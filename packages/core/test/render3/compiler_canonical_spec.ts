@@ -270,12 +270,15 @@ describe('compiler specification', () => {
 
   describe('lifecycle hooks', () => {
     let events: string[] = [];
+    let simpleLayout: SimpleLayout;
 
     beforeEach(() => { events = []; });
 
     @Component({selector: 'lifecycle-comp', template: ``})
     class LifecycleComp {
       @Input() nameMin: string;
+
+      ngOnChanges() { events.push('changes' + this.nameMin); }
 
       ngOnInit() { events.push('init' + this.nameMin); }
       ngDoCheck() { events.push('check' + this.nameMin); }
@@ -293,7 +296,8 @@ describe('compiler specification', () => {
         tag: 'lifecycle-comp',
         factory: () => new LifecycleComp(),
         template: function(ctx: any, cm: boolean) {},
-        inputs: {nameMin: 'name'}
+        inputs: {nameMin: 'name'},
+        features: [r3.NgOnChangesFeature(LifecycleComp)]
       });
     }
 
@@ -311,7 +315,7 @@ describe('compiler specification', () => {
       static ngComponentDef = r3.defineComponent({
         type: SimpleLayout,
         tag: 'simple-layout',
-        factory: () => new SimpleLayout(),
+        factory: () => simpleLayout = new SimpleLayout(),
         template: function(ctx: any, cm: boolean) {
           if (cm) {
             r3.E(0, LifecycleComp);
@@ -333,8 +337,18 @@ describe('compiler specification', () => {
       expect(renderComp(SimpleLayout))
           .toEqual(`<lifecycle-comp></lifecycle-comp><lifecycle-comp></lifecycle-comp>`);
       expect(events).toEqual([
-        'init1', 'check1', 'init2', 'check2', 'content init1', 'content check1', 'content init2',
-        'content check2', 'view init1', 'view check1', 'view init2', 'view check2'
+        'changes1', 'init1', 'check1', 'changes2', 'init2', 'check2', 'content init1',
+        'content check1', 'content init2', 'content check2', 'view init1', 'view check1',
+        'view init2', 'view check2'
+      ]);
+
+      events = [];
+      simpleLayout.name1 = '-one';
+      simpleLayout.name2 = '-two';
+      r3.detectChanges(simpleLayout);
+      expect(events).toEqual([
+        'changes-one', 'check-one', 'changes-two', 'check-two', 'content check-one',
+        'content check-two', 'view check-one', 'view check-two'
       ]);
     });
 
