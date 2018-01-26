@@ -133,22 +133,31 @@ inside the `<app-root>` tag. -->
 
 
 ## Template inline or template file?
+<!-- 인라인 템플릿이 좋을까, 템플릿 파일을 따로 두는 것이 좋을까? -->
 
-You can store your component's template in one of two places.
+<!-- You can store your component's template in one of two places.
 You can define it *inline* using the `template` property, or you can define
 the template in a separate HTML file and link to it in
-the component metadata using the `@Component` decorator's `templateUrl` property.
+the component metadata using the `@Component` decorator's `templateUrl` property. -->
+컴포넌트 템플릿은 두가지 방법으로 정의할 수 있습니다.
+템플릿을 *인라인* 으로 정의하려면 `@Component` 데코레이터의 `template` 프로퍼티를 사용하면 되고,
+별개의 HTML 파일에 정의하려면 `templateUrl` 프로퍼티를 사용하면 됩니다.
 
-The choice between inline and separate HTML is a matter of taste,
+<!-- The choice between inline and separate HTML is a matter of taste,
 circumstances, and organization policy.
 Here the app uses inline HTML because the template is small and the demo
-is simpler without the additional HTML file.
+is simpler without the additional HTML file. -->
+템플릿을 인라인으로 정의하느냐, 별개의 HTML 파일에 정의하느냐는 단순히 취향이나 정책에 대한 문제입니다.
+보통 템플릿의 양이 적거나 별개의 파일로 분리하기 전에 간단하게 테스트 할 때는 인라인 템플릿을 사용합니다.
 
-In either style, the template data bindings have the same access to the component's properties.
+<!-- In either style, the template data bindings have the same access to the component's properties. -->
+둘 중 어떤 스타일이든, 템플릿에 데이터를 바인딩하는 방법은 같습니다.
 
 <div class="alert is-helpful">
   
-  By default, the Angular CLI generates components with a template file. You can override that with:
+  <!-- By default, the Angular CLI generates components with a template file. You can override that with: -->
+  Angular CLI으로 컴포넌트를 생성하면 템플릿 파일을 별개로 만듭니다.
+  이 때 템플릿을 인라인으로 만들려면 <code>-it</code> 옵션을 사용하면 됩니다.
 
   <code-example hideCopy language="sh" class="code-shell">
     ng generate component hero -it
@@ -158,8 +167,10 @@ In either style, the template data bindings have the same access to the componen
 
 
 ## Constructor or variable initialization?
+<!-- 변수 초기값은 생성자에서 할당하는 것이 좋을까, 클래스 선언에서 할당하는 것이 좋을까? -->
 
-Although this example uses variable assignment to initialize the components, you could instead declare and initialize the properties using a constructor:
+<!-- Although this example uses variable assignment to initialize the components, you could instead declare and initialize the properties using a constructor: -->
+위에서 본 예제 코드에서는 컴포넌트 클래스에 변수를 선언하면서 변수값을 할당했지만, 변수 초기값은 생성자에서 할 수도 있습니다.
 
 
 <code-example path="displaying-data/src/app/app-ctor.component.ts" linenums="false" region="class">
@@ -167,14 +178,16 @@ Although this example uses variable assignment to initialize the components, you
 </code-example>
 
 
-
-This app uses more terse "variable assignment" style simply for brevity.
+<!-- This app uses more terse "variable assignment" style simply for brevity. -->
+하지만 이 예제만 보면 클래스에 변수를 선언하면서 초기값을 할당하는 것이 간결하니 이 방식을 계속 사용하겠습니다.
 
 {@a ngFor}
 
 ## Showing an array property with ***ngFor**
+<!-- 배열에 있는 항목을 ***ngFor**로 표시하기 -->
 
-To display a list of heroes, begin by adding an array of hero names to the component and redefine `myHero` to be the first name in the array.
+<!-- To display a list of heroes, begin by adding an array of hero names to the component and redefine `myHero` to be the first name in the array. -->
+히어로의 목록을 표시하려면 먼저 컴포넌트에 히어로 목록을 정의해야 합니다. 그리고 난 후에 `myHero` 에 첫번째 항목을 할당합시다.
 
 
 <code-example path="displaying-data/src/app/app.component.2.ts" linenums="false" title="src/app/app.component.ts (class)" region="class">
@@ -182,9 +195,9 @@ To display a list of heroes, begin by adding an array of hero names to the compo
 </code-example>
 
 
-
-Now use the Angular `ngFor` directive in the template to display
-each item in the `heroes` list.
+<!-- Now use the Angular `ngFor` directive in the template to display
+each item in the `heroes` list. -->
+그리고 Angular에서 제공하는 `ngFor` 디렉티브를 사용하면 `heroes` 목록의 각 항목을 화면에 표시할 수 있습니다.
 
 
 <code-example path="displaying-data/src/app/app.component.2.ts" linenums="false" title="src/app/app.component.ts (template)" region="template">
@@ -192,10 +205,12 @@ each item in the `heroes` list.
 </code-example>
 
 
-
-This UI uses the HTML unordered list with `<ul>` and `<li>` tags. The `*ngFor`
+<!-- This UI uses the HTML unordered list with `<ul>` and `<li>` tags. The `*ngFor`
 in the `<li>` element is the Angular "repeater" directive.
-It marks that `<li>` element (and its children) as the "repeater template":
+It marks that `<li>` element (and its children) as the "repeater template": -->
+이 템플릿에는 목록을 표시하기 위해 `<ul>` 태그와 `<li>` 태그를 사용했습니다.
+그리고 `<li>` 태그 안에 사용된 `*ngFor` 는 무언가를 반복할 때 사용하는 디렉티브입니다.
+이 디렉티브를 아래 예제처럼 `<li>` 엘리먼트에 사용하면 `<li>` 엘리먼트와 그 하위 엘리먼트를 반복할 수 있습니다.
 
 
 <code-example path="displaying-data/src/app/app.component.2.ts" linenums="false" title="src/app/app.component.ts (li)" region="li">
@@ -207,9 +222,10 @@ It marks that `<li>` element (and its children) as the "repeater template":
 <div class="alert is-important">
 
 
-
-Don't forget the leading asterisk (\*) in `*ngFor`. It is an essential part of the syntax.
-For more information, see the [Template Syntax](guide/template-syntax#ngFor) page.
+<!-- Don't forget the leading asterisk (\*) in `*ngFor`. It is an essential part of the syntax.
+For more information, see the [Template Syntax](guide/template-syntax#ngFor) page. -->
+좀 더 자세한 설명은 [템플릿 문법](guide/template-syntax#ngFor) 문서를 참고하세요.
+`*ngFor` 를 사용할 때 별표(\*)를 잊지 마세요. 이 표기방식은 템플릿 문법에서도 특히 중요합니다.
 
 
 </div>
