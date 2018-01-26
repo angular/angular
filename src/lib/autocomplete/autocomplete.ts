@@ -19,6 +19,9 @@ import {
   ChangeDetectionStrategy,
   EventEmitter,
   Output,
+  InjectionToken,
+  Inject,
+  Optional,
 } from '@angular/core';
 import {
   MatOption,
@@ -28,6 +31,7 @@ import {
   CanDisableRipple,
 } from '@angular/material/core';
 import {ActiveDescendantKeyManager} from '@angular/cdk/a11y';
+import {coerceBooleanProperty} from '@angular/cdk/coercion';
 
 
 /**
@@ -49,6 +53,16 @@ export class MatAutocompleteSelectedEvent {
 /** @docs-private */
 export class MatAutocompleteBase {}
 export const _MatAutocompleteMixinBase = mixinDisableRipple(MatAutocompleteBase);
+
+/** Default `mat-autocomplete` options that can be overridden. */
+export interface MatAutocompleteDefaultOptions {
+  /** Whether the first option should be highlighted when an autocomplete panel is opened. */
+  autoActiveFirstOption?: boolean;
+}
+
+/** Injection token to be used to override the default options for `mat-autocomplete`. */
+export const MAT_AUTOCOMPLETE_DEFAULT_OPTIONS =
+    new InjectionToken<MatAutocompleteDefaultOptions>('mat-autocomplete-default-options');
 
 
 @Component({
@@ -98,6 +112,18 @@ export class MatAutocomplete extends _MatAutocompleteMixinBase implements AfterC
   /** Function that maps an option's control value to its display value in the trigger. */
   @Input() displayWith: ((value: any) => string) | null = null;
 
+  /**
+   * Whether the first option should be highlighted when the autocomplete panel is opened.
+   * Can be configured globally through the `MAT_AUTOCOMPLETE_DEFAULT_OPTIONS` token.
+   */
+  @Input()
+  get autoActiveFirstOption(): boolean { return this._autoActiveFirstOption; }
+  set autoActiveFirstOption(value: boolean) {
+    this._autoActiveFirstOption = coerceBooleanProperty(value);
+  }
+  private _autoActiveFirstOption: boolean;
+
+
   /** Event that is emitted whenever an option from the list is selected. */
   @Output() readonly optionSelected: EventEmitter<MatAutocompleteSelectedEvent> =
       new EventEmitter<MatAutocompleteSelectedEvent>();
@@ -118,8 +144,19 @@ export class MatAutocomplete extends _MatAutocompleteMixinBase implements AfterC
   /** Unique ID to be used by autocomplete trigger's "aria-owns" property. */
   id: string = `mat-autocomplete-${_uniqueAutocompleteIdCounter++}`;
 
-  constructor(private _changeDetectorRef: ChangeDetectorRef, private _elementRef: ElementRef) {
+  constructor(
+    private _changeDetectorRef: ChangeDetectorRef,
+    private _elementRef: ElementRef,
+
+    // @deletion-target Turn into required param in 6.0.0
+    @Optional() @Inject(MAT_AUTOCOMPLETE_DEFAULT_OPTIONS)
+        defaults?: MatAutocompleteDefaultOptions) {
     super();
+
+    this._autoActiveFirstOption = defaults &&
+        typeof defaults.autoActiveFirstOption !== 'undefined' ?
+            defaults.autoActiveFirstOption :
+            false;
   }
 
   ngAfterContentInit() {

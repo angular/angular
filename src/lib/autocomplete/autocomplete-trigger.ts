@@ -525,9 +525,12 @@ export class MatAutocompleteTrigger implements ControlValueAccessor, OnDestroy {
     return this._getConnectedElement().nativeElement.getBoundingClientRect().width;
   }
 
-  /** Reset active item to -1 so arrow events will activate the correct options. */
+  /**
+   * Resets the active item to -1 so arrow events will activate the
+   * correct options, or to 0 if the consumer opted into it.
+   */
   private _resetActiveItem(): void {
-    this.autocomplete._keyManager.setActiveItem(-1);
+    this.autocomplete._keyManager.setActiveItem(this.autocomplete.autoActiveFirstOption ? 0 : -1);
   }
 
   /** Determines whether the panel can be opened. */

@@ -1,4 +1,4 @@
-import {Direction, Directionality} from '@angular/cdk/bidi';
+import {Directionality} from '@angular/cdk/bidi';
 import {DOWN_ARROW, ENTER, ESCAPE, SPACE, UP_ARROW, TAB} from '@angular/cdk/keycodes';
 import {OverlayContainer, Overlay} from '@angular/cdk/overlay';
 import {map} from 'rxjs/operators/map';
@@ -20,6 +20,7 @@ import {
   ViewChild,
   ViewChildren,
   NgZone,
+  Provider,
 } from '@angular/core';
 import {
   async,
@@ -46,6 +47,7 @@ import {
   MatAutocompleteSelectedEvent,
   MatAutocompleteTrigger,
   MAT_AUTOCOMPLETE_SCROLL_STRATEGY,
+  MAT_AUTOCOMPLETE_DEFAULT_OPTIONS,
 } from './index';
 
 
@@ -56,7 +58,7 @@ describe('MatAutocomplete', () => {
   let zone: MockNgZone;
 
   // Creates a test component fixture.
-  function createComponent(component: any, dir: Direction = 'ltr'): ComponentFixture<any> {
+  function createComponent(component: any, providers: Provider[] = []): ComponentFixture<any> {
     TestBed.configureTestingModule({
       imports: [
         MatAutocompleteModule,
@@ -68,14 +70,14 @@ describe('MatAutocomplete', () => {
       ],
       declarations: [component],
       providers: [
-        {provide: Directionality, useFactory: () => ({value: dir})},
         {provide: ScrollDispatcher, useFactory: () => ({
           scrolled: () => scrolledSubject.asObservable()
         })},
         {provide: NgZone, useFactory: () => {
           zone = new MockNgZone();
           return zone;
-        }}
+        }},
+        ...providers
       ]
     });
 
@@ -410,9 +412,11 @@ describe('MatAutocomplete', () => {
   });
 
   it('should have the correct text direction in RTL', () => {
-    const rtlFixture = createComponent(SimpleAutocomplete, 'rtl');
-    rtlFixture.detectChanges();
+    const rtlFixture = createComponent(SimpleAutocomplete, [
+      {provide: Directionality, useFactory: () => ({value: 'rtl'})},
+    ]);
 
+    rtlFixture.detectChanges();
     rtlFixture.componentInstance.trigger.openPanel();
     rtlFixture.detectChanges();
 
@@ -1291,12 +1295,12 @@ describe('MatAutocomplete', () => {
     beforeEach(() => {
       fixture = createComponent(SimpleAutocomplete);
       fixture.detectChanges();
-
-      fixture.componentInstance.trigger.openPanel();
-      fixture.detectChanges();
     });
 
     it('should deselect any other selected option', fakeAsync(() => {
+      fixture.componentInstance.trigger.openPanel();
+      fixture.detectChanges();
+
       let options =
           overlayContainerElement.querySelectorAll('mat-option') as NodeListOf<HTMLElement>;
       options[0].click();
@@ -1320,6 +1324,9 @@ describe('MatAutocomplete', () => {
     }));
 
     it('should call deselect only on the previous selected option', fakeAsync(() => {
+      fixture.componentInstance.trigger.openPanel();
+      fixture.detectChanges();
+
       let options =
           overlayContainerElement.querySelectorAll('mat-option') as NodeListOf<HTMLElement>;
       options[0].click();
@@ -1342,15 +1349,33 @@ describe('MatAutocomplete', () => {
       componentOptions.slice(1).forEach(option => expect(option.deselect).not.toHaveBeenCalled());
     }));
 
-    it('should emit an event when an option is selected', fakeAsync(() => {
-      const spy = jasmine.createSpy('option selection spy');
-      const subscription = fixture.componentInstance.trigger.optionSelections.subscribe(spy);
-      const option = overlayContainerElement.querySelector('mat-option') as HTMLElement;
-      option.click();
+    it('should be able to preselect the first option', fakeAsync(() => {
+      fixture.componentInstance.trigger.autocomplete.autoActiveFirstOption = true;
+      fixture.componentInstance.trigger.openPanel();
+      fixture.detectChanges();
+      zone.simulateZoneExit();
       fixture.detectChanges();
 
-      expect(spy).toHaveBeenCalledWith(jasmine.any(MatOptionSelectionChange));
-      subscription.unsubscribe();
+      expect(overlayContainerElement.querySelectorAll('mat-option')[0].classList)
+          .toContain('mat-active', 'Expected first option to be highlighted.');
+    }));
+
+    it('should be able to configure preselecting the first option globally', fakeAsync(() => {
+      overlayContainer.ngOnDestroy();
+      fixture.destroy();
+      TestBed.resetTestingModule();
+      fixture = createComponent(SimpleAutocomplete, [
+        {provide: MAT_AUTOCOMPLETE_DEFAULT_OPTIONS, useValue: {autoActiveFirstOption: true}}
+      ]);
+
+      fixture.detectChanges();
+      fixture.componentInstance.trigger.openPanel();
+      fixture.detectChanges();
+      zone.simulateZoneExit();
+      fixture.detectChanges();
+
+      expect(overlayContainerElement.querySelectorAll('mat-option')[0].classList)
+          .toContain('mat-active', 'Expected first option to be highlighted.');
     }));
 
     it('should handle `optionSelections` being accessed too early', fakeAsync(() => {
@@ -1743,8 +1768,8 @@ describe('MatAutocomplete', () => {
       <input matInput placeholder="State" [matAutocomplete]="auto" [formControl]="stateCtrl">
     </mat-form-field>
 
-    <mat-autocomplete class="class-one class-two" #auto="matAutocomplete"
-      [displayWith]="displayFn" [disableRipple]="disableRipple">
+    <mat-autocomplete class="class-one class-two" #auto="matAutocomplete" [displayWith]="displayFn"
+      [disableRipple]="disableRipple">
       <mat-option *ngFor="let state of filteredStates" [value]="state">
         <span> {{ state.code }}: {{ state.name }}  </span>
       </mat-option>
