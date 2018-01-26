@@ -68,7 +68,7 @@ fi
 
 
 CHECKOUT_MASTER="git checkout merge_pr_master"
-CHECKOUT_PATCH="git checkout merge_pr_$PATCH_BRANCH"
+CHECKOUT_PATCH="git checkout merge_pr_patch"
 RESTORE_BRANCH="git checkout $CURRENT_BRANCH"
 FETCH_PR="git fetch git@github.com:angular/angular.git pull/$PR_NUMBER/head:merge_pr heads/master:merge_pr_master heads/master:merge_pr_master_base heads/$PATCH_BRANCH:merge_pr_patch  heads/$PATCH_BRANCH:merge_pr_patch_base -f"
 BASE_PR="git checkout merge_pr~$PR_SHA_COUNT -B merge_pr_base"
