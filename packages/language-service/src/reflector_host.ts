@@ -69,7 +69,7 @@ export class ReflectorHost implements StaticSymbolResolverHost {
         throw new Error('Resolution of relative paths requires a containing file.');
       }
       // Any containing file gives the same result for absolute imports
-      containingFile = path.join(this.options.basePath !, 'index.ts');
+      containingFile = path.join(this.options.basePath !, 'index.ts').replace(/\\/g, '/');
     }
     const resolved =
         ts.resolveModuleName(moduleName, containingFile !, this.options, this.hostAdapter)
