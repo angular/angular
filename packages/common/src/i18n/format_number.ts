@@ -18,33 +18,28 @@ const DIGIT_CHAR = '#';
 const CURRENCY_CHAR = '¤';
 const PERCENT_CHAR = '%';
 
-/** @internal */
-export type FormatNumberRes = {
-  str: string | null,
-  error?: string
-};
-
 /**
- * Transform a number to a locale string based on a style and a format
- *
- * @internal
+ * Transforms a string into a number (if needed)
  */
-export function formatNumber(
-    value: number | string, locale: string, style: NumberFormatStyle, digitsInfo?: string | null,
-    currency: string | null = null): FormatNumberRes {
-  const res: FormatNumberRes = {str: null};
-  const format = getLocaleNumberFormat(locale, style);
-  let num;
-
+function strToNumber(value: number | string): number {
   // Convert strings to numbers
   if (typeof value === 'string' && !isNaN(+value - parseFloat(value))) {
-    num = +value;
-  } else if (typeof value !== 'number') {
-    res.error = `${value} is not a number`;
-    return res;
-  } else {
-    num = value;
+    return +value;
   }
+  if (typeof value !== 'number') {
+    throw new Error(`${value} is not a number`);
+  }
+  return value;
+}
+
+/**
+ * Transforms a number to a locale string based on a style and a format
+ */
+function formatNumber(
+    value: number | string, locale: string, style: NumberFormatStyle, groupSymbol: NumberSymbol,
+    decimalSymbol: NumberSymbol, digitsInfo?: string): string {
+  const format = getLocaleNumberFormat(locale, style);
+  const num = strToNumber(value);
 
   const pattern = parseNumberFormat(format, getLocaleNumberSymbol(locale, NumberSymbol.MinusSign));
   let formattedText = '';
@@ -66,8 +61,7 @@ export function formatNumber(
     if (digitsInfo) {
       const parts = digitsInfo.match(NUMBER_FORMAT_REGEXP);
       if (parts === null) {
-        res.error = `${digitsInfo} is not a valid digit info`;
-        return res;
+        throw new Error(`${digitsInfo} is not a valid digit info`);
       }
       const minIntPart = parts[1];
       const minFractionPart = parts[3];
@@ -125,12 +119,10 @@ export function formatNumber(
       groups.unshift(digits.join(''));
     }
 
-    const groupSymbol = currency ? NumberSymbol.CurrencyGroup : NumberSymbol.Group;
     formattedText = groups.join(getLocaleNumberSymbol(locale, groupSymbol));
 
     // append the decimal digits
     if (decimals.length) {
-      const decimalSymbol = currency ? NumberSymbol.CurrencyDecimal : NumberSymbol.Decimal;
       formattedText += getLocaleNumberSymbol(locale, decimalSymbol) + decimals.join('');
     }
 
@@ -145,22 +137,42 @@ export function formatNumber(
     formattedText = pattern.posPre + formattedText + pattern.posSuf;
   }
 
-  if (style === NumberFormatStyle.Currency && currency !== null) {
-    res.str = formattedText
-                  .replace(CURRENCY_CHAR, currency)
-                  // if we have 2 time the currency character, the second one is ignored
-                  .replace(CURRENCY_CHAR, '');
-    return res;
-  }
+  return formattedText;
+}
 
-  if (style === NumberFormatStyle.Percent) {
-    res.str = formattedText.replace(
-        new RegExp(PERCENT_CHAR, 'g'), getLocaleNumberSymbol(locale, NumberSymbol.PercentSign));
-    return res;
-  }
+/**
+ * Formats a currency to a locale string
+ */
+export function formatCurrency(
+    value: number | string, locale: string, currency: string, currencyCode?: string,
+    digitsInfo?: string): string {
+  const res = formatNumber(
+      value, locale, NumberFormatStyle.Currency, NumberSymbol.CurrencyGroup,
+      NumberSymbol.CurrencyDecimal, digitsInfo);
+  return res
+      .replace(CURRENCY_CHAR, currency)
+      // if we have 2 time the currency character, the second one is ignored
+      .replace(CURRENCY_CHAR, '');
+}
 
-  res.str = formattedText;
-  return res;
+/**
+ * Formats a percentage to a locale string
+ */
+export function formatPercent(value: number | string, locale: string, digitsInfo?: string): string {
+  const res = formatNumber(
+      value, locale, NumberFormatStyle.Percent, NumberSymbol.Group, NumberSymbol.Decimal,
+      digitsInfo);
+  return res.replace(
+      new RegExp(PERCENT_CHAR, 'g'), getLocaleNumberSymbol(locale, NumberSymbol.PercentSign));
+}
+
+/**
+ * Formats a number to a locale string
+ */
+export function formatDecimal(value: number | string, locale: string, digitsInfo?: string): string {
+  return formatNumber(
+      value, locale, NumberFormatStyle.Decimal, NumberSymbol.Group, NumberSymbol.Decimal,
+      digitsInfo);
 }
 
 interface ParsedNumberFormat {

@@ -125,7 +125,15 @@ import {beforeEach, describe, expect, it} from '@angular/core/testing/src/testin
           expect(pipe.transform(5.1234, 'CAD', 'symbol-narrow', '5.2-2')).toEqual('$00,005.12');
           expect(pipe.transform(5.1234, 'CAD', 'symbol-narrow', '5.2-2', 'fr'))
               .toEqual('00 005,12 $');
-          expect(pipe.transform(5.1234, 'FAKE', 'symbol')).toEqual('FAKE5.12');
+          expect(pipe.transform(5, 'USD', 'symbol', '', 'fr')).toEqual('5,00 $US');
+        });
+
+        it('should support any currency code name', () => {
+          // currency code is unknown, default formatting options will be used
+          expect(pipe.transform(5.1234, 'unexisting_ISO_code', 'symbol'))
+              .toEqual('unexisting_ISO_code5.12');
+          // currency code is USD, the pipe will format based on USD but will display "Custom name"
+          expect(pipe.transform(5.1234, 'USD', 'Custom name')).toEqual('Custom name5.12');
         });
 
         it('should not support other objects', () => {

@@ -4,12 +4,10 @@
  * Like JSON.stringify, but without double quotes around keys, and without null instead of undefined
  * values
  * Based on https://github.com/json5/json5/blob/master/lib/json5.js
+ * Use option "quoteKeys" to preserve quotes for keys
  */
-module.exports.stringify = function(obj, replacer, space) {
-  if (replacer && (typeof(replacer) !== 'function' && !isArray(replacer))) {
-    throw new Error('Replacer must be a function or an array');
-  }
-  var getReplacedValueOrUndefined = function(holder, key, isTopLevel) {
+module.exports.stringify = function(obj, quoteKeys) {
+  var getReplacedValueOrUndefined = function(holder, key) {
     var value = holder[key];
 
     // Replace the value with its toJSON value first, if possible
@@ -17,21 +15,7 @@ module.exports.stringify = function(obj, replacer, space) {
       value = value.toJSON();
     }
 
-    // If the user-supplied replacer if a function, call it. If it's an array, check objects' string
-    // keys for
-    // presence in the array (removing the key/value pair from the resulting JSON if the key is
-    // missing).
-    if (typeof(replacer) === 'function') {
-      return replacer.call(holder, key, value);
-    } else if (replacer) {
-      if (isTopLevel || isArray(holder) || replacer.indexOf(key) >= 0) {
-        return value;
-      } else {
-        return undefined;
-      }
-    } else {
-      return value;
-    }
+    return value;
   };
 
   function isWordChar(c) {
@@ -80,34 +64,6 @@ module.exports.stringify = function(obj, replacer, space) {
     }
   }
 
-  function makeIndent(str, num, noNewLine) {
-    if (!str) {
-      return '';
-    }
-    // indentation no more than 10 chars
-    if (str.length > 10) {
-      str = str.substring(0, 10);
-    }
-
-    var indent = noNewLine ? '' : '\n';
-    for (var i = 0; i < num; i++) {
-      indent += str;
-    }
-
-    return indent;
-  }
-
-  var indentStr;
-  if (space) {
-    if (typeof space === 'string') {
-      indentStr = space;
-    } else if (typeof space === 'number' && space >= 0) {
-      indentStr = makeIndent(' ', space, true);
-    } else {
-      // ignore space parameter
-    }
-  }
-
   // Copied from Crokford's implementation of JSON
   // See
   // https://github.com/douglascrockford/JSON-js/blob/e39db4b7e6249f04a195e7dd0840e610cc9e941e/json2.js#L195
@@ -123,24 +79,24 @@ module.exports.stringify = function(obj, replacer, space) {
       '"' : '\\"',
       '\\': '\\\\'
     };
-  function escapeString(str) {
+  function escapeString(str, keepQuotes) {
     // If the string contains no control characters, no quote characters, and no
     // backslash characters, then we can safely slap some quotes around it.
     // Otherwise we must also replace the offending characters with safe escape
     // sequences.
     escapable.lastIndex = 0;
-    return escapable.test(str) ? '"' + str.replace(escapable, function(a) {
+    return escapable.test(str) && !keepQuotes ? '"' + str.replace(escapable, function(a) {
       var c = meta[a];
       return typeof c === 'string' ? c : '\\u' + ('0000' + a.charCodeAt(0).toString(16)).slice(-4);
     }) + '"' : '"' + str + '"';
   }
   // End
 
-  function internalStringify(holder, key, isTopLevel) {
+  function internalStringify(holder, key) {
     var buffer, res;
 
     // Replace the value, if necessary
-    var obj_part = getReplacedValueOrUndefined(holder, key, isTopLevel);
+    var obj_part = getReplacedValueOrUndefined(holder, key);
 
     if (obj_part && !isDate(obj_part)) {
       // unbox objects
@@ -169,8 +125,7 @@ module.exports.stringify = function(obj, replacer, space) {
           objStack.push(obj_part);
 
           for (var i = 0; i < obj_part.length; i++) {
-            res = internalStringify(obj_part, i, false);
-            buffer += makeIndent(indentStr, objStack.length);
+            res = internalStringify(obj_part, i);
             if (res === null) {
               buffer += 'null';
             } else if (typeof res === 'undefined') {  // modified to support empty array values
@@ -180,14 +135,9 @@ module.exports.stringify = function(obj, replacer, space) {
             }
             if (i < obj_part.length - 1) {
               buffer += ',';
-            } else if (indentStr) {
-              buffer += '\n';
             }
           }
           objStack.pop();
-          if (obj_part.length) {
-            buffer += makeIndent(indentStr, objStack.length, true);
-          }
           buffer += ']';
         } else {
           checkForCircular(obj_part);
@@ -197,19 +147,16 @@ module.exports.stringify = function(obj, replacer, space) {
           for (var prop in obj_part) {
             if (obj_part.hasOwnProperty(prop)) {
               var value = internalStringify(obj_part, prop, false);
-              isTopLevel = false;
               if (typeof value !== 'undefined' && value !== null) {
-                buffer += makeIndent(indentStr, objStack.length);
                 nonEmpty = true;
-                key = isWord(prop) ? prop : escapeString(prop);
-                buffer += key + ':' + (indentStr ? ' ' : '') + value + ',';
+                key = isWord(prop) && !quoteKeys ? prop : escapeString(prop, quoteKeys);
+                buffer += key + ':' + value + ',';
               }
             }
           }
           objStack.pop();
           if (nonEmpty) {
-            buffer = buffer.substring(0, buffer.length - 1) +
-                makeIndent(indentStr, objStack.length) + '}';
+            buffer = buffer.substring(0, buffer.length - 1) + '}';
           } else {
             buffer = '{}';
           }
@@ -228,5 +175,5 @@ module.exports.stringify = function(obj, replacer, space) {
   if (obj === undefined) {
     return getReplacedValueOrUndefined(topLevelHolder, '', true);
   }
-  return internalStringify(topLevelHolder, '', true);
+  return internalStringify(topLevelHolder, '');
 };

@@ -9,8 +9,10 @@
 // THIS CODE IS GENERATED - DO NOT MODIFY
 // See angular/tools/gulp-tasks/cldr/extract.js
 
+export type CurrenciesSymbols = [string] | [string | undefined, string];
+
 /** @internal */
-export const CURRENCIES: {[code: string]: (string | undefined)[]} = {
+export const CURRENCIES_EN: {[code: string]: CurrenciesSymbols} = {
   'AOA': [, 'Kz'],
   'ARS': [, '$'],
   'AUD': ['A$', '$'],
@@ -111,5 +113,5 @@ export const CURRENCIES: {[code: string]: (string | undefined)[]} = {
   'XOF': ['CFA'],
   'XPF': ['CFPF'],
   'ZAR': [, 'R'],
-  'ZMW': [, 'ZK'],
+  'ZMW': [, 'ZK']
 };
