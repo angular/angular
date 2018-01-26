@@ -16,7 +16,7 @@ import {LView, LifecycleStage, TData, TView} from './interfaces/view';
 
 import {LContainerNode, LElementNode, LNode, LNodeFlags, LProjectionNode, LTextNode, LViewNode, TNode, TContainerNode, InitialInputData, InitialInputs, PropertyAliases, PropertyAliasValue,} from './interfaces/node';
 import {assertNodeType, assertNodeOfPossibleTypes} from './node_assert';
-import {appendChild, insertChild, insertView, processProjectedNode, removeView} from './node_manipulation';
+import {appendChild, insertChild, insertView, appendProjectedNode, removeView, canInsertNativeNode} from './node_manipulation';
 import {isNodeMatchingSelector} from './node_selector_matcher';
 import {ComponentDef, ComponentTemplate, ComponentType, DirectiveDef, DirectiveType} from './interfaces/definition';
 import {RElement, RText, Renderer3, RendererFactory3, ProceduralRenderer3, ObjectOrientedRenderer3, RendererStyleFlags3} from './interfaces/renderer';
@@ -194,14 +194,15 @@ export function createLNode(
 export function createLNode(
     index: null, type: LNodeFlags.View, native: null, lView: LView): LViewNode;
 export function createLNode(
-    index: number, type: LNodeFlags.Container, native: null,
+    index: number, type: LNodeFlags.Container, native: undefined,
     lContainer: LContainer): LContainerNode;
 export function createLNode(
     index: number, type: LNodeFlags.Projection, native: null,
     lProjection: LProjection): LProjectionNode;
 export function createLNode(
-    index: number | null, type: LNodeFlags, native: RText | RElement | null, state?: null | LView |
-        LContainer | LProjection): LElementNode&LTextNode&LViewNode&LContainerNode&LProjectionNode {
+    index: number | null, type: LNodeFlags, native: RText | RElement | null | undefined,
+    state?: null | LView | LContainer | LProjection): LElementNode&LTextNode&LViewNode&
+    LContainerNode&LProjectionNode {
   const parent = isParent ? previousOrParentNode :
                             previousOrParentNode && previousOrParentNode.parent as LNode;
   let query = (isParent ? currentQuery : previousOrParentNode && previousOrParentNode.query) ||
@@ -986,35 +987,23 @@ export function container(
     tagName?: string, attrs?: string[], localRefs?: string[] | null): void {
   ngDevMode && assertEqual(currentView.bindingStartIndex, null, 'bindingStartIndex');
 
-  // If the direct parent of the container is a view, its views (including its comment)
-  // will need to be added through insertView() when its parent view is being inserted.
-  // For now, it is marked "headless" so we know to append its views later.
-  let renderParent: LElementNode|null = null;
   const currentParent = isParent ? previousOrParentNode : previousOrParentNode.parent !;
   ngDevMode && assertNotEqual(currentParent, null, 'currentParent');
 
-  if ((currentParent.flags & LNodeFlags.TYPE_MASK) === LNodeFlags.Element &&
-      (currentParent.view !==
-           currentView /* Crossing View Boundaries, it is Component, but add Element of View */
-       || currentParent.data === null /* Regular Element. */)) {
-    // we are adding to an Element which is either:
-    // - Not a component (will not be re-projected, just added)
-    // - View of the Component
-    renderParent = currentParent as LElementNode;
-  }
-
   const lContainer = <LContainer>{
     views: [],
-    nextIndex: 0, renderParent,
+    nextIndex: 0,
+    // If the direct parent of the container is a view, its views will need to be added
+    // through insertView() when its parent view is being inserted:
+    renderParent: canInsertNativeNode(currentParent, currentView) ? currentParent : null,
     template: template == null ? null : template,
     next: null,
     parent: currentView,
     dynamicViewCount: 0,
-    query: null,
-    nextNative: undefined
+    query: null
   };
 
-  const node = createLNode(index, LNodeFlags.Container, null, lContainer);
+  const node = createLNode(index, LNodeFlags.Container, undefined, lContainer);
 
   if (node.tNode == null) {
     // TODO(misko): implement queryName caching
@@ -1048,11 +1037,10 @@ export function containerRefreshStart(index: number): void {
   previousOrParentNode = data[index] as LNode;
   ngDevMode && assertNodeType(previousOrParentNode, LNodeFlags.Container);
   isParent = true;
-  const container = previousOrParentNode as LContainerNode;
-  container.data.nextIndex = 0;
-  ngDevMode &&
-      assertEqual(
-          container.data.nextNative === undefined, true, 'container.data.nextNative === undefined');
+  (previousOrParentNode as LContainerNode).data.nextIndex = 0;
+  ngDevMode && assertEqual(
+                   (previousOrParentNode as LContainerNode).native === undefined, true,
+                   'previousOrParentNode.native === undefined');
 
   // We need to execute init hooks here so ngOnInit hooks are called in top level views
   // before they are called in embedded views (for backwards compatibility).
@@ -1074,7 +1062,7 @@ export function containerRefreshEnd(): void {
   }
   ngDevMode && assertNodeType(previousOrParentNode, LNodeFlags.Container);
   const container = previousOrParentNode as LContainerNode;
-  container.data.nextNative = undefined;
+  container.native = undefined;
   ngDevMode && assertNodeType(container, LNodeFlags.Container);
   const nextIndex = container.data.nextIndex;
   while (nextIndex < container.data.views.length) {
@@ -1281,12 +1269,12 @@ function appendToProjectionNode(
     return;
   }
   const projectionNodeData = projectionNode.data;
-  if (projectionNodeData.last) {
-    projectionNodeData.last.pNextOrParent = appendedFirst;
+  if (projectionNodeData.tail) {
+    projectionNodeData.tail.pNextOrParent = appendedFirst;
   } else {
-    projectionNodeData.first = appendedFirst;
+    projectionNodeData.head = appendedFirst;
   }
-  projectionNodeData.last = appendedLast;
+  projectionNodeData.tail = appendedLast;
   appendedLast.pNextOrParent = projectionNode;
 }
 
@@ -1299,7 +1287,7 @@ function appendToProjectionNode(
  * @param selectorIndex - 0 means <ng-content> without any selector
  */
 export function projection(nodeIndex: number, localIndex: number, selectorIndex: number = 0): void {
-  const node = createLNode(nodeIndex, LNodeFlags.Projection, null, {first: null, last: null});
+  const node = createLNode(nodeIndex, LNodeFlags.Projection, null, {head: null, tail: null});
   isParent = false;  // self closing
   const currentParent = node.parent;
 
@@ -1315,7 +1303,7 @@ export function projection(nodeIndex: number, localIndex: number, selectorIndex:
     const nodeToProject = nodesForSelector[i];
     if ((nodeToProject.flags & LNodeFlags.TYPE_MASK) === LNodeFlags.Projection) {
       const previouslyProjected = (nodeToProject as LProjectionNode).data;
-      appendToProjectionNode(node, previouslyProjected.first, previouslyProjected.last);
+      appendToProjectionNode(node, previouslyProjected.head, previouslyProjected.tail);
     } else {
       appendToProjectionNode(
           node, nodeToProject as LTextNode | LElementNode | LContainerNode,
@@ -1323,13 +1311,15 @@ export function projection(nodeIndex: number, localIndex: number, selectorIndex:
     }
   }
 
-  // process each node in the list of projected nodes:
-  let nodeToProject: LNode|null = node.data.first;
-  const lastNodeToProject = node.data.last;
-  while (nodeToProject) {
-    processProjectedNode(
-        nodeToProject as LTextNode | LElementNode | LContainerNode, currentParent, currentView);
-    nodeToProject = nodeToProject === lastNodeToProject ? null : nodeToProject.pNextOrParent;
+  if (canInsertNativeNode(currentParent, currentView)) {
+    // process each node in the list of projected nodes:
+    let nodeToProject: LNode|null = node.data.head;
+    const lastNodeToProject = node.data.tail;
+    while (nodeToProject) {
+      appendProjectedNode(
+          nodeToProject as LTextNode | LElementNode | LContainerNode, currentParent, currentView);
+      nodeToProject = nodeToProject === lastNodeToProject ? null : nodeToProject.pNextOrParent;
+    }
   }
 }
 

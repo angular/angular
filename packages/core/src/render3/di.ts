@@ -392,7 +392,10 @@ export class ReadFromInjectorFn<T> {
  * @returns The ElementRef instance to use
  */
 export function getOrCreateElementRef(di: LInjector): viewEngine_ElementRef {
-  return di.elementRef || (di.elementRef = new ElementRef(di.node.native));
+  return di.elementRef ||
+      (di.elementRef = new ElementRef(
+           ((di.node.flags & LNodeFlags.TYPE_MASK) === LNodeFlags.Container) ? null :
+                                                                               di.node.native));
 }
 
 export const QUERY_READ_TEMPLATE_REF = <QueryReadType<viewEngine_TemplateRef<any>>>(

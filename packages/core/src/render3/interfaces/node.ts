@@ -11,8 +11,9 @@ import {DirectiveDef} from './definition';
 import {LInjector} from './injector';
 import {LProjection} from './projection';
 import {LQuery} from './query';
-import {RElement, RText} from './renderer';
+import {RElement, RNode, RText} from './renderer';
 import {LView, TData, TView} from './view';
+
 
 
 /**
@@ -75,7 +76,7 @@ export interface LNode {
    *  - append children to their element parents in the DOM (e.g. `parent.native.appendChild(...)`)
    *  - retrieve the sibling elements of text nodes whose creation / insertion has been delayed
    */
-  readonly native: RElement|RText|null;
+  readonly native: RElement|RText|null|undefined;
 
   /**
    * We need a reference to a node's parent so we can append the node to its parent's native
@@ -177,7 +178,14 @@ export interface LViewNode extends LNode {
 
 /** Abstract node container which contains other views. */
 export interface LContainerNode extends LNode {
-  readonly native: null;
+  /*
+   * Caches the reference of the first native node following this container in the same native
+   * parent.
+   * This is reset to undefined in containerRefreshEnd.
+   * When it is undefined, it means the value has not been computed yet.
+   * Otherwise, it contains the result of findBeforeNode(container, null).
+   */
+  native: RElement|RText|null|undefined;
   readonly data: LContainer;
   child: null;
   next: LContainerNode|LElementNode|LTextNode|LProjectionNode|null;

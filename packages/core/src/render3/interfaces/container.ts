@@ -9,7 +9,6 @@
 import {ComponentTemplate} from './definition';
 import {LElementNode, LViewNode} from './node';
 import {LQuery} from './query';
-import {RNode} from './renderer';
 import {LView, TView} from './view';
 
 
@@ -81,15 +80,6 @@ export interface LContainer {
    * this container are reported to queries referenced here.
    */
   query: LQuery|null;
-
-  /*
-   * Caches the reference of the first native node following this container in the same native
-   * parent.
-   * This is reset to undefined in containerRefreshEnd.
-   * When it is undefined, it means the value has not been computed yet.
-   * Otherwise, it contains the result of findBeforeNode(container, null).
-   */
-  nextNative: RNode|null|undefined;
 }
 
 /**
