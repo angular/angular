@@ -7,6 +7,7 @@ BASEDIR=`(cd $BASEDIR; pwd)`
 
 PR_NUMBER=0
 PUSH_UPSTREAM=1
+FORCE=0
 while [[ $# -gt 0 ]]
 do
   key="$1"
@@ -14,6 +15,10 @@ do
   case $key in
       --dryrun)
       PUSH_UPSTREAM=0
+      shift # past argument
+      ;;
+      --force)
+      FORCE=1
       shift # past argument
       ;;
       *)    # unknown option
@@ -24,22 +29,26 @@ do
 done
 
 if [ "$PR_NUMBER" -eq 0 ]; then
-  echo "Merge github PR into the target branches"
+  echo "Merge github PR into the target branches if status is green"
   echo
-  echo "$0 PR_NUMBER [--dryrun]"
+  echo "$0 PR_NUMBER [--dryrun] [--force]"
   echo
+  echo    --dryrun   Performs all operations but does not push the merge back to git@github.com:angular/angular.git.
+  echo    --force    Continues even if PR status is not green.
   exit 0
 fi
 
 CURRENT_BRANCH=`git rev-parse --abbrev-ref HEAD`
-PR_SHA_COUNT=`curl -s https://api.github.com/repos/angular/angular/pulls/$PR_NUMBER | node $BASEDIR/utils/json_extract.js commits`
+PULL_JSON=`curl -s https://api.github.com/repos/angular/angular/pulls/$PR_NUMBER`
+PR_SHA_COUNT=`node $BASEDIR/utils/json_extract.js commits <<< """$PULL_JSON"""`
+STATUS_JSON_URL=`node $BASEDIR/utils/json_extract.js _links.statuses.href <<< """$PULL_JSON"""`
+STATUS=`curl -s $STATUS_JSON_URL | node $BASEDIR/utils/json_extract.js description | cut -d '|' -f1`
 PR_LABELS=`curl -s https://api.github.com/repos/angular/angular/issues/$PR_NUMBER/labels`
 PR_ACTION=`echo "$PR_LABELS" | node $BASEDIR/utils/json_extract.js "name=^PR action:"`
 PR_TARGET=`echo "$PR_LABELS"  | node $BASEDIR/utils/json_extract.js "name=^PR target:"`
 PR_CLA=`echo "$PR_LABELS"  | node $BASEDIR/utils/json_extract.js "name=^cla"`
 MASTER_BRANCH='master'
-SHA=`git rev-parse HEAD`
-PATCH_BRANCH=`git ls-remote --heads  git@github.com:angular/angular.git | grep -E 'refs\/heads\/\d+\.\d+\.x' | cut -d '/' -f3 | sort -r | head -n1`
+PATCH_BRANCH=`git ls-remote --heads  git@github.com:angular/angular.git | grep -E 'refs\/heads\/[0-9]+\.[0-9]+\.x' | cut -d '/' -f3 | sort -r | head -n1`
 
 if [[ "$PR_ACTION" != "PR action: merge" ]]; then
   echo The PR is missing 'PR action: merge' label, found: $PR_ACTION
@@ -51,6 +60,15 @@ if [[ "$PR_CLA" != "cla: yes" ]]; then
   exit 1
 fi
 
+if [[ "$STATUS" != "All checks passed!" ]]; then
+  echo PR $PR_NUMBER is failing with: $STATUS
+  if [[ $FORCE == 1 ]]; then
+    echo FORCING: --force flag used to ignor PR status.
+  else 
+    echo Exting...
+    exit 1
+  fi
+fi
 
 if [[ $PR_TARGET == "PR target: master & patch" ]]; then
   MERGE_MASTER=1
