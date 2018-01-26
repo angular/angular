@@ -111,7 +111,7 @@ if [[ $MERGE_MASTER == 1 ]]; then
   echo ">>> Rewrite message: $REWRITE_MESSAGE_MASTER"
   # Next line should work, but it errors, hence copy paste the command.
   # $REWRITE_MESSAGE_MASTER
-  echo git filter-branch -f --msg-filter "$BASEDIR/utils/github_closes.js $PR_NUMBER" merge_pr_master_base..merge_pr_master --
+  git filter-branch -f --msg-filter "$BASEDIR/utils/github_closes.js $PR_NUMBER" merge_pr_master_base..merge_pr_master --
 fi
 if [[ $MERGE_PATCH == 1 ]]; then
   echo
