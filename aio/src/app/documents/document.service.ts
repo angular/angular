@@ -5,6 +5,7 @@ import { Observable } from 'rxjs/Observable';
 import { AsyncSubject } from 'rxjs/AsyncSubject';
 import { of } from 'rxjs/observable/of';
 import 'rxjs/add/operator/catch';
+import 'rxjs/add/operator/do';
 import 'rxjs/add/operator/switchMap';
 
 import { DocumentContents } from './document-contents';
@@ -49,7 +50,7 @@ export class DocumentService {
   private getDocument(url: string) {
     const id = url || 'index';
     this.logger.log('getting document', id);
-    if ( !this.cache.has(id)) {
+    if (!this.cache.has(id)) {
       this.cache.set(id, this.fetchDocument(id));
     }
     return this.cache.get(id)!;
@@ -92,7 +93,7 @@ export class DocumentService {
   private getErrorDoc(id: string, error: HttpErrorResponse): Observable<DocumentContents> {
     this.logger.error('Error fetching document', error);
     this.cache.delete(id);
-    return Observable.of({
+    return of({
       id: FETCHING_ERROR_ID,
       contents: FETCHING_ERROR_CONTENTS
     });
