@@ -98,6 +98,8 @@ describe('compiler specification', () => {
               r3.e();
               r3.T(3, '!');
             }
+            ChildComponent.ngComponentDef.h(1, 0);
+            SomeDirective.ngDirectiveDef.h(2, 0);
             r3.r(1, 0);
             r3.r(2, 0);
           }
@@ -264,6 +266,78 @@ describe('compiler specification', () => {
       expect(renderComp(MyComponent))
           .toEqual('<div class="my-app" title="Hello">Hello <b>World</b>!</div>');
     });
+  });
+
+  describe('lifecycle hooks', () => {
+    let events: string[] = [];
+
+    beforeEach(() => { events = []; });
+
+    @Component({selector: 'lifecycle-comp', template: ``})
+    class LifecycleComp {
+      @Input() nameMin: string;
+
+      ngOnInit() { events.push('init' + this.nameMin); }
+      ngDoCheck() { events.push('check' + this.nameMin); }
+
+      ngAfterContentInit() { events.push('content init' + this.nameMin); }
+      ngAfterContentChecked() { events.push('content check' + this.nameMin); }
+
+      ngAfterViewInit() { events.push('view init' + this.nameMin); }
+      ngAfterViewChecked() { events.push('view check' + this.nameMin); }
+
+      ngOnDestroy() { events.push(this.nameMin); }
+
+      static ngComponentDef = r3.defineComponent({
+        type: LifecycleComp,
+        tag: 'lifecycle-comp',
+        factory: () => new LifecycleComp(),
+        template: function(ctx: any, cm: boolean) {},
+        inputs: {nameMin: 'name'}
+      });
+    }
+
+    @Component({
+      selector: 'simple-layout',
+      template: `
+        <lifecycle-comp [name]="name1"></lifecycle-comp>
+        <lifecycle-comp [name]="name2"></lifecycle-comp>
+      `
+    })
+    class SimpleLayout {
+      name1 = '1';
+      name2 = '2';
+
+      static ngComponentDef = r3.defineComponent({
+        type: SimpleLayout,
+        tag: 'simple-layout',
+        factory: () => new SimpleLayout(),
+        template: function(ctx: any, cm: boolean) {
+          if (cm) {
+            r3.E(0, LifecycleComp);
+            r3.e();
+            r3.E(2, LifecycleComp);
+            r3.e();
+          }
+          r3.p(0, 'name', r3.b(ctx.name1));
+          r3.p(2, 'name', r3.b(ctx.name2));
+          LifecycleComp.ngComponentDef.h(1, 0);
+          LifecycleComp.ngComponentDef.h(3, 2);
+          r3.r(1, 0);
+          r3.r(3, 2);
+        }
+      });
+    }
+
+    it('should gen hooks with a few simple components', () => {
+      expect(renderComp(SimpleLayout))
+          .toEqual(`<lifecycle-comp></lifecycle-comp><lifecycle-comp></lifecycle-comp>`);
+      expect(events).toEqual([
+        'init1', 'check1', 'init2', 'check2', 'content init1', 'content check1', 'content init2',
+        'content check2', 'view init1', 'view check1', 'view init2', 'view check2'
+      ]);
+    });
+
   });
 
   describe('template variables', () => {
