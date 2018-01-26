@@ -190,7 +190,7 @@ export class MatPaginator implements OnInit, OnDestroy {
 
   /** Emits an event notifying that a change of the paginator's properties has been triggered. */
   private _emitPageEvent() {
-    this.page.next({
+    this.page.emit({
       pageIndex: this.pageIndex,
       pageSize: this.pageSize,
       length: this.length
