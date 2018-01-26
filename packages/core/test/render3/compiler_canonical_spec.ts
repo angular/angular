@@ -318,7 +318,7 @@ describe('compiler specification', () => {
       static ngComponentDef = r3.defineComponent({
         type: SimpleLayout,
         tag: 'simple-layout',
-        factory: function SimpleLayout_Factory() { return simpleLayout = new SimpleLayout(); } ,
+        factory: function SimpleLayout_Factory() { return simpleLayout = new SimpleLayout(); },
         template: function SimpleLayout_Template(ctx: SimpleLayout, cm: boolean) {
           if (cm) {
             r3.E(0, LifecycleComp);
