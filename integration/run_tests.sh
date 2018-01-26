@@ -29,14 +29,18 @@ for testDir in $(ls | grep -v node_modules) ; do
     rm -rf dist
     yarn install --cache-folder ../$cache
     yarn test || exit 1
-    # Track payload size for cli-hello-world and hello_world__closure
-    if [[ $testDir == cli-hello-world ]] || [[ $testDir == hello_world__closure ]] || [[ $testDir == hello_world__render3__closure ]] || [[ $testDir == hello_world__render3__rollup ]]; then
-      if [[ $testDir == cli-hello-world ]]; then
+    # Track payload size for cli-hello-world and hello_world__closure and the render3 tests
+    if [[ $testDir == cli-hello-world ]] || [[ $testDir == hello_world__closure ]] || [[ $testDir == hello_world__render3__closure ]] || [[ $testDir == hello_world__render3__rollup ]] || [[ $testDir == hello_world__render3__cli ]]; then
+      if [[ $testDir == cli-hello-world ]] || [[ $testDir == hello_world__render3__cli ]]; then
         yarn build
       fi
       if [[ -v TRAVIS ]]; then
         trackPayloadSize "$testDir" "dist/*.js" true false "${thisDir}/_payload-limits.json"
       fi
+    fi
+    if [[ -v TRAVIS ]]; then
+      # remove the temporary node modules directory to save space.
+      rm -rf node_modules
     fi
   )
 done

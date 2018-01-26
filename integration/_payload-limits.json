@@ -28,5 +28,14 @@
         "bundle": 34694
       }
     }
+  },
+  "hello_world__render3__cli": {
+    "master": {
+      "uncompressed": {
+        "inline": 1447,
+        "main": 40513,
+        "polyfills": 61085
+      }
+    }
   }
 }
