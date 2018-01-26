@@ -128,9 +128,8 @@ if [[ $MERGE_PATCH == 1 ]]; then
 fi
 $RESTORE_BRANCH
 
-echo ">>> Push branches to angular repo"
 if [[ $PUSH_UPSTREAM == 0 ]]; then
-  exit
+  echo ">>> Push branches to angular repo"
   $PUSH_BRANCHES
 fi
 echo
