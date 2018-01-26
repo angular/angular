@@ -7,8 +7,8 @@
  */
 
 import {Inject, LOCALE_ID, Pipe, PipeTransform} from '@angular/core';
-import {formatNumber} from '../i18n/format_number';
-import {NumberFormatStyle, getCurrencySymbol, getLocaleCurrencyName, getLocaleCurrencySymbol} from '../i18n/locale_data_api';
+import {formatCurrency, formatDecimal, formatPercent} from '../i18n/format_number';
+import {getCurrencySymbol} from '../i18n/locale_data_api';
 import {invalidPipeArgumentError} from './invalid_pipe_argument_error';
 
 /**
@@ -41,18 +41,16 @@ import {invalidPipeArgumentError} from './invalid_pipe_argument_error';
 export class DecimalPipe implements PipeTransform {
   constructor(@Inject(LOCALE_ID) private _locale: string) {}
 
-  transform(value: any, digits?: string, locale?: string): string|null {
+  transform(value: any, digitsInfo?: string, locale?: string): string|null {
     if (isEmpty(value)) return null;
 
     locale = locale || this._locale;
 
-    const {str, error} = formatNumber(value, locale, NumberFormatStyle.Decimal, digits);
-
-    if (error) {
-      throw invalidPipeArgumentError(DecimalPipe, error);
+    try {
+      return formatDecimal(value, locale, digitsInfo);
+    } catch (error) {
+      throw invalidPipeArgumentError(DecimalPipe, error.message);
     }
-
-    return str;
   }
 }
 
@@ -65,7 +63,7 @@ export class DecimalPipe implements PipeTransform {
  *
  * Formats a number as percentage.
  *
- * - `digitInfo` See {@link DecimalPipe} for detailed description.
+ * - `digitInfo` See {@link DecimalPipe} for a detailed description.
  *  - `locale` is a `string` defining the locale to use (uses the current {@link LOCALE_ID} by
  * default)
  *
@@ -79,18 +77,16 @@ export class DecimalPipe implements PipeTransform {
 export class PercentPipe implements PipeTransform {
   constructor(@Inject(LOCALE_ID) private _locale: string) {}
 
-  transform(value: any, digits?: string, locale?: string): string|null {
+  transform(value: any, digitsInfo?: string, locale?: string): string|null {
     if (isEmpty(value)) return null;
 
     locale = locale || this._locale;
 
-    const {str, error} = formatNumber(value, locale, NumberFormatStyle.Percent, digits);
-
-    if (error) {
-      throw invalidPipeArgumentError(PercentPipe, error);
+    try {
+      return formatPercent(value, locale, digitsInfo);
+    } catch (error) {
+      throw invalidPipeArgumentError(PercentPipe, error.message);
     }
-
-    return str;
   }
 }
 
@@ -104,14 +100,15 @@ export class PercentPipe implements PipeTransform {
  *
  * - `currencyCode` is the [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217) currency code, such
  *    as `USD` for the US dollar and `EUR` for the euro.
- * - `display` indicates whether to show the currency symbol or the code.
+ * - `display` indicates whether to show the currency symbol, the code or a custom value
  *   - `code`: use code (e.g. `USD`).
  *   - `symbol`(default): use symbol (e.g. `$`).
  *   - `symbol-narrow`: some countries have two symbols for their currency, one regular and one
  *   narrow (e.g. the canadian dollar CAD has the symbol `CA$` and the symbol-narrow `$`).
+ *   - `string`: use this value instead of a code or a symbol
  *   - boolean (deprecated from v5): `true` for symbol and false for `code`
  *   If there is no narrow symbol for the chosen currency, the regular symbol will be used.
- * - `digitInfo` See {@link DecimalPipe} for detailed description.
+ * - `digitInfo` See {@link DecimalPipe} for a detailed description.
  *  - `locale` is a `string` defining the locale to use (uses the current {@link LOCALE_ID} by
  * default)
  *
@@ -127,7 +124,7 @@ export class CurrencyPipe implements PipeTransform {
 
   transform(
       value: any, currencyCode?: string,
-      display: 'code'|'symbol'|'symbol-narrow'|boolean = 'symbol', digits?: string,
+      display: 'code'|'symbol'|'symbol-narrow'|string|boolean = 'symbol', digitsInfo?: string,
       locale?: string): string|null {
     if (isEmpty(value)) return null;
 
@@ -141,18 +138,20 @@ export class CurrencyPipe implements PipeTransform {
       display = display ? 'symbol' : 'code';
     }
 
-    let currency = currencyCode || 'USD';
+    let currency: string = currencyCode || 'USD';
     if (display !== 'code') {
-      currency = getCurrencySymbol(currency, display === 'symbol' ? 'wide' : 'narrow');
+      if (display === 'symbol' || display === 'symbol-narrow') {
+        currency = getCurrencySymbol(currency, display === 'symbol' ? 'wide' : 'narrow', locale);
+      } else {
+        currency = display;
+      }
     }
 
-    const {str, error} = formatNumber(value, locale, NumberFormatStyle.Currency, digits, currency);
-
-    if (error) {
-      throw invalidPipeArgumentError(CurrencyPipe, error);
+    try {
+      return formatCurrency(value, locale, currency, currencyCode, digitsInfo);
+    } catch (error) {
+      throw invalidPipeArgumentError(CurrencyPipe, error.message);
     }
-
-    return str;
   }
 }
 

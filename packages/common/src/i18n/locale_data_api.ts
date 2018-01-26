@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CURRENCIES} from './currencies';
 import localeEn from './locale_en';
-import {LOCALE_DATA, LocaleDataIndex, ExtraLocaleDataIndex} from './locale_data';
+import {LOCALE_DATA, LocaleDataIndex, ExtraLocaleDataIndex, CurrencyIndex} from './locale_data';
+import {CURRENCIES_EN, CurrenciesSymbols} from './currencies';
 
 /**
  * The different format styles that can be used to represent numbers.
@@ -392,6 +392,14 @@ export function getLocaleCurrencyName(locale: string): string|null {
 }
 
 /**
+ * Returns the currency values for the locale
+ */
+function getLocaleCurrencies(locale: string): {[code: string]: CurrenciesSymbols} {
+  const data = findLocaleData(locale);
+  return data[LocaleDataIndex.Currencies];
+}
+
+/**
  * The locale plural function used by ICU expressions to determine the plural case to use.
  * See {@link NgPlural} for more information.
  *
@@ -526,18 +534,19 @@ export function findLocaleData(locale: string): any {
 }
 
 /**
- * Return the currency symbol for a given currency code, or the code if no symbol available
+ * Returns the currency symbol for a given currency code, or the code if no symbol available
  * (e.g.: format narrow = $, format wide = US$, code = USD)
+ * If no locale is provided, it uses the locale "en" by default
  *
  * @experimental i18n support is experimental.
  */
-export function getCurrencySymbol(code: string, format: 'wide' | 'narrow'): string {
-  const currency = CURRENCIES[code] || [];
-  const symbolNarrow = currency[1];
+export function getCurrencySymbol(code: string, format: 'wide' | 'narrow', locale = 'en'): string {
+  const currency = getLocaleCurrencies(locale)[code] || CURRENCIES_EN[code] || [];
+  const symbolNarrow = currency[CurrencyIndex.SymbolNarrow];
 
   if (format === 'narrow' && typeof symbolNarrow === 'string') {
     return symbolNarrow;
   }
 
-  return currency[0] || code;
+  return currency[CurrencyIndex.Symbol] || code;
 }

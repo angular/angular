@@ -11,6 +11,7 @@ import localeEn from '@angular/common/locales/en';
 import localeFr from '@angular/common/locales/fr';
 import localeZh from '@angular/common/locales/zh';
 import localeFrCA from '@angular/common/locales/fr-CA';
+import localeEnAU from '@angular/common/locales/en-AU';
 import {registerLocaleData} from '../../src/i18n/locale_data';
 import {findLocaleData, getCurrencySymbol, getLocaleDateFormat, FormatWidth} from '../../src/i18n/locale_data_api';
 
@@ -24,6 +25,7 @@ import {findLocaleData, getCurrencySymbol, getLocaleDateFormat, FormatWidth} fro
       registerLocaleData(localeFr, 'fake-id');
       registerLocaleData(localeFrCA, 'fake_Id2');
       registerLocaleData(localeZh);
+      registerLocaleData(localeEnAU);
     });
 
     describe('findLocaleData', () => {
@@ -54,7 +56,7 @@ import {findLocaleData, getCurrencySymbol, getLocaleDateFormat, FormatWidth} fro
       });
     });
 
-    describe('getCurrencySymbolElseCode', () => {
+    describe('getting currency symbol', () => {
       it('should return the correct symbol', () => {
         expect(getCurrencySymbol('USD', 'wide')).toEqual('$');
         expect(getCurrencySymbol('USD', 'narrow')).toEqual('$');
@@ -62,8 +64,13 @@ import {findLocaleData, getCurrencySymbol, getLocaleDateFormat, FormatWidth} fro
         expect(getCurrencySymbol('AUD', 'narrow')).toEqual('$');
         expect(getCurrencySymbol('CRC', 'wide')).toEqual('CRC');
         expect(getCurrencySymbol('CRC', 'narrow')).toEqual('₡');
-        expect(getCurrencySymbol('FAKE', 'wide')).toEqual('FAKE');
-        expect(getCurrencySymbol('FAKE', 'narrow')).toEqual('FAKE');
+        expect(getCurrencySymbol('unexisting_ISO_code', 'wide')).toEqual('unexisting_ISO_code');
+        expect(getCurrencySymbol('unexisting_ISO_code', 'narrow')).toEqual('unexisting_ISO_code');
+        expect(getCurrencySymbol('USD', 'wide', 'en-AU')).toEqual('USD');
+        expect(getCurrencySymbol('USD', 'narrow', 'en-AU')).toEqual('$');
+        expect(getCurrencySymbol('AUD', 'wide', 'en-AU')).toEqual('$');
+        expect(getCurrencySymbol('AUD', 'narrow', 'en-AU')).toEqual('$');
+        expect(getCurrencySymbol('USD', 'wide', 'fr')).toEqual('$US');
       });
     });
 
