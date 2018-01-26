@@ -63,8 +63,9 @@ export class ServerPlatformLocation implements PlatformLocation {
     }
     (this as{hash: string}).hash = value;
     const newUrl = this.url;
-    scheduleMicroTask(
-        () => this._hashUpdate.next({ type: 'hashchange', oldUrl, newUrl } as LocationChangeEvent));
+    scheduleMicroTask(() => this._hashUpdate.next({
+      type: 'hashchange', state: null, oldUrl, newUrl
+    } as LocationChangeEvent));
   }
 
   replaceState(state: any, title: string, newUrl: string): void {
