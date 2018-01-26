@@ -18,7 +18,7 @@ export declare class CommonModule {
 /** @stable */
 export declare class CurrencyPipe implements PipeTransform {
     constructor(_locale: string);
-    transform(value: any, currencyCode?: string, display?: 'code' | 'symbol' | 'symbol-narrow' | boolean, digits?: string, locale?: string): string | null;
+    transform(value: any, currencyCode?: string, display?: 'code' | 'symbol' | 'symbol-narrow' | string | boolean, digitsInfo?: string, locale?: string): string | null;
 }
 
 /** @stable */
@@ -30,7 +30,7 @@ export declare class DatePipe implements PipeTransform {
 /** @stable */
 export declare class DecimalPipe implements PipeTransform {
     constructor(_locale: string);
-    transform(value: any, digits?: string, locale?: string): string | null;
+    transform(value: any, digitsInfo?: string, locale?: string): string | null;
 }
 
 /** @stable */
@@ -79,7 +79,7 @@ export declare enum FormStyle {
 }
 
 /** @experimental */
-export declare function getCurrencySymbol(code: string, format: 'wide' | 'narrow'): string;
+export declare function getCurrencySymbol(code: string, format: 'wide' | 'narrow', locale?: string): string;
 
 /** @experimental */
 export declare function getLocaleCurrencyName(locale: string): string | null;
@@ -386,7 +386,7 @@ export declare class PathLocationStrategy extends LocationStrategy {
 /** @stable */
 export declare class PercentPipe implements PipeTransform {
     constructor(_locale: string);
-    transform(value: any, digits?: string, locale?: string): string | null;
+    transform(value: any, digitsInfo?: string, locale?: string): string | null;
 }
 
 /** @stable */
