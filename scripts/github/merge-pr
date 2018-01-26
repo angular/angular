@@ -48,7 +48,7 @@ PR_ACTION=`echo "$PR_LABELS" | node $BASEDIR/utils/json_extract.js "name=^PR act
 PR_TARGET=`echo "$PR_LABELS"  | node $BASEDIR/utils/json_extract.js "name=^PR target:"`
 PR_CLA=`echo "$PR_LABELS"  | node $BASEDIR/utils/json_extract.js "name=^cla"`
 MASTER_BRANCH='master'
-PATCH_BRANCH=`git ls-remote --heads  git@github.com:angular/angular.git | grep -E 'refs\/heads\/\d+\.\d+\.x' | cut -d '/' -f3 | sort -r | head -n1`
+PATCH_BRANCH=`git ls-remote --heads  git@github.com:angular/angular.git | grep -E 'refs\/heads\/[0-9]+\.[0-9]+\.x' | cut -d '/' -f3 | sort -r | head -n1`
 
 if [[ "$PR_ACTION" != "PR action: merge" ]]; then
   echo The PR is missing 'PR action: merge' label, found: $PR_ACTION
