@@ -10,7 +10,7 @@ import {FocusKeyManager} from '@angular/cdk/a11y';
 import {Directionality} from '@angular/cdk/bidi';
 import {coerceBooleanProperty} from '@angular/cdk/coercion';
 import {SelectionModel} from '@angular/cdk/collections';
-import {BACKSPACE, LEFT_ARROW, RIGHT_ARROW} from '@angular/cdk/keycodes';
+import {BACKSPACE} from '@angular/cdk/keycodes';
 import {startWith} from 'rxjs/operators/startWith';
 import {
   AfterContentInit,
@@ -332,8 +332,10 @@ export class MatChipList extends _MatChipListMixinBase implements MatFormFieldCo
   }
 
   ngAfterContentInit(): void {
-
-    this._keyManager = new FocusKeyManager<MatChip>(this.chips).withWrap();
+    this._keyManager = new FocusKeyManager<MatChip>(this.chips)
+      .withWrap()
+      .withVerticalOrientation()
+      .withHorizontalOrientation(this._dir ? this._dir.value : 'ltr');
 
     // Prevents the chip list from capturing focus and redirecting
     // it back to the first chip when the user tabs out.
@@ -451,35 +453,16 @@ export class MatChipList extends _MatChipListMixinBase implements MatFormFieldCo
    * Pass events to the keyboard manager. Available here for tests.
    */
   _keydown(event: KeyboardEvent) {
-    let code = event.keyCode;
-    let target = event.target as HTMLElement;
-    let isInputEmpty = this._isInputEmpty(target);
-    let isRtl = this._dir && this._dir.value == 'rtl';
+    const target = event.target as HTMLElement;
 
-    let isPrevKey = (code === (isRtl ? RIGHT_ARROW : LEFT_ARROW));
-    let isNextKey = (code === (isRtl ? LEFT_ARROW : RIGHT_ARROW));
-    let isBackKey = code === BACKSPACE;
     // If they are on an empty input and hit backspace, focus the last chip
-    if (isInputEmpty && isBackKey) {
+    if (event.keyCode === BACKSPACE && this._isInputEmpty(target)) {
       this._keyManager.setLastItemActive();
       event.preventDefault();
-      return;
+    } else {
+      this._keyManager.onKeydown(event);
+      this.stateChanges.next();
     }
-
-    // If they are on a chip, check for space/left/right, otherwise pass to our key manager (like
-    // up/down keys)
-    if (target && target.classList.contains('mat-chip')) {
-      if (isPrevKey) {
-        this._keyManager.setPreviousItemActive();
-        event.preventDefault();
-      } else if (isNextKey) {
-        this._keyManager.setNextItemActive();
-        event.preventDefault();
-      } else {
-        this._keyManager.onKeydown(event);
-      }
-    }
-    this.stateChanges.next();
   }
 
 
