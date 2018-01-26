@@ -104,7 +104,7 @@ GIT_EDITOR=echo $SQUASH_PR
 echo ">>> Rewrite message: $REWRITE_MESSAGE"
 # Next line should work, but it errors, hence copy paste the command.
 # $REWRITE_MESSAGE
-git filter-branch -f --msg-filter \"$BASEDIR/utils/github_closes.js $PR_NUMBER\" merge_pr_base..merge_pr
+git filter-branch -f --msg-filter "$BASEDIR/utils/github_closes.js $PR_NUMBER" merge_pr_base..merge_pr
 if [[ $MERGE_MASTER == 1 ]]; then
   echo
   echo ">>> Checkout master: $CHECKOUT_MASTER"
