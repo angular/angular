@@ -38,6 +38,9 @@
   },
   "devDependencies": {
     "@bazel/ibazel": "^0.1.1",
+    "@bazel/typescript": "0.3.2",
+    "@commitlint/cli": "^5.0.0",
+    "@commitlint/config-angular": "^5.0.0",
     "@types/angularjs": "1.5.14-alpha",
     "@types/base64-js": "1.2.5",
     "@types/chokidar": "1.7.3",

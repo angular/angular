@@ -170,7 +170,7 @@ format that includes a **type**, a **scope** and a **subject**:
 
 The **header** is mandatory and the **scope** of the header is optional.
 
-Any line of the commit message cannot be longer 100 characters! This allows the message to be easier
+Any line of the commit message cannot be longer than 120 characters! This allows the message to be easier
 to read on GitHub as well as in various git tools.
 
 Footer should contain a [closing reference to an issue](https://help.github.com/articles/closing-issues-via-commit-messages/) if any.
@@ -192,13 +192,14 @@ If the commit reverts a previous commit, it should begin with `revert: `, follow
 ### Type
 Must be one of the following:
 
-* **build**: Changes that affect the build system or external dependencies (example scopes: gulp, broccoli, npm)
-* **ci**: Changes to our CI configuration files and scripts (example scopes: Travis, Circle, BrowserStack, SauceLabs)
+* **build**: Changes that affect the build system or external dependencies
+* **ci**: Changes to our CI configuration files and scripts 
 * **docs**: Documentation only changes
 * **feat**: A new feature
 * **fix**: A bug fix
 * **perf**: A code change that improves performance
 * **refactor**: A code change that neither fixes a bug nor adds a feature
+* **release**: Changes related to releases, such as version bumps and changelog additions
 * **style**: Changes that do not affect the meaning of the code (white-space, formatting, missing semi-colons, etc)
 * **test**: Adding missing tests or correcting existing tests
 
@@ -208,6 +209,8 @@ The scope should be the name of the npm package affected (as perceived by person
 The following is the list of supported scopes:
 
 * **animations**
+* **bazel**
+* **benchpress**
 * **common**
 * **compiler**
 * **compiler-cli**
