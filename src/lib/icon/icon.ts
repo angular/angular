@@ -41,7 +41,7 @@ export const _MatIconMixinBase = mixinColor(MatIconBase);
  *     `<mat-icon svgIcon="left-arrow"></mat-icon>
  *     <mat-icon svgIcon="animals:cat"></mat-icon>`
  *
- * - Use a font ligature as an icon by putting the ligature text in the content of the <mat-icon>
+ * - Use a font ligature as an icon by putting the ligature text in the content of the `<mat-icon>`
  *   component. By default the Material icons font is used as described at
  *   http://google.github.io/material-design-icons/#icon-font-for-the-web. You can specify an
  *   alternate font by setting the fontSet input to either the CSS class to apply to use the
