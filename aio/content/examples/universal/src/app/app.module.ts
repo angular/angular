@@ -53,7 +53,7 @@ export class AppModule {
     @Inject(PLATFORM_ID) private platformId: Object,
     @Inject(APP_ID) private appId: string) {
     const platform = isPlatformBrowser(platformId) ?
-      'on the server' : 'in the browser';
+      'in the browser' : 'on the server';
     console.log(`Running ${platform} with appId=${appId}`);
   }
   // #enddocregion platform-detection
