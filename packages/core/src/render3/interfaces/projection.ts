@@ -13,8 +13,8 @@ import {LContainerNode, LElementNode, LTextNode} from './node';
  * It is a linked list (using the pNextOrParent property).
  */
 export interface LProjection {
-  first: LElementNode|LTextNode|LContainerNode|null;
-  last: LElementNode|LTextNode|LContainerNode|null;
+  head: LElementNode|LTextNode|LContainerNode|null;
+  tail: LElementNode|LTextNode|LContainerNode|null;
 }
 
 /**
