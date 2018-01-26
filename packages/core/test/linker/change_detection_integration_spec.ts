@@ -1156,11 +1156,19 @@ const TEST_COMPILER_PROVIDERS: Provider[] = [
 
     describe('enforce no new changes', () => {
       it('should throw when a record gets changed after it has been checked', fakeAsync(() => {
-           const ctx = createCompFixture('<div [someProp]="a"></div>', TestData);
-           ctx.componentInstance.a = 1;
+           @Directive({selector: '[changed]'})
+           class ChangingDirective {
+             @Input() changed: any;
+           }
+
+           TestBed.configureTestingModule({declarations: [ChangingDirective]});
+
+           const ctx = createCompFixture('<div [someProp]="a" [changed]="b"></div>', TestData);
+
+           ctx.componentInstance.b = 1;
 
            expect(() => ctx.checkNoChanges())
-               .toThrowError(/Expression has changed after it was checked./g);
+               .toThrowError(/Previous value: 'changed: undefined'\. Current value: 'changed: 1'/g);
          }));
 
       it('should warn when the view has been created in a cd hook', fakeAsync(() => {
@@ -1968,7 +1976,8 @@ class Uninitialized {
 
 @Component({selector: 'root', template: 'empty'})
 class TestData {
-  public a: any;
+  a: any;
+  b: any;
 }
 
 @Component({selector: 'root', template: 'empty'})
