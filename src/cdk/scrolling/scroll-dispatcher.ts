@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ElementRef, Injectable, NgZone, Optional, SkipSelf} from '@angular/core';
+import {ElementRef, Injectable, NgZone, Optional, SkipSelf, OnDestroy} from '@angular/core';
 import {Platform} from '@angular/cdk/platform';
 import {Subject} from 'rxjs/Subject';
 import {Subscription} from 'rxjs/Subscription';
@@ -26,7 +26,7 @@ export const DEFAULT_SCROLL_TIME = 20;
  * Scrollable references emit a scrolled event.
  */
 @Injectable()
-export class ScrollDispatcher {
+export class ScrollDispatcher implements OnDestroy {
   constructor(private _ngZone: NgZone, private _platform: Platform) { }
 
   /** Subject for notifying that a registered scrollable reference element has been scrolled. */
@@ -97,12 +97,16 @@ export class ScrollDispatcher {
         subscription.unsubscribe();
         this._scrolledCount--;
 
-        if (this._globalSubscription && !this._scrolledCount) {
-          this._globalSubscription.unsubscribe();
-          this._globalSubscription = null;
+        if (!this._scrolledCount) {
+          this._removeGlobalListener();
         }
       };
     }) : observableOf<void>();
+  }
+
+  ngOnDestroy() {
+    this._removeGlobalListener();
+    this.scrollContainers.forEach((_, container) => this.deregister(container));
   }
 
   /**
@@ -146,11 +150,19 @@ export class ScrollDispatcher {
     return false;
   }
 
-  /** Sets up the global scroll and resize listeners. */
+  /** Sets up the global scroll listeners. */
   private _addGlobalListener() {
     this._globalSubscription = this._ngZone.runOutsideAngular(() => {
       return fromEvent(window.document, 'scroll').subscribe(() => this._scrolled.next());
     });
+  }
+
+  /** Cleans up the global scroll listener. */
+  private _removeGlobalListener() {
+    if (this._globalSubscription) {
+      this._globalSubscription.unsubscribe();
+      this._globalSubscription = null;
+    }
   }
 }
 
