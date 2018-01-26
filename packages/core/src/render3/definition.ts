@@ -99,16 +99,26 @@ export function NgOnChangesFeature<T>(type: Type<T>): (definition: DirectiveDef<
         }
       });
     }
-    definition.doCheck = (function(delegateDoCheck) {
+
+    // If an onInit hook is defined, it will need to wrap the ngOnChanges call
+    // so the call order is changes-init-check in creation mode. In subsequent
+    // change detection runs, only the check wrapper will be called.
+    if (definition.onInit != null) {
+      definition.onInit = onChangesWrapper(definition.onInit);
+    }
+
+    definition.doCheck = onChangesWrapper(definition.doCheck);
+
+    function onChangesWrapper(delegateHook: (() => void) | null) {
       return function(this: OnChangesExpando) {
         let simpleChanges = this[PRIVATE_PREFIX];
         if (simpleChanges != null) {
           this.ngOnChanges(simpleChanges);
           this[PRIVATE_PREFIX] = null;
         }
-        delegateDoCheck && delegateDoCheck.apply(this);
+        delegateHook && delegateHook.apply(this);
       };
-    })(proto.ngDoCheck);
+    }
   };
 }
 
