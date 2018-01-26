@@ -5,7 +5,6 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-
 import {Platform, supportsPassiveEventListeners} from '@angular/cdk/platform';
 import {
   Directive,
@@ -56,7 +55,13 @@ export class FocusMonitor implements OnDestroy {
   private _lastTouchTarget: EventTarget | null;
 
   /** The timeout id of the touch timeout, used to cancel timeout later. */
-  private _touchTimeout: number;
+  private _touchTimeoutId: number;
+
+  /** The timeout id of the window focus timeout. */
+  private _windowFocusTimeoutId: number;
+
+  /** The timeout id of the origin clearing timeout. */
+  private _originTimeoutId: number;
 
   /** Map of elements being monitored to their info. */
   private _elementInfo = new Map<HTMLElement, MonitoredElementInfo>();
@@ -187,18 +192,18 @@ export class FocusMonitor implements OnDestroy {
     // we can't rely on the trick used above (setting timeout of 0ms). Instead we wait 650ms to
     // see if a focus happens.
     let documentTouchstartListener = (event: TouchEvent) => {
-      if (this._touchTimeout != null) {
-        clearTimeout(this._touchTimeout);
+      if (this._touchTimeoutId != null) {
+        clearTimeout(this._touchTimeoutId);
       }
       this._lastTouchTarget = event.target;
-      this._touchTimeout = setTimeout(() => this._lastTouchTarget = null, TOUCH_BUFFER_MS);
+      this._touchTimeoutId = setTimeout(() => this._lastTouchTarget = null, TOUCH_BUFFER_MS);
     };
 
     // Make a note of when the window regains focus, so we can restore the origin info for the
     // focused element.
     let windowFocusListener = () => {
       this._windowFocused = true;
-      setTimeout(() => this._windowFocused = false, 0);
+      this._windowFocusTimeoutId = setTimeout(() => this._windowFocused = false, 0);
     };
 
     // Note: we listen to events in the capture phase so we can detect them even if the user stops
@@ -217,6 +222,11 @@ export class FocusMonitor implements OnDestroy {
       document.removeEventListener('touchstart', documentTouchstartListener,
           supportsPassiveEventListeners() ? ({passive: true, capture: true} as any) : true);
       window.removeEventListener('focus', windowFocusListener);
+
+      // Clear timeouts for all potentially pending timeouts to prevent the leaks.
+      clearTimeout(this._windowFocusTimeoutId);
+      clearTimeout(this._touchTimeoutId);
+      clearTimeout(this._originTimeoutId);
     };
   }
 
@@ -251,7 +261,7 @@ export class FocusMonitor implements OnDestroy {
    */
   private _setOriginForCurrentEventQueue(origin: FocusOrigin): void {
     this._origin = origin;
-    setTimeout(() => this._origin = null, 0);
+    this._originTimeoutId = setTimeout(() => this._origin = null, 0);
   }
 
   /**
