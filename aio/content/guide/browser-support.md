@@ -625,8 +625,13 @@ If you aren't using the CLI, you should add your polyfill scripts directly to th
     // __Zone_disable_requestAnimationFrame = true; // disable patch requestAnimationFrame
     // __Zone_disable_on_property = true; // disable patch onProperty such as onclick
     // __zone_symbol__BLACK_LISTED_EVENTS = ['scroll', 'mousemove']; // disable patch specified eventNames
-  &lt;/script>
 
+    /*
+     * in IE/Edge developer tools, the addEventListener will also be wrapped by zone.js
+     * with the following flag, it will bypass `zone.js` patch for IE/Edge
+     */
+    // __Zone_enable_cross_context_check = true;
+  &lt;/script>
   &lt;!-- zone.js required by Angular -->
   &lt;script src="node_modules/zone.js/dist/zone.js">&lt;/script>
 
