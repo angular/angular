@@ -432,6 +432,7 @@ describe('r3_view_compiler', () => {
 
         const MyComponentDefinition = `
           static ngComponentDef = IDENT.ɵdefineComponent({
+            type: MyComponent,
             tag: 'my-component',
             factory: function MyComponent_Factory() { return new MyComponent(); },
             template: function MyComponent_Template(ctx: IDENT, cm: IDENT) {
@@ -505,6 +506,7 @@ describe('r3_view_compiler', () => {
 
         const MyComponentDefinition = `
           static ngComponentDef = IDENT.ɵdefineComponent({
+            type: MyComponent,
             tag: 'my-component',
             factory: function MyComponent_Factory() { return new MyComponent(); },
             template: function MyComponent_Template(ctx: IDENT, cm: IDENT) {
