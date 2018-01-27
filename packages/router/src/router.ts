@@ -21,7 +21,7 @@ import {applyRedirects} from './apply_redirects';
 import {LoadedRouterConfig, QueryParamsHandling, Route, Routes, validateConfig} from './config';
 import {createRouterState} from './create_router_state';
 import {createUrlTree} from './create_url_tree';
-import {ActivationEnd, ChildActivationEnd, Event, GuardsCheckEnd, GuardsCheckStart, NavigationCancel, NavigationEnd, NavigationError, NavigationStart, NavigationTrigger, ResolveEnd, ResolveStart, RouteConfigLoadEnd, RouteConfigLoadStart, RoutesRecognized} from './events';
+import {ActivationEnd, ChildActivationEnd, Event, GuardsCheckEnd, GuardsCheckStart, NavigationCancel, NavigationEnd, NavigationError, NavigationStart, ResolveEnd, ResolveStart, RouteConfigLoadEnd, RouteConfigLoadStart, RoutesRecognized} from './events';
 import {PreActivation} from './pre_activation';
 import {recognize} from './recognize';
 import {DefaultRouteReuseStrategy, DetachedRouteHandleInternal, RouteReuseStrategy} from './route_reuse_strategy';
@@ -164,6 +164,8 @@ function defaultErrorHandler(error: any): any {
   throw error;
 }
 
+type NavigationSource = 'imperative' | 'popstate' | 'hashchange';
+
 type NavigationParams = {
   id: number,
   rawUrl: UrlTree,
@@ -171,8 +173,7 @@ type NavigationParams = {
   resolve: any,
   reject: any,
   promise: Promise<boolean>,
-  source: NavigationTrigger,
-  state: {navigationId: number} | null
+  source: NavigationSource,
 };
 
 /**
@@ -222,7 +223,6 @@ export class Router {
    * Indicates if at least one navigation happened.
    */
   navigated: boolean = false;
-  private lastSuccessfulId: number = -1;
 
   /**
    * Used by RouterModule. This allows us to
@@ -311,12 +311,8 @@ export class Router {
     if (!this.locationSubscription) {
       this.locationSubscription = <any>this.location.subscribe(Zone.current.wrap((change: any) => {
         const rawUrlTree = this.urlSerializer.parse(change['url']);
-        const source: NavigationTrigger = change['type'] === 'popstate' ? 'popstate' : 'hashchange';
-        const state = change.state && change.state.navigationId ?
-            {navigationId: change.state.navigationId} :
-            null;
-        setTimeout(
-            () => { this.scheduleNavigation(rawUrlTree, source, state, {replaceUrl: true}); }, 0);
+        const source: NavigationSource = change['type'] === 'popstate' ? 'popstate' : 'hashchange';
+        setTimeout(() => { this.scheduleNavigation(rawUrlTree, source, {replaceUrl: true}); }, 0);
       }));
     }
   }
@@ -345,7 +341,6 @@ export class Router {
     validateConfig(config);
     this.config = config;
     this.navigated = false;
-    this.lastSuccessfulId = -1;
   }
 
   /** @docsNotRequired */
@@ -454,7 +449,7 @@ export class Router {
     const urlTree = url instanceof UrlTree ? url : this.parseUrl(url);
     const mergedTree = this.urlHandlingStrategy.merge(urlTree, this.rawUrlTree);
 
-    return this.scheduleNavigation(mergedTree, 'imperative', null, extras);
+    return this.scheduleNavigation(mergedTree, 'imperative', extras);
   }
 
   /**
@@ -527,9 +522,8 @@ export class Router {
         .subscribe(() => {});
   }
 
-  private scheduleNavigation(
-      rawUrl: UrlTree, source: NavigationTrigger, state: {navigationId: number}|null,
-      extras: NavigationExtras): Promise<boolean> {
+  private scheduleNavigation(rawUrl: UrlTree, source: NavigationSource, extras: NavigationExtras):
+      Promise<boolean> {
     const lastNavigation = this.navigations.value;
 
     // If the user triggers a navigation imperatively (e.g., by using navigateByUrl),
@@ -564,22 +558,21 @@ export class Router {
     });
 
     const id = ++this.navigationId;
-    this.navigations.next({id, source, state, rawUrl, extras, resolve, reject, promise});
+    this.navigations.next({id, source, rawUrl, extras, resolve, reject, promise});
 
     // Make sure that the error is propagated even though `processNavigations` catch
     // handler does not rethrow
     return promise.catch((e: any) => Promise.reject(e));
   }
 
-  private executeScheduledNavigation({id, rawUrl, extras, resolve, reject, source,
-                                      state}: NavigationParams): void {
+  private executeScheduledNavigation({id, rawUrl, extras, resolve, reject}: NavigationParams):
+      void {
     const url = this.urlHandlingStrategy.extract(rawUrl);
     const urlTransition = !this.navigated || url.toString() !== this.currentUrlTree.toString();
 
     if ((this.onSameUrlNavigation === 'reload' ? true : urlTransition) &&
         this.urlHandlingStrategy.shouldProcessUrl(rawUrl)) {
-      (this.events as Subject<Event>)
-          .next(new NavigationStart(id, this.serializeUrl(url), source, state));
+      (this.events as Subject<Event>).next(new NavigationStart(id, this.serializeUrl(url)));
       Promise.resolve()
           .then(
               (_) => this.runNavigate(
@@ -591,8 +584,7 @@ export class Router {
     } else if (
         urlTransition && this.rawUrlTree &&
         this.urlHandlingStrategy.shouldProcessUrl(this.rawUrlTree)) {
-      (this.events as Subject<Event>)
-          .next(new NavigationStart(id, this.serializeUrl(url), source, state));
+      (this.events as Subject<Event>).next(new NavigationStart(id, this.serializeUrl(url)));
       Promise.resolve()
           .then(
               (_) => this.runNavigate(
@@ -735,9 +727,9 @@ export class Router {
             if (!skipLocationChange) {
               const path = this.urlSerializer.serialize(this.rawUrlTree);
               if (this.location.isCurrentPathEqualTo(path) || replaceUrl) {
-                this.location.replaceState(path, '', {navigationId: id});
+                this.location.replaceState(path);
               } else {
-                this.location.go(path, '', {navigationId: id});
+                this.location.go(path);
               }
             }
 
@@ -751,7 +743,6 @@ export class Router {
               () => {
                 if (navigationIsSuccessful) {
                   this.navigated = true;
-                  this.lastSuccessfulId = id;
                   (this.events as Subject<Event>)
                       .next(new NavigationEnd(
                           id, this.serializeUrl(url), this.serializeUrl(this.currentUrlTree)));
@@ -793,8 +784,7 @@ export class Router {
   }
 
   private resetUrlToCurrentUrlTree(): void {
-    this.location.replaceState(
-        this.urlSerializer.serialize(this.rawUrlTree), '', {navigationId: this.lastSuccessfulId});
+    this.location.replaceState(this.urlSerializer.serialize(this.rawUrlTree));
   }
 }
 
