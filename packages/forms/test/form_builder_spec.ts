@@ -41,7 +41,7 @@ import {FormBuilder} from '@angular/forms';
       expect(g.controls['password'].asyncValidator).toEqual(asyncValidator);
     });
 
-    it('should use controls whose form state is a standalone value', () => {
+    it('should use controls whose form state is a primitive value', () => {
       const g = b.group({'login': b.control('some value', syncValidator, asyncValidator)});
 
       expect(g.controls['login'].value).toEqual('some value');
