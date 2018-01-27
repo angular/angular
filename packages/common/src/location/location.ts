@@ -14,7 +14,6 @@ import {LocationStrategy} from './location_strategy';
 /** @experimental */
 export interface PopStateEvent {
   pop?: boolean;
-  state?: any;
   type?: string;
   url?: string;
 }
@@ -57,7 +56,6 @@ export class Location {
       this._subject.emit({
         'url': this.path(true),
         'pop': true,
-        'state': ev.state,
         'type': ev.type,
       });
     });
@@ -105,16 +103,16 @@ export class Location {
    * Changes the browsers URL to the normalized version of the given URL, and pushes a
    * new item onto the platform's history.
    */
-  go(path: string, query: string = '', state: any = null): void {
-    this._platformStrategy.pushState(state, '', path, query);
+  go(path: string, query: string = ''): void {
+    this._platformStrategy.pushState(null, '', path, query);
   }
 
   /**
    * Changes the browsers URL to the normalized version of the given URL, and replaces
    * the top item on the platform's history stack.
    */
-  replaceState(path: string, query: string = '', state: any = null): void {
-    this._platformStrategy.replaceState(state, '', path, query);
+  replaceState(path: string, query: string = ''): void {
+    this._platformStrategy.replaceState(null, '', path, query);
   }
 
   /**

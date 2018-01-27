@@ -58,10 +58,7 @@ export const LOCATION_INITIALIZED = new InjectionToken<Promise<any>>('Location I
  *
  * @experimental
  */
-export interface LocationChangeEvent {
-  type: string;
-  state: any;
-}
+export interface LocationChangeEvent { type: string; }
 
 /**
  * @experimental
