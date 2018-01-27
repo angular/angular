@@ -297,6 +297,82 @@ describe('r3_view_compiler', () => {
       expectEmit(source, directives, 'Incorrect shared directive constant');
     });
 
+    it('should support content projection', () => {
+      const files = {
+        app: {
+          'spec.ts': `
+            import {Component, Directive, NgModule, TemplateRef} from '@angular/core';
+
+            @Component({selector: 'simple', template: '<div><ng-content></ng-content></div>'})
+            export class SimpleComponent {}
+
+            @Component({
+              selector: 'complex',
+              template: \`
+                <div id="first"><ng-content select="span[title=toFirst]"></ng-content></div>
+                <div id="second"><ng-content select="span[title=toSecond]"></ng-content></div>\`
+              })
+            export class ComplexComponent { }
+
+            @NgModule({declarations: [SimpleComponent, ComplexComponent]})
+            export class MyModule {}
+
+            @Component({
+              selector: 'my-app',
+              template: '<simple>content</simple> <complex></complex>'
+            })
+            export class MyApp {}
+          `
+        }
+      };
+
+      const SimpleComponentDefinition = `
+        static ngComponentDef = IDENT.ɵdefineComponent({
+          type: SimpleComponent,
+          tag: 'simple',
+          factory: function SimpleComponent_Factory() { return new SimpleComponent(); },
+          template: function SimpleComponent_Template(ctx: IDENT, cm: IDENT) {
+            if (cm) {
+              IDENT.ɵpD(0);
+              IDENT.ɵE(1, 'div');
+              IDENT.ɵP(2, 0);
+              IDENT.ɵe();
+            }
+          }
+        });`;
+
+      const ComplexComponentDefinition = `
+        static ngComponentDef = IDENT.ɵdefineComponent({
+          type: ComplexComponent,
+          tag: 'complex',
+          factory: function ComplexComponent_Factory() { return new ComplexComponent(); },
+          template: function ComplexComponent_Template(ctx: IDENT, cm: IDENT) {
+            if (cm) {
+              IDENT.ɵpD(0, IDENT);
+              IDENT.ɵE(1, 'div', IDENT);
+              IDENT.ɵP(2, 0, 1);
+              IDENT.ɵe();
+              IDENT.ɵE(3, 'div', IDENT);
+              IDENT.ɵP(4, 0, 2);
+              IDENT.ɵe();
+            }
+          }
+        });
+      `;
+
+      const ComplexComponent_ProjectionConst = `
+        const IDENT = [[[['span', 'title', 'tofirst'], null]], [[['span', 'title', 'tosecond'], null]]];
+      `;
+
+      const result = compile(files, angularFiles);
+      const source = result.source;
+
+      expectEmit(result.source, SimpleComponentDefinition, 'Incorrect SimpleComponent definition');
+      expectEmit(
+          result.source, ComplexComponentDefinition, 'Incorrect ComplexComponent definition');
+      expectEmit(result.source, ComplexComponent_ProjectionConst, 'Incorrect projection const');
+    });
+
     it('local reference', () => {
       const files = {
         app: {
