@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {PipeTransform} from '../../change_detection/pipe_transform';
 import {RendererType2} from '../../render/api';
 import {Type} from '../../type';
 import {resolveRendererType2} from '../../view/util';
@@ -22,6 +23,8 @@ export interface ComponentType<T> extends Type<T> { ngComponentDef: ComponentDef
 export interface DirectiveType<T> extends Type<T> { ngDirectiveDef: DirectiveDef<T>; }
 
 export const enum DirectiveDefFlags {ContentQuery = 0b10}
+
+export interface PipeType<T> extends Type<T> { ngPipeDef: PipeDef<T>; }
 
 /**
  * `DirectiveDef` is a compiled version of the Directive used by the renderer instructions.
@@ -108,6 +111,31 @@ export interface ComponentDef<T> extends DirectiveDef<T> {
    */
   readonly rendererType: RendererType2|null;
 }
+
+/**
+ *
+ */
+export interface PipeDef<T> {
+  /**
+   * factory function used to create a new directive instance.
+   *
+   * NOTE: this property is short (1 char) because it is used in
+   * component templates which is sensitive to size.
+   */
+  n: () => PipeTransform;
+
+  /**
+   * Whether or not the pipe is pure.
+   *
+   * Pure pipes result only depends on the pipe input and not on internal
+   * state of the pipe.
+   */
+  pure: boolean;
+
+  /* The following are lifecycle hooks for this pipe */
+  onDestroy: (() => void)|null;
+}
+
 
 export interface DirectiveDefArgs<T> {
   type: Type<T>;

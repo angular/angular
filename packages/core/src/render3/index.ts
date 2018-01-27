@@ -7,7 +7,7 @@
  */
 
 import {createComponentRef, detectChanges, getHostElement, markDirty, renderComponent} from './component';
-import {NgOnChangesFeature, PublicFeature, defineComponent, defineDirective} from './definition';
+import {NgOnChangesFeature, PublicFeature, defineComponent, defineDirective, definePipe} from './definition';
 import {InjectFlags} from './di';
 import {ComponentDef, ComponentTemplate, ComponentType, DirectiveDef, DirectiveDefFlags, DirectiveType} from './interfaces/definition';
 
@@ -64,6 +64,15 @@ export {
 } from './instructions';
 
 export {
+  pipe as Pp,
+  pipeBind1 as pb1,
+  pipeBind2 as pb2,
+  pipeBind3 as pb3,
+  pipeBind4 as pb4,
+  pipeBindV as pbV,
+} from './pipe';
+
+export {
   QueryList,
 
   query as Q,
@@ -83,6 +92,7 @@ export {
   PublicFeature,
   defineComponent,
   defineDirective,
+  definePipe,
 };
 export {createComponentRef, detectChanges, getHostElement, markDirty, renderComponent};
 export {CssSelector} from './interfaces/projection';
