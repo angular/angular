@@ -7,11 +7,11 @@
  */
 
 import {ViewEncapsulation} from '../../src/core';
-import {E, T, b, defineComponent, e, markDirty, r, t} from '../../src/render3/index';
+import {C, E, T, V, b, cR, cr, defineComponent, e, markDirty, p, r, t, v} from '../../src/render3/index';
 import {createRendererType2} from '../../src/view/index';
 
 import {getRendererFactory2} from './imported_renderer2';
-import {containerEl, renderComponent, requestAnimationFrame, toHtml} from './render_util';
+import {containerEl, renderComponent, renderToHtml, requestAnimationFrame, toHtml} from './render_util';
 
 describe('component', () => {
   class CounterComponent {
@@ -55,6 +55,70 @@ describe('component', () => {
       expect(toHtml(containerEl)).toEqual('124');
     });
 
+  });
+
+});
+
+describe('component with a container', () => {
+
+  function showItems(ctx: {items: string[]}, cm: boolean) {
+    if (cm) {
+      C(0);
+    }
+    cR(0);
+    {
+      for (const item of ctx.items) {
+        const cm0 = V(0);
+        {
+          if (cm0) {
+            T(0);
+          }
+          t(0, b(item));
+        }
+        v();
+      }
+    }
+    cr();
+  }
+
+  class WrapperComponent {
+    items: string[];
+    static ngComponentDef = defineComponent({
+      type: WrapperComponent,
+      tag: 'wrapper',
+      template: function ChildComponentTemplate(ctx: {items: string[]}, cm: boolean) {
+        if (cm) {
+          C(0);
+        }
+        cR(0);
+        {
+          const cm0 = V(0);
+          { showItems({items: ctx.items}, cm0); }
+          v();
+        }
+        cr();
+      },
+      factory: () => new WrapperComponent,
+      inputs: {items: 'items'}
+    });
+  }
+
+  function template(ctx: {items: string[]}, cm: boolean) {
+    if (cm) {
+      E(0, WrapperComponent);
+      e();
+    }
+    p(0, 'items', b(ctx.items));
+    WrapperComponent.ngComponentDef.h(1, 0);
+    r(1, 0);
+  }
+
+  it('should re-render on input change', () => {
+    const ctx: {items: string[]} = {items: ['a']};
+    expect(renderToHtml(template, ctx)).toEqual('<wrapper>a</wrapper>');
+
+    ctx.items = [...ctx.items, 'b'];
+    expect(renderToHtml(template, ctx)).toEqual('<wrapper>ab</wrapper>');
   });
 
 });

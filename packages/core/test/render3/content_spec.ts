@@ -377,6 +377,61 @@ describe('content projection', () => {
        expect(toHtml(parent)).toEqual('<child><div></div></child>');
      });
 
+  it('should support projection in embedded views when ng-content is a root node of an embedded view, with other nodes after',
+     () => {
+       let childCmptInstance: any;
+
+       /**
+        * <div>
+        *  % if (!skipContent) {
+        *    before-<ng-content></ng-content>-after
+        *  % }
+        * </div>
+        */
+       const Child = createComponent('child', function(ctx: any, cm: boolean) {
+         if (cm) {
+           pD(0);
+           E(1, 'div');
+           { C(2); }
+           e();
+         }
+         cR(2);
+         {
+           if (!ctx.skipContent) {
+             if (V(0)) {
+               T(0, 'before-');
+               P(1, 0);
+               T(2, '-after');
+             }
+             v();
+           }
+         }
+         cr();
+       });
+
+       /**
+        * <child>content</child>
+        */
+       const Parent = createComponent('parent', function(ctx: any, cm: boolean) {
+         if (cm) {
+           E(0, Child);
+           {
+             childCmptInstance = m(1);
+             T(2, 'content');
+           }
+           e();
+         }
+         Child.ngComponentDef.h(1, 0);
+         r(1, 0);
+       });
+       const parent = renderComponent(Parent);
+       expect(toHtml(parent)).toEqual('<child><div>before-content-after</div></child>');
+
+       childCmptInstance.skipContent = true;
+       detectChanges(parent);
+       expect(toHtml(parent)).toEqual('<child><div></div></child>');
+     });
+
   it('should project nodes into the last ng-content', () => {
     /**
      * <div><ng-content></ng-content></div>

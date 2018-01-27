@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {C, E, NC, T, V, a, b, b1, b2, b3, b4, b5, b6, b7, b8, bV, cR, cr, defineComponent, e, k, m, p, r, s, t, v} from '../../src/render3/index';
+import {C, E, NC, P, T, V, a, b, b1, b2, b3, b4, b5, b6, b7, b8, bV, cR, cr, defineComponent, e, k, m, p, pD, r, s, t, v} from '../../src/render3/index';
 import {NO_CHANGE} from '../../src/render3/instructions';
 
 import {containerEl, renderToHtml} from './render_util';
@@ -389,6 +389,142 @@ describe('render3 integration test', () => {
       expect(renderToHtml(Template, {condition: true})).toEqual('<comp><div>text</div></comp>');
       expect(renderToHtml(Template, {condition: false})).toEqual('<comp></comp>');
 
+    });
+
+  });
+
+  describe('tree', () => {
+    interface Tree {
+      beforeLabel?: string;
+      subTrees?: Tree[];
+      afterLabel?: string;
+    }
+
+    interface ParentCtx {
+      beforeTree: Tree;
+      projectedTree: Tree;
+      afterTree: Tree;
+    }
+
+    function showLabel(ctx: {label: string | undefined}, cm: boolean) {
+      if (cm) {
+        C(0);
+      }
+      cR(0);
+      {
+        if (ctx.label != null) {
+          if (V(0)) {
+            T(0);
+          }
+          t(0, b(ctx.label));
+          v();
+        }
+      }
+      cr();
+    }
+
+    function showTree(ctx: {tree: Tree}, cm: boolean) {
+      if (cm) {
+        C(0);
+        C(1);
+        C(2);
+      }
+      cR(0);
+      {
+        const cm0 = V(0);
+        { showLabel({label: ctx.tree.beforeLabel}, cm0); }
+        v();
+      }
+      cr();
+      cR(1);
+      {
+        for (let subTree of ctx.tree.subTrees || []) {
+          const cm0 = V(0);
+          { showTree({tree: subTree}, cm0); }
+          v();
+        }
+      }
+      cr();
+      cR(2);
+      {
+        const cm0 = V(0);
+        { showLabel({label: ctx.tree.afterLabel}, cm0); }
+        v();
+      }
+      cr();
+    }
+
+    class ChildComponent {
+      beforeTree: Tree;
+      afterTree: Tree;
+      static ngComponentDef = defineComponent({
+        tag: 'child',
+        type: ChildComponent,
+        template: function ChildComponentTemplate(
+            ctx: {beforeTree: Tree, afterTree: Tree}, cm: boolean) {
+          if (cm) {
+            pD(0);
+            C(1);
+            P(2, 0);
+            C(3);
+          }
+          cR(1);
+          {
+            const cm0 = V(0);
+            { showTree({tree: ctx.beforeTree}, cm0); }
+            v();
+          }
+          cr();
+          cR(3);
+          {
+            const cm0 = V(0);
+            { showTree({tree: ctx.afterTree}, cm0); }
+            v();
+          }
+          cr();
+        },
+        factory: () => new ChildComponent,
+        inputs: {beforeTree: 'beforeTree', afterTree: 'afterTree'}
+      });
+    }
+
+    function parentTemplate(ctx: ParentCtx, cm: boolean) {
+      if (cm) {
+        E(0, ChildComponent);
+        { C(2); }
+        e();
+      }
+      p(0, 'beforeTree', b(ctx.beforeTree));
+      p(0, 'afterTree', b(ctx.afterTree));
+      cR(2);
+      {
+        const cm0 = V(0);
+        { showTree({tree: ctx.projectedTree}, cm0); }
+        v();
+      }
+      cr();
+      ChildComponent.ngComponentDef.h(1, 0);
+      r(1, 0);
+    }
+
+    it('should work with a tree', () => {
+
+      const ctx: ParentCtx = {
+        beforeTree: {subTrees: [{beforeLabel: 'a'}]},
+        projectedTree: {beforeLabel: 'p'},
+        afterTree: {afterLabel: 'z'}
+      };
+      expect(renderToHtml(parentTemplate, ctx)).toEqual('<child>apz</child>');
+      ctx.projectedTree = {subTrees: [{}, {}, {subTrees: [{}, {}]}, {}]};
+      ctx.beforeTree.subTrees !.push({afterLabel: 'b'});
+      expect(renderToHtml(parentTemplate, ctx)).toEqual('<child>abz</child>');
+      ctx.projectedTree.subTrees ![1].afterLabel = 'h';
+      expect(renderToHtml(parentTemplate, ctx)).toEqual('<child>abhz</child>');
+      ctx.beforeTree.subTrees !.push({beforeLabel: 'c'});
+      expect(renderToHtml(parentTemplate, ctx)).toEqual('<child>abchz</child>');
+
+      // To check the context easily:
+      // console.log(JSON.stringify(ctx));
     });
 
   });

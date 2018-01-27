@@ -296,7 +296,7 @@ describe('query', () => {
       expect(isViewContainerRef(query.first)).toBeTruthy();
     });
 
-    it('should read ElementRef with a native element pointing to comment DOM node from containers',
+    it('should no longer read ElementRef with a native element pointing to comment DOM node from containers',
        () => {
          /**
           * <ng-template #foo></ng-template>
@@ -316,8 +316,7 @@ describe('query', () => {
          const cmptInstance = renderComponent(Cmpt);
          const query = (cmptInstance.query as QueryList<any>);
          expect(query.length).toBe(1);
-         expect(isElementRef(query.first)).toBeTruthy();
-         expect(query.first.nativeElement.nodeType).toBe(8);  // Node.COMMENT_NODE = 8
+         expect(query.first.nativeElement).toBe(null);
        });
 
     it('should read TemplateRef from container nodes by default', () => {
