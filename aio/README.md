@@ -105,8 +105,7 @@ The general setup is as follows:
 * Open a terminal, ensure the dependencies are installed; run an initial doc generation; then start the doc-viewer:
 
 ```bash
-yarn
-yarn docs
+yarn setup
 yarn start
 ```
 
