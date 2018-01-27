@@ -4055,6 +4055,7 @@ elaborate some of the points you covered quickly above.
 The appendix material isn't essential. Continued reading is for the curious.
 
 
+
 {@a link-parameters-array}
 
 
@@ -4272,5 +4273,28 @@ in the `AppModule`.
 
 
 <code-example path="router/src/app/app.module.6.ts" linenums="false" title="src/app/app.module.ts (hash URL strategy)">
+
+</code-example>
+
+
+
+{@ hash-prefix}
+
+
+### Appendix: hash prefix
+
+
+When the Router is configured with the `HashLocationStrategy` it is possible to also add a exclamation mark after the hash.
+
+Here is how it would look like if the `HashLocationStrategy` is configured with an additional exclamation mark:
+
+<code-example format="nocode">
+  localhost:3002/#!/crisis-center/
+
+</code-example>
+
+To configure it you only need to set the `HashLocationStrategy` and create a `APP_BASE_HREF` with a `useValue: !`:
+
+<code-example path="router/src/app/app.module.8.ts" linenums="false" title="src/app/app.module.ts (hash URL strategy)">
 
 </code-example>
