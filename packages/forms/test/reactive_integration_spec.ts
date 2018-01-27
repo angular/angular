@@ -321,6 +321,108 @@ import {MyInput, MyInputForm} from './value_accessor_integration_spec';
           expect(input.nativeElement.value).toEqual('LA');
         });
 
+        it('should remove controls correctly after re-binding a form array', () => {
+          const fixture = initTest(FormArrayComp);
+          const cityArray =
+              new FormArray([new FormControl('SF'), new FormControl('NY'), new FormControl('LA')]);
+          const form = new FormGroup({cities: cityArray});
+          fixture.componentInstance.form = form;
+          fixture.componentInstance.cityArray = cityArray;
+          fixture.detectChanges();
+
+          const newArr =
+              new FormArray([new FormControl('SF'), new FormControl('NY'), new FormControl('LA')]);
+          fixture.componentInstance.cityArray = newArr;
+          form.setControl('cities', newArr);
+          fixture.detectChanges();
+
+          newArr.removeAt(0);
+          fixture.detectChanges();
+
+          let inputs = fixture.debugElement.queryAll(By.css('input'));
+          expect(inputs[0].nativeElement.value).toEqual('NY');
+          expect(inputs[1].nativeElement.value).toEqual('LA');
+
+          let firstInput = inputs[0].nativeElement;
+          firstInput.value = 'new value';
+          dispatchEvent(firstInput, 'input');
+          fixture.detectChanges();
+
+          expect(newArr.value).toEqual(['new value', 'LA']);
+
+          newArr.removeAt(0);
+          fixture.detectChanges();
+
+          firstInput = fixture.debugElement.query(By.css('input')).nativeElement;
+          firstInput.value = 'last one';
+          dispatchEvent(firstInput, 'input');
+          fixture.detectChanges();
+
+          expect(newArr.value).toEqual(['last one']);
+
+          newArr.get([0]) !.setValue('set value');
+          fixture.detectChanges();
+
+          firstInput = fixture.debugElement.query(By.css('input')).nativeElement;
+          expect(firstInput.value).toEqual('set value');
+        });
+
+        it('should submit properly after removing controls on a re-bound array', () => {
+          const fixture = initTest(FormArrayComp);
+          const cityArray =
+              new FormArray([new FormControl('SF'), new FormControl('NY'), new FormControl('LA')]);
+          const form = new FormGroup({cities: cityArray});
+          fixture.componentInstance.form = form;
+          fixture.componentInstance.cityArray = cityArray;
+          fixture.detectChanges();
+
+          const newArr =
+              new FormArray([new FormControl('SF'), new FormControl('NY'), new FormControl('LA')]);
+          fixture.componentInstance.cityArray = newArr;
+          form.setControl('cities', newArr);
+          fixture.detectChanges();
+
+          newArr.removeAt(0);
+          fixture.detectChanges();
+
+          const formEl = fixture.debugElement.query(By.css('form'));
+          expect(() => dispatchEvent(formEl.nativeElement, 'submit')).not.toThrowError();
+        });
+
+        it('should insert controls properly on a re-bound array', () => {
+          const fixture = initTest(FormArrayComp);
+          const cityArray = new FormArray([new FormControl('SF'), new FormControl('NY')]);
+          const form = new FormGroup({cities: cityArray});
+          fixture.componentInstance.form = form;
+          fixture.componentInstance.cityArray = cityArray;
+          fixture.detectChanges();
+
+          const newArr = new FormArray([new FormControl('SF'), new FormControl('NY')]);
+          fixture.componentInstance.cityArray = newArr;
+          form.setControl('cities', newArr);
+          fixture.detectChanges();
+
+          newArr.insert(1, new FormControl('LA'));
+          fixture.detectChanges();
+
+          let inputs = fixture.debugElement.queryAll(By.css('input'));
+          expect(inputs[0].nativeElement.value).toEqual('SF');
+          expect(inputs[1].nativeElement.value).toEqual('LA');
+          expect(inputs[2].nativeElement.value).toEqual('NY');
+
+          const lastInput = inputs[2].nativeElement;
+          lastInput.value = 'Tulsa';
+          dispatchEvent(lastInput, 'input');
+          fixture.detectChanges();
+
+          expect(newArr.value).toEqual(['SF', 'LA', 'Tulsa']);
+
+          newArr.get([2]) !.setValue('NY');
+          fixture.detectChanges();
+
+          expect(lastInput.value).toEqual('NY');
+        });
+
       });
 
     });
