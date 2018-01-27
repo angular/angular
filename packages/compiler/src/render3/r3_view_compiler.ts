@@ -15,10 +15,12 @@ import {Identifiers} from '../identifiers';
 import * as o from '../output/output_ast';
 import {ParseSourceSpan} from '../parse_util';
 import {CssSelector} from '../selector';
-import {AttrAst, BoundDirectivePropertyAst, BoundElementPropertyAst, BoundEventAst, BoundTextAst, DirectiveAst, ElementAst, EmbeddedTemplateAst, NgContentAst, PropertyBindingType, ProviderAst, QueryMatch, ReferenceAst, TemplateAst, TemplateAstVisitor, TextAst, VariableAst, templateVisitAll} from '../template_parser/template_ast';
+import {AttrAst, BoundDirectivePropertyAst, BoundElementPropertyAst, BoundEventAst, BoundTextAst, DirectiveAst, ElementAst, EmbeddedTemplateAst, NgContentAst, PropertyBindingType, ProviderAst, QueryMatch, RecursiveTemplateAstVisitor, ReferenceAst, TemplateAst, TemplateAstVisitor, TextAst, VariableAst, templateVisitAll} from '../template_parser/template_ast';
 import {OutputContext, error} from '../util';
 
 import {Identifiers as R3} from './r3_identifiers';
+
+
 
 /** Name of the context parameter passed into a template function */
 const CONTEXT_NAME = 'ctx';
@@ -108,7 +110,7 @@ export function compileComponent(
   const templateFunctionExpression =
       new TemplateDefinitionBuilder(
           outputCtx, outputCtx.constantPool, reflector, CONTEXT_NAME, ROOT_SCOPE.nestedScope(), 0,
-          templateTypeName, templateName)
+          component.template !.ngContentSelectors, templateTypeName, templateName)
           .buildTemplateFunction(template, []);
   definitionMapValues.push({key: 'template', value: templateFunctionExpression, quoted: false});
 
@@ -134,8 +136,10 @@ export function compileComponent(
 
 // TODO: Remove these when the things are fully supported
 function unknown<T>(arg: o.Expression | o.Statement | TemplateAst): never {
-  throw new Error(`Builder ${this.constructor.name} is unable to handle ${o.constructor.name} yet`);
+  throw new Error(
+      `Builder ${this.constructor.name} is unable to handle ${arg.constructor.name} yet`);
 }
+
 function unsupported(feature: string): never {
   if (this) {
     throw new Error(`Builder ${this.constructor.name} doesn't support ${feature} yet`);
@@ -225,14 +229,16 @@ class TemplateDefinitionBuilder implements TemplateAstVisitor, LocalResolver {
   private _hostMode: o.Statement[] = [];
   private _refreshMode: o.Statement[] = [];
   private _postfix: o.Statement[] = [];
+  private _contentProjections: Map<NgContentAst, NgContentInfo>;
+  private _projectionDefinitionIndex = 0;
   private unsupported = unsupported;
   private invalid = invalid;
 
   constructor(
       private outputCtx: OutputContext, private constantPool: ConstantPool,
       private reflector: CompileReflector, private contextParameter: string,
-      private bindingScope: BindingScope, private level = 0, private contextName: string|null,
-      private templateName: string|null) {}
+      private bindingScope: BindingScope, private level = 0, private ngContentSelectors: string[],
+      private contextName: string|null, private templateName: string|null) {}
 
   buildTemplateFunction(asts: TemplateAst[], variables: VariableAst[]): o.FunctionExpr {
     // Create variable bindings
@@ -250,6 +256,28 @@ class TemplateDefinitionBuilder implements TemplateAstVisitor, LocalResolver {
 
       // Declare the local variable in binding mode
       this._bindingMode.push(declaration);
+    }
+
+    // Collect content projections
+    if (this.ngContentSelectors && this.ngContentSelectors.length > 0) {
+      const contentProjections = getContentProjection(asts, this.ngContentSelectors);
+      this._contentProjections = contentProjections;
+      if (contentProjections.size > 0) {
+        const infos: R3CssSelector[] = [];
+        Array.from(contentProjections.values()).forEach(info => {
+          if (info.selector) {
+            infos[info.index - 1] = info.selector;
+          }
+        });
+        const projectionIndex = this._projectionDefinitionIndex = this.allocateDataSlot();
+        const parameters: o.Expression[] = [o.literal(projectionIndex)];
+        !infos.some(value => !value) || error(`content project information skipped an index`);
+        if (infos.length > 1) {
+          parameters.push(this.outputCtx.constantPool.getConstLiteral(
+              asLiteral(infos), /* forceShared */ true));
+        }
+        this.instruction(this._creationMode, null, R3.projectionDef, ...parameters);
+      }
     }
 
     templateVisitAll(this, asts);
@@ -282,8 +310,16 @@ class TemplateDefinitionBuilder implements TemplateAstVisitor, LocalResolver {
 
   getLocal(name: string): o.Expression|null { return this.bindingScope.get(name); }
 
-  // TODO(chuckj): Implement ng-content
-  visitNgContent = unknown;
+  visitNgContent(ast: NgContentAst) {
+    const info = this._contentProjections.get(ast) !;
+    info || error(`Expected ${ast.sourceSpan} to be included in content projection collection`);
+    const slot = this.allocateDataSlot();
+    const parameters = [o.literal(slot), o.literal(this._projectionDefinitionIndex)];
+    if (info.index !== 0) {
+      parameters.push(o.literal(info.index));
+    }
+    this.instruction(this._creationMode, ast.sourceSpan, R3.projection, ...parameters);
+  }
 
   private _computeDirectivesArray(directives: DirectiveAst[]) {
     const directiveIndexMap = new Map<any, number>();
@@ -473,7 +509,8 @@ class TemplateDefinitionBuilder implements TemplateAstVisitor, LocalResolver {
     // Create the template function
     const templateVisitor = new TemplateDefinitionBuilder(
         this.outputCtx, this.constantPool, this.reflector, templateContext,
-        this.bindingScope.nestedScope(), this.level + 1, contextName, templateName);
+        this.bindingScope.nestedScope(), this.level + 1, this.ngContentSelectors, contextName,
+        templateName);
     const templateFunctionExpr = templateVisitor.buildTemplateFunction(ast.children, ast.variables);
     this._postfix.push(templateFunctionExpr.toDeclStmt(templateName, null));
   }
@@ -512,7 +549,7 @@ class TemplateDefinitionBuilder implements TemplateAstVisitor, LocalResolver {
   private bindingContext() { return `${this._bindingContext++}`; }
 
   private instruction(
-      statements: o.Statement[], span: ParseSourceSpan, reference: o.ExternalReference,
+      statements: o.Statement[], span: ParseSourceSpan|null, reference: o.ExternalReference,
       ...params: o.Expression[]) {
     statements.push(o.importExpr(reference, null, span).callFn(params, span).toStmt());
   }
@@ -593,4 +630,69 @@ function invalid<T>(arg: o.Expression | o.Statement | TemplateAst): never {
 
 function findComponent(directives: DirectiveAst[]): DirectiveAst|undefined {
   return directives.filter(directive => directive.directive.isComponent)[0];
+}
+
+interface NgContentInfo {
+  index: number;
+  selector?: R3CssSelector;
+}
+
+class ContentProjectionVisitor extends RecursiveTemplateAstVisitor {
+  private index = 1;
+  constructor(
+      private projectionMap: Map<NgContentAst, NgContentInfo>,
+      private ngContentSelectors: string[]) {
+    super();
+  }
+
+  visitNgContent(ast: NgContentAst) {
+    const selectorText = this.ngContentSelectors[ast.index];
+    selectorText != null || error(`could not find selector for index ${ast.index} in ${ast}`);
+    if (!selectorText || selectorText === '*') {
+      this.projectionMap.set(ast, {index: 0});
+    } else {
+      const cssSelectors = CssSelector.parse(selectorText);
+      this.projectionMap.set(
+          ast, {index: this.index++, selector: parseSelectorsToR3Selector(cssSelectors)});
+    }
+  }
+}
+
+function getContentProjection(asts: TemplateAst[], ngContentSelectors: string[]) {
+  const projectIndexMap = new Map<NgContentAst, NgContentInfo>();
+  const visitor = new ContentProjectionVisitor(projectIndexMap, ngContentSelectors);
+  templateVisitAll(visitor, asts);
+  return projectIndexMap;
+}
+
+// These are a copy the CSS types from core/src/render3/interfaces/projection.ts
+// They are duplicated here as they cannot be directly referenced from core.
+type R3SimpleCssSelector = (string | null)[];
+type R3CssSelectorWithNegations =
+    [R3SimpleCssSelector, null] | [R3SimpleCssSelector, R3SimpleCssSelector];
+type R3CssSelector = R3CssSelectorWithNegations[];
+
+function parserSelectorToSimpleSelector(selector: CssSelector): R3SimpleCssSelector {
+  const classes =
+      selector.classNames && selector.classNames.length ? ['class', ...selector.classNames] : [];
+  return [selector.element, ...selector.attrs, ...classes];
+}
+
+function parserSelectorToR3Selector(selector: CssSelector): R3CssSelectorWithNegations {
+  const positive = parserSelectorToSimpleSelector(selector);
+  const negative = selector.notSelectors && selector.notSelectors.length &&
+      parserSelectorToSimpleSelector(selector.notSelectors[0]);
+
+  return negative ? [positive, negative] : [positive, null];
+}
+
+function parseSelectorsToR3Selector(selectors: CssSelector[]): R3CssSelector {
+  return selectors.map(parserSelectorToR3Selector);
+}
+
+function asLiteral(value: any): o.Expression {
+  if (Array.isArray(value)) {
+    return o.literalArr(value.map(asLiteral));
+  }
+  return o.literal(value, o.INFERRED_TYPE);
 }
