@@ -8,6 +8,7 @@
 
 import {isPlatformBrowser} from '@angular/common';
 import {APP_INITIALIZER, ApplicationRef, InjectionToken, Injector, ModuleWithProviders, NgModule, PLATFORM_ID} from '@angular/core';
+import {Observable} from 'rxjs';
 import {filter, take} from 'rxjs/operators';
 
 import {NgswCommChannel} from './low_level';
@@ -41,6 +42,8 @@ export abstract class SwRegistrationOptions {
    * [ServiceWorkerContainer#register()](https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorkerContainer/register).
    */
   scope?: string;
+
+  registrationStrategy?: (() => Observable<any>)|string;
 }
 
 export const SCRIPT = new InjectionToken<string>('NGSW_REGISTER_SCRIPT');
@@ -68,7 +71,33 @@ export function ngswAppInitializer(
 
     // Don't return the Promise, as that will block the application until the SW is registered, and
     // cause a crash if the SW registration fails.
-    whenStable.then(() => navigator.serviceWorker.register(script, {scope: options.scope}));
+    if (typeof options.registrationStrategy === 'function') {
+      const observable = options.registrationStrategy();
+      const subscription = observable.subscribe(() => {
+        navigator.serviceWorker.register(script, {scope: options.scope});
+        subscription.unsubscribe();
+      });
+    } else {
+      const registrationStrategy = typeof options.registrationStrategy === 'string' ?
+          options.registrationStrategy :
+          'registerWhenStable';
+      if (registrationStrategy === 'registerWhenStable') {
+        whenStable.then(() => navigator.serviceWorker.register(script, {scope: options.scope}));
+      } else if (registrationStrategy === 'registerImmediately') {
+        navigator.serviceWorker.register(script, {scope: options.scope});
+      } else if (registrationStrategy.indexOf('registerDelay') !== -1) {
+        const split = registrationStrategy.split(':');
+        const delayStr = split.length > 1 ? split[1] : undefined;
+        const delay = Number(delayStr);
+        setTimeout(
+            () => navigator.serviceWorker.register(script, {scope: options.scope}),
+            typeof delay === 'number' ? delay : 0);
+      } else {
+        // wrong strategy
+        throw new Error(
+            `Unknown service worker registration strategy: ${options.registrationStrategy}`);
+      }
+    }
   };
   return initializer;
 }

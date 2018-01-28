@@ -21,6 +21,7 @@ export declare class SwPush {
 
 export declare abstract class SwRegistrationOptions {
     enabled?: boolean;
+    registrationStrategy?: (() => Observable<any>) | string;
     scope?: string;
 }
 
