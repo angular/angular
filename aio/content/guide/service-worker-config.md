@@ -218,3 +218,15 @@ If the field is omitted, it defaults to:
   '!/**/*__*/**',  // Exclude URLs containing `__` in any other segment.
 ]
 ```
+
+## `register options`
+
+<code-example path="service-worker-getting-started/src/app/app.module.ts" linenums="false" header="src/app/app.module.ts" region="sw-module"> </code-example>
+ You can pass some options to the `register()` method.
+- enabled: optional parameter, by default is true, if enabled is false, the module will behave like the browser not support service worker, and service worker will not be registered.
+- scope: optional parameter, to specify the subset of your content that you want the service worker to control.
+- registrationStrategy: optional parameter, specify a strategy that determines when to register the service worker, the available options are:
+  - registerWhenStable: this is the default behavior, the service worker will register when the application is stable (no microTasks or macroTasks remain).
+  - registerImmediately: register immediately without waiting the application to become stable.
+  - registerDelay:timeout : register after the timeout period, `timeout` is the number of milliseconds to delay registration. For example `registerDelay:5000` would register the service worker after 5 seconds. If the number of `timeout` is not given (`registerDelay`), by default, `timeout` will be `0`, but it is not equal to `registerImmediately`, it will still run a `setTimeout(register, 0)` to wait all `microTasks` to finish then perform registration of the service worker.
+  - A factory to get Observable : you can also specify a factory which returns an Observable, the service worker will be registered the first time that a value is emitted by the Observable.
