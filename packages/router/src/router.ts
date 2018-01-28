@@ -495,8 +495,10 @@ export class Router {
    * router.navigateByUrl("/team/33/user/11", { skipLocationChange: true });
    * ```
    *
-   * In opposite to `navigate`, `navigateByUrl` takes a whole URL
-   * and does not apply any delta to the current one.
+   * Since `navigateByUrl()` takes an absolute URL as the first parameter,
+   * it will not apply any delta to the current URL and ignores any properties
+   * in the second parameter (the `NavigationExtras`) that would change the
+   * provided URL.
    */
   navigateByUrl(url: string|UrlTree, extras: NavigationExtras = {skipLocationChange: false}):
       Promise<boolean> {
@@ -529,8 +531,9 @@ export class Router {
    * router.navigate(['team', 33, 'user', 11], {relativeTo: route, skipLocationChange: true});
    * ```
    *
-   * In opposite to `navigateByUrl`, `navigate` always takes a delta that is applied to the current
-   * URL.
+   * The first parameter of `navigate()` is a delta to be applied to the current URL
+   * or the one provided in the `relativeTo` property of the second parameter (the
+   * `NavigationExtras`).
    */
   navigate(commands: any[], extras: NavigationExtras = {skipLocationChange: false}):
       Promise<boolean> {
