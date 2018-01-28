@@ -1,5 +1,7 @@
+    registrationStrategy?: (() => Observable<any>) | string;
 export declare class ServiceWorkerModule {
     static register(script: string, opts?: SwRegistrationOptions): ModuleWithProviders<ServiceWorkerModule>;
+        registrationStrategy?: (() => Observable<any>) | string;
 }
 
 export declare class SwPush {
