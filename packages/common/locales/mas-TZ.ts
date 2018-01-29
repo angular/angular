@@ -48,5 +48,6 @@ export default [
     ,
   ],
   ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'], 'TSh', 'Iropiyianí e Tanzania', plural
+  ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'], 'TSh', 'Iropiyianí e Tanzania',
+  {'JPY': ['JP¥', '¥'], 'KES': ['Ksh'], 'TZS': ['TSh'], 'USD': ['US$', '$']}, plural
 ];
