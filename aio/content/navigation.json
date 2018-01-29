@@ -169,6 +169,11 @@
               "tooltip": "Attribute directives attach behavior to elements."
             },
             {
+              "url": "guide/structural-directives",
+              "title": "Structural Directives",
+              "tooltip": "Structural directives manipulate the layout of the page."
+            }, 
+            {
               "url": "guide/pipes",
               "title": "Pipes",
               "tooltip": "Pipes transform displayed values within a template."
