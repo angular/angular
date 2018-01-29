@@ -28,13 +28,16 @@ const unusedValueToPlacateAjd = unused1 + unused2 + unused3 + unused4;
 
 
 /**
- * A predicate which determines if a given element/directive should be included in the query
+ * An object representing a query, which is a combination of:
+ * - query predicate to determines if a given element/directive should be included in the query
+ * - values collected based on a predicate
+ * - `QueryList` to which collected values should be reported
  */
-export interface QueryPredicate<T> {
+export interface LQuery<T> {
   /**
-   * Next predicate
+   * Next query. Used when queries are stored as a linked list in `LQueries`.
    */
-  next: QueryPredicate<any>|null;
+  next: LQuery<any>|null;
 
   /**
    * Destination to which the value should be added.
@@ -65,10 +68,10 @@ export interface QueryPredicate<T> {
 }
 
 export class LQueries_ implements LQueries {
-  shallow: QueryPredicate<any>|null = null;
-  deep: QueryPredicate<any>|null = null;
+  shallow: LQuery<any>|null = null;
+  deep: LQuery<any>|null = null;
 
-  constructor(deep?: QueryPredicate<any>) { this.deep = deep == null ? null : deep; }
+  constructor(deep?: LQuery<any>) { this.deep = deep == null ? null : deep; }
 
   track<T>(
       queryList: viewEngine_QueryList<T>, predicate: Type<T>|string[], descend?: boolean,
@@ -76,10 +79,9 @@ export class LQueries_ implements LQueries {
     // TODO(misko): This is not right. In case of inherited state, a calling track will incorrectly
     // mutate parent.
     if (descend) {
-      this.deep = createPredicate(this.deep, queryList, predicate, read != null ? read : null);
+      this.deep = createQuery(this.deep, queryList, predicate, read != null ? read : null);
     } else {
-      this.shallow =
-          createPredicate(this.shallow, queryList, predicate, read != null ? read : null);
+      this.shallow = createQuery(this.shallow, queryList, predicate, read != null ? read : null);
     }
   }
 
@@ -99,46 +101,46 @@ export class LQueries_ implements LQueries {
   }
 
   container(): LQueries|null {
-    let result: QueryPredicate<any>|null = null;
-    let predicate = this.deep;
+    let result: LQuery<any>|null = null;
+    let query = this.deep;
 
-    while (predicate) {
+    while (query) {
       const containerValues: any[] = [];  // prepare room for views
-      predicate.values.push(containerValues);
-      const clonedPredicate: QueryPredicate<any> = {
+      query.values.push(containerValues);
+      const clonedQuery: LQuery<any> = {
         next: null,
-        list: predicate.list,
-        type: predicate.type,
-        selector: predicate.selector,
-        read: predicate.read,
+        list: query.list,
+        type: query.type,
+        selector: query.selector,
+        read: query.read,
         values: containerValues
       };
-      clonedPredicate.next = result;
-      result = clonedPredicate;
-      predicate = predicate.next;
+      clonedQuery.next = result;
+      result = clonedQuery;
+      query = query.next;
     }
 
     return result ? new LQueries_(result) : null;
   }
 
   enterView(index: number): LQueries|null {
-    let result: QueryPredicate<any>|null = null;
-    let predicate = this.deep;
+    let result: LQuery<any>|null = null;
+    let query = this.deep;
 
-    while (predicate) {
+    while (query) {
       const viewValues: any[] = [];  // prepare room for view nodes
-      predicate.values.splice(index, 0, viewValues);
-      const clonedPredicate: QueryPredicate<any> = {
+      query.values.splice(index, 0, viewValues);
+      const clonedQuery: LQuery<any> = {
         next: null,
-        list: predicate.list,
-        type: predicate.type,
-        selector: predicate.selector,
-        read: predicate.read,
+        list: query.list,
+        type: query.type,
+        selector: query.selector,
+        read: query.read,
         values: viewValues
       };
-      clonedPredicate.next = result;
-      result = clonedPredicate;
-      predicate = predicate.next;
+      clonedQuery.next = result;
+      result = clonedQuery;
+      query = query.next;
     }
 
     return result ? new LQueries_(result) : null;
@@ -150,38 +152,18 @@ export class LQueries_ implements LQueries {
   }
 
   removeView(index: number): void {
-    let predicate = this.deep;
-    while (predicate) {
-      const removed = predicate.values.splice(index, 1);
+    let query = this.deep;
+    while (query) {
+      const removed = query.values.splice(index, 1);
 
       // mark a query as dirty only when removed view had matching modes
       ngDevMode && assertEqual(removed.length, 1, 'removed.length');
       if (removed[0].length) {
-        predicate.list.setDirty();
+        query.list.setDirty();
       }
 
-      predicate = predicate.next;
+      query = query.next;
     }
-  }
-
-  /**
-   * Clone LQueries by taking all the deep query predicates and cloning those using a provided clone
-   * function.
-   * Shallow predicates are ignored.
-   */
-  private _clonePredicates(
-      predicateCloneFn: (predicate: QueryPredicate<any>) => QueryPredicate<any>): LQueries|null {
-    let result: QueryPredicate<any>|null = null;
-    let predicate = this.deep;
-
-    while (predicate) {
-      const clonedPredicate = predicateCloneFn(predicate);
-      clonedPredicate.next = result;
-      result = clonedPredicate;
-      predicate = predicate.next;
-    }
-
-    return result ? new LQueries_(result) : null;
   }
 }
 
@@ -240,49 +222,48 @@ function readFromNodeInjector(
   return null;
 }
 
-function add(predicate: QueryPredicate<any>| null, node: LNode) {
+function add(query: LQuery<any>| null, node: LNode) {
   const nodeInjector = getOrCreateNodeInjectorForNode(node as LElementNode | LContainerNode);
-  while (predicate) {
-    const type = predicate.type;
+  while (query) {
+    const type = query.type;
     if (type) {
       const directiveIdx = geIdxOfMatchingDirective(node, type);
       if (directiveIdx !== null) {
         // a node is matching a predicate - determine what to read
         // if read token and / or strategy is not specified, use type as read token
-        const result =
-            readFromNodeInjector(nodeInjector, node, predicate.read || type, directiveIdx);
+        const result = readFromNodeInjector(nodeInjector, node, query.read || type, directiveIdx);
         if (result !== null) {
-          addMatch(predicate, result);
+          addMatch(query, result);
         }
       }
     } else {
-      const selector = predicate.selector !;
+      const selector = query.selector !;
       for (let i = 0; i < selector.length; i++) {
         ngDevMode && assertNotNull(node.tNode, 'node.tNode');
         const directiveIdx = getIdxOfMatchingSelector(node.tNode !, selector[i]);
         if (directiveIdx !== null) {
           // a node is matching a predicate - determine what to read
           // note that queries using name selector must specify read strategy
-          ngDevMode && assertNotNull(predicate.read, 'predicate.read');
-          const result = readFromNodeInjector(nodeInjector, node, predicate.read !, directiveIdx);
+          ngDevMode && assertNotNull(query.read, 'query.read');
+          const result = readFromNodeInjector(nodeInjector, node, query.read !, directiveIdx);
           if (result !== null) {
-            addMatch(predicate, result);
+            addMatch(query, result);
           }
         }
       }
     }
-    predicate = predicate.next;
+    query = query.next;
   }
 }
 
-function addMatch(predicate: QueryPredicate<any>, matchingValue: any): void {
-  predicate.values.push(matchingValue);
-  predicate.list.setDirty();
+function addMatch(query: LQuery<any>, matchingValue: any): void {
+  query.values.push(matchingValue);
+  query.list.setDirty();
 }
 
-function createPredicate<T>(
-    previous: QueryPredicate<any>| null, queryList: QueryList<T>, predicate: Type<T>| string[],
-    read: QueryReadType<T>| Type<T>| null): QueryPredicate<T> {
+function createQuery<T>(
+    previous: LQuery<any>| null, queryList: QueryList<T>, predicate: Type<T>| string[],
+    read: QueryReadType<T>| Type<T>| null): LQuery<T> {
   const isArray = Array.isArray(predicate);
   return {
     next: previous,
