@@ -11,19 +11,15 @@
     "strict": true,
     "target": "es5",
     "noImplicitAny": false,
-    "sourceMap": false,
+    "sourceMap": true,
     "experimentalDecorators": true,
     "outDir": "built",
-    "rootDir": ".",
+    "rootDir": "./src",
     "declaration": true,
-    "types": []
+    "types": [],
+    "lib": ["es2015", "dom"]
   },
-
-  "exclude": [
-    "vendor",
-    "node_modules",
-    "built",
-    "dist",
-    "e2e"
+  "files": [
+    "src/index.ts"
   ]
 }
