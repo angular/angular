@@ -49,5 +49,6 @@ export default [
     ,
   ],
   ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0%', '#,##0.00¤', '#E0'], 'TSh', 'Shilingi ya Hutanzania', plural
+  ['#,##0.###', '#,##0%', '#,##0.00¤', '#E0'], 'TSh', 'Shilingi ya Hutanzania',
+  {'JPY': ['JP¥', '¥'], 'TZS': ['TSh'], 'USD': ['US$', '$']}, plural
 ];

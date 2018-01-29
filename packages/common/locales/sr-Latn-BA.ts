@@ -44,5 +44,16 @@ export default [
   ],
   [',', '.', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
   ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'], 'KM',
-  'Bosansko-hercegovačka konvertibilna marka', plural
+  'Bosansko-hercegovačka konvertibilna marka', {
+    'AUD': [, '$'],
+    'BAM': ['KM'],
+    'BYN': [, 'r.'],
+    'GEL': [, 'ლ'],
+    'KRW': [, '₩'],
+    'NZD': [, '$'],
+    'TWD': ['NT$'],
+    'USD': ['US$', '$'],
+    'VND': [, '₫']
+  },
+  plural
 ];

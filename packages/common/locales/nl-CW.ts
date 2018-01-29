@@ -46,5 +46,17 @@ export default [
   ],
   [',', '.', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
   ['#,##0.###', '#,##0%', '¤ #,##0.00;¤ -#,##0.00', '#E0'], 'NAf.',
-  'Nederlands-Antilliaanse gulden', plural
+  'Nederlands-Antilliaanse gulden', {
+    'ANG': ['NAf.'],
+    'AUD': ['AU$', '$'],
+    'CAD': ['C$', '$'],
+    'FJD': ['FJ$', '$'],
+    'JPY': ['JP¥', '¥'],
+    'SBD': ['SI$', '$'],
+    'THB': ['฿'],
+    'TWD': ['NT$'],
+    'USD': ['US$', '$'],
+    'XPF': []
+  },
+  plural
 ];
