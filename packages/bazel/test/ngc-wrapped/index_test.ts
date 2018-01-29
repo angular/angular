@@ -18,12 +18,22 @@ describe('ngc_wrapped', () => {
 
     write('some_project/index.ts', `
       import {Component} from '@angular/core';
+      import {a} from 'ambient_module';
       console.log('works: ', Component);
     `);
 
-    writeConfig({
+    const tsconfig = writeConfig({
       srcTargetPath: 'some_project',
     });
+    const typesFile = path.resolve(
+        tsconfig.compilerOptions.rootDir, tsconfig.compilerOptions.typeRoots[0], 'thing',
+        'index.d.ts');
+
+    write(typesFile, `
+      declare module "ambient_module" {
+        declare const a = 1;
+      }
+    `);
 
     // expect no error
     expect(runOneBuild()).toBe(true);
