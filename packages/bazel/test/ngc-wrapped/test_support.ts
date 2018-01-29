@@ -24,7 +24,7 @@ export interface TestSupport {
     srcTargetPath: string,
     depPaths?: string[],
     pathMapping?: Array<{moduleName: string; path: string;}>,
-  }): void;
+  }): {compilerOptions: ts.CompilerOptions};
   read(fileName: string): string;
   write(fileName: string, content: string): void;
   writeFiles(...mockDirs: {[fileName: string]: string}[]): void;
@@ -68,11 +68,19 @@ export function setup(
   // -----------------
   // helpers
 
+  function mkdirp(dirname: string) {
+    const parent = path.dirname(dirname);
+    if (!fs.existsSync(parent)) {
+      mkdirp(parent);
+    }
+    fs.mkdirSync(dirname);
+  }
+
   function write(fileName: string, content: string) {
     const dir = path.dirname(fileName);
     if (dir != '.') {
       const newDir = path.resolve(basePath, dir);
-      if (!fs.existsSync(newDir)) fs.mkdirSync(newDir);
+      if (!fs.existsSync(newDir)) mkdirp(newDir);
     }
     fs.writeFileSync(path.resolve(basePath, fileName), content, {encoding: 'utf-8'});
   }
@@ -126,6 +134,7 @@ export function setup(
       pathMapping: pathMappingObj,
     });
     write(path.resolve(basePath, tsConfigJsonPath), JSON.stringify(tsconfig, null, 2));
+    return tsconfig;
   }
 
   function shouldExist(fileName: string) {
