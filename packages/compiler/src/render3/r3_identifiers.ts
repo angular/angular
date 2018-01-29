@@ -21,7 +21,6 @@ export class Identifiers {
   /* Methods */
   static NEW_METHOD = 'n';
   static HOST_BINDING_METHOD = 'h';
-  static REFRESH_METHOD = 'r';
 
   /* Instructions */
   static createElement: o.ExternalReference = {name: 'ɵE', moduleName: CORE};

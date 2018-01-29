@@ -208,8 +208,8 @@ describe('r3_view_compiler', () => {
               IDENT.ɵe();
               IDENT.ɵT(3, '!');
             }
-            ChildComponent.ngComponentDef.r(1, 0);
-            SomeDirective.ngDirectiveDef.r(2, 0);
+            IDENT.ɵr(1, 0);
+            IDENT.ɵr(2, 0);
           }
         });
       `;
@@ -272,7 +272,7 @@ describe('r3_view_compiler', () => {
             }
             const IDENT = IDENT.ɵm(1);
             IDENT.ɵcR(2);
-            IfDirective.ngDirectiveDef.r(3,2);
+            IDENT.ɵr(3,2);
             IDENT.ɵcr();
 
             function MyComponent_IfDirective_Template_2(ctx0: IDENT, cm: IDENT) {
@@ -495,13 +495,11 @@ describe('r3_view_compiler', () => {
         // TODO(chuckj): Enforce this when the directives are specified
         const ForDirectiveDefinition = `
           static ngDirectiveDef = IDENT.ɵdefineDirective({
+            type: ForOfDirective,
             factory: function ForOfDirective_Factory() {
               return new ForOfDirective(IDENT.ɵinjectViewContainerRef(), IDENT.ɵinjectTemplateRef());
             },
             features: [IDENT.ɵNgOnChangesFeature(NgForOf)],
-            refresh: function ForOfDirective_Refresh(directiveIndex: IDENT, elementIndex: IDENT) {
-              IDENT.ɵm<ForOfDirective>(directiveIndex).ngDoCheck();
-            },
             inputs: {forOf: 'forOf'}
           });
         `;
@@ -519,7 +517,7 @@ describe('r3_view_compiler', () => {
               }
               IDENT.ɵp(1, 'forOf', IDENT.ɵb(ctx.items));
               IDENT.ɵcR(1);
-              ForOfDirective.ngDirectiveDef.r(2, 1);
+              IDENT.ɵr(2, 1);
               IDENT.ɵcr();
 
               function MyComponent_ForOfDirective_Template_1(ctx0: IDENT, cm: IDENT) {
@@ -593,7 +591,7 @@ describe('r3_view_compiler', () => {
               }
               IDENT.ɵp(1, 'forOf', IDENT.ɵb(ctx.items));
               IDENT.ɵcR(1);
-              IDENT.r(2, 1);
+              IDENT.ɵr(2, 1);
               IDENT.ɵcr();
 
               function MyComponent_ForOfDirective_Template_1(ctx0: IDENT, cm: IDENT) {
@@ -611,7 +609,7 @@ describe('r3_view_compiler', () => {
                 IDENT.ɵp(4, 'forOf', IDENT.ɵb(IDENT.infos));
                 IDENT.ɵt(2, IDENT.ɵb1('', IDENT.name, ''));
                 IDENT.ɵcR(4);
-                IDENT.r(5, 4);
+                IDENT.ɵr(5, 4);
                 IDENT.ɵcr();
 
                 function MyComponent_ForOfDirective_ForOfDirective_Template_4(
