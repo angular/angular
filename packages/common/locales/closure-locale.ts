@@ -11,6 +11,11 @@
 
 import {registerLocaleData} from '../src/i18n/locale_data';
 
+function plural_af(n: number): number {
+  if (n === 1) return 1;
+  return 5;
+}
+
 export const locale_af = [
   'af',
   [
@@ -41,13 +46,14 @@ export const locale_af = [
     ,
   ],
   [',', ' ', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'], 'R', 'Suid-Afrikaanse rand', function(n: number):
-                                                                                number {
-                                                                                  if (n === 1)
-                                                                                    return 1;
-                                                                                  return 5;
-                                                                                }
+  ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'], 'R', 'Suid-Afrikaanse rand', plural_af
 ];
+
+function plural_am(n: number): number {
+  let i = Math.floor(Math.abs(n));
+  if (i === 0 || n === 1) return 1;
+  return 5;
+}
 
 export const locale_am = [
   'am',
@@ -78,15 +84,17 @@ export const locale_am = [
     ,
   ],
   ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'], 'ብር', 'የኢትዮጵያ ብር', function(n: number):
-                                                                      number {
-                                                                        let i =
-                                                                            Math.floor(Math.abs(n));
-                                                                        if (i === 0 || n === 1)
-                                                                          return 1;
-                                                                        return 5;
-                                                                      }
+  ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'], 'ብር', 'የኢትዮጵያ ብር', plural_am
 ];
+
+function plural_ar(n: number): number {
+  if (n === 0) return 0;
+  if (n === 1) return 1;
+  if (n === 2) return 2;
+  if (n % 100 === Math.floor(n % 100) && n % 100 >= 3 && n % 100 <= 10) return 3;
+  if (n % 100 === Math.floor(n % 100) && n % 100 >= 11 && n % 100 <= 99) return 4;
+  return 5;
+}
 
 export const locale_ar = [
   'ar',
@@ -109,25 +117,25 @@ export const locale_ar = [
     ],
   ],
   , [['ق.م', 'م'], , ['قبل الميلاد', 'ميلادي']], 6, [5, 6],
-  ['d‏/M‏/y', 'dd‏/MM‏/y', 'd MMMM y', 'EEEE، d MMMM y'],
+  ['d\u200f/M\u200f/y', 'dd\u200f/MM\u200f/y', 'd MMMM y', 'EEEE، d MMMM y'],
   ['h:mm a', 'h:mm:ss a', 'h:mm:ss a z', 'h:mm:ss a zzzz'],
   [
     '{1} {0}',
     ,
     ,
   ],
-  ['.', ',', ';', '‎%‎', '‎+', '‎-', 'E', '×', '‰', '∞', 'ليس رقمًا', ':'],
-  ['#,##0.###', '#,##0%', '¤ #,##0.00', '#E0'], 'ج.م.‏', 'جنيه مصري',
-  function(n: number):
-      number {
-        if (n === 0) return 0;
-        if (n === 1) return 1;
-        if (n === 2) return 2;
-        if (n % 100 === Math.floor(n % 100) && n % 100 >= 3 && n % 100 <= 10) return 3;
-        if (n % 100 === Math.floor(n % 100) && n % 100 >= 11 && n % 100 <= 99) return 4;
-        return 5;
-      }
+  ['.', ',', ';', '\u200e%\u200e', '\u200e+', '\u200e-', 'E', '×', '‰', '∞', 'ليس رقمًا', ':'],
+  ['#,##0.###', '#,##0%', '¤ #,##0.00', '#E0'], 'ج.م.\u200f', 'جنيه مصري', plural_ar
 ];
+
+function plural_ar_DZ(n: number): number {
+  if (n === 0) return 0;
+  if (n === 1) return 1;
+  if (n === 2) return 2;
+  if (n % 100 === Math.floor(n % 100) && n % 100 >= 3 && n % 100 <= 10) return 3;
+  if (n % 100 === Math.floor(n % 100) && n % 100 >= 11 && n % 100 <= 99) return 4;
+  return 5;
+}
 
 export const locale_ar_DZ = [
   'ar-DZ',
@@ -150,25 +158,21 @@ export const locale_ar_DZ = [
     ],
   ],
   , [['ق.م', 'م'], , ['قبل الميلاد', 'ميلادي']], 6, [5, 6],
-  ['d‏/M‏/y', 'dd‏/MM‏/y', 'd MMMM y', 'EEEE، d MMMM y'],
+  ['d\u200f/M\u200f/y', 'dd\u200f/MM\u200f/y', 'd MMMM y', 'EEEE، d MMMM y'],
   ['h:mm a', 'h:mm:ss a', 'h:mm:ss a z', 'h:mm:ss a zzzz'],
   [
     '{1} {0}',
     ,
     ,
   ],
-  [',', '.', ';', '‎%‎', '‎+', '‎-', 'E', '×', '‰', '∞', 'ليس رقمًا', ':'],
-  ['#,##0.###', '#,##0%', '¤ #,##0.00', '#E0'], 'د.ج.‏', 'دينار جزائري',
-  function(n: number):
-      number {
-        if (n === 0) return 0;
-        if (n === 1) return 1;
-        if (n === 2) return 2;
-        if (n % 100 === Math.floor(n % 100) && n % 100 >= 3 && n % 100 <= 10) return 3;
-        if (n % 100 === Math.floor(n % 100) && n % 100 >= 11 && n % 100 <= 99) return 4;
-        return 5;
-      }
+  [',', '.', ';', '\u200e%\u200e', '\u200e+', '\u200e-', 'E', '×', '‰', '∞', 'ليس رقمًا', ':'],
+  ['#,##0.###', '#,##0%', '¤ #,##0.00', '#E0'], 'د.ج.\u200f', 'دينار جزائري', plural_ar_DZ
 ];
+
+function plural_az(n: number): number {
+  if (n === 1) return 1;
+  return 5;
+}
 
 export const locale_az = [
   'az',
@@ -211,13 +215,19 @@ export const locale_az = [
     ,
   ],
   [',', '.', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0%', '¤ #,##0.00', '#E0'], '₼', 'Azərbaycan Manatı', function(n: number):
-                                                                                number {
-                                                                                  if (n === 1)
-                                                                                    return 1;
-                                                                                  return 5;
-                                                                                }
+  ['#,##0.###', '#,##0%', '¤ #,##0.00', '#E0'], '₼', 'Azərbaycan Manatı', plural_az
 ];
+
+function plural_be(n: number): number {
+  if (n % 10 === 1 && !(n % 100 === 11)) return 1;
+  if (n % 10 === Math.floor(n % 10) && n % 10 >= 2 && n % 10 <= 4 &&
+      !(n % 100 >= 12 && n % 100 <= 14))
+    return 3;
+  if (n % 10 === 0 || n % 10 === Math.floor(n % 10) && n % 10 >= 5 && n % 10 <= 9 ||
+      n % 100 === Math.floor(n % 100) && n % 100 >= 11 && n % 100 <= 14)
+    return 4;
+  return 5;
+}
 
 export const locale_be = [
   'be',
@@ -260,19 +270,13 @@ export const locale_be = [
     '{1} \'у\' {0}',
   ],
   [',', ' ', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0 %', '#,##0.00 ¤', '#E0'], 'Br', 'беларускі рубель',
-  function(n: number):
-      number {
-        if (n % 10 === 1 && !(n % 100 === 11)) return 1;
-        if (n % 10 === Math.floor(n % 10) && n % 10 >= 2 && n % 10 <= 4 &&
-            !(n % 100 >= 12 && n % 100 <= 14))
-          return 3;
-        if (n % 10 === 0 || n % 10 === Math.floor(n % 10) && n % 10 >= 5 && n % 10 <= 9 ||
-            n % 100 === Math.floor(n % 100) && n % 100 >= 11 && n % 100 <= 14)
-          return 4;
-        return 5;
-      }
+  ['#,##0.###', '#,##0 %', '#,##0.00 ¤', '#E0'], 'Br', 'беларускі рубель', plural_be
 ];
+
+function plural_bg(n: number): number {
+  if (n === 1) return 1;
+  return 5;
+}
 
 export const locale_bg = [
   'bg', [['am', 'pm'], , ['пр.об.', 'сл.об.']],
@@ -303,12 +307,14 @@ export const locale_bg = [
     ,
   ],
   [',', ' ', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0%', '0.00 ¤', '#E0'], 'лв.', 'Български лев', function(n: number):
-                                                                        number {
-                                                                          if (n === 1) return 1;
-                                                                          return 5;
-                                                                        }
+  ['#,##0.###', '#,##0%', '0.00 ¤', '#E0'], 'лв.', 'Български лев', plural_bg
 ];
+
+function plural_bn(n: number): number {
+  let i = Math.floor(Math.abs(n));
+  if (i === 0 || n === 1) return 1;
+  return 5;
+}
 
 export const locale_bn = [
   'bn',
@@ -354,14 +360,19 @@ export const locale_bn = [
     ,
   ],
   ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##,##0.###', '#,##,##0%', '#,##,##0.00¤', '#E0'], '৳', 'বাংলাদেশী টাকা',
-  function(n: number):
-      number {
-        let i = Math.floor(Math.abs(n));
-        if (i === 0 || n === 1) return 1;
-        return 5;
-      }
+  ['#,##,##0.###', '#,##,##0%', '#,##,##0.00¤', '#E0'], '৳', 'বাংলাদেশী টাকা', plural_bn
 ];
+
+function plural_br(n: number): number {
+  if (n % 10 === 1 && !(n % 100 === 11 || n % 100 === 71 || n % 100 === 91)) return 1;
+  if (n % 10 === 2 && !(n % 100 === 12 || n % 100 === 72 || n % 100 === 92)) return 2;
+  if (n % 10 === Math.floor(n % 10) && (n % 10 >= 3 && n % 10 <= 4 || n % 10 === 9) &&
+      !(n % 100 >= 10 && n % 100 <= 19 || n % 100 >= 70 && n % 100 <= 79 ||
+        n % 100 >= 90 && n % 100 <= 99))
+    return 3;
+  if (!(n === 0) && n % 1e6 === 0) return 4;
+  return 5;
+}
 
 export const locale_br = [
   'br',
@@ -410,19 +421,20 @@ export const locale_br = [
     '{1} \'da\' {0}',
   ],
   [',', ' ', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0 %', '#,##0.00 ¤', '#E0'], '€', 'euro',
-  function(n: number):
-      number {
-        if (n % 10 === 1 && !(n % 100 === 11 || n % 100 === 71 || n % 100 === 91)) return 1;
-        if (n % 10 === 2 && !(n % 100 === 12 || n % 100 === 72 || n % 100 === 92)) return 2;
-        if (n % 10 === Math.floor(n % 10) && (n % 10 >= 3 && n % 10 <= 4 || n % 10 === 9) &&
-            !(n % 100 >= 10 && n % 100 <= 19 || n % 100 >= 70 && n % 100 <= 79 ||
-              n % 100 >= 90 && n % 100 <= 99))
-          return 3;
-        if (!(n === 0) && n % 1e6 === 0) return 4;
-        return 5;
-      }
+  ['#,##0.###', '#,##0 %', '#,##0.00 ¤', '#E0'], '€', 'euro', plural_br
 ];
+
+function plural_bs(n: number): number {
+  let i = Math.floor(Math.abs(n)), v = n.toString().replace(/^[^.]*\.?/, '').length,
+      f = parseInt(n.toString().replace(/^[^.]*\.?/, ''), 10) || 0;
+  if (v === 0 && i % 10 === 1 && !(i % 100 === 11) || f % 10 === 1 && !(f % 100 === 11)) return 1;
+  if (v === 0 && i % 10 === Math.floor(i % 10) && i % 10 >= 2 && i % 10 <= 4 &&
+          !(i % 100 >= 12 && i % 100 <= 14) ||
+      f % 10 === Math.floor(f % 10) && f % 10 >= 2 && f % 10 <= 4 &&
+          !(f % 100 >= 12 && f % 100 <= 14))
+    return 3;
+  return 5;
+}
 
 export const locale_bs = [
   'bs',
@@ -459,20 +471,14 @@ export const locale_bs = [
   ],
   [',', '.', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
   ['#,##0.###', '#,##0 %', '#,##0.00 ¤', '#E0'], 'KM', 'Bosanskohercegovačka konvertibilna marka',
-  function(n: number):
-      number {
-        let i = Math.floor(Math.abs(n)), v = n.toString().replace(/^[^.]*\.?/, '').length,
-            f = parseInt(n.toString().replace(/^[^.]*\.?/, ''), 10) || 0;
-        if (v === 0 && i % 10 === 1 && !(i % 100 === 11) || f % 10 === 1 && !(f % 100 === 11))
-          return 1;
-        if (v === 0 && i % 10 === Math.floor(i % 10) && i % 10 >= 2 && i % 10 <= 4 &&
-                !(i % 100 >= 12 && i % 100 <= 14) ||
-            f % 10 === Math.floor(f % 10) && f % 10 >= 2 && f % 10 <= 4 &&
-                !(f % 100 >= 12 && f % 100 <= 14))
-          return 3;
-        return 5;
-      }
+  plural_bs
 ];
+
+function plural_ca(n: number): number {
+  let i = Math.floor(Math.abs(n)), v = n.toString().replace(/^[^.]*\.?/, '').length;
+  if (i === 1 && v === 0) return 1;
+  return 5;
+}
 
 export const locale_ca = [
   'ca',
@@ -517,14 +523,13 @@ export const locale_ca = [
     '{1} \'a\' \'les\' {0}',
   ],
   [',', '.', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'], '€', 'euro',
-  function(n: number):
-      number {
-        let i = Math.floor(Math.abs(n)), v = n.toString().replace(/^[^.]*\.?/, '').length;
-        if (i === 1 && v === 0) return 1;
-        return 5;
-      }
+  ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'], '€', 'euro', plural_ca
 ];
+
+function plural_chr(n: number): number {
+  if (n === 1) return 1;
+  return 5;
+}
 
 export const locale_chr = [
   'chr',
@@ -556,12 +561,16 @@ export const locale_chr = [
     '{1} ᎤᎾᎢ {0}',
   ],
   ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'], '$', 'US ᎠᏕᎳ', function(n: number):
-                                                                  number {
-                                                                    if (n === 1) return 1;
-                                                                    return 5;
-                                                                  }
+  ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'], '$', 'US ᎠᏕᎳ', plural_chr
 ];
+
+function plural_cs(n: number): number {
+  let i = Math.floor(Math.abs(n)), v = n.toString().replace(/^[^.]*\.?/, '').length;
+  if (i === 1 && v === 0) return 1;
+  if (i === Math.floor(i) && i >= 2 && i <= 4 && v === 0) return 3;
+  if (!(v === 0)) return 4;
+  return 5;
+}
 
 export const locale_cs = [
   'cs',
@@ -601,16 +610,17 @@ export const locale_cs = [
     ,
   ],
   [',', ' ', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0 %', '#,##0.00 ¤', '#E0'], 'Kč', 'česká koruna',
-  function(n: number):
-      number {
-        let i = Math.floor(Math.abs(n)), v = n.toString().replace(/^[^.]*\.?/, '').length;
-        if (i === 1 && v === 0) return 1;
-        if (i === Math.floor(i) && i >= 2 && i <= 4 && v === 0) return 3;
-        if (!(v === 0)) return 4;
-        return 5;
-      }
+  ['#,##0.###', '#,##0 %', '#,##0.00 ¤', '#E0'], 'Kč', 'česká koruna', plural_cs
 ];
+
+function plural_cy(n: number): number {
+  if (n === 0) return 0;
+  if (n === 1) return 1;
+  if (n === 2) return 2;
+  if (n === 3) return 3;
+  if (n === 6) return 4;
+  return 5;
+}
 
 export const locale_cy = [
   'cy',
@@ -663,16 +673,15 @@ export const locale_cy = [
     '{1} \'am\' {0}',
   ],
   ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'], '£', 'Punt Prydain', function(n: number):
-                                                                        number {
-                                                                          if (n === 0) return 0;
-                                                                          if (n === 1) return 1;
-                                                                          if (n === 2) return 2;
-                                                                          if (n === 3) return 3;
-                                                                          if (n === 6) return 4;
-                                                                          return 5;
-                                                                        }
+  ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'], '£', 'Punt Prydain', plural_cy
 ];
+
+function plural_da(n: number): number {
+  let i = Math.floor(Math.abs(n)),
+      t = parseInt(n.toString().replace(/^[^.]*\.?|0+$/g, ''), 10) || 0;
+  if (n === 1 || !(t === 0) && (i === 0 || i === 1)) return 1;
+  return 5;
+}
 
 export const locale_da = [
   'da',
@@ -715,15 +724,14 @@ export const locale_da = [
     '{1} \'kl\'. {0}',
   ],
   [',', '.', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', '.'],
-  ['#,##0.###', '#,##0 %', '#,##0.00 ¤', '#E0'], 'kr.', 'dansk krone',
-  function(n: number):
-      number {
-        let i = Math.floor(Math.abs(n)),
-            t = parseInt(n.toString().replace(/^[^.]*\.?|0+$/g, ''), 10) || 0;
-        if (n === 1 || !(t === 0) && (i === 0 || i === 1)) return 1;
-        return 5;
-      }
+  ['#,##0.###', '#,##0 %', '#,##0.00 ¤', '#E0'], 'kr.', 'dansk krone', plural_da
 ];
+
+function plural_de(n: number): number {
+  let i = Math.floor(Math.abs(n)), v = n.toString().replace(/^[^.]*\.?/, '').length;
+  if (i === 1 && v === 0) return 1;
+  return 5;
+}
 
 export const locale_de = [
   'de',
@@ -773,14 +781,14 @@ export const locale_de = [
     '{1} \'um\' {0}',
   ],
   [',', '.', ';', '%', '+', '-', 'E', '·', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0 %', '#,##0.00 ¤', '#E0'], '€', 'Euro',
-  function(n: number):
-      number {
-        let i = Math.floor(Math.abs(n)), v = n.toString().replace(/^[^.]*\.?/, '').length;
-        if (i === 1 && v === 0) return 1;
-        return 5;
-      }
+  ['#,##0.###', '#,##0 %', '#,##0.00 ¤', '#E0'], '€', 'Euro', plural_de
 ];
+
+function plural_de_AT(n: number): number {
+  let i = Math.floor(Math.abs(n)), v = n.toString().replace(/^[^.]*\.?/, '').length;
+  if (i === 1 && v === 0) return 1;
+  return 5;
+}
 
 export const locale_de_AT = [
   'de-AT',
@@ -830,14 +838,14 @@ export const locale_de_AT = [
     '{1} \'um\' {0}',
   ],
   [',', ' ', ';', '%', '+', '-', 'E', '·', '‰', '∞', 'NaN', ':', '.'],
-  ['#,##0.###', '#,##0 %', '¤ #,##0.00', '#E0'], '€', 'Euro',
-  function(n: number):
-      number {
-        let i = Math.floor(Math.abs(n)), v = n.toString().replace(/^[^.]*\.?/, '').length;
-        if (i === 1 && v === 0) return 1;
-        return 5;
-      }
+  ['#,##0.###', '#,##0 %', '¤ #,##0.00', '#E0'], '€', 'Euro', plural_de_AT
 ];
+
+function plural_de_CH(n: number): number {
+  let i = Math.floor(Math.abs(n)), v = n.toString().replace(/^[^.]*\.?/, '').length;
+  if (i === 1 && v === 0) return 1;
+  return 5;
+}
 
 export const locale_de_CH = [
   'de-CH',
@@ -887,14 +895,13 @@ export const locale_de_CH = [
     '{1} \'um\' {0}',
   ],
   ['.', '’', ';', '%', '+', '-', 'E', '·', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0%', '¤ #,##0.00;¤-#,##0.00', '#E0'], 'CHF', 'Schweizer Franken',
-  function(n: number):
-      number {
-        let i = Math.floor(Math.abs(n)), v = n.toString().replace(/^[^.]*\.?/, '').length;
-        if (i === 1 && v === 0) return 1;
-        return 5;
-      }
+  ['#,##0.###', '#,##0%', '¤ #,##0.00;¤-#,##0.00', '#E0'], 'CHF', 'Schweizer Franken', plural_de_CH
 ];
+
+function plural_el(n: number): number {
+  if (n === 1) return 1;
+  return 5;
+}
 
 export const locale_el = [
   'el',
@@ -934,12 +941,14 @@ export const locale_el = [
     '{1} - {0}',
   ],
   [',', '.', ';', '%', '+', '-', 'e', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'], '€', 'Ευρώ', function(n: number):
-                                                                 number {
-                                                                   if (n === 1) return 1;
-                                                                   return 5;
-                                                                 }
+  ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'], '€', 'Ευρώ', plural_el
 ];
+
+function plural_en_AU(n: number): number {
+  let i = Math.floor(Math.abs(n)), v = n.toString().replace(/^[^.]*\.?/, '').length;
+  if (i === 1 && v === 0) return 1;
+  return 5;
+}
 
 export const locale_en_AU = [
   'en-AU',
@@ -972,14 +981,14 @@ export const locale_en_AU = [
     '{1} \'at\' {0}',
   ],
   ['.', ',', ';', '%', '+', '-', 'e', '×', '‰', '∞', 'NaN', '.'],
-  ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'], '$', 'Australian Dollar',
-  function(n: number):
-      number {
-        let i = Math.floor(Math.abs(n)), v = n.toString().replace(/^[^.]*\.?/, '').length;
-        if (i === 1 && v === 0) return 1;
-        return 5;
-      }
+  ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'], '$', 'Australian Dollar', plural_en_AU
 ];
+
+function plural_en_CA(n: number): number {
+  let i = Math.floor(Math.abs(n)), v = n.toString().replace(/^[^.]*\.?/, '').length;
+  if (i === 1 && v === 0) return 1;
+  return 5;
+}
 
 export const locale_en_CA = [
   'en-CA',
@@ -1022,14 +1031,14 @@ export const locale_en_CA = [
     '{1} \'at\' {0}',
   ],
   ['.', ',', ';', '%', '+', '-', 'e', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'], '$', 'Canadian Dollar',
-  function(n: number):
-      number {
-        let i = Math.floor(Math.abs(n)), v = n.toString().replace(/^[^.]*\.?/, '').length;
-        if (i === 1 && v === 0) return 1;
-        return 5;
-      }
+  ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'], '$', 'Canadian Dollar', plural_en_CA
 ];
+
+function plural_en_GB(n: number): number {
+  let i = Math.floor(Math.abs(n)), v = n.toString().replace(/^[^.]*\.?/, '').length;
+  if (i === 1 && v === 0) return 1;
+  return 5;
+}
 
 export const locale_en_GB = [
   'en-GB',
@@ -1064,14 +1073,14 @@ export const locale_en_GB = [
     '{1} \'at\' {0}',
   ],
   ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'], '£', 'British Pound',
-  function(n: number):
-      number {
-        let i = Math.floor(Math.abs(n)), v = n.toString().replace(/^[^.]*\.?/, '').length;
-        if (i === 1 && v === 0) return 1;
-        return 5;
-      }
+  ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'], '£', 'British Pound', plural_en_GB
 ];
+
+function plural_en_IE(n: number): number {
+  let i = Math.floor(Math.abs(n)), v = n.toString().replace(/^[^.]*\.?/, '').length;
+  if (i === 1 && v === 0) return 1;
+  return 5;
+}
 
 export const locale_en_IE = [
   'en-IE', [['a', 'p'], ['AM', 'PM'], ['a.m.', 'p.m.']],
@@ -1102,14 +1111,14 @@ export const locale_en_IE = [
     '{1} \'at\' {0}',
   ],
   ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'], '€', 'Euro',
-  function(n: number):
-      number {
-        let i = Math.floor(Math.abs(n)), v = n.toString().replace(/^[^.]*\.?/, '').length;
-        if (i === 1 && v === 0) return 1;
-        return 5;
-      }
+  ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'], '€', 'Euro', plural_en_IE
 ];
+
+function plural_en_IN(n: number): number {
+  let i = Math.floor(Math.abs(n)), v = n.toString().replace(/^[^.]*\.?/, '').length;
+  if (i === 1 && v === 0) return 1;
+  return 5;
+}
 
 export const locale_en_IN = [
   'en-IN',
@@ -1144,14 +1153,14 @@ export const locale_en_IN = [
     '{1} \'at\' {0}',
   ],
   ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##,##0.###', '#,##,##0%', '¤ #,##,##0.00', '#E0'], '₹', 'Indian Rupee',
-  function(n: number):
-      number {
-        let i = Math.floor(Math.abs(n)), v = n.toString().replace(/^[^.]*\.?/, '').length;
-        if (i === 1 && v === 0) return 1;
-        return 5;
-      }
+  ['#,##,##0.###', '#,##,##0%', '¤ #,##,##0.00', '#E0'], '₹', 'Indian Rupee', plural_en_IN
 ];
+
+function plural_en_SG(n: number): number {
+  let i = Math.floor(Math.abs(n)), v = n.toString().replace(/^[^.]*\.?/, '').length;
+  if (i === 1 && v === 0) return 1;
+  return 5;
+}
 
 export const locale_en_SG = [
   'en-SG',
@@ -1186,14 +1195,14 @@ export const locale_en_SG = [
     '{1} \'at\' {0}',
   ],
   ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'], '$', 'Singapore Dollar',
-  function(n: number):
-      number {
-        let i = Math.floor(Math.abs(n)), v = n.toString().replace(/^[^.]*\.?/, '').length;
-        if (i === 1 && v === 0) return 1;
-        return 5;
-      }
+  ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'], '$', 'Singapore Dollar', plural_en_SG
 ];
+
+function plural_en_ZA(n: number): number {
+  let i = Math.floor(Math.abs(n)), v = n.toString().replace(/^[^.]*\.?/, '').length;
+  if (i === 1 && v === 0) return 1;
+  return 5;
+}
 
 export const locale_en_ZA = [
   'en-ZA',
@@ -1228,14 +1237,13 @@ export const locale_en_ZA = [
     '{1} \'at\' {0}',
   ],
   [',', ' ', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'], 'R', 'South African Rand',
-  function(n: number):
-      number {
-        let i = Math.floor(Math.abs(n)), v = n.toString().replace(/^[^.]*\.?/, '').length;
-        if (i === 1 && v === 0) return 1;
-        return 5;
-      }
+  ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'], 'R', 'South African Rand', plural_en_ZA
 ];
+
+function plural_es(n: number): number {
+  if (n === 1) return 1;
+  return 5;
+}
 
 export const locale_es = [
   'es',
@@ -1270,12 +1278,13 @@ export const locale_es = [
     '{1}, {0}',
   ],
   [',', '.', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0 %', '#,##0.00 ¤', '#E0'], '€', 'euro', function(n: number):
-                                                                  number {
-                                                                    if (n === 1) return 1;
-                                                                    return 5;
-                                                                  }
+  ['#,##0.###', '#,##0 %', '#,##0.00 ¤', '#E0'], '€', 'euro', plural_es
 ];
+
+function plural_es_419(n: number): number {
+  if (n === 1) return 1;
+  return 5;
+}
 
 export const locale_es_419 = [
   'es-419',
@@ -1316,12 +1325,13 @@ export const locale_es_419 = [
     '{1}, {0}',
   ],
   ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0 %', '¤#,##0.00', '#E0'], 'EUR', 'euro', function(n: number):
-                                                                   number {
-                                                                     if (n === 1) return 1;
-                                                                     return 5;
-                                                                   }
+  ['#,##0.###', '#,##0 %', '¤#,##0.00', '#E0'], 'EUR', 'euro', plural_es_419
 ];
+
+function plural_es_MX(n: number): number {
+  if (n === 1) return 1;
+  return 5;
+}
 
 export const locale_es_MX = [
   'es-MX',
@@ -1367,12 +1377,13 @@ export const locale_es_MX = [
     '{1}, {0}',
   ],
   ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0 %', '¤#,##0.00', '#E0'], '$', 'peso mexicano', function(n: number):
-                                                                          number {
-                                                                            if (n === 1) return 1;
-                                                                            return 5;
-                                                                          }
+  ['#,##0.###', '#,##0 %', '¤#,##0.00', '#E0'], '$', 'peso mexicano', plural_es_MX
 ];
+
+function plural_es_US(n: number): number {
+  if (n === 1) return 1;
+  return 5;
+}
 
 export const locale_es_US = [
   'es-US',
@@ -1406,13 +1417,14 @@ export const locale_es_US = [
     '{1}, {0}',
   ],
   ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0 %', '¤#,##0.00', '#E0'], '$', 'dólar estadounidense', function(n: number):
-                                                                                 number {
-                                                                                   if (n === 1)
-                                                                                     return 1;
-                                                                                   return 5;
-                                                                                 }
+  ['#,##0.###', '#,##0 %', '¤#,##0.00', '#E0'], '$', 'dólar estadounidense', plural_es_US
 ];
+
+function plural_et(n: number): number {
+  let i = Math.floor(Math.abs(n)), v = n.toString().replace(/^[^.]*\.?/, '').length;
+  if (i === 1 && v === 0) return 1;
+  return 5;
+}
 
 export const locale_et = [
   'et',
@@ -1444,14 +1456,13 @@ export const locale_et = [
     ,
   ],
   [',', ' ', ';', '%', '+', '−', '×10^', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'], '€', 'euro',
-  function(n: number):
-      number {
-        let i = Math.floor(Math.abs(n)), v = n.toString().replace(/^[^.]*\.?/, '').length;
-        if (i === 1 && v === 0) return 1;
-        return 5;
-      }
+  ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'], '€', 'euro', plural_et
 ];
+
+function plural_eu(n: number): number {
+  if (n === 1) return 1;
+  return 5;
+}
 
 export const locale_eu = [
   'eu',
@@ -1505,19 +1516,21 @@ export const locale_eu = [
     ,
   ],
   [',', '.', ';', '%', '+', '−', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '% #,##0', '#,##0.00 ¤', '#E0'], '€', 'euroa', function(n: number):
-                                                                   number {
-                                                                     if (n === 1) return 1;
-                                                                     return 5;
-                                                                   }
+  ['#,##0.###', '% #,##0', '#,##0.00 ¤', '#E0'], '€', 'euroa', plural_eu
 ];
 
+function plural_fa(n: number): number {
+  let i = Math.floor(Math.abs(n));
+  if (i === 0 || n === 1) return 1;
+  return 5;
+}
+
 export const locale_fa = [
-  'fa', [['ق', 'ب'], ['ق.ظ.', 'ب.ظ.'], ['قبل‌ازظهر', 'بعدازظهر']],
-  [['ق.ظ.', 'ب.ظ.'], , ['قبل‌ازظهر', 'بعدازظهر']],
+  'fa', [['ق', 'ب'], ['ق.ظ.', 'ب.ظ.'], ['قبل\u200cازظهر', 'بعدازظهر']],
+  [['ق.ظ.', 'ب.ظ.'], , ['قبل\u200cازظهر', 'بعدازظهر']],
   [
     ['ی', 'د', 'س', 'چ', 'پ', 'ج', 'ش'],
-    ['یکشنبه', 'دوشنبه', 'سه‌شنبه', 'چهارشنبه', 'پنجشنبه', 'جمعه', 'شنبه'], ,
+    ['یکشنبه', 'دوشنبه', 'سه\u200cشنبه', 'چهارشنبه', 'پنجشنبه', 'جمعه', 'شنبه'], ,
     ['۱ش', '۲ش', '۳ش', '۴ش', '۵ش', 'ج', 'ش']
   ],
   ,
@@ -1539,19 +1552,19 @@ export const locale_fa = [
   ['y/M/d', 'd MMM y', 'd MMMM y', 'EEEE d MMMM y'],
   ['H:mm', 'H:mm:ss', 'H:mm:ss (z)', 'H:mm:ss (zzzz)'],
   [
-    '{1}،‏ {0}',
+    '{1}،\u200f {0}',
     ,
     '{1}، ساعت {0}',
   ],
-  ['.', ',', ';', '%', '‎+', '‎−', 'E', '×', '‰', '∞', 'ناعدد', ':'],
-  ['#,##0.###', '#,##0%', '‎¤ #,##0.00', '#E0'], 'ریال', 'ریال ایران',
-  function(n: number):
-      number {
-        let i = Math.floor(Math.abs(n));
-        if (i === 0 || n === 1) return 1;
-        return 5;
-      }
+  ['.', ',', ';', '%', '\u200e+', '\u200e−', 'E', '×', '‰', '∞', 'ناعدد', ':'],
+  ['#,##0.###', '#,##0%', '\u200e¤ #,##0.00', '#E0'], 'ریال', 'ریال ایران', plural_fa
 ];
+
+function plural_fi(n: number): number {
+  let i = Math.floor(Math.abs(n)), v = n.toString().replace(/^[^.]*\.?/, '').length;
+  if (i === 1 && v === 0) return 1;
+  return 5;
+}
 
 export const locale_fi = [
   'fi',
@@ -1604,14 +1617,14 @@ export const locale_fi = [
     ,
   ],
   [',', ' ', ';', '%', '+', '−', 'E', '×', '‰', '∞', 'epäluku', '.'],
-  ['#,##0.###', '#,##0 %', '#,##0.00 ¤', '#E0'], '€', 'euro',
-  function(n: number):
-      number {
-        let i = Math.floor(Math.abs(n)), v = n.toString().replace(/^[^.]*\.?/, '').length;
-        if (i === 1 && v === 0) return 1;
-        return 5;
-      }
+  ['#,##0.###', '#,##0 %', '#,##0.00 ¤', '#E0'], '€', 'euro', plural_fi
 ];
+
+function plural_fr(n: number): number {
+  let i = Math.floor(Math.abs(n));
+  if (i === 0 || i === 1) return 1;
+  return 5;
+}
 
 export const locale_fr = [
   'fr',
@@ -1646,14 +1659,14 @@ export const locale_fr = [
     ,
   ],
   [',', ' ', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0 %', '#,##0.00 ¤', '#E0'], '€', 'euro', function(n: number):
-                                                                  number {
-                                                                    let i = Math.floor(Math.abs(n));
-                                                                    if (i === 0 || i === 1)
-                                                                      return 1;
-                                                                    return 5;
-                                                                  }
+  ['#,##0.###', '#,##0 %', '#,##0.00 ¤', '#E0'], '€', 'euro', plural_fr
 ];
+
+function plural_fr_CA(n: number): number {
+  let i = Math.floor(Math.abs(n));
+  if (i === 0 || i === 1) return 1;
+  return 5;
+}
 
 export const locale_fr_CA = [
   'fr-CA',
@@ -1694,14 +1707,16 @@ export const locale_fr_CA = [
     '{1} \'à\' {0}',
   ],
   [',', ' ', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0 %', '#,##0.00 ¤', '#E0'], '$', 'dollar canadien',
-  function(n: number):
-      number {
-        let i = Math.floor(Math.abs(n));
-        if (i === 0 || i === 1) return 1;
-        return 5;
-      }
+  ['#,##0.###', '#,##0 %', '#,##0.00 ¤', '#E0'], '$', 'dollar canadien', plural_fr_CA
 ];
+
+function plural_ga(n: number): number {
+  if (n === 1) return 1;
+  if (n === 2) return 2;
+  if (n === Math.floor(n) && n >= 3 && n <= 6) return 3;
+  if (n === Math.floor(n) && n >= 7 && n <= 10) return 4;
+  return 5;
+}
 
 export const locale_ga = [
   'ga',
@@ -1741,16 +1756,14 @@ export const locale_ga = [
     ,
   ],
   ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'], '€', 'Euro',
-  function(n: number):
-      number {
-        if (n === 1) return 1;
-        if (n === 2) return 2;
-        if (n === Math.floor(n) && n >= 3 && n <= 6) return 3;
-        if (n === Math.floor(n) && n >= 7 && n <= 10) return 4;
-        return 5;
-      }
+  ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'], '€', 'Euro', plural_ga
 ];
+
+function plural_gl(n: number): number {
+  let i = Math.floor(Math.abs(n)), v = n.toString().replace(/^[^.]*\.?/, '').length;
+  if (i === 1 && v === 0) return 1;
+  return 5;
+}
 
 export const locale_gl = [
   'gl',
@@ -1799,14 +1812,13 @@ export const locale_gl = [
     '{0} \'do\' {1}',
   ],
   [',', '.', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0 %', '#,##0.00 ¤', '#E0'], '€', 'Euro',
-  function(n: number):
-      number {
-        let i = Math.floor(Math.abs(n)), v = n.toString().replace(/^[^.]*\.?/, '').length;
-        if (i === 1 && v === 0) return 1;
-        return 5;
-      }
+  ['#,##0.###', '#,##0 %', '#,##0.00 ¤', '#E0'], '€', 'Euro', plural_gl
 ];
+
+function plural_gsw(n: number): number {
+  if (n === 1) return 1;
+  return 5;
+}
 
 export const locale_gsw = [
   'gsw', [['vorm.', 'nam.'], , ['am Vormittag', 'am Namittag']],
@@ -1837,14 +1849,15 @@ export const locale_gsw = [
     ,
     ,
   ],
-  ['.', '’', ';', '%', '+', '�������������������������������', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0 %', '#,##0.00 ¤', '#E0'], 'CHF', 'Schwiizer Franke', function(n: number):
-                                                                                number {
-                                                                                  if (n === 1)
-                                                                                    return 1;
-                                                                                  return 5;
-                                                                                }
+  ['.', '’', ';', '%', '+', '−', 'E', '×', '‰', '∞', 'NaN', ':'],
+  ['#,##0.###', '#,##0 %', '#,##0.00 ¤', '#E0'], 'CHF', 'Schwiizer Franke', plural_gsw
 ];
+
+function plural_gu(n: number): number {
+  let i = Math.floor(Math.abs(n));
+  if (i === 0 || n === 1) return 1;
+  return 5;
+}
 
 export const locale_gu = [
   'gu',
@@ -1876,14 +1889,13 @@ export const locale_gu = [
     '{1} એ {0} વાગ્યે',
   ],
   ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##,##0.###', '#,##,##0%', '¤#,##,##0.00', '[#E0]'], '₹', 'ભારતીય રૂપિયા',
-  function(n: number):
-      number {
-        let i = Math.floor(Math.abs(n));
-        if (i === 0 || n === 1) return 1;
-        return 5;
-      }
+  ['#,##,##0.###', '#,##,##0%', '¤#,##,##0.00', '[#E0]'], '₹', 'ભારતીય રૂપિયા', plural_gu
 ];
+
+function plural_haw(n: number): number {
+  if (n === 1) return 1;
+  return 5;
+}
 
 export const locale_haw = [
   'haw',
@@ -1919,12 +1931,14 @@ export const locale_haw = [
     ,
   ],
   ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'], '$', 'USD', function(n: number):
-                                                               number {
-                                                                 if (n === 1) return 1;
-                                                                 return 5;
-                                                               }
+  ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'], '$', 'USD', plural_haw
 ];
+
+function plural_hi(n: number): number {
+  let i = Math.floor(Math.abs(n));
+  if (i === 0 || n === 1) return 1;
+  return 5;
+}
 
 export const locale_hi = [
   'hi',
@@ -1956,14 +1970,20 @@ export const locale_hi = [
     '{1} को {0}',
   ],
   ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##,##0.###', '#,##,##0%', '¤#,##,##0.00', '[#E0]'], '₹', 'भारतीय रुपया',
-  function(n: number):
-      number {
-        let i = Math.floor(Math.abs(n));
-        if (i === 0 || n === 1) return 1;
-        return 5;
-      }
+  ['#,##,##0.###', '#,##,##0%', '¤#,##,##0.00', '[#E0]'], '₹', 'भारतीय रुपया', plural_hi
 ];
+
+function plural_hr(n: number): number {
+  let i = Math.floor(Math.abs(n)), v = n.toString().replace(/^[^.]*\.?/, '').length,
+      f = parseInt(n.toString().replace(/^[^.]*\.?/, ''), 10) || 0;
+  if (v === 0 && i % 10 === 1 && !(i % 100 === 11) || f % 10 === 1 && !(f % 100 === 11)) return 1;
+  if (v === 0 && i % 10 === Math.floor(i % 10) && i % 10 >= 2 && i % 10 <= 4 &&
+          !(i % 100 >= 12 && i % 100 <= 14) ||
+      f % 10 === Math.floor(f % 10) && f % 10 >= 2 && f % 10 <= 4 &&
+          !(f % 100 >= 12 && f % 100 <= 14))
+    return 3;
+  return 5;
+}
 
 export const locale_hr = [
   'hr',
@@ -2007,21 +2027,13 @@ export const locale_hr = [
     '{1} \'u\' {0}',
   ],
   [',', '.', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'], 'HRK', 'hrvatska kuna',
-  function(n: number):
-      number {
-        let i = Math.floor(Math.abs(n)), v = n.toString().replace(/^[^.]*\.?/, '').length,
-            f = parseInt(n.toString().replace(/^[^.]*\.?/, ''), 10) || 0;
-        if (v === 0 && i % 10 === 1 && !(i % 100 === 11) || f % 10 === 1 && !(f % 100 === 11))
-          return 1;
-        if (v === 0 && i % 10 === Math.floor(i % 10) && i % 10 >= 2 && i % 10 <= 4 &&
-                !(i % 100 >= 12 && i % 100 <= 14) ||
-            f % 10 === Math.floor(f % 10) && f % 10 >= 2 && f % 10 <= 4 &&
-                !(f % 100 >= 12 && f % 100 <= 14))
-          return 3;
-        return 5;
-      }
+  ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'], 'HRK', 'hrvatska kuna', plural_hr
 ];
+
+function plural_hu(n: number): number {
+  if (n === 1) return 1;
+  return 5;
+}
 
 export const locale_hu = [
   'hu',
@@ -2056,12 +2068,14 @@ export const locale_hu = [
     ,
   ],
   [',', ' ', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'], 'Ft', 'magyar forint', function(n: number):
-                                                                           number {
-                                                                             if (n === 1) return 1;
-                                                                             return 5;
-                                                                           }
+  ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'], 'Ft', 'magyar forint', plural_hu
 ];
+
+function plural_hy(n: number): number {
+  let i = Math.floor(Math.abs(n));
+  if (i === 0 || i === 1) return 1;
+  return 5;
+}
 
 export const locale_hy = [
   'hy',
@@ -2104,14 +2118,12 @@ export const locale_hy = [
     ,
   ],
   [',', ' ', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'ՈչԹ', ':'],
-  ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'], '֏', 'հայկական դրամ',
-  function(n: number):
-      number {
-        let i = Math.floor(Math.abs(n));
-        if (i === 0 || i === 1) return 1;
-        return 5;
-      }
+  ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'], '֏', 'հայկական դրամ', plural_hy
 ];
+
+function plural_in(n: number): number {
+  return 5;
+}
 
 export const locale_in = [
   'id',
@@ -2143,9 +2155,15 @@ export const locale_in = [
     ,
   ],
   [',', '.', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', '.'],
-  ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'], 'Rp', 'Rupiah Indonesia',
-  function(n: number): number { return 5;}
+  ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'], 'Rp', 'Rupiah Indonesia', plural_in
 ];
+
+function plural_is(n: number): number {
+  let i = Math.floor(Math.abs(n)),
+      t = parseInt(n.toString().replace(/^[^.]*\.?|0+$/g, ''), 10) || 0;
+  if (t === 0 && i % 10 === 1 && !(i % 100 === 11) || !(t === 0)) return 1;
+  return 5;
+}
 
 export const locale_is = [
   'is',
@@ -2183,15 +2201,14 @@ export const locale_is = [
     '{1} \'kl\'. {0}',
   ],
   [',', '.', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'], 'ISK', 'íslensk króna',
-  function(n: number):
-      number {
-        let i = Math.floor(Math.abs(n)),
-            t = parseInt(n.toString().replace(/^[^.]*\.?|0+$/g, ''), 10) || 0;
-        if (t === 0 && i % 10 === 1 && !(i % 100 === 11) || !(t === 0)) return 1;
-        return 5;
-      }
+  ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'], 'ISK', 'íslensk króna', plural_is
 ];
+
+function plural_it(n: number): number {
+  let i = Math.floor(Math.abs(n)), v = n.toString().replace(/^[^.]*\.?/, '').length;
+  if (i === 1 && v === 0) return 1;
+  return 5;
+}
 
 export const locale_it = [
   'it',
@@ -2223,14 +2240,16 @@ export const locale_it = [
     '{1} {0}',
   ],
   [',', '.', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'], '€', 'euro',
-  function(n: number):
-      number {
-        let i = Math.floor(Math.abs(n)), v = n.toString().replace(/^[^.]*\.?/, '').length;
-        if (i === 1 && v === 0) return 1;
-        return 5;
-      }
+  ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'], '€', 'euro', plural_it
 ];
+
+function plural_iw(n: number): number {
+  let i = Math.floor(Math.abs(n)), v = n.toString().replace(/^[^.]*\.?/, '').length;
+  if (i === 1 && v === 0) return 1;
+  if (i === 2 && v === 0) return 2;
+  if (v === 0 && !(n >= 0 && n <= 10) && n % 10 === 0) return 4;
+  return 5;
+}
 
 export const locale_iw = [
   'he',
@@ -2265,17 +2284,13 @@ export const locale_iw = [
     ,
     '{1} בשעה {0}',
   ],
-  ['.', ',', ';', '%', '‎+', '‎-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0%', '‏#,##0.00 ¤;‏-#,##0.00 ¤', '#E0'], '₪', 'שקל חדש',
-  function(n: number):
-      number {
-        let i = Math.floor(Math.abs(n)), v = n.toString().replace(/^[^.]*\.?/, '').length;
-        if (i === 1 && v === 0) return 1;
-        if (i === 2 && v === 0) return 2;
-        if (v === 0 && !(n >= 0 && n <= 10) && n % 10 === 0) return 4;
-        return 5;
-      }
+  ['.', ',', ';', '%', '\u200e+', '\u200e-', 'E', '×', '‰', '∞', 'NaN', ':'],
+  ['#,##0.###', '#,##0%', '\u200f#,##0.00 ¤;\u200f-#,##0.00 ¤', '#E0'], '₪', 'שקל חדש', plural_iw
 ];
+
+function plural_ja(n: number): number {
+  return 5;
+}
 
 export const locale_ja = [
   'ja',
@@ -2307,9 +2322,13 @@ export const locale_ja = [
     ,
   ],
   ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'], '￥', '日本円',
-  function(n: number): number { return 5;}
+  ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'], '￥', '日本円', plural_ja
 ];
+
+function plural_ka(n: number): number {
+  if (n === 1) return 1;
+  return 5;
+}
 
 export const locale_ka = [
   'ka',
@@ -2341,12 +2360,13 @@ export const locale_ka = [
     ,
   ],
   [',', ' ', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'არ არის რიცხვი', ':'],
-  ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'], '₾', 'ქართული ლარი', function(n: number):
-                                                                           number {
-                                                                             if (n === 1) return 1;
-                                                                             return 5;
-                                                                           }
+  ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'], '₾', 'ქართული ლარი', plural_ka
 ];
+
+function plural_kk(n: number): number {
+  if (n === 1) return 1;
+  return 5;
+}
 
 export const locale_kk = [
   'kk',
@@ -2394,13 +2414,12 @@ export const locale_kk = [
     ,
   ],
   [',', ' ', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'сан емес', ':'],
-  ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'], '₸', 'Қазақстан теңгесі', function(n: number):
-                                                                              number {
-                                                                                if (n === 1)
-                                                                                  return 1;
-                                                                                return 5;
-                                                                              }
+  ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'], '₸', 'Қазақстан теңгесі', plural_kk
 ];
+
+function plural_km(n: number): number {
+  return 5;
+}
 
 export const locale_km = [
   'km',
@@ -2430,9 +2449,14 @@ export const locale_km = [
     '{1} នៅ​ម៉ោង {0}',
   ],
   [',', '.', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0%', '#,##0.00¤', '#E0'], '៛', 'រៀល​កម្ពុជា',
-  function(n: number): number { return 5;}
+  ['#,##0.###', '#,##0%', '#,##0.00¤', '#E0'], '៛', 'រៀល​កម្ពុជា', plural_km
 ];
+
+function plural_kn(n: number): number {
+  let i = Math.floor(Math.abs(n));
+  if (i === 0 || n === 1) return 1;
+  return 5;
+}
 
 export const locale_kn = [
   'kn',
@@ -2475,14 +2499,12 @@ export const locale_kn = [
     ,
   ],
   ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'], '₹', 'ಭಾರತೀಯ ರೂಪಾಯಿ',
-  function(n: number):
-      number {
-        let i = Math.floor(Math.abs(n));
-        if (i === 0 || n === 1) return 1;
-        return 5;
-      }
+  ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'], '₹', 'ಭಾರತೀಯ ರೂಪಾಯಿ', plural_kn
 ];
+
+function plural_ko(n: number): number {
+  return 5;
+}
 
 export const locale_ko = [
   'ko', [['AM', 'PM'], , ['오전', '오후']], ,
@@ -2505,9 +2527,13 @@ export const locale_ko = [
     ,
   ],
   ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'], '₩', '대한민국 원',
-  function(n: number): number { return 5;}
+  ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'], '₩', '대한민국 원', plural_ko
 ];
+
+function plural_ky(n: number): number {
+  if (n === 1) return 1;
+  return 5;
+}
 
 export const locale_ky = [
   'ky', [['тң', 'тк'], , ['таңкы', 'түштөн кийинки']], ,
@@ -2548,13 +2574,13 @@ export const locale_ky = [
     ,
   ],
   [',', ' ', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'сан эмес', ':'],
-  ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'], 'сом', 'Кыргызстан сому', function(n: number):
-                                                                              number {
-                                                                                if (n === 1)
-                                                                                  return 1;
-                                                                                return 5;
-                                                                              }
+  ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'], 'сом', 'Кыргызстан сому', plural_ky
 ];
+
+function plural_ln(n: number): number {
+  if (n === Math.floor(n) && n >= 0 && n <= 1) return 1;
+  return 5;
+}
 
 export const locale_ln = [
   'ln',
@@ -2590,13 +2616,12 @@ export const locale_ln = [
     ,
   ],
   [',', '.', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'], 'FC', 'Falánga ya Kongó',
-  function(n: number):
-      number {
-        if (n === Math.floor(n) && n >= 0 && n <= 1) return 1;
-        return 5;
-      }
+  ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'], 'FC', 'Falánga ya Kongó', plural_ln
 ];
+
+function plural_lo(n: number): number {
+  return 5;
+}
 
 export const locale_lo = [
   'lo',
@@ -2633,9 +2658,18 @@ export const locale_lo = [
     ',', '.', ';', '%', '+', '-', 'E', '×', '‰', '∞',
     'ບໍ່​ແມ່ນ​ໂຕ​ເລກ', ':'
   ],
-  ['#,##0.###', '#,##0%', '¤#,##0.00;¤-#,##0.00', '#'], '₭', 'ລາວ ກີບ',
-  function(n: number): number { return 5;}
+  ['#,##0.###', '#,##0%', '¤#,##0.00;¤-#,##0.00', '#'], '₭', 'ລາວ ກີບ', plural_lo
 ];
+
+function plural_lt(n: number): number {
+  let f = parseInt(n.toString().replace(/^[^.]*\.?/, ''), 10) || 0;
+  if (n % 10 === 1 && !(n % 100 >= 11 && n % 100 <= 19)) return 1;
+  if (n % 10 === Math.floor(n % 10) && n % 10 >= 2 && n % 10 <= 9 &&
+      !(n % 100 >= 11 && n % 100 <= 19))
+    return 3;
+  if (!(f === 0)) return 4;
+  return 5;
+}
 
 export const locale_lt = [
   'lt',
@@ -2684,18 +2718,20 @@ export const locale_lt = [
     ,
   ],
   [',', ' ', ';', '%', '+', '−', '×10^', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0 %', '#,##0.00 ¤', '#E0'], '€', 'Euras',
-  function(n: number):
-      number {
-        let f = parseInt(n.toString().replace(/^[^.]*\.?/, ''), 10) || 0;
-        if (n % 10 === 1 && !(n % 100 >= 11 && n % 100 <= 19)) return 1;
-        if (n % 10 === Math.floor(n % 10) && n % 10 >= 2 && n % 10 <= 9 &&
-            !(n % 100 >= 11 && n % 100 <= 19))
-          return 3;
-        if (!(f === 0)) return 4;
-        return 5;
-      }
+  ['#,##0.###', '#,##0 %', '#,##0.00 ¤', '#E0'], '€', 'Euras', plural_lt
 ];
+
+function plural_lv(n: number): number {
+  let v = n.toString().replace(/^[^.]*\.?/, '').length,
+      f = parseInt(n.toString().replace(/^[^.]*\.?/, ''), 10) || 0;
+  if (n % 10 === 0 || n % 100 === Math.floor(n % 100) && n % 100 >= 11 && n % 100 <= 19 ||
+      v === 2 && f % 100 === Math.floor(f % 100) && f % 100 >= 11 && f % 100 <= 19)
+    return 0;
+  if (n % 10 === 1 && !(n % 100 === 11) || v === 2 && f % 10 === 1 && !(f % 100 === 11) ||
+      !(v === 2) && f % 10 === 1)
+    return 1;
+  return 5;
+}
 
 export const locale_lv = [
   'lv', [['priekšp.', 'pēcp.'], , ['priekšpusdienā', 'pēcpusdienā']],
@@ -2732,20 +2768,15 @@ export const locale_lv = [
     ,
   ],
   [',', ' ', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NS', ':'],
-  ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'], '€', 'eiro',
-  function(n: number):
-      number {
-        let v = n.toString().replace(/^[^.]*\.?/, '').length,
-            f = parseInt(n.toString().replace(/^[^.]*\.?/, ''), 10) || 0;
-        if (n % 10 === 0 || n % 100 === Math.floor(n % 100) && n % 100 >= 11 && n % 100 <= 19 ||
-            v === 2 && f % 100 === Math.floor(f % 100) && f % 100 >= 11 && f % 100 <= 19)
-          return 0;
-        if (n % 10 === 1 && !(n % 100 === 11) || v === 2 && f % 10 === 1 && !(f % 100 === 11) ||
-            !(v === 2) && f % 10 === 1)
-          return 1;
-        return 5;
-      }
+  ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'], '€', 'eiro', plural_lv
 ];
+
+function plural_mk(n: number): number {
+  let i = Math.floor(Math.abs(n)), v = n.toString().replace(/^[^.]*\.?/, '').length,
+      f = parseInt(n.toString().replace(/^[^.]*\.?/, ''), 10) || 0;
+  if (v === 0 && i % 10 === 1 || f % 10 === 1) return 1;
+  return 5;
+}
 
 export const locale_mk = [
   'mk', [['претпл.', 'попл.'], , ['претпладне', 'попладне']], ,
@@ -2779,15 +2810,13 @@ export const locale_mk = [
     ,
   ],
   [',', '.', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'], 'ден', 'Македонски денар',
-  function(n: number):
-      number {
-        let i = Math.floor(Math.abs(n)), v = n.toString().replace(/^[^.]*\.?/, '').length,
-            f = parseInt(n.toString().replace(/^[^.]*\.?/, ''), 10) || 0;
-        if (v === 0 && i % 10 === 1 || f % 10 === 1) return 1;
-        return 5;
-      }
+  ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'], 'ден', 'Македонски денар', plural_mk
 ];
+
+function plural_ml(n: number): number {
+  if (n === 1) return 1;
+  return 5;
+}
 
 export const locale_ml = [
   'ml',
@@ -2800,9 +2829,8 @@ export const locale_ml = [
     ['ഞ', 'തി', 'ചൊ', 'ബു', 'വ്യാ', 'വെ', 'ശ'],
     ['ഞായർ', 'തിങ്കൾ', 'ചൊവ്വ', 'ബുധൻ', 'വ്യാഴം', 'വെള്ളി', 'ശനി'],
     [
-      'ഞായറാഴ്‌ച', 'തിങ്കളാഴ്‌ച', 'ചൊവ്വാഴ്ച',
-      'ബുധനാഴ്‌ച', 'വ്യാഴാഴ്‌ച',
-      'വെള്ളിയാഴ്‌ച', 'ശനിയാഴ്‌ച'
+      'ഞായറാഴ്\u200cച', 'തിങ്കളാഴ്\u200cച', 'ചൊവ്വാഴ്ച', 'ബുധനാഴ്\u200cച', 'വ്യാഴാഴ്\u200cച',
+      'വെള്ളിയാഴ്\u200cച', 'ശനിയാഴ്\u200cച'
     ],
     ['ഞാ', 'തി', 'ചൊ', 'ബു', 'വ്യാ', 'വെ', 'ശ']
   ],
@@ -2810,10 +2838,8 @@ export const locale_ml = [
     ['ഞാ', 'തി', 'ചൊ', 'ബു', 'വ്യാ', 'വെ', 'ശ'],
     ['ഞായർ', 'തിങ്കൾ', 'ചൊവ്വ', 'ബുധൻ', 'വ്യാഴം', 'വെള്ളി', 'ശനി'],
     [
-      'ഞായറാഴ്‌ച', 'തിങ്കളാഴ്‌ച',
-      'ചൊവ്വാഴ്‌ച', 'ബുധനാഴ്‌ച',
-      'വ്യാഴാഴ്‌ച', 'വെള്ളിയാഴ്‌ച',
-      'ശനിയാഴ്‌ച'
+      'ഞായറാഴ്\u200cച', 'തിങ്കളാഴ്\u200cച', 'ചൊവ്വാഴ്\u200cച', 'ബുധനാഴ്\u200cച', 'വ്യാഴാഴ്\u200cച',
+      'വെള്ളിയാഴ്\u200cച', 'ശനിയാഴ്\u200cച'
     ],
     ['ഞാ', 'തി', 'ചൊ', 'ബു', 'വ്യാ', 'വെ', 'ശ']
   ],
@@ -2821,16 +2847,12 @@ export const locale_ml = [
     ['ജ', 'ഫെ', 'മാ', 'ഏ', 'മെ', 'ജൂൺ', 'ജൂ', 'ഓ', 'സെ', 'ഒ', 'ന', 'ഡി'],
     ['ജനു', 'ഫെബ്രു', 'മാർ', 'ഏപ്രി', 'മേയ്', 'ജൂൺ', 'ജൂലൈ', 'ഓഗ', 'സെപ്റ്റം', 'ഒക്ടോ', 'നവം', 'ഡിസം'],
     [
-      'ജനുവരി', 'ഫെബ്രുവരി', 'മാർച്ച്', 'ഏപ്രിൽ', 'മേയ്', 'ജൂൺ', 'ജൂലൈ', 'ഓഗസ്റ്റ്', 'സെപ്റ്റംബർ',
-      'ഒക്‌ടോബർ', 'നവംബർ', 'ഡിസംബർ'
+      'ജനുവരി', 'ഫെബ്രുവരി', 'മാർച്ച്', 'ഏപ്രിൽ', 'മേയ്', 'ജൂൺ', 'ജൂലൈ', 'ഓഗസ്റ്റ്', 'സെപ്റ്റംബർ', 'ഒക്\u200cടോബർ',
+      'നവംബർ', 'ഡിസംബർ'
     ]
   ],
-  ,
-  [
-    ['ക്രി.മു.', 'എഡി'], ,
-    ['ക്രിസ്‌തുവിന് മുമ്പ്', 'ആന്നോ ഡൊമിനി']
-  ],
-  0, [0, 0], ['d/M/yy', 'y, MMM d', 'y, MMMM d', 'y, MMMM d, EEEE'],
+  , [['ക്രി.മു.', 'എഡി'], , ['ക്രിസ്\u200cതുവിന് മുമ്പ്', 'ആന്നോ ഡൊമിനി']], 0, [0, 0],
+  ['d/M/yy', 'y, MMM d', 'y, MMMM d', 'y, MMMM d, EEEE'],
   ['h:mm a', 'h:mm:ss a', 'h:mm:ss a z', 'h:mm:ss a zzzz'],
   [
     '{1} {0}',
@@ -2838,12 +2860,13 @@ export const locale_ml = [
     ,
   ],
   ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##,##0.###', '#,##0%', '¤#,##0.00', '#E0'], '₹', 'ഇന്ത്യൻ രൂപ', function(n: number):
-                                                                       number {
-                                                                         if (n === 1) return 1;
-                                                                         return 5;
-                                                                       }
+  ['#,##,##0.###', '#,##0%', '¤#,##0.00', '#E0'], '₹', 'ഇന്ത്യൻ രൂപ', plural_ml
 ];
+
+function plural_mn(n: number): number {
+  if (n === 1) return 1;
+  return 5;
+}
 
 export const locale_mn = [
   'mn', [['үө', 'үх'], ['ҮӨ', 'ҮХ'], ['ү.ө', 'ү.х']],
@@ -2878,12 +2901,17 @@ export const locale_mn = [
     ,
   ],
   ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0%', '¤ #,##0.00', '#E0'], '₮', 'төгрөг', function(n: number):
-                                                                   number {
-                                                                     if (n === 1) return 1;
-                                                                     return 5;
-                                                                   }
+  ['#,##0.###', '#,##0%', '¤ #,##0.00', '#E0'], '₮', 'төгрөг', plural_mn
 ];
+
+function plural_mo(n: number): number {
+  let i = Math.floor(Math.abs(n)), v = n.toString().replace(/^[^.]*\.?/, '').length;
+  if (i === 1 && v === 0) return 1;
+  if (!(v === 0) || n === 0 ||
+      !(n === 1) && n % 100 === Math.floor(n % 100) && n % 100 >= 1 && n % 100 <= 19)
+    return 3;
+  return 5;
+}
 
 export const locale_mo = [
   'ro-MD',
@@ -2917,17 +2945,14 @@ export const locale_mo = [
     ,
   ],
   [',', '.', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0 %', '#,##0.00 ¤', '#E0'], 'L', 'leu moldovenesc',
-  function(n: number):
-      number {
-        let i = Math.floor(Math.abs(n)), v = n.toString().replace(/^[^.]*\.?/, '').length;
-        if (i === 1 && v === 0) return 1;
-        if (!(v === 0) || n === 0 ||
-            !(n === 1) && n % 100 === Math.floor(n % 100) && n % 100 >= 1 && n % 100 <= 19)
-          return 3;
-        return 5;
-      }
+  ['#,##0.###', '#,##0 %', '#,##0.00 ¤', '#E0'], 'L', 'leu moldovenesc', plural_mo
 ];
+
+function plural_mr(n: number): number {
+  let i = Math.floor(Math.abs(n));
+  if (i === 0 || n === 1) return 1;
+  return 5;
+}
 
 export const locale_mr = [
   'mr',
@@ -2962,14 +2987,12 @@ export const locale_mr = [
     '{1} रोजी {0}',
   ],
   ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##,##0.###', '#,##0%', '¤#,##0.00', '[#E0]'], '₹', 'भारतीय रुपया',
-  function(n: number):
-      number {
-        let i = Math.floor(Math.abs(n));
-        if (i === 0 || n === 1) return 1;
-        return 5;
-      }
+  ['#,##,##0.###', '#,##0%', '¤#,##0.00', '[#E0]'], '₹', 'भारतीय रुपया', plural_mr
 ];
+
+function plural_ms(n: number): number {
+  return 5;
+}
 
 export const locale_ms = [
   'ms',
@@ -3005,9 +3028,15 @@ export const locale_ms = [
     '{1} {0}',
   ],
   ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'], 'RM', 'Ringgit Malaysia',
-  function(n: number): number { return 5;}
+  ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'], 'RM', 'Ringgit Malaysia', plural_ms
 ];
+
+function plural_mt(n: number): number {
+  if (n === 1) return 1;
+  if (n === 0 || n % 100 === Math.floor(n % 100) && n % 100 >= 2 && n % 100 <= 10) return 3;
+  if (n % 100 === Math.floor(n % 100) && n % 100 >= 11 && n % 100 <= 19) return 4;
+  return 5;
+}
 
 export const locale_mt = [
   'mt',
@@ -3051,15 +3080,12 @@ export const locale_mt = [
     ,
   ],
   ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'], '€', 'ewro',
-  function(n: number):
-      number {
-        if (n === 1) return 1;
-        if (n === 0 || n % 100 === Math.floor(n % 100) && n % 100 >= 2 && n % 100 <= 10) return 3;
-        if (n % 100 === Math.floor(n % 100) && n % 100 >= 11 && n % 100 <= 19) return 4;
-        return 5;
-      }
+  ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'], '€', 'ewro', plural_mt
 ];
+
+function plural_my(n: number): number {
+  return 5;
+}
 
 export const locale_my = [
   'my',
@@ -3091,9 +3117,13 @@ export const locale_my = [
     ,
   ],
   ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'ဂဏန်းမဟုတ်သော', ':'],
-  ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'], 'K', 'မြန်မာ ကျပ်',
-  function(n: number): number { return 5;}
+  ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'], 'K', 'မြန်မာ ကျပ်', plural_my
 ];
+
+function plural_ne(n: number): number {
+  if (n === 1) return 1;
+  return 5;
+}
 
 export const locale_ne = [
   'ne',
@@ -3134,12 +3164,14 @@ export const locale_ne = [
     '{1} {0}',
   ],
   ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0%', '¤ #,##0.00', '#E0'], 'नेरू', 'नेपाली रूपैयाँ', function(n: number):
-                                                                        number {
-                                                                          if (n === 1) return 1;
-                                                                          return 5;
-                                                                        }
+  ['#,##0.###', '#,##0%', '¤ #,##0.00', '#E0'], 'नेरू', 'नेपाली रूपैयाँ', plural_ne
 ];
+
+function plural_nl(n: number): number {
+  let i = Math.floor(Math.abs(n)), v = n.toString().replace(/^[^.]*\.?/, '').length;
+  if (i === 1 && v === 0) return 1;
+  return 5;
+}
 
 export const locale_nl = [
   'nl',
@@ -3171,14 +3203,13 @@ export const locale_nl = [
     '{1} \'om\' {0}',
   ],
   [',', '.', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0%', '¤ #,##0.00;¤ -#,##0.00', '#E0'], '€', 'Euro',
-  function(n: number):
-      number {
-        let i = Math.floor(Math.abs(n)), v = n.toString().replace(/^[^.]*\.?/, '').length;
-        if (i === 1 && v === 0) return 1;
-        return 5;
-      }
+  ['#,##0.###', '#,##0%', '¤ #,##0.00;¤ -#,##0.00', '#E0'], '€', 'Euro', plural_nl
 ];
+
+function plural_no(n: number): number {
+  if (n === 1) return 1;
+  return 5;
+}
 
 export const locale_no = [
   'nb',
@@ -3217,12 +3248,13 @@ export const locale_no = [
   ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'],
   ['{1}, {0}', , '{1} \'kl\'. {0}', '{1} {0}'],
   [',', ' ', ';', '%', '+', '−', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0 %', '¤ #,##0.00', '#E0'], 'kr', 'norske kroner', function(n: number):
-                                                                            number {
-                                                                              if (n === 1) return 1;
-                                                                              return 5;
-                                                                            }
+  ['#,##0.###', '#,##0 %', '¤ #,##0.00', '#E0'], 'kr', 'norske kroner', plural_no
 ];
+
+function plural_or(n: number): number {
+  if (n === 1) return 1;
+  return 5;
+}
 
 export const locale_or = [
   'or', [['ପୂ', 'ଅ'], ['am', 'pm'], ['AM', 'PM']],
@@ -3252,12 +3284,13 @@ export const locale_or = [
     '{0} ଠାରେ {1}',
   ],
   ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##,##0.###', '#,##,##0%', '¤ #,##,##0.00', '#E0'], '₹', 'ଟଙ୍କା', function(n: number):
-                                                                          number {
-                                                                            if (n === 1) return 1;
-                                                                            return 5;
-                                                                          }
+  ['#,##,##0.###', '#,##,##0%', '¤ #,##,##0.00', '#E0'], '₹', 'ଟଙ୍କା', plural_or
 ];
+
+function plural_pa(n: number): number {
+  if (n === Math.floor(n) && n >= 0 && n <= 1) return 1;
+  return 5;
+}
 
 export const locale_pa = [
   'pa',
@@ -3291,13 +3324,21 @@ export const locale_pa = [
     '{1} {0}',
   ],
   ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##,##0.###', '#,##,##0%', '¤ #,##,##0.00', '[#E0]'], '₹', 'ਭਾਰਤੀ ਰੁਪਇਆ',
-  function(n: number):
-      number {
-        if (n === Math.floor(n) && n >= 0 && n <= 1) return 1;
-        return 5;
-      }
+  ['#,##,##0.###', '#,##,##0%', '¤ #,##,##0.00', '[#E0]'], '₹', 'ਭਾਰਤੀ ਰੁਪਇਆ', plural_pa
 ];
+
+function plural_pl(n: number): number {
+  let i = Math.floor(Math.abs(n)), v = n.toString().replace(/^[^.]*\.?/, '').length;
+  if (i === 1 && v === 0) return 1;
+  if (v === 0 && i % 10 === Math.floor(i % 10) && i % 10 >= 2 && i % 10 <= 4 &&
+      !(i % 100 >= 12 && i % 100 <= 14))
+    return 3;
+  if (v === 0 && !(i === 1) && i % 10 === Math.floor(i % 10) && i % 10 >= 0 && i % 10 <= 1 ||
+      v === 0 && i % 10 === Math.floor(i % 10) && i % 10 >= 5 && i % 10 <= 9 ||
+      v === 0 && i % 100 === Math.floor(i % 100) && i % 100 >= 12 && i % 100 <= 14)
+    return 4;
+  return 5;
+}
 
 export const locale_pl = [
   'pl',
@@ -3341,21 +3382,14 @@ export const locale_pl = [
     '{1} {0}',
   ],
   [',', ' ', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'], 'zł', 'złoty polski',
-  function(n: number):
-      number {
-        let i = Math.floor(Math.abs(n)), v = n.toString().replace(/^[^.]*\.?/, '').length;
-        if (i === 1 && v === 0) return 1;
-        if (v === 0 && i % 10 === Math.floor(i % 10) && i % 10 >= 2 && i % 10 <= 4 &&
-            !(i % 100 >= 12 && i % 100 <= 14))
-          return 3;
-        if (v === 0 && !(i === 1) && i % 10 === Math.floor(i % 10) && i % 10 >= 0 && i % 10 <= 1 ||
-            v === 0 && i % 10 === Math.floor(i % 10) && i % 10 >= 5 && i % 10 <= 9 ||
-            v === 0 && i % 100 === Math.floor(i % 100) && i % 100 >= 12 && i % 100 <= 14)
-          return 4;
-        return 5;
-      }
+  ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'], 'zł', 'złoty polski', plural_pl
 ];
+
+function plural_pt(n: number): number {
+  let i = Math.floor(Math.abs(n));
+  if (i === Math.floor(i) && i >= 0 && i <= 1) return 1;
+  return 5;
+}
 
 export const locale_pt = [
   'pt',
@@ -3390,14 +3424,14 @@ export const locale_pt = [
     ,
   ],
   [',', '.', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0%', '¤ #,##0.00', '#E0'], 'R$', 'Real brasileiro',
-  function(n: number):
-      number {
-        let i = Math.floor(Math.abs(n));
-        if (i === Math.floor(i) && i >= 0 && i <= 1) return 1;
-        return 5;
-      }
+  ['#,##0.###', '#,##0%', '¤ #,##0.00', '#E0'], 'R$', 'Real brasileiro', plural_pt
 ];
+
+function plural_pt_PT(n: number): number {
+  let i = Math.floor(Math.abs(n));
+  if (i === Math.floor(i) && i >= 0 && i <= 1) return 1;
+  return 5;
+}
 
 export const locale_pt_PT = [
   'pt-PT', [['a.m.', 'p.m.'], , ['da manhã', 'da tarde']], [['a.m.', 'p.m.'], , ['manhã', 'tarde']],
@@ -3428,14 +3462,17 @@ export const locale_pt_PT = [
     '{1} \'às\' {0}',
   ],
   [',', ' ', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'], '€', 'euro',
-  function(n: number):
-      number {
-        let i = Math.floor(Math.abs(n));
-        if (i === Math.floor(i) && i >= 0 && i <= 1) return 1;
-        return 5;
-      }
+  ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'], '€', 'euro', plural_pt_PT
 ];
+
+function plural_ro(n: number): number {
+  let i = Math.floor(Math.abs(n)), v = n.toString().replace(/^[^.]*\.?/, '').length;
+  if (i === 1 && v === 0) return 1;
+  if (!(v === 0) || n === 0 ||
+      !(n === 1) && n % 100 === Math.floor(n % 100) && n % 100 >= 1 && n % 100 <= 19)
+    return 3;
+  return 5;
+}
 
 export const locale_ro = [
   'ro',
@@ -3469,17 +3506,21 @@ export const locale_ro = [
     ,
   ],
   [',', '.', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0 %', '#,##0.00 ¤', '#E0'], 'RON', 'leu rom��nesc',
-  function(n: number):
-      number {
-        let i = Math.floor(Math.abs(n)), v = n.toString().replace(/^[^.]*\.?/, '').length;
-        if (i === 1 && v === 0) return 1;
-        if (!(v === 0) || n === 0 ||
-            !(n === 1) && n % 100 === Math.floor(n % 100) && n % 100 >= 1 && n % 100 <= 19)
-          return 3;
-        return 5;
-      }
+  ['#,##0.###', '#,##0 %', '#,##0.00 ¤', '#E0'], 'RON', 'leu românesc', plural_ro
 ];
+
+function plural_ru(n: number): number {
+  let i = Math.floor(Math.abs(n)), v = n.toString().replace(/^[^.]*\.?/, '').length;
+  if (v === 0 && i % 10 === 1 && !(i % 100 === 11)) return 1;
+  if (v === 0 && i % 10 === Math.floor(i % 10) && i % 10 >= 2 && i % 10 <= 4 &&
+      !(i % 100 >= 12 && i % 100 <= 14))
+    return 3;
+  if (v === 0 && i % 10 === 0 ||
+      v === 0 && i % 10 === Math.floor(i % 10) && i % 10 >= 5 && i % 10 <= 9 ||
+      v === 0 && i % 100 === Math.floor(i % 100) && i % 100 >= 11 && i % 100 <= 14)
+    return 4;
+  return 5;
+}
 
 export const locale_ru = [
   'ru',
@@ -3529,21 +3570,12 @@ export const locale_ru = [
     ,
   ],
   [',', ' ', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'не число', ':'],
-  ['#,##0.###', '#,##0 %', '#,##0.00 ¤', '#E0'], '₽', 'российский рубль',
-  function(n: number):
-      number {
-        let i = Math.floor(Math.abs(n)), v = n.toString().replace(/^[^.]*\.?/, '').length;
-        if (v === 0 && i % 10 === 1 && !(i % 100 === 11)) return 1;
-        if (v === 0 && i % 10 === Math.floor(i % 10) && i % 10 >= 2 && i % 10 <= 4 &&
-            !(i % 100 >= 12 && i % 100 <= 14))
-          return 3;
-        if (v === 0 && i % 10 === 0 ||
-            v === 0 && i % 10 === Math.floor(i % 10) && i % 10 >= 5 && i % 10 <= 9 ||
-            v === 0 && i % 100 === Math.floor(i % 100) && i % 100 >= 11 && i % 100 <= 14)
-          return 4;
-        return 5;
-      }
+  ['#,##0.###', '#,##0 %', '#,##0.00 ¤', '#E0'], '₽', 'российский рубль', plural_ru
 ];
+
+function plural_sh(n: number): number {
+  return 5;
+}
 
 export const locale_sh = [
   'sr-Latn',
@@ -3578,9 +3610,14 @@ export const locale_sh = [
     ,
   ],
   [',', '.', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'], 'RSD', 'Srpski dinar',
-  function(n: number): number { return 5;}
+  ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'], 'RSD', 'Srpski dinar', plural_sh
 ];
+
+function plural_si(n: number): number {
+  let i = Math.floor(Math.abs(n)), f = parseInt(n.toString().replace(/^[^.]*\.?/, ''), 10) || 0;
+  if (n === 0 || n === 1 || i === 0 && f === 1) return 1;
+  return 5;
+}
 
 export const locale_si = [
   'si',
@@ -3593,42 +3630,30 @@ export const locale_si = [
     ,
   ],
   [
-    ['ඉ', 'ස', 'අ', 'බ', 'බ්‍ර', 'සි', 'සෙ'],
-    ['ඉරිදා', 'සඳුදා', 'අඟහ', 'බදාදා', 'බ්‍රහස්', 'සිකු', 'සෙන'],
-    [
-      'ඉරිදා', 'සඳුදා', 'අඟහරුවාදා', 'බදාදා', 'බ්‍රහස්පතින්දා', 'සිකුරාදා',
-      'සෙනසුරාදා'
-    ],
-    ['ඉරි', 'සඳු', 'අඟ', 'බදා', 'බ්‍රහ', 'සිකු', 'සෙන']
+    ['ඉ', 'ස', 'අ', 'බ', 'බ්\u200dර', 'සි', 'සෙ'],
+    ['ඉරිදා', 'සඳුදා', 'අඟහ', 'බදාදා', 'බ්\u200dරහස්', 'සිකු', 'සෙන'],
+    ['ඉරිදා', 'සඳුදා', 'අඟහරුවාදා', 'බදාදා', 'බ්\u200dරහස්පතින්දා', 'සිකුරාදා', 'සෙනසුරාදා'],
+    ['ඉරි', 'සඳු', 'අඟ', 'බදා', 'බ්\u200dරහ', 'සිකු', 'සෙන']
   ],
   ,
   [
     ['ජ', 'පෙ', 'මා', 'අ', 'මැ', 'ජූ', 'ජූ', 'අ', 'සැ', 'ඔ', 'නෙ', 'දෙ'],
+    ['ජන', 'පෙබ', 'මාර්තු', 'අප්\u200dරේල්', 'මැයි', 'ජූනි', 'ජූලි', 'අගෝ', 'සැප්', 'ඔක්', 'නොවැ', 'දෙසැ'],
     [
-      'ජන', 'පෙබ', 'මාර්තු', 'අප්‍රේල්', 'මැයි', 'ජූනි', 'ජූලි', 'අගෝ', 'සැප්', 'ඔක්',
-      'නොවැ', 'දෙසැ'
-    ],
-    [
-      'ජනවාරි', 'පෙබරවාරි', 'මාර්තු', 'අප්‍රේල්', 'මැයි', 'ජූනි', 'ජූලි', 'අගෝස්තු',
-      'සැප්තැම්බර්', 'ඔක්තෝබර්', 'නොවැම්බර්', 'දෙසැම්බර්'
+      'ජනවාරි', 'පෙබරවාරි', 'මාර්තු', 'අප්\u200dරේල්', 'මැයි', 'ජූනි', 'ජූලි', 'අගෝස්තු', 'සැප්තැම්බර්', 'ඔක්තෝබර්',
+      'නොවැම්බර්', 'දෙසැම්බර්'
     ]
   ],
   [
     ['ජ', 'පෙ', 'මා', 'අ', 'මැ', 'ජූ', 'ජූ', 'අ', 'සැ', 'ඔ', 'නෙ', 'දෙ'],
+    ['ජන', 'පෙබ', 'මාර්', 'අප්\u200dරේල්', 'මැයි', 'ජූනි', 'ජූලි', 'අගෝ', 'සැප්', 'ඔක්', 'නොවැ', 'දෙසැ'],
     [
-      'ජන', 'පෙබ', 'මාර්', 'අප්‍රේල්', 'මැයි', 'ජූනි', 'ජූලි', 'අගෝ', 'සැප්', 'ඔක්', 'නොවැ',
-      'දෙසැ'
-    ],
-    [
-      'ජනවාරි', 'පෙබරවාරි', 'මාර්තු', 'අප්‍රේල්', 'මැයි', 'ජූනි', 'ජූලි', 'අගෝස්තු',
-      'සැප්තැම්බර්', 'ඔක්තෝබර්', 'නොවැම්බර්', 'දෙසැම්බර්'
+      'ජනවාරි', 'පෙබරවාරි', 'මාර්තු', 'අප්\u200dරේල්', 'මැයි', 'ජූනි', 'ජූලි', 'අගෝස්තු', 'සැප්තැම්බර්', 'ඔක්තෝබර්',
+      'නොවැම්බර්', 'දෙසැම්බර්'
     ]
   ],
-  [
-    ['ක්‍රි.පූ.', 'ක්‍රි.ව.'], ,
-    ['ක්‍රිස්තු පූර්ව', 'ක්‍රිස්තු වර්ෂ']
-  ],
-  1, [6, 0], ['y-MM-dd', 'y MMM d', 'y MMMM d', 'y MMMM d, EEEE'],
+  [['ක්\u200dරි.පූ.', 'ක්\u200dරි.ව.'], , ['ක්\u200dරිස්තු පූර්ව', 'ක්\u200dරිස්තු වර්ෂ']], 1, [6, 0],
+  ['y-MM-dd', 'y MMM d', 'y MMMM d', 'y MMMM d, EEEE'],
   ['HH.mm', 'HH.mm.ss', 'HH.mm.ss z', 'HH.mm.ss zzzz'],
   [
     '{1} {0}',
@@ -3636,16 +3661,16 @@ export const locale_si = [
     ,
   ],
   ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', '.'],
-  ['#,##0.###', '#,##0%', '¤#,##0.00', '#'], 'රු.',
-  'ශ්‍රී ලංකා රුපියල',
-  function(n: number):
-      number {
-        let i = Math.floor(Math.abs(n)),
-            f = parseInt(n.toString().replace(/^[^.]*\.?/, ''), 10) || 0;
-        if (n === 0 || n === 1 || i === 0 && f === 1) return 1;
-        return 5;
-      }
+  ['#,##0.###', '#,##0%', '¤#,##0.00', '#'], 'රු.', 'ශ්\u200dරී ලංකා රුපියල', plural_si
 ];
+
+function plural_sk(n: number): number {
+  let i = Math.floor(Math.abs(n)), v = n.toString().replace(/^[^.]*\.?/, '').length;
+  if (i === 1 && v === 0) return 1;
+  if (i === Math.floor(i) && i >= 2 && i <= 4 && v === 0) return 3;
+  if (!(v === 0)) return 4;
+  return 5;
+}
 
 export const locale_sk = [
   'sk',
@@ -3684,16 +3709,17 @@ export const locale_sk = [
     ,
   ],
   [',', ' ', ';', '%', '+', '-', 'e', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0 %', '#,##0.00 ¤', '#E0'], '€', 'euro',
-  function(n: number):
-      number {
-        let i = Math.floor(Math.abs(n)), v = n.toString().replace(/^[^.]*\.?/, '').length;
-        if (i === 1 && v === 0) return 1;
-        if (i === Math.floor(i) && i >= 2 && i <= 4 && v === 0) return 3;
-        if (!(v === 0)) return 4;
-        return 5;
-      }
+  ['#,##0.###', '#,##0 %', '#,##0.00 ¤', '#E0'], '€', 'euro', plural_sk
 ];
+
+function plural_sl(n: number): number {
+  let i = Math.floor(Math.abs(n)), v = n.toString().replace(/^[^.]*\.?/, '').length;
+  if (v === 0 && i % 100 === 1) return 1;
+  if (v === 0 && i % 100 === 2) return 2;
+  if (v === 0 && i % 100 === Math.floor(i % 100) && i % 100 >= 3 && i % 100 <= 4 || !(v === 0))
+    return 3;
+  return 5;
+}
 
 export const locale_sl = [
   'sl',
@@ -3725,18 +3751,13 @@ export const locale_sl = [
     ,
   ],
   [',', '.', ';', '%', '+', '−', 'e', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0 %', '#,##0.00 ¤', '#E0'], '€', 'evro',
-  function(n: number):
-      number {
-        let i = Math.floor(Math.abs(n)), v = n.toString().replace(/^[^.]*\.?/, '').length;
-        if (v === 0 && i % 100 === 1) return 1;
-        if (v === 0 && i % 100 === 2) return 2;
-        if (v === 0 && i % 100 === Math.floor(i % 100) && i % 100 >= 3 && i % 100 <= 4 ||
-            !(v === 0))
-          return 3;
-        return 5;
-      }
+  ['#,##0.###', '#,##0 %', '#,##0.00 ¤', '#E0'], '€', 'evro', plural_sl
 ];
+
+function plural_sq(n: number): number {
+  if (n === 1) return 1;
+  return 5;
+}
 
 export const locale_sq = [
   'sq',
@@ -3783,13 +3804,20 @@ export const locale_sq = [
     '{1} \'në\' {0}',
   ],
   [',', ' ', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'], 'Lekë', 'Leku shqiptar', function(n: number):
-                                                                             number {
-                                                                               if (n === 1)
-                                                                                 return 1;
-                                                                               return 5;
-                                                                             }
+  ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'], 'Lekë', 'Leku shqiptar', plural_sq
 ];
+
+function plural_sr(n: number): number {
+  let i = Math.floor(Math.abs(n)), v = n.toString().replace(/^[^.]*\.?/, '').length,
+      f = parseInt(n.toString().replace(/^[^.]*\.?/, ''), 10) || 0;
+  if (v === 0 && i % 10 === 1 && !(i % 100 === 11) || f % 10 === 1 && !(f % 100 === 11)) return 1;
+  if (v === 0 && i % 10 === Math.floor(i % 10) && i % 10 >= 2 && i % 10 <= 4 &&
+          !(i % 100 >= 12 && i % 100 <= 14) ||
+      f % 10 === Math.floor(f % 10) && f % 10 >= 2 && f % 10 <= 4 &&
+          !(f % 100 >= 12 && f % 100 <= 14))
+    return 3;
+  return 5;
+}
 
 export const locale_sr = [
   'sr',
@@ -3824,21 +3852,14 @@ export const locale_sr = [
     ,
   ],
   [',', '.', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'], 'RSD', 'Српски динар',
-  function(n: number):
-      number {
-        let i = Math.floor(Math.abs(n)), v = n.toString().replace(/^[^.]*\.?/, '').length,
-            f = parseInt(n.toString().replace(/^[^.]*\.?/, ''), 10) || 0;
-        if (v === 0 && i % 10 === 1 && !(i % 100 === 11) || f % 10 === 1 && !(f % 100 === 11))
-          return 1;
-        if (v === 0 && i % 10 === Math.floor(i % 10) && i % 10 >= 2 && i % 10 <= 4 &&
-                !(i % 100 >= 12 && i % 100 <= 14) ||
-            f % 10 === Math.floor(f % 10) && f % 10 >= 2 && f % 10 <= 4 &&
-                !(f % 100 >= 12 && f % 100 <= 14))
-          return 3;
-        return 5;
-      }
+  ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'], 'RSD', 'Српски динар', plural_sr
 ];
+
+function plural_sv(n: number): number {
+  let i = Math.floor(Math.abs(n)), v = n.toString().replace(/^[^.]*\.?/, '').length;
+  if (i === 1 && v === 0) return 1;
+  return 5;
+}
 
 export const locale_sv = [
   'sv',
@@ -3870,14 +3891,14 @@ export const locale_sv = [
     ,
   ],
   [',', ' ', ';', '%', '+', '−', '×10^', '×', '‰', '∞', '¤¤¤', ':'],
-  ['#,##0.###', '#,##0 %', '#,##0.00 ¤', '#E0'], 'kr', 'svensk krona',
-  function(n: number):
-      number {
-        let i = Math.floor(Math.abs(n)), v = n.toString().replace(/^[^.]*\.?/, '').length;
-        if (i === 1 && v === 0) return 1;
-        return 5;
-      }
+  ['#,##0.###', '#,##0 %', '#,##0.00 ¤', '#E0'], 'kr', 'svensk krona', plural_sv
 ];
+
+function plural_sw(n: number): number {
+  let i = Math.floor(Math.abs(n)), v = n.toString().replace(/^[^.]*\.?/, '').length;
+  if (i === 1 && v === 0) return 1;
+  return 5;
+}
 
 export const locale_sw = [
   'sw',
@@ -3912,14 +3933,13 @@ export const locale_sw = [
     ,
   ],
   ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'], 'TSh', 'Shilingi ya Tanzania',
-  function(n: number):
-      number {
-        let i = Math.floor(Math.abs(n)), v = n.toString().replace(/^[^.]*\.?/, '').length;
-        if (i === 1 && v === 0) return 1;
-        return 5;
-      }
+  ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'], 'TSh', 'Shilingi ya Tanzania', plural_sw
 ];
+
+function plural_ta(n: number): number {
+  if (n === 1) return 1;
+  return 5;
+}
 
 export const locale_ta = [
   'ta',
@@ -3952,13 +3972,13 @@ export const locale_ta = [
     '{1} ’அன்று’ {0}',
   ],
   ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##,##0.###', '#,##,##0%', '¤ #,##,##0.00', '#E0'], '₹', 'இந்திய ரூபாய்', function(n: number):
-                                                                                 number {
-                                                                                   if (n === 1)
-                                                                                     return 1;
-                                                                                   return 5;
-                                                                                 }
+  ['#,##,##0.###', '#,##,##0%', '¤ #,##,##0.00', '#E0'], '₹', 'இந்திய ரூபாய்', plural_ta
 ];
+
+function plural_te(n: number): number {
+  if (n === 1) return 1;
+  return 5;
+}
 
 export const locale_te = [
   'te',
@@ -3993,12 +4013,12 @@ export const locale_te = [
     '{1} {0}కి',
   ],
   ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##,##0.###', '#,##0%', '¤#,##,##0.00', '#E0'], '₹', 'రూపాయి', function(n: number):
-                                                                      number {
-                                                                        if (n === 1) return 1;
-                                                                        return 5;
-                                                                      }
+  ['#,##,##0.###', '#,##0%', '¤#,##,##0.00', '#E0'], '₹', 'రూపాయి', plural_te
 ];
+
+function plural_th(n: number): number {
+  return 5;
+}
 
 export const locale_th = [
   'th',
@@ -4036,9 +4056,18 @@ export const locale_th = [
     ,
   ],
   ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'], 'THB', 'บาท',
-  function(n: number): number { return 5;}
+  ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'], 'THB', 'บาท', plural_th
 ];
+
+function plural_tl(n: number): number {
+  let i = Math.floor(Math.abs(n)), v = n.toString().replace(/^[^.]*\.?/, '').length,
+      f = parseInt(n.toString().replace(/^[^.]*\.?/, ''), 10) || 0;
+  if (v === 0 && (i === 1 || i === 2 || i === 3) ||
+      v === 0 && !(i % 10 === 4 || i % 10 === 6 || i % 10 === 9) ||
+      !(v === 0) && !(f % 10 === 4 || f % 10 === 6 || f % 10 === 9))
+    return 1;
+  return 5;
+}
 
 export const locale_tl = [
   'fil',
@@ -4080,18 +4109,13 @@ export const locale_tl = [
     '{1} \'nang\' {0}',
   ],
   ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'], '₱', 'Piso ng Pilipinas',
-  function(n: number):
-      number {
-        let i = Math.floor(Math.abs(n)), v = n.toString().replace(/^[^.]*\.?/, '').length,
-            f = parseInt(n.toString().replace(/^[^.]*\.?/, ''), 10) || 0;
-        if (v === 0 && (i === 1 || i === 2 || i === 3) ||
-            v === 0 && !(i % 10 === 4 || i % 10 === 6 || i % 10 === 9) ||
-            !(v === 0) && !(f % 10 === 4 || f % 10 === 6 || f % 10 === 9))
-          return 1;
-        return 5;
-      }
+  ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'], '₱', 'Piso ng Pilipinas', plural_tl
 ];
+
+function plural_tr(n: number): number {
+  if (n === 1) return 1;
+  return 5;
+}
 
 export const locale_tr = [
   'tr',
@@ -4126,12 +4150,21 @@ export const locale_tr = [
     ,
   ],
   [',', '.', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '%#,##0', '¤#,##0.00', '#E0'], '₺', 'Türk Lirası', function(n: number):
-                                                                       number {
-                                                                         if (n === 1) return 1;
-                                                                         return 5;
-                                                                       }
+  ['#,##0.###', '%#,##0', '¤#,##0.00', '#E0'], '₺', 'Türk Lirası', plural_tr
 ];
+
+function plural_uk(n: number): number {
+  let i = Math.floor(Math.abs(n)), v = n.toString().replace(/^[^.]*\.?/, '').length;
+  if (v === 0 && i % 10 === 1 && !(i % 100 === 11)) return 1;
+  if (v === 0 && i % 10 === Math.floor(i % 10) && i % 10 >= 2 && i % 10 <= 4 &&
+      !(i % 100 >= 12 && i % 100 <= 14))
+    return 3;
+  if (v === 0 && i % 10 === 0 ||
+      v === 0 && i % 10 === Math.floor(i % 10) && i % 10 >= 5 && i % 10 <= 9 ||
+      v === 0 && i % 100 === Math.floor(i % 100) && i % 100 >= 11 && i % 100 <= 14)
+    return 4;
+  return 5;
+}
 
 export const locale_uk = [
   'uk',
@@ -4174,21 +4207,14 @@ export const locale_uk = [
     '{1} \'о\' {0}',
   ],
   [',', ' ', ';', '%', '+', '-', 'Е', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'], '₴', 'українська гривня',
-  function(n: number):
-      number {
-        let i = Math.floor(Math.abs(n)), v = n.toString().replace(/^[^.]*\.?/, '').length;
-        if (v === 0 && i % 10 === 1 && !(i % 100 === 11)) return 1;
-        if (v === 0 && i % 10 === Math.floor(i % 10) && i % 10 >= 2 && i % 10 <= 4 &&
-            !(i % 100 >= 12 && i % 100 <= 14))
-          return 3;
-        if (v === 0 && i % 10 === 0 ||
-            v === 0 && i % 10 === Math.floor(i % 10) && i % 10 >= 5 && i % 10 <= 9 ||
-            v === 0 && i % 100 === Math.floor(i % 100) && i % 100 >= 11 && i % 100 <= 14)
-          return 4;
-        return 5;
-      }
+  ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'], '₴', 'українська гривня', plural_uk
 ];
+
+function plural_ur(n: number): number {
+  let i = Math.floor(Math.abs(n)), v = n.toString().replace(/^[^.]*\.?/, '').length;
+  if (i === 1 && v === 0) return 1;
+  return 5;
+}
 
 export const locale_ur = [
   'ur',
@@ -4225,15 +4251,14 @@ export const locale_ur = [
     ,
     ,
   ],
-  ['.', ',', ';', '%', '‎+', '‎-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0%', '¤ #,##0.00', '#E0'], 'Rs', 'پاکستانی روپیہ',
-  function(n: number):
-      number {
-        let i = Math.floor(Math.abs(n)), v = n.toString().replace(/^[^.]*\.?/, '').length;
-        if (i === 1 && v === 0) return 1;
-        return 5;
-      }
+  ['.', ',', ';', '%', '\u200e+', '\u200e-', 'E', '×', '‰', '∞', 'NaN', ':'],
+  ['#,##0.###', '#,##0%', '¤ #,##0.00', '#E0'], 'Rs', 'پاکستانی روپیہ', plural_ur
 ];
+
+function plural_uz(n: number): number {
+  if (n === 1) return 1;
+  return 5;
+}
 
 export const locale_uz = [
   'uz',
@@ -4273,13 +4298,12 @@ export const locale_uz = [
     ,
   ],
   [',', ' ', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'son emas', ':'],
-  ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'], 'soʻm', 'O‘zbekiston so‘mi', function(n: number):
-                                                                                 number {
-                                                                                   if (n === 1)
-                                                                                     return 1;
-                                                                                   return 5;
-                                                                                 }
+  ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'], 'soʻm', 'O‘zbekiston so‘mi', plural_uz
 ];
+
+function plural_vi(n: number): number {
+  return 5;
+}
 
 export const locale_vi = [
   'vi',
@@ -4332,9 +4356,12 @@ export const locale_vi = [
     '{0} {1}',
   ],
   [',', '.', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'], '₫', 'Đồng Việt Nam',
-  function(n: number): number { return 5;}
+  ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'], '₫', 'Đồng Việt Nam', plural_vi
 ];
+
+function plural_zh(n: number): number {
+  return 5;
+}
 
 export const locale_zh = [
   'zh',
@@ -4371,9 +4398,12 @@ export const locale_zh = [
     ,
   ],
   ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'], '￥', '人民币',
-  function(n: number): number { return 5;}
+  ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'], '￥', '人民币', plural_zh
 ];
+
+function plural_zh_CN(n: number): number {
+  return 5;
+}
 
 export const locale_zh_CN = [
   'zh-Hans',
@@ -4410,9 +4440,12 @@ export const locale_zh_CN = [
     ,
   ],
   ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'], '￥', '人民币',
-  function(n: number): number { return 5;}
+  ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'], '￥', '人民币', plural_zh_CN
 ];
+
+function plural_zh_HK(n: number): number {
+  return 5;
+}
 
 export const locale_zh_HK = [
   'zh-Hant-HK',
@@ -4445,9 +4478,12 @@ export const locale_zh_HK = [
     ,
   ],
   ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', '非數值', ':'],
-  ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'], 'HK$', '港元',
-  function(n: number): number { return 5;}
+  ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'], 'HK$', '港元', plural_zh_HK
 ];
+
+function plural_zh_TW(n: number): number {
+  return 5;
+}
 
 export const locale_zh_TW = [
   'zh-Hant',
@@ -4480,9 +4516,14 @@ export const locale_zh_TW = [
     ,
   ],
   ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', '非數值', ':'],
-  ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'], '$', '新台幣',
-  function(n: number): number { return 5;}
+  ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'], '$', '新台幣', plural_zh_TW
 ];
+
+function plural_zu(n: number): number {
+  let i = Math.floor(Math.abs(n));
+  if (i === 0 || n === 1) return 1;
+  return 5;
+}
 
 export const locale_zu = [
   'zu',
@@ -4528,13 +4569,7 @@ export const locale_zu = [
     ,
   ],
   ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'], 'R', 'i-South African Rand',
-  function(n: number):
-      number {
-        let i = Math.floor(Math.abs(n));
-        if (i === 0 || n === 1) return 1;
-        return 5;
-      }
+  ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'], 'R', 'i-South African Rand', plural_zu
 ];
 
 
