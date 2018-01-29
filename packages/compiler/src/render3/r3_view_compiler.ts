@@ -464,11 +464,10 @@ class TemplateDefinitionBuilder implements TemplateAstVisitor, LocalResolver {
             o.importExpr(R3.bind).callFn([convertedBinding.currValExpr]));
       }
 
-      // e.g. TodoComponentDef.r(0, 0);
-      this._refreshMode.push(
-          this.definitionOf(directiveType, kind)
-              .callMethod(R3.REFRESH_METHOD, [o.literal(directiveIndex), o.literal(nodeIndex)])
-              .toStmt());
+      // e.g. r(0, 0);
+      this.instruction(
+          this._refreshMode, directive.sourceSpan, R3.refreshComponent, o.literal(directiveIndex),
+          o.literal(nodeIndex));
     }
   }
 
