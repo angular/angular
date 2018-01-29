@@ -12,6 +12,7 @@ import {BindingForm, BuiltinConverter, EventHandlerVars, LocalResolver, convertA
 import {ConstantPool, DefinitionKind} from '../constant_pool';
 import {AST} from '../expression_parser/ast';
 import {Identifiers} from '../identifiers';
+import {LifecycleHooks} from '../lifecycle_reflector';
 import * as o from '../output/output_ast';
 import {ParseSourceSpan} from '../parse_util';
 import {CssSelector} from '../selector';
@@ -19,8 +20,6 @@ import {AttrAst, BoundDirectivePropertyAst, BoundElementPropertyAst, BoundEventA
 import {OutputContext, error} from '../util';
 
 import {Identifiers as R3} from './r3_identifiers';
-
-
 
 /** Name of the context parameter passed into a template function */
 const CONTEXT_NAME = 'ctx';
@@ -48,6 +47,12 @@ export function compileDirective(
   // e.g. `factory: () => new MyApp(injectElementRef())`
   const templateFactory = createFactory(directive.type, outputCtx, reflector);
   definitionMapValues.push({key: 'factory', value: templateFactory, quoted: false});
+
+  // e.g 'inputs: {a: 'a'}`
+  if (Object.getOwnPropertyNames(directive.inputs).length > 0) {
+    definitionMapValues.push(
+        {key: 'inputs', quoted: false, value: mapToExpression(directive.inputs)});
+  }
 
   const className = identifierName(directive.type) !;
   className || error(`Cannot resolver the name of ${directive.type}`);
@@ -114,6 +119,21 @@ export function compileComponent(
           .buildTemplateFunction(template, []);
   definitionMapValues.push({key: 'template', value: templateFunctionExpression, quoted: false});
 
+  // e.g `inputs: {a: 'a'}`
+  if (Object.getOwnPropertyNames(component.inputs).length > 0) {
+    definitionMapValues.push(
+        {key: 'inputs', quoted: false, value: mapToExpression(component.inputs)});
+  }
+
+  // e.g. `features: [NgOnChangesFeature(MyComponent)]`
+  const features: o.Expression[] = [];
+  if (component.type.lifecycleHooks.some(lifecycle => lifecycle == LifecycleHooks.OnChanges)) {
+    features.push(o.importExpr(R3.NgOnChangesFeature, null, null).callFn([outputCtx.importExpr(
+        component.type.reference)]));
+  }
+  if (features.length) {
+    definitionMapValues.push({key: 'features', quoted: false, value: o.literalArr(features)});
+  }
 
   const className = identifierName(component.type) !;
   className || error(`Cannot resolver the name of ${component.type}`);
@@ -282,6 +302,10 @@ class TemplateDefinitionBuilder implements TemplateAstVisitor, LocalResolver {
 
     templateVisitAll(this, asts);
 
+    const creationMode = this._creationMode.length > 0 ?
+        [o.ifStmt(o.variable(CREATION_MODE_FLAG), this._creationMode)] :
+        [];
+
     return o.fn(
         [
           new o.FnParam(this.contextParameter, null), new o.FnParam(CREATION_MODE_FLAG, o.BOOL_TYPE)
@@ -291,7 +315,7 @@ class TemplateDefinitionBuilder implements TemplateAstVisitor, LocalResolver {
           ...this._prefix,
 
           // Creating mode (i.e. if (cm) { ... })
-          o.ifStmt(o.variable(CREATION_MODE_FLAG), this._creationMode),
+          ...creationMode,
 
           // Binding mode (i.e. ɵp(...))
           ...this._bindingMode,
@@ -463,6 +487,12 @@ class TemplateDefinitionBuilder implements TemplateAstVisitor, LocalResolver {
             o.literal(input.templateName),
             o.importExpr(R3.bind).callFn([convertedBinding.currValExpr]));
       }
+
+      // e.g. MyDirective.ngDirectiveDef.h(0, 0);
+      this._hostMode.push(
+          this.definitionOf(directiveType, kind)
+              .callMethod(R3.HOST_BINDING_METHOD, [o.literal(directiveIndex), o.literal(nodeIndex)])
+              .toStmt());
 
       // e.g. r(0, 0);
       this.instruction(
@@ -694,4 +724,9 @@ function asLiteral(value: any): o.Expression {
     return o.literalArr(value.map(asLiteral));
   }
   return o.literal(value, o.INFERRED_TYPE);
+}
+
+function mapToExpression(map: {[key: string]: any}): o.Expression {
+  return o.literalMap(Object.getOwnPropertyNames(map).map(
+      key => ({key, quoted: false, value: o.literal(map[key])})));
 }
