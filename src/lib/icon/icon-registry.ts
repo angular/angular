@@ -224,7 +224,7 @@ export class MatIconRegistry {
 
     return this._loadSvgIconFromConfig(new SvgIconConfig(safeUrl)).pipe(
       tap(svg => this._cachedIconsByUrl.set(url!, svg)),
-      map(svg => cloneSvg(svg))
+      map(svg => cloneSvg(svg)),
     );
   }
 
@@ -266,7 +266,7 @@ export class MatIconRegistry {
       // Fetch the icon from the config's URL, cache it, and return a copy.
       return this._loadSvgIconFromConfig(config).pipe(
         tap(svg => config.svgElement = svg),
-        map(svg => cloneSvg(svg))
+        map(svg => cloneSvg(svg)),
       );
     }
   }
@@ -305,12 +305,6 @@ export class MatIconRegistry {
             // necessarily fail.
             console.log(`Loading icon set URL: ${url} failed: ${err}`);
             return observableOf(null);
-          }),
-          tap(svg => {
-            // Cache the SVG element.
-            if (svg) {
-              iconSetConfig.svgElement = svg;
-            }
           })
         );
       });
@@ -362,8 +356,20 @@ export class MatIconRegistry {
    * from it.
    */
   private _loadSvgIconSetFromConfig(config: SvgIconConfig): Observable<SVGElement> {
-    // TODO: Document that icons should only be loaded from trusted sources.
-    return this._fetchUrl(config.url).pipe(map(svgText => this._svgElementFromString(svgText)));
+    // If the SVG for this icon set has already been parsed, do nothing.
+    if (config.svgElement) {
+      return observableOf(config.svgElement);
+    }
+
+    return this._fetchUrl(config.url).pipe(map(svgText => {
+      // It is possible that the icon set was parsed and cached by an earlier request, so parsing
+      // only needs to occur if the cache is yet unset.
+      if (!config.svgElement) {
+        config.svgElement = this._svgElementFromString(svgText);
+      }
+
+      return config.svgElement;
+    }));
   }
 
   /**
@@ -492,7 +498,7 @@ export class MatIconRegistry {
     // Observable. Figure out why and fix it.
     const req = this._httpClient.get(url, {responseType: 'text'}).pipe(
       finalize(() => this._inProgressUrlFetches.delete(url)),
-      share()
+      share(),
     );
 
     this._inProgressUrlFetches.set(url, req);
@@ -517,9 +523,9 @@ export const ICON_REGISTRY_PROVIDER = {
     [new Optional(), new SkipSelf(), MatIconRegistry],
     [new Optional(), HttpClient],
     DomSanitizer,
-    [new Optional(), DOCUMENT as InjectionToken<any>]
+    [new Optional(), DOCUMENT as InjectionToken<any>],
   ],
-  useFactory: ICON_REGISTRY_PROVIDER_FACTORY
+  useFactory: ICON_REGISTRY_PROVIDER_FACTORY,
 };
 
 /** Clones an SVGElement while preserving type information. */

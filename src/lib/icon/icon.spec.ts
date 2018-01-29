@@ -207,6 +207,25 @@ describe('MatIcon', () => {
       verifyPathChildElement(svgChild, 'moo');
     });
 
+    it('should never parse the same icon set multiple times', () => {
+      // Normally we avoid spying on private methods like this, but the parsing is a private
+      // implementation detail that should not be exposed to the public API. This test, though,
+      // is important enough to warrant the brittle-ness that results.
+      spyOn(iconRegistry, '_svgElementFromString' as any).and.callThrough();
+
+      iconRegistry.addSvgIconSetInNamespace('farm', trust('farm-set-1.svg'));
+
+      // Requests for icons must be subscribed to in order for requests to be made.
+      iconRegistry.getNamedSvgIcon('pig', 'farm').subscribe(() => {});
+      iconRegistry.getNamedSvgIcon('cow', 'farm').subscribe(() => {});
+
+      http.expectOne('farm-set-1.svg').flush(FAKE_SVGS.farmSet1);
+
+      // _svgElementFromString is called once for each icon to create an empty SVG element
+      // and once to parse the full icon set.
+      expect((iconRegistry as any)._svgElementFromString).toHaveBeenCalledTimes(3);
+    });
+
     it('should allow multiple icon sets in a namespace', () => {
       iconRegistry.addSvgIconSetInNamespace('farm', trust('farm-set-1.svg'));
       iconRegistry.addSvgIconSetInNamespace('farm', trust('farm-set-2.svg'));
