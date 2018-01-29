@@ -51,5 +51,6 @@ export default [
     ,
   ],
   ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'], 'CFA', 'Faransi ti Orílɛ́ède BIKEAO', plural
+  ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'], 'CFA', 'Faransi ti Orílɛ́ède BIKEAO',
+  {'JPY': ['JP¥', '¥'], 'NGN': ['₦'], 'USD': ['US$', '$']}, plural
 ];

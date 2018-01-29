@@ -48,5 +48,6 @@ export default [
     '{1} \'at\' {0}',
   ],
   ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'], 'NAf.', 'Netherlands Antillean Guilder', plural
+  ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'], 'NAf.', 'Netherlands Antillean Guilder',
+  {'ANG': ['NAf.'], 'JPY': ['JP¥', '¥'], 'USD': ['US$', '$']}, plural
 ];
