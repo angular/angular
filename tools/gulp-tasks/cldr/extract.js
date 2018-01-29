@@ -158,6 +158,7 @@ export default ${stringify(dayPeriodsSupplemental).replace(/undefined/g, '')};
  */
 function generateBaseCurrencies(localeData, addDigits) {
   const currenciesData = localeData.main('numbers/currencies');
+  const fractions = new cldrJs('en').get(`supplemental/currencyData/fractions`);
   const currencies = {};
   Object.keys(currenciesData).forEach(key => {
     let symbolsArray = [];
@@ -171,6 +172,16 @@ function generateBaseCurrencies(localeData, addDigits) {
         symbolsArray.push(symbolNarrow);
       } else {
         symbolsArray = [, symbolNarrow];
+      }
+    }
+    if (addDigits && fractions[key] && fractions[key]['_digits']) {
+      const digits = parseInt(fractions[key]['_digits'], 10);
+      if (symbolsArray.length === 2) {
+        symbolsArray.push(digits);
+      } else if (symbolsArray.length === 1) {
+        symbolsArray = [...symbolsArray, , digits];
+      } else {
+        symbolsArray = [, , digits];
       }
     }
     if (symbolsArray.length > 0) {
@@ -219,7 +230,7 @@ function generateCurrenciesFile() {
 export type CurrenciesSymbols = [string] | [string | undefined, string];
 
 /** @internal */
-export const CURRENCIES_EN: {[code: string]: CurrenciesSymbols} = ${stringify(baseCurrencies, true)};
+export const CURRENCIES_EN: {[code: string]: CurrenciesSymbols | [string | undefined, string | undefined, number]} = ${stringify(baseCurrencies, true)};
 `;
 }
 

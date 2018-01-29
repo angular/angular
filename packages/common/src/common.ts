@@ -14,7 +14,7 @@
 export * from './location/index';
 export {NgLocaleLocalization, NgLocalization} from './i18n/localization';
 export {registerLocaleData} from './i18n/locale_data';
-export {Plural, NumberFormatStyle, FormStyle, Time, TranslationWidth, FormatWidth, NumberSymbol, WeekDay, getCurrencySymbol, getLocaleDayPeriods, getLocaleDayNames, getLocaleMonthNames, getLocaleId, getLocaleEraNames, getLocaleWeekEndRange, getLocaleFirstDayOfWeek, getLocaleDateFormat, getLocaleDateTimeFormat, getLocaleExtraDayPeriodRules, getLocaleExtraDayPeriods, getLocalePluralCase, getLocaleTimeFormat, getLocaleNumberSymbol, getLocaleNumberFormat, getLocaleCurrencyName, getLocaleCurrencySymbol} from './i18n/locale_data_api';
+export {Plural, NumberFormatStyle, FormStyle, Time, TranslationWidth, FormatWidth, NumberSymbol, WeekDay, getNbOfCurrencyDigits, getCurrencySymbol, getLocaleDayPeriods, getLocaleDayNames, getLocaleMonthNames, getLocaleId, getLocaleEraNames, getLocaleWeekEndRange, getLocaleFirstDayOfWeek, getLocaleDateFormat, getLocaleDateTimeFormat, getLocaleExtraDayPeriodRules, getLocaleExtraDayPeriods, getLocalePluralCase, getLocaleTimeFormat, getLocaleNumberSymbol, getLocaleNumberFormat, getLocaleCurrencyName, getLocaleCurrencySymbol} from './i18n/locale_data_api';
 export {parseCookieValue as ɵparseCookieValue} from './cookie';
 export {CommonModule, DeprecatedI18NPipesModule} from './common_module';
 export {NgClass, NgForOf, NgForOfContext, NgIf, NgIfContext, NgPlural, NgPluralCase, NgStyle, NgSwitch, NgSwitchCase, NgSwitchDefault, NgTemplateOutlet, NgComponentOutlet} from './directives/index';

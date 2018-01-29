@@ -132,6 +132,9 @@ export declare function getLocaleTimeFormat(locale: string, width: FormatWidth):
 /** @experimental */
 export declare function getLocaleWeekEndRange(locale: string): [WeekDay, WeekDay];
 
+/** @experimental */
+export declare function getNbOfCurrencyDigits(code: string): number;
+
 /** @stable */
 export declare class HashLocationStrategy extends LocationStrategy {
     constructor(_platformLocation: PlatformLocation, _baseHref?: string);

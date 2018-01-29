@@ -71,4 +71,4 @@ export const enum ExtraLocaleDataIndex {
 /**
  * Index of each value in currency data (used to describe CURRENCIES_EN in currencies.ts)
  */
-export const enum CurrencyIndex {Symbol = 0, SymbolNarrow}
+export const enum CurrencyIndex {Symbol = 0, SymbolNarrow, NbOfDigits}
