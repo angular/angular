@@ -313,7 +313,7 @@ export function removeView(container: LContainerNode, removeIndex: number): LVie
   destroyViewTree(viewNode.data);
   addRemoveViewFromContainer(container, viewNode, false);
   // Notify query that view has been removed
-  container.data.query && container.data.query.removeView(removeIndex);
+  container.data.queries && container.data.queries.removeView(removeIndex);
   return viewNode;
 }
 

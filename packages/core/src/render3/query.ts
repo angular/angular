@@ -16,11 +16,11 @@ import {getSymbolIterator} from '../util';
 
 import {assertEqual, assertNotNull} from './assert';
 import {ReadFromInjectorFn, getOrCreateNodeInjectorForNode} from './di';
-import {assertPreviousIsParent, getCurrentQuery} from './instructions';
+import {assertPreviousIsParent, getCurrentQueries} from './instructions';
 import {DirectiveDef, unusedValueExportToPlacateAjd as unused1} from './interfaces/definition';
 import {LInjector, unusedValueExportToPlacateAjd as unused2} from './interfaces/injector';
 import {LContainerNode, LElementNode, LNode, LNodeFlags, TNode, unusedValueExportToPlacateAjd as unused3} from './interfaces/node';
-import {LQuery, QueryReadType, unusedValueExportToPlacateAjd as unused4} from './interfaces/query';
+import {LQueries, QueryReadType, unusedValueExportToPlacateAjd as unused4} from './interfaces/query';
 import {flatten} from './util';
 
 const unusedValueToPlacateAjd = unused1 + unused2 + unused3 + unused4;
@@ -63,7 +63,7 @@ export interface QueryPredicate<T> {
   values: any[];
 }
 
-export class LQuery_ implements LQuery {
+export class LQueries_ implements LQueries {
   shallow: QueryPredicate<any>|null = null;
   deep: QueryPredicate<any>|null = null;
 
@@ -82,7 +82,7 @@ export class LQuery_ implements LQuery {
     }
   }
 
-  child(): LQuery|null {
+  child(): LQueries|null {
     if (this.deep === null) {
       // if we don't have any deep queries then no need to track anything more.
       return null;
@@ -93,11 +93,11 @@ export class LQuery_ implements LQuery {
       return this;
     } else {
       // We need to create new state
-      return new LQuery_(this.deep);
+      return new LQueries_(this.deep);
     }
   }
 
-  container(): LQuery|null {
+  container(): LQueries|null {
     let result: QueryPredicate<any>|null = null;
     let predicate = this.deep;
 
@@ -117,10 +117,10 @@ export class LQuery_ implements LQuery {
       predicate = predicate.next;
     }
 
-    return result ? new LQuery_(result) : null;
+    return result ? new LQueries_(result) : null;
   }
 
-  enterView(index: number): LQuery|null {
+  enterView(index: number): LQueries|null {
     let result: QueryPredicate<any>|null = null;
     let predicate = this.deep;
 
@@ -140,7 +140,7 @@ export class LQuery_ implements LQuery {
       predicate = predicate.next;
     }
 
-    return result ? new LQuery_(result) : null;
+    return result ? new LQueries_(result) : null;
   }
 
   addNode(node: LNode): void {
@@ -164,12 +164,12 @@ export class LQuery_ implements LQuery {
   }
 
   /**
-   * Clone LQuery by taking all the deep query predicates and cloning those using a provided clone
+   * Clone LQueries by taking all the deep query predicates and cloning those using a provided clone
    * function.
    * Shallow predicates are ignored.
    */
   private _clonePredicates(
-      predicateCloneFn: (predicate: QueryPredicate<any>) => QueryPredicate<any>): LQuery|null {
+      predicateCloneFn: (predicate: QueryPredicate<any>) => QueryPredicate<any>): LQueries|null {
     let result: QueryPredicate<any>|null = null;
     let predicate = this.deep;
 
@@ -180,7 +180,7 @@ export class LQuery_ implements LQuery {
       predicate = predicate.next;
     }
 
-    return result ? new LQuery_(result) : null;
+    return result ? new LQueries_(result) : null;
   }
 }
 
@@ -382,8 +382,8 @@ export function query<T>(
     read?: QueryReadType<T>| Type<T>): QueryList<T> {
   ngDevMode && assertPreviousIsParent();
   const queryList = new QueryList<T>();
-  const query = getCurrentQuery(LQuery_);
-  query.track(queryList, predicate, descend, read);
+  const queries = getCurrentQueries(LQueries_);
+  queries.track(queryList, predicate, descend, read);
   return queryList;
 }
 
@@ -392,10 +392,10 @@ export function query<T>(
  * views.
  * Returns true if a query got dirty during change detection, false otherwise.
  */
-export function queryRefresh(query: QueryList<any>): boolean {
-  const queryImpl = (query as any as QueryList_<any>);
-  if (query.dirty) {
-    query.reset(queryImpl._valuesTree);
+export function queryRefresh(queryList: QueryList<any>): boolean {
+  const queryListImpl = (queryList as any as QueryList_<any>);
+  if (queryList.dirty) {
+    queryList.reset(queryListImpl._valuesTree);
     return true;
   }
   return false;
