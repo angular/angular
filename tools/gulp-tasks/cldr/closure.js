@@ -110,8 +110,13 @@ function generateAllLocalesFile(LOCALES, ALIASES) {
       // find the existing content file
       const path = `${RELATIVE_I18N_DATA_FOLDER}/${l}.ts`;
       if (fs.existsSync(`${RELATIVE_I18N_DATA_FOLDER}/${l}.ts`)) {
+        const localeName = formatLocale(locale);
         existingLocalesData[locale] =
-            fs.readFileSync(path, 'utf8').replace(`${HEADER}\nexport default `, '');
+            fs.readFileSync(path, 'utf8')
+                .replace(`${HEADER}\n`, '')
+                .replace('export default ', `export const locale_${localeName} = `)
+                .replace('function plural', `function plural_${localeName}`)
+                .replace(/,(\n  | )plural/, `, plural_${localeName}`);
       }
     }
 
@@ -125,17 +130,17 @@ function generateAllLocalesFile(LOCALES, ALIASES) {
       str += `case '${l}':\n`;
     }
 
-    str += `  l = ${formatLocale(locale)};
+    str += `  l = locale_${formatLocale(locale)};
     break;\n`;
     return str;
   }
 
-  function formatLocale(locale) { return `locale_${locale.replace(/-/g, '_')}`; }
+  function formatLocale(locale) { return locale.replace(/-/g, '_'); }
   // clang-format off
   return `${HEADER}
 import {registerLocaleData} from '../src/i18n/locale_data';
 
-${LOCALES.map(locale => `export const ${formatLocale(locale)} = ${existingLocalesData[locale]}`).join('\n')}
+${LOCALES.map(locale => `${existingLocalesData[locale]}`).join('\n')}
 
 let l: any;
 
