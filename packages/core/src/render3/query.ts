@@ -26,6 +26,26 @@ import {flatten} from './util';
 
 const unusedValueToPlacateAjd = unused1 + unused2 + unused3 + unused4;
 
+/**
+ * A predicate which determines if a given element/directive should be included in the query
+ * results.
+ */
+export interface QueryPredicate<T> {
+  /**
+   * If looking for directives then it contains the directive type.
+   */
+  type: Type<T>|null;
+
+  /**
+   * If selector then contains local names to query for.
+   */
+  selector: string[]|null;
+
+  /**
+   * Indicates which token should be read from DI for this query.
+   */
+  read: QueryReadType<T>|Type<T>|null;
+}
 
 /**
  * An object representing a query, which is a combination of:
@@ -45,24 +65,15 @@ export interface LQuery<T> {
   list: QueryList<T>;
 
   /**
-   * If looking for directives then it contains the directive type.
+   * A predicate which determines if a given element/directive should be included in the query
+   * results.
    */
-  type: Type<T>|null;
-
-  /**
-   * If selector then contains local names to query for.
-   */
-  selector: string[]|null;
-
-  /**
-   * Indicates which token should be read from DI for this query.
-   */
-  read: QueryReadType<T>|Type<T>|null;
+  predicate: QueryPredicate<T>;
 
   /**
    * Values which have been located.
    *
-   * this is what builds up the `QueryList._valuesTree`.
+   * This is what builds up the `QueryList._valuesTree`.
    */
   values: any[];
 }
@@ -107,14 +118,8 @@ export class LQueries_ implements LQueries {
     while (query) {
       const containerValues: any[] = [];  // prepare room for views
       query.values.push(containerValues);
-      const clonedQuery: LQuery<any> = {
-        next: null,
-        list: query.list,
-        type: query.type,
-        selector: query.selector,
-        read: query.read,
-        values: containerValues
-      };
+      const clonedQuery: LQuery<any> =
+          {next: null, list: query.list, predicate: query.predicate, values: containerValues};
       clonedQuery.next = result;
       result = clonedQuery;
       query = query.next;
@@ -130,14 +135,8 @@ export class LQueries_ implements LQueries {
     while (query) {
       const viewValues: any[] = [];  // prepare room for view nodes
       query.values.splice(index, 0, viewValues);
-      const clonedQuery: LQuery<any> = {
-        next: null,
-        list: query.list,
-        type: query.type,
-        selector: query.selector,
-        read: query.read,
-        values: viewValues
-      };
+      const clonedQuery: LQuery<any> =
+          {next: null, list: query.list, predicate: query.predicate, values: viewValues};
       clonedQuery.next = result;
       result = clonedQuery;
       query = query.next;
@@ -225,27 +224,29 @@ function readFromNodeInjector(
 function add(query: LQuery<any>| null, node: LNode) {
   const nodeInjector = getOrCreateNodeInjectorForNode(node as LElementNode | LContainerNode);
   while (query) {
-    const type = query.type;
+    const predicate = query.predicate;
+    const type = predicate.type;
     if (type) {
       const directiveIdx = geIdxOfMatchingDirective(node, type);
       if (directiveIdx !== null) {
         // a node is matching a predicate - determine what to read
         // if read token and / or strategy is not specified, use type as read token
-        const result = readFromNodeInjector(nodeInjector, node, query.read || type, directiveIdx);
+        const result =
+            readFromNodeInjector(nodeInjector, node, predicate.read || type, directiveIdx);
         if (result !== null) {
           addMatch(query, result);
         }
       }
     } else {
-      const selector = query.selector !;
+      const selector = predicate.selector !;
       for (let i = 0; i < selector.length; i++) {
         ngDevMode && assertNotNull(node.tNode, 'node.tNode');
         const directiveIdx = getIdxOfMatchingSelector(node.tNode !, selector[i]);
         if (directiveIdx !== null) {
           // a node is matching a predicate - determine what to read
           // note that queries using name selector must specify read strategy
-          ngDevMode && assertNotNull(query.read, 'query.read');
-          const result = readFromNodeInjector(nodeInjector, node, query.read !, directiveIdx);
+          ngDevMode && assertNotNull(predicate.read, 'predicate.read');
+          const result = readFromNodeInjector(nodeInjector, node, predicate.read !, directiveIdx);
           if (result !== null) {
             addMatch(query, result);
           }
@@ -261,16 +262,23 @@ function addMatch(query: LQuery<any>, matchingValue: any): void {
   query.list.setDirty();
 }
 
+function createPredicate<T>(
+    predicate: Type<T>| string[], read: QueryReadType<T>| Type<T>| null): QueryPredicate<T> {
+  const isArray = Array.isArray(predicate);
+  return {
+    type: isArray ? null : predicate as Type<T>,
+    selector: isArray ? predicate as string[] : null,
+    read: read
+  };
+}
+
 function createQuery<T>(
     previous: LQuery<any>| null, queryList: QueryList<T>, predicate: Type<T>| string[],
     read: QueryReadType<T>| Type<T>| null): LQuery<T> {
-  const isArray = Array.isArray(predicate);
   return {
     next: previous,
     list: queryList,
-    type: isArray ? null : predicate as Type<T>,
-    selector: isArray ? predicate as string[] : null,
-    read: read,
+    predicate: createPredicate(predicate, read),
     values: (queryList as any as QueryList_<T>)._valuesTree
   };
 }
