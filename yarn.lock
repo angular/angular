@@ -137,6 +137,10 @@
   version "1.0.4"
   resolved "https://registry.yarnpkg.com/@webcomponents/custom-elements/-/custom-elements-1.0.4.tgz#f7de0103026f27863ecfabaf1d450b9c21714910"
 
+"@webcomponents/webcomponentsjs@^1.1.0":
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/@webcomponents/webcomponentsjs/-/webcomponentsjs-1.1.0.tgz#1392799c266fca142622a720176f688beb74d181"
+
 Base64@~0.2.0:
   version "0.2.1"
   resolved "https://registry.yarnpkg.com/Base64/-/Base64-0.2.1.tgz#ba3a4230708e186705065e66babdd4c35cf60028"
