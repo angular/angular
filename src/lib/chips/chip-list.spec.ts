@@ -212,6 +212,18 @@ describe('MatChipList', () => {
           expect(manager.activeItemIndex).toEqual(1);
         });
 
+        it('should not handle arrow key events from non-chip elements', () => {
+          const event: KeyboardEvent =
+              createKeyboardEvent('keydown', RIGHT_ARROW, chipListNativeElement);
+          const initialActiveIndex = manager.activeItemIndex;
+
+          chipListInstance._keydown(event);
+          fixture.detectChanges();
+
+          expect(manager.activeItemIndex)
+              .toBe(initialActiveIndex, 'Expected focused item not to have changed.');
+        });
+
       });
 
       describe('RTL', () => {
