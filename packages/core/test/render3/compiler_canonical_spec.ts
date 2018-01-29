@@ -426,7 +426,7 @@ describe('compiler specification', () => {
         factory: () => new LifecycleComp(),
         template: function(ctx: any, cm: boolean) {},
         inputs: {nameMin: 'name'},
-        features: [r3.NgOnChangesFeature(LifecycleComp)]
+        features: [r3.NgOnChangesFeature]
       });
     }
 

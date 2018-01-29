@@ -67,59 +67,57 @@ type OnChangesExpando = OnChanges & {
   [key: string]: any;
 };
 
-export function NgOnChangesFeature<T>(type: Type<T>): (definition: DirectiveDef<any>) => void {
-  return function(definition: DirectiveDef<any>): void {
-    const inputs = definition.inputs;
-    const proto = type.prototype;
-    // Place where we will store SimpleChanges if there is a change
-    Object.defineProperty(proto, PRIVATE_PREFIX, {value: undefined, writable: true});
-    for (let pubKey in inputs) {
-      const minKey = inputs[pubKey];
-      const privateMinKey = PRIVATE_PREFIX + minKey;
-      // Create a place where the actual value will be stored and make it non-enumerable
-      Object.defineProperty(proto, privateMinKey, {value: undefined, writable: true});
+export function NgOnChangesFeature(definition: DirectiveDef<any>): void {
+  const inputs = definition.inputs;
+  const proto = definition.type.prototype;
+  // Place where we will store SimpleChanges if there is a change
+  Object.defineProperty(proto, PRIVATE_PREFIX, {value: undefined, writable: true});
+  for (let pubKey in inputs) {
+    const minKey = inputs[pubKey];
+    const privateMinKey = PRIVATE_PREFIX + minKey;
+    // Create a place where the actual value will be stored and make it non-enumerable
+    Object.defineProperty(proto, privateMinKey, {value: undefined, writable: true});
 
-      const existingDesc = Object.getOwnPropertyDescriptor(proto, minKey);
+    const existingDesc = Object.getOwnPropertyDescriptor(proto, minKey);
 
-      // create a getter and setter for property
-      Object.defineProperty(proto, minKey, {
-        get: function(this: OnChangesExpando) {
-          return (existingDesc && existingDesc.get) ? existingDesc.get.call(this) :
-                                                      this[privateMinKey];
-        },
-        set: function(this: OnChangesExpando, value: any) {
-          let simpleChanges = this[PRIVATE_PREFIX];
-          let isFirstChange = simpleChanges === undefined;
-          if (simpleChanges == null) {
-            simpleChanges = this[PRIVATE_PREFIX] = {};
-          }
-          simpleChanges[pubKey] = new SimpleChange(this[privateMinKey], value, isFirstChange);
-          (existingDesc && existingDesc.set) ? existingDesc.set.call(this, value) :
-                                               this[privateMinKey] = value;
-        }
-      });
-    }
-
-    // If an onInit hook is defined, it will need to wrap the ngOnChanges call
-    // so the call order is changes-init-check in creation mode. In subsequent
-    // change detection runs, only the check wrapper will be called.
-    if (definition.onInit != null) {
-      definition.onInit = onChangesWrapper(definition.onInit);
-    }
-
-    definition.doCheck = onChangesWrapper(definition.doCheck);
-
-    function onChangesWrapper(delegateHook: (() => void) | null) {
-      return function(this: OnChangesExpando) {
+    // create a getter and setter for property
+    Object.defineProperty(proto, minKey, {
+      get: function(this: OnChangesExpando) {
+        return (existingDesc && existingDesc.get) ? existingDesc.get.call(this) :
+                                                    this[privateMinKey];
+      },
+      set: function(this: OnChangesExpando, value: any) {
         let simpleChanges = this[PRIVATE_PREFIX];
-        if (simpleChanges != null) {
-          this.ngOnChanges(simpleChanges);
-          this[PRIVATE_PREFIX] = null;
+        let isFirstChange = simpleChanges === undefined;
+        if (simpleChanges == null) {
+          simpleChanges = this[PRIVATE_PREFIX] = {};
         }
-        delegateHook && delegateHook.apply(this);
-      };
-    }
-  };
+        simpleChanges[pubKey] = new SimpleChange(this[privateMinKey], value, isFirstChange);
+        (existingDesc && existingDesc.set) ? existingDesc.set.call(this, value) :
+                                             this[privateMinKey] = value;
+      }
+    });
+  }
+
+  // If an onInit hook is defined, it will need to wrap the ngOnChanges call
+  // so the call order is changes-init-check in creation mode. In subsequent
+  // change detection runs, only the check wrapper will be called.
+  if (definition.onInit != null) {
+    definition.onInit = onChangesWrapper(definition.onInit);
+  }
+
+  definition.doCheck = onChangesWrapper(definition.doCheck);
+
+  function onChangesWrapper(delegateHook: (() => void) | null) {
+    return function(this: OnChangesExpando) {
+      let simpleChanges = this[PRIVATE_PREFIX];
+      if (simpleChanges != null) {
+        this.ngOnChanges(simpleChanges);
+        this[PRIVATE_PREFIX] = null;
+      }
+      delegateHook && delegateHook.apply(this);
+    };
+  }
 }
 
 
