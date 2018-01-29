@@ -58,7 +58,7 @@ new as of May 2017 and not very stable yet.
 - Test all packages: `bazel test packages/...`
 
 You can use [ibazel] to get a "watch mode" that continuously
-keeps the outputs up-to-date as you save sources. 
+keeps the outputs up-to-date as you save sources.
 
 ### Debugging a Node Test
 
@@ -67,6 +67,44 @@ keeps the outputs up-to-date as you save sources.
 - Run test: `bazel test packages/core/test:test --config=debug`
 
 The process should automatically connect to the debugger.
+
+### Debugging a Node Test in VSCode
+
+First time setup:
+- Go to Debug > Add configuration (in the menu bar) to open `launch.json`
+- Add the following to the `configurations` array:
+
+```
+        {
+            "name": "Attach (inspect)",
+            "type": "node",
+            "request": "attach",
+            "port": 9229,
+            "address": "localhost",
+            "restart": false,
+            "sourceMaps": true,
+            "localRoot": "${workspaceRoot}",
+            "remoteRoot": null
+        },
+        {
+            "name": "Attach (no-sm,inspect)",
+            "type": "node",
+            "request": "attach",
+            "port": 9229,
+            "address": "localhost",
+            "restart": false,
+            "sourceMaps": false,
+            "localRoot": "${workspaceRoot}",
+            "remoteRoot": null
+        },
+```
+
+The easiest way to debug a test for now is to add a `debugger` statement in the code
+and launch the bazel corresponding test (`bazel test <target> --config=debug`).
+
+Bazel will wait on a connection. Go to the debug view (by clicking on the sidebar or
+Apple+Shift+D on Mac) and click on the green play icon next to the configuration name
+(ie `Attach (inspect)`).
 
 ### Debugging a Karma Test
 
