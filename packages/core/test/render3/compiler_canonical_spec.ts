@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, Directive, Injectable, Input, NgModule, Optional, SimpleChanges, TemplateRef, Type, ViewContainerRef} from '../../src/core';
+import {Component, Directive, Injectable, Input, NgModule, Optional, QueryList, SimpleChanges, TemplateRef, Type, ViewChild, ViewContainerRef} from '../../src/core';
 import * as r3 from '../../src/render3/index';
 
 import {containerEl, renderComponent, requestAnimationFrame, toHtml} from './render_util';
@@ -238,6 +238,60 @@ describe('compiler specification', () => {
         });
       }
     });
+
+    describe('queries', () => {
+      let someDir: SomeDirective;
+
+      @Directive({
+        selector: '[someDir]',
+      })
+      class SomeDirective {
+        static ngDirectiveDef = r3.defineDirective({
+          type: SomeDirective,
+          factory: function SomeDirective_Factory() { return someDir = new SomeDirective(); },
+          features: [r3.PublicFeature]
+        });
+      }
+
+      it('should support view queries', () => {
+        @Component({
+          selector: 'view-query-component',
+          template: `
+          <div someDir></div>
+        `
+        })
+        class ViewQueryComponent {
+          @ViewChild(SomeDirective) someDir: SomeDirective;
+
+
+          // NORMATIVE
+          static ngComponentDef = r3.defineComponent({
+            type: ViewQueryComponent,
+            tag: 'view-query-component',
+            factory: function ViewQueryComponent_Factory() { return new ViewQueryComponent(); },
+            template: function ViewQueryComponent_Template(ctx: ViewQueryComponent, cm: boolean) {
+              let tmp: any;
+              if (cm) {
+                r3.m(0, r3.Q(SomeDirective, false));
+                r3.E(1, 'div', null, e1_dirs);
+                r3.e();
+              }
+              r3.qR(tmp = r3.m<QueryList<any>>(0)) && (ctx.someDir = tmp as QueryList<any>);
+              SomeDirective.ngDirectiveDef.h(2, 1);
+              r3.r(2, 1);
+            }
+          });
+          // /NORMATIVE
+        }
+
+        const e1_dirs = [SomeDirective];
+
+        const viewQueryComp = renderComponent(ViewQueryComponent);
+        expect((viewQueryComp.someDir as QueryList<SomeDirective>).toArray()).toEqual([someDir !]);
+      });
+      
+    });
+
   });
 
   describe('local references', () => {
