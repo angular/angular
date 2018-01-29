@@ -8,7 +8,7 @@
 
 import {ComponentTemplate} from './definition';
 import {LElementNode, LViewNode} from './node';
-import {LQuery} from './query';
+import {LQueries} from './query';
 import {LView, TView} from './view';
 
 
@@ -79,7 +79,7 @@ export interface LContainer {
    * Queries active for this container - all the views inserted to / removed from
    * this container are reported to queries referenced here.
    */
-  query: LQuery|null;
+  queries: LQueries|null;
 }
 
 /**
