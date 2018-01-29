@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {NumberFormatStyle, NumberSymbol, getLocaleNumberFormat, getLocaleNumberSymbol} from './locale_data_api';
+import {NumberFormatStyle, NumberSymbol, getLocaleNumberFormat, getLocaleNumberSymbol, getNbOfCurrencyDigits} from './locale_data_api';
 
 export const NUMBER_FORMAT_REGEXP = /^(\d+)?\.((\d+)(-(\d+))?)?$/;
 const MAX_DIGITS = 22;
@@ -36,21 +36,18 @@ function strToNumber(value: number | string): number {
  * Transforms a number to a locale string based on a style and a format
  */
 function formatNumber(
-    value: number | string, locale: string, style: NumberFormatStyle, groupSymbol: NumberSymbol,
-    decimalSymbol: NumberSymbol, digitsInfo?: string): string {
-  const format = getLocaleNumberFormat(locale, style);
-  const num = strToNumber(value);
-
-  const pattern = parseNumberFormat(format, getLocaleNumberSymbol(locale, NumberSymbol.MinusSign));
+    value: number | string, pattern: ParsedNumberFormat, locale: string, groupSymbol: NumberSymbol,
+    decimalSymbol: NumberSymbol, digitsInfo?: string, isPercent = false): string {
   let formattedText = '';
   let isZero = false;
+  const num = strToNumber(value);
 
   if (!isFinite(num)) {
     formattedText = getLocaleNumberSymbol(locale, NumberSymbol.Infinity);
   } else {
     let parsedNumber = parseNumber(num);
 
-    if (style === NumberFormatStyle.Percent) {
+    if (isPercent) {
       parsedNumber = toPercent(parsedNumber);
     }
 
@@ -142,13 +139,20 @@ function formatNumber(
 
 /**
  * Formats a currency to a locale string
+ *
+ * @internal
  */
 export function formatCurrency(
     value: number | string, locale: string, currency: string, currencyCode?: string,
     digitsInfo?: string): string {
+  const format = getLocaleNumberFormat(locale, NumberFormatStyle.Currency);
+  const pattern = parseNumberFormat(format, getLocaleNumberSymbol(locale, NumberSymbol.MinusSign));
+
+  pattern.minFrac = getNbOfCurrencyDigits(currencyCode !);
+  pattern.maxFrac = pattern.minFrac;
+
   const res = formatNumber(
-      value, locale, NumberFormatStyle.Currency, NumberSymbol.CurrencyGroup,
-      NumberSymbol.CurrencyDecimal, digitsInfo);
+      value, pattern, locale, NumberSymbol.CurrencyGroup, NumberSymbol.CurrencyDecimal, digitsInfo);
   return res
       .replace(CURRENCY_CHAR, currency)
       // if we have 2 time the currency character, the second one is ignored
@@ -157,22 +161,27 @@ export function formatCurrency(
 
 /**
  * Formats a percentage to a locale string
+ *
+ * @internal
  */
 export function formatPercent(value: number | string, locale: string, digitsInfo?: string): string {
+  const format = getLocaleNumberFormat(locale, NumberFormatStyle.Percent);
+  const pattern = parseNumberFormat(format, getLocaleNumberSymbol(locale, NumberSymbol.MinusSign));
   const res = formatNumber(
-      value, locale, NumberFormatStyle.Percent, NumberSymbol.Group, NumberSymbol.Decimal,
-      digitsInfo);
+      value, pattern, locale, NumberSymbol.Group, NumberSymbol.Decimal, digitsInfo, true);
   return res.replace(
       new RegExp(PERCENT_CHAR, 'g'), getLocaleNumberSymbol(locale, NumberSymbol.PercentSign));
 }
 
 /**
  * Formats a number to a locale string
+ *
+ * @internal
  */
 export function formatDecimal(value: number | string, locale: string, digitsInfo?: string): string {
-  return formatNumber(
-      value, locale, NumberFormatStyle.Decimal, NumberSymbol.Group, NumberSymbol.Decimal,
-      digitsInfo);
+  const format = getLocaleNumberFormat(locale, NumberFormatStyle.Decimal);
+  const pattern = parseNumberFormat(format, getLocaleNumberSymbol(locale, NumberSymbol.MinusSign));
+  return formatNumber(value, pattern, locale, NumberSymbol.Group, NumberSymbol.Decimal, digitsInfo);
 }
 
 interface ParsedNumberFormat {

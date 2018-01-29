@@ -550,3 +550,21 @@ export function getCurrencySymbol(code: string, format: 'wide' | 'narrow', local
 
   return currency[CurrencyIndex.Symbol] || code;
 }
+
+// Most currencies have cents, that's why the default is 2
+const DEFAULT_NB_OF_CURRENCY_DIGITS = 2;
+
+/**
+ * Returns the number of decimal digits for the given currency.
+ * Its value depends upon the presence of cents in that particular currency.
+ *
+ * @experimental i18n support is experimental.
+ */
+export function getNbOfCurrencyDigits(code: string): number {
+  let digits;
+  const currency = CURRENCIES_EN[code];
+  if (currency) {
+    digits = currency[CurrencyIndex.NbOfDigits];
+  }
+  return typeof digits === 'number' ? digits : DEFAULT_NB_OF_CURRENCY_DIGITS;
+}
