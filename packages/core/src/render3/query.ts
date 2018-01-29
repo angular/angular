@@ -10,6 +10,7 @@
 // correctly implementing its interfaces for backwards compatibility.
 import {Observable} from 'rxjs/Observable';
 
+import {EventEmitter} from '../event_emitter';
 import {QueryList as viewEngine_QueryList} from '../linker/query_list';
 import {Type} from '../type';
 import {getSymbolIterator} from '../util';
@@ -295,7 +296,7 @@ function createPredicate<T>(
 
 class QueryList_<T>/* implements viewEngine_QueryList<T> */ {
   readonly dirty = true;
-  readonly changes: Observable<T>;
+  readonly changes: Observable<T> = new EventEmitter();
   private _values: T[] = [];
   /** @internal */
   _valuesTree: any[] = [];
@@ -367,9 +368,12 @@ class QueryList_<T>/* implements viewEngine_QueryList<T> */ {
     (this as{dirty: boolean}).dirty = false;
   }
 
-  notifyOnChanges(): void { throw new Error('Method not implemented.'); }
+  notifyOnChanges(): void { (this.changes as EventEmitter<any>).emit(this); }
   setDirty(): void { (this as{dirty: boolean}).dirty = true; }
-  destroy(): void { throw new Error('Method not implemented.'); }
+  destroy(): void {
+    (this.changes as EventEmitter<any>).complete();
+    (this.changes as EventEmitter<any>).unsubscribe();
+  }
 }
 
 // NOTE: this hack is here because IQueryList has private members and therefore
@@ -396,6 +400,7 @@ export function queryRefresh(query: QueryList<any>): boolean {
   const queryImpl = (query as any as QueryList_<any>);
   if (query.dirty) {
     query.reset(queryImpl._valuesTree);
+    query.notifyOnChanges();
     return true;
   }
   return false;
