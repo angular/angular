@@ -826,4 +826,34 @@ describe('query', () => {
     });
 
   });
+
+  describe('observable interface', () => {
+
+    it('should allow observing changes to query list', () => {
+      const queryList = new QueryList();
+      let changes = 0;
+
+      queryList.changes.subscribe({
+        next: (arg) => {
+          changes += 1;
+          expect(arg).toBe(queryList);
+        }
+      });
+
+      // initial refresh, the query should be dirty
+      qR(queryList);
+      expect(changes).toBe(1);
+
+
+      // refresh without setting dirty - no emit
+      qR(queryList);
+      expect(changes).toBe(1);
+
+      // refresh with setting dirty - emit
+      queryList.setDirty();
+      qR(queryList);
+      expect(changes).toBe(2);
+    });
+
+  });
 });
