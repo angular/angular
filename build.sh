@@ -413,7 +413,6 @@ if [[ ${BUILD_TOOLS} == true || ${BUILD_ALL} == true ]]; then
   $(npm bin)/tsc -p packages/compiler/tsconfig-tools.json
   echo "====== (compiler)COMPILING: \$(npm bin)/tsc -p packages/compiler-cli/tsconfig-tools.json"
   $(npm bin)/tsc -p packages/compiler-cli/tsconfig-tools.json
-  cp -r packages/compiler-cli/package.json dist/tools/@angular/compiler-cli/
 
   mkdir -p ./dist/packages-dist
   rsync -a packages/bazel/ ./dist/packages-dist/bazel

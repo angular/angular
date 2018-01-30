@@ -67,6 +67,11 @@ class AngularCompilerProgram implements Program {
       private host: CompilerHost, oldProgram?: Program) {
     this.rootNames = [...rootNames];
 
+    if (ts.version < '2.4.2' || (ts.version >= '2.7.0' && !options.disableTypeScriptVersionCheck)) {
+      throw new Error(
+          `The Angular Compiler requires TypeScript >=2.4.2 and <2.7 but ${ts.version} was found instead.`);
+    }
+
     this.oldTsProgram = oldProgram ? oldProgram.getTsProgram() : undefined;
     if (oldProgram) {
       this.oldProgramLibrarySummaries = oldProgram.getLibrarySummaries();
