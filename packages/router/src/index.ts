@@ -7,22 +7,28 @@
  */
 
 
+export {applyRedirects} from './apply_redirects';
+export {createRouterState} from './create_router_state';
+export {recognize} from './recognize';
 export {Data, LoadChildren, LoadChildrenCallback, ResolveData, Route, Routes, RunGuardsAndResolvers, UrlMatchResult, UrlMatcher} from './config';
 export {RouterLink, RouterLinkWithHref} from './directives/router_link';
 export {RouterLinkActive} from './directives/router_link_active';
 export {RouterOutlet} from './directives/router_outlet';
 export {ActivationEnd, ActivationStart, ChildActivationEnd, ChildActivationStart, Event, GuardsCheckEnd, GuardsCheckStart, NavigationCancel, NavigationEnd, NavigationError, NavigationStart, ResolveEnd, ResolveStart, RouteConfigLoadEnd, RouteConfigLoadStart, RouterEvent, RoutesRecognized} from './events';
 export {CanActivate, CanActivateChild, CanDeactivate, CanLoad, Resolve} from './interfaces';
+export {PreActivation} from './pre_activation';
 export {DetachedRouteHandle, RouteReuseStrategy} from './route_reuse_strategy';
 export {NavigationExtras, Router} from './router';
 export {ROUTES} from './router_config_loader';
 export {ExtraOptions, ROUTER_CONFIGURATION, ROUTER_INITIALIZER, RouterModule, provideRoutes} from './router_module';
 export {ChildrenOutletContexts, OutletContext} from './router_outlet_context';
 export {NoPreloading, PreloadAllModules, PreloadingStrategy, RouterPreloader} from './router_preloader';
-export {ActivatedRoute, ActivatedRouteSnapshot, RouterState, RouterStateSnapshot} from './router_state';
-export {PRIMARY_OUTLET, ParamMap, Params, convertToParamMap} from './shared';
+export {ActivatedRoute, ActivatedRouteSnapshot, RouterState, RouterStateSnapshot, advanceActivatedRoute} from './router_state';
+export {PRIMARY_OUTLET, ParamMap, Params, convertToParamMap, isNavigationCancelingError} from './shared';
 export {UrlHandlingStrategy} from './url_handling_strategy';
 export {DefaultUrlSerializer, UrlSegment, UrlSegmentGroup, UrlSerializer, UrlTree} from './url_tree';
+export {TreeNode, nodeChildrenAsMap} from './utils/tree';
+export {forEach} from './utils/collection';
 export {VERSION} from './version';
 
 export * from './private_export';
