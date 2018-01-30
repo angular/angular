@@ -124,7 +124,6 @@ export class EmbedComponentsService {
    * If necessary, load and instantiate the module first.
    */
   protected prepareComponentFactories(compsOrPath: ComponentsOrModulePath): Promise<void> {
-    console.log(compsOrPath)
     if (!this.componentFactoriesReady.has(compsOrPath)) {
       const componentsAndResolverPromise = (typeof compsOrPath !== 'string')
           ? Promise.resolve({components: compsOrPath, resolver: this.resolver})
