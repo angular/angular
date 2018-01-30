@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, Directive, Injectable, Input, NgModule, Optional, QueryList, SimpleChanges, TemplateRef, Type, ViewChild, ViewContainerRef} from '../../src/core';
+import {Component, ContentChild, Directive, Injectable, Input, NgModule, Optional, QueryList, SimpleChanges, TemplateRef, Type, ViewChild, ViewContainerRef} from '../../src/core';
 import * as r3 from '../../src/render3/index';
 
 import {containerEl, renderComponent, requestAnimationFrame, toHtml} from './render_util';
@@ -183,7 +183,7 @@ describe('compiler specification', () => {
           template: function(ctx: SimpleComponent, cm: boolean) {
             if (cm) {
               r3.pD(0);
-              r3.E(0, 'div');
+              r3.E(1, 'div');
               r3.P(2, 0);
               r3.e();
             }
@@ -272,7 +272,7 @@ describe('compiler specification', () => {
             template: function ViewQueryComponent_Template(ctx: ViewQueryComponent, cm: boolean) {
               let tmp: any;
               if (cm) {
-                r3.m(0, r3.Q(SomeDirective, false));
+                r3.Q(0, SomeDirective, false);
                 r3.E(1, 'div', null, e1_dirs);
                 r3.e();
               }
@@ -289,7 +289,82 @@ describe('compiler specification', () => {
         const viewQueryComp = renderComponent(ViewQueryComponent);
         expect((viewQueryComp.someDir as QueryList<SomeDirective>).toArray()).toEqual([someDir !]);
       });
-      
+
+      it('should support content queries', () => {
+        let contentQueryComp: ContentQueryComponent;
+
+        @Component({
+          selector: 'content-query-component',
+          template: `
+            <div><ng-content></ng-content></div>
+          `
+        })
+        class ContentQueryComponent {
+          @ContentChild(SomeDirective) someDir: SomeDirective;
+
+          // NORMATIVE
+          static ngComponentDef = r3.defineComponent({
+            type: ContentQueryComponent,
+            tag: 'content-query-component',
+            factory: function ContentQueryComponent_Factory() {
+              return [new ContentQueryComponent(), r3.Q(null, SomeDirective, false)];
+            },
+            hostBindings: function ContentQueryComponent_HostBindings(
+                dirIndex: number, elIndex: number) {
+              let tmp: any;
+              r3.qR(tmp = r3.m<any[]>(dirIndex)[1]) && (r3.m<any[]>(dirIndex)[0].someDir = tmp);
+            },
+            template: function ContentQueryComponent_Template(
+                ctx: ContentQueryComponent, cm: boolean) {
+              if (cm) {
+                r3.pD(0);
+                r3.E(1, 'div');
+                r3.P(2, 0);
+                r3.e();
+              }
+            }
+          });
+          // /NORMATIVE
+        }
+
+        @Component({
+          selector: 'my-app',
+          template: `
+            <content-query-component>
+              <div someDir></div>
+            </content-query-component>
+          `
+        })
+        class MyApp {
+          static ngComponentDef = r3.defineComponent({
+            type: MyApp,
+            tag: 'my-app',
+            factory: function MyApp_Factory() { return new MyApp(); },
+            template: function MyApp_Template(ctx: MyApp, cm: boolean) {
+              if (cm) {
+                r3.E(0, ContentQueryComponent);
+                contentQueryComp = r3.m<any[]>(1)[0];
+                r3.E(2, 'div', null, e2_dirs);
+                r3.e();
+                r3.e();
+              }
+              ContentQueryComponent.ngComponentDef.h(1, 0);
+              SomeDirective.ngDirectiveDef.h(3, 2);
+              r3.r(1, 0);
+              r3.r(3, 2);
+            }
+          });
+        }
+
+        const e2_dirs = [SomeDirective];
+
+        expect(renderComp(MyApp))
+            .toEqual(`<content-query-component><div><div></div></div></content-query-component>`);
+        expect((contentQueryComp !.someDir as QueryList<SomeDirective>).toArray()).toEqual([
+          someDir !
+        ]);
+      });
+
     });
 
   });
