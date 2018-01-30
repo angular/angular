@@ -17,8 +17,8 @@ import { CodeComponent } from './code/code.component';
 import { SharedModule } from 'app/shared/shared.module';
 
 // Embedded Components
-import { ApiListComponent } from './api/api-list.component';
-import { ApiService } from './api/api.service';
+//import { ApiListComponent } from './api/api-list.component';
+//import { ApiService } from './api/api.service';
 import { CodeExampleComponent } from './code/code-example.component';
 import { CodeTabsComponent } from './code/code-tabs.component';
 import { ContributorListComponent } from './contributor/contributor-list.component';
@@ -34,7 +34,7 @@ import { ResourceService } from './resource/resource.service';
  * such as CodeExampleComponent, LiveExampleComponent,...
  */
 export const embeddedComponents: Type<any>[] = [
-  ApiListComponent, CodeExampleComponent, CodeTabsComponent, ContributorListComponent,
+  CodeExampleComponent, CodeTabsComponent, ContributorListComponent,
   CurrentLocationComponent, FileNotFoundSearchComponent, LiveExampleComponent, ResourceListComponent
 ];
 
@@ -53,7 +53,7 @@ export const embeddedComponents: Type<any>[] = [
     EmbeddedPlunkerComponent
   ],
   providers: [
-    ApiService,
+    //ApiService,
     ContributorService,
     CopierService,
     PrettyPrinter,

@@ -14,7 +14,8 @@ import {isFunction} from './utils';
 /**
  * @whatItDoes Registers an array of Angular Components as Custom Elements.
  *
- * @description registers the `customElementComponents` using an existing `PlatformRef` and compiled `NgModuleFactory`
+ * @description registers the `customElementComponents` using an existing `PlatformRef` and compiled
+ * `NgModuleFactory`
  *
  * @param {Type<any>[]} customElementComponents
  * @param {PlatformRef} platformRef
@@ -28,7 +29,8 @@ export function registerAsCustomElements<T>(
 
 /**
  *
- * @description registers the `customElementComponents` using a async bootstrap function, allowing JIT usage (not recommended)
+ * @description registers the `customElementComponents` using a async bootstrap function, allowing
+ * JIT usage (not recommended)
  * @param {Type<any>[]} customElementComponents
  * @param {() => Promise<NgModuleRef<T>>} bootstrapFn
  * @returns {Promise<NgModuleRef<T>>}
@@ -38,7 +40,9 @@ export function registerAsCustomElements<T>(
     bootstrapFn: () => Promise<NgModuleRef<T>>): Promise<NgModuleRef<T>>;
 /**
  *
- * @description The `customElement` components passed into this function are wrapped in a subclass of `NgElement` and registered with the browser's [`CustomElementRegistry`](https://developer.mozilla.org/en-US/docs/Web/API/CustomElementRegistry)
+ * @description The `customElement` components passed into this function are wrapped in a subclass
+ * of `NgElement` and registered with the browser's
+ * [`CustomElementRegistry`](https://developer.mozilla.org/en-US/docs/Web/API/CustomElementRegistry)
  *
  * ## Example
  *
