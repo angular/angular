@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {AnimationEvent} from '@angular/animations';
 import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
@@ -138,6 +139,22 @@ export class MatExpansionPanel extends CdkAccordionItem
   ngOnDestroy() {
     super.ngOnDestroy();
     this._inputChanges.complete();
+  }
+
+  _bodyAnimation(event: AnimationEvent) {
+    const classList = event.element.classList;
+    const cssClass = 'mat-expanded';
+    const {phaseName, toState} = event;
+
+    // Toggle the body's `overflow: hidden` class when closing starts or when expansion ends in
+    // order to prevent the cases where switching too early would cause the animation to jump.
+    // Note that we do it directly on the DOM element to avoid the slight delay that comes
+    // with doing it via change detection.
+    if (phaseName === 'done' && toState === 'expanded') {
+      classList.add(cssClass);
+    } else if (phaseName === 'start' && toState === 'collapsed') {
+      classList.remove(cssClass);
+    }
   }
 }
 

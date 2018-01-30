@@ -1,4 +1,4 @@
-import {async, TestBed, fakeAsync, tick, ComponentFixture} from '@angular/core/testing';
+import {async, TestBed, fakeAsync, tick, ComponentFixture, flush} from '@angular/core/testing';
 import {Component, ViewChild} from '@angular/core';
 import {By} from '@angular/platform-browser';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
@@ -26,19 +26,22 @@ describe('MatExpansionPanel', () => {
     TestBed.compileComponents();
   }));
 
-  it('should expand and collapse the panel', () => {
+  it('should expand and collapse the panel', fakeAsync(() => {
     const fixture = TestBed.createComponent(PanelWithContent);
-    const contentEl = fixture.debugElement.query(By.css('.mat-expansion-panel-content'));
-    const headerEl = fixture.debugElement.query(By.css('.mat-expansion-panel-header'));
+    const contentEl = fixture.nativeElement.querySelector('.mat-expansion-panel-content');
+    const headerEl = fixture.nativeElement.querySelector('.mat-expansion-panel-header');
     fixture.detectChanges();
-    expect(headerEl.classes['mat-expanded']).toBeFalsy();
-    expect(contentEl.classes['mat-expanded']).toBeFalsy();
+
+    expect(headerEl.classList).not.toContain('mat-expanded');
+    expect(contentEl.classList).not.toContain('mat-expanded');
 
     fixture.componentInstance.expanded = true;
     fixture.detectChanges();
-    expect(headerEl.classes['mat-expanded']).toBeTruthy();
-    expect(contentEl.classes['mat-expanded']).toBeTruthy();
-  });
+    flush();
+
+    expect(headerEl.classList).toContain('mat-expanded');
+    expect(contentEl.classList).toContain('mat-expanded');
+  }));
 
   it('should be able to render panel content lazily', fakeAsync(() => {
     let fixture = TestBed.createComponent(LazyPanelWithContent);

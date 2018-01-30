@@ -11,12 +11,10 @@
 }
 
 .mat-expansion-panel-content {
-  .mat-expanded & {
-    overflow: visible;
-  }
+  overflow: hidden;
 
-  &, &.ng-animating {
-    overflow: hidden;
+  &.mat-expanded {
+    overflow: visible;
   }
 }
 
