@@ -70,6 +70,8 @@ export {
   queryRefresh as qR,
 } from './query';
 
+export {LifecycleHook} from './hooks';
+
 // clang-format on
 
 export {

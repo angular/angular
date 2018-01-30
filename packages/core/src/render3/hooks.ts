@@ -10,6 +10,20 @@ import {DirectiveDef} from './interfaces/definition';
 import {LNodeFlags} from './interfaces/node';
 import {HookData, LView, LifecycleStage, TView} from './interfaces/view';
 
+
+
+/** Constants used by lifecycle hooks to determine when and how a hook should be called. */
+export const enum LifecycleHook {
+  ON_INIT = 0b00,
+  ON_CHECK = 0b01,
+
+  /* Mask used to get the type of the lifecycle hook from flags in hook queue */
+  TYPE_MASK = 0b00000000000000000000000000000001,
+
+  /* Shift needed to get directive index from flags in hook queue */
+  INDX_SHIFT = 1
+}
+
 /**
  * If this is the first template pass, any ngOnInit or ngDoCheck hooks will be queued into
  * TView.initHooks during directiveCreate.
@@ -26,12 +40,11 @@ export function queueInitHooks(
     index: number, onInit: (() => void) | null, doCheck: (() => void) | null, tView: TView): void {
   if (tView.firstTemplatePass === true) {
     if (onInit != null) {
-      (tView.initHooks || (tView.initHooks = [])).push(index, onInit);
+      (tView.initHooks || (tView.initHooks = [])).push(getInitFlags(index), onInit);
     }
 
     if (doCheck != null) {
-      (tView.initHooks || (tView.initHooks = [])).push(index, doCheck);
-      (tView.checkHooks || (tView.checkHooks = [])).push(index, doCheck);
+      (tView.initHooks || (tView.initHooks = [])).push(getCheckFlags(index), doCheck);
     }
   }
 }
@@ -61,24 +74,23 @@ export function queueLifecycleHooks(flags: number, currentView: LView): void {
 /** Queues afterContentInit and afterContentChecked hooks on TView */
 function queueContentHooks(def: DirectiveDef<any>, tView: TView, i: number): void {
   if (def.afterContentInit != null) {
-    (tView.contentHooks || (tView.contentHooks = [])).push(i, def.afterContentInit);
+    (tView.contentHooks || (tView.contentHooks = [])).push(getInitFlags(i), def.afterContentInit);
   }
 
   if (def.afterContentChecked != null) {
-    (tView.contentHooks || (tView.contentHooks = [])).push(i, def.afterContentChecked);
-    (tView.contentCheckHooks || (tView.contentCheckHooks = [])).push(i, def.afterContentChecked);
+    (tView.contentHooks || (tView.contentHooks = [
+     ])).push(getCheckFlags(i), def.afterContentChecked);
   }
 }
 
 /** Queues afterViewInit and afterViewChecked hooks on TView */
 function queueViewHooks(def: DirectiveDef<any>, tView: TView, i: number): void {
   if (def.afterViewInit != null) {
-    (tView.viewHooks || (tView.viewHooks = [])).push(i, def.afterViewInit);
+    (tView.viewHooks || (tView.viewHooks = [])).push(getInitFlags(i), def.afterViewInit);
   }
 
   if (def.afterViewChecked != null) {
-    (tView.viewHooks || (tView.viewHooks = [])).push(i, def.afterViewChecked);
-    (tView.viewCheckHooks || (tView.viewCheckHooks = [])).push(i, def.afterViewChecked);
+    (tView.viewHooks || (tView.viewHooks = [])).push(getCheckFlags(i), def.afterViewChecked);
   }
 }
 
@@ -89,14 +101,26 @@ function queueDestroyHooks(def: DirectiveDef<any>, tView: TView, i: number): voi
   }
 }
 
+/** Generates flags for init-only hooks */
+function getInitFlags(index: number): number {
+  return index << LifecycleHook.INDX_SHIFT;
+}
+
+/** Generates flags for hooks called every change detection run */
+function getCheckFlags(index: number): number {
+  return (index << LifecycleHook.INDX_SHIFT) | LifecycleHook.ON_CHECK;
+}
+
 /**
  * Calls onInit and doCheck calls if they haven't already been called.
  *
  * @param currentView The current view
  */
-export function executeInitHooks(currentView: LView, tView: TView, creationMode: boolean): void {
-  if (currentView.lifecycleStage === LifecycleStage.INIT) {
-    executeHooks(currentView.data, tView.initHooks, tView.checkHooks, creationMode);
+export function executeInitHooks(currentView: LView): void {
+  const initHooks = currentView.tView.initHooks;
+
+  if (currentView.lifecycleStage === LifecycleStage.INIT && initHooks != null) {
+    executeLifecycleHooks(currentView, initHooks);
     currentView.lifecycleStage = LifecycleStage.CONTENT_INIT;
   }
 }
@@ -107,9 +131,11 @@ export function executeInitHooks(currentView: LView, tView: TView, creationMode:
  *
  * @param currentView The current view
  */
-export function executeContentHooks(currentView: LView, tView: TView, creationMode: boolean): void {
-  if (currentView.lifecycleStage < LifecycleStage.VIEW_INIT) {
-    executeHooks(currentView.data, tView.contentHooks, tView.contentCheckHooks, creationMode);
+export function executeContentHooks(currentView: LView): void {
+  const contentHooks = currentView.tView.contentHooks;
+
+  if (currentView.lifecycleStage < LifecycleStage.VIEW_INIT && contentHooks != null) {
+    executeLifecycleHooks(currentView, contentHooks);
     currentView.lifecycleStage = LifecycleStage.VIEW_INIT;
   }
 }
@@ -119,12 +145,11 @@ export function executeContentHooks(currentView: LView, tView: TView, creationMo
  *
  * @param currentView The current view
  */
-export function executeHooks(
-    data: any[], allHooks: HookData | null, checkHooks: HookData | null,
-    creationMode: boolean): void {
-  const hooksToCall = creationMode ? allHooks : checkHooks;
-  if (hooksToCall != null) {
-    callHooks(data, hooksToCall);
+export function executeViewHooks(currentView: LView): void {
+  const viewHooks = currentView.tView.viewHooks;
+
+  if (viewHooks != null) {
+    executeLifecycleHooks(currentView, viewHooks);
   }
 }
 
@@ -135,8 +160,15 @@ export function executeHooks(
  * @param currentView The current view
  * @param arr The array in which the hooks are found
  */
-export function callHooks(data: any[], arr: HookData): void {
+function executeLifecycleHooks(currentView: LView, arr: HookData): void {
+  const data = currentView.data;
+  const creationMode = currentView.creationMode;
+
   for (let i = 0; i < arr.length; i += 2) {
-    (arr[i | 1] as() => void).call(data[arr[i] as number]);
+    const flags = arr[i] as number;
+    const initOnly = (flags & LifecycleHook.TYPE_MASK) === LifecycleHook.ON_INIT;
+    if (initOnly === false || creationMode) {
+      (arr[i | 1] as() => void).call(data[flags >> LifecycleHook.INDX_SHIFT]);
+    }
   }
 }
