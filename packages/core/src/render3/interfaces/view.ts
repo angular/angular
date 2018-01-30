@@ -200,57 +200,30 @@ export interface TView {
   firstTemplatePass: boolean;
 
   /**
-   * Array of ngOnInit and ngDoCheck hooks that should be executed for this view in
-   * creation mode.
+   * Array of ngOnInit and ngDoCheck hooks that should be executed for this view.
    *
-   * Even indices: Directive index
+   * Even indices: Flags (1st bit: hook type, remaining: directive index)
    * Odd indices: Hook function
    */
   initHooks: HookData|null;
 
   /**
-   * Array of ngDoCheck hooks that should be executed for this view in update mode.
+   * Array of ngAfterContentInit and ngAfterContentChecked hooks that should be executed for
+   * this view.
    *
-   * Even indices: Directive index
-   * Odd indices: Hook function
-   */
-  checkHooks: HookData|null;
-
-  /**
-   * Array of ngAfterContentInit and ngAfterContentChecked hooks that should be executed
-   * for this view in creation mode.
-   *
-   * Even indices: Directive index
+   * Even indices: Flags (1st bit: hook type, remaining: directive index)
    * Odd indices: Hook function
    */
   contentHooks: HookData|null;
 
   /**
-   * Array of ngAfterContentChecked hooks that should be executed for this view in update
-   * mode.
-   *
-   * Even indices: Directive index
-   * Odd indices: Hook function
-   */
-  contentCheckHooks: HookData|null;
-
-  /**
    * Array of ngAfterViewInit and ngAfterViewChecked hooks that should be executed for
-   * this view in creation mode.
+   * this view.
    *
-   * Even indices: Directive index
+   * Even indices: Flags (1st bit: hook type, remaining: directive index)
    * Odd indices: Hook function
    */
   viewHooks: HookData|null;
-
-  /**
-   * Array of ngAfterViewChecked hooks that should be executed for this view in
-   * update mode.
-   *
-   * Even indices: Directive index
-   * Odd indices: Hook function
-   */
-  viewCheckHooks: HookData|null;
 
   /**
    * Array of ngOnDestroy hooks that should be executed when this view is destroyed.
@@ -264,7 +237,7 @@ export interface TView {
 /**
  * Array of hooks that should be executed for a view and their directive indices.
  *
- * Even indices: Directive index
+ * Even indices: Flags (1st bit: hook type, remaining: directive index)
  * Odd indices: Hook function
  */
 export type HookData = (number | (() => void))[];

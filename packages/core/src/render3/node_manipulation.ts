@@ -6,8 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {assertNotNull} from './assert';
-import {callHooks} from './hooks';
+import {assertNotEqual, assertNotNull} from './assert';
 import {LContainer, unusedValueExportToPlacateAjd as unused1} from './interfaces/container';
 import {LContainerNode, LElementNode, LNode, LNodeFlags, LProjectionNode, LTextNode, LViewNode, unusedValueExportToPlacateAjd as unused2} from './interfaces/node';
 import {unusedValueExportToPlacateAjd as unused3} from './interfaces/projection';
@@ -386,7 +385,10 @@ function executeOnDestroys(view: LView): void {
   const tView = view.tView;
   let destroyHooks: HookData|null;
   if (tView != null && (destroyHooks = tView.destroyHooks) != null) {
-    callHooks(view.data, destroyHooks);
+    for (let i = 0; i < destroyHooks.length; i += 2) {
+      const instance = view.data[destroyHooks[i] as number];
+      (destroyHooks[i | 1] as() => void).call(instance);
+    }
   }
 }
 
