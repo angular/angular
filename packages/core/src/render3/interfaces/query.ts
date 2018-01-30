@@ -12,36 +12,36 @@ import {LNode} from './node';
 
 
 /** Used for tracking queries (e.g. ViewChild, ContentChild). */
-export interface LQuery {
+export interface LQueries {
   /**
-   * Used to ask query if it should be cloned to the child element.
+   * Used to ask queries if those should be cloned to the child element.
    *
    * For example in the case of deep queries the `child()` returns
-   * query for the child node. In case of shallow queries it returns
+   * queries for the child node. In case of shallow queries it returns
    * `null`.
    */
-  child(): LQuery|null;
+  child(): LQueries|null;
 
   /**
-   * Notify `LQuery` that a new `LNode` has been created and needs to be added to query results
+   * Notify `LQueries` that a new `LNode` has been created and needs to be added to query results
    * if matching query predicate.
    */
   addNode(node: LNode): void;
 
   /**
-   * Notify `LQuery` that a  `LNode` has been created and needs to be added to query results
+   * Notify `LQueries` that a  `LNode` has been created and needs to be added to query results
    * if matching query predicate.
    */
-  container(): LQuery|null;
+  container(): LQueries|null;
 
   /**
-   * Notify `LQuery` that a new view was created and is being entered in the creation mode.
+   * Notify `LQueries` that a new view was created and is being entered in the creation mode.
    * This allow queries to prepare space for matching nodes from views.
    */
-  enterView(newViewIndex: number): LQuery|null;
+  enterView(newViewIndex: number): LQueries|null;
 
   /**
-   * Notify `LQuery` that an `LViewNode` has been removed from `LContainerNode`. As a result all
+   * Notify `LQueries` that an `LViewNode` has been removed from `LContainerNode`. As a result all
    * the matching nodes from this view should be removed from container's queries.
    */
   removeView(removeIndex: number): void;

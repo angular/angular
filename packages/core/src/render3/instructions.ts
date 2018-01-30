@@ -11,7 +11,7 @@ import './ng_dev_mode';
 import {assertEqual, assertLessThan, assertNotEqual, assertNotNull} from './assert';
 import {LContainer, TContainer} from './interfaces/container';
 import {CssSelector, LProjection} from './interfaces/projection';
-import {LQuery, QueryReadType} from './interfaces/query';
+import {LQueries} from './interfaces/query';
 import {LView, LifecycleStage, TData, TView} from './interfaces/view';
 
 import {LContainerNode, LElementNode, LNode, LNodeFlags, LProjectionNode, LTextNode, LViewNode, TNode, TContainerNode, InitialInputData, InitialInputs, PropertyAliases, PropertyAliasValue,} from './interfaces/node';
@@ -76,7 +76,7 @@ let currentView: LView;
 // The initialization has to be after the `let`, otherwise `createLView` can't see `let`.
 currentView = createLView(null !, null !, createTView());
 
-let currentQuery: LQuery|null;
+let currentQueries: LQueries|null;
 
 /**
  * This property gets set before entering a template.
@@ -141,7 +141,7 @@ export function enterView(newView: LView, host: LElementNode | LViewNode | null)
   }
 
   currentView = newView;
-  currentQuery = newView.query;
+  currentQueries = newView.queries;
 
   return oldView !;
 }
@@ -178,7 +178,7 @@ export function createLView(
     context: context,
     dynamicViewCount: 0,
     lifecycleStage: LifecycleStage.INIT,
-    query: null,
+    queries: null,
   };
 
   return newView;
@@ -205,8 +205,9 @@ export function createLNode(
     LContainerNode&LProjectionNode {
   const parent = isParent ? previousOrParentNode :
                             previousOrParentNode && previousOrParentNode.parent as LNode;
-  let query = (isParent ? currentQuery : previousOrParentNode && previousOrParentNode.query) ||
-      parent && parent.query && parent.query.child();
+  let queries =
+      (isParent ? currentQueries : previousOrParentNode && previousOrParentNode.queries) ||
+      parent && parent.queries && parent.queries.child();
   const isState = state != null;
   const node: LElementNode&LTextNode&LViewNode&LContainerNode&LProjectionNode = {
     flags: type,
@@ -217,7 +218,7 @@ export function createLNode(
     next: null,
     nodeInjector: parent ? parent.nodeInjector : null,
     data: isState ? state as any : null,
-    query: query,
+    queries: queries,
     tNode: null,
     pNextOrParent: null
   };
@@ -242,7 +243,7 @@ export function createLNode(
 
     // Now link ourselves into the tree.
     if (isParent) {
-      currentQuery = null;
+      currentQueries = null;
       if (previousOrParentNode.view === currentView ||
           (previousOrParentNode.flags & LNodeFlags.TYPE_MASK) === LNodeFlags.View) {
         // We are in the same view, which means we are adding content node to the parent View.
@@ -606,8 +607,8 @@ export function elementEnd() {
     previousOrParentNode = previousOrParentNode.parent !;
   }
   ngDevMode && assertNodeType(previousOrParentNode, LNodeFlags.Element);
-  const query = previousOrParentNode.query;
-  query && query.addNode(previousOrParentNode);
+  const queries = previousOrParentNode.queries;
+  queries && queries.addNode(previousOrParentNode);
   queueLifecycleHooks(previousOrParentNode.flags, currentView);
 }
 
@@ -1000,7 +1001,7 @@ export function container(
     next: null,
     parent: currentView,
     dynamicViewCount: 0,
-    query: null
+    queries: null
   };
 
   const node = createLNode(index, LNodeFlags.Container, undefined, lContainer);
@@ -1018,12 +1019,12 @@ export function container(
 
   isParent = false;
   ngDevMode && assertNodeType(previousOrParentNode, LNodeFlags.Container);
-  const query = node.query;
-  if (query) {
+  const queries = node.queries;
+  if (queries) {
     // check if a given container node matches
-    query.addNode(node);
+    queries.addNode(node);
     // prepare place for matching nodes from views inserted into a given container
-    lContainer.query = query.container();
+    lContainer.queries = queries.container();
   }
 }
 
@@ -1109,8 +1110,8 @@ export function viewStart(viewBlockId: number): boolean {
     // When we create a new LView, we always reset the state of the instructions.
     const newView =
         createLView(viewBlockId, renderer, getOrCreateEmbeddedTView(viewBlockId, container));
-    if (lContainer.query) {
-      newView.query = lContainer.query.enterView(lContainer.nextIndex);
+    if (lContainer.queries) {
+      newView.queries = lContainer.queries.enterView(lContainer.nextIndex);
     }
 
     enterView(newView, createLNode(null, LNodeFlags.View, null, newView));
@@ -1845,8 +1846,8 @@ function valueInData<T>(data: any[], index: number, value?: T): T {
   return value !;
 }
 
-export function getCurrentQuery(QueryType: {new (): LQuery}): LQuery {
-  return currentQuery || (currentQuery = new QueryType());
+export function getCurrentQueries(QueryType: {new (): LQueries}): LQueries {
+  return currentQueries || (currentQueries = new QueryType());
 }
 
 export function getPreviousOrParentNode(): LNode {
