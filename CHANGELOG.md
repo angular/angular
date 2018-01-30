@@ -1,3 +1,51 @@
+<a name="5.1.1"></a>
+## [5.1.1 silk-xylophone](https://github.com/angular/material2/compare/5.1.0...5.1.1) (2018-01-29)
+
+
+### Bug Fixes
+
+* **autocomplete:** close panel using alt + up arrow ([#9341](https://github.com/angular/material2/issues/9341)) ([a1ad82b](https://github.com/angular/material2/commit/a1ad82b))
+* **autocomplete:** error when closing from a destroyed view ([#7365](https://github.com/angular/material2/issues/7365)) ([00820f7](https://github.com/angular/material2/commit/00820f7)), closes [#7315](https://github.com/angular/material2/issues/7315)
+* **autocomplete:** handle `optionSelections` being accessed early ([#8802](https://github.com/angular/material2/issues/8802)) ([ec6168b](https://github.com/angular/material2/commit/ec6168b)), closes [#4616](https://github.com/angular/material2/issues/4616)
+* **autocomplete:** prevent opening using arrow keys on readonly input ([#9229](https://github.com/angular/material2/issues/9229)) ([f3b50b0](https://github.com/angular/material2/commit/f3b50b0)), closes [#9227](https://github.com/angular/material2/issues/9227)
+* **button:** accent color not set on fab buttons with build optimizer ([#9376](https://github.com/angular/material2/issues/9376)) ([f6a59cd](https://github.com/angular/material2/commit/f6a59cd)), closes [#9360](https://github.com/angular/material2/issues/9360)
+* **button-toggle:** inaccurate name passed down to input if no name is assigned ([#9017](https://github.com/angular/material2/issues/9017)) ([fda978a](https://github.com/angular/material2/commit/fda978a))
+* **card:** add camel-cased selectors to content projection ([#6818](https://github.com/angular/material2/issues/6818)) ([6e4f90f](https://github.com/angular/material2/commit/6e4f90f)), closes [#6816](https://github.com/angular/material2/issues/6816)
+* **card,tabs,toolbar:** Make media query breakpoints follow Material spec ([#9284](https://github.com/angular/material2/issues/9284)) ([d6b3cc8](https://github.com/angular/material2/commit/d6b3cc8))
+* **checkbox:** underlying native checkbox being rendered when parent uses css column layout ([#9258](https://github.com/angular/material2/issues/9258)) ([58b665e](https://github.com/angular/material2/commit/58b665e)), closes [#9049](https://github.com/angular/material2/issues/9049)
+* **datepicker:** calendar controls not being inverted in rtl ([#9219](https://github.com/angular/material2/issues/9219)) ([af38b97](https://github.com/angular/material2/commit/af38b97))
+* **datepicker:** calendar keyboard controls not working if the user clicks on blank area ([#9494](https://github.com/angular/material2/issues/9494)) ([7cea0b6](https://github.com/angular/material2/commit/7cea0b6))
+* **datepicker:** highlight datepicker toggle when calendar is open ([#9426](https://github.com/angular/material2/issues/9426)) ([37d8716](https://github.com/angular/material2/commit/37d8716))
+* **datepicker:** set border radius on calendar popup ([#9509](https://github.com/angular/material2/issues/9509)) ([3f87dc4](https://github.com/angular/material2/commit/3f87dc4))
+* **expansion-panel:** improved accessibility labelling and keyboard default action not being prevented ([#9174](https://github.com/angular/material2/issues/9174)) ([444cee8](https://github.com/angular/material2/commit/444cee8))
+* **focus-monitor:** implement OnDestroy logic ([#9305](https://github.com/angular/material2/issues/9305)) ([e6cdce5](https://github.com/angular/material2/commit/e6cdce5))
+* **grid-list:** tile being pulled outside the grid if no gap can be found ([#9128](https://github.com/angular/material2/issues/9128)) ([5535325](https://github.com/angular/material2/commit/5535325)), closes [#4515](https://github.com/angular/material2/issues/4515)
+* **input:** floating label not reacting when patching the value without emitting an event ([#9260](https://github.com/angular/material2/issues/9260)) ([4a00499](https://github.com/angular/material2/commit/4a00499)), closes [#8982](https://github.com/angular/material2/issues/8982)
+* **interactivity-checker:** carefully handle frame elements ([#9340](https://github.com/angular/material2/issues/9340)) ([305a81c](https://github.com/angular/material2/commit/305a81c)), closes [#3372](https://github.com/angular/material2/issues/3372)
+* **keycodes:** incorrect key code for nine ([#9568](https://github.com/angular/material2/issues/9568)) ([b489559](https://github.com/angular/material2/commit/b489559)), closes [#9567](https://github.com/angular/material2/issues/9567)
+* **list:** incorrect padding for list-items with avatars, icons ([#9500](https://github.com/angular/material2/issues/9500)) ([db520cf](https://github.com/angular/material2/commit/db520cf)), closes [#9156](https://github.com/angular/material2/issues/9156)
+* **menu:** inconsistent side padding for nested menu items in RTL ([#9124](https://github.com/angular/material2/issues/9124)) ([53d48f6](https://github.com/angular/material2/commit/53d48f6))
+* **menu:** set appropriate origin when restoring focus ([#9303](https://github.com/angular/material2/issues/9303)) ([2bf9ad8](https://github.com/angular/material2/commit/2bf9ad8)), closes [#9292](https://github.com/angular/material2/issues/9292)
+* **native-date-adapter:** avoid error when formatting edge case dates in IE11 and Edge ([#9523](https://github.com/angular/material2/issues/9523)) ([d25ab57](https://github.com/angular/material2/commit/d25ab57))
+* **overlay:** default options not being applied correctly ([#9088](https://github.com/angular/material2/issues/9088)) ([6f8f226](https://github.com/angular/material2/commit/6f8f226))
+* **overlay:** server-side rendering error when creating backdrop element ([#9448](https://github.com/angular/material2/issues/9448)) ([5c98185](https://github.com/angular/material2/commit/5c98185))
+* **overlay:** transparent overlay not blocking scroll on Firefox 57 ([#9446](https://github.com/angular/material2/issues/9446)) ([e2999a8](https://github.com/angular/material2/commit/e2999a8)), closes [#8924](https://github.com/angular/material2/issues/8924)
+* **progress-spinner:** element size not updated when diamater is changed ([#8697](https://github.com/angular/material2/issues/8697)) ([23f0c47](https://github.com/angular/material2/commit/23f0c47))
+* **select:** close panel on alt + arrow key presses ([#9250](https://github.com/angular/material2/issues/9250)) ([c3ec94d](https://github.com/angular/material2/commit/c3ec94d))
+* **select:** don't restore focus unless an option was selected ([#8964](https://github.com/angular/material2/issues/8964)) ([960b7cf](https://github.com/angular/material2/commit/960b7cf)), closes [#8915](https://github.com/angular/material2/issues/8915)
+* **select:** handle async changes to the option label ([#9159](https://github.com/angular/material2/issues/9159)) ([63a5184](https://github.com/angular/material2/commit/63a5184)), closes [#7923](https://github.com/angular/material2/issues/7923)
+* **select:** handle keyboard events from inside panel ([#9361](https://github.com/angular/material2/issues/9361)) ([0d233b2](https://github.com/angular/material2/commit/0d233b2))
+* **select:** support changing the value using left/right arrow keys while closed ([#9578](https://github.com/angular/material2/issues/9578)) ([b11523a](https://github.com/angular/material2/commit/b11523a))
+* **selection-model:** incorrect initial value when empty array is passed in single-selection mode ([#9287](https://github.com/angular/material2/issues/9287)) ([5d0fb95](https://github.com/angular/material2/commit/5d0fb95)), closes [#9273](https://github.com/angular/material2/issues/9273)
+* **slide-toggle:** truncate label content with ellipsis ([#9166](https://github.com/angular/material2/issues/9166)) ([4bd96ce](https://github.com/angular/material2/commit/4bd96ce)), closes [#5212](https://github.com/angular/material2/issues/5212)
+* **stepper:** header collapsing if box-sizing is set ([#9505](https://github.com/angular/material2/issues/9505)) ([ccc8fbb](https://github.com/angular/material2/commit/ccc8fbb)), closes [#9501](https://github.com/angular/material2/issues/9501)
+* **stepper:** unable to skip optional steps in linear stepper ([#9245](https://github.com/angular/material2/issues/9245)) ([517ea57](https://github.com/angular/material2/commit/517ea57)), closes [#9239](https://github.com/angular/material2/issues/9239)
+* **tab-link:** preventDefault action when disabled tab link is clicked. ([#9357](https://github.com/angular/material2/issues/9357)) ([0b5806b](https://github.com/angular/material2/commit/0b5806b))
+* **theming:** provide text color through mat-app-background ([#9262](https://github.com/angular/material2/issues/9262)) ([6d66a16](https://github.com/angular/material2/commit/6d66a16))
+* **overlay:** make it easier to override backdrop color ([#9114](https://github.com/angular/material2/issues/9114)) ([4ff1fd4](https://github.com/angular/material2/commit/4ff1fd4)), closes [#7855](https://github.com/angular/material2/issues/7855)
+
+
+
 <a name="5.1.0"></a>
 # [5.1.0 burlap-bezel](https://github.com/angular/material2/compare/5.0.1...5.1.0) (2018-01-17)
 
@@ -68,6 +116,7 @@
 
 * **autocomplete:** allow option ripples to be disabled ([#8851](https://github.com/angular/material2/issues/8851)) ([ff31ac8](https://github.com/angular/material2/commit/ff31ac8))
 * **close-scroll-strategy:** add scroll threshold option ([#8656](https://github.com/angular/material2/issues/8656)) ([c0ff761](https://github.com/angular/material2/commit/c0ff761))
+* **datepicker:** add animation to calendar popup ([#8542](https://github.com/angular/material2/issues/8542)) ([c3e267f](https://github.com/angular/material2/commit/c3e267f))
 * **datepicker:** add year selection mode ([#8565](https://github.com/angular/material2/issues/8565)) ([cdbabf7](https://github.com/angular/material2/commit/cdbabf7))
 * **dialog:** allow default dialog options to be configurable ([#9113](https://github.com/angular/material2/issues/9113)) ([05304f0](https://github.com/angular/material2/commit/05304f0))
 * **dialog:** allow for closing on navigation to be disabled ([#9024](https://github.com/angular/material2/issues/9024)) ([c349c58](https://github.com/angular/material2/commit/c349c58)), closes [#8983](https://github.com/angular/material2/issues/8983)
