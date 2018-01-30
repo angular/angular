@@ -37,7 +37,7 @@ export class HeroService {
   /** GET heroes from the server */
   // #docregion getHeroes-2
   getHeroes (): Observable<Hero[]> {
-    return this.http.get<Hero[]>(this.heroesUrl)
+    return this.http.get<Hero[]>(this.heroesUrl);
   // #enddocregion getHeroes-1
       .pipe(
         // #enddocregion getHeroes-2
