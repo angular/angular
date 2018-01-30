@@ -1198,6 +1198,45 @@ export function componentRefresh<T>(directiveIndex: number, elementIndex: number
 }
 
 /**
+ * Iterates over projectable nodes matching them against selectors and inserting results into
+ * distributedNodes array.
+ *
+ * @param rootNodes
+ * @param selectors
+ * @param distributedNodes
+ */
+function distributeProjectableNodes(
+    rootNodes: LContainerNode | LElementNode | LTextNode | LProjectionNode | null,
+    selectors: CssSelector[] | null, distributedNodes: Array<LNode[]>): void {
+  while (rootNodes !== null) {
+    if ((rootNodes.flags & LNodeFlags.TYPE_MASK) === LNodeFlags.Element ||
+        (rootNodes.flags & LNodeFlags.TYPE_MASK) === LNodeFlags.Container) {
+      // Only trying to match selectors against:
+      // - elements, excluding text nodes;
+      // - containers that have tagName and attributes associated.
+      if (rootNodes.tNode && selectors) {
+        for (let i = 0; i < selectors !.length; i++) {
+          if (isNodeMatchingSelector(rootNodes.tNode, selectors ![i])) {
+            distributedNodes[i + 1].push(rootNodes);
+            break;  // first matching selector "captures" a given node
+          } else {
+            distributedNodes[0].push(rootNodes);
+          }
+        }
+      } else {
+        distributedNodes[0].push(rootNodes);
+      }
+
+    } else if ((rootNodes.flags & LNodeFlags.TYPE_MASK) === LNodeFlags.Projection) {
+      // Descend into previously projected nodes and re-distribute those in the new destination
+      const lProjectionNode = rootNodes as LProjectionNode;
+      distributeProjectableNodes(lProjectionNode.data.head, selectors, distributedNodes);
+    }
+    rootNodes = rootNodes.next;
+  }
+}
+
+/**
  * Instruction to distribute projectable nodes among <ng-content> occurrences in a given template.
  * It takes all the selectors from the entire component's template and decides where
  * each projected node belongs (it re-distributes nodes among "buckets" where each "bucket" is
@@ -1215,36 +1254,7 @@ export function projectionDef(index: number, selectors?: CssSelector[]): void {
   const componentNode = findComponentHost(currentView);
   let componentChild = componentNode.child;
 
-  while (componentChild !== null) {
-    if (!selectors) {
-      distributedNodes[0].push(componentChild);
-    } else if (
-        (componentChild.flags & LNodeFlags.TYPE_MASK) === LNodeFlags.Element ||
-        (componentChild.flags & LNodeFlags.TYPE_MASK) === LNodeFlags.Container) {
-      // Only trying to match selectors against:
-      // - elements, excluding text nodes;
-      // - containers that have tagName and attributes associated.
-
-      if (componentChild.tNode) {
-        for (let i = 0; i < selectors !.length; i++) {
-          if (isNodeMatchingSelector(componentChild.tNode, selectors ![i])) {
-            distributedNodes[i + 1].push(componentChild);
-            break;  // first matching selector "captures" a given node
-          } else {
-            distributedNodes[0].push(componentChild);
-          }
-        }
-      } else {
-        distributedNodes[0].push(componentChild);
-      }
-
-    } else if ((componentChild.flags & LNodeFlags.TYPE_MASK) === LNodeFlags.Projection) {
-      // we don't descend into nodes to re-project (not trying to match selectors against nodes to
-      // re-project)
-      distributedNodes[0].push(componentChild);
-    }
-    componentChild = componentChild.next;
-  }
+  distributeProjectableNodes(componentChild, selectors || null, distributedNodes);
 
   ngDevMode && assertDataNext(index);
   data[index] = distributedNodes;
@@ -1301,14 +1311,9 @@ export function projection(nodeIndex: number, localIndex: number, selectorIndex:
   // build the linked list of projected nodes:
   for (let i = 0; i < nodesForSelector.length; i++) {
     const nodeToProject = nodesForSelector[i];
-    if ((nodeToProject.flags & LNodeFlags.TYPE_MASK) === LNodeFlags.Projection) {
-      const previouslyProjected = (nodeToProject as LProjectionNode).data;
-      appendToProjectionNode(node, previouslyProjected.head, previouslyProjected.tail);
-    } else {
-      appendToProjectionNode(
-          node, nodeToProject as LTextNode | LElementNode | LContainerNode,
-          nodeToProject as LTextNode | LElementNode | LContainerNode);
-    }
+    appendToProjectionNode(
+        node, nodeToProject as LTextNode | LElementNode | LContainerNode,
+        nodeToProject as LTextNode | LElementNode | LContainerNode);
   }
 
   if (canInsertNativeNode(currentParent, currentView)) {
