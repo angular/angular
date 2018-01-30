@@ -18,7 +18,7 @@ import {EmbeddedViewRef as viewEngine_EmbeddedViewRef, ViewRef as viewEngine_Vie
 import {Type} from '../type';
 
 import {assertLessThan} from './assert';
-import {assertPreviousIsParent, getPreviousOrParentNode, getRenderer, renderEmbeddedTemplate} from './instructions';
+import {assertPreviousIsParent, getDirectiveInstance, getPreviousOrParentNode, getRenderer, renderEmbeddedTemplate} from './instructions';
 import {ComponentTemplate, DirectiveDef} from './interfaces/definition';
 import {LInjector} from './interfaces/injector';
 import {LContainerNode, LElementNode, LNode, LNodeFlags, LViewNode} from './interfaces/node';
@@ -293,7 +293,7 @@ export function getOrCreateInjectable<T>(
           // and matches the given token, return the directive instance.
           const directiveDef = tData[i] as DirectiveDef<any>;
           if (directiveDef.diPublic && directiveDef.type == token) {
-            return node.view.data[i];
+            return getDirectiveInstance(node.view.data[i]);
           }
         }
       }
