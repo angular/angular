@@ -12,7 +12,7 @@ import {Observer} from 'rxjs/Observer';
 import {of } from 'rxjs/observable/of';
 
 import {Data, ResolveData, Route, Routes} from './config';
-import {ActivatedRouteSnapshot, ParamsInheritanceStrategy, RouterStateSnapshot, inheritedParamsDataResolve} from './router_state';
+import {ActivatedRouteSnapshot, RouterStateSnapshot, inheritedParamsDataResolve} from './router_state';
 import {PRIMARY_OUTLET, defaultUrlMatcher} from './shared';
 import {UrlSegment, UrlSegmentGroup, UrlTree, mapChildrenIntoArray} from './url_tree';
 import {forEach, last} from './utils/collection';
@@ -22,7 +22,7 @@ class NoMatch {}
 
 export function recognize(
     rootComponentType: Type<any>| null, config: Routes, urlTree: UrlTree, url: string,
-    paramsInheritanceStrategy: ParamsInheritanceStrategy =
+    paramsInheritanceStrategy: 'emptyOnly' | 'always' =
         'emptyOnly'): Observable<RouterStateSnapshot> {
   return new Recognizer(rootComponentType, config, urlTree, url, paramsInheritanceStrategy)
       .recognize();
@@ -31,7 +31,7 @@ export function recognize(
 class Recognizer {
   constructor(
       private rootComponentType: Type<any>|null, private config: Routes, private urlTree: UrlTree,
-      private url: string, private paramsInheritanceStrategy: ParamsInheritanceStrategy) {}
+      private url: string, private paramsInheritanceStrategy: 'emptyOnly' | 'always') {}
 
   recognize(): Observable<RouterStateSnapshot> {
     try {
