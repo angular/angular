@@ -105,7 +105,7 @@ class Ng1HeroComponentWrapper extends UpgradeComponent implements OnInit, OnChan
   imports: [BrowserModule, UpgradeModule]
 })
 class Ng2AppModule {
-  ngDoBootstrap() { /* this is a placeholder to stop the boostrapper from complaining */
+  ngDoBootstrap() { /* this is a placeholder to stop the bootstrapper from complaining */
   }
 }
 // #enddocregion
