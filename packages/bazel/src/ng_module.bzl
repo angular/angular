@@ -35,7 +35,7 @@ def _expected_outs(ctx):
 
   for src in ctx.files.srcs + ctx.files.assets:
     if src.short_path.endswith(".ts") and not src.short_path.endswith(".d.ts"):
-      basename = src.short_path[len(ctx.label.package) + 1:-len(".ts")]
+      basename = src.path[src.path.find(ctx.build_file_path[:ctx.build_file_path.rfind("/")]) + ctx.build_file_path.rfind("/") + 1:-len(".ts")]
       if len(factory_basename_set) == 0 or basename in factory_basename_set:
         devmode_js = [
             ".ngfactory.js",
@@ -47,7 +47,7 @@ def _expected_outs(ctx):
         devmode_js = [".js"]
         summaries = []
     elif src.short_path.endswith(".css"):
-      basename = src.short_path[len(ctx.label.package) + 1:-len(".css")]
+      basename = src.path[src.path.find(ctx.build_file_path[:ctx.build_file_path.rfind("/")]) + ctx.build_file_path.rfind("/") + 1:-len(".css")]
       devmode_js = [
           ".css.shim.ngstyle.js",
           ".css.ngstyle.js",
