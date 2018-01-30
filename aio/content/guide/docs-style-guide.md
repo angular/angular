@@ -101,7 +101,7 @@ Begin the title with the markdown `#` character. Alternatively, you can write th
 
 **Only one title (`<h1>`) per document!**
 
-Title text should be in "Title Case", which means that you use capital letters to start the first words and all _principal_ words. Use lower case letters for _secondary words such as "in", "of", and "the".
+Title text should be in "Title Case", which means that you use capital letters to start the first words and all _principal_ words. Use lower case letters for _secondary_ words such as "in", "of", and "the".
 
 ```html
   # The Meat of the Matter
