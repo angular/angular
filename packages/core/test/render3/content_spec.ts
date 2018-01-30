@@ -809,42 +809,39 @@ describe('content projection', () => {
     });
 
     /**
-     * Descending into projected content for selector-matching purposes is not supported
-     * today: http://plnkr.co/edit/MYQcNfHSTKp9KvbzJWVQ?p=preview
+     * BREAKING CHANGE:
+     * descending into projected content for selector-matching purposes is not supported in the
+     * current version of Angular:
+     * http://plnkr.co/edit/MYQcNfHSTKp9KvbzJWVQ?p=preview
+     *
+     * With ivy rewrite, though, we could easily descend into previously projected content and match
+     * it against
+     * selectors when re-projecting. This would make the view engine more predictable and would
+     * remove need for
+     * ngProjectAs.
      */
-    it('should not match selectors on re-projected content', () => {
+    it('should match selectors against projected content', () => {
 
       /**
        *  <ng-content select="span"></ng-content>
-       *  <hr>
-       *  <ng-content></ng-content>
        */
       const GrandChild = createComponent('grand-child', function(ctx: any, cm: boolean) {
         if (cm) {
           pD(0, [[[['span'], null]]]);
           P(1, 0, 1);
-          E(2, 'hr');
-          e();
-          P(3, 0, 0);
         }
       });
 
       /**
        *  <grand-child>
        *    <ng-content></ng-content>
-       *    <span>in child template</span>
        *  </grand-child>
        */
       const Child = createComponent('child', function(ctx: any, cm: boolean) {
         if (cm) {
           pD(0);
           E(1, GrandChild);
-          {
-            P(3, 0);
-            E(4, 'span');
-            { T(5, 'in child template'); }
-            e();
-          }
+          { P(3, 0); }
           e();
           GrandChild.ngComponentDef.h(2, 1);
           r(2, 1);
@@ -853,9 +850,9 @@ describe('content projection', () => {
 
       /**
        * <child>
-       *  <div>
-       *    parent content
-       *  </div>
+       *  <span>
+       *    child content in parent
+       *  </span>
        * </child>
        */
       const Parent = createComponent('parent', function(ctx: any, cm: boolean) {
@@ -863,7 +860,7 @@ describe('content projection', () => {
           E(0, Child);
           {
             E(2, 'span');
-            { T(3, 'parent content'); }
+            { T(3, 'child content in parent'); }
             e();
           }
           e();
@@ -875,7 +872,7 @@ describe('content projection', () => {
       const parent = renderComponent(Parent);
       expect(toHtml(parent))
           .toEqual(
-              '<child><grand-child><span>in child template</span><hr><span>parent content</span></grand-child></child>');
+              '<child><grand-child><span>child content in parent</span></grand-child></child>');
     });
 
     it('should match selectors against projected containers', () => {
