@@ -8,11 +8,12 @@
                      [attr.aria-controls]="_getStepContentId(i)"
                      [attr.aria-selected]="selectedIndex == i"
                      [index]="i"
-                     [icon]="_getIndicatorType(i)"
+                     [state]="_getIndicatorType(i)"
                      [label]="step.stepLabel || step.label"
                      [selected]="selectedIndex === i"
                      [active]="step.completed || selectedIndex === i || !linear"
-                     [optional]="step.optional">
+                     [optional]="step.optional"
+                     [iconOverrides]="_iconOverrides">
     </mat-step-header>
     <div *ngIf="!isLast" class="mat-stepper-horizontal-line"></div>
   </ng-container>

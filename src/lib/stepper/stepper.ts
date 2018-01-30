@@ -24,6 +24,7 @@ import {
   ChangeDetectorRef,
   ChangeDetectionStrategy,
   Optional,
+  TemplateRef,
 } from '@angular/core';
 import {FormControl, FormGroupDirective, NgForm} from '@angular/forms';
 import {ErrorStateMatcher} from '@angular/material/core';
@@ -31,6 +32,11 @@ import {MatStepHeader} from './step-header';
 import {MatStepLabel} from './step-label';
 import {takeUntil} from 'rxjs/operators/takeUntil';
 import {matStepperAnimations} from './stepper-animations';
+import {MatStepperIcon} from './stepper-icon';
+
+/** Workaround for https://github.com/angular/angular/issues/17849 */
+export const _MatStep = CdkStep;
+export const _MatStepper = CdkStepper;
 
 @Component({
   moduleId: module.id,
@@ -64,6 +70,7 @@ export class MatStep extends CdkStep implements ErrorStateMatcher {
   }
 }
 
+
 @Directive({
   selector: '[matStepper]'
 })
@@ -74,7 +81,25 @@ export class MatStepper extends CdkStepper implements AfterContentInit {
   /** Steps that the stepper holds. */
   @ContentChildren(MatStep) _steps: QueryList<MatStep>;
 
+  /** Custom icon overrides passed in by the consumer. */
+  @ContentChildren(MatStepperIcon) _icons: QueryList<MatStepperIcon>;
+
+  /** Consumer-specified template-refs to be used to override the header icons. */
+  _iconOverrides: {[key: string]: TemplateRef<any>} = {};
+
   ngAfterContentInit() {
+    const icons = this._icons.toArray();
+    const editOverride = icons.find(icon => icon.name === 'edit');
+    const doneOverride = icons.find(icon => icon.name === 'done');
+
+    if (editOverride) {
+      this._iconOverrides.edit = editOverride.templateRef;
+    }
+
+    if (doneOverride) {
+      this._iconOverrides.done = doneOverride.templateRef;
+    }
+
     // Mark the component for change detection whenever the content children query changes
     this._steps.changes.pipe(takeUntil(this._destroyed)).subscribe(() => this._stateChanged());
   }

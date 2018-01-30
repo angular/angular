@@ -16,6 +16,7 @@ import {
   Input,
   OnDestroy,
   ViewEncapsulation,
+  TemplateRef,
 } from '@angular/core';
 import {Subscription} from 'rxjs/Subscription';
 import {MatStepLabel} from './step-label';
@@ -38,11 +39,14 @@ import {MatStepperIntl} from './stepper-intl';
 export class MatStepHeader implements OnDestroy {
   private _intlSubscription: Subscription;
 
-  /** Icon for the given step. */
-  @Input() icon: string;
+  /** State of the given step. */
+  @Input() state: string;
 
   /** Label of the given step. */
   @Input() label: MatStepLabel | string;
+
+  /** Overrides for the header icons, passed in via the stepper. */
+  @Input() iconOverrides: {[key: string]: TemplateRef<any>};
 
   /** Index of the given step. */
   @Input()

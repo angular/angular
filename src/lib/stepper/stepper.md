@@ -121,6 +121,25 @@ By default, the `completed` attribute of a step returns `true` if the step is va
 linear stepper) and the user has interacted with the step. The user, however, can also override
 this default `completed` behavior by setting the `completed` attribute as needed.
 
+#### Overriding icons
+By default, the step headers will use the `create` and `done` icons from the Material design icon
+set via `<mat-icon>` elements. If you want to provide a different set of icons, you can do so
+by placing a `matStepperIcon` for each of the icons that you want to override:
+
+```html
+<mat-vertical-stepper>
+  <ng-template matStepperIcon="edit">
+    <custom-icon>edit</custom-icon>
+  </ng-template>
+
+  <ng-template matStepperIcon="done">
+    <custom-icon>done</custom-icon>
+  </ng-template>
+
+  <!-- Stepper steps go here -->
+</mat-vertical-stepper>
+```
+
 ### Keyboard interaction
 - <kbd>LEFT_ARROW</kbd>: Focuses the previous step header
 - <kbd>RIGHT_ARROW</kbd>: Focuses the next step header

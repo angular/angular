@@ -13,3 +13,4 @@ export * from './stepper-button';
 export * from './step-header';
 export * from './stepper-intl';
 export * from './stepper-animations';
+export * from './stepper-icon';

@@ -1,10 +1,19 @@
 <div class="mat-step-header-ripple" mat-ripple [matRippleTrigger]="_getHostElement()"></div>
-<div [class.mat-step-icon]="icon !== 'number' || selected"
-     [class.mat-step-icon-not-touched]="icon == 'number' && !selected"
-     [ngSwitch]="icon">
+<div [class.mat-step-icon]="state !== 'number' || selected"
+     [class.mat-step-icon-not-touched]="state == 'number' && !selected"
+     [ngSwitch]="state">
+
   <span *ngSwitchCase="'number'">{{index + 1}}</span>
-  <mat-icon *ngSwitchCase="'edit'">create</mat-icon>
-  <mat-icon *ngSwitchCase="'done'">done</mat-icon>
+
+  <ng-container *ngSwitchCase="'edit'" [ngSwitch]="!!(iconOverrides && iconOverrides.edit)">
+    <ng-container *ngSwitchCase="true" [ngTemplateOutlet]="iconOverrides.edit"></ng-container>
+    <mat-icon *ngSwitchDefault>create</mat-icon>
+  </ng-container>
+
+  <ng-container *ngSwitchCase="'done'" [ngSwitch]="!!(iconOverrides && iconOverrides.done)">
+    <ng-container *ngSwitchCase="true" [ngTemplateOutlet]="iconOverrides.done"></ng-container>
+    <mat-icon *ngSwitchDefault>done</mat-icon>
+  </ng-container>
 </div>
 <div class="mat-step-label"
      [class.mat-step-label-active]="active"
