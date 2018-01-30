@@ -143,7 +143,7 @@ http
   .subscribe(
     data => {...},
     (err: HttpErrorResponse) => {
-      if (err.error instanceof Error) {
+      if (err.error instanceof Error || err.error instanceof ProgressEvent) {
         // A client-side or network error occurred. Handle it accordingly.
         console.log('An error occurred:', err.error.message);
       } else {
