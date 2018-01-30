@@ -1375,33 +1375,36 @@ export const NO_CHANGE = {} as NO_CHANGE;
  * @param values an array of values to diff.
  */
 export function bindV(values: any[]): string|NO_CHANGE {
-  let different: boolean;
-  let parts: any[];
-  if (different = creationMode) {
-    // make a copy of the array.
-    if (typeof currentView.bindingStartIndex !== 'number') {
-      bindingIndex = currentView.bindingStartIndex = data.length;
+  if (creationMode) {
+    initBindings();
+    data[bindingIndex++] = values.slice();
+    let content: string = values[0];
+    for (let i = 1; i < values.length; i++) {
+      content += stringify(values[i]);
     }
-    data[bindingIndex++] = parts = values.slice();
-  } else {
-    parts = data[bindingIndex++];
-    different = false;
-    for (let i = 0; i < values.length; i++) {
-      different = different || values[i] !== NO_CHANGE && isDifferent(values[i], parts[i]);
-      if (different && values[i] !== NO_CHANGE) {
-        parts[i] = values[i];
+    return content;
+  }
+
+  const parts: any[] = data[bindingIndex++];
+  for (let i = 0; i < values.length; i++) {
+    if (values[i] !== NO_CHANGE && isDifferent(values[i], parts[i])) {
+      let content = '';
+      // The i first values are the same, no need to update the bindings
+      for (let j = 0; j < i; j++) {
+        content += stringify(parts[j]);
       }
+      // The subsequent values might have changed, update the bindings
+      for (let j = i; j < values.length; j++) {
+        if (values[j] !== NO_CHANGE) {
+          parts[j] = values[j];
+        }
+        content += stringify(parts[j]);
+      }
+      return content;
     }
   }
-  if (different) {
-    let str = stringify(parts[0]);
-    for (let i = 1; i < parts.length; i++) {
-      str += stringify(parts[i]);
-    }
-    return str;
-  } else {
-    return NO_CHANGE;
-  }
+
+  return NO_CHANGE;
 }
 
 // For bindings that have 0 - 7 dynamic values to watch, we can use a bind function that
@@ -1409,29 +1412,34 @@ export function bindV(values: any[]): string|NO_CHANGE {
 // because we know ahead of time how many interpolations we'll have and don't need to
 // accept the values as an array that will need to be copied and looped over.
 
+// Initializes the binding start index. Will get inlined.
+function initBindings() {
+  if (currentView.bindingStartIndex == null) {
+    bindingIndex = currentView.bindingStartIndex = data.length;
+  }
+}
+
 /**
- * Create a single value binding without interpolation.
+ * Creates a single value binding without interpolation.
  *
  * @param value Value to diff
  */
 export function bind<T>(value: T | NO_CHANGE): T|NO_CHANGE {
-  let different: boolean;
-  if (different = creationMode) {
-    if (typeof currentView.bindingStartIndex !== 'number') {
-      bindingIndex = currentView.bindingStartIndex = data.length;
-    }
-    data[bindingIndex++] = value;
-  } else {
-    if (different = value !== NO_CHANGE && isDifferent(data[bindingIndex], value)) {
-      data[bindingIndex] = value;
-    }
-    bindingIndex++;
+  if (creationMode) {
+    initBindings();
+    return data[bindingIndex++] = value;
   }
-  return different ? value : NO_CHANGE;
+
+  const changed: boolean = value !== NO_CHANGE && isDifferent(data[bindingIndex], value);
+  if (changed) {
+    data[bindingIndex] = value;
+  }
+  bindingIndex++;
+  return changed ? value : NO_CHANGE;
 }
 
 /**
- * Create an interpolation bindings with 1 arguments.
+ * Creates an interpolation bindings with 1 argument.
  *
  * @param prefix static value used for concatenation only.
  * @param value value checked for change.
@@ -1441,22 +1449,12 @@ export function bind1(prefix: string, value: any, suffix: string): string|NO_CHA
   return bind(value) === NO_CHANGE ? NO_CHANGE : prefix + stringify(value) + suffix;
 }
 
-/**
- * Create an interpolation bindings with 2 arguments.
- *
- * @param prefix
- * @param v0 value checked for change
- * @param i0
- * @param v1 value checked for change
- * @param suffix
- */
+/** Creates an interpolation bindings with 2 arguments. */
 export function bind2(prefix: string, v0: any, i0: string, v1: any, suffix: string): string|
     NO_CHANGE {
   let different: boolean;
   if (different = creationMode) {
-    if (typeof currentView.bindingStartIndex !== 'number') {
-      bindingIndex = currentView.bindingStartIndex = data.length;
-    }
+    initBindings();
     data[bindingIndex++] = v0;
     data[bindingIndex++] = v1;
   } else {
@@ -1472,25 +1470,13 @@ export function bind2(prefix: string, v0: any, i0: string, v1: any, suffix: stri
   return different ? prefix + stringify(v0) + i0 + stringify(v1) + suffix : NO_CHANGE;
 }
 
-/**
- * Create an interpolation bindings with 3 arguments.
- *
- * @param prefix
- * @param v0
- * @param i0
- * @param v1
- * @param i1
- * @param v2
- * @param suffix
- */
+/** Creates an interpolation bindings with 3 arguments. */
 export function bind3(
     prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, suffix: string): string|
     NO_CHANGE {
   let different: boolean;
   if (different = creationMode) {
-    if (typeof currentView.bindingStartIndex !== 'number') {
-      bindingIndex = currentView.bindingStartIndex = data.length;
-    }
+    initBindings();
     data[bindingIndex++] = v0;
     data[bindingIndex++] = v1;
     data[bindingIndex++] = v2;
@@ -1511,27 +1497,13 @@ export function bind3(
                      NO_CHANGE;
 }
 
-/**
- * Create an interpolation binding with 4 arguments.
- *
- * @param prefix
- * @param v0
- * @param i0
- * @param v1
- * @param i1
- * @param v2
- * @param i2
- * @param v3
- * @param suffix
- */
+/** Create an interpolation binding with 4 arguments. */
 export function bind4(
     prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string, v3: any,
     suffix: string): string|NO_CHANGE {
   let different: boolean;
   if (different = creationMode) {
-    if (typeof currentView.bindingStartIndex !== 'number') {
-      bindingIndex = currentView.bindingStartIndex = data.length;
-    }
+    initBindings();
     data[bindingIndex++] = v0;
     data[bindingIndex++] = v1;
     data[bindingIndex++] = v2;
@@ -1560,29 +1532,13 @@ export function bind4(
       NO_CHANGE;
 }
 
-/**
- * Create an interpolation binding with 5 arguments.
- *
- * @param prefix
- * @param v0
- * @param i0
- * @param v1
- * @param i1
- * @param v2
- * @param i2
- * @param v3
- * @param i3
- * @param v4
- * @param suffix
- */
+/** Creates an interpolation binding with 5 arguments. */
 export function bind5(
     prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string, v3: any,
     i3: string, v4: any, suffix: string): string|NO_CHANGE {
   let different: boolean;
   if (different = creationMode) {
-    if (typeof currentView.bindingStartIndex !== 'number') {
-      bindingIndex = currentView.bindingStartIndex = data.length;
-    }
+    initBindings();
     data[bindingIndex++] = v0;
     data[bindingIndex++] = v1;
     data[bindingIndex++] = v2;
@@ -1616,31 +1572,13 @@ export function bind5(
       NO_CHANGE;
 }
 
-/**
- * Create an interpolation binding with 6 arguments.
- *
- * @param prefix
- * @param v0
- * @param i0
- * @param v1
- * @param i1
- * @param v2
- * @param i2
- * @param v3
- * @param i3
- * @param v4
- * @param i4
- * @param v5
- * @param suffix
- */
+/** Creates an interpolation binding with 6 arguments. */
 export function bind6(
     prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string, v3: any,
     i3: string, v4: any, i4: string, v5: any, suffix: string): string|NO_CHANGE {
   let different: boolean;
   if (different = creationMode) {
-    if (typeof currentView.bindingStartIndex !== 'number') {
-      bindingIndex = currentView.bindingStartIndex = data.length;
-    }
+    initBindings();
     data[bindingIndex++] = v0;
     data[bindingIndex++] = v1;
     data[bindingIndex++] = v2;
@@ -1678,34 +1616,14 @@ export function bind6(
       NO_CHANGE;
 }
 
-/**
- * Create an interpolation binding with 7 arguments.
- *
- * @param prefix
- * @param v0
- * @param i0
- * @param v1
- * @param i1
- * @param v2
- * @param i2
- * @param v3
- * @param i3
- * @param v4
- * @param i4
- * @param v5
- * @param i5
- * @param v6
- * @param suffix
- */
+/** Creates an interpolation binding with 7 arguments. */
 export function bind7(
     prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string, v3: any,
     i3: string, v4: any, i4: string, v5: any, i5: string, v6: any, suffix: string): string|
     NO_CHANGE {
   let different: boolean;
   if (different = creationMode) {
-    if (typeof currentView.bindingStartIndex !== 'number') {
-      bindingIndex = currentView.bindingStartIndex = data.length;
-    }
+    initBindings();
     data[bindingIndex++] = v0;
     data[bindingIndex++] = v1;
     data[bindingIndex++] = v2;
@@ -1747,36 +1665,14 @@ export function bind7(
       NO_CHANGE;
 }
 
-/**
- * Create an interpolation binding with 8 arguments.
- *
- * @param prefix
- * @param v0
- * @param i0
- * @param v1
- * @param i1
- * @param v2
- * @param i2
- * @param v3
- * @param i3
- * @param v4
- * @param i4
- * @param v5
- * @param i5
- * @param v6
- * @param i6
- * @param v7
- * @param suffix
- */
+/** Creates an interpolation binding with 8 arguments. */
 export function bind8(
     prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string, v3: any,
     i3: string, v4: any, i4: string, v5: any, i5: string, v6: any, i6: string, v7: any,
     suffix: string): string|NO_CHANGE {
   let different: boolean;
   if (different = creationMode) {
-    if (typeof currentView.bindingStartIndex !== 'number') {
-      bindingIndex = currentView.bindingStartIndex = data.length;
-    }
+    initBindings();
     data[bindingIndex++] = v0;
     data[bindingIndex++] = v1;
     data[bindingIndex++] = v2;

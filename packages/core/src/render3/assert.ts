@@ -28,7 +28,7 @@ function stringifyValueForError(value: any): string {
 }
 
 export function assertNumber(actual: any, name: string) {
-  (typeof actual != 'number') && assertThrow(actual, 'number', name, 'typeofr ==');
+  (typeof actual != 'number') && assertThrow(actual, 'number', name, 'typeof ==');
 }
 
 export function assertEqual<T>(
