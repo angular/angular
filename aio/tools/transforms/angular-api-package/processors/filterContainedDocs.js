@@ -4,7 +4,7 @@
  */
 module.exports = function filterContainedDocs() {
   return {
-    docTypes: ['member', 'function-overload', 'get-accessor-info', 'set-accessor-info'],
+    docTypes: ['member', 'function-overload', 'get-accessor-info', 'set-accessor-info', 'parameter'],
     $runAfter: ['extra-docs-added'],
     $runBefore: ['computing-paths'],
     $process: function(docs) {

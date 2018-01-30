@@ -354,8 +354,10 @@ export interface AnimationStaggerMetadata extends AnimationMetadata {
  animateChild animateChild}.
  *
  * @experimental Animation support is experimental.
+ * @param name
+ * @param definitions The metadata that defines this animation
  */
-export function trigger(name: string, definitions: AnimationMetadata[]): AnimationTriggerMetadata {
+export function trigger(/** the namexxx*/name: string, definitions: AnimationMetadata[]): AnimationTriggerMetadata {
   return {type: AnimationMetadataType.Trigger, name, definitions, options: {}};
 }
 
