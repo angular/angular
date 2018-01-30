@@ -60,12 +60,15 @@ export interface DirectiveDef<T> {
   readonly exportAs: string|null;
 
   /**
-   * factory function used to create a new directive instance.
+   * Factory function used to create a new directive instance.
+   *
+   * Usually returns the directive instance, but if the directive has a content query,
+   * it instead returns an array that contains the instance as well as content query data.
    *
    * NOTE: this property is short (1 char) because it is used in
    * component templates which is sensitive to size.
    */
-  n(): T;
+  n(): T|[T];
 
   /**
    * Refreshes host bindings on the associated directive. Also calls lifecycle hooks
@@ -108,7 +111,7 @@ export interface ComponentDef<T> extends DirectiveDef<T> {
 
 export interface DirectiveDefArgs<T> {
   type: Type<T>;
-  factory: () => T;
+  factory: () => T | [T];
   inputs?: {[P in keyof T]?: string};
   outputs?: {[P in keyof T]?: string};
   methods?: {[P in keyof T]?: string};

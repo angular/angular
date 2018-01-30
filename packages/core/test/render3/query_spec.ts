@@ -58,8 +58,8 @@ describe('query', () => {
        */
       let tmp: any;
       if (cm) {
-        m(0, Q(Child, false));
-        m(1, Q(Child, true));
+        Q(0, Child, false);
+        Q(1, Child, true);
         E(2, Child);
         {
           child1 = m(3);
@@ -92,7 +92,7 @@ describe('query', () => {
       const Cmpt = createComponent('cmpt', function(ctx: any, cm: boolean) {
         let tmp: any;
         if (cm) {
-          m(0, Q(Child, false, QUERY_READ_ELEMENT_REF));
+          Q(0, Child, false, QUERY_READ_ELEMENT_REF);
           elToQuery = E(1, 'div', null, [Child]);
           e();
         }
@@ -120,7 +120,7 @@ describe('query', () => {
       const Cmpt = createComponent('cmpt', function(ctx: any, cm: boolean) {
         let tmp: any;
         if (cm) {
-          m(0, Q(Child, false, OtherChild));
+          Q(0, Child, false, OtherChild);
           E(1, 'div', null, [Child, OtherChild]);
           { otherChildInstance = m(3); }
           e();
@@ -146,7 +146,7 @@ describe('query', () => {
       const Cmpt = createComponent('cmpt', function(ctx: any, cm: boolean) {
         let tmp: any;
         if (cm) {
-          m(0, Q(Child, false, OtherChild));
+          Q(0, Child, false, OtherChild);
           E(1, 'div', null, [Child]);
           e();
         }
@@ -174,7 +174,7 @@ describe('query', () => {
       const Cmpt = createComponent('cmpt', function(ctx: any, cm: boolean) {
         let tmp: any;
         if (cm) {
-          m(0, Q(['foo'], false, QUERY_READ_FROM_NODE));
+          Q(0, ['foo'], false, QUERY_READ_FROM_NODE);
           elToQuery = E(1, 'div', null, null, ['foo', '']);
           e();
           E(2, 'div');
@@ -204,7 +204,7 @@ describe('query', () => {
       const Cmpt = createComponent('cmpt', function(ctx: any, cm: boolean) {
         let tmp: any;
         if (cm) {
-          m(0, Q(['foo', 'bar'], undefined, QUERY_READ_FROM_NODE));
+          Q(0, ['foo', 'bar'], undefined, QUERY_READ_FROM_NODE);
           el1ToQuery = E(1, 'div', null, null, ['foo', '']);
           e();
           E(2, 'div');
@@ -235,7 +235,7 @@ describe('query', () => {
       const Cmpt = createComponent('cmpt', function(ctx: any, cm: boolean) {
         let tmp: any;
         if (cm) {
-          m(0, Q(['foo'], false, QUERY_READ_ELEMENT_REF));
+          Q(0, ['foo'], false, QUERY_READ_ELEMENT_REF);
           elToQuery = E(1, 'div', null, null, ['foo', '']);
           e();
           E(2, 'div');
@@ -261,7 +261,7 @@ describe('query', () => {
       const Cmpt = createComponent('cmpt', function(ctx: any, cm: boolean) {
         let tmp: any;
         if (cm) {
-          m(0, Q(['foo'], false, QUERY_READ_CONTAINER_REF));
+          Q(0, ['foo'], false, QUERY_READ_CONTAINER_REF);
           E(1, 'div', null, null, ['foo', '']);
           e();
         }
@@ -284,7 +284,7 @@ describe('query', () => {
       const Cmpt = createComponent('cmpt', function(ctx: any, cm: boolean) {
         let tmp: any;
         if (cm) {
-          m(0, Q(['foo'], false, QUERY_READ_CONTAINER_REF));
+          Q(0, ['foo'], false, QUERY_READ_CONTAINER_REF);
           C(1, undefined, undefined, undefined, undefined, ['foo', '']);
         }
         qR(tmp = m<QueryList<any>>(0)) && (ctx.query = tmp as QueryList<any>);
@@ -307,7 +307,7 @@ describe('query', () => {
          const Cmpt = createComponent('cmpt', function(ctx: any, cm: boolean) {
            let tmp: any;
            if (cm) {
-             m(0, Q(['foo'], false, QUERY_READ_ELEMENT_REF));
+             Q(0, ['foo'], false, QUERY_READ_ELEMENT_REF);
              C(1, undefined, undefined, undefined, undefined, ['foo', '']);
            }
            qR(tmp = m<QueryList<any>>(0)) && (ctx.query = tmp as QueryList<any>);
@@ -330,7 +330,7 @@ describe('query', () => {
       const Cmpt = createComponent('cmpt', function(ctx: any, cm: boolean) {
         let tmp: any;
         if (cm) {
-          m(0, Q(['foo'], undefined, QUERY_READ_FROM_NODE));
+          Q(0, ['foo'], undefined, QUERY_READ_FROM_NODE);
           C(1, undefined, undefined, undefined, undefined, ['foo', '']);
         }
         qR(tmp = m<QueryList<any>>(0)) && (ctx.query = tmp as QueryList<any>);
@@ -353,7 +353,7 @@ describe('query', () => {
       const Cmpt = createComponent('cmpt', function(ctx: any, cm: boolean) {
         let tmp: any;
         if (cm) {
-          m(0, Q(['foo'], false, QUERY_READ_TEMPLATE_REF));
+          Q(0, ['foo'], false, QUERY_READ_TEMPLATE_REF);
           C(1, undefined, undefined, undefined, undefined, ['foo', '']);
         }
         qR(tmp = m<QueryList<any>>(0)) && (ctx.query = tmp as QueryList<any>);
@@ -378,7 +378,7 @@ describe('query', () => {
       const Cmpt = createComponent('cmpt', function(ctx: any, cm: boolean) {
         let tmp: any;
         if (cm) {
-          m(0, Q(['foo'], true, QUERY_READ_FROM_NODE));
+          Q(0, ['foo'], true, QUERY_READ_FROM_NODE);
           E(1, Child, null, null, ['foo', '']);
           { childInstance = m(2); }
           e();
@@ -406,7 +406,7 @@ describe('query', () => {
          const Cmpt = createComponent('cmpt', function(ctx: any, cm: boolean) {
            let tmp: any;
            if (cm) {
-             m(0, Q(['foo'], true, QUERY_READ_FROM_NODE));
+             Q(0, ['foo'], true, QUERY_READ_FROM_NODE);
              E(1, 'div', null, [Child], ['foo', 'child']);
              childInstance = m(2);
              e();
@@ -434,7 +434,7 @@ describe('query', () => {
       const Cmpt = createComponent('cmpt', function(ctx: any, cm: boolean) {
         let tmp: any;
         if (cm) {
-          m(0, Q(['foo', 'bar'], true, QUERY_READ_FROM_NODE));
+          Q(0, ['foo', 'bar'], true, QUERY_READ_FROM_NODE);
           E(1, 'div', null, [Child1, Child2], ['foo', 'child1', 'bar', 'child2']);
           {
             child1Instance = m(2);
@@ -465,7 +465,7 @@ describe('query', () => {
       const Cmpt = createComponent('cmpt', function(ctx: any, cm: boolean) {
         let tmp: any;
         if (cm) {
-          m(0, Q(['foo'], undefined, QUERY_READ_ELEMENT_REF));
+          Q(0, ['foo'], undefined, QUERY_READ_ELEMENT_REF);
           div = E(1, 'div', null, [Child], ['foo', 'child']);
           e();
         }
@@ -491,7 +491,7 @@ describe('query', () => {
       const Cmpt = createComponent('cmpt', function(ctx: any, cm: boolean) {
         let tmp: any;
         if (cm) {
-          m(0, Q(['foo', 'bar'], undefined, QUERY_READ_FROM_NODE));
+          Q(0, ['foo', 'bar'], undefined, QUERY_READ_FROM_NODE);
           div = E(1, 'div', null, [Child], ['foo', '', 'bar', 'child']);
           { childInstance = m(2); }
           e();
@@ -518,7 +518,7 @@ describe('query', () => {
       const Cmpt = createComponent('cmpt', function(ctx: any, cm: boolean) {
         let tmp: any;
         if (cm) {
-          m(0, Q(['foo'], false, Child));
+          Q(0, ['foo'], false, Child);
           E(1, 'div', null, null, ['foo', '']);
           e();
         }
@@ -547,7 +547,7 @@ describe('query', () => {
       const Cmpt = createComponent('cmpt', function(ctx: any, cm: boolean) {
         let tmp: any;
         if (cm) {
-          m(0, Q(['foo'], true, QUERY_READ_FROM_NODE));
+          Q(0, ['foo'], true, QUERY_READ_FROM_NODE);
           C(1);
         }
         cR(1);
@@ -597,7 +597,7 @@ describe('query', () => {
          const Cmpt = createComponent('cmpt', function(ctx: any, cm: boolean) {
            let tmp: any;
            if (cm) {
-             m(0, Q(['foo'], true, QUERY_READ_FROM_NODE));
+             Q(0, ['foo'], true, QUERY_READ_FROM_NODE);
              firstEl = E(1, 'b', null, null, ['foo', '']);
              e();
              C(2);
@@ -657,7 +657,7 @@ describe('query', () => {
       const Cmpt = createComponent('cmpt', function(ctx: any, cm: boolean) {
         let tmp: any;
         if (cm) {
-          m(0, Q(['foo'], true, QUERY_READ_FROM_NODE));
+          Q(0, ['foo'], true, QUERY_READ_FROM_NODE);
           C(1);
         }
         cR(1);
@@ -719,7 +719,7 @@ describe('query', () => {
       const Cmpt = createComponent('cmpt', function(ctx: any, cm: boolean) {
         let tmp: any;
         if (cm) {
-          m(0, Q(['foo'], true, QUERY_READ_FROM_NODE));
+          Q(0, ['foo'], true, QUERY_READ_FROM_NODE);
           C(1);
         }
         cR(1);
@@ -783,8 +783,8 @@ describe('query', () => {
       const Cmpt = createComponent('cmpt', function(ctx: any, cm: boolean) {
         let tmp: any;
         if (cm) {
-          m(0, Q(['foo'], true, QUERY_READ_FROM_NODE));
-          m(1, Q(['foo'], false, QUERY_READ_FROM_NODE));
+          Q(0, ['foo'], true, QUERY_READ_FROM_NODE);
+          Q(1, ['foo'], false, QUERY_READ_FROM_NODE);
           C(2);
           E(3, 'span', null, null, ['foo', '']);
           e();
