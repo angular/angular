@@ -98,7 +98,13 @@ export class MatPaginator implements OnInit, OnDestroy {
   private _pageSizeOptions: number[] = [];
 
   /** Whether to hide the page size selection UI from the user. */
-  @Input() hidePageSize = false;
+  @Input()
+  get hidePageSize(): boolean { return this._hidePageSize; }
+  set hidePageSize(value: boolean) {
+    this._hidePageSize = coerceBooleanProperty(value);
+  }
+  private _hidePageSize = false;
+
 
   /** Whether to show the first/last buttons UI to the user. */
   @Input()
