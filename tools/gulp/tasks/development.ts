@@ -40,7 +40,7 @@ const appVendors = [
 const vendorGlob = `+(${appVendors.join('|')})/**/*.+(html|css|js|map)`;
 
 /** Glob that matches all assets that need to be copied to the output. */
-const assetsGlob = join(appDir, `**/*.+(html|css|svg)`);
+const assetsGlob = join(appDir, `**/*.+(html|css|svg|ico)`);
 
 task(':watch:devapp', () => {
   watchFiles(join(appDir, '**/*.ts'), [':build:devapp:ts']);
