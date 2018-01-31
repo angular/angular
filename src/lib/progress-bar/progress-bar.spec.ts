@@ -87,6 +87,11 @@ describe('MatProgressBar', () => {
       expect(progressComponent._primaryTransform()).toEqual({transform: 'scaleX(0.6)'});
       expect(progressComponent._bufferTransform()).toEqual({transform: 'scaleX(0.6)'});
     });
+
+    it('should not be able to tab into the underlying SVG element', () => {
+      const svg = fixture.debugElement.query(By.css('svg')).nativeElement;
+      expect(svg.getAttribute('focusable')).toBe('false');
+    });
   });
 
   describe('buffer progress-bar', () => {
