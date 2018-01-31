@@ -36,11 +36,13 @@ export class TestRequest {
    *
    * Both successful and unsuccessful responses can be delivered via `flush()`.
    */
-  flush(body: ArrayBuffer|Blob|string|number|Object|(string|number|Object|null)[]|null, opts: {
-    headers?: HttpHeaders | {[name: string]: string | string[]},
-    status?: number,
-    statusText?: string,
-  } = {}): void {
+  flush(
+      body: ArrayBuffer|Blob|string|number|Object|boolean|(string|number|Object|null)[]|null,
+      opts: {
+        headers?: HttpHeaders | {[name: string]: string | string[]},
+        status?: number,
+        statusText?: string,
+      } = {}): void {
     if (this.cancelled) {
       throw new Error(`Cannot flush a cancelled request.`);
     }
@@ -144,7 +146,8 @@ function _toBlob(
  * Helper function to convert a response body to JSON data.
  */
 function _toJsonBody(
-    body: ArrayBuffer | Blob | string | number | Object | (string | number | Object | null)[],
+    body: ArrayBuffer | Blob | string | number | Object | boolean |
+        (string | number | Object | null)[],
     format: string = 'JSON'): Object|string|number|(Object | string | number)[] {
   if (typeof ArrayBuffer !== 'undefined' && body instanceof ArrayBuffer) {
     throw new Error(`Automatic conversion to ${format} is not supported for ArrayBuffers.`);
@@ -153,7 +156,7 @@ function _toJsonBody(
     throw new Error(`Automatic conversion to ${format} is not supported for Blobs.`);
   }
   if (typeof body === 'string' || typeof body === 'number' || typeof body === 'object' ||
-      Array.isArray(body)) {
+      typeof body === 'boolean' || Array.isArray(body)) {
     return body;
   }
   throw new Error(`Automatic conversion to ${format} is not supported for response type.`);
