@@ -140,5 +140,6 @@ This error occurs if you have added multiple hints for the same side. Keep in mi
 
 This error occurs when you have not added a form field control to your form field. If your form
 field contains a native `<input>` or `<textarea>` element, make sure you've added the `matInput`
-directive to it. Other components that can act as a form field control include `<mat-select>`,
-`<mat-chip-list>`, and any custom form field controls you've created.
+directive to it and have imported `MatInputModule`. Other components that can act as a form field
+control include `<mat-select>`, `<mat-chip-list>`, and any custom form field controls you've
+created.
