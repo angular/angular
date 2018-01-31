@@ -371,7 +371,7 @@ export type QueryList<T> = viewEngine_QueryList<T>;
 export const QueryList: typeof viewEngine_QueryList = QueryList_ as any;
 
 /**
- * Creates and returns a QueryList,
+ * Creates and returns a QueryList.
  *
  * @param memoryIndex The index in memory where the QueryList should be saved. If null,
  * this is is a content query and the QueryList will be saved later through directiveCreate.
