@@ -1372,33 +1372,38 @@ export const NO_CHANGE = {} as NO_CHANGE;
  * If any of the arguments change, then the interpolation is concatenated
  * and causes an update.
  *
- * @param values an array of values to diff.
+ * `values`:
+ * - has static text at even indexes,
+ * - has evaluated expressions at odd indexes (could be NO_CHANGE).
  */
 export function bindV(values: any[]): string|NO_CHANGE {
+  ngDevMode && assertLessThan(2, values.length, 'should have at least 3 values');
+  ngDevMode && assertEqual(values.length % 2, 1, 'should have an odd number of values');
+
+  // TODO(vicb): Add proper unit tests when there is a place to add them
   if (creationMode) {
     initBindings();
-    data[bindingIndex++] = values.slice();
+    // Only the bindings (odd indexes) are stored as texts are constant.
+    const bindings: any[] = [];
+    data[bindingIndex++] = bindings;
     let content: string = values[0];
-    for (let i = 1; i < values.length; i++) {
-      content += stringify(values[i]);
+    for (let i = 1; i < values.length; i += 2) {
+      content += stringify(values[i]) + values[i + 1];
+      bindings.push(values[i]);
     }
     return content;
   }
 
-  const parts: any[] = data[bindingIndex++];
-  for (let i = 0; i < values.length; i++) {
-    if (values[i] !== NO_CHANGE && isDifferent(values[i], parts[i])) {
-      let content = '';
-      // The i first values are the same, no need to update the bindings
-      for (let j = 0; j < i; j++) {
-        content += stringify(parts[j]);
-      }
-      // The subsequent values might have changed, update the bindings
-      for (let j = i; j < values.length; j++) {
-        if (values[j] !== NO_CHANGE) {
-          parts[j] = values[j];
+  const bindings: any[] = data[bindingIndex++];
+  // `bIdx` is the index in the `bindings` array, `vIdx` in the `values` array
+  for (let bIdx = 0, vIdx = 1; bIdx < bindings.length; bIdx++, vIdx += 2) {
+    if (values[vIdx] !== NO_CHANGE && isDifferent(values[vIdx], bindings[bIdx])) {
+      let content: string = values[0];
+      for (bIdx = 0, vIdx = 1; bIdx < bindings.length; vIdx += 2, bIdx++) {
+        if (values[vIdx] !== NO_CHANGE) {
+          bindings[bIdx] = values[vIdx];
         }
-        content += stringify(parts[j]);
+        content += stringify(bindings[bIdx]) + values[vIdx + 1];
       }
       return content;
     }
