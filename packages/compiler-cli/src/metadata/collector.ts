@@ -76,6 +76,9 @@ export class MetadataCollector {
     }
 
     function recordEntry<T extends MetadataEntry>(entry: T, node: ts.Node): T {
+      if (composedSubstituter) {
+        entry = composedSubstituter(entry as MetadataValue, node) as T;
+      }
       return recordMapEntry(entry, node, nodeMap, sourceFile);
     }
 
