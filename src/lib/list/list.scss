@@ -1,9 +1,11 @@
 @import '../core/style/variables';
 @import '../core/style/list-common';
 @import '../core/style/layout-common';
+@import '../divider/divider';
 
 
 $mat-list-side-padding: 16px;
+$mat-list-icon-padding: 4px;
 $mat-list-avatar-size: 40px;
 
 // Normal list variables
@@ -129,6 +131,10 @@ $mat-list-item-inset-divider-offset: 72px;
     width: $mat-list-avatar-size;
     height: $mat-list-avatar-size;
     border-radius: 50%;
+
+    ~ .mat-divider-inset {
+      @include mat-inset-divider-offset($mat-list-avatar-size, $mat-list-side-padding);
+    }
   }
 
   .mat-list-icon {
@@ -138,7 +144,12 @@ $mat-list-item-inset-divider-offset: 72px;
     font-size: $icon-size;
     box-sizing: content-box;
     border-radius: 50%;
-    padding: 4px;
+    padding: $mat-list-icon-padding;
+
+    ~ .mat-divider-inset {
+      @include mat-inset-divider-offset($icon-size + (2 * $mat-list-icon-padding),
+              $mat-list-side-padding);
+    }
   }
 
   .mat-divider {
@@ -146,21 +157,15 @@ $mat-list-item-inset-divider-offset: 72px;
     bottom: 0;
     left: 0;
     width: 100%;
+    margin: 0;
 
     [dir='rtl'] & {
-      left: auto;
-      right: 0;
+      margin-left: auto;
+      margin-right: 0;
     }
 
     &.mat-divider-inset {
-      left: $mat-list-item-inset-divider-offset;
-      width: calc(100% - #{$mat-list-item-inset-divider-offset});
-      margin: 0;
-
-      [dir='rtl'] & {
-        left: auto;
-        right: $mat-list-item-inset-divider-offset;
-      }
+      position: absolute; // necessary to override card styles
     }
   }
 }

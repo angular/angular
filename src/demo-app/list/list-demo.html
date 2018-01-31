@@ -31,7 +31,7 @@
           <span>{{message.subject}} -- </span>
           <span class="demo-secondary-text">{{message.message}}</span>
         </p>
-        <mat-divider [inset]="true" *ngIf="!last"></mat-divider>
+        <mat-divider inset *ngIf="!last"></mat-divider>
       </mat-list-item>
       <mat-divider></mat-divider>
       <mat-list-item *ngFor="let message of messages">
@@ -87,10 +87,11 @@
       </mat-list-item>
     </mat-nav-list>
     <mat-nav-list>
-      <a mat-list-item *ngFor="let link of links" href="http://www.google.com">
+      <a mat-list-item *ngFor="let link of links; last as last" href="http://www.google.com">
         <mat-icon mat-list-icon>folder</mat-icon>
         <span mat-line>{{ link.name }}</span>
         <span mat-line class="demo-secondary-text"> Description </span>
+        <mat-divider inset *ngIf="!last"></mat-divider>
       </a>
     </mat-nav-list>
     <mat-nav-list dense>
