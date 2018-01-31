@@ -12,6 +12,7 @@ import {PlatformModule} from '@angular/cdk/platform';
 import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
 import {MatCommonModule} from '@angular/material/core';
+import {LayoutModule} from '@angular/cdk/layout';
 import {
   MAT_TOOLTIP_SCROLL_STRATEGY_PROVIDER,
   MAT_TOOLTIP_DEFAULT_OPTIONS,
@@ -27,6 +28,7 @@ import {
     MatCommonModule,
     PlatformModule,
     A11yModule,
+    LayoutModule,
   ],
   exports: [MatTooltip, TooltipComponent, MatCommonModule],
   declarations: [MatTooltip, TooltipComponent],

@@ -18,6 +18,7 @@ ng_module(
     "//src/cdk/keycodes",
     "//src/cdk/portal",
     "//src/cdk/scrolling",
+    "//src/cdk/layout",
     "@rxjs",
   ],
   tsconfig = ":tsconfig-build.json",

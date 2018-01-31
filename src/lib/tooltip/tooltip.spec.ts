@@ -481,7 +481,7 @@ describe('MatTooltip', () => {
     it('should have consistent right transform origin in any dir', () => {
       // Move the button away from the edge of the screen so
       // we don't get into the fallback positions.
-      fixture.componentInstance.button.nativeElement.style.margin = '200px';
+      fixture.componentInstance.button.nativeElement.style.margin = '300px';
 
       tooltipDirective.position = 'left';
       tooltipDirective.show();

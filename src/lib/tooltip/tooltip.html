@@ -1,5 +1,6 @@
 <div class="mat-tooltip"
      [ngClass]="tooltipClass"
+     [class.mat-tooltip-handset]="(_isHandset | async)!.matches"
      [style.transform-origin]="_transformOrigin"
      [@state]="_visibility"
      (@state.start)="_animationStart()"

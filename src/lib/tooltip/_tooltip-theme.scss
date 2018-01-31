@@ -2,11 +2,14 @@
 @import '../core/theming/theming';
 @import '../core/typography/typography-utils';
 
-// TODO(crisbeto): these doesn't correspond to any typography levels
-// and the width/height appear to be off from the spec.
 $mat-tooltip-target-height: 22px;
 $mat-tooltip-font-size: 10px;
 $mat-tooltip-vertical-padding: ($mat-tooltip-target-height - $mat-tooltip-font-size) / 2;
+
+$mat-tooltip-handset-target-height: 32px;
+$mat-tooltip-handset-font-size: 14px;
+$mat-tooltip-handset-vertical-padding:
+    ($mat-tooltip-handset-target-height - $mat-tooltip-handset-font-size) / 2;
 
 @mixin mat-tooltip-theme($theme) {
   .mat-tooltip {
@@ -20,5 +23,11 @@ $mat-tooltip-vertical-padding: ($mat-tooltip-target-height - $mat-tooltip-font-s
     font-size: $mat-tooltip-font-size;
     padding-top: $mat-tooltip-vertical-padding;
     padding-bottom: $mat-tooltip-vertical-padding;
+  }
+
+  .mat-tooltip-handset {
+    font-size: $mat-tooltip-handset-font-size;
+    padding-top: $mat-tooltip-handset-vertical-padding;
+    padding-bottom: $mat-tooltip-handset-vertical-padding;
   }
 }

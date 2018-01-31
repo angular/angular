@@ -5,6 +5,9 @@ $mat-tooltip-horizontal-padding: 8px;
 $mat-tooltip-max-width: 250px;
 $mat-tooltip-margin: 14px;
 
+$mat-tooltip-handset-horizontal-padding: 16px;
+$mat-tooltip-handset-margin: 24px;
+
 .mat-tooltip-panel {
   // The overlay reference updates the pointer-events style property directly on the HTMLElement
   // depending on the state of the overlay. For tooltips the overlay panel should never enable
@@ -23,4 +26,10 @@ $mat-tooltip-margin: 14px;
   @include cdk-high-contrast {
     outline: solid 1px;
   }
+}
+
+.mat-tooltip-handset {
+  margin: $mat-tooltip-handset-margin;
+  padding-left: $mat-tooltip-handset-horizontal-padding;
+  padding-right: $mat-tooltip-handset-horizontal-padding;
 }
