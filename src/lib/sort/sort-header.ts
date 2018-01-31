@@ -41,7 +41,7 @@ export const _MatSortHeaderMixinBase = mixinDisabled(MatSortHeaderBase);
 export type ArrowViewState = SortDirection | 'hint' | 'active';
 
 /**
- * States describing the arrow's animated position (animating fromState -> toState).
+ * States describing the arrow's animated position (animating fromState to toState).
  * If the fromState is not defined, there will be no animated transition to the toState.
  * @docs-private
  */
