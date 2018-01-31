@@ -38,6 +38,7 @@ class CanDeactivate {
 
 /**
  * This class bundles the actions involved in preactivation of a route.
+ * @stable
  */
 export class PreActivation {
   private canActivateChecks: CanActivate[] = [];

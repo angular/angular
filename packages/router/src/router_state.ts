@@ -377,6 +377,8 @@ function serializeNode(node: TreeNode<ActivatedRouteSnapshot>): string {
  * The expectation is that the activate route is created with the right set of parameters.
  * So we push new values into the observables only when they are not the initial values.
  * And we detect that by checking if the snapshot field is set.
+ *
+ * @stable
  */
 export function advanceActivatedRoute(route: ActivatedRoute): void {
   if (route.snapshot) {

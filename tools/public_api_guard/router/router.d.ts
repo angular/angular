@@ -56,6 +56,12 @@ export declare class ActivationStart {
 }
 
 /** @stable */
+export declare function advanceActivatedRoute(route: ActivatedRoute): void;
+
+/** @stable */
+export declare function applyRedirects(moduleInjector: Injector, configLoader: RouterConfigLoader, urlSerializer: UrlSerializer, urlTree: UrlTree, config: Routes): Observable<UrlTree>;
+
+/** @stable */
 export interface CanActivate {
     canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> | Promise<boolean> | boolean;
 }
@@ -105,6 +111,9 @@ export declare class ChildrenOutletContexts {
 export declare function convertToParamMap(params: Params): ParamMap;
 
 /** @stable */
+export declare function createRouterState(routeReuseStrategy: RouteReuseStrategy, curr: RouterStateSnapshot, prevState: RouterState): RouterState;
+
+/** @stable */
 export declare type Data = {
     [name: string]: any;
 };
@@ -132,6 +141,11 @@ export interface ExtraOptions {
     useHash?: boolean;
 }
 
+/** @stable */
+export declare function forEach<K, V>(map: {
+    [key: string]: V;
+}, callback: (v: V, k: string) => void): void;
+
 /** @experimental */
 export declare class GuardsCheckEnd extends RouterEvent {
     shouldActivate: boolean;
@@ -157,6 +171,9 @@ export declare class GuardsCheckStart extends RouterEvent {
         state: RouterStateSnapshot);
     toString(): string;
 }
+
+/** @stable */
+export declare function isNavigationCancelingError(error: Error): any;
 
 /** @stable */
 export declare type LoadChildren = string | LoadChildrenCallback;
@@ -222,6 +239,13 @@ export declare class NavigationStart extends RouterEvent {
     toString(): string;
 }
 
+/** @stable */
+export declare function nodeChildrenAsMap<T extends {
+    outlet: string;
+}>(node: TreeNode<T> | null): {
+    [outlet: string]: TreeNode<T>;
+};
+
 /** @experimental */
 export declare class NoPreloading implements PreloadingStrategy {
     preload(route: Route, fn: () => Observable<any>): Observable<any>;
@@ -249,6 +273,16 @@ export declare type Params = {
     [key: string]: any;
 };
 
+/** @stable */
+export declare class PreActivation {
+    constructor(future: RouterStateSnapshot, curr: RouterStateSnapshot, moduleInjector: Injector, forwardEvent?: ((evt: Event) => void) | undefined);
+    checkGuards(): Observable<boolean>;
+    initialize(parentContexts: ChildrenOutletContexts): void;
+    isActivating(): boolean;
+    isDeactivating(): boolean;
+    resolveData(paramsInheritanceStrategy: 'emptyOnly' | 'always'): Observable<any>;
+}
+
 /** @experimental */
 export declare class PreloadAllModules implements PreloadingStrategy {
     preload(route: Route, fn: () => Observable<any>): Observable<any>;
@@ -264,6 +298,9 @@ export declare const PRIMARY_OUTLET = "primary";
 
 /** @stable */
 export declare function provideRoutes(routes: Routes): any;
+
+/** @stable */
+export declare function recognize(rootComponentType: Type<any> | null, config: Routes, urlTree: UrlTree, url: string, paramsInheritanceStrategy?: ParamsInheritanceStrategy): Observable<RouterStateSnapshot>;
 
 /** @stable */
 export interface Resolve<T> {
@@ -337,15 +374,29 @@ export declare class RouteConfigLoadStart {
 /** @stable */
 export declare class Router {
     config: Routes;
+    protected configLoader: RouterConfigLoader;
+    protected currentUrlTree: UrlTree;
     errorHandler: ErrorHandler;
-    readonly events: Observable<Event>;
+    events: Subject<Event>;
+    hooks: {
+        beforePreactivation: (snapshot: RouterStateSnapshot) => Observable<void>;
+        afterPreactivation: (snapshot: RouterStateSnapshot) => Observable<void>;
+    };
+    protected lastSuccessfulId: number;
+    protected location: Location;
     navigated: boolean;
+    protected navigationId: number;
+    protected ngModule: NgModuleRef<any>;
     onSameUrlNavigation: 'reload' | 'ignore';
     paramsInheritanceStrategy: 'emptyOnly' | 'always';
+    protected rawUrlTree: UrlTree;
+    protected rootComponentType: Type<any> | null;
+    protected rootContexts: ChildrenOutletContexts;
     routeReuseStrategy: RouteReuseStrategy;
-    readonly routerState: RouterState;
+    routerState: RouterState;
     readonly url: string;
     urlHandlingStrategy: UrlHandlingStrategy;
+    protected urlSerializer: UrlSerializer;
     constructor(rootComponentType: Type<any> | null, urlSerializer: UrlSerializer, rootContexts: ChildrenOutletContexts, location: Location, injector: Injector, loader: NgModuleFactoryLoader, compiler: Compiler, config: Routes);
     createUrlTree(commands: any[], navigationExtras?: NavigationExtras): UrlTree;
     dispose(): void;
@@ -356,6 +407,9 @@ export declare class Router {
     ngOnDestroy(): void;
     parseUrl(url: string): UrlTree;
     resetConfig(config: Routes): void;
+    protected resetStateAndUrl(storedState: RouterState, storedUrl: UrlTree, rawUrl: UrlTree): void;
+    protected resetUrlToCurrentUrlTree(): void;
+    protected runNavigate(url: UrlTree, rawUrl: UrlTree, skipLocationChange: boolean, replaceUrl: boolean, id: number, precreatedState: RouterStateSnapshot | null): Promise<boolean>;
     serializeUrl(url: UrlTree): string;
     setUpLocationChangeListener(): void;
 }
@@ -503,6 +557,14 @@ export declare class RoutesRecognized extends RouterEvent {
 
 /** @experimental */
 export declare type RunGuardsAndResolvers = 'paramsChange' | 'paramsOrQueryParamsChange' | 'always';
+
+/** @stable */
+export declare class TreeNode<T> {
+    children: TreeNode<T>[];
+    value: T;
+    constructor(value: T, children: TreeNode<T>[]);
+    toString(): string;
+}
 
 /** @experimental */
 export declare abstract class UrlHandlingStrategy {

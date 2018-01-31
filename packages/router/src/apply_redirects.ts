@@ -60,6 +60,8 @@ function canLoadFails(route: Route): Observable<LoadedRouterConfig> {
  * Returns the `UrlTree` with the redirection applied.
  *
  * Lazy modules are loaded along the way.
+ *
+ * @stable
  */
 export function applyRedirects(
     moduleInjector: Injector, configLoader: RouterConfigLoader, urlSerializer: UrlSerializer,
