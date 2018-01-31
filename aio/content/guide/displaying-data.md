@@ -231,68 +231,79 @@ For more information, see the [Template Syntax](guide/template-syntax#ngFor) pag
 </div>
 
 
-
-Notice the `hero` in the `ngFor` double-quoted instruction;
+<!-- Notice the `hero` in the `ngFor` double-quoted instruction;
 it is an example of a template input variable. Read
 more about template input variables in the [microsyntax](guide/template-syntax#microsyntax) section of
-the [Template Syntax](guide/template-syntax) page.
+the [Template Syntax](guide/template-syntax) page. -->
+이 코드에서 `ngFor` 가 지정된 엘리먼트 안의 `hero` 에는 이중 중괄호가 사용되었는데, 이 문법은 템플릿에 데이터를 바인딩하는 방법 중 가장 간단한 방법입니다. 좀 더 자세한 내용은 [템플릿 문법](guide/template-syntax)의 [microsyntax](guide/template-syntax#microsyntax) 를 참고하세요.
 
-Angular duplicates the `<li>` for each item in the list, setting the `hero` variable
+<!-- Angular duplicates the `<li>` for each item in the list, setting the `hero` variable
 to the item (the hero) in the current iteration. Angular uses that variable as the
-context for the interpolation in the double curly braces.
+context for the interpolation in the double curly braces. -->
+이렇게 코드를 작성하면 Angular는 목록에 있는 항목의 개수만큼 `<li>` 태그를 반복하하면서 `hero` 변수를 하나씩 전달합니다.
+이 때 전달된 변수는 이중 중괄호 안에서만 유효합니다.
 
 
 <div class="l-sub-section">
 
 
-
-In this case, `ngFor` is displaying an array, but `ngFor` can
-repeat items for any [iterable](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Iteration_protocols) object.
+<!-- In this case, `ngFor` is displaying an array, but `ngFor` can
+repeat items for any [iterable](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Iteration_protocols) object. -->
+이 코드에서 `ngFor` 는 배열을 순회하기 위해 사용했습니다. `ngFor`는 배열 뿐 아니라 [이터러블(interable)](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Iteration_protocols) 객체에도 사용할 수 있습니다.
 
 </div>
 
 
-
-Now the heroes appear in an unordered list.
+<!-- Now the heroes appear in an unordered list. -->
+여기까지 작성하면 이제 히어로의 목록이 화면에 표시됩니다.
 
 
 <figure>
-  <img src="generated/images/guide/displaying-data/hero-names-list.png" alt="After ngfor">
+  <!-- <img src="generated/images/guide/displaying-data/hero-names-list.png" alt="After ngfor"> -->
+  <img src="generated/images/guide/displaying-data/hero-names-list.png" alt="ngfor 적용 화면">
 </figure>
 
 
-
-
 ## Creating a class for the data
+<!-- 데이터 클래스 정의하기 -->
 
-The app's code defines the data directly inside the component, which isn't best practice.
-In a simple demo, however, it's fine.
+<!-- The app's code defines the data directly inside the component, which isn't best practice.
+In a simple demo, however, it's fine. -->
+지금은 데이터를 그대로 컴포넌트에 표시하지만, 이 방식이 최선은 아닙니다.
+간단하게 테스트하는 목적이라면 이대로도 좋지만요.
 
-At the moment, the binding is to an array of strings.
-In real applications, most bindings are to more specialized objects.
+<!-- At the moment, the binding is to an array of strings.
+In real applications, most bindings are to more specialized objects. -->
+지금까지는 데이터가 간단한 문자열 배열이기 때문에 이정도로 충분했습니다.
+하지만 실제 애플리케이션에서는 복잡하게 정의된 객체를 바인딩해서 사용하는 경우가 대부분입니다.
 
-To convert this binding to use specialized objects, turn the array
-of hero names into an array of `Hero` objects. For that you'll need a `Hero` class:
+<!-- To convert this binding to use specialized objects, turn the array
+of hero names into an array of `Hero` objects. For that you'll need a `Hero` class: -->
+이제 객체를 바인딩하는 방법을 알아보기 위해, 배열의 항목을 `Hero` 객체로 만들어 봅시다.
+Angular CLI를 사용해서 `Hero` 클래스를 생성합니다.
 
 <code-example language="sh" class="code-shell">
   ng generate class hero
 </code-example>
 
-With the following code:
-
+<!-- With the following code: -->
+그리고 클래스 코드는 다음과 같이 작성합니다.
 
 <code-example path="displaying-data/src/app/hero.ts" linenums="false" title="src/app/hero.ts">
 
 </code-example>
 
 
+<!-- You've defined a class with a constructor and two properties: `id` and `name`. -->
+이 코드에서는 생성자를 사용해서 `id` 와 `name` 프로퍼티를 정의했습니다.
 
-You've defined a class with a constructor and two properties: `id` and `name`.
+<!-- It might not look like the class has properties, but it does.
+The declaration of the constructor parameters takes advantage of a TypeScript shortcut. -->
+코드를 이렇게 작성하면 클래스에 정의한 프로퍼티가 없는 것 같지만, 실제로는 클래스에 프로퍼티가 2개 정의됩니다.
+이 문법은 TypeScript 문법으로, 생성자에서 프로퍼티를 간단하게 정의하는 문법입니다.
 
-It might not look like the class has properties, but it does.
-The declaration of the constructor parameters takes advantage of a TypeScript shortcut.
-
-Consider the first parameter:
+<!-- Consider the first parameter: -->
+생성자에 사용된 첫번째 인자를 봅시다:
 
 
 <code-example path="displaying-data/src/app/hero.ts" linenums="false" title="src/app/hero.ts (id)" region="id">
@@ -300,19 +311,23 @@ Consider the first parameter:
 </code-example>
 
 
+<!-- That brief syntax does a lot: -->
+이 간단한 문법이 다음과 같은 역할을 합니다:
 
-That brief syntax does a lot:
-
-* Declares a constructor parameter and its type.
+<!-- * Declares a constructor parameter and its type.
 * Declares a public property of the same name.
-* Initializes that property with the corresponding argument when creating an instance of the class.
-
+* Initializes that property with the corresponding argument when creating an instance of the class. -->
+* 생성자에서 받을 인자와 인자의 타입을 정의합니다.
+* 인자와 같은 이름으로 클래스에 public 프로퍼티를 정의합니다.
+* 클래스가 생성될 때 생성자로 인자를 받으면 그 값을 해당 프로퍼티에 할당합니다.
 
 
 ### Using the Hero class
+<!-- Hero 클래스 적용하기 -->
 
-After importing the `Hero` class, the `AppComponent.heroes` property can return a _typed_ array
-of `Hero` objects:
+<!-- After importing the `Hero` class, the `AppComponent.heroes` property can return a _typed_ array
+of `Hero` objects: -->
+이제 `AppComponent.heroes` 프로퍼티를 `Hero` 객체 타입으로 다시 정의합니다.
 
 
 <code-example path="displaying-data/src/app/app.component.3.ts" linenums="false" title="src/app/app.component.ts (heroes)" region="heroes">
@@ -320,10 +335,12 @@ of `Hero` objects:
 </code-example>
 
 
-
-Next, update the template.
+<!-- Next, update the template.
 At the moment it displays the hero's `id` and `name`.
-Fix that to display only the hero's `name` property.
+Fix that to display only the hero's `name` property. -->
+그리고 템플릿을 수정합니다.
+히어로 객체에는 `id` 프로퍼티와 `name` 프로퍼티가 있지만, 지금은 `name` 프로퍼티만 화면에 표시합시다.
+
 
 
 <code-example path="displaying-data/src/app/app.component.3.ts" linenums="false" title="src/app/app.component.ts (template)" region="template">
@@ -331,8 +348,8 @@ Fix that to display only the hero's `name` property.
 </code-example>
 
 
-
-The display looks the same, but the code is clearer.
+<!-- The display looks the same, but the code is clearer. -->
+앱을 실행해보면 화면에 표시되는 모습은 이전과 같지만, 이제 어떤 프로퍼티를 참조하는지 명확해졌습니다.
 
 {@a ngIf}
 
