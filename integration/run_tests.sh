@@ -19,7 +19,7 @@ rm_cache
 mkdir $cache
 trap rm_cache EXIT
 
-for testDir in $(ls | grep -v node_modules) ; do
+for testDir in $(ls | grep -Ev 'node_modules|render3') ; do
   [[ -d "$testDir" ]] || continue
   echo "#################################"
   echo "Running integration test $testDir"
