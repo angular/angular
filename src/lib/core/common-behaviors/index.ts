@@ -12,3 +12,4 @@ export {CanColor, mixinColor, ThemePalette} from './color';
 export {CanDisableRipple, mixinDisableRipple} from './disable-ripple';
 export {HasTabIndex, mixinTabIndex} from './tabindex';
 export {CanUpdateErrorState, mixinErrorState} from './error-state';
+export {HasInitialized, mixinInitialized} from './initialized';
