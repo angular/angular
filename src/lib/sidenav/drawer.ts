@@ -176,9 +176,6 @@ export class MatDrawer implements AfterContentInit, AfterContentChecked, OnDestr
   set disableClose(value: boolean) { this._disableClose = coerceBooleanProperty(value); }
   private _disableClose: boolean = false;
 
-  /** Whether the drawer is opened. */
-  private _opened: boolean = false;
-
   /** How the sidenav was opened (keypress, mouse click etc.) */
   private _openedVia: FocusOrigin | null;
 
@@ -335,7 +332,8 @@ export class MatDrawer implements AfterContentInit, AfterContentChecked, OnDestr
    */
   @Input()
   get opened(): boolean { return this._opened; }
-  set opened(v: boolean) { this.toggle(coerceBooleanProperty(v)); }
+  set opened(value: boolean) { this.toggle(coerceBooleanProperty(value)); }
+  private _opened: boolean = false;
 
   /**
    * Open the drawer.
@@ -388,7 +386,7 @@ export class MatDrawer implements AfterContentInit, AfterContentChecked, OnDestr
    * Handles the keyboard events.
    * @docs-private
    */
-  handleKeydown(event: KeyboardEvent) {
+  handleKeydown(event: KeyboardEvent): void {
     if (event.keyCode === ESCAPE && !this.disableClose) {
       this.close();
       event.stopPropagation();
@@ -408,7 +406,7 @@ export class MatDrawer implements AfterContentInit, AfterContentChecked, OnDestr
     }
   }
 
-  get _width() {
+  get _width(): number {
     return this._elementRef.nativeElement ? (this._elementRef.nativeElement.offsetWidth || 0) : 0;
   }
 }
@@ -457,7 +455,7 @@ export class MatDrawerContainer implements AfterContentInit, OnDestroy {
   private _autosize: boolean;
 
   /** Event emitted when the drawer backdrop is clicked. */
-  @Output() readonly backdropClick = new EventEmitter<void>();
+  @Output() readonly backdropClick: EventEmitter<void> = new EventEmitter<void>();
 
   /** The drawer at the start/end position, independent of direction. */
   private _start: MatDrawer | null;

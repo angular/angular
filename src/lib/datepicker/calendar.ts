@@ -105,10 +105,10 @@ export class MatCalendar<D> implements AfterContentInit, OnDestroy, OnChanges {
   @Input() dateFilter: (date: D) => boolean;
 
   /** Emits when the currently selected date changes. */
-  @Output() readonly selectedChange = new EventEmitter<D>();
+  @Output() readonly selectedChange: EventEmitter<D> = new EventEmitter<D>();
 
   /** Emits when any date is selected. */
-  @Output() readonly _userSelection = new EventEmitter<void>();
+  @Output() readonly _userSelection: EventEmitter<void> = new EventEmitter<void>();
 
   /** Reference to the current month view component. */
   @ViewChild(MatMonthView) monthView: MatMonthView<D>;

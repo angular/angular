@@ -122,8 +122,8 @@ export class MatDatepicker<D> implements OnDestroy {
     // selected value is.
     return this._startAt || (this._datepickerInput ? this._datepickerInput.value : null);
   }
-  set startAt(date: D | null) {
-    this._startAt = this._getValidDateOrNull(this._dateAdapter.deserialize(date));
+  set startAt(value: D | null) {
+    this._startAt = this._getValidDateOrNull(this._dateAdapter.deserialize(value));
   }
   private _startAt: D | null;
 
@@ -176,7 +176,7 @@ export class MatDatepicker<D> implements OnDestroy {
   /** Whether the calendar is open. */
   @Input()
   get opened(): boolean { return this._opened; }
-  set opened(shouldOpen: boolean) { shouldOpen ? this.open() : this.close(); }
+  set opened(value: boolean) { value ? this.open() : this.close(); }
   private _opened = false;
 
   /** The id for the datepicker calendar. */

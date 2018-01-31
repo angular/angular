@@ -118,7 +118,6 @@ export function getMatAutocompleteMissingPanelError(): Error {
 export class MatAutocompleteTrigger implements ControlValueAccessor, OnDestroy {
   private _overlayRef: OverlayRef | null;
   private _portal: TemplatePortal;
-  private _panelOpen: boolean = false;
   private _componentDestroyed = false;
 
   /** Strategy that is used to position the panel. */
@@ -158,9 +157,8 @@ export class MatAutocompleteTrigger implements ControlValueAccessor, OnDestroy {
   }
 
   /** Whether or not the autocomplete panel is open. */
-  get panelOpen(): boolean {
-    return this._panelOpen && this.autocomplete.showPanel;
-  }
+  get panelOpen(): boolean { return this._panelOpen && this.autocomplete.showPanel; }
+  private _panelOpen: boolean = false;
 
   /** Opens the autocomplete suggestion panel. */
   openPanel(): void {
@@ -252,42 +250,22 @@ export class MatAutocompleteTrigger implements ControlValueAccessor, OnDestroy {
     }));
   }
 
-  /**
-   * Sets the autocomplete's value. Part of the ControlValueAccessor interface
-   * required to integrate with Angular's core forms API.
-   *
-   * @param value New value to be written to the model.
-   */
+  // Implemented as part of ControlValueAccessor.
   writeValue(value: any): void {
     Promise.resolve(null).then(() => this._setTriggerValue(value));
   }
 
-  /**
-   * Saves a callback function to be invoked when the autocomplete's value
-   * changes from user input. Part of the ControlValueAccessor interface
-   * required to integrate with Angular's core forms API.
-   *
-   * @param fn Callback to be triggered when the value changes.
-   */
+  // Implemented as part of ControlValueAccessor.
   registerOnChange(fn: (value: any) => {}): void {
     this._onChange = fn;
   }
 
-  /**
-   * Saves a callback function to be invoked when the autocomplete is blurred
-   * by the user. Part of the ControlValueAccessor interface required
-   * to integrate with Angular's core forms API.
-   *
-   * @param fn Callback to be triggered when the component has been touched.
-   */
+  // Implemented as part of ControlValueAccessor.
   registerOnTouched(fn: () => {}) {
     this._onTouched = fn;
   }
 
-  /**
-   * Disables the input. Implemented as a part of `ControlValueAccessor`.
-   * @param isDisabled Whether the component should be disabled.
-   */
+  // Implemented as part of ControlValueAccessor.
   setDisabledState(isDisabled: boolean) {
     this._element.nativeElement.disabled = isDisabled;
   }

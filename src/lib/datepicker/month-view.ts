@@ -68,10 +68,10 @@ export class MatMonthView<D> implements AfterContentInit {
   @Input() dateFilter: (date: D) => boolean;
 
   /** Emits when a new date is selected. */
-  @Output() readonly selectedChange = new EventEmitter<D | null>();
+  @Output() readonly selectedChange: EventEmitter<D | null> = new EventEmitter<D | null>();
 
   /** Emits when any date is selected. */
-  @Output() readonly _userSelection = new EventEmitter<void>();
+  @Output() readonly _userSelection: EventEmitter<void> = new EventEmitter<void>();
 
   /** The label for this month (e.g. "January 2017"). */
   _monthLabel: string;
@@ -117,7 +117,7 @@ export class MatMonthView<D> implements AfterContentInit {
     this._activeDate = this._dateAdapter.today();
   }
 
-  ngAfterContentInit(): void {
+  ngAfterContentInit() {
     this._init();
   }
 

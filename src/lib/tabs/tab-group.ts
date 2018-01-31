@@ -139,7 +139,7 @@ export class MatTabGroup extends _MatTabGroupMixinBase implements AfterContentIn
   private _backgroundColor: ThemePalette;
 
   /** Output to enable support for two-way binding on `[(selectedIndex)]` */
-  @Output() readonly selectedIndexChange: EventEmitter<number> = new EventEmitter();
+  @Output() readonly selectedIndexChange: EventEmitter<number> = new EventEmitter<number>();
 
   /** Event emitted when focus has changed within a tab group. */
   @Output() readonly focusChange: EventEmitter<MatTabChangeEvent> =
@@ -173,7 +173,7 @@ export class MatTabGroup extends _MatTabGroupMixinBase implements AfterContentIn
    * each tab should be in according to the new selected index, and additionally we know how
    * a new selected tab should transition in (from the left or right).
    */
-  ngAfterContentChecked(): void {
+  ngAfterContentChecked() {
     // Clamp the next selected index to the boundsof 0 and the tabs length.
     // Note the `|| 0`, which ensures that values like NaN can't get through
     // and which would otherwise throw the component into an infinite loop

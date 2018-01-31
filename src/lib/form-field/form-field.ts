@@ -121,12 +121,12 @@ export class MatFormField extends _MatFormFieldMixinBase
   private _showAlwaysAnimate = false;
 
   /** Whether the floating label should always float or not. */
-  get _shouldAlwaysFloat() {
+  get _shouldAlwaysFloat(): boolean {
     return this._floatLabel === 'always' && !this._showAlwaysAnimate;
   }
 
   /** Whether the label can float or not. */
-  get _canLabelFloat() { return this._floatLabel !== 'never'; }
+  get _canLabelFloat(): boolean { return this._floatLabel !== 'never'; }
 
   /** State of the mat-hint and mat-error animations. */
   _subscriptAnimationState: string = '';

@@ -64,8 +64,8 @@ export class MatPaginator implements OnInit, OnDestroy {
   /** The zero-based page index of the displayed list of items. Defaulted to 0. */
   @Input()
   get pageIndex(): number { return this._pageIndex; }
-  set pageIndex(pageIndex: number) {
-    this._pageIndex = coerceNumberProperty(pageIndex);
+  set pageIndex(value: number) {
+    this._pageIndex = coerceNumberProperty(value);
     this._changeDetectorRef.markForCheck();
   }
   _pageIndex: number = 0;
@@ -73,8 +73,8 @@ export class MatPaginator implements OnInit, OnDestroy {
   /** The length of the total number of items that are being paginated. Defaulted to 0. */
   @Input()
   get length(): number { return this._length; }
-  set length(length: number) {
-    this._length = coerceNumberProperty(length);
+  set length(value: number) {
+    this._length = coerceNumberProperty(value);
     this._changeDetectorRef.markForCheck();
   }
   _length: number = 0;
@@ -82,8 +82,8 @@ export class MatPaginator implements OnInit, OnDestroy {
   /** Number of items to display on a page. By default set to 50. */
   @Input()
   get pageSize(): number { return this._pageSize; }
-  set pageSize(pageSize: number) {
-    this._pageSize = coerceNumberProperty(pageSize);
+  set pageSize(value: number) {
+    this._pageSize = coerceNumberProperty(value);
     this._updateDisplayedPageSizeOptions();
   }
   private _pageSize: number;
@@ -91,8 +91,8 @@ export class MatPaginator implements OnInit, OnDestroy {
   /** The set of provided page size options to display to the user. */
   @Input()
   get pageSizeOptions(): number[] { return this._pageSizeOptions; }
-  set pageSizeOptions(pageSizeOptions: number[]) {
-    this._pageSizeOptions = (pageSizeOptions || []).map(p => coerceNumberProperty(p));
+  set pageSizeOptions(value: number[]) {
+    this._pageSizeOptions = (value || []).map(p => coerceNumberProperty(p));
     this._updateDisplayedPageSizeOptions();
   }
   private _pageSizeOptions: number[] = [];
@@ -115,7 +115,7 @@ export class MatPaginator implements OnInit, OnDestroy {
   private _showFirstLastButtons = false;
 
   /** Event emitted when the paginator changes the page size or page index. */
-  @Output() readonly page = new EventEmitter<PageEvent>();
+  @Output() readonly page: EventEmitter<PageEvent> = new EventEmitter<PageEvent>();
 
   /** Displayed set of page size options. Will be sorted and include current page size. */
   _displayedPageSizeOptions: number[];

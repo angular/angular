@@ -89,12 +89,10 @@ export class MatAutocomplete extends _MatAutocompleteMixinBase implements AfterC
   _keyManager: ActiveDescendantKeyManager<MatOption>;
 
   /** Whether the autocomplete panel should be visible, depending on option length. */
-  showPanel = false;
+  showPanel: boolean = false;
 
   /** Whether the autocomplete panel is open. */
-  get isOpen(): boolean {
-    return this._isOpen && this.showPanel;
-  }
+  get isOpen(): boolean { return this._isOpen && this.showPanel; }
   _isOpen: boolean = false;
 
   /** @docs-private */
@@ -133,9 +131,9 @@ export class MatAutocomplete extends _MatAutocompleteMixinBase implements AfterC
    * inside the overlay container to allow for easy styling.
    */
   @Input('class')
-  set classList(classList: string) {
-    if (classList && classList.length) {
-      classList.split(' ').forEach(className => this._classList[className.trim()] = true);
+  set classList(value: string) {
+    if (value && value.length) {
+      value.split(' ').forEach(className => this._classList[className.trim()] = true);
       this._elementRef.nativeElement.className = '';
     }
   }

@@ -50,6 +50,7 @@ export class MatChipListBase {
   constructor(public _defaultErrorStateMatcher: ErrorStateMatcher,
               public _parentForm: NgForm,
               public _parentFormGroup: FormGroupDirective,
+              /** @docs-private */
               public ngControl: NgControl) {}
 }
 export const _MatChipListMixinBase = mixinErrorState(MatChipListBase);
@@ -100,8 +101,12 @@ export class MatChipListChange {
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class MatChipList extends _MatChipListMixinBase implements MatFormFieldControl<any>,
-    ControlValueAccessor, AfterContentInit, DoCheck, OnInit, OnDestroy, CanUpdateErrorState {
-  readonly controlType = 'mat-chip-list';
+  ControlValueAccessor, AfterContentInit, DoCheck, OnInit, OnDestroy, CanUpdateErrorState {
+  /**
+   * Implemented as part of MatFormFieldControl.
+   * @docs-private
+   */
+  readonly controlType: string = 'mat-chip-list';
 
   /** When a chip is destroyed, we track the index so we can focus the appropriate next chip. */
   protected _lastDestroyedIndex: number|null = null;
@@ -116,42 +121,22 @@ export class MatChipList extends _MatChipListMixinBase implements MatFormFieldCo
   private _changeSubscription: Subscription;
 
   /** Subscription to focus changes in the chips. */
-  private _chipFocusSubscription: Subscription|null;
+  private _chipFocusSubscription: Subscription | null;
 
   /** Subscription to blur changes in the chips. */
-  private _chipBlurSubscription: Subscription|null;
+  private _chipBlurSubscription: Subscription | null;
 
   /** Subscription to selection changes in chips. */
-  private _chipSelectionSubscription: Subscription|null;
+  private _chipSelectionSubscription: Subscription | null;
 
   /** Subscription to remove changes in chips. */
-  private _chipRemoveSubscription: Subscription|null;
-
-  /** Whether or not the chip is selectable. */
-  protected _selectable: boolean = true;
-
-  /** Whether the component is in multiple selection mode. */
-  private _multiple: boolean = false;
+  private _chipRemoveSubscription: Subscription | null;
 
   /** The chip input to add more chips */
   protected _chipInput: MatChipInput;
 
-  /** Id of the chip list */
-  protected _id: string;
-
   /** Uid of the chip list */
   protected _uid: string = `mat-chip-list-${nextUniqueId++}`;
-
-  /** Whether this is required */
-  protected _required: boolean = false;
-
-  /** Whether this is disabled */
-  protected _disabled: boolean = false;
-
-  protected _value: any;
-
-  /** Placeholder for the chip list. Alternatively, placeholder can be set on MatChipInput */
-  protected _placeholder: string;
 
   /** The aria-describedby attribute on the chip list for improved a11y. */
   _ariaDescribedby: string;
@@ -176,17 +161,13 @@ export class MatChipList extends _MatChipListMixinBase implements MatFormFieldCo
 
   _selectionModel: SelectionModel<MatChip>;
 
-  /** Comparison function to specify which option is displayed. Defaults to object equality. */
-  private _compareWith = (o1: any, o2: any) => o1 === o2;
-
   /** The array of selected chips inside chip list. */
   get selected(): MatChip[] | MatChip {
     return this.multiple ? this._selectionModel.selected : this._selectionModel.selected[0];
   }
 
-  get role(): string|null {
-    return this.empty ? null : 'listbox';
-  }
+  /** The ARIA role applied to the chip list. */
+  get role(): string | null { return this.empty ? null : 'listbox'; }
 
   /** An object used to control when error messages are shown. */
   @Input() errorStateMatcher: ErrorStateMatcher;
@@ -197,6 +178,7 @@ export class MatChipList extends _MatChipListMixinBase implements MatFormFieldCo
   set multiple(value: boolean) {
     this._multiple = coerceBooleanProperty(value);
   }
+  private _multiple: boolean = false;
 
   /**
    * A function to compare the option values with the selected values. The first argument
@@ -204,7 +186,7 @@ export class MatChipList extends _MatChipListMixinBase implements MatFormFieldCo
    * should be returned.
    */
   @Input()
-  get compareWith() { return this._compareWith; }
+  get compareWith(): (o1: any, o2: any) => boolean { return this._compareWith; }
   set compareWith(fn: (o1: any, o2: any) => boolean) {
     this._compareWith = fn;
     if (this._selectionModel) {
@@ -212,32 +194,48 @@ export class MatChipList extends _MatChipListMixinBase implements MatFormFieldCo
       this._initializeSelection();
     }
   }
+  private _compareWith = (o1: any, o2: any) => o1 === o2;
 
-  /** Required for FormFieldControl */
+  /**
+   * Implemented as part of MatFormFieldControl.
+   * @docs-private
+   */
   @Input()
-  get value() { return this._value; }
-  set value(newValue: any) {
-    this.writeValue(newValue);
-    this._value = newValue;
+  get value(): any { return this._value; }
+  set value(value: any) {
+    this.writeValue(value);
+    this._value = value;
   }
+  protected _value: any;
 
-  /** Required for FormFieldControl. The ID of the chip list */
+  /**
+   * Implemented as part of MatFormFieldControl.
+   * @docs-private
+   */
   @Input()
   get id(): string { return this._id || this._uid; }
   set id(value: string) {
     this._id = value;
     this.stateChanges.next();
   }
+  protected _id: string;
 
-  /** Required for FormFieldControl. Whether the chip list is required. */
+  /**
+   * Implemented as part of MatFormFieldControl.
+   * @docs-private
+   */
   @Input()
   get required(): boolean { return this._required; }
   set required(value: boolean) {
     this._required = coerceBooleanProperty(value);
     this.stateChanges.next();
   }
+  protected _required: boolean = false;
 
-  /** For FormFieldControl. Use chip input's placholder if there's a chip input */
+  /**
+   * Implemented as part of MatFormFieldControl.
+   * @docs-private
+   */
   @Input()
   get placeholder(): string {
     return this._chipInput ? this._chipInput.placeholder : this._placeholder;
@@ -246,6 +244,7 @@ export class MatChipList extends _MatChipListMixinBase implements MatFormFieldCo
     this._placeholder = value;
     this.stateChanges.next();
   }
+  protected _placeholder: string;
 
   /** Whether any chips or the matChipInput inside of this chip-list has focus. */
   get focused(): boolean {
@@ -253,19 +252,28 @@ export class MatChipList extends _MatChipListMixinBase implements MatFormFieldCo
       (this._chipInput && this._chipInput.focused);
   }
 
-  /** Whether this chip-list contains no chips and no matChipInput. */
+  /**
+   * Implemented as part of MatFormFieldControl.
+   * @docs-private
+   */
   get empty(): boolean {
     return (!this._chipInput || this._chipInput.empty) && this.chips.length === 0;
   }
 
-  /** @docs-private */
+  /**
+   * Implemented as part of MatFormFieldControl.
+   * @docs-private
+   */
   get shouldLabelFloat(): boolean { return !this.empty || this.focused; }
 
-  /** Whether this chip-list is disabled. */
+  /**
+   * Implemented as part of MatFormFieldControl.
+   * @docs-private
+   */
   @Input()
-  get disabled() { return this.ngControl ? this.ngControl.disabled : this._disabled; }
-  set disabled(value: any) { this._disabled = coerceBooleanProperty(value); }
-
+  get disabled(): boolean { return this.ngControl ? !!this.ngControl.disabled : this._disabled; }
+  set disabled(value: boolean) { this._disabled = coerceBooleanProperty(value); }
+  protected _disabled: boolean = false;
 
   /** Orientation of the chip list. */
   @Input('aria-orientation') ariaOrientation: 'horizontal' | 'vertical' = 'horizontal';
@@ -277,6 +285,7 @@ export class MatChipList extends _MatChipListMixinBase implements MatFormFieldCo
   @Input()
   get selectable(): boolean { return this._selectable; }
   set selectable(value: boolean) { this._selectable = coerceBooleanProperty(value); }
+  protected _selectable: boolean = true;
 
   @Input()
   set tabIndex(value: number) {
@@ -324,6 +333,7 @@ export class MatChipList extends _MatChipListMixinBase implements MatFormFieldCo
               @Optional() _parentForm: NgForm,
               @Optional() _parentFormGroup: FormGroupDirective,
               _defaultErrorStateMatcher: ErrorStateMatcher,
+              /** @docs-private */
               @Optional() @Self() public ngControl: NgControl) {
     super(_defaultErrorStateMatcher, _parentForm, _parentFormGroup, ngControl);
     if (this.ngControl) {
@@ -331,7 +341,7 @@ export class MatChipList extends _MatChipListMixinBase implements MatFormFieldCo
     }
   }
 
-  ngAfterContentInit(): void {
+  ngAfterContentInit() {
     this._keyManager = new FocusKeyManager<MatChip>(this.chips)
       .withWrap()
       .withVerticalOrientation()
@@ -373,7 +383,7 @@ export class MatChipList extends _MatChipListMixinBase implements MatFormFieldCo
     }
   }
 
-  ngOnDestroy(): void {
+  ngOnDestroy() {
     this._tabOutSubscription.unsubscribe();
 
     if (this._changeSubscription) {
@@ -385,7 +395,7 @@ export class MatChipList extends _MatChipListMixinBase implements MatFormFieldCo
 
 
   /** Associates an HTML input element with this chip list. */
-  registerInput(inputElement: MatChipInput) {
+  registerInput(inputElement: MatChipInput): void {
     this._chipInput = inputElement;
   }
 
@@ -395,34 +405,35 @@ export class MatChipList extends _MatChipListMixinBase implements MatFormFieldCo
    */
   setDescribedByIds(ids: string[]) { this._ariaDescribedby = ids.join(' '); }
 
-  // Implemented as part of ControlValueAccessor
+  // Implemented as part of ControlValueAccessor.
   writeValue(value: any): void {
     if (this.chips) {
       this._setSelectionByValue(value, false);
     }
   }
 
-  // Implemented as part of ControlValueAccessor
+  // Implemented as part of ControlValueAccessor.
   registerOnChange(fn: (value: any) => void): void {
     this._onChange = fn;
   }
 
-  // Implemented as part of ControlValueAccessor
+  // Implemented as part of ControlValueAccessor.
   registerOnTouched(fn: () => void): void {
     this._onTouched = fn;
   }
 
-  // Implemented as part of ControlValueAccessor
-  setDisabledState(disabled: boolean): void {
-    this.disabled = disabled;
-    this._elementRef.nativeElement.disabled = disabled;
+  // Implemented as part of ControlValueAccessor.
+  setDisabledState(isDisabled: boolean): void {
+    this.disabled = isDisabled;
+    this._elementRef.nativeElement.disabled = isDisabled;
     this.stateChanges.next();
   }
 
-  /** @docs-private */
-  onContainerClick() {
-    this.focus();
-  }
+  /**
+   * Implemented as part of MatFormFieldControl.
+   * @docs-private
+   */
+  onContainerClick() { this.focus(); }
 
   /**
    * Focuses the the first non-disabled chip in this chip list, or the associated input when there
@@ -724,14 +735,14 @@ export class MatChipList extends _MatChipListMixinBase implements MatFormFieldCo
       this.stateChanges.next();
     });
 
-    this._chipBlurSubscription = this.chipBlurChanges.subscribe(_ => {
+    this._chipBlurSubscription = this.chipBlurChanges.subscribe(() => {
       this._blur();
       this.stateChanges.next();
     });
   }
 
   private _listenToChipsRemoved(): void {
-    this._chipRemoveSubscription = this.chipRemoveChanges.subscribe((event) => {
+    this._chipRemoveSubscription = this.chipRemoveChanges.subscribe(event => {
       this._updateKeyManager(event.chip);
     });
   }

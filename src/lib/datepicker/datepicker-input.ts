@@ -110,8 +110,8 @@ export class MatDatepickerInput<D> implements AfterContentInit, ControlValueAcce
 
   /** Function that can be used to filter out dates within the datepicker. */
   @Input()
-  set matDatepickerFilter(filter: (date: D | null) => boolean) {
-    this._dateFilter = filter;
+  set matDatepickerFilter(value: (date: D | null) => boolean) {
+    this._dateFilter = value;
     this._validatorOnChange();
   }
   _dateFilter: (date: D | null) => boolean;
@@ -173,7 +173,7 @@ export class MatDatepickerInput<D> implements AfterContentInit, ControlValueAcce
       new EventEmitter<MatDatepickerInputEvent<D>>();
 
   /** Emits when the value changes (either due to user input or programmatic change). */
-  _valueChange = new EventEmitter<D|null>();
+  _valueChange = new EventEmitter<D | null>();
 
   /** Emits when the disabled state has changed */
   _disabledChange = new EventEmitter<boolean>();
@@ -268,6 +268,7 @@ export class MatDatepickerInput<D> implements AfterContentInit, ControlValueAcce
     this._validatorOnChange = fn;
   }
 
+  /** @docs-private */
   validate(c: AbstractControl): ValidationErrors | null {
     return this._validator ? this._validator(c) : null;
   }
@@ -288,24 +289,24 @@ export class MatDatepickerInput<D> implements AfterContentInit, ControlValueAcce
     return this._formField ? -this._formField._inputContainerRef.nativeElement.clientHeight : 0;
   }
 
-  // Implemented as part of ControlValueAccessor
+  // Implemented as part of ControlValueAccessor.
   writeValue(value: D): void {
     this.value = value;
   }
 
-  // Implemented as part of ControlValueAccessor
+  // Implemented as part of ControlValueAccessor.
   registerOnChange(fn: (value: any) => void): void {
     this._cvaOnChange = fn;
   }
 
-  // Implemented as part of ControlValueAccessor
+  // Implemented as part of ControlValueAccessor.
   registerOnTouched(fn: () => void): void {
     this._onTouched = fn;
   }
 
-  // Implemented as part of ControlValueAccessor
-  setDisabledState(disabled: boolean): void {
-    this.disabled = disabled;
+  // Implemented as part of ControlValueAccessor.
+  setDisabledState(isDisabled: boolean): void {
+    this.disabled = isDisabled;
   }
 
   _onKeydown(event: KeyboardEvent) {

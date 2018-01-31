@@ -37,6 +37,7 @@ export interface MatChipInputEvent {
   }
 })
 export class MatChipInput {
+  /** Whether the control is focused. */
   focused: boolean = false;
   _chipList: MatChipList;
 
@@ -73,10 +74,7 @@ export class MatChipInput {
   @Input() placeholder: string = '';
 
   /** Whether the input is empty. */
-  get empty(): boolean {
-    let value: string | null = this._inputElement.value;
-    return (value == null || value === '');
-  }
+  get empty(): boolean { return !this._inputElement.value; }
 
   /** The native input element to which this directive is attached. */
   protected _inputElement: HTMLInputElement;
@@ -127,5 +125,6 @@ export class MatChipInput {
     this._chipList.stateChanges.next();
   }
 
+  /** Focuses the input. */
   focus(): void { this._inputElement.focus(); }
 }
