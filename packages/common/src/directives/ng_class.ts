@@ -126,7 +126,7 @@ export class NgClass implements DoCheck {
         (<any>rawClassVal).forEach((klass: string) => this._toggleClass(klass, !isCleanup));
       } else {
         Object.keys(rawClassVal).forEach(klass => {
-          if (rawClassVal[klass] != null) this._toggleClass(klass, !isCleanup);
+          this._toggleClass(klass, isCleanup ? false : !!rawClassVal[klass]);
         });
       }
     }
