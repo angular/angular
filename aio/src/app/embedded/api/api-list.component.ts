@@ -25,7 +25,8 @@ class SearchCriteria {
 
 @Component({
   selector: 'aio-api-list',
-  templateUrl: './api-list.component.html'
+  templateUrl: './api-list.component.html',
+  providers: [ ApiService ]
 })
 export class ApiListComponent implements OnInit {
 
