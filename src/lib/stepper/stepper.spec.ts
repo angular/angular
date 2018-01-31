@@ -318,6 +318,10 @@ describe('MatHorizontalStepper', () => {
     it('should be able to reset the stepper to its initial state', () => {
       assertLinearStepperResetable(fixture);
     });
+
+    it('should not clobber the `complete` binding when resetting', () => {
+      assertLinearStepperResetComplete(fixture);
+    });
   });
 });
 
@@ -492,6 +496,10 @@ describe('MatVerticalStepper', () => {
 
     it('should be able to reset the stepper to its initial state', () => {
       assertLinearStepperResetable(fixture);
+    });
+
+    it('should not clobber the `complete` binding when resetting', () => {
+      assertLinearStepperResetComplete(fixture);
     });
   });
 });
@@ -968,6 +976,38 @@ function assertLinearStepperResetable(
   expect(steps[1].interacted).toBe(false);
   expect(steps[1].completed).toBe(false);
   expect(testComponent.twoGroup.get('twoCtrl')!.valid).toBe(false);
+}
+
+
+/** Asserts that the `complete` binding is being reset correctly. */
+function assertLinearStepperResetComplete(
+  fixture: ComponentFixture<LinearMatHorizontalStepperApp|LinearMatVerticalStepperApp>) {
+
+  const testComponent = fixture.componentInstance;
+  const stepperComponent = fixture.debugElement.query(By.directive(MatStepper)).componentInstance;
+  const steps: MatStep[] = stepperComponent._steps.toArray();
+  const fillOutStepper = () => {
+    testComponent.oneGroup.get('oneCtrl')!.setValue('input');
+    testComponent.twoGroup.get('twoCtrl')!.setValue('input');
+    testComponent.threeGroup.get('threeCtrl')!.setValue('valid');
+    testComponent.validationTrigger.next();
+    stepperComponent.selectedIndex = 2;
+    fixture.detectChanges();
+    stepperComponent.selectedIndex = 3;
+    fixture.detectChanges();
+  };
+
+  fillOutStepper();
+
+  expect(steps[2].completed)
+      .toBe(true, 'Expected third step to be considered complete after the first run through.');
+
+  stepperComponent.reset();
+  fixture.detectChanges();
+  fillOutStepper();
+
+  expect(steps[2].completed)
+      .toBe(true, 'Expected third step to be considered complete when doing a run after a reset.');
 }
 
 

@@ -126,7 +126,10 @@ export class CdkStep implements OnChanges {
   /** Resets the step to its initial state. Note that this includes resetting form data. */
   reset(): void {
     this.interacted = false;
-    this.completed = false;
+
+    if (this._customCompleted != null) {
+      this._customCompleted = false;
+    }
 
     if (this.stepControl) {
       this.stepControl.reset();
