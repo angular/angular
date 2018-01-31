@@ -114,3 +114,16 @@ export function isNodeMatchingSelector(tNode: TNode, selector: CssSelector): boo
 
   return false;
 }
+
+/**
+ * Checks a given node against matching selectors and returns
+ * selector index (or 0 if none matched);
+ */
+export function matchingSelectorIndex(tNode: TNode, selectors: CssSelector[]): number {
+  for (let i = 0; i < selectors.length; i++) {
+    if (isNodeMatchingSelector(tNode, selectors[i])) {
+      return i + 1;  // first matching selector "captures" a given node
+    }
+  }
+  return 0;
+}

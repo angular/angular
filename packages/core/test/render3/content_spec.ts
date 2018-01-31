@@ -812,7 +812,7 @@ describe('content projection', () => {
      * Descending into projected content for selector-matching purposes is not supported
      * today: http://plnkr.co/edit/MYQcNfHSTKp9KvbzJWVQ?p=preview
      */
-    it('should not match selectors on re-projected content', () => {
+    it('should not descend into re-projected content', () => {
 
       /**
        *  <ng-content select="span"></ng-content>
@@ -876,6 +876,66 @@ describe('content projection', () => {
       expect(toHtml(parent))
           .toEqual(
               '<child><grand-child><span>in child template</span><hr><span>parent content</span></grand-child></child>');
+    });
+
+    it('should match selectors on ng-content nodes with attributes', () => {
+
+      /**
+       * <ng-content select="[card-title]"></ng-content>
+       * <hr>
+       * <ng-content select="[card-content]"></ng-content>
+       */
+      const Card = createComponent('card', function(ctx: any, cm: boolean) {
+        if (cm) {
+          pD(0, [[[['', 'card-title', ''], null]], [[['', 'card-content', ''], null]]]);
+          P(1, 0, 1);
+          E(2, 'hr');
+          e();
+          P(3, 0, 2);
+        }
+      });
+
+      /**
+       * <card>
+       *  <h1 card-title>Title</h1>
+       *  <ng-content card-content></ng-content>
+       * </card>
+       */
+      const CardWithTitle = createComponent('card-with-title', function(ctx: any, cm: boolean) {
+        if (cm) {
+          pD(0);
+          E(1, Card);
+          {
+            E(3, 'h1', ['card-title', '']);
+            { T(4, 'Title'); }
+            e();
+            P(5, 0, 0, ['card-content', '']);
+          }
+          e();
+          Card.ngComponentDef.h(2, 1);
+          r(2, 1);
+        }
+      });
+
+      /**
+       * <card-with-title>
+       *  content
+       * </card-with-title>
+       */
+      const App = createComponent('app', function(ctx: any, cm: boolean) {
+        if (cm) {
+          E(0, CardWithTitle);
+          { T(2, 'content'); }
+          e();
+        }
+        CardWithTitle.ngComponentDef.h(1, 0);
+        r(1, 0);
+      });
+
+      const app = renderComponent(App);
+      expect(toHtml(app))
+          .toEqual(
+              '<card-with-title><card><h1 card-title="">Title</h1><hr>content</card></card-with-title>');
     });
 
     it('should match selectors against projected containers', () => {
