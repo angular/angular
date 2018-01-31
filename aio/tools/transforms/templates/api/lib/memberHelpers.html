@@ -11,7 +11,7 @@
 
 {%- macro renderMembers(doc) -%}
 {%- if doc.members.length %}{% for member in doc.members %}{% if not member.internal %}
-  <a class="code-anchor" href="{$ doc.path $}#{$ member.anchor $}">{$ renderMember(member, 1) $}</a>{% endif %}{% endfor %}{% endif %}
+  <a class="code-anchor" href="{$ doc.path $}#{$ member.anchor | urlencode $}">{$ renderMember(member, 1) $}</a>{% endif %}{% endfor %}{% endif %}
 {%- for ancestor in doc.extendsClauses %}{% if ancestor.doc %}
   // inherited from <a class="code-anchor" href="{$ ancestor.doc.path $}">{$ ancestor.doc.id $}</a>{$ renderMembers(ancestor.doc) $}{% endif %}{% endfor %}
 {%- endmacro -%}
