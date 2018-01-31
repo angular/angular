@@ -100,6 +100,35 @@ describe('r3_view_compiler', () => {
     expect(result.source).toContain('@angular/core');
   });
 
+  describe('interpolations', () => {
+    // Regression #21927
+    it('should generate a correct call to bV with more than 8 interpolations', () => {
+      const files: MockDirectory = {
+        app: {
+          'example.ts': `
+          import {Component, NgModule} from '@angular/core';
+
+          @Component({
+            selector: 'my-app',
+            template: ' {{list[0]}} {{list[1]}} {{list[2]}} {{list[3]}} {{list[4]}} {{list[5]}} {{list[6]}} {{list[7]}} {{list[8]}} '
+          })
+          export class MyApp implements OnInit {
+            list: any[] = [];
+          }
+
+          @NgModule({declarations: [MyApp]})
+          export class MyModule {}`
+        }
+      };
+
+      const bV_call = `IDENT.ɵbV([' ',ctx.list[0],' ',ctx.list[1],' ',ctx.list[2],' ',ctx.list[3],
+        ' ',ctx.list[4],' ',ctx.list[5],' ',ctx.list[6],' ',ctx.list[7],' ',ctx.list[8],
+        ' '])`;
+      const result = compile(files, angularFiles);
+      expectEmit(result.source, bV_call, 'Incorrect bV call');
+    });
+  });
+
   /* These tests are codified version of the tests in compiler_canonical_spec.ts. Every
    * test in compiler_canonical_spec.ts should have a corresponding test here.
    */
@@ -696,7 +725,7 @@ function expectEmit(source: string, emitted: string, description: string) {
       }
     }
     fail(
-        'Test helper failure: Expected expression failed but the reporting logic could not find where it failed');
+        `Test helper failure: Expected expression failed but the reporting logic could not find where it failed in: ${source}`);
   }
 }
 
