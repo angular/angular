@@ -10,6 +10,7 @@ import {createLoweredSymbol, isLoweredSymbol} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {CollectorOptions, MetadataCollector, MetadataValue, ModuleMetadata, isMetadataGlobalReferenceExpression} from '../metadata/index';
+import {MetadataCache, MetadataTransformer, ValueTransform} from './metadata_cache';
 
 export interface LoweringRequest {
   kind: ts.SyntaxKind;
@@ -249,35 +250,39 @@ function isLiteralFieldNamed(node: ts.Node, names: Set<string>): boolean {
 
 const LOWERABLE_FIELD_NAMES = new Set(['useValue', 'useFactory', 'data']);
 
-export class LowerMetadataCache implements RequestsMap {
-  private collector: MetadataCollector;
-  private metadataCache = new Map<string, MetadataAndLoweringRequests>();
+export class LowerMetadataTransform implements RequestsMap, MetadataTransformer {
+  private cache: MetadataCache;
+  private requests = new Map<string, RequestLocationMap>();
 
-  constructor(options: CollectorOptions, private strict?: boolean) {
-    this.collector = new MetadataCollector(options);
-  }
-
-  getMetadata(sourceFile: ts.SourceFile): ModuleMetadata|undefined {
-    return this.ensureMetadataAndRequests(sourceFile).metadata;
-  }
-
+  // RequestMap
   getRequests(sourceFile: ts.SourceFile): RequestLocationMap {
-    return this.ensureMetadataAndRequests(sourceFile).requests;
-  }
-
-  private ensureMetadataAndRequests(sourceFile: ts.SourceFile): MetadataAndLoweringRequests {
-    let result = this.metadataCache.get(sourceFile.fileName);
+    let result = this.requests.get(sourceFile.fileName);
     if (!result) {
-      result = this.getMetadataAndRequests(sourceFile);
-      this.metadataCache.set(sourceFile.fileName, result);
+      // Force the metadata for this source file to be collected which
+      // will recursively call start() populating the request map;
+      this.cache.getMetadata(sourceFile);
+
+      // If we still don't have the requested metadata, the file is not a module
+      // or is a declaration file so return an empty map.
+      result = this.requests.get(sourceFile.fileName) || new Map<number, LoweringRequest>();
     }
     return result;
   }
 
-  private getMetadataAndRequests(sourceFile: ts.SourceFile): MetadataAndLoweringRequests {
+  // MetadataTransformer
+  connect(cache: MetadataCache): void { this.cache = cache; }
+
+  start(sourceFile: ts.SourceFile): ValueTransform|undefined {
     let identNumber = 0;
     const freshIdent = () => createLoweredSymbol(identNumber++);
     const requests = new Map<number, LoweringRequest>();
+    this.requests.set(sourceFile.fileName, requests);
+
+    const replaceNode = (node: ts.Node) => {
+      const name = freshIdent();
+      requests.set(node.pos, {name, kind: node.kind, location: node.pos, end: node.end});
+      return {__symbolic: 'reference', name};
+    };
 
     const isExportedSymbol = (() => {
       let exportTable: Set<string>;
@@ -303,13 +308,8 @@ export class LowerMetadataCache implements RequestsMap {
       }
       return false;
     };
-    const replaceNode = (node: ts.Node) => {
-      const name = freshIdent();
-      requests.set(node.pos, {name, kind: node.kind, location: node.pos, end: node.end});
-      return {__symbolic: 'reference', name};
-    };
 
-    const substituteExpression = (value: MetadataValue, node: ts.Node): MetadataValue => {
+    return (value: MetadataValue, node: ts.Node): MetadataValue => {
       if (!isPrimitive(value) && !isRewritten(value)) {
         if ((node.kind === ts.SyntaxKind.ArrowFunction ||
              node.kind === ts.SyntaxKind.FunctionExpression) &&
@@ -323,18 +323,6 @@ export class LowerMetadataCache implements RequestsMap {
       }
       return value;
     };
-
-    // Do not validate or lower metadata in a declaration file. Declaration files are requested
-    // when we need to update the version of the metadata to add information that might be missing
-    // in the out-of-date version that can be recovered from the .d.ts file.
-    const declarationFile = sourceFile.isDeclarationFile;
-    const moduleFile = ts.isExternalModule(sourceFile);
-
-    const metadata = this.collector.getMetadata(
-        sourceFile, this.strict && !declarationFile,
-        moduleFile && !declarationFile ? substituteExpression : undefined);
-
-    return {metadata, requests};
   }
 }
 
