@@ -12,7 +12,6 @@ import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
 import {MatButtonModule} from '@angular/material/button';
 import {MatDialogModule} from '@angular/material/dialog';
-import {MatIconModule} from '@angular/material/icon';
 import {MatCalendar} from './calendar';
 import {MatCalendarBody} from './calendar-body';
 import {
@@ -33,7 +32,6 @@ import {MatYearView} from './year-view';
     CommonModule,
     MatButtonModule,
     MatDialogModule,
-    MatIconModule,
     OverlayModule,
     A11yModule,
   ],
