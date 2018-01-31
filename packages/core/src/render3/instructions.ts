@@ -15,9 +15,9 @@ import {LQueries} from './interfaces/query';
 import {LView, LifecycleStage, TData, TView} from './interfaces/view';
 
 import {LContainerNode, LElementNode, LNode, LNodeFlags, LProjectionNode, LTextNode, LViewNode, TNode, TContainerNode, InitialInputData, InitialInputs, PropertyAliases, PropertyAliasValue,} from './interfaces/node';
-import {assertNodeType, assertNodeOfPossibleTypes} from './node_assert';
+import {assertNodeType} from './node_assert';
 import {appendChild, insertChild, insertView, appendProjectedNode, removeView, canInsertNativeNode} from './node_manipulation';
-import {isNodeMatchingSelector} from './node_selector_matcher';
+import {matchingSelectorIndex} from './node_selector_matcher';
 import {ComponentDef, ComponentTemplate, ComponentType, DirectiveDef, DirectiveType} from './interfaces/definition';
 import {RElement, RText, Renderer3, RendererFactory3, ProceduralRenderer3, ObjectOrientedRenderer3, RendererStyleFlags3} from './interfaces/renderer';
 import {isDifferent, stringify} from './util';
@@ -1222,33 +1222,16 @@ export function projectionDef(index: number, selectors?: CssSelector[]): void {
   let componentChild = componentNode.child;
 
   while (componentChild !== null) {
-    if (!selectors) {
-      distributedNodes[0].push(componentChild);
-    } else if (
-        (componentChild.flags & LNodeFlags.TYPE_MASK) === LNodeFlags.Element ||
-        (componentChild.flags & LNodeFlags.TYPE_MASK) === LNodeFlags.Container) {
-      // Only trying to match selectors against:
-      // - elements, excluding text nodes;
-      // - containers that have tagName and attributes associated.
-
-      if (componentChild.tNode) {
-        for (let i = 0; i < selectors !.length; i++) {
-          if (isNodeMatchingSelector(componentChild.tNode, selectors ![i])) {
-            distributedNodes[i + 1].push(componentChild);
-            break;  // first matching selector "captures" a given node
-          } else {
-            distributedNodes[0].push(componentChild);
-          }
-        }
-      } else {
-        distributedNodes[0].push(componentChild);
-      }
-
-    } else if ((componentChild.flags & LNodeFlags.TYPE_MASK) === LNodeFlags.Projection) {
-      // we don't descend into nodes to re-project (not trying to match selectors against nodes to
-      // re-project)
+    // execute selector matching logic if and only if:
+    // - there are selectors defined
+    // - a node has a tag name / attributes that can be matched
+    if (selectors && componentChild.tNode) {
+      const matchedIdx = matchingSelectorIndex(componentChild.tNode, selectors !);
+      distributedNodes[matchedIdx].push(componentChild);
+    } else {
       distributedNodes[0].push(componentChild);
     }
+
     componentChild = componentChild.next;
   }
 
@@ -1291,9 +1274,16 @@ function appendToProjectionNode(
  * @param nodeIndex
  * @param localIndex - index under which distribution of projected nodes was memorized
  * @param selectorIndex - 0 means <ng-content> without any selector
+ * @param attrs - attributes attached to the ng-content node, if present
  */
-export function projection(nodeIndex: number, localIndex: number, selectorIndex: number = 0): void {
+export function projection(
+    nodeIndex: number, localIndex: number, selectorIndex: number = 0, attrs?: string[]): void {
   const node = createLNode(nodeIndex, LNodeFlags.Projection, null, {head: null, tail: null});
+
+  if (node.tNode == null) {
+    node.tNode = createTNode(null, attrs || null, null, null);
+  }
+
   isParent = false;  // self closing
   const currentParent = node.parent;
 
