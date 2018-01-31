@@ -1,6 +1,7 @@
 import {Package} from 'dgeni';
 import {DocsPrivateFilter} from './processors/docs-private-filter';
 import {Categorizer} from './processors/categorizer';
+import {FilterDuplicateExports} from './processors/filter-duplicate-exports';
 import {FilterExportAliases} from './processors/filter-export-aliases';
 import {MergeInheritedProperties} from './processors/merge-inherited-properties';
 import {ComponentGrouper} from './processors/component-grouper';
@@ -48,6 +49,9 @@ const materialPackages = globSync(path.join(sourceDir, 'lib', '*/'))
   .map(packagePath => path.basename(packagePath));
 
 export const apiDocsPackage = new Package('material2-api-docs', dgeniPackageDeps);
+
+// Processor that filters out duplicate exports that should not be shown in the docs.
+apiDocsPackage.processor(new FilterDuplicateExports());
 
 // Processor that filters out aliased exports that should not be shown in the docs.
 apiDocsPackage.processor(new FilterExportAliases());
