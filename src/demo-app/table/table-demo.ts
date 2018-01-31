@@ -9,7 +9,7 @@
 import {Component, ElementRef, ViewChild} from '@angular/core';
 import {PeopleDatabase, UserData} from './people-database';
 import {PersonDataSource} from './person-data-source';
-import {MatPaginator, MatSort, MatTableDataSource} from '@angular/material';
+import {MatPaginator, MatSort, MatTableDataSource, PageEvent} from '@angular/material';
 import {DetailRow, PersonDetailDataSource} from './person-detail-data-source';
 import {animate, state, style, transition, trigger} from '@angular/animations';
 import {SelectionModel} from '@angular/cdk/collections';
@@ -64,6 +64,8 @@ export class TableDemo {
 
   @ViewChild('paginatorForDataSource') paginatorForDataSource: MatPaginator;
   @ViewChild('sortForDataSource') sortForDataSource: MatSort;
+
+  paginatorOutput: PageEvent;
 
   constructor(public _peopleDatabase: PeopleDatabase) {
     this.matTableDataSource.sortingDataAccessor = (data: UserData, property: string) => {
@@ -182,5 +184,9 @@ export class TableDemo {
 
   toggleHighlight(property: string, enable: boolean) {
     enable ? this.highlights.add(property) : this.highlights.delete(property);
+  }
+
+  handlePaginator(pageEvent: PageEvent) {
+    this.paginatorOutput = pageEvent;
   }
 }

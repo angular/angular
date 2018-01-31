@@ -104,7 +104,7 @@ describe('MatPaginator', () => {
       }));
   });
 
-  describe('when navigating with the navigation buttons', () => {
+  describe('when navigating with the next and previous buttons', () => {
     it('should be able to go to the next page', () => {
       expect(paginator.pageIndex).toBe(0);
 
@@ -120,6 +120,58 @@ describe('MatPaginator', () => {
       expect(paginator.pageIndex).toBe(1);
 
       dispatchMouseEvent(getPreviousButton(fixture), 'click');
+
+      expect(paginator.pageIndex).toBe(0);
+      expect(component.latestPageEvent ? component.latestPageEvent.pageIndex : null).toBe(0);
+    });
+
+  });
+
+  it('should be able to show the first/last buttons', () => {
+    expect(getFirstButton(fixture))
+      .toBeNull('Expected first button to not exist.');
+
+    expect(getLastButton(fixture))
+      .toBeNull('Expected last button to not exist.');
+
+    fixture.componentInstance.showFirstLastButtons = true;
+    fixture.detectChanges();
+
+    expect(getFirstButton(fixture))
+      .toBeTruthy('Expected first button to be rendered.');
+
+    expect(getLastButton(fixture))
+      .toBeTruthy('Expected last button to be rendered.');
+
+  });
+
+  describe('when showing the first and last button', () => {
+
+    beforeEach(() => {
+      component.showFirstLastButtons = true;
+      fixture.detectChanges();
+    });
+
+    it('should show right aria-labels for first/last buttons', () => {
+      expect(getFirstButton(fixture).getAttribute('aria-label')).toBe('First page');
+      expect(getLastButton(fixture).getAttribute('aria-label')).toBe('Last page');
+    });
+
+    it('should be able to go to the last page via the last page button', () => {
+      expect(paginator.pageIndex).toBe(0);
+
+      dispatchMouseEvent(getLastButton(fixture), 'click');
+
+      expect(paginator.pageIndex).toBe(9);
+      expect(component.latestPageEvent ? component.latestPageEvent.pageIndex : null).toBe(9);
+    });
+
+    it('should be able to go to the first page via the first page button', () => {
+      paginator.pageIndex = 3;
+      fixture.detectChanges();
+      expect(paginator.pageIndex).toBe(3);
+
+      dispatchMouseEvent(getFirstButton(fixture), 'click');
 
       expect(paginator.pageIndex).toBe(0);
       expect(component.latestPageEvent ? component.latestPageEvent.pageIndex : null).toBe(0);
@@ -148,6 +200,7 @@ describe('MatPaginator', () => {
       expect(component.latestPageEvent).toBe(null);
       expect(paginator.pageIndex).toBe(0);
     });
+
   });
 
   it('should mark for check when inputs are changed directly', () => {
@@ -253,7 +306,7 @@ describe('MatPaginator', () => {
     expect(fixture.nativeElement.querySelector('.mat-select')).toBeNull();
   });
 
- it('should handle the number inputs being passed in as strings', () => {
+  it('should handle the number inputs being passed in as strings', () => {
     const withStringFixture = TestBed.createComponent(MatPaginatorWithStringValues);
     const withStringPaginator = withStringFixture.componentInstance.paginator;
 
@@ -277,6 +330,7 @@ describe('MatPaginator', () => {
     expect(element.querySelector('.mat-paginator-page-size'))
         .toBeNull('Expected select to be removed.');
   });
+
 });
 
 function getPreviousButton(fixture: ComponentFixture<any>) {
@@ -287,12 +341,21 @@ function getNextButton(fixture: ComponentFixture<any>) {
   return fixture.nativeElement.querySelector('.mat-paginator-navigation-next');
 }
 
+function getFirstButton(fixture: ComponentFixture<any>) {
+    return fixture.nativeElement.querySelector('.mat-paginator-navigation-first');
+}
+
+function getLastButton(fixture: ComponentFixture<any>) {
+    return fixture.nativeElement.querySelector('.mat-paginator-navigation-last');
+}
+
 @Component({
   template: `
     <mat-paginator [pageIndex]="pageIndex"
                    [pageSize]="pageSize"
                    [pageSizeOptions]="pageSizeOptions"
                    [hidePageSize]="hidePageSize"
+                   [showFirstLastButtons]="showFirstLastButtons"
                    [length]="length"
                    (page)="latestPageEvent = $event">
     </mat-paginator>
@@ -303,6 +366,7 @@ class MatPaginatorApp {
   pageSize = 10;
   pageSizeOptions = [5, 10, 25, 100];
   hidePageSize = false;
+  showFirstLastButtons = false;
   length = 100;
 
   latestPageEvent: PageEvent | null;

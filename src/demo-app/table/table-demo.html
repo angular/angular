@@ -172,6 +172,24 @@
   </mat-paginator>
 </div>
 
+<h3>MatTable with First/Last Buttons Example</h3>
+
+<div class="demo-table-container demo-mat-table-example mat-elevation-z4">
+
+  <table-header-demo>
+  </table-header-demo>
+
+  <h4 class="paginator-output">{{paginatorOutput | json}}</h4>
+
+  <mat-paginator #paginator
+                [length]="_peopleDatabase.data.length"
+                [pageSize]="10"
+                [pageSizeOptions]="[5, 10, 25, 100]"
+                showFirstLastButtons
+                (page)="handlePaginator($event)">
+  </mat-paginator>
+</div>
+
 <mat-card class="demo-table-card">
   <h3> MatTable Using 'When' Rows for Interactive Details</h3>
 

@@ -26,13 +26,24 @@
     </div>
 
     <button mat-icon-button type="button"
+            class="mat-paginator-navigation-first"
+            (click)="firstPage()"
+            [attr.aria-label]="_intl.firstPageLabel"
+            [matTooltip]="_intl.firstPageLabel"
+            [matTooltipPosition]="'above'"
+            [disabled]="!hasPreviousPage()"
+            *ngIf="showFirstLastButtons">
+      <div class="mat-paginator-first"></div>
+      <div class="mat-paginator-decrement"></div>
+    </button>
+    <button mat-icon-button type="button"
             class="mat-paginator-navigation-previous"
             (click)="previousPage()"
             [attr.aria-label]="_intl.previousPageLabel"
             [matTooltip]="_intl.previousPageLabel"
             [matTooltipPosition]="'above'"
             [disabled]="!hasPreviousPage()">
-      <div class="mat-paginator-increment"></div>
+      <div class="mat-paginator-decrement"></div>
     </button>
     <button mat-icon-button type="button"
             class="mat-paginator-navigation-next"
@@ -41,7 +52,18 @@
             [matTooltip]="_intl.nextPageLabel"
             [matTooltipPosition]="'above'"
             [disabled]="!hasNextPage()">
-      <div class="mat-paginator-decrement"></div>
+      <div class="mat-paginator-increment"></div>
+    </button>
+    <button mat-icon-button type="button"
+            class="mat-paginator-navigation-last"
+            (click)="lastPage()"
+            [attr.aria-label]="_intl.lastPageLabel"
+            [matTooltip]="_intl.lastPageLabel"
+            [matTooltipPosition]="'above'"
+            [disabled]="!hasNextPage()"
+            *ngIf="showFirstLastButtons">
+      <div class="mat-paginator-increment"></div>
+      <div class="mat-paginator-last"></div>
     </button>
   </div>
 </div>
