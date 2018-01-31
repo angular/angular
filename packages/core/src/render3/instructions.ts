@@ -1185,7 +1185,7 @@ export function componentRefresh<T>(directiveIndex: number, elementIndex: number
     ngDevMode && assertNodeType(element, LNodeFlags.Element);
     ngDevMode && assertNotEqual(element.data, null, 'isComponent');
     ngDevMode && assertDataInRange(directiveIndex);
-    const directive = data[directiveIndex];
+    const directive = getDirectiveInstance<T>(data[directiveIndex]);
     const hostView = element.data !;
     ngDevMode && assertNotEqual(hostView, null, 'hostView');
     const oldView = enterView(hostView, element);
@@ -1856,6 +1856,12 @@ export function getPreviousOrParentNode(): LNode {
 
 export function getRenderer(): Renderer3 {
   return renderer;
+}
+
+export function getDirectiveInstance<T>(instanceOrArray: T | [T]): T {
+  // Directives with content queries store an array in data[directiveIndex]
+  // with the instance as the first index
+  return Array.isArray(instanceOrArray) ? instanceOrArray[0] : instanceOrArray;
 }
 
 export function assertPreviousIsParent() {

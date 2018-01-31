@@ -17,7 +17,7 @@ import {getSymbolIterator} from '../util';
 
 import {assertEqual, assertNotNull} from './assert';
 import {ReadFromInjectorFn, getOrCreateNodeInjectorForNode} from './di';
-import {assertPreviousIsParent, getCurrentQueries} from './instructions';
+import {assertPreviousIsParent, getCurrentQueries, memory} from './instructions';
 import {DirectiveDef, unusedValueExportToPlacateAjd as unused1} from './interfaces/definition';
 import {LInjector, unusedValueExportToPlacateAjd as unused2} from './interfaces/injector';
 import {LContainerNode, LElementNode, LNode, LNodeFlags, TNode, unusedValueExportToPlacateAjd as unused3} from './interfaces/node';
@@ -370,13 +370,27 @@ class QueryList_<T>/* implements viewEngine_QueryList<T> */ {
 export type QueryList<T> = viewEngine_QueryList<T>;
 export const QueryList: typeof viewEngine_QueryList = QueryList_ as any;
 
+/**
+ * Creates and returns a QueryList.
+ *
+ * @param memoryIndex The index in memory where the QueryList should be saved. If null,
+ * this is is a content query and the QueryList will be saved later through directiveCreate.
+ * @param predicate The type for which the query will search
+ * @param descend Whether or not to descend into children
+ * @param read What to save in the query
+ * @returns QueryList<T>
+ */
 export function query<T>(
-    predicate: Type<any>| string[], descend?: boolean,
+    memoryIndex: number | null, predicate: Type<any>| string[], descend?: boolean,
     read?: QueryReadType<T>| Type<T>): QueryList<T> {
   ngDevMode && assertPreviousIsParent();
   const queryList = new QueryList<T>();
   const queries = getCurrentQueries(LQueries_);
   queries.track(queryList, predicate, descend, read);
+
+  if (memoryIndex != null) {
+    memory(memoryIndex, queryList);
+  }
   return queryList;
 }
 
