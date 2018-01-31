@@ -3,7 +3,7 @@ $mat-sort-header-arrow-container-size: 12px;
 $mat-sort-header-arrow-stem-size: 10px;
 $mat-sort-header-arrow-pointer-length: 6px;
 $mat-sort-header-arrow-thickness: 2px;
-$mat-sort-header-arrow-transition: 225ms cubic-bezier(0.4, 0, 0.2, 1);
+$mat-sort-header-arrow-hint-opacity: 0.38;
 
 .mat-sort-header-container {
   display: flex;
@@ -60,7 +60,6 @@ $mat-sort-header-arrow-transition: 225ms cubic-bezier(0.4, 0, 0.2, 1);
   position: absolute;
   top: 0;
   left: 0;
-  transition: $mat-sort-header-arrow-transition;
 }
 
 .mat-sort-header-pointer-middle {
@@ -76,7 +75,6 @@ $mat-sort-header-arrow-transition: 225ms cubic-bezier(0.4, 0, 0.2, 1);
   background: currentColor;
   width: $mat-sort-header-arrow-pointer-length;
   height: $mat-sort-header-arrow-thickness;
-  transition: $mat-sort-header-arrow-transition;
   position: absolute;
   top: 0;
 }

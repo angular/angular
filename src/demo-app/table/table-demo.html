@@ -235,7 +235,8 @@
     selected
   </div>
 
-  <mat-table [dataSource]="matTableDataSource" [trackBy]="userTrackBy" matSort
+  <mat-table [dataSource]="matTableDataSource" [trackBy]="userTrackBy"
+             matSort matSortActive="progress" matSortDirection="asc"
              #sortForDataSource="matSort">
 
     <!-- Checkbox Column -->

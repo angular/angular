@@ -1,16 +1,25 @@
 <div class="mat-sort-header-container"
+     [class.mat-sort-header-sorted]="_isSorted()"
      [class.mat-sort-header-position-before]="arrowPosition == 'before'">
   <button class="mat-sort-header-button" type="button"
+          [attr.disabled]="_isDisabled() || null"
           [attr.aria-label]="_intl.sortButtonLabel(id)"
-          [attr.disabled]="_isDisabled() || null">
+          (focus)="_setIndicatorHintVisible(true)"
+          (blur)="_setIndicatorHintVisible(false)">
     <ng-content></ng-content>
   </button>
 
-  <div *ngIf="_isSorted()" class="mat-sort-header-arrow" [@indicatorToggle]="_sort.direction">
+  <!-- Disable animations while a current animation is running -->
+  <div class="mat-sort-header-arrow"
+       [@arrowOpacity]="_getArrowViewState()"
+       [@arrowPosition]="_getArrowViewState()"
+       [@allowChildren]="_getArrowDirectionState()"
+       (@arrowPosition.start)="_disableViewStateAnimation = true"
+       (@arrowPosition.done)="_disableViewStateAnimation = false">
     <div class="mat-sort-header-stem"></div>
-    <div class="mat-sort-header-indicator" [@indicator]="_sort.direction" >
-      <div class="mat-sort-header-pointer-left" [@leftPointer]="_sort.direction"></div>
-      <div class="mat-sort-header-pointer-right" [@rightPointer]="_sort.direction"></div>
+    <div class="mat-sort-header-indicator" [@indicator]="_getArrowDirectionState()">
+      <div class="mat-sort-header-pointer-left" [@leftPointer]="_getArrowDirectionState()"></div>
+      <div class="mat-sort-header-pointer-right" [@rightPointer]="_getArrowDirectionState()"></div>
       <div class="mat-sort-header-pointer-middle"></div>
     </div>
   </div>
