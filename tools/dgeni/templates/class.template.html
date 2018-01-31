@@ -1,3 +1,5 @@
+{% import "macros.html" as macros %}
+
 <h4 id="{$ class.name $}" class="docs-header-link docs-api-h4 docs-api-class-name">
   <span header-link="{$ class.name $}"></span>
   <code>{$ class.name $}</code>
@@ -28,7 +30,9 @@
 {%- endif -%}
 
 {%- if class.isDeprecated -%}
-<div class="docs-api-class-deprecated-marker">Deprecated</div>
+<div class="docs-api-class-deprecated-marker" {$ macros.deprecationTitle(class) $}>
+  Deprecated
+</div>
 {%- endif -%}
 
 {$ propertyList(class.properties) $}

@@ -1,3 +1,5 @@
+{% import "macros.html" as macros %}
+
 <tr class="docs-api-properties-row">
   <td class="docs-api-properties-name-cell">
     {%- if property.isDirectiveInput -%}
@@ -19,7 +21,9 @@
       </div>
     {%- endif -%}
     {%- if property.isDeprecated -%}
-      <div class="docs-api-deprecated-marker">Deprecated</div>
+      <div class="docs-api-deprecated-marker" {$ macros.deprecationTitle(property) $}>
+        Deprecated
+      </div>
     {%- endif -%}   
 
     <p class="docs-api-property-name">

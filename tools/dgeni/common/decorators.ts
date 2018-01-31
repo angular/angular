@@ -6,7 +6,7 @@
 import {ClassExportDoc} from 'dgeni-packages/typescript/api-doc-types/ClassExportDoc';
 import {PropertyMemberDoc} from 'dgeni-packages/typescript/api-doc-types/PropertyMemberDoc';
 import {MemberDoc} from 'dgeni-packages/typescript/api-doc-types/MemberDoc';
-import {CategorizedClassDoc} from './dgeni-definitions';
+import {CategorizedClassDoc, DeprecationDoc, HasDecoratorsDoc} from './dgeni-definitions';
 
 const SELECTOR_BLACKLIST = new Set([
   '[portal]',
@@ -76,16 +76,34 @@ export function hasClassDecorator(doc: ClassExportDoc, decoratorName: string) {
   return doc.docType == 'class' && hasDecorator(doc, decoratorName);
 }
 
-export function hasDecorator(doc: {decorators?: {name: string}[]}, decoratorName: string) {
+export function hasDecorator(doc: HasDecoratorsDoc, decoratorName: string) {
   return !!doc.decorators &&
     doc.decorators.length > 0 &&
     doc.decorators.some(d => d.name == decoratorName);
+}
+
+export function getDeletionTarget(doc: any): string | null {
+  if (!doc.tags) {
+    return null;
+  }
+
+  const deletionTarget = doc.tags.tags.find((t: any) => t.tagName === 'deletion-target');
+
+  return deletionTarget ? deletionTarget.description : null;
 }
 
 /**
  * Decorates public exposed docs. Creates a property on the doc that indicates whether
  * the item is deprecated or not.
  */
-export function decorateDeprecatedDoc(doc: {isDeprecated: boolean}) {
+export function decorateDeprecatedDoc(doc: DeprecationDoc) {
   doc.isDeprecated = isDeprecatedDoc(doc);
+  doc.deletionTarget = getDeletionTarget(doc);
+
+  if (doc.isDeprecated && !doc.deletionTarget) {
+    console.warn('Warning: There is a deprecated item without a @deletion-target tag.', doc.id);
+  } else if  (doc.deletionTarget && !doc.isDeprecated) {
+    console.warn('Warning: There is an item with a @deletion-target which is not deprecated.',
+      doc.id);
+  }
 }

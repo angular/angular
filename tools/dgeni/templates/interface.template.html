@@ -1,3 +1,5 @@
+{% import "macros.html" as macros %}
+
 <h4 id="{$ interface.name $}" class="docs-header-link docs-api-h4 docs-api-interface-name">
   <span header-link="{$ interface.name $}"></span>
   <code>{$ interface.name $}</code>
@@ -8,7 +10,9 @@
 {%- endif -%}
 
 {%- if interface.isDeprecated -%}
-<div class="docs-api-interface-deprecated-marker">Deprecated</div>
+<div class="docs-api-interface-deprecated-marker" {$ macros.deprecationTitle(interface) $}>
+  Deprecated
+</div>
 {%- endif -%}
 
 {$ propertyList(interface.properties) $}

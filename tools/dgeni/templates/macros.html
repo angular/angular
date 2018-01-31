@@ -1,0 +1,5 @@
+{% macro deprecationTitle(doc) %}
+  {%- if doc.deletionTarget -%}
+    title="Will be deleted in v{$ doc.deletionTarget $}"
+  {%- endif -%}
+{% endmacro %}
