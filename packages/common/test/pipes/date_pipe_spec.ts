@@ -19,7 +19,7 @@ import localeAr from '@angular/common/locales/ar';
 
 {
   let date: Date;
-  xdescribe('DatePipe', () => {
+  describe('DatePipe', () => {
     const isoStringWithoutTime = '2015-01-01';
     let pipe: DatePipe;
 
