@@ -25,8 +25,17 @@ remove the indeterminate state.
 
 ### Click action config
 When user clicks on the `mat-checkbox`, the default behavior is toggle `checked` value and set
-`indeterminate` to `false`. Developers now are able to change the behavior by providing a new value
-of `MatCheckboxClickAction` to the checkbox. The possible values are:
+`indeterminate` to `false`. This behavior can be customized by
+[providing a new value](https://angular.io/guide/dependency-injection)
+of `MAT_CHECKBOX_CLICK_ACTION` to the checkbox.
+
+```
+providers: [
+  {provide: MAT_CHECKBOX_CLICK_ACTION, useValue: 'check'}
+]
+```
+
+The possible values are:
 
 #### `noop`
 Do not change the `checked` value or `indeterminate` value. Developers have the power to
