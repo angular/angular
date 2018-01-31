@@ -20,6 +20,15 @@ $ ng new cli-hello-world
 # typescript version
 ```
 
+## Render3 tests
+
+The directory `hello_world_cli` contains a test for render3 used with the angular cli.
+
+If the Angular CLI is modified to generate a render3 application this should be replaced with that project.
+
+If the render3 is updated to support the Angular 5 bootstrap a version of this project should be created that
+uses the Angular 5 bootstrap.
+
 ## Writing an integration test
 
 The API for each test is:
