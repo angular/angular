@@ -21,6 +21,7 @@ const entrypoints = [
   //'dist/packages-dist/compiler/testing.d.ts',
   'dist/packages-dist/core/core.d.ts',
   'dist/packages-dist/core/testing.d.ts',
+  'dist/packages-dist/elements/elements.d.ts',
   'dist/packages-dist/forms/forms.d.ts',
   'dist/packages-dist/http/http.d.ts',
   'dist/packages-dist/http/testing.d.ts',
