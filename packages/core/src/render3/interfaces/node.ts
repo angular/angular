@@ -274,13 +274,6 @@ export interface TNode {
    * If this TNode corresponds to an LElementNode, data will be null.
    */
   data: TContainer|null;
-
-  /**
-   * Contains copies of array literals that were passed as bindings for this node.
-   *
-   * Note on name: will soon contain both object and array literals.
-   */
-  objectLiterals: any[][]|null;
 }
 
 /** Static data for an LElementNode  */

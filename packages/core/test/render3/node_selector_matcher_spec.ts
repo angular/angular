@@ -19,7 +19,6 @@ function testLStaticData(tagName: string, attrs: string[] | null): TNode {
     inputs: undefined,
     outputs: undefined,
     data: null,
-    objectLiterals: null
   };
 }
 

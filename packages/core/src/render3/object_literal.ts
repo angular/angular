@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {NO_CHANGE, bind, getTNode} from './instructions';
+import {NO_CHANGE, bind, getTView} from './instructions';
 
 
 /**
@@ -41,12 +41,12 @@ function updateBinding4(
 }
 
 
-function getObjectCopy(nodeIndex: number, propIndex: number, arr: any[]): any[] {
-  const tNode = getTNode(nodeIndex);
-  const objectLiterals = tNode.objectLiterals;
-  return objectLiterals && propIndex < objectLiterals.length ?
-      objectLiterals[propIndex] :
-      (objectLiterals || (tNode.objectLiterals = []))[propIndex] = arr.slice();
+function getObjectCopy(index: number, arr: any[]): any[] {
+  const tView = getTView();
+  const objectLiterals = tView.objectLiterals;
+  return objectLiterals && index < objectLiterals.length ?
+      objectLiterals[index] :
+      (objectLiterals || (tView.objectLiterals = []))[index] = arr.slice();
 }
 
 /**
@@ -58,9 +58,9 @@ function getObjectCopy(nodeIndex: number, propIndex: number, arr: any[]): any[] 
  * @param exp Expression to set at index
  * @returns A copy of the array or NO_CHANGE
  */
-export function objectLiteral1(
-    nodeIndex: number, propIndex: number, arr: any[], index: number, exp: any): any[]|NO_CHANGE {
-  arr = getObjectCopy(nodeIndex, propIndex, arr);
+export function objectLiteral1(objectIndex: number, arr: any[], index: number, exp: any): any[]|
+    NO_CHANGE {
+  arr = getObjectCopy(objectIndex, arr);
   if (bind(exp) === NO_CHANGE) {
     return NO_CHANGE;
   } else {
@@ -81,9 +81,9 @@ export function objectLiteral1(
  * @returns A copy of the array or NO_CHANGE
  */
 export function objectLiteral2(
-    nodeIndex: number, propIndex: number, arr: any[], index1: number, exp1: any, index2: number,
-    exp2: any): any[]|NO_CHANGE {
-  arr = getObjectCopy(nodeIndex, propIndex, arr);
+    objectIndex: number, arr: any[], index1: number, exp1: any, index2: number, exp2: any): any[]|
+    NO_CHANGE {
+  arr = getObjectCopy(objectIndex, arr);
   return updateBinding2(arr, index1, exp1, index2, exp2) ? arr.slice() : NO_CHANGE;
 }
 
@@ -100,9 +100,9 @@ export function objectLiteral2(
  * @returns A copy of the array or NO_CHANGE
  */
 export function objectLiteral3(
-    nodeIndex: number, propIndex: number, arr: any[], index1: number, exp1: any, index2: number,
-    exp2: any, index3: number, exp3: any): any[]|NO_CHANGE {
-  arr = getObjectCopy(nodeIndex, propIndex, arr);
+    objectIndex: number, arr: any[], index1: number, exp1: any, index2: number, exp2: any,
+    index3: number, exp3: any): any[]|NO_CHANGE {
+  arr = getObjectCopy(objectIndex, arr);
   let different = updateBinding2(arr, index1, exp1, index2, exp2);
   return updateArrBinding(arr, index3, exp3) || different ? arr.slice() : NO_CHANGE;
 }
@@ -122,9 +122,9 @@ export function objectLiteral3(
  * @returns A copy of the array or NO_CHANGE
  */
 export function objectLiteral4(
-    nodeIndex: number, propIndex: number, arr: any[], index1: number, exp1: any, index2: number,
-    exp2: any, index3: number, exp3: any, index4: number, exp4: any): any[]|NO_CHANGE {
-  arr = getObjectCopy(nodeIndex, propIndex, arr);
+    objectIndex: number, arr: any[], index1: number, exp1: any, index2: number, exp2: any,
+    index3: number, exp3: any, index4: number, exp4: any): any[]|NO_CHANGE {
+  arr = getObjectCopy(objectIndex, arr);
   return updateBinding4(arr, index1, exp1, index2, exp2, index3, exp3, index4, exp4) ? arr.slice() :
                                                                                        NO_CHANGE;
 }
@@ -146,10 +146,10 @@ export function objectLiteral4(
  * @returns A copy of the array or NO_CHANGE
  */
 export function objectLiteral5(
-    nodeIndex: number, propIndex: number, arr: any[], index1: number, exp1: any, index2: number,
-    exp2: any, index3: number, exp3: any, index4: number, exp4: any, index5: number,
-    exp5: any): any[]|NO_CHANGE {
-  arr = getObjectCopy(nodeIndex, propIndex, arr);
+    objectIndex: number, arr: any[], index1: number, exp1: any, index2: number, exp2: any,
+    index3: number, exp3: any, index4: number, exp4: any, index5: number, exp5: any): any[]|
+    NO_CHANGE {
+  arr = getObjectCopy(objectIndex, arr);
   let different = updateBinding4(arr, index1, exp1, index2, exp2, index3, exp3, index4, exp4);
   return updateArrBinding(arr, index5, exp5) || different ? arr.slice() : NO_CHANGE;
 }
@@ -173,10 +173,10 @@ export function objectLiteral5(
  * @returns A copy of the array or NO_CHANGE
  */
 export function objectLiteral6(
-    nodeIndex: number, propIndex: number, arr: any[], index1: number, exp1: any, index2: number,
-    exp2: any, index3: number, exp3: any, index4: number, exp4: any, index5: number, exp5: any,
-    index6: number, exp6: any): any[]|NO_CHANGE {
-  arr = getObjectCopy(nodeIndex, propIndex, arr);
+    objectIndex: number, arr: any[], index1: number, exp1: any, index2: number, exp2: any,
+    index3: number, exp3: any, index4: number, exp4: any, index5: number, exp5: any, index6: number,
+    exp6: any): any[]|NO_CHANGE {
+  arr = getObjectCopy(objectIndex, arr);
   let different = updateBinding4(arr, index1, exp1, index2, exp2, index3, exp3, index4, exp4);
   return updateBinding2(arr, index5, exp5, index6, exp6) || different ? arr.slice() : NO_CHANGE;
 }
@@ -202,10 +202,10 @@ export function objectLiteral6(
  * @returns A copy of the array or NO_CHANGE
  */
 export function objectLiteral7(
-    nodeIndex: number, propIndex: number, arr: any[], index1: number, exp1: any, index2: number,
-    exp2: any, index3: number, exp3: any, index4: number, exp4: any, index5: number, exp5: any,
-    index6: number, exp6: any, index7: number, exp7: any): any[]|NO_CHANGE {
-  arr = getObjectCopy(nodeIndex, propIndex, arr);
+    objectIndex: number, arr: any[], index1: number, exp1: any, index2: number, exp2: any,
+    index3: number, exp3: any, index4: number, exp4: any, index5: number, exp5: any, index6: number,
+    exp6: any, index7: number, exp7: any): any[]|NO_CHANGE {
+  arr = getObjectCopy(objectIndex, arr);
   let different = updateBinding4(arr, index1, exp1, index2, exp2, index3, exp3, index4, exp4);
   different = updateBinding2(arr, index5, exp5, index6, exp6) || different;
   return updateArrBinding(arr, index7, exp7) || different ? arr.slice() : NO_CHANGE;
@@ -234,11 +234,10 @@ export function objectLiteral7(
  * @returns A copy of the array or NO_CHANGE
  */
 export function objectLiteral8(
-    nodeIndex: number, propIndex: number, arr: any[], index1: number, exp1: any, index2: number,
-    exp2: any, index3: number, exp3: any, index4: number, exp4: any, index5: number, exp5: any,
-    index6: number, exp6: any, index7: number, exp7: any, index8: number, exp8: any): any[]|
-    NO_CHANGE {
-  arr = getObjectCopy(nodeIndex, propIndex, arr);
+    objectIndex: number, arr: any[], index1: number, exp1: any, index2: number, exp2: any,
+    index3: number, exp3: any, index4: number, exp4: any, index5: number, exp5: any, index6: number,
+    exp6: any, index7: number, exp7: any, index8: number, exp8: any): any[]|NO_CHANGE {
+  arr = getObjectCopy(objectIndex, arr);
   let different = updateBinding4(arr, index1, exp1, index2, exp2, index3, exp3, index4, exp4);
   return updateBinding4(arr, index5, exp5, index6, exp6, index7, exp7, index8, exp8) || different ?
       arr.slice() :

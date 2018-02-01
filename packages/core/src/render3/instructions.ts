@@ -494,7 +494,8 @@ export function createTView(): TView {
     contentCheckHooks: null,
     viewHooks: null,
     viewCheckHooks: null,
-    destroyHooks: null
+    destroyHooks: null,
+    objectLiterals: null
   };
 }
 
@@ -698,8 +699,7 @@ function createTNode(
     initialInputs: undefined,
     inputs: undefined,
     outputs: undefined,
-    data: data,
-    objectLiterals: null
+    data: data
   };
 }
 
@@ -1864,8 +1864,8 @@ export function getRenderer(): Renderer3 {
   return renderer;
 }
 
-export function getTNode(index: number): TNode {
-  return tData[index] as TNode;
+export function getTView(): TView {
+  return currentView.tView;
 }
 
 export function getDirectiveInstance<T>(instanceOrArray: T | [T]): T {

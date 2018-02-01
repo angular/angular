@@ -30,7 +30,7 @@ describe('array literals', () => {
         E(0, MyComp);
         e();
       }
-      p(0, 'names', o1(0, 0, e0_literal, 1, ctx.customName));
+      p(0, 'names', o1(0, e0_literal, 1, ctx.customName));
       MyComp.ngComponentDef.h(1, 0);
       r(1, 0);
     }
@@ -77,8 +77,8 @@ describe('array literals', () => {
         E(0, ManyPropComp);
         e();
       }
-      p(0, 'names1', o1(0, 0, e0_literal, 1, ctx.customName));
-      p(0, 'names2', o1(0, 1, e0_literal_1, 0, ctx.customName2));
+      p(0, 'names1', o1(0, e0_literal, 1, ctx.customName));
+      p(0, 'names2', o1(1, e0_literal_1, 0, ctx.customName2));
       ManyPropComp.ngComponentDef.h(1, 0);
       r(1, 0);
     }
@@ -107,7 +107,7 @@ describe('array literals', () => {
         E(0, MyComp);
         e();
       }
-      p(0, 'names', o2(0, 0, e0_literal, 1, ctx.customName, 3, ctx.customName2));
+      p(0, 'names', o2(0, e0_literal, 1, ctx.customName, 3, ctx.customName2));
       MyComp.ngComponentDef.h(1, 0);
       r(1, 0);
     }
@@ -159,14 +159,14 @@ describe('array literals', () => {
         o8Comp = m(11);
         e();
       }
-      p(0, 'names', o3(0, 0, e0_literal, 5, c[5], 6, c[6], 7, c[7]));
-      p(2, 'names', o4(2, 0, e2_literal, 4, c[4], 5, c[5], 6, c[6], 7, c[7]));
-      p(4, 'names', o5(4, 0, e4_literal, 3, c[3], 4, c[4], 5, c[5], 6, c[6], 7, c[7]));
-      p(6, 'names', o6(6, 0, e6_literal, 2, c[2], 3, c[3], 4, c[4], 5, c[5], 6, c[6], 7, c[7]));
+      p(0, 'names', o3(0, e0_literal, 5, c[5], 6, c[6], 7, c[7]));
+      p(2, 'names', o4(1, e2_literal, 4, c[4], 5, c[5], 6, c[6], 7, c[7]));
+      p(4, 'names', o5(2, e4_literal, 3, c[3], 4, c[4], 5, c[5], 6, c[6], 7, c[7]));
+      p(6, 'names', o6(3, e6_literal, 2, c[2], 3, c[3], 4, c[4], 5, c[5], 6, c[6], 7, c[7]));
       p(8, 'names',
-        o7(8, 0, e8_literal, 1, c[1], 2, c[2], 3, c[3], 4, c[4], 5, c[5], 6, c[6], 7, c[7]));
-      p(10, 'names', o8(10, 0, e10_literal, 0, c[0], 1, c[1], 2, c[2], 3, c[3], 4, c[4], 5, c[5], 6,
-                        c[6], 7, c[7]));
+        o7(4, e8_literal, 1, c[1], 2, c[2], 3, c[3], 4, c[4], 5, c[5], 6, c[6], 7, c[7]));
+      p(10, 'names',
+        o8(5, e10_literal, 0, c[0], 1, c[1], 2, c[2], 3, c[3], 4, c[4], 5, c[5], 6, c[6], 7, c[7]));
       MyComp.ngComponentDef.h(1, 0);
       r(1, 0);
       MyComp.ngComponentDef.h(3, 2);

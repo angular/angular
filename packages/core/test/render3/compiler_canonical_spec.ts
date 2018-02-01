@@ -225,7 +225,7 @@ describe('compiler specification', () => {
                 r3.E(0, MyComp);
                 r3.e();
               }
-              r3.p(0, 'names', r3.o1(0, 0, e0_literal, 1, ctx.customName));
+              r3.p(0, 'names', r3.o1(0, e0_literal, 1, ctx.customName));
               MyComp.ngComponentDef.h(1, 0);
               r3.r(1, 0);
             }
