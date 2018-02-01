@@ -27,7 +27,7 @@ export type ImmutableObject<T> = {
  */
 export class OverlayRef implements PortalOutlet {
   private _backdropElement: HTMLElement | null = null;
-  private _backdropClick: Subject<any> = new Subject();
+  private _backdropClick: Subject<MouseEvent> = new Subject();
   private _attachments = new Subject<void>();
   private _detachments = new Subject<void>();
 
@@ -181,7 +181,7 @@ export class OverlayRef implements PortalOutlet {
   }
 
   /** Gets an observable that emits when the backdrop has been clicked. */
-  backdropClick(): Observable<void> {
+  backdropClick(): Observable<MouseEvent> {
     return this._backdropClick.asObservable();
   }
 
@@ -278,7 +278,8 @@ export class OverlayRef implements PortalOutlet {
 
     // Forward backdrop clicks such that the consumer of the overlay can perform whatever
     // action desired when such a click occurs (usually closing the overlay).
-    this._backdropElement.addEventListener('click', () => this._backdropClick.next(null));
+    this._backdropElement.addEventListener('click',
+        (event: MouseEvent) => this._backdropClick.next(event));
 
     // Add class to fade-in the backdrop after one frame.
     if (typeof requestAnimationFrame !== 'undefined') {

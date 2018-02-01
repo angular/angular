@@ -388,7 +388,7 @@ describe('Overlay', () => {
       overlayRef.backdropClick().subscribe(backdropClickHandler);
 
       backdrop.click();
-      expect(backdropClickHandler).toHaveBeenCalled();
+      expect(backdropClickHandler).toHaveBeenCalledWith(jasmine.any(MouseEvent));
     });
 
     it('should complete the backdrop click stream once the overlay is destroyed', () => {

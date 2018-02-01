@@ -62,7 +62,7 @@ export class DialogRef<T, R = any> {
   }
 
   /** Gets an observable that emits when the overlay's backdrop has been clicked. */
-  backdropClick(): Observable<void> {
+  backdropClick(): Observable<MouseEvent> {
     return this._overlayRef.backdropClick();
   }
 
