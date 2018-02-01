@@ -11,7 +11,7 @@ describe('site App', function() {
 
   it('should show features text after clicking "Features"', () => {
     page.navigateTo('');
-    page.getTopMenuLink('features').click();
+    page.click(page.getTopMenuLink('features'));
     expect(page.getDocViewerText()).toMatch(/Progressive web apps/i);
   });
 
@@ -19,10 +19,10 @@ describe('site App', function() {
     page.navigateTo('');
     expect(browser.getTitle()).toBe('Angular');
 
-    page.getTopMenuLink('features').click();
+    page.click(page.getTopMenuLink('features'));
     expect(browser.getTitle()).toBe('Angular - FEATURES & BENEFITS');
 
-    page.homeLink.click();
+    page.click(page.homeLink);
     expect(browser.getTitle()).toBe('Angular');
   });
 
@@ -78,11 +78,11 @@ describe('site App', function() {
     expect(page.getDocViewerText()).toMatch(/Tutorial: Tour of Heroes/i);
 
     // navigate to a different page
-    page.getTopMenuLink('features').click();
+    page.click(page.getTopMenuLink('features'));
     expect(page.getDocViewerText()).toMatch(/Progressive web apps/i);
 
     // Show the menu
-    page.docsMenuLink.click();
+    page.click(page.docsMenuLink);
 
     // Tutorial folder should still be expanded because this test runs in wide mode
     // Navigate to the tutorial introduction via a link in the sidenav
@@ -146,7 +146,7 @@ describe('site App', function() {
     it('should call ga with new URL on navigation', done => {
       let path: string;
       page.navigateTo('');
-      page.getTopMenuLink('features').click();
+      page.click(page.getTopMenuLink('features'));
       page.locationPath()
         .then(p => path = p)
         .then(() => page.ga())
@@ -181,7 +181,7 @@ describe('site App', function() {
       expect(element(by.css('meta[name="googlebot"][content="noindex"]')).isPresent()).toBeTruthy();
       expect(element(by.css('meta[name="robots"][content="noindex"]')).isPresent()).toBeTruthy();
 
-      page.getTopMenuLink('features').click();
+      page.click(page.getTopMenuLink('features'));
       expect(element(by.css('meta[name="googlebot"]')).isPresent()).toBeFalsy();
       expect(element(by.css('meta[name="robots"]')).isPresent()).toBeFalsy();
     });
