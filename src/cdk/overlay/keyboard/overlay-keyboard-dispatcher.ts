@@ -61,12 +61,12 @@ export class OverlayKeyboardDispatcher implements OnDestroy {
    * events to the appropriate overlay.
    */
   private _subscribeToKeydownEvents(): void {
-    const bodyKeydownEvents = fromEvent<KeyboardEvent>(this._document.body, 'keydown');
+    const bodyKeydownEvents = fromEvent<KeyboardEvent>(this._document.body, 'keydown', true);
 
     this._keydownEventSubscription = bodyKeydownEvents.pipe(
       filter(() => !!this._attachedOverlays.length)
     ).subscribe(event => {
-      // Dispatch keydown event to correct overlay reference
+      // Dispatch keydown event to the correct overlay.
       this._selectOverlayFromEvent(event)._keydownEvents.next(event);
     });
   }
@@ -87,7 +87,7 @@ export class OverlayKeyboardDispatcher implements OnDestroy {
           overlay.overlayElement.contains(event.target as HTMLElement);
     });
 
-    // Use that overlay if it exists, otherwise choose the most recently attached one
+    // Use the overlay if it exists, otherwise choose the most recently attached one
     return targetedOverlay || this._attachedOverlays[this._attachedOverlays.length - 1];
   }
 

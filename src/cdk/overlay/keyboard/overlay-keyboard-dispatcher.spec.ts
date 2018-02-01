@@ -69,6 +69,23 @@ describe('OverlayKeyboardDispatcher', () => {
     expect(overlayTwoSpy).toHaveBeenCalled();
   });
 
+  it('should dispatch keyboard events when propagation is stopped', () => {
+    const overlayRef = overlay.create();
+    const spy = jasmine.createSpy('keyboard event spy');
+    const button = document.createElement('button');
+
+    document.body.appendChild(button);
+    button.addEventListener('keydown', event => event.stopPropagation());
+
+    overlayRef.keydownEvents().subscribe(spy);
+    keyboardDispatcher.add(overlayRef);
+    dispatchKeyboardEvent(button, 'keydown', ESCAPE);
+
+    expect(spy).toHaveBeenCalled();
+
+    button.parentNode!.removeChild(button);
+  });
+
   it('should dispatch targeted keyboard events to the overlay containing that target', () => {
     const overlayOne = overlay.create();
     const overlayTwo = overlay.create();
