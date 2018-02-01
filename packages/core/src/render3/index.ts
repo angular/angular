@@ -37,6 +37,15 @@ export {
   bind8 as b8,
   bindV as bV,
 
+  memoize1 as mo1,
+  memoize2 as mo2,
+  memoize3 as mo3,
+  memoize4 as mo4,
+  memoize5 as mo5,
+  memoize6 as mo6,
+  memoize7 as mo7,
+  memoize8 as mo8,
+
   componentRefresh as r,
 
   container as C,
