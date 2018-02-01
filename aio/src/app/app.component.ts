@@ -28,7 +28,7 @@ export class AppComponent implements OnInit {
 
   currentDocument: DocumentContents;
   currentDocVersion: NavigationNode;
-  currentNodes: CurrentNodes;
+  currentNodes: CurrentNodes = {};
   currentPath: string;
   docVersions: NavigationNode[];
   dtOn = false;
@@ -213,7 +213,10 @@ export class AppComponent implements OnInit {
 
   onDocInserted() {
     // Update the shell (host classes, sidenav state) to match the new document.
-    this.updateShell();
+    // This may be called as a result of actions initiated by view updates.
+    // In order to avoid errors (e.g. `ExpressionChangedAfterItHasBeenChecked`), updating the view
+    // (e.g. sidenav, host classes) needs to happen asynchronously.
+    setTimeout(() => this.updateShell());
 
     // Scroll 500ms after the new document has been inserted into the doc-viewer.
     // The delay is to allow time for async layout to complete.
@@ -304,7 +307,7 @@ export class AppComponent implements OnInit {
     const sideNavOpen = `sidenav-${this.sidenav.opened ? 'open' : 'closed'}`;
     const pageClass = `page-${this.pageId}`;
     const folderClass = `folder-${this.folderId}`;
-    const viewClasses = Object.keys(this.currentNodes || {}).map(view => `view-${view}`).join(' ');
+    const viewClasses = Object.keys(this.currentNodes).map(view => `view-${view}`).join(' ');
     const notificationClass = `aio-notification-${this.notification.showNotification}`;
     const notificationAnimatingClass = this.notificationAnimating ? 'aio-notification-animating' : '';
 
@@ -320,18 +323,13 @@ export class AppComponent implements OnInit {
   }
 
   updateShell() {
-    // This may be called as a result of actions initiated by view updates.
-    // In order to avoid errors (e.g. `ExpressionChangedAfterItHasBeenChecked`), updating the view
-    // (e.g. sidenav, host classes) needs to happen asynchronously.
-    setTimeout(() => {
-      // Update the SideNav state (if necessary).
-      this.updateSideNav();
+    // Update the SideNav state (if necessary).
+    this.updateSideNav();
 
-      // Update the host classes.
-      this.setPageId(this.currentDocument.id);
-      this.setFolderId(this.currentDocument.id);
-      this.updateHostClasses();
-    });
+    // Update the host classes.
+    this.setPageId(this.currentDocument.id);
+    this.setFolderId(this.currentDocument.id);
+    this.updateHostClasses();
   }
 
   updateSideNav() {
