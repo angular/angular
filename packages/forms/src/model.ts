@@ -80,10 +80,24 @@ function coerceToAsyncValidator(
 
 export type FormHooks = 'change' | 'blur' | 'submit';
 
+/**
+ * @whatItDoes Interface for options provided to an {@link AbstractControl}.
+ *
+ * @experimental
+ */
 export interface AbstractControlOptions {
+  /**
+   * List of validators applied to control.
+   */
   validators?: ValidatorFn|ValidatorFn[]|null;
+  /**
+   * List of async validators applied to control.
+   */
   asyncValidators?: AsyncValidatorFn|AsyncValidatorFn[]|null;
-  updateOn?: FormHooks;
+  /**
+   * The event name for control to update upon.
+   */
+  updateOn?: 'change'|'blur'|'submit';
 }
 
 
