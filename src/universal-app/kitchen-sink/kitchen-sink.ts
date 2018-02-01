@@ -36,13 +36,22 @@ import {
   MatTooltipModule,
   MatStepperModule,
   MatSnackBar,
+  MatDialog,
 } from '@angular/material';
 import {
   CdkTableModule,
   DataSource
 } from '@angular/cdk/table';
+import {Overlay} from '@angular/cdk/overlay';
 
 import {of as observableOf} from 'rxjs/observable/of';
+
+
+@Component({
+  template: `<button>Do the thing</button>`
+})
+export class TestDialog {}
+
 
 @Component({
   selector: 'kitchen-sink',
@@ -60,9 +69,13 @@ export class KitchenSink {
     disconnect: () => {}
   };
 
-  constructor(snackBar: MatSnackBar) {
+  constructor(snackBar: MatSnackBar, dialog: MatDialog, overlay: Overlay) {
     // Open a snack bar to do a basic sanity check of the overlays.
     snackBar.open('Hello there');
+
+    // TODO(crisbeto): use the noop scroll strategy until
+    // the fixes for the block scroll strategy get in.
+    dialog.open(TestDialog, {scrollStrategy: overlay.scrollStrategies.noop()});
   }
 
 }
@@ -109,7 +122,8 @@ export class KitchenSink {
     CdkTableModule
   ],
   bootstrap: [KitchenSink],
-  declarations: [KitchenSink],
+  declarations: [KitchenSink, TestDialog],
+  entryComponents: [TestDialog],
 })
 export class KitchenSinkClientModule { }
 
