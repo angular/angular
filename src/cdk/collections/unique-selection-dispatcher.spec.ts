@@ -2,31 +2,36 @@ import {UniqueSelectionDispatcher} from './unique-selection-dispatcher';
 
 
 describe('Unique selection dispatcher', () => {
+  let dispatcher: UniqueSelectionDispatcher;
 
-  describe('register', () => {
-    it('once unregistered the listener must not be called on notify', (done) => {
-      let dispatcher: UniqueSelectionDispatcher = new UniqueSelectionDispatcher();
-      let called = false;
+  beforeEach(() => dispatcher = new UniqueSelectionDispatcher());
 
-      // Register first listener
-      dispatcher.listen(() => {
-        called = true;
-      });
+  it('should notify registered listeners', () => {
+    const spy = jasmine.createSpy('listen handler');
 
-      // Register a listener
-      let deregisterFn = dispatcher.listen(() => {
-        done.fail('Should not be called');
-      });
+    dispatcher.listen(spy);
+    dispatcher.notify('id', 'name');
 
-      // Unregister
-      deregisterFn();
+    expect(spy).toHaveBeenCalledWith('id', 'name');
+  });
 
-      // Call registered listeners
-      dispatcher.notify('testId', 'testName');
+  it('should not notify unregistered listeners', () => {
+    const spy = jasmine.createSpy('listen handler');
+    const unregister = dispatcher.listen(spy);
 
-      expect(called).toBeTruthy('Registered listener must be called.');
+    unregister();
+    dispatcher.notify('id', 'name');
 
-      done();
-    });
+    expect(spy).not.toHaveBeenCalled();
+  });
+
+  it('should remove all listeners when destroyed', () => {
+    const spy = jasmine.createSpy('listen handler');
+    dispatcher.listen(spy);
+
+    dispatcher.ngOnDestroy();
+    dispatcher.notify('id', 'name');
+
+    expect(spy).not.toHaveBeenCalled();
   });
 });

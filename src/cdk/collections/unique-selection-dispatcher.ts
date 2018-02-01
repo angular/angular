@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injectable, Optional, SkipSelf} from '@angular/core';
+import {Injectable, Optional, SkipSelf, OnDestroy} from '@angular/core';
 
 
 // Users of the Dispatcher never need to see this type, but TypeScript requires it to be exported.
@@ -22,7 +22,7 @@ export type UniqueSelectionDispatcherListener = (id: string, name: string) => vo
  * less error-prone if they are simply passed through when the events occur.
  */
 @Injectable()
-export class UniqueSelectionDispatcher {
+export class UniqueSelectionDispatcher implements OnDestroy {
   private _listeners: UniqueSelectionDispatcherListener[] = [];
 
   /**
@@ -47,6 +47,10 @@ export class UniqueSelectionDispatcher {
         return listener !== registered;
       });
     };
+  }
+
+  ngOnDestroy() {
+    this._listeners = [];
   }
 }
 
