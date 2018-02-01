@@ -1,5 +1,14 @@
 import {Directionality} from '@angular/cdk/bidi';
-import {ENTER, LEFT_ARROW, RIGHT_ARROW, UP_ARROW, DOWN_ARROW, SPACE} from '@angular/cdk/keycodes';
+import {
+  ENTER,
+  LEFT_ARROW,
+  RIGHT_ARROW,
+  UP_ARROW,
+  DOWN_ARROW,
+  SPACE,
+  HOME,
+  END,
+} from '@angular/cdk/keycodes';
 import {dispatchKeyboardEvent} from '@angular/cdk/testing';
 import {Component, DebugElement} from '@angular/core';
 import {async, ComponentFixture, TestBed, inject} from '@angular/core/testing';
@@ -725,6 +734,16 @@ function assertCorrectKeyboardInteraction(fixture: ComponentFixture<any>,
   expect(stepperComponent.selectedIndex)
       .toBe(0,
           'Expected index of selected step to change to index of focused step after SPACE event.');
+
+  const endEvent = dispatchKeyboardEvent(stepHeaderEl, 'keydown', END);
+  expect(stepperComponent._focusIndex)
+      .toBe(stepHeaders.length - 1, 'Expected last step to be focused when pressing END.');
+  expect(endEvent.defaultPrevented).toBe(true, 'Expected default END action to be prevented.');
+
+  const homeEvent = dispatchKeyboardEvent(stepHeaderEl, 'keydown', HOME);
+  expect(stepperComponent._focusIndex)
+      .toBe(0, 'Expected first step to be focused when pressing HOME.');
+  expect(homeEvent.defaultPrevented).toBe(true, 'Expected default HOME action to be prevented.');
 }
 
 /** Asserts that step selection change using stepper buttons does not focus step header. */
