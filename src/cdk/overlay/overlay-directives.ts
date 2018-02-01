@@ -98,7 +98,6 @@ export class CdkConnectedOverlay implements OnDestroy, OnChanges {
   private _templatePortal: TemplatePortal;
   private _hasBackdrop = false;
   private _backdropSubscription = Subscription.EMPTY;
-  private _positionSubscription = Subscription.EMPTY;
   private _offsetX: number = 0;
   private _offsetY: number = 0;
   private _position: ConnectedPositionStrategy;
@@ -369,8 +368,7 @@ export class CdkConnectedOverlay implements OnDestroy, OnChanges {
       );
     }
 
-    this._positionSubscription = strategy.onPositionChange
-        .subscribe(pos => this.positionChange.emit(pos));
+    strategy.onPositionChange.subscribe(pos => this.positionChange.emit(pos));
 
     return strategy;
   }
@@ -419,6 +417,5 @@ export class CdkConnectedOverlay implements OnDestroy, OnChanges {
     }
 
     this._backdropSubscription.unsubscribe();
-    this._positionSubscription.unsubscribe();
   }
 }

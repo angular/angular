@@ -108,6 +108,7 @@ export class ConnectedPositionStrategy implements PositionStrategy {
   dispose() {
     this._applied = false;
     this._resizeSubscription.unsubscribe();
+    this._onPositionChange.complete();
   }
 
   /** @docs-private */

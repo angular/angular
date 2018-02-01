@@ -407,6 +407,22 @@ describe('ConnectedPositionStrategy', () => {
       subscription.unsubscribe();
     });
 
+    it('should complete the onPositionChange stream on dispose', () => {
+      strategy = positionBuilder.connectedTo(
+          fakeElementRef,
+          {originX: 'end', originY: 'bottom'},
+          {overlayX: 'start', overlayY: 'top'});
+
+      const completeHandler = jasmine.createSpy('complete handler');
+
+      strategy.onPositionChange.subscribe(undefined, undefined, completeHandler);
+      strategy.attach(fakeOverlayRef(overlayElement));
+      strategy.apply();
+      strategy.dispose();
+
+      expect(completeHandler).toHaveBeenCalled();
+    });
+
     it('should pick the fallback position that shows the largest area of the element', () => {
       originElement.style.top = '200px';
       originElement.style.right = '25px';

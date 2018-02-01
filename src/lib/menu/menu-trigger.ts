@@ -87,7 +87,6 @@ export class MatMenuTrigger implements AfterContentInit, OnDestroy {
   private _overlayRef: OverlayRef | null = null;
   private _menuOpen: boolean = false;
   private _closeSubscription = Subscription.EMPTY;
-  private _positionSubscription = Subscription.EMPTY;
   private _hoverSubscription = Subscription.EMPTY;
 
   // Tracking input type is necessary so it's possible to only auto-focus
@@ -353,7 +352,7 @@ export class MatMenuTrigger implements AfterContentInit, OnDestroy {
    * correct, even if a fallback position is used for the overlay.
    */
   private _subscribeToPositions(position: ConnectedPositionStrategy): void {
-    this._positionSubscription = position.onPositionChange.subscribe(change => {
+    position.onPositionChange.subscribe(change => {
       const posX: MenuPositionX = change.connectionPair.overlayX === 'start' ? 'after' : 'before';
       const posY: MenuPositionY = change.connectionPair.overlayY === 'top' ? 'below' : 'above';
 
@@ -408,7 +407,6 @@ export class MatMenuTrigger implements AfterContentInit, OnDestroy {
   /** Cleans up the active subscriptions. */
   private _cleanUpSubscriptions(): void {
     this._closeSubscription.unsubscribe();
-    this._positionSubscription.unsubscribe();
     this._hoverSubscription.unsubscribe();
   }
 
