@@ -47,3 +47,11 @@ export function getTableMissingRowDefsError() {
   return Error('Missing definitions for header and row, ' +
       'cannot determine which columns should be rendered.');
 }
+
+/**
+ * Returns an error to be thrown when the data source does not match the compatible types.
+ * @docs-private
+ */
+export function getTableUnknownDataSourceError() {
+  return Error(`Provided data source did not match an array, Observable, or DataSource`);
+}

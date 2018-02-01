@@ -1,0 +1,51 @@
+<div class="demo-actions">
+  <strong>Input type: </strong>
+  <mat-radio-group [value]="inputType" (change)="changeInput($event)">
+    <mat-radio-button value="array">Array</mat-radio-button>
+    <mat-radio-button value="stream">Stream</mat-radio-button>
+    <mat-radio-button value="source">DataSource</mat-radio-button>
+  </mat-radio-group>
+</div>
+
+<div class="demo-actions">
+  <strong>Data Changes: </strong>
+  <button mat-raised-button (click)="addRow()">Add Row</button>
+  <button mat-raised-button (click)="removeRow()">Remove Row</button>
+  <button mat-raised-button (click)="reassignDataClone()">Clone Data</button>
+</div>
+
+<div class="demo-actions">
+  <strong>Table: </strong>
+  <button mat-raised-button (click)="this.renderRows()">Re-render</button>
+  <button mat-raised-button (click)="this.removeDataSource()">Remove Data Source</button>
+</div>
+
+<mat-card class="demo-table-card">
+  <h3> CdkTable  </h3>
+
+  <cdk-table #cdkTable [dataSource]="dataSourceInput">
+    <!-- Name (normal column) -->
+    <ng-container cdkColumnDef="{{column}}" *ngFor="let column of columnsToDisplay">
+      <cdk-header-cell *cdkHeaderCellDef> {{column}} </cdk-header-cell>
+      <cdk-cell *cdkCellDef="let element"> {{element[column]}} </cdk-cell>
+    </ng-container>
+
+    <cdk-header-row *cdkHeaderRowDef="columnsToDisplay"></cdk-header-row>
+    <cdk-row *cdkRowDef="let data; columns: columnsToDisplay;"></cdk-row>
+  </cdk-table>
+</mat-card>
+
+<mat-card class="demo-table-card">
+  <h3> MatTable </h3>
+
+  <mat-table #matTable [dataSource]="dataSourceInput">
+    <!-- Name (normal column) -->
+    <ng-container matColumnDef="{{column}}" *ngFor="let column of columnsToDisplay">
+      <mat-header-cell *matHeaderCellDef> {{column}} </mat-header-cell>
+      <mat-cell *matCellDef="let element"> {{element[column]}} </mat-cell>
+    </ng-container>
+
+    <mat-header-row *matHeaderRowDef="columnsToDisplay"></mat-header-row>
+    <mat-row *matRowDef="let data; columns: columnsToDisplay;"></mat-row>
+  </mat-table>
+</mat-card>

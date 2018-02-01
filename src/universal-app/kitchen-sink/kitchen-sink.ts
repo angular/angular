@@ -45,6 +45,15 @@ import {
 import {Overlay} from '@angular/cdk/overlay';
 
 import {of as observableOf} from 'rxjs/observable/of';
+import {Observable} from 'rxjs/Observable';
+
+export class TableDataSource extends DataSource<any> {
+  connect(): Observable<any> {
+    return observableOf([{userId: 1}, {userId: 2}]);
+  }
+
+  disconnect() {}
+}
 
 
 @Component({
@@ -64,10 +73,7 @@ export class KitchenSink {
   tableColumns = ['userId'];
 
   /** Data source for the CDK and Material table. */
-  tableDataSource: DataSource<any> = {
-    connect: () => observableOf([{userId: 1}, {userId: 2}]),
-    disconnect: () => {}
-  };
+  tableDataSource = new TableDataSource();
 
   constructor(snackBar: MatSnackBar, dialog: MatDialog, overlay: Overlay) {
     // Open a snack bar to do a basic sanity check of the overlays.
@@ -77,7 +83,6 @@ export class KitchenSink {
     // the fixes for the block scroll strategy get in.
     dialog.open(TestDialog, {scrollStrategy: overlay.scrollStrategies.noop()});
   }
-
 }
 
 

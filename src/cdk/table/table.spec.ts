@@ -11,7 +11,8 @@ import {
   getTableMissingMatchingRowDefError,
   getTableMissingRowDefsError,
   getTableMultipleDefaultRowDefsError,
-  getTableUnknownColumnError
+  getTableUnknownColumnError,
+  getTableUnknownDataSourceError
 } from './table-errors';
 import {CdkHeaderRowDef, CdkRowDef} from './row';
 import {CdkColumnDef} from './cell';
@@ -45,6 +46,7 @@ describe('CdkTable', () => {
         BooleanRowCdkTableApp,
         WrapperCdkTableApp,
         OuterTableApp,
+        CdkTableWithDifferentDataInputsApp,
       ],
     }).compileComponents();
   }));
@@ -110,6 +112,138 @@ describe('CdkTable', () => {
           expect(cell.getAttribute('role')).toBe('gridcell');
         });
       });
+    });
+  });
+
+  describe('with different data inputs other than data source', () => {
+    let dataInputFixture: ComponentFixture<CdkTableWithDifferentDataInputsApp>;
+    let dataInputComponent: CdkTableWithDifferentDataInputsApp;
+    let dataInputTableElement: HTMLElement;
+
+    let baseData: TestData[] = [
+      {a: 'a_1', b: 'b_1', c: 'c_1'},
+      {a: 'a_2', b: 'b_2', c: 'c_2'},
+      {a: 'a_3', b: 'b_3', c: 'c_3'},
+    ];
+
+    beforeEach(() => {
+      dataInputFixture = TestBed.createComponent(CdkTableWithDifferentDataInputsApp);
+      dataInputComponent = dataInputFixture.componentInstance;
+      dataInputFixture.detectChanges();
+
+      dataInputTableElement = dataInputFixture.nativeElement.querySelector('cdk-table');
+    });
+
+    it('should render with data array input', () => {
+      const data = baseData.slice();
+      dataInputComponent.dataSource = data;
+      dataInputFixture.detectChanges();
+
+      const expectedRender = [
+        ['Column A', 'Column B', 'Column C'],
+        ['a_1', 'b_1', 'c_1'],
+        ['a_2', 'b_2', 'c_2'],
+        ['a_3', 'b_3', 'c_3'],
+      ];
+      expectTableToMatchContent(dataInputTableElement, expectedRender);
+
+      // Push data to the array but neglect to tell the table, should be no change
+      data.push({a: 'a_4', b: 'b_4', c: 'c_4'});
+
+      expectTableToMatchContent(dataInputTableElement, expectedRender);
+
+      // Notify table of the change, expect another row
+      dataInputComponent.table.renderRows();
+      dataInputFixture.detectChanges();
+
+      expectedRender.push(['a_4', 'b_4', 'c_4']);
+      expectTableToMatchContent(dataInputTableElement, expectedRender);
+
+      // Remove a row and expect the change in rows
+      data.pop();
+      dataInputComponent.table.renderRows();
+
+      expectedRender.pop();
+      expectTableToMatchContent(dataInputTableElement, expectedRender);
+
+      // Remove the data input entirely and expect no rows - just header.
+      dataInputComponent.dataSource = null;
+      dataInputFixture.detectChanges();
+
+      expectTableToMatchContent(dataInputTableElement, [expectedRender[0]]);
+
+      // Add back the data to verify that it renders rows
+      dataInputComponent.dataSource = data;
+      dataInputFixture.detectChanges();
+
+      expectTableToMatchContent(dataInputTableElement, expectedRender);
+    });
+
+    it('should render with data stream input', () => {
+      const data = baseData.slice();
+      const stream = new BehaviorSubject<TestData[]>(data);
+      dataInputComponent.dataSource = stream;
+      dataInputFixture.detectChanges();
+
+      const expectedRender = [
+        ['Column A', 'Column B', 'Column C'],
+        ['a_1', 'b_1', 'c_1'],
+        ['a_2', 'b_2', 'c_2'],
+        ['a_3', 'b_3', 'c_3'],
+      ];
+      expectTableToMatchContent(dataInputTableElement, expectedRender);
+
+      // Push data to the array and emit the data array on the stream
+      data.push({a: 'a_4', b: 'b_4', c: 'c_4'});
+      stream.next(data);
+      dataInputFixture.detectChanges();
+
+      expectedRender.push(['a_4', 'b_4', 'c_4']);
+      expectTableToMatchContent(dataInputTableElement, expectedRender);
+
+      // Push data to the array but rather than emitting, call renderRows.
+      data.push({a: 'a_5', b: 'b_5', c: 'c_5'});
+      dataInputComponent.table.renderRows();
+      dataInputFixture.detectChanges();
+
+      expectedRender.push(['a_5', 'b_5', 'c_5']);
+      expectTableToMatchContent(dataInputTableElement, expectedRender);
+
+      // Remove a row and expect the change in rows
+      data.pop();
+      expectedRender.pop();
+      stream.next(data);
+
+      expectTableToMatchContent(dataInputTableElement, expectedRender);
+
+      // Remove the data input entirely and expect no rows - just header.
+      dataInputComponent.dataSource = null;
+      dataInputFixture.detectChanges();
+
+      expectTableToMatchContent(dataInputTableElement, [expectedRender[0]]);
+
+      // Add back the data to verify that it renders rows
+      dataInputComponent.dataSource = stream;
+      dataInputFixture.detectChanges();
+
+      expectTableToMatchContent(dataInputTableElement, expectedRender);
+    });
+
+    it('should throw an error if the data source is not valid', () => {
+      dataInputComponent.dataSource = {invalid: 'dataSource'};
+
+      expect(() => dataInputFixture.detectChanges())
+          .toThrowError(getTableUnknownDataSourceError().message);
+    });
+
+    it('should throw an error if the data source is not valid', () => {
+      dataInputComponent.dataSource = undefined;
+      dataInputFixture.detectChanges();
+
+      // Expect the table to render just the header, no rows
+      expectTableToMatchContent(dataInputTableElement, [
+        ['Column A', 'Column B', 'Column C']
+      ]);
     });
   });
 
@@ -724,6 +858,36 @@ class SimpleCdkTableApp {
   template: `
     <cdk-table [dataSource]="dataSource">
       <ng-container cdkColumnDef="column_a">
+        <cdk-header-cell *cdkHeaderCellDef> Column A</cdk-header-cell>
+        <cdk-cell *cdkCellDef="let row"> {{row.a}}</cdk-cell>
+      </ng-container>
+
+      <ng-container cdkColumnDef="column_b">
+        <cdk-header-cell *cdkHeaderCellDef> Column B</cdk-header-cell>
+        <cdk-cell *cdkCellDef="let row"> {{row.b}}</cdk-cell>
+      </ng-container>
+
+      <ng-container cdkColumnDef="column_c">
+        <cdk-header-cell *cdkHeaderCellDef> Column C</cdk-header-cell>
+        <cdk-cell *cdkCellDef="let row"> {{row.c}}</cdk-cell>
+      </ng-container>
+
+      <cdk-header-row *cdkHeaderRowDef="columnsToRender"></cdk-header-row>
+      <cdk-row *cdkRowDef="let row; columns: columnsToRender"></cdk-row>
+    </cdk-table>
+  `
+})
+class CdkTableWithDifferentDataInputsApp {
+  dataSource: DataSource<TestData> | Observable<TestData[]> | TestData[] | any = null;
+  columnsToRender = ['column_a', 'column_b', 'column_c'];
+
+  @ViewChild(CdkTable) table: CdkTable<TestData>;
+}
+
+@Component({
+  template: `
+    <cdk-table [dataSource]="dataSource">
+      <ng-container cdkColumnDef="column_a">
         <cdk-header-cell *cdkHeaderCellDef></cdk-header-cell>
         <cdk-cell *cdkCellDef="let data"> {{data}} </cdk-cell>
       </ng-container>
@@ -1186,6 +1350,9 @@ function expectTableToMatchContent(tableElement: Element, expectedTableContent: 
     }
   }
 
+  // Copy the expected data array to avoid mutating the test's array
+  expectedTableContent = expectedTableContent.slice();
+
   // Check header cells
   const expectedHeaderContent = expectedTableContent.shift();
   getHeaderCells(tableElement).forEach((cell, index) => {
@@ -1196,7 +1363,13 @@ function expectTableToMatchContent(tableElement: Element, expectedTableContent: 
   });
 
   // Check data row cells
-  getRows(tableElement).forEach((row, rowIndex) => {
+  const rows = getRows(tableElement);
+  if (rows.length !== expectedTableContent.length) {
+    missedExpectations.push(
+        `Expected ${expectedTableContent.length} rows but found ${rows.length}`);
+    fail(missedExpectations.join('\n'));
+  }
+  rows.forEach((row, rowIndex) => {
     getCells(row).forEach((cell, cellIndex) => {
       const expected = expectedTableContent.length ?
           expectedTableContent[rowIndex][cellIndex] :

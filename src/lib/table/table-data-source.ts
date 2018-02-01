@@ -25,7 +25,7 @@ import {_isNumberValue} from '@angular/cdk/coercion';
  * properties are accessed. Also allows for filter customization by overriding filterTermAccessor,
  * which defines how row data is converted to a string for filter matching.
  */
-export class MatTableDataSource<T> implements DataSource<T> {
+export class MatTableDataSource<T> extends DataSource<T> {
   /** Stream that emits when a new data array is set on the data source. */
   private readonly _data: BehaviorSubject<T[]>;
 
@@ -165,6 +165,7 @@ export class MatTableDataSource<T> implements DataSource<T> {
   }
 
   constructor(initialData: T[] = []) {
+    super();
     this._data = new BehaviorSubject<T[]>(initialData);
     this._updateChangeSubscription();
   }

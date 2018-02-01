@@ -1,0 +1,20 @@
+.demo-actions {
+  margin-top: 24px;
+}
+
+mat-card {
+  margin: 8px 0;
+}
+
+cdk-table {
+  display: table;
+  width: 100%;
+
+  cdk-header-row, cdk-row {
+    display: table-row;
+  }
+
+  cdk-header-cell, cdk-cell {
+    display: table-cell;
+  }
+}

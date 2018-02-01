@@ -16,5 +16,6 @@ export class TableDemoPage {
   links = [
     {name: 'Main Page', link: 'main-demo'},
     {name: 'Custom Table', link: 'custom-table'},
+    {name: 'Direct Data', link: 'data-input-table'},
   ];
 }

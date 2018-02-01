@@ -1,5 +1,4 @@
 import {Component} from '@angular/core';
-import {MatTableDataSource} from '@angular/material';
 
 /**
  * @title Basic table
@@ -11,7 +10,7 @@ import {MatTableDataSource} from '@angular/material';
 })
 export class TableBasicExample {
   displayedColumns = ['position', 'name', 'weight', 'symbol'];
-  dataSource = new MatTableDataSource<Element>(ELEMENT_DATA);
+  dataSource = ELEMENT_DATA;
 }
 
 export interface Element {
