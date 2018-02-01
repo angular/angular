@@ -75,7 +75,7 @@
   $background: map-get($theme, background);
   $foreground: map-get($theme, foreground);
 
-  .mat-button, .mat-icon-button {
+  .mat-button, .mat-icon-button, .mat-stroked-button {
     background: transparent;
 
     @include _mat-button-focus-color($theme);
@@ -99,6 +99,18 @@
     @include _mat-button-ripple-color($theme, default, 0.1);
   }
 
+  .mat-flat-button {
+    // Default properties when not using any [color] value.
+    color: mat-color($foreground, text);
+
+    background-color: mat-color($background, raised-button);
+    @include _mat-button-theme-color($theme, 'color', default-contrast);
+    @include _mat-button-theme-color($theme, 'background-color');
+
+    // Add ripple effect with contrast color to buttons that don't have a focus overlay.
+    @include _mat-button-ripple-color($theme, default-contrast);
+  }
+
   // Add ripple effect with default color to the icon button. Ripple color needs to be stronger
   // since the icon button doesn't have a focus overlay.
   .mat-icon-button {
@@ -107,7 +119,8 @@
 }
 
 @mixin mat-button-typography($config) {
-  .mat-button, .mat-raised-button, .mat-icon-button, .mat-fab, .mat-mini-fab {
+  .mat-button, .mat-raised-button, .mat-icon-button, .mat-stroked-button, .mat-flat-button,
+  .mat-fab, .mat-mini-fab {
     font: {
       family: mat-font-family($config, button);
       size: mat-font-size($config, button);

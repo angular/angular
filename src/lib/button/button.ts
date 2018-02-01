@@ -11,7 +11,6 @@ import {Platform} from '@angular/cdk/platform';
 import {
   ChangeDetectionStrategy,
   Component,
-  Directive,
   ElementRef,
   OnDestroy,
   ViewChild,
@@ -27,63 +26,25 @@ import {
   mixinDisableRipple
 } from '@angular/material/core';
 
-
-// TODO(kara): Convert attribute selectors to classes when attr maps become available
-
 /** Default color palette for round buttons (mat-fab and mat-mini-fab) */
 const DEFAULT_ROUND_BUTTON_COLOR = 'accent';
 
+/** Default color palette for flat buttons (mat-flat-button) */
+const DEFAULT_FLAT_BUTTON_COLOR = 'primary';
 
 /**
- * Directive whose purpose is to add the mat- CSS styling to this selector.
- * @docs-private
+ * List of classes to add to MatButton instances based on host attributes to
+ * style as different variants.
  */
-@Directive({
-  selector: 'button[mat-button], a[mat-button]',
-  host: {'class': 'mat-button'}
-})
-export class MatButtonCssMatStyler {}
-
-/**
- * Directive whose purpose is to add the mat- CSS styling to this selector.
- * @docs-private
- */
-@Directive({
-  selector: 'button[mat-raised-button], a[mat-raised-button]',
-  host: {'class': 'mat-raised-button'}
-})
-export class MatRaisedButtonCssMatStyler {}
-
-/**
- * Directive whose purpose is to add the mat- CSS styling to this selector.
- * @docs-private
- */
-@Directive({
-  selector: 'button[mat-icon-button], a[mat-icon-button]',
-  host: {'class': 'mat-icon-button'}
-})
-export class MatIconButtonCssMatStyler {}
-
-/**
- * Directive whose purpose is to add the mat- CSS styling to this selector.
- * @docs-private
- */
-@Directive({
-  selector: 'button[mat-fab], a[mat-fab]',
-  host: {'class': 'mat-fab'}
-})
-export class MatFab {}
-
-/**
- * Directive whose purpose is to add the mat- CSS styling to this selector.
- * @docs-private
- */
-@Directive({
-  selector: 'button[mat-mini-fab], a[mat-mini-fab]',
-  host: {'class': 'mat-mini-fab'}
-})
-export class MatMiniFab {}
-
+const BUTTON_HOST_ATTRIBUTES = [
+  'mat-button',
+  'mat-flat-button',
+  'mat-icon-button',
+  'mat-raised-button',
+  'mat-stroked-button',
+  'mat-mini-fab',
+  'mat-fab',
+];
 
 // Boilerplate for applying mixins to MatButton.
 /** @docs-private */
@@ -99,7 +60,8 @@ export const _MatButtonMixinBase = mixinColor(mixinDisabled(mixinDisableRipple(M
 @Component({
   moduleId: module.id,
   selector: `button[mat-button], button[mat-raised-button], button[mat-icon-button],
-             button[mat-fab], button[mat-mini-fab]`,
+             button[mat-fab], button[mat-mini-fab], button[mat-stroked-button],
+             button[mat-flat-button]`,
   exportAs: 'matButton',
   host: {
     '[disabled]': 'disabled || null',
@@ -128,10 +90,20 @@ export class MatButton extends _MatButtonMixinBase
               private _focusMonitor: FocusMonitor) {
     super(elementRef);
 
+    // For each of the variant selectors that is prevent in the button's host
+    // attributes, add the correct corresponding class.
+    for (const attr of BUTTON_HOST_ATTRIBUTES) {
+      if (this._hasHostAttributes(attr)) {
+        (elementRef.nativeElement as HTMLElement).classList.add(attr);
+      }
+    }
+
     this._focusMonitor.monitor(this._elementRef.nativeElement, true);
 
     if (this._isRoundButton) {
       this.color = DEFAULT_ROUND_BUTTON_COLOR;
+    } else if (this._hasHostAttributes('mat-flat-button')) {
+      this.color = DEFAULT_FLAT_BUTTON_COLOR;
     }
   }
 
@@ -170,7 +142,8 @@ export class MatButton extends _MatButtonMixinBase
  */
 @Component({
   moduleId: module.id,
-  selector: `a[mat-button], a[mat-raised-button], a[mat-icon-button], a[mat-fab], a[mat-mini-fab]`,
+  selector: `a[mat-button], a[mat-raised-button], a[mat-icon-button], a[mat-fab],
+             a[mat-mini-fab], a[mat-stroked-button], a[mat-flat-button]`,
   exportAs: 'matButton, matAnchor',
   host: {
     '[attr.tabindex]': 'disabled ? -1 : 0',

@@ -12,6 +12,12 @@ $mat-button-border-radius: 2px !default;
 $mat-button-focus-transition: opacity 200ms $swift-ease-in-out-timing-function,
                               background-color 200ms $swift-ease-in-out-timing-function !default;
 
+// Stroked Button standards
+$mat-stroked-button-line-height: $mat-button-line-height - 2;
+// Stroked button padding is 1px less horizontally than default/flat/raised
+// button's padding.
+$mat-stroked-button-padding: 0 15px;
+
 // Icon Button standards
 $mat-icon-button-size: 40px !default;
 $mat-icon-button-border-radius: 50% !default;
