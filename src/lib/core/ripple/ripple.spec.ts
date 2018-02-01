@@ -500,6 +500,27 @@ describe('MatRipple', () => {
 
       expect(rippleTarget.querySelectorAll('.mat-ripple-element').length).toBe(0);
     }));
+
+    it('should allow ripples to fade out immediately on pointer up', fakeAsync(() => {
+      createTestComponent({
+        terminateOnPointerUp: true
+      });
+
+      dispatchMouseEvent(rippleTarget, 'mousedown');
+      dispatchMouseEvent(rippleTarget, 'mouseup');
+
+      expect(rippleTarget.querySelectorAll('.mat-ripple-element').length).toBe(1);
+
+      // Ignore the enter duration, because we immediately fired the mouseup after the mousedown.
+      // This means that the ripple should just fade out, and there shouldn't be an enter animation.
+      tick(exitDuration);
+
+      expect(rippleTarget.querySelectorAll('.mat-ripple-element').length).toBe(0);
+
+      // Since the enter duration is bigger than the exit duration, the enter duration timer
+      // will still exist. To properly finish all timers, we just wait the remaining time.
+      tick(enterDuration - exitDuration);
+    }));
   });
 
   describe('configuring behavior', () => {

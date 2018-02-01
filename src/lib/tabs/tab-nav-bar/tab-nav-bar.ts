@@ -240,6 +240,7 @@ export class MatTabLink extends _MatTabLinkMixinBase
 
     if (globalOptions) {
       this.rippleConfig = {
+        terminateOnPointerUp: globalOptions.terminateOnPointerUp,
         speedFactor: globalOptions.baseSpeedFactor,
         animation: globalOptions.animation,
       };

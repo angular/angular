@@ -42,6 +42,12 @@ export interface RippleGlobalOptions {
    * @deprecated Use the `animation` global option instead.
    */
   baseSpeedFactor?: number;
+
+  /**
+   * Whether ripples should start fading out immediately after the mouse our touch is released. By
+   * default, ripples will wait for the enter animation to complete and for mouse or touch release.
+   */
+  terminateOnPointerUp?: boolean;
 }
 
 /** Injection token that can be used to specify the global ripple options. */
@@ -159,6 +165,7 @@ export class MatRipple implements OnInit, OnDestroy, RippleTarget {
       radius: this.radius,
       color: this.color,
       animation: {...this._globalOptions.animation, ...this.animation},
+      terminateOnPointerUp: this._globalOptions.terminateOnPointerUp,
       speedFactor: this.speedFactor * (this._globalOptions.baseSpeedFactor || 1),
     };
   }
