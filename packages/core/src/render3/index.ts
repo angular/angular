@@ -78,6 +78,17 @@ export {
   query as Q,
   queryRefresh as qR,
 } from './query';
+export {
+  objectLiteral1 as o1,
+  objectLiteral2 as o2,
+  objectLiteral3 as o3,
+  objectLiteral4 as o4,
+  objectLiteral5 as o5,
+  objectLiteral6 as o6,
+  objectLiteral7 as o7,
+  objectLiteral8 as o8,
+} from './object_literal';
+
 
 // clang-format on
 
