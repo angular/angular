@@ -52,6 +52,11 @@ export class OverlayRef implements PortalOutlet {
     return this._pane;
   }
 
+  /** The overlay's backdrop HTML element. */
+  get backdropElement(): HTMLElement | null {
+    return this._backdropElement;
+  }
+
   attach<T>(portal: ComponentPortal<T>): ComponentRef<T>;
   attach<T>(portal: TemplatePortal<T>): EmbeddedViewRef<T>;
   attach(portal: any): any;
