@@ -86,6 +86,13 @@ export declare abstract class AbstractControlDirective {
     reset(value?: any): void;
 }
 
+/** @experimental */
+export interface AbstractControlOptions {
+    asyncValidators?: AsyncValidatorFn | AsyncValidatorFn[] | null;
+    updateOn?: 'change' | 'blur' | 'submit';
+    validators?: ValidatorFn | ValidatorFn[] | null;
+}
+
 /** @stable */
 export declare class AbstractFormGroupDirective extends ControlContainer implements OnInit, OnDestroy {
     readonly asyncValidator: AsyncValidatorFn | null;
