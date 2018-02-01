@@ -494,7 +494,8 @@ export function createTView(): TView {
     contentCheckHooks: null,
     viewHooks: null,
     viewCheckHooks: null,
-    destroyHooks: null
+    destroyHooks: null,
+    objectLiterals: null
   };
 }
 
@@ -1752,6 +1753,10 @@ export function getPreviousOrParentNode(): LNode {
 
 export function getRenderer(): Renderer3 {
   return renderer;
+}
+
+export function getTView(): TView {
+  return currentView.tView;
 }
 
 export function getDirectiveInstance<T>(instanceOrArray: T | [T]): T {

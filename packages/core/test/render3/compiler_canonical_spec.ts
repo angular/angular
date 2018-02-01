@@ -173,6 +173,76 @@ describe('compiler specification', () => {
       expect(log).toEqual(['ChildComponent', 'SomeDirective']);
     });
 
+    describe('memoization', () => {
+      @Component({
+        selector: 'my-comp',
+        template: `
+        <p>{{ names[0] }}</p>
+        <p>{{ names[1] }}</p>
+      `
+      })
+      class MyComp {
+        @Input() names: string[];
+
+        static ngComponentDef = r3.defineComponent({
+          type: MyComp,
+          tag: 'my-comp',
+          factory: function MyComp_Factory() { return new MyComp(); },
+          template: function MyComp_Template(ctx: MyComp, cm: boolean) {
+            if (cm) {
+              r3.E(0, 'p');
+              r3.T(1);
+              r3.e();
+              r3.E(2, 'p');
+              r3.T(3);
+              r3.e();
+            }
+            r3.t(1, r3.b(ctx.names[0]));
+            r3.t(3, r3.b(ctx.names[1]));
+          },
+          inputs: {names: 'names'}
+        });
+      }
+
+      it('should memoize array literals', () => {
+
+        @Component({
+          selector: 'my-app',
+          template: `
+          <my-comp [names]="['Nancy', customName]"></my-comp>
+        `
+        })
+        class MyApp {
+          customName = 'Bess';
+
+          // NORMATIVE
+          static ngComponentDef = r3.defineComponent({
+            type: MyApp,
+            tag: 'my-app',
+            factory: function MyApp_Factory() { return new MyApp(); },
+            template: function MyApp_Template(ctx: MyApp, cm: boolean) {
+              if (cm) {
+                r3.E(0, MyComp);
+                r3.e();
+              }
+              r3.p(0, 'names', r3.o1(0, e0_literal, 1, ctx.customName));
+              MyComp.ngComponentDef.h(1, 0);
+              r3.r(1, 0);
+            }
+          });
+          // /NORMATIVE
+        }
+
+        // NORMATIVE
+        const e0_literal = ['Nancy', null];
+        // /NORMATIVE
+
+        expect(renderComp(MyApp)).toEqual(`<my-comp><p>Nancy</p><p>Bess</p></my-comp>`);
+        expect(e0_literal).toEqual(['Nancy', null]);
+      });
+
+    });
+
     it('should support content projection', () => {
       @Component({selector: 'simple', template: `<div><ng-content></ng-content></div>`})
       class SimpleComponent {
