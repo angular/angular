@@ -113,6 +113,7 @@ export function getMatAutocompleteMissingPanelError(): Error {
     '(input)': '_handleInput($event)',
     '(keydown)': '_handleKeydown($event)',
   },
+  exportAs: 'matAutocompleteTrigger',
   providers: [MAT_AUTOCOMPLETE_VALUE_ACCESSOR]
 })
 export class MatAutocompleteTrigger implements ControlValueAccessor, OnDestroy {
