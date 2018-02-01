@@ -1639,6 +1639,17 @@ describe('MatAutocomplete', () => {
       expect(trigger.panelOpen).toBe(false, 'Expected panel to be closed.');
     }));
 
+    it('should handle autocomplete being attached to number inputs', fakeAsync(() => {
+      const fixture = createComponent(AutocompleteWithNumberInputAndNgModel);
+      fixture.detectChanges();
+      const input = fixture.debugElement.query(By.css('input')).nativeElement;
+
+      typeInElement('1337', input);
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance.selectedValue).toBe(1337);
+    }));
+
   });
 
   it('should have correct width when opened', () => {
@@ -2071,4 +2082,21 @@ class AutocompleteWithSelectEvent {
 })
 class PlainAutocompleteInputWithFormControl {
   formControl = new FormControl();
+}
+
+
+@Component({
+  template: `
+    <mat-form-field>
+      <input type="number" matInput [matAutocomplete]="auto" [(ngModel)]="selectedValue">
+    </mat-form-field>
+
+    <mat-autocomplete #auto="matAutocomplete">
+      <mat-option *ngFor="let value of values" [value]="value">{{value}}</mat-option>
+    </mat-autocomplete>
+  `
+})
+class AutocompleteWithNumberInputAndNgModel {
+  selectedValue: number;
+  values = [1, 2, 3];
 }
