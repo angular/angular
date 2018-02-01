@@ -186,9 +186,9 @@ template for our `HeroListComponent`:
 
 <code-example path="architecture/src/app/hero-list.component.html" title="src/app/hero-list.component.html"></code-example>
 
-Although this template uses typical HTML elements like `<h2>` and  `<p>`, it also has some differences. Code like `*ngFor`, `{{hero.name}}`, `(click)`, `[hero]`, and `<hero-detail>` uses Angular's [template syntax](guide/template-syntax).
+Although this template uses typical HTML elements like `<h2>` and  `<p>`, it also has some differences. Code like `*ngFor`, `{{hero.name}}`, `(click)`, `[hero]`, and `<app-hero-detail>` uses Angular's [template syntax](guide/template-syntax).
 
-In the last line of the template, the `<hero-detail>` tag is a custom element that represents a new component, `HeroDetailComponent`.
+In the last line of the template, the `<app-hero-detail>` tag is a custom element that represents a new component, `HeroDetailComponent`.
 
 The `HeroDetailComponent` is a *different* component than the `HeroListComponent` you've been reviewing.
 The `HeroDetailComponent` (code not shown) presents facts about a particular hero, the
@@ -197,7 +197,7 @@ The `HeroDetailComponent` is a **child** of the `HeroListComponent`.
 
 <img src="generated/images/guide/architecture/component-tree.png" alt="Metadata" class="left">
 
-Notice how `<hero-detail>` rests comfortably among native HTML elements. Custom components mix seamlessly with native HTML in the same layouts.
+Notice how `<app-hero-detail>` rests comfortably among native HTML elements. Custom components mix seamlessly with native HTML in the same layouts.
 
 <hr class="clear"/>
 
