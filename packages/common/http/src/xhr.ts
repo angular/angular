@@ -21,12 +21,12 @@ const XSSI_PREFIX = /^\)\]\}',?\n/;
  * Determine an appropriate URL for the response, by checking either
  * XMLHttpRequest.responseURL or the X-Request-URL header.
  */
-function getResponseUrl(xhr: any): string|null {
-  if ('responseURL' in xhr && xhr.responseURL) {
-    return xhr.responseURL;
+function getResponseUrl(localXhr: any): string|null {
+  if ('responseURL' in localXhr && localXhr.responseURL) {
+    return localXhr.responseURL;
   }
-  if (/^X-Request-URL:/m.test(xhr.getAllResponseHeaders())) {
-    return xhr.getResponseHeader('X-Request-URL');
+  if (/^X-Request-URL:/m.test(localXhr.getAllResponseHeaders())) {
+    return localXhr.getResponseHeader('X-Request-URL');
   }
   return null;
 }
