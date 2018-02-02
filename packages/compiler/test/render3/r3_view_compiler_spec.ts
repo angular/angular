@@ -237,6 +237,8 @@ describe('r3_view_compiler', () => {
               IDENT.ɵe();
               IDENT.ɵT(3, '!');
             }
+            ChildComponent.ngComponentDef.h(1, 0);
+            SomeDirective.ngDirectiveDef.h(2, 0);
             IDENT.ɵr(1, 0);
             IDENT.ɵr(2, 0);
           }
@@ -300,6 +302,7 @@ describe('r3_view_compiler', () => {
               IDENT.ɵe();
             }
             const IDENT = IDENT.ɵm(1);
+            IfDirective.ngDirectiveDef.h(3,2);
             IDENT.ɵcR(2);
             IDENT.ɵr(3,2);
             IDENT.ɵcr();
@@ -443,6 +446,90 @@ describe('r3_view_compiler', () => {
       expectEmit(source, locals, 'Incorrect locals constant definition');
     });
 
+    describe('lifecycle hooks', () => {
+      const files = {
+        app: {
+          'spec.ts': `
+            import {Component, Input, NgModule} from '@angular/core';
+
+            let events: string[] = [];
+
+            @Component({selector: 'lifecycle-comp', template: ''})
+            export class LifecycleComp {
+              @Input('name') nameMin: string;
+
+              ngOnChanges() { events.push('changes' + this.nameMin); }
+
+              ngOnInit() { events.push('init' + this.nameMin); }
+              ngDoCheck() { events.push('check' + this.nameMin); }
+
+              ngAfterContentInit() { events.push('content init' + this.nameMin); }
+              ngAfterContentChecked() { events.push('content check' + this.nameMin); }
+
+              ngAfterViewInit() { events.push('view init' + this.nameMin); }
+              ngAfterViewChecked() { events.push('view check' + this.nameMin); }
+
+              ngOnDestroy() { events.push(this.nameMin); }
+            }
+
+            @Component({
+              selector: 'simple-layout',
+              template: \`
+                <lifecycle-comp [name]="name1"></lifecycle-comp>
+                <lifecycle-comp [name]="name2"></lifecycle-comp>
+              \`
+            })
+            export class SimpleLayout {
+              name1 = '1';
+              name2 = '2';
+            }
+
+            @NgModule({declarations: [LifecycleComp, SimpleLayout]}
+            export class LifecycleModule {}
+          `
+        }
+      };
+
+      it('should gen hooks with a few simple components', () => {
+        const LifecycleCompDefinition = `
+          static ngComponentDef = IDENT.ɵdefineComponent({
+            type: LifecycleComp,
+            tag: 'lifecycle-comp',
+            factory: function LifecycleComp_Factory() { return new LifecycleComp(); },
+            template: function LifecycleComp_Template(ctx: any, cm: boolean) {},
+            inputs: {nameMin: 'name'},
+            features: [IDENT.ɵNgOnChangesFeature(LifecycleComp)]
+          });`;
+
+        const SimpleLayoutDefinition = `
+          static ngComponentDef = IDENT.ɵdefineComponent({
+            type: SimpleLayout,
+            tag: 'simple-layout',
+            factory: function SimpleLayout_Factory() { return new SimpleLayout(); },
+            template: function SimpleLayout_Template(ctx: any, cm: boolean) {
+              if (cm) {
+                IDENT.ɵE(0, LifecycleComp);
+                IDENT.ɵe();
+                IDENT.ɵE(2, LifecycleComp);
+                IDENT.ɵe();
+              }
+              IDENT.ɵp(0, 'name', IDENT.ɵb(ctx.name1));
+              IDENT.ɵp(2, 'name', IDENT.ɵb(ctx.name2));
+              IDENT.h(1, 0);
+              IDENT.h(3, 2);
+              IDENT.ɵr(1, 0);
+              IDENT.ɵr(3, 2);
+            }
+          });`;
+
+        const result = compile(files, angularFiles);
+        const source = result.source;
+
+        expectEmit(source, LifecycleCompDefinition, 'Invalid LifecycleComp definition');
+        expectEmit(source, SimpleLayoutDefinition, 'Invalid SimpleLayout definition');
+      });
+    });
+
     describe('template variables', () => {
       const shared = {
         shared: {
@@ -545,6 +632,7 @@ describe('r3_view_compiler', () => {
                 IDENT.ɵe();
               }
               IDENT.ɵp(1, 'forOf', IDENT.ɵb(ctx.items));
+              ForOfDirective.ngDirectiveDef.h(2, 1);
               IDENT.ɵcR(1);
               IDENT.ɵr(2, 1);
               IDENT.ɵcr();
@@ -619,6 +707,7 @@ describe('r3_view_compiler', () => {
                 IDENT.ɵe();
               }
               IDENT.ɵp(1, 'forOf', IDENT.ɵb(ctx.items));
+              IDENT.h(2,1);
               IDENT.ɵcR(1);
               IDENT.ɵr(2, 1);
               IDENT.ɵcr();
@@ -636,6 +725,7 @@ describe('r3_view_compiler', () => {
                 }
                 const IDENT = ctx0.$implicit;
                 IDENT.ɵp(4, 'forOf', IDENT.ɵb(IDENT.infos));
+                IDENT.h(5,4);
                 IDENT.ɵt(2, IDENT.ɵb1('', IDENT.name, ''));
                 IDENT.ɵcR(4);
                 IDENT.ɵr(5, 4);
