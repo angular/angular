@@ -13,6 +13,7 @@ import {DirectiveResolver} from '../directive_resolver';
 import {Lexer} from '../expression_parser/lexer';
 import {Parser} from '../expression_parser/parser';
 import {I18NHtmlParser} from '../i18n/i18n_html_parser';
+import {InjectableCompiler} from '../injectable_compiler';
 import {CompileMetadataResolver} from '../metadata_resolver';
 import {HtmlParser} from '../ml_parser/html_parser';
 import {NgModuleCompiler} from '../ng_module_compiler';
@@ -90,7 +91,7 @@ export function createAotCompiler(
   const compiler = new AotCompiler(
       config, options, compilerHost, staticReflector, resolver, tmplParser,
       new StyleCompiler(urlResolver), viewCompiler, typeCheckCompiler,
-      new NgModuleCompiler(staticReflector), new TypeScriptEmitter(), summaryResolver,
-      symbolResolver);
+      new NgModuleCompiler(staticReflector), new InjectableCompiler(staticReflector),
+      new TypeScriptEmitter(), summaryResolver, symbolResolver);
   return {compiler, reflector: staticReflector};
 }

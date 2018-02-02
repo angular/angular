@@ -33,6 +33,7 @@ export class JitReflector implements CompileReflector {
   parameters(typeOrFunc: /*Type*/ any): any[][] {
     return this.reflectionCapabilities.parameters(typeOrFunc);
   }
+  tryAnnotations(typeOrFunc: /*Type*/ any): any[] { return this.annotations(typeOrFunc); }
   annotations(typeOrFunc: /*Type*/ any): any[] {
     return this.reflectionCapabilities.annotations(typeOrFunc);
   }

@@ -346,50 +346,56 @@ export function resolveDep(
     elDef = elDef.parent !;
   }
 
-  while (view) {
+  let searchView: ViewData|null = view;
+  while (searchView) {
     if (elDef) {
       switch (tokenKey) {
         case RendererV1TokenKey: {
-          const compView = findCompView(view, elDef, allowPrivateServices);
+          const compView = findCompView(searchView, elDef, allowPrivateServices);
           return createRendererV1(compView);
         }
         case Renderer2TokenKey: {
-          const compView = findCompView(view, elDef, allowPrivateServices);
+          const compView = findCompView(searchView, elDef, allowPrivateServices);
           return compView.renderer;
         }
         case ElementRefTokenKey:
-          return new ElementRef(asElementData(view, elDef.nodeIndex).renderElement);
+          return new ElementRef(asElementData(searchView, elDef.nodeIndex).renderElement);
         case ViewContainerRefTokenKey:
-          return asElementData(view, elDef.nodeIndex).viewContainer;
+          return asElementData(searchView, elDef.nodeIndex).viewContainer;
         case TemplateRefTokenKey: {
           if (elDef.element !.template) {
-            return asElementData(view, elDef.nodeIndex).template;
+            return asElementData(searchView, elDef.nodeIndex).template;
           }
           break;
         }
         case ChangeDetectorRefTokenKey: {
-          let cdView = findCompView(view, elDef, allowPrivateServices);
+          let cdView = findCompView(searchView, elDef, allowPrivateServices);
           return createChangeDetectorRef(cdView);
         }
         case InjectorRefTokenKey:
-          return createInjector(view, elDef);
+          return createInjector(searchView, elDef);
         default:
           const providerDef =
               (allowPrivateServices ? elDef.element !.allProviders :
                                       elDef.element !.publicProviders) ![tokenKey];
           if (providerDef) {
-            let providerData = asProviderData(view, providerDef.nodeIndex);
+            let providerData = asProviderData(searchView, providerDef.nodeIndex);
             if (!providerData) {
-              providerData = {instance: _createProviderInstance(view, providerDef)};
-              view.nodes[providerDef.nodeIndex] = providerData as any;
+              providerData = {instance: _createProviderInstance(searchView, providerDef)};
+              searchView.nodes[providerDef.nodeIndex] = providerData as any;
             }
             return providerData.instance;
           }
       }
     }
-    allowPrivateServices = isComponentView(view);
-    elDef = viewParentEl(view) !;
-    view = view.parent !;
+
+    allowPrivateServices = isComponentView(searchView);
+    elDef = viewParentEl(searchView) !;
+    searchView = searchView.parent !;
+
+    if (depDef.flags & DepFlags.Self) {
+      searchView = null;
+    }
   }
 
   const value = startView.root.injector.get(depDef.token, NOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR);

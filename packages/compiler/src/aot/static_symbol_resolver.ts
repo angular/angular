@@ -12,6 +12,9 @@ import {ValueTransformer, visitValue} from '../util';
 import {StaticSymbol, StaticSymbolCache} from './static_symbol';
 import {isGeneratedFile, stripSummaryForJitFileSuffix, stripSummaryForJitNameSuffix, summaryForJitFileName, summaryForJitName} from './util';
 
+const DTS = /\.d\.ts$/;
+const TS = /^(?!.*\.d\.ts$).*\.ts$/;
+
 export class ResolvedStaticSymbol {
   constructor(public symbol: StaticSymbol, public metadata: any) {}
 }
@@ -374,7 +377,8 @@ export class StaticSymbolResolver {
     // (e.g. their constructor parameters).
     // We do this to prevent introducing deep imports
     // as we didn't generate .ngfactory.ts files with proper reexports.
-    if (this.summaryResolver.isLibraryFile(sourceSymbol.filePath) && metadata &&
+    const isTsFile = TS.test(sourceSymbol.filePath);
+    if (this.summaryResolver.isLibraryFile(sourceSymbol.filePath) && !isTsFile && metadata &&
         metadata['__symbolic'] === 'class') {
       const transformedMeta = {__symbolic: 'class', arity: metadata.arity};
       return new ResolvedStaticSymbol(sourceSymbol, transformedMeta);
