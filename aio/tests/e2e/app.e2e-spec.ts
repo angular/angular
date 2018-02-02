@@ -115,18 +115,6 @@ describe('site App', function() {
     });
   });
 
-  describe('search', () => {
-    it('should find pages when searching by a partial word in the title', () => {
-      page.navigateTo('');
-
-      page.enterSearch('ngCont');
-      expect(page.getSearchResults()).toContain('NgControl');
-
-      page.enterSearch('accessor');
-      expect(page.getSearchResults()).toContain('ControlValueAccessor');
-    });
-  });
-
   describe('404 page', () => {
     it('should add or remove the "noindex" meta tag depending upon the validity of the page', () => {
       page.navigateTo('');
