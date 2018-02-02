@@ -1,6 +1,5 @@
 {
   "name": "angular-srcs",
-  "version": "TODO this should be 6.0.0-beta.0, workaround",
   "version": "6.0.0-beta.2",
   "private": true,
   "branchPattern": "2.0.*",
