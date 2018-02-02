@@ -31,6 +31,14 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="translucent">
 
+  <script>
+    // Dynamically, pre-emptively, add `noindex`, which will be removed when the doc is ready and valid
+    var tag = document.createElement('meta'); tag.name = 'googlebot'; tag.content = 'noindex';
+    document.head.appendChild(tag);
+    tag = document.createElement('meta'); tag.name = 'robots'; tag.content = 'noindex';
+    document.head.appendChild(tag);
+  </script>
+
   <!-- Google Analytics -->
   <script>
   // Note this is a customised version of the GA tracking snippet
