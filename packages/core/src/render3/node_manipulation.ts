@@ -18,25 +18,25 @@ import {assertNodeType} from './node_assert';
 const unusedValueToPlacateAjd = unused1 + unused2 + unused3 + unused4 + unused5;
 
 /**
- * Returns the first DOM node following the given logical node in the same parent DOM element.
+ * Returns the first RNode following the given LNode in the same parent DOM element.
  *
  * This is needed in order to insert the given node with insertBefore.
  *
  * @param node The node whose following DOM node must be found.
  * @param stopNode A parent node at which the lookup in the tree should be stopped, or null if the
  * lookup should not be stopped until the result is found.
- * @returns Node before which the provided node should be inserted or null if the lookup was stopped
+ * @returns RNode before which the provided node should be inserted or null if the lookup was
+ * stopped
  * or if there is no native node after the given logical node in the same native parent.
  */
-function findBeforeNode(node: LNode | null, stopNode: LNode | null): RElement|RText|null {
+function findNextRNodeSibling(node: LNode | null, stopNode: LNode | null): RElement|RText|null {
   let currentNode = node;
   while (currentNode && currentNode !== stopNode) {
-    const currentNodeType = currentNode.flags && LNodeFlags.TYPE_MASK;
     let pNextOrParent = currentNode.pNextOrParent;
     if (pNextOrParent) {
       let pNextOrParentType = pNextOrParent.flags & LNodeFlags.TYPE_MASK;
       while (pNextOrParentType !== LNodeFlags.Projection) {
-        const nativeNode = findFirstNativeNode(pNextOrParent);
+        const nativeNode = findFirstRNode(pNextOrParent);
         if (nativeNode) {
           return nativeNode;
         }
@@ -46,7 +46,7 @@ function findBeforeNode(node: LNode | null, stopNode: LNode | null): RElement|RT
     } else {
       let currentSibling = currentNode.next;
       while (currentSibling) {
-        const nativeNode = findFirstNativeNode(currentSibling);
+        const nativeNode = findFirstRNode(currentSibling);
         if (nativeNode) {
           return nativeNode;
         }
@@ -68,72 +68,78 @@ function findBeforeNode(node: LNode | null, stopNode: LNode | null): RElement|RT
 /**
  * Get the next node in the LNode tree, taking into account the place where a node is
  * projected (in the shadow DOM) rather than where it comes from (in the light DOM).
- * If the node is not projected, the return value is simply node.next.
- * If the node is projected, the return value is node.pNextOrParent if node.pNextOrParent is
- * not a projection node (which marks the end of the linked list).
- * Otherwise the return value is null.
+ *
  * @param node The node whose next node in the LNode tree must be found.
- * @return The next sibling in the LNode tree.
+ * @return LNode|null The next sibling in the LNode tree.
  */
-function getNextNode(node: LNode): LNode|null {
+function getNextLNodeWithProjection(node: LNode): LNode|null {
   const pNextOrParent = node.pNextOrParent;
+
   if (pNextOrParent) {
-    return (pNextOrParent.flags & LNodeFlags.TYPE_MASK) === LNodeFlags.Projection ? null :
-                                                                                    pNextOrParent;
-  } else {
-    return node.next;
+    // The node is projected
+    const isLastProjectedNode =
+        (pNextOrParent.flags & LNodeFlags.TYPE_MASK) === LNodeFlags.Projection;
+    // returns pNextOrParent if we are not at the end of the list, null otherwise
+    return isLastProjectedNode ? null : pNextOrParent;
   }
+
+  // returns node.next because the the node is not projected
+  return node.next;
 }
 
 /**
  * Find the next node in the LNode tree, taking into account the place where a node is
  * projected (in the shadow DOM) rather than where it comes from (in the light DOM).
+ *
  * If there is no sibling node, this function goes to the next sibling of the parent node...
  * until it reaches rootNode (at which point null is returned).
  *
  * @param initialNode The node whose following node in the LNode tree must be found.
  * @param rootNode The root node at which the lookup should stop.
- * @return The following node in the LNode tree.
+ * @return LNode|null The following node in the LNode tree.
  */
 function getNextOrParentSiblingNode(initialNode: LNode, rootNode: LNode): LNode|null {
   let node: LNode|null = initialNode;
-  let nextNode = getNextNode(node);
+  let nextNode = getNextLNodeWithProjection(node);
   while (node && !nextNode) {
     // if node.pNextOrParent is not null here, it is not the next node
     // (because, at this point, nextNode is null, so it is the parent)
     node = node.pNextOrParent || node.parent;
-    if (node === rootNode) node = null;
-    nextNode = node && getNextNode(node);
+    if (node === rootNode) {
+      return null;
+    }
+    nextNode = node && getNextLNodeWithProjection(node);
   }
   return nextNode;
 }
 
 /**
- * Returns the first DOM node inside the given logical node.
+ * Returns the first RNode inside the given LNode.
  *
  * @param node The node whose first DOM node must be found
- * @returns The first native node of the given logical node or null if there is none.
+ * @returns RNode The first RNode of the given LNode or null if there is none.
  */
-function findFirstNativeNode(rootNode: LNode): RElement|RText|null {
+function findFirstRNode(rootNode: LNode): RElement|RText|null {
   let node: LNode|null = rootNode;
   while (node) {
     const type = node.flags & LNodeFlags.TYPE_MASK;
     let nextNode: LNode|null = null;
     if (type === LNodeFlags.Element) {
+      // A LElementNode has a matching RNode in LElementNode.native
       return (node as LElementNode).native;
     } else if (type === LNodeFlags.Container) {
+      // For container look at the first node of the view next
       const childContainerData: LContainer = (node as LContainerNode).data;
       nextNode = childContainerData.views.length ? childContainerData.views[0].child : null;
     } else if (type === LNodeFlags.Projection) {
+      // For Projection look at the first projected node
       nextNode = (node as LProjectionNode).data.head;
     } else {
+      // Otherwise look at the first child
       nextNode = (node as LViewNode).child;
     }
-    if (nextNode === null) {
-      node = getNextOrParentSiblingNode(node, rootNode);
-    } else {
-      node = nextNode;
-    }
+
+    node = nextNode === null ? getNextOrParentSiblingNode(node, rootNode) : nextNode;
   }
   return null;
 }
@@ -279,11 +285,11 @@ export function insertView(
   // and we should wait until that parent processes its nodes (otherwise, we will insert this view's
   // nodes twice - once now and once when its parent inserts its views).
   if (container.data.renderParent !== null) {
-    let beforeNode = findBeforeNode(newView, container);
+    let beforeNode = findNextRNodeSibling(newView, container);
     if (!beforeNode) {
       let containerNextNativeNode = container.native;
       if (containerNextNativeNode === undefined) {
-        containerNextNativeNode = container.native = findBeforeNode(container, null);
+        containerNextNativeNode = container.native = findNextRNodeSibling(container, null);
       }
       beforeNode = containerNextNativeNode;
     }
@@ -470,7 +476,7 @@ export function insertChild(node: LNode, currentView: LView): void {
   if (canInsertNativeNode(parent, currentView)) {
     // We only add element if not in View or not projected.
 
-    let nativeSibling: RNode|null = findBeforeNode(node, null);
+    let nativeSibling: RNode|null = findNextRNodeSibling(node, null);
     const renderer = currentView.renderer;
     (renderer as ProceduralRenderer3).listen ?
         (renderer as ProceduralRenderer3)
