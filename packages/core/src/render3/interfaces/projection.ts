@@ -9,8 +9,7 @@
 import {LContainerNode, LElementNode, LTextNode} from './node';
 
 /**
- * An LProjection is a pointer to the first and the last projected nodes.
- * It is a linked list (using the pNextOrParent property).
+ * Linked list of projected nodes (using the pNextOrParent property).
  */
 export interface LProjection {
   head: LElementNode|LTextNode|LContainerNode|null;
