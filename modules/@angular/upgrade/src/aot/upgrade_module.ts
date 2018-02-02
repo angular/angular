@@ -204,12 +204,10 @@ export class UpgradeModule {
                 // Wire up the ng1 rootScope to run a digest cycle whenever the zone settles
                 // We need to do this in the next tick so that we don't prevent the bootup
                 // stabilizing
-                setTimeout(() => {
-                  const $rootScope = $injector.get('$rootScope');
-                  const subscription =
-                      this.ngZone.onMicrotaskEmpty.subscribe(() => $rootScope.$digest());
-                  $rootScope.$on('$destroy', () => { subscription.unsubscribe(); });
-                }, 0);
+                const $rootScope = $injector.get('$rootScope');
+                const subscription = this.ngZone.onMicrotaskEmpty.subscribe(
+                    () => { setTimeout(() => { $rootScope.$digest(); }, 0); });
+                $rootScope.$on('$destroy', () => { subscription.unsubscribe(); });
               }
             ]);
 
