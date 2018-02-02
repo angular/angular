@@ -14,6 +14,14 @@ load(":rules_typescript.bzl",
     "ts_providers_dict_to_struct",
 )
 
+def _basename_of(ctx, file):
+  ext_len = len(".ts")
+  if file.short_path.endswith(".ng.html"):
+    ext_len = len(".ng.html")
+  elif file.short_path.endswith(".html"):
+    ext_len = len(".html")
+  return file.short_path[len(ctx.label.package) + 1:-ext_len]
+
 # Calculate the expected output of the template compiler for every source in
 # in the library. Most of these will be produced as empty files but it is
 # unknown, without parsing, which will be empty.
@@ -23,16 +31,21 @@ def _expected_outs(ctx):
   declaration_files = []
   summary_files = []
 
+  factory_basename_set = depset([_basename_of(ctx, src) for src in ctx.files.factories])
+
   for src in ctx.files.srcs + ctx.files.assets:
     if src.short_path.endswith(".ts") and not src.short_path.endswith(".d.ts"):
       basename = src.short_path[len(ctx.label.package) + 1:-len(".ts")]
-      devmode_js = [
-          ".ngfactory.js",
-          ".ngsummary.js",
-          ".js",
-      ]
-      summaries = [".ngsummary.json"]
-
+      if len(factory_basename_set) == 0 or basename in factory_basename_set:
+        devmode_js = [
+            ".ngfactory.js",
+            ".ngsummary.js",
+            ".js",
+        ]
+        summaries = [".ngsummary.json"]
+      else:
+        devmode_js = [".js"]
+        summaries = []
     elif src.short_path.endswith(".css"):
       basename = src.short_path[len(ctx.label.package) + 1:-len(".css")]
       devmode_js = [
@@ -264,6 +277,10 @@ NG_MODULE_ATTRIBUTES = {
       # TODO(alexeagle): change this to ".ng.html" when usages updated
       ".html",
     ]),
+
+    "factories": attr.label_list(
+        allow_files = [".ts", ".html"],
+        mandatory = False),
 
     "type_check": attr.bool(default = True),
 
