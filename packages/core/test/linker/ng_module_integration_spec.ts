@@ -945,15 +945,6 @@ function declareTests({useJit}: {useJit: boolean}) {
 
             expect(inj.get(Car)).toBeAnInstanceOf(Car);
           });
-
-          it('should throw when not requested provider on self', () => {
-            expect(() => createInjector([{
-                     provide: Car,
-                     useFactory: (e: Engine) => new Car(e),
-                     deps: [[Engine, new Self()]]
-                   }]))
-                .toThrowError(/No provider for Engine/g);
-          });
         });
 
         describe('default', () => {

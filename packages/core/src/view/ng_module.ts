@@ -7,17 +7,23 @@
  */
 
 import {resolveForwardRef} from '../di/forward_ref';
-import {Injector} from '../di/injector';
+import {InjectFlags, Injector, setCurrentInjector} from '../di/injector';
 import {NgModuleRef} from '../linker/ng_module_factory';
 import {stringify} from '../util';
 
-import {DepDef, DepFlags, NgModuleData, NgModuleDefinition, NgModuleProviderDef, NodeFlags} from './types';
+import {DepDef, DepFlags, InjectableDef, NgModuleData, NgModuleDefinition, NgModuleProviderDef, NodeFlags} from './types';
 import {splitDepsDsl, tokenKey} from './util';
 
 const UNDEFINED_VALUE = new Object();
 
 const InjectorRefTokenKey = tokenKey(Injector);
 const NgModuleRefTokenKey = tokenKey(NgModuleRef);
+
+export function injectableDef(scope: any, factory: () => any): InjectableDef {
+  return {
+      scope, factory,
+  };
+}
 
 export function moduleProvideDef(
     flags: NodeFlags, token: any, value: any,
@@ -90,10 +96,32 @@ export function resolveNgModuleDep(
           _createProviderInstance(data, providerDef);
     }
     return providerInstance === UNDEFINED_VALUE ? undefined : providerInstance;
+  } else if (depDef.token.ngInjectableDef && targetsModule(data, depDef.token.ngInjectableDef)) {
+    const injectableDef = depDef.token.ngInjectableDef as InjectableDef;
+    const key = tokenKey;
+    const index = data._providers.length;
+    data._def.providersByKey[depDef.tokenKey] = {
+      flags: NodeFlags.TypeFactoryProvider | NodeFlags.LazyProvider,
+      value: injectableDef.factory,
+      deps: [], index,
+      token: depDef.token,
+    };
+    const former = setCurrentInjector(data);
+    try {
+      data._providers[index] = UNDEFINED_VALUE;
+      return (
+          data._providers[index] =
+              _createProviderInstance(data, data._def.providersByKey[depDef.tokenKey]));
+    } finally {
+      setCurrentInjector(former);
+    }
   }
   return data._parent.get(depDef.token, notFoundValue);
 }
 
+function targetsModule(ngModule: NgModuleData, def: InjectableDef): boolean {
+  return def.scope != null && ngModule._def.modules.indexOf(def.scope) > -1;
+}
 
 function _createProviderInstance(ngModule: NgModuleData, providerDef: NgModuleProviderDef): any {
   let injectable: any;
