@@ -210,10 +210,10 @@ You can get runtime information about the current platform and the `appId` by in
 
 #### Absolute HTTP URLs
 
-The tutorial's `HeroService` and `HeroSearchService` delegate to the Angular `Http` module to fetch application data.
+The tutorial's `HeroService` and `HeroSearchService` delegate to the Angular `HttpClient` module to fetch application data.
 These services send requests to _relative_ URLs such as `api/heroes`.
 
-In a Universal app, `Http` URLs must be _absolute_ (e.g., `https://my-server.com/api/heroes`)
+In a Universal app, HTTP URLs must be _absolute_, for example, `https://my-server.com/api/heroes` 
 even when the Universal web server is capable of handling those requests.
 
 You'll have to change the services to make requests with absolute URLs when running on the server
@@ -416,7 +416,7 @@ Create a `tsconfig.server.json` file in the project root directory to configure 
 
 This config extends from the root's `tsconfig.json` file. Certain settings are noteworthy for their differences.
 
-* The `module` property must be **commonjs** which can be require()'d into our server application.
+* The `module` property must be **commonjs** which can be required into our server application.
 
 * The `angularCompilerOptions` section guides the AOT compiler:
   * `entryModule` - the root module of the server application, expressed as `path/to/file#ClassName`.
