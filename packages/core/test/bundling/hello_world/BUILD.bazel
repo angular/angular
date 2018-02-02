@@ -1,0 +1,45 @@
+package(default_visibility = ["//visibility:public"])
+
+load("//tools:defaults.bzl", "ts_library")
+load("//packages/bazel/src:ng_rollup_bundle.bzl", "ng_rollup_bundle")
+load("@build_bazel_rules_nodejs//:defs.bzl", "jasmine_node_test")
+
+ts_library(
+    name = "hello_world",
+    srcs = ["index.ts"],
+    deps = [
+        "//packages/core",
+    ],
+)
+
+ng_rollup_bundle(
+    name = "bundle",
+    # TODO(alexeagle): This is inconsistent.
+    # We try to teach users to always have their workspace at the start of a
+    # path, to disambiguate from other workspaces.
+    # Here, the rule implementation is looking in an execroot where the layout
+    # has an "external" directory for external dependencies.
+    # This should probably start with "angular/" and let the rule deal with it.
+    entry_point = "packages/core/test/bundling/hello_world/index.js",
+    deps = [
+        ":hello_world",
+        "//packages/core",
+    ],
+)
+
+ts_library(
+    name = "test_lib",
+    testonly = 1,
+    srcs = ["domino_typings.d.ts"] + glob(["*_spec.ts"]),
+    deps = ["//packages:types"],
+)
+
+jasmine_node_test(
+    name = "test",
+    data = [
+        ":bundle",
+        ":bundle.js",
+        ":bundle.min_debug.js",
+    ],
+    deps = [":test_lib"],
+)
