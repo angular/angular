@@ -53,6 +53,16 @@ export declare const HAMMER_GESTURE_CONFIG: InjectionToken<HammerGestureConfig>;
 /** @experimental */
 export declare class HammerGestureConfig {
     events: string[];
+    options?: {
+        cssProps?: any;
+        domEvents?: boolean;
+        enable?: boolean | ((manager: any) => boolean);
+        preset?: any[];
+        touchAction?: string;
+        recognizers?: any[];
+        inputClass?: any;
+        inputTarget?: EventTarget;
+    };
     overrides: {
         [key: string]: Object;
     };
