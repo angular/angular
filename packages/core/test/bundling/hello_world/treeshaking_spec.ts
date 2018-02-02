@@ -18,10 +18,8 @@ import * as domino from 'domino';
 
 describe('treeshaking with uglify', () => {
   let content: string;
-  beforeAll(() => {
-    content = fs.readFileSync(
-        path.join(process.env['TEST_SRCDIR'], PACKAGE, 'bundle.min_debug.js'), UTF8);
-  });
+  const contentPath = require.resolve(path.join(PACKAGE, 'bundle.min_debug.js'));
+  beforeAll(() => { content = fs.readFileSync(contentPath, UTF8); });
 
   it('should drop unused TypeScript helpers',
      () => { expect(content).not.toContain('__asyncGenerator'); });

@@ -1,0 +1,83 @@
+[
+  {
+    "name": "EMPTY$1"
+  },
+  {
+    "name": "NO_CHANGE"
+  },
+  {
+    "name": "Symbol$1"
+  },
+  {
+    "name": "__global$1"
+  },
+  {
+    "name": "__self$1"
+  },
+  {
+    "name": "__window$1"
+  },
+  {
+    "name": "_renderCompCount"
+  },
+  {
+    "name": "_root"
+  },
+  {
+    "name": "canInsertNativeNode"
+  },
+  {
+    "name": "createLNode"
+  },
+  {
+    "name": "createLView"
+  },
+  {
+    "name": "domRendererFactory3"
+  },
+  {
+    "name": "enterView"
+  },
+  {
+    "name": "executeHooks"
+  },
+  {
+    "name": "findFirstRNode"
+  },
+  {
+    "name": "getDirectiveInstance"
+  },
+  {
+    "name": "getNextLNodeWithProjection"
+  },
+  {
+    "name": "getNextOrParentSiblingNode"
+  },
+  {
+    "name": "invertObject"
+  },
+  {
+    "name": "isProceduralRenderer"
+  },
+  {
+    "name": "leaveView"
+  },
+  {
+    "name": "locateHostElement"
+  },
+  {
+    "name": "noop$2"
+  },
+  {
+    "name": "refreshDynamicChildren"
+  },
+  {
+    "name": "renderComponentOrTemplate"
+  },
+  {
+    "name": "renderEmbeddedTemplate"
+  },
+  {
+    "name": "stringify$1"
+  }
+]
