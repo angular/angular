@@ -5,7 +5,7 @@ load("@bazel_tools//tools/build_defs/repo:git.bzl", "git_repository")
 git_repository(
     name = "build_bazel_rules_nodejs",
     remote = "https://github.com/bazelbuild/rules_nodejs.git",
-    commit = "230d39a391226f51c03448f91eb61370e2e58c42",
+    commit = "5307b572d86a0764bd86a5681fc72cca016e9390",
 )
 
 load("@build_bazel_rules_nodejs//:defs.bzl", "check_bazel_version", "node_repositories")
@@ -55,4 +55,16 @@ http_archive(
     url = "https://github.com/bazelbuild/bazel/archive/9755c72b48866ed034bd28aa033e9abd27431b1e.zip",
     strip_prefix = "bazel-9755c72b48866ed034bd28aa033e9abd27431b1e",
     sha256 = "5b8443fc3481b5fcd9e7f348e1dd93c1397f78b223623c39eb56494c55f41962",
+)
+
+# We have a source dependency on the Devkit repository, because it's built with
+# Bazel.
+# This allows us to edit sources and have the effect appear immediately without
+# re-packaging or "npm link"ing.
+# Even better, things like aspects will visit the entire graph including
+# ts_library rules in the devkit repository.
+git_repository(
+    name = "angular_devkit",
+    remote = "https://github.com/angular/devkit.git",
+    commit = "69fcdee61c5ff3f08aa609dec69155dfd29c809a",
 )

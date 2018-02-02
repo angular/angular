@@ -64,6 +64,12 @@ jobs:
       # See https://github.com/bazelbuild/bazel/issues/4257
       - run: bazel query --output=label '//modules/... union //packages/... union //tools/...' | xargs bazel test --config=ci
 
+      # CircleCI will allow us to go back and view/download these artifacts from past builds.
+      # Also we can use a service like https://buildsize.org/ to automatically track binary size of these artifacts.
+      - store_artifacts:
+          path: dist/bin/packages/core/test/bundling/hello_world/bundle.min.js
+          destination: packages/core/test/bundling/hello_world/bundle.min.js
+
       - save_cache:
           key: *cache_key
           paths:

@@ -14,13 +14,9 @@ test:debug --test_arg=--node_options=--inspect-brk --test_output=streamed --test
 # Filesystem interactions     #
 ###############################
 
-# Don't create bazel-* symlinks in the WORKSPACE directory.
-# These require .gitignore and may scare users.
-# Also, it's a workaround for https://github.com/bazelbuild/rules_typescript/issues/12
-# which affects the common case of having `tsconfig.json` in the WORKSPACE directory.
-#
-# Instead, you should run `bazel info bazel-bin` to find out where the outputs went.
-build --symlink_prefix=/
+# Put bazel's symlinks under dist, so results go to dist/bin
+# There is still a `bazel-out` symlink created in the project root.
+build --symlink_prefix=dist/
 
 # Performance: avoid stat'ing input files
 build --watchfs
@@ -50,3 +46,6 @@ build:ci --noshow_progress
 
 # Don't run manual tests on CI
 test:ci --test_tag_filters=-manual
+
+# Retry in the event of flakes, eg. https://circleci.com/gh/angular/angular/31309
+test:ci --flaky_test_attempts=2
