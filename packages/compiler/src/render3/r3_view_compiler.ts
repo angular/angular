@@ -174,9 +174,9 @@ function interpolate(args: o.Expression[]): o.Expression {
     case 17:
       return o.importExpr(R3.bind8).callFn(args);
   }
-  (args.length > 19 && args.length % 2 == 1) ||
+  (args.length >= 19 && args.length % 2 == 1) ||
       error(`Invalid interpolation argument length ${args.length}`);
-  return o.importExpr(R3.bindV).callFn(args);
+  return o.importExpr(R3.bindV).callFn([o.literalArr(args)]);
 }
 
 class BindingScope {
