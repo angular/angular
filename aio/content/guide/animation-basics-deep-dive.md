@@ -20,7 +20,7 @@ The following code sample shows the basic structure of a TypeScript file for a s
 
 * `@NgModule` imports
 
-<code-example hideCopy language="sh" class="code-shell">
+<code-example hideCopy language="typescript">
 
 import {animate, state, style, transition, trigger} from '@angular/animations';
 import {Component, NgModule} from '@angular/core';
@@ -163,7 +163,7 @@ Note that `@.disabled` disables all animations running on the same element. You 
 
 To disable all animations for an entire Angular app, place the @.disabled host binding on the topmost Angular component.
 
-<code-example hideCopy language="sh" class="code-shell">
+<code-example hideCopy language="typescript">
 import { Component, HostBinding } from '@angular/core';
 @Component ({
   selector: 'app-component',
@@ -199,7 +199,7 @@ transition `( 'on <=> off', … `
 
 The `transition()` function also takes additional functions as well as named states:
 
-<code-example hideCopy language="sh" class="code-shell">
+<code-example hideCopy language="typescript">
 trigger ( 'myAnimationTrigger', [
    transition (( fromState, toState) => {
        return fromState == "off" && toState == "on";
@@ -223,7 +223,7 @@ In this example, the HTML template binds a `<div>` element to a trigger named `o
 
 In the component code, under the `@Component` metadata under the `animations:` property, when the state evaluates to `true`, meaning "open" in this case, the associated HTML element's height is a wildcard style or default, basically saying to use whatever height the element already had before the animation started. When the element is "closed", the element animates to a height of 0, which basically makes it invisible.
 
-<code-example hideCopy language="sh" class="code-shell">
+<code-example hideCopy language="typescript">
 @Component ({
    … 
    animations: [
@@ -248,7 +248,7 @@ Here’s another code sample using the wildcard state together with our previous
 
 This allows us to add new states without having to add separate transitions for each one.
 
-<code-example hideCopy language="sh" class="code-shell">
+<code-example hideCopy language="typescript">
 trigger ('openClose', [
    state ('open', style ({
       height: 200px,
@@ -266,7 +266,7 @@ trigger ('openClose', [
 
 Use a double arrow syntax to specify state-to-state transitions in both directions:
 
-<code-example hideCopy language="sh" class="code-shell">
+<code-example hideCopy language="typescript">
 transition ('closed <=> open', [
       animate ('500ms')] ),
 </code-example>
@@ -281,7 +281,7 @@ In our two-state button example, the wildcard isn’t that useful because there 
 
 In this example, we assume that all the transitions have a duration of 1 second.
 
-<code-example hideCopy language="sh" class="code-shell">
+<code-example hideCopy language="typescript">
    state ('open', style ({
       height: 200px,
       opacity: 1,
@@ -308,7 +308,7 @@ To do this, list the more specific transitions _before_ the `* => *`.
 
 Use the wildcard `*` with a style setting to tell the animation to use whatever the current style value is, and animate with that. It's a fallback value that is used if the state that is being animated is not declared within the trigger.
 
-<code-example hideCopy language="sh" class="code-shell">
+<code-example hideCopy language="typescript">
 transition ('* => open', [
    animate ('1s', 
       style ({ opacity: '*'}),
@@ -330,7 +330,7 @@ Up until this point, we haven’t had our single button enter or leave the page.
 
 Now we will add a new behavior: on initial page load, the button appears to fly onto the page from the left, entering in the `open` state. 
 
-<code-example hideCopy language="sh" class="code-shell">
+<code-example hideCopy language="typescript">
 @Component ({
    animations: [
       trigger ( 'openClose',  [
@@ -381,7 +381,7 @@ You can combine wildcard and void states in a transition to define animations th
 
 The transitions for `void => *` and `* => void` have their own aliases, called `:enter` and `:leave`. These aliases are used by several animation functions. 
 
-<code-example hideCopy language="sh" class="code-shell">
+<code-example hideCopy language="typescript">
 transition ( ':enter', [ ... ] );  // alias for void => *
 transition ( ':leave', [ ... ] );  // alias for * => void
 </code-example>	
@@ -398,7 +398,7 @@ The HTML template contains:
 
 In the component file, the enter transition first sets an initial opacity of 0, and then animates it to change that opacity to 1 as the element is inserted into the view:
 
-<code-example hideCopy language="sh" class="code-shell">
+<code-example hideCopy language="typescript">
 trigger ('myInsertRemoveTrigger', [
    transition (':enter', [
        style ( { opacity: 0 } ), 
@@ -420,7 +420,7 @@ The `transition()` function takes additional selector values, `:increment` and `
 
 The animation `trigger()` function emits _callbacks_ when it starts and when it finishes. 
 
-<code-example hideCopy language="sh" class="code-shell">
+<code-example hideCopy language="typescript">
 import {AnimationEvent} from '@angular/animations';
 @Component ({
    animations: [
@@ -445,7 +445,7 @@ An animation can influence an end user to _perceive_ the operation as faster, ev
 
 Callbacks can also serve as a debugging tool, for example in conjunction with `console.log()` to view the application’s progress in a browser’s Developer JavaScript Console. The following code snippet creates console log output for our original example, button that has 2 states of `open` and `closed`.
 
-<code-example hideCopy language="sh" class="code-shell">
+<code-example hideCopy language="typescript">
 @Component ( {
    animations: [
       trigger ( 'openClose', [ … ] )
@@ -494,7 +494,7 @@ In these cases, you can use a special wildcard `*` property value under `style()
 
 In this example, we have a trigger called `shrinkOut`, used when an HTML element leaves the page. The animation takes whatever height the element has before it leaves, and animates from that height to zero:
 
-<code-example hideCopy language="sh" class="code-shell">
+<code-example hideCopy language="typescript">
 animations: [
   trigger('shrinkOut', [
     state('in', style({height: '*'})),
@@ -532,7 +532,7 @@ In addition to the aliases `:enter` and `:leave` for HTML elements inserted or r
 
 These selectors can be merged together into a combined query selector string.
 
-<code-example hideCopy language="sh" class="code-shell">
+<code-example hideCopy language="typescript">
 query (':self, .record:enter, .record:leave, @trigger', [ 
    ...
 ])
@@ -588,7 +588,7 @@ In the component file, the `listAnimation` trigger performs a query for each of 
 
 The component file is as follows:
 
-<code-example hideCopy language="sh" class="code-shell">
+<code-example hideCopy language="typescript">
 import {trigger, transition, style, animate, query, stagger} from '@angular/animations';
 @Component ({
    templateUrl: 'list.component.html',

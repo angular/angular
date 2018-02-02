@@ -52,8 +52,7 @@ To make the code samples work, you’ll need to import the animation-specific mo
 
 Add **@angular/animations** and **@angular/platform-browser** to `package.json`. Specify "latest" for all modules, not just the animations.
 
-<code-example hideCopy language="sh" class="code-shell">
-// package.json  
+<code-example hideCopy language="json" title="package.json">
 {  
   "dependencies": {  
     "@angular/animations": "latest",  
@@ -71,20 +70,7 @@ The code sample assumes that you are using the Angular CLI.
 
 Import `BrowserModule` and `BrowserAnimationsModule` into your Angular root application module.
 
-<code-example hideCopy language="sh" class="code-shell">
-
-import { BrowserModule } from '@angular/platform-browser';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-
-@NgModule({
-  imports: [ BrowserModule, BrowserAnimationsModule ],
-  …
-
-})
-
-export class AppModule { }
-
-
+<code-example path="animations-guide/src/app/app.module.fake.ts" title="src/app/app.module.ts">
 </code-example>
 
 <div class="l-sub-section">
@@ -95,18 +81,7 @@ The root application module is typically located in `src/app` and is named `app.
 
 Perform this step for every component file that uses animations.
 
-<code-example hideCopy language="sh" class="code-shell">
-
-import { Component } from '@angular/core'; 
-import { 
-  trigger, 
-  state, 
-  style, 
-  animate, 
-  transition 
-  … 
-} from '@angular/animations'; 
-
+<code-example path="animations-guide/src/app/app.component.ts" title="src/app/app.component.ts" region="imports">
 </code-example>	
 
 <div class="l-sub-section">
@@ -117,15 +92,7 @@ Import the specific functions that you plan to use, from the items listed under 
 
 In the component file, add a property called `animations:` to the `@Component` decorator.
 
-<code-example hideCopy language="sh" class="code-shell">
-
-@Component ( {
-   …
-   animations: [
-      // animation function calls go here
-   ]
-} )
-
+<code-example path="animations-guide/src/app/app.component.ts" title="src/app/app.component.ts" region="decorator">
 </code-example>
 
 ## Animation DSL
@@ -216,7 +183,7 @@ Advanced animation features, including reusable animations, `animateChild()`, an
 
 ## Simple transition
 
-We’ll start with an animation example that is a single HTML element, changing from one state to another. For example, a button can show as either "Open" or "Closed", depending on the user's last action. When the button is in the "Open" state, it's visible and yellow. When it's "Closed" it's transparent and green. These attributes are set using ordinary CSS styles such as color and opacity. In Angular, they are set using the `style()` function.
+We’ll start with an animation example that is a single HTML element, changing from one state to another. For example, a button can show as either `open` or `closed`, depending on the user's last action. When the button is in the `open` state, it's visible and yellow. When it's `closed` it's transparent and green. These attributes are set using ordinary CSS styles such as color and opacity. In Angular, they are set using the `style()` function.
 
 Within Angular, these collections of _style_ attributes are called _states_, and each state can be associated with a name like `open` or `closed`.
 
@@ -238,26 +205,12 @@ Here we describe how Angular's `state()` function works together with the `style
 
 In our example, when the button shows as "Open" it has several style attributes: a height of 200 pixels, an opacity of 1, and a color of yellow. The `style()` function describes what the style should be when the right conditions arise. In this case, some other code elsewhere causes the button to change to the `open` state.
 
-<code-example hideCopy language="sh" class="code-shell">
-
-state ('open', 
-   style ({
-     height: 200px, 
-     opacity: 1, 
-     background-color: 'yellow'})
-
+<code-example path="animations-guide/src/app/open-close.component.ts" title="src/app/open-close.component.ts" region="state1">
 </code-example>
 
 In the `closed` state, the button has a height of 100 pixels, an opacity of 0.5, and a background color of green. This example shows how states can allow multiple style attributes to be set all at the same time. 
 
-<code-example hideCopy language="sh" class="code-shell">
-
-state ('closed', 
-   style ({
-     height: 100px, 
-     opacity: 0.5, 
-     background-color: 'green'})
-
+<code-example path="animations-guide/src/app/open-close.component.ts" title="src/app/open-close.component.ts" region="state2">
 </code-example>
 
 ### Transitions and timing
@@ -268,22 +221,12 @@ To make the change less abrupt, we need an animation _transition_ to describe th
 
 The `transition()` function evaluates an expression, such as a state-to-state transition. Note the arrow syntax used in the code snippet below. Within the transition, `animate()` specifies how long the transition will take. In this case, the state change from open to closed takes one second, expressed here as '1s'. 
 
-<code-example hideCopy language="sh" class="code-shell">
-
-transition ('open => closed', [
-   animate ('1s') 
-] )
-
+<code-example path="animations-guide/src/app/open-close.component.ts" title="src/app/open-close.component.ts" region="transition1">
 </code-example>
 
 The `animate()` function defines the duration of the animation: how long it should take, and optionally, whether there is a delay before that portion of the animation begins. A third option uses a standard CSS feature called _easing_, which allows for the change to vary in speed during the animation. For now, we will only specify a duration: 1 second to go from `open` to `closed`, and half a second to go from `closed` to `open`.
 
-<code-example hideCopy language="sh" class="code-shell">
-
-transition ('closed => open', [
-   animate ('0.5s') 
-] )
-
+<code-example path="animations-guide/src/app/open-close.component.ts" title="src/app/open-close.component.ts" region="transition2">
 </code-example>
 
 ### Triggering the animation
@@ -300,52 +243,36 @@ For our example, we'll name the trigger `openClose`, and attach it to the `butto
 
 Here's the trigger function that describes and names the new trigger: 
 
-<code-example hideCopy language="sh" class="code-shell">
-
-trigger ('openClose', [
-   state ('open', style ({
-      height: 200px,
-      opacity: 1,
-      background-color: 'yellow'}) ),
-   state ('closed', style ({
-      Height: 100px,
-      Opacity: 0.5,
-      background-color: 'green'}) ),
-   transition ('open => closed', [
-      animate ('1s')] ),
-   transition ('closed => open', [
-      animate ('500ms')] ),
-
+<code-example path="animations-guide/src/app/open-close.component.ts" title="src/app/open-close.component.ts" region="trigger">
 </code-example>
-
 
 ### Defining and linking the animation
 
 Animations are  defined in the metadata of the component that controls the HTML element to be animated. Put the code that defines your animations under the `animations:` property within the `@Component` decorator:
 
-<code-example hideCopy language="sh" class="code-shell">
-
-@Component ( {
-     selector:  ' selectorName '
-     templateUrl:  ' componentHtmlFile '
-     animations:  [
-        //animation description here
-     ] 
-) }
-
+<code-example hideCopy language="typescript">
+@Component({
+  selector: 'selectorName',
+  templateUrl: 'componentHtmlFile',
+  animations: [
+    //animation description here
+  ] 
+})
+//...
 </code-example>
 
 When you have defined an animation trigger for a component, you can bind it to an element in that component's template using standard Angular property binding syntax. On the triggering element in the HTML template, add the trigger property using this format:
 
-<code-example hideCopy language="sh" class="code-shell">
-
- [ @triggerName ] = "expression"
-
+<code-example hideCopy language="typescript">
+// this should match what `name` value is inside of the trigger(name)
+[@triggerName] = "expression"
 </code-example>
 
 where `triggerName` is the name of the trigger, and  `expression` evaluates to a defined animation state.  The full HTML syntax looks like this:
 
->**<myElement [@myTriggerName]="expression">...</myElement>**
+<code-example hideCopy language="typescript">
+&lt;div [@triggerName]="expression"&gt;...&lt;/div&gt;
+</code-example>
 
 The animation is executed or triggered when the expression value changes to a new state. 
 
@@ -355,23 +282,15 @@ The trigger is bound to the component in the component metadata, under the `@Com
 
 #### Component decorator
 
-<code-example hideCopy language="sh" class="code-shell">
-
-@Component ( {
-   …
-   animations: [
-      trigger ('openClose', [ … ] )
-      …
-   ]
-} )
-
-</code-example>	
+<code-example path="animations-guide/src/app/open-close.component.ts" title="src/app/open-close.component.ts" region="component">
+</code-example>
 
 In the HTML template for that component, we bind the `openClose` trigger to the HTML element to be animated, along with a trigger expression.  
 
 #### HTML template file
 
->**<button [ @openClose ] = 'expression' … />**
+<code-example path="animations-guide/src/app/open-close.component.html" title="src/app/open-close.component.html" region="trigger">
+</code-example>
 
 For elements entering or leaving a page (inserted or removed  from the DOM), you can make the animation conditional – for example, use `*ngIf` with the animation trigger in the HTML template. In the above code snippet, `'expression'` is an expression that evaluates to a defined state, in this case `open` or `closed`.
 
@@ -395,15 +314,7 @@ Angular’s `keyframe()` function is similar to keyframes in CSS. Keyframes allo
 
 The code for the above might look like this:
 
-<code-example hideCopy language="sh" class="code-shell">
-
-animate ("2s", 
-         keyframes([
-            style ({ background-color: "blue"})
-            style ({ background-color: "red"})
-            style ({ background-color: "orange"})
-         ])
-
+<code-example path="animations-guide/src/app/status-slider.component.ts" title="src/app/status-slider.component.ts" region="keyframes">
 </code-example>
 
 ### Offset
@@ -418,15 +329,7 @@ Defining offsets for keyframes is optional. If you omit them, evenly spaced offs
 
 The code with offsets specified would be as follows:
 
-<code-example hideCopy language="sh" class="code-shell">
-
-animate ("2s", 
-         keyframes([
-            style ({ background-color: "blue", offset: 0})
-            style ({ background-color: "red", offset: 0.8})
-            style ({ background-color: "orange", offset: 1.0})
-         ])
-
+<code-example path="animations-guide/src/app/status-slider.component.ts" title="src/app/status-slider.component.ts" region="keyframesWithOffsets">
 </code-example>
 
 You can combine keyframes together with duration, delay, and easing within a single animation.
@@ -445,25 +348,8 @@ Here’s an example showing:
 
 The code snippet for this animation might look like this:
 
-<code-example hideCopy language="sh" class="code-shell">
-
-@Component ({
-        selector:  ' selectorName '
-        templateUrl:  ' componentHtmlFile '
-   animations: [
-      trigger ( 'openClose',  [
-      transition ('* => closed', [
-         animate ('1s', keyframes ( [
-            style ({ opacity: 0.1, offset: 0.1 })
-            style ({ opacity: 0.6, offset: 0.2 })
-            style ({ opacity: 1,   offset: 0.5 })
-            style ({ opacity: 0.2, offset: 0.7 })
-         ] ) 
-      ] 
-})
-
-</code-example>	
-
+<code-example path="animations-guide/src/app/open-close.component.fake.ts" title="src/app/open-close.component.ts" region="trigger">
+</code-example>
 
 <div class="l-sub-section">
 The use of the wildcard state `*` under `transition()` in the above code snippet is described on the [Animation Basics Deep Dive](guide/animation-basics-deep-dive).
@@ -506,17 +392,17 @@ The page opens with an introductory sequence. To see the portion that is relevan
 
 The page entry animation code is as follows:
 
-<code-example hideCopy language="sh" class="code-shell">
+<code-example hideCopy language="typescript">
 
-trigger ('pageAnimations', [
-  transition (':enter', [
+trigger('pageAnimations', [
+  transition(':enter', [
     query ('.photo-record, .menu li, form', [
-      style ({
+      style({
         opacity: 0,
         transform: 'translateY (-100px)' }),
       stagger (-30, [
-        animate ('500ms cubic-bezier(0.35, 0, 0.25, 1)',
-          style ({ opacity: 1, transform: 'none' })
+        animate('500ms cubic-bezier(0.35, 0, 0.25, 1)',
+          style({ opacity: 1, transform: 'none' })
         )
       ])
     ])
@@ -549,28 +435,28 @@ The HTML template contains a trigger called filterAnimation:
 
 The component file contains 3 transitions:
 
-<code-example hideCopy language="sh" class="code-shell">
+<code-example hideCopy language="typescript">
 
-trigger ( 'filterAnimation', [
-  transition ( ':enter, [  ] ),
-  transition ( ':increment', [
+trigger( 'filterAnimation', [
+  transition( ':enter, [  ]),
+  transition( ':increment', [
     query ( ':enter', [
-      style ( { opacity: 0, width: '0px' } ),
+      style( { opacity: 0, width: '0px' } ),
       stagger( 50, [
-        animate  ('300ms ease-out', style ( { 
+        animate  ('300ms ease-out', style( { 
           opacity: 1, width: '*' } ) ),
-      ] ),
-    ] )
-  ] ),
-  transition ( ':decrement', [
+      ]),
+    ])
+  ]),
+  transition( ':decrement', [
     query ( ':leave', [
       stagger ( 50, [
-        animate ( '300ms ease-out', style ( { 
+        animate( '300ms ease-out', style( { 
            opacity: 0, width: '0px' } ) ),
-      ] ),
-    ] )
-  ] ),
-] )
+      ]),
+    ])
+  ]),
+])
 
 </code-example>	
 
