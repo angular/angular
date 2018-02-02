@@ -12,22 +12,54 @@ import {NgElements} from './ng-elements';
 import {isFunction} from './utils';
 
 /**
- * TODO(gkalpak): Add docs.
+ * @whatItDoes Registers an array of Angular Components as Custom Elements.
+ *
+ * @description registers the `customElementComponents` using an existing `PlatformRef` and compiled
+ * `NgModuleFactory`
+ *
  * @experimental
  */
 export function registerAsCustomElements<T>(
-    customElementComponents: Type<any>[], platformRef: PlatformRef,
-    moduleFactory: NgModuleFactory<T>): Promise<NgModuleRef<T>>;
+  customElementComponents: Type<any>[], platformRef: PlatformRef,
+  moduleFactory: NgModuleFactory<T>): Promise<NgModuleRef<T>>;
+
+/**
+ * @description registers the `customElementComponents` using a async bootstrap function, allowing
+ * JIT usage (not recommended)
+ *
+ * @experimental
+ */
 export function registerAsCustomElements<T>(
-    customElementComponents: Type<any>[],
-    bootstrapFn: () => Promise<NgModuleRef<T>>): Promise<NgModuleRef<T>>;
+  customElementComponents: Type<any>[],
+  bootstrapFn: () => Promise<NgModuleRef<T>>): Promise<NgModuleRef<T>>;
+/**
+ *
+ * @description The `customElement` components passed into this function are wrapped in a subclass
+ * of `NgElement` and registered with the browser's
+ * [`CustomElementRegistry`](https://developer.mozilla.org/en-US/docs/Web/API/CustomElementRegistry)
+ *
+ * ## Example
+ *
+ * ```typescript
+ * //index.ts
+ * import { registerAsCustomElements } from '@angular/elements';
+ * import { platformBrowser } from '@angular/platform-browser';
+ * import { HelloWorld } from './hello-world.ngfactory';
+ * import { HelloWorldModuleNgFactory } from './hello-world.ngfactory';
+ *
+ * registerAsCustomElements([HelloWorld], platformBrowser(), HelloWorldModuleNgFactory);
+ *   .catch(err => console.log(err));
+ * ```
+ *
+ * @experimental
+ */
 export function registerAsCustomElements<T>(
-    customElementComponents: Type<any>[],
-    platformRefOrBootstrapFn: PlatformRef | (() => Promise<NgModuleRef<T>>),
-    moduleFactory?: NgModuleFactory<T>): Promise<NgModuleRef<T>> {
+  customElementComponents: Type<any>[],
+  platformRefOrBootstrapFn: PlatformRef | (() => Promise<NgModuleRef<T>>),
+  moduleFactory?: NgModuleFactory<T>): Promise<NgModuleRef<T>> {
   const bootstrapFn = isFunction(platformRefOrBootstrapFn) ?
-      platformRefOrBootstrapFn :
-      () => platformRefOrBootstrapFn.bootstrapModuleFactory(moduleFactory !);
+    platformRefOrBootstrapFn :
+    () => platformRefOrBootstrapFn.bootstrapModuleFactory(moduleFactory !);
 
   return bootstrapFn().then(moduleRef => {
     const ngElements = new NgElements(moduleRef, customElementComponents);
