@@ -57,7 +57,7 @@ You can also use the VS Quick Open (⌘+P) to search for the extension. When you
 enter the following command: 
 
 ```sh
-ext install ng-template
+ext install Angular.ng-template
 ```
 
 Then click the install button to install the Angular Language Service. 
