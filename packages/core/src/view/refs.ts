@@ -480,6 +480,7 @@ class NgModuleRef_ implements NgModuleData, InternalNgModuleRef<any> {
   private _destroyed: boolean = false;
   /** @internal */
   _providers: any[];
+  _modules: any[];
 
   readonly injector: Injector = this;
 

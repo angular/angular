@@ -36,8 +36,12 @@ export function moduleProvideDef(
 
 export function moduleDef(providers: NgModuleProviderDef[]): NgModuleDefinition {
   const providersByKey: {[key: string]: NgModuleProviderDef} = {};
+  const modules = [];
   for (let i = 0; i < providers.length; i++) {
     const provider = providers[i];
+    if (provider.flags & NodeFlags.TypeNgModule) {
+      modules.push(provider.token);
+    }
     provider.index = i;
     providersByKey[tokenKey(provider.token)] = provider;
   }
@@ -45,7 +49,8 @@ export function moduleDef(providers: NgModuleProviderDef[]): NgModuleDefinition 
     // Will be filled later...
     factory: null,
     providersByKey,
-    providers
+    providers,
+    modules,
   };
 }
 
