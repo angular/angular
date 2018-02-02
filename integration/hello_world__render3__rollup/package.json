@@ -16,13 +16,13 @@
   },
   "devDependencies": {
     "@types/jasmine": "2.5.41",
-    "concurrently": "3.4.0",
-    "lite-server": "2.2.2",
+    "concurrently": "3.5.1",
+    "lite-server": "2.3.0",
     "protractor": "file:../../node_modules/protractor",
-    "rollup": "0.54.0",
+    "rollup": "0.55.3",
     "rollup-plugin-angular-optimizer": "0.2.0",
-    "rollup-plugin-commonjs": "8.2.6",
     "rollup-plugin-node-resolve": "3.0.2",
+    "rollup-plugin-paths": "0.0.3",
     "rollup-plugin-uglify": "2.0.1"
   },
   "scripts": {
