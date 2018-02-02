@@ -7,7 +7,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AotCompiler, AotCompilerHost, AotCompilerOptions, EmitterVisitorContext, FormattedMessageChain, GeneratedFile, MessageBundle, NgAnalyzedFile, NgAnalyzedModules, ParseSourceSpan, PartialModule, Position, Serializer, TypeScriptEmitter, Xliff, Xliff2, Xmb, core, createAotCompiler, getParseErrors, isFormattedError, isSyntaxError} from '@angular/compiler';
+import {AotCompiler, AotCompilerHost, AotCompilerOptions, EmitterVisitorContext, FormattedMessageChain, GeneratedFile, MessageBundle, NgAnalyzedFile, NgAnalyzedFileWithInjectables, NgAnalyzedModules, ParseSourceSpan, PartialModule, Position, Serializer, TypeScriptEmitter, Xliff, Xliff2, Xmb, core, createAotCompiler, getParseErrors, isFormattedError, isSyntaxError} from '@angular/compiler';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as ts from 'typescript';
@@ -22,7 +22,7 @@ import {MetadataCache, MetadataTransformer} from './metadata_cache';
 import {getAngularEmitterTransformFactory} from './node_emitter_transform';
 import {PartialModuleMetadataTransformer} from './r3_metadata_transform';
 import {getAngularClassTransformerFactory} from './r3_transform';
-import {GENERATED_FILES, StructureIsReused, createMessageDiagnostic, isInRootDir, ngToTsDiagnostic, tsStructureIsReused, userError} from './util';
+import {DTS, GENERATED_FILES, StructureIsReused, TS, createMessageDiagnostic, isInRootDir, ngToTsDiagnostic, tsStructureIsReused, userError} from './util';
 
 
 
@@ -62,6 +62,7 @@ class AngularCompilerProgram implements Program {
   private _hostAdapter: TsCompilerAotCompilerTypeCheckHostAdapter;
   private _tsProgram: ts.Program;
   private _analyzedModules: NgAnalyzedModules|undefined;
+  private _analyzedInjectables: NgAnalyzedFileWithInjectables[]|undefined;
   private _structuralDiagnostics: Diagnostic[]|undefined;
   private _programWithStubs: ts.Program|undefined;
   private _optionsDiagnostics: Diagnostic[] = [];
@@ -191,13 +192,15 @@ class AngularCompilerProgram implements Program {
     }
     return Promise.resolve()
         .then(() => {
-          const {tmpProgram, sourceFiles, rootNames} = this._createProgramWithBasicStubs();
-          return this.compiler.loadFilesAsync(sourceFiles).then(analyzedModules => {
-            if (this._analyzedModules) {
-              throw new Error('Angular structure loaded both synchronously and asynchronously');
-            }
-            this._updateProgramWithTypeCheckStubs(tmpProgram, analyzedModules, rootNames);
-          });
+          const {tmpProgram, sourceFiles, tsFiles, rootNames} = this._createProgramWithBasicStubs();
+          return this.compiler.loadFilesAsync(sourceFiles, tsFiles)
+              .then(({analyzedModules, analyzedInjectables}) => {
+                if (this._analyzedModules) {
+                  throw new Error('Angular structure loaded both synchronously and asynchronously');
+                }
+                this._updateProgramWithTypeCheckStubs(
+                    tmpProgram, analyzedModules, analyzedInjectables, rootNames);
+              });
         })
         .catch(e => this._createProgramOnError(e));
   }
@@ -304,8 +307,12 @@ class AngularCompilerProgram implements Program {
           }
           this.writeFile(outFileName, outData, writeByteOrderMark, onError, genFile, sourceFiles);
         };
-    const tsCustomTransformers = this.calculateTransforms(
-        genFileByFileName, /* partialModules */ undefined, customTransformers);
+
+    const modules = this._analyzedInjectables &&
+        this.compiler.emitAllPartialModules2(this._analyzedInjectables);
+
+    const tsCustomTransformers =
+        this.calculateTransforms(genFileByFileName, modules, customTransformers);
     const emitOnlyDtsFiles = (emitFlags & (EmitFlags.DTS | EmitFlags.JS)) == EmitFlags.DTS;
     // Restore the original references before we emit so TypeScript doesn't emit
     // a reference to the .d.ts file.
@@ -491,9 +498,11 @@ class AngularCompilerProgram implements Program {
       return;
     }
     try {
-      const {tmpProgram, sourceFiles, rootNames} = this._createProgramWithBasicStubs();
-      const analyzedModules = this.compiler.loadFilesSync(sourceFiles);
-      this._updateProgramWithTypeCheckStubs(tmpProgram, analyzedModules, rootNames);
+      const {tmpProgram, sourceFiles, tsFiles, rootNames} = this._createProgramWithBasicStubs();
+      const {analyzedModules, analyzedInjectables} =
+          this.compiler.loadFilesSync(sourceFiles, tsFiles);
+      this._updateProgramWithTypeCheckStubs(
+          tmpProgram, analyzedModules, analyzedInjectables, rootNames);
     } catch (e) {
       this._createProgramOnError(e);
     }
@@ -520,6 +529,7 @@ class AngularCompilerProgram implements Program {
     tmpProgram: ts.Program,
     rootNames: string[],
     sourceFiles: string[],
+    tsFiles: string[],
   } {
     if (this._analyzedModules) {
       throw new Error(`Internal Error: already initialized!`);
@@ -553,17 +563,23 @@ class AngularCompilerProgram implements Program {
 
     const tmpProgram = ts.createProgram(rootNames, this.options, this.hostAdapter, oldTsProgram);
     const sourceFiles: string[] = [];
+    const tsFiles: string[] = [];
     tmpProgram.getSourceFiles().forEach(sf => {
       if (this.hostAdapter.isSourceFile(sf.fileName)) {
         sourceFiles.push(sf.fileName);
       }
+      if (TS.test(sf.fileName) && !DTS.test(sf.fileName)) {
+        tsFiles.push(sf.fileName);
+      }
     });
-    return {tmpProgram, sourceFiles, rootNames};
+    return {tmpProgram, sourceFiles, tsFiles, rootNames};
   }
 
   private _updateProgramWithTypeCheckStubs(
-      tmpProgram: ts.Program, analyzedModules: NgAnalyzedModules, rootNames: string[]) {
+      tmpProgram: ts.Program, analyzedModules: NgAnalyzedModules,
+      analyzedInjectables: NgAnalyzedFileWithInjectables[], rootNames: string[]) {
     this._analyzedModules = analyzedModules;
+    this._analyzedInjectables = analyzedInjectables;
     tmpProgram.getSourceFiles().forEach(sf => {
       if (sf.fileName.endsWith('.ngfactory.ts')) {
         const {generate, baseFileName} = this.hostAdapter.shouldGenerateFile(sf.fileName);

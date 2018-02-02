@@ -26,7 +26,7 @@ export function getAngularClassTransformerFactory(modules: PartialModule[]): Tra
   return function(context: ts.TransformationContext) {
     return function(sourceFile: ts.SourceFile): ts.SourceFile {
       const module = moduleMap.get(sourceFile.fileName);
-      if (module) {
+      if (module && module.statements.length > 0) {
         const [newSourceFile] = updateSourceFile(sourceFile, module, context);
         return newSourceFile;
       }

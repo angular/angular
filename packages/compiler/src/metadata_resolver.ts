@@ -12,7 +12,7 @@ import {assertArrayOfStrings, assertInterpolationSymbols} from './assertions';
 import * as cpl from './compile_metadata';
 import {CompileReflector} from './compile_reflector';
 import {CompilerConfig} from './config';
-import {ChangeDetectionStrategy, Component, Directive, ModuleWithProviders, Provider, Query, SchemaMetadata, Type, ViewEncapsulation, createAttribute, createComponent, createHost, createInject, createInjectable, createInjectionToken, createOptional, createSelf, createSkipSelf} from './core';
+import {ChangeDetectionStrategy, Component, Directive, Injectable, ModuleWithProviders, Provider, Query, SchemaMetadata, Type, ViewEncapsulation, createAttribute, createComponent, createHost, createInject, createInjectable, createInjectionToken, createOptional, createSelf, createSkipSelf} from './core';
 import {DirectiveNormalizer} from './directive_normalizer';
 import {DirectiveResolver} from './directive_resolver';
 import {Identifiers} from './identifiers';
@@ -771,7 +771,7 @@ export class CompileMetadataResolver {
   }
 
   isInjectable(type: any): boolean {
-    const annotations = this._reflector.annotations(type);
+    const annotations = this._reflector.tryAnnotations(type);
     return annotations.some(ann => createInjectable.isTypeOf(ann));
   }
 
@@ -782,13 +782,32 @@ export class CompileMetadataResolver {
     };
   }
 
-  private _getInjectableMetadata(type: Type, dependencies: any[]|null = null):
-      cpl.CompileTypeMetadata {
+  getInjectableMetadata(
+      type: any, dependencies: any[]|null = null,
+      throwOnUnknownDeps: boolean = true): cpl.CompileInjectableMetadata|null {
     const typeSummary = this._loadSummary(type, cpl.CompileSummaryKind.Injectable);
-    if (typeSummary) {
-      return typeSummary.type;
+    const typeMetadata = typeSummary ?
+        typeSummary.type :
+        this._getTypeMetadata(type, dependencies, throwOnUnknownDeps);
+
+    const annotations: Injectable[] =
+        this._reflector.annotations(type).filter(ann => createInjectable.isTypeOf(ann));
+
+    if (annotations.length === 0) {
+      return null;
     }
-    return this._getTypeMetadata(type, dependencies);
+
+    const meta = annotations[annotations.length - 1];
+    return {
+      symbol: type,
+      type: typeMetadata,
+      module: meta.scope || undefined,
+      useValue: meta.useValue,
+      useClass: meta.useClass,
+      useExisting: meta.useExisting,
+      useFactory: meta.useFactory,
+      deps: meta.deps,
+    };
   }
 
   private _getTypeMetadata(type: Type, dependencies: any[]|null = null, throwOnUnknownDeps = true):
@@ -1042,6 +1061,15 @@ export class CompileMetadataResolver {
     return null;
   }
 
+  private _getInjectableTypeMetadata(type: Type, dependencies: any[]|null = null):
+      cpl.CompileTypeMetadata {
+    const typeSummary = this._loadSummary(type, cpl.CompileSummaryKind.Injectable);
+    if (typeSummary) {
+      return typeSummary.type;
+    }
+    return this._getTypeMetadata(type, dependencies);
+  }
+
   getProviderMetadata(provider: cpl.ProviderMeta): cpl.CompileProviderMetadata {
     let compileDeps: cpl.CompileDiDependencyMetadata[] = undefined !;
     let compileTypeMetadata: cpl.CompileTypeMetadata = null !;
@@ -1049,7 +1077,8 @@ export class CompileMetadataResolver {
     let token: cpl.CompileTokenMetadata = this._getTokenMetadata(provider.token);
 
     if (provider.useClass) {
-      compileTypeMetadata = this._getInjectableMetadata(provider.useClass, provider.dependencies);
+      compileTypeMetadata =
+          this._getInjectableTypeMetadata(provider.useClass, provider.dependencies);
       compileDeps = compileTypeMetadata.diDeps;
       if (provider.token === provider.useClass) {
         // use the compileTypeMetadata as it contains information about lifecycleHooks...

@@ -292,7 +292,8 @@ export const enum DepFlags {
   None = 0,
   SkipSelf = 1 << 0,
   Optional = 1 << 1,
-  Value = 2 << 2,
+  Self = 1 << 2,
+  Value = 1 << 3,
 }
 
 export interface InjectableDef {
