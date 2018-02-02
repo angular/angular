@@ -180,6 +180,7 @@ def ngc_compile_action(ctx, label, inputs, outputs, messages_out, tsconfig_file,
         tsconfig = tsconfig_file,
         inputs = inputs,
         outputs = outputs,
+        compiler = ctx.executable.compiler,
     )
 
   return None

@@ -13,5 +13,6 @@ ng_module(
     module_name = "@angular/animations/browser",
     deps = [
         "//packages/animations",
+        "//packages/core",
     ],
 )
