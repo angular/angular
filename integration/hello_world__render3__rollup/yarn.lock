@@ -12,17 +12,17 @@
     webpack-sources "^1.0.1"
 
 "@angular/animations@file:../../dist/packages-dist/animations":
-  version "6.0.0-beta.1-5bd93b1f0f"
+  version "6.0.0-beta.2-65cf1add97"
   dependencies:
     tslib "^1.7.1"
 
 "@angular/common@file:../../dist/packages-dist/common":
-  version "6.0.0-beta.1-5bd93b1f0f"
+  version "6.0.0-beta.2-65cf1add97"
   dependencies:
     tslib "^1.7.1"
 
 "@angular/compiler-cli@file:../../dist/packages-dist/compiler-cli":
-  version "6.0.0-beta.1-5bd93b1f0f"
+  version "6.0.0-beta.2-65cf1add97"
   dependencies:
     chokidar "^1.4.2"
     minimist "^1.2.0"
@@ -30,22 +30,22 @@
     tsickle "^0.26.0"
 
 "@angular/compiler@file:../../dist/packages-dist/compiler":
-  version "6.0.0-beta.1-5bd93b1f0f"
+  version "6.0.0-beta.2-65cf1add97"
   dependencies:
     tslib "^1.7.1"
 
 "@angular/core@file:../../dist/packages-dist/core":
-  version "6.0.0-beta.1-5bd93b1f0f"
+  version "6.0.0-beta.2-65cf1add97"
   dependencies:
     tslib "^1.7.1"
 
 "@angular/platform-browser@file:../../dist/packages-dist/platform-browser":
-  version "6.0.0-beta.1-5bd93b1f0f"
+  version "6.0.0-beta.2-65cf1add97"
   dependencies:
     tslib "^1.7.1"
 
 "@angular/platform-server@file:../../dist/packages-dist/platform-server":
-  version "6.0.0-beta.1-5bd93b1f0f"
+  version "6.0.0-beta.2-65cf1add97"
   dependencies:
     domino "^1.0.29"
     tslib "^1.7.1"
@@ -84,10 +84,6 @@ accepts@~1.3.3:
   dependencies:
     mime-types "~2.1.16"
     negotiator "0.6.1"
-
-acorn@^5.2.1:
-  version "5.3.0"
-  resolved "https://registry.yarnpkg.com/acorn/-/acorn-5.3.0.tgz#7446d39459c54fb49a80e6ee6478149b940ec822"
 
 adm-zip@0.4.4:
   version "0.4.4"
@@ -334,7 +330,7 @@ browser-sync-ui@v1.0.1:
     socket.io-client "2.0.4"
     stream-throttle "^0.1.3"
 
-browser-sync@^2.12.3:
+browser-sync@^2.18.5:
   version "2.23.6"
   resolved "https://registry.yarnpkg.com/browser-sync/-/browser-sync-2.23.6.tgz#ed0721c92e5b98c71b7bf839b39092ac9f220650"
   dependencies:
@@ -471,9 +467,9 @@ concat-map@0.0.1:
   version "0.0.1"
   resolved "https://registry.yarnpkg.com/concat-map/-/concat-map-0.0.1.tgz#d8a96bd77fd68df7793a73036a3ba0d5405d477b"
 
-concurrently@3.4.0:
-  version "3.4.0"
-  resolved "https://registry.yarnpkg.com/concurrently/-/concurrently-3.4.0.tgz#60662b3defde07375bae19aac0ab780ec748ba79"
+concurrently@3.5.1:
+  version "3.5.1"
+  resolved "https://registry.yarnpkg.com/concurrently/-/concurrently-3.5.1.tgz#ee8b60018bbe86b02df13e5249453c6ececd2521"
   dependencies:
     chalk "0.5.1"
     commander "2.6.0"
@@ -699,14 +695,6 @@ escape-html@~1.0.3:
 escape-string-regexp@^1.0.0, escape-string-regexp@^1.0.2:
   version "1.0.5"
   resolved "https://registry.yarnpkg.com/escape-string-regexp/-/escape-string-regexp-1.0.5.tgz#1b61c0562190a8dff6ae3bb2cf0200ca130b86d4"
-
-estree-walker@^0.3.0:
-  version "0.3.1"
-  resolved "https://registry.yarnpkg.com/estree-walker/-/estree-walker-0.3.1.tgz#e6b1a51cf7292524e7237c312e5fe6660c1ce1aa"
-
-estree-walker@^0.5.0:
-  version "0.5.1"
-  resolved "https://registry.yarnpkg.com/estree-walker/-/estree-walker-0.5.1.tgz#64fc375053abc6f57d73e9bd2f004644ad3c5854"
 
 etag@^1.8.1, etag@~1.8.0:
   version "1.8.1"
@@ -1287,11 +1275,11 @@ limiter@^1.0.5:
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/limiter/-/limiter-1.1.2.tgz#229d8055891c8b11af9e0ee5200e8e09bb3dcbeb"
 
-lite-server@2.2.2:
-  version "2.2.2"
-  resolved "https://registry.yarnpkg.com/lite-server/-/lite-server-2.2.2.tgz#4644afe6c9146d850cfa0ad9a86a94f87156499e"
+lite-server@2.3.0:
+  version "2.3.0"
+  resolved "https://registry.yarnpkg.com/lite-server/-/lite-server-2.3.0.tgz#5b4cc8f5d5fd4836105480ab2ac48a3a0de2b0c8"
   dependencies:
-    browser-sync "^2.12.3"
+    browser-sync "^2.18.5"
     connect-history-api-fallback "^1.2.0"
     connect-logger "0.0.1"
     lodash "^4.11.1"
@@ -1336,13 +1324,7 @@ lodash@^4.11.1, lodash@^4.5.1:
   version "4.17.4"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.4.tgz#78203a4d1c328ae1d86dca6460e369b57f4055ae"
 
-magic-string@^0.22.4:
-  version "0.22.4"
-  resolved "https://registry.yarnpkg.com/magic-string/-/magic-string-0.22.4.tgz#31039b4e40366395618c1d6cf8193c53917475ff"
-  dependencies:
-    vlq "^0.2.1"
-
-micromatch@2.3.11, micromatch@^2.1.5, micromatch@^2.3.11:
+micromatch@2.3.11, micromatch@^2.1.5:
   version "2.3.11"
   resolved "https://registry.yarnpkg.com/micromatch/-/micromatch-2.3.11.tgz#86677c97d1720b363431d04d0d15293bd38c1565"
   dependencies:
@@ -1836,7 +1818,7 @@ requires-port@1.x.x:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/requires-port/-/requires-port-1.0.0.tgz#925d2601d39ac485e091cf0da5c6e694dc3dcaff"
 
-resolve@^1.1.6, resolve@^1.4.0:
+resolve@^1.1.6:
   version "1.5.0"
   resolved "https://registry.yarnpkg.com/resolve/-/resolve-1.5.0.tgz#1f09acce796c9a762579f31b2c1cc4c3cddf9f36"
   dependencies:
@@ -1861,16 +1843,6 @@ rollup-plugin-angular-optimizer@0.2.0:
   dependencies:
     "@angular-devkit/build-optimizer" "^0.0.32"
 
-rollup-plugin-commonjs@8.2.6:
-  version "8.2.6"
-  resolved "https://registry.yarnpkg.com/rollup-plugin-commonjs/-/rollup-plugin-commonjs-8.2.6.tgz#27e5b9069ff94005bb01e01bb46a1e4873784677"
-  dependencies:
-    acorn "^5.2.1"
-    estree-walker "^0.5.0"
-    magic-string "^0.22.4"
-    resolve "^1.4.0"
-    rollup-pluginutils "^2.0.1"
-
 rollup-plugin-node-resolve@3.0.2:
   version "3.0.2"
   resolved "https://registry.yarnpkg.com/rollup-plugin-node-resolve/-/rollup-plugin-node-resolve-3.0.2.tgz#38babc12fd404cc2ba1ff68648fe43fa3ffee6b0"
@@ -1879,22 +1851,19 @@ rollup-plugin-node-resolve@3.0.2:
     is-module "^1.0.0"
     resolve "^1.1.6"
 
+rollup-plugin-paths@0.0.3:
+  version "0.0.3"
+  resolved "https://registry.yarnpkg.com/rollup-plugin-paths/-/rollup-plugin-paths-0.0.3.tgz#a68c8516252a941e773405ad05a0d1a02b5fa394"
+
 rollup-plugin-uglify@2.0.1:
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/rollup-plugin-uglify/-/rollup-plugin-uglify-2.0.1.tgz#67b37ad1efdafbd83af4c36b40c189ee4866c969"
   dependencies:
     uglify-js "^3.0.9"
 
-rollup-pluginutils@^2.0.1:
-  version "2.0.1"
-  resolved "https://registry.yarnpkg.com/rollup-pluginutils/-/rollup-pluginutils-2.0.1.tgz#7ec95b3573f6543a46a6461bd9a7c544525d0fc0"
-  dependencies:
-    estree-walker "^0.3.0"
-    micromatch "^2.3.11"
-
-rollup@0.54.0:
-  version "0.54.0"
-  resolved "https://registry.yarnpkg.com/rollup/-/rollup-0.54.0.tgz#0641b8154ba02706464285d2ead924c486b48ba9"
+rollup@0.55.3:
+  version "0.55.3"
+  resolved "https://registry.yarnpkg.com/rollup/-/rollup-0.55.3.tgz#0af082a766d51c3058430c8372442ff5207d8736"
 
 rx@2.3.24:
   version "2.3.24"
@@ -2268,7 +2237,11 @@ tweetnacl@^0.14.3, tweetnacl@~0.14.0:
   version "0.14.5"
   resolved "https://registry.yarnpkg.com/tweetnacl/-/tweetnacl-0.14.5.tgz#5ae68177f192d4456269d108afa93ff8743f4f64"
 
-typescript@^2.3.3, "typescript@file:../../node_modules/typescript":
+typescript@^2.3.3:
+  version "2.7.1"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-2.7.1.tgz#bb3682c2c791ac90e7c6210b26478a8da085c359"
+
+"typescript@file:../../node_modules/typescript":
   version "2.6.2"
 
 ua-parser-js@0.7.12:
@@ -2332,10 +2305,6 @@ verror@1.10.0:
     assert-plus "^1.0.0"
     core-util-is "1.0.2"
     extsprintf "^1.2.0"
-
-vlq@^0.2.1:
-  version "0.2.3"
-  resolved "https://registry.yarnpkg.com/vlq/-/vlq-0.2.3.tgz#8f3e4328cf63b1540c0d67e1b2778386f8975b26"
 
 webdriver-js-extender@^1.0.0:
   version "1.0.0"
