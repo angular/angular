@@ -40,6 +40,7 @@ export interface RippleGlobalOptions {
    * setting it to 0.5 will cause the ripple fade-in animation to take twice as long.
    * A changed speedFactor will not affect the fade-out duration of the ripples.
    * @deprecated Use the `animation` global option instead.
+   * @deletion-target 7.0.0
    */
   baseSpeedFactor?: number;
 
@@ -88,6 +89,7 @@ export class MatRipple implements OnInit, OnDestroy, RippleTarget {
    * setting it to 0.5 will cause the animations to take twice as long.
    * A changed speedFactor will not modify the fade-out duration of the ripples.
    * @deprecated Use the [matRippleAnimation] binding instead.
+   * @deletion-target 7.0.0
    */
   @Input('matRippleSpeedFactor') speedFactor: number = 1;
 
