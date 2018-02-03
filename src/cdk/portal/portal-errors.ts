@@ -49,7 +49,7 @@ export function throwNullPortalOutletError() {
 
 /**
  * Throws an exception when attempting to detach a portal that is not attached.
- * @docs-privatew
+ * @docs-private
  */
 export function throwNoPortalAttachedError() {
   throw Error('Attempting to detach a portal that is not attached to a host');
