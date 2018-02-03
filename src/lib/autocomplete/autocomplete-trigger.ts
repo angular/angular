@@ -121,6 +121,9 @@ export class MatAutocompleteTrigger implements ControlValueAccessor, OnDestroy {
   private _portal: TemplatePortal;
   private _componentDestroyed = false;
 
+  /** Old value of the native input. Used to work around issues with the `input` event on IE. */
+  private _previousValue: string | number | null;
+
   /** Strategy that is used to position the panel. */
   private _positionStrategy: ConnectedPositionStrategy;
 
@@ -301,18 +304,22 @@ export class MatAutocompleteTrigger implements ControlValueAccessor, OnDestroy {
   }
 
   _handleInput(event: KeyboardEvent): void {
-    // We need to ensure that the input is focused, because IE will fire the `input`
-    // event on focus/blur/load if the input has a placeholder. See:
-    // https://connect.microsoft.com/IE/feedback/details/885747/
-    if (this._canOpen() && document.activeElement === event.target) {
-      let target = event.target as HTMLInputElement;
-      let value: number | string | null = target.value;
+    let target = event.target as HTMLInputElement;
+    let value: number | string | null = target.value;
 
-      // Based on `NumberValueAccessor` from forms.
-      if (target.type === 'number') {
-        value = value == '' ? null : parseFloat(value);
-      }
+    // Based on `NumberValueAccessor` from forms.
+    if (target.type === 'number') {
+      value = value == '' ? null : parseFloat(value);
+    }
 
+    // If the input has a placeholder, IE will fire the `input` event on page load,
+    // focus and blur, in addition to when the user actually changed the value. To
+    // filter out all of the extra events, we save the value on focus and between
+    // `input` events, and we check whether it changed.
+    // See: https://connect.microsoft.com/IE/feedback/details/885747/
+    if (this._canOpen() && this._previousValue !== value &&
+      document.activeElement === event.target) {
+      this._previousValue = value;
       this._onChange(value);
       this.openPanel();
     }
@@ -320,6 +327,7 @@ export class MatAutocompleteTrigger implements ControlValueAccessor, OnDestroy {
 
   _handleFocus(): void {
     if (this._canOpen()) {
+      this._previousValue = this._element.nativeElement.value;
       this._attachOverlay();
       this._floatLabel(true);
     }

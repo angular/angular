@@ -234,6 +234,7 @@ describe('MatAutocomplete', () => {
 
       // Changing value from 'Alabama' to 'al' to re-populate the option list,
       // ensuring that 'California' is created new.
+      dispatchFakeEvent(input, 'focusin');
       typeInElement('al', input);
       fixture.detectChanges();
       tick();
@@ -818,6 +819,7 @@ describe('MatAutocomplete', () => {
       expect(overlayContainerElement.textContent)
           .toEqual('', `Expected panel to close after ENTER key.`);
 
+      dispatchFakeEvent(input, 'focusin');
       typeInElement('Alabama', input);
       fixture.detectChanges();
       tick();
@@ -827,6 +829,31 @@ describe('MatAutocomplete', () => {
       expect(overlayContainerElement.textContent)
           .toContain('Alabama', `Expected panel to display when typing in input.`);
     }));
+
+    it('should not open the panel if the `input` event was dispatched with changing the value',
+      fakeAsync(() => {
+        const trigger = fixture.componentInstance.trigger;
+
+        dispatchFakeEvent(input, 'focusin');
+        typeInElement('A', input);
+        fixture.detectChanges();
+        tick();
+
+        expect(trigger.panelOpen).toBe(true, 'Expected panel to be open.');
+
+        trigger.closePanel();
+        fixture.detectChanges();
+
+        expect(trigger.panelOpen).toBe(false, 'Expected panel to be closed.');
+
+        // Dispatch the event without actually changing the value
+        // to simulate what happen in some cases on IE.
+        dispatchFakeEvent(input, 'input');
+        fixture.detectChanges();
+        tick();
+
+        expect(trigger.panelOpen).toBe(false, 'Expected panel to stay closed.');
+      }));
 
     it('should scroll to active options below the fold', () => {
       const trigger = fixture.componentInstance.trigger;
