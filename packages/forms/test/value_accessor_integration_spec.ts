@@ -8,7 +8,7 @@
 
 import {Component, Directive, EventEmitter, Input, Output, Type} from '@angular/core';
 import {ComponentFixture, TestBed, async, fakeAsync, tick} from '@angular/core/testing';
-import {AbstractControl, ControlValueAccessor, FormControl, FormGroup, FormsModule, NG_VALIDATORS, NG_VALUE_ACCESSOR, NgControl, NgForm, NgModel, ReactiveFormsModule, Validators} from '@angular/forms';
+import {AbstractControl, ControlValueAccessor, FormControl, FormGroup, FormsModule, NG_VALIDATORS, NG_VALUE_ACCESSOR, NgControl, NgForm, NgModel, NgSelectOption, ReactiveFormsModule, Validators} from '@angular/forms';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util';
 
@@ -402,6 +402,20 @@ import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util'
 
       });
 
+      it(`options without parent select control value accessor should not set the element's value`,
+         () => {
+           if (isNode) return;
+           const fixture = initTest(OptionWithoutSelectFormControl);
+           fixture.detectChanges();
+
+           const sfOption = fixture.debugElement.query(By.css('option'));
+
+           const sfOptionDirective = sfOption.injector.get(NgSelectOption);
+           expect(sfOption.nativeElement.value).toEqual('SF');
+
+           sfOptionDirective.value = 'NY';
+           expect(sfOption.nativeElement.value).toEqual('SF');
+         });
     });
 
     describe('select multiple controls', () => {
@@ -1271,6 +1285,20 @@ class NgModelSelectMultipleWithCustomCompareFnForm {
 class NgModelSelectMultipleForm {
   selectedCities: any[];
   cities: any[] = [];
+}
+
+@Component({
+  selector: 'option-without-select-form-control',
+  template: `
+    <div [formGroup]="form">
+      <select>
+        <option [value]="city"></option>
+      </select>
+    </div>`
+})
+class OptionWithoutSelectFormControl {
+  city = 'SF';
+  form = new FormGroup({});
 }
 
 @Component({
