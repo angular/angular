@@ -82,6 +82,15 @@ desired display value. Then bind it to the autocomplete's `displayWith` property
 
 <!-- example(autocomplete-display) -->
 
+### Automatically highlighting the first option
+
+If your use case requires for the first autocomplete option to be highlighted when the user opens
+the panel, you can do so by setting the `autoActiveFirstOption` input on the `mat-autocomplete`
+component. This behavior can be configured globally using the `MAT_AUTOCOMPLETE_DEFAULT_OPTIONS`
+injection token.
+
+<!-- example(autocomplete-auto-active-first-option) -->
+
 ### Keyboard interaction
 - <kbd>DOWN_ARROW</kbd>: Next option becomes active.
 - <kbd>UP_ARROW</kbd>: Previous option becomes active.
