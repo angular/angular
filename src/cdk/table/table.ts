@@ -330,12 +330,12 @@ export class CdkTable<T> implements CollectionViewer, OnInit, AfterContentChecke
     this._customColumnDefs.delete(columnDef);
   }
 
-  /** Adds a column definition that was not included as part of the direct content children. */
+  /** Adds a row definition that was not included as part of the direct content children. */
   addRowDef(rowDef: CdkRowDef<T>) {
     this._customRowDefs.add(rowDef);
   }
 
-  /** Removes a column definition that was not included as part of the direct content children. */
+  /** Removes a row definition that was not included as part of the direct content children. */
   removeRowDef(rowDef: CdkRowDef<T>) {
     this._customRowDefs.delete(rowDef);
   }
