@@ -34,8 +34,6 @@ import {UrlSerializer, UrlTree, containsTree, createEmptyUrlTree} from './url_tr
 import {forEach} from './utils/collection';
 import {TreeNode, nodeChildrenAsMap} from './utils/tree';
 
-declare let Zone: any;
-
 /**
  * @whatItDoes Represents the extra options used during navigation.
  *
@@ -306,14 +304,15 @@ export class Router {
    * Sets up the location change listener.
    */
   setUpLocationChangeListener(): void {
-    // Zone.current.wrap is needed because of the issue with RxJS scheduler,
-    // which does not work properly with zone.js in IE and Safari
+    // Don't need to use Zone.wrap any more, because zone.js
+    // already patch onPopState, so location change callback will
+    // run into ngZone
     if (!this.locationSubscription) {
-      this.locationSubscription = <any>this.location.subscribe(Zone.current.wrap((change: any) => {
+      this.locationSubscription = <any>this.location.subscribe((change: any) => {
         const rawUrlTree = this.urlSerializer.parse(change['url']);
         const source: NavigationSource = change['type'] === 'popstate' ? 'popstate' : 'hashchange';
         setTimeout(() => { this.scheduleNavigation(rawUrlTree, source, {replaceUrl: true}); }, 0);
-      }));
+      });
     }
   }
 
