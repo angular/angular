@@ -7,12 +7,13 @@
  */
 
 
-const FakeAsyncTestZoneSpec = (Zone as any)['FakeAsyncTestZoneSpec'];
+const _Zone: any = typeof Zone !== 'undefined' ? Zone : null;
+const FakeAsyncTestZoneSpec = _Zone && _Zone['FakeAsyncTestZoneSpec'];
 type ProxyZoneSpec = {
   setDelegate(delegateSpec: ZoneSpec): void; getDelegate(): ZoneSpec; resetDelegate(): void;
 };
 const ProxyZoneSpec: {get(): ProxyZoneSpec; assertPresent: () => ProxyZoneSpec} =
-    (Zone as any)['ProxyZoneSpec'];
+    _Zone && _Zone['ProxyZoneSpec'];
 
 let _fakeAsyncTestZoneSpec: any = null;
 
@@ -24,7 +25,8 @@ let _fakeAsyncTestZoneSpec: any = null;
  */
 export function resetFakeAsyncZone() {
   _fakeAsyncTestZoneSpec = null;
-  ProxyZoneSpec.assertPresent().resetDelegate();
+  // in node.js testing we may not have ProxyZoneSpec in which case there is nothing to reset.
+  ProxyZoneSpec && ProxyZoneSpec.assertPresent().resetDelegate();
 }
 
 let _inFakeAsyncCall = false;

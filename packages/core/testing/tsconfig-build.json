@@ -14,7 +14,8 @@
   "files": [
     "public_api.ts",
     "../../../node_modules/zone.js/dist/zone.js.d.ts",
-    "../../system.d.ts"
+    "../../system.d.ts",
+    "../../types.d.ts"
   ],
 
   "angularCompilerOptions": {

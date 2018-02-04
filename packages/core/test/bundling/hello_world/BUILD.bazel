@@ -34,6 +34,7 @@ ts_library(
     srcs = ["domino_typings.d.ts"] + glob(["*_spec.ts"]),
     deps = [
         "//packages:types",
+        "//packages/core/testing",
     ],
 )
 
