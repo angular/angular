@@ -160,9 +160,11 @@ export interface LView {
   template: ComponentTemplate<{}>|null;
 
   /**
-   * For embedded views, the context with which to render the template.
+   * - For embedded views, the context with which to render the template.
+   * - For root view of the root component the context contains change detection data.
+   * - `null` otherwise.
    */
-  context: {}|null;
+  context: {}|RootContext|null;
 
   /**
    * A count of dynamic views that are children of this view (indirectly via containers).
@@ -259,6 +261,31 @@ export interface TView {
    * Odd indices: Hook function
    */
   destroyHooks: HookData|null;
+}
+
+/**
+ * RootContext contains information which is shared for all components which
+ * were bootstrapped with {@link renderComponent}.
+ */
+export interface RootContext {
+  /**
+   * A function used for scheduling change detection in the future. Usually
+   * this is `requestAnimationFrame`.
+   */
+  scheduler: (workFn: () => void) => void;
+
+  /**
+   * A promise which is resolved when all components are considered clean (not dirty).
+   *
+   * This promise is overwritten every time a first call to {@link markDirty} is invoked.
+   */
+  clean: Promise<null>;
+
+  /**
+   * RootComponent - The component which was instantiated by the call to
+   * {@link renderComponent}.
+   */
+  component: {};
 }
 
 /**
