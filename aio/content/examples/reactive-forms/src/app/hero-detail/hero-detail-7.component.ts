@@ -59,8 +59,10 @@ export class HeroDetailComponent7 implements OnChanges {
     this.heroForm.setValue({
       name:    this.hero.name,
       // #docregion set-value-address
-      address: this.hero.addresses[0] || new Address()
+      address: this.hero.addresses[0] || new Address(),
       // #enddocregion set-value-address
+      power: '',
+      sidekick: ''
     });
     // #enddocregion set-value
   }
