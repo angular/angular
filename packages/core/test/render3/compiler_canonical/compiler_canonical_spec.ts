@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, ContentChild, Directive, Injectable, Input, NgModule, OnDestroy, Optional, Pipe, PipeTransform, QueryList, SimpleChanges, TemplateRef, ViewChild, ViewContainerRef} from '../../src/core';
-import * as $r3$ from '../../src/core_render3_private_export';
+import {Component, ContentChild, Directive, Injectable, Input, NgModule, OnDestroy, Optional, Pipe, PipeTransform, QueryList, SimpleChanges, TemplateRef, ViewChild, ViewContainerRef} from '../../../src/core';
+import * as $r3$ from '../../../src/core_render3_private_export';
 
-import {renderComponent, toHtml} from './render_util';
+import {renderComponent, toHtml} from '../render_util';
 
 /**
  * NORMATIVE => /NORMATIVE: Designates what the compiler is expected to generate.
