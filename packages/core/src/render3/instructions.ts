@@ -70,10 +70,15 @@ let isParent: boolean;
  */
 let tData: TData;
 
-/** State of the current view being processed. */
-let currentView: LView;
-// The initialization has to be after the `let`, otherwise `createLView` can't see `let`.
-currentView = createLView(null !, null !, createTView());
+/**
+ * State of the current view being processed.
+ *
+ * NOTE: we cheat here and initialize it to `null` even thought the type does not
+ * contain `null`. This is because we expect this value to be not `null` as soon
+ * as we enter the view. Declaring the type as `null` would require us to place `!`
+ * in most instructions since they all assume that `currentView` is defined.
+ */
+let currentView: LView = null !;
 
 let currentQueries: LQueries|null;
 
@@ -131,13 +136,13 @@ const enum BindingDirection {
  */
 export function enterView(newView: LView, host: LElementNode | LViewNode | null): LView {
   const oldView = currentView;
-  data = newView.data;
-  bindingIndex = newView.bindingStartIndex || 0;
-  tData = newView.tView.data;
-  creationMode = newView.creationMode;
+  data = newView && newView.data;
+  bindingIndex = newView && newView.bindingStartIndex || 0;
+  tData = newView && newView.tView.data;
+  creationMode = newView && newView.creationMode;
 
-  cleanup = newView.cleanup;
-  renderer = newView.renderer;
+  cleanup = newView && newView.cleanup;
+  renderer = newView && newView.renderer;
 
   if (host != null) {
     previousOrParentNode = host;
@@ -145,7 +150,7 @@ export function enterView(newView: LView, host: LElementNode | LViewNode | null)
   }
 
   currentView = newView;
-  currentQueries = newView.queries;
+  currentQueries = newView && newView.queries;
 
   return oldView !;
 }
@@ -165,8 +170,8 @@ export function leaveView(newView: LView): void {
 }
 
 export function createLView(
-    viewId: number, renderer: Renderer3, tView: TView,
-    template: ComponentTemplate<any>| null = null, context: any | null = null): LView {
+    viewId: number, renderer: Renderer3, tView: TView, template: ComponentTemplate<any>| null,
+    context: any | null): LView {
   const newView = {
     parent: currentView,
     id: viewId,    // -1 for component views
@@ -300,7 +305,8 @@ export function renderTemplate<T>(
     host = createLNode(
         null, LNodeFlags.Element, hostNode,
         createLView(
-            -1, providedRendererFactory.createRenderer(null, null), getOrCreateTView(template)));
+            -1, providedRendererFactory.createRenderer(null, null), getOrCreateTView(template),
+            null, null));
   }
   const hostView = host.data !;
   ngDevMode && assertNotNull(hostView, 'Host node should have an LView defined in host.data.');
@@ -406,7 +412,8 @@ export function elementStart(
       if (isHostElement) {
         const tView = getOrCreateTView(hostComponentDef !.template);
         componentView = addToViewTree(createLView(
-            -1, rendererFactory.createRenderer(native, hostComponentDef !.rendererType), tView));
+            -1, rendererFactory.createRenderer(native, hostComponentDef !.rendererType), tView,
+            null, null));
       }
 
       // Only component views should be added to the view tree directly. Embedded views are
@@ -556,7 +563,8 @@ export function locateHostElement(
 export function hostElement(rNode: RElement | null, def: ComponentDef<any>) {
   resetApplicationState();
   createLNode(
-      0, LNodeFlags.Element, rNode, createLView(-1, renderer, getOrCreateTView(def.template)));
+      0, LNodeFlags.Element, rNode,
+      createLView(-1, renderer, getOrCreateTView(def.template), null, null));
 }
 
 
@@ -1114,8 +1122,8 @@ export function embeddedViewStart(viewBlockId: number): boolean {
     enterView((existingView as LViewNode).data, previousOrParentNode as LViewNode);
   } else {
     // When we create a new LView, we always reset the state of the instructions.
-    const newView =
-        createLView(viewBlockId, renderer, getOrCreateEmbeddedTView(viewBlockId, container));
+    const newView = createLView(
+        viewBlockId, renderer, getOrCreateEmbeddedTView(viewBlockId, container), null, null);
     if (lContainer.queries) {
       newView.queries = lContainer.queries.enterView(lContainer.nextIndex);
     }

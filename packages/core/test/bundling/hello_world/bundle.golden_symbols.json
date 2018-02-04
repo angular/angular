@@ -1,5 +1,8 @@
 [
   {
+    "name": "CLEAN_PROMISE"
+  },
+  {
     "name": "EMPTY$1"
   },
   {
@@ -31,6 +34,9 @@
   },
   {
     "name": "createLView"
+  },
+  {
+    "name": "currentView"
   },
   {
     "name": "domRendererFactory3"
