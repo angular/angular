@@ -6,8 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Version} from '@angular/core';
+/**
+ * @module
+ * @description
+ * Entry point for all public APIs of the common package.
+ */
 
+import {Version} from '@angular/core';
 /**
  * @experimental
  */
