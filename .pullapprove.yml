@@ -7,6 +7,7 @@
 #
 # alexeagle - Alex Eagle
 # alxhub - Alex Rickabaugh
+# andrewseguin - Andrew Seguin
 # brocco - Mike Brocchi
 # chuckjaz - Chuck Jazdzewski
 # filipesilva - Filipe Silva
@@ -306,8 +307,10 @@ groups:
       files:
         - "packages/elements/*"
     users:
-      - mhevery #primary
+      - andrewseguin #primary
+      - gkalpak
       - IgorMinar #fallback
+      - mhevery #fallback
 
   benchpress:
     conditions:
