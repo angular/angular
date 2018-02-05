@@ -18,7 +18,7 @@ import {Renderer3} from './renderer';
  * they are invoked from the template. Each embedded view and component view has its
  * own `LView`. When processing a particular view, we set the `currentView` to that
  * `LView`. When that view is done processing, the `currentView` is set back to
- * whatever the original `currentView` was before(the parent `LView`).
+ * whatever the original `currentView` was before (the parent `LView`).
  *
  * Keeping separate state for each view facilities view insertion / deletion, so we
  * don't have to edit the data array based on which views are present.
