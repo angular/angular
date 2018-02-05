@@ -98,6 +98,36 @@ describe('generateKeywords processor', () => {
     expect(keywordsDoc.data[0].headingWords).toEqual('heading important secondary');
   });
 
+  it('should add member doc properties to the search terms', () => {
+    const processor = processorFactory(mockLogger, mockReadFilesProcessor);
+    const docs = [
+      {
+        docType: 'class',
+        name: 'PublicExport',
+        searchTitle: 'class PublicExport',
+        vFile: { headings: { h2: ['heading A'] } },
+        content: 'Some content with ngClass in it.',
+        members: [
+          { name: 'instanceMethodA' },
+          { name: 'instancePropertyA' },
+          { name: 'instanceMethodB' },
+          { name: 'instancePropertyB' },
+        ],
+        statics: [
+          { name: 'staticMethodA' },
+          { name: 'staticPropertyA' },
+          { name: 'staticMethodB' },
+          { name: 'staticPropertyB' },
+        ],
+      },
+    ];
+    processor.$process(docs);
+    const keywordsDoc = docs[docs.length - 1];
+    expect(keywordsDoc.data[0].members).toEqual(
+      'instancemethoda instancemethodb instancepropertya instancepropertyb staticmethoda staticmethodb staticpropertya staticpropertyb'
+    );
+  });
+
   it('should process terms prefixed with "ng" to include the term stripped of "ng"', () => {
     const processor = processorFactory(mockLogger, mockReadFilesProcessor);
     const docs = [
