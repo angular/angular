@@ -148,8 +148,8 @@ export interface CompilerOptions extends ts.CompilerOptions {
   // How to handle missing messages
   i18nInMissingTranslations?: 'error'|'warning'|'ignore';
 
-  // Whether to remove blank text nodes from compiled templates. It is `true` by default
-  // in Angular 5 and will be re-visited in Angular 6.
+  // Whether to remove blank text nodes from compiled templates. It is `false` by default starting
+  // from Angular 6.
   preserveWhitespaces?: boolean;
 
   /** generate all possible generated files  */
