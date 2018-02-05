@@ -693,13 +693,13 @@ export interface Component extends Directive {
    * - text nodes are left as-is inside HTML tags where whitespaces are significant (ex. `<pre>`,
    *   `<textarea>`).
    *
-   * Described transformations can (potentially) influence DOM nodes layout so the
-   * `preserveWhitespaces` option is `true` be default (no whitespace removal).
-   * In Angular 5 you need to opt-in for whitespace removal (but we might revisit the default
-   * setting in Angular 6 or later). If you want to change the default setting for all components
-   * in your application you can use the `preserveWhitespaces` option of the AOT compiler.
+   * Described transformations may (potentially) influence DOM nodes layout. However, the impact
+   * should so be minimal. That's why starting from Angular 6, the
+   * `preserveWhitespaces` option is `false` by default (whitespace removal).
+   * If you want to change the default setting for all components in your application you can use
+   * the `preserveWhitespaces` option of the AOT compiler.
    *
-   * Even if you decide to opt-in for whitespace removal there are ways of preserving whitespaces
+   * Even with the default behavior of whitespace removal, there are ways of preserving whitespaces
    * in certain fragments of a template. You can either exclude entire DOM sub-tree by using the
    * `ngPreserveWhitespaces` attribute, ex.:
    *

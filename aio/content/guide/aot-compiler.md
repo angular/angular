@@ -92,7 +92,7 @@ You can control your app compilation by providing template compiler options in t
   },
   "angularCompilerOptions": {
     "fullTemplateTypeCheck": true,
-    "preserveWhitespaces": false,
+    "preserveWhitespaces": true,
     ...
   }
 }
@@ -234,9 +234,7 @@ done manually.
 ### *preserveWhitespaces*
 
 This option tells the compiler whether to remove blank text nodes from compiled templates.
-This option is `true` by default.
-
-*Note*: It is recommended to set this explicitly to `false` as it emits smaller template factory modules and might be set to `false` by default in the future.
+As of v6, this option is `false` by default, which results in smaller emitted template factory modules.
 
 ### *allowEmptyCodegenFiles*
 
