@@ -260,12 +260,8 @@ export interface TView {
    */
   destroyHooks: HookData|null;
 
-  /**
-   * Contains copies of array literals that were passed as bindings in this view.
-   *
-   * Note on name: will soon contain both object and array literals.
-   */
-  objectLiterals: any[][]|null;
+  /** Contains copies of object literals that were passed as bindings in this view. */
+  objectLiterals: any[]|null;
 }
 
 /**

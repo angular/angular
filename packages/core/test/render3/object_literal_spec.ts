@@ -205,4 +205,49 @@ describe('array literals', () => {
     expect(o8Comp !.names).toEqual(['a1', 'b1', 'c1', 'd1', 'e1', 'f1', 'g1', 'h1']);
   });
 
+  it('should support an object literal', () => {
+    let objectComp: ObjectComp;
+
+    class ObjectComp {
+      config: {[key: string]: any};
+
+      static ngComponentDef = defineComponent({
+        type: ObjectComp,
+        tag: 'object-comp',
+        factory: function ObjectComp_Factory() { return objectComp = new ObjectComp(); },
+        template: function ObjectComp_Template(ctx: ObjectComp, cm: boolean) {},
+        inputs: {config: 'config'}
+      });
+    }
+
+    /** <object-comp [config]="{duration: 500, animation: ctx.name}"></object-comp> */
+    function Template(ctx: any, cm: boolean) {
+      if (cm) {
+        E(0, ObjectComp);
+        e();
+      }
+      p(0, 'config', o1(0, e0_literal, 'animation', ctx.name));
+      ObjectComp.ngComponentDef.h(1, 0);
+      r(1, 0);
+    }
+
+    const e0_literal = {duration: 500, animation: null};
+
+    renderToHtml(Template, {name: 'slide'});
+    const firstObj = objectComp !.config;
+    expect(objectComp !.config).toEqual({duration: 500, animation: 'slide'});
+
+    renderToHtml(Template, {name: 'slide'});
+    expect(objectComp !.config).toEqual({duration: 500, animation: 'slide'});
+    expect(firstObj).toBe(objectComp !.config);
+
+    renderToHtml(Template, {name: 'tap'});
+    expect(objectComp !.config).toEqual({duration: 500, animation: 'tap'});
+
+    // Identity must change if binding changes
+    expect(firstObj).not.toBe(objectComp !.config);
+
+    expect(e0_literal).toEqual({duration: 500, animation: null});
+  });
+
 });
