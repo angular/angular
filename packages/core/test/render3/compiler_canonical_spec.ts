@@ -442,6 +442,7 @@ describe('compiler specification', () => {
   xdescribe('pipes', () => {
     @Pipe({
       name: 'myPipe',
+      pure: false,
     })
     class MyPipe implements PipeTransform,
         OnDestroy {
@@ -449,14 +450,16 @@ describe('compiler specification', () => {
       ngOnDestroy(): void { throw new Error('Method not implemented.'); }
 
       // NORMATIVE
-      static ngPipeDef = r3.definePipe(
-          {type: MyPipe, factory: function MyPipe_Factory() { return new MyPipe(); }});
+      static ngPipeDef = r3.definePipe({
+        type: MyPipe,
+        factory: function MyPipe_Factory() { return new MyPipe(); },
+        pure: false,
+      });
       // /NORMATIVE
     }
 
     @Pipe({
       name: 'myPurePipe',
-      pure: true,
     })
     class MyPurePipe implements PipeTransform {
       transform(value: any, ...args: any[]) { throw new Error('Method not implemented.'); }
@@ -465,7 +468,6 @@ describe('compiler specification', () => {
       static ngPipeDef = r3.definePipe({
         type: MyPurePipe,
         factory: function MyPurePipe_Factory() { return new MyPurePipe(); },
-        pure: true
       });
       // /NORMATIVE
     }
@@ -482,19 +484,18 @@ describe('compiler specification', () => {
         factory: function MyApp_Factory() { return new MyApp(); },
         template: function MyApp_Template(ctx: MyApp, cm: boolean) {
           if (cm) {
-            r3.Pp(0, MyPipe_ngPipeDef, MyPipe_ngPipeDef.n());
+            r3.T(0);
             r3.Pp(1, MyPurePipe_ngPipeDef, MyPurePipe_ngPipeDef.n());
-            r3.T(2);
+            r3.Pp(2, MyPipe_ngPipeDef, MyPipe_ngPipeDef.n());
           }
-          r3.t(
-              2, r3.b1('', r3.pb2(1, r3.m<MyPipe>(0).transform(ctx.name, ctx.size), ctx.size), ''));
+          r3.t(2, r3.b1('', r3.pb2(1, r3.pb2(2, ctx.name, ctx.size), ctx.size), ''));
         }
       });
       // /NORMATIVE
     }
     // NORMATIVE
-    const MyPipe_ngPipeDef = MyPipe.ngPipeDef;
     const MyPurePipe_ngPipeDef = MyPurePipe.ngPipeDef;
+    const MyPipe_ngPipeDef = MyPipe.ngPipeDef;
     // /NORMATIVE
 
     it('should render pipes', () => {
@@ -827,7 +828,7 @@ xdescribe('NgModule', () => {
       constructor(name: String) {}
       // NORMATIVE
       static ngInjectableDef = defineInjectable({
-        factory: () => new Toast(inject(String)),
+        factory: () => new Toast(r3.inject(String)),
       });
       // /NORMATIVE
     }
@@ -846,7 +847,7 @@ xdescribe('NgModule', () => {
       constructor(toast: Toast) {}
       // NORMATIVE
       static ngInjectorDef = defineInjector({
-        factory: () => new MyModule(inject(Toast)),
+        factory: () => new MyModule(r3.inject(Toast)),
         provider: [
           {provide: Toast, deps: [String]},  // If Toast has metadata generate this line
           Toast,                             // If Toast has no metadata generate this line.
@@ -863,7 +864,7 @@ xdescribe('NgModule', () => {
       // NORMATIVE
       static ngInjectableDef = defineInjectable({
         scope: MyModule,
-        factory: () => new BurntToast(inject(Toast, r3.InjectFlags.Optional), inject(String)),
+        factory: () => new BurntToast(r3.inject(Toast, r3.InjectFlags.Optional), r3.inject(String)),
       });
       // /NORMATIVE
     }
