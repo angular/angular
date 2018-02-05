@@ -123,7 +123,7 @@ class BadTemplateUrl {
            TestBed.compileComponents().then(() => {
              const componentFixture = TestBed.createComponent(ExternalTemplateComp);
              componentFixture.detectChanges();
-             expect(componentFixture.nativeElement.textContent).toEqual('from external template\n');
+             expect(componentFixture.nativeElement.textContent).toEqual('from external template');
            });
          }),
          10000);  // Long timeout here because this test makes an actual ResourceLoader request, and

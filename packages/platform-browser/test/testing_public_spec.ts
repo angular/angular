@@ -307,7 +307,7 @@ class CompWithUrlTemplate {
         it('should allow to createSync components with templateUrl after explicit async compilation',
            () => {
              const fixture = TestBed.createComponent(CompWithUrlTemplate);
-             expect(fixture.nativeElement).toHaveText('from external template\n');
+             expect(fixture.nativeElement).toHaveText('from external template');
            });
       });
 
