@@ -13,6 +13,30 @@ merge:
     # text to show when some checks are failing
     failureText: "The following checks are failing:"
 
+  # the g3 status will be added to your pull requests if they include files that match the patterns
+  g3Status:
+    # set to true to disable
+    disabled: false
+    # the name of the status
+    context: "google3"
+    # text to show when the status is pending
+    pendingDesc: "Googler: test this change in google3 http://go/angular-g3sync"
+    # text to show when the status is success
+    successDesc: "Does not affect google3"
+    # list of patterns to check for the files changed by the PR
+    # this list must be manually kept in sync with google3/third_party/javascript/angular2/copy.bara.sky
+    include:
+      - "BUILD.bazel"
+      - "LICENSE"
+      - "WORKSPACE"
+      - "modules/**"
+      - "packages/**"
+    # list of patterns to ignore for the files changed by the PR
+    exclude:
+      - "packages/language-service/**"
+      - "**/.gitignore"
+      - "**/.gitkeep"
+
   # comment that will be added to a PR when there is a conflict, leave empty or set to false to disable
   mergeConflictComment: "Hi @{{PRAuthor}}! This PR has merge conflicts due to recent upstream merges.
 \nPlease help to unblock it by resolving these conflicts. Thanks!"
