@@ -44,6 +44,7 @@ groups:
   all:
     users: all
     required: 1
+    rejection_value: -999
     # In this group, your self-approval does not count
     author_approval:
       auto: false
