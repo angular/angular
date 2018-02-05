@@ -20,7 +20,7 @@ export function pipe<T>(index: number, pipeDef: PipeDef<T>, pipe: T): void {
 }
 
 /**
- * Invokes a pure pipe with 4 arguments.
+ * Invokes a pipe with 1 arguments.
  *
  * This instruction acts as a guard to {@link PipeTransform#transform} invoking
  * the pipe only when an input to the pipe changes.
@@ -33,7 +33,7 @@ export function pipeBind1(index: number, v1: any): any {
 }
 
 /**
- * Invokes a pure pipe with 4 arguments.
+ * Invokes a pipe with 2 arguments.
  *
  * This instruction acts as a guard to {@link PipeTransform#transform} invoking
  * the pipe only when an input to the pipe changes.
@@ -47,7 +47,7 @@ export function pipeBind2(index: number, v1: any, v2: any): any {
 }
 
 /**
- * Invokes a pure pipe with 4 arguments.
+ * Invokes a pipe with 3 arguments.
  *
  * This instruction acts as a guard to {@link PipeTransform#transform} invoking
  * the pipe only when an input to the pipe changes.
@@ -62,7 +62,7 @@ export function pipeBind3(index: number, v1: any, v2: any, v3: any): any {
 }
 
 /**
- * Invokes a pure pipe with 4 arguments.
+ * Invokes a pipe with 4 arguments.
  *
  * This instruction acts as a guard to {@link PipeTransform#transform} invoking
  * the pipe only when an input to the pipe changes.
@@ -78,7 +78,7 @@ export function pipeBind4(index: number, v1: any, v2: any, v3: any, v4: any): an
 }
 
 /**
- * Invokes a pure pipe with variable number of arguments.
+ * Invokes a pipe with variable number of arguments.
  *
  * This instruction acts as a guard to {@link PipeTransform#transform} invoking
  * the pipe only when an input to the pipe changes.
