@@ -1,9 +1,11 @@
-import { Injectable } from '@angular/core';
+import { ErrorHandler, Injectable } from '@angular/core';
 import { environment } from '../../environments/environment';
 
 
 @Injectable()
 export class Logger {
+
+  constructor(private errorHandler: ErrorHandler) {}
 
   log(value: any, ...rest: any[]) {
     if (!environment.production) {
@@ -12,7 +14,8 @@ export class Logger {
   }
 
   error(value: any, ...rest: any[]) {
-    console.error(value, ...rest);
+    const message = [value, ...rest].join(' ');
+    this.errorHandler.handleError(message);
   }
 
   warn(value: any, ...rest: any[]) {
