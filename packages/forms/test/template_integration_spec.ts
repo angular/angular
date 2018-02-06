@@ -1265,7 +1265,7 @@ import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integrat
            tick();
 
            expect(input.nativeElement.value).toEqual('');
-           expect(control.hasError('email')).toBe(true);
+           expect(control.hasError('email')).toBe(false);
 
            input.nativeElement.value = 'test@gmail.com';
            dispatchEvent(input.nativeElement, 'input');
