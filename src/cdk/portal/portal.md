@@ -1,7 +1,7 @@
 The `portals` package provides a flexible system for rendering dynamic content into an application.
 
 ### Portals
-A `Portal `is a piece of UI that can be dynamically rendered to an open slot on the page.
+A `Portal` is a piece of UI that can be dynamically rendered to an open slot on the page.
 
 The "piece of UI" can be either a `Component` or a `TemplateRef` and the "open slot" is
 a `PortalOutlet`.
