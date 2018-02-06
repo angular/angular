@@ -1,6 +1,7 @@
 import buildOptimizer from 'rollup-plugin-angular-optimizer'
-import commonjs from 'rollup-plugin-commonjs';
 import nodeResolve from 'rollup-plugin-node-resolve';
+import paths from 'rollup-plugin-paths';
+import pathMapping from 'rxjs/_esm5/path-mapping';
 import uglify from 'rollup-plugin-uglify';
 
 export default {
@@ -12,17 +13,19 @@ export default {
     sourcemap: true
   },
   plugins: [
-    buildOptimizer(),
+    paths(pathMapping()),
     nodeResolve({jsnext: true, module: true}),
-    commonjs({
-      include: 'node_modules/rxjs/**'
-    }),
+    buildOptimizer(),
     uglify({
       mangle: true,
       compress: {
         global_defs: {
           'ngDevMode': false,
-        }
+        },
+        keep_fargs: false,
+        passes: 3,
+        pure_getters: true,
+        unsafe: true,
       }
     })
   ],
