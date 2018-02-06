@@ -8,10 +8,9 @@
 
 // tslint:disable-next-line:no-require-imports
 require('source-map-support').install();
-const fs = require('fs');
 
-import './shelljs';
-import * as shx from 'shelljs';
+const fs = require('fs');
+const shx = require('shelljs');
 import * as path from 'path';
 
 function filter(ext: string): (path: string) => boolean {

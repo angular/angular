@@ -5,74 +5,8 @@
 """Implementation of the ng_package rule.
 """
 
-# This provider exposes another flavor of output JavaScript, which is ES5 syntax
-# with ES2015 module syntax (import/export).
-# All Bazel rules should consume the standard dev or prod mode.
-# However we need to publish this flavor on NPM, so it's necessary to be able
-# to produce it.
-ES5_ESM_TypeScript_output = provider()
-
-def _ES5_ESM_outputs_aspect(target, ctx):
-  # We can't recompile targets from a different workspace yet... why?
-  if target.label.workspace_root.startswith("external/"): return []
-
-  if hasattr(target, "typescript"):
-    # We create a new tsconfig.json file that will have our compilation settings
-    tsconfig = ctx.actions.declare_file("%s_es5_esm.tsconfig.json" % target.label.name)
-
-    rerooted_outputs = [ctx.actions.declare_file("/".join([
-        target.label.name + ".es5_esm",
-        target.label.workspace_root,
-        f.short_path[:-len(".closure.js")] + ".js"
-    ])) for f in target.typescript.replay_params.outputs
-    if not f.short_path.endswith(".externs.js")
-    ]
-
-    ctx.actions.run(
-        executable = ctx.executable._modify_tsconfig,
-        inputs = [target.typescript.replay_params.tsconfig],
-        outputs = [tsconfig],
-        arguments = [
-            target.typescript.replay_params.tsconfig.path,
-            "%s/%s.es5_esm" % (target.label.package, target.label.name),
-            tsconfig.path,
-            ctx.bin_dir.path
-        ],
-    )
-
-    ctx.action(
-        progress_message = "Compiling TypeScript (ES5 with ES Modules) %s" % target.label,
-        inputs = target.typescript.replay_params.inputs + [tsconfig],
-        # re-root the outputs under a ".es5_esm" directory so the path don't collide
-        outputs = rerooted_outputs,
-        arguments = [tsconfig.path],
-        executable = target.typescript.replay_params.compiler,
-        execution_requirements = {
-            "supports-workers": "0",
-        },
-    )
-
-  return [ES5_ESM_TypeScript_output(
-    files = depset(rerooted_outputs)
-  )]
-
-# Downstream rules can use this aspect to access the ES5_ESM output flavor.
-# Only terminal rules (those which expect never to be used in deps[]) should do
-# this.
-ES5_ESM_outputs_aspect = aspect(
-    implementation = _ES5_ESM_outputs_aspect,
-    # Recurse to the deps of any target we visit
-    attr_aspects = ['deps'],
-    attrs = {
-      "_modify_tsconfig": attr.label(
-          default = ("//packages/bazel/src:modify_tsconfig"),
-          allow_files = True,
-          executable = True,
-          cfg = "host")
-    },
-)
-
 load("@build_bazel_rules_nodejs//:internal/collect_es6_sources.bzl", "collect_es6_sources")
+load(":esm5.bzl", "esm5_outputs_aspect", "ESM5Info")
 
 def _rollup(ctx, output_name, inputs, npm_package_name, externals, entry_point_name, rootdir, format = "es"):
   rollup_config = ctx.actions.declare_file("%s.rollup.conf.js" % ctx.label.name)
@@ -117,7 +51,7 @@ def _rollup(ctx, output_name, inputs, npm_package_name, externals, entry_point_n
   ctx.actions.run(
       progress_message = "Angular Packaging: rolling up %s" % ctx.label.name,
       mnemonic = "AngularPackageRollup",
-      inputs = inputs + [
+      inputs = inputs.to_list() + [
           ctx.executable._rollup,
           ctx.file.license_banner,
           rollup_config,
@@ -161,21 +95,29 @@ def _ng_package_impl(ctx):
   npm_package_name = ctx.label.package.split("/")[-1]
   npm_package_directory = ctx.actions.declare_directory(ctx.label.name)
 
-  esm_2015_files = collect_es6_sources(ctx).to_list()
-  esm_es5_files = depset(transitive = [dep[ES5_ESM_TypeScript_output].files
-                                       for dep in ctx.attr.deps
-                                       if ES5_ESM_TypeScript_output in dep]).to_list()
+  esm_2015_files = collect_es6_sources(ctx)
+
+  esm5_sources = depset()
+  root_dirs = []
+
+  for dep in ctx.attr.deps:
+    if ESM5Info in dep:
+      # TODO(alexeagle): we could make the module resolution in the rollup plugin
+      # faster if we kept the files grouped with their root dir. This approach just
+      # passes in both lists and requires multiple lookups (with expensive exception
+      # handling) to locate the files again.
+      transitive_output = dep[ESM5Info].transitive_output
+      root_dirs.extend(transitive_output.keys())
+      esm5_sources = depset(transitive=[esm5_sources] + transitive_output.values())
 
   externals = ctx.attr.globals.keys()
 
   fesm_2015 = _rollup(ctx, "fesm_2015/" + npm_package_name, esm_2015_files, npm_package_name, externals,
       ctx.label.package, "/".join([ctx.bin_dir.path, ctx.label.package, ctx.label.name + ".es6"]))
-  fesm_5 = _rollup(ctx, "fesm_5/" + npm_package_name, esm_es5_files, npm_package_name, externals,
-      #FIXME(alexeagle): why is it /core.es5_esm rather than /npm_package.es5_esm? should be more similar to es6 above
-      ctx.label.package, "/".join([ctx.bin_dir.path, ctx.label.package, ctx.label.package.split("/")[-1] + ".es5_esm"]))
-  umd = _rollup(ctx, "umd/" + npm_package_name, esm_es5_files, npm_package_name, externals,
-      #FIXME(alexeagle): why is it /core.es5_esm rather than /npm_package.es5_esm? should be more similar to es6 above
-      ctx.label.package, "/".join([ctx.bin_dir.path, ctx.label.package, ctx.label.package.split("/")[-1] + ".es5_esm"]),
+  fesm_5 = _rollup(ctx, "fesm_5/" + npm_package_name, esm5_sources, npm_package_name, externals,
+       ctx.label.package, "/".join([ctx.bin_dir.path, ctx.label.package, ctx.label.package.split("/")[-1] + ".esm5"]))
+  umd = _rollup(ctx, "umd/" + npm_package_name, esm5_sources, npm_package_name, externals,
+      ctx.label.package, "/".join([ctx.bin_dir.path, ctx.label.package, ctx.label.package.split("/")[-1] + ".esm5"]),
       "umd")
   min = _uglify(ctx, umd.js, npm_package_name)
 
@@ -195,13 +137,12 @@ def _ng_package_impl(ctx):
     secondary_fesm_2015 = _rollup(ctx,  "fesm_2015/" + fesm_output_filename, esm_2015_files,
         npm_package_name, externals, entry_point_name,
        "/".join([ctx.bin_dir.path, ctx.label.package, ctx.label.name + ".es6"]))
-    secondary_fesm_5 = _rollup(ctx, "fesm_5/" + fesm_output_filename, esm_es5_files,
+    secondary_fesm_5 = _rollup(ctx, "fesm_5/" + fesm_output_filename, esm5_sources,
        npm_package_name, externals, entry_point_name,
-       "/".join([ctx.bin_dir.path, entry_point_name, entry_point.split("/")[-1] + ".es5_esm"]))
+       "/".join([ctx.bin_dir.path, entry_point_name, entry_point.split("/")[-1] + ".esm5"]))
 
-    secondary_umd = _rollup(ctx, "umd/" + umd_output_filename, esm_es5_files, npm_package_name, externals,
-      #FIXME(alexeagle): why is it /core.es5_esm rather than /npm_package.es5_esm? should be more similar to es6 above
-      entry_point_name, "/".join([ctx.bin_dir.path, entry_point_name, entry_point.split("/")[-1] + ".es5_esm"]),
+    secondary_umd = _rollup(ctx, "umd/" + umd_output_filename, esm5_sources, npm_package_name, externals,
+      entry_point_name, "/".join([ctx.bin_dir.path, entry_point_name, entry_point.split("/")[-1] + ".esm5"]),
       "umd")
     secondary_min = _uglify(ctx, secondary_umd.js, umd_output_filename)
 
@@ -227,7 +168,7 @@ def _ng_package_impl(ctx):
   ctx.actions.run(
       progress_message = "Angular Packaging: building npm package for %s" % ctx.label.name,
       mnemonic = "AngularPackage",
-      inputs = esm_es5_files + esm2015 + esm5 + bundles + [
+      inputs = (esm5_sources + esm2015 + esm5 + bundles) + [
             ctx.file.stamp_data,
             ctx.file.package_json,
             ctx.file.readme_md,
@@ -283,7 +224,7 @@ def _ng_package_impl(ctx):
 ng_package = rule(
     implementation = _ng_package_impl,
     attrs = {
-      "deps": attr.label_list(aspects = [ES5_ESM_outputs_aspect]),
+      "deps": attr.label_list(aspects = [esm5_outputs_aspect]),
       "package_json": attr.label(allow_single_file = FileType([".json"])),
       "readme_md": attr.label(allow_single_file = FileType([".md"])),
       "license_banner": attr.label(allow_single_file = FileType([".txt"])),
