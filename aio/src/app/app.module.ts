@@ -146,7 +146,7 @@ export const svgIconProviders = [
       useValue: {
         /* tslint:disable: max-line-length */
         'aio-toc': [TocComponent],
-        'aio-api-list, aio-contributor-list, aio-file-not-found-search, aio-resource-list, code-example, code-tabs, current-location, live-example': embeddedModulePath,
+        'aio-announcement-bar, aio-api-list, aio-contributor-list, aio-file-not-found-search, aio-resource-list, code-example, code-tabs, current-location, live-example': embeddedModulePath,
         /* tslint:enable: max-line-length */
       } as EmbeddedComponentsMap,
     },

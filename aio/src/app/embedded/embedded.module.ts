@@ -17,6 +17,7 @@ import { CodeComponent } from './code/code.component';
 import { SharedModule } from 'app/shared/shared.module';
 
 // Embedded Components
+import { AnnouncementBarComponent } from './announcement-bar/announcement-bar.component';
 import { ApiListComponent } from './api/api-list.component';
 import { ApiService } from './api/api.service';
 import { CodeExampleComponent } from './code/code-example.component';
@@ -34,7 +35,7 @@ import { ResourceService } from './resource/resource.service';
  * such as CodeExampleComponent, LiveExampleComponent,...
  */
 export const embeddedComponents: Type<any>[] = [
-  ApiListComponent, CodeExampleComponent, CodeTabsComponent, ContributorListComponent,
+  AnnouncementBarComponent, ApiListComponent, CodeExampleComponent, CodeTabsComponent, ContributorListComponent,
   CurrentLocationComponent, FileNotFoundSearchComponent, LiveExampleComponent, ResourceListComponent
 ];
 
