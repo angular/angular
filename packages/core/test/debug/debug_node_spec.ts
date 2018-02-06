@@ -192,8 +192,8 @@ class TestApp {
       fixture = TestBed.createComponent(ParentComp);
       fixture.detectChanges();
 
-      // The root component has 3 elements and 2 text node children.
-      expect(fixture.debugElement.childNodes.length).toEqual(5);
+      // The root component has 3 elements and 2 text node whitespace children.
+      expect(fixture.debugElement.childNodes.length).toEqual(3);
     });
 
     it('should list all component child elements', () => {

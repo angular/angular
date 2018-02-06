@@ -46,6 +46,6 @@ export class CompilerConfig {
 }
 
 export function preserveWhitespacesDefault(
-    preserveWhitespacesOption: boolean | null, defaultSetting = true): boolean {
+    preserveWhitespacesOption: boolean | null, defaultSetting = false): boolean {
   return preserveWhitespacesOption === null ? defaultSetting : preserveWhitespacesOption;
 }

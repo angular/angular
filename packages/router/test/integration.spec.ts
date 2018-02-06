@@ -1618,20 +1618,20 @@ describe('Integration', () => {
 
          router.navigateByUrl('/');
          advance(fixture);
-         expect(fixture.nativeElement).toHaveText(' ');
+         expect(fixture.nativeElement).toHaveText('-');
          const cmp = fixture.componentInstance;
 
          cmp.show = true;
          advance(fixture);
 
-         expect(fixture.nativeElement).toHaveText('link ');
+         expect(fixture.nativeElement).toHaveText('link-');
          const native = fixture.nativeElement.querySelector('a');
 
          expect(native.getAttribute('href')).toEqual('/simple');
          native.click();
          advance(fixture);
 
-         expect(fixture.nativeElement).toHaveText('link simple');
+         expect(fixture.nativeElement).toHaveText('link-simple');
        })));
 
     it('should support query params and fragments',
@@ -4031,7 +4031,7 @@ class RouteCmp {
 @Component({
   selector: 'link-cmp',
   template:
-      `<div *ngIf="show"><a [routerLink]="['./simple']">link</a></div> <router-outlet></router-outlet>`
+      `<div *ngIf="show"><a [routerLink]="['./simple']">link</a></div>-<router-outlet></router-outlet>`
 })
 class RelativeLinkInIfCmp {
   show: boolean = false;
