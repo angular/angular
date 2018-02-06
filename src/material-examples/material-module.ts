@@ -30,21 +30,21 @@ import {
     MatInputModule,
     MatListModule,
     MatMenuModule,
+    MatPaginatorModule,
     MatProgressBarModule,
     MatProgressSpinnerModule,
     MatRadioModule,
     MatSelectModule,
+    MatSidenavModule,
     MatSlideToggleModule,
     MatSliderModule,
-    MatSidenavModule,
     MatSnackBarModule,
+    MatSortModule,
     MatStepperModule,
+    MatTableModule,
     MatTabsModule,
     MatToolbarModule,
     MatTooltipModule,
-    MatPaginatorModule,
-    MatSortModule,
-    MatTableModule
   ]
 })
 export class ExampleMaterialModule {}

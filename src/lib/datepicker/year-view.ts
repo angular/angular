@@ -65,6 +65,9 @@ export class MatYearView<D> implements AfterContentInit {
   /** Emits when a new month is selected. */
   @Output() readonly selectedChange: EventEmitter<D> = new EventEmitter<D>();
 
+  /** Emits the selected month. This doesn't imply a change on the selected date */
+  @Output() readonly monthSelected: EventEmitter<D> = new EventEmitter<D>();
+
   /** Grid of calendar cells representing the months of the year. */
   _months: MatCalendarCell[][];
 
@@ -99,8 +102,13 @@ export class MatYearView<D> implements AfterContentInit {
 
   /** Handles when a new month is selected. */
   _monthSelected(month: number) {
-    let daysInMonth = this._dateAdapter.getNumDaysInMonth(
-        this._dateAdapter.createDate(this._dateAdapter.getYear(this.activeDate), month, 1));
+    const normalizedDate =
+          this._dateAdapter.createDate(this._dateAdapter.getYear(this.activeDate), month, 1);
+
+    this.monthSelected.emit(normalizedDate);
+
+    const daysInMonth = this._dateAdapter.getNumDaysInMonth(normalizedDate);
+
     this.selectedChange.emit(this._dateAdapter.createDate(
         this._dateAdapter.getYear(this.activeDate), month,
         Math.min(this._dateAdapter.getDate(this.activeDate), daysInMonth)));

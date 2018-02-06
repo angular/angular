@@ -66,6 +66,16 @@ describe('MatMultiYearView', () => {
       expect(selectedEl.innerHTML.trim()).toBe('2039');
     });
 
+    it('should emit the selected year on cell clicked', () => {
+      let cellEls = multiYearViewNativeElement.querySelectorAll('.mat-calendar-body-cell');
+
+      (cellEls[1] as HTMLElement).click();
+      fixture.detectChanges();
+
+      const normalizedYear: Date = fixture.componentInstance.selectedYear;
+      expect(normalizedYear.getFullYear()).toEqual(2017);
+    });
+
     it('should mark active date', () => {
       let cellEls = multiYearViewNativeElement.querySelectorAll('.mat-calendar-body-cell');
       expect((cellEls[1] as HTMLElement).innerText.trim()).toBe('2017');
@@ -98,11 +108,13 @@ describe('MatMultiYearView', () => {
 
 @Component({
   template: `
-    <mat-multi-year-view [activeDate]="date" [(selected)]="selected"></mat-multi-year-view>`,
+    <mat-multi-year-view [activeDate]="date" [(selected)]="selected"
+                         (yearSelected)="selectedYear=$event"></mat-multi-year-view>`
 })
 class StandardMultiYearView {
   date = new Date(2017, JAN, 1);
   selected = new Date(2020, JAN, 1);
+  selectedYear: Date;
 
   @ViewChild(MatYearView) yearView: MatYearView<Date>;
 }

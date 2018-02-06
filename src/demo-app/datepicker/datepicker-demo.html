@@ -93,7 +93,7 @@
     <input matInput [matDatepicker]="datePicker1" [(ngModel)]="date" [min]="minDate" [max]="maxDate"
            [matDatepickerFilter]="filterOdd ? dateFilter : null" disabled>
     <mat-datepicker #datePicker1 [touchUi]="touch" [startAt]="startAt"
-                   [startView]="yearView ? 'year' : 'month'"></mat-datepicker>
+                    [startView]="yearView ? 'year' : 'month'"></mat-datepicker>
   </mat-form-field>
 </p>
 
@@ -121,7 +121,7 @@
     <input matInput disabled [matDatepicker]="datePicker3" [(ngModel)]="date" [min]="minDate"
            [max]="maxDate" [matDatepickerFilter]="filterOdd ? dateFilter : null">
     <mat-datepicker #datePicker3 [touchUi]="touch" [disabled]="false" [startAt]="startAt"
-                   [startView]="yearView ? 'year' : 'month'"></mat-datepicker>
+                    [startView]="yearView ? 'year' : 'month'"></mat-datepicker>
   </mat-form-field>
 </p>
 

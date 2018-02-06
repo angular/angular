@@ -31,7 +31,7 @@ import {AccessibilityDemoModule} from './a11y/a11y-module';
   ],
   entryComponents: [
     EntryApp,
-  ],
+  ]
 })
 export class DemoAppModule {
   constructor(private _appRef: ApplicationRef) { }

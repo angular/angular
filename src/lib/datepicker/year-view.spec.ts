@@ -71,6 +71,16 @@ describe('MatYearView', () => {
       expect(selectedEl.innerHTML.trim()).toBe('DEC');
     });
 
+    it('should emit the selected month on cell clicked', () => {
+      let cellEls = yearViewNativeElement.querySelectorAll('.mat-calendar-body-cell');
+
+      (cellEls[cellEls.length - 1] as HTMLElement).click();
+      fixture.detectChanges();
+
+      const normalizedMonth: Date = fixture.componentInstance.selectedMonth;
+      expect(normalizedMonth.getMonth()).toEqual(11);
+    });
+
     it('should mark active date', () => {
       let cellEls = yearViewNativeElement.querySelectorAll('.mat-calendar-body-cell');
       expect((cellEls[0] as HTMLElement).innerText.trim()).toBe('JAN');
@@ -113,11 +123,13 @@ describe('MatYearView', () => {
 
 @Component({
   template: `
-    <mat-year-view [activeDate]="date" [(selected)]="selected"></mat-year-view>`,
+    <mat-year-view [activeDate]="date" [(selected)]="selected"
+                   (monthSelected)="selectedMonth=$event"></mat-year-view>`
 })
 class StandardYearView {
   date = new Date(2017, JAN, 5);
   selected = new Date(2017, MAR, 10);
+  selectedMonth: Date;
 
   @ViewChild(MatYearView) yearView: MatYearView<Date>;
 }

@@ -107,6 +107,18 @@ export class MatCalendar<D> implements AfterContentInit, OnDestroy, OnChanges {
   /** Emits when the currently selected date changes. */
   @Output() readonly selectedChange: EventEmitter<D> = new EventEmitter<D>();
 
+  /**
+   * Emits the year chosen in multiyear view.
+   * This doesn't imply a change on the selected date.
+   */
+  @Output() readonly yearSelected: EventEmitter<D> = new EventEmitter<D>();
+
+  /**
+   * Emits the month chosen in year view.
+   * This doesn't imply a change on the selected date.
+   */
+  @Output() readonly monthSelected: EventEmitter<D> = new EventEmitter<D>();
+
   /** Emits when any date is selected. */
   @Output() readonly _userSelection: EventEmitter<void> = new EventEmitter<void>();
 
@@ -226,6 +238,16 @@ export class MatCalendar<D> implements AfterContentInit, OnDestroy, OnChanges {
     if (!this._dateAdapter.sameDate(date, this.selected)) {
       this.selectedChange.emit(date);
     }
+  }
+
+  /** Handles year selection in the multiyear view. */
+  _yearSelectedInMultiYearView(normalizedYear: D) {
+    this.yearSelected.emit(normalizedYear);
+  }
+
+  /** Handles month selection in the year view. */
+  _monthSelectedInYearView(normalizedMonth: D) {
+    this.monthSelected.emit(normalizedMonth);
   }
 
   _userSelected(): void {
