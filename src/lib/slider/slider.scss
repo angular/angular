@@ -1,5 +1,6 @@
 @import '../core/style/variables';
 @import '../core/style/vendor-prefixes';
+@import '../../cdk/a11y/a11y';
 
 
 // This refers to the thickness of the slider. On a horizontal slider this is the height, on a
@@ -298,6 +299,12 @@ $mat-slider-focus-ring-size: 30px !default;
   .mat-slider-ticks-container {
     height: $mat-slider-track-thickness;
     width: 100%;
+
+    @include cdk-high-contrast {
+      height: 0;
+      outline: solid $mat-slider-track-thickness;
+      top: $mat-slider-track-thickness / 2;
+    }
   }
 
   .mat-slider-ticks {
@@ -375,6 +382,12 @@ $mat-slider-focus-ring-size: 30px !default;
   .mat-slider-ticks-container {
     width: $mat-slider-track-thickness;
     height: 100%;
+
+    @include cdk-high-contrast {
+      width: 0;
+      outline: solid $mat-slider-track-thickness;
+      left: $mat-slider-track-thickness / 2;
+    }
   }
 
   .mat-slider-focus-ring {
