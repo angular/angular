@@ -21,6 +21,7 @@ export class Identifiers {
   /* Methods */
   static NEW_METHOD = 'n';
   static HOST_BINDING_METHOD = 'h';
+  static TRANSFORM_METHOD = 'transform';
 
   /* Instructions */
   static createElement: o.ExternalReference = {name: 'ɵE', moduleName: CORE};
@@ -63,7 +64,15 @@ export class Identifiers {
   static interpolation8: o.ExternalReference = {name: 'ɵi8', moduleName: CORE};
   static interpolationV: o.ExternalReference = {name: 'ɵiV', moduleName: CORE};
 
+  static pipeBind1: o.ExternalReference = {name: 'ɵpb1', moduleName: CORE};
+  static pipeBind2: o.ExternalReference = {name: 'ɵpb2', moduleName: CORE};
+  static pipeBind3: o.ExternalReference = {name: 'ɵpb3', moduleName: CORE};
+  static pipeBind4: o.ExternalReference = {name: 'ɵpb4', moduleName: CORE};
+  static pipeBindV: o.ExternalReference = {name: 'ɵpbV', moduleName: CORE};
+
   static load: o.ExternalReference = {name: 'ɵld', moduleName: CORE};
+
+  static pipe: o.ExternalReference = {name: 'ɵPp', moduleName: CORE};
 
   static projection: o.ExternalReference = {name: 'ɵP', moduleName: CORE};
   static projectionDef: o.ExternalReference = {name: 'ɵpD', moduleName: CORE};
@@ -87,6 +96,8 @@ export class Identifiers {
     name: 'ɵdefineDirective',
     moduleName: CORE,
   };
+
+  static definePipe: o.ExternalReference = {name: 'ɵdefinePipe', moduleName: CORE};
 
   static NgOnChangesFeature: o.ExternalReference = {name: 'ɵNgOnChangesFeature', moduleName: CORE};
 }
