@@ -124,9 +124,10 @@
   z-index: 1;
 }
 
-// Add an outline to make it more visible in high contrast mode.
+// Add an outline to make buttons more visible in high contrast mode. Stroked buttons
+// don't need a special look in high-contrast mode, because those already have an outline.
 @include cdk-high-contrast {
-  .mat-button, .mat-raised-button, .mat-icon-button, .mat-fab, .mat-mini-fab {
+  .mat-button, .mat-flat-button, .mat-raised-button, .mat-icon-button, .mat-fab, .mat-mini-fab {
     outline: solid 1px;
   }
 }
