@@ -9,6 +9,7 @@ ts_library(
     srcs = ["index.ts"],
     deps = [
         "//packages/core",
+        "@rxjs",
     ],
 )
 

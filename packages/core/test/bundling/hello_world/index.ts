@@ -7,6 +7,7 @@
  */
 
 import {ɵT as T, ɵb1 as b1, ɵdefineComponent as defineComponent, ɵrenderComponent as renderComponent, ɵt as t} from '@angular/core';
+import 'rxjs/Rx';
 
 class HelloWorld {
   name = 'World';
