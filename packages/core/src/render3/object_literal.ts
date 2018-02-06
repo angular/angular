@@ -11,7 +11,7 @@ import {NO_CHANGE, bind, getTView} from './instructions';
 
 
 /**
- * Updates an expression in an object literal if the expression has changed.
+ * Updates an expression in an object or array literal if the expression has changed.
  * Used in objectLiteral instructions.
  *
  * @param obj Object to update
@@ -27,16 +27,17 @@ function updateBinding(obj: any, key: string | number, exp: any): boolean {
   return false;
 }
 
-/** Updates two expressions in an object literal if they have changed. */
-function updateBinding2(obj: any, key1: number, exp1: any, key2: number, exp2: any): boolean {
+/** Updates two expressions in an object or array literal if they have changed. */
+function updateBinding2(
+    obj: any, key1: string | number, exp1: any, key2: string | number, exp2: any): boolean {
   let different = updateBinding(obj, key1, exp1);
   return updateBinding(obj, key2, exp2) || different;
 }
 
-/** Updates four expressions in an object literal if they have changed. */
+/** Updates four expressions in an object or array literal if they have changed. */
 function updateBinding4(
-    obj: any, key1: number, exp1: any, key2: number, exp2: any, key3: number, exp3: any,
-    key4: number, exp4: any): boolean {
+    obj: any, key1: string | number, exp1: any, key2: string | number, exp2: any,
+    key3: string | number, exp3: any, key4: string | number, exp4: any): boolean {
   let different = updateBinding2(obj, key1, exp1, key2, exp2);
   return updateBinding2(obj, key3, exp3, key4, exp4) || different;
 }
@@ -62,7 +63,7 @@ function copyObject(obj: any): any {
 }
 
 /**
- * Updates the expression in the given object if it has changed and returns a copy of the object.
+ * Updates the expression in the given object or array if it has changed and returns a copy.
  * Or if the expression hasn't changed, returns NO_CHANGE.
  *
  * @param objIndex Index of object blueprint in objectLiterals
@@ -83,8 +84,7 @@ export function objectLiteral1(objIndex: number, obj: any, key: string | number,
 }
 
 /**
- * Updates the expressions in the given object if they have changed and returns a copy of the
- * object.
+ * Updates the expressions in the given object or array if they have changed and returns a copy.
  * Or if no expressions have changed, returns NO_CHANGE.
  *
  * @param objIndex
@@ -96,14 +96,14 @@ export function objectLiteral1(objIndex: number, obj: any, key: string | number,
  * @returns A copy of the array or NO_CHANGE
  */
 export function objectLiteral2(
-    objIndex: number, obj: any, key1: number, exp1: any, key2: number, exp2: any): any {
+    objIndex: number, obj: any, key1: string | number, exp1: any, key2: string | number,
+    exp2: any): any {
   obj = getMutableBlueprint(objIndex, obj);
   return updateBinding2(obj, key1, exp1, key2, exp2) ? copyObject(obj) : NO_CHANGE;
 }
 
 /**
- * Updates the expressions in the given object if they have changed and returns a copy of the
- * object.
+ * Updates the expressions in the given object or array if they have changed and returns a copy.
  * Or if no expressions have changed, returns NO_CHANGE.
  *
  * @param objIndex
@@ -117,16 +117,15 @@ export function objectLiteral2(
  * @returns A copy of the object or NO_CHANGE
  */
 export function objectLiteral3(
-    objIndex: number, obj: any, key1: number, exp1: any, key2: number, exp2: any, key3: number,
-    exp3: any): any {
+    objIndex: number, obj: any, key1: string | number, exp1: any, key2: string | number, exp2: any,
+    key3: string | number, exp3: any): any {
   obj = getMutableBlueprint(objIndex, obj);
   let different = updateBinding2(obj, key1, exp1, key2, exp2);
   return updateBinding(obj, key3, exp3) || different ? copyObject(obj) : NO_CHANGE;
 }
 
 /**
- * Updates the expressions in the given object if they have changed and returns a copy of the
- * object.
+ * Updates the expressions in the given object or array if they have changed and returns a copy.
  * Or if no expressions have changed, returns NO_CHANGE.
  *
  * @param objIndex
@@ -142,16 +141,15 @@ export function objectLiteral3(
  * @returns A copy of the object or NO_CHANGE
  */
 export function objectLiteral4(
-    objIndex: number, obj: any, key1: number, exp1: any, key2: number, exp2: any, key3: number,
-    exp3: any, key4: number, exp4: any): any {
+    objIndex: number, obj: any, key1: string | number, exp1: any, key2: string | number, exp2: any,
+    key3: string | number, exp3: any, key4: string | number, exp4: any): any {
   obj = getMutableBlueprint(objIndex, obj);
   return updateBinding4(obj, key1, exp1, key2, exp2, key3, exp3, key4, exp4) ? copyObject(obj) :
                                                                                NO_CHANGE;
 }
 
 /**
- * Updates the expressions in the given object if they have changed and returns a copy of the
- * object.
+ * Updates the expressions in the given object or array if they have changed and returns a copy.
  * Or if no expressions have changed, returns NO_CHANGE.
  *
  * @param objIndex
@@ -169,16 +167,16 @@ export function objectLiteral4(
  * @returns A copy of the object or NO_CHANGE
  */
 export function objectLiteral5(
-    objIndex: number, obj: any, key1: number, exp1: any, key2: number, exp2: any, key3: number,
-    exp3: any, key4: number, exp4: any, key5: number, exp5: any): any {
+    objIndex: number, obj: any, key1: string | number, exp1: any, key2: string | number, exp2: any,
+    key3: string | number, exp3: any, key4: string | number, exp4: any, key5: string | number,
+    exp5: any): any {
   obj = getMutableBlueprint(objIndex, obj);
   let different = updateBinding4(obj, key1, exp1, key2, exp2, key3, exp3, key4, exp4);
   return updateBinding(obj, key5, exp5) || different ? copyObject(obj) : NO_CHANGE;
 }
 
 /**
- * Updates the expressions in the given object if they have changed and returns a copy of the
- * object.
+ * Updates the expressions in the given object or array if they have changed and returns a copy.
  * Or if no expressions have changed, returns NO_CHANGE.
  *
  * @param objIndex
@@ -198,16 +196,16 @@ export function objectLiteral5(
  * @returns A copy of the object or NO_CHANGE
  */
 export function objectLiteral6(
-    objIndex: number, obj: any, key1: number, exp1: any, key2: number, exp2: any, key3: number,
-    exp3: any, key4: number, exp4: any, key5: number, exp5: any, key6: number, exp6: any): any {
+    objIndex: number, obj: any, key1: string | number, exp1: any, key2: string | number, exp2: any,
+    key3: string | number, exp3: any, key4: string | number, exp4: any, key5: string | number,
+    exp5: any, key6: string | number, exp6: any): any {
   obj = getMutableBlueprint(objIndex, obj);
   let different = updateBinding4(obj, key1, exp1, key2, exp2, key3, exp3, key4, exp4);
   return updateBinding2(obj, key5, exp5, key6, exp6) || different ? copyObject(obj) : NO_CHANGE;
 }
 
 /**
- * Updates the expressions in the given object if they have changed and returns a copy of the
- * object.
+ * Updates the expressions in the given object or array if they have changed and returns a copy.
  * Or if no expressions have changed, returns NO_CHANGE.
  *
  * @param objIndex
@@ -229,9 +227,9 @@ export function objectLiteral6(
  * @returns A copy of the object or NO_CHANGE
  */
 export function objectLiteral7(
-    objIndex: number, obj: any, key1: number, exp1: any, key2: number, exp2: any, key3: number,
-    exp3: any, key4: number, exp4: any, key5: number, exp5: any, key6: number, exp6: any,
-    key7: number, exp7: any): any {
+    objIndex: number, obj: any, key1: string | number, exp1: any, key2: string | number, exp2: any,
+    key3: string | number, exp3: any, key4: string | number, exp4: any, key5: string | number,
+    exp5: any, key6: string | number, exp6: any, key7: string | number, exp7: any): any {
   obj = getMutableBlueprint(objIndex, obj);
   let different = updateBinding4(obj, key1, exp1, key2, exp2, key3, exp3, key4, exp4);
   different = updateBinding2(obj, key5, exp5, key6, exp6) || different;
@@ -239,8 +237,7 @@ export function objectLiteral7(
 }
 
 /**
- * Updates the expressions in the given object if they have changed and returns a copy of the
- * object.
+ * Updates the expressions in the given object or array if they have changed and returns a copy.
  * Or if no expressions have changed, returns NO_CHANGE.
  *
  * @param objIndex
@@ -264,9 +261,10 @@ export function objectLiteral7(
  * @returns A copy of the object or NO_CHANGE
  */
 export function objectLiteral8(
-    objIndex: number, obj: any, key1: number, exp1: any, key2: number, exp2: any, key3: number,
-    exp3: any, key4: number, exp4: any, key5: number, exp5: any, key6: number, exp6: any,
-    key7: number, exp7: any, key8: number, exp8: any): any {
+    objIndex: number, obj: any, key1: string | number, exp1: any, key2: string | number, exp2: any,
+    key3: string | number, exp3: any, key4: string | number, exp4: any, key5: string | number,
+    exp5: any, key6: string | number, exp6: any, key7: string | number, exp7: any,
+    key8: string | number, exp8: any): any {
   obj = getMutableBlueprint(objIndex, obj);
   let different = updateBinding4(obj, key1, exp1, key2, exp2, key3, exp3, key4, exp4);
   return updateBinding4(obj, key5, exp5, key6, exp6, key7, exp7, key8, exp8) || different ?
