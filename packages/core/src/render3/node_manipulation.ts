@@ -397,43 +397,33 @@ function executeOnDestroys(view: LView): void {
 }
 
 /**
- * Returns whether a child native element should be inserted now in the given parent.
+ * Returns whether a native element should be inserted in the given parent.
  *
- * If the parent is a view, the element will be appended as part of viewEnd(), so
- * the element should not be appended now. Similarly, if the child is a content child
- * of a parent component, the child will be appended to the right position later by
- * the content projection system.
+ * The native node can be inserted when its parent is:
+ * - A regular element => Yes
+ * - A component host element =>
+ *    - if the `currentView` === the parent `view`: The element is in the content (vs the
+ *      template)
+ *      => don't add as the parent component will project if needed.
+ *    - `currentView` !== the parent `view` => The element is in the template (vs the content),
+ *      add it
+ * - View element => delay insertion, will be done on `viewEnd()`
  *
  * @param parent The parent in which to insert the child
- * @param currentView The current LView
- * @return Whether the child element should be inserted now.
+ * @param currentView The LView being processed
+ * @return boolean Whether the child element should be inserted.
  */
-export function canInsertNativeNode(parent: LNode, view: LView): boolean {
-  // Only add native child element to parent element if the parent element is regular Element.
-  // If parent is:
-  // - Regular element => add child
-  // - Component host element =>
-  //    - Current View, and parent view same => content => don't add -> parent component will
-  //    re-project if needed.
-  //    - Current View, and parent view different => view => add Child
-  // - View element => View's get added separately.
+export function canInsertNativeNode(parent: LNode, currentView: LView): boolean {
+  const parentIsElement = (parent.flags & LNodeFlags.TYPE_MASK) === LNodeFlags.Element;
 
-  return (
-      (parent.flags & LNodeFlags.TYPE_MASK) === LNodeFlags.Element &&
-      (parent.view !== view /* Crossing View Boundaries, it is Component, but add Element of View */
-       || parent.data === null /* Regular Element. */));
-  // we are adding to an Element which is either:
-  // - Not a component (will not be re-projected, just added)
-  // - View of the Component
+  return parentIsElement &&
+      (parent.view !== currentView || parent.data === null /* Regular Element. */);
 }
 
 /**
- * Appends the provided child element to the provided parent, if appropriate.
+ * Appends the provided child element to the provided parent.
  *
- * If the parent is a view, the element will be appended as part of viewEnd(), so
- * the element should not be appended now. Similarly, if the child is a content child
- * of a parent component, the child will be appended to the right position later by
- * the content projection system. Otherwise, append normally.
+ * The element insertion might be delayed {@link canInsertNativeNode}
  *
  * @param parent The parent to which to append the child
  * @param child The child that should be appended
@@ -453,29 +443,16 @@ export function appendChild(parent: LNode, child: RNode | null, currentView: LVi
 }
 
 /**
- * Inserts the provided node before the correct element in the DOM, if appropriate.
+ * Inserts the provided node before the correct element in the DOM.
  *
- * If the parent is a view, the element will be inserted as part of viewEnd(), so
- * the element should not be inserted now. Similarly, if the child is a content child
- * of a parent component, the child will be inserted to the right position later by
- * the content projection system. Otherwise, insertBefore normally.
+ * The element insertion might be delayed {@link canInsertNativeNode}
  *
  * @param node Node to insert
  * @param currentView Current LView
  */
 export function insertChild(node: LNode, currentView: LView): void {
   const parent = node.parent !;
-  // Only add child element to parent element if the parent element is regular Element.
-  // If parent is:
-  // - Normal element => add child
-  // - Component element =>
-  //    - Current View, and parent view same => content don't add -> parent component will
-  //    re-project if needed.
-  //    - Current View, and parent view different => view => add Child
-  // - View element => View's get added separately.
   if (canInsertNativeNode(parent, currentView)) {
-    // We only add element if not in View or not projected.
-
     let nativeSibling: RNode|null = findNextRNodeSibling(node, null);
     const renderer = currentView.renderer;
     (renderer as ProceduralRenderer3).listen ?
