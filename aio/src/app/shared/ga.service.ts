@@ -30,6 +30,9 @@ export class GaService {
   }
 
   ga(...args: any[]) {
-    (this.window as any)['ga'](...args);
+    const gaFn = (this.window as any)['ga'];
+    if (gaFn) {
+      gaFn(...args);
+    }
   }
 }
