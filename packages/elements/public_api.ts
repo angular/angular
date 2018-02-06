@@ -12,6 +12,7 @@
  * Entry point for all public APIs of the `elements` package.
  */
 export {registerAsCustomElements} from './src/register-as-custom-elements';
+export {NgElement} from './src/ng-element';
 export {VERSION} from './src/version';
 
 // This file only reexports content of the `src` folder. Keep it that way.

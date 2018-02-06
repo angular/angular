@@ -20,7 +20,9 @@ import {createCustomEvent, getComponentName, isFunction, scheduler, strictEquals
 export type NgElementWithProps<T, P> = NgElement<T>& {[property in keyof P]: P[property]};
 
 /**
- * TODO(gkalpak): Add docs.
+ * Interface that extends HTMLElement and defines methods to act as a custom element that will
+ * translate changes to its Angular component.
+ *
  * @experimental
  */
 export interface NgElement<T> extends HTMLElement {
