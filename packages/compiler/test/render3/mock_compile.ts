@@ -6,12 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AotCompilerHost, AotCompilerOptions, AotSummaryResolver, CompileDirectiveMetadata, CompileMetadataResolver, CompilerConfig, DirectiveNormalizer, DirectiveResolver, DomElementSchemaRegistry, HtmlParser, I18NHtmlParser, Lexer, NgModuleResolver, Parser, PipeResolver, StaticReflector, StaticSymbol, StaticSymbolCache, StaticSymbolResolver, TemplateParser, TypeScriptEmitter, analyzeNgModules, createAotUrlResolver} from '@angular/compiler';
+import {AotCompilerHost, AotCompilerOptions, AotSummaryResolver, CompileDirectiveMetadata, CompileMetadataResolver, CompilePipeSummary, CompilerConfig, DirectiveNormalizer, DirectiveResolver, DomElementSchemaRegistry, HtmlParser, I18NHtmlParser, Lexer, NgModuleResolver, Parser, PipeResolver, StaticReflector, StaticSymbol, StaticSymbolCache, StaticSymbolResolver, TemplateParser, TypeScriptEmitter, analyzeNgModules, createAotUrlResolver} from '@angular/compiler';
 import {ViewEncapsulation} from '@angular/core';
 import * as ts from 'typescript';
 
 import {ConstantPool} from '../../src/constant_pool';
 import * as o from '../../src/output/output_ast';
+import {compilePipe} from '../../src/render3/r3_pipe_compiler';
 import {compileComponent, compileDirective} from '../../src/render3/r3_view_compiler';
 import {OutputContext} from '../../src/util';
 import {MockAotCompilerHost, MockCompilerHost, MockData, MockDirectory, arrayToMockDir, expectNoDiagnostics, settings, setup, toMockFileArray} from '../aot/test_util';
@@ -173,7 +174,7 @@ export function compile(
   // to generate a template definition.
   const analyzedModules = analyzeNgModules(sourceFiles, compilerHost, symbolResolver, resolver);
 
-  const directives = Array.from(analyzedModules.ngModuleByPipeOrDirective.keys());
+  const pipesOrDirectives = Array.from(analyzedModules.ngModuleByPipeOrDirective.keys());
 
   const fakeOutputContext: OutputContext = {
     genFilePath: 'fakeFactory.ts',
@@ -193,20 +194,20 @@ export function compile(
     constantPool: new ConstantPool()
   };
 
-  // Load All directives
-  for (const directive of directives) {
-    const module = analyzedModules.ngModuleByPipeOrDirective.get(directive) !;
+  // Load all directives and pipes
+  for (const pipeOrDirective of pipesOrDirectives) {
+    const module = analyzedModules.ngModuleByPipeOrDirective.get(pipeOrDirective) !;
     resolver.loadNgModuleDirectiveAndPipeMetadata(module.type.reference, true);
   }
 
   // Compile the directives.
-  for (const directive of directives) {
-    const module = analyzedModules.ngModuleByPipeOrDirective.get(directive);
+  for (const pipeOrDirective of pipesOrDirectives) {
+    const module = analyzedModules.ngModuleByPipeOrDirective.get(pipeOrDirective);
     if (!module || !module.type.reference.filePath.startsWith('/app')) {
       continue;
     }
-    if (resolver.isDirective(directive)) {
-      const metadata = resolver.getDirectiveMetadata(directive);
+    if (resolver.isDirective(pipeOrDirective)) {
+      const metadata = resolver.getDirectiveMetadata(pipeOrDirective);
       if (metadata.isComponent) {
         const fakeUrl = 'ng://fake-template-url.html';
         const htmlAst = htmlParser.parse(metadata.template !.template !, fakeUrl);
@@ -217,10 +218,15 @@ export function compile(
             module.transitiveModule.pipes.map(pipe => resolver.getPipeSummary(pipe.reference));
         const parsedTemplate = templateParser.parse(
             metadata, htmlAst, directives, pipes, module.schemas, fakeUrl, false);
-
-        compileComponent(fakeOutputContext, metadata, parsedTemplate.template, staticReflector);
+        compileComponent(
+            fakeOutputContext, metadata, pipes, parsedTemplate.template, staticReflector);
       } else {
         compileDirective(fakeOutputContext, metadata, staticReflector);
+      }
+    } else if (resolver.isPipe(pipeOrDirective)) {
+      const metadata = resolver.getPipeMetadata(pipeOrDirective);
+      if (metadata) {
+        compilePipe(fakeOutputContext, metadata, staticReflector);
       }
     }
   }
