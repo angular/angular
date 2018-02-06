@@ -241,6 +241,12 @@
             "rev": true,
             "title": "NinjaCodeGen - Angular CRUD Generator",
             "url": "https://ninjaCodeGen.com"
+          },
+          "angular-playground": {
+            "desc": "UI development environment for building, testing, and documenting Angular applications.",
+            "rev": true,
+            "title": "Angular Playground",
+            "url": "http://www.angularplayground.it/"
           }
         }
       },
