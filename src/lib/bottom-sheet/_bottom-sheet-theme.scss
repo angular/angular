@@ -1,0 +1,21 @@
+@import '../core/typography/typography-utils';
+@import '../core/theming/palette';
+
+@mixin mat-bottom-sheet-theme($theme) {
+  $background: map-get($theme, background);
+  $foreground: map-get($theme, foreground);
+
+  .mat-bottom-sheet-container {
+    background: mat-color($background, dialog);
+    color: mat-color($foreground, text);
+  }
+}
+
+@mixin mat-bottom-sheet-typography($config) {
+  .mat-bottom-sheet-container {
+    // Note: we don't use the line-height, because it's way too big.
+    font-family: mat-font-family($config);
+    font-size: mat-font-size($config, subheading-2);
+    font-weight: mat-font-weight($config, subheading-2);
+  }
+}

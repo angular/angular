@@ -1,5 +1,6 @@
 @import './typography';
 @import '../../autocomplete/autocomplete-theme';
+@import '../../bottom-sheet/bottom-sheet-theme';
 @import '../../button/button-theme';
 @import '../../button-toggle/button-toggle-theme';
 @import '../../card/card-theme';
@@ -40,6 +41,7 @@
 
   @include mat-base-typography($config);
   @include mat-autocomplete-typography($config);
+  @include mat-bottom-sheet-typography($config);
   @include mat-button-typography($config);
   @include mat-button-toggle-typography($config);
   @include mat-card-typography($config);

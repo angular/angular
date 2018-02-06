@@ -12,6 +12,7 @@ import {NgModule} from '@angular/core';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {RouterModule} from '@angular/router';
 import {AutocompleteDemo} from '../autocomplete/autocomplete-demo';
+import {BottomSheetDemo, ExampleBottomSheet} from '../bottom-sheet/bottom-sheet-demo';
 import {BaselineDemo} from '../baseline/baseline-demo';
 import {ButtonToggleDemo} from '../button-toggle/button-toggle-demo';
 import {ButtonDemo} from '../button/button-demo';
@@ -71,6 +72,7 @@ import {TableDemoModule} from '../table/table-demo-module';
   ],
   declarations: [
     AutocompleteDemo,
+    BottomSheetDemo,
     BaselineDemo,
     ButtonDemo,
     ButtonToggleDemo,
@@ -120,6 +122,7 @@ import {TableDemoModule} from '../table/table-demo-module';
     ToolbarDemo,
     TooltipDemo,
     TypographyDemo,
+    ExampleBottomSheet,
   ],
   providers: [
     {provide: OverlayContainer, useClass: FullscreenOverlayContainer},
@@ -133,6 +136,7 @@ import {TableDemoModule} from '../table/table-demo-module';
     RotiniPanel,
     ScienceJoke,
     SpagettiPanel,
+    ExampleBottomSheet,
   ],
 })
 export class DemoModule {}

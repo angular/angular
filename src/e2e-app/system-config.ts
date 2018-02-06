@@ -51,6 +51,7 @@ System.config({
     '@angular/material-examples': 'dist/bundles/material-examples.umd.js',
 
     '@angular/material/autocomplete': 'dist/bundles/material-autocomplete.umd.js',
+    '@angular/material/bottom-sheet': 'dist/bundles/material-bottom-sheet.umd.js',
     '@angular/material/button': 'dist/bundles/material-button.umd.js',
     '@angular/material/button-toggle': 'dist/bundles/material-button-toggle.umd.js',
     '@angular/material/card': 'dist/bundles/material-card.umd.js',

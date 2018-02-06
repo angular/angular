@@ -1,6 +1,7 @@
 # Angular Material components
 /src/lib/*                                         @jelbourn
 /src/lib/autocomplete/**                           @kara @crisbeto
+/src/lib/bottom-sheet/**                           @jelbourn @crisbeto
 /src/lib/button-toggle/**                          @tinayuangao
 /src/lib/button/**                                 @tinayuangao
 /src/lib/card/**                                   @jelbourn
@@ -88,6 +89,7 @@
 /src/demo-app/*                                    @jelbourn
 /src/demo-app/a11y/**                              @tinayuangao
 /src/demo-app/autocomplete/**                      @kara @crisbeto
+/src/demo-app/bottom-sheet/**                      @jelbourn @crisbeto
 /src/demo-app/baseline/**                          @mmalerba
 /src/demo-app/button-toggle/**                     @tinayuangao
 /src/demo-app/button/**                            @tinayuangao

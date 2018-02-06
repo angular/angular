@@ -1,0 +1,31 @@
+@import '../core/style/elevation';
+
+// The bottom sheet minimum width on larger screen sizes is based
+// on increments of the toolbar, according to the spec. See:
+// https://material.io/guidelines/components/bottom-sheets.html#bottom-sheets-specs
+$_mat-bottom-sheet-width-increment: 64px;
+$mat-bottom-sheet-container-vertical-padding: 8px !default;
+$mat-bottom-sheet-container-horizontal-padding: 16px !default;
+
+.mat-bottom-sheet-container {
+  @include mat-elevation(16);
+
+  padding: $mat-bottom-sheet-container-vertical-padding
+           $mat-bottom-sheet-container-horizontal-padding;
+  min-width: 100vw;
+  box-sizing: border-box;
+  display: block;
+  outline: 0;
+}
+
+.mat-bottom-sheet-container-medium {
+  min-width: $_mat-bottom-sheet-width-increment * 6;
+}
+
+.mat-bottom-sheet-container-large {
+  min-width: $_mat-bottom-sheet-width-increment * 8;
+}
+
+.mat-bottom-sheet-container-xlarge {
+  min-width: $_mat-bottom-sheet-width-increment * 9;
+}

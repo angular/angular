@@ -1,0 +1,45 @@
+<h1>Bottom sheet demo</h1>
+
+<button mat-raised-button color="primary" (click)="openComponent()">Open component sheet</button>
+<button mat-raised-button color="accent" (click)="openTemplate()">Open template sheet</button>
+
+<mat-card class="demo-dialog-card">
+  <mat-card-content>
+    <h2>Options</h2>
+
+    <p>
+      <mat-checkbox [(ngModel)]="config.hasBackdrop">Has backdrop</mat-checkbox>
+    </p>
+
+    <p>
+      <mat-checkbox [(ngModel)]="config.disableClose">Disable close</mat-checkbox>
+    </p>
+
+    <p>
+      <mat-form-field>
+        <input matInput [(ngModel)]="config.backdropClass" placeholder="Backdrop class">
+      </mat-form-field>
+    </p>
+
+    <p>
+      <mat-form-field>
+        <mat-select placeholder="Direction" [(ngModel)]="config.direction">
+          <mat-option value="ltr">LTR</mat-option>
+          <mat-option value="rtl">RTL</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </p>
+
+  </mat-card-content>
+</mat-card>
+
+
+<ng-template let-bottomSheetRef="bottomSheetRef">
+  <mat-nav-list>
+    <mat-list-item (click)="bottomSheetRef.dismiss()" *ngFor="let action of [1, 2, 3]">
+      <mat-icon mat-list-icon>folder</mat-icon>
+      <span mat-line>Action {{ link }}</span>
+      <span mat-line>Description</span>
+    </mat-list-item>
+  </mat-nav-list>
+</ng-template>

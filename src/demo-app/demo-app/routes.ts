@@ -10,6 +10,7 @@ import {Routes} from '@angular/router';
 import {AccessibilityDemo} from '../a11y/a11y';
 import {ACCESSIBILITY_DEMO_ROUTES} from '../a11y/routes';
 import {AutocompleteDemo} from '../autocomplete/autocomplete-demo';
+import {BottomSheetDemo} from '../bottom-sheet/bottom-sheet-demo';
 import {BaselineDemo} from '../baseline/baseline-demo';
 import {ButtonToggleDemo} from '../button-toggle/button-toggle-demo';
 import {ButtonDemo} from '../button/button-demo';
@@ -55,6 +56,7 @@ export const DEMO_APP_ROUTES: Routes = [
   {path: '', component: DemoApp, children: [
     {path: '', component: Home},
     {path: 'autocomplete', component: AutocompleteDemo},
+    {path: 'bottom-sheet', component: BottomSheetDemo},
     {path: 'baseline', component: BaselineDemo},
     {path: 'button', component: ButtonDemo},
     {path: 'button-toggle', component: ButtonToggleDemo},
