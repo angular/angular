@@ -1363,13 +1363,21 @@ import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integrat
            input.nativeElement.value = '';
            dispatchEvent(input.nativeElement, 'input');
            fixture.detectChanges();
-           expect(form.valid).toBeTruthy();
+           expect(form.valid).toBe(true);
+           expect(input.nativeElement.validity.valid).toBe(true);
+
+           input.nativeElement.value = 'a';
+           dispatchEvent(input.nativeElement, 'input');
+           fixture.detectChanges();
+           expect(form.valid).toBe(true);
+           expect(input.nativeElement.validity.valid).toBe(true);
 
            input.nativeElement.value = '1';
            dispatchEvent(input.nativeElement, 'input');
            fixture.detectChanges();
-           expect(form.valid).toBeFalsy();
-           expect(form.control.hasError('pattern', ['tovalidate'])).toBeTruthy();
+           expect(form.valid).toBe(false);
+           expect(form.control.hasError('pattern', ['tovalidate'])).toBe(true);
+           expect(input.nativeElement.validity.valid).toBe(false);
          }));
 
       it('should support optional fields with minlength validator', fakeAsync(() => {

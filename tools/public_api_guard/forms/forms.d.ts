@@ -465,7 +465,8 @@ export declare class NgSelectOption implements OnDestroy {
 
 /** @stable */
 export declare class PatternValidator implements Validator, OnChanges {
-    pattern: string | RegExp;
+    _patternAttr: string | null;
+    pattern: string | RegExp | null;
     ngOnChanges(changes: SimpleChanges): void;
     registerOnValidatorChange(fn: () => void): void;
     validate(c: AbstractControl): ValidationErrors | null;

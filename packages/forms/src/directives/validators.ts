@@ -301,18 +301,20 @@ export const PATTERN_VALIDATOR: any = {
 @Directive({
   selector: '[pattern][formControlName],[pattern][formControl],[pattern][ngModel]',
   providers: [PATTERN_VALIDATOR],
-  host: {'[attr.pattern]': 'pattern ? pattern : null'}
+  host: {'[attr.pattern]': '_patternAttr'},
 })
 export class PatternValidator implements Validator,
     OnChanges {
   private _validator: ValidatorFn;
   private _onChange: () => void;
 
-  @Input() pattern: string|RegExp;
+  @Input() pattern: string|RegExp|null = null;
+  _patternAttr: string|null = null;
 
   ngOnChanges(changes: SimpleChanges): void {
     if ('pattern' in changes) {
       this._createValidator();
+      this._patternAttr = this.pattern ? patternAsStr(this.pattern) : null;
       if (this._onChange) this._onChange();
     }
   }
@@ -322,4 +324,8 @@ export class PatternValidator implements Validator,
   registerOnValidatorChange(fn: () => void): void { this._onChange = fn; }
 
   private _createValidator(): void { this._validator = Validators.pattern(this.pattern); }
+}
+
+function patternAsStr(pattern: string | RegExp): string {
+  return typeof pattern === 'string' ? pattern : pattern.source;
 }
