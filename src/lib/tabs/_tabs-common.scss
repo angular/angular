@@ -28,6 +28,13 @@ $mat-tab-animation-duration: 500ms !default;
   &.mat-tab-disabled {
     cursor: default;
   }
+
+  &.mat-tab-label-content {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    white-space: nowrap;
+  }
 }
 
 // Mixin styles for the top section of the view; contains the tab labels.

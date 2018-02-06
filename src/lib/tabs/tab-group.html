@@ -14,13 +14,16 @@
        [matRippleDisabled]="tab.disabled || disableRipple"
        (click)="_handleClick(tab, tabHeader, i)">
 
-       <!-- If there is a label template, use it. -->
-    <ng-template [ngIf]="tab.templateLabel">
-      <ng-template [cdkPortalOutlet]="tab.templateLabel"></ng-template>
-    </ng-template>
 
-    <!-- If there is not a label template, fall back to the text label. -->
-    <ng-template [ngIf]="!tab.templateLabel">{{tab.textLabel}}</ng-template>
+    <div class="mat-tab-label-content">
+      <!-- If there is a label template, use it. -->
+      <ng-template [ngIf]="tab.templateLabel">
+        <ng-template [cdkPortalOutlet]="tab.templateLabel"></ng-template>
+      </ng-template>
+
+      <!-- If there is not a label template, fall back to the text label. -->
+      <ng-template [ngIf]="!tab.templateLabel">{{tab.textLabel}}</ng-template>
+    </div>
   </div>
 </mat-tab-header>
 
