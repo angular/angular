@@ -250,4 +250,72 @@ describe('array literals', () => {
     expect(e0_literal).toEqual({duration: 500, animation: null});
   });
 
+  it('should support expressions nested deeply in object/array literals', () => {
+    let nestedComp: NestedComp;
+
+    class NestedComp {
+      config: {[key: string]: any};
+
+      static ngComponentDef = defineComponent({
+        type: NestedComp,
+        tag: 'nested-comp',
+        factory: function NestedComp_Factory() { return nestedComp = new NestedComp(); },
+        template: function NestedComp_Template(ctx: NestedComp, cm: boolean) {},
+        inputs: {config: 'config'}
+      });
+    }
+
+    /**
+     * <nested-comp [config]="{animation: name, actions: [{ opacity: 0, duration: 0}, {opacity: 1,
+     * duration: duration }]}">
+     *   </nested-comp>
+     */
+    function Template(ctx: any, cm: boolean) {
+      if (cm) {
+        E(0, NestedComp);
+        e();
+      }
+      p(0, 'config', o2(2, e0_literal_2, 'animation', ctx.name, 'actions',
+                        o1(1, e0_literal_1, 1, o1(0, e0_literal, 'duration', ctx.duration))));
+      NestedComp.ngComponentDef.h(1, 0);
+      r(1, 0);
+    }
+
+    const e0_literal = {opacity: 1, duration: null};
+    const e0_literal_1 = [{opacity: 0, duration: 0}, null];
+    const e0_literal_2 = {animation: null, actions: null};
+
+    renderToHtml(Template, {name: 'slide', duration: 100});
+    expect(nestedComp !.config).toEqual({
+      animation: 'slide',
+      actions: [{opacity: 0, duration: 0}, {opacity: 1, duration: 100}]
+    });
+    const firstConfig = nestedComp !.config;
+
+    renderToHtml(Template, {name: 'slide', duration: 100});
+    expect(nestedComp !.config).toEqual({
+      animation: 'slide',
+      actions: [{opacity: 0, duration: 0}, {opacity: 1, duration: 100}]
+    });
+    expect(nestedComp !.config).toBe(firstConfig);
+
+    renderToHtml(Template, {name: 'slide', duration: 50});
+    expect(nestedComp !.config).toEqual({
+      animation: 'slide',
+      actions: [{opacity: 0, duration: 0}, {opacity: 1, duration: 50}]
+    });
+    expect(nestedComp !.config).not.toBe(firstConfig);
+
+    renderToHtml(Template, {name: 'tap', duration: 50});
+    expect(nestedComp !.config).toEqual({
+      animation: 'tap',
+      actions: [{opacity: 0, duration: 0}, {opacity: 1, duration: 50}]
+    });
+
+    expect(e0_literal).toEqual({opacity: 1, duration: null});
+    expect(e0_literal_1).toEqual([{opacity: 0, duration: 0}, null]);
+    expect(e0_literal_2).toEqual({animation: null, actions: null});
+  });
+
+
 });
