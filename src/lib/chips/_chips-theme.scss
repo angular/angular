@@ -37,11 +37,11 @@ $mat-chip-remove-font-size: 18px;
   $unselected-foreground: mat-color($foreground, text);
 
 
-  .mat-chip:not(.mat-basic-chip) {
+  .mat-chip.mat-standard-chip {
     @include mat-chips-color($unselected-foreground, $unselected-background);
   }
 
-  .mat-chip.mat-chip-selected {
+  .mat-chip.mat-standard-chip.mat-chip-selected {
 
     &.mat-primary {
       @include mat-chips-theme-color($primary);
@@ -62,6 +62,7 @@ $mat-chip-remove-font-size: 18px;
     font-size: $mat-chip-font-size;
     line-height: $mat-chip-line-height;
 
+    .mat-chip-trailing-icon.mat-icon,
     .mat-chip-remove.mat-icon {
       font-size: $mat-chip-remove-font-size;
     }

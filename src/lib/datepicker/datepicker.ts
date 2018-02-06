@@ -378,18 +378,14 @@ export class MatDatepicker<D> implements OnDestroy {
 
   /** Create the popup PositionStrategy. */
   private _createPopupPositionStrategy(): PositionStrategy {
-    const fallbackOffset = this._datepickerInput._getPopupFallbackOffset();
-
     return this._overlay.position()
-      .connectedTo(this._datepickerInput.getPopupConnectionElementRef(),
+      .connectedTo(this._datepickerInput.getConnectedOverlayOrigin(),
         {originX: 'start', originY: 'bottom'},
         {overlayX: 'start', overlayY: 'top'}
       )
       .withFallbackPosition(
         {originX: 'start', originY: 'top'},
         {overlayX: 'start', overlayY: 'bottom'},
-        undefined,
-        fallbackOffset
       )
       .withFallbackPosition(
         {originX: 'end', originY: 'bottom'},
@@ -398,8 +394,6 @@ export class MatDatepicker<D> implements OnDestroy {
       .withFallbackPosition(
         {originX: 'end', originY: 'top'},
         {overlayX: 'end', overlayY: 'bottom'},
-        undefined,
-        fallbackOffset
       );
   }
 

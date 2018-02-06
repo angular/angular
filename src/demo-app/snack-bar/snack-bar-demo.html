@@ -25,10 +25,10 @@
     <mat-checkbox [(ngModel)]="action">
       <p *ngIf="!action">Show button on snack bar</p>
       <mat-form-field *ngIf="action">
+        <mat-label>Snack bar action label</mat-label>
         <input matInput
                type="text"
                class="demo-button-label-input"
-               placeholder="Snack bar action label"
                [(ngModel)]="actionButtonLabel">
       </mat-form-field>
     </mat-checkbox>
@@ -37,10 +37,10 @@
     <mat-checkbox [(ngModel)]="setAutoHide">
       <p *ngIf="!setAutoHide">Auto hide after duration</p>
       <mat-form-field *ngIf="setAutoHide">
+        <mat-label>Auto hide duration in ms</mat-label>
         <input matInput
                type="number"
                class="demo-button-label-input"
-               placeholder="Auto Hide Duration in ms"
                [(ngModel)]="autoHide">
       </mat-form-field>
     </mat-checkbox>

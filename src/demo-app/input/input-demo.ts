@@ -51,6 +51,13 @@ export class InputDemo {
   emailFormControl = new FormControl('', [Validators.required, Validators.pattern(EMAIL_REGEX)]);
   delayedFormControl = new FormControl('');
   model = 'hello';
+  isAutofilled = false;
+  customAutofillStyle = true;
+
+  legacyAppearance: string;
+  standardAppearance: string;
+  fillAppearance: string;
+  outlineAppearance: string;
 
   constructor() {
     setTimeout(() => this.delayedFormControl.setValue('hello'), 100);

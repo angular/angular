@@ -1,0 +1,44 @@
+@import '../core/style/variables';
+@import '../core/style/vendor-prefixes';
+
+
+// Styles that only apply to the standard appearance of the form-field.
+
+// The height of the underline.
+$mat-form-field-standard-underline-height: 1px !default;
+// The padding between the top of the form field and the label text (used to align the standard
+// form field with the fill and outline appearances).
+$mat-form-field-standard-padding-top: 0.75em !default;
+
+
+.mat-form-field-appearance-standard {
+  .mat-form-field-flex {
+    padding-top: $mat-form-field-standard-padding-top;
+  }
+
+  // The underline is what's shown under the control, its prefix and its suffix.
+  // The ripple is the blue animation coming on top of it.
+  .mat-form-field-underline {
+    height: $mat-form-field-standard-underline-height;
+  }
+
+  .mat-form-field-ripple {
+    bottom: 0;
+    height: $mat-form-field-standard-underline-height * 2;
+  }
+
+  &.mat-form-field-disabled .mat-form-field-underline {
+    background-position: 0;
+    background-color: transparent;
+  }
+
+  // Note that we need this specific of a selector because we don't want
+  // the hover effect to show when the user hovers over the hints.
+  &:not(.mat-form-field-disabled) .mat-form-field-flex:hover ~ .mat-form-field-underline {
+    .mat-form-field-ripple {
+      opacity: 1;
+      transform: none;
+      transition: opacity 600ms $swift-ease-out-timing-function;
+    }
+  }
+}

@@ -1,0 +1,133 @@
+@import '../core/theming/palette';
+@import '../core/theming/theming';
+@import '../core/style/form-common';
+@import '../core/typography/typography-utils';
+
+
+// Theme styles that only apply to the legacy appearance of the form-field.
+
+@mixin mat-form-field-legacy-theme($theme) {
+  $foreground: map-get($theme, foreground);
+  $is-dark-theme: map-get($theme, is-dark);
+
+  $label-color: mat-color($foreground, secondary-text);
+  $underline-color: mat-color($foreground, divider, if($is-dark-theme, 0.7, 0.42));
+
+  .mat-form-field-appearance-legacy {
+    .mat-form-field-label {
+      color: $label-color;
+    }
+
+    .mat-hint {
+      color: $label-color;
+    }
+
+    .mat-form-field-underline {
+      background-color: $underline-color;
+    }
+
+    &.mat-form-field-disabled .mat-form-field-underline {
+      @include mat-control-disabled-underline($underline-color);
+    }
+  }
+}
+
+// Used to make instances of the _mat-form-field-label-floating mixin negligibly different,
+// and prevent Google's CSS Optimizer from collapsing the declarations. This is needed because some
+// of the selectors contain pseudo-classes not recognized in all browsers. If a browser encounters
+// an unknown pseudo-class it will discard the entire rule set.
+$mat-form-field-legacy-dedupe: 0;
+
+// Applies a floating label above the form field control itself.
+@mixin _mat-form-field-legacy-label-floating($font-scale, $infix-padding, $infix-margin-top) {
+  // We use perspective to fix the text blurriness as described here:
+  // http://www.useragentman.com/blog/2014/05/04/fixing-typography-inside-of-2-d-css-transforms/
+  // This results in a small jitter after the label floats on Firefox, which the
+  // translateZ fixes.
+  transform: translateY(-$infix-margin-top - $infix-padding) scale($font-scale) perspective(100px)
+  translateZ(0.001px + $mat-form-field-legacy-dedupe);
+  // The tricks above used to smooth out the animation on chrome and firefox actually make things
+  // worse on IE, so we don't include them in the IE version.
+  -ms-transform: translateY(-$infix-margin-top - $infix-padding + $mat-form-field-legacy-dedupe)
+                 scale($font-scale);
+
+  width: 100% / $font-scale + $mat-form-field-legacy-dedupe;
+
+  $mat-form-field-legacy-dedupe: $mat-form-field-legacy-dedupe + 0.00001 !global;
+}
+
+@mixin mat-form-field-legacy-typography($config) {
+  // The unit-less line-height from the font config.
+  $line-height: mat-line-height($config, input);
+  // The amount to scale the font for the floating label and subscript.
+  $subscript-font-scale: 0.75;
+  // The amount of space between the top of the line and the top of the actual text
+  // (as a fraction of the font-size).
+  $line-spacing: ($line-height - 1) / 2;
+  // The padding on the infix. Mocks show half of the text size, but seem to measure from the edge
+  // of the text itself, not the edge of the line; therefore we subtract off the line spacing.
+  $infix-padding: 0.5em - $line-spacing;
+  // The margin applied to the form-field-infix to reserve space for the floating label.
+  $infix-margin-top: 1em * $line-height * $subscript-font-scale;
+  // The space between the bottom of the .mat-form-field-flex area and the subscript wrapper.
+  // Mocks show half of the text size, but this margin is applied to an element with the subscript
+  // text font size, so we need to divide by the scale factor to make it half of the original text
+  // size. We again need to subtract off the line spacing since the mocks measure to the edge of the
+  // text, not the  edge of the line.
+  $subscript-margin-top: 0.5em / $subscript-font-scale - ($line-spacing * 2);
+  // The padding applied to the form-field-wrapper to reserve space for the subscript, since it's
+  // absolutely positioned. This is a combination of the subscript's margin and line-height, but we
+  // need to multiply by the subscript font scale factor since the wrapper has a larger font size.
+  $wrapper-padding-bottom: ($subscript-margin-top + $line-height) * $subscript-font-scale;
+
+  .mat-form-field-appearance-legacy {
+    .mat-form-field-wrapper {
+      padding-bottom: $wrapper-padding-bottom;
+    }
+
+    .mat-form-field-infix {
+      padding: $infix-padding 0;
+    }
+
+    &.mat-form-field-can-float {
+      &.mat-form-field-should-float .mat-form-field-label,
+      .mat-input-server:focus + .mat-form-field-label-wrapper .mat-form-field-label {
+        @include _mat-form-field-legacy-label-floating(
+                $subscript-font-scale, $infix-padding, $infix-margin-top);
+      }
+
+      // @deletion-target 7.0.0 will rely on AutofillMonitor instead.
+      .mat-form-field-autofill-control:-webkit-autofill + .mat-form-field-label-wrapper
+      .mat-form-field-label {
+        @include _mat-form-field-legacy-label-floating(
+                $subscript-font-scale, $infix-padding, $infix-margin-top);
+      }
+
+      // Server-side rendered matInput with a label attribute but label not shown
+      // (used as a pure CSS stand-in for mat-form-field-should-float).
+      .mat-input-server[label]:not(:label-shown) + .mat-form-field-label-wrapper
+      .mat-form-field-label {
+        @include _mat-form-field-legacy-label-floating(
+                $subscript-font-scale, $infix-padding, $infix-margin-top);
+      }
+    }
+
+    .mat-form-field-label {
+      top: $infix-margin-top + $infix-padding;
+    }
+
+    .mat-form-field-underline {
+      // We want the underline to start at the end of the content box, not the padding box,
+      // so we move it up by the padding amount.
+      bottom: $wrapper-padding-bottom;
+    }
+
+    .mat-form-field-subscript-wrapper {
+      margin-top: $subscript-margin-top;
+
+      // We want the subscript to start at the end of the content box, not the padding box,
+      // so we move it up by the padding amount (adjusted for the smaller font size);
+      top: calc(100% - #{$wrapper-padding-bottom / $subscript-font-scale});
+    }
+  }
+}

@@ -2,10 +2,10 @@
 @import '../core/style/vendor-prefixes';
 
 
+// Styles that apply to all appearances of the form-field.
+
 // Min amount of space between start and end hint.
 $mat-form-field-hint-min-space: 1em !default;
-// The height of the underline.
-$mat-form-field-underline-height: 1px !default;
 // Infix stretches to fit the container, but naturally wants to be this wide. We set this in order
 // to have a a consistent natural size for the various types of controls that can go in a form
 // field.
@@ -35,6 +35,7 @@ $mat-form-field-default-infix-width: 180px !default;
 .mat-form-field-flex {
   display: inline-flex;
   align-items: baseline;
+  box-sizing: border-box;
   width: 100%;
 }
 
@@ -42,21 +43,7 @@ $mat-form-field-default-infix-width: 180px !default;
 .mat-form-field-suffix {
   white-space: nowrap;
   flex: none;
-
-  // Allow icons in a prefix or suffix to adapt to the correct size.
-  .mat-icon {
-    width: 1em;
-  }
-
-  // Allow icon buttons in a prefix or suffix to adapt to the correct size.
-  .mat-icon-button {
-    font: inherit;
-    vertical-align: baseline;
-
-    .mat-icon {
-      font-size: inherit;
-    }
-  }
+  position: relative;
 }
 
 .mat-form-field-infix {
@@ -96,14 +83,10 @@ $mat-form-field-default-infix-width: 180px !default;
   text-overflow: ellipsis;
   overflow: hidden;
 
-  // The perspective helps smooth out animations on Chrome and Firefox but isn't needed on IE.
-  transform: perspective(100px);
-  -ms-transform: none;
-
   transform-origin: 0 0;
   transition: transform $swift-ease-out-duration $swift-ease-out-timing-function,
-  color $swift-ease-out-duration $swift-ease-out-timing-function,
-  width $swift-ease-out-duration $swift-ease-out-timing-function;
+              color $swift-ease-out-duration $swift-ease-out-timing-function,
+              width $swift-ease-out-duration $swift-ease-out-timing-function;
 
   // Hide the label initially, and only show it when it's floating or the control is empty.
   display: none;
@@ -124,6 +107,7 @@ $mat-form-field-default-infix-width: 180px !default;
 // This is necessary because these browsers do not actually fire any events when a form auto-fill is
 // occurring. Once the autofill is committed, a change event happen and the regular mat-form-field
 // classes take over to fulfill this behaviour.
+// @deletion-target 7.0.0 will rely on AutofillMonitor instead.
 .mat-form-field-autofill-control:-webkit-autofill + .mat-form-field-label-wrapper
     .mat-form-field-label {
   // The form field will be considered empty if it is autofilled, and therefore the label will
@@ -155,49 +139,38 @@ $mat-form-field-default-infix-width: 180px !default;
   transition: none;
 }
 
-// The underline is what's shown under the control, its prefix and its suffix.
-// The ripple is the blue animation coming on top of it.
 .mat-form-field-underline {
   position: absolute;
-  height: $mat-form-field-underline-height;
   width: 100%;
+  // Need this so that the underline doesn't block the hover effect.
+  pointer-events: none;
+}
 
-  .mat-form-field-disabled & {
-    background-position: 0;
-    background-color: transparent;
-  }
+.mat-form-field-ripple {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  transform-origin: 50%;
+  transform: scaleX(0.5);
+  opacity: 0;
+  transition: background-color $swift-ease-in-duration $swift-ease-in-timing-function;
+}
 
+.mat-form-field.mat-focused,
+.mat-form-field.mat-form-field-invalid {
   .mat-form-field-ripple {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: $mat-form-field-underline-height * 2;
-    transform-origin: 50%;
-    transform: scaleX(0.5);
-    visibility: hidden;
-    opacity: 0;
-    transition: background-color $swift-ease-in-duration $swift-ease-in-timing-function;
-
-    .mat-form-field-invalid:not(.mat-focused) & {
-      height: $mat-form-field-underline-height;
-    }
-
-    .mat-focused &,
-    .mat-form-field-invalid & {
-      visibility: visible;
-      opacity: 1;
-      transform: scaleX(1);
-      transition: transform 300ms $swift-ease-out-timing-function,
-        opacity 100ms $swift-ease-out-timing-function,
-        background-color 300ms $swift-ease-out-timing-function;
-    }
+    opacity: 1;
+    transform: scaleX(1);
+    transition: transform 300ms $swift-ease-out-timing-function,
+                opacity 100ms $swift-ease-out-timing-function,
+                background-color 300ms $swift-ease-out-timing-function;
   }
 }
 
 // Wrapper for the hints and error messages.
 .mat-form-field-subscript-wrapper {
   position: absolute;
+  box-sizing: border-box;
   width: 100%;
   overflow: hidden; // prevents multi-line errors from overlapping the control
 }

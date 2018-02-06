@@ -1,0 +1,54 @@
+@import '../core/style/variables';
+@import '../core/style/vendor-prefixes';
+
+
+// Styles that only apply to the legacy appearance of the form-field.
+
+// The height of the underline.
+$mat-form-field-legacy-underline-height: 1px !default;
+
+
+.mat-form-field-appearance-legacy {
+  .mat-form-field-label {
+    transform: perspective(100px);
+    -ms-transform: none;
+  }
+
+  .mat-form-field-prefix,
+  .mat-form-field-suffix {
+    // Allow icons in a prefix or suffix to adapt to the correct size.
+    .mat-icon {
+      width: 1em;
+    }
+
+    // Allow icon buttons in a prefix or suffix to adapt to the correct size.
+    .mat-icon-button {
+      font: inherit;
+      vertical-align: baseline;
+
+      .mat-icon {
+        font-size: inherit;
+      }
+    }
+  }
+
+  // The underline is what's shown under the control, its prefix and its suffix.
+  // The ripple is the blue animation coming on top of it.
+  .mat-form-field-underline {
+    height: $mat-form-field-legacy-underline-height;
+  }
+
+  .mat-form-field-ripple {
+    top: 0;
+    height: $mat-form-field-legacy-underline-height * 2;
+  }
+
+  &.mat-form-field-disabled .mat-form-field-underline {
+    background-position: 0;
+    background-color: transparent;
+  }
+
+  &.mat-form-field-invalid:not(.mat-focused) .mat-form-field-ripple {
+    height: $mat-form-field-legacy-underline-height;
+  }
+}

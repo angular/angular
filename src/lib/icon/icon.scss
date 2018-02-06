@@ -11,3 +11,16 @@ $mat-icon-size: 24px !default;
   height: $mat-icon-size;
   width: $mat-icon-size;
 }
+
+.mat-form-field:not(.mat-form-field-appearance-legacy) {
+  .mat-form-field-prefix,
+  .mat-form-field-suffix {
+    .mat-icon {
+      display: block;
+    }
+
+    .mat-icon-button .mat-icon {
+      margin: auto;
+    }
+  }
+}

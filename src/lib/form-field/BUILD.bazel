@@ -9,6 +9,10 @@ ng_module(
   module_name = "@angular/material/form-field",
   assets = [
     ":form_field_css",
+    ":form_field_fill_css",
+    ":form_field_legacy_css",
+    ":form_field_outline_css",
+    ":form_field_standard_css",
     "//src/lib/input:input_css"
   ],
   deps = [
@@ -19,14 +23,37 @@ ng_module(
   tsconfig = ":tsconfig-build.json",
 )
 
-
 sass_binary(
   name = "form_field_scss",
   src = "form-field.scss",
   deps = ["//src/lib/core:core_scss_lib"],
 )
 
-# TODO(jelbourn): remove this when sass_binary supports specifying an output filename and dir.
+sass_binary(
+  name = "form_field_fill_scss",
+  src = "form-field-fill.scss",
+  deps = ["//src/lib/core:core_scss_lib"],
+)
+
+sass_binary(
+  name = "form_field_legacy_scss",
+  src = "form-field-legacy.scss",
+  deps = ["//src/lib/core:core_scss_lib"],
+)
+
+sass_binary(
+  name = "form_field_outline_scss",
+  src = "form-field-outline.scss",
+  deps = ["//src/lib/core:core_scss_lib"],
+)
+
+sass_binary(
+  name = "form_field_standard_scss",
+  src = "form-field-standard.scss",
+  deps = ["//src/lib/core:core_scss_lib"],
+)
+
+# TODO(jelbourn): remove these when sass_binary supports specifying an output filename and dir.
 # Copy the output of the sass_binary such that the filename and path match what we expect.
 genrule(
   name = "form_field_css",
@@ -35,3 +62,30 @@ genrule(
   cmd = "cat $(locations :form_field_scss) > $@",
 )
 
+genrule(
+  name = "form_field_fill_css",
+  srcs = [":form_field_fill_scss"],
+  outs = ["form-field-fill.css"],
+  cmd = "cat $(locations :form_field_fill_scss) > $@",
+)
+
+genrule(
+  name = "form_field_legacy_css",
+  srcs = [":form_field_legacy_scss"],
+  outs = ["form-field-legacy.css"],
+  cmd = "cat $(locations :form_field_legacy_scss) > $@",
+)
+
+genrule(
+  name = "form_field_outline_css",
+  srcs = [":form_field_outline_scss"],
+  outs = ["form-field-outline.css"],
+  cmd = "cat $(locations :form_field_outline_scss) > $@",
+)
+
+genrule(
+  name = "form_field_standard_css",
+  srcs = [":form_field_standard_scss"],
+  outs = ["form-field-standard.css"],
+  cmd = "cat $(locations :form_field_standard_scss) > $@",
+)

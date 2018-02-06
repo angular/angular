@@ -1,0 +1,43 @@
+// Core styles that enable monitoring autofill state of inputs.
+@mixin mat-input-autofill {
+  // Keyframes that apply no styles, but allow us to monitor when an input becomes autofilled
+  // by watching for the animation events that are fired when they start.
+  // Based on: https://medium.com/@brunn/detecting-autofilled-fields-in-javascript-aed598d25da7
+  @keyframes mat-input-autofill-start {}
+  @keyframes mat-input-autofill-end {}
+
+  .mat-input-autofill-monitored:-webkit-autofill {
+    animation-name: mat-input-autofill-start;
+  }
+
+  .mat-input-autofill-monitored:not(:-webkit-autofill) {
+    animation-name: mat-input-autofill-end;
+  }
+}
+
+// Used to generate UIDs for keyframes used to change the input autofill styles.
+$mat-input-autofill-color-frame-count: 0;
+
+// Mixin used to apply custom background and foreground colors to an autofilled input. Based on:
+// https://stackoverflow.com/questions/2781549/
+// removing-input-background-colour-for-chrome-autocomplete#answer-37432260
+@mixin mat-input-autofill-color($background, $foreground:'') {
+  @keyframes mat-input-autofill-color-#{$mat-input-autofill-color-frame-count} {
+    to {
+      background: $background;
+      @if $foreground != '' { color: $foreground; }
+    }
+  }
+
+  &:-webkit-autofill {
+    animation-name: mat-input-autofill-color-#{$mat-input-autofill-color-frame-count};
+    animation-fill-mode: both;
+  }
+
+  &.mat-input-autofill-monitored:-webkit-autofill {
+    animation-name: mat-input-autofill-start,
+                    mat-input-autofill-color-#{$mat-input-autofill-color-frame-count};
+  }
+
+  $mat-input-autofill-color-frame-count: $mat-input-autofill-color-frame-count + 1 !global;
+}

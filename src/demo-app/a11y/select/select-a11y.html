@@ -3,7 +3,8 @@
   <p>Select your favorite color</p>
 
   <mat-form-field>
-    <mat-select placeholder="Colors" [(ngModel)]="selectedColor">
+    <mat-label>Colors</mat-label>
+    <mat-select [(ngModel)]="selectedColor">
       <mat-option *ngFor="let color of colors" [value]="color.value">
         {{ color.label }}
       </mat-option>
@@ -16,7 +17,8 @@
   <p>Pick toppings for your pizza</p>
 
   <mat-form-field>
-    <mat-select placeholder="Toppings" [(ngModel)]="selectedTopping" multiple>
+    <mat-label>Toppings</mat-label>
+    <mat-select [(ngModel)]="selectedTopping" multiple>
       <mat-option *ngFor="let topping of toppings" [value]="topping.value">
         {{ topping.label }}
       </mat-option>
@@ -29,7 +31,8 @@
   <p>Pick your Pokemon</p>
 
   <mat-form-field>
-    <mat-select placeholder="Pokemon" [(ngModel)]="selectedPokemon">
+    <mat-label>Pokemon</mat-label>
+    <mat-select [(ngModel)]="selectedPokemon">
       <mat-optgroup *ngFor="let group of pokemon" [label]="group.label">
         <mat-option *ngFor="let creature of group.pokemon" [value]="creature.value">
           {{ creature.label }}
@@ -44,21 +47,24 @@
 
   <div class="select-a11y-spacer">
     <mat-form-field  color="primary">
-      <mat-select placeholder="ZIP code">
+      <mat-label>ZIP code</mat-label>
+      <mat-select>
         <mat-option value="2000">2000</mat-option>
         <mat-option value="2100">2100</mat-option>
       </mat-select>
     </mat-form-field>
 
     <mat-form-field color="accent">
-      <mat-select placeholder="State">
+      <mat-label>State</mat-label>
+      <mat-select>
         <mat-option value="alaska">Alaska</mat-option>
         <mat-option value="alabama">Alabama</mat-option>
       </mat-select>
     </mat-form-field>
 
     <mat-form-field color="warn">
-      <mat-select placeholder="Language">
+      <mat-label>Language</mat-label>
+      <mat-select>
         <mat-option value="english">English</mat-option>
         <mat-option value="spanish">Spanish</mat-option>
       </mat-select>
@@ -67,21 +73,24 @@
 
   <div class="select-a11y-spacer">
     <mat-form-field color="primary">
-      <mat-select placeholder="Digimon" multiple>
+      <mat-label>Digimon</mat-label>
+      <mat-select multiple>
         <mat-option value="mihiramon">Mihiramon</mat-option>
         <mat-option value="sandiramon">Sandiramon</mat-option>
       </mat-select>
     </mat-form-field>
 
     <mat-form-field color="accent">
-      <mat-select placeholder="Drink" multiple>
+      <mat-label>Drink</mat-label>
+      <mat-select multiple>
         <mat-option value="water">Water</mat-option>
         <mat-option value="coke">Coke</mat-option>
       </mat-select>
     </mat-form-field>
 
     <mat-form-field color="warn">
-      <mat-select placeholder="Theme" multiple>
+      <mat-label>Theme</mat-label>
+      <mat-select multiple>
         <mat-option value="light">Light</mat-option>
         <mat-option value="dark">Dark</mat-option>
       </mat-select>

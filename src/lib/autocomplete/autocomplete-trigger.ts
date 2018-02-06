@@ -512,7 +512,7 @@ export class MatAutocompleteTrigger implements ControlValueAccessor, OnDestroy {
   }
 
   private _getConnectedElement(): ElementRef {
-    return this._formField ? this._formField._connectionContainerRef : this._element;
+    return this._formField ? this._formField.getConnectedOverlayOrigin() : this._element;
   }
 
   /** Returns the width of the input element, so the panel width can match it. */

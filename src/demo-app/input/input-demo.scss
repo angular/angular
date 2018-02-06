@@ -1,3 +1,5 @@
+@import '../../../dist/packages/material/input/autofill';
+
 .demo-basic {
   padding: 0;
 }
@@ -10,6 +12,10 @@
 
 .demo-card {
   margin: 16px;
+
+  mat-card-content {
+    font-size: 16px;
+  }
 }
 
 .demo-text-align-end {
@@ -22,4 +28,8 @@
   overflow: auto;
   padding: 0;
   background: lightblue;
+}
+
+.demo-custom-autofill-style {
+  @include mat-input-autofill-color(transparent, red);
 }

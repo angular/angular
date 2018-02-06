@@ -8,7 +8,7 @@
       <mat-chip-list>
         <mat-chip>Chip 1</mat-chip>
         <mat-chip>Chip 2</mat-chip>
-        <mat-chip>Chip 3</mat-chip>
+        <mat-chip disabled>Chip 3</mat-chip>
       </mat-chip-list>
 
       <h4>Unstyled</h4>
@@ -31,6 +31,56 @@
         </mat-chip>
       </mat-chip-list>
       <div>{{message}}</div>
+
+      <h4>With avatar and icons</h4>
+
+
+      <mat-chip-list>
+        <mat-chip>
+          <mat-icon matChipAvatar>home</mat-icon>
+          Home
+          <mat-icon matChipRemove>cancel</mat-icon>
+        </mat-chip>
+        <mat-chip color="accent" selected="true">
+          <mat-chip-avatar>P</mat-chip-avatar>
+          Portel
+          <mat-icon matChipRemove>cancel</mat-icon>
+        </mat-chip>
+
+        <mat-chip>
+          <mat-chip-avatar>M</mat-chip-avatar>
+          Molly
+        </mat-chip>
+
+        <mat-chip>
+          Koby
+          <mat-icon matChipRemove>cancel</mat-icon>
+        </mat-chip>
+
+        <mat-chip>
+          Razzle
+        </mat-chip>
+
+        <mat-chip>
+          <img src="https://material.angularjs.org/material2_assets/ngconf/Mal.png" matChipAvatar>
+          Mal
+        </mat-chip>
+
+        <mat-chip selected="true" color="warn">
+          <img src="https://material.angularjs.org/material2_assets/ngconf/Husi.png" matChipAvatar>
+          Husi
+          <mat-icon matChipRemove>cancel</mat-icon>
+        </mat-chip>
+
+        <mat-chip>
+          Good
+          <mat-icon matChipTrailingIcon>star</mat-icon>
+        </mat-chip>
+        <mat-chip>
+          Bad
+          <mat-icon matChipTrailingIcon>star_border</mat-icon>
+        </mat-chip>
+      </mat-chip-list>
     </mat-card-content>
   </mat-card>
 

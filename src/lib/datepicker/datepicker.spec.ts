@@ -273,7 +273,7 @@ describe('MatDatepicker', () => {
       });
 
       it('should attach popup to native input', () => {
-        let attachToRef = testComponent.datepickerInput.getPopupConnectionElementRef();
+        let attachToRef = testComponent.datepickerInput.getConnectedOverlayOrigin();
         expect(attachToRef.nativeElement.tagName.toLowerCase())
             .toBe('input', 'popup should be attached to native input');
       });
@@ -790,12 +790,6 @@ describe('MatDatepicker', () => {
         fixture.detectChanges();
       }));
 
-      it('should attach popup to mat-form-field underline', () => {
-        let attachToRef = testComponent.datepickerInput.getPopupConnectionElementRef();
-        expect(attachToRef.nativeElement.classList.contains('mat-form-field-underline'))
-            .toBe(true, 'popup should be attached to mat-form-field underline');
-      });
-
       it('should float the placeholder when an invalid value is entered', () => {
         testComponent.datepickerInput.value = 'totally-not-a-date' as any;
         fixture.debugElement.nativeElement.querySelector('input').value = 'totally-not-a-date';
@@ -804,7 +798,6 @@ describe('MatDatepicker', () => {
         expect(fixture.debugElement.nativeElement.querySelector('mat-form-field').classList)
           .toContain('mat-form-field-should-float');
       });
-
     });
 
     describe('datepicker with min and max dates and validation', () => {

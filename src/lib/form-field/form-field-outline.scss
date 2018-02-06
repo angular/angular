@@ -1,0 +1,138 @@
+@import '../core/style/variables';
+@import '../core/style/vendor-prefixes';
+
+// Styles that only apply to the outline appearance of the form-field.
+
+// The horizontal padding between the edge of the form field fill box and the start of the text.
+$mat-form-field-outline-side-padding: 0.75em !default;
+// The scale of the subscript and floating label text w.r.t the value text.
+$mat-form-field-outline-subscript-font-scale: 0.75 !default;
+// The amount of overlap between the label and the outline.
+$mat-form-field-outline-label-overlap: 0.25em;
+// The border radius of the outline.
+$mat-form-field-outline-border-radius: 5px;
+// The width of the outline.
+$mat-form-field-outline-width: 1px;
+// The width of the thick outline (used for focus, hover, and error state).
+$mat-form-field-outline-thick-width: 2px;
+// The horizontal padding between the edge of the subscript box and the start of the subscript text.
+$mat-form-field-outline-subscript-padding:
+    $mat-form-field-outline-side-padding / $mat-form-field-outline-subscript-font-scale;
+
+
+.mat-form-field-appearance-outline {
+  // We need to add margin to the top to reserve space in the layout for the label which sticks out
+  // of the top. In order to ensure that the outline appearance aligns nicely with other form-field
+  // appearances when center-aligned, we also need to add the same amount of margin to the bottom.
+  .mat-form-field-wrapper {
+    margin: $mat-form-field-outline-label-overlap 0;
+  }
+
+  .mat-form-field-flex {
+    padding: 0 $mat-form-field-outline-side-padding 0 $mat-form-field-outline-side-padding;
+    margin-top: -$mat-form-field-outline-label-overlap;
+  }
+
+  .mat-form-field-prefix,
+  .mat-form-field-suffix {
+    top: $mat-form-field-outline-label-overlap;
+  }
+
+  .mat-form-field-outline {
+    display: flex;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    pointer-events: none;
+  }
+
+  .mat-form-field-outline-start,
+  .mat-form-field-outline-end {
+    border: $mat-form-field-outline-width solid currentColor;
+    min-width: $mat-form-field-outline-border-radius;
+  }
+
+  .mat-form-field-outline-start {
+    border-radius: $mat-form-field-outline-border-radius 0 0 $mat-form-field-outline-border-radius;
+    border-right-style: none;
+
+    [dir='rtl'] & {
+      border-right-style: solid;
+      border-left-style: none;
+      border-radius: 0 $mat-form-field-outline-border-radius $mat-form-field-outline-border-radius
+                     0;
+    }
+  }
+
+  .mat-form-field-outline-end {
+    border-radius: 0 $mat-form-field-outline-border-radius $mat-form-field-outline-border-radius 0;
+    border-left-style: none;
+    flex-grow: 1;
+
+    [dir='rtl'] & {
+      border-left-style: solid;
+      border-right-style: none;
+      border-radius: $mat-form-field-outline-border-radius 0 0
+                     $mat-form-field-outline-border-radius;
+    }
+  }
+
+  .mat-form-field-outline-gap {
+    border-bottom: $mat-form-field-outline-width solid currentColor;
+
+    &::before {
+      content: '';
+      display: block;
+      width: 100%;
+      border-top: $mat-form-field-outline-width solid currentColor;
+      opacity: 1;
+      transition: opacity 300ms $swift-ease-out-timing-function;
+    }
+  }
+
+  &.mat-form-field-can-float.mat-form-field-should-float {
+    .mat-form-field-outline-gap::before {
+      opacity: 0;
+    }
+  }
+
+  .mat-form-field-outline-thick {
+    opacity: 0;
+
+    .mat-form-field-outline-start,
+    .mat-form-field-outline-end,
+    .mat-form-field-outline-gap,
+    .mat-form-field-outline-gap::before {
+      border-width: $mat-form-field-outline-thick-width;
+      transition: border-color 300ms $swift-ease-out-timing-function,
+                  opacity 300ms $swift-ease-out-timing-function;
+    }
+  }
+
+  &.mat-focused,
+  &.mat-form-field-invalid {
+    .mat-form-field-outline {
+      opacity: 0;
+      transition: opacity 100ms $swift-ease-out-timing-function;
+    }
+    .mat-form-field-outline-thick {
+      opacity: 1;
+    }
+  }
+
+  &:not(.mat-form-field-disabled) .mat-form-field-flex:hover {
+    & ~ .mat-form-field-outline {
+      opacity: 0;
+      transition: opacity 600ms $swift-ease-out-timing-function;
+    }
+
+    & ~ .mat-form-field-outline-thick {
+      opacity: 1;
+    }
+  }
+
+  .mat-form-field-subscript-wrapper {
+    padding: 0 $mat-form-field-outline-subscript-padding;
+  }
+}

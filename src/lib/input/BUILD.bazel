@@ -8,6 +8,7 @@ ng_module(
   srcs = glob(["**/*.ts"], exclude=["**/*.spec.ts"]),
   module_name = "@angular/material/input",
   deps = [
+    "@rxjs",
     "//src/lib/core",
     "//src/lib/form-field",
     "//src/cdk/coercion",

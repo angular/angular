@@ -7,7 +7,8 @@ Space above cards: <input type="number" [formControl]="topHeightCtrl">
     <mat-card-subtitle>ngModel</mat-card-subtitle>
 
     <mat-form-field [floatLabel]="floatLabel" [color]="drinksTheme">
-      <mat-select placeholder="Drink" [(ngModel)]="currentDrink" [required]="drinksRequired"
+      <mat-label>Drink</mat-label>
+      <mat-select [(ngModel)]="currentDrink" [required]="drinksRequired"
         [disabled]="drinksDisabled" #drinkControl="ngModel">
         <mat-option>None</mat-option>
         <mat-option *ngFor="let drink of drinks" [value]="drink.value" [disabled]="drink.disabled">
@@ -50,7 +51,8 @@ Space above cards: <input type="number" [formControl]="topHeightCtrl">
 
     <mat-card-content>
       <mat-form-field [color]="pokemonTheme">
-        <mat-select multiple placeholder="Pokemon" [(ngModel)]="currentPokemon"
+        <mat-label>Pokemon</mat-label>
+        <mat-select multiple [(ngModel)]="currentPokemon"
           [required]="pokemonRequired" [disabled]="pokemonDisabled" #pokemonControl="ngModel">
           <mat-option *ngFor="let creature of pokemon" [value]="creature.value">
             {{ creature.viewValue }}
@@ -78,7 +80,8 @@ Space above cards: <input type="number" [formControl]="topHeightCtrl">
     <mat-card-subtitle>Without Angular forms</mat-card-subtitle>
 
     <mat-form-field>
-      <mat-select placeholder="Digimon" [(value)]="currentDigimon">
+      <mat-label>Digimon</mat-label>
+      <mat-select [(value)]="currentDigimon">
         <mat-option>None</mat-option>
         <mat-option *ngFor="let creature of digimon" [value]="creature.value">
           {{ creature.viewValue }}
@@ -97,7 +100,8 @@ Space above cards: <input type="number" [formControl]="topHeightCtrl">
 
     <mat-card-content>
       <mat-form-field>
-        <mat-select placeholder="Pokemon" [(ngModel)]="currentPokemonFromGroup">
+        <mat-label>Pokemon</mat-label>
+        <mat-select [(ngModel)]="currentPokemonFromGroup">
           <mat-optgroup *ngFor="let group of pokemonGroups" [label]="group.name"
             [disabled]="group.disabled">
             <mat-option *ngFor="let creature of group.pokemon" [value]="creature.value">
@@ -114,11 +118,11 @@ Space above cards: <input type="number" [formControl]="topHeightCtrl">
     <mat-card-subtitle>compareWith</mat-card-subtitle>
     <mat-card-content>
       <mat-form-field [color]="drinksTheme">
-        <mat-select placeholder="Drink"
-                   [(ngModel)]="currentDrinkObject"
-                   [required]="drinkObjectRequired"
-                   [compareWith]="compareByValue ? compareDrinkObjectsByValue : compareByReference"
-                   #drinkObjectControl="ngModel">
+        <mat-label>Drink</mat-label>
+        <mat-select [(ngModel)]="currentDrinkObject"
+                    [required]="drinkObjectRequired"
+                    [compareWith]="compareByValue ? compareDrinkObjectsByValue : compareByReference"
+                    #drinkObjectControl="ngModel">
           <mat-option *ngFor="let drink of drinks" [value]="drink" [disabled]="drink.disabled">
             {{ drink.viewValue }}
           </mat-option>
@@ -146,7 +150,8 @@ Space above cards: <input type="number" [formControl]="topHeightCtrl">
 
       <mat-card-content>
         <mat-form-field>
-          <mat-select placeholder="Food i would like to eat" [formControl]="foodControl">
+          <mat-label>Food I would like to eat</mat-label>
+          <mat-select [formControl]="foodControl">
             <mat-option *ngFor="let food of foods" [value]="food.value"> {{ food.viewValue }}</mat-option>
           </mat-select>
         </mat-form-field>
@@ -167,7 +172,8 @@ Space above cards: <input type="number" [formControl]="topHeightCtrl">
 
       <mat-card-content>
         <mat-form-field>
-          <mat-select placeholder="Starter Pokemon" (change)="latestChangeEvent = $event">
+          <mat-label>Starter pokemon</mat-label>
+          <mat-select (change)="latestChangeEvent = $event">
             <mat-option *ngFor="let creature of pokemon" [value]="creature.value">{{ creature.viewValue }}</mat-option>
           </mat-select>
         </mat-form-field>

@@ -3,22 +3,29 @@
 
 $mat-chip-vertical-padding: 7px;
 $mat-chip-horizontal-padding: 12px;
-$mat-chip-remove-margin-before: 6px;
-$mat-chip-remove-margin-after: -4px;
 
-$mat-chips-chip-margin: 8px;
+$mat-chip-remove-vertical-padding: 7px;
+$mat-chip-remove-before-margin: 7px;
+$mat-chip-remove-after-padding: 7px;
+
+$mat-chip-avatar-vertical-padding: 0;
+$mat-chip-avatar-before-padding: 0;
+$mat-chip-avatar-after-margin: 8px;
+
+$mat-chips-chip-margin: 4px;
 
 $mat-chip-input-width: 150px;
 $mat-chip-input-margin: 3px;
 
-.mat-chip-list-wrapper {
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  align-items: baseline;
+$mat-chip-avatar-size: 32px;
+$mat-chip-remove-size: 18px;
+
+.mat-chip {
+  position: relative;
+  overflow: hidden;
 }
 
-.mat-chip:not(.mat-basic-chip) {
+.mat-standard-chip {
   @include mat-elevation-transition;
   display: inline-flex;
   padding: $mat-chip-vertical-padding $mat-chip-horizontal-padding;
@@ -26,28 +33,9 @@ $mat-chip-input-margin: 3px;
   align-items: center;
   cursor: default;
 
-  // Apply a margin to adjacent sibling chips.
-  & + & {
-    margin: 0 0 0 $mat-chips-chip-margin;
-
-    [dir='rtl'] & {
-      margin: 0 $mat-chips-chip-margin 0 0;
-    }
-  }
-
-  .mat-form-field-prefix & {
-    &:last-child {
-      margin-right: $mat-chips-chip-margin;
-    }
-
-    [dir='rtl'] &:last-child {
-      margin-left: $mat-chips-chip-margin;
-    }
-  }
-
   .mat-chip-remove.mat-icon {
-    width: 1em;
-    height: 1em;
+    width: $mat-chip-remove-size;
+    height: $mat-chip-remove-size;
   }
 
   &:focus {
@@ -58,40 +46,104 @@ $mat-chip-input-margin: 3px;
   @include cdk-high-contrast {
     outline: solid 1px;
   }
+
+  &.mat-chip-with-trailing-icon.mat-chip-with-avatar,
+  &.mat-chip-with-avatar {
+    padding-top: $mat-chip-avatar-vertical-padding;
+    padding-bottom: $mat-chip-avatar-vertical-padding;
+  }
+
+  &.mat-chip-with-trailing-icon.mat-chip-with-avatar {
+    padding-right: $mat-chip-remove-after-padding;
+    padding-left: $mat-chip-avatar-before-padding;
+
+    [dir='rtl'] & {
+      padding-left: $mat-chip-remove-after-padding;
+      padding-right: $mat-chip-avatar-before-padding;
+    }
+  }
+
+  &.mat-chip-with-trailing-icon {
+    padding-top: $mat-chip-remove-vertical-padding;
+    padding-bottom: $mat-chip-remove-vertical-padding;
+    padding-right: $mat-chip-remove-after-padding;
+    padding-left: $mat-chip-horizontal-padding;
+
+    [dir='rtl'] & {
+      padding-left: $mat-chip-remove-after-padding;
+      padding-right: $mat-chip-horizontal-padding;
+    }
+  }
+
+  &.mat-chip-with-avatar {
+    padding-left: $mat-chip-avatar-before-padding;
+    padding-right: $mat-chip-horizontal-padding;
+
+    [dir='rtl'] & {
+      padding-right: $mat-chip-avatar-before-padding;
+      padding-left: $mat-chip-horizontal-padding;
+    }
+  }
+
+  .mat-chip-avatar {
+    width: $mat-chip-avatar-size;
+    height: $mat-chip-avatar-size;
+    margin-right: $mat-chip-avatar-after-margin;
+    margin-left: 0;
+
+    [dir='rtl'] & {
+      margin-left: $mat-chip-avatar-after-margin;
+      margin-right: 0;
+    }
+  }
+
+  .mat-chip-remove,
+  .mat-chip-trailing-icon {
+    width: $mat-chip-remove-size;
+    height: $mat-chip-remove-size;
+    cursor: pointer;
+  }
+
+  .mat-chip-remove,
+  .mat-chip-trailing-icon {
+    margin-left: $mat-chip-remove-before-margin;
+    margin-right: 0;
+
+    [dir='rtl'] & {
+      margin-right: $mat-chip-remove-before-margin;
+      margin-left: 0;
+    }
+  }
+}
+
+.mat-chip-list-wrapper {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  margin: -$mat-chips-chip-margin;
+
+  input.mat-input-element,
+  .mat-standard-chip {
+    margin: $mat-chips-chip-margin;
+  }
 }
 
 .mat-chip-list-stacked .mat-chip-list-wrapper {
-  display: block;
+  flex-direction: column;
+  align-items: flex-start;
 
-  .mat-chip:not(.mat-basic-chip) {
-    display: block;
-    margin: 0;
-    margin-bottom: $mat-chips-chip-margin;
-
-    [dir='rtl'] & {
-      margin: 0;
-      margin-bottom: $mat-chips-chip-margin;
-    }
-
-    &:last-child, [dir='rtl'] &:last-child {
-      margin-bottom: 0;
-    }
+  .mat-standard-chip {
+    width: 100%;
   }
 }
 
-.mat-form-field-prefix .mat-chip-list-wrapper {
-  margin-bottom: $mat-chips-chip-margin;
-}
-
-.mat-chip-remove {
-  margin-right: $mat-chip-remove-margin-after;
-  margin-left: $mat-chip-remove-margin-before;
-  cursor: pointer;
-
-  [dir='rtl'] & {
-    margin-right: $mat-chip-remove-margin-before;
-    margin-left: $mat-chip-remove-margin-after;
-  }
+.mat-chip-avatar {
+  border-radius: 50%;
+  justify-content: center;
+  align-items: center;
+  display: flex;
+  overflow: hidden;
 }
 
 input.mat-chip-input {

@@ -2,7 +2,8 @@
   <h2>Filtering and selection</h2>
   <p>Select your favorite state</p>
   <mat-form-field>
-    <input matInput placeholder="Search for a state" [matAutocomplete]="autocomplete"
+    <mat-label>Search for a state</mat-label>
+    <input matInput [matAutocomplete]="autocomplete"
       [(ngModel)]="value" (ngModelChange)="filteredStates = filter(value)">
     <mat-autocomplete #autocomplete="matAutocomplete">
       <mat-option *ngFor="let state of filteredStates" [value]="state.name">

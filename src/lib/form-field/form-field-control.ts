@@ -62,6 +62,12 @@ export abstract class MatFormFieldControl<T> {
    */
   readonly controlType?: string;
 
+  /**
+   * Whether the input is currently in an autofilled state. If property is not present on the
+   * control it is assumed to be false.
+   */
+  readonly autofilled?: boolean;
+
   /** Sets the list of element IDs that currently describe this control. */
   abstract setDescribedByIds(ids: string[]): void;
 

@@ -8,13 +8,15 @@
 </p>
 <p>
   <mat-form-field>
-    <input matInput [matDatepicker]="minDatePicker" [(ngModel)]="minDate" placeholder="Min date"
+    <mat-label>Min date</mat-label>
+    <input matInput [matDatepicker]="minDatePicker" [(ngModel)]="minDate"
         [disabled]="inputDisabled">
     <mat-datepicker-toggle matSuffix [for]="minDatePicker"></mat-datepicker-toggle>
     <mat-datepicker #minDatePicker [touchUi]="touch" [disabled]="datepickerDisabled"></mat-datepicker>
   </mat-form-field>
   <mat-form-field>
-    <input matInput [matDatepicker]="maxDatePicker" [(ngModel)]="maxDate" placeholder="Max date"
+    <mat-label>Max date</mat-label>
+    <input matInput [matDatepicker]="maxDatePicker" [(ngModel)]="maxDate"
         [disabled]="inputDisabled">
     <mat-datepicker-toggle matSuffix [for]="maxDatePicker"></mat-datepicker-toggle>
     <mat-datepicker #maxDatePicker [touchUi]="touch" [disabled]="datepickerDisabled"></mat-datepicker>
@@ -22,7 +24,8 @@
 </p>
 <p>
   <mat-form-field>
-    <input matInput [matDatepicker]="startAtPicker" [(ngModel)]="startAt" placeholder="Start at date"
+    <mat-label>Start at date</mat-label>
+    <input matInput [matDatepicker]="startAtPicker" [(ngModel)]="startAt"
         [disabled]="inputDisabled">
     <mat-datepicker-toggle matSuffix [for]="startAtPicker"></mat-datepicker-toggle>
     <mat-datepicker #startAtPicker [touchUi]="touch" [disabled]="datepickerDisabled"></mat-datepicker>
@@ -34,6 +37,7 @@
 <p>
   <mat-datepicker-toggle [for]="resultPicker"></mat-datepicker-toggle>
   <mat-form-field>
+    <mat-label>Pick a date</mat-label>
     <input matInput
            #resultPickerModel="ngModel"
            [matDatepicker]="resultPicker"
@@ -42,7 +46,6 @@
            [max]="maxDate"
            [matDatepickerFilter]="filterOdd ? dateFilter : null"
            [disabled]="inputDisabled"
-           placeholder="Pick a date"
            (dateInput)="onDateInput($event)"
            (dateChange)="onDateChange($event)">
     <mat-datepicker
@@ -86,9 +89,9 @@
 <p>
   <mat-datepicker-toggle [for]="datePicker1"></mat-datepicker-toggle>
   <mat-form-field>
+    <mat-label>Input disabled</mat-label>
     <input matInput [matDatepicker]="datePicker1" [(ngModel)]="date" [min]="minDate" [max]="maxDate"
-           [matDatepickerFilter]="filterOdd ? dateFilter : null" disabled
-           placeholder="Input disabled">
+           [matDatepickerFilter]="filterOdd ? dateFilter : null" disabled>
     <mat-datepicker #datePicker1 [touchUi]="touch" [startAt]="startAt"
                    [startView]="yearView ? 'year' : 'month'"></mat-datepicker>
   </mat-form-field>
@@ -98,9 +101,9 @@
 <p>
   <mat-datepicker-toggle [for]="datePicker2"></mat-datepicker-toggle>
   <mat-form-field>
+    <mat-label>FormControl disabled</mat-label>
     <input matInput [matDatepicker]="datePicker2" [formControl]="dateCtrl" [min]="minDate"
-           [max]="maxDate" [matDatepickerFilter]="filterOdd ? dateFilter : null"
-           placeholder="FormControl disabled">
+           [max]="maxDate" [matDatepickerFilter]="filterOdd ? dateFilter : null">
     <mat-datepicker #datePicker2 [touchUi]="touch" [startAt]="startAt"
                     [startView]="yearView ? 'year' : 'month'"></mat-datepicker>
   </mat-form-field>
@@ -114,9 +117,9 @@
 <p>
   <mat-datepicker-toggle [for]="datePicker3"></mat-datepicker-toggle>
   <mat-form-field>
+    <mat-label>Input disabled, datepicker enabled</mat-label>
     <input matInput disabled [matDatepicker]="datePicker3" [(ngModel)]="date" [min]="minDate"
-           [max]="maxDate" [matDatepickerFilter]="filterOdd ? dateFilter : null"
-           placeholder="Input disabled, datepicker enabled">
+           [max]="maxDate" [matDatepickerFilter]="filterOdd ? dateFilter : null">
     <mat-datepicker #datePicker3 [touchUi]="touch" [disabled]="false" [startAt]="startAt"
                    [startView]="yearView ? 'year' : 'month'"></mat-datepicker>
   </mat-form-field>
@@ -126,9 +129,9 @@
 <p>
   <mat-datepicker-toggle [for]="datePicker4"></mat-datepicker-toggle>
   <mat-form-field>
+    <mat-label>Value binding</mat-label>
     <input matInput [matDatepicker]="datePicker4" [value]="date" [min]="minDate"
-           [max]="maxDate" [matDatepickerFilter]="filterOdd ? dateFilter : null"
-           placeholder="Value binding">
+           [max]="maxDate" [matDatepickerFilter]="filterOdd ? dateFilter : null">
     <mat-datepicker #datePicker4 [touchUi]="touch" [startAt]="startAt"
                     [startView]="yearView ? 'year' : 'month'"></mat-datepicker>
   </mat-form-field>

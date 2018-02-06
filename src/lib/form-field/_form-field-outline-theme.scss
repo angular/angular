@@ -1,0 +1,136 @@
+@import '../core/theming/palette';
+@import '../core/theming/theming';
+@import '../core/style/form-common';
+@import '../core/typography/typography-utils';
+
+
+// Theme styles that only apply to the outline appearance of the form-field.
+
+@mixin mat-form-field-outline-theme($theme) {
+  $primary: map-get($theme, primary);
+  $accent: map-get($theme, accent);
+  $warn: map-get($theme, warn);
+  $foreground: map-get($theme, foreground);
+  $is-dark-theme: map-get($theme, is-dark);
+
+  $label-disabled-color: mat-color($foreground, disabled-text);
+  $outline-color: mat-color($foreground, divider, if($is-dark-theme, 0.3, 0.12));
+  $outline-color-hover: mat-color($foreground, divider, if($is-dark-theme, 1, 0.87));
+  $outline-color-primary: mat-color($primary);
+  $outline-color-accent: mat-color($accent);
+  $outline-color-warn: mat-color($warn);
+  $outline-color-disabled: mat-color($foreground, divider, if($is-dark-theme, 0.15, 0.06));
+
+  .mat-form-field-appearance-outline {
+    .mat-form-field-outline {
+      color: $outline-color;
+    }
+
+    .mat-form-field-outline-thick {
+      color: $outline-color-hover;
+    }
+
+    &.mat-focused {
+      .mat-form-field-outline-thick {
+        color: $outline-color-primary;
+      }
+
+      &.mat-accent .mat-form-field-outline-thick {
+        color: $outline-color-accent;
+      }
+
+      &.mat-warn .mat-form-field-outline-thick {
+        color: $outline-color-warn;
+      }
+    }
+
+    // Class repeated so that rule is specific enough to override focused accent color case.
+    &.mat-form-field-invalid.mat-form-field-invalid {
+      .mat-form-field-outline-thick {
+        color: $outline-color-warn;
+      }
+    }
+
+    &.mat-form-field-disabled {
+      .mat-form-field-label {
+        color: $label-disabled-color;
+      }
+
+      .mat-form-field-outline {
+        color: $outline-color-disabled;
+      }
+    }
+  }
+}
+
+// Used to make instances of the _mat-form-field-label-floating mixin negligibly different,
+// and prevent Google's CSS Optimizer from collapsing the declarations. This is needed because some
+// of the selectors contain pseudo-classes not recognized in all browsers. If a browser encounters
+// an unknown pseudo-class it will discard the entire rule set.
+$mat-form-field-outline-dedupe: 0;
+
+// Applies a floating label above the form field control itself.
+@mixin _mat-form-field-outline-label-floating($font-scale, $infix-padding, $infix-margin-top) {
+  transform: translateY(-$infix-margin-top - $infix-padding + $mat-form-field-outline-dedupe)
+  scale($font-scale);
+  width: 100% / $font-scale + $mat-form-field-outline-dedupe;
+
+  $mat-form-field-fill-dedupe: $mat-form-field-outline-dedupe + 0.00001 !global;
+}
+
+@mixin mat-form-field-outline-typography($config) {
+  // The unit-less line-height from the font config.
+  $line-height: mat-line-height($config, input);
+  // The amount to scale the font for the floating label and subscript.
+  $subscript-font-scale: 0.75;
+  // The padding above and below the infix.
+  $infix-padding: 1em;
+  // The margin applied to the form-field-infix to reserve space for the floating label.
+  $infix-margin-top: 1em * $line-height * $subscript-font-scale;
+  // The space between the bottom of the .mat-form-field-flex area and the subscript wrapper.
+  // Mocks show half of the text size, but this margin is applied to an element with the subscript
+  // text font size, so we need to divide by the scale factor to make it half of the original text
+  // size.
+  $subscript-margin-top: 0.5em / $subscript-font-scale;
+  // The padding applied to the form-field-wrapper to reserve space for the subscript, since it's
+  // absolutely positioned. This is a combination of the subscript's margin and line-height, but we
+  // need to multiply by the subscript font scale factor since the wrapper has a larger font size.
+  $wrapper-padding-bottom: ($subscript-margin-top + $line-height) * $subscript-font-scale;
+  // The amount we offset the label from the input text in the outline appearance.
+  $outline-appearance-label-offset: -0.25em;
+
+  .mat-form-field-appearance-outline {
+    .mat-form-field-infix {
+      padding: $infix-padding 0 $infix-padding 0;
+    }
+
+    .mat-form-field-outline {
+      // We want the bottom of the outline to start at the end of the content box, not the padding
+      // box, so we move it up by the padding amount.
+      bottom: $wrapper-padding-bottom;
+    }
+
+    .mat-form-field-label {
+      top: $infix-margin-top + $infix-padding;
+      margin-top: $outline-appearance-label-offset;
+    }
+
+    &.mat-form-field-can-float {
+      &.mat-form-field-should-float .mat-form-field-label,
+      .mat-input-server:focus + .mat-form-field-label-wrapper .mat-form-field-label {
+        @include _mat-form-field-outline-label-floating(
+                $subscript-font-scale, $infix-padding + $outline-appearance-label-offset,
+                $infix-margin-top);
+      }
+
+      // Server-side rendered matInput with a label attribute but label not shown
+      // (used as a pure CSS stand-in for mat-form-field-should-float).
+      .mat-input-server[label]:not(:label-shown) + .mat-form-field-label-wrapper
+      .mat-form-field-label {
+        @include _mat-form-field-outline-label-floating(
+                $subscript-font-scale, $infix-padding + $outline-appearance-label-offset,
+                $infix-margin-top);
+      }
+    }
+  }
+}

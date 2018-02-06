@@ -67,6 +67,19 @@
   }
 }
 
+// Align icon-buttons correctly inside of standard, fill, and outline form-field appearances.
+.mat-form-field:not(.mat-form-field-appearance-legacy) {
+  .mat-form-field-prefix,
+  .mat-form-field-suffix {
+    .mat-icon-button {
+      display: block;
+      font-size: inherit;
+      width: 2.5em;
+      height: 2.5em;
+    }
+  }
+}
+
 // The text and icon should be vertical aligned inside a button
 .mat-button, .mat-raised-button, .mat-icon-button, .mat-fab, .mat-mini-fab {
   color: currentColor;

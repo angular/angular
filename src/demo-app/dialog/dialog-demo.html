@@ -16,28 +16,34 @@
 
     <p>
       <mat-form-field>
-        <input matInput [(ngModel)]="config.width" placeholder="Width">
+        <mat-label>Width</mat-label>
+        <input matInput [(ngModel)]="config.width">
       </mat-form-field>
       <mat-form-field>
-        <input matInput [(ngModel)]="config.height" placeholder="Height">
-      </mat-form-field>
-    </p>
-
-    <p>
-      <mat-form-field>
-        <input matInput [(ngModel)]="config.minWidth" placeholder="Min Width">
-      </mat-form-field>
-      <mat-form-field>
-        <input matInput [(ngModel)]="config.minHeight" placeholder="Min Height">
+        <mat-label>Height</mat-label>
+        <input matInput [(ngModel)]="config.height">
       </mat-form-field>
     </p>
 
     <p>
       <mat-form-field>
-        <input matInput [(ngModel)]="config.maxWidth" placeholder="Max Width">
+        <mat-label>Min width</mat-label>
+        <input matInput [(ngModel)]="config.minWidth">
       </mat-form-field>
       <mat-form-field>
-        <input matInput [(ngModel)]="config.maxHeight" placeholder="Max Height">
+        <mat-label>Min height</mat-label>
+        <input matInput [(ngModel)]="config.minHeight">
+      </mat-form-field>
+    </p>
+
+    <p>
+      <mat-form-field>
+        <mat-label>Max width</mat-label>
+        <input matInput [(ngModel)]="config.maxWidth">
+      </mat-form-field>
+      <mat-form-field>
+        <mat-label>Max height</mat-label>
+        <input matInput [(ngModel)]="config.maxHeight">
       </mat-form-field>
     </p>
 
@@ -45,19 +51,23 @@
 
     <p>
       <mat-form-field>
-        <input matInput [(ngModel)]="config.position.top" (change)="config.position.bottom = ''" placeholder="Top">
+        <mat-label>Top</mat-label>
+        <input matInput [(ngModel)]="config.position.top" (change)="config.position.bottom = ''">
       </mat-form-field>
       <mat-form-field>
-        <input matInput [(ngModel)]="config.position.bottom" (change)="config.position.top = ''" placeholder="Bottom">
+        <mat-label>Bottom</mat-label>
+        <input matInput [(ngModel)]="config.position.bottom" (change)="config.position.top = ''">
       </mat-form-field>
     </p>
 
     <p>
       <mat-form-field>
-        <input matInput [(ngModel)]="config.position.left" (change)="config.position.right = ''" placeholder="Left">
+        <mat-label>Left</mat-label>
+        <input matInput [(ngModel)]="config.position.left" (change)="config.position.right = ''">
       </mat-form-field>
       <mat-form-field>
-        <input matInput [(ngModel)]="config.position.right" (change)="config.position.left = ''" placeholder="Right">
+        <mat-label>Right</mat-label>
+        <input matInput [(ngModel)]="config.position.right" (change)="config.position.left = ''">
       </mat-form-field>
     </p>
 
@@ -65,7 +75,8 @@
 
     <p>
       <mat-form-field>
-        <input matInput [(ngModel)]="config.backdropClass" placeholder="Backdrop class">
+        <mat-label>Backdrop class</mat-label>
+        <input matInput [(ngModel)]="config.backdropClass">
       </mat-form-field>
     </p>
 
@@ -75,7 +86,8 @@
 
     <p>
       <mat-form-field>
-        <mat-select placeholder="Button alignment" [(ngModel)]="actionsAlignment">
+        <mat-label>Button alignment</mat-label>
+        <mat-select [(ngModel)]="actionsAlignment">
           <mat-option>Start</mat-option>
           <mat-option value="end">End</mat-option>
           <mat-option value="center">Center</mat-option>
@@ -85,7 +97,8 @@
 
     <p>
       <mat-form-field>
-        <input matInput [(ngModel)]="config.data.message" placeholder="Dialog message">
+        <mat-label>Dialog message</mat-label>
+        <input matInput [(ngModel)]="config.data.message">
       </mat-form-field>
     </p>
 
@@ -104,7 +117,8 @@
   <p>It's Jazz!</p>
 
   <mat-form-field>
-    <input matInput placeholder="How much?" #howMuch>
+    <mat-label>How much?</mat-label>
+    <input matInput #howMuch>
   </mat-form-field>
 
   <p> {{ data.message }} </p>
