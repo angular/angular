@@ -96,7 +96,7 @@ Bind the `HeroesComponent.selectedHero` to the element's `hero` property like th
 `[hero]="selectedHero"` is an Angular [property binding](guide/template-syntax#property-binding).
 
 It's a _one way_ data binding from
-the `selectedHero` property of the `HeroComponent` to the `hero` property of the target element, which maps to the `hero` property of the `HeroDetailComponent`.
+the `selectedHero` property of the `HeroesComponent` to the `hero` property of the target element, which maps to the `hero` property of the `HeroDetailComponent`.
 
 Now when the user clicks a hero in the list, the `selectedHero` changes.
 When the `selectedHero` changes, the _property binding_ updates `hero`
