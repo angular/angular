@@ -64,6 +64,22 @@ export class MatMonthView<D> implements AfterContentInit {
   }
   private _selected: D | null;
 
+  /** The minimum selectable date. */
+  @Input()
+  get minDate(): D | null { return this._minDate; }
+  set minDate(value: D | null) {
+    this._minDate = this._getValidDateOrNull(this._dateAdapter.deserialize(value));
+  }
+  private _minDate: D | null;
+
+  /** The maximum selectable date. */
+  @Input()
+  get maxDate(): D | null { return this._maxDate; }
+  set maxDate(value: D | null) {
+    this._maxDate = this._getValidDateOrNull(this._dateAdapter.deserialize(value));
+  }
+  private _maxDate: D | null;
+
   /** A function used to filter which dates are selectable. */
   @Input() dateFilter: (date: D) => boolean;
 
@@ -154,23 +170,30 @@ export class MatMonthView<D> implements AfterContentInit {
 
   /** Creates MatCalendarCells for the dates in this month. */
   private _createWeekCells() {
-    let daysInMonth = this._dateAdapter.getNumDaysInMonth(this.activeDate);
-    let dateNames = this._dateAdapter.getDateNames();
+    const daysInMonth = this._dateAdapter.getNumDaysInMonth(this.activeDate);
+    const dateNames = this._dateAdapter.getDateNames();
     this._weeks = [[]];
     for (let i = 0, cell = this._firstWeekOffset; i < daysInMonth; i++, cell++) {
       if (cell == DAYS_PER_WEEK) {
         this._weeks.push([]);
         cell = 0;
       }
-      let date = this._dateAdapter.createDate(
-          this._dateAdapter.getYear(this.activeDate),
-          this._dateAdapter.getMonth(this.activeDate), i + 1);
-      let enabled = !this.dateFilter ||
-          this.dateFilter(date);
-      let ariaLabel = this._dateAdapter.format(date, this._dateFormats.display.dateA11yLabel);
+      const date = this._dateAdapter.createDate(
+            this._dateAdapter.getYear(this.activeDate),
+            this._dateAdapter.getMonth(this.activeDate), i + 1);
+      const enabled = this._shouldEnableDate(date);
+      const ariaLabel = this._dateAdapter.format(date, this._dateFormats.display.dateA11yLabel);
       this._weeks[this._weeks.length - 1]
           .push(new MatCalendarCell(i + 1, dateNames[i], ariaLabel, enabled));
     }
+  }
+
+  /** Date filter for the month */
+  private _shouldEnableDate(date: D): boolean {
+    return !!date &&
+        (!this.dateFilter || this.dateFilter(date)) &&
+        (!this.minDate || this._dateAdapter.compareDate(date, this.minDate) >= 0) &&
+        (!this.maxDate || this._dateAdapter.compareDate(date, this.maxDate) <= 0);
   }
 
   /**

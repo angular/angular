@@ -131,14 +131,6 @@ export class MatCalendar<D> implements AfterContentInit, OnDestroy, OnChanges {
   /** Reference to the current multi-year view component. */
   @ViewChild(MatMultiYearView) multiYearView: MatMultiYearView<D>;
 
-  /** Date filter for the month, year, and multi-year views. */
-  _dateFilterForViews = (date: D) => {
-    return !!date &&
-        (!this.dateFilter || this.dateFilter(date)) &&
-        (!this.minDate || this._dateAdapter.compareDate(date, this.minDate) >= 0) &&
-        (!this.maxDate || this._dateAdapter.compareDate(date, this.maxDate) <= 0);
-  }
-
   /**
    * The current active date. This determines which time period is shown and which date is
    * highlighted when using keyboard navigation.
@@ -368,7 +360,7 @@ export class MatCalendar<D> implements AfterContentInit, OnDestroy, OnChanges {
             this._dateAdapter.addCalendarMonths(this._activeDate, 1);
         break;
       case ENTER:
-        if (this._dateFilterForViews(this._activeDate)) {
+        if (!this.dateFilter || this.dateFilter(this._activeDate)) {
           this._dateSelected(this._activeDate);
           this._userSelected();
           // Prevent unexpected default actions such as form submission.
