@@ -20,8 +20,8 @@ import {isFunction} from './utils';
  * @experimental
  */
 export function registerAsCustomElements<T>(
-  customElementComponents: Type<any>[], platformRef: PlatformRef,
-  moduleFactory: NgModuleFactory<T>): Promise<NgModuleRef<T>>;
+    customElementComponents: Type<any>[], platformRef: PlatformRef,
+    moduleFactory: NgModuleFactory<T>): Promise<NgModuleRef<T>>;
 
 /**
  * @description registers the `customElementComponents` using a async bootstrap function, allowing
@@ -30,8 +30,8 @@ export function registerAsCustomElements<T>(
  * @experimental
  */
 export function registerAsCustomElements<T>(
-  customElementComponents: Type<any>[],
-  bootstrapFn: () => Promise<NgModuleRef<T>>): Promise<NgModuleRef<T>>;
+    customElementComponents: Type<any>[],
+    bootstrapFn: () => Promise<NgModuleRef<T>>): Promise<NgModuleRef<T>>;
 /**
  *
  * @description The `customElement` components passed into this function are wrapped in a subclass
@@ -54,12 +54,12 @@ export function registerAsCustomElements<T>(
  * @experimental
  */
 export function registerAsCustomElements<T>(
-  customElementComponents: Type<any>[],
-  platformRefOrBootstrapFn: PlatformRef | (() => Promise<NgModuleRef<T>>),
-  moduleFactory?: NgModuleFactory<T>): Promise<NgModuleRef<T>> {
+    customElementComponents: Type<any>[],
+    platformRefOrBootstrapFn: PlatformRef | (() => Promise<NgModuleRef<T>>),
+    moduleFactory?: NgModuleFactory<T>): Promise<NgModuleRef<T>> {
   const bootstrapFn = isFunction(platformRefOrBootstrapFn) ?
-    platformRefOrBootstrapFn :
-    () => platformRefOrBootstrapFn.bootstrapModuleFactory(moduleFactory !);
+      platformRefOrBootstrapFn :
+      () => platformRefOrBootstrapFn.bootstrapModuleFactory(moduleFactory !);
 
   return bootstrapFn().then(moduleRef => {
     const ngElements = new NgElements(moduleRef, customElementComponents);

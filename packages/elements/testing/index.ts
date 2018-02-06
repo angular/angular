@@ -101,7 +101,7 @@ export function installMockScheduler(isSync?: boolean): AsyncMockScheduler|SyncM
 
 export function patchEnv() {
   // This helper function is defined in `test-main.js`. See there for more details.
- // (//window as any).$$patchInnerHtmlProp();
+  // (//window as any).$$patchInnerHtmlProp();
 }
 
 export function restoreEnv() {
