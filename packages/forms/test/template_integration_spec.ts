@@ -1251,13 +1251,14 @@ import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integrat
 
       it('should validate email', fakeAsync(() => {
            const fixture = initTest(NgModelEmailValidator);
+           const input = fixture.debugElement.query(By.css('input'));
+           input.nativeElement.value = 'invalid-email';
            fixture.detectChanges();
            tick();
 
            const control =
                fixture.debugElement.children[0].injector.get(NgForm).control.get('email') !;
 
-           const input = fixture.debugElement.query(By.css('input'));
            expect(control.hasError('email')).toBe(false);
 
            fixture.componentInstance.validatorEnabled = true;
