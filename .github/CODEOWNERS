@@ -172,6 +172,9 @@
 /src/e2e-app/slide-toggle/**                       @devversion
 /src/e2e-app/tabs/**                               @andrewseguin
 
+# Schematics
+/schematics/**                                     @amcdnl
+
 # Universal app
 /src/universal-app/**                              @jelbourn
 

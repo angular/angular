@@ -38,3 +38,7 @@ npm-debug.log
 testem.log
 /.chrome
 /.git
+
+# schematics
+/schematics/**/*.js
+/schematics/**/*.map

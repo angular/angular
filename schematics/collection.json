@@ -1,0 +1,5 @@
+// This is the root config file where the schematics are defined.
+{
+  "$schema": "./node_modules/@angular-devkit/schematics/collection-schema.json",
+  "schematics": {}
+}
