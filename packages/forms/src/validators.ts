@@ -125,6 +125,9 @@ export class Validators {
    * Validator that performs email validation.
    */
   static email(control: AbstractControl): ValidationErrors|null {
+    if (isEmptyInputValue(control.value)) {
+      return null;  // don't validate empty values to allow optional controls
+    }
     return EMAIL_REGEXP.test(control.value) ? null : {'email': true};
   }
 
