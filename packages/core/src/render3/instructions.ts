@@ -494,8 +494,7 @@ export function createTView(): TView {
     contentCheckHooks: null,
     viewHooks: null,
     viewCheckHooks: null,
-    destroyHooks: null,
-    objectLiterals: null
+    destroyHooks: null
   };
 }
 
@@ -1743,6 +1742,26 @@ function valueInData<T>(data: any[], index: number, value?: T): T {
   return value !;
 }
 
+/**
+ * Gets a blueprint of an object or array if one has already been saved, or copies the
+ * object and saves it for the next change detection run if it hasn't.
+ */
+export function getMutableBlueprint(obj: any): any {
+  return creationMode ? memoryWithBinding(copyObject(obj)) : memoryWithBinding();
+}
+
+/** Wrapper for memory instruction to account for binding index (when outside creation mode block)
+ */
+function memoryWithBinding<T>(value?: T): T {
+  initBindings();
+  return memory<T>(bindingIndex++, value);
+}
+
+/** Copies an object or array */
+export function copyObject(obj: any): any {
+  return Array.isArray(obj) ? obj.slice() : {...obj};
+}
+
 export function getCurrentQueries(QueryType: {new (): LQueries}): LQueries {
   return currentQueries || (currentQueries = new QueryType());
 }
@@ -1753,10 +1772,6 @@ export function getPreviousOrParentNode(): LNode {
 
 export function getRenderer(): Renderer3 {
   return renderer;
-}
-
-export function getTView(): TView {
-  return currentView.tView;
 }
 
 export function getDirectiveInstance<T>(instanceOrArray: T | [T]): T {

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {defineComponent} from '../../src/render3/index';
-import {componentRefresh, elementEnd, elementProperty, elementStart, memory} from '../../src/render3/instructions';
+import {componentRefresh, elementEnd, elementProperty, elementStart, memory, container, containerRefreshEnd, containerRefreshStart, embeddedViewStart, embeddedViewEnd} from '../../src/render3/instructions';
 import {objectLiteral1, objectLiteral2, objectLiteral3, objectLiteral4, objectLiteral5, objectLiteral6, objectLiteral7, objectLiteral8} from '../../src/render3/object_literal';
 import {renderToHtml} from '../../test/render3/render_util';
 
@@ -32,7 +32,7 @@ describe('array literals', () => {
         elementStart(0, MyComp);
         elementEnd();
       }
-      elementProperty(0, 'names', objectLiteral1(0, e0_literal, 1, ctx.customName));
+      elementProperty(0, 'names', objectLiteral1(e0_literal, 1, ctx.customName));
       MyComp.ngComponentDef.h(1, 0);
       componentRefresh(1, 0);
     }
@@ -79,8 +79,8 @@ describe('array literals', () => {
         elementStart(0, ManyPropComp);
         elementEnd();
       }
-      elementProperty(0, 'names1', objectLiteral1(0, e0_literal, 1, ctx.customName));
-      elementProperty(0, 'names2', objectLiteral1(1, e0_literal_1, 0, ctx.customName2));
+      elementProperty(0, 'names1', objectLiteral1(e0_literal, 1, ctx.customName));
+      elementProperty(0, 'names2', objectLiteral1(e0_literal_1, 0, ctx.customName2));
       ManyPropComp.ngComponentDef.h(1, 0);
       componentRefresh(1, 0);
     }
@@ -110,7 +110,7 @@ describe('array literals', () => {
         elementEnd();
       }
       elementProperty(
-          0, 'names', objectLiteral2(0, e0_literal, 1, ctx.customName, 3, ctx.customName2));
+          0, 'names', objectLiteral2(e0_literal, 1, ctx.customName, 3, ctx.customName2));
       MyComp.ngComponentDef.h(1, 0);
       componentRefresh(1, 0);
     }
@@ -162,21 +162,21 @@ describe('array literals', () => {
         o8Comp = memory(11);
         elementEnd();
       }
-      elementProperty(0, 'names', objectLiteral3(0, e0_literal, 5, c[5], 6, c[6], 7, c[7]));
+      elementProperty(0, 'names', objectLiteral3(e0_literal, 5, c[5], 6, c[6], 7, c[7]));
       elementProperty(
-          2, 'names', objectLiteral4(1, e2_literal, 4, c[4], 5, c[5], 6, c[6], 7, c[7]));
+          2, 'names', objectLiteral4(e2_literal, 4, c[4], 5, c[5], 6, c[6], 7, c[7]));
       elementProperty(
-          4, 'names', objectLiteral5(2, e4_literal, 3, c[3], 4, c[4], 5, c[5], 6, c[6], 7, c[7]));
+          4, 'names', objectLiteral5(e4_literal, 3, c[3], 4, c[4], 5, c[5], 6, c[6], 7, c[7]));
       elementProperty(
           6, 'names',
-          objectLiteral6(3, e6_literal, 2, c[2], 3, c[3], 4, c[4], 5, c[5], 6, c[6], 7, c[7]));
+          objectLiteral6(e6_literal, 2, c[2], 3, c[3], 4, c[4], 5, c[5], 6, c[6], 7, c[7]));
       elementProperty(
           8, 'names',
           objectLiteral7(
-              4, e8_literal, 1, c[1], 2, c[2], 3, c[3], 4, c[4], 5, c[5], 6, c[6], 7, c[7]));
+            e8_literal, 1, c[1], 2, c[2], 3, c[3], 4, c[4], 5, c[5], 6, c[6], 7, c[7]));
       elementProperty(
           10, 'names', objectLiteral8(
-                           5, e10_literal, 0, c[0], 1, c[1], 2, c[2], 3, c[3], 4, c[4], 5, c[5], 6,
+                           e10_literal, 0, c[0], 1, c[1], 2, c[2], 3, c[3], 4, c[4], 5, c[5], 6,
                            c[6], 7, c[7]));
       MyComp.ngComponentDef.h(1, 0);
       componentRefresh(1, 0);
@@ -216,20 +216,23 @@ describe('array literals', () => {
     expect(o8Comp !.names).toEqual(['a1', 'b1', 'c1', 'd1', 'e1', 'f1', 'g1', 'h1']);
   });
 
+});
+describe('object literals', () => {
+  let objectComp: ObjectComp;
+
+  class ObjectComp {
+    config: {[key: string]: any};
+
+    static ngComponentDef = defineComponent({
+      type: ObjectComp,
+      tag: 'object-comp',
+      factory: function ObjectComp_Factory() { return objectComp = new ObjectComp(); },
+      template: function ObjectComp_Template(ctx: ObjectComp, cm: boolean) {},
+      inputs: {config: 'config'}
+    });
+  }
+
   it('should support an object literal', () => {
-    let objectComp: ObjectComp;
-
-    class ObjectComp {
-      config: {[key: string]: any};
-
-      static ngComponentDef = defineComponent({
-        type: ObjectComp,
-        tag: 'object-comp',
-        factory: function ObjectComp_Factory() { return objectComp = new ObjectComp(); },
-        template: function ObjectComp_Template(ctx: ObjectComp, cm: boolean) {},
-        inputs: {config: 'config'}
-      });
-    }
 
     /** <object-comp [config]="{duration: 500, animation: ctx.name}"></object-comp> */
     function Template(ctx: any, cm: boolean) {
@@ -237,7 +240,7 @@ describe('array literals', () => {
         elementStart(0, ObjectComp);
         elementEnd();
       }
-      elementProperty(0, 'config', objectLiteral1(0, e0_literal, 'animation', ctx.name));
+      elementProperty(0, 'config', objectLiteral1(e0_literal, 'animation', ctx.name));
       ObjectComp.ngComponentDef.h(1, 0);
       componentRefresh(1, 0);
     }
@@ -262,37 +265,23 @@ describe('array literals', () => {
   });
 
   it('should support expressions nested deeply in object/array literals', () => {
-    let nestedComp: NestedComp;
-
-    class NestedComp {
-      config: {[key: string]: any};
-
-      static ngComponentDef = defineComponent({
-        type: NestedComp,
-        tag: 'nested-comp',
-        factory: function NestedComp_Factory() { return nestedComp = new NestedComp(); },
-        template: function NestedComp_Template(ctx: NestedComp, cm: boolean) {},
-        inputs: {config: 'config'}
-      });
-    }
-
     /**
-     * <nested-comp [config]="{animation: name, actions: [{ opacity: 0, duration: 0}, {opacity: 1,
+     * <object-comp [config]="{animation: name, actions: [{ opacity: 0, duration: 0}, {opacity: 1,
      * duration: duration }]}">
-     *   </nested-comp>
+     * </object-comp>
      */
     function Template(ctx: any, cm: boolean) {
       if (cm) {
-        elementStart(0, NestedComp);
+        elementStart(0, ObjectComp);
         elementEnd();
       }
       elementProperty(
           0, 'config',
           objectLiteral2(
-              2, e0_literal_2, 'animation', ctx.name, 'actions',
+              e0_literal_2, 'animation', ctx.name, 'actions',
               objectLiteral1(
-                  1, e0_literal_1, 1, objectLiteral1(0, e0_literal, 'duration', ctx.duration))));
-      NestedComp.ngComponentDef.h(1, 0);
+                  e0_literal_1, 1, objectLiteral1(e0_literal, 'duration', ctx.duration))));
+      ObjectComp.ngComponentDef.h(1, 0);
       componentRefresh(1, 0);
     }
 
@@ -301,28 +290,28 @@ describe('array literals', () => {
     const e0_literal_2 = {animation: null, actions: null};
 
     renderToHtml(Template, {name: 'slide', duration: 100});
-    expect(nestedComp !.config).toEqual({
+    expect(objectComp !.config).toEqual({
       animation: 'slide',
       actions: [{opacity: 0, duration: 0}, {opacity: 1, duration: 100}]
     });
-    const firstConfig = nestedComp !.config;
+    const firstConfig = objectComp !.config;
 
     renderToHtml(Template, {name: 'slide', duration: 100});
-    expect(nestedComp !.config).toEqual({
+    expect(objectComp !.config).toEqual({
       animation: 'slide',
       actions: [{opacity: 0, duration: 0}, {opacity: 1, duration: 100}]
     });
-    expect(nestedComp !.config).toBe(firstConfig);
+    expect(objectComp !.config).toBe(firstConfig);
 
     renderToHtml(Template, {name: 'slide', duration: 50});
-    expect(nestedComp !.config).toEqual({
+    expect(objectComp !.config).toEqual({
       animation: 'slide',
       actions: [{opacity: 0, duration: 0}, {opacity: 1, duration: 50}]
     });
-    expect(nestedComp !.config).not.toBe(firstConfig);
+    expect(objectComp !.config).not.toBe(firstConfig);
 
     renderToHtml(Template, {name: 'tap', duration: 50});
-    expect(nestedComp !.config).toEqual({
+    expect(objectComp !.config).toEqual({
       animation: 'tap',
       actions: [{opacity: 0, duration: 0}, {opacity: 1, duration: 50}]
     });
@@ -332,5 +321,48 @@ describe('array literals', () => {
     expect(e0_literal_2).toEqual({animation: null, actions: null});
   });
 
+  it('should support multiple view instances with multiple bindings', () => {
+    let objectComps: ObjectComp[] = [];
+
+    /**
+     * % for(let i = 0; i < 2; i++) {
+     *   <object-comp [config]="{opacity: configs[i].opacity, duration: configs[i].duration}">
+     *   </object-comp>
+     * % }
+     */
+    function Template(ctx: any, cm: boolean) {
+      if (cm) {
+        container(0);
+      }
+      containerRefreshStart(0);
+      {
+        for (let i = 0; i < 2; i++) {
+          if (embeddedViewStart(0)) {
+            elementStart(0, ObjectComp);
+            objectComps.push(memory(1));
+            elementEnd();
+          }
+          elementProperty(0, 'config',
+            objectLiteral2(e0_literal, 'opacity', ctx.configs[i].opacity, 'duration', ctx.configs[i].duration));
+          ObjectComp.ngComponentDef.h(1, 0);
+          componentRefresh(1, 0);
+          embeddedViewEnd();
+        }
+      }
+      containerRefreshEnd();
+    }
+
+    const e0_literal = {opacity: null, duration: null};
+
+    const configs = [{opacity: 0, duration: 500}, {opacity: 1, duration: 600}];
+    renderToHtml(Template, {configs});
+    expect(objectComps[0].config).toEqual({opacity: 0, duration: 500});
+    expect(objectComps[1].config).toEqual({opacity: 1, duration: 600});
+
+    configs[0].duration = 1000;
+    renderToHtml(Template, {configs});
+    expect(objectComps[0].config).toEqual({opacity: 0, duration: 1000});
+    expect(objectComps[1].config).toEqual({opacity: 1, duration: 600});
+  });
 
 });

@@ -226,7 +226,7 @@ describe('compiler specification', () => {
                 r3.E(0, MyComp);
                 r3.e();
               }
-              r3.p(0, 'names', r3.o1(0, e0_literal, 1, ctx.customName));
+              r3.p(0, 'names', r3.o1(e0_literal, 1, ctx.customName));
               MyComp.ngComponentDef.h(1, 0);
               r3.r(1, 0);
             }
@@ -292,7 +292,7 @@ describe('compiler specification', () => {
                 r3.E(0, ObjectComp);
                 r3.e();
               }
-              r3.p(0, 'config', r3.o1(0, e0_literal, 'animation', ctx.name));
+              r3.p(0, 'config', r3.o1(e0_literal, 'animation', ctx.name));
               ObjectComp.ngComponentDef.h(1, 0);
               r3.r(1, 0);
             }
@@ -368,8 +368,8 @@ describe('compiler specification', () => {
               r3.p(
                   0, 'config',
                   r3.o2(
-                      2, e0_literal_2, 'animation', ctx.name, 'actions',
-                      r3.o1(1, e0_literal_1, 1, r3.o1(0, e0_literal, 'duration', ctx.duration))));
+                      e0_literal_2, 'animation', ctx.name, 'actions',
+                      r3.o1(e0_literal_1, 1, r3.o1(e0_literal, 'duration', ctx.duration))));
               NestedComp.ngComponentDef.h(1, 0);
               r3.r(1, 0);
             }
