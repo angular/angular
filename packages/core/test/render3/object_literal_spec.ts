@@ -5,7 +5,9 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {E, defineComponent, e, m, o1, o2, o3, o4, o5, o6, o7, o8, p, r} from '../../src/render3/index';
+import {defineComponent} from '../../src/render3/index';
+import {componentRefresh, elementEnd, elementProperty, elementStart, memory} from '../../src/render3/instructions';
+import {objectLiteral1, objectLiteral2, objectLiteral3, objectLiteral4, objectLiteral5, objectLiteral6, objectLiteral7, objectLiteral8} from '../../src/render3/object_literal';
 import {renderToHtml} from '../../test/render3/render_util';
 
 describe('array literals', () => {
@@ -27,12 +29,12 @@ describe('array literals', () => {
     /** <my-comp [names]="['Nancy', customName, 'Bess']"></my-comp> */
     function Template(ctx: any, cm: boolean) {
       if (cm) {
-        E(0, MyComp);
-        e();
+        elementStart(0, MyComp);
+        elementEnd();
       }
-      p(0, 'names', o1(0, e0_literal, 1, ctx.customName));
+      elementProperty(0, 'names', objectLiteral1(0, e0_literal, 1, ctx.customName));
       MyComp.ngComponentDef.h(1, 0);
-      r(1, 0);
+      componentRefresh(1, 0);
     }
 
     const e0_literal = ['Nancy', null, 'Bess'];
@@ -74,13 +76,13 @@ describe('array literals', () => {
      */
     function Template(ctx: any, cm: boolean) {
       if (cm) {
-        E(0, ManyPropComp);
-        e();
+        elementStart(0, ManyPropComp);
+        elementEnd();
       }
-      p(0, 'names1', o1(0, e0_literal, 1, ctx.customName));
-      p(0, 'names2', o1(1, e0_literal_1, 0, ctx.customName2));
+      elementProperty(0, 'names1', objectLiteral1(0, e0_literal, 1, ctx.customName));
+      elementProperty(0, 'names2', objectLiteral1(1, e0_literal_1, 0, ctx.customName2));
       ManyPropComp.ngComponentDef.h(1, 0);
-      r(1, 0);
+      componentRefresh(1, 0);
     }
 
     const e0_literal = ['Nancy', null];
@@ -104,12 +106,13 @@ describe('array literals', () => {
     /** <my-comp [names]="['Nancy', customName, 'Bess', customName2]"></my-comp> */
     function Template(ctx: any, cm: boolean) {
       if (cm) {
-        E(0, MyComp);
-        e();
+        elementStart(0, MyComp);
+        elementEnd();
       }
-      p(0, 'names', o2(0, e0_literal, 1, ctx.customName, 3, ctx.customName2));
+      elementProperty(
+          0, 'names', objectLiteral2(0, e0_literal, 1, ctx.customName, 3, ctx.customName2));
       MyComp.ngComponentDef.h(1, 0);
-      r(1, 0);
+      componentRefresh(1, 0);
     }
 
     const e0_literal = ['Nancy', null, 'Bess', null];
@@ -140,45 +143,53 @@ describe('array literals', () => {
 
     function Template(c: any, cm: boolean) {
       if (cm) {
-        E(0, MyComp);
-        o3Comp = m(1);
-        e();
-        E(2, MyComp);
-        o4Comp = m(3);
-        e();
-        E(4, MyComp);
-        o5Comp = m(5);
-        e();
-        E(6, MyComp);
-        o6Comp = m(7);
-        e();
-        E(8, MyComp);
-        o7Comp = m(9);
-        e();
-        E(10, MyComp);
-        o8Comp = m(11);
-        e();
+        elementStart(0, MyComp);
+        o3Comp = memory(1);
+        elementEnd();
+        elementStart(2, MyComp);
+        o4Comp = memory(3);
+        elementEnd();
+        elementStart(4, MyComp);
+        o5Comp = memory(5);
+        elementEnd();
+        elementStart(6, MyComp);
+        o6Comp = memory(7);
+        elementEnd();
+        elementStart(8, MyComp);
+        o7Comp = memory(9);
+        elementEnd();
+        elementStart(10, MyComp);
+        o8Comp = memory(11);
+        elementEnd();
       }
-      p(0, 'names', o3(0, e0_literal, 5, c[5], 6, c[6], 7, c[7]));
-      p(2, 'names', o4(1, e2_literal, 4, c[4], 5, c[5], 6, c[6], 7, c[7]));
-      p(4, 'names', o5(2, e4_literal, 3, c[3], 4, c[4], 5, c[5], 6, c[6], 7, c[7]));
-      p(6, 'names', o6(3, e6_literal, 2, c[2], 3, c[3], 4, c[4], 5, c[5], 6, c[6], 7, c[7]));
-      p(8, 'names',
-        o7(4, e8_literal, 1, c[1], 2, c[2], 3, c[3], 4, c[4], 5, c[5], 6, c[6], 7, c[7]));
-      p(10, 'names',
-        o8(5, e10_literal, 0, c[0], 1, c[1], 2, c[2], 3, c[3], 4, c[4], 5, c[5], 6, c[6], 7, c[7]));
+      elementProperty(0, 'names', objectLiteral3(0, e0_literal, 5, c[5], 6, c[6], 7, c[7]));
+      elementProperty(
+          2, 'names', objectLiteral4(1, e2_literal, 4, c[4], 5, c[5], 6, c[6], 7, c[7]));
+      elementProperty(
+          4, 'names', objectLiteral5(2, e4_literal, 3, c[3], 4, c[4], 5, c[5], 6, c[6], 7, c[7]));
+      elementProperty(
+          6, 'names',
+          objectLiteral6(3, e6_literal, 2, c[2], 3, c[3], 4, c[4], 5, c[5], 6, c[6], 7, c[7]));
+      elementProperty(
+          8, 'names',
+          objectLiteral7(
+              4, e8_literal, 1, c[1], 2, c[2], 3, c[3], 4, c[4], 5, c[5], 6, c[6], 7, c[7]));
+      elementProperty(
+          10, 'names', objectLiteral8(
+                           5, e10_literal, 0, c[0], 1, c[1], 2, c[2], 3, c[3], 4, c[4], 5, c[5], 6,
+                           c[6], 7, c[7]));
       MyComp.ngComponentDef.h(1, 0);
-      r(1, 0);
+      componentRefresh(1, 0);
       MyComp.ngComponentDef.h(3, 2);
-      r(3, 2);
+      componentRefresh(3, 2);
       MyComp.ngComponentDef.h(5, 4);
-      r(5, 4);
+      componentRefresh(5, 4);
       MyComp.ngComponentDef.h(7, 6);
-      r(7, 6);
+      componentRefresh(7, 6);
       MyComp.ngComponentDef.h(9, 8);
-      r(9, 8);
+      componentRefresh(9, 8);
       MyComp.ngComponentDef.h(11, 10);
-      r(11, 10);
+      componentRefresh(11, 10);
     }
 
     const e0_literal = ['a', 'b', 'c', 'd', 'e', null, null, null];
@@ -223,12 +234,12 @@ describe('array literals', () => {
     /** <object-comp [config]="{duration: 500, animation: ctx.name}"></object-comp> */
     function Template(ctx: any, cm: boolean) {
       if (cm) {
-        E(0, ObjectComp);
-        e();
+        elementStart(0, ObjectComp);
+        elementEnd();
       }
-      p(0, 'config', o1(0, e0_literal, 'animation', ctx.name));
+      elementProperty(0, 'config', objectLiteral1(0, e0_literal, 'animation', ctx.name));
       ObjectComp.ngComponentDef.h(1, 0);
-      r(1, 0);
+      componentRefresh(1, 0);
     }
 
     const e0_literal = {duration: 500, animation: null};

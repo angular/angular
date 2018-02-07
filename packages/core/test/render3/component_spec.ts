@@ -7,7 +7,8 @@
  */
 
 import {ViewEncapsulation} from '../../src/core';
-import {C, E, T, V, b, cR, cr, defineComponent, e, markDirty, p, r, t, v} from '../../src/render3/index';
+import {defineComponent, markDirty} from '../../src/render3/index';
+import {bind, componentRefresh, container, containerRefreshEnd, containerRefreshStart, elementEnd, elementProperty, elementStart, text, textBinding, viewEnd, viewStart} from '../../src/render3/instructions';
 import {createRendererType2} from '../../src/view/index';
 
 import {getRendererFactory2} from './imported_renderer2';
@@ -24,9 +25,9 @@ describe('component', () => {
       tag: 'counter',
       template: function(ctx: CounterComponent, cm: boolean) {
         if (cm) {
-          T(0);
+          text(0);
         }
-        t(0, b(ctx.count));
+        textBinding(0, bind(ctx.count));
       },
       factory: () => new CounterComponent,
       inputs: {count: 'count'},
@@ -63,22 +64,22 @@ describe('component with a container', () => {
 
   function showItems(ctx: {items: string[]}, cm: boolean) {
     if (cm) {
-      C(0);
+      container(0);
     }
-    cR(0);
+    containerRefreshStart(0);
     {
       for (const item of ctx.items) {
-        const cm0 = V(0);
+        const cm0 = viewStart(0);
         {
           if (cm0) {
-            T(0);
+            text(0);
           }
-          t(0, b(item));
+          textBinding(0, bind(item));
         }
-        v();
+        viewEnd();
       }
     }
-    cr();
+    containerRefreshEnd();
   }
 
   class WrapperComponent {
@@ -88,15 +89,15 @@ describe('component with a container', () => {
       tag: 'wrapper',
       template: function ChildComponentTemplate(ctx: {items: string[]}, cm: boolean) {
         if (cm) {
-          C(0);
+          container(0);
         }
-        cR(0);
+        containerRefreshStart(0);
         {
-          const cm0 = V(0);
+          const cm0 = viewStart(0);
           { showItems({items: ctx.items}, cm0); }
-          v();
+          viewEnd();
         }
-        cr();
+        containerRefreshEnd();
       },
       factory: () => new WrapperComponent,
       inputs: {items: 'items'}
@@ -105,12 +106,12 @@ describe('component with a container', () => {
 
   function template(ctx: {items: string[]}, cm: boolean) {
     if (cm) {
-      E(0, WrapperComponent);
-      e();
+      elementStart(0, WrapperComponent);
+      elementEnd();
     }
-    p(0, 'items', b(ctx.items));
+    elementProperty(0, 'items', bind(ctx.items));
     WrapperComponent.ngComponentDef.h(1, 0);
-    r(1, 0);
+    componentRefresh(1, 0);
   }
 
   it('should re-render on input change', () => {
@@ -132,11 +133,11 @@ describe('encapsulation', () => {
       tag: 'wrapper',
       template: function(ctx: WrapperComponent, cm: boolean) {
         if (cm) {
-          E(0, EncapsulatedComponent);
-          e();
+          elementStart(0, EncapsulatedComponent);
+          elementEnd();
         }
         EncapsulatedComponent.ngComponentDef.h(1, 0);
-        r(1, 0);
+        componentRefresh(1, 0);
       },
       factory: () => new WrapperComponent,
     });
@@ -148,12 +149,12 @@ describe('encapsulation', () => {
       tag: 'encapsulated',
       template: function(ctx: EncapsulatedComponent, cm: boolean) {
         if (cm) {
-          T(0, 'foo');
-          E(1, LeafComponent);
-          e();
+          text(0, 'foo');
+          elementStart(1, LeafComponent);
+          elementEnd();
         }
         LeafComponent.ngComponentDef.h(2, 1);
-        r(2, 1);
+        componentRefresh(2, 1);
       },
       factory: () => new EncapsulatedComponent,
       rendererType:
@@ -167,9 +168,9 @@ describe('encapsulation', () => {
       tag: 'leaf',
       template: function(ctx: LeafComponent, cm: boolean) {
         if (cm) {
-          E(0, 'span');
-          { T(1, 'bar'); }
-          e();
+          elementStart(0, 'span');
+          { text(1, 'bar'); }
+          elementEnd();
         }
       },
       factory: () => new LeafComponent,
@@ -197,11 +198,11 @@ describe('encapsulation', () => {
         tag: 'wrapper',
         template: function(ctx: WrapperComponentWith, cm: boolean) {
           if (cm) {
-            E(0, LeafComponentwith);
-            e();
+            elementStart(0, LeafComponentwith);
+            elementEnd();
           }
           LeafComponentwith.ngComponentDef.h(1, 0);
-          r(1, 0);
+          componentRefresh(1, 0);
         },
         factory: () => new WrapperComponentWith,
         rendererType:
@@ -215,9 +216,9 @@ describe('encapsulation', () => {
         tag: 'leaf',
         template: function(ctx: LeafComponentwith, cm: boolean) {
           if (cm) {
-            E(0, 'span');
-            { T(1, 'bar'); }
-            e();
+            elementStart(0, 'span');
+            { text(1, 'bar'); }
+            elementEnd();
           }
         },
         factory: () => new LeafComponentwith,

@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {C, ComponentTemplate, E, L, P, T, V, b, cR, cr, defineComponent, defineDirective, e, m, p, pD, r, v} from '../../src/render3/index';
+import {ComponentTemplate, defineComponent, defineDirective} from '../../src/render3/index';
+import {bind, componentRefresh, container, containerRefreshEnd, containerRefreshStart, elementEnd, elementProperty, elementStart, listener, memory, projection, projectionDef, text, viewEnd, viewStart} from '../../src/render3/instructions';
 
 import {containerEl, renderToHtml} from './render_util';
 
@@ -15,12 +16,12 @@ describe('lifecycles', () => {
   function getParentTemplate(type: any) {
     return (ctx: any, cm: boolean) => {
       if (cm) {
-        E(0, type);
-        e();
+        elementStart(0, type);
+        elementEnd();
       }
-      p(0, 'val', b(ctx.val));
+      elementProperty(0, 'val', bind(ctx.val));
       type.ngComponentDef.h(1, 0);
-      r(1, 0);
+      componentRefresh(1, 0);
     };
   }
 
@@ -31,16 +32,16 @@ describe('lifecycles', () => {
 
     let Comp = createOnInitComponent('comp', (ctx: any, cm: boolean) => {
       if (cm) {
-        pD(0);
-        E(1, 'div');
-        { P(2, 0); }
-        e();
+        projectionDef(0);
+        elementStart(1, 'div');
+        { projection(2, 0); }
+        elementEnd();
       }
     });
     let Parent = createOnInitComponent('parent', getParentTemplate(Comp));
     let ProjectedComp = createOnInitComponent('projected', (ctx: any, cm: boolean) => {
       if (cm) {
-        T(0, 'content');
+        text(0, 'content');
       }
     });
 
@@ -63,12 +64,12 @@ describe('lifecycles', () => {
          /** <comp [val]="val"></comp> */
          function Template(ctx: any, cm: boolean) {
            if (cm) {
-             E(0, Comp);
-             e();
+             elementStart(0, Comp);
+             elementEnd();
            }
-           p(0, 'val', b(ctx.val));
+           elementProperty(0, 'val', bind(ctx.val));
            Comp.ngComponentDef.h(1, 0);
-           r(1, 0);
+           componentRefresh(1, 0);
          }
 
          renderToHtml(Template, {val: '1'});
@@ -86,11 +87,11 @@ describe('lifecycles', () => {
 
       function Template(ctx: any, cm: boolean) {
         if (cm) {
-          E(0, Parent);
-          e();
+          elementStart(0, Parent);
+          elementEnd();
         }
         Parent.ngComponentDef.h(1, 0);
-        r(1, 0);
+        componentRefresh(1, 0);
       }
 
       renderToHtml(Template, {});
@@ -107,17 +108,17 @@ describe('lifecycles', () => {
 
       function Template(ctx: any, cm: boolean) {
         if (cm) {
-          E(0, Parent);
-          e();
-          E(2, Parent);
-          e();
+          elementStart(0, Parent);
+          elementEnd();
+          elementStart(2, Parent);
+          elementEnd();
         }
-        p(0, 'val', 1);
-        p(2, 'val', 2);
+        elementProperty(0, 'val', 1);
+        elementProperty(2, 'val', 2);
         Parent.ngComponentDef.h(1, 0);
         Parent.ngComponentDef.h(3, 2);
-        r(1, 0);
-        r(3, 2);
+        componentRefresh(1, 0);
+        componentRefresh(3, 2);
       }
 
       renderToHtml(Template, {});
@@ -134,21 +135,21 @@ describe('lifecycles', () => {
 
       function Template(ctx: any, cm: boolean) {
         if (cm) {
-          C(0);
+          container(0);
         }
-        cR(0);
+        containerRefreshStart(0);
         {
           if (ctx.condition) {
-            if (V(0)) {
-              E(0, Comp);
-              e();
+            if (viewStart(0)) {
+              elementStart(0, Comp);
+              elementEnd();
             }
             Comp.ngComponentDef.h(1, 0);
-            r(1, 0);
-            v();
+            componentRefresh(1, 0);
+            viewEnd();
           }
         }
-        cr();
+        containerRefreshEnd();
       }
 
       renderToHtml(Template, {condition: true});
@@ -169,14 +170,14 @@ describe('lifecycles', () => {
        */
       function Template(ctx: any, cm: boolean) {
         if (cm) {
-          E(0, Comp);
-          { E(2, ProjectedComp); }
-          e();
+          elementStart(0, Comp);
+          { elementStart(2, ProjectedComp); }
+          elementEnd();
         }
         Comp.ngComponentDef.h(1, 0);
         ProjectedComp.ngComponentDef.h(3, 2);
-        r(1, 0);
-        r(3, 2);
+        componentRefresh(1, 0);
+        componentRefresh(3, 2);
       }
 
       renderToHtml(Template, {});
@@ -194,25 +195,25 @@ describe('lifecycles', () => {
        */
       function Template(ctx: any, cm: boolean) {
         if (cm) {
-          E(0, Comp);
-          { E(2, ProjectedComp); }
-          e();
-          E(4, Comp);
-          { E(6, ProjectedComp); }
-          e();
+          elementStart(0, Comp);
+          { elementStart(2, ProjectedComp); }
+          elementEnd();
+          elementStart(4, Comp);
+          { elementStart(6, ProjectedComp); }
+          elementEnd();
         }
-        p(0, 'val', 1);
-        p(2, 'val', 1);
-        p(4, 'val', 2);
-        p(6, 'val', 2);
+        elementProperty(0, 'val', 1);
+        elementProperty(2, 'val', 1);
+        elementProperty(4, 'val', 2);
+        elementProperty(6, 'val', 2);
         Comp.ngComponentDef.h(1, 0);
         ProjectedComp.ngComponentDef.h(3, 2);
         Comp.ngComponentDef.h(5, 4);
         ProjectedComp.ngComponentDef.h(7, 6);
-        r(1, 0);
-        r(3, 2);
-        r(5, 4);
-        r(7, 6);
+        componentRefresh(1, 0);
+        componentRefresh(3, 2);
+        componentRefresh(5, 4);
+        componentRefresh(7, 6);
       }
 
       renderToHtml(Template, {});
@@ -228,11 +229,11 @@ describe('lifecycles', () => {
 
       function Template(ctx: any, cm: boolean) {
         if (cm) {
-          E(0, Comp, null, [Directive]);
-          e();
+          elementStart(0, Comp, null, [Directive]);
+          elementEnd();
         }
         Comp.ngComponentDef.h(1, 0);
-        r(1, 0);
+        componentRefresh(1, 0);
       }
 
       renderToHtml(Template, {});
@@ -254,32 +255,32 @@ describe('lifecycles', () => {
 
       function Template(ctx: any, cm: boolean) {
         if (cm) {
-          E(0, Comp);
-          e();
-          C(2);
-          E(3, Comp);
-          e();
+          elementStart(0, Comp);
+          elementEnd();
+          container(2);
+          elementStart(3, Comp);
+          elementEnd();
         }
-        p(0, 'val', 1);
-        p(3, 'val', 5);
+        elementProperty(0, 'val', 1);
+        elementProperty(3, 'val', 5);
         Comp.ngComponentDef.h(1, 0);
         Comp.ngComponentDef.h(4, 3);
-        cR(2);
+        containerRefreshStart(2);
         {
           for (let j = 2; j < 5; j++) {
-            if (V(0)) {
-              E(0, Comp);
-              e();
+            if (viewStart(0)) {
+              elementStart(0, Comp);
+              elementEnd();
             }
-            p(0, 'val', j);
+            elementProperty(0, 'val', j);
             Comp.ngComponentDef.h(1, 0);
-            r(1, 0);
-            v();
+            componentRefresh(1, 0);
+            viewEnd();
           }
         }
-        cr();
-        r(1, 0);
-        r(4, 3);
+        containerRefreshEnd();
+        componentRefresh(1, 0);
+        componentRefresh(4, 3);
       }
 
       renderToHtml(Template, {});
@@ -300,32 +301,32 @@ describe('lifecycles', () => {
 
       function Template(ctx: any, cm: boolean) {
         if (cm) {
-          E(0, Parent);
-          e();
-          C(2);
-          E(3, Parent);
-          e();
+          elementStart(0, Parent);
+          elementEnd();
+          container(2);
+          elementStart(3, Parent);
+          elementEnd();
         }
-        p(0, 'val', 1);
-        p(3, 'val', 5);
+        elementProperty(0, 'val', 1);
+        elementProperty(3, 'val', 5);
         Parent.ngComponentDef.h(1, 0);
         Parent.ngComponentDef.h(4, 3);
-        cR(2);
+        containerRefreshStart(2);
         {
           for (let j = 2; j < 5; j++) {
-            if (V(0)) {
-              E(0, Parent);
-              e();
+            if (viewStart(0)) {
+              elementStart(0, Parent);
+              elementEnd();
             }
-            p(0, 'val', j);
+            elementProperty(0, 'val', j);
             Parent.ngComponentDef.h(1, 0);
-            r(1, 0);
-            v();
+            componentRefresh(1, 0);
+            viewEnd();
           }
         }
-        cr();
-        r(1, 0);
-        r(4, 3);
+        containerRefreshEnd();
+        componentRefresh(1, 0);
+        componentRefresh(4, 3);
       }
 
       renderToHtml(Template, {});
@@ -371,11 +372,11 @@ describe('lifecycles', () => {
       /** <comp></comp> */
       function Template(ctx: any, cm: boolean) {
         if (cm) {
-          E(0, Comp);
-          e();
+          elementStart(0, Comp);
+          elementEnd();
         }
         Comp.ngComponentDef.h(1, 0);
-        r(1, 0);
+        componentRefresh(1, 0);
       }
 
       renderToHtml(Template, {});
@@ -393,11 +394,11 @@ describe('lifecycles', () => {
 
       function Template(ctx: any, cm: boolean) {
         if (cm) {
-          E(0, Parent);
-          e();
+          elementStart(0, Parent);
+          elementEnd();
         }
         Parent.ngComponentDef.h(1, 0);
-        r(1, 0);
+        componentRefresh(1, 0);
       }
 
       renderToHtml(Template, {});
@@ -408,11 +409,11 @@ describe('lifecycles', () => {
       /** <comp></comp> */
       function Template(ctx: any, cm: boolean) {
         if (cm) {
-          E(0, Comp);
-          e();
+          elementStart(0, Comp);
+          elementEnd();
         }
         Comp.ngComponentDef.h(1, 0);
-        r(1, 0);
+        componentRefresh(1, 0);
       }
 
       renderToHtml(Template, {});
@@ -435,27 +436,27 @@ describe('lifecycles', () => {
 
     let Comp = createAfterContentInitComp('comp', function(ctx: any, cm: boolean) {
       if (cm) {
-        pD(0);
-        P(1, 0);
+        projectionDef(0);
+        projection(1, 0);
       }
     });
 
     let Parent = createAfterContentInitComp('parent', function(ctx: any, cm: boolean) {
       if (cm) {
-        pD(0);
-        E(1, Comp);
-        { P(3, 0); }
-        e();
+        projectionDef(0);
+        elementStart(1, Comp);
+        { projection(3, 0); }
+        elementEnd();
       }
-      p(1, 'val', b(ctx.val));
+      elementProperty(1, 'val', bind(ctx.val));
       Comp.ngComponentDef.h(2, 1);
-      r(2, 1);
+      componentRefresh(2, 1);
     });
 
     let ProjectedComp = createAfterContentInitComp('projected', (ctx: any, cm: boolean) => {
       if (cm) {
-        pD(0);
-        P(1, 0);
+        projectionDef(0);
+        projection(1, 0);
       }
     });
 
@@ -482,12 +483,12 @@ describe('lifecycles', () => {
       /** <comp>content</comp> */
       function Template(ctx: any, cm: boolean) {
         if (cm) {
-          E(0, Comp);
-          { T(2, 'content'); }
-          e();
+          elementStart(0, Comp);
+          { text(2, 'content'); }
+          elementEnd();
         }
         Comp.ngComponentDef.h(1, 0);
-        r(1, 0);
+        componentRefresh(1, 0);
       }
 
       renderToHtml(Template, {});
@@ -505,22 +506,22 @@ describe('lifecycles', () => {
        */
       function Template(ctx: any, cm: boolean) {
         if (cm) {
-          C(0);
+          container(0);
         }
-        cR(0);
+        containerRefreshStart(0);
         {
           if (ctx.condition) {
-            if (V(0)) {
-              E(0, Comp);
-              { T(2, 'content'); }
-              e();
+            if (viewStart(0)) {
+              elementStart(0, Comp);
+              { text(2, 'content'); }
+              elementEnd();
             }
             Comp.ngComponentDef.h(1, 0);
-            r(1, 0);
-            v();
+            componentRefresh(1, 0);
+            viewEnd();
           }
         }
-        cr();
+        containerRefreshEnd();
       }
 
       renderToHtml(Template, {condition: true});
@@ -542,11 +543,11 @@ describe('lifecycles', () => {
 
       function Template(ctx: any, cm: boolean) {
         if (cm) {
-          E(0, Comp, null, [Directive]);
-          e();
+          elementStart(0, Comp, null, [Directive]);
+          elementEnd();
         }
         Comp.ngComponentDef.h(1, 0);
-        r(1, 0);
+        componentRefresh(1, 0);
       }
 
       renderToHtml(Template, {});
@@ -565,12 +566,12 @@ describe('lifecycles', () => {
        */
       function Template(ctx: any, cm: boolean) {
         if (cm) {
-          E(0, Parent);
-          { T(2, 'content'); }
-          e();
+          elementStart(0, Parent);
+          { text(2, 'content'); }
+          elementEnd();
         }
         Parent.ngComponentDef.h(1, 0);
-        r(1, 0);
+        componentRefresh(1, 0);
       }
 
       renderToHtml(Template, {});
@@ -586,19 +587,19 @@ describe('lifecycles', () => {
        */
       function Template(ctx: any, cm: boolean) {
         if (cm) {
-          E(0, Parent);
-          { T(2, 'content'); }
-          e();
-          E(3, Parent);
-          { T(5, 'content'); }
-          e();
+          elementStart(0, Parent);
+          { text(2, 'content'); }
+          elementEnd();
+          elementStart(3, Parent);
+          { text(5, 'content'); }
+          elementEnd();
         }
-        p(0, 'val', 1);
-        p(3, 'val', 2);
+        elementProperty(0, 'val', 1);
+        elementProperty(3, 'val', 2);
         Parent.ngComponentDef.h(1, 0);
         Parent.ngComponentDef.h(4, 3);
-        r(1, 0);
-        r(4, 3);
+        componentRefresh(1, 0);
+        componentRefresh(4, 3);
       }
 
       renderToHtml(Template, {});
@@ -618,18 +619,18 @@ describe('lifecycles', () => {
        */
       function Template(ctx: any, cm: boolean) {
         if (cm) {
-          E(0, Parent);
+          elementStart(0, Parent);
           {
-            E(2, ProjectedComp);
-            { T(4, 'content'); }
-            e();
+            elementStart(2, ProjectedComp);
+            { text(4, 'content'); }
+            elementEnd();
           }
-          e();
+          elementEnd();
         }
         Parent.ngComponentDef.h(1, 0);
         ProjectedComp.ngComponentDef.h(3, 2);
-        r(1, 0);
-        r(3, 2);
+        componentRefresh(1, 0);
+        componentRefresh(3, 2);
       }
 
       renderToHtml(Template, {});
@@ -652,33 +653,33 @@ describe('lifecycles', () => {
        */
       function Template(ctx: any, cm: boolean) {
         if (cm) {
-          E(0, Parent);
+          elementStart(0, Parent);
           {
-            E(2, ProjectedComp);
-            { T(4, 'content'); }
-            e();
+            elementStart(2, ProjectedComp);
+            { text(4, 'content'); }
+            elementEnd();
           }
-          e();
-          E(5, Parent);
+          elementEnd();
+          elementStart(5, Parent);
           {
-            E(7, ProjectedComp);
-            { T(9, 'content'); }
-            e();
+            elementStart(7, ProjectedComp);
+            { text(9, 'content'); }
+            elementEnd();
           }
-          e();
+          elementEnd();
         }
-        p(0, 'val', 1);
-        p(2, 'val', 1);
-        p(5, 'val', 2);
-        p(7, 'val', 2);
+        elementProperty(0, 'val', 1);
+        elementProperty(2, 'val', 1);
+        elementProperty(5, 'val', 2);
+        elementProperty(7, 'val', 2);
         Parent.ngComponentDef.h(1, 0);
         ProjectedComp.ngComponentDef.h(3, 2);
         Parent.ngComponentDef.h(6, 5);
         ProjectedComp.ngComponentDef.h(8, 7);
-        r(1, 0);
-        r(3, 2);
-        r(6, 5);
-        r(8, 7);
+        componentRefresh(1, 0);
+        componentRefresh(3, 2);
+        componentRefresh(6, 5);
+        componentRefresh(8, 7);
       }
 
       renderToHtml(Template, {});
@@ -695,35 +696,35 @@ describe('lifecycles', () => {
        */
       function Template(ctx: any, cm: boolean) {
         if (cm) {
-          E(0, Comp);
-          { T(2, 'content'); }
-          e();
-          C(3);
-          E(4, Comp);
-          { T(6, 'content'); }
-          e();
+          elementStart(0, Comp);
+          { text(2, 'content'); }
+          elementEnd();
+          container(3);
+          elementStart(4, Comp);
+          { text(6, 'content'); }
+          elementEnd();
         }
-        p(0, 'val', 1);
-        p(4, 'val', 4);
+        elementProperty(0, 'val', 1);
+        elementProperty(4, 'val', 4);
         Comp.ngComponentDef.h(1, 0);
         Comp.ngComponentDef.h(5, 4);
-        cR(3);
+        containerRefreshStart(3);
         {
           for (let i = 2; i < 4; i++) {
-            if (V(0)) {
-              E(0, Comp);
-              { T(2, 'content'); }
-              e();
+            if (viewStart(0)) {
+              elementStart(0, Comp);
+              { text(2, 'content'); }
+              elementEnd();
             }
-            p(0, 'val', i);
+            elementProperty(0, 'val', i);
             Comp.ngComponentDef.h(1, 0);
-            r(1, 0);
-            v();
+            componentRefresh(1, 0);
+            viewEnd();
           }
         }
-        cr();
-        r(1, 0);
-        r(5, 4);
+        containerRefreshEnd();
+        componentRefresh(1, 0);
+        componentRefresh(5, 4);
       }
 
       renderToHtml(Template, {});
@@ -732,35 +733,35 @@ describe('lifecycles', () => {
 
     function ForLoopWithChildrenTemplate(ctx: any, cm: boolean) {
       if (cm) {
-        E(0, Parent);
-        { T(2, 'content'); }
-        e();
-        C(3);
-        E(4, Parent);
-        { T(6, 'content'); }
-        e();
+        elementStart(0, Parent);
+        { text(2, 'content'); }
+        elementEnd();
+        container(3);
+        elementStart(4, Parent);
+        { text(6, 'content'); }
+        elementEnd();
       }
-      p(0, 'val', 1);
-      p(4, 'val', 4);
+      elementProperty(0, 'val', 1);
+      elementProperty(4, 'val', 4);
       Parent.ngComponentDef.h(1, 0);
       Parent.ngComponentDef.h(5, 4);
-      cR(3);
+      containerRefreshStart(3);
       {
         for (let i = 2; i < 4; i++) {
-          if (V(0)) {
-            E(0, Parent);
-            { T(2, 'content'); }
-            e();
+          if (viewStart(0)) {
+            elementStart(0, Parent);
+            { text(2, 'content'); }
+            elementEnd();
           }
-          p(0, 'val', i);
+          elementProperty(0, 'val', i);
           Parent.ngComponentDef.h(1, 0);
-          r(1, 0);
-          v();
+          componentRefresh(1, 0);
+          viewEnd();
         }
       }
-      cr();
-      r(1, 0);
-      r(5, 4);
+      containerRefreshEnd();
+      componentRefresh(1, 0);
+      componentRefresh(5, 4);
     }
 
     it('should be called in correct order in a for loop with children', () => {
@@ -783,12 +784,12 @@ describe('lifecycles', () => {
         /** <comp>content</comp> */
         function Template(ctx: any, cm: boolean) {
           if (cm) {
-            E(0, Comp);
-            { T(2, 'content'); }
-            e();
+            elementStart(0, Comp);
+            { text(2, 'content'); }
+            elementEnd();
           }
           Comp.ngComponentDef.h(1, 0);
-          r(1, 0);
+          componentRefresh(1, 0);
         }
 
         renderToHtml(Template, {});
@@ -813,17 +814,17 @@ describe('lifecycles', () => {
 
     let Comp = createAfterViewInitComponent('comp', (ctx: any, cm: boolean) => {
       if (cm) {
-        pD(0);
-        E(1, 'div');
-        { P(2, 0); }
-        e();
+        projectionDef(0);
+        elementStart(1, 'div');
+        { projection(2, 0); }
+        elementEnd();
       }
     });
     let Parent = createAfterViewInitComponent('parent', getParentTemplate(Comp));
 
     let ProjectedComp = createAfterViewInitComponent('projected', (ctx: any, cm: boolean) => {
       if (cm) {
-        T(0, 'content');
+        text(0, 'content');
       }
     });
 
@@ -850,11 +851,11 @@ describe('lifecycles', () => {
       /** <comp></comp> */
       function Template(ctx: any, cm: boolean) {
         if (cm) {
-          E(0, Comp);
-          e();
+          elementStart(0, Comp);
+          elementEnd();
         }
         Comp.ngComponentDef.h(1, 0);
-        r(1, 0);
+        componentRefresh(1, 0);
       }
 
       renderToHtml(Template, {});
@@ -872,21 +873,21 @@ describe('lifecycles', () => {
       */
       function Template(ctx: any, cm: boolean) {
         if (cm) {
-          C(0);
+          container(0);
         }
-        cR(0);
+        containerRefreshStart(0);
         {
           if (ctx.condition) {
-            if (V(0)) {
-              E(0, Comp);
-              e();
+            if (viewStart(0)) {
+              elementStart(0, Comp);
+              elementEnd();
             }
             Comp.ngComponentDef.h(1, 0);
-            r(1, 0);
-            v();
+            componentRefresh(1, 0);
+            viewEnd();
           }
         }
-        cr();
+        containerRefreshEnd();
       }
 
       renderToHtml(Template, {condition: true});
@@ -908,11 +909,11 @@ describe('lifecycles', () => {
        */
       function Template(ctx: any, cm: boolean) {
         if (cm) {
-          E(0, Parent);
-          e();
+          elementStart(0, Parent);
+          elementEnd();
         }
         Parent.ngComponentDef.h(1, 0);
-        r(1, 0);
+        componentRefresh(1, 0);
       }
 
       renderToHtml(Template, {});
@@ -929,17 +930,17 @@ describe('lifecycles', () => {
        */
       function Template(ctx: any, cm: boolean) {
         if (cm) {
-          E(0, Parent);
-          e();
-          E(2, Parent);
-          e();
+          elementStart(0, Parent);
+          elementEnd();
+          elementStart(2, Parent);
+          elementEnd();
         }
-        p(0, 'val', 1);
-        p(2, 'val', 2);
+        elementProperty(0, 'val', 1);
+        elementProperty(2, 'val', 2);
         Parent.ngComponentDef.h(1, 0);
         Parent.ngComponentDef.h(3, 2);
-        r(1, 0);
-        r(3, 2);
+        componentRefresh(1, 0);
+        componentRefresh(3, 2);
       }
       renderToHtml(Template, {});
       expect(events).toEqual(['comp1', 'comp2', 'parent1', 'parent2']);
@@ -954,17 +955,17 @@ describe('lifecycles', () => {
        */
       function Template(ctx: any, cm: boolean) {
         if (cm) {
-          E(0, Comp);
+          elementStart(0, Comp);
           {
-            E(2, ProjectedComp);
-            e();
+            elementStart(2, ProjectedComp);
+            elementEnd();
           }
-          e();
+          elementEnd();
         }
         Comp.ngComponentDef.h(1, 0);
         ProjectedComp.ngComponentDef.h(3, 2);
-        r(1, 0);
-        r(3, 2);
+        componentRefresh(1, 0);
+        componentRefresh(3, 2);
       }
 
       renderToHtml(Template, {});
@@ -982,31 +983,31 @@ describe('lifecycles', () => {
        */
       function Template(ctx: any, cm: boolean) {
         if (cm) {
-          E(0, Comp);
+          elementStart(0, Comp);
           {
-            E(2, ProjectedComp);
-            e();
+            elementStart(2, ProjectedComp);
+            elementEnd();
           }
-          e();
-          E(4, Comp);
+          elementEnd();
+          elementStart(4, Comp);
           {
-            E(6, ProjectedComp);
-            e();
+            elementStart(6, ProjectedComp);
+            elementEnd();
           }
-          e();
+          elementEnd();
         }
-        p(0, 'val', 1);
-        p(2, 'val', 1);
-        p(4, 'val', 2);
-        p(6, 'val', 2);
+        elementProperty(0, 'val', 1);
+        elementProperty(2, 'val', 1);
+        elementProperty(4, 'val', 2);
+        elementProperty(6, 'val', 2);
         Comp.ngComponentDef.h(1, 0);
         ProjectedComp.ngComponentDef.h(3, 2);
         Comp.ngComponentDef.h(5, 4);
         ProjectedComp.ngComponentDef.h(7, 6);
-        r(1, 0);
-        r(3, 2);
-        r(5, 4);
-        r(7, 6);
+        componentRefresh(1, 0);
+        componentRefresh(3, 2);
+        componentRefresh(5, 4);
+        componentRefresh(7, 6);
       }
 
       renderToHtml(Template, {});
@@ -1021,19 +1022,19 @@ describe('lifecycles', () => {
        */
       const ParentComp = createAfterViewInitComponent('parent', (ctx: any, cm: boolean) => {
         if (cm) {
-          E(0, Comp);
+          elementStart(0, Comp);
           {
-            E(2, ProjectedComp);
-            e();
+            elementStart(2, ProjectedComp);
+            elementEnd();
           }
-          e();
+          elementEnd();
         }
-        p(0, 'val', b(ctx.val));
-        p(2, 'val', b(ctx.val));
+        elementProperty(0, 'val', bind(ctx.val));
+        elementProperty(2, 'val', bind(ctx.val));
         Comp.ngComponentDef.h(1, 0);
         ProjectedComp.ngComponentDef.h(3, 2);
-        r(1, 0);
-        r(3, 2);
+        componentRefresh(1, 0);
+        componentRefresh(3, 2);
       });
 
       /**
@@ -1042,17 +1043,17 @@ describe('lifecycles', () => {
        */
       function Template(ctx: any, cm: boolean) {
         if (cm) {
-          E(0, ParentComp);
-          e();
-          E(2, ParentComp);
-          e();
+          elementStart(0, ParentComp);
+          elementEnd();
+          elementStart(2, ParentComp);
+          elementEnd();
         }
-        p(0, 'val', 1);
-        p(2, 'val', 2);
+        elementProperty(0, 'val', 1);
+        elementProperty(2, 'val', 2);
         ParentComp.ngComponentDef.h(1, 0);
         ParentComp.ngComponentDef.h(3, 2);
-        r(1, 0);
-        r(3, 2);
+        componentRefresh(1, 0);
+        componentRefresh(3, 2);
       }
 
       renderToHtml(Template, {});
@@ -1069,32 +1070,32 @@ describe('lifecycles', () => {
        */
       function Template(ctx: any, cm: boolean) {
         if (cm) {
-          E(0, Comp);
-          e();
-          C(2);
-          E(3, Comp);
-          e();
+          elementStart(0, Comp);
+          elementEnd();
+          container(2);
+          elementStart(3, Comp);
+          elementEnd();
         }
-        p(0, 'val', 1);
-        p(3, 'val', 4);
+        elementProperty(0, 'val', 1);
+        elementProperty(3, 'val', 4);
         Comp.ngComponentDef.h(1, 0);
         Comp.ngComponentDef.h(4, 3);
-        cR(2);
+        containerRefreshStart(2);
         {
           for (let i = 2; i < 4; i++) {
-            if (V(0)) {
-              E(0, Comp);
-              e();
+            if (viewStart(0)) {
+              elementStart(0, Comp);
+              elementEnd();
             }
-            p(0, 'val', i);
+            elementProperty(0, 'val', i);
             Comp.ngComponentDef.h(1, 0);
-            r(1, 0);
-            v();
+            componentRefresh(1, 0);
+            viewEnd();
           }
         }
-        cr();
-        r(1, 0);
-        r(4, 3);
+        containerRefreshEnd();
+        componentRefresh(1, 0);
+        componentRefresh(4, 3);
       }
 
       renderToHtml(Template, {});
@@ -1112,32 +1113,32 @@ describe('lifecycles', () => {
        */
       function Template(ctx: any, cm: boolean) {
         if (cm) {
-          E(0, Parent);
-          e();
-          C(2);
-          E(3, Parent);
-          e();
+          elementStart(0, Parent);
+          elementEnd();
+          container(2);
+          elementStart(3, Parent);
+          elementEnd();
         }
-        p(0, 'val', 1);
-        p(3, 'val', 4);
+        elementProperty(0, 'val', 1);
+        elementProperty(3, 'val', 4);
         Parent.ngComponentDef.h(1, 0);
         Parent.ngComponentDef.h(4, 3);
-        cR(2);
+        containerRefreshStart(2);
         {
           for (let i = 2; i < 4; i++) {
-            if (V(0)) {
-              E(0, Parent);
-              e();
+            if (viewStart(0)) {
+              elementStart(0, Parent);
+              elementEnd();
             }
-            p(0, 'val', i);
+            elementProperty(0, 'val', i);
             Parent.ngComponentDef.h(1, 0);
-            r(1, 0);
-            v();
+            componentRefresh(1, 0);
+            viewEnd();
           }
         }
-        cr();
-        r(1, 0);
-        r(4, 3);
+        containerRefreshEnd();
+        componentRefresh(1, 0);
+        componentRefresh(4, 3);
       }
 
       renderToHtml(Template, {});
@@ -1153,11 +1154,11 @@ describe('lifecycles', () => {
         /** <comp></comp> */
         function Template(ctx: any, cm: boolean) {
           if (cm) {
-            E(0, Comp);
-            e();
+            elementStart(0, Comp);
+            elementEnd();
           }
           Comp.ngComponentDef.h(1, 0);
-          r(1, 0);
+          componentRefresh(1, 0);
         }
 
         renderToHtml(Template, {});
@@ -1171,12 +1172,12 @@ describe('lifecycles', () => {
         /** <comp [val]="myVal"></comp> */
         function Template(ctx: any, cm: boolean) {
           if (cm) {
-            E(0, Comp);
-            e();
+            elementStart(0, Comp);
+            elementEnd();
           }
-          p(0, 'val', b(ctx.myVal));
+          elementProperty(0, 'val', bind(ctx.myVal));
           Comp.ngComponentDef.h(1, 0);
-          r(1, 0);
+          componentRefresh(1, 0);
         }
 
         renderToHtml(Template, {myVal: 5});
@@ -1196,32 +1197,32 @@ describe('lifecycles', () => {
          */
         function Template(ctx: any, cm: boolean) {
           if (cm) {
-            E(0, Parent);
-            e();
-            C(2);
-            E(3, Parent);
-            e();
+            elementStart(0, Parent);
+            elementEnd();
+            container(2);
+            elementStart(3, Parent);
+            elementEnd();
           }
-          p(0, 'val', 1);
-          p(3, 'val', 4);
+          elementProperty(0, 'val', 1);
+          elementProperty(3, 'val', 4);
           Parent.ngComponentDef.h(1, 0);
           Parent.ngComponentDef.h(4, 3);
-          cR(2);
+          containerRefreshStart(2);
           {
             for (let i = 2; i < 4; i++) {
-              if (V(0)) {
-                E(0, Parent);
-                e();
+              if (viewStart(0)) {
+                elementStart(0, Parent);
+                elementEnd();
               }
-              p(0, 'val', i);
+              elementProperty(0, 'val', i);
               Parent.ngComponentDef.h(1, 0);
-              r(1, 0);
-              v();
+              componentRefresh(1, 0);
+              viewEnd();
             }
           }
-          cr();
-          r(1, 0);
-          r(4, 3);
+          containerRefreshEnd();
+          componentRefresh(1, 0);
+          componentRefresh(4, 3);
         }
 
         renderToHtml(Template, {});
@@ -1244,8 +1245,8 @@ describe('lifecycles', () => {
 
     let Comp = createOnDestroyComponent('comp', (ctx: any, cm: boolean) => {
       if (cm) {
-        pD(0);
-        P(1, 0);
+        projectionDef(0);
+        projection(1, 0);
       }
     });
     let Parent = createOnDestroyComponent('parent', getParentTemplate(Comp));
@@ -1274,21 +1275,21 @@ describe('lifecycles', () => {
 
       function Template(ctx: any, cm: boolean) {
         if (cm) {
-          C(0);
+          container(0);
         }
-        cR(0);
+        containerRefreshStart(0);
         {
           if (ctx.condition) {
-            if (V(0)) {
-              E(0, Comp);
-              e();
+            if (viewStart(0)) {
+              elementStart(0, Comp);
+              elementEnd();
             }
             Comp.ngComponentDef.h(1, 0);
-            r(1, 0);
-            v();
+            componentRefresh(1, 0);
+            viewEnd();
           }
         }
-        cr();
+        containerRefreshEnd();
       }
 
       renderToHtml(Template, {condition: true});
@@ -1306,27 +1307,27 @@ describe('lifecycles', () => {
 
       function Template(ctx: any, cm: boolean) {
         if (cm) {
-          C(0);
+          container(0);
         }
-        cR(0);
+        containerRefreshStart(0);
         {
           if (ctx.condition) {
-            if (V(0)) {
-              E(0, Comp);
-              e();
-              E(2, Comp);
-              e();
+            if (viewStart(0)) {
+              elementStart(0, Comp);
+              elementEnd();
+              elementStart(2, Comp);
+              elementEnd();
             }
-            p(0, 'val', b('1'));
-            p(2, 'val', b('2'));
+            elementProperty(0, 'val', bind('1'));
+            elementProperty(2, 'val', bind('2'));
             Comp.ngComponentDef.h(1, 0);
             Comp.ngComponentDef.h(3, 2);
-            r(1, 0);
-            r(3, 2);
-            v();
+            componentRefresh(1, 0);
+            componentRefresh(3, 2);
+            viewEnd();
           }
         }
-        cr();
+        containerRefreshEnd();
       }
 
       renderToHtml(Template, {condition: true});
@@ -1345,21 +1346,21 @@ describe('lifecycles', () => {
 
       function Template(ctx: any, cm: boolean) {
         if (cm) {
-          C(0);
+          container(0);
         }
-        cR(0);
+        containerRefreshStart(0);
         {
           if (ctx.condition) {
-            if (V(0)) {
-              E(0, Parent);
-              e();
+            if (viewStart(0)) {
+              elementStart(0, Parent);
+              elementEnd();
             }
             Parent.ngComponentDef.h(1, 0);
-            r(1, 0);
-            v();
+            componentRefresh(1, 0);
+            viewEnd();
           }
         }
-        cr();
+        containerRefreshEnd();
       }
 
       renderToHtml(Template, {condition: true});
@@ -1379,30 +1380,30 @@ describe('lifecycles', () => {
 
       let Grandparent = createOnDestroyComponent('grandparent', function(ctx: any, cm: boolean) {
         if (cm) {
-          E(0, Parent);
-          e();
+          elementStart(0, Parent);
+          elementEnd();
         }
         Parent.ngComponentDef.h(1, 0);
-        r(1, 0);
+        componentRefresh(1, 0);
       });
 
       function Template(ctx: any, cm: boolean) {
         if (cm) {
-          C(0);
+          container(0);
         }
-        cR(0);
+        containerRefreshStart(0);
         {
           if (ctx.condition) {
-            if (V(0)) {
-              E(0, Grandparent);
-              e();
+            if (viewStart(0)) {
+              elementStart(0, Grandparent);
+              elementEnd();
             }
             Grandparent.ngComponentDef.h(1, 0);
-            r(1, 0);
-            v();
+            componentRefresh(1, 0);
+            viewEnd();
           }
         }
-        cr();
+        containerRefreshEnd();
       }
 
       renderToHtml(Template, {condition: true});
@@ -1425,41 +1426,41 @@ describe('lifecycles', () => {
        */
       function Template(ctx: any, cm: boolean) {
         if (cm) {
-          C(0);
+          container(0);
         }
-        cR(0);
+        containerRefreshStart(0);
         {
           if (ctx.showing) {
-            if (V(0)) {
-              E(0, Comp);
+            if (viewStart(0)) {
+              elementStart(0, Comp);
               {
-                E(2, ProjectedComp);
-                e();
+                elementStart(2, ProjectedComp);
+                elementEnd();
               }
-              e();
-              E(4, Comp);
+              elementEnd();
+              elementStart(4, Comp);
               {
-                E(6, ProjectedComp);
-                e();
+                elementStart(6, ProjectedComp);
+                elementEnd();
               }
-              e();
+              elementEnd();
             }
-            p(0, 'val', 1);
-            p(2, 'val', 1);
-            p(4, 'val', 2);
-            p(6, 'val', 2);
+            elementProperty(0, 'val', 1);
+            elementProperty(2, 'val', 1);
+            elementProperty(4, 'val', 2);
+            elementProperty(6, 'val', 2);
             Comp.ngComponentDef.h(1, 0);
             ProjectedComp.ngComponentDef.h(3, 2);
             Comp.ngComponentDef.h(5, 4);
             ProjectedComp.ngComponentDef.h(7, 6);
-            r(1, 0);
-            r(3, 2);
-            r(5, 4);
-            r(7, 6);
-            v();
+            componentRefresh(1, 0);
+            componentRefresh(3, 2);
+            componentRefresh(5, 4);
+            componentRefresh(7, 6);
+            viewEnd();
           }
         }
-        cr();
+        containerRefreshEnd();
       }
 
       renderToHtml(Template, {showing: true});
@@ -1482,42 +1483,42 @@ describe('lifecycles', () => {
 
       function Template(ctx: any, cm: boolean) {
         if (cm) {
-          C(0);
+          container(0);
         }
-        cR(0);
+        containerRefreshStart(0);
         {
           if (ctx.condition) {
-            if (V(0)) {
-              E(0, Comp);
-              e();
-              C(2);
-              E(3, Comp);
-              e();
+            if (viewStart(0)) {
+              elementStart(0, Comp);
+              elementEnd();
+              container(2);
+              elementStart(3, Comp);
+              elementEnd();
             }
-            p(0, 'val', b('1'));
-            p(3, 'val', b('3'));
+            elementProperty(0, 'val', bind('1'));
+            elementProperty(3, 'val', bind('3'));
             Comp.ngComponentDef.h(1, 0);
             Comp.ngComponentDef.h(4, 3);
-            cR(2);
+            containerRefreshStart(2);
             {
               if (ctx.condition2) {
-                if (V(0)) {
-                  E(0, Comp);
-                  e();
+                if (viewStart(0)) {
+                  elementStart(0, Comp);
+                  elementEnd();
                 }
-                p(0, 'val', b('2'));
+                elementProperty(0, 'val', bind('2'));
                 Comp.ngComponentDef.h(1, 0);
-                r(1, 0);
-                v();
+                componentRefresh(1, 0);
+                viewEnd();
               }
             }
-            cr();
-            r(1, 0);
-            r(4, 3);
-            v();
+            containerRefreshEnd();
+            componentRefresh(1, 0);
+            componentRefresh(4, 3);
+            viewEnd();
           }
         }
-        cr();
+        containerRefreshEnd();
       }
 
       renderToHtml(Template, {condition: true, condition2: true});
@@ -1558,42 +1559,42 @@ describe('lifecycles', () => {
        */
       function Template(ctx: any, cm: boolean) {
         if (cm) {
-          C(0);
+          container(0);
         }
-        cR(0);
+        containerRefreshStart(0);
         {
           if (ctx.condition) {
-            if (V(0)) {
-              E(0, Comp);
-              e();
-              C(2);
-              E(3, Comp);
-              e();
+            if (viewStart(0)) {
+              elementStart(0, Comp);
+              elementEnd();
+              container(2);
+              elementStart(3, Comp);
+              elementEnd();
             }
-            p(0, 'val', b('1'));
-            p(3, 'val', b('5'));
+            elementProperty(0, 'val', bind('1'));
+            elementProperty(3, 'val', bind('5'));
             Comp.ngComponentDef.h(1, 0);
             Comp.ngComponentDef.h(4, 3);
-            cR(2);
+            containerRefreshStart(2);
             {
               for (let j = 2; j < ctx.len; j++) {
-                if (V(0)) {
-                  E(0, Comp);
-                  e();
+                if (viewStart(0)) {
+                  elementStart(0, Comp);
+                  elementEnd();
                 }
-                p(0, 'val', b(j));
+                elementProperty(0, 'val', bind(j));
                 Comp.ngComponentDef.h(1, 0);
-                r(1, 0);
-                v();
+                componentRefresh(1, 0);
+                viewEnd();
               }
             }
-            cr();
-            r(1, 0);
-            r(4, 3);
-            v();
+            containerRefreshEnd();
+            componentRefresh(1, 0);
+            componentRefresh(4, 3);
+            viewEnd();
           }
         }
-        cr();
+        containerRefreshEnd();
       }
 
       /**
@@ -1636,33 +1637,33 @@ describe('lifecycles', () => {
 
       function Template(ctx: any, cm: boolean) {
         if (cm) {
-          C(0);
+          container(0);
         }
-        cR(0);
+        containerRefreshStart(0);
         {
           if (ctx.condition) {
-            if (V(0)) {
-              E(0, 'button');
+            if (viewStart(0)) {
+              elementStart(0, 'button');
               {
-                L('click', ctx.onClick.bind(ctx));
-                T(1, 'Click me');
+                listener('click', ctx.onClick.bind(ctx));
+                text(1, 'Click me');
               }
-              e();
-              E(2, Comp);
-              e();
-              E(4, 'button');
+              elementEnd();
+              elementStart(2, Comp);
+              elementEnd();
+              elementStart(4, 'button');
               {
-                L('click', ctx.onClick.bind(ctx));
-                T(5, 'Click me');
+                listener('click', ctx.onClick.bind(ctx));
+                text(5, 'Click me');
               }
-              e();
+              elementEnd();
             }
             Comp.ngComponentDef.h(3, 2);
-            r(3, 2);
-            v();
+            componentRefresh(3, 2);
+            viewEnd();
           }
         }
-        cr();
+        containerRefreshEnd();
       }
 
       class App {
@@ -1728,17 +1729,17 @@ describe('lifecycles', () => {
        */
       function Template(ctx: any, cm: boolean) {
         if (cm) {
-          E(0, Comp);
-          e();
-          E(2, Comp);
-          e();
+          elementStart(0, Comp);
+          elementEnd();
+          elementStart(2, Comp);
+          elementEnd();
         }
-        p(0, 'val', 1);
-        p(2, 'val', 2);
+        elementProperty(0, 'val', 1);
+        elementProperty(2, 'val', 2);
         Comp.ngComponentDef.h(1, 0);
         Comp.ngComponentDef.h(3, 2);
-        r(1, 0);
-        r(3, 2);
+        componentRefresh(1, 0);
+        componentRefresh(3, 2);
       }
 
       renderToHtml(Template, {});
@@ -1762,12 +1763,12 @@ describe('lifecycles', () => {
       /** <comp [val]="val"></comp> */
       const Parent = createAllHooksComponent('parent', (ctx: any, cm: boolean) => {
         if (cm) {
-          E(0, Comp);
-          e();
+          elementStart(0, Comp);
+          elementEnd();
         }
-        p(0, 'val', b(ctx.val));
+        elementProperty(0, 'val', bind(ctx.val));
         Comp.ngComponentDef.h(1, 0);
-        r(1, 0);
+        componentRefresh(1, 0);
       });
 
       /**
@@ -1776,17 +1777,17 @@ describe('lifecycles', () => {
        */
       function Template(ctx: any, cm: boolean) {
         if (cm) {
-          E(0, Parent);
-          e();
-          E(2, Parent);
-          e();
+          elementStart(0, Parent);
+          elementEnd();
+          elementStart(2, Parent);
+          elementEnd();
         }
-        p(0, 'val', 1);
-        p(2, 'val', 2);
+        elementProperty(0, 'val', 1);
+        elementProperty(2, 'val', 2);
         Parent.ngComponentDef.h(1, 0);
         Parent.ngComponentDef.h(3, 2);
-        r(1, 0);
-        r(3, 2);
+        componentRefresh(1, 0);
+        componentRefresh(3, 2);
       }
 
       renderToHtml(Template, {});

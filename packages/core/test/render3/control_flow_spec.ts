@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {C, E, T, V, b, cR, cr, e, t, v} from '../../src/render3/index';
+import {bind, container, containerRefreshEnd, containerRefreshStart, elementEnd, elementStart, text, textBinding, viewEnd, viewStart} from '../../src/render3/instructions';
 
 import {renderToHtml} from './render_util';
 
@@ -16,26 +16,26 @@ describe('JS control flow', () => {
 
     function Template(ctx: any, cm: boolean) {
       if (cm) {
-        E(0, 'div');
-        { C(1); }
-        e();
+        elementStart(0, 'div');
+        { container(1); }
+        elementEnd();
       }
-      cR(1);
+      containerRefreshStart(1);
       {
         if (ctx.condition) {
-          let cm1 = V(1);
+          let cm1 = viewStart(1);
           {
             if (cm1) {
-              E(0, 'span');
-              { T(1); }
-              e();
+              elementStart(0, 'span');
+              { text(1); }
+              elementEnd();
             }
-            t(1, b(ctx.message));
+            textBinding(1, bind(ctx.message));
           }
-          v();
+          viewEnd();
         }
       }
-      cr();
+      containerRefreshEnd();
     }
 
     expect(renderToHtml(Template, ctx)).toEqual('<div><span>Hello</span></div>');
@@ -64,38 +64,38 @@ describe('JS control flow', () => {
      */
     function Template(ctx: any, cm: boolean) {
       if (cm) {
-        E(0, 'div');
-        { C(1); }
-        e();
+        elementStart(0, 'div');
+        { container(1); }
+        elementEnd();
       }
-      cR(1);
+      containerRefreshStart(1);
       {
         if (ctx.condition) {
-          let cm1 = V(1);
+          let cm1 = viewStart(1);
           {
             if (cm1) {
-              E(0, 'span');
-              { C(1); }
-              e();
+              elementStart(0, 'span');
+              { container(1); }
+              elementEnd();
             }
-            cR(1);
+            containerRefreshStart(1);
             {
               if (ctx.condition2) {
-                let cm2 = V(2);
+                let cm2 = viewStart(2);
                 {
                   if (cm2) {
-                    T(0, 'Hello');
+                    text(0, 'Hello');
                   }
                 }
-                v();
+                viewEnd();
               }
             }
-            cr();
+            containerRefreshEnd();
           }
-          v();
+          viewEnd();
         }
       }
-      cr();
+      containerRefreshEnd();
     }
 
     expect(renderToHtml(Template, ctx)).toEqual('<div><span>Hello</span></div>');
@@ -128,37 +128,37 @@ describe('JS control flow', () => {
   it('should work with containers with views as parents', () => {
     function Template(ctx: any, cm: boolean) {
       if (cm) {
-        E(0, 'div');
-        { T(1, 'hello'); }
-        e();
-        C(2);
+        elementStart(0, 'div');
+        { text(1, 'hello'); }
+        elementEnd();
+        container(2);
       }
-      cR(2);
+      containerRefreshStart(2);
       {
         if (ctx.condition1) {
-          let cm0 = V(0);
+          let cm0 = viewStart(0);
           {
             if (cm0) {
-              C(0);
+              container(0);
             }
-            cR(0);
+            containerRefreshStart(0);
             {
               if (ctx.condition2) {
-                let cm0 = V(0);
+                let cm0 = viewStart(0);
                 {
                   if (cm0) {
-                    T(0, 'world');
+                    text(0, 'world');
                   }
                 }
-                v();
+                viewEnd();
               }
             }
-            cr();
+            containerRefreshEnd();
           }
-          v();
+          viewEnd();
         }
       }
-      cr();
+      containerRefreshEnd();
     }
 
     expect(renderToHtml(Template, {condition1: true, condition2: true}))
@@ -173,26 +173,26 @@ describe('JS control flow', () => {
 
     function Template(ctx: any, cm: boolean) {
       if (cm) {
-        E(0, 'ul');
-        { C(1); }
-        e();
+        elementStart(0, 'ul');
+        { container(1); }
+        elementEnd();
       }
-      cR(1);
+      containerRefreshStart(1);
       {
         for (let i = 0; i < ctx.data.length; i++) {
-          let cm1 = V(1);
+          let cm1 = viewStart(1);
           {
             if (cm1) {
-              E(0, 'li');
-              { T(1); }
-              e();
+              elementStart(0, 'li');
+              { text(1); }
+              elementEnd();
             }
-            t(1, b(ctx.data[i]));
+            textBinding(1, bind(ctx.data[i]));
           }
-          v();
+          viewEnd();
         }
       }
-      cr();
+      containerRefreshEnd();
     }
 
     expect(renderToHtml(Template, ctx)).toEqual('<ul><li>a</li><li>b</li><li>c</li></ul>');
@@ -219,36 +219,36 @@ describe('JS control flow', () => {
 
     function Template(ctx: any, cm: boolean) {
       if (cm) {
-        E(0, 'ul');
-        { C(1); }
-        e();
+        elementStart(0, 'ul');
+        { container(1); }
+        elementEnd();
       }
-      cR(1);
+      containerRefreshStart(1);
       {
         for (let i = 0; i < ctx.data[0].length; i++) {
-          let cm1 = V(1);
+          let cm1 = viewStart(1);
           {
             if (cm1) {
-              E(0, 'li');
-              { C(1); }
-              e();
+              elementStart(0, 'li');
+              { container(1); }
+              elementEnd();
             }
-            cR(1);
+            containerRefreshStart(1);
             {
               ctx.data[1].forEach((value: string, ind: number) => {
-                if (V(2)) {
-                  T(0);
+                if (viewStart(2)) {
+                  text(0);
                 }
-                t(0, b(ctx.data[0][i] + value));
-                v();
+                textBinding(0, bind(ctx.data[0][i] + value));
+                viewEnd();
               });
             }
-            cr();
+            containerRefreshEnd();
           }
-          v();
+          viewEnd();
         }
       }
-      cr();
+      containerRefreshEnd();
     }
 
     expect(renderToHtml(Template, ctx)).toEqual('<ul><li>aman</li><li>bmbn</li><li>cmcn</li></ul>');
@@ -274,43 +274,43 @@ describe('JS control flow', () => {
      */
     function Template(ctx: any, cm: boolean) {
       if (cm) {
-        E(0, 'div');
+        elementStart(0, 'div');
         {
-          T(1, 'Before');
-          C(2);
-          T(3, 'After');
+          text(1, 'Before');
+          container(2);
+          text(3, 'After');
         }
-        e();
+        elementEnd();
       }
-      cR(2);
+      containerRefreshStart(2);
       {
         for (let i = 0; i < ctx.cafes.length; i++) {
-          let cm1 = V(1);
+          let cm1 = viewStart(1);
           {
             if (cm1) {
-              E(0, 'h2');
-              { T(1); }
-              e();
-              C(2);
-              T(3, '-');
+              elementStart(0, 'h2');
+              { text(1); }
+              elementEnd();
+              container(2);
+              text(3, '-');
             }
-            t(1, b(ctx.cafes[i].name));
-            cR(2);
+            textBinding(1, bind(ctx.cafes[i].name));
+            containerRefreshStart(2);
             {
               for (let j = 0; j < ctx.cafes[i].entrees.length; j++) {
-                if (V(1)) {
-                  T(0);
+                if (viewStart(1)) {
+                  text(0);
                 }
-                t(0, b(ctx.cafes[i].entrees[j]));
-                v();
+                textBinding(0, bind(ctx.cafes[i].entrees[j]));
+                viewEnd();
               }
             }
-            cr();
+            containerRefreshEnd();
           }
-          v();
+          viewEnd();
         }
       }
-      cr();
+      containerRefreshEnd();
     }
 
     const ctx = {
@@ -354,60 +354,60 @@ describe('JS control flow', () => {
      */
     function Template(ctx: any, cm: boolean) {
       if (cm) {
-        E(0, 'div');
+        elementStart(0, 'div');
         {
-          T(1, 'Before');
-          C(2);
-          T(3, 'After');
+          text(1, 'Before');
+          container(2);
+          text(3, 'After');
         }
-        e();
+        elementEnd();
       }
-      cR(2);
+      containerRefreshStart(2);
       {
         for (let i = 0; i < ctx.cafes.length; i++) {
-          let cm1 = V(1);
+          let cm1 = viewStart(1);
           {
             if (cm1) {
-              E(0, 'h2');
-              { T(1); }
-              e();
-              C(2);
-              T(3, '-');
+              elementStart(0, 'h2');
+              { text(1); }
+              elementEnd();
+              container(2);
+              text(3, '-');
             }
-            t(1, b(ctx.cafes[i].name));
-            cR(2);
+            textBinding(1, bind(ctx.cafes[i].name));
+            containerRefreshStart(2);
             {
               for (let j = 0; j < ctx.cafes[i].entrees.length; j++) {
-                let cm1 = V(1);
+                let cm1 = viewStart(1);
                 {
                   if (cm1) {
-                    E(0, 'h3');
-                    { T(1); }
-                    e();
-                    C(2);
+                    elementStart(0, 'h3');
+                    { text(1); }
+                    elementEnd();
+                    container(2);
                   }
-                  t(1, b(ctx.cafes[i].entrees[j].name));
-                  cR(2);
+                  textBinding(1, bind(ctx.cafes[i].entrees[j].name));
+                  containerRefreshStart(2);
                   {
                     for (let k = 0; k < ctx.cafes[i].entrees[j].foods.length; k++) {
-                      if (V(1)) {
-                        T(0);
+                      if (viewStart(1)) {
+                        text(0);
                       }
-                      t(0, b(ctx.cafes[i].entrees[j].foods[k]));
-                      v();
+                      textBinding(0, bind(ctx.cafes[i].entrees[j].foods[k]));
+                      viewEnd();
                     }
                   }
-                  cr();
+                  containerRefreshEnd();
                 }
-                v();
+                viewEnd();
               }
             }
-            cr();
+            containerRefreshEnd();
           }
-          v();
+          viewEnd();
         }
       }
-      cr();
+      containerRefreshEnd();
     }
 
     const ctx = {
@@ -444,35 +444,35 @@ describe('JS control flow', () => {
 
     function Template(ctx: any, cm: boolean) {
       if (cm) {
-        E(0, 'div');
-        { C(1); }
-        e();
+        elementStart(0, 'div');
+        { container(1); }
+        elementEnd();
       }
-      cR(1);
+      containerRefreshStart(1);
       {
         if (ctx.condition) {
-          let cm1 = V(1);
+          let cm1 = viewStart(1);
           {
             if (cm1) {
-              E(0, 'span');
-              { T(1, 'Hello'); }
-              e();
+              elementStart(0, 'span');
+              { text(1, 'Hello'); }
+              elementEnd();
             }
           }
-          v();
+          viewEnd();
         } else {
-          let cm2 = V(2);
+          let cm2 = viewStart(2);
           {
             if (cm2) {
-              E(0, 'div');
-              { T(1, 'Goodbye'); }
-              e();
+              elementStart(0, 'div');
+              { text(1, 'Goodbye'); }
+              elementEnd();
             }
           }
-          v();
+          viewEnd();
         }
       }
-      cr();
+      containerRefreshEnd();
     }
 
     expect(renderToHtml(Template, ctx)).toEqual('<div><span>Hello</span></div>');
@@ -492,28 +492,28 @@ describe('JS for loop', () => {
 
     function Template(ctx: any, cm: boolean) {
       if (cm) {
-        E(0, 'div');
-        { C(1); }
-        e();
+        elementStart(0, 'div');
+        { container(1); }
+        elementEnd();
       }
-      cR(1);
+      containerRefreshStart(1);
       {
         for (let i = 0; i < ctx.data1.length; i++) {
-          if (V(1)) {
-            T(0);
+          if (viewStart(1)) {
+            text(0);
           }
-          t(0, b(ctx.data1[i]));
-          v();
+          textBinding(0, bind(ctx.data1[i]));
+          viewEnd();
         }
         for (let j = 0; j < ctx.data2.length; j++) {
-          if (V(2)) {
-            T(0);
+          if (viewStart(2)) {
+            text(0);
           }
-          t(0, b(ctx.data2[j]));
-          v();
+          textBinding(0, bind(ctx.data2[j]));
+          viewEnd();
         }
       }
-      cr();
+      containerRefreshEnd();
     }
 
     expect(renderToHtml(Template, ctx)).toEqual('<div>abc12</div>');
@@ -536,38 +536,38 @@ describe('function calls', () => {
     function spanify(ctx: {message: string | null}, cm: boolean) {
       const message = ctx.message;
       if (cm) {
-        E(0, 'span');
-        { T(1); }
-        e();
+        elementStart(0, 'span');
+        { text(1); }
+        elementEnd();
       }
-      t(1, b(message));
+      textBinding(1, bind(message));
     }
 
     function Template(ctx: any, cm: boolean) {
       if (cm) {
-        E(0, 'div');
+        elementStart(0, 'div');
         {
-          T(1, 'Before');
-          C(2);
-          C(3);
-          T(4, 'After');
+          text(1, 'Before');
+          container(2);
+          container(3);
+          text(4, 'After');
         }
-        e();
+        elementEnd();
       }
-      cR(2);
+      containerRefreshStart(2);
       {
-        let cm0 = V(0);
+        let cm0 = viewStart(0);
         { spanify({message: ctx.data[0]}, cm0); }
-        v();
+        viewEnd();
       }
-      cr();
-      cR(3);
+      containerRefreshEnd();
+      containerRefreshStart(3);
       {
-        let cm0 = V(0);
+        let cm0 = viewStart(0);
         { spanify({message: ctx.data[1]}, cm0); }
-        v();
+        viewEnd();
       }
-      cr();
+      containerRefreshEnd();
     }
 
     expect(renderToHtml(Template, ctx))
