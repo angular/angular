@@ -173,38 +173,39 @@ describe('compiler specification', () => {
       expect(log).toEqual(['ChildComponent', 'SomeDirective']);
     });
 
-    describe('memoization', () => {
-      @Component({
-        selector: 'my-comp',
-        template: `
-        <p>{{ names[0] }}</p>
-        <p>{{ names[1] }}</p>
-      `
-      })
-      class MyComp {
-        @Input() names: string[];
+    describe('value composition', () => {
 
-        static ngComponentDef = r3.defineComponent({
-          type: MyComp,
-          tag: 'my-comp',
-          factory: function MyComp_Factory() { return new MyComp(); },
-          template: function MyComp_Template(ctx: MyComp, cm: boolean) {
-            if (cm) {
-              r3.E(0, 'p');
-              r3.T(1);
-              r3.e();
-              r3.E(2, 'p');
-              r3.T(3);
-              r3.e();
-            }
-            r3.t(1, r3.b(ctx.names[0]));
-            r3.t(3, r3.b(ctx.names[1]));
-          },
-          inputs: {names: 'names'}
-        });
-      }
+      it('should support array literals', () => {
 
-      it('should memoize array literals', () => {
+        @Component({
+          selector: 'my-comp',
+          template: `
+            <p>{{ names[0] }}</p>
+            <p>{{ names[1] }}</p>
+          `
+        })
+        class MyComp {
+          @Input() names: string[];
+
+          static ngComponentDef = r3.defineComponent({
+            type: MyComp,
+            tag: 'my-comp',
+            factory: function MyComp_Factory() { return new MyComp(); },
+            template: function MyComp_Template(ctx: MyComp, cm: boolean) {
+              if (cm) {
+                r3.E(0, 'p');
+                r3.T(1);
+                r3.e();
+                r3.E(2, 'p');
+                r3.T(3);
+                r3.e();
+              }
+              r3.t(1, r3.b(ctx.names[0]));
+              r3.t(3, r3.b(ctx.names[1]));
+            },
+            inputs: {names: 'names'}
+          });
+        }
 
         @Component({
           selector: 'my-app',
@@ -239,6 +240,152 @@ describe('compiler specification', () => {
 
         expect(renderComp(MyApp)).toEqual(`<my-comp><p>Nancy</p><p>Bess</p></my-comp>`);
         expect(e0_literal).toEqual(['Nancy', null]);
+      });
+
+      it('should support object literals', () => {
+        @Component({
+          selector: 'object-comp',
+          template: `
+            <p> {{ config.duration }} </p>
+            <p> {{ config.animation }} </p>
+          `
+        })
+        class ObjectComp {
+          config: {[key: string]: any};
+
+          static ngComponentDef = r3.defineComponent({
+            type: ObjectComp,
+            tag: 'object-comp',
+            factory: function ObjectComp_Factory() { return new ObjectComp(); },
+            template: function ObjectComp_Template(ctx: ObjectComp, cm: boolean) {
+              if (cm) {
+                r3.E(0, 'p');
+                r3.T(1);
+                r3.e();
+                r3.E(2, 'p');
+                r3.T(3);
+                r3.e();
+              }
+              r3.t(1, r3.b(ctx.config.duration));
+              r3.t(3, r3.b(ctx.config.animation));
+            },
+            inputs: {config: 'config'}
+          });
+        }
+
+        @Component({
+          selector: 'my-app',
+          template: `
+          <object-comp [config]="{duration: 500, animation: name}"></object-comp>
+        `
+        })
+        class MyApp {
+          name = 'slide';
+
+          // NORMATIVE
+          static ngComponentDef = r3.defineComponent({
+            type: MyApp,
+            tag: 'my-app',
+            factory: function MyApp_Factory() { return new MyApp(); },
+            template: function MyApp_Template(ctx: MyApp, cm: boolean) {
+              if (cm) {
+                r3.E(0, ObjectComp);
+                r3.e();
+              }
+              r3.p(0, 'config', r3.o1(0, e0_literal, 'animation', ctx.name));
+              ObjectComp.ngComponentDef.h(1, 0);
+              r3.r(1, 0);
+            }
+          });
+          // /NORMATIVE
+        }
+
+        // NORMATIVE
+        const e0_literal = {duration: 500, animation: null};
+        // /NORMATIVE
+
+        expect(renderComp(MyApp)).toEqual(`<object-comp><p>500</p><p>slide</p></object-comp>`);
+        expect(e0_literal).toEqual({duration: 500, animation: null});
+      });
+
+      it('should support expressions nested deeply in object/array literals', () => {
+        @Component({
+          selector: 'nested-comp',
+          template: `            
+            <p> {{ config.animation }} </p>
+            <p> {{config.actions[0].opacity }} </p>
+            <p> {{config.actions[1].duration }} </p>
+          `
+        })
+        class NestedComp {
+          config: {[key: string]: any};
+
+          static ngComponentDef = r3.defineComponent({
+            type: NestedComp,
+            tag: 'nested-comp',
+            factory: function NestedComp_Factory() { return new NestedComp(); },
+            template: function NestedComp_Template(ctx: NestedComp, cm: boolean) {
+              if (cm) {
+                r3.E(0, 'p');
+                r3.T(1);
+                r3.e();
+                r3.E(2, 'p');
+                r3.T(3);
+                r3.e();
+                r3.E(4, 'p');
+                r3.T(5);
+                r3.e();
+              }
+              r3.t(1, r3.b(ctx.config.animation));
+              r3.t(3, r3.b(ctx.config.actions[0].opacity));
+              r3.t(5, r3.b(ctx.config.actions[1].duration));
+            },
+            inputs: {config: 'config'}
+          });
+        }
+
+        @Component({
+          selector: 'my-app',
+          template: `
+          <nested-comp [config]="{animation: name, actions: [{ opacity: 0, duration: 0}, {opacity: 1, duration: duration }]}">
+          </nested-comp>
+        `
+        })
+        class MyApp {
+          name = 'slide';
+          duration = 100;
+
+          // NORMATIVE
+          static ngComponentDef = r3.defineComponent({
+            type: MyApp,
+            tag: 'my-app',
+            factory: function MyApp_Factory() { return new MyApp(); },
+            template: function MyApp_Template(ctx: MyApp, cm: boolean) {
+              if (cm) {
+                r3.E(0, NestedComp);
+                r3.e();
+              }
+              r3.p(
+                  0, 'config',
+                  r3.o2(
+                      2, e0_literal_2, 'animation', ctx.name, 'actions',
+                      r3.o1(1, e0_literal_1, 1, r3.o1(0, e0_literal, 'duration', ctx.duration))));
+              NestedComp.ngComponentDef.h(1, 0);
+              r3.r(1, 0);
+            }
+          });
+          // /NORMATIVE
+        }
+
+        // NORMATIVE
+        const e0_literal = {opacity: 1, duration: null};
+        const c0 = {opacity: 0, duration: 0};
+        const e0_literal_1 = [c0, null];
+        const e0_literal_2 = {animation: null, actions: null};
+        // /NORMATIVE
+
+        expect(renderComp(MyApp))
+            .toEqual(`<nested-comp><p>slide</p><p>0</p><p>100</p></nested-comp>`);
       });
 
     });
