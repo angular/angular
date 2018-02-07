@@ -38,32 +38,31 @@ export class HeroDetailComponent7 implements OnChanges {
 
   // #docregion ngOnChanges
   ngOnChanges() {
+    this.rebuildForm();
+  }
+   // #enddocregion ngOnChanges
+
+    // #docregion rebuildForm
+  rebuildForm() {
     this.heroForm.reset({
       name: this.hero.name,
-      address: this.hero.addresses[0] || new Address()
-    });
-  }
-  // #enddocregion ngOnChanges
-
-  /* First version of ngOnChanges
-  // #docregion ngOnChanges-1
-  ngOnChanges()
-  // #enddocregion ngOnChanges-1
-  */
-  ngOnChanges1() {
-    // #docregion reset
-    this.heroForm.reset();
-    // #enddocregion reset
-    // #docregion ngOnChanges-1
-    // #docregion set-value
-    this.heroForm.setValue({
-      name:    this.hero.name,
       // #docregion set-value-address
       address: this.hero.addresses[0] || new Address()
       // #enddocregion set-value-address
     });
+  }
+  // #enddocregion rebuildForm
+
+  /* First version of rebuildForm */
+  rebuildForm1() {
+    // #docregion reset
+    this.heroForm.reset();
+     // #enddocregion reset
+     // #docregion set-value
+     this.heroForm.setValue({
+      name:    this.hero.name,
+      address: this.hero.addresses[0] || new Address()
+   });
     // #enddocregion set-value
   }
-  // #enddocregion ngOnChanges-1
 }
-
