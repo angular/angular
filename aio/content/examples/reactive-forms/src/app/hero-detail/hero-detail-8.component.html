@@ -1,7 +1,7 @@
 <!-- #docplaster-->
 <h3><i>Using FormArray to add groups</i></h3>
 
-<form [formGroup]="heroForm" novalidate>
+<form [formGroup]="heroForm">
     <p>Form Changed: {{ heroForm.dirty }}</p>
 
     <div class="form-group">
@@ -11,7 +11,9 @@
     </div>
     <!-- #docregion form-array-->
     <!-- #docregion form-array-skeleton -->
+    <!-- #docregion form-array-name -->
     <div formArrayName="secretLairs" class="well well-lg">
+    <!-- #enddocregion form-array-name -->
       <div *ngFor="let address of secretLairs.controls; let i=index" [formGroupName]="i" >
         <!-- The repeated address template -->
     <!-- #enddocregion form-array-skeleton -->
