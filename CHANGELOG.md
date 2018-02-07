@@ -1,3 +1,16 @@
+<a name="5.2.4"></a>
+## [5.2.4](https://github.com/angular/angular/compare/5.2.3...5.2.4) (2018-02-07)
+
+
+### Bug Fixes
+
+* **common:** don't convert null to a string when flushing a mock request ([#21417](https://github.com/angular/angular/issues/21417)) ([c4fb696](https://github.com/angular/angular/commit/c4fb696)), closes [#20744](https://github.com/angular/angular/issues/20744)
+* **core:** fix [#20582](https://github.com/angular/angular/issues/20582), don't need to wrap zone in location change listener ([#22007](https://github.com/angular/angular/issues/22007)) ([ce51ea9](https://github.com/angular/angular/commit/ce51ea9))
+* **core:** fix proper propagation of subscriptions in EventEmitter ([#22016](https://github.com/angular/angular/issues/22016)) ([c6645e7](https://github.com/angular/angular/commit/c6645e7)), closes [#21999](https://github.com/angular/angular/issues/21999)
+* **core:** should check Zone existance when scheduleMicroTask ([#20656](https://github.com/angular/angular/issues/20656)) ([aa9ba7f](https://github.com/angular/angular/commit/aa9ba7f))
+
+
+
 <a name="6.0.0-beta.2"></a>
 # [6.0.0-beta.2](https://github.com/angular/angular/compare/6.0.0-beta.1...6.0.0-beta.2) (2018-01-31)
 
