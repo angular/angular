@@ -68,3 +68,10 @@ git_repository(
     remote = "https://github.com/angular/devkit.git",
     commit = "69fcdee61c5ff3f08aa609dec69155dfd29c809a",
 )
+
+http_archive(
+    name = "org_brotli",
+    url = "https://github.com/google/brotli/archive/v1.0.2.zip",
+    strip_prefix = "brotli-1.0.2",
+    sha256 = "b43d5d6bc40f2fa6c785b738d86c6bbe022732fe25196ebbe43b9653a025920d",
+)
