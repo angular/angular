@@ -11,7 +11,7 @@ import {ElementRef, TemplateRef, ViewContainerRef} from '@angular/core';
 import {defineComponent} from '../../src/render3/definition';
 import {InjectFlags, bloomAdd, bloomFindPossibleInjector, getOrCreateNodeInjector} from '../../src/render3/di';
 import {PublicFeature, defineDirective, inject, injectElementRef, injectTemplateRef, injectViewContainerRef} from '../../src/render3/index';
-import {bind, bind2, container, containerRefreshEnd, containerRefreshStart, createLNode, createLView, createTView, elementEnd, elementStart, enterView, leaveView, memory, text, textBinding, viewEnd, viewStart} from '../../src/render3/instructions';
+import {bind, bind2, container, containerRefreshEnd, containerRefreshStart, createLNode, createLView, createTView, elementEnd, elementStart, embeddedViewEnd, embeddedViewStart, enterView, leaveView, memory, text, textBinding} from '../../src/render3/instructions';
 import {LInjector} from '../../src/render3/interfaces/injector';
 import {LNodeFlags} from '../../src/render3/interfaces/node';
 
@@ -297,7 +297,7 @@ describe('di', () => {
         }
         containerRefreshStart(2);
         {
-          if (viewStart(0)) {
+          if (embeddedViewStart(0)) {
             elementStart(0, 'span', null, [ChildDirective, Child2Directive]);
             { text(3); }
             elementEnd();
@@ -306,7 +306,7 @@ describe('di', () => {
               3,
               bind2(
                   '', memory<ChildDirective>(1).value, '-', memory<Child2Directive>(2).value, ''));
-          viewEnd();
+          embeddedViewEnd();
         }
         containerRefreshEnd();
       }

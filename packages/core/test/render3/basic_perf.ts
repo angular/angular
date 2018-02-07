@@ -7,7 +7,7 @@
  */
 
 import {defineComponent} from '../../src/render3/index';
-import {container, containerRefreshEnd, containerRefreshStart, elementEnd, elementStart, text, viewEnd, viewStart} from '../../src/render3/instructions';
+import {container, containerRefreshEnd, containerRefreshStart, elementEnd, elementStart, embeddedViewEnd, embeddedViewStart, text} from '../../src/render3/instructions';
 
 import {document, renderComponent} from './render_util';
 
@@ -42,7 +42,7 @@ describe('iv perf test', () => {
               containerRefreshStart(0);
               {
                 for (let i = 0; i < count; i++) {
-                  let cm0 = viewStart(0);
+                  let cm0 = embeddedViewStart(0);
                   {
                     if (cm0) {
                       elementStart(0, 'div');
@@ -50,7 +50,7 @@ describe('iv perf test', () => {
                       elementEnd();
                     }
                   }
-                  viewEnd();
+                  embeddedViewEnd();
                 }
               }
               containerRefreshEnd();

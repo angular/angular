@@ -59,8 +59,8 @@ export {
   text as T,
   textBinding as t,
 
-  viewStart as V,
-  viewEnd as v,
+  embeddedViewStart as V,
+  embeddedViewEnd as v,
 } from './instructions';
 
 export {

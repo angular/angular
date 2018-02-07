@@ -7,10 +7,11 @@
  */
 import {QUERY_READ_CONTAINER_REF, QUERY_READ_ELEMENT_REF, QUERY_READ_FROM_NODE, QUERY_READ_TEMPLATE_REF} from '../../src/render3/di';
 import {QueryList, detectChanges} from '../../src/render3/index';
-import {container, containerRefreshEnd, containerRefreshStart, elementEnd, elementStart, memory, viewEnd, viewStart} from '../../src/render3/instructions';
+import {container, containerRefreshEnd, containerRefreshStart, elementEnd, elementStart, embeddedViewEnd, embeddedViewStart, memory} from '../../src/render3/instructions';
 import {query, queryRefresh} from '../../src/render3/query';
 
 import {createComponent, createDirective, renderComponent} from './render_util';
+
 
 
 /**
@@ -554,14 +555,14 @@ describe('query', () => {
         containerRefreshStart(1);
         {
           if (ctx.exp) {
-            let cm1 = viewStart(1);
+            let cm1 = embeddedViewStart(1);
             {
               if (cm1) {
                 firstEl = elementStart(0, 'div', null, null, ['foo', '']);
                 elementEnd();
               }
             }
-            viewEnd();
+            embeddedViewEnd();
           }
         }
         containerRefreshEnd();
@@ -608,14 +609,14 @@ describe('query', () => {
            containerRefreshStart(2);
            {
              if (ctx.exp) {
-               let cm1 = viewStart(1);
+               let cm1 = embeddedViewStart(1);
                {
                  if (cm1) {
                    viewEl = elementStart(0, 'div', null, null, ['foo', '']);
                    elementEnd();
                  }
                }
-               viewEnd();
+               embeddedViewEnd();
              }
            }
            containerRefreshEnd();
@@ -664,24 +665,24 @@ describe('query', () => {
         containerRefreshStart(1);
         {
           if (ctx.exp1) {
-            let cm1 = viewStart(0);
+            let cm1 = embeddedViewStart(0);
             {
               if (cm1) {
                 firstEl = elementStart(0, 'div', null, null, ['foo', '']);
                 elementEnd();
               }
             }
-            viewEnd();
+            embeddedViewEnd();
           }
           if (ctx.exp2) {
-            let cm1 = viewStart(1);
+            let cm1 = embeddedViewStart(1);
             {
               if (cm1) {
                 lastEl = elementStart(0, 'span', null, null, ['foo', '']);
                 elementEnd();
               }
             }
-            viewEnd();
+            embeddedViewEnd();
           }
         }
         containerRefreshEnd();
@@ -726,7 +727,7 @@ describe('query', () => {
         containerRefreshStart(1);
         {
           if (ctx.exp1) {
-            let cm1 = viewStart(0);
+            let cm1 = embeddedViewStart(0);
             {
               if (cm1) {
                 firstEl = elementStart(0, 'div', null, null, ['foo', '']);
@@ -736,19 +737,19 @@ describe('query', () => {
               containerRefreshStart(1);
               {
                 if (ctx.exp2) {
-                  let cm2 = viewStart(0);
+                  let cm2 = embeddedViewStart(0);
                   {
                     if (cm2) {
                       lastEl = elementStart(0, 'span', null, null, ['foo', '']);
                       elementEnd();
                     }
                   }
-                  viewEnd();
+                  embeddedViewEnd();
                 }
               }
               containerRefreshEnd();
             }
-            viewEnd();
+            embeddedViewEnd();
           }
         }
         containerRefreshEnd();
@@ -793,14 +794,14 @@ describe('query', () => {
         containerRefreshStart(2);
         {
           if (ctx.exp) {
-            let cm1 = viewStart(0);
+            let cm1 = embeddedViewStart(0);
             {
               if (cm1) {
                 elementStart(0, 'div', null, null, ['foo', '']);
                 elementEnd();
               }
             }
-            viewEnd();
+            embeddedViewEnd();
           }
         }
         containerRefreshEnd();

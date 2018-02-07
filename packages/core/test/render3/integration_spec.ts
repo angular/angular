@@ -7,7 +7,7 @@
  */
 
 import {defineComponent} from '../../src/render3/index';
-import {NO_CHANGE, bind, bind1, bind2, bind3, bind4, bind5, bind6, bind7, bind8, bindV, componentRefresh, container, containerRefreshEnd, containerRefreshStart, elementAttribute, elementClass, elementEnd, elementProperty, elementStart, elementStyle, memory, projection, projectionDef, text, textBinding, viewEnd, viewStart} from '../../src/render3/instructions';
+import {NO_CHANGE, bind, bind1, bind2, bind3, bind4, bind5, bind6, bind7, bind8, bindV, componentRefresh, container, containerRefreshEnd, containerRefreshStart, elementAttribute, elementClass, elementEnd, elementProperty, elementStart, elementStyle, embeddedViewEnd, embeddedViewStart, memory, projection, projectionDef, text, textBinding} from '../../src/render3/instructions';
 
 import {containerEl, renderToHtml} from './render_util';
 
@@ -367,12 +367,12 @@ describe('render3 integration test', () => {
             containerRefreshStart(0);
             {
               if (ctx.condition) {
-                if (viewStart(0)) {
+                if (embeddedViewStart(0)) {
                   elementStart(0, 'div');
                   { text(1, 'text'); }
                   elementEnd();
                 }
-                viewEnd();
+                embeddedViewEnd();
               }
             }
             containerRefreshEnd();
@@ -420,11 +420,11 @@ describe('render3 integration test', () => {
       containerRefreshStart(0);
       {
         if (ctx.label != null) {
-          if (viewStart(0)) {
+          if (embeddedViewStart(0)) {
             text(0);
           }
           textBinding(0, bind(ctx.label));
-          viewEnd();
+          embeddedViewEnd();
         }
       }
       containerRefreshEnd();
@@ -438,25 +438,25 @@ describe('render3 integration test', () => {
       }
       containerRefreshStart(0);
       {
-        const cm0 = viewStart(0);
+        const cm0 = embeddedViewStart(0);
         { showLabel({label: ctx.tree.beforeLabel}, cm0); }
-        viewEnd();
+        embeddedViewEnd();
       }
       containerRefreshEnd();
       containerRefreshStart(1);
       {
         for (let subTree of ctx.tree.subTrees || []) {
-          const cm0 = viewStart(0);
+          const cm0 = embeddedViewStart(0);
           { showTree({tree: subTree}, cm0); }
-          viewEnd();
+          embeddedViewEnd();
         }
       }
       containerRefreshEnd();
       containerRefreshStart(2);
       {
-        const cm0 = viewStart(0);
+        const cm0 = embeddedViewStart(0);
         { showLabel({label: ctx.tree.afterLabel}, cm0); }
-        viewEnd();
+        embeddedViewEnd();
       }
       containerRefreshEnd();
     }
@@ -477,16 +477,16 @@ describe('render3 integration test', () => {
           }
           containerRefreshStart(1);
           {
-            const cm0 = viewStart(0);
+            const cm0 = embeddedViewStart(0);
             { showTree({tree: ctx.beforeTree}, cm0); }
-            viewEnd();
+            embeddedViewEnd();
           }
           containerRefreshEnd();
           containerRefreshStart(3);
           {
-            const cm0 = viewStart(0);
+            const cm0 = embeddedViewStart(0);
             { showTree({tree: ctx.afterTree}, cm0); }
-            viewEnd();
+            embeddedViewEnd();
           }
           containerRefreshEnd();
         },
@@ -505,9 +505,9 @@ describe('render3 integration test', () => {
       elementProperty(0, 'afterTree', bind(ctx.afterTree));
       containerRefreshStart(2);
       {
-        const cm0 = viewStart(0);
+        const cm0 = embeddedViewStart(0);
         { showTree({tree: ctx.projectedTree}, cm0); }
-        viewEnd();
+        embeddedViewEnd();
       }
       containerRefreshEnd();
       ChildComponent.ngComponentDef.h(1, 0);
@@ -633,7 +633,7 @@ describe('render3 integration test', () => {
           containerRefreshStart(1);
           {
             if (true) {
-              let cm1 = viewStart(1);
+              let cm1 = embeddedViewStart(1);
               {
                 if (cm1) {
                   elementStart(0, 'b');
@@ -642,7 +642,7 @@ describe('render3 integration test', () => {
                 }
                 elementAttribute(0, 'title', bind(ctx.title));
               }
-              viewEnd();
+              embeddedViewEnd();
             }
           }
           containerRefreshEnd();
@@ -747,12 +747,12 @@ describe('render3 integration test', () => {
         containerRefreshStart(0);
         {
           if (ctx.condition) {
-            if (viewStart(0)) {
+            if (embeddedViewStart(0)) {
               elementStart(0, 'div');
               {}
               elementEnd();
             }
-            viewEnd();
+            embeddedViewEnd();
           }
         }
         containerRefreshEnd();
