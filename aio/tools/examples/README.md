@@ -1,74 +1,57 @@
 # Overview
 
-Many of the documentation pages contain snippets of code examples. We extract these snippets from
+Many of the documentation pages contain snippets of code examples. Extract these snippets from
 real working example applications, which are stored in subfolders of the `/aio/content/examples`
 folder. Each example can be built and run independently. Each example also provides e2e specs, which
 are run as part of our Travis build tasks, to verify that the examples continue to work as expected,
 as changes are made to the core Angular libraries.
 
-In order to build, run and test these examples independently we need to install dependencies into
+In order to build, run and test these examples independently you need to install dependencies into
 their sub-folder. Also there are a number of common boilerplate files that are needed to configure
-each example's project. We maintain these common boilerplate files centrally to reduce the amount
+each example's project. Maintain these common boilerplate files centrally to reduce the amount
 of effort if one of them needs to change.
 
 ## Boilerplate overview
 
 As mentioned, many of the documentation pages contain snippets extracted from real example applications.
 To achieve that, all those applications needs to contain a basic boilerplate. E.g. a `node_modules`
-folder, `package.json` with scripts, `system.js` configuration, etc.
+folder, `package.json` with scripts, etc.
 
 No one wants to maintain the boilerplate on each example, so the goal of this tool is to provide a
-generic boilerplate that works in all the examples.
+set of boilerplates that works in all the examples.
 
 ### Boilerplate files
 
-Inside `/aio/tools/examples/shared/boilerplate` you will see all the common boilerplate you can find
-in any Angular application using System.js. This is the boilerplate that will be carried to each example.
+Inside `/aio/tools/examples/shared/boilerplate` you will find a set of folders representing each
+boilerplate.
 
-Among these files, there are a few special ones:
+Currently you will find the next boilerplates:
 
-* **src/systemjs.config.js** - This is the configuration of System.js used to run the example locally.
-* **src/systemjs.config.web.js** - This configuration replaces the previous one on Stackblitz.
-* **src/systemjs.config.web.build.js** - Same as the previous one but for using angular's `-builds`
-  versions.
-* **src/systemjs-angular-loader.js** - It is a System.js plugin that removes the need of `moduleId`.
-* **package.json** - This package.json only contains scripts, no dependencies. It contains the
-  different tasks needed to run any example. Doesn't matter if CLI, System.js or Webpack.
-* **stackblitz.json** - This file is used by the Stackblitz tool to generate a stackblitz for an example. This
-  concrete file is just a placeholder. Authors needs to tweak it for each guide. More at the
-  [stackblitz docs](../stackblitz-builder/README.md).
-* **example-config.json** - This file serves as a flag to indicate that the current folder is an
-  example. This concrete file is just a placeholder. More on this later in this readme.
+
+* CLI - For CLI based examples. This is the default one, to be used in the majority of the examples.
+* systemjs - Currently in deprecation, only used in a a few examples.
+* i18n - Based on the CLI one, features a few scripts for i18n.
+* universal - Based on the cli with a extra server for universal.
+
+There is also a `common` folder that contains files used in all different examples.
 
 ### The example-config.json
 
-So what is this **example-config.json** again? If an author wants to create a new example, say
-`/aio/content/examples/awesome-example`. The author needs to create an empty `example-config.json`
-in that folder. That serves as a flag so this tool will say "Hey, that is an example, let's copy
-all the boilerplate there".
-
-So when the tool runs, it finds **all** the folders with an `example-config.json` file, and puts
-a copy of the boilerplate in those folders.
-
-Normally the file is empty, but we can add information in it, for example:
+Each example is identified by an **example-config.json** configuration file in its root folder.
+This configuration file indicates what type of boilerplate this example needs. E.g.
 
 ```json
-{
-  "build": "build:cli",
-  "run": "serve:cli"
-}
+{ projectType: 'universal' }
 ```
 
-In this case, this would indicate that this is a CLI example. Won't make any difference on the
-boilerplate, but will be useful for e2e tests (more on this later). Also works as a hint for
-the example to know how is executed.
-
+If the file is empty then the default type of cli is assumed.
+When the boilerplate tooling runs, it will copy into the example folder all of the appropriate boilerplate files.
 
 ### A node_modules to share
 
 With all the boilerplate files in place, the only missing piece are the installed packages. For
-that we have a `/aio/tools/examples/shared/package.json` which contains **all** the packages
-needed to run all the examples.
+that you have a `/aio/tools/examples/shared/package.json` which contains **all** the packages
+needed to run all the examples through all different boilerplates.
 
 After installing these dependencies, a `node_modules` will be created at
 `/aio/tools/examples/shared/node_modules`. This folder will be **symlinked** into each example.
@@ -77,12 +60,13 @@ may require admin rights.
 
 ### End to end tests
 
-Each example contains an `e2e-spec.ts` file. We can find all the related configuration files for
-e2e in the `/aio/tools/examples/shared` folder.
+End to end changes between boilerplates.
 
-This tool expects all the examples to be build with `npm run build`. If an example is not built
-with that script, the author would need to specify the new build command in the `example-config.json`
-as shown earlier.
+For CLI applications, create a `app.e2e-spec.ts` inside the `e2e` folder. The tooling will run
+`ng e2e` for each CLI based examples.
+
+For SystemJS, each example contains an `e2e-spec.ts` file. You can find all the related configuration files
+in the `/aio/tools/examples/shared` folder.
 
 ### example-boilerplate.js
 
