@@ -1,5 +1,5 @@
 import { BrowserModule } from '@angular/platform-browser';
-import { NgModule } from '@angular/core';
+import { ErrorHandler, NgModule } from '@angular/core';
 import { HttpClientModule } from '@angular/common/http';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
@@ -31,6 +31,7 @@ import { TopMenuComponent } from 'app/layout/top-menu/top-menu.component';
 import { FooterComponent } from 'app/layout/footer/footer.component';
 import { NavMenuComponent } from 'app/layout/nav-menu/nav-menu.component';
 import { NavItemComponent } from 'app/layout/nav-item/nav-item.component';
+import { ReportingErrorHandler } from 'app/shared/reporting-error-handler';
 import { ScrollService } from 'app/shared/scroll.service';
 import { ScrollSpyService } from 'app/shared/scroll-spy.service';
 import { SearchBoxComponent } from 'app/search/search-box/search-box.component';
@@ -124,6 +125,7 @@ export const svgIconProviders = [
   providers: [
     Deployment,
     DocumentService,
+    { provide: ErrorHandler, useClass: ReportingErrorHandler },
     GaService,
     Logger,
     Location,
