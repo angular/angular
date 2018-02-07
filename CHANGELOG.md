@@ -1,3 +1,34 @@
+<a name="6.0.0-beta.3"></a>
+# [6.0.0-beta.3](https://github.com/angular/angular/compare/6.0.0-beta.2...6.0.0-beta.3) (2018-02-07)
+
+
+### Bug Fixes
+
+* **common:** don't convert null to a string when flushing a mock request ([#21417](https://github.com/angular/angular/issues/21417)) ([8b14488](https://github.com/angular/angular/commit/8b14488)), closes [#20744](https://github.com/angular/angular/issues/20744)
+* **core:** fix [#20582](https://github.com/angular/angular/issues/20582), don't need to wrap zone in location change listener ([#20640](https://github.com/angular/angular/issues/20640)) ([f791e9f](https://github.com/angular/angular/commit/f791e9f))
+* **core:** fix proper propagation of subscriptions in EventEmitter ([#22016](https://github.com/angular/angular/issues/22016)) ([e81606c](https://github.com/angular/angular/commit/e81606c)), closes [#21999](https://github.com/angular/angular/issues/21999)
+* **core:** should check Zone existance when scheduleMicroTask ([#20656](https://github.com/angular/angular/issues/20656)) ([3a86940](https://github.com/angular/angular/commit/3a86940))
+* **forms:** publish missing types ([#19941](https://github.com/angular/angular/issues/19941)) ([2707012](https://github.com/angular/angular/commit/2707012))
+* **ivy:** generate correct interpolations ([#21946](https://github.com/angular/angular/issues/21946)) ([3cc1d76](https://github.com/angular/angular/commit/3cc1d76))
+* **ivy:** generate lifecycle pattern ([#21865](https://github.com/angular/angular/issues/21865)) ([f816666](https://github.com/angular/angular/commit/f816666))
+* **ivy:** improve `bindV` perf and memory usage ([#21881](https://github.com/angular/angular/issues/21881)) ([0846784](https://github.com/angular/angular/commit/0846784))
+* **ivy:** remove unnecessary parameter of NgOnChangesFeature ([#21879](https://github.com/angular/angular/issues/21879)) ([65cf1ad](https://github.com/angular/angular/commit/65cf1ad))
+
+
+### Features
+
+* **compiler-cli:** reflect static methods added to classes in metadata ([#21926](https://github.com/angular/angular/issues/21926)) ([eb8ddd2](https://github.com/angular/angular/commit/eb8ddd2))
+* **ivy:** add canonical example of a pipe. ([#21834](https://github.com/angular/angular/issues/21834)) ([743d8bc](https://github.com/angular/angular/commit/743d8bc))
+* **ivy:** add support for attributes on ng-content nodes ([#21935](https://github.com/angular/angular/issues/21935)) ([1aa2947](https://github.com/angular/angular/commit/1aa2947))
+* **ivy:** memoize array literals in render3 ([#21973](https://github.com/angular/angular/issues/21973)) ([4d62be6](https://github.com/angular/angular/commit/4d62be6))
+
+
+### Performance Improvements
+
+* **ivy:** improve Uglify configuration in hello world integration test ([#21985](https://github.com/angular/angular/issues/21985)) ([7e51e52](https://github.com/angular/angular/commit/7e51e52))
+
+
+
 <a name="5.2.4"></a>
 ## [5.2.4](https://github.com/angular/angular/compare/5.2.3...5.2.4) (2018-02-07)
 
