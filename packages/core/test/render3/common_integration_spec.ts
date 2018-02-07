@@ -8,7 +8,8 @@
 
 import {NgForOfContext} from '@angular/common';
 
-import {C, E, T, b, cR, cr, defineComponent, e, p, r, t} from '../../src/render3/index';
+import {defineComponent} from '../../src/render3/index';
+import {bind, componentRefresh, container, containerRefreshEnd, containerRefreshStart, elementEnd, elementProperty, elementStart, text, textBinding} from '../../src/render3/instructions';
 
 import {NgForOf} from './common_with_def';
 import {renderComponent, toHtml} from './render_util';
@@ -28,22 +29,22 @@ describe('@angular/common integration', () => {
           // </ul>
           template: (myApp: MyApp, cm: boolean) => {
             if (cm) {
-              E(0, 'ul');
-              { C(1, [NgForOf], liTemplate); }
-              e();
+              elementStart(0, 'ul');
+              { container(1, [NgForOf], liTemplate); }
+              elementEnd();
             }
-            p(1, 'ngForOf', b(myApp.items));
-            cR(1);
-            r(2, 0);
-            cr();
+            elementProperty(1, 'ngForOf', bind(myApp.items));
+            containerRefreshStart(1);
+            componentRefresh(2, 0);
+            containerRefreshEnd();
 
             function liTemplate(row: NgForOfContext<string>, cm: boolean) {
               if (cm) {
-                E(0, 'li');
-                { T(1); }
-                e();
+                elementStart(0, 'li');
+                { text(1); }
+                elementEnd();
               }
-              t(1, b(row.$implicit));
+              textBinding(1, bind(row.$implicit));
             }
           }
         });

@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {C, E, T, V, cR, cr, defineComponent, e, v} from '../../src/render3/index';
+import {defineComponent} from '../../src/render3/index';
+import {container, containerRefreshEnd, containerRefreshStart, elementEnd, elementStart, text, viewEnd, viewStart} from '../../src/render3/instructions';
 
 import {document, renderComponent} from './render_util';
 
@@ -36,23 +37,23 @@ describe('iv perf test', () => {
             tag: 'div',
             template: function Template(ctx: any, cm: any) {
               if (cm) {
-                C(0);
+                container(0);
               }
-              cR(0);
+              containerRefreshStart(0);
               {
                 for (let i = 0; i < count; i++) {
-                  let cm0 = V(0);
+                  let cm0 = viewStart(0);
                   {
                     if (cm0) {
-                      E(0, 'div');
-                      T(1, '-');
-                      e();
+                      elementStart(0, 'div');
+                      text(1, '-');
+                      elementEnd();
                     }
                   }
-                  v();
+                  viewEnd();
                 }
               }
-              cr();
+              containerRefreshEnd();
             },
             factory: () => new Component
           });

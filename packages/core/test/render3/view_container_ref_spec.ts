@@ -7,7 +7,8 @@
  */
 
 import {TemplateRef, ViewContainerRef} from '../../src/core';
-import {C, T, b, cR, cr, defineComponent, defineDirective, injectTemplateRef, injectViewContainerRef, m, r, t} from '../../src/render3/index';
+import {defineComponent, defineDirective, injectTemplateRef, injectViewContainerRef} from '../../src/render3/index';
+import {bind, componentRefresh, container, containerRefreshEnd, containerRefreshStart, memory, text, textBinding} from '../../src/render3/instructions';
 
 import {renderComponent, toHtml} from './render_util';
 
@@ -32,17 +33,17 @@ describe('ViewContainerRef', () => {
         if (cm) {
           const subTemplate = (ctx: any, cm: boolean) => {
             if (cm) {
-              T(0);
+              text(0);
             }
-            t(0, b(ctx.$implicit));
+            textBinding(0, bind(ctx.$implicit));
           };
-          C(0, [TestDirective], subTemplate);
+          container(0, [TestDirective], subTemplate);
         }
-        cR(0);
-        cmp.testDir = m(1) as TestDirective;
+        containerRefreshStart(0);
+        cmp.testDir = memory(1) as TestDirective;
         TestDirective.ngDirectiveDef.h(1, 0);
-        r(1, 0);
-        cr();
+        componentRefresh(1, 0);
+        containerRefreshEnd();
       },
     });
   }

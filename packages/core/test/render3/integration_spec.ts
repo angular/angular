@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {C, E, NC, P, T, V, a, b, b1, b2, b3, b4, b5, b6, b7, b8, bV, cR, cr, defineComponent, e, k, m, p, pD, r, s, t, v} from '../../src/render3/index';
-import {NO_CHANGE} from '../../src/render3/instructions';
+import {defineComponent} from '../../src/render3/index';
+import {NO_CHANGE, bind, bind1, bind2, bind3, bind4, bind5, bind6, bind7, bind8, bindV, componentRefresh, container, containerRefreshEnd, containerRefreshStart, elementAttribute, elementClass, elementEnd, elementProperty, elementStart, elementStyle, memory, projection, projectionDef, text, textBinding, viewEnd, viewStart} from '../../src/render3/instructions';
 
 import {containerEl, renderToHtml} from './render_util';
 
@@ -20,9 +20,9 @@ describe('render3 integration test', () => {
 
       function Template(ctx: any, cm: boolean) {
         if (cm) {
-          E(0, 'span', ['title', 'Hello']);
-          { T(1, 'Greetings'); }
-          e();
+          elementStart(0, 'span', ['title', 'Hello']);
+          { text(1, 'Greetings'); }
+          elementEnd();
         }
       }
     });
@@ -33,11 +33,11 @@ describe('render3 integration test', () => {
 
       function Template(name: string, cm: boolean) {
         if (cm) {
-          E(0, 'h1');
-          { T(1); }
-          e();
+          elementStart(0, 'h1');
+          { text(1); }
+          elementEnd();
         }
-        t(1, b1('Hello, ', name, '!'));
+        textBinding(1, bind1('Hello, ', name, '!'));
       }
     });
   });
@@ -46,9 +46,9 @@ describe('render3 integration test', () => {
     it('should render "undefined" as "" when used with `bind()`', () => {
       function Template(name: string, cm: boolean) {
         if (cm) {
-          T(0);
+          text(0);
         }
-        t(0, b(name));
+        textBinding(0, bind(name));
       }
 
       expect(renderToHtml(Template, 'benoit')).toEqual('benoit');
@@ -58,9 +58,9 @@ describe('render3 integration test', () => {
     it('should render "null" as "" when used with `bind()`', () => {
       function Template(name: string, cm: boolean) {
         if (cm) {
-          T(0);
+          text(0);
         }
-        t(0, b(name));
+        textBinding(0, bind(name));
       }
 
       expect(renderToHtml(Template, 'benoit')).toEqual('benoit');
@@ -70,9 +70,9 @@ describe('render3 integration test', () => {
     it('should support creation-time values in text nodes', () => {
       function Template(value: string, cm: boolean) {
         if (cm) {
-          T(0);
+          text(0);
         }
-        t(0, cm ? value : NO_CHANGE);
+        textBinding(0, cm ? value : NO_CHANGE);
       }
       expect(renderToHtml(Template, 'once')).toEqual('once');
       expect(renderToHtml(Template, 'twice')).toEqual('once');
@@ -81,27 +81,32 @@ describe('render3 integration test', () => {
     it('should support creation-time bindings in interpolations', () => {
       function Template(v: string, cm: boolean) {
         if (cm) {
-          T(0);
-          T(1);
-          T(2);
-          T(3);
-          T(4);
-          T(5);
-          T(6);
-          T(7);
-          T(8);
+          text(0);
+          text(1);
+          text(2);
+          text(3);
+          text(4);
+          text(5);
+          text(6);
+          text(7);
+          text(8);
         }
-        t(0, b1('', cm ? v : NC, '|'));
-        t(1, b2('', v, '_', cm ? v : NC, '|'));
-        t(2, b3('', v, '_', v, '_', cm ? v : NC, '|'));
-        t(3, b4('', v, '_', v, '_', v, '_', cm ? v : NC, '|'));
-        t(4, b5('', v, '_', v, '_', v, '_', v, '_', cm ? v : NC, '|'));
-        t(5, b6('', v, '_', v, '_', v, '_', v, '_', v, '_', cm ? v : NC, '|'));
-        t(6, b7('', v, '_', v, '_', v, '_', v, '_', v, '_', v, '_', cm ? v : NC, '|'));
-        t(7, b8('', v, '_', v, '_', v, '_', v, '_', v, '_', v, '_', v, '_', cm ? v : NC, '|'));
-        t(8, bV([
-            '', v, '_', v, '_', v, '_', v, '_', v, '_', v, '_', v, '_', v, '_', cm ? v : NC, ''
-          ]));
+        textBinding(0, bind1('', cm ? v : NO_CHANGE, '|'));
+        textBinding(1, bind2('', v, '_', cm ? v : NO_CHANGE, '|'));
+        textBinding(2, bind3('', v, '_', v, '_', cm ? v : NO_CHANGE, '|'));
+        textBinding(3, bind4('', v, '_', v, '_', v, '_', cm ? v : NO_CHANGE, '|'));
+        textBinding(4, bind5('', v, '_', v, '_', v, '_', v, '_', cm ? v : NO_CHANGE, '|'));
+        textBinding(5, bind6('', v, '_', v, '_', v, '_', v, '_', v, '_', cm ? v : NO_CHANGE, '|'));
+        textBinding(
+            6, bind7('', v, '_', v, '_', v, '_', v, '_', v, '_', v, '_', cm ? v : NO_CHANGE, '|'));
+        textBinding(
+            7, bind8(
+                   '', v, '_', v, '_', v, '_', v, '_', v, '_', v, '_', v, '_', cm ? v : NO_CHANGE,
+                   '|'));
+        textBinding(8, bindV([
+                      '', v, '_', v, '_', v, '_', v, '_', v, '_', v, '_', v, '_', v, '_',
+                      cm ? v : NO_CHANGE, ''
+                    ]));
       }
       expect(renderToHtml(Template, 'a'))
           .toEqual(
@@ -117,11 +122,11 @@ describe('render3 integration test', () => {
     it('should handle a flat list of static/bound text nodes', () => {
       function Template(name: string, cm: boolean) {
         if (cm) {
-          T(0, 'Hello ');
-          T(1);
-          T(2, '!');
+          text(0, 'Hello ');
+          text(1);
+          text(2, '!');
         }
-        t(1, b(name));
+        textBinding(1, bind(name));
       }
       expect(renderToHtml(Template, 'world')).toEqual('Hello world!');
       expect(renderToHtml(Template, 'monde')).toEqual('Hello monde!');
@@ -130,15 +135,15 @@ describe('render3 integration test', () => {
     it('should handle a list of static/bound text nodes as element children', () => {
       function Template(name: string, cm: boolean) {
         if (cm) {
-          E(0, 'b');
+          elementStart(0, 'b');
           {
-            T(1, 'Hello ');
-            T(2);
-            T(3, '!');
+            text(1, 'Hello ');
+            text(2);
+            text(3, '!');
           }
-          e();
+          elementEnd();
         }
-        t(2, b(name));
+        textBinding(2, bind(name));
       }
       expect(renderToHtml(Template, 'world')).toEqual('<b>Hello world!</b>');
       expect(renderToHtml(Template, 'mundo')).toEqual('<b>Hello mundo!</b>');
@@ -147,23 +152,23 @@ describe('render3 integration test', () => {
     it('should render/update text node as a child of a deep list of elements', () => {
       function Template(name: string, cm: boolean) {
         if (cm) {
-          E(0, 'b');
+          elementStart(0, 'b');
           {
-            E(1, 'b');
+            elementStart(1, 'b');
             {
-              E(2, 'b');
+              elementStart(2, 'b');
               {
-                E(3, 'b');
-                { T(4); }
-                e();
+                elementStart(3, 'b');
+                { text(4); }
+                elementEnd();
               }
-              e();
+              elementEnd();
             }
-            e();
+            elementEnd();
           }
-          e();
+          elementEnd();
         }
-        t(4, b1('Hello ', name, '!'));
+        textBinding(4, bind1('Hello ', name, '!'));
       }
       expect(renderToHtml(Template, 'world')).toEqual('<b><b><b><b>Hello world!</b></b></b></b>');
       expect(renderToHtml(Template, 'mundo')).toEqual('<b><b><b><b>Hello mundo!</b></b></b></b>');
@@ -172,17 +177,17 @@ describe('render3 integration test', () => {
     it('should update 2 sibling elements', () => {
       function Template(id: any, cm: boolean) {
         if (cm) {
-          E(0, 'b');
+          elementStart(0, 'b');
           {
-            E(1, 'span');
-            e();
-            E(2, 'span', ['class', 'foo']);
+            elementStart(1, 'span');
+            elementEnd();
+            elementStart(2, 'span', ['class', 'foo']);
             {}
-            e();
+            elementEnd();
           }
-          e();
+          elementEnd();
         }
-        a(2, 'id', b(id));
+        elementAttribute(2, 'id', bind(id));
       }
       expect(renderToHtml(Template, 'foo'))
           .toEqual('<b><span></span><span class="foo" id="foo"></span></b>');
@@ -193,10 +198,10 @@ describe('render3 integration test', () => {
     it('should handle sibling text node after element with child text node', () => {
       function Template(ctx: any, cm: boolean) {
         if (cm) {
-          E(0, 'p');
-          { T(1, 'hello'); }
-          e();
-          T(2, 'world');
+          elementStart(0, 'p');
+          { text(1, 'hello'); }
+          elementEnd();
+          text(2, 'world');
         }
       }
 
@@ -214,14 +219,14 @@ describe('render3 integration test', () => {
         tag: 'todo',
         template: function TodoTemplate(ctx: any, cm: boolean) {
           if (cm) {
-            E(0, 'p');
+            elementStart(0, 'p');
             {
-              T(1, 'Todo');
-              T(2);
+              text(1, 'Todo');
+              text(2);
             }
-            e();
+            elementEnd();
           }
-          t(2, b(ctx.value));
+          textBinding(2, bind(ctx.value));
         },
         factory: () => new TodoComponent
       });
@@ -230,11 +235,11 @@ describe('render3 integration test', () => {
     it('should support a basic component template', () => {
       function Template(ctx: any, cm: boolean) {
         if (cm) {
-          E(0, TodoComponent);
-          e();
+          elementStart(0, TodoComponent);
+          elementEnd();
         }
         TodoComponent.ngComponentDef.h(1, 0);
-        r(1, 0);
+        componentRefresh(1, 0);
       }
 
       expect(renderToHtml(Template, null)).toEqual('<todo><p>Todo one</p></todo>');
@@ -243,12 +248,12 @@ describe('render3 integration test', () => {
     it('should support a component template with sibling', () => {
       function Template(ctx: any, cm: boolean) {
         if (cm) {
-          E(0, TodoComponent);
-          e();
-          T(2, 'two');
+          elementStart(0, TodoComponent);
+          elementEnd();
+          text(2, 'two');
         }
         TodoComponent.ngComponentDef.h(1, 0);
-        r(1, 0);
+        componentRefresh(1, 0);
       }
       expect(renderToHtml(Template, null)).toEqual('<todo><p>Todo one</p></todo>two');
     });
@@ -260,15 +265,15 @@ describe('render3 integration test', () => {
        */
       function Template(ctx: any, cm: boolean) {
         if (cm) {
-          E(0, TodoComponent);
-          e();
-          E(2, TodoComponent);
-          e();
+          elementStart(0, TodoComponent);
+          elementEnd();
+          elementStart(2, TodoComponent);
+          elementEnd();
         }
         TodoComponent.ngComponentDef.h(1, 0);
         TodoComponent.ngComponentDef.h(3, 2);
-        r(1, 0);
-        r(3, 2);
+        componentRefresh(1, 0);
+        componentRefresh(3, 2);
       }
       expect(renderToHtml(Template, null))
           .toEqual('<todo><p>Todo one</p></todo><todo><p>Todo one</p></todo>');
@@ -285,25 +290,27 @@ describe('render3 integration test', () => {
           template: function TodoComponentHostBindingTemplate(
               ctx: TodoComponentHostBinding, cm: boolean) {
             if (cm) {
-              T(0);
+              text(0);
             }
-            t(0, b(ctx.title));
+            textBinding(0, bind(ctx.title));
           },
           factory: () => cmptInstance = new TodoComponentHostBinding,
           hostBindings: function(directiveIndex: number, elementIndex: number): void {
             // host bindings
-            p(elementIndex, 'title', b(m<TodoComponentHostBinding>(directiveIndex).title));
+            elementProperty(
+                elementIndex, 'title',
+                bind(memory<TodoComponentHostBinding>(directiveIndex).title));
           }
         });
       }
 
       function Template(ctx: any, cm: boolean) {
         if (cm) {
-          E(0, TodoComponentHostBinding);
-          e();
+          elementStart(0, TodoComponentHostBinding);
+          elementEnd();
         }
         TodoComponentHostBinding.ngComponentDef.h(1, 0);
-        r(1, 0);
+        componentRefresh(1, 0);
       }
 
       expect(renderToHtml(Template, {})).toEqual('<todo title="one">one</todo>');
@@ -320,11 +327,11 @@ describe('render3 integration test', () => {
           tag: 'comp',
           template: function MyCompTemplate(ctx: any, cm: boolean) {
             if (cm) {
-              E(0, 'p');
-              { T(1); }
-              e();
+              elementStart(0, 'p');
+              { text(1); }
+              elementEnd();
             }
-            t(1, b(ctx.name));
+            textBinding(1, bind(ctx.name));
           },
           factory: () => new MyComp
         });
@@ -332,11 +339,11 @@ describe('render3 integration test', () => {
 
       function Template(ctx: any, cm: boolean) {
         if (cm) {
-          E(0, MyComp);
-          e();
+          elementStart(0, MyComp);
+          elementEnd();
         }
         MyComp.ngComponentDef.h(1, 0);
-        r(1, 0);
+        componentRefresh(1, 0);
       }
 
       expect(renderToHtml(Template, null)).toEqual('<comp><p>Bess</p></comp>');
@@ -355,20 +362,20 @@ describe('render3 integration test', () => {
           tag: 'comp',
           template: function MyCompTemplate(ctx: any, cm: boolean) {
             if (cm) {
-              C(0);
+              container(0);
             }
-            cR(0);
+            containerRefreshStart(0);
             {
               if (ctx.condition) {
-                if (V(0)) {
-                  E(0, 'div');
-                  { T(1, 'text'); }
-                  e();
+                if (viewStart(0)) {
+                  elementStart(0, 'div');
+                  { text(1, 'text'); }
+                  elementEnd();
                 }
-                v();
+                viewEnd();
               }
             }
-            cr();
+            containerRefreshEnd();
           },
           factory: () => new MyComp,
           inputs: {condition: 'condition'}
@@ -378,12 +385,12 @@ describe('render3 integration test', () => {
       /** <comp [condition]="condition"></comp> */
       function Template(ctx: any, cm: boolean) {
         if (cm) {
-          E(0, MyComp);
-          e();
+          elementStart(0, MyComp);
+          elementEnd();
         }
-        p(0, 'condition', b(ctx.condition));
+        elementProperty(0, 'condition', bind(ctx.condition));
         MyComp.ngComponentDef.h(1, 0);
-        r(1, 0);
+        componentRefresh(1, 0);
       }
 
       expect(renderToHtml(Template, {condition: true})).toEqual('<comp><div>text</div></comp>');
@@ -408,50 +415,50 @@ describe('render3 integration test', () => {
 
     function showLabel(ctx: {label: string | undefined}, cm: boolean) {
       if (cm) {
-        C(0);
+        container(0);
       }
-      cR(0);
+      containerRefreshStart(0);
       {
         if (ctx.label != null) {
-          if (V(0)) {
-            T(0);
+          if (viewStart(0)) {
+            text(0);
           }
-          t(0, b(ctx.label));
-          v();
+          textBinding(0, bind(ctx.label));
+          viewEnd();
         }
       }
-      cr();
+      containerRefreshEnd();
     }
 
     function showTree(ctx: {tree: Tree}, cm: boolean) {
       if (cm) {
-        C(0);
-        C(1);
-        C(2);
+        container(0);
+        container(1);
+        container(2);
       }
-      cR(0);
+      containerRefreshStart(0);
       {
-        const cm0 = V(0);
+        const cm0 = viewStart(0);
         { showLabel({label: ctx.tree.beforeLabel}, cm0); }
-        v();
+        viewEnd();
       }
-      cr();
-      cR(1);
+      containerRefreshEnd();
+      containerRefreshStart(1);
       {
         for (let subTree of ctx.tree.subTrees || []) {
-          const cm0 = V(0);
+          const cm0 = viewStart(0);
           { showTree({tree: subTree}, cm0); }
-          v();
+          viewEnd();
         }
       }
-      cr();
-      cR(2);
+      containerRefreshEnd();
+      containerRefreshStart(2);
       {
-        const cm0 = V(0);
+        const cm0 = viewStart(0);
         { showLabel({label: ctx.tree.afterLabel}, cm0); }
-        v();
+        viewEnd();
       }
-      cr();
+      containerRefreshEnd();
     }
 
     class ChildComponent {
@@ -463,25 +470,25 @@ describe('render3 integration test', () => {
         template: function ChildComponentTemplate(
             ctx: {beforeTree: Tree, afterTree: Tree}, cm: boolean) {
           if (cm) {
-            pD(0);
-            C(1);
-            P(2, 0);
-            C(3);
+            projectionDef(0);
+            container(1);
+            projection(2, 0);
+            container(3);
           }
-          cR(1);
+          containerRefreshStart(1);
           {
-            const cm0 = V(0);
+            const cm0 = viewStart(0);
             { showTree({tree: ctx.beforeTree}, cm0); }
-            v();
+            viewEnd();
           }
-          cr();
-          cR(3);
+          containerRefreshEnd();
+          containerRefreshStart(3);
           {
-            const cm0 = V(0);
+            const cm0 = viewStart(0);
             { showTree({tree: ctx.afterTree}, cm0); }
-            v();
+            viewEnd();
           }
-          cr();
+          containerRefreshEnd();
         },
         factory: () => new ChildComponent,
         inputs: {beforeTree: 'beforeTree', afterTree: 'afterTree'}
@@ -490,21 +497,21 @@ describe('render3 integration test', () => {
 
     function parentTemplate(ctx: ParentCtx, cm: boolean) {
       if (cm) {
-        E(0, ChildComponent);
-        { C(2); }
-        e();
+        elementStart(0, ChildComponent);
+        { container(2); }
+        elementEnd();
       }
-      p(0, 'beforeTree', b(ctx.beforeTree));
-      p(0, 'afterTree', b(ctx.afterTree));
-      cR(2);
+      elementProperty(0, 'beforeTree', bind(ctx.beforeTree));
+      elementProperty(0, 'afterTree', bind(ctx.afterTree));
+      containerRefreshStart(2);
       {
-        const cm0 = V(0);
+        const cm0 = viewStart(0);
         { showTree({tree: ctx.projectedTree}, cm0); }
-        v();
+        viewEnd();
       }
-      cr();
+      containerRefreshEnd();
       ChildComponent.ngComponentDef.h(1, 0);
-      r(1, 0);
+      componentRefresh(1, 0);
     }
 
     it('should work with a tree', () => {
@@ -537,10 +544,10 @@ describe('render3 integration test', () => {
 
         function Template(ctx: any, cm: boolean) {
           if (cm) {
-            E(0, 'span');
-            e();
+            elementStart(0, 'span');
+            elementEnd();
           }
-          a(0, 'title', b(ctx.title));
+          elementAttribute(0, 'title', bind(ctx.title));
         }
 
         // initial binding
@@ -560,10 +567,10 @@ describe('render3 integration test', () => {
 
         function Template(ctx: any, cm: boolean) {
           if (cm) {
-            E(0, 'span');
-            e();
+            elementStart(0, 'span');
+            elementEnd();
           }
-          a(0, 'title', b(ctx.title));
+          elementAttribute(0, 'title', bind(ctx.title));
         }
 
         expect(renderToHtml(Template, ctx)).toEqual('<span title="NaN"></span>');
@@ -575,22 +582,29 @@ describe('render3 integration test', () => {
       it('should update bindings', () => {
         function Template(c: any, cm: boolean) {
           if (cm) {
-            E(0, 'b');
-            e();
+            elementStart(0, 'b');
+            elementEnd();
           }
-          a(0, 'a', bV(c));
-          a(0, 'a0', b(c[1]));
-          a(0, 'a1', b1(c[0], c[1], c[16]));
-          a(0, 'a2', b2(c[0], c[1], c[2], c[3], c[16]));
-          a(0, 'a3', b3(c[0], c[1], c[2], c[3], c[4], c[5], c[16]));
-          a(0, 'a4', b4(c[0], c[1], c[2], c[3], c[4], c[5], c[6], c[7], c[16]));
-          a(0, 'a5', b5(c[0], c[1], c[2], c[3], c[4], c[5], c[6], c[7], c[8], c[9], c[16]));
-          a(0, 'a6',
-            b6(c[0], c[1], c[2], c[3], c[4], c[5], c[6], c[7], c[8], c[9], c[10], c[11], c[16]));
-          a(0, 'a7', b7(c[0], c[1], c[2], c[3], c[4], c[5], c[6], c[7], c[8], c[9], c[10], c[11],
-                        c[12], c[13], c[16]));
-          a(0, 'a8', b8(c[0], c[1], c[2], c[3], c[4], c[5], c[6], c[7], c[8], c[9], c[10], c[11],
-                        c[12], c[13], c[14], c[15], c[16]));
+          elementAttribute(0, 'a', bindV(c));
+          elementAttribute(0, 'a0', bind(c[1]));
+          elementAttribute(0, 'a1', bind1(c[0], c[1], c[16]));
+          elementAttribute(0, 'a2', bind2(c[0], c[1], c[2], c[3], c[16]));
+          elementAttribute(0, 'a3', bind3(c[0], c[1], c[2], c[3], c[4], c[5], c[16]));
+          elementAttribute(0, 'a4', bind4(c[0], c[1], c[2], c[3], c[4], c[5], c[6], c[7], c[16]));
+          elementAttribute(
+              0, 'a5', bind5(c[0], c[1], c[2], c[3], c[4], c[5], c[6], c[7], c[8], c[9], c[16]));
+          elementAttribute(
+              0, 'a6',
+              bind6(
+                  c[0], c[1], c[2], c[3], c[4], c[5], c[6], c[7], c[8], c[9], c[10], c[11], c[16]));
+          elementAttribute(
+              0, 'a7', bind7(
+                           c[0], c[1], c[2], c[3], c[4], c[5], c[6], c[7], c[8], c[9], c[10], c[11],
+                           c[12], c[13], c[16]));
+          elementAttribute(
+              0, 'a8', bind8(
+                           c[0], c[1], c[2], c[3], c[4], c[5], c[6], c[7], c[8], c[9], c[10], c[11],
+                           c[12], c[13], c[14], c[15], c[16]));
         }
         let args = ['(', 0, 'a', 1, 'b', 2, 'c', 3, 'd', 4, 'e', 5, 'f', 6, 'g', 7, ')'];
         expect(renderToHtml(Template, args))
@@ -611,27 +625,27 @@ describe('render3 integration test', () => {
 
         function Template(ctx: any, cm: boolean) {
           if (cm) {
-            E(0, 'span');
-            C(1);
-            e();
+            elementStart(0, 'span');
+            container(1);
+            elementEnd();
           }
-          a(0, 'title', b(ctx.title));
-          cR(1);
+          elementAttribute(0, 'title', bind(ctx.title));
+          containerRefreshStart(1);
           {
             if (true) {
-              let cm1 = V(1);
+              let cm1 = viewStart(1);
               {
                 if (cm1) {
-                  E(0, 'b');
+                  elementStart(0, 'b');
                   {}
-                  e();
+                  elementEnd();
                 }
-                a(0, 'title', b(ctx.title));
+                elementAttribute(0, 'title', bind(ctx.title));
               }
-              v();
+              viewEnd();
             }
           }
-          cr();
+          containerRefreshEnd();
         }
 
         // initial binding
@@ -653,10 +667,10 @@ describe('render3 integration test', () => {
       it('should support binding to styles', () => {
         function Template(ctx: any, cm: boolean) {
           if (cm) {
-            E(0, 'span');
-            e();
+            elementStart(0, 'span');
+            elementEnd();
           }
-          s(0, 'border-color', b(ctx));
+          elementStyle(0, 'border-color', bind(ctx));
         }
 
         expect(renderToHtml(Template, 'red')).toEqual('<span style="border-color: red;"></span>');
@@ -668,10 +682,10 @@ describe('render3 integration test', () => {
       it('should support binding to styles with suffix', () => {
         function Template(ctx: any, cm: boolean) {
           if (cm) {
-            E(0, 'span');
-            e();
+            elementStart(0, 'span');
+            elementEnd();
           }
-          s(0, 'font-size', b(ctx), 'px');
+          elementStyle(0, 'font-size', bind(ctx), 'px');
         }
 
         expect(renderToHtml(Template, '100')).toEqual('<span style="font-size: 100px;"></span>');
@@ -685,10 +699,10 @@ describe('render3 integration test', () => {
       it('should support CSS class toggle', () => {
         function Template(ctx: any, cm: boolean) {
           if (cm) {
-            E(0, 'span');
-            e();
+            elementStart(0, 'span');
+            elementEnd();
           }
-          k(0, 'active', b(ctx));
+          elementClass(0, 'active', bind(ctx));
         }
 
         expect(renderToHtml(Template, true)).toEqual('<span class="active"></span>');
@@ -706,10 +720,10 @@ describe('render3 integration test', () => {
       it('should work correctly with existing static classes', () => {
         function Template(ctx: any, cm: boolean) {
           if (cm) {
-            E(0, 'span', ['class', 'existing']);
-            e();
+            elementStart(0, 'span', ['class', 'existing']);
+            elementEnd();
           }
-          k(0, 'active', b(ctx));
+          elementClass(0, 'active', bind(ctx));
         }
 
         expect(renderToHtml(Template, true)).toEqual('<span class="existing active"></span>');
@@ -728,20 +742,20 @@ describe('render3 integration test', () => {
        */
       function Template(ctx: any, cm: boolean) {
         if (cm) {
-          C(0);
+          container(0);
         }
-        cR(0);
+        containerRefreshStart(0);
         {
           if (ctx.condition) {
-            if (V(0)) {
-              E(0, 'div');
+            if (viewStart(0)) {
+              elementStart(0, 'div');
               {}
-              e();
+              elementEnd();
             }
-            v();
+            viewEnd();
           }
         }
-        cr();
+        containerRefreshEnd();
       }
 
       expect((Template as any).ngPrivateData).toBeUndefined();
