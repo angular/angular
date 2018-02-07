@@ -9,7 +9,7 @@
 import {EventEmitter} from '@angular/core';
 
 import {defineComponent, defineDirective} from '../../src/render3/index';
-import {NO_CHANGE, bind, bind1, componentRefresh, container, containerRefreshEnd, containerRefreshStart, elementEnd, elementProperty, elementStart, listener, memory, text, textBinding, viewEnd, viewStart} from '../../src/render3/instructions';
+import {NO_CHANGE, bind, bind1, componentRefresh, container, containerRefreshEnd, containerRefreshStart, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, listener, memory, text, textBinding} from '../../src/render3/instructions';
 
 import {renderToHtml} from './render_util';
 
@@ -257,21 +257,21 @@ describe('elementProperty', () => {
         containerRefreshStart(3);
         {
           if (ctx.condition) {
-            if (viewStart(0)) {
+            if (embeddedViewStart(0)) {
               elementStart(0, 'button');
               { text(1, 'Click me too'); }
               elementEnd();
             }
             elementProperty(0, 'id', bind(ctx.id2));
-            viewEnd();
+            embeddedViewEnd();
           } else {
-            if (viewStart(1)) {
+            if (embeddedViewStart(1)) {
               elementStart(0, 'button', null, [OtherDir]);
               { text(2, 'Click me too'); }
               elementEnd();
             }
             elementProperty(0, 'id', bind(ctx.id3));
-            viewEnd();
+            embeddedViewEnd();
           }
         }
         containerRefreshEnd();
@@ -437,18 +437,18 @@ describe('elementProperty', () => {
         containerRefreshStart(2);
         {
           if (ctx.condition) {
-            if (viewStart(0)) {
+            if (embeddedViewStart(0)) {
               elementStart(0, 'div', ['role', 'button'], [MyDirB]);
               elementEnd();
             }
-            viewEnd();
+            embeddedViewEnd();
           } else {
-            if (viewStart(1)) {
+            if (embeddedViewStart(1)) {
               elementStart(0, 'div', ['role', 'menu']);
               {}
               elementEnd();
             }
-            viewEnd();
+            embeddedViewEnd();
           }
         }
         containerRefreshEnd();
@@ -497,13 +497,13 @@ describe('elementProperty', () => {
         containerRefreshStart(0);
         {
           for (let i = 0; i < 2; i++) {
-            if (viewStart(0)) {
+            if (embeddedViewStart(0)) {
               elementStart(0, Comp);
               elementEnd();
             }
             Comp.ngComponentDef.h(1, 0);
             componentRefresh(1, 0);
-            viewEnd();
+            embeddedViewEnd();
           }
         }
         containerRefreshEnd();

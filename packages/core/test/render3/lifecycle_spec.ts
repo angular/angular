@@ -7,7 +7,7 @@
  */
 
 import {ComponentTemplate, defineComponent, defineDirective} from '../../src/render3/index';
-import {bind, componentRefresh, container, containerRefreshEnd, containerRefreshStart, elementEnd, elementProperty, elementStart, listener, memory, projection, projectionDef, text, viewEnd, viewStart} from '../../src/render3/instructions';
+import {bind, componentRefresh, container, containerRefreshEnd, containerRefreshStart, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, listener, memory, projection, projectionDef, text} from '../../src/render3/instructions';
 
 import {containerEl, renderToHtml} from './render_util';
 
@@ -140,13 +140,13 @@ describe('lifecycles', () => {
         containerRefreshStart(0);
         {
           if (ctx.condition) {
-            if (viewStart(0)) {
+            if (embeddedViewStart(0)) {
               elementStart(0, Comp);
               elementEnd();
             }
             Comp.ngComponentDef.h(1, 0);
             componentRefresh(1, 0);
-            viewEnd();
+            embeddedViewEnd();
           }
         }
         containerRefreshEnd();
@@ -268,14 +268,14 @@ describe('lifecycles', () => {
         containerRefreshStart(2);
         {
           for (let j = 2; j < 5; j++) {
-            if (viewStart(0)) {
+            if (embeddedViewStart(0)) {
               elementStart(0, Comp);
               elementEnd();
             }
             elementProperty(0, 'val', j);
             Comp.ngComponentDef.h(1, 0);
             componentRefresh(1, 0);
-            viewEnd();
+            embeddedViewEnd();
           }
         }
         containerRefreshEnd();
@@ -314,14 +314,14 @@ describe('lifecycles', () => {
         containerRefreshStart(2);
         {
           for (let j = 2; j < 5; j++) {
-            if (viewStart(0)) {
+            if (embeddedViewStart(0)) {
               elementStart(0, Parent);
               elementEnd();
             }
             elementProperty(0, 'val', j);
             Parent.ngComponentDef.h(1, 0);
             componentRefresh(1, 0);
-            viewEnd();
+            embeddedViewEnd();
           }
         }
         containerRefreshEnd();
@@ -511,14 +511,14 @@ describe('lifecycles', () => {
         containerRefreshStart(0);
         {
           if (ctx.condition) {
-            if (viewStart(0)) {
+            if (embeddedViewStart(0)) {
               elementStart(0, Comp);
               { text(2, 'content'); }
               elementEnd();
             }
             Comp.ngComponentDef.h(1, 0);
             componentRefresh(1, 0);
-            viewEnd();
+            embeddedViewEnd();
           }
         }
         containerRefreshEnd();
@@ -711,7 +711,7 @@ describe('lifecycles', () => {
         containerRefreshStart(3);
         {
           for (let i = 2; i < 4; i++) {
-            if (viewStart(0)) {
+            if (embeddedViewStart(0)) {
               elementStart(0, Comp);
               { text(2, 'content'); }
               elementEnd();
@@ -719,7 +719,7 @@ describe('lifecycles', () => {
             elementProperty(0, 'val', i);
             Comp.ngComponentDef.h(1, 0);
             componentRefresh(1, 0);
-            viewEnd();
+            embeddedViewEnd();
           }
         }
         containerRefreshEnd();
@@ -748,7 +748,7 @@ describe('lifecycles', () => {
       containerRefreshStart(3);
       {
         for (let i = 2; i < 4; i++) {
-          if (viewStart(0)) {
+          if (embeddedViewStart(0)) {
             elementStart(0, Parent);
             { text(2, 'content'); }
             elementEnd();
@@ -756,7 +756,7 @@ describe('lifecycles', () => {
           elementProperty(0, 'val', i);
           Parent.ngComponentDef.h(1, 0);
           componentRefresh(1, 0);
-          viewEnd();
+          embeddedViewEnd();
         }
       }
       containerRefreshEnd();
@@ -878,13 +878,13 @@ describe('lifecycles', () => {
         containerRefreshStart(0);
         {
           if (ctx.condition) {
-            if (viewStart(0)) {
+            if (embeddedViewStart(0)) {
               elementStart(0, Comp);
               elementEnd();
             }
             Comp.ngComponentDef.h(1, 0);
             componentRefresh(1, 0);
-            viewEnd();
+            embeddedViewEnd();
           }
         }
         containerRefreshEnd();
@@ -1083,14 +1083,14 @@ describe('lifecycles', () => {
         containerRefreshStart(2);
         {
           for (let i = 2; i < 4; i++) {
-            if (viewStart(0)) {
+            if (embeddedViewStart(0)) {
               elementStart(0, Comp);
               elementEnd();
             }
             elementProperty(0, 'val', i);
             Comp.ngComponentDef.h(1, 0);
             componentRefresh(1, 0);
-            viewEnd();
+            embeddedViewEnd();
           }
         }
         containerRefreshEnd();
@@ -1126,14 +1126,14 @@ describe('lifecycles', () => {
         containerRefreshStart(2);
         {
           for (let i = 2; i < 4; i++) {
-            if (viewStart(0)) {
+            if (embeddedViewStart(0)) {
               elementStart(0, Parent);
               elementEnd();
             }
             elementProperty(0, 'val', i);
             Parent.ngComponentDef.h(1, 0);
             componentRefresh(1, 0);
-            viewEnd();
+            embeddedViewEnd();
           }
         }
         containerRefreshEnd();
@@ -1210,14 +1210,14 @@ describe('lifecycles', () => {
           containerRefreshStart(2);
           {
             for (let i = 2; i < 4; i++) {
-              if (viewStart(0)) {
+              if (embeddedViewStart(0)) {
                 elementStart(0, Parent);
                 elementEnd();
               }
               elementProperty(0, 'val', i);
               Parent.ngComponentDef.h(1, 0);
               componentRefresh(1, 0);
-              viewEnd();
+              embeddedViewEnd();
             }
           }
           containerRefreshEnd();
@@ -1280,13 +1280,13 @@ describe('lifecycles', () => {
         containerRefreshStart(0);
         {
           if (ctx.condition) {
-            if (viewStart(0)) {
+            if (embeddedViewStart(0)) {
               elementStart(0, Comp);
               elementEnd();
             }
             Comp.ngComponentDef.h(1, 0);
             componentRefresh(1, 0);
-            viewEnd();
+            embeddedViewEnd();
           }
         }
         containerRefreshEnd();
@@ -1312,7 +1312,7 @@ describe('lifecycles', () => {
         containerRefreshStart(0);
         {
           if (ctx.condition) {
-            if (viewStart(0)) {
+            if (embeddedViewStart(0)) {
               elementStart(0, Comp);
               elementEnd();
               elementStart(2, Comp);
@@ -1324,7 +1324,7 @@ describe('lifecycles', () => {
             Comp.ngComponentDef.h(3, 2);
             componentRefresh(1, 0);
             componentRefresh(3, 2);
-            viewEnd();
+            embeddedViewEnd();
           }
         }
         containerRefreshEnd();
@@ -1351,13 +1351,13 @@ describe('lifecycles', () => {
         containerRefreshStart(0);
         {
           if (ctx.condition) {
-            if (viewStart(0)) {
+            if (embeddedViewStart(0)) {
               elementStart(0, Parent);
               elementEnd();
             }
             Parent.ngComponentDef.h(1, 0);
             componentRefresh(1, 0);
-            viewEnd();
+            embeddedViewEnd();
           }
         }
         containerRefreshEnd();
@@ -1394,13 +1394,13 @@ describe('lifecycles', () => {
         containerRefreshStart(0);
         {
           if (ctx.condition) {
-            if (viewStart(0)) {
+            if (embeddedViewStart(0)) {
               elementStart(0, Grandparent);
               elementEnd();
             }
             Grandparent.ngComponentDef.h(1, 0);
             componentRefresh(1, 0);
-            viewEnd();
+            embeddedViewEnd();
           }
         }
         containerRefreshEnd();
@@ -1431,7 +1431,7 @@ describe('lifecycles', () => {
         containerRefreshStart(0);
         {
           if (ctx.showing) {
-            if (viewStart(0)) {
+            if (embeddedViewStart(0)) {
               elementStart(0, Comp);
               {
                 elementStart(2, ProjectedComp);
@@ -1457,7 +1457,7 @@ describe('lifecycles', () => {
             componentRefresh(3, 2);
             componentRefresh(5, 4);
             componentRefresh(7, 6);
-            viewEnd();
+            embeddedViewEnd();
           }
         }
         containerRefreshEnd();
@@ -1488,7 +1488,7 @@ describe('lifecycles', () => {
         containerRefreshStart(0);
         {
           if (ctx.condition) {
-            if (viewStart(0)) {
+            if (embeddedViewStart(0)) {
               elementStart(0, Comp);
               elementEnd();
               container(2);
@@ -1502,20 +1502,20 @@ describe('lifecycles', () => {
             containerRefreshStart(2);
             {
               if (ctx.condition2) {
-                if (viewStart(0)) {
+                if (embeddedViewStart(0)) {
                   elementStart(0, Comp);
                   elementEnd();
                 }
                 elementProperty(0, 'val', bind('2'));
                 Comp.ngComponentDef.h(1, 0);
                 componentRefresh(1, 0);
-                viewEnd();
+                embeddedViewEnd();
               }
             }
             containerRefreshEnd();
             componentRefresh(1, 0);
             componentRefresh(4, 3);
-            viewEnd();
+            embeddedViewEnd();
           }
         }
         containerRefreshEnd();
@@ -1564,7 +1564,7 @@ describe('lifecycles', () => {
         containerRefreshStart(0);
         {
           if (ctx.condition) {
-            if (viewStart(0)) {
+            if (embeddedViewStart(0)) {
               elementStart(0, Comp);
               elementEnd();
               container(2);
@@ -1578,20 +1578,20 @@ describe('lifecycles', () => {
             containerRefreshStart(2);
             {
               for (let j = 2; j < ctx.len; j++) {
-                if (viewStart(0)) {
+                if (embeddedViewStart(0)) {
                   elementStart(0, Comp);
                   elementEnd();
                 }
                 elementProperty(0, 'val', bind(j));
                 Comp.ngComponentDef.h(1, 0);
                 componentRefresh(1, 0);
-                viewEnd();
+                embeddedViewEnd();
               }
             }
             containerRefreshEnd();
             componentRefresh(1, 0);
             componentRefresh(4, 3);
-            viewEnd();
+            embeddedViewEnd();
           }
         }
         containerRefreshEnd();
@@ -1642,7 +1642,7 @@ describe('lifecycles', () => {
         containerRefreshStart(0);
         {
           if (ctx.condition) {
-            if (viewStart(0)) {
+            if (embeddedViewStart(0)) {
               elementStart(0, 'button');
               {
                 listener('click', ctx.onClick.bind(ctx));
@@ -1660,7 +1660,7 @@ describe('lifecycles', () => {
             }
             Comp.ngComponentDef.h(3, 2);
             componentRefresh(3, 2);
-            viewEnd();
+            embeddedViewEnd();
           }
         }
         containerRefreshEnd();

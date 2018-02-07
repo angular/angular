@@ -9,7 +9,7 @@
 import {EventEmitter} from '@angular/core';
 
 import {defineComponent, defineDirective} from '../../src/render3/index';
-import {bind, componentRefresh, container, containerRefreshEnd, containerRefreshStart, elementEnd, elementProperty, elementStart, listener, text, viewEnd, viewStart} from '../../src/render3/instructions';
+import {bind, componentRefresh, container, containerRefreshEnd, containerRefreshStart, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, listener, text} from '../../src/render3/instructions';
 
 import {containerEl, renderToHtml} from './render_util';
 
@@ -128,14 +128,14 @@ describe('outputs', () => {
       containerRefreshStart(0);
       {
         if (ctx.condition) {
-          if (viewStart(0)) {
+          if (embeddedViewStart(0)) {
             elementStart(0, ButtonToggle);
             { listener('change', ctx.onChange.bind(ctx)); }
             elementEnd();
           }
           ButtonToggle.ngComponentDef.h(1, 0);
           componentRefresh(1, 0);
-          viewEnd();
+          embeddedViewEnd();
         }
       }
       containerRefreshEnd();
@@ -172,24 +172,24 @@ describe('outputs', () => {
       containerRefreshStart(0);
       {
         if (ctx.condition) {
-          if (viewStart(0)) {
+          if (embeddedViewStart(0)) {
             container(0);
           }
           containerRefreshStart(0);
           {
             if (ctx.condition2) {
-              if (viewStart(0)) {
+              if (embeddedViewStart(0)) {
                 elementStart(0, ButtonToggle);
                 { listener('change', ctx.onChange.bind(ctx)); }
                 elementEnd();
               }
               ButtonToggle.ngComponentDef.h(1, 0);
               componentRefresh(1, 0);
-              viewEnd();
+              embeddedViewEnd();
             }
           }
           containerRefreshEnd();
-          viewEnd();
+          embeddedViewEnd();
         }
       }
       containerRefreshEnd();
@@ -238,7 +238,7 @@ describe('outputs', () => {
       containerRefreshStart(0);
       {
         if (ctx.condition) {
-          if (viewStart(0)) {
+          if (embeddedViewStart(0)) {
             elementStart(0, 'button');
             {
               listener('click', ctx.onClick.bind(ctx));
@@ -255,7 +255,7 @@ describe('outputs', () => {
           DestroyComp.ngComponentDef.h(5, 4);
           componentRefresh(3, 2);
           componentRefresh(5, 4);
-          viewEnd();
+          embeddedViewEnd();
         }
       }
       containerRefreshEnd();
@@ -396,21 +396,21 @@ describe('outputs', () => {
       containerRefreshStart(2);
       {
         if (ctx.condition) {
-          if (viewStart(0)) {
+          if (embeddedViewStart(0)) {
             elementStart(0, ButtonToggle);
             { listener('change', ctx.onChange.bind(ctx)); }
             elementEnd();
           }
           ButtonToggle.ngComponentDef.h(1, 0);
           componentRefresh(1, 0);
-          viewEnd();
+          embeddedViewEnd();
         } else {
-          if (viewStart(1)) {
+          if (embeddedViewStart(1)) {
             elementStart(0, 'div', null, [OtherDir]);
             { listener('change', ctx.onChange.bind(ctx)); }
             elementEnd();
           }
-          viewEnd();
+          embeddedViewEnd();
         }
       }
       containerRefreshEnd();

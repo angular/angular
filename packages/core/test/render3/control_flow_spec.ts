@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {bind, container, containerRefreshEnd, containerRefreshStart, elementEnd, elementStart, text, textBinding, viewEnd, viewStart} from '../../src/render3/instructions';
+import {bind, container, containerRefreshEnd, containerRefreshStart, elementEnd, elementStart, embeddedViewEnd, embeddedViewStart, text, textBinding} from '../../src/render3/instructions';
 
 import {renderToHtml} from './render_util';
 
@@ -23,7 +23,7 @@ describe('JS control flow', () => {
       containerRefreshStart(1);
       {
         if (ctx.condition) {
-          let cm1 = viewStart(1);
+          let cm1 = embeddedViewStart(1);
           {
             if (cm1) {
               elementStart(0, 'span');
@@ -32,7 +32,7 @@ describe('JS control flow', () => {
             }
             textBinding(1, bind(ctx.message));
           }
-          viewEnd();
+          embeddedViewEnd();
         }
       }
       containerRefreshEnd();
@@ -71,7 +71,7 @@ describe('JS control flow', () => {
       containerRefreshStart(1);
       {
         if (ctx.condition) {
-          let cm1 = viewStart(1);
+          let cm1 = embeddedViewStart(1);
           {
             if (cm1) {
               elementStart(0, 'span');
@@ -81,18 +81,18 @@ describe('JS control flow', () => {
             containerRefreshStart(1);
             {
               if (ctx.condition2) {
-                let cm2 = viewStart(2);
+                let cm2 = embeddedViewStart(2);
                 {
                   if (cm2) {
                     text(0, 'Hello');
                   }
                 }
-                viewEnd();
+                embeddedViewEnd();
               }
             }
             containerRefreshEnd();
           }
-          viewEnd();
+          embeddedViewEnd();
         }
       }
       containerRefreshEnd();
@@ -136,7 +136,7 @@ describe('JS control flow', () => {
       containerRefreshStart(2);
       {
         if (ctx.condition1) {
-          let cm0 = viewStart(0);
+          let cm0 = embeddedViewStart(0);
           {
             if (cm0) {
               container(0);
@@ -144,18 +144,18 @@ describe('JS control flow', () => {
             containerRefreshStart(0);
             {
               if (ctx.condition2) {
-                let cm0 = viewStart(0);
+                let cm0 = embeddedViewStart(0);
                 {
                   if (cm0) {
                     text(0, 'world');
                   }
                 }
-                viewEnd();
+                embeddedViewEnd();
               }
             }
             containerRefreshEnd();
           }
-          viewEnd();
+          embeddedViewEnd();
         }
       }
       containerRefreshEnd();
@@ -180,7 +180,7 @@ describe('JS control flow', () => {
       containerRefreshStart(1);
       {
         for (let i = 0; i < ctx.data.length; i++) {
-          let cm1 = viewStart(1);
+          let cm1 = embeddedViewStart(1);
           {
             if (cm1) {
               elementStart(0, 'li');
@@ -189,7 +189,7 @@ describe('JS control flow', () => {
             }
             textBinding(1, bind(ctx.data[i]));
           }
-          viewEnd();
+          embeddedViewEnd();
         }
       }
       containerRefreshEnd();
@@ -226,7 +226,7 @@ describe('JS control flow', () => {
       containerRefreshStart(1);
       {
         for (let i = 0; i < ctx.data[0].length; i++) {
-          let cm1 = viewStart(1);
+          let cm1 = embeddedViewStart(1);
           {
             if (cm1) {
               elementStart(0, 'li');
@@ -236,16 +236,16 @@ describe('JS control flow', () => {
             containerRefreshStart(1);
             {
               ctx.data[1].forEach((value: string, ind: number) => {
-                if (viewStart(2)) {
+                if (embeddedViewStart(2)) {
                   text(0);
                 }
                 textBinding(0, bind(ctx.data[0][i] + value));
-                viewEnd();
+                embeddedViewEnd();
               });
             }
             containerRefreshEnd();
           }
-          viewEnd();
+          embeddedViewEnd();
         }
       }
       containerRefreshEnd();
@@ -285,7 +285,7 @@ describe('JS control flow', () => {
       containerRefreshStart(2);
       {
         for (let i = 0; i < ctx.cafes.length; i++) {
-          let cm1 = viewStart(1);
+          let cm1 = embeddedViewStart(1);
           {
             if (cm1) {
               elementStart(0, 'h2');
@@ -298,16 +298,16 @@ describe('JS control flow', () => {
             containerRefreshStart(2);
             {
               for (let j = 0; j < ctx.cafes[i].entrees.length; j++) {
-                if (viewStart(1)) {
+                if (embeddedViewStart(1)) {
                   text(0);
                 }
                 textBinding(0, bind(ctx.cafes[i].entrees[j]));
-                viewEnd();
+                embeddedViewEnd();
               }
             }
             containerRefreshEnd();
           }
-          viewEnd();
+          embeddedViewEnd();
         }
       }
       containerRefreshEnd();
@@ -365,7 +365,7 @@ describe('JS control flow', () => {
       containerRefreshStart(2);
       {
         for (let i = 0; i < ctx.cafes.length; i++) {
-          let cm1 = viewStart(1);
+          let cm1 = embeddedViewStart(1);
           {
             if (cm1) {
               elementStart(0, 'h2');
@@ -378,7 +378,7 @@ describe('JS control flow', () => {
             containerRefreshStart(2);
             {
               for (let j = 0; j < ctx.cafes[i].entrees.length; j++) {
-                let cm1 = viewStart(1);
+                let cm1 = embeddedViewStart(1);
                 {
                   if (cm1) {
                     elementStart(0, 'h3');
@@ -390,21 +390,21 @@ describe('JS control flow', () => {
                   containerRefreshStart(2);
                   {
                     for (let k = 0; k < ctx.cafes[i].entrees[j].foods.length; k++) {
-                      if (viewStart(1)) {
+                      if (embeddedViewStart(1)) {
                         text(0);
                       }
                       textBinding(0, bind(ctx.cafes[i].entrees[j].foods[k]));
-                      viewEnd();
+                      embeddedViewEnd();
                     }
                   }
                   containerRefreshEnd();
                 }
-                viewEnd();
+                embeddedViewEnd();
               }
             }
             containerRefreshEnd();
           }
-          viewEnd();
+          embeddedViewEnd();
         }
       }
       containerRefreshEnd();
@@ -451,7 +451,7 @@ describe('JS control flow', () => {
       containerRefreshStart(1);
       {
         if (ctx.condition) {
-          let cm1 = viewStart(1);
+          let cm1 = embeddedViewStart(1);
           {
             if (cm1) {
               elementStart(0, 'span');
@@ -459,9 +459,9 @@ describe('JS control flow', () => {
               elementEnd();
             }
           }
-          viewEnd();
+          embeddedViewEnd();
         } else {
-          let cm2 = viewStart(2);
+          let cm2 = embeddedViewStart(2);
           {
             if (cm2) {
               elementStart(0, 'div');
@@ -469,7 +469,7 @@ describe('JS control flow', () => {
               elementEnd();
             }
           }
-          viewEnd();
+          embeddedViewEnd();
         }
       }
       containerRefreshEnd();
@@ -499,18 +499,18 @@ describe('JS for loop', () => {
       containerRefreshStart(1);
       {
         for (let i = 0; i < ctx.data1.length; i++) {
-          if (viewStart(1)) {
+          if (embeddedViewStart(1)) {
             text(0);
           }
           textBinding(0, bind(ctx.data1[i]));
-          viewEnd();
+          embeddedViewEnd();
         }
         for (let j = 0; j < ctx.data2.length; j++) {
-          if (viewStart(2)) {
+          if (embeddedViewStart(2)) {
             text(0);
           }
           textBinding(0, bind(ctx.data2[j]));
-          viewEnd();
+          embeddedViewEnd();
         }
       }
       containerRefreshEnd();
@@ -556,16 +556,16 @@ describe('function calls', () => {
       }
       containerRefreshStart(2);
       {
-        let cm0 = viewStart(0);
+        let cm0 = embeddedViewStart(0);
         { spanify({message: ctx.data[0]}, cm0); }
-        viewEnd();
+        embeddedViewEnd();
       }
       containerRefreshEnd();
       containerRefreshStart(3);
       {
-        let cm0 = viewStart(0);
+        let cm0 = embeddedViewStart(0);
         { spanify({message: ctx.data[1]}, cm0); }
-        viewEnd();
+        embeddedViewEnd();
       }
       containerRefreshEnd();
     }
