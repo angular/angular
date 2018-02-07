@@ -795,11 +795,11 @@ export interface Pipe {
   /**
    * If Pipe is pure (its output depends only on its input.)
    *
-   * Normally pipe's `translate` method is invoked on each change detection
-   * cycle. If the cost of invoking the `translated` method is non-trivial and
-   * if the output of the pipe depends only on its input, then declaring a pipe
-   * as pure would short circuit the invocation of the `translate` method and
-   * invoke the method only when the inputs to the pipe change.
+   * Normally pipe's `transform` method is only invoked when the inputs to pipe`s
+   * `transform` method change. If the pipe has internal state (it's result are
+   * dependant on state other than its arguments) than set `pure` to `false` so
+   * that the pipe is invoked on each change-detection even if the arguments to the
+   * pipe do not change.
    */
   pure?: boolean;
 }
