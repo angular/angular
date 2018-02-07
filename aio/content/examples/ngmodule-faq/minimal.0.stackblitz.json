@@ -1,0 +1,12 @@
+{
+  "description": "Minimal NgModule",
+  "files": [
+    "src/app/app.component.0.ts",
+    "src/app/app.module.0.ts",
+    "src/main.0.ts",
+    "src/styles.css",
+    "src/index.0.html"
+  ],
+  "main": "src/index.0.html",
+  "tags": ["NgModule"]
+}

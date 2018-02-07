@@ -38,7 +38,7 @@ export class ContributorListComponent implements OnInit {
       });
   }
 
-  selectGroup(name) {
+  selectGroup(name: string) {
     name = name.toLowerCase();
     this.selectedGroup = this.groups.find(g => g.name.toLowerCase() === name) || this.groups[0];
     this.locationService.setSearch('', {group: this.selectedGroup.name});

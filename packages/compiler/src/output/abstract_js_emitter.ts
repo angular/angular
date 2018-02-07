@@ -107,7 +107,7 @@ export abstract class AbstractJsEmitterVisitor extends AbstractEmitterVisitor {
     return null;
   }
   visitFunctionExpr(ast: o.FunctionExpr, ctx: EmitterVisitorContext): any {
-    ctx.print(ast, `function(`);
+    ctx.print(ast, `function${ast.name ? ' ' + ast.name : ''}(`);
     this._visitParams(ast.params, ctx);
     ctx.println(ast, `) {`);
     ctx.incIndent();

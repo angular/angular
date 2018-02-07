@@ -8,8 +8,9 @@
 
 import * as ts from 'typescript';
 
-import {ModuleMetadata} from '../../src/metadata/index';
-import {LowerMetadataCache, LoweringRequest, RequestLocationMap, getExpressionLoweringTransformFactory} from '../../src/transformers/lower_expressions';
+import {MetadataCollector, ModuleMetadata} from '../../src/metadata/index';
+import {LowerMetadataTransform, LoweringRequest, RequestLocationMap, getExpressionLoweringTransformFactory} from '../../src/transformers/lower_expressions';
+import {MetadataCache} from '../../src/transformers/metadata_cache';
 import {Directory, MockAotContext, MockCompilerHost} from '../mocks';
 
 describe('Expression lowering', () => {
@@ -99,8 +100,19 @@ describe('Expression lowering', () => {
           .toBeTruthy('did not find the data field');
     });
 
-    it('should throw a validation execption for invalid files', () => {
-      const cache = new LowerMetadataCache({}, /* strict */ true);
+    it('should not lower a non-module', () => {
+      const collected = collect(`
+          declare const global: any;
+          const ngDevMode: boolean = (function(global: any) {
+            return global.ngDevMode = true;
+          })(typeof window != 'undefined' && window || typeof self != 'undefined' && self || typeof global != 'undefined' && global);
+       `);
+      expect(collected.requests.size).toBe(0, 'unexpected rewriting');
+    });
+
+    it('should throw a validation exception for invalid files', () => {
+      const cache = new MetadataCache(
+          new MetadataCollector({}), /* strict */ true, [new LowerMetadataTransform()]);
       const sourceFile = ts.createSourceFile(
           'foo.ts', `
         import {Injectable} from '@angular/core';
@@ -116,7 +128,8 @@ describe('Expression lowering', () => {
     });
 
     it('should not report validation errors on a .d.ts file', () => {
-      const cache = new LowerMetadataCache({}, /* strict */ true);
+      const cache = new MetadataCache(
+          new MetadataCollector({}), /* strict */ true, [new LowerMetadataTransform()]);
       const dtsFile = ts.createSourceFile(
           'foo.d.ts', `
         import {Injectable} from '@angular/core';
@@ -231,11 +244,12 @@ function normalizeResult(result: string): string {
 
 function collect(annotatedSource: string) {
   const {annotations, unannotatedSource} = getAnnotations(annotatedSource);
-  const cache = new LowerMetadataCache({});
+  const transformer = new LowerMetadataTransform();
+  const cache = new MetadataCache(new MetadataCollector({}), false, [transformer]);
   const sourceFile = ts.createSourceFile(
       'someName.ts', unannotatedSource, ts.ScriptTarget.Latest, /* setParentNodes */ true);
   return {
     metadata: cache.getMetadata(sourceFile),
-    requests: cache.getRequests(sourceFile), annotations
+    requests: transformer.getRequests(sourceFile), annotations
   };
 }

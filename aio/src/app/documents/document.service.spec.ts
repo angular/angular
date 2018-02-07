@@ -50,7 +50,7 @@ describe('DocumentService', () => {
     });
 
     it('should emit a document each time the location changes', () => {
-      let latestDocument: DocumentContents;
+      let latestDocument: DocumentContents|undefined;
       const doc0 = { contents: 'doc 0', id: 'initial/doc' };
       const doc1 = { contents: 'doc 1', id: 'new/doc' };
       const { docService, locationService } = getServices('initial/doc');
@@ -67,7 +67,7 @@ describe('DocumentService', () => {
     });
 
     it('should emit the not-found document if the document is not found on the server', () => {
-      let currentDocument: DocumentContents;
+      let currentDocument: DocumentContents|undefined;
       const notFoundDoc = { id: FILE_NOT_FOUND_ID, contents: '<h1>Page Not Found</h1>' };
       const { docService } = getServices('missing/doc');
       docService.currentDocument.subscribe(doc => currentDocument = doc);
@@ -82,7 +82,7 @@ describe('DocumentService', () => {
     });
 
     it('should emit a hard-coded not-found document if the not-found document is not found on the server', () => {
-      let currentDocument: DocumentContents;
+      let currentDocument: DocumentContents|undefined;
       const hardCodedNotFoundDoc = { contents: 'Document not found', id: FILE_NOT_FOUND_ID };
       const nextDoc = { contents: 'Next Doc', id: 'new/doc' };
       const { docService, locationService } = getServices(FILE_NOT_FOUND_ID);
@@ -99,7 +99,7 @@ describe('DocumentService', () => {
     });
 
     it('should use a hard-coded error doc if the request fails (but not cache it)', () => {
-      let latestDocument: DocumentContents;
+      let latestDocument: DocumentContents|undefined;
       const doc1 = { contents: 'doc 1' };
       const doc2 = { contents: 'doc 2' };
       const { docService, locationService } = getServices('initial/doc');
@@ -107,7 +107,7 @@ describe('DocumentService', () => {
       docService.currentDocument.subscribe(doc => latestDocument = doc);
 
       httpMock.expectOne({}).flush(null, {status: 500, statusText: 'Server Error'});
-      expect(latestDocument.id).toEqual(FETCHING_ERROR_ID);
+      expect(latestDocument!.id).toEqual(FETCHING_ERROR_ID);
 
       locationService.go('new/doc');
       httpMock.expectOne({}).flush(doc1);
@@ -119,14 +119,14 @@ describe('DocumentService', () => {
     });
 
     it('should not crash the app if the response is invalid JSON', () => {
-      let latestDocument: DocumentContents;
+      let latestDocument: DocumentContents|undefined;
       const doc1 = { contents: 'doc 1' };
       const { docService, locationService } = getServices('initial/doc');
 
       docService.currentDocument.subscribe(doc => latestDocument = doc);
 
       httpMock.expectOne({}).flush('this is invalid JSON');
-      expect(latestDocument.id).toEqual(FETCHING_ERROR_ID);
+      expect(latestDocument!.id).toEqual(FETCHING_ERROR_ID);
 
       locationService.go('new/doc');
       httpMock.expectOne({}).flush(doc1);
@@ -134,7 +134,7 @@ describe('DocumentService', () => {
     });
 
     it('should not make a request to the server if the doc is in the cache already', () => {
-      let latestDocument: DocumentContents;
+      let latestDocument: DocumentContents|undefined;
       let subscription: Subscription;
 
       const doc0 = { contents: 'doc 0' };

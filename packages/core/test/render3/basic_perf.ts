@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {C, E, T, V, c, cR, cr, defineComponent, e, v} from '../../src/render3/index';
+import {C, E, T, V, cR, cr, defineComponent, e, v} from '../../src/render3/index';
 
 import {document, renderComponent} from './render_util';
 
@@ -37,7 +37,6 @@ describe('iv perf test', () => {
             template: function Template(ctx: any, cm: any) {
               if (cm) {
                 C(0);
-                c();
               }
               cR(0);
               {

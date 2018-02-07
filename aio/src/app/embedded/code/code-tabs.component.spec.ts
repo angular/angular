@@ -81,7 +81,8 @@ describe('CodeTabsComponent', () => {
       `);
       const classes = labelElems.map(s => s.className);
 
-      expect(classes).toEqual(['foo-class', 'bar-class']);
+      expect(classes[0].split(' ')).toContain('foo-class');
+      expect(classes[1].split(' ')).toContain('bar-class');
     });
 
     it('should disable ripple effect on tab labels', () => {

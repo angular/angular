@@ -1,4 +1,4 @@
-# Service Worker in Production
+# Service worker in production
 
 This page is a reference for deploying and supporting production apps that use the Angular service worker. It explains how the Angular service worker fits into the larger production environment, the service worker's behavior under various conditions, and available recourses and fail-safes.
 
@@ -290,19 +290,41 @@ out of date. Right click the Cache Storage title and refresh the caches.
 Stopping and starting the service worker in the Service Worker 
 pane triggers a check for updates.
 
-## Fail-safe
+## Service Worker Safety
 
 Like any complex system, bugs or broken configurations can cause 
 the Angular service worker to act in unforeseen ways. While its 
 design attempts to minimize the impact of such problems, the 
-Angular service worker contains a failsafe mechanism in case 
+Angular service worker contains several failsafe mechanisms in case 
 an administrator ever needs to deactivate the service worker quickly.
+
+## Fail-safe
 
 To deactivate the service worker, remove or rename the 
 `ngsw-config.json` file. When the service worker's request 
 for `ngsw.json` returns a `404`, then the service worker 
 removes all of its caches and de-registers itself, 
 essentially self-destructing.
+
+### Safety Worker
+
+Also included in the `@angular/service-worker` NPM package is a small
+script `safety-worker.js`, which when loaded will unregister itself
+from the browser. This script can be used as a last resort to get rid
+of unwanted service workers already installed on client pages.
+
+It's important to note that you cannot register this worker directly,
+as old clients with cached state may not see a new `index.html` which
+installs the different worker script. Instead, you must serve the
+contents of `safety-worker.js` at the URL of the Service Worker script
+you are trying to unregister, and must continue to do so until you are
+certain all users have successfully unregistered the old worker. For
+most sites, this means that you should serve the safety worker at the
+old Service Worker URL forever.
+
+This script can be used both to deactivate `@angular/service-worker`
+as well as any other Service Workers which might have been served in
+the past on your site.
 
 ## More on Angular service workers
 

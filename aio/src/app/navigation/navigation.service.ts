@@ -97,7 +97,7 @@ export class NavigationService {
 
       (navMap, url) => {
         const urlKey = url.startsWith('api/') ? 'api' : url;
-        return navMap[urlKey] || { '' : { view: '', url: urlKey, nodes: [] }};
+        return navMap.get(urlKey) || { '' : { view: '', url: urlKey, nodes: [] }};
       })
       .publishReplay(1);
     currentNodes.connect();
@@ -145,7 +145,10 @@ export class NavigationService {
       if (url) {
         // Strip off trailing slashes from nodes in the navMap - they are not relevant to matching
         const cleanedUrl = url.replace(/\/$/, '');
-        const navMapItem = navMap[cleanedUrl] = navMap[cleanedUrl] || {};
+        if (!navMap.has(cleanedUrl)) {
+          navMap.set(cleanedUrl, {});
+        }
+        const navMapItem = navMap.get(cleanedUrl)!;
         navMapItem[view] = { url, view, nodes };
       }
 

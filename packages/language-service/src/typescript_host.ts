@@ -140,7 +140,7 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
   }
 
   getAnalyzedModules(): NgAnalyzedModules {
-    this.validate();
+    this.updateAnalyzedModules();
     return this.ensureAnalyzedModules();
   }
 
@@ -240,7 +240,7 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
 
   private validate() {
     const program = this.program;
-    if (this._staticSymbolResolver && this.lastProgram != program) {
+    if (this.lastProgram !== program) {
       // Invalidate file that have changed in the static symbol resolver
       const invalidateFile = (fileName: string) =>
           this._staticSymbolResolver.invalidateFile(fileName);
@@ -253,14 +253,18 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
         const lastVersion = this.fileVersions.get(fileName);
         if (version != lastVersion) {
           this.fileVersions.set(fileName, version);
-          invalidateFile(fileName);
+          if (this._staticSymbolResolver) {
+            invalidateFile(fileName);
+          }
         }
       }
 
       // Remove file versions that are no longer in the file and invalidate them.
       const missing = Array.from(this.fileVersions.keys()).filter(f => !seen.has(f));
       missing.forEach(f => this.fileVersions.delete(f));
-      missing.forEach(invalidateFile);
+      if (this._staticSymbolResolver) {
+        missing.forEach(invalidateFile);
+      }
 
       this.lastProgram = program;
     }

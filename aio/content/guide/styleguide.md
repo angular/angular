@@ -1904,7 +1904,18 @@ It is rarely worth the effort to change them at the risk of breaking existing co
 
 
 
-**Consider** using a class instead of an interface.
+**Consider** using a class instead of an interface for services and declarables (components, directives, and pipes).
+
+
+</div>
+
+
+
+<div class="s-rule consider">
+
+
+
+**Consider** using an interface for data models.
 
 
 </div>

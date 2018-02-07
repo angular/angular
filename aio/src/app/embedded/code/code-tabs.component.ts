@@ -2,13 +2,13 @@
 import { Component, ElementRef, OnInit } from '@angular/core';
 
 export interface TabInfo {
-  class: string;
+  class: string|null;
   code: string;
-  language: string;
+  language: string|null;
   linenums: any;
   path: string;
   region: string;
-  title: string;
+  title: string|null;
 }
 
 /**

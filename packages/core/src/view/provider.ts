@@ -437,10 +437,7 @@ function updateProp(
   providerData.instance[propName] = value;
   if (def.flags & NodeFlags.OnChanges) {
     changes = changes || {};
-    let oldValue = view.oldValues[def.bindingIndex + bindingIdx];
-    if (oldValue instanceof WrappedValue) {
-      oldValue = oldValue.wrapped;
-    }
+    const oldValue = WrappedValue.unwrap(view.oldValues[def.bindingIndex + bindingIdx]);
     const binding = def.bindings[bindingIdx];
     changes[binding.nonMinifiedName !] =
         new SimpleChange(oldValue, value, (view.state & ViewState.FirstCheck) !== 0);

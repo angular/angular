@@ -6,19 +6,19 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CssSelector, CssSelectorWithNegations, SimpleCssSelector} from '../../src/render3/interfaces';
-import {LNodeStatic} from '../../src/render3/l_node_static';
+import {TNode} from '../../src/render3/interfaces/node';
+import {CssSelector, CssSelectorWithNegations, SimpleCssSelector} from '../../src/render3/interfaces/projection';
 import {isNodeMatchingSelector, isNodeMatchingSelectorWithNegations, isNodeMatchingSimpleSelector} from '../../src/render3/node_selector_matcher';
 
-function testLStaticData(tagName: string, attrs: string[] | null): LNodeStatic {
+function testLStaticData(tagName: string, attrs: string[] | null): TNode {
   return {
     tagName,
     attrs,
-    localName: null,
+    localNames: null,
     initialInputs: undefined,
     inputs: undefined,
     outputs: undefined,
-    containerStatic: null,
+    data: null,
   };
 }
 

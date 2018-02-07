@@ -9,6 +9,11 @@
 // THIS CODE IS GENERATED - DO NOT MODIFY
 // See angular/tools/gulp-tasks/cldr/extract.js
 
+function plural(n: number): number {
+  if (n === 1) return 1;
+  return 5;
+}
+
 export default [
   'wae',
   [
@@ -26,8 +31,8 @@ export default [
     ['J', 'H', 'M', 'A', 'M', 'B', 'H', 'Ö', 'H', 'W', 'W', 'C'],
     ['Jen', 'Hor', 'Mär', 'Abr', 'Mei', 'Brá', 'Hei', 'Öig', 'Her', 'Wím', 'Win', 'Chr'],
     [
-      'Jenner', 'Hornig', 'Märze', 'Abrille', 'Meije', 'Bráčet', 'Heiwet', 'Öigšte', 'Herbštmánet',
-      'Wímánet', 'Wintermánet', 'Chrištmánet'
+      'Jenner', 'Hornig', 'Märze', 'Abrille', 'Meije', 'Bráčet', 'Heiwet', 'Öigšte',
+      'Herbštmánet', 'Wímánet', 'Wintermánet', 'Chrištmánet'
     ]
   ],
   ,
@@ -43,9 +48,5 @@ export default [
     ,
   ],
   [',', '’', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0%', '¤ #,##0.00', '#E0'], 'CHF', 'CHF', function(n: number):
-                                                                  number {
-                                                                    if (n === 1) return 1;
-                                                                    return 5;
-                                                                  }
+  ['#,##0.###', '#,##0%', '¤ #,##0.00', '#E0'], 'CHF', 'CHF', plural
 ];

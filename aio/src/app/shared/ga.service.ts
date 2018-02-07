@@ -29,7 +29,7 @@ export class GaService {
     this.ga('send', 'pageview');
   }
 
-  ga(...args) {
-    this.window['ga'](...args);
+  ga(...args: any[]) {
+    (this.window as any)['ga'](...args);
   }
 }

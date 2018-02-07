@@ -10,6 +10,12 @@
             "rev": true,
             "title": "Catalog of Angular Components & Libraries",
             "url": "https://github.com/brillout/awesome-angular-components"
+          },
+          "angular-ru": {
+            "desc": "Angular-RU Community on GitHub is a single entry point for all resources, chats, podcasts and meetups for Angular in Russia.",
+            "rev": true,
+            "title": "Angular Conferences and Angular Camps in Moscow, Russia.",
+            "url": "https://angular-ru.github.io/"
           }
         }
       },

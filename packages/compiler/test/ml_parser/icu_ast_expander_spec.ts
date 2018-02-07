@@ -36,7 +36,7 @@ import {humanizeNodes} from './ast_spec_utils';
     });
 
     it('should handle nested expansion forms', () => {
-      const res = expand(`{messages.length, plural, =0 { {p.gender, select, =m {m}} }}`);
+      const res = expand(`{messages.length, plural, =0 { {p.gender, select, male {m}} }}`);
 
       expect(humanizeNodes(res.nodes)).toEqual([
         [html.Element, 'ng-container', 0],
@@ -46,7 +46,7 @@ import {humanizeNodes} from './ast_spec_utils';
         [html.Element, 'ng-container', 2],
         [html.Attribute, '[ngSwitch]', 'p.gender'],
         [html.Element, 'ng-template', 3],
-        [html.Attribute, 'ngSwitchCase', '=m'],
+        [html.Attribute, 'ngSwitchCase', 'male'],
         [html.Text, 'm', 4],
         [html.Text, ' ', 2],
       ]);

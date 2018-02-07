@@ -7,6 +7,8 @@
  */
 
 import {AsyncTestCompleter, beforeEach, describe, expect, inject, it} from '@angular/core/testing/src/testing_internal';
+import {filter} from 'rxjs/operators';
+
 import {EventEmitter} from '../src/event_emitter';
 
 {
@@ -123,6 +125,59 @@ import {EventEmitter} from '../src/event_emitter';
       expect(e.observers.length > 0).toBe(false);
       e.subscribe({next: () => {}});
       expect(e.observers.length > 0).toBe(true);
+    });
+
+    it('remove a subscriber subscribed directly to EventEmitter', () => {
+      const sub = emitter.subscribe();
+      expect(emitter.observers.length).toBe(1);
+      sub.unsubscribe();
+      expect(emitter.observers.length).toBe(0);
+    });
+
+    it('remove a subscriber subscribed after applying operators with pipe()', () => {
+      const sub = emitter.pipe(filter(() => true)).subscribe();
+      expect(emitter.observers.length).toBe(1);
+      sub.unsubscribe();
+      expect(emitter.observers.length).toBe(0);
+    });
+
+    it('unsubscribing a subscriber invokes the dispose method', () => {
+      inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
+        const sub = emitter.subscribe();
+        sub.add(() => async.done());
+        sub.unsubscribe();
+      });
+    });
+
+    it('unsubscribing a subscriber after applying operators with pipe() invokes the dispose method',
+       () => {
+         inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
+           const sub = emitter.pipe(filter(() => true)).subscribe();
+           sub.add(() => async.done());
+           sub.unsubscribe();
+         });
+       });
+
+    it('error thrown inside an Rx chain propagates to the error handler and disposes the chain',
+       () => {
+         let errorPropagated = false;
+         emitter.pipe(filter(() => { throw new Error(); }), )
+             .subscribe(() => {}, err => errorPropagated = true, );
+
+         emitter.next(1);
+
+         expect(errorPropagated).toBe(true);
+         expect(emitter.observers.length).toBe(0);
+       });
+
+    it('error sent by EventEmitter should dispose the Rx chain and remove subscribers', () => {
+      let errorPropagated = false;
+      emitter.pipe(filter(() => true)).subscribe(() => {}, err => errorPropagated = true, );
+
+      emitter.error(1);
+
+      expect(errorPropagated).toBe(true);
+      expect(emitter.observers.length).toBe(0);
     });
 
     // TODO: vsavkin: add tests cases

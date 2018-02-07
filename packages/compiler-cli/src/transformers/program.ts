@@ -1,3 +1,4 @@
+
 /**
  * @license
  * Copyright Google Inc. All Rights Reserved.
@@ -6,19 +7,23 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AotCompiler, AotCompilerHost, AotCompilerOptions, EmitterVisitorContext, FormattedMessageChain, GeneratedFile, MessageBundle, NgAnalyzedFile, NgAnalyzedModules, ParseSourceSpan, Position, Serializer, TypeScriptEmitter, Xliff, Xliff2, Xmb, core, createAotCompiler, getParseErrors, isFormattedError, isSyntaxError} from '@angular/compiler';
+import {AotCompiler, AotCompilerHost, AotCompilerOptions, EmitterVisitorContext, FormattedMessageChain, GeneratedFile, MessageBundle, NgAnalyzedFile, NgAnalyzedModules, ParseSourceSpan, PartialModule, Position, Serializer, TypeScriptEmitter, Xliff, Xliff2, Xmb, core, createAotCompiler, getParseErrors, isFormattedError, isSyntaxError} from '@angular/compiler';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as ts from 'typescript';
 
 import {TypeCheckHost, translateDiagnostics} from '../diagnostics/translate_diagnostics';
-import {ModuleMetadata, createBundleIndexHost} from '../metadata/index';
+import {MetadataCollector, ModuleMetadata, createBundleIndexHost} from '../metadata/index';
 
 import {CompilerHost, CompilerOptions, CustomTransformers, DEFAULT_ERROR_CODE, Diagnostic, DiagnosticMessageChain, EmitFlags, LazyRoute, LibrarySummary, Program, SOURCE, TsEmitArguments, TsEmitCallback} from './api';
 import {CodeGenerator, TsCompilerAotCompilerTypeCheckHostAdapter, getOriginalReferences} from './compiler_host';
-import {LowerMetadataCache, getExpressionLoweringTransformFactory} from './lower_expressions';
+import {LowerMetadataTransform, getExpressionLoweringTransformFactory} from './lower_expressions';
+import {MetadataCache, MetadataTransformer} from './metadata_cache';
 import {getAngularEmitterTransformFactory} from './node_emitter_transform';
-import {GENERATED_FILES, StructureIsReused, createMessageDiagnostic, isInRootDir, ngToTsDiagnostic, tsStructureIsReused} from './util';
+import {PartialModuleMetadataTransformer} from './r3_metadata_transform';
+import {getAngularClassTransformerFactory} from './r3_transform';
+import {GENERATED_FILES, StructureIsReused, createMessageDiagnostic, isInRootDir, ngToTsDiagnostic, tsStructureIsReused, userError} from './util';
+
 
 
 /**
@@ -41,7 +46,8 @@ const defaultEmitCallback: TsEmitCallback =
 
 class AngularCompilerProgram implements Program {
   private rootNames: string[];
-  private metadataCache: LowerMetadataCache;
+  private metadataCache: MetadataCache;
+  private loweringMetadataTransform: LowerMetadataTransform;
   private oldProgramLibrarySummaries: Map<string, LibrarySummary>|undefined;
   private oldProgramEmittedGeneratedFiles: Map<string, GeneratedFile>|undefined;
   private oldProgramEmittedSourceFiles: Map<string, ts.SourceFile>|undefined;
@@ -65,9 +71,10 @@ class AngularCompilerProgram implements Program {
       private host: CompilerHost, oldProgram?: Program) {
     this.rootNames = [...rootNames];
     const [major, minor] = ts.version.split('.');
-    if (Number(major) < 2 || (Number(major) === 2 && Number(minor) < 4)) {
-      throw new Error('The Angular Compiler requires TypeScript >= 2.4.');
-    }
+
+    Number(major) > 2 || (Number(major) === 2 && Number(minor) >= 4) ||
+        userError('The Angular Compiler requires TypeScript >= 2.4.');
+
     this.oldTsProgram = oldProgram ? oldProgram.getTsProgram() : undefined;
     if (oldProgram) {
       this.oldProgramLibrarySummaries = oldProgram.getLibrarySummaries();
@@ -79,8 +86,6 @@ class AngularCompilerProgram implements Program {
       const {host: bundleHost, indexName, errors} =
           createBundleIndexHost(options, this.rootNames, host);
       if (errors) {
-        // TODO(tbosch): once we move MetadataBundler from tsc_wrapped into compiler_cli,
-        // directly create ng.Diagnostic instead of using ts.Diagnostic here.
         this._optionsDiagnostics.push(...errors.map(e => ({
                                                       category: e.category,
                                                       messageText: e.messageText as string,
@@ -92,7 +97,14 @@ class AngularCompilerProgram implements Program {
         this.host = bundleHost;
       }
     }
-    this.metadataCache = new LowerMetadataCache({quotedNames: true}, !!options.strictMetadataEmit);
+    this.loweringMetadataTransform = new LowerMetadataTransform();
+    this.metadataCache = this.createMetadataCache([this.loweringMetadataTransform]);
+  }
+
+  private createMetadataCache(transformers: MetadataTransformer[]) {
+    return new MetadataCache(
+        new MetadataCollector({quotedNames: true}), !!this.options.strictMetadataEmit,
+        transformers);
   }
 
   getLibrarySummaries(): Map<string, LibrarySummary> {
@@ -182,7 +194,7 @@ class AngularCompilerProgram implements Program {
           const {tmpProgram, sourceFiles, rootNames} = this._createProgramWithBasicStubs();
           return this.compiler.loadFilesAsync(sourceFiles).then(analyzedModules => {
             if (this._analyzedModules) {
-              throw new Error('Angular structure loaded both synchronously and asynchronsly');
+              throw new Error('Angular structure loaded both synchronously and asynchronously');
             }
             this._updateProgramWithTypeCheckStubs(tmpProgram, analyzedModules, rootNames);
           });
@@ -196,7 +208,55 @@ class AngularCompilerProgram implements Program {
     return this.compiler.listLazyRoutes(route, route ? undefined : this.analyzedModules);
   }
 
-  emit(
+  emit(parameters: {
+    emitFlags?: EmitFlags,
+    cancellationToken?: ts.CancellationToken,
+    customTransformers?: CustomTransformers,
+    emitCallback?: TsEmitCallback
+  } = {}): ts.EmitResult {
+    return this.options.enableIvy === true ? this._emitRender3(parameters) :
+                                             this._emitRender2(parameters);
+  }
+
+  private _emitRender3(
+      {emitFlags = EmitFlags.Default, cancellationToken, customTransformers,
+       emitCallback = defaultEmitCallback}: {
+        emitFlags?: EmitFlags,
+        cancellationToken?: ts.CancellationToken,
+        customTransformers?: CustomTransformers,
+        emitCallback?: TsEmitCallback
+      } = {}): ts.EmitResult {
+    const emitStart = Date.now();
+    if ((emitFlags & (EmitFlags.JS | EmitFlags.DTS | EmitFlags.Metadata | EmitFlags.Codegen)) ===
+        0) {
+      return {emitSkipped: true, diagnostics: [], emittedFiles: []};
+    }
+    const modules = this.compiler.emitAllPartialModules(this.analyzedModules);
+
+    const writeTsFile: ts.WriteFileCallback =
+        (outFileName, outData, writeByteOrderMark, onError?, sourceFiles?) => {
+          const sourceFile = sourceFiles && sourceFiles.length == 1 ? sourceFiles[0] : null;
+          let genFile: GeneratedFile|undefined;
+          this.writeFile(outFileName, outData, writeByteOrderMark, onError, undefined, sourceFiles);
+        };
+
+    const emitOnlyDtsFiles = (emitFlags & (EmitFlags.DTS | EmitFlags.JS)) == EmitFlags.DTS;
+
+    const tsCustomTransformers = this.calculateTransforms(
+        /* genFiles */ undefined, /* partialModules */ modules, customTransformers);
+
+    const emitResult = emitCallback({
+      program: this.tsProgram,
+      host: this.host,
+      options: this.options,
+      writeFile: writeTsFile, emitOnlyDtsFiles,
+      customTransformers: tsCustomTransformers
+    });
+
+    return emitResult;
+  }
+
+  private _emitRender2(
       {emitFlags = EmitFlags.Default, cancellationToken, customTransformers,
        emitCallback = defaultEmitCallback}: {
         emitFlags?: EmitFlags,
@@ -244,7 +304,8 @@ class AngularCompilerProgram implements Program {
           }
           this.writeFile(outFileName, outData, writeByteOrderMark, onError, genFile, sourceFiles);
         };
-    const tsCustomTansformers = this.calculateTransforms(genFileByFileName, customTransformers);
+    const tsCustomTransformers = this.calculateTransforms(
+        genFileByFileName, /* partialModules */ undefined, customTransformers);
     const emitOnlyDtsFiles = (emitFlags & (EmitFlags.DTS | EmitFlags.JS)) == EmitFlags.DTS;
     // Restore the original references before we emit so TypeScript doesn't emit
     // a reference to the .d.ts file.
@@ -280,7 +341,7 @@ class AngularCompilerProgram implements Program {
                                   host: this.host,
                                   options: this.options,
                                   writeFile: writeTsFile, emitOnlyDtsFiles,
-                                  customTransformers: tsCustomTansformers,
+                                  customTransformers: tsCustomTransformers,
                                   targetSourceFile: this.tsProgram.getSourceFile(fileName),
                                 })));
         emittedUserTsCount = sourceFilesToEmit.length;
@@ -290,7 +351,7 @@ class AngularCompilerProgram implements Program {
           host: this.host,
           options: this.options,
           writeFile: writeTsFile, emitOnlyDtsFiles,
-          customTransformers: tsCustomTansformers
+          customTransformers: tsCustomTransformers
         });
         emittedUserTsCount = this.tsProgram.getSourceFiles().length - genTsFiles.length;
       }
@@ -400,13 +461,24 @@ class AngularCompilerProgram implements Program {
   }
 
   private calculateTransforms(
-      genFiles: Map<string, GeneratedFile>,
+      genFiles: Map<string, GeneratedFile>|undefined, partialModules: PartialModule[]|undefined,
       customTransformers?: CustomTransformers): ts.CustomTransformers {
     const beforeTs: ts.TransformerFactory<ts.SourceFile>[] = [];
     if (!this.options.disableExpressionLowering) {
-      beforeTs.push(getExpressionLoweringTransformFactory(this.metadataCache, this.tsProgram));
+      beforeTs.push(
+          getExpressionLoweringTransformFactory(this.loweringMetadataTransform, this.tsProgram));
     }
-    beforeTs.push(getAngularEmitterTransformFactory(genFiles, this.getTsProgram()));
+    if (genFiles) {
+      beforeTs.push(getAngularEmitterTransformFactory(genFiles, this.getTsProgram()));
+    }
+    if (partialModules) {
+      beforeTs.push(getAngularClassTransformerFactory(partialModules));
+
+      // If we have partial modules, the cached metadata might be incorrect as it doesn't reflect
+      // the partial module transforms.
+      this.metadataCache = this.createMetadataCache(
+          [this.loweringMetadataTransform, new PartialModuleMetadataTransformer(partialModules)]);
+    }
     if (customTransformers && customTransformers.beforeTs) {
       beforeTs.push(...customTransformers.beforeTs);
     }
@@ -450,7 +522,7 @@ class AngularCompilerProgram implements Program {
     sourceFiles: string[],
   } {
     if (this._analyzedModules) {
-      throw new Error(`Internal Error: already initalized!`);
+      throw new Error(`Internal Error: already initialized!`);
     }
     // Note: This is important to not produce a memory leak!
     const oldTsProgram = this.oldTsProgram;
@@ -467,7 +539,7 @@ class AngularCompilerProgram implements Program {
     if (this.options.generateCodeForLibraries !== false) {
       // if we should generateCodeForLibraries, never include
       // generated files in the program as otherwise we will
-      // ovewrite them and typescript will report the error
+      // overwrite them and typescript will report the error
       // TS5055: Cannot write file ... because it would overwrite input file.
       rootNames = rootNames.filter(fn => !GENERATED_FILES.test(fn));
     }
@@ -496,7 +568,7 @@ class AngularCompilerProgram implements Program {
       if (sf.fileName.endsWith('.ngfactory.ts')) {
         const {generate, baseFileName} = this.hostAdapter.shouldGenerateFile(sf.fileName);
         if (generate) {
-          // Note: ! is ok as hostAdapter.shouldGenerateFile will always return a basefileName
+          // Note: ! is ok as hostAdapter.shouldGenerateFile will always return a baseFileName
           // for .ngfactory.ts files.
           const genFile = this.compiler.emitTypeCheckStub(sf.fileName, baseFileName !);
           if (genFile) {
@@ -619,7 +691,7 @@ class AngularCompilerProgram implements Program {
           this.emittedLibrarySummaries.push({fileName: genFile.genFileUrl, text: outData});
           if (!this.options.declaration) {
             // If we don't emit declarations, still record an empty .ngfactory.d.ts file,
-            // as we might need it lateron for resolving module names from summaries.
+            // as we might need it later on for resolving module names from summaries.
             const ngFactoryDts =
                 genFile.genFileUrl.substring(0, genFile.genFileUrl.length - 15) + '.ngfactory.d.ts';
             this.emittedLibrarySummaries.push({fileName: ngFactoryDts, text: ''});
@@ -633,7 +705,7 @@ class AngularCompilerProgram implements Program {
       }
     }
     // Filter out generated files for which we didn't generate code.
-    // This can happen as the stub caclulation is not completely exact.
+    // This can happen as the stub calculation is not completely exact.
     // Note: sourceFile refers to the .ngfactory.ts / .ngsummary.ts file
     // node_emitter_transform already set the file contents to be empty,
     //  so this code only needs to skip the file if !allowEmptyCodegenFiles.
@@ -800,7 +872,7 @@ export function i18nSerialize(
 }
 
 function getPathNormalizer(basePath?: string) {
-  // normalize sourcepaths by removing the base path and always using "/" as a separator
+  // normalize source paths by removing the base path and always using "/" as a separator
   return (sourcePath: string) => {
     sourcePath = basePath ? path.relative(basePath, sourcePath) : sourcePath;
     return sourcePath.split(path.sep).join('/');

@@ -1,5 +1,5 @@
 import { Component, ComponentRef, NgModule, ViewChild } from '@angular/core';
-import { Title } from '@angular/platform-browser';
+import { Title, Meta } from '@angular/platform-browser';
 
 import { Observable } from 'rxjs/Observable';
 
@@ -38,7 +38,7 @@ export class TestDocViewerComponent extends DocViewerComponent {
   template: '<aio-doc-viewer [doc]="currentDoc">Test Component</aio-doc-viewer>',
 })
 export class TestParentComponent {
-  currentDoc: DocumentContents;
+  currentDoc?: DocumentContents|null;
   @ViewChild(DocViewerComponent) docViewer: DocViewerComponent;
 }
 
@@ -49,6 +49,11 @@ export class MockEmbedComponentsService {
 
 export class MockTitle {
   setTitle = jasmine.createSpy('Title#reset');
+}
+
+export class MockMeta {
+  addTag = jasmine.createSpy('Meta#addTag');
+  removeTag = jasmine.createSpy('Meta#removeTag');
 }
 
 export class MockTocService {
@@ -65,6 +70,7 @@ export class MockTocService {
     { provide: Logger, useClass: MockLogger },
     { provide: EmbedComponentsService, useClass: MockEmbedComponentsService },
     { provide: Title, useClass: MockTitle },
+    { provide: Meta, useClass: MockMeta },
     { provide: TocService, useClass: MockTocService },
   ],
 })
@@ -77,7 +83,7 @@ export class TestModule { }
 
 export class ObservableWithSubscriptionSpies<T = void> extends Observable<T> {
   unsubscribeSpies: jasmine.Spy[] = [];
-  subscribeSpy = spyOn(this, 'subscribe').and.callFake((...args) => {
+  subscribeSpy = spyOn(this, 'subscribe').and.callFake((...args: any[]) => {
     const subscription = super.subscribe(...args);
     const unsubscribeSpy = spyOn(subscription, 'unsubscribe').and.callThrough();
     this.unsubscribeSpies.push(unsubscribeSpy);

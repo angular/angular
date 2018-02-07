@@ -9,6 +9,12 @@
 // THIS CODE IS GENERATED - DO NOT MODIFY
 // See angular/tools/gulp-tasks/cldr/extract.js
 
+function plural(n: number): number {
+  if (n === 1) return 1;
+  if (n === 2) return 2;
+  return 5;
+}
+
 export default [
   'smn',
   [
@@ -18,23 +24,30 @@ export default [
   ,
   [
     ['p', 'V', 'M', 'K', 'T', 'V', 'L'], ['pas', 'vuo', 'maj', 'kos', 'tuo', 'vás', 'láv'],
-    ['pasepeeivi', 'vuossaargâ', 'majebaargâ', 'koskoho', 'tuorâstuv', 'vástuppeeivi', 'lávurduv'],
+    [
+      'pasepeeivi', 'vuossaargâ', 'majebaargâ', 'koskoho', 'tuorâstuv', 'vástuppeeivi',
+      'lávurduv'
+    ],
     ['pa', 'vu', 'ma', 'ko', 'tu', 'vá', 'lá']
   ],
   [
     ['S', 'M', 'T', 'W', 'T', 'F', 'S'], ['pas', 'vuo', 'maj', 'kos', 'tuo', 'vás', 'láv'],
-    ['pasepeivi', 'vuossargâ', 'majebargâ', 'koskokko', 'tuorâstâh', 'vástuppeivi', 'lávurdâh'],
+    [
+      'pasepeivi', 'vuossargâ', 'majebargâ', 'koskokko', 'tuorâstâh', 'vástuppeivi',
+      'lávurdâh'
+    ],
     ['pa', 'vu', 'ma', 'ko', 'tu', 'vá', 'lá']
   ],
   [
     ['U', 'K', 'NJ', 'C', 'V', 'K', 'S', 'P', 'Č', 'R', 'S', 'J'],
     [
-      'uđiv', 'kuovâ', 'njuhčâ', 'cuáŋui', 'vyesi', 'kesi', 'syeini', 'porge', 'čohčâ', 'roovvâd',
-      'skammâ', 'juovlâ'
+      'uđiv', 'kuovâ', 'njuhčâ', 'cuáŋui', 'vyesi', 'kesi', 'syeini', 'porge', 'čohčâ',
+      'roovvâd', 'skammâ', 'juovlâ'
     ],
     [
-      'uđđâivemáánu', 'kuovâmáánu', 'njuhčâmáánu', 'cuáŋuimáánu', 'vyesimáánu', 'kesimáánu',
-      'syeinimáánu', 'porgemáánu', 'čohčâmáánu', 'roovvâdmáánu', 'skammâmáánu', 'juovlâmáánu'
+      'uđđâivemáánu', 'kuovâmáánu', 'njuhčâmáánu', 'cuáŋuimáánu', 'vyesimáánu',
+      'kesimáánu', 'syeinimáánu', 'porgemáánu', 'čohčâmáánu', 'roovvâdmáánu',
+      'skammâmáánu', 'juovlâmáánu'
     ]
   ],
   , [['oKr.', 'mKr.'], , ['Ovdil Kristus šoddâm', 'maŋa Kristus šoddâm']], 1, [6, 0],
@@ -46,10 +59,5 @@ export default [
     ,
   ],
   [',', ' ', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'epiloho', '.'],
-  ['#,##0.###', '#,##0 %', '#,##0.00 ¤', '#E0'], '€', 'euro', function(n: number):
-                                                                  number {
-                                                                    if (n === 1) return 1;
-                                                                    if (n === 2) return 2;
-                                                                    return 5;
-                                                                  }
+  ['#,##0.###', '#,##0 %', '#,##0.00 ¤', '#E0'], '€', 'euro', plural
 ];

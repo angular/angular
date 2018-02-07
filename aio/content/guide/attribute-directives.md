@@ -53,7 +53,7 @@ The CLI creates `src/app/highlight.directive.ts`, a corresponding test file (`..
 
 <div class="l-sub-section">
 
-_Directives_ must be declared in [Angular Modules](guide/ngmodule) in the same manner as _components_.
+_Directives_ must be declared in [Angular Modules](guide/ngmodules) in the same manner as _components_.
 
 </div >
 

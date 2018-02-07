@@ -80,10 +80,24 @@ function coerceToAsyncValidator(
 
 export type FormHooks = 'change' | 'blur' | 'submit';
 
+/**
+ * @whatItDoes Interface for options provided to an {@link AbstractControl}.
+ *
+ * @experimental
+ */
 export interface AbstractControlOptions {
+  /**
+   * List of validators applied to control.
+   */
   validators?: ValidatorFn|ValidatorFn[]|null;
+  /**
+   * List of async validators applied to control.
+   */
   asyncValidators?: AsyncValidatorFn|AsyncValidatorFn[]|null;
-  updateOn?: FormHooks;
+  /**
+   * The event name for control to update upon.
+   */
+  updateOn?: 'change'|'blur'|'submit';
 }
 
 
@@ -1311,25 +1325,19 @@ export class FormArray extends AbstractControl {
     this._onCollectionChange();
   }
 
-  /**
-   * Insert a new {@link AbstractControl} at the given `index` in the array.
-   */
+  /** Insert a new {@link AbstractControl} at the given `index` in the array. */
   insert(index: number, control: AbstractControl): void {
     this.controls.splice(index, 0, control);
 
     this._registerControl(control);
     this.updateValueAndValidity();
-    this._onCollectionChange();
   }
 
-  /**
-   * Remove the control at the given `index` in the array.
-   */
+  /** Remove the control at the given `index` in the array. */
   removeAt(index: number): void {
     if (this.controls[index]) this.controls[index]._registerOnCollectionChange(() => {});
     this.controls.splice(index, 1);
     this.updateValueAndValidity();
-    this._onCollectionChange();
   }
 
   /**

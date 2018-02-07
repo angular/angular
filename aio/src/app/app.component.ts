@@ -6,6 +6,7 @@ import { CurrentNodes, NavigationService, NavigationNode, VersionInfo } from 'ap
 import { DocumentService, DocumentContents } from 'app/documents/document.service';
 import { Deployment } from 'app/shared/deployment.service';
 import { LocationService } from 'app/shared/location.service';
+import { NotificationComponent } from 'app/layout/notification/notification.component';
 import { ScrollService } from 'app/shared/scroll.service';
 import { SearchBoxComponent } from 'app/search/search-box/search-box.component';
 import { SearchResults } from 'app/search/interfaces';
@@ -90,6 +91,10 @@ export class AppComponent implements OnInit {
   @ViewChild(MatSidenav)
   sidenav: MatSidenav;
 
+  @ViewChild(NotificationComponent)
+  notification: NotificationComponent;
+  notificationAnimating = false;
+
   constructor(
     public deployment: Deployment,
     private documentService: DocumentService,
@@ -121,9 +126,9 @@ export class AppComponent implements OnInit {
     this.documentService.currentDocument.first().subscribe(doc => this.updateHostClassesForDoc(doc));
 
     this.locationService.currentPath.subscribe(path => {
-      // Redirect to docs if we are in not in stable mode and are not hitting a docs page
+      // Redirect to docs if we are in archive mode and are not hitting a docs page
       // (i.e. we have arrived at a marketing page)
-      if (this.deployment.mode !== 'stable' && !/^(docs$|api|guide|tutorial)/.test(path)) {
+      if (this.deployment.mode === 'archive' && !/^(docs$|api|guide|tutorial)/.test(path)) {
         this.locationService.replace('docs');
       }
       if (path === this.currentPath) {
@@ -147,19 +152,19 @@ export class AppComponent implements OnInit {
       this.navigationService.navigationViews.map(views => views['docVersions']))
       .subscribe(([versionInfo, versions]) => {
         // TODO(pbd): consider whether we can lookup the stable and next versions from the internet
-        const computedVersions = [
+        const computedVersions: NavigationNode[] = [
           { title: 'next', url: 'https://next.angular.io' },
           { title: 'stable', url: 'https://angular.io' },
         ];
         if (this.deployment.mode === 'archive') {
-          computedVersions.push({ title: `v${versionInfo.major}`, url: null });
+          computedVersions.push({ title: `v${versionInfo.major}` });
         }
         this.docVersions = [...computedVersions, ...versions];
 
         // Find the current version - eithers title matches the current deployment mode
         // or its title matches the major version of the current version info
         this.currentDocVersion = this.docVersions.find(version =>
-          version.title === this.deployment.mode || version.title === `v${versionInfo.major}`);
+          version.title === this.deployment.mode || version.title === `v${versionInfo.major}`)!;
         this.currentDocVersion.title += ` (v${versionInfo.raw})`;
       });
 
@@ -227,9 +232,17 @@ export class AppComponent implements OnInit {
   }
 
   @HostListener('window:resize', ['$event.target.innerWidth'])
-  onResize(width) {
+  onResize(width: number) {
     this.isSideBySide = width > this.sideBySideWidth;
     this.showFloatingToc.next(width > this.showFloatingTocWidth);
+
+    if (this.isSideBySide && !this.isSideNavDoc) {
+      // If this is a non-sidenav doc and the screen is wide enough so that we can display menu
+      // items in the top-bar, ensure the sidenav is closed.
+      // (This condition can only be met when the resize event changes the value of `isSideBySide`
+      //  from `false` to `true` while on a non-sidenav doc.)
+      this.sideNavToggle(false);
+    }
   }
 
   @HostListener('click', ['$event.target', '$event.button', '$event.ctrlKey', '$event.metaKey', '$event.altKey'])
@@ -247,7 +260,7 @@ export class AppComponent implements OnInit {
     }
 
     // Deal with anchor clicks; climb DOM tree until anchor found (or null)
-    let target = eventTarget;
+    let target: HTMLElement|null = eventTarget;
     while (target && !(target instanceof HTMLAnchorElement)) {
       target = target.parentElement;
     }
@@ -273,14 +286,33 @@ export class AppComponent implements OnInit {
     this.folderId = (id === 'index') ? 'home' : id.split('/', 1)[0];
   }
 
+  notificationDismissed() {
+    this.notificationAnimating = true;
+      // this should be kept in sync with the animation durations in:
+      // - aio/src/styles/2-modules/_notification.scss
+      // - aio/src/app/layout/notification/notification.component.ts
+      setTimeout(() => this.notificationAnimating = false, 250);
+    this.updateHostClasses();
+  }
+
   updateHostClasses() {
     const mode = `mode-${this.deployment.mode}`;
     const sideNavOpen = `sidenav-${this.sidenav.opened ? 'open' : 'closed'}`;
     const pageClass = `page-${this.pageId}`;
     const folderClass = `folder-${this.folderId}`;
     const viewClasses = Object.keys(this.currentNodes || {}).map(view => `view-${view}`).join(' ');
+    const notificationClass = `aio-notification-${this.notification.showNotification}`;
+    const notificationAnimatingClass = this.notificationAnimating ? 'aio-notification-animating' : '';
 
-    this.hostClasses = `${mode} ${sideNavOpen} ${pageClass} ${folderClass} ${viewClasses}`;
+    this.hostClasses = [
+      mode,
+      sideNavOpen,
+      pageClass,
+      folderClass,
+      viewClasses,
+      notificationClass,
+      notificationAnimatingClass
+    ].join(' ');
   }
 
   updateHostClassesForDoc(doc: DocumentContents) {
@@ -311,8 +343,8 @@ export class AppComponent implements OnInit {
       // Must wait until now for mat-toolbar to be measurable.
       const el = this.hostElement.nativeElement as Element;
       this.tocMaxHeightOffset =
-          el.querySelector('footer').clientHeight +
-          el.querySelector('.app-toolbar').clientHeight +
+          el.querySelector('footer')!.clientHeight +
+          el.querySelector('.app-toolbar')!.clientHeight +
           24; //  fudge margin
     }
 
@@ -351,7 +383,7 @@ export class AppComponent implements OnInit {
     }
   }
 
-  doSearch(query) {
+  doSearch(query: string) {
     this.searchResults = this.searchService.search(query);
     this.showSearchResults = !!query;
   }

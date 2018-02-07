@@ -45,7 +45,7 @@ describe('NavigationService', () => {
 
     it('navigationViews observable should complete', () => {
       let completed = false;
-      navService.navigationViews.subscribe(null, null, () => completed = true);
+      navService.navigationViews.subscribe(undefined, undefined, () => completed = true);
       expect(true).toBe(true, 'observable completed');
 
       // Stop `$httpMock.verify()` from complaining.
@@ -53,15 +53,15 @@ describe('NavigationService', () => {
     });
 
     it('should return the same object to all subscribers', () => {
-      let views1: NavigationViews;
+      let views1: NavigationViews|undefined;
       navService.navigationViews.subscribe(views => views1 = views);
 
-      let views2: NavigationViews;
+      let views2: NavigationViews|undefined;
       navService.navigationViews.subscribe(views => views2 = views);
 
       httpMock.expectOne({}).flush({ TopBar: [{ url: 'a' }] });
 
-      let views3: NavigationViews;
+      let views3: NavigationViews|undefined;
       navService.navigationViews.subscribe(views => views3 = views);
 
       expect(views2).toBe(views1);
@@ -143,7 +143,7 @@ describe('NavigationService', () => {
           url: 'b',
           view: 'SideNav',
           nodes: [
-            sideNavNodes[0].children[0],
+            sideNavNodes[0].children![0],
             sideNavNodes[0]
           ]
         }
@@ -155,8 +155,8 @@ describe('NavigationService', () => {
           url: 'd',
           view: 'SideNav',
           nodes: [
-            sideNavNodes[0].children[0].children[1],
-            sideNavNodes[0].children[0],
+            sideNavNodes[0].children![0].children![1],
+            sideNavNodes[0].children![0],
             sideNavNodes[0]
           ]
         }
@@ -200,8 +200,8 @@ describe('NavigationService', () => {
           url: 'c',
           view: 'SideNav',
           nodes: [
-            sideNavNodes[0].children[0].children[0],
-            sideNavNodes[0].children[0],
+            sideNavNodes[0].children![0].children![0],
+            sideNavNodes[0].children![0],
             sideNavNodes[0]
           ]
         }

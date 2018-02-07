@@ -36,8 +36,8 @@ describe('CodeComponent', () => {
   // we take strict measures to wipe it out in the `afterAll`
   // and make sure THAT runs after the tests by making component creation async
   afterAll(() => {
-    delete window['prettyPrint'];
-    delete window['prettyPrintOne'];
+    delete (window as any)['prettyPrint'];
+    delete (window as any)['prettyPrintOne'];
   });
 
   beforeEach(() => {

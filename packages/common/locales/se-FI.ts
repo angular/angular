@@ -9,6 +9,12 @@
 // THIS CODE IS GENERATED - DO NOT MODIFY
 // See angular/tools/gulp-tasks/cldr/extract.js
 
+function plural(n: number): number {
+  if (n === 1) return 1;
+  if (n === 2) return 2;
+  return 5;
+}
+
 export default [
   'se-FI',
   [
@@ -28,11 +34,13 @@ export default [
   [
     ['O', 'G', 'N', 'C', 'M', 'G', 'S', 'B', 'Č', 'G', 'S', 'J'],
     [
-      'ođđj', 'guov', 'njuk', 'cuoŋ', 'mies', 'geas', 'suoi', 'borg', 'čakč', 'golg', 'skáb', 'juov'
+      'ođđj', 'guov', 'njuk', 'cuoŋ', 'mies', 'geas', 'suoi', 'borg', 'čakč', 'golg', 'skáb',
+      'juov'
     ],
     [
-      'ođđajagemánnu', 'guovvamánnu', 'njukčamánnu', 'cuoŋománnu', 'miessemánnu', 'geassemánnu',
-      'suoidnemánnu', 'borgemánnu', 'čakčamánnu', 'golggotmánnu', 'skábmamánnu', 'juovlamánnu'
+      'ođđajagemánnu', 'guovvamánnu', 'njukčamánnu', 'cuoŋománnu', 'miessemánnu',
+      'geassemánnu', 'suoidnemánnu', 'borgemánnu', 'čakčamánnu', 'golggotmánnu',
+      'skábmamánnu', 'juovlamánnu'
     ]
   ],
   , [['oKr.', 'mKr.'], , ['ovdal Kristusa', 'maŋŋel Kristusa']], 1, [6, 0],
@@ -44,10 +52,5 @@ export default [
     ,
   ],
   [',', ' ', ';', '%', '+', '−', '·10^', '·', '‰', '∞', '¤¤¤', ':'],
-  ['#,##0.###', '#,##0 %', '#,##0.00 ¤', '#E0'], '€', 'euro', function(n: number):
-                                                                  number {
-                                                                    if (n === 1) return 1;
-                                                                    if (n === 2) return 2;
-                                                                    return 5;
-                                                                  }
+  ['#,##0.###', '#,##0 %', '#,##0.00 ¤', '#E0'], '€', 'euro', plural
 ];

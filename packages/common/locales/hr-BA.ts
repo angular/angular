@@ -9,6 +9,18 @@
 // THIS CODE IS GENERATED - DO NOT MODIFY
 // See angular/tools/gulp-tasks/cldr/extract.js
 
+function plural(n: number): number {
+  let i = Math.floor(Math.abs(n)), v = n.toString().replace(/^[^.]*\.?/, '').length,
+      f = parseInt(n.toString().replace(/^[^.]*\.?/, ''), 10) || 0;
+  if (v === 0 && i % 10 === 1 && !(i % 100 === 11) || f % 10 === 1 && !(f % 100 === 11)) return 1;
+  if (v === 0 && i % 10 === Math.floor(i % 10) && i % 10 >= 2 && i % 10 <= 4 &&
+          !(i % 100 >= 12 && i % 100 <= 14) ||
+      f % 10 === Math.floor(f % 10) && f % 10 >= 2 && f % 10 <= 4 &&
+          !(f % 100 >= 12 && f % 100 <= 14))
+    return 3;
+  return 5;
+}
+
 export default [
   'hr-BA',
   [
@@ -34,8 +46,8 @@ export default [
     ['1.', '2.', '3.', '4.', '5.', '6.', '7.', '8.', '9.', '10.', '11.', '12.'],
     ['sij', 'velj', 'ožu', 'tra', 'svi', 'lip', 'srp', 'kol', 'ruj', 'lis', 'stu', 'pro'],
     [
-      'siječanj', 'veljača', 'ožujak', 'travanj', 'svibanj', 'lipanj', 'srpanj', 'kolovoz', 'rujan',
-      'listopad', 'studeni', 'prosinac'
+      'siječanj', 'veljača', 'ožujak', 'travanj', 'svibanj', 'lipanj', 'srpanj', 'kolovoz',
+      'rujan', 'listopad', 'studeni', 'prosinac'
     ]
   ],
   [['pr.n.e.', 'AD'], ['pr. Kr.', 'po. Kr.'], ['prije Krista', 'poslije Krista']], 1, [6, 0],
@@ -47,18 +59,5 @@ export default [
     '{1} \'u\' {0}',
   ],
   [',', '.', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'], 'KM', 'konvertibilna marka',
-  function(n: number):
-      number {
-        let i = Math.floor(Math.abs(n)), v = n.toString().replace(/^[^.]*\.?/, '').length,
-            f = parseInt(n.toString().replace(/^[^.]*\.?/, ''), 10) || 0;
-        if (v === 0 && i % 10 === 1 && !(i % 100 === 11) || f % 10 === 1 && !(f % 100 === 11))
-          return 1;
-        if (v === 0 && i % 10 === Math.floor(i % 10) && i % 10 >= 2 && i % 10 <= 4 &&
-                !(i % 100 >= 12 && i % 100 <= 14) ||
-            f % 10 === Math.floor(f % 10) && f % 10 >= 2 && f % 10 <= 4 &&
-                !(f % 100 >= 12 && f % 100 <= 14))
-          return 3;
-        return 5;
-      }
+  ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'], 'KM', 'konvertibilna marka', plural
 ];

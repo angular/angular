@@ -9,6 +9,16 @@
 // THIS CODE IS GENERATED - DO NOT MODIFY
 // See angular/tools/gulp-tasks/cldr/extract.js
 
+function plural(n: number): number {
+  let f = parseInt(n.toString().replace(/^[^.]*\.?/, ''), 10) || 0;
+  if (n % 10 === 1 && !(n % 100 >= 11 && n % 100 <= 19)) return 1;
+  if (n % 10 === Math.floor(n % 10) && n % 10 >= 2 && n % 10 <= 9 &&
+      !(n % 100 >= 11 && n % 100 <= 19))
+    return 3;
+  if (!(f === 0)) return 4;
+  return 5;
+}
+
 export default [
   'lt',
   [
@@ -19,8 +29,8 @@ export default [
   [
     ['S', 'P', 'A', 'T', 'K', 'P', 'Š'], ['sk', 'pr', 'an', 'tr', 'kt', 'pn', 'št'],
     [
-      'sekmadienis', 'pirmadienis', 'antradienis', 'trečiadienis', 'ketvirtadienis', 'penktadienis',
-      'šeštadienis'
+      'sekmadienis', 'pirmadienis', 'antradienis', 'trečiadienis', 'ketvirtadienis',
+      'penktadienis', 'šeštadienis'
     ],
     ['Sk', 'Pr', 'An', 'Tr', 'Kt', 'Pn', 'Št']
   ],
@@ -56,15 +66,5 @@ export default [
     ,
   ],
   [',', ' ', ';', '%', '+', '−', '×10^', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0 %', '#,##0.00 ¤', '#E0'], '€', 'Euras',
-  function(n: number):
-      number {
-        let f = parseInt(n.toString().replace(/^[^.]*\.?/, ''), 10) || 0;
-        if (n % 10 === 1 && !(n % 100 >= 11 && n % 100 <= 19)) return 1;
-        if (n % 10 === Math.floor(n % 10) && n % 10 >= 2 && n % 10 <= 9 &&
-            !(n % 100 >= 11 && n % 100 <= 19))
-          return 3;
-        if (!(f === 0)) return 4;
-        return 5;
-      }
+  ['#,##0.###', '#,##0 %', '#,##0.00 ¤', '#E0'], '€', 'Euras', plural
 ];

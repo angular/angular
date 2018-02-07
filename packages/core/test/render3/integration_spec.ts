@@ -6,12 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {C, D, E, NC, T, V, a, b, b1, b2, b3, b4, b5, b6, b7, b8, bV, c, cR, cr, defineComponent, e, k, p, r, s, t, v} from '../../src/render3/index';
+import {C, E, NC, P, T, V, a, b, b1, b2, b3, b4, b5, b6, b7, b8, bV, cR, cr, defineComponent, e, k, m, p, pD, r, s, t, v} from '../../src/render3/index';
 import {NO_CHANGE} from '../../src/render3/instructions';
 
 import {containerEl, renderToHtml} from './render_util';
 
-describe('iv integration test', () => {
+describe('render3 integration test', () => {
 
   describe('render', () => {
 
@@ -230,11 +230,11 @@ describe('iv integration test', () => {
     it('should support a basic component template', () => {
       function Template(ctx: any, cm: boolean) {
         if (cm) {
-          E(0, TodoComponent.ngComponentDef);
-          { D(1, TodoComponent.ngComponentDef.n(), TodoComponent.ngComponentDef); }
+          E(0, TodoComponent);
           e();
         }
-        TodoComponent.ngComponentDef.r(1, 0);
+        TodoComponent.ngComponentDef.h(1, 0);
+        r(1, 0);
       }
 
       expect(renderToHtml(Template, null)).toEqual('<todo><p>Todo one</p></todo>');
@@ -243,12 +243,12 @@ describe('iv integration test', () => {
     it('should support a component template with sibling', () => {
       function Template(ctx: any, cm: boolean) {
         if (cm) {
-          E(0, TodoComponent.ngComponentDef);
-          { D(1, TodoComponent.ngComponentDef.n(), TodoComponent.ngComponentDef); }
+          E(0, TodoComponent);
           e();
           T(2, 'two');
         }
-        TodoComponent.ngComponentDef.r(1, 0);
+        TodoComponent.ngComponentDef.h(1, 0);
+        r(1, 0);
       }
       expect(renderToHtml(Template, null)).toEqual('<todo><p>Todo one</p></todo>two');
     });
@@ -260,15 +260,15 @@ describe('iv integration test', () => {
        */
       function Template(ctx: any, cm: boolean) {
         if (cm) {
-          E(0, TodoComponent.ngComponentDef);
-          { D(1, TodoComponent.ngComponentDef.n(), TodoComponent.ngComponentDef); }
+          E(0, TodoComponent);
           e();
-          E(2, TodoComponent.ngComponentDef);
-          { D(3, TodoComponent.ngComponentDef.n(), TodoComponent.ngComponentDef); }
+          E(2, TodoComponent);
           e();
         }
-        TodoComponent.ngComponentDef.r(1, 0);
-        TodoComponent.ngComponentDef.r(3, 2);
+        TodoComponent.ngComponentDef.h(1, 0);
+        TodoComponent.ngComponentDef.h(3, 2);
+        r(1, 0);
+        r(3, 2);
       }
       expect(renderToHtml(Template, null))
           .toEqual('<todo><p>Todo one</p></todo><todo><p>Todo one</p></todo>');
@@ -290,25 +290,20 @@ describe('iv integration test', () => {
             t(0, b(ctx.title));
           },
           factory: () => cmptInstance = new TodoComponentHostBinding,
-          refresh: function(directiveIndex: number, elementIndex: number): void {
+          hostBindings: function(directiveIndex: number, elementIndex: number): void {
             // host bindings
-            p(elementIndex, 'title', b(D<TodoComponentHostBinding>(directiveIndex).title));
-            // refresh component's template
-            r(directiveIndex, elementIndex, this.template);
+            p(elementIndex, 'title', b(m<TodoComponentHostBinding>(directiveIndex).title));
           }
         });
       }
 
       function Template(ctx: any, cm: boolean) {
         if (cm) {
-          E(0, TodoComponentHostBinding.ngComponentDef);
-          {
-            D(1, TodoComponentHostBinding.ngComponentDef.n(),
-              TodoComponentHostBinding.ngComponentDef);
-          }
+          E(0, TodoComponentHostBinding);
           e();
         }
-        TodoComponentHostBinding.ngComponentDef.r(1, 0);
+        TodoComponentHostBinding.ngComponentDef.h(1, 0);
+        r(1, 0);
       }
 
       expect(renderToHtml(Template, {})).toEqual('<todo title="one">one</todo>');
@@ -337,11 +332,11 @@ describe('iv integration test', () => {
 
       function Template(ctx: any, cm: boolean) {
         if (cm) {
-          E(0, MyComp.ngComponentDef);
-          { D(1, MyComp.ngComponentDef.n(), MyComp.ngComponentDef); }
+          E(0, MyComp);
           e();
         }
-        MyComp.ngComponentDef.r(1, 0);
+        MyComp.ngComponentDef.h(1, 0);
+        r(1, 0);
       }
 
       expect(renderToHtml(Template, null)).toEqual('<comp><p>Bess</p></comp>');
@@ -361,7 +356,6 @@ describe('iv integration test', () => {
           template: function MyCompTemplate(ctx: any, cm: boolean) {
             if (cm) {
               C(0);
-              c();
             }
             cR(0);
             {
@@ -384,17 +378,153 @@ describe('iv integration test', () => {
       /** <comp [condition]="condition"></comp> */
       function Template(ctx: any, cm: boolean) {
         if (cm) {
-          E(0, MyComp.ngComponentDef);
-          { D(1, MyComp.ngComponentDef.n(), MyComp.ngComponentDef); }
+          E(0, MyComp);
           e();
         }
         p(0, 'condition', b(ctx.condition));
-        MyComp.ngComponentDef.r(1, 0);
+        MyComp.ngComponentDef.h(1, 0);
+        r(1, 0);
       }
 
       expect(renderToHtml(Template, {condition: true})).toEqual('<comp><div>text</div></comp>');
       expect(renderToHtml(Template, {condition: false})).toEqual('<comp></comp>');
 
+    });
+
+  });
+
+  describe('tree', () => {
+    interface Tree {
+      beforeLabel?: string;
+      subTrees?: Tree[];
+      afterLabel?: string;
+    }
+
+    interface ParentCtx {
+      beforeTree: Tree;
+      projectedTree: Tree;
+      afterTree: Tree;
+    }
+
+    function showLabel(ctx: {label: string | undefined}, cm: boolean) {
+      if (cm) {
+        C(0);
+      }
+      cR(0);
+      {
+        if (ctx.label != null) {
+          if (V(0)) {
+            T(0);
+          }
+          t(0, b(ctx.label));
+          v();
+        }
+      }
+      cr();
+    }
+
+    function showTree(ctx: {tree: Tree}, cm: boolean) {
+      if (cm) {
+        C(0);
+        C(1);
+        C(2);
+      }
+      cR(0);
+      {
+        const cm0 = V(0);
+        { showLabel({label: ctx.tree.beforeLabel}, cm0); }
+        v();
+      }
+      cr();
+      cR(1);
+      {
+        for (let subTree of ctx.tree.subTrees || []) {
+          const cm0 = V(0);
+          { showTree({tree: subTree}, cm0); }
+          v();
+        }
+      }
+      cr();
+      cR(2);
+      {
+        const cm0 = V(0);
+        { showLabel({label: ctx.tree.afterLabel}, cm0); }
+        v();
+      }
+      cr();
+    }
+
+    class ChildComponent {
+      beforeTree: Tree;
+      afterTree: Tree;
+      static ngComponentDef = defineComponent({
+        tag: 'child',
+        type: ChildComponent,
+        template: function ChildComponentTemplate(
+            ctx: {beforeTree: Tree, afterTree: Tree}, cm: boolean) {
+          if (cm) {
+            pD(0);
+            C(1);
+            P(2, 0);
+            C(3);
+          }
+          cR(1);
+          {
+            const cm0 = V(0);
+            { showTree({tree: ctx.beforeTree}, cm0); }
+            v();
+          }
+          cr();
+          cR(3);
+          {
+            const cm0 = V(0);
+            { showTree({tree: ctx.afterTree}, cm0); }
+            v();
+          }
+          cr();
+        },
+        factory: () => new ChildComponent,
+        inputs: {beforeTree: 'beforeTree', afterTree: 'afterTree'}
+      });
+    }
+
+    function parentTemplate(ctx: ParentCtx, cm: boolean) {
+      if (cm) {
+        E(0, ChildComponent);
+        { C(2); }
+        e();
+      }
+      p(0, 'beforeTree', b(ctx.beforeTree));
+      p(0, 'afterTree', b(ctx.afterTree));
+      cR(2);
+      {
+        const cm0 = V(0);
+        { showTree({tree: ctx.projectedTree}, cm0); }
+        v();
+      }
+      cr();
+      ChildComponent.ngComponentDef.h(1, 0);
+      r(1, 0);
+    }
+
+    it('should work with a tree', () => {
+
+      const ctx: ParentCtx = {
+        beforeTree: {subTrees: [{beforeLabel: 'a'}]},
+        projectedTree: {beforeLabel: 'p'},
+        afterTree: {afterLabel: 'z'}
+      };
+      expect(renderToHtml(parentTemplate, ctx)).toEqual('<child>apz</child>');
+      ctx.projectedTree = {subTrees: [{}, {}, {subTrees: [{}, {}]}, {}]};
+      ctx.beforeTree.subTrees !.push({afterLabel: 'b'});
+      expect(renderToHtml(parentTemplate, ctx)).toEqual('<child>abz</child>');
+      ctx.projectedTree.subTrees ![1].afterLabel = 'h';
+      expect(renderToHtml(parentTemplate, ctx)).toEqual('<child>abhz</child>');
+      ctx.beforeTree.subTrees !.push({beforeLabel: 'c'});
+      expect(renderToHtml(parentTemplate, ctx)).toEqual('<child>abchz</child>');
+
+      // To check the context easily:
+      // console.log(JSON.stringify(ctx));
     });
 
   });
@@ -483,7 +613,6 @@ describe('iv integration test', () => {
           if (cm) {
             E(0, 'span');
             C(1);
-            c();
             e();
           }
           a(0, 'title', b(ctx.title));
@@ -600,7 +729,6 @@ describe('iv integration test', () => {
       function Template(ctx: any, cm: boolean) {
         if (cm) {
           C(0);
-          c();
         }
         cR(0);
         {
@@ -616,22 +744,22 @@ describe('iv integration test', () => {
         cr();
       }
 
-      expect((Template as any).ngStaticData).toBeUndefined();
+      expect((Template as any).ngPrivateData).toBeUndefined();
 
       renderToHtml(Template, {condition: true});
 
-      const oldTemplateData = (Template as any).ngStaticData;
-      const oldContainerData = (oldTemplateData as any)[0];
-      const oldElementData = oldContainerData.containerStatic[0][0];
+      const oldTemplateData = (Template as any).ngPrivateData;
+      const oldContainerData = (oldTemplateData as any).data[0];
+      const oldElementData = oldContainerData.data[0][0];
       expect(oldContainerData).not.toBeNull();
       expect(oldElementData).not.toBeNull();
 
       renderToHtml(Template, {condition: false});
       renderToHtml(Template, {condition: true});
 
-      const newTemplateData = (Template as any).ngStaticData;
-      const newContainerData = (oldTemplateData as any)[0];
-      const newElementData = oldContainerData.containerStatic[0][0];
+      const newTemplateData = (Template as any).ngPrivateData;
+      const newContainerData = (oldTemplateData as any).data[0];
+      const newElementData = oldContainerData.data[0][0];
       expect(newTemplateData === oldTemplateData).toBe(true);
       expect(newContainerData === oldContainerData).toBe(true);
       expect(newElementData === oldElementData).toBe(true);

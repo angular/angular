@@ -1,8 +1,0 @@
-{
-  "description": "Validation",
-  "basePath": "src/",
-  "files":[
-    "!**/*.d.ts",
-    "!**/*.js"
-  ]
-}

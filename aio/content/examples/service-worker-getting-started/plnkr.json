@@ -1,5 +1,0 @@
-{
-    "description": "Service Worker",
-    "basePath": "src/",
-    "tags": ["service worker"]
-  }

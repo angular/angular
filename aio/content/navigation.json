@@ -74,6 +74,7 @@
     },
 
     {
+      "url": "tutorial",
       "title": "튜토리얼",
       "tooltip": "The Tour of Heroes tutorial takes you through the steps of creating an Angular application in TypeScript.",
       "children": [
@@ -121,6 +122,7 @@
     },
 
     {
+      "url": "guide/architecture",
       "title": "기초",
       "tooltip": "Angular 기초",
       "children": [
@@ -169,11 +171,6 @@
               "tooltip": "어트리뷰트 디렉티브는 DOM 엘리먼트의 속성을 정의합니다."
             },
             {
-              "url": "guide/structural-directives",
-              "title": "구조 디렉티브",
-              "tooltip": "구조 디렉티브는 페이지의 DOM을 조작합니다."
-            },
-            {
               "url": "guide/pipes",
               "title": "파이프",
               "tooltip": "파이프는 템플릿에 표시되는 데이터의 형식을 지정합니다."
@@ -216,21 +213,69 @@
             }
           ]
         },
-
         {
           "url": "guide/bootstrapping",
           "title": "부트스트랩",
           "tooltip": "Angular가 \"AppModule\"을 어떻게 구성하고 실행하는지 알아봅니다."
         },
-
         {
           "title": "NgModule",
           "tooltip": "NgModule을 사용해서 앱을 모듈화 하세요.",
           "children": [
             {
-              "url": "guide/ngmodule",
-              "title": "NgModule",
-              "tooltip": "NgModule을 사용해서 애플리케이션 모듈을 정의할 수 있습니다."
+              "url": "guide/ngmodules",
+              "title": "NgModules Introduction",
+              "tooltip": "Use NgModules to make your apps efficient."
+            },
+            {
+              "url": "guide/ngmodule-vs-jsmodule",
+              "title": "JS Modules vs NgModules",
+              "tooltip": "Differentiate between JavaScript modules and NgModules."
+            },
+            {
+              "url": "guide/frequent-ngmodules",
+              "title": "Frequently Used NgModules",
+              "tooltip": "Introduction to the most frequently used NgModules."
+            },
+            {
+              "url": "guide/module-types",
+              "title": "Types of Feature Modules",
+              "tooltip": "Description of the different types of feature modules."
+            },
+            {
+              "url": "guide/entry-components",
+              "title": "Entry Components",
+              "tooltip": "All about entry components in Angular."
+            },
+            {
+              "url": "guide/feature-modules",
+              "title": "Feature Modules",
+              "tooltip": "Create feature modules to organize your code."
+            },
+            {
+              "url": "guide/providers",
+              "title": "Providers",
+              "tooltip": "Providers and NgModules."
+            },
+            {
+              "url": "guide/singleton-services",
+              "title": "Singleton Services",
+              "tooltip": "Creating singleton services."
+            },
+            {
+              "url": "guide/lazy-loading-ngmodules",
+              "title": "Lazy Loading Feature Modules",
+              "tooltip": "Lazy load modules to speed up your apps."
+            },
+            {
+              "url": "guide/sharing-ngmodules",
+              "title": "Sharing NgModules",
+              "tooltip": "Share NgModules to streamline your apps."
+            },
+            {
+              "url": "guide/ngmodule-api",
+              "title": "NgModule API",
+              "tooltip": "Understand the details of NgModules."
             },
             {
               "url": "guide/ngmodule-faq",

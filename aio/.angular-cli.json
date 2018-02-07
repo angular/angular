@@ -39,7 +39,7 @@
   ],
   "e2e": {
     "protractor": {
-      "config": "./protractor.conf.js"
+      "config": "tests/e2e/protractor.conf.js"
     }
   },
   "lint": [
@@ -50,18 +50,21 @@
       "project": "src/tsconfig.spec.json"
     },
     {
-      "project": "e2e/tsconfig.e2e.json"
+      "project": "tests/e2e/tsconfig.e2e.json"
     }
   ],
   "test": {
     "karma": {
-      "config": "./karma.conf.js"
+      "config": "src/karma.conf.js"
     }
   },
   "defaults": {
     "styleExt": "scss",
     "component": {
       "inlineStyle": true
+    },
+    "build": {
+      "namedChunks": true
     }
   }
 }

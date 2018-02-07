@@ -9,6 +9,10 @@
 // THIS CODE IS GENERATED - DO NOT MODIFY
 // See angular/tools/gulp-tasks/cldr/extract.js
 
+function plural(n: number): number {
+  return 5;
+}
+
 export default [
   'sg',
   [
@@ -18,7 +22,10 @@ export default [
   ,
   [
     ['K', 'S', 'T', 'S', 'K', 'P', 'Y'], ['Bk1', 'Bk2', 'Bk3', 'Bk4', 'Bk5', 'Lâp', 'Lây'],
-    ['Bikua-ôko', 'Bïkua-ûse', 'Bïkua-ptâ', 'Bïkua-usïö', 'Bïkua-okü', 'Lâpôsö', 'Lâyenga'],
+    [
+      'Bikua-ôko', 'Bïkua-ûse', 'Bïkua-ptâ', 'Bïkua-usïö', 'Bïkua-okü', 'Lâpôsö',
+      'Lâyenga'
+    ],
     ['Bk1', 'Bk2', 'Bk3', 'Bk4', 'Bk5', 'Lâp', 'Lây']
   ],
   ,
@@ -26,8 +33,8 @@ export default [
     ['N', 'F', 'M', 'N', 'B', 'F', 'L', 'K', 'M', 'N', 'N', 'K'],
     ['Nye', 'Ful', 'Mbä', 'Ngu', 'Bêl', 'Fön', 'Len', 'Kük', 'Mvu', 'Ngb', 'Nab', 'Kak'],
     [
-      'Nyenye', 'Fulundïgi', 'Mbängü', 'Ngubùe', 'Bêläwü', 'Föndo', 'Lengua', 'Kükürü', 'Mvuka',
-      'Ngberere', 'Nabändüru', 'Kakauka'
+      'Nyenye', 'Fulundïgi', 'Mbängü', 'Ngubùe', 'Bêläwü', 'Föndo', 'Lengua', 'Kükürü',
+      'Mvuka', 'Ngberere', 'Nabändüru', 'Kakauka'
     ]
   ],
   , [['KnK', 'NpK'], , ['Kôzo na Krîstu', 'Na pekô tî Krîstu']], 1, [6, 0],
@@ -39,6 +46,5 @@ export default [
     ,
   ],
   [',', '.', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0%', '¤#,##0.00;¤-#,##0.00', '#E0'], 'FCFA', 'farânga CFA (BEAC)',
-  function(n: number): number { return 5;}
+  ['#,##0.###', '#,##0%', '¤#,##0.00;¤-#,##0.00', '#E0'], 'FCFA', 'farânga CFA (BEAC)', plural
 ];

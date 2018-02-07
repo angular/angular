@@ -9,6 +9,12 @@
 // THIS CODE IS GENERATED - DO NOT MODIFY
 // See angular/tools/gulp-tasks/cldr/extract.js
 
+function plural(n: number): number {
+  let i = Math.floor(Math.abs(n)), v = n.toString().replace(/^[^.]*\.?/, '').length;
+  if (i === 1 && v === 0) return 1;
+  return 5;
+}
+
 export default [
   'ast', [['a', 'p'], ['AM', 'PM'], ['de la mañana', 'de la tarde']],
   [['a', 'p'], ['AM', 'PM'], ['mañana', 'tarde']],
@@ -43,11 +49,5 @@ export default [
     '{1} \'a\' \'les\' {0}',
   ],
   [',', '.', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'ND', ':'],
-  ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'], '€', 'euro',
-  function(n: number):
-      number {
-        let i = Math.floor(Math.abs(n)), v = n.toString().replace(/^[^.]*\.?/, '').length;
-        if (i === 1 && v === 0) return 1;
-        return 5;
-      }
+  ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'], '€', 'euro', plural
 ];

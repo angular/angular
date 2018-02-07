@@ -1,1 +1,19 @@
-# Empty marker file, indicating this directory is a Bazel package.
+load("@build_bazel_rules_nodejs//:defs.bzl", "nodejs_binary")
+
+nodejs_binary(
+    name = "rollup_with_build_optimizer",
+    data = ["@angular_devkit//packages/angular_devkit/build_optimizer:lib"],
+    # Since our rule extends the one in rules_nodejs, we use the same runtime
+    # dependency @build_bazel_rules_nodejs_rollup_deps. We don't need any
+    # additional npm dependencies when we run rollup or uglify.
+    entry_point = "build_bazel_rules_nodejs_rollup_deps/node_modules/rollup/bin/rollup",
+    node_modules = "@build_bazel_rules_nodejs_rollup_deps//:node_modules",
+    visibility = ["//visibility:public"],
+)
+
+nodejs_binary(
+    name = "modify_tsconfig",
+    data = ["modify_tsconfig.js"],
+    entry_point = "angular/packages/bazel/src/modify_tsconfig.js",
+    visibility = ["//visibility:public"],
+)

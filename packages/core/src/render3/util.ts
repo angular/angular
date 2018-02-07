@@ -31,3 +31,28 @@ export function stringify(value: any): string {
 export function notImplemented(): Error {
   return new Error('NotImplemented');
 }
+
+/**
+ * Flattens an array in non-recursive way. Input arrays are not modified.
+ */
+export function flatten(list: any[]): any[] {
+  const result: any[] = [];
+  let i = 0;
+
+  while (i < list.length) {
+    const item = list[i];
+    if (Array.isArray(item)) {
+      if (item.length > 0) {
+        list = item.concat(list.slice(i + 1));
+        i = 0;
+      } else {
+        i++;
+      }
+    } else {
+      result.push(item);
+      i++;
+    }
+  }
+
+  return result;
+}

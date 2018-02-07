@@ -12,7 +12,7 @@ import {JitReflector} from '@angular/platform-browser-dynamic/src/compiler_refle
 import {browserDetection} from '@angular/platform-browser/testing/src/browser_util';
 
 {
-  describe('DeprecatedDatePipe', () => {
+  xdescribe('DeprecatedDatePipe', () => {
     let date: Date;
     const isoStringWithoutTime = '2015-01-01';
     let pipe: DeprecatedDatePipe;

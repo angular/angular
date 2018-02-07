@@ -51,7 +51,7 @@ export class SwUpdatesService implements OnDestroy {
 
   private activateUpdate() {
     this.log('Activating update...');
-    this.sw.activateUpdate(null)
+    this.sw.activateUpdate(null as any) // expects a non-null string
         .subscribe(() => this.scheduleCheckForUpdate());
   }
 

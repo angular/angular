@@ -17,9 +17,16 @@ import {ViewContainerRef as viewEngine_ViewContainerRef} from '../linker/view_co
 import {EmbeddedViewRef as viewEngine_EmbeddedViewRef, ViewRef as viewEngine_ViewRef} from '../linker/view_ref';
 import {Type} from '../type';
 
-import {ComponentTemplate, DirectiveDef} from './definition_interfaces';
-import {LContainer, LElement, LNodeFlags, LNodeInjector} from './interfaces';
-import {assertNodeType} from './node_assert';
+import {assertLessThan} from './assert';
+import {assertPreviousIsParent, getDirectiveInstance, getPreviousOrParentNode, getRenderer, renderEmbeddedTemplate} from './instructions';
+import {ComponentTemplate, DirectiveDef} from './interfaces/definition';
+import {LInjector} from './interfaces/injector';
+import {LContainerNode, LElementNode, LNode, LNodeFlags, LViewNode} from './interfaces/node';
+import {QueryReadType} from './interfaces/query';
+import {Renderer3} from './interfaces/renderer';
+import {LView} from './interfaces/view';
+import {assertNodeOfPossibleTypes, assertNodeType} from './node_assert';
+import {insertView} from './node_manipulation';
 import {notImplemented, stringify} from './util';
 
 
@@ -48,7 +55,7 @@ let nextNgElementId = 0;
  * @param injector The node injector in which the directive should be registered
  * @param type The directive to register
  */
-export function bloomAdd(injector: LNodeInjector, type: Type<any>): void {
+export function bloomAdd(injector: LInjector, type: Type<any>): void {
   let id: number|undefined = (type as any)[NG_ELEMENT_ID];
 
   // Set a unique ID on the directive type, so if something tries to inject the directive,
@@ -86,13 +93,18 @@ export function bloomAdd(injector: LNodeInjector, type: Type<any>): void {
   }
 }
 
+export function getOrCreateNodeInjector(): LInjector {
+  ngDevMode && assertPreviousIsParent();
+  return getOrCreateNodeInjectorForNode(getPreviousOrParentNode() as LElementNode | LContainerNode);
+}
+
 /**
  * Creates (or gets an existing) injector for a given element or container.
  *
  * @param node for which an injector should be retrieved / created.
  * @returns Node injector
  */
-export function getOrCreateNodeInjectorForNode(node: LElement | LContainer): LNodeInjector {
+export function getOrCreateNodeInjectorForNode(node: LElementNode | LContainerNode): LInjector {
   const nodeInjector = node.nodeInjector;
   const parentInjector = node.parent && node.parent.nodeInjector;
   if (nodeInjector != parentInjector) {
@@ -146,8 +158,73 @@ function createInjectionError(text: string, token: any) {
  * @param di The node injector in which a directive will be added
  * @param def The definition of the directive to be made public
  */
-export function diPublicInInjector(di: LNodeInjector, def: DirectiveDef<any>): void {
+export function diPublicInInjector(di: LInjector, def: DirectiveDef<any>): void {
   bloomAdd(di, def.type);
+}
+
+/**
+ * Makes a directive public to the DI system by adding it to an injector's bloom filter.
+ *
+ * @param def The definition of the directive to be made public
+ */
+export function diPublic(def: DirectiveDef<any>): void {
+  diPublicInInjector(getOrCreateNodeInjector(), def);
+}
+
+/**
+ * Searches for an instance of the given directive type up the injector tree and returns
+ * that instance if found.
+ *
+ * If not found, it will propagate up to the next parent injector until the token
+ * is found or the top is reached.
+ *
+ * Usage example (in factory function):
+ *
+ * class SomeDirective {
+ *   constructor(directive: DirectiveA) {}
+ *
+ *   static ngDirectiveDef = defineDirective({
+ *     type: SomeDirective,
+ *     factory: () => new SomeDirective(inject(DirectiveA))
+ *   });
+ * }
+ *
+ * @param token The directive type to search for
+ * @param flags Injection flags (e.g. CheckParent)
+ * @returns The instance found
+ */
+export function inject<T>(token: Type<T>, flags?: InjectFlags, defaultValue?: T): T {
+  return getOrCreateInjectable<T>(getOrCreateNodeInjector(), token, flags, defaultValue);
+}
+
+/**
+ * Creates an ElementRef and stores it on the injector.
+ * Or, if the ElementRef already exists, retrieves the existing ElementRef.
+ *
+ * @returns The ElementRef instance to use
+ */
+export function injectElementRef(): viewEngine_ElementRef {
+  return getOrCreateElementRef(getOrCreateNodeInjector());
+}
+
+/**
+ * Creates a TemplateRef and stores it on the injector. Or, if the TemplateRef already
+ * exists, retrieves the existing TemplateRef.
+ *
+ * @returns The TemplateRef instance to use
+ */
+export function injectTemplateRef<T>(): viewEngine_TemplateRef<T> {
+  return getOrCreateTemplateRef<T>(getOrCreateNodeInjector());
+}
+
+/**
+ * Creates a ViewContainerRef and stores it on the injector. Or, if the ViewContainerRef
+ * already exists, retrieves the existing ViewContainerRef.
+ *
+ * @returns The ViewContainerRef instance to use
+ */
+export function injectViewContainerRef(): viewEngine_ViewContainerRef {
+  return getOrCreateContainerRef(getOrCreateNodeInjector());
 }
 
 /**
@@ -168,7 +245,7 @@ export function diPublicInInjector(di: LNodeInjector, def: DirectiveDef<any>): v
  * @returns The instance found
  */
 export function getOrCreateInjectable<T>(
-    di: LNodeInjector, token: Type<T>, flags?: InjectFlags): T {
+    di: LInjector, token: Type<T>, flags?: InjectFlags, defaultValue?: T): T {
   const bloomHash = bloomHashBit(token);
 
   // If the token has a bloom hash, then it is a directive that is public to the injection system
@@ -176,11 +253,14 @@ export function getOrCreateInjectable<T>(
   if (bloomHash === null) {
     const moduleInjector = di.injector;
     if (!moduleInjector) {
+      if (defaultValue != null) {
+        return defaultValue;
+      }
       throw createInjectionError('NotFound', token);
     }
     moduleInjector.get(token);
   } else {
-    let injector: LNodeInjector|null = di;
+    let injector: LInjector|null = di;
 
     while (injector) {
       // Get the closest potential matching injector (upwards in the injector tree) that
@@ -207,13 +287,13 @@ export function getOrCreateInjectable<T>(
         // nothing to the "left" of it so it doesn't need a mask.
         const start = flags >> LNodeFlags.INDX_SHIFT;
 
-        const ngStaticData = node.view.ngStaticData;
+        const tData = node.view.tView.data;
         for (let i = start, ii = start + size; i < ii; i++) {
           // Get the definition for the directive at this index and, if it is injectable (diPublic),
           // and matches the given token, return the directive instance.
-          const directiveDef = ngStaticData[i] as DirectiveDef<any>;
+          const directiveDef = tData[i] as DirectiveDef<any>;
           if (directiveDef.diPublic && directiveDef.type == token) {
-            return node.view.data[i];
+            return getDirectiveInstance(node.view.data[i]);
           }
         }
       }
@@ -265,8 +345,8 @@ function bloomHashBit(type: Type<any>): number|null {
  * @param  bloomBit The bit to check in each injector's bloom filter
  * @returns An injector that might have the directive
  */
-export function bloomFindPossibleInjector(
-    startInjector: LNodeInjector, bloomBit: number): LNodeInjector|null {
+export function bloomFindPossibleInjector(startInjector: LInjector, bloomBit: number): LInjector|
+    null {
   // Create a mask that targets the specific bit associated with the directive we're looking for.
   // JS bit operations are 32 bits, so this will be a number between 2^0 and 2^31, corresponding
   // to bit positions 0 - 31 in a 32 bit integer.
@@ -274,7 +354,7 @@ export function bloomFindPossibleInjector(
 
   // Traverse up the injector tree until we find a potential match or until we know there *isn't* a
   // match.
-  let injector: LNodeInjector|null = startInjector;
+  let injector: LInjector|null = startInjector;
   while (injector) {
     // Our bloom filter size is 128 bits, which is four 32-bit bloom filter buckets:
     // bf0 = [0 - 31], bf1 = [32 - 63], bf2 = [64 - 95], bf3 = [96 - 127]
@@ -300,6 +380,10 @@ export function bloomFindPossibleInjector(
   return null;
 }
 
+export class ReadFromInjectorFn<T> {
+  constructor(readonly read: (injector: LInjector, node: LNode, directiveIndex?: number) => T) {}
+}
+
 /**
  * Creates an ElementRef for a given node injector and stores it on the injector.
  * Or, if the ElementRef already exists, retrieves the existing ElementRef.
@@ -307,9 +391,37 @@ export function bloomFindPossibleInjector(
  * @param di The node injector where we should store a created ElementRef
  * @returns The ElementRef instance to use
  */
-export function getOrCreateElementRef(di: LNodeInjector): viewEngine_ElementRef {
-  return di.elementRef || (di.elementRef = new ElementRef(di.node.native));
+export function getOrCreateElementRef(di: LInjector): viewEngine_ElementRef {
+  return di.elementRef ||
+      (di.elementRef = new ElementRef(
+           ((di.node.flags & LNodeFlags.TYPE_MASK) === LNodeFlags.Container) ? null :
+                                                                               di.node.native));
 }
+
+export const QUERY_READ_TEMPLATE_REF = <QueryReadType<viewEngine_TemplateRef<any>>>(
+    new ReadFromInjectorFn<viewEngine_TemplateRef<any>>(
+        (injector: LInjector) => getOrCreateTemplateRef(injector)) as any);
+
+export const QUERY_READ_CONTAINER_REF = <QueryReadType<viewEngine_ViewContainerRef>>(
+    new ReadFromInjectorFn<viewEngine_ViewContainerRef>(
+        (injector: LInjector) => getOrCreateContainerRef(injector)) as any);
+
+export const QUERY_READ_ELEMENT_REF =
+    <QueryReadType<viewEngine_ElementRef>>(new ReadFromInjectorFn<viewEngine_ElementRef>(
+        (injector: LInjector) => getOrCreateElementRef(injector)) as any);
+
+export const QUERY_READ_FROM_NODE =
+    (new ReadFromInjectorFn<any>((injector: LInjector, node: LNode, directiveIdx: number) => {
+      ngDevMode && assertNodeOfPossibleTypes(node, LNodeFlags.Container, LNodeFlags.Element);
+      if (directiveIdx > -1) {
+        return node.view.data[directiveIdx];
+      } else if ((node.flags & LNodeFlags.TYPE_MASK) === LNodeFlags.Element) {
+        return getOrCreateElementRef(injector);
+      } else if ((node.flags & LNodeFlags.TYPE_MASK) === LNodeFlags.Container) {
+        return getOrCreateTemplateRef(injector);
+      }
+      throw new Error('fail');
+    }) as any as QueryReadType<any>);
 
 /** A ref to a node's native element. */
 class ElementRef implements viewEngine_ElementRef {
@@ -318,38 +430,14 @@ class ElementRef implements viewEngine_ElementRef {
 }
 
 /**
- * Creates a TemplateRef and stores it on the injector. Or, if the TemplateRef already
- * exists, retrieves the existing TemplateRef.
- *
- * @param di The node injector where we should store a created TemplateRef
- * @returns The TemplateRef instance to use
- */
-export function getOrCreateTemplateRef<T>(di: LNodeInjector): viewEngine_TemplateRef<T> {
-  ngDevMode && assertNodeType(di.node, LNodeFlags.Container);
-  const data = (di.node as LContainer).data;
-  return di.templateRef ||
-      (di.templateRef = new TemplateRef<any>(getOrCreateElementRef(di), data.template));
-}
-
-/** A ref to a particular template. */
-class TemplateRef<T> implements viewEngine_TemplateRef<T> {
-  readonly elementRef: viewEngine_ElementRef;
-
-  constructor(elementRef: viewEngine_ElementRef, template: ComponentTemplate<T>|null) {
-    this.elementRef = elementRef;
-  }
-
-  createEmbeddedView(context: T): viewEngine_EmbeddedViewRef<T> { throw notImplemented(); }
-}
-
-/**
  * Creates a ViewContainerRef and stores it on the injector. Or, if the ViewContainerRef
  * already exists, retrieves the existing ViewContainerRef.
  *
  * @returns The ViewContainerRef instance to use
  */
-export function getOrCreateContainerRef(di: LNodeInjector): viewEngine_ViewContainerRef {
-  return di.viewContainerRef || (di.viewContainerRef = new ViewContainerRef(di.node as LContainer));
+export function getOrCreateContainerRef(di: LInjector): viewEngine_ViewContainerRef {
+  return di.viewContainerRef ||
+      (di.viewContainerRef = new ViewContainerRef(di.node as LContainerNode));
 }
 
 /**
@@ -361,7 +449,7 @@ class ViewContainerRef implements viewEngine_ViewContainerRef {
   injector: Injector;
   parentInjector: Injector;
 
-  constructor(node: LContainer) {}
+  constructor(private _node: LContainerNode) {}
 
   clear(): void { throw notImplemented(); }
   get(index: number): viewEngine_ViewRef|null { throw notImplemented(); }
@@ -369,7 +457,9 @@ class ViewContainerRef implements viewEngine_ViewContainerRef {
   createEmbeddedView<C>(
       templateRef: viewEngine_TemplateRef<C>, context?: C|undefined,
       index?: number|undefined): viewEngine_EmbeddedViewRef<C> {
-    throw notImplemented();
+    const viewRef = templateRef.createEmbeddedView(context !);
+    this.insert(viewRef, index);
+    return viewRef;
   }
   createComponent<C>(
       componentFactory: viewEngine_ComponentFactory<C>, index?: number|undefined,
@@ -378,7 +468,29 @@ class ViewContainerRef implements viewEngine_ViewContainerRef {
     throw notImplemented();
   }
   insert(viewRef: viewEngine_ViewRef, index?: number|undefined): viewEngine_ViewRef {
-    throw notImplemented();
+    if (index == null) {
+      index = this._node.data.views.length;
+    } else {
+      // +1 because it's legal to insert at the end.
+      ngDevMode && assertLessThan(index, this._node.data.views.length + 1, 'index');
+    }
+    const lView = (viewRef as EmbeddedViewRef<any>)._lViewNode;
+    insertView(this._node, lView, index);
+
+    // If the view is dynamic (has a template), it needs to be counted both at the container
+    // level and at the node above the container.
+    if (lView.data.template !== null) {
+      // Increment the container view count.
+      this._node.data.dynamicViewCount++;
+
+      // Look for the parent node and increment its dynamic view count.
+      if (this._node.parent !== null && this._node.parent.data !== null) {
+        ngDevMode &&
+            assertNodeOfPossibleTypes(this._node.parent, LNodeFlags.View, LNodeFlags.Element);
+        this._node.parent.data.dynamicViewCount++;
+      }
+    }
+    return viewRef;
   }
   move(viewRef: viewEngine_ViewRef, currentIndex: number): viewEngine_ViewRef {
     throw notImplemented();
@@ -386,4 +498,58 @@ class ViewContainerRef implements viewEngine_ViewContainerRef {
   indexOf(viewRef: viewEngine_ViewRef): number { throw notImplemented(); }
   remove(index?: number|undefined): void { throw notImplemented(); }
   detach(index?: number|undefined): viewEngine_ViewRef|null { throw notImplemented(); }
+}
+
+/**
+ * Creates a TemplateRef and stores it on the injector. Or, if the TemplateRef already
+ * exists, retrieves the existing TemplateRef.
+ *
+ * @param di The node injector where we should store a created TemplateRef
+ * @returns The TemplateRef instance to use
+ */
+export function getOrCreateTemplateRef<T>(di: LInjector): viewEngine_TemplateRef<T> {
+  ngDevMode && assertNodeType(di.node, LNodeFlags.Container);
+  const data = (di.node as LContainerNode).data;
+  return di.templateRef || (di.templateRef = new TemplateRef<any>(
+                                getOrCreateElementRef(di), data.template !, getRenderer()));
+}
+
+class TemplateRef<T> implements viewEngine_TemplateRef<T> {
+  readonly elementRef: viewEngine_ElementRef;
+  private _template: ComponentTemplate<T>;
+
+  constructor(
+      elementRef: viewEngine_ElementRef, template: ComponentTemplate<T>,
+      private _renderer: Renderer3) {
+    this.elementRef = elementRef;
+    this._template = template;
+  }
+
+  createEmbeddedView(context: T): viewEngine_EmbeddedViewRef<T> {
+    let viewNode: LViewNode = renderEmbeddedTemplate(null, this._template, context, this._renderer);
+    return new EmbeddedViewRef(viewNode, this._template, context);
+  }
+}
+
+class EmbeddedViewRef<T> implements viewEngine_EmbeddedViewRef<T> {
+  context: T;
+  rootNodes: any[];
+  /**
+   * @internal
+   */
+  _lViewNode: LViewNode;
+
+  constructor(viewNode: LViewNode, template: ComponentTemplate<T>, context: T) {
+    this._lViewNode = viewNode;
+    this.context = context;
+  }
+
+  destroy(): void { notImplemented(); }
+  destroyed: boolean;
+  onDestroy(callback: Function) { notImplemented(); }
+  markForCheck(): void { notImplemented(); }
+  detach(): void { notImplemented(); }
+  detectChanges(): void { notImplemented(); }
+  checkNoChanges(): void { notImplemented(); }
+  reattach(): void { notImplemented(); }
 }
