@@ -46,6 +46,38 @@ describe('createSitemap processor', () => {
         processor.$process(docs);
         expect(docs.pop().urls).toEqual(['abc', 'fgh']);
       });
+
+      it('ignoring blacklisted doc types', () => {
+        const docs = [
+          { path: 'abc', outputPath: 'abc', docType: 'good' },
+          { path: 'cde', outputPath: 'cde', docType: 'bad' },
+          { path: 'fgh', outputPath: 'fgh', docType: 'good' },
+        ];
+        processor.blacklistedDocTypes = ['bad'];
+        processor.$process(docs);
+        expect(docs.pop().urls).toEqual(['abc', 'fgh']);
+      });
+
+      it('ignoring blacklisted paths', () => {
+        const docs = [
+          { path: 'abc', outputPath: 'abc' },
+          { path: 'cde', outputPath: 'cde' },
+          { path: 'fgh', outputPath: 'fgh' },
+        ];
+        processor.blacklistedPaths = ['cde'];
+        processor.$process(docs);
+        expect(docs.pop().urls).toEqual(['abc', 'fgh']);
+      });
+
+      it('mapping the home page\'s path to `/`', () => {
+        const docs = [
+          { path: 'abc', outputPath: 'abc' },
+          { path: 'index', outputPath: 'index.json' },
+          { path: 'fgh', outputPath: 'fgh' },
+        ];
+        processor.$process(docs);
+        expect(docs.pop().urls).toEqual(['abc', '', 'fgh']);
+      });
     });
   });
 });
