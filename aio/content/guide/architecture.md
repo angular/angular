@@ -1,7 +1,7 @@
 <!--
 # Architecture Overview
 -->
-# Architecture
+# 아키텍처
 
 <!--
 Angular is a framework for building client applications in HTML and
@@ -53,7 +53,7 @@ You'll learn the details in the pages that follow. For now, focus on the big pic
 
 </div>
 
-## Modules
+## 모듈
 
 <!--
 <img src="generated/images/guide/architecture/module.png" alt="Component" class="left">
@@ -120,10 +120,10 @@ The most important properties are:
 
 <!--
 * `declarations` - the _view classes_ that belong to this module.
-Angular has three kinds of view classes: [components](guide/architecture#components), [directives](guide/architecture#directives), and [pipes](guide/pipes).
+Angular has three kinds of view classes: [components](guide/architecture#컴포넌트), [directives](guide/architecture#directives), and [pipes](guide/pipes).
 -->
 * `declarations` - 모듈에 속하는 _뷰 클래스_ 를 등록합니다.
-Angular에는 3 종류의 뷰 클래스가 있습니다 : [컴포넌트](guide/architecture#components), [디렉티브](guide/architecture#directives), [파이프](guide/pipes).
+Angular에는 3 종류의 뷰 클래스가 있습니다 : [컴포넌트](guide/architecture#컴포넌트), [디렉티브](guide/architecture#디렉티브), [파이프](guide/pipes).
 
 <!--
 * `exports` - the subset of declarations that should be visible and usable in the component [templates](guide/architecture#templates) of other modules.
@@ -140,7 +140,7 @@ Angular에는 3 종류의 뷰 클래스가 있습니다 : [컴포넌트](guide/a
 * `providers` - creators of [services](guide/architecture#services) that this module contributes to
 the global collection of services; they become accessible in all parts of the app.
 -->
-* `providers` - [서비스](guide/architecture#services) 프로바이더를 지정합니다.
+* `providers` - [서비스](guide/architecture#서비스) 프로바이더를 지정합니다.
 모듈에서 사용하는 서비스는 프로바이더에 등록된 방법으로 인스턴스를 생성하며, 이렇게 생성된 서비스는 전역 서비스 풀에 생성되어 앱 어디에서라도 접근할 수 있습니다.
 
 <!--
@@ -173,7 +173,10 @@ During development you're likely to bootstrap the `AppModule` in a `main.ts` fil
 
 <code-example path="architecture/src/main.ts" title="src/main.ts" linenums="false"></code-example>
 
+<!--
 ### NgModules vs. JavaScript modules
+-->
+### NgModule 과 JavaScript 모듈
 
 <!--
 The NgModule &mdash; a class decorated with `@NgModule` &mdash; is a fundamental feature of Angular.
@@ -210,7 +213,10 @@ These are two different and _complementary_ module systems. Use them both to wri
 -->
 결국 우리가 작성하는 코드에는 _완전히 다르지만 상호 보완적인_ 2개의 모듈 체계가 있다고 할 수 있습니다. 이 두 방식은 애플리케이션을 개발하면서 각각의 역할에 맞게 모두 사용할 것입니다.
 
+<!--
 ### Angular libraries
+-->
+### Angular 라이브러리
 
 <!--
 <img src="generated/images/guide/architecture/library-module.png" alt="Component" class="left">
@@ -274,7 +280,10 @@ Hang in there. The confusion yields to clarity with time and experience.
 
 <hr/>
 
+<!--
 ## Components
+-->
+## 컴포넌트
 
 <img src="generated/images/guide/architecture/hero-component.png" alt="Component" class="left">
 
@@ -327,6 +336,9 @@ Angular는 사용자의 행동에 따라 컴포넌트를 생성하고, 갱신하
 
 <hr/>
 
+<!--
+## Templates
+-->
 ## 템플릿
 
 <img src="generated/images/guide/architecture/template.png" alt="Template" class="left">
@@ -377,7 +389,10 @@ Notice how `<app-hero-detail>` rests comfortably among native HTML elements. Cus
 
 <hr class="clear"/>
 
+<!--
 ## Metadata
+-->
+## 메타데이터
 
 <!--
 <img src="generated/images/guide/architecture/metadata.png" alt="Metadata" class="left">
@@ -484,7 +499,10 @@ so that Angular knows what to do.
 
 <hr/>
 
+<!--
 ## Data binding
+-->
+## 데이터 바인딩
 
 <!--
 Without a framework, you would be responsible for pushing data values into the HTML controls and turning user responses
@@ -588,7 +606,10 @@ Data binding is also important for communication between parent and child compon
 
 <hr/>
 
+<!--
 ## Directives
+-->
+## 디렉티브
 
 <img src="generated/images/guide/architecture/directive.png" alt="Parent child" class="left">
 
@@ -686,7 +707,10 @@ Of course, you can also write your own directives. Components such as
 
 <hr/>
 
+<!--
 ## Services
+-->
+## 서비스
 
 <!--
 <img src="generated/images/guide/architecture/service.png" alt="Service" class="left">
@@ -792,7 +816,10 @@ application logic into services and make those services available to components 
 
 <hr/>
 
+<!--
 ## Dependency injection
+-->
+## 의존성 주입
 
 <!--
 <img src="generated/images/guide/architecture/dependency-injection.png" alt="Service" class="left">
@@ -871,7 +898,7 @@ You can register providers in modules or in components.
 In general, add providers to the [root module](guide/architecture#modules) so that
 the same instance of a service is available everywhere.
 -->
-프로바이더는 보통 [최상위 모듈](guide/architecture#modules) 에 등록하는데,
+프로바이더는 보통 [최상위 모듈](guide/architecture#모듈) 에 등록하는데,
 하위 계층에서 프로바이더를 따로 등록하지 않는 이상 인스턴스를 하나만 만들어서 공유합니다.
 
 <code-example path="architecture/src/app/app.module.ts" linenums="false" title="src/app/app.module.ts (module providers)" region="providers"></code-example>
@@ -925,7 +952,10 @@ Points to remember about dependency injection:
 
 <hr/>
 
+<!--
 ## Wrap up
+-->
+## 정리
 
 <!--
 You've learned the basics about the eight main building blocks of an Angular application:
@@ -943,14 +973,14 @@ You've learned the basics about the eight main building blocks of an Angular app
 * [Dependency injection](guide/architecture#dependency-injection)
 -->
 
-* [모듈](guide/architecture#modules)
-* [컴포넌트](guide/architecture#components)
+* [모듈](guide/architecture#모듈)
+* [컴포넌트](guide/architecture#컴포넌트)
 * [템플릿](guide/architecture#템플릿)
-* [메타데이터](guide/architecture#metadata)
-* [데이터 바인딩](guide/architecture#data-binding)
-* [디렉티브](guide/architecture#directives)
-* [서비스](guide/architecture#services)
-* [의존성 주입](guide/architecture#dependency-injection)
+* [메타데이터](guide/architecture#메타데이터)
+* [데이터 바인딩](guide/architecture#데이터-바인딩)
+* [디렉티브](guide/architecture#디렉티브)
+* [서비스](guide/architecture#서비스)
+* [의존성 주입](guide/architecture#의존성-주입)
 
 <!--
 That's a foundation for everything else in an Angular application,
