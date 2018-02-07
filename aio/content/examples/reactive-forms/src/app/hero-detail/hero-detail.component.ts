@@ -13,7 +13,10 @@ import { HeroService }           from '../hero.service';
   templateUrl: './hero-detail.component.html',
   styleUrls: ['./hero-detail.component.css']
 })
+
+// #docregion onchanges-implementation
 export class HeroDetailComponent implements OnChanges {
+// #enddocregion onchanges-implementation
   @Input() hero: Hero;
 
   heroForm: FormGroup;
@@ -42,6 +45,10 @@ export class HeroDetailComponent implements OnChanges {
   }
 
   ngOnChanges() {
+    this.rebuildForm();
+  }
+
+  rebuildForm() {
     this.heroForm.reset({
       name: this.hero.name
     });
@@ -66,7 +73,7 @@ export class HeroDetailComponent implements OnChanges {
   onSubmit() {
     this.hero = this.prepareSaveHero();
     this.heroService.updateHero(this.hero).subscribe(/* error handling */);
-    this.ngOnChanges();
+    this.rebuildForm();
   }
   // #enddocregion on-submit
 
@@ -92,7 +99,7 @@ export class HeroDetailComponent implements OnChanges {
   // #enddocregion prepare-save-hero
 
   // #docregion revert
-  revert() { this.ngOnChanges(); }
+  revert() { this.rebuildForm(); }
   // #enddocregion revert
 
   // #docregion log-name-change
