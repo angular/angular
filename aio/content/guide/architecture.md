@@ -129,7 +129,7 @@ Angular에는 3 종류의 뷰 클래스가 있습니다 : [컴포넌트](guide/a
 * `exports` - the subset of declarations that should be visible and usable in the component [templates](guide/architecture#templates) of other modules.
 -->
 * `exports` - 모듈의 `declarations` 항목 일부를 다른 모듈에서 참조해야 하는 경우가 있습니다.
-이 때 다른 모듈의 [템플릿](guide/architecture#templates)에 사용할 수 있도록 `exports` 항목을 지정할 수 있습니다.
+이 때 다른 모듈의 [템플릿](guide/architecture#템플릿)에 사용할 수 있도록 `exports` 항목을 지정할 수 있습니다.
 
 <!--
 * `imports` - other modules whose exported classes are needed by component templates declared in _this_ module.
@@ -327,7 +327,7 @@ Angular는 사용자의 행동에 따라 컴포넌트를 생성하고, 갱신하
 
 <hr/>
 
-## Templates
+## 템플릿
 
 <img src="generated/images/guide/architecture/template.png" alt="Template" class="left">
 
@@ -446,7 +446,7 @@ Angular inserts an instance of the `HeroListComponent` view between those tags.
 <!--
 * `templateUrl`: module-relative address of this component's HTML template, shown [above](guide/architecture#templates).
 -->
-* `templateUrl`: 컴포넌트 템플릿 파일을 상대주소로 지정합니다. [템플릿](guide/architecture#templates) 부분을 참고하세요.
+* `templateUrl`: 컴포넌트 템플릿 파일을 상대주소로 지정합니다. [템플릿](guide/architecture#템플릿) 부분을 참고하세요.
 
 <!--
 * `providers`: array of **dependency injection providers** for services that the component requires.
@@ -518,7 +518,7 @@ As the diagram shows, there are four forms of data binding syntax. Each form has
 <!--
 The `HeroListComponent` [example](guide/architecture#templates) template has three forms:
 -->
-`HeroListComponent` [예제](guide/architecture#templates) 를 보면, 템플릿에 3가지 종류의 데이터 바인딩을 사용하는 것을 확인할 수 있습니다:
+`HeroListComponent` [예제](guide/architecture#템플릿) 를 보면, 템플릿에 3가지 종류의 데이터 바인딩을 사용하는 것을 확인할 수 있습니다:
 
 <code-example path="architecture/src/app/hero-list.component.1.html" linenums="false" title="src/app/hero-list.component.html (binding)" region="binding"></code-example>
 
@@ -636,7 +636,7 @@ sometimes by name but more often as the target of an assignment or a binding.
 <!--
 The [example template](guide/architecture#templates) uses two built-in structural directives:
 -->
-[템플릿 예제 코드](guide/architecture#templates) 를 다시 보면 두 종류의 구조 디렉티브를 사용한 것을 확인할 수 있습니다:
+[템플릿 예제 코드](guide/architecture#템플릿) 를 다시 보면 두 종류의 구조 디렉티브를 사용한 것을 확인할 수 있습니다:
 
 <code-example path="architecture/src/app/hero-list.component.1.html" linenums="false" title="src/app/hero-list.component.html (structural)" region="structural"></code-example>
 
@@ -945,7 +945,7 @@ You've learned the basics about the eight main building blocks of an Angular app
 
 * [모듈](guide/architecture#modules)
 * [컴포넌트](guide/architecture#components)
-* [템플릿](guide/architecture#templates)
+* [템플릿](guide/architecture#템플릿)
 * [메타데이터](guide/architecture#metadata)
 * [데이터 바인딩](guide/architecture#data-binding)
 * [디렉티브](guide/architecture#directives)
