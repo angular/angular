@@ -26,6 +26,14 @@ PLUGIN_CONFIG="{sideEffectFreeModules: [\n%s]}" % ",\n".join(
 BO_ROLLUP="angular_devkit/packages/angular_devkit/build_optimizer/src/build-optimizer/rollup-plugin.js"
 BO_PLUGIN="require('%s').default(%s)" % (BO_ROLLUP, PLUGIN_CONFIG)
 
+def run_brotli(ctx, input, output):
+  ctx.action(
+      executable = ctx.executable._brotli,
+      inputs = [input],
+      outputs = [output],
+      arguments = ["--output=%s" % output.path, input.path],
+  )
+
 def _ng_rollup_bundle(ctx):
   # We don't expect anyone to make use of this bundle yet, but it makes this rule
   # compatible with rollup_bundle which allows them to be easily swapped back and
@@ -52,6 +60,8 @@ def _ng_rollup_bundle(ctx):
   run_uglify(ctx, ctx.outputs.build_es5, ctx.outputs.build_es5_min)
   run_uglify(ctx, ctx.outputs.build_es5, ctx.outputs.build_es5_min_debug, debug = True)
 
+  run_brotli(ctx, ctx.outputs.build_es5_min, ctx.outputs.build_es5_min_compressed)
+
   return DefaultInfo(files=depset([ctx.outputs.build_es5_min]))
 
 ng_rollup_bundle = rule(
@@ -63,8 +73,14 @@ ng_rollup_bundle = rule(
         ]),
         "_rollup": attr.label(
             executable = True,
-            cfg="host",
+            cfg = "host",
             default = Label("@angular//packages/bazel/src:rollup_with_build_optimizer")),
+	"_brotli": attr.label(
+            executable = True,
+            cfg = "host",
+            default = Label("@org_brotli//:brotli")),
     }),
-    outputs = ROLLUP_OUTPUTS,
+    outputs = dict(ROLLUP_OUTPUTS, **{
+        "build_es5_min_compressed": "%{name}.min.js.brotli",
+    }),
 )
