@@ -5,25 +5,26 @@
       display: none;
     }
 
-    .mat-icon, .material-icons {
-      visibility: hidden;
-      display: inline-block;
+    .header-link {
+      box-sizing: border-box;
       color: $mediumgray;
-      margin: 0 8px;
-    }
+      display: inline-block;
+      margin-left: -42px;
+      padding: 0 8px;
+      text-decoration: none;
+      user-select: none;
+      vertical-align: middle;
+      visibility: hidden;
+      width: 40px;
 
-    &:hover {
-      .mat-icon, .material-icons {
-        visibility: visible;
+      @media (max-width: 600px) {
+        float: right;
+        margin-left: 0;
       }
     }
 
-    a.header-link {
-      text-decoration: none;
-      padding-left: 8px;
-      margin-left: -50px;
-      display: inline-block;
-      vertical-align: middle;
+    &:hover .header-link {
+      visibility: visible;
     }
   }
 
