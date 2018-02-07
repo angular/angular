@@ -283,13 +283,17 @@ describe('array literals', () => {
      */
     function Template(ctx: any, cm: boolean) {
       if (cm) {
-        E(0, NestedComp);
-        e();
+        elementStart(0, NestedComp);
+        elementEnd();
       }
-      p(0, 'config', o2(2, e0_literal_2, 'animation', ctx.name, 'actions',
-                        o1(1, e0_literal_1, 1, o1(0, e0_literal, 'duration', ctx.duration))));
+      elementProperty(
+          0, 'config',
+          objectLiteral2(
+              2, e0_literal_2, 'animation', ctx.name, 'actions',
+              objectLiteral1(
+                  1, e0_literal_1, 1, objectLiteral1(0, e0_literal, 'duration', ctx.duration))));
       NestedComp.ngComponentDef.h(1, 0);
-      r(1, 0);
+      componentRefresh(1, 0);
     }
 
     const e0_literal = {opacity: 1, duration: null};

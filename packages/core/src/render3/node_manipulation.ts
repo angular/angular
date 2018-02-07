@@ -11,7 +11,7 @@ import {callHooks} from './hooks';
 import {LContainer, unusedValueExportToPlacateAjd as unused1} from './interfaces/container';
 import {LContainerNode, LElementNode, LNode, LNodeFlags, LProjectionNode, LTextNode, LViewNode, unusedValueExportToPlacateAjd as unused2} from './interfaces/node';
 import {unusedValueExportToPlacateAjd as unused3} from './interfaces/projection';
-import {ProceduralRenderer3, RElement, RNode, RText, unusedValueExportToPlacateAjd as unused4} from './interfaces/renderer';
+import {ProceduralRenderer3, RElement, RNode, RText, isProceduralRenderer, unusedValueExportToPlacateAjd as unused4} from './interfaces/renderer';
 import {HookData, LView, LViewOrLContainer, TView, unusedValueExportToPlacateAjd as unused5} from './interfaces/view';
 import {assertNodeType} from './node_assert';
 
@@ -174,16 +174,15 @@ export function addRemoveViewFromContainer(
       const type = node.flags & LNodeFlags.TYPE_MASK;
       let nextNode: LNode|null = null;
       const renderer = container.view.renderer;
-      const isFnRenderer = (renderer as ProceduralRenderer3).listen;
       if (type === LNodeFlags.Element) {
-        insertMode ? (isFnRenderer ?
-                          (renderer as ProceduralRenderer3)
-                              .insertBefore !(parent, node.native !, beforeNode as RNode | null) :
-                          parent.insertBefore(node.native !, beforeNode as RNode | null, true)) :
-                     (isFnRenderer ?
-                          (renderer as ProceduralRenderer3)
-                              .removeChild !(parent as RElement, node.native !) :
-                          parent.removeChild(node.native !));
+        if (insertMode) {
+          isProceduralRenderer(renderer) ?
+              renderer.insertBefore(parent, node.native !, beforeNode as RNode | null) :
+              parent.insertBefore(node.native !, beforeNode as RNode | null, true);
+        } else {
+          isProceduralRenderer(renderer) ? renderer.removeChild(parent as RElement, node.native !) :
+                                           parent.removeChild(node.native !);
+        }
         nextNode = node.next;
       } else if (type === LNodeFlags.Container) {
         // if we get to a container, it must be a root node of a view because we are only
@@ -421,7 +420,7 @@ export function canInsertNativeNode(parent: LNode, currentView: LView): boolean 
 }
 
 /**
- * Appends the provided child element to the provided parent.
+ * Appends the `child` element to the `parent`.
  *
  * The element insertion might be delayed {@link canInsertNativeNode}
  *
@@ -434,9 +433,8 @@ export function appendChild(parent: LNode, child: RNode | null, currentView: LVi
   if (child !== null && canInsertNativeNode(parent, currentView)) {
     // We only add element if not in View or not projected.
     const renderer = currentView.renderer;
-    (renderer as ProceduralRenderer3).listen ?
-        (renderer as ProceduralRenderer3).appendChild !(parent.native !as RElement, child) :
-        parent.native !.appendChild(child);
+    isProceduralRenderer(renderer) ? renderer.appendChild(parent.native !as RElement, child) :
+                                     parent.native !.appendChild(child);
     return true;
   }
   return false;
@@ -455,9 +453,8 @@ export function insertChild(node: LNode, currentView: LView): void {
   if (canInsertNativeNode(parent, currentView)) {
     let nativeSibling: RNode|null = findNextRNodeSibling(node, null);
     const renderer = currentView.renderer;
-    (renderer as ProceduralRenderer3).listen ?
-        (renderer as ProceduralRenderer3)
-            .insertBefore !(parent.native !, node.native !, nativeSibling) :
+    isProceduralRenderer(renderer) ?
+        renderer.insertBefore(parent.native !, node.native !, nativeSibling) :
         parent.native !.insertBefore(node.native !, nativeSibling, false);
   }
 }

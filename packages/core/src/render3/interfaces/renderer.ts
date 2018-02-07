@@ -41,6 +41,12 @@ export interface ObjectOrientedRenderer3 {
   querySelector(selectors: string): RElement|null;
 }
 
+/** Returns wether the `renderer` is a `ProceduralRenderer3` */
+export function isProceduralRenderer(renderer: ProceduralRenderer3 | ObjectOrientedRenderer3):
+    renderer is ProceduralRenderer3 {
+  return !!((renderer as any).listen);
+}
+
 /**
  * Procedural style of API needed to create elements and text nodes.
  *
