@@ -64,8 +64,8 @@ export class FormBuilder {
    * configuration, with the given optional `validator` and `asyncValidator`.
    */
   array(
-      controlsConfig: any[], validator?: ValidatorFn|null,
-      asyncValidator?: AsyncValidatorFn|null): FormArray {
+      controlsConfig: any[], validator?: ValidatorFn|ValidatorFn[]|null,
+      asyncValidator?: AsyncValidatorFn|AsyncValidatorFn[]|null): FormArray {
     const controls = controlsConfig.map(c => this._createControl(c));
     return new FormArray(controls, validator, asyncValidator);
   }
