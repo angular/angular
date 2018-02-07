@@ -2,10 +2,10 @@ workspace(name = "angular")
 
 load("@bazel_tools//tools/build_defs/repo:git.bzl", "git_repository")
 
-git_repository(
+local_repository(path="../rules_nodejs",#git_repository(
     name = "build_bazel_rules_nodejs",
-    remote = "https://github.com/bazelbuild/rules_nodejs.git",
-    commit = "5307b572d86a0764bd86a5681fc72cca016e9390",
+    #remote = "https://github.com/bazelbuild/rules_nodejs.git",
+    #commit = "5307b572d86a0764bd86a5681fc72cca016e9390",
 )
 
 load("@build_bazel_rules_nodejs//:defs.bzl", "check_bazel_version", "node_repositories")

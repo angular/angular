@@ -32,5 +32,6 @@ ng_package(
         'rxjs/observable/merge': 'Rx.Observable',
         'rxjs/operator/share': 'Rx.Observable.prototype'
     },
+    entry_point = "packages/core/index.js",
     secondary_entry_points = ["testing"],
 )

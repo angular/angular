@@ -6,6 +6,10 @@
 """
 
 load("@build_bazel_rules_nodejs//:internal/collect_es6_sources.bzl", "collect_es6_sources")
+load("@build_bazel_rules_nodejs//:internal/rollup/rollup_bundle.bzl",
+     "write_rollup_config",
+     "rollup_module_mappings_aspect",
+     "ROLLUP_ATTRS")
 load(":esm5.bzl", "esm5_outputs_aspect", "ESM5Info")
 
 def _rollup(ctx, output_name, inputs, npm_package_name, externals, entry_point_name, rootdir, format = "es"):
@@ -90,7 +94,7 @@ def _uglify(ctx, input, entry_point_name):
       map = map_output,
   )
 
-# ng_package produces package that is npm ready.
+# ng_package produces package that is npm-ready.
 def _ng_package_impl(ctx):
   npm_package_name = ctx.label.package.split("/")[-1]
   npm_package_directory = ctx.actions.declare_directory(ctx.label.name)
@@ -223,17 +227,26 @@ def _ng_package_impl(ctx):
 #   [ ]   <extra-files>
 ng_package = rule(
     implementation = _ng_package_impl,
-    attrs = {
-      "deps": attr.label_list(aspects = [esm5_outputs_aspect]),
+    attrs = dict(ROLLUP_ATTRS, **{
+      "deps": attr.label_list(aspects = [
+          rollup_module_mappings_aspect,
+          esm5_outputs_aspect,
+      ]),
       "package_json": attr.label(allow_single_file = FileType([".json"])),
       "readme_md": attr.label(allow_single_file = FileType([".md"])),
-      "license_banner": attr.label(allow_single_file = FileType([".txt"])),
       "globals": attr.string_dict(default={}),
       "secondary_entry_points": attr.string_list(),
-      "stamp_data": attr.label(mandatory=True, allow_single_file=[".txt"]),
-      "_packager": attr.label(default=Label("//packages/bazel/src/packager"), executable=True, cfg="host"),
-      "_rollup": attr.label(default=Label("//packages/bazel/src/rollup"), executable=True, cfg="host"),
-      "_rollup_config_tmpl": attr.label(default=Label("//packages/bazel/src/rollup:rollup.config.js"), allow_single_file=True),
-      "_uglify": attr.label(default=Label("//packages/bazel/src/rollup:uglify"), executable=True, cfg="host"),
-    }
+      "_packager": attr.label(
+          default=Label("//packages/bazel/src/packager"),
+          executable=True, cfg="host"),
+      "_rollup": attr.label(
+          default=Label("//packages/bazel/src/rollup"),
+          executable=True, cfg="host"),
+      "_rollup_config_tmpl": attr.label(
+          default=Label("//packages/bazel/src/rollup:rollup.config.js"),
+          allow_single_file=True),
+      "_uglify": attr.label(
+          default=Label("//packages/bazel/src:uglify"),
+          executable=True, cfg="host"),
+    }),
 )

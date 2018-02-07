@@ -43,6 +43,7 @@ ng_package(
       'rxjs/operator/filter': 'Rx.Observable.prototype',
       'rxjs/operator/map': 'Rx.Observable.prototype',
     },
+    entry_point = "packages/common/index.js",
     secondary_entry_points = [
         "testing",
         "http",
