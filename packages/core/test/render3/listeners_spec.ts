@@ -7,7 +7,7 @@
  */
 
 import {defineComponent} from '../../src/render3/index';
-import {componentRefresh, container, containerRefreshEnd, containerRefreshStart, elementEnd, elementStart, listener, text, viewEnd, viewStart} from '../../src/render3/instructions';
+import {componentRefresh, container, containerRefreshEnd, containerRefreshStart, elementEnd, elementStart, embeddedViewEnd, embeddedViewStart, listener, text} from '../../src/render3/instructions';
 
 import {containerEl, renderComponent, renderToHtml} from './render_util';
 
@@ -94,7 +94,7 @@ describe('event listeners', () => {
       containerRefreshStart(0);
       {
         if (ctx.showing) {
-          if (viewStart(1)) {
+          if (embeddedViewStart(1)) {
             elementStart(0, 'button');
             {
               listener('click', ctx.onClick.bind(ctx));
@@ -102,7 +102,7 @@ describe('event listeners', () => {
             }
             elementEnd();
           }
-          viewEnd();
+          embeddedViewEnd();
         }
       }
       containerRefreshEnd();
@@ -142,14 +142,14 @@ describe('event listeners', () => {
       containerRefreshStart(0);
       {
         if (ctx.showing) {
-          if (viewStart(0)) {
+          if (embeddedViewStart(0)) {
             text(0, 'Hello');
             container(1);
           }
           containerRefreshStart(1);
           {
             if (ctx.button) {
-              if (viewStart(0)) {
+              if (embeddedViewStart(0)) {
                 elementStart(0, 'button');
                 {
                   listener('click', ctx.onClick.bind(ctx));
@@ -157,11 +157,11 @@ describe('event listeners', () => {
                 }
                 elementEnd();
               }
-              viewEnd();
+              embeddedViewEnd();
             }
           }
           containerRefreshEnd();
-          viewEnd();
+          embeddedViewEnd();
         }
       }
       containerRefreshEnd();
@@ -200,7 +200,7 @@ describe('event listeners', () => {
       containerRefreshStart(0);
       {
         if (ctx.showing) {
-          if (viewStart(0)) {
+          if (embeddedViewStart(0)) {
             text(0, 'Hello');
             elementStart(1, MyComp);
             elementEnd();
@@ -211,7 +211,7 @@ describe('event listeners', () => {
           MyComp.ngComponentDef.h(4, 3);
           componentRefresh(2, 1);
           componentRefresh(4, 3);
-          viewEnd();
+          embeddedViewEnd();
         }
       }
       containerRefreshEnd();
@@ -256,7 +256,7 @@ describe('event listeners', () => {
       containerRefreshStart(0);
       {
         if (ctx.condition) {
-          if (viewStart(0)) {
+          if (embeddedViewStart(0)) {
             text(0, 'Hello');
             container(1);
             container(2);
@@ -264,7 +264,7 @@ describe('event listeners', () => {
           containerRefreshStart(1);
           {
             if (ctx.sub1) {
-              if (viewStart(0)) {
+              if (embeddedViewStart(0)) {
                 elementStart(0, 'button');
                 {
                   listener('click', () => ctx.counter1++);
@@ -272,14 +272,14 @@ describe('event listeners', () => {
                 }
                 elementEnd();
               }
-              viewEnd();
+              embeddedViewEnd();
             }
           }
           containerRefreshEnd();
           containerRefreshStart(2);
           {
             if (ctx.sub2) {
-              if (viewStart(0)) {
+              if (embeddedViewStart(0)) {
                 elementStart(0, 'button');
                 {
                   listener('click', () => ctx.counter2++);
@@ -287,11 +287,11 @@ describe('event listeners', () => {
                 }
                 elementEnd();
               }
-              viewEnd();
+              embeddedViewEnd();
             }
           }
           containerRefreshEnd();
-          viewEnd();
+          embeddedViewEnd();
         }
       }
       containerRefreshEnd();

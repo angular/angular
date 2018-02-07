@@ -7,7 +7,7 @@
  */
 
 import {defineComponent, defineDirective} from '../../src/render3/index';
-import {bind, container, containerRefreshEnd, containerRefreshStart, elementAttribute, elementClass, elementEnd, elementProperty, elementStart, memory, text, textBinding, viewEnd, viewStart} from '../../src/render3/instructions';
+import {bind, container, containerRefreshEnd, containerRefreshStart, elementAttribute, elementClass, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, memory, text, textBinding} from '../../src/render3/instructions';
 
 import {renderToHtml} from './render_util';
 
@@ -261,7 +261,7 @@ describe('exports', () => {
         containerRefreshStart(1);
         {
           if (ctx.condition) {
-            let cm1 = viewStart(1);
+            let cm1 = embeddedViewStart(1);
             {
               if (cm1) {
                 text(0);
@@ -271,7 +271,7 @@ describe('exports', () => {
               let myInput = elementStart(1);
               textBinding(0, bind(myInput && (myInput as any).value));
             }
-            viewEnd();
+            embeddedViewEnd();
           }
         }
         containerRefreshEnd();

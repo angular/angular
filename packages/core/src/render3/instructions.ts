@@ -1091,12 +1091,12 @@ function refreshDynamicChildren() {
 }
 
 /**
- * Creates an LViewNode.
+ * Marks the start of an embedded view.
  *
  * @param viewBlockId The ID of this view
- * @return Whether or not this view is in creation mode
+ * @return boolean Whether or not this view is in creation mode
  */
-export function viewStart(viewBlockId: number): boolean {
+export function embeddedViewStart(viewBlockId: number): boolean {
   const container =
       (isParent ? previousOrParentNode : previousOrParentNode.parent !) as LContainerNode;
   ngDevMode && assertNodeType(container, LNodeFlags.Container);
@@ -1148,8 +1148,8 @@ function getOrCreateEmbeddedTView(viewIndex: number, parent: LContainerNode): TV
   return tContainer[viewIndex];
 }
 
-/** Marks the end of the LViewNode. */
-export function viewEnd(): void {
+/** Marks the end of an embedded view. */
+export function embeddedViewEnd(): void {
   isParent = false;
   const viewNode = previousOrParentNode = currentView.node as LViewNode;
   const container = previousOrParentNode.parent as LContainerNode;

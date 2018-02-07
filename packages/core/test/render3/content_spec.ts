@@ -7,7 +7,7 @@
  */
 
 import {detectChanges} from '../../src/render3/index';
-import {componentRefresh, container, containerRefreshEnd, containerRefreshStart, elementEnd, elementStart, memory, projection, projectionDef, text, viewEnd, viewStart} from '../../src/render3/instructions';
+import {componentRefresh, container, containerRefreshEnd, containerRefreshStart, elementEnd, elementStart, embeddedViewEnd, embeddedViewStart, memory, projection, projectionDef, text} from '../../src/render3/instructions';
 
 import {createComponent, renderComponent, toHtml} from './render_util';
 
@@ -164,10 +164,10 @@ describe('content projection', () => {
       containerRefreshStart(3);
       {
         if (ctx.value) {
-          if (viewStart(0)) {
+          if (embeddedViewStart(0)) {
             text(0, 'content');
           }
-          viewEnd();
+          embeddedViewEnd();
         }
       }
       containerRefreshEnd();
@@ -200,10 +200,10 @@ describe('content projection', () => {
       containerRefreshStart(2);
       {
         if (ctx.value) {
-          if (viewStart(0)) {
+          if (embeddedViewStart(0)) {
             text(0, 'content');
           }
-          viewEnd();
+          embeddedViewEnd();
         }
       }
       containerRefreshEnd();
@@ -244,15 +244,15 @@ describe('content projection', () => {
       containerRefreshStart(3);
       {
         if (ctx.value) {
-          if (viewStart(0)) {
+          if (embeddedViewStart(0)) {
             text(0, 'content');
           }
-          viewEnd();
+          embeddedViewEnd();
         } else {
-          if (viewStart(1)) {
+          if (embeddedViewStart(1)) {
             text(0, 'else');
           }
-          viewEnd();
+          embeddedViewEnd();
         }
       }
       containerRefreshEnd();
@@ -291,12 +291,12 @@ describe('content projection', () => {
       containerRefreshStart(2);
       {
         if (!ctx.skipContent) {
-          if (viewStart(0)) {
+          if (embeddedViewStart(0)) {
             elementStart(0, 'span');
             projection(1, 0);
             elementEnd();
           }
-          viewEnd();
+          embeddedViewEnd();
         }
       }
       containerRefreshEnd();
@@ -346,10 +346,10 @@ describe('content projection', () => {
          containerRefreshStart(2);
          {
            if (!ctx.skipContent) {
-             if (viewStart(0)) {
+             if (embeddedViewStart(0)) {
                projection(0, 0);
              }
-             viewEnd();
+             embeddedViewEnd();
            }
          }
          containerRefreshEnd();
@@ -399,12 +399,12 @@ describe('content projection', () => {
          containerRefreshStart(2);
          {
            if (!ctx.skipContent) {
-             if (viewStart(0)) {
+             if (embeddedViewStart(0)) {
                text(0, 'before-');
                projection(1, 0);
                text(2, '-after');
              }
-             viewEnd();
+             embeddedViewEnd();
            }
          }
          containerRefreshEnd();
@@ -496,10 +496,10 @@ describe('content projection', () => {
       containerRefreshStart(3);
       {
         if (ctx.show) {
-          if (viewStart(0)) {
+          if (embeddedViewStart(0)) {
             projection(0, 0);
           }
-          viewEnd();
+          embeddedViewEnd();
         }
       }
       containerRefreshEnd();
@@ -972,12 +972,12 @@ describe('content projection', () => {
         containerRefreshStart(2);
         {
           if (true) {
-            if (viewStart(0)) {
+            if (embeddedViewStart(0)) {
               elementStart(0, 'div');
               { text(1, 'content'); }
               elementEnd();
             }
-            viewEnd();
+            embeddedViewEnd();
           }
         }
         containerRefreshEnd();

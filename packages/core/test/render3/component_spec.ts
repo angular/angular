@@ -8,7 +8,7 @@
 
 import {ViewEncapsulation} from '../../src/core';
 import {defineComponent, markDirty} from '../../src/render3/index';
-import {bind, componentRefresh, container, containerRefreshEnd, containerRefreshStart, elementEnd, elementProperty, elementStart, text, textBinding, viewEnd, viewStart} from '../../src/render3/instructions';
+import {bind, componentRefresh, container, containerRefreshEnd, containerRefreshStart, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, text, textBinding} from '../../src/render3/instructions';
 import {createRendererType2} from '../../src/view/index';
 
 import {getRendererFactory2} from './imported_renderer2';
@@ -69,14 +69,14 @@ describe('component with a container', () => {
     containerRefreshStart(0);
     {
       for (const item of ctx.items) {
-        const cm0 = viewStart(0);
+        const cm0 = embeddedViewStart(0);
         {
           if (cm0) {
             text(0);
           }
           textBinding(0, bind(item));
         }
-        viewEnd();
+        embeddedViewEnd();
       }
     }
     containerRefreshEnd();
@@ -93,9 +93,9 @@ describe('component with a container', () => {
         }
         containerRefreshStart(0);
         {
-          const cm0 = viewStart(0);
+          const cm0 = embeddedViewStart(0);
           { showItems({items: ctx.items}, cm0); }
-          viewEnd();
+          embeddedViewEnd();
         }
         containerRefreshEnd();
       },
