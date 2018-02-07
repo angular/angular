@@ -76,8 +76,8 @@ aot-compiler/**/*.factory.d.ts
 # universal
 !universal/webpack.server.config.js
 
-# plunkers
-*plnkr.no-link.html
+# stackblitz
+*stackblitz.no-link.html
 
 # ngUpgrade testing
 !upgrade-phonecat-*/**/karma.conf.js

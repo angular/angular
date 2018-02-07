@@ -39,6 +39,12 @@ export interface StaticSymbolResolverHost {
    * `path/to/containingFile.ts` containing `import {...} from 'module-name'`.
    */
   moduleNameToFileName(moduleName: string, containingFile?: string): string|null;
+
+  /**
+   * Get a file suitable for display to the user that should be relative to the project directory
+   * or the current directory.
+   */
+  getOutputName(filePath: string): string;
 }
 
 const SUPPORTED_SCHEMA_VERSION = 4;
@@ -382,7 +388,8 @@ export class StaticSymbolResolver {
         // .ts or .d.ts, append `.ts'. Also, if it is in `node_modules`, trim the `node_module`
         // location as it is not important to finding the file.
         _originalFileMemo =
-            topLevelPath.replace(/((\.ts)|(\.d\.ts)|)$/, '.ts').replace(/^.*node_modules[/\\]/, '');
+            this.host.getOutputName(topLevelPath.replace(/((\.ts)|(\.d\.ts)|)$/, '.ts')
+                                        .replace(/^.*node_modules[/\\]/, ''));
       }
       return _originalFileMemo;
     };
@@ -481,7 +488,7 @@ export class StaticSymbolResolver {
       if (moduleMetadatas) {
         let maxVersion = -1;
         moduleMetadatas.forEach((md) => {
-          if (md['version'] > maxVersion) {
+          if (md && md['version'] > maxVersion) {
             maxVersion = md['version'];
             moduleMetadata = md;
           }

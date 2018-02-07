@@ -140,7 +140,7 @@ export function setupTestingRouter(
  *   TestBed.configureTestModule({
  *     imports: [
  *       RouterTestingModule.withRoutes(
- *         [{path: '', component: BlankCmp}, {path: 'simple', component: SimpleCmp}])]
+ *         [{path: '', component: BlankCmp}, {path: 'simple', component: SimpleCmp}]
  *       )
  *     ]
  *   });

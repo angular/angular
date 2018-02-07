@@ -19,9 +19,9 @@ class ExampleZipper {
     this.exampleTsconfig = path.join(__dirname, '../examples/shared/boilerplate/systemjs/src/tsconfig.json');
     this.customizer = new PackageJsonCustomizer();
 
-    let gpathPlnkr = path.join(sourceDirName, '**/*plnkr.json');
+    let gpathStackblitz = path.join(sourceDirName, '**/*stackblitz.json');
     let gpathZipper = path.join(sourceDirName, '**/zipper.json');
-    let configFileNames = globby.sync([gpathPlnkr, gpathZipper], { ignore: ['**/node_modules/**'] });
+    let configFileNames = globby.sync([gpathStackblitz, gpathZipper], { ignore: ['**/node_modules/**'] });
     configFileNames.forEach((configFileName) => {
       this._zipExample(configFileName, sourceDirName, outputDirName);
     });
@@ -77,7 +77,7 @@ class ExampleZipper {
     if (relativeDirName.indexOf('/') !== -1) { // Special example
       exampleZipName = relativeDirName.split('/').join('-');
     } else {
-      exampleZipName = jsonFileName.replace(/(plnkr|zipper).json/, relativeDirName);
+      exampleZipName = jsonFileName.replace(/(stackblitz|zipper).json/, relativeDirName);
     }
 
     const exampleDirName = path.dirname(configFileName);
@@ -103,7 +103,7 @@ class ExampleZipper {
     ];
     var alwaysExcludes = [
       '!**/bs-config.e2e.json',
-      '!**/*plnkr.*',
+      '!**/*stackblitz.*',
       '!**/*zipper.*',
       '!**/systemjs.config.js',
       '!**/npm-debug.log',

@@ -10,9 +10,10 @@ interface StringMap { [index: string]: string; }
  */
 export function getAttrs(el:  HTMLElement | ElementRef): StringMap {
   const attrs: NamedNodeMap = el instanceof ElementRef ? el.nativeElement.attributes : el.attributes;
-  const attrMap = {};
-  Object.keys(attrs).forEach(key =>
-    attrMap[(attrs[key] as Attr).name.toLowerCase()] = (attrs[key] as Attr).value);
+  const attrMap: StringMap = {};
+  for (const attr of attrs as any /* cast due to https://github.com/Microsoft/TypeScript/issues/2695 */) {
+    attrMap[attr.name.toLowerCase()] = attr.value;
+  }
   return attrMap;
 }
 
@@ -23,7 +24,7 @@ export function getAttrs(el:  HTMLElement | ElementRef): StringMap {
 export function getAttrValue(attrs: StringMap, attr: string | string[] = ''): string {
   return attrs[typeof attr === 'string' ?
     attr.toLowerCase() :
-    attr.find(a => attrs[a.toLowerCase()] !== undefined)
+    attr.find(a => attrs[a.toLowerCase()] !== undefined) || ''
   ];
 }
 
@@ -32,7 +33,7 @@ export function getAttrValue(attrs: StringMap, attr: string | string[] = ''): st
  * @param attrValue The string value of some attribute (or undefined if attribute not present)
  * @param def Default boolean value when attribute is undefined.
  */
-export function boolFromValue(attrValue: string, def: boolean = false) {
+export function boolFromValue(attrValue: string|undefined, def: boolean = false) {
   // tslint:disable-next-line:triple-equals
   return attrValue == undefined ? def :  attrValue.trim() !== 'false';
 }

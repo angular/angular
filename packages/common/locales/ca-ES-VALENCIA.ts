@@ -9,6 +9,12 @@
 // THIS CODE IS GENERATED - DO NOT MODIFY
 // See angular/tools/gulp-tasks/cldr/extract.js
 
+function plural(n: number): number {
+  let i = Math.floor(Math.abs(n)), v = n.toString().replace(/^[^.]*\.?/, '').length;
+  if (i === 1 && v === 0) return 1;
+  return 5;
+}
+
 export default [
   'ca-ES-VALENCIA',
   [
@@ -29,14 +35,15 @@ export default [
       'de set.', 'd’oct.', 'de nov.', 'de des.'
     ],
     [
-      'de gener', 'de febrer', 'de març', 'd’abril', 'de maig', 'de juny', 'de juliol', 'd’agost',
-      'de setembre', 'd’octubre', 'de novembre', 'de desembre'
+      'de gener', 'de febrer', 'de març', 'd’abril', 'de maig', 'de juny', 'de juliol',
+      'd’agost', 'de setembre', 'd’octubre', 'de novembre', 'de desembre'
     ]
   ],
   [
     ['GN', 'FB', 'MÇ', 'AB', 'MG', 'JN', 'JL', 'AG', 'ST', 'OC', 'NV', 'DS'],
     [
-      'gen.', 'febr.', 'març', 'abr.', 'maig', 'juny', 'jul.', 'ag.', 'set.', 'oct.', 'nov.', 'des.'
+      'gen.', 'febr.', 'març', 'abr.', 'maig', 'juny', 'jul.', 'ag.', 'set.', 'oct.', 'nov.',
+      'des.'
     ],
     [
       'gener', 'febrer', 'març', 'abril', 'maig', 'juny', 'juliol', 'agost', 'setembre', 'octubre',
@@ -52,11 +59,5 @@ export default [
     '{1} \'a\' \'les\' {0}',
   ],
   [',', '.', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'], '€', 'euro',
-  function(n: number):
-      number {
-        let i = Math.floor(Math.abs(n)), v = n.toString().replace(/^[^.]*\.?/, '').length;
-        if (i === 1 && v === 0) return 1;
-        return 5;
-      }
+  ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'], '€', 'euro', plural
 ];

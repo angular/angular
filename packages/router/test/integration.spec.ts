@@ -76,6 +76,28 @@ describe('Integration', () => {
          ]);
        })));
 
+    it('should set the restoredState to null when executing imperative navigations',
+       fakeAsync(inject([Router], (router: Router) => {
+         router.resetConfig([
+           {path: '', component: SimpleCmp},
+           {path: 'simple', component: SimpleCmp},
+         ]);
+
+         const fixture = createRoot(router, RootCmp);
+         let event: NavigationStart;
+         router.events.subscribe(e => {
+           if (e instanceof NavigationStart) {
+             event = e;
+           }
+         });
+
+         router.navigateByUrl('/simple');
+         tick();
+
+         expect(event !.navigationTrigger).toEqual('imperative');
+         expect(event !.restoredState).toEqual(null);
+       })));
+
     it('should not pollute browser history when replaceUrl is set to true',
        fakeAsync(inject([Router, Location], (router: Router, location: SpyLocation) => {
          router.resetConfig([
@@ -466,21 +488,34 @@ describe('Integration', () => {
              [{path: 'simple', component: SimpleCmp}, {path: 'user/:name', component: UserCmp}]
        }]);
 
+       let event: NavigationStart;
+       router.events.subscribe(e => {
+         if (e instanceof NavigationStart) {
+           event = e;
+         }
+       });
 
        router.navigateByUrl('/team/33/simple');
        advance(fixture);
        expect(location.path()).toEqual('/team/33/simple');
+       const simpleNavStart = event !;
 
        router.navigateByUrl('/team/22/user/victor');
        advance(fixture);
+       const userVictorNavStart = event !;
+
 
        location.back();
        advance(fixture);
        expect(location.path()).toEqual('/team/33/simple');
+       expect(event !.navigationTrigger).toEqual('hashchange');
+       expect(event !.restoredState !.navigationId).toEqual(simpleNavStart.id);
 
        location.forward();
        advance(fixture);
        expect(location.path()).toEqual('/team/22/user/victor');
+       expect(event !.navigationTrigger).toEqual('hashchange');
+       expect(event !.restoredState !.navigationId).toEqual(userVictorNavStart.id);
      })));
 
   it('should navigate to the same url when config changes',
@@ -866,6 +901,40 @@ describe('Integration', () => {
 
        expect(routerUrlBeforeEmittingError).toEqual('/simple');
        expect(locationUrlBeforeEmittingError).toEqual('/simple');
+     }));
+
+  it('should reset the url with the right state when navigation errors', fakeAsync(() => {
+       const router: Router = TestBed.get(Router);
+       const location: SpyLocation = TestBed.get(Location);
+       const fixture = createRoot(router, RootCmp);
+
+       router.resetConfig([
+         {path: 'simple1', component: SimpleCmp}, {path: 'simple2', component: SimpleCmp},
+         {path: 'throwing', component: ThrowingCmp}
+       ]);
+
+
+       let event: NavigationStart;
+       router.events.subscribe(e => {
+         if (e instanceof NavigationStart) {
+           event = e;
+         }
+       });
+
+       router.navigateByUrl('/simple1');
+       advance(fixture);
+       const simple1NavStart = event !;
+
+       router.navigateByUrl('/throwing').catch(() => null);
+       advance(fixture);
+
+       router.navigateByUrl('/simple2');
+       advance(fixture);
+
+       location.back();
+       tick();
+
+       expect(event !.restoredState !.navigationId).toEqual(simple1NavStart.id);
      }));
 
   it('should not trigger another navigation when resetting the url back due to a NavigationError',

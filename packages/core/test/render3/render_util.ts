@@ -6,16 +6,21 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ComponentTemplate, ComponentType, PublicFeature, defineComponent, renderComponent as _renderComponent} from '../../src/render3/index';
-import {NG_HOST_SYMBOL, createLNode, createViewState, renderTemplate} from '../../src/render3/instructions';
-import {LElement, LNodeFlags} from '../../src/render3/interfaces';
-import {RElement, RText, Renderer3, RendererFactory3, domRendererFactory3} from '../../src/render3/renderer';
+import {stringifyElement} from '@angular/platform-browser/testing/src/browser_util';
+
+import {ComponentTemplate, ComponentType, DirectiveType, PublicFeature, defineComponent, defineDirective, renderComponent as _renderComponent} from '../../src/render3/index';
+import {NG_HOST_SYMBOL, createLNode, createLView, renderTemplate} from '../../src/render3/instructions';
+import {DirectiveDefArgs} from '../../src/render3/interfaces/definition';
+import {LElementNode, LNodeFlags} from '../../src/render3/interfaces/node';
+import {RElement, RText, Renderer3, RendererFactory3, domRendererFactory3} from '../../src/render3/interfaces/renderer';
+
 import {getRendererFactory2} from './imported_renderer2';
 
 export const document = ((global || window) as any).document;
 export let containerEl: HTMLElement = null !;
-let host: LElement|null;
-const isRenderer2 = process.argv[3] && process.argv[3] === '--r=renderer2';
+let host: LElementNode|null;
+const isRenderer2 =
+    typeof process == 'object' && process.argv[3] && process.argv[3] === '--r=renderer2';
 // tslint:disable-next-line:no-console
 console.log(`Running tests with ${!isRenderer2 ? 'document' : 'Renderer2'} renderer...`);
 const testRendererFactory: RendererFactory3 =
@@ -34,7 +39,10 @@ requestAnimationFrame.flush = function() {
 export function resetDOM() {
   requestAnimationFrame.queue = [];
   if (containerEl) {
-    document.body.removeChild(containerEl);
+    try {
+      document.body.removeChild(containerEl);
+    } catch (e) {
+    }
   }
   containerEl = document.createElement('div');
   containerEl.setAttribute('host', '');
@@ -58,11 +66,15 @@ export function renderComponent<T>(type: ComponentType<T>, rendererFactory?: Ren
 }
 
 export function toHtml<T>(componentOrElement: T | RElement): string {
-  const node = (componentOrElement as any)[NG_HOST_SYMBOL] as LElement;
+  const node = (componentOrElement as any)[NG_HOST_SYMBOL] as LElementNode;
   if (node) {
     return toHtml(node.native);
   } else {
-    return containerEl.innerHTML.replace(' style=""', '').replace(/<!--[\w]*-->/g, '');
+    return stringifyElement(componentOrElement)
+        .replace(/^<div host="">/, '')
+        .replace(/<\/div>$/, '')
+        .replace(' style=""', '')
+        .replace(/<!--[\w]*-->/g, '');
   }
 }
 
@@ -80,6 +92,16 @@ export function createComponent(
   };
 }
 
+export function createDirective({exportAs}: {exportAs?: string} = {}): DirectiveType<any> {
+  return class Directive {
+    static ngDirectiveDef = defineDirective({
+      type: Directive,
+      factory: () => new Directive(),
+      features: [PublicFeature],
+      exportAs: exportAs,
+    });
+  };
+}
 
 
 // Verify that DOM is a type of render. This is here for error checking only and has no use.

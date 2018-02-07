@@ -110,8 +110,8 @@ export class BoundEventAst implements TemplateAst {
  */
 export class ReferenceAst implements TemplateAst {
   constructor(
-      public name: string, public value: CompileTokenMetadata, public sourceSpan: ParseSourceSpan) {
-  }
+      public name: string, public value: CompileTokenMetadata, public originalValue: string,
+      public sourceSpan: ParseSourceSpan) {}
   visit(visitor: TemplateAstVisitor, context: any): any {
     return visitor.visitReference(this, context);
   }

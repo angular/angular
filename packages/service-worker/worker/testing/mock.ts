@@ -194,12 +194,16 @@ export function tmpManifestSingleAssetGroup(fs: MockFileSystem): Manifest {
   };
 }
 
-export function tmpHashTableForFs(fs: MockFileSystem): {[url: string]: string} {
+export function tmpHashTableForFs(
+    fs: MockFileSystem, breakHashes: {[url: string]: boolean} = {}): {[url: string]: string} {
   const table: {[url: string]: string} = {};
   fs.list().forEach(path => {
     const file = fs.lookup(path) !;
     if (file.hashThisFile) {
       table[path] = file.hash;
+      if (breakHashes[path]) {
+        table[path] = table[path].split('').reverse().join('');
+      }
     }
   });
   return table;

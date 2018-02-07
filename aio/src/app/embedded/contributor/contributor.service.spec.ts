@@ -43,7 +43,7 @@ describe('ContributorService', () => {
 
     it('contributors observable should complete', () => {
       let completed = false;
-      contribService.contributors.subscribe(null, null, () => completed = true);
+      contribService.contributors.subscribe(undefined, undefined, () => completed = true);
       expect(true).toBe(true, 'observable completed');
     });
 

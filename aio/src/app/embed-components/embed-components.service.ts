@@ -111,7 +111,7 @@ export class EmbedComponentsService {
         // Hack: Preserve the current element content, because the factory will empty it out.
         // Security: The source of this `innerHTML` should always be authored by the documentation
         //           team and is considered to be safe.
-        host[contentPropertyName] = host.innerHTML;
+        (host as any)[contentPropertyName] = host.innerHTML;
         componentRefs.push(factory.create(this.injector, [], host));
       }
     });
@@ -141,7 +141,7 @@ export class EmbedComponentsService {
       this.componentFactoriesReady.set(compsOrPath, readyPromise);
     }
 
-    return this.componentFactoriesReady.get(compsOrPath);
+    return this.componentFactoriesReady.get(compsOrPath)!;
   }
 
   /**

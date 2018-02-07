@@ -24,9 +24,7 @@ filegroup(
         "typescript",
         "zone.js",
         "tsutils",
-        "@types/jasmine",
-        "@types/node",
-        "@types/source-map",
+        "@types",
         "tsickle",
         "hammerjs",
         "protobufjs",
@@ -34,6 +32,7 @@ filegroup(
         "reflect-metadata",
         "source-map-support",
         "minimist",
+        "tslib",
     ] for ext in [
         "*.js",
         "*.json",

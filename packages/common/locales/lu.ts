@@ -9,6 +9,10 @@
 // THIS CODE IS GENERATED - DO NOT MODIFY
 // See angular/tools/gulp-tasks/cldr/extract.js
 
+function plural(n: number): number {
+  return 5;
+}
+
 export default [
   'lu',
   [
@@ -26,8 +30,8 @@ export default [
     ['C', 'L', 'L', 'M', 'L', 'L', 'K', 'L', 'L', 'L', 'K', 'C'],
     ['Cio', 'Lui', 'Lus', 'Muu', 'Lum', 'Luf', 'Kab', 'Lush', 'Lut', 'Lun', 'Kas', 'Cis'],
     [
-      'Ciongo', 'Lùishi', 'Lusòlo', 'Mùuyà', 'Lumùngùlù', 'Lufuimi', 'Kabàlàshìpù', 'Lùshìkà',
-      'Lutongolo', 'Lungùdi', 'Kaswèkèsè', 'Ciswà'
+      'Ciongo', 'Lùishi', 'Lusòlo', 'Mùuyà', 'Lumùngùlù', 'Lufuimi', 'Kabàlàshìpù',
+      'Lùshìkà', 'Lutongolo', 'Lungùdi', 'Kaswèkèsè', 'Ciswà'
     ]
   ],
   , [['kmp. Y.K.', 'kny. Y. K.'], , ['Kumpala kwa Yezu Kli', 'Kunyima kwa Yezu Kli']], 1, [6, 0],
@@ -39,6 +43,5 @@ export default [
     ,
   ],
   [',', '.', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0%', '#,##0.00¤', '#E0'], 'FC', 'Nfalanga wa Kongu',
-  function(n: number): number { return 5;}
+  ['#,##0.###', '#,##0%', '#,##0.00¤', '#E0'], 'FC', 'Nfalanga wa Kongu', plural
 ];

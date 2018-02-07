@@ -144,10 +144,9 @@ export class IterableDiffers {
     if (parent != null) {
       const copied = parent.factories.slice();
       factories = factories.concat(copied);
-      return new IterableDiffers(factories);
-    } else {
-      return new IterableDiffers(factories);
     }
+
+    return new IterableDiffers(factories);
   }
 
   /**

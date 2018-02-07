@@ -73,18 +73,18 @@ describe('TocComponent', () => {
     it('should update when the TocItems are updated', () => {
       tocService.tocList.next([tocItem('Heading A')]);
       fixture.detectChanges();
-      expect(tocComponentDe.queryAllNodes(By.css('li')).length).toBe(1);
+      expect(tocComponentDe.queryAll(By.css('li')).length).toBe(1);
 
       tocService.tocList.next([tocItem('Heading A'), tocItem('Heading B'), tocItem('Heading C')]);
       fixture.detectChanges();
-      expect(tocComponentDe.queryAllNodes(By.css('li')).length).toBe(3);
+      expect(tocComponentDe.queryAll(By.css('li')).length).toBe(3);
     });
 
     it('should only display H2 and H3 TocItems', () => {
       tocService.tocList.next([tocItem('Heading A', 'h1'), tocItem('Heading B'), tocItem('Heading C', 'h3')]);
       fixture.detectChanges();
 
-      const tocItems = tocComponentDe.queryAllNodes(By.css('li'));
+      const tocItems = tocComponentDe.queryAll(By.css('li'));
       const textContents = tocItems.map(item => item.nativeNode.textContent.trim());
 
       expect(tocItems.length).toBe(2);
@@ -97,12 +97,12 @@ describe('TocComponent', () => {
     it('should stop listening for TocItems once destroyed', () => {
       tocService.tocList.next([tocItem('Heading A')]);
       fixture.detectChanges();
-      expect(tocComponentDe.queryAllNodes(By.css('li')).length).toBe(1);
+      expect(tocComponentDe.queryAll(By.css('li')).length).toBe(1);
 
       tocComponent.ngOnDestroy();
       tocService.tocList.next([tocItem('Heading A', 'h1'), tocItem('Heading B'), tocItem('Heading C')]);
       fixture.detectChanges();
-      expect(tocComponentDe.queryAllNodes(By.css('li')).length).toBe(1);
+      expect(tocComponentDe.queryAll(By.css('li')).length).toBe(1);
     });
 
     describe('when fewer than `maxPrimary` TocItems', () => {
@@ -339,7 +339,7 @@ describe('TocComponent', () => {
 
       it('should re-apply the `active` class when the list elements change', () => {
         const getActiveTextContent = () =>
-            page.listItems.find(By.css('.active')).nativeElement.textContent.trim();
+            page.listItems.find(By.css('.active'))!.nativeElement.textContent.trim();
 
         tocComponent.activeIndex = 1;
         fixture.detectChanges();
@@ -462,7 +462,7 @@ class TestScrollService {
 class TestTocService {
   tocList = new BehaviorSubject<TocItem[]>(getTestTocList());
   activeItemIndex = new BehaviorSubject<number | null>(null);
-  setActiveIndex(index) {
+  setActiveIndex(index: number|null) {
     this.activeItemIndex.next(index);
     if (asap.scheduled) {
       asap.flush();

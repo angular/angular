@@ -356,9 +356,6 @@ export class Evaluator {
           }
         }
         const args = arrayOrEmpty(callExpression.arguments).map(arg => this.evaluateNode(arg));
-        if (!this.options.verboseInvalidExpression && args.some(isMetadataError)) {
-          return args.find(isMetadataError);
-        }
         if (this.isFoldable(callExpression)) {
           if (isMethodCallOf(callExpression, 'concat')) {
             const arrayValue = <MetadataValue[]>this.evaluateNode(

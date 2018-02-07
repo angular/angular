@@ -362,9 +362,9 @@ export interface DoCheck {
 }
 
 /** @stable */
-export declare class ElementRef {
-    /** @stable */ nativeElement: any;
-    constructor(nativeElement: any);
+export declare class ElementRef<T = any> {
+    /** @stable */ nativeElement: T;
+    constructor(nativeElement: T);
 }
 
 /** @experimental */
@@ -1093,8 +1093,10 @@ export declare abstract class ViewRef extends ChangeDetectorRef {
 
 /** @stable */
 export declare class WrappedValue {
-    wrapped: any;
-    constructor(wrapped: any);
+    /** @deprecated */ wrapped: any;
+    constructor(value: any);
+    static isWrapped(value: any): value is WrappedValue;
+    static unwrap(value: any): any;
     static wrap(value: any): WrappedValue;
 }
 

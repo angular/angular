@@ -208,6 +208,17 @@ export interface NavigationExtras {
 
 /** @stable */
 export declare class NavigationStart extends RouterEvent {
+    navigationTrigger?: 'imperative' | 'popstate' | 'hashchange';
+    restoredState?: {
+        navigationId: number;
+    } | null;
+    constructor(
+        id: number,
+        url: string,
+        navigationTrigger?: 'imperative' | 'popstate' | 'hashchange',
+        restoredState?: {
+        navigationId: number;
+    } | null);
     toString(): string;
 }
 

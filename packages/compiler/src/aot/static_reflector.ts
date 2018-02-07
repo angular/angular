@@ -47,6 +47,7 @@ export class StaticReflector implements CompileReflector {
   private methodCache = new Map<StaticSymbol, {[key: string]: boolean}>();
   private staticCache = new Map<StaticSymbol, string[]>();
   private conversionMap = new Map<StaticSymbol, (context: StaticSymbol, args: any[]) => any>();
+  private resolvedExternalReferences = new Map<string, StaticSymbol>();
   private injectionToken: StaticSymbol;
   private opaqueToken: StaticSymbol;
   ROUTES: StaticSymbol;
@@ -81,12 +82,21 @@ export class StaticReflector implements CompileReflector {
   }
 
   resolveExternalReference(ref: o.ExternalReference, containingFile?: string): StaticSymbol {
+    let key: string|undefined = undefined;
+    if (!containingFile) {
+      key = `${ref.moduleName}:${ref.name}`;
+      const declarationSymbol = this.resolvedExternalReferences.get(key);
+      if (declarationSymbol) return declarationSymbol;
+    }
     const refSymbol =
         this.symbolResolver.getSymbolByModule(ref.moduleName !, ref.name !, containingFile);
     const declarationSymbol = this.findSymbolDeclaration(refSymbol);
     if (!containingFile) {
       this.symbolResolver.recordModuleNameForFileName(refSymbol.filePath, ref.moduleName !);
       this.symbolResolver.recordImportAs(declarationSymbol, refSymbol);
+    }
+    if (key) {
+      this.resolvedExternalReferences.set(key, declarationSymbol);
     }
     return declarationSymbol;
   }

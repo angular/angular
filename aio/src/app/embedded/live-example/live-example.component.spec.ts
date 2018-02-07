@@ -3,17 +3,16 @@ import { By } from '@angular/platform-browser';
 import { Component, DebugElement } from '@angular/core';
 import { Location } from '@angular/common';
 
-import { LiveExampleComponent, EmbeddedPlunkerComponent } from './live-example.component';
+import { LiveExampleComponent, EmbeddedStackblitzComponent } from './live-example.component';
 
 const defaultTestPath = '/test';
 
 describe('LiveExampleComponent', () => {
-  let hostComponent: HostComponent;
   let liveExampleDe: DebugElement;
   let liveExampleComponent: LiveExampleComponent;
   let fixture: ComponentFixture<HostComponent>;
   let testPath: string;
-  let liveExampleContent: string;
+  let liveExampleContent: string|null;
 
   //////// test helpers ////////
 
@@ -39,7 +38,6 @@ describe('LiveExampleComponent', () => {
 
   function testComponent(testFn: () => void) {
     fixture = TestBed.createComponent(HostComponent);
-    hostComponent = fixture.componentInstance;
     liveExampleDe = fixture.debugElement.children[0];
     liveExampleComponent = liveExampleDe.componentInstance;
 
@@ -57,16 +55,16 @@ describe('LiveExampleComponent', () => {
   //////// tests ////////
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [ HostComponent, LiveExampleComponent, EmbeddedPlunkerComponent ],
+      declarations: [ HostComponent, LiveExampleComponent, EmbeddedStackblitzComponent ],
       providers: [
         { provide: Location, useClass: TestLocation }
       ]
     })
-    // Disable the <iframe> within the EmbeddedPlunkerComponent
-    .overrideComponent(EmbeddedPlunkerComponent, {set: {template: 'NO IFRAME'}});
+    // Disable the <iframe> within the EmbeddedStackblitzComponent
+    .overrideComponent(EmbeddedStackblitzComponent, {set: {template: 'NO IFRAME'}});
 
     testPath = defaultTestPath;
-    liveExampleContent = undefined;
+    liveExampleContent = null;
   });
 
   describe('when not embedded', () => {
@@ -78,68 +76,68 @@ describe('LiveExampleComponent', () => {
       });
     });
 
-    it('should have expected plunker & download hrefs', () => {
+    it('should have expected stackblitz & download hrefs', () => {
       testPath = '/tutorial/toh-pt1';
       testComponent(() => {
         const hrefs = getHrefs();
-        expect(hrefs[0]).toContain('/toh-pt1/eplnkr.html');
+        expect(hrefs[0]).toContain('/toh-pt1/stackblitz.html');
         expect(hrefs[1]).toContain('/toh-pt1/toh-pt1.zip');
       });
     });
 
-    it('should have expected plunker & download hrefs even when path has # frag', () => {
+    it('should have expected stackblitz & download hrefs even when path has # frag', () => {
       testPath = '/tutorial/toh-pt1#somewhere';
       testComponent(() => {
         const hrefs = getHrefs();
-        expect(hrefs[0]).toContain('/toh-pt1/eplnkr.html');
+        expect(hrefs[0]).toContain('/toh-pt1/stackblitz.html');
         expect(hrefs[1]).toContain('/toh-pt1/toh-pt1.zip');
       });
     });
 
-    it('should have expected plunker & download hrefs even when path has ? params', () => {
+    it('should have expected stackblitz & download hrefs even when path has ? params', () => {
       testPath = '/tutorial/toh-pt1?foo=1&bar="bar"';
       testComponent(() => {
         const hrefs = getHrefs();
-        expect(hrefs[0]).toContain('/toh-pt1/eplnkr.html');
+        expect(hrefs[0]).toContain('/toh-pt1/stackblitz.html');
         expect(hrefs[1]).toContain('/toh-pt1/toh-pt1.zip');
       });
     });
 
-    it('should have expected flat-style plunker when has `flat-style`', () => {
+    it('should have expected flat-style stackblitz when has `flat-style`', () => {
       testPath = '/tutorial/toh-pt1';
       setHostTemplate('<live-example flat-style></live-example>');
       testComponent(() => {
-        // The file should be "plnkr.html", not "eplnkr.html"
-        expect(getLiveExampleAnchor().href).toContain('/plnkr.html');
+        // The file should be "stackblitz.html", not "stackblitz.html"
+        expect(getLiveExampleAnchor().href).toContain('/stackblitz.html');
       });
     });
 
-    it('should have expected plunker & download hrefs when has example directory (name)', () => {
+    it('should have expected stackblitz & download hrefs when has example directory (name)', () => {
       testPath = '/guide/somewhere';
       setHostTemplate('<live-example name="toh-pt1"></live-example>');
       testComponent(() => {
         const hrefs = getHrefs();
-        expect(hrefs[0]).toContain('/toh-pt1/eplnkr.html');
+        expect(hrefs[0]).toContain('/toh-pt1/stackblitz.html');
         expect(hrefs[1]).toContain('/toh-pt1/toh-pt1.zip');
       });
     });
 
-    it('should have expected plunker & download hrefs when has `plnkr`', () => {
+    it('should have expected stackblitz & download hrefs when has `stackblitz`', () => {
       testPath = '/testing';
-      setHostTemplate('<live-example plnkr="app-specs"></live-example>');
+      setHostTemplate('<live-example stackblitz="app-specs"></live-example>');
       testComponent(() => {
         const hrefs = getHrefs();
-        expect(hrefs[0]).toContain('/testing/app-specs.eplnkr.html');
+        expect(hrefs[0]).toContain('/testing/app-specs.stackblitz.html');
         expect(hrefs[1]).toContain('/testing/app-specs.testing.zip');
       });
     });
 
-    it('should have expected plunker & download hrefs when has `name` & `plnkr`', () => {
+    it('should have expected stackblitz & download hrefs when has `name` & `stackblitz`', () => {
       testPath = '/guide/somewhere';
-      setHostTemplate('<live-example name="testing" plnkr="app-specs"></live-example>');
+      setHostTemplate('<live-example name="testing" stackblitz="app-specs"></live-example>');
       testComponent(() => {
         const hrefs = getHrefs();
-        expect(hrefs[0]).toContain('/testing/app-specs.eplnkr.html');
+        expect(hrefs[0]).toContain('/testing/app-specs.stackblitz.html');
         expect(hrefs[1]).toContain('/testing/app-specs.testing.zip');
       });
     });
@@ -148,7 +146,7 @@ describe('LiveExampleComponent', () => {
       setHostTemplate('<live-example></live-example>');
       testComponent(() => {
         const hrefs = getHrefs();
-        expect(hrefs[0]).toContain(defaultTestPath + '/eplnkr.html');
+        expect(hrefs[0]).toContain(defaultTestPath + '/stackblitz.html');
       });
     });
 
@@ -156,7 +154,7 @@ describe('LiveExampleComponent', () => {
       setHostTemplate('<live-example flat-style></live-example>');
       testComponent(() => {
         const hrefs = getHrefs();
-        expect(hrefs[0]).toContain(defaultTestPath + '/plnkr.html');
+        expect(hrefs[0]).toContain(defaultTestPath + '/stackblitz.html');
       });
     });
 
@@ -164,8 +162,8 @@ describe('LiveExampleComponent', () => {
       setHostTemplate('<live-example noDownload></live-example>');
       testComponent(() => {
         const hrefs = getHrefs();
-        expect(hrefs.length).toBe(1, 'only the plunker live-example anchor');
-        expect(hrefs[0]).toContain('plnkr.html');
+        expect(hrefs.length).toBe(1, 'only the stackblitz live-example anchor');
+        expect(hrefs[0]).toContain('stackblitz.html');
       });
     });
 
@@ -211,7 +209,7 @@ describe('LiveExampleComponent', () => {
       setHostTemplate('<live-example name="testing/ts"></live-example>');
       testComponent(() => {
         const hrefs = getHrefs();
-        expect(hrefs[0]).toContain('/testing/ts/eplnkr.html');
+        expect(hrefs[0]).toContain('/testing/ts/stackblitz.html');
         expect(hrefs[1]).toContain('/testing/ts/testing.zip');
       });
     });
@@ -224,77 +222,33 @@ describe('LiveExampleComponent', () => {
       return anchor && anchor.nativeElement as HTMLAnchorElement;
     }
 
-    function getEmbeddedPlunkerComponent() {
-      const compDe = liveExampleDe.query(By.directive(EmbeddedPlunkerComponent));
-      return compDe && compDe.componentInstance as EmbeddedPlunkerComponent;
+    function getEmbeddedStackblitzComponent() {
+      const compDe = liveExampleDe.query(By.directive(EmbeddedStackblitzComponent));
+      return compDe && compDe.componentInstance as EmbeddedStackblitzComponent;
     }
 
-    function getImg() {
-      const img = liveExampleDe.query(By.css('img'));
-      return img && img.nativeElement as HTMLImageElement;
-    }
-
-    describe('before click', () => {
-
-      it('should have hidden, embedded plunker', () => {
-        setHostTemplate('<live-example embedded></live-example>');
-        testComponent(() => {
-          expect(liveExampleComponent.mode).toBe('embedded', 'component is embedded');
-          expect(liveExampleComponent.showEmbedded).toBe(false, 'component.showEmbedded');
-          expect(getEmbeddedPlunkerComponent()).toBeNull('no EmbeddedPlunkerComponent');
-        });
+    it('should have hidden, embedded stackblitz', () => {
+      setHostTemplate('<live-example embedded></live-example>');
+      testComponent(() => {
+        expect(liveExampleComponent.mode).toBe('embedded', 'component is embedded');
+        expect(getEmbeddedStackblitzComponent()).toBeTruthy('EmbeddedStackblitzComponent');
       });
-
-      it('should have default plunker placeholder image', () => {
-        setHostTemplate('<live-example embedded></live-example>');
-        testComponent(() => {
-          expect(getImg().src).toContain('plunker/placeholder.png');
-        });
-      });
-
-      it('should have specified plunker placeholder image', () => {
-        const expectedSrc = 'example/demo.png';
-        setHostTemplate(`<live-example embedded img="${expectedSrc}"></live-example>`);
-        testComponent(() => {
-          expect(getImg().src).toContain(expectedSrc);
-        });
-      });
-
-      it('should have download paragraph with expected anchor href', () => {
-        testPath = '/tutorial/toh-pt1';
-        setHostTemplate('<live-example embedded></live-example>');
-        testComponent(() => {
-          expect(getDownloadAnchor().href).toContain('/toh-pt1/toh-pt1.zip');
-        });
-      });
-
-      it('should not have download paragraph when has `nodownload`', () => {
-        testPath = '/tutorial/toh-pt1';
-        setHostTemplate('<live-example embedded nodownload></live-example>');
-        testComponent(() => {
-          expect(getDownloadAnchor()).toBeNull();
-        });
-      });
-
     });
 
-    describe('after click', () => {
-
-      function clickImg() {
-        getImg().click();
-        fixture.detectChanges();
-      }
-
-      it('should show plunker in the page', () => {
-        setHostTemplate('<live-example embedded></live-example>');
-        testComponent(() => {
-          clickImg();
-          expect(liveExampleComponent.mode).toBe('embedded', 'component is embedded');
-          expect(liveExampleComponent.showEmbedded).toBe(true, 'component.showEmbedded');
-          expect(getEmbeddedPlunkerComponent()).toBeDefined('has EmbeddedPlunkerComponent');
-        });
+    it('should have download paragraph with expected anchor href', () => {
+      testPath = '/tutorial/toh-pt1';
+      setHostTemplate('<live-example embedded></live-example>');
+      testComponent(() => {
+        expect(getDownloadAnchor().href).toContain('/toh-pt1/toh-pt1.zip');
       });
+    });
 
+    it('should not have download paragraph when has `nodownload`', () => {
+      testPath = '/tutorial/toh-pt1';
+      setHostTemplate('<live-example embedded nodownload></live-example>');
+      testComponent(() => {
+        expect(getDownloadAnchor()).toBeNull();
+      });
     });
   });
 
@@ -306,7 +260,7 @@ describe('LiveExampleComponent', () => {
         liveExampleComponent.onResize(600); // narrow
         fixture.detectChanges();
         const hrefs = getHrefs();
-        expect(hrefs[0]).toContain(defaultTestPath + '/eplnkr.html');
+        expect(hrefs[0]).toContain(defaultTestPath + '/stackblitz.html');
       });
     });
 
@@ -316,7 +270,7 @@ describe('LiveExampleComponent', () => {
         liveExampleComponent.onResize(600); // narrow
         fixture.detectChanges();
         const hrefs = getHrefs();
-        expect(hrefs[0]).toContain(defaultTestPath + '/eplnkr.html');
+        expect(hrefs[0]).toContain(defaultTestPath + '/stackblitz.html');
       });
     });
   });

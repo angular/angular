@@ -27,6 +27,8 @@ const ALLOW_NON_HERMETIC_READS = true;
 // Note: We compile the content of node_modules with plain ngc command line.
 const ALL_DEPS_COMPILED_WITH_BAZEL = false;
 
+const NODE_MODULES = 'node_modules/';
+
 export function main(args) {
   if (runAsWorker(args)) {
     runWorkerLoop(runOneBuild);
@@ -43,7 +45,13 @@ export function runOneBuild(args: string[], inputs?: {[path: string]: string}): 
   if (args[0] === '-p') args.shift();
   // Strip leading at-signs, used to indicate a params file
   const project = args[0].replace(/^@+/, '');
-  const [{options: tsOptions, bazelOpts, files, config}] = parseTsconfig(project);
+
+  const [parsedOptions, errors] = parseTsconfig(project);
+  if (errors && errors.length) {
+    console.error(ng.formatDiagnostics(errors));
+    return false;
+  }
+  const {options: tsOptions, bazelOpts, files, config} = parsedOptions;
   const expectedOuts = config['angularCompilerOptions']['expectedOut'];
 
   const {basePath} = ng.calcProjectFileAndBasePath(project);
@@ -175,17 +183,24 @@ export function compile({allowNonHermeticReads, allDepsCompiledWithBazel = true,
         ngHost.amdModuleName) {
       return ngHost.amdModuleName({ fileName: importedFilePath } as ts.SourceFile);
     }
-    return relativeToRootDirs(importedFilePath, compilerOpts.rootDirs).replace(EXT, '');
+    const result = relativeToRootDirs(importedFilePath, compilerOpts.rootDirs).replace(EXT, '');
+    if (result.startsWith(NODE_MODULES)) {
+      return result.substr(NODE_MODULES.length);
+    }
+    return bazelOpts.workspaceName + '/' + result;
   };
-  ngHost.toSummaryFileName = (fileName: string, referringSrcFileName: string) =>
-      relativeToRootDirs(fileName, compilerOpts.rootDirs).replace(EXT, '');
+  ngHost.toSummaryFileName = (fileName: string, referringSrcFileName: string) => path.join(
+      bazelOpts.workspaceName,
+      relativeToRootDirs(fileName, compilerOpts.rootDirs).replace(EXT, ''));
   if (allDepsCompiledWithBazel) {
     // Note: The default implementation would work as well,
     // but we can be faster as we know how `toSummaryFileName` works.
     // Note: We can't do this if some deps have been compiled with the command line,
     // as that has a different implementation of fromSummaryFileName / toSummaryFileName
-    ngHost.fromSummaryFileName = (fileName: string, referringLibFileName: string) =>
-        path.resolve(bazelBin, fileName) + '.d.ts';
+    ngHost.fromSummaryFileName = (fileName: string, referringLibFileName: string) => {
+      const workspaceRelative = fileName.split('/').splice(1).join('/');
+      return path.resolve(bazelBin, workspaceRelative) + '.d.ts';
+    };
   }
 
   const emitCallback: ng.TsEmitCallback = ({

@@ -23,7 +23,7 @@ export class ContributorService {
     const contributors = this.http.get<{[key: string]: Contributor}>(contributorsPath)
       // Create group map
       .map(contribs => {
-        const contribMap = new Map<string, Contributor[]>();
+        const contribMap: { [name: string]: Contributor[]} = {};
         Object.keys(contribs).forEach(key => {
           const contributor = contribs[key];
           const group = contributor.group;

@@ -1,8 +1,0 @@
-{
-  "description": "Pipes",
-  "basePath": "src/",
-  "files":[
-    "!**/*.d.ts",
-    "!**/*.js"],
-  "tags": ["pipe"]
-}

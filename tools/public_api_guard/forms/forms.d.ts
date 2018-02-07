@@ -86,6 +86,13 @@ export declare abstract class AbstractControlDirective {
     reset(value?: any): void;
 }
 
+/** @experimental */
+export interface AbstractControlOptions {
+    asyncValidators?: AsyncValidatorFn | AsyncValidatorFn[] | null;
+    updateOn?: 'change' | 'blur' | 'submit';
+    validators?: ValidatorFn | ValidatorFn[] | null;
+}
+
 /** @stable */
 export declare class AbstractFormGroupDirective extends ControlContainer implements OnInit, OnDestroy {
     readonly asyncValidator: AsyncValidatorFn | null;
@@ -211,7 +218,7 @@ export declare class FormArrayName extends ControlContainer implements OnInit, O
 /** @stable */
 export declare class FormBuilder {
     array(controlsConfig: any[], validator?: ValidatorFn | null, asyncValidator?: AsyncValidatorFn | null): FormArray;
-    control(formState: Object, validator?: ValidatorFn | ValidatorFn[] | null, asyncValidator?: AsyncValidatorFn | AsyncValidatorFn[] | null): FormControl;
+    control(formState: any, validator?: ValidatorFn | ValidatorFn[] | null, asyncValidator?: AsyncValidatorFn | AsyncValidatorFn[] | null): FormControl;
     group(controlsConfig: {
         [key: string]: any;
     }, extra?: {

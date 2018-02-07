@@ -797,7 +797,7 @@ set the `href` value in **`index.html`** *exactly* as shown here.
 
 
 
-A live coding environment like Plunker sets the application base address dynamically so you can't specify a fixed address.
+A live coding environment like Stackblitz sets the application base address dynamically so you can't specify a fixed address.
 That's why the example code replaces the `<base href...>` with a script that writes the `<base>` tag on the fly.
 
 
@@ -1274,7 +1274,7 @@ The **Routing Module** has several characteristics:
 * Separates routing concerns from other application concerns.
 * Provides a module to replace or remove when testing the application.
 * Provides a well-known location for routing service providers including guards and resolvers.
-* Does **not** [declare components](guide/ngmodule-faq#routing-module).
+* Does **not** declare components.
 
 
 {@a routing-refactor}
@@ -4039,7 +4039,7 @@ to see the finished route configuration.
 ## Wrap up and final app
 
 You've covered a lot of ground in this guide and the application is too big to reprint here.
-Please visit the <live-example title="Router Sample in Plunker"></live-example>
+Please visit the <live-example title="Router Sample in Stackblitz"></live-example>
 where you can download the final source code.
 
 

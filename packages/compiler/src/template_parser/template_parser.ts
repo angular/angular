@@ -574,7 +574,7 @@ class TemplateParseVisitor implements html.Visitor {
         if ((elOrDirRef.value.length === 0 && directive.isComponent) ||
             (elOrDirRef.isReferenceToDirective(directive))) {
           targetReferences.push(new ReferenceAst(
-              elOrDirRef.name, createTokenForReference(directive.type.reference),
+              elOrDirRef.name, createTokenForReference(directive.type.reference), elOrDirRef.value,
               elOrDirRef.sourceSpan));
           matchedReferences.add(elOrDirRef.name);
         }
@@ -598,7 +598,8 @@ class TemplateParseVisitor implements html.Visitor {
         if (isTemplateElement) {
           refToken = createTokenForExternalReference(this.reflector, Identifiers.TemplateRef);
         }
-        targetReferences.push(new ReferenceAst(elOrDirRef.name, refToken, elOrDirRef.sourceSpan));
+        targetReferences.push(
+            new ReferenceAst(elOrDirRef.name, refToken, elOrDirRef.value, elOrDirRef.sourceSpan));
       }
     });
     return directiveAsts;

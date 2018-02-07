@@ -8,7 +8,7 @@
 
 import 'rxjs/add/operator/map';
 
-import {Injector} from '@angular/core';
+import {Injectable, Injector} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {Observable} from 'rxjs/Observable';
 
@@ -47,6 +47,15 @@ class InterceptorB extends TestInterceptor {
   constructor() { super('B'); }
 }
 
+@Injectable()
+class ReentrantInterceptor implements HttpInterceptor {
+  constructor(private client: HttpClient) {}
+
+  intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+    return next.handle(req);
+  }
+}
+
 {
   describe('HttpClientModule', () => {
     let injector: Injector;
@@ -82,6 +91,17 @@ class InterceptorB extends TestInterceptor {
             expect(value.headers.get('Intercepted')).toEqual('B,A');
             done();
           });
+      injector.get(HttpTestingController).expectOne('/test').flush('ok!');
+    });
+    it('allows interceptors to inject HttpClient', (done: DoneFn) => {
+      TestBed.resetTestingModule();
+      injector = TestBed.configureTestingModule({
+        imports: [HttpClientTestingModule],
+        providers: [
+          {provide: HTTP_INTERCEPTORS, useClass: ReentrantInterceptor, multi: true},
+        ],
+      });
+      injector.get(HttpClient).get('/test').subscribe(() => { done(); });
       injector.get(HttpTestingController).expectOne('/test').flush('ok!');
     });
   });

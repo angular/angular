@@ -2,6 +2,8 @@
 #
 # Use of this source code is governed by an MIT-style license that can be
 # found in the LICENSE file at https://angular.io/license
+"""Implementation of the ng_module rule.
+"""
 
 load(":rules_typescript.bzl",
     "tsc_wrapped_tsconfig",
@@ -10,19 +12,16 @@ load(":rules_typescript.bzl",
     "compile_ts",
     "DEPS_ASPECTS",
     "ts_providers_dict_to_struct",
-    "json_marshal",
 )
 
 # Calculate the expected output of the template compiler for every source in
 # in the library. Most of these will be produced as empty files but it is
 # unknown, without parsing, which will be empty.
-def _expected_outs(ctx, label):
+def _expected_outs(ctx):
   devmode_js_files = []
   closure_js_files = []
   declaration_files = []
   summary_files = []
-
-  codegen_inputs = ctx.files.srcs
 
   for src in ctx.files.srcs + ctx.files.assets:
     if src.short_path.endswith(".ts") and not src.short_path.endswith(".d.ts"):
@@ -41,6 +40,9 @@ def _expected_outs(ctx, label):
           ".css.ngstyle.js",
       ]
       summaries = []
+
+    else:
+      continue
 
     closure_js = [f.replace(".js", ".closure.js") for f in devmode_js]
     declarations = [f.replace(".js", ".d.ts") for f in devmode_js]
@@ -61,7 +63,7 @@ def _expected_outs(ctx, label):
   )
 
 def _ngc_tsconfig(ctx, files, srcs, **kwargs):
-  outs = _expected_outs(ctx, ctx.label)
+  outs = _expected_outs(ctx)
   if "devmode_manifest" in kwargs:
     expected_outs = outs.devmode_js + outs.declarations + outs.summaries
   else:
@@ -72,6 +74,7 @@ def _ngc_tsconfig(ctx, files, srcs, **kwargs):
           "generateCodeForLibraries": False,
           "allowEmptyCodegenFiles": True,
           "enableSummariesForJit": True,
+          "fullTemplateTypeCheck": ctx.attr.type_check,
           # FIXME: wrong place to de-dupe
           "expectedOut": depset([o.path for o in expected_outs]).to_list(),
           "preserveWhitespaces": False,
@@ -79,7 +82,7 @@ def _ngc_tsconfig(ctx, files, srcs, **kwargs):
   })
 
 def _collect_summaries_aspect_impl(target, ctx):
-  results = target.angular.summaries if hasattr(target, "angular") else depset()
+  results = depset(target.angular.summaries if hasattr(target, "angular") else [])
 
   # If we are visiting empty-srcs ts_library, this is a re-export
   srcs = ctx.rule.attr.srcs if hasattr(ctx.rule.attr, "srcs") else []
@@ -88,7 +91,7 @@ def _collect_summaries_aspect_impl(target, ctx):
   if not srcs:
     for dep in ctx.rule.attr.deps:
       if (hasattr(dep, "angular")):
-        results += dep.angular.summaries
+        results = depset(dep.angular.summaries, transitive = [results])
 
   return struct(collect_summaries_aspect_result = results)
 
@@ -103,11 +106,30 @@ _EXTRA_NODE_OPTIONS_FLAGS = [
     "--node_options=--expose-gc"
 ]
 
-def ngc_compile_action(ctx, label, inputs, outputs, messages_out, config_file_path,
-                       locale=None, i18n_args=[]):
+def ngc_compile_action(ctx, label, inputs, outputs, messages_out, tsconfig_file,
+                        locale=None, i18n_args=[]):
+  """Helper function to create the ngc action.
+
+  This is exposed for google3 to wire up i18n replay rules, and is not intended
+  as part of the public API.
+
+  Args:
+    ctx: skylark context
+    label: the label of the ng_module being compiled
+    inputs: passed to the ngc action's inputs
+    outputs: passed to the ngc action's outputs
+    messages_out: produced xmb files
+    tsconfig_file: tsconfig file with settings used for the compilation
+    locale: i18n locale, or None
+    i18n_args: additional command-line arguments to ngc
+
+  Returns:
+    the parameters of the compilation which will be used to replay the ngc action for i18N.
+  """
+
   mnemonic = "AngularTemplateCompile"
   progress_message = "Compiling Angular templates (ngc) %s" % label
-  supports_workers = "0"
+
   if locale:
     mnemonic = "AngularI18NMerging"
     supports_workers = "0"
@@ -121,9 +143,9 @@ def ngc_compile_action(ctx, label, inputs, outputs, messages_out, config_file_pa
   # Two at-signs escapes the argument so it's passed through to ngc
   # rather than the contents getting expanded.
   if supports_workers == "1":
-    arguments += ["@@" + config_file_path]
+    arguments += ["@@" + tsconfig_file.path]
   else:
-    arguments += ["-p", config_file_path]
+    arguments += ["-p", tsconfig_file.path]
 
   arguments += i18n_args
 
@@ -144,7 +166,7 @@ def ngc_compile_action(ctx, label, inputs, outputs, messages_out, config_file_pa
                outputs = messages_out,
                executable = ctx.executable._ng_xi18n,
                arguments = (_EXTRA_NODE_OPTIONS_FLAGS +
-                            [config_file_path] +
+                            [tsconfig_file.path] +
                             # The base path is bin_dir because of the way the ngc
                             # compiler host is configured. So we need to explictily
                             # point to genfiles/ to redirect the output.
@@ -152,56 +174,78 @@ def ngc_compile_action(ctx, label, inputs, outputs, messages_out, config_file_pa
                progress_message = "Extracting Angular 2 messages (ng_xi18n)",
                mnemonic = "Angular2MessageExtractor")
 
-  # Return the parameters of the compilation which will be used to replay the
-  # ngc action for i18N.
   if not locale and not ctx.attr.no_i18n:
     return struct(
         label = label,
-        tsconfig = config_file_path,
+        tsconfig = tsconfig_file,
         inputs = inputs,
         outputs = outputs,
+        compiler = ctx.executable.compiler,
     )
 
-def _compile_action(ctx, inputs, outputs, messages_out, config_file_path):
-  summaries = depset()
-  for dep in ctx.attr.deps:
-    if hasattr(dep, "collect_summaries_aspect_result"):
-      summaries += dep.collect_summaries_aspect_result
+  return None
 
-  action_inputs = inputs + summaries.to_list() + ctx.files.assets
-  # print("ASSETS", [a.path for a in ctx.files.assets])
-  # print("INPUTS", ctx.label, [o.path for o in summaries if o.path.find("core/src") > 0])
+def _compile_action(ctx, inputs, outputs, messages_out, tsconfig_file):
+  # Give the Angular compiler all the user-listed assets
+  file_inputs = list(ctx.files.assets)
 
+  # The compiler only needs to see TypeScript sources from the npm dependencies,
+  # but may need to look at package.json and ngsummary.json files as well.
   if hasattr(ctx.attr, "node_modules"):
-    action_inputs += [f for f in ctx.files.node_modules
-                      if f.path.endswith(".ts") or f.path.endswith(".json")]
+    file_inputs += [f for f in ctx.files.node_modules
+                    if f.path.endswith(".ts") or f.path.endswith(".json")]
+
+  # If the user supplies a tsconfig.json file, the Angular compiler needs to read it
   if hasattr(ctx.attr, "tsconfig") and ctx.file.tsconfig:
-    action_inputs += [ctx.file.tsconfig]
+    file_inputs.append(ctx.file.tsconfig)
 
-  return ngc_compile_action(ctx, ctx.label, action_inputs, outputs, messages_out, config_file_path)
+  # Collect the inputs and summary files from our deps
+  action_inputs = depset(file_inputs,
+      transitive = [inputs] + [dep.collect_summaries_aspect_result for dep in ctx.attr.deps
+                    if hasattr(dep, "collect_summaries_aspect_result")])
+
+  return ngc_compile_action(ctx, ctx.label, action_inputs, outputs, messages_out, tsconfig_file)
 
 
-def _prodmode_compile_action(ctx, inputs, outputs, config_file_path):
-  outs = _expected_outs(ctx, ctx.label)
-  return _compile_action(ctx, inputs, outputs + outs.closure_js, outs.i18n_messages, config_file_path)
+def _prodmode_compile_action(ctx, inputs, outputs, tsconfig_file):
+  outs = _expected_outs(ctx)
+  return _compile_action(ctx, inputs, outputs + outs.closure_js, outs.i18n_messages, tsconfig_file)
 
-def _devmode_compile_action(ctx, inputs, outputs, config_file_path):
-  outs = _expected_outs(ctx, ctx.label)
-  _compile_action(ctx, inputs, outputs + outs.devmode_js + outs.declarations + outs.summaries, None, config_file_path)
+def _devmode_compile_action(ctx, inputs, outputs, tsconfig_file):
+  outs = _expected_outs(ctx)
+  compile_action_outputs = outputs + outs.devmode_js + outs.declarations + outs.summaries
+  _compile_action(ctx, inputs, compile_action_outputs, None, tsconfig_file)
+
+def _ts_expected_outs(ctx, label):
+  # rules_typescript expects a function with two arguments, but our
+  # implementation doesn't use the label
+  _ignored = [label]
+  return _expected_outs(ctx)
 
 def ng_module_impl(ctx, ts_compile_actions):
+  """Implementation function for the ng_module rule.
+
+  This is exposed so that google3 can have its own entry point that re-uses this
+  and is not meant as a public API.
+
+  Args:
+    ctx: the skylark rule context
+    ts_compile_actions: generates all the actions to run an ngc compilation
+
+  Returns:
+    the result of the ng_module rule as a dict, suitable for
+    conversion by ts_providers_dict_to_struct
+  """
+
   providers = ts_compile_actions(
       ctx, is_library=True, compile_action=_prodmode_compile_action,
       devmode_compile_action=_devmode_compile_action,
       tsc_wrapped_tsconfig=_ngc_tsconfig,
-      outputs = _expected_outs)
+      outputs = _ts_expected_outs)
 
-  #addl_declarations = [_expected_outs(ctx)]
-  #providers["typescript"]["declarations"] += addl_declarations
-  #providers["typescript"]["transitive_declarations"] += addl_declarations
-  outs = _expected_outs(ctx, ctx.label)
+  outs = _expected_outs(ctx)
   providers["angular"] = {
-    "summaries": _expected_outs(ctx, ctx.label).summaries
+    "summaries": _expected_outs(ctx).summaries
   }
   providers["ngc_messages"] = outs.i18n_messages
 
@@ -221,16 +265,18 @@ NG_MODULE_ATTRIBUTES = {
       ".html",
     ]),
 
+    "type_check": attr.bool(default = True),
+
     "no_i18n": attr.bool(default = False),
 
     "compiler": attr.label(
-        default = Label("//src/ngc-wrapped"),
+        default = Label("//packages/bazel/src/ngc-wrapped"),
         executable = True,
         cfg = "host",
     ),
 
     "_ng_xi18n": attr.label(
-        default = Label("//src/ngc-wrapped:xi18n"),
+        default = Label("//packages/bazel/src/ngc-wrapped:xi18n"),
         executable = True,
         cfg = "host",
     ),
@@ -240,7 +286,7 @@ NG_MODULE_ATTRIBUTES = {
 
 ng_module = rule(
     implementation = _ng_module_impl,
-    attrs = COMMON_ATTRIBUTES + NG_MODULE_ATTRIBUTES + {
+    attrs = dict(dict(COMMON_ATTRIBUTES, **NG_MODULE_ATTRIBUTES), **{
         "tsconfig": attr.label(allow_files = True, single_file = True),
 
         # @// is special syntax for the "main" repository
@@ -249,6 +295,6 @@ ng_module = rule(
         "node_modules": attr.label(
             default = Label("@//:node_modules")
         ),
-    },
+    }),
     outputs = COMMON_OUTPUTS,
 )

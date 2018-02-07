@@ -1,9 +1,0 @@
-{
-  "description": "Content Security",
-  "basePath": "src/",
-  "files": [
-    "!**/*.d.ts",
-    "!**/*.js"
-  ],
-  "tags": ["security"]
-}

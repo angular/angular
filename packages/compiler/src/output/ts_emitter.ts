@@ -40,9 +40,9 @@ export type ReferenceFilter = (reference: o.ExternalReference) => boolean;
 export class TypeScriptEmitter implements OutputEmitter {
   emitStatementsAndContext(
       genFilePath: string, stmts: o.Statement[], preamble: string = '',
-      emitSourceMaps: boolean = true,
-      referenceFilter?: ReferenceFilter): {sourceText: string, context: EmitterVisitorContext} {
-    const converter = new _TsEmitterVisitor(referenceFilter);
+      emitSourceMaps: boolean = true, referenceFilter?: ReferenceFilter,
+      importFilter?: ReferenceFilter): {sourceText: string, context: EmitterVisitorContext} {
+    const converter = new _TsEmitterVisitor(referenceFilter, importFilter);
 
     const ctx = EmitterVisitorContext.createRoot();
 
@@ -83,7 +83,9 @@ export class TypeScriptEmitter implements OutputEmitter {
 class _TsEmitterVisitor extends AbstractEmitterVisitor implements o.TypeVisitor {
   private typeExpression = 0;
 
-  constructor(private referenceFilter?: ReferenceFilter) { super(false); }
+  constructor(private referenceFilter?: ReferenceFilter, private importFilter?: ReferenceFilter) {
+    super(false);
+  }
 
   importsWithPrefixes = new Map<string, string>();
   reexports = new Map<string, {name: string, as: string}[]>();
@@ -216,8 +218,15 @@ class _TsEmitterVisitor extends AbstractEmitterVisitor implements o.TypeVisitor 
       // comment out as a workaround for #10967
       ctx.print(null, `/*private*/ `);
     }
+    if (field.hasModifier(o.StmtModifier.Static)) {
+      ctx.print(null, 'static ');
+    }
     ctx.print(null, field.name);
     this._printColonType(field.type, ctx);
+    if (field.initializer) {
+      ctx.print(null, ' = ');
+      field.initializer.visitExpression(this, ctx);
+    }
     ctx.println(null, `;`);
   }
 
@@ -260,15 +269,23 @@ class _TsEmitterVisitor extends AbstractEmitterVisitor implements o.TypeVisitor 
   }
 
   visitFunctionExpr(ast: o.FunctionExpr, ctx: EmitterVisitorContext): any {
+    if (ast.name) {
+      ctx.print(ast, 'function ');
+      ctx.print(ast, ast.name);
+    }
     ctx.print(ast, `(`);
     this._visitParams(ast.params, ctx);
     ctx.print(ast, `)`);
     this._printColonType(ast.type, ctx, 'void');
-    ctx.println(ast, ` => {`);
+    if (!ast.name) {
+      ctx.print(ast, ` => `);
+    }
+    ctx.println(ast, '{');
     ctx.incIndent();
     this.visitAllStatements(ast.statements, ctx);
     ctx.decIndent();
     ctx.print(ast, `}`);
+
     return null;
   }
 
@@ -305,7 +322,7 @@ class _TsEmitterVisitor extends AbstractEmitterVisitor implements o.TypeVisitor 
     return null;
   }
 
-  visitBuiltintType(type: o.BuiltinType, ctx: EmitterVisitorContext): any {
+  visitBuiltinType(type: o.BuiltinType, ctx: EmitterVisitorContext): any {
     let typeStr: string;
     switch (type.name) {
       case o.BuiltinTypeName.Bool:
@@ -383,7 +400,7 @@ class _TsEmitterVisitor extends AbstractEmitterVisitor implements o.TypeVisitor 
       ctx.print(null, '(null as any)');
       return;
     }
-    if (moduleName) {
+    if (moduleName && (!this.importFilter || !this.importFilter(value))) {
       let prefix = this.importsWithPrefixes.get(moduleName);
       if (prefix == null) {
         prefix = `i${this.importsWithPrefixes.size}`;

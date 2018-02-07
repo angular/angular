@@ -12,8 +12,18 @@ $ yarn upgrade-interactive --tilde
 
 There, select all the packages that are updated on the new Angular release.
 
-**2)** Changes to the tsconfig.json? There is one to update at `/aio/tools/examples/shared/boilerplate/src/tsconfig.json`
+**2)** Changes to the tsconfig.json? There are several files in `/aio/tools/examples/shared/boilerplate/*/tsconfig.json` (based on the example type).
 
-**3)** The file `/aio/tools/examples/shared/boilerplate/src/systemjs.config.web.js` contains the configuration for plunkers. It has some hardcoded versions that could be updated.
+**3)** The files `/aio/tools/examples/shared/boilerplate/systemjs/src/systemjs.config.web[.build].js` contains the configuration for plunkers. They have some hardcoded versions that could be updated.
 
-**4)** As in step 3, more hardcoded versions at `/aio/tools/plunker-builder/translator/rules/indexHtml.js`
+>N.B.: Plunkers have been replaced by Stackblitz and (almost) all examples have be replaced by CLI/WebPack-based examples that do not use SystemJS.
+The upgrade examples may still rely on SystemJS.
+
+---
+> NOTE(gkalpak):
+> There are some `package.json` files in `/aio/tools/examples/shared/boilerplate/*`.
+> AFAICT, they are copied over to the examples (based on the example type), but they are neither
+> used for installing dependencies (which come from `/aio/tools/examples/shared/package.json`) nor
+> used in zips (since they are overwritten by `/aio/tools/example-zipper/customizer`).
+> For all stackblitz live-examples, `/aio/tools/examples/shared/boilerplate/cli/package.json` seems
+> to be used.

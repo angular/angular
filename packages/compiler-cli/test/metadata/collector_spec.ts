@@ -1054,10 +1054,20 @@ describe('Collector', () => {
       expect(metadata.metadata.MyComponent).toEqual({
         __symbolic: 'class',
         decorators: [{
-          __symbolic: 'error',
-          message: 'Expression form not supported',
-          line: 5,
-          character: 55
+          __symbolic: 'call',
+          expression: {
+            __symbolic: 'reference',
+            module: '@angular/core',
+            name: 'Component',
+            line: 4,
+            character: 9
+          },
+          arguments: [{
+            __symbolic: 'error',
+            message: 'Expression form not supported',
+            line: 5,
+            character: 55
+          }]
         }]
       });
     });

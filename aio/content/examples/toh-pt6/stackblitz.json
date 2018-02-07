@@ -1,0 +1,9 @@
+{
+  "description": "Tour of Heroes: Part 6",
+  "files":[
+    "!**/*.d.ts",
+    "!**/*.js",
+    "!**/*.[1,2].*"
+  ],
+  "tags": ["tutorial", "tour", "heroes", "http"]
+}

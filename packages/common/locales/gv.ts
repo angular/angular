@@ -9,6 +9,17 @@
 // THIS CODE IS GENERATED - DO NOT MODIFY
 // See angular/tools/gulp-tasks/cldr/extract.js
 
+function plural(n: number): number {
+  let i = Math.floor(Math.abs(n)), v = n.toString().replace(/^[^.]*\.?/, '').length;
+  if (v === 0 && i % 10 === 1) return 1;
+  if (v === 0 && i % 10 === 2) return 2;
+  if (v === 0 &&
+      (i % 100 === 0 || i % 100 === 20 || i % 100 === 40 || i % 100 === 60 || i % 100 === 80))
+    return 3;
+  if (!(v === 0)) return 4;
+  return 5;
+}
+
 export default [
   'gv',
   [
@@ -46,16 +57,5 @@ export default [
     ,
   ],
   ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'], '£', 'GBP',
-  function(n: number):
-      number {
-        let i = Math.floor(Math.abs(n)), v = n.toString().replace(/^[^.]*\.?/, '').length;
-        if (v === 0 && i % 10 === 1) return 1;
-        if (v === 0 && i % 10 === 2) return 2;
-        if (v === 0 &&
-            (i % 100 === 0 || i % 100 === 20 || i % 100 === 40 || i % 100 === 60 || i % 100 === 80))
-          return 3;
-        if (!(v === 0)) return 4;
-        return 5;
-      }
+  ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'], '£', 'GBP', plural
 ];

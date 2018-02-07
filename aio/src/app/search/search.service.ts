@@ -7,9 +7,10 @@ can be found in the LICENSE file at http://angular.io/license
 import { NgZone, Injectable } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 import { ReplaySubject } from 'rxjs/ReplaySubject';
-import 'rxjs/add/observable/race';
-import 'rxjs/add/observable/timer';
+import { race } from 'rxjs/observable/race';
+import { timer } from 'rxjs/observable/timer';
 import 'rxjs/add/operator/concatMap';
+import 'rxjs/add/operator/first';
 import 'rxjs/add/operator/publishReplay';
 import { WebWorkerClient } from 'app/shared/web-worker';
 import { SearchResults } from 'app/search/interfaces';
@@ -30,11 +31,10 @@ export class SearchService {
    * @param initDelay the number of milliseconds to wait before we load the WebWorker and generate the search index
    */
   initWorker(workerUrl: string, initDelay: number) {
-    const ready = this.ready = Observable
-      // Wait for the initDelay or the first search
-      .race<any>(
-        Observable.timer(initDelay),
-        (this.searchesSubject as Observable<string>).first()
+    // Wait for the initDelay or the first search
+    const ready = this.ready = race<any>(
+        timer(initDelay),
+        (this.searchesSubject.asObservable()).first()
       )
       .concatMap(() => {
         // Create the worker and load the index

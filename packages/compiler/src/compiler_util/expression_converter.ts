@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-
 import * as cdAst from '../expression_parser/ast';
 import {Identifiers} from '../identifiers';
 import * as o from '../output/output_ast';
@@ -19,13 +18,15 @@ export class ConvertActionBindingResult {
   constructor(public stmts: o.Statement[], public allowDefault: o.ReadVarExpr) {}
 }
 
+export type InterpolationFunction = (args: o.Expression[]) => o.Expression;
+
 /**
  * Converts the given expression AST into an executable output AST, assuming the expression is
  * used in an action binding (e.g. an event handler).
  */
 export function convertActionBinding(
     localResolver: LocalResolver | null, implicitReceiver: o.Expression, action: cdAst.AST,
-    bindingId: string): ConvertActionBindingResult {
+    bindingId: string, interpolationFunction?: InterpolationFunction): ConvertActionBindingResult {
   if (!localResolver) {
     localResolver = new DefaultLocalResolver();
   }
@@ -52,7 +53,8 @@ export function convertActionBinding(
       },
       action);
 
-  const visitor = new _AstToIrVisitor(localResolver, implicitReceiver, bindingId);
+  const visitor =
+      new _AstToIrVisitor(localResolver, implicitReceiver, bindingId, interpolationFunction);
   const actionStmts: o.Statement[] = [];
   flattenStatements(actionWithoutBuiltins.visit(visitor, _Mode.Statement), actionStmts);
   prependTemporaryDecls(visitor.temporaryCount, bindingId, actionStmts);
@@ -98,6 +100,7 @@ export enum BindingForm {
   // otherise generate a general binding
   TrySimple,
 }
+
 /**
  * Converts the given expression AST into an executable output AST, assuming the expression
  * is used in property binding. The expression has to be preprocessed via
@@ -105,14 +108,15 @@ export enum BindingForm {
  */
 export function convertPropertyBinding(
     localResolver: LocalResolver | null, implicitReceiver: o.Expression,
-    expressionWithoutBuiltins: cdAst.AST, bindingId: string,
-    form: BindingForm): ConvertPropertyBindingResult {
+    expressionWithoutBuiltins: cdAst.AST, bindingId: string, form: BindingForm,
+    interpolationFunction?: InterpolationFunction): ConvertPropertyBindingResult {
   if (!localResolver) {
     localResolver = new DefaultLocalResolver();
   }
   const currValExpr = createCurrValueExpr(bindingId);
   const stmts: o.Statement[] = [];
-  const visitor = new _AstToIrVisitor(localResolver, implicitReceiver, bindingId);
+  const visitor =
+      new _AstToIrVisitor(localResolver, implicitReceiver, bindingId, interpolationFunction);
   const outputExpr: o.Expression = expressionWithoutBuiltins.visit(visitor, _Mode.Expression);
 
   if (visitor.temporaryCount) {
@@ -200,7 +204,7 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
 
   constructor(
       private _localResolver: LocalResolver, private _implicitReceiver: o.Expression,
-      private bindingId: string) {}
+      private bindingId: string, private interpolationFunction: InterpolationFunction|undefined) {}
 
   visitBinary(ast: cdAst.Binary, mode: _Mode): any {
     let op: o.BinaryOperator;
@@ -303,6 +307,9 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
     }
     args.push(o.literal(ast.strings[ast.strings.length - 1]));
 
+    if (this.interpolationFunction) {
+      return this.interpolationFunction(args);
+    }
     return ast.expressions.length <= 9 ?
         o.importExpr(Identifiers.inlineInterpolate).callFn(args) :
         o.importExpr(Identifiers.interpolate).callFn([args[0], o.literalArr(args.slice(1))]);

@@ -25,7 +25,7 @@ import { ContributorListComponent } from './contributor/contributor-list.compone
 import { ContributorComponent } from './contributor/contributor.component';
 import { CurrentLocationComponent } from './current-location.component';
 import { FileNotFoundSearchComponent } from './search/file-not-found-search.component';
-import { LiveExampleComponent, EmbeddedPlunkerComponent } from './live-example/live-example.component';
+import { LiveExampleComponent, EmbeddedStackblitzComponent } from './live-example/live-example.component';
 import { ResourceListComponent } from './resource/resource-list.component';
 import { ResourceService } from './resource/resource.service';
 
@@ -50,7 +50,7 @@ export const embeddedComponents: Type<any>[] = [
     embeddedComponents,
     CodeComponent,
     ContributorComponent,
-    EmbeddedPlunkerComponent
+    EmbeddedStackblitzComponent
   ],
   providers: [
     ApiService,

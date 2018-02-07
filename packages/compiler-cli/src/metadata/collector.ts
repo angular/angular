@@ -76,6 +76,9 @@ export class MetadataCollector {
     }
 
     function recordEntry<T extends MetadataEntry>(entry: T, node: ts.Node): T {
+      if (composedSubstituter) {
+        entry = composedSubstituter(entry as MetadataValue, node) as T;
+      }
       return recordMapEntry(entry, node, nodeMap, sourceFile);
     }
 
@@ -289,7 +292,7 @@ export class MetadataCollector {
          ts.TypeAliasDeclaration | ts.EnumDeclaration) => exportedIdentifierName(node.name);
 
 
-    // Predeclare classes and functions
+    // Pre-declare classes and functions
     ts.forEachChild(sourceFile, node => {
       switch (node.kind) {
         case ts.SyntaxKind.ClassDeclaration:
@@ -454,7 +457,7 @@ export class MetadataCollector {
                 };
               } else {
                 nextDefaultValue =
-                    recordEntry(errorSym('Unsuppported enum member name', member.name), node);
+                    recordEntry(errorSym('Unsupported enum member name', member.name), node);
               }
             }
             if (writtenMembers) {

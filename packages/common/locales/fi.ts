@@ -9,6 +9,12 @@
 // THIS CODE IS GENERATED - DO NOT MODIFY
 // See angular/tools/gulp-tasks/cldr/extract.js
 
+function plural(n: number): number {
+  let i = Math.floor(Math.abs(n)), v = n.toString().replace(/^[^.]*\.?/, '').length;
+  if (i === 1 && v === 0) return 1;
+  return 5;
+}
+
 export default [
   'fi',
   [
@@ -47,11 +53,14 @@ export default [
       'marras', 'joulu'
     ],
     [
-      'tammikuu', 'helmikuu', 'maaliskuu', 'huhtikuu', 'toukokuu', 'kesäkuu', 'heinäkuu', 'elokuu',
-      'syyskuu', 'lokakuu', 'marraskuu', 'joulukuu'
+      'tammikuu', 'helmikuu', 'maaliskuu', 'huhtikuu', 'toukokuu', 'kesäkuu', 'heinäkuu',
+      'elokuu', 'syyskuu', 'lokakuu', 'marraskuu', 'joulukuu'
     ]
   ],
-  [['eKr', 'jKr'], ['eKr.', 'jKr.'], ['ennen Kristuksen syntymää', 'jälkeen Kristuksen syntymän']],
+  [
+    ['eKr', 'jKr'], ['eKr.', 'jKr.'],
+    ['ennen Kristuksen syntymää', 'jälkeen Kristuksen syntymän']
+  ],
   1, [6, 0], ['d.M.y', , 'd. MMMM y', 'cccc d. MMMM y'],
   ['H.mm', 'H.mm.ss', 'H.mm.ss z', 'H.mm.ss zzzz'],
   [
@@ -60,11 +69,5 @@ export default [
     ,
   ],
   [',', ' ', ';', '%', '+', '−', 'E', '×', '‰', '∞', 'epäluku', '.'],
-  ['#,##0.###', '#,##0 %', '#,##0.00 ¤', '#E0'], '€', 'euro',
-  function(n: number):
-      number {
-        let i = Math.floor(Math.abs(n)), v = n.toString().replace(/^[^.]*\.?/, '').length;
-        if (i === 1 && v === 0) return 1;
-        return 5;
-      }
+  ['#,##0.###', '#,##0 %', '#,##0.00 ¤', '#E0'], '€', 'euro', plural
 ];
