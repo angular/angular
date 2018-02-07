@@ -1280,7 +1280,7 @@ function declareTests({useJit}: {useJit: boolean}) {
         fixture.detectChanges();
         expect(fixture.nativeElement)
             .toHaveText(
-                'Default Interpolation\nCustom Interpolation A\nCustom Interpolation B (Default Interpolation)');
+                'Default InterpolationCustom Interpolation ACustom Interpolation B (Default Interpolation)');
       });
     });
 
@@ -1781,7 +1781,7 @@ function declareTests({useJit}: {useJit: boolean}) {
     });
 
     describe('whitespaces in templates', () => {
-      it('should not remove whitespaces by default', async(() => {
+      it('should remove whitespaces by default', async(() => {
            @Component({
              selector: 'comp',
              template: '<span>foo</span>  <span>bar</span>',
@@ -1792,7 +1792,7 @@ function declareTests({useJit}: {useJit: boolean}) {
            const f = TestBed.configureTestingModule({declarations: [MyCmp]}).createComponent(MyCmp);
            f.detectChanges();
 
-           expect(f.nativeElement.childNodes.length).toBe(3);
+           expect(f.nativeElement.childNodes.length).toBe(2);
          }));
 
       it('should not remove whitespaces when explicitly requested not to do so', async(() => {
