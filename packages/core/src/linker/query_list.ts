@@ -41,7 +41,7 @@ export class QueryList<T>/* implements Iterable<T> */ {
   private _results: Array<T> = [];
   public readonly changes: Observable<any> = new EventEmitter();
 
-  readonly length: number;
+  readonly length: number = 0;
   readonly first: T;
   readonly last: T;
 
