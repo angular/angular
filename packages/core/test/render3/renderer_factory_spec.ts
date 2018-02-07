@@ -10,7 +10,8 @@ import {AnimationEvent} from '@angular/animations';
 import {MockAnimationDriver, MockAnimationPlayer} from '@angular/animations/browser/testing';
 
 import {RendererType2, ViewEncapsulation} from '../../src/core';
-import {E, L, T, b, defineComponent, detectChanges, e, p, r} from '../../src/render3/index';
+import {defineComponent, detectChanges} from '../../src/render3/index';
+import {bind, componentRefresh, elementEnd, elementProperty, elementStart, listener, text} from '../../src/render3/instructions';
 import {createRendererType2} from '../../src/view/index';
 
 import {getAnimationRendererFactory2, getRendererFactory2} from './imported_renderer2';
@@ -34,7 +35,7 @@ describe('renderer factory lifecycle', () => {
       template: function(ctx: SomeComponent, cm: boolean) {
         logs.push('component');
         if (cm) {
-          T(0, 'foo');
+          text(0, 'foo');
         }
       },
       factory: () => new SomeComponent
@@ -55,19 +56,19 @@ describe('renderer factory lifecycle', () => {
   function Template(ctx: any, cm: boolean) {
     logs.push('function');
     if (cm) {
-      T(0, 'bar');
+      text(0, 'bar');
     }
   }
 
   function TemplateWithComponent(ctx: any, cm: boolean) {
     logs.push('function_with_component');
     if (cm) {
-      T(0, 'bar');
-      E(1, SomeComponent);
-      e();
+      text(0, 'bar');
+      elementStart(1, SomeComponent);
+      elementEnd();
     }
     SomeComponent.ngComponentDef.h(2, 1);
-    r(2, 1);
+    componentRefresh(2, 1);
   }
 
   beforeEach(() => { logs = []; });
@@ -126,7 +127,7 @@ describe('animation renderer factory', () => {
       tag: 'some-component',
       template: function(ctx: SomeComponent, cm: boolean) {
         if (cm) {
-          T(0, 'foo');
+          text(0, 'foo');
         }
       },
       factory: () => new SomeComponent
@@ -143,15 +144,15 @@ describe('animation renderer factory', () => {
       tag: 'some-component',
       template: function(ctx: SomeComponentWithAnimation, cm: boolean) {
         if (cm) {
-          E(0, 'div');
+          elementStart(0, 'div');
           {
-            L('@myAnimation.start', ctx.callback.bind(ctx));
-            L('@myAnimation.done', ctx.callback.bind(ctx));
-            T(1, 'foo');
+            listener('@myAnimation.start', ctx.callback.bind(ctx));
+            listener('@myAnimation.done', ctx.callback.bind(ctx));
+            text(1, 'foo');
           }
-          e();
+          elementEnd();
         }
-        p(0, '@myAnimation', b(ctx.exp));
+        elementProperty(0, '@myAnimation', bind(ctx.exp));
       },
       factory: () => new SomeComponentWithAnimation,
       rendererType: createRendererType2({

@@ -10,8 +10,8 @@ import {ElementRef, TemplateRef, ViewContainerRef} from '@angular/core';
 
 import {defineComponent} from '../../src/render3/definition';
 import {InjectFlags, bloomAdd, bloomFindPossibleInjector, getOrCreateNodeInjector} from '../../src/render3/di';
-import {C, E, PublicFeature, T, V, b, b2, cR, cr, defineDirective, e, inject, injectElementRef, injectTemplateRef, injectViewContainerRef, m, t, v} from '../../src/render3/index';
-import {createLNode, createLView, createTView, enterView, leaveView} from '../../src/render3/instructions';
+import {PublicFeature, defineDirective, inject, injectElementRef, injectTemplateRef, injectViewContainerRef} from '../../src/render3/index';
+import {bind, bind2, container, containerRefreshEnd, containerRefreshStart, createLNode, createLView, createTView, elementEnd, elementStart, enterView, leaveView, memory, text, textBinding, viewEnd, viewStart} from '../../src/render3/instructions';
 import {LInjector} from '../../src/render3/interfaces/injector';
 import {LNodeFlags} from '../../src/render3/interfaces/node';
 
@@ -27,11 +27,11 @@ describe('di', () => {
 
       function Template(ctx: any, cm: boolean) {
         if (cm) {
-          E(0, 'div', null, [Directive]);
-          { T(2); }
-          e();
+          elementStart(0, 'div', null, [Directive]);
+          { text(2); }
+          elementEnd();
         }
-        t(2, b(m<Directive>(1).value));
+        textBinding(2, bind(memory<Directive>(1).value));
       }
 
       expect(renderToHtml(Template, {})).toEqual('<div>Created</div>');
@@ -63,15 +63,15 @@ describe('di', () => {
 
       function Template(ctx: any, cm: boolean) {
         if (cm) {
-          E(0, 'div', null, [DirectiveA]);
+          elementStart(0, 'div', null, [DirectiveA]);
           {
-            E(2, 'span', null, [DirectiveB, DirectiveC]);
-            { T(5); }
-            e();
+            elementStart(2, 'span', null, [DirectiveB, DirectiveC]);
+            { text(5); }
+            elementEnd();
           }
-          e();
+          elementEnd();
         }
-        t(5, b(m<DirectiveC>(4).value));
+        textBinding(5, bind(memory<DirectiveC>(4).value));
       }
 
       expect(renderToHtml(Template, {})).toEqual('<div><span>AB</span></div>');
@@ -105,11 +105,13 @@ describe('di', () => {
 
       function Template(ctx: any, cm: boolean) {
         if (cm) {
-          E(0, 'div', null, [Directive, DirectiveSameInstance]);
-          { T(3); }
-          e();
+          elementStart(0, 'div', null, [Directive, DirectiveSameInstance]);
+          { text(3); }
+          elementEnd();
         }
-        t(3, b2('', m<Directive>(1).value, '-', m<DirectiveSameInstance>(2).value, ''));
+        textBinding(
+            3,
+            bind2('', memory<Directive>(1).value, '-', memory<DirectiveSameInstance>(2).value, ''));
       }
 
       expect(renderToHtml(Template, {})).toEqual('<div>ElementRef-true</div>');
@@ -144,10 +146,12 @@ describe('di', () => {
 
       function Template(ctx: any, cm: any) {
         if (cm) {
-          C(0, [Directive, DirectiveSameInstance], function() {});
-          T(3);
+          container(0, [Directive, DirectiveSameInstance], function() {});
+          text(3);
         }
-        t(3, b2('', m<Directive>(1).value, '-', m<DirectiveSameInstance>(2).value, ''));
+        textBinding(
+            3,
+            bind2('', memory<Directive>(1).value, '-', memory<DirectiveSameInstance>(2).value, ''));
       }
 
       expect(renderToHtml(Template, {})).toEqual('TemplateRef-true');
@@ -181,11 +185,13 @@ describe('di', () => {
 
       function Template(ctx: any, cm: boolean) {
         if (cm) {
-          E(0, 'div', null, [Directive, DirectiveSameInstance]);
-          { T(3); }
-          e();
+          elementStart(0, 'div', null, [Directive, DirectiveSameInstance]);
+          { text(3); }
+          elementEnd();
         }
-        t(3, b2('', m<Directive>(1).value, '-', m<DirectiveSameInstance>(2).value, ''));
+        textBinding(
+            3,
+            bind2('', memory<Directive>(1).value, '-', memory<DirectiveSameInstance>(2).value, ''));
       }
 
       expect(renderToHtml(Template, {})).toEqual('<div>ViewContainerRef-true</div>');
@@ -285,21 +291,24 @@ describe('di', () => {
 
       function Template(ctx: any, cm: boolean) {
         if (cm) {
-          E(0, 'div', null, [ParentDirective]);
-          { C(2); }
-          e();
+          elementStart(0, 'div', null, [ParentDirective]);
+          { container(2); }
+          elementEnd();
         }
-        cR(2);
+        containerRefreshStart(2);
         {
-          if (V(0)) {
-            E(0, 'span', null, [ChildDirective, Child2Directive]);
-            { T(3); }
-            e();
+          if (viewStart(0)) {
+            elementStart(0, 'span', null, [ChildDirective, Child2Directive]);
+            { text(3); }
+            elementEnd();
           }
-          t(3, b2('', m<ChildDirective>(1).value, '-', m<Child2Directive>(2).value, ''));
-          v();
+          textBinding(
+              3,
+              bind2(
+                  '', memory<ChildDirective>(1).value, '-', memory<Child2Directive>(2).value, ''));
+          viewEnd();
         }
-        cr();
+        containerRefreshEnd();
       }
 
       expect(renderToHtml(Template, {})).toEqual('<div><span>ParentDirective-true</span></div>');

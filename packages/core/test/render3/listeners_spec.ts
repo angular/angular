@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {C, E, L, T, V, cR, cr, defineComponent, e, r, v} from '../../src/render3/index';
+import {defineComponent} from '../../src/render3/index';
+import {componentRefresh, container, containerRefreshEnd, containerRefreshStart, elementEnd, elementStart, listener, text, viewEnd, viewStart} from '../../src/render3/instructions';
 
 import {containerEl, renderComponent, renderToHtml} from './render_util';
 
@@ -26,12 +27,12 @@ describe('event listeners', () => {
       /** <button (click)="onClick()"> Click me </button> */
       template: function CompTemplate(ctx: any, cm: boolean) {
         if (cm) {
-          E(0, 'button');
+          elementStart(0, 'button');
           {
-            L('click', ctx.onClick.bind(ctx));
-            T(1, 'Click me');
+            listener('click', ctx.onClick.bind(ctx));
+            text(1, 'Click me');
           }
-          e();
+          elementEnd();
         }
       },
       factory: () => {
@@ -59,12 +60,12 @@ describe('event listeners', () => {
     /** <button (click)="showing=!showing"> Click me </button> */
     function Template(ctx: any, cm: boolean) {
       if (cm) {
-        E(0, 'button');
+        elementStart(0, 'button');
         {
-          L('click', () => ctx.showing = !ctx.showing);
-          T(1, 'Click me');
+          listener('click', () => ctx.showing = !ctx.showing);
+          text(1, 'Click me');
         }
-        e();
+        elementEnd();
       }
     }
 
@@ -88,23 +89,23 @@ describe('event listeners', () => {
      */
     function Template(ctx: any, cm: boolean) {
       if (cm) {
-        C(0);
+        container(0);
       }
-      cR(0);
+      containerRefreshStart(0);
       {
         if (ctx.showing) {
-          if (V(1)) {
-            E(0, 'button');
+          if (viewStart(1)) {
+            elementStart(0, 'button');
             {
-              L('click', ctx.onClick.bind(ctx));
-              T(1, 'Click me');
+              listener('click', ctx.onClick.bind(ctx));
+              text(1, 'Click me');
             }
-            e();
+            elementEnd();
           }
-          v();
+          viewEnd();
         }
       }
-      cr();
+      containerRefreshEnd();
     }
 
     let comp = new MyComp();
@@ -136,34 +137,34 @@ describe('event listeners', () => {
      */
     function Template(ctx: any, cm: boolean) {
       if (cm) {
-        C(0);
+        container(0);
       }
-      cR(0);
+      containerRefreshStart(0);
       {
         if (ctx.showing) {
-          if (V(0)) {
-            T(0, 'Hello');
-            C(1);
+          if (viewStart(0)) {
+            text(0, 'Hello');
+            container(1);
           }
-          cR(1);
+          containerRefreshStart(1);
           {
             if (ctx.button) {
-              if (V(0)) {
-                E(0, 'button');
+              if (viewStart(0)) {
+                elementStart(0, 'button');
                 {
-                  L('click', ctx.onClick.bind(ctx));
-                  T(1, 'Click');
+                  listener('click', ctx.onClick.bind(ctx));
+                  text(1, 'Click');
                 }
-                e();
+                elementEnd();
               }
-              v();
+              viewEnd();
             }
           }
-          cr();
-          v();
+          containerRefreshEnd();
+          viewEnd();
         }
       }
-      cr();
+      containerRefreshEnd();
     }
 
     const comp = {showing: true, counter: 0, button: true, onClick: function() { this.counter++; }};
@@ -194,26 +195,26 @@ describe('event listeners', () => {
      */
     function Template(ctx: any, cm: boolean) {
       if (cm) {
-        C(0);
+        container(0);
       }
-      cR(0);
+      containerRefreshStart(0);
       {
         if (ctx.showing) {
-          if (V(0)) {
-            T(0, 'Hello');
-            E(1, MyComp);
-            e();
-            E(3, MyComp);
-            e();
+          if (viewStart(0)) {
+            text(0, 'Hello');
+            elementStart(1, MyComp);
+            elementEnd();
+            elementStart(3, MyComp);
+            elementEnd();
           }
           MyComp.ngComponentDef.h(2, 1);
           MyComp.ngComponentDef.h(4, 3);
-          r(2, 1);
-          r(4, 3);
-          v();
+          componentRefresh(2, 1);
+          componentRefresh(4, 3);
+          viewEnd();
         }
       }
-      cr();
+      containerRefreshEnd();
     }
 
     const ctx = {showing: true};
@@ -250,50 +251,50 @@ describe('event listeners', () => {
      */
     function Template(ctx: any, cm: boolean) {
       if (cm) {
-        C(0);
+        container(0);
       }
-      cR(0);
+      containerRefreshStart(0);
       {
         if (ctx.condition) {
-          if (V(0)) {
-            T(0, 'Hello');
-            C(1);
-            C(2);
+          if (viewStart(0)) {
+            text(0, 'Hello');
+            container(1);
+            container(2);
           }
-          cR(1);
+          containerRefreshStart(1);
           {
             if (ctx.sub1) {
-              if (V(0)) {
-                E(0, 'button');
+              if (viewStart(0)) {
+                elementStart(0, 'button');
                 {
-                  L('click', () => ctx.counter1++);
-                  T(1, 'Click');
+                  listener('click', () => ctx.counter1++);
+                  text(1, 'Click');
                 }
-                e();
+                elementEnd();
               }
-              v();
+              viewEnd();
             }
           }
-          cr();
-          cR(2);
+          containerRefreshEnd();
+          containerRefreshStart(2);
           {
             if (ctx.sub2) {
-              if (V(0)) {
-                E(0, 'button');
+              if (viewStart(0)) {
+                elementStart(0, 'button');
                 {
-                  L('click', () => ctx.counter2++);
-                  T(1, 'Click');
+                  listener('click', () => ctx.counter2++);
+                  text(1, 'Click');
                 }
-                e();
+                elementEnd();
               }
-              v();
+              viewEnd();
             }
           }
-          cr();
-          v();
+          containerRefreshEnd();
+          viewEnd();
         }
       }
-      cr();
+      containerRefreshEnd();
     }
 
     const ctx = {condition: true, counter1: 0, counter2: 0, sub1: true, sub2: true};
