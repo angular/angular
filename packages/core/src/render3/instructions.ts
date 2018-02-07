@@ -1747,14 +1747,13 @@ function valueInData<T>(data: any[], index: number, value?: T): T {
  * object and saves it for the next change detection run if it hasn't.
  */
 export function getMutableBlueprint(obj: any): any {
-  return creationMode ? memoryWithBinding(copyObject(obj)) : memoryWithBinding();
-}
-
-/** Wrapper for memory instruction to account for binding index (when outside creation mode block)
- */
-function memoryWithBinding<T>(value?: T): T {
-  initBindings();
-  return memory<T>(bindingIndex++, value);
+  if (creationMode) {
+    initBindings();
+    // Object must be copied so multiple template instances don't mutate each other's blueprints
+    return memory(bindingIndex++, copyObject(obj));
+  } else {
+    return memory(bindingIndex++);
+  }
 }
 
 /** Copies an object or array */

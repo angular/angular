@@ -59,7 +59,7 @@ export function objectLiteral1(obj: any, key: string | number, exp: any): any {
   } else {
     obj[key] = exp;
     // Must copy to change identity when binding changes for backwards compatibility
-    // Also supports deeply nested expressions
+    // Also supports nested expressions like {a: {b: exp}}
     return copyObject(obj);
   }
 }
