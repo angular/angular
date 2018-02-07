@@ -1,6 +1,6 @@
 """Re-export of some bazel rules with repository-wide defaults."""
 load("@build_bazel_rules_typescript//:defs.bzl", _ts_library = "ts_library")
-load("//packages/bazel/src:ng_module.bzl", _ng_module = "ng_module")
+load("//packages/bazel:index.bzl", _ng_module = "ng_module")
 
 DEFAULT_TSCONFIG = "//packages:tsconfig-build.json"
 

@@ -1,8 +1,10 @@
 #!/usr/bin/env bash
-set -u -e -o pipefail
-
 # Generates the data used by the stamping feature in bazel.
 # A genrule with stamp=1 can read the resulting file from bazel-out/volatile-status.txt
+# See the section on stamping in docs/BAZEL.md
+
+set -u -e -o pipefail
+
 echo BUILD_SCM_HASH $(git rev-parse HEAD)
 
 BUILD_SCM_VERSION_RAW=$(git describe --abbrev=7 --tags HEAD)

@@ -24,6 +24,7 @@ ng_package(
     package_json = "package.json",
     readme_md = "//packages:README.md",
     license_banner = "//packages:license-banner.txt",
+    stamp_data = "//tools:stamp_data",
     globals = {
         'rxjs/Observable': 'Rx',
         'rxjs/Subject': 'Rx',

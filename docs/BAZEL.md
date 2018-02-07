@@ -137,6 +137,15 @@ To debug nodejs_binary executable paths uncomment `find . -name rollup 1>&2` (~ 
 open $(bazel info output_base)/external/build_bazel_rules_nodejs/internal/node_launcher.sh
 ```
 
+## Stamping
+
+Bazel supports the ability to include non-hermetic information from the version control system in built artifacts. This is called stamping.
+You can see an overview at https://www.kchodorow.com/blog/2017/03/27/stamping-your-builds/
+In our repo, here is how it's configured:
+
+1) In `tools/bazel_stamp_vars.sh` we run the `git` commands to generate our versioning info.
+1) In `tools/bazel.rc` we register this script as the value for the `workspace_status_command` flag. Bazel will run the script when it needs to stamp a binary.
+1) In `tools/BUILD.bazel` we have a target `stamp_data` with the special `stamp=1` attribute, which requests that Bazel run the `workspace_status_command`. The result is written to a text file that can be used as an input to other rules.
 
 ## FAQs
 

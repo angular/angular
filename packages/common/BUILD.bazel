@@ -29,6 +29,7 @@ ng_package(
     package_json = "package.json",
     readme_md = "//packages:README.md",
     license_banner = "//packages:license-banner.txt",
+    stamp_data = "//tools:stamp_data",
     globals = {
       '@angular/core': 'ng.core',
       '@angular/common': 'ng.common',

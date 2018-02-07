@@ -237,25 +237,3 @@ ng_package = rule(
       "_uglify": attr.label(default=Label("//packages/bazel/src/rollup:uglify"), executable=True, cfg="host"),
     }
 )
-
-def ng_package_macro(name, **kwargs):
-  """Wraps the ng_package rule to allow running a genrule before it.
-
-  We typically don't use macros because they are a leaky abstraction.
-  However this is the only way to exercise the bazel stamping feature.
-
-  Make sure the rule that gets the name=name is called "ng_package" so
-  it matches what the user expects when they have an "ng_package" in
-  their BUILD file.
-  """
-  native.genrule(
-      name = "%s_stamp_data" % name,
-      outs = ["%s_stamp_data.txt" % name],
-      stamp = True,
-      cmd = "cat bazel-out/volatile-status.txt > $@",
-  )
-  ng_package(
-      name = name,
-      stamp_data = ":%s_stamp_data.txt" % name,
-      **kwargs
-  )
