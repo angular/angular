@@ -33,7 +33,8 @@ export class NoopAnimationDriver implements AnimationDriver {
 
   animate(
       element: any, keyframes: {[key: string]: string | number}[], duration: number, delay: number,
-      easing: string, previousPlayers: any[] = []): AnimationPlayer {
+      easing: string, previousPlayers: any[] = [],
+      scrubberAccessRequested?: boolean): AnimationPlayer {
     return new NoopAnimationPlayer(duration, delay);
   }
 }
@@ -56,5 +57,5 @@ export abstract class AnimationDriver {
 
   abstract animate(
       element: any, keyframes: {[key: string]: string | number}[], duration: number, delay: number,
-      easing?: string|null, previousPlayers?: any[]): any;
+      easing?: string|null, previousPlayers?: any[], scrubberAccessRequested?: boolean): any;
 }
