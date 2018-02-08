@@ -793,6 +793,60 @@ describe('ConnectedPositionStrategy', () => {
 
   });
 
+  describe('validations', () => {
+    let overlayElement: HTMLElement;
+    let originElement: HTMLElement;
+    let strategy: ConnectedPositionStrategy;
+
+    beforeEach(() => {
+      overlayElement = createPositionedBlockElement();
+      overlayContainerElement.appendChild(overlayElement);
+      originElement = createBlockElement();
+
+      strategy = positionBuilder.connectedTo(
+          new ElementRef(originElement),
+          {originX: 'start', originY: 'bottom'},
+          {overlayX: 'start', overlayY: 'top'});
+      strategy.attach(fakeOverlayRef(overlayElement));
+    });
+
+    afterEach(() => {
+      strategy.dispose();
+    });
+
+    it('should throw when attaching without any positions', () => {
+      strategy.withPositions([]);
+      expect(() => strategy.apply()).toThrow();
+    });
+
+    it('should throw when passing in something that is missing a connection point', () => {
+      strategy.withPositions([{originY: 'top', overlayX: 'start', overlayY: 'top'} as any]);
+      expect(() => strategy.apply()).toThrow();
+    });
+
+    it('should throw when passing in something that has an invalid X position', () => {
+      strategy.withPositions([{
+        originX: 'left',
+        originY: 'top',
+        overlayX: 'left',
+        overlayY: 'top'
+      } as any]);
+
+      expect(() => strategy.apply()).toThrow();
+    });
+
+    it('should throw when passing in something that has an invalid Y position', () => {
+      strategy.withPositions([{
+        originX: 'start',
+        originY: 'middle',
+        overlayX: 'start',
+        overlayY: 'middle'
+      } as any]);
+
+      expect(() => strategy.apply()).toThrow();
+    });
+  });
+
 });
 
 /** Creates an absolutely positioned, display: block element with a default size. */

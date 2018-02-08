@@ -90,3 +90,29 @@ export class ConnectedOverlayPositionChange {
       /** @docs-private */
       @Optional() public scrollableViewProperties: ScrollingVisibility) {}
 }
+
+/**
+ * Validates whether a vertical position property matches the expected values.
+ * @param property Name of the property being validated.
+ * @param value Value of the property being validated.
+ * @docs-private
+ */
+export function validateVerticalPosition(property: string, value: VerticalConnectionPos) {
+  if (value !== 'top' && value !== 'bottom' && value !== 'center') {
+    throw Error(`ConnectedPosition: Invalid ${property} "${value}". ` +
+                `Expected "top", "bottom" or "center".`);
+  }
+}
+
+/**
+ * Validates whether a horizontal position property matches the expected values.
+ * @param property Name of the property being validated.
+ * @param value Value of the property being validated.
+ * @docs-private
+ */
+export function validateHorizontalPosition(property: string, value: HorizontalConnectionPos) {
+  if (value !== 'start' && value !== 'end' && value !== 'center') {
+    throw Error(`ConnectedPosition: Invalid ${property} "${value}". ` +
+                `Expected "start", "end" or "center".`);
+  }
+}
