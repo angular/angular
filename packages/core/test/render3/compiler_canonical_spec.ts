@@ -686,7 +686,7 @@ describe('compiler specification', () => {
 
     @Component({selector: 'lifecycle-comp', template: ``})
     class LifecycleComp {
-      @Input() nameMin: string;
+      @Input('name') nameMin: string;
 
       ngOnChanges() { events.push('changes' + this.nameMin); }
 
@@ -701,14 +701,16 @@ describe('compiler specification', () => {
 
       ngOnDestroy() { events.push(this.nameMin); }
 
+      // NORMATIVE
       static ngComponentDef = r3.defineComponent({
         type: LifecycleComp,
         tag: 'lifecycle-comp',
-        factory: () => new LifecycleComp(),
-        template: function(ctx: any, cm: boolean) {},
+        factory: function LifecycleComp_Factory() { return new LifecycleComp(); },
+        template: function LifecycleComp_Template(ctx: LifecycleComp, cm: boolean) {},
         inputs: {nameMin: 'name'},
         features: [r3.NgOnChangesFeature]
       });
+      // /NORMATIVE
     }
 
     @Component({
@@ -722,11 +724,12 @@ describe('compiler specification', () => {
       name1 = '1';
       name2 = '2';
 
+      // NORMATIVE
       static ngComponentDef = r3.defineComponent({
         type: SimpleLayout,
         tag: 'simple-layout',
-        factory: () => simpleLayout = new SimpleLayout(),
-        template: function(ctx: any, cm: boolean) {
+        factory: function SimpleLayout_Factory() { return simpleLayout = new SimpleLayout(); },
+        template: function SimpleLayout_Template(ctx: SimpleLayout, cm: boolean) {
           if (cm) {
             r3.E(0, LifecycleComp);
             r3.e();
@@ -741,6 +744,7 @@ describe('compiler specification', () => {
           r3.r(3, 2);
         }
       });
+      // /NORMATIVE
     }
 
     it('should gen hooks with a few simple components', () => {
