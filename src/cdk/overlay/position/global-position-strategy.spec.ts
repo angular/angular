@@ -1,41 +1,51 @@
+import {NgModule, NgZone, Component} from '@angular/core';
 import {TestBed, inject} from '@angular/core/testing';
-import {OverlayModule, Overlay, OverlayRef, GlobalPositionStrategy} from '../index';
+import {MockNgZone} from '@angular/cdk/testing';
+import {PortalModule, ComponentPortal} from '@angular/cdk/portal';
+import {OverlayModule, Overlay, OverlayConfig, OverlayRef} from '../index';
 
 
 describe('GlobalPositonStrategy', () => {
-  let element: HTMLElement;
-  let strategy: GlobalPositionStrategy;
-  let hasOverlayAttached: boolean;
+  let overlayRef: OverlayRef;
+  let overlay: Overlay;
+  let zone: MockNgZone;
 
   beforeEach(() => {
-    TestBed.configureTestingModule({imports: [OverlayModule]});
+    TestBed.configureTestingModule({
+      imports: [GlobalOverlayTestModule],
+      providers: [{provide: NgZone, useFactory: () => zone = new MockNgZone()}]
+    });
 
-    inject([Overlay], (overlay: Overlay) => {
-      strategy = overlay.position().global();
+    inject([Overlay], (o: Overlay) => {
+      overlay = o;
     })();
-
-    element = document.createElement('div');
-    document.body.appendChild(element);
-    hasOverlayAttached = true;
-    strategy.attach({
-      overlayElement: element,
-      hasAttached: () => hasOverlayAttached
-    } as OverlayRef);
   });
 
   afterEach(() => {
-    if (element.parentNode) {
-      element.parentNode.removeChild(element);
+    if (overlayRef) {
+      overlayRef.dispose();
+      overlayRef = null!;
     }
-
-    strategy.dispose();
   });
 
-  it('should position the element to the (top, left) with an offset', () => {
-    strategy.top('10px').left('40px').apply();
+  function attachOverlay(config: OverlayConfig): OverlayRef {
+    const portal = new ComponentPortal(BlankPortal);
+    overlayRef = overlay.create(config);
+    overlayRef.attach(portal);
+    zone.simulateZoneExit();
+    return overlayRef;
+  }
 
-    let elementStyle = element.style;
-    let parentStyle = (element.parentNode as HTMLElement).style;
+  it('should position the element to the (top, left) with an offset', () => {
+    attachOverlay({
+      positionStrategy: overlay.position()
+        .global()
+        .top('10px')
+        .left('40px')
+    });
+
+    const elementStyle = overlayRef.overlayElement.style;
+    const parentStyle = (overlayRef.overlayElement.parentNode as HTMLElement).style;
 
     expect(elementStyle.marginTop).toBe('10px');
     expect(elementStyle.marginLeft).toBe('40px');
@@ -47,10 +57,15 @@ describe('GlobalPositonStrategy', () => {
   });
 
   it('should position the element to the (bottom, right) with an offset', () => {
-    strategy.bottom('70px').right('15em').apply();
+    attachOverlay({
+      positionStrategy: overlay.position()
+        .global()
+        .bottom('70px')
+        .right('15em')
+    });
 
-    let elementStyle = element.style;
-    let parentStyle = (element.parentNode as HTMLElement).style;
+    const elementStyle = overlayRef.overlayElement.style;
+    const parentStyle = (overlayRef.overlayElement.parentNode as HTMLElement).style;
 
     expect(elementStyle.marginTop).toBe('');
     expect(elementStyle.marginLeft).toBe('');
@@ -62,11 +77,17 @@ describe('GlobalPositonStrategy', () => {
   });
 
   it('should overwrite previously applied positioning', () => {
-    strategy.centerHorizontally().centerVertically().apply();
-    strategy.top('10px').left('40%').apply();
+    const positionStrategy = overlay.position()
+      .global()
+      .centerHorizontally()
+      .centerVertically();
 
-    let elementStyle = element.style;
-    let parentStyle = (element.parentNode as HTMLElement).style;
+    attachOverlay({positionStrategy});
+    positionStrategy.top('10px').left('40%');
+    overlayRef.updatePosition();
+
+    const elementStyle = overlayRef.overlayElement.style;
+    const parentStyle = (overlayRef.overlayElement.parentNode as HTMLElement).style;
 
     expect(elementStyle.marginTop).toBe('10px');
     expect(elementStyle.marginLeft).toBe('40%');
@@ -76,31 +97,42 @@ describe('GlobalPositonStrategy', () => {
     expect(parentStyle.justifyContent).toBe('flex-start');
     expect(parentStyle.alignItems).toBe('flex-start');
 
-    strategy.bottom('70px').right('15em').apply();
+    positionStrategy.bottom('70px').right('15em');
+    overlayRef.updatePosition();
 
-    expect(element.style.marginTop).toBe('');
-    expect(element.style.marginLeft).toBe('');
-    expect(element.style.marginBottom).toBe('70px');
-    expect(element.style.marginRight).toBe('15em');
+    expect(elementStyle.marginTop).toBe('');
+    expect(elementStyle.marginLeft).toBe('');
+    expect(elementStyle.marginBottom).toBe('70px');
+    expect(elementStyle.marginRight).toBe('15em');
 
     expect(parentStyle.justifyContent).toBe('flex-end');
     expect(parentStyle.alignItems).toBe('flex-end');
   });
 
   it('should center the element', () => {
-    strategy.centerHorizontally().centerVertically().apply();
+    attachOverlay({
+      positionStrategy: overlay.position()
+        .global()
+        .centerHorizontally()
+        .centerVertically()
+    });
 
-    let parentStyle = (element.parentNode as HTMLElement).style;
+    const parentStyle = (overlayRef.overlayElement.parentNode as HTMLElement).style;
 
     expect(parentStyle.justifyContent).toBe('center');
     expect(parentStyle.alignItems).toBe('center');
   });
 
   it('should center the element with an offset', () => {
-    strategy.centerHorizontally('10px').centerVertically('15px').apply();
+    attachOverlay({
+      positionStrategy: overlay.position()
+        .global()
+        .centerHorizontally('10px')
+        .centerVertically('15px')
+    });
 
-    let elementStyle = element.style;
-    let parentStyle = (element.parentNode as HTMLElement).style;
+    const elementStyle = overlayRef.overlayElement.style;
+    const parentStyle = (overlayRef.overlayElement.parentNode as HTMLElement).style;
 
     expect(elementStyle.marginLeft).toBe('10px');
     expect(elementStyle.marginTop).toBe('15px');
@@ -110,61 +142,140 @@ describe('GlobalPositonStrategy', () => {
   });
 
   it('should make the element position: static', () => {
-    strategy.apply();
+    attachOverlay({
+      positionStrategy: overlay.position().global()
+    });
 
-    expect(element.style.position).toBe('static');
+    expect(overlayRef.overlayElement.style.position).toBe('static');
   });
 
   it('should wrap the element in a `cdk-global-overlay-wrapper`', () => {
-    strategy.apply();
+    attachOverlay({
+      positionStrategy: overlay.position().global()
+    });
 
-    let parent = element.parentNode as HTMLElement;
+    const parent = overlayRef.overlayElement.parentNode as HTMLElement;
 
     expect(parent.classList.contains('cdk-global-overlay-wrapper')).toBe(true);
   });
 
-
   it('should remove the parent wrapper from the DOM', () => {
-    strategy.apply();
+    attachOverlay({
+      positionStrategy: overlay.position().global()
+    });
 
-    expect(document.body.contains(element.parentNode!)).toBe(true);
+    expect(document.body.contains(overlayRef.overlayElement.parentNode!)).toBe(true);
 
-    strategy.dispose();
+    overlayRef.dispose();
 
-    expect(document.body.contains(element.parentNode!)).toBe(false);
+    expect(document.body.contains(overlayRef.overlayElement.parentNode!)).toBe(false);
   });
 
   it('should set the element width', () => {
-    strategy.width('100px').apply();
+    attachOverlay({
+      positionStrategy: overlay.position().global().width('100px')
+    });
 
-    expect(element.style.width).toBe('100px');
+    expect(overlayRef.overlayElement.style.width).toBe('100px');
   });
 
   it('should set the element height', () => {
-    strategy.height('100px').apply();
+    attachOverlay({
+      positionStrategy: overlay.position().global().height('100px')
+    });
 
-    expect(element.style.height).toBe('100px');
+    expect(overlayRef.overlayElement.style.height).toBe('100px');
   });
 
   it('should reset the horizontal position and offset when the width is 100%', () => {
-    strategy.centerHorizontally().width('100%').apply();
+    attachOverlay({
+      positionStrategy: overlay.position()
+        .global()
+        .centerHorizontally()
+        .width('100%')
+    });
 
-    expect(element.style.marginLeft).toBe('0px');
-    expect((element.parentNode as HTMLElement).style.justifyContent).toBe('flex-start');
+    const elementStyle = overlayRef.overlayElement.style;
+    const parentStyle = (overlayRef.overlayElement.parentNode as HTMLElement).style;
+
+    expect(elementStyle.marginLeft).toBe('0px');
+    expect(parentStyle.justifyContent).toBe('flex-start');
   });
 
   it('should reset the vertical position and offset when the height is 100%', () => {
-    strategy.centerVertically().height('100%').apply();
+    attachOverlay({
+      positionStrategy: overlay.position()
+        .global()
+        .centerVertically()
+        .height('100%')
+    });
 
-    expect(element.style.marginTop).toBe('0px');
-    expect((element.parentNode as HTMLElement).style.alignItems).toBe('flex-start');
+    const elementStyle = overlayRef.overlayElement.style;
+    const parentStyle = (overlayRef.overlayElement.parentNode as HTMLElement).style;
+
+    expect(elementStyle.marginTop).toBe('0px');
+    expect(parentStyle.alignItems).toBe('flex-start');
   });
 
   it('should not throw when attempting to apply after the overlay has been disposed', () => {
-    strategy.dispose();
-    element.parentNode!.removeChild(element);
-    hasOverlayAttached = false;
+    const positionStrategy = overlay.position().global();
 
-    expect(() => strategy.apply()).not.toThrow();
+    attachOverlay({positionStrategy});
+
+    positionStrategy.dispose();
+
+    expect(() => positionStrategy.apply()).not.toThrow();
   });
+
+  it('should take its width and height from the overlay config', () => {
+    attachOverlay({
+      positionStrategy: overlay.position().global(),
+      width: '500px',
+      height: '300px'
+    });
+
+    const elementStyle = overlayRef.overlayElement.style;
+
+    expect(elementStyle.width).toBe('500px');
+    expect(elementStyle.height).toBe('300px');
+  });
+
+  it('should update the overlay size when setting it through the position strategy', () => {
+    attachOverlay({
+      positionStrategy: overlay.position()
+        .global()
+        .width('500px')
+        .height('300px'),
+    });
+
+    expect(overlayRef.getConfig().width).toBe('500px');
+    expect(overlayRef.getConfig().height).toBe('300px');
+  });
+
+  it('should take the dimensions from the overlay config, when they are set both in the ' +
+    'config and the strategy', () => {
+      attachOverlay({
+        positionStrategy: overlay.position().global().width('200px').height('100px'),
+        width: '500px',
+        height: '300px'
+      });
+
+      const elementStyle = overlayRef.overlayElement.style;
+
+      expect(elementStyle.width).toBe('500px');
+      expect(elementStyle.height).toBe('300px');
+    });
+
 });
+
+
+@Component({template: ''})
+class BlankPortal {}
+
+@NgModule({
+  imports: [OverlayModule, PortalModule],
+  exports: [BlankPortal],
+  declarations: [BlankPortal],
+  entryComponents: [BlankPortal],
+})
+class GlobalOverlayTestModule {}
