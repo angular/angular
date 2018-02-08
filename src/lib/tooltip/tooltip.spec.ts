@@ -201,7 +201,7 @@ describe('MatTooltip', () => {
 
       const overlayRef = tooltipDirective._overlayRef;
 
-      expect(overlayRef).not.toBeNull();
+      expect(!!overlayRef).toBeTruthy();
       expect(overlayRef!.overlayElement.classList).toContain(TOOLTIP_PANEL_CLASS,
           'Expected the overlay panel element to have the tooltip panel class set.');
     }));
@@ -314,16 +314,15 @@ describe('MatTooltip', () => {
 
       tooltipDirective.position = initialPosition;
       tooltipDirective.show();
-      expect(tooltipDirective._tooltipInstance).toBeDefined();
+      expect(tooltipDirective._tooltipInstance).toBeTruthy();
 
       // Same position value should not remove the tooltip
       tooltipDirective.position = initialPosition;
-      expect(tooltipDirective._tooltipInstance).toBeDefined();
+      expect(tooltipDirective._tooltipInstance).toBeTruthy();
 
       // Different position value should destroy the tooltip
       tooltipDirective.position = changedPosition;
       assertTooltipInstance(tooltipDirective, false);
-      expect(tooltipDirective._overlayRef).toBeNull();
     });
 
     it('should be able to modify the tooltip message', fakeAsync(() => {
@@ -541,6 +540,7 @@ describe('MatTooltip', () => {
       tick(0);
       fixture.detectChanges();
       tick(500);
+      fixture.detectChanges();
 
       expect(tooltipDirective._isTooltipVisible()).toBe(false);
       expect(overlayContainerElement.textContent).toBe('');

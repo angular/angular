@@ -24,6 +24,6 @@ export class TooltipDemo {
   tooltips: string[] = [];
   disabled = false;
   showDelay = 0;
-  hideDelay = 1000;
+  hideDelay = 0;
   showExtraClass = false;
 }
