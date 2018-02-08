@@ -10,7 +10,7 @@ const yesterday = changeDays(today, -1);
 const tomorrow = changeDays(today, 1);
 const nextWeek = changeDays(today, 7);
 
-fdescribe('AnnouncementBarComponent', () => {
+describe('AnnouncementBarComponent', () => {
 
   let element: HTMLElement;
   let fixture: ComponentFixture<AnnouncementBarComponent>;
