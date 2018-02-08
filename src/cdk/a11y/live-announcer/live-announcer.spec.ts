@@ -70,6 +70,15 @@ describe('LiveAnnouncer', () => {
       expect(document.body.querySelector('[aria-live]'))
           .toBeFalsy('Expected that the aria-live element was remove from the DOM.');
     }));
+
+    it('should return a promise that resolves after the text has been announced', fakeAsync(() => {
+      const spy = jasmine.createSpy('announce spy');
+      const promise = announcer.announce('something').then(spy);
+
+      expect(spy).not.toHaveBeenCalled();
+      tick(100);
+      expect(spy).toHaveBeenCalled();
+    }));
   });
 
   describe('with a custom element', () => {

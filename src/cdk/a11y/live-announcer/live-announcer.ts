@@ -40,8 +40,9 @@ export class LiveAnnouncer implements OnDestroy {
    * Announces a message to screenreaders.
    * @param message Message to be announced to the screenreader
    * @param politeness The politeness of the announcer element
+   * @returns Promise that will be resolved when the message is added to the DOM.
    */
-  announce(message: string, politeness: AriaLivePoliteness = 'polite'): void {
+  announce(message: string, politeness: AriaLivePoliteness = 'polite'): Promise<void> {
     this._liveElement.textContent = '';
 
     // TODO: ensure changing the politeness works on all environments we support.
@@ -52,7 +53,12 @@ export class LiveAnnouncer implements OnDestroy {
     // - With Chrome and IE11 with NVDA or JAWS, a repeated (identical) message won't be read a
     //   second time without clearing and then using a non-zero delay.
     // (using JAWS 17 at time of this writing).
-    setTimeout(() => this._liveElement.textContent = message, 100);
+    return new Promise(resolve => {
+      setTimeout(() => {
+        this._liveElement.textContent = message;
+        resolve();
+      }, 100);
+    });
   }
 
   ngOnDestroy() {
