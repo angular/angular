@@ -253,16 +253,23 @@ export interface TNode {
    */
   localNames: (string|number)[]|null;
 
-  /**
-   * This property contains information about input properties that
-   * need to be set once from attribute data.
-   */
+  /** Information about input properties that need to be set once from attribute data. */
   initialInputs: InitialInputData|null|undefined;
 
-  /** Input data for all directives on this node. */
+  /**
+   * Input data for all directives on this node.
+   *
+   * - `undefined` means that the prop has not been initialized yet,
+   * - `null` means that the prop has been initialized but no inputs have been found.
+   */
   inputs: PropertyAliases|null|undefined;
 
-  /** Output data for all directives on this node. */
+  /**
+   * Output data for all directives on this node.
+   *
+   * - `undefined` means that the prop has not been initialized yet,
+   * - `null` means that the prop has been initialized but no outputs have been found.
+   */
   outputs: PropertyAliases|null|undefined;
 
   /**
@@ -298,11 +305,10 @@ export type PropertyAliases = {
 };
 
 /**
- * The value in PropertyAliases.
+ * Store the runtime input or output names for all the directives.
  *
- * In each array:
- * Even indices: directive index
- * Odd indices: minified / internal name
+ * - Even indices: directive index
+ * - Odd indices: minified / internal name
  *
  * e.g. [0, 'change-minified']
  */

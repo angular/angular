@@ -113,6 +113,11 @@ let bindingIndex: number;
  */
 let cleanup: any[]|null;
 
+const enum BindingDirection {
+  Input,
+  Output,
+}
+
 /**
  * Swap the current state with a new state.
  *
@@ -581,12 +586,11 @@ export function listener(eventName: string, listener: EventListener, useCapture 
   if (tNode.outputs === undefined) {
     // if we create TNode here, inputs must be undefined so we know they still need to be
     // checked
-    tNode.outputs = null;
-    tNode = generatePropertyAliases(node.flags, tNode);
+    tNode.outputs = generatePropertyAliases(node.flags, BindingDirection.Output);
   }
 
   const outputs = tNode.outputs;
-  let outputData: (number | string)[]|undefined;
+  let outputData: PropertyAliasValue|undefined;
   if (outputs && (outputData = outputs[eventName])) {
     createOutput(outputData, listener);
   }
@@ -596,7 +600,7 @@ export function listener(eventName: string, listener: EventListener, useCapture 
  * Iterates through the outputs associated with a particular event name and subscribes to
  * each output.
  */
-function createOutput(outputs: (number | string)[], listener: Function): void {
+function createOutput(outputs: PropertyAliasValue, listener: Function): void {
   for (let i = 0; i < outputs.length; i += 2) {
     ngDevMode && assertDataInRange(outputs[i] as number);
     const subscription = data[outputs[i] as number][outputs[i | 1]].subscribe(listener);
@@ -658,18 +662,16 @@ export function elementAttribute(index: number, attrName: string, value: any): v
 export function elementProperty<T>(index: number, propName: string, value: T | NO_CHANGE): void {
   if (value === NO_CHANGE) return;
   const node = data[index] as LElementNode;
-
-  let tNode: TNode|null = node.tNode !;
+  const tNode = node.tNode !;
   // if tNode.inputs is undefined, a listener has created outputs, but inputs haven't
   // yet been checked
   if (tNode.inputs === undefined) {
     // mark inputs as checked
-    tNode.inputs = null;
-    tNode = generatePropertyAliases(node.flags, tNode, true);
+    tNode.inputs = generatePropertyAliases(node.flags, BindingDirection.Input);
   }
 
   const inputData = tNode.inputs;
-  let dataValue: PropertyAliasValue|null;
+  let dataValue: PropertyAliasValue|undefined;
   if (inputData && (dataValue = inputData[propName])) {
     setInputsForProperty(dataValue, value);
   } else {
@@ -707,7 +709,7 @@ function createTNode(
  * Given a list of directive indices and minified input names, sets the
  * input properties on the corresponding directives.
  */
-function setInputsForProperty(inputs: (number | string)[], value: any): void {
+function setInputsForProperty(inputs: PropertyAliasValue, value: any): void {
   for (let i = 0; i < inputs.length; i += 2) {
     ngDevMode && assertDataInRange(inputs[i] as number);
     data[inputs[i] as number][inputs[i | 1]] = value;
@@ -715,33 +717,37 @@ function setInputsForProperty(inputs: (number | string)[], value: any): void {
 }
 
 /**
- * This function consolidates all the inputs or outputs defined by directives
- * on this node into one object and stores it in tData so it can
- * be shared between all templates of this type.
+ * Consolidates all inputs or outputs of all directives on this logical node.
  *
- * @param index Index where data should be stored in tData
+ * @param number lNodeFlags logical node flags
+ * @param Direction direction whether to consider inputs or outputs
+ * @returns PropertyAliases|null aggregate of all properties if any, `null` otherwise
  */
-function generatePropertyAliases(flags: number, tNode: TNode, isInputData = false): TNode {
-  const start = flags >> LNodeFlags.INDX_SHIFT;
-  const size = (flags & LNodeFlags.SIZE_MASK) >> LNodeFlags.SIZE_SHIFT;
+function generatePropertyAliases(lNodeFlags: number, direction: BindingDirection): PropertyAliases|
+    null {
+  const size = (lNodeFlags & LNodeFlags.SIZE_MASK) >> LNodeFlags.SIZE_SHIFT;
+  let propStore: PropertyAliases|null = null;
 
-  for (let i = start, ii = start + size; i < ii; i++) {
-    const directiveDef: DirectiveDef<any> = tData ![i] as DirectiveDef<any>;
-    const propertyAliasMap: {[publicName: string]: string} =
-        isInputData ? directiveDef.inputs : directiveDef.outputs;
-    for (let publicName in propertyAliasMap) {
-      if (propertyAliasMap.hasOwnProperty(publicName)) {
-        const internalName = propertyAliasMap[publicName];
-        const staticDirData: PropertyAliases = isInputData ?
-            (tNode.inputs || (tNode.inputs = {})) :
-            (tNode.outputs || (tNode.outputs = {}));
-        const hasProperty: boolean = staticDirData.hasOwnProperty(publicName);
-        hasProperty ? staticDirData[publicName].push(i, internalName) :
-                      (staticDirData[publicName] = [i, internalName]);
+  if (size > 0) {
+    const start = lNodeFlags >> LNodeFlags.INDX_SHIFT;
+    const isInput = direction === BindingDirection.Input;
+
+    for (let i = start, ii = start + size; i < ii; i++) {
+      const directiveDef = tData ![i] as DirectiveDef<any>;
+      const propertyAliasMap: {[publicName: string]: string} =
+          isInput ? directiveDef.inputs : directiveDef.outputs;
+      for (let publicName in propertyAliasMap) {
+        if (propertyAliasMap.hasOwnProperty(publicName)) {
+          propStore = propStore || {};
+          const internalName = propertyAliasMap[publicName];
+          const hasProperty = propStore.hasOwnProperty(publicName);
+          hasProperty ? propStore[publicName].push(i, internalName) :
+                        (propStore[publicName] = [i, internalName]);
+        }
       }
     }
   }
-  return tNode;
+  return propStore;
 }
 
 /**
@@ -799,7 +805,6 @@ export function elementStyle<T>(
     }
   }
 }
-
 
 
 //////////////////////////
