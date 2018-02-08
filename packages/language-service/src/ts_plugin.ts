@@ -72,7 +72,13 @@ function angularOnlyFilter(ls: ts.LanguageService): ts.LanguageService {
     dispose: () => ls.dispose(),
     getApplicableRefactors: (fileName, positionOrRaneg) => <ts.ApplicableRefactorInfo[]>[],
     getEditsForRefactor: (fileName, formatOptions, positionOrRange, refactorName, actionName) =>
-                             undefined
+                             undefined,
+    getDefinitionAndBoundSpan: (fileName: string, position: number):
+                                   ts.DefinitionInfoAndBoundSpan =>
+                                       ({definitions: [], textSpan: {start: 0, length: 0}}),
+    getCombinedCodeFix:
+        (scope: ts.CombinedCodeFixScope, fixId: {}, formatOptions: ts.FormatCodeSettings):
+            ts.CombinedCodeActions => ({changes: [], commands: undefined})
   };
 }
 
@@ -172,7 +178,11 @@ export function create(info: any /* ts.server.PluginCreateInfo */): ts.LanguageS
       getProgram: () => ls.getProgram(),
       dispose: () => ls.dispose(),
       getApplicableRefactors: tryFilenameOneCall(ls.getApplicableRefactors),
-      getEditsForRefactor: tryFilenameFourCall(ls.getEditsForRefactor)
+      getEditsForRefactor: tryFilenameFourCall(ls.getEditsForRefactor),
+      getDefinitionAndBoundSpan: tryFilenameOneCall(ls.getDefinitionAndBoundSpan),
+      getCombinedCodeFix:
+          (scope: ts.CombinedCodeFixScope, fixId: {}, formatOptions: ts.FormatCodeSettings) =>
+              tryCall(undefined, () => ls.getCombinedCodeFix(scope, fixId, formatOptions))
     };
   }
 
@@ -300,7 +310,9 @@ export function create(info: any /* ts.server.PluginCreateInfo */): ts.LanguageS
       const ours = ls.getDiagnostics(fileName);
       if (ours && ours.length) {
         const file = oldLS.getProgram().getSourceFile(fileName);
-        base.push.apply(base, ours.map(d => diagnosticToDiagnostic(d, file)));
+        if (file) {
+          base.push.apply(base, ours.map(d => diagnosticToDiagnostic(d, file)));
+        }
       }
     });
 

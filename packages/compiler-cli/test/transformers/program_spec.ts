@@ -446,45 +446,57 @@ describe('ng program', () => {
         {rootNames: [path.resolve(testSupport.basePath, 'src/index.ts')], options, host});
     program.emit();
 
+    const enum ShouldBe { Empty, EmptyExport, NoneEmpty }
     function assertGenFile(
-        fileName: string, checks: {originalFileName: string, shouldBeEmpty: boolean}) {
+        fileName: string, checks: {originalFileName: string, shouldBe: ShouldBe}) {
       const writeData = written.get(path.join(testSupport.basePath, fileName));
       expect(writeData).toBeTruthy();
       expect(writeData !.original !.some(
                  sf => sf.fileName === path.join(testSupport.basePath, checks.originalFileName)))
           .toBe(true);
-      if (checks.shouldBeEmpty) {
-        // The file should only contain comments (the preamble comment added by ngc).
-        expect(writeData !.data).toMatch(/^(\s*\/\*([^*]|\*[^/])*\*\/\s*)?$/);
-      } else {
-        expect(writeData !.data).not.toBe('');
+      switch (checks.shouldBe) {
+        case ShouldBe.Empty:
+          expect(writeData !.data).toMatch(/^(\s*\/\*([^*]|\*[^/])*\*\/\s*)?$/);
+          break;
+        case ShouldBe.EmptyExport:
+          expect(writeData !.data)
+              .toMatch(/^((\s*\/\*([^*]|\*[^/])*\*\/\s*)|(\s*export\s*{\s*}\s*;\s*)|())$/);
+          break;
+        case ShouldBe.NoneEmpty:
+          expect(writeData !.data).not.toBe('');
+          break;
       }
     }
 
     assertGenFile(
-        'built/src/util.ngfactory.js', {originalFileName: 'src/util.ts', shouldBeEmpty: true});
+        'built/src/util.ngfactory.js', {originalFileName: 'src/util.ts', shouldBe: ShouldBe.Empty});
     assertGenFile(
-        'built/src/util.ngfactory.d.ts', {originalFileName: 'src/util.ts', shouldBeEmpty: true});
+        'built/src/util.ngfactory.d.ts',
+        {originalFileName: 'src/util.ts', shouldBe: ShouldBe.EmptyExport});
     assertGenFile(
-        'built/src/util.ngsummary.js', {originalFileName: 'src/util.ts', shouldBeEmpty: true});
+        'built/src/util.ngsummary.js', {originalFileName: 'src/util.ts', shouldBe: ShouldBe.Empty});
     assertGenFile(
-        'built/src/util.ngsummary.d.ts', {originalFileName: 'src/util.ts', shouldBeEmpty: true});
+        'built/src/util.ngsummary.d.ts',
+        {originalFileName: 'src/util.ts', shouldBe: ShouldBe.EmptyExport});
     assertGenFile(
-        'built/src/util.ngsummary.json', {originalFileName: 'src/util.ts', shouldBeEmpty: false});
+        'built/src/util.ngsummary.json',
+        {originalFileName: 'src/util.ts', shouldBe: ShouldBe.NoneEmpty});
 
     // Note: we always fill non shim and shim style files as they might
     // be shared by component with and without ViewEncapsulation.
     assertGenFile(
-        'built/src/main.css.ngstyle.js', {originalFileName: 'src/main.ts', shouldBeEmpty: false});
+        'built/src/main.css.ngstyle.js',
+        {originalFileName: 'src/main.ts', shouldBe: ShouldBe.NoneEmpty});
     assertGenFile(
-        'built/src/main.css.ngstyle.d.ts', {originalFileName: 'src/main.ts', shouldBeEmpty: true});
+        'built/src/main.css.ngstyle.d.ts',
+        {originalFileName: 'src/main.ts', shouldBe: ShouldBe.EmptyExport});
     // Note: this file is not empty as we actually generated code for it
     assertGenFile(
         'built/src/main.css.shim.ngstyle.js',
-        {originalFileName: 'src/main.ts', shouldBeEmpty: false});
+        {originalFileName: 'src/main.ts', shouldBe: ShouldBe.NoneEmpty});
     assertGenFile(
         'built/src/main.css.shim.ngstyle.d.ts',
-        {originalFileName: 'src/main.ts', shouldBeEmpty: true});
+        {originalFileName: 'src/main.ts', shouldBe: ShouldBe.EmptyExport});
   });
 
   it('should not emit /// references in .d.ts files', () => {

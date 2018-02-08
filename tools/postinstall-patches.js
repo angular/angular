@@ -1,7 +1,16 @@
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
 const {set, cd, sed} = require('shelljs');
 const path = require('path');
+const log = console.log;
 
-console.log('===== about to run the postinstall.js script     =====');
+log('===== about to run the postinstall.js script     =====');
 // fail on first error
 set('-e');
 // print commands as being executed
@@ -12,8 +21,9 @@ cd(path.join(__dirname, '../'));
 // https://github.com/ReactiveX/rxjs/pull/3302
 // make node_modules/rxjs compilable with Typescript 2.7
 // remove when we update to rxjs v6
-console.log('\n# patch: reactivex/rxjs#3302 make node_modules/rxjs compilable with Typescript 2.7')
-sed('-i', "('response' in xhr)", "('response' in (xhr as any))", "node_modules/rxjs/src/observable/dom/AjaxObservable.ts")
+log('\n# patch: reactivex/rxjs#3302 make node_modules/rxjs compilable with Typescript 2.7');
+sed('-i', '(\'response\' in xhr)', '(\'response\' in (xhr as any))',
+    'node_modules/rxjs/src/observable/dom/AjaxObservable.ts');
 
 
-console.log('===== finished running the postinstall.js script =====');
+log('===== finished running the postinstall.js script =====');
