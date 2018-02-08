@@ -413,8 +413,8 @@ $_mat-checkbox-mark-stroke-size: 2 / 15 * $mat-checkbox-size !default;
 
 .mat-checkbox-ripple {
   position: absolute;
-  left: $mat-checkbox-size / 2 - $_mat-checkbox-ripple-radius;
-  top: $mat-checkbox-size / 2 - $_mat-checkbox-ripple-radius;
+  left: calc(50% - #{$_mat-checkbox-ripple-radius});
+  top: calc(50% - #{$_mat-checkbox-ripple-radius});
   height: $_mat-checkbox-ripple-radius * 2;
   width: $_mat_checkbox-ripple-radius * 2;
   z-index: 1;

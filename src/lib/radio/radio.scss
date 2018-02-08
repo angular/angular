@@ -101,8 +101,8 @@ $mat-radio-ripple-radius: 25px;
 
 .mat-radio-ripple {
   position: absolute;
-  left: $mat-radio-size / 2 - $mat-radio-ripple-radius;
-  top: $mat-radio-size / 2 - $mat-radio-ripple-radius;
+  left: calc(50% - #{$mat-radio-ripple-radius});
+  top: calc(50% - #{$mat-radio-ripple-radius});
   height: $mat-radio-ripple-radius * 2;
   width: $mat-radio-ripple-radius * 2;
   z-index: 1;
