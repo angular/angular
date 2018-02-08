@@ -627,6 +627,23 @@ describe('MatRadio', () => {
       expect(fruitRadioNativeInputs[0].getAttribute('aria-labelledby')).toBe('uvw');
     });
 
+    it('should add aria-describedby attribute to the underlying input element if defined', () => {
+      expect(fruitRadioNativeInputs[0].getAttribute('aria-describedby')).toBe('abc');
+    });
+
+    it('should not add aria-describedby attribute if not defined', () => {
+      expect(fruitRadioNativeInputs[1].hasAttribute('aria-describedby')).toBeFalsy();
+    });
+
+    it('should change aria-describedby attribute if property is changed at runtime', () => {
+      expect(fruitRadioNativeInputs[0].getAttribute('aria-describedby')).toBe('abc');
+
+      testComponent.ariaDescribedby = 'uvw';
+      fixture.detectChanges();
+
+      expect(fruitRadioNativeInputs[0].getAttribute('aria-describedby')).toBe('uvw');
+    });
+
     it('should focus on underlying input element when focus() is called', () => {
       for (let i = 0; i < fruitRadioInstances.length; i++) {
         expect(document.activeElement).not.toBe(fruitRadioNativeInputs[i]);
@@ -745,10 +762,12 @@ class RadiosInsideRadioGroup {
     <mat-radio-button name="weather" value="cool">Autumn</mat-radio-button>
 
     <span id="xyz">Baby Banana</span>
+    <span id="abc">A smaller banana</span>
     <mat-radio-button name="fruit"
                      value="banana"
                      [aria-label]="ariaLabel"
-                     [aria-labelledby]="ariaLabelledby">
+                     [aria-labelledby]="ariaLabelledby"
+                     [aria-describedby]="ariaDescribedby">
     </mat-radio-button>
     <mat-radio-button name="fruit" value="raspberry">Raspberry</mat-radio-button>
     <mat-radio-button id="nameless" value="no-name">No name</mat-radio-button>
@@ -757,6 +776,7 @@ class RadiosInsideRadioGroup {
 class StandaloneRadioButtons {
   ariaLabel: string = 'Banana';
   ariaLabelledby: string = 'xyz';
+  ariaDescribedby: string = 'abc';
 }
 
 
