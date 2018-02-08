@@ -2,8 +2,6 @@
 
 <!-- example(chips-overview) -->
 
-_Note: chips are still early in their development and more features are being actively worked on._
-
 ```html
 <mat-chip-list>
   <mat-chip>Papadum</mat-chip>
