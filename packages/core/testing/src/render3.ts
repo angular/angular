@@ -41,7 +41,10 @@ export function withBody<T>(html: string, blockFn: T): T {
     let returnValue: any = undefined;
     if (typeof blockFn === 'function') {
       document.body.innerHTML = html;
-      let blockReturn = blockFn();
+      // TODO(i): I'm not sure why a cast is required here but otherwise I get
+      //   TS2349: Cannot invoke an expression whose type lacks a call signature. Type 'never' has
+      //   no compatible call signatures.
+      let blockReturn = (blockFn as any)();
       if (blockReturn instanceof Promise) {
         blockReturn = blockReturn.then(done, done.fail);
       } else {
