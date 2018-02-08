@@ -30,7 +30,7 @@
         box-shadow: 0 2px 2px rgba(0,0,0,0.24), 0 0 2px rgba(0,0,0,0.12);
       }
 
-      table tbody th{
+      table > tbody > tr > th {
         border: 1px solid rgba(mat-color($foreground, secondary-text), .03);
       }
 

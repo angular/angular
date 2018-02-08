@@ -11,12 +11,12 @@
 
 {%- macro renderMembers(doc) -%}
 {%- if doc.members.length %}{% for member in doc.members %}{% if not member.internal %}
-  <a class="code-anchor" href="{$ doc.path $}#{$ member.anchor | urlencode $}">{$ renderMember(member, 1) $}</a>{% endif %}{% endfor %}{% endif %}
+  <a class="code-anchor" href="{$ doc.path $}#{$ member.anchor | urlencode $}">{$ renderMemberSyntax(member, 1) $}</a>{% endif %}{% endfor %}{% endif %}
 {%- for ancestor in doc.extendsClauses %}{% if ancestor.doc %}
   // inherited from <a class="code-anchor" href="{$ ancestor.doc.path $}">{$ ancestor.doc.id $}</a>{$ renderMembers(ancestor.doc) $}{% endif %}{% endfor %}
 {%- endmacro -%}
 
-{%- macro renderMember(member, truncateLines) -%}
+{%- macro renderMemberSyntax(member, truncateLines) -%}
     {%- if member.accessibility !== 'public' %}{$ member.accessibility $} {% endif -%}
     {%- if (member.isGetAccessor or member.isReadonly) and not member.isSetAccessor %}get {% endif -%}
     {%- if member.isSetAccessor and not member.isGetAccessor %}set {% endif -%}
@@ -26,35 +26,101 @@
     {$ params.returnType(member.type) | trim | truncateCode(truncateLines) $}
 {%- endmacro -%}
 
-{%- macro renderMemberDetail(member, cssClass) -%}
-<div class="{$ cssClass $}">
-  <a id="{$ member.anchor $}"></a>
-  <code-example language="ts" hideCopy="true" class="no-box api-heading">{$ renderMember(member) $}</code-example>
-  {%- if not member.notYetDocumented %}
-  {$ member.description | marked $}
-  {% endif -%}
-</div>
+{%- macro renderOverloadInfo(overload, cssClass, method) -%}
+  {% if overload.description and (overload.description != method.description) %}{$ overload.description | marked $}{% endif %}
+
+  <code-example language="ts" hideCopy="true" class="no-box api-heading">{$ renderMemberSyntax(overload) $}</code-example>
+
+  <h4 class="no-anchor">Parameters</h4>
+  {$ params.renderParameters(overload.parameterDocs, cssClass + '-parameters', cssClass + '-parameter') $}
+
+  {% if overload.type or overload.returns.type %}
+    <h4 class="no-anchor">Returns</h4>
+    {% marked %}`{$ (overload.type or overload.returns.type) $}`{% if overload.returns %}: {$ overload.returns.description $}{% endif %}{% endmarked %}
+  {% endif %}
+
+  {% if overload.throws.length %}
+  <h4 class="no-anchor">Throws</h4>
+  {% for error in overload.throws %}
+    {% marked %}`{$ (error.typeList or 'Error') $}` {$ error.description $}{% endmarked %}
+  {% endfor %}
+  {% endif %}
+{%- endmacro -%}
+
+{%- macro renderMethodDetail(method, cssClass) -%}
+<a id="{$ method.anchor $}"></a>
+<table class="is-full-width method-table {$ cssClass $}">
+  <thead><tr><th><h3>{$ method.name $}()</h3></th></tr></thead>
+  <tbody>
+    <tr>
+      <td>
+        {% if method.description %}{$ method.description | marked $}{% endif %}
+      </td>
+    </tr>
+  {% if method.overloads.length == 0 %}
+    <tr>
+      <td>
+        {$ renderOverloadInfo(method, cssClass + '-overload', method) $}
+      </td>
+    </tr>
+  {% elseif method.overloads.length < 3 -%}
+    {% for overload in method.overloads -%}
+    <tr>
+      <td>
+        {$ renderOverloadInfo(overload, cssClass + '-overload', method) $}
+      </td>
+    </tr>
+    {% endfor -%}
+  {% else -%}
+    <tr>
+      <td>
+        <details class="overloads">
+          <summary><h4 class="no-anchor">{$ method.overloads.length $} overloads...</h4></summary>
+          <div class="detail-contents">
+              {% for overload in method.overloads %}
+                {$ renderOverloadInfo(overload, cssClass + '-overload', method) $}
+                {% if not loop.last %}<hr class="hr-margin fullwidth">{% endif %}
+              {% endfor %}
+          </div>
+        </details>
+      </td>
+    </tr>
+  {% endif %}
+  </tbody>
+</table>
 {% endmacro -%}
 
-{% macro renderMemberDetails(members, containerClass, itemClass, titleText) %}
-{% if members.length %}
+{%- macro renderMethodDetails(methods, containerClass, itemClass, headingText) -%}
+{% if methods.length %}
 <section class="{$ containerClass $}">
-  <h2>{$ titleText $}</h2>
-  {% for member in members %}{% if not member.internal %}
-    {$ renderMemberDetail(member, itemClass) $}
-    {% if member.overloads.length %}
-    <details class="overloads">
-      <summary>Overloads</summary>
-      <div class="detail-contents">
-        {% for overload in member.overloads %}
-        {$ renderMemberDetail(overload, itemClass + '-overload') $}
-        {% if not loop.last %}<hr>{% endif %}
-        {% endfor %}
-      </div>
-    </details>
-    {% endif %}
-    {% if not loop.last %}<hr class="hr-margin">{% endif %}
+  <h2>{$ headingText $}</h2>
+  {% for member in methods %}{% if not member.internal %}
+    {$ renderMethodDetail(member, itemClass) $}
   {% endif %}{% endfor %}
 </section>
 {% endif %}
-{% endmacro %}
+{%- endmacro -%}
+
+
+{%- macro renderProperties(properties, containerClass, propertyClass, headingText) -%}
+{%- if properties.length -%}
+<h2>{$ headingText $}</h2>
+<table class="is-full-width list-table properties-table">
+  <thead>
+    <tr><th>Property</th><th>Type</th><th>Description</th></tr>
+  </thead>
+  <tbody>
+  {% for property in properties %}{% if not property.internal %}
+    <tr class="{$ propertyClass $}">
+      <td><a id="{$ property.anchor $}"></a>{$ property.name $}</td>
+      <td><label class="property-type-label"><code>{$ property.type | escape $}</code></label></td>
+      <td>
+        {$ (property.description or property.constructorParamDoc.description) | marked $}
+        {% if property.constructorParamDoc %} <span class='from-constructor'>Declared in constructor.</span>{% endif %}
+      </td>
+  </tr>
+  {% endif %}{% endfor %}
+  </tbody>
+</table>
+{%- endif -%}
+{%- endmacro -%}
