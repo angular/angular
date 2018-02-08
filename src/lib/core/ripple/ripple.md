@@ -109,3 +109,22 @@ const globalRippleConfig: RippleGlobalOptions = {
   }
 };
 ```
+
+### Animation behavior
+
+There are two different animation behaviors for the fade-out of ripples shown in the Material
+Design specifications.
+
+By default, all ripples will start fading out if the mouse or touch is released and the enter
+animation completed. The second possible behavior, which is also shown in the specifications, is
+that ripples start to fade out immediately on mouse or touch release.
+
+In some scenarios, developers might prefer that behavior over the default and would like to have
+the same for Angular Material. This behavior can be activated by specifying the
+`terminateOnPointerUp` global ripple option.
+
+```ts
+const globalRippleConfig: RippleGlobalOptions = {
+  terminateOnPointerUp: true
+};
+```
