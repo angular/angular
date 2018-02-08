@@ -946,6 +946,13 @@ describe('MatAutocomplete', () => {
       expect(stopPropagationSpy).toHaveBeenCalled();
     }));
 
+    it('should prevent the default action when pressing escape', fakeAsync(() => {
+      const escapeEvent = dispatchKeyboardEvent(input, 'keydown', ESCAPE);
+      fixture.detectChanges();
+
+      expect(escapeEvent.defaultPrevented).toBe(true);
+    }));
+
     it('should close the panel when pressing ALT + UP_ARROW', fakeAsync(() => {
       const trigger = fixture.componentInstance.trigger;
       const upArrowEvent = createKeyboardEvent('keydown', UP_ARROW);

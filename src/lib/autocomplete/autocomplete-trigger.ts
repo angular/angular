@@ -277,6 +277,14 @@ export class MatAutocompleteTrigger implements ControlValueAccessor, OnDestroy {
   _handleKeydown(event: KeyboardEvent): void {
     const keyCode = event.keyCode;
 
+    // Prevent the default action on all escape key presses. This is here primarily to bring IE
+    // in line with other browsers. By default, pressing escape on IE will cause it to revert
+    // the input value to the one that it had on focus, however it won't dispatch any events
+    // which means that the model value will be out of sync with the view.
+    if (keyCode === ESCAPE) {
+      event.preventDefault();
+    }
+
     // Close when pressing ESCAPE or ALT + UP_ARROW, based on the a11y guidelines.
     // See: https://www.w3.org/TR/wai-aria-practices-1.1/#textbox-keyboard-interaction
     if (this.panelOpen && (keyCode === ESCAPE || (keyCode === UP_ARROW && event.altKey))) {
