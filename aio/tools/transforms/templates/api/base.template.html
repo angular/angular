@@ -1,13 +1,46 @@
+{% import "lib/githubLinks.html" as github -%}
+{% set comma = joiner(',') %}
+{% set slash = joiner('/') %}
 <article>
+  <div class="breadcrumb">
+    <script type="application/ld+json">
+      {
+        "@context": "http://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          {% for crumb in doc.breadCrumbs %}
+            {$ comma() $}{
+            "@type": "ListItem",
+            "position": {$ loop.index $},
+            "item": {
+              "@id": "https://angular.io/{$ crumb.path $}",
+              "name": "{$ crumb.text $}"
+            }
+          }{% endfor %}
+        ]
+      }
+      </script>
+    {% for crumb in doc.breadCrumbs %}{% if not loop.last %}
+      {$ slash() $}
+      {% if crumb.path %}<a href="{$ crumb.path $}">{$ crumb.text $}<a>{% else %}{$ crumb.text $}{% endif %}
+    {% endif %}{% endfor %}
+  </div>
   <header class="api-header">
-    <h1 class="no-toc">{$ doc.name $}</h1>
+    {% if doc.deprecated !== undefined %}<label class="api-status-label deprecated">deprecated</label>{% endif %}
+    {% if doc.experimental !== undefined %}<label class="api-status-label experimental">experimental</label>{% endif %}
+    {% if doc.stable !== undefined %}<label class="api-status-label stable">stable</label>{% endif %}
     <label class="api-type-label {$ doc.docType $}">{$ doc.docType $}</label>
-    {% if doc.deprecated %}<label class="api-status-label deprecated">deprecated</label>{% endif %}
-    {% if doc.experimental %}<label class="api-status-label experimental">experimental</label>{% endif %}
-    {% if doc.stable %}<label class="api-status-label stable">stable</label>{% endif %}
+    <h1>
+      {$ doc.name $}
+    </h1>
     <span class="version">{$ version $}</span>
   </header>
+  <div class="page-actions">
+      <a href="#"><label class="raised page-label"><i class="material-icons">mode_edit</i>suggest edits</label></a>
+      <a href="{$ github.githubHref(doc, versionInfo) $}"><label class="raised page-label"><i class="material-icons">code</i>view source</label></a>
+  </div>
 
-  {% block body %}{% endblock %}
-
+  <div class="api-body">
+    {% block body %}{% endblock %}
+  </div>
 </article>
