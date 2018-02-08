@@ -202,6 +202,12 @@ export function compile({allowNonHermeticReads, allDepsCompiledWithBazel = true,
       return path.resolve(bazelBin, workspaceRelative) + '.d.ts';
     };
   }
+  // Patch a property on the ngHost that allows the resourceNameToModuleName function to
+  // report better errors.
+  (ngHost as any).reportMissingResource = (resourceName: string) => {
+    console.error(`\nAsset not found:\n  ${resourceName}`);
+    console.error('Check that it\'s included in the `assets` attribute of the `ng_module` rule.\n');
+  };
 
   const emitCallback: ng.TsEmitCallback = ({
     program,
