@@ -123,6 +123,7 @@ describe('MatSelect', () => {
         BasicSelect,
         MultiSelect,
         SelectWithGroups,
+        SelectWithGroupsAndNgContainer,
       ]);
     }));
 
@@ -990,6 +991,19 @@ describe('MatSelect', () => {
         dispatchFakeEvent(option, 'mouseup');
 
         expect(option.querySelectorAll('.mat-ripple-element').length).toBe(0);
+      }));
+
+      it('should be able to render options inside groups with an ng-container', fakeAsync(() => {
+        fixture.destroy();
+
+        const groupFixture = TestBed.createComponent(SelectWithGroupsAndNgContainer);
+        groupFixture.detectChanges();
+        trigger = groupFixture.debugElement.query(By.css('.mat-select-trigger')).nativeElement;
+        trigger.click();
+        groupFixture.detectChanges();
+
+        expect(document.querySelectorAll('.cdk-overlay-container mat-option').length)
+            .toBeGreaterThan(0, 'Expected at least one option to be rendered.');
       }));
     });
 
@@ -4198,6 +4212,30 @@ class SelectWithGroups {
 
   @ViewChild(MatSelect) select: MatSelect;
   @ViewChildren(MatOption) options: QueryList<MatOption>;
+}
+
+@Component({
+  selector: 'select-with-groups',
+  template: `
+    <mat-form-field>
+      <mat-select placeholder="Pokemon" [formControl]="control">
+        <mat-optgroup *ngFor="let group of pokemonTypes" [label]="group.name">
+          <ng-container *ngFor="let pokemon of group.pokemon">
+            <mat-option [value]="pokemon.value">{{ pokemon.viewValue }}</mat-option>
+          </ng-container>
+        </mat-optgroup>
+      </mat-select>
+    </mat-form-field>
+  `
+})
+class SelectWithGroupsAndNgContainer {
+  control = new FormControl();
+  pokemonTypes = [
+    {
+      name: 'Grass',
+      pokemon: [{ value: 'bulbasaur-0', viewValue: 'Bulbasaur' }]
+    }
+  ];
 }
 
 @Component({
