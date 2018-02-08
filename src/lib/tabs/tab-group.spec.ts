@@ -18,6 +18,7 @@ describe('MatTabGroup', () => {
         AsyncTabsTestApp,
         DisabledTabsTestApp,
         TabGroupWithSimpleApi,
+        TemplateTabs,
       ],
     });
 
@@ -387,6 +388,23 @@ describe('MatTabGroup', () => {
     });
   });
 
+  describe('lazy loaded tabs', () => {
+    it('should lazy load the second tab', async () => {
+      let fixture = TestBed.createComponent(TemplateTabs);
+      fixture.detectChanges();
+
+      let secondLabel = fixture.debugElement.queryAll(By.css('.mat-tab-label'))[1];
+      secondLabel.nativeElement.click();
+      fixture.detectChanges();
+
+      fixture.whenStable().then(() => {
+        fixture.detectChanges();
+        let child = fixture.debugElement.query(By.css('.child'));
+        expect(child.nativeElement).toBeDefined();
+      });
+    });
+   });
+
   /**
    * Checks that the `selectedIndex` has been updated; checks that the label and body have their
    * respective `active` classes
@@ -616,3 +634,19 @@ class TabGroupWithSimpleApi {
 })
 class NestedTabs {}
 
+@Component({
+  selector: 'template-tabs',
+  template: `
+    <mat-tab-group>
+      <mat-tab label="One">
+        Eager
+      </mat-tab>
+      <mat-tab label="Two">
+        <ng-template matTabContent>
+          <div class="child">Hi</div>
+        </ng-template>
+      </mat-tab>
+    </mat-tab-group>
+  `,
+ })
+ class TemplateTabs {}

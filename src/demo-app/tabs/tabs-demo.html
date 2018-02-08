@@ -293,3 +293,20 @@
     </div>
   </mat-tab>
 </mat-tab-group>
+
+<h1>Lazy Loaded Tabs</h1>
+<mat-tab-group>
+  <mat-tab label="First">
+    <ng-template matTabContent>
+      <counter></counter>
+    </ng-template>
+  </mat-tab>
+  <mat-tab label="Second">
+    <ng-template matTabContent>
+      <counter></counter>
+    </ng-template>
+  </mat-tab>
+  <mat-tab label="Third">
+      <counter></counter>
+  </mat-tab>  
+</mat-tab-group>
