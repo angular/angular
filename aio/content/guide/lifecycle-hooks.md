@@ -1,7 +1,5 @@
 # Lifecycle Hooks
 
-<img src="generated/images/guide/lifecycle-hooks/hooks-in-sequence.png" alt="Us" class="left">
-
 A component has a lifecycle managed by Angular.
 
 Angular creates it, renders it, creates and renders its children,
