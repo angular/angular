@@ -161,6 +161,13 @@ export class MatDatepickerInput<D> implements AfterContentInit, ControlValueAcce
       this._disabled = newValue;
       this._disabledChange.emit(newValue);
     }
+
+    if (newValue) {
+      // Normally, native input elements automatically blur if they turn disabled. This behavior
+      // is problematic, because it would mean that it triggers another change detection cycle,
+      // which then causes a changed after checked error if the input element was focused before.
+      this._elementRef.nativeElement.blur();
+    }
   }
   private _disabled: boolean;
 
