@@ -10,3 +10,23 @@
 {% macro returnType(returnType) -%}
   {%- if returnType %}: {$ returnType | escape $}{% endif -%}
 {%- endmacro -%}
+
+{%- macro renderParameters(parameters, containerClass, parameterClass) -%}
+{%- if parameters.length -%}
+<table class="is-full-width list-table parameters-table {$ containerClass $}">
+  <tbody>
+  {% for parameter in parameters %}
+    <tr class="{$ parameterClass $}">
+      <td class="param-name"><a id="{$ parameter.anchor $}"></a>{$ parameter.name $}</td>
+      <td class="param-description">
+        {% if parameter.description | trim %}{$ parameter.description | marked $}
+        {% elseif parameter.type %}<code>{$ parameter.type $}</code>
+        {% endif %}
+      </td>
+    </tr>{% endfor %}
+  </tbody>
+</table>
+{%- else -%}
+<p>There are no parameters.</p>
+{%- endif -%}
+{%- endmacro -%}
