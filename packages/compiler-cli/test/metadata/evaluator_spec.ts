@@ -47,7 +47,7 @@ describe('Evaluator', () => {
   });
 
   it('should be able to fold literal expressions', () => {
-    const consts = program.getSourceFile('consts.ts');
+    const consts = program.getSourceFile('consts.ts') !;
     expect(evaluator.isFoldable(findVarInitializer(consts, 'someName'))).toBeTruthy();
     expect(evaluator.isFoldable(findVarInitializer(consts, 'someBool'))).toBeTruthy();
     expect(evaluator.isFoldable(findVarInitializer(consts, 'one'))).toBeTruthy();
@@ -55,7 +55,7 @@ describe('Evaluator', () => {
   });
 
   it('should be able to fold expressions with foldable references', () => {
-    const expressions = program.getSourceFile('expressions.ts');
+    const expressions = program.getSourceFile('expressions.ts') !;
     symbols.define('someName', 'some-name');
     symbols.define('someBool', true);
     symbols.define('one', 1);
@@ -69,7 +69,7 @@ describe('Evaluator', () => {
   });
 
   it('should be able to evaluate literal expressions', () => {
-    const consts = program.getSourceFile('consts.ts');
+    const consts = program.getSourceFile('consts.ts') !;
     expect(evaluator.evaluateNode(findVarInitializer(consts, 'someName'))).toBe('some-name');
     expect(evaluator.evaluateNode(findVarInitializer(consts, 'someBool'))).toBe(true);
     expect(evaluator.evaluateNode(findVarInitializer(consts, 'one'))).toBe(1);
@@ -77,7 +77,7 @@ describe('Evaluator', () => {
   });
 
   it('should be able to evaluate expressions', () => {
-    const expressions = program.getSourceFile('expressions.ts');
+    const expressions = program.getSourceFile('expressions.ts') !;
     symbols.define('someName', 'some-name');
     symbols.define('someBool', true);
     symbols.define('one', 1);
@@ -124,7 +124,7 @@ describe('Evaluator', () => {
   });
 
   it('should report recursive references as symbolic', () => {
-    const expressions = program.getSourceFile('expressions.ts');
+    const expressions = program.getSourceFile('expressions.ts') !;
     expect(evaluator.evaluateNode(findVarInitializer(expressions, 'recursiveA')))
         .toEqual({__symbolic: 'reference', name: 'recursiveB'});
     expect(evaluator.evaluateNode(findVarInitializer(expressions, 'recursiveB')))
@@ -132,13 +132,13 @@ describe('Evaluator', () => {
   });
 
   it('should correctly handle special cases for CONST_EXPR', () => {
-    const const_expr = program.getSourceFile('const_expr.ts');
+    const const_expr = program.getSourceFile('const_expr.ts') !;
     expect(evaluator.evaluateNode(findVarInitializer(const_expr, 'bTrue'))).toEqual(true);
     expect(evaluator.evaluateNode(findVarInitializer(const_expr, 'bFalse'))).toEqual(false);
   });
 
   it('should resolve a forwardRef', () => {
-    const forwardRef = program.getSourceFile('forwardRef.ts');
+    const forwardRef = program.getSourceFile('forwardRef.ts') !;
     expect(evaluator.evaluateNode(findVarInitializer(forwardRef, 'bTrue'))).toEqual(true);
     expect(evaluator.evaluateNode(findVarInitializer(forwardRef, 'bFalse'))).toEqual(false);
   });
@@ -146,7 +146,7 @@ describe('Evaluator', () => {
   it('should return new expressions', () => {
     symbols.define('Value', {__symbolic: 'reference', module: './classes', name: 'Value'});
     evaluator = new Evaluator(symbols, new Map());
-    const newExpression = program.getSourceFile('newExpression.ts');
+    const newExpression = program.getSourceFile('newExpression.ts') !;
     expect(evaluator.evaluateNode(findVarInitializer(newExpression, 'someValue'))).toEqual({
       __symbolic: 'new',
       expression:
@@ -162,7 +162,7 @@ describe('Evaluator', () => {
   });
 
   it('should support referene to a declared module type', () => {
-    const declared = program.getSourceFile('declared.ts');
+    const declared = program.getSourceFile('declared.ts') !;
     const aDecl = findVar(declared, 'a') !;
     expect(evaluator.evaluateNode(aDecl.type !)).toEqual({
       __symbolic: 'select',
@@ -172,7 +172,7 @@ describe('Evaluator', () => {
   });
 
   it('should return errors for unsupported expressions', () => {
-    const errors = program.getSourceFile('errors.ts');
+    const errors = program.getSourceFile('errors.ts') !;
     const fDecl = findVar(errors, 'f') !;
     expect(evaluator.evaluateNode(fDecl.initializer !))
         .toEqual({__symbolic: 'error', message: 'Lambda not supported', line: 1, character: 12});
@@ -202,14 +202,14 @@ describe('Evaluator', () => {
   });
 
   it('should be able to fold an array spread', () => {
-    const expressions = program.getSourceFile('expressions.ts');
+    const expressions = program.getSourceFile('expressions.ts') !;
     symbols.define('arr', [1, 2, 3, 4]);
     const arrSpread = findVar(expressions, 'arrSpread') !;
     expect(evaluator.evaluateNode(arrSpread.initializer !)).toEqual([0, 1, 2, 3, 4, 5]);
   });
 
   it('should be able to produce a spread expression', () => {
-    const expressions = program.getSourceFile('expressions.ts');
+    const expressions = program.getSourceFile('expressions.ts') !;
     const arrSpreadRef = findVar(expressions, 'arrSpreadRef') !;
     expect(evaluator.evaluateNode(arrSpreadRef.initializer !)).toEqual([
       0, {__symbolic: 'spread', expression: {__symbolic: 'reference', name: 'arrImport'}}, 5

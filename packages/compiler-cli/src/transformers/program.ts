@@ -299,7 +299,10 @@ class AngularCompilerProgram implements Program {
             genFile = genFileByFileName.get(sourceFile.fileName);
             if (!sourceFile.isDeclarationFile && !GENERATED_FILES.test(sourceFile.fileName)) {
               // Note: sourceFile is the transformed sourcefile, not the original one!
-              emittedSourceFiles.push(this.tsProgram.getSourceFile(sourceFile.fileName));
+              const originalFile = this.tsProgram.getSourceFile(sourceFile.fileName);
+              if (originalFile) {
+                emittedSourceFiles.push(originalFile);
+              }
             }
           }
           this.writeFile(outFileName, outData, writeByteOrderMark, onError, genFile, sourceFiles);
