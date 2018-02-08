@@ -383,6 +383,14 @@ export class CdkConnectedOverlay implements OnDestroy, OnChanges {
           this._detachOverlay();
         }
       });
+    } else {
+      // Update the overlay size, in case the directive's inputs have changed
+      this._overlayRef.updateSize({
+        width: this.width,
+        minWidth: this.minWidth,
+        height: this.height,
+        minHeight: this.minHeight,
+      });
     }
 
     this._position.withDirection(this.dir);
