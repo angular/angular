@@ -3,9 +3,28 @@
 # A genrule with stamp=1 can read the resulting file from bazel-out/volatile-status.txt
 # See the section on stamping in docs/BAZEL.md
 
-set -u -e -o pipefail
+set -u -e -E -o pipefail
+
+echo "Running: $0" >&2
+
+function onError {
+  echo "Failed to execute: $0"
+  echo ""
+}
+
+# Setup crash trap
+trap 'onError' ERR
+
+
 
 echo BUILD_SCM_HASH $(git rev-parse HEAD)
+
+if [[ "$(git tag)" == "" ]]; then
+  echo "No git tags found, can't stamp the build."
+  echo "Run: "
+  echo "       git fetch git@github.com:angular/angular.git --tags"
+  echo ""
+fi
 
 BUILD_SCM_VERSION_RAW=$(git describe --abbrev=7 --tags HEAD)
 
