@@ -10,7 +10,6 @@ import {QueryList} from '../../linker';
 import {Type} from '../../type';
 import {LNode} from './node';
 
-
 /** Used for tracking queries (e.g. ViewChild, ContentChild). */
 export interface LQueries {
   /**

@@ -19,7 +19,7 @@ import {assertNodeType} from './node_assert';
 import {appendChild, insertChild, insertView, appendProjectedNode, removeView, canInsertNativeNode} from './node_manipulation';
 import {matchingSelectorIndex} from './node_selector_matcher';
 import {ComponentDef, ComponentTemplate, ComponentType, DirectiveDef, DirectiveType} from './interfaces/definition';
-import {RElement, RText, Renderer3, RendererFactory3, ProceduralRenderer3, ObjectOrientedRenderer3, RendererStyleFlags3} from './interfaces/renderer';
+import {RElement, RText, Renderer3, RendererFactory3, ProceduralRenderer3, ObjectOrientedRenderer3, RendererStyleFlags3, isProceduralRenderer} from './interfaces/renderer';
 import {isDifferent, stringify} from './util';
 import {executeHooks, executeContentHooks, queueLifecycleHooks, queueInitHooks, executeInitHooks} from './hooks';
 
@@ -569,8 +569,8 @@ export function listener(eventName: string, listener: EventListener, useCapture 
 
   // In order to match current behavior, native DOM event listeners must be added for all
   // events (including outputs).
-  if ((renderer as ProceduralRenderer3).listen) {
-    const cleanupFn = (renderer as ProceduralRenderer3).listen(native, eventName, listener);
+  if (isProceduralRenderer(renderer)) {
+    const cleanupFn = renderer.listen(native, eventName, listener);
     (cleanup || (cleanup = currentView.cleanup = [])).push(cleanupFn, null);
   } else {
     native.addEventListener(eventName, listener, useCapture);
@@ -1091,12 +1091,12 @@ function refreshDynamicChildren() {
 }
 
 /**
- * Creates an LViewNode.
+ * Marks the start of an embedded view.
  *
  * @param viewBlockId The ID of this view
- * @return Whether or not this view is in creation mode
+ * @return boolean Whether or not this view is in creation mode
  */
-export function viewStart(viewBlockId: number): boolean {
+export function embeddedViewStart(viewBlockId: number): boolean {
   const container =
       (isParent ? previousOrParentNode : previousOrParentNode.parent !) as LContainerNode;
   ngDevMode && assertNodeType(container, LNodeFlags.Container);
@@ -1148,8 +1148,8 @@ function getOrCreateEmbeddedTView(viewIndex: number, parent: LContainerNode): TV
   return tContainer[viewIndex];
 }
 
-/** Marks the end of the LViewNode. */
-export function viewEnd(): void {
+/** Marks the end of an embedded view. */
+export function embeddedViewEnd(): void {
   isParent = false;
   const viewNode = previousOrParentNode = currentView.node as LViewNode;
   const container = previousOrParentNode.parent as LContainerNode;
