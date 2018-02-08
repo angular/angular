@@ -506,11 +506,11 @@ export function createTView(): TView {
 
 function setUpAttributes(native: RElement, attrs: string[]): void {
   ngDevMode && assertEqual(attrs.length % 2, 0, 'attrs.length % 2');
-  const isProceduralRenderer = (renderer as ProceduralRenderer3).setAttribute;
+
+  const isProc = isProceduralRenderer(renderer);
   for (let i = 0; i < attrs.length; i += 2) {
-    isProceduralRenderer ?
-        (renderer as ProceduralRenderer3).setAttribute !(native, attrs[i], attrs[i | 1]) :
-        native.setAttribute(attrs[i], attrs[i | 1]);
+    isProc ? (renderer as ProceduralRenderer3).setAttribute(native, attrs[i], attrs[i | 1]) :
+             native.setAttribute(attrs[i], attrs[i | 1]);
   }
 }
 
@@ -530,9 +530,9 @@ export function locateHostElement(
   rendererFactory = factory;
   const defaultRenderer = factory.createRenderer(null, null);
   const rNode = typeof elementOrSelector === 'string' ?
-      ((defaultRenderer as ProceduralRenderer3).selectRootElement ?
-           (defaultRenderer as ProceduralRenderer3).selectRootElement(elementOrSelector) :
-           (defaultRenderer as ObjectOrientedRenderer3).querySelector !(elementOrSelector)) :
+      (isProceduralRenderer(defaultRenderer) ?
+           defaultRenderer.selectRootElement(elementOrSelector) :
+           defaultRenderer.querySelector(elementOrSelector)) :
       elementOrSelector;
   if (ngDevMode && !rNode) {
     if (typeof elementOrSelector === 'string') {
@@ -634,13 +634,11 @@ export function elementAttribute(index: number, attrName: string, value: any): v
   if (value !== NO_CHANGE) {
     const element = data[index] as LElementNode;
     if (value == null) {
-      (renderer as ProceduralRenderer3).removeAttribute ?
-          (renderer as ProceduralRenderer3).removeAttribute(element.native, attrName) :
-          element.native.removeAttribute(attrName);
+      isProceduralRenderer(renderer) ? renderer.removeAttribute(element.native, attrName) :
+                                       element.native.removeAttribute(attrName);
     } else {
-      (renderer as ProceduralRenderer3).setAttribute ?
-          (renderer as ProceduralRenderer3)
-              .setAttribute(element.native, attrName, stringify(value)) :
+      isProceduralRenderer(renderer) ?
+          renderer.setAttribute(element.native, attrName, stringify(value)) :
           element.native.setAttribute(attrName, stringify(value));
     }
   }
@@ -676,10 +674,9 @@ export function elementProperty<T>(index: number, propName: string, value: T | N
     setInputsForProperty(dataValue, value);
   } else {
     const native = node.native;
-    (renderer as ProceduralRenderer3).setProperty ?
-        (renderer as ProceduralRenderer3).setProperty(native, propName, value) :
-        native.setProperty ? native.setProperty(propName, value) :
-                             (native as any)[propName] = value;
+    isProceduralRenderer(renderer) ? renderer.setProperty(native, propName, value) :
+                                     (native.setProperty ? native.setProperty(propName, value) :
+                                                           (native as any)[propName] = value);
   }
 }
 
@@ -764,14 +761,12 @@ export function elementClass<T>(index: number, className: string, value: T | NO_
   if (value !== NO_CHANGE) {
     const lElement = data[index] as LElementNode;
     if (value) {
-      (renderer as ProceduralRenderer3).addClass ?
-          (renderer as ProceduralRenderer3).addClass(lElement.native, className) :
-          lElement.native.classList.add(className);
+      isProceduralRenderer(renderer) ? renderer.addClass(lElement.native, className) :
+                                       lElement.native.classList.add(className);
 
     } else {
-      (renderer as ProceduralRenderer3).removeClass ?
-          (renderer as ProceduralRenderer3).removeClass(lElement.native, className) :
-          lElement.native.classList.remove(className);
+      isProceduralRenderer(renderer) ? renderer.removeClass(lElement.native, className) :
+                                       lElement.native.classList.remove(className);
     }
   }
 }
@@ -790,18 +785,14 @@ export function elementStyle<T>(
   if (value !== NO_CHANGE) {
     const lElement = data[index] as LElementNode;
     if (value == null) {
-      (renderer as ProceduralRenderer3).removeStyle ?
-          (renderer as ProceduralRenderer3)
-              .removeStyle(lElement.native, styleName, RendererStyleFlags3.DashCase) :
+      isProceduralRenderer(renderer) ?
+          renderer.removeStyle(lElement.native, styleName, RendererStyleFlags3.DashCase) :
           lElement.native.style.removeProperty(styleName);
     } else {
-      (renderer as ProceduralRenderer3).setStyle ?
-          (renderer as ProceduralRenderer3)
-              .setStyle(
-                  lElement.native, styleName, suffix ? stringify(value) + suffix : stringify(value),
-                  RendererStyleFlags3.DashCase) :
-          lElement.native.style.setProperty(
-              styleName, suffix ? stringify(value) + suffix : stringify(value));
+      const strValue = suffix ? stringify(value) + suffix : stringify(value);
+      isProceduralRenderer(renderer) ?
+          renderer.setStyle(lElement.native, styleName, strValue, RendererStyleFlags3.DashCase) :
+          lElement.native.style.setProperty(styleName, strValue);
     }
   }
 }
@@ -821,9 +812,8 @@ export function elementStyle<T>(
 export function text(index: number, value?: any): void {
   ngDevMode && assertEqual(currentView.bindingStartIndex, null, 'bindingStartIndex');
   const textNode = value != null ?
-      ((renderer as ProceduralRenderer3).createText ?
-           (renderer as ProceduralRenderer3).createText(stringify(value)) :
-           (renderer as ObjectOrientedRenderer3).createTextNode !(stringify(value))) :
+      (isProceduralRenderer(renderer) ? renderer.createText(stringify(value)) :
+                                        renderer.createTextNode(stringify(value))) :
       null;
   const node = createLNode(index, LNodeFlags.Element, textNode);
   // Text nodes are self closing.
@@ -845,15 +835,13 @@ export function textBinding<T>(index: number, value: T | NO_CHANGE): void {
   if (existingNode.native) {
     // If DOM node exists and value changed, update textContent
     value !== NO_CHANGE &&
-        ((renderer as ProceduralRenderer3).setValue ?
-             (renderer as ProceduralRenderer3).setValue(existingNode.native, stringify(value)) :
-             existingNode.native.textContent = stringify(value));
+        (isProceduralRenderer(renderer) ? renderer.setValue(existingNode.native, stringify(value)) :
+                                          existingNode.native.textContent = stringify(value));
   } else {
     // Node was created but DOM node creation was delayed. Create and append now.
-    existingNode.native =
-        ((renderer as ProceduralRenderer3).createText ?
-             (renderer as ProceduralRenderer3).createText(stringify(value)) :
-             (renderer as ObjectOrientedRenderer3).createTextNode !(stringify(value)));
+    existingNode.native = isProceduralRenderer(renderer) ?
+        renderer.createText(stringify(value)) :
+        renderer.createTextNode(stringify(value));
     insertChild(existingNode, currentView);
   }
 }
