@@ -80,6 +80,8 @@ import {
   MAT_OPTION_PARENT_COMPONENT,
   mixinDisableRipple,
   CanDisableRipple,
+  _countGroupLabelsBeforeOption,
+  _getOptionScrollPosition,
 } from '@angular/material/core';
 import {MatFormField, MatFormFieldControl} from '@angular/material/form-field';
 import {Observable} from 'rxjs/Observable';
@@ -971,19 +973,16 @@ export class MatSelect extends _MatSelectMixinBase implements AfterContentInit, 
 
   /** Scrolls the active option into view. */
   private _scrollActiveOptionIntoView(): void {
-    const itemHeight = this._getItemHeight();
     const activeOptionIndex = this._keyManager.activeItemIndex || 0;
-    const labelCount = MatOption.countGroupLabelsBeforeOption(activeOptionIndex,
-        this.options, this.optionGroups);
-    const scrollOffset = (activeOptionIndex + labelCount) * itemHeight;
-    const panelTop = this.panel.nativeElement.scrollTop;
+    const labelCount = _countGroupLabelsBeforeOption(activeOptionIndex, this.options,
+        this.optionGroups);
 
-    if (scrollOffset < panelTop) {
-      this.panel.nativeElement.scrollTop = scrollOffset;
-    } else if (scrollOffset + itemHeight > panelTop + SELECT_PANEL_MAX_HEIGHT) {
-      this.panel.nativeElement.scrollTop =
-          Math.max(0, scrollOffset - SELECT_PANEL_MAX_HEIGHT + itemHeight);
-    }
+    this.panel.nativeElement.scrollTop = _getOptionScrollPosition(
+      activeOptionIndex + labelCount,
+      this._getItemHeight(),
+      this.panel.nativeElement.scrollTop,
+      SELECT_PANEL_MAX_HEIGHT
+    );
   }
 
   /** Focuses the select element. */
@@ -1012,8 +1011,8 @@ export class MatSelect extends _MatSelectMixinBase implements AfterContentInit, 
     let selectedOptionOffset =
         this.empty ? 0 : this._getOptionIndex(this._selectionModel.selected[0])!;
 
-    selectedOptionOffset += MatOption.countGroupLabelsBeforeOption(selectedOptionOffset,
-        this.options, this.optionGroups);
+    selectedOptionOffset += _countGroupLabelsBeforeOption(selectedOptionOffset, this.options,
+        this.optionGroups);
 
     // We must maintain a scroll buffer so the selected option will be scrolled to the
     // center of the overlay panel rather than the top.
