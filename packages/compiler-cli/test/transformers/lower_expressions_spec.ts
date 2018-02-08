@@ -192,7 +192,7 @@ function convert(annotatedSource: string) {
 
   const program = ts.createProgram(
       [fileName], {module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2017}, host);
-  const moduleSourceFile = program.getSourceFile(fileName);
+  const moduleSourceFile = program.getSourceFile(fileName) !;
   const transformers: ts.CustomTransformers = {
     before: [getExpressionLoweringTransformFactory(
         {

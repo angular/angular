@@ -73,9 +73,9 @@ class AngularCompilerProgram implements Program {
       private host: CompilerHost, oldProgram?: Program) {
     this.rootNames = [...rootNames];
 
-    if (ts.version < '2.4.2' || (ts.version >= '2.7.0' && !options.disableTypeScriptVersionCheck)) {
+    if (ts.version < '2.7.2' || (ts.version >= '2.8.0' && !options.disableTypeScriptVersionCheck)) {
       throw new Error(
-          `The Angular Compiler requires TypeScript >=2.4.2 and <2.7 but ${ts.version} was found instead.`);
+          `The Angular Compiler requires TypeScript >=2.7.2 and <2.8.0 but ${ts.version} was found instead.`);
     }
 
     this.oldTsProgram = oldProgram ? oldProgram.getTsProgram() : undefined;
@@ -304,7 +304,10 @@ class AngularCompilerProgram implements Program {
             genFile = genFileByFileName.get(sourceFile.fileName);
             if (!sourceFile.isDeclarationFile && !GENERATED_FILES.test(sourceFile.fileName)) {
               // Note: sourceFile is the transformed sourcefile, not the original one!
-              emittedSourceFiles.push(this.tsProgram.getSourceFile(sourceFile.fileName));
+              const originalFile = this.tsProgram.getSourceFile(sourceFile.fileName);
+              if (originalFile) {
+                emittedSourceFiles.push(originalFile);
+              }
             }
           }
           this.writeFile(outFileName, outData, writeByteOrderMark, onError, genFile, sourceFiles);
