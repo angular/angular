@@ -721,27 +721,29 @@ function setInputsForProperty(inputs: PropertyAliasValue, value: any): void {
  * @returns PropertyAliases|null aggregate of all properties if any, `null` otherwise
  */
 function generatePropertyAliases(lNodeFlags: number, direction: Direction): PropertyAliases|null {
-  const start = lNodeFlags >> LNodeFlags.INDX_SHIFT;
   const size = (lNodeFlags & LNodeFlags.SIZE_MASK) >> LNodeFlags.SIZE_SHIFT;
-  const isInput = direction === Direction.Input;
-  const propStore: PropertyAliases = {};
-  let hasProp = false;
+  let propStore: PropertyAliases|null = null;
 
-  for (let i = start, ii = start + size; i < ii; i++) {
-    const directiveDef: DirectiveDef<any> = tData ![i] as DirectiveDef<any>;
-    const propertyAliasMap: {[publicName: string]: string} =
-        isInput ? directiveDef.inputs : directiveDef.outputs;
-    for (let publicName in propertyAliasMap) {
-      if (propertyAliasMap.hasOwnProperty(publicName)) {
-        hasProp = true;
-        const internalName = propertyAliasMap[publicName];
-        const hasProperty = propStore.hasOwnProperty(publicName);
-        hasProperty ? propStore[publicName].push(i, internalName) :
-                      (propStore[publicName] = [i, internalName]);
+  if (size > 0) {
+    const start = lNodeFlags >> LNodeFlags.INDX_SHIFT;
+    const isInput = direction === Direction.Input;
+
+    for (let i = start, ii = start + size; i < ii; i++) {
+      const directiveDef = tData ![i] as DirectiveDef<any>;
+      const propertyAliasMap: {[publicName: string]: string} =
+          isInput ? directiveDef.inputs : directiveDef.outputs;
+      for (let publicName in propertyAliasMap) {
+        if (propertyAliasMap.hasOwnProperty(publicName)) {
+          propStore = propStore || {};
+          const internalName = propertyAliasMap[publicName];
+          const hasProperty = propStore.hasOwnProperty(publicName);
+          hasProperty ? propStore[publicName].push(i, internalName) :
+                        (propStore[publicName] = [i, internalName]);
+        }
       }
     }
   }
-  return hasProp ? propStore : null;
+  return propStore;
 }
 
 /**
