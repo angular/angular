@@ -51,7 +51,7 @@ export class MatTab extends _MatTabMixinBase implements OnInit, CanDisable, OnCh
    */
   @ContentChild(MatTabContent, {read: TemplateRef}) _explicitContent: TemplateRef<any>;
 
-  /** Template inside the MatTab view that contains an <ng-content>. */
+  /** Template inside the MatTab view that contains an `<ng-content>`. */
   @ViewChild(TemplateRef) _implicitContent: TemplateRef<any>;
 
   /** The plain text label for the tab, used when there is no template label. */

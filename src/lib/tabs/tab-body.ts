@@ -24,14 +24,7 @@ import {
   forwardRef,
   ViewChild,
 } from '@angular/core';
-import {
-  trigger,
-  state,
-  style,
-  animate,
-  transition,
-  AnimationEvent,
-} from '@angular/animations';
+import {AnimationEvent} from '@angular/animations';
 import {TemplatePortal, CdkPortalOutlet, PortalHostDirective} from '@angular/cdk/portal';
 import {Directionality, Direction} from '@angular/cdk/bidi';
 import {Subscription} from 'rxjs/Subscription';

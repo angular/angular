@@ -73,7 +73,7 @@ describe('LiveAnnouncer', () => {
 
     it('should return a promise that resolves after the text has been announced', fakeAsync(() => {
       const spy = jasmine.createSpy('announce spy');
-      const promise = announcer.announce('something').then(spy);
+      announcer.announce('something').then(spy);
 
       expect(spy).not.toHaveBeenCalled();
       tick(100);
