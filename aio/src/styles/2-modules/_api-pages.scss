@@ -1,23 +1,102 @@
-.api-info-bar {
-  max-width: 800px;
-  text-align: left;
+.api-body {
 
-  span {
-    margin: 0 16px 0 0;
+  .class-overview {
+    position: relative;
 
-    @media screen and (max-width: 600px) {
-      display: block;
+    code-example {
+        clear: left;
+    }
+  }
+
+  .sidebar {
+      box-shadow: 0 2px 2px rgba(10, 16, 20, 0.24), 0 0 2px rgba(10, 16, 20, 0.12);
+      border-radius: 2px;
+      background: #FAFAFA;
+      float: right;
+      margin: 20px;
+      padding: 0 24px 14px;
+
+      h2 {
+        margin: 18px 0 4px;
+      }
+
+      ul {
+        margin: 0;
+        padding-left: 14px;
+      }
+  }
+  .inline-sidebar {
+      display: none;
+  }
+
+  @media (max-width: 1200px) {
+      .sidebar {
+          display: none;
+      }
+      .inline-sidebar {
+          display: block;
+      }
+  }
+
+
+  .method-table {
+    h3 {
+      margin: 6px 0;
+      font-weight: bold;
     }
 
+    h4 {
+      font-size: 14px;
+      font-weight: bold;
+      margin-top: 12px;
+    }
   }
+
+  .api-heading {
+    padding: 5px 0;
+    font-size: 16px;
+  }
+
+  .properties-table {
+    font-size: 14px;
+
+    thead th {
+      &:nth-child(1) {
+        width: 20%;
+      }
+      &:nth-child(2) {
+        width: 20%;
+      }
+    }
+  }
+
+  .parameters-table {
+    margin-top: 0;
+    font-size: 14px;
+    td:nth-child(1) {
+      width: 20%;
+    }
+  }
+
+  details.overloads {
+    margin-left: -8px;
+
+    summary {
+      height: inherit;
+      padding: 8px 12px;
+      h4 {
+        margin: 0;
+        clear: left;
+      }
+    }
 }
 
-.api-heading {
-  margin-top: 24px;
-  margin-bottom: 18px;
-  font-size: 16px;
-}
+  .api-section aio-code {
+    background-color: rgba(241, 241, 241, 0.2);
+  }
 
-.overloads .detail-contents {
-  padding-top: 0;
+  .from-constructor {
+    font-style: italic;
+    color: $blue;
+  }
 }
