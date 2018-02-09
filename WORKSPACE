@@ -26,11 +26,11 @@ sass_repositories()
 git_repository(
   name = "build_bazel_rules_typescript",
   remote = "https://github.com/bazelbuild/rules_typescript.git",
-  commit = "89d2c75066bea3d9c942f29dd1d2ea543c58d6d5",
+  tag = "0.10.0",
 )
 
 # Setup TypeScript Bazel workspace
-load("@build_bazel_rules_typescript//:setup.bzl", "ts_setup_workspace")
+load("@build_bazel_rules_typescript//:defs.bzl", "ts_setup_workspace")
 ts_setup_workspace()
 
 # Add Angular rules

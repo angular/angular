@@ -1,5 +1,5 @@
 <button *ngFor="let tooltip of tooltips" matTooltip="Tooltip message">Tooltip Button</button>
-<button (click)="tooltips.push(null)">Add tooltip</button>
+<button (click)="tooltips.push('')">Add tooltip</button>
 <button (click)="tooltips.shift()" [disabled]="tooltips.length == 0">Remove tooltip</button>
 
 <div class="demo-tooltip">
