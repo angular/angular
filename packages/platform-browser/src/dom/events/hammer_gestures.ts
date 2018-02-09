@@ -64,14 +64,44 @@ export interface HammerInstance {
 }
 
 /**
+ * @whatItDoes Configures HammerJS.
+ *
+ * @description
+ *
+ * Use the `HammerGestureConfig` class to configure
+ * [HammerJS](https://hammerjs.github.io/getting-started/),
+ * an external library you can use with Angular to support gesture
+ * recognition. The
+ * [dependency injection token](guide/dependency-injection#dependency-injection-tokens)
+ * should be bound to an instance of {@link   HammerGestureConfig}.
+ * There are three key parts to the `HammerGestureConfig` class.
+ *
  * @experimental
  */
 @Injectable()
 export class HammerGestureConfig {
+  /**
+   * The `events` array is an array of strings that specifies the HammerJS
+   * [events](https://github.com/angular/angular/blob/master/packages/platform-browser/src/dom/events/hammer_gestures.ts#L15)
+   * you're supporting.
+   */
+
   events: string[] = [];
+
+  /**
+   * The `overrides` object is a map of recognizer name to configuration that the
+   * default implementation uses. For example, to disable the rotate gesture,
+   * you would use `{"rotate": {"enabled": false}}`.
+   */
 
   overrides: {[key: string]: Object} = {};
 
+
+  /**
+   * The `buildHammer()` method takes an HTML element and creates a Manager instance,
+   * which Angular refers to as `HammerInstance`, with the configuration you specify.
+   *
+   */
   buildHammer(element: HTMLElement): HammerInstance {
     const mc = new Hammer(element);
 
