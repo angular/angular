@@ -14,6 +14,7 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { ROUTES } from '@angular/router';
 
 
+import { AnnouncementBarComponent } from 'app/embedded/announcement-bar/announcement-bar.component';
 import { AppComponent } from 'app/app.component';
 import { EMBEDDED_COMPONENTS, EmbeddedComponentsMap } from 'app/embed-components/embed-components.service';
 import { CustomIconRegistry, SVG_ICONS } from 'app/shared/custom-icon-registry';
@@ -110,6 +111,7 @@ export const svgIconProviders = [
     SharedModule
   ],
   declarations: [
+    AnnouncementBarComponent,
     AppComponent,
     DocViewerComponent,
     DtComponent,
@@ -145,6 +147,7 @@ export const svgIconProviders = [
       provide: EMBEDDED_COMPONENTS,
       useValue: {
         /* tslint:disable: max-line-length */
+        'aio-announcement-bar': [AnnouncementBarComponent],
         'aio-toc': [TocComponent],
         'aio-api-list, aio-contributor-list, aio-file-not-found-search, aio-resource-list, code-example, code-tabs, current-location, live-example': embeddedModulePath,
         /* tslint:enable: max-line-length */
@@ -158,7 +161,7 @@ export const svgIconProviders = [
       multi: true,
     },
   ],
-  entryComponents: [ TocComponent ],
+  entryComponents: [ AnnouncementBarComponent, TocComponent ],
   bootstrap: [ AppComponent ]
 })
 export class AppModule {
