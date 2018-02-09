@@ -1742,23 +1742,9 @@ function valueInData<T>(data: any[], index: number, value?: T): T {
   return value !;
 }
 
-/**
- * Gets a blueprint of an object or array if one has already been saved, or copies the
- * object and saves it for the next change detection run if it hasn't.
- */
-export function getMutableBlueprint(obj: any): any {
-  if (creationMode) {
-    initBindings();
-    // Object must be copied so multiple template instances don't mutate each other's blueprints
-    return memory(bindingIndex++, copyObject(obj));
-  } else {
-    return memory(bindingIndex++);
-  }
-}
-
-/** Copies an object or array */
-export function copyObject(obj: any): any {
-  return Array.isArray(obj) ? obj.slice() : {...obj};
+/** Gets the binding at the current bindingIndex and increments index. */
+export function getCurrentBinding(): any {
+  return data[bindingIndex++];
 }
 
 export function getCurrentQueries(QueryType: {new (): LQueries}): LQueries {

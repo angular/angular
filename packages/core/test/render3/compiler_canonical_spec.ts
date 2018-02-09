@@ -226,7 +226,7 @@ describe('compiler specification', () => {
                 r3.E(0, MyComp);
                 r3.e();
               }
-              r3.p(0, 'names', r3.o1(e0_literal, 1, ctx.customName));
+              r3.p(0, 'names', r3.o1(e0_ff, ctx.customName));
               MyComp.ngComponentDef.h(1, 0);
               r3.r(1, 0);
             }
@@ -235,11 +235,10 @@ describe('compiler specification', () => {
         }
 
         // NORMATIVE
-        const e0_literal = ['Nancy', null];
+        const e0_ff = (v: any) => ['Nancy', v];
         // /NORMATIVE
 
         expect(renderComp(MyApp)).toEqual(`<my-comp><p>Nancy</p><p>Bess</p></my-comp>`);
-        expect(e0_literal).toEqual(['Nancy', null]);
       });
 
       it('should support object literals', () => {
@@ -292,7 +291,7 @@ describe('compiler specification', () => {
                 r3.E(0, ObjectComp);
                 r3.e();
               }
-              r3.p(0, 'config', r3.o1(e0_literal, 'animation', ctx.name));
+              r3.p(0, 'config', r3.o1(e0_ff, ctx.name));
               ObjectComp.ngComponentDef.h(1, 0);
               r3.r(1, 0);
             }
@@ -301,11 +300,10 @@ describe('compiler specification', () => {
         }
 
         // NORMATIVE
-        const e0_literal = {duration: 500, animation: null};
+        const e0_ff = (v: any) => { return {duration: 500, animation: v}; };
         // /NORMATIVE
 
         expect(renderComp(MyApp)).toEqual(`<object-comp><p>500</p><p>slide</p></object-comp>`);
-        expect(e0_literal).toEqual({duration: 500, animation: null});
       });
 
       it('should support expressions nested deeply in object/array literals', () => {
@@ -367,9 +365,7 @@ describe('compiler specification', () => {
               }
               r3.p(
                   0, 'config',
-                  r3.o2(
-                      e0_literal_2, 'animation', ctx.name, 'actions',
-                      r3.o1(e0_literal_1, 1, r3.o1(e0_literal, 'duration', ctx.duration))));
+                  r3.o2(e0_ff_2, ctx.name, r3.o1(e0_ff_1, r3.o1(e0_ff, ctx.duration))));
               NestedComp.ngComponentDef.h(1, 0);
               r3.r(1, 0);
             }
@@ -378,10 +374,10 @@ describe('compiler specification', () => {
         }
 
         // NORMATIVE
-        const e0_literal = {opacity: 1, duration: null};
+        const e0_ff = (v: any) => { return {opacity: 1, duration: v}; };
         const c0 = {opacity: 0, duration: 0};
-        const e0_literal_1 = [c0, null];
-        const e0_literal_2 = {animation: null, actions: null};
+        const e0_ff_1 = (v: any) => [c0, v];
+        const e0_ff_2 = (v1: any, v2: any) => { return {animation: v1, actions: v2}; };
         // /NORMATIVE
 
         expect(renderComp(MyApp))

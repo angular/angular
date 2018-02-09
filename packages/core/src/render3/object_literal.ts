@@ -6,241 +6,206 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {assertEqual} from './assert';
-import {NO_CHANGE, bind, copyObject, getMutableBlueprint} from './instructions';
-
-
+import {NO_CHANGE, bind, getCurrentBinding} from './instructions';
 
 /**
- * Updates an expression in an object or array literal if the expression has changed.
- * Used in objectLiteral instructions.
- *
- * @param obj Object to update
- * @param key Key to set in object
- * @param exp Expression to set at key
- * @returns Whether or not there has been a change
+ * Whether one of the bindings in an object/array literal has changed.
+ * Resets to false at the start of every o() instruction.
  */
-function updateBinding(obj: any, key: string | number, exp: any): boolean {
-  if (bind(exp) !== NO_CHANGE) {
-    obj[key] = exp;
-    return true;
+let different = false;
+
+/**
+ * Gets the latest value for this binding.
+ *
+ * @param value new value to check against binding
+ */
+function getLatestValue(value: any): any {
+  // When expressions are nested like {a: {b: exp}}, o() instructions must be built on top
+  // of each other (e.g. o1(e0_ff, o1(e0_ff_1, ctx.exp)). For these cases, the value might be
+  // NO_CHANGES from the level before it, so the binding needs to be retrieved manually.
+  if (value === NO_CHANGE) return getCurrentBinding();
+
+  if (bind(value) !== NO_CHANGE) {
+    different = true;
   }
-  return false;
-}
-
-/** Updates two expressions in an object or array literal if they have changed. */
-function updateBinding2(
-    obj: any, key1: string | number, exp1: any, key2: string | number, exp2: any): boolean {
-  let different = updateBinding(obj, key1, exp1);
-  return updateBinding(obj, key2, exp2) || different;
-}
-
-/** Updates four expressions in an object or array literal if they have changed. */
-function updateBinding4(
-    obj: any, key1: string | number, exp1: any, key2: string | number, exp2: any,
-    key3: string | number, exp3: any, key4: string | number, exp4: any): boolean {
-  let different = updateBinding2(obj, key1, exp1, key2, exp2);
-  return updateBinding2(obj, key3, exp3, key4, exp4) || different;
+  return value;
 }
 
 /**
- * Updates the expression in the given object or array if it has changed and returns a copy.
+ * If the object or array has changed, returns a copy with the updated expression.
  * Or if the expression hasn't changed, returns NO_CHANGE.
  *
- * @param  obj Object to update
- * @param key Key to set in object
- * @param exp Expression to set at key
- * @returns A copy of the object or NO_CHANGE
+ * @param factoryFn Function that returns an updated instance of the object/array
+ * @param exp Updated expression value
+ * @returns A copy of the object/array or NO_CHANGE
  */
-export function objectLiteral1(obj: any, key: string | number, exp: any): any {
-  obj = getMutableBlueprint(obj);
-  if (bind(exp) === NO_CHANGE) {
-    return NO_CHANGE;
-  } else {
-    obj[key] = exp;
-    // Must copy to change identity when binding changes for backwards compatibility
-    // Also supports nested expressions like {a: {b: exp}}
-    return copyObject(obj);
-  }
+export function objectLiteral1(factoryFn: (v: any) => any, exp: any): any {
+  different = false;
+  exp = getLatestValue(exp);
+  return different ? factoryFn(exp) : NO_CHANGE;
 }
 
 /**
- * Updates the expressions in the given object or array if they have changed and returns a copy.
+ * If the object or array has changed, returns a copy with all updated expressions.
  * Or if no expressions have changed, returns NO_CHANGE.
  *
- * @param obj
- * @param key1
+ * @param factoryFn
  * @param exp1
- * @param key2
  * @param exp2
- * @returns A copy of the array or NO_CHANGE
+ * @returns A copy of the object/array or NO_CHANGE
  */
-export function objectLiteral2(
-    obj: any, key1: string | number, exp1: any, key2: string | number, exp2: any): any {
-  obj = getMutableBlueprint(obj);
-  return updateBinding2(obj, key1, exp1, key2, exp2) ? copyObject(obj) : NO_CHANGE;
+export function objectLiteral2(factoryFn: (v1: any, v2: any) => any, exp1: any, exp2: any): any {
+  different = false;
+  exp1 = getLatestValue(exp1);
+  exp2 = getLatestValue(exp2);
+  return different ? factoryFn(exp1, exp2) : NO_CHANGE;
 }
 
 /**
- * Updates the expressions in the given object or array if they have changed and returns a copy.
+ * If the object or array has changed, returns a copy with all updated expressions.
  * Or if no expressions have changed, returns NO_CHANGE.
  *
- * @param obj
- * @param key1
+ * @param factoryFn
  * @param exp1
- * @param key2
  * @param exp2
- * @param key3
  * @param exp3
- * @returns A copy of the object or NO_CHANGE
+ * @returns A copy of the object/array or NO_CHANGE
  */
 export function objectLiteral3(
-    obj: any, key1: string | number, exp1: any, key2: string | number, exp2: any,
-    key3: string | number, exp3: any): any {
-  obj = getMutableBlueprint(obj);
-  let different = updateBinding2(obj, key1, exp1, key2, exp2);
-  return updateBinding(obj, key3, exp3) || different ? copyObject(obj) : NO_CHANGE;
+    factoryFn: (v1: any, v2: any, v3: any) => any, exp1: any, exp2: any, exp3: any): any {
+  different = false;
+  exp1 = getLatestValue(exp1);
+  exp2 = getLatestValue(exp2);
+  exp3 = getLatestValue(exp3);
+  return different ? factoryFn(exp1, exp2, exp3) : NO_CHANGE;
 }
 
 /**
- * Updates the expressions in the given object or array if they have changed and returns a copy.
+ * If the object or array has changed, returns a copy with all updated expressions.
  * Or if no expressions have changed, returns NO_CHANGE.
  *
- * @param obj
- * @param key1
+ * @param factoryFn
  * @param exp1
- * @param key2
  * @param exp2
- * @param key3
  * @param exp3
- * @param key4
  * @param exp4
- * @returns A copy of the object or NO_CHANGE
+ * @returns A copy of the object/array or NO_CHANGE
  */
 export function objectLiteral4(
-    obj: any, key1: string | number, exp1: any, key2: string | number, exp2: any,
-    key3: string | number, exp3: any, key4: string | number, exp4: any): any {
-  obj = getMutableBlueprint(obj);
-  return updateBinding4(obj, key1, exp1, key2, exp2, key3, exp3, key4, exp4) ? copyObject(obj) :
-                                                                               NO_CHANGE;
+    factoryFn: (v1: any, v2: any, v3: any, v4: any) => any, exp1: any, exp2: any, exp3: any,
+    exp4: any): any {
+  different = false;
+  exp1 = getLatestValue(exp1);
+  exp2 = getLatestValue(exp2);
+  exp3 = getLatestValue(exp3);
+  exp4 = getLatestValue(exp4);
+  return different ? factoryFn(exp1, exp2, exp3, exp4) : NO_CHANGE;
 }
 
 /**
- * Updates the expressions in the given object or array if they have changed and returns a copy.
+ * If the object or array has changed, returns a copy with all updated expressions.
  * Or if no expressions have changed, returns NO_CHANGE.
  *
- * @param obj
- * @param key1
+ * @param factoryFn
  * @param exp1
- * @param key2
  * @param exp2
- * @param key3
  * @param exp3
- * @param key4
  * @param exp4
- * @param key5
  * @param exp5
- * @returns A copy of the object or NO_CHANGE
+ * @returns A copy of the object/array or NO_CHANGE
  */
 export function objectLiteral5(
-    obj: any, key1: string | number, exp1: any, key2: string | number, exp2: any,
-    key3: string | number, exp3: any, key4: string | number, exp4: any, key5: string | number,
-    exp5: any): any {
-  obj = getMutableBlueprint(obj);
-  let different = updateBinding4(obj, key1, exp1, key2, exp2, key3, exp3, key4, exp4);
-  return updateBinding(obj, key5, exp5) || different ? copyObject(obj) : NO_CHANGE;
+    factoryFn: (v1: any, v2: any, v3: any, v4: any, v5: any) => any, exp1: any, exp2: any,
+    exp3: any, exp4: any, exp5: any): any {
+  different = false;
+  exp1 = getLatestValue(exp1);
+  exp2 = getLatestValue(exp2);
+  exp3 = getLatestValue(exp3);
+  exp4 = getLatestValue(exp4);
+  exp5 = getLatestValue(exp5);
+  return different ? factoryFn(exp1, exp2, exp3, exp4, exp5) : NO_CHANGE;
 }
 
 /**
- * Updates the expressions in the given object or array if they have changed and returns a copy.
+ * If the object or array has changed, returns a copy with all updated expressions.
  * Or if no expressions have changed, returns NO_CHANGE.
  *
- * @param obj
- * @param key1
+ * @param factoryFn
  * @param exp1
- * @param key2
  * @param exp2
- * @param key3
  * @param exp3
- * @param key4
  * @param exp4
- * @param key5
  * @param exp5
- * @param key6
  * @param exp6
- * @returns A copy of the object or NO_CHANGE
+ * @returns A copy of the object/array or NO_CHANGE
  */
 export function objectLiteral6(
-    obj: any, key1: string | number, exp1: any, key2: string | number, exp2: any,
-    key3: string | number, exp3: any, key4: string | number, exp4: any, key5: string | number,
-    exp5: any, key6: string | number, exp6: any): any {
-  obj = getMutableBlueprint(obj);
-  let different = updateBinding4(obj, key1, exp1, key2, exp2, key3, exp3, key4, exp4);
-  return updateBinding2(obj, key5, exp5, key6, exp6) || different ? copyObject(obj) : NO_CHANGE;
+    factoryFn: (v1: any, v2: any, v3: any, v4: any, v5: any, v6: any) => any, exp1: any, exp2: any,
+    exp3: any, exp4: any, exp5: any, exp6: any): any {
+  different = false;
+  exp1 = getLatestValue(exp1);
+  exp2 = getLatestValue(exp2);
+  exp3 = getLatestValue(exp3);
+  exp4 = getLatestValue(exp4);
+  exp5 = getLatestValue(exp5);
+  exp6 = getLatestValue(exp6);
+  return different ? factoryFn(exp1, exp2, exp3, exp4, exp5, exp6) : NO_CHANGE;
 }
 
 /**
- * Updates the expressions in the given object or array if they have changed and returns a copy.
+ * If the object or array has changed, returns a copy with all updated expressions.
  * Or if no expressions have changed, returns NO_CHANGE.
  *
- * @param obj
- * @param key1
+ * @param factoryFn
  * @param exp1
- * @param key2
  * @param exp2
- * @param key3
  * @param exp3
- * @param key4
  * @param exp4
- * @param key5
  * @param exp5
- * @param key6
  * @param exp6
- * @param key7
  * @param exp7
- * @returns A copy of the object or NO_CHANGE
+ * @returns A copy of the object/array or NO_CHANGE
  */
 export function objectLiteral7(
-    obj: any, key1: string | number, exp1: any, key2: string | number, exp2: any,
-    key3: string | number, exp3: any, key4: string | number, exp4: any, key5: string | number,
-    exp5: any, key6: string | number, exp6: any, key7: string | number, exp7: any): any {
-  obj = getMutableBlueprint(obj);
-  let different = updateBinding4(obj, key1, exp1, key2, exp2, key3, exp3, key4, exp4);
-  different = updateBinding2(obj, key5, exp5, key6, exp6) || different;
-  return updateBinding(obj, key7, exp7) || different ? copyObject(obj) : NO_CHANGE;
+    factoryFn: (v1: any, v2: any, v3: any, v4: any, v5: any, v6: any, v7: any) => any, exp1: any,
+    exp2: any, exp3: any, exp4: any, exp5: any, exp6: any, exp7: any): any {
+  different = false;
+  exp1 = getLatestValue(exp1);
+  exp2 = getLatestValue(exp2);
+  exp3 = getLatestValue(exp3);
+  exp4 = getLatestValue(exp4);
+  exp5 = getLatestValue(exp5);
+  exp6 = getLatestValue(exp6);
+  exp7 = getLatestValue(exp7);
+  return different ? factoryFn(exp1, exp2, exp3, exp4, exp5, exp6, exp7) : NO_CHANGE;
 }
 
 /**
- * Updates the expressions in the given object or array if they have changed and returns a copy.
+ * If the object or array has changed, returns a copy with all updated expressions.
  * Or if no expressions have changed, returns NO_CHANGE.
  *
- * @param obj
- * @param key1
+ * @param factoryFn
  * @param exp1
- * @param key2
  * @param exp2
- * @param key3
  * @param exp3
- * @param key4
  * @param exp4
- * @param key5
  * @param exp5
- * @param key6
  * @param exp6
- * @param key7
  * @param exp7
- * @param key8
  * @param exp8
- * @returns A copy of the object or NO_CHANGE
+ * @returns A copy of the object/array or NO_CHANGE
  */
 export function objectLiteral8(
-    obj: any, key1: string | number, exp1: any, key2: string | number, exp2: any,
-    key3: string | number, exp3: any, key4: string | number, exp4: any, key5: string | number,
-    exp5: any, key6: string | number, exp6: any, key7: string | number, exp7: any,
-    key8: string | number, exp8: any): any {
-  obj = getMutableBlueprint(obj);
-  let different = updateBinding4(obj, key1, exp1, key2, exp2, key3, exp3, key4, exp4);
-  return updateBinding4(obj, key5, exp5, key6, exp6, key7, exp7, key8, exp8) || different ?
-      copyObject(obj) :
-      NO_CHANGE;
+    factoryFn: (v1: any, v2: any, v3: any, v4: any, v5: any, v6: any, v7: any, v8: any) => any,
+    exp1: any, exp2: any, exp3: any, exp4: any, exp5: any, exp6: any, exp7: any, exp8: any): any {
+  different = false;
+  exp1 = getLatestValue(exp1);
+  exp2 = getLatestValue(exp2);
+  exp3 = getLatestValue(exp3);
+  exp4 = getLatestValue(exp4);
+  exp5 = getLatestValue(exp5);
+  exp6 = getLatestValue(exp6);
+  exp7 = getLatestValue(exp7);
+  exp8 = getLatestValue(exp8);
+  return different ? factoryFn(exp1, exp2, exp3, exp4, exp5, exp6, exp7, exp8) : NO_CHANGE;
 }
