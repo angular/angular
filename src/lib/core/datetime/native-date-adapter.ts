@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {Platform} from '@angular/cdk/platform';
 import {Inject, Injectable, Optional} from '@angular/core';
 import {DateAdapter, MAT_DATE_LOCALE} from './date-adapter';
 
@@ -67,20 +68,15 @@ export class NativeDateAdapter extends DateAdapter<Date> {
    * the result. (e.g. in the en-US locale `new Date(1800, 7, 14).toLocaleDateString()`
    * will produce `'8/13/1800'`.
    */
-  useUtcForDisplay: boolean;
+  useUtcForDisplay: boolean = true;
 
-  constructor(@Optional() @Inject(MAT_DATE_LOCALE) matDateLocale: string) {
+  constructor(@Optional() @Inject(MAT_DATE_LOCALE) matDateLocale: string, platform: Platform) {
     super();
     super.setLocale(matDateLocale);
 
     // IE does its own time zone correction, so we disable this on IE.
-    // TODO(mmalerba): replace with checks from PLATFORM, logic currently duplicated to avoid
-    // breaking change from injecting the Platform.
-    const isBrowser = typeof document === 'object' && !!document;
-    const isIE = isBrowser && /(msie|trident)/i.test(navigator.userAgent);
-
-    this.useUtcForDisplay = !isIE;
-    this._clampDate = isIE || (isBrowser && /(edge)/i.test(navigator.userAgent));
+    this.useUtcForDisplay = !platform.TRIDENT;
+    this._clampDate = platform.TRIDENT || platform.EDGE;
   }
 
   getYear(date: Date): number {
