@@ -43,6 +43,11 @@
     <mat-radio-button value="default">Default</mat-radio-button>
     <mat-radio-button value="flat">Flat</mat-radio-button>
   </mat-radio-group>
+  <p>Accordion Actions <sup>('Multi Expansion' mode only)</sup></p>
+  <div>
+    <button mat-button (click)="accordion.openAll()" [disabled]="!multi">Expand All</button>
+    <button mat-button (click)="accordion.closeAll()" [disabled]="!multi">Collapse All</button>
+  </div>
   <p>Accordion Panel(s)</p>
   <div>
     <mat-checkbox [(ngModel)]="panel1.expanded">Panel 1</mat-checkbox>

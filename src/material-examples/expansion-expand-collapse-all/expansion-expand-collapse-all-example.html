@@ -1,0 +1,60 @@
+<div class="example-action-buttons">
+    <button mat-button (click)="accordion.openAll()">Expand All</button>
+    <button mat-button (click)="accordion.closeAll()">Collapse All</button>
+</div>
+<mat-accordion class="example-headers-align" [multi]="true">
+    <mat-expansion-panel>
+        <mat-expansion-panel-header>
+            <mat-panel-title>
+                Personal data
+            </mat-panel-title>
+            <mat-panel-description>
+                Type your name and age
+                <mat-icon>account_circle</mat-icon>
+            </mat-panel-description>
+        </mat-expansion-panel-header>
+
+        <mat-form-field>
+            <input matInput placeholder="First name">
+        </mat-form-field>
+
+        <mat-form-field>
+            <input matInput type="number" min="1" placeholder="Age">
+        </mat-form-field>
+
+    </mat-expansion-panel>
+
+    <mat-expansion-panel [disabled]="true">
+        <mat-expansion-panel-header>
+            <mat-panel-title>
+                Destination
+            </mat-panel-title>
+            <mat-panel-description>
+                Type the country name
+                <mat-icon>map</mat-icon>
+            </mat-panel-description>
+        </mat-expansion-panel-header>
+
+        <mat-form-field>
+            <input matInput placeholder="Country">
+        </mat-form-field>
+    </mat-expansion-panel>
+
+    <mat-expansion-panel>
+        <mat-expansion-panel-header>
+            <mat-panel-title>
+                Day of the trip
+            </mat-panel-title>
+            <mat-panel-description>
+                Inform the date you wish to travel
+                <mat-icon>date_range</mat-icon>
+            </mat-panel-description>
+        </mat-expansion-panel-header>
+
+        <mat-form-field>
+            <input matInput placeholder="Date" [matDatepicker]="picker" (focus)="picker.open()" readonly>
+        </mat-form-field>
+        <mat-datepicker #picker></mat-datepicker>
+    </mat-expansion-panel>
+
+</mat-accordion>
