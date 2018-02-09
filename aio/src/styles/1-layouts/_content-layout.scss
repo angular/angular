@@ -37,3 +37,11 @@ aio-shell.page-docs {
   margin: 24px 0px;
   background: $lightgray;
 }
+
+.page-actions {
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  top: 80px;
+  right: 24px;
+}
