@@ -49,7 +49,6 @@ export class BottomSheetDemo {
   template: `
     <mat-nav-list>
       <a href="#" mat-list-item (click)="handleClick($event)" *ngFor="let action of [1, 2, 3]">
-        <mat-icon mat-list-icon>folder</mat-icon>
         <span mat-line>Action {{ link }}</span>
         <span mat-line>Description</span>
       </a>
