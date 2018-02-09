@@ -347,6 +347,18 @@ describe('MatSelectionList without forms', () => {
       expect(list.selectedOptions.isSelected(listOptions[0].componentInstance)).toBe(true);
       expect(list.selectedOptions.isSelected(listOptions[2].componentInstance)).toBe(true);
     });
+
+    it('should update the item selected state when it is selected via the model', () => {
+      const list: MatSelectionList = selectionList.componentInstance;
+      const item: MatListOption = listOptions[0].componentInstance;
+
+      expect(item.selected).toBe(false);
+
+      list.selectedOptions.select(item);
+      fixture.detectChanges();
+
+      expect(item.selected).toBe(true);
+    });
   });
 
   describe('with list option selected', () => {
@@ -713,6 +725,16 @@ describe('MatSelectionList with forms', () => {
       tick();
 
       expect(fixture.componentInstance.selectedOptions).toEqual(['opt2']);
+    }));
+
+    it('should update the model if an option got selected via the model', fakeAsync(() => {
+      expect(fixture.componentInstance.selectedOptions).toEqual([]);
+
+      selectionList.selectedOptions.select(listOptions[0]);
+      fixture.detectChanges();
+      tick();
+
+      expect(fixture.componentInstance.selectedOptions).toEqual(['opt1']);
     }));
 
   });

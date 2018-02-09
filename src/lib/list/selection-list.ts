@@ -41,6 +41,7 @@ import {
   mixinTabIndex,
 } from '@angular/material/core';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
+import {Subscription} from 'rxjs/Subscription';
 
 
 /** @docs-private */
@@ -112,8 +113,8 @@ export class MatListOption extends _MatListOptionMixinBase
     implements AfterContentInit, OnDestroy, OnInit, FocusableOption, CanDisableRipple {
 
   private _lineSetter: MatLineSetter;
-  private _selected: boolean = false;
-  private _disabled: boolean = false;
+  private _selected = false;
+  private _disabled = false;
 
   /** Whether the option has focus. */
   _hasFocus: boolean = false;
@@ -292,7 +293,7 @@ export class MatListOption extends _MatListOptionMixinBase
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class MatSelectionList extends _MatSelectionListMixinBase implements FocusableOption,
-    CanDisable, CanDisableRipple, HasTabIndex, AfterContentInit, ControlValueAccessor {
+    CanDisable, CanDisableRipple, HasTabIndex, AfterContentInit, ControlValueAccessor, OnDestroy {
 
   /** The FocusKeyManager which handles focus. */
   _keyManager: FocusKeyManager<MatListOption>;
@@ -313,6 +314,8 @@ export class MatSelectionList extends _MatSelectionListMixinBase implements Focu
   /** Used for storing the values that were assigned before the options were initialized. */
   private _tempValues: string[]|null;
 
+  private _modelChanges = Subscription.EMPTY;
+
   /** View to model callback that should be called if the list or its options lost focus. */
   _onTouched: () => void = () => {};
 
@@ -329,6 +332,25 @@ export class MatSelectionList extends _MatSelectionListMixinBase implements Focu
       this._setOptionsFromValues(this._tempValues);
       this._tempValues = null;
     }
+
+    // Sync external changes to the model back to the options.
+    this._modelChanges = this.selectedOptions.onChange!.subscribe(event => {
+      if (event.added) {
+        for (let item of event.added) {
+          item.selected = true;
+        }
+      }
+
+      if (event.removed) {
+        for (let item of event.removed) {
+          item.selected = false;
+        }
+      }
+    });
+  }
+
+  ngOnDestroy() {
+    this._modelChanges.unsubscribe();
   }
 
   /** Focus the selection-list. */
