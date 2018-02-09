@@ -112,19 +112,33 @@ Apple+Shift+D on Mac) and click on the green play icon next to the configuration
 - Open chrome at: [http://localhost:9876/debug.html](http://localhost:9876/debug.html)
 - Open chrome inspector
 
-## FAQs
+## Known issues
 
-Note: recent XCode update on Mac causes the following Bazel error
+### Xcode
+
+If you see the following error:
+
 ```
 $ bazel build packages/...
-ERROR: /private/var/tmp/_bazel_iminar/9b8801a4939e9750a817dc0cb35bbbca/external/local_config_cc/BUILD:50:5: in apple_cc_toolchain rule @local_config_cc//:cc-compiler-darwin_x86_64: Xcode version must be specified to use an Apple CROSSTOOL
+ERROR: /private/var/tmp/[...]/external/local_config_cc/BUILD:50:5: in apple_cc_toolchain rule @local_config_cc//:cc-compiler-darwin_x86_64: Xcode version must be specified to use an Apple CROSSTOOL
 ERROR: Analysis of target '//packages/core/test/render3:render3' failed; build aborted: Analysis of target '@local_config_cc//:cc-compiler-darwin_x86_64' failed; build aborted
 ```
-To resolve the error do the following:
+
+It might be linked to an interaction with VSCode.
+If closing VSCode fixes the issue, you can add the following line to your VSCode configuration:
+
+```
+"files.exclude": {"bazel-*": true}
+```
+
+source: https://github.com/bazelbuild/bazel/issues/4603
+
+If VSCode is not the root cause, you might try:
+
 ```
 bazel clean --expunge
 sudo xcode-select -s /Applications/Xcode.app/Contents/Developer
 sudo xcodebuild -license
-bazel build packages/...
 ```
+
 Source: https://stackoverflow.com/questions/45276830/xcode-version-must-be-specified-to-use-an-apple-crosstool
