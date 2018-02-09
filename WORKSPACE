@@ -1,11 +1,10 @@
 workspace(name = "angular")
 
-load("@bazel_tools//tools/build_defs/repo:git.bzl", "git_repository")
-
-git_repository(
+http_archive(
     name = "build_bazel_rules_nodejs",
-    remote = "https://github.com/bazelbuild/rules_nodejs.git",
-    commit = "5307b572d86a0764bd86a5681fc72cca016e9390",
+    url = "https://github.com/bazelbuild/rules_nodejs/archive/0.4.1.zip",
+    strip_prefix = "rules_nodejs-0.4.1",
+    sha256 = "e9bc013417272b17f302dc169ad597f05561bb277451f010043f4da493417607",
 )
 
 load("@build_bazel_rules_nodejs//:defs.bzl", "check_bazel_version", "node_repositories")
@@ -13,10 +12,11 @@ load("@build_bazel_rules_nodejs//:defs.bzl", "check_bazel_version", "node_reposi
 check_bazel_version("0.9.0")
 node_repositories(package_json = ["//:package.json"])
 
-git_repository(
+http_archive(
     name = "build_bazel_rules_typescript",
-    remote = "https://github.com/bazelbuild/rules_typescript.git",
-    commit = "d3ad16d1f105e2490859da9ad528ba4c45991d09"
+    url = "https://github.com/bazelbuild/rules_typescript/archive/0.10.1.zip",
+    strip_prefix = "rules_typescript-0.10.1",
+    sha256 = "a2c81776a4a492ff9f878f9705639f5647bef345f7f3e1da09c9eeb8dec80485",
 )
 
 load("@build_bazel_rules_typescript//:defs.bzl", "ts_setup_workspace")
@@ -63,10 +63,11 @@ http_archive(
 # re-packaging or "npm link"ing.
 # Even better, things like aspects will visit the entire graph including
 # ts_library rules in the devkit repository.
-git_repository(
+http_archive(
     name = "angular_devkit",
-    remote = "https://github.com/angular/devkit.git",
-    commit = "69fcdee61c5ff3f08aa609dec69155dfd29c809a",
+    url = "https://github.com/angular/devkit/archive/v0.3.1.zip",
+    strip_prefix = "devkit-0.3.1",
+    sha256 = "31d4b597fe9336650acf13df053c1c84dcbe9c29c6a833bcac3819cd3fd8cad3",
 )
 
 http_archive(
