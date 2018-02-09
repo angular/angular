@@ -1742,9 +1742,9 @@ function valueInData<T>(data: any[], index: number, value?: T): T {
   return value !;
 }
 
-/** Gets the binding at the current bindingIndex and increments index. */
-export function getCurrentBinding(): any {
-  return data[bindingIndex++];
+/** Gets the binding at the current bindingIndex */
+export function peekBinding(): any {
+  return data[bindingIndex];
 }
 
 export function getCurrentQueries(QueryType: {new (): LQueries}): LQueries {
