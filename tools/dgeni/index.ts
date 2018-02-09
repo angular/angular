@@ -1,4 +1,5 @@
 import {Package} from 'dgeni';
+import {patchLogService} from './patch-log-service';
 import {DocsPrivateFilter} from './processors/docs-private-filter';
 import {Categorizer} from './processors/categorizer';
 import {FilterDuplicateExports} from './processors/filter-duplicate-exports';
@@ -78,6 +79,9 @@ apiDocsPackage.config((readFilesProcessor: any, writeFilesProcessor: any) => {
 
   writeFilesProcessor.outputFolder = outputDir;
 });
+
+// Patches Dgeni's log service to not print warnings about unresolved mixin base symbols.
+apiDocsPackage.config((log: any) => patchLogService(log));
 
 // Configure the output path for written files (i.e., file names).
 apiDocsPackage.config((computePathsProcessor: any) => {

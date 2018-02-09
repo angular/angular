@@ -200,7 +200,10 @@ export class MatFormField extends _MatFormFieldMixinBase
 
   _outlineGapStart = 0;
 
-  /** @deletion-target 7.0.0 */
+  /**
+   * @deprecated
+   * @deletion-target 7.0.0
+   */
   @ViewChild('underline') underlineRef: ElementRef;
 
   @ViewChild('connectionContainer') _connectionContainerRef: ElementRef;
