@@ -57,8 +57,10 @@ def _ng_rollup_bundle(ctx):
   rollup_config = write_rollup_config(ctx, [BO_PLUGIN], root_dirs)
   run_rollup(ctx, depset(transitive = esm5_sources).to_list(), rollup_config, ctx.outputs.build_es5)
 
-  run_uglify(ctx, ctx.outputs.build_es5, ctx.outputs.build_es5_min)
-  run_uglify(ctx, ctx.outputs.build_es5, ctx.outputs.build_es5_min_debug, debug = True)
+  run_uglify(ctx, ctx.outputs.build_es5, ctx.outputs.build_es5_min,
+      comments = False)
+  run_uglify(ctx, ctx.outputs.build_es5, ctx.outputs.build_es5_min_debug,
+      debug = True, comments = False)
 
   run_brotli(ctx, ctx.outputs.build_es5_min, ctx.outputs.build_es5_min_compressed)
 

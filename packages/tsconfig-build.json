@@ -23,5 +23,8 @@
     "emitDecoratorMetadata": true,
     "sourceMap": true,
     "inlineSources": true
+  },
+  "bazelOptions": {
+    "suppressTsconfigOverrideWarnings": true
   }
 }
