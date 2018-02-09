@@ -2,27 +2,27 @@
 # yarn lockfile v1
 
 
-"@angular-devkit/build-optimizer@^0.0.32":
-  version "0.0.32"
-  resolved "https://registry.yarnpkg.com/@angular-devkit/build-optimizer/-/build-optimizer-0.0.32.tgz#1bf32332d8a7c84043059e3d265a52f9d11726fd"
+"@angular-devkit/build-optimizer@0.3.1":
+  version "0.3.1"
+  resolved "https://registry.yarnpkg.com/@angular-devkit/build-optimizer/-/build-optimizer-0.3.1.tgz#6a26a46c58858c7b67833c6d8a81198fa17d23e7"
   dependencies:
     loader-utils "^1.1.0"
     source-map "^0.5.6"
-    typescript "^2.3.3"
+    typescript "~2.6.2"
     webpack-sources "^1.0.1"
 
 "@angular/animations@file:../../dist/packages-dist/animations":
-  version "6.0.0-beta.2-65cf1add97"
+  version "6.0.0-beta.3-0b1f5d2127"
   dependencies:
     tslib "^1.7.1"
 
 "@angular/common@file:../../dist/packages-dist/common":
-  version "6.0.0-beta.2-65cf1add97"
+  version "6.0.0-beta.3-0b1f5d2127"
   dependencies:
     tslib "^1.7.1"
 
 "@angular/compiler-cli@file:../../dist/packages-dist/compiler-cli":
-  version "6.0.0-beta.2-65cf1add97"
+  version "6.0.0-beta.3-0b1f5d2127"
   dependencies:
     chokidar "^1.4.2"
     minimist "^1.2.0"
@@ -30,22 +30,22 @@
     tsickle "^0.26.0"
 
 "@angular/compiler@file:../../dist/packages-dist/compiler":
-  version "6.0.0-beta.2-65cf1add97"
+  version "6.0.0-beta.3-0b1f5d2127"
   dependencies:
     tslib "^1.7.1"
 
 "@angular/core@file:../../dist/packages-dist/core":
-  version "6.0.0-beta.2-65cf1add97"
+  version "6.0.0-beta.3-0b1f5d2127"
   dependencies:
     tslib "^1.7.1"
 
 "@angular/platform-browser@file:../../dist/packages-dist/platform-browser":
-  version "6.0.0-beta.2-65cf1add97"
+  version "6.0.0-beta.3-0b1f5d2127"
   dependencies:
     tslib "^1.7.1"
 
 "@angular/platform-server@file:../../dist/packages-dist/platform-server":
-  version "6.0.0-beta.2-65cf1add97"
+  version "6.0.0-beta.3-0b1f5d2127"
   dependencies:
     domino "^1.0.29"
     tslib "^1.7.1"
@@ -1837,12 +1837,6 @@ rimraf@2, rimraf@^2.2.8, rimraf@^2.5.1, rimraf@^2.5.2, rimraf@^2.5.4, rimraf@^2.
   dependencies:
     glob "^7.0.5"
 
-rollup-plugin-angular-optimizer@0.2.0:
-  version "0.2.0"
-  resolved "https://registry.yarnpkg.com/rollup-plugin-angular-optimizer/-/rollup-plugin-angular-optimizer-0.2.0.tgz#f417ae0d8ab8fe09f90b0d152034d252fa1d231f"
-  dependencies:
-    "@angular-devkit/build-optimizer" "^0.0.32"
-
 rollup-plugin-node-resolve@3.0.2:
   version "3.0.2"
   resolved "https://registry.yarnpkg.com/rollup-plugin-node-resolve/-/rollup-plugin-node-resolve-3.0.2.tgz#38babc12fd404cc2ba1ff68648fe43fa3ffee6b0"
@@ -2237,11 +2231,7 @@ tweetnacl@^0.14.3, tweetnacl@~0.14.0:
   version "0.14.5"
   resolved "https://registry.yarnpkg.com/tweetnacl/-/tweetnacl-0.14.5.tgz#5ae68177f192d4456269d108afa93ff8743f4f64"
 
-typescript@^2.3.3:
-  version "2.7.1"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-2.7.1.tgz#bb3682c2c791ac90e7c6210b26478a8da085c359"
-
-"typescript@file:../../node_modules/typescript":
+"typescript@file:../../node_modules/typescript", typescript@~2.6.2:
   version "2.6.2"
 
 ua-parser-js@0.7.12:
