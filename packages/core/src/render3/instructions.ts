@@ -113,7 +113,7 @@ let bindingIndex: number;
  */
 let cleanup: any[]|null;
 
-const enum Direction {
+const enum BindingDirection {
   Input,
   Output,
 }
@@ -586,7 +586,7 @@ export function listener(eventName: string, listener: EventListener, useCapture 
   if (tNode.outputs === undefined) {
     // if we create TNode here, inputs must be undefined so we know they still need to be
     // checked
-    tNode.outputs = generatePropertyAliases(node.flags, Direction.Output);
+    tNode.outputs = generatePropertyAliases(node.flags, BindingDirection.Output);
   }
 
   const outputs = tNode.outputs;
@@ -665,7 +665,7 @@ export function elementProperty<T>(index: number, propName: string, value: T | N
   // yet been checked
   if (tNode.inputs === undefined) {
     // mark inputs as checked
-    tNode.inputs = generatePropertyAliases(node.flags, Direction.Input);
+    tNode.inputs = generatePropertyAliases(node.flags, BindingDirection.Input);
   }
 
   const inputData = tNode.inputs;
@@ -720,13 +720,14 @@ function setInputsForProperty(inputs: PropertyAliasValue, value: any): void {
  * @param Direction direction whether to consider inputs or outputs
  * @returns PropertyAliases|null aggregate of all properties if any, `null` otherwise
  */
-function generatePropertyAliases(lNodeFlags: number, direction: Direction): PropertyAliases|null {
+function generatePropertyAliases(lNodeFlags: number, direction: BindingDirection): PropertyAliases|
+    null {
   const size = (lNodeFlags & LNodeFlags.SIZE_MASK) >> LNodeFlags.SIZE_SHIFT;
   let propStore: PropertyAliases|null = null;
 
   if (size > 0) {
     const start = lNodeFlags >> LNodeFlags.INDX_SHIFT;
-    const isInput = direction === Direction.Input;
+    const isInput = direction === BindingDirection.Input;
 
     for (let i = start, ii = start + size; i < ii; i++) {
       const directiveDef = tData ![i] as DirectiveDef<any>;
