@@ -62,7 +62,7 @@ if [[ "$PR_CLA" != "cla: yes" ]]; then
 fi
 
 if [[ $MERGE_STATUS == *CHANGES_REQUESTED* ]]; then 
-  echo The PR $PR_NUMBER has requested changes from a reviewer.
+  echo The PR $PR_NUMBER has not been approved by all reviewers. Ask PR owner to obtain reviews or dismiss reviews and document the dismissal reason.
   exit 1
 fi
 
