@@ -57,8 +57,7 @@ def _expected_outs(ctx):
     else:
       continue
 
-    filter_summaries = ctx.attr.filter_summaries
-    closure_js = [f.replace(".js", ".closure.js") for f in devmode_js if not filter_summaries or not f.endswith(".ngsummary.js")]
+    closure_js = [f.replace(".js", ".closure.js") for f in devmode_js]
     declarations = [f.replace(".js", ".d.ts") for f in devmode_js]
 
     devmode_js_files += [ctx.new_file(ctx.bin_dir, basename + ext) for ext in devmode_js]
@@ -282,8 +281,6 @@ NG_MODULE_ATTRIBUTES = {
     "factories": attr.label_list(
         allow_files = [".ts", ".html"],
         mandatory = False),
-
-    "filter_summaries": attr.bool(default = True),
 
     "type_check": attr.bool(default = True),
 
