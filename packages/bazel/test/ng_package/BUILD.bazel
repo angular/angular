@@ -1,0 +1,41 @@
+# TODO(i): move ng_package with all tests and source code into a separate directory within packages/bazel
+#   this will require:
+#     - moving things around within packages/bazel/src
+#     - getting rid of the nested workspace so that we can use //packages/core:package to test against
+
+load("@build_bazel_rules_typescript//:defs.bzl", "ts_library")
+load("@build_bazel_rules_nodejs//:defs.bzl", "jasmine_node_test")
+
+# The tests in this package must run in separate targets, since they change
+# working directory and therefore have mutable global state that causes test
+# isolation failures.
+
+ts_library(
+    name = "spec_lib",
+    srcs = ["ng_package.spec.ts"],
+    tsconfig = ":tsconfig.json",
+    testonly = True,
+)
+
+jasmine_node_test(
+    name = "ng_package",
+    srcs = [":spec_lib"],
+    data = [
+        "//packages/core:npm_package",
+    ]
+)
+
+ts_library(
+    name = "common_package_lib",
+    srcs = ["common_package.spec.ts"],
+    tsconfig = ":tsconfig.json",
+    testonly = True,
+)
+
+jasmine_node_test(
+    name = "common_package",
+    srcs = [":common_package_lib"],
+    data = ["//packages/common:npm_package"],
+)
+
+exports_files(["package.json"])

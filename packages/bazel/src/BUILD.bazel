@@ -17,3 +17,10 @@ nodejs_binary(
     entry_point = "angular/packages/bazel/src/modify_tsconfig.js",
     visibility = ["//visibility:public"],
 )
+
+nodejs_binary(
+    name = "uglify",
+    entry_point = "uglify-js/bin/uglifyjs",
+    node_modules = "@angular_deps//:node_modules",
+    visibility = ["//visibility:public"],
+)

@@ -5,7 +5,7 @@ load("@bazel_tools//tools/build_defs/repo:git.bzl", "git_repository")
 git_repository(
     name = "build_bazel_rules_nodejs",
     remote = "https://github.com/bazelbuild/rules_nodejs.git",
-    commit = "5307b572d86a0764bd86a5681fc72cca016e9390",
+    commit = "3ca84467a02f735ec53aa9278c892940b8be828e",
 )
 
 load("@build_bazel_rules_nodejs//:defs.bzl", "check_bazel_version", "node_repositories")
@@ -22,6 +22,11 @@ git_repository(
 load("@build_bazel_rules_typescript//:defs.bzl", "ts_setup_workspace")
 
 ts_setup_workspace()
+
+load("//packages/bazel:index.bzl", "ng_setup_workspace")
+
+ng_setup_workspace()
+
 
 local_repository(
     name = "rxjs",

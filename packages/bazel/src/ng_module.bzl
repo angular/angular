@@ -74,6 +74,7 @@ def _expected_outs(ctx):
     declarations = declaration_files,
     summaries = summary_files,
     i18n_messages = i18n_messages_files,
+    flat_module_metadata = ctx.new_file(ctx.bin_dir, getattr(ctx.attr, "flatModuleOutFile") + ".metadata.json") if hasattr(ctx.attr, "flatModuleOutFile") else None
   )
 
 def _ngc_tsconfig(ctx, files, srcs, **kwargs):
@@ -83,16 +84,20 @@ def _ngc_tsconfig(ctx, files, srcs, **kwargs):
   else:
     expected_outs = outs.closure_js
 
+  ngOptions = {
+      "generateCodeForLibraries": False,
+      "allowEmptyCodegenFiles": True,
+      "enableSummariesForJit": True,
+      "fullTemplateTypeCheck": ctx.attr.type_check,
+      # FIXME: wrong place to de-dupe
+      "expectedOut": depset([o.path for o in expected_outs]).to_list(),
+      "preserveWhitespaces": False,
+  }
+  if hasattr(ctx.attr, "flatModuleOutFile"):
+    ngOptions["flatModuleOutFile"] = ctx.attr.flatModuleOutFile
+
   return dict(tsc_wrapped_tsconfig(ctx, files, srcs, **kwargs), **{
-      "angularCompilerOptions": {
-          "generateCodeForLibraries": False,
-          "allowEmptyCodegenFiles": True,
-          "enableSummariesForJit": True,
-          "fullTemplateTypeCheck": ctx.attr.type_check,
-          # FIXME: wrong place to de-dupe
-          "expectedOut": depset([o.path for o in expected_outs]).to_list(),
-          "preserveWhitespaces": False,
-      }
+    "angularCompilerOptions": ngOptions,
   })
 
 def _collect_summaries_aspect_impl(target, ctx):
@@ -227,7 +232,7 @@ def _prodmode_compile_action(ctx, inputs, outputs, tsconfig_file):
 
 def _devmode_compile_action(ctx, inputs, outputs, tsconfig_file):
   outs = _expected_outs(ctx)
-  compile_action_outputs = outputs + outs.devmode_js + outs.declarations + outs.summaries
+  compile_action_outputs = outputs + outs.devmode_js + outs.declarations + outs.summaries + [outs.flat_module_metadata]
   _compile_action(ctx, inputs, compile_action_outputs, None, tsconfig_file)
 
 def _ts_expected_outs(ctx, label):
@@ -259,7 +264,12 @@ def ng_module_impl(ctx, ts_compile_actions):
 
   outs = _expected_outs(ctx)
   providers["angular"] = {
-    "summaries": _expected_outs(ctx).summaries
+    "summaries": _expected_outs(ctx).summaries,
+    "flat_module_metadata": depset([_expected_outs(ctx).flat_module_metadata], transitive=[
+      getattr(dep, "angular").flat_module_metadata
+      for dep in ctx.attr.deps
+      if hasattr(dep, "angular")
+    ])
   }
   providers["ngc_messages"] = outs.i18n_messages
 
@@ -313,8 +323,11 @@ ng_module = rule(
         # The default assumes the user specified a target "node_modules" in their
         # root BUILD file.
         "node_modules": attr.label(
+            # TODO(i): I think this one should stay as is, right @alexeagle?
             default = Label("@//:node_modules")
         ),
+
+        "flatModuleOutFile": attr.string(),
     }),
     outputs = COMMON_OUTPUTS,
 )
