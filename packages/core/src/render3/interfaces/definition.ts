@@ -139,7 +139,7 @@ export interface PipeDef<T> {
 
 export interface DirectiveDefArgs<T> {
   type: Type<T>;
-  factory: () => T | [T];
+  factory: () => T | ({0: T} & any[]); /* trying to say T | [T, ...any] */
   inputs?: {[P in keyof T]?: string};
   outputs?: {[P in keyof T]?: string};
   methods?: {[P in keyof T]?: string};
