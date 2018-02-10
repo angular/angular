@@ -265,3 +265,26 @@ export function objectLiteral8(
 
   return different ? factoryFn(exp1, exp2, exp3, exp4, exp5, exp6, exp7, exp8) : NO_CHANGE;
 }
+
+/**
+ * objectLiteral instruction that can support any number of bindings.
+ *
+ * If the object or array has changed, returns a copy with all updated expressions.
+ * Or if no expressions have changed, returns NO_CHANGE.
+ *
+ * @param factoryFn A factory function that takes binding values and builds an object or array
+ * containing those values.
+ * @param exp An array of binding values
+ * @returns A copy of the object/array or NO_CHANGE
+ */
+export function objectLiteralV(factoryFn: (v: any[]) => any, exps: any[]): any {
+  let different = false;
+
+  for (let i = 0; i < exps.length; i++) {
+    let exp = exps[i];
+    if (exp === NO_CHANGE) exps[i] = peekBinding();
+    if (bind(exp) !== NO_CHANGE) different = true;
+  }
+
+  return different ? factoryFn(exps) : NO_CHANGE;
+}

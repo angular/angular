@@ -241,6 +241,107 @@ describe('compiler specification', () => {
         expect(renderComp(MyApp)).toEqual(`<my-comp><p>Nancy</p><p>Bess</p></my-comp>`);
       });
 
+      it('should support 9+ bindings in array literals', () => {
+        @Component({
+          selector: 'my-comp',
+          template: `
+            {{ names[0] }}
+            {{ names[1] }}
+            {{ names[3] }}
+            {{ names[4] }}
+            {{ names[5] }}
+            {{ names[6] }}
+            {{ names[7] }}
+            {{ names[8] }}
+            {{ names[9] }}
+            {{ names[10] }}
+            {{ names[11] }}
+          `
+        })
+        class MyComp {
+          @Input() names: string[];
+
+          static ngComponentDef = r3.defineComponent({
+            type: MyComp,
+            tag: 'my-comp',
+            factory: function MyComp_Factory() { return new MyComp(); },
+            template: function MyComp_Template(ctx: MyComp, cm: boolean) {
+              if (cm) {
+                r3.T(0);
+                r3.T(1);
+                r3.T(2);
+                r3.T(3);
+                r3.T(4);
+                r3.T(5);
+                r3.T(6);
+                r3.T(7);
+                r3.T(8);
+                r3.T(9);
+                r3.T(10);
+                r3.T(11);
+              }
+              r3.t(0, r3.b(ctx.names[0]));
+              r3.t(1, r3.b(ctx.names[1]));
+              r3.t(2, r3.b(ctx.names[2]));
+              r3.t(3, r3.b(ctx.names[3]));
+              r3.t(4, r3.b(ctx.names[4]));
+              r3.t(5, r3.b(ctx.names[5]));
+              r3.t(6, r3.b(ctx.names[6]));
+              r3.t(7, r3.b(ctx.names[7]));
+              r3.t(8, r3.b(ctx.names[8]));
+              r3.t(9, r3.b(ctx.names[9]));
+              r3.t(10, r3.b(ctx.names[10]));
+              r3.t(11, r3.b(ctx.names[11]));
+            },
+            inputs: {names: 'names'}
+          });
+        }
+
+        @Component({
+          selector: 'my-app',
+          template: `
+          <my-comp [names]="['start-', n0, n1, n2, n3, n4, '-middle-', n5, n6, n7, n8, '-end']">
+          </my-comp>
+        `
+        })
+        class MyApp {
+          n0 = 'a';
+          n1 = 'b';
+          n2 = 'c';
+          n3 = 'd';
+          n4 = 'e';
+          n5 = 'f';
+          n6 = 'g';
+          n7 = 'h';
+          n8 = 'i';
+
+          // NORMATIVE
+          static ngComponentDef = r3.defineComponent({
+            type: MyApp,
+            tag: 'my-app',
+            factory: function MyApp_Factory() { return new MyApp(); },
+            template: function MyApp_Template(c: MyApp, cm: boolean) {
+              if (cm) {
+                r3.E(0, MyComp);
+                r3.e();
+              }
+              r3.p(
+                  0, 'names', r3.oV(e0_ff, [c.n0, c.n1, c.n2, c.n3, c.n4, c.n5, c.n6, c.n7, c.n8]));
+              MyComp.ngComponentDef.h(1, 0);
+              r3.r(1, 0);
+            }
+          });
+          // /NORMATIVE
+        }
+
+        // NORMATIVE
+        const e0_ff = (v: any[]) =>
+            ['start-', v[0], v[1], v[2], v[3], v[4], '-middle-', v[5], v[6], v[7], v[8], '-end'];
+        // /NORMATIVE
+
+        expect(renderComp(MyApp)).toEqual(`<my-comp>start-abcde-middle-fghi-end</my-comp>`);
+      });
+
       it('should support object literals', () => {
         @Component({
           selector: 'object-comp',

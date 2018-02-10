@@ -7,7 +7,7 @@
  */
 import {defineComponent} from '../../src/render3/index';
 import {componentRefresh, container, containerRefreshEnd, containerRefreshStart, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, memory} from '../../src/render3/instructions';
-import {objectLiteral1, objectLiteral2, objectLiteral3, objectLiteral4, objectLiteral5, objectLiteral6, objectLiteral7, objectLiteral8} from '../../src/render3/object_literal';
+import {objectLiteral1, objectLiteral2, objectLiteral3, objectLiteral4, objectLiteral5, objectLiteral6, objectLiteral7, objectLiteral8, objectLiteralV} from '../../src/render3/object_literal';
 import {renderToHtml} from '../../test/render3/render_util';
 
 describe('array literals', () => {
@@ -165,16 +165,16 @@ describe('array literals', () => {
       elementProperty(
           10, 'names', objectLiteral8(e10_ff, c[0], c[1], c[2], c[3], c[4], c[5], c[6], c[7]));
       MyComp.ngComponentDef.h(1, 0);
-      componentRefresh(1, 0);
       MyComp.ngComponentDef.h(3, 2);
-      componentRefresh(3, 2);
       MyComp.ngComponentDef.h(5, 4);
-      componentRefresh(5, 4);
       MyComp.ngComponentDef.h(7, 6);
-      componentRefresh(7, 6);
       MyComp.ngComponentDef.h(9, 8);
-      componentRefresh(9, 8);
       MyComp.ngComponentDef.h(11, 10);
+      componentRefresh(1, 0);
+      componentRefresh(3, 2);
+      componentRefresh(5, 4);
+      componentRefresh(7, 6);
+      componentRefresh(9, 8);
       componentRefresh(11, 10);
     }
 
@@ -207,6 +207,44 @@ describe('array literals', () => {
     expect(o6Comp !.names).toEqual(['a', 'b', 'c1', 'd1', 'e1', 'f1', 'g1', 'h1']);
     expect(o7Comp !.names).toEqual(['a', 'b1', 'c1', 'd1', 'e1', 'f1', 'g1', 'h1']);
     expect(o8Comp !.names).toEqual(['a1', 'b1', 'c1', 'd1', 'e1', 'f1', 'g1', 'h1']);
+  });
+
+  it('should work with objectLiteralV for 9+ bindings', () => {
+    /**
+     * <my-comp [names]="['start', v0, v1, v2, v3, {name: v4}, v5, v6, v7, v8, 'end']">
+     * </my-comp>
+     */
+    function Template(c: any, cm: boolean) {
+      if (cm) {
+        elementStart(0, MyComp);
+        elementEnd();
+      }
+      elementProperty(
+          0, 'names', objectLiteralV(e0_ff, [
+            c[0], c[1], c[2], c[3], objectLiteral1(e0_ff_1, c[4]), c[5], c[6], c[7], c[8]
+          ]));
+      MyComp.ngComponentDef.h(1, 0);
+      componentRefresh(1, 0);
+    }
+
+    const e0_ff =
+        (v: any[]) => ['start', v[0], v[1], v[2], v[3], v[4], v[5], v[6], v[7], v[8], 'end'];
+    const e0_ff_1 = (v: any) => { return {name: v}; };
+
+    renderToHtml(Template, ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i']);
+    expect(myComp !.names).toEqual([
+      'start', 'a', 'b', 'c', 'd', {name: 'e'}, 'f', 'g', 'h', 'i', 'end'
+    ]);
+
+    renderToHtml(Template, ['a1', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i']);
+    expect(myComp !.names).toEqual([
+      'start', 'a1', 'b', 'c', 'd', {name: 'e'}, 'f', 'g', 'h', 'i', 'end'
+    ]);
+
+    renderToHtml(Template, ['a1', 'b', 'c', 'd', 'e5', 'f', 'g', 'h', 'i']);
+    expect(myComp !.names).toEqual([
+      'start', 'a1', 'b', 'c', 'd', {name: 'e5'}, 'f', 'g', 'h', 'i', 'end'
+    ]);
   });
 
 });
