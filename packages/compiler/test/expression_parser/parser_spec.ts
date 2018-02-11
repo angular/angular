@@ -103,7 +103,9 @@ import {validate} from './validator';
 
       it('should parse unary - expressions', () => {
         checkAction('-1', '0 - 1');
-        checkAction('+1', '1');
+        checkAction('+1', '1 - 0');
+        checkAction(`-'1'`, `0 - "1"`);
+        checkAction(`+'1'`, `"1" - 0`);
       });
 
       it('should parse unary ! expressions', () => {
