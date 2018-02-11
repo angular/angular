@@ -71,6 +71,7 @@ export const HAMMER_LOADER = new InjectionToken<HammerLoader>('HammerLoader');
 export interface HammerInstance {
   on(eventName: string, callback?: Function): void;
   off(eventName: string, callback?: Function): void;
+  destroy?(): void;
 }
 
 /**
@@ -214,7 +215,13 @@ export class HammerGesturesPlugin extends EventManagerPlugin {
         zone.runGuarded(function() { handler(eventObj); });
       };
       mc.on(eventName, callback);
-      return () => mc.off(eventName, callback);
+      return () => {
+        mc.off(eventName, callback);
+        // destroy mc to prevent memory leak
+        if (typeof mc.destroy === 'function') {
+          mc.destroy();
+        }
+      };
     });
   }
 
