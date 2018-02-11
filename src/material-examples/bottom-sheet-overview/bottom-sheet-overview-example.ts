@@ -24,7 +24,7 @@ export class BottomSheetOverviewExample {
 export class BottomSheetOverviewExampleSheet {
   constructor(private bottomSheetRef: MatBottomSheetRef<BottomSheetOverviewExampleSheet>) {}
 
-  onNoClick(event: MouseEvent): void {
+  openLink(event: MouseEvent): void {
     this.bottomSheetRef.dismiss();
     event.preventDefault();
   }
