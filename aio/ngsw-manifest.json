@@ -19,7 +19,7 @@
   "routing": {
     "index": "/index.html",
     "routes": {
-      "^(?!/docs/ts/latest|/guide/cli-quickstart|/styleguide).*/(?!e?plnkr)[^/.]*$": {
+      "^(?!/docs/.|(?:/guide/(?:cli-quickstart|metadata|ngmodule|service-worker-(?:getstart|comm|configref)|learning-angular)|/news)(?:\\.html|/)?$|/testing|/api/(?:.+/[^/]+-|platform-browser/AnimationDriver|testing|api/|(?:common/(?:NgModel|Control|MaxLengthValidator))|(?:[^/]+/)?(?:NgFor(?:$|-)|AnimationStateDeclarationMetadata|CORE_DIRECTIVES|PLATFORM_PIPES|DirectiveMetadata|HTTP_PROVIDERS))|.*/stackblitz(?:\\.html)?$|.*\\.[^\/.]+$)": {
         "match": "regex"
       }
     }

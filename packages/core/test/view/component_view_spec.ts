@@ -132,7 +132,38 @@ const addEventListener = '__zone_symbol__addEventListener';
         value = 'v2';
         expect(() => Services.checkNoChangesView(view))
             .toThrowError(
-                `ExpressionChangedAfterItHasBeenCheckedError: Expression has changed after it was checked. Previous value: 'v1'. Current value: 'v2'.`);
+                `ExpressionChangedAfterItHasBeenCheckedError: Expression has changed after it was checked. Previous value: 'a: v1'. Current value: 'a: v2'.`);
+      });
+
+      // fixes https://github.com/angular/angular/issues/21788
+      it('report the binding name when an expression changes after it has been checked', () => {
+        let value: any;
+        class AComp {}
+
+        const update =
+            jasmine.createSpy('updater').and.callFake((check: NodeCheckFn, view: ViewData) => {
+              check(view, 0, ArgumentType.Inline, 'const', 'const', value);
+            });
+
+        const {view, rootNodes} = createAndGetRootNodes(
+          compViewDef([
+            elementDef(0, NodeFlags.None, null, null, 1, 'div', null, null, null, null, () => compViewDef([
+                elementDef(0, NodeFlags.None, null, null, 0, 'span', null, [
+                 [BindingFlags.TypeElementAttribute, 'p1', SecurityContext.NONE],
+                [BindingFlags.TypeElementAttribute, 'p2', SecurityContext.NONE],
+                [BindingFlags.TypeElementAttribute, 'p3', SecurityContext.NONE],
+              ]),
+              ], null, update)
+            ),
+            directiveDef(1, NodeFlags.Component, null, 0, AComp, []),
+          ]));
+
+        value = 'v1';
+        Services.checkAndUpdateView(view);
+        value = 'v2';
+        expect(() => Services.checkNoChangesView(view))
+            .toThrowError(
+                `ExpressionChangedAfterItHasBeenCheckedError: Expression has changed after it was checked. Previous value: 'p3: v1'. Current value: 'p3: v2'.`);
       });
 
       it('should support detaching and attaching component views for dirty checking', () => {

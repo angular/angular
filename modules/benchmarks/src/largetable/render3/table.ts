@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ɵC as C, ɵE as E, ɵT as T, ɵV as V, ɵb as b, ɵc as c, ɵcR as cR, ɵcr as cr, ɵdefineComponent as defineComponent, ɵdetectChanges as detectChanges, ɵe as e, ɵs as s, ɵt as t, ɵv as v} from '@angular/core';
-import {ComponentDef} from '@angular/core/src/render3/definition_interfaces';
+import {ɵC as C, ɵE as E, ɵT as T, ɵV as V, ɵb as b, ɵcR as cR, ɵcr as cr, ɵdefineComponent as defineComponent, ɵdetectChanges as detectChanges, ɵe as e, ɵs as s, ɵt as t, ɵv as v} from '@angular/core';
+import {ComponentDef} from '@angular/core/src/render3/interfaces/definition';
 
 import {TableCell, buildTable, emptyTable} from '../util';
 
@@ -23,10 +23,7 @@ export class LargeTableComponent {
         E(0, 'table');
         {
           E(1, 'tbody');
-          {
-            C(2);
-            c();
-          }
+          { C(2); }
           e();
         }
         e();
@@ -39,7 +36,6 @@ export class LargeTableComponent {
             if (cm1) {
               E(0, 'tr');
               C(1);
-              c();
               e();
             }
             cR(1);

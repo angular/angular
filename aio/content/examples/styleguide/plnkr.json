@@ -1,9 +1,0 @@
-{
-  "description": "Style Guide",
-  "basePath": "src/",
-  "files":[
-    "!**/*.d.ts",
-    "!**/*.js"
-  ],
-  "tags": ["style guide, styleguide"]
-}

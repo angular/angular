@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {D, E, b, defineDirective, e, p} from '../../src/render3/index';
+import {E, b, defineDirective, e, m, p, r} from '../../src/render3/index';
 
 import {renderToHtml} from './render_util';
 
@@ -19,22 +19,22 @@ describe('directive', () => {
 
       class Directive {
         klass = 'foo';
+        static ngDirectiveDef = defineDirective({
+          type: Directive,
+          factory: () => directiveInstance = new Directive,
+          hostBindings: (directiveIndex: number, elementIndex: number) => {
+            p(elementIndex, 'className', b(m<Directive>(directiveIndex).klass));
+          }
+        });
       }
-      const DirectiveDef = defineDirective({
-        type: Directive,
-        factory: () => directiveInstance = new Directive,
-        refresh: (directiveIndex: number, elementIndex: number) => {
-          p(elementIndex, 'className', b(D<Directive>(directiveIndex).klass));
-        }
-      });
 
       function Template(ctx: any, cm: boolean) {
         if (cm) {
-          E(0, 'span');
-          { D(1, DirectiveDef.n(), DirectiveDef); }
+          E(0, 'span', null, [Directive]);
           e();
         }
-        DirectiveDef.r(1, 0);
+        Directive.ngDirectiveDef.h(1, 0);
+        r(1, 0);
       }
 
       expect(renderToHtml(Template, {})).toEqual('<span class="foo"></span>');

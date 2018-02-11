@@ -9,13 +9,12 @@ with components, enabling a more modular design than regular stylesheets.
 
 This page describes how to load and apply these component styles.
 
-You can run the <live-example></live-example> in Plunker and download the code from there.
-
+You can run the <live-example></live-example> in Stackblitz and download the code from there.
 
 ## Using component styles
 
 For every Angular component you write, you may define not only an HTML template,
-but also the CSS styles that go with that template, 
+but also the CSS styles that go with that template,
 specifying any selectors, rules, and media queries that you need.
 
 One way to do this is to set the `styles` property in the component metadata.
@@ -43,7 +42,7 @@ This scoping restriction is a ***styling modularity feature***.
 * You can use the CSS class names and selectors that make the most sense in the context of each component.
 
 
-* Class names and selectors are local to the component and don't collide with 
+* Class names and selectors are local to the component and don't collide with
   classes and selectors used elsewhere in the application.
 
 
@@ -62,7 +61,7 @@ This scoping restriction is a ***styling modularity feature***.
 ## Special selectors
 
 Component styles have a few special *selectors* from the world of shadow DOM style scoping
-(described in the [CSS Scoping Module Level 1](https://www.w3.org/TR/css-scoping-1) page on the 
+(described in the [CSS Scoping Module Level 1](https://www.w3.org/TR/css-scoping-1) page on the
 [W3C](https://www.w3.org) site).
 The following sections describe these selectors.
 
@@ -79,7 +78,7 @@ The `:host` selector is the only way to target the host element. You can't reach
 the host element from inside the component with other selectors because it's not part of the
 component's own template. The host element is in a parent component's template.
 
-Use the *function form* to apply host styles conditionally by 
+Use the *function form* to apply host styles conditionally by
 including another selector inside parentheses after `:host`.
 
 The next example targets the host element again, but only when it also has the `active` CSS class.
@@ -105,15 +104,15 @@ if some ancestor element has the CSS class `theme-light`.
 
 ### (deprecated) `/deep/`, `>>>`, and `::ng-deep`
 
-Component styles normally apply only to the HTML in the component's own template. 
+Component styles normally apply only to the HTML in the component's own template.
 
 Use the `/deep/` shadow-piercing descendant combinator to force a style down through the child
 component tree into all the child component views.
 The `/deep/` combinator works to any depth of nested components, and it applies to both the view
-children and content children of the component. 
+children and content children of the component.
 
-The following example targets all `<h3>` elements, from the host element down 
-through this component to all of its child elements in the DOM. 
+The following example targets all `<h3>` elements, from the host element down
+through this component to all of its child elements in the DOM.
 
 <code-example path="component-styles/src/app/hero-details.component.css" region="deep" title="src/app/hero-details.component.css" linenums="false">
 
@@ -141,7 +140,7 @@ Until then `::ng-deep` should be preferred for a broader compatibility with the 
 
 ## Loading component styles
 
-There are several ways to add styles to a component: 
+There are several ways to add styles to a component:
 
 * By setting `styles` or `styleUrls` metadata.
 * Inline in the template HTML.
@@ -178,8 +177,8 @@ to a component's `@Component` decorator:
 
 <code-tabs>
   <code-pane title="src/app/hero-app.component.ts (CSS in file)" path="component-styles/src/app/hero-app.component.1.ts"></code-pane>
-  <code-pane title="src/app/hero-app.component.css" path="component-styles/src/app/hero-app.component.1.css"></code-pane>
-</code-tabs> 
+  <code-pane title="src/app/hero-app.component.css" path="component-styles/src/app/hero-app.component.css"></code-pane>
+</code-tabs>
 
 <div class="alert is-critical">
 
@@ -210,14 +209,14 @@ inside `<style>` tags.
 
 ### Template link tags
 
-You can also write `<link>` tags into the component's HTML template. 
+You can also write `<link>` tags into the component's HTML template.
 
 <code-example path="component-styles/src/app/hero-team.component.ts" region="stylelink" title="src/app/hero-team.component.ts">
 </code-example>
 
 <div class="alert is-critical">
 
-The link tag's `href` URL must be relative to the 
+The link tag's `href` URL must be relative to the
 _**application root**_, not relative to the component file.
 
 When building with the CLI, be sure to include the linked style file among the assets to be copied to the server as described in the [CLI documentation](https://github.com/angular/angular-cli/wiki/stories-asset-configuration).
@@ -245,7 +244,7 @@ See the [CLI documentation](https://github.com/angular/angular-cli/wiki/stories-
 
 ### Non-CSS style files
 
-If you're building with the CLI, 
+If you're building with the CLI,
 you can write style files in [sass](http://sass-lang.com/), [less](http://lesscss.org/), or [stylus](http://stylus-lang.com/) and specify those files in the `@Component.styleUrls` metadata with the appropriate extensions (`.scss`, `.less`, `.styl`) as in the following example:
 
 <code-example>
@@ -260,7 +259,7 @@ you can write style files in [sass](http://sass-lang.com/), [less](http://lesscs
 The CLI build process runs the pertinent CSS preprocessor.
 
 When generating a component file with `ng generate component`, the CLI emits an empty CSS styles file (`.css`) by default.
-You can configure the CLI to default to your preferred CSS preprocessor 
+You can configure the CLI to default to your preferred CSS preprocessor
 as explained in the [CLI documentation](https://github.com/angular/angular-cli/wiki/stories-css-preprocessors
 "CSS Preprocessor integration").
 
@@ -282,7 +281,7 @@ component* basis, you can set the *view encapsulation mode* in the component met
 Choose from the following modes:
 
 * `Native` view encapsulation uses the browser's native shadow DOM implementation (see
-  [Shadow DOM](https://developer.mozilla.org/en-US/docs/Web/Web_Components/Shadow_DOM) 
+  [Shadow DOM](https://developer.mozilla.org/en-US/docs/Web/Web_Components/Shadow_DOM)
   on the [MDN](https://developer.mozilla.org) site)
   to attach a shadow DOM to the component's host element, and then puts the component
   view inside that shadow DOM. The component's styles are included within the shadow DOM.
@@ -291,18 +290,18 @@ Choose from the following modes:
   (and renaming) the CSS code to effectively scope the CSS to the component's view.
   For details, see [Appendix 1](guide/component-styles#inspect-generated-css).
 
-* `None` means that Angular does no view encapsulation. 
-  Angular adds the CSS to the global styles. 
-  The scoping rules, isolations, and protections discussed earlier don't apply. 
+* `None` means that Angular does no view encapsulation.
+  Angular adds the CSS to the global styles.
+  The scoping rules, isolations, and protections discussed earlier don't apply.
   This is essentially the same as pasting the component's styles into the HTML.
-  
+
 To set the components encapsulation mode, use the `encapsulation` property in the component metadata:
 
 <code-example path="component-styles/src/app/quest-summary.component.ts" region="encapsulation.native" title="src/app/quest-summary.component.ts" linenums="false">
 </code-example>
 
 `Native` view encapsulation only works on browsers that have native support
-for shadow DOM (see [Shadow DOM v0](http://caniuse.com/#feat=shadowdom) on the 
+for shadow DOM (see [Shadow DOM v0](http://caniuse.com/#feat=shadowdom) on the
 [Can I use](http://caniuse.com) site). The support is still limited,
 which is why `Emulated` view encapsulation is the default mode and recommended
 in most cases.
@@ -332,7 +331,7 @@ There are two kinds of generated attributes:
 
 * An element that would be a shadow DOM host in native encapsulation has a
   generated `_nghost` attribute. This is typically the case for component host elements.
-* An element within a component's view has a `_ngcontent` attribute 
+* An element within a component's view has a `_ngcontent` attribute
 that identifies to which host's emulated shadow DOM this element belongs.
 
 The exact values of these attributes aren't important. They are automatically
@@ -352,5 +351,5 @@ by the generated component styles, which are in the `<head>` section of the DOM:
 </code-example>
 
 These styles are post-processed so that each selector is augmented
-with `_nghost` or `_ngcontent` attribute selectors. 
+with `_nghost` or `_ngcontent` attribute selectors.
 These extra selectors enable the scoping rules described in this page.

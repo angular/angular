@@ -23,7 +23,7 @@ describe('AppModule', () => {
   });
 
   it('should provide a list of eagerly-loaded embedded components', () => {
-    const eagerSelector = Object.keys(componentsMap).find(selector => Array.isArray(componentsMap[selector]));
+    const eagerSelector = Object.keys(componentsMap).find(selector => Array.isArray(componentsMap[selector]))!;
     const selectorCount = eagerSelector.split(',').length;
 
     expect(eagerSelector).not.toBeNull();
@@ -34,7 +34,7 @@ describe('AppModule', () => {
   });
 
   it('should provide a list of lazy-loaded embedded components', () => {
-    const lazySelector = Object.keys(componentsMap).find(selector => selector.includes('code-example'));
+    const lazySelector = Object.keys(componentsMap).find(selector => selector.includes('code-example'))!;
     const selectorCount = lazySelector.split(',').length;
 
     expect(lazySelector).not.toBeNull();

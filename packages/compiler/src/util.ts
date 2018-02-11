@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {ConstantPool} from './constant_pool';
+
 import * as o from './output/output_ast';
 import {ParseError} from './parse_util';
 
@@ -90,6 +92,10 @@ export const SyncAsync = {
   }
 };
 
+export function error(msg: string): never {
+  throw new Error(`Internal Error: ${msg}`);
+}
+
 export function syntaxError(msg: string, parseErrors?: ParseError[]): Error {
   const error = Error(msg);
   (error as any)[ERROR_SYNTAX_ERROR] = true;
@@ -152,6 +158,7 @@ export function utf8Encode(str: string): string {
 export interface OutputContext {
   genFilePath: string;
   statements: o.Statement[];
+  constantPool: ConstantPool;
   importExpr(reference: any, typeParams?: o.Type[]|null, useSummaries?: boolean): o.Expression;
 }
 

@@ -130,7 +130,7 @@ function tests() {
   it('can get RouterLinks from template', () => {
     expect(links.length).toBe(3, 'should have 3 links');
     expect(links[0].linkParams).toBe('/dashboard', '1st link should go to Dashboard');
-    expect(links[1].linkParams).toBe('/heroes', '1st link should go to Heroes');
+    expect(links[1].linkParams).toBe('/heroes', '2nd link should go to Heroes');
   });
 
   it('can click Heroes link in template', () => {

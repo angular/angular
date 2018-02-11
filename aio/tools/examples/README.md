@@ -28,15 +28,15 @@ in any Angular application using System.js. This is the boilerplate that will be
 Among these files, there are a few special ones:
 
 * **src/systemjs.config.js** - This is the configuration of System.js used to run the example locally.
-* **src/systemjs.config.web.js** - This configuration replaces the previous one on Plunkers.
+* **src/systemjs.config.web.js** - This configuration replaces the previous one on Stackblitz.
 * **src/systemjs.config.web.build.js** - Same as the previous one but for using angular's `-builds`
   versions.
 * **src/systemjs-angular-loader.js** - It is a System.js plugin that removes the need of `moduleId`.
 * **package.json** - This package.json only contains scripts, no dependencies. It contains the
   different tasks needed to run any example. Doesn't matter if CLI, System.js or Webpack.
-* **plnkr.json** - This file is used by the Plunker tool to generate a plunker for an example. This
+* **stackblitz.json** - This file is used by the Stackblitz tool to generate a stackblitz for an example. This
   concrete file is just a placeholder. Authors needs to tweak it for each guide. More at the
-  [plunker docs](../plunker-builder/README.md).
+  [stackblitz docs](../stackblitz-builder/README.md).
 * **example-config.json** - This file serves as a flag to indicate that the current folder is an
   example. This concrete file is just a placeholder. More on this later in this readme.
 
@@ -88,7 +88,7 @@ as shown earlier.
 
 This script installs all the dependencies that are shared among all the examples, creates the
 `node_modules` symlinks and copy all the boilerplate files where needed. It won't do anything
-about plunkers nor e2e tests.
+about stackblitz nor e2e tests.
 
 It also contains a function to remove all the boilerplate. It uses a `git clean -xdf` to do
 the job. It will remove all files that don't exist in the git repository, **including any

@@ -249,6 +249,9 @@ export class PerflogMetric extends Metric {
       // not all events have been received, no further processing for now
       return null;
     }
+    if (markStartEvent.pid !== markEndEvent.pid) {
+      result['invalid'] = 1;
+    }
 
     let gcTimeInScript = 0;
     let renderTimeInScript = 0;

@@ -253,7 +253,7 @@ export function getLocaleWeekEndRange(locale: string): [WeekDay, WeekDay] {
  */
 export function getLocaleDateFormat(locale: string, width: FormatWidth): string {
   const data = findLocaleData(locale);
-  return data[LocaleDataIndex.DateFormat][width];
+  return getLastDefinedValue(data[LocaleDataIndex.DateFormat], width);
 }
 
 /**
@@ -278,7 +278,7 @@ export function getLocaleDateFormat(locale: string, width: FormatWidth): string 
  */
 export function getLocaleTimeFormat(locale: string, width: FormatWidth): string {
   const data = findLocaleData(locale);
-  return data[LocaleDataIndex.TimeFormat][width];
+  return getLastDefinedValue(data[LocaleDataIndex.TimeFormat], width);
 }
 
 /**
@@ -527,12 +527,17 @@ export function findLocaleData(locale: string): any {
 
 /**
  * Return the currency symbol for a given currency code, or the code if no symbol available
- * (e.g.: $, US$, or USD)
+ * (e.g.: format narrow = $, format wide = US$, code = USD)
  *
- * @internal
+ * @experimental i18n support is experimental.
  */
-export function findCurrencySymbol(code: string, format: 'wide' | 'narrow') {
-  const currency = CURRENCIES[code] || {};
-  const symbol = currency[0] || code;
-  return format === 'wide' ? symbol : currency[1] || symbol;
+export function getCurrencySymbol(code: string, format: 'wide' | 'narrow'): string {
+  const currency = CURRENCIES[code] || [];
+  const symbolNarrow = currency[1];
+
+  if (format === 'narrow' && typeof symbolNarrow === 'string') {
+    return symbolNarrow;
+  }
+
+  return currency[0] || code;
 }

@@ -124,8 +124,8 @@ to create components to represent the dynamic form.
 
 
 
-It presents a list of questions, each bound to a `<df-question>` component element.
-The `<df-question>` tag matches the `DynamicFormQuestionComponent`,
+It presents a list of questions, each bound to a `<app-question>` component element.
+The `<app-question>` tag matches the `DynamicFormQuestionComponent`,
 the component responsible for rendering the details of each _individual_
 question based on values in the data-bound question object.
 

@@ -7,6 +7,7 @@
  */
 
 import {Subject} from 'rxjs/Subject';
+import {Subscription} from 'rxjs/Subscription';
 
 /**
  * Use by directives and components to emit custom Events.
@@ -111,6 +112,12 @@ export class EventEmitter<T> extends Subject<T> {
       }
     }
 
-    return super.subscribe(schedulerFn, errorFn, completeFn);
+    const sink = super.subscribe(schedulerFn, errorFn, completeFn);
+
+    if (generatorOrNext instanceof Subscription) {
+      generatorOrNext.add(sink);
+    }
+
+    return sink;
   }
 }

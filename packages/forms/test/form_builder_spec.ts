@@ -41,10 +41,38 @@ import {FormBuilder} from '@angular/forms';
       expect(g.controls['password'].asyncValidator).toEqual(asyncValidator);
     });
 
-    it('should use controls', () => {
+    it('should use controls whose form state is a standalone value', () => {
       const g = b.group({'login': b.control('some value', syncValidator, asyncValidator)});
 
       expect(g.controls['login'].value).toEqual('some value');
+      expect(g.controls['login'].validator).toBe(syncValidator);
+      expect(g.controls['login'].asyncValidator).toBe(asyncValidator);
+    });
+
+    it('should support controls with no validators and whose form state is null', () => {
+      const g = b.group({'login': b.control(null)});
+      expect(g.controls['login'].value).toBeNull();
+      expect(g.controls['login'].validator).toBeNull();
+      expect(g.controls['login'].asyncValidator).toBeNull();
+    });
+
+    it('should support controls with validators and whose form state is null', () => {
+      const g = b.group({'login': b.control(null, syncValidator, asyncValidator)});
+      expect(g.controls['login'].value).toBeNull();
+      expect(g.controls['login'].validator).toBe(syncValidator);
+      expect(g.controls['login'].asyncValidator).toBe(asyncValidator);
+    });
+
+    it('should support controls with no validators and whose form state is undefined', () => {
+      const g = b.group({'login': b.control(undefined)});
+      expect(g.controls['login'].value).toBeNull();
+      expect(g.controls['login'].validator).toBeNull();
+      expect(g.controls['login'].asyncValidator).toBeNull();
+    });
+
+    it('should support controls with validators and whose form state is undefined', () => {
+      const g = b.group({'login': b.control(undefined, syncValidator, asyncValidator)});
+      expect(g.controls['login'].value).toBeNull();
       expect(g.controls['login'].validator).toBe(syncValidator);
       expect(g.controls['login'].asyncValidator).toBe(asyncValidator);
     });
@@ -59,10 +87,13 @@ import {FormBuilder} from '@angular/forms';
 
     it('should create control arrays', () => {
       const c = b.control('three');
+      const e = b.control(null);
+      const f = b.control(undefined);
       const a = b.array(
-          ['one', ['two', syncValidator], c, b.array(['four'])], syncValidator, asyncValidator);
+          ['one', ['two', syncValidator], c, b.array(['four']), e, f], syncValidator,
+          asyncValidator);
 
-      expect(a.value).toEqual(['one', 'two', 'three', ['four']]);
+      expect(a.value).toEqual(['one', 'two', 'three', ['four'], null, null]);
       expect(a.validator).toBe(syncValidator);
       expect(a.asyncValidator).toBe(asyncValidator);
     });

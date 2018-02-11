@@ -9,6 +9,11 @@
 // THIS CODE IS GENERATED - DO NOT MODIFY
 // See angular/tools/gulp-tasks/cldr/extract.js
 
+function plural(n: number): number {
+  if (n === 1) return 1;
+  return 5;
+}
+
 export default [
   'az',
   [
@@ -21,7 +26,10 @@ export default [
   ],
   [
     ['7', '1', '2', '3', '4', '5', '6'], ['B.', 'B.E.', 'Ç.A.', 'Ç.', 'C.A.', 'C.', 'Ş.'],
-    ['bazar', 'bazar ertəsi', 'çərşənbə axşamı', 'çərşənbə', 'cümə axşamı', 'cümə', 'şənbə'],
+    [
+      'bazar', 'bazar ertəsi', 'çərşənbə axşamı', 'çərşənbə', 'cümə axşamı',
+      'cümə', 'şənbə'
+    ],
     ['B.', 'B.E.', 'Ç.A.', 'Ç.', 'C.A.', 'C.', 'Ş.']
   ],
   ,
@@ -50,10 +58,5 @@ export default [
     ,
   ],
   [',', '.', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0%', '¤ #,##0.00', '#E0'], '₼', 'Azərbaycan Manatı', function(n: number):
-                                                                                number {
-                                                                                  if (n === 1)
-                                                                                    return 1;
-                                                                                  return 5;
-                                                                                }
+  ['#,##0.###', '#,##0%', '¤ #,##0.00', '#E0'], '₼', 'Azərbaycan Manatı', plural
 ];

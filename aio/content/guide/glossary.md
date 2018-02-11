@@ -20,13 +20,9 @@ unexpected definitions.
 ## Ahead-of-time (AOT) compilation
 
 You can compile Angular applications at build time.
-By compiling your application using the compiler-cli, `ngc`, you can bootstrap directly
-to a module factory, meaning you don't need to include the Angular compiler in your JavaScript bundle.
+By compiling your application using the compiler-cli, `ngc`, you can bootstrap directly to a module factory, meaning you don't need to include the Angular compiler in your JavaScript bundle.
 Ahead-of-time compiled applications also benefit from decreased load time and increased performance.
 
-
-
-</div>
 
 
 ## Annotation
@@ -125,8 +121,6 @@ between a "token"&mdash;also referred to as a "key"&mdash;and a dependency [prov
 
 ## Bootstrap
 
-
-<div class="l-sub-section">
 
 You launch an Angular application by "bootstrapping" it using the application root NgModule (`AppModule`).
 
@@ -478,8 +472,10 @@ Read more in the [Lifecycle Hooks](guide/lifecycle-hooks) page.
 Angular has the following types of modules:
 
 * [NgModules](guide/glossary#ngmodule).
-For details and examples, see the [NgModules](guide/ngmodule) page.
+For details and examples, see the [NgModules](guide/ngmodules) page. 
 * ES2015 modules, as described in this section.
+
+For a comparison, see [JavaScript Modules vs. NgModules](guide/ngmodule-vs-jsmodule).
 
 
 </div>
@@ -526,7 +522,8 @@ An NgModule identifies the components, directives, and pipes that the applicatio
 Every Angular application has an application root-module class. By convention, the class is
 called `AppModule` and resides in a file named `app.module.ts`.
 
-For details and examples, see [NgModules](guide/ngmodule).
+For details and examples, see [NgModules](guide/ngmodules) and the 
+related files in that section.
 
 
 </div>
@@ -640,6 +637,7 @@ A separate [NgModule](guide/glossary#ngmodule) that provides the necessary servi
 
 For more information, see the [Routing & Navigation](guide/router) page.
 
+</div>
 
 ## Routing component
 

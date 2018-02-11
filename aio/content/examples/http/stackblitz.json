@@ -1,0 +1,11 @@
+{
+  "description": "Http",
+  "files":[
+    "!**/*.d.ts",
+    "!**/*.js",
+
+    "!src/testing/*.*",
+    "!src/index-specs.html"
+  ],
+  "tags": ["http"]
+}

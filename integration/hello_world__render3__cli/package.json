@@ -1,0 +1,33 @@
+{
+  "name": "hello_world__render3__cli",
+  "version": "0.0.0",
+  "license": "MIT",
+  "scripts": {
+    "ng": "ng",
+    "start": "ng serve",
+    "build": "ng build --prod --build-optimizer",
+    "test": "echo no tests",
+    "lint": "ng lint",
+    "e2e": "ng e2e"
+  },
+  "private": true,
+  "dependencies": {
+    "@angular/animations": "file:../../dist/packages-dist/animations",
+    "@angular/common": "file:../../dist/packages-dist/common",
+    "@angular/compiler": "file:../../dist/packages-dist/compiler",
+    "@angular/core": "file:../../dist/packages-dist/core",
+    "@angular/forms": "file:../../dist/packages-dist/forms",
+    "@angular/http": "file:../../dist/packages-dist/http",
+    "@angular/platform-browser": "file:../../dist/packages-dist/platform-browser",
+    "@angular/platform-browser-dynamic": "file:../../dist/packages-dist/platform-browser-dynamic",
+    "@angular/router": "file:../../dist/packages-dist/router",
+    "core-js": "2.4.1",
+    "rxjs": "5.5.6",
+    "zone.js": "0.8.19"
+  },
+  "devDependencies": {
+    "@angular/cli": "1.7.0-beta.2",
+    "@angular/compiler-cli": "file:../../dist/packages-dist/compiler-cli",
+    "typescript": "2.6.2"
+  }
+}

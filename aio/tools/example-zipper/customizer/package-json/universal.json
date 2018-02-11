@@ -11,7 +11,6 @@
     { "name": "webpack:server", "command": "webpack --config webpack.server.config.js --progress --colors" }
   ],
   "dependencies": [
-    "web-animations-js",
     "@nguniversal/express-engine",
     "@nguniversal/module-map-ngfactory-loader",
     "ts-loader"
@@ -19,6 +18,7 @@
   "devDependencies": [
     "@angular/cli",
     "@types/jasminewd2",
+    "jasmine-spec-reporter",
     "karma-coverage-istanbul-reporter",
     "ts-node"
   ]

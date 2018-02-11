@@ -184,26 +184,17 @@ function _maybeConvertBody(
     responseType: string, body: ArrayBuffer | Blob | string | number | Object |
         (string | number | Object | null)[] | null): ArrayBuffer|Blob|string|number|Object|
     (string | number | Object | null)[]|null {
+  if (body === null) {
+    return null;
+  }
   switch (responseType) {
     case 'arraybuffer':
-      if (body === null) {
-        return null;
-      }
       return _toArrayBufferBody(body);
     case 'blob':
-      if (body === null) {
-        return null;
-      }
       return _toBlob(body);
     case 'json':
-      if (body === null) {
-        return 'null';
-      }
       return _toJsonBody(body);
     case 'text':
-      if (body === null) {
-        return null;
-      }
       return _toTextBody(body);
     default:
       throw new Error(`Unsupported responseType: ${responseType}`);

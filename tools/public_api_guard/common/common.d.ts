@@ -15,11 +15,6 @@ export declare class AsyncPipe implements OnDestroy, PipeTransform {
 export declare class CommonModule {
 }
 
-/** @experimental */
-export declare const CURRENCIES: {
-    [code: string]: (string | undefined)[];
-};
-
 /** @stable */
 export declare class CurrencyPipe implements PipeTransform {
     constructor(_locale: string);
@@ -82,6 +77,9 @@ export declare enum FormStyle {
     Format = 0,
     Standalone = 1,
 }
+
+/** @experimental */
+export declare function getCurrencySymbol(code: string, format: 'wide' | 'narrow'): string;
 
 /** @experimental */
 export declare function getLocaleCurrencyName(locale: string): string | null;
@@ -184,12 +182,12 @@ export declare class Location {
     constructor(platformStrategy: LocationStrategy);
     back(): void;
     forward(): void;
-    go(path: string, query?: string): void;
+    go(path: string, query?: string, state?: any): void;
     isCurrentPathEqualTo(path: string, query?: string): boolean;
     normalize(url: string): string;
     path(includeHash?: boolean): string;
     prepareExternalUrl(url: string): string;
-    replaceState(path: string, query?: string): void;
+    replaceState(path: string, query?: string, state?: any): void;
     subscribe(onNext: (value: PopStateEvent) => void, onThrow?: ((exception: any) => void) | null, onReturn?: (() => void) | null): ISubscription;
     static joinWithSlash(start: string, end: string): string;
     static normalizeQueryParams(params: string): string;
@@ -201,6 +199,7 @@ export declare const LOCATION_INITIALIZED: InjectionToken<Promise<any>>;
 
 /** @experimental */
 export interface LocationChangeEvent {
+    state: any;
     type: string;
 }
 
@@ -417,6 +416,7 @@ export declare enum Plural {
 /** @experimental */
 export interface PopStateEvent {
     pop?: boolean;
+    state?: any;
     type?: string;
     url?: string;
 }

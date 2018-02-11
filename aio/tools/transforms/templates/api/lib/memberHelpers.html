@@ -11,7 +11,7 @@
 
 {%- macro renderMembers(doc) -%}
 {%- if doc.members.length %}{% for member in doc.members %}{% if not member.internal %}
-  <a class="code-anchor" href="{$ doc.path $}#{$ member.anchor $}">{$ renderMember(member, 1) $}</a>{% endif %}{% endfor %}{% endif %}
+  <a class="code-anchor" href="{$ doc.path $}#{$ member.anchor | urlencode $}">{$ renderMember(member, 1) $}</a>{% endif %}{% endfor %}{% endif %}
 {%- for ancestor in doc.extendsClauses %}{% if ancestor.doc %}
   // inherited from <a class="code-anchor" href="{$ ancestor.doc.path $}">{$ ancestor.doc.id $}</a>{$ renderMembers(ancestor.doc) $}{% endif %}{% endfor %}
 {%- endmacro -%}
@@ -29,7 +29,7 @@
 {%- macro renderMemberDetail(member, cssClass) -%}
 <div class="{$ cssClass $}">
   <a id="{$ member.anchor $}"></a>
-  <code-example hideCopy="true" class="no-box api-heading">{$ renderMember(member) $}</code-example>
+  <code-example language="ts" hideCopy="true" class="no-box api-heading">{$ renderMember(member) $}</code-example>
   {%- if not member.notYetDocumented %}
   {$ member.description | marked $}
   {% endif -%}

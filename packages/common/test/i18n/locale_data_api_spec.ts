@@ -9,9 +9,10 @@
 import localeCaESVALENCIA from '@angular/common/locales/ca-ES-VALENCIA';
 import localeEn from '@angular/common/locales/en';
 import localeFr from '@angular/common/locales/fr';
+import localeZh from '@angular/common/locales/zh';
 import localeFrCA from '@angular/common/locales/fr-CA';
 import {registerLocaleData} from '../../src/i18n/locale_data';
-import {findLocaleData} from '../../src/i18n/locale_data_api';
+import {findLocaleData, getCurrencySymbol, getLocaleDateFormat, FormatWidth} from '../../src/i18n/locale_data_api';
 
 {
   describe('locale data api', () => {
@@ -22,6 +23,7 @@ import {findLocaleData} from '../../src/i18n/locale_data_api';
       registerLocaleData(localeFrCA);
       registerLocaleData(localeFr, 'fake-id');
       registerLocaleData(localeFrCA, 'fake_Id2');
+      registerLocaleData(localeZh);
     });
 
     describe('findLocaleData', () => {
@@ -50,6 +52,24 @@ import {findLocaleData} from '../../src/i18n/locale_data_api';
         expect(findLocaleData('fake_iD')).toEqual(localeFr);
         expect(findLocaleData('fake-id2')).toEqual(localeFrCA);
       });
+    });
+
+    describe('getCurrencySymbolElseCode', () => {
+      it('should return the correct symbol', () => {
+        expect(getCurrencySymbol('USD', 'wide')).toEqual('$');
+        expect(getCurrencySymbol('USD', 'narrow')).toEqual('$');
+        expect(getCurrencySymbol('AUD', 'wide')).toEqual('A$');
+        expect(getCurrencySymbol('AUD', 'narrow')).toEqual('$');
+        expect(getCurrencySymbol('CRC', 'wide')).toEqual('CRC');
+        expect(getCurrencySymbol('CRC', 'narrow')).toEqual('₡');
+        expect(getCurrencySymbol('FAKE', 'wide')).toEqual('FAKE');
+        expect(getCurrencySymbol('FAKE', 'narrow')).toEqual('FAKE');
+      });
+    });
+
+    describe('getLastDefinedValue', () => {
+      it('should find the last defined date format when format not defined',
+         () => { expect(getLocaleDateFormat('zh', FormatWidth.Long)).toEqual('y年M月d日'); });
     });
   });
 }

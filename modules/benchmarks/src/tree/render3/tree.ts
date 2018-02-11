@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ɵC as C, ɵD as D, ɵE as E, ɵT as T, ɵV as V, ɵb as b, ɵb1 as b1, ɵc as c, ɵcR as cR, ɵcr as cr, ɵdefineComponent as defineComponent, ɵdetectChanges as _detectChanges, ɵe as e, ɵp as p, ɵs as s, ɵt as t, ɵv as v} from '@angular/core';
-import {ComponentDef} from '@angular/core/src/render3/definition_interfaces';
+import {ɵC as C, ɵE as E, ɵT as T, ɵV as V, ɵb as b, ɵb1 as b1, ɵcR as cR, ɵcr as cr, ɵdefineComponent as defineComponent, ɵdetectChanges as _detectChanges, ɵe as e, ɵp as p, ɵr as r, ɵs as s, ɵt as t, ɵv as v} from '@angular/core';
+import {ComponentDef} from '@angular/core/src/render3/interfaces/definition';
 
 import {TreeNode, buildTree, emptyTree} from '../util';
 
@@ -44,9 +44,7 @@ export class TreeComponent {
         { T(1); }
         e();
         C(2);
-        c();
         C(3);
-        c();
       }
       s(0, 'background-color', b(ctx.data.depth % 2 ? '' : 'grey'));
       t(1, b1(' ', ctx.data.value, ' '));
@@ -56,12 +54,12 @@ export class TreeComponent {
           let cm0 = V(0);
           {
             if (cm0) {
-              E(0, TreeComponent.ngComponentDef);
-              { D(1, TreeComponent.ngComponentDef.n(), TreeComponent.ngComponentDef); }
+              E(0, TreeComponent);
               e();
             }
             p(0, 'data', b(ctx.data.left));
-            TreeComponent.ngComponentDef.r(1, 0);
+            TreeComponent.ngComponentDef.h(1, 0);
+            r(1, 0);
           }
           v();
         }
@@ -73,12 +71,12 @@ export class TreeComponent {
           let cm0 = V(0);
           {
             if (cm0) {
-              E(0, TreeComponent.ngComponentDef);
-              { D(1, TreeComponent.ngComponentDef.n(), TreeComponent.ngComponentDef); }
+              E(0, TreeComponent);
               e();
             }
             p(0, 'data', b(ctx.data.right));
-            TreeComponent.ngComponentDef.r(1, 0);
+            TreeComponent.ngComponentDef.h(1, 0);
+            r(1, 0);
           }
           v();
         }
@@ -90,7 +88,7 @@ export class TreeComponent {
   });
 }
 
-export class TreeFunction extends TreeComponent {
+export class TreeFunction {
   data: TreeNode = emptyTree;
 
   /** @nocollapse */
@@ -108,17 +106,19 @@ export class TreeFunction extends TreeComponent {
 
 export function TreeTpl(ctx: TreeNode, cm: boolean) {
   if (cm) {
-    E(0, 'span');
-    { T(1); }
+    E(0, 'tree');
+    {
+      E(1, 'span');
+      { T(2); }
+      e();
+      C(3);
+      C(4);
+    }
     e();
-    C(2);
-    c();
-    C(3);
-    c();
   }
-  s(0, 'background-color', b(ctx.depth % 2 ? '' : 'grey'));
-  t(1, b1(' ', ctx.value, ' '));
-  cR(2);
+  s(1, 'background-color', b(ctx.depth % 2 ? '' : 'grey'));
+  t(2, b1(' ', ctx.value, ' '));
+  cR(3);
   {
     if (ctx.left != null) {
       let cm0 = V(0);
@@ -127,7 +127,7 @@ export function TreeTpl(ctx: TreeNode, cm: boolean) {
     }
   }
   cr();
-  cR(3);
+  cR(4);
   {
     if (ctx.right != null) {
       let cm0 = V(0);

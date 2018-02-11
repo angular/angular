@@ -153,122 +153,202 @@ describe('AppComponent', () => {
       });
     });
 
-    describe('SideNav when side-by-side (wide)', () => {
+    describe('SideNav', () => {
       const navigateTo = (path: string) => {
         locationService.go(path);
         component.updateSideNav();
         fixture.detectChanges();
       };
-
-      beforeEach(() => {
-        component.onResize(sideBySideBreakPoint + 1); // side-by-side
-      });
-
-      it('should open when nav to a guide page (guide/pipes)', () => {
-        navigateTo('guide/pipes');
-        expect(sidenav.opened).toBe(true);
-      });
-
-      it('should open when nav to an api page', () => {
-        navigateTo('api/a/b/c/d');
-        expect(sidenav.opened).toBe(true);
-      });
-
-      it('should be closed when nav to a marketing page (features)', () => {
-        navigateTo('features');
-        expect(sidenav.opened).toBe(false);
-      });
-
-      describe('when manually closed', () => {
-
-        beforeEach(() => {
-          navigateTo('guide/pipes');
-          hamburger.click();
-          fixture.detectChanges();
-        });
-
-        it('should be closed', () => {
-          expect(sidenav.opened).toBe(false);
-        });
-
-        it('should stay closed when nav from one guide page to another', () => {
-          navigateTo('guide/bags');
-          expect(sidenav.opened).toBe(false);
-        });
-
-        it('should stay closed when nav from a guide page to api page', () => {
-          navigateTo('api');
-          expect(sidenav.opened).toBe(false);
-        });
-
-        it('should reopen when nav to market page and back to guide page', () => {
-          navigateTo('features');
-          navigateTo('guide/bags');
-          expect(sidenav.opened).toBe(true);
-        });
-      });
-    });
-
-    describe('SideNav when NOT side-by-side (narrow)', () => {
-      const navigateTo = (path: string) => {
-        locationService.go(path);
-        component.updateSideNav();
+      const resizeTo = (width: number) => {
+        component.onResize(width);
+        fixture.detectChanges();
+      };
+      const toggleSidenav = () => {
+        hamburger.click();
         fixture.detectChanges();
       };
 
-      beforeEach(() => {
-        component.onResize(sideBySideBreakPoint - 1); // NOT side-by-side
-      });
+      describe('when side-by-side (wide)', () => {
+        beforeEach(() => resizeTo(sideBySideBreakPoint + 1));  // side-by-side
 
-      it('should be closed when nav to a guide page (guide/pipes)', () => {
-        navigateTo('guide/pipes');
-        expect(sidenav.opened).toBe(false);
-      });
-
-      it('should be closed when nav to an api page', () => {
-        navigateTo('api/a/b/c/d');
-        expect(sidenav.opened).toBe(false);
-      });
-
-      it('should be closed when nav to a marketing page (features)', () => {
-        navigateTo('features');
-        expect(sidenav.opened).toBe(false);
-      });
-
-      describe('when manually opened', () => {
-
-        beforeEach(() => {
+        it('should open when navigating to a guide page (guide/pipes)', () => {
           navigateTo('guide/pipes');
-          hamburger.click();
-          fixture.detectChanges();
-        });
-
-        it('should be open', () => {
           expect(sidenav.opened).toBe(true);
         });
 
-        it('should close when click in gray content area overlay', () => {
-          const sidenavBackdrop = fixture.debugElement.query(By.css('.mat-drawer-backdrop')).nativeElement;
-          sidenavBackdrop.click();
-          fixture.detectChanges();
-          expect(sidenav.opened).toBe(false);
+        it('should open when navigating to an api page', () => {
+          navigateTo('api/a/b/c/d');
+          expect(sidenav.opened).toBe(true);
         });
 
-        it('should close when nav to another guide page', () => {
-          navigateTo('guide/bags');
-          expect(sidenav.opened).toBe(false);
-        });
-
-        it('should close when nav to api page', () => {
-          navigateTo('api');
-          expect(sidenav.opened).toBe(false);
-        });
-
-        it('should close again when nav to market page', () => {
+        it('should be closed when navigating to a marketing page (features)', () => {
           navigateTo('features');
           expect(sidenav.opened).toBe(false);
         });
 
+        describe('when manually closed', () => {
+
+          beforeEach(() => {
+            navigateTo('guide/pipes');
+            toggleSidenav();
+          });
+
+          it('should be closed', () => {
+            expect(sidenav.opened).toBe(false);
+          });
+
+          it('should stay closed when navigating from one guide page to another', () => {
+            navigateTo('guide/bags');
+            expect(sidenav.opened).toBe(false);
+          });
+
+          it('should stay closed when navigating from a guide page to api page', () => {
+            navigateTo('api');
+            expect(sidenav.opened).toBe(false);
+          });
+
+          it('should reopen when navigating to market page and back to guide page', () => {
+            navigateTo('features');
+            navigateTo('guide/bags');
+            expect(sidenav.opened).toBe(true);
+          });
+        });
+      });
+
+      describe('when NOT side-by-side (narrow)', () => {
+        beforeEach(() => resizeTo(sideBySideBreakPoint - 1)); // NOT side-by-side
+
+        it('should be closed when navigating to a guide page (guide/pipes)', () => {
+          navigateTo('guide/pipes');
+          expect(sidenav.opened).toBe(false);
+        });
+
+        it('should be closed when navigating to an api page', () => {
+          navigateTo('api/a/b/c/d');
+          expect(sidenav.opened).toBe(false);
+        });
+
+        it('should be closed when navigating to a marketing page (features)', () => {
+          navigateTo('features');
+          expect(sidenav.opened).toBe(false);
+        });
+
+        describe('when manually opened', () => {
+
+          beforeEach(() => {
+            navigateTo('guide/pipes');
+            toggleSidenav();
+          });
+
+          it('should be open', () => {
+            expect(sidenav.opened).toBe(true);
+          });
+
+          it('should close when clicking in gray content area overlay', () => {
+            const sidenavBackdrop = fixture.debugElement.query(By.css('.mat-drawer-backdrop')).nativeElement;
+            sidenavBackdrop.click();
+            fixture.detectChanges();
+            expect(sidenav.opened).toBe(false);
+          });
+
+          it('should close when navigating to another guide page', () => {
+            navigateTo('guide/bags');
+            expect(sidenav.opened).toBe(false);
+          });
+
+          it('should close when navigating to api page', () => {
+            navigateTo('api');
+            expect(sidenav.opened).toBe(false);
+          });
+
+          it('should close again when navigating to market page', () => {
+            navigateTo('features');
+            expect(sidenav.opened).toBe(false);
+          });
+
+        });
+      });
+
+      describe('when changing side-by-side (narrow --> wide)', () => {
+        const sidenavDocs = ['api/a/b/c/d', 'guide/pipes'];
+        const nonSidenavDocs = ['features', 'about'];
+
+        sidenavDocs.forEach(doc => {
+          it(`should open when on a sidenav doc (${doc})`, () => {
+            resizeTo(sideBySideBreakPoint - 1);
+
+            navigateTo(doc);
+            expect(sidenav.opened).toBe(false);
+
+            resizeTo(sideBySideBreakPoint + 1);
+            expect(sidenav.opened).toBe(true);
+          });
+        });
+
+        nonSidenavDocs.forEach(doc => {
+          it(`should remain closed when on a non-sidenav doc (${doc})`, () => {
+            resizeTo(sideBySideBreakPoint - 1);
+
+            navigateTo(doc);
+            expect(sidenav.opened).toBe(false);
+
+            resizeTo(sideBySideBreakPoint + 1);
+            expect(sidenav.opened).toBe(false);
+          });
+        });
+
+        describe('when manually opened', () => {
+          sidenavDocs.forEach(doc => {
+            it(`should remain opened when on a sidenav doc (${doc})`, () => {
+              resizeTo(sideBySideBreakPoint - 1);
+
+              navigateTo(doc);
+              toggleSidenav();
+              expect(sidenav.opened).toBe(true);
+
+              resizeTo(sideBySideBreakPoint + 1);
+              expect(sidenav.opened).toBe(true);
+            });
+          });
+
+          nonSidenavDocs.forEach(doc => {
+            it(`should close when on a non-sidenav doc (${doc})`, () => {
+              resizeTo(sideBySideBreakPoint - 1);
+
+              navigateTo(doc);
+              toggleSidenav();
+              expect(sidenav.opened).toBe(true);
+
+              resizeTo(sideBySideBreakPoint + 1);
+              expect(sidenav.opened).toBe(false);
+            });
+          });
+        });
+      });
+
+      describe('when changing side-by-side (wide --> narrow)', () => {
+        const sidenavDocs = ['api/a/b/c/d', 'guide/pipes'];
+        const nonSidenavDocs = ['features', 'about'];
+
+        sidenavDocs.forEach(doc => {
+          it(`should close when on a sidenav doc (${doc})`, () => {
+            navigateTo(doc);
+            expect(sidenav.opened).toBe(true);
+
+            resizeTo(sideBySideBreakPoint - 1);
+            expect(sidenav.opened).toBe(false);
+          });
+        });
+
+        nonSidenavDocs.forEach(doc => {
+          it(`should remain closed when on a non-sidenav doc (${doc})`, () => {
+            navigateTo(doc);
+            expect(sidenav.opened).toBe(false);
+
+            resizeTo(sideBySideBreakPoint - 1);
+            expect(sidenav.opened).toBe(false);
+          });
+        });
       });
     });
 
@@ -314,7 +394,7 @@ describe('AppComponent', () => {
       it('should not navigate when change to a version without a url', () => {
         setupSelectorForTesting();
         const versionWithoutUrlIndex = component.docVersions.length;
-        const versionWithoutUrl = component.docVersions[versionWithoutUrlIndex] = { title: 'foo', url: null };
+        const versionWithoutUrl = component.docVersions[versionWithoutUrlIndex] = { title: 'foo' };
         selectElement.triggerEventHandler('change', { option: versionWithoutUrl, index: versionWithoutUrlIndex });
         expect(locationService.go).not.toHaveBeenCalled();
       });
@@ -387,14 +467,14 @@ describe('AppComponent', () => {
         expect(scrollSpy).toHaveBeenCalled();
       });
 
-      it('should scroll again when nav to the same hash twice in succession', () => {
+      it('should scroll again when navigating to the same hash twice in succession', () => {
         locationService.go('guide/pipes');
         locationService.go('guide/pipes#somewhere');
         locationService.go('guide/pipes#somewhere');
         expect(scrollSpy.calls.count()).toBe(2);
       });
 
-      it('should scroll when nav to the same path', () => {
+      it('should scroll when navigating to the same path', () => {
         locationService.go('guide/pipes');
         scrollSpy.calls.reset();
 
@@ -520,9 +600,9 @@ describe('AppComponent', () => {
 
     describe('aio-toc', () => {
       let tocDebugElement: DebugElement;
-      let tocContainer: DebugElement;
+      let tocContainer: DebugElement|null;
 
-      const setHasFloatingToc = hasFloatingToc => {
+      const setHasFloatingToc = (hasFloatingToc: boolean) => {
         component.hasFloatingToc = hasFloatingToc;
         fixture.detectChanges();
 
@@ -551,12 +631,12 @@ describe('AppComponent', () => {
       });
 
       it('should update the TOC container\'s `maxHeight` based on `tocMaxHeight`', () => {
-        expect(tocContainer.styles['max-height']).toBeNull();
+        expect(tocContainer!.styles['max-height']).toBeNull();
 
         component.tocMaxHeight = '100';
         fixture.detectChanges();
 
-        expect(tocContainer.styles['max-height']).toBe('100px');
+        expect(tocContainer!.styles['max-height']).toBe('100px');
       });
 
       it('should restrain scrolling inside the ToC container', () => {
@@ -565,7 +645,7 @@ describe('AppComponent', () => {
 
         expect(restrainScrolling).not.toHaveBeenCalled();
 
-        tocContainer.triggerEventHandler('mousewheel', evt);
+        tocContainer!.triggerEventHandler('mousewheel', evt);
         expect(restrainScrolling).toHaveBeenCalledWith(evt);
       });
     });
@@ -591,7 +671,7 @@ describe('AppComponent', () => {
         initializeTest();
         fixture.detectChanges();
         const banner: HTMLElement = fixture.debugElement.query(By.css('aio-mode-banner')).nativeElement;
-        expect(banner.textContent.trim()).toEqual('');
+        expect(banner.textContent!.trim()).toEqual('');
       });
     });
 
@@ -723,14 +803,14 @@ describe('AppComponent', () => {
         expect(TestBed.get(LocationService).replace).not.toHaveBeenCalled();
       });
 
-      it('should redirect to `docs` if deployment mode is `next` and not at a docs page', () => {
+      it('should not redirect if deployment mode is `next`', () => {
         createTestingModule('', 'next');
         initializeTest();
-        expect(TestBed.get(LocationService).replace).toHaveBeenCalledWith('docs');
+        expect(TestBed.get(LocationService).replace).not.toHaveBeenCalled();
 
         createTestingModule('resources', 'next');
         initializeTest();
-        expect(TestBed.get(LocationService).replace).toHaveBeenCalledWith('docs');
+        expect(TestBed.get(LocationService).replace).not.toHaveBeenCalled();
 
         createTestingModule('guide/aot-compiler', 'next');
         initializeTest();
@@ -757,7 +837,7 @@ describe('AppComponent', () => {
         expect(TestBed.get(LocationService).replace).not.toHaveBeenCalled();
       });
 
-      it('should not redirect to `docs` if deployment mode is `stable` and not at a docs page', () => {
+      it('should not redirect to `docs` if deployment mode is `stable`', () => {
         createTestingModule('', 'stable');
         initializeTest();
         expect(TestBed.get(LocationService).replace).not.toHaveBeenCalled();
@@ -985,9 +1065,9 @@ describe('AppComponent', () => {
         checkHostClass('mode', 'archive');
       });
 
-      function checkHostClass(type, value) {
+      function checkHostClass(type: string, value: string) {
         const host = fixture.debugElement;
-        const classes = host.properties['className'];
+        const classes: string = host.properties['className'];
         const classArray = classes.split(' ').filter(c => c.indexOf(`${type}-`) === 0);
         expect(classArray.length).toBeLessThanOrEqual(1, `"${classes}" should have only one class matching ${type}-*`);
         expect(classArray).toEqual([`${type}-${value}`], `"${classes}" should contain ${type}-${value}`);
@@ -1212,10 +1292,10 @@ class TestHttpClient {
     if (/navigation\.json/.test(url)) {
       data = this.navJson;
     } else {
-      const match = /generated\/docs\/(.+)\.json/.exec(url);
-      const id = match[1];
+      const match = /generated\/docs\/(.+)\.json/.exec(url)!;
+      const id = match[1]!;
       // Make up a title for test purposes
-      const title = id.split('/').pop().replace(/^([a-z])/, (_, letter) => letter.toUpperCase());
+      const title = id.split('/').pop()!.replace(/^([a-z])/, (_, letter) => letter.toUpperCase());
       const h1 = (id === 'no-title') ? '' : `<h1>${title}</h1>`;
       const contents = `${h1}<h2 id="#somewhere">Some heading</h2>`;
       data = { id, contents };

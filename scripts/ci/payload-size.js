@@ -23,8 +23,13 @@ for (const compressionType in limitSizes) {
 
       if (Math.abs(actualSize - expectedSize) > expectedSize / 100) {
         failed = true;
+        // We must also catch when the size is significantly lower than the payload limit, so
+        // we are forced to update the expected payload number when the payload size reduces.
+        // Otherwise, we won't be able to catch future regressions that happen to be below
+        // the artificially inflated limit.
+        const operator = actualSize > expectedSize ? 'exceeded' : 'fell below';
         console.log(
-            `Commit ${commit} ${compressionType} ${filename} exceeded expected size by >1% ` +
+            `Commit ${commit} ${compressionType} ${filename} ${operator} expected size by >1% ` +
             `(expected: ${expectedSize}, actual: ${actualSize}).`);
       }
     }

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {C, E, T, V, b, c, cR, cr, e, t, v} from '../../src/render3/index';
+import {C, E, T, V, b, cR, cr, e, t, v} from '../../src/render3/index';
 
 import {renderToHtml} from './render_util';
 
@@ -17,10 +17,7 @@ describe('JS control flow', () => {
     function Template(ctx: any, cm: boolean) {
       if (cm) {
         E(0, 'div');
-        {
-          C(1);
-          c();
-        }
+        { C(1); }
         e();
       }
       cR(1);
@@ -68,10 +65,7 @@ describe('JS control flow', () => {
     function Template(ctx: any, cm: boolean) {
       if (cm) {
         E(0, 'div');
-        {
-          C(1);
-          c();
-        }
+        { C(1); }
         e();
       }
       cR(1);
@@ -81,10 +75,7 @@ describe('JS control flow', () => {
           {
             if (cm1) {
               E(0, 'span');
-              {
-                C(1);
-                c();
-              }
+              { C(1); }
               e();
             }
             cR(1);
@@ -141,7 +132,6 @@ describe('JS control flow', () => {
         { T(1, 'hello'); }
         e();
         C(2);
-        c();
       }
       cR(2);
       {
@@ -150,7 +140,6 @@ describe('JS control flow', () => {
           {
             if (cm0) {
               C(0);
-              c();
             }
             cR(0);
             {
@@ -185,10 +174,7 @@ describe('JS control flow', () => {
     function Template(ctx: any, cm: boolean) {
       if (cm) {
         E(0, 'ul');
-        {
-          C(1);
-          c();
-        }
+        { C(1); }
         e();
       }
       cR(1);
@@ -234,10 +220,7 @@ describe('JS control flow', () => {
     function Template(ctx: any, cm: boolean) {
       if (cm) {
         E(0, 'ul');
-        {
-          C(1);
-          c();
-        }
+        { C(1); }
         e();
       }
       cR(1);
@@ -247,10 +230,7 @@ describe('JS control flow', () => {
           {
             if (cm1) {
               E(0, 'li');
-              {
-                C(1);
-                c();
-              }
+              { C(1); }
               e();
             }
             cR(1);
@@ -298,7 +278,6 @@ describe('JS control flow', () => {
         {
           T(1, 'Before');
           C(2);
-          c();
           T(3, 'After');
         }
         e();
@@ -313,7 +292,6 @@ describe('JS control flow', () => {
               { T(1); }
               e();
               C(2);
-              c();
               T(3, '-');
             }
             t(1, b(ctx.cafes[i].name));
@@ -380,7 +358,6 @@ describe('JS control flow', () => {
         {
           T(1, 'Before');
           C(2);
-          c();
           T(3, 'After');
         }
         e();
@@ -395,7 +372,6 @@ describe('JS control flow', () => {
               { T(1); }
               e();
               C(2);
-              c();
               T(3, '-');
             }
             t(1, b(ctx.cafes[i].name));
@@ -409,7 +385,6 @@ describe('JS control flow', () => {
                     { T(1); }
                     e();
                     C(2);
-                    c();
                   }
                   t(1, b(ctx.cafes[i].entrees[j].name));
                   cR(2);
@@ -470,10 +445,7 @@ describe('JS control flow', () => {
     function Template(ctx: any, cm: boolean) {
       if (cm) {
         E(0, 'div');
-        {
-          C(1);
-          c();
-        }
+        { C(1); }
         e();
       }
       cR(1);
@@ -521,10 +493,7 @@ describe('JS for loop', () => {
     function Template(ctx: any, cm: boolean) {
       if (cm) {
         E(0, 'div');
-        {
-          C(1);
-          c();
-        }
+        { C(1); }
         e();
       }
       cR(1);
@@ -580,9 +549,7 @@ describe('function calls', () => {
         {
           T(1, 'Before');
           C(2);
-          c();
           C(3);
-          c();
           T(4, 'After');
         }
         e();

@@ -1,0 +1,12 @@
+{
+  "description": "Structural directives",
+  "files": [
+    "!**/*.d.ts",
+    "!**/*.js",
+    "!src/app/scrap.txt"
+  ],
+  "tags": [
+    "structural", "directives", "template", "ngIf",
+    "ngSwitch", "ngFor"
+  ]
+}

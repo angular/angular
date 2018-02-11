@@ -344,7 +344,10 @@ The following are some of the key AngularJS built-in directives and their equiva
       In Angular, the template no longer specifies its associated controller.
       Rather, the component specifies its associated template as part of the component class decorator.
 
-      For more information, see [Architecture Overview](guide/architecture#components).
+      <!--
+	  For more information, see [Architecture Overview](guide/architecture#components).
+	  -->
+	  For more information, see [Architecture Overview](guide/architecture#컴포넌트).
 
     </td>
 
@@ -1041,7 +1044,11 @@ The Angular code is shown using TypeScript.
       This is a nonissue in Angular because ES 2015 modules
       handle the namespacing for you.
 
-      For more information on modules, see the [Modules](guide/architecture#modules) section of the
+      <!--
+	  For more information on modules, see the [Modules](guide/architecture#modules) section of the
+      [Architecture Overview](guide/architecture).
+	  -->
+	  For more information on modules, see the [Modules](guide/architecture#모듈) section of the
       [Architecture Overview](guide/architecture).
     </td>
 
@@ -1076,7 +1083,7 @@ The Angular code is shown using TypeScript.
       * `imports`: specifies the list of other modules that this module depends upon
       * `declaration`: keeps track of your components, pipes, and directives.
 
-      For more information on modules, see [NgModules](guide/ngmodule).
+      For more information on modules, see [NgModules](guide/ngmodules).
     </td>
 
   </tr>
@@ -1118,7 +1125,11 @@ The Angular code is shown using TypeScript.
 
       This is how you associate a template with logic, which is defined in the component class.
 
-      For more information, see the [Components](guide/architecture#components)
+      <!--
+	  For more information, see the [Components](guide/architecture#components)
+      section of the [Architecture Overview](guide/architecture) page.
+	  -->
+	  For more information, see the [Components](guide/architecture#컴포넌트)
       section of the [Architecture Overview](guide/architecture) page.
     </td>
 
@@ -1152,7 +1163,11 @@ The Angular code is shown using TypeScript.
 
       NOTE: If you are using TypeScript with AngularJS, you must use the `export` keyword to export the component class.
 
-      For more information, see the [Components](guide/architecture#components)
+      <!--
+	  For more information, see the [Components](guide/architecture#components)
+      section of the [Architecture Overview](guide/architecture) page.
+	  -->
+	  For more information, see the [Components](guide/architecture#컴포넌트)
       section of the [Architecture Overview](guide/architecture) page.
     </td>
 
@@ -1191,7 +1206,11 @@ The Angular code is shown using TypeScript.
       This example injects a `MovieService`.
       The first parameter's TypeScript type tells Angular what to inject, even after minification.
 
-      For more information, see the [Dependency injection](guide/architecture#dependency-injection)
+      <!--
+	  For more information, see the [Dependency injection](guide/architecture#dependency-injection)
+      section of the [Architecture Overview](guide/architecture).
+	  -->
+	  For more information, see the [Dependency injection](guide/architecture#의존성-주입)
       section of the [Architecture Overview](guide/architecture).
     </td>
 
@@ -1254,7 +1273,7 @@ also encapsulate a style sheet within a specific component.
 
 
       ### Styles configuration
-      <code-example hideCopy path="ajs-quick-reference/.angular-cli.1.json" region="styles" linenums="false">
+      <code-example hideCopy path="ajs-quick-reference/.angular-cli.1.json" region="styles" linenums="false"></code-example>
 
       With the Angular CLI, you can configure your global styles in the `.angular-cli.json` file.
       You can rename the extension to `.scss` to use sass.

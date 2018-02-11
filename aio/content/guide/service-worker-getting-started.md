@@ -1,4 +1,4 @@
-# Getting Started with Service Workers
+# Getting started with service workers
 
 #### Prerequisites
 

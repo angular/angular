@@ -8,6 +8,8 @@
 
 describe('validate-commit-message.js', function() {
   var validateMessage = require('./validate-commit-message');
+  var SCOPES = validateMessage.config.scopes.join(', ');
+  var TYPES = validateMessage.config.types.join(', ');
   var errors = [];
   var logs = [];
 
@@ -39,6 +41,10 @@ describe('validate-commit-message.js', function() {
       expect(validateMessage('test(packaging): something')).toBe(VALID);
       expect(validateMessage('release: something')).toBe(VALID);
       expect(validateMessage('release(packaging): something')).toBe(VALID);
+      expect(validateMessage('release(packaging): something')).toBe(VALID);
+      expect(validateMessage('fixup! release(packaging): something')).toBe(VALID);
+      expect(validateMessage('squash! release(packaging): something')).toBe(VALID);
+      expect(validateMessage('Revert: "release(packaging): something"')).toBe(VALID);
       expect(errors).toEqual([]);
     });
 
@@ -51,22 +57,22 @@ describe('validate-commit-message.js', function() {
       expect(validateMessage('refactor(docs): something')).toBe(INVALID);
       ['INVALID COMMIT MSG: "fix(Compiler): something"\n' +
            ' => ERROR: "Compiler" is not an allowed scope.\n' +
-           ' => SCOPES: aio, animations, bazel, benchpress, common, compiler, compiler-cli, core, forms, http, language-service, platform-browser, platform-browser-dynamic, platform-server, platform-webworker, platform-webworker-dynamic, router, service-worker, upgrade, packaging, changelog',
+           ' => SCOPES: ' + SCOPES,
        'INVALID COMMIT MSG: "feat(bah): something"\n' +
            ' => ERROR: "bah" is not an allowed scope.\n' +
-           ' => SCOPES: aio, animations, bazel, benchpress, common, compiler, compiler-cli, core, forms, http, language-service, platform-browser, platform-browser-dynamic, platform-server, platform-webworker, platform-webworker-dynamic, router, service-worker, upgrade, packaging, changelog',
+           ' => SCOPES: ' + SCOPES,
        'INVALID COMMIT MSG: "style(webworker): something"\n' +
            ' => ERROR: "webworker" is not an allowed scope.\n' +
-           ' => SCOPES: aio, animations, bazel, benchpress, common, compiler, compiler-cli, core, forms, http, language-service, platform-browser, platform-browser-dynamic, platform-server, platform-webworker, platform-webworker-dynamic, router, service-worker, upgrade, packaging, changelog',
+           ' => SCOPES: ' + SCOPES,
        'INVALID COMMIT MSG: "refactor(security): something"\n' +
            ' => ERROR: "security" is not an allowed scope.\n' +
-           ' => SCOPES: aio, animations, bazel, benchpress, common, compiler, compiler-cli, core, forms, http, language-service, platform-browser, platform-browser-dynamic, platform-server, platform-webworker, platform-webworker-dynamic, router, service-worker, upgrade, packaging, changelog',
+           ' => SCOPES: ' + SCOPES,
        'INVALID COMMIT MSG: "refactor(docs): something"\n' +
            ' => ERROR: "docs" is not an allowed scope.\n' +
-           ' => SCOPES: aio, animations, bazel, benchpress, common, compiler, compiler-cli, core, forms, http, language-service, platform-browser, platform-browser-dynamic, platform-server, platform-webworker, platform-webworker-dynamic, router, service-worker, upgrade, packaging, changelog']
-          .forEach((expectedErrorMessage, index) => {
-            expect(expectedErrorMessage).toEqual(errors[index]);
-          });
+           ' => SCOPES: ' + SCOPES,
+      ].forEach((expectedErrorMessage, index) => {
+        expect(expectedErrorMessage).toEqual(errors[index]);
+      });
       expect(validateMessage('release(angular): something')).toBe(INVALID);
     });
 
@@ -87,21 +93,24 @@ describe('validate-commit-message.js', function() {
 
       expect(validateMessage(msg)).toBe(INVALID);
       expect(errors).toEqual([
-        'INVALID COMMIT MSG: "not correct format"\n => ERROR: The commit message does not match the format of "<type>(<scope>): <subject> OR revert: type(<scope>): <subject>"'
+        'INVALID COMMIT MSG: "not correct format"\n => ERROR: The commit message does not match the format of \'<type>(<scope>): <subject>\' OR \'Revert: "type(<scope>): <subject>"\''
       ]);
     });
 
 
-    it('should support "revert: type(scope):" syntax and reject "revert(scope):" syntax', function() {
-      let correctMsg = 'revert: fix(compiler): reduce generated code payload size by 65%';
-      expect(validateMessage(correctMsg)).toBe(VALID);
+    it('should support "revert: type(scope):" syntax and reject "revert(scope):" syntax',
+       function() {
+         let correctMsg = 'revert: fix(compiler): reduce generated code payload size by 65%';
+         expect(validateMessage(correctMsg)).toBe(VALID);
 
-      let incorretMsg = 'revert(compiler): reduce generated code payload size by 65%';
-      expect(validateMessage(incorretMsg)).toBe(INVALID);
-      expect(errors).toEqual([
-        'INVALID COMMIT MSG: "revert(compiler): reduce generated code payload size by 65%"\n => ERROR: The commit message does not match the format of "<type>(<scope>): <subject> OR revert: type(<scope>): <subject>"'
-      ]);
-    });
+         let incorretMsg = 'revert(compiler): reduce generated code payload size by 65%';
+         expect(validateMessage(incorretMsg)).toBe(INVALID);
+         expect(errors).toEqual([
+           'INVALID COMMIT MSG: "revert(compiler): reduce generated code payload size by 65%"\n' +
+           ' => ERROR: revert is not an allowed type.\n' +
+           ' => TYPES: ' + TYPES
+         ]);
+       });
 
 
     it('should validate type', function() {
@@ -109,7 +118,7 @@ describe('validate-commit-message.js', function() {
       expect(errors).toEqual(
           ['INVALID COMMIT MSG: "weird($filter): something"\n' +
            ' => ERROR: weird is not an allowed type.\n' +
-           ' => TYPES: build, ci, docs, feat, fix, perf, refactor, release, style, test']);
+           ' => TYPES: ' + TYPES]);
     });
 
 

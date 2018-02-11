@@ -21,11 +21,14 @@
  * @returns The stringified value
  */
 function stringifyValueForError(value: any): string {
-  return typeof value === 'string' ? `"${value}"` : '' + value;
+  if (value && value.native && value.native.outerHTML) {
+    return value.native.outerHTML;
+  }
+  return typeof value === 'string' ? `"${value}"` : value;
 }
 
 export function assertNumber(actual: any, name: string) {
-  (typeof actual != 'number') && assertThrow(actual, 'number', name, 'typeofr ==');
+  (typeof actual != 'number') && assertThrow(actual, 'number', name, 'typeof ==');
 }
 
 export function assertEqual<T>(
@@ -34,7 +37,7 @@ export function assertEqual<T>(
 }
 
 export function assertLessThan<T>(actual: T, expected: T, name: string) {
-  (actual < expected) && assertThrow(actual, expected, name, '>');
+  (actual >= expected) && assertThrow(actual, expected, name, '<');
 }
 
 export function assertNotNull<T>(actual: T, name: string) {
@@ -57,6 +60,8 @@ export function assertNotEqual<T>(actual: T, expected: T, name: string) {
 export function assertThrow<T>(
     actual: T, expected: T, name: string, operator: string,
     serializer: ((v: T) => string) = stringifyValueForError): never {
-  throw new Error(
-      `ASSERT: expected ${name} ${operator} ${serializer(expected)} but was ${serializer(actual)}!`);
+  const error =
+      `ASSERT: expected ${name} ${operator} ${serializer(expected)} but was ${serializer(actual)}!`;
+  debugger;  // leave `debugger` here to aid in debugging.
+  throw new Error(error);
 }

@@ -5,8 +5,6 @@ import { CONTENT_URL_PREFIX } from 'app/documents/document.service';
 
 import { boolFromValue, getAttrs, getAttrValue } from 'app/shared/attribute-utils';
 
-const defaultPlnkrImg = 'plunker/placeholder.png';
-const imageBase  = CONTENT_URL_PREFIX + 'images/';
 const liveExampleBase = CONTENT_URL_PREFIX + 'live-examples/';
 const zipBase = CONTENT_URL_PREFIX + 'zips/';
 
@@ -19,49 +17,38 @@ const zipBase = CONTENT_URL_PREFIX + 'zips/';
 *
 * Usage:
 *   <live-example
-*      [name="..."]      // name of the example directory
-*      [plnkr="...""]    // name of the plunker file (becomes part of zip file name as well)
-*      [embedded]        // embed the plunker in the doc page, else display in new browser tab (default)
-*      [img="..."]       // image to display if embedded in doc page
-*      [embedded-style]  // show plnkr in embedded style (default and on narrow screens)
-*      [flat-style]      // show plnkr in flat (original) style
-*      [noDownload]      // no downloadable zip option
-*      [downloadOnly]    // just the zip
-*      [title="..."]>    // text for live example link and tooltip
-*        text            // higher precedence way to specify text for live example link and tooltip
+*      [name="..."]        // name of the example directory
+*      [stackblitz="...""] // name of the stackblitz file (becomes part of zip file name as well)
+*      [embedded]          // embed the stackblitz in the doc page, else display in new browser tab (default)
+*      [noDownload]        // no downloadable zip option
+*      [downloadOnly]      // just the zip
+*      [title="..."]>      // text for live example link and tooltip
+*        text              // higher precedence way to specify text for live example link and tooltip
 *  </live-example>
 * Example:
 *   <p>Run <live-example>Try the live example</live-example></p>.
-*   // ~/resources/live-examples/{page}/plnkr.html
+*   // ~/resources/live-examples/{page}/stackblitz.json
 *
 *   <p>Run <live-example name="toh-pt1">this example</live-example></p>.
-*   // ~/resources/live-examples/toh-pt1/plnkr.html
+*   // ~/resources/live-examples/toh-pt1/stackblitz.json
 *
-*   // Link to the default plunker in the toh-pt1 sample
+*   // Link to the default stackblitz in the toh-pt1 sample
 *   // The title overrides default ("live example") with "Tour of Heroes - Part 1"
 *   <p>Run <live-example name="toh-pt1" title="Tour of Heroes - Part 1"></live-example></p>.
-*   // ~/resources/live-examples/toh-pt1/plnkr.html
+*   // ~/resources/live-examples/toh-pt1/stackblitz.json
 *
-*   <p>Run <live-example plnkr="minimal"></live-example></p>.
-*   // ~/resources/live-examples/{page}/minimal.plnkr.html
+*   <p>Run <live-example stackblitz="minimal"></live-example></p>.
+*   // ~/resources/live-examples/{page}/minimal.stackblitz.json
 *
-*   // Embed the current page's default plunker
+*   // Embed the current page's default stackblitz
 *   // Text within tag is "live example"
 *   // No title (no tooltip)
 *   <live-example embedded title=""></live-example>
-*   // ~/resources/live-examples/{page}/eplnkr.html
+*   // ~/resources/live-examples/{page}/stackblitz.json
 *
-*   // Links to a *new* browser tab as an embedded style plunker editor
-*   <live-example embedded-style>this example</live-example>
-*   // ~/resources/live-examples/{page}/eplnkr.html
-*
-*   // Links to a *new* browser tab in the flat (original editor) style plunker editor
-*   <live-example flat-style>this example</live-example>
-*   // ~/resources/live-examples/{page}/plnkr.html
-*
-*   // Displays within the document page as an embedded style plunker editor
-*   <live-example name="toh-pt1" embedded plnkr="minimal" img="toh>Tour of Heroes - Part 1</live-example>
-*   // ~/resources/live-examples/toh-pt1/minimal.eplnkr.html
+*   // Displays within the document page as an embedded style stackblitz editor
+*   <live-example name="toh-pt1" embedded stackblitz="minimal">Tour of Heroes - Part 1</live-example>
+*   // ~/resources/live-examples/toh-pt1/minimal.stackblitz.json
 */
 @Component({
   selector: 'live-example',
@@ -78,10 +65,8 @@ export class LiveExampleComponent implements OnInit {
   exampleDir: string;
   isEmbedded = false;
   mode = 'disabled';
-  plnkr: string;
-  plnkrName: string;
-  plnkrImg: string;
-  showEmbedded = false;
+  stackblitz: string;
+  stackblitzName: string;
   title: string;
   zip: string;
   zipName: string;
@@ -94,50 +79,36 @@ export class LiveExampleComponent implements OnInit {
     let exampleDir = attrs.name;
     if (!exampleDir) {
       // take last segment, excluding hash fragment and query params
-      exampleDir = location.path(false).match(/[^\/?\#]+(?=\/?(?:$|\#|\?))/)[0];
+      exampleDir = (location.path(false).match(/[^\/?\#]+(?=\/?(?:$|\#|\?))/) || [])[0];
     }
     this.exampleDir = exampleDir.trim();
     this.zipName = exampleDir.indexOf('/') === -1 ? this.exampleDir : exampleDir.split('/')[0];
-    this.plnkrName = attrs.plnkr ? attrs.plnkr.trim() + '.' : '';
-    this.zip = `${zipBase}${exampleDir}/${this.plnkrName}${this.zipName}.zip`;
+    this.stackblitzName = attrs.stackblitz ? attrs.stackblitz.trim() + '.' : '';
+    this.zip = `${zipBase}${exampleDir}/${this.stackblitzName}${this.zipName}.zip`;
 
     this.enableDownload = !boolFromValue(getAttrValue(attrs, 'nodownload'));
-
-    this.plnkrImg = imageBase + (attrs.img || defaultPlnkrImg);
 
     if (boolFromValue(getAttrValue(attrs, 'downloadonly'))) {
       this.mode = 'downloadOnly';
     }
   }
 
-  calcPlnkrLink(width: number) {
+  calcStackblitzLink(width: number) {
 
     const attrs = this.attrs;
     const exampleDir = this.exampleDir;
+    let urlQuery = '';
 
-    let plnkrStyle = 'eplnkr'; // embedded style by default
     this.mode = 'default';     // display in another browser tab by default
 
     this.isEmbedded = boolFromValue(attrs.embedded);
 
     if (this.isEmbedded) {
       this.mode = 'embedded'; // display embedded in the doc
-    } else {
-      // Not embedded in doc page; determine if is embedded- or flat-style in another browser tab.
-      // Embedded style if on tiny screen (reg. plunker no good on narrow screen)
-      // If wide enough, choose style based on style attributes
-      if (width > this.narrowWidth) {
-        // Make flat style with `flat-style` or `embedded-style="false`; support atty aliases
-        const flatStyle = getAttrValue(attrs, ['flat-style', 'flatstyle']);
-        const isFlatStyle = boolFromValue(flatStyle);
-
-        const embeddedStyle = getAttrValue(attrs, ['embedded-style', 'embeddedstyle']);
-        const isEmbeddedStyle = boolFromValue(embeddedStyle, !isFlatStyle);
-        plnkrStyle = isEmbeddedStyle ? 'eplnkr' : 'plnkr';
-      }
+      urlQuery = '?ctl=1';
     }
 
-    this.plnkr = `${liveExampleBase}${exampleDir}/${this.plnkrName}${plnkrStyle}.html`;
+    this.stackblitz = `${liveExampleBase}${exampleDir}/${this.stackblitzName}stackblitz.html${urlQuery}`;
   }
 
   ngOnInit() {
@@ -150,33 +121,31 @@ export class LiveExampleComponent implements OnInit {
   }
 
   @HostListener('window:resize', ['$event.target.innerWidth'])
-  onResize(width) {
+  onResize(width: number) {
     if (this.mode !== 'downloadOnly') {
-      this.calcPlnkrLink(width);
+      this.calcStackblitzLink(width);
     }
   }
-
-  toggleEmbedded () { this.showEmbedded = !this.showEmbedded; }
 }
 
-///// EmbeddedPlunkerComponent ///
+///// EmbeddedStackblitzComponent ///
 /**
  * Hides the <iframe> so we can test LiveExampleComponent without actually triggering
- * a call to plunker to load the iframe
+ * a call to stackblitz to load the iframe
  */
 @Component({
-  selector: 'aio-embedded-plunker',
+  selector: 'aio-embedded-stackblitz',
   template: `<iframe #iframe frameborder="0" width="100%" height="100%"></iframe>`,
   styles: [ 'iframe { min-height: 400px; }']
 })
-export class EmbeddedPlunkerComponent implements AfterViewInit {
+export class EmbeddedStackblitzComponent implements AfterViewInit {
   @Input() src: string;
 
   @ViewChild('iframe') iframe: ElementRef;
 
   ngAfterViewInit() {
     // DEVELOPMENT TESTING ONLY
-    // this.src = 'https://angular.io/resources/live-examples/quickstart/ts/eplnkr.html';
+    // this.src = 'https://angular.io/resources/live-examples/quickstart/ts/stackblitz.json';
 
     if (this.iframe) {
       // security: the `src` is always authored by the documentation team

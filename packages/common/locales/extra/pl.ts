@@ -12,7 +12,10 @@
 export default [
   [
     ['o półn.', 'w poł.', 'rano', 'przed poł.', 'po poł.', 'wiecz.', 'w nocy'],
-    ['o północy', 'w południe', 'rano', 'przed południem', 'po południu', 'wieczorem', 'w nocy'],
+    [
+      'o północy', 'w południe', 'rano', 'przed południem', 'po południu', 'wieczorem',
+      'w nocy'
+    ],
   ],
   [
     ['półn.', 'poł.', 'rano', 'przedpoł.', 'popoł.', 'wiecz.', 'noc'],
