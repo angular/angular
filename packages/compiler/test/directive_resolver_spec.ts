@@ -61,6 +61,25 @@ class SomeDirectiveWithHostListeners {
   }
 }
 
+// #18698
+@Directive({selector: 'someDirective', host: {'[c]': 'c'}})
+class SomeDirectiveWithHostBindingsToLiteralLikeName {
+  @HostBinding() true: any;
+  @HostBinding('renamed') false: any;
+  c: any;
+}
+
+// #18698
+@Directive({selector: 'someDirective', host: {'(c)': 'onC()'}})
+class SomeDirectiveWithHostListenersOnLiteralLikeName {
+  @HostListener('a')
+  true() {
+  }
+  @HostListener('b', ['$event.value'])
+  false(value: any) {
+  }
+}
+
 @Directive({selector: 'someDirective', queries: {'cs': new ContentChildren('c')}})
 class SomeDirectiveWithContentChildren {
   @ContentChildren('a') as: any;
@@ -294,19 +313,32 @@ class SomeDirectiveWithoutMetadata {}
     describe('host', () => {
       it('should append host bindings', () => {
         const directiveMetadata = resolver.resolve(SomeDirectiveWithHostBindings);
-        expect(directiveMetadata.host).toEqual({'[c]': 'c', '[a]': 'a', '[renamed]': 'b'});
+        expect(directiveMetadata.host)
+            .toEqual({'[c]': 'c', '[a]': 'this.a', '[renamed]': 'this.b'});
+      });
+
+      it('should append host bindings to literal-like property name', () => {
+        const directiveMetadata = resolver.resolve(SomeDirectiveWithHostBindingsToLiteralLikeName);
+        expect(directiveMetadata.host)
+            .toEqual({'[c]': 'c', '[true]': 'this.true', '[renamed]': 'this.false'});
       });
 
       it('should append host binding and input on the same property', () => {
         const directiveMetadata = resolver.resolve(SomeDirectiveWithSameHostBindingAndInput);
-        expect(directiveMetadata.host).toEqual({'[decorator]': 'decorator', '[prop]': 'prop'});
+        expect(directiveMetadata.host).toEqual({'[decorator]': 'decorator', '[prop]': 'this.prop'});
         expect(directiveMetadata.inputs).toEqual(['decorator', 'prop']);
       });
 
       it('should append host listeners', () => {
         const directiveMetadata = resolver.resolve(SomeDirectiveWithHostListeners);
         expect(directiveMetadata.host)
-            .toEqual({'(c)': 'onC()', '(a)': 'onA()', '(b)': 'onB($event.value)'});
+            .toEqual({'(c)': 'onC()', '(a)': 'this.onA()', '(b)': 'this.onB($event.value)'});
+      });
+
+      it('should append host listeners on literal-like method name', () => {
+        const directiveMetadata = resolver.resolve(SomeDirectiveWithHostListenersOnLiteralLikeName);
+        expect(directiveMetadata.host)
+            .toEqual({'(c)': 'onC()', '(a)': 'this.true()', '(b)': 'this.false($event.value)'});
       });
 
       it('should throw when @HostBinding name starts with "("', () => {
@@ -334,7 +366,8 @@ class SomeDirectiveWithoutMetadata {}
 
         const directiveMetadata = resolver.resolve(Child);
         expect(directiveMetadata.host)
-            .toEqual({'[p1]': 'p1', '[p21]': 'p2', '[p22]': 'p2', '[p3]': 'p3'});
+            .toEqual(
+                {'[p1]': 'this.p1', '[p21]': 'this.p2', '[p22]': 'this.p2', '[p3]': 'this.p3'});
       });
 
       it('should support inheriting host listeners', () => {
@@ -358,8 +391,12 @@ class SomeDirectiveWithoutMetadata {}
         }
 
         const directiveMetadata = resolver.resolve(Child);
-        expect(directiveMetadata.host)
-            .toEqual({'(p1)': 'p1()', '(p21)': 'p2()', '(p22)': 'p2()', '(p3)': 'p3()'});
+        expect(directiveMetadata.host).toEqual({
+          '(p1)': 'this.p1()',
+          '(p21)': 'this.p2()',
+          '(p22)': 'this.p2()',
+          '(p3)': 'this.p3()'
+        });
       });
 
       it('should combine host bindings and listeners during inheritance', () => {
@@ -383,12 +420,12 @@ class SomeDirectiveWithoutMetadata {}
 
         const directiveMetadata = resolver.resolve(Child);
         expect(directiveMetadata.host).toEqual({
-          '(p11)': 'p1()',
-          '(p12)': 'p1()',
-          '(c1)': 'p1()',
-          '[p21]': 'p2',
-          '[p22]': 'p2',
-          '[c2]': 'p2'
+          '(p11)': 'this.p1()',
+          '(p12)': 'this.p1()',
+          '(c1)': 'this.p1()',
+          '[p21]': 'this.p2',
+          '[p22]': 'this.p2',
+          '[c2]': 'this.p2'
         });
       });
     });

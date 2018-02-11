@@ -90,15 +90,15 @@ export class DirectiveResolver {
             throw new Error(
                 `@HostBinding parameter should be a property name, 'class.<name>', or 'attr.<name>'.`);
           }
-          host[`[${hostBinding.hostPropertyName}]`] = propName;
+          host[`[${hostBinding.hostPropertyName}]`] = `this.${propName}`;
         } else {
-          host[`[${propName}]`] = propName;
+          host[`[${propName}]`] = `this.${propName}`;
         }
       });
       const hostListeners = propertyMetadata[propName].filter(a => createHostListener.isTypeOf(a));
       hostListeners.forEach(hostListener => {
         const args = hostListener.args || [];
-        host[`(${hostListener.eventName})`] = `${propName}(${args.join(',')})`;
+        host[`(${hostListener.eventName})`] = `this.${propName}(${args.join(',')})`;
       });
       const query = findLast(
           propertyMetadata[propName], (a) => QUERY_METADATA_IDENTIFIERS.some(i => i.isTypeOf(a)));
