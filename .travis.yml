@@ -18,6 +18,7 @@ addons:
 branches:
   only:
   - master
+  - 5.2.x
 
 jobs:
   include:
