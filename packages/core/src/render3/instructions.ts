@@ -1744,6 +1744,7 @@ function valueInData<T>(data: any[], index: number, value?: T): T {
 
 /** Gets the binding at the current bindingIndex */
 export function peekBinding(): any {
+  ngDevMode && assertNotEqual(currentView.bindingStartIndex, null, 'bindingStartIndex');
   return data[bindingIndex];
 }
 
