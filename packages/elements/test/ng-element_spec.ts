@@ -9,9 +9,7 @@
 import {AfterContentChecked, AfterContentInit, AfterViewChecked, AfterViewInit, ApplicationRef, Component, ComponentFactory, DoCheck, EventEmitter, Inject, Injector, Input, NgModule, NgModuleRef, NgZone, OnChanges, OnDestroy, OnInit, Output, SimpleChange, SimpleChanges, destroyPlatform} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
-import {NgElementImpl, NgElementInput, NgElementOutput} from '../src/ng-element';
-import {NgElementApplicationContext} from '../src/ng-element-application-context';
-import {scheduler} from '../src/utils';
+import {NgElementImpl} from '../src/ng-element';
 import {AsyncMockScheduler, installMockScheduler, patchEnv, restoreEnv, supportsCustomElements} from '../testing/index';
 
 type WithFooBar = {
@@ -1204,7 +1202,6 @@ if (supportsCustomElements()) {
       set bar(v) { this.setInputValue('bar', v); }
 
       constructor() {
-        const appContext = new NgElementApplicationContext(moduleRef.injector);
         const factory = moduleRef.componentFactoryResolver.resolveComponentFactory(TestComponent);
 
         const inputs = factory.inputs.map(({propName, templateName}) => ({
@@ -1216,7 +1213,7 @@ if (supportsCustomElements()) {
                                               eventName: templateName,
                                             }));
 
-        super(appContext, factory, inputs, outputs);
+        super(moduleRef.injector, factory, inputs, outputs);
       }
     }
 

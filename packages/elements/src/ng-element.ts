@@ -6,25 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ApplicationRef, ComponentFactory, ComponentRef, EventEmitter, Injector, OnChanges, SimpleChange, SimpleChanges} from '@angular/core';
+import {ApplicationRef, ComponentFactory, ComponentRef, EventEmitter, Injector, NgZone, OnChanges, SimpleChange, SimpleChanges} from '@angular/core';
 import {Subscription} from 'rxjs/Subscription';
 
 import {extractProjectableNodes} from './extract-projectable-nodes';
-import {NgElementApplicationContext} from './ng-element-application-context';
 import {createCustomEvent, getComponentName, isFunction, scheduler, strictEquals, throwError} from './utils';
 
-/**
- * TODO(gkalpak): Add docs.
- * @experimental
- */
 export type NgElementWithProps<T, P> = NgElement<T>& {[property in keyof P]: P[property]};
 
-/**
- * Interface that extends HTMLElement and defines methods to act as a custom element that will
- * translate changes to its Angular component.
- *
- * @experimental
- */
 export interface NgElement<T> extends HTMLElement {
   ngElement: NgElement<T>|null;
   componentRef: ComponentRef<T>|null;
@@ -50,7 +39,7 @@ export interface NgElementInput {
 }
 
 /**
- * Represents an `NgElement` input.
+ * Represents an `NgElement` output.
  * Similar to a `ComponentFactory` output (`{propName: string, templateName: string}`),
  * except that `templateName` is renamed to `eventName`.
  */
@@ -86,6 +75,9 @@ export abstract class NgElementImpl<T> extends HTMLElement implements NgElement<
   onConnected = new EventEmitter<void>();
   onDisconnected = new EventEmitter<void>();
 
+  private applicationRef = this.injector.get<ApplicationRef>(ApplicationRef);
+  private ngZone = this.injector.get<NgZone>(NgZone);
+
   private host = this as HTMLElement;
   private readonly componentName = getComponentName(this.componentFactory.componentType);
   private readonly initialInputValues = new Map<string, any>();
@@ -98,9 +90,8 @@ export abstract class NgElementImpl<T> extends HTMLElement implements NgElement<
   private cancelDestruction: (() => void)|null = null;
 
   constructor(
-      private appContext: NgElementApplicationContext,
-      private componentFactory: ComponentFactory<T>, private readonly inputs: NgElementInput[],
-      private readonly outputs: NgElementOutput[]) {
+      private injector: Injector, private componentFactory: ComponentFactory<T>,
+      private readonly inputs: NgElementInput[], private readonly outputs: NgElementOutput[]) {
     super();
   }
 
@@ -144,29 +135,27 @@ export abstract class NgElementImpl<T> extends HTMLElement implements NgElement<
           `because the element is already upgraded to component '${existingComponentName}'.`);
     }
 
-    this.appContext.runInNgZone(() => {
+    this.ngZone.run(() => {
       this.lifecyclePhase = NgElementLifecyclePhase.connected;
-      const cThis = (this as any as NgElementConnected<T>);
 
-      const childInjector = Injector.create([], cThis.appContext.injector);
+      const childInjector = Injector.create([], this.injector);
       const projectableNodes =
-          extractProjectableNodes(cThis.host, cThis.componentFactory.ngContentSelectors);
-      cThis.componentRef =
-          cThis.componentFactory.create(childInjector, projectableNodes, cThis.host);
-      cThis.implementsOnChanges =
-          isFunction((cThis.componentRef.instance as any as OnChanges).ngOnChanges);
+          extractProjectableNodes(this.host, this.componentFactory.ngContentSelectors);
+      this.componentRef = this.componentFactory.create(childInjector, projectableNodes, this.host);
+      this.implementsOnChanges =
+          isFunction((this.componentRef.instance as any as OnChanges).ngOnChanges);
 
-      cThis.initializeInputs();
-      cThis.initializeOutputs();
-      cThis.detectChanges();
+      this.initializeInputs();
+      this.initializeOutputs();
+      this.detectChanges();
 
-      cThis.appContext.applicationRef.attachView(cThis.componentRef.hostView);
+      this.applicationRef.attachView(this.componentRef.hostView);
 
       // Ensure `ngElement` is set on the host too (even for manually upgraded elements)
       // in order to be able to detect that the element has been been upgraded.
-      cThis.ngElement = host.ngElement = cThis;
+      this.ngElement = host.ngElement = this;
 
-      cThis.onConnected.emit();
+      this.onConnected.emit();
     });
   }
 
@@ -179,13 +168,11 @@ export abstract class NgElementImpl<T> extends HTMLElement implements NgElement<
 
     this.assertNotInPhase(NgElementLifecyclePhase.unconnected, 'detectChanges');
 
-    this.appContext.runInNgZone(() => {
-      const cThis = this as any as NgElementConnected<T>;
+    this.ngZone.run(() => {
+      this.changeDetectionScheduled = false;
 
-      cThis.changeDetectionScheduled = false;
-
-      cThis.callNgOnChanges();
-      cThis.componentRef.changeDetectorRef.detectChanges();
+      this.callNgOnChanges();
+      this.componentRef !.changeDetectorRef.detectChanges();
     });
   }
 
@@ -197,7 +184,7 @@ export abstract class NgElementImpl<T> extends HTMLElement implements NgElement<
 
     this.assertNotInPhase(NgElementLifecyclePhase.unconnected, 'disconnectedCallback');
 
-    const doDestroy = () => this.appContext.runInNgZone(() => this.destroy());
+    const doDestroy = () => this.ngZone.run(() => this.destroy());
     this.cancelDestruction = scheduler.schedule(doDestroy, NgElementImpl.DESTROY_DELAY);
   }
 
@@ -210,9 +197,7 @@ export abstract class NgElementImpl<T> extends HTMLElement implements NgElement<
       return this.initialInputValues.get(propName);
     }
 
-    const cThis = this as any as NgElementConnected<T>;
-
-    return (cThis.componentRef.instance as any)[propName];
+    return (this.componentRef !.instance as any)[propName];
   }
 
   markDirty(): void {
@@ -237,12 +222,10 @@ export abstract class NgElementImpl<T> extends HTMLElement implements NgElement<
       return;
     }
 
-    const cThis = this as any as NgElementConnected<T>;
-
-    if (!strictEquals(newValue, cThis.getInputValue(propName))) {
-      cThis.recordInputChange(propName, newValue);
-      (cThis.componentRef.instance as any)[propName] = newValue;
-      cThis.markDirty();
+    if (!strictEquals(newValue, this.getInputValue(propName))) {
+      this.recordInputChange(propName, newValue);
+      (this.componentRef !.instance as any)[propName] = newValue;
+      this.markDirty();
     }
   }
 
@@ -253,25 +236,23 @@ export abstract class NgElementImpl<T> extends HTMLElement implements NgElement<
     }
   }
 
-  private callNgOnChanges(this: NgElementConnected<T>): void {
+  private callNgOnChanges(): void {
     if (this.implementsOnChanges && this.inputChanges !== null) {
       const inputChanges = this.inputChanges;
       this.inputChanges = null;
-      (this.componentRef.instance as any as OnChanges).ngOnChanges(inputChanges);
+      (this.componentRef !.instance as any as OnChanges).ngOnChanges(inputChanges);
     }
   }
 
   private destroy() {
-    const cThis = this as any as NgElementConnected<T>;
-
-    cThis.componentRef.destroy();
-    cThis.outputs.forEach(output => cThis.unsubscribeFromOutput(output));
+    this.componentRef !.destroy();
+    this.outputs.forEach(output => this.unsubscribeFromOutput(output));
 
     this.ngElement = (this.host as NgElement<any>).ngElement = null;
-    cThis.host.innerHTML = '';
+    this.host.innerHTML = '';
 
-    cThis.lifecyclePhase = NgElementLifecyclePhase.disconnected;
-    cThis.onDisconnected.emit();
+    this.lifecyclePhase = NgElementLifecyclePhase.disconnected;
+    this.onDisconnected.emit();
   }
 
   private dispatchCustomEvent(eventName: string, value: any): void {
@@ -311,7 +292,7 @@ export abstract class NgElementImpl<T> extends HTMLElement implements NgElement<
     this.initialInputValues.clear();
   }
 
-  private initializeOutputs(this: NgElementConnected<T>): void {
+  private initializeOutputs(): void {
     this.outputs.forEach(output => this.subscribeToOutput(output));
   }
 
@@ -341,9 +322,9 @@ export abstract class NgElementImpl<T> extends HTMLElement implements NgElement<
     }
   }
 
-  private subscribeToOutput(this: NgElementConnected<T>, output: NgElementOutput): void {
+  private subscribeToOutput(output: NgElementOutput): void {
     const {propName, eventName} = output;
-    const emitter = (this.componentRef.instance as any)[output.propName] as EventEmitter<any>;
+    const emitter = (this.componentRef !.instance as any)[output.propName] as EventEmitter<any>;
 
     if (!emitter) {
       throwError(`Missing emitter '${propName}' on component '${this.componentName}'.`);

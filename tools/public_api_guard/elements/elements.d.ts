@@ -1,18 +1,12 @@
 /** @experimental */
-export interface NgElement<T> extends HTMLElement {
-    componentRef: ComponentRef<T> | null;
-    ngElement: NgElement<T> | null;
-    attributeChangedCallback(attrName: string, oldValue: string | null, newValue: string, namespace?: string): void;
-    connectedCallback(): void;
-    detach(): void;
-    detectChanges(): void;
-    disconnectedCallback(): void;
-    getHost(): HTMLElement;
-    markDirty(): void;
-}
+export declare function createNgElementConstructor<T, P>(componentFactory: ComponentFactory<T>, injector: Injector): NgElementConstructor<T, P>;
 
 /** @experimental */
-export declare function registerAsCustomElements<T>(customElementComponents: Type<any>[], platformRef: PlatformRef, moduleFactory: NgModuleFactory<T>): Promise<NgModuleRef<T>>;
+export interface NgElementConstructor<T, P> {
+    injector: Injector;
+    readonly observedAttributes: string[];
+    new (): NgElementWithProps<T, P>;
+}
 
 /** @experimental */
 export declare const VERSION: Version;
