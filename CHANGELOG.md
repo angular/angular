@@ -1,3 +1,23 @@
+<a name="6.0.0-beta-0"></a>
+# [6.0.0-beta-0](https://github.com/angular/material2/compare/5.2.0...6.0.0-beta-0) (2018-02-12)
+
+
+### Bug Fixes
+
+* **overlay:** validate that ConnectedPositionStrategy positions are passed in correctly at runtime ([#9466](https://github.com/angular/material2/issues/9466)) ([6a8ce02](https://github.com/angular/material2/commit/6a8ce02))
+
+
+### Features
+
+* add bottom sheet component ([#9764](https://github.com/angular/material2/issues/9764)) ([bbf62cd](https://github.com/angular/material2/commit/bbf62cd))
+* **datepicker:** @Output for year and month selected in multiyear/year ([#9678](https://github.com/angular/material2/issues/9678)) ([c2e108e](https://github.com/angular/material2/commit/c2e108e))
+* **expansion:** add accordion expand/collapse all ([#6929](https://github.com/angular/material2/issues/6929)) ([#7461](https://github.com/angular/material2/issues/7461)) ([3aceb73](https://github.com/angular/material2/commit/3aceb73))
+* **form-field, chip:** merge new form-field and chip features to master ([#9762](https://github.com/angular/material2/issues/9762)) ([4a5287c](https://github.com/angular/material2/commit/4a5287c)), closes [#9743](https://github.com/angular/material2/issues/9743) [#9759](https://github.com/angular/material2/issues/9759) [#9767](https://github.com/angular/material2/issues/9767)
+* **schematics:** add initial schematics utils ([#9451](https://github.com/angular/material2/issues/9451)) ([673d56e](https://github.com/angular/material2/commit/673d56e))
+* **tabs:** add ability to lazy load tab content ([#8921](https://github.com/angular/material2/issues/8921)) ([6feaf62](https://github.com/angular/material2/commit/6feaf62))
+
+
+
 <a name="5.2.1"></a>
 ## [5.2.1 ghillie-soup](https://github.com/angular/material2/compare/5.2.0...5.2.1) (2018-02-12)
 
