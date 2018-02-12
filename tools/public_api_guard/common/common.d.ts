@@ -5,8 +5,8 @@ export declare const APP_BASE_HREF: InjectionToken<string>;
 export declare class AsyncPipe implements OnDestroy, PipeTransform {
     constructor(_ref: ChangeDetectorRef);
     ngOnDestroy(): void;
-    transform<T>(obj: Promise<T>): T | null;
-    transform<T>(obj: Observable<T>): T | null;
+    transform<T>(obj: Promise<T> | null | undefined): T | null;
+    transform<T>(obj: Observable<T> | null | undefined): T | null;
     transform<T>(obj: undefined): undefined;
     transform<T>(obj: null): null;
 }
