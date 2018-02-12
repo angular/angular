@@ -281,7 +281,7 @@ export function objectLiteralV(factoryFn: (v: any[]) => any, exps: any[]): any {
   let different = false;
 
   for (let i = 0; i < exps.length; i++) {
-    let exp = exps[i];
+    const exp = exps[i];
     if (exp === NO_CHANGE) exps[i] = peekBinding();
     if (bind(exp) !== NO_CHANGE) different = true;
   }
