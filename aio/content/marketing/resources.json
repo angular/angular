@@ -652,6 +652,13 @@
             "rev": true,
             "title": "We Are One Sàrl",
             "url": "https://weareone.ch/courses/angular/"
+          },
+          "angular-schule": {
+            "desc": "Angular onsite training and public workshops in Germany from the authors of the German Angular book. We also regularly post articles and videos on our blog (in English and German language).",
+            "logo": "https://angular.schule/assets/img/brand.svg",
+            "rev": true,
+            "title": "Angular.Schule (German)",
+            "url": "https://angular.schule/"
           }
         }
       }
