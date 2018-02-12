@@ -14,8 +14,8 @@ allow users to select a hero and display the hero's details.-->
 
 <!-- Eventually you'll get them from a remote data server.
 For now, you'll create some _mock heroes_ and pretend they came from the server. -->
-최종적으로는 리모트 데이터 서버로부터 그 데이터를 받아올 것입니다.
-하지만 지금은 _히어로 목_을 생성해서 그 데이터들이 서버로부터 받아오는 것으로 간주하겠습니다.
+최종적으로는 리모트 데이터 서버로부터 데이터를 받아올 것입니다.
+하지만 지금은 _히어로 목_ 을 생성해서 그 데이터들이 서버로부터 받아오는 것으로 간주하겠습니다.
 
 <!-- Create a file called `mock-heroes.ts` in the `src/app/` folder.
 Define a `HEROES` constant as an array of ten heroes and export it.
@@ -32,7 +32,7 @@ title="src/app/mock-heroes.ts">
 ## 히어로 표시하기
 
 <!-- You're about to display the list of heroes at the top of the `HeroesComponent`. -->
-이제 `HeroesComponent` 위쪽에 히어로의 목록을 표시하고자 합니다.
+이제 `HeroesComponent`의 위쪽에 히어로의 목록을 표시하고자 합니다.
 
 <!-- Open the `HeroesComponent` class file and import the mock `HEROES`. -->
 `HeroesComponent` 클래스 파일을 열어서 `HEROES` 목을 가져옵니다.
@@ -47,7 +47,7 @@ title="src/app/mock-heroes.ts">
 </code-example>
 
 <!-- ### List heroes with _*ngFor_ -->
-### _*ngFor_를 활용하여 히어로 목록 표시하기
+### _*ngFor_ 를 활용하여 히어로 목록 표시하기
 
 <!-- Open the `HeroesComponent` template file and make the following changes: -->
 `HeroesComponent` 템플릿 파일을 열어 아래와 같이 수정하세요:
@@ -77,7 +77,7 @@ title="src/app/mock-heroes.ts">
 <!-- The [`*ngFor`](guide/template-syntax#ngFor) is Angular's _repeater_ directive. 
 It repeats the host element for each element in a list. -->
 [`*ngFor`](guide/template-syntax#ngFor)는 Angular의 _repeater_ 디렉티브입니다.
-이 디렉티브는 목록의 각 엘리먼트에 대해 호스트 엘리먼트를 반복합니다.(?)
+이 디렉티브는 목록에서 각 엘리먼트에 대해 호스트 엘리먼트를 반복해서 표시합니다.
 
 <!-- In this example
 
@@ -88,12 +88,12 @@ It repeats the host element for each element in a list. -->
 이 예제에서
  
 * `<li>`는 호스트 엘리먼트입니다.
-* `heroes`는 `HeroesComponent` 클래스에서의 목록입니다.
+* `heroes`는 `HeroesComponent` 클래스에서의 목록을 위한 변수입니다.
 * `hero`는 목록 전체에 걸쳐 반복되는 각각의 히어로 객체입니다.
 
 <div class="alert is-important">
 <!-- Don't forget the asterisk (*) in front of `ngFor`. It's a critical part of the syntax. -->
-`ngFor`앞에 별표(*)가 있다는 걸 명심하세요. 아주 중요한 문법 요소입니다.
+`ngFor`앞에 별표(*)가 있다는 걸 명심하세요. 이 표기방식은 템플릿 문법에서 특히 중요합니다.
 </div>
 
 <!-- After the browser refreshes, the list of heroes appears. -->
@@ -107,7 +107,7 @@ It repeats the host element for each element in a list. -->
 <!-- The heroes list should be attractive and should respond visually when users 
 hover over and select a hero from the list. -->
 
-히어로 목록은 매력적인 모습이어야하며 목록에서 한 히어로에 마우스를 올리거나 선택하면 시각적으로 반응해야 합니다.
+히어로 목록은 매력적인 모습이어야하며 목록에서 한 히어로에 마우스를 올리거나 선택하면 시각적으로 반응하는 것이 중요합니다.
 
 <!-- In the [first tutorial](tutorial/toh-pt0#app-wide-styles), you set the basic styles for the entire application in `styles.css`.
 That stylesheet didn't include styles for this list of heroes. -->
@@ -121,12 +121,12 @@ That stylesheet didn't include styles for this list of heroes. -->
 <!-- You may prefer instead to define private styles for a specific component and keep everything a component needs&mdash; the code, the HTML,
 and the CSS &mdash;together in one place. -->
 
-특정 컴포넌트만을 위해 스타일을 정의하고 컴포넌트가 필요로하는&mdash; 코드, HTML, CSS &mdash;모두 한 곳에 함께 보관하는 것을 더 선호할지도 모릅니다.
+특정 컴포넌트만을 위해 스타일을 정의하고 컴포넌트가 필요로하는&mdash; 코드, HTML, CSS &mdash;모두 한 곳에 함께 보관하는 것을 더 선호할수도 있습니다.
 
 <!-- This approach makes it easier to re-use the component somewhere else
 and deliver the component's intended appearance even if the global styles are different. -->
 
-이 접근은 컴포넌트를 다른 곳에서 재활용을 쉽게 하고 전역 스타일은 다를지라도 원하는 컴포넌트의 모습을 표시합니다.
+이와 같은 접근방식은 컴포넌트를 다른 곳에서 재활용을 쉽게 하고 전역 스타일은 다르게 정의되어 있을지라도 원하는 컴포넌트의 모습을 표시합니다.
 
 <!-- You define private styles either inline in the `@Component.styles` array or
 as stylesheet file(s) identified in the `@Component.styleUrls` array. -->
@@ -153,7 +153,7 @@ You'll find them in the [final code review](#final-code-review) at the bottom of
 <!-- Styles and stylesheets identified in `@Component` metadata are scoped to that specific component.
 The `heroes.component.css` styles apply only to the `HeroesComponent` and don't affect the outer HTML or the HTML in any other component. -->
 
-`@Component` 메타데이터에 정의되어 있는 스타일과 스타일시트는 해당 컴포넌트에 제한됩니다.
+`@Component` 메타데이터에 정의되어 있는 스타일과 스타일시트는 해당 컴포넌트에 제한되어 적용됩니다.
 `heroes.component.css` 스타일은 `HeroesComponent`에만 적용되며 컴포넌트 외부의 HTML이나 다른 컴포넌트의 HTML에는 영향을 주지 않습니다.
 </div>
 
@@ -163,7 +163,7 @@ The `heroes.component.css` styles apply only to the `HeroesComponent` and don't 
 <!-- When the user clicks a hero in the **master** list, 
 the component should display the selected hero's **details** at the bottom of the page. -->
 
-**마스터**목록에서 히어로를 클릭할 경우, 컴포넌트는 선택된 히어로의 **details**를 화면 하단에 표시합니다.
+**마스터**목록에서 히어로를 클릭할 경우, 컴포넌트는 선택된 히어로의 **상세화면**을 화면 하단에 표시합니다.
 
 <!-- In this section, you'll listen for the hero item click event
 and update the hero detail. -->
@@ -202,30 +202,30 @@ Angular는 선택된 `<li>`에 표시된 `hero` 객체를 파라미터로 하여
 There is no _selected hero_ when the application starts. -->
 
 컴포넌트의 `hero`의 프로퍼티의 이름을 `selectedHero`로 변경하고 할당하지 마세요.
-애플리케이션이 실행될 때 _선택된 히어로_는 없습니다.
+애플리케이션이 실행될 때는 _선택된 히어로_ 는 없습니다.
 
 <!-- Add the following `onSelect()` method, which assigns the clicked hero from the template
 to the component's `selectedHero`. -->
 
-그 다음 `onSelect()`메소드를 추가합니다. 이 메소드는 템플릿에서 선택된 히어로를 컴포넌트의 `selectedHero`에 할당합니다.
+그 다음 `onSelect()`메소드를 추가합니다. 이 메소드는 템플릿에서 선택된 히어로를 컴포넌트의 `selectedHero` 변수에 할당합니다.
 
 <code-example path="toh-pt2/src/app/heroes/heroes.component.ts" region="on-select" title="src/app/heroes/heroes.component.ts (onSelect)" linenums="false">
 </code-example>
 
 <!-- ### Update the details template -->
-### 상세 템플릿 업데이트 하기
+### 상세화면 템플릿 업데이트 하기
 
 <!-- The template still refers to the component's old `hero` property which no longer exists. 
 Rename `hero` to `selectedHero`. -->
 
-템플릿에서는 더이상 존재하지 않는 컴포넌트의 예전 `hero`프로퍼티를 여전히 참조하고 있습니다.
+템플릿에서는 더이상 존재하지 않는 컴포넌트의 이전 `hero`프로퍼티를 여전히 참조하고 있습니다.
 `hero`를 `selectedHero`로 변경합니다.
 
 <code-example path="toh-pt2/src/app/heroes/heroes.component.html" region="selectedHero-details" title="heroes.component.html (selected hero details)" linenums="false">
 </code-example>
 
 <!-- ### Hide empty details with _*ngIf_ -->
-### _*ngIf_를 활용하여 비어있는 상세화면 가리기
+### _*ngIf_ 를 활용하여 비어있는 상세화면 가리기
 
 <!-- After the browser refreshes, the application is broken. -->
 브라우저가 갱신되면 애플리케이션은 더이상 동작하지 않습니다.
@@ -241,7 +241,7 @@ Rename `hero` to `selectedHero`. -->
 The app seems to be working again.
 The heroes appear in a list and details about the clicked hero appear at the bottom of the page. -->
 
-목록의 아이템 중 하나를 선택하세요.
+자 이제 목록의 아이템 중 하나를 선택하세요.
 앱이 다시 정상적으로 동작하는 것을 확인할 수 있습니다.
 히어로들이 목록에 표시되며 선택한 히어로의 상세화면은 페이지의 하단에 표시됩니다.
 
@@ -258,7 +258,7 @@ The heroes appear in a list and details about the clicked hero appear at the bot
 #### 수정하기
 
 <!-- The component should only display the selected hero details if the `selectedHero` exists. -->
-컴포넌트는 `selectedHero`가 존재할때만 선택된 허이로의 상세화면을 보여줘야 합니다.
+컴포넌트는 `selectedHero`가 존재할때만 선택된 히어로의 상세화면을 보여줘야 합니다.
 
 <!-- Wrap the hero detail HTML in a `<div>`.
 Add Angular's `*ngIf` directive to the `<div>` and set it to `selectedHero`. -->
@@ -278,7 +278,7 @@ Angular의  `*ㅜngif`디렉티브를 `<div>`에 추가하고 `selectedHero`를 
 The details area is blank.
 Click a hero and its details appear. -->
 
-브라우저가 갱신되고 나면, 이름의 목록이 다시 표시됩니다.
+브라우저가 갱신되고 나면, 히어로의 이름 목록이 다시 표시됩니다.
 상세화면 영역은 비어있습니다.
 히어로 한명을 선택하면 상세화면이 나타납니다.
 
@@ -287,7 +287,7 @@ Click a hero and its details appear. -->
 
 <!-- When `selectedHero` is undefined, the `ngIf` removes the hero detail from the DOM. There are no `selectedHero` bindings to worry about. -->
 
-`selectedHero`가 undefined일때, `ngIf`는 히어로의 상세화면을 DOM에서 삭제합니다. `selectedHero` 바인딩?????????
+`selectedHero`가 undefined일때, `ngIf`는 히어로의 상세화면을 DOM에서 삭제합니다. 그래서 `selectedHero` 바인딩으로 인한 오류는 더이상 걱정할 필요는 없습니다.
 
 <!-- When the user picks a hero, `selectedHero` has a value and
 `ngIf` puts the hero detail into the DOM. -->
@@ -313,14 +313,14 @@ Click a hero and its details appear. -->
 <!-- That _selected hero_ coloring is the work of the `.selected` CSS class in the [styles you added earlier](#styles).
 You just have to apply the `.selected` class to the `<li>` when the user clicks it. -->
 
-_선택된 히어로_ 의 색은 [이전에 추가한 스타일](#styles)에 선언된 `.selected` CSS 클래스의 결과입니다.
+_선택된 히어로_ 의 색은 [이전에 추가한 스타일](#styles)에 선언된 `.selected` CSS 클래스가 적용된 결과입니다.
 `<li>`를 선택하면 `.selected` 클래스가 적용됩니다.
 
 <!-- The Angular [class binding](guide/template-syntax#class-binding) makes it easy to add and remove a CSS class conditionally. 
 Just add `[class.some-css-class]="some-condition"` to the element you want to style. -->
 
 Angular의 [class binding](guide/template-syntax#class-binding)은 CSS 클래스를 조건에 따라 추가하거나 제거하는 것을 도와줍니다.
-단지 `[class.some-css-class]="some-condition"`를 디자인하고 싶은 엘리먼트에 추가하면 됩니다.
+디자인하고 싶은 엘리먼트에 `[class.some-css-class]="some-condition"`만 추가하면 됩니다.
 
 <!-- Add the following `[class.selected]` binding to  the `<li>` in the `HeroesComponent` template: -->
 아래의 `[class.selected]` 바인딩을 `HeroesComponent` 템플릿에 있는 `<li>`에 추가합니다:
@@ -330,7 +330,7 @@ Angular의 [class binding](guide/template-syntax#class-binding)은 CSS 클래스
 
 <!-- When the current row hero is the same as the `selectedHero`, Angular adds the `selected` CSS class. When the two heroes are different, Angular removes the class. -->
 
-현재 열의 히어로와 `selectedHero`가 같다면, Angular는 `selected` CSS 클래스를 추가합니다. 만약 서로다르다면 Angular는 해당 클래스를 삭제합니다.
+현재 열의 히어로와 `selectedHero`가 같다면, Angular는 `selected` CSS 클래스를 추가합니다. 만약 서로 다르다면 Angular는 해당 클래스를 삭제합니다.
 
 <!-- The finished `<li>` looks like this: -->
 완성된 `<li>`의 모습은 아래와 같습니다.
@@ -345,7 +345,7 @@ Angular의 [class binding](guide/template-syntax#class-binding)은 CSS 클래스
 ## 마지막 코드리뷰
 
 <!-- Your app should look like this <live-example></live-example>.  -->
-앱의 모습은  <live-example></live-example>와 같습니다.
+완성된 앱의 모습은  <live-example></live-example>와 같습니다.
 
 <!-- Here are the code files discussed on this page, including the `HeroesComponent` styles. -->
 `HeroesComponent` 스타일을 포함하여 이번 페이지에서 다룬 코드는 아래와 같습니다.
@@ -364,11 +364,11 @@ Angular의 [class binding](guide/template-syntax#class-binding)은 CSS 클래스
 <!-- ## Summary -->
 ## 요약
 
-* The Tour of Heroes app displays a list of heroes in a Master/Detail view.
+<!-- * The Tour of Heroes app displays a list of heroes in a Master/Detail view.
 * The user can select a hero and see that hero's details.
 * You used `*ngFor` to display a list.
 * You used `*ngIf` to conditionally include or exclude a block of HTML.
-* You can toggle a CSS style class with a `class` binding.
+* You can toggle a CSS style class with a `class` binding. -->
 
 * 히어로들의 여행앱은 마스터/상세 화면에서 히어로의 목록을 표시합니다.
 * 한명의 히어로를 선택할 수 있으며 히어로의 상세화면을 볼 수 있습니다.
