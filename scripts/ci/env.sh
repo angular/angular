@@ -51,16 +51,16 @@ if [[ ${TRAVIS:-} ]]; then
       setEnvVar KARMA_JS_BROWSERS ChromeNoSandbox
       ;;
     saucelabs_required)
-      setEnvVar KARMA_JS_BROWSERS `node -e "console.log(require('/home/travis/build/angular/angular/browser-providers.conf').sauceAliases.CI_REQUIRED.join(','))"`
+      setEnvVar KARMA_JS_BROWSERS `node -e "console.log(require('${PROJECT_ROOT}/browser-providers.conf').sauceAliases.CI_REQUIRED.join(','))"`
       ;;
     browserstack_required)
-      setEnvVar KARMA_JS_BROWSERS `node -e "console.log(require('/home/travis/build/angular/angular/browser-providers.conf').browserstackAliases.CI_REQUIRED.join(','))"`
+      setEnvVar KARMA_JS_BROWSERS `node -e "console.log(require('${PROJECT_ROOT}/browser-providers.conf').browserstackAliases.CI_REQUIRED.join(','))"`
       ;;
     saucelabs_optional)
-      setEnvVar KARMA_JS_BROWSERS `node -e "console.log(require('/home/travis/build/angular/angular/browser-providers.conf').sauceAliases.CI_OPTIONAL.join(','))"`
+      setEnvVar KARMA_JS_BROWSERS `node -e "console.log(require('${PROJECT_ROOT}/browser-providers.conf').sauceAliases.CI_OPTIONAL.join(','))"`
       ;;
     browserstack_optional)
-      setEnvVar KARMA_JS_BROWSERS `node -e "console.log(require('/home/travis/build/angular/angular/browser-providers.conf').browserstackAliases.CI_OPTIONAL.join(','))"`
+      setEnvVar KARMA_JS_BROWSERS `node -e "console.log(require('${PROJECT_ROOT}/browser-providers.conf').browserstackAliases.CI_OPTIONAL.join(','))"`
       ;;
     aio)
       # Determine the current stable branch.
@@ -83,6 +83,8 @@ if [[ ${TRAVIS:-} ]]; then
   # more info: https://docs.travis-ci.com/user/languages/javascript-with-nodejs#Node.js-v4-(or-io.js-v3)-compiler-requirements
   setEnvVar CXX g++-4.8
 
+  # Avoid "unbound variable" error in case `SAUCE_ACCESS_KEY` is not set (e.g. on a fork).
+  SAUCE_ACCESS_KEY=${SAUCE_ACCESS_KEY:-}
   # If NGBUILDS_IO_KEY not set yet, export the NGBUILDS_IO_KEY using the JWT token that Travis generated and exported for SAUCE_ACCESS_KEY.
   # This is a workaround for travis-ci/travis-ci#7223
   # WARNING: NGBUILDS_IO_KEY should NOT be printed
