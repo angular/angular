@@ -11,9 +11,10 @@ import { Hero } from '../hero';
   templateUrl: './hero-detail.component.html',
   styleUrls: ['./hero-detail.component.css']
 })
+// #docregion input-hero
 export class HeroDetailComponent implements OnInit {
-  // #docregion input-hero
   @Input() hero: Hero;
+  /* ... */
   // #enddocregion input-hero
 
   constructor() { }

@@ -15,7 +15,7 @@ Using the Angular CLI, generate a new component named `heroes`.
 The CLI creates a new folder, `src/app/heroes/` and generates
 the three files of the  `HeroesComponent`.
 
-The `HeroesComponent` class file is as follows:
+The `HeroesComponent` class file is generated as follows:
 
 <code-example 
   path="toh-pt1/src/app/heroes/heroes.component.ts" region="v1" 
@@ -36,7 +36,8 @@ The CLI generated three metadata properties:
 {@a selector}
 
 The [CSS element selector](https://developer.mozilla.org/en-US/docs/Web/CSS/Type_selectors),
-`'app-heroes'`, matches the name of the HTML element that identifies this component within a parent component's template.
+`'app-heroes'`, defines the special HTML tag that identifies this component 
+within a parent component's template. In this case the tag would be: `<app-heroes></app-heroes>`.
 
 The `ngOnInit` is a [lifecycle hook](guide/lifecycle-hooks#oninit) 
 Angular calls `ngOnInit` shortly after creating a component.
@@ -46,6 +47,7 @@ Always `export` the component class so you can `import` it elsewhere ... like in
 
 ### Add a _hero_ property
 
+Let's test to see if it's working correctly.
 Add a `hero` property to the `HeroesComponent` for a hero named "Windstorm."
 
 <code-example path="toh-pt1/src/app/heroes/heroes.component.ts" region="add-hero" title="heroes.component.ts (hero property)" linenums="false">
@@ -112,6 +114,17 @@ The browser refreshes and display's the hero's information.
 
 ## Format with the _UppercasePipe_
 
+You can add value-processing to a binding through piping. 
+The built-in `UppercasePipe` is activated by the pipe operator (`|`) then 
+the word `uppercase` inside of an interpolation binding.
+
+<div class="l-sub-section">
+
+  [Pipes](guide/pipes) are a good way to format strings, currency amounts, dates and other display data.
+  Angular ships with several built-in pipes and you can create your own.
+
+</div>
+
 Modify the `hero.name` binding like this.
 <code-example
   path="toh-pt1/src/app/heroes/heroes.component.html"
@@ -120,25 +133,45 @@ Modify the `hero.name` binding like this.
 
 The browser refreshes and now the hero's name is displayed in capital letters.
 
-The word `uppercase` in the interpolation binding, 
-right after the pipe operator ( | ),
-activates the built-in `UppercasePipe`.
-
-[Pipes](guide/pipes) are a good way to format strings, currency amounts, dates and other display data.
-Angular ships with several built-in pipes and you can create your own.
-
 ## Edit the hero
 
 Users should be able to edit the hero name in an `<input>` textbox.
 
 The textbox should both _display_ the hero's `name` property
 and _update_ that property as the user types.
-That means data flow from the component class _out to the screen_ and
-from the screen _back to the class_.
+That means data should flow from the `model -> view` and `view -> model`. 
+In other words, the data should flow in two ways.
 
-To automate that data flow, setup a two-way data binding between the `<input>` form element and the `hero.name` property.
+A two-way data binding can be set up to automate that data flow between 
+the `<input>` form element and the `hero.name` property.
 
 ### Two-way binding
+
+**[(ngModel)]** is Angular's two-way data binding syntax. `[(ngModel)]` is 
+part of the `FormsModule`, which isn't imported by default. You must import 
+the `FormsModule` in the `AppModule` class in order to use two-way binding.
+
+Import the `FormsModule` symbol from the `@angular/forms` library. 
+
+<code-example path="toh-pt1/src/app/app.module.ts" title="app.module.ts (FormsModule symbol import)"
+ region="formsmodule-js-import">
+</code-example>
+
+<code-example path="toh-pt1/src/app/app.module.ts" title="app.module.ts ( @NgModule imports)"
+region="ng-imports">
+</code-example>
+
+<div class="alert is-important">
+
+  If you don't import the `FormsModule` in the `AppModule` class, you 
+  will get the following error.
+  
+  <code-example language="sh" class="code-shell">
+  Template parse errors:
+  Can't bind to 'ngModel' since it isn't a known property of 'input'.
+  </code-example>
+
+</div>
 
 Refactor the details area in the `HeroesComponent` template so it looks like this:
 
@@ -146,25 +179,9 @@ Refactor the details area in the `HeroesComponent` template so it looks like thi
 
 </code-example>
 
-**[(ngModel)]** is Angular's two-way data binding syntax. 
-
-Here it binds the `hero.name` property to the HTML textbox so that data can flow _in both directions:_ from the `hero.name` property to the textbox, and from the textbox back to the `hero.name`.
-
-### The missing _FormsModule_
-
-Notice that the app stopped working when you added `[(ngModel)]`.
-
-To see the error, open the browser development tools and look in the console
-for a message like
-
-<code-example language="sh" class="code-shell">
-Template parse errors:
-Can't bind to 'ngModel' since it isn't a known property of 'input'.
-</code-example>
-
-Although `ngModel` is a valid Angular directive, it isn't available by default. 
-
-It belongs to the optional `FormsModule` and you must _opt-in_ to using it.
+Here the **[(ngModel)]** binds the `hero.name` property to the HTML textbox 
+so that data can flow _in both directions:_ from the `hero.name` property 
+to the textbox, and from the textbox back to the `hero.name`.
 
 ## _AppModule_
 
@@ -178,23 +195,6 @@ Other critical metadata is in [`@NgModule`](guide/ngmodules) decorators.
 The most important `@NgModule`decorator annotates the top-level **AppModule** class.
 
 The Angular CLI generated an `AppModule` class in `src/app/app.module.ts` when it created the project.
-This is where you _opt-in_ to the `FormsModule`.
-
-### Import _FormsModule_
-
-Open `AppModule` (`app.module.ts`) and import the `FormsModule` symbol from the `@angular/forms` library. 
-
-<code-example path="toh-pt1/src/app/app.module.ts" title="app.module.ts (FormsModule symbol import)"
- region="formsmodule-js-import">
-</code-example>
-
-Then add `FormsModule` to the `@NgModule` metadata's `imports` array, which contains a list of external modules that the app needs.
-
-<code-example path="toh-pt1/src/app/app.module.ts" title="app.module.ts ( @NgModule imports)"
-region="ng-imports">
-</code-example>
-
-When the browser refreshes, the app should work again. You can edit the hero's name and see the changes reflected immediately in the `<h2>` above the textbox.
 
 ### Declare _HeroesComponent_ 
 

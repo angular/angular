@@ -43,9 +43,9 @@ Notice that the new service imports the Angular `Injectable` symbol and annotate
 the class with the `@Injectable()` decorator.
 
 The `@Injectable()` decorator tells Angular that this service _might_ itself
-have injected dependencies.
+have injected dependencies, which allows the service to be "injected" into 
+the constructor of another component.
 It doesn't have dependencies now but [it will soon](#inject-message-service).
-Whether it does or it doesn't, it's good practice to keep the decorator.
 
 <div class="l-sub-section">
 
@@ -72,6 +72,73 @@ Add a `getHeroes` method to return the _mock heroes_.
 
 <code-example path="toh-pt4/src/app/hero.service.1.ts" region="getHeroes">
 </code-example>
+
+<div class="alert is-important">
+
+  The `getHeroes` method now returns heroes _synchronously_. This is **bad practice** 
+  and will be fixed next.
+
+</div>
+
+## Observable data
+
+Currently, the `HeroService.getHeroes()` method has a _synchronous signature_,
+which implies that the `HeroService` can fetch heroes synchronously.
+
+This will not work in a real app, but it works now because the service currently 
+returns _mock heroes_ (a hardcoded array).
+But soon the app will fetch heroes from a remote server, 
+which is an inherently _asynchronous_ operation.
+
+The `HeroService` must wait for the server to respond,
+`getHeroes()` cannot return immediately with hero data,
+and the browser will not block while the service waits.
+
+`HeroService.getHeroes()` must have an _asynchronous signature_ of some kind.
+
+It can take a callback. It could return a `Promise`. It could return an `Observable`.
+
+In this tutorial, `HeroService.getHeroes()` will return an `Observable`
+in part because it will eventually use the Angular `HttpClient.get` method to fetch the heroes
+and [`HttpClient.get()` returns an `Observable`](guide/http).
+
+### Observable _HeroService_
+
+`Observable` is one of the key classes in the [RxJS library](http://reactivex.io/rxjs/).
+
+In a [later tutorial on HTTP](tutorial/toh-pt6), you'll learn that Angular's `HttpClient` methods return RxJS `Observable`s.
+In this tutorial, you'll simulate getting data from the server with the RxJS `of()` function.
+
+Open the `HeroService` file and import the `Observable` and `of` symbols from RxJS.
+
+<code-example path="toh-pt4/src/app/hero.service.ts" 
+title="src/app/hero.service.ts (Observable imports)" region="import-observable">
+</code-example>
+
+Replace the `getHeroes` method with this one.
+
+<code-example path="toh-pt4/src/app/hero.service.ts" region="getHeroes-1"></code-example>
+
+<code-tabs>
+
+  <code-pane title="hero.service.ts (Observable)" 
+    path="toh-pt4/src/app/hero.service.ts" region="getHeroes">
+  </code-pane>
+
+  <code-pane title="hero.service.ts (Original - Bad Practice)" 
+    path="toh-pt4/src/app/hero.service.1.ts" region="getHeroes">
+  </code-pane>
+
+</code-tabs>
+
+`of(HEROES)` returns an `Observable<Hero[]>` that emits  _a single value_, the array of mock heroes.
+
+<div class="l-sub-section">
+
+In the [HTTP tutorial](tutorial/toh-pt6), you'll call `HttpClient.get<Hero[]>()` which also returns an `Observable<Hero[]>` that emits  _a single value_, an array of heroes from the body of the HTTP response.
+
+</div>
+
 
 {@a provide}
 ## Provide the `HeroService`
@@ -104,12 +171,6 @@ The `providers` array tells Angular to create a single, shared instance of `Hero
 and inject into any class that asks for it.
 
 The `HeroService` is now ready to plug into the `HeroesComponent`.
-
-<div class="alert is-important">
-
-This is a interim code sample that will allow you to provide and use the `HeroService`.  At this point, the code will differ from the `HeroService` in the ["final code review"](#final-code-review).
-
-</div>
 
 <div class="alert is-helpful">
 
@@ -148,10 +209,36 @@ sets the `heroService` parameter to the singleton instance of `HeroService`.
 
 ### Add _getHeroes()_
 
-Create a function to retrieve the heroes from the service.
+Create a function to retrieve the heroes from the service. An example is also 
+shown of how the code would look given the original _synchronous_ `getHeroes` method.
 
-<code-example path="toh-pt4/src/app/heroes/heroes.component.1.ts" region="getHeroes">
-</code-example>
+<code-tabs>
+
+  <code-pane title="heroes.component.ts (Observable)" 
+    path="toh-pt4/src/app/heroes/heroes.component.ts" region="getHeroes">
+  </code-pane>
+
+  <code-pane title="heroes.component.ts (Original - Bad Practice)" 
+    path="toh-pt4/src/app/heroes/heroes.component.1.ts" region="getHeroes">
+  </code-pane>
+
+</code-tabs>
+
+`Observable.subscribe()` is the critical difference.
+
+The original version assigns an array of heroes to the component's `heroes` property.
+The assignment occurs _synchronously_, as if the server could return heroes instantly
+or the browser could freeze the UI while it waited for the server's response.
+
+That _won't work_ when the `HeroService` is actually making requests of a remote server.
+
+The new version waits for the `Observable` to emit the array of heroes&mdash; 
+which could happen now or several minutes from now.
+Then `subscribe` passes the emitted array to the callback,
+which sets the component's `heroes` property.
+
+This asynchronous approach _will work_ when
+the `HeroService` requests heroes from the server.
 
 {@a oninit}
 
@@ -171,98 +258,8 @@ let Angular call `ngOnInit` at an appropriate time _after_ constructing a `Heroe
 
 ### See it run
 
-After the browser refreshes, the app should run as before, 
-showing a list of heroes and a hero detail view when you click on a hero name.
-
-## Observable data
-
-The `HeroService.getHeroes()` method has a _synchronous signature_,
-which implies that the `HeroService` can fetch heroes synchronously.
-The `HeroesComponent` consumes the `getHeroes()` result 
-as if heroes could be fetched synchronously.
-
-<code-example path="toh-pt4/src/app/heroes/heroes.component.1.ts" region="get-heroes">
-</code-example>
-
-This will not work in a real app.
-You're getting away with it now because the service currently returns _mock heroes_.
-But soon the app will fetch heroes from a remote server, 
-which is an inherently _asynchronous_ operation.
-
-The `HeroService` must wait for the server to respond,
-`getHeroes()` cannot return immediately with hero data,
-and the browser will not block while the service waits.
-
-`HeroService.getHeroes()` must have an _asynchronous signature_ of some kind.
-
-It can take a callback. It could return a `Promise`. It could return an `Observable`.
-
-In this tutorial, `HeroService.getHeroes()` will return an `Observable`
-in part because it will eventually use the Angular `HttpClient.get` method to fetch the heroes
-and [`HttpClient.get()` returns an `Observable`](guide/http).
-
-### Observable _HeroService_
-
-`Observable` is one of the key classes in the [RxJS library](http://reactivex.io/rxjs/).
-
-In a [later tutorial on HTTP](tutorial/toh-pt6), you'll learn that Angular's `HttpClient` methods return RxJS `Observable`s.
-In this tutorial, you'll simulate getting data from the server with the RxJS `of()` function.
-
-Open the `HeroService` file and import the `Observable` and `of` symbols from RxJS.
-
-<code-example path="toh-pt4/src/app/hero.service.ts" 
-title="src/app/hero.service.ts (Observable imports)" region="import-observable">
-</code-example>
-
-Replace the `getHeroes` method with this one.
-
-<code-example path="toh-pt4/src/app/hero.service.ts" region="getHeroes-1"></code-example>
-
-`of(HEROES)` returns an `Observable<Hero[]>` that emits  _a single value_, the array of mock heroes.
-
-<div class="l-sub-section">
-
-In the [HTTP tutorial](tutorial/toh-pt6), you'll call `HttpClient.get<Hero[]>()` which also returns an `Observable<Hero[]>` that emits  _a single value_, an array of heroes from the body of the HTTP response.
-
-</div>
-
-### Subscribe in _HeroesComponent_
-
-The `HeroService.getHeroes` method used to return a `Hero[]`.
-Now it returns an `Observable<Hero[]>`.
-
-You'll have to adjust to that difference in `HeroesComponent`.
-
-Find the `getHeroes` method and replace it with the following code
-(shown side-by-side with the previous version for comparison)
-
-<code-tabs>
-
-  <code-pane title="heroes.component.ts (Observable)" 
-    path="toh-pt4/src/app/heroes/heroes.component.ts" region="getHeroes">
-  </code-pane>
-
-  <code-pane title="heroes.component.ts (Original)" 
-    path="toh-pt4/src/app/heroes/heroes.component.1.ts" region="getHeroes">
-  </code-pane>
-
-</code-tabs>
-
-`Observable.subscribe()` is the critical difference.
-
-The previous version assigns an array of heroes to the component's `heroes` property.
-The assignment occurs _synchronously_, as if the server could return heroes instantly
-or the browser could freeze the UI while it waited for the server's response.
-
-That _won't work_ when the `HeroService` is actually making requests of a remote server.
-
-The new version waits for the `Observable` to emit the array of heroes&mdash; 
-which could happen now or several minutes from now.
-Then `subscribe` passes the emitted array to the callback,
-which sets the component's `heroes` property.
-
-This asynchronous approach _will work_ when
-the `HeroService` requests heroes from the server.
+After the browser refreshes, the app should show a list of heroes and a hero 
+detail view when you click on a hero name.
 
 ## Show messages
 
@@ -366,7 +363,7 @@ The `messageService` property **must be public** because you're about to bind to
 
 <div class="alert is-important">
 
-Angular only binds to _public_ component properties.
+Angular only binds to _public_ component properties. Therefore, if you use a property in a template, it has to be _public_.
 
 </div>
 

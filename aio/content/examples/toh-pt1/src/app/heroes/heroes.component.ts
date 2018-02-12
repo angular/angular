@@ -10,12 +10,15 @@ import { Hero } from '../hero';
   templateUrl: './heroes.component.html',
   styleUrls: ['./heroes.component.css']
 })
+// #docregion add-hero
 export class HeroesComponent implements OnInit {
   // #enddocregion, v1
-  /*
-  // #docregion add-hero
-  hero = 'Windstorm';
   // #enddocregion add-hero
+  /*
+   // #docregion add-hero
+  hero = 'Windstorm';
+  // ...
+   // #enddocregion add-hero
   */
   // #docregion
   // #docregion hero-property-1
@@ -30,6 +33,7 @@ export class HeroesComponent implements OnInit {
 
   ngOnInit() {
   }
-
+// #docregion add-hero
 }
+// #enddocregion add-hero
 // #enddocregion, v1

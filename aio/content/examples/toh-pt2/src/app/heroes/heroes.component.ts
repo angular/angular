@@ -12,10 +12,10 @@ import { HEROES } from '../mock-heroes';
   styleUrls: ['./heroes.component.css']
 })
 // #enddocregion metadata
+// #docregion heroes
 export class HeroesComponent implements OnInit {
-
-  // #docregion heroes
   heroes = HEROES;
+  /* ... */
   // #enddocregion heroes
 
   // #docregion on-select

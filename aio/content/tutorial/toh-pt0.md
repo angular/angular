@@ -46,6 +46,20 @@ The shell is controlled by an Angular **component** named `AppComponent`.
 _Components_ are the fundamental building blocks of Angular applications.
 They display data on the screen, listen for user input, and take action based on that input.
 
+ 
+<div class="l-sub-section">
+
+  _Components_ allow the application to be broken up into parts, where each 
+  component has a certain function. This allows you to separate the different 
+  functions of the application into easier-to-maintain chunks.
+  
+  In essence, each component has two parts:
+  
+  1. Model: Data stored in properties of component class
+  1. View: HTML file, how the data should be displayed
+
+</div>
+
 ## Change the application title
 
 Open the project in your favorite editor or IDE and navigate to the `src/app` folder.
@@ -70,18 +84,28 @@ Replace it with the following line of HTML.
   title="app.component.html (template)" linenums="false">
 </code-example>
 
-The double curly braces are Angular's *interpolation binding* syntax. 
-This interpolation binding presents the component's `title` property value 
-inside the HTML header tag.
-
 The browser refreshes and displays the new application title.
+
+The double curly braces are Angular's *interpolation binding* syntax. 
+This specific interpolation binding finds the `title` property inside `AppComponent` and 
+presents the value inside the HTML header tag instead of the curly braces. 
+
+<div class="l-sub-section">
+
+  This binds the _model_ to the _view_. Should the value of the model (`title`) 
+  change, the view (HTML template) will be updated.
+
+</div>
 
 {@a app-wide-styles}
 
 ## Add application styles
 
 Most apps strive for a consistent look across the application.
-The CLI generated an empty `styles.css` for this purpose.
+The CLI generated an empty `styles.css` for this purpose. 
+
+Style rules placed 
+in this document will be applied to _every_ component in the application.
 Put your application-wide styles there.
 
 Here's an excerpt from the `styles.css` for the _Tour of Heroes_ sample app.

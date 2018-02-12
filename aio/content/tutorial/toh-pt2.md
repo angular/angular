@@ -152,23 +152,20 @@ Rename `hero` to `selectedHero`.
 
 ### Hide empty details with _*ngIf_
 
-After the browser refreshes, the application is broken.
-
-Open the browser developer tools and look in the console for an error message like this:
-
-<code-example language="sh" class="code-shell">
-  HeroesComponent.html:3 ERROR TypeError: Cannot read property 'name' of undefined
-</code-example>
-
-Now click one of the list items.
-The app seems to be working again.
-The heroes appear in a list and details about the clicked hero appear at the bottom of the page.
-
-#### What happened?
-
 When the app starts, the `selectedHero` is `undefined` _by design_.
 
 Binding expressions in the template that refer to properties of `selectedHero` &mdash; expressions like `{{selectedHero.name}}` &mdash; _must fail_ because there is no selected hero.
+
+<div class="alert is-important">
+
+  If you try to access an undefined variable, an error message like this 
+  will appear in the console of the web browser:
+  
+  <code-example language="sh" class="code-shell">
+    HeroesComponent.html:3 ERROR TypeError: Cannot read property 'name' of undefined
+  </code-example>
+
+</div>
 
 #### The fix
 
@@ -177,18 +174,14 @@ The component should only display the selected hero details if the `selectedHero
 Wrap the hero detail HTML in a `<div>`.
 Add Angular's `*ngIf` directive to the `<div>` and set it to `selectedHero`.
 
+<code-example path="toh-pt2/src/app/heroes/heroes.component.html" region="ng-if" title="src/app/heroes/heroes.component.html (*ngIf)" linenums="false">
+</code-example>
+
 <div class="alert is-important">
 
 Don't forget the asterisk (*) in front of `ngIf`. It's a critical part of the syntax.
 
 </div>
-
-<code-example path="toh-pt2/src/app/heroes/heroes.component.html" region="ng-if" title="src/app/heroes/heroes.component.html (*ngIf)" linenums="false">
-</code-example>
-
-After the browser refreshes, the list of names reappears.
-The details area is blank.
-Click a hero and its details appear.
 
 #### Why it works
 
