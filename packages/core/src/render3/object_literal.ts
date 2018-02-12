@@ -18,10 +18,10 @@ import {NO_CHANGE, bind, peekBinding} from './instructions';
  */
 export function objectLiteral1(factoryFn: (v: any) => any, exp: any): any {
   let different = false;
-  if (exp === NO_CHANGE) exp = peekBinding();
+  const latestValue = exp === NO_CHANGE ? peekBinding() : exp;
   if (bind(exp) !== NO_CHANGE) different = true;
 
-  return different ? factoryFn(exp) : NO_CHANGE;
+  return different ? factoryFn(latestValue) : NO_CHANGE;
 }
 
 /**
@@ -36,13 +36,13 @@ export function objectLiteral1(factoryFn: (v: any) => any, exp: any): any {
 export function objectLiteral2(factoryFn: (v1: any, v2: any) => any, exp1: any, exp2: any): any {
   let different = false;
 
-  if (exp1 === NO_CHANGE) exp1 = peekBinding();
+  const latestVal1 = exp1 === NO_CHANGE ? peekBinding() : exp1;
   if (bind(exp1) !== NO_CHANGE) different = true;
 
-  if (exp2 === NO_CHANGE) exp2 = peekBinding();
+  const latestVal2 = exp2 === NO_CHANGE ? peekBinding() : exp2;
   if (bind(exp2) !== NO_CHANGE) different = true;
 
-  return different ? factoryFn(exp1, exp2) : NO_CHANGE;
+  return different ? factoryFn(latestVal1, latestVal2) : NO_CHANGE;
 }
 
 /**
@@ -59,16 +59,16 @@ export function objectLiteral3(
     factoryFn: (v1: any, v2: any, v3: any) => any, exp1: any, exp2: any, exp3: any): any {
   let different = false;
 
-  if (exp1 === NO_CHANGE) exp1 = peekBinding();
+  const latestVal1 = exp1 === NO_CHANGE ? peekBinding() : exp1;
   if (bind(exp1) !== NO_CHANGE) different = true;
 
-  if (exp2 === NO_CHANGE) exp2 = peekBinding();
+  const latestVal2 = exp2 === NO_CHANGE ? peekBinding() : exp2;
   if (bind(exp2) !== NO_CHANGE) different = true;
 
-  if (exp3 === NO_CHANGE) exp3 = peekBinding();
+  const latestVal3 = exp3 === NO_CHANGE ? peekBinding() : exp3;
   if (bind(exp3) !== NO_CHANGE) different = true;
 
-  return different ? factoryFn(exp1, exp2, exp3) : NO_CHANGE;
+  return different ? factoryFn(latestVal1, latestVal2, latestVal3) : NO_CHANGE;
 }
 
 /**
@@ -87,19 +87,19 @@ export function objectLiteral4(
     exp4: any): any {
   let different = false;
 
-  if (exp1 === NO_CHANGE) exp1 = peekBinding();
+  const latestVal1 = exp1 === NO_CHANGE ? peekBinding() : exp1;
   if (bind(exp1) !== NO_CHANGE) different = true;
 
-  if (exp2 === NO_CHANGE) exp2 = peekBinding();
+  const latestVal2 = exp2 === NO_CHANGE ? peekBinding() : exp2;
   if (bind(exp2) !== NO_CHANGE) different = true;
 
-  if (exp3 === NO_CHANGE) exp3 = peekBinding();
+  const latestVal3 = exp3 === NO_CHANGE ? peekBinding() : exp3;
   if (bind(exp3) !== NO_CHANGE) different = true;
 
-  if (exp4 === NO_CHANGE) exp4 = peekBinding();
+  const latestVal4 = exp4 === NO_CHANGE ? peekBinding() : exp4;
   if (bind(exp4) !== NO_CHANGE) different = true;
 
-  return different ? factoryFn(exp1, exp2, exp3, exp4) : NO_CHANGE;
+  return different ? factoryFn(latestVal1, latestVal2, latestVal3, latestVal4) : NO_CHANGE;
 }
 
 /**
@@ -119,22 +119,23 @@ export function objectLiteral5(
     exp3: any, exp4: any, exp5: any): any {
   let different = false;
 
-  if (exp1 === NO_CHANGE) exp1 = peekBinding();
+  const latestVal1 = exp1 === NO_CHANGE ? peekBinding() : exp1;
   if (bind(exp1) !== NO_CHANGE) different = true;
 
-  if (exp2 === NO_CHANGE) exp2 = peekBinding();
+  const latestVal2 = exp2 === NO_CHANGE ? peekBinding() : exp2;
   if (bind(exp2) !== NO_CHANGE) different = true;
 
-  if (exp3 === NO_CHANGE) exp3 = peekBinding();
+  const latestVal3 = exp3 === NO_CHANGE ? peekBinding() : exp3;
   if (bind(exp3) !== NO_CHANGE) different = true;
 
-  if (exp4 === NO_CHANGE) exp4 = peekBinding();
+  const latestVal4 = exp4 === NO_CHANGE ? peekBinding() : exp4;
   if (bind(exp4) !== NO_CHANGE) different = true;
 
-  if (exp5 === NO_CHANGE) exp5 = peekBinding();
+  const latestVal5 = exp5 === NO_CHANGE ? peekBinding() : exp5;
   if (bind(exp5) !== NO_CHANGE) different = true;
 
-  return different ? factoryFn(exp1, exp2, exp3, exp4, exp5) : NO_CHANGE;
+  return different ? factoryFn(latestVal1, latestVal2, latestVal3, latestVal4, latestVal5) :
+                     NO_CHANGE;
 }
 
 /**
@@ -155,25 +156,27 @@ export function objectLiteral6(
     exp3: any, exp4: any, exp5: any, exp6: any): any {
   let different = false;
 
-  if (exp1 === NO_CHANGE) exp1 = peekBinding();
+  const latestVal1 = exp1 === NO_CHANGE ? peekBinding() : exp1;
   if (bind(exp1) !== NO_CHANGE) different = true;
 
-  if (exp2 === NO_CHANGE) exp2 = peekBinding();
+  const latestVal2 = exp2 === NO_CHANGE ? peekBinding() : exp2;
   if (bind(exp2) !== NO_CHANGE) different = true;
 
-  if (exp3 === NO_CHANGE) exp3 = peekBinding();
+  const latestVal3 = exp3 === NO_CHANGE ? peekBinding() : exp3;
   if (bind(exp3) !== NO_CHANGE) different = true;
 
-  if (exp4 === NO_CHANGE) exp4 = peekBinding();
+  const latestVal4 = exp4 === NO_CHANGE ? peekBinding() : exp4;
   if (bind(exp4) !== NO_CHANGE) different = true;
 
-  if (exp5 === NO_CHANGE) exp5 = peekBinding();
+  const latestVal5 = exp5 === NO_CHANGE ? peekBinding() : exp5;
   if (bind(exp5) !== NO_CHANGE) different = true;
 
-  if (exp6 === NO_CHANGE) exp6 = peekBinding();
+  const latestVal6 = exp6 === NO_CHANGE ? peekBinding() : exp6;
   if (bind(exp6) !== NO_CHANGE) different = true;
 
-  return different ? factoryFn(exp1, exp2, exp3, exp4, exp5, exp6) : NO_CHANGE;
+  return different ?
+      factoryFn(latestVal1, latestVal2, latestVal3, latestVal4, latestVal5, latestVal6) :
+      NO_CHANGE;
 }
 
 /**
@@ -195,28 +198,31 @@ export function objectLiteral7(
     exp2: any, exp3: any, exp4: any, exp5: any, exp6: any, exp7: any): any {
   let different = false;
 
-  if (exp1 === NO_CHANGE) exp1 = peekBinding();
+  const latestVal1 = exp1 === NO_CHANGE ? peekBinding() : exp1;
   if (bind(exp1) !== NO_CHANGE) different = true;
 
-  if (exp2 === NO_CHANGE) exp2 = peekBinding();
+  const latestVal2 = exp2 === NO_CHANGE ? peekBinding() : exp2;
   if (bind(exp2) !== NO_CHANGE) different = true;
 
-  if (exp3 === NO_CHANGE) exp3 = peekBinding();
+  const latestVal3 = exp3 === NO_CHANGE ? peekBinding() : exp3;
   if (bind(exp3) !== NO_CHANGE) different = true;
 
-  if (exp4 === NO_CHANGE) exp4 = peekBinding();
+  const latestVal4 = exp4 === NO_CHANGE ? peekBinding() : exp4;
   if (bind(exp4) !== NO_CHANGE) different = true;
 
-  if (exp5 === NO_CHANGE) exp5 = peekBinding();
+  const latestVal5 = exp5 === NO_CHANGE ? peekBinding() : exp5;
   if (bind(exp5) !== NO_CHANGE) different = true;
 
-  if (exp6 === NO_CHANGE) exp6 = peekBinding();
+  const latestVal6 = exp6 === NO_CHANGE ? peekBinding() : exp6;
   if (bind(exp6) !== NO_CHANGE) different = true;
 
-  if (exp7 === NO_CHANGE) exp7 = peekBinding();
+  const latestVal7 = exp7 === NO_CHANGE ? peekBinding() : exp7;
   if (bind(exp7) !== NO_CHANGE) different = true;
 
-  return different ? factoryFn(exp1, exp2, exp3, exp4, exp5, exp6, exp7) : NO_CHANGE;
+  return different ?
+      factoryFn(
+          latestVal1, latestVal2, latestVal3, latestVal4, latestVal5, latestVal6, latestVal7) :
+      NO_CHANGE;
 }
 
 /**
@@ -239,31 +245,34 @@ export function objectLiteral8(
     exp1: any, exp2: any, exp3: any, exp4: any, exp5: any, exp6: any, exp7: any, exp8: any): any {
   let different = false;
 
-  if (exp1 === NO_CHANGE) exp1 = peekBinding();
+  const latestVal1 = exp1 === NO_CHANGE ? peekBinding() : exp1;
   if (bind(exp1) !== NO_CHANGE) different = true;
 
-  if (exp2 === NO_CHANGE) exp2 = peekBinding();
+  const latestVal2 = exp2 === NO_CHANGE ? peekBinding() : exp2;
   if (bind(exp2) !== NO_CHANGE) different = true;
 
-  if (exp3 === NO_CHANGE) exp3 = peekBinding();
+  const latestVal3 = exp3 === NO_CHANGE ? peekBinding() : exp3;
   if (bind(exp3) !== NO_CHANGE) different = true;
 
-  if (exp4 === NO_CHANGE) exp4 = peekBinding();
+  const latestVal4 = exp4 === NO_CHANGE ? peekBinding() : exp4;
   if (bind(exp4) !== NO_CHANGE) different = true;
 
-  if (exp5 === NO_CHANGE) exp5 = peekBinding();
+  const latestVal5 = exp5 === NO_CHANGE ? peekBinding() : exp5;
   if (bind(exp5) !== NO_CHANGE) different = true;
 
-  if (exp6 === NO_CHANGE) exp6 = peekBinding();
+  const latestVal6 = exp6 === NO_CHANGE ? peekBinding() : exp6;
   if (bind(exp6) !== NO_CHANGE) different = true;
 
-  if (exp7 === NO_CHANGE) exp7 = peekBinding();
+  const latestVal7 = exp7 === NO_CHANGE ? peekBinding() : exp7;
   if (bind(exp7) !== NO_CHANGE) different = true;
 
-  if (exp8 === NO_CHANGE) exp8 = peekBinding();
+  const latestVal8 = exp8 === NO_CHANGE ? peekBinding() : exp8;
   if (bind(exp8) !== NO_CHANGE) different = true;
 
-  return different ? factoryFn(exp1, exp2, exp3, exp4, exp5, exp6, exp7, exp8) : NO_CHANGE;
+  return different ? factoryFn(
+                         latestVal1, latestVal2, latestVal3, latestVal4, latestVal5, latestVal6,
+                         latestVal7, latestVal8) :
+                     NO_CHANGE;
 }
 
 /**

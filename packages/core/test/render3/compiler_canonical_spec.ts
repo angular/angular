@@ -346,7 +346,7 @@ describe('compiler specification', () => {
         @Component({
           selector: 'object-comp',
           template: `
-            <p> {{ config.duration }} </p>
+            <p> {{ config['duration'] }} </p>
             <p> {{ config.animation }} </p>
           `
         })
@@ -366,7 +366,7 @@ describe('compiler specification', () => {
                 r3.T(3);
                 r3.e();
               }
-              r3.t(1, r3.b(ctx.config.duration));
+              r3.t(1, r3.b(ctx.config['duration']));
               r3.t(3, r3.b(ctx.config.animation));
             },
             inputs: {config: 'config'}
