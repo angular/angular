@@ -1,10 +1,14 @@
-import { Component, ElementRef, ViewChild, OnChanges, Input } from '@angular/core';
+import { Component, ElementRef, ViewChild, Input } from '@angular/core';
 import { Logger } from 'app/shared/logger.service';
 import { PrettyPrinter } from './pretty-printer.service';
 import { CopierService } from 'app/shared/copier.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
-const defaultLineNumsCount = 10; // by default, show linenums over this number
+/**
+ * If linenums is not set, this is the default maximum number of lines that
+ * an example can display without line numbers.
+ */
+const DEFAULT_LINE_NUMS_COUNT = 10;
 
 /**
  * Formatted Code Block
@@ -17,13 +21,15 @@ const defaultLineNumsCount = 10; // by default, show linenums over this number
  *
  * ```
  * <aio-code
- *   [code]="variableContainingCode"
  *   [language]="ts"
  *   [linenums]="true"
  *   [path]="router/src/app/app.module.ts"
  *   [region]="animations-module">
  * </aio-code>
  * ```
+ *
+ *
+ * Renders code provided through the `updateCode` method.
  */
 @Component({
   selector: 'aio-code',
@@ -39,64 +45,42 @@ const defaultLineNumsCount = 10; // by default, show linenums over this number
     </pre>
     `
 })
-export class CodeComponent implements OnChanges {
-
+export class CodeComponent {
   ariaLabel = '';
 
-  /**
-   * The code to be formatted, this should already be HTML encoded
-   */
-  @Input()
-  code: string;
-
-  /**
-   * The code to be copied when clicking the copy button, this should not be HTML encoded
-   */
+  /** The code to be copied when clicking the copy button, this should not be HTML encoded */
   private codeText: string;
 
-  /**
-   * set to true if the copy button is not to be shown
-   */
-  @Input()
-  hideCopy: boolean;
+  /** Whether the copy button should be shown. */
+  @Input() hideCopy: boolean;
 
-  /**
-   * The language of the code to render
-   * (could be javascript, dart, typescript, etc)
-   */
-  @Input()
-  language: string;
+  /** Language to render the code (e.g. javascript, dart, typescript). */
+  @Input() language: string;
 
   /**
    * Whether to display line numbers:
-   *  - false: don't display
-   *  - true: do display
-   *  - number: do display but start at the given number
+   *  - If false: hide
+   *  - If true: show
+   *  - If number: show but start at that number
    */
-  @Input()
-  linenums: boolean | number | string;
+  @Input() linenums: boolean | number | string;
 
-  /**
-   * path to the source of the code being displayed
-   */
-  @Input()
-  path: string;
+  /** Path to the source of the code. */
+  @Input() path: string;
 
-  /**
-   * region of the source of the code being displayed
-   */
-  @Input()
-  region: string;
+  /** Region of the source of the code being displayed. */
+  @Input() region: string;
 
-  /**
-   * title for this snippet (optional)
-   */
+  /** Optional title to be displayed above the code. */
   @Input()
-  title: string;
+  set title(title: string) {
+    this._title = title;
+    this.ariaLabel = this.title ? `Copy code snippet from ${this.title}` : '';
+  }
+  get title(): string { return this._title; }
+  private _title: string;
 
-  /**
-   * The element in the template that will display the formatted code
-   */
+  /** The element in the template that will display the formatted code. */
   @ViewChild('codeContainer') codeContainer: ElementRef;
 
   constructor(
@@ -105,33 +89,37 @@ export class CodeComponent implements OnChanges {
     private copier: CopierService,
     private logger: Logger) {}
 
-  ngOnChanges() {
-    this.code = this.code && leftAlign(this.code);
-    this.ariaLabel = this.title ? `Copy code snippet from ${this.title}` : '';
-
-    if (!this.code) {
-      const src = this.path ? this.path + (this.region ? '#' + this.region : '') : '';
-      const srcMsg = src ? ` for\n${src}` : '.';
-      this.setCodeHtml(`<p class="code-missing">The code sample is missing${srcMsg}</p>`);
+  updateCode(code: string) {
+    if (!code || !code.trim()) {
+      this.showMissingCodeMessage();
       return;
     }
 
-    const linenums = this.getLinenums();
-
-    this.setCodeHtml(this.code); // start with unformatted code
+    code = leftAlign(code);
+    this.setCodeHtml(code); // start with unformatted code
     this.codeText = this.getCodeText(); // store the unformatted code as text (for copying)
-    this.pretty.formatCode(this.code, this.language, linenums).subscribe(
-      formattedCode => this.setCodeHtml(formattedCode),
-      err => { /* ignore failure to format */ }
+
+    this.pretty.formatCode(code, this.language, this.getLinenums(code)).subscribe(
+        formattedCode => this.setCodeHtml(formattedCode),
+        err => { /* ignore failure to format */ }
     );
   }
 
+  /** Sets the message showing that the code could not be found. */
+  private showMissingCodeMessage() {
+    const src = this.path ? this.path + (this.region ? '#' + this.region : '') : '';
+    const srcMsg = src ? ` for\n${src}` : '.';
+    this.setCodeHtml(`<p class="code-missing">The code sample is missing${srcMsg}</p>`);
+  }
+
+  /** Sets the innerHTML of the code container to the provided code string. */
   private setCodeHtml(formattedCode: string) {
-    // **Security:** `codeExampleContent` is provided by docs authors and as such its considered to
+    // **Security:** Code example content is provided by docs authors and as such its considered to
     // be safe for innerHTML purposes.
     this.codeContainer.nativeElement.innerHTML = formattedCode;
   }
 
+  /** Gets the textContent of the displayed code element. */
   private getCodeText() {
     // `prettify` may remove newlines, e.g. when `linenums` are on. Retrieve the content of the
     // container as text, before prettifying it.
@@ -139,24 +127,22 @@ export class CodeComponent implements OnChanges {
     return this.codeContainer.nativeElement.textContent;
   }
 
+  /** Copies the code snippet to the user's clipboard. */
   doCopy() {
     const code = this.codeText;
-    if (this.copier.copyText(code)) {
+    const successfullyCopied = this.copier.copyText(code);
+
+    if (successfullyCopied) {
       this.logger.log('Copied code to clipboard:', code);
-      // success snackbar alert
-      this.snackbar.open('Code Copied', '', {
-        duration: 800,
-      });
+      this.snackbar.open('Code Copied', '', { duration: 800 });
     } else {
       this.logger.error('ERROR copying code to clipboard:', code);
-      // failure snackbar alert
-      this.snackbar.open('Copy failed. Please try again!', '', {
-        duration: 800,
-      });
+      this.snackbar.open('Copy failed. Please try again!', '', { duration: 800 });
     }
   }
 
-  getLinenums() {
+  /** Gets the calculated value of linenums (boolean/number). */
+  getLinenums(code: string) {
     const linenums =
       typeof this.linenums === 'boolean' ? this.linenums :
       this.linenums === 'true' ? true :
@@ -165,13 +151,14 @@ export class CodeComponent implements OnChanges {
       this.linenums;
 
     // if no linenums, enable line numbers if more than one line
-    return linenums == null || linenums === NaN ?
-      (this.code.match(/\n/g) || []).length > defaultLineNumsCount : linenums;
+    return linenums == null || isNaN(linenums as number) ?
+        (code.match(/\n/g) || []).length > DEFAULT_LINE_NUMS_COUNT : linenums;
   }
 }
 
-function leftAlign(text: string) {
+function leftAlign(text: string): string {
   let indent = Number.MAX_VALUE;
+
   const lines = text.split('\n');
   lines.forEach(line => {
     const lineIndent = line.search(/\S/);
@@ -179,5 +166,6 @@ function leftAlign(text: string) {
       indent = Math.min(lineIndent, indent);
     }
   });
+
   return lines.map(line => line.substr(indent)).join('\n').trim();
 }

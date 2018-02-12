@@ -16,7 +16,6 @@ import { AppModule } from './app.module';
 import { DocumentService } from 'app/documents/document.service';
 import { DocViewerComponent } from 'app/layout/doc-viewer/doc-viewer.component';
 import { Deployment } from 'app/shared/deployment.service';
-import { EmbedComponentsService } from 'app/embed-components/embed-components.service';
 import { GaService } from 'app/shared/ga.service';
 import { LocationService } from 'app/shared/location.service';
 import { Logger } from 'app/shared/logger.service';
@@ -1280,7 +1279,6 @@ function createTestingModule(initialUrl: string, mode: string = 'stable') {
     imports: [ AppModule ],
     providers: [
       { provide: APP_BASE_HREF, useValue: '/' },
-      { provide: EmbedComponentsService, useClass: TestEmbedComponentsService },
       { provide: GaService, useClass: TestGaService },
       { provide: HttpClient, useClass: TestHttpClient },
       { provide: LocationService, useFactory: () => mockLocationService },
@@ -1293,10 +1291,6 @@ function createTestingModule(initialUrl: string, mode: string = 'stable') {
       }},
     ]
   });
-}
-
-class TestEmbedComponentsService {
-  embedInto = jasmine.createSpy('embedInto').and.returnValue(of([]));
 }
 
 class TestGaService {
