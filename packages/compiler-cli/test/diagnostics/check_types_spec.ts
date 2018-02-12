@@ -620,12 +620,12 @@ describe('ng type checker', () => {
     });
   });
 
-  describe('regressions ', () => {
+  describe('core', () => {
     const a = (files: MockFiles, options: ng.AngularCompilerOptions = {}) => {
       accept(files, {fullTemplateTypeCheck: true, ...options});
     };
 
-    // #19905
+    // Regression #19905
     it('should accept an event binding', () => {
       a({
         'src/app.component.ts': '',
@@ -649,6 +649,38 @@ describe('ng type checker', () => {
 
         @NgModule({
           declarations: [MainComp, SomeDirective],
+        })
+        export class MainModule {}`
+      });
+    });
+  });
+
+  describe('common', () => {
+    const a = (files: MockFiles, options: ng.AngularCompilerOptions = {}) => {
+      accept(files, {fullTemplateTypeCheck: true, ...options});
+    };
+
+    // Regression #19905
+    it('should accept a |undefined or |null parameter for async_pipe', () => {
+      a({
+        'src/app.component.ts': '',
+        'src/lib.ts': '',
+        'src/app.module.ts': `
+        import {NgModule, Component} from '@angular/core';
+        import {CommonModule} from '@angular/common';
+
+        @Component({
+          selector: 'comp',
+          template: '<div>{{ name | async}}</div>'
+        })
+        export class MainComp {
+          name: Promise<string>|undefined;
+        }
+
+
+        @NgModule({
+          declarations: [MainComp],
+          imports: [CommonModule]
         })
         export class MainModule {}`
       });
