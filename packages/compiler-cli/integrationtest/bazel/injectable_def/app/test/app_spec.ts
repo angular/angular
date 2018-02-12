@@ -10,6 +10,7 @@ import {enableProdMode} from '@angular/core';
 import {renderModuleFactory} from '@angular/platform-server';
 import {BasicAppModuleNgFactory} from 'app_built/src/basic.ngfactory';
 import {HierarchyAppModuleNgFactory} from 'app_built/src/hierarchy.ngfactory';
+import {RootAppModuleNgFactory} from 'app_built/src/root.ngfactory';
 import {SelfAppModuleNgFactory} from 'app_built/src/self.ngfactory';
 import {TokenAppModuleNgFactory} from 'app_built/src/token.ngfactory';
 
@@ -52,6 +53,16 @@ describe('ngInjectableDef Bazel Integration', () => {
       url: '/',
     }).then(html => {
       expect(html).toMatch(/>fromToken<\//);
+      done();
+    });
+  });
+
+  it('APP_ROOT_SCOPE works', done => {
+    renderModuleFactory(RootAppModuleNgFactory, {
+      document: '<root-app></root-app>',
+      url: '/',
+    }).then(html => {
+      expect(html).toMatch(/>true:false<\//);
       done();
     });
   });

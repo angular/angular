@@ -97,7 +97,7 @@ function makeProviders(classes: any[], modules: any[]): NgModuleDefinition {
                   }));
   const providersByKey: {[key: string]: NgModuleProviderDef} = {};
   providers.forEach(provider => providersByKey[tokenKey(provider.token)] = provider);
-  return {factory: null, providers, providersByKey, modules};
+  return {factory: null, providers, providersByKey, modules, isRoot: true};
 }
 
 describe('NgModuleRef_ injector', () => {

@@ -8,6 +8,7 @@
 
 import {resolveForwardRef} from '../di/forward_ref';
 import {InjectFlags, Injector, setCurrentInjector} from '../di/injector';
+import {APP_ROOT_SCOPE} from '../di/scope';
 import {NgModuleRef} from '../linker/ng_module_factory';
 import {stringify} from '../util';
 
@@ -43,8 +44,12 @@ export function moduleProvideDef(
 export function moduleDef(providers: NgModuleProviderDef[]): NgModuleDefinition {
   const providersByKey: {[key: string]: NgModuleProviderDef} = {};
   const modules = [];
+  let isRoot: boolean = false;
   for (let i = 0; i < providers.length; i++) {
     const provider = providers[i];
+    if (provider.token === APP_ROOT_SCOPE) {
+      isRoot = true;
+    }
     if (provider.flags & NodeFlags.TypeNgModule) {
       modules.push(provider.token);
     }
@@ -57,6 +62,7 @@ export function moduleDef(providers: NgModuleProviderDef[]): NgModuleDefinition 
     providersByKey,
     providers,
     modules,
+    isRoot,
   };
 }
 
@@ -119,8 +125,13 @@ export function resolveNgModuleDep(
   return data._parent.get(depDef.token, notFoundValue);
 }
 
+function moduleTransitivelyPresent(ngModule: NgModuleData, scope: any): boolean {
+  return ngModule._def.modules.indexOf(scope) > -1;
+}
+
 function targetsModule(ngModule: NgModuleData, def: InjectableDef): boolean {
-  return def.scope != null && ngModule._def.modules.indexOf(def.scope) > -1;
+  return def.scope != null && (moduleTransitivelyPresent(ngModule, def.scope) ||
+                               def.scope === APP_ROOT_SCOPE && ngModule._def.isRoot);
 }
 
 function _createProviderInstance(ngModule: NgModuleData, providerDef: NgModuleProviderDef): any {
