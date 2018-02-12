@@ -1,0 +1,20 @@
+@media print {
+  mat-sidenav, mat-toolbar, footer, .copy-button, .toc-container {
+    display: none !important;
+  }
+
+  mat-sidenav-container {
+    max-width: 100% !important;
+  }
+
+  .sidenav-content, mat-sidenav-content {
+    padding-top: 0;
+    width: 100% !important;
+    margin-left: 0 !important;
+    padding-left: 0 !important;
+  }
+
+  h1, h2, h3, h4, h5 {
+    page-break-after: avoid;
+  }
+}
