@@ -376,7 +376,7 @@ describe('compiler specification', () => {
         @Component({
           selector: 'my-app',
           template: `
-          <object-comp [config]="{duration: 500, animation: name}"></object-comp>
+          <object-comp [config]="{'duration': 500, animation: name}"></object-comp>
         `
         })
         class MyApp {
@@ -401,7 +401,7 @@ describe('compiler specification', () => {
         }
 
         // NORMATIVE
-        const e0_ff = (v: any) => { return {duration: 500, animation: v}; };
+        const e0_ff = (v: any) => { return {'duration': 500, animation: v}; };
         // /NORMATIVE
 
         expect(renderComp(MyApp)).toEqual(`<object-comp><p>500</p><p>slide</p></object-comp>`);
