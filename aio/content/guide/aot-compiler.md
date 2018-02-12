@@ -92,7 +92,7 @@ You can control your app compilation by providing template compiler options in t
   },
   "angularCompilerOptions": {
     "fullTemplateTypeCheck": true,
-    "preserveWhiteSpaces": false,
+    "preserveWhitespaces": false,
     ...
   }
 }
