@@ -8,7 +8,7 @@
 
 import {ApplicationRef} from '../application_ref';
 import {ChangeDetectorRef} from '../change_detection/change_detection';
-import {Injector} from '../di/injector';
+import {InjectFlags, Injector} from '../di/injector';
 import {ComponentFactory, ComponentRef} from '../linker/component_factory';
 import {ComponentFactoryBoundToModule, ComponentFactoryResolver} from '../linker/component_factory_resolver';
 import {ElementRef} from '../linker/element_ref';
@@ -480,6 +480,8 @@ class NgModuleRef_ implements NgModuleData, InternalNgModuleRef<any> {
   private _destroyed: boolean = false;
   /** @internal */
   _providers: any[];
+  /** @internal */
+  _modules: any[];
 
   readonly injector: Injector = this;
 
@@ -489,9 +491,16 @@ class NgModuleRef_ implements NgModuleData, InternalNgModuleRef<any> {
     initNgModule(this);
   }
 
-  get(token: any, notFoundValue: any = Injector.THROW_IF_NOT_FOUND): any {
+  get(token: any, notFoundValue: any = Injector.THROW_IF_NOT_FOUND,
+      injectFlags: InjectFlags = InjectFlags.Default): any {
+    let flags = DepFlags.None;
+    if (injectFlags & InjectFlags.SkipSelf) {
+      flags |= DepFlags.SkipSelf;
+    } else if (injectFlags & InjectFlags.Self) {
+      flags |= DepFlags.Self;
+    }
     return resolveNgModuleDep(
-        this, {token: token, tokenKey: tokenKey(token), flags: DepFlags.None}, notFoundValue);
+        this, {token: token, tokenKey: tokenKey(token), flags: flags}, notFoundValue);
   }
 
   get instance() { return this.get(this._moduleType); }

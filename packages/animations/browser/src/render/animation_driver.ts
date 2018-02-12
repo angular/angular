@@ -6,12 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {AnimationPlayer, NoopAnimationPlayer} from '@angular/animations';
+import {Injectable} from '@angular/core';
 
 import {containsElement, invokeQuery, matchesElement, validateStyleProperty} from './shared';
 
 /**
  * @experimental
  */
+@Injectable()
 export class NoopAnimationDriver implements AnimationDriver {
   validateStyleProperty(prop: string): boolean { return validateStyleProperty(prop); }
 
