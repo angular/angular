@@ -10,6 +10,7 @@
 export {COMPILER_OPTIONS, Compiler, CompilerFactory, CompilerOptions, ModuleWithComponentFactories} from './linker/compiler';
 export {ComponentFactory, ComponentRef} from './linker/component_factory';
 export {ComponentFactoryResolver} from './linker/component_factory_resolver';
+export {ComponentLifecycle} from './linker/component_lifecycle';
 export {ElementRef} from './linker/element_ref';
 export {NgModuleFactory, NgModuleRef} from './linker/ng_module_factory';
 export {NgModuleFactoryLoader, getModuleFactory} from './linker/ng_module_factory_loader';

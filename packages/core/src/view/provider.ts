@@ -8,6 +8,7 @@
 
 import {ChangeDetectorRef, SimpleChange, SimpleChanges, WrappedValue} from '../change_detection/change_detection';
 import {Injector, resolveForwardRef} from '../di';
+import {ComponentLifecycle} from '../linker/component_lifecycle';
 import {ElementRef} from '../linker/element_ref';
 import {TemplateRef} from '../linker/template_ref';
 import {ViewContainerRef} from '../linker/view_container_ref';
@@ -24,6 +25,7 @@ const ViewContainerRefTokenKey = tokenKey(ViewContainerRef);
 const TemplateRefTokenKey = tokenKey(TemplateRef);
 const ChangeDetectorRefTokenKey = tokenKey(ChangeDetectorRef);
 const InjectorRefTokenKey = tokenKey(Injector);
+const ComponentLifecycleTokenKey = tokenKey(ComponentLifecycle);
 
 export function directiveDef(
     checkIndex: number, flags: NodeFlags,
@@ -197,10 +199,17 @@ export function checkAndUpdateDirectiveInline(
   }
   if (changes) {
     directive.ngOnChanges(changes);
+    if (view.lifecycle) {
+      view.lifecycle.onChanges.next(changes);
+    }
   }
-  if ((def.flags & NodeFlags.OnInit) &&
-      shouldCallLifecycleInitHook(view, ViewState.InitState_CallingOnInit, def.nodeIndex)) {
-    directive.ngOnInit();
+  if (shouldCallLifecycleInitHook(view, ViewState.InitState_CallingOnInit, def.nodeIndex)) {
+    if ((def.flags & NodeFlags.OnInit)) {
+      directive.ngOnInit();
+    }
+    if (view.lifecycle) {
+      view.lifecycle.onInit.next();
+    }
   }
   if (def.flags & NodeFlags.DoCheck) {
     directive.ngDoCheck();
@@ -222,10 +231,17 @@ export function checkAndUpdateDirectiveDynamic(
   }
   if (changes) {
     directive.ngOnChanges(changes);
+    if (view.lifecycle) {
+      view.lifecycle.onChanges.next(changes);
+    }
   }
-  if ((def.flags & NodeFlags.OnInit) &&
-      shouldCallLifecycleInitHook(view, ViewState.InitState_CallingOnInit, def.nodeIndex)) {
-    directive.ngOnInit();
+  if (shouldCallLifecycleInitHook(view, ViewState.InitState_CallingOnInit, def.nodeIndex)) {
+    if ((def.flags & NodeFlags.OnInit)) {
+      directive.ngOnInit();
+    }
+    if (view.lifecycle) {
+      view.lifecycle.onInit.next();
+    }
   }
   if (def.flags & NodeFlags.DoCheck) {
     directive.ngDoCheck();
@@ -373,6 +389,9 @@ export function resolveDep(
         }
         case InjectorRefTokenKey:
           return createInjector(view, elDef);
+        case ComponentLifecycleTokenKey:
+          const compView = findCompView(view, elDef, allowPrivateServices);
+          return compView.lifecycle;
         default:
           const providerDef =
               (allowPrivateServices ? elDef.element !.allProviders :
@@ -544,18 +563,33 @@ function callProviderLifecycles(
   if (lifecycles & NodeFlags.AfterContentInit &&
       shouldCallLifecycleInitHook(view, ViewState.InitState_CallingAfterContentInit, initIndex)) {
     provider.ngAfterContentInit();
+    if (view.lifecycle) {
+      view.lifecycle.afterContentInit.next();
+    }
   }
   if (lifecycles & NodeFlags.AfterContentChecked) {
     provider.ngAfterContentChecked();
+    if (view.lifecycle) {
+      view.lifecycle.afterContentChecked.next();
+    }
   }
   if (lifecycles & NodeFlags.AfterViewInit &&
       shouldCallLifecycleInitHook(view, ViewState.InitState_CallingAfterViewInit, initIndex)) {
     provider.ngAfterViewInit();
+    if (view.lifecycle) {
+      view.lifecycle.afterViewInit.next();
+    }
   }
   if (lifecycles & NodeFlags.AfterViewChecked) {
     provider.ngAfterViewChecked();
+    if (view.lifecycle) {
+      view.lifecycle.afterViewChecked.next();
+    }
   }
   if (lifecycles & NodeFlags.OnDestroy) {
     provider.ngOnDestroy();
+    if (view.lifecycle) {
+      view.lifecycle.onDestroy.next();
+    }
   }
 }

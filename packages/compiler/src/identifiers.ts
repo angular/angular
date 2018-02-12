@@ -28,6 +28,7 @@ export class Identifiers {
   };
   static QueryList: o.ExternalReference = {name: 'QueryList', moduleName: CORE};
   static TemplateRef: o.ExternalReference = {name: 'TemplateRef', moduleName: CORE};
+  static ComponentLifecycle: o.ExternalReference = {name: 'ComponentLifecycle', moduleName: CORE};
   static CodegenComponentFactoryResolver: o.ExternalReference = {
     name: 'ɵCodegenComponentFactoryResolver',
     moduleName: CORE,
