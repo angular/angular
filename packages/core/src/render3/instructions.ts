@@ -1773,7 +1773,7 @@ export function assertPreviousIsParent() {
 }
 
 function assertHasParent() {
-  assertNotNull(previousOrParentNode, 'should have a parent');
+  assertNotNull(previousOrParentNode.parent, 'previousOrParentNode should have a parent');
 }
 
 function assertDataInRange(index: number, arr?: any[]) {
