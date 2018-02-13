@@ -29,19 +29,23 @@ publishPackage() {
   packageName=${1}
   packageRepo=${2}
 
-  buildDir="dist/releases/${packageName}"
+  buildDir="$(pwd)/dist/releases/${packageName}"
   buildVersion=$(node -pe "require('./package.json').version")
+  branchName=${TRAVIS_BRANCH:-'master'}
 
   commitSha=$(git rev-parse --short HEAD)
   commitAuthorName=$(git --no-pager show -s --format='%an' HEAD)
   commitAuthorEmail=$(git --no-pager show -s --format='%ae' HEAD)
   commitMessage=$(git log --oneline -n 1)
-  commitTag="${buildVersion}-${commitSha}"
+
+  buildVersionName="${buildVersion}-${commitSha}"
+  buildTagName="${branchName}-${commitSha}"
+  buildCommitMessage="${branchName} - ${commitMessage}"
 
   repoUrl="https://github.com/angular/${packageRepo}.git"
   repoDir="tmp/${packageRepo}"
 
-  echo "Starting publish process of ${packageName} for ${commitTag}.."
+  echo "Starting publish process of ${packageName} for ${buildVersionName} into ${branchName}.."
 
   if [[ ! ${COMMAND_ARGS} == *--no-build* ]]; then
     # Create a release of the current repository.
@@ -59,18 +63,27 @@ publishPackage() {
 
   echo "Successfully cloned ${repoUrl} into ${repoDir}."
 
-  # Copy the build files to the repository
-  rm -rf ${repoDir}/*
-  cp -r ${buildDir}/* ${repoDir}
-
-  echo "Removed everything from ${packageRepo} and added the new build output."
-
   # Create the build commit and push the changes to the repository.
   cd ${repoDir}
 
   echo "Switched into the repository directory (${repoDir})."
 
-  if [[ $(git ls-remote origin "refs/tags/${commitTag}") ]]; then
+  if [[ $(git ls-remote --heads origin ${branchName}) ]]; then
+    git checkout ${branchName}
+    echo "Switched to ${branchName} branch."
+  else
+    echo "Branch ${branchName} does not exist on ${packageRepo} yet. Creating ${branchName}.."
+    git checkout -b ${branchName}
+    echo "Branch created and checked out."
+  fi
+
+  # Copy the build files to the repository
+  rm -rf ./*
+  cp -r ${buildDir}/* ./
+
+  echo "Removed everything from ${packageRepo}#${branchName} and added the new build output."
+
+  if [[ $(git ls-remote origin "refs/tags/${buildTagName}") ]]; then
     echo "Skipping publish because tag is already published"
     exit 0
   fi
@@ -78,7 +91,7 @@ publishPackage() {
   # Replace the version in every file recursively with a more specific version that also includes
   # the SHA of the current build job. Normally this "sed" call would just replace the version
   # placeholder, but the version placeholders have been replaced by the release task already.
-  sed -i "s/${buildVersion}/${commitTag}/g" $(find . -type f -not -path '*\/.*')
+  sed -i "s/${buildVersion}/${buildVersionName}/g" $(find . -type f -not -path '*\/.*')
 
   echo "Updated the build version in every file to include the SHA of the latest commit."
 
@@ -92,11 +105,11 @@ publishPackage() {
   echo "Git configuration has been updated to match the last commit author. Publishing now.."
 
   git add -A
-  git commit --allow-empty -m "${commitMessage}"
-  git tag "${commitTag}"
-  git push origin master --tags
+  git commit --allow-empty -m "${buildCommitMessage}"
+  git tag "${buildTagName}"
+  git push origin ${branchName} --tags
 
-  echo "Published package artifacts for ${packageName}#${commitSha}."
+  echo "Published package artifacts for ${packageName}#${buildVersionName} into ${branchName}"
 }
 
 for ((i = 0; i < ${#PACKAGES[@]}; i++)); do
