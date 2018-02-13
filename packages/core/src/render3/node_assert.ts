@@ -10,12 +10,12 @@ import {assertEqual, assertNotNull} from './assert';
 import {LNode, LNodeFlags} from './interfaces/node';
 
 export function assertNodeType(node: LNode, type: LNodeFlags) {
-  assertNotNull(node, 'should have a node');
+  assertNotNull(node, 'should be called with a node');
   assertEqual(node.flags & LNodeFlags.TYPE_MASK, type, `should be a ${typeName(type)}`);
 }
 
 export function assertNodeOfPossibleTypes(node: LNode, ...types: LNodeFlags[]) {
-  assertNotNull(node, 'should have a node');
+  assertNotNull(node, 'should be called with a node');
   const nodeType = node.flags & LNodeFlags.TYPE_MASK;
   const found = types.some(type => nodeType === type);
   assertEqual(found, true, `Should be one of ${types.map(typeName).join(', ')}`);

@@ -233,7 +233,7 @@ export function createLNode(
   if ((type & LNodeFlags.ViewOrElement) === LNodeFlags.ViewOrElement && isState) {
     // Bit of a hack to bust through the readonly because there is a circular dep between
     // LView and LNode.
-    ngDevMode && assertNull((state as LView).node, 'should not have been initialized');
+    ngDevMode && assertNull((state as LView).node, 'LView.node should not have been initialized');
     (state as LView as{node: LNode}).node = node;
   }
   if (index != null) {
@@ -254,13 +254,17 @@ export function createLNode(
       if (previousOrParentNode.view === currentView ||
           (previousOrParentNode.flags & LNodeFlags.TYPE_MASK) === LNodeFlags.View) {
         // We are in the same view, which means we are adding content node to the parent View.
-        ngDevMode && assertNull(previousOrParentNode.child, 'previousNode.child');
+        ngDevMode && assertNull(
+                         previousOrParentNode.child,
+                         `previousOrParentNode's child should not have been set.`);
         previousOrParentNode.child = node;
       } else {
         // We are adding component view, so we don't link parent node child to this node.
       }
     } else if (previousOrParentNode) {
-      ngDevMode && assertNull(previousOrParentNode.next, 'previousNode.next');
+      ngDevMode && assertNull(
+                       previousOrParentNode.next,
+                       `previousOrParentNode's next property should not have been set.`);
       previousOrParentNode.next = node;
     }
   }
@@ -300,7 +304,7 @@ export function renderTemplate<T>(
             -1, providedRendererFactory.createRenderer(null, null), getOrCreateTView(template)));
   }
   const hostView = host.data !;
-  ngDevMode && assertNotNull(hostView, 'should be the lview of the component');
+  ngDevMode && assertNotNull(hostView, 'Host node should have an LView defined in host.data.');
   renderComponentOrTemplate(host, hostView, context, template);
   return host;
 }
@@ -868,8 +872,7 @@ export function directiveCreate<T>(
     index: number, directive: T, directiveDef: DirectiveDef<T>, queryName?: string | null): T {
   let instance;
   ngDevMode &&
-      assertNull(
-          currentView.bindingStartIndex, 'directive nodes should be created before any bindings');
+      assertNull(currentView.bindingStartIndex, 'directives should be created before any bindings');
   ngDevMode && assertPreviousIsParent();
   let flags = previousOrParentNode !.flags;
   let size = flags & LNodeFlags.SIZE_MASK;
@@ -1045,7 +1048,7 @@ export function containerRefreshStart(index: number): void {
   (previousOrParentNode as LContainerNode).data.nextIndex = 0;
   ngDevMode && assertSame(
                    (previousOrParentNode as LContainerNode).native, undefined,
-                   'The first native node should not be initialized yet');
+                   `the container's native element should not have been set yet.`);
 
   // We need to execute init hooks here so ngOnInit hooks are called in top level views
   // before they are called in embedded views (for backwards compatibility).
@@ -1187,11 +1190,11 @@ export function componentRefresh<T>(directiveIndex: number, elementIndex: number
     ngDevMode && assertDataInRange(elementIndex);
     const element = data ![elementIndex] as LElementNode;
     ngDevMode && assertNodeType(element, LNodeFlags.Element);
-    ngDevMode && assertNotNull(element.data, 'components shuold have a lview');
+    ngDevMode &&
+        assertNotNull(element.data, `Component's host node should have an LView attached.`);
     ngDevMode && assertDataInRange(directiveIndex);
     const directive = getDirectiveInstance<T>(data[directiveIndex]);
     const hostView = element.data !;
-    ngDevMode && assertNotNull(hostView, 'a component should have a lview');
     const oldView = enterView(hostView, element);
     try {
       template(directive, creationMode);
