@@ -12,7 +12,7 @@ import { createNgElementConstructor } from '@angular/elements';
   providers: [
     ElementsLoader,
     { provide: NgModuleFactoryLoader, useClass: SystemJsNgModuleLoader },
-    { provide: ELEMENT_MODULE_PATHS_TOKEN, useValue: ELEMENT_MODULE_PATHS},
+    { provide: ELEMENT_MODULE_PATHS_TOKEN, useValue: ELEMENT_MODULE_PATHS },
 
     // This could be used directly by the ElementsLoader but it is injected so that it can
     // be faked in tests.
