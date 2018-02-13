@@ -1,8 +1,8 @@
 package(default_visibility = ["//visibility:public"])
 
-load("//tools:defaults.bzl", "ts_library")
+load("//tools:defaults.bzl", "ng_module")
 
-ts_library(
+ng_module(
     name = "browser",
     srcs = glob(
         [

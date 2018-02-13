@@ -10,12 +10,8 @@ ts_library(
     ],
     tsconfig = ":tsconfig.json",
     deps = [
-        # BEGIN-INTERNAL
-        # Only needed when compiling within the Angular repo.
-        # Users will get this dependency from node_modules.
-        "//packages/compiler-cli",
-        # END-INTERNAL
         "//packages/bazel/src/ngc-wrapped:ngc_lib",
+        "//packages/compiler-cli",
     ],
 )
 
