@@ -56,7 +56,7 @@ let previousOrParentNode: LNode;
 
 /**
  * If `isParent` is:
-*  - `true`: then `previousOrParentNode` points to a parent node.
+ *  - `true`: then `previousOrParentNode` points to a parent node.
  *  - `false`: then `previousOrParentNode` points to previous node (sibling).
  */
 let isParent: boolean;
@@ -505,7 +505,7 @@ export function createTView(): TView {
 }
 
 function setUpAttributes(native: RElement, attrs: string[]): void {
-  ngDevMode && assertEqual(attrs.length % 2, 0, 'each attribute should a a key and a value');
+  ngDevMode && assertEqual(attrs.length % 2, 0, 'each attribute should have a key and a value');
 
   const isProc = isProceduralRenderer(renderer);
   for (let i = 0; i < attrs.length; i += 2) {
