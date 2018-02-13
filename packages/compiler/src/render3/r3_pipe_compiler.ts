@@ -24,7 +24,7 @@ export function compilePipe(
       {key: 'type', value: outputCtx.importExpr(pipe.type.reference), quoted: false});
 
   // e.g. factory: function MyPipe_Factory() { return new MyPipe(); },
-  const templateFactory = createFactory(pipe.type, outputCtx, reflector);
+  const templateFactory = createFactory(pipe.type, outputCtx, reflector, []);
   definitionMapValues.push({key: 'factory', value: templateFactory, quoted: false});
 
   // e.g. pure: true

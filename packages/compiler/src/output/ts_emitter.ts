@@ -161,8 +161,10 @@ class _TsEmitterVisitor extends AbstractEmitterVisitor implements o.TypeVisitor 
     }
     ctx.print(stmt, ` ${stmt.name}`);
     this._printColonType(stmt.type, ctx);
-    ctx.print(stmt, ` = `);
-    stmt.value.visitExpression(this, ctx);
+    if (stmt.value) {
+      ctx.print(stmt, ` = `);
+      stmt.value.visitExpression(this, ctx);
+    }
     ctx.println(stmt, `;`);
     return null;
   }
