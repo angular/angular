@@ -52,7 +52,7 @@ export class ElementsLoader {
       const elementModuleRef = elementModuleFactory.create(injector);
       const componentFactory = this.getElementComponentFactory(elementModuleRef);
 
-      const NgElement = this.createNgElementConstructor(componentFactory, injector);
+      const NgElement = this.createNgElementConstructor(componentFactory, {injector});
       customElements!.define(selector, NgElement);
 
       this.unregisteredElements.delete(selector);

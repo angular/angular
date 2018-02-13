@@ -36,7 +36,7 @@ if (supportsCustomElements()) {
 
             const factory = ref.componentFactoryResolver.resolveComponentFactory(TestComponent);
 
-            c = createNgElementConstructor(factory, ref.injector);
+            c = createNgElementConstructor(factory, {injector: ref.injector});
 
             // The `@webcomponents/custom-elements/src/native-shim.js` polyfill, that we use to
             // enable ES2015 classes transpiled to ES5 constructor functions to be used as Custom
