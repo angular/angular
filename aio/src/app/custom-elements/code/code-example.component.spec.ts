@@ -65,27 +65,27 @@ describe('CodeExampleComponent', () => {
     expect(codeExampleComponentElement.className.indexOf('avoidFile') === -1).toBe(false);
   });
 
-  it('should coerce hideCopy', () => {
-    expect(codeExampleComponent.hideCopy).toBe(false);
+  it('should coerce hidecopy', () => {
+    expect(codeExampleComponent.hidecopy).toBe(false);
 
-    hostComponent.hideCopy = true;
+    hostComponent.hidecopy = true;
     fixture.detectChanges();
-    expect(codeExampleComponent.hideCopy).toBe(true);
+    expect(codeExampleComponent.hidecopy).toBe(true);
 
-    hostComponent.hideCopy = 'false';
+    hostComponent.hidecopy = 'false';
     fixture.detectChanges();
-    expect(codeExampleComponent.hideCopy).toBe(false);
+    expect(codeExampleComponent.hidecopy).toBe(false);
 
-    hostComponent.hideCopy = 'true';
+    hostComponent.hidecopy = 'true';
     fixture.detectChanges();
-    expect(codeExampleComponent.hideCopy).toBe(true);
+    expect(codeExampleComponent.hidecopy).toBe(true);
   });
 });
 
 @Component({
   selector: 'aio-host-comp',
   template: `
-    <code-example [title]="title" [path]="path" [hideCopy]="hideCopy">
+    <code-example [title]="title" [path]="path" [hidecopy]="hidecopy">
       {{code}}
     </code-example>
   `
@@ -94,7 +94,7 @@ class HostComponent {
   code = `const foo = "bar";`;
   title = 'Great Example';
   path = 'code-path';
-  hideCopy: boolean | string = false;
+  hidecopy: boolean | string = false;
 
   @ViewChild(CodeExampleComponent) codeExampleComponent: CodeExampleComponent;
 }

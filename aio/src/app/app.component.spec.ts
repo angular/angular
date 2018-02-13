@@ -7,7 +7,6 @@ import { MatProgressBar, MatSidenav } from '@angular/material';
 import { By } from '@angular/platform-browser';
 
 import { Observable } from 'rxjs/Observable';
-import { of } from 'rxjs/observable/of';
 import { timer } from 'rxjs/observable/timer';
 import 'rxjs/add/operator/mapTo';
 

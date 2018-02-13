@@ -1,12 +1,12 @@
 import { NgModule, NgModuleFactoryLoader, SystemJsNgModuleLoader } from '@angular/core';
 import { ROUTES} from '@angular/router';
-import { ElementsLoader, REGISTER_AS_CUSTOM_ELEMENTS_API } from './elements-loader';
+import { ElementsLoader, CREATE_NG_ELEMENT_CONSTRUCTOR } from './elements-loader';
 import {
   ELEMENT_MODULE_PATHS,
   ELEMENT_MODULE_PATHS_AS_ROUTES,
   ELEMENT_MODULE_PATHS_TOKEN
 } from './element-registry';
-import { registerAsCustomElements } from '@angular/elements';
+import { createNgElementConstructor } from '@angular/elements';
 
 @NgModule({
   providers: [
@@ -16,7 +16,7 @@ import { registerAsCustomElements } from '@angular/elements';
 
     // This could be used directly by the ElementsLoader but it is injected so that it can
     // be faked in tests.
-    { provide: REGISTER_AS_CUSTOM_ELEMENTS_API, useValue: registerAsCustomElements },
+    { provide: CREATE_NG_ELEMENT_CONSTRUCTOR, useValue: createNgElementConstructor },
 
     // Providing these routes as a signal to the build system that these modules should be
     // registered as lazy-loadable.

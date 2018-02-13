@@ -5,6 +5,10 @@ import { InjectionToken, Type } from '@angular/core';
 // that contains custom elements.
 export const ELEMENT_MODULE_PATHS_AS_ROUTES = [
   {
+    selector: 'aio-announcement-bar',
+    loadChildren: './announcement-bar/announcement-bar.module#AnnouncementBarModule'
+  },
+  {
     selector: 'aio-api-list',
     loadChildren: './api/api-list.module#ApiListModule'
   },
@@ -43,8 +47,8 @@ export const ELEMENT_MODULE_PATHS_AS_ROUTES = [
 ];
 
 /** Interface expected to be implemented by all modules that declare custom elements. */
-export interface WithCustomElements {
-  customElements: Type<string>[];
+export interface WithCustomElement {
+  customElement: Type<string>;
 }
 
 /** Injection token to provide the element path modules. */

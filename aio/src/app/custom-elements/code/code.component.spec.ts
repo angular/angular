@@ -38,7 +38,7 @@ describe('CodeComponent', () => {
     delete (window as any)['prettyPrintOne'];
   });
 
-  beforeEach(() => {
+  beforeEach(async(() => {
     TestBed.configureTestingModule({
       imports: [ NoopAnimationsModule, CodeModule ],
       declarations: [ HostComponent ],
@@ -47,8 +47,8 @@ describe('CodeComponent', () => {
         CopierService,
         {provide: Logger, useClass: TestLogger }
      ]
-    });
-  });
+    }).compileComponents();
+  }));
 
   // Must be async because
   // CodeComponent creates PrettyPrintService which async loads `prettify.js`.

@@ -2,16 +2,14 @@ import { NgModule, Type } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
 import { SharedModule } from '../../shared/shared.module';
-import { ApiListComponent } from './api-list.component';
-import { ApiService } from './api.service';
+import { AnnouncementBarComponent } from './announcement-bar.component';
 import { WithCustomElement } from '../element-registry';
 
 @NgModule({
   imports: [ CommonModule, SharedModule, HttpClientModule ],
-  declarations: [ ApiListComponent ],
-  entryComponents: [ ApiListComponent ],
-  providers: [ ApiService ]
+  declarations: [ AnnouncementBarComponent ],
+  entryComponents: [ AnnouncementBarComponent ],
 })
-export class ApiListModule implements WithCustomElement {
-  customElement: Type<any> = ApiListComponent;
+export class AnnouncementBarModule implements WithCustomElement {
+  customElement: Type<any> = AnnouncementBarComponent;
 }

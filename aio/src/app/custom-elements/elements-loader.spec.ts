@@ -1,47 +1,64 @@
-import { NgModuleFactoryLoader, Type } from '@angular/core';
-import { TestBed, fakeAsync, tick } from '@angular/core/testing';
+import {
+  ComponentFactory,
+  ComponentFactoryResolver, ComponentRef, Injector, NgModuleFactory, NgModuleFactoryLoader,
+  NgModuleRef,
+  Type
+} from '@angular/core';
+import {TestBed, fakeAsync, tick} from '@angular/core/testing';
 
-import { ElementsLoader, REGISTER_AS_CUSTOM_ELEMENTS_API } from './elements-loader';
-import { ELEMENT_MODULE_PATHS_TOKEN, WithCustomElements } from './element-registry';
+import { ElementsLoader, CREATE_NG_ELEMENT_CONSTRUCTOR } from './elements-loader';
+import { ELEMENT_MODULE_PATHS_TOKEN, WithCustomElement } from './element-registry';
 
-const FAKE_MODULE_PATHS = new Map([
-  ['element-a-selector', 'element-a-module-path']
+const actualCustomElements = window.customElements;
+
+class FakeComponentFactory extends ComponentFactory<any> {
+  selector: string;
+  componentType: Type<any>;
+  ngContentSelectors: string[];
+  inputs = [];
+  outputs = [];
+
+  create(injector: Injector,
+         projectableNodes?: any[][],
+         rootSelectorOrNode?: string | any,
+         ngModule?: NgModuleRef<any>): ComponentRef<string> {
+    return jasmine.createSpyObj('ComponentRef', ['methods']);
+  };
+}
+
+const FAKE_COMPONENT_FACTORIES = new Map([
+  ['element-a-module-path', new FakeComponentFactory()]
 ]);
 
 describe('ElementsLoader', () => {
   let elementsLoader: ElementsLoader;
 
-  let fakeModuleFactoryLoader;
-  let fakeModuleFactory;
-  let fakeModuleRef;
-  let fakeModule;
+  let fakeCreateNgElementConstructor;
+  let injectedModuleRef: NgModuleRef<any>;
 
-  let fakeRegisterAsCustomElements;
+  // ElementsLoader uses the window's customElements API. Provide a fake for this test.
+  beforeEach(() => {
+    window.customElements = jasmine.createSpyObj('customElements', ['define']);
+  });
+  afterEach(() => {
+    window.customElements = actualCustomElements;
+  });
 
   beforeEach(() => {
-    fakeModuleFactory = jasmine.createSpyObj('module', ['create']);
-    fakeModuleFactoryLoader = new FakeModuleLoader();
-
-    fakeModuleRef = jasmine.createSpyObj('moduleRef', ['instance']);
-    fakeModule = new FakeModule();
-    fakeModuleRef.instance = fakeModule;
-
-    fakeRegisterAsCustomElements = jasmine.createSpy('registerAsCustomElements');
-
-    // Setup stubs for the fakes - should end up with a module containing a component to register.
-    fakeModuleFactoryLoader.load.and.returnValue(Promise.resolve(fakeModuleFactory));
-    fakeModuleFactory.create.and.returnValue(fakeModuleRef);
-    fakeModule.customElements = [FakeElementAComponent];
+    fakeCreateNgElementConstructor = jasmine.createSpy('createNgElementConstructor');
 
     const injector = TestBed.configureTestingModule({
       providers: [
         ElementsLoader,
-        { provide: NgModuleFactoryLoader, useValue: fakeModuleFactoryLoader },
-        { provide: ELEMENT_MODULE_PATHS_TOKEN, useValue: FAKE_MODULE_PATHS },
-        { provide: REGISTER_AS_CUSTOM_ELEMENTS_API, useValue: fakeRegisterAsCustomElements},
+        { provide: NgModuleFactoryLoader, useClass: FakeModuleFactoryLoader },
+        { provide: ELEMENT_MODULE_PATHS_TOKEN, useValue: new Map([
+          ['element-a-selector', 'element-a-module-path']
+        ])},
+        { provide: CREATE_NG_ELEMENT_CONSTRUCTOR, useValue: fakeCreateNgElementConstructor},
       ]
     });
 
+    injectedModuleRef = injector.get(NgModuleRef);
     elementsLoader = injector.get(ElementsLoader);
   });
 
@@ -52,17 +69,16 @@ describe('ElementsLoader', () => {
     const hostEl = document.createElement('div');
     hostEl.innerHTML = `<element-a-selector></element-a-selector>`;
 
+    const fakeCreatedClass = {};
+    fakeCreateNgElementConstructor.and.returnValue(fakeCreatedClass);
     elementsLoader.loadContainingCustomElements(hostEl);
-    tick(); // Tick for the module factory loader's async `load` function
+    tick();
 
-    // Factory loader should have been called to load module for `element a`.
-    expect(fakeModuleFactoryLoader.load).toHaveBeenCalledWith('element-a-module-path');
-
-    // Registration should have been for FakeElementAComponent, part of FakeModule
-    expect(fakeRegisterAsCustomElements)
-        .toHaveBeenCalledWith([FakeElementAComponent], jasmine.any(Function));
-
-    // Successful registration means that element a is no longer considered `unregistered`
+    const expectedComponentFactory = FAKE_COMPONENT_FACTORIES.get('element-a-module-path');
+    expect(fakeCreateNgElementConstructor)
+        .toHaveBeenCalledWith(expectedComponentFactory, injectedModuleRef.injector);
+    expect(window.customElements.define)
+        .toHaveBeenCalledWith('element-a-selector', fakeCreatedClass);
     expect(elementsLoader.unregisteredElements.has('element-a-selector')).toBeFalsy();
   }));
 
@@ -78,7 +94,7 @@ describe('ElementsLoader', () => {
     tick(); // Tick for the module factory loader's async `load` function
 
     // Should have only been called once, since the second load would not query for element-a
-    expect(fakeRegisterAsCustomElements).toHaveBeenCalledTimes(1);
+    expect(fakeCreateNgElementConstructor).toHaveBeenCalledTimes(1);
   }));
 
   it('should throw an error if the registration fails', fakeAsync(() => {
@@ -88,7 +104,7 @@ describe('ElementsLoader', () => {
     hostEl.innerHTML = `<element-a-selector></element-a-selector>`;
 
     // Force registration to fail.
-    fakeRegisterAsCustomElements.and.throwError();
+    fakeCreateNgElementConstructor.and.throwError();
 
     // If registration fails, should catch and throw an error
     expect(() => {
@@ -101,12 +117,45 @@ describe('ElementsLoader', () => {
   }));
 });
 
-class FakeElementAComponent { }
+// TEST CLASSES/HELPERS
 
-class FakeModule implements WithCustomElements {
-  customElements: Type<any>[];
+class FakeCustomElementModule implements WithCustomElement {
+  customElement: Type<any>;
 }
 
-class FakeModuleLoader {
-  load = jasmine.createSpy('load');
+class FakeComponentFactoryResolver extends ComponentFactoryResolver {
+  constructor(private modulePath) { super(); }
+
+  resolveComponentFactory(component: Type<any>): ComponentFactory<any> {
+    return FAKE_COMPONENT_FACTORIES.get(this.modulePath)!;
+  }
+}
+
+class FakeModuleRef extends NgModuleRef<WithCustomElement> {
+  injector: Injector;
+  componentFactoryResolver = new FakeComponentFactoryResolver(this.modulePath);
+  instance: WithCustomElement = new FakeCustomElementModule();
+
+  constructor(private modulePath) { super(); }
+
+  destroy() {}
+  onDestroy(callback: () => void) {}
+}
+
+class FakeModuleFactory extends NgModuleFactory<any> {
+  moduleType: Type<any>;
+  moduleRefToCreate = new FakeModuleRef(this.modulePath);
+
+  constructor(private modulePath) { super(); }
+
+  create(parentInjector: Injector | null): NgModuleRef<any> {
+    return this.moduleRefToCreate;
+  }
+}
+
+class FakeModuleFactoryLoader extends NgModuleFactoryLoader {
+  load(modulePath: string): Promise<NgModuleFactory<any>> {
+    const fakeModuleFactory = new FakeModuleFactory(modulePath);
+    return Promise.resolve(fakeModuleFactory);
+  }
 }

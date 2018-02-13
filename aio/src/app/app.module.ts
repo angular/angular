@@ -102,7 +102,6 @@ export const svgIconProviders = [
     SharedModule,
   ],
   declarations: [
-    AnnouncementBarComponent,
     AppComponent,
     DocViewerComponent,
     DtComponent,
@@ -134,8 +133,7 @@ export const svgIconProviders = [
     { provide: CurrentDateToken, useFactory: currentDateProvider },
     { provide: WindowToken, useFactory: windowProvider },
   ],
-  entryComponents: [ AnnouncementBarComponent, TocComponent ],
+  entryComponents: [ TocComponent ],
   bootstrap: [ AppComponent ]
 })
-export class AppModule {
-}
+export class AppModule { }
