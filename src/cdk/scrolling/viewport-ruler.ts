@@ -33,8 +33,8 @@ export class ViewportRuler implements OnDestroy {
   /** Subscription to streams that invalidate the cached viewport dimensions. */
   private _invalidateCache: Subscription;
 
-  constructor(platform: Platform, ngZone: NgZone) {
-    this._change = platform.isBrowser ? ngZone.runOutsideAngular(() => {
+  constructor(private _platform: Platform, ngZone: NgZone) {
+    this._change = _platform.isBrowser ? ngZone.runOutsideAngular(() => {
       return merge<Event>(fromEvent(window, 'resize'), fromEvent(window, 'orientationchange'));
     }) : observableOf();
 
@@ -51,7 +51,14 @@ export class ViewportRuler implements OnDestroy {
       this._updateViewportSize();
     }
 
-    return {width: this._viewportSize.width, height: this._viewportSize.height};
+    const output = {width: this._viewportSize.width, height: this._viewportSize.height};
+
+    // If we're not on a browser, don't cache the size since it'll be mocked out anyway.
+    if (!this._platform.isBrowser) {
+      this._viewportSize = null!;
+    }
+
+    return output;
   }
 
   /** Gets a ClientRect for the viewport's bounds. */
@@ -80,6 +87,12 @@ export class ViewportRuler implements OnDestroy {
 
   /** Gets the (top, left) scroll position of the viewport. */
   getViewportScrollPosition() {
+    // While we can get a reference to the fake document
+    // during SSR, it doesn't have getBoundingClientRect.
+    if (!this._platform.isBrowser) {
+      return {top: 0, left: 0};
+    }
+
     // The top-left-corner of the viewport is determined by the scroll position of the document
     // body, normally just (scrollLeft, scrollTop). However, Chrome and Firefox disagree about
     // whether `document.body` or `document.documentElement` is the scrolled element, so reading
@@ -107,7 +120,9 @@ export class ViewportRuler implements OnDestroy {
 
   /** Updates the cached viewport size. */
   private _updateViewportSize() {
-    this._viewportSize = {width: window.innerWidth, height: window.innerHeight};
+    this._viewportSize = this._platform.isBrowser ?
+        {width: window.innerWidth, height: window.innerHeight} :
+        {width: 0, height: 0};
   }
 }
 
