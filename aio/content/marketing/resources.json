@@ -446,7 +446,7 @@
             "url": "https://gumroad.com/l/essential_angular"
           },
           "angular-buch": {
-            "desc": "The first German book about Angular 4+. Amazon Bestseller of 2017. Available in printed and electronic format (Kindle, PDF, ePub and Mobi). All sources are available on GitHub.",
+            "desc": "The first German book about Angular. It gives you a detailed practical overview of the key concepts of the platform. In each chapter a sample application is built upon with a new Angular topic. All sources are available on GitHub.",
             "logo": "https://angular-buch.com/assets/img/brand.svg",
             "rev": true,
             "title": "Angular-Buch (German)",
