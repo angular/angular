@@ -14,18 +14,19 @@ export class Rule extends Lint.Rules.AbstractRule {
     return this.applyWithFunction(sourceFile, (ctx: Lint.WalkContext<any>) => {
       utils.forEachComment(ctx.sourceFile, (file, {pos, end}) => {
         const commentText = file.substring(pos, end);
+        const hasDeletionTarget = commentText.indexOf('@deletion-target') > -1;
 
-        if (commentText.indexOf('@deletion-target') === -1) {
-          return;
-        }
+        if (!hasDeletionTarget && commentText.indexOf('@deprecated') > -1) {
+          ctx.addFailure(pos, end, '@deprecated marker has to have a @deletion-target.');
+        } if (hasDeletionTarget) {
+          const version = commentText.match(/\d+\.\d+\.\d+/);
 
-        const version = commentText.match(/\d+\.\d+\.\d+/);
-
-        if (!version) {
-          ctx.addFailure(pos, end, '@deletion-target must have a version.');
-        } else if (this._hasExpired(packageVersion, version[0])) {
-          ctx.addFailure(pos, end, `Deletion target at ${version[0]} is due to be deleted. ` +
-                                   `Current version is ${packageVersion}.`);
+          if (!version) {
+            ctx.addFailure(pos, end, '@deletion-target must have a version.');
+          } else if (this._hasExpired(packageVersion, version[0])) {
+            ctx.addFailure(pos, end, `Deletion target at ${version[0]} is due to be deleted. ` +
+                                     `Current version is ${packageVersion}.`);
+          }
         }
       });
     });

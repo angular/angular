@@ -16,7 +16,10 @@ export type RippleConfig = {
   persistent?: boolean;
   animation?: RippleAnimationConfig;
   terminateOnPointerUp?: boolean;
-  /** @deprecated Use the animation property instead. */
+  /**
+   * @deprecated Use the `animation` property instead.
+   * @deletion-target 7.0.0
+   */
   speedFactor?: number;
 };
 
