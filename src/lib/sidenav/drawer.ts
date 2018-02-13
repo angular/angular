@@ -454,6 +454,20 @@ export class MatDrawerContainer implements AfterContentInit, OnDestroy {
   set autosize(value: boolean) { this._autosize = coerceBooleanProperty(value); }
   private _autosize: boolean;
 
+  /** Whether the drawer container should have a backdrop while one of the sidenavs is open. */
+  @Input()
+  get hasBackdrop() {
+    if (this._hasBackdrop == null) {
+      return !this._start || this._start.mode !== 'side' || !this._end || this._end.mode !== 'side';
+    }
+
+    return this._hasBackdrop;
+  }
+  set hasBackdrop(value: any) {
+    this._hasBackdrop = value == null ? null : coerceBooleanProperty(value);
+  }
+  private _hasBackdrop: boolean | null;
+
   /** Event emitted when the drawer backdrop is clicked. */
   @Output() readonly backdropClick: EventEmitter<void> = new EventEmitter<void>();
 

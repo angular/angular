@@ -483,6 +483,7 @@ describe('MatDrawerContainer', () => {
         DrawerSetToOpenedTrue,
         DrawerContainerStateChangesTestApp,
         AutosizeDrawer,
+        BasicTestApp,
       ],
     });
 
@@ -630,6 +631,18 @@ describe('MatDrawerContainer', () => {
       discardPeriodicTasks();
     }));
 
+    it('should be able to toggle whether the container has a backdrop', fakeAsync(() => {
+      const fixture = TestBed.createComponent(BasicTestApp);
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.querySelector('.mat-drawer-backdrop')).toBeTruthy();
+
+      fixture.componentInstance.hasBackdrop = false;
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.querySelector('.mat-drawer-backdrop')).toBeFalsy();
+    }));
+
 });
 
 
@@ -652,13 +665,13 @@ class DrawerContainerTwoDrawerTestApp {
 /** Test component that contains an MatDrawerContainer and one MatDrawer. */
 @Component({
   template: `
-    <mat-drawer-container (backdropClick)="backdropClicked()">
+    <mat-drawer-container (backdropClick)="backdropClicked()" [hasBackdrop]="hasBackdrop">
       <mat-drawer #drawer position="start"
                  (opened)="open()"
                  (openedStart)="openStart()"
                  (closed)="close()"
                  (closedStart)="closeStart()">
-        <button #drawerButton>Content.</button>
+        <button #drawerButton>Content</button>
       </mat-drawer>
       <button (click)="drawer.open()" class="open" #openButton></button>
       <button (click)="drawer.close()" class="close" #closeButton></button>
@@ -670,6 +683,7 @@ class BasicTestApp {
   closeCount = 0;
   closeStartCount = 0;
   backdropClickedCount = 0;
+  hasBackdrop = true;
 
   @ViewChild('drawerButton') drawerButton: ElementRef;
   @ViewChild('openButton') openButton: ElementRef;
