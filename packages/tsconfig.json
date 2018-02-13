@@ -24,6 +24,9 @@
     "target": "es5",
     "types": ["angularjs"]
   },
+  "bazelOptions": {
+    "suppressTsconfigOverrideWarnings": true
+  },
   "exclude": [
     "bazel",
     "compiler-cli/integrationtest",
