@@ -756,14 +756,14 @@ export abstract class Statement {
 export class DeclareVarStmt extends Statement {
   public type: Type|null;
   constructor(
-      public name: string, public value: Expression, type?: Type|null,
+      public name: string, public value?: Expression, type?: Type|null,
       modifiers: StmtModifier[]|null = null, sourceSpan?: ParseSourceSpan|null) {
     super(modifiers, sourceSpan);
-    this.type = type || value.type;
+    this.type = type || (value && value.type) || null;
   }
   isEquivalent(stmt: Statement): boolean {
     return stmt instanceof DeclareVarStmt && this.name === stmt.name &&
-        this.value.isEquivalent(stmt.value);
+        (this.value ? !!stmt.value && this.value.isEquivalent(stmt.value) : !stmt.value);
   }
   visitStatement(visitor: StatementVisitor, context: any): any {
     return visitor.visitDeclareVarStmt(this, context);
@@ -1087,11 +1087,9 @@ export class AstTransformer implements StatementVisitor, ExpressionVisitor {
   }
 
   visitDeclareVarStmt(stmt: DeclareVarStmt, context: any): any {
+    const value = stmt.value && stmt.value.visitExpression(this, context);
     return this.transformStmt(
-        new DeclareVarStmt(
-            stmt.name, stmt.value.visitExpression(this, context), stmt.type, stmt.modifiers,
-            stmt.sourceSpan),
-        context);
+        new DeclareVarStmt(stmt.name, value, stmt.type, stmt.modifiers, stmt.sourceSpan), context);
   }
   visitDeclareFunctionStmt(stmt: DeclareFunctionStmt, context: any): any {
     return this.transformStmt(
@@ -1275,7 +1273,9 @@ export class RecursiveAstVisitor implements StatementVisitor, ExpressionVisitor 
   }
 
   visitDeclareVarStmt(stmt: DeclareVarStmt, context: any): any {
-    stmt.value.visitExpression(this, context);
+    if (stmt.value) {
+      stmt.value.visitExpression(this, context);
+    }
     if (stmt.type) {
       stmt.type.visitType(this, context);
     }

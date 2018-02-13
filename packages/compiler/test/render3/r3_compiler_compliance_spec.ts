@@ -551,6 +551,133 @@ describe('compiler compliance', () => {
           result.source, ComplexComponentDefinition, 'Incorrect ComplexComponent definition');
     });
 
+    describe('queries', () => {
+      const directive = {
+        'some.directive.ts': `
+          import {Directive} from '@angular/core';
+
+          @Directive({
+            selector: '[someDir]',
+          })
+          export class SomeDirective { }
+        `
+      };
+
+      it('should support view queries', () => {
+        const files = {
+          app: {
+            ...directive,
+            'view_query.component.ts': `
+            import {Component, NgModule, ViewChild} from '@angular/core';
+            import {SomeDirective} from './some.directive';
+
+            @Component({
+              selector: 'view-query-component',
+              template: \`
+              <div someDir></div>
+              \`
+            })
+            export class ViewQueryComponent {
+              @ViewChild(SomeDirective) someDir: SomeDirective;
+            }
+
+            @NgModule({declarations: [SomeDirective, ViewQueryComponent]})
+            export class MyModule {}
+          `
+          }
+        };
+
+        const ViewQueryComponentDefinition = `
+          const $e0_attrs$ = ['someDir',''];
+          const $e1_dirs$ = [SomeDirective];
+          …
+          static ngComponentDef = $r3$.ɵdefineComponent({
+            type: ViewQueryComponent,
+            tag: 'view-query-component',
+            factory: function ViewQueryComponent_Factory() { return new ViewQueryComponent(); },
+            template: function ViewQueryComponent_Template(ctx: $ViewQueryComponent$, cm: $boolean$) {
+              var $tmp$: $any$;
+              if (cm) {
+                $r3$.ɵQ(0, SomeDirective, true);
+                $r3$.ɵE(1, 'div', $e0_attrs$, $e1_dirs$);
+                $r3$.ɵe();
+              }
+              ($r3$.ɵqR(($tmp$ = $r3$.ɵld(0))) && (ctx.someDir = $tmp$.first));
+              SomeDirective.ngDirectiveDef.h(2, 1);
+              $r3$.ɵr(2, 1);
+            }
+          });`;
+
+        const result = compile(files, angularFiles);
+        const source = result.source;
+
+        expectEmit(source, ViewQueryComponentDefinition, 'Invalid ViewQuery declaration');
+      });
+
+      it('should support content queries', () => {
+        const files = {
+          app: {
+            ...directive,
+            'spec.ts': `
+            import {Component, ContentChild, NgModule} from '@angular/core';
+            import {SomeDirective} from './some.directive';
+
+            @Component({
+              selector: 'content-query-component',
+              template: \`
+                <div><ng-content></ng-content></div>
+              \`
+            })
+            export class ContentQueryComponent {
+              @ContentChild(SomeDirective) someDir: SomeDirective;
+            }
+
+            @Component({
+              selector: 'my-app',
+              template: \`
+                <content-query-component>
+                  <div someDir></div>
+                </content-query-component>
+              \`
+            })
+            export class MyApp { }
+
+            @NgModule({declarations: [SomeDirective, ContentQueryComponent, MyApp]})
+            export class MyModule { }
+            `
+          }
+        };
+
+        const ContentQueryComponentDefinition = `
+          static ngComponentDef = $r3$.ɵdefineComponent({
+            type: ContentQueryComponent,
+            tag: 'content-query-component',
+            factory: function ContentQueryComponent_Factory() {
+              return [new ContentQueryComponent(), $r3$.ɵQ(null, SomeDirective, true)];
+            },
+            hostBindings: function ContentQueryComponent_HostBindings(
+                dirIndex: $number$, elIndex: $number$) {
+              var $tmp$: $any$;
+              ($r3$.ɵqR(($tmp$ = $r3$.ɵld(dirIndex)[1])) && ($r3$.ɵld(dirIndex)[0].someDir = $tmp$[0]));
+            },
+            template: function ContentQueryComponent_Template(
+                ctx: $ContentQueryComponent$, cm: $boolean$) {
+              if (cm) {
+                $r3$.ɵpD(0);
+                $r3$.ɵE(1, 'div');
+                $r3$.ɵP(2, 0);
+                $r3$.ɵe();
+              }
+            }
+          });`;
+
+        const result = compile(files, angularFiles);
+
+        const source = result.source;
+        expectEmit(source, ContentQueryComponentDefinition, 'Invalid ContentQuery declaration');
+      });
+    });
+
     describe('pipes', () => {
 
       const files = {

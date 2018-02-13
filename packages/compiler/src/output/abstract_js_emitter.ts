@@ -82,8 +82,11 @@ export abstract class AbstractJsEmitterVisitor extends AbstractEmitterVisitor {
     return null;
   }
   visitDeclareVarStmt(stmt: o.DeclareVarStmt, ctx: EmitterVisitorContext): any {
-    ctx.print(stmt, `var ${stmt.name} = `);
-    stmt.value.visitExpression(this, ctx);
+    ctx.print(stmt, `var ${stmt.name}`);
+    if (stmt.value) {
+      ctx.print(stmt, ' = ');
+      stmt.value.visitExpression(this, ctx);
+    }
     ctx.println(stmt, `;`);
     return null;
   }

@@ -110,5 +110,8 @@ export class Identifiers {
 
   static definePipe: o.ExternalReference = {name: 'ɵdefinePipe', moduleName: CORE};
 
+  static query: o.ExternalReference = {name: 'ɵQ', moduleName: CORE};
+  static queryRefresh: o.ExternalReference = {name: 'ɵqR', moduleName: CORE};
+
   static NgOnChangesFeature: o.ExternalReference = {name: 'ɵNgOnChangesFeature', moduleName: CORE};
 }
