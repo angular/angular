@@ -6,7 +6,7 @@ import {
 } from '@angular/core';
 import {TestBed, fakeAsync, tick} from '@angular/core/testing';
 
-import { ElementsLoader, CREATE_NG_ELEMENT_CONSTRUCTOR } from './elements-loader';
+import { ElementsLoader } from './elements-loader';
 import { ELEMENT_MODULE_PATHS_TOKEN, WithCustomElement } from './element-registry';
 
 const actualCustomElements = window.customElements;
@@ -15,8 +15,10 @@ class FakeComponentFactory extends ComponentFactory<any> {
   selector: string;
   componentType: Type<any>;
   ngContentSelectors: string[];
-  inputs = [];
+  inputs = [{propName: this.identifyingInput, templateName: this.identifyingInput}];
   outputs = [];
+
+  constructor(private identifyingInput: string) { super(); }
 
   create(injector: Injector,
          projectableNodes?: any[][],
@@ -27,26 +29,24 @@ class FakeComponentFactory extends ComponentFactory<any> {
 }
 
 const FAKE_COMPONENT_FACTORIES = new Map([
-  ['element-a-module-path', new FakeComponentFactory()]
+  ['element-a-module-path', new FakeComponentFactory('element-a-input')]
 ]);
 
 describe('ElementsLoader', () => {
   let elementsLoader: ElementsLoader;
-
-  let fakeCreateNgElementConstructor;
   let injectedModuleRef: NgModuleRef<any>;
+  let fakeCustomElements;
 
   // ElementsLoader uses the window's customElements API. Provide a fake for this test.
   beforeEach(() => {
-    window.customElements = jasmine.createSpyObj('customElements', ['define']);
+    fakeCustomElements = jasmine.createSpyObj('customElements', ['define']);
+    window.customElements = fakeCustomElements;
   });
   afterEach(() => {
     window.customElements = actualCustomElements;
   });
 
   beforeEach(() => {
-    fakeCreateNgElementConstructor = jasmine.createSpy('createNgElementConstructor');
-
     const injector = TestBed.configureTestingModule({
       providers: [
         ElementsLoader,
@@ -54,7 +54,6 @@ describe('ElementsLoader', () => {
         { provide: ELEMENT_MODULE_PATHS_TOKEN, useValue: new Map([
           ['element-a-selector', 'element-a-module-path']
         ])},
-        { provide: CREATE_NG_ELEMENT_CONSTRUCTOR, useValue: fakeCreateNgElementConstructor},
       ]
     });
 
@@ -69,16 +68,15 @@ describe('ElementsLoader', () => {
     const hostEl = document.createElement('div');
     hostEl.innerHTML = `<element-a-selector></element-a-selector>`;
 
-    const fakeCreatedClass = {};
-    fakeCreateNgElementConstructor.and.returnValue(fakeCreatedClass);
     elementsLoader.loadContainingCustomElements(hostEl);
     tick();
 
-    const expectedComponentFactory = FAKE_COMPONENT_FACTORIES.get('element-a-module-path');
-    expect(fakeCreateNgElementConstructor)
-        .toHaveBeenCalledWith(expectedComponentFactory, injectedModuleRef.injector);
-    expect(window.customElements.define)
-        .toHaveBeenCalledWith('element-a-selector', fakeCreatedClass);
+    const defineArgs = fakeCustomElements.define.calls.argsFor(0);
+    expect(defineArgs[0]).toBe('element-a-selector');
+
+    // Verify the right component was loaded/created
+    expect(defineArgs[1].observedAttributes[0]).toBe('element-a-input');
+
     expect(elementsLoader.unregisteredElements.has('element-a-selector')).toBeFalsy();
   }));
 
@@ -94,26 +92,7 @@ describe('ElementsLoader', () => {
     tick(); // Tick for the module factory loader's async `load` function
 
     // Should have only been called once, since the second load would not query for element-a
-    expect(fakeCreateNgElementConstructor).toHaveBeenCalledTimes(1);
-  }));
-
-  it('should throw an error if the registration fails', fakeAsync(() => {
-    expect(elementsLoader.unregisteredElements.has('element-a-selector')).toBeTruthy();
-
-    const hostEl = document.createElement('div');
-    hostEl.innerHTML = `<element-a-selector></element-a-selector>`;
-
-    // Force registration to fail.
-    fakeCreateNgElementConstructor.and.throwError();
-
-    // If registration fails, should catch and throw an error
-    expect(() => {
-      elementsLoader.loadContainingCustomElements(hostEl);
-      tick();
-    }).toThrowError();
-
-    // Should not have removed the selector from the list of unregistered elements.
-    expect(elementsLoader.unregisteredElements.has('element-a-selector')).toBeTruthy();
+    expect(window.customElements.define).toHaveBeenCalledTimes(1);
   }));
 });
 

@@ -2,7 +2,6 @@ import {
   ComponentFactory,
   Inject,
   Injectable,
-  InjectionToken,
   NgModuleFactoryLoader,
   NgModuleRef,
 } from '@angular/core';
@@ -10,10 +9,7 @@ import { ELEMENT_MODULE_PATHS_TOKEN, WithCustomElement } from './element-registr
 import { of } from 'rxjs/observable/of';
 import { Observable } from 'rxjs/Observable';
 import { fromPromise } from 'rxjs/observable/fromPromise';
-
-/** Injection token to provide Angular's custom element class constructor function. */
-export const CREATE_NG_ELEMENT_CONSTRUCTOR =
-    new InjectionToken('aio/create-ng-element-constructor');
+import { createNgElementConstructor } from '@angular/elements';
 
 @Injectable()
 export class ElementsLoader {
@@ -22,7 +18,6 @@ export class ElementsLoader {
 
   constructor(private moduleFactoryLoader: NgModuleFactoryLoader,
               private moduleRef: NgModuleRef<any>,
-              @Inject(CREATE_NG_ELEMENT_CONSTRUCTOR) private createNgElementConstructor,
               @Inject(ELEMENT_MODULE_PATHS_TOKEN) elementModulePaths) {
     this.unregisteredElements = new Map(elementModulePaths);
   }
@@ -52,7 +47,7 @@ export class ElementsLoader {
       const elementModuleRef = elementModuleFactory.create(injector);
       const componentFactory = this.getElementComponentFactory(elementModuleRef);
 
-      const NgElement = this.createNgElementConstructor(componentFactory, {injector});
+      const NgElement = createNgElementConstructor(componentFactory, {injector});
       customElements!.define(selector, NgElement);
 
       this.unregisteredElements.delete(selector);
