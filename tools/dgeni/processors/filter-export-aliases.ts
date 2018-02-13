@@ -1,6 +1,4 @@
 import {DocCollection, Processor} from 'dgeni';
-import {ExportDoc} from 'dgeni-packages/typescript/api-doc-types/ExportDoc';
-import {ModuleDoc} from 'dgeni-packages/typescript/api-doc-types/ModuleDoc';
 
 /**
  * Processor to filter out Dgeni documents that are export aliases. Keeping them means
@@ -22,27 +20,12 @@ export class FilterExportAliases implements Processor {
   $runBefore = ['categorizer'];
 
   $process(docs: DocCollection) {
-    return docs.filter(doc => this.filterAliasExport(doc));
+    return docs.filter(doc => {
+      // If the alias symbol and the actual resolved symbol have the same name, then this doc
+      // shouldn't be filtered. This check is necessary, because technically as per TypeScript,
+      // explicit and individual re-exports are being considered as aliases.
+      // For example: export {Test} from './my-file`;
+      return !(doc.aliasSymbol && doc.aliasSymbol.name !== doc.symbol.name);
+    });
   }
-
-  private filterAliasExport(doc: ExportDoc) {
-    if (!doc.moduleDoc) {
-      return true;
-    }
-
-    const moduleDoc = doc.moduleDoc as ModuleDoc;
-    const duplicateDocs = moduleDoc.exports.filter(exportDoc => exportDoc.id === doc.id);
-
-    // Remove the current export document if there are multiple Dgeni export documents with the
-    // same document id. If there are multiple docs with the same id, we can assume that this doc
-    // is an alias export.
-    if (duplicateDocs && duplicateDocs.length > 1) {
-      moduleDoc.exports.splice(
-        moduleDoc.exports.findIndex(exportDoc => exportDoc.id === doc.id), 1);
-      return false;
-    }
-
-    return true;
-  }
-
 }
