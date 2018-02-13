@@ -21,31 +21,34 @@ import { Component, Input, NgModule } from '@angular/core';
   template: `<h1>Hello {{name}}</h1>`
 })
 export class HelloWorld {
-  @Input() name:string = 'World';
+  @Input() name: string = 'World!';
 }
 
 @NgModule({
-  declarations:[HelloWorld],
-  entryComponents: [HelloWorld]
+  declarations: [ HelloWorld ],
+  entryComponents: [ HelloWorld ]
 })
-export class HelloWorldModule {
-  ngDoBootstrap(){}
-}
+export class HelloWorldModule {}
 ```
+
 ```ts
-//index.ts
-import { registerAsCustomElements } from '@angular/elements';
-import { platformBrowser } from '@angular/platform-browser';
+//app.component.ts
+import { Component, NgModuleRef } from '@angular/core';
+import { createNgElementConstructor } from '@angular/elements';
 
 import { HelloWorld } from './hello-world.ngfactory';
-import { HelloWorldModuleNgFactory } from './hello-world.ngfactory';
 
-registerAsCustomElements(
-  [HelloWorld],
-  () => platformBrowser().bootstrapModuleFactory(HelloWorldModuleNgFactory)
-).catch(err => {
-  console.log('error');
+@Component({
+  selector: 'app-root',
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.css']
 })
+export class AppComponent {
+  constructor(ngModuleRef: NgModuleRef) {
+    const NgElementConstructor = createNgElementConstructor(HelloWorld, ngModuleRef.injector);
+    customElements.register('hello-world', NgElementConstructor);
+  }
+}
 
 ```
 Once registered, these components can be used just like built-in HTML elements, because they *are* 
