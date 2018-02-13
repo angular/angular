@@ -16,6 +16,9 @@ export const releasePackages = [
   'material-moment-adapter'
 ];
 
+/** Regular Expression that matches valid version numbers of Angular Material. */
+export const validVersionRegex = /^\d+\.\d+\.\d+(-(alpha|beta|rc)\.\d+)?$/;
+
 /** Parse command-line arguments for release task. */
 const argv = minimist(process.argv.slice(3));
 
@@ -45,6 +48,14 @@ task(':publish', async () => {
   const tag = argv['tag'];
   const version = buildConfig.projectVersion;
   const currentDir = process.cwd();
+
+  if (!version.match(validVersionRegex)) {
+    console.log(red(`Error: Cannot publish due to an invalid version name. Version "${version}" ` +
+      `is not following our semver format.`));
+    console.log(yellow(`A version should follow this format: d.d.d, d.d.d-beta.x, d.d.d-alpha.x, ` +
+        `d.d.d-rc.x`));
+    return;
+  }
 
   console.log('');
   if (!tag) {
