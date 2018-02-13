@@ -181,6 +181,7 @@ export class MatAutocompleteTrigger implements ControlValueAccessor, OnDestroy {
 
     if (this._panelOpen) {
       this.autocomplete._isOpen = this._panelOpen = false;
+      this.autocomplete.closed.emit();
 
       if (this._overlayRef && this._overlayRef.hasAttached()) {
         this._overlayRef.detach();
@@ -499,8 +500,16 @@ export class MatAutocompleteTrigger implements ControlValueAccessor, OnDestroy {
       this._closingActionsSubscription = this._subscribeToClosingActions();
     }
 
+    const wasOpen = this.panelOpen;
+
     this.autocomplete._setVisibility();
     this.autocomplete._isOpen = this._panelOpen = true;
+
+    // We need to do an extra `panelOpen` check in here, because the
+    // autocomplete won't be shown if there are no options.
+    if (this.panelOpen && wasOpen !== this.panelOpen) {
+      this.autocomplete.opened.emit();
+    }
   }
 
   private _getOverlayConfig(): OverlayConfig {

@@ -410,6 +410,38 @@ describe('MatAutocomplete', () => {
       expect(fixture.componentInstance.panel.isOpen).toBeTruthy(
         `Expected the panel to be opened on focus.`);
     }));
+
+    it('should emit an event when the panel is opened', () => {
+      fixture.componentInstance.trigger.openPanel();
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance.openedSpy).toHaveBeenCalled();
+    });
+
+    it('should not emit the opened event multiple times while typing', fakeAsync(() => {
+      fixture.componentInstance.trigger.openPanel();
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance.openedSpy).toHaveBeenCalledTimes(1);
+
+      typeInElement('Alabam', input);
+      fixture.detectChanges();
+      tick();
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance.openedSpy).toHaveBeenCalledTimes(1);
+    }));
+
+    it('should emit an event when the panel is closed', () => {
+      fixture.componentInstance.trigger.openPanel();
+      fixture.detectChanges();
+
+      fixture.componentInstance.trigger.closePanel();
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance.closedSpy).toHaveBeenCalled();
+    });
+
   });
 
   it('should have the correct text direction in RTL', () => {
@@ -423,7 +455,6 @@ describe('MatAutocomplete', () => {
 
     const overlayPane = overlayContainerElement.querySelector('.cdk-overlay-pane')!;
     expect(overlayPane.getAttribute('dir')).toEqual('rtl');
-
   });
 
   describe('forms integration', () => {
@@ -1814,7 +1845,7 @@ describe('MatAutocomplete', () => {
     </mat-form-field>
 
     <mat-autocomplete class="class-one class-two" #auto="matAutocomplete" [displayWith]="displayFn"
-      [disableRipple]="disableRipple">
+      [disableRipple]="disableRipple" (opened)="openedSpy()" (closed)="closedSpy()">
       <mat-option *ngFor="let state of filteredStates" [value]="state">
         <span> {{ state.code }}: {{ state.name }}  </span>
       </mat-option>
@@ -1828,6 +1859,8 @@ class SimpleAutocomplete implements OnDestroy {
   floatLabel = 'auto';
   width: number;
   disableRipple = false;
+  openedSpy = jasmine.createSpy('autocomplete opened spy');
+  closedSpy = jasmine.createSpy('autocomplete closed spy');
 
   @ViewChild(MatAutocompleteTrigger) trigger: MatAutocompleteTrigger;
   @ViewChild(MatAutocomplete) panel: MatAutocomplete;
