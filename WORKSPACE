@@ -1,10 +1,14 @@
 workspace(name = "angular")
 
+# Using a pre-release snapshot to pick up a commit that makes all nodejs_binary
+# programs produce source-mapped stack traces.
+RULES_NODEJS_VERSION = "926349cea4cd360afcd5647ccdd09d2d2fb471aa"
+
 http_archive(
     name = "build_bazel_rules_nodejs",
-    url = "https://github.com/bazelbuild/rules_nodejs/archive/0.4.1.zip",
-    strip_prefix = "rules_nodejs-0.4.1",
-    sha256 = "e9bc013417272b17f302dc169ad597f05561bb277451f010043f4da493417607",
+    url = "https://github.com/bazelbuild/rules_nodejs/archive/%s.zip" % RULES_NODEJS_VERSION,
+    strip_prefix = "rules_nodejs-%s" % RULES_NODEJS_VERSION,
+    sha256 = "5ba3c8c209078c2e3f0c6aa4abd01a1a561f92a5bfda04e25604af5f4734d69d",
 )
 
 load("@build_bazel_rules_nodejs//:defs.bzl", "check_bazel_version", "node_repositories")
@@ -12,10 +16,12 @@ load("@build_bazel_rules_nodejs//:defs.bzl", "check_bazel_version", "node_reposi
 check_bazel_version("0.9.0")
 node_repositories(package_json = ["//:package.json"])
 
+RULES_TYPESCRIPT_VERSION = "0.10.1"
+
 http_archive(
     name = "build_bazel_rules_typescript",
-    url = "https://github.com/bazelbuild/rules_typescript/archive/0.10.1.zip",
-    strip_prefix = "rules_typescript-0.10.1",
+    url = "https://github.com/bazelbuild/rules_typescript/archive/%s.zip" % RULES_TYPESCRIPT_VERSION,
+    strip_prefix = "rules_typescript-%s" % RULES_TYPESCRIPT_VERSION,
     sha256 = "a2c81776a4a492ff9f878f9705639f5647bef345f7f3e1da09c9eeb8dec80485",
 )
 

@@ -17,7 +17,6 @@ ts_library(
         ],
         exclude = [
             "src/extract_i18n.ts",
-            "src/main.ts",
             "src/integrationtest/**/*.ts",
         ],
     ),
