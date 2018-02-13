@@ -1,11 +1,14 @@
 workspace(name = "angular")
 
-load("@bazel_tools//tools/build_defs/repo:git.bzl", "git_repository")
+# Using a pre-release snapshot to pick up a commit that makes all nodejs_binary
+# programs produce source-mapped stack traces.
+RULES_NODEJS_VERSION = "926349cea4cd360afcd5647ccdd09d2d2fb471aa"
 
-git_repository(
+http_archive(
     name = "build_bazel_rules_nodejs",
-    remote = "https://github.com/bazelbuild/rules_nodejs.git",
-    commit = "230d39a391226f51c03448f91eb61370e2e58c42",
+    url = "https://github.com/bazelbuild/rules_nodejs/archive/%s.zip" % RULES_NODEJS_VERSION,
+    strip_prefix = "rules_nodejs-%s" % RULES_NODEJS_VERSION,
+    sha256 = "5ba3c8c209078c2e3f0c6aa4abd01a1a561f92a5bfda04e25604af5f4734d69d",
 )
 
 load("@build_bazel_rules_nodejs//:defs.bzl", "check_bazel_version", "node_repositories")
@@ -13,10 +16,13 @@ load("@build_bazel_rules_nodejs//:defs.bzl", "check_bazel_version", "node_reposi
 check_bazel_version("0.9.0")
 node_repositories(package_json = ["//:package.json"])
 
-git_repository(
+RULES_TYPESCRIPT_VERSION = "0.10.1"
+
+http_archive(
     name = "build_bazel_rules_typescript",
-    remote = "https://github.com/bazelbuild/rules_typescript.git",
-    commit = "d3ad16d1f105e2490859da9ad528ba4c45991d09"
+    url = "https://github.com/bazelbuild/rules_typescript/archive/%s.zip" % RULES_TYPESCRIPT_VERSION,
+    strip_prefix = "rules_typescript-%s" % RULES_TYPESCRIPT_VERSION,
+    sha256 = "a2c81776a4a492ff9f878f9705639f5647bef345f7f3e1da09c9eeb8dec80485",
 )
 
 load("@build_bazel_rules_typescript//:defs.bzl", "ts_setup_workspace")
