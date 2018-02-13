@@ -42,6 +42,8 @@ export class MatDatepickerToggleIcon {}
   host: {
     'class': 'mat-datepicker-toggle',
     '[class.mat-datepicker-toggle-active]': 'datepicker && datepicker.opened',
+    '[class.mat-accent]': 'datepicker && datepicker.color === "accent"',
+    '[class.mat-warn]': 'datepicker && datepicker.color === "warn"',
   },
   exportAs: 'matDatepickerToggle',
   encapsulation: ViewEncapsulation.None,

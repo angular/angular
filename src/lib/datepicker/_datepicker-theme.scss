@@ -3,23 +3,31 @@
 @import '../core/typography/typography-utils';
 
 
+$mat-datepicker-selected-today-box-shadow-width: 1px;
+$mat-datepicker-selected-fade-amount: 0.6;
+$mat-datepicker-today-fade-amount: 0.2;
 $mat-calendar-body-font-size: 13px !default;
 $mat-calendar-weekday-table-font-size: 11px !default;
 
+@mixin _mat-datepicker-color($palette) {
+  .mat-calendar-body-selected {
+    background-color: mat-color($palette);
+    color: mat-color($palette, default-contrast);
+  }
+
+  .mat-calendar-body-disabled > .mat-calendar-body-selected {
+    background-color: fade-out(mat-color($palette), $mat-datepicker-selected-fade-amount);
+  }
+
+  .mat-calendar-body-today.mat-calendar-body-selected {
+    box-shadow: inset 0 0 0 $mat-datepicker-selected-today-box-shadow-width
+                mat-color($palette, default-contrast);
+  }
+}
 
 @mixin mat-datepicker-theme($theme) {
-  $primary: map-get($theme, primary);
   $foreground: map-get($theme, foreground);
   $background: map-get($theme, background);
-
-  $mat-datepicker-selected-today-box-shadow-width: 1px;
-  $mat-datepicker-selected-fade-amount: 0.6;
-  $mat-datepicker-today-fade-amount: 0.2;
-
-  .mat-datepicker-content {
-    background-color: mat-color($background, card);
-    color: mat-color($foreground, text);
-  }
 
   .mat-calendar-arrow {
     border-top-color: mat-color($foreground, icon);
@@ -59,34 +67,41 @@ $mat-calendar-weekday-table-font-size: 11px !default;
     }
   }
 
-  .mat-calendar-body-selected {
-    background-color: mat-color($primary);
-    color: mat-color($primary, default-contrast);
-  }
-
-  .mat-calendar-body-disabled > .mat-calendar-body-selected {
-    background-color: fade-out(mat-color($primary), $mat-datepicker-selected-fade-amount);
-  }
-
-  .mat-calendar-body-today {
-    &:not(.mat-calendar-body-selected) {
-      // Note: though it's not text, the border is a hint about the fact that this is today's date,
-      // so we use the hint color.
-      border-color: mat-color($foreground, hint-text);
-    }
-
-    &.mat-calendar-body-selected {
-      box-shadow: inset 0 0 0 $mat-datepicker-selected-today-box-shadow-width
-                  mat-color($primary, default-contrast);
-    }
+  .mat-calendar-body-today:not(.mat-calendar-body-selected) {
+    // Note: though it's not text, the border is a hint about the fact that this is today's date,
+    // so we use the hint color.
+    border-color: mat-color($foreground, hint-text);
   }
 
   .mat-calendar-body-disabled > .mat-calendar-body-today:not(.mat-calendar-body-selected) {
     border-color: fade-out(mat-color($foreground, hint-text), $mat-datepicker-today-fade-amount);
   }
 
+  @include _mat-datepicker-color(map-get($theme, primary));
+
+  .mat-datepicker-content {
+    background-color: mat-color($background, card);
+    color: mat-color($foreground, text);
+
+    &.mat-accent {
+      @include _mat-datepicker-color(map-get($theme, accent));
+    }
+
+    &.mat-warn {
+      @include _mat-datepicker-color(map-get($theme, warn));
+    }
+  }
+
   .mat-datepicker-toggle-active {
-    color: mat-color($primary);
+    color: mat-color(map-get($theme, primary));
+
+    &.mat-accent {
+      color: mat-color(map-get($theme, accent));
+    }
+
+    &.mat-warn {
+      color: mat-color(map-get($theme, warn));
+    }
   }
 }
 

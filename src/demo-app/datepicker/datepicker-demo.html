@@ -5,6 +5,13 @@
   <mat-checkbox [(ngModel)]="yearView">Start in year view</mat-checkbox>
   <mat-checkbox [(ngModel)]="datepickerDisabled">Disable datepicker</mat-checkbox>
   <mat-checkbox [(ngModel)]="inputDisabled">Disable input</mat-checkbox>
+  <mat-form-field>
+    <mat-select [(ngModel)]="color" placeholder="Color">
+      <mat-option value="primary">Primary</mat-option>
+      <mat-option value="accent">Accent</mat-option>
+      <mat-option value="warn">Warn</mat-option>
+    </mat-select>
+  </mat-form-field>
 </p>
 <p>
   <mat-form-field>
@@ -53,7 +60,8 @@
         [touchUi]="touch"
         [disabled]="datepickerDisabled"
         [startAt]="startAt"
-        [startView]="yearView ? 'year' : 'month'">
+        [startView]="yearView ? 'year' : 'month'"
+        [color]="color">
     </mat-datepicker>
     <mat-error *ngIf="resultPickerModel.hasError('matDatepickerParse')">
       "{{resultPickerModel.getError('matDatepickerParse').text}}" is not a valid date!

@@ -8,7 +8,9 @@
 
 import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {FormControl} from '@angular/forms';
-import {MatDatepickerInputEvent} from '@angular/material';
+import {MatDatepickerInputEvent} from '@angular/material/datepicker';
+import {ThemePalette} from '@angular/material/core';
+
 
 @Component({
   moduleId: module.id,
@@ -29,6 +31,7 @@ export class DatepickerDemo {
   date: Date;
   lastDateInput: Date | null;
   lastDateChange: Date | null;
+  color: ThemePalette;
 
   dateCtrl = new FormControl();
 

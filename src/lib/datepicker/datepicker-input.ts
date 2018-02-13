@@ -337,6 +337,11 @@ export class MatDatepickerInput<D> implements AfterContentInit, ControlValueAcce
     this.dateChange.emit(new MatDatepickerInputEvent(this, this._elementRef.nativeElement));
   }
 
+  /** Returns the palette used by the input's form field, if any. */
+  _getThemePalette() {
+    return this._formField ? this._formField.color : undefined;
+  }
+
   /**
    * @param obj The object to check.
    * @returns The given object if it is both a date instance and valid, otherwise null.
