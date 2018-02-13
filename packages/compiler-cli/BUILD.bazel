@@ -22,6 +22,7 @@ ts_library(
         ],
     ),
     module_name = "@angular/compiler-cli",
+    node_modules = "@//:node_modules",
     tsconfig = ":tsconfig",
     deps = [
         "//packages/compiler",
