@@ -1,0 +1,167 @@
+// This contains all of the styles for the badge
+// rather than just the color/theme because of
+// no style sheet support for directives.
+@import '../core/theming/palette';
+@import '../core/theming/theming';
+@import '../core/typography/typography-utils';
+
+$mat-badge-font-size: 12px;
+$mat-badge-font-weight: 600;
+$mat-badge-default-size: 22px !default;
+$mat-badge-small-size: $mat-badge-default-size - 6;
+$mat-badge-large-size: $mat-badge-default-size + 6;
+
+// Mixin for building offset given different sizes
+@mixin _mat-badge-size($size) {
+  .mat-badge-content {
+    width: $size;
+    height: $size;
+    line-height: $size;
+  }
+
+  &.mat-badge-above {
+    .mat-badge-content {
+      top: -$size / 2;
+    }
+  }
+
+  &.mat-badge-below {
+    .mat-badge-content {
+      bottom: -$size / 2;
+    }
+  }
+
+  &.mat-badge-before {
+    margin-left: $size;
+
+    &[dir='rtl'] {
+      margin-left: 0;
+      margin-right: $size;
+    }
+
+    .mat-badge-content {
+      left: -$size;
+    }
+  }
+
+  &.mat-badge-after {
+    margin-right: $size;
+
+    &[dir='rtl'] {
+      margin-right: 0;
+      margin-left: $size;
+    }
+
+    .mat-badge-content {
+      right: -$size;
+    }
+  }
+
+  &.mat-badge-overlap {
+    &.mat-badge-before {
+      margin-left: $size / 2;
+
+      &[dir='rtl'] {
+        margin-left: 0;
+        margin-right: $size / 2;
+      }
+
+      .mat-badge-content {
+        left: -$size / 2;
+      }
+    }
+
+    &.mat-badge-after {
+      margin-right: $size / 2;
+      
+      &[dir='rtl'] {
+        margin-right: 0;
+        margin-left: $size;
+      }
+
+      .mat-badge-content {
+        right: -$size / 2;
+      }
+    }
+  }
+}
+
+@mixin mat-badge-theme($theme) {
+  $accent: map-get($theme, accent);
+  $warn: map-get($theme, warn);
+  $primary: map-get($theme, primary);
+  
+  .mat-badge-content {
+    color: mat-color($primary, default-contrast);
+    background: mat-color($primary);
+  }
+
+  &.mat-badge-accent {
+    .mat-badge-content {
+      background: mat-color($accent);
+      color: mat-color($accent, default-contrast);
+    }
+  }
+
+  &.mat-badge-warn {
+    .mat-badge-content {
+      color: mat-color($warn, default-contrast);
+      background: mat-color($warn);
+    }
+  }
+}
+
+@mixin mat-badge-typography($config) {
+  .mat-badge-content {
+    font-weight: $mat-badge-font-weight;
+    font-size: $mat-badge-font-size;
+    font-family: mat-font-family($config);
+  }
+
+  .mat-badge-small .mat-badge-content {
+    font-size: $mat-badge-font-size / 2;
+  }
+
+  .mat-badge-large .mat-badge-content {
+    font-size: $mat-badge-font-size * 2;
+  }
+}
+
+.mat-badge {
+  position: relative;
+}
+
+.mat-badge-hidden {
+  .mat-badge-content {
+    display: none;
+  }
+}
+
+.mat-badge-content {
+  position: absolute;
+  text-align: center;
+  display: inline-block;
+  border-radius: 50%;
+  transition: all 0.2 ease-in-out;
+  transform: scale(0.6);
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  pointer-events: none;
+}
+
+// The active class is added after the element is added
+// so it can animate scale to default
+.mat-badge-content.mat-badge-active {
+  transform: scale(1);
+}
+
+.mat-badge-small {
+  @include _mat-badge-size($mat-badge-small-size);
+}
+.mat-badge-medium {
+  @include _mat-badge-size($mat-badge-default-size);
+}
+.mat-badge-large {
+  @include _mat-badge-size($mat-badge-large-size);
+}

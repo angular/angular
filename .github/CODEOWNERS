@@ -32,6 +32,7 @@
 /src/lib/tabs/**                                   @andrewseguin
 /src/lib/toolbar/**                                @devversion
 /src/lib/tooltip/**                                @andrewseguin
+/src/lib/badge/**                                  @amcdnl
 
 # Angular Material core
 /src/lib/core/*                                    @jelbourn
@@ -129,6 +130,7 @@
 /src/demo-app/toolbar/**                           @devversion
 /src/demo-app/tooltip/**                           @andrewseguin
 /src/demo-app/typography/**                        @crisbeto
+/src/demo-app/badge/**                             @amcdnl
 
 # E2E app
 /e2e/*                                             @jelbourn

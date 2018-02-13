@@ -51,11 +51,13 @@ import {TypographyDemo} from '../typography/typography-demo';
 import {DemoApp, Home} from './demo-app';
 import {TableDemoPage} from '../table/table-demo-page';
 import {TABLE_DEMO_ROUTES} from '../table/routes';
+import {BadgeDemo} from 'badge/badge-demo';
 
 export const DEMO_APP_ROUTES: Routes = [
   {path: '', component: DemoApp, children: [
     {path: '', component: Home},
     {path: 'autocomplete', component: AutocompleteDemo},
+    {path: 'badge', component: BadgeDemo},
     {path: 'bottom-sheet', component: BottomSheetDemo},
     {path: 'baseline', component: BaselineDemo},
     {path: 'button', component: ButtonDemo},

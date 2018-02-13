@@ -1,6 +1,7 @@
 // Import all the theming functionality.
 @import '../core';
 @import '../../autocomplete/autocomplete-theme';
+@import '../../badge/badge-theme';
 @import '../../bottom-sheet/bottom-sheet-theme';
 @import '../../button/button-theme';
 @import '../../button-toggle/button-toggle-theme';
@@ -37,6 +38,7 @@
 @mixin angular-material-theme($theme) {
   @include mat-core-theme($theme);
   @include mat-autocomplete-theme($theme);
+  @include mat-badge-theme($theme);
   @include mat-bottom-sheet-theme($theme);
   @include mat-button-theme($theme);
   @include mat-button-toggle-theme($theme);

@@ -1,0 +1,90 @@
+<div class="badge-demo">
+
+  <div class="badge-examples">
+    <h3>Text</h3>
+    <span [matBadge]="badgeContent" matBadgeOverlap="false" *ngIf="visible">
+      Hello
+    </span>
+
+    <span [matBadge]="11111" matBadgeOverlap="false">
+      Hello
+    </span>
+
+    <span matBadge="22" matBadgeOverlap="false" matBadgePosition="below after" matBadgeColor="accent">
+      Hello
+    </span>
+
+    <span matBadge="22" matBadgeOverlap="false" matBadgePosition="above before" matBadgeColor="warn">
+      Hello
+    </span>
+
+    <span matBadge="⚡️" matBadgeOverlap="false" matBadgePosition="below before">
+      Hello
+    </span>
+
+    <span [matBadge]="badgeContent" matBadgeDescription="I've got {{badgeContent}} problems">
+      Aria
+    </span>
+
+    <span [matBadge]="badgeContent" matBadgeHidden="true">
+      Hidden
+    </span>
+
+    <input type="text" [(ngModel)]="badgeContent" />
+    <button (click)="visible = !visible">Toggle</button>
+  </div>
+
+  <div class="badge-examples">
+    <h3>Buttons</h3>
+    <button mat-raised-button [matBadge]="badgeContent">
+      <mat-icon color="primary">home</mat-icon>
+    </button>
+
+    <button mat-raised-button matBadge="22" matBadgePosition="below after" color="primary" matBadgeColor="accent">
+      <mat-icon color="accent">home</mat-icon>
+    </button>
+
+    <button mat-raised-button matBadge="22" matBadgePosition="above before">
+      <mat-icon color="primary">home</mat-icon>
+    </button>
+
+    <button mat-raised-button matBadge="22" matBadgePosition="below before">
+      <mat-icon color="primary">home</mat-icon>
+    </button>
+
+    <button mat-raised-button>
+      <mat-icon color="primary" matBadge="22" color="accent">home</mat-icon>
+    </button>
+  </div>
+
+  <div class="badge-examples">
+    <h3>Icons</h3>
+    <mat-icon [matBadge]="badgeContent">
+      home
+    </mat-icon>
+
+    <mat-icon color="primary" matBadge="22" matBadgePosition="below after" matBadgeColor="accent">
+      home
+    </mat-icon>
+
+    <mat-icon color="primary" matBadge="22" matBadgePosition="above before" matBadgeColor="warn">
+      home
+    </mat-icon>
+
+    <mat-icon color="primary" matBadge="22" matBadgePosition="below before">
+      home
+    </mat-icon>
+  </div>
+
+   <div class="badge-examples">
+    <h3>Size</h3>
+    <mat-icon [matBadge]="badgeContent" matBadgeSize="small">
+      home
+    </mat-icon>
+    <mat-icon [matBadge]="badgeContent" matBadgeSize="large">
+      home
+    </mat-icon>
+
+  </div>
+
+</div>

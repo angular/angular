@@ -61,6 +61,7 @@ import {TypographyDemo} from '../typography/typography-demo';
 import {DemoApp, Home} from './demo-app';
 import {DEMO_APP_ROUTES} from './routes';
 import {TableDemoModule} from '../table/table-demo-module';
+import {BadgeDemo} from 'badge/badge-demo';
 
 @NgModule({
   imports: [
@@ -78,6 +79,7 @@ import {TableDemoModule} from '../table/table-demo-module';
     BaselineDemo,
     ButtonDemo,
     ButtonToggleDemo,
+    BadgeDemo,
     CardDemo,
     CheckboxDemo,
     ChipsDemo,

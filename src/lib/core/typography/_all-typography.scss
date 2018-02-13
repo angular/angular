@@ -39,6 +39,7 @@
     $config: mat-typography-config();
   }
 
+  @include mat-badge-typography($config);
   @include mat-base-typography($config);
   @include mat-autocomplete-typography($config);
   @include mat-bottom-sheet-typography($config);
