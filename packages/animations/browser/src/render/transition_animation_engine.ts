@@ -390,7 +390,7 @@ export class AnimationTransitionNamespace {
         const trigger = this._triggers[triggerName];
         const transition = trigger.fallbackTransition;
         const elementStates = engine.statesByElement.get(element) !;
-        const fromState = elementStates[triggerName] || DEFAULT_STATE_VALUE;
+        const fromState = (elementStates && elementStates[triggerName]) || DEFAULT_STATE_VALUE;
         const toState = new StateValue(VOID_VALUE);
         const player = new TransitionAnimationPlayer(this.id, triggerName, element);
 
