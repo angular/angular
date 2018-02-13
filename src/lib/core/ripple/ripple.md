@@ -46,7 +46,7 @@ class MyComponent {
   
   /** Shows a centered and persistent ripple. */
   launchRipple() {
-    const rippleRef = this.ripple.launch(0, 0, {
+    const rippleRef = this.ripple.launch({
       persistent: true,
       centered: true
     });
@@ -57,12 +57,20 @@ class MyComponent {
 }
 ```
 
-In the example above, the `x` and `y` parameters will be ignored, because the `centered`
-ripple option has been set to `true`.
+In the example above, no specific coordinates have been passed, because the `centered`
+ripple option has been set to `true` and the coordinates would not matter.
 
 Ripples that are being dispatched programmatically can be launched with the `persistent` option.
 This means that the ripples will not fade out automatically, and need to be faded out using
 the `RippleRef` (*useful for focus indicators*).
+
+In case, developers want to launch ripples at specific coordinates within the element, the
+`launch()` method also accepts `x` and `y` coordinates as parameters. Those coordinates
+are relative to the ripple container element.
+
+```ts
+const rippleRef = this.ripple.launch(10, 10, {persistent: true});
+```
 
 ### Global options
 

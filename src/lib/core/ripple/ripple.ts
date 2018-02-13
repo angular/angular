@@ -150,11 +150,6 @@ export class MatRipple implements OnInit, OnDestroy, RippleTarget {
     this._rippleRenderer._removeTriggerEvents();
   }
 
-  /** Launches a manual ripple at the specified position. */
-  launch(x: number, y: number, config?: RippleConfig): RippleRef {
-    return this._rippleRenderer.fadeInRipple(x, y, {...this.rippleConfig, ...config});
-  }
-
   /** Fades out all currently showing ripple elements. */
   fadeOutAll() {
     this._rippleRenderer.fadeOutAll();
@@ -181,6 +176,29 @@ export class MatRipple implements OnInit, OnDestroy, RippleTarget {
   private _setupTriggerEventsIfEnabled() {
     if (!this.disabled && this._isInitialized) {
       this._rippleRenderer.setupTriggerEvents(this.trigger);
+    }
+  }
+
+  /**
+   * Launches a manual ripple using the specified ripple configuration.
+   * @param config Configuration for the manual ripple.
+   */
+  launch(config: RippleConfig): RippleRef;
+
+  /**
+   * Launches a manual ripple at the specified coordinates within the element.
+   * @param x Coordinate within the element, along the X axis at which to fade-in the ripple.
+   * @param y Coordinate within the element, along the Y axis at which to fade-in the ripple.
+   * @param config Optional ripple configuration for the manual ripple.
+   */
+  launch(x: number, y: number, config?: RippleConfig): RippleRef;
+
+  /** Launches a manual ripple at the specified coordinated or just by the ripple config. */
+  launch(configOrX: number | RippleConfig, y: number = 0, config?: RippleConfig): RippleRef {
+    if (typeof configOrX === 'number') {
+      return this._rippleRenderer.fadeInRipple(configOrX, y, {...this.rippleConfig, ...config});
+    } else {
+      return this._rippleRenderer.fadeInRipple(0, 0, {...this.rippleConfig, ...configOrX});
     }
   }
 }
