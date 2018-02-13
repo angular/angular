@@ -499,8 +499,7 @@ export function createTView(): TView {
     contentCheckHooks: null,
     viewHooks: null,
     viewCheckHooks: null,
-    destroyHooks: null,
-    objectLiterals: null
+    destroyHooks: null
   };
 }
 
@@ -1736,6 +1735,12 @@ function valueInData<T>(data: any[], index: number, value?: T): T {
   return value !;
 }
 
+/** Gets the binding at the current bindingIndex */
+export function peekBinding(): any {
+  ngDevMode && assertNotEqual(currentView.bindingStartIndex, null, 'bindingStartIndex');
+  return data[bindingIndex];
+}
+
 export function getCurrentQueries(QueryType: {new (): LQueries}): LQueries {
   return currentQueries || (currentQueries = new QueryType());
 }
@@ -1746,10 +1751,6 @@ export function getPreviousOrParentNode(): LNode {
 
 export function getRenderer(): Renderer3 {
   return renderer;
-}
-
-export function getTView(): TView {
-  return currentView.tView;
 }
 
 export function getDirectiveInstance<T>(instanceOrArray: T | [T]): T {
