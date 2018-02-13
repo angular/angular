@@ -1,14 +1,14 @@
 workspace(name = "angular")
 
 # Using a pre-release snapshot to pick up a commit that makes all nodejs_binary
-# programs produce source-mapped stack traces.
-RULES_NODEJS_VERSION = "926349cea4cd360afcd5647ccdd09d2d2fb471aa"
+# programs produce source-mapped stack traces and uglify sourcemaps.
+RULES_NODEJS_VERSION = "4303cbef12e5e252ad66cc35cff1123e3a44ee83"
 
 http_archive(
     name = "build_bazel_rules_nodejs",
     url = "https://github.com/bazelbuild/rules_nodejs/archive/%s.zip" % RULES_NODEJS_VERSION,
     strip_prefix = "rules_nodejs-%s" % RULES_NODEJS_VERSION,
-    sha256 = "5ba3c8c209078c2e3f0c6aa4abd01a1a561f92a5bfda04e25604af5f4734d69d",
+    sha256 = "fccb9a7122f339d89c9994dc0fea33c737dd76e66281d0da0cb841da5f1edec7",
 )
 
 load("@build_bazel_rules_nodejs//:defs.bzl", "check_bazel_version", "node_repositories")
