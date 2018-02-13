@@ -11,3 +11,8 @@ ts_library(
     name = "types",
     srcs = glob(["*.ts"]),
 )
+
+exports_files([
+    "license-banner.txt",
+    "README.md",
+])

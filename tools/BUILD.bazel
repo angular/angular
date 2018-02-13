@@ -1,1 +1,9 @@
-# Marker file indicating this folder is a Bazel package
+# Executes the workspace_status_command and provides the result.
+# See the section on stamping in docs/BAZEL.md
+genrule(
+    name = "stamp_data",
+    outs = ["stamp_data.txt"],
+    cmd = "cat bazel-out/volatile-status.txt > $@",
+    stamp = True,
+    visibility = ["//:__subpackages__"],
+)
