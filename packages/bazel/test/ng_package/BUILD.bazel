@@ -1,0 +1,36 @@
+load("//tools:defaults.bzl", "ts_library")
+load("@build_bazel_rules_nodejs//:defs.bzl", "jasmine_node_test")
+
+exports_files(["package.json"])
+
+# The tests in this package must run in separate targets, since they change
+# working directory and therefore have mutable global state that causes test
+# isolation failures.
+
+ts_library(
+    name = "core_spec_lib",
+    testonly = True,
+    srcs = ["core_package.spec.ts"],
+    deps = ["//packages:types"],
+)
+
+jasmine_node_test(
+    name = "core_package",
+    srcs = [":core_spec_lib"],
+    data = [
+        "//packages/core:npm_package",
+    ],
+)
+
+ts_library(
+    name = "common_spec_lib",
+    testonly = True,
+    srcs = ["common_package.spec.ts"],
+    deps = ["//packages:types"],
+)
+
+jasmine_node_test(
+    name = "common_package",
+    srcs = [":common_spec_lib"],
+    data = ["//packages/common:npm_package"],
+)
