@@ -1,13 +1,13 @@
-/**
- * We want to avoid emitting selectors that are deprecated but don't have a way to mark
- * them as such in the source code. Thus, we maintain a separate blacklist of selectors
- * that should not be emitted in the documentation.
- */
 import {ClassExportDoc} from 'dgeni-packages/typescript/api-doc-types/ClassExportDoc';
 import {PropertyMemberDoc} from 'dgeni-packages/typescript/api-doc-types/PropertyMemberDoc';
 import {MemberDoc} from 'dgeni-packages/typescript/api-doc-types/MemberDoc';
 import {CategorizedClassDoc, DeprecationDoc, HasDecoratorsDoc} from './dgeni-definitions';
 
+/**
+ * We want to avoid emitting selectors that are deprecated but don't have a way to mark
+ * them as such in the source code. Thus, we maintain a separate blacklist of selectors
+ * that should not be emitted in the documentation.
+ */
 const SELECTOR_BLACKLIST = new Set([
   '[portal]',
   '[portalHost]',

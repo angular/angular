@@ -13,10 +13,10 @@ export class MergeInheritedProperties implements Processor {
   $process(docs: DocCollection) {
     return docs
       .filter(doc => doc.docType === 'class')
-      .forEach(doc => this.addInhertiedProperties(doc));
+      .forEach(doc => this.addInheritedProperties(doc));
   }
 
-  private addInhertiedProperties(doc: ClassExportDoc) {
+  private addInheritedProperties(doc: ClassExportDoc) {
     doc.implementsClauses.filter(clause => clause.doc).forEach(clause => {
       clause.doc!.members.forEach(member => this.addMemberDocIfNotPresent(doc, member));
     });
