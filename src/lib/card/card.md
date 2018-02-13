@@ -19,7 +19,7 @@ provides a number of preset sections that you can use inside of an `<mat-card>`:
 
 These elements primary serve as pre-styled content containers without any additional APIs. 
 However, the `align` property on `<mat-card-actions>` can be used to position the actions at the 
-`'start'` or `'end` of the container.  
+`'start'` or `'end'` of the container.  
 
 
 ### Card headers
