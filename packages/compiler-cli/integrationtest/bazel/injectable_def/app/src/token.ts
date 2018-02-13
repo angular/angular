@@ -12,6 +12,16 @@ import {ServerModule} from '@angular/platform-server';
 
 export interface IService { readonly data: string; }
 
+@NgModule({})
+export class TokenModule {
+}
+
+export const TOKEN = new InjectionToken('test', {
+  scope: TokenModule,
+  factory: () => new Service(),
+});
+
+
 @Component({
   selector: 'token-app',
   template: '{{data}}',
@@ -25,18 +35,12 @@ export class AppComponent {
   imports: [
     BrowserModule.withServerTransition({appId: 'id-app'}),
     ServerModule,
+    TokenModule,
   ],
   declarations: [AppComponent],
   bootstrap: [AppComponent],
-  providers: [{provide: forwardRef(() => TOKEN), useClass: forwardRef(() => Service)}]
 })
 export class TokenAppModule {
 }
 
 export class Service { readonly data = 'fromToken'; }
-
-export const TOKEN = new InjectionToken('test', {
-  scope: TokenAppModule,
-  useClass: Service,
-  deps: [],
-});
