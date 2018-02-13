@@ -17,17 +17,15 @@ cd $(dirname $0)/../..
 source scripts/ci/sources/mode.sh
 source scripts/ci/sources/tunnel.sh
 
-# Get commit diff
-if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then
-  fileDiff=$(git diff --name-only $TRAVIS_COMMIT_RANGE)
-else
+# Get the commit diff and skip the build if only .md files have changed.
+# Should not apply to master builds.
+if [ "$TRAVIS_PULL_REQUEST" = "true" ]; then
   fileDiff=$(git diff --name-only $TRAVIS_BRANCH...HEAD)
-fi
 
-# Check if tests can be skipped
-if [[ ${fileDiff} =~ ^(.*\.md\s*)*$ ]]; then
-  echo "Skipping tests since only markdown files changed."
-  exit 0
+  if [[ ${fileDiff} =~ ^(.*\.md\s*)*$ ]]; then
+    echo "Skipping tests because only markdown files changed."
+    exit 0
+  fi
 fi
 
 start_tunnel
