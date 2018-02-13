@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ChangeDetectorRef, Compiler, Component, ComponentFactoryResolver, Directive, ElementRef, EventEmitter, Injector, Input, NgModule, NgModuleRef, OnChanges, OnDestroy, Output, SimpleChanges, destroyPlatform} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Compiler, Component, ComponentFactoryResolver, Directive, ElementRef, EventEmitter, Injector, Input, NgModule, NgModuleRef, OnChanges, OnDestroy, Output, SimpleChanges, destroyPlatform} from '@angular/core';
 import {async, fakeAsync, tick} from '@angular/core/testing';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
@@ -145,6 +145,51 @@ withEachNg1Version(() => {
                    'literal: Text; interpolate: Hello everyone; ' +
                    'oneWayA: A; oneWayB: B; twoWayA: newA; twoWayB: newB; (3) | ' +
                    'modelA: newA; modelB: newB; eventA: aFired; eventB: bFired;');
+         });
+       }));
+
+    it('should bind properties to onpush components', async(() => {
+         const ng1Module =
+             angular.module('ng1', []).value('$exceptionHandler', (err: any) => {
+                                        throw err;
+                                      }).run(($rootScope: angular.IScope) => {
+               $rootScope['dataB'] = 'B';
+             });
+
+         @Component({
+           selector: 'ng2',
+           inputs: ['oneWayB'],
+           template: 'oneWayB: {{oneWayB}}',
+           changeDetection: ChangeDetectionStrategy.OnPush
+         })
+
+         class Ng2Component {
+           ngOnChangesCount = 0;
+           oneWayB = '?';
+         }
+
+         ng1Module.directive('ng2', downgradeComponent({
+                               component: Ng2Component,
+                             }));
+
+         @NgModule({
+           declarations: [Ng2Component],
+           entryComponents: [Ng2Component],
+           imports: [BrowserModule, UpgradeModule]
+         })
+         class Ng2Module {
+           ngDoBootstrap() {}
+         }
+
+         const element = html(`
+          <div>
+            <ng2 [one-way-b]="dataB"></ng2>
+          </div>`);
+
+         bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then((upgrade) => {
+           expect(multiTrim(document.body.textContent)).toEqual('oneWayB: B');
+           $apply(upgrade, 'dataB= "everyone"');
+           expect(multiTrim(document.body.textContent)).toEqual('oneWayB: everyone');
          });
        }));
 
