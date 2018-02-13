@@ -12,6 +12,9 @@
     },
     "outDir": "../../dist/packages/compiler-cli"
   },
+  "bazelOptions": {
+    "suppressTsconfigOverrideWarnings": true
+  },
 
   "exclude": [
     "integrationtest"
