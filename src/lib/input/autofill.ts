@@ -97,8 +97,10 @@ export class AutofillMonitor implements OnDestroy {
    */
   stopMonitoring(element: Element) {
     const info = this._monitoredElements.get(element);
+
     if (info) {
       info.unlisten();
+      info.subject.complete();
       element.classList.remove('mat-input-autofill-monitored');
       element.classList.remove('mat-input-autofilled');
       this._monitoredElements.delete(element);
@@ -106,10 +108,7 @@ export class AutofillMonitor implements OnDestroy {
   }
 
   ngOnDestroy() {
-    this._monitoredElements.forEach(info => {
-      info.unlisten();
-      info.subject.complete();
-    });
+    this._monitoredElements.forEach((_info, element) => this.stopMonitoring(element));
   }
 }
 
@@ -119,13 +118,14 @@ export class AutofillMonitor implements OnDestroy {
   selector: '[matAutofill]',
 })
 export class MatAutofill implements OnDestroy, OnInit {
-  @Output() matAutofill = new EventEmitter<AutofillEvent>();
+  @Output() matAutofill: EventEmitter<AutofillEvent> = new EventEmitter<AutofillEvent>();
 
   constructor(private _elementRef: ElementRef, private _autofillMonitor: AutofillMonitor) {}
 
   ngOnInit() {
-    this._autofillMonitor.monitor(this._elementRef.nativeElement)
-        .subscribe(event => this.matAutofill.emit(event));
+    this._autofillMonitor
+      .monitor(this._elementRef.nativeElement)
+      .subscribe(event => this.matAutofill.emit(event));
   }
 
   ngOnDestroy() {

@@ -137,6 +137,19 @@ describe('AutofillMonitor', () => {
     autofillMonitor.stopMonitoring(inputEl);
     expect(inputEl.classlist).not.toContain('mat-input-autofilled');
   });
+
+  it('should complete the stream when monitoring is stopped', () => {
+    const element = testComponent.input1.nativeElement;
+    const autofillStream = autofillMonitor.monitor(element);
+    const spy = jasmine.createSpy('autofillStream complete');
+
+    autofillStream.subscribe(undefined, undefined, spy);
+    expect(spy).not.toHaveBeenCalled();
+
+    autofillMonitor.stopMonitoring(element);
+    expect(spy).toHaveBeenCalled();
+  });
+
 });
 
 describe('matAutofill', () => {
