@@ -97,6 +97,7 @@ export class CdkConnectedOverlay implements OnDestroy, OnChanges {
   private _overlayRef: OverlayRef;
   private _templatePortal: TemplatePortal;
   private _hasBackdrop = false;
+  private _lockPosition = false;
   private _backdropSubscription = Subscription.EMPTY;
   private _offsetX: number = 0;
   private _offsetY: number = 0;
@@ -154,6 +155,11 @@ export class CdkConnectedOverlay implements OnDestroy, OnChanges {
   @Input('cdkConnectedOverlayHasBackdrop')
   get hasBackdrop() { return this._hasBackdrop; }
   set hasBackdrop(value: any) { this._hasBackdrop = coerceBooleanProperty(value); }
+
+  /** Whether or not the overlay should be locked when scrolling. */
+  @Input('cdkConnectedOverlayLockPosition')
+  get lockPosition() { return this._lockPosition; }
+  set lockPosition(value: any) { this._lockPosition = coerceBooleanProperty(value); }
 
   /**
    * @deprecated
@@ -296,6 +302,10 @@ export class CdkConnectedOverlay implements OnDestroy, OnChanges {
         this._position.withPositions(this.positions);
       }
 
+      if (changes['lockPosition']) {
+        this._position.withLockedPosition(this.lockPosition);
+      }
+
       if (changes['origin'] || changes['_deprecatedOrigin']) {
         this._position.setOrigin(this.origin.elementRef);
 
@@ -359,7 +369,8 @@ export class CdkConnectedOverlay implements OnDestroy, OnChanges {
     const strategy = this._overlay.position()
       .connectedTo(this.origin.elementRef, originPoint, overlayPoint)
       .withOffsetX(this.offsetX)
-      .withOffsetY(this.offsetY);
+      .withOffsetY(this.offsetY)
+      .withLockedPosition(this.lockPosition);
 
     for (let i = 1; i < this.positions.length; i++) {
       strategy.withFallbackPosition(
