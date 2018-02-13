@@ -24,7 +24,6 @@ import {
   Input,
   OnDestroy,
   OnInit,
-  Optional,
   Output,
   QueryList,
   ViewChild,
@@ -164,8 +163,8 @@ export class MatListOption extends _MatListOptionMixinBase
 
   constructor(private _element: ElementRef,
               private _changeDetector: ChangeDetectorRef,
-              /** @docs-private */ @Optional() @Inject(forwardRef(() => MatSelectionList))
-              public selectionList: MatSelectionList) {
+              /** @docs-private */
+              @Inject(forwardRef(() => MatSelectionList)) public selectionList: MatSelectionList) {
     super();
   }
 
