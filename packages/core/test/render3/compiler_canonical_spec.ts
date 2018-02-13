@@ -6,46 +6,55 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, ContentChild, Directive, Injectable, Input, NgModule, OnDestroy, Optional, Pipe, PipeTransform, QueryList, SimpleChanges, TemplateRef, Type, ViewChild, ViewContainerRef} from '../../src/core';
-import * as r3 from '../../src/render3/index';
+import {Component, ContentChild, Directive, Injectable, Input, NgModule, OnDestroy, Optional, Pipe, PipeTransform, QueryList, SimpleChanges, TemplateRef, ViewChild, ViewContainerRef} from '../../src/core';
+import * as $r3$ from '../../src/core_render3_private_export';
 
-import {containerEl, renderComponent, requestAnimationFrame, toHtml} from './render_util';
+import {renderComponent, toHtml} from './render_util';
 
 /**
  * NORMATIVE => /NORMATIVE: Designates what the compiler is expected to generate.
  *
- * All local variable names are considered non-normative (informative).
+ * All local variable names are considered non-normative (informative). They should be
+ * wrapped in $ on each end to simplify testing on the compiler side.
  */
 
 describe('compiler specification', () => {
+  // Saving type as $boolean$, etc to simplify testing for compiler, as types aren't saved
+  type $boolean$ = boolean;
+  type $any$ = any;
+  type $number$ = number;
+
   describe('elements', () => {
     it('should translate DOM structure', () => {
+      type $MyComponent$ = MyComponent;
+
+      // Important: keep arrays outside of function to not create new instances.
+      const $e0_attrs$ = ['class', 'my-app', 'title', 'Hello'];
+
       @Component({
         selector: 'my-component',
         template: `<div class="my-app" title="Hello">Hello <b>World</b>!</div>`
       })
       class MyComponent {
         // NORMATIVE
-        static ngComponentDef = r3.defineComponent({
+        static ngComponentDef = $r3$.ɵdefineComponent({
           type: MyComponent,
           tag: 'my-component',
           factory: () => new MyComponent(),
-          template: function(ctx: MyComponent, cm: boolean) {
+          template: function(ctx: $MyComponent$, cm: $boolean$) {
             if (cm) {
-              r3.E(0, 'div', e0_attrs);
-              r3.T(1, 'Hello ');
-              r3.E(2, 'b');
-              r3.T(3, 'World');
-              r3.e();
-              r3.T(4, '!');
-              r3.e();
+              $r3$.ɵE(0, 'div', $e0_attrs$);
+              $r3$.ɵT(1, 'Hello ');
+              $r3$.ɵE(2, 'b');
+              $r3$.ɵT(3, 'World');
+              $r3$.ɵe();
+              $r3$.ɵT(4, '!');
+              $r3$.ɵe();
             }
           }
         });
         // /NORMATIVE
       }
-      // Important: keep arrays outside of function to not create new instances.
-      const e0_attrs = ['class', 'my-app', 'title', 'Hello'];
 
       expect(renderComp(MyComponent))
           .toEqual('<div class="my-app" title="Hello">Hello <b>World</b>!</div>');
@@ -54,18 +63,21 @@ describe('compiler specification', () => {
 
   describe('components & directives', () => {
     it('should instantiate directives', () => {
+      type $ChildComponent$ = ChildComponent;
+      type $MyComponent$ = MyComponent;
+
       const log: string[] = [];
       @Component({selector: 'child', template: 'child-view'})
       class ChildComponent {
         constructor() { log.push('ChildComponent'); }
         // NORMATIVE
-        static ngComponentDef = r3.defineComponent({
+        static ngComponentDef = $r3$.ɵdefineComponent({
           type: ChildComponent,
           tag: `child`,
           factory: () => new ChildComponent(),
-          template: function(ctx: ChildComponent, cm: boolean) {
+          template: function(ctx: $ChildComponent$, cm: $boolean$) {
             if (cm) {
-              r3.T(0, 'child-view');
+              $r3$.ɵT(0, 'child-view');
             }
           }
         });
@@ -73,50 +85,53 @@ describe('compiler specification', () => {
       }
 
       @Directive({
-        selector: 'some-directive',
+        selector: '[some-directive]',
       })
       class SomeDirective {
         constructor() { log.push('SomeDirective'); }
         // NORMATIVE
-        static ngDirectiveDef = r3.defineDirective({
+        static ngDirectiveDef = $r3$.ɵdefineDirective({
           type: SomeDirective,
           factory: () => new SomeDirective(),
         });
         // /NORMATIVE
       }
 
+      // Important: keep arrays outside of function to not create new instances.
+      // NORMATIVE
+      const $e0_attrs$ = ['some-directive', ''];
+      const $e0_dirs$ = [SomeDirective];
+      // /NORMATIVE
+
       @Component({selector: 'my-component', template: `<child some-directive></child>!`})
       class MyComponent {
         // NORMATIVE
-        static ngComponentDef = r3.defineComponent({
+        static ngComponentDef = $r3$.ɵdefineComponent({
           type: MyComponent,
           tag: 'my-component',
           factory: () => new MyComponent(),
-          template: function(ctx: MyComponent, cm: boolean) {
+          template: function(ctx: $MyComponent$, cm: $boolean$) {
             if (cm) {
-              r3.E(0, ChildComponent, e0_attrs, e0_dirs);
-              r3.e();
-              r3.T(3, '!');
+              $r3$.ɵE(0, ChildComponent, $e0_attrs$, $e0_dirs$);
+              $r3$.ɵe();
+              $r3$.ɵT(3, '!');
             }
             ChildComponent.ngComponentDef.h(1, 0);
             SomeDirective.ngDirectiveDef.h(2, 0);
-            r3.r(1, 0);
-            r3.r(2, 0);
+            $r3$.ɵr(1, 0);
+            $r3$.ɵr(2, 0);
           }
         });
         // /NORMATIVE
       }
-      // Important: keep arrays outside of function to not create new instances.
-      // NORMATIVE
-      const e0_attrs = ['some-directive', ''];
-      const e0_dirs = [SomeDirective];
-      // /NORMATIVE
 
       expect(renderComp(MyComponent)).toEqual('<child some-directive="">child-view</child>!');
       expect(log).toEqual(['ChildComponent', 'SomeDirective']);
     });
 
     xit('should support structural directives', () => {
+      type $MyComponent$ = MyComponent;
+
       const log: string[] = [];
       @Directive({
         selector: '[if]',
@@ -124,50 +139,51 @@ describe('compiler specification', () => {
       class IfDirective {
         constructor(template: TemplateRef<any>) { log.push('ifDirective'); }
         // NORMATIVE
-        static ngDirectiveDef = r3.defineDirective({
+        static ngDirectiveDef = $r3$.ɵdefineDirective({
           type: IfDirective,
-          factory: () => new IfDirective(r3.injectTemplateRef()),
+          factory: () => new IfDirective($r3$.ɵinjectTemplateRef()),
         });
         // /NORMATIVE
       }
+
+      // Important: keep arrays outside of function to not create new instances.
+      // NORMATIVE
+      const $e0_locals$ = ['foo', ''];
+      const $c1_dirs$ = [IfDirective];
+      // /NORMATIVE
 
       @Component(
           {selector: 'my-component', template: `<ul #foo><li *if>{{salutation}} {{foo}}</li></ul>`})
       class MyComponent {
         salutation = 'Hello';
         // NORMATIVE
-        static ngComponentDef = r3.defineComponent({
+        static ngComponentDef = $r3$.ɵdefineComponent({
           type: MyComponent,
           tag: 'my-component',
           factory: () => new MyComponent(),
-          template: function(ctx: MyComponent, cm: boolean) {
+          template: function(ctx: $MyComponent$, cm: $boolean$) {
             if (cm) {
-              r3.E(0, 'ul', null, null, e0_locals);
-              r3.C(2, c1_dirs, C1);
-              r3.e();
+              $r3$.ɵE(0, 'ul', null, null, $e0_locals$);
+              $r3$.ɵC(2, $c1_dirs$, C1);
+              $r3$.ɵe();
             }
-            let foo = r3.m<any>(1);
-            r3.cR(2);
-            r3.r(3, 2);
-            r3.cr();
+            let $foo$ = $r3$.ɵm<any>(1);
+            $r3$.ɵcR(2);
+            $r3$.ɵr(3, 2);
+            $r3$.ɵcr();
 
-            function C1(ctx1: any, cm: boolean) {
+            function C1(ctx1: $any$, cm: $boolean$) {
               if (cm) {
-                r3.E(0, 'li');
-                r3.T(1);
-                r3.e();
+                $r3$.ɵE(0, 'li');
+                $r3$.ɵT(1);
+                $r3$.ɵe();
               }
-              r3.t(1, r3.b2('', ctx.salutation, ' ', foo, ''));
+              $r3$.ɵt(1, $r3$.ɵb2('', ctx.salutation, ' ', $foo$, ''));
             }
           }
         });
         // /NORMATIVE
       }
-      // Important: keep arrays outside of function to not create new instances.
-      // NORMATIVE
-      const e0_locals = ['foo', ''];
-      const c1_dirs = [IfDirective];
-      // /NORMATIVE
 
       expect(renderComp(MyComponent)).toEqual('<child some-directive="">child-view</child>!');
       expect(log).toEqual(['ChildComponent', 'SomeDirective']);
@@ -176,6 +192,8 @@ describe('compiler specification', () => {
     describe('value composition', () => {
 
       it('should support array literals', () => {
+        type $MyComp$ = MyComp;
+        type $MyApp$ = MyApp;
 
         @Component({
           selector: 'my-comp',
@@ -187,25 +205,29 @@ describe('compiler specification', () => {
         class MyComp {
           @Input() names: string[];
 
-          static ngComponentDef = r3.defineComponent({
+          static ngComponentDef = $r3$.ɵdefineComponent({
             type: MyComp,
             tag: 'my-comp',
             factory: function MyComp_Factory() { return new MyComp(); },
-            template: function MyComp_Template(ctx: MyComp, cm: boolean) {
+            template: function MyComp_Template(ctx: $MyComp$, cm: $boolean$) {
               if (cm) {
-                r3.E(0, 'p');
-                r3.T(1);
-                r3.e();
-                r3.E(2, 'p');
-                r3.T(3);
-                r3.e();
+                $r3$.ɵE(0, 'p');
+                $r3$.ɵT(1);
+                $r3$.ɵe();
+                $r3$.ɵE(2, 'p');
+                $r3$.ɵT(3);
+                $r3$.ɵe();
               }
-              r3.t(1, r3.b(ctx.names[0]));
-              r3.t(3, r3.b(ctx.names[1]));
+              $r3$.ɵt(1, $r3$.ɵb(ctx.names[0]));
+              $r3$.ɵt(3, $r3$.ɵb(ctx.names[1]));
             },
             inputs: {names: 'names'}
           });
         }
+
+        // NORMATIVE
+        const $e0_ff$ = (v: any) => ['Nancy', v];
+        // /NORMATIVE
 
         @Component({
           selector: 'my-app',
@@ -217,31 +239,29 @@ describe('compiler specification', () => {
           customName = 'Bess';
 
           // NORMATIVE
-          static ngComponentDef = r3.defineComponent({
+          static ngComponentDef = $r3$.ɵdefineComponent({
             type: MyApp,
             tag: 'my-app',
             factory: function MyApp_Factory() { return new MyApp(); },
-            template: function MyApp_Template(ctx: MyApp, cm: boolean) {
+            template: function MyApp_Template(ctx: $MyApp$, cm: $boolean$) {
               if (cm) {
-                r3.E(0, MyComp);
-                r3.e();
+                $r3$.ɵE(0, MyComp);
+                $r3$.ɵe();
               }
-              r3.p(0, 'names', r3.o1(e0_ff, ctx.customName));
+              $r3$.ɵp(0, 'names', $r3$.ɵo1($e0_ff$, ctx.customName));
               MyComp.ngComponentDef.h(1, 0);
-              r3.r(1, 0);
+              $r3$.ɵr(1, 0);
             }
           });
           // /NORMATIVE
         }
 
-        // NORMATIVE
-        const e0_ff = (v: any) => ['Nancy', v];
-        // /NORMATIVE
-
         expect(renderComp(MyApp)).toEqual(`<my-comp><p>Nancy</p><p>Bess</p></my-comp>`);
       });
 
       it('should support 9+ bindings in array literals', () => {
+        type $MyComp$ = MyComp;
+
         @Component({
           selector: 'my-comp',
           template: `
@@ -261,41 +281,46 @@ describe('compiler specification', () => {
         class MyComp {
           @Input() names: string[];
 
-          static ngComponentDef = r3.defineComponent({
+          static ngComponentDef = $r3$.ɵdefineComponent({
             type: MyComp,
             tag: 'my-comp',
             factory: function MyComp_Factory() { return new MyComp(); },
-            template: function MyComp_Template(ctx: MyComp, cm: boolean) {
+            template: function MyComp_Template(ctx: $MyComp$, cm: $boolean$) {
               if (cm) {
-                r3.T(0);
-                r3.T(1);
-                r3.T(2);
-                r3.T(3);
-                r3.T(4);
-                r3.T(5);
-                r3.T(6);
-                r3.T(7);
-                r3.T(8);
-                r3.T(9);
-                r3.T(10);
-                r3.T(11);
+                $r3$.ɵT(0);
+                $r3$.ɵT(1);
+                $r3$.ɵT(2);
+                $r3$.ɵT(3);
+                $r3$.ɵT(4);
+                $r3$.ɵT(5);
+                $r3$.ɵT(6);
+                $r3$.ɵT(7);
+                $r3$.ɵT(8);
+                $r3$.ɵT(9);
+                $r3$.ɵT(10);
+                $r3$.ɵT(11);
               }
-              r3.t(0, r3.b(ctx.names[0]));
-              r3.t(1, r3.b(ctx.names[1]));
-              r3.t(2, r3.b(ctx.names[2]));
-              r3.t(3, r3.b(ctx.names[3]));
-              r3.t(4, r3.b(ctx.names[4]));
-              r3.t(5, r3.b(ctx.names[5]));
-              r3.t(6, r3.b(ctx.names[6]));
-              r3.t(7, r3.b(ctx.names[7]));
-              r3.t(8, r3.b(ctx.names[8]));
-              r3.t(9, r3.b(ctx.names[9]));
-              r3.t(10, r3.b(ctx.names[10]));
-              r3.t(11, r3.b(ctx.names[11]));
+              $r3$.ɵt(0, $r3$.ɵb(ctx.names[0]));
+              $r3$.ɵt(1, $r3$.ɵb(ctx.names[1]));
+              $r3$.ɵt(2, $r3$.ɵb(ctx.names[2]));
+              $r3$.ɵt(3, $r3$.ɵb(ctx.names[3]));
+              $r3$.ɵt(4, $r3$.ɵb(ctx.names[4]));
+              $r3$.ɵt(5, $r3$.ɵb(ctx.names[5]));
+              $r3$.ɵt(6, $r3$.ɵb(ctx.names[6]));
+              $r3$.ɵt(7, $r3$.ɵb(ctx.names[7]));
+              $r3$.ɵt(8, $r3$.ɵb(ctx.names[8]));
+              $r3$.ɵt(9, $r3$.ɵb(ctx.names[9]));
+              $r3$.ɵt(10, $r3$.ɵb(ctx.names[10]));
+              $r3$.ɵt(11, $r3$.ɵb(ctx.names[11]));
             },
             inputs: {names: 'names'}
           });
         }
+
+        // NORMATIVE
+        const $e0_ff$ = (v: any[]) =>
+            ['start-', v[0], v[1], v[2], v[3], v[4], '-middle-', v[5], v[6], v[7], v[8], '-end'];
+        // /NORMATIVE
 
         @Component({
           selector: 'my-app',
@@ -316,33 +341,32 @@ describe('compiler specification', () => {
           n8 = 'i';
 
           // NORMATIVE
-          static ngComponentDef = r3.defineComponent({
+          static ngComponentDef = $r3$.ɵdefineComponent({
             type: MyApp,
             tag: 'my-app',
             factory: function MyApp_Factory() { return new MyApp(); },
             template: function MyApp_Template(c: MyApp, cm: boolean) {
               if (cm) {
-                r3.E(0, MyComp);
-                r3.e();
+                $r3$.ɵE(0, MyComp);
+                $r3$.ɵe();
               }
-              r3.p(
-                  0, 'names', r3.oV(e0_ff, [c.n0, c.n1, c.n2, c.n3, c.n4, c.n5, c.n6, c.n7, c.n8]));
+              $r3$.ɵp(
+                  0, 'names',
+                  $r3$.ɵoV($e0_ff$, [c.n0, c.n1, c.n2, c.n3, c.n4, c.n5, c.n6, c.n7, c.n8]));
               MyComp.ngComponentDef.h(1, 0);
-              r3.r(1, 0);
+              $r3$.ɵr(1, 0);
             }
           });
           // /NORMATIVE
         }
 
-        // NORMATIVE
-        const e0_ff = (v: any[]) =>
-            ['start-', v[0], v[1], v[2], v[3], v[4], '-middle-', v[5], v[6], v[7], v[8], '-end'];
-        // /NORMATIVE
-
         expect(renderComp(MyApp)).toEqual(`<my-comp>start-abcde-middle-fghi-end</my-comp>`);
       });
 
       it('should support object literals', () => {
+        type $ObjectComp$ = ObjectComp;
+        type $MyApp$ = MyApp;
+
         @Component({
           selector: 'object-comp',
           template: `
@@ -353,25 +377,29 @@ describe('compiler specification', () => {
         class ObjectComp {
           config: {[key: string]: any};
 
-          static ngComponentDef = r3.defineComponent({
+          static ngComponentDef = $r3$.ɵdefineComponent({
             type: ObjectComp,
             tag: 'object-comp',
             factory: function ObjectComp_Factory() { return new ObjectComp(); },
-            template: function ObjectComp_Template(ctx: ObjectComp, cm: boolean) {
+            template: function ObjectComp_Template(ctx: $ObjectComp$, cm: $boolean$) {
               if (cm) {
-                r3.E(0, 'p');
-                r3.T(1);
-                r3.e();
-                r3.E(2, 'p');
-                r3.T(3);
-                r3.e();
+                $r3$.ɵE(0, 'p');
+                $r3$.ɵT(1);
+                $r3$.ɵe();
+                $r3$.ɵE(2, 'p');
+                $r3$.ɵT(3);
+                $r3$.ɵe();
               }
-              r3.t(1, r3.b(ctx.config['duration']));
-              r3.t(3, r3.b(ctx.config.animation));
+              $r3$.ɵt(1, $r3$.ɵb(ctx.config['duration']));
+              $r3$.ɵt(3, $r3$.ɵb(ctx.config.animation));
             },
             inputs: {config: 'config'}
           });
         }
+
+        // NORMATIVE
+        const $e0_ff$ = (v: any) => { return {'duration': 500, animation: v}; };
+        // /NORMATIVE
 
         @Component({
           selector: 'my-app',
@@ -383,34 +411,33 @@ describe('compiler specification', () => {
           name = 'slide';
 
           // NORMATIVE
-          static ngComponentDef = r3.defineComponent({
+          static ngComponentDef = $r3$.ɵdefineComponent({
             type: MyApp,
             tag: 'my-app',
             factory: function MyApp_Factory() { return new MyApp(); },
-            template: function MyApp_Template(ctx: MyApp, cm: boolean) {
+            template: function MyApp_Template(ctx: $MyApp$, cm: $boolean$) {
               if (cm) {
-                r3.E(0, ObjectComp);
-                r3.e();
+                $r3$.ɵE(0, ObjectComp);
+                $r3$.ɵe();
               }
-              r3.p(0, 'config', r3.o1(e0_ff, ctx.name));
+              $r3$.ɵp(0, 'config', $r3$.ɵo1($e0_ff$, ctx.name));
               ObjectComp.ngComponentDef.h(1, 0);
-              r3.r(1, 0);
+              $r3$.ɵr(1, 0);
             }
           });
           // /NORMATIVE
         }
 
-        // NORMATIVE
-        const e0_ff = (v: any) => { return {'duration': 500, animation: v}; };
-        // /NORMATIVE
-
         expect(renderComp(MyApp)).toEqual(`<object-comp><p>500</p><p>slide</p></object-comp>`);
       });
 
       it('should support expressions nested deeply in object/array literals', () => {
+        type $NestedComp$ = NestedComp;
+        type $MyApp$ = MyApp;
+
         @Component({
           selector: 'nested-comp',
-          template: `            
+          template: `
             <p> {{ config.animation }} </p>
             <p> {{config.actions[0].opacity }} </p>
             <p> {{config.actions[1].duration }} </p>
@@ -419,29 +446,36 @@ describe('compiler specification', () => {
         class NestedComp {
           config: {[key: string]: any};
 
-          static ngComponentDef = r3.defineComponent({
+          static ngComponentDef = $r3$.ɵdefineComponent({
             type: NestedComp,
             tag: 'nested-comp',
             factory: function NestedComp_Factory() { return new NestedComp(); },
-            template: function NestedComp_Template(ctx: NestedComp, cm: boolean) {
+            template: function NestedComp_Template(ctx: $NestedComp$, cm: $boolean$) {
               if (cm) {
-                r3.E(0, 'p');
-                r3.T(1);
-                r3.e();
-                r3.E(2, 'p');
-                r3.T(3);
-                r3.e();
-                r3.E(4, 'p');
-                r3.T(5);
-                r3.e();
+                $r3$.ɵE(0, 'p');
+                $r3$.ɵT(1);
+                $r3$.ɵe();
+                $r3$.ɵE(2, 'p');
+                $r3$.ɵT(3);
+                $r3$.ɵe();
+                $r3$.ɵE(4, 'p');
+                $r3$.ɵT(5);
+                $r3$.ɵe();
               }
-              r3.t(1, r3.b(ctx.config.animation));
-              r3.t(3, r3.b(ctx.config.actions[0].opacity));
-              r3.t(5, r3.b(ctx.config.actions[1].duration));
+              $r3$.ɵt(1, $r3$.ɵb(ctx.config.animation));
+              $r3$.ɵt(3, $r3$.ɵb(ctx.config.actions[0].opacity));
+              $r3$.ɵt(5, $r3$.ɵb(ctx.config.actions[1].duration));
             },
             inputs: {config: 'config'}
           });
         }
+
+        // NORMATIVE
+        const $e0_ff$ = (v: any) => { return {opacity: 1, duration: v}; };
+        const $c0$ = {opacity: 0, duration: 0};
+        const $e0_ff_1$ = (v: any) => [$c0$, v];
+        const $e0_ff_2$ = (v1: any, v2: any) => { return {animation: v1, actions: v2}; };
+        // /NORMATIVE
 
         @Component({
           selector: 'my-app',
@@ -455,31 +489,25 @@ describe('compiler specification', () => {
           duration = 100;
 
           // NORMATIVE
-          static ngComponentDef = r3.defineComponent({
+          static ngComponentDef = $r3$.ɵdefineComponent({
             type: MyApp,
             tag: 'my-app',
             factory: function MyApp_Factory() { return new MyApp(); },
-            template: function MyApp_Template(ctx: MyApp, cm: boolean) {
+            template: function MyApp_Template(ctx: $MyApp$, cm: $boolean$) {
               if (cm) {
-                r3.E(0, NestedComp);
-                r3.e();
+                $r3$.ɵE(0, NestedComp);
+                $r3$.ɵe();
               }
-              r3.p(
+              $r3$.ɵp(
                   0, 'config',
-                  r3.o2(e0_ff_2, ctx.name, r3.o1(e0_ff_1, r3.o1(e0_ff, ctx.duration))));
+                  $r3$.ɵo2(
+                      $e0_ff_2$, ctx.name, $r3$.ɵo1($e0_ff_1$, $r3$.ɵo1($e0_ff$, ctx.duration))));
               NestedComp.ngComponentDef.h(1, 0);
-              r3.r(1, 0);
+              $r3$.ɵr(1, 0);
             }
           });
           // /NORMATIVE
         }
-
-        // NORMATIVE
-        const e0_ff = (v: any) => { return {opacity: 1, duration: v}; };
-        const c0 = {opacity: 0, duration: 0};
-        const e0_ff_1 = (v: any) => [c0, v];
-        const e0_ff_2 = (v1: any, v2: any) => { return {animation: v1, actions: v2}; };
-        // /NORMATIVE
 
         expect(renderComp(MyApp))
             .toEqual(`<nested-comp><p>slide</p><p>0</p><p>100</p></nested-comp>`);
@@ -488,22 +516,33 @@ describe('compiler specification', () => {
     });
 
     it('should support content projection', () => {
+      type $SimpleComponent$ = SimpleComponent;
+      type $ComplexComponent$ = ComplexComponent;
+      type $MyApp$ = MyApp;
+
       @Component({selector: 'simple', template: `<div><ng-content></ng-content></div>`})
       class SimpleComponent {
-        static ngComponentDef = r3.defineComponent({
+        // NORMATIVE
+        static ngComponentDef = $r3$.ɵdefineComponent({
           type: SimpleComponent,
           tag: 'simple',
           factory: () => new SimpleComponent(),
-          template: function(ctx: SimpleComponent, cm: boolean) {
+          template: function(ctx: $SimpleComponent$, cm: $boolean$) {
             if (cm) {
-              r3.pD(0);
-              r3.E(1, 'div');
-              r3.P(2, 0);
-              r3.e();
+              $r3$.ɵpD(0);
+              $r3$.ɵE(1, 'div');
+              $r3$.ɵP(2, 0);
+              $r3$.ɵe();
             }
           }
         });
+        // /NORMATIVE
       }
+
+      // NORMATIVE
+      const $pD_0$: $r3$.ɵCssSelector[] =
+          [[[['span', 'title', 'toFirst'], null]], [[['span', 'title', 'toSecond'], null]]];
+      // /NORMATIVE
 
       @Component({
         selector: 'complex',
@@ -512,25 +551,25 @@ describe('compiler specification', () => {
         <div id="second"><ng-content select="span[title=toSecond]"></ng-content></div>`
       })
       class ComplexComponent {
-        static ngComponentDef = r3.defineComponent({
+        // NORMATIVE
+        static ngComponentDef = $r3$.ɵdefineComponent({
           type: ComplexComponent,
           tag: 'complex',
           factory: () => new ComplexComponent(),
-          template: function(ctx: ComplexComponent, cm: boolean) {
+          template: function(ctx: $ComplexComponent$, cm: $boolean$) {
             if (cm) {
-              r3.pD(0, pD_0);
-              r3.E(1, 'div', ['id', 'first']);
-              r3.P(2, 0, 1);
-              r3.e();
-              r3.E(3, 'div', ['id', 'second']);
-              r3.P(4, 0, 2);
-              r3.e();
+              $r3$.ɵpD(0, $pD_0$);
+              $r3$.ɵE(1, 'div', ['id', 'first']);
+              $r3$.ɵP(2, 0, 1);
+              $r3$.ɵe();
+              $r3$.ɵE(3, 'div', ['id', 'second']);
+              $r3$.ɵP(4, 0, 2);
+              $r3$.ɵe();
             }
           }
         });
+        // /NORMATIVE
       }
-      const pD_0: r3.CssSelector[] =
-          [[[['span', 'title', 'toFirst'], null]], [[['span', 'title', 'toSecond'], null]]];
 
       @Component({
         selector: 'my-app',
@@ -538,15 +577,15 @@ describe('compiler specification', () => {
         <complex></complex>`
       })
       class MyApp {
-        static ngComponentDef = r3.defineComponent({
+        static ngComponentDef = $r3$.ɵdefineComponent({
           type: MyApp,
           tag: 'my-app',
           factory: () => new MyApp(),
-          template: function(ctx: MyApp, cm: boolean) {
+          template: function(ctx: $MyApp$, cm: $boolean$) {
             if (cm) {
-              r3.E(0, SimpleComponent);
-              r3.T(2, 'content');
-              r3.e();
+              $r3$.ɵE(0, SimpleComponent);
+              $r3$.ɵT(2, 'content');
+              $r3$.ɵe();
             }
           }
         });
@@ -560,14 +599,21 @@ describe('compiler specification', () => {
         selector: '[someDir]',
       })
       class SomeDirective {
-        static ngDirectiveDef = r3.defineDirective({
+        static ngDirectiveDef = $r3$.ɵdefineDirective({
           type: SomeDirective,
           factory: function SomeDirective_Factory() { return someDir = new SomeDirective(); },
-          features: [r3.PublicFeature]
+          features: [$r3$.ɵPublicFeature]
         });
       }
 
       it('should support view queries', () => {
+        type $ViewQueryComponent$ = ViewQueryComponent;
+
+        // NORMATIVE
+        const $e1_attrs$ = ['someDir', ''];
+        const $e1_dirs$ = [SomeDirective];
+        // /NORMATIVE
+
         @Component({
           selector: 'view-query-component',
           template: `
@@ -579,32 +625,36 @@ describe('compiler specification', () => {
 
 
           // NORMATIVE
-          static ngComponentDef = r3.defineComponent({
+          static ngComponentDef = $r3$.ɵdefineComponent({
             type: ViewQueryComponent,
             tag: 'view-query-component',
             factory: function ViewQueryComponent_Factory() { return new ViewQueryComponent(); },
-            template: function ViewQueryComponent_Template(ctx: ViewQueryComponent, cm: boolean) {
-              let tmp: any;
+            template: function ViewQueryComponent_Template(
+                ctx: $ViewQueryComponent$, cm: $boolean$) {
+              let $tmp$: any;
               if (cm) {
-                r3.Q(0, SomeDirective, false);
-                r3.E(1, 'div', null, e1_dirs);
-                r3.e();
+                $r3$.ɵQ(0, SomeDirective, false);
+                $r3$.ɵE(1, 'div', $e1_attrs$, $e1_dirs$);
+                $r3$.ɵe();
               }
-              r3.qR(tmp = r3.m<QueryList<any>>(0)) && (ctx.someDir = tmp as QueryList<any>);
+              $r3$.ɵqR($tmp$ = $r3$.ɵm<QueryList<any>>(0)) &&
+                  (ctx.someDir = $tmp$ as QueryList<any>);
               SomeDirective.ngDirectiveDef.h(2, 1);
-              r3.r(2, 1);
+              $r3$.ɵr(2, 1);
             }
           });
           // /NORMATIVE
         }
 
-        const e1_dirs = [SomeDirective];
 
         const viewQueryComp = renderComponent(ViewQueryComponent);
         expect((viewQueryComp.someDir as QueryList<SomeDirective>).toArray()).toEqual([someDir !]);
       });
 
       it('should support content queries', () => {
+        type $MyApp$ = MyApp;
+        type $ContentQueryComponent$ = ContentQueryComponent;
+
         let contentQueryComp: ContentQueryComponent;
 
         @Component({
@@ -617,29 +667,33 @@ describe('compiler specification', () => {
           @ContentChild(SomeDirective) someDir: SomeDirective;
 
           // NORMATIVE
-          static ngComponentDef = r3.defineComponent({
+          static ngComponentDef = $r3$.ɵdefineComponent({
             type: ContentQueryComponent,
             tag: 'content-query-component',
             factory: function ContentQueryComponent_Factory() {
-              return [new ContentQueryComponent(), r3.Q(null, SomeDirective, false)];
+              return [new ContentQueryComponent(), $r3$.ɵQ(null, SomeDirective, false)];
             },
             hostBindings: function ContentQueryComponent_HostBindings(
-                dirIndex: number, elIndex: number) {
-              let tmp: any;
-              r3.qR(tmp = r3.m<any[]>(dirIndex)[1]) && (r3.m<any[]>(dirIndex)[0].someDir = tmp);
+                dirIndex: $number$, elIndex: $number$) {
+              let $tmp$: any;
+              $r3$.ɵqR($tmp$ = $r3$.ɵm<any[]>(dirIndex)[1]) &&
+                  ($r3$.ɵm<any[]>(dirIndex)[0].someDir = $tmp$);
             },
             template: function ContentQueryComponent_Template(
-                ctx: ContentQueryComponent, cm: boolean) {
+                ctx: $ContentQueryComponent$, cm: $boolean$) {
               if (cm) {
-                r3.pD(0);
-                r3.E(1, 'div');
-                r3.P(2, 0);
-                r3.e();
+                $r3$.ɵpD(0);
+                $r3$.ɵE(1, 'div');
+                $r3$.ɵP(2, 0);
+                $r3$.ɵe();
               }
             }
           });
           // /NORMATIVE
         }
+
+        const $e2_attrs$ = ['someDir', ''];
+        const $e2_dirs$ = [SomeDirective];
 
         @Component({
           selector: 'my-app',
@@ -650,30 +704,32 @@ describe('compiler specification', () => {
           `
         })
         class MyApp {
-          static ngComponentDef = r3.defineComponent({
+          // NON-NORMATIVE
+          static ngComponentDef = $r3$.ɵdefineComponent({
             type: MyApp,
             tag: 'my-app',
             factory: function MyApp_Factory() { return new MyApp(); },
-            template: function MyApp_Template(ctx: MyApp, cm: boolean) {
+            template: function MyApp_Template(ctx: $MyApp$, cm: $boolean$) {
               if (cm) {
-                r3.E(0, ContentQueryComponent);
-                contentQueryComp = r3.m<any[]>(1)[0];
-                r3.E(2, 'div', null, e2_dirs);
-                r3.e();
-                r3.e();
+                $r3$.ɵE(0, ContentQueryComponent);
+                contentQueryComp = $r3$.ɵm<any[]>(1)[0];
+                $r3$.ɵE(2, 'div', $e2_attrs$, $e2_dirs$);
+                $r3$.ɵe();
+                $r3$.ɵe();
               }
               ContentQueryComponent.ngComponentDef.h(1, 0);
               SomeDirective.ngDirectiveDef.h(3, 2);
-              r3.r(1, 0);
-              r3.r(3, 2);
+              $r3$.ɵr(1, 0);
+              $r3$.ɵr(3, 2);
             }
           });
+          // /NON-NORMATIVE
         }
 
-        const e2_dirs = [SomeDirective];
 
         expect(renderComp(MyApp))
-            .toEqual(`<content-query-component><div><div></div></div></content-query-component>`);
+            .toEqual(
+                `<content-query-component><div><div somedir=""></div></div></content-query-component>`);
         expect((contentQueryComp !.someDir as QueryList<SomeDirective>).toArray()).toEqual([
           someDir !
         ]);
@@ -684,6 +740,8 @@ describe('compiler specification', () => {
   });
 
   xdescribe('pipes', () => {
+    type $MyApp$ = MyApp;
+
     @Pipe({
       name: 'myPipe',
       pure: false,
@@ -694,7 +752,7 @@ describe('compiler specification', () => {
       ngOnDestroy(): void { throw new Error('Method not implemented.'); }
 
       // NORMATIVE
-      static ngPipeDef = r3.definePipe({
+      static ngPipeDef = $r3$.ɵdefinePipe({
         type: MyPipe,
         factory: function MyPipe_Factory() { return new MyPipe(); },
         pure: false,
@@ -709,12 +767,17 @@ describe('compiler specification', () => {
       transform(value: any, ...args: any[]) { throw new Error('Method not implemented.'); }
 
       // NORMATIVE
-      static ngPipeDef = r3.definePipe({
+      static ngPipeDef = $r3$.ɵdefinePipe({
         type: MyPurePipe,
         factory: function MyPurePipe_Factory() { return new MyPurePipe(); },
       });
       // /NORMATIVE
     }
+
+    // NORMATIVE
+    const $MyPurePipe_ngPipeDef$ = MyPurePipe.ngPipeDef;
+    const $MyPipe_ngPipeDef$ = MyPipe.ngPipeDef;
+    // /NORMATIVE
 
     @Component({template: `{{name | myPipe:size | myPurePipe:size }}`})
     class MyApp {
@@ -722,25 +785,21 @@ describe('compiler specification', () => {
       size = 0;
 
       // NORMATIVE
-      static ngComponentDef = r3.defineComponent({
+      static ngComponentDef = $r3$.ɵdefineComponent({
         type: MyApp,
         tag: 'my-app',
         factory: function MyApp_Factory() { return new MyApp(); },
-        template: function MyApp_Template(ctx: MyApp, cm: boolean) {
+        template: function MyApp_Template(ctx: $MyApp$, cm: $boolean$) {
           if (cm) {
-            r3.T(0);
-            r3.Pp(1, MyPurePipe_ngPipeDef, MyPurePipe_ngPipeDef.n());
-            r3.Pp(2, MyPipe_ngPipeDef, MyPipe_ngPipeDef.n());
+            $r3$.ɵT(0);
+            $r3$.ɵPp(1, $MyPurePipe_ngPipeDef$, $MyPurePipe_ngPipeDef$.n());
+            $r3$.ɵPp(2, $MyPipe_ngPipeDef$, $MyPipe_ngPipeDef$.n());
           }
-          r3.t(2, r3.b1('', r3.pb2(1, r3.pb2(2, ctx.name, ctx.size), ctx.size), ''));
+          $r3$.ɵt(2, $r3$.ɵb1('', $r3$.ɵpb2(1, $r3$.ɵpb2(2, ctx.name, ctx.size), ctx.size), ''));
         }
       });
       // /NORMATIVE
     }
-    // NORMATIVE
-    const MyPurePipe_ngPipeDef = MyPurePipe.ngPipeDef;
-    const MyPipe_ngPipeDef = MyPipe.ngPipeDef;
-    // /NORMATIVE
 
     it('should render pipes', () => {
                                   // TODO(misko): write a test once pipes runtime is implemented.
@@ -750,21 +809,23 @@ describe('compiler specification', () => {
   describe('local references', () => {
     // TODO(misko): currently disabled until local refs are working
     xit('should translate DOM structure', () => {
+      type $MyComponent$ = MyComponent;
+
       @Component({selector: 'my-component', template: `<input #user>Hello {{user.value}}!`})
       class MyComponent {
         // NORMATIVE
-        static ngComponentDef = r3.defineComponent({
+        static ngComponentDef = $r3$.ɵdefineComponent({
           type: MyComponent,
           tag: 'my-component',
           factory: () => new MyComponent,
-          template: function(ctx: MyComponent, cm: boolean) {
+          template: function(ctx: $MyComponent$, cm: $boolean$) {
             if (cm) {
-              r3.E(0, 'input', null, null, ['user', '']);
-              r3.e();
-              r3.T(2);
+              $r3$.ɵE(0, 'input', null, null, ['user', '']);
+              $r3$.ɵe();
+              $r3$.ɵT(2);
             }
-            const l1_user = r3.m<any>(1);
-            r3.t(2, r3.b1('Hello ', l1_user.value, '!'));
+            const l1_user = $r3$.ɵm<any>(1);
+            $r3$.ɵt(2, $r3$.ɵb1('Hello ', l1_user.value, '!'));
           }
         });
         // NORMATIVE
@@ -778,6 +839,9 @@ describe('compiler specification', () => {
   describe('lifecycle hooks', () => {
     let events: string[] = [];
     let simpleLayout: SimpleLayout;
+
+    type $LifecycleComp$ = LifecycleComp;
+    type $SimpleLayout$ = SimpleLayout;
 
     beforeEach(() => { events = []; });
 
@@ -799,13 +863,13 @@ describe('compiler specification', () => {
       ngOnDestroy() { events.push(this.nameMin); }
 
       // NORMATIVE
-      static ngComponentDef = r3.defineComponent({
+      static ngComponentDef = $r3$.ɵdefineComponent({
         type: LifecycleComp,
         tag: 'lifecycle-comp',
         factory: function LifecycleComp_Factory() { return new LifecycleComp(); },
-        template: function LifecycleComp_Template(ctx: LifecycleComp, cm: boolean) {},
+        template: function LifecycleComp_Template(ctx: $LifecycleComp$, cm: $boolean$) {},
         inputs: {nameMin: 'name'},
-        features: [r3.NgOnChangesFeature]
+        features: [$r3$.ɵNgOnChangesFeature]
       });
       // /NORMATIVE
     }
@@ -822,23 +886,23 @@ describe('compiler specification', () => {
       name2 = '2';
 
       // NORMATIVE
-      static ngComponentDef = r3.defineComponent({
+      static ngComponentDef = $r3$.ɵdefineComponent({
         type: SimpleLayout,
         tag: 'simple-layout',
         factory: function SimpleLayout_Factory() { return simpleLayout = new SimpleLayout(); },
-        template: function SimpleLayout_Template(ctx: SimpleLayout, cm: boolean) {
+        template: function SimpleLayout_Template(ctx: $SimpleLayout$, cm: $boolean$) {
           if (cm) {
-            r3.E(0, LifecycleComp);
-            r3.e();
-            r3.E(2, LifecycleComp);
-            r3.e();
+            $r3$.ɵE(0, LifecycleComp);
+            $r3$.ɵe();
+            $r3$.ɵE(2, LifecycleComp);
+            $r3$.ɵe();
           }
-          r3.p(0, 'name', r3.b(ctx.name1));
-          r3.p(2, 'name', r3.b(ctx.name2));
+          $r3$.ɵp(0, 'name', $r3$.ɵb(ctx.name1));
+          $r3$.ɵp(2, 'name', $r3$.ɵb(ctx.name2));
           LifecycleComp.ngComponentDef.h(1, 0);
           LifecycleComp.ngComponentDef.h(3, 2);
-          r3.r(1, 0);
-          r3.r(3, 2);
+          $r3$.ɵr(1, 0);
+          $r3$.ɵr(3, 2);
         }
       });
       // /NORMATIVE
@@ -856,7 +920,7 @@ describe('compiler specification', () => {
       events = [];
       simpleLayout.name1 = '-one';
       simpleLayout.name2 = '-two';
-      r3.detectChanges(simpleLayout);
+      $r3$.ɵdetectChanges(simpleLayout);
       expect(events).toEqual([
         'changes-one', 'check-one', 'changes-two', 'check-two', 'content check-one',
         'content check-two', 'view check-one', 'view check-two'
@@ -912,10 +976,10 @@ describe('compiler specification', () => {
       }
 
       // NORMATIVE
-      static ngDirectiveDef = r3.defineDirective({
+      static ngDirectiveDef = $r3$.ɵdefineDirective({
         type: ForOfDirective,
         factory: function ForOfDirective_Factory() {
-          return new ForOfDirective(r3.injectViewContainerRef(), r3.injectTemplateRef());
+          return new ForOfDirective($r3$.ɵinjectViewContainerRef(), $r3$.ɵinjectTemplateRef());
         },
         // TODO(chuckj): Enable when ngForOf enabling lands.
         // features: [NgOnChangesFeature(NgForOf)],
@@ -925,11 +989,15 @@ describe('compiler specification', () => {
     }
 
     it('should support a let variable and reference', () => {
+      type $MyComponent$ = MyComponent;
+
       interface Item {
         name: string;
       }
 
-      const c1_dirs = [ForOfDirective];
+      // NORMATIVE
+      const $c1_dirs$ = [ForOfDirective];
+      // /NORMATIVE
 
       @Component({
         selector: 'my-component',
@@ -939,29 +1007,29 @@ describe('compiler specification', () => {
         items = [{name: 'one'}, {name: 'two'}];
 
         // NORMATIVE
-        static ngComponentDef = r3.defineComponent({
+        static ngComponentDef = $r3$.ɵdefineComponent({
           type: MyComponent,
           tag: 'my-component',
           factory: function MyComponent_Factory() { return new MyComponent(); },
-          template: function MyComponent_Template(ctx: MyComponent, cm: boolean) {
+          template: function MyComponent_Template(ctx: $MyComponent$, cm: $boolean$) {
             if (cm) {
-              r3.E(0, 'ul');
-              r3.C(1, c1_dirs, MyComponent_ForOfDirective_Template_1);
-              r3.e();
+              $r3$.ɵE(0, 'ul');
+              $r3$.ɵC(1, $c1_dirs$, MyComponent_ForOfDirective_Template_1);
+              $r3$.ɵe();
             }
-            r3.p(1, 'forOf', r3.b(ctx.items));
-            r3.cR(1);
-            r3.r(2, 1);
-            r3.cr();
+            $r3$.ɵp(1, 'forOf', $r3$.ɵb(ctx.items));
+            $r3$.ɵcR(1);
+            $r3$.ɵr(2, 1);
+            $r3$.ɵcr();
 
-            function MyComponent_ForOfDirective_Template_1(ctx1: any, cm: boolean) {
+            function MyComponent_ForOfDirective_Template_1(ctx1: $any$, cm: $boolean$) {
               if (cm) {
-                r3.E(0, 'li');
-                r3.T(1);
-                r3.e();
+                $r3$.ɵE(0, 'li');
+                $r3$.ɵT(1);
+                $r3$.ɵe();
               }
-              const l0_item = ctx1.$implicit;
-              r3.t(1, r3.b1('', l0_item.name, ''));
+              const $l0_item$ = ctx1.$implicit;
+              $r3$.ɵt(1, $r3$.ɵb1('', $l0_item$.name, ''));
             }
           }
         });
@@ -973,6 +1041,8 @@ describe('compiler specification', () => {
     });
 
     it('should support accessing parent template variables', () => {
+      type $MyComponent$ = MyComponent;
+
       interface Info {
         description: string;
       }
@@ -981,7 +1051,9 @@ describe('compiler specification', () => {
         infos: Info[];
       }
 
-      const c1_dirs = [ForOfDirective];
+      // NORMATIVE
+      const $c1_dirs$ = [ForOfDirective];
+      // /NORMATIVE
 
       @Component({
         selector: 'my-component',
@@ -1004,48 +1076,48 @@ describe('compiler specification', () => {
         ];
 
         // NORMATIVE
-        static ngComponentDef = r3.defineComponent({
+        static ngComponentDef = $r3$.ɵdefineComponent({
           type: MyComponent,
           tag: 'my-component',
           factory: function MyComponent_Factory() { return new MyComponent(); },
-          template: function MyComponent_Template(ctx: MyComponent, cm: boolean) {
+          template: function MyComponent_Template(ctx: $MyComponent$, cm: $boolean$) {
             if (cm) {
-              r3.E(0, 'ul');
-              r3.C(1, c1_dirs, MyComponent_ForOfDirective_Template_1);
-              r3.e();
+              $r3$.ɵE(0, 'ul');
+              $r3$.ɵC(1, $c1_dirs$, MyComponent_ForOfDirective_Template_1);
+              $r3$.ɵe();
             }
-            r3.p(1, 'forOf', r3.b(ctx.items));
-            r3.cR(1);
-            r3.r(2, 1);
-            r3.cr();
+            $r3$.ɵp(1, 'forOf', $r3$.ɵb(ctx.items));
+            $r3$.ɵcR(1);
+            $r3$.ɵr(2, 1);
+            $r3$.ɵcr();
 
-            function MyComponent_ForOfDirective_Template_1(ctx1: any, cm: boolean) {
+            function MyComponent_ForOfDirective_Template_1(ctx1: $any$, cm: $boolean$) {
               if (cm) {
-                r3.E(0, 'li');
-                r3.E(1, 'div');
-                r3.T(2);
-                r3.e();
-                r3.E(3, 'ul');
-                r3.C(4, c1_dirs, MyComponent_ForOfDirective_ForOfDirective_Template_3);
-                r3.e();
-                r3.e();
+                $r3$.ɵE(0, 'li');
+                $r3$.ɵE(1, 'div');
+                $r3$.ɵT(2);
+                $r3$.ɵe();
+                $r3$.ɵE(3, 'ul');
+                $r3$.ɵC(4, $c1_dirs$, MyComponent_ForOfDirective_ForOfDirective_Template_3);
+                $r3$.ɵe();
+                $r3$.ɵe();
               }
-              const l0_item = ctx1.$implicit;
-              r3.p(4, 'forOf', r3.b(l0_item.infos));
-              r3.t(2, r3.b1('', l0_item.name, ''));
-              r3.cR(4);
-              r3.r(5, 4);
-              r3.cr();
+              const $l0_item$ = ctx1.$implicit;
+              $r3$.ɵp(4, 'forOf', $r3$.ɵb($l0_item$.infos));
+              $r3$.ɵt(2, $r3$.ɵb1('', $l0_item$.name, ''));
+              $r3$.ɵcR(4);
+              $r3$.ɵr(5, 4);
+              $r3$.ɵcr();
 
               function MyComponent_ForOfDirective_ForOfDirective_Template_3(
-                  ctx2: any, cm: boolean) {
+                  ctx2: $any$, cm: $boolean$) {
                 if (cm) {
-                  r3.E(0, 'li');
-                  r3.T(1);
-                  r3.e();
+                  $r3$.ɵE(0, 'li');
+                  $r3$.ɵT(1);
+                  $r3$.ɵe();
                 }
-                const l0_info = ctx2.$implicit;
-                r3.t(1, r3.b2(' ', l0_item.name, ': ', l0_info.description, ' '));
+                const $l0_info$ = ctx2.$implicit;
+                $r3$.ɵt(1, $r3$.ɵb2(' ', $l0_item$.name, ': ', $l0_info$.description, ' '));
               }
             }
           }
@@ -1057,6 +1129,7 @@ describe('compiler specification', () => {
 });
 
 xdescribe('NgModule', () => {
+
   interface Injectable {
     scope?: /*InjectorDefType<any>*/ any;
     factory: Function;
@@ -1076,7 +1149,7 @@ xdescribe('NgModule', () => {
       constructor(name: String) {}
       // NORMATIVE
       static ngInjectableDef = defineInjectable({
-        factory: () => new Toast(r3.inject(String)),
+        factory: () => new Toast($r3$.ɵinject(String)),
       });
       // /NORMATIVE
     }
@@ -1095,7 +1168,7 @@ xdescribe('NgModule', () => {
       constructor(toast: Toast) {}
       // NORMATIVE
       static ngInjectorDef = defineInjector({
-        factory: () => new MyModule(r3.inject(Toast)),
+        factory: () => new MyModule($r3$.ɵinject(Toast)),
         provider: [
           {provide: Toast, deps: [String]},  // If Toast has metadata generate this line
           Toast,                             // If Toast has no metadata generate this line.
@@ -1112,7 +1185,8 @@ xdescribe('NgModule', () => {
       // NORMATIVE
       static ngInjectableDef = defineInjectable({
         scope: MyModule,
-        factory: () => new BurntToast(r3.inject(Toast, r3.InjectFlags.Optional), r3.inject(String)),
+        factory: () => new BurntToast(
+                     $r3$.ɵinject(Toast, $r3$.ɵInjectFlags.Optional), $r3$.ɵinject(String)),
       });
       // /NORMATIVE
     }
@@ -1120,6 +1194,6 @@ xdescribe('NgModule', () => {
   });
 });
 
-function renderComp<T>(type: r3.ComponentType<T>): string {
+function renderComp<T>(type: $r3$.ɵComponentType<T>): string {
   return toHtml(renderComponent(type));
 }
