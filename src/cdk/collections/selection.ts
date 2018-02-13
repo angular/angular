@@ -122,10 +122,12 @@ export class SelectionModel<T> {
     this._selected = null;
 
     if (this._selectedToEmit.length || this._deselectedToEmit.length) {
-      const eventData = new SelectionChange<T>(this, this._selectedToEmit, this._deselectedToEmit);
-
       if (this.onChange) {
-        this.onChange.next(eventData);
+        this.onChange.next({
+          source: this,
+          added: this._selectedToEmit,
+          removed: this._deselectedToEmit
+        });
       }
 
       this._deselectedToEmit = [];
@@ -181,14 +183,13 @@ export class SelectionModel<T> {
  * Event emitted when the value of a MatSelectionModel has changed.
  * @docs-private
  */
-export class SelectionChange<T> {
-  constructor(
-    /** Model that dispatched the event. */
-    public source: SelectionModel<T>,
-    /** Options that were added to the model. */
-    public added?: T[],
-    /** Options that were removed from the model. */
-    public removed?: T[]) {}
+export interface SelectionChange<T> {
+  /** Model that dispatched the event. */
+  source: SelectionModel<T>;
+  /** Options that were added to the model. */
+  added: T[];
+  /** Options that were removed from the model. */
+  removed: T[];
 }
 
 /**
