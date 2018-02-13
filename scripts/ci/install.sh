@@ -62,7 +62,7 @@ if [[ ${TRAVIS} &&
 fi
 
 # Install bazel
-if [[ ${TRAVIS} && (${CI_MODE} == "bazel" || ${CI_MODE} == "e2e_2") ]]; then
+if [[ ${TRAVIS} && ${CI_MODE} == "e2e_2" ]]; then
   travisFoldStart "bazel-install"
   (
     mkdir tmp
