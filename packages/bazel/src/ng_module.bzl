@@ -35,8 +35,10 @@ def _expected_outs(ctx):
   factory_basename_set = depset([_basename_of(ctx, src) for src in ctx.files.factories])
 
   for src in ctx.files.srcs + ctx.files.assets:
+    package_prefix = ctx.label.package + "/" if ctx.label.package else ""
+
     if src.short_path.endswith(".ts") and not src.short_path.endswith(".d.ts"):
-      basename = src.short_path[len(ctx.label.package) + 1:-len(".ts")]
+      basename = src.short_path[len(package_prefix):-len(".ts")]
       if len(factory_basename_set) == 0 or basename in factory_basename_set:
         devmode_js = [
             ".ngfactory.js",
@@ -48,7 +50,7 @@ def _expected_outs(ctx):
         devmode_js = [".js"]
         summaries = []
     elif src.short_path.endswith(".css"):
-      basename = src.short_path[len(ctx.label.package) + 1:-len(".css")]
+      basename = src.short_path[len(package_prefix):-len(".css")]
       devmode_js = [
           ".css.shim.ngstyle.js",
           ".css.ngstyle.js",
@@ -252,15 +254,19 @@ def _write_bundle_index(ctx):
   if ctx.attr.module_name:
     tsconfig["angularCompilerOptions"]["flatModuleId"] = ctx.attr.module_name
 
+  entry_point = ctx.attr.entry_point if ctx.attr.entry_point else "index.ts"
   # createBundleIndexHost in bundle_index_host.ts will throw if the "files" has more than one entry.
   # We don't want to fail() here, however, because not all ng_module's will have the bundle index written.
   # So we make the assumption that the index.ts file in the highest parent directory is the entry point.
   index_file = None
+
   for f in tsconfig["files"]:
-    if f.endswith("/index.ts"):
+    if f.endswith("/" + entry_point):
       if not index_file or len(f) < len(index_file):
         index_file = f
-  tsconfig["files"] = [index_file]
+
+  if index_file:
+    tsconfig["files"] = [index_file]
 
   ctx.actions.write(tsconfig_file, json_marshal(tsconfig))
 
@@ -361,6 +367,9 @@ ng_module = rule(
         "node_modules": attr.label(
             default = Label("@//:node_modules")
         ),
+
+        "entry_point": attr.string(),
+
         "_index_bundler": attr.label(
             executable = True,
             cfg = "host",

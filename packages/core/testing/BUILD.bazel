@@ -4,10 +4,17 @@ load("//tools:defaults.bzl", "ng_module")
 
 ng_module(
     name = "testing",
-    srcs = glob(["**/*.ts"]),
+    srcs = glob(
+        ["**/*.ts"],
+    ),
     module_name = "@angular/core/testing",
     deps = [
         "//packages:types",
         "//packages/core",
     ],
+)
+
+filegroup(
+    name = "npm_package_assets",
+    srcs = ["package.json"],
 )

@@ -1,6 +1,6 @@
 package(default_visibility = ["//visibility:public"])
 
-load("//tools:defaults.bzl", "ng_module")
+load("//tools:defaults.bzl", "ng_module", "ng_package")
 
 ng_module(
     name = "core",
@@ -14,5 +14,16 @@ ng_module(
     deps = [
         "//packages:types",
         "@rxjs",
+    ],
+)
+
+ng_package(
+    name = "npm_package",
+    srcs = glob(["**/*.externs.js"] + ["**/package.json"]) + ["//packages/core/testing:npm_package_assets"],
+    entry_point = "packages/core/index.js",
+    secondary_entry_points = ["testing"],
+    deps = [
+        ":core",
+        "//packages/core/testing",
     ],
 )
