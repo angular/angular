@@ -359,7 +359,8 @@ describe('Overlay directives', () => {
       backdrop.click();
       fixture.detectChanges();
 
-      expect(fixture.componentInstance.backdropClicked).toBe(true);
+      expect(fixture.componentInstance.backdropClickHandler)
+          .toHaveBeenCalledWith(jasmine.any(MouseEvent));
     });
 
     it('should emit positionChange appropriately', () => {
@@ -404,7 +405,7 @@ describe('Overlay directives', () => {
   <ng-template cdk-connected-overlay [open]="isOpen" [width]="width" [height]="height"
             [cdkConnectedOverlayOrigin]="triggerOverride || trigger"
             [hasBackdrop]="hasBackdrop" backdropClass="mat-test-class"
-            (backdropClick)="backdropClicked=true" [offsetX]="offsetX" [offsetY]="offsetY"
+            (backdropClick)="backdropClickHandler($event)" [offsetX]="offsetX" [offsetY]="offsetY"
             (positionChange)="positionChangeHandler($event)" (attach)="attachHandler()"
             (detach)="detachHandler()" [minWidth]="minWidth" [minHeight]="minHeight"
             [cdkConnectedOverlayPositions]="positionOverrides">
@@ -425,7 +426,7 @@ class ConnectedOverlayDirectiveTest {
   offsetY = 0;
   triggerOverride: CdkOverlayOrigin;
   hasBackdrop: boolean;
-  backdropClicked = false;
+  backdropClickHandler = jasmine.createSpy('backdropClick handler');
   positionChangeHandler = jasmine.createSpy('positionChangeHandler');
   positionOverrides: ConnectionPositionPair[];
   attachHandler = jasmine.createSpy('attachHandler').and.callFake(() => {

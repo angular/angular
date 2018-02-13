@@ -254,7 +254,7 @@ export class CdkConnectedOverlay implements OnDestroy, OnChanges {
   set _deprecatedHasBackdrop(_hasBackdrop: any) { this.hasBackdrop = _hasBackdrop; }
 
   /** Event emitted when the backdrop is clicked. */
-  @Output() backdropClick = new EventEmitter<void>();
+  @Output() backdropClick = new EventEmitter<MouseEvent>();
 
   /** Event emitted when the position has changed. */
   @Output() positionChange = new EventEmitter<ConnectedOverlayPositionChange>();
@@ -402,8 +402,8 @@ export class CdkConnectedOverlay implements OnDestroy, OnChanges {
     }
 
     if (this.hasBackdrop) {
-      this._backdropSubscription = this._overlayRef.backdropClick().subscribe(() => {
-        this.backdropClick.emit();
+      this._backdropSubscription = this._overlayRef.backdropClick().subscribe(event => {
+        this.backdropClick.emit(event);
       });
     }
   }
