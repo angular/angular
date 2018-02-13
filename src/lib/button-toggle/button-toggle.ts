@@ -28,7 +28,12 @@ import {
   ViewEncapsulation,
 } from '@angular/core';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
-import {CanDisable, mixinDisabled} from '@angular/material/core';
+import {
+  CanDisable,
+  CanDisableRipple,
+  mixinDisabled,
+  mixinDisableRipple
+} from '@angular/material/core';
 
 /** Acceptable types for a button toggle. */
 export type ToggleType = 'checkbox' | 'radio';
@@ -225,6 +230,11 @@ export class MatButtonToggleGroupMultiple extends _MatButtonToggleGroupMixinBase
   private _vertical: boolean = false;
 }
 
+// Boilerplate for applying mixins to the MatButtonToggle class.
+/** @docs-private */
+export class MatButtonToggleBase {}
+export const _MatButtonToggleMixinBase = mixinDisableRipple(MatButtonToggleBase);
+
 /** Single button inside of a toggle group. */
 @Component({
   moduleId: module.id,
@@ -235,6 +245,7 @@ export class MatButtonToggleGroupMultiple extends _MatButtonToggleGroupMixinBase
   preserveWhitespaces: false,
   exportAs: 'matButtonToggle',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  inputs: ['disableRipple'],
   host: {
     '[class.mat-button-toggle-standalone]': '!buttonToggleGroup && !buttonToggleGroupMultiple',
     '[class.mat-button-toggle-checked]': 'checked',
@@ -243,7 +254,9 @@ export class MatButtonToggleGroupMultiple extends _MatButtonToggleGroupMixinBase
     '[attr.id]': 'id',
   }
 })
-export class MatButtonToggle implements OnInit, OnDestroy {
+export class MatButtonToggle extends _MatButtonToggleMixinBase
+    implements OnInit, OnDestroy, CanDisableRipple {
+
   /**
    * Attached to the aria-label attribute of the host element. In most cases, arial-labelledby will
    * take precedence so this may be omitted.
@@ -331,6 +344,7 @@ export class MatButtonToggle implements OnInit, OnDestroy {
               private _buttonToggleDispatcher: UniqueSelectionDispatcher,
               private _elementRef: ElementRef,
               private _focusMonitor: FocusMonitor) {
+    super();
 
     this.buttonToggleGroup = toggleGroup;
     this.buttonToggleGroupMultiple = toggleGroupMultiple;

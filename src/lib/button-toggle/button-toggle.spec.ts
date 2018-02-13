@@ -5,6 +5,7 @@ import {
   ComponentFixture,
   TestBed,
 } from '@angular/core/testing';
+import {dispatchMouseEvent} from '@angular/cdk/testing';
 import {NgModel, FormsModule, ReactiveFormsModule, FormControl} from '@angular/forms';
 import {Component, DebugElement} from '@angular/core';
 import {By} from '@angular/platform-browser';
@@ -177,8 +178,32 @@ describe('MatButtonToggle with forms', () => {
 
       expect(testComponent.modelValue).toBe('green');
     }));
-  });
 
+    it('should show a ripple on label click', () => {
+      const groupElement = groupDebugElement.nativeElement;
+
+      expect(groupElement.querySelectorAll('.mat-ripple-element').length).toBe(0);
+
+      dispatchMouseEvent(buttonToggleLabels[0], 'mousedown');
+      dispatchMouseEvent(buttonToggleLabels[0], 'mouseup');
+
+      expect(groupElement.querySelectorAll('.mat-ripple-element').length).toBe(1);
+    });
+
+    it('should allow ripples to be disabled', () => {
+      const groupElement = groupDebugElement.nativeElement;
+
+      testComponent.disableRipple = true;
+      fixture.detectChanges();
+
+      expect(groupElement.querySelectorAll('.mat-ripple-element').length).toBe(0);
+
+      dispatchMouseEvent(buttonToggleLabels[0], 'mousedown');
+      dispatchMouseEvent(buttonToggleLabels[0], 'mouseup');
+
+      expect(groupElement.querySelectorAll('.mat-ripple-element').length).toBe(0);
+    });
+  });
 });
 
 describe('MatButtonToggle without forms', () => {
@@ -647,7 +672,8 @@ class ButtonTogglesInsideButtonToggleGroup {
 @Component({
   template: `
   <mat-button-toggle-group [(ngModel)]="modelValue" (change)="lastEvent = $event">
-    <mat-button-toggle *ngFor="let option of options" [value]="option.value">
+    <mat-button-toggle *ngFor="let option of options" [value]="option.value"
+                       [disableRipple]="disableRipple">
       {{option.label}}
     </mat-button-toggle>
   </mat-button-toggle-group>
@@ -661,6 +687,7 @@ class ButtonToggleGroupWithNgModel {
     {label: 'Blue', value: 'blue'},
   ];
   lastEvent: MatButtonToggleChange;
+  disableRipple = false;
 }
 
 @Component({

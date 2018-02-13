@@ -10,10 +10,18 @@
 
 <section class="demo-section">
   <mat-button-toggle-group name="alignment" [vertical]="isVertical">
-    <mat-button-toggle value="left"><mat-icon>format_align_left</mat-icon></mat-button-toggle>
-    <mat-button-toggle value="center"><mat-icon>format_align_center</mat-icon></mat-button-toggle>
-    <mat-button-toggle value="right"><mat-icon>format_align_right</mat-icon></mat-button-toggle>
-    <mat-button-toggle value="justify" [disabled]="isDisabled"><mat-icon>format_align_justify</mat-icon></mat-button-toggle>
+    <mat-button-toggle value="left"[disabled]="isDisabled">
+      <mat-icon>format_align_left</mat-icon>
+    </mat-button-toggle>
+    <mat-button-toggle value="center" [disabled]="isDisabled">
+      <mat-icon>format_align_center</mat-icon>
+    </mat-button-toggle>
+    <mat-button-toggle value="right" [disabled]="isDisabled">
+      <mat-icon>format_align_right</mat-icon>
+    </mat-button-toggle>
+    <mat-button-toggle value="justify" [disabled]="isDisabled">
+      <mat-icon>format_align_justify</mat-icon>
+    </mat-button-toggle>
   </mat-button-toggle-group>
 </section>
 

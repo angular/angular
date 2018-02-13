@@ -2,15 +2,6 @@
 @import '../core/theming/theming';
 @import '../core/typography/typography-utils';
 
-// Applies a focus style to an mat-button-toggle element for each of the supported palettes.
-@mixin _mat-button-toggle-focus-color($theme) {
-  $background: map-get($theme, background);
-
-  .mat-button-toggle-focus-overlay {
-    background-color: mat-color($background, focused-button);
-  }
-}
-
 @mixin mat-button-toggle-theme($theme) {
   $foreground: map-get($theme, foreground);
   $background: map-get($theme, background);
@@ -18,8 +9,8 @@
   .mat-button-toggle {
     color: mat-color($foreground, hint-text);
 
-    &.cdk-focused {
-      @include _mat-button-toggle-focus-color($theme);
+    .mat-button-toggle-focus-overlay {
+      background-color: mat-color($background, focused-button);
     }
   }
 

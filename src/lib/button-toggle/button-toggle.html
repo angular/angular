@@ -1,4 +1,4 @@
-<label [attr.for]="inputId" class="mat-button-toggle-label">
+<label [attr.for]="inputId" class="mat-button-toggle-label" #label>
   <input #input class="mat-button-toggle-input cdk-visually-hidden"
          [type]="_type"
          [id]="inputId"
@@ -15,3 +15,8 @@
   </div>
 </label>
 <div class="mat-button-toggle-focus-overlay"></div>
+
+<div class="mat-button-toggle-ripple" matRipple
+     [matRippleTrigger]="label"
+     [matRippleDisabled]="this.disableRipple || this.disabled">
+</div>

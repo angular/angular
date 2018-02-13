@@ -30,7 +30,6 @@ $mat-button-toggle-border-radius: 2px !default;
   }
 }
 
-
 .mat-button-toggle-disabled .mat-button-toggle-label-content {
   cursor: default;
 }
@@ -39,8 +38,11 @@ $mat-button-toggle-border-radius: 2px !default;
   white-space: nowrap;
   position: relative;
 
-  &.cdk-keyboard-focused,
-  &.cdk-program-focused {
+  // Similar to components like the checkbox, slide-toggle and radio, we cannot show the focus
+  // overlay for `.cdk-program-focused` because mouse clicks on the <label> element would be always
+  // treated as programmatic focus.
+  // TODO(paul): support `program` as well. See https://github.com/angular/material2/issues/9889
+  &.cdk-keyboard-focused {
     .mat-button-toggle-focus-overlay {
       opacity: 1;
     }
@@ -67,4 +69,13 @@ $mat-button-toggle-border-radius: 2px !default;
   pointer-events: none;
   opacity: 0;
   @include mat-fill;
+}
+
+.mat-button-toggle-ripple {
+  @include mat-fill;
+
+  // Disable pointer events for the ripple container, because the container will overlay the user
+  // content and we don't want to prevent mouse clicks that should toggle the state.
+  // Pointer events can be safely disabled because the ripple trigger element is the label element.
+  pointer-events: none;
 }
