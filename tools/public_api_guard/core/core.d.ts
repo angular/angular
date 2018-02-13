@@ -489,7 +489,8 @@ export declare class InjectionToken<T> {
     readonly ngInjectableDef: Injectable | undefined;
     constructor(_desc: string, options?: {
         scope: Type<any>;
-    } & InjectionTokenProvider);
+        factory: () => T;
+    });
     toString(): string;
 }
 

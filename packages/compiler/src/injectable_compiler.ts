@@ -48,12 +48,14 @@ export class InjectableCompiler {
             } else if (v.ngMetadataName === 'Self') {
               flags |= InjectFlags.Self;
             } else if (v.ngMetadataName === 'Inject') {
-              throw new Error('@Inject() is not implemented');
+              token = v.token;
             } else {
               token = v;
             }
           }
         }
+      }
+      if (flags !== InjectFlags.Default || defaultValue !== undefined) {
         args = [ctx.importExpr(token), o.literal(defaultValue), o.literal(flags)];
       } else {
         args = [ctx.importExpr(token)];
