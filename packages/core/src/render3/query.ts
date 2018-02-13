@@ -245,7 +245,7 @@ function add(query: LQuery<any>| null, node: LNode) {
         if (directiveIdx !== null) {
           // a node is matching a predicate - determine what to read
           // note that queries using name selector must specify read strategy
-          ngDevMode && assertNotNull(predicate.read, 'predicate.read');
+          ngDevMode && assertNotNull(predicate.read, 'the node should have a predicate');
           const result = readFromNodeInjector(nodeInjector, node, predicate.read !, directiveIdx);
           if (result !== null) {
             addMatch(query, result);
