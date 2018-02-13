@@ -18,29 +18,39 @@ import {camelToKebabCase} from './utils';
  */
 export interface NgElementConstructor<T, P> {
   readonly observedAttributes: string[];
-
-  injector: Injector;
-
   new (): NgElementWithProps<T, P>;
 }
 
+/** Type to provide additional interface information to the NgElementConstructor. */
 type WithProperties<P> = {
   [property in keyof P]: P[property]
 };
 
 /**
- * @whatItDoes Creates a custom element class based on an Angular Component. Uses the provided
- * injection to understand where to put the component in the dependency injection hierarchy.
- * Injector may be changed so that subsequent custom elements use a different module.
+ * Initialization configuration for the NgElementConstructor.
+ *
+ * @experimental
+ */
+export interface NgElementConfig {
+  injector: Injector;
+}
+
+/**
+ * @whatItDoes Creates a custom element class based on an Angular Component. Takes a configuration
+ * that provides initialization information to the created class. E.g. the configuration's injector
+ * will be the initial injector set on the class which will be used for each created instance.
  *
  * @description Builds a class that encapsulates the functionality of the provided component and
- * uses the module for its location in dependency injection. May be registered with the browser's
- * CustomElementRegistry to use it as a native web component
+ * uses the config's information to provide more context to the class. Takes the component factory's
+ * inputs and outputs to convert them to the proper custom element API and add hooks to input
+ * changes. Passes the config's injector to each created instance (may be overriden with the
+ * static property to affect all newly created instances, or as a constructor argument for
+ * one-off creations).
  *
  * @experimental
  */
 export function createNgElementConstructor<T, P>(
-    componentFactory: ComponentFactory<T>, injector: Injector): NgElementConstructor<T, P> {
+    componentFactory: ComponentFactory<T>, config: NgElementConfig): NgElementConstructor<T, P> {
   const inputs = componentFactory.inputs.map(({propName, templateName}) => ({
                                                propName,
                                                attrName: camelToKebabCase(templateName),
@@ -57,9 +67,11 @@ export function createNgElementConstructor<T, P>(
   class NgElementConstructorImpl extends NgElementImpl<T> {
     static readonly observedAttributes = inputs.map(input => input.attrName);
 
-    static injector = injector;
+    static injector = config.injector;
 
-    constructor() { super(NgElementConstructorImpl.injector, componentFactory, inputs, outputs); }
+    constructor(injector: Injector) {
+      super(injector || NgElementConstructorImpl.injector, componentFactory, inputs, outputs);
+    }
   }
 
   // Add getters and setters for each input defined on the Angular Component so that the input
