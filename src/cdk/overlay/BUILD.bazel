@@ -1,5 +1,6 @@
 package(default_visibility=["//visibility:public"])
 load("@angular//:index.bzl", "ng_module")
+load("@build_bazel_rules_typescript//:defs.bzl", "ts_library", "ts_web_test")
 
 ng_module(
   name = "overlay",
@@ -15,4 +16,40 @@ ng_module(
     "@rxjs",
   ],
   tsconfig = ":tsconfig-build.json",
+)
+
+ts_library(
+  name = "overlay_test_sources",
+  testonly = 1,
+  srcs = glob(["**/*.spec.ts"]),
+  deps = [
+    ":overlay",
+    "//src/cdk/bidi",
+    "//src/cdk/keycodes",
+    "//src/cdk/platform",
+    "//src/cdk/portal",
+    "//src/cdk/scrolling",
+    "//src/cdk/testing",
+    "@rxjs",
+  ],
+  tsconfig = ":tsconfig-build.json",
+)
+
+ts_web_test(
+  name = "unit_tests",
+  # TODO(jelbourn): re-enable this when we can specify browser flags
+  # in order to fix the window size.
+  tags = ["manual"],
+  bootstrap = [
+    "//:web_test_bootstrap_scripts",
+  ],
+
+  # Do not sort
+  deps = [
+    "//:tslib_bundle",
+    "//:angular_bundles",
+    "//:angular_test_bundles",
+    "//test:angular_test_init",
+    ":overlay_test_sources",
+  ],
 )

@@ -1,0 +1,15 @@
+// This file exists to be consumed by bazel
+{
+  "extends": "../tsconfig-build",
+  "files": [
+    "public-api.ts",
+    "../typings.d.ts"
+  ],
+  "angularCompilerOptions": {
+    "annotateForClosureCompiler": true,
+    "strictMetadataEmit": true,
+    "flatModuleOutFile": "index.js",
+    "flatModuleId": "@angular/cdk/testing",
+    "skipTemplateCodegen": true
+  }
+}

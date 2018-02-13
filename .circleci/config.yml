@@ -36,6 +36,7 @@ jobs:
       # This may be unnecessary once rules_nodejs uses nodejs 8
       - run: bazel run @nodejs//:npm run postinstall
       - run: bazel build src/...
+      - run: bazel test src/...
       - save_cache:
           key: material2-{{ .Branch }}-{{ checksum "package-lock.json" }}
           paths:

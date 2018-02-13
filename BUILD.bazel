@@ -14,22 +14,67 @@ filegroup(
   # TODO(alexeagle): figure out what to do
   srcs = glob(["/".join(["node_modules", pkg, "**", ext]) for pkg in [
     "@angular",
-    "jasmine",
-    "typescript",
-    "tslib",
-    "zone.js",
     "@types",
-    "tsickle",
-    "hammerjs",
-    "protobufjs",
     "bytebuffer",
-    "reflect-metadata",
+    "hammerjs",
+    "jasmine",
     "minimist",
     "moment",
+    "protobufjs",
+    "protractor",
+    "reflect-metadata",
+    "tsickle",
+    "tslib",
+    "tsutils",
+    "typescript",
+    "zone.js",
   ] for ext in [
     "*.js",
     "*.json",
     "*.d.ts",
-  ]]),
+  ]] + [
+    "node_modules/http-server/**",
+  ]),
 )
 
+
+# Glob pattern that matches all Angular testing bundles.
+ANGULAR_TESTING = [
+  "node_modules/@angular/*/bundles/*-testing.umd.js",
+  # The compiler and the dynamic platform-browser should be visible only in tests
+  "node_modules/@angular/compiler/bundles/*.umd.js",
+  "node_modules/@angular/platform-browser-dynamic/bundles/*.umd.js",
+]
+
+filegroup(
+  name = "angular_bundles",
+  srcs = glob(["node_modules/@angular/*/bundles/*.umd.js"], exclude = ANGULAR_TESTING),
+)
+
+filegroup(
+  name = "angular_test_bundles",
+  testonly = 1,
+  srcs = glob(ANGULAR_TESTING),
+)
+
+filegroup(
+  name = "tslib_bundle",
+  testonly = 1,
+  srcs = glob(["node_modules/tslib/tslib.js"]),
+)
+
+# Files necessary for unit tests that use zonejs
+filegroup(
+  name = "web_test_bootstrap_scripts",
+  # The order of these deps is important.
+  # Do not sort.
+  srcs = [
+    "//:node_modules/reflect-metadata/Reflect.js",
+    "//:node_modules/zone.js/dist/zone.js",
+    "//:node_modules/zone.js/dist/async-test.js",
+    "//:node_modules/zone.js/dist/sync-test.js",
+    "//:node_modules/zone.js/dist/fake-async-test.js",
+    "//:node_modules/zone.js/dist/proxy.js",
+    "//:node_modules/zone.js/dist/jasmine-patch.js",
+  ],
+)

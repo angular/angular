@@ -1,0 +1,11 @@
+package(default_visibility=["//visibility:public"])
+load("@build_bazel_rules_typescript//:defs.bzl", "ts_library")
+
+
+# Common set-up for all Angular Material and CDK tests.
+ts_library(
+  name = "angular_test_init",
+  testonly = 1,
+  # This file *must* end with "spec" in order for ts_web_test to load it.
+  srcs = ["angular-test-init-spec.ts"],
+)

@@ -47,7 +47,7 @@
     "@angular/platform-server": "^5.2.3",
     "@angular/router": "^5.2.3",
     "@angular/upgrade": "^5.0.1",
-    "@bazel/ibazel": "^0.1.1",
+    "@bazel/ibazel": "0.3.1",
     "@google-cloud/storage": "^1.1.1",
     "@types/chalk": "^0.4.31",
     "@types/fs-extra": "^4.0.3",

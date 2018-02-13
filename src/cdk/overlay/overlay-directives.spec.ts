@@ -330,7 +330,10 @@ describe('Overlay directives', () => {
         originX: 'end',
         originY: 'bottom',
         overlayX: 'start',
-        overlayY: 'top'
+        overlayY: 'top',
+        // TODO(jelbourn) figure out why, when compiling with bazel, these offsets are required.
+        offsetX: 0,
+        offsetY: 0,
       }];
 
       fixture.componentInstance.isOpen = true;

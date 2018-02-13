@@ -1,5 +1,6 @@
 package(default_visibility=["//visibility:public"])
 load("@build_bazel_rules_typescript//:defs.bzl", "ts_library")
+load("@build_bazel_rules_typescript//:defs.bzl", "ts_library", "ts_web_test")
 
 # Note: this will need to ng_module if any Angular-specific stuff is added to coercion.
 ts_library(
@@ -8,4 +9,17 @@ ts_library(
   module_name = "@angular/cdk/coercion",
   deps = [],
   tsconfig = ":tsconfig-build.json",
+)
+
+ts_library(
+  name = "coercion_test_sources",
+  testonly = 1,
+  srcs = glob(["**/*.spec.ts"]),
+  deps = [":coercion"],
+)
+
+ts_web_test(
+  name = "unit_tests",
+  bootstrap = ["//:web_test_bootstrap_scripts"],
+  deps = [":coercion_test_sources"],
 )
