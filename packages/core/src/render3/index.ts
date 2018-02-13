@@ -87,6 +87,7 @@ export {
   objectLiteral6 as o6,
   objectLiteral7 as o7,
   objectLiteral8 as o8,
+  objectLiteralV as oV,
 } from './object_literal';
 
 
