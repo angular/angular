@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CompileDirectiveMetadata, CompilePipeSummary, CompileTokenMetadata, CompileTypeMetadata, flatten, identifierName, rendererTypeName, tokenReference, viewClassName} from '../compile_metadata';
+import {CompileDirectiveMetadata, CompilePipeSummary, CompileQueryMetadata, CompileTokenMetadata, CompileTypeMetadata, flatten, identifierName, rendererTypeName, tokenReference, viewClassName} from '../compile_metadata';
 import {CompileReflector} from '../compile_reflector';
 import {BindingForm, BuiltinConverter, BuiltinFunctionCall, ConvertPropertyBindingResult, EventHandlerVars, LocalResolver, convertActionBinding, convertPropertyBinding, convertPropertyBindingBuiltins} from '../compiler_util/expression_converter';
 import {ConstantPool, DefinitionKind} from '../constant_pool';
@@ -47,7 +47,7 @@ export function compileDirective(
       {key: 'type', value: outputCtx.importExpr(directive.type.reference), quoted: false});
 
   // e.g. `factory: () => new MyApp(injectElementRef())`
-  const templateFactory = createFactory(directive.type, outputCtx, reflector);
+  const templateFactory = createFactory(directive.type, outputCtx, reflector, directive.queries);
   definitionMapValues.push({key: 'factory', value: templateFactory, quoted: false});
 
   // e.g 'inputs: {a: 'a'}`
@@ -108,8 +108,14 @@ export function compileComponent(
   }
 
   // e.g. `factory: function MyApp_Factory() { return new MyApp(injectElementRef()); }`
-  const templateFactory = createFactory(component.type, outputCtx, reflector);
+  const templateFactory = createFactory(component.type, outputCtx, reflector, component.queries);
   definitionMapValues.push({key: 'factory', value: templateFactory, quoted: false});
+
+  // e.g `hostBindings: function MyApp_HostBindings { ... }
+  const hostBindings = createHostBindingsFunction(component.type, outputCtx, component.queries);
+  if (hostBindings) {
+    definitionMapValues.push({key: 'hostBindings', value: hostBindings, quoted: false});
+  }
 
   // e.g. `template: function MyComponent_Template(_ctx, _cm) {...}`
   const templateTypeName = component.type.reference.name;
@@ -118,7 +124,8 @@ export function compileComponent(
   const templateFunctionExpression =
       new TemplateDefinitionBuilder(
           outputCtx, outputCtx.constantPool, reflector, CONTEXT_NAME, ROOT_SCOPE.nestedScope(), 0,
-          component.template !.ngContentSelectors, templateTypeName, templateName, pipeMap)
+          component.template !.ngContentSelectors, templateTypeName, templateName, pipeMap,
+          component.viewQueries)
           .buildTemplateFunction(template, []);
   definitionMapValues.push({key: 'template', value: templateFunctionExpression, quoted: false});
 
@@ -296,7 +303,7 @@ class TemplateDefinitionBuilder implements TemplateAstVisitor, LocalResolver {
       private reflector: CompileReflector, private contextParameter: string,
       private bindingScope: BindingScope, private level = 0, private ngContentSelectors: string[],
       private contextName: string|null, private templateName: string|null,
-      private pipes: Map<string, CompilePipeSummary>) {
+      private pipes: Map<string, CompilePipeSummary>, private viewQueries: CompileQueryMetadata[]) {
     this._valueConverter = new ValueConverter(
         outputCtx, () => this.allocateDataSlot(), (name, localName, slot, value) => {
           bindingScope.set(localName, value);
@@ -351,6 +358,32 @@ class TemplateDefinitionBuilder implements TemplateAstVisitor, LocalResolver {
         }
         this.instruction(this._creationMode, null, R3.projectionDef, ...parameters);
       }
+    }
+
+    // Define and update any view queries
+    for (let query of this.viewQueries) {
+      // e.g. r3.Q(0, SomeDirective, true);
+      const querySlot = this.allocateDataSlot();
+      const predicate = getQueryPredicate(query, this.outputCtx);
+      const args = [
+        /* memoryIndex */ o.literal(querySlot, o.INFERRED_TYPE),
+        /* predicate */ predicate,
+        /* descend */ o.literal(query.descendants, o.INFERRED_TYPE)
+      ];
+
+      if (query.read) {
+        args.push(this.outputCtx.importExpr(query.read.identifier !.reference));
+      }
+      this.instruction(this._creationMode, null, R3.query, ...args);
+
+      // (r3.qR(tmp = r3.ɵld(0)) && (ctx.someDir = tmp));
+      const temporary = this.temp();
+      const getQueryList = o.importExpr(R3.load).callFn([o.literal(querySlot)]);
+      const refresh = o.importExpr(R3.queryRefresh).callFn([temporary.set(getQueryList)]);
+      const updateDirective = o.variable(CONTEXT_NAME)
+                                  .prop(query.propertyName)
+                                  .set(query.first ? temporary.prop('first') : temporary);
+      this._bindingMode.push(refresh.and(updateDirective).toStmt());
     }
 
     templateVisitAll(this, asts);
@@ -589,7 +622,7 @@ class TemplateDefinitionBuilder implements TemplateAstVisitor, LocalResolver {
     const templateVisitor = new TemplateDefinitionBuilder(
         this.outputCtx, this.constantPool, this.reflector, templateContext,
         this.bindingScope.nestedScope(), this.level + 1, this.ngContentSelectors, contextName,
-        templateName, this.pipes);
+        templateName, this.pipes, []);
     const templateFunctionExpr = templateVisitor.buildTemplateFunction(ast.children, ast.variables);
     this._postfix.push(templateFunctionExpr.toDeclStmt(templateName, null));
   }
@@ -643,9 +676,7 @@ class TemplateDefinitionBuilder implements TemplateAstVisitor, LocalResolver {
 
   private temp(): o.ReadVarExpr {
     if (!this._temporaryAllocated) {
-      this._prefix.push(o.variable(TEMPORARY_NAME, o.DYNAMIC_TYPE,  null)
-                            .set(o.literal(undefined))
-                            .toDeclStmt(o.DYNAMIC_TYPE));
+      this._prefix.push(new o.DeclareVarStmt(TEMPORARY_NAME, undefined, o.DYNAMIC_TYPE));
       this._temporaryAllocated = true;
     }
     return o.variable(TEMPORARY_NAME);
@@ -665,9 +696,31 @@ class TemplateDefinitionBuilder implements TemplateAstVisitor, LocalResolver {
   }
 }
 
+function getQueryPredicate(query: CompileQueryMetadata, outputCtx: OutputContext): o.Expression {
+  let predicate: o.Expression;
+  if (query.selectors.length > 1 || (query.selectors.length == 1 && query.selectors[0].value)) {
+    const selectors = query.selectors.map(value => value.value as string);
+    selectors.some(value => !value) && error('Found a type among the string selectors expected');
+    predicate = outputCtx.constantPool.getConstLiteral(
+        o.literalArr(selectors.map(value => o.literal(value))));
+  } else if (query.selectors.length == 1) {
+    const first = query.selectors[0];
+    if (first.identifier) {
+      predicate = outputCtx.importExpr(first.identifier.reference);
+    } else {
+      error('Unexpected query form');
+      predicate = o.literal(null);
+    }
+  } else {
+    error('Unexpected query form');
+    predicate = o.literal(null);
+  }
+  return predicate;
+}
+
 export function createFactory(
-    type: CompileTypeMetadata, outputCtx: OutputContext,
-    reflector: CompileReflector): o.FunctionExpr {
+    type: CompileTypeMetadata, outputCtx: OutputContext, reflector: CompileReflector,
+    queries: CompileQueryMetadata[]): o.Expression {
   let args: o.Expression[] = [];
 
   const elementRef = reflector.resolveExternalReference(Identifiers.ElementRef);
@@ -700,10 +753,74 @@ export function createFactory(
     }
   }
 
+  const queryDefinitions: o.Expression[] = [];
+  for (let query of queries) {
+    const predicate = getQueryPredicate(query, outputCtx);
+
+    // e.g. r3.Q(null, SomeDirective, false) or r3.Q(null, ['div'], false)
+    const parameters = [
+      /* memoryIndex */ o.literal(null, o.INFERRED_TYPE),
+      /* predicate */ predicate,
+      /* descend */ o.literal(query.descendants)
+    ];
+
+    if (query.read) {
+      parameters.push(outputCtx.importExpr(query.read.identifier !.reference));
+    }
+
+    queryDefinitions.push(o.importExpr(R3.query).callFn(parameters));
+  }
+
+  const createInstance = new o.InstantiateExpr(outputCtx.importExpr(type.reference), args);
+  const result = queryDefinitions.length > 0 ? o.literalArr([createInstance, ...queryDefinitions]) :
+                                               createInstance;
+
   return o.fn(
-      [],
-      [new o.ReturnStatement(new o.InstantiateExpr(outputCtx.importExpr(type.reference), args))],
-      o.INFERRED_TYPE, null, type.reference.name ? `${type.reference.name}_Factory` : null);
+      [], [new o.ReturnStatement(result)], o.INFERRED_TYPE, null,
+      type.reference.name ? `${type.reference.name}_Factory` : null);
+}
+
+// Return a host binding function or null if one is not necessary.
+export function createHostBindingsFunction(
+    type: CompileTypeMetadata, outputCtx: OutputContext,
+    queries: CompileQueryMetadata[]): o.Expression|null {
+  const statements: o.Statement[] = [];
+
+  const temporary = function() {
+    let declared = false;
+    return () => {
+      if (!declared) {
+        statements.push(new o.DeclareVarStmt(TEMPORARY_NAME, undefined, o.DYNAMIC_TYPE));
+        declared = true;
+      }
+      return o.variable(TEMPORARY_NAME);
+    };
+  }();
+
+  for (let index = 0; index < queries.length; index++) {
+    const query = queries[index];
+
+    // e.g. r3.qR(tmp = r3.ld(dirIndex)[1]) && (r3.ld(dirIndex)[0].someDir = tmp);
+    const getDirectiveMemory = o.importExpr(R3.load).callFn([o.variable('dirIndex')]);
+    // The query list is at the query index + 1 because the directive itself is in slot 0.
+    const getQueryList = getDirectiveMemory.key(o.literal(index + 1));
+    const assignToTemporary = temporary().set(getQueryList);
+    const callQueryRefresh = o.importExpr(R3.queryRefresh).callFn([assignToTemporary]);
+    const updateDirective = getDirectiveMemory.key(o.literal(0, o.INFERRED_TYPE))
+                                .prop(query.propertyName)
+                                .set(query.first ? temporary().key(o.literal(0)) : temporary());
+    const andExpression = callQueryRefresh.and(updateDirective);
+    statements.push(andExpression.toStmt());
+  }
+
+  if (statements.length > 0) {
+    return o.fn(
+        [new o.FnParam('dirIndex', o.NUMBER_TYPE), new o.FnParam('elIndex', o.NUMBER_TYPE)],
+        statements, o.INFERRED_TYPE, null,
+        type.reference.name ? `${type.reference.name}_HostBindings` : null);
+  }
+
+  return null;
 }
 
 class ValueConverter extends AstMemoryEfficientTransformer {
