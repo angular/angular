@@ -2,7 +2,7 @@
 
 The Angular Ahead-of-Time (AOT) compiler converts your Angular HTML and TypeScript code into efficient JavaScript code during the build phase _before_ the browser downloads and runs that code.
 
-This guide explains how to build efficiently with the AOT compiler using the available compiler options and  Angular metadata.
+This guide explains how to build efficiently with the AOT compiler using the available compiler options and Angular metadata.
 
 <div class="l-sub-section">
 
@@ -65,7 +65,7 @@ You can control your app compilation by providing template compiler options in t
   }
 }
 ```
-To find the list of Angular compiler options available, see the [Angular Compiler Options](#compiler-options) section.
+To find a list of compiler options available, see the [Angular Compiler Options](#compiler-options) section.
 
 ### Angular metadata and AOT
 
@@ -73,7 +73,7 @@ Angular metadata tells Angular how to construct instances of your application cl
 
 The Angular **AOT compiler** extracts and interprets **metadata** about the parts of the application that Angular is supposed to manage.
 
-To learn how to specify Angular Metadata, see the [Specifying Metadata](#metadata-aot) section
+To learn how to specify Angular metadata in your application, see the [Specifying Metadata](#metadata-aot) section.
 
 {@a why-aot}
 
@@ -110,7 +110,7 @@ there are fewer opportunities for injection attacks.
 
 ## Specifying Metadata
 
-You can use the Angular metadata to specify how to interpret different parts of your applications. 
+You can use the Angular metadata to specify how to interpret different parts of your application. 
 You specify the metadata with **decorators** such as `@Component()` and `@Input()`.
 You also specify metadata implicitly in the constructor declarations of these decorated classes.
 
