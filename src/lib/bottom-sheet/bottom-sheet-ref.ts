@@ -18,7 +18,7 @@ import {MatBottomSheetContainer} from './bottom-sheet-container';
 /**
  * Reference to a bottom sheet dispatched from the bottom sheet service.
  */
-export class MatBottomSheetRef<T = any> {
+export class MatBottomSheetRef<T = any, R = any> {
   /** Instance of the component making up the content of the bottom sheet. */
   instance: T;
 
@@ -29,10 +29,13 @@ export class MatBottomSheetRef<T = any> {
   containerInstance: MatBottomSheetContainer;
 
   /** Subject for notifying the user that the bottom sheet has been dismissed. */
-  private readonly _afterDismissed = new Subject<void>();
+  private readonly _afterDismissed = new Subject<R | undefined>();
 
   /** Subject for notifying the user that the bottom sheet has opened and appeared. */
   private readonly _afterOpened = new Subject<void>();
+
+  /** Result to be passed down to the `afterDismissed` stream. */
+  private _result: R | undefined;
 
   constructor(containerInstance: MatBottomSheetContainer, private _overlayRef: OverlayRef) {
     this.containerInstance = containerInstance;
@@ -54,7 +57,7 @@ export class MatBottomSheetRef<T = any> {
     )
     .subscribe(() => {
       this._overlayRef.dispose();
-      this._afterDismissed.next();
+      this._afterDismissed.next(this._result);
       this._afterDismissed.complete();
     });
 
@@ -66,8 +69,11 @@ export class MatBottomSheetRef<T = any> {
     }
   }
 
-  /** Dismisses the bottom sheet. */
-  dismiss(): void {
+  /**
+   * Dismisses the bottom sheet.
+   * @param result Data to be passed back to the bottom sheet opener.
+   */
+  dismiss(result?: R): void {
     if (!this._afterDismissed.closed) {
       // Transition the backdrop in parallel to the bottom sheet.
       this.containerInstance._animationStateChanged.pipe(
@@ -75,12 +81,13 @@ export class MatBottomSheetRef<T = any> {
         take(1)
       ).subscribe(() => this._overlayRef.detachBackdrop());
 
+      this._result = result;
       this.containerInstance.exit();
     }
   }
 
   /** Gets an observable that is notified when the bottom sheet is finished closing. */
-  afterDismissed(): Observable<void> {
+  afterDismissed(): Observable<R | undefined> {
     return this._afterDismissed.asObservable();
   }
 

@@ -295,6 +295,34 @@ describe('MatBottomSheet', () => {
       tick(500);
     }));
 
+  it('should emit after being dismissed', fakeAsync(() => {
+    const bottomSheetRef = bottomSheet.open(PizzaMsg);
+    const spy = jasmine.createSpy('afterDismissed spy');
+
+    bottomSheetRef.afterDismissed().subscribe(spy);
+    viewContainerFixture.detectChanges();
+
+    bottomSheetRef.dismiss();
+    viewContainerFixture.detectChanges();
+    flush();
+
+    expect(spy).toHaveBeenCalledTimes(1);
+  }));
+
+  it('should be able to pass a result back to the dismissed stream', fakeAsync(() => {
+    const bottomSheetRef = bottomSheet.open<PizzaMsg, any, number>(PizzaMsg);
+    const spy = jasmine.createSpy('afterDismissed spy');
+
+    bottomSheetRef.afterDismissed().subscribe(spy);
+    viewContainerFixture.detectChanges();
+
+    bottomSheetRef.dismiss(1337);
+    viewContainerFixture.detectChanges();
+    flush();
+
+    expect(spy).toHaveBeenCalledWith(1337);
+  }));
+
   describe('passing in data', () => {
     it('should be able to pass in data', () => {
       const config = {

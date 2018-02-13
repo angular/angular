@@ -39,18 +39,18 @@ export class MatBottomSheet {
       private _injector: Injector,
       @Optional() @SkipSelf() private _parentBottomSheet: MatBottomSheet) {}
 
-  open<T, D = any>(component: ComponentType<T>,
-                   config?: MatBottomSheetConfig<D>): MatBottomSheetRef<T>;
-  open<T, D = any>(template: TemplateRef<T>,
-                   config?: MatBottomSheetConfig<D>): MatBottomSheetRef<T>;
+  open<T, D = any, R = any>(component: ComponentType<T>,
+                   config?: MatBottomSheetConfig<D>): MatBottomSheetRef<T, R>;
+  open<T, D = any, R = any>(template: TemplateRef<T>,
+                   config?: MatBottomSheetConfig<D>): MatBottomSheetRef<T, R>;
 
-  open<T, D = any>(componentOrTemplateRef: ComponentType<T> | TemplateRef<T>,
-                   config?: MatBottomSheetConfig<D>): MatBottomSheetRef<T> {
+  open<T, D = any, R = any>(componentOrTemplateRef: ComponentType<T> | TemplateRef<T>,
+                   config?: MatBottomSheetConfig<D>): MatBottomSheetRef<T, R> {
 
     const _config = _applyConfigDefaults(config);
     const overlayRef = this._createOverlay(_config);
     const container = this._attachContainer(overlayRef, _config);
-    const ref = new MatBottomSheetRef<T>(container, overlayRef);
+    const ref = new MatBottomSheetRef<T, R>(container, overlayRef);
 
     if (componentOrTemplateRef instanceof TemplateRef) {
       container.attachTemplatePortal(new TemplatePortal<T>(componentOrTemplateRef, null!, {
