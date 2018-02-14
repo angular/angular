@@ -7,7 +7,7 @@
  */
 
 import {defineComponent} from '../../src/render3/index';
-import {NO_CHANGE, bind, bind1, bind2, bind3, bind4, bind5, bind6, bind7, bind8, bindV, componentRefresh, container, containerRefreshEnd, containerRefreshStart, elementAttribute, elementClass, elementEnd, elementProperty, elementStart, elementStyle, embeddedViewEnd, embeddedViewStart, memory, projection, projectionDef, text, textBinding} from '../../src/render3/instructions';
+import {NO_CHANGE, bind, componentRefresh, container, containerRefreshEnd, containerRefreshStart, elementAttribute, elementClass, elementEnd, elementProperty, elementStart, elementStyle, embeddedViewEnd, embeddedViewStart, interpolation1, interpolation2, interpolation3, interpolation4, interpolation5, interpolation6, interpolation7, interpolation8, interpolationV, memory, projection, projectionDef, text, textBinding} from '../../src/render3/instructions';
 
 import {containerEl, renderToHtml} from './render_util';
 
@@ -37,7 +37,7 @@ describe('render3 integration test', () => {
           { text(1); }
           elementEnd();
         }
-        textBinding(1, bind1('Hello, ', name, '!'));
+        textBinding(1, interpolation1('Hello, ', name, '!'));
       }
     });
   });
@@ -91,19 +91,21 @@ describe('render3 integration test', () => {
           text(7);
           text(8);
         }
-        textBinding(0, bind1('', cm ? v : NO_CHANGE, '|'));
-        textBinding(1, bind2('', v, '_', cm ? v : NO_CHANGE, '|'));
-        textBinding(2, bind3('', v, '_', v, '_', cm ? v : NO_CHANGE, '|'));
-        textBinding(3, bind4('', v, '_', v, '_', v, '_', cm ? v : NO_CHANGE, '|'));
-        textBinding(4, bind5('', v, '_', v, '_', v, '_', v, '_', cm ? v : NO_CHANGE, '|'));
-        textBinding(5, bind6('', v, '_', v, '_', v, '_', v, '_', v, '_', cm ? v : NO_CHANGE, '|'));
+        textBinding(0, interpolation1('', cm ? v : NO_CHANGE, '|'));
+        textBinding(1, interpolation2('', v, '_', cm ? v : NO_CHANGE, '|'));
+        textBinding(2, interpolation3('', v, '_', v, '_', cm ? v : NO_CHANGE, '|'));
+        textBinding(3, interpolation4('', v, '_', v, '_', v, '_', cm ? v : NO_CHANGE, '|'));
+        textBinding(4, interpolation5('', v, '_', v, '_', v, '_', v, '_', cm ? v : NO_CHANGE, '|'));
         textBinding(
-            6, bind7('', v, '_', v, '_', v, '_', v, '_', v, '_', v, '_', cm ? v : NO_CHANGE, '|'));
+            5, interpolation6('', v, '_', v, '_', v, '_', v, '_', v, '_', cm ? v : NO_CHANGE, '|'));
         textBinding(
-            7, bind8(
+            6, interpolation7(
+                   '', v, '_', v, '_', v, '_', v, '_', v, '_', v, '_', cm ? v : NO_CHANGE, '|'));
+        textBinding(
+            7, interpolation8(
                    '', v, '_', v, '_', v, '_', v, '_', v, '_', v, '_', v, '_', cm ? v : NO_CHANGE,
                    '|'));
-        textBinding(8, bindV([
+        textBinding(8, interpolationV([
                       '', v, '_', v, '_', v, '_', v, '_', v, '_', v, '_', v, '_', v, '_',
                       cm ? v : NO_CHANGE, ''
                     ]));
@@ -168,7 +170,7 @@ describe('render3 integration test', () => {
           }
           elementEnd();
         }
-        textBinding(4, bind1('Hello ', name, '!'));
+        textBinding(4, interpolation1('Hello ', name, '!'));
       }
       expect(renderToHtml(Template, 'world')).toEqual('<b><b><b><b>Hello world!</b></b></b></b>');
       expect(renderToHtml(Template, 'mundo')).toEqual('<b><b><b><b>Hello mundo!</b></b></b></b>');
@@ -585,24 +587,26 @@ describe('render3 integration test', () => {
             elementStart(0, 'b');
             elementEnd();
           }
-          elementAttribute(0, 'a', bindV(c));
+          elementAttribute(0, 'a', interpolationV(c));
           elementAttribute(0, 'a0', bind(c[1]));
-          elementAttribute(0, 'a1', bind1(c[0], c[1], c[16]));
-          elementAttribute(0, 'a2', bind2(c[0], c[1], c[2], c[3], c[16]));
-          elementAttribute(0, 'a3', bind3(c[0], c[1], c[2], c[3], c[4], c[5], c[16]));
-          elementAttribute(0, 'a4', bind4(c[0], c[1], c[2], c[3], c[4], c[5], c[6], c[7], c[16]));
+          elementAttribute(0, 'a1', interpolation1(c[0], c[1], c[16]));
+          elementAttribute(0, 'a2', interpolation2(c[0], c[1], c[2], c[3], c[16]));
+          elementAttribute(0, 'a3', interpolation3(c[0], c[1], c[2], c[3], c[4], c[5], c[16]));
           elementAttribute(
-              0, 'a5', bind5(c[0], c[1], c[2], c[3], c[4], c[5], c[6], c[7], c[8], c[9], c[16]));
+              0, 'a4', interpolation4(c[0], c[1], c[2], c[3], c[4], c[5], c[6], c[7], c[16]));
+          elementAttribute(
+              0, 'a5',
+              interpolation5(c[0], c[1], c[2], c[3], c[4], c[5], c[6], c[7], c[8], c[9], c[16]));
           elementAttribute(
               0, 'a6',
-              bind6(
+              interpolation6(
                   c[0], c[1], c[2], c[3], c[4], c[5], c[6], c[7], c[8], c[9], c[10], c[11], c[16]));
           elementAttribute(
-              0, 'a7', bind7(
+              0, 'a7', interpolation7(
                            c[0], c[1], c[2], c[3], c[4], c[5], c[6], c[7], c[8], c[9], c[10], c[11],
                            c[12], c[13], c[16]));
           elementAttribute(
-              0, 'a8', bind8(
+              0, 'a8', interpolation8(
                            c[0], c[1], c[2], c[3], c[4], c[5], c[6], c[7], c[8], c[9], c[10], c[11],
                            c[12], c[13], c[14], c[15], c[16]));
         }

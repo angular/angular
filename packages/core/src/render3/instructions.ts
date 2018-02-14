@@ -23,7 +23,6 @@ import {RElement, RText, Renderer3, RendererFactory3, ProceduralRenderer3, Objec
 import {isDifferent, stringify} from './util';
 import {executeHooks, executeContentHooks, queueLifecycleHooks, queueInitHooks, executeInitHooks} from './hooks';
 
-
 /**
  * Directive (D) sets a property on all component instances using this constant as a key and the
  * component's host node (LElement) as the value. This is used in methods like detectChanges to
@@ -1356,9 +1355,9 @@ export function addToViewTree<T extends LView|LContainer>(state: T): T {
   return state;
 }
 
-//////////////////////////
-//// Bindings
-//////////////////////////
+///////////////////////////////
+//// Bindings & interpolations
+///////////////////////////////
 
 export interface NO_CHANGE {
   // This is a brand that ensures that this type can never match anything else
@@ -1369,16 +1368,53 @@ export interface NO_CHANGE {
 export const NO_CHANGE = {} as NO_CHANGE;
 
 /**
- * Create interpolation bindings with variable number of arguments.
+ *  Initializes the binding start index. Will get inlined.
  *
- * If any of the arguments change, then the interpolation is concatenated
- * and causes an update.
+ *  This function must be called before any binding related function is called
+ *  (ie `bind()`, `interpolationX()`, `pureFunctionX()`)
+ */
+function initBindings() {
+  // `bindingIndex` is initialized when the view is first entered when not in creation mode
+  ngDevMode &&
+      assertEqual(
+          creationMode, true, 'should only be called in creationMode for performance reasons');
+  if (currentView.bindingStartIndex == null) {
+    bindingIndex = currentView.bindingStartIndex = data.length;
+  }
+}
+
+/**
+ * Creates a single value binding.
+ *
+ * @param value Value to diff
+ */
+export function bind<T>(value: T | NO_CHANGE): T|NO_CHANGE {
+  if (creationMode) {
+    initBindings();
+    return data[bindingIndex++] = value;
+  }
+
+  const changed: boolean = value !== NO_CHANGE && isDifferent(data[bindingIndex], value);
+  if (changed) {
+    data[bindingIndex] = value;
+  }
+  bindingIndex++;
+  return changed ? value : NO_CHANGE;
+}
+
+/**
+ * Create interpolation bindings with a variable number of expressions.
+ *
+ * If there are 1 to 7 expressions `interpolation1()` to `interpolation7` should be used instead.
+ * Those are faster because there is no need to create an array of expressions and loop over it.
  *
  * `values`:
  * - has static text at even indexes,
  * - has evaluated expressions at odd indexes (could be NO_CHANGE).
+ *
+ * Returns the concatenated string when any of the arguments changes, `NO_CHANGE` otherwise.
  */
-export function bindV(values: any[]): string|NO_CHANGE {
+export function interpolationV(values: any[]): string|NO_CHANGE {
   ngDevMode && assertLessThan(2, values.length, 'should have at least 3 values');
   ngDevMode && assertEqual(values.length % 2, 1, 'should have an odd number of values');
 
@@ -1414,51 +1450,20 @@ export function bindV(values: any[]): string|NO_CHANGE {
   return NO_CHANGE;
 }
 
-// For bindings that have 0 - 7 dynamic values to watch, we can use a bind function that
-// matches the number of interpolations. This is faster than using the bindV function above
-// because we know ahead of time how many interpolations we'll have and don't need to
-// accept the values as an array that will need to be copied and looped over.
-
-// Initializes the binding start index. Will get inlined.
-function initBindings() {
-  if (currentView.bindingStartIndex == null) {
-    bindingIndex = currentView.bindingStartIndex = data.length;
-  }
-}
-
 /**
- * Creates a single value binding without interpolation.
- *
- * @param value Value to diff
- */
-export function bind<T>(value: T | NO_CHANGE): T|NO_CHANGE {
-  if (creationMode) {
-    initBindings();
-    return data[bindingIndex++] = value;
-  }
-
-  const changed: boolean = value !== NO_CHANGE && isDifferent(data[bindingIndex], value);
-  if (changed) {
-    data[bindingIndex] = value;
-  }
-  bindingIndex++;
-  return changed ? value : NO_CHANGE;
-}
-
-/**
- * Creates an interpolation bindings with 1 argument.
+ * Creates an interpolation binding with 1 expression.
  *
  * @param prefix static value used for concatenation only.
  * @param value value checked for change.
  * @param suffix static value used for concatenation only.
  */
-export function bind1(prefix: string, value: any, suffix: string): string|NO_CHANGE {
+export function interpolation1(prefix: string, value: any, suffix: string): string|NO_CHANGE {
   return bind(value) === NO_CHANGE ? NO_CHANGE : prefix + stringify(value) + suffix;
 }
 
-/** Creates an interpolation bindings with 2 arguments. */
-export function bind2(prefix: string, v0: any, i0: string, v1: any, suffix: string): string|
-    NO_CHANGE {
+/** Creates an interpolation binding with 2 expressions. */
+export function interpolation2(
+    prefix: string, v0: any, i0: string, v1: any, suffix: string): string|NO_CHANGE {
   let different: boolean;
   if (different = creationMode) {
     initBindings();
@@ -1477,8 +1482,8 @@ export function bind2(prefix: string, v0: any, i0: string, v1: any, suffix: stri
   return different ? prefix + stringify(v0) + i0 + stringify(v1) + suffix : NO_CHANGE;
 }
 
-/** Creates an interpolation bindings with 3 arguments. */
-export function bind3(
+/** Creates an interpolation bindings with 3 expressions. */
+export function interpolation3(
     prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, suffix: string): string|
     NO_CHANGE {
   let different: boolean;
@@ -1504,8 +1509,8 @@ export function bind3(
                      NO_CHANGE;
 }
 
-/** Create an interpolation binding with 4 arguments. */
-export function bind4(
+/** Create an interpolation binding with 4 expressions. */
+export function interpolation4(
     prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string, v3: any,
     suffix: string): string|NO_CHANGE {
   let different: boolean;
@@ -1539,8 +1544,8 @@ export function bind4(
       NO_CHANGE;
 }
 
-/** Creates an interpolation binding with 5 arguments. */
-export function bind5(
+/** Creates an interpolation binding with 5 expressions. */
+export function interpolation5(
     prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string, v3: any,
     i3: string, v4: any, suffix: string): string|NO_CHANGE {
   let different: boolean;
@@ -1579,8 +1584,8 @@ export function bind5(
       NO_CHANGE;
 }
 
-/** Creates an interpolation binding with 6 arguments. */
-export function bind6(
+/** Creates an interpolation binding with 6 expressions. */
+export function interpolation6(
     prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string, v3: any,
     i3: string, v4: any, i4: string, v5: any, suffix: string): string|NO_CHANGE {
   let different: boolean;
@@ -1623,8 +1628,8 @@ export function bind6(
       NO_CHANGE;
 }
 
-/** Creates an interpolation binding with 7 arguments. */
-export function bind7(
+/** Creates an interpolation binding with 7 expressions. */
+export function interpolation7(
     prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string, v3: any,
     i3: string, v4: any, i4: string, v5: any, i5: string, v6: any, suffix: string): string|
     NO_CHANGE {
@@ -1672,8 +1677,8 @@ export function bind7(
       NO_CHANGE;
 }
 
-/** Creates an interpolation binding with 8 arguments. */
-export function bind8(
+/** Creates an interpolation binding with 8 expressions. */
+export function interpolation8(
     prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string, v3: any,
     i3: string, v4: any, i4: string, v5: any, i5: string, v6: any, i6: string, v7: any,
     suffix: string): string|NO_CHANGE {
