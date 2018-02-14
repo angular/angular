@@ -5,8 +5,8 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AUTO_STYLE, AnimationEvent, AnimationOptions, animate, animateChild, group, keyframes, query, state, style, transition, trigger, ɵPRE_STYLE as PRE_STYLE} from '@angular/animations';
-import {AnimationDriver, ɵAnimationEngine, ɵNoopAnimationDriver} from '@angular/animations/browser';
+import {AUTO_STYLE, AnimationEvent, AnimationOptions, AnimationPlayer, NoopAnimationPlayer, animate, animateChild, group, keyframes, query, state, style, transition, trigger, ɵPRE_STYLE as PRE_STYLE} from '@angular/animations';
+import {AnimationDriver, ɵAnimationEngine, ɵNoopAnimationDriver as NoopAnimationDriver} from '@angular/animations/browser';
 import {MockAnimationDriver, MockAnimationPlayer} from '@angular/animations/browser/testing';
 import {ChangeDetectorRef, Component, HostBinding, HostListener, RendererFactory2, ViewChild} from '@angular/core';
 import {ɵDomRendererFactory2} from '@angular/platform-browser';
@@ -112,6 +112,50 @@ const DEFAULT_COMPONENT_ID = '1';
            flushMicrotasks();
            expect(cmp.log).toEqual(['start', 'done']);
          }));
+
+      it('should emit the correct totalTime value for a noop-animation', fakeAsync(() => {
+           @Component({
+             selector: 'cmp',
+             template: `
+                <div [@myAnimation]="exp" (@myAnimation.start)="cb($event)" (@myAnimation.done)="cb($event)"></div>
+          `,
+             animations: [
+               trigger(
+                   'myAnimation',
+                   [
+                     transition(
+                         '* => go',
+                         [
+                           animate('1s', style({opacity: 0})),
+                         ]),
+                   ]),
+             ]
+           })
+           class Cmp {
+             exp: any = false;
+             log: AnimationEvent[] = [];
+             cb(event: AnimationEvent) { this.log.push(event); }
+           }
+
+           TestBed.configureTestingModule({
+             declarations: [Cmp],
+             providers: [
+               {provide: AnimationDriver, useClass: NoopAnimationDriver},
+             ],
+           });
+
+           const fixture = TestBed.createComponent(Cmp);
+           const cmp = fixture.componentInstance;
+           cmp.exp = 'go';
+           fixture.detectChanges();
+           expect(cmp.log).toEqual([]);
+
+           flushMicrotasks();
+           expect(cmp.log.length).toEqual(2);
+           const [start, end] = cmp.log;
+           expect(start.totalTime).toEqual(1000);
+           expect(end.totalTime).toEqual(1000);
+         }));
     });
 
     describe('component fixture integration', () => {
@@ -166,7 +210,7 @@ const DEFAULT_COMPONENT_ID = '1';
              }
 
              TestBed.configureTestingModule({
-               providers: [{provide: AnimationDriver, useClass: ɵNoopAnimationDriver}],
+               providers: [{provide: AnimationDriver, useClass: NoopAnimationDriver}],
                declarations: [Cmp]
              });
 
@@ -2461,7 +2505,7 @@ const DEFAULT_COMPONENT_ID = '1';
            }
 
            TestBed.configureTestingModule({
-             providers: [{provide: AnimationDriver, useClass: ɵNoopAnimationDriver}],
+             providers: [{provide: AnimationDriver, useClass: NoopAnimationDriver}],
              declarations: [Cmp]
            });
 
@@ -2500,7 +2544,7 @@ const DEFAULT_COMPONENT_ID = '1';
            }
 
            TestBed.configureTestingModule({
-             providers: [{provide: AnimationDriver, useClass: ɵNoopAnimationDriver}],
+             providers: [{provide: AnimationDriver, useClass: NoopAnimationDriver}],
              declarations: [Cmp]
            });
 
@@ -2971,8 +3015,8 @@ const DEFAULT_COMPONENT_ID = '1';
              class Cmp {
                disableExp = false;
                exp = '';
-               startEvent: any;
-               doneEvent: any;
+               startEvent: AnimationEvent;
+               doneEvent: AnimationEvent;
              }
 
              TestBed.configureTestingModule({declarations: [Cmp]});
@@ -2988,14 +3032,17 @@ const DEFAULT_COMPONENT_ID = '1';
              cmp.exp = '1';
              fixture.detectChanges();
              flushMicrotasks();
-             expect(cmp.startEvent.totalTime).toEqual(0);
-             expect(cmp.doneEvent.totalTime).toEqual(0);
+             expect(cmp.startEvent.totalTime).toEqual(9876);
+             expect(cmp.startEvent.disabled).toBeTruthy();
+             expect(cmp.doneEvent.totalTime).toEqual(9876);
+             expect(cmp.doneEvent.disabled).toBeTruthy();
 
              cmp.exp = '2';
              cmp.disableExp = false;
              fixture.detectChanges();
              flushMicrotasks();
              expect(cmp.startEvent.totalTime).toEqual(9876);
+             expect(cmp.startEvent.disabled).toBeFalsy();
              // the done event isn't fired because it's an actual animation
            }));
 
@@ -3428,7 +3475,7 @@ const DEFAULT_COMPONENT_ID = '1';
       });
     });
   });
-});
+})();
 
 function assertHasParent(element: any, yes: boolean) {
   const parent = getDOM().parentElement(element);

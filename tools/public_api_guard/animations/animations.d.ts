@@ -43,6 +43,7 @@ export declare abstract class AnimationBuilder {
 
 /** @experimental */
 export interface AnimationEvent {
+    disabled: boolean;
     element: any;
     fromState: string;
     phaseName: string;
@@ -199,8 +200,8 @@ export declare function keyframes(steps: AnimationStyleMetadata[]): AnimationKey
 /** @experimental */
 export declare class NoopAnimationPlayer implements AnimationPlayer {
     parentPlayer: AnimationPlayer | null;
-    totalTime: number;
-    constructor();
+    readonly totalTime: number;
+    constructor(duration?: number, delay?: number);
     destroy(): void;
     finish(): void;
     getPosition(): number;
