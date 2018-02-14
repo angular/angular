@@ -1749,14 +1749,52 @@ function valueInData<T>(data: any[], index: number, value?: T): T {
   return value !;
 }
 
-/** Gets the binding at the current bindingIndex */
-export function peekBinding(): any {
-  ngDevMode && assertNotEqual(currentView.bindingStartIndex, null, 'bindingStartIndex');
-  return data[bindingIndex];
-}
-
 export function getCurrentQueries(QueryType: {new (): LQueries}): LQueries {
   return currentQueries || (currentQueries = new QueryType());
+}
+
+export function getCreationMode(): boolean {
+  return creationMode;
+}
+
+/** Gets the current binding value and increments the binding index. */
+export function consumeBinding(): any {
+  ngDevMode && assertDataInRange(bindingIndex);
+  ngDevMode &&
+      assertNotEqual(data[bindingIndex], NO_CHANGE, 'Stored value should never be NO_CHANGE.');
+  return data[bindingIndex++];
+}
+
+/** Updates binding if changed, then returns whether it was updated. */
+export function bindingUpdated(value: any): boolean {
+  ngDevMode && assertNotEqual(value, NO_CHANGE, 'Incoming value should never be NO_CHANGE.');
+
+  if (creationMode || isDifferent(data[bindingIndex], value)) {
+    creationMode && initBindings();
+    data[bindingIndex++] = value;
+    return true;
+  } else {
+    bindingIndex++;
+    return false;
+  }
+}
+
+/** Updates binding if changed, then returns the latest value. */
+export function checkAndUpdateBinding(value: any): any {
+  bindingUpdated(value);
+  return value;
+}
+
+/** Updates 2 bindings if changed, then returns whether either was updated. */
+export function bindingUpdated2(exp1: any, exp2: any): boolean {
+  const different = bindingUpdated(exp1);
+  return bindingUpdated(exp2) || different;
+}
+
+/** Updates 4 bindings if changed, then returns whether any was updated. */
+export function bindingUpdated4(exp1: any, exp2: any, exp3: any, exp4: any): boolean {
+  const different = bindingUpdated2(exp1, exp2);
+  return bindingUpdated2(exp3, exp4) || different;
 }
 
 export function getPreviousOrParentNode(): LNode {
