@@ -7,7 +7,7 @@
  */
 import {defineComponent} from '../../src/render3/index';
 import {componentRefresh, container, containerRefreshEnd, containerRefreshStart, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, memory} from '../../src/render3/instructions';
-import {objectLiteral1, objectLiteral2, objectLiteral3, objectLiteral4, objectLiteral5, objectLiteral6, objectLiteral7, objectLiteral8, objectLiteralV} from '../../src/render3/object_literal';
+import {pureFunction1, pureFunction2, pureFunction3, pureFunction4, pureFunction5, pureFunction6, pureFunction7, pureFunction8, pureFunctionV} from '../../src/render3/pure_function';
 import {renderToHtml} from '../../test/render3/render_util';
 
 describe('array literals', () => {
@@ -32,7 +32,7 @@ describe('array literals', () => {
         elementStart(0, MyComp);
         elementEnd();
       }
-      elementProperty(0, 'names', objectLiteral1(e0_ff, ctx.customName));
+      elementProperty(0, 'names', pureFunction1(e0_ff, ctx.customName));
       MyComp.ngComponentDef.h(1, 0);
       componentRefresh(1, 0);
     }
@@ -79,8 +79,8 @@ describe('array literals', () => {
         elementStart(0, ManyPropComp);
         elementEnd();
       }
-      elementProperty(0, 'names1', objectLiteral1(e0_ff, ctx.customName));
-      elementProperty(0, 'names2', objectLiteral1(e0_ff_1, ctx.customName2));
+      elementProperty(0, 'names1', pureFunction1(e0_ff, ctx.customName));
+      elementProperty(0, 'names2', pureFunction1(e0_ff_1, ctx.customName2));
       ManyPropComp.ngComponentDef.h(1, 0);
       componentRefresh(1, 0);
     }
@@ -105,7 +105,7 @@ describe('array literals', () => {
         elementStart(0, MyComp);
         elementEnd();
       }
-      elementProperty(0, 'names', objectLiteral2(e0_ff, ctx.customName, ctx.customName2));
+      elementProperty(0, 'names', pureFunction2(e0_ff, ctx.customName, ctx.customName2));
       MyComp.ngComponentDef.h(1, 0);
       componentRefresh(1, 0);
     }
@@ -129,41 +129,41 @@ describe('array literals', () => {
   });
 
   it('should work up to 8 bindings', () => {
-    let o3Comp: MyComp;
-    let o4Comp: MyComp;
-    let o5Comp: MyComp;
-    let o6Comp: MyComp;
-    let o7Comp: MyComp;
-    let o8Comp: MyComp;
+    let f3Comp: MyComp;
+    let f4Comp: MyComp;
+    let f5Comp: MyComp;
+    let f6Comp: MyComp;
+    let f7Comp: MyComp;
+    let f8Comp: MyComp;
 
     function Template(c: any, cm: boolean) {
       if (cm) {
         elementStart(0, MyComp);
-        o3Comp = memory(1);
+        f3Comp = memory(1);
         elementEnd();
         elementStart(2, MyComp);
-        o4Comp = memory(3);
+        f4Comp = memory(3);
         elementEnd();
         elementStart(4, MyComp);
-        o5Comp = memory(5);
+        f5Comp = memory(5);
         elementEnd();
         elementStart(6, MyComp);
-        o6Comp = memory(7);
+        f6Comp = memory(7);
         elementEnd();
         elementStart(8, MyComp);
-        o7Comp = memory(9);
+        f7Comp = memory(9);
         elementEnd();
         elementStart(10, MyComp);
-        o8Comp = memory(11);
+        f8Comp = memory(11);
         elementEnd();
       }
-      elementProperty(0, 'names', objectLiteral3(e0_ff, c[5], c[6], c[7]));
-      elementProperty(2, 'names', objectLiteral4(e2_ff, c[4], c[5], c[6], c[7]));
-      elementProperty(4, 'names', objectLiteral5(e4_ff, c[3], c[4], c[5], c[6], c[7]));
-      elementProperty(6, 'names', objectLiteral6(e6_ff, c[2], c[3], c[4], c[5], c[6], c[7]));
-      elementProperty(8, 'names', objectLiteral7(e8_ff, c[1], c[2], c[3], c[4], c[5], c[6], c[7]));
+      elementProperty(0, 'names', pureFunction3(e0_ff, c[5], c[6], c[7]));
+      elementProperty(2, 'names', pureFunction4(e2_ff, c[4], c[5], c[6], c[7]));
+      elementProperty(4, 'names', pureFunction5(e4_ff, c[3], c[4], c[5], c[6], c[7]));
+      elementProperty(6, 'names', pureFunction6(e6_ff, c[2], c[3], c[4], c[5], c[6], c[7]));
+      elementProperty(8, 'names', pureFunction7(e8_ff, c[1], c[2], c[3], c[4], c[5], c[6], c[7]));
       elementProperty(
-          10, 'names', objectLiteral8(e10_ff, c[0], c[1], c[2], c[3], c[4], c[5], c[6], c[7]));
+          10, 'names', pureFunction8(e10_ff, c[0], c[1], c[2], c[3], c[4], c[5], c[6], c[7]));
       MyComp.ngComponentDef.h(1, 0);
       MyComp.ngComponentDef.h(3, 2);
       MyComp.ngComponentDef.h(5, 4);
@@ -193,23 +193,23 @@ describe('array literals', () => {
          v8: any) => [v1, v2, v3, v4, v5, v6, v7, v8];
 
     renderToHtml(Template, ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i']);
-    expect(o3Comp !.names).toEqual(['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']);
-    expect(o4Comp !.names).toEqual(['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']);
-    expect(o5Comp !.names).toEqual(['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']);
-    expect(o6Comp !.names).toEqual(['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']);
-    expect(o7Comp !.names).toEqual(['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']);
-    expect(o8Comp !.names).toEqual(['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']);
+    expect(f3Comp !.names).toEqual(['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']);
+    expect(f4Comp !.names).toEqual(['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']);
+    expect(f5Comp !.names).toEqual(['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']);
+    expect(f6Comp !.names).toEqual(['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']);
+    expect(f7Comp !.names).toEqual(['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']);
+    expect(f8Comp !.names).toEqual(['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']);
 
     renderToHtml(Template, ['a1', 'b1', 'c1', 'd1', 'e1', 'f1', 'g1', 'h1', 'i1']);
-    expect(o3Comp !.names).toEqual(['a', 'b', 'c', 'd', 'e', 'f1', 'g1', 'h1']);
-    expect(o4Comp !.names).toEqual(['a', 'b', 'c', 'd', 'e1', 'f1', 'g1', 'h1']);
-    expect(o5Comp !.names).toEqual(['a', 'b', 'c', 'd1', 'e1', 'f1', 'g1', 'h1']);
-    expect(o6Comp !.names).toEqual(['a', 'b', 'c1', 'd1', 'e1', 'f1', 'g1', 'h1']);
-    expect(o7Comp !.names).toEqual(['a', 'b1', 'c1', 'd1', 'e1', 'f1', 'g1', 'h1']);
-    expect(o8Comp !.names).toEqual(['a1', 'b1', 'c1', 'd1', 'e1', 'f1', 'g1', 'h1']);
+    expect(f3Comp !.names).toEqual(['a', 'b', 'c', 'd', 'e', 'f1', 'g1', 'h1']);
+    expect(f4Comp !.names).toEqual(['a', 'b', 'c', 'd', 'e1', 'f1', 'g1', 'h1']);
+    expect(f5Comp !.names).toEqual(['a', 'b', 'c', 'd1', 'e1', 'f1', 'g1', 'h1']);
+    expect(f6Comp !.names).toEqual(['a', 'b', 'c1', 'd1', 'e1', 'f1', 'g1', 'h1']);
+    expect(f7Comp !.names).toEqual(['a', 'b1', 'c1', 'd1', 'e1', 'f1', 'g1', 'h1']);
+    expect(f8Comp !.names).toEqual(['a1', 'b1', 'c1', 'd1', 'e1', 'f1', 'g1', 'h1']);
   });
 
-  it('should work with objectLiteralV for 9+ bindings', () => {
+  it('should work with pureFunctionV for 9+ bindings', () => {
     /**
      * <my-comp [names]="['start', v0, v1, v2, v3, {name: v4}, v5, v6, v7, v8, 'end']">
      * </my-comp>
@@ -219,10 +219,9 @@ describe('array literals', () => {
         elementStart(0, MyComp);
         elementEnd();
       }
-      elementProperty(
-          0, 'names', objectLiteralV(e0_ff, [
-            c[0], c[1], c[2], c[3], objectLiteral1(e0_ff_1, c[4]), c[5], c[6], c[7], c[8]
-          ]));
+      elementProperty(0, 'names', pureFunctionV(e0_ff, [
+                        c[0], c[1], c[2], c[3], pureFunction1(e0_ff_1, c[4]), c[5], c[6], c[7], c[8]
+                      ]));
       MyComp.ngComponentDef.h(1, 0);
       componentRefresh(1, 0);
     }
@@ -271,7 +270,7 @@ describe('object literals', () => {
         elementStart(0, ObjectComp);
         elementEnd();
       }
-      elementProperty(0, 'config', objectLiteral1(e0_ff, ctx.name));
+      elementProperty(0, 'config', pureFunction1(e0_ff, ctx.name));
       ObjectComp.ngComponentDef.h(1, 0);
       componentRefresh(1, 0);
     }
@@ -306,8 +305,8 @@ describe('object literals', () => {
       }
       elementProperty(
           0, 'config',
-          objectLiteral2(
-              e0_ff, ctx.name, objectLiteral1(e0_ff_1, objectLiteral1(e0_ff_2, ctx.duration))));
+          pureFunction2(
+              e0_ff, ctx.name, pureFunction1(e0_ff_1, pureFunction1(e0_ff_2, ctx.duration))));
       ObjectComp.ngComponentDef.h(1, 0);
       componentRefresh(1, 0);
     }
@@ -372,7 +371,7 @@ describe('object literals', () => {
             elementEnd();
           }
           elementProperty(
-              0, 'config', objectLiteral2(e0_ff, ctx.configs[i].opacity, ctx.configs[i].duration));
+              0, 'config', pureFunction2(e0_ff, ctx.configs[i].opacity, ctx.configs[i].duration));
           ObjectComp.ngComponentDef.h(1, 0);
           componentRefresh(1, 0);
           embeddedViewEnd();
