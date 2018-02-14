@@ -19,10 +19,8 @@ import {CssSelector} from '../selector';
 import {BindingParser} from '../template_parser/binding_parser';
 import {AttrAst, BoundDirectivePropertyAst, BoundElementPropertyAst, BoundEventAst, BoundTextAst, DirectiveAst, ElementAst, EmbeddedTemplateAst, NgContentAst, PropertyBindingType, ProviderAst, QueryMatch, RecursiveTemplateAstVisitor, ReferenceAst, TemplateAst, TemplateAstVisitor, TextAst, VariableAst, templateVisitAll} from '../template_parser/template_ast';
 import {OutputContext, error} from '../util';
-
 import {Identifiers as R3} from './r3_identifiers';
 import {BUILD_OPTIMIZER_COLOCATE, OutputMode} from './r3_types';
-
 
 
 /** Name of the context parameter passed into a template function */
@@ -39,6 +37,17 @@ const REFERENCE_PREFIX = '_r';
 
 /** The name of the implicit context reference */
 const IMPLICIT_REFERENCE = '$implicit';
+
+/** Name of the i18n attributes **/
+const I18N_ATTR = 'i18n';
+const I18N_ATTR_PREFIX = 'i18n-';
+
+/** I18n separators for metadata **/
+const MEANING_SEPARATOR = '|';
+const ID_SEPARATOR = '@@';
+
+/** Closure functions **/
+const GOOG_GET_MSG = 'goog.getMsg';
 
 export function compileDirective(
     outputCtx: OutputContext, directive: CompileDirectiveMetadata, reflector: CompileReflector,
@@ -302,10 +311,17 @@ class BindingScope {
   nestedScope(): BindingScope { return new BindingScope(this); }
 
   freshReferenceName(): string {
-    let current: BindingScope|null = this;
+    let current: BindingScope = this;
     // Find the top scope as it maintains the global reference count
     while (current.parent) current = current.parent;
-    return `${REFERENCE_PREFIX}${current.referenceNameIndex++}`;
+    const ref = `${REFERENCE_PREFIX}${current.referenceNameIndex++}`;
+    return ref;
+  }
+
+  // closure variables holding i18n messages are name `MSG_[A-Z0-9]+`
+  freshI18nName(): string {
+    const name = this.freshReferenceName();
+    return `MSG_${name}`.toUpperCase();
   }
 }
 
@@ -327,6 +343,12 @@ class TemplateDefinitionBuilder implements TemplateAstVisitor, LocalResolver {
   private _valueConverter: ValueConverter;
   private unsupported = unsupported;
   private invalid = invalid;
+
+  // Whether we are inside a translatable element (`<p i18n>... somewhere here ... </p>)
+  private _inI18nSection: boolean = false;
+  private _i18nSectionIndex = -1;
+  // Maps of placeholder to node indexes for each of the i18n section
+  private _phToNodeIdxes: {[phName: string]: number[]}[] = [{}];
 
   constructor(
       private outputCtx: OutputContext, private constantPool: ConstantPool,
@@ -422,6 +444,19 @@ class TemplateDefinitionBuilder implements TemplateAstVisitor, LocalResolver {
         [o.ifStmt(o.variable(CREATION_MODE_FLAG), this._creationMode)] :
         [];
 
+    // Generate maps of placeholder name to node indexes
+    // TODO(vicb): This is a WIP, not fully supported yet
+    for (const phToNodeIdx of this._phToNodeIdxes) {
+      if (Object.keys(phToNodeIdx).length > 0) {
+        const scopedName = this.bindingScope.freshReferenceName();
+        const phMap = o.variable(scopedName)
+                          .set(mapToExpression(phToNodeIdx, true))
+                          .toDeclStmt(o.INFERRED_TYPE, [o.StmtModifier.Final]);
+
+        this._prefix.push(phMap);
+      }
+    }
+
     return o.fn(
         [
           new o.FnParam(this.contextParameter, null), new o.FnParam(CREATION_MODE_FLAG, o.BOOL_TYPE)
@@ -429,19 +464,14 @@ class TemplateDefinitionBuilder implements TemplateAstVisitor, LocalResolver {
         [
           // Temporary variable declarations (i.e. let _t: any;)
           ...this._prefix,
-
           // Creating mode (i.e. if (cm) { ... })
           ...creationMode,
-
           // Binding mode (i.e. ɵp(...))
           ...this._bindingMode,
-
           // Host mode (i.e. Comp.h(...))
           ...this._hostMode,
-
           // Refresh mode (i.e. Comp.r(...))
           ...this._refreshMode,
-
           // Nested templates (i.e. function CompTemplate() {})
           ...this._postfix
         ],
@@ -480,14 +510,48 @@ class TemplateDefinitionBuilder implements TemplateAstVisitor, LocalResolver {
   }
 
   // TemplateAstVisitor
-  visitElement(ast: ElementAst) {
-    let bindingCount = 0;
+  visitElement(element: ElementAst) {
     const elementIndex = this.allocateDataSlot();
     let componentIndex: number|undefined = undefined;
     const referenceDataSlots = new Map<string, number>();
+    const wasInI18nSection = this._inI18nSection;
+
+    const outputAttrs: {[name: string]: string} = {};
+    const attrI18nMetas: {[name: string]: string} = {};
+    let i18nMeta: string = '';
+
+    // Elements inside i18n sections are replaced with placeholders
+    // TODO(vicb): nested elements are a WIP in this phase
+    if (this._inI18nSection) {
+      const phName = element.name.toLowerCase();
+      if (!this._phToNodeIdxes[this._i18nSectionIndex][phName]) {
+        this._phToNodeIdxes[this._i18nSectionIndex][phName] = [];
+      }
+      this._phToNodeIdxes[this._i18nSectionIndex][phName].push(elementIndex);
+    }
+
+    // Handle i18n attributes
+    for (const attr of element.attrs) {
+      const name = attr.name;
+      const value = attr.value;
+      if (name === I18N_ATTR) {
+        if (this._inI18nSection) {
+          throw new Error(
+              `Could not mark an element as translatable inside of a translatable section`);
+        }
+        this._inI18nSection = true;
+        this._i18nSectionIndex++;
+        this._phToNodeIdxes[this._i18nSectionIndex] = {};
+        i18nMeta = value;
+      } else if (name.startsWith(I18N_ATTR_PREFIX)) {
+        attrI18nMetas[name.slice(I18N_ATTR_PREFIX.length)] = value;
+      } else {
+        outputAttrs[name] = value;
+      }
+    }
 
     // Element creation mode
-    const component = findComponent(ast.directives);
+    const component = findComponent(element.directives);
     const nullNode = o.literal(null, o.INFERRED_TYPE);
     const parameters: o.Expression[] = [o.literal(elementIndex)];
 
@@ -496,21 +560,38 @@ class TemplateDefinitionBuilder implements TemplateAstVisitor, LocalResolver {
       parameters.push(this.typeReference(component.directive.type.reference));
       componentIndex = this.allocateDataSlot();
     } else {
-      parameters.push(o.literal(ast.name));
+      parameters.push(o.literal(element.name));
     }
 
-    // Add attributes array
+    // Add the attributes
+    const i18nMessages: o.Statement[] = [];
     const attributes: o.Expression[] = [];
-    for (let attr of ast.attrs) {
-      attributes.push(o.literal(attr.name), o.literal(attr.value));
+    let hasI18nAttr = false;
+
+    Object.getOwnPropertyNames(outputAttrs).forEach(name => {
+      const value = outputAttrs[name];
+      attributes.push(o.literal(name));
+      if (attrI18nMetas.hasOwnProperty(name)) {
+        hasI18nAttr = true;
+        const {statements, variable} = this.genI18nMessageStmts(value, attrI18nMetas[name]);
+        i18nMessages.push(...statements);
+        attributes.push(variable);
+      } else {
+        attributes.push(o.literal(value));
+      }
+    });
+
+    let attrArg: o.Expression = nullNode;
+
+    if (attributes.length > 0) {
+      attrArg = hasI18nAttr ? getLiteralFactory(this.outputCtx, o.literalArr(attributes)) :
+                              this.constantPool.getConstLiteral(o.literalArr(attributes), true);
     }
-    parameters.push(
-        attributes.length > 0 ?
-            this.constantPool.getConstLiteral(o.literalArr(attributes), /* forceShared */ true) :
-            nullNode);
+
+    parameters.push(attrArg);
 
     // Add directives array
-    const {directivesArray, directiveIndexMap} = this._computeDirectivesArray(ast.directives);
+    const {directivesArray, directiveIndexMap} = this._computeDirectivesArray(element.directives);
     parameters.push(directiveIndexMap.size > 0 ? directivesArray : nullNode);
 
     if (component && componentIndex != null) {
@@ -518,10 +599,9 @@ class TemplateDefinitionBuilder implements TemplateAstVisitor, LocalResolver {
       directiveIndexMap.set(component.directive.type.reference, componentIndex);
     }
 
-    // Add references array
-    if (ast.references && ast.references.length > 0) {
+    if (element.references && element.references.length > 0) {
       const references =
-          flatten(ast.references.map(reference => {
+          flatten(element.references.map(reference => {
             const slot = this.allocateDataSlot();
             referenceDataSlots.set(reference.name, slot);
             // Generate the update temporary.
@@ -544,17 +624,19 @@ class TemplateDefinitionBuilder implements TemplateAstVisitor, LocalResolver {
     }
 
     // Generate the instruction create element instruction
-    this.instruction(this._creationMode, ast.sourceSpan, R3.createElement, ...parameters);
+    if (i18nMessages.length > 0) {
+      this._creationMode.push(...i18nMessages);
+    }
+    this.instruction(this._creationMode, element.sourceSpan, R3.createElement, ...parameters);
 
     const implicit = o.variable(this.contextParameter);
 
     // Generate element input bindings
-    for (let input of ast.inputs) {
+    for (let input of element.inputs) {
       if (input.isAnimation) {
         this.unsupported('animations');
       }
       const convertedBinding = this.convertPropertyBinding(implicit, input.value);
-      const parameters = [o.literal(elementIndex), o.literal(input.name), convertedBinding];
       const instruction = BINDING_INSTRUCTION_MAP[input.type];
       if (instruction) {
         // TODO(chuckj): runtime: security context?
@@ -567,13 +649,23 @@ class TemplateDefinitionBuilder implements TemplateAstVisitor, LocalResolver {
     }
 
     // Generate directives input bindings
-    this._visitDirectives(ast.directives, implicit, elementIndex, directiveIndexMap);
+    this._visitDirectives(element.directives, implicit, elementIndex, directiveIndexMap);
 
     // Traverse element child nodes
-    templateVisitAll(this, ast.children);
+    if (this._inI18nSection && element.children.length == 1 &&
+        element.children[0] instanceof TextAst) {
+      const text = element.children[0] as TextAst;
+      this.visitSingleI18nTextChild(text, i18nMeta);
+    } else {
+      templateVisitAll(this, element.children);
+    }
 
     // Finish element construction mode.
-    this.instruction(this._creationMode, ast.endSourceSpan || ast.sourceSpan, R3.elementEnd);
+    this.instruction(
+        this._creationMode, element.endSourceSpan || element.sourceSpan, R3.elementEnd);
+
+    // Restore the state before exiting this node
+    this._inI18nSection = wasInI18nSection;
   }
 
   private _visitDirectives(
@@ -685,6 +777,25 @@ class TemplateDefinitionBuilder implements TemplateAstVisitor, LocalResolver {
         o.literal(ast.value));
   }
 
+  // When the content of the element is a single text node the translation can be inlined:
+  //
+  // `<p i18n="desc|mean">some content</p>`
+  // compiles to
+  // ```
+  // /**
+  // * @desc desc
+  // * @meaning mean
+  // */
+  // const MSG_XYZ = goog.getMsg('some content');
+  // i0.ɵT(1, MSG_XYZ);
+  // ```
+  visitSingleI18nTextChild(text: TextAst, i18nMeta: string) {
+    const {statements, variable} = this.genI18nMessageStmts(text.value, i18nMeta);
+    this._creationMode.push(...statements);
+    this.instruction(
+        this._creationMode, text.sourceSpan, R3.text, o.literal(this.allocateDataSlot()), variable);
+  }
+
   // These should be handled in the template or element directly
   readonly visitDirective = invalid;
   readonly visitDirectiveProperty = invalid;
@@ -723,6 +834,35 @@ class TemplateDefinitionBuilder implements TemplateAstVisitor, LocalResolver {
 
   private bind(implicit: o.Expression, value: AST, sourceSpan: ParseSourceSpan): o.Expression {
     return this.convertPropertyBinding(implicit, value);
+  }
+
+  // Transforms an i18n message into a const declaration.
+  //
+  // `message`
+  // becomes
+  // ```
+  // /**
+  //  * @desc description?
+  //  * @meaning meaning?
+  //  */
+  // const MSG_XYZ = goog.getMsg('message');
+  // ```
+  private genI18nMessageStmts(msg: string, meta: string):
+      {statements: o.Statement[], variable: o.ReadVarExpr} {
+    const statements: o.Statement[] = [];
+    const m = parseI18nMeta(meta);
+    const docStmt = i18nMetaToDocStmt(m);
+    if (docStmt) {
+      statements.push(docStmt);
+    }
+
+    // Call closure to get the translation
+    const variable = o.variable(this.bindingScope.freshI18nName());
+    const fnCall = o.variable(GOOG_GET_MSG).callFn([o.literal(msg)]);
+    const msgStmt = variable.set(fnCall).toDeclStmt(o.INFERRED_TYPE, [o.StmtModifier.Final]);
+    statements.push(msgStmt);
+
+    return {statements, variable};
   }
 }
 
@@ -954,7 +1094,7 @@ class ValueConverter extends AstMemoryEfficientTransformer {
 
   visitLiteralArray(ast: LiteralArray, context: any): AST {
     return new BuiltinFunctionCall(ast.span, this.visitAll(ast.expressions), values => {
-      // If the literal has calculated (non-literal) elements  transform it into
+      // If the literal has calculated (non-literal) elements transform it into
       // calls to literal factories that compose the literal and will cache intermediate
       // values. Otherwise, just return an literal array that contains the values.
       const literal = o.literalArr(values);
@@ -1052,7 +1192,49 @@ function asLiteral(value: any): o.Expression {
   return o.literal(value, o.INFERRED_TYPE);
 }
 
-function mapToExpression(map: {[key: string]: any}): o.Expression {
-  return o.literalMap(Object.getOwnPropertyNames(map).map(
-      key => ({key, quoted: false, value: o.literal(map[key])})));
+function mapToExpression(map: {[key: string]: any}, quoted = false): o.Expression {
+  return o.literalMap(
+      Object.getOwnPropertyNames(map).map(key => ({key, quoted, value: asLiteral(map[key])})));
+}
+
+// Parse i18n metas like:
+// - "@@id",
+// - "description[@@id]",
+// - "meaning|description[@@id]"
+function parseI18nMeta(i18n?: string): {description?: string, id?: string, meaning?: string} {
+  let meaning: string|undefined;
+  let description: string|undefined;
+  let id: string|undefined;
+
+  if (i18n) {
+    // TODO(vicb): figure out how to force a message ID with closure ?
+    const idIndex = i18n.indexOf(ID_SEPARATOR);
+
+    const descIndex = i18n.indexOf(MEANING_SEPARATOR);
+    let meaningAndDesc: string;
+    [meaningAndDesc, id] =
+        (idIndex > -1) ? [i18n.slice(0, idIndex), i18n.slice(idIndex + 2)] : [i18n, ''];
+    [meaning, description] = (descIndex > -1) ?
+        [meaningAndDesc.slice(0, descIndex), meaningAndDesc.slice(descIndex + 1)] :
+        ['', meaningAndDesc];
+  }
+
+  return {description, id, meaning};
+}
+
+// Converts i18n meta informations for a message (description, meaning) to a JsDoc statement
+// formatted as expected by the Closure compiler.
+function i18nMetaToDocStmt(meta: {description?: string, id?: string, meaning?: string}):
+    o.JSDocCommentStmt|null {
+  const tags: o.JSDocTag[] = [];
+
+  if (meta.description) {
+    tags.push({tagName: o.JSDocTagName.Desc, text: meta.description});
+  }
+
+  if (meta.meaning) {
+    tags.push({tagName: o.JSDocTagName.Meaning, text: meta.meaning});
+  }
+
+  return tags.length == 0 ? null : new o.JSDocCommentStmt(tags);
 }

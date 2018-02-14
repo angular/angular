@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AotCompilerHost, AotCompilerOptions, AotSummaryResolver, CompileDirectiveMetadata, CompileIdentifierMetadata, CompileMetadataResolver, CompileNgModuleMetadata, CompilePipeSummary, CompileTypeMetadata, CompilerConfig, DEFAULT_INTERPOLATION_CONFIG, DirectiveNormalizer, DirectiveResolver, DomElementSchemaRegistry, HtmlParser, I18NHtmlParser, Lexer, NgModuleResolver, ParseError, Parser, PipeResolver, StaticReflector, StaticSymbol, StaticSymbolCache, StaticSymbolResolver, TemplateParser, TypeScriptEmitter, analyzeNgModules, createAotUrlResolver, templateSourceUrl} from '@angular/compiler';
+import {AotCompilerHost, AotCompilerOptions, AotSummaryResolver, CompileDirectiveMetadata, CompileIdentifierMetadata, CompileMetadataResolver, CompileNgModuleMetadata, CompilePipeSummary, CompileTypeMetadata, CompilerConfig, DEFAULT_INTERPOLATION_CONFIG, DirectiveNormalizer, DirectiveResolver, DomElementSchemaRegistry, HtmlParser, Lexer, NgModuleResolver, ParseError, Parser, PipeResolver, StaticReflector, StaticSymbol, StaticSymbolCache, StaticSymbolResolver, TemplateParser, TypeScriptEmitter, analyzeNgModules, createAotUrlResolver, templateSourceUrl} from '@angular/compiler';
 import {ViewEncapsulation} from '@angular/core';
 import * as ts from 'typescript';
 
@@ -21,7 +21,7 @@ import {OutputMode} from '../../src/render3/r3_types';
 import {compileComponent, compileDirective} from '../../src/render3/r3_view_compiler';
 import {BindingParser} from '../../src/template_parser/binding_parser';
 import {OutputContext} from '../../src/util';
-import {MockAotCompilerHost, MockCompilerHost, MockData, MockDirectory, arrayToMockDir, expectNoDiagnostics, settings, setup, toMockFileArray} from '../aot/test_util';
+import {MockAotCompilerHost, MockCompilerHost, MockData, MockDirectory, arrayToMockDir, expectNoDiagnostics, settings, toMockFileArray} from '../aot/test_util';
 
 const IDENTIFIER = /[A-Za-z_$ɵ][A-Za-z0-9_$]*/;
 const OPERATOR =
@@ -76,7 +76,7 @@ export function expectEmit(source: string, emitted: string, description: string)
   const expr = r(...pieces);
   if (!expr.test(source)) {
     let last: number = 0;
-    for (let i = 1; i < pieces.length; i++) {
+    for (let i = 1; i <= pieces.length; i++) {
       const t = r(...pieces.slice(0, i));
       const m = source.match(t);
       const expected = pieces[i - 1] == IDENT ? '<IDENT>' : pieces[i - 1];
@@ -145,7 +145,6 @@ function doCompile(
 
   // TODO(chuckj): Replace with a variant of createAotCompiler() when the r3_view_compiler is
   // integrated
-  const translations = options.translations || '';
 
   const urlResolver = createAotUrlResolver(compilerHost);
   const symbolCache = new StaticSymbolCache();
@@ -153,8 +152,7 @@ function doCompile(
   const symbolResolver = new StaticSymbolResolver(compilerHost, symbolCache, summaryResolver);
   const staticReflector =
       new StaticReflector(summaryResolver, symbolResolver, [], [], errorCollector);
-  const htmlParser = new I18NHtmlParser(
-      new HtmlParser(), translations, options.i18nFormat, options.missingTranslation, console);
+  const htmlParser = new HtmlParser();
   const config = new CompilerConfig({
     defaultEncapsulation: ViewEncapsulation.Emulated,
     useJit: false,
