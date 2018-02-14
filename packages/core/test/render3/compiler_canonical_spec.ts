@@ -190,40 +190,68 @@ describe('compiler specification', () => {
     });
 
     describe('value composition', () => {
+      type $MyArrayComp$ = MyArrayComp;
 
-      it('should support array literals', () => {
-        type $MyComp$ = MyComp;
+      @Component({
+        selector: 'my-array-comp',
+        template: `
+            {{ names[0] }} {{ names[1] }}
+        `
+      })
+      class MyArrayComp {
+        @Input() names: string[];
+
+        static ngComponentDef = $r3$.ɵdefineComponent({
+          type: MyArrayComp,
+          tag: 'my-array-comp',
+          factory: function MyArrayComp_Factory() { return new MyArrayComp(); },
+          template: function MyArrayComp_Template(ctx: $MyArrayComp$, cm: $boolean$) {
+            if (cm) {
+              $r3$.ɵT(0);
+            }
+            $r3$.ɵt(0, $r3$.ɵb2('', ctx.names[0], ' ', ctx.names[1], ''));
+          },
+          inputs: {names: 'names'}
+        });
+      }
+
+      it('should support array literals of constants', () => {
         type $MyApp$ = MyApp;
 
-        @Component({
-          selector: 'my-comp',
-          template: `
-            <p>{{ names[0] }}</p>
-            <p>{{ names[1] }}</p>
-          `
-        })
-        class MyComp {
-          @Input() names: string[];
+        // NORMATIVE
+        const $e0_arr$ = ['Nancy', 'Bess'];
+        // /NORMATIVE
 
+        @Component({
+          selector: 'my-app',
+          template: `
+          <my-array-comp [names]="['Nancy', 'Bess']"></my-array-comp>
+        `
+        })
+        class MyApp {
+          // NORMATIVE
           static ngComponentDef = $r3$.ɵdefineComponent({
-            type: MyComp,
-            tag: 'my-comp',
-            factory: function MyComp_Factory() { return new MyComp(); },
-            template: function MyComp_Template(ctx: $MyComp$, cm: $boolean$) {
+            type: MyApp,
+            tag: 'my-app',
+            factory: function MyApp_Factory() { return new MyApp(); },
+            template: function MyApp_Template(ctx: $MyApp$, cm: $boolean$) {
               if (cm) {
-                $r3$.ɵE(0, 'p');
-                $r3$.ɵT(1);
-                $r3$.ɵe();
-                $r3$.ɵE(2, 'p');
-                $r3$.ɵT(3);
+                $r3$.ɵE(0, MyArrayComp);
                 $r3$.ɵe();
               }
-              $r3$.ɵt(1, $r3$.ɵb(ctx.names[0]));
-              $r3$.ɵt(3, $r3$.ɵb(ctx.names[1]));
-            },
-            inputs: {names: 'names'}
+              $r3$.ɵp(0, 'names', $r3$.ɵb0($e0_arr$));
+              MyArrayComp.ngComponentDef.h(1, 0);
+              $r3$.ɵr(1, 0);
+            }
           });
+          // /NORMATIVE
         }
+
+        expect(renderComp(MyApp)).toEqual(`<my-array-comp>Nancy Bess</my-array-comp>`);
+      });
+
+      it('should support array literals', () => {
+        type $MyApp$ = MyApp;
 
         // NORMATIVE
         const $e0_ff$ = (v: any) => ['Nancy', v];
@@ -232,7 +260,7 @@ describe('compiler specification', () => {
         @Component({
           selector: 'my-app',
           template: `
-          <my-comp [names]="['Nancy', customName]"></my-comp>
+          <my-array-comp [names]="['Nancy', customName]"></my-array-comp>
         `
         })
         class MyApp {
@@ -245,18 +273,18 @@ describe('compiler specification', () => {
             factory: function MyApp_Factory() { return new MyApp(); },
             template: function MyApp_Template(ctx: $MyApp$, cm: $boolean$) {
               if (cm) {
-                $r3$.ɵE(0, MyComp);
+                $r3$.ɵE(0, MyArrayComp);
                 $r3$.ɵe();
               }
-              $r3$.ɵp(0, 'names', $r3$.ɵo1($e0_ff$, ctx.customName));
-              MyComp.ngComponentDef.h(1, 0);
+              $r3$.ɵp(0, 'names', $r3$.ɵf1($e0_ff$, ctx.customName));
+              MyArrayComp.ngComponentDef.h(1, 0);
               $r3$.ɵr(1, 0);
             }
           });
           // /NORMATIVE
         }
 
-        expect(renderComp(MyApp)).toEqual(`<my-comp><p>Nancy</p><p>Bess</p></my-comp>`);
+        expect(renderComp(MyApp)).toEqual(`<my-array-comp>Nancy Bess</my-array-comp>`);
       });
 
       it('should support 9+ bindings in array literals', () => {
@@ -352,7 +380,7 @@ describe('compiler specification', () => {
               }
               $r3$.ɵp(
                   0, 'names',
-                  $r3$.ɵoV($e0_ff$, [c.n0, c.n1, c.n2, c.n3, c.n4, c.n5, c.n6, c.n7, c.n8]));
+                  $r3$.ɵfV($e0_ff$, [c.n0, c.n1, c.n2, c.n3, c.n4, c.n5, c.n6, c.n7, c.n8]));
               MyComp.ngComponentDef.h(1, 0);
               $r3$.ɵr(1, 0);
             }
@@ -420,7 +448,7 @@ describe('compiler specification', () => {
                 $r3$.ɵE(0, ObjectComp);
                 $r3$.ɵe();
               }
-              $r3$.ɵp(0, 'config', $r3$.ɵo1($e0_ff$, ctx.name));
+              $r3$.ɵp(0, 'config', $r3$.ɵf1($e0_ff$, ctx.name));
               ObjectComp.ngComponentDef.h(1, 0);
               $r3$.ɵr(1, 0);
             }
@@ -500,8 +528,8 @@ describe('compiler specification', () => {
               }
               $r3$.ɵp(
                   0, 'config',
-                  $r3$.ɵo2(
-                      $e0_ff_2$, ctx.name, $r3$.ɵo1($e0_ff_1$, $r3$.ɵo1($e0_ff$, ctx.duration))));
+                  $r3$.ɵf2(
+                      $e0_ff_2$, ctx.name, $r3$.ɵf1($e0_ff_1$, $r3$.ɵf1($e0_ff$, ctx.duration))));
               NestedComp.ngComponentDef.h(1, 0);
               $r3$.ɵr(1, 0);
             }
