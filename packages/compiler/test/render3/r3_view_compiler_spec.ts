@@ -114,7 +114,7 @@ describe('r3_view_compiler', () => {
         }
       };
 
-      const bV_call = `$r3$.ɵbV([' ',ctx.list[0],' ',ctx.list[1],' ',ctx.list[2],' ',ctx.list[3],
+      const bV_call = `$r3$.ɵiV([' ',ctx.list[0],' ',ctx.list[1],' ',ctx.list[2],' ',ctx.list[3],
         ' ',ctx.list[4],' ',ctx.list[5],' ',ctx.list[6],' ',ctx.list[7],' ',ctx.list[8],
         ' '])`;
       const result = compile(files, angularFiles);
@@ -305,7 +305,7 @@ describe('r3_view_compiler', () => {
                 $r3$.ɵT(1);
                 $r3$.ɵe();
               }
-              $r3$.ɵt(1, $r3$.ɵb2('', ctx.salutation, ' ', $foo$, ''));
+              $r3$.ɵt(1, $r3$.ɵi2('', ctx.salutation, ' ', $foo$, ''));
             }
           }
         });`;
@@ -421,7 +421,7 @@ describe('r3_view_compiler', () => {
               $r3$.ɵT(2);
             }
             const $user$ = $r3$.ɵm(1);
-            $r3$.ɵt(2, $r3$.ɵb1('Hello ', $user$.value, '!'));
+            $r3$.ɵt(2, $r3$.ɵi1('Hello ', $user$.value, '!'));
           }
         });
       `;
@@ -634,7 +634,7 @@ describe('r3_view_compiler', () => {
                   $r3$.ɵe();
                 }
                 const $item$ = ctx0.$implicit;
-                $r3$.ɵt(1, $r3$.ɵb1('', $item$.name, ''));
+                $r3$.ɵt(1, $r3$.ɵi1('', $item$.name, ''));
               }
             }
           });
@@ -719,7 +719,7 @@ describe('r3_view_compiler', () => {
                 const $item$ = ctx0.$implicit;
                 $r3$.ɵp(4, 'forOf', $r3$.ɵb(IDENT.infos));
                 $c2$.h(5,4);
-                $r3$.ɵt(2, $r3$.ɵb1('', IDENT.name, ''));
+                $r3$.ɵt(2, $r3$.ɵi1('', IDENT.name, ''));
                 $r3$.ɵcR(4);
                 $r3$.ɵr(5, 4);
                 $r3$.ɵcr();
@@ -732,7 +732,7 @@ describe('r3_view_compiler', () => {
                     $r3$.ɵe();
                   }
                   const $info$ = ctx1.$implicit;
-                  $r3$.ɵt(1, $r3$.ɵb2(' ', $item$.name, ': ', $info$.description, ' '));
+                  $r3$.ɵt(1, $r3$.ɵi2(' ', $item$.name, ': ', $info$.description, ' '));
                 }
               }
             }
