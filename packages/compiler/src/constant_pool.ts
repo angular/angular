@@ -237,7 +237,13 @@ class KeyVisitor implements o.ExpressionVisitor {
                                   `EX:${ast.value.runtime.name}`;
   }
 
-  visitReadVarExpr = invalid;
+  visitReadVarExpr(ast: o.ReadVarExpr): string {
+    if (!ast.name) {
+      invalid(ast);
+    }
+    return ast.name as string;
+  }
+
   visitWriteVarExpr = invalid;
   visitWriteKeyExpr = invalid;
   visitWritePropExpr = invalid;
@@ -257,7 +263,7 @@ class KeyVisitor implements o.ExpressionVisitor {
 
 function invalid<T>(arg: o.Expression | o.Statement): never {
   throw new Error(
-      `Invalid state: Visitor ${this.constructor.name} doesn't handle ${o.constructor.name}`);
+      `Invalid state: Visitor ${this.constructor.name} doesn't handle ${arg.constructor.name}`);
 }
 
 function isVariable(e: o.Expression): e is o.ReadVarExpr {

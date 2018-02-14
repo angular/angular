@@ -121,5 +121,4 @@ describe('r3_view_compiler', () => {
       expectEmit(result.source, bV_call, 'Incorrect bV call');
     });
   });
-
 });

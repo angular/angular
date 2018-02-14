@@ -252,7 +252,7 @@ export class ReadVarExpr extends Expression {
       this.builtin = null;
     } else {
       this.name = null;
-      this.builtin = <BuiltinVar>name;
+      this.builtin = name;
     }
   }
 
@@ -1486,7 +1486,11 @@ export function literal(
 }
 
 // The list of JSDoc tags that we currently support. Extend it if needed.
-export const enum JSDocTagName {Desc = 'desc', Id = 'id', Meaning = 'meaning'}
+export const enum JSDocTagName {
+  Desc = 'desc',
+  Id = 'id',
+  Meaning = 'meaning',
+}
 
 /*
  * TypeScript has an API for JSDoc already, but it's not exposed.
@@ -1496,42 +1500,43 @@ export const enum JSDocTagName {Desc = 'desc', Id = 'id', Meaning = 'meaning'}
  */
 export type JSDocTag = {
   // `tagName` is e.g. "param" in an `@param` declaration
-  tagName: JSDocTagName | string;
+  tagName: JSDocTagName | string,
   // Any remaining text on the tag, e.g. the description
-  text?: string;
-} | {// no `tagName` for plain text documentation that occurs before any `@param` lines
-     tagName?: undefined
+  text?: string,
+} | {
+  // no `tagName` for plain text documentation that occurs before any `@param` lines
+  tagName?: undefined,
   text: string,
 };
 
-  /*
-   * Serializes a `Tag` into a string.
-   * Returns a string like " @foo {bar} baz" (note the leading whitespace before `@foo`).
-   */
-  function tagToString(tag: JSDocTag): string {
-    let out = '';
-    if (tag.tagName) {
-      out += ` @${tag.tagName}`;
-    }
-    if (tag.text) {
-      if (tag.text.match(/\/\*|\*\//)) {
-        throw new Error('JSDoc text cannot contain "/*" and "*/"');
-      }
-      out += ' ' + tag.text.replace(/@/g, '\\@');
-    }
-    return out;
+/*
+ * Serializes a `Tag` into a string.
+ * Returns a string like " @foo {bar} baz" (note the leading whitespace before `@foo`).
+ */
+function tagToString(tag: JSDocTag): string {
+  let out = '';
+  if (tag.tagName) {
+    out += ` @${tag.tagName}`;
   }
-
-  function serializeTags(tags: JSDocTag[]): string {
-    if (tags.length === 0) return '';
-
-    let out = '*\n';
-    for (const tag of tags) {
-      out += ' *';
-      // If the tagToString is multi-line, insert " * " prefixes on subsequent lines.
-      out += tagToString(tag).replace(/\n/g, '\n * ');
-      out += '\n';
+  if (tag.text) {
+    if (tag.text.match(/\/\*|\*\//)) {
+      throw new Error('JSDoc text cannot contain "/*" and "*/"');
     }
-    out += ' ';
-    return out;
+    out += ' ' + tag.text.replace(/@/g, '\\@');
   }
+  return out;
+}
+
+function serializeTags(tags: JSDocTag[]): string {
+  if (tags.length === 0) return '';
+
+  let out = '*\n';
+  for (const tag of tags) {
+    out += ' *';
+    // If the tagToString is multi-line, insert " * " prefixes on subsequent lines.
+    out += tagToString(tag).replace(/\n/g, '\n * ');
+    out += '\n';
+  }
+  out += ' ';
+  return out;
+}

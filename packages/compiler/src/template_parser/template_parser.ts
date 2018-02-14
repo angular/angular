@@ -12,10 +12,9 @@ import {CompilerConfig} from '../config';
 import {SchemaMetadata} from '../core';
 import {AST, ASTWithSource, EmptyExpr} from '../expression_parser/ast';
 import {Parser} from '../expression_parser/parser';
-import {I18NHtmlParser} from '../i18n/i18n_html_parser';
 import {Identifiers, createTokenForExternalReference, createTokenForReference} from '../identifiers';
 import * as html from '../ml_parser/ast';
-import {ParseTreeResult} from '../ml_parser/html_parser';
+import {HtmlParser, ParseTreeResult} from '../ml_parser/html_parser';
 import {removeWhitespaces, replaceNgsp} from '../ml_parser/html_whitespaces';
 import {expandNodes} from '../ml_parser/icu_ast_expander';
 import {InterpolationConfig} from '../ml_parser/interpolation_config';
@@ -88,7 +87,7 @@ export class TemplateParser {
   constructor(
       private _config: CompilerConfig, private _reflector: CompileReflector,
       private _exprParser: Parser, private _schemaRegistry: ElementSchemaRegistry,
-      private _htmlParser: I18NHtmlParser, private _console: Console,
+      private _htmlParser: HtmlParser, private _console: Console,
       public transforms: TemplateAstVisitor[]) {}
 
   public get expressionParser() { return this._exprParser; }
