@@ -79,16 +79,16 @@ export {
   queryRefresh as qR,
 } from './query';
 export {
-  objectLiteral1 as o1,
-  objectLiteral2 as o2,
-  objectLiteral3 as o3,
-  objectLiteral4 as o4,
-  objectLiteral5 as o5,
-  objectLiteral6 as o6,
-  objectLiteral7 as o7,
-  objectLiteral8 as o8,
-  objectLiteralV as oV,
-} from './object_literal';
+  pureFunction1 as f1,
+  pureFunction2 as f2,
+  pureFunction3 as f3,
+  pureFunction4 as f4,
+  pureFunction5 as f5,
+  pureFunction6 as f6,
+  pureFunction7 as f7,
+  pureFunction8 as f8,
+  pureFunctionV as fV,
+} from './pure_function';
 
 
 // clang-format on
