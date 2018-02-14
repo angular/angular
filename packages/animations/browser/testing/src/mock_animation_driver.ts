@@ -58,7 +58,7 @@ export class MockAnimationPlayer extends NoopAnimationPlayer {
       public element: any, public keyframes: {[key: string]: string | number}[],
       public duration: number, public delay: number, public easing: string,
       public previousPlayers: any[]) {
-    super();
+    super(duration, delay);
 
     if (allowPreviousPlayerStylesMerge(duration, delay)) {
       previousPlayers.forEach(player => {
@@ -68,8 +68,6 @@ export class MockAnimationPlayer extends NoopAnimationPlayer {
         }
       });
     }
-
-    this.totalTime = delay + duration;
   }
 
   /* @internal */

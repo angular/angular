@@ -34,7 +34,7 @@ export class NoopAnimationDriver implements AnimationDriver {
   animate(
       element: any, keyframes: {[key: string]: string | number}[], duration: number, delay: number,
       easing: string, previousPlayers: any[] = []): AnimationPlayer {
-    return new NoopAnimationPlayer();
+    return new NoopAnimationPlayer(duration, delay);
   }
 }
 
