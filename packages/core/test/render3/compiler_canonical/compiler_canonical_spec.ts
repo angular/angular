@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, ContentChild, Directive, Injectable, Input, NgModule, OnDestroy, Optional, Pipe, PipeTransform, QueryList, SimpleChanges, TemplateRef, ViewChild, ViewContainerRef} from '../../../src/core';
-import * as $r3$ from '../../../src/core_render3_private_export';
+import {Component, ContentChild, ContentChildren, Directive, HostBinding, Injectable, Input, NgModule, OnDestroy, Optional, Pipe, PipeTransform, QueryList, SimpleChanges, TemplateRef, ViewChild, ViewChildren, ViewContainerRef} from '../../src/core';
+import * as $r3$ from '../../src/core_render3_private_export';
 
 import {renderComponent, toHtml} from '../render_util';
 
@@ -127,6 +127,54 @@ describe('compiler specification', () => {
 
       expect(renderComp(MyComponent)).toEqual('<child some-directive="">child-view</child>!');
       expect(log).toEqual(['ChildComponent', 'SomeDirective']);
+    });
+
+    it('should support host bindings', () => {
+      type $MyApp$ = MyApp;
+
+      @Directive({selector: '[hostBindingDir]'})
+      class HostBindingDir {
+        @HostBinding('id') dirId = 'some id';
+
+        // NORMATIVE
+        static ngDirectiveDef = $r3$.ɵdefineDirective({
+          type: HostBindingDir,
+          factory: function HostBindingDir_Factory() { return new HostBindingDir(); },
+          hostBindings: function HostBindingDir_HostBindings(
+              dirIndex: $number$, elIndex: $number$) {
+            $r3$.ɵp(elIndex, 'id', $r3$.ɵb($r3$.ɵm<HostBindingDir>(dirIndex).dirId));
+          }
+        });
+        // /NORMATIVE
+      }
+
+      const $e0_attrs$ = ['hostBindingDir', ''];
+      const $e0_dirs$ = [HostBindingDir];
+
+      @Component({
+        selector: 'my-app',
+        template: `
+          <div hostBindingDir></div>
+        `
+      })
+      class MyApp {
+        static ngComponentDef = $r3$.ɵdefineComponent({
+          type: MyApp,
+          tag: 'my-app',
+          factory: function MyApp_Factory() { return new MyApp(); },
+          template: function MyApp_Template(ctx: $MyApp$, cm: $boolean$) {
+            if (cm) {
+              $r3$.ɵE(0, 'div', $e0_attrs$, $e0_dirs$);
+              $r3$.ɵe();
+            }
+            HostBindingDir.ngDirectiveDef.h(1, 0);
+            $r3$.ɵr(1, 0);
+          }
+        });
+      }
+
+      expect(renderComp(MyApp)).toEqual(`<div hostbindingdir="" id="some id"></div>`);
+
     });
 
     xit('should support structural directives', () => {
@@ -747,7 +795,7 @@ describe('compiler specification', () => {
         })
         class ViewQueryComponent {
           @ViewChild(SomeDirective) someDir: SomeDirective;
-
+          @ViewChildren(SomeDirective) someDirList: QueryList<SomeDirective>;
 
           // NORMATIVE
           static ngComponentDef = $r3$.ɵdefineComponent({
@@ -759,13 +807,16 @@ describe('compiler specification', () => {
               let $tmp$: any;
               if (cm) {
                 $r3$.ɵQ(0, SomeDirective, false);
-                $r3$.ɵE(1, 'div', $e1_attrs$, $e1_dirs$);
+                $r3$.ɵQ(1, SomeDirective, false);
+                $r3$.ɵE(2, 'div', $e1_attrs$, $e1_dirs$);
                 $r3$.ɵe();
               }
-              $r3$.ɵqR($tmp$ = $r3$.ɵm<QueryList<any>>(0)) &&
-                  (ctx.someDir = $tmp$ as QueryList<any>);
-              SomeDirective.ngDirectiveDef.h(2, 1);
-              $r3$.ɵr(2, 1);
+
+              $r3$.ɵqR($tmp$ = $r3$.ɵm<QueryList<any>>(0)) && (ctx.someDir = $tmp$.first);
+              $r3$.ɵqR($tmp$ = $r3$.ɵm<QueryList<any>>(1)) &&
+                  (ctx.someDirList = $tmp$ as QueryList<any>);
+              SomeDirective.ngDirectiveDef.h(3, 2);
+              $r3$.ɵr(3, 2);
             }
           });
           // /NORMATIVE
@@ -773,7 +824,10 @@ describe('compiler specification', () => {
 
 
         const viewQueryComp = renderComponent(ViewQueryComponent);
-        expect((viewQueryComp.someDir as QueryList<SomeDirective>).toArray()).toEqual([someDir !]);
+        expect(viewQueryComp.someDir).toEqual(someDir);
+        expect((viewQueryComp.someDirList as QueryList<SomeDirective>).toArray()).toEqual([
+          someDir !
+        ]);
       });
 
       it('should support content queries', () => {
@@ -790,19 +844,24 @@ describe('compiler specification', () => {
         })
         class ContentQueryComponent {
           @ContentChild(SomeDirective) someDir: SomeDirective;
+          @ContentChildren(SomeDirective) someDirList: QueryList<SomeDirective>;
 
           // NORMATIVE
           static ngComponentDef = $r3$.ɵdefineComponent({
             type: ContentQueryComponent,
             tag: 'content-query-component',
             factory: function ContentQueryComponent_Factory() {
-              return [new ContentQueryComponent(), $r3$.ɵQ(null, SomeDirective, false)];
+              return [
+                new ContentQueryComponent(), $r3$.ɵQ(null, SomeDirective, false),
+                $r3$.ɵQ(null, SomeDirective, false)
+              ];
             },
             hostBindings: function ContentQueryComponent_HostBindings(
                 dirIndex: $number$, elIndex: $number$) {
               let $tmp$: any;
-              $r3$.ɵqR($tmp$ = $r3$.ɵm<any[]>(dirIndex)[1]) &&
-                  ($r3$.ɵm<any[]>(dirIndex)[0].someDir = $tmp$);
+              const $instance$ = $r3$.ɵm<any[]>(dirIndex)[0];
+              $r3$.ɵqR($tmp$ = $r3$.ɵm<any[]>(dirIndex)[1]) && ($instance$.someDir = $tmp$.first);
+              $r3$.ɵqR($tmp$ = $r3$.ɵm<any[]>(dirIndex)[2]) && ($instance$.someDirList = $tmp$);
             },
             template: function ContentQueryComponent_Template(
                 ctx: $ContentQueryComponent$, cm: $boolean$) {
@@ -855,7 +914,8 @@ describe('compiler specification', () => {
         expect(renderComp(MyApp))
             .toEqual(
                 `<content-query-component><div><div somedir=""></div></div></content-query-component>`);
-        expect((contentQueryComp !.someDir as QueryList<SomeDirective>).toArray()).toEqual([
+        expect(contentQueryComp !.someDir).toEqual(someDir !);
+        expect((contentQueryComp !.someDirList as QueryList<SomeDirective>).toArray()).toEqual([
           someDir !
         ]);
       });
