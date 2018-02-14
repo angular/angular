@@ -642,6 +642,12 @@
             "rev": true,
             "title": "AngularFirebase.com",
             "url": "https://angularfirebase.com/"
+          },
+          "loiane-angulartraining": {
+            "desc": "Free Angular course in Portuguese.",
+            "rev": true,
+            "title": "Loiane Training (Português)",
+            "url": "https://loiane.training/course/angular/"
           }
         }
       },
