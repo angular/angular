@@ -1,16 +1,19 @@
+<!--
 # Displaying Data
+-->
+# 데이터 표시하기
 
 <!--
 You can display data by binding controls in an HTML template to properties of an Angular component.
 -->
-Angular 컴포넌트에 있는 프로퍼티를 HTML 템플릿에 바인딩하면 화면에 표시할 수 있습니다.
+Angular 컴포넌트에 있는 프로퍼티는 HTML 템플릿에 바인딩해서 화면에 표시할 수 있습니다.
 
 <!--
 In this page, you'll create a component with a list of heroes.
 You'll display the list of hero names and
 conditionally show a message below the list.
 -->
-이 문서에서는 목록에 있는 히어로의 이름과 상태를 표시하는 컴포넌트를 간단하게 만들어 봅니다.
+이 문서에서는 배열에 있는 히어로의 이름과 상태를 표시하는 예제를 간단하게 만들어 봅니다.
 
 <!--
 The final UI looks like this:
@@ -40,7 +43,11 @@ snippets described in this page.
 
 {@a interpolation}
 
+<!--
 ## Showing component properties with interpolation
+-->
+## 가장 간단한 방법
+
 <!--
 The easiest way to display a component property
 is to bind the property name through interpolation.
@@ -81,7 +88,7 @@ When you're done, it should look like this:
 <!--
 You added two properties to the formerly empty component: `title` and `myHero`.
 -->
-이 코드를 보면 컴포넌트 프로퍼티로 `title` 과 `myHero` 를 선언한 것을 확인할 수 있습니다.
+컴포넌트 프로퍼티에는 `title` 과 `myHero` 를 선언했습니다.
 
 <!--
 The template displays the two component properties using double curly brace
@@ -104,7 +111,7 @@ The backtick (<code>\`</code>)&mdash;which is *not* the same character as a sing
 quote (`'`)&mdash;allows you to compose a string over several lines, which makes the
 HTML more readable.
 -->
-템플릿에 사용된 역따옴표(<code>\`</code>)는 문자열을 여러 줄에 걸쳐 선언하는 ECMAScript 2015 표준이며,
+템플릿에 사용된 역따옴표(<code>\`</code>)는 문자열을 여러 줄에 걸쳐 선언하는 ECMAScript 2015 표준 문법이며,
 역따옴표를 사용하면 HTML 코드의 가독성을 더 높일 수 있습니다.
 역따옴표(<code>\`</code>)와 홑따옴표(`'`)를 혼동하지 않도록 주의하세요.
 
@@ -153,19 +160,19 @@ When you bootstrap with the `AppComponent` class (in <code>main.ts</code>), Angu
 in the `index.html`, finds it, instantiates an instance of `AppComponent`, and renders it
 inside the `<app-root>` tag.
 -->
-그러면 Angular 애플리케이션이 시작되면서 `AppComponent` 클래스가 부트스트랩 될 때, Angular는 `index.html` 파일에서 `<app-root>` 엘리먼트를 찾습니다.
+Angular 애플리케이션이 시작되면서 `AppComponent` 클래스가 부트스트랩 될 때, Angular는 `index.html` 파일에서 `<app-root>` 엘리먼트를 찾습니다.
 그리고 이 엘리먼트를 찾은 위치에 `AppComponent` 인스턴스를 생성하고 화면에 렌더링합니다.
 
 <!--
 Now run the app. It should display the title and hero name:
 -->
-여기까지 작성하고 애플리케이션을 시작하면, 페이지 제목과 히어로 이름이 다음과 같이 표시되는 것을 확인할 수 있습니다:
+여기까지 작성하고 애플리케이션을 시작하면, 페이지 제목과 히어로 이름이 다음과 같이 표시됩니다:
 
 <figure>
   <!--
   <img src="generated/images/guide/displaying-data/title-and-hero.png" alt="Title and Hero">
   -->
-  <img src="generated/images/guide/displaying-data/title-and-hero.png" alt="제목과 히어로가 표시된 화면">
+  <img src="generated/images/guide/displaying-data/title-and-hero.png" alt="페이지 제목과 히어로가 표시된 화면">
 </figure>
 
 
@@ -173,11 +180,10 @@ Now run the app. It should display the title and hero name:
 The next few sections review some of the coding choices in the app.
 -->
 
-
-## Template inline or template file?
 <!--
-인라인 템플릿이 좋을까, 템플릿 파일을 따로 두는 것이 좋을까?
+## Template inline or template file?
 -->
+## 인라인 템플릿? 템플릿 파일?
 
 <!--
 You can store your component's template in one of two places.
@@ -218,10 +224,10 @@ In either style, the template data bindings have the same access to the componen
 </div>
 
 
-## Constructor or variable initialization?
 <!--
-변수 초기값은 생성자에서 할당하는 것이 좋을까, 클래스 선언에서 할당하는 것이 좋을까?
+## Constructor or variable initialization?
 -->
+## 변수 초기화는 생성자에서? 클래스에서?
 
 <!--
 Although this example uses variable assignment to initialize the components, you could instead declare and initialize the properties using a constructor:
@@ -241,15 +247,15 @@ This app uses more terse "variable assignment" style simply for brevity.
 
 {@a ngFor}
 
-## Showing an array property with ***ngFor**
 <!--
-배열에 있는 항목을 ***ngFor**로 표시하기
+## Showing an array property with ***ngFor**
 -->
+## 배열 순회하기 : ***ngFor***
 
 <!--
 To display a list of heroes, begin by adding an array of hero names to the component and redefine `myHero` to be the first name in the array.
 -->
-히어로의 목록을 표시하려면 먼저 컴포넌트에 히어로 목록을 정의해야 합니다. 그리고 난 후에 `myHero` 에 첫번째 항목을 할당합시다.
+히어로의 목록을 표시하려면 먼저 컴포넌트에 배열을 정의해야 합니다. `myHero` 배열을 만들고, 이 배열에 히어로들의 이름을 할당합시다.
 
 
 <code-example path="displaying-data/src/app/app.component.2.ts" linenums="false" title="src/app/app.component.ts (class)" region="class">
@@ -261,7 +267,7 @@ To display a list of heroes, begin by adding an array of hero names to the compo
 Now use the Angular `ngFor` directive in the template to display
 each item in the `heroes` list.
 -->
-그리고 Angular에서 제공하는 `ngFor` 디렉티브를 사용하면 `heroes` 목록의 각 항목을 화면에 표시할 수 있습니다.
+그리고 Angular에서 제공하는 `ngFor` 디렉티브를 사용하면 `heroes` 배열의 각 항목을 화면에 표시할 수 있습니다.
 
 
 <code-example path="displaying-data/src/app/app.component.2.ts" linenums="false" title="src/app/app.component.ts (template)" region="template">
@@ -293,7 +299,7 @@ Don't forget the leading asterisk (\*) in `*ngFor`. It is an essential part of t
 For more information, see the [Template Syntax](guide/template-syntax#ngFor) page.
 -->
 좀 더 자세한 설명은 [템플릿 문법](guide/template-syntax#ngFor) 문서를 참고하세요.
-`*ngFor` 를 사용할 때 별표(\*)를 잊지 마세요. 이 표기방식은 템플릿 문법에서도 특히 중요합니다.
+그리고 `*ngFor` 를 사용할 때 별표(\*)를 잊지 마세요. 이 표기방식은 템플릿 문법에서도 특히 중요합니다.
 
 
 </div>
@@ -342,10 +348,10 @@ Now the heroes appear in an unordered list.
 </figure>
 
 
-## Creating a class for the data
 <!--
-데이터 클래스 정의하기
+## Creating a class for the data
 -->
+## 데이터 클래스 정의하기
 
 <!--
 The app's code defines the data directly inside the component, which isn't best practice.
@@ -419,11 +425,10 @@ That brief syntax does a lot:
 * 인자와 같은 이름으로 클래스에 public 프로퍼티를 정의합니다.
 * 클래스가 생성될 때 생성자로 인자를 받으면 그 값을 해당 프로퍼티에 할당합니다.
 
-
-### Using the Hero class
 <!--
-Hero 클래스 적용하기
+### Using the Hero class
 -->
+### Hero 클래스 적용하기
 
 <!--
 After importing the `Hero` class, the `AppComponent.heroes` property can return a _typed_ array
@@ -455,38 +460,50 @@ Fix that to display only the hero's `name` property.
 <!--
 The display looks the same, but the code is clearer.
 -->
-앱을 실행해보면 화면에 표시되는 모습은 이전과 같지만, 이제 어떤 프로퍼티를 참조하는지 명확해졌습니다.
+앱을 실행해보면 화면에 표시되는 모습은 이전과 같지만, 이제 객체의 어떤 프로퍼티를 참조하는지 명확해졌습니다.
 
 {@a ngIf}
 
+<!--
 ## Conditional display with NgIf
+-->
+## 특정 조건을 만족할 때만 표시하기 : ***ngIf***
 
+<!--
 Sometimes an app needs to display a view or a portion of a view only under specific circumstances.
+-->
+상황에 따라서, 어떤 뷰는 특정 조건을 만족할 때만 화면에 표시할 수 있습니다.
 
+<!--
 Let's change the example to display a message if there are more than three heroes.
+-->
+히어로 데이터가 3건을 넘어가면 간단한 메시지를 화면에 표시하도록 예제를 수정해 봅시다.
 
+<!--
 The Angular `ngIf` directive inserts or removes an element based on a _truthy/falsy_ condition.
 To see it in action, add the following paragraph at the bottom of the template:
-
+-->
+Angular에서 제공하는 `ngIf` 디렉티브는 _참/거짓으로 평가되는_ 조건에 따라 엘리먼트를 DOM에 추가하거나 제거합니다.
+`ngIf` 의 동작을 확인하기 위해 템플릿에 다음과 같은 코드를 작성합시다.
 
 <code-example path="displaying-data/src/app/app.component.ts" linenums="false" title="src/app/app.component.ts (message)" region="message">
 
 </code-example>
 
 
-
 <div class="alert is-important">
 
-
-
+<!--
 Don't forget the leading asterisk (\*) in `*ngIf`. It is an essential part of the syntax.
 Read more about `ngIf` and `*` in the [ngIf section](guide/template-syntax#ngIf) of the [Template Syntax](guide/template-syntax) page.
-
+-->
+`*ngIf` 를 사용할 때 별표(\*) 를 빼먹지 마세요. 이 표기방식은 템플릿 문법에서 특히 중요합니다.
+`ngIf` 나 `*` 에 대해 자세히 살펴보려면 [템플릿 문법](guide/template-syntax) 문서에 있는 [ngIf 섹션](guide/template-syntax#ngIf)을 참고하세요.
 
 </div>
 
 
-
+<!--
 The template expression inside the double quotes,
 `*ngIf="heroes.length > 3"`, looks and behaves much like TypeScript.
 When the component's list of heroes has more than three items, Angular adds the paragraph
@@ -494,36 +511,59 @@ to the DOM and the message appears. If there are three or fewer items, Angular o
 paragraph, so no message appears. For more information,
 see the [template expressions](guide/template-syntax#template-expressions) section of the
 [Template Syntax](guide/template-syntax) page.
+-->
+템플릿 표현식은 이중 중괄호 안에 `*ngIf="heroes.length > 3"` 와 같이 작성합니다. 이 문법은 TypeScript와 비슷해 보이고, 동작도 비슷합니다.
+이 코드를 추가한 후에 컴포넌트에 배열로 정의한 히어로 목록의 길이가 3을 넘어가면 Angular가 이 엘리먼트를 DOM에 추가해서 화면에 표시합니다.
+그리고 배열의 길이가 3 이하이면 이 엘리먼트를 DOM에서 제거합니다.
+좀 더 자세한 내용은 [템플릿 문법](guide/template-syntax) 문서에 있는 [템플릿 표현식](guide/template-syntax#template-expressions)을 참고하세요.
 
 
 <div class="alert is-helpful">
 
-
-
+<!--
 Angular isn't showing and hiding the message. It is adding and removing the paragraph element from the DOM. That improves performance, especially in larger projects when conditionally including or excluding
 big chunks of HTML with many data bindings.
-
+-->
+`ngIf` 의 조건을 만족하지 않아서 엘리먼트가 화면에 표시되지 않을 때, 엘리먼트는 감춰지는 것이 아니고 DOM에서 완전히 제거됩니다.
+이 방식은 성능 향상에 도움이 되며, 조건문이 많고 데이터 바인딩을 많이 하는 프로젝트에 더욱 유용합니다.
 
 </div>
 
 
-
+<!--
 Try it out. Because the array has four items, the message should appear.
 Go back into <code>app.component.ts"</code> and delete or comment out one of the elements from the hero array.
 The browser should refresh automatically and the message should disappear.
+-->
+앱을 실행해서 결과를 직접 확인해 보세요. 예제에서 다룬 배열은 길이가 4이기 때문에 메시지가 표시됩니다.
+그리고 <code>app.component.ts"</code> 코드에서 히어로 배열 코드를 삭제하거나 주석 처리하면, 브라우저가 자동으로 갱신되면서 메시지가 표시되지 않을 것입니다.
 
 
-
+<!--
 ## Summary
-Now you know how to use:
+-->
+## 정리
 
+<!--
+Now you know how to use:
+-->
+이 문서에서는 이런 내용들을 다뤘습니다:
+
+<!--
 * **Interpolation** with double curly braces to display a component property.
 * **ngFor** to display an array of items.
 * A TypeScript class to shape the **model data** for your component and display properties of that model.
 * **ngIf** to conditionally display a chunk of HTML based on a boolean expression.
+-->
+* 이중 중괄호를 사용해서 컴포넌트 프로퍼티를 템플릿에 넣는 방법을 **문자열 바인딩(interpolation)** 이라고 합니다.
+* 배열은 **ngFor** 를 사용해서 순회할 수 있습니다.
+* 컴포넌트와 템플릿에 사용할 데이터에 형식을 지정하고 싶다면 TypeScript 클래스를 사용할 수 있습니다.
+* **ngIf** 를 사용하면 불리언 값으로 평가되는 조건에 맞춰 HTML 조각을 DOM에 추가하거나 제거할 수 있습니다.
 
+<!--
 Here's the final code:
-
+-->
+그리고 이 문서에서 다뤘던 코드의 최종 버전은 다음과 같습니다:
 
 <code-tabs>
 
