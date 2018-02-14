@@ -9,11 +9,6 @@ set -e
 # Go to project directory
 cd $(dirname $0)/../..
 
-if [[ -z "$TRAVIS" ]]; then
-  echo "This script can only run inside of Travis build jobs."
-  exit 1
-fi
-
 if [[ "${MODE}" ]]; then
   ./scripts/ci/travis-testing.sh
 elif [[ "${DEPLOY_MODE}" ]]; then
