@@ -1,3 +1,36 @@
+<a name="6.0.0-beta.4"></a>
+# [6.0.0-beta.4](https://github.com/angular/angular/compare/6.0.0-beta.3...6.0.0-beta.4) (2018-02-14)
+
+
+### Bug Fixes
+
+* **bazel:** allow TS to read ambient typings ([#21876](https://github.com/angular/angular/issues/21876)) ([b081dfe](https://github.com/angular/angular/commit/b081dfe)), closes [#21872](https://github.com/angular/angular/issues/21872)
+* **bazel:** improve error message for missing assets ([#22096](https://github.com/angular/angular/issues/22096)) ([dcf64a0](https://github.com/angular/angular/commit/dcf64a0)), closes [#22095](https://github.com/angular/angular/issues/22095)
+* **common:** add locale currency values ([#21783](https://github.com/angular/angular/issues/21783)) ([420cc7a](https://github.com/angular/angular/commit/420cc7a)), closes [#20385](https://github.com/angular/angular/issues/20385)
+* **common:** regenerate i18n locale data files ([#21783](https://github.com/angular/angular/issues/21783)) ([0b2f7d1](https://github.com/angular/angular/commit/0b2f7d1))
+* **common:** round currencies based on decimal digits in `CurrencyPipe` ([#21783](https://github.com/angular/angular/issues/21783)) ([44154e7](https://github.com/angular/angular/commit/44154e7)), closes [#10189](https://github.com/angular/angular/issues/10189)
+* **common:** weaken AsyncPipe transform signature ([#22169](https://github.com/angular/angular/issues/22169)) ([be59c3a](https://github.com/angular/angular/commit/be59c3a))
+* **compiler:** make unary plus operator consistent to JavaScript ([#22154](https://github.com/angular/angular/issues/22154)) ([72f8abd](https://github.com/angular/angular/commit/72f8abd)), closes [#22089](https://github.com/angular/angular/issues/22089)
+* **core:** add stacktrace in log when error during cleanup component in TestBed ([#22162](https://github.com/angular/angular/issues/22162)) ([16d1700](https://github.com/angular/angular/commit/16d1700))
+* **core:** ensure initial value of QueryList length ([#21980](https://github.com/angular/angular/issues/21980)) ([#21982](https://github.com/angular/angular/issues/21982)) ([e56de10](https://github.com/angular/angular/commit/e56de10)), closes [/github.com/angular/angular/commit/e54474215629aa6a0e0497fe61bfc896cea532c9#diff-a85dbe0991a7577ea24b49374e9ae90](https://github.com//github.com/angular/angular/commit/e54474215629aa6a0e0497fe61bfc896cea532c9/issues/diff-a85dbe0991a7577ea24b49374e9ae90)
+* **core:** use appropriate inert document strategy for Firefox & Safari ([#17019](https://github.com/angular/angular/issues/17019)) ([a751649](https://github.com/angular/angular/commit/a751649))
+* **forms:** make Validators.email support optional controls ([#20869](https://github.com/angular/angular/issues/20869)) ([140e7c0](https://github.com/angular/angular/commit/140e7c0))
+* **forms:** prevent event emission on enable/disable when emitEvent is false ([#12366](https://github.com/angular/angular/issues/12366)) ([#21018](https://github.com/angular/angular/issues/21018)) ([0bcfae7](https://github.com/angular/angular/commit/0bcfae7))
+* **forms:** set state before emitting a value from ngModelChange ([#21514](https://github.com/angular/angular/issues/21514)) ([9744a1c](https://github.com/angular/angular/commit/9744a1c)), closes [#21513](https://github.com/angular/angular/issues/21513)
+* **language-service:** correct instructions to install the language service ([#22000](https://github.com/angular/angular/issues/22000)) ([b37cee3](https://github.com/angular/angular/commit/b37cee3))
+* **platform-browser:** add @Injectable where it was missing ([#22005](https://github.com/angular/angular/issues/22005)) ([0a1a397](https://github.com/angular/angular/commit/0a1a397))
+* **platform-browser:** support 0/false/null values in transfer_state ([#22179](https://github.com/angular/angular/issues/22179)) ([6435ecd](https://github.com/angular/angular/commit/6435ecd))
+
+
+### Features
+
+* **bazel:** allow explicit specification of factories ([#22003](https://github.com/angular/angular/issues/22003)) ([e442881](https://github.com/angular/angular/commit/e442881))
+* **compiler:** mark @NgModules in provider lists for identification at runtime ([#22005](https://github.com/angular/angular/issues/22005)) ([2d5e7d1](https://github.com/angular/angular/commit/2d5e7d1))
+* **forms:** multiple validators for array method ([#20766](https://github.com/angular/angular/issues/20766)) ([941e88f](https://github.com/angular/angular/commit/941e88f)), closes [#20665](https://github.com/angular/angular/issues/20665)
+* change @Injectable() to support tree-shakeable tokens ([#22005](https://github.com/angular/angular/issues/22005)) ([235a235](https://github.com/angular/angular/commit/235a235))
+
+
+
 <a name="5.2.5"></a>
 ## [5.2.5](https://github.com/angular/angular/compare/5.2.4...5.2.5) (2018-02-14)
 
