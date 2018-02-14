@@ -72,7 +72,7 @@ describe('render3 integration test', () => {
         if (cm) {
           text(0);
         }
-        textBinding(0, bind0(value));
+        textBinding(0, cm ? value : NO_CHANGE);
       }
       expect(renderToHtml(Template, 'once')).toEqual('once');
       expect(renderToHtml(Template, 'twice')).toEqual('once');
