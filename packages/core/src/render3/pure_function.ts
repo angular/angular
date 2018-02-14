@@ -9,12 +9,12 @@
 import {NO_CHANGE, bind, peekBinding} from './instructions';
 
 /**
- * If the object or array has changed, returns a copy with the updated expression.
- * Or if the expression hasn't changed, returns NO_CHANGE.
+ * If the value of the provided exp has changed, calls the pure function to
+ * return an updated value. Or if the value has not changed, returns NO_CHANGE.
  *
- * @param pureFn Function that returns an updated instance of the object/array
+ * @param pureFn Function that returns an updated value
  * @param exp Updated expression value
- * @returns A copy of the object/array or NO_CHANGE
+ * @returns Updated value or NO_CHANGE
  */
 export function pureFunction1(pureFn: (v: any) => any, exp: any): any {
   let different = false;
@@ -25,13 +25,13 @@ export function pureFunction1(pureFn: (v: any) => any, exp: any): any {
 }
 
 /**
- * If the object or array has changed, returns a copy with all updated expressions.
- * Or if no expressions have changed, returns NO_CHANGE.
+ * If the value of any provided exp has changed, calls the pure function to
+ * return an updated value. Or if no values have changed, returns NO_CHANGE.
  *
  * @param pureFn
  * @param exp1
  * @param exp2
- * @returns A copy of the object/array or NO_CHANGE
+ * @returns Updated value or NO_CHANGE
  */
 export function pureFunction2(pureFn: (v1: any, v2: any) => any, exp1: any, exp2: any): any {
   let different = false;
@@ -46,14 +46,14 @@ export function pureFunction2(pureFn: (v1: any, v2: any) => any, exp1: any, exp2
 }
 
 /**
- * If the object or array has changed, returns a copy with all updated expressions.
- * Or if no expressions have changed, returns NO_CHANGE.
+ * If the value of any provided exp has changed, calls the pure function to
+ * return an updated value. Or if no values have changed, returns NO_CHANGE.
  *
  * @param pureFn
  * @param exp1
  * @param exp2
  * @param exp3
- * @returns A copy of the object/array or NO_CHANGE
+ * @returns Updated value or NO_CHANGE
  */
 export function pureFunction3(
     pureFn: (v1: any, v2: any, v3: any) => any, exp1: any, exp2: any, exp3: any): any {
@@ -72,15 +72,15 @@ export function pureFunction3(
 }
 
 /**
- * If the object or array has changed, returns a copy with all updated expressions.
- * Or if no expressions have changed, returns NO_CHANGE.
+ * If the value of any provided exp has changed, calls the pure function to
+ * return an updated value. Or if no values have changed, returns NO_CHANGE.
  *
  * @param pureFn
  * @param exp1
  * @param exp2
  * @param exp3
  * @param exp4
- * @returns A copy of the object/array or NO_CHANGE
+ * @returns Updated value or NO_CHANGE
  */
 export function pureFunction4(
     pureFn: (v1: any, v2: any, v3: any, v4: any) => any, exp1: any, exp2: any, exp3: any,
@@ -103,8 +103,8 @@ export function pureFunction4(
 }
 
 /**
- * If the object or array has changed, returns a copy with all updated expressions.
- * Or if no expressions have changed, returns NO_CHANGE.
+ * If the value of any provided exp has changed, calls the pure function to
+ * return an updated value. Or if no values have changed, returns NO_CHANGE.
  *
  * @param pureFn
  * @param exp1
@@ -112,7 +112,7 @@ export function pureFunction4(
  * @param exp3
  * @param exp4
  * @param exp5
- * @returns A copy of the object/array or NO_CHANGE
+ * @returns Updated value or NO_CHANGE
  */
 export function pureFunction5(
     pureFn: (v1: any, v2: any, v3: any, v4: any, v5: any) => any, exp1: any, exp2: any, exp3: any,
@@ -138,8 +138,8 @@ export function pureFunction5(
 }
 
 /**
- * If the object or array has changed, returns a copy with all updated expressions.
- * Or if no expressions have changed, returns NO_CHANGE.
+ * If the value of any provided exp has changed, calls the pure function to
+ * return an updated value. Or if no values have changed, returns NO_CHANGE.
  *
  * @param pureFn
  * @param exp1
@@ -148,7 +148,7 @@ export function pureFunction5(
  * @param exp4
  * @param exp5
  * @param exp6
- * @returns A copy of the object/array or NO_CHANGE
+ * @returns Updated value or NO_CHANGE
  */
 export function pureFunction6(
     pureFn: (v1: any, v2: any, v3: any, v4: any, v5: any, v6: any) => any, exp1: any, exp2: any,
@@ -179,8 +179,8 @@ export function pureFunction6(
 }
 
 /**
- * If the object or array has changed, returns a copy with all updated expressions.
- * Or if no expressions have changed, returns NO_CHANGE.
+ * If the value of any provided exp has changed, calls the pure function to
+ * return an updated value. Or if no values have changed, returns NO_CHANGE.
  *
  * @param pureFn
  * @param exp1
@@ -190,7 +190,7 @@ export function pureFunction6(
  * @param exp5
  * @param exp6
  * @param exp7
- * @returns A copy of the object/array or NO_CHANGE
+ * @returns Updated value or NO_CHANGE
  */
 export function pureFunction7(
     pureFn: (v1: any, v2: any, v3: any, v4: any, v5: any, v6: any, v7: any) => any, exp1: any,
@@ -224,8 +224,8 @@ export function pureFunction7(
 }
 
 /**
- * If the object or array has changed, returns a copy with all updated expressions.
- * Or if no expressions have changed, returns NO_CHANGE.
+ * If the value of any provided exp has changed, calls the pure function to
+ * return an updated value. Or if no values have changed, returns NO_CHANGE.
  *
  * @param pureFn
  * @param exp1
@@ -236,7 +236,7 @@ export function pureFunction7(
  * @param exp6
  * @param exp7
  * @param exp8
- * @returns A copy of the object/array or NO_CHANGE
+ * @returns Updated value or NO_CHANGE
  */
 export function pureFunction8(
     pureFn: (v1: any, v2: any, v3: any, v4: any, v5: any, v6: any, v7: any, v8: any) => any,
@@ -276,13 +276,13 @@ export function pureFunction8(
 /**
  * pureFunction instruction that can support any number of bindings.
  *
- * If the object or array has changed, returns a copy with all updated expressions.
- * Or if no expressions have changed, returns NO_CHANGE.
+ * If the value of any provided exp has changed, calls the pure function to
+ * return an updated value. Or if no values have changed, returns NO_CHANGE.
  *
  * @param pureFn A pure function that takes binding values and builds an object or array
  * containing those values.
  * @param exp An array of binding values
- * @returns A copy of the object/array or NO_CHANGE
+ * @returns Updated value or NO_CHANGE
  */
 export function pureFunctionV(pureFn: (v: any[]) => any, exps: any[]): any {
   let different = false;

@@ -195,9 +195,8 @@ describe('compiler specification', () => {
       @Component({
         selector: 'my-array-comp',
         template: `
-            <p>{{ names[0] }}</p>
-            <p>{{ names[1] }}</p>
-          `
+            {{ names[0] }} {{ names[1] }}
+        `
       })
       class MyArrayComp {
         @Input() names: string[];
@@ -208,21 +207,15 @@ describe('compiler specification', () => {
           factory: function MyArrayComp_Factory() { return new MyArrayComp(); },
           template: function MyArrayComp_Template(ctx: $MyArrayComp$, cm: $boolean$) {
             if (cm) {
-              $r3$.ɵE(0, 'p');
-              $r3$.ɵT(1);
-              $r3$.ɵe();
-              $r3$.ɵE(2, 'p');
-              $r3$.ɵT(3);
-              $r3$.ɵe();
+              $r3$.ɵT(0);
             }
-            $r3$.ɵt(1, $r3$.ɵb(ctx.names[0]));
-            $r3$.ɵt(3, $r3$.ɵb(ctx.names[1]));
+            $r3$.ɵt(0, $r3$.ɵb2('', ctx.names[0], ' ', ctx.names[1], ''));
           },
           inputs: {names: 'names'}
         });
       }
 
-      it('should support array literals with no changes', () => {
+      it('should support array literals of constants', () => {
         type $MyApp$ = MyApp;
 
         // NORMATIVE
@@ -254,7 +247,7 @@ describe('compiler specification', () => {
           // /NORMATIVE
         }
 
-        expect(renderComp(MyApp)).toEqual(`<my-array-comp><p>Nancy</p><p>Bess</p></my-array-comp>`);
+        expect(renderComp(MyApp)).toEqual(`<my-array-comp>Nancy Bess</my-array-comp>`);
       });
 
       it('should support array literals', () => {
@@ -291,7 +284,7 @@ describe('compiler specification', () => {
           // /NORMATIVE
         }
 
-        expect(renderComp(MyApp)).toEqual(`<my-array-comp><p>Nancy</p><p>Bess</p></my-array-comp>`);
+        expect(renderComp(MyApp)).toEqual(`<my-array-comp>Nancy Bess</my-array-comp>`);
       });
 
       it('should support 9+ bindings in array literals', () => {
