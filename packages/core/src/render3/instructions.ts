@@ -1759,6 +1759,14 @@ export function getCurrentQueries(QueryType: {new (): LQueries}): LQueries {
   return currentQueries || (currentQueries = new QueryType());
 }
 
+export function getCreationMode(): boolean {
+  return creationMode;
+}
+
+export function peekAndIncrementBinding() {
+  return data[bindingIndex++];
+}
+
 export function getPreviousOrParentNode(): LNode {
   return previousOrParentNode;
 }

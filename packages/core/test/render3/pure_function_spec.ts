@@ -7,7 +7,7 @@
  */
 import {defineComponent} from '../../src/render3/index';
 import {componentRefresh, container, containerRefreshEnd, containerRefreshStart, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, memory} from '../../src/render3/instructions';
-import {pureFunction1, pureFunction2, pureFunction3, pureFunction4, pureFunction5, pureFunction6, pureFunction7, pureFunction8, pureFunctionV} from '../../src/render3/pure_function';
+import {pureFunction0, pureFunction1, pureFunction2, pureFunction3, pureFunction4, pureFunction5, pureFunction6, pureFunction7, pureFunction8, pureFunctionV} from '../../src/render3/pure_function';
 import {renderToHtml} from '../../test/render3/render_util';
 
 describe('array literals', () => {
@@ -97,6 +97,61 @@ describe('array literals', () => {
     expect(manyPropComp !.names2).toEqual(['Carson']);
   });
 
+  it('should support an array literal of constants inside expressions', () => {
+    let myComps: MyComp[] = [];
+
+    const e0_ff = () => ['Nancy', 'Bess'];
+
+    /** <my-comp [names]="someFn(['Nancy', 'Bess'])"></my-comp> */
+    class MyApp {
+      someFn(arr: string[]): string[] {
+        arr[0] = arr[0].toUpperCase();
+        return arr;
+      }
+
+      static ngComponentDef = defineComponent({
+        type: MyApp,
+        tag: 'parent-comp',
+        factory: () => new MyApp(),
+        template: function(ctx: any, cm: boolean) {
+          if (cm) {
+            elementStart(0, MyComp);
+            myComps.push(memory(1));
+            elementEnd();
+          }
+          elementProperty(0, 'names', ctx.someFn(pureFunction0(e0_ff)));
+          MyComp.ngComponentDef.h(1, 0);
+          componentRefresh(1, 0);
+        }
+      });
+    }
+
+    function Template(ctx: any, cm: boolean) {
+      if (cm) {
+        elementStart(0, MyApp);
+        elementEnd();
+        elementStart(2, MyApp);
+        elementEnd();
+      }
+      MyApp.ngComponentDef.h(1, 0);
+      MyApp.ngComponentDef.h(3, 2);
+      componentRefresh(1, 0);
+      componentRefresh(3, 2);
+    }
+
+    renderToHtml(Template, {});
+    const firstArray = myComps[0].names;
+    const secondArray = myComps[1].names;
+    expect(firstArray).toEqual(['NANCY', 'Bess']);
+    expect(secondArray).toEqual(['NANCY', 'Bess']);
+    expect(firstArray).not.toBe(secondArray);
+
+    renderToHtml(Template, {});
+    expect(firstArray).toEqual(['NANCY', 'Bess']);
+    expect(secondArray).toEqual(['NANCY', 'Bess']);
+    expect(firstArray).toBe(myComps[0].names);
+    expect(secondArray).toBe(myComps[1].names);
+  });
 
   it('should support an array literal with more than 1 binding', () => {
     /** <my-comp [names]="['Nancy', customName, 'Bess', customName2]"></my-comp> */

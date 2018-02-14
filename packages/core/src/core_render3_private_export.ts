@@ -44,6 +44,7 @@ export {
   pb3 as ɵpb3,
   pb4 as ɵpb4,
   pbV as ɵpbV,
+  f0 as ɵf0,
   f1 as ɵf1,
   f2 as ɵf2,
   f3 as ɵf3,

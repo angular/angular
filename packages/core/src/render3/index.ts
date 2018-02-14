@@ -79,6 +79,7 @@ export {
   queryRefresh as qR,
 } from './query';
 export {
+  pureFunction0 as f0,
   pureFunction1 as f1,
   pureFunction2 as f2,
   pureFunction3 as f3,

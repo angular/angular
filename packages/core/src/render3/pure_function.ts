@@ -6,7 +6,20 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {NO_CHANGE, bind, peekBinding} from './instructions';
+import {NO_CHANGE, bind, getCreationMode, peekAndIncrementBinding, peekBinding} from './instructions';
+
+
+
+/**
+ * If the value hasn't been saved, calls the pure function to store and return the
+ * value. If it has been saved, returns the saved value.
+ *
+ * @param pureFn Function that returns a value
+ * @returns value
+ */
+export function pureFunction0<T>(pureFn: () => T): T {
+  return getCreationMode() ? bind(pureFn()) as T : peekAndIncrementBinding();
+}
 
 /**
  * If the value of the provided exp has changed, calls the pure function to

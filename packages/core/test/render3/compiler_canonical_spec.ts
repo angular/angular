@@ -250,6 +250,47 @@ describe('compiler specification', () => {
         expect(renderComp(MyApp)).toEqual(`<my-array-comp>Nancy Bess</my-array-comp>`);
       });
 
+      it('should support array literals of constants inside expressions', () => {
+        type $MyApp$ = MyApp;
+
+        // NORMATIVE
+        const $e0_ff$ = () => ['Nancy', 'Bess'];
+        // /NORMATIVE
+
+        @Component({
+          selector: 'my-app',
+          template: `
+            <my-array-comp [names]="someFn(['Nancy', 'Bess'])"></my-array-comp>
+          `
+        })
+        class MyApp {
+          someFn(arr: string[]): string[] {
+            arr[0] = arr[0].toUpperCase();
+            return arr;
+          }
+
+          // NORMATIVE
+          static ngComponentDef = $r3$.ɵdefineComponent({
+            type: MyApp,
+            tag: 'my-app',
+            factory: function MyApp_Factory() { return new MyApp(); },
+            template: function MyApp_Template(ctx: $MyApp$, cm: $boolean$) {
+              if (cm) {
+                $r3$.ɵE(0, MyArrayComp);
+                $r3$.ɵe();
+              }
+              $r3$.ɵp(0, 'names', ctx.someFn($r3$.ɵf0($e0_ff$)));
+              MyArrayComp.ngComponentDef.h(1, 0);
+              $r3$.ɵr(1, 0);
+            }
+          });
+          // /NORMATIVE
+        }
+
+        expect(renderComp(MyApp)).toEqual(`<my-array-comp>NANCY Bess</my-array-comp>`);
+      });
+
+
       it('should support array literals', () => {
         type $MyApp$ = MyApp;
 
