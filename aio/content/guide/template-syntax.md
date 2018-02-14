@@ -1,4 +1,7 @@
+<!--
 # Template Syntax
+-->
+# 템플릿 문법
 
 <style>
   h4 {font-size: 17px !important; text-transform: none !important;}
@@ -6,37 +9,73 @@
   h4 .syntax { font-size: 100%; }
 </style>
 
+<!--
 The Angular application manages what the user sees and can do, achieving this through the interaction of a
 component class instance (the *component*) and its user-facing template.
+-->
+Angular 애플리케이션은 사용자의 행동에 반응하면서 화면에 데이터를 표시하는데, 이 과정은 컴포넌트 클래스와 템플릿이 상호작용하면서 이루어집니다.
 
+<!--
 You may be familiar with the component/template duality from your experience with model-view-controller (MVC) or model-view-viewmodel (MVVM).
 In Angular, the component plays the part of the controller/viewmodel, and the template represents the view.
+-->
+MVC(모델-뷰-컨트롤러)나 MVVM(모델-뷰-뷰모델) 구조를 다뤄봤다면 컴포넌트와 템플릿의 관계가 이미 익숙할 수도 있습니다.
+Angular에서는 컴포넌트가 컨트롤러나 뷰모델의 역할을 하고, 템플릿이 뷰 역할을 합니다.
 
+<!--
 This page is a comprehensive technical reference to the Angular template language.
 It explains basic principles of the template language and describes most of the syntax that you'll encounter elsewhere in the documentation.
+-->
+이 문서에서는 Angular 템플릿 문법의 기술적인 부분을 종합적으로 다룹니다.
+템플릿 문법의 기초부터 시작해서 다른 가이드 페이지에서도 등장하는 템플릿 문법 대부분을 이 문서에서 다룹니다.
 
+<!--
 Many code snippets illustrate the points and concepts, all of them available
 in the <live-example title="Template Syntax Live Code"></live-example>.
+-->
 
+템플릿 문법의 개념을 확실하게 이해하기 위해 많은 코드를 살펴볼 것이며,
+이 문서에서 설명하는 코드는 <live-example title="Template Syntax Live Code"></live-example> 에서 확인하거나 다운받을 수 있습니다.
 
 {@a html}
+<!--
 ## HTML in templates
+-->
+## 템플릿과 HTML
 
+<!--
 HTML is the language of the Angular template.
 Almost all HTML syntax is valid template syntax.
 The `<script>` element is a notable exception;
 it is forbidden, eliminating the risk of script injection attacks.
 In practice, `<script>` is ignored and a warning appears in the browser console.
 See the [Security](guide/security) page for details.
+-->
+Angular 템플릿에는 HTML을 사용하며, 거의 모든 HTML 문법은 템플릿 문법에서도 유효합니다.
+다만 `<script>` 엘리먼트는 예외입니다. 이 엘리먼트는 스크립트 인젝션 공격에 노출될 수 있기 때문에 Angular 템플릿 문법에 유효하지 않습니다.
+Angular 템플릿에 `<script>` 엘리먼트가 있어도 이 엘리먼트는 처리되지 않으며, 브라우저 콘솔에 경고 메시지를 출력합니다.
+더 자세한 내용은 [보안](guide/security) 문서를 확인하세요.
 
+<!--
 Some legal HTML doesn't make much sense in a template.
 The `<html>`, `<body>`, and `<base>` elements have no useful role.
 Pretty much everything else is fair game.
+-->
+Angular 템플릿에 유효하지 않은 HTML 엘리먼트는 몇가지 더 있습니다.
+`<html>` 이나 `<body>`, `<base>` 엘리먼트는 Angular 템플릿에 사용해도 에러나 경고가 표시되지 않지만, 별다른 역할을 하지는 않습니다.
+언급하지 않은 엘리먼트는 그대로 사용해도 됩니다.
 
+<!--
 You can extend the HTML vocabulary of your templates with components and directives that appear as new elements and attributes.
 In the following sections, you'll learn how to get and set DOM (Document Object Model) values dynamically through data binding.
+-->
+컴포넌트나 디렉티브를 정의하면 템플릿에 사용할 수 있는 HTML 엘리먼트를 새롭게 정의하거나 표준 HTML 엘리먼트에는 없던 속성을 추가할 수 있습니다.
+이 문서에서는 템플릿 문법을 하나씩 살펴보면서 DOM(Document Object Model) 값을 어떻게 참조하고 어떻게 원하는 값을 지정하는지 알아볼 것입니다.
 
+<!--
 Begin with the first form of data binding&mdash;interpolation&mdash;to see how much richer template HTML can be.
+-->
+가장 간단한 데이터 바인딩인 문자열 바인딩(interpolation)부터 살펴보면서 템플릿 HTML이 어떻게 확장되는지 알아봅시다.
 
 <hr/>
 
