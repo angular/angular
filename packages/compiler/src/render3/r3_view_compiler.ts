@@ -178,25 +178,25 @@ function interpolate(args: o.Expression[]): o.Expression {
   args = args.slice(1);  // Ignore the length prefix added for render2
   switch (args.length) {
     case 3:
-      return o.importExpr(R3.bind1).callFn(args);
+      return o.importExpr(R3.interpolation1).callFn(args);
     case 5:
-      return o.importExpr(R3.bind2).callFn(args);
+      return o.importExpr(R3.interpolation2).callFn(args);
     case 7:
-      return o.importExpr(R3.bind3).callFn(args);
+      return o.importExpr(R3.interpolation3).callFn(args);
     case 9:
-      return o.importExpr(R3.bind4).callFn(args);
+      return o.importExpr(R3.interpolation4).callFn(args);
     case 11:
-      return o.importExpr(R3.bind5).callFn(args);
+      return o.importExpr(R3.interpolation5).callFn(args);
     case 13:
-      return o.importExpr(R3.bind6).callFn(args);
+      return o.importExpr(R3.interpolation6).callFn(args);
     case 15:
-      return o.importExpr(R3.bind7).callFn(args);
+      return o.importExpr(R3.interpolation7).callFn(args);
     case 17:
-      return o.importExpr(R3.bind8).callFn(args);
+      return o.importExpr(R3.interpolation8).callFn(args);
   }
   (args.length >= 19 && args.length % 2 == 1) ||
       error(`Invalid interpolation argument length ${args.length}`);
-  return o.importExpr(R3.bindV).callFn([o.literalArr(args)]);
+  return o.importExpr(R3.interpolationV).callFn([o.literalArr(args)]);
 }
 
 class BindingScope {
