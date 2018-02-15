@@ -43,6 +43,7 @@ PULL_JSON=`curl -s https://api.github.com/repos/angular/angular/pulls/$PR_NUMBER
 PR_SHA_COUNT=`node $BASEDIR/utils/json_extract.js commits <<< """$PULL_JSON"""`
 STATUS_JSON_URL=`node $BASEDIR/utils/json_extract.js _links.statuses.href <<< """$PULL_JSON"""`
 STATUS=`curl -s $STATUS_JSON_URL | node $BASEDIR/utils/json_extract.js description | cut -d '|' -f1`
+MERGE_STATUS=`curl -s https://api.github.com/repos/angular/angular/pulls/$PR_NUMBER/reviews | node ./scripts/github/utils/json_extract.js state`
 PR_LABELS=`curl -s https://api.github.com/repos/angular/angular/issues/$PR_NUMBER/labels`
 PR_ACTION=`echo "$PR_LABELS" | node $BASEDIR/utils/json_extract.js "name=^PR action:"`
 PR_TARGET=`echo "$PR_LABELS"  | node $BASEDIR/utils/json_extract.js "name=^PR target:"`
@@ -57,6 +58,11 @@ fi
 
 if [[ "$PR_CLA" != "cla: yes" ]]; then
   echo The PR is missing 'cla: Yes' label, found: $PR_CLA
+  exit 1
+fi
+
+if [[ $MERGE_STATUS == *CHANGES_REQUESTED* ]]; then 
+  echo The PR $PR_NUMBER has not been approved by all reviewers. Ask PR owner to obtain reviews or dismiss reviews and document the dismissal reason.
   exit 1
 fi
 
