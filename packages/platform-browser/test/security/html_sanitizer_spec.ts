@@ -149,7 +149,6 @@ import {sanitizeHtml} from '../../src/security/html_sanitizer';
     // See https://github.com/cure53/DOMPurify/releases/tag/0.6.7
     it('should not allow JavaScript hidden in badly formed HTML to get through sanitization (Firefox bug)',
        () => {
-         debugger;
          expect(sanitizeHtml(
                     defaultDoc, '<svg><p><style><img src="</style><img src=x onerror=alert(1)//">'))
              .toEqual(
