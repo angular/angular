@@ -28,11 +28,6 @@ local_repository(
     path = "node_modules/rxjs/src",
 )
 
-local_repository(
-    name = "bazel_integration_test",
-    path = "integration/bazel",
-)
-
 git_repository(
     name = "com_github_bazelbuild_buildtools",
     remote = "https://github.com/bazelbuild/buildtools.git",
