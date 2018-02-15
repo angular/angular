@@ -16,13 +16,10 @@ load("@build_bazel_rules_nodejs//:defs.bzl", "check_bazel_version", "node_reposi
 check_bazel_version("0.9.0")
 node_repositories(package_json = ["//:package.json"])
 
-RULES_TYPESCRIPT_VERSION = "0.10.1"
-
-http_archive(
+git_repository(
     name = "build_bazel_rules_typescript",
-    url = "https://github.com/bazelbuild/rules_typescript/archive/%s.zip" % RULES_TYPESCRIPT_VERSION,
-    strip_prefix = "rules_typescript-%s" % RULES_TYPESCRIPT_VERSION,
-    sha256 = "a2c81776a4a492ff9f878f9705639f5647bef345f7f3e1da09c9eeb8dec80485",
+    commit = "d3cc5cd72d89aee0e4c2553ae1b99c707ecbef4e",
+    remote = "https://github.com/bazelbuild/rules_typescript",
 )
 
 load("@build_bazel_rules_typescript//:defs.bzl", "ts_setup_workspace")
