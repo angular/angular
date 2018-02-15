@@ -564,6 +564,10 @@ export class ApplicationRef {
   private _unloadComponent(componentRef: ComponentRef<any>): void {
     this.detachView(componentRef.hostView);
     remove(this.components, componentRef);
+    const testabilityRegistry = componentRef.injector.get(TestabilityRegistry, null);
+    if (testabilityRegistry) {
+      testabilityRegistry.unregisterApplication(componentRef.location.nativeElement);
+    }
   }
 
   /** @internal */
