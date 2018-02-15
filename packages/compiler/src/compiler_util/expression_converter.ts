@@ -97,7 +97,7 @@ export enum BindingForm {
   General,
 
   // Try to generate a simple binding (no temporaries or statements)
-  // otherise generate a general binding
+  // otherwise generate a general binding
   TrySimple,
 }
 
@@ -341,7 +341,7 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
   }
 
   visitLiteralPrimitive(ast: cdAst.LiteralPrimitive, mode: _Mode): any {
-    // For literal values of null, undefined, true, or false allow type inteference
+    // For literal values of null, undefined, true, or false allow type interference
     // to infer the type.
     const type =
         ast.value === null || ast.value === undefined || ast.value === true || ast.value === true ?
@@ -648,7 +648,7 @@ function convertStmtIntoExpression(stmt: o.Statement): o.Expression|null {
   return null;
 }
 
-class BuiltinFunctionCall extends cdAst.FunctionCall {
+export class BuiltinFunctionCall extends cdAst.FunctionCall {
   constructor(span: cdAst.ParseSpan, public args: cdAst.AST[], public converter: BuiltinConverter) {
     super(span, null, args);
   }
