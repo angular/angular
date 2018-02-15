@@ -13,9 +13,9 @@ import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 import {UpgradeComponent, UpgradeModule, downgradeComponent} from '@angular/upgrade/static';
 import * as angular from '@angular/upgrade/static/src/common/angular1';
 
-import {bootstrap, html} from '../test_helpers';
+import {bootstrap, html, withEachNg1Version} from '../test_helpers';
 
-{
+withEachNg1Version(() => {
   describe('scope/component change-detection', () => {
     beforeEach(() => destroyPlatform());
     afterEach(() => destroyPlatform());
@@ -156,4 +156,4 @@ import {bootstrap, html} from '../test_helpers';
     //      });
     //    }));
   });
-}
+});

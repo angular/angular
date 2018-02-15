@@ -10,9 +10,9 @@ import {TestBed, getTestBed, inject} from '@angular/core/testing';
 import * as angular from '@angular/upgrade/src/common/angular1';
 import {DowngradeComponentAdapter, groupNodesBySelector} from '@angular/upgrade/src/common/downgrade_component_adapter';
 
-import {nodes} from './test_helpers';
+import {nodes, withEachNg1Version} from './test_helpers';
 
-{
+withEachNg1Version(() => {
   describe('DowngradeComponentAdapter', () => {
     describe('groupNodesBySelector', () => {
       it('should return an array of node collections for each selector', () => {
@@ -190,4 +190,4 @@ import {nodes} from './test_helpers';
     });
 
   });
-}
+});

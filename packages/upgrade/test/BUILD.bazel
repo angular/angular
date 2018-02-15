@@ -23,8 +23,12 @@ ts_web_test(
     name = "test_web",
     bootstrap = [
         "//:web_test_bootstrap_scripts",
-        "//:angularjs",
+        # "//:angularjs",
     ],
+    # Disable since tests need to request different AngularJS versions at
+    # runtime, which is not yet supported.
+    # (Related issue: https://github.com/bazelbuild/rules_typescript/issues/131)
+    tags = ["manual"],
     # do not sort
     deps = [
         "//tools/testing:browser",

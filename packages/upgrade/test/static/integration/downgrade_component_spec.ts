@@ -13,9 +13,9 @@ import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 import {UpgradeModule, downgradeComponent} from '@angular/upgrade/static';
 import * as angular from '@angular/upgrade/static/src/common/angular1';
 
-import {$apply, bootstrap, html, multiTrim} from '../test_helpers';
+import {$apply, bootstrap, html, multiTrim, withEachNg1Version} from '../test_helpers';
 
-{
+withEachNg1Version(() => {
   describe('downgrade ng2 component', () => {
 
     beforeEach(() => destroyPlatform());
@@ -642,4 +642,4 @@ import {$apply, bootstrap, html, multiTrim} from '../test_helpers';
 
        }));
   });
-}
+});

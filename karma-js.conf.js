@@ -21,11 +21,13 @@ module.exports = function(config) {
       // Loaded through the System loader, in `test-main.js`.
       {pattern: 'dist/all/@angular/**/*.js', included: false, watched: true},
 
-      'node_modules/core-js/client/core.js',
-      // include Angular v1 for upgrade module testing
-      'node_modules/angular/angular.js',
-      'node_modules/angular-mocks/angular-mocks.js',
+      // Serve AngularJS for `ngUpgrade` testing.
+      {pattern: 'node_modules/angular-1.5/angular.js', included: false, watched: false},
+      {pattern: 'node_modules/angular-mocks-1.5/angular-mocks.js', included: false, watched: false},
+      {pattern: 'node_modules/angular/angular.js', included: false, watched: false},
+      {pattern: 'node_modules/angular-mocks/angular-mocks.js', included: false, watched: false},
 
+      'node_modules/core-js/client/core.js',
       'node_modules/zone.js/dist/zone.js',
       'node_modules/zone.js/dist/long-stack-trace-zone.js',
       'node_modules/zone.js/dist/proxy.js',
