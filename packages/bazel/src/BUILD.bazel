@@ -1,3 +1,5 @@
+package(default_visibility = ["//visibility:public"])
+
 load("@build_bazel_rules_nodejs//:defs.bzl", "nodejs_binary")
 
 nodejs_binary(
@@ -8,12 +10,22 @@ nodejs_binary(
     # additional npm dependencies when we run rollup or uglify.
     entry_point = "build_bazel_rules_nodejs_rollup_deps/node_modules/rollup/bin/rollup",
     node_modules = "@build_bazel_rules_nodejs_rollup_deps//:node_modules",
-    visibility = ["//visibility:public"],
 )
 
 nodejs_binary(
     name = "modify_tsconfig",
     data = ["modify_tsconfig.js"],
     entry_point = "angular/packages/bazel/src/modify_tsconfig.js",
-    visibility = ["//visibility:public"],
+)
+
+nodejs_binary(
+    name = "index_bundler",
+    data = [
+        # BEGIN-INTERNAL
+        # Only needed when compiling within the Angular repo.
+        # Users will get this dependency from node_modules.
+        "//packages/compiler-cli",
+        # END-INTERNAL
+    ],
+    entry_point = "@angular/compiler-cli/src/metadata/bundle_index_main.js",
 )

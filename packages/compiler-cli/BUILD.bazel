@@ -17,11 +17,11 @@ ts_library(
         ],
         exclude = [
             "src/extract_i18n.ts",
-            "src/main.ts",
             "src/integrationtest/**/*.ts",
         ],
     ),
     module_name = "@angular/compiler-cli",
+    node_modules = "@//:node_modules",
     tsconfig = ":tsconfig",
     deps = [
         "//packages/compiler",

@@ -8,6 +8,7 @@ ts_library(
     srcs = glob(["**/*.ts"]),
     deps = [
         "//packages:types",
+        "//packages/core",
         "//packages/service-worker/worker",
         "@rxjs",
     ],
