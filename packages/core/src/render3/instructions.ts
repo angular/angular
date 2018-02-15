@@ -8,7 +8,7 @@
 
 import './ng_dev_mode';
 
-import {assertEqual, assertLessThan, assertNotEqual, assertNotNull} from './assert';
+import {assertEqual, assertLessThan, assertNotEqual, assertNotNull, assertNull, assertSame} from './assert';
 import {LContainer, TContainer} from './interfaces/container';
 import {CssSelector, LProjection} from './interfaces/projection';
 import {LQueries} from './interfaces/query';
@@ -233,7 +233,7 @@ export function createLNode(
   if ((type & LNodeFlags.ViewOrElement) === LNodeFlags.ViewOrElement && isState) {
     // Bit of a hack to bust through the readonly because there is a circular dep between
     // LView and LNode.
-    ngDevMode && assertEqual((state as LView).node, null, 'lView.node');
+    ngDevMode && assertNull((state as LView).node, 'LView.node should not have been initialized');
     (state as LView as{node: LNode}).node = node;
   }
   if (index != null) {
@@ -254,13 +254,17 @@ export function createLNode(
       if (previousOrParentNode.view === currentView ||
           (previousOrParentNode.flags & LNodeFlags.TYPE_MASK) === LNodeFlags.View) {
         // We are in the same view, which means we are adding content node to the parent View.
-        ngDevMode && assertEqual(previousOrParentNode.child, null, 'previousNode.child');
+        ngDevMode && assertNull(
+                         previousOrParentNode.child,
+                         `previousOrParentNode's child should not have been set.`);
         previousOrParentNode.child = node;
       } else {
         // We are adding component view, so we don't link parent node child to this node.
       }
     } else if (previousOrParentNode) {
-      ngDevMode && assertEqual(previousOrParentNode.next, null, 'previousNode.next');
+      ngDevMode && assertNull(
+                       previousOrParentNode.next,
+                       `previousOrParentNode's next property should not have been set.`);
       previousOrParentNode.next = node;
     }
   }
@@ -300,7 +304,7 @@ export function renderTemplate<T>(
             -1, providedRendererFactory.createRenderer(null, null), getOrCreateTView(template)));
   }
   const hostView = host.data !;
-  ngDevMode && assertNotEqual(hostView, null, 'hostView');
+  ngDevMode && assertNotNull(hostView, 'Host node should have an LView defined in host.data.');
   renderComponentOrTemplate(host, hostView, context, template);
   return host;
 }
@@ -381,7 +385,8 @@ export function elementStart(
     const node = data[index] !;
     native = node && (node as LElementNode).native;
   } else {
-    ngDevMode && assertEqual(currentView.bindingStartIndex, null, 'bindingStartIndex');
+    ngDevMode &&
+        assertNull(currentView.bindingStartIndex, 'elements should be created before any bindings');
     const isHostElement = typeof nameOrComponentType !== 'string';
     // MEGAMORPHIC: `ngComponentDef` is a megamorphic property access here.
     // This is OK, since we will refactor this code and store the result in `TView.data`
@@ -504,7 +509,7 @@ export function createTView(): TView {
 }
 
 function setUpAttributes(native: RElement, attrs: string[]): void {
-  ngDevMode && assertEqual(attrs.length % 2, 0, 'attrs.length % 2');
+  ngDevMode && assertEqual(attrs.length % 2, 0, 'each attribute should have a key and a value');
 
   const isProc = isProceduralRenderer(renderer);
   for (let i = 0; i < attrs.length; i += 2) {
@@ -809,7 +814,8 @@ export function elementStyle<T>(
  *   If value is not provided than the actual creation of the text node is delayed.
  */
 export function text(index: number, value?: any): void {
-  ngDevMode && assertEqual(currentView.bindingStartIndex, null, 'bindingStartIndex');
+  ngDevMode &&
+      assertNull(currentView.bindingStartIndex, 'text nodes should be created before bindings');
   const textNode = value != null ?
       (isProceduralRenderer(renderer) ? renderer.createText(stringify(value)) :
                                         renderer.createTextNode(stringify(value))) :
@@ -865,7 +871,8 @@ export function textBinding<T>(index: number, value: T | NO_CHANGE): void {
 export function directiveCreate<T>(
     index: number, directive: T, directiveDef: DirectiveDef<T>, queryName?: string | null): T {
   let instance;
-  ngDevMode && assertEqual(currentView.bindingStartIndex, null, 'bindingStartIndex');
+  ngDevMode &&
+      assertNull(currentView.bindingStartIndex, 'directives should be created before any bindings');
   ngDevMode && assertPreviousIsParent();
   let flags = previousOrParentNode !.flags;
   let size = flags & LNodeFlags.SIZE_MASK;
@@ -984,10 +991,12 @@ function generateInitialInputs(
 export function container(
     index: number, directiveTypes?: DirectiveType<any>[], template?: ComponentTemplate<any>,
     tagName?: string, attrs?: string[], localRefs?: string[] | null): void {
-  ngDevMode && assertEqual(currentView.bindingStartIndex, null, 'bindingStartIndex');
+  ngDevMode &&
+      assertNull(
+          currentView.bindingStartIndex, 'container nodes should be created before any bindings');
 
   const currentParent = isParent ? previousOrParentNode : previousOrParentNode.parent !;
-  ngDevMode && assertNotEqual(currentParent, null, 'currentParent');
+  ngDevMode && assertNotNull(currentParent, 'containers should have a parent');
 
   const lContainer = <LContainer>{
     views: [],
@@ -1037,9 +1046,9 @@ export function containerRefreshStart(index: number): void {
   ngDevMode && assertNodeType(previousOrParentNode, LNodeFlags.Container);
   isParent = true;
   (previousOrParentNode as LContainerNode).data.nextIndex = 0;
-  ngDevMode && assertEqual(
-                   (previousOrParentNode as LContainerNode).native === undefined, true,
-                   'previousOrParentNode.native === undefined');
+  ngDevMode && assertSame(
+                   (previousOrParentNode as LContainerNode).native, undefined,
+                   `the container's native element should not have been set yet.`);
 
   // We need to execute init hooks here so ngOnInit hooks are called in top level views
   // before they are called in embedded views (for backwards compatibility).
@@ -1181,11 +1190,11 @@ export function componentRefresh<T>(directiveIndex: number, elementIndex: number
     ngDevMode && assertDataInRange(elementIndex);
     const element = data ![elementIndex] as LElementNode;
     ngDevMode && assertNodeType(element, LNodeFlags.Element);
-    ngDevMode && assertNotEqual(element.data, null, 'isComponent');
+    ngDevMode &&
+        assertNotNull(element.data, `Component's host node should have an LView attached.`);
     ngDevMode && assertDataInRange(directiveIndex);
     const directive = getDirectiveInstance<T>(data[directiveIndex]);
     const hostView = element.data !;
-    ngDevMode && assertNotEqual(hostView, null, 'hostView');
     const oldView = enterView(hostView, element);
     try {
       template(directive, creationMode);
@@ -1243,9 +1252,9 @@ function appendToProjectionNode(
     projectionNode: LProjectionNode,
     appendedFirst: LElementNode | LTextNode | LContainerNode | null,
     appendedLast: LElementNode | LTextNode | LContainerNode | null) {
-  // appendedFirst can be null if and only if appendedLast is also null
-  ngDevMode &&
-      assertEqual(!appendedFirst === !appendedLast, true, '!appendedFirst === !appendedLast');
+  ngDevMode && assertEqual(
+                   !!appendedFirst, !!appendedLast,
+                   'appendedFirst can be null if and only if appendedLast is also null');
   if (!appendedLast) {
     // nothing to append
     return;
@@ -1760,18 +1769,18 @@ export function getDirectiveInstance<T>(instanceOrArray: T | [T]): T {
 }
 
 export function assertPreviousIsParent() {
-  assertEqual(isParent, true, 'isParent');
+  assertEqual(isParent, true, 'previousOrParentNode should be a parent');
 }
 
 function assertHasParent() {
-  assertNotEqual(previousOrParentNode.parent, null, 'isParent');
+  assertNotNull(previousOrParentNode.parent, 'previousOrParentNode should have a parent');
 }
 
 function assertDataInRange(index: number, arr?: any[]) {
   if (arr == null) arr = data;
-  assertLessThan(index, arr ? arr.length : 0, 'data.length');
+  assertLessThan(index, arr ? arr.length : 0, 'index expected to be a valid data index');
 }
 
 function assertDataNext(index: number) {
-  assertEqual(data.length, index, 'data.length not in sequence');
+  assertEqual(data.length, index, 'index expected to be at the end of data');
 }

@@ -6,30 +6,25 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {assertEqual, assertNotEqual} from './assert';
+import {assertEqual, assertNotNull} from './assert';
 import {LNode, LNodeFlags} from './interfaces/node';
 
 export function assertNodeType(node: LNode, type: LNodeFlags) {
-  assertNotEqual(node, null, 'node');
-  assertEqual(node.flags & LNodeFlags.TYPE_MASK, type, 'Node.type', typeSerializer);
+  assertNotNull(node, 'should be called with a node');
+  assertEqual(node.flags & LNodeFlags.TYPE_MASK, type, `should be a ${typeName(type)}`);
 }
 
 export function assertNodeOfPossibleTypes(node: LNode, ...types: LNodeFlags[]) {
-  assertNotEqual(node, null, 'node');
-  const nodeType = (node.flags & LNodeFlags.TYPE_MASK);
-  for (let i = 0; i < types.length; i++) {
-    if (nodeType === types[i]) {
-      return;
-    }
-  }
-  throw new Error(
-      `Expected node of possible types: ${types.map(typeSerializer).join(', ')} but got ${typeSerializer(nodeType)}`);
+  assertNotNull(node, 'should be called with a node');
+  const nodeType = node.flags & LNodeFlags.TYPE_MASK;
+  const found = types.some(type => nodeType === type);
+  assertEqual(found, true, `Should be one of ${types.map(typeName).join(', ')}`);
 }
 
-function typeSerializer(type: LNodeFlags): string {
+function typeName(type: LNodeFlags): string {
   if (type == LNodeFlags.Projection) return 'Projection';
   if (type == LNodeFlags.Container) return 'Container';
   if (type == LNodeFlags.View) return 'View';
   if (type == LNodeFlags.Element) return 'Element';
-  return '??? ' + type + ' ???';
+  return '<unknown>';
 }
