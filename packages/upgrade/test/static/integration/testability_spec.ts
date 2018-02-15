@@ -11,8 +11,8 @@ import {NgZone} from '@angular/core/src/zone/ng_zone';
 import {fakeAsync, tick} from '@angular/core/testing';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
-import * as angular from '@angular/upgrade/src/common/angular1';
 import {UpgradeModule} from '@angular/upgrade/static';
+import * as angular from '@angular/upgrade/static/src/common/angular1';
 
 import {bootstrap, html} from '../test_helpers';
 
