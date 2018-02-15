@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {NO_CHANGE, bind, consumeBinding, getCreationMode, peekBinding} from './instructions';
+import {NO_CHANGE, bind, consumeBinding, getCreationMode, updateBinding} from './instructions';
 
 
 
@@ -18,7 +18,7 @@ import {NO_CHANGE, bind, consumeBinding, getCreationMode, peekBinding} from './i
  * @returns value
  */
 export function pureFunction0<T>(pureFn: () => T): T {
-  return getCreationMode() ? bind(pureFn()) as T : consumeBinding();
+  return getCreationMode() ? bind(pureFn()) : consumeBinding();
 }
 
 /**
@@ -48,7 +48,7 @@ export function pureFunction2(pureFn: (v1: any, v2: any) => any, exp1: any, exp2
   if (bind(exp1) !== NO_CHANGE) different = true;
   if (bind(exp2) !== NO_CHANGE) different = true;
 
-  return different ? bind(pureFn(exp1, exp2)) : consumeBinding();
+  return different ? updateBinding(pureFn(exp1, exp2)) : consumeBinding();
 }
 
 /**
@@ -69,7 +69,7 @@ export function pureFunction3(
   if (bind(exp2) !== NO_CHANGE) different = true;
   if (bind(exp3) !== NO_CHANGE) different = true;
 
-  return different ? bind(pureFn(exp1, exp2, exp3)) : consumeBinding();
+  return different ? updateBinding(pureFn(exp1, exp2, exp3)) : consumeBinding();
 }
 
 /**
@@ -93,7 +93,7 @@ export function pureFunction4(
   if (bind(exp3) !== NO_CHANGE) different = true;
   if (bind(exp4) !== NO_CHANGE) different = true;
 
-  return different ? bind(pureFn(exp1, exp2, exp3, exp4)) : consumeBinding();
+  return different ? updateBinding(pureFn(exp1, exp2, exp3, exp4)) : consumeBinding();
 }
 
 /**
@@ -119,7 +119,7 @@ export function pureFunction5(
   if (bind(exp4) !== NO_CHANGE) different = true;
   if (bind(exp5) !== NO_CHANGE) different = true;
 
-  return different ? bind(pureFn(exp1, exp2, exp3, exp4, exp5)) : consumeBinding();
+  return different ? updateBinding(pureFn(exp1, exp2, exp3, exp4, exp5)) : consumeBinding();
 }
 
 /**
@@ -147,7 +147,7 @@ export function pureFunction6(
   if (bind(exp5) !== NO_CHANGE) different = true;
   if (bind(exp6) !== NO_CHANGE) different = true;
 
-  return different ? bind(pureFn(exp1, exp2, exp3, exp4, exp5, exp6)) : consumeBinding();
+  return different ? updateBinding(pureFn(exp1, exp2, exp3, exp4, exp5, exp6)) : consumeBinding();
 }
 
 /**
@@ -177,7 +177,8 @@ export function pureFunction7(
   if (bind(exp6) !== NO_CHANGE) different = true;
   if (bind(exp7) !== NO_CHANGE) different = true;
 
-  return different ? bind(pureFn(exp1, exp2, exp3, exp4, exp5, exp6, exp7)) : consumeBinding();
+  return different ? updateBinding(pureFn(exp1, exp2, exp3, exp4, exp5, exp6, exp7)) :
+                     consumeBinding();
 }
 
 /**
@@ -209,7 +210,7 @@ export function pureFunction8(
   if (bind(exp7) !== NO_CHANGE) different = true;
   if (bind(exp8) !== NO_CHANGE) different = true;
 
-  return different ? bind(pureFn(exp1, exp2, exp3, exp4, exp5, exp6, exp7, exp8)) :
+  return different ? updateBinding(pureFn(exp1, exp2, exp3, exp4, exp5, exp6, exp7, exp8)) :
                      consumeBinding();
 }
 
@@ -231,5 +232,5 @@ export function pureFunctionV(pureFn: (v: any[]) => any, exps: any[]): any {
     if (bind(exps[i]) !== NO_CHANGE) different = true;
   }
 
-  return different ? bind(pureFn(exps)) : consumeBinding();
+  return different ? updateBinding(pureFn(exps)) : consumeBinding();
 }

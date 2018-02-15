@@ -1749,12 +1749,6 @@ function valueInData<T>(data: any[], index: number, value?: T): T {
   return value !;
 }
 
-/** Gets the binding at the current bindingIndex */
-export function peekBinding(): any {
-  ngDevMode && assertNotEqual(currentView.bindingStartIndex, null, 'bindingStartIndex');
-  return data[bindingIndex];
-}
-
 export function getCurrentQueries(QueryType: {new (): LQueries}): LQueries {
   return currentQueries || (currentQueries = new QueryType());
 }
@@ -1765,6 +1759,14 @@ export function getCreationMode(): boolean {
 
 export function consumeBinding(): any {
   return data[bindingIndex++];
+}
+
+/** Updates the binding at the current index and returns the latest value.  */
+export function updateBinding(exp: any): any {
+  if (creationMode) {
+    initBindings();
+  }
+  return data[bindingIndex++] = exp;
 }
 
 export function getPreviousOrParentNode(): LNode {
