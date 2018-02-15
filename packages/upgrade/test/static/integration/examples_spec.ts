@@ -13,9 +13,9 @@ import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 import {UpgradeComponent, UpgradeModule, downgradeComponent} from '@angular/upgrade/static';
 import * as angular from '@angular/upgrade/static/src/common/angular1';
 
-import {bootstrap, html, multiTrim} from '../test_helpers';
+import {bootstrap, html, multiTrim, withEachNg1Version} from '../test_helpers';
 
-{
+withEachNg1Version(() => {
   describe('examples', () => {
 
     beforeEach(() => destroyPlatform());
@@ -84,4 +84,4 @@ import {bootstrap, html, multiTrim} from '../test_helpers';
          });
        }));
   });
-}
+});

@@ -14,9 +14,9 @@ import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 import {UpgradeModule} from '@angular/upgrade/static';
 import * as angular from '@angular/upgrade/static/src/common/angular1';
 
-import {bootstrap, html} from '../test_helpers';
+import {bootstrap, html, withEachNg1Version} from '../test_helpers';
 
-{
+withEachNg1Version(() => {
   describe('testability', () => {
 
     beforeEach(() => destroyPlatform());
@@ -111,4 +111,4 @@ import {bootstrap, html} from '../test_helpers';
          });
        }));
   });
-}
+});
