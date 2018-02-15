@@ -7,9 +7,9 @@
  */
 
 import {NgZone, PlatformRef, Type} from '@angular/core';
-import * as angular from '@angular/upgrade/src/common/angular1';
-import {$ROOT_SCOPE} from '@angular/upgrade/src/common/constants';
 import {UpgradeModule} from '@angular/upgrade/static';
+import * as angular from '@angular/upgrade/static/src/common/angular1';
+import {$ROOT_SCOPE} from '@angular/upgrade/static/src/common/constants';
 
 export * from '../common/test_helpers';
 
