@@ -16,6 +16,7 @@ ng_module(
         "//packages/core",
         "//packages/platform-browser",
         "//packages/platform-server",
+        "//packages/router",
         "@rxjs",
     ],
 )
