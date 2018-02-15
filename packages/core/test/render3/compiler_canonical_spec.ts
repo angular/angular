@@ -178,7 +178,7 @@ describe('compiler specification', () => {
                 $r3$.ɵT(1);
                 $r3$.ɵe();
               }
-              $r3$.ɵt(1, $r3$.ɵb2('', ctx.salutation, ' ', $foo$, ''));
+              $r3$.ɵt(1, $r3$.ɵi2('', ctx.salutation, ' ', $foo$, ''));
             }
           }
         });
@@ -795,7 +795,7 @@ describe('compiler specification', () => {
             $r3$.ɵPp(1, $MyPurePipe_ngPipeDef$, $MyPurePipe_ngPipeDef$.n());
             $r3$.ɵPp(2, $MyPipe_ngPipeDef$, $MyPipe_ngPipeDef$.n());
           }
-          $r3$.ɵt(2, $r3$.ɵb1('', $r3$.ɵpb2(1, $r3$.ɵpb2(2, ctx.name, ctx.size), ctx.size), ''));
+          $r3$.ɵt(2, $r3$.ɵi1('', $r3$.ɵpb2(1, $r3$.ɵpb2(2, ctx.name, ctx.size), ctx.size), ''));
         }
       });
       // /NORMATIVE
@@ -825,7 +825,7 @@ describe('compiler specification', () => {
               $r3$.ɵT(2);
             }
             const l1_user = $r3$.ɵm<any>(1);
-            $r3$.ɵt(2, $r3$.ɵb1('Hello ', l1_user.value, '!'));
+            $r3$.ɵt(2, $r3$.ɵi1('Hello ', l1_user.value, '!'));
           }
         });
         // NORMATIVE
@@ -1029,7 +1029,7 @@ describe('compiler specification', () => {
                 $r3$.ɵe();
               }
               const $l0_item$ = ctx1.$implicit;
-              $r3$.ɵt(1, $r3$.ɵb1('', $l0_item$.name, ''));
+              $r3$.ɵt(1, $r3$.ɵi1('', $l0_item$.name, ''));
             }
           }
         });
@@ -1104,7 +1104,7 @@ describe('compiler specification', () => {
               }
               const $l0_item$ = ctx1.$implicit;
               $r3$.ɵp(4, 'forOf', $r3$.ɵb($l0_item$.infos));
-              $r3$.ɵt(2, $r3$.ɵb1('', $l0_item$.name, ''));
+              $r3$.ɵt(2, $r3$.ɵi1('', $l0_item$.name, ''));
               $r3$.ɵcR(4);
               $r3$.ɵr(5, 4);
               $r3$.ɵcr();
@@ -1117,7 +1117,7 @@ describe('compiler specification', () => {
                   $r3$.ɵe();
                 }
                 const $l0_info$ = ctx2.$implicit;
-                $r3$.ɵt(1, $r3$.ɵb2(' ', $l0_item$.name, ': ', $l0_info$.description, ' '));
+                $r3$.ɵt(1, $r3$.ɵi2(' ', $l0_item$.name, ': ', $l0_info$.description, ' '));
               }
             }
           }

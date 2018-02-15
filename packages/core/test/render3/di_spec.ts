@@ -11,7 +11,7 @@ import {ElementRef, TemplateRef, ViewContainerRef} from '@angular/core';
 import {defineComponent} from '../../src/render3/definition';
 import {InjectFlags, bloomAdd, bloomFindPossibleInjector, getOrCreateNodeInjector} from '../../src/render3/di';
 import {PublicFeature, defineDirective, inject, injectElementRef, injectTemplateRef, injectViewContainerRef} from '../../src/render3/index';
-import {bind, bind2, container, containerRefreshEnd, containerRefreshStart, createLNode, createLView, createTView, elementEnd, elementStart, embeddedViewEnd, embeddedViewStart, enterView, leaveView, memory, text, textBinding} from '../../src/render3/instructions';
+import {bind, container, containerRefreshEnd, containerRefreshStart, createLNode, createLView, createTView, elementEnd, elementStart, embeddedViewEnd, embeddedViewStart, enterView, interpolation2, leaveView, memory, text, textBinding} from '../../src/render3/instructions';
 import {LInjector} from '../../src/render3/interfaces/injector';
 import {LNodeFlags} from '../../src/render3/interfaces/node';
 
@@ -111,7 +111,8 @@ describe('di', () => {
         }
         textBinding(
             3,
-            bind2('', memory<Directive>(1).value, '-', memory<DirectiveSameInstance>(2).value, ''));
+            interpolation2(
+                '', memory<Directive>(1).value, '-', memory<DirectiveSameInstance>(2).value, ''));
       }
 
       expect(renderToHtml(Template, {})).toEqual('<div>ElementRef-true</div>');
@@ -151,7 +152,8 @@ describe('di', () => {
         }
         textBinding(
             3,
-            bind2('', memory<Directive>(1).value, '-', memory<DirectiveSameInstance>(2).value, ''));
+            interpolation2(
+                '', memory<Directive>(1).value, '-', memory<DirectiveSameInstance>(2).value, ''));
       }
 
       expect(renderToHtml(Template, {})).toEqual('TemplateRef-true');
@@ -191,7 +193,8 @@ describe('di', () => {
         }
         textBinding(
             3,
-            bind2('', memory<Directive>(1).value, '-', memory<DirectiveSameInstance>(2).value, ''));
+            interpolation2(
+                '', memory<Directive>(1).value, '-', memory<DirectiveSameInstance>(2).value, ''));
       }
 
       expect(renderToHtml(Template, {})).toEqual('<div>ViewContainerRef-true</div>');
@@ -304,7 +307,7 @@ describe('di', () => {
           }
           textBinding(
               3,
-              bind2(
+              interpolation2(
                   '', memory<ChildDirective>(1).value, '-', memory<Child2Directive>(2).value, ''));
           embeddedViewEnd();
         }

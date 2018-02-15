@@ -9,7 +9,7 @@
 import {EventEmitter} from '@angular/core';
 
 import {defineComponent, defineDirective} from '../../src/render3/index';
-import {NO_CHANGE, bind, bind1, componentRefresh, container, containerRefreshEnd, containerRefreshStart, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, listener, memory, text, textBinding} from '../../src/render3/instructions';
+import {NO_CHANGE, bind, componentRefresh, container, containerRefreshEnd, containerRefreshStart, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, interpolation1, listener, memory, text, textBinding} from '../../src/render3/instructions';
 
 import {renderToHtml} from './render_util';
 
@@ -55,7 +55,7 @@ describe('elementProperty', () => {
         elementStart(0, 'span');
         elementEnd();
       }
-      elementProperty(0, 'id', bind1('_', ctx, '_'));
+      elementProperty(0, 'id', interpolation1('_', ctx, '_'));
     }
 
     expect(renderToHtml(Template, 'testId')).toEqual('<span id="_testId_"></span>');
