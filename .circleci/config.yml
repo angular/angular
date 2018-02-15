@@ -76,7 +76,7 @@ jobs:
       # Use bazel query so that we explicitly ask for all buildable targets to be built as well
       # This avoids waiting for a build command to finish before running the first test
       # See https://github.com/bazelbuild/bazel/issues/4257
-      - run: bazel query --output=label //... | xargs bazel test
+      - run: bazel query --output=label '//modules/... union //packages/... union //tools/...' | xargs bazel test
 
       # CircleCI will allow us to go back and view/download these artifacts from past builds.
       # Also we can use a service like https://buildsize.org/ to automatically track binary size of these artifacts.
