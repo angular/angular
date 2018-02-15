@@ -189,12 +189,12 @@ export function renderComponent<T>(
 }
 
 export function detectChanges<T>(component: T) {
-  ngDevMode && assertNotNull(component, 'detectChanges should be called with a component');
+  ngDevMode && assertNotNull(component, 'component');
   const hostNode = (component as any)[NG_HOST_SYMBOL] as LElementNode;
   if (ngDevMode && !hostNode) {
     createError('Not a directive instance', component);
   }
-  ngDevMode && assertNotNull(hostNode.data, 'Component host node should be attached to an LView');
+  ngDevMode && assertNotNull(hostNode.data, 'hostNode.data');
   renderComponentOrTemplate(hostNode, hostNode.view, component);
   isDirty = false;
 }
@@ -202,7 +202,7 @@ export function detectChanges<T>(component: T) {
 let isDirty = false;
 export function markDirty<T>(
     component: T, scheduler: (fn: () => void) => void = requestAnimationFrame) {
-  ngDevMode && assertNotNull(component, 'markDirty should be called with a component');
+  ngDevMode && assertNotNull(component, 'component');
   if (!isDirty) {
     isDirty = true;
     scheduler(() => detectChanges(component));
