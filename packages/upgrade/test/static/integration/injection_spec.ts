@@ -14,9 +14,9 @@ import {UpgradeModule, downgradeInjectable, getAngularJSGlobal, setAngularJSGlob
 import * as angular from '@angular/upgrade/static/src/common/angular1';
 import {$INJECTOR, INJECTOR_KEY} from '@angular/upgrade/static/src/common/constants';
 
-import {bootstrap, html} from '../test_helpers';
+import {bootstrap, html, withEachNg1Version} from '../test_helpers';
 
-{
+withEachNg1Version(() => {
   describe('injection', () => {
 
     beforeEach(() => destroyPlatform());
@@ -101,13 +101,13 @@ import {bootstrap, html} from '../test_helpers';
        }));
 
     it('should allow resetting angular at runtime', async(() => {
-         let wrappedBootstrapepedCalled = false;
+         let wrappedBootstrapCalled = false;
 
          const n: any = getAngularJSGlobal();
 
          setAngularJSGlobal({
            bootstrap: (...args: any[]) => {
-             wrappedBootstrapepedCalled = true;
+             wrappedBootstrapCalled = true;
              n.bootstrap(...args);
            },
            module: n.module,
@@ -125,7 +125,8 @@ import {bootstrap, html} from '../test_helpers';
          const ng1Module = angular.module('ng1Module', []);
 
          bootstrap(platformBrowserDynamic(), Ng2Module, html('<div>'), ng1Module)
-             .then((upgrade) => { expect(wrappedBootstrapepedCalled).toEqual(true); });
+             .then(upgrade => expect(wrappedBootstrapCalled).toBe(true))
+             .then(() => setAngularJSGlobal(n));  // Reset the AngularJS global.
        }));
   });
-}
+});

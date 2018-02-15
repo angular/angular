@@ -16,10 +16,10 @@ import * as angular from '@angular/upgrade/static/src/common/angular1';
 import {$ROOT_SCOPE, INJECTOR_KEY, LAZY_MODULE_REF} from '@angular/upgrade/static/src/common/constants';
 import {LazyModuleRef} from '@angular/upgrade/static/src/common/util';
 
-import {html, multiTrim} from '../test_helpers';
+import {html, multiTrim, withEachNg1Version} from '../test_helpers';
 
 
-{
+withEachNg1Version(() => {
   [true, false].forEach(propagateDigest => {
     describe(`lazy-load ng2 module (propagateDigest: ${propagateDigest})`, () => {
 
@@ -611,4 +611,4 @@ import {html, multiTrim} from '../test_helpers';
          }));
     });
   });
-}
+});

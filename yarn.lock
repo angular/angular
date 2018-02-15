@@ -250,17 +250,21 @@ amdetective@0.0.2:
   dependencies:
     esprima "~1.2.2"
 
-angular-animate@1.5.0:
-  version "1.5.0"
-  resolved "https://registry.yarnpkg.com/angular-animate/-/angular-animate-1.5.0.tgz#0e31f31fa7ab2ddf5ea5787e476548644d62fb93"
+"angular-1.5@npm:angular@1.5":
+  version "1.5.11"
+  resolved "https://registry.yarnpkg.com/angular/-/angular-1.5.11.tgz#8c5ba7386f15965c9acf3429f6881553aada30d6"
 
-angular-mocks@1.5.0:
-  version "1.5.0"
-  resolved "https://registry.yarnpkg.com/angular-mocks/-/angular-mocks-1.5.0.tgz#81b3e4b21098d7c545c6f0a0a97f897b26879dd9"
+"angular-mocks-1.5@npm:angular-mocks@1.5":
+  version "1.5.11"
+  resolved "https://registry.yarnpkg.com/angular-mocks/-/angular-mocks-1.5.11.tgz#a0e1dd0ea55fd77ee7a757d75536c5e964c86f81"
 
-angular@1.5.0:
-  version "1.5.0"
-  resolved "https://registry.yarnpkg.com/angular/-/angular-1.5.0.tgz#d96ee97ab6df6cfd0915accbee484d098adb74ec"
+"angular-mocks@npm:angular-mocks@1.6":
+  version "1.6.9"
+  resolved "https://registry.yarnpkg.com/angular-mocks/-/angular-mocks-1.6.9.tgz#4fed8c8293a5080e0919a7ff0dcf0f704864b7ba"
+
+"angular@npm:angular@1.6":
+  version "1.6.9"
+  resolved "https://registry.yarnpkg.com/angular/-/angular-1.6.9.tgz#bc812932e18909038412d594a5990f4bb66c0619"
 
 ansi-align@^1.1.0:
   version "1.1.0"
