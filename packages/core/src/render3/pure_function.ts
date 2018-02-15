@@ -30,7 +30,7 @@ export function pureFunction0<T>(pureFn: () => T): T {
  * @returns Updated value
  */
 export function pureFunction1(pureFn: (v: any) => any, exp: any): any {
-  return bind(exp) !== NO_CHANGE ? bind(pureFn(exp)) : consumeBinding();
+  return bind(exp) !== NO_CHANGE ? updateBinding(pureFn(exp)) : consumeBinding();
 }
 
 /**
