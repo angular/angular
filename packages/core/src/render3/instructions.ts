@@ -1763,7 +1763,7 @@ export function getCreationMode(): boolean {
   return creationMode;
 }
 
-export function peekAndIncrementBinding() {
+export function consumeBinding(): any {
   return data[bindingIndex++];
 }
 

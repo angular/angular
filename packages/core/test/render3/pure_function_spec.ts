@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {defineComponent} from '../../src/render3/index';
-import {componentRefresh, container, containerRefreshEnd, containerRefreshStart, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, memory} from '../../src/render3/instructions';
-import {pureFunction0, pureFunction1, pureFunction2, pureFunction3, pureFunction4, pureFunction5, pureFunction6, pureFunction7, pureFunction8, pureFunctionV} from '../../src/render3/pure_function';
+import {bind, componentRefresh, container, containerRefreshEnd, containerRefreshStart, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, memory} from '../../src/render3/instructions';
+import {pureFunction1, pureFunction2, pureFunction3, pureFunction4, pureFunction5, pureFunction6, pureFunction7, pureFunction8, pureFunctionV} from '../../src/render3/pure_function';
 import {renderToHtml} from '../../test/render3/render_util';
 
 describe('array literals', () => {
@@ -97,29 +97,31 @@ describe('array literals', () => {
     expect(manyPropComp !.names2).toEqual(['Carson']);
   });
 
-  it('should support an array literal of constants inside expressions', () => {
+  it('should support an array literals inside fn calls', () => {
     let myComps: MyComp[] = [];
 
-    const e0_ff = () => ['Nancy', 'Bess'];
+    const e0_ff = (v: any) => ['Nancy', v];
 
-    /** <my-comp [names]="someFn(['Nancy', 'Bess'])"></my-comp> */
-    class MyApp {
+    /** <my-comp [names]="someFn(['Nancy', customName])"></my-comp> */
+    class ParentComp {
+      customName = 'Bess';
+
       someFn(arr: string[]): string[] {
         arr[0] = arr[0].toUpperCase();
         return arr;
       }
 
       static ngComponentDef = defineComponent({
-        type: MyApp,
+        type: ParentComp,
         tag: 'parent-comp',
-        factory: () => new MyApp(),
+        factory: () => new ParentComp(),
         template: function(ctx: any, cm: boolean) {
           if (cm) {
             elementStart(0, MyComp);
             myComps.push(memory(1));
             elementEnd();
           }
-          elementProperty(0, 'names', ctx.someFn(pureFunction0(e0_ff)));
+          elementProperty(0, 'names', bind(ctx.someFn(pureFunction1(e0_ff, ctx.customName))));
           MyComp.ngComponentDef.h(1, 0);
           componentRefresh(1, 0);
         }
@@ -128,13 +130,13 @@ describe('array literals', () => {
 
     function Template(ctx: any, cm: boolean) {
       if (cm) {
-        elementStart(0, MyApp);
+        elementStart(0, ParentComp);
         elementEnd();
-        elementStart(2, MyApp);
+        elementStart(2, ParentComp);
         elementEnd();
       }
-      MyApp.ngComponentDef.h(1, 0);
-      MyApp.ngComponentDef.h(3, 2);
+      ParentComp.ngComponentDef.h(1, 0);
+      ParentComp.ngComponentDef.h(3, 2);
       componentRefresh(1, 0);
       componentRefresh(3, 2);
     }

@@ -250,7 +250,7 @@ describe('compiler specification', () => {
         expect(renderComp(MyApp)).toEqual(`<my-array-comp>Nancy Bess</my-array-comp>`);
       });
 
-      it('should support array literals of constants inside expressions', () => {
+      it('should support array literals of constants inside function calls', () => {
         type $MyApp$ = MyApp;
 
         // NORMATIVE
@@ -279,7 +279,7 @@ describe('compiler specification', () => {
                 $r3$.ɵE(0, MyArrayComp);
                 $r3$.ɵe();
               }
-              $r3$.ɵp(0, 'names', ctx.someFn($r3$.ɵf0($e0_ff$)));
+              $r3$.ɵp(0, 'names', $r3$.ɵb(ctx.someFn($r3$.ɵf0($e0_ff$))));
               MyArrayComp.ngComponentDef.h(1, 0);
               $r3$.ɵr(1, 0);
             }
@@ -288,6 +288,60 @@ describe('compiler specification', () => {
         }
 
         expect(renderComp(MyApp)).toEqual(`<my-array-comp>NANCY Bess</my-array-comp>`);
+      });
+
+      it('should support array literals of constants inside expressions', () => {
+        type $MyApp$ = MyApp;
+        type $MyComp$ = MyComp;
+
+        @Component({selector: 'my-comp', template: `{{ num }}`})
+        class MyComp {
+          num: number;
+
+          static ngComponentDef = $r3$.ɵdefineComponent({
+            type: MyComp,
+            tag: 'my-comp',
+            factory: function MyComp_Factory() { return new MyComp(); },
+            template: function MyComp_Template(ctx: $MyComp$, cm: $boolean$) {
+              if (cm) {
+                $r3$.ɵT(0);
+              }
+              $r3$.ɵt(0, $r3$.ɵb(ctx.num));
+            },
+            inputs: {num: 'num'}
+          });
+        }
+
+        // NORMATIVE
+        const $e0_ff$ = () => ['Nancy', 'Bess'];
+        // /NORMATIVE
+
+        @Component({
+          selector: 'my-app',
+          template: `
+            <my-comp [num]="['Nancy', 'Bess'].length + 1"></my-comp>
+          `
+        })
+        class MyApp {
+          // NORMATIVE
+          static ngComponentDef = $r3$.ɵdefineComponent({
+            type: MyApp,
+            tag: 'my-app',
+            factory: function MyApp_Factory() { return new MyApp(); },
+            template: function MyApp_Template(ctx: $MyApp$, cm: $boolean$) {
+              if (cm) {
+                $r3$.ɵE(0, MyComp);
+                $r3$.ɵe();
+              }
+              $r3$.ɵp(0, 'num', $r3$.ɵb($r3$.ɵf0($e0_ff$).length + 1));
+              MyComp.ngComponentDef.h(1, 0);
+              $r3$.ɵr(1, 0);
+            }
+          });
+          // /NORMATIVE
+        }
+
+        expect(renderComp(MyApp)).toEqual(`<my-comp>3</my-comp>`);
       });
 
 
