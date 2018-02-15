@@ -121,7 +121,7 @@ _EXTRA_NODE_OPTIONS_FLAGS = [
 ]
 
 def ngc_compile_action(ctx, label, inputs, outputs, messages_out, tsconfig_file,
-                        locale=None, i18n_args=[]):
+                       node_opts, locale=None, i18n_args=[]):
   """Helper function to create the ngc action.
 
   This is exposed for google3 to wire up i18n replay rules, and is not intended
@@ -134,6 +134,7 @@ def ngc_compile_action(ctx, label, inputs, outputs, messages_out, tsconfig_file,
     outputs: passed to the ngc action's outputs
     messages_out: produced xmb files
     tsconfig_file: tsconfig file with settings used for the compilation
+    node_opts: list of strings, extra nodejs options.
     locale: i18n locale, or None
     i18n_args: additional command-line arguments to ngc
 
@@ -152,7 +153,8 @@ def ngc_compile_action(ctx, label, inputs, outputs, messages_out, tsconfig_file,
   else:
     supports_workers = str(int(ctx.attr._supports_workers))
 
-  arguments = list(_EXTRA_NODE_OPTIONS_FLAGS)
+  arguments = (list(_EXTRA_NODE_OPTIONS_FLAGS) +
+               ["--node_options=%s" % opt for opt in node_opts])
   # One at-sign makes this a params-file, enabling the worker strategy.
   # Two at-signs escapes the argument so it's passed through to ngc
   # rather than the contents getting expanded.
@@ -199,7 +201,7 @@ def ngc_compile_action(ctx, label, inputs, outputs, messages_out, tsconfig_file,
 
   return None
 
-def _compile_action(ctx, inputs, outputs, messages_out, tsconfig_file):
+def _compile_action(ctx, inputs, outputs, messages_out, tsconfig_file, node_opts):
   # Give the Angular compiler all the user-listed assets
   file_inputs = list(ctx.files.assets)
 
@@ -218,17 +220,17 @@ def _compile_action(ctx, inputs, outputs, messages_out, tsconfig_file):
       transitive = [inputs] + [dep.collect_summaries_aspect_result for dep in ctx.attr.deps
                     if hasattr(dep, "collect_summaries_aspect_result")])
 
-  return ngc_compile_action(ctx, ctx.label, action_inputs, outputs, messages_out, tsconfig_file)
+  return ngc_compile_action(ctx, ctx.label, action_inputs, outputs, messages_out, tsconfig_file, node_opts)
 
 
-def _prodmode_compile_action(ctx, inputs, outputs, tsconfig_file):
+def _prodmode_compile_action(ctx, inputs, outputs, tsconfig_file, node_opts):
   outs = _expected_outs(ctx)
-  return _compile_action(ctx, inputs, outputs + outs.closure_js, outs.i18n_messages, tsconfig_file)
+  return _compile_action(ctx, inputs, outputs + outs.closure_js, outs.i18n_messages, tsconfig_file, node_opts)
 
-def _devmode_compile_action(ctx, inputs, outputs, tsconfig_file):
+def _devmode_compile_action(ctx, inputs, outputs, tsconfig_file, node_opts):
   outs = _expected_outs(ctx)
   compile_action_outputs = outputs + outs.devmode_js + outs.declarations + outs.summaries
-  _compile_action(ctx, inputs, compile_action_outputs, None, tsconfig_file)
+  _compile_action(ctx, inputs, compile_action_outputs, None, tsconfig_file, node_opts)
 
 def _ts_expected_outs(ctx, label):
   # rules_typescript expects a function with two arguments, but our

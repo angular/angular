@@ -10,11 +10,10 @@ http_archive(
 load("@build_bazel_rules_nodejs//:defs.bzl", "node_repositories")
 node_repositories(package_json = ["//:package.json"])
 
-http_archive(
+git_repository(
     name = "build_bazel_rules_typescript",
-    url = "https://github.com/bazelbuild/rules_typescript/archive/0.10.1.zip",
-    strip_prefix = "rules_typescript-0.10.1",
-    sha256 = "a2c81776a4a492ff9f878f9705639f5647bef345f7f3e1da09c9eeb8dec80485",
+    commit = "d3cc5cd72d89aee0e4c2553ae1b99c707ecbef4e",
+    remote = "https://github.com/bazelbuild/rules_typescript",
 )
 
 load("@build_bazel_rules_typescript//:defs.bzl", "ts_setup_workspace")
