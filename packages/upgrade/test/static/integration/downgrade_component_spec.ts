@@ -10,8 +10,8 @@ import {ChangeDetectorRef, Compiler, Component, ComponentFactoryResolver, EventE
 import {async, fakeAsync, tick} from '@angular/core/testing';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
-import * as angular from '@angular/upgrade/src/common/angular1';
 import {UpgradeModule, downgradeComponent} from '@angular/upgrade/static';
+import * as angular from '@angular/upgrade/static/src/common/angular1';
 
 import {$apply, bootstrap, html, multiTrim} from '../test_helpers';
 
