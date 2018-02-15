@@ -37,7 +37,7 @@ function isCssClassMatching(nodeClassAttrVal: string, cssClassToMatch: string): 
  */
 export function isNodeMatchingSimpleSelector(tNode: TNode, selector: SimpleCssSelector): boolean {
   const noOfSelectorParts = selector.length;
-  ngDevMode && assertNotNull(selector[0], 'the selector should have a tag name');
+  ngDevMode && assertNotNull(selector[0], 'selector[0]');
   const tagNameInSelector = selector[0];
 
   // check tag tame
