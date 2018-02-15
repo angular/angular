@@ -2777,6 +2777,9 @@ describe('MatSelect', () => {
 
       it('should align the first option with trigger text if no option is selected',
           fakeAsync(() => {
+            // We shouldn't push it too far down for this one, because the default may
+            // end up being too much when running the tests on mobile browsers.
+            formField.style.top = '100px';
             trigger.click();
             fixture.detectChanges();
             flush();
