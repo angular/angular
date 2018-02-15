@@ -239,7 +239,7 @@ describe('compiler specification', () => {
                 $r3$.ɵE(0, MyArrayComp);
                 $r3$.ɵe();
               }
-              $r3$.ɵp(0, 'names', $r3$.ɵb0($e0_arr$));
+              $r3$.ɵp(0, 'names', cm ? $e0_arr$ : $r3$.ɵNC);
               MyArrayComp.ngComponentDef.h(1, 0);
               $r3$.ɵr(1, 0);
             }
