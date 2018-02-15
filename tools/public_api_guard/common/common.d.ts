@@ -65,6 +65,16 @@ export declare class DeprecatedPercentPipe implements PipeTransform {
 export declare const DOCUMENT: InjectionToken<Document>;
 
 /** @experimental */
+export declare class EntriesPipe implements PipeTransform {
+    transform(object: {
+        [key: string]: any;
+    }): {
+        key: string;
+        value: any;
+    }[];
+}
+
+/** @experimental */
 export declare enum FormatWidth {
     Short = 0,
     Medium = 1,

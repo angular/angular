@@ -12,6 +12,7 @@ import {BrowserModule} from '@angular/platform-browser';
 import {AsyncObservablePipeComponent, AsyncPromisePipeComponent} from './async_pipe';
 import {CurrencyPipeComponent, DeprecatedCurrencyPipeComponent} from './currency_pipe';
 import {DatePipeComponent, DeprecatedDatePipeComponent} from './date_pipe';
+import {EntriesPipeComponent} from './entries_pipe';
 import {I18nPluralPipeComponent, I18nSelectPipeComponent} from './i18n_pipe';
 import {JsonPipeComponent} from './json_pipe';
 import {LowerUpperPipeComponent} from './lowerupper_pipe';
@@ -49,6 +50,9 @@ import {SlicePipeListComponent, SlicePipeStringComponent} from './slice_pipe';
     <h2><code>i18n</code></h2>
     <i18n-plural-pipe></i18n-plural-pipe>
     <i18n-select-pipe></i18n-select-pipe>
+
+    <h2><code>keys</code></h2>
+    <entries-pipe></entries-pipe>
   `
 })
 export class ExampleAppComponent {
@@ -60,7 +64,7 @@ export class ExampleAppComponent {
     DatePipeComponent, DeprecatedDatePipeComponent, LowerUpperPipeComponent, NumberPipeComponent,
     PercentPipeComponent, DeprecatedPercentPipeComponent, CurrencyPipeComponent,
     DeprecatedCurrencyPipeComponent, SlicePipeStringComponent, SlicePipeListComponent,
-    I18nPluralPipeComponent, I18nSelectPipeComponent
+    I18nPluralPipeComponent, I18nSelectPipeComponent, EntriesPipeComponent
   ],
   imports: [BrowserModule],
   bootstrap: [ExampleAppComponent]
