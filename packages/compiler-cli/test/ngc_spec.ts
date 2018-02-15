@@ -2094,5 +2094,24 @@ describe('ngc transformer command-line', () => {
       `);
       expect(source).toMatch(/ngInjectableDef.*return ..\(..\.inject\(Existing, undefined, 1\)/);
     });
+
+    it('compiles a service that depends on a token', () => {
+      const source = compileService(`
+        import {Inject, Injectable, InjectionToken} from '@angular/core';
+        import {Module} from './module';
+
+        export const TOKEN = new InjectionToken('desc', {scope: Module, factory: () => true});
+
+        @Injectable({
+          scope: Module,
+        })
+        export class Service {
+          constructor(@Inject(TOKEN) value: boolean) {}
+        }
+      `);
+      expect(source).toMatch(/ngInjectableDef = .+\.defineInjectable\(/);
+      expect(source).toMatch(/ngInjectableDef.*token: Service/);
+      expect(source).toMatch(/ngInjectableDef.*scope: .+\.Module/);
+    });
   });
 });
