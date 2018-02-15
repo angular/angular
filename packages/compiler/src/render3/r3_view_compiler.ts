@@ -8,9 +8,9 @@
 
 import {CompileDirectiveMetadata, CompilePipeSummary, CompileTokenMetadata, CompileTypeMetadata, flatten, identifierName, rendererTypeName, tokenReference, viewClassName} from '../compile_metadata';
 import {CompileReflector} from '../compile_reflector';
-import {BindingForm, BuiltinConverter, ConvertPropertyBindingResult, EventHandlerVars, LocalResolver, convertActionBinding, convertPropertyBinding, convertPropertyBindingBuiltins} from '../compiler_util/expression_converter';
+import {BindingForm, BuiltinConverter, BuiltinFunctionCall, ConvertPropertyBindingResult, EventHandlerVars, LocalResolver, convertActionBinding, convertPropertyBinding, convertPropertyBindingBuiltins} from '../compiler_util/expression_converter';
 import {ConstantPool, DefinitionKind} from '../constant_pool';
-import {AST, AstMemoryEfficientTransformer, AstTransformer, BindingPipe, FunctionCall, ImplicitReceiver, LiteralPrimitive, MethodCall, ParseSpan, PropertyRead} from '../expression_parser/ast';
+import {AST, AstMemoryEfficientTransformer, AstTransformer, BindingPipe, FunctionCall, ImplicitReceiver, LiteralArray, LiteralMap, LiteralPrimitive, MethodCall, ParseSpan, PropertyRead} from '../expression_parser/ast';
 import {Identifiers} from '../identifiers';
 import {LifecycleHooks} from '../lifecycle_reflector';
 import * as o from '../output/output_ast';
@@ -20,6 +20,7 @@ import {AttrAst, BoundDirectivePropertyAst, BoundElementPropertyAst, BoundEventA
 import {OutputContext, error} from '../util';
 
 import {Identifiers as R3} from './r3_identifiers';
+
 
 
 /** Name of the context parameter passed into a template function */
@@ -217,6 +218,23 @@ function pipeBinding(args: o.Expression[]): o.ExternalReference {
   }
 }
 
+const pureFunctionIdentifiers = [
+  R3.pureFunction0, R3.pureFunction1, R3.pureFunction2, R3.pureFunction3, R3.pureFunction4,
+  R3.pureFunction5, R3.pureFunction6, R3.pureFunction7, R3.pureFunction8
+];
+function getLiteralFactory(
+    outputContext: OutputContext, literal: o.LiteralArrayExpr | o.LiteralMapExpr): o.Expression {
+  const {literalFactory, literalFactoryArguments} =
+      outputContext.constantPool.getLiteralFactory(literal);
+  literalFactoryArguments.length > 0 || error(`Expected arguments to a literal factory function`);
+  let pureFunctionIdent =
+      pureFunctionIdentifiers[literalFactoryArguments.length] || R3.pureFunctionV;
+
+  // Literal factories are pure functions that only need to be re-invoked when the parameters
+  // change.
+  return o.importExpr(pureFunctionIdent).callFn([literalFactory, ...literalFactoryArguments]);
+}
+
 class BindingScope {
   private map = new Map<string, o.Expression>();
   private referenceNameIndex = 0;
@@ -269,7 +287,7 @@ class TemplateDefinitionBuilder implements TemplateAstVisitor, LocalResolver {
   private _postfix: o.Statement[] = [];
   private _contentProjections: Map<NgContentAst, NgContentInfo>;
   private _projectionDefinitionIndex = 0;
-  private _pipeConverter: PipeConverter;
+  private _valueConverter: ValueConverter;
   private unsupported = unsupported;
   private invalid = invalid;
 
@@ -279,8 +297,8 @@ class TemplateDefinitionBuilder implements TemplateAstVisitor, LocalResolver {
       private bindingScope: BindingScope, private level = 0, private ngContentSelectors: string[],
       private contextName: string|null, private templateName: string|null,
       private pipes: Map<string, CompilePipeSummary>) {
-    this._pipeConverter =
-        new PipeConverter(() => this.allocateDataSlot(), (name, localName, slot, value) => {
+    this._valueConverter = new ValueConverter(
+        outputCtx, () => this.allocateDataSlot(), (name, localName, slot, value) => {
           bindingScope.set(localName, value);
           const pipe = pipes.get(name) !;
           pipe || error(`Could not find pipe ${name}`);
@@ -634,7 +652,7 @@ class TemplateDefinitionBuilder implements TemplateAstVisitor, LocalResolver {
   }
 
   private convertPropertyBinding(implicit: o.Expression, value: AST): o.Expression {
-    const pipesConvertedValue = value.visit(this._pipeConverter);
+    const pipesConvertedValue = value.visit(this._valueConverter);
     const convertedPropertyBinding = convertPropertyBinding(
         this, implicit, pipesConvertedValue, this.bindingContext(), BindingForm.TrySimple,
         interpolate);
@@ -688,10 +706,10 @@ export function createFactory(
       o.INFERRED_TYPE, null, type.reference.name ? `${type.reference.name}_Factory` : null);
 }
 
-class PipeConverter extends AstMemoryEfficientTransformer {
+class ValueConverter extends AstMemoryEfficientTransformer {
   private pipeSlots = new Map<string, number>();
   constructor(
-      private allocateSlot: () => number,
+      private outputCtx: OutputContext, private allocateSlot: () => number,
       private definePipe:
           (name: string, localName: string, slot: number, value: o.Expression) => void) {
     super();
@@ -714,6 +732,31 @@ class PipeConverter extends AstMemoryEfficientTransformer {
 
     return new FunctionCall(
         ast.span, target, [new LiteralPrimitive(ast.span, slot), value, ...args]);
+  }
+
+  visitLiteralArray(ast: LiteralArray, context: any): AST {
+    return new BuiltinFunctionCall(ast.span, this.visitAll(ast.expressions), values => {
+      // If the literal has calculated (non-literal) elements  transform it into
+      // calls to literal factories that compose the literal and will cache intermediate
+      // values. Otherwise, just return an literal array that contains the values.
+      const literal = o.literalArr(values);
+      return values.every(a => a.isConstant()) ?
+          this.outputCtx.constantPool.getConstLiteral(literal, true) :
+          getLiteralFactory(this.outputCtx, literal);
+    });
+  }
+
+  visitLiteralMap(ast: LiteralMap, context: any): AST {
+    return new BuiltinFunctionCall(ast.span, this.visitAll(ast.values), values => {
+      // If the literal has calculated (non-literal) elements  transform it into
+      // calls to literal factories that compose the literal and will cache intermediate
+      // values. Otherwise, just return an literal array that contains the values.
+      const literal = o.literalMap(values.map(
+          (value, index) => ({key: ast.keys[index].key, value, quoted: ast.keys[index].quoted})));
+      return values.every(a => a.isConstant()) ?
+          this.outputCtx.constantPool.getConstLiteral(literal, true) :
+          getLiteralFactory(this.outputCtx, literal);
+    });
   }
 }
 
