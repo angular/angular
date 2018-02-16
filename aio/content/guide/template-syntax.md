@@ -81,24 +81,40 @@ Begin with the first form of data binding&mdash;interpolation&mdash;to see how m
 
 {@a interpolation}
 
+<!--
 ## Interpolation ( <span class="syntax">{&#xfeff;{...}}</span> )
+-->
+## 문자열 바인딩(Interpolation ( <span class="syntax">{&#xfeff;{...}}</span> )
 
+<!--
 You met the double-curly braces of interpolation, `{{` and `}}`, early in your Angular education.
+-->
+다른 문서에서도 살펴봤듯이, 문자열 바인딩에는 이중 중괄호(`{{`, `}}`)를 사용합니다.
 
 <code-example path="template-syntax/src/app/app.component.html" region="first-interpolation" title="src/app/app.component.html" linenums="false">
 </code-example>
 
+<!--
 You use interpolation to weave calculated strings into the text between HTML element tags and within attribute assignments.
+-->
+그리고 HTML 엘리먼트 태그 안에 내용을 넣거나 어트리뷰트를 지정할 때도 문자열 바인딩을 사용할 수 있습니다.
 
 <code-example path="template-syntax/src/app/app.component.html" region="title+image" title="src/app/app.component.html" linenums="false">
 </code-example>
 
+<!--
 The text between the braces is often the name of a component property. Angular replaces that name with the
 string value of the corresponding component property. In the example above, Angular evaluates the `title` and `heroImageUrl` properties
 and "fills in the blanks", first displaying a bold application title and then a heroic image.
+-->
+중괄호 안에는 컴포넌트 프로퍼티를 바인딩 할 수 있습니다. 프로퍼티 이름을 템플릿에 바인딩하면 Angular가 처리하면서 프로퍼티 이름을 프로퍼티 값으로 변경해서 템플릿에 적용합니다.
+위에서 살펴본 코드를 예로 들면, 템플릿에 사용된 `title` 프로퍼티의 값을 애플리케이션 제목으로 표시하고, `heroImageUrl` 프로퍼티에 지정된 주소를 찾아서 히어로의 이미지를 표시합니다.
 
+<!--
 More generally, the text between the braces is a **template expression** that Angular first **evaluates**
 and then **converts to a string**. The following interpolation illustrates the point by adding the two numbers:
+-->
+좀 더 일반적으로 얘기하면 중괄호 안에 있는 **템플릿 표현식**은 Angular에서 가장 먼저 **평가**되며, 평가된 값은 **문자열로 변환**되어 템플릿에 반영됩니다. 이 때문에 문자열 바인딩은 문자열 삽입이라고도 하며, 이런 특성 때문에 두 숫자를 더하는 표현식도 템플릿에 바로 사용할 수 있습니다.
 
 <code-example path="template-syntax/src/app/app.component.html" region="sum-1" title="src/app/app.component.html" linenums="false">
 </code-example>
