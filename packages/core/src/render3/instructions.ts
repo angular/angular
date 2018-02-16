@@ -1760,12 +1760,15 @@ export function getCreationMode(): boolean {
 /** Gets the current binding value and increments the binding index. */
 export function consumeBinding(): any {
   ngDevMode && assertDataInRange(bindingIndex);
+  ngDevMode &&
+      assertNotEqual(data[bindingIndex], NO_CHANGE, 'Stored value should never be NO_CHANGE.');
   return data[bindingIndex++];
 }
 
 /** Updates binding if changed, then returns whether it was updated. */
 export function bindingUpdated(value: any): boolean {
   creationMode && initBindings();
+  ngDevMode && assertNotEqual(value, NO_CHANGE, 'Incoming value should never be NO_CHANGE.');
 
   if (creationMode || isDifferent(data[bindingIndex], value)) {
     data[bindingIndex++] = value;
