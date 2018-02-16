@@ -1767,10 +1767,10 @@ export function consumeBinding(): any {
 
 /** Updates binding if changed, then returns whether it was updated. */
 export function bindingUpdated(value: any): boolean {
-  creationMode && initBindings();
   ngDevMode && assertNotEqual(value, NO_CHANGE, 'Incoming value should never be NO_CHANGE.');
 
   if (creationMode || isDifferent(data[bindingIndex], value)) {
+    creationMode && initBindings();
     data[bindingIndex++] = value;
     return true;
   } else {
