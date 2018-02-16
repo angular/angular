@@ -235,7 +235,7 @@ describe('compiler specification', () => {
         static ngDirectiveDef = $r3$.ɵdefineDirective({
           type: HostAttributeDir,
           factory: function HostAttributeDir_Factory() { return new HostAttributeDir(); },
-          attributes: {'role': 'listbox'}
+          attributes: ['role', 'listbox']
         });
         // /NORMATIVE
       }
