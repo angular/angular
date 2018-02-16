@@ -6,14 +6,16 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AotCompilerHost, AotCompilerOptions, AotSummaryResolver, CompileDirectiveMetadata, CompileMetadataResolver, CompilePipeSummary, CompilerConfig, DirectiveNormalizer, DirectiveResolver, DomElementSchemaRegistry, HtmlParser, I18NHtmlParser, Lexer, NgModuleResolver, Parser, PipeResolver, StaticReflector, StaticSymbol, StaticSymbolCache, StaticSymbolResolver, TemplateParser, TypeScriptEmitter, analyzeNgModules, createAotUrlResolver} from '@angular/compiler';
+import {AotCompilerHost, AotCompilerOptions, AotSummaryResolver, CompileDirectiveMetadata, CompileMetadataResolver, CompilePipeSummary, CompilerConfig, DEFAULT_INTERPOLATION_CONFIG, DirectiveNormalizer, DirectiveResolver, DomElementSchemaRegistry, HtmlParser, I18NHtmlParser, Lexer, NgModuleResolver, ParseError, Parser, PipeResolver, StaticReflector, StaticSymbol, StaticSymbolCache, StaticSymbolResolver, TemplateParser, TypeScriptEmitter, analyzeNgModules, createAotUrlResolver} from '@angular/compiler';
 import {ViewEncapsulation} from '@angular/core';
 import * as ts from 'typescript';
 
 import {ConstantPool} from '../../src/constant_pool';
+import {ParserError} from '../../src/expression_parser/ast';
 import * as o from '../../src/output/output_ast';
 import {compilePipe} from '../../src/render3/r3_pipe_compiler';
 import {compileComponent, compileDirective} from '../../src/render3/r3_view_compiler';
+import {BindingParser} from '../../src/template_parser/binding_parser';
 import {OutputContext} from '../../src/util';
 import {MockAotCompilerHost, MockCompilerHost, MockData, MockDirectory, arrayToMockDir, expectNoDiagnostics, settings, setup, toMockFileArray} from '../aot/test_util';
 
@@ -194,6 +196,11 @@ export function compile(
     constantPool: new ConstantPool()
   };
 
+  const errors: ParseError[] = [];
+
+  const hostBindingParser = new BindingParser(
+      expressionParser, DEFAULT_INTERPOLATION_CONFIG, elementSchemaRegistry, [], errors);
+
   // Load all directives and pipes
   for (const pipeOrDirective of pipesOrDirectives) {
     const module = analyzedModules.ngModuleByPipeOrDirective.get(pipeOrDirective) !;
@@ -219,9 +226,10 @@ export function compile(
         const parsedTemplate = templateParser.parse(
             metadata, htmlAst, directives, pipes, module.schemas, fakeUrl, false);
         compileComponent(
-            fakeOutputContext, metadata, pipes, parsedTemplate.template, staticReflector);
+            fakeOutputContext, metadata, pipes, parsedTemplate.template, staticReflector,
+            hostBindingParser);
       } else {
-        compileDirective(fakeOutputContext, metadata, staticReflector);
+        compileDirective(fakeOutputContext, metadata, staticReflector, hostBindingParser);
       }
     } else if (resolver.isPipe(pipeOrDirective)) {
       const metadata = resolver.getPipeMetadata(pipeOrDirective);
@@ -242,6 +250,10 @@ export function compile(
       fakeOutputContext.genFilePath, fakeOutputContext.statements, '', false,
       /* referenceFilter */ undefined,
       /* importFilter */ e => e.moduleName != null && e.moduleName.startsWith('/app'));
+
+  if (errors.length) {
+    throw new Error('Unexpected errors:' + errors.map(e => e.toString()).join(', '));
+  }
 
   return {source: result.sourceText, outputContext: fakeOutputContext};
 }
