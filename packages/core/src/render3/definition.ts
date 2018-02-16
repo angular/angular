@@ -42,7 +42,7 @@ export function defineComponent<T>(componentDefinition: ComponentDefArgs<T>): Co
     tag: (componentDefinition as ComponentDefArgs<T>).tag || null !,
     template: (componentDefinition as ComponentDefArgs<T>).template || null !,
     h: componentDefinition.hostBindings || noop,
-    attributes: componentDefinition.attributes || null,
+    attributes: convertToArray(componentDefinition.attributes),
     inputs: invertObject(componentDefinition.inputs),
     outputs: invertObject(componentDefinition.outputs),
     methods: invertObject(componentDefinition.methods),
@@ -139,6 +139,16 @@ function invertObject(obj: any): any {
     newObj[obj[minifiedKey]] = minifiedKey;
   }
   return newObj;
+}
+
+/** Converts an object to a flat array of keys and values */
+function convertToArray(attrObj: {[key: string]: string} | undefined): string[]|null {
+  if (attrObj == null) return null;
+  const arr: string[] = [];
+  for (let name in attrObj) {
+    arr.push(name, attrObj[name]);
+  }
+  return arr;
 }
 
 /**
