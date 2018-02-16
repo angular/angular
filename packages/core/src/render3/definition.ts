@@ -42,6 +42,7 @@ export function defineComponent<T>(componentDefinition: ComponentDefArgs<T>): Co
     tag: (componentDefinition as ComponentDefArgs<T>).tag || null !,
     template: (componentDefinition as ComponentDefArgs<T>).template || null !,
     h: componentDefinition.hostBindings || noop,
+    attributes: componentDefinition.attributes || null,
     inputs: invertObject(componentDefinition.inputs),
     outputs: invertObject(componentDefinition.outputs),
     methods: invertObject(componentDefinition.methods),
