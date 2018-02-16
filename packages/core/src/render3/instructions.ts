@@ -1765,7 +1765,7 @@ export function consumeBinding(): any {
 
 /** Updates binding if changed, then returns whether it was updated. */
 export function bindingUpdated(value: any): boolean {
-  initBindings();
+  creationMode && initBindings();
 
   if (creationMode || isDifferent(data[bindingIndex], value)) {
     data[bindingIndex++] = value;

@@ -209,7 +209,7 @@ describe('compiler specification', () => {
             if (cm) {
               $r3$.ɵT(0);
             }
-            $r3$.ɵt(0, $r3$.ɵb2('', ctx.names[0], ' ', ctx.names[1], ''));
+            $r3$.ɵt(0, $r3$.ɵi2('', ctx.names[0], ' ', ctx.names[1], ''));
           },
           inputs: {names: 'names'}
         });
