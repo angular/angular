@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {defineComponent} from '../../src/render3/index';
+import {defineComponent, defineDirective} from '../../src/render3/index';
 import {componentRefresh, container, containerRefreshEnd, containerRefreshStart, elementEnd, elementStart, embeddedViewEnd, embeddedViewStart, listener, text} from '../../src/render3/instructions';
 
 import {containerEl, renderComponent, renderToHtml} from './render_util';
@@ -123,6 +123,42 @@ describe('event listeners', () => {
     renderToHtml(Template, comp);
     button.click();
     expect(comp.counter).toEqual(2);
+  });
+
+  it('should support host listeners', () => {
+    let events: string[] = [];
+
+    class HostListenerDir {
+      /* @HostListener('click') */
+      onClick() { events.push('click!'); }
+
+      static ngDirectiveDef = defineDirective({
+        type: HostListenerDir,
+        factory: function HostListenerDir_Factory() {
+          const $dir$ = new HostListenerDir();
+          listener('click', $dir$.onClick.bind($dir$));
+          return $dir$;
+        },
+      });
+    }
+
+    function Template(ctx: any, cm: boolean) {
+      if (cm) {
+        elementStart(0, 'button', ['hostListenerDir', ''], [HostListenerDir]);
+        text(2, 'Click');
+        elementEnd();
+      }
+      HostListenerDir.ngDirectiveDef.h(1, 0);
+      componentRefresh(1, 0);
+    }
+
+    renderToHtml(Template, {});
+    const button = containerEl.querySelector('button') !;
+    button.click();
+    expect(events).toEqual(['click!']);
+
+    button.click();
+    expect(events).toEqual(['click!', 'click!']);
   });
 
   it('should destroy listeners in nested views', () => {

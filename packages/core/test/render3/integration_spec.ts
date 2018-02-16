@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {defineComponent} from '../../src/render3/index';
+import {defineComponent, defineDirective} from '../../src/render3/index';
 import {NO_CHANGE, bind, componentRefresh, container, containerRefreshEnd, containerRefreshStart, elementAttribute, elementClass, elementEnd, elementProperty, elementStart, elementStyle, embeddedViewEnd, embeddedViewStart, interpolation1, interpolation2, interpolation3, interpolation4, interpolation5, interpolation6, interpolation7, interpolation8, interpolationV, memory, projection, projectionDef, text, textBinding} from '../../src/render3/instructions';
 
 import {containerEl, renderToHtml} from './render_util';
@@ -663,6 +663,41 @@ describe('render3 integration test', () => {
         // refresh again with same binding
         expect(renderToHtml(Template, ctx))
             .toEqual('<span title="Hello"><b title="Goodbye"></b></span>');
+      });
+
+      it('should support host attribute bindings', () => {
+        let hostBindingDir: HostBindingDir;
+
+        class HostBindingDir {
+          /* @HostBinding('attr.aria-label') */
+          label = 'some label';
+
+          static ngDirectiveDef = defineDirective({
+            type: HostBindingDir,
+            factory: function HostBindingDir_Factory() {
+              return hostBindingDir = new HostBindingDir();
+            },
+            hostBindings: function HostBindingDir_HostBindings(dirIndex: number, elIndex: number) {
+              elementAttribute(elIndex, 'aria-label', bind(memory<HostBindingDir>(dirIndex).label));
+            }
+          });
+        }
+
+        function Template(ctx: any, cm: boolean) {
+          if (cm) {
+            elementStart(0, 'div', ['hostBindingDir', ''], [HostBindingDir]);
+            elementEnd();
+          }
+          HostBindingDir.ngDirectiveDef.h(1, 0);
+          componentRefresh(1, 0);
+        }
+
+        expect(renderToHtml(Template, {}))
+            .toEqual(`<div aria-label="some label" hostbindingdir=""></div>`);
+
+        hostBindingDir !.label = 'other label';
+        expect(renderToHtml(Template, {}))
+            .toEqual(`<div aria-label="other label" hostbindingdir=""></div>`);
       });
     });
 
