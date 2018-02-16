@@ -114,4 +114,6 @@ export class Identifiers {
   static queryRefresh: o.ExternalReference = {name: 'ɵqR', moduleName: CORE};
 
   static NgOnChangesFeature: o.ExternalReference = {name: 'ɵNgOnChangesFeature', moduleName: CORE};
+
+  static listener: o.ExternalReference = {name: 'ɵL', moduleName: CORE};
 }

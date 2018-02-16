@@ -141,6 +141,40 @@ describe('compiler compliance', () => {
       expectEmit(source, MyComponentDefinition, 'Incorrect MyComponentDefinition.ngComponentDef');
     });
 
+    it('should support host bindings', () => {
+      const files = {
+        app: {
+          'spec.ts': `
+            import {Directive, HostBinding, NgModule} from '@angular/core';
+
+            @Directive({selector: '[hostBindingDir]'})
+            export class HostBindingDir {
+              @HostBinding('id') dirId = 'some id';
+            }
+
+            @NgModule({declarations: [HostBindingDir]})
+            export class MyModule {}
+          `
+        }
+      };
+
+      const HostBindingDirDeclaration = `
+        static ngDirectiveDef = $r3$.ɵdefineDirective({
+          type: HostBindingDir,
+          factory: function HostBindingDir_Factory() { return new HostBindingDir(); },
+          hostBindings: function HostBindingDir_HostBindings(
+              dirIndex: $number$, elIndex: $number$) {
+            $r3$.ɵp(elIndex, 'id', $r3$.ɵb($r3$.ɵld(dirIndex).dirId));
+          }
+        });
+      `;
+
+      const result = compile(files, angularFiles);
+      const source = result.source;
+
+      expectEmit(source, HostBindingDirDeclaration, 'Invalid host binding code');
+    });
+
     it('should support structural directives', () => {
       const files = {
         app: {
@@ -658,7 +692,7 @@ describe('compiler compliance', () => {
             hostBindings: function ContentQueryComponent_HostBindings(
                 dirIndex: $number$, elIndex: $number$) {
               var $tmp$: $any$;
-              ($r3$.ɵqR(($tmp$ = $r3$.ɵld(dirIndex)[1])) && ($r3$.ɵld(dirIndex)[0].someDir = $tmp$[0]));
+              ($r3$.ɵqR(($tmp$ = $r3$.ɵld(dirIndex)[1])) && ($r3$.ɵld(dirIndex)[0].someDir = $tmp$.first));
             },
             template: function ContentQueryComponent_Template(
                 ctx: $ContentQueryComponent$, cm: $boolean$) {
