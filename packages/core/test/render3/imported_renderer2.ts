@@ -8,34 +8,15 @@
 
 import {ɵAnimationEngine, ɵNoopAnimationStyleNormalizer} from '@angular/animations/browser';
 import {MockAnimationDriver} from '@angular/animations/browser/testing';
-import {EventEmitter, NgZone, RendererFactory2} from '@angular/core';
-import {EventManager, ɵDomEventsPlugin, ɵDomRendererFactory2, ɵDomSharedStylesHost} from '@angular/platform-browser';
+import {NgZone, RendererFactory2} from '@angular/core';
+import {EventManager, ɵDomRendererFactory2, ɵDomSharedStylesHost} from '@angular/platform-browser';
 import {ɵAnimationRendererFactory} from '@angular/platform-browser/animations';
+import {EventManagerPlugin} from '@angular/platform-browser/src/dom/events/event_manager';
 
+import {NoopNgZone} from '../../src/zone/ng_zone';
 
-// Adapted renderer: it creates a Renderer2 instance and adapts it to Renderer3
-// TODO: remove once this code is in angular/angular
-export class NoopNgZone implements NgZone {
-  readonly hasPendingMicrotasks: boolean = false;
-  readonly hasPendingMacrotasks: boolean = false;
-  readonly isStable: boolean = true;
-  readonly onUnstable: EventEmitter<any> = new EventEmitter();
-  readonly onMicrotaskEmpty: EventEmitter<any> = new EventEmitter();
-  readonly onStable: EventEmitter<any> = new EventEmitter();
-  readonly onError: EventEmitter<any> = new EventEmitter();
-
-  run(fn: () => any): any { return fn(); }
-
-  runGuarded(fn: () => any): any { return fn(); }
-
-  runOutsideAngular(fn: () => any): any { return fn(); }
-
-  runTask<T>(fn: () => any): T { return fn(); }
-}
-
-// TODO: remove once this code is in angular/angular
-export class SimpleDomEventsPlugin extends ɵDomEventsPlugin {
-  constructor(doc: any, ngZone: NgZone) { super(doc, ngZone); }
+export class SimpleDomEventsPlugin extends EventManagerPlugin {
+  constructor(doc: any) { super(doc); }
 
   supports(eventName: string): boolean { return true; }
 
@@ -52,8 +33,7 @@ export class SimpleDomEventsPlugin extends ɵDomEventsPlugin {
 
 export function getRendererFactory2(document: any): RendererFactory2 {
   const fakeNgZone: NgZone = new NoopNgZone();
-  const eventManager =
-      new EventManager([new SimpleDomEventsPlugin(document, fakeNgZone)], fakeNgZone);
+  const eventManager = new EventManager([new SimpleDomEventsPlugin(document)], fakeNgZone);
   return new ɵDomRendererFactory2(eventManager, new ɵDomSharedStylesHost(document));
 }
 
