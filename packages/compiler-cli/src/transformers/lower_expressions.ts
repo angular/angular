@@ -208,7 +208,7 @@ interface MetadataAndLoweringRequests {
   requests: RequestLocationMap;
 }
 
-function shouldLower(node: ts.Node | undefined): boolean {
+function isEligibleForLowering(node: ts.Node | undefined): boolean {
   if (node) {
     switch (node.kind) {
       case ts.SyntaxKind.SourceFile:
@@ -226,7 +226,7 @@ function shouldLower(node: ts.Node | undefined): boolean {
         // Avoid lowering expressions already in an exported variable declaration
         return (ts.getCombinedModifierFlags(node) & ts.ModifierFlags.Export) == 0;
     }
-    return shouldLower(node.parent);
+    return isEligibleForLowering(node.parent);
   }
   return true;
 }
@@ -251,11 +251,14 @@ function isLiteralFieldNamed(node: ts.Node, names: Set<string>): boolean {
   return false;
 }
 
-const LOWERABLE_FIELD_NAMES = new Set(['useValue', 'useFactory', 'data']);
-
 export class LowerMetadataTransform implements RequestsMap, MetadataTransformer {
   private cache: MetadataCache;
   private requests = new Map<string, RequestLocationMap>();
+  private lowerableFieldNames: Set<string>;
+
+  constructor(lowerableFieldNames: string[]) {
+    this.lowerableFieldNames = new Set<string>(lowerableFieldNames);
+  }
 
   // RequestMap
   getRequests(sourceFile: ts.SourceFile): RequestLocationMap {
@@ -312,17 +315,46 @@ export class LowerMetadataTransform implements RequestsMap, MetadataTransformer 
       return false;
     };
 
+    const hasLowerableParentCache = new Map<ts.Node, boolean>();
+
+    const shouldBeLowered = (node: ts.Node | undefined): boolean => {
+      if (node === undefined) {
+        return false;
+      }
+      let lowerable: boolean = false;
+      if ((node.kind === ts.SyntaxKind.ArrowFunction ||
+           node.kind === ts.SyntaxKind.FunctionExpression) &&
+          isEligibleForLowering(node)) {
+        lowerable = true;
+      } else if (
+          isLiteralFieldNamed(node, this.lowerableFieldNames) && isEligibleForLowering(node) &&
+          !isExportedSymbol(node) && !isExportedPropertyAccess(node)) {
+        lowerable = true;
+      }
+      return lowerable;
+    };
+
+    const hasLowerableParent = (node: ts.Node | undefined): boolean => {
+      if (node === undefined) {
+        return false;
+      }
+      if (!hasLowerableParentCache.has(node)) {
+        hasLowerableParentCache.set(
+            node, shouldBeLowered(node.parent) || hasLowerableParent(node.parent));
+      }
+      return hasLowerableParentCache.get(node) !;
+    };
+
+    const isLowerable = (node: ts.Node | undefined): boolean => {
+      if (node === undefined) {
+        return false;
+      }
+      return shouldBeLowered(node) && !hasLowerableParent(node);
+    };
+
     return (value: MetadataValue, node: ts.Node): MetadataValue => {
-      if (!isPrimitive(value) && !isRewritten(value)) {
-        if ((node.kind === ts.SyntaxKind.ArrowFunction ||
-             node.kind === ts.SyntaxKind.FunctionExpression) &&
-            shouldLower(node)) {
-          return replaceNode(node);
-        }
-        if (isLiteralFieldNamed(node, LOWERABLE_FIELD_NAMES) && shouldLower(node) &&
-            !isExportedSymbol(node) && !isExportedPropertyAccess(node)) {
-          return replaceNode(node);
-        }
+      if (!isPrimitive(value) && !isRewritten(value) && isLowerable(node)) {
+        return replaceNode(node);
       }
       return value;
     };

@@ -7,7 +7,7 @@
  */
 
 import {NgModuleRef} from '@angular/core';
-import {InjectableDef} from '@angular/core/src/di/injectable';
+import {InjectableDef, defineInjectable} from '@angular/core/src/di/defs';
 import {InjectFlags, Injector, inject} from '@angular/core/src/di/injector';
 import {makePropDecorator} from '@angular/core/src/util/decorators';
 import {NgModuleDefinition, NgModuleProviderDef, NodeFlags} from '@angular/core/src/view';
@@ -24,68 +24,68 @@ class MyChildModule {}
 class NotMyModule {}
 
 class Bar {
-  static ngInjectableDef: InjectableDef<Bar> = {
+  static ngInjectableDef: InjectableDef<Bar> = defineInjectable({
     factory: () => new Bar(),
     providedIn: MyModule,
-  };
+  });
 }
 
 class Baz {
-  static ngInjectableDef: InjectableDef<Baz> = {
+  static ngInjectableDef: InjectableDef<Baz> = defineInjectable({
     factory: () => new Baz(),
     providedIn: NotMyModule,
-  };
+  });
 }
 
 class HasNormalDep {
   constructor(public foo: Foo) {}
 
-  static ngInjectableDef: InjectableDef<HasNormalDep> = {
+  static ngInjectableDef: InjectableDef<HasNormalDep> = defineInjectable({
     factory: () => new HasNormalDep(inject(Foo)),
     providedIn: MyModule,
-  };
+  });
 }
 
 class HasDefinedDep {
   constructor(public bar: Bar) {}
 
-  static ngInjectableDef: InjectableDef<HasDefinedDep> = {
+  static ngInjectableDef: InjectableDef<HasDefinedDep> = defineInjectable({
     factory: () => new HasDefinedDep(inject(Bar)),
     providedIn: MyModule,
-  };
+  });
 }
 
 class HasOptionalDep {
   constructor(public baz: Baz|null) {}
 
-  static ngInjectableDef: InjectableDef<HasOptionalDep> = {
+  static ngInjectableDef: InjectableDef<HasOptionalDep> = defineInjectable({
     factory: () => new HasOptionalDep(inject(Baz, null)),
     providedIn: MyModule,
-  };
+  });
 }
 
 class ChildDep {
-  static ngInjectableDef: InjectableDef<ChildDep> = {
+  static ngInjectableDef: InjectableDef<ChildDep> = defineInjectable({
     factory: () => new ChildDep(),
     providedIn: MyChildModule,
-  };
+  });
 }
 
 class FromChildWithOptionalDep {
   constructor(public baz: Baz|null) {}
-  static ngInjectableDef: InjectableDef<FromChildWithOptionalDep> = {
+  static ngInjectableDef: InjectableDef<FromChildWithOptionalDep> = defineInjectable({
     factory: () => new FromChildWithOptionalDep(inject(Baz, null, InjectFlags.Default)),
     providedIn: MyChildModule,
-  };
+  });
 }
 
 class FromChildWithSkipSelfDep {
   constructor(public depFromParent: ChildDep|null, public depFromChild: Bar|null) {}
-  static ngInjectableDef: InjectableDef<FromChildWithSkipSelfDep> = {
+  static ngInjectableDef: InjectableDef<FromChildWithSkipSelfDep> = defineInjectable({
     factory: () => new FromChildWithSkipSelfDep(
                  inject(ChildDep, null, InjectFlags.SkipSelf), inject(Bar, null, InjectFlags.Self)),
     providedIn: MyChildModule,
-  };
+  });
 }
 
 function makeProviders(classes: any[], modules: any[]): NgModuleDefinition {

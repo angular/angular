@@ -7,7 +7,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AotCompiler, AotCompilerHost, AotCompilerOptions, EmitterVisitorContext, FormattedMessageChain, GeneratedFile, MessageBundle, NgAnalyzedFile, NgAnalyzedFileWithInjectables, NgAnalyzedModules, ParseSourceSpan, PartialModule, Position, Serializer, TypeScriptEmitter, Xliff, Xliff2, Xmb, core, createAotCompiler, getParseErrors, isFormattedError, isSyntaxError} from '@angular/compiler';
+import {AotCompiler, AotCompilerHost, AotCompilerOptions, EmitterVisitorContext, FormattedMessageChain, GeneratedFile, MessageBundle, NgAnalyzedFile, NgAnalyzedFileWithInjectables, NgAnalyzedModules, ParseSourceSpan, PartialModule, Position, Serializer, StaticSymbol, TypeScriptEmitter, Xliff, Xliff2, Xmb, core, createAotCompiler, getParseErrors, isFormattedError, isSyntaxError} from '@angular/compiler';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as ts from 'typescript';
@@ -22,8 +22,10 @@ import {LowerMetadataTransform, getExpressionLoweringTransformFactory} from './l
 import {MetadataCache, MetadataTransformer} from './metadata_cache';
 import {getAngularEmitterTransformFactory} from './node_emitter_transform';
 import {PartialModuleMetadataTransformer} from './r3_metadata_transform';
+import {StripDecoratorsMetadataTransformer, getDecoratorStripTransformerFactory} from './r3_strip_decorators';
 import {getAngularClassTransformerFactory} from './r3_transform';
 import {DTS, GENERATED_FILES, StructureIsReused, TS, createMessageDiagnostic, isInRootDir, ngToTsDiagnostic, tsStructureIsReused, userError} from './util';
+
 
 // Closure compiler transforms the form `Service.ngInjectableDef = X` into
 // `Service$ngInjectableDef = X`. To prevent this transformation, such assignments need to be
@@ -62,6 +64,25 @@ const R3_NOCOLLAPSE_DEFS = '$1\/** @nocollapse *\/ $2';
  */
 const MAX_FILE_COUNT_FOR_SINGLE_FILE_EMIT = 20;
 
+
+/**
+ * Fields to lower within metadata in render2 mode.
+ */
+const LOWER_FIELDS = ['useValue', 'useFactory', 'data'];
+
+/**
+ * Fields to lower within metadata in render3 mode.
+ */
+const R3_LOWER_FIELDS = [...LOWER_FIELDS, 'providers', 'imports', 'exports'];
+
+const R3_REIFIED_DECORATORS = [
+  'Component',
+  'Directive',
+  'Injectable',
+  'NgModule',
+  'Pipe',
+];
+
 const emptyModules: NgAnalyzedModules = {
   ngModules: [],
   ngModuleByPipeOrDirective: new Map(),
@@ -96,6 +117,7 @@ class AngularCompilerProgram implements Program {
   private _structuralDiagnostics: Diagnostic[]|undefined;
   private _programWithStubs: ts.Program|undefined;
   private _optionsDiagnostics: Diagnostic[] = [];
+  private _reifiedDecorators: Set<StaticSymbol>;
 
   constructor(
       rootNames: ReadonlyArray<string>, private options: CompilerOptions,
@@ -129,7 +151,9 @@ class AngularCompilerProgram implements Program {
         this.host = bundleHost;
       }
     }
-    this.loweringMetadataTransform = new LowerMetadataTransform();
+
+    this.loweringMetadataTransform =
+        new LowerMetadataTransform(options.enableIvy ? R3_LOWER_FIELDS : LOWER_FIELDS);
     this.metadataCache = this.createMetadataCache([this.loweringMetadataTransform]);
   }
 
@@ -269,7 +293,11 @@ class AngularCompilerProgram implements Program {
         0) {
       return {emitSkipped: true, diagnostics: [], emittedFiles: []};
     }
-    const modules = this.compiler.emitAllPartialModules(this.analyzedModules);
+
+    // analyzedModules and analyzedInjectables are created together. If one exists, so does the
+    // other.
+    const modules =
+        this.compiler.emitAllPartialModules(this.analyzedModules, this._analyzedInjectables !);
 
     const writeTsFile: ts.WriteFileCallback =
         (outFileName, outData, writeByteOrderMark, onError?, sourceFiles?) => {
@@ -285,7 +313,8 @@ class AngularCompilerProgram implements Program {
     const emitOnlyDtsFiles = (emitFlags & (EmitFlags.DTS | EmitFlags.JS)) == EmitFlags.DTS;
 
     const tsCustomTransformers = this.calculateTransforms(
-        /* genFiles */ undefined, /* partialModules */ modules, customTransformers);
+        /* genFiles */ undefined, /* partialModules */ modules,
+        /* stripDecorators */ this.reifiedDecorators, customTransformers);
 
     const emitResult = emitCallback({
       program: this.tsProgram,
@@ -356,8 +385,8 @@ class AngularCompilerProgram implements Program {
     const modules = this._analyzedInjectables &&
         this.compiler.emitAllPartialModules2(this._analyzedInjectables);
 
-    const tsCustomTransformers =
-        this.calculateTransforms(genFileByFileName, modules, customTransformers);
+    const tsCustomTransformers = this.calculateTransforms(
+        genFileByFileName, modules, /* stripDecorators */ undefined, customTransformers);
     const emitOnlyDtsFiles = (emitFlags & (EmitFlags.DTS | EmitFlags.JS)) == EmitFlags.DTS;
     // Restore the original references before we emit so TypeScript doesn't emit
     // a reference to the .d.ts file.
@@ -512,8 +541,18 @@ class AngularCompilerProgram implements Program {
     return this._tsProgram !;
   }
 
+  private get reifiedDecorators(): Set<StaticSymbol> {
+    if (!this._reifiedDecorators) {
+      const reflector = this.compiler.reflector;
+      this._reifiedDecorators = new Set(
+          R3_REIFIED_DECORATORS.map(name => reflector.findDeclaration('@angular/core', name)));
+    }
+    return this._reifiedDecorators;
+  }
+
   private calculateTransforms(
       genFiles: Map<string, GeneratedFile>|undefined, partialModules: PartialModule[]|undefined,
+      stripDecorators: Set<StaticSymbol>|undefined,
       customTransformers?: CustomTransformers): ts.CustomTransformers {
     const beforeTs: Array<ts.TransformerFactory<ts.SourceFile>> = [];
     const metadataTransforms: MetadataTransformer[] = [];
@@ -521,6 +560,7 @@ class AngularCompilerProgram implements Program {
       beforeTs.push(getInlineResourcesTransformFactory(this.tsProgram, this.hostAdapter));
       metadataTransforms.push(new InlineResourcesMetadataTransformer(this.hostAdapter));
     }
+
     if (!this.options.disableExpressionLowering) {
       beforeTs.push(
           getExpressionLoweringTransformFactory(this.loweringMetadataTransform, this.tsProgram));
@@ -536,6 +576,14 @@ class AngularCompilerProgram implements Program {
       // the partial module transforms.
       metadataTransforms.push(new PartialModuleMetadataTransformer(partialModules));
     }
+
+    if (stripDecorators) {
+      beforeTs.push(getDecoratorStripTransformerFactory(
+          stripDecorators, this.compiler.reflector, this.getTsProgram().getTypeChecker()));
+      metadataTransforms.push(
+          new StripDecoratorsMetadataTransformer(stripDecorators, this.compiler.reflector));
+    }
+
     if (customTransformers && customTransformers.beforeTs) {
       beforeTs.push(...customTransformers.beforeTs);
     }
@@ -832,6 +880,7 @@ function getAotCompilerOptions(options: CompilerOptions): AotCompilerOptions {
     preserveWhitespaces: options.preserveWhitespaces,
     fullTemplateTypeCheck: options.fullTemplateTypeCheck,
     allowEmptyCodegenFiles: options.allowEmptyCodegenFiles,
+    enableIvy: options.enableIvy,
   };
 }
 

@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {StaticSymbol} from './aot/static_symbol';
 import {CompileInjectableMetadata, CompileNgModuleMetadata, CompileProviderMetadata, identifierName} from './compile_metadata';
 import {CompileReflector} from './compile_reflector';
 import {InjectFlags, NodeFlags} from './core';
@@ -29,7 +30,10 @@ function mapEntry(key: string, value: o.Expression): MapEntry {
 }
 
 export class InjectableCompiler {
-  constructor(private reflector: CompileReflector) {}
+  private tokenInjector: StaticSymbol;
+  constructor(private reflector: CompileReflector, private alwaysGenerateDef: boolean) {
+    this.tokenInjector = reflector.resolveExternalReference(Identifiers.Injector);
+  }
 
   private depsArray(deps: any[], ctx: OutputContext): o.Expression[] {
     return deps.map(dep => {
@@ -55,7 +59,16 @@ export class InjectableCompiler {
           }
         }
       }
-      const tokenExpr = typeof token === 'string' ? o.literal(token) : ctx.importExpr(token);
+
+      let tokenExpr: o.Expression;
+      if (typeof token === 'string') {
+        tokenExpr = o.literal(token);
+      } else if (token === this.tokenInjector && this.alwaysGenerateDef) {
+        tokenExpr = o.importExpr(Identifiers.INJECTOR);
+      } else {
+        tokenExpr = ctx.importExpr(token);
+      }
+
       if (flags !== InjectFlags.Default || defaultValue !== undefined) {
         args = [tokenExpr, o.literal(defaultValue), o.literal(flags)];
       } else {
@@ -65,7 +78,7 @@ export class InjectableCompiler {
     });
   }
 
-  private factoryFor(injectable: CompileInjectableMetadata, ctx: OutputContext): o.Expression {
+  factoryFor(injectable: CompileInjectableMetadata, ctx: OutputContext): o.Expression {
     let retValue: o.Expression;
     if (injectable.useExisting) {
       retValue = o.importExpr(Identifiers.inject).callFn([ctx.importExpr(injectable.useExisting)]);
@@ -90,8 +103,10 @@ export class InjectableCompiler {
 
   injectableDef(injectable: CompileInjectableMetadata, ctx: OutputContext): o.Expression {
     let providedIn: o.Expression = o.NULL_EXPR;
-    if (injectable.providedIn) {
-      if (typeof injectable.providedIn === 'string') {
+    if (injectable.providedIn !== undefined) {
+      if (injectable.providedIn === null) {
+        providedIn = o.NULL_EXPR;
+      } else if (typeof injectable.providedIn === 'string') {
         providedIn = o.literal(injectable.providedIn);
       } else {
         providedIn = ctx.importExpr(injectable.providedIn);
@@ -106,7 +121,7 @@ export class InjectableCompiler {
   }
 
   compile(injectable: CompileInjectableMetadata, ctx: OutputContext): void {
-    if (injectable.providedIn) {
+    if (this.alwaysGenerateDef || injectable.providedIn !== undefined) {
       const className = identifierName(injectable.type) !;
       const clazz = new o.ClassStmt(
           className, null,

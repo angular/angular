@@ -473,7 +473,7 @@ function factoryFn(a: any){}
   describe('displayName', () => {
     it('should work', () => {
       expect(Injector.create([Engine.PROVIDER, {provide: BrokenEngine, useValue: null}]).toString())
-          .toEqual('StaticInjector[Injector, Engine, BrokenEngine]');
+          .toEqual('StaticInjector[Injector, InjectionToken INJECTOR, Engine, BrokenEngine]');
     });
   });
 }
