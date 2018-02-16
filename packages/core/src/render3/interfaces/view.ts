@@ -7,7 +7,7 @@
  */
 
 import {LContainer} from './container';
-import {ComponentTemplate, DirectiveDef} from './definition';
+import {ComponentTemplate, DirectiveDef, PipeDef} from './definition';
 import {LElementNode, LViewNode, TNode} from './node';
 import {LQueries} from './query';
 import {Renderer3} from './renderer';
@@ -324,11 +324,11 @@ export const enum LifecycleStage {
  * Static data that corresponds to the instance-specific data array on an LView.
  *
  * Each node's static data is stored in tData at the same index that it's stored
- * in the data array. Each directive's definition is stored here at the same index
- * as its directive instance in the data array. Any nodes that do not have static
+ * in the data array. Each directive/pipe's definition is stored here at the same index
+ * as its directive/pipe instance in the data array. Any nodes that do not have static
  * data store a null value in tData to avoid a sparse array.
  */
-export type TData = (TNode | DirectiveDef<any>| null)[];
+export type TData = (TNode | DirectiveDef<any>| PipeDef<any>| null)[];
 
 // Note: This hack is necessary so we don't erroneously get a circular dependency
 // failure based on types.

@@ -20,7 +20,7 @@ import {assertNodeType} from './node_assert';
 import {appendChild, insertChild, insertView, appendProjectedNode, removeView, canInsertNativeNode} from './node_manipulation';
 import {matchingSelectorIndex} from './node_selector_matcher';
 import {ComponentDef, ComponentTemplate, ComponentType, DirectiveDef, DirectiveType} from './interfaces/definition';
-import {RElement, RText, Renderer3, RendererFactory3, ProceduralRenderer3, RendererStyleFlags3, isProceduralRenderer} from './interfaces/renderer';
+import {RElement, RText, Renderer3, RendererFactory3, ProceduralRenderer3, ObjectOrientedRenderer3, RendererStyleFlags3, isProceduralRenderer} from './interfaces/renderer';
 import {isDifferent, stringify} from './util';
 import {executeHooks, executeContentHooks, queueLifecycleHooks, queueInitHooks, executeInitHooks} from './hooks';
 import {ViewRef} from './view_ref';
@@ -122,7 +122,7 @@ export function getCreationMode(): boolean {
 }
 
 /**
- * An array of nodes (text, element, container, etc), their bindings, and
+ * An array of nodes (text, element, container, etc), pipes, their bindings, and
  * any local variables that need to be stored between invocations.
  */
 let data: any[];
@@ -1804,6 +1804,10 @@ export function bindingUpdated2(exp1: any, exp2: any): boolean {
 export function bindingUpdated4(exp1: any, exp2: any, exp3: any, exp4: any): boolean {
   const different = bindingUpdated2(exp1, exp2);
   return bindingUpdated2(exp3, exp4) || different;
+}
+
+export function getTView(): TView {
+  return currentView.tView;
 }
 
 export function getDirectiveInstance<T>(instanceOrArray: T | [T]): T {
