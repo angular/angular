@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {WrappedValue} from '../change_detection/change_detection_util';
+
 /**
 * Must use this method for CD (instead of === ) since NaN !== NaN
 */
@@ -16,10 +18,15 @@ export function isDifferent(a: any, b: any): boolean {
 }
 
 export function stringify(value: any): string {
+  value = unwrap(value);
   if (typeof value == 'function') return value.name || value;
   if (typeof value == 'string') return value;
   if (value == null) return '';
   return '' + value;
+}
+
+export function unwrap(value: any): any {
+  return WrappedValue.unwrap(value);
 }
 
 /**

@@ -140,7 +140,7 @@ export interface PipeDef<T> {
    * NOTE: this property is short (1 char) because it is used in
    * component templates which is sensitive to size.
    */
-  n: () => PipeTransform;
+  n: () => T;
 
   /**
    * Whether or not the pipe is pure.

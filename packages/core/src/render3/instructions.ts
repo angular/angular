@@ -19,9 +19,9 @@ import {LContainerNode, LElementNode, LNode, LNodeFlags, LProjectionNode, LTextN
 import {assertNodeType} from './node_assert';
 import {appendChild, insertChild, insertView, appendProjectedNode, removeView, canInsertNativeNode} from './node_manipulation';
 import {matchingSelectorIndex} from './node_selector_matcher';
-import {ComponentDef, ComponentTemplate, ComponentType, DirectiveDef, DirectiveType} from './interfaces/definition';
+import {ComponentDef, ComponentTemplate, ComponentType, DirectiveDef, DirectiveType, PipeDef} from './interfaces/definition';
 import {RElement, RText, Renderer3, RendererFactory3, ProceduralRenderer3, RendererStyleFlags3, isProceduralRenderer} from './interfaces/renderer';
-import {isDifferent, stringify} from './util';
+import {isDifferent, stringify, unwrap} from './util';
 import {executeHooks, executeContentHooks, queueLifecycleHooks, queueInitHooks, executeInitHooks} from './hooks';
 import {ViewRef} from './view_ref';
 
@@ -117,7 +117,7 @@ export function getCreationMode(): boolean {
 }
 
 /**
- * An array of nodes (text, element, container, etc), their bindings, and
+ * An array of nodes (text, element, container, etc), pipes, their bindings, and
  * any local variables that need to be stored between invocations.
  */
 let data: any[];
@@ -1567,7 +1567,8 @@ function initBindings() {
 export function bind<T>(value: T | NO_CHANGE): T|NO_CHANGE {
   if (creationMode) {
     initBindings();
-    return data[bindingIndex++] = value;
+    data[bindingIndex++] = value;
+    return unwrap(value);
   }
 
   const changed: boolean = value !== NO_CHANGE && isDifferent(data[bindingIndex], value);
@@ -1575,7 +1576,7 @@ export function bind<T>(value: T | NO_CHANGE): T|NO_CHANGE {
     data[bindingIndex] = value;
   }
   bindingIndex++;
-  return changed ? value : NO_CHANGE;
+  return changed ? unwrap(value) : NO_CHANGE;
 }
 
 /**
@@ -1767,6 +1768,10 @@ export function bindingUpdated2(exp1: any, exp2: any): boolean {
 export function bindingUpdated4(exp1: any, exp2: any, exp3: any, exp4: any): boolean {
   const different = bindingUpdated2(exp1, exp2);
   return bindingUpdated2(exp3, exp4) || different;
+}
+
+export function getTView(): TView {
+  return currentView.tView;
 }
 
 export function getDirectiveInstance<T>(instanceOrArray: T | [T]): T {
