@@ -7,7 +7,7 @@
  */
 
 import {CommonModule, PlatformLocation, ɵPLATFORM_BROWSER_ID as PLATFORM_BROWSER_ID} from '@angular/common';
-import {APP_ID, APP_ROOT_SCOPE, ApplicationModule, ErrorHandler, ModuleWithProviders, NgModule, Optional, PLATFORM_ID, PLATFORM_INITIALIZER, PlatformRef, RendererFactory2, RootRenderer, Sanitizer, SkipSelf, StaticProvider, Testability, createPlatformFactory, platformCore} from '@angular/core';
+import {APP_ID, APP_ROOT_SCOPE, ApplicationModule, ErrorHandler, ModuleWithProviders, NgModule, Optional, PLATFORM_ID, PLATFORM_INITIALIZER, PlatformRef, Renderer2, RendererFactory2, RootRenderer, Sanitizer, SkipSelf, StaticProvider, Testability, createPlatformFactory, platformCore} from '@angular/core';
 
 import {BrowserDomAdapter} from './browser/browser_adapter';
 import {BrowserPlatformLocation} from './browser/location/browser_platform_location';
@@ -63,6 +63,10 @@ export function _document(): any {
   return document;
 }
 
+export function getRenderer(rendererFactory: RendererFactory2): Renderer2 {
+  return rendererFactory.createRenderer(null, null);
+}
+
 /**
  * The ng module for the browser.
  *
@@ -79,6 +83,7 @@ export function _document(): any {
     {provide: HAMMER_GESTURE_CONFIG, useClass: HammerGestureConfig},
     DomRendererFactory2,
     {provide: RendererFactory2, useExisting: DomRendererFactory2},
+    {provide: Renderer2, useFactory: getRenderer, deps: [RendererFactory2]},
     {provide: SharedStylesHost, useExisting: DomSharedStylesHost},
     DomSharedStylesHost,
     Testability,

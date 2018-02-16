@@ -10,6 +10,7 @@ import {TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {browserDetection} from '@angular/platform-browser/testing/src/browser_util';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
+import {BrowserModule} from '../../src/browser';
 import {NAMESPACE_URIS} from '../../src/dom/dom_renderer';
 
 {
@@ -105,6 +106,15 @@ import {NAMESPACE_URIS} from '../../src/dom/dom_renderer';
            expect(window.getComputedStyle(none).color).toEqual('rgb(0, 255, 0)');
          });
     }
+  });
+
+  describe('Providers', () => {
+    beforeEach(() => { TestBed.configureTestingModule({imports: [BrowserModule]}); });
+
+    it('should inject Renderer2 outside a component', () => {
+      const renderer = TestBed.get(Renderer2, null);
+      expect(renderer).not.toBe(null);
+    });
   });
 }
 
