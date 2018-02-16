@@ -18,7 +18,7 @@ import {splitAtColon, stringify} from './util';
 // group 3: "@trigger" from "@trigger"
 const HOST_REG_EXP = /^(?:(?:\[([^\]]+)\])|(?:\(([^\)]+)\)))|(\@[-\w]+)$/;
 
-function _sanitizeIdentifier(name: string): string {
+export function sanitizeIdentifier(name: string): string {
   return name.replace(/\W/g, '_');
 }
 
@@ -42,7 +42,7 @@ export function identifierName(compileIdentifier: CompileIdentifierMetadata | nu
     identifier = `anonymous_${_anonymousTypeIndex++}`;
     ref['__anonymousType'] = identifier;
   } else {
-    identifier = _sanitizeIdentifier(identifier);
+    identifier = sanitizeIdentifier(identifier);
   }
   return identifier;
 }
@@ -120,7 +120,7 @@ export interface CompileFactoryMetadata extends CompileIdentifierMetadata {
 }
 
 export function tokenName(token: CompileTokenMetadata) {
-  return token.value != null ? _sanitizeIdentifier(token.value) : identifierName(token.identifier);
+  return token.value != null ? sanitizeIdentifier(token.value) : identifierName(token.identifier);
 }
 
 export function tokenReference(token: CompileTokenMetadata) {

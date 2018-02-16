@@ -15,7 +15,7 @@ import {Identifiers, createTokenForExternalReference} from '../identifiers';
 import {InjectableCompiler} from '../injectable_compiler';
 import {CompileMetadataResolver} from '../metadata_resolver';
 import {HtmlParser} from '../ml_parser/html_parser';
-import {InterpolationConfig} from '../ml_parser/interpolation_config';
+import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from '../ml_parser/interpolation_config';
 import {NgModuleCompiler} from '../ng_module_compiler';
 import {OutputEmitter} from '../output/abstract_emitter';
 import * as o from '../output/output_ast';
@@ -24,6 +24,7 @@ import {compilePipe as compileIvyPipe} from '../render3/r3_pipe_compiler';
 import {compileComponent as compileIvyComponent, compileDirective as compileIvyDirective} from '../render3/r3_view_compiler';
 import {CompiledStylesheet, StyleCompiler} from '../style_compiler';
 import {SummaryResolver} from '../summary_resolver';
+import {BindingParser} from '../template_parser/binding_parser';
 import {TemplateAst} from '../template_parser/template_ast';
 import {TemplateParser} from '../template_parser/template_parser';
 import {OutputContext, ValueVisitor, error, syntaxError, visitValue} from '../util';
@@ -345,8 +346,12 @@ export class AotCompiler {
       directives: StaticSymbol[], pipes: StaticSymbol[], ngModules: CompileNgModuleMetadata[],
       injectables: CompileInjectableMetadata[]): PartialModule[] {
     const classes: o.ClassStmt[] = [];
+    const errors: ParseError[] = [];
 
     const context = this._createOutputContext(fileName);
+    const hostBindingParser = new BindingParser(
+        this._templateParser.expressionParser, DEFAULT_INTERPOLATION_CONFIG, null !, [], errors);
+
 
     // Process all components and directives
     directives.forEach(directiveType => {
@@ -360,9 +365,10 @@ export class AotCompiler {
         const {template: parsedTemplate, pipes: parsedPipes} =
             this._parseTemplate(directiveMetadata, module, module.transitiveModule.directives);
         compileIvyComponent(
-            context, directiveMetadata, parsedPipes, parsedTemplate, this._reflector);
+            context, directiveMetadata, parsedPipes, parsedTemplate, this._reflector,
+            hostBindingParser);
       } else {
-        compileIvyDirective(context, directiveMetadata, this._reflector);
+        compileIvyDirective(context, directiveMetadata, this._reflector, hostBindingParser);
       }
     });
 
