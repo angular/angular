@@ -46,7 +46,9 @@ describe('outputs', () => {
     function Template(ctx: any, cm: boolean) {
       if (cm) {
         elementStart(0, ButtonToggle);
-        { listener('change', ctx.onChange.bind(ctx)); }
+        {
+          listener('change', function() { ctx.onChange(); });
+        }
         elementEnd();
       }
       ButtonToggle.ngComponentDef.h(1, 0);
@@ -70,8 +72,8 @@ describe('outputs', () => {
       if (cm) {
         elementStart(0, ButtonToggle);
         {
-          listener('change', ctx.onChange.bind(ctx));
-          listener('reset', ctx.onReset.bind(ctx));
+          listener('change', function() { ctx.onChange(); });
+          listener('reset', function() { ctx.onReset(); });
         }
         elementEnd();
       }
@@ -96,7 +98,9 @@ describe('outputs', () => {
     function Template(ctx: any, cm: boolean) {
       if (cm) {
         elementStart(0, ButtonToggle);
-        { listener('change', () => ctx.counter++); }
+        {
+          listener('change', function() { ctx.counter++; });
+        }
         elementEnd();
       }
       ButtonToggle.ngComponentDef.h(1, 0);
@@ -130,7 +134,9 @@ describe('outputs', () => {
         if (ctx.condition) {
           if (embeddedViewStart(0)) {
             elementStart(0, ButtonToggle);
-            { listener('change', ctx.onChange.bind(ctx)); }
+            {
+              listener('change', function() { ctx.onChange(); });
+            }
             elementEnd();
           }
           ButtonToggle.ngComponentDef.h(1, 0);
@@ -180,7 +186,9 @@ describe('outputs', () => {
             if (ctx.condition2) {
               if (embeddedViewStart(0)) {
                 elementStart(0, ButtonToggle);
-                { listener('change', ctx.onChange.bind(ctx)); }
+                {
+                  listener('change', function() { ctx.onChange(); });
+                }
                 elementEnd();
               }
               ButtonToggle.ngComponentDef.h(1, 0);
@@ -241,12 +249,14 @@ describe('outputs', () => {
           if (embeddedViewStart(0)) {
             elementStart(0, 'button');
             {
-              listener('click', ctx.onClick.bind(ctx));
+              listener('click', function() { ctx.onClick(); });
               text(1, 'Click me');
             }
             elementEnd();
             elementStart(2, ButtonToggle);
-            { listener('change', ctx.onChange.bind(ctx)); }
+            {
+              listener('change', function() { ctx.onChange(); });
+            }
             elementEnd();
             elementStart(4, DestroyComp);
             elementEnd();
@@ -300,7 +310,9 @@ describe('outputs', () => {
     function Template(ctx: any, cm: boolean) {
       if (cm) {
         elementStart(0, 'button', null, [MyButton]);
-        { listener('click', ctx.onClick.bind(ctx)); }
+        {
+          listener('click', function() { ctx.onClick(); });
+        }
         elementEnd();
       }
     }
@@ -323,7 +335,9 @@ describe('outputs', () => {
     function Template(ctx: any, cm: boolean) {
       if (cm) {
         elementStart(0, ButtonToggle, null, [OtherDir]);
-        { listener('change', ctx.onChange.bind(ctx)); }
+        {
+          listener('change', function() { ctx.onChange(); });
+        }
         elementEnd();
       }
       ButtonToggle.ngComponentDef.h(1, 0);
@@ -354,7 +368,9 @@ describe('outputs', () => {
     function Template(ctx: any, cm: boolean) {
       if (cm) {
         elementStart(0, ButtonToggle, null, [OtherDir]);
-        { listener('change', ctx.onChange.bind(ctx)); }
+        {
+          listener('change', function() { ctx.onChange(); });
+        }
         elementEnd();
       }
       elementProperty(0, 'change', bind(ctx.change));
@@ -387,7 +403,7 @@ describe('outputs', () => {
       if (cm) {
         elementStart(0, 'button');
         {
-          listener('click', ctx.onClick.bind(ctx));
+          listener('click', function() { ctx.onClick(); });
           text(1, 'Click me');
         }
         elementEnd();
@@ -398,7 +414,9 @@ describe('outputs', () => {
         if (ctx.condition) {
           if (embeddedViewStart(0)) {
             elementStart(0, ButtonToggle);
-            { listener('change', ctx.onChange.bind(ctx)); }
+            {
+              listener('change', function() { ctx.onChange(); });
+            }
             elementEnd();
           }
           ButtonToggle.ngComponentDef.h(1, 0);
@@ -407,7 +425,9 @@ describe('outputs', () => {
         } else {
           if (embeddedViewStart(1)) {
             elementStart(0, 'div', null, [OtherDir]);
-            { listener('change', ctx.onChange.bind(ctx)); }
+            {
+              listener('change', function() { ctx.onChange(); });
+            }
             elementEnd();
           }
           embeddedViewEnd();
