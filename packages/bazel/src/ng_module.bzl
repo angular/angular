@@ -79,7 +79,13 @@ def _expected_outs(ctx):
     i18n_messages = i18n_messages_files,
   )
 
+def _ivy_tsconfig(ctx, files, srcs, **kwargs):
+  return _ngc_tsconfig_helper(ctx, files, srcs, True, **kwargs)
+
 def _ngc_tsconfig(ctx, files, srcs, **kwargs):
+  return _ngc_tsconfig_helper(ctx, files, srcs, False, **kwargs)
+
+def _ngc_tsconfig_helper(ctx, files, srcs, enable_ivy, **kwargs):
   outs = _expected_outs(ctx)
   if "devmode_manifest" in kwargs:
     expected_outs = outs.devmode_js + outs.declarations + outs.summaries
@@ -92,6 +98,7 @@ def _ngc_tsconfig(ctx, files, srcs, **kwargs):
           "generateCodeForLibraries": False,
           "allowEmptyCodegenFiles": True,
           "enableSummariesForJit": True,
+          "enableIvy": enable_ivy,
           "fullTemplateTypeCheck": ctx.attr.type_check,
           # FIXME: wrong place to de-dupe
           "expectedOut": depset([o.path for o in expected_outs]).to_list()
@@ -283,7 +290,7 @@ def _write_bundle_index(ctx):
   )
   return outputs
 
-def ng_module_impl(ctx, ts_compile_actions):
+def ng_module_impl(ctx, ts_compile_actions, ivy = False):
   """Implementation function for the ng_module rule.
 
   This is exposed so that google3 can have its own entry point that re-uses this
@@ -292,16 +299,19 @@ def ng_module_impl(ctx, ts_compile_actions):
   Args:
     ctx: the skylark rule context
     ts_compile_actions: generates all the actions to run an ngc compilation
+    ivy: if True, run the compiler in Ivy mode (internal only)
 
   Returns:
     the result of the ng_module rule as a dict, suitable for
     conversion by ts_providers_dict_to_struct
   """
 
+  tsconfig = _ngc_tsconfig if not ivy else _ivy_tsconfig
+
   providers = ts_compile_actions(
       ctx, is_library=True, compile_action=_prodmode_compile_action,
       devmode_compile_action=_devmode_compile_action,
-      tsc_wrapped_tsconfig=_ngc_tsconfig,
+      tsc_wrapped_tsconfig=tsconfig,
       outputs = _ts_expected_outs)
 
   outs = _expected_outs(ctx)
@@ -324,6 +334,9 @@ def ng_module_impl(ctx, ts_compile_actions):
 
 def _ng_module_impl(ctx):
   return ts_providers_dict_to_struct(ng_module_impl(ctx, compile_ts))
+
+def _ivy_module_impl(ctx):
+  return ts_providers_dict_to_struct(ng_module_impl(ctx, compile_ts, True))
 
 NG_MODULE_ATTRIBUTES = {
     "srcs": attr.label_list(allow_files = [".ts"]),
@@ -363,24 +376,35 @@ NG_MODULE_ATTRIBUTES = {
     "_supports_workers": attr.bool(default = True),
 }
 
+NG_MODULE_RULE_ATTRS = dict(dict(COMMON_ATTRIBUTES, **NG_MODULE_ATTRIBUTES), **{
+    "tsconfig": attr.label(allow_files = True, single_file = True),
+
+    # @// is special syntax for the "main" repository
+    # The default assumes the user specified a target "node_modules" in their
+    # root BUILD file.
+    "node_modules": attr.label(
+        default = Label("@//:node_modules")
+    ),
+
+    "entry_point": attr.string(),
+
+    "_index_bundler": attr.label(
+        executable = True,
+        cfg = "host",
+        default = Label("//packages/bazel/src:index_bundler")),
+})
+
 ng_module = rule(
     implementation = _ng_module_impl,
-    attrs = dict(dict(COMMON_ATTRIBUTES, **NG_MODULE_ATTRIBUTES), **{
-        "tsconfig": attr.label(allow_files = True, single_file = True),
+    attrs = NG_MODULE_RULE_ATTRS,
+    outputs = COMMON_OUTPUTS,
+)
 
-        # @// is special syntax for the "main" repository
-        # The default assumes the user specified a target "node_modules" in their
-        # root BUILD file.
-        "node_modules": attr.label(
-            default = Label("@//:node_modules")
-        ),
-
-        "entry_point": attr.string(),
-
-        "_index_bundler": attr.label(
-            executable = True,
-            cfg = "host",
-            default = Label("//packages/bazel/src:index_bundler")),
-    }),
+# TODO(alxhub): this rule exists to allow early testing of the Ivy compiler within angular/angular,
+# and should not be made public. When ng_module() supports Ivy-mode outputs, this rule should be
+# removed and its usages refactored to use ng_module() directly.
+internal_ivy_ng_module = rule(
+    implementation = _ivy_module_impl,
+    attrs = NG_MODULE_RULE_ATTRS,
     outputs = COMMON_OUTPUTS,
 )

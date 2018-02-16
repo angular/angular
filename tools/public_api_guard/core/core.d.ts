@@ -187,6 +187,9 @@ export interface ContentChildrenDecorator {
 }
 
 /** @experimental */
+export declare function createInjector(defType: any, parent?: Injector | null): Injector;
+
+/** @experimental */
 export declare function createPlatform(injector: Injector): PlatformRef;
 
 /** @experimental */
@@ -262,6 +265,13 @@ export declare function defineInjectable<T>(opts: {
     providedIn?: Type<any> | 'root' | null;
     factory: () => T;
 }): InjectableDef<T>;
+
+/** @experimental */
+export declare function defineInjector(options: {
+    factory: () => any;
+    providers?: any[];
+    imports?: any[];
+}): InjectorDef<any>;
 
 /** @experimental */
 export declare function destroyPlatform(): void;
@@ -381,6 +391,12 @@ export interface InjectableDecorator {
 }
 
 /** @experimental */
+export interface InjectableDef<T> {
+    factory: () => T;
+    providedIn: InjectorType<any> | 'root' | 'any' | null;
+}
+
+/** @experimental */
 export declare type InjectableProvider = ValueSansProvider | ExistingSansProvider | StaticClassSansProvider | ConstructorSansProvider | FactorySansProvider | ClassSansProvider;
 
 /** @experimental */
@@ -418,12 +434,34 @@ export declare abstract class Injector {
     /** @deprecated */ abstract get(token: any, notFoundValue?: any): any;
     static NULL: Injector;
     static THROW_IF_NOT_FOUND: Object;
+    static ngInjectableDef: InjectableDef<Injector>;
     /** @deprecated */ static create(providers: StaticProvider[], parent?: Injector): Injector;
     static create(options: {
         providers: StaticProvider[];
         parent?: Injector;
         name?: string;
     }): Injector;
+}
+
+/** @experimental */
+export declare const INJECTOR: InjectionToken<Injector>;
+
+/** @experimental */
+export interface InjectorDef<T> {
+    factory: () => T;
+    imports: (InjectorType<any> | InjectorTypeWithProviders<any>)[];
+    providers: (Type<any> | ValueProvider | ExistingProvider | FactoryProvider | ConstructorProvider | StaticClassProvider | ClassProvider | any[])[];
+}
+
+/** @experimental */
+export interface InjectorType<T> extends Type<T> {
+    ngInjectorDef: InjectorDef<T>;
+}
+
+/** @experimental */
+export interface InjectorTypeWithProviders<T> {
+    ngModule: InjectorType<T>;
+    providers?: (Type<any> | ValueProvider | ExistingProvider | FactoryProvider | ConstructorProvider | StaticClassProvider | ClassProvider | any[])[];
 }
 
 /** @stable */

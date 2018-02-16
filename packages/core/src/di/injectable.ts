@@ -11,6 +11,7 @@ import {Type} from '../type';
 import {makeDecorator, makeParamDecorator} from '../util/decorators';
 import {getClosureSafeProperty} from '../util/property';
 
+import {InjectableDef, InjectableType, defineInjectable} from './defs';
 import {inject, injectArgs} from './injector';
 import {ClassSansProvider, ConstructorProvider, ConstructorSansProvider, ExistingProvider, ExistingSansProvider, FactoryProvider, FactorySansProvider, StaticClassProvider, StaticClassSansProvider, ValueProvider, ValueSansProvider} from './provider';
 
@@ -109,22 +110,6 @@ export function convertInjectableProviderToFactory(
 }
 
 /**
-* Construct an `InjectableDef` which defines how a token will be constructed by the DI system, and
-* in which injectors (if any) it will be available.
-*
-* @experimental
-*/
-export function defineInjectable<T>(opts: {
-  providedIn?: Type<any>| 'root' | null,
-  factory: () => T,
-}): InjectableDef<T> {
-  return {
-    providedIn: opts.providedIn || null,
-    factory: opts.factory,
-  };
-}
-
-/**
 * Injectable decorator and metadata.
 *
 * @stable
@@ -132,20 +117,15 @@ export function defineInjectable<T>(opts: {
 */
 export const Injectable: InjectableDecorator = makeDecorator(
     'Injectable', undefined, undefined, undefined,
-    (injectableType: Type<any>,
+    (injectableType: InjectableType<any>,
      options: {providedIn?: Type<any>| 'root' | null} & InjectableProvider) => {
-      if (options && options.providedIn) {
-        (injectableType as InjectableType<any>).ngInjectableDef = defineInjectable({
+      if (options && options.providedIn !== undefined) {
+        injectableType.ngInjectableDef = defineInjectable({
           providedIn: options.providedIn,
           factory: convertInjectableProviderToFactory(injectableType, options)
         });
       }
     });
-
-export interface InjectableDef<T> {
-  providedIn: Type<any>|'root'|null;
-  factory: () => T;
-}
 
 /**
  * Type representing injectable service.

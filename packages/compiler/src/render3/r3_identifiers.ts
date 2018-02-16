@@ -102,6 +102,11 @@ export class Identifiers {
     moduleName: CORE,
   };
 
+  static defineInjector: o.ExternalReference = {
+    name: 'defineInjector',
+    moduleName: CORE,
+  };
+
   static definePipe: o.ExternalReference = {name: 'ɵdefinePipe', moduleName: CORE};
 
   static query: o.ExternalReference = {name: 'ɵQ', moduleName: CORE};
