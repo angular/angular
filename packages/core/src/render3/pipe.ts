@@ -6,17 +6,32 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {PipeTransform} from '../change_detection/pipe_transform';
+
+import {getTView, load, store} from './instructions';
 import {PipeDef} from './interfaces/definition';
+import {pureFunction1, pureFunction2, pureFunction3, pureFunction4, pureFunctionV} from './pure_function';
+
 
 /**
  * Create a pipe.
  *
  * @param index Pipe index where the pipe will be stored.
  * @param pipeDef Pipe definition object for registering life cycle hooks.
- * @param pipe A Pipe instance.
+ * @param firstInstance (optional) The first instance of the pipe that can be reused for pure pipes.
+ * @returns T the instance of the pipe.
  */
-export function pipe<T>(index: number, pipeDef: PipeDef<T>, pipe: T): void {
-  throw new Error('TODO: implement!');
+export function pipe<T>(index: number, pipeDef: PipeDef<T>, firstInstance?: T): T {
+  const tView = getTView();
+  if (tView.firstTemplatePass) {
+    tView.data[index] = pipeDef;
+    if (pipeDef.onDestroy != null) {
+      (tView.destroyHooks || (tView.destroyHooks = [])).push(index, pipeDef.onDestroy);
+    }
+  }
+  const pipeInstance = pipeDef.pure && firstInstance ? firstInstance : pipeDef.n();
+  store(index, pipeInstance);
+  return pipeInstance;
 }
 
 /**
@@ -29,7 +44,9 @@ export function pipe<T>(index: number, pipeDef: PipeDef<T>, pipe: T): void {
  * @param v1 1st argument to {@link PipeTransform#transform}.
  */
 export function pipeBind1(index: number, v1: any): any {
-  throw new Error('TODO: implement!');
+  const pipeInstance = load<PipeTransform>(index);
+  return isPure(index) ? pureFunction1(pipeInstance.transform, v1, pipeInstance) :
+                         pipeInstance.transform(v1);
 }
 
 /**
@@ -43,7 +60,9 @@ export function pipeBind1(index: number, v1: any): any {
  * @param v2 2nd argument to {@link PipeTransform#transform}.
  */
 export function pipeBind2(index: number, v1: any, v2: any): any {
-  throw new Error('TODO: implement!');
+  const pipeInstance = load<PipeTransform>(index);
+  return isPure(index) ? pureFunction2(pipeInstance.transform, v1, v2, pipeInstance) :
+                         pipeInstance.transform(v1, v2);
 }
 
 /**
@@ -58,7 +77,9 @@ export function pipeBind2(index: number, v1: any, v2: any): any {
  * @param v3 4rd argument to {@link PipeTransform#transform}.
  */
 export function pipeBind3(index: number, v1: any, v2: any, v3: any): any {
-  throw new Error('TODO: implement!');
+  const pipeInstance = load<PipeTransform>(index);
+  return isPure(index) ? pureFunction3(pipeInstance.transform.bind(pipeInstance), v1, v2, v3) :
+                         pipeInstance.transform(v1, v2, v3);
 }
 
 /**
@@ -74,7 +95,9 @@ export function pipeBind3(index: number, v1: any, v2: any, v3: any): any {
  * @param v4 4th argument to {@link PipeTransform#transform}.
  */
 export function pipeBind4(index: number, v1: any, v2: any, v3: any, v4: any): any {
-  throw new Error('TODO: implement!');
+  const pipeInstance = load<PipeTransform>(index);
+  return isPure(index) ? pureFunction4(pipeInstance.transform, v1, v2, v3, v4, pipeInstance) :
+                         pipeInstance.transform(v1, v2, v3, v4);
 }
 
 /**
@@ -87,5 +110,11 @@ export function pipeBind4(index: number, v1: any, v2: any, v3: any, v4: any): an
  * @param values Array of arguments to pass to {@link PipeTransform#transform} method.
  */
 export function pipeBindV(index: number, values: any[]): any {
-  throw new Error('TODO: implement!');
+  const pipeInstance = load<PipeTransform>(index);
+  return isPure(index) ? pureFunctionV(pipeInstance.transform, values, pipeInstance) :
+                         pipeInstance.transform.apply(pipeInstance, values);
+}
+
+function isPure(index: number): boolean {
+  return (<PipeDef<any>>getTView().data[index]).pure;
 }

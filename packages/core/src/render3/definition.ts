@@ -181,7 +181,10 @@ export const defineDirective = defineComponent as<T>(directiveDefinition: Direct
  * @param pure Whether the pipe is pure.
  */
 export function definePipe<T>(
-    {type, factory, pure}: {type: Type<T>, factory: () => PipeTransform, pure?: boolean}):
-    PipeDef<T> {
-  throw new Error('TODO: implement!');
+    {type, factory, pure}: {type: Type<T>, factory: () => T, pure?: boolean}): PipeDef<T> {
+  return <PipeDef<T>>{
+    n: factory,
+    pure: pure !== false,
+    onDestroy: type.prototype.ngOnDestroy || null
+  };
 }
