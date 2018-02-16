@@ -90,7 +90,8 @@ export function createAotCompiler(
   const compiler = new AotCompiler(
       config, options, compilerHost, staticReflector, resolver, tmplParser,
       new StyleCompiler(urlResolver), viewCompiler, typeCheckCompiler,
-      new NgModuleCompiler(staticReflector), new InjectableCompiler(staticReflector),
-      new TypeScriptEmitter(), summaryResolver, symbolResolver);
+      new NgModuleCompiler(staticReflector),
+      new InjectableCompiler(staticReflector, !!options.enableIvy), new TypeScriptEmitter(),
+      summaryResolver, symbolResolver);
   return {compiler, reflector: staticReflector};
 }
