@@ -910,6 +910,12 @@ export function directiveCreate<T>(
     diPublic(directiveDef !);
   }
 
+  if (directiveDef !.attributes != null &&
+      (previousOrParentNode.flags & LNodeFlags.TYPE_MASK) == LNodeFlags.Element) {
+    setUpAttributes(
+        (previousOrParentNode as LElementNode).native, directiveDef !.attributes as string[]);
+  }
+
   const tNode: TNode|null = previousOrParentNode.tNode !;
   if (tNode && tNode.attrs) {
     setInputsFromAttrs<T>(instance, directiveDef !.inputs, tNode);

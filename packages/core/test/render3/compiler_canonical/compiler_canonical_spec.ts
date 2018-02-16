@@ -225,6 +225,49 @@ describe('compiler specification', () => {
       expect(renderComp(MyApp)).toEqual(`<button hostlistenerdir="">Click</button>`);
     });
 
+
+    it('should support setting of host attributes', () => {
+      type $MyApp$ = MyApp;
+
+      @Directive({selector: '[hostAttributeDir]', host: {'role': 'listbox'}})
+      class HostAttributeDir {
+        // NORMATIVE
+        static ngDirectiveDef = $r3$.ɵdefineDirective({
+          type: HostAttributeDir,
+          factory: function HostAttributeDir_Factory() { return new HostAttributeDir(); },
+          attributes: ['role', 'listbox']
+        });
+        // /NORMATIVE
+      }
+
+      const $e0_attrs$ = ['hostAttributeDir', ''];
+      const $e0_dirs$ = [HostAttributeDir];
+
+      @Component({
+        selector: 'my-app',
+        template: `
+          <div hostAttributeDir></div>
+        `
+      })
+      class MyApp {
+        static ngComponentDef = $r3$.ɵdefineComponent({
+          type: MyApp,
+          tag: 'my-app',
+          factory: function MyApp_Factory() { return new MyApp(); },
+          template: function MyApp_Template(ctx: $MyApp$, cm: $boolean$) {
+            if (cm) {
+              $r3$.ɵE(0, 'div', $e0_attrs$, $e0_dirs$);
+              $r3$.ɵe();
+            }
+            HostAttributeDir.ngDirectiveDef.h(1, 0);
+            $r3$.ɵr(1, 0);
+          }
+        });
+      }
+
+      expect(renderComp(MyApp)).toEqual(`<div hostattributedir="" role="listbox"></div>`);
+    });
+
     it('should support bindings of host attributes', () => {
       type $MyApp$ = MyApp;
 
