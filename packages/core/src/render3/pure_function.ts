@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {NO_CHANGE, bind, consumeBinding, getCreationMode, updateBinding} from './instructions';
+import {bindingUpdated, bindingUpdated2, bindingUpdated4, checkAndUpdateBinding, consumeBinding, getCreationMode} from './instructions';
 
 
 
@@ -18,7 +18,7 @@ import {NO_CHANGE, bind, consumeBinding, getCreationMode, updateBinding} from '.
  * @returns value
  */
 export function pureFunction0<T>(pureFn: () => T): T {
-  return getCreationMode() ? bind(pureFn()) : consumeBinding();
+  return getCreationMode() ? checkAndUpdateBinding(pureFn()) : consumeBinding();
 }
 
 /**
@@ -30,7 +30,7 @@ export function pureFunction0<T>(pureFn: () => T): T {
  * @returns Updated value
  */
 export function pureFunction1(pureFn: (v: any) => any, exp: any): any {
-  return bind(exp) === NO_CHANGE ? consumeBinding() : updateBinding(pureFn(exp));
+  return bindingUpdated(exp) ? checkAndUpdateBinding(pureFn(exp)) : consumeBinding();
 }
 
 /**
@@ -43,12 +43,7 @@ export function pureFunction1(pureFn: (v: any) => any, exp: any): any {
  * @returns Updated value
  */
 export function pureFunction2(pureFn: (v1: any, v2: any) => any, exp1: any, exp2: any): any {
-  let different = false;
-
-  if (bind(exp1) !== NO_CHANGE) different = true;
-  if (bind(exp2) !== NO_CHANGE) different = true;
-
-  return different ? updateBinding(pureFn(exp1, exp2)) : consumeBinding();
+  return bindingUpdated2(exp1, exp2) ? checkAndUpdateBinding(pureFn(exp1, exp2)) : consumeBinding();
 }
 
 /**
@@ -63,13 +58,9 @@ export function pureFunction2(pureFn: (v1: any, v2: any) => any, exp1: any, exp2
  */
 export function pureFunction3(
     pureFn: (v1: any, v2: any, v3: any) => any, exp1: any, exp2: any, exp3: any): any {
-  let different = false;
-
-  if (bind(exp1) !== NO_CHANGE) different = true;
-  if (bind(exp2) !== NO_CHANGE) different = true;
-  if (bind(exp3) !== NO_CHANGE) different = true;
-
-  return different ? updateBinding(pureFn(exp1, exp2, exp3)) : consumeBinding();
+  const different = bindingUpdated2(exp1, exp2);
+  return bindingUpdated(exp3) || different ? checkAndUpdateBinding(pureFn(exp1, exp2, exp3)) :
+                                             consumeBinding();
 }
 
 /**
@@ -86,14 +77,9 @@ export function pureFunction3(
 export function pureFunction4(
     pureFn: (v1: any, v2: any, v3: any, v4: any) => any, exp1: any, exp2: any, exp3: any,
     exp4: any): any {
-  let different = false;
-
-  if (bind(exp1) !== NO_CHANGE) different = true;
-  if (bind(exp2) !== NO_CHANGE) different = true;
-  if (bind(exp3) !== NO_CHANGE) different = true;
-  if (bind(exp4) !== NO_CHANGE) different = true;
-
-  return different ? updateBinding(pureFn(exp1, exp2, exp3, exp4)) : consumeBinding();
+  return bindingUpdated4(exp1, exp2, exp3, exp4) ?
+      checkAndUpdateBinding(pureFn(exp1, exp2, exp3, exp4)) :
+      consumeBinding();
 }
 
 /**
@@ -111,15 +97,10 @@ export function pureFunction4(
 export function pureFunction5(
     pureFn: (v1: any, v2: any, v3: any, v4: any, v5: any) => any, exp1: any, exp2: any, exp3: any,
     exp4: any, exp5: any): any {
-  let different = false;
-
-  if (bind(exp1) !== NO_CHANGE) different = true;
-  if (bind(exp2) !== NO_CHANGE) different = true;
-  if (bind(exp3) !== NO_CHANGE) different = true;
-  if (bind(exp4) !== NO_CHANGE) different = true;
-  if (bind(exp5) !== NO_CHANGE) different = true;
-
-  return different ? updateBinding(pureFn(exp1, exp2, exp3, exp4, exp5)) : consumeBinding();
+  const different = bindingUpdated4(exp1, exp2, exp3, exp4);
+  return bindingUpdated(exp5) || different ?
+      checkAndUpdateBinding(pureFn(exp1, exp2, exp3, exp4, exp5)) :
+      consumeBinding();
 }
 
 /**
@@ -138,16 +119,10 @@ export function pureFunction5(
 export function pureFunction6(
     pureFn: (v1: any, v2: any, v3: any, v4: any, v5: any, v6: any) => any, exp1: any, exp2: any,
     exp3: any, exp4: any, exp5: any, exp6: any): any {
-  let different = false;
-
-  if (bind(exp1) !== NO_CHANGE) different = true;
-  if (bind(exp2) !== NO_CHANGE) different = true;
-  if (bind(exp3) !== NO_CHANGE) different = true;
-  if (bind(exp4) !== NO_CHANGE) different = true;
-  if (bind(exp5) !== NO_CHANGE) different = true;
-  if (bind(exp6) !== NO_CHANGE) different = true;
-
-  return different ? updateBinding(pureFn(exp1, exp2, exp3, exp4, exp5, exp6)) : consumeBinding();
+  const different = bindingUpdated4(exp1, exp2, exp3, exp4);
+  return bindingUpdated2(exp5, exp6) || different ?
+      checkAndUpdateBinding(pureFn(exp1, exp2, exp3, exp4, exp5, exp6)) :
+      consumeBinding();
 }
 
 /**
@@ -167,18 +142,11 @@ export function pureFunction6(
 export function pureFunction7(
     pureFn: (v1: any, v2: any, v3: any, v4: any, v5: any, v6: any, v7: any) => any, exp1: any,
     exp2: any, exp3: any, exp4: any, exp5: any, exp6: any, exp7: any): any {
-  let different = false;
-
-  if (bind(exp1) !== NO_CHANGE) different = true;
-  if (bind(exp2) !== NO_CHANGE) different = true;
-  if (bind(exp3) !== NO_CHANGE) different = true;
-  if (bind(exp4) !== NO_CHANGE) different = true;
-  if (bind(exp5) !== NO_CHANGE) different = true;
-  if (bind(exp6) !== NO_CHANGE) different = true;
-  if (bind(exp7) !== NO_CHANGE) different = true;
-
-  return different ? updateBinding(pureFn(exp1, exp2, exp3, exp4, exp5, exp6, exp7)) :
-                     consumeBinding();
+  let different = bindingUpdated4(exp1, exp2, exp3, exp4);
+  different = bindingUpdated2(exp5, exp6) || different;
+  return bindingUpdated(exp7) || different ?
+      checkAndUpdateBinding(pureFn(exp1, exp2, exp3, exp4, exp5, exp6, exp7)) :
+      consumeBinding();
 }
 
 /**
@@ -199,19 +167,10 @@ export function pureFunction7(
 export function pureFunction8(
     pureFn: (v1: any, v2: any, v3: any, v4: any, v5: any, v6: any, v7: any, v8: any) => any,
     exp1: any, exp2: any, exp3: any, exp4: any, exp5: any, exp6: any, exp7: any, exp8: any): any {
-  let different = false;
-
-  if (bind(exp1) !== NO_CHANGE) different = true;
-  if (bind(exp2) !== NO_CHANGE) different = true;
-  if (bind(exp3) !== NO_CHANGE) different = true;
-  if (bind(exp4) !== NO_CHANGE) different = true;
-  if (bind(exp5) !== NO_CHANGE) different = true;
-  if (bind(exp6) !== NO_CHANGE) different = true;
-  if (bind(exp7) !== NO_CHANGE) different = true;
-  if (bind(exp8) !== NO_CHANGE) different = true;
-
-  return different ? updateBinding(pureFn(exp1, exp2, exp3, exp4, exp5, exp6, exp7, exp8)) :
-                     consumeBinding();
+  const different = bindingUpdated4(exp1, exp2, exp3, exp4);
+  return bindingUpdated4(exp1, exp2, exp3, exp4) || different ?
+      checkAndUpdateBinding(pureFn(exp1, exp2, exp3, exp4, exp5, exp6, exp7, exp8)) :
+      consumeBinding();
 }
 
 /**
@@ -229,8 +188,8 @@ export function pureFunctionV(pureFn: (v: any[]) => any, exps: any[]): any {
   let different = false;
 
   for (let i = 0; i < exps.length; i++) {
-    if (bind(exps[i]) !== NO_CHANGE) different = true;
+    bindingUpdated(exps[i]) && (different = true);
   }
 
-  return different ? updateBinding(pureFn(exps)) : consumeBinding();
+  return different ? checkAndUpdateBinding(pureFn(exps)) : consumeBinding();
 }

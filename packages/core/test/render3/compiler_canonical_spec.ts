@@ -371,7 +371,7 @@ describe('compiler specification', () => {
                 $r3$.ɵE(0, MyArrayComp);
                 $r3$.ɵe();
               }
-              $r3$.ɵp(0, 'names', $r3$.ɵf1($e0_ff$, ctx.customName));
+              $r3$.ɵp(0, 'names', $r3$.ɵb($r3$.ɵf1($e0_ff$, ctx.customName)));
               MyArrayComp.ngComponentDef.h(1, 0);
               $r3$.ɵr(1, 0);
             }
@@ -475,7 +475,8 @@ describe('compiler specification', () => {
               }
               $r3$.ɵp(
                   0, 'names',
-                  $r3$.ɵfV($e0_ff$, [c.n0, c.n1, c.n2, c.n3, c.n4, c.n5, c.n6, c.n7, c.n8]));
+                  $r3$.ɵb(
+                      $r3$.ɵfV($e0_ff$, [c.n0, c.n1, c.n2, c.n3, c.n4, c.n5, c.n6, c.n7, c.n8])));
               MyComp.ngComponentDef.h(1, 0);
               $r3$.ɵr(1, 0);
             }
@@ -543,7 +544,7 @@ describe('compiler specification', () => {
                 $r3$.ɵE(0, ObjectComp);
                 $r3$.ɵe();
               }
-              $r3$.ɵp(0, 'config', $r3$.ɵf1($e0_ff$, ctx.name));
+              $r3$.ɵp(0, 'config', $r3$.ɵb($r3$.ɵf1($e0_ff$, ctx.name)));
               ObjectComp.ngComponentDef.h(1, 0);
               $r3$.ɵr(1, 0);
             }
@@ -622,9 +623,9 @@ describe('compiler specification', () => {
                 $r3$.ɵe();
               }
               $r3$.ɵp(
-                  0, 'config',
-                  $r3$.ɵf2(
-                      $e0_ff_2$, ctx.name, $r3$.ɵf1($e0_ff_1$, $r3$.ɵf1($e0_ff$, ctx.duration))));
+                  0, 'config', $r3$.ɵf2(
+                                   $e0_ff_2$, ctx.name,
+                                   $r3$.ɵb($r3$.ɵf1($e0_ff_1$, $r3$.ɵf1($e0_ff$, ctx.duration)))));
               NestedComp.ngComponentDef.h(1, 0);
               $r3$.ɵr(1, 0);
             }

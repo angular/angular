@@ -1757,16 +1757,41 @@ export function getCreationMode(): boolean {
   return creationMode;
 }
 
+/** Gets the current binding value and increments the binding index. */
 export function consumeBinding(): any {
+  ngDevMode && assertDataInRange(bindingIndex);
   return data[bindingIndex++];
 }
 
-/** Updates the binding at the current index and returns the latest value.  */
-export function updateBinding(exp: any): any {
-  if (creationMode) {
-    initBindings();
+/** Updates binding if changed, then returns whether it was updated. */
+export function bindingUpdated(value: any): boolean {
+  initBindings();
+
+  if (creationMode || isDifferent(data[bindingIndex], value)) {
+    data[bindingIndex++] = value;
+    return true;
+  } else {
+    bindingIndex++;
+    return false;
   }
-  return data[bindingIndex++] = exp;
+}
+
+/** Updates binding if changed, then returns the latest value. */
+export function checkAndUpdateBinding(value: any): any {
+  bindingUpdated(value);
+  return value;
+}
+
+/** Updates 2 bindings if changed, then returns whether either was updated. */
+export function bindingUpdated2(exp1: any, exp2: any): boolean {
+  const different = bindingUpdated(exp1);
+  return bindingUpdated(exp2) || different;
+}
+
+/** Updates 4 bindings if changed, then returns whether any was updated. */
+export function bindingUpdated4(exp1: any, exp2: any, exp3: any, exp4: any): boolean {
+  const different = bindingUpdated2(exp1, exp2);
+  return bindingUpdated2(exp3, exp4) || different;
 }
 
 export function getPreviousOrParentNode(): LNode {
