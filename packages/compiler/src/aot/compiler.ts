@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CompileDirectiveMetadata, CompileDirectiveSummary, CompileIdentifierMetadata, CompileInjectableMetadata, CompileNgModuleMetadata, CompileNgModuleSummary, CompilePipeMetadata, CompilePipeSummary, CompileProviderMetadata, CompileStylesheetMetadata, CompileSummaryKind, CompileTypeMetadata, CompileTypeSummary, componentFactoryName, flatten, identifierName, templateSourceUrl, tokenReference} from '../compile_metadata';
+import {CompileDirectiveMetadata, CompileDirectiveSummary, CompileIdentifierMetadata, CompileInjectableMetadata, CompileNgModuleMetadata, CompileNgModuleSummary, CompilePipeMetadata, CompilePipeSummary, CompileProviderMetadata, CompileShallowModuleMetadata, CompileStylesheetMetadata, CompileSummaryKind, CompileTypeMetadata, CompileTypeSummary, componentFactoryName, flatten, identifierName, templateSourceUrl, tokenReference} from '../compile_metadata';
 import {CompilerConfig} from '../config';
 import {ConstantPool} from '../constant_pool';
 import {ViewEncapsulation} from '../core';
@@ -20,6 +20,7 @@ import {NgModuleCompiler} from '../ng_module_compiler';
 import {OutputEmitter} from '../output/abstract_emitter';
 import * as o from '../output/output_ast';
 import {ParseError} from '../parse_util';
+import {compileNgModule as compileIvyModule} from '../render3/r3_module_compiler';
 import {compilePipe as compileIvyPipe} from '../render3/r3_pipe_compiler';
 import {OutputMode} from '../render3/r3_types';
 import {compileComponent as compileIvyComponent, compileDirective as compileIvyDirective} from '../render3/r3_view_compiler';
@@ -57,7 +58,7 @@ export class AotCompiler {
 
   constructor(
       private _config: CompilerConfig, private _options: AotCompilerOptions,
-      private _host: AotCompilerHost, private _reflector: StaticReflector,
+      private _host: AotCompilerHost, readonly reflector: StaticReflector,
       private _metadataResolver: CompileMetadataResolver, private _templateParser: TemplateParser,
       private _styleCompiler: StyleCompiler, private _viewCompiler: ViewCompiler,
       private _typeCheckCompiler: TypeCheckCompiler, private _ngModuleCompiler: NgModuleCompiler,
@@ -283,7 +284,7 @@ export class AotCompiler {
   private _externalIdentifierReferences(references: o.ExternalReference[]): StaticSymbol[] {
     const result: StaticSymbol[] = [];
     for (let reference of references) {
-      const token = createTokenForExternalReference(this._reflector, reference);
+      const token = createTokenForExternalReference(this.reflector, reference);
       if (token.identifier) {
         result.push(token.identifier.reference);
       }
@@ -332,27 +333,48 @@ export class AotCompiler {
     return messageBundle;
   }
 
-  emitAllPartialModules({ngModuleByPipeOrDirective, files}: NgAnalyzedModules): PartialModule[] {
-    // Using reduce like this is a select many pattern (where map is a select pattern)
-    return files.reduce<PartialModule[]>((r, file) => {
-      r.push(...this._emitPartialModule(
-          file.fileName, ngModuleByPipeOrDirective, file.directives, file.pipes, file.ngModules,
-          file.injectables));
-      return r;
-    }, []);
+  emitAllPartialModules(
+      {ngModuleByPipeOrDirective, files}: NgAnalyzedModules,
+      r3Files: NgAnalyzedFileWithInjectables[]): PartialModule[] {
+    const contextMap = new Map<string, OutputContext>();
+
+    const getContext = (fileName: string): OutputContext => {
+      if (!contextMap.has(fileName)) {
+        contextMap.set(fileName, this._createOutputContext(fileName));
+      }
+      return contextMap.get(fileName) !;
+    };
+
+    files.forEach(
+        file => this._compilePartialModule(
+            file.fileName, ngModuleByPipeOrDirective, file.directives, file.pipes, file.ngModules,
+            file.injectables, getContext(file.fileName)));
+    r3Files.forEach(
+        file => this._compileShallowModules(
+            file.fileName, file.shallowModules, getContext(file.fileName)));
+
+    return Array.from(contextMap.values())
+        .map(context => ({
+               fileName: context.genFilePath,
+               statements: [...context.constantPool.statements, ...context.statements],
+             }));
   }
 
-  private _emitPartialModule(
+  private _compileShallowModules(
+      fileName: string, shallowModules: CompileShallowModuleMetadata[],
+      context: OutputContext): void {
+    shallowModules.forEach(module => compileIvyModule(context, module, this._injectableCompiler));
+  }
+
+  private _compilePartialModule(
       fileName: string, ngModuleByPipeOrDirective: Map<StaticSymbol, CompileNgModuleMetadata>,
       directives: StaticSymbol[], pipes: StaticSymbol[], ngModules: CompileNgModuleMetadata[],
-      injectables: CompileInjectableMetadata[]): PartialModule[] {
+      injectables: CompileInjectableMetadata[], context: OutputContext): void {
     const classes: o.ClassStmt[] = [];
     const errors: ParseError[] = [];
 
-    const context = this._createOutputContext(fileName);
     const hostBindingParser = new BindingParser(
         this._templateParser.expressionParser, DEFAULT_INTERPOLATION_CONFIG, null !, [], errors);
-
 
     // Process all components and directives
     directives.forEach(directiveType => {
@@ -366,28 +388,22 @@ export class AotCompiler {
         const {template: parsedTemplate, pipes: parsedPipes} =
             this._parseTemplate(directiveMetadata, module, module.transitiveModule.directives);
         compileIvyComponent(
-            context, directiveMetadata, parsedPipes, parsedTemplate, this._reflector,
+            context, directiveMetadata, parsedPipes, parsedTemplate, this.reflector,
             hostBindingParser, OutputMode.PartialClass);
       } else {
         compileIvyDirective(
-            context, directiveMetadata, this._reflector, hostBindingParser,
-            OutputMode.PartialClass);
+            context, directiveMetadata, this.reflector, hostBindingParser, OutputMode.PartialClass);
       }
     });
 
     pipes.forEach(pipeType => {
       const pipeMetadata = this._metadataResolver.getPipeMetadata(pipeType);
       if (pipeMetadata) {
-        compileIvyPipe(context, pipeMetadata, this._reflector, OutputMode.PartialClass);
+        compileIvyPipe(context, pipeMetadata, this.reflector, OutputMode.PartialClass);
       }
     });
 
     injectables.forEach(injectable => this._injectableCompiler.compile(injectable, context));
-
-    if (context.statements && context.statements.length > 0) {
-      return [{fileName, statements: [...context.constantPool.statements, ...context.statements]}];
-    }
-    return [];
   }
 
   emitAllPartialModules2(files: NgAnalyzedFileWithInjectables[]): PartialModule[] {
@@ -531,14 +547,14 @@ export class AotCompiler {
     if (this._options.locale) {
       const normalizedLocale = this._options.locale.replace(/_/g, '-');
       providers.push({
-        token: createTokenForExternalReference(this._reflector, Identifiers.LOCALE_ID),
+        token: createTokenForExternalReference(this.reflector, Identifiers.LOCALE_ID),
         useValue: normalizedLocale,
       });
     }
 
     if (this._options.i18nFormat) {
       providers.push({
-        token: createTokenForExternalReference(this._reflector, Identifiers.TRANSLATIONS_FORMAT),
+        token: createTokenForExternalReference(this.reflector, Identifiers.TRANSLATIONS_FORMAT),
         useValue: this._options.i18nFormat
       });
     }
@@ -682,12 +698,12 @@ export class AotCompiler {
   listLazyRoutes(entryRoute?: string, analyzedModules?: NgAnalyzedModules): LazyRoute[] {
     const self = this;
     if (entryRoute) {
-      const symbol = parseLazyRoute(entryRoute, this._reflector).referencedModule;
+      const symbol = parseLazyRoute(entryRoute, this.reflector).referencedModule;
       return visitLazyRoute(symbol);
     } else if (analyzedModules) {
       const allLazyRoutes: LazyRoute[] = [];
       for (const ngModule of analyzedModules.ngModules) {
-        const lazyRoutes = listLazyRoutes(ngModule, this._reflector);
+        const lazyRoutes = listLazyRoutes(ngModule, this.reflector);
         for (const lazyRoute of lazyRoutes) {
           allLazyRoutes.push(lazyRoute);
         }
@@ -707,7 +723,7 @@ export class AotCompiler {
       }
       seenRoutes.add(symbol);
       const lazyRoutes = listLazyRoutes(
-          self._metadataResolver.getNgModuleMetadata(symbol, true) !, self._reflector);
+          self._metadataResolver.getNgModuleMetadata(symbol, true) !, self.reflector);
       for (const lazyRoute of lazyRoutes) {
         allLazyRoutes.push(lazyRoute);
         visitLazyRoute(lazyRoute.referencedModule, seenRoutes, allLazyRoutes);
@@ -748,6 +764,7 @@ export interface NgAnalyzedModules {
 export interface NgAnalyzedFileWithInjectables {
   fileName: string;
   injectables: CompileInjectableMetadata[];
+  shallowModules: CompileShallowModuleMetadata[];
 }
 
 export interface NgAnalyzedFile {
@@ -868,6 +885,7 @@ export function analyzeFileForInjectables(
     host: NgAnalyzeModulesHost, staticSymbolResolver: StaticSymbolResolver,
     metadataResolver: CompileMetadataResolver, fileName: string): NgAnalyzedFileWithInjectables {
   const injectables: CompileInjectableMetadata[] = [];
+  const shallowModules: CompileShallowModuleMetadata[] = [];
   if (staticSymbolResolver.hasDecorators(fileName)) {
     staticSymbolResolver.getSymbolsOf(fileName).forEach((symbol) => {
       const resolvedSymbol = staticSymbolResolver.resolveSymbol(symbol);
@@ -883,11 +901,17 @@ export function analyzeFileForInjectables(
           if (injectable) {
             injectables.push(injectable);
           }
+        } else if (metadataResolver.isNgModule(symbol)) {
+          isNgSymbol = true;
+          const module = metadataResolver.getShallowModuleMetadata(symbol);
+          if (module) {
+            shallowModules.push(module);
+          }
         }
       }
     });
   }
-  return {fileName, injectables};
+  return {fileName, injectables, shallowModules};
 }
 
 function isValueExportingNonSourceFile(host: NgAnalyzeModulesHost, metadata: any): boolean {

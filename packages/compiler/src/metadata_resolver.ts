@@ -12,9 +12,9 @@ import {assertArrayOfStrings, assertInterpolationSymbols} from './assertions';
 import * as cpl from './compile_metadata';
 import {CompileReflector} from './compile_reflector';
 import {CompilerConfig} from './config';
-import {ChangeDetectionStrategy, Component, Directive, Injectable, ModuleWithProviders, Provider, Query, SchemaMetadata, Type, ViewEncapsulation, createAttribute, createComponent, createHost, createInject, createInjectable, createInjectionToken, createOptional, createSelf, createSkipSelf} from './core';
+import {ChangeDetectionStrategy, Component, Directive, Injectable, ModuleWithProviders, Provider, Query, SchemaMetadata, Type, ViewEncapsulation, createAttribute, createComponent, createHost, createInject, createInjectable, createInjectionToken, createNgModule, createOptional, createSelf, createSkipSelf} from './core';
 import {DirectiveNormalizer} from './directive_normalizer';
-import {DirectiveResolver} from './directive_resolver';
+import {DirectiveResolver, findLast} from './directive_resolver';
 import {Identifiers} from './identifiers';
 import {getAllLifecycleHooks} from './lifecycle_reflector';
 import {HtmlParser} from './ml_parser/html_parser';
@@ -44,6 +44,7 @@ export class CompileMetadataResolver {
   private _pipeCache = new Map<Type, cpl.CompilePipeMetadata>();
   private _ngModuleCache = new Map<Type, cpl.CompileNgModuleMetadata>();
   private _ngModuleOfTypes = new Map<Type, Type>();
+  private _shallowModuleCache = new Map<Type, cpl.CompileShallowModuleMetadata>();
 
   constructor(
       private _config: CompilerConfig, private _htmlParser: HtmlParser,
@@ -475,6 +476,26 @@ export class CompileMetadataResolver {
       ngModule.declaredPipes.forEach((id) => this._loadPipeMetadata(id.reference));
     }
     return Promise.all(loading);
+  }
+
+  getShallowModuleMetadata(moduleType: any): cpl.CompileShallowModuleMetadata|null {
+    let compileMeta = this._shallowModuleCache.get(moduleType);
+    if (compileMeta) {
+      return compileMeta;
+    }
+
+    const ngModuleMeta =
+        findLast(this._reflector.shallowAnnotations(moduleType), createNgModule.isTypeOf);
+
+    compileMeta = {
+      type: this._getTypeMetadata(moduleType),
+      rawExports: ngModuleMeta.exports,
+      rawImports: ngModuleMeta.imports,
+      rawProviders: ngModuleMeta.providers,
+    };
+
+    this._shallowModuleCache.set(moduleType, compileMeta);
+    return compileMeta;
   }
 
   getNgModuleMetadata(

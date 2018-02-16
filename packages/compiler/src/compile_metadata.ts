@@ -527,6 +527,14 @@ export interface CompileNgModuleSummary extends CompileTypeSummary {
   modules: CompileTypeMetadata[];
 }
 
+export class CompileShallowModuleMetadata {
+  type: CompileTypeMetadata;
+
+  rawExports: any;
+  rawImports: any;
+  rawProviders: any;
+}
+
 /**
  * Metadata regarding compilation of a module.
  */

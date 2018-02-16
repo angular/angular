@@ -2205,4 +2205,94 @@ describe('ngc transformer command-line', () => {
       expect(source).toMatch(/new Service\(i0\.inject\(exports\.TOKEN\)\);/);
     });
   });
+
+  describe('ngInjectorDef', () => {
+    it('is applied with lowered metadata', () => {
+      writeConfig(`{
+        "extends": "./tsconfig-base.json",
+        "files": ["module.ts"],
+        "angularCompilerOptions": {
+          "enableIvy": true,
+          "skipTemplateCodegen": true
+        }
+      }`);
+      write('module.ts', `
+        import {Injectable, NgModule} from '@angular/core';
+
+        @Injectable()
+        export class ServiceA {}
+
+        @Injectable()
+        export class ServiceB {}
+
+        @NgModule()
+        export class Exported {}
+
+        @NgModule({
+          providers: [ServiceA]
+        })
+        export class Imported {
+          static forRoot() {
+           console.log('not statically analyzable');
+            return {
+              ngModule: Imported,
+              providers: [] as any,
+            };
+          }
+        }
+
+        @NgModule({
+          providers: [ServiceA, ServiceB],
+          imports: [Imported.forRoot()],
+          exports: [Exported],
+        })
+        export class Module {}
+      `);
+
+      const exitCode = main(['-p', path.join(basePath, 'tsconfig.json')], errorSpy);
+      expect(exitCode).toEqual(0);
+
+      const modulePath = path.resolve(outDir, 'module.js');
+      const moduleSource = fs.readFileSync(modulePath, 'utf8');
+      expect(moduleSource)
+          .toContain('var ɵ1 = [ServiceA, ServiceB], ɵ2 = [Imported.forRoot()], ɵ3 = [Exported];');
+      expect(moduleSource)
+          .toContain(
+              'Imported.ngInjectorDef = i0.ɵdefineInjector({ factory: function Imported_Factory() { return new Imported(); }, providers: ɵ0, imports: [] });');
+      expect(moduleSource)
+          .toContain(
+              'Module.ngInjectorDef = i0.ɵdefineInjector({ factory: function Module_Factory() { return new Module(); }, providers: ɵ1, imports: [ɵ2, ɵ3] });');
+    });
+
+    it('strips decorator in ivy mode', () => {
+      writeConfig(`{
+        "extends": "./tsconfig-base.json",
+        "files": ["service.ts"],
+        "angularCompilerOptions": {
+          "enableIvy": true
+        }
+      }`);
+      write('service.ts', `
+        import {Injectable, Self} from '@angular/core';  
+
+        @Injectable()
+        export class ServiceA {}
+
+        @Injectable()
+        @Self()
+        export class ServiceB {}
+      `);
+
+      const exitCode = main(['-p', path.join(basePath, 'tsconfig.json')], errorSpy);
+      expect(exitCode).toEqual(0);
+
+      const modulePath = path.resolve(outDir, 'service.js');
+      const metaPath = path.resolve(outDir, 'service.metadata.json');
+      const moduleSource = fs.readFileSync(modulePath, 'utf8');
+      expect(moduleSource).not.toMatch(/ServiceA\.decorators =/);
+      expect(moduleSource).toMatch(/ServiceB\.decorators =/);
+      expect(moduleSource).toMatch(/type: Self/);
+      expect(moduleSource).not.toMatch(/type: Injectable/);
+    });
+  });
 });

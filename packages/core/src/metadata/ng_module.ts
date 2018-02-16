@@ -6,7 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Provider} from '../di';
+import {InjectorDef, InjectorType} from '../di/defs';
+import {convertInjectableProviderToFactory} from '../di/injectable';
+import {Provider} from '../di/provider';
 import {Type} from '../type';
 import {TypeDecorator, makeDecorator} from '../util/decorators';
 
@@ -190,5 +192,46 @@ export interface NgModule {
  * @stable
  * @Annotation
  */
-export const NgModule: NgModuleDecorator =
-    makeDecorator('NgModule', (ngModule: NgModule) => ngModule);
+export const NgModule: NgModuleDecorator = makeDecorator(
+    'NgModule', (ngModule: NgModule) => ngModule, undefined, undefined,
+    (moduleType: InjectorType<any>, metadata: NgModule) => {
+      let imports = (metadata && metadata.imports) || [];
+      if (metadata && metadata.exports) {
+        imports = [...imports, metadata.exports];
+      }
+
+      moduleType.ngInjectorDef = defineInjector({
+        factory: convertInjectableProviderToFactory(moduleType, {useClass: moduleType}),
+        providers: metadata && metadata.providers,
+        imports: imports,
+      });
+    });
+
+/**
+ * Construct an `InjectorDef` which configures an injector.
+ *
+ * This should be assigned to a static `ngInjectorDef` field on a type, which will then be an
+ * `InjectorType`.
+ *
+ * Options:
+ *
+ * * `factory`: an `InjectorType` is an instantiable type, so a zero argument `factory` function to
+ *   create the type must be provided. If that factory function needs to inject arguments, it can
+ *   use the `inject` function.
+ * * `providers`: an optional array of providers to add to the injector. Each provider must
+ *   either have a factory or point to a type which has an `ngInjectableDef` static property (the
+ *   type must be an `InjectableType`).
+ * * `imports`: an optional array of imports of other `InjectorType`s or `InjectorTypeWithModule`s
+ *   whose providers will also be added to the injector. Locally provided types will override
+ *   providers from imports.
+ *
+ * @experimental
+ */
+export function defineInjector(options: {factory: () => any, providers?: any[], imports?: any[]}):
+    InjectorDef<any> {
+  return {
+    factory: options.factory,
+    providers: options.providers || [],
+    imports: options.imports || [],
+  };
+}

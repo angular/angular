@@ -3,7 +3,7 @@
     "master": {
       "uncompressed": {
         "inline": 1447,
-        "main": 155112,
+        "main": 157654,
         "polyfills": 59179
       }
     }
@@ -11,7 +11,7 @@
   "hello_world__closure": {
     "master": {
       "uncompressed": {
-        "bundle": 105779
+        "bundle": 106550
       }
     }
   },

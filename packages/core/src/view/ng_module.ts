@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {InjectableDef} from '../di/defs';
 import {resolveForwardRef} from '../di/forward_ref';
-import {InjectableDef} from '../di/injectable';
 import {InjectFlags, Injector, setCurrentInjector} from '../di/injector';
 import {APP_ROOT} from '../di/scope';
 import {NgModuleRef} from '../linker/ng_module_factory';

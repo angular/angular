@@ -1,6 +1,7 @@
 """Re-export of some bazel rules with repository-wide defaults."""
 load("@build_bazel_rules_typescript//:defs.bzl", _ts_library = "ts_library")
 load("//packages/bazel:index.bzl", _ng_module = "ng_module", _ng_package = "ng_package")
+load("//packages/bazel/src:ng_module.bzl", _ivy_ng_module = "internal_ivy_ng_module")
 
 DEFAULT_TSCONFIG = "//packages:tsconfig-build.json"
 
@@ -30,3 +31,8 @@ def ng_package(name, readme_md = None, license_banner = None, stamp_data = None,
       license_banner = license_banner,
       stamp_data = stamp_data,
       **kwargs)
+
+def ivy_ng_module(name, tsconfig = None, **kwargs):
+  if not tsconfig:
+    tsconfig = DEFAULT_TSCONFIG
+  _ivy_ng_module(name = name, tsconfig = tsconfig, **kwargs)

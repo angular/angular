@@ -37,6 +37,9 @@ export class JitReflector implements CompileReflector {
   annotations(typeOrFunc: /*Type*/ any): any[] {
     return this.reflectionCapabilities.annotations(typeOrFunc);
   }
+  shallowAnnotations(typeOrFunc: /*Type*/ any): any[] {
+    throw new Error('Not supported in JIT mode');
+  }
   propMetadata(typeOrFunc: /*Type*/ any): {[key: string]: any[]} {
     return this.reflectionCapabilities.propMetadata(typeOrFunc);
   }

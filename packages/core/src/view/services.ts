@@ -8,7 +8,8 @@
 
 import {isDevMode} from '../application_ref';
 import {DebugElement, DebugNode, EventListener, getDebugNode, indexDebugNode, removeDebugNodeFromIndex} from '../debug/debug_node';
-import {InjectableType, Injector} from '../di';
+import {Injector} from '../di';
+import {InjectableType} from '../di/injectable';
 import {ErrorHandler} from '../error_handler';
 import {ComponentFactory} from '../linker/component_factory';
 import {NgModuleRef} from '../linker/ng_module_factory';

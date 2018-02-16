@@ -19,4 +19,5 @@ export interface AotCompilerOptions {
   fullTemplateTypeCheck?: boolean;
   allowEmptyCodegenFiles?: boolean;
   strictInjectionParameters?: boolean;
+  enableIvy?: boolean;
 }
