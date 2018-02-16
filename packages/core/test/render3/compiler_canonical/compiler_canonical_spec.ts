@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, ContentChild, ContentChildren, Directive, HostBinding, Injectable, Input, NgModule, OnDestroy, Optional, Pipe, PipeTransform, QueryList, SimpleChanges, TemplateRef, ViewChild, ViewChildren, ViewContainerRef} from '../../src/core';
+import {Component, ContentChild, ContentChildren, Directive, HostBinding, HostListener, Injectable, Input, NgModule, OnDestroy, Optional, Pipe, PipeTransform, QueryList, SimpleChanges, TemplateRef, ViewChild, ViewChildren, ViewContainerRef} from '../../src/core';
 import * as $r3$ from '../../src/core_render3_private_export';
 
 import {renderComponent, toHtml} from '../render_util';
@@ -174,7 +174,102 @@ describe('compiler specification', () => {
       }
 
       expect(renderComp(MyApp)).toEqual(`<div hostbindingdir="" id="some id"></div>`);
+    });
 
+    it('should support host listeners', () => {
+      type $MyApp$ = MyApp;
+
+      @Directive({selector: '[hostlistenerDir]'})
+      class HostListenerDir {
+        @HostListener('click')
+        onClick() {}
+
+        // NORMATIVE
+        static ngDirectiveDef = $r3$.ɵdefineDirective({
+          type: HostListenerDir,
+          factory: function HostListenerDir_Factory() {
+            const $dir$ = new HostListenerDir();
+            $r3$.ɵL('click', function HostListenerDir_click_Handler(event) { $dir$.onClick(); });
+            return $dir$;
+          },
+        });
+        // /NORMATIVE
+      }
+
+      const $e0_attrs$ = ['hostListenerDir', ''];
+      const $e0_dirs$ = [HostListenerDir];
+
+      @Component({
+        selector: 'my-app',
+        template: `
+          <button hostListenerDir>Click</button>
+        `
+      })
+      class MyApp {
+        static ngComponentDef = $r3$.ɵdefineComponent({
+          type: MyApp,
+          tag: 'my-app',
+          factory: function MyApp_Factory() { return new MyApp(); },
+          template: function MyApp_Template(ctx: $MyApp$, cm: $boolean$) {
+            if (cm) {
+              $r3$.ɵE(0, 'button', $e0_attrs$, $e0_dirs$);
+              $r3$.ɵT(2, 'Click');
+              $r3$.ɵe();
+            }
+            HostListenerDir.ngDirectiveDef.h(1, 0);
+            $r3$.ɵr(1, 0);
+          }
+        });
+      }
+
+      expect(renderComp(MyApp)).toEqual(`<button hostlistenerdir="">Click</button>`);
+    });
+
+    it('should support bindings of host attributes', () => {
+      type $MyApp$ = MyApp;
+
+      @Directive({selector: '[hostBindingDir]'})
+      class HostBindingDir {
+        @HostBinding('attr.aria-label') label = 'some label';
+
+        // NORMATIVE
+        static ngDirectiveDef = $r3$.ɵdefineDirective({
+          type: HostBindingDir,
+          factory: function HostBindingDir_Factory() { return new HostBindingDir(); },
+          hostBindings: function HostBindingDir_HostBindings(
+              dirIndex: $number$, elIndex: $number$) {
+            $r3$.ɵa(elIndex, 'aria-label', $r3$.ɵb($r3$.ɵm<HostBindingDir>(dirIndex).label));
+          }
+        });
+        // /NORMATIVE
+      }
+
+      const $e0_attrs$ = ['hostBindingDir', ''];
+      const $e0_dirs$ = [HostBindingDir];
+
+      @Component({
+        selector: 'my-app',
+        template: `
+          <div hostBindingDir></div>
+        `
+      })
+      class MyApp {
+        static ngComponentDef = $r3$.ɵdefineComponent({
+          type: MyApp,
+          tag: 'my-app',
+          factory: function MyApp_Factory() { return new MyApp(); },
+          template: function MyApp_Template(ctx: $MyApp$, cm: $boolean$) {
+            if (cm) {
+              $r3$.ɵE(0, 'div', $e0_attrs$, $e0_dirs$);
+              $r3$.ɵe();
+            }
+            HostBindingDir.ngDirectiveDef.h(1, 0);
+            $r3$.ɵr(1, 0);
+          }
+        });
+      }
+
+      expect(renderComp(MyApp)).toEqual(`<div aria-label="some label" hostbindingdir=""></div>`);
     });
 
     xit('should support structural directives', () => {

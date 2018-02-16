@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {defineComponent} from '../../src/render3/index';
+import {defineComponent, defineDirective} from '../../src/render3/index';
 import {componentRefresh, container, containerRefreshEnd, containerRefreshStart, elementEnd, elementStart, embeddedViewEnd, embeddedViewStart, listener, text} from '../../src/render3/instructions';
 
 import {containerEl, renderComponent, renderToHtml} from './render_util';
@@ -29,7 +29,7 @@ describe('event listeners', () => {
         if (cm) {
           elementStart(0, 'button');
           {
-            listener('click', ctx.onClick.bind(ctx));
+            listener('click', function() { ctx.onClick(); });
             text(1, 'Click me');
           }
           elementEnd();
@@ -55,6 +55,40 @@ describe('event listeners', () => {
     expect(comp.counter).toEqual(2);
   });
 
+  it('should call function chain on event emit', () => {
+    /** <button (click)="onClick(); onClick2(); "> Click me </button> */
+    function Template(ctx: any, cm: boolean) {
+      if (cm) {
+        elementStart(0, 'button');
+        {
+          listener('click', function() {
+            ctx.onClick();
+            ctx.onClick2();
+          });
+          text(1, 'Click me');
+        }
+        elementEnd();
+      }
+    }
+
+    const ctx = {
+      counter: 0,
+      counter2: 0,
+      onClick: function() { this.counter++; },
+      onClick2: function() { this.counter2++; }
+    };
+    renderToHtml(Template, ctx);
+    const button = containerEl.querySelector('button') !;
+
+    button.click();
+    expect(ctx.counter).toBe(1);
+    expect(ctx.counter2).toBe(1);
+
+    button.click();
+    expect(ctx.counter).toBe(2);
+    expect(ctx.counter2).toBe(2);
+  });
+
   it('should evaluate expression on event emit', () => {
 
     /** <button (click)="showing=!showing"> Click me </button> */
@@ -62,7 +96,7 @@ describe('event listeners', () => {
       if (cm) {
         elementStart(0, 'button');
         {
-          listener('click', () => ctx.showing = !ctx.showing);
+          listener('click', function() { ctx.showing = !ctx.showing; });
           text(1, 'Click me');
         }
         elementEnd();
@@ -97,7 +131,7 @@ describe('event listeners', () => {
           if (embeddedViewStart(1)) {
             elementStart(0, 'button');
             {
-              listener('click', ctx.onClick.bind(ctx));
+              listener('click', function() { ctx.onClick(); });
               text(1, 'Click me');
             }
             elementEnd();
@@ -123,6 +157,42 @@ describe('event listeners', () => {
     renderToHtml(Template, comp);
     button.click();
     expect(comp.counter).toEqual(2);
+  });
+
+  it('should support host listeners', () => {
+    let events: string[] = [];
+
+    class HostListenerDir {
+      /* @HostListener('click') */
+      onClick() { events.push('click!'); }
+
+      static ngDirectiveDef = defineDirective({
+        type: HostListenerDir,
+        factory: function HostListenerDir_Factory() {
+          const $dir$ = new HostListenerDir();
+          listener('click', function() { $dir$.onClick(); });
+          return $dir$;
+        },
+      });
+    }
+
+    function Template(ctx: any, cm: boolean) {
+      if (cm) {
+        elementStart(0, 'button', ['hostListenerDir', ''], [HostListenerDir]);
+        text(2, 'Click');
+        elementEnd();
+      }
+      HostListenerDir.ngDirectiveDef.h(1, 0);
+      componentRefresh(1, 0);
+    }
+
+    renderToHtml(Template, {});
+    const button = containerEl.querySelector('button') !;
+    button.click();
+    expect(events).toEqual(['click!']);
+
+    button.click();
+    expect(events).toEqual(['click!', 'click!']);
   });
 
   it('should destroy listeners in nested views', () => {
@@ -152,7 +222,7 @@ describe('event listeners', () => {
               if (embeddedViewStart(0)) {
                 elementStart(0, 'button');
                 {
-                  listener('click', ctx.onClick.bind(ctx));
+                  listener('click', function() { ctx.onClick(); });
                   text(1, 'Click');
                 }
                 elementEnd();
@@ -267,7 +337,7 @@ describe('event listeners', () => {
               if (embeddedViewStart(0)) {
                 elementStart(0, 'button');
                 {
-                  listener('click', () => ctx.counter1++);
+                  listener('click', function() { ctx.counter1++; });
                   text(1, 'Click');
                 }
                 elementEnd();
@@ -282,7 +352,7 @@ describe('event listeners', () => {
               if (embeddedViewStart(0)) {
                 elementStart(0, 'button');
                 {
-                  listener('click', () => ctx.counter2++);
+                  listener('click', function() { ctx.counter2++; });
                   text(1, 'Click');
                 }
                 elementEnd();
