@@ -7,10 +7,12 @@
  */
 import {AnimationMetadataType, ɵStyleData} from '@angular/animations';
 
+import {AnimationDriver} from '../render/animation_driver';
 import {copyStyles, interpolateParams} from '../util';
 
 import {SequenceAst, StyleAst, TransitionAst, TriggerAst} from './animation_ast';
-import {AnimationStateStyles, AnimationTransitionFactory} from './animation_transition_factory';
+import {AstBasedTransitionState, TransitionState} from './animation_state';
+import {AnimationStateStyles, AnimationTransitionFactory, _AnimationTransitionFactory, _ImplicitAnimationFactory} from './animation_transition_factory';
 
 
 
@@ -18,13 +20,22 @@ import {AnimationStateStyles, AnimationTransitionFactory} from './animation_tran
  * @experimental Animation support is experimental.
  */
 export function buildTrigger(name: string, ast: TriggerAst): AnimationTrigger {
-  return new AnimationTrigger(name, ast);
+  return new _AnimationTrigger(name, ast);
 }
 
-/**
+export interface AnimationTrigger {
+  containsQueries: boolean;
+  fallbackTransition: AnimationTransitionFactory;
+  states: {[stateName: string]: AnimationStateStyles};
+  matchTransition(currentState: TransitionState, nextState: TransitionState):
+      AnimationTransitionFactory|null;
+  matchStyles(state: TransitionState, params: {[key: string]: any}, errors: any[]): ɵStyleData;
+}
+
+/*
 * @experimental Animation support is experimental.
 */
-export class AnimationTrigger {
+export class _AnimationTrigger implements AnimationTrigger {
   public transitionFactories: AnimationTransitionFactory[] = [];
   public fallbackTransition: AnimationTransitionFactory;
   public states: {[stateName: string]: AnimationStateStyles} = {};
@@ -39,7 +50,7 @@ export class AnimationTrigger {
     balanceProperties(this.states, 'false', '0');
 
     ast.transitions.forEach(ast => {
-      this.transitionFactories.push(new AnimationTransitionFactory(name, ast, this.states));
+      this.transitionFactories.push(new _AnimationTransitionFactory(ast, this.states));
     });
 
     this.fallbackTransition = createFallbackTransition(name, this.states);
@@ -57,6 +68,23 @@ export class AnimationTrigger {
   }
 }
 
+export class ImplicitTrigger implements AnimationTrigger {
+  public factory: AnimationTransitionFactory;
+  public containsQueries = false;
+  public fallbackTransition: AnimationTransitionFactory;
+  public states = {};
+
+  constructor() { this.fallbackTransition = this.factory = new _ImplicitAnimationFactory(); }
+
+  matchTransition(currentState: any, nextState: any): AnimationTransitionFactory|null {
+    return this.factory;
+  }
+
+  matchStyles(currentState: any, params: {[key: string]: any}, errors: any[]): ɵStyleData {
+    return this.factory.buildStyles(currentState, params, errors);
+  }
+}
+
 function createFallbackTransition(
     triggerName: string,
     states: {[stateName: string]: AnimationStateStyles}): AnimationTransitionFactory {
@@ -70,7 +98,7 @@ function createFallbackTransition(
     queryCount: 0,
     depCount: 0
   };
-  return new AnimationTransitionFactory(triggerName, transition, states);
+  return new _AnimationTransitionFactory(transition, states);
 }
 
 function balanceProperties(obj: {[key: string]: any}, key1: string, key2: string) {

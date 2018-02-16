@@ -9,6 +9,6 @@ export {Animation as ɵAnimation} from './dsl/animation';
 export {AnimationStyleNormalizer as ɵAnimationStyleNormalizer, NoopAnimationStyleNormalizer as ɵNoopAnimationStyleNormalizer} from './dsl/style_normalization/animation_style_normalizer';
 export {WebAnimationsStyleNormalizer as ɵWebAnimationsStyleNormalizer} from './dsl/style_normalization/web_animations_style_normalizer';
 export {NoopAnimationDriver as ɵNoopAnimationDriver} from './render/animation_driver';
-export {AnimationEngine as ɵAnimationEngine} from './render/animation_engine_next';
+export {ANIMATION_BUILDER_PREFIX as ɵANIMATION_BUILDER_PREFIX, AnimationEngine as ɵAnimationEngine} from './render/animation_engine_next';
 export {WebAnimationsDriver as ɵWebAnimationsDriver, supportsWebAnimations as ɵsupportsWebAnimations} from './render/web_animations/web_animations_driver';
 export {WebAnimationsPlayer as ɵWebAnimationsPlayer} from './render/web_animations/web_animations_player';

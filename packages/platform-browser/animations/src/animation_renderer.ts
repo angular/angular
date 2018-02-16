@@ -5,8 +5,8 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AnimationTriggerMetadata} from '@angular/animations';
-import {ɵAnimationEngine as AnimationEngine} from '@angular/animations/browser';
+import {AnimationEvent, AnimationTriggerMetadata} from '@angular/animations';
+import {ɵANIMATION_BUILDER_PREFIX as ANIMATION_BUILDER_PREFIX, ɵAnimationEngine as AnimationEngine} from '@angular/animations/browser';
 import {Injectable, NgZone, Renderer2, RendererFactory2, RendererStyleFlags2, RendererType2} from '@angular/core';
 
 const ANIMATION_PREFIX = '@';
@@ -43,7 +43,7 @@ export class AnimationRendererFactory implements RendererFactory2 {
     if (!hostElement || !type || !type.data || !type.data['animation']) {
       let renderer: BaseAnimationRenderer|undefined = this._rendererCache.get(delegate);
       if (!renderer) {
-        renderer = new BaseAnimationRenderer(EMPTY_NAMESPACE_ID, delegate, this.engine);
+        renderer = new BaseAnimationRenderer(this, EMPTY_NAMESPACE_ID, delegate, this.engine);
         // only cache this result when the base renderer is used
         this._rendererCache.set(delegate, renderer);
       }
@@ -117,8 +117,10 @@ export class AnimationRendererFactory implements RendererFactory2 {
 
 export class BaseAnimationRenderer implements Renderer2 {
   constructor(
-      protected namespaceId: string, public delegate: Renderer2, public engine: AnimationEngine) {
+      public factory: AnimationRendererFactory, protected namespaceId: string,
+      public delegate: Renderer2, public engine: AnimationEngine) {
     this.destroyNode = this.delegate.destroyNode ? (n) => delegate.destroyNode !(n) : null;
+    this.engine.register(namespaceId, null);
   }
 
   get data() { return this.delegate.data; }
@@ -179,16 +181,61 @@ export class BaseAnimationRenderer implements Renderer2 {
   }
 
   setProperty(el: any, name: string, value: any): void {
-    if (name.charAt(0) == ANIMATION_PREFIX && name == DISABLE_ANIMATIONS_FLAG) {
-      this.disableAnimations(el, !!value);
+    if (name.charAt(0) == ANIMATION_PREFIX) {
+      this._handleAnimationProperty(el, name, value);
     } else {
       this.delegate.setProperty(el, name, value);
+    }
+  }
+
+  /* @internal */
+  protected _handleAnimationProperty(
+      el: any, name: string, value: any, allowStandardAnimations?: boolean): void {
+    const isDynamic = name.charAt(1) == ANIMATION_PREFIX;  // @@dynamic animations
+    const allowAnimation = isDynamic || allowStandardAnimations;
+    if (!isDynamic && name == DISABLE_ANIMATIONS_FLAG) {
+      value = value === undefined ? true : !!value;
+      this.disableAnimations(el, value);
+    } else if (allowAnimation) {
+      this.engine.process(this.namespaceId, el, name.substr(1), value);
+    }
+  }
+
+  /* @internal */
+  protected _handleAnimationListener(
+      target: 'window'|'document'|'body'|any, eventName: string, callback: (event: any) => any,
+      allowStandardAnimations?: boolean) {
+    const isDynamic = eventName.charAt(1) == ANIMATION_PREFIX;  // @@dynamic animations
+    const allowAnimation = isDynamic || allowStandardAnimations;
+    if (allowAnimation) {
+      const element = resolveElementFromTarget(target);
+      let name = eventName.substr(1);
+      let phase = '';
+      // @listener.phase is for trigger animation callbacks
+      // @@listener.phase is for dynamic trigger animation callbacks
+      // @!listener is for animation builder callbacks
+      if (name.charAt(0) != ANIMATION_BUILDER_PREFIX) {
+        [name, phase] = parseTriggerCallbackName(name);
+      }
+      return this.engine.listen(this.namespaceId, element, name, phase, event => {
+        const countId = (event as any)['_data'] || -1;
+        if (isDynamic) {
+          // this is to emit the event name as @@dynamic
+          const e = event as AnimationEvent;
+          e.triggerName = ANIMATION_PREFIX + e.triggerName;
+        }
+        this.factory.scheduleListenerCallback(countId, callback, event);
+      });
     }
   }
 
   setValue(node: any, value: string): void { this.delegate.setValue(node, value); }
 
   listen(target: any, eventName: string, callback: (event: any) => boolean | void): () => void {
+    if (eventName.charAt(0) == ANIMATION_PREFIX) {
+      const cb = this._handleAnimationListener(target, eventName, callback);
+      if (cb) return cb;
+    }
     return this.delegate.listen(target, eventName, callback);
   }
 
@@ -199,20 +246,15 @@ export class BaseAnimationRenderer implements Renderer2 {
 
 export class AnimationRenderer extends BaseAnimationRenderer implements Renderer2 {
   constructor(
-      public factory: AnimationRendererFactory, namespaceId: string, delegate: Renderer2,
+      factory: AnimationRendererFactory, namespaceId: string, delegate: Renderer2,
       engine: AnimationEngine) {
-    super(namespaceId, delegate, engine);
+    super(factory, namespaceId, delegate, engine);
     this.namespaceId = namespaceId;
   }
 
   setProperty(el: any, name: string, value: any): void {
     if (name.charAt(0) == ANIMATION_PREFIX) {
-      if (name.charAt(1) == '.' && name == DISABLE_ANIMATIONS_FLAG) {
-        value = value === undefined ? true : !!value;
-        this.disableAnimations(el, value as boolean);
-      } else {
-        this.engine.process(this.namespaceId, el, name.substr(1), value);
-      }
+      this._handleAnimationProperty(el, name, value, true);
     } else {
       this.delegate.setProperty(el, name, value);
     }
@@ -221,18 +263,8 @@ export class AnimationRenderer extends BaseAnimationRenderer implements Renderer
   listen(target: 'window'|'document'|'body'|any, eventName: string, callback: (event: any) => any):
       () => void {
     if (eventName.charAt(0) == ANIMATION_PREFIX) {
-      const element = resolveElementFromTarget(target);
-      let name = eventName.substr(1);
-      let phase = '';
-      // @listener.phase is for trigger animation callbacks
-      // @@listener is for animation builder callbacks
-      if (name.charAt(0) != ANIMATION_PREFIX) {
-        [name, phase] = parseTriggerCallbackName(name);
-      }
-      return this.engine.listen(this.namespaceId, element, name, phase, event => {
-        const countId = (event as any)['_data'] || -1;
-        this.factory.scheduleListenerCallback(countId, callback, event);
-      });
+      const cb = this._handleAnimationListener(target, eventName, callback, true);
+      if (cb) return cb;
     }
     return this.delegate.listen(target, eventName, callback);
   }

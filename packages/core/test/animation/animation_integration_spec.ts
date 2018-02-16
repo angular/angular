@@ -8,7 +8,7 @@
 import {AUTO_STYLE, AnimationEvent, AnimationOptions, animate, animateChild, group, keyframes, query, state, style, transition, trigger, ɵPRE_STYLE as PRE_STYLE} from '@angular/animations';
 import {AnimationDriver, ɵAnimationEngine, ɵNoopAnimationDriver} from '@angular/animations/browser';
 import {MockAnimationDriver, MockAnimationPlayer} from '@angular/animations/browser/testing';
-import {ChangeDetectorRef, Component, HostBinding, HostListener, RendererFactory2, ViewChild} from '@angular/core';
+import {ChangeDetectorRef, Component, Directive, EventEmitter, HostBinding, HostListener, Input, Output, RendererFactory2, ViewChild} from '@angular/core';
 import {ɵDomRendererFactory2} from '@angular/platform-browser';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
@@ -2697,6 +2697,471 @@ const DEFAULT_COMPONENT_ID = '1';
                expect(cmp.events['c-3'].totalTime).toEqual(4100);
                expect(cmp.events['c-3'].element.innerText.trim()).toEqual('3');
              }));
+    });
+
+    describe('animation directives', () => {
+      it('should allow for directives to write to the @@trigger prop', () => {
+        @Directive({selector: '[fade]'})
+        class FadeDirective {
+          @HostBinding('@@myAnimation') public animationExp: any|null = null;
+
+          @Input('fade')
+          set status(value: string) {
+            switch (value) {
+              case 'in':
+                this.fadeIn();
+                break;
+              case 'out':
+                this.fadeOut();
+                break;
+              default:
+                break;
+            }
+          }
+
+          fadeIn() {
+            this.animationExp = [
+              style({opacity: 0}),
+              animate('500ms', style({opacity: 1})),
+            ];
+          }
+
+          fadeOut() {
+            this.animationExp = [
+              style({opacity: 1}),
+              animate('500ms', style({opacity: 0})),
+            ];
+          }
+        }
+
+        @Component({
+          selector: 'my-cmp',
+          template: `
+              <div #elm [fade]="fadeExp">123</div>
+            `
+        })
+        class Cmp {
+          fadeExp: 'in'|'out'|null = null;
+          @ViewChild('elm') public elm: any = null;
+        }
+
+        TestBed.configureTestingModule({declarations: [FadeDirective, Cmp]});
+
+        const fixture = TestBed.createComponent(Cmp);
+        const cmp = fixture.componentInstance;
+        cmp.fadeExp = 'in';
+        fixture.detectChanges();
+        const elm = cmp.elm.nativeElement;
+
+        let players = getLog();
+        expect(players.length).toEqual(1);
+        let [p1] = players;
+        resetLog();
+
+        expect(p1.keyframes).toEqual([
+          {opacity: '0', offset: 0},
+          {opacity: '1', offset: 1},
+        ]);
+
+        p1.finish();
+        expect(elm.style.opacity).toEqual('1');
+
+        cmp.fadeExp = 'out';
+        fixture.detectChanges();
+
+        players = getLog();
+        expect(players.length).toEqual(1);
+        [p1] = players;
+
+        expect(p1.keyframes).toEqual([
+          {opacity: '1', offset: 0},
+          {opacity: '0', offset: 1},
+        ]);
+
+        p1.finish();
+        expect(elm.style.opacity).toEqual('0');
+      });
+
+      it('should include the stlying from the previous exp change into the next animation', () => {
+        @Directive({selector: '[animate]'})
+        class FadeDirective {
+          @HostBinding('@@myAnimation') public animationExp: any|null = null;
+
+          @Input('animate')
+          set status(value: string) {
+            switch (value) {
+              case 'widthAndHeight':
+                this.applyWidthAndHeight();
+                break;
+              case 'height':
+                this.applyHeight();
+                break;
+              default:
+                break;
+            }
+          }
+
+          applyWidthAndHeight() {
+            this.animationExp = [
+              style({width: '0px', height: '0px'}),
+              animate('500ms', style({height: '200px', width: '200px'})),
+            ];
+          }
+
+          applyHeight() {
+            this.animationExp = [
+              style({height: '100px'}),
+              animate('500ms', style({height: '500px'})),
+            ];
+          }
+        }
+
+        @Component({
+          selector: 'my-cmp',
+          template: `
+              <div #elm [animate]="exp">123</div>
+            `
+        })
+        class Cmp {
+          exp: 'widthAndHeight'|'height'|null = null;
+          @ViewChild('elm') public elm: any = null;
+        }
+
+        TestBed.configureTestingModule({declarations: [FadeDirective, Cmp]});
+
+        const fixture = TestBed.createComponent(Cmp);
+        const cmp = fixture.componentInstance;
+        cmp.exp = 'widthAndHeight';
+        fixture.detectChanges();
+        const elm = cmp.elm.nativeElement;
+
+        let players = getLog();
+        expect(players.length).toEqual(1);
+        let [p1] = players;
+        resetLog();
+        p1.finish();
+
+        cmp.exp = 'height';
+        fixture.detectChanges();
+
+        players = getLog();
+        expect(players.length).toEqual(1);
+        [p1] = players;
+
+        expect(p1.keyframes).toEqual([
+          {width: '200px', height: '100px', offset: 0},
+          {width: '200px', height: '500px', offset: 1},
+        ]);
+
+        p1.finish();
+
+        // even though the width is passed into the next animation
+        // (from the previous), it is not included as a final value
+        // when the animation finishes itself...
+        expect(elm.style.width).toEqual('');
+        expect(elm.style.height).toEqual('500px');
+      });
+
+      it('should verify that the value passed into a @@dynamic trigger is null or of AnimationMetadata|AnimationMetadata[]',
+         () => {
+           @Component({
+             selector: 'my-cmp',
+             template: `
+              <div [@@dynamicMan]="exp">123</div>
+            `
+           })
+           class Cmp {
+             exp: any;
+           }
+
+           TestBed.configureTestingModule({declarations: [Cmp]});
+
+           const fixture = TestBed.createComponent(Cmp);
+           const cmp = fixture.componentInstance;
+           cmp.exp = null;
+           fixture.detectChanges();
+
+           cmp.exp = 'foo';
+           expect(() => fixture.detectChanges())
+               .toThrowError(
+                   /The value passed into the dynamic trigger @@dynamicMan must be either null or an animation sequence/);
+         });
+
+      it('should by queryable by normal @trigger queries via @foo and @*', () => {
+        @Component({
+          selector: 'my-cmp',
+          animations: [
+            trigger(
+                'parent',
+                [
+                  transition('* => simple', [query(
+                                                '@child',
+                                                [
+                                                  style({opacity: 0}),
+                                                  animate('1s', style({opacity: 1})),
+                                                ])]),
+                  transition(
+                      '* => advanced',
+                      [
+                        query(
+                            '@*',
+                            [
+                              animateChild(),
+                            ]),
+                      ]),
+                ]),
+          ],
+          template: `
+              <div [@parent]="parentExp">
+                <div #child [@@child]="childExp"></div>
+              </div>
+            `
+        })
+        class Cmp {
+          parentExp: string;
+          childExp: any;
+
+          @ViewChild('child') public child: any;
+        }
+
+        TestBed.configureTestingModule({declarations: [Cmp]});
+
+        const fixture = TestBed.createComponent(Cmp);
+        const cmp = fixture.componentInstance;
+        cmp.parentExp = '';
+        cmp.childExp = null;
+        fixture.detectChanges();
+
+        const childElm = cmp.child !.nativeElement;
+        cmp.parentExp = 'simple';
+        fixture.detectChanges();
+
+        let players = getLog();
+        expect(players.length).toEqual(1);
+        let [p1] = players;
+        resetLog();
+
+        expect(p1.element).toBe(childElm);
+        expect(p1.keyframes).toEqual([
+          {opacity: '0', offset: 0},
+          {opacity: '1', offset: 1},
+        ]);
+
+        cmp.parentExp = 'advanced';
+        cmp.childExp = [
+          style({width: '0px'}),
+          animate('1s', style({width: '100px'})),
+        ];
+        fixture.detectChanges();
+
+        players = getLog();
+        expect(players.length).toEqual(1);
+        [p1] = players;
+        resetLog();
+
+        expect(p1.element).toBe(childElm);
+        expect(p1.keyframes).toEqual([
+          {width: '0px', offset: 0},
+          {width: '100px', offset: 1},
+        ]);
+      });
+
+      it('should allow @@dynamic triggers to query child @triggers and @@triggers', () => {
+        @Component({
+          selector: 'my-cmp',
+          animations: [
+            trigger(
+                'child',
+                [
+                  transition(
+                      '* => go',
+                      [
+                        style({width: '0px'}),
+                        animate('1s', style({width: '300px'})),
+                      ]),
+                ]),
+          ],
+          template: `
+              <div [@@dynamicParent]="parentExp">
+                <div #child [@child]="childExp1" [@@dynamicChild]="childExp2"></div>
+              </div>
+            `
+        })
+        class Cmp {
+          parentExp: any;
+          childExp1: string|null;
+          childExp2: any;
+
+          @ViewChild('child') public child: any;
+        }
+
+        TestBed.configureTestingModule({declarations: [Cmp]});
+
+        const fixture = TestBed.createComponent(Cmp);
+        const cmp = fixture.componentInstance;
+        cmp.parentExp = '';
+        cmp.childExp1 = null;
+        cmp.childExp2 = null;
+        fixture.detectChanges();
+        const childElm = cmp.child !.nativeElement;
+
+        cmp.parentExp = [
+          query('@*', animateChild()),
+        ];
+        cmp.childExp1 = 'go';
+        cmp.childExp2 = [style({height: '0px'}), animate('1s', style({height: '500px'}))];
+        fixture.detectChanges();
+
+        let players = getLog();
+        expect(players.length).toEqual(2);
+        let [p1, p2] = players;
+        resetLog();
+
+        expect(p1.element).toBe(childElm);
+        expect(p2.element).toBe(childElm);
+
+        expect(p1.keyframes).toEqual([
+          {width: '0px', offset: 0},
+          {width: '300px', offset: 1},
+        ]);
+
+        expect(p2.keyframes).toEqual([
+          {height: '0px', offset: 0},
+          {height: '500px', offset: 1},
+        ]);
+      });
+
+      it('should respect a parent that has disabled animations', () => {
+        @Directive({selector: '[animate]'})
+        class FadeDirective {
+          @HostBinding('@@myAnimation') public animationExp: any|null = null;
+
+          @Input('animate')
+          set status(value: string) {
+            if (value == 'go') {
+              this.go();
+            }
+          }
+
+          go() {
+            this.animationExp = [
+              style({opacity: '0'}),
+              animate(1234, style({opacity: '1'})),
+            ];
+          }
+        }
+
+        @Component({
+          selector: 'my-cmp',
+          template: `
+              <div [@.disabled]="disableExp" #elm [animate]="exp">123</div>
+            `
+        })
+        class Cmp {
+          disableExp = false;
+          exp: 'go'|null = null;
+          @ViewChild('elm') public elm: any = null;
+        }
+
+        TestBed.configureTestingModule({declarations: [FadeDirective, Cmp]});
+
+        const fixture = TestBed.createComponent(Cmp);
+        const cmp = fixture.componentInstance;
+        cmp.exp = null;
+        cmp.disableExp = true;
+        fixture.detectChanges();
+
+        const elm = cmp.elm.nativeElement;
+        expect(elm.style.opacity).not.toEqual('1');
+
+        cmp.exp = 'go';
+        fixture.detectChanges();
+
+        const players = getLog();
+        expect(players.length).toEqual(0);
+
+        expect(elm.style.opacity).toEqual('1');
+      });
+
+      it('should listen on animation directive callbacks via (@@trigger.start) and (@@trigger.done)',
+         fakeAsync(() => {
+           @Directive({selector: '[cb]', exportAs: 'cb'})
+           class CbDirective {
+             @Output('cbStart') public startEmit = new EventEmitter();
+
+             @Output('cbDone') public doneEmit = new EventEmitter();
+
+             @HostBinding('@@myAnimation') public animationExp: any|null = null;
+
+             @HostListener('@@myAnimation.start', ['$event'])
+             onStart(event: AnimationEvent) { this.startEmit.next(event); }
+
+             @HostListener('@@myAnimation.done', ['$event'])
+             onDone(event: AnimationEvent) { this.doneEmit.next(event); }
+
+             @Input('cb')
+             set status(value: string) {
+               if (value == 'go') {
+                 this.animationExp = [
+                   style({opacity: 0}),
+                   animate(1234, style({opacity: 1})),
+                 ];
+               }
+             }
+           }
+
+           @Component({
+             selector: 'my-cmp',
+             template: `
+              <div #elm #cb="cb" [cb]="exp" (cbStart)="onAnimationEvent($event)" (cbDone)="onAnimationEvent($event)">123</div>
+            `
+           })
+           class Cmp {
+             exp = '';
+             log: AnimationEvent[] = [];
+
+             @ViewChild('elm') public elm: any = null;
+             @ViewChild('cb') public cb: CbDirective|null = null;
+
+             onAnimationEvent(event: AnimationEvent) { this.log.push(event); }
+           }
+
+           TestBed.configureTestingModule({declarations: [CbDirective, Cmp]});
+
+           const fixture = TestBed.createComponent(Cmp);
+           const cmp = fixture.componentInstance;
+           cmp.exp = 'go';
+           fixture.detectChanges();
+           flushMicrotasks();
+
+           const elm = cmp.elm.nativeElement;
+           const toState = cmp.cb !.animationExp;
+
+           const players = getLog();
+           expect(players.length).toEqual(1);
+           const [p1] = players;
+
+           expect(cmp.log.length).toEqual(1);
+
+           let event = cmp.log.pop() !;
+           expect(event.triggerName).toEqual('@@myAnimation');
+           expect(event.phaseName).toEqual('start');
+           expect(event.fromState).toEqual('void');
+           expect(event.toState).toEqual(toState);
+           expect(event.totalTime).toEqual(1234);
+           expect(event.element).toEqual(elm);
+
+           p1.finish();
+           expect(cmp.log.length).toEqual(1);
+
+           event = cmp.log.pop() !;
+           expect(event.triggerName).toEqual('@@myAnimation');
+           expect(event.phaseName).toEqual('done');
+           expect(event.fromState).toEqual('void');
+           expect(event.toState).toEqual(toState);
+           expect(event.totalTime).toEqual(1234);
+           expect(event.element).toEqual(elm);
+         }));
     });
 
     describe('animation control flags', () => {
