@@ -282,7 +282,8 @@ describe('array literals', () => {
 
   it('should work with pureFunctionV for 9+ bindings', () => {
     const e0_ff =
-        (v: any[]) => ['start', v[0], v[1], v[2], v[3], v[4], v[5], v[6], v[7], v[8], 'end'];
+        (v0: any, v1: any, v2: any, v3: any, v4: any, v5: any, v6: any, v7: any,
+         v8: any) => ['start', v0, v1, v2, v3, v4, v5, v6, v7, v8, 'end'];
     const e0_ff_1 = (v: any) => { return {name: v}; };
 
     renderToHtml(Template, ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i']);

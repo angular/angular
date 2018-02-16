@@ -184,12 +184,11 @@ export function pureFunction8(
  * @param exp An array of binding values
  * @returns Updated value
  */
-export function pureFunctionV(pureFn: (v: any[]) => any, exps: any[]): any {
+export function pureFunctionV(pureFn: (...v: any[]) => any, exps: any[]): any {
   let different = false;
 
   for (let i = 0; i < exps.length; i++) {
     bindingUpdated(exps[i]) && (different = true);
   }
-
-  return different ? checkAndUpdateBinding(pureFn(exps)) : consumeBinding();
+  return different ? checkAndUpdateBinding(pureFn.apply(null, exps)) : consumeBinding();
 }
