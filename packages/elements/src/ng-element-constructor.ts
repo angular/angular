@@ -31,9 +31,7 @@ type WithProperties<P> = {
  *
  * @experimental
  */
-export interface NgElementConfig {
-  injector: Injector;
-}
+export interface NgElementConfig { injector: Injector; }
 
 /**
  * @whatItDoes Creates a custom element class based on an Angular Component. Takes a configuration

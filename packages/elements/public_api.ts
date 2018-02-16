@@ -11,7 +11,7 @@
  * @description
  * Entry point for all public APIs of the `elements` package.
  */
-export {NgElementConstructor, createNgElementConstructor, NgElementConfig} from './src/ng-element-constructor';
+export {NgElementConfig, NgElementConstructor, createNgElementConstructor} from './src/ng-element-constructor';
 export {VERSION} from './src/version';
 
 // This file only reexports content of the `src` folder. Keep it that way.
