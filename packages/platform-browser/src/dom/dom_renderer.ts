@@ -122,6 +122,12 @@ class DefaultDomRenderer2 implements Renderer2 {
 
   appendChild(parent: any, newChild: any): void { parent.appendChild(newChild); }
 
+  prependChild(parent: any, newChild: any): void {
+    if (parent) {
+      parent.insertBefore(newChild, parent.firstChild);
+    }
+  }
+
   insertBefore(parent: any, newChild: any, refChild: any): void {
     if (parent) {
       parent.insertBefore(newChild, refChild);

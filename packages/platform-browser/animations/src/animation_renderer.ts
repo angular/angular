@@ -143,6 +143,11 @@ export class BaseAnimationRenderer implements Renderer2 {
     this.engine.onInsert(this.namespaceId, newChild, parent, false);
   }
 
+  prependChild(parent: any, newChild: any): void {
+    this.delegate.prependChild(parent, newChild);
+    this.engine.onInsert(this.namespaceId, newChild, parent, false);
+  }
+
   insertBefore(parent: any, newChild: any, refChild: any): void {
     this.delegate.insertBefore(parent, newChild, refChild);
     this.engine.onInsert(this.namespaceId, newChild, parent, true);

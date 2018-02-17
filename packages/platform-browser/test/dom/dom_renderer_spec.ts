@@ -26,6 +26,29 @@ import {NAMESPACE_URIS} from '../../src/dom/dom_renderer';
       renderer = TestBed.createComponent(TestCmp).componentInstance.renderer;
     });
 
+    describe('prependChild', () => {
+      it('should work when parent has no existing child', () => {
+        const div = document.createElement('div');
+        const p = document.createElement('p');
+
+        renderer.prependChild(div, p);
+
+        expect(div.childNodes).toContain(p);
+      });
+
+      it('should work when parent has existing child', () => {
+        const div = document.createElement('div');
+        const oldP = document.createElement('p');
+        const newP = document.createElement('p');
+
+        renderer.appendChild(div, oldP);
+        renderer.prependChild(div, newP);
+
+        expect(div.childNodes[0]).toBe(newP);
+        expect(div.childNodes[1]).toBe(oldP);
+      });
+    });
+
     describe('setAttribute', () => {
       describe('with namespace', () => {
         it('xmlns', () => shouldSetAttributeWithNs('xmlns'));

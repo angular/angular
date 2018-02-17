@@ -81,6 +81,8 @@ class DefaultServerRenderer2 implements Renderer2 {
 
   appendChild(parent: any, newChild: any): void { getDOM().appendChild(parent, newChild); }
 
+  prependChild(parent: any, newChild: any): void { getDOM().prependChild(parent, newChild); }
+
   insertBefore(parent: any, newChild: any, refChild: any): void {
     if (parent) {
       getDOM().insertBefore(parent, refChild, newChild);

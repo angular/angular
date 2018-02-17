@@ -161,6 +161,7 @@ export abstract class Renderer2 {
    */
   destroyNode: ((node: any) => void)|null;
   abstract appendChild(parent: any, newChild: any): void;
+  abstract prependChild(parent: any, newChild: any): void;
   abstract insertBefore(parent: any, newChild: any, refChild: any): void;
   abstract removeChild(parent: any, oldChild: any): void;
   abstract selectRootElement(selectorOrNode: string|any): any;

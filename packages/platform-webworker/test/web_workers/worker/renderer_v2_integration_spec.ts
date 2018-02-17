@@ -154,6 +154,20 @@ let lastCreatedRenderer: Renderer2;
       expect(rootEl).toHaveText('');
     });
 
+    it('should prepend fragments', () => {
+      const fixture =
+          TestBed.overrideTemplate(MyComp2, '<div>world</div>').createComponent(MyComp2);
+
+      const rootEl = getRenderElement(fixture.nativeElement);
+      fixture.detectChanges();
+      expect(rootEl).toHaveText('world');
+
+      const textNode = getDOM().createTextNode('hello ');
+      getDOM().prependChild(rootEl, textNode);
+      fixture.detectChanges();
+      expect(rootEl).toHaveText('hello world');
+    });
+
     if (getDOM().supportsDOMEvents()) {
       it('should listen to events', () => {
         const fixture = TestBed.overrideTemplate(MyComp2, '<input (change)="ctxNumProp = 1">')

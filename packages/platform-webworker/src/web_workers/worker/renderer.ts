@@ -166,6 +166,13 @@ export class WebWorkerRenderer2 implements Renderer2 {
     ]);
   }
 
+  prependChild(parent: any, newChild: any): void {
+    this.callUIWithRenderer('prependChild', [
+      new FnArg(parent, SerializerTypes.RENDER_STORE_OBJECT),
+      new FnArg(newChild, SerializerTypes.RENDER_STORE_OBJECT),
+    ]);
+  }
+
   insertBefore(parent: any, newChild: any, refChild: any): void {
     if (!parent) {
       return;

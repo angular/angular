@@ -699,6 +699,15 @@ class DebugRenderer2 implements Renderer2 {
     this.delegate.appendChild(parent, newChild);
   }
 
+  prependChild(parent: any, newChild: any): void {
+    const debugEl = getDebugNode(parent);
+    const debugChildEl = getDebugNode(newChild);
+    if (debugEl && debugChildEl && debugEl instanceof DebugElement) {
+      debugEl.insertBefore(debugEl.childNodes[0], debugChildEl);
+    }
+    this.delegate.prependChild(parent, newChild);
+  }
+
   insertBefore(parent: any, newChild: any, refChild: any): void {
     const debugEl = getDebugNode(parent);
     const debugChildEl = getDebugNode(newChild);

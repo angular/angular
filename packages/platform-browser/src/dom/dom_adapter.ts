@@ -78,6 +78,7 @@ export abstract class DomAdapter {
   abstract childNodesAsList(el: any): Node[];
   abstract clearNodes(el: any): any;
   abstract appendChild(el: any, node: any): any;
+  abstract prependChild(el: any, node: any): any;
   abstract removeChild(el: any, node: any): any;
   abstract replaceChild(el: any, newNode: any, oldNode: any): any;
   abstract remove(el: any): Node;

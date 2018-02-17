@@ -841,6 +841,7 @@ export declare abstract class Renderer2 {
     abstract listen(target: 'window' | 'document' | 'body' | any, eventName: string, callback: (event: any) => boolean | void): () => void;
     abstract nextSibling(node: any): any;
     abstract parentNode(node: any): any;
+    abstract prependChild(parent: any, newChild: any): void;
     abstract removeAttribute(el: any, name: string, namespace?: string | null): void;
     abstract removeChild(parent: any, oldChild: any): void;
     abstract removeClass(el: any, name: string): void;

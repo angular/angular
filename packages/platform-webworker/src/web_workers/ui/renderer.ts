@@ -41,6 +41,7 @@ export class MessageBasedRenderer2 {
       ['createElement', this.createElement, RSO, P, P, P],
       ['createComment', this.createComment, RSO, P, P], ['createText', this.createText, RSO, P, P],
       ['appendChild', this.appendChild, RSO, RSO, RSO],
+      ['prependChild', this.prependChild, RSO, RSO, RSO],
       ['insertBefore', this.insertBefore, RSO, RSO, RSO, RSO],
       ['removeChild', this.removeChild, RSO, RSO, RSO],
       ['selectRootElement', this.selectRootElement, RSO, P, P],
@@ -87,6 +88,8 @@ export class MessageBasedRenderer2 {
   }
 
   private appendChild(r: Renderer2, parent: any, child: any) { r.appendChild(parent, child); }
+
+  private prependChild(r: Renderer2, parent: any, child: any) { r.prependChild(parent, child); }
 
   private insertBefore(r: Renderer2, parent: any, child: any, ref: any) {
     r.insertBefore(parent, child, ref);

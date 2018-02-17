@@ -79,6 +79,7 @@ export class WorkerDomAdapter extends DomAdapter {
   childNodesAsList(el: any): Node[] { throw 'not implemented'; }
   clearNodes(el: any) { throw 'not implemented'; }
   appendChild(el: any, node: any) { throw 'not implemented'; }
+  prependChild(el: any, node: any) { throw 'not implemented'; }
   removeChild(el: any, node: any) { throw 'not implemented'; }
   replaceChild(el: any, newNode: any, oldNode: any) { throw 'not implemented'; }
   remove(el: any): Node { throw 'not implemented'; }
