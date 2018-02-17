@@ -106,6 +106,7 @@ describe('parser', () => {
         checkAction('[]');
         checkAction('[].length');
         checkAction('[1, 2].length');
+        checkAction('[1, 2,]', '[1, 2]');
       });
 
       it('should parse map', () => {
