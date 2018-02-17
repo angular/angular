@@ -634,23 +634,23 @@ export function elementEnd() {
 }
 
 /**
- * Update an attribute on an Element. This is used with a `bind` instruction.
+ * Updates the value of removes an attribute on an Element.
  *
- * @param index The index of the element to update in the data array
- * @param attrName Name of attribute. Because it is going to DOM, this is not subject to
- *        renaming as port of minification.
- * @param value Value to write. This value will go through stringification.
+ * @param number index The index of the element in the data array
+ * @param string name The name of the attribute.
+ * @param any value The attribute is removed when value is `null` or `undefined`.
+ *                  Otherwise the attribute value is set to the stringified value.
  */
-export function elementAttribute(index: number, attrName: string, value: any): void {
+export function elementAttribute(index: number, name: string, value: any): void {
   if (value !== NO_CHANGE) {
-    const element = data[index] as LElementNode;
+    const element: LElementNode = data[index];
     if (value == null) {
-      isProceduralRenderer(renderer) ? renderer.removeAttribute(element.native, attrName) :
-                                       element.native.removeAttribute(attrName);
+      isProceduralRenderer(renderer) ? renderer.removeAttribute(element.native, name) :
+                                       element.native.removeAttribute(name);
     } else {
       isProceduralRenderer(renderer) ?
-          renderer.setAttribute(element.native, attrName, stringify(value)) :
-          element.native.setAttribute(attrName, stringify(value));
+          renderer.setAttribute(element.native, name, stringify(value)) :
+          element.native.setAttribute(name, stringify(value));
     }
   }
 }
