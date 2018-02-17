@@ -131,6 +131,8 @@ class DefaultServerRenderer2 implements Renderer2 {
 
   removeClass(el: any, name: string): void { getDOM().removeClass(el, name); }
 
+  toggleClass(el: any, name: string): void { getDOM().toggleClass(el, name); }
+
   setStyle(el: any, style: string, value: any, flags: RendererStyleFlags2): void {
     getDOM().setStyle(el, style, value);
   }

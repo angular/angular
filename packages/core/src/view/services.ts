@@ -762,6 +762,14 @@ class DebugRenderer2 implements Renderer2 {
     this.delegate.removeClass(el, name);
   }
 
+  toggleClass(el: any, name: string): void {
+    const debugEl = getDebugNode(el);
+    if (debugEl && debugEl instanceof DebugElement) {
+      debugEl.classes[name] = !debugEl.classes[name];
+    }
+    this.delegate.toggleClass(el, name);
+  }
+
   setStyle(el: any, style: string, value: any, flags: RendererStyleFlags2): void {
     const debugEl = getDebugNode(el);
     if (debugEl && debugEl instanceof DebugElement) {

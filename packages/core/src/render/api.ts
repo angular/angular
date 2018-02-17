@@ -180,6 +180,7 @@ export abstract class Renderer2 {
   abstract removeAttribute(el: any, name: string, namespace?: string|null): void;
   abstract addClass(el: any, name: string): void;
   abstract removeClass(el: any, name: string): void;
+  abstract toggleClass(el: any, name: string): void;
   abstract setStyle(el: any, style: string, value: any, flags?: RendererStyleFlags2): void;
   abstract removeStyle(el: any, style: string, flags?: RendererStyleFlags2): void;
   abstract setProperty(el: any, name: string, value: any): void;

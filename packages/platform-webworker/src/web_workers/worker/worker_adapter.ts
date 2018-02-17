@@ -111,6 +111,7 @@ export class WorkerDomAdapter extends DomAdapter {
   classList(element: any): any[] { throw 'not implemented'; }
   addClass(element: any, className: string) { throw 'not implemented'; }
   removeClass(element: any, className: string) { throw 'not implemented'; }
+  toggleClass(element: any, className: string) { throw 'not implemented'; }
   hasClass(element: any, className: string): boolean { throw 'not implemented'; }
   setStyle(element: any, styleName: string, styleValue: string) { throw 'not implemented'; }
   removeStyle(element: any, styleName: string) { throw 'not implemented'; }

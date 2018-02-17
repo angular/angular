@@ -170,6 +170,8 @@ export class BaseAnimationRenderer implements Renderer2 {
 
   removeClass(el: any, name: string): void { this.delegate.removeClass(el, name); }
 
+  toggleClass(el: any, name: string): void { this.delegate.toggleClass(el, name); }
+
   setStyle(el: any, style: string, value: any, flags?: RendererStyleFlags2|undefined): void {
     this.delegate.setStyle(el, style, value, flags);
   }

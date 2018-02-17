@@ -241,6 +241,7 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
   classList(element: any): any[] { return Array.prototype.slice.call(element.classList, 0); }
   addClass(element: any, className: string) { element.classList.add(className); }
   removeClass(element: any, className: string) { element.classList.remove(className); }
+  toggleClass(element: any, className: string) { element.classList.toggle(className); }
   hasClass(element: any, className: string): boolean {
     return element.classList.contains(className);
   }

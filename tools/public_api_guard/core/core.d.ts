@@ -850,6 +850,7 @@ export declare abstract class Renderer2 {
     abstract setProperty(el: any, name: string, value: any): void;
     abstract setStyle(el: any, style: string, value: any, flags?: RendererStyleFlags2): void;
     abstract setValue(node: any, value: string): void;
+    abstract toggleClass(el: any, name: string): void;
 }
 
 /** @experimental */

@@ -48,6 +48,7 @@ export class MessageBasedRenderer2 {
       ['setAttribute', this.setAttribute, RSO, RSO, P, P, P],
       ['removeAttribute', this.removeAttribute, RSO, RSO, P, P],
       ['addClass', this.addClass, RSO, RSO, P], ['removeClass', this.removeClass, RSO, RSO, P],
+      ['toggleClass', this.toggleClass, RSO, RSO, P],
       ['setStyle', this.setStyle, RSO, RSO, P, P, P],
       ['removeStyle', this.removeStyle, RSO, RSO, P, P],
       ['setProperty', this.setProperty, RSO, RSO, P, P], ['setValue', this.setValue, RSO, RSO, P],
@@ -117,6 +118,8 @@ export class MessageBasedRenderer2 {
   private addClass(r: Renderer2, el: any, name: string) { r.addClass(el, name); }
 
   private removeClass(r: Renderer2, el: any, name: string) { r.removeClass(el, name); }
+
+  private toggleClass(r: Renderer2, el: any, name: string) { r.toggleClass(el, name); }
 
   private setStyle(r: Renderer2, el: any, style: string, value: any, flags: RendererStyleFlags2) {
     r.setStyle(el, style, value, flags);

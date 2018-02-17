@@ -110,6 +110,12 @@ let lastCreatedRenderer: Renderer2;
            lastCreatedRenderer.removeClass(workerEl, 'a');
            expect(getDOM().hasClass(el, 'a')).toBe(false);
 
+           lastCreatedRenderer.toggleClass(workerEl, 'a');
+           expect(getDOM().hasClass(el, 'a')).toBe(true);
+
+           lastCreatedRenderer.toggleClass(workerEl, 'a');
+           expect(getDOM().hasClass(el, 'a')).toBe(false);
+
            lastCreatedRenderer.setStyle(workerEl, 'width', '10px');
            expect(getDOM().getStyle(el, 'width')).toEqual('10px');
 

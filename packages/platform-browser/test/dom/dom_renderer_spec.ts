@@ -86,6 +86,18 @@ import {NAMESPACE_URIS} from '../../src/dom/dom_renderer';
       });
     });
 
+    describe('toggleClass', () => {
+      it('should toggle the className in classList', () => {
+        const div = document.createElement('div');
+
+        renderer.toggleClass(div, 'foo');
+        expect(div.classList.contains('foo')).toBe(true);
+
+        renderer.toggleClass(div, 'foo');
+        expect(div.classList.contains('foo')).toBe(false);
+      });
+    });
+
     // other browsers don't support shadow dom
     if (browserDetection.isChromeDesktop) {
       it('should allow to style components with emulated encapsulation and no encapsulation inside of components with shadow DOM',

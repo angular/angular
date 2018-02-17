@@ -243,6 +243,13 @@ export class WebWorkerRenderer2 implements Renderer2 {
     ]);
   }
 
+  toggleClass(el: any, name: string): void {
+    this.callUIWithRenderer('toggleClass', [
+      new FnArg(el, SerializerTypes.RENDER_STORE_OBJECT),
+      new FnArg(name),
+    ]);
+  }
+
   setStyle(el: any, style: string, value: any, flags: RendererStyleFlags2): void {
     this.callUIWithRenderer('setStyle', [
       new FnArg(el, SerializerTypes.RENDER_STORE_OBJECT),

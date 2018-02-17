@@ -108,6 +108,7 @@ export abstract class DomAdapter {
   abstract classList(element: any): any[];
   abstract addClass(element: any, className: string): any;
   abstract removeClass(element: any, className: string): any;
+  abstract toggleClass(element: any, className: string): any;
   abstract hasClass(element: any, className: string): boolean;
   abstract setStyle(element: any, styleName: string, styleValue: string): any;
   abstract removeStyle(element: any, styleName: string): any;

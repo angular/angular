@@ -179,6 +179,8 @@ class DefaultDomRenderer2 implements Renderer2 {
 
   removeClass(el: any, name: string): void { el.classList.remove(name); }
 
+  toggleClass(el: any, name: string): void { el.classList.toggle(name); }
+
   setStyle(el: any, style: string, value: any, flags: RendererStyleFlags2): void {
     if (flags & RendererStyleFlags2.DashCase) {
       el.style.setProperty(
