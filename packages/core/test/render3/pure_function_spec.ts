@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {defineComponent} from '../../src/render3/index';
-import {bind, componentRefresh, container, containerRefreshEnd, containerRefreshStart, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, memory} from '../../src/render3/instructions';
+import {bind, componentRefresh, container, containerRefreshEnd, containerRefreshStart, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, load} from '../../src/render3/instructions';
 import {pureFunction1, pureFunction2, pureFunction3, pureFunction4, pureFunction5, pureFunction6, pureFunction7, pureFunction8, pureFunctionV} from '../../src/render3/pure_function';
 import {renderToHtml} from '../../test/render3/render_util';
 
@@ -124,7 +124,7 @@ describe('array literals', () => {
         template: function(ctx: any, cm: boolean) {
           if (cm) {
             elementStart(0, MyComp);
-            myComps.push(memory(1));
+            myComps.push(load(1));
             elementEnd();
           }
           elementProperty(0, 'names', bind(ctx.someFn(pureFunction1(e0_ff, ctx.customName))));
@@ -223,22 +223,22 @@ describe('array literals', () => {
     function Template(c: any, cm: boolean) {
       if (cm) {
         elementStart(0, MyComp);
-        f3Comp = memory(1);
+        f3Comp = load(1);
         elementEnd();
         elementStart(2, MyComp);
-        f4Comp = memory(3);
+        f4Comp = load(3);
         elementEnd();
         elementStart(4, MyComp);
-        f5Comp = memory(5);
+        f5Comp = load(5);
         elementEnd();
         elementStart(6, MyComp);
-        f6Comp = memory(7);
+        f6Comp = load(7);
         elementEnd();
         elementStart(8, MyComp);
-        f7Comp = memory(9);
+        f7Comp = load(9);
         elementEnd();
         elementStart(10, MyComp);
-        f8Comp = memory(11);
+        f8Comp = load(11);
         elementEnd();
       }
       elementProperty(0, 'names', bind(pureFunction3(e0_ff, c[5], c[6], c[7])));
@@ -444,7 +444,7 @@ describe('object literals', () => {
         for (let i = 0; i < 2; i++) {
           if (embeddedViewStart(0)) {
             elementStart(0, ObjectComp);
-            objectComps.push(memory(1));
+            objectComps.push(load(1));
             elementEnd();
           }
           elementProperty(

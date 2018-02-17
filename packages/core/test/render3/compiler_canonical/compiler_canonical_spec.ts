@@ -354,7 +354,7 @@ describe('compiler specification', () => {
               $r3$.ɵC(2, $c1_dirs$, C1);
               $r3$.ɵe();
             }
-            let $foo$ = $r3$.ɵm<any>(1);
+            let $foo$ = $r3$.ɵld<any>(1);
             $r3$.ɵcR(2);
             $r3$.ɵr(3, 2);
             $r3$.ɵcr();
@@ -951,8 +951,8 @@ describe('compiler specification', () => {
                 $r3$.ɵe();
               }
 
-              $r3$.ɵqR($tmp$ = $r3$.ɵm<QueryList<any>>(0)) && (ctx.someDir = $tmp$.first);
-              $r3$.ɵqR($tmp$ = $r3$.ɵm<QueryList<any>>(1)) &&
+              $r3$.ɵqR($tmp$ = $r3$.ɵld<QueryList<any>>(0)) && (ctx.someDir = $tmp$.first);
+              $r3$.ɵqR($tmp$ = $r3$.ɵld<QueryList<any>>(1)) &&
                   (ctx.someDirList = $tmp$ as QueryList<any>);
               SomeDirective.ngDirectiveDef.h(3, 2);
               $r3$.ɵr(3, 2);
@@ -998,9 +998,9 @@ describe('compiler specification', () => {
             hostBindings: function ContentQueryComponent_HostBindings(
                 dirIndex: $number$, elIndex: $number$) {
               let $tmp$: any;
-              const $instance$ = $r3$.ɵm<any[]>(dirIndex)[0];
-              $r3$.ɵqR($tmp$ = $r3$.ɵm<any[]>(dirIndex)[1]) && ($instance$.someDir = $tmp$.first);
-              $r3$.ɵqR($tmp$ = $r3$.ɵm<any[]>(dirIndex)[2]) && ($instance$.someDirList = $tmp$);
+              const $instance$ = $r3$.ɵld<any[]>(dirIndex)[0];
+              $r3$.ɵqR($tmp$ = $r3$.ɵld<any[]>(dirIndex)[1]) && ($instance$.someDir = $tmp$.first);
+              $r3$.ɵqR($tmp$ = $r3$.ɵld<any[]>(dirIndex)[2]) && ($instance$.someDirList = $tmp$);
             },
             template: function ContentQueryComponent_Template(
                 ctx: $ContentQueryComponent$, cm: $boolean$) {
@@ -1035,7 +1035,7 @@ describe('compiler specification', () => {
             template: function MyApp_Template(ctx: $MyApp$, cm: $boolean$) {
               if (cm) {
                 $r3$.ɵE(0, ContentQueryComponent);
-                contentQueryComp = $r3$.ɵm<any[]>(1)[0];
+                contentQueryComp = $r3$.ɵld<any[]>(1)[0];
                 $r3$.ɵE(2, 'div', $e2_attrs$, $e2_dirs$);
                 $r3$.ɵe();
                 $r3$.ɵe();
@@ -1148,7 +1148,7 @@ describe('compiler specification', () => {
               $r3$.ɵe();
               $r3$.ɵT(2);
             }
-            const l1_user = $r3$.ɵm<any>(1);
+            const l1_user = $r3$.ɵld<any>(1);
             $r3$.ɵt(2, $r3$.ɵi1('Hello ', l1_user.value, '!'));
           }
         });
