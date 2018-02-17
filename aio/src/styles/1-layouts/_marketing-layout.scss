@@ -125,6 +125,7 @@ section#intro {
 .announcement-bar {
   display: flex;
   flex-direction: row;
+  flex-wrap: wrap;
   justify-content: space-around;
   align-items: center;
   max-width: 50vw;
