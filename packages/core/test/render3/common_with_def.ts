@@ -11,7 +11,6 @@ import {IterableDiffers} from '@angular/core';
 
 import {defaultIterableDiffers} from '../../src/change_detection/change_detection';
 import {DirectiveType, InjectFlags, NgOnChangesFeature, defineDirective, inject, injectTemplateRef, injectViewContainerRef} from '../../src/render3/index';
-import {memory} from '../../src/render3/instructions';
 
 export const NgForOf: DirectiveType<NgForOfDef<any>> = NgForOfDef as any;
 

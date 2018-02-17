@@ -7,7 +7,7 @@
  */
 import {QUERY_READ_CONTAINER_REF, QUERY_READ_ELEMENT_REF, QUERY_READ_FROM_NODE, QUERY_READ_TEMPLATE_REF} from '../../src/render3/di';
 import {QueryList, detectChanges} from '../../src/render3/index';
-import {container, containerRefreshEnd, containerRefreshStart, elementEnd, elementStart, embeddedViewEnd, embeddedViewStart, memory} from '../../src/render3/instructions';
+import {container, containerRefreshEnd, containerRefreshStart, elementEnd, elementStart, embeddedViewEnd, embeddedViewStart, load} from '../../src/render3/instructions';
 import {query, queryRefresh} from '../../src/render3/query';
 
 import {createComponent, createDirective, renderComponent} from './render_util';
@@ -64,15 +64,15 @@ describe('query', () => {
         query(1, Child, true);
         elementStart(2, Child);
         {
-          child1 = memory(3);
+          child1 = load(3);
           elementStart(4, Child);
-          { child2 = memory(5); }
+          { child2 = load(5); }
           elementEnd();
         }
         elementEnd();
       }
-      queryRefresh(tmp = memory<QueryList<any>>(0)) && (ctx.query0 = tmp as QueryList<any>);
-      queryRefresh(tmp = memory<QueryList<any>>(1)) && (ctx.query1 = tmp as QueryList<any>);
+      queryRefresh(tmp = load<QueryList<any>>(0)) && (ctx.query0 = tmp as QueryList<any>);
+      queryRefresh(tmp = load<QueryList<any>>(1)) && (ctx.query1 = tmp as QueryList<any>);
     });
 
     const parent = renderComponent(Cmp);
@@ -98,7 +98,7 @@ describe('query', () => {
           elToQuery = elementStart(1, 'div', null, [Child]);
           elementEnd();
         }
-        queryRefresh(tmp = memory<QueryList<any>>(0)) && (ctx.query = tmp as QueryList<any>);
+        queryRefresh(tmp = load<QueryList<any>>(0)) && (ctx.query = tmp as QueryList<any>);
       });
 
       const cmptInstance = renderComponent(Cmpt);
@@ -124,10 +124,10 @@ describe('query', () => {
         if (cm) {
           query(0, Child, false, OtherChild);
           elementStart(1, 'div', null, [Child, OtherChild]);
-          { otherChildInstance = memory(3); }
+          { otherChildInstance = load(3); }
           elementEnd();
         }
-        queryRefresh(tmp = memory<QueryList<any>>(0)) && (ctx.query = tmp as QueryList<any>);
+        queryRefresh(tmp = load<QueryList<any>>(0)) && (ctx.query = tmp as QueryList<any>);
       });
 
       const cmptInstance = renderComponent(Cmpt);
@@ -152,7 +152,7 @@ describe('query', () => {
           elementStart(1, 'div', null, [Child]);
           elementEnd();
         }
-        queryRefresh(tmp = memory<QueryList<any>>(0)) && (ctx.query = tmp as QueryList<any>);
+        queryRefresh(tmp = load<QueryList<any>>(0)) && (ctx.query = tmp as QueryList<any>);
       });
 
       const cmptInstance = renderComponent(Cmpt);
@@ -182,7 +182,7 @@ describe('query', () => {
           elementStart(2, 'div');
           elementEnd();
         }
-        queryRefresh(tmp = memory<QueryList<any>>(0)) && (ctx.query = tmp as QueryList<any>);
+        queryRefresh(tmp = load<QueryList<any>>(0)) && (ctx.query = tmp as QueryList<any>);
       });
 
       const cmptInstance = renderComponent(Cmpt);
@@ -214,7 +214,7 @@ describe('query', () => {
           el2ToQuery = elementStart(3, 'div', null, null, ['bar', '']);
           elementEnd();
         }
-        queryRefresh(tmp = memory<QueryList<any>>(0)) && (ctx.query = tmp as QueryList<any>);
+        queryRefresh(tmp = load<QueryList<any>>(0)) && (ctx.query = tmp as QueryList<any>);
       });
 
       const cmptInstance = renderComponent(Cmpt);
@@ -243,7 +243,7 @@ describe('query', () => {
           elementStart(2, 'div');
           elementEnd();
         }
-        queryRefresh(tmp = memory<QueryList<any>>(0)) && (ctx.query = tmp as QueryList<any>);
+        queryRefresh(tmp = load<QueryList<any>>(0)) && (ctx.query = tmp as QueryList<any>);
       });
 
       const cmptInstance = renderComponent(Cmpt);
@@ -267,7 +267,7 @@ describe('query', () => {
           elementStart(1, 'div', null, null, ['foo', '']);
           elementEnd();
         }
-        queryRefresh(tmp = memory<QueryList<any>>(0)) && (ctx.query = tmp as QueryList<any>);
+        queryRefresh(tmp = load<QueryList<any>>(0)) && (ctx.query = tmp as QueryList<any>);
       });
 
       const cmptInstance = renderComponent(Cmpt);
@@ -289,7 +289,7 @@ describe('query', () => {
           query(0, ['foo'], false, QUERY_READ_CONTAINER_REF);
           container(1, undefined, undefined, undefined, undefined, ['foo', '']);
         }
-        queryRefresh(tmp = memory<QueryList<any>>(0)) && (ctx.query = tmp as QueryList<any>);
+        queryRefresh(tmp = load<QueryList<any>>(0)) && (ctx.query = tmp as QueryList<any>);
       });
 
       const cmptInstance = renderComponent(Cmpt);
@@ -312,7 +312,7 @@ describe('query', () => {
              query(0, ['foo'], false, QUERY_READ_ELEMENT_REF);
              container(1, undefined, undefined, undefined, undefined, ['foo', '']);
            }
-           queryRefresh(tmp = memory<QueryList<any>>(0)) && (ctx.query = tmp as QueryList<any>);
+           queryRefresh(tmp = load<QueryList<any>>(0)) && (ctx.query = tmp as QueryList<any>);
          });
 
          const cmptInstance = renderComponent(Cmpt);
@@ -335,7 +335,7 @@ describe('query', () => {
           query(0, ['foo'], undefined, QUERY_READ_FROM_NODE);
           container(1, undefined, undefined, undefined, undefined, ['foo', '']);
         }
-        queryRefresh(tmp = memory<QueryList<any>>(0)) && (ctx.query = tmp as QueryList<any>);
+        queryRefresh(tmp = load<QueryList<any>>(0)) && (ctx.query = tmp as QueryList<any>);
       });
 
       const cmptInstance = renderComponent(Cmpt);
@@ -358,7 +358,7 @@ describe('query', () => {
           query(0, ['foo'], false, QUERY_READ_TEMPLATE_REF);
           container(1, undefined, undefined, undefined, undefined, ['foo', '']);
         }
-        queryRefresh(tmp = memory<QueryList<any>>(0)) && (ctx.query = tmp as QueryList<any>);
+        queryRefresh(tmp = load<QueryList<any>>(0)) && (ctx.query = tmp as QueryList<any>);
       });
 
       const cmptInstance = renderComponent(Cmpt);
@@ -382,10 +382,10 @@ describe('query', () => {
         if (cm) {
           query(0, ['foo'], true, QUERY_READ_FROM_NODE);
           elementStart(1, Child, null, null, ['foo', '']);
-          { childInstance = memory(2); }
+          { childInstance = load(2); }
           elementEnd();
         }
-        queryRefresh(tmp = memory<QueryList<any>>(0)) && (ctx.query = tmp as QueryList<any>);
+        queryRefresh(tmp = load<QueryList<any>>(0)) && (ctx.query = tmp as QueryList<any>);
       });
 
       const cmptInstance = renderComponent(Cmpt);
@@ -410,10 +410,10 @@ describe('query', () => {
            if (cm) {
              query(0, ['foo'], true, QUERY_READ_FROM_NODE);
              elementStart(1, 'div', null, [Child], ['foo', 'child']);
-             childInstance = memory(2);
+             childInstance = load(2);
              elementEnd();
            }
-           queryRefresh(tmp = memory<QueryList<any>>(0)) && (ctx.query = tmp as QueryList<any>);
+           queryRefresh(tmp = load<QueryList<any>>(0)) && (ctx.query = tmp as QueryList<any>);
          });
 
          const cmptInstance = renderComponent(Cmpt);
@@ -439,12 +439,12 @@ describe('query', () => {
           query(0, ['foo', 'bar'], true, QUERY_READ_FROM_NODE);
           elementStart(1, 'div', null, [Child1, Child2], ['foo', 'child1', 'bar', 'child2']);
           {
-            child1Instance = memory(2);
-            child2Instance = memory(3);
+            child1Instance = load(2);
+            child2Instance = load(3);
           }
           elementEnd();
         }
-        queryRefresh(tmp = memory<QueryList<any>>(0)) && (ctx.query = tmp as QueryList<any>);
+        queryRefresh(tmp = load<QueryList<any>>(0)) && (ctx.query = tmp as QueryList<any>);
       });
 
       const cmptInstance = renderComponent(Cmpt);
@@ -471,7 +471,7 @@ describe('query', () => {
           div = elementStart(1, 'div', null, [Child], ['foo', 'child']);
           elementEnd();
         }
-        queryRefresh(tmp = memory<QueryList<any>>(0)) && (ctx.query = tmp as QueryList<any>);
+        queryRefresh(tmp = load<QueryList<any>>(0)) && (ctx.query = tmp as QueryList<any>);
       });
 
       const cmptInstance = renderComponent(Cmpt);
@@ -495,10 +495,10 @@ describe('query', () => {
         if (cm) {
           query(0, ['foo', 'bar'], undefined, QUERY_READ_FROM_NODE);
           div = elementStart(1, 'div', null, [Child], ['foo', '', 'bar', 'child']);
-          { childInstance = memory(2); }
+          { childInstance = load(2); }
           elementEnd();
         }
-        queryRefresh(tmp = memory<QueryList<any>>(0)) && (ctx.query = tmp as QueryList<any>);
+        queryRefresh(tmp = load<QueryList<any>>(0)) && (ctx.query = tmp as QueryList<any>);
       });
 
       const cmptInstance = renderComponent(Cmpt);
@@ -524,7 +524,7 @@ describe('query', () => {
           elementStart(1, 'div', null, null, ['foo', '']);
           elementEnd();
         }
-        queryRefresh(tmp = memory<QueryList<any>>(0)) && (ctx.query = tmp as QueryList<any>);
+        queryRefresh(tmp = load<QueryList<any>>(0)) && (ctx.query = tmp as QueryList<any>);
       });
 
       const cmptInstance = renderComponent(Cmpt);
@@ -566,7 +566,7 @@ describe('query', () => {
           }
         }
         containerRefreshEnd();
-        queryRefresh(tmp = memory<QueryList<any>>(0)) && (ctx.query = tmp as QueryList<any>);
+        queryRefresh(tmp = load<QueryList<any>>(0)) && (ctx.query = tmp as QueryList<any>);
       });
 
       const cmptInstance = renderComponent(Cmpt);
@@ -620,7 +620,7 @@ describe('query', () => {
              }
            }
            containerRefreshEnd();
-           queryRefresh(tmp = memory<QueryList<any>>(0)) && (ctx.query = tmp as QueryList<any>);
+           queryRefresh(tmp = load<QueryList<any>>(0)) && (ctx.query = tmp as QueryList<any>);
          });
 
          const cmptInstance = renderComponent(Cmpt);
@@ -686,7 +686,7 @@ describe('query', () => {
           }
         }
         containerRefreshEnd();
-        queryRefresh(tmp = memory<QueryList<any>>(0)) && (ctx.query = tmp as QueryList<any>);
+        queryRefresh(tmp = load<QueryList<any>>(0)) && (ctx.query = tmp as QueryList<any>);
       });
 
       const cmptInstance = renderComponent(Cmpt);
@@ -753,7 +753,7 @@ describe('query', () => {
           }
         }
         containerRefreshEnd();
-        queryRefresh(tmp = memory<QueryList<any>>(0)) && (ctx.query = tmp as QueryList<any>);
+        queryRefresh(tmp = load<QueryList<any>>(0)) && (ctx.query = tmp as QueryList<any>);
       });
 
       const cmptInstance = renderComponent(Cmpt);
@@ -805,8 +805,8 @@ describe('query', () => {
           }
         }
         containerRefreshEnd();
-        queryRefresh(tmp = memory<QueryList<any>>(0)) && (ctx.deep = tmp as QueryList<any>);
-        queryRefresh(tmp = memory<QueryList<any>>(1)) && (ctx.shallow = tmp as QueryList<any>);
+        queryRefresh(tmp = load<QueryList<any>>(0)) && (ctx.deep = tmp as QueryList<any>);
+        queryRefresh(tmp = load<QueryList<any>>(1)) && (ctx.shallow = tmp as QueryList<any>);
       });
 
       const cmptInstance = renderComponent(Cmpt);

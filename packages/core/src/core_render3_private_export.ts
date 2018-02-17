@@ -65,7 +65,8 @@ export {
   t as ɵt,
   v as ɵv,
   r as ɵr,
-  m as ɵm,
+  st as ɵst,
+  ld as ɵld,
   Pp as ɵPp,
 } from './render3/index';
 // clang-format on

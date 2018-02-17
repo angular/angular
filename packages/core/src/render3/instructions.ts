@@ -1306,8 +1306,7 @@ export function projection(
   const componentNode = findComponentHost(currentView);
 
   // make sure that nodes to project were memorized
-  const nodesForSelector =
-      valueInData<LNode[][]>(componentNode.data !.data !, localIndex)[selectorIndex];
+  const nodesForSelector = componentNode.data !.data ![localIndex][selectorIndex];
 
   // build the linked list of projected nodes:
   for (let i = 0; i < nodesForSelector.length; i++) {
@@ -1744,23 +1743,20 @@ export function interpolation8(
       NO_CHANGE;
 }
 
-export function memory<T>(index: number, value?: T): T {
-  return valueInData<T>(data, index, value);
+/** Store a value in the `data` at a given `index`. */
+export function store<T>(index: number, value: T): void {
+  // We don't store any static data for local variables, so the first time
+  // we see the template, we should store as null to avoid a sparse array
+  if (index >= tData.length) {
+    tData[index] = null;
+  }
+  data[index] = value;
 }
 
-function valueInData<T>(data: any[], index: number, value?: T): T {
-  if (value === undefined) {
-    ngDevMode && assertDataInRange(index, data);
-    value = data[index];
-  } else {
-    // We don't store any static data for local variables, so the first time
-    // we see the template, we should store as null to avoid a sparse array
-    if (index >= tData.length) {
-      tData[index] = null;
-    }
-    data[index] = value;
-  }
-  return value !;
+/** Retrieves a value from the `data`. */
+export function load<T>(index: number): T {
+  ngDevMode && assertDataInRange(index, data);
+  return data[index];
 }
 
 export function getCurrentQueries(QueryType: {new (): LQueries}): LQueries {

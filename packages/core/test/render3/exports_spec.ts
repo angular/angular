@@ -7,7 +7,7 @@
  */
 
 import {defineComponent, defineDirective} from '../../src/render3/index';
-import {bind, container, containerRefreshEnd, containerRefreshStart, elementAttribute, elementClass, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, memory, text, textBinding} from '../../src/render3/instructions';
+import {bind, container, containerRefreshEnd, containerRefreshStart, elementAttribute, elementClass, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, load, text, textBinding} from '../../src/render3/instructions';
 
 import {renderToHtml} from './render_util';
 
@@ -37,7 +37,7 @@ describe('exports', () => {
         elementEnd();
         text(2);
       }
-      textBinding(2, memory<MyComponent>(1).name);
+      textBinding(2, load<MyComponent>(1).name);
     }
 
     class MyComponent {
@@ -83,7 +83,7 @@ describe('exports', () => {
         elementStart(2, 'div', null, [MyDir]);
         elementEnd();
       }
-      elementProperty(2, 'myDir', bind(memory<MyComponent>(1)));
+      elementProperty(2, 'myDir', bind(load<MyComponent>(1)));
     }
 
     renderToHtml(Template, {});
@@ -99,7 +99,7 @@ describe('exports', () => {
         elementEnd();
         text(2);
       }
-      textBinding(2, memory<SomeDir>(1).name);
+      textBinding(2, load<SomeDir>(1).name);
     }
 
     class SomeDir {
@@ -209,7 +209,7 @@ describe('exports', () => {
           elementStart(2, MyComponent);
           elementEnd();
         }
-        elementProperty(0, 'myDir', bind(memory<MyComponent>(3)));
+        elementProperty(0, 'myDir', bind(load<MyComponent>(3)));
       }
 
       renderToHtml(Template, {});
@@ -229,7 +229,7 @@ describe('exports', () => {
           elementEnd();
         }
         let myInput = elementStart(4);
-        let myComp = memory(3) as MyComponent;
+        let myComp = load<MyComponent>(3);
         textBinding(0, bind(myInput && (myInput as any).value));
         textBinding(1, bind(myComp && myComp.name));
       }
