@@ -38,12 +38,23 @@ if [ "$PR_NUMBER" -eq 0 ]; then
   exit 0
 fi
 
+if [ -z ${TOKEN:-''} ]; then
+    echo "############################################################"
+    echo "############################################################"
+    echo "WARNING: you should set the TOKEN variable to a github token"
+    echo "############################################################"
+    echo "############################################################"
+    $GHCURL="curl"
+else
+    $GHCURL="curl -H \"Authorization: token $TOKEN\""
+fi
+
 CURRENT_BRANCH=`git rev-parse --abbrev-ref HEAD`
-PULL_JSON=`curl -s https://api.github.com/repos/angular/angular/pulls/$PR_NUMBER`
+PULL_JSON=`$GHCURL -s https://api.github.com/repos/angular/angular/pulls/$PR_NUMBER`
 PR_SHA_COUNT=`node $BASEDIR/utils/json_extract.js commits <<< """$PULL_JSON"""`
 STATUS_JSON_URL=`node $BASEDIR/utils/json_extract.js _links.statuses.href <<< """$PULL_JSON"""`
-STATUS=`curl -s $STATUS_JSON_URL | node $BASEDIR/utils/json_extract.js description | cut -d '|' -f1`
-PR_LABELS=`curl -s https://api.github.com/repos/angular/angular/issues/$PR_NUMBER/labels`
+STATUS=`$GHCURL -s $STATUS_JSON_URL | node $BASEDIR/utils/json_extract.js description | cut -d '|' -f1`
+PR_LABELS=`$GHCURL -s https://api.github.com/repos/angular/angular/issues/$PR_NUMBER/labels`
 PR_ACTION=`echo "$PR_LABELS" | node $BASEDIR/utils/json_extract.js "name=^PR action:"`
 PR_TARGET=`echo "$PR_LABELS"  | node $BASEDIR/utils/json_extract.js "name=^PR target:"`
 PR_CLA=`echo "$PR_LABELS"  | node $BASEDIR/utils/json_extract.js "name=^cla"`
@@ -64,7 +75,7 @@ if [[ "$STATUS" != "All checks passed!" ]]; then
   echo PR $PR_NUMBER is failing with: $STATUS
   if [[ $FORCE == 1 ]]; then
     echo FORCING: --force flag used to ignor PR status.
-  else 
+  else
     echo Exting...
     exit 1
   fi
