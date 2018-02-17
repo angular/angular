@@ -78,46 +78,6 @@ describe('render3 integration test', () => {
       expect(renderToHtml(Template, 'twice')).toEqual('once');
     });
 
-    it('should support creation-time bindings in interpolations', () => {
-      function Template(v: string, cm: boolean) {
-        if (cm) {
-          text(0);
-          text(1);
-          text(2);
-          text(3);
-          text(4);
-          text(5);
-          text(6);
-          text(7);
-          text(8);
-        }
-        textBinding(0, interpolation1('', cm ? v : NO_CHANGE, '|'));
-        textBinding(1, interpolation2('', v, '_', cm ? v : NO_CHANGE, '|'));
-        textBinding(2, interpolation3('', v, '_', v, '_', cm ? v : NO_CHANGE, '|'));
-        textBinding(3, interpolation4('', v, '_', v, '_', v, '_', cm ? v : NO_CHANGE, '|'));
-        textBinding(4, interpolation5('', v, '_', v, '_', v, '_', v, '_', cm ? v : NO_CHANGE, '|'));
-        textBinding(
-            5, interpolation6('', v, '_', v, '_', v, '_', v, '_', v, '_', cm ? v : NO_CHANGE, '|'));
-        textBinding(
-            6, interpolation7(
-                   '', v, '_', v, '_', v, '_', v, '_', v, '_', v, '_', cm ? v : NO_CHANGE, '|'));
-        textBinding(
-            7, interpolation8(
-                   '', v, '_', v, '_', v, '_', v, '_', v, '_', v, '_', v, '_', cm ? v : NO_CHANGE,
-                   '|'));
-        textBinding(8, interpolationV([
-                      '', v, '_', v, '_', v, '_', v, '_', v, '_', v, '_', v, '_', v, '_',
-                      cm ? v : NO_CHANGE, ''
-                    ]));
-      }
-      expect(renderToHtml(Template, 'a'))
-          .toEqual(
-              'a|a_a|a_a_a|a_a_a_a|a_a_a_a_a|a_a_a_a_a_a|a_a_a_a_a_a_a|a_a_a_a_a_a_a_a|a_a_a_a_a_a_a_a_a');
-      expect(renderToHtml(Template, 'A'))
-          .toEqual(
-              'a|A_a|A_A_a|A_A_A_a|A_A_A_A_a|A_A_A_A_A_a|A_A_A_A_A_A_a|A_A_A_A_A_A_A_a|A_A_A_A_A_A_A_A_a');
-    });
-
   });
 
   describe('Siblings update', () => {
