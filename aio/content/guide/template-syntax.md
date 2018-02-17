@@ -114,34 +114,48 @@ and "fills in the blanks", first displaying a bold application title and then a 
 More generally, the text between the braces is a **template expression** that Angular first **evaluates**
 and then **converts to a string**. The following interpolation illustrates the point by adding the two numbers:
 -->
-좀 더 일반적으로 얘기하면 중괄호 안에 있는 **템플릿 표현식**은 Angular에서 가장 먼저 **평가**되며, 평가된 값은 **문자열로 변환**되어 템플릿에 반영됩니다. 이 때문에 문자열 바인딩은 문자열 삽입이라고도 하며, 이런 특성 때문에 두 숫자를 더하는 표현식도 템플릿에 바로 사용할 수 있습니다.
+좀 더 자세히 얘기하면 중괄호 안에 있는 **템플릿 표현식**은 Angular에서 가장 먼저 **평가**되며, 평가된 값은 **문자열로 변환**되어 템플릿에 반영됩니다. 이 때문에 문자열 바인딩은 문자열 삽입이라고도 하며, 이런 특성 때문에 두 숫자를 더하는 표현식도 템플릿에 바로 사용할 수 있습니다.
 
 <code-example path="template-syntax/src/app/app.component.html" region="sum-1" title="src/app/app.component.html" linenums="false">
 </code-example>
 
+<!--
 The expression can invoke methods of the host component such as `getVal()`, seen here:
+-->
+그리고 템플릿 표현식에서는 컴포넌트 메서드를 바로 실행할 수도 있습니다.
 
 <code-example path="template-syntax/src/app/app.component.html" region="sum-2" title="src/app/app.component.html" linenums="false">
 </code-example>
 
+<!--
 Angular evaluates all expressions in double curly braces,
 converts the expression results to strings, and links them with neighboring literal strings. Finally,
 it assigns this composite interpolated result to an **element or directive property**.
+-->
+이중 중괄호 안에 있는 템플릿 표현식은 Angular 프레임워크가 평가하고 문자열로 변환해서 같은 엘리먼트에 있는 문자열과 연결합니다. 이렇게 템플릿에 삽입된 문자열은 **엘리먼트나 디렉티브의 속성값**으로 사용됩니다.
 
+<!--
 You appear to be inserting the result between element tags and assigning it to attributes.
 It's convenient to think so, and you rarely suffer for this mistake.
 Though this is not exactly true. Interpolation is a special syntax that Angular converts into a
 [property binding](guide/template-syntax#property-binding), as is explained [below](guide/template-syntax#property-binding-or-interpolation).
+-->
+이 과정은 템플릿 표현식의 결과값이 엘리먼트 태그의 값이나 속성값으로 바로 삽입된다고 생각할 수도 있습니다. 이렇게 단순하게 이해하는 것도 틀린 것은 아닙니다만, 정확한 것은 아닙니다. 문자열 바인딩은 [프로퍼티 바인딩](guide/template-syntax#property-binding)의 특별한 케이스이며, [아래](guide/template-syntax#property-binding-or-interpolation)에서 자세하게 설명할 것입니다.
 
+<!--
 But first, let's take a closer look at template expressions and statements.
-
+-->
+우선은 템플릿 표현식에 대해 자세하게 알아봅시다.
 
 
 <hr/>
 
 {@a template-expressions}
 
+<!--
 ## Template expressions
+-->
+## 템플릿 표현식
 
 A template **expression** produces a value.
 Angular executes the expression and assigns it to a property of a binding target;
