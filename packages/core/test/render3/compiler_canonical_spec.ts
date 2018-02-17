@@ -189,7 +189,7 @@ describe('compiler specification', () => {
           type: HostListenerDir,
           factory: function HostListenerDir_Factory() {
             const $dir$ = new HostListenerDir();
-            $r3$.ɵL('click', $dir$.onClick.bind($dir$));
+            $r3$.ɵL('click', function HostListenerDir_click_Handler(event) { $dir$.onClick(); });
             return $dir$;
           },
         });
