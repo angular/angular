@@ -9,6 +9,7 @@
 import {Directive, EventEmitter, forwardRef, Host, Inject, Input, OnChanges, OnDestroy, Optional, Output, Self, SimpleChanges, SkipSelf} from '@angular/core';
 
 import {FormControl} from '../../model';
+import {stringifyTruthy} from '../../util/stringify_truthy';
 import {NG_ASYNC_VALIDATORS, NG_VALIDATORS} from '../../validators';
 import {AbstractFormGroupDirective} from '../abstract_form_group_directive';
 import {ControlContainer} from '../control_container';
@@ -86,8 +87,13 @@ export class FormControlName extends NgControl implements OnChanges, OnDestroy {
    * while the numerical form allows for form controls to be bound
    * to indices when iterating over controls in a `FormArray`.
    */
-  // TODO(issue/24571): remove '!'.
-  @Input('formControlName') name!: string|number|null;
+  @Input('formControlName')
+  set name(value: string|null) {
+    this._name = stringifyTruthy(value);
+  }
+  get name(): string|null {
+    return this._name;
+  }
 
   /**
    * @description

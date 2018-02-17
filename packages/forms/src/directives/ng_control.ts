@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {stringifyTruthy} from '../util/stringify_truthy';
 import {AbstractControlDirective} from './abstract_control_directive';
 import {ControlContainer} from './control_container';
 import {ControlValueAccessor} from './control_value_accessor';
@@ -27,17 +28,25 @@ export abstract class NgControl extends AbstractControlDirective {
    */
   _parent: ControlContainer|null = null;
 
-  /**
-   * @description
-   * The name for the control
-   */
-  name: string|number|null = null;
+  /** @internal */
+  _name: string|null = null;
 
   /**
    * @description
    * The value accessor for the control
    */
   valueAccessor: ControlValueAccessor|null = null;
+
+  /**
+   * @description
+   * The name for the control
+   */
+  set name(value: string|null) {
+    this._name = stringifyTruthy(value);
+  }
+  get name(): string|null {
+    return this._name;
+  }
 
   /**
    * @description

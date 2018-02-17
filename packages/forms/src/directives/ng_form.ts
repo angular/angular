@@ -9,6 +9,7 @@
 import {AfterViewInit, Directive, EventEmitter, forwardRef, Inject, Input, Optional, Self} from '@angular/core';
 
 import {AbstractControl, FormControl, FormGroup, FormHooks} from '../model';
+import {stringifyTruthy} from '../util/stringify_truthy';
 import {composeAsyncValidators, composeValidators, NG_ASYNC_VALIDATORS, NG_VALIDATORS} from '../validators';
 
 import {ControlContainer} from './control_container';
@@ -188,7 +189,7 @@ export class NgForm extends ControlContainer implements Form, AfterViewInit {
     resolvedPromise.then(() => {
       const container = this._findContainer(dir.path);
       (dir as {control: FormControl}).control =
-          <FormControl>container.registerControl(dir.name, dir.control);
+          <FormControl>container.registerControl(dir.name!, dir.control);
       setUpControl(dir.control, dir);
       dir.control.updateValueAndValidity({emitEvent: false});
       this._directives.push(dir);
@@ -215,7 +216,7 @@ export class NgForm extends ControlContainer implements Form, AfterViewInit {
     resolvedPromise.then(() => {
       const container = this._findContainer(dir.path);
       if (container) {
-        container.removeControl(dir.name);
+        container.removeControl(dir.name!);
       }
       removeListItem(this._directives, dir);
     });

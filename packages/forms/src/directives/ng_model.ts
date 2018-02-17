@@ -6,11 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, EventEmitter, forwardRef, Host, Inject, Input, OnChanges, OnDestroy, Optional, Output, Self, SimpleChanges} from '@angular/core';
-
+import {Directive, ElementRef, EventEmitter, forwardRef, Host, Inject, Input, OnChanges, OnDestroy, Optional, Output, Renderer2, Self, SimpleChanges} from '@angular/core';
 import {FormControl, FormHooks} from '../model';
+import {stringifyTruthy} from '../util/stringify_truthy';
 import {NG_ASYNC_VALIDATORS, NG_VALIDATORS} from '../validators';
-
 import {AbstractFormGroupDirective} from './abstract_form_group_directive';
 import {ControlContainer} from './control_container';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from './control_value_accessor';
@@ -156,13 +155,32 @@ export class NgModel extends NgControl implements OnChanges, OnDestroy {
    */
   viewModel: any;
 
+  /** @internal */
+  _name: string|null = null;
+
   /**
    * @description
    * Tracks the name bound to the directive. If a parent form exists, it
    * uses this name as a key to retrieve this control's value.
    */
-  // TODO(issue/24571): remove '!'.
-  @Input() name!: string;
+  @Input()
+  set name(value: string|null) {
+    this._name = stringifyTruthy(value);
+    if (this._name) {
+      this._renderer.setAttribute(this._elementRef.nativeElement, 'name', this._name);
+    } else {
+      this._renderer.removeAttribute(this._elementRef.nativeElement, 'name');
+    }
+  }
+
+  /**
+   * @description
+   * Tracks the name bound to the directive. If a parent form exists, it
+   * uses this name as a key to retrieve this control's value.
+   */
+  get name(): string|null {
+    return this._name;
+  }
 
   /**
    * @description
@@ -208,7 +226,8 @@ export class NgModel extends NgControl implements OnChanges, OnDestroy {
       @Optional() @Self() @Inject(NG_VALIDATORS) validators: (Validator|ValidatorFn)[],
       @Optional() @Self() @Inject(NG_ASYNC_VALIDATORS) asyncValidators:
           (AsyncValidator|AsyncValidatorFn)[],
-      @Optional() @Self() @Inject(NG_VALUE_ACCESSOR) valueAccessors: ControlValueAccessor[]) {
+      @Optional() @Self() @Inject(NG_VALUE_ACCESSOR) valueAccessors: ControlValueAccessor[],
+      private _renderer: Renderer2, private _elementRef: ElementRef) {
     super();
     this._parent = parent;
     this._setValidators(validators);
@@ -241,7 +260,8 @@ export class NgModel extends NgControl implements OnChanges, OnDestroy {
    * Each index is the string name of the control on that level.
    */
   get path(): string[] {
-    return this._parent ? controlPath(this.name, this._parent) : [this.name];
+    const name = stringifyTruthy(this.name);
+    return this._parent ? controlPath(name, this._parent) : [name!];
   }
 
   /**

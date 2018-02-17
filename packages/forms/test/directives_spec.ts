@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {SimpleChange} from '@angular/core';
+import {ElementRef, Renderer2, SimpleChange} from '@angular/core';
 import {fakeAsync, flushMicrotasks, tick} from '@angular/core/testing';
 import {beforeEach, describe, expect, it} from '@angular/core/testing/src/testing_internal';
 import {AbstractControl, CheckboxControlValueAccessor, ControlValueAccessor, DefaultValueAccessor, FormArray, FormArrayName, FormControl, FormControlDirective, FormControlName, FormGroup, FormGroupDirective, FormGroupName, NgControl, NgForm, NgModel, NgModelGroup, SelectControlValueAccessor, SelectMultipleControlValueAccessor, ValidationErrors, Validator, Validators} from '@angular/forms';
@@ -313,15 +313,23 @@ class CustomValidatorDirective implements Validator {
       let formModel: FormGroup;
       let loginControlDir: any /** TODO #9100 */;
       let personControlGroupDir: any /** TODO #9100 */;
+      let renderer: Renderer2;
+      let elementRef: ElementRef;
 
       beforeEach(() => {
         form = new NgForm([], []);
         formModel = form.form;
+        renderer = {
+          setAttribute: () => {},
+          removeAttribute: () => {},
+        } as any;
+        elementRef = new ElementRef(null);
 
         personControlGroupDir = new NgModelGroup(form, [], []);
         personControlGroupDir.name = 'person';
 
-        loginControlDir = new NgModel(personControlGroupDir, null!, null!, [defaultAccessor]);
+        loginControlDir = new NgModel(
+            personControlGroupDir, null!, null!, [defaultAccessor], renderer, elementRef);
         loginControlDir.name = 'login';
         loginControlDir.valueAccessor = new DummyControlValueAccessor();
       });
@@ -543,10 +551,18 @@ class CustomValidatorDirective implements Validator {
     describe('NgModel', () => {
       let ngModel: NgModel;
       let control: FormControl;
+      let renderer: Renderer2;
+      let elementRef: ElementRef;
 
       beforeEach(() => {
+        renderer = {
+          setAttribute: () => {},
+          removeAttribute: () => {},
+        } as any;
+        elementRef = new ElementRef(null);
         ngModel = new NgModel(
-            null!, [Validators.required], [asyncValidator('expected')], [defaultAccessor]);
+            null!, [Validators.required], [asyncValidator('expected')], [defaultAccessor], renderer,
+            elementRef);
         ngModel.valueAccessor = new DummyControlValueAccessor();
         control = ngModel.control;
       });
@@ -579,7 +595,7 @@ class CustomValidatorDirective implements Validator {
       });
 
       it('should throw when no value accessor with named control', () => {
-        const namedDir = new NgModel(null!, null!, null!, null!);
+        const namedDir = new NgModel(null!, null!, null!, null!, renderer, elementRef);
         namedDir.name = 'one';
 
         expect(() => namedDir.ngOnChanges({}))
@@ -587,7 +603,7 @@ class CustomValidatorDirective implements Validator {
       });
 
       it('should throw when no value accessor with unnamed control', () => {
-        const unnamedDir = new NgModel(null!, null!, null!, null!);
+        const unnamedDir = new NgModel(null!, null!, null!, null!, renderer, elementRef);
 
         expect(() => unnamedDir.ngOnChanges({}))
             .toThrowError(

@@ -255,7 +255,8 @@ export declare class FormControlName extends NgControl implements OnChanges, OnD
     get formDirective(): any;
     set isDisabled(isDisabled: boolean);
     /** @deprecated */ model: any;
-    name: string | number | null;
+    set name(value: string | null);
+    get name(): string | null;
     get path(): string[];
     /** @deprecated */ update: EventEmitter<any>;
     constructor(parent: ControlContainer, validators: (Validator | ValidatorFn)[], asyncValidators: (AsyncValidator | AsyncValidatorFn)[], valueAccessors: ControlValueAccessor[], _ngModelWarningConfig: string | null);
@@ -349,7 +350,8 @@ export declare const NG_VALIDATORS: InjectionToken<(Function | Validator)[]>;
 export declare const NG_VALUE_ACCESSOR: InjectionToken<readonly ControlValueAccessor[]>;
 
 export declare abstract class NgControl extends AbstractControlDirective {
-    name: string | number | null;
+    set name(value: string | null);
+    get name(): string | null;
     valueAccessor: ControlValueAccessor | null;
     abstract viewToModelUpdate(newValue: any): void;
 }
@@ -397,7 +399,8 @@ export declare class NgModel extends NgControl implements OnChanges, OnDestroy {
     get formDirective(): any;
     isDisabled: boolean;
     model: any;
-    name: string;
+    set name(value: string | null);
+    get name(): string | null;
     options: {
         name?: string;
         standalone?: boolean;
@@ -406,7 +409,7 @@ export declare class NgModel extends NgControl implements OnChanges, OnDestroy {
     get path(): string[];
     update: EventEmitter<any>;
     viewModel: any;
-    constructor(parent: ControlContainer, validators: (Validator | ValidatorFn)[], asyncValidators: (AsyncValidator | AsyncValidatorFn)[], valueAccessors: ControlValueAccessor[]);
+    constructor(parent: ControlContainer, validators: (Validator | ValidatorFn)[], asyncValidators: (AsyncValidator | AsyncValidatorFn)[], valueAccessors: ControlValueAccessor[], _renderer: Renderer2, _elementRef: ElementRef);
     ngOnChanges(changes: SimpleChanges): void;
     ngOnDestroy(): void;
     viewToModelUpdate(newValue: any): void;
@@ -445,7 +448,8 @@ export declare class PatternValidator implements Validator, OnChanges {
 
 export declare class RadioControlValueAccessor implements ControlValueAccessor, OnDestroy, OnInit {
     formControlName: string;
-    name: string;
+    set name(value: string | null);
+    get name(): string | null;
     onChange: () => void;
     onTouched: () => void;
     value: any;

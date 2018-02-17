@@ -177,6 +177,16 @@ import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util'
         const input = fixture.debugElement.query(By.css('input'));
         expect(input.nativeElement.value).toEqual('');
       });
+
+      // #19320
+      it('should keep name attribute', () => {
+        const fixture = initTest(NgModelTextForm);
+        fixture.detectChanges();
+
+        const inputs = fixture.debugElement.queryAll(By.css('input'));
+        expect(inputs[0].attributes['name']).toBe('foo');
+        expect(inputs[1].attributes['name']).toBeUndefined();
+      });
     });
 
     describe('select controls', () => {
@@ -799,6 +809,16 @@ import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util'
           expect(inputs[0].nativeElement.checked).toBe(false);
           expect(inputs[1].nativeElement.checked).toBe(true);
         });
+
+        // #11757
+        it('should keep name attribute', () => {
+          const fixture = initTest(FormControlRadioInput);
+          fixture.detectChanges();
+
+          const inputs = fixture.debugElement.queryAll(By.css('input'));
+          expect(inputs[0].attributes['name']).toBe('foo');
+          expect(inputs[1].attributes['name']).toBeUndefined();
+        });
       });
 
       describe('in template-driven forms', () => {
@@ -1137,6 +1157,18 @@ class FormControlNumberInput {
 }
 
 @Component({
+  selector: 'form-control-radio-input',
+  template: `
+    <input type="radio" [name]="name" [formControl]="control">
+    <input type="radio" [formControl]="control">
+  `
+})
+class FormControlRadioInput {
+  name = 'foo';
+  control: FormControl = new FormControl(false);
+}
+
+@Component({
   selector: 'form-control-name-select',
   template: `
     <div [formGroup]="form">
@@ -1327,6 +1359,20 @@ export class FormControlRadioButtons {
   // TODO(issue/24571): remove '!'.
   form!: FormGroup;
   showRadio = new FormControl('yes');
+}
+
+@Component({
+  selector: 'ng-model-text-form',
+  template: `
+    <form>
+      <input type="text" name="foo" [(ngModel)]="foo">
+      <input type="text" [(ngModel)]="bar" [ngModelOptions]="{standalone: true}">
+    </form>
+  `
+})
+class NgModelTextForm {
+  foo: string = '';
+  bar: string = '';
 }
 
 @Component({

@@ -7,6 +7,7 @@
  */
 
 import {Directive, ElementRef, forwardRef, Injectable, Injector, Input, OnDestroy, OnInit, Renderer2} from '@angular/core';
+import {stringifyTruthy} from '../util/stringify_truthy';
 
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from './control_value_accessor';
 import {NgControl} from './ng_control';
@@ -123,12 +124,30 @@ export class RadioControlValueAccessor implements ControlValueAccessor, OnDestro
    */
   onTouched = () => {};
 
+  /** @internal */
+  @Input() _name: string|null = null;
+
   /**
    * @description
    * Tracks the name of the radio input element.
    */
-  // TODO(issue/24571): remove '!'.
-  @Input() name!: string;
+  @Input()
+  set name(value: string|null) {
+    this._name = stringifyTruthy(value);
+    if (this._name) {
+      this._renderer.setAttribute(this._elementRef.nativeElement, 'name', this._name);
+    } else {
+      this._renderer.removeAttribute(this._elementRef.nativeElement, 'name');
+    }
+  }
+
+  /**
+   * @description
+   * Tracks the name of the radio input element.
+   */
+  get name(): string|null {
+    return this._name;
+  }
 
   /**
    * @description
@@ -207,10 +226,10 @@ export class RadioControlValueAccessor implements ControlValueAccessor, OnDestro
   }
 
   private _checkName(): void {
-    if (this.name && this.formControlName && this.name !== this.formControlName &&
+    if (this._name && this.formControlName && this._name !== this.formControlName &&
         (typeof ngDevMode === 'undefined' || ngDevMode)) {
       throwNameError();
     }
-    if (!this.name && this.formControlName) this.name = this.formControlName;
+    if (!this._name && this.formControlName) this._name = this.formControlName;
   }
 }
