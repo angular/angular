@@ -63,7 +63,7 @@ export class Identifiers {
   static interpolation8: o.ExternalReference = {name: 'ɵi8', moduleName: CORE};
   static interpolationV: o.ExternalReference = {name: 'ɵiV', moduleName: CORE};
 
-  static memory: o.ExternalReference = {name: 'ɵm', moduleName: CORE};
+  static load: o.ExternalReference = {name: 'ɵld', moduleName: CORE};
 
   static projection: o.ExternalReference = {name: 'ɵP', moduleName: CORE};
   static projectionDef: o.ExternalReference = {name: 'ɵpD', moduleName: CORE};

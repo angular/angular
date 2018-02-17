@@ -9,7 +9,7 @@
 import {EventEmitter} from '@angular/core';
 
 import {defineComponent, defineDirective} from '../../src/render3/index';
-import {NO_CHANGE, bind, componentRefresh, container, containerRefreshEnd, containerRefreshStart, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, interpolation1, listener, memory, text, textBinding} from '../../src/render3/instructions';
+import {NO_CHANGE, bind, componentRefresh, container, containerRefreshEnd, containerRefreshStart, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, interpolation1, listener, load, text, textBinding} from '../../src/render3/instructions';
 
 import {renderToHtml} from './render_util';
 
@@ -479,7 +479,7 @@ describe('elementProperty', () => {
               elementEnd();
               text(2);
             }
-            textBinding(2, bind(memory<MyDir>(1).role));
+            textBinding(2, bind(load<MyDir>(1).role));
           },
           factory: () => new Comp()
         });

@@ -408,7 +408,7 @@ class TemplateDefinitionBuilder implements TemplateAstVisitor, LocalResolver {
             // Generate the update temporary.
             const variableName = this.bindingScope.freshReferenceName();
             this._bindingMode.push(o.variable(variableName, o.INFERRED_TYPE)
-                                       .set(o.importExpr(R3.memory).callFn([o.literal(slot)]))
+                                       .set(o.importExpr(R3.load).callFn([o.literal(slot)]))
                                        .toDeclStmt(o.INFERRED_TYPE, [o.StmtModifier.Final]));
             this.bindingScope.set(reference.name, variableName);
             return [reference.name, reference.originalValue];

@@ -293,7 +293,7 @@ describe('r3_view_compiler', () => {
               $r3$.ɵC(2, $c2$, MyComponent_IfDirective_Template_2);
               $r3$.ɵe();
             }
-            const $foo$ = $r3$.ɵm(1);
+            const $foo$ = $r3$.ɵld(1);
             IfDirective.ngDirectiveDef.h(3,2);
             $r3$.ɵcR(2);
             $r3$.ɵr(3,2);
@@ -420,7 +420,7 @@ describe('r3_view_compiler', () => {
               $r3$.ɵe();
               $r3$.ɵT(2);
             }
-            const $user$ = $r3$.ɵm(1);
+            const $user$ = $r3$.ɵld(1);
             $r3$.ɵt(2, $r3$.ɵi1('Hello ', $user$.value, '!'));
           }
         });

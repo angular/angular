@@ -53,7 +53,8 @@ export {
   elementStyle as s,
 
   listener as L,
-  memory as m,
+  store as st,
+  load as ld,
 
   projection as P,
   projectionDef as pD,

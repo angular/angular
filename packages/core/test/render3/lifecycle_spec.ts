@@ -7,7 +7,7 @@
  */
 
 import {ComponentTemplate, defineComponent, defineDirective} from '../../src/render3/index';
-import {bind, componentRefresh, container, containerRefreshEnd, containerRefreshStart, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, listener, memory, projection, projectionDef, text} from '../../src/render3/instructions';
+import {bind, componentRefresh, container, containerRefreshEnd, containerRefreshStart, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, listener, projection, projectionDef, store, text} from '../../src/render3/instructions';
 
 import {containerEl, renderToHtml} from './render_util';
 

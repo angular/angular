@@ -11,7 +11,7 @@ import {ElementRef, TemplateRef, ViewContainerRef} from '@angular/core';
 import {defineComponent} from '../../src/render3/definition';
 import {InjectFlags, bloomAdd, bloomFindPossibleInjector, getOrCreateNodeInjector} from '../../src/render3/di';
 import {PublicFeature, defineDirective, inject, injectElementRef, injectTemplateRef, injectViewContainerRef} from '../../src/render3/index';
-import {bind, container, containerRefreshEnd, containerRefreshStart, createLNode, createLView, createTView, elementEnd, elementStart, embeddedViewEnd, embeddedViewStart, enterView, interpolation2, leaveView, memory, text, textBinding} from '../../src/render3/instructions';
+import {bind, container, containerRefreshEnd, containerRefreshStart, createLNode, createLView, createTView, elementEnd, elementStart, embeddedViewEnd, embeddedViewStart, enterView, interpolation2, leaveView, load, text, textBinding} from '../../src/render3/instructions';
 import {LInjector} from '../../src/render3/interfaces/injector';
 import {LNodeFlags} from '../../src/render3/interfaces/node';
 
@@ -31,7 +31,7 @@ describe('di', () => {
           { text(2); }
           elementEnd();
         }
-        textBinding(2, bind(memory<Directive>(1).value));
+        textBinding(2, bind(load<Directive>(1).value));
       }
 
       expect(renderToHtml(Template, {})).toEqual('<div>Created</div>');
@@ -71,7 +71,7 @@ describe('di', () => {
           }
           elementEnd();
         }
-        textBinding(5, bind(memory<DirectiveC>(4).value));
+        textBinding(5, bind(load<DirectiveC>(4).value));
       }
 
       expect(renderToHtml(Template, {})).toEqual('<div><span>AB</span></div>');
@@ -110,9 +110,8 @@ describe('di', () => {
           elementEnd();
         }
         textBinding(
-            3,
-            interpolation2(
-                '', memory<Directive>(1).value, '-', memory<DirectiveSameInstance>(2).value, ''));
+            3, interpolation2(
+                   '', load<Directive>(1).value, '-', load<DirectiveSameInstance>(2).value, ''));
       }
 
       expect(renderToHtml(Template, {})).toEqual('<div>ElementRef-true</div>');
@@ -151,9 +150,8 @@ describe('di', () => {
           text(3);
         }
         textBinding(
-            3,
-            interpolation2(
-                '', memory<Directive>(1).value, '-', memory<DirectiveSameInstance>(2).value, ''));
+            3, interpolation2(
+                   '', load<Directive>(1).value, '-', load<DirectiveSameInstance>(2).value, ''));
       }
 
       expect(renderToHtml(Template, {})).toEqual('TemplateRef-true');
@@ -192,9 +190,8 @@ describe('di', () => {
           elementEnd();
         }
         textBinding(
-            3,
-            interpolation2(
-                '', memory<Directive>(1).value, '-', memory<DirectiveSameInstance>(2).value, ''));
+            3, interpolation2(
+                   '', load<Directive>(1).value, '-', load<DirectiveSameInstance>(2).value, ''));
       }
 
       expect(renderToHtml(Template, {})).toEqual('<div>ViewContainerRef-true</div>');
@@ -306,9 +303,8 @@ describe('di', () => {
             elementEnd();
           }
           textBinding(
-              3,
-              interpolation2(
-                  '', memory<ChildDirective>(1).value, '-', memory<Child2Directive>(2).value, ''));
+              3, interpolation2(
+                     '', load<ChildDirective>(1).value, '-', load<Child2Directive>(2).value, ''));
           embeddedViewEnd();
         }
         containerRefreshEnd();
