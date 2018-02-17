@@ -1418,7 +1418,7 @@ export function bind<T>(value: T | NO_CHANGE): T|NO_CHANGE {
 /**
  * Create interpolation bindings with a variable number of expressions.
  *
- * If there are 1 to 7 expressions `interpolation1()` to `interpolation7` should be used instead.
+ * If there are 1 to 8 expressions `interpolation1()` to `interpolation8()` should be used instead.
  * Those are faster because there is no need to create an array of expressions and loop over it.
  *
  * `values`:
@@ -1448,12 +1448,10 @@ export function interpolationV(values: any[]): string|NO_CHANGE {
   const bindings: any[] = data[bindingIndex++];
   // `bIdx` is the index in the `bindings` array, `vIdx` in the `values` array
   for (let bIdx = 0, vIdx = 1; bIdx < bindings.length; bIdx++, vIdx += 2) {
-    if (values[vIdx] !== NO_CHANGE && isDifferent(values[vIdx], bindings[bIdx])) {
+    if (isDifferent(values[vIdx], bindings[bIdx])) {
       let content: string = values[0];
       for (bIdx = 0, vIdx = 1; bIdx < bindings.length; vIdx += 2, bIdx++) {
-        if (values[vIdx] !== NO_CHANGE) {
-          bindings[bIdx] = values[vIdx];
-        }
+        bindings[bIdx] = values[vIdx];
         content += stringify(bindings[bIdx]) + values[vIdx + 1];
       }
       return content;
@@ -1467,11 +1465,24 @@ export function interpolationV(values: any[]): string|NO_CHANGE {
  * Creates an interpolation binding with 1 expression.
  *
  * @param prefix static value used for concatenation only.
- * @param value value checked for change.
+ * @param v0 value checked for change.
  * @param suffix static value used for concatenation only.
  */
-export function interpolation1(prefix: string, value: any, suffix: string): string|NO_CHANGE {
-  return bind(value) === NO_CHANGE ? NO_CHANGE : prefix + stringify(value) + suffix;
+export function interpolation1(prefix: string, v0: any, suffix: string): string|NO_CHANGE {
+  let different: boolean;
+  debugger;
+  if (different = creationMode) {
+    initBindings();
+    data[bindingIndex++] = v0;
+  } else {
+    const part0 = data[bindingIndex++];
+    different = isDifferent(part0, v0);
+    if (different) {
+      data[bindingIndex - 1] = v0;
+    }
+  }
+
+  return different ? prefix + stringify(v0) + suffix : NO_CHANGE;
 }
 
 /** Creates an interpolation binding with 2 expressions. */
@@ -1485,13 +1496,15 @@ export function interpolation2(
   } else {
     const part0 = data[bindingIndex++];
     const part1 = data[bindingIndex++];
-    if (v0 === NO_CHANGE) v0 = part0;
-    if (v1 === NO_CHANGE) v1 = part1;
-    if (different = (isDifferent(part0, v0) || isDifferent(part1, v1))) {
+
+    different = isDifferent(part0, v0) || isDifferent(part1, v1);
+
+    if (different) {
       data[bindingIndex - 2] = v0;
       data[bindingIndex - 1] = v1;
     }
   }
+
   return different ? prefix + stringify(v0) + i0 + stringify(v1) + suffix : NO_CHANGE;
 }
 
@@ -1509,15 +1522,16 @@ export function interpolation3(
     const part0 = data[bindingIndex++];
     const part1 = data[bindingIndex++];
     const part2 = data[bindingIndex++];
-    if (v0 === NO_CHANGE) v0 = part0;
-    if (v1 === NO_CHANGE) v1 = part1;
-    if (v2 === NO_CHANGE) v2 = part2;
-    if (different = (isDifferent(part0, v0) || isDifferent(part1, v1) || isDifferent(part2, v2))) {
+
+    different = isDifferent(part0, v0) || isDifferent(part1, v1) || isDifferent(part2, v2);
+
+    if (different) {
       data[bindingIndex - 3] = v0;
       data[bindingIndex - 2] = v1;
       data[bindingIndex - 1] = v2;
     }
   }
+
   return different ? prefix + stringify(v0) + i0 + stringify(v1) + i1 + stringify(v2) + suffix :
                      NO_CHANGE;
 }
@@ -1538,19 +1552,18 @@ export function interpolation4(
     const part1 = data[bindingIndex++];
     const part2 = data[bindingIndex++];
     const part3 = data[bindingIndex++];
-    if (v0 === NO_CHANGE) v0 = part0;
-    if (v1 === NO_CHANGE) v1 = part1;
-    if (v2 === NO_CHANGE) v2 = part2;
-    if (v3 === NO_CHANGE) v3 = part3;
-    if (different =
-            (isDifferent(part0, v0) || isDifferent(part1, v1) || isDifferent(part2, v2) ||
-             isDifferent(part3, v3))) {
+
+    different = isDifferent(part0, v0) || isDifferent(part1, v1) || isDifferent(part2, v2) ||
+        isDifferent(part3, v3);
+
+    if (different) {
       data[bindingIndex - 4] = v0;
       data[bindingIndex - 3] = v1;
       data[bindingIndex - 2] = v2;
       data[bindingIndex - 1] = v3;
     }
   }
+
   return different ?
       prefix + stringify(v0) + i0 + stringify(v1) + i1 + stringify(v2) + i2 + stringify(v3) +
           suffix :
@@ -1575,15 +1588,11 @@ export function interpolation5(
     const part2 = data[bindingIndex++];
     const part3 = data[bindingIndex++];
     const part4 = data[bindingIndex++];
-    if (v0 === NO_CHANGE) v0 = part0;
-    if (v1 === NO_CHANGE) v1 = part1;
-    if (v2 === NO_CHANGE) v2 = part2;
-    if (v3 === NO_CHANGE) v3 = part3;
-    if (v4 === NO_CHANGE) v4 = part4;
 
-    if (different =
-            (isDifferent(part0, v0) || isDifferent(part1, v1) || isDifferent(part2, v2) ||
-             isDifferent(part3, v3) || isDifferent(part4, v4))) {
+    different = isDifferent(part0, v0) || isDifferent(part1, v1) || isDifferent(part2, v2) ||
+        isDifferent(part3, v3) || isDifferent(part4, v4);
+
+    if (different) {
       data[bindingIndex - 5] = v0;
       data[bindingIndex - 4] = v1;
       data[bindingIndex - 3] = v2;
@@ -1617,16 +1626,11 @@ export function interpolation6(
     const part3 = data[bindingIndex++];
     const part4 = data[bindingIndex++];
     const part5 = data[bindingIndex++];
-    if (v0 === NO_CHANGE) v0 = part0;
-    if (v1 === NO_CHANGE) v1 = part1;
-    if (v2 === NO_CHANGE) v2 = part2;
-    if (v3 === NO_CHANGE) v3 = part3;
-    if (v4 === NO_CHANGE) v4 = part4;
-    if (v5 === NO_CHANGE) v5 = part5;
 
-    if (different =
-            (isDifferent(part0, v0) || isDifferent(part1, v1) || isDifferent(part2, v2) ||
-             isDifferent(part3, v3) || isDifferent(part4, v4) || isDifferent(part5, v5))) {
+    different = isDifferent(part0, v0) || isDifferent(part1, v1) || isDifferent(part2, v2) ||
+        isDifferent(part3, v3) || isDifferent(part4, v4) || isDifferent(part5, v5);
+
+    if (different) {
       data[bindingIndex - 6] = v0;
       data[bindingIndex - 5] = v1;
       data[bindingIndex - 4] = v2;
@@ -1664,17 +1668,11 @@ export function interpolation7(
     const part4 = data[bindingIndex++];
     const part5 = data[bindingIndex++];
     const part6 = data[bindingIndex++];
-    if (v0 === NO_CHANGE) v0 = part0;
-    if (v1 === NO_CHANGE) v1 = part1;
-    if (v2 === NO_CHANGE) v2 = part2;
-    if (v3 === NO_CHANGE) v3 = part3;
-    if (v4 === NO_CHANGE) v4 = part4;
-    if (v5 === NO_CHANGE) v5 = part5;
-    if (v6 === NO_CHANGE) v6 = part6;
-    if (different =
-            (isDifferent(part0, v0) || isDifferent(part1, v1) || isDifferent(part2, v2) ||
-             isDifferent(part3, v3) || isDifferent(part4, v4) || isDifferent(part5, v5) ||
-             isDifferent(part6, v6))) {
+    different = isDifferent(part0, v0) || isDifferent(part1, v1) || isDifferent(part2, v2) ||
+        isDifferent(part3, v3) || isDifferent(part4, v4) || isDifferent(part5, v5) ||
+        isDifferent(part6, v6);
+
+    if (different) {
       data[bindingIndex - 7] = v0;
       data[bindingIndex - 6] = v1;
       data[bindingIndex - 5] = v2;
@@ -1684,6 +1682,7 @@ export function interpolation7(
       data[bindingIndex - 1] = v6;
     }
   }
+
   return different ?
       prefix + stringify(v0) + i0 + stringify(v1) + i1 + stringify(v2) + i2 + stringify(v3) + i3 +
           stringify(v4) + i4 + stringify(v5) + i5 + stringify(v6) + suffix :
@@ -1715,18 +1714,11 @@ export function interpolation8(
     const part5 = data[bindingIndex++];
     const part6 = data[bindingIndex++];
     const part7 = data[bindingIndex++];
-    if (v0 === NO_CHANGE) v0 = part0;
-    if (v1 === NO_CHANGE) v1 = part1;
-    if (v2 === NO_CHANGE) v2 = part2;
-    if (v3 === NO_CHANGE) v3 = part3;
-    if (v4 === NO_CHANGE) v4 = part4;
-    if (v5 === NO_CHANGE) v5 = part5;
-    if (v6 === NO_CHANGE) v6 = part6;
-    if (v7 === NO_CHANGE) v7 = part7;
-    if (different =
-            (isDifferent(part0, v0) || isDifferent(part1, v1) || isDifferent(part2, v2) ||
-             isDifferent(part3, v3) || isDifferent(part4, v4) || isDifferent(part5, v5) ||
-             isDifferent(part6, v6) || isDifferent(part7, v7))) {
+    different = isDifferent(part0, v0) || isDifferent(part1, v1) || isDifferent(part2, v2) ||
+        isDifferent(part3, v3) || isDifferent(part4, v4) || isDifferent(part5, v5) ||
+        isDifferent(part6, v6) || isDifferent(part7, v7);
+
+    if (different) {
       data[bindingIndex - 8] = v0;
       data[bindingIndex - 7] = v1;
       data[bindingIndex - 6] = v2;
@@ -1737,6 +1729,7 @@ export function interpolation8(
       data[bindingIndex - 1] = v7;
     }
   }
+
   return different ?
       prefix + stringify(v0) + i0 + stringify(v1) + i1 + stringify(v2) + i2 + stringify(v3) + i3 +
           stringify(v4) + i4 + stringify(v5) + i5 + stringify(v6) + i6 + stringify(v7) + suffix :
