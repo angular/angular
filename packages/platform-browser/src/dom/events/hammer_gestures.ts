@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Inject, Injectable, InjectionToken} from '@angular/core';
+import {Inject, Injectable, InjectionToken, ɵConsole as Console} from '@angular/core';
 
 import {DOCUMENT} from '../dom_tokens';
 
@@ -99,7 +99,8 @@ export class HammerGestureConfig {
 export class HammerGesturesPlugin extends EventManagerPlugin {
   constructor(
       @Inject(DOCUMENT) doc: any,
-      @Inject(HAMMER_GESTURE_CONFIG) private _config: HammerGestureConfig) {
+      @Inject(HAMMER_GESTURE_CONFIG) private _config: HammerGestureConfig,
+      private console: Console) {
     super(doc);
   }
 
@@ -109,7 +110,8 @@ export class HammerGesturesPlugin extends EventManagerPlugin {
     }
 
     if (!(window as any).Hammer) {
-      throw new Error(`Hammer.js is not loaded, can not bind ${eventName} event`);
+      this.console.warn(`Hammer.js is not loaded, can not bind '${eventName}' event.`);
+      return false;
     }
 
     return true;
