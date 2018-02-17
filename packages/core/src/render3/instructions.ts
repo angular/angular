@@ -50,8 +50,18 @@ export const NG_HOST_SYMBOL = '__ngHostLNode__';
 let renderer: Renderer3;
 let rendererFactory: RendererFactory3;
 
+export function getRenderer(): Renderer3 {
+  // top level variables should not be exported for performance reason (PERF_NOTES.md)
+  return renderer;
+}
+
 /** Used to set the parent property when nodes are created. */
 let previousOrParentNode: LNode;
+
+export function getPreviousOrParentNode(): LNode {
+  // top level variables should not be exported for performance reason (PERF_NOTES.md)
+  return previousOrParentNode;
+}
 
 /**
  * If `isParent` is:
@@ -82,10 +92,20 @@ let currentView: LView = null !;
 
 let currentQueries: LQueries|null;
 
+export function getCurrentQueries(QueryType: {new (): LQueries}): LQueries {
+  // top level variables should not be exported for performance reason (PERF_NOTES.md)
+  return currentQueries || (currentQueries = new QueryType());
+}
+
 /**
  * This property gets set before entering a template.
  */
 let creationMode: boolean;
+
+export function getCreationMode(): boolean {
+  // top level variables should not be exported for performance reason (PERF_NOTES.md)
+  return creationMode;
+}
 
 /**
  * An array of nodes (text, element, container, etc), their bindings, and
@@ -1752,14 +1772,6 @@ export function load<T>(index: number): T {
   return data[index];
 }
 
-export function getCurrentQueries(QueryType: {new (): LQueries}): LQueries {
-  return currentQueries || (currentQueries = new QueryType());
-}
-
-export function getCreationMode(): boolean {
-  return creationMode;
-}
-
 /** Gets the current binding value and increments the binding index. */
 export function consumeBinding(): any {
   ngDevMode && assertDataInRange(bindingIndex);
@@ -1798,14 +1810,6 @@ export function bindingUpdated2(exp1: any, exp2: any): boolean {
 export function bindingUpdated4(exp1: any, exp2: any, exp3: any, exp4: any): boolean {
   const different = bindingUpdated2(exp1, exp2);
   return bindingUpdated2(exp3, exp4) || different;
-}
-
-export function getPreviousOrParentNode(): LNode {
-  return previousOrParentNode;
-}
-
-export function getRenderer(): Renderer3 {
-  return renderer;
 }
 
 export function getDirectiveInstance<T>(instanceOrArray: T | [T]): T {
