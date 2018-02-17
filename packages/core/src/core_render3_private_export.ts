@@ -60,6 +60,7 @@ export {
   e as ɵe,
   p as ɵp,
   pD as ɵpD,
+  a as ɵa,
   s as ɵs,
   t as ɵt,
   v as ɵv,
