@@ -180,6 +180,23 @@ export class NgForOf<T, U extends NgIterable<T> = NgIterable<T>> implements DoCh
   // TODO(issue/24571): remove '!'.
   private _trackByFn!: TrackByFunction<T>;
 
+  /**
+   * To display specific content when the given `Iterable` is of zero length, `NgForOf` supports
+   * `whenEmpty` option. `whenEmpty` takes a template reference to an `<ng-template>` element.
+   *
+   * ```
+   * <li *ngFor="let item of items; whenEmpty: emptyContent">...</li>
+   * <ng-template #emptyContent> (the list is empty) </ng-template>
+   * ```
+   */
+  @Input()
+  set ngForWhenEmpty(value: TemplateRef<void>) {
+    this._whenEmptyBlockTemplate = value ?? null;
+  }
+
+  private _whenEmptyBlockTemplate: TemplateRef<void>|null = null;
+  private _whenEmptyBlockView: EmbeddedViewRef<void>|null = null;
+
   constructor(
       private _viewContainer: ViewContainerRef,
       private _template: TemplateRef<NgForOfContext<T, U>>, private _differs: IterableDiffers) {}
@@ -217,7 +234,18 @@ export class NgForOf<T, U extends NgIterable<T> = NgIterable<T>> implements DoCh
     }
     if (this._differ) {
       const changes = this._differ.diff(this._ngForOf);
-      if (changes) this._applyChanges(changes);
+      if (changes) {
+        if (this._whenEmptyBlockView) {
+          this._viewContainer.remove(this._viewContainer.indexOf(this._whenEmptyBlockView));
+          this._whenEmptyBlockView = null;
+        }
+        this._applyChanges(changes);
+      }
+      if (this._whenEmptyBlockTemplate && !this._whenEmptyBlockView &&
+          this._viewContainer.length === 0) {
+        this._whenEmptyBlockView =
+            this._viewContainer.createEmbeddedView(this._whenEmptyBlockTemplate);
+      }
     }
   }
 

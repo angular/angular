@@ -219,6 +219,7 @@ export declare class NgForOf<T, U extends NgIterable<T> = NgIterable<T>> impleme
     set ngForTemplate(value: TemplateRef<NgForOfContext<T, U>>);
     set ngForTrackBy(fn: TrackByFunction<T>);
     get ngForTrackBy(): TrackByFunction<T>;
+    set ngForWhenEmpty(value: TemplateRef<void>);
     constructor(_viewContainer: ViewContainerRef, _template: TemplateRef<NgForOfContext<T, U>>, _differs: IterableDiffers);
     ngDoCheck(): void;
     static ngTemplateContextGuard<T, U extends NgIterable<T>>(dir: NgForOf<T, U>, ctx: any): ctx is NgForOfContext<T, U>;

@@ -380,6 +380,26 @@ let thisArg: any;
            detectChangesAndExpectText('efh');
          }));
     });
+
+    describe('Default', () => {
+      it('should display default block when no items available', () => {
+        const template = `<div *ngFor="let item of items; whenEmpty: noItems">{{item}}</div>` +
+            `<ng-template #noItems>No items</ng-template>`;
+        fixture = createTestComponent(template);
+
+        getComponent().items = [];
+        detectChangesAndExpectText('No items');
+
+        getComponent().items = ['a', 'b', 'c'];
+        detectChangesAndExpectText('abc');
+
+        getComponent().items = [];
+        detectChangesAndExpectText('No items');
+
+        getComponent().items = [];
+        detectChangesAndExpectText('No items');
+      });
+    });
   });
 }
 
