@@ -61,7 +61,9 @@ export type HttpObserve = 'body' | 'events' | 'response';
  */
 @Injectable()
 export class HttpClient {
-  constructor(private handler: HttpHandler) {}
+  constructor(
+
+      private handler: HttpHandler, ) {}
 
   /**
    * Send the given `HttpRequest` and return a stream of `HttpEvents`.

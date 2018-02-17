@@ -17,13 +17,37 @@ import {Observable} from 'rxjs/Observable';
 import {Observer} from 'rxjs/Observer';
 import {Subscription} from 'rxjs/Subscription';
 
+import {APP_ORIGIN_HREF} from './tokens';
+
 const isAbsoluteUrl = /^[a-zA-Z\-\+.]+:\/\//;
 
-function validateRequestUrl(url: string): void {
+function ensureAbsoluteUrl(url: string, origin: string): string {
+  // if the url isn't a absolute url already
+  if (isAbsoluteUrl.test(url)) {
+    return url;
+  }
+  if (url !.startsWith('./')) {
+    url = url !.slice(1);
+  }
+  if (!url !.startsWith('/')) {
+    url = '/' + url;
+  }
+  if (url !.startsWith('//')) {
+    // assume the appHostNameHref has a scheme
+    const [scheme, host] = origin.split('://');
+    url = scheme + '://' + url !.replace('//', '');
+  } else {
+    url = origin + url;
+  }
+  return url;
+}
+
+function throwIfNotAbsolute(url: string): void {
   if (!isAbsoluteUrl.test(url)) {
     throw new Error(`URLs requested via Http on the server must be absolute. URL: ${url}`);
   }
 }
+
 
 @Injectable()
 export class ServerXhr implements BrowserXhr {
@@ -118,9 +142,10 @@ export class ZoneMacroTaskConnection extends ZoneMacroTaskWrapper<Request, Respo
   response: Observable<Response>;
   lastConnection: Connection;
 
-  constructor(public request: Request, private backend: XHRBackend) {
+  constructor(
+      public request: Request, private backend: XHRBackend, private appOriginHref?: string) {
     super();
-    validateRequestUrl(request.url);
+    throwIfNotAbsolute(request.url);
     this.response = this.wrap(request);
   }
 
@@ -135,18 +160,23 @@ export class ZoneMacroTaskConnection extends ZoneMacroTaskWrapper<Request, Respo
 }
 
 export class ZoneMacroTaskBackend implements ConnectionBackend {
-  constructor(private backend: XHRBackend) {}
+  constructor(private backend: XHRBackend, private appOriginHref?: string) {}
 
   createConnection(request: any): ZoneMacroTaskConnection {
-    return new ZoneMacroTaskConnection(request, this.backend);
+    return new ZoneMacroTaskConnection(request, this.backend, this.appOriginHref);
   }
 }
 
 export class ZoneClientBackend extends
     ZoneMacroTaskWrapper<HttpRequest<any>, HttpEvent<any>> implements HttpBackend {
-  constructor(private backend: HttpBackend) { super(); }
+  constructor(private backend: HttpBackend, private appOriginHref?: string) { super(); }
 
-  handle(request: HttpRequest<any>): Observable<HttpEvent<any>> { return this.wrap(request); }
+  handle(request: HttpRequest<any>): Observable<HttpEvent<any>> {
+    if (typeof this.appOriginHref !== 'undefined') {
+      return this.wrap(request.clone({url: ensureAbsoluteUrl(request.url, this.appOriginHref)}));
+    }
+    return this.wrap(request);
+  }
 
   protected delegate(request: HttpRequest<any>): Observable<HttpEvent<any>> {
     return this.backend.handle(request);
@@ -159,9 +189,9 @@ export function httpFactory(xhrBackend: XHRBackend, options: RequestOptions) {
 }
 
 export function zoneWrappedInterceptingHandler(
-    backend: HttpBackend, interceptors: HttpInterceptor[] | null) {
+    backend: HttpBackend, interceptors: HttpInterceptor[] | null, appOriginHref?: string) {
   const realBackend: HttpBackend = interceptingHandler(backend, interceptors);
-  return new ZoneClientBackend(realBackend);
+  return new ZoneClientBackend(realBackend, appOriginHref);
 }
 
 export const SERVER_HTTP_PROVIDERS: Provider[] = [
@@ -170,6 +200,6 @@ export const SERVER_HTTP_PROVIDERS: Provider[] = [
   {provide: XhrFactory, useClass: ServerXhr}, {
     provide: HttpHandler,
     useFactory: zoneWrappedInterceptingHandler,
-    deps: [HttpBackend, [new Optional(), HTTP_INTERCEPTORS]]
+    deps: [HttpBackend, [new Optional(), HTTP_INTERCEPTORS], [new Optional(), APP_ORIGIN_HREF]]
   }
 ];

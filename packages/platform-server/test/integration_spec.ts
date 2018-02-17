@@ -8,7 +8,7 @@
 
 import {AnimationBuilder, animate, style, transition, trigger} from '@angular/animations';
 import {APP_BASE_HREF, PlatformLocation, isPlatformServer} from '@angular/common';
-import {HttpClient, HttpClientModule} from '@angular/common/http';
+import {HttpClient, HttpClientModule, XhrFactory} from '@angular/common/http';
 import {HttpClientTestingModule, HttpTestingController} from '@angular/common/http/testing';
 import {ApplicationRef, CompilerFactory, Component, HostListener, Input, NgModule, NgModuleRef, NgZone, PLATFORM_ID, PlatformRef, ViewEncapsulation, destroyPlatform, getPlatform} from '@angular/core';
 import {TestBed, async, inject} from '@angular/core/testing';
@@ -16,7 +16,7 @@ import {Http, HttpModule, Response, ResponseOptions, XHRBackend} from '@angular/
 import {MockBackend, MockConnection} from '@angular/http/testing';
 import {BrowserModule, DOCUMENT, StateKey, Title, TransferState, makeStateKey} from '@angular/platform-browser';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
-import {BEFORE_APP_SERIALIZED, INITIAL_CONFIG, PlatformState, ServerModule, ServerTransferStateModule, platformDynamicServer, renderModule, renderModuleFactory} from '@angular/platform-server';
+import {APP_ORIGIN_HREF, BEFORE_APP_SERIALIZED, INITIAL_CONFIG, PlatformState, ServerModule, ServerTransferStateModule, platformDynamicServer, renderModule, renderModuleFactory} from '@angular/platform-server';
 import {Subscription} from 'rxjs/Subscription';
 import {filter} from 'rxjs/operator/filter';
 import {first} from 'rxjs/operator/first';
@@ -713,6 +713,53 @@ class EscapedTransferStoreModule {
              });
            });
          }));
+      describe('makes absolute urls', () => {
+        let platformBootstrapped: Promise<NgModuleRef<HttpClientExmapleModule>>;
+        let http: HttpClient;
+        let zone: NgZone;
+        let mock: HttpTestingController;
+
+        beforeEach(() => {
+          const platform = platformDynamicServer([
+            {provide: INITIAL_CONFIG, useValue: {document: '<app></app>'}},
+            {provide: APP_ORIGIN_HREF, useValue: 'http://testhost.com'}
+          ]);
+          platformBootstrapped = platform.bootstrapModule(HttpClientExmapleModule).then(ref => {
+            mock = ref.injector.get(HttpTestingController) as HttpTestingController;
+            http = ref.injector.get(HttpClient);
+            zone = ref.injector.get(NgZone);
+            return ref;
+          });
+
+        });
+        const testUrl = (target: string, expected: string) => {
+          platformBootstrapped.then(ref => {
+            zone.run(() => {
+              http.get(target).subscribe(body => {
+                NgZone.assertInAngularZone();
+                expect(body).toEqual('success!');
+              });
+              mock.expectOne(expected).flush('success!');
+            });
+          });
+        };
+        it('with url starting /', async(() => { testUrl('/test', 'http://testhost.com/test'); }));
+        it('with url starting ./', async(() => { testUrl('./test', 'http://testhost.com/test'); }));
+        it('with urls that have no prefix',
+           async(() => { testUrl('test', 'http://testhost.com/test'); }));
+        it('with urls that have no scheme', async(() => {
+             testUrl('www.anotherhost.com/test', 'http://testhost.com/www.anotherhost.com/test');
+           }));
+        it('with url on the same host',
+           async(() => { testUrl('http://testhost.com/test', 'http://testhost.com/test'); }));
+        it('with url on another scheme',
+           async(() => { testUrl('ftp://anotherhost.com/test', 'ftp://anotherhost.com/test'); }));
+        it('with url on a another host', async(() => {
+             testUrl('https://anotherhost.com/test', 'https://anotherhost.com/test');
+           }));
+        it('with url using scheme independant',
+           async(() => { testUrl('//testhost.com/test', 'http://testhost.com/test'); }));
+      });
     });
 
     describe('ServerTransferStoreModule', () => {

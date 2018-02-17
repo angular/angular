@@ -1,4 +1,7 @@
 /** @experimental */
+export declare const APP_ORIGIN_HREF: InjectionToken<string>;
+
+/** @experimental */
 export declare const BEFORE_APP_SERIALIZED: InjectionToken<(() => void)[]>;
 
 /** @experimental */

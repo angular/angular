@@ -33,3 +33,10 @@ export const INITIAL_CONFIG = new InjectionToken<PlatformConfig>('Server.INITIAL
  */
 export const BEFORE_APP_SERIALIZED =
     new InjectionToken<Array<() => void>>('Server.RENDER_MODULE_HOOK');
+
+/**
+ *
+ *
+ * @experimental
+ */
+export const APP_ORIGIN_HREF = new InjectionToken<string>('Server.APP_ORIGIN_HREF');
