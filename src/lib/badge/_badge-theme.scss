@@ -73,7 +73,7 @@ $mat-badge-large-size: $mat-badge-default-size + 6;
 
     &.mat-badge-after {
       margin-right: $size / 2;
-      
+
       &[dir='rtl'] {
         margin-right: 0;
         margin-left: $size;
@@ -90,20 +90,20 @@ $mat-badge-large-size: $mat-badge-default-size + 6;
   $accent: map-get($theme, accent);
   $warn: map-get($theme, warn);
   $primary: map-get($theme, primary);
-  
+
   .mat-badge-content {
     color: mat-color($primary, default-contrast);
     background: mat-color($primary);
   }
 
-  &.mat-badge-accent {
+  .mat-badge-accent {
     .mat-badge-content {
       background: mat-color($accent);
       color: mat-color($accent, default-contrast);
     }
   }
 
-  &.mat-badge-warn {
+  .mat-badge-warn {
     .mat-badge-content {
       color: mat-color($warn, default-contrast);
       background: mat-color($warn);
