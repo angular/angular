@@ -1,0 +1,19 @@
+{
+  "$schema": "http://json-schema.org/schema",
+  "id": "SchematicsMaterialShell",
+  "title": "Material Shell Options Schema",
+  "type": "object",
+  "properties": {
+    "skipPackageJson": {
+      "type": "boolean",
+      "default": false,
+      "description": "Do not add materials dependencies to package.json (e.g., --skipPackageJson)"
+    },
+    "theme": {
+      "enum": ["indigo-pink", "deeppurple-amber", "pink-bluegrey", "purple-green", "custom"],
+      "default": "indigo-pink",
+      "description": "The theme to apply"
+    }
+  },
+  "required": []
+}

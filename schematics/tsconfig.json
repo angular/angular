@@ -17,11 +17,5 @@
       "jasmine",
       "node"
     ]
-  },
-  "include": [
-    "src/**/*"
-  ],
-  "exclude": [
-    "src/*/files/**/*"
-  ]
+  }
 }

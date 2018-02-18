@@ -18,7 +18,7 @@ export function createTestApp() {
     viewEncapsulation: 'None',
     version: '1.2.3',
     routing: true,
-    style: 'css',
+    style: 'scss',
     skipTests: false,
     minimal: false,
   });

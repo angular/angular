@@ -1,5 +1,13 @@
 // This is the root config file where the schematics are defined.
 {
   "$schema": "./node_modules/@angular-devkit/schematics/collection-schema.json",
-  "schematics": {}
+  "schematics": {
+    // Adds Angular Material to an application without changing any templates
+    "materialShell": {
+      "description": "Create a Material shell",
+      "factory": "./shell",
+      "schema": "./shell/schema.json",
+      "aliases": ["material-shell"]
+    }
+  }
 }

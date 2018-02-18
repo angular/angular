@@ -1,6 +1,6 @@
 import {Tree, SchematicsException} from '@angular-devkit/schematics';
 import * as parse5 from 'parse5';
-import {getIndexPath} from './ast';
+import {getIndexHtmlPath} from './ast';
 import {InsertChange} from './devkit-utils/change';
 
 /**
@@ -44,7 +44,7 @@ export function getHeadTag(host: Tree, src: string) {
  * @param link html element string we are inserting.
  */
 export function addHeadLink(host: Tree, link: string) {
-  const indexPath = getIndexPath(host);
+  const indexPath = getIndexHtmlPath(host);
   const buffer = host.read(indexPath);
   if (!buffer) {
     throw new SchematicsException(`Could not find file for path: ${indexPath}`);
