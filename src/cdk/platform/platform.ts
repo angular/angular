@@ -10,7 +10,7 @@ import {Injectable} from '@angular/core';
 
 // Whether the current platform supports the V8 Break Iterator. The V8 check
 // is necessary to detect all Blink based browsers.
-const hasV8BreakIterator = (typeof(Intl) !== 'undefined' && (Intl as any).v8BreakIterator);
+const hasV8BreakIterator = (typeof Intl !== 'undefined' && (Intl as any).v8BreakIterator);
 
 /**
  * Service to detect the current platform by comparing the userAgent strings and
@@ -29,8 +29,8 @@ export class Platform {
 
   /** Whether the current rendering engine is Blink. */
   // EdgeHTML and Trident mock Blink specific things and need to be excluded from this check.
-  BLINK: boolean = this.isBrowser &&
-      (!!((window as any).chrome || hasV8BreakIterator) && !!CSS && !this.EDGE && !this.TRIDENT);
+  BLINK: boolean = this.isBrowser && (!!((window as any).chrome || hasV8BreakIterator) &&
+    typeof CSS !== 'undefined' && !this.EDGE && !this.TRIDENT);
 
   /** Whether the current rendering engine is WebKit. */
   // Webkit is part of the userAgent in EdgeHTML, Blink and Trident. Therefore we need to
