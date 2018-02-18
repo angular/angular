@@ -1,13 +1,26 @@
-import {Component, ViewChild} from '@angular/core';
-import {ComponentFixture, TestBed} from '@angular/core/testing';
-import {JAN, MatNativeDateModule} from '@angular/material/core';
+import {
+  DOWN_ARROW,
+  END,
+  HOME,
+  LEFT_ARROW,
+  PAGE_DOWN,
+  PAGE_UP,
+  RIGHT_ARROW,
+  UP_ARROW,
+} from '@angular/cdk/keycodes';
 import {By} from '@angular/platform-browser';
+import {Component, ViewChild} from '@angular/core';
+import {ComponentFixture, TestBed, async} from '@angular/core/testing';
+import {Direction, Directionality} from '@angular/cdk/bidi';
+import {JAN, MatNativeDateModule} from '@angular/material/core';
 import {MatCalendarBody} from './calendar-body';
-import {MatMultiYearView, yearsPerPage} from './multi-year-view';
-import {MatYearView} from './year-view';
+import {MatMultiYearView, yearsPerPage, yearsPerRow} from './multi-year-view';
+import {dispatchKeyboardEvent, dispatchFakeEvent} from '@angular/cdk/testing';
 
 describe('MatMultiYearView', () => {
-  beforeEach(() => {
+  let dir: {value: Direction};
+
+  beforeEach(async(() => {
     TestBed.configureTestingModule({
       imports: [
         MatNativeDateModule,
@@ -20,10 +33,13 @@ describe('MatMultiYearView', () => {
         StandardMultiYearView,
         MultiYearViewWithDateFilter,
       ],
+      providers: [
+        {provide: Directionality, useFactory: () => dir = {value: 'ltr'}}
+      ]
     });
 
     TestBed.compileComponents();
-  });
+  }));
 
   describe('standard multi-year view', () => {
     let fixture: ComponentFixture<StandardMultiYearView>;
@@ -81,6 +97,130 @@ describe('MatMultiYearView', () => {
       expect((cellEls[1] as HTMLElement).innerText.trim()).toBe('2017');
       expect(cellEls[1].classList).toContain('mat-calendar-body-active');
     });
+
+    describe('a11y', () => {
+      describe('calendar body', () => {
+        let calendarBodyEl: HTMLElement;
+        let calendarInstance: StandardMultiYearView;
+
+        beforeEach(() => {
+          calendarInstance = fixture.componentInstance;
+          calendarBodyEl =
+            fixture.debugElement.nativeElement.querySelector('.mat-calendar-body') as HTMLElement;
+          expect(calendarBodyEl).not.toBeNull();
+          dir.value = 'ltr';
+          fixture.componentInstance.date = new Date(2017, JAN, 1);
+          dispatchFakeEvent(calendarBodyEl, 'focus');
+          fixture.detectChanges();
+        });
+
+        it('should decrement year on left arrow press', () => {
+          dispatchKeyboardEvent(calendarBodyEl, 'keydown', LEFT_ARROW);
+          fixture.detectChanges();
+
+          expect(calendarInstance.multiYearView.activeDate).toEqual(new Date(2016, JAN, 1));
+
+          dispatchKeyboardEvent(calendarBodyEl, 'keydown', LEFT_ARROW);
+          fixture.detectChanges();
+
+          expect(calendarInstance.multiYearView.activeDate).toEqual(new Date(2015, JAN, 1));
+        });
+
+        it('should increment year on right arrow press', () => {
+          dispatchKeyboardEvent(calendarBodyEl, 'keydown', RIGHT_ARROW);
+          fixture.detectChanges();
+
+          expect(calendarInstance.multiYearView.activeDate).toEqual(new Date(2018, JAN, 1));
+
+          dispatchKeyboardEvent(calendarBodyEl, 'keydown', RIGHT_ARROW);
+          fixture.detectChanges();
+
+          expect(calendarInstance.multiYearView.activeDate).toEqual(new Date(2019, JAN, 1));
+        });
+
+        it('should go up a row on up arrow press', () => {
+          dispatchKeyboardEvent(calendarBodyEl, 'keydown', UP_ARROW);
+          fixture.detectChanges();
+
+          expect(calendarInstance.multiYearView.activeDate)
+            .toEqual(new Date(2017 - yearsPerRow, JAN, 1));
+
+          dispatchKeyboardEvent(calendarBodyEl, 'keydown', UP_ARROW);
+          fixture.detectChanges();
+
+          expect(calendarInstance.multiYearView.activeDate)
+            .toEqual(new Date(2017 - yearsPerRow * 2, JAN, 1));
+        });
+
+        it('should go down a row on down arrow press', () => {
+          dispatchKeyboardEvent(calendarBodyEl, 'keydown', DOWN_ARROW);
+          fixture.detectChanges();
+
+          expect(calendarInstance.multiYearView.activeDate)
+            .toEqual(new Date(2017 + yearsPerRow, JAN, 1));
+
+          dispatchKeyboardEvent(calendarBodyEl, 'keydown', DOWN_ARROW);
+          fixture.detectChanges();
+
+          expect(calendarInstance.multiYearView.activeDate)
+            .toEqual(new Date(2017 + yearsPerRow * 2, JAN, 1));
+        });
+
+        it('should go to first year in current range on home press', () => {
+          dispatchKeyboardEvent(calendarBodyEl, 'keydown', HOME);
+          fixture.detectChanges();
+
+          expect(calendarInstance.multiYearView.activeDate).toEqual(new Date(2016, JAN, 1));
+
+          dispatchKeyboardEvent(calendarBodyEl, 'keydown', HOME);
+          fixture.detectChanges();
+
+          expect(calendarInstance.multiYearView.activeDate).toEqual(new Date(2016, JAN, 1));
+        });
+
+        it('should go to last year in current range on end press', () => {
+          dispatchKeyboardEvent(calendarBodyEl, 'keydown', END);
+          fixture.detectChanges();
+
+          expect(calendarInstance.multiYearView.activeDate).toEqual(new Date(2039, JAN, 1));
+
+          dispatchKeyboardEvent(calendarBodyEl, 'keydown', END);
+          fixture.detectChanges();
+
+          expect(calendarInstance.multiYearView.activeDate).toEqual(new Date(2039, JAN, 1));
+        });
+
+        it('should go to same index in previous year range page up press', () => {
+          dispatchKeyboardEvent(calendarBodyEl, 'keydown', PAGE_UP);
+          fixture.detectChanges();
+
+          expect(calendarInstance.multiYearView.activeDate)
+            .toEqual(new Date(2017 - yearsPerPage, JAN, 1));
+
+          dispatchKeyboardEvent(calendarBodyEl, 'keydown', PAGE_UP);
+          fixture.detectChanges();
+
+          expect(calendarInstance.multiYearView.activeDate)
+              .toEqual(new Date(2017 - yearsPerPage * 2, JAN, 1));
+        });
+
+        it('should go to same index in next year range on page down press', () => {
+          dispatchKeyboardEvent(calendarBodyEl, 'keydown', PAGE_DOWN);
+          fixture.detectChanges();
+
+          expect(calendarInstance.multiYearView.activeDate)
+            .toEqual(new Date(2017 + yearsPerPage, JAN, 1));
+
+          dispatchKeyboardEvent(calendarBodyEl, 'keydown', PAGE_DOWN);
+          fixture.detectChanges();
+
+          expect(calendarInstance.multiYearView.activeDate)
+            .toEqual(new Date(2017 + yearsPerPage * 2, JAN, 1));
+        });
+
+      });
+    });
+
   });
 
   describe('multi year view with date filter', () => {
@@ -116,7 +256,7 @@ class StandardMultiYearView {
   selected = new Date(2020, JAN, 1);
   selectedYear: Date;
 
-  @ViewChild(MatYearView) yearView: MatYearView<Date>;
+  @ViewChild(MatMultiYearView) multiYearView: MatMultiYearView<Date>;
 }
 
 @Component({

@@ -25,6 +25,7 @@ import {
   ChangeDetectionStrategy,
   Component,
   ComponentRef,
+  ElementRef,
   EventEmitter,
   Inject,
   InjectionToken,
@@ -36,18 +37,16 @@ import {
   ViewChild,
   ViewContainerRef,
   ViewEncapsulation,
-  ElementRef,
 } from '@angular/core';
-import {DateAdapter} from '@angular/material/core';
+import {CanColor, DateAdapter, mixinColor, ThemePalette} from '@angular/material/core';
 import {MatDialog, MatDialogRef} from '@angular/material/dialog';
 import {DOCUMENT} from '@angular/common';
 import {Subject} from 'rxjs/Subject';
 import {Subscription} from 'rxjs/Subscription';
 import {merge} from 'rxjs/observable/merge';
-import {MatCalendar} from './calendar';
 import {createMissingDateImplError} from './datepicker-errors';
 import {MatDatepickerInput} from './datepicker-input';
-import {CanColor, mixinColor, ThemePalette} from '@angular/material/core';
+import {MatCalendar} from './calendar';
 
 
 /** Used to generate a unique ID for each datepicker instance. */
@@ -73,7 +72,7 @@ export const MAT_DATEPICKER_SCROLL_STRATEGY_PROVIDER = {
 // Boilerplate for applying mixins to MatDatepickerContent.
 /** @docs-private */
 export class MatDatepickerContentBase {
-  constructor(public _elementRef: ElementRef) {}
+  constructor(public _elementRef: ElementRef) { }
 }
 export const _MatDatepickerContentMixinBase = mixinColor(MatDatepickerContentBase);
 
@@ -105,12 +104,21 @@ export class MatDatepickerContent<D> extends _MatDatepickerContentMixinBase
 
   @ViewChild(MatCalendar) _calendar: MatCalendar<D>;
 
-  constructor(elementRef: ElementRef) {
+  constructor(elementRef: ElementRef, private _ngZone: NgZone) {
     super(elementRef);
   }
 
   ngAfterContentInit() {
-    this._calendar._focusActiveCell();
+    this._focusActiveCell();
+  }
+
+  /** Focuses the active cell after the microtask queue is empty. */
+  private _focusActiveCell() {
+    this._ngZone.runOutsideAngular(() => {
+      this._ngZone.onStable.asObservable().pipe(take(1)).subscribe(() => {
+        this._elementRef.nativeElement.querySelector('.mat-calendar-body-active').focus();
+      });
+    });
   }
 }
 
@@ -370,20 +378,23 @@ export class MatDatepicker<D> implements OnDestroy, CanColor {
 
   /** Open the calendar as a dialog. */
   private _openAsDialog(): void {
-    this._dialogRef = this._dialog.open(MatDatepickerContent, {
+    this._dialogRef = this._dialog.open<MatDatepickerContent<D>>(MatDatepickerContent, {
       direction: this._dir ? this._dir.value : 'ltr',
       viewContainerRef: this._viewContainerRef,
       panelClass: 'mat-datepicker-dialog',
     });
-    this._dialogRef.afterClosed().subscribe(() => this.close());
-    this._dialogRef.componentInstance.datepicker = this;
+    if (this._dialogRef) {
+      this._dialogRef.afterClosed().subscribe(() => this.close());
+      this._dialogRef.componentInstance.datepicker = this;
+    }
     this._setColor();
   }
 
   /** Open the calendar as a popup. */
   private _openAsPopup(): void {
     if (!this._calendarPortal) {
-      this._calendarPortal = new ComponentPortal(MatDatepickerContent, this._viewContainerRef);
+      this._calendarPortal = new ComponentPortal<MatDatepickerContent<D>>(MatDatepickerContent,
+                                                                          this._viewContainerRef);
     }
 
     if (!this._popupRef) {

@@ -234,7 +234,7 @@ describe('MatDatepicker', () => {
         expect(document.querySelector('mat-dialog-container')).not.toBeNull();
         expect(testComponent.datepickerInput.value).toEqual(new Date(2020, JAN, 1));
 
-        let calendarBodyEl = document.querySelector('.mat-calendar-content') as HTMLElement;
+        let calendarBodyEl = document.querySelector('.mat-calendar-body') as HTMLElement;
 
         dispatchKeyboardEvent(calendarBodyEl, 'keydown', RIGHT_ARROW);
         fixture.detectChanges();
@@ -279,7 +279,7 @@ describe('MatDatepicker', () => {
         testComponent.datepicker.open();
         fixture.detectChanges();
 
-        let calendarBodyEl = document.querySelector('.mat-calendar-content') as HTMLElement;
+        let calendarBodyEl = document.querySelector('.mat-calendar-body') as HTMLElement;
         expect(calendarBodyEl).not.toBeNull();
         expect(testComponent.datepickerInput.value).toEqual(new Date(2020, JAN, 1));
 
@@ -402,7 +402,8 @@ describe('MatDatepicker', () => {
           fixture.detectChanges();
 
           expect(testComponent.datepicker.opened).toBe(false);
-        })));
+        }))
+      );
     });
 
     describe('datepicker with too many inputs', () => {

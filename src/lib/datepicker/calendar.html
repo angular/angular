@@ -20,11 +20,10 @@
   </div>
 </div>
 
-<div class="mat-calendar-content" (keydown)="_handleCalendarBodyKeydown($event)"
-    [ngSwitch]="_currentView" cdkMonitorSubtreeFocus tabindex="-1">
+<div class="mat-calendar-content" [ngSwitch]="_currentView" cdkMonitorSubtreeFocus tabindex="-1">
   <mat-month-view
       *ngSwitchCase="'month'"
-      [activeDate]="_activeDate"
+      [(activeDate)]="_activeDate"
       [selected]="selected"
       [dateFilter]="dateFilter"
       [maxDate]="maxDate"
