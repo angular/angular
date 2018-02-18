@@ -7,7 +7,7 @@
  */
 
 import {Injectable} from '@angular/core';
-import {Observable, of } from 'rxjs';
+import {Observable, of as observableOf} from 'rxjs';
 import {concatMap, filter, map} from 'rxjs/operators';
 
 import {HttpHandler} from './backend';
@@ -381,7 +381,7 @@ export class HttpClient {
     // inside an Observable chain, which causes interceptors to be re-run on every
     // subscription (this also makes retries re-run the handler, including interceptors).
     const events$: Observable<HttpEvent<any>> =
-        of (req).pipe(concatMap((req: HttpRequest<any>) => this.handler.handle(req)));
+        observableOf(req).pipe(concatMap((req: HttpRequest<any>) => this.handler.handle(req)));
 
     // If coming via the API signature which accepts a previously constructed HttpRequest,
     // the only option is to get the event stream. Otherwise, return the event stream if

@@ -5,13 +5,13 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-
 const xhr2: any = require('xhr2');
 
-import {Injectable, Optional, Provider} from '@angular/core';
+import {Inject, Injectable, Optional, Provider} from '@angular/core';
 import {BrowserXhr, Connection, ConnectionBackend, Http, ReadyState, Request, RequestOptions, Response, XHRBackend, XSRFStrategy} from '@angular/http';
 
 import {HttpEvent, HttpRequest, HttpHandler, HttpInterceptor, HTTP_INTERCEPTORS, HttpBackend, XhrFactory, ɵinterceptingHandler as interceptingHandler} from '@angular/common/http';
+import {DOCUMENT} from '@angular/common';
 
 import {Observable, Observer, Subscription} from 'rxjs';
 
@@ -20,6 +20,27 @@ const isAbsoluteUrl = /^[a-zA-Z\-\+.]+:\/\//;
 function validateRequestUrl(url: string): void {
   if (!isAbsoluteUrl.test(url)) {
     throw new Error(`URLs requested via Http on the server must be absolute. URL: ${url}`);
+  }
+}
+
+@Injectable()
+export class ServerUrlInterceptor implements HttpInterceptor {
+  constructor(@Inject(DOCUMENT) private _document: any) {}
+  intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+    let url = request.url;
+    if (url && !isAbsoluteUrl.test(url)) {
+      let href = this._document.location.href;
+      const path = this._document.location.pathname;
+      if (path && url.startsWith('/')) {
+        href = href.substr(0, href.indexOf(path));
+      }
+      if (!href.endsWith('/') && !url.startsWith('/')) {
+        href += '/';
+      }
+      url = href + url;
+    }
+    request = request.clone({url});
+    return next.handle(request);
   }
 }
 
@@ -164,10 +185,13 @@ export function zoneWrappedInterceptingHandler(
 
 export const SERVER_HTTP_PROVIDERS: Provider[] = [
   {provide: Http, useFactory: httpFactory, deps: [XHRBackend, RequestOptions]},
-  {provide: BrowserXhr, useClass: ServerXhr}, {provide: XSRFStrategy, useClass: ServerXsrfStrategy},
-  {provide: XhrFactory, useClass: ServerXhr}, {
+  {provide: BrowserXhr, useClass: ServerXhr},
+  {provide: XSRFStrategy, useClass: ServerXsrfStrategy},
+  {provide: XhrFactory, useClass: ServerXhr},
+  {
     provide: HttpHandler,
     useFactory: zoneWrappedInterceptingHandler,
     deps: [HttpBackend, [new Optional(), HTTP_INTERCEPTORS]]
-  }
+  },
+  {provide: HTTP_INTERCEPTORS, useClass: ServerUrlInterceptor, multi: true},
 ];

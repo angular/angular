@@ -694,6 +694,23 @@ class EscapedTransferStoreModule {
              });
            });
          }));
+      it('can make relative HttpClient requests with initial url', async(() => {
+           const platform = platformDynamicServer([{
+             provide: INITIAL_CONFIG,
+             useValue: {document: '<app></app>', url: 'http://localhost:4000'}
+           }]);
+           platform.bootstrapModule(HttpClientExmapleModule).then(ref => {
+             const mock = ref.injector.get(HttpTestingController) as HttpTestingController;
+             const http = ref.injector.get(HttpClient);
+             ref.injector.get<NgZone>(NgZone).run(() => {
+               http.get('/testing').subscribe(body => {
+                 NgZone.assertInAngularZone();
+                 expect(body).toEqual('success!');
+               });
+               mock.expectOne('http://localhost:4000/testing').flush('success!');
+             });
+           });
+         }));
       it('requests are macrotasks', async(() => {
            const platform = platformDynamicServer(
                [{provide: INITIAL_CONFIG, useValue: {document: '<app></app>'}}]);
