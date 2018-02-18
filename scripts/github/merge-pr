@@ -44,9 +44,9 @@ if [ -z ${TOKEN:-''} ]; then
     echo "WARNING: you should set the TOKEN variable to a github token"
     echo "############################################################"
     echo "############################################################"
-    $GHCURL="curl"
+    GHCURL="curl"
 else
-    $GHCURL="curl -H \"Authorization: token $TOKEN\""
+    GHCURL="curl -H \"Authorization: token $TOKEN\""
 fi
 
 CURRENT_BRANCH=`git rev-parse --abbrev-ref HEAD`
