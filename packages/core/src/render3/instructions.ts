@@ -1439,11 +1439,11 @@ export function bind<T>(value: T | NO_CHANGE): T|NO_CHANGE {
  * Create interpolation bindings with a variable number of expressions.
  *
  * If there are 1 to 8 expressions `interpolation1()` to `interpolation8()` should be used instead.
- * Those are faster because there is no need to create an array of expressions and loop over it.
+ * Those are faster because there is no need to create an array of expressions and iterate over it.
  *
  * `values`:
  * - has static text at even indexes,
- * - has evaluated expressions at odd indexes (could be NO_CHANGE).
+ * - has evaluated expressions at odd indexes.
  *
  * Returns the concatenated string when any of the arguments changes, `NO_CHANGE` otherwise.
  */
@@ -1451,34 +1451,24 @@ export function interpolationV(values: any[]): string|NO_CHANGE {
   ngDevMode && assertLessThan(2, values.length, 'should have at least 3 values');
   ngDevMode && assertEqual(values.length % 2, 1, 'should have an odd number of values');
 
-  // TODO(vicb): Add proper unit tests when there is a place to add them
-  if (creationMode) {
-    initBindings();
-    // Only the bindings (odd indexes) are stored as texts are constant.
-    const bindings: any[] = [];
-    data[bindingIndex++] = bindings;
-    let content: string = values[0];
-    for (let i = 1; i < values.length; i += 2) {
-      content += stringify(values[i]) + values[i + 1];
-      bindings.push(values[i]);
-    }
-    return content;
+  let different = false;
+
+  for (let i = 1; i < values.length; i += 2) {
+    // Check if bindings (odd indexes) have changed
+    bindingUpdated(values[i]) && (different = true);
   }
 
-  const bindings: any[] = data[bindingIndex++];
-  // `bIdx` is the index in the `bindings` array, `vIdx` in the `values` array
-  for (let bIdx = 0, vIdx = 1; bIdx < bindings.length; bIdx++, vIdx += 2) {
-    if (isDifferent(values[vIdx], bindings[bIdx])) {
-      let content: string = values[0];
-      for (bIdx = 0, vIdx = 1; bIdx < bindings.length; vIdx += 2, bIdx++) {
-        bindings[bIdx] = values[vIdx];
-        content += stringify(bindings[bIdx]) + values[vIdx + 1];
-      }
-      return content;
-    }
+  if (!different) {
+    return NO_CHANGE;
   }
 
-  return NO_CHANGE;
+  // Build the updated content
+  let content = values[0];
+  for (let i = 1; i < values.length; i += 2) {
+    content += stringify(values[i]) + values[i + 1];
+  }
+
+  return content;
 }
 
 /**
