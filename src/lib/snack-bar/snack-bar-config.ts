@@ -46,7 +46,7 @@ export class MatSnackBarConfig<D = any> {
   extraClasses?: string | string[];
 
   /** Text layout direction for the snack bar. */
-  direction?: Direction = 'ltr';
+  direction?: Direction;
 
   /** Data being injected into the child component. */
   data?: D | null = null;

@@ -23,7 +23,7 @@ export class MatBottomSheetConfig<D = any> {
   panelClass?: string | string[];
 
   /** Text layout direction for the bottom sheet. */
-  direction?: Direction = 'ltr';
+  direction?: Direction;
 
   /** Data being injected into the child component. */
   data?: D | null = null;

@@ -1,5 +1,6 @@
 import {async, fakeAsync, tick, ComponentFixture, inject, TestBed} from '@angular/core/testing';
 import {Component, NgModule, ViewChild, ViewContainerRef} from '@angular/core';
+import {Direction, Directionality} from '@angular/cdk/bidi';
 import {
   ComponentPortal,
   PortalModule,
@@ -24,10 +25,20 @@ describe('Overlay', () => {
   let overlayContainerElement: HTMLElement;
   let overlayContainer: OverlayContainer;
   let viewContainerFixture: ComponentFixture<TestComponentWithTemplatePortals>;
+  let dir: Direction;
 
   beforeEach(async(() => {
+    dir = 'ltr';
     TestBed.configureTestingModule({
-      imports: [OverlayModule, PortalModule, OverlayTestModule]
+      imports: [OverlayModule, PortalModule, OverlayTestModule],
+      providers: [{
+        provide: Directionality,
+        useFactory: () => {
+          const fakeDirectionality = {};
+          Object.defineProperty(fakeDirectionality, 'value', {get: () => dir});
+          return fakeDirectionality;
+        }
+      }],
     }).compileComponents();
   }));
 
@@ -132,13 +143,21 @@ describe('Overlay', () => {
         .toBeFalsy('Expected cake to still be on top.');
   }));
 
+  it('should take the default direction from the global Directionality', () => {
+    dir = 'rtl';
+    overlay.create().attach(componentPortal);
+
+    const pane = overlayContainerElement.children[0] as HTMLElement;
+    expect(pane.getAttribute('dir')).toBe('rtl');
+  });
+
   it('should set the direction', () => {
     const config = new OverlayConfig({direction: 'rtl'});
 
     overlay.create(config).attach(componentPortal);
 
     const pane = overlayContainerElement.children[0] as HTMLElement;
-    expect(pane.getAttribute('dir')).toEqual('rtl');
+    expect(pane.getAttribute('dir')).toBe('rtl');
   });
 
   it('should emit when an overlay is attached', () => {
