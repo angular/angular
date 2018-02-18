@@ -259,7 +259,7 @@ export class ListKeyManager<T extends ListKeyManagerOption> {
    * currently active item and the new active item. It will calculate differently
    * depending on whether wrap mode is turned on.
    */
-  private _setActiveItemByDelta(delta: number, items = this._items.toArray()): void {
+  private _setActiveItemByDelta(delta: -1 | 1, items = this._items.toArray()): void {
     this._wrap ? this._setActiveInWrapMode(delta, items)
                : this._setActiveInDefaultMode(delta, items);
   }
@@ -269,16 +269,15 @@ export class ListKeyManager<T extends ListKeyManagerOption> {
    * down the list until it finds an item that is not disabled, and it will wrap if it
    * encounters either end of the list.
    */
-  private _setActiveInWrapMode(delta: number, items: T[]): void {
-    // when active item would leave menu, wrap to beginning or end
-    this._activeItemIndex =
-      (this._activeItemIndex + delta + items.length) % items.length;
+  private _setActiveInWrapMode(delta: -1 | 1, items: T[]): void {
+    for (let i = 1; i <= items.length; i++) {
+      const index = (this._activeItemIndex + (delta * i) + items.length) % items.length;
+      const item = items[index];
 
-    // skip all disabled menu items recursively until an enabled one is reached
-    if (items[this._activeItemIndex].disabled) {
-      this._setActiveInWrapMode(delta, items);
-    } else {
-      this.setActiveItem(this._activeItemIndex);
+      if (!item.disabled) {
+        this.setActiveItem(index);
+        return;
+      }
     }
   }
 
@@ -287,7 +286,7 @@ export class ListKeyManager<T extends ListKeyManagerOption> {
    * continue to move down the list until it finds an item that is not disabled. If
    * it encounters either end of the list, it will stop and not wrap.
    */
-  private _setActiveInDefaultMode(delta: number, items: T[]): void {
+  private _setActiveInDefaultMode(delta: -1 | 1, items: T[]): void {
     this._setActiveItemByIndex(this._activeItemIndex + delta, delta, items);
   }
 
@@ -296,13 +295,18 @@ export class ListKeyManager<T extends ListKeyManagerOption> {
    * item is disabled, it will move in the fallbackDelta direction until it either
    * finds an enabled item or encounters the end of the list.
    */
-  private _setActiveItemByIndex(index: number, fallbackDelta: number,
-                                  items = this._items.toArray()): void {
-    if (!items[index]) { return; }
+  private _setActiveItemByIndex(index: number, fallbackDelta: -1 | 1,
+                                items = this._items.toArray()): void {
+    if (!items[index]) {
+      return;
+    }
 
     while (items[index].disabled) {
       index += fallbackDelta;
-      if (!items[index]) { return; }
+
+      if (!items[index]) {
+        return;
+      }
     }
 
     this.setActiveItem(index);
