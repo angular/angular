@@ -217,6 +217,28 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
            expect(fixture.nativeElement).toHaveText('false');
          }));
     });
+
+    describe('Type guarding', () => {
+      it('should throw when then block is not template', async(() => {
+           const template = '<span *ngIf="booleanCondition; then thenBlock">IGNORE</span>' +
+               '<div #thenBlock>THEN</div>';
+
+           fixture = createTestComponent(template);
+
+           expect(() => fixture.detectChanges())
+               .toThrowError(/ngIfThen must be a TemplateRef, but received/);
+         }));
+
+      it('should throw when else block is not template', async(() => {
+           const template = '<span *ngIf="booleanCondition; else elseBlock">IGNORE</span>' +
+               '<div #elseBlock>ELSE</div>';
+
+           fixture = createTestComponent(template);
+
+           expect(() => fixture.detectChanges())
+               .toThrowError(/ngIfElse must be a TemplateRef, but received/);
+         }));
+    });
   });
 }
 
