@@ -40,6 +40,15 @@ describe('AriaDescriber', () => {
     expect(getMessageElements()).toBe(null);
   });
 
+  it('should not register non-string values', () => {
+    expect(() => ariaDescriber.describe(component.element1, null!)).not.toThrow();
+    expect(getMessageElements()).toBe(null);
+  });
+
+  it('should not throw when trying to remove non-string value', () => {
+    expect(() => ariaDescriber.removeDescription(component.element1, null!)).not.toThrow();
+  });
+
   it('should de-dupe a message registered multiple times', () => {
     ariaDescriber.describe(component.element1, 'My Message');
     ariaDescriber.describe(component.element2, 'My Message');

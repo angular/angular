@@ -60,7 +60,7 @@ export class AriaDescriber {
    * message element.
    */
   describe(hostElement: Element, message: string) {
-    if (hostElement.nodeType !== this._document.ELEMENT_NODE || !message.trim()) {
+    if (!this._canBeDescribed(hostElement, message)) {
       return;
     }
 
@@ -75,7 +75,7 @@ export class AriaDescriber {
 
   /** Removes the host element's aria-describedby reference to the message element. */
   removeDescription(hostElement: Element, message: string) {
-    if (hostElement.nodeType !== this._document.ELEMENT_NODE || !message.trim()) {
+    if (!this._canBeDescribed(hostElement, message)) {
       return;
     }
 
@@ -194,6 +194,12 @@ export class AriaDescriber {
     const messageId = registeredMessage && registeredMessage.messageElement.id;
 
     return !!messageId && referenceIds.indexOf(messageId) != -1;
+  }
+
+  /** Determines whether a message can be described on a particular element. */
+  private _canBeDescribed(element: Element, message: string): boolean {
+    return element.nodeType === this._document.ELEMENT_NODE && message != null &&
+        !!`${message}`.trim();
   }
 
 }
