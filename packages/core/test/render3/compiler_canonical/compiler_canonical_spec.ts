@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, ContentChild, ContentChildren, Directive, HostBinding, HostListener, Injectable, Input, NgModule, OnDestroy, Optional, Pipe, PipeTransform, QueryList, SimpleChanges, TemplateRef, ViewChild, ViewChildren, ViewContainerRef} from '../../src/core';
-import * as $r3$ from '../../src/core_render3_private_export';
+import {Component, ContentChild, ContentChildren, Directive, HostBinding, HostListener, Injectable, Input, NgModule, OnDestroy, Optional, Pipe, PipeTransform, QueryList, SimpleChanges, TemplateRef, ViewChild, ViewChildren, ViewContainerRef} from '../../../src/core';
+import * as $r3$ from '../../../src/core_render3_private_export';
 
 import {renderComponent, toHtml} from '../render_util';
 
@@ -189,7 +189,8 @@ describe('compiler specification', () => {
           type: HostListenerDir,
           factory: function HostListenerDir_Factory() {
             const $dir$ = new HostListenerDir();
-            $r3$.ɵL('click', function HostListenerDir_click_Handler(event) { $dir$.onClick(); });
+            $r3$.ɵL(
+                'click', function HostListenerDir_click_Handler(event: any) { $dir$.onClick(); });
             return $dir$;
           },
         });
