@@ -279,7 +279,7 @@ export class MatChipList extends _MatChipListMixinBase implements MatFormFieldCo
    */
   @Input()
   get selectable(): boolean { return this._selectable; }
-  set selectable(value: boolean) { 
+  set selectable(value: boolean) {
     this._selectable = coerceBooleanProperty(value);
     if (this.chips) {
       this.chips.forEach(chip => chip.chipListSelectable = this._selectable);
