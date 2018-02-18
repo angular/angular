@@ -72,6 +72,7 @@ export {SomeModule as JitSummariesSomeModule} from './jit_summaries';
     // disable sanity check for material because it throws an error when used server-side
     // see https://github.com/angular/material2/issues/6292
     {provide: MATERIAL_SANITY_CHECKS, useValue: false},
+    {provide: 'regexpToken', useValue: [/\d/, /[a-z]/]},
   ],
   entryComponents: [
     AnimateCmp,

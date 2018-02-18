@@ -72,6 +72,15 @@ multi-lines`);
     });
   });
 
+  describe('metadata collector', () => {
+    // https://github.com/angular/angular/issues/14187
+    it('should support RegExp literal in provider', () => {
+      const moduleRef = createModule();
+      const regexps = moduleRef.injector.get('regexpToken');
+      expect(regexps[0].toString()).toBe('/\\d/');
+    });
+  });
+
   it('should support module directives and pipes', () => {
     const compFixture = createComponent(CompUsingRootModuleDirectiveAndPipe);
     compFixture.detectChanges();
