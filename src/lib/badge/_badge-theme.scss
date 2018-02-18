@@ -4,6 +4,7 @@
 @import '../core/theming/palette';
 @import '../core/theming/theming';
 @import '../core/typography/typography-utils';
+@import '../../cdk/a11y/a11y';
 
 $mat-badge-font-size: 12px;
 $mat-badge-font-weight: 600;
@@ -17,6 +18,11 @@ $mat-badge-large-size: $mat-badge-default-size + 6;
     width: $size;
     height: $size;
     line-height: $size;
+
+    @include cdk-high-contrast {
+      outline: solid 1px;
+      border-radius: 0;
+    }
   }
 
   &.mat-badge-above {
