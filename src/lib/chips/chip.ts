@@ -134,6 +134,9 @@ export class MatChip extends _MatChipMixinBase implements FocusableOption, OnDes
   /** Whether the chip has focus. */
   _hasFocus: boolean = false;
 
+  /** Whether the chip list is selectable */
+  chipListSelectable: boolean = true;
+
   /** The chip avatar */
   @ContentChild(MatChipAvatar) avatar: MatChipAvatar;
 
@@ -167,11 +170,13 @@ export class MatChip extends _MatChipMixinBase implements FocusableOption, OnDes
   protected _value: any;
 
   /**
-   * Whether or not the chips are selectable. When a chip is not selectable,
-   * changes to it's selected state are always ignored.
+   * Whether or not the chip is selectable. When a chip is not selectable,
+   * changes to it's selected state are always ignored. By default a chip is
+   * selectable, and it becomes non-selectable if it's parent chip list is
+   * not selectable.
    */
   @Input()
-  get selectable(): boolean { return this._selectable; }
+  get selectable(): boolean { return this._selectable && this.chipListSelectable; }
   set selectable(value: boolean) {
     this._selectable = coerceBooleanProperty(value);
   }

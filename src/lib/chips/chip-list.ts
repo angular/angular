@@ -274,12 +274,17 @@ export class MatChipList extends _MatChipListMixinBase implements MatFormFieldCo
   @Input('aria-orientation') ariaOrientation: 'horizontal' | 'vertical' = 'horizontal';
 
   /**
-   * Whether or not this chip is selectable. When a chip is not selectable,
-   * its selected state is always ignored.
+   * Whether or not this chip list is selectable. When a chip list is not selectable,
+   * the selected states for all the chips inside the chip list are always ignored.
    */
   @Input()
   get selectable(): boolean { return this._selectable; }
-  set selectable(value: boolean) { this._selectable = coerceBooleanProperty(value); }
+  set selectable(value: boolean) { 
+    this._selectable = coerceBooleanProperty(value);
+    if (this.chips) {
+      this.chips.forEach(chip => chip.chipListSelectable = this._selectable);
+    }
+  }
   protected _selectable: boolean = true;
 
   @Input()
