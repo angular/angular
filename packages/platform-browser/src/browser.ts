@@ -19,6 +19,7 @@ import {ELEMENT_PROBE_PROVIDERS} from './dom/debug/ng_probe';
 import {getDOM} from './dom/dom_adapter';
 import {DomRendererFactory2} from './dom/dom_renderer';
 import {DOCUMENT} from './dom/dom_tokens';
+import {CompositionEventsPlugin} from './dom/events/composition_events';
 import {DomEventsPlugin} from './dom/events/dom_events';
 import {EVENT_MANAGER_PLUGINS, EventManager} from './dom/events/event_manager';
 import {HAMMER_GESTURE_CONFIG, HammerGestureConfig, HammerGesturesPlugin} from './dom/events/hammer_gestures';
@@ -76,6 +77,7 @@ export function _document(): any {
     {provide: EVENT_MANAGER_PLUGINS, useClass: DomEventsPlugin, multi: true},
     {provide: EVENT_MANAGER_PLUGINS, useClass: KeyEventsPlugin, multi: true},
     {provide: EVENT_MANAGER_PLUGINS, useClass: HammerGesturesPlugin, multi: true},
+    {provide: EVENT_MANAGER_PLUGINS, useClass: CompositionEventsPlugin, multi: true},
     {provide: HAMMER_GESTURE_CONFIG, useClass: HammerGestureConfig},
     DomRendererFactory2,
     {provide: RendererFactory2, useExisting: DomRendererFactory2},
