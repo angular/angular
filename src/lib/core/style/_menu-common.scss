@@ -48,6 +48,7 @@ $mat-menu-icon-margin: 16px !default;
 
   .mat-icon {
     margin-right: $mat-menu-icon-margin;
+    vertical-align: middle;
 
     [dir='rtl'] & {
       margin-left: $mat-menu-icon-margin;

@@ -37,10 +37,6 @@ $mat-menu-submenu-indicator-size: 10px !default;
   @include mat-button-reset();
   @include mat-menu-item-base();
   position: relative;
-
-  .mat-icon {
-    vertical-align: middle;
-  }
 }
 
 .mat-menu-item-submenu-trigger {
