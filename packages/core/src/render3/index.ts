@@ -6,12 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {createComponentRef, detectChanges, getHostElement, markDirty, renderComponent} from './component';
+import {createComponentRef, detectChanges, getHostElement, getRenderedText, markDirty, renderComponent, whenRendered} from './component';
 import {NgOnChangesFeature, PublicFeature, defineComponent, defineDirective, definePipe} from './definition';
 import {InjectFlags} from './di';
 import {ComponentDef, ComponentTemplate, ComponentType, DirectiveDef, DirectiveDefFlags, DirectiveType} from './interfaces/definition';
 
 export {InjectFlags, QUERY_READ_CONTAINER_REF, QUERY_READ_ELEMENT_REF, QUERY_READ_FROM_NODE, QUERY_READ_TEMPLATE_REF, inject, injectElementRef, injectTemplateRef, injectViewContainerRef} from './di';
+export {CssSelector} from './interfaces/projection';
+
 
 // Naming scheme:
 // - Capital letters are for creating things: T(Text), E(Element), D(Directive), V(View),
@@ -106,6 +108,11 @@ export {
   defineComponent,
   defineDirective,
   definePipe,
+  detectChanges,
+  createComponentRef,
+  getHostElement,
+  getRenderedText,
+  markDirty,
+  renderComponent,
+  whenRendered,
 };
-export {createComponentRef, detectChanges, getHostElement, markDirty, renderComponent};
-export {CssSelector} from './interfaces/projection';

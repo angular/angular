@@ -181,7 +181,7 @@ describe('animation renderer factory', () => {
     expect(toHtml(containerEl)).toEqual('foo');
   });
 
-  it('should work with animated components', (done) => {
+  isBrowser && it('should work with animated components', (done) => {
     const factory = getAnimationRendererFactory2(document);
     const component = renderComponent(SomeComponentWithAnimation, factory);
     expect(toHtml(containerEl))

@@ -61,8 +61,11 @@ export function renderToHtml(
 beforeEach(resetDOM);
 
 export function renderComponent<T>(type: ComponentType<T>, rendererFactory?: RendererFactory3): T {
-  return _renderComponent(
-      type, {rendererFactory: rendererFactory || testRendererFactory, host: containerEl});
+  return _renderComponent(type, {
+    rendererFactory: rendererFactory || testRendererFactory,
+    host: containerEl,
+    scheduler: requestAnimationFrame,
+  });
 }
 
 export function toHtml<T>(componentOrElement: T | RElement): string {

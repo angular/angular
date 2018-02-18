@@ -324,7 +324,7 @@ describe('di', () => {
 
   describe('getOrCreateNodeInjector', () => {
     it('should handle initial undefined state', () => {
-      const contentView = createLView(-1, null !, createTView());
+      const contentView = createLView(-1, null !, createTView(), null, null);
       const oldView = enterView(contentView, null !);
       try {
         const parent = createLNode(0, LNodeFlags.Element, null, null);

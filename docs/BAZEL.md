@@ -194,10 +194,13 @@ source: https://github.com/bazelbuild/bazel/issues/4603
 
 If VSCode is not the root cause, you might try:
 
+- Quit VSCode (make sure no VSCode is running).
+
 ```
 bazel clean --expunge
 sudo xcode-select -s /Applications/Xcode.app/Contents/Developer
 sudo xcodebuild -license
+bazel build //packages/core    # Run a build outside VSCode to pre-build the xcode; then safe to run VSCode
 ```
 
 Source: https://stackoverflow.com/questions/45276830/xcode-version-must-be-specified-to-use-an-apple-crosstool
