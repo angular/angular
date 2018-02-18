@@ -444,6 +444,13 @@
             "rev": true,
             "title": "Essential Angular",
             "url": "https://gumroad.com/l/essential_angular"
+          },
+          "angular-buch": {
+            "desc": "The first German book about Angular. It gives you a detailed practical overview of the key concepts of the platform. In each chapter a sample application is built upon with a new Angular topic. All sources are available on GitHub.",
+            "logo": "https://angular-buch.com/assets/img/brand.svg",
+            "rev": true,
+            "title": "Angular-Buch (German)",
+            "url": "https://angular-buch.com/"
           }
         }
       },
