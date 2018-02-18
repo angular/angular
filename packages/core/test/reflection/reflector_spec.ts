@@ -181,6 +181,13 @@ class TestObj {
         expect(DELEGATE_CTOR.exec(ChildNoCtorPrivateProps.toString())).toBeTruthy();
         expect(DELEGATE_CTOR.exec(ChildWithCtor.toString())).toBeFalsy();
       });
+
+      it('should not throw when no prototype on type', () => {
+        // Cannot test arrow function here due to the compilation
+        const dummyArrowFn = function() {};
+        Object.defineProperty(dummyArrowFn, 'prototype', {value: undefined});
+        expect(() => reflector.annotations(dummyArrowFn as any)).not.toThrow();
+      });
     });
 
     describe('inheritance with decorators', () => {
