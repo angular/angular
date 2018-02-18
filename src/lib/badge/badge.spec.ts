@@ -1,4 +1,4 @@
-import {ComponentFixture, TestBed, async} from '@angular/core/testing';
+import {ComponentFixture, TestBed, fakeAsync} from '@angular/core/testing';
 import {Component, DebugElement} from '@angular/core';
 import {By} from '@angular/platform-browser';
 import {MatBadge, MatBadgeModule} from './index';
@@ -6,127 +6,136 @@ import {ThemePalette} from '@angular/material/core';
 
 describe('MatBadge', () => {
   let fixture: ComponentFixture<any>;
-  let testComponent: BadgeWithTextContent;
-  let badgeNativeElement;
+  let testComponent: BadgeTestApp;
+  let badgeNativeElement: HTMLElement;
+  let badgeDebugElement: DebugElement;
 
-  beforeEach(async(() => {
+  beforeEach(fakeAsync(() => {
     TestBed.configureTestingModule({
       imports: [MatBadgeModule],
-      declarations: [BadgeWithTextContent],
+      declarations: [BadgeTestApp],
     }).compileComponents();
-  }));
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(BadgeWithTextContent);
+    fixture = TestBed.createComponent(BadgeTestApp);
     testComponent = fixture.debugElement.componentInstance;
     fixture.detectChanges();
+
+    badgeDebugElement = fixture.debugElement.query(By.directive(MatBadge));
+    badgeNativeElement = badgeDebugElement.nativeElement;
+  }));
+
+  it('should update the badge based on attribute', () => {
+    let badgeContentDebugElement = badgeNativeElement.querySelector('.mat-badge-content')!;
+
+    expect(badgeContentDebugElement.textContent).toContain('1');
+
+    testComponent.badgeContent = '22';
+    fixture.detectChanges();
+
+    badgeContentDebugElement = badgeNativeElement.querySelector('.mat-badge-content')!;
+    expect(badgeContentDebugElement.textContent).toContain('22');
   });
 
-  describe('MatBadge Text', () => {
-    let badgeDebugElement: DebugElement;
+  it('should apply class based on color attribute', () => {
+    testComponent.badgeColor = 'primary';
+    fixture.detectChanges();
+    expect(badgeNativeElement.classList.contains('mat-badge-primary')).toBe(true);
 
-    beforeEach(() => {
-      badgeDebugElement = fixture.debugElement.query(By.directive(MatBadge));
-      badgeNativeElement = badgeDebugElement.nativeElement;
-      fixture.detectChanges();
-    });
+    testComponent.badgeColor = 'accent';
+    fixture.detectChanges();
+    expect(badgeNativeElement.classList.contains('mat-badge-accent')).toBe(true);
 
-    it('should update the badge based on attribute', () => {
-      let badgeContentDebugElement = badgeNativeElement.querySelector('.mat-badge-content');
+    testComponent.badgeColor = 'warn';
+    fixture.detectChanges();
+    expect(badgeNativeElement.classList.contains('mat-badge-warn')).toBe(true);
 
-      expect(badgeContentDebugElement.textContent).toContain('1');
+    testComponent.badgeColor = undefined;
+    fixture.detectChanges();
 
-      testComponent.badgeContent = '22';
-      fixture.detectChanges();
+    expect(badgeNativeElement.classList).not.toContain('mat-badge-accent');
+  });
 
-      badgeContentDebugElement = badgeNativeElement.querySelector('.mat-badge-content');
-      expect(badgeContentDebugElement.textContent).toContain('22');
-    });
+  it('should update the badge position on direction change', () => {
+    expect(badgeNativeElement.classList.contains('mat-badge-above')).toBe(true);
+    expect(badgeNativeElement.classList.contains('mat-badge-after')).toBe(true);
 
-    it('should apply class based on color attribute', () => {
-      testComponent.badgeColor = 'primary';
-      fixture.detectChanges();
-      expect(badgeNativeElement.classList.contains('mat-badge-primary')).toBe(true);
+    testComponent.badgeDirection = 'below before';
+    fixture.detectChanges();
 
-      testComponent.badgeColor = 'accent';
-      fixture.detectChanges();
-      expect(badgeNativeElement.classList.contains('mat-badge-accent')).toBe(true);
+    expect(badgeNativeElement.classList.contains('mat-badge-below')).toBe(true);
+    expect(badgeNativeElement.classList.contains('mat-badge-before')).toBe(true);
+  });
 
-      testComponent.badgeColor = 'warn';
-      fixture.detectChanges();
-      expect(badgeNativeElement.classList.contains('mat-badge-warn')).toBe(true);
+  it('should change visibility to hidden', () => {
+    expect(badgeNativeElement.classList.contains('mat-badge-hidden')).toBe(false);
 
-      testComponent.badgeColor = undefined;
-      fixture.detectChanges();
+    testComponent.badgeHidden = true;
+    fixture.detectChanges();
 
-      expect(badgeNativeElement.classList).not.toContain('mat-badge-accent');
-    });
+    expect(badgeNativeElement.classList.contains('mat-badge-hidden')).toBe(true);
+  });
 
-    it('should update the badge position on direction change', () => {
-      expect(badgeNativeElement.classList.contains('mat-badge-above')).toBe(true);
-      expect(badgeNativeElement.classList.contains('mat-badge-after')).toBe(true);
+  it('should change badge sizes', () => {
+    expect(badgeNativeElement.classList.contains('mat-badge-medium')).toBe(true);
 
-      testComponent.badgeDirection = 'below before';
-      fixture.detectChanges();
+    testComponent.badgeSize = 'small';
+    fixture.detectChanges();
 
-      expect(badgeNativeElement.classList.contains('mat-badge-below')).toBe(true);
-      expect(badgeNativeElement.classList.contains('mat-badge-before')).toBe(true);
-    });
+    expect(badgeNativeElement.classList.contains('mat-badge-small')).toBe(true);
 
-    it('should change visibility to hidden', () => {
-      expect(badgeNativeElement.classList.contains('mat-badge-hidden')).toBe(false);
+    testComponent.badgeSize = 'large';
+    fixture.detectChanges();
 
-      testComponent.badgeHidden = true;
-      fixture.detectChanges();
+    expect(badgeNativeElement.classList.contains('mat-badge-large')).toBe(true);
+  });
 
-      expect(badgeNativeElement.classList.contains('mat-badge-hidden')).toBe(true);
-    });
+  it('should change badge overlap', () => {
+    expect(badgeNativeElement.classList.contains('mat-badge-overlap')).toBe(false);
 
-    it('should change badge sizes', () => {
-      expect(badgeNativeElement.classList.contains('mat-badge-medium')).toBe(true);
+    testComponent.badgeOverlap = true;
+    fixture.detectChanges();
 
-      testComponent.badgeSize = 'small';
-      fixture.detectChanges();
+    expect(badgeNativeElement.classList.contains('mat-badge-overlap')).toBe(true);
+  });
 
-      expect(badgeNativeElement.classList.contains('mat-badge-small')).toBe(true);
+  it('should toggle `aria-describedby` depending on whether the badge has a description', () => {
+    const badgeContent = badgeNativeElement.querySelector('.mat-badge-content')!;
 
-      testComponent.badgeSize = 'large';
-      fixture.detectChanges();
+    expect(badgeContent.getAttribute('aria-describedby')).toBeFalsy();
 
-      expect(badgeNativeElement.classList.contains('mat-badge-large')).toBe(true);
-    });
+    testComponent.badgeDescription = 'Describing a badge';
+    fixture.detectChanges();
 
-    it('should change badge overlap', () => {
-      expect(badgeNativeElement.classList.contains('mat-badge-overlap')).toBe(false);
+    expect(badgeContent.getAttribute('aria-describedby')).toBeTruthy();
 
-      testComponent.badgeOverlap = true;
-      fixture.detectChanges();
+    testComponent.badgeDescription = '';
+    fixture.detectChanges();
 
-      expect(badgeNativeElement.classList.contains('mat-badge-overlap')).toBe(true);
-    });
+    expect(badgeContent.getAttribute('aria-describedby')).toBeFalsy();
   });
 
 });
 
 /** Test component that contains a MatBadge. */
 @Component({
-  selector: 'test-app',
   template: `
     <span [matBadge]="badgeContent"
           [matBadgeColor]="badgeColor"
           [matBadgePosition]="badgeDirection"
           [matBadgeHidden]="badgeHidden"
           [matBadgeSize]="badgeSize"
-          [matBadgeOverlap]="badgeOverlap">
+          [matBadgeOverlap]="badgeOverlap"
+          [matBadgeDescription]="badgeDescription">
       home
     </span>
   `
 })
-class BadgeWithTextContent {
+class BadgeTestApp {
   badgeColor: ThemePalette;
   badgeContent = '1';
   badgeDirection = 'above after';
   badgeHidden = false;
   badgeSize = 'medium';
   badgeOverlap = false;
+  badgeDescription: string;
 }
