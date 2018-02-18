@@ -157,29 +157,57 @@ But first, let's take a closer look at template expressions and statements.
 -->
 ## 템플릿 표현식
 
+<!--
 A template **expression** produces a value.
 Angular executes the expression and assigns it to a property of a binding target;
 the target might be an HTML element, a component, or a directive.
+-->
+템플릿 **표현식**은 결과값을 반환합니다.
+템플릿 표현식을 실행하고 반환된 값은 Angular 프레임워크가 HTML 엘리먼트나 컴포넌트, 디렉티브에 바인딩합니다.
 
+<!--
 The interpolation braces in `{{1 + 1}}` surround the template expression `1 + 1`.
 In the [property binding](guide/template-syntax#property-binding) section below,
 a template expression appears in quotes to the right of the&nbsp;`=` symbol as in `[property]="expression"`.
+-->
+`{{1 + 1}}` 이라는 표현은 템플릿 표현식 `1 + 1`을 문자열 바인딩 표현식으로 감싼 것입니다.
+이후에 알아볼 [프로퍼티 바인딩](guide/template-syntax#property-binding)에서 자세히 설명하겠지만,
+템플릿 표현식은 큰따옴표로 둘러싸서 `=` 기호 오른쪽에 `[property]="expression"` 와 같이 사용합니다.
 
+<!--
 You write these template expressions in a language that looks like JavaScript.
 Many JavaScript expressions are legal template expressions, but not all.
+-->
+템플릿 표현식은 JavaScript처럼 보이기도 하며, JavaScript 구문은 대부분 템플릿 표현식에 사용할 수 있지만, 모두 가능한 것은 아닙니다.
 
+<!--
 JavaScript expressions that have or promote side effects are prohibited,
 including:
+-->
+JavaScript 문법 중에 템플릿 표현식의 용도에 맞지 않는 다음 문법들은 사용할 수 없습니다:
 
+<!--
 * assignments (`=`, `+=`, `-=`, ...)
 * <code>new</code>
 * chaining expressions with <code>;</code> or <code>,</code>
 * increment and decrement operators (`++` and `--`)
+-->
+* 값을 할당하는 구문(`=`, `+=`, `-=` 등)
+* <code>new</code> 키워드
+* 여러 줄일 때 사용하는 <code>;</code> 와 <code>,</code>
+* 증감연산자 (`++`, `--`)
 
+<!--
 Other notable differences from JavaScript syntax include:
+-->
+그리고 아래 연산자들은 JavaScript와 다릅니다:
 
+<!--
 * no support for the bitwise operators `|` and `&`
 * new [template expression operators](guide/template-syntax#expression-operators), such as `|`, `?.` and `!`.
+-->
+* 비트 연산자 `|`, `&` 는 템플릿 표현식에서 지원하지 않습니다.
+* `|`, `?.`, `!`와 같은 [템플릿 표현식 전용 연산자](guide/template-syntax#expression-operators)도 있습니다.
 
 {@a expression-context}
 
