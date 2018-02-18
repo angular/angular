@@ -1,4 +1,5 @@
 @import '../core/style/variables';
+@import '../../cdk/a11y/a11y';
 
 $mat-tab-bar-height: 48px !default;
 $mat-tab-animation-duration: 500ms !default;
@@ -46,13 +47,20 @@ $mat-tab-animation-duration: 500ms !default;
 
 // Mixin styles for the ink bar that displays near the active tab in the header.
 @mixin ink-bar {
+  $height: 2px;
+
   position: absolute;
   bottom: 0;
-  height: 2px;
+  height: $height;
   transition: $mat-tab-animation-duration $ease-in-out-curve-function;
 
   .mat-tab-group-inverted-header & {
     bottom: auto;
     top: 0;
+  }
+
+  @include cdk-high-contrast {
+    outline: solid $height;
+    height: 0;
   }
 }
