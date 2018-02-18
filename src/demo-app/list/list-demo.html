@@ -109,7 +109,8 @@
 
     <mat-selection-list #groceries [ngModel]="selectedOptions"
                         (ngModelChange)="onSelectedOptionsChange($event)"
-                        (change)="changeEventCount = changeEventCount + 1">
+                        (change)="changeEventCount = changeEventCount + 1"
+                        [disabled]="selectionListDisabled">
       <h3 mat-subheader>Groceries</h3>
 
       <mat-list-option value="bananas" checkboxPosition="before">Bananas</mat-list-option>
@@ -121,6 +122,7 @@
     <p>Selected: {{selectedOptions | json}}</p>
     <p>Change Event Count {{changeEventCount}}</p>
     <p>Model Change Event Count {{modelChangeEventCount}}</p>
+    <mat-checkbox [(ngModel)]="selectionListDisabled">Disable Selection List</mat-checkbox>
 
     <p>
       <button mat-raised-button (click)="groceries.selectAll()">Select all</button>

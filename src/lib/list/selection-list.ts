@@ -283,7 +283,8 @@ export class MatListOption extends _MatListOptionMixinBase
     '(focus)': 'focus()',
     '(blur)': '_onTouched()',
     '(keydown)': '_keydown($event)',
-    '[attr.aria-disabled]': 'disabled.toString()'},
+    '[attr.aria-disabled]': 'disabled.toString()',
+  },
   template: '<ng-content></ng-content>',
   styleUrls: ['list.css'],
   encapsulation: ViewEncapsulation.None,
@@ -390,6 +391,10 @@ export class MatSelectionList extends _MatSelectionListMixinBase implements Focu
 
   /** Passes relevant key presses to our key manager. */
   _keydown(event: KeyboardEvent) {
+    if (this.disabled) {
+      return;
+    }
+
     switch (event.keyCode) {
       case SPACE:
       case ENTER:

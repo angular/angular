@@ -254,7 +254,7 @@ $mat-list-item-inset-divider-offset: 72px;
 }
 
 .mat-list-option {
-  &:not([disabled]) {
+  &:not(.mat-list-item-disabled) {
     cursor: pointer;
   }
 }

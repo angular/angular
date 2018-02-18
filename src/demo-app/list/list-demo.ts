@@ -59,6 +59,7 @@ export class ListDemo {
 
   thirdLine: boolean = false;
   infoClicked: boolean = false;
+  selectionListDisabled: boolean = false;
 
   selectedOptions: string[] = ['apples'];
   changeEventCount: number = 0;
