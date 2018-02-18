@@ -13,6 +13,7 @@ ng_module(
   deps = [
     "//src/lib/core",
     "//src/cdk/a11y",
+    "//src/cdk/bidi",
     "//src/cdk/overlay",
     "//src/cdk/portal",
     "//src/cdk/layout",

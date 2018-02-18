@@ -12,6 +12,8 @@ import {ComponentRef, TemplateRef, Injectable, Injector, Optional, SkipSelf} fro
 import {MatBottomSheetConfig, MAT_BOTTOM_SHEET_DATA} from './bottom-sheet-config';
 import {MatBottomSheetRef} from './bottom-sheet-ref';
 import {MatBottomSheetContainer} from './bottom-sheet-container';
+import {of as observableOf} from 'rxjs/observable/of';
+import {Directionality} from '@angular/cdk/bidi';
 
 /**
  * Service to trigger Material Design bottom sheets.
@@ -143,6 +145,13 @@ export class MatBottomSheet {
 
     injectionTokens.set(MatBottomSheetRef, bottomSheetRef);
     injectionTokens.set(MAT_BOTTOM_SHEET_DATA, config.data);
+
+    if (!userInjector || !userInjector.get(Directionality, null)) {
+      injectionTokens.set(Directionality, {
+        value: config.direction,
+        change: observableOf()
+      });
+    }
 
     return new PortalInjector(userInjector || this._injector, injectionTokens);
   }

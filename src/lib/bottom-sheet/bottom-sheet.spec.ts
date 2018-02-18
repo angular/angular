@@ -208,13 +208,21 @@ describe('MatBottomSheet', () => {
   }));
 
   it('should allow setting the layout direction', () => {
-    bottomSheet.open(PizzaMsg, { direction: 'rtl' });
+    bottomSheet.open(PizzaMsg, {direction: 'rtl'});
 
     viewContainerFixture.detectChanges();
 
     let overlayPane = overlayContainerElement.querySelector('.cdk-overlay-pane')!;
 
     expect(overlayPane.getAttribute('dir')).toBe('rtl');
+  });
+
+  it('should inject the correct direction in the instantiated component', () => {
+    const bottomSheetRef = bottomSheet.open(PizzaMsg, {direction: 'rtl'});
+
+    viewContainerFixture.detectChanges();
+
+    expect(bottomSheetRef.instance.directionality.value).toBe('rtl');
   });
 
   it('should be able to set a custom panel class', () => {
