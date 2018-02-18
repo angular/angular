@@ -228,7 +228,18 @@ class SomeDirectiveWithoutMetadata {}
         }
 
         const directiveMetadata = resolver.resolve(Child);
-        expect(directiveMetadata.inputs).toEqual(['p1', 'p2: p22', 'p3']);
+        expect(directiveMetadata.inputs).toEqual(['p1', 'p2: p21', 'p2: p22', 'p3']);
+      });
+
+      it('should support multiple inputs on same property', () => {
+        @Directive({selector: 'p'})
+        class Dir {
+          @Input() @Input('p11')
+          p1: any;
+        }
+
+        const directiveMetadata = resolver.resolve(Dir);
+        expect(directiveMetadata.inputs).toEqual(['p1', 'p1: p11']);
       });
     });
 
@@ -288,7 +299,18 @@ class SomeDirectiveWithoutMetadata {}
         }
 
         const directiveMetadata = resolver.resolve(Child);
-        expect(directiveMetadata.outputs).toEqual(['p1', 'p2: p22', 'p3']);
+        expect(directiveMetadata.outputs).toEqual(['p1', 'p2: p21', 'p2: p22', 'p3']);
+      });
+
+      it('should support multiple outputs on same property', () => {
+        @Directive({selector: 'p'})
+        class Dir {
+          @Output() @Output('p11')
+          p1: any;
+        }
+
+        const directiveMetadata = resolver.resolve(Dir);
+        expect(directiveMetadata.outputs).toEqual(['p1', 'p1: p11']);
       });
     });
 

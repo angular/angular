@@ -64,22 +64,26 @@ export class DirectiveResolver {
     const host: {[key: string]: string} = {};
     const queries: {[key: string]: any} = {};
     Object.keys(propertyMetadata).forEach((propName: string) => {
-      const input = findLast(propertyMetadata[propName], (a) => createInput.isTypeOf(a));
-      if (input) {
+      const inputDecoratorFactories =
+          propertyMetadata[propName].filter((a) => createInput.isTypeOf(a));
+      inputDecoratorFactories.forEach(input => {
         if (input.bindingPropertyName) {
           inputs.push(`${propName}: ${input.bindingPropertyName}`);
         } else {
           inputs.push(propName);
         }
-      }
-      const output = findLast(propertyMetadata[propName], (a) => createOutput.isTypeOf(a));
-      if (output) {
+      });
+
+      const outputDecoratorFactories =
+          propertyMetadata[propName].filter((a) => createOutput.isTypeOf(a));
+      outputDecoratorFactories.forEach(output => {
         if (output.bindingPropertyName) {
           outputs.push(`${propName}: ${output.bindingPropertyName}`);
         } else {
           outputs.push(propName);
         }
-      }
+      });
+
       const hostBindings = propertyMetadata[propName].filter(a => createHostBinding.isTypeOf(a));
       hostBindings.forEach(hostBinding => {
         if (hostBinding.hostPropertyName) {
