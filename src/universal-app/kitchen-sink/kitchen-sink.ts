@@ -3,6 +3,7 @@ import {ServerModule} from '@angular/platform-server';
 import {BrowserModule} from '@angular/platform-browser';
 import {
   MatAutocompleteModule,
+  MatBadgeModule,
   MatButtonModule,
   MatButtonToggleModule,
   MatCardModule,
@@ -93,6 +94,7 @@ export class KitchenSink {
   imports: [
     BrowserModule.withServerTransition({appId: 'kitchen-sink'}),
     MatAutocompleteModule,
+    MatBadgeModule,
     MatButtonModule,
     MatButtonToggleModule,
     MatCardModule,

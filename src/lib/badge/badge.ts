@@ -22,7 +22,7 @@ export type MatBadgeSize = 'small' | 'medium' | 'large';
   selector: '[matBadge]',
   host: {
     'class': 'mat-badge',
-    '[class.mat-badge-overlap]': '_overlap',
+    '[class.mat-badge-overlap]': 'overlap',
     '[class.mat-badge-above]': 'isAbove()',
     '[class.mat-badge-below]': '!isAbove()',
     '[class.mat-badge-before]': '!isAfter()',
@@ -123,6 +123,8 @@ export class MatBadge {
   /** Creates the badge element */
   private _createBadgeElement(): HTMLElement {
     const badgeElement = this._document.createElement('span');
+    const activeClass = 'mat-badge-active';
+
     badgeElement.setAttribute('id', `mat-badge-content-${this._id}`);
     badgeElement.classList.add('mat-badge-content');
     badgeElement.textContent = this.content;
@@ -134,12 +136,15 @@ export class MatBadge {
     this._elementRef.nativeElement.appendChild(badgeElement);
 
     // animate in after insertion
-    this._ngZone.runOutsideAngular(() => requestAnimationFrame(() => {
-      // ensure content available
-      if (badgeElement) {
-        badgeElement.classList.add('mat-badge-active');
-      }
-    }));
+    if (typeof requestAnimationFrame === 'function') {
+      this._ngZone.runOutsideAngular(() => {
+        requestAnimationFrame(() => {
+          badgeElement.classList.add(activeClass);
+        });
+      });
+    } else {
+      badgeElement.classList.add(activeClass);
+    }
 
     return badgeElement;
   }
