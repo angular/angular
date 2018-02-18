@@ -53,6 +53,10 @@ $mat-mini-fab-padding: 8px !default;
   padding: $mat-button-padding;
   border-radius: $mat-button-border-radius;
 
+  // Explicitly set the default overflow to `visible`. It is already set
+  // on most browsers except on IE11 where it defaults to `hidden`.
+  overflow: visible;
+
   &[disabled] {
     cursor: default;
   }
