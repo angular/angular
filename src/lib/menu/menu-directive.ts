@@ -129,7 +129,7 @@ export class MatMenu implements AfterContentInit, MatMenuPanel, OnDestroy {
   @ViewChild(TemplateRef) templateRef: TemplateRef<any>;
 
   /** List of the items inside of a menu. */
-  @ContentChildren(MatMenuItem) items: QueryList<MatMenuItem>;
+  @ContentChildren(MatMenuItem, {descendants: true}) items: QueryList<MatMenuItem>;
 
   /**
    * Menu content that will be rendered lazily.
