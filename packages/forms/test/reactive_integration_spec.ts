@@ -1625,90 +1625,6 @@ import {MyInput, MyInputForm} from './value_accessor_integration_spec';
 
     });
 
-    describe('ngModel interactions', () => {
-
-      it('should support ngModel for complex forms', fakeAsync(() => {
-           const fixture = initTest(FormGroupNgModel);
-           fixture.componentInstance.form = new FormGroup({'login': new FormControl('')});
-           fixture.componentInstance.login = 'oldValue';
-           fixture.detectChanges();
-           tick();
-
-           const input = fixture.debugElement.query(By.css('input')).nativeElement;
-           expect(input.value).toEqual('oldValue');
-
-           input.value = 'updatedValue';
-           dispatchEvent(input, 'input');
-
-           tick();
-           expect(fixture.componentInstance.login).toEqual('updatedValue');
-         }));
-
-      it('should support ngModel for single fields', fakeAsync(() => {
-           const fixture = initTest(FormControlNgModel);
-           fixture.componentInstance.control = new FormControl('');
-           fixture.componentInstance.login = 'oldValue';
-           fixture.detectChanges();
-           tick();
-
-           const input = fixture.debugElement.query(By.css('input')).nativeElement;
-           expect(input.value).toEqual('oldValue');
-
-           input.value = 'updatedValue';
-           dispatchEvent(input, 'input');
-           tick();
-
-           expect(fixture.componentInstance.login).toEqual('updatedValue');
-         }));
-
-      it('should not update the view when the value initially came from the view', fakeAsync(() => {
-           if (isNode) return;
-           const fixture = initTest(FormControlNgModel);
-           fixture.componentInstance.control = new FormControl('');
-           fixture.detectChanges();
-           tick();
-
-           const input = fixture.debugElement.query(By.css('input')).nativeElement;
-           input.value = 'aa';
-           input.setSelectionRange(1, 2);
-           dispatchEvent(input, 'input');
-
-           fixture.detectChanges();
-           tick();
-
-           // selection start has not changed because we did not reset the value
-           expect(input.selectionStart).toEqual(1);
-         }));
-
-      it('should work with updateOn submit', fakeAsync(() => {
-           const fixture = initTest(FormGroupNgModel);
-           const formGroup = new FormGroup({login: new FormControl('', {updateOn: 'submit'})});
-           fixture.componentInstance.form = formGroup;
-           fixture.componentInstance.login = 'initial';
-           fixture.detectChanges();
-           tick();
-
-           const input = fixture.debugElement.query(By.css('input')).nativeElement;
-           input.value = 'Nancy';
-           dispatchEvent(input, 'input');
-           fixture.detectChanges();
-           tick();
-
-           expect(fixture.componentInstance.login)
-               .toEqual('initial', 'Expected ngModel value to remain unchanged on input.');
-
-           const form = fixture.debugElement.query(By.css('form')).nativeElement;
-           dispatchEvent(form, 'submit');
-           fixture.detectChanges();
-           tick();
-
-           expect(fixture.componentInstance.login)
-               .toEqual('Nancy', 'Expected ngModel value to update on submit.');
-
-         }));
-
-    });
-
     describe('validations', () => {
       it('required validator should validate checkbox', () => {
         const fixture = initTest(FormControlCheckboxRequiredValidator);
@@ -2442,27 +2358,6 @@ class FormArrayComp {
 class FormArrayNestedGroup {
   form: FormGroup;
   cityArray: FormArray;
-}
-
-@Component({
-  selector: 'form-group-ng-model',
-  template: `
-  <form [formGroup]="form">
-    <input type="text" formControlName="login" [(ngModel)]="login">
-   </form>`
-})
-class FormGroupNgModel {
-  form: FormGroup;
-  login: string;
-}
-
-@Component({
-  selector: 'form-control-ng-model',
-  template: `<input type="text" [formControl]="control" [(ngModel)]="login">`
-})
-class FormControlNgModel {
-  control: FormControl;
-  login: string;
 }
 
 @Component({
