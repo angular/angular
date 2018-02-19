@@ -125,7 +125,6 @@ export class NgIf {
 
   @Input()
   set ngIfElse(templateRef: TemplateRef<NgIfContext>|null) {
-    assertTemplate('ngIfElse', templateRef);
     this._elseTemplateRef = templateRef;
     this._elseViewRef = null;  // clear previous view if any.
     this._updateView();
