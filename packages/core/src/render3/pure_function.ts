@@ -168,7 +168,7 @@ export function pureFunction8(
     pureFn: (v1: any, v2: any, v3: any, v4: any, v5: any, v6: any, v7: any, v8: any) => any,
     exp1: any, exp2: any, exp3: any, exp4: any, exp5: any, exp6: any, exp7: any, exp8: any): any {
   const different = bindingUpdated4(exp1, exp2, exp3, exp4);
-  return bindingUpdated4(exp1, exp2, exp3, exp4) || different ?
+  return bindingUpdated4(exp5, exp6, exp7, exp8) || different ?
       checkAndUpdateBinding(pureFn(exp1, exp2, exp3, exp4, exp5, exp6, exp7, exp8)) :
       consumeBinding();
 }
