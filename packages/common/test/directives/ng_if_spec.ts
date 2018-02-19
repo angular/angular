@@ -172,8 +172,8 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
       it('should support removing the then/else templates', () => {
         const template = `<span *ngIf="booleanCondition;
             then nestedBooleanCondition ? tplRef : null;
-            else nestedBooleanCondition ? tplRef : null"></span>
-        <ng-template #tplRef>Template</ng-template>`;
+            else nestedBooleanCondition ? tplRef : null"></span>` +
+            `<ng-template #tplRef>Template</ng-template>`;
 
         fixture = createTestComponent(template);
         const comp = fixture.componentInstance;

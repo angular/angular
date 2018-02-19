@@ -163,4 +163,3 @@ export class NgIfContext {
   public $implicit: any = null;
   public ngIf: any = null;
 }
-
