@@ -177,7 +177,7 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
 
         fixture = createTestComponent(template);
         const comp = fixture.componentInstance;
-        // then
+        // then template
         comp.booleanCondition = true;
 
         comp.nestedBooleanCondition = true;
@@ -188,7 +188,7 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
         fixture.detectChanges();
         expect(fixture.nativeElement).toHaveText('');
 
-        // else
+        // else template
         comp.booleanCondition = true;
 
         comp.nestedBooleanCondition = true;
@@ -198,8 +198,6 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
         comp.nestedBooleanCondition = false;
         fixture.detectChanges();
         expect(fixture.nativeElement).toHaveText('');
-
-
       });
 
       it('should support dynamic else', async(() => {
