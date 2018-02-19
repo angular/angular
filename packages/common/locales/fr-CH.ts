@@ -39,16 +39,17 @@ export default [
       'octobre', 'novembre', 'décembre'
     ]
   ],
-  , [['av. J.-C.', 'ap. J.-C.'], , ['avant Jésus-Christ', 'après Jésus-Christ']], 1, [6, 0],
-  ['dd.MM.yy', 'd MMM y', 'd MMMM y', 'EEEE, d MMMM y'],
-  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH.mm:ss \'h\' zzzz'],
+  , [['av. J.-C.', 'ap. J.-C.'], , ['avant Jésus-Christ', 'après Jésus-Christ']],
+  1, [6, 0],
+  ['dd.MM.yy', 'dd.MM.y', 'd. MMMM y', 'EEEE, d. MMMM y'],
+  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'],
   [
-    '{1} {0}',
-    '{1} \'à\' {0}',
+    '{1}, {0}',
     ,
+    '{1} \'um\' {0}',
   ],
-  [',', ' ', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':', '.'],
-  ['#,##0.###', '#,##0%', '#,##0.00 ¤ ;-#,##0.00 ¤', '#E0'], 'CHF', 'franc suisse', {
+  ['.', '’', ';', '%', '+', '-', 'E', '·', '‰', '∞', 'NaN', ':'],
+  ['#,##0.###', '#,##0%', '¤ #,##0.00;¤-#,##0.00', '#E0'], 'CHF', 'franc suisse', {
     'ARS': ['$AR', '$'],
     'AUD': ['$AU', '$'],
     'BEF': ['FB'],
