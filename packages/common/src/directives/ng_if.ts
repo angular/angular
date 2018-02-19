@@ -117,14 +117,15 @@ export class NgIf {
   }
 
   @Input()
-  set ngIfThen(templateRef: TemplateRef<NgIfContext>) {
+  set ngIfThen(templateRef: TemplateRef<NgIfContext>|null) {
     this._thenTemplateRef = templateRef;
     this._thenViewRef = null;  // clear previous view if any.
     this._updateView();
   }
 
   @Input()
-  set ngIfElse(templateRef: TemplateRef<NgIfContext>) {
+  set ngIfElse(templateRef: TemplateRef<NgIfContext>|null) {
+    assertTemplate('ngIfElse', templateRef);
     this._elseTemplateRef = templateRef;
     this._elseViewRef = null;  // clear previous view if any.
     this._updateView();
@@ -163,3 +164,4 @@ export class NgIfContext {
   public $implicit: any = null;
   public ngIf: any = null;
 }
+
