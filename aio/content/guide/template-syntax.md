@@ -81,6 +81,8 @@ Begin with the first form of data binding&mdash;interpolation&mdash;to see how m
 
 {@a interpolation}
 
+{@a 문자열-바인딩}
+
 <!--
 ## Interpolation ( <span class="syntax">{&#xfeff;{...}}</span> )
 -->
@@ -152,6 +154,8 @@ But first, let's take a closer look at template expressions and statements.
 
 {@a template-expressions}
 
+{@a 템플릿-표현식}
+
 <!--
 ## Template expressions
 -->
@@ -211,95 +215,185 @@ Other notable differences from JavaScript syntax include:
 
 {@a expression-context}
 
-### Expression context
+{@a 템플릿-표현식의-컨텍스트}
 
+<!--
+### Expression context
+-->
+### 템플릿 표현식의 컨텍스트
+
+<!--
 The *expression context* is typically the _component_ instance.
 In the following snippets, the `title`  within double-curly braces and the
 `isUnchanged` in quotes refer to properties of the `AppComponent`.
+-->
+*템플릿 표현식의 컨텍스트*는 일반적으로 _컴포넌트_ 인스턴스의 컨텍스트와 같습니다.
+따라서 아래 예제에서 이중 중괄호로 문자열 바인딩 된  `title`과 `<span>`에 사용된 `isUnchanged` 어트리뷰트는 모두 `AppComponent`에 있는 프로퍼티를 가리킵니다.
 
 <code-example path="template-syntax/src/app/app.component.html" region="context-component-expression" title="src/app/app.component.html" linenums="false">
 </code-example>
 
+<!--
 An expression may also refer to properties of the _template's_ context
 such as a [template input variable](guide/template-syntax#template-input-variable) (`let hero`)
 or a [template reference variable](guide/template-syntax#ref-vars) (`#heroInput`).
+-->
+그리고 _템플릿_ 안에서만 유효한 변수도 있습니다. 아래 코드에서 `let hero`로 쓰인 [템플릿 입력 변수](guide/template-syntax#템플릿-입력-변수)와
+`#heroInput`으로 쓰인 [템플릿 참조 변수](guide/template-syntax#템플릿-참조-변수)는 템플릿 안에서만 유효합니다.
 
 <code-example path="template-syntax/src/app/app.component.html" region="context-var" title="src/app/app.component.html" linenums="false">
 </code-example>
 
+<!--
 The context for terms in an expression is a blend of the _template variables_,
 the directive's _context_ object (if it has one), and the component's _members_.
 If you reference a name that belongs to more than one of these namespaces,
 the template variable name takes precedence, followed by a name in the directive's _context_,
 and, lastly, the component's member names.
+-->
+Angular 템플릿의 컨텍스트는 _템플릿 변수_와 디렉티브의 _context_ 객체, 컴포넌트의 _멤버_ 가 조합된 범위입니다.
+이 중 참조하는 항목의 이름이 동시에 두 군데 존재하면 템플릿 변수의 우선순위가 가장 높습니다.
+그 다음 우선순위는 디렉티브의 _context_ 객체이며, 컴포넌트 멤버의 우선순위가 가장 낮습니다.
 
+<!--
 The previous example presents such a name collision. The component has a `hero`
 property and the `*ngFor` defines a `hero` template variable.
 The `hero` in `{{hero.name}}`
 refers to the template input variable, not the component's property.
+-->
+위에서 살펴본 예제에서 이미 중복된 항목이 사용되었습니다.
+컴포넌트에 `hero` 프로퍼티가 있는데 템플릿에서 `*ngFor`를 사용하면서 다시 한 번 `hero` 템플릿 변수를 선언했는데,
+이 경우 `{{hero.name}}`에 사용된 변수 `hero`는 참조 우선순위에 따라 컴포넌트의 프로퍼티 대신 템플릿 입력 변수를 참조합니다.
 
+<!--
 Template expressions cannot refer to anything in
 the global namespace (except `undefined`). They can't refer to `window` or `document`. They
 can't call `console.log` or `Math.max`. They are restricted to referencing
 members of the expression context.
+-->
+템플릿 표현식에서는 전역에 있는 어떠한 객체에도 접근할 수 없으며 `undefined`만 허용됩니다.
+`window`나 `document`는 참조할 수 없으며, `console.log`나 `Math.max`와 같은 함수도 실행할 수 없습니다.
 
 
 {@a no-side-effects}
 
 {@a expression-guidelines}
 
-### Expression guidelines
+{@a 템플릿-표현식-가이드라인}
 
+<!--
+### Expression guidelines
+-->
+### 템플릿 표현식 가이드라인
+
+<!--
 Template expressions can make or break an application.
 Please follow these guidelines:
+-->
+템플릿 표현식을 잘못 사용하면 애플리케이션이 중단되는 에러가 발생할 수도 있습니다.
+다음 가이드라인을 꼭 확인하세요:
 
+<!--
 * [No visible side effects](guide/template-syntax#no-visible-side-effects)
 * [Quick execution](guide/template-syntax#quick-execution)
 * [Simplicity](guide/template-syntax#simplicity)
 * [Idempotence](guide/template-syntax#idempotence)
+-->
+* [사이드 이펙트 방지](guide/template-syntax#사이드-이펙트-방지)
+* [실행시간은 최대한 짧게](guide/template-syntax#실행시간은-최대한-짧게)
+* [로직은 최대한 단순하게](guide/template-syntax#로직은-최대한-단순하게)
+* [멱등성](guide/template-syntax#멱등성)
 
+<!--
 The only exceptions to these guidelines should be in specific circumstances that you thoroughly understand.
+-->
+이 가이드라인들은 불가피한 상황이 아니라면 지키는 것이 좋습니다.
 
+<!--
 #### No visible side effects
+-->
+#### 사이드 이펙트 방지
 
+<!--
 A template expression should not change any application state other than the value of the
 target property.
+-->
+템플릿 표현식은 표현식에 사용된 프로퍼티 값 하나에 의해서만 영향을 받아야 하며, 애플리케이션의 상태와는 관련이 없어야 합니다.
 
+<!--
 This rule is essential to Angular's "unidirectional data flow" policy.
 You should never worry that reading a component value might change some other displayed value.
 The view should be stable throughout a single rendering pass.
+-->
+이 규칙은 Angular가 제안하는 "단방향 데이터 흐름"의 관점에서도 아주 중요합니다.
+컴포넌트 프로퍼티를 참조하는 과정에서 다른 컴포넌트 프로퍼티가 영향을 줄 걱정은 할 필요가 없으며, 뷰는 렌더링 단계에서 한 번만 갱신됩니다.
 
+<!--
 #### Quick execution
+-->
+#### 실행시간은 최대한 짧게
 
+<!--
 Angular executes template expressions after every change detection cycle.
 Change detection cycles are triggered by many asynchronous activities such as
 promise resolutions, http results, timer events, keypresses and mouse moves.
+-->
+변화 갑지 싸이클은 Promise 완료, http 응답, 타이머 이벤트, 키보드나 마우스 입력등에 의해 발생하는데,
+Angular는 변화 감지 싸이클마다 템플릿 표현식을 다시 평가합니다.
 
+<!--
 Expressions should finish quickly or the user experience may drag, especially on slower devices.
 Consider caching values when their computation is expensive.
+-->
+따라서 템플릿 표현식은 최대한 빠르게 완료되어야 하며, 실행 시간이 오래 걸린다면 사용자가 불편을 느낄 것입니다.
+연산이 많이 필요한 작업이라면 결과값을 캐싱하는 방법도 고려해 보세요.
 
+<!--
 #### Simplicity
+-->
+#### 로직은 최대한 단순하게
 
+<!--
 Although it's possible to write quite complex template expressions, you should avoid them.
+-->
+템플릿 표현식에는 아주 복잡한 로직을 작성할 수도 있지만, 이런 상황은 피하는 것이 좋습니다.
 
+<!--
 A property name or method call should be the norm.
 An occasional Boolean negation (`!`) is OK.
 Otherwise, confine application and business logic to the component itself,
 where it will be easier to develop and test.
+-->
+프로퍼티을 바로 참조하거나 함수 실행만 하는 것이 가장 좋습니다.
+필요하다면 `!` 같은 불리언 연산을 하는 것도 좋습니다.
+이정도의 로직 외에 애플리케이션 로직이나 비즈니스 로직이 더 필요하다면, 템플릿보다 테스트하기 쉬운 컴포넌트에 구현하는 것이 좋습니다.
 
-#### Idempotence
+#### 멱등성
 
+<!--
 An [idempotent](https://en.wikipedia.org/wiki/Idempotence) expression is ideal because
 it is free of side effects and improves Angular's change detection performance.
+-->
+[멱등성](https://en.wikipedia.org/wiki/Idempotence)은 어떤 연산을 몇 번 반복해도 결과가 같은 상태를 뜻하며, 다음과 같은 연산은 멱등성이 있다고 할 수 있습니다.
+`7 x 0 = 7 x 0 x 0 x 0 x 0`
 
+이 법칙을 따르는 템플릿 표현식은 사이드 이펙트를 걱정할 필요가 없고, Angular의 변화 감지 성능도 향상시킬 수 있기 때문에 가장 좋습니다.
+
+<!--
 In Angular terms, an idempotent expression always returns *exactly the same thing* until
 one of its dependent values changes.
+-->
+Angular의 기준으로 보면, 멱등성을 띄는 템플릿 표현식은 참조하는 변수의 값이 변하지 않는 이상 언제나 *정확하게 같은 값*을 반환해야 합니다.
 
+<!--
 Dependent values should not change during a single turn of the event loop.
 If an idempotent expression returns a string or a number, it returns the same string or number
 when called twice in a row. If the expression returns an object (including an `array`),
 it returns the same object *reference* when called twice in a row.
-
+-->
+템플릿 표현식에서 참조하는 변수는 한 번 도는 이벤트 루프에서 여러 번 변경되지 않습니다.
+만약 멱등성을 띄는 템플릿 표현식에서 문자열이나 숫자를 반환한다면, 이 템플릿 표현식은 다시 실행되어도 같은 결과값을 반환해야 합니다.
+그리고 객체나 배열을 반환하는 템플릿 표현식이라면 여러번 실행되더라도 그 결과값은 *같은 객체*를 가리켜야 합니다.
 
 <hr/>
 
@@ -1562,7 +1656,10 @@ Learn about the _microsyntax_ in the [_Structural Directives_](guide/structural-
 
 {@a template-input-variables}
 
+<!--
 ### Template input variables
+-->
+### 템플릿 입력 변수
 
 The `let` keyword before `hero` creates a _template input variable_ called `hero`.
 The `NgForOf` directive iterates over the `heroes` array returned by the parent component's `heroes` property
@@ -1688,7 +1785,12 @@ For example, you could replace the `<confused-hero>` switch case with the follow
 
 {@a ref-var}
 
+{@a 템플릿-참조-변수}
+
+<!--
 ## Template reference variables ( <span class="syntax">#var</span> )
+-->
+## 템플릿 참조 변수 ( <span class="syntax">#var</span> )
 
 A **template reference variable** is often a reference to a DOM element within a template.
 It can also be a reference to an Angular component or directive or a
