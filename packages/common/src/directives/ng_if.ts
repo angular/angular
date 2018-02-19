@@ -117,7 +117,7 @@ export class NgIf {
   }
 
   @Input()
-  set ngIfThen(templateRef: TemplateRef<NgIfContext>) {
+  set ngIfThen(templateRef: TemplateRef<NgIfContext>|null) {
     assertTemplate('ngIfThen', templateRef);
     this._thenTemplateRef = templateRef;
     this._thenViewRef = null;  // clear previous view if any.
@@ -125,7 +125,7 @@ export class NgIf {
   }
 
   @Input()
-  set ngIfElse(templateRef: TemplateRef<NgIfContext>) {
+  set ngIfElse(templateRef: TemplateRef<NgIfContext>|null) {
     assertTemplate('ngIfElse', templateRef);
     this._elseTemplateRef = templateRef;
     this._elseViewRef = null;  // clear previous view if any.
@@ -166,9 +166,9 @@ export class NgIfContext {
   public ngIf: any = null;
 }
 
-function assertTemplate(property: string, templateRef: TemplateRef<any>): void {
-  const isTemplateRef = templateRef.createEmbeddedView != null;
-  if (!isTemplateRef) {
+function assertTemplate(property: string, templateRef: TemplateRef<any>| null): void {
+  const isTemplateRefOrNull = !!(!templateRef || templateRef.createEmbeddedView);
+  if (!isTemplateRefOrNull) {
     throw new Error(`${property} must be a TemplateRef, but received '${stringify(templateRef)}'.`);
   }
 }
