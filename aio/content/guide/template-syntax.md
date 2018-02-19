@@ -211,7 +211,7 @@ Other notable differences from JavaScript syntax include:
 * new [template expression operators](guide/template-syntax#expression-operators), such as `|`, `?.` and `!`.
 -->
 * 비트 연산자 `|`, `&` 는 템플릿 표현식에서 지원하지 않습니다.
-* `|`, `?.`, `!`와 같은 [템플릿 표현식 전용 연산자](guide/template-syntax#expression-operators)도 있습니다.
+* `|`, `?.`, `!`와 같은 [템플릿 표현식 전용 연산자](guide/template-syntax#템플릿-표현식-전용-연산자)도 있습니다.
 
 {@a expression-context}
 
@@ -271,7 +271,7 @@ the global namespace (except `undefined`). They can't refer to `window` or `docu
 can't call `console.log` or `Math.max`. They are restricted to referencing
 members of the expression context.
 -->
-템플릿 표현식에서는 전역에 있는 어떠한 객체에도 접근할 수 없으며 `undefined`만 허용됩니다.
+템플릿 표현식에서는 전역 공간에 있는 어떠한 객체에도 접근할 수 없으며 `undefined`만 허용됩니다.
 `window`나 `document`는 참조할 수 없으며, `console.log`나 `Math.max`와 같은 함수도 실행할 수 없습니다.
 
 
@@ -399,71 +399,138 @@ it returns the same object *reference* when called twice in a row.
 
 {@a template-statements}
 
-## Template statements
+{@a 템플릿-실행문}
 
+<!--
+## Template statements
+-->
+## 템플릿 실행문
+
+<!--
 A template **statement** responds to an **event** raised by a binding target
 such as an element, component, or directive.
 You'll see template statements in the [event binding](guide/template-syntax#event-binding) section,
 appearing in quotes to the right of the `=`&nbsp;symbol as in `(event)="statement"`.
+-->
+템플릿 **실행문**은 엘리먼트나 컴포넌트, 디렉티브에서 발생하는 **이벤트**에 반응합니다.
+템플릿 실행문은 이 문서의 [이벤트 바인딩](guide/template-syntax#이벤트-바인딩) 섹션에서도 확인할 수 있으며,
+`=` 기호를 사용해서 `(event)="실행문"`과 같이 작성합니다.
 
 <code-example path="template-syntax/src/app/app.component.html" region="context-component-statement" title="src/app/app.component.html" linenums="false">
 </code-example>
 
+<!--
 A template statement *has a side effect*.
 That's the whole point of an event.
 It's how you update application state from user action.
+-->
+템플릿 실행문은 *변화를 발생*시키며, 이벤트의 목적도 이것을 위한 것입니다.
+템플릿 실행문은 사용자의 행동에 따라 애플리케이션을 동작시키기 위해 사용합니다.
 
+<!--
 Responding to events is the other side of Angular's "unidirectional data flow".
 You're free to change anything, anywhere, during this turn of the event loop.
+-->
+이벤트에 반응하는 것은 Angular가 제안하는 "단방향 데이터 흐름"의 또다른 한 방향입니다.
+이 방향은 컴포넌트 프로퍼티가 뷰로 반영되는 것의 반대 방향이며, 이벤트 루프에서는 어떠한 객체의 어떠한 값도 자유롭게 변경할 수 있습니다.
 
+<!--
 Like template expressions, template *statements* use a language that looks like JavaScript.
 The template statement parser differs from the template expression parser and
 specifically supports both basic assignment (`=`) and chaining expressions
 (with <code>;</code> or <code>,</code>).
+-->
+템플릿 표현식과 비슷하게 템플릿 *실행문*도 JavaScript와 비슷한 문법을 사용합니다.
+템플릿 실행문을 파싱하는 파서는 템플릿 표현식을 파싱하는 파서와 다르며, 템플릿 표현식에서는 사용할 수 없는 문법도 몇 가지는 사용할 수 있습니다.
+템플릿 실행문에서는 값을 할당하는 표현이나(`=`) 여러 줄에 걸친 표현(<code>;</code>, <code>,</code>)도 사용할 수 있습니다.
 
+<!--
 However, certain JavaScript syntax is not allowed:
+-->
+하지만 다음과 같은 JavaScript 문법은 사용할 수 없습니다.
 
+<!--
 * <code>new</code>
 * increment and decrement operators, `++` and `--`
 * operator assignment, such as `+=` and `-=`
 * the bitwise operators `|` and `&`
 * the [template expression operators](guide/template-syntax#expression-operators)
+-->
+* <code>new</code> 키워드
+* `+=`나 `-=`와 같은 연산 할당자
+* `|`나 `&`와 같은 비트 연산자
+* [템플릿 표현식 전용 연산자](guide/template-syntax#템플릿-표현식-전용-연산자)
 
+<!--
 ### Statement context
+-->
+### 템플릿 실행문의 컨텍스트
 
+<!--
 As with expressions, statements can refer only to what's in the statement context
 such as an event handling method of the component instance.
+-->
+템플릿 표현식과 비슷하게 템플릿 실행문도 컨텍스트가 제한되어 있으며, 컴포넌트 인스턴스에 있는 이벤트 핸들링 메소드를 주로 사용합니다.
 
+<!--
 The *statement context* is typically the component instance.
 The *deleteHero* in `(click)="deleteHero()"` is a method of the data-bound component.
+-->
+*템플릿 실행문의 컨텍스트*는 컴포넌트 인스턴스의 범위와 같습니다.
+예를 들어 아래 코드에서 `(click)="deleteHero()"`에 사용된 `deleteHero`는 컴포넌트에서 데이터를 처리하는 메소드입니다.
 
 <code-example path="template-syntax/src/app/app.component.html" region="context-component-statement" title="src/app/app.component.html" linenums="false">
 </code-example>
 
+<!--
 The statement context may also refer to properties of the template's own context.
 In the following examples, the template `$event` object,
 a [template input variable](guide/template-syntax#template-input-variable) (`let hero`),
 and a [template reference variable](guide/template-syntax#ref-vars) (`#heroForm`)
 are passed to an event handling method of the component.
+-->
+템플릿 실행문의 컨텍스트에서는 템플릿 컨텍스트 안에 있는 프로퍼티에 접근할 수도 있습니다.
+아래 예제에서 `$event` 객체는 템플릿 변수이며, `let hero`는 [템플릿 입력 변수](guide/template-syntax#템플릿-입력-변수)이고,
+`#heroForm`은 [템플릿 참조 변수](guide/template-syntax#템플릿-참조-변수)입니다.
+각각의 변수는 컴포넌트의 이벤트 핸들링 메소드로 전달됩니다.
 
 <code-example path="template-syntax/src/app/app.component.html" region="context-var-statement" title="src/app/app.component.html" linenums="false">
 </code-example>
 
+<!--
 Template context names take precedence over component context names.
 In `deleteHero(hero)` above, the `hero` is the template input variable,
 not the component's `hero` property.
+-->
+템플릿 컨텍스트의 항목 이름과 컴포넌트의 프로퍼티 이름이 중복되면 템플릿 컨텍스트의 우선순위가 높습니다.
+위 코드를 예로 들면, `deleteHero(hero)`에 사용된 `hero`는 템플릿 입력 변수이며, 컴포넌트에 있는 `hero` 프로퍼티는 템플릿 변수에 의해 가려졌습니다.
 
+<!--
 Template statements cannot refer to anything in the global namespace. They
 can't refer to `window` or `document`.
 They can't call `console.log` or `Math.max`.
+-->
+템플릿 실행문에서는 템플릿 표현식과 마찬가지로 전역 공간에 접근할 수 없습니다.
+또, `window`나 `document`에도 접근할 수 없고, `console.log`나 `Math.max`와 같은 함수도 실행할 수 없습니다.
 
+<!--
 ### Statement guidelines
+-->
+### 템플릿 실행문 가이드라인
 
+<!--
 As with expressions, avoid writing complex template statements.
 A method call or simple property assignment should be the norm.
+-->
+템플릿 표현식과 마찬가지로 템플릿 실행문에도 복잡한 구문을 작성하지 않는 것이 좋습니다.
+간단하게 프로퍼티를 참조하거나 함수를 실행하는 것이 가장 좋은 방법입니다.
 
+<!--
 Now that you have a feel for template expressions and statements,
 you're ready to learn about the varieties of data binding syntax beyond interpolation.
+-->
+지금까지 템플릿 표현식과 템플릿 실행식에 대해 알아봤습니다.
+이제부터는 문자열 바인딩을 포함한 데이터 바인딩에 대해 자세하게 알아봅시다.
 
 
 <hr/>
@@ -817,7 +884,10 @@ You can't bind to a property of the target element to _read_ it. You can only _s
 
 Similarly, you cannot use property binding to *call* a method on the target element.
 
+<!--
 If the element raises events, you can listen to them with an [event binding](guide/template-syntax#event-binding).
+-->
+If the element raises events, you can listen to them with an [event binding](guide/template-syntax#이벤트-바인딩).
 
 If you must read a target element property or call one of its methods,
 you'll need a different technique.
@@ -1109,7 +1179,12 @@ Note that a _style property_ name can be written in either
 
 {@a event-binding}
 
+{@a 이벤트-바인딩}
+
+<!--
 ## Event binding  ( <span class="syntax">(event)</span> )
+-->
+## 이벤트 바인딩 ( <span class="syntax">(event)</span> )
 
 The bindings directives you've met so far flow data in one direction: **from a component to an element**.
 
@@ -1862,9 +1937,14 @@ This example declares the `fax` variable as `ref-fax` instead of `#fax`.
 An _Input_ property is a _settable_ property annotated with an `@Input` decorator.
 Values flow _into_ the property when it is data bound with a [property binding](#property-binding)
 
+<!--
 An _Output_ property is an _observable_ property annotated with an `@Output` decorator.
 The property almost always returns an Angular [`EventEmitter`](api/core/EventEmitter).
 Values flow _out_ of the component as events bound with an [event binding](#event-binding).
+-->
+An _Output_ property is an _observable_ property annotated with an `@Output` decorator.
+The property almost always returns an Angular [`EventEmitter`](api/core/EventEmitter).
+Values flow _out_ of the component as events bound with an [이벤트 바인딩](#이벤트-바인딩).
 
 You can only bind to _another_ component or directive through its _Input_ and _Output_ properties.
 
@@ -2026,7 +2106,12 @@ the directive property name on the *left* and the public alias on the *right*:
 
 {@a expression-operators}
 
+{@a 템플릿-표현식-전용-연산자}
+
+<!--
 ## Template expression operators
+-->
+## 템플릿 표현식 전용 연산자
 
 The template expression language employs a subset of JavaScript syntax supplemented with a few special operators
 for specific scenarios. The next sections cover two of these operators: _pipe_ and _safe navigation operator_.
