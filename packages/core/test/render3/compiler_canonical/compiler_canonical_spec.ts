@@ -142,7 +142,7 @@ describe('compiler specification', () => {
           factory: function HostBindingDir_Factory() { return new HostBindingDir(); },
           hostBindings: function HostBindingDir_HostBindings(
               dirIndex: $number$, elIndex: $number$) {
-            $r3$.ɵp(elIndex, 'id', $r3$.ɵb($r3$.ɵm<HostBindingDir>(dirIndex).dirId));
+            $r3$.ɵp(elIndex, 'id', $r3$.ɵb($r3$.ɵld<HostBindingDir>(dirIndex).dirId));
           }
         });
         // /NORMATIVE
@@ -282,7 +282,7 @@ describe('compiler specification', () => {
           factory: function HostBindingDir_Factory() { return new HostBindingDir(); },
           hostBindings: function HostBindingDir_HostBindings(
               dirIndex: $number$, elIndex: $number$) {
-            $r3$.ɵa(elIndex, 'aria-label', $r3$.ɵb($r3$.ɵm<HostBindingDir>(dirIndex).label));
+            $r3$.ɵa(elIndex, 'aria-label', $r3$.ɵb($r3$.ɵld<HostBindingDir>(dirIndex).label));
           }
         });
         // /NORMATIVE
