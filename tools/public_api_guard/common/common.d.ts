@@ -275,8 +275,8 @@ export declare class NgForOfContext<T> {
 /** @stable */
 export declare class NgIf {
     ngIf: any;
-    ngIfElse: TemplateRef<NgIfContext>;
-    ngIfThen: TemplateRef<NgIfContext>;
+    ngIfElse: TemplateRef<NgIfContext> | null;
+    ngIfThen: TemplateRef<NgIfContext> | null;
     constructor(_viewContainer: ViewContainerRef, templateRef: TemplateRef<NgIfContext>);
 }
 
