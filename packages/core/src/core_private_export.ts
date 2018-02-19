@@ -17,7 +17,7 @@ export {CodegenComponentFactoryResolver as ɵCodegenComponentFactoryResolver} fr
 export {ReflectionCapabilities as ɵReflectionCapabilities} from './reflection/reflection_capabilities';
 export {GetterFn as ɵGetterFn, MethodFn as ɵMethodFn, SetterFn as ɵSetterFn} from './reflection/types';
 export {DirectRenderer as ɵDirectRenderer, RenderDebugInfo as ɵRenderDebugInfo} from './render/api';
-export {global as ɵglobal, looseIdentical as ɵlooseIdentical, stringify as ɵstringify} from './util';
+export {getSymbolIterator as ɵgetSymbolIterator, global as ɵglobal, looseIdentical as ɵlooseIdentical, stringify as ɵstringify} from './util';
 export {makeDecorator as ɵmakeDecorator} from './util/decorators';
 export {isObservable as ɵisObservable, isPromise as ɵisPromise} from './util/lang';
 export {clearOverrides as ɵclearOverrides, overrideComponentView as ɵoverrideComponentView, overrideProvider as ɵoverrideProvider} from './view/index';

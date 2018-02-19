@@ -79,6 +79,10 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
         expect(list).toEqual([1, 2, 3, 4, 5]);
       });
 
+      it('should treat iterable as array', () => {
+        expect(pipe.transform(listGenerator(), 3)).toEqual([4, 5]);
+      });
+
     });
 
     describe('integration', () => {
@@ -105,4 +109,12 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
          }));
     });
   });
+}
+
+function* listGenerator(): Iterator<number> {
+  yield 1;
+  yield 2;
+  yield 3;
+  yield 4;
+  yield 5;
 }

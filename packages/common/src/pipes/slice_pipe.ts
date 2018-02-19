@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Pipe, PipeTransform} from '@angular/core';
+import {Pipe, PipeTransform, ɵgetSymbolIterator as getSymbolIterator} from '@angular/core';
 import {invalidPipeArgumentError} from './invalid_pipe_argument_error';
 
 /**
@@ -58,6 +58,10 @@ import {invalidPipeArgumentError} from './invalid_pipe_argument_error';
 export class SlicePipe implements PipeTransform {
   transform(value: any, start: number, end?: number): any {
     if (value == null) return value;
+
+    if (typeof value !== 'string' && value[getSymbolIterator()]) {
+      value = Array.from(value);
+    }
 
     if (!this.supports(value)) {
       throw invalidPipeArgumentError(SlicePipe, value);
