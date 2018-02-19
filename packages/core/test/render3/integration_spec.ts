@@ -637,7 +637,7 @@ describe('render3 integration test', () => {
               return hostBindingDir = new HostBindingDir();
             },
             hostBindings: function HostBindingDir_HostBindings(dirIndex: number, elIndex: number) {
-              elementAttribute(elIndex, 'aria-label', bind(memory<HostBindingDir>(dirIndex).label));
+              elementAttribute(elIndex, 'aria-label', bind(load<HostBindingDir>(dirIndex).label));
             }
           });
         }
