@@ -20,6 +20,7 @@ import {NgModuleCompiler} from '../ng_module_compiler';
 import {OutputEmitter} from '../output/abstract_emitter';
 import * as o from '../output/output_ast';
 import {ParseError} from '../parse_util';
+import {compilePipe as compileIvyPipe} from '../render3/r3_pipe_compiler';
 import {compileComponent as compileIvyComponent, compileDirective as compileIvyDirective} from '../render3/r3_view_compiler';
 import {CompiledStylesheet, StyleCompiler} from '../style_compiler';
 import {SummaryResolver} from '../summary_resolver';
@@ -356,11 +357,19 @@ export class AotCompiler {
             error(
                 `Cannot determine the module for component '${identifierName(directiveMetadata.type)}'`);
 
-        const {template: parsedTemplate} =
+        const {template: parsedTemplate, pipes: parsedPipes} =
             this._parseTemplate(directiveMetadata, module, module.transitiveModule.directives);
-        compileIvyComponent(context, directiveMetadata, parsedTemplate, this._reflector);
+        compileIvyComponent(
+            context, directiveMetadata, parsedPipes, parsedTemplate, this._reflector);
       } else {
         compileIvyDirective(context, directiveMetadata, this._reflector);
+      }
+    });
+
+    pipes.forEach(pipeType => {
+      const pipeMetadata = this._metadataResolver.getPipeMetadata(pipeType);
+      if (pipeMetadata) {
+        compileIvyPipe(context, pipeMetadata, this._reflector);
       }
     });
 
