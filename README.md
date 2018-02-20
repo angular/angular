@@ -23,7 +23,7 @@ for more insight into our process.
 If you'd like to contribute, you must follow our [contributing guidelines](https://github.com/angular/material2/blob/master/CONTRIBUTING.md).
 You can look through the issues (which should be up-to-date on who is working on which features
 and which pieces are blocked) and make a comment.
-Also see our [`Good for community contribution`](https://github.com/angular/material2/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+for+community+contribution%22)
+Also see our [`help wanted`](https://github.com/angular/material2/issues?q=is%3Aissue+is%3Aopen+label%3A%22help+wanted%22)
 label.
 
 High level stuff planned for Q1 2018 (January - March):
