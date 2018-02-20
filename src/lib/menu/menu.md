@@ -117,8 +117,8 @@ the `matMenuTriggerData` input. This allows for a single menu instance to be ren
 with a different set of data, depending on the trigger that opened it:
 
 ```html
-<mat-menu #appMenu="matMenu" let-user="user">
-  <ng-template matMenuContent>
+<mat-menu #appMenu="matMenu">
+  <ng-template matMenuContent let-user="user">
     <button mat-menu-item>Settings</button>
     <button mat-menu-item>Log off {{name}}</button>
   </ng-template>

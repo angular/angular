@@ -1572,7 +1572,7 @@ class SimpleLazyMenu {
       [matMenuTriggerData]="{label: 'two'}"
       #triggerTwo="matMenuTrigger">Two</button>
 
-    <mat-menu matMenuContent #menu="matMenu">
+    <mat-menu #menu="matMenu">
       <ng-template let-label="label" matMenuContent>
         <button mat-menu-item>{{label}}</button>
       </ng-template>
