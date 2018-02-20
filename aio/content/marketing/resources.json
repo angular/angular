@@ -247,6 +247,13 @@
             "rev": true,
             "title": "Angular Playground",
             "url": "http://www.angularplayground.it/"
+          },
+          "nx": {
+            "desc": "Nx (Nrwl Extensions for Angular) is an open source toolkit built on top of Angular CLI to help enterprise teams develop Angular at scale.",
+            "rev": true,
+            "title": "Nx",
+            "logo": "https://nrwl.io/assets/nx-logo.png",
+            "url": "https://nrwl.io/nx"
           }
         }
       },
@@ -494,6 +501,13 @@
             "subcategory": "Online Training",
             "title": "CodeSchool: Accelerating Through Angular",
             "url": "https://www.codeschool.com/courses/accelerating-through-angular-2"
+          },
+          "angular-playbook": {
+            "desc": "Learn advanced Angular best practices for enterprise teams, created by Nrwl.io.",
+            "logo": "https://nrwl.io/assets/logo_footer_2x.png",
+            "rev": true,
+            "title": "Angular Enterprise Playbook",
+            "url": "https://angularplaybook.com"
           },
           "a2b": {
             "desc": "Hundreds of Angular courses for all skill levels",
