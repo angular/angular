@@ -7,7 +7,7 @@
  */
 
 import {Reflector} from '@angular/core/src/reflection/reflection';
-import {DELEGATE_CTOR, ReflectionCapabilities} from '@angular/core/src/reflection/reflection_capabilities';
+import {DELEGATE_CTOR, INHERITED_CLASS, INHERITED_CLASS_WITH_CTOR, ReflectionCapabilities} from '@angular/core/src/reflection/reflection_capabilities';
 import {global} from '@angular/core/src/util';
 import {makeDecorator, makeParamDecorator, makePropDecorator} from '@angular/core/src/util/decorators';
 
@@ -188,6 +188,41 @@ class TestObj {
         Object.defineProperty(dummyArrowFn, 'prototype', {value: undefined});
         expect(() => reflector.annotations(dummyArrowFn as any)).not.toThrow();
       });
+
+      it('should support native class', () => {
+        const ChildNoCtor = `class ChildNoCtor extends Parent {}\n`;
+        const ChildWithCtor = `class ChildWithCtor extends Parent {\n` +
+            `  constructor() { super(); }` +
+            `}\n`;
+        const ChildNoCtorPrivateProps = `class ChildNoCtorPrivateProps extends Parent {\n` +
+            `  private x = 10;\n` +
+            `}\n`;
+
+        const checkNoOwnMetadata = (str: string) =>
+            INHERITED_CLASS.exec(str) && !INHERITED_CLASS_WITH_CTOR.exec(str);
+
+        expect(checkNoOwnMetadata(ChildNoCtor)).toBeTruthy();
+        expect(checkNoOwnMetadata(ChildNoCtorPrivateProps)).toBeTruthy();
+        expect(checkNoOwnMetadata(ChildWithCtor)).toBeFalsy();
+      });
+
+      it('should properly handle all class forms', () => {
+        const ctor = (str: string) => expect(INHERITED_CLASS.exec(str)).toBeTruthy() &&
+            expect(INHERITED_CLASS_WITH_CTOR.exec(str)).toBeTruthy();
+        const noCtor = (str: string) => expect(INHERITED_CLASS.exec(str)).toBeTruthy() &&
+            expect(INHERITED_CLASS_WITH_CTOR.exec(str)).toBeFalsy();
+
+        ctor(`class Bar extends Foo {constructor(){}}`);
+        ctor(`class Bar extends Foo { constructor ( ) {} }`);
+        ctor(`class Bar extends Foo { other(){}; constructor(){} }`);
+
+        noCtor(`class extends Foo{}`);
+        noCtor(`class extends Foo {}`);
+        noCtor(`class Bar extends Foo {}`);
+        noCtor(`class $Bar1_ extends $Fo0_ {}`);
+        noCtor(`class Bar extends Foo { other(){} }`);
+      });
+
     });
 
     describe('inheritance with decorators', () => {
