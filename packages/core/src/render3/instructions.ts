@@ -12,7 +12,7 @@ import {assertEqual, assertLessThan, assertNotEqual, assertNotNull, assertNull, 
 import {LContainer, TContainer} from './interfaces/container';
 import {CssSelector, LProjection} from './interfaces/projection';
 import {LQueries} from './interfaces/query';
-import {LView, LifecycleStage, TData, TView} from './interfaces/view';
+import {LView, LViewFlags, LifecycleStage, TData, TView} from './interfaces/view';
 
 import {LContainerNode, LElementNode, LNode, LNodeFlags, LProjectionNode, LTextNode, LViewNode, TNode, TContainerNode, InitialInputData, InitialInputs, PropertyAliases, PropertyAliasValue,} from './interfaces/node';
 import {assertNodeType} from './node_assert';
@@ -159,7 +159,7 @@ export function enterView(newView: LView, host: LElementNode | LViewNode | null)
   data = newView && newView.data;
   bindingIndex = newView && newView.bindingStartIndex || 0;
   tData = newView && newView.tView.data;
-  creationMode = newView && newView.creationMode;
+  creationMode = newView && (newView.flags & LViewFlags.CreationMode) === 1;
 
   cleanup = newView && newView.cleanup;
   renderer = newView && newView.renderer;
@@ -183,7 +183,7 @@ export function leaveView(newView: LView): void {
   executeHooks(
       currentView.data, currentView.tView.viewHooks, currentView.tView.viewCheckHooks,
       creationMode);
-  currentView.creationMode = false;
+  currentView.flags &= ~LViewFlags.CreationMode;  // Clear creationMode bit in view flags
   currentView.lifecycleStage = LifecycleStage.INIT;
   currentView.tView.firstTemplatePass = false;
   enterView(newView, null);
@@ -194,7 +194,8 @@ export function createLView(
     context: any | null): LView {
   const newView = {
     parent: currentView,
-    id: viewId,    // -1 for component views
+    id: viewId,  // -1 for component views
+    flags: LViewFlags.CreationMode,
     node: null !,  // until we initialize it in createNode.
     data: [],
     tView: tView,
@@ -204,7 +205,6 @@ export function createLView(
     tail: null,
     next: null,
     bindingStartIndex: null,
-    creationMode: true,
     template: template,
     context: context,
     dynamicViewCount: 0,
