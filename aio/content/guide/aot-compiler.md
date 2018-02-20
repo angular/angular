@@ -103,7 +103,7 @@ You can control your app compilation by providing template compiler options in t
 This option tells the compiler not to produce `.metadata.json` files.
 The option is `false` by default.
 
-`.metadata.json` files contain infomration needed by the template compiler from a `.ts`
+`.metadata.json` files contain information needed by the template compiler from a `.ts`
 file that is not included in the `.d.ts` file produced by the TypeScript compiler. This information contains,
 for example, the content of annotations (such as a component's template) which TypeScript
 emits to the `.js` file but not to the `.d.ts` file.
