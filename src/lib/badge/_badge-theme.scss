@@ -115,6 +115,45 @@ $mat-badge-large-size: $mat-badge-default-size + 6;
       background: mat-color($warn);
     }
   }
+
+  .mat-badge {
+    position: relative;
+  }
+
+  .mat-badge-hidden {
+    .mat-badge-content {
+      display: none;
+    }
+  }
+
+  .mat-badge-content {
+    position: absolute;
+    text-align: center;
+    display: inline-block;
+    border-radius: 50%;
+    transition: all 0.2 ease-in-out;
+    transform: scale(0.6);
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    pointer-events: none;
+  }
+
+  // The active class is added after the element is added
+  // so it can animate scale to default
+  .mat-badge-content.mat-badge-active {
+    transform: scale(1);
+  }
+
+  .mat-badge-small {
+    @include _mat-badge-size($mat-badge-small-size);
+  }
+  .mat-badge-medium {
+    @include _mat-badge-size($mat-badge-default-size);
+  }
+  .mat-badge-large {
+    @include _mat-badge-size($mat-badge-large-size);
+  }
 }
 
 @mixin mat-badge-typography($config) {
@@ -131,43 +170,4 @@ $mat-badge-large-size: $mat-badge-default-size + 6;
   .mat-badge-large .mat-badge-content {
     font-size: $mat-badge-font-size * 2;
   }
-}
-
-.mat-badge {
-  position: relative;
-}
-
-.mat-badge-hidden {
-  .mat-badge-content {
-    display: none;
-  }
-}
-
-.mat-badge-content {
-  position: absolute;
-  text-align: center;
-  display: inline-block;
-  border-radius: 50%;
-  transition: all 0.2 ease-in-out;
-  transform: scale(0.6);
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  pointer-events: none;
-}
-
-// The active class is added after the element is added
-// so it can animate scale to default
-.mat-badge-content.mat-badge-active {
-  transform: scale(1);
-}
-
-.mat-badge-small {
-  @include _mat-badge-size($mat-badge-small-size);
-}
-.mat-badge-medium {
-  @include _mat-badge-size($mat-badge-default-size);
-}
-.mat-badge-large {
-  @include _mat-badge-size($mat-badge-large-size);
 }
