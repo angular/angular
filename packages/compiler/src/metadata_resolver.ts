@@ -1127,7 +1127,9 @@ export class CompileMetadataResolver {
       if (!q.selector) {
         this._reportError(
             syntaxError(
-                `Can't construct a query for the property "${propertyName}" of "${stringifyType(typeOrFunc)}" since the query selector wasn't defined.`),
+                `Can't construct a query ${q}(${q.selector}) for the property "${propertyName}" of "${stringifyType(typeOrFunc)}" since the directive is ${q.selector}.
+                1. If the directive is declared in another file ensure that it is imported. 
+                2. If the directive is declared in the same file ensure that it goes first (classes aren’t hoisted) or use forwardRef: @ViewChild(forwardRef(() => ChildComp)) child: ChildComp;.`),
             typeOrFunc);
         selectors = [];
       } else {

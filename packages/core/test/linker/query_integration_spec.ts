@@ -219,10 +219,10 @@ import {stringify} from '../../src/util';
       it('should throw with descriptive error when query selectors are not present', () => {
         TestBed.configureTestingModule({declarations: [MyCompBroken0, HasNullQueryCondition]});
         const template = '<has-null-query-condition></has-null-query-condition>';
-        TestBed.overrideComponent(MyCompBroken0, {set: {template}});
+        TestBed.overrideTemplate(MyCompBroken0, template);
         expect(() => TestBed.createComponent(MyCompBroken0))
             .toThrowError(
-                `Can't construct a query for the property "errorTrigger" of "${stringify(HasNullQueryCondition)}" since the query selector wasn't defined.`);
+                /Can't construct a query @ContentChildren\(null\) for the property "errorTrigger" of "HasNullQueryCondition" since the directive is null/);
       });
     });
 
