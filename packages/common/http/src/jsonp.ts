@@ -156,7 +156,7 @@ export class JsonpClientBackend implements HttpBackend {
           statusText: 'OK', url,
         }));
 
-        // Complete the stream, the resposne is over.
+        // Complete the stream, the response is over.
         observer.complete();
       };
 
