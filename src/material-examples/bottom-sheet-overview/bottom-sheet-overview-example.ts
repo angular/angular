@@ -28,8 +28,4 @@ export class BottomSheetOverviewExampleSheet {
     this.bottomSheetRef.dismiss();
     event.preventDefault();
   }
-
-  openLink(event) {
-    window.open(event.target.href);
-  }
 }
