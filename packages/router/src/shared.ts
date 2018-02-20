@@ -103,6 +103,10 @@ export function navigationCancelingError(message: string) {
   return error;
 }
 
+/**
+ *
+ * @stable
+ */
 export function isNavigationCancelingError(error: Error) {
   return error && (error as any)[NAVIGATION_CANCELING_ERROR];
 }

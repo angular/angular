@@ -83,13 +83,20 @@ function findPath<T>(value: T, node: TreeNode<T>): TreeNode<T>[] {
   return [];
 }
 
+/**
+ * @stable
+ */
 export class TreeNode<T> {
   constructor(public value: T, public children: TreeNode<T>[]) {}
 
   toString(): string { return `TreeNode(${this.value})`; }
 }
 
-// Return the list of T indexed by outlet name
+/**
+ * Return the list of T indexed by outlet name
+ *
+ * @stable
+ */
 export function nodeChildrenAsMap<T extends{outlet: string}>(node: TreeNode<T>| null) {
   const map: {[outlet: string]: TreeNode<T>} = {};
 

@@ -62,6 +62,10 @@ export function and(bools: boolean[]): boolean {
   return !bools.some(v => !v);
 }
 
+/**
+ *
+ * @stable
+ */
 export function forEach<K, V>(map: {[key: string]: V}, callback: (v: V, k: string) => void): void {
   for (const prop in map) {
     if (map.hasOwnProperty(prop)) {

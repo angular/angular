@@ -20,6 +20,10 @@ import {TreeNode} from './utils/tree';
 
 class NoMatch {}
 
+/**
+ *
+ * @stable
+ */
 export function recognize(
     rootComponentType: Type<any>| null, config: Routes, urlTree: UrlTree, url: string,
     paramsInheritanceStrategy: ParamsInheritanceStrategy =

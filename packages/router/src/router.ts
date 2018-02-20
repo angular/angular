@@ -162,21 +162,16 @@ function defaultErrorHandler(error: any): any {
   throw error;
 }
 
-type NavigationParams = {
-  id: number,
-  rawUrl: UrlTree,
-  extras: NavigationExtras,
-  resolve: any,
-  reject: any,
-  promise: Promise<boolean>,
-  source: NavigationTrigger,
-  state: {navigationId: number} | null
-};
-
-/**
- * @internal
- */
-export type RouterHook = (snapshot: RouterStateSnapshot) => Observable<void>;
+interface NavigationParams {
+  id: number;
+  rawUrl: UrlTree;
+  extras: NavigationExtras;
+  resolve: any;
+  reject: any;
+  promise: Promise<boolean>;
+  source: NavigationTrigger;
+  state: {navigationId: number} | null;
+}
 
 /**
  * @internal
@@ -195,17 +190,17 @@ function defaultRouterHook(snapshot: RouterStateSnapshot): Observable<void> {
  * @stable
  */
 export class Router {
-  private currentUrlTree: UrlTree;
-  private rawUrlTree: UrlTree;
+  protected currentUrlTree: UrlTree;
+  protected rawUrlTree: UrlTree;
   private navigations = new BehaviorSubject<NavigationParams>(null !);
 
   private locationSubscription: Subscription;
-  private navigationId: number = 0;
-  private configLoader: RouterConfigLoader;
-  private ngModule: NgModuleRef<any>;
+  protected navigationId: number = 0;
+  protected configLoader: RouterConfigLoader;
+  protected ngModule: NgModuleRef<any>;
 
-  public readonly events: Observable<Event> = new Subject<Event>();
-  public readonly routerState: RouterState;
+  public events: Subject<Event> = new Subject<Event>();
+  public routerState: RouterState;
 
   /**
    * Error handler that is invoked when a navigation errors.
@@ -220,14 +215,13 @@ export class Router {
    * Indicates if at least one navigation happened.
    */
   navigated: boolean = false;
-  private lastSuccessfulId: number = -1;
+  protected lastSuccessfulId: number = -1;
 
   /**
    * Used by RouterModule. This allows us to
    * pause the navigation either before preactivation or after it.
-   * @internal
    */
-  hooks: {beforePreactivation: RouterHook, afterPreactivation: RouterHook} = {
+  hooks: {beforePreactivation: (snapshot: RouterStateSnapshot) => Observable<void>, afterPreactivation: (snapshot: RouterStateSnapshot) => Observable<void>} = {
     beforePreactivation: defaultRouterHook,
     afterPreactivation: defaultRouterHook
   };
@@ -262,8 +256,8 @@ export class Router {
    */
   // TODO: vsavkin make internal after the final is out.
   constructor(
-      private rootComponentType: Type<any>|null, private urlSerializer: UrlSerializer,
-      private rootContexts: ChildrenOutletContexts, private location: Location, injector: Injector,
+      protected rootComponentType: Type<any>|null, protected urlSerializer: UrlSerializer,
+      protected rootContexts: ChildrenOutletContexts, protected location: Location, injector: Injector,
       loader: NgModuleFactoryLoader, compiler: Compiler, public config: Routes) {
     const onLoadStart = (r: Route) => this.triggerEvent(new RouteConfigLoadStart(r));
     const onLoadEnd = (r: Route) => this.triggerEvent(new RouteConfigLoadEnd(r));
@@ -605,7 +599,7 @@ export class Router {
     }
   }
 
-  private runNavigate(
+  protected runNavigate(
       url: UrlTree, rawUrl: UrlTree, skipLocationChange: boolean, replaceUrl: boolean, id: number,
       precreatedState: RouterStateSnapshot|null): Promise<boolean> {
     if (id !== this.navigationId) {
@@ -794,14 +788,14 @@ export class Router {
             });
   }
 
-  private resetStateAndUrl(storedState: RouterState, storedUrl: UrlTree, rawUrl: UrlTree): void {
+  protected resetStateAndUrl(storedState: RouterState, storedUrl: UrlTree, rawUrl: UrlTree): void {
     (this as{routerState: RouterState}).routerState = storedState;
     this.currentUrlTree = storedUrl;
     this.rawUrlTree = this.urlHandlingStrategy.merge(this.currentUrlTree, rawUrl);
     this.resetUrlToCurrentUrlTree();
   }
 
-  private resetUrlToCurrentUrlTree(): void {
+  protected resetUrlToCurrentUrlTree(): void {
     this.location.replaceState(
         this.urlSerializer.serialize(this.rawUrlTree), '', {navigationId: this.lastSuccessfulId});
   }

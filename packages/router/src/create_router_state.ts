@@ -12,6 +12,10 @@ import {DetachedRouteHandleInternal, RouteReuseStrategy} from './route_reuse_str
 import {ActivatedRoute, ActivatedRouteSnapshot, RouterState, RouterStateSnapshot} from './router_state';
 import {TreeNode} from './utils/tree';
 
+/**
+ *
+ * @stable
+ */
 export function createRouterState(
     routeReuseStrategy: RouteReuseStrategy, curr: RouterStateSnapshot,
     prevState: RouterState): RouterState {
