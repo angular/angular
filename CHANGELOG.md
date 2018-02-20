@@ -1,3 +1,9 @@
+<a name="6.0.0-beta.1"></a>
+# [6.0.0-beta.1](https://github.com/angular/material2/compare/5.2.0...6.0.0-beta-0) (2018-02-12)
+
+* Fix typo in version name (using a dash instead of a dot)
+* Update Angular peer dependency to 6.0.0-beta.x
+
 <a name="6.0.0-beta-0"></a>
 # [6.0.0-beta-0](https://github.com/angular/material2/compare/5.2.0...6.0.0-beta-0) (2018-02-12)
 
