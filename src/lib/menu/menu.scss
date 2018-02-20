@@ -16,13 +16,6 @@ $mat-menu-submenu-indicator-size: 10px !default;
   border-radius: $mat-menu-border-radius;
   outline: 0;
 
-  // Prevent the user from interacting while the panel is still animating.
-  // This avoids issues where the user could accidentally open a sub-menu,
-  // because of the `overlapTrigger` option.
-  &.ng-animating {
-    pointer-events: none;
-  }
-
   @include cdk-high-contrast {
     outline: solid 1px;
   }
@@ -69,6 +62,13 @@ $mat-menu-submenu-indicator-size: 10px !default;
       left: $mat-menu-side-padding;
       transform: rotateY(180deg) translateY(-50%);
     }
+  }
+
+  // Prevent the user from interacting while the panel is still animating.
+  // This avoids issues where the user could accidentally open a sub-menu,
+  // because of the `overlapTrigger` option.
+  .mat-menu-panel.ng-animating & {
+    pointer-events: none;
   }
 }
 
