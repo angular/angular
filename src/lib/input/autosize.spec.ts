@@ -84,7 +84,7 @@ describe('MatTextareaAutosize', () => {
         .toBe(textarea.scrollHeight, 'Expected textarea height to match its scrollHeight');
   });
 
-  it('should set a min-width based on minRows', () => {
+  it('should set a min-height based on minRows', () => {
     expect(textarea.style.minHeight).toBeFalsy();
 
     fixture.componentInstance.minRows = 4;
@@ -100,7 +100,7 @@ describe('MatTextareaAutosize', () => {
         .toBeGreaterThan(previousMinHeight, 'Expected increased min-height with minRows increase.');
   });
 
-  it('should set a max-width based on maxRows', () => {
+  it('should set a max-height based on maxRows', () => {
     expect(textarea.style.maxHeight).toBeFalsy();
 
     fixture.componentInstance.maxRows = 4;
