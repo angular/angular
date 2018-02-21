@@ -6,9 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {DirectiveDef} from './interfaces/definition';
+import {ComponentDef, DirectiveDef} from './interfaces/definition';
 import {LNodeFlags} from './interfaces/node';
 import {HookData, LView, LifecycleStage, TView} from './interfaces/view';
+
 
 /**
  * If this is the first template pass, any ngOnInit or ngDoCheck hooks will be queued into
@@ -50,7 +51,7 @@ export function queueLifecycleHooks(flags: number, currentView: LView): void {
     // directiveCreate) so we can preserve the current hook order. Content, view, and destroy
     // hooks for projected components and directives must be called *before* their hosts.
     for (let i = start, end = start + size; i < end; i++) {
-      const def = (tView.data[i] as DirectiveDef<any>);
+      const def = (tView.data[i] as ComponentDef<any>);
       queueContentHooks(def, tView, i);
       queueViewHooks(def, tView, i);
       queueDestroyHooks(def, tView, i);
@@ -59,7 +60,7 @@ export function queueLifecycleHooks(flags: number, currentView: LView): void {
 }
 
 /** Queues afterContentInit and afterContentChecked hooks on TView */
-function queueContentHooks(def: DirectiveDef<any>, tView: TView, i: number): void {
+function queueContentHooks(def: ComponentDef<any>, tView: TView, i: number): void {
   if (def.afterContentInit != null) {
     (tView.contentHooks || (tView.contentHooks = [])).push(i, def.afterContentInit);
   }
@@ -71,7 +72,7 @@ function queueContentHooks(def: DirectiveDef<any>, tView: TView, i: number): voi
 }
 
 /** Queues afterViewInit and afterViewChecked hooks on TView */
-function queueViewHooks(def: DirectiveDef<any>, tView: TView, i: number): void {
+function queueViewHooks(def: ComponentDef<any>, tView: TView, i: number): void {
   if (def.afterViewInit != null) {
     (tView.viewHooks || (tView.viewHooks = [])).push(i, def.afterViewInit);
   }
