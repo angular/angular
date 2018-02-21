@@ -40,6 +40,12 @@ function expectStringToken(token: any, index: number, str: string) {
   expect(token.toString()).toEqual(str);
 }
 
+function expectRegExpToken(token: any, index: number, literal: string) {
+  expectToken(token, index);
+  expect(token.isRegExp()).toBe(true);
+  expect(token.toString()).toEqual(literal);
+}
+
 function expectIdentifierToken(token: any, index: number, identifier: string) {
   expectToken(token, index);
   expect(token.isIdentifier()).toBe(true);
@@ -159,6 +165,32 @@ function expectErrorToken(token: Token, index: any, message: string) {
         const tokens: Token[] = lex('"\\u00A0"');
         expect(tokens.length).toEqual(1);
         expect(tokens[0].toString()).toEqual('\u00a0');
+      });
+
+      it('should tokenize RegExp', () => {
+        const tokens: Token[] = lex('/\\d/ / /\\// - /\\\\/i');
+        expect(tokens.length).toEqual(5);
+        expectRegExpToken(tokens[0], 0, '/\\d/');
+        expectOperatorToken(tokens[1], 5, '/');
+        expectRegExpToken(tokens[2], 7, '/\\//');
+        expectOperatorToken(tokens[3], 12, '-');
+        expectRegExpToken(tokens[4], 14, '/\\\\/i');
+      });
+
+      it('should throw for unclosed RegExp', () => {
+        expectErrorToken(
+            lex('/foo + 3')[0], 8,
+            'Lexer Error: Unterminated RegExp at column 8 in expression [/foo + 3]');
+      });
+
+      it('should tokenize RegExp in pipe', () => {
+        const tokens: Token[] = lex('foo | bar:/\\d/');
+        expect(tokens.length).toEqual(5);
+        expectIdentifierToken(tokens[0], 0, 'foo');
+        expectOperatorToken(tokens[1], 4, '|');
+        expectIdentifierToken(tokens[2], 6, 'bar');
+        expectCharacterToken(tokens[3], 9, ':');
+        expectRegExpToken(tokens[4], 10, '/\\d/');
       });
 
       it('should tokenize relation', () => {

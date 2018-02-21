@@ -584,6 +584,21 @@ export class _ParseAST {
       this.advance();
       return new LiteralPrimitive(this.span(start), literalValue);
 
+    } else if (this.next.isRegExp()) {
+      const pattern = this.next.strValue;
+      const flags = this.next.extraValue;
+
+      let regex: RegExp;
+      try {
+        regex = new RegExp(pattern, flags);
+      } catch {
+        this.error(`Invalid regular expression: ${this.next}`);
+        return new EmptyExpr(this.span(start));
+      }
+
+      this.advance();
+      return new LiteralPrimitive(this.span(start), regex);
+
     } else if (this.index >= this.tokens.length) {
       this.error(`Unexpected end of expression: ${this.input}`);
       return new EmptyExpr(this.span(start));

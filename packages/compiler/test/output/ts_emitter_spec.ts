@@ -149,6 +149,7 @@ const externalModuleIdentifier = new o.ExternalReference(anotherModuleUrl, 'some
       expect(emitStmt(o.literal(0).toStmt())).toEqual('0;');
       expect(emitStmt(o.literal(true).toStmt())).toEqual('true;');
       expect(emitStmt(o.literal('someStr').toStmt())).toEqual(`'someStr';`);
+      expect(emitStmt(o.literal(/[A-Z]\/\d/gi).toStmt())).toEqual(`/[A-Z]\\/\\d/gi;`);
       expect(emitStmt(o.literalArr([o.literal(1)]).toStmt())).toEqual(`[1];`);
       expect(emitStmt(o.literalMap([
                          {key: 'someKey', value: o.literal(1), quoted: false},

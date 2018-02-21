@@ -171,6 +171,14 @@ import {validate} from './validator';
           checkAction('{}["a"]');
         });
 
+        it('should parse RegExp', () => {
+          checkAction('/\\d/');
+          checkAction('/[A-E]/gi');
+          checkAction('/.*?/.exec(input)');
+          expectActionError('/(/', 'Invalid regular expression: /(/');
+          expectActionError('/abc/def', 'Invalid regular expression: /abc/def');
+        });
+
         it('should only allow identifier, string, or keyword as map key', () => {
           expectActionError('{(:0}', 'expected identifier, keyword, or string');
           expectActionError('{1234:0}', 'expected identifier, keyword, or string');

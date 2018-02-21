@@ -15,6 +15,7 @@ export enum TokenType {
   String,
   Operator,
   Number,
+  RegExp,
   Error
 }
 
@@ -36,19 +37,25 @@ export class Lexer {
 export class Token {
   constructor(
       public index: number, public type: TokenType, public numValue: number,
-      public strValue: string) {}
+      public strValue: string, public extraValue: string = '') {}
 
   isCharacter(code: number): boolean {
     return this.type == TokenType.Character && this.numValue == code;
   }
 
+  isCharacterType(): boolean { return this.type == TokenType.Character; }
+
   isNumber(): boolean { return this.type == TokenType.Number; }
 
   isString(): boolean { return this.type == TokenType.String; }
 
+  isRegExp(): boolean { return this.type == TokenType.RegExp; }
+
   isOperator(operater: string): boolean {
     return this.type == TokenType.Operator && this.strValue == operater;
   }
+
+  isOperatorType(): boolean { return this.type == TokenType.Operator; }
 
   isIdentifier(): boolean { return this.type == TokenType.Identifier; }
 
@@ -85,6 +92,8 @@ export class Token {
         return this.strValue;
       case TokenType.Number:
         return this.numValue.toString();
+      case TokenType.RegExp:
+        return `/${this.strValue}/${this.extraValue}`;
       default:
         return null;
     }
@@ -115,6 +124,10 @@ function newNumberToken(index: number, n: number): Token {
   return new Token(index, TokenType.Number, n, '');
 }
 
+function newRegExpToken(index: number, pattern: string, flags: string): Token {
+  return new Token(index, TokenType.RegExp, 0, pattern, flags);
+}
+
 function newErrorToken(index: number, message: string): Token {
   return new Token(index, TokenType.Error, 0, message);
 }
@@ -125,6 +138,7 @@ class _Scanner {
   length: number;
   peek: number = 0;
   index: number = -1;
+  previous: Token|null = null;
 
   constructor(public input: string) {
     this.length = input.length;
@@ -157,15 +171,16 @@ class _Scanner {
     }
 
     // Handle identifiers and numbers.
-    if (isIdentifierStart(peek)) return this.scanIdentifier();
-    if (chars.isDigit(peek)) return this.scanNumber(index);
+    if (isIdentifierStart(peek)) return this.produceToken(this.scanIdentifier());
+    if (chars.isDigit(peek)) return this.produceToken(this.scanNumber(index));
 
     const start: number = index;
     switch (peek) {
       case chars.$PERIOD:
         this.advance();
-        return chars.isDigit(this.peek) ? this.scanNumber(start) :
-                                          newCharacterToken(start, chars.$PERIOD);
+        return this.produceToken(
+            chars.isDigit(this.peek) ? this.scanNumber(start) :
+                                       newCharacterToken(start, chars.$PERIOD));
       case chars.$LPAREN:
       case chars.$RPAREN:
       case chars.$LBRACE:
@@ -175,31 +190,36 @@ class _Scanner {
       case chars.$COMMA:
       case chars.$COLON:
       case chars.$SEMICOLON:
-        return this.scanCharacter(start, peek);
+        return this.produceToken(this.scanCharacter(start, peek));
       case chars.$SQ:
       case chars.$DQ:
-        return this.scanString();
+        return this.produceToken(this.scanString());
+      case chars.$SLASH:
+        return this.produceToken(
+            this.previous && !this.previous.isCharacterType() && !this.previous.isOperatorType() ?
+                this.scanOperator(start, String.fromCharCode(peek)) :
+                this.scanRegExp(start));
       case chars.$HASH:
       case chars.$PLUS:
       case chars.$MINUS:
       case chars.$STAR:
-      case chars.$SLASH:
       case chars.$PERCENT:
       case chars.$CARET:
-        return this.scanOperator(start, String.fromCharCode(peek));
+        return this.produceToken(this.scanOperator(start, String.fromCharCode(peek)));
       case chars.$QUESTION:
-        return this.scanComplexOperator(start, '?', chars.$PERIOD, '.');
+        return this.produceToken(this.scanComplexOperator(start, '?', chars.$PERIOD, '.'));
       case chars.$LT:
       case chars.$GT:
-        return this.scanComplexOperator(start, String.fromCharCode(peek), chars.$EQ, '=');
+        return this.produceToken(
+            this.scanComplexOperator(start, String.fromCharCode(peek), chars.$EQ, '='));
       case chars.$BANG:
       case chars.$EQ:
-        return this.scanComplexOperator(
-            start, String.fromCharCode(peek), chars.$EQ, '=', chars.$EQ, '=');
+        return this.produceToken(this.scanComplexOperator(
+            start, String.fromCharCode(peek), chars.$EQ, '=', chars.$EQ, '='));
       case chars.$AMPERSAND:
-        return this.scanComplexOperator(start, '&', chars.$AMPERSAND, '&');
+        return this.produceToken(this.scanComplexOperator(start, '&', chars.$AMPERSAND, '&'));
       case chars.$BAR:
-        return this.scanComplexOperator(start, '|', chars.$BAR, '|');
+        return this.produceToken(this.scanComplexOperator(start, '|', chars.$BAR, '|'));
       case chars.$NBSP:
         while (chars.isWhitespace(this.peek)) this.advance();
         return this.scanToken();
@@ -324,10 +344,38 @@ class _Scanner {
     return newStringToken(start, buffer + last);
   }
 
+  scanRegExp(start: number): Token {
+    let escape = false;
+    this.advance();
+
+    while (this.peek != chars.$SLASH || escape) {
+      if (this.peek == chars.$EOF) {
+        return this.error('Unterminated RegExp', 0);
+      }
+      escape = this.peek == chars.$BACKSLASH && !escape;
+      this.advance();
+    }
+    const endSlash = this.index;
+    this.advance();
+
+    while (chars.isAsciiLetter(this.peek)) {
+      this.advance();
+    }
+    const pattern = this.input.substring(start + 1, endSlash);
+    const flags = this.input.substring(endSlash + 1, this.index);
+
+    return newRegExpToken(start, pattern, flags);
+  }
+
   error(message: string, offset: number): Token {
     const position: number = this.index + offset;
     return newErrorToken(
         position, `Lexer Error: ${message} at column ${position} in expression [${this.input}]`);
+  }
+
+  private produceToken(token: Token|null): Token|null {
+    this.previous = token;
+    return token;
   }
 }
 
