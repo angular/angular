@@ -22,6 +22,38 @@ import {RouterTestingModule} from '../testing/src/router_testing_module';
 import {Logger, createActivatedRouteSnapshot, provideTokenLogger} from './helpers';
 
 describe('Router', () => {
+
+  describe('resetConfig', () => {
+    class TestComponent {}
+
+    beforeEach(() => { TestBed.configureTestingModule({imports: [RouterTestingModule]}); });
+
+    it('should copy config to avoid mutations of user-provided objects', () => {
+      const r: Router = TestBed.get(Router);
+      const configs = [{
+        path: 'a',
+        component: TestComponent,
+        children: [{path: 'b', component: TestComponent}, {path: 'c', component: TestComponent}]
+      }];
+      r.resetConfig(configs);
+
+      let rConfigs = r.config;
+
+      // routes array and shallow copy
+      expect(configs).not.toBe(rConfigs);
+      expect(configs[0]).not.toBe(rConfigs[0]);
+      expect(configs[0].path).toBe(rConfigs[0].path);
+      expect(configs[0].component).toBe(rConfigs[0].component);
+
+      // children should be new array and routes shallow copied
+      expect(configs[0].children).not.toBe(rConfigs[0].children);
+      expect(configs[0].children[0]).not.toBe(rConfigs[0].children ![0]);
+      expect(configs[0].children[0].path).toBe(rConfigs[0].children ![0].path);
+      expect(configs[0].children[1]).not.toBe(rConfigs[0].children ![1]);
+      expect(configs[0].children[1].path).toBe(rConfigs[0].children ![1].path);
+    });
+  });
+
   describe('resetRootComponentType', () => {
     class NewRootComponent {}
 

@@ -457,3 +457,9 @@ function getFullPath(parentPath: string, currentRoute: Route): string {
     return `${parentPath}/${currentRoute.path}`;
   }
 }
+
+
+export function copyConfig(r: Route): Route {
+  const children = r.children && r.children.map(copyConfig);
+  return children ? {...r, children} : {...r};
+}
