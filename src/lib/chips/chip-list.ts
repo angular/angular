@@ -747,4 +747,3 @@ export class MatChipList extends _MatChipListMixinBase implements MatFormFieldCo
     });
   }
 }
-
