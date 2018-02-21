@@ -59,6 +59,12 @@ describe('lifecycles', () => {
       };
     }
 
+    class Directive {
+      ngOnInit() { events.push('dir'); }
+
+      static ngDirectiveDef = defineDirective({type: Directive, factory: () => new Directive()});
+    }
+
     it('should call onInit method after inputs are set in creation mode (and not in update mode)',
        () => {
          /** <comp [val]="val"></comp> */
@@ -221,12 +227,7 @@ describe('lifecycles', () => {
     });
 
     it('should be called on directives after component', () => {
-      class Directive {
-        ngOnInit() { events.push('dir'); }
-
-        static ngDirectiveDef = defineDirective({type: Directive, factory: () => new Directive()});
-      }
-
+      /** <comp directive></comp> */
       function Template(ctx: any, cm: boolean) {
         if (cm) {
           elementStart(0, Comp, null, [Directive]);
@@ -244,6 +245,24 @@ describe('lifecycles', () => {
       renderToHtml(Template, {});
       expect(events).toEqual(['comp', 'dir']);
 
+    });
+
+    it('should be called on directives on an element', () => {
+      /** <div directive></div> */
+      function Template(ctx: any, cm: boolean) {
+        if (cm) {
+          elementStart(0, 'div', null, [Directive]);
+          elementEnd();
+        }
+        Directive.ngDirectiveDef.h(1, 0);
+        componentRefresh(1, 0);
+      }
+
+      renderToHtml(Template, {});
+      expect(events).toEqual(['dir']);
+
+      renderToHtml(Template, {});
+      expect(events).toEqual(['dir']);
     });
 
     it('should call onInit properly in for loop', () => {
@@ -370,6 +389,12 @@ describe('lifecycles', () => {
       };
     }
 
+    class Directive {
+      ngDoCheck() { events.push('dir'); }
+
+      static ngDirectiveDef = defineDirective({type: Directive, factory: () => new Directive()});
+    }
+
     it('should call doCheck on every refresh', () => {
       /** <comp></comp> */
       function Template(ctx: any, cm: boolean) {
@@ -423,6 +448,45 @@ describe('lifecycles', () => {
 
       renderToHtml(Template, {});
       expect(allEvents).toEqual(['init comp', 'check comp', 'check comp']);
+    });
+
+    it('should be called on directives after component', () => {
+      /** <comp directive></comp> */
+      function Template(ctx: any, cm: boolean) {
+        if (cm) {
+          elementStart(0, Comp, null, [Directive]);
+          elementEnd();
+        }
+        Comp.ngComponentDef.h(1, 0);
+        Directive.ngDirectiveDef.h(2, 0);
+        componentRefresh(1, 0);
+        componentRefresh(2, 0);
+      }
+
+      renderToHtml(Template, {});
+      expect(events).toEqual(['comp', 'dir']);
+
+      renderToHtml(Template, {});
+      expect(events).toEqual(['comp', 'dir', 'comp', 'dir']);
+
+    });
+
+    it('should be called on directives on an element', () => {
+      /** <div directive></div> */
+      function Template(ctx: any, cm: boolean) {
+        if (cm) {
+          elementStart(0, 'div', null, [Directive]);
+          elementEnd();
+        }
+        Directive.ngDirectiveDef.h(1, 0);
+        componentRefresh(1, 0);
+      }
+
+      renderToHtml(Template, {});
+      expect(events).toEqual(['dir']);
+
+      renderToHtml(Template, {});
+      expect(events).toEqual(['dir', 'dir']);
     });
 
   });
@@ -1324,6 +1388,12 @@ describe('lifecycles', () => {
       };
     }
 
+    class Directive {
+      ngOnDestroy() { events.push('dir'); }
+
+      static ngDirectiveDef = defineDirective({type: Directive, factory: () => new Directive()});
+    }
+
     it('should call destroy when view is removed', () => {
       /**
        * % if (condition) {
@@ -1747,6 +1817,74 @@ describe('lifecycles', () => {
       expect(ctx.counter).toEqual(2);
     });
 
+    it('should be called on directives after component', () => {
+      /**
+       * % if (condition) {
+       *   <comp></comp>
+       * % }
+       */
+
+      function Template(ctx: any, cm: boolean) {
+        if (cm) {
+          container(0);
+        }
+        containerRefreshStart(0);
+        {
+          if (ctx.condition) {
+            if (embeddedViewStart(0)) {
+              elementStart(0, Comp, null, [Directive]);
+              elementEnd();
+            }
+            Comp.ngComponentDef.h(1, 0);
+            Directive.ngDirectiveDef.h(2, 0);
+            componentRefresh(1, 0);
+            componentRefresh(2, 0);
+            embeddedViewEnd();
+          }
+        }
+        containerRefreshEnd();
+      }
+
+      renderToHtml(Template, {condition: true});
+      expect(events).toEqual([]);
+
+      renderToHtml(Template, {condition: false});
+      expect(events).toEqual(['comp', 'dir']);
+
+    });
+
+    it('should be called on directives on an element', () => {
+      /**
+       * % if (condition) {
+       *   <div directive></div>
+       * % }
+       */
+
+      function Template(ctx: any, cm: boolean) {
+        if (cm) {
+          container(0);
+        }
+        containerRefreshStart(0);
+        {
+          if (ctx.condition) {
+            if (embeddedViewStart(0)) {
+              elementStart(0, 'div', null, [Directive]);
+              elementEnd();
+            }
+            Directive.ngDirectiveDef.h(1, 0);
+            componentRefresh(1, 0);
+            embeddedViewEnd();
+          }
+        }
+        containerRefreshEnd();
+      }
+
+      renderToHtml(Template, {condition: true});
+      expect(events).toEqual([]);
+
+      renderToHtml(Template, {condition: false});
+      expect(events).toEqual(['dir']);
+    });
 
   });
 
