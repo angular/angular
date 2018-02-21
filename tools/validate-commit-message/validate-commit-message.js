@@ -22,7 +22,7 @@ const configPath = path.resolve(__dirname, './commit-message.json');
 const config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
 const PATTERN = /^(\w+)(?:\(([^)]+)\))?\: (.+)$/;
 const FIXUP_SQUASH = /^(fixup|squash)\! /i;
-const REVERT = /^revert: (\"(.*)\"|(.*))?$/i;
+const REVERT = /^revert:? (\"(.*)\"|(.*))?$/i;
 
 module.exports = function(commitSubject) {
   commitSubject = commitSubject.replace(FIXUP_SQUASH, '');
