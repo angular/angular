@@ -50,12 +50,14 @@ export function defineComponent<T>(componentDefinition: ComponentDefArgs<T>): Co
     exportAs: componentDefinition.exportAs,
     onInit: type.prototype.ngOnInit || null,
     doCheck: type.prototype.ngDoCheck || null,
-    afterContentInit: type.prototype.ngAfterContentInit || null,
-    afterContentChecked: type.prototype.ngAfterContentChecked || null,
-    afterViewInit: type.prototype.ngAfterViewInit || null,
-    afterViewChecked: type.prototype.ngAfterViewChecked || null,
     onDestroy: type.prototype.ngOnDestroy || null
   };
+  if (def.tag) {
+    def.afterContentInit = type.prototype.ngAfterContentInit || null;
+    def.afterContentChecked = type.prototype.ngAfterContentChecked || null;
+    def.afterViewInit = type.prototype.ngAfterViewInit || null;
+    def.afterViewChecked = type.prototype.ngAfterViewChecked || null;
+  }
   const feature = componentDefinition.features;
   feature && feature.forEach((fn) => fn(def));
   return def;

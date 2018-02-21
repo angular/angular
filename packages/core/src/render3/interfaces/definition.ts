@@ -87,13 +87,9 @@ export interface DirectiveDef<T> {
    */
   attributes: string[]|null;
 
-  /* The following are lifecycle hooks for this component */
+  /* The following are lifecycle hooks for this directive */
   onInit: (() => void)|null;
   doCheck: (() => void)|null;
-  afterContentInit: (() => void)|null;
-  afterContentChecked: (() => void)|null;
-  afterViewInit: (() => void)|null;
-  afterViewChecked: (() => void)|null;
   onDestroy: (() => void)|null;
 }
 
@@ -118,6 +114,12 @@ export interface ComponentDef<T> extends DirectiveDef<T> {
    * NOTE: only used with component directives.
    */
   readonly rendererType: RendererType2|null;
+
+  /* The following are additional lifecycle hooks for this component */
+  afterContentInit: (() => void)|null;
+  afterContentChecked: (() => void)|null;
+  afterViewInit: (() => void)|null;
+  afterViewChecked: (() => void)|null;
 }
 
 /**
