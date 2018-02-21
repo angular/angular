@@ -18,7 +18,7 @@ the positions `before` and `after` should be used instead of `left` and `right`,
 | `left`    | Always display to the left of the element                                            |
 | `right`   | Always display to the right of the element                                           |
 | `before`  | Display to the left in left-to-right layout and to the right in right-to-left layout |
-| `after`   | Display to the right in left-to-right layout and to the right in right-to-left layout|
+| `after`   | Display to the right in left-to-right layout and to the left in right-to-left layout|
 
 <!-- example(tooltip-position) -->
 
