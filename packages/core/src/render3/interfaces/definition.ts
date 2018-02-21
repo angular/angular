@@ -37,23 +37,32 @@ export interface DirectiveDef<T> {
   diPublic: ((def: DirectiveDef<any>) => void)|null;
 
   /**
-   * List of inputs which are part of the components public API.
+   * Dictionary of inputs which are part of the components public API.
    *
-   * The key is minified property name whereas the value is the original unminified name.
+   * The key is the minified property name whereas the value is the original public unminified name.
    */
   readonly inputs: {[P in keyof T]: P};
 
   /**
-   * List of outputs which are part of the components public API.
+   * Dictionary of inputs' unminified property names.
    *
-   * The key is minified property name whereas the value is the original unminified name.=
+   * The key is the minified property name whereas the value is the original unminified property
+   * name.
+   * An entry is added if and only if the public name is different from the property name.
+   */
+  readonly inputsPropertyName: {[P in keyof T]: P};
+
+  /**
+   * Dictionary of outputs which are part of the components public API.
+   *
+   * The key is the minified property name whereas the value is the original unminified name.
    */
   readonly outputs: {[P in keyof T]: P};
 
   /**
-   * List of methods which are part of the components public API.
+   * Dictionary of methods which are part of the components public API.
    *
-   * The key is minified property name whereas the value is the original unminified name.
+   * The key is the minified property name whereas the value is the original unminified name.
    */
   readonly methods: {[P in keyof T]: P};
 
@@ -150,6 +159,7 @@ export interface DirectiveDefArgs<T> {
   factory: () => T | [T];
   attributes?: string[];
   inputs?: {[P in keyof T]?: string};
+  inputsPropertyName?: {[P in keyof T]?: string};
   outputs?: {[P in keyof T]?: string};
   methods?: {[P in keyof T]?: string};
   features?: DirectiveDefFeature[];
