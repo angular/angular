@@ -537,18 +537,36 @@ you're ready to learn about the varieties of data binding syntax beyond interpol
 
 {@a binding-syntax}
 
-## Binding syntax: An overview
+{@a 바인딩-문법}
 
+<!--
+## Binding syntax: An overview
+-->
+## 바인딩 문법 : 개요
+
+<!--
 Data binding is a mechanism for coordinating what users see, with application data values.
 While you could push values to and pull values from HTML,
 the application is easier to write, read, and maintain if you turn these chores over to a binding framework.
 You simply declare bindings between binding sources and target HTML elements and let the framework do the work.
+-->
+사용자가 보는 화면과 애플리케이션 데이터의 값은 데이터 바인딩을 통해 자동으로 동기화됩니다.
+데이터 바인딩을 지원하는 프레임워크에서는 HTML에 값을 반영하거나 HTML에서 값을 가져오는 과정이 이전에 비해 훨씬 편해지기 때문에,
+애플리케이션 로직을 쉽고 빠르면서 간결하게 작성할 수 있습니다.
+바인딩할 객체와 HTML을 단순하게 연결하기만 하면 그 이후는 프레임워크가 알아서 필요한 작업을 수행합니다.
 
+<!--
 Angular provides many kinds of data binding.
 This guide covers most of them, after a high-level view of Angular data binding and its syntax.
+-->
+Angular는 데이터 바인딩을 여러가지 방식으로 제공합니다.
+이 문서에서는 Angular가 제공하는 데이터 바인딩을 기본부터 차근차근 알아봅시다.
 
+<!--
 Binding types can be grouped into three categories distinguished by the direction of data flow:
 from the _source-to-view_, from _view-to-source_, and in the two-way sequence: _view-to-source-to-view_:
+-->
+바인딩 방식은 데이터가 반영되는 방향에 따라 3종류로 구분할 수 있습니다. 이 때 데이터가 흐르는 방향은 _소스에서 뷰로 가는 방향_, _뷰에서 소스로 가는 방향_, _양방향_ 이 있습니다.
 
 <style>
   td, th {vertical-align: top}
@@ -563,72 +581,129 @@ from the _source-to-view_, from _view-to-source_, and in the two-way sequence: _
   </col>
   <tr>
     <th>
+      <!--
       Data direction
+      -->
+      데이터 방향
     </th>
     <th>
+      <!--
       Syntax
+      -->
+      문법
     </th>
     <th>
+      <!--
       Type
+      -->
+      종류
     </th>
 
   </tr>
   <tr>
     <td>
+      <!--
       One-way<br>from data source<br>to view target
+      -->
+      데이터 소스에서<br>뷰로 가는<br>단방향
     </td>
     <td>
 
+      <!--
       <code-example>
         {{expression}}
         [target]="expression"
         bind-target="expression"
       </code-example>
+      -->
+      <code-example>
+        {{표현식}}
+        [대상]="표현식"
+        bind-대상="표현식"
+      </code-example>
 
     </td>
     <td>
+      <!--
       Interpolation<br>
       Property<br>
       Attribute<br>
       Class<br>
       Style
+      -->
+      문자열 바인딩(Interpolation)<br>
+      프로퍼티<br>
+      어트리뷰트<br>
+      클래스<br>
+      스타일
     </td>
     <tr>
       <td>
+        <!--
         One-way<br>from view target<br>to data source
+        -->
+        뷰에서<br>데이터 소스로 가는<br>단방향
       </td>
       <td>
+        <!--
         <code-example>
           (target)="statement"
           on-target="statement"
         </code-example>
+      -->
+        <code-example>
+          (대상)="실행문"
+          on-대상="실행문"
+        </code-example>
       </td>
       <td>
+        <!--
         Event
+        -->
+        이벤트
       </td>
     </tr>
     <tr>
       <td>
+        <!--
         Two-way
+        -->
+        양방향
       </td>
       <td>
+        <!--
         <code-example>
           [(target)]="expression"
           bindon-target="expression"
         </code-example>
+        -->
+        <code-example>
+          [(대상)]="표현식"
+          bindon-대상="표현식"
+        </code-example>
       </td>
       <td>
+        <!--
         Two-way
+        -->
+        양방향
       </td>
     </tr>
   </tr>
 </table>
 
+<!--
 Binding types other than interpolation have a **target name** to the left of the equal sign,
 either surrounded by punctuation (`[]`, `()`) or preceded by a prefix (`bind-`, `on-`, `bindon-`).
+-->
+문자열 바인딩을 제외하면 모든 바인딩 방식에는 등호 왼쪽에 **바인딩할 대상의 이름**이 있고, `[]`나 `()`로 둘러싸여 있거나 `bind-`, `on-`, `bindon-` 접두사가 붙습니다.
 
+<!--
 The target name is the name of a _property_. It may look like the name of an _attribute_ but it never is.
 To appreciate the difference, you must develop a new way to think about template HTML.
+-->
+바인딩할 대상의 이름은 _프로퍼티_ 의 이름이 되는데, _어트리뷰트_ 와 헷갈릴 수 있으니 주의해야 합니다.
+프로퍼티 바인딩과 어트리뷰트 바인딩의 차이를 알아보기 위해 템플릿 HTML를 조금 다른 시각으로 알아봅시다.
 
 ### A new mental model
 
