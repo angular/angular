@@ -252,7 +252,7 @@ function convertTsickleDecoratorIntoMetadata(decoratorInvocations: any[]): any[]
 }
 
 function getParentCtor(ctor: Function): Type<any> {
-  const parentProto = Object.getPrototypeOf(ctor.prototype);
+  const parentProto = ctor.prototype ? Object.getPrototypeOf(ctor.prototype) : null;
   const parentCtor = parentProto ? parentProto.constructor : null;
   // Note: We always use `Object` as the null value
   // to simplify checking later on.
