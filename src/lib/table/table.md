@@ -26,7 +26,7 @@ input. The table will take the array and render a row for each object in the dat
 
 Since the table optimizes for performance, it will not automatically check for changes to the data
 array. Instead, when objects are added, removed, or moved on the data array, you can trigger an 
-update to the table's rendered rows by calling its `renderRows()` function. 
+update to the table's rendered rows by calling its `renderRows()` method. 
 
 While an array is the _simplest_ way to bind data into the data source, it is also
 the most limited. For more complex applications, using a `DataSource` instance
