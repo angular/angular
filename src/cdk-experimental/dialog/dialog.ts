@@ -10,6 +10,7 @@ import {
   TemplateRef,
   SkipSelf,
   Optional,
+  Injectable,
   Injector,
   Inject,
   ComponentRef
@@ -44,6 +45,7 @@ import {
 /**
  * Service to open modal dialogs.
  */
+@Injectable()
 export class Dialog {
   /** Stream that emits when all dialogs are closed. */
   get _afterAllClosed(): Observable<void> {
