@@ -192,7 +192,8 @@ export class ProviderAst implements TemplateAst {
   constructor(
       public token: CompileTokenMetadata, public multiProvider: boolean, public eager: boolean,
       public providers: CompileProviderMetadata[], public providerType: ProviderAstType,
-      public lifecycleHooks: LifecycleHooks[], public sourceSpan: ParseSourceSpan) {}
+      public lifecycleHooks: LifecycleHooks[], public sourceSpan: ParseSourceSpan,
+      readonly isModule: boolean) {}
 
   visit(visitor: TemplateAstVisitor, context: any): any {
     // No visit method in the visitor for now...

@@ -42,6 +42,8 @@ export interface Definition<DF extends DefinitionFactory<any>> { factory: DF|nul
 export interface NgModuleDefinition extends Definition<NgModuleDefinitionFactory> {
   providers: NgModuleProviderDef[];
   providersByKey: {[tokenKey: string]: NgModuleProviderDef};
+  modules: any[];
+  isRoot: boolean;
 }
 
 export interface NgModuleDefinitionFactory extends DefinitionFactory<NgModuleDefinition> {}
@@ -192,6 +194,7 @@ export const enum NodeFlags {
   TypeViewQuery = 1 << 27,
   StaticQuery = 1 << 28,
   DynamicQuery = 1 << 29,
+  TypeNgModule = 1 << 30,
   CatQuery = TypeContentQuery | TypeViewQuery,
 
   // mutually exclusive values...
@@ -290,7 +293,13 @@ export const enum DepFlags {
   None = 0,
   SkipSelf = 1 << 0,
   Optional = 1 << 1,
-  Value = 2 << 2,
+  Self = 1 << 2,
+  Value = 1 << 3,
+}
+
+export interface InjectableDef {
+  scope: any;
+  factory: () => any;
 }
 
 export interface TextDef { prefix: string; }

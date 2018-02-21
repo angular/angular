@@ -11,7 +11,7 @@
   "dependencies": {
     "reflect-metadata": "^0.1.2",
     "minimist": "^1.2.0",
-    "tsickle": "^0.26.0",
+    "tsickle": "^0.27.2",
     "chokidar": "^1.4.2"
   },
   "peerDependencies": {

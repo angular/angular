@@ -17,6 +17,14 @@ you run the first build.
 
 [install]: https://bazel.build/versions/master/docs/install.html
 
+### Installation of ibazel
+
+Install interactive bazel runner / fs watcher via:
+
+```
+yarn global add @bazel/ibazel
+```
+
 ## Configuration
 
 The `WORKSPACE` file indicates that our root directory is a
@@ -112,6 +120,57 @@ Apple+Shift+D on Mac) and click on the green play icon next to the configuration
 - Open chrome at: [http://localhost:9876/debug.html](http://localhost:9876/debug.html)
 - Open chrome inspector
 
+### Debugging Bazel rules
+
+Open `external` directory which contains everything that bazel downloaded while executing the workspace file:
+```sh
+open $(bazel info output_base)/external
+```
+
+See subcommands that bazel executes (helpful for debugging):
+```sh
+bazel build //packages/core:package -s
+```
+
+To debug nodejs_binary executable paths uncomment `find . -name rollup 1>&2` (~ line 96) in
+```sh
+open $(bazel info output_base)/external/build_bazel_rules_nodejs/internal/node_launcher.sh
+```
+
+## Stamping
+
+Bazel supports the ability to include non-hermetic information from the version control system in built artifacts. This is called stamping.
+You can see an overview at https://www.kchodorow.com/blog/2017/03/27/stamping-your-builds/
+In our repo, here is how it's configured:
+
+1) In `tools/bazel_stamp_vars.sh` we run the `git` commands to generate our versioning info.
+1) In `tools/bazel.rc` we register this script as the value for the `workspace_status_command` flag. Bazel will run the script when it needs to stamp a binary.
+1) In `tools/BUILD.bazel` we have a target `stamp_data` with the special `stamp=1` attribute, which requests that Bazel run the `workspace_status_command`. The result is written to a text file that can be used as an input to other rules.
+
+## Remote cache
+
+Bazel supports fetching action results from a cache, allowing a clean build to pick up artifacts from prior builds.
+This makes builds incremental, even on CI.
+It works because Bazel assigns a content-based hash to all action inputs, which is used as the cache key for the action outputs.
+Thanks the the hermeticity property, we can skip executing an action if the inputs hash is already present in the cache.
+
+Of course, non-hermeticity in an action can cause problems.
+At worst, you can fetch a broken artifact from the cache, making your build non-reproducible.
+For this reason, we are careful to implement our Bazel rules to depend only on their inputs.
+
+Currently we only use remote caching on CircleCI.
+We could enable it for developer builds as well, which would make initial builds much faster for developers by fetching already-built artifacts from the cache.
+
+This feature is experimental, and developed by the CircleCI team with guidance from Angular.
+Contact Alex Eagle with questions.
+
+*How it's configured*:
+
+1. In `.circleci/config.yml`, each CircleCI job downloads a proxy binary, which is built from https://github.com/notnoopci/bazel-remote-proxy. The download is done by running `.circleci/setup_cache.sh`. When the feature graduates from experimental, this proxy will be installed by default on every CircleCI worker, and this step will not be needed.
+1. Next, each job runs the `setup-bazel-remote-cache` anchor. This starts up the proxy running in the background. In the CircleCI UI, you'll see this step continues running while later steps run, and you can see logging from the proxy process.
+1. Bazel must be configured to connect to the proxy on a local port. This configuration lives in `.circleci/bazel.rc` and is enabled because we overwrite the system Bazel settings in /etc/bazel.bazelrc with this file.
+1. Each `bazel` command in `.circleci/config.yml` picks up and uses the caching flags.
+
 ## Known issues
 
 ### Xcode
@@ -135,10 +194,13 @@ source: https://github.com/bazelbuild/bazel/issues/4603
 
 If VSCode is not the root cause, you might try:
 
+- Quit VSCode (make sure no VSCode is running).
+
 ```
 bazel clean --expunge
 sudo xcode-select -s /Applications/Xcode.app/Contents/Developer
 sudo xcodebuild -license
+bazel build //packages/core    # Run a build outside VSCode to pre-build the xcode; then safe to run VSCode
 ```
 
 Source: https://stackoverflow.com/questions/45276830/xcode-version-must-be-specified-to-use-an-apple-crosstool

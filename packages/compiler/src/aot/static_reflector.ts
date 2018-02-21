@@ -124,6 +124,16 @@ export class StaticReflector implements CompileReflector {
     return symbol;
   }
 
+  public tryAnnotations(type: StaticSymbol): any[] {
+    const originalRecorder = this.errorRecorder;
+    this.errorRecorder = (error: any, fileName: string) => {};
+    try {
+      return this.annotations(type);
+    } finally {
+      this.errorRecorder = originalRecorder;
+    }
+  }
+
   public annotations(type: StaticSymbol): any[] {
     let annotations = this.annotationCache.get(type);
     if (!annotations) {
@@ -331,6 +341,8 @@ export class StaticReflector implements CompileReflector {
   }
 
   private initializeConversionMap(): void {
+    this._registerDecoratorOrConstructor(
+        this.findDeclaration(ANGULAR_CORE, 'Injectable'), createInjectable);
     this.injectionToken = this.findDeclaration(ANGULAR_CORE, 'InjectionToken');
     this.opaqueToken = this.findDeclaration(ANGULAR_CORE, 'OpaqueToken');
     this.ROUTES = this.tryFindDeclaration(ANGULAR_ROUTER, 'ROUTES');
@@ -338,8 +350,6 @@ export class StaticReflector implements CompileReflector {
         this.findDeclaration(ANGULAR_CORE, 'ANALYZE_FOR_ENTRY_COMPONENTS');
 
     this._registerDecoratorOrConstructor(this.findDeclaration(ANGULAR_CORE, 'Host'), createHost);
-    this._registerDecoratorOrConstructor(
-        this.findDeclaration(ANGULAR_CORE, 'Injectable'), createInjectable);
     this._registerDecoratorOrConstructor(this.findDeclaration(ANGULAR_CORE, 'Self'), createSelf);
     this._registerDecoratorOrConstructor(
         this.findDeclaration(ANGULAR_CORE, 'SkipSelf'), createSkipSelf);

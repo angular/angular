@@ -8,7 +8,7 @@
 
 import './ng_dev_mode';
 
-import {assertEqual, assertLessThan, assertNotEqual, assertNotNull} from './assert';
+import {assertEqual, assertLessThan, assertNotEqual, assertNotNull, assertNull, assertSame} from './assert';
 import {LContainer, TContainer} from './interfaces/container';
 import {CssSelector, LProjection} from './interfaces/projection';
 import {LQueries} from './interfaces/query';
@@ -22,7 +22,6 @@ import {ComponentDef, ComponentTemplate, ComponentType, DirectiveDef, DirectiveT
 import {RElement, RText, Renderer3, RendererFactory3, ProceduralRenderer3, ObjectOrientedRenderer3, RendererStyleFlags3, isProceduralRenderer} from './interfaces/renderer';
 import {isDifferent, stringify} from './util';
 import {executeHooks, executeContentHooks, queueLifecycleHooks, queueInitHooks, executeInitHooks} from './hooks';
-
 
 /**
  * Directive (D) sets a property on all component instances using this constant as a key and the
@@ -51,8 +50,18 @@ export const NG_HOST_SYMBOL = '__ngHostLNode__';
 let renderer: Renderer3;
 let rendererFactory: RendererFactory3;
 
+export function getRenderer(): Renderer3 {
+  // top level variables should not be exported for performance reason (PERF_NOTES.md)
+  return renderer;
+}
+
 /** Used to set the parent property when nodes are created. */
 let previousOrParentNode: LNode;
+
+export function getPreviousOrParentNode(): LNode {
+  // top level variables should not be exported for performance reason (PERF_NOTES.md)
+  return previousOrParentNode;
+}
 
 /**
  * If `isParent` is:
@@ -71,17 +80,32 @@ let isParent: boolean;
  */
 let tData: TData;
 
-/** State of the current view being processed. */
-let currentView: LView;
-// The initialization has to be after the `let`, otherwise `createLView` can't see `let`.
-currentView = createLView(null !, null !, createTView());
+/**
+ * State of the current view being processed.
+ *
+ * NOTE: we cheat here and initialize it to `null` even thought the type does not
+ * contain `null`. This is because we expect this value to be not `null` as soon
+ * as we enter the view. Declaring the type as `null` would require us to place `!`
+ * in most instructions since they all assume that `currentView` is defined.
+ */
+let currentView: LView = null !;
 
 let currentQueries: LQueries|null;
+
+export function getCurrentQueries(QueryType: {new (): LQueries}): LQueries {
+  // top level variables should not be exported for performance reason (PERF_NOTES.md)
+  return currentQueries || (currentQueries = new QueryType());
+}
 
 /**
  * This property gets set before entering a template.
  */
 let creationMode: boolean;
+
+export function getCreationMode(): boolean {
+  // top level variables should not be exported for performance reason (PERF_NOTES.md)
+  return creationMode;
+}
 
 /**
  * An array of nodes (text, element, container, etc), their bindings, and
@@ -113,6 +137,11 @@ let bindingIndex: number;
  */
 let cleanup: any[]|null;
 
+const enum BindingDirection {
+  Input,
+  Output,
+}
+
 /**
  * Swap the current state with a new state.
  *
@@ -127,13 +156,13 @@ let cleanup: any[]|null;
  */
 export function enterView(newView: LView, host: LElementNode | LViewNode | null): LView {
   const oldView = currentView;
-  data = newView.data;
-  bindingIndex = newView.bindingStartIndex || 0;
-  tData = newView.tView.data;
-  creationMode = newView.creationMode;
+  data = newView && newView.data;
+  bindingIndex = newView && newView.bindingStartIndex || 0;
+  tData = newView && newView.tView.data;
+  creationMode = newView && newView.creationMode;
 
-  cleanup = newView.cleanup;
-  renderer = newView.renderer;
+  cleanup = newView && newView.cleanup;
+  renderer = newView && newView.renderer;
 
   if (host != null) {
     previousOrParentNode = host;
@@ -141,7 +170,7 @@ export function enterView(newView: LView, host: LElementNode | LViewNode | null)
   }
 
   currentView = newView;
-  currentQueries = newView.queries;
+  currentQueries = newView && newView.queries;
 
   return oldView !;
 }
@@ -161,8 +190,8 @@ export function leaveView(newView: LView): void {
 }
 
 export function createLView(
-    viewId: number, renderer: Renderer3, tView: TView,
-    template: ComponentTemplate<any>| null = null, context: any | null = null): LView {
+    viewId: number, renderer: Renderer3, tView: TView, template: ComponentTemplate<any>| null,
+    context: any | null): LView {
   const newView = {
     parent: currentView,
     id: viewId,    // -1 for component views
@@ -228,7 +257,7 @@ export function createLNode(
   if ((type & LNodeFlags.ViewOrElement) === LNodeFlags.ViewOrElement && isState) {
     // Bit of a hack to bust through the readonly because there is a circular dep between
     // LView and LNode.
-    ngDevMode && assertEqual((state as LView).node, null, 'lView.node');
+    ngDevMode && assertNull((state as LView).node, 'LView.node should not have been initialized');
     (state as LView as{node: LNode}).node = node;
   }
   if (index != null) {
@@ -249,13 +278,17 @@ export function createLNode(
       if (previousOrParentNode.view === currentView ||
           (previousOrParentNode.flags & LNodeFlags.TYPE_MASK) === LNodeFlags.View) {
         // We are in the same view, which means we are adding content node to the parent View.
-        ngDevMode && assertEqual(previousOrParentNode.child, null, 'previousNode.child');
+        ngDevMode && assertNull(
+                         previousOrParentNode.child,
+                         `previousOrParentNode's child should not have been set.`);
         previousOrParentNode.child = node;
       } else {
         // We are adding component view, so we don't link parent node child to this node.
       }
     } else if (previousOrParentNode) {
-      ngDevMode && assertEqual(previousOrParentNode.next, null, 'previousNode.next');
+      ngDevMode && assertNull(
+                       previousOrParentNode.next,
+                       `previousOrParentNode's next property should not have been set.`);
       previousOrParentNode.next = node;
     }
   }
@@ -292,10 +325,11 @@ export function renderTemplate<T>(
     host = createLNode(
         null, LNodeFlags.Element, hostNode,
         createLView(
-            -1, providedRendererFactory.createRenderer(null, null), getOrCreateTView(template)));
+            -1, providedRendererFactory.createRenderer(null, null), getOrCreateTView(template),
+            null, null));
   }
   const hostView = host.data !;
-  ngDevMode && assertNotEqual(hostView, null, 'hostView');
+  ngDevMode && assertNotNull(hostView, 'Host node should have an LView defined in host.data.');
   renderComponentOrTemplate(host, hostView, context, template);
   return host;
 }
@@ -376,7 +410,8 @@ export function elementStart(
     const node = data[index] !;
     native = node && (node as LElementNode).native;
   } else {
-    ngDevMode && assertEqual(currentView.bindingStartIndex, null, 'bindingStartIndex');
+    ngDevMode &&
+        assertNull(currentView.bindingStartIndex, 'elements should be created before any bindings');
     const isHostElement = typeof nameOrComponentType !== 'string';
     // MEGAMORPHIC: `ngComponentDef` is a megamorphic property access here.
     // This is OK, since we will refactor this code and store the result in `TView.data`
@@ -397,7 +432,8 @@ export function elementStart(
       if (isHostElement) {
         const tView = getOrCreateTView(hostComponentDef !.template);
         componentView = addToViewTree(createLView(
-            -1, rendererFactory.createRenderer(native, hostComponentDef !.rendererType), tView));
+            -1, rendererFactory.createRenderer(native, hostComponentDef !.rendererType), tView,
+            null, null));
       }
 
       // Only component views should be added to the view tree directly. Embedded views are
@@ -494,18 +530,17 @@ export function createTView(): TView {
     contentCheckHooks: null,
     viewHooks: null,
     viewCheckHooks: null,
-    destroyHooks: null,
-    objectLiterals: null
+    destroyHooks: null
   };
 }
 
 function setUpAttributes(native: RElement, attrs: string[]): void {
-  ngDevMode && assertEqual(attrs.length % 2, 0, 'attrs.length % 2');
-  const isProceduralRenderer = (renderer as ProceduralRenderer3).setAttribute;
+  ngDevMode && assertEqual(attrs.length % 2, 0, 'each attribute should have a key and a value');
+
+  const isProc = isProceduralRenderer(renderer);
   for (let i = 0; i < attrs.length; i += 2) {
-    isProceduralRenderer ?
-        (renderer as ProceduralRenderer3).setAttribute !(native, attrs[i], attrs[i | 1]) :
-        native.setAttribute(attrs[i], attrs[i | 1]);
+    isProc ? (renderer as ProceduralRenderer3).setAttribute(native, attrs[i], attrs[i | 1]) :
+             native.setAttribute(attrs[i], attrs[i | 1]);
   }
 }
 
@@ -525,9 +560,9 @@ export function locateHostElement(
   rendererFactory = factory;
   const defaultRenderer = factory.createRenderer(null, null);
   const rNode = typeof elementOrSelector === 'string' ?
-      ((defaultRenderer as ProceduralRenderer3).selectRootElement ?
-           (defaultRenderer as ProceduralRenderer3).selectRootElement(elementOrSelector) :
-           (defaultRenderer as ObjectOrientedRenderer3).querySelector !(elementOrSelector)) :
+      (isProceduralRenderer(defaultRenderer) ?
+           defaultRenderer.selectRootElement(elementOrSelector) :
+           defaultRenderer.querySelector(elementOrSelector)) :
       elementOrSelector;
   if (ngDevMode && !rNode) {
     if (typeof elementOrSelector === 'string') {
@@ -548,7 +583,8 @@ export function locateHostElement(
 export function hostElement(rNode: RElement | null, def: ComponentDef<any>) {
   resetApplicationState();
   createLNode(
-      0, LNodeFlags.Element, rNode, createLView(-1, renderer, getOrCreateTView(def.template)));
+      0, LNodeFlags.Element, rNode,
+      createLView(-1, renderer, getOrCreateTView(def.template), null, null));
 }
 
 
@@ -581,12 +617,11 @@ export function listener(eventName: string, listener: EventListener, useCapture 
   if (tNode.outputs === undefined) {
     // if we create TNode here, inputs must be undefined so we know they still need to be
     // checked
-    tNode.outputs = null;
-    tNode = generatePropertyAliases(node.flags, tNode);
+    tNode.outputs = generatePropertyAliases(node.flags, BindingDirection.Output);
   }
 
   const outputs = tNode.outputs;
-  let outputData: (number | string)[]|undefined;
+  let outputData: PropertyAliasValue|undefined;
   if (outputs && (outputData = outputs[eventName])) {
     createOutput(outputData, listener);
   }
@@ -596,7 +631,7 @@ export function listener(eventName: string, listener: EventListener, useCapture 
  * Iterates through the outputs associated with a particular event name and subscribes to
  * each output.
  */
-function createOutput(outputs: (number | string)[], listener: Function): void {
+function createOutput(outputs: PropertyAliasValue, listener: Function): void {
   for (let i = 0; i < outputs.length; i += 2) {
     ngDevMode && assertDataInRange(outputs[i] as number);
     const subscription = data[outputs[i] as number][outputs[i | 1]].subscribe(listener);
@@ -619,25 +654,23 @@ export function elementEnd() {
 }
 
 /**
- * Update an attribute on an Element. This is used with a `bind` instruction.
+ * Updates the value of removes an attribute on an Element.
  *
- * @param index The index of the element to update in the data array
- * @param attrName Name of attribute. Because it is going to DOM, this is not subject to
- *        renaming as port of minification.
- * @param value Value to write. This value will go through stringification.
+ * @param number index The index of the element in the data array
+ * @param string name The name of the attribute.
+ * @param any value The attribute is removed when value is `null` or `undefined`.
+ *                  Otherwise the attribute value is set to the stringified value.
  */
-export function elementAttribute(index: number, attrName: string, value: any): void {
+export function elementAttribute(index: number, name: string, value: any): void {
   if (value !== NO_CHANGE) {
-    const element = data[index] as LElementNode;
+    const element: LElementNode = data[index];
     if (value == null) {
-      (renderer as ProceduralRenderer3).removeAttribute ?
-          (renderer as ProceduralRenderer3).removeAttribute(element.native, attrName) :
-          element.native.removeAttribute(attrName);
+      isProceduralRenderer(renderer) ? renderer.removeAttribute(element.native, name) :
+                                       element.native.removeAttribute(name);
     } else {
-      (renderer as ProceduralRenderer3).setAttribute ?
-          (renderer as ProceduralRenderer3)
-              .setAttribute(element.native, attrName, stringify(value)) :
-          element.native.setAttribute(attrName, stringify(value));
+      isProceduralRenderer(renderer) ?
+          renderer.setAttribute(element.native, name, stringify(value)) :
+          element.native.setAttribute(name, stringify(value));
     }
   }
 }
@@ -658,26 +691,23 @@ export function elementAttribute(index: number, attrName: string, value: any): v
 export function elementProperty<T>(index: number, propName: string, value: T | NO_CHANGE): void {
   if (value === NO_CHANGE) return;
   const node = data[index] as LElementNode;
-
-  let tNode: TNode|null = node.tNode !;
+  const tNode = node.tNode !;
   // if tNode.inputs is undefined, a listener has created outputs, but inputs haven't
   // yet been checked
   if (tNode.inputs === undefined) {
     // mark inputs as checked
-    tNode.inputs = null;
-    tNode = generatePropertyAliases(node.flags, tNode, true);
+    tNode.inputs = generatePropertyAliases(node.flags, BindingDirection.Input);
   }
 
   const inputData = tNode.inputs;
-  let dataValue: PropertyAliasValue|null;
+  let dataValue: PropertyAliasValue|undefined;
   if (inputData && (dataValue = inputData[propName])) {
     setInputsForProperty(dataValue, value);
   } else {
     const native = node.native;
-    (renderer as ProceduralRenderer3).setProperty ?
-        (renderer as ProceduralRenderer3).setProperty(native, propName, value) :
-        native.setProperty ? native.setProperty(propName, value) :
-                             (native as any)[propName] = value;
+    isProceduralRenderer(renderer) ? renderer.setProperty(native, propName, value) :
+                                     (native.setProperty ? native.setProperty(propName, value) :
+                                                           (native as any)[propName] = value);
   }
 }
 
@@ -707,7 +737,7 @@ function createTNode(
  * Given a list of directive indices and minified input names, sets the
  * input properties on the corresponding directives.
  */
-function setInputsForProperty(inputs: (number | string)[], value: any): void {
+function setInputsForProperty(inputs: PropertyAliasValue, value: any): void {
   for (let i = 0; i < inputs.length; i += 2) {
     ngDevMode && assertDataInRange(inputs[i] as number);
     data[inputs[i] as number][inputs[i | 1]] = value;
@@ -715,33 +745,37 @@ function setInputsForProperty(inputs: (number | string)[], value: any): void {
 }
 
 /**
- * This function consolidates all the inputs or outputs defined by directives
- * on this node into one object and stores it in tData so it can
- * be shared between all templates of this type.
+ * Consolidates all inputs or outputs of all directives on this logical node.
  *
- * @param index Index where data should be stored in tData
+ * @param number lNodeFlags logical node flags
+ * @param Direction direction whether to consider inputs or outputs
+ * @returns PropertyAliases|null aggregate of all properties if any, `null` otherwise
  */
-function generatePropertyAliases(flags: number, tNode: TNode, isInputData = false): TNode {
-  const start = flags >> LNodeFlags.INDX_SHIFT;
-  const size = (flags & LNodeFlags.SIZE_MASK) >> LNodeFlags.SIZE_SHIFT;
+function generatePropertyAliases(lNodeFlags: number, direction: BindingDirection): PropertyAliases|
+    null {
+  const size = (lNodeFlags & LNodeFlags.SIZE_MASK) >> LNodeFlags.SIZE_SHIFT;
+  let propStore: PropertyAliases|null = null;
 
-  for (let i = start, ii = start + size; i < ii; i++) {
-    const directiveDef: DirectiveDef<any> = tData ![i] as DirectiveDef<any>;
-    const propertyAliasMap: {[publicName: string]: string} =
-        isInputData ? directiveDef.inputs : directiveDef.outputs;
-    for (let publicName in propertyAliasMap) {
-      if (propertyAliasMap.hasOwnProperty(publicName)) {
-        const internalName = propertyAliasMap[publicName];
-        const staticDirData: PropertyAliases = isInputData ?
-            (tNode.inputs || (tNode.inputs = {})) :
-            (tNode.outputs || (tNode.outputs = {}));
-        const hasProperty: boolean = staticDirData.hasOwnProperty(publicName);
-        hasProperty ? staticDirData[publicName].push(i, internalName) :
-                      (staticDirData[publicName] = [i, internalName]);
+  if (size > 0) {
+    const start = lNodeFlags >> LNodeFlags.INDX_SHIFT;
+    const isInput = direction === BindingDirection.Input;
+
+    for (let i = start, ii = start + size; i < ii; i++) {
+      const directiveDef = tData ![i] as DirectiveDef<any>;
+      const propertyAliasMap: {[publicName: string]: string} =
+          isInput ? directiveDef.inputs : directiveDef.outputs;
+      for (let publicName in propertyAliasMap) {
+        if (propertyAliasMap.hasOwnProperty(publicName)) {
+          propStore = propStore || {};
+          const internalName = propertyAliasMap[publicName];
+          const hasProperty = propStore.hasOwnProperty(publicName);
+          hasProperty ? propStore[publicName].push(i, internalName) :
+                        (propStore[publicName] = [i, internalName]);
+        }
       }
     }
   }
-  return tNode;
+  return propStore;
 }
 
 /**
@@ -758,14 +792,12 @@ export function elementClass<T>(index: number, className: string, value: T | NO_
   if (value !== NO_CHANGE) {
     const lElement = data[index] as LElementNode;
     if (value) {
-      (renderer as ProceduralRenderer3).addClass ?
-          (renderer as ProceduralRenderer3).addClass(lElement.native, className) :
-          lElement.native.classList.add(className);
+      isProceduralRenderer(renderer) ? renderer.addClass(lElement.native, className) :
+                                       lElement.native.classList.add(className);
 
     } else {
-      (renderer as ProceduralRenderer3).removeClass ?
-          (renderer as ProceduralRenderer3).removeClass(lElement.native, className) :
-          lElement.native.classList.remove(className);
+      isProceduralRenderer(renderer) ? renderer.removeClass(lElement.native, className) :
+                                       lElement.native.classList.remove(className);
     }
   }
 }
@@ -784,22 +816,17 @@ export function elementStyle<T>(
   if (value !== NO_CHANGE) {
     const lElement = data[index] as LElementNode;
     if (value == null) {
-      (renderer as ProceduralRenderer3).removeStyle ?
-          (renderer as ProceduralRenderer3)
-              .removeStyle(lElement.native, styleName, RendererStyleFlags3.DashCase) :
+      isProceduralRenderer(renderer) ?
+          renderer.removeStyle(lElement.native, styleName, RendererStyleFlags3.DashCase) :
           lElement.native.style.removeProperty(styleName);
     } else {
-      (renderer as ProceduralRenderer3).setStyle ?
-          (renderer as ProceduralRenderer3)
-              .setStyle(
-                  lElement.native, styleName, suffix ? stringify(value) + suffix : stringify(value),
-                  RendererStyleFlags3.DashCase) :
-          lElement.native.style.setProperty(
-              styleName, suffix ? stringify(value) + suffix : stringify(value));
+      const strValue = suffix ? stringify(value) + suffix : stringify(value);
+      isProceduralRenderer(renderer) ?
+          renderer.setStyle(lElement.native, styleName, strValue, RendererStyleFlags3.DashCase) :
+          lElement.native.style.setProperty(styleName, strValue);
     }
   }
 }
-
 
 
 //////////////////////////
@@ -814,11 +841,11 @@ export function elementStyle<T>(
  *   If value is not provided than the actual creation of the text node is delayed.
  */
 export function text(index: number, value?: any): void {
-  ngDevMode && assertEqual(currentView.bindingStartIndex, null, 'bindingStartIndex');
+  ngDevMode &&
+      assertNull(currentView.bindingStartIndex, 'text nodes should be created before bindings');
   const textNode = value != null ?
-      ((renderer as ProceduralRenderer3).createText ?
-           (renderer as ProceduralRenderer3).createText(stringify(value)) :
-           (renderer as ObjectOrientedRenderer3).createTextNode !(stringify(value))) :
+      (isProceduralRenderer(renderer) ? renderer.createText(stringify(value)) :
+                                        renderer.createTextNode(stringify(value))) :
       null;
   const node = createLNode(index, LNodeFlags.Element, textNode);
   // Text nodes are self closing.
@@ -840,15 +867,13 @@ export function textBinding<T>(index: number, value: T | NO_CHANGE): void {
   if (existingNode.native) {
     // If DOM node exists and value changed, update textContent
     value !== NO_CHANGE &&
-        ((renderer as ProceduralRenderer3).setValue ?
-             (renderer as ProceduralRenderer3).setValue(existingNode.native, stringify(value)) :
-             existingNode.native.textContent = stringify(value));
+        (isProceduralRenderer(renderer) ? renderer.setValue(existingNode.native, stringify(value)) :
+                                          existingNode.native.textContent = stringify(value));
   } else {
     // Node was created but DOM node creation was delayed. Create and append now.
-    existingNode.native =
-        ((renderer as ProceduralRenderer3).createText ?
-             (renderer as ProceduralRenderer3).createText(stringify(value)) :
-             (renderer as ObjectOrientedRenderer3).createTextNode !(stringify(value)));
+    existingNode.native = isProceduralRenderer(renderer) ?
+        renderer.createText(stringify(value)) :
+        renderer.createTextNode(stringify(value));
     insertChild(existingNode, currentView);
   }
 }
@@ -873,7 +898,8 @@ export function textBinding<T>(index: number, value: T | NO_CHANGE): void {
 export function directiveCreate<T>(
     index: number, directive: T, directiveDef: DirectiveDef<T>, queryName?: string | null): T {
   let instance;
-  ngDevMode && assertEqual(currentView.bindingStartIndex, null, 'bindingStartIndex');
+  ngDevMode &&
+      assertNull(currentView.bindingStartIndex, 'directives should be created before any bindings');
   ngDevMode && assertPreviousIsParent();
   let flags = previousOrParentNode !.flags;
   let size = flags & LNodeFlags.SIZE_MASK;
@@ -902,6 +928,12 @@ export function directiveCreate<T>(
   const diPublic = directiveDef !.diPublic;
   if (diPublic) {
     diPublic(directiveDef !);
+  }
+
+  if (directiveDef !.attributes != null &&
+      (previousOrParentNode.flags & LNodeFlags.TYPE_MASK) == LNodeFlags.Element) {
+    setUpAttributes(
+        (previousOrParentNode as LElementNode).native, directiveDef !.attributes as string[]);
   }
 
   const tNode: TNode|null = previousOrParentNode.tNode !;
@@ -992,10 +1024,12 @@ function generateInitialInputs(
 export function container(
     index: number, directiveTypes?: DirectiveType<any>[], template?: ComponentTemplate<any>,
     tagName?: string, attrs?: string[], localRefs?: string[] | null): void {
-  ngDevMode && assertEqual(currentView.bindingStartIndex, null, 'bindingStartIndex');
+  ngDevMode &&
+      assertNull(
+          currentView.bindingStartIndex, 'container nodes should be created before any bindings');
 
   const currentParent = isParent ? previousOrParentNode : previousOrParentNode.parent !;
-  ngDevMode && assertNotEqual(currentParent, null, 'currentParent');
+  ngDevMode && assertNotNull(currentParent, 'containers should have a parent');
 
   const lContainer = <LContainer>{
     views: [],
@@ -1045,9 +1079,9 @@ export function containerRefreshStart(index: number): void {
   ngDevMode && assertNodeType(previousOrParentNode, LNodeFlags.Container);
   isParent = true;
   (previousOrParentNode as LContainerNode).data.nextIndex = 0;
-  ngDevMode && assertEqual(
-                   (previousOrParentNode as LContainerNode).native === undefined, true,
-                   'previousOrParentNode.native === undefined');
+  ngDevMode && assertSame(
+                   (previousOrParentNode as LContainerNode).native, undefined,
+                   `the container's native element should not have been set yet.`);
 
   // We need to execute init hooks here so ngOnInit hooks are called in top level views
   // before they are called in embedded views (for backwards compatibility).
@@ -1114,8 +1148,8 @@ export function embeddedViewStart(viewBlockId: number): boolean {
     enterView((existingView as LViewNode).data, previousOrParentNode as LViewNode);
   } else {
     // When we create a new LView, we always reset the state of the instructions.
-    const newView =
-        createLView(viewBlockId, renderer, getOrCreateEmbeddedTView(viewBlockId, container));
+    const newView = createLView(
+        viewBlockId, renderer, getOrCreateEmbeddedTView(viewBlockId, container), null, null);
     if (lContainer.queries) {
       newView.queries = lContainer.queries.enterView(lContainer.nextIndex);
     }
@@ -1189,11 +1223,11 @@ export function componentRefresh<T>(directiveIndex: number, elementIndex: number
     ngDevMode && assertDataInRange(elementIndex);
     const element = data ![elementIndex] as LElementNode;
     ngDevMode && assertNodeType(element, LNodeFlags.Element);
-    ngDevMode && assertNotEqual(element.data, null, 'isComponent');
+    ngDevMode &&
+        assertNotNull(element.data, `Component's host node should have an LView attached.`);
     ngDevMode && assertDataInRange(directiveIndex);
     const directive = getDirectiveInstance<T>(data[directiveIndex]);
     const hostView = element.data !;
-    ngDevMode && assertNotEqual(hostView, null, 'hostView');
     const oldView = enterView(hostView, element);
     try {
       template(directive, creationMode);
@@ -1251,9 +1285,9 @@ function appendToProjectionNode(
     projectionNode: LProjectionNode,
     appendedFirst: LElementNode | LTextNode | LContainerNode | null,
     appendedLast: LElementNode | LTextNode | LContainerNode | null) {
-  // appendedFirst can be null if and only if appendedLast is also null
-  ngDevMode &&
-      assertEqual(!appendedFirst === !appendedLast, true, '!appendedFirst === !appendedLast');
+  ngDevMode && assertEqual(
+                   !!appendedFirst, !!appendedLast,
+                   'appendedFirst can be null if and only if appendedLast is also null');
   if (!appendedLast) {
     // nothing to append
     return;
@@ -1292,8 +1326,7 @@ export function projection(
   const componentNode = findComponentHost(currentView);
 
   // make sure that nodes to project were memorized
-  const nodesForSelector =
-      valueInData<LNode[][]>(componentNode.data !.data !, localIndex)[selectorIndex];
+  const nodesForSelector = componentNode.data !.data ![localIndex][selectorIndex];
 
   // build the linked list of projected nodes:
   for (let i = 0; i < nodesForSelector.length; i++) {
@@ -1355,9 +1388,9 @@ export function addToViewTree<T extends LView|LContainer>(state: T): T {
   return state;
 }
 
-//////////////////////////
-//// Bindings
-//////////////////////////
+///////////////////////////////
+//// Bindings & interpolations
+///////////////////////////////
 
 export interface NO_CHANGE {
   // This is a brand that ensures that this type can never match anything else
@@ -1368,65 +1401,23 @@ export interface NO_CHANGE {
 export const NO_CHANGE = {} as NO_CHANGE;
 
 /**
- * Create interpolation bindings with variable number of arguments.
+ *  Initializes the binding start index. Will get inlined.
  *
- * If any of the arguments change, then the interpolation is concatenated
- * and causes an update.
- *
- * `values`:
- * - has static text at even indexes,
- * - has evaluated expressions at odd indexes (could be NO_CHANGE).
+ *  This function must be called before any binding related function is called
+ *  (ie `bind()`, `interpolationX()`, `pureFunctionX()`)
  */
-export function bindV(values: any[]): string|NO_CHANGE {
-  ngDevMode && assertLessThan(2, values.length, 'should have at least 3 values');
-  ngDevMode && assertEqual(values.length % 2, 1, 'should have an odd number of values');
-
-  // TODO(vicb): Add proper unit tests when there is a place to add them
-  if (creationMode) {
-    initBindings();
-    // Only the bindings (odd indexes) are stored as texts are constant.
-    const bindings: any[] = [];
-    data[bindingIndex++] = bindings;
-    let content: string = values[0];
-    for (let i = 1; i < values.length; i += 2) {
-      content += stringify(values[i]) + values[i + 1];
-      bindings.push(values[i]);
-    }
-    return content;
-  }
-
-  const bindings: any[] = data[bindingIndex++];
-  // `bIdx` is the index in the `bindings` array, `vIdx` in the `values` array
-  for (let bIdx = 0, vIdx = 1; bIdx < bindings.length; bIdx++, vIdx += 2) {
-    if (values[vIdx] !== NO_CHANGE && isDifferent(values[vIdx], bindings[bIdx])) {
-      let content: string = values[0];
-      for (bIdx = 0, vIdx = 1; bIdx < bindings.length; vIdx += 2, bIdx++) {
-        if (values[vIdx] !== NO_CHANGE) {
-          bindings[bIdx] = values[vIdx];
-        }
-        content += stringify(bindings[bIdx]) + values[vIdx + 1];
-      }
-      return content;
-    }
-  }
-
-  return NO_CHANGE;
-}
-
-// For bindings that have 0 - 7 dynamic values to watch, we can use a bind function that
-// matches the number of interpolations. This is faster than using the bindV function above
-// because we know ahead of time how many interpolations we'll have and don't need to
-// accept the values as an array that will need to be copied and looped over.
-
-// Initializes the binding start index. Will get inlined.
 function initBindings() {
+  // `bindingIndex` is initialized when the view is first entered when not in creation mode
+  ngDevMode &&
+      assertEqual(
+          creationMode, true, 'should only be called in creationMode for performance reasons');
   if (currentView.bindingStartIndex == null) {
     bindingIndex = currentView.bindingStartIndex = data.length;
   }
 }
 
 /**
- * Creates a single value binding without interpolation.
+ * Creates a single value binding.
  *
  * @param value Value to diff
  */
@@ -1445,318 +1436,194 @@ export function bind<T>(value: T | NO_CHANGE): T|NO_CHANGE {
 }
 
 /**
- * Creates an interpolation bindings with 1 argument.
+ * Create interpolation bindings with a variable number of expressions.
  *
- * @param prefix static value used for concatenation only.
- * @param value value checked for change.
- * @param suffix static value used for concatenation only.
+ * If there are 1 to 8 expressions `interpolation1()` to `interpolation8()` should be used instead.
+ * Those are faster because there is no need to create an array of expressions and iterate over it.
+ *
+ * `values`:
+ * - has static text at even indexes,
+ * - has evaluated expressions at odd indexes.
+ *
+ * Returns the concatenated string when any of the arguments changes, `NO_CHANGE` otherwise.
  */
-export function bind1(prefix: string, value: any, suffix: string): string|NO_CHANGE {
-  return bind(value) === NO_CHANGE ? NO_CHANGE : prefix + stringify(value) + suffix;
+export function interpolationV(values: any[]): string|NO_CHANGE {
+  ngDevMode && assertLessThan(2, values.length, 'should have at least 3 values');
+  ngDevMode && assertEqual(values.length % 2, 1, 'should have an odd number of values');
+
+  let different = false;
+
+  for (let i = 1; i < values.length; i += 2) {
+    // Check if bindings (odd indexes) have changed
+    bindingUpdated(values[i]) && (different = true);
+  }
+
+  if (!different) {
+    return NO_CHANGE;
+  }
+
+  // Build the updated content
+  let content = values[0];
+  for (let i = 1; i < values.length; i += 2) {
+    content += stringify(values[i]) + values[i + 1];
+  }
+
+  return content;
 }
 
-/** Creates an interpolation bindings with 2 arguments. */
-export function bind2(prefix: string, v0: any, i0: string, v1: any, suffix: string): string|
-    NO_CHANGE {
-  let different: boolean;
-  if (different = creationMode) {
-    initBindings();
-    data[bindingIndex++] = v0;
-    data[bindingIndex++] = v1;
-  } else {
-    const part0 = data[bindingIndex++];
-    const part1 = data[bindingIndex++];
-    if (v0 === NO_CHANGE) v0 = part0;
-    if (v1 === NO_CHANGE) v1 = part1;
-    if (different = (isDifferent(part0, v0) || isDifferent(part1, v1))) {
-      data[bindingIndex - 2] = v0;
-      data[bindingIndex - 1] = v1;
-    }
-  }
+/**
+ * Creates an interpolation binding with 1 expression.
+ *
+ * @param prefix static value used for concatenation only.
+ * @param v0 value checked for change.
+ * @param suffix static value used for concatenation only.
+ */
+export function interpolation1(prefix: string, v0: any, suffix: string): string|NO_CHANGE {
+  const different = bindingUpdated(v0);
+
+  return different ? prefix + stringify(v0) + suffix : NO_CHANGE;
+}
+
+/** Creates an interpolation binding with 2 expressions. */
+export function interpolation2(
+    prefix: string, v0: any, i0: string, v1: any, suffix: string): string|NO_CHANGE {
+  const different = bindingUpdated2(v0, v1);
+
   return different ? prefix + stringify(v0) + i0 + stringify(v1) + suffix : NO_CHANGE;
 }
 
-/** Creates an interpolation bindings with 3 arguments. */
-export function bind3(
+/** Creates an interpolation bindings with 3 expressions. */
+export function interpolation3(
     prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, suffix: string): string|
     NO_CHANGE {
-  let different: boolean;
-  if (different = creationMode) {
-    initBindings();
-    data[bindingIndex++] = v0;
-    data[bindingIndex++] = v1;
-    data[bindingIndex++] = v2;
-  } else {
-    const part0 = data[bindingIndex++];
-    const part1 = data[bindingIndex++];
-    const part2 = data[bindingIndex++];
-    if (v0 === NO_CHANGE) v0 = part0;
-    if (v1 === NO_CHANGE) v1 = part1;
-    if (v2 === NO_CHANGE) v2 = part2;
-    if (different = (isDifferent(part0, v0) || isDifferent(part1, v1) || isDifferent(part2, v2))) {
-      data[bindingIndex - 3] = v0;
-      data[bindingIndex - 2] = v1;
-      data[bindingIndex - 1] = v2;
-    }
-  }
+  let different = bindingUpdated2(v0, v1);
+  different = bindingUpdated(v2) || different;
+
   return different ? prefix + stringify(v0) + i0 + stringify(v1) + i1 + stringify(v2) + suffix :
                      NO_CHANGE;
 }
 
-/** Create an interpolation binding with 4 arguments. */
-export function bind4(
+/** Create an interpolation binding with 4 expressions. */
+export function interpolation4(
     prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string, v3: any,
     suffix: string): string|NO_CHANGE {
-  let different: boolean;
-  if (different = creationMode) {
-    initBindings();
-    data[bindingIndex++] = v0;
-    data[bindingIndex++] = v1;
-    data[bindingIndex++] = v2;
-    data[bindingIndex++] = v3;
-  } else {
-    const part0 = data[bindingIndex++];
-    const part1 = data[bindingIndex++];
-    const part2 = data[bindingIndex++];
-    const part3 = data[bindingIndex++];
-    if (v0 === NO_CHANGE) v0 = part0;
-    if (v1 === NO_CHANGE) v1 = part1;
-    if (v2 === NO_CHANGE) v2 = part2;
-    if (v3 === NO_CHANGE) v3 = part3;
-    if (different =
-            (isDifferent(part0, v0) || isDifferent(part1, v1) || isDifferent(part2, v2) ||
-             isDifferent(part3, v3))) {
-      data[bindingIndex - 4] = v0;
-      data[bindingIndex - 3] = v1;
-      data[bindingIndex - 2] = v2;
-      data[bindingIndex - 1] = v3;
-    }
-  }
+  const different = bindingUpdated4(v0, v1, v2, v3);
+
   return different ?
       prefix + stringify(v0) + i0 + stringify(v1) + i1 + stringify(v2) + i2 + stringify(v3) +
           suffix :
       NO_CHANGE;
 }
 
-/** Creates an interpolation binding with 5 arguments. */
-export function bind5(
+/** Creates an interpolation binding with 5 expressions. */
+export function interpolation5(
     prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string, v3: any,
     i3: string, v4: any, suffix: string): string|NO_CHANGE {
-  let different: boolean;
-  if (different = creationMode) {
-    initBindings();
-    data[bindingIndex++] = v0;
-    data[bindingIndex++] = v1;
-    data[bindingIndex++] = v2;
-    data[bindingIndex++] = v3;
-    data[bindingIndex++] = v4;
-  } else {
-    const part0 = data[bindingIndex++];
-    const part1 = data[bindingIndex++];
-    const part2 = data[bindingIndex++];
-    const part3 = data[bindingIndex++];
-    const part4 = data[bindingIndex++];
-    if (v0 === NO_CHANGE) v0 = part0;
-    if (v1 === NO_CHANGE) v1 = part1;
-    if (v2 === NO_CHANGE) v2 = part2;
-    if (v3 === NO_CHANGE) v3 = part3;
-    if (v4 === NO_CHANGE) v4 = part4;
+  let different = bindingUpdated4(v0, v1, v2, v3);
+  different = bindingUpdated(v4) || different;
 
-    if (different =
-            (isDifferent(part0, v0) || isDifferent(part1, v1) || isDifferent(part2, v2) ||
-             isDifferent(part3, v3) || isDifferent(part4, v4))) {
-      data[bindingIndex - 5] = v0;
-      data[bindingIndex - 4] = v1;
-      data[bindingIndex - 3] = v2;
-      data[bindingIndex - 2] = v3;
-      data[bindingIndex - 1] = v4;
-    }
-  }
   return different ?
       prefix + stringify(v0) + i0 + stringify(v1) + i1 + stringify(v2) + i2 + stringify(v3) + i3 +
           stringify(v4) + suffix :
       NO_CHANGE;
 }
 
-/** Creates an interpolation binding with 6 arguments. */
-export function bind6(
+/** Creates an interpolation binding with 6 expressions. */
+export function interpolation6(
     prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string, v3: any,
     i3: string, v4: any, i4: string, v5: any, suffix: string): string|NO_CHANGE {
-  let different: boolean;
-  if (different = creationMode) {
-    initBindings();
-    data[bindingIndex++] = v0;
-    data[bindingIndex++] = v1;
-    data[bindingIndex++] = v2;
-    data[bindingIndex++] = v3;
-    data[bindingIndex++] = v4;
-    data[bindingIndex++] = v5;
-  } else {
-    const part0 = data[bindingIndex++];
-    const part1 = data[bindingIndex++];
-    const part2 = data[bindingIndex++];
-    const part3 = data[bindingIndex++];
-    const part4 = data[bindingIndex++];
-    const part5 = data[bindingIndex++];
-    if (v0 === NO_CHANGE) v0 = part0;
-    if (v1 === NO_CHANGE) v1 = part1;
-    if (v2 === NO_CHANGE) v2 = part2;
-    if (v3 === NO_CHANGE) v3 = part3;
-    if (v4 === NO_CHANGE) v4 = part4;
-    if (v5 === NO_CHANGE) v5 = part5;
+  let different = bindingUpdated4(v0, v1, v2, v3);
+  different = bindingUpdated2(v4, v5) || different;
 
-    if (different =
-            (isDifferent(part0, v0) || isDifferent(part1, v1) || isDifferent(part2, v2) ||
-             isDifferent(part3, v3) || isDifferent(part4, v4) || isDifferent(part5, v5))) {
-      data[bindingIndex - 6] = v0;
-      data[bindingIndex - 5] = v1;
-      data[bindingIndex - 4] = v2;
-      data[bindingIndex - 3] = v3;
-      data[bindingIndex - 2] = v4;
-      data[bindingIndex - 1] = v5;
-    }
-  }
   return different ?
       prefix + stringify(v0) + i0 + stringify(v1) + i1 + stringify(v2) + i2 + stringify(v3) + i3 +
           stringify(v4) + i4 + stringify(v5) + suffix :
       NO_CHANGE;
 }
 
-/** Creates an interpolation binding with 7 arguments. */
-export function bind7(
+/** Creates an interpolation binding with 7 expressions. */
+export function interpolation7(
     prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string, v3: any,
     i3: string, v4: any, i4: string, v5: any, i5: string, v6: any, suffix: string): string|
     NO_CHANGE {
-  let different: boolean;
-  if (different = creationMode) {
-    initBindings();
-    data[bindingIndex++] = v0;
-    data[bindingIndex++] = v1;
-    data[bindingIndex++] = v2;
-    data[bindingIndex++] = v3;
-    data[bindingIndex++] = v4;
-    data[bindingIndex++] = v5;
-    data[bindingIndex++] = v6;
-  } else {
-    const part0 = data[bindingIndex++];
-    const part1 = data[bindingIndex++];
-    const part2 = data[bindingIndex++];
-    const part3 = data[bindingIndex++];
-    const part4 = data[bindingIndex++];
-    const part5 = data[bindingIndex++];
-    const part6 = data[bindingIndex++];
-    if (v0 === NO_CHANGE) v0 = part0;
-    if (v1 === NO_CHANGE) v1 = part1;
-    if (v2 === NO_CHANGE) v2 = part2;
-    if (v3 === NO_CHANGE) v3 = part3;
-    if (v4 === NO_CHANGE) v4 = part4;
-    if (v5 === NO_CHANGE) v5 = part5;
-    if (v6 === NO_CHANGE) v6 = part6;
-    if (different =
-            (isDifferent(part0, v0) || isDifferent(part1, v1) || isDifferent(part2, v2) ||
-             isDifferent(part3, v3) || isDifferent(part4, v4) || isDifferent(part5, v5) ||
-             isDifferent(part6, v6))) {
-      data[bindingIndex - 7] = v0;
-      data[bindingIndex - 6] = v1;
-      data[bindingIndex - 5] = v2;
-      data[bindingIndex - 4] = v3;
-      data[bindingIndex - 3] = v4;
-      data[bindingIndex - 2] = v5;
-      data[bindingIndex - 1] = v6;
-    }
-  }
+  let different = bindingUpdated4(v0, v1, v2, v3);
+  different = bindingUpdated2(v4, v5) || different;
+  different = bindingUpdated(v6) || different;
+
   return different ?
       prefix + stringify(v0) + i0 + stringify(v1) + i1 + stringify(v2) + i2 + stringify(v3) + i3 +
           stringify(v4) + i4 + stringify(v5) + i5 + stringify(v6) + suffix :
       NO_CHANGE;
 }
 
-/** Creates an interpolation binding with 8 arguments. */
-export function bind8(
+/** Creates an interpolation binding with 8 expressions. */
+export function interpolation8(
     prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string, v3: any,
     i3: string, v4: any, i4: string, v5: any, i5: string, v6: any, i6: string, v7: any,
     suffix: string): string|NO_CHANGE {
-  let different: boolean;
-  if (different = creationMode) {
-    initBindings();
-    data[bindingIndex++] = v0;
-    data[bindingIndex++] = v1;
-    data[bindingIndex++] = v2;
-    data[bindingIndex++] = v3;
-    data[bindingIndex++] = v4;
-    data[bindingIndex++] = v5;
-    data[bindingIndex++] = v6;
-    data[bindingIndex++] = v7;
-  } else {
-    const part0 = data[bindingIndex++];
-    const part1 = data[bindingIndex++];
-    const part2 = data[bindingIndex++];
-    const part3 = data[bindingIndex++];
-    const part4 = data[bindingIndex++];
-    const part5 = data[bindingIndex++];
-    const part6 = data[bindingIndex++];
-    const part7 = data[bindingIndex++];
-    if (v0 === NO_CHANGE) v0 = part0;
-    if (v1 === NO_CHANGE) v1 = part1;
-    if (v2 === NO_CHANGE) v2 = part2;
-    if (v3 === NO_CHANGE) v3 = part3;
-    if (v4 === NO_CHANGE) v4 = part4;
-    if (v5 === NO_CHANGE) v5 = part5;
-    if (v6 === NO_CHANGE) v6 = part6;
-    if (v7 === NO_CHANGE) v7 = part7;
-    if (different =
-            (isDifferent(part0, v0) || isDifferent(part1, v1) || isDifferent(part2, v2) ||
-             isDifferent(part3, v3) || isDifferent(part4, v4) || isDifferent(part5, v5) ||
-             isDifferent(part6, v6) || isDifferent(part7, v7))) {
-      data[bindingIndex - 8] = v0;
-      data[bindingIndex - 7] = v1;
-      data[bindingIndex - 6] = v2;
-      data[bindingIndex - 5] = v3;
-      data[bindingIndex - 4] = v4;
-      data[bindingIndex - 3] = v5;
-      data[bindingIndex - 2] = v6;
-      data[bindingIndex - 1] = v7;
-    }
-  }
+  let different = bindingUpdated4(v0, v1, v2, v3);
+  different = bindingUpdated4(v4, v5, v6, v7) || different;
+
   return different ?
       prefix + stringify(v0) + i0 + stringify(v1) + i1 + stringify(v2) + i2 + stringify(v3) + i3 +
           stringify(v4) + i4 + stringify(v5) + i5 + stringify(v6) + i6 + stringify(v7) + suffix :
       NO_CHANGE;
 }
 
-export function memory<T>(index: number, value?: T): T {
-  return valueInData<T>(data, index, value);
-}
-
-function valueInData<T>(data: any[], index: number, value?: T): T {
-  if (value === undefined) {
-    ngDevMode && assertDataInRange(index, data);
-    value = data[index];
-  } else {
-    // We don't store any static data for local variables, so the first time
-    // we see the template, we should store as null to avoid a sparse array
-    if (index >= tData.length) {
-      tData[index] = null;
-    }
-    data[index] = value;
+/** Store a value in the `data` at a given `index`. */
+export function store<T>(index: number, value: T): void {
+  // We don't store any static data for local variables, so the first time
+  // we see the template, we should store as null to avoid a sparse array
+  if (index >= tData.length) {
+    tData[index] = null;
   }
-  return value !;
+  data[index] = value;
 }
 
-export function getCurrentQueries(QueryType: {new (): LQueries}): LQueries {
-  return currentQueries || (currentQueries = new QueryType());
+/** Retrieves a value from the `data`. */
+export function load<T>(index: number): T {
+  ngDevMode && assertDataInRange(index, data);
+  return data[index];
 }
 
-export function getPreviousOrParentNode(): LNode {
-  return previousOrParentNode;
+/** Gets the current binding value and increments the binding index. */
+export function consumeBinding(): any {
+  ngDevMode && assertDataInRange(bindingIndex);
+  ngDevMode &&
+      assertNotEqual(data[bindingIndex], NO_CHANGE, 'Stored value should never be NO_CHANGE.');
+  return data[bindingIndex++];
 }
 
-export function getRenderer(): Renderer3 {
-  return renderer;
+/** Updates binding if changed, then returns whether it was updated. */
+export function bindingUpdated(value: any): boolean {
+  ngDevMode && assertNotEqual(value, NO_CHANGE, 'Incoming value should never be NO_CHANGE.');
+
+  if (creationMode || isDifferent(data[bindingIndex], value)) {
+    creationMode && initBindings();
+    data[bindingIndex++] = value;
+    return true;
+  } else {
+    bindingIndex++;
+    return false;
+  }
 }
 
-export function getTView(): TView {
-  return currentView.tView;
+/** Updates binding if changed, then returns the latest value. */
+export function checkAndUpdateBinding(value: any): any {
+  bindingUpdated(value);
+  return value;
+}
+
+/** Updates 2 bindings if changed, then returns whether either was updated. */
+export function bindingUpdated2(exp1: any, exp2: any): boolean {
+  const different = bindingUpdated(exp1);
+  return bindingUpdated(exp2) || different;
+}
+
+/** Updates 4 bindings if changed, then returns whether any was updated. */
+export function bindingUpdated4(exp1: any, exp2: any, exp3: any, exp4: any): boolean {
+  const different = bindingUpdated2(exp1, exp2);
+  return bindingUpdated2(exp3, exp4) || different;
 }
 
 export function getDirectiveInstance<T>(instanceOrArray: T | [T]): T {
@@ -1766,18 +1633,18 @@ export function getDirectiveInstance<T>(instanceOrArray: T | [T]): T {
 }
 
 export function assertPreviousIsParent() {
-  assertEqual(isParent, true, 'isParent');
+  assertEqual(isParent, true, 'previousOrParentNode should be a parent');
 }
 
 function assertHasParent() {
-  assertNotEqual(previousOrParentNode.parent, null, 'isParent');
+  assertNotNull(previousOrParentNode.parent, 'previousOrParentNode should have a parent');
 }
 
 function assertDataInRange(index: number, arr?: any[]) {
   if (arr == null) arr = data;
-  assertLessThan(index, arr ? arr.length : 0, 'data.length');
+  assertLessThan(index, arr ? arr.length : 0, 'index expected to be a valid data index');
 }
 
 function assertDataNext(index: number) {
-  assertEqual(data.length, index, 'data.length not in sequence');
+  assertEqual(data.length, index, 'index expected to be at the end of data');
 }

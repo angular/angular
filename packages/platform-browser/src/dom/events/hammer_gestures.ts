@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Inject, Injectable, InjectionToken} from '@angular/core';
+import {Inject, Injectable, InjectionToken, ɵConsole as Console} from '@angular/core';
 
 import {DOCUMENT} from '../dom_tokens';
 
@@ -72,8 +72,17 @@ export class HammerGestureConfig {
 
   overrides: {[key: string]: Object} = {};
 
+  options?: {
+    cssProps?: any; domEvents?: boolean; enable?: boolean | ((manager: any) => boolean);
+    preset?: any[];
+    touchAction?: string;
+    recognizers?: any[];
+    inputClass?: any;
+    inputTarget?: EventTarget;
+  };
+
   buildHammer(element: HTMLElement): HammerInstance {
-    const mc = new Hammer(element);
+    const mc = new Hammer(element, this.options);
 
     mc.get('pinch').set({enable: true});
     mc.get('rotate').set({enable: true});
@@ -90,7 +99,8 @@ export class HammerGestureConfig {
 export class HammerGesturesPlugin extends EventManagerPlugin {
   constructor(
       @Inject(DOCUMENT) doc: any,
-      @Inject(HAMMER_GESTURE_CONFIG) private _config: HammerGestureConfig) {
+      @Inject(HAMMER_GESTURE_CONFIG) private _config: HammerGestureConfig,
+      private console: Console) {
     super(doc);
   }
 
@@ -100,7 +110,8 @@ export class HammerGesturesPlugin extends EventManagerPlugin {
     }
 
     if (!(window as any).Hammer) {
-      throw new Error(`Hammer.js is not loaded, can not bind ${eventName} event`);
+      this.console.warn(`Hammer.js is not loaded, can not bind '${eventName}' event.`);
+      return false;
     }
 
     return true;

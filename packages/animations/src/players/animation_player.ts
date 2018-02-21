@@ -33,6 +33,8 @@ export interface AnimationPlayer {
   beforeDestroy?: () => any;
   /* @internal */
   triggerCallback?: (phaseName: string) => void;
+  /* @internal */
+  disabled?: boolean;
 }
 
 /**
@@ -46,8 +48,8 @@ export class NoopAnimationPlayer implements AnimationPlayer {
   private _destroyed = false;
   private _finished = false;
   public parentPlayer: AnimationPlayer|null = null;
-  public totalTime = 0;
-  constructor() {}
+  public readonly totalTime: number;
+  constructor(duration: number = 0, delay: number = 0) { this.totalTime = duration + delay; }
   private _onFinish() {
     if (!this._finished) {
       this._finished = true;

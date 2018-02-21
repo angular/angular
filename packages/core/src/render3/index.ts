@@ -6,12 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {createComponentRef, detectChanges, getHostElement, markDirty, renderComponent} from './component';
+import {createComponentRef, detectChanges, getHostElement, getRenderedText, markDirty, renderComponent, whenRendered} from './component';
 import {NgOnChangesFeature, PublicFeature, defineComponent, defineDirective, definePipe} from './definition';
 import {InjectFlags} from './di';
 import {ComponentDef, ComponentTemplate, ComponentType, DirectiveDef, DirectiveDefFlags, DirectiveType} from './interfaces/definition';
 
 export {InjectFlags, QUERY_READ_CONTAINER_REF, QUERY_READ_ELEMENT_REF, QUERY_READ_FROM_NODE, QUERY_READ_TEMPLATE_REF, inject, injectElementRef, injectTemplateRef, injectViewContainerRef} from './di';
+export {CssSelector} from './interfaces/projection';
+
 
 // Naming scheme:
 // - Capital letters are for creating things: T(Text), E(Element), D(Directive), V(View),
@@ -27,15 +29,15 @@ export {
   NO_CHANGE as NC,
 
   bind as b,
-  bind1 as b1,
-  bind2 as b2,
-  bind3 as b3,
-  bind4 as b4,
-  bind5 as b5,
-  bind6 as b6,
-  bind7 as b7,
-  bind8 as b8,
-  bindV as bV,
+  interpolation1 as i1,
+  interpolation2 as i2,
+  interpolation3 as i3,
+  interpolation4 as i4,
+  interpolation5 as i5,
+  interpolation6 as i6,
+  interpolation7 as i7,
+  interpolation8 as i8,
+  interpolationV as iV,
 
   componentRefresh as r,
 
@@ -51,7 +53,8 @@ export {
   elementStyle as s,
 
   listener as L,
-  memory as m,
+  store as st,
+  load as ld,
 
   projection as P,
   projectionDef as pD,
@@ -79,15 +82,17 @@ export {
   queryRefresh as qR,
 } from './query';
 export {
-  objectLiteral1 as o1,
-  objectLiteral2 as o2,
-  objectLiteral3 as o3,
-  objectLiteral4 as o4,
-  objectLiteral5 as o5,
-  objectLiteral6 as o6,
-  objectLiteral7 as o7,
-  objectLiteral8 as o8,
-} from './object_literal';
+  pureFunction0 as f0,
+  pureFunction1 as f1,
+  pureFunction2 as f2,
+  pureFunction3 as f3,
+  pureFunction4 as f4,
+  pureFunction5 as f5,
+  pureFunction6 as f6,
+  pureFunction7 as f7,
+  pureFunction8 as f8,
+  pureFunctionV as fV,
+} from './pure_function';
 
 
 // clang-format on
@@ -104,6 +109,11 @@ export {
   defineComponent,
   defineDirective,
   definePipe,
+  detectChanges,
+  createComponentRef,
+  getHostElement,
+  getRenderedText,
+  markDirty,
+  renderComponent,
+  whenRendered,
 };
-export {createComponentRef, detectChanges, getHostElement, markDirty, renderComponent};
-export {CssSelector} from './interfaces/projection';

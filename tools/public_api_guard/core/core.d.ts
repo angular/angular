@@ -113,6 +113,9 @@ export declare const APP_ID: InjectionToken<string>;
 export declare const APP_INITIALIZER: InjectionToken<(() => void)[]>;
 
 /** @experimental */
+export declare const APP_ROOT_SCOPE: Type<any>;
+
+/** @experimental */
 export declare class ApplicationInitStatus {
     readonly done: boolean;
     readonly donePromise: Promise<any>;
@@ -164,10 +167,9 @@ export declare abstract class ChangeDetectorRef {
 }
 
 /** @stable */
-export interface ClassProvider {
+export interface ClassProvider extends ClassSansProvider {
     multi?: boolean;
     provide: any;
-    useClass: Type<any>;
 }
 
 /** @deprecated */
@@ -345,6 +347,9 @@ export declare class DefaultIterableDiffer<V> implements IterableDiffer<V>, Iter
 }
 
 /** @experimental */
+export declare function defineInjectable(opts: Injectable): Injectable;
+
+/** @experimental */
 export declare function destroyPlatform(): void;
 
 /** @stable */
@@ -390,18 +395,15 @@ export declare class EventEmitter<T> extends Subject<T> {
 }
 
 /** @stable */
-export interface ExistingProvider {
+export interface ExistingProvider extends ExistingSansProvider {
     multi?: boolean;
     provide: any;
-    useExisting: any;
 }
 
 /** @stable */
-export interface FactoryProvider {
-    deps?: any[];
+export interface FactoryProvider extends FactorySansProvider {
     multi?: boolean;
     provide: any;
-    useFactory: Function;
 }
 
 /** @experimental */
@@ -454,7 +456,21 @@ export declare const Injectable: InjectableDecorator;
 /** @stable */
 export interface InjectableDecorator {
     /** @stable */ (): any;
+    (options?: {
+        scope: Type<any>;
+    } & InjectableProvider): any;
     new (): Injectable;
+    new (options?: {
+        scope: Type<any>;
+    } & InjectableProvider): Injectable;
+}
+
+/** @experimental */
+export declare type InjectableProvider = ValueSansProvider | ExistingSansProvider | StaticClassSansProvider | ConstructorSansProvider | FactorySansProvider | ClassSansProvider;
+
+/** @experimental */
+export interface InjectableType<T> extends Type<T> {
+    ngInjectableDef?: Injectable;
 }
 
 /** @stable */
@@ -464,15 +480,26 @@ export interface InjectDecorator {
 }
 
 /** @stable */
+export declare const enum InjectFlags {
+    Default = 0,
+    SkipSelf = 1,
+    Self = 2,
+}
+
+/** @stable */
 export declare class InjectionToken<T> {
     protected _desc: string;
-    constructor(_desc: string);
+    readonly ngInjectableDef: Injectable | undefined;
+    constructor(_desc: string, options?: {
+        scope: Type<any>;
+        factory: () => T;
+    });
     toString(): string;
 }
 
 /** @stable */
 export declare abstract class Injector {
-    abstract get<T>(token: Type<T> | InjectionToken<T>, notFoundValue?: T): T;
+    abstract get<T>(token: Type<T> | InjectionToken<T>, notFoundValue?: T, flags?: InjectFlags): T;
     /** @deprecated */ abstract get(token: any, notFoundValue?: any): any;
     static NULL: Injector;
     static THROW_IF_NOT_FOUND: Object;
@@ -1016,10 +1043,9 @@ export interface TypeProvider extends Type<any> {
 }
 
 /** @stable */
-export interface ValueProvider {
+export interface ValueProvider extends ValueSansProvider {
     multi?: boolean;
     provide: any;
-    useValue: any;
 }
 
 /** @stable */

@@ -61,7 +61,9 @@ export class Identifiers {
     moduleName: CORE,
 
   };
+  static inject: o.ExternalReference = {name: 'inject', moduleName: CORE};
   static Injector: o.ExternalReference = {name: 'Injector', moduleName: CORE};
+  static defineInjectable: o.ExternalReference = {name: 'defineInjectable', moduleName: CORE};
   static ViewEncapsulation: o.ExternalReference = {
     name: 'ViewEncapsulation',
     moduleName: CORE,

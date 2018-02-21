@@ -50,13 +50,15 @@ merge:
     noConflict: true
     # list of labels that a PR needs to have, checked with a regexp (e.g. "PR target:" will work for the label "PR target: master")
     requiredLabels:
-      - "PR target:"
+      - "PR target: *"
       - "cla: yes"
 
     # list of labels that a PR shouldn't have, checked after the required labels with a regexp
     forbiddenLabels:
       - "PR target: TBD"
       - "PR action: cleanup"
+      - "PR action: review"
+      - "PR state: blocked"
       - "cla: no"
 
     # list of PR statuses that need to be successful
@@ -84,9 +86,15 @@ triage:
   triagedLabels:
     -
       - "type: bug"
-      - "severity"
-      - "freq"
-      - "comp:"
+      - "severity*"
+      - "freq*"
+      - "comp: *"
     -
       - "type: feature"
-      - "comp:"
+      - "comp: *"
+    -
+      - "type: refactor"
+      - "comp: *"
+    -
+      - "type: RFC / Discussion / question"
+      - "comp: *"

@@ -241,6 +241,19 @@
             "rev": true,
             "title": "NinjaCodeGen - Angular CRUD Generator",
             "url": "https://ninjaCodeGen.com"
+          },
+          "angular-playground": {
+            "desc": "UI development environment for building, testing, and documenting Angular applications.",
+            "rev": true,
+            "title": "Angular Playground",
+            "url": "http://www.angularplayground.it/"
+          },
+          "nx": {
+            "desc": "Nx (Nrwl Extensions for Angular) is an open source toolkit built on top of Angular CLI to help enterprise teams develop Angular at scale.",
+            "rev": true,
+            "title": "Nx",
+            "logo": "https://nrwl.io/assets/nx-logo.png",
+            "url": "https://nrwl.io/nx"
           }
         }
       },
@@ -438,6 +451,13 @@
             "rev": true,
             "title": "Essential Angular",
             "url": "https://gumroad.com/l/essential_angular"
+          },
+          "angular-buch": {
+            "desc": "The first German book about Angular. It gives you a detailed practical overview of the key concepts of the platform. In each chapter a sample application is built upon with a new Angular topic. All sources are available on GitHub.",
+            "logo": "https://angular-buch.com/assets/img/brand.svg",
+            "rev": true,
+            "title": "Angular-Buch (German)",
+            "url": "https://angular-buch.com/"
           }
         }
       },
@@ -481,6 +501,13 @@
             "subcategory": "Online Training",
             "title": "CodeSchool: Accelerating Through Angular",
             "url": "https://www.codeschool.com/courses/accelerating-through-angular-2"
+          },
+          "angular-playbook": {
+            "desc": "Learn advanced Angular best practices for enterprise teams, created by Nrwl.io.",
+            "logo": "https://nrwl.io/assets/logo_footer_2x.png",
+            "rev": true,
+            "title": "Angular Enterprise Playbook",
+            "url": "https://angularplaybook.com"
           },
           "a2b": {
             "desc": "Hundreds of Angular courses for all skill levels",
@@ -652,6 +679,13 @@
             "rev": true,
             "title": "We Are One Sàrl",
             "url": "https://weareone.ch/courses/angular/"
+          },
+          "angular-schule": {
+            "desc": "Angular onsite training and public workshops in Germany from the authors of the German Angular book. We also regularly post articles and videos on our blog (in English and German language).",
+            "logo": "https://angular.schule/assets/img/brand.svg",
+            "rev": true,
+            "title": "Angular.Schule (German)",
+            "url": "https://angular.schule/"
           }
         }
       }

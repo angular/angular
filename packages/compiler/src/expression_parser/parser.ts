@@ -477,7 +477,9 @@ export class _ParseAST {
       switch (operator) {
         case '+':
           this.advance();
-          return this.parsePrefix();
+          result = this.parsePrefix();
+          return new Binary(
+              this.span(start), '-', result, new LiteralPrimitive(new ParseSpan(start, start), 0));
         case '-':
           this.advance();
           result = this.parsePrefix();

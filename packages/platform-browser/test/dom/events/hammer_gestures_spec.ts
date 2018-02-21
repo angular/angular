@@ -10,14 +10,27 @@ import {HammerGestureConfig, HammerGesturesPlugin} from '@angular/platform-brows
 
 {
   describe('HammerGesturesPlugin', () => {
+    let plugin: HammerGesturesPlugin;
+    let mockConsole: any;
     if (isNode) return;
 
-    it('should implement addGlobalEventListener', () => {
-      const plugin = new HammerGesturesPlugin(document, new HammerGestureConfig());
+    beforeEach(() => {
+      mockConsole = {warn: () => {}};
+      plugin = new HammerGesturesPlugin(document, new HammerGestureConfig(), mockConsole);
+    });
 
+    it('should implement addGlobalEventListener', () => {
       spyOn(plugin, 'addEventListener').and.callFake(() => {});
 
       expect(() => plugin.addGlobalEventListener('document', 'swipe', () => {})).not.toThrowError();
+    });
+
+    it('shoud warn user and do nothing when Hammer.js not loaeded', () => {
+      spyOn(mockConsole, 'warn');
+
+      expect(plugin.supports('swipe')).toBe(false);
+      expect(mockConsole.warn)
+          .toHaveBeenCalledWith(`Hammer.js is not loaded, can not bind 'swipe' event.`);
     });
   });
 }

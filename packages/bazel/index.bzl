@@ -7,6 +7,6 @@
 Users should not load files under "/src"
 """
 
-load("//src:ng_module.bzl", _ng_module = "ng_module")
+load("//packages/bazel/src:ng_module.bzl", _ng_module = "ng_module")
 
 ng_module = _ng_module

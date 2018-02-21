@@ -1,4 +1,4 @@
-import buildOptimizer from 'rollup-plugin-angular-optimizer'
+import optimizer from '@angular-devkit/build-optimizer/src/build-optimizer/rollup-plugin'
 import nodeResolve from 'rollup-plugin-node-resolve';
 import paths from 'rollup-plugin-paths';
 import pathMapping from 'rxjs/_esm5/path-mapping';
@@ -15,7 +15,9 @@ export default {
   plugins: [
     paths(pathMapping()),
     nodeResolve({jsnext: true, module: true}),
-    buildOptimizer(),
+    optimizer({
+      sideEffectFreeModules: ['@angular/core/esm5/core.js']
+    }),
     uglify({
       mangle: true,
       compress: {

@@ -6,7 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {ClassSansProvider, ConstructorProvider, ConstructorSansProvider, ExistingProvider, ExistingSansProvider, FactoryProvider, FactorySansProvider, StaticClassProvider, StaticClassSansProvider, ValueProvider, ValueSansProvider} from '../di/provider';
+import {ReflectionCapabilities} from '../reflection/reflection_capabilities';
+import {Type} from '../type';
 import {makeDecorator, makeParamDecorator} from '../util/decorators';
+import {EMPTY_ARRAY} from '../view/util';
 
 
 /**
@@ -105,53 +109,6 @@ export interface Optional {}
  * @Annotation
  */
 export const Optional: OptionalDecorator = makeParamDecorator('Optional');
-
-/**
- * Type of the Injectable decorator / constructor function.
- *
- * @stable
- */
-export interface InjectableDecorator {
-  /**
-   * @whatItDoes A marker metadata that marks a class as available to {@link Injector} for creation.
-   * @howToUse
-   * ```
-   * @Injectable()
-   * class Car {}
-   * ```
-   *
-   * @description
-   * For more details, see the {@linkDocs guide/dependency-injection "Dependency Injection Guide"}.
-   *
-   * ### Example
-   *
-   * {@example core/di/ts/metadata_spec.ts region='Injectable'}
-   *
-   * {@link Injector} will throw an error when trying to instantiate a class that
-   * does not have `@Injectable` marker, as shown in the example below.
-   *
-   * {@example core/di/ts/metadata_spec.ts region='InjectableThrows'}
-   *
-   * @stable
-   */
-  (): any;
-  new (): Injectable;
-}
-
-/**
- * Type of the Injectable metadata.
- *
- * @stable
- */
-export interface Injectable {}
-
-/**
- * Injectable decorator and metadata.
- *
- * @stable
- * @Annotation
- */
-export const Injectable: InjectableDecorator = makeDecorator('Injectable');
 
 /**
  * Type of the Self decorator / constructor function.

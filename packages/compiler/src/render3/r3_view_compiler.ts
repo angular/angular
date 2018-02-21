@@ -8,9 +8,9 @@
 
 import {CompileDirectiveMetadata, CompilePipeSummary, CompileTokenMetadata, CompileTypeMetadata, flatten, identifierName, rendererTypeName, tokenReference, viewClassName} from '../compile_metadata';
 import {CompileReflector} from '../compile_reflector';
-import {BindingForm, BuiltinConverter, EventHandlerVars, LocalResolver, convertActionBinding, convertPropertyBinding, convertPropertyBindingBuiltins} from '../compiler_util/expression_converter';
+import {BindingForm, BuiltinConverter, ConvertPropertyBindingResult, EventHandlerVars, LocalResolver, convertActionBinding, convertPropertyBinding, convertPropertyBindingBuiltins} from '../compiler_util/expression_converter';
 import {ConstantPool, DefinitionKind} from '../constant_pool';
-import {AST} from '../expression_parser/ast';
+import {AST, AstMemoryEfficientTransformer, AstTransformer, BindingPipe, FunctionCall, ImplicitReceiver, LiteralPrimitive, MethodCall, ParseSpan, PropertyRead} from '../expression_parser/ast';
 import {Identifiers} from '../identifiers';
 import {LifecycleHooks} from '../lifecycle_reflector';
 import * as o from '../output/output_ast';
@@ -20,6 +20,7 @@ import {AttrAst, BoundDirectivePropertyAst, BoundElementPropertyAst, BoundEventA
 import {OutputContext, error} from '../util';
 
 import {Identifiers as R3} from './r3_identifiers';
+
 
 /** Name of the context parameter passed into a template function */
 const CONTEXT_NAME = 'ctx';
@@ -62,7 +63,7 @@ export function compileDirective(
       /* name */ className,
       /* parent */ null,
       /* fields */[new o.ClassField(
-          /* name */ 'ngDirectiveDef',
+          /* name */ outputCtx.constantPool.propertyNameOf(DefinitionKind.Directive),
           /* type */ o.INFERRED_TYPE,
           /* modifiers */[o.StmtModifier.Static],
           /* initializer */ o.importExpr(R3.defineDirective).callFn([o.literalMap(
@@ -73,8 +74,8 @@ export function compileDirective(
 }
 
 export function compileComponent(
-    outputCtx: OutputContext, component: CompileDirectiveMetadata, template: TemplateAst[],
-    reflector: CompileReflector) {
+    outputCtx: OutputContext, component: CompileDirectiveMetadata, pipes: CompilePipeSummary[],
+    template: TemplateAst[], reflector: CompileReflector) {
   const definitionMapValues: {key: string, quoted: boolean, value: o.Expression}[] = [];
 
   // e.g. `type: MyApp`
@@ -112,10 +113,11 @@ export function compileComponent(
   // e.g. `template: function MyComponent_Template(_ctx, _cm) {...}`
   const templateTypeName = component.type.reference.name;
   const templateName = templateTypeName ? `${templateTypeName}_Template` : null;
+  const pipeMap = new Map(pipes.map<[string, CompilePipeSummary]>(pipe => [pipe.name, pipe]));
   const templateFunctionExpression =
       new TemplateDefinitionBuilder(
           outputCtx, outputCtx.constantPool, reflector, CONTEXT_NAME, ROOT_SCOPE.nestedScope(), 0,
-          component.template !.ngContentSelectors, templateTypeName, templateName)
+          component.template !.ngContentSelectors, templateTypeName, templateName, pipeMap)
           .buildTemplateFunction(template, []);
   definitionMapValues.push({key: 'template', value: templateFunctionExpression, quoted: false});
 
@@ -143,7 +145,7 @@ export function compileComponent(
       /* name */ className,
       /* parent */ null,
       /* fields */[new o.ClassField(
-          /* name */ 'ngComponentDef',
+          /* name */ outputCtx.constantPool.propertyNameOf(DefinitionKind.Component),
           /* type */ o.INFERRED_TYPE,
           /* modifiers */[o.StmtModifier.Static],
           /* initializer */ o.importExpr(R3.defineComponent).callFn([o.literalMap(
@@ -178,25 +180,41 @@ function interpolate(args: o.Expression[]): o.Expression {
   args = args.slice(1);  // Ignore the length prefix added for render2
   switch (args.length) {
     case 3:
-      return o.importExpr(R3.bind1).callFn(args);
+      return o.importExpr(R3.interpolation1).callFn(args);
     case 5:
-      return o.importExpr(R3.bind2).callFn(args);
+      return o.importExpr(R3.interpolation2).callFn(args);
     case 7:
-      return o.importExpr(R3.bind3).callFn(args);
+      return o.importExpr(R3.interpolation3).callFn(args);
     case 9:
-      return o.importExpr(R3.bind4).callFn(args);
+      return o.importExpr(R3.interpolation4).callFn(args);
     case 11:
-      return o.importExpr(R3.bind5).callFn(args);
+      return o.importExpr(R3.interpolation5).callFn(args);
     case 13:
-      return o.importExpr(R3.bind6).callFn(args);
+      return o.importExpr(R3.interpolation6).callFn(args);
     case 15:
-      return o.importExpr(R3.bind7).callFn(args);
+      return o.importExpr(R3.interpolation7).callFn(args);
     case 17:
-      return o.importExpr(R3.bind8).callFn(args);
+      return o.importExpr(R3.interpolation8).callFn(args);
   }
   (args.length >= 19 && args.length % 2 == 1) ||
       error(`Invalid interpolation argument length ${args.length}`);
-  return o.importExpr(R3.bindV).callFn([o.literalArr(args)]);
+  return o.importExpr(R3.interpolationV).callFn([o.literalArr(args)]);
+}
+
+function pipeBinding(args: o.Expression[]): o.ExternalReference {
+  switch (args.length) {
+    case 0:
+      // The first parameter to pipeBind is always the value to be transformed followed
+      // by arg.length arguments so the total number of arguments to pipeBind are
+      // arg.length + 1.
+      return R3.pipeBind1;
+    case 1:
+      return R3.pipeBind2;
+    case 2:
+      return R3.pipeBind3;
+    default:
+      return R3.pipeBindV;
+  }
 }
 
 class BindingScope {
@@ -219,10 +237,10 @@ class BindingScope {
     return null;
   }
 
-  set(name: string, variableName: string): BindingScope {
+  set(name: string, value: o.Expression): BindingScope {
     !this.map.has(name) ||
         error(`The name ${name} is already defined in scope to be ${this.map.get(name)}`);
-    this.map.set(name, o.variable(variableName));
+    this.map.set(name, value);
     return this;
   }
 
@@ -236,7 +254,7 @@ class BindingScope {
   }
 }
 
-const ROOT_SCOPE = new BindingScope(null).set('$event', '$event');
+const ROOT_SCOPE = new BindingScope(null).set('$event', o.variable('$event'));
 
 class TemplateDefinitionBuilder implements TemplateAstVisitor, LocalResolver {
   private _dataIndex = 0;
@@ -251,6 +269,7 @@ class TemplateDefinitionBuilder implements TemplateAstVisitor, LocalResolver {
   private _postfix: o.Statement[] = [];
   private _contentProjections: Map<NgContentAst, NgContentInfo>;
   private _projectionDefinitionIndex = 0;
+  private _pipeConverter: PipeConverter;
   private unsupported = unsupported;
   private invalid = invalid;
 
@@ -258,7 +277,23 @@ class TemplateDefinitionBuilder implements TemplateAstVisitor, LocalResolver {
       private outputCtx: OutputContext, private constantPool: ConstantPool,
       private reflector: CompileReflector, private contextParameter: string,
       private bindingScope: BindingScope, private level = 0, private ngContentSelectors: string[],
-      private contextName: string|null, private templateName: string|null) {}
+      private contextName: string|null, private templateName: string|null,
+      private pipes: Map<string, CompilePipeSummary>) {
+    this._pipeConverter =
+        new PipeConverter(() => this.allocateDataSlot(), (name, localName, slot, value) => {
+          bindingScope.set(localName, value);
+          const pipe = pipes.get(name) !;
+          pipe || error(`Could not find pipe ${name}`);
+          const pipeDefinition = constantPool.getDefinition(
+              pipe.type.reference, DefinitionKind.Pipe, outputCtx, /* forceShared */ true);
+          this._creationMode.push(
+              o.importExpr(R3.pipe)
+                  .callFn([
+                    o.literal(slot), pipeDefinition, pipeDefinition.callMethod(R3.NEW_METHOD, [])
+                  ])
+                  .toStmt());
+        });
+  }
 
   buildTemplateFunction(asts: TemplateAst[], variables: VariableAst[]): o.FunctionExpr {
     // Create variable bindings
@@ -272,7 +307,7 @@ class TemplateDefinitionBuilder implements TemplateAstVisitor, LocalResolver {
       ]);
 
       // Add the reference to the local scope.
-      this.bindingScope.set(variableName, scopedName);
+      this.bindingScope.set(variableName, o.variable(scopedName));
 
       // Declare the local variable in binding mode
       this._bindingMode.push(declaration);
@@ -332,8 +367,10 @@ class TemplateDefinitionBuilder implements TemplateAstVisitor, LocalResolver {
         o.INFERRED_TYPE, null, this.templateName);
   }
 
+  // LocalResolver
   getLocal(name: string): o.Expression|null { return this.bindingScope.get(name); }
 
+  // TemplateAstVisitor
   visitNgContent(ast: NgContentAst) {
     const info = this._contentProjections.get(ast) !;
     info || error(`Expected ${ast.sourceSpan} to be included in content projection collection`);
@@ -361,6 +398,7 @@ class TemplateDefinitionBuilder implements TemplateAstVisitor, LocalResolver {
     };
   }
 
+  // TemplateAstVisitor
   visitElement(ast: ElementAst) {
     let bindingCount = 0;
     const elementIndex = this.allocateDataSlot();
@@ -408,9 +446,9 @@ class TemplateDefinitionBuilder implements TemplateAstVisitor, LocalResolver {
             // Generate the update temporary.
             const variableName = this.bindingScope.freshReferenceName();
             this._bindingMode.push(o.variable(variableName, o.INFERRED_TYPE)
-                                       .set(o.importExpr(R3.memory).callFn([o.literal(slot)]))
+                                       .set(o.importExpr(R3.load).callFn([o.literal(slot)]))
                                        .toDeclStmt(o.INFERRED_TYPE, [o.StmtModifier.Final]));
-            this.bindingScope.set(reference.name, variableName);
+            this.bindingScope.set(reference.name, o.variable(variableName));
             return [reference.name, reference.originalValue];
           })).map(value => o.literal(value));
       parameters.push(
@@ -434,18 +472,14 @@ class TemplateDefinitionBuilder implements TemplateAstVisitor, LocalResolver {
       if (input.isAnimation) {
         this.unsupported('animations');
       }
-      // TODO(chuckj): Built-in transform?
-      const convertedBinding = convertPropertyBinding(
-          this, implicit, input.value, this.bindingContext(), BindingForm.TrySimple, interpolate);
-      this._bindingMode.push(...convertedBinding.stmts);
-      const parameters =
-          [o.literal(elementIndex), o.literal(input.name), convertedBinding.currValExpr];
+      const convertedBinding = this.convertPropertyBinding(implicit, input.value);
+      const parameters = [o.literal(elementIndex), o.literal(input.name), convertedBinding];
       const instruction = BINDING_INSTRUCTION_MAP[input.type];
       if (instruction) {
         // TODO(chuckj): runtime: security context?
         this.instruction(
             this._bindingMode, input.sourceSpan, instruction, o.literal(elementIndex),
-            o.literal(input.name), convertedBinding.currValExpr);
+            o.literal(input.name), convertedBinding);
       } else {
         this.unsupported(`binding ${PropertyBindingType[input.type]}`);
       }
@@ -479,13 +513,10 @@ class TemplateDefinitionBuilder implements TemplateAstVisitor, LocalResolver {
 
       // Bindings
       for (const input of directive.inputs) {
-        const convertedBinding = convertPropertyBinding(
-            this, implicit, input.value, this.bindingContext(), BindingForm.TrySimple, interpolate);
-        this._bindingMode.push(...convertedBinding.stmts);
+        const convertedBinding = this.convertPropertyBinding(implicit, input.value);
         this.instruction(
             this._bindingMode, directive.sourceSpan, R3.elementProperty, o.literal(nodeIndex),
-            o.literal(input.templateName),
-            o.importExpr(R3.bind).callFn([convertedBinding.currValExpr]));
+            o.literal(input.templateName), o.importExpr(R3.bind).callFn([convertedBinding]));
       }
 
       // e.g. MyDirective.ngDirectiveDef.h(0, 0);
@@ -501,6 +532,7 @@ class TemplateDefinitionBuilder implements TemplateAstVisitor, LocalResolver {
     }
   }
 
+  // TemplateAstVisitor
   visitEmbeddedTemplate(ast: EmbeddedTemplateAst) {
     const templateIndex = this.allocateDataSlot();
 
@@ -539,7 +571,7 @@ class TemplateDefinitionBuilder implements TemplateAstVisitor, LocalResolver {
     const templateVisitor = new TemplateDefinitionBuilder(
         this.outputCtx, this.constantPool, this.reflector, templateContext,
         this.bindingScope.nestedScope(), this.level + 1, this.ngContentSelectors, contextName,
-        templateName);
+        templateName, this.pipes);
     const templateFunctionExpr = templateVisitor.buildTemplateFunction(ast.children, ast.variables);
     this._postfix.push(templateFunctionExpr.toDeclStmt(templateName, null));
   }
@@ -551,6 +583,7 @@ class TemplateDefinitionBuilder implements TemplateAstVisitor, LocalResolver {
   readonly visitElementProperty = invalid;
   readonly visitAttr = invalid;
 
+  // TemplateAstVisitor
   visitBoundText(ast: BoundTextAst) {
     const nodeIndex = this.allocateDataSlot();
 
@@ -563,6 +596,7 @@ class TemplateDefinitionBuilder implements TemplateAstVisitor, LocalResolver {
         this.bind(o.variable(CONTEXT_NAME), ast.value, ast.sourceSpan));
   }
 
+  // TemplateAstVisitor
   visitText(ast: TextAst) {
     // Text is defined in creation mode only.
     this.instruction(
@@ -600,8 +634,10 @@ class TemplateDefinitionBuilder implements TemplateAstVisitor, LocalResolver {
   }
 
   private convertPropertyBinding(implicit: o.Expression, value: AST): o.Expression {
+    const pipesConvertedValue = value.visit(this._pipeConverter);
     const convertedPropertyBinding = convertPropertyBinding(
-        this, implicit, value, this.bindingContext(), BindingForm.TrySimple, interpolate);
+        this, implicit, pipesConvertedValue, this.bindingContext(), BindingForm.TrySimple,
+        interpolate);
     this._refreshMode.push(...convertedPropertyBinding.stmts);
     return convertedPropertyBinding.currValExpr;
   }
@@ -611,7 +647,7 @@ class TemplateDefinitionBuilder implements TemplateAstVisitor, LocalResolver {
   }
 }
 
-function createFactory(
+export function createFactory(
     type: CompileTypeMetadata, outputCtx: OutputContext,
     reflector: CompileReflector): o.FunctionExpr {
   let args: o.Expression[] = [];
@@ -650,6 +686,35 @@ function createFactory(
       [],
       [new o.ReturnStatement(new o.InstantiateExpr(outputCtx.importExpr(type.reference), args))],
       o.INFERRED_TYPE, null, type.reference.name ? `${type.reference.name}_Factory` : null);
+}
+
+class PipeConverter extends AstMemoryEfficientTransformer {
+  private pipeSlots = new Map<string, number>();
+  constructor(
+      private allocateSlot: () => number,
+      private definePipe:
+          (name: string, localName: string, slot: number, value: o.Expression) => void) {
+    super();
+  }
+
+  // AstMemoryEfficientTransformer
+  visitPipe(ast: BindingPipe, context: any): AST {
+    // Allocate a slot to create the pipe
+    let slot = this.pipeSlots.get(ast.name);
+    if (slot == null) {
+      slot = this.allocateSlot();
+      this.pipeSlots.set(ast.name, slot);
+    }
+    const slotPseudoLocal = `PIPE:${slot}`;
+    const target = new PropertyRead(ast.span, new ImplicitReceiver(ast.span), slotPseudoLocal);
+    const bindingId = pipeBinding(ast.args);
+    this.definePipe(ast.name, slotPseudoLocal, slot, o.importExpr(bindingId));
+    const value = ast.exp.visit(this);
+    const args = this.visitAll(ast.args);
+
+    return new FunctionCall(
+        ast.span, target, [new LiteralPrimitive(ast.span, slot), value, ...args]);
+  }
 }
 
 function invalid<T>(arg: o.Expression | o.Statement | TemplateAst): never {

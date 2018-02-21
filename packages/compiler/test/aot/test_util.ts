@@ -531,6 +531,7 @@ const minCoreIndex = `
   export * from './src/change_detection';
   export * from './src/metadata';
   export * from './src/di/metadata';
+  export * from './src/di/injectable';
   export * from './src/di/injector';
   export * from './src/di/injection_token';
   export * from './src/linker';

@@ -79,6 +79,14 @@ export interface DirectiveDef<T> {
    */
   h(directiveIndex: number, elementIndex: number): void;
 
+  /**
+   * Static attributes to set on host element.
+   *
+   * Even indices: attribute name
+   * Odd indices: attribute value
+   */
+  attributes: string[]|null;
+
   /* The following are lifecycle hooks for this component */
   onInit: (() => void)|null;
   doCheck: (() => void)|null;
@@ -140,6 +148,7 @@ export interface PipeDef<T> {
 export interface DirectiveDefArgs<T> {
   type: Type<T>;
   factory: () => T | [T];
+  attributes?: string[];
   inputs?: {[P in keyof T]?: string};
   outputs?: {[P in keyof T]?: string};
   methods?: {[P in keyof T]?: string};

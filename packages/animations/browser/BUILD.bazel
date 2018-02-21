@@ -1,8 +1,8 @@
 package(default_visibility = ["//visibility:public"])
 
-load("//tools:defaults.bzl", "ts_library")
+load("//tools:defaults.bzl", "ng_module")
 
-ts_library(
+ng_module(
     name = "browser",
     srcs = glob(
         [
@@ -13,5 +13,6 @@ ts_library(
     module_name = "@angular/animations/browser",
     deps = [
         "//packages/animations",
+        "//packages/core",
     ],
 )

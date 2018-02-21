@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ɵT as T, ɵb1 as b1, ɵdefineComponent as defineComponent, ɵrenderComponent as renderComponent, ɵt as t} from '@angular/core';
+import {ɵT as T, ɵdefineComponent as defineComponent, ɵi1 as i1, ɵrenderComponent as renderComponent, ɵt as t} from '@angular/core';
 
 class HelloWorld {
   name = 'World';
@@ -19,7 +19,7 @@ class HelloWorld {
       if (cm) {
         T(0);
       }
-      t(0, b1('Hello ', ctx.name, '!'));
+      t(0, i1('Hello ', ctx.name, '!'));
     }
   });
 }

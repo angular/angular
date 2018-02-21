@@ -12,6 +12,7 @@ load(":rules_typescript.bzl",
     "compile_ts",
     "DEPS_ASPECTS",
     "ts_providers_dict_to_struct",
+    "json_marshal",
 )
 
 def _basename_of(ctx, file):
@@ -57,7 +58,8 @@ def _expected_outs(ctx):
     else:
       continue
 
-    closure_js = [f.replace(".js", ".closure.js") for f in devmode_js]
+    filter_summaries = ctx.attr.filter_summaries
+    closure_js = [f.replace(".js", ".closure.js") for f in devmode_js if not filter_summaries or not f.endswith(".ngsummary.js")]
     declarations = [f.replace(".js", ".d.ts") for f in devmode_js]
 
     devmode_js_files += [ctx.new_file(ctx.bin_dir, basename + ext) for ext in devmode_js]
@@ -89,8 +91,7 @@ def _ngc_tsconfig(ctx, files, srcs, **kwargs):
           "enableSummariesForJit": True,
           "fullTemplateTypeCheck": ctx.attr.type_check,
           # FIXME: wrong place to de-dupe
-          "expectedOut": depset([o.path for o in expected_outs]).to_list(),
-          "preserveWhitespaces": False,
+          "expectedOut": depset([o.path for o in expected_outs]).to_list()
       }
   })
 
@@ -235,6 +236,43 @@ def _ts_expected_outs(ctx, label):
   _ignored = [label]
   return _expected_outs(ctx)
 
+def _write_bundle_index(ctx):
+  basename = "_%s.bundle_index" % ctx.label.name
+  tsconfig_file = ctx.actions.declare_file("%s.tsconfig.json" % basename)
+  metadata_file = ctx.actions.declare_file("%s.metadata.json" % basename)
+  tstyping_file = ctx.actions.declare_file("%s.d.ts" % basename)
+
+  tsconfig = dict(tsc_wrapped_tsconfig(ctx, ctx.files.srcs, ctx.files.srcs), **{
+    "angularCompilerOptions": {
+      "flatModuleOutFile": basename,
+    },
+  })
+  if ctx.attr.module_name:
+    tsconfig["angularCompilerOptions"]["flatModuleId"] = ctx.attr.module_name
+
+  # createBundleIndexHost in bundle_index_host.ts will throw if the "files" has more than one entry.
+  # We don't want to fail() here, however, because not all ng_module's will have the bundle index written.
+  # So we make the assumption that the index.ts file in the highest parent directory is the entry point.
+  index_file = None
+  for f in tsconfig["files"]:
+    if f.endswith("/index.ts"):
+      if not index_file or len(f) < len(index_file):
+        index_file = f
+  tsconfig["files"] = [index_file]
+
+  ctx.actions.write(tsconfig_file, json_marshal(tsconfig))
+
+  outputs = [metadata_file, tstyping_file]
+
+  ctx.action(
+      progress_message = "Producing metadata for bundle %s" % ctx.label.name,
+      executable = ctx.executable._index_bundler,
+      inputs = ctx.files.srcs + [tsconfig_file],
+      outputs = outputs,
+      arguments = ["-p", tsconfig_file.path],
+  )
+  return outputs
+
 def ng_module_impl(ctx, ts_compile_actions):
   """Implementation function for the ng_module rule.
 
@@ -262,6 +300,13 @@ def ng_module_impl(ctx, ts_compile_actions):
   }
   providers["ngc_messages"] = outs.i18n_messages
 
+  # Only produces the flattened "index bundle" metadata when requested by some other rule
+  # and only under Bazel
+  if hasattr(ctx.executable, "_index_bundler"):
+    bundle_index_metadata = _write_bundle_index(ctx)
+    # note, not recursive
+    providers["angular"]["flat_module_metadata"] = depset(bundle_index_metadata)
+
   return providers
 
 def _ng_module_impl(ctx):
@@ -281,6 +326,8 @@ NG_MODULE_ATTRIBUTES = {
     "factories": attr.label_list(
         allow_files = [".ts", ".html"],
         mandatory = False),
+
+    "filter_summaries": attr.bool(default = False),
 
     "type_check": attr.bool(default = True),
 
@@ -312,6 +359,10 @@ ng_module = rule(
         "node_modules": attr.label(
             default = Label("@//:node_modules")
         ),
+        "_index_bundler": attr.label(
+            executable = True,
+            cfg = "host",
+            default = Label("//packages/bazel/src:index_bundler")),
     }),
     outputs = COMMON_OUTPUTS,
 )

@@ -7,7 +7,7 @@
  */
 
 import {detectChanges} from '../../src/render3/index';
-import {componentRefresh, container, containerRefreshEnd, containerRefreshStart, elementEnd, elementStart, embeddedViewEnd, embeddedViewStart, memory, projection, projectionDef, text} from '../../src/render3/instructions';
+import {componentRefresh, container, containerRefreshEnd, containerRefreshStart, elementEnd, elementStart, embeddedViewEnd, embeddedViewStart, load, projection, projectionDef, text} from '../../src/render3/instructions';
 
 import {createComponent, renderComponent, toHtml} from './render_util';
 
@@ -309,7 +309,7 @@ describe('content projection', () => {
       if (cm) {
         elementStart(0, Child);
         {
-          childCmptInstance = memory(1);
+          childCmptInstance = load(1);
           text(2, 'content');
         }
         elementEnd();
@@ -362,7 +362,7 @@ describe('content projection', () => {
          if (cm) {
            elementStart(0, Child);
            {
-             childCmptInstance = memory(1);
+             childCmptInstance = load(1);
              text(2, 'content');
            }
            elementEnd();
@@ -417,7 +417,7 @@ describe('content projection', () => {
          if (cm) {
            elementStart(0, Child);
            {
-             childCmptInstance = memory(1);
+             childCmptInstance = load(1);
              text(2, 'content');
            }
            elementEnd();
@@ -512,7 +512,7 @@ describe('content projection', () => {
       if (cm) {
         elementStart(0, Child);
         {
-          childCmptInstance = memory(1);
+          childCmptInstance = load(1);
           text(2, 'content');
         }
         elementEnd();
