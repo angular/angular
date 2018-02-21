@@ -210,4 +210,35 @@ describe('RouterPreloader', () => {
              expect((c[1] as any)._loadedConfig).toBeDefined();
            })));
   });
+
+  describe('should copy loaded configs', () => {
+    const configs = [{path: 'LoadedModule1', component: LazyLoadedCmp}];
+    @NgModule({declarations: [LazyLoadedCmp], imports: [RouterModule.forChild(configs)]})
+    class LoadedModule {
+    }
+
+    beforeEach(() => {
+      TestBed.configureTestingModule({
+        imports: [RouterTestingModule.withRoutes([{path: 'lazy1', loadChildren: 'expected'}])],
+        providers: [{provide: PreloadingStrategy, useExisting: PreloadAllModules}]
+      });
+    });
+
+    it('should work',
+       fakeAsync(inject(
+           [NgModuleFactoryLoader, RouterPreloader, Router],
+           (loader: SpyNgModuleFactoryLoader, preloader: RouterPreloader, router: Router) => {
+             loader.stubbedModules = {expected: LoadedModule};
+
+             preloader.preload().subscribe(() => {});
+
+             tick();
+
+             const c = router.config as{_loadedConfig: LoadedRouterConfig}[];
+             expect(c[0]._loadedConfig).toBeDefined();
+             expect(c[0]._loadedConfig !.routes).not.toBe(configs);
+             expect(c[0]._loadedConfig !.routes[0]).not.toBe(configs[0]);
+             expect(c[0]._loadedConfig !.routes[0].component).toBe(configs[0].component);
+           })));
+  });
 });
