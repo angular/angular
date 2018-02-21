@@ -29,13 +29,32 @@ export class LowerCasePipe implements PipeTransform {
 
 
 /**
- * Helper method to transform a single word to titlecase.
+ * Helper method to transform strings to title case
  *
  * @stable
  */
-function titleCaseWord(word: string) {
-  if (!word) return word;
-  return word[0].toUpperCase() + word.substr(1).toLowerCase();
+function titleCase(str: string): string {
+  if (!str) return str;
+
+  const beforeCapital = [/\s/, /\./, /,/];
+
+  let shouldLookforFirstLetter = true;
+
+  return Array.from(str)
+      .map((letter) => {
+        if (beforeCapital.some(regex => regex.test(letter))) {
+          shouldLookforFirstLetter = true;
+          return letter;
+        }
+
+        if (shouldLookforFirstLetter) {
+          shouldLookforFirstLetter = false;
+          return letter.toUpperCase();
+        }
+
+        return letter.toLowerCase();
+      })
+      .join('');
 }
 
 /**
@@ -51,7 +70,7 @@ export class TitleCasePipe implements PipeTransform {
       throw invalidPipeArgumentError(TitleCasePipe, value);
     }
 
-    return value.split(/\b/g).map(word => titleCaseWord(word)).join('');
+    return titleCase(value);
   }
 }
 
