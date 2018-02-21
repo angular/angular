@@ -44,6 +44,7 @@ export function defineComponent<T>(componentDefinition: ComponentDefArgs<T>): Co
     h: componentDefinition.hostBindings || noop,
     attributes: componentDefinition.attributes || null,
     inputs: invertObject(componentDefinition.inputs),
+    inputsPropertyName: componentDefinition.inputsPropertyName || null,
     outputs: invertObject(componentDefinition.outputs),
     methods: invertObject(componentDefinition.methods),
     rendererType: resolveRendererType2(componentDefinition.rendererType) || null,
@@ -72,10 +73,12 @@ type OnChangesExpando = OnChanges & {
 export function NgOnChangesFeature(definition: DirectiveDef<any>): void {
   const inputs = definition.inputs;
   const proto = definition.type.prototype;
+  const inputsPropertyName = definition.inputsPropertyName;
   // Place where we will store SimpleChanges if there is a change
   Object.defineProperty(proto, PRIVATE_PREFIX, {value: undefined, writable: true});
   for (let pubKey in inputs) {
     const minKey = inputs[pubKey];
+    const propertyName = inputsPropertyName && inputsPropertyName[minKey] || pubKey;
     const privateMinKey = PRIVATE_PREFIX + minKey;
     // Create a place where the actual value will be stored and make it non-enumerable
     Object.defineProperty(proto, privateMinKey, {value: undefined, writable: true});
@@ -94,7 +97,7 @@ export function NgOnChangesFeature(definition: DirectiveDef<any>): void {
         if (simpleChanges == null) {
           simpleChanges = this[PRIVATE_PREFIX] = {};
         }
-        simpleChanges[pubKey] = new SimpleChange(this[privateMinKey], value, isFirstChange);
+        simpleChanges[propertyName] = new SimpleChange(this[privateMinKey], value, isFirstChange);
         (existingDesc && existingDesc.set) ? existingDesc.set.call(this, value) :
                                              this[privateMinKey] = value;
       }
