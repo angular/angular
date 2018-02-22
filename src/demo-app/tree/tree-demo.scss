@@ -1,0 +1,25 @@
+.demo-tree-container {
+  .tree-demo-invisible {
+    display: none;
+  }
+
+  ul, li {
+    -webkit-margin-before: 0;
+    -webkit-margin-after: 0;
+    list-style-type: none;
+  }
+
+  .mat-card {
+    margin: 16px;
+  }
+}
+
+.checklist-leaf-node {
+  padding-left: 40px;
+  padding-right: inherit;
+
+  [dir='rtl'] & {
+    padding-right: 60px;
+    padding-left: inherit;
+  }
+}

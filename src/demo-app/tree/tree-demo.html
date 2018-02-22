@@ -1,0 +1,69 @@
+<div class="demo-tree-container">
+  <mat-card>
+    <mat-card-header>Flattened tree</mat-card-header>
+
+    <mat-tree [dataSource]="dataSource" [treeControl]="treeControl">
+      <mat-tree-node *matTreeNodeDef="let node" matTreeNodeToggle matTreeNodePadding>
+          {{node.filename}} : {{node.type}}
+      </mat-tree-node>
+
+      <mat-tree-node *matTreeNodeDef="let node;when: hasChild" matTreeNodePadding>
+          <button mat-icon-button matTreeNodeToggle
+                  [attr.aria-label]="'toggle ' + node.filename">
+            <mat-icon>
+              {{treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
+            </mat-icon>
+          </button>
+          {{node.filename}} : {{node.type}}
+      </mat-tree-node>
+    </mat-tree>
+
+  </mat-card>
+
+
+
+  <mat-card>
+    <mat-card-header>Nested tree</mat-card-header>
+
+    <mat-tree [dataSource]="nestedDataSource" [treeControl]="nestedTreeControl">
+      <mat-tree-node *matTreeNodeDef="let node" matTreeNodeToggle>
+        <li>
+          <div>{{node.filename}}:  {{node.type}}</div>
+        </li>
+      </mat-tree-node>
+
+      <mat-nested-tree-node *matTreeNodeDef="let node; when: hasNestedChild">
+        <li>
+          <div class="mat-tree-node">
+            <button mat-icon-button matTreeNodeToggle
+                    [attr.aria-label]="'toggle ' + node.filename">
+              <mat-icon>
+                {{nestedTreeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
+              </mat-icon>
+            </button>
+            {{node.filename}}
+          </div>
+          <ul [class.tree-demo-invisible]="!nestedTreeControl.isExpanded(node)">
+            <ng-container matTreeNodeOutlet></ng-container>
+          </ul>
+        </li>
+      </mat-nested-tree-node>
+    </mat-tree>
+  </mat-card>
+
+  <mat-card>
+    <mat-card-header>Todo list Flattened tree</mat-card-header>
+    <checklist-tree-demo></checklist-tree-demo>
+  </mat-card>
+
+  <mat-card>
+    <mat-card-header>Dynamic flat tree</mat-card-header>
+    <dynamic-tree-demo></dynamic-tree-demo>
+  </mat-card>
+
+  <mat-card>
+    <mat-card-header>Loadmore flat tree</mat-card-header>
+    <loadmore-tree-demo></loadmore-tree-demo>
+  </mat-card>
+
+</div>

@@ -33,6 +33,7 @@
 /src/lib/toolbar/**                                @devversion
 /src/lib/tooltip/**                                @andrewseguin
 /src/lib/badge/**                                  @amcdnl
+/src/lib/tree/**                                   @tinayuangao
 
 # Angular Material core
 /src/lib/core/*                                    @jelbourn
@@ -71,6 +72,7 @@
 /src/cdk/stepper/**                                @mmalerba
 /src/cdk/table/**                                  @andrewseguin
 /src/cdk/testing/**                                @devversion
+/src/cdk/tree/**                                   @tinayuangao
 
 # Moment adapter package
 /src/material-moment-adapter/**                    @mmalerba
@@ -129,6 +131,7 @@
 /src/demo-app/tabs/**                              @andrewseguin
 /src/demo-app/toolbar/**                           @devversion
 /src/demo-app/tooltip/**                           @andrewseguin
+/src/demo-app/tree/**                              @tinayuangao
 /src/demo-app/typography/**                        @crisbeto
 /src/demo-app/badge/**                             @amcdnl
 

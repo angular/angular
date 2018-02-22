@@ -1,0 +1,27 @@
+@import '../core/theming/palette';
+@import '../core/theming/theming';
+@import '../core/typography/typography-utils';
+
+@mixin mat-tree-theme($theme) {
+  $background: map-get($theme, background);
+  $foreground: map-get($theme, foreground);
+
+  .mat-tree {
+    background: mat-color($background, 'card');
+  }
+
+  .mat-tree-node {
+    color: mat-color($foreground, text);
+  }
+}
+
+@mixin mat-tree-typography($config) {
+  .mat-tree {
+    font-family: mat-font-family($config);
+  }
+
+  .mat-tree-node {
+    font-weight: mat-font-weight($config, body-1);
+    font-size: mat-font-size($config, body-1);
+  }
+}

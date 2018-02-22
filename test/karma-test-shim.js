@@ -69,6 +69,7 @@ System.config({
     '@angular/cdk/stepper': 'dist/packages/cdk/stepper/index.js',
     '@angular/cdk/table': 'dist/packages/cdk/table/index.js',
     '@angular/cdk/testing': 'dist/packages/cdk/testing/index.js',
+    '@angular/cdk/tree': 'dist/packages/cdk/tree/index.js',
 
     '@angular/material/autocomplete': 'dist/packages/material/autocomplete/index.js',
     '@angular/material/badge': 'dist/packages/material/badge/index.js',
@@ -104,6 +105,7 @@ System.config({
     '@angular/material/tabs': 'dist/packages/material/tabs/index.js',
     '@angular/material/toolbar': 'dist/packages/material/toolbar/index.js',
     '@angular/material/tooltip': 'dist/packages/material/tooltip/index.js',
+    '@angular/material/tree': 'dist/packages/material/tree/index.js',
   },
   packages: {
     // Thirdparty barrels.

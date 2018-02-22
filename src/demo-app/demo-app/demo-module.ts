@@ -62,6 +62,7 @@ import {DemoApp, Home} from './demo-app';
 import {DEMO_APP_ROUTES} from './routes';
 import {TableDemoModule} from '../table/table-demo-module';
 import {BadgeDemo} from '../badge/badge-demo';
+import {TreeDemoModule} from '../tree/tree-demo-module';
 
 @NgModule({
   imports: [
@@ -72,6 +73,7 @@ import {BadgeDemo} from '../badge/badge-demo';
     DemoMaterialModule,
     LayoutModule,
     TableDemoModule,
+    TreeDemoModule,
   ],
   declarations: [
     AutocompleteDemo,

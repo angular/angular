@@ -14,6 +14,7 @@ import {OverlayModule} from '@angular/cdk/overlay';
 import {PlatformModule} from '@angular/cdk/platform';
 import {PortalModule} from '@angular/cdk/portal';
 import {CdkTableModule} from '@angular/cdk/table';
+import {CdkTreeModule} from '@angular/cdk/tree';
 import {NgModule} from '@angular/core';
 import {
   MatAutocompleteModule,
@@ -51,6 +52,7 @@ import {
   MatTabsModule,
   MatToolbarModule,
   MatTooltipModule,
+  MatTreeModule
 } from '@angular/material';
 
 /**
@@ -92,8 +94,10 @@ import {
     MatTabsModule,
     MatToolbarModule,
     MatTooltipModule,
+    MatTreeModule,
     MatNativeDateModule,
     CdkTableModule,
+    CdkTreeModule,
     A11yModule,
     BidiModule,
     CdkAccordionModule,
