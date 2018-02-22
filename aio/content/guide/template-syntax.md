@@ -705,47 +705,84 @@ To appreciate the difference, you must develop a new way to think about template
 바인딩할 대상의 이름은 _프로퍼티_ 의 이름이 되는데, _어트리뷰트_ 와 헷갈릴 수 있으니 주의해야 합니다.
 프로퍼티 바인딩과 어트리뷰트 바인딩의 차이를 알아보기 위해 템플릿 HTML를 조금 다른 시각으로 알아봅시다.
 
+<!--
 ### A new mental model
+-->
+### 새로운 HTML 구현방식으로 생각하기
 
+<!--
 With all the power of data binding and the ability to extend the HTML vocabulary
 with custom markup, it is tempting to think of template HTML as *HTML Plus*.
+-->
+기존에 있던 HTML 요소에 데이터 바인딩 기능을 추가하는 것은 *HTML 요소를 확장* 하는 것이라고 생각할 수도 있습니다.
 
+<!--
 It really *is* HTML Plus.
 But it's also significantly different than the HTML you're used to.
 It requires a new mental model.
+-->
+하지만 기존에 사용하던 HTML과 다른 점도 많습니다.
+좀 더 자세히 알아봅시다.
 
+<!--
 In the normal course of HTML development, you create a visual structure with HTML elements, and
 you modify those elements by setting element attributes with string constants.
+-->
+일반적으로 HTML 문서를 작성할 때는 화면에 표시하는 모양에 맞게 HTML 엘리먼트 구조를 잡고 각 엘리먼트의 어트리뷰트를 문자열로 직접 지정했습니다.
 
 <code-example path="template-syntax/src/app/app.component.html" region="img+button" title="src/app/app.component.html" linenums="false">
 </code-example>
 
+<!--
 You still create a structure and initialize attribute values this way in Angular templates.
+-->
+지금까지 살펴본 Angular 템플릿에서도 엘리먼트 구조를 잡거나 어트리뷰트 값을 지정할 때도 이런 방법을 사용했습니다.
 
+<!--
 Then you learn to create new elements with components that encapsulate HTML
 and drop them into templates as if they were native HTML elements.
+-->
+그리고 HTML을 캡슐화하는 컴포넌트를 작성한 후에는 일반 HTML 엘리먼트처럼 템플릿에 사용할 수 있습니다.
 
 <code-example path="template-syntax/src/app/app.component.html" region="hero-detail-1" title="src/app/app.component.html" linenums="false">
 </code-example>
 
+<!--
 That's HTML Plus.
+-->
+그래서 이것을 HTML가 확장되었다고 하는 것입니다.
 
+<!--
 Then you learn about data binding. The first binding you meet might look like this:
+-->
+이제 데이터 바인딩에 대해 알아봅시다. 첫번째로 살펴볼 바인딩은 다음과 같습니다.
 
 <code-example path="template-syntax/src/app/app.component.html" region="disabled-button-1" title="src/app/app.component.html" linenums="false">
 </code-example>
 
+<!--
 You'll get to that peculiar bracket notation in a moment. Looking beyond it,
 your intuition suggests that you're binding to the button's `disabled` attribute and setting
 it to the current value of the component's `isUnchanged` property.
+-->
+코드에 사용된 중괄호(`[`, `]`)가 낯설어 보일 수 있습니다.
+이 문법은 컴포넌트에 있는 `isUnchanged` 프로퍼티 값을 버튼의 `disabled` 어트리뷰트 값에 바인딩하는 문법일까요?
 
+<!--
 Your intuition is incorrect! Your everyday HTML mental model is misleading.
 In fact, once you start data binding, you are no longer working with HTML *attributes*. You aren't setting attributes.
 You are setting the *properties* of DOM elements, components, and directives.
+-->
+아닙니다! 매일 작업하던 HTML 모델과는 이 점이 다릅니다.
+사실 데이터 바인딩을 사용하고 나면 더이상 HTML *어트리뷰트* 를 직접 조작할 필요가 없습니다.
+단지 DOM 엘리먼트나 컴포넌트, 디렉티브의 *프로퍼티* 값만 지정하게 될 것입니다.
 
 <div class="l-sub-section">
 
+<!--
 ### HTML attribute vs. DOM property
+-->
+### HTML 어트리뷰트 vs. DOM 프로퍼티
 
 The distinction between an HTML attribute and a DOM property is crucial to understanding how Angular binding works.
 
