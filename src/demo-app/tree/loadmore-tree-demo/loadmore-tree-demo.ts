@@ -9,6 +9,7 @@
 import {Component} from '@angular/core';
 import {FlatTreeControl} from '@angular/cdk/tree';
 import {MatTreeFlatDataSource, MatTreeFlattener} from '@angular/material/tree';
+import {Observable} from 'rxjs/Observable';
 import {LoadmoreNode, LoadmoreFlatNode, LoadmoreDatabase} from './loadmore-database';
 
 const LOAD_MORE = 'LOAD_MORE';
@@ -50,7 +51,7 @@ export class LoadmoreTreeDemo {
     database.initialize();
   }
 
-  getChildren = (node: LoadmoreNode) => { return node.childrenChange; };
+  getChildren = (node: LoadmoreNode): Observable<LoadmoreNode[]> => { return node.childrenChange; };
 
   transformer = (node: LoadmoreNode, level: number) => {
     if (this.nodeMap.has(node.item)) {

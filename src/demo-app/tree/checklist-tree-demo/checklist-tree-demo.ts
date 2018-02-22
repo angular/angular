@@ -11,6 +11,7 @@ import {SelectionModel} from '@angular/cdk/collections';
 import {FlatTreeControl} from '@angular/cdk/tree';
 import {MatTreeFlattener, MatTreeFlatDataSource} from '@angular/material/tree';
 import {of as ofObservable} from 'rxjs/observable/of';
+import {Observable} from 'rxjs/Observable';
 import {TodoItemNode, TodoItemFlatNode, ChecklistDatabase} from './checklist-database';
 
 /**
@@ -61,7 +62,9 @@ export class ChecklistTreeDemo {
 
   isExpandable = (node: TodoItemFlatNode) => { return node.expandable; };
 
-  getChildren = (node: TodoItemNode) => { return ofObservable(node.children); };
+  getChildren = (node: TodoItemNode): Observable<TodoItemNode[]> => {
+    return ofObservable(node.children);
+  }
 
   hasChild = (_: number, _nodeData: TodoItemFlatNode) => { return _nodeData.expandable; };
 

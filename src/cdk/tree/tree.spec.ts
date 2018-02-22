@@ -14,11 +14,13 @@ import {Observable} from 'rxjs/Observable';
 import {combineLatest} from 'rxjs/observable/combineLatest';
 import {map} from 'rxjs/operators/map';
 
+import {BaseTreeControl} from './control/base-tree-control';
 import {TreeControl} from './control/tree-control';
 import {FlatTreeControl} from './control/flat-tree-control';
 import {NestedTreeControl} from './control/nested-tree-control';
 import {CdkTreeModule} from './index';
 import {CdkTree} from './tree';
+import {getTreeControlFunctionsMissingError} from './tree-errors';
 
 
 describe('CdkTree', () => {
@@ -587,6 +589,18 @@ describe('CdkTree', () => {
           [`[topping_3] - [cheese_3] + [base_3]`]);
       });
     });
+
+    it('should throw an error when missing function in nested tree', () => {
+      configureCdkTreeTestingModule([NestedCdkErrorTreeApp]);
+      expect(() => TestBed.createComponent(NestedCdkErrorTreeApp).detectChanges())
+          .toThrowError(getTreeControlFunctionsMissingError().message);
+    });
+
+    it('should throw an error when missing function in flat tree', () => {
+      configureCdkTreeTestingModule([FlatCdkErrorTreeApp]);
+      expect(() => TestBed.createComponent(FlatCdkErrorTreeApp).detectChanges())
+        .toThrowError(getTreeControlFunctionsMissingError().message);
+    });
   });
 });
 
@@ -994,3 +1008,56 @@ class ObservableDataSourceNestedCdkTreeApp {
   @ViewChild(CdkTree) tree: CdkTree<TestData>;
 }
 
+@Component({
+  template: `
+    <cdk-tree [dataSource]="dataSource" [treeControl]="treeControl">
+      <cdk-nested-tree-node *cdkTreeNodeDef="let node" class="customNodeClass">
+                     {{node.pizzaTopping}} - {{node.pizzaCheese}} + {{node.pizzaBase}}
+         <ng-template cdkTreeNodeOutlet></ng-template>
+      </cdk-nested-tree-node>
+    </cdk-tree>
+  `
+})
+class NestedCdkErrorTreeApp {
+  getLevel = (node: TestData) => node.level;
+
+  isExpandable = (node: TestData) => node.children.length > 0;
+
+  treeControl: TreeControl<TestData> = new FlatTreeControl(this.getLevel, this.isExpandable);
+
+  dataSource: FakeDataSource | null = new FakeDataSource(this.treeControl);
+
+  @ViewChild(CdkTree) tree: CdkTree<TestData>;
+}
+
+class FakeTreeControl extends BaseTreeControl<TestData> {
+  getDescendants(_: TestData): TestData[] {
+    return this.dataNodes;
+  }
+
+  expandAll(): void {
+    // No op
+  }
+}
+@Component({
+  template: `
+    <cdk-tree [dataSource]="dataSource" [treeControl]="treeControl">
+      <cdk-tree-node *cdkTreeNodeDef="let node" class="customNodeClass">
+                     {{node.pizzaTopping}} - {{node.pizzaCheese}} + {{node.pizzaBase}}
+         <ng-template cdkTreeNodeOutlet></ng-template>
+      </cdk-tree-node>
+    </cdk-tree>
+  `
+})
+class FlatCdkErrorTreeApp {
+
+  getLevel = (node: TestData) => node.level;
+
+  isExpandable = (node: TestData) => node.children.length > 0;
+
+  treeControl: TreeControl<TestData> = new FakeTreeControl();
+
+  dataSource: FakeDataSource | null = new FakeDataSource(this.treeControl);
+
+  @ViewChild(CdkTree) tree: CdkTree<TestData>;
+}

@@ -9,6 +9,7 @@ import {Injectable} from '@angular/core';
 import {FlatTreeControl} from '@angular/cdk/tree';
 import {CollectionViewer, SelectionChange} from '@angular/cdk/collections';
 import {BehaviorSubject} from 'rxjs/BehaviorSubject';
+import {Observable} from 'rxjs/Observable';
 import {merge} from 'rxjs/observable/merge';
 import {map} from 'rxjs/operators/map';
 
@@ -67,12 +68,9 @@ export class DynamicDataSource {
   constructor(private treeControl: FlatTreeControl<DynamicFlatNode>,
               private database: DynamicDatabase) {}
 
-  connect(collectionViewer: CollectionViewer) {
-    const changes = [
-      collectionViewer.viewChange,
-      this.treeControl.expansionModel.onChange!,
-    ];
-    return merge(...changes).pipe(map((change) => {
+  connect(collectionViewer: CollectionViewer): Observable<DynamicFlatNode[]> {
+    return merge(collectionViewer.viewChange, this.treeControl.expansionModel.onChange!)
+        .pipe(map((change) => {
       if ((change as SelectionChange<DynamicFlatNode>).added ||
           (change as SelectionChange<DynamicFlatNode>).removed) {
         this.handleTreeControl(change as SelectionChange<DynamicFlatNode>);

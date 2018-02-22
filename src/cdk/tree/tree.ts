@@ -60,7 +60,7 @@ export class CdkTreeNode<T>  implements FocusableOption, OnDestroy {
    * The most recently created `CdkTreeNode`. We save it in static variable so we can retrieve it
    * in `CdkTree` and set the data to it.
    */
-  static mostRecentTreeNode: CdkTreeNode<any> | null = null;
+  static mostRecentTreeNode: CdkTreeNode<{}> | null = null;
 
   /** Subject that emits when the component has been destroyed. */
   protected _destroyed = new Subject<void>();
@@ -89,7 +89,7 @@ export class CdkTreeNode<T>  implements FocusableOption, OnDestroy {
 
   constructor(protected _elementRef: ElementRef,
               protected _tree: CdkTree<T>) {
-    CdkTreeNode.mostRecentTreeNode = this;
+    CdkTreeNode.mostRecentTreeNode = this as CdkTreeNode<T>;
   }
 
   ngOnDestroy() {
@@ -140,7 +140,7 @@ export class CdkTree<T> implements CollectionViewer, OnInit, OnDestroy {
   private _onDestroy = new Subject<void>();
 
   /** Latest data provided by the data source through the connect interface. */
-  private _data: Array<T> = new Array<T>();
+  private _data = new Array<T>();
 
   /** Differ used to find the changes in the data provided by the data source. */
   private _dataDiffer: IterableDiffer<T>;
@@ -304,7 +304,7 @@ export class CdkTree<T> implements CollectionViewer, OnInit, OnDestroy {
    * definition.
    */
   _getNodeDef(data: T, i: number): CdkTreeNodeDef<T> {
-    if (this._nodeDefs.length == 1) { return this._nodeDefs.first; }
+    if (this._nodeDefs.length === 1) { return this._nodeDefs.first; }
 
     const nodeDef =
       this._nodeDefs.find(def => def.when && def.when(i, data)) || this._defaultNodeDef;
@@ -321,7 +321,7 @@ export class CdkTree<T> implements CollectionViewer, OnInit, OnDestroy {
     const node = this._getNodeDef(nodeData, index);
 
     // Node context that will be provided to created embedded view
-    const context: CdkTreeNodeOutletContext<T> = new CdkTreeNodeOutletContext<T>(nodeData);
+    const context = new CdkTreeNodeOutletContext<T>(nodeData);
 
     // Use default tree nodeOutlet, or nested node's nodeOutlet
     const container = viewContainer ? viewContainer : this._nodeOutlet.viewContainer;

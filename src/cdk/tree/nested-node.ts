@@ -17,6 +17,7 @@ import {takeUntil} from 'rxjs/operators/takeUntil';
 
 import {CdkTree, CdkTreeNode} from './tree';
 import {CdkTreeNodeOutlet} from './outlet';
+import {getTreeControlFunctionsMissingError} from './tree-errors';
 
 /**
  * Nested node is a child of `<cdk-tree>`. It works with nested tree.
@@ -62,6 +63,9 @@ export class CdkNestedTreeNode<T> extends CdkTreeNode<T> implements AfterContent
   }
 
   ngAfterContentInit() {
+    if (!this._tree.treeControl.getChildren) {
+      throw getTreeControlFunctionsMissingError();
+    }
     this._tree.treeControl.getChildren(this.data).pipe(takeUntil(this._destroyed))
         .subscribe(result => {
           if (result && result.length) {
