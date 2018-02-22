@@ -18,7 +18,7 @@ import {map} from 'rxjs/operator/map';
 import {mergeMap} from 'rxjs/operator/mergeMap';
 
 import {applyRedirects} from './apply_redirects';
-import {LoadedRouterConfig, QueryParamsHandling, Route, Routes, validateConfig} from './config';
+import {LoadedRouterConfig, QueryParamsHandling, Route, Routes, copyConfig, validateConfig} from './config';
 import {createRouterState} from './create_router_state';
 import {createUrlTree} from './create_url_tree';
 import {ActivationEnd, ChildActivationEnd, Event, GuardsCheckEnd, GuardsCheckStart, NavigationCancel, NavigationEnd, NavigationError, NavigationStart, NavigationTrigger, ResolveEnd, ResolveStart, RouteConfigLoadEnd, RouteConfigLoadStart, RoutesRecognized} from './events';
@@ -33,6 +33,7 @@ import {DefaultUrlHandlingStrategy, UrlHandlingStrategy} from './url_handling_st
 import {UrlSerializer, UrlTree, containsTree, createEmptyUrlTree} from './url_tree';
 import {forEach} from './utils/collection';
 import {TreeNode, nodeChildrenAsMap} from './utils/tree';
+
 
 /**
  * @whatItDoes Represents the extra options used during navigation.
@@ -342,7 +343,7 @@ export class Router {
    */
   resetConfig(config: Routes): void {
     validateConfig(config);
-    this.config = config;
+    this.config = config.map(copyConfig);
     this.navigated = false;
     this.lastSuccessfulId = -1;
   }
