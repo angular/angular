@@ -933,29 +933,18 @@ As always, strive for consistency.
 
 <a href="#toc">Back to top</a>
 
-{@a 02-06}
+{@a 05-02}
 
-### Directive selectors
+### Component selectors
 
-#### Style 02-06
+#### Style 05-02
 
 
 <div class="s-rule do">
 
 
 
-**Do** Use lower camel case for naming the selectors of directives.
-
-
-</div>
-
-
-
-<div class="s-why">
-
-
-
-**Why?** Keeps the names of the properties defined in the directives that are bound to the view consistent with the attribute names.
+**Do** use _dashed-case_ or _kebab-case_ for naming the element selectors of components.
 
 
 </div>
@@ -966,16 +955,40 @@ As always, strive for consistency.
 
 
 
-**Why?** The Angular HTML parser is case sensitive and recognizes lower camel case.
+**Why?** Keeps the element names consistent with the specification for [Custom Elements](https://www.w3.org/TR/custom-elements/).
 
 
 </div>
+
+
+
+<code-example path="styleguide/src/05-02/app/heroes/shared/hero-button/hero-button.component.avoid.ts" region="example" title="app/heroes/shared/hero-button/hero-button.component.ts">
+
+</code-example>
+
+
+
+
+
+<code-tabs>
+
+  <code-pane title="app/heroes/shared/hero-button/hero-button.component.ts" path="styleguide/src/05-02/app/heroes/shared/hero-button/hero-button.component.ts" region="example">
+
+  </code-pane>
+
+  <code-pane title="app/app.component.html" path="styleguide/src/05-02/app/app.component.html">
+
+  </code-pane>
+
+</code-tabs>
+
+
 
 <a href="#toc">Back to top</a>
 
 {@a 02-07}
 
-### Custom prefix for components
+### Component custom prefix
 
 #### Style 02-07
 
@@ -1078,11 +1091,51 @@ For example, the prefix `toh` represents from **T**our **o**f **H**eroes and the
 
 
 
+<a href="#toc">Back to top</a>
 
+{@a 02-06}
+
+### Directive selectors
+
+#### Style 02-06
+
+
+<div class="s-rule do">
+
+
+
+**Do** Use lower camel case for naming the selectors of directives.
+
+
+</div>
+
+
+
+<div class="s-why">
+
+
+
+**Why?** Keeps the names of the properties defined in the directives that are bound to the view consistent with the attribute names.
+
+
+</div>
+
+
+
+<div class="s-why-last">
+
+
+
+**Why?** The Angular HTML parser is case sensitive and recognizes lower camel case.
+
+
+</div>
+
+<a href="#toc">Back to top</a>
 
 {@a 02-08}
 
-### Custom prefix for directives
+### Directive custom prefix
 
 #### Style 02-08
 
@@ -3709,59 +3762,6 @@ A typical *lazy loaded folder* contains a *routing component*, its child compone
 
 
 ## Components
-
-{@a 05-02}
-
-### Component selector names
-
-#### Style 05-02
-
-
-<div class="s-rule do">
-
-
-
-**Do** use _dashed-case_ or _kebab-case_ for naming the element selectors of components.
-
-
-</div>
-
-
-
-<div class="s-why-last">
-
-
-
-**Why?** Keeps the element names consistent with the specification for [Custom Elements](https://www.w3.org/TR/custom-elements/).
-
-
-</div>
-
-
-
-<code-example path="styleguide/src/05-02/app/heroes/shared/hero-button/hero-button.component.avoid.ts" region="example" title="app/heroes/shared/hero-button/hero-button.component.ts">
-
-</code-example>
-
-
-
-
-
-<code-tabs>
-
-  <code-pane title="app/heroes/shared/hero-button/hero-button.component.ts" path="styleguide/src/05-02/app/heroes/shared/hero-button/hero-button.component.ts" region="example">
-
-  </code-pane>
-
-  <code-pane title="app/app.component.html" path="styleguide/src/05-02/app/app.component.html">
-
-  </code-pane>
-
-</code-tabs>
-
-
-
-<a href="#toc">Back to top</a>
 
 {@a 05-03}
 
