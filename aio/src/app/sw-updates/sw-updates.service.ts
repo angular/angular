@@ -1,7 +1,8 @@
-import { Injectable, OnDestroy } from '@angular/core';
+import { ApplicationRef, Injectable, OnDestroy } from '@angular/core';
 import { NgServiceWorker } from '@angular/service-worker';
 import { concat, of, Subject } from 'rxjs';
-import { debounceTime, filter, map, startWith, take, takeUntil, tap } from 'rxjs/operators';
+import { debounceTime, filter, first, map, startWith, takeUntil, tap } from 'rxjs/operators';
+
 import { Logger } from 'app/shared/logger.service';
 
 
@@ -29,13 +30,12 @@ export class SwUpdatesService implements OnDestroy {
       map(({version}) => version),
   );
 
-  constructor(private logger: Logger, private sw: NgServiceWorker) {
-    this.checkForUpdateSubj
-        .pipe(
-            debounceTime(this.checkInterval),
-            startWith<void>(undefined),
-            takeUntil(this.onDestroy),
-        )
+  constructor(appRef: ApplicationRef, private logger: Logger, private sw: NgServiceWorker) {
+    const appIsStable$ = appRef.isStable.pipe(filter(v => v), first());
+    const checkForUpdates$ = this.checkForUpdateSubj.pipe(debounceTime(this.checkInterval), startWith<void>(undefined));
+
+    concat(appIsStable$, checkForUpdates$)
+        .pipe(takeUntil(this.onDestroy))
         .subscribe(() => this.checkForUpdate());
   }
 
@@ -55,7 +55,7 @@ export class SwUpdatesService implements OnDestroy {
     // TODO (gkalpak): Remove once #137 is fixed.
     concat(this.sw.checkForUpdate(), of(false))
         .pipe(
-            take(1),
+            first(),
             tap(v => this.log(`Update available: ${v}`)),
         )
         .subscribe(v => v ? this.activateUpdate() : this.scheduleCheckForUpdate());
