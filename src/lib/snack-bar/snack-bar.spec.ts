@@ -511,7 +511,6 @@ describe('MatSnackBar Positioning', () => {
   let overlayContainer: OverlayContainer;
   let overlayContainerEl: HTMLElement;
 
-  let testViewContainerRef: ViewContainerRef;
   let viewContainerFixture: ComponentFixture<ComponentWithChildViewContainer>;
 
   let simpleMessage = 'Burritos are here!';
@@ -539,7 +538,6 @@ describe('MatSnackBar Positioning', () => {
   beforeEach(() => {
     viewContainerFixture = TestBed.createComponent(ComponentWithChildViewContainer);
     viewContainerFixture.detectChanges();
-    testViewContainerRef = viewContainerFixture.componentInstance.childViewContainer;
   });
 
   it('should default to bottom center', fakeAsync(() => {

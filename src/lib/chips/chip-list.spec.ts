@@ -455,7 +455,6 @@ describe('MatChipList', () => {
   });
 
   describe('forms integration', () => {
-    let formField: HTMLElement;
     let nativeChips: HTMLElement[];
 
     describe('single selection', () => {
@@ -463,7 +462,6 @@ describe('MatChipList', () => {
         fixture = TestBed.createComponent(BasicChipList);
         fixture.detectChanges();
 
-        formField = fixture.debugElement.query(By.css('.mat-form-field')).nativeElement;
         nativeChips = fixture.debugElement.queryAll(By.css('mat-chip'))
           .map((chip) => chip.nativeElement);
         chips = fixture.componentInstance.chips;
@@ -627,7 +625,6 @@ describe('MatChipList', () => {
         fixture = TestBed.createComponent(MultiSelectionChipList);
         fixture.detectChanges();
 
-        formField = fixture.debugElement.query(By.css('.mat-form-field')).nativeElement;
         nativeChips = fixture.debugElement.queryAll(By.css('mat-chip'))
           .map((chip) => chip.nativeElement);
         chips = fixture.componentInstance.chips;
@@ -705,14 +702,12 @@ describe('MatChipList', () => {
   });
 
   describe('chip list with chip input', () => {
-    let formField: HTMLElement;
     let nativeChips: HTMLElement[];
 
     beforeEach(() => {
       fixture = TestBed.createComponent(InputChipList);
       fixture.detectChanges();
 
-      formField = fixture.debugElement.query(By.css('.mat-form-field')).nativeElement;
       nativeChips = fixture.debugElement.queryAll(By.css('mat-chip'))
         .map((chip) => chip.nativeElement);
     });

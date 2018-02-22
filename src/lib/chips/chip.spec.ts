@@ -4,13 +4,12 @@ import {createKeyboardEvent} from '@angular/cdk/testing';
 import {Component, DebugElement} from '@angular/core';
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
-import {MatChip, MatChipEvent, MatChipList, MatChipSelectionChange, MatChipsModule} from './index';
+import {MatChip, MatChipEvent, MatChipSelectionChange, MatChipsModule} from './index';
 
 
 describe('Chips', () => {
   let fixture: ComponentFixture<any>;
   let chipDebugElement: DebugElement;
-  let chipListNativeElement: HTMLElement;
   let chipNativeElement: HTMLElement;
   let chipInstance: MatChip;
 
@@ -59,7 +58,6 @@ describe('Chips', () => {
       fixture.detectChanges();
 
       chipDebugElement = fixture.debugElement.query(By.directive(MatChip));
-      chipListNativeElement = fixture.debugElement.query(By.directive(MatChipList)).nativeElement;
       chipNativeElement = chipDebugElement.nativeElement;
       chipInstance = chipDebugElement.injector.get(MatChip);
       testComponent = fixture.debugElement.componentInstance;

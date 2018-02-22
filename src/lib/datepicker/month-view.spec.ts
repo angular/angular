@@ -262,7 +262,6 @@ describe('MatMonthView', () => {
 
   describe('month view with date filter', () => {
     let fixture: ComponentFixture<MonthViewWithDateFilter>;
-    let testComponent: MonthViewWithDateFilter;
     let monthViewNativeElement: Element;
 
     beforeEach(() => {
@@ -271,7 +270,6 @@ describe('MatMonthView', () => {
 
       let monthViewDebugElement = fixture.debugElement.query(By.directive(MatMonthView));
       monthViewNativeElement = monthViewDebugElement.nativeElement;
-      testComponent = fixture.componentInstance;
     });
 
     it('should disable filtered dates', () => {

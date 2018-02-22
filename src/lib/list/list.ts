@@ -109,7 +109,6 @@ export class MatListSubheaderCssMatStyler {}
 })
 export class MatListItem extends _MatListItemMixinBase implements AfterContentInit,
     CanDisableRipple {
-  private _lineSetter: MatLineSetter;
   private _isNavList: boolean = false;
 
   @ContentChildren(MatLine) _lines: QueryList<MatLine>;
@@ -130,7 +129,9 @@ export class MatListItem extends _MatListItemMixinBase implements AfterContentIn
   }
 
   ngAfterContentInit() {
-    this._lineSetter = new MatLineSetter(this._lines, this._element);
+    // TODO: consider turning the setter into a function, it doesn't do anything as a class.
+    // tslint:disable-next-line:no-unused-expression
+    new MatLineSetter(this._lines, this._element);
   }
 
   /** Whether this list item should show a ripple effect when clicked. */

@@ -139,9 +139,6 @@ export class CdkTree<T> implements CollectionViewer, OnInit, OnDestroy {
   /** Subject that emits when the component has been destroyed. */
   private _onDestroy = new Subject<void>();
 
-  /** Latest data provided by the data source through the connect interface. */
-  private _data = new Array<T>();
-
   /** Differ used to find the changes in the data provided by the data source. */
   private _dataDiffer: IterableDiffer<T>;
 
@@ -231,8 +228,6 @@ export class CdkTree<T> implements CollectionViewer, OnInit, OnDestroy {
    * clearing the node outlet. Otherwise start listening for new data.
    */
   private _switchDataSource(dataSource: DataSource<T> | Observable<T[]> | T[]) {
-    this._data = new Array<T>();
-
     if (this._dataSource && typeof (this._dataSource as DataSource<T>).disconnect === 'function') {
       (this.dataSource as DataSource<T>).disconnect(this);
     }
@@ -269,10 +264,7 @@ export class CdkTree<T> implements CollectionViewer, OnInit, OnDestroy {
 
     if (dataStream) {
       this._dataSubscription = dataStream.pipe(takeUntil(this._onDestroy))
-        .subscribe(data => {
-          this._data = data;
-          this._renderNodeChanges(data);
-        });
+        .subscribe(data => this._renderNodeChanges(data));
     } else {
       throw getTreeNoValidDataSourceError();
     }

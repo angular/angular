@@ -33,12 +33,6 @@ export class BuildPackage {
   /** Path to the entry file of the package in the output directory. */
   readonly entryFilePath: string;
 
-  /** Path to the tsconfig file, which will be used to build the package. */
-  private readonly tsconfigBuild: string;
-
-  /** Path to the tsconfig file, which will be used to build the tests. */
-  private readonly tsconfigTests: string;
-
   /** Package bundler instance. */
   private bundler = new PackageBundler(this);
 
@@ -60,10 +54,6 @@ export class BuildPackage {
     this.sourceDir = join(packagesDir, name);
     this.outputDir = join(outputDir, 'packages', name);
     this.esm5OutputDir = join(outputDir, 'packages', name, 'esm5');
-
-    this.tsconfigBuild = join(this.sourceDir, buildTsconfigName);
-    this.tsconfigTests = join(this.sourceDir, testsTsconfigName);
-
     this.entryFilePath = join(this.outputDir, 'index.js');
   }
 

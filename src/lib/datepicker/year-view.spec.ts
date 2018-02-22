@@ -293,7 +293,6 @@ describe('MatYearView', () => {
 
   describe('year view with date filter', () => {
     let fixture: ComponentFixture<YearViewWithDateFilter>;
-    let testComponent: YearViewWithDateFilter;
     let yearViewNativeElement: Element;
 
     beforeEach(() => {
@@ -302,7 +301,6 @@ describe('MatYearView', () => {
 
       const yearViewDebugElement = fixture.debugElement.query(By.directive(MatYearView));
       yearViewNativeElement = yearViewDebugElement.nativeElement;
-      testComponent = fixture.componentInstance;
     });
 
     it('should disable months with no enabled days', () => {

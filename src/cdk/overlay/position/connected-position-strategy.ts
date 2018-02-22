@@ -35,9 +35,6 @@ import {OverlayRef} from '../overlay-ref';
  * of the overlay.
  */
 export class ConnectedPositionStrategy implements PositionStrategy {
-  /** The overlay to which this strategy is attached. */
-  private _overlayRef: OverlayRef;
-
   /** Layout direction of the position strategy. */
   private _dir = 'ltr';
 
@@ -100,7 +97,6 @@ export class ConnectedPositionStrategy implements PositionStrategy {
 
   /** Attach this position strategy to an overlay. */
   attach(overlayRef: OverlayRef): void {
-    this._overlayRef = overlayRef;
     this._pane = overlayRef.overlayElement;
     this._resizeSubscription.unsubscribe();
     this._resizeSubscription = this._viewportRuler.change().subscribe(() => this.apply());

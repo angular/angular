@@ -748,7 +748,6 @@ describe('MatCheckbox', () => {
     let checkboxNativeElement: HTMLElement;
     let testComponent: CheckboxWithTabIndex;
     let inputElement: HTMLInputElement;
-    let labelElement: HTMLLabelElement;
 
     beforeEach(() => {
       fixture = TestBed.createComponent(CheckboxWithTabIndex);
@@ -758,7 +757,6 @@ describe('MatCheckbox', () => {
       checkboxDebugElement = fixture.debugElement.query(By.directive(MatCheckbox));
       checkboxNativeElement = checkboxDebugElement.nativeElement;
       inputElement = <HTMLInputElement>checkboxNativeElement.querySelector('input');
-      labelElement = <HTMLLabelElement>checkboxNativeElement.querySelector('label');
     });
 
     it('should preserve any given tabIndex', () => {
@@ -940,7 +938,6 @@ describe('MatCheckbox', () => {
 
   describe('without label', () => {
     let testComponent: CheckboxWithoutLabel;
-    let checkboxElement: HTMLElement;
     let checkboxInnerContainer: HTMLElement;
 
     beforeEach(() => {
@@ -949,7 +946,6 @@ describe('MatCheckbox', () => {
       const checkboxDebugEl = fixture.debugElement.query(By.directive(MatCheckbox));
 
       testComponent = fixture.componentInstance;
-      checkboxElement = checkboxDebugEl.nativeElement;
       checkboxInnerContainer = checkboxDebugEl
         .query(By.css('.mat-checkbox-inner-container')).nativeElement;
     });

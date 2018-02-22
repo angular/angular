@@ -111,7 +111,6 @@ export class MatSelectionListChange {
 export class MatListOption extends _MatListOptionMixinBase
     implements AfterContentInit, OnDestroy, OnInit, FocusableOption, CanDisableRipple {
 
-  private _lineSetter: MatLineSetter;
   private _selected = false;
   private _disabled = false;
 
@@ -180,7 +179,9 @@ export class MatListOption extends _MatListOptionMixinBase
   }
 
   ngAfterContentInit() {
-    this._lineSetter = new MatLineSetter(this._lines, this._element);
+    // TODO: consider turning the setter into a function, it doesn't do anything as a class.
+    // tslint:disable-next-line:no-unused-expression
+    new MatLineSetter(this._lines, this._element);
   }
 
   ngOnDestroy(): void {

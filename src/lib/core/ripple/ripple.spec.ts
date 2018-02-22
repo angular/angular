@@ -543,14 +543,12 @@ describe('MatRipple', () => {
 
   describe('configuring behavior', () => {
     let controller: RippleContainerWithInputBindings;
-    let rippleComponent: MatRipple;
 
     beforeEach(() => {
       fixture = TestBed.createComponent(RippleContainerWithInputBindings);
       fixture.detectChanges();
 
       controller = fixture.debugElement.componentInstance;
-      rippleComponent = controller.ripple;
       rippleTarget = fixture.debugElement.nativeElement.querySelector('[mat-ripple]');
     });
 

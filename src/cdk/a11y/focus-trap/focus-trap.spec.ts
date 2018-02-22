@@ -76,12 +76,10 @@ describe('FocusTrap', () => {
 
   describe('with bindings', () => {
     let fixture: ComponentFixture<FocusTrapWithBindings>;
-    let focusTrapInstance: FocusTrap;
 
     beforeEach(() => {
       fixture = TestBed.createComponent(FocusTrapWithBindings);
       fixture.detectChanges();
-      focusTrapInstance = fixture.componentInstance.focusTrapDirective.focusTrap;
     });
 
     it('should clean up its anchor sibling elements on destroy', () => {

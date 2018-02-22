@@ -24,7 +24,6 @@ describe('MatTree', () => {
   const _ = {};
 
   let treeElement: HTMLElement;
-  let tree: MatTree<TestData>;
   let underlyingDataSource: FakeDataSource;
 
   function configureMatTreeTestingModule(declarations) {
@@ -35,8 +34,6 @@ describe('MatTree', () => {
   }
 
   describe('flat tree', () => {
-    let dataSource: MatTreeFlatDataSource<TestData, TestData>;
-
     describe('should initialize', () => {
       let fixture: ComponentFixture<SimpleMatTreeApp>;
       let component: SimpleMatTreeApp;
@@ -48,8 +45,6 @@ describe('MatTree', () => {
 
         component = fixture.componentInstance;
         underlyingDataSource = component.underlyingDataSource;
-        tree = component.tree;
-        dataSource = component.dataSource;
         treeElement = fixture.nativeElement.querySelector('mat-tree');
 
         fixture.detectChanges();
@@ -99,7 +94,6 @@ describe('MatTree', () => {
         fixture = TestBed.createComponent(MatTreeAppWithToggle);
 
         component = fixture.componentInstance;
-        tree = component.tree;
         underlyingDataSource = component.underlyingDataSource;
         treeElement = fixture.nativeElement.querySelector('mat-tree');
 
@@ -208,7 +202,6 @@ describe('MatTree', () => {
 
         component = fixture.componentInstance;
         underlyingDataSource = component.underlyingDataSource;
-        tree = component.tree;
         treeElement = fixture.nativeElement.querySelector('mat-tree');
 
         fixture.detectChanges();
@@ -235,7 +228,6 @@ describe('MatTree', () => {
 
         component = fixture.componentInstance;
         underlyingDataSource = component.underlyingDataSource;
-        tree = component.tree;
         treeElement = fixture.nativeElement.querySelector('mat-tree');
 
         fixture.detectChanges();
@@ -318,7 +310,6 @@ describe('MatTree', () => {
 
         component = fixture.componentInstance;
         underlyingDataSource = component.underlyingDataSource;
-        tree = component.tree;
         treeElement = fixture.nativeElement.querySelector('mat-tree');
 
         fixture.detectChanges();
@@ -343,7 +334,6 @@ describe('MatTree', () => {
 
         component = fixture.componentInstance;
         underlyingDataSource = component.underlyingDataSource;
-        tree = component.tree;
         treeElement = fixture.nativeElement.querySelector('mat-tree');
 
         fixture.detectChanges();

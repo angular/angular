@@ -28,7 +28,6 @@ describe('MatRadio', () => {
   describe('inside of a group', () => {
     let fixture: ComponentFixture<RadiosInsideRadioGroup>;
     let groupDebugElement: DebugElement;
-    let groupNativeElement: HTMLElement;
     let radioDebugElements: DebugElement[];
     let radioNativeElements: HTMLElement[];
     let radioLabelElements: HTMLLabelElement[];
@@ -44,7 +43,6 @@ describe('MatRadio', () => {
       testComponent = fixture.debugElement.componentInstance;
 
       groupDebugElement = fixture.debugElement.query(By.directive(MatRadioGroup));
-      groupNativeElement = groupDebugElement.nativeElement;
       groupInstance = groupDebugElement.injector.get<MatRadioGroup>(MatRadioGroup);
 
       radioDebugElements = fixture.debugElement.queryAll(By.directive(MatRadioButton));
@@ -379,7 +377,6 @@ describe('MatRadio', () => {
   describe('group with ngModel', () => {
     let fixture: ComponentFixture<RadioGroupWithNgModel>;
     let groupDebugElement: DebugElement;
-    let groupNativeElement: HTMLElement;
     let radioDebugElements: DebugElement[];
     let innerRadios: DebugElement[];
     let radioLabelElements: HTMLLabelElement[];
@@ -395,7 +392,6 @@ describe('MatRadio', () => {
       testComponent = fixture.debugElement.componentInstance;
 
       groupDebugElement = fixture.debugElement.query(By.directive(MatRadioGroup));
-      groupNativeElement = groupDebugElement.nativeElement;
       groupInstance = groupDebugElement.injector.get<MatRadioGroup>(MatRadioGroup);
       groupNgModel = groupDebugElement.injector.get<NgModel>(NgModel);
 
