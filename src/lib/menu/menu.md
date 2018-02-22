@@ -118,7 +118,7 @@ with a different set of data, depending on the trigger that opened it:
 
 ```html
 <mat-menu #appMenu="matMenu">
-  <ng-template matMenuContent let-user="user">
+  <ng-template matMenuContent let-name="name">
     <button mat-menu-item>Settings</button>
     <button mat-menu-item>Log off {{name}}</button>
   </ng-template>
