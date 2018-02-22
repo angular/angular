@@ -334,7 +334,7 @@ modified to serve `index.html`:
               &lt;add input="{REQUEST_FILENAME}" matchType="IsFile" negate="true" /&gt;
               &lt;add input="{REQUEST_FILENAME}" matchType="IsDirectory" negate="true" /&gt;
             &lt;/conditions&gt;
-            &lt;action type="Rewrite" url="/src/" /&gt;
+            &lt;action type="Rewrite" url="/index.html" /&gt;
           &lt;/rule&gt;
         &lt;/rules&gt;
       &lt;/rewrite&gt;
