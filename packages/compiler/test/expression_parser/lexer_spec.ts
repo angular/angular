@@ -95,10 +95,70 @@ function expectErrorToken(token: Token, index: any, end: number, message: string
         expectCharacterToken(tokens[3], 3, 4, ']');
       });
 
-      it('should tokenize numbers', () => {
+      it('should tokenize decimal numbers', () => {
         const tokens: number[] = lex('88');
         expect(tokens.length).toEqual(1);
         expectNumberToken(tokens[0], 0, 2, 88);
+      });
+
+      it('should tokenize numbers within index ops', () => {
+        expectNumberToken(lex('a[22]')[2], 2, 4, 22);
+      });
+
+      it('should tokenize hexadecimal numbers', () => {
+        const tokens: number[] = lex('0x88AbCdEf');
+        expect(tokens.length).toEqual(1);
+        expectNumberToken(tokens[0], 0, 10, 0x88AbCdEf);
+      });
+
+      it('should tokenize octal numbers', () => {
+        const tokens: number[] = lex('0o66');
+        expect(tokens.length).toEqual(1);
+        expectNumberToken(tokens[0], 0, 4, 0o66);
+      });
+
+      it('should throw error when octal digit out of range', () => {
+        expectErrorToken(
+            lex('0o88')[0], 2, 2,
+            `Lexer Error: Out of range digit '8' under radix '8' at column 2 in expression [0o88]`);
+      });
+
+      it('should tokenize binary numbers', () => {
+        const tokens: number[] = lex('0b11');
+        expect(tokens.length).toEqual(1);
+        expectNumberToken(tokens[0], 0, 4, 0b11);
+      });
+
+      it('should throw error when binary digit out of range', () => {
+        expectErrorToken(
+            lex('0b12')[0], 3, 3,
+            `Lexer Error: Out of range digit '2' under radix '2' at column 3 in expression [0b12]`);
+      });
+
+      it('should throw error when combine dot with non-decimal', () => {
+        expectErrorToken(
+            lex('0x88.12')[0], 0, 7,
+            `Lexer Error: Invalid number format at column 0 in expression [0x88.12]`);
+      });
+
+      it('should throw error when combine exponent with non-decimal', () => {
+        expectErrorToken(
+            lex('0o12e2')[0], 4, 4,
+            `Lexer Error: Out of range digit 'e' under radix '8' at column 4 in expression [0o12e2]`);
+      });
+
+      // Enable this tests once we want to align ourselves with JavaScript parsing rules.
+      xit('should throw error for deprecated legacy octal', () => {
+        expectErrorToken(
+            lex('01234')[0], 0, 1,
+            `Lexer Error: Legacy octal literals are not allowed in strict mode at column 0 in expression [01234]`);
+      });
+
+      // Delete this tests once the above test is enabled.
+      it('should parse as radix=10', () => {
+        const tokens: number[] = lex('01234');
+        expect(tokens.length).toEqual(1);
+        expectNumberToken(tokens[0], 0, 5, 1234);
       });
 
       it('should tokenize numbers within index ops', () => {

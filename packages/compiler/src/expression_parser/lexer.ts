@@ -281,24 +281,61 @@ class _Scanner {
 
   scanNumber(start: number): Token {
     let simple: boolean = (this.index === start);
-    this.advance();  // Skip initial digit.
+    let radix: number|null = simple ? null : 10;  // null for not determined yet
+
     while (true) {
-      if (chars.isDigit(this.peek)) {
-        // Do nothing.
+      if (this.index === start && this.peek != chars.$0) {
+        radix = 10;
+      } else if (radix == null && this.index === start + 1) {
+        if (isHexadecimalSeparator(this.peek)) {
+          radix = 16;
+        } else if (isOctalSeparator(this.peek)) {
+          radix = 8;
+        } else if (isBinarySeparator(this.peek)) {
+          radix = 2;
+        } else if (chars.isDigit(this.peek)) {
+          // Leading zero followed by digits
+          // return this.error(`Legacy octal literals are not allowed in strict mode`, -1);
+
+          // To align ourselves with JavaScript parsing rules we should throw, but instead
+          // we are going to assume '10' so that we don't break anyone.
+          radix = 10;
+        } else {
+          radix = 10;
+        }
+
+        if (radix !== 10) {
+          this.advance();
+          continue;
+        }
+      }
+
+      if ((chars.isAsciiHexDigit(this.peek)) && !(radix === 10 && isExponentStart(this.peek))) {
+        if (!isDigitInRange(this.peek, radix)) {
+          // radix won't be null here
+          return this.error(
+              `Out of range digit '${String.fromCharCode(this.peek)}' under radix '${radix}'`, 0);
+        }
       } else if (this.peek == chars.$PERIOD) {
         simple = false;
+        if (radix == null) radix = 10;
       } else if (isExponentStart(this.peek)) {
         this.advance();
         if (isExponentSign(this.peek)) this.advance();
         if (!chars.isDigit(this.peek)) return this.error('Invalid exponent', -1);
         simple = false;
+        if (radix == null) radix = 10;
       } else {
         break;
       }
       this.advance();
     }
+    if (!simple && radix !== 10) {
+      return this.error(`Invalid number format`, start - this.index);
+    }
     const str: string = this.input.substring(start, this.index);
-    const value: number = simple ? parseIntAutoRadix(str) : parseFloat(str);
+    radix = radix != null ? radix : 10;
+    const value: number = simple ? parseIntWithRadix(str, radix) : parseFloat(str);
     return newNumberToken(start, this.index, value);
   }
 
@@ -386,6 +423,35 @@ function isExponentSign(code: number): boolean {
   return code == chars.$MINUS || code == chars.$PLUS;
 }
 
+function isHexadecimalSeparator(code: number): boolean {
+  return code == chars.$X || code == chars.$x;
+}
+
+function isOctalSeparator(code: number): boolean {
+  return code == chars.$O || code == chars.$o;
+}
+
+function isBinarySeparator(code: number): boolean {
+  return code == chars.$B || code == chars.$b;
+}
+
+function isDigitInRange(code: number, radix: number|null): boolean {
+  switch (radix) {
+    case null:
+      return true;  // radix will only be null if code is 0 (leading position)
+    case 16:
+      return chars.isAsciiHexDigit(code);
+    case 10:
+      return chars.isDigit(code);
+    case 8:
+      return chars.isOctalDigit(code);
+    case 2:
+      return chars.isBinaryDigit(code);
+    default:
+      return false;
+  }
+}
+
 export function isQuote(code: number): boolean {
   return code === chars.$SQ || code === chars.$DQ || code === chars.$BT;
 }
@@ -407,8 +473,21 @@ function unescape(code: number): number {
   }
 }
 
-function parseIntAutoRadix(text: string): number {
-  const result: number = parseInt(text);
+/**
+ * Parse an integer number with literal and given radix, the literal contains prefix for non-decimal
+ * values
+ *
+ * eg. parseIntWithRadix('123', 10)
+ *     parseIntWithRadix('0xABC', 16)
+ *
+ * @param text raw literal form of the numeric value
+ * @param radix mathematical base given
+ */
+function parseIntWithRadix(text: string, radix: number): number {
+  radix = radix != null ? radix : 10;
+  const isDecimal = radix === 10;
+  const digits = isDecimal ? text : text.substring(2);
+  const result: number = parseInt(digits, radix);
   if (isNaN(result)) {
     throw new Error('Invalid integer literal when parsing ' + text);
   }
