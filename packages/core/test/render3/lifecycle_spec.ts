@@ -233,7 +233,9 @@ describe('lifecycles', () => {
           elementEnd();
         }
         Comp.ngComponentDef.h(1, 0);
+        Directive.ngDirectiveDef.h(2, 0);
         componentRefresh(1, 0);
+        componentRefresh(2, 0);
       }
 
       renderToHtml(Template, {});
@@ -534,30 +536,6 @@ describe('lifecycles', () => {
       expect(events).toEqual(['comp', 'comp']);
     });
 
-    it('should be called on directives after component', () => {
-      class Directive {
-        ngAfterContentInit() { events.push('dir'); }
-
-        static ngDirectiveDef = defineDirective({type: Directive, factory: () => new Directive()});
-      }
-
-      function Template(ctx: any, cm: boolean) {
-        if (cm) {
-          elementStart(0, Comp, null, [Directive]);
-          elementEnd();
-        }
-        Comp.ngComponentDef.h(1, 0);
-        componentRefresh(1, 0);
-      }
-
-      renderToHtml(Template, {});
-      expect(events).toEqual(['comp', 'dir']);
-
-      renderToHtml(Template, {});
-      expect(events).toEqual(['comp', 'dir']);
-
-    });
-
     it('should be called in parents before children', () => {
       /**
        * <parent>content</parent>
@@ -800,6 +778,47 @@ describe('lifecycles', () => {
 
       });
 
+    });
+
+    describe('directives', () => {
+      class Directive {
+        ngAfterContentInit() { events.push('init'); }
+        ngAfterContentChecked() { events.push('check'); }
+
+        static ngDirectiveDef = defineDirective({type: Directive, factory: () => new Directive()});
+      }
+
+      it('should be called on directives after component', () => {
+        /** <comp directive></comp> */
+        function Template(ctx: any, cm: boolean) {
+          if (cm) {
+            elementStart(0, Comp, null, [Directive]);
+            elementEnd();
+          }
+          Comp.ngComponentDef.h(1, 0);
+          Directive.ngDirectiveDef.h(2, 0);
+          componentRefresh(1, 0);
+          componentRefresh(2, 0);
+        }
+
+        renderToHtml(Template, {});
+        expect(events).toEqual(['comp', 'init', 'check']);
+      });
+
+      it('should be called on directives on an element', () => {
+        /** <div directive></div> */
+        function Template(ctx: any, cm: boolean) {
+          if (cm) {
+            elementStart(0, 'div', null, [Directive]);
+            elementEnd();
+          }
+          Directive.ngDirectiveDef.h(1, 0);
+          componentRefresh(1, 0);
+        }
+
+        renderToHtml(Template, {});
+        expect(events).toEqual(['init', 'check']);
+      });
     });
   });
 
@@ -1147,7 +1166,6 @@ describe('lifecycles', () => {
 
     });
 
-
     describe('ngAfterViewChecked', () => {
 
       it('should call ngAfterViewChecked every update', () => {
@@ -1236,6 +1254,46 @@ describe('lifecycles', () => {
 
     });
 
+    describe('directives', () => {
+      class Directive {
+        ngAfterViewInit() { events.push('init'); }
+        ngAfterViewChecked() { events.push('check'); }
+
+        static ngDirectiveDef = defineDirective({type: Directive, factory: () => new Directive()});
+      }
+
+      it('should be called on directives after component', () => {
+        /** <comp directive></comp> */
+        function Template(ctx: any, cm: boolean) {
+          if (cm) {
+            elementStart(0, Comp, null, [Directive]);
+            elementEnd();
+          }
+          Comp.ngComponentDef.h(1, 0);
+          Directive.ngDirectiveDef.h(2, 0);
+          componentRefresh(1, 0);
+          componentRefresh(2, 0);
+        }
+
+        renderToHtml(Template, {});
+        expect(events).toEqual(['comp', 'init', 'check']);
+      });
+
+      it('should be called on directives on an element', () => {
+        /** <div directive></div> */
+        function Template(ctx: any, cm: boolean) {
+          if (cm) {
+            elementStart(0, 'div', null, [Directive]);
+            elementEnd();
+          }
+          Directive.ngDirectiveDef.h(1, 0);
+          componentRefresh(1, 0);
+        }
+
+        renderToHtml(Template, {});
+        expect(events).toEqual(['init', 'check']);
+      });
+    });
   });
 
   describe('onDestroy', () => {
