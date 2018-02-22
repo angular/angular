@@ -1,7 +1,7 @@
 # JavaScript Modules vs. NgModules
 
 #### Prerequisites
-A basic understanding of [Bootstrapping](guide/bootstrapping).
+A basic understanding of [JavaScript/ECMAScript modules](https://hacks.mozilla.org/2015/08/es6-in-depth-modules/).
 
 <hr>
 
