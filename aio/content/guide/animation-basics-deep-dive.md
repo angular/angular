@@ -73,7 +73,7 @@ export class AppModule {
 
 ## Details from simple transition
 
-This section contains details from the topics discussed in the [Simple Transition](guide/animations#simple-transition) section of the Animation Basics page.
+This section contains details from the topics discussed in the [Simple Transition]() section of the Animation Basics page.
 
 ### animation() details
 

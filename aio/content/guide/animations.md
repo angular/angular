@@ -93,146 +93,70 @@ Perform this step for every component file that uses animations.
 Import the specific functions that you plan to use, from the items listed under the Animation DSL section of this document.
 </div>
 
-### Step 4: Add animations: property inside @Component decorator
+### Step 4: Define animations inside @Component decorator
 
-In the component file, add a property called `animations:` to the `@Component` decorator.
+In the component file, add a property called `animations:` to the `@Component` decorator. This lets you define the animations you plan to apply to your component.
 
 <code-example path="animations-guide/src/app/app.component.ts" title="src/app/app.component.ts" region="decorator">
 </code-example>
 
-## Animation DSL
+{@a simple-transitoon}
 
-Angular provides a domain-specific language (DSL) for animations. See @angular/animations module in the [API reference](api) for a listing and syntax of core functions and related data structures. 
+## Simple Transition Example
 
-Advanced animation features, including reusable animations, `animateChild()`, and route-based animations will be covered in separate guide. Route-based animations require additional modules and imports.
-
-<table>
-
- <tr>
-   <th style="vertical-align: top">
-     Function name
-   </th>
-
-   <th style="vertical-align: top">
-     What it does
-   </th>
- </tr>
-
- <tr>
-   <td><code>trigger()</code></td>
-   <td>Kicks off the animation and serves as a container for all other animation function calls. HTML template binds to <code>triggerName</code>. Use the first argument to declare a unique trigger name. Uses array syntax.</td>
- </tr>
-
- <tr>
-   <td><code>style()</code></td>
-   <td>Defines one or more CSS styles to use in animations. Controls visual appearance of HTML elements during animations. Uses object syntax.</td>
- </tr>
-
- <tr>
-   <td><code>state()</code></td>
-   <td>Creates a named set of CSS styles which should be applied on successful transition to a given state. The state can then be referenced by name within other animation functions.</td>
- </tr>
-
- <tr>
-   <td><code>animate()</code></td>
-   <td>Specifies timing information for a transition. Optional values for delay and easing. Can contain <code>style()</code> calls within.</td>
- </tr>
-
- <tr>
-   <td><code>transition()</code></td>
-   <td>Defines animation sequence between 2 named states. Uses array syntax.</td>
- </tr>
-
- <tr>
-   <td><code>keyframes()</code></td>
-   <td>Allows a sequential change between styles within a specified time interval. Use within <code>animate()</code>. Can include multiple <code>style()</code> calls within each <code>keyframe()</code>. Uses array syntax.</td>
- </tr>
-
- <tr>
-   <td><code>group()</code></td>
-   <td>Specifies a group of animation steps (<em>inner animations</em>) to be run in parallel. Animation continues only after all inner animation steps have completed. Used within <code>sequence()</code> or <code>transition()</code></td>
- </tr>
-
- <tr>
-   <td><code>query()</code></td>
-   <td>Use to find one or more inner HTML elements within the current element. </td>
- </tr>
-
- <tr>
-   <td><code>sequence()</code></td>
-   <td>Specifies a list of animation steps that are run sequentially, one by one.</td>
- </tr>
-
- <tr>
-   <td><code>stagger()</code></td>
-   <td>Staggers the starting time for animations for multiple elements.</td>
- </tr>
-
- <tr>
-   <td><code>animation()</code></td>
-   <td>Produces a re-usable animation that can be invoked from elsewhere. Used together with <code>useAnimation()</code>.</td>
- </tr>
-
- <tr>
-   <td><code>useAnimation()</code></td>
-   <td>Activates a reusable animation. Used together with <code>animation()</code>.</td>
- </tr>
-
- <tr>
-   <td><code>animateChild()</code></td>
-   <td>Allows animations on child components to be run within the same timeframe as the parent.</td>
- </tr>
-
-</table>
-
-
-## Simple transition
-
-We’ll start with an animation example that is a single HTML element, changing from one state to another. For example, a button can show as either `open` or `closed`, depending on the user's last action. When the button is in the `open` state, it's visible and yellow. When it's `closed` it's transparent and green. These attributes are set using ordinary CSS styles such as color and opacity. In Angular, they are set using the `style()` function.
-
-Within Angular, these collections of _style_ attributes are called _states_, and each state can be associated with a name like `open` or `closed`.
+We’ll start with an animation example that changes a single HTML element from one state to another. 
+For example, a button can show as either `open` or `closed`, depending on the user's last action. 
 
 <figure>
   <img src="generated/images/guide/animations/open-closed-500.png" alt="open and closed states">
 </figure>
 
-### States in Angular
+### Animation State and Styles
+ 
+Angular's `state()` functions allows you to define different states that you can call at the end of each transition. It takes two arguments: the first argument accepts a unique name like `open` or `closed` and the second argument accepts a `style()` function.
 
-Angular's `state()` function defines a set of styles to associate with a given state name. You can also define styles nested directly within the `transition()` function, with the following distinction between them:
+The `style()` function allows you to define a set of styles to associate with a given state name.
+
+Let us see how Angular's `state()` function works together with the `style⁣­(⁠)` function to set CSS style attributes.
+
+<code-example path="animations-guide/src/app/open-close.component.ts" title="src/app/open-close.component.ts" region="state1">
+</code-example>
+
+<code-example path="animations-guide/src/app/open-close.component.ts" title="src/app/open-close.component.ts" region="state2">
+</code-example>
+
+In the above code snippet,  you can see how states can allow multiple style attributes to be set all at the same time. When the button shows as `Open` it has several style attributes: a height of 200 pixels, an opacity of 1, and a color of yellow. The `style()` function describes what the style should be when the right conditions arise. 
+
+In the `closed` state, the button has a height of 100 pixels, an opacity of 0.5, and a background color of green.  
+
+### Transitions
+In Angular, you can set multiple styles without any animation. However, without further refinement, the HTML element will instantly transform with no fade, no shrinkage, or other visible indicator that a change is occurring. The `transition()` function makes the actual animation to occur. 
+
+To make the change less abrupt, we need an animation transition to describe the changes that occur between one state and another over a defined period of time. It accepts two arguments: the first argument accepts an expression that defines how the animation will be executed, and the second argument accepts an `animate()` function. 
+
+The `animate()` function allows you to define the length, delay, and easing of a transition. It also allows you to designate the style function for defining styles while the transitions are taking place, or the keyframes function for multi-step animations; both of which are placed in the second argument of the animate function.
+
+For our example, let us provide a transition from `open` to `closed` state with a durations of 1s between transitions. 
+
+ Note the arrow syntax used in the code snippet below. Within the transition, `animate()` specifies how long the transition will take. In this case, the state change from open to closed takes one second, expressed here as '1s'. 
+
+<code-example path="animations-guide/src/app/open-close.component.ts" title="src/app/open-close.component.ts" region="transition1">
+</code-example>
+
+We will also add a transition from `closed` to `open` state with a 0.5s duration.
+
+<code-example path="animations-guide/src/app/open-close.component.ts" title="src/app/open-close.component.ts" region="transition2">
+</code-example>
+
+<div class="l-sub-section">
+You can also define styles nested directly within the `transition()` function, with the following distinction between them:
 
 * Use `state()` to define steady-state styles that are applied at the end of each transition. 
 
 * Use `transition()` to define intermediate styles which create the illusion of motion during the animation.
 
 * When animations are disabled, `transition()` styles can be skipped, but `state()` styles cannot. 
-
-Here we describe how Angular's `state()` function works together with the `style⁣­(⁠)` function to set CSS style attributes.
-
-In our example, when the button shows as "Open" it has several style attributes: a height of 200 pixels, an opacity of 1, and a color of yellow. The `style()` function describes what the style should be when the right conditions arise. In this case, some other code elsewhere causes the button to change to the `open` state.
-
-<code-example path="animations-guide/src/app/open-close.component.ts" title="src/app/open-close.component.ts" region="state1">
-</code-example>
-
-In the `closed` state, the button has a height of 100 pixels, an opacity of 0.5, and a background color of green. This example shows how states can allow multiple style attributes to be set all at the same time. 
-
-<code-example path="animations-guide/src/app/open-close.component.ts" title="src/app/open-close.component.ts" region="state2">
-</code-example>
-
-### Transitions and timing
-
-In Angular, you can set multiple styles without any animation. However, without further refinement, the button will instantly transform with no fade, no shrinkage, or other visible indicator that a change is occurring. 
-
-To make the change less abrupt, we need an animation _transition_ to describe the changes that occur between one state and another over a defined period of time. The user perceives the animation as a sense of movement or change. 
-
-The `transition()` function evaluates an expression, such as a state-to-state transition. Note the arrow syntax used in the code snippet below. Within the transition, `animate()` specifies how long the transition will take. In this case, the state change from open to closed takes one second, expressed here as '1s'. 
-
-<code-example path="animations-guide/src/app/open-close.component.ts" title="src/app/open-close.component.ts" region="transition1">
-</code-example>
-
-The `animate()` function defines the duration of the animation: how long it should take, and optionally, whether there is a delay before that portion of the animation begins. A third option uses a standard CSS feature called _easing_, which allows for the change to vary in speed during the animation. For now, we will only specify a duration: 1 second to go from `open` to `closed`, and half a second to go from `closed` to `open`.
-
-<code-example path="animations-guide/src/app/open-close.component.ts" title="src/app/open-close.component.ts" region="transition2">
-</code-example>
+</div>
 
 ### Triggering the animation
 
@@ -248,6 +172,7 @@ For our example, we'll name the trigger `openClose`, and attach it to the `butto
 
 Here's the trigger function that describes and names the new trigger: 
 
+<!-- >does not show triggger in snippet<!-->
 <code-example path="animations-guide/src/app/open-close.component.ts" title="src/app/open-close.component.ts" region="trigger">
 </code-example>
 
@@ -273,7 +198,7 @@ When you have defined an animation trigger for a component, you can bind it to a
 [@triggerName] = "expression"
 </code-example>
 
-where `triggerName` is the name of the trigger, and  `expression` evaluates to a defined animation state.  The full HTML syntax looks like this:
+where `triggerName` is the name of the trigger you defined in the `animations` property of your app component, and  `expression` evaluates to a defined animation state.  The full HTML syntax looks like this:
 
 <code-example hideCopy language="typescript">
 &lt;div [@triggerName]="expression"&gt;...&lt;/div&gt;
@@ -283,29 +208,98 @@ The animation is executed or triggered when the expression value changes to a ne
 
 ### Linking to the HTML template
 
-The trigger is bound to the component in the component metadata, under the `@Component `decorator using the `animations:` property. In the HTML template, that same trigger appears under the HTML element to be animated. 
+The trigger is bound to the component in the component metadata, under the `@Component` decorator using the `animations:` property. 
 
-#### Component decorator
+<code-example hideCopy language="typescript">
+@Component({
+  selector: 'open-close-component',
+  animations: [
+    trigger('openClose', [
+      state('open', style({
+        height: '200px',
+        opacity: 1,
+        backgroundColor: 'yellow'
+      })),
+</code-example> 
 
-<code-example path="animations-guide/src/app/open-close.component.ts" title="src/app/open-close.component.ts" region="component">
-</code-example>
-
-In the HTML template for that component, we bind the `openClose` trigger to the HTML element to be animated, along with a trigger expression.  
+Here, we have `openClose` as the trigger name.
+In the HTML template for the above component, we bind the `openClose` trigger to the HTML element to be animated, along with a trigger expression.  
 
 #### HTML template file
 
 <code-example path="animations-guide/src/app/open-close.component.html" title="src/app/open-close.component.html" region="trigger">
 </code-example>
 
-For elements entering or leaving a page (inserted or removed  from the DOM), you can make the animation conditional – for example, use `*ngIf` with the animation trigger in the HTML template. In the above code snippet, `'expression'` is an expression that evaluates to a defined state, in this case `open` or `closed`.
+ In the above code snippet, when the `isOpen` expression evaluates to a defined state: `open` or `closed`, it will notify the trigger `openClose` of a state change. It is then up to `openClose` code to handle the state change and kick off a state change animation.
+
+_Note_: For elements entering or leaving a page (inserted or removed  from the DOM), you can make the animation conditional – for example, use `*ngIf` in the expression along with the animation trigger in the HTML template.
 
 ### Code sample, simple transition
+
+Here are the code files discussed on the transition example. 
+
+<code-tabs>
+
+  <code-pane title="src/app/open-close.component.ts" path="animations-guide/src/app/open-close.component.ts">
+  </code-pane>
+
+  <code-pane title="src/app/open-close.component.html" path="animations-guide/src/app/open-close.component.html">
+  </code-pane>
+
+</code-tabs>
 
 ### Summary
 
 The simplest possible animation transition is between two states, using `style()`, `state()`,  with `animate()` for the timing. The animation kicks off using the `trigger()` function, which is also how the animation is tied to the HTML template. 
 
 On the [Animation Basics Deep Dive](guide/animation-basics-deep-dive) page, we go into greater depth on callbacks, animation timing, some special states such as `wildcard *` and `void`, and show how these special states are used for elements entering and leaving a view.
+
+## Reusable Animations
+
+Angular animation provides [AnimationOptions](https://angular.io/api/animations/AnimationOptions) to configure or override options for each of the step-based animation methods such as trigger and transition.
+
+<code-example hideCopy language="typescript">
+transition('open => closed', [style({
+        height: 200 px
+    }, {
+        opacity: "{{ opacity }}"
+    }, {
+        backgroundcolor: 'yelow'
+    }),
+    animate("{{ time }}"),
+], {
+    time: "1s",
+    opacity: "1"
+})
+</code-example>
+
+In the above code snippet, both time and opacity inputs will be replaced during runtime.
+
+This allows you to reuse an Animation across different components. Use the `animation()` and `useAnimation()` API calls to acheive this. 
+
+<code-example hideCopy language="typescript">
+import {animation, style, animate} from "@angular/animations";
+export var transAnimation = animation([ 
+  style({ height: "{{ height }}",
+  opacity: "{{ opacity }}", backgroundcolor: "{{backgroundcolor}}" }), 
+  animate("{{ time }}" ])
+</code-example>
+
+Now, you can import the reusable `transAnimation` in your component class and reuse it using the `useAnimation()` method as shown below:
+
+<code-example hideCopy language="typescript">
+// inside of @Component.animations...
+
+import {useAnimation, transition} from "@angular/animations";
+import {transAnimation} from "./animations";
+transition('open => closed', [ 
+  useAnimation(transAnimation, { 
+    height: 0, 
+    opacity: 1, 
+    backgroundcolor:'red', 
+    time: '1s' }) ])
+</code-example>
+
 
 ## Keyframes
 
@@ -496,6 +490,93 @@ A second function called `sequence()` lets you run those same animations one aft
 ### Summary
 
 Angular functions for choreographing multiple elements start with `query()` to find inner elements, for example gathering all images within a <div>. The remaining functions, `stagger()`, `group()`, and `sequence()`, apply cascades or allow you to control how multiple animation steps are applied.
+
+## Animation DSL
+
+Angular provides a domain-specific language (DSL) for animations. See @angular/animations module in the [API reference](api) for a listing and syntax of core functions and related data structures. 
+
+
+<table>
+
+ <tr>
+   <th style="vertical-align: top">
+     Function name
+   </th>
+
+   <th style="vertical-align: top">
+     What it does
+   </th>
+ </tr>
+
+ <tr>
+   <td><code>trigger()</code></td>
+   <td>Kicks off the animation and serves as a container for all other animation function calls. HTML template binds to <code>triggerName</code>. Use the first argument to declare a unique trigger name. Uses array syntax.</td>
+ </tr>
+
+ <tr>
+   <td><code>style()</code></td>
+   <td>Defines one or more CSS styles to use in animations. Controls visual appearance of HTML elements during animations. Uses object syntax.</td>
+ </tr>
+
+ <tr>
+   <td><code>state()</code></td>
+   <td>Creates a named set of CSS styles which should be applied on successful transition to a given state. The state can then be referenced by name within other animation functions.</td>
+ </tr>
+
+ <tr>
+   <td><code>animate()</code></td>
+   <td>Specifies timing information for a transition. Optional values for delay and easing. Can contain <code>style()</code> calls within.</td>
+ </tr>
+
+ <tr>
+   <td><code>transition()</code></td>
+   <td>Defines animation sequence between 2 named states. Uses array syntax.</td>
+ </tr>
+
+ <tr>
+   <td><code>keyframes()</code></td>
+   <td>Allows a sequential change between styles within a specified time interval. Use within <code>animate()</code>. Can include multiple <code>style()</code> calls within each <code>keyframe()</code>. Uses array syntax.</td>
+ </tr>
+
+ <tr>
+   <td><code>group()</code></td>
+   <td>Specifies a group of animation steps (<em>inner animations</em>) to be run in parallel. Animation continues only after all inner animation steps have completed. Used within <code>sequence()</code> or <code>transition()</code></td>
+ </tr>
+
+ <tr>
+   <td><code>query()</code></td>
+   <td>Use to find one or more inner HTML elements within the current element. </td>
+ </tr>
+
+ <tr>
+   <td><code>sequence()</code></td>
+   <td>Specifies a list of animation steps that are run sequentially, one by one.</td>
+ </tr>
+
+ <tr>
+   <td><code>stagger()</code></td>
+   <td>Staggers the starting time for animations for multiple elements.</td>
+ </tr>
+
+ <tr>
+   <td><code>animation()</code></td>
+   <td>Produces a re-usable animation that can be invoked from elsewhere. Used together with <code>useAnimation()</code>.</td>
+ </tr>
+
+ <tr>
+   <td><code>useAnimation()</code></td>
+   <td>Activates a reusable animation. Used together with <code>animation()</code>.</td>
+ </tr>
+
+ <tr>
+   <td><code>animateChild()</code></td>
+   <td>Allows animations on child components to be run within the same timeframe as the parent.</td>
+ </tr>
+
+</table>
+
+
+
 
 
 
