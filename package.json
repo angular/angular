@@ -26,12 +26,12 @@
     "node": ">= 5.4.1"
   },
   "dependencies": {
-    "@angular/animations": "^5.2.3",
-    "@angular/common": "^5.2.3",
-    "@angular/compiler": "^5.2.3",
-    "@angular/core": "^5.2.3",
-    "@angular/forms": "^5.2.3",
-    "@angular/platform-browser": "^5.2.3",
+    "@angular/animations": ">=6.0.0-beta.0 <7.0.0",
+    "@angular/common": ">=6.0.0-beta.0 <7.0.0",
+    "@angular/compiler": ">=6.0.0-beta.0 <7.0.0",
+    "@angular/core": ">=6.0.0-beta.0 <7.0.0",
+    "@angular/forms": ">=6.0.0-beta.0 <7.0.0",
+    "@angular/platform-browser": ">=6.0.0-beta.0 <7.0.0",
     "core-js": "^2.4.1",
     "rxjs": "^5.5.5",
     "systemjs": "0.19.43",
@@ -40,12 +40,12 @@
     "zone.js": "^0.8.12"
   },
   "devDependencies": {
-    "@angular/bazel": "^5.2.3",
-    "@angular/compiler-cli": "^5.2.3",
-    "@angular/http": "^5.2.3",
-    "@angular/platform-browser-dynamic": "^5.2.3",
-    "@angular/platform-server": "^5.2.3",
-    "@angular/router": "^5.2.3",
+    "@angular/bazel": ">=6.0.0-beta.0 <7.0.0",
+    "@angular/compiler-cli": ">=6.0.0-beta.0 <7.0.0",
+    "@angular/http": ">=6.0.0-beta.0 <7.0.0",
+    "@angular/platform-browser-dynamic": ">=6.0.0-beta.0 <7.0.0",
+    "@angular/platform-server": ">=6.0.0-beta.0 <7.0.0",
+    "@angular/router": ">=6.0.0-beta.0 <7.0.0",
     "@angular/upgrade": "^5.0.1",
     "@bazel/ibazel": "0.3.1",
     "@google-cloud/storage": "^1.1.1",
@@ -123,7 +123,7 @@
     "tsconfig-paths": "^2.3.0",
     "tslint": "^5.9.1",
     "tsutils": "^2.6.0",
-    "typescript": "~2.5.3",
+    "typescript": "~2.6.0",
     "uglify-js": "^2.8.14",
     "web-animations-js": "^2.2.5"
   }

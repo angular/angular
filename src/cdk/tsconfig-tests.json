@@ -18,7 +18,7 @@
     "typings.d.ts"
   ],
   "angularCompilerOptions": {
-    "strictMetadataEmit": true,
+    "strictMetadataEmit": false, // Workaround for Angular #22210
     "skipTemplateCodegen": true,
     "emitDecoratorMetadata": true,
     "fullTemplateTypeCheck": true

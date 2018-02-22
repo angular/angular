@@ -27,6 +27,7 @@ class FakeQueryList<T> extends QueryList<T> {
   changes = new Subject<FakeQueryList<T>>();
   items: T[];
   get length() { return this.items.length; }
+  set length(_) { /* Empty setter for base class constructor */  }
   get first() { return this.items[0]; }
   toArray() { return this.items; }
   some() { return this.items.some.apply(this.items, arguments); }
