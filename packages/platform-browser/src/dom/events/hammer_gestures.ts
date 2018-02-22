@@ -72,17 +72,8 @@ export class HammerGestureConfig {
 
   overrides: {[key: string]: Object} = {};
 
-  options?: {
-    cssProps?: any; domEvents?: boolean; enable?: boolean | ((manager: any) => boolean);
-    preset?: any[];
-    touchAction?: string;
-    recognizers?: any[];
-    inputClass?: any;
-    inputTarget?: EventTarget;
-  };
-
   buildHammer(element: HTMLElement): HammerInstance {
-    const mc = new Hammer(element, this.options);
+    const mc = new Hammer(element);
 
     mc.get('pinch').set({enable: true});
     mc.get('rotate').set({enable: true});
