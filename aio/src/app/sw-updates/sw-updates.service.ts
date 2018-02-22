@@ -1,14 +1,14 @@
-import { Injectable, OnDestroy } from '@angular/core';
+import { ApplicationRef, Injectable, OnDestroy } from '@angular/core';
 import { NgServiceWorker } from '@angular/service-worker';
-import { Observable } from 'rxjs/Observable';
 import { Subject } from 'rxjs/Subject';
-import 'rxjs/add/observable/of';
 import 'rxjs/add/operator/concat';
 import 'rxjs/add/operator/debounceTime';
+import 'rxjs/add/operator/defaultIfEmpty';
+import 'rxjs/add/operator/do';
 import 'rxjs/add/operator/filter';
+import 'rxjs/add/operator/first';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/startWith';
-import 'rxjs/add/operator/take';
 import 'rxjs/add/operator/takeUntil';
 
 import { Logger } from 'app/shared/logger.service';
@@ -29,18 +29,20 @@ import { Logger } from 'app/shared/logger.service';
 @Injectable()
 export class SwUpdatesService implements OnDestroy {
   private checkInterval = 1000 * 60 * 60 * 6;   // 6 hours
-  private onDestroy = new Subject();
-  private checkForUpdateSubj = new Subject();
+  private onDestroy = new Subject<void>();
+  private checkForUpdateSubj = new Subject<void>();
   updateActivated = this.sw.updates
       .takeUntil(this.onDestroy)
       .do(evt => this.log(`Update event: ${JSON.stringify(evt)}`))
       .filter(({type}) => type === 'activation')
       .map(({version}) => version);
 
-  constructor(private logger: Logger, private sw: NgServiceWorker) {
-    this.checkForUpdateSubj
-        .debounceTime(this.checkInterval)
-        .startWith(null)
+  constructor(appRef: ApplicationRef, private logger: Logger, private sw: NgServiceWorker) {
+    const appIsStable$ = appRef.isStable.first(v => v);
+    const checkForUpdates$ = this.checkForUpdateSubj.debounceTime(this.checkInterval).startWith<void>(undefined);
+
+    appIsStable$
+        .concat(checkForUpdates$)
         .takeUntil(this.onDestroy)
         .subscribe(() => this.checkForUpdate());
   }
@@ -60,7 +62,8 @@ export class SwUpdatesService implements OnDestroy {
     this.sw.checkForUpdate()
         // Temp workaround for https://github.com/angular/mobile-toolkit/pull/137.
         // TODO (gkalpak): Remove once #137 is fixed.
-        .concat(Observable.of(false)).take(1)
+        .defaultIfEmpty(false)
+        .first()
         .do(v => this.log(`Update available: ${v}`))
         .subscribe(v => v ? this.activateUpdate() : this.scheduleCheckForUpdate());
   }
