@@ -14,12 +14,11 @@ test:debug --test_arg=--node_options=--inspect-brk --test_output=streamed --test
 # Filesystem interactions     #
 ###############################
 
-# Don't create bazel-* symlinks in the WORKSPACE directory.
-# These require .gitignore and may scare users.
-# Also, it's a workaround for https://github.com/bazelbuild/rules_typescript/issues/12
-# which affects the common case of having `tsconfig.json` in the WORKSPACE directory.
-#
-# Instead, you should run `bazel info bazel-bin` to find out where the outputs went.
+# Don't create symlinks like bazel-out in the project.
+# These cause VSCode to traverse a massive tree, opening file handles and
+# eventually a surprising failure with auto-discovery of the C++ toolchain in
+# MacOS High Sierra.
+# See https://github.com/bazelbuild/bazel/issues/4603
 build --symlink_prefix=/
 
 # Performance: avoid stat'ing input files
