@@ -1,13 +1,13 @@
 
 #!/usr/bin/env bash
 
-# use for PATCH releases
+# use for BETA and RC releases
 # Verify that all packages are published with correct version:
 
 mkdir tmp
 cd tmp
 npm init -y
-npm install typescript@2.6 rxjs@5.5.0 zone.js@0.8.10 @angular/{animations,core,common,forms,router,platform-browser,platform-browser-dynamic,platform-webworker,platform-webworker-dynamic,platform-server,compiler,compiler-cli,language-service,service-worker,animations}@next --save
+npm install typescript@2.6 rxjs@5.5.0 zone.js@0.8.10 @angular/{animations,core,common,forms,router,platform-browser,platform-browser-dynamic,platform-webworker,platform-webworker-dynamic,platform-server,compiler,compiler-cli,language-service,service-worker,upgrade}@next --save
 cd ..
 rm -rf tmp
 
