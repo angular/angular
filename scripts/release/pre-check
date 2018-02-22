@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+# Verify peer deps constraints and package.json before publishing to npm
+# There should be no npm errors
+
+mkdir tmp
+cd tmp
+npm init -y
+npm install --save ../dist/packages-dist/* zone.js@0.8.10 rxjs@5.5.0 typescript@2.6
+cd ..
+rm -rf ./tmp
