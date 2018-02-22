@@ -13,6 +13,7 @@ import {DepAppModuleNgFactory} from 'app_built/src/dep.ngfactory';
 import {HierarchyAppModuleNgFactory} from 'app_built/src/hierarchy.ngfactory';
 import {RootAppModuleNgFactory} from 'app_built/src/root.ngfactory';
 import {SelfAppModuleNgFactory} from 'app_built/src/self.ngfactory';
+import {StringAppModuleNgFactory} from 'app_built/src/string.ngfactory';
 import {TokenAppModuleNgFactory} from 'app_built/src/token.ngfactory';
 
 enableProdMode();
@@ -74,6 +75,16 @@ describe('ngInjectableDef Bazel Integration', () => {
       url: '/',
     }).then(html => {
       expect(html).toMatch(/>true<\//);
+      done();
+    });
+  });
+
+  it('string tokens work', done => {
+    renderModuleFactory(StringAppModuleNgFactory, {
+      document: '<string-app></string-app>',
+      url: '/',
+    }).then(html => {
+      expect(html).toMatch(/>works<\//);
       done();
     });
   });
