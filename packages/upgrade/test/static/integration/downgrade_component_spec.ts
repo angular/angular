@@ -6,11 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ChangeDetectorRef, Compiler, Component, ComponentFactoryResolver, EventEmitter, Injector, Input, NgModule, NgModuleRef, OnChanges, OnDestroy, SimpleChanges, destroyPlatform} from '@angular/core';
+import {ChangeDetectorRef, Compiler, Component, ComponentFactoryResolver, Directive, ElementRef, EventEmitter, Injector, Input, NgModule, NgModuleRef, OnChanges, OnDestroy, SimpleChanges, destroyPlatform} from '@angular/core';
 import {async, fakeAsync, tick} from '@angular/core/testing';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
-import {UpgradeModule, downgradeComponent} from '@angular/upgrade/static';
+import {UpgradeComponent, UpgradeModule, downgradeComponent} from '@angular/upgrade/static';
 import * as angular from '@angular/upgrade/static/src/common/angular1';
 
 import {$apply, bootstrap, html, multiTrim, withEachNg1Version} from '../test_helpers';
@@ -457,6 +457,57 @@ withEachNg1Version(() => {
            $rootScope.$apply('destroyIt = true');
 
            expect(element.textContent).not.toContain('test');
+           expect(destroyed).toBe(true);
+         });
+       }));
+
+    it('should properly run cleanup with multiple levels of nesting', async(() => {
+         let destroyed = false;
+
+         @Component({
+           selector: 'ng2-outer',
+           template: '<div *ngIf="!destroyIt"><ng1></ng1></div>',
+         })
+         class Ng2OuterComponent {
+           @Input() destroyIt = false;
+         }
+
+         @Component({selector: 'ng2-inner', template: 'test'})
+         class Ng2InnerComponent implements OnDestroy {
+           ngOnDestroy() { destroyed = true; }
+         }
+
+         @Directive({selector: 'ng1'})
+         class Ng1ComponentFacade extends UpgradeComponent {
+           constructor(elementRef: ElementRef, injector: Injector) {
+             super('ng1', elementRef, injector);
+           }
+         }
+
+         @NgModule({
+           imports: [BrowserModule, UpgradeModule],
+           declarations: [Ng1ComponentFacade, Ng2InnerComponent, Ng2OuterComponent],
+           entryComponents: [Ng2InnerComponent, Ng2OuterComponent],
+         })
+         class Ng2Module {
+           ngDoBootstrap() {}
+         }
+
+         const ng1Module =
+             angular.module('ng1', [])
+                 .directive('ng1', () => ({template: '<ng2-inner></ng2-inner>'}))
+                 .directive('ng2Inner', downgradeComponent({component: Ng2InnerComponent}))
+                 .directive('ng2Outer', downgradeComponent({component: Ng2OuterComponent}));
+
+         const element = html('<ng2-outer [destroy-it]="destroyIt"></ng2-outer>');
+
+         bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then(upgrade => {
+           expect(element.textContent).toBe('test');
+           expect(destroyed).toBe(false);
+
+           $apply(upgrade, 'destroyIt = true');
+
+           expect(element.textContent).toBe('');
            expect(destroyed).toBe(true);
          });
        }));

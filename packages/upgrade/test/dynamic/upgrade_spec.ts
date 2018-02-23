@@ -6,13 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ChangeDetectorRef, Component, EventEmitter, Input, NO_ERRORS_SCHEMA, NgModule, NgModuleFactory, NgZone, OnChanges, SimpleChange, SimpleChanges, Testability, destroyPlatform, forwardRef} from '@angular/core';
+import {ChangeDetectorRef, Component, EventEmitter, Input, NO_ERRORS_SCHEMA, NgModule, NgModuleFactory, NgZone, OnChanges, OnDestroy, SimpleChange, SimpleChanges, Testability, destroyPlatform, forwardRef} from '@angular/core';
 import {async, fakeAsync, flushMicrotasks, tick} from '@angular/core/testing';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 import * as angular from '@angular/upgrade/src/common/angular1';
 import {UpgradeAdapter, UpgradeAdapterRef} from '@angular/upgrade/src/dynamic/upgrade_adapter';
-import {$digest, html, multiTrim, withEachNg1Version} from './test_helpers';
+import {$apply, $digest, html, multiTrim, withEachNg1Version} from './test_helpers';
 
 declare global {
   export var inject: Function;
@@ -579,6 +579,49 @@ withEachNg1Version(() => {
            const element = html('<ng1></ng1>');
            adapter.bootstrap(element, ['ng1']).ready((ref) => {
              onDestroyed.subscribe(() => { ref.dispose(); });
+           });
+         }));
+
+      it('should properly run cleanup with multiple levels of nesting', async(() => {
+           const adapter: UpgradeAdapter = new UpgradeAdapter(forwardRef(() => Ng2Module));
+           let destroyed = false;
+
+           @Component(
+               {selector: 'ng2-outer', template: '<div *ngIf="!destroyIt"><ng1></ng1></div>'})
+           class Ng2OuterComponent {
+             @Input() destroyIt = false;
+           }
+
+           @Component({selector: 'ng2-inner', template: 'test'})
+           class Ng2InnerComponent implements OnDestroy {
+             ngOnDestroy() { destroyed = true; }
+           }
+
+           @NgModule({
+             imports: [BrowserModule],
+             declarations:
+                 [Ng2InnerComponent, Ng2OuterComponent, adapter.upgradeNg1Component('ng1')],
+             schemas: [NO_ERRORS_SCHEMA],
+           })
+           class Ng2Module {
+           }
+
+           const ng1Module =
+               angular.module('ng1', [])
+                   .directive('ng1', () => ({template: '<ng2-inner></ng2-inner>'}))
+                   .directive('ng2Inner', adapter.downgradeNg2Component(Ng2InnerComponent))
+                   .directive('ng2Outer', adapter.downgradeNg2Component(Ng2OuterComponent));
+
+           const element = html('<ng2-outer [destroy-it]="destroyIt"></ng2-outer>');
+
+           adapter.bootstrap(element, [ng1Module.name]).ready(ref => {
+             expect(element.textContent).toBe('test');
+             expect(destroyed).toBe(false);
+
+             $apply(ref, 'destroyIt = true');
+
+             expect(element.textContent).toBe('');
+             expect(destroyed).toBe(true);
            });
          }));
 
