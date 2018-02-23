@@ -410,6 +410,20 @@ export function setCurrentInjector(injector: Injector | null): Injector|null {
   return former;
 }
 
+/**
+ * Injects a token from the currently active injector.
+ *
+ * This function must be used in the context of a factory function such as one defined for an
+ * `InjectionToken`, and will throw an error if not called from such a context. For example:
+ *
+ * {@example core/di/ts/injector_spec.ts region='ShakeableInjectionToken'}
+ *
+ * Within such a factory function `inject` is utilized to request injection of a dependency, instead
+ * of providing an additional array of dependencies as was common to do with `useFactory` providers.
+ * `inject` is faster and more type-safe.
+ *
+ * @experimental
+ */
 export function inject<T>(
     token: Type<T>| InjectionToken<T>, notFoundValue?: undefined, flags?: InjectFlags): T;
 export function inject<T>(
