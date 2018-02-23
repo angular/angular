@@ -35,7 +35,7 @@ export interface TypeDecorator {
 }
 
 export const ANNOTATIONS = '__annotations__';
-export const PARAMETERS = '__paramaters__';
+export const PARAMETERS = '__parameters__';
 export const PROP_METADATA = '__prop__metadata__';
 
 /**
