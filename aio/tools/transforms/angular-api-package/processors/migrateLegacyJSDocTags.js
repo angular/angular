@@ -28,7 +28,7 @@ module.exports = function migrateLegacyJSDocTags(log, createDocMessage) {
       });
 
       if (migrated) {
-        log.warn('Some deprecated tags were migrated.')
+        log.warn('Some deprecated tags were migrated.');
         log.warn('This automatic handling will be removed in a future version of the doc generation.\n');
       }
     }

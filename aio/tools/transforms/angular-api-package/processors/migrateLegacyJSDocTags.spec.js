@@ -59,6 +59,6 @@ describe('migrateLegacyJSDocTags processor', () => {
     expect(docs).toEqual([
       { },
       { description: 'the description' }
-    ])
+    ]);
   });
 });
