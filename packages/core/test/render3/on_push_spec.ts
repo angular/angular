@@ -152,7 +152,7 @@ describe('OnPush change detection', () => {
     expect(getRenderedText(buttonParent)).toEqual('1 - Nancy');
 
     const button = containerEl.querySelector('button#parent');
-    (button ! as HTMLButtonElement).click();
+    (button as HTMLButtonElement) !.click();
     detectChanges(buttonParent);
     expect(getRenderedText(buttonParent)).toEqual('1 - Nancy');
   });
