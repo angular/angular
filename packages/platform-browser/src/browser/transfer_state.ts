@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {APP_ID, Injectable, NgModule} from '@angular/core';
+import {APP_ID, Injectable, NgModule, APP_INITIALIZER} from '@angular/core';
 import {DOCUMENT} from '../dom/dom_tokens';
 
 export function escapeHtml(text: string): string {
@@ -152,6 +152,14 @@ export function initTransferState(doc: Document, appId: string) {
   return TransferState.init(initialState);
 }
 
+export function domContentLoadedFactory(doc: Document) {
+  return () => {
+    return new Promise ((resolve, reject) => {
+      document.addEventListener('DOMContentLoaded', () => resolve());
+    });
+  };
+}
+
 /**
  * NgModule to install on the client side while using the `TransferState` to transfer state from
  * server to client.
@@ -159,7 +167,8 @@ export function initTransferState(doc: Document, appId: string) {
  * @experimental
  */
 @NgModule({
-  providers: [{provide: TransferState, useFactory: initTransferState, deps: [DOCUMENT, APP_ID]}],
+  providers: [{provide: APP_INITIALIZER, multi: true, useFactory: () => domContentLoadedFactory, deps: [DOCUMENT]},
+    {provide: TransferState, useFactory: initTransferState, deps: [DOCUMENT, APP_ID]}],
 })
 export class BrowserTransferStateModule {
 }
