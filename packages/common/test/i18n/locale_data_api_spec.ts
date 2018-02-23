@@ -13,7 +13,7 @@ import localeZh from '@angular/common/locales/zh';
 import localeFrCA from '@angular/common/locales/fr-CA';
 import localeEnAU from '@angular/common/locales/en-AU';
 import {registerLocaleData} from '../../src/i18n/locale_data';
-import {findLocaleData, getCurrencySymbol, getLocaleDateFormat, FormatWidth, getNbOfCurrencyDigits} from '../../src/i18n/locale_data_api';
+import {findLocaleData, getCurrencySymbol, getLocaleDateFormat, FormatWidth, getNumberOfCurrencyDigits} from '../../src/i18n/locale_data_api';
 
 {
   describe('locale data api', () => {
@@ -76,10 +76,10 @@ import {findLocaleData, getCurrencySymbol, getLocaleDateFormat, FormatWidth, get
 
     describe('getNbOfCurrencyDigits', () => {
       it('should return the correct value', () => {
-        expect(getNbOfCurrencyDigits('USD')).toEqual(2);
-        expect(getNbOfCurrencyDigits('IDR')).toEqual(0);
-        expect(getNbOfCurrencyDigits('BHD')).toEqual(3);
-        expect(getNbOfCurrencyDigits('unexisting_ISO_code')).toEqual(2);
+        expect(getNumberOfCurrencyDigits('USD')).toEqual(2);
+        expect(getNumberOfCurrencyDigits('IDR')).toEqual(0);
+        expect(getNumberOfCurrencyDigits('BHD')).toEqual(3);
+        expect(getNumberOfCurrencyDigits('unexisting_ISO_code')).toEqual(2);
       });
     });
 

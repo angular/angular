@@ -64,6 +64,18 @@ export declare class DeprecatedPercentPipe implements PipeTransform {
 /** @stable */
 export declare const DOCUMENT: InjectionToken<Document>;
 
+/** @stable */
+export declare function formatCurrency(value: number, locale: string, currency: string, currencyCode?: string, digitsInfo?: string): string;
+
+/** @stable */
+export declare function formatDate(value: string | number | Date, format: string, locale: string, timezone?: string): string;
+
+/** @stable */
+export declare function formatNumber(value: number, locale: string, digitsInfo?: string): string;
+
+/** @stable */
+export declare function formatPercent(value: number, locale: string, digitsInfo?: string): string;
+
 /** @experimental */
 export declare enum FormatWidth {
     Short = 0,
@@ -133,7 +145,7 @@ export declare function getLocaleTimeFormat(locale: string, width: FormatWidth):
 export declare function getLocaleWeekEndRange(locale: string): [WeekDay, WeekDay];
 
 /** @experimental */
-export declare function getNbOfCurrencyDigits(code: string): number;
+export declare function getNumberOfCurrencyDigits(code: string): number;
 
 /** @stable */
 export declare class HashLocationStrategy extends LocationStrategy {
