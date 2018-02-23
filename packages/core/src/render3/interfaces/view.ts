@@ -174,7 +174,7 @@ export interface LView {
 }
 
 /** Flags associated with an LView (saved in LView.flags) */
-export enum LViewFlags {
+export const enum LViewFlags {
   /**
    * Whether or not the view is in creationMode.
    *
@@ -188,7 +188,7 @@ export enum LViewFlags {
   /** Whether or not this is the view for an OnPush component. */
   OnPush = 0b010,
 
-  /** Whetehr or not this view is currently dirty (needing check) */
+  /** Whether or not this view is currently dirty (needing check) */
   Dirty = 0b100
 }
 

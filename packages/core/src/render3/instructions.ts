@@ -159,7 +159,7 @@ export function enterView(newView: LView, host: LElementNode | LViewNode | null)
   data = newView && newView.data;
   bindingIndex = newView && newView.bindingStartIndex || 0;
   tData = newView && newView.tView.data;
-  creationMode = newView && (newView.flags & LViewFlags.CreationMode) === 1;
+  creationMode = newView && (newView.flags & LViewFlags.CreationMode) === LViewFlags.CreationMode;
 
   cleanup = newView && newView.cleanup;
   renderer = newView && newView.renderer;
@@ -216,7 +216,7 @@ export function createLView(
   return newView;
 }
 
-/** Builds the view flags based on whether the view should be OnPush */
+/** Builds the view flags on creation based on whether the view should be OnPush */
 function buildViewFlags(onPush: boolean): LViewFlags {
   return onPush ? (LViewFlags.Dirty | LViewFlags.OnPush | LViewFlags.CreationMode) :
                   LViewFlags.CreationMode;
@@ -614,13 +614,13 @@ export function listener(eventName: string, listener: EventListener, useCapture 
 
   // In order to match current behavior, native DOM event listeners must be added for all
   // events (including outputs).
+  const cleanupFns = cleanup || (cleanup = currentView.cleanup = []);
   if (isProceduralRenderer(renderer)) {
     const cleanupFn = renderer.listen(native, eventName, wrappedListener);
-    (cleanup || (cleanup = currentView.cleanup = [])).push(cleanupFn, null);
+    cleanupFns.push(cleanupFn, null);
   } else {
     native.addEventListener(eventName, wrappedListener, useCapture);
-    (cleanup || (cleanup = currentView.cleanup = [
-     ])).push(eventName, native, wrappedListener, useCapture);
+    cleanupFns.push(eventName, native, wrappedListener, useCapture);
   }
 
   let tNode: TNode|null = node.tNode !;
@@ -649,9 +649,10 @@ function wrapListenerWithDirtyLogic(view: LView, listener: EventListener): Event
 }
 
 export function markSelfAndParentsDirty(view: LView): void {
-  while (view != null) {
-    view.flags |= LViewFlags.Dirty;
-    view = view.parent !;
+  let currentView: LView|null = view;
+  while (currentView != null) {
+    currentView.flags |= LViewFlags.Dirty;
+    currentView = currentView.parent;
   }
 }
 
