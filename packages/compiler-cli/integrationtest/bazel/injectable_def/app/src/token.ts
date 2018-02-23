@@ -6,11 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, Inject, InjectionToken, NgModule, forwardRef} from '@angular/core';
+import {Component, Inject, Injectable, InjectionToken, NgModule, forwardRef, inject} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 import {ServerModule} from '@angular/platform-server';
 
-export interface IService { readonly data: string; }
+export interface IService { readonly dep: {readonly data: string;}; }
 
 @NgModule({})
 export class TokenModule {
@@ -18,7 +18,7 @@ export class TokenModule {
 
 export const TOKEN = new InjectionToken('test', {
   scope: TokenModule,
-  factory: () => new Service(),
+  factory: () => new Service(inject(Dep)),
 });
 
 
@@ -28,7 +28,7 @@ export const TOKEN = new InjectionToken('test', {
 })
 export class AppComponent {
   data: string;
-  constructor(@Inject(TOKEN) service: IService) { this.data = service.data; }
+  constructor(@Inject(TOKEN) service: IService) { this.data = service.dep.data; }
 }
 
 @NgModule({
@@ -37,10 +37,18 @@ export class AppComponent {
     ServerModule,
     TokenModule,
   ],
+  providers: [forwardRef(() => Dep)],
   declarations: [AppComponent],
   bootstrap: [AppComponent],
 })
 export class TokenAppModule {
 }
 
-export class Service { readonly data = 'fromToken'; }
+@Injectable()
+export class Dep {
+  readonly data = 'fromToken';
+}
+
+export class Service {
+  constructor(readonly dep: Dep) {}
+}
