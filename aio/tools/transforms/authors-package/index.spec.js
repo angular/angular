@@ -12,6 +12,7 @@ describe('authors-package (integration tests)', () => {
     originalJasmineTimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
     jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000;
   });
+
   afterAll(() => jasmine.DEFAULT_TIMEOUT_INTERVAL = originalJasmineTimeout);
 
   beforeEach(() => {
