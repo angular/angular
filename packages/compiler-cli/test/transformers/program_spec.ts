@@ -551,7 +551,8 @@ describe('ng program', () => {
     compile(/*oldProgram*/ undefined, options, /*rootNames*/ undefined, host);
 
     // verify that `compilerHost.writeFile()` was called for the metadata json
-    expect(writtenFileNames.some(f => /built\/my-bundled-sources.metadata.json/.test(f))).toBe(true);
+    expect(writtenFileNames.some(f => /built\/my-bundled-sources.metadata.json/.test(f)))
+        .toBe(true);
   });
 
   describe('createSrcToOutPathMapper', () => {
