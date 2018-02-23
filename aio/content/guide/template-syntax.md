@@ -784,10 +784,17 @@ You are setting the *properties* of DOM elements, components, and directives.
 -->
 ### HTML 어트리뷰트 vs. DOM 프로퍼티
 
+<!--
 The distinction between an HTML attribute and a DOM property is crucial to understanding how Angular binding works.
+-->
+Angular에서 바인딩이 어떻게 동작하는지 이해하려면, HTML 어트리뷰트와 DOM 프로퍼티를 확실하게 구분해야 합니다.
 
+<!--
 **Attributes are defined by HTML. Properties are defined by the DOM (Document Object Model).**
+-->
+**어트리뷰트는 HTML에 지정합니다. 그리고 프로퍼티는 DOM(Document Object Model)에 지정합니다.**
 
+<!--
 * A few HTML attributes have 1:1 mapping to properties. `id` is one example.
 
 * Some HTML attributes don't have corresponding properties. `colspan` is one example.
@@ -795,52 +802,105 @@ The distinction between an HTML attribute and a DOM property is crucial to under
 * Some DOM properties don't have corresponding attributes. `textContent` is one example.
 
 * Many HTML attributes appear to map to properties ... but not in the way you might think!
+-->
+* 어떤 HTML 어트리뷰트는 프로퍼티와 같은 역할을 합니다. `id`가 그렇습니다.
+* 프로퍼티에는 없는 HTML 어트리뷰트도 있습니다. `colspan`이 그렇습니다.
+* 어트리뷰트에는 없는 DOM 프로퍼티도 있습니다. `textContent`가 그렇습니다.
+* 그 외의 어트리뷰트와 프로퍼티는 서로 연관이 있지만... 이 부분은 일단 넘어가죠!
 
+<!--
 That last category is confusing until you grasp this general rule:
+-->
+마지막 분류가 좀 헷갈릴 수 있지만, 일반적인 규칙은 이렇습니다:
 
+<!--
 **Attributes *initialize* DOM properties and then they are done.
 Property values can change; attribute values can't.**
+-->
+**어트리뷰트는 DOM 프로퍼티의 *초기값*을 지정하고 역할이 끝납니다. 값도 변하지 않습니다.
+프로퍼티는 값을 바꾸면서 계속 유지됩니다.** 
 
+<!--
 For example, when the browser renders `<input type="text" value="Bob">`, it creates a
 corresponding DOM node with a `value` property *initialized* to "Bob".
+-->
+브라우저가 렌더링하는 `<input type="text" value="Bob">` 엘리먼트로 설명하면,
+이 DOM 노드는 어트리뷰트 값인 "Bob"으로 `value` 프로퍼티가 *초기화* 되면서 만들어 집니다.
 
+<!--
 When the user enters "Sally" into the input box, the DOM element `value` *property* becomes "Sally".
 But the HTML `value` *attribute* remains unchanged as you discover if you ask the input element
 about that attribute: `input.getAttribute('value')` returns "Bob".
+-->
+그리고 사용자가 이 입력 필드에 "Sally" 라고 입력하면 DOM 엘리번트의 `value` *프로퍼티* 는 "Sally"라는 값으로 변경됩니다.
+하지만 HTML에 있는 `value` *어트리뷰트*는 `input.getAttribute('value')`로 찾아봐도 "Bob"으로 남아있습니다.
 
+<!--
 The HTML attribute `value` specifies the *initial* value; the DOM `value` property is the *current* value.
+-->
+HTML에 있는 `value` 어트리뷰트는 연결된 DOM 필드의 값을 초기화할 뿐이고, DOM에 있는 `value` 프로퍼티가 *현재값* 을 나타냅니다.
 
+<!--
 The `disabled` attribute is another peculiar example. A button's `disabled` *property* is
 `false` by default so the button is enabled.
 When you add the `disabled` *attribute*, its presence alone initializes the  button's `disabled` *property* to `true`
 so the button is disabled.
+-->
+하지만 `disabled` 어트리뷰트는 조금 다릅니다. 버튼의 `disabled` *프로퍼티* 기본값은 `fasle`이기 때문에 버튼은 활성화되어 있습니다.
+이 버튼에 `disabled` *어트리뷰트*를 지정하면, 버튼의 `disabled` *프로퍼티*가 `true`로 초기화되면서 버튼이 비활성화 됩니다.
 
+<!--
 Adding and removing the `disabled` *attribute* disables and enables the button. The value of the *attribute* is irrelevant,
 which is why you cannot enable a button by writing `<button disabled="false">Still Disabled</button>`.
+-->
+`disabled` *어트리뷰트*를 지정하는 것에 따라 버튼이 활성화되거나 비활성화됩니다. 이 때 `disabled` 어트리뷰트의 값은 상관없습니다.
+`<button disabled="false">Still Disabled</button>` 라고 지정해도 이 버튼은 비활성화 됩니다.
 
+<!--
 Setting the button's `disabled` *property*  (say, with an Angular binding) disables or enables the button.
 The value of the *property* matters.
+-->
+하지만 버튼의 `disabled` *프로퍼티*를 Angular로 바인딩하면 버튼을 비활성화하거나 활성화할 수 있습니다.
+이 때는 *프로퍼티* 값의 영향을 받습니다.
 
+<!--
 **The HTML attribute and the DOM property are not the same thing, even when they have the same name.**
+-->
+**HTML 어트리뷰트와 DOM 프로퍼티의 이름이 같은 항목이라, 엄연히 다릅니다.**
 
 </div>
 
+<!--
 This fact bears repeating:
 **Template binding works with *properties* and *events*, not *attributes*.**
+-->
+중요한 내용이니 다시 한 번 설명하자면:
+**템플릿 바인딩은 *프로퍼티*나 *이벤트*와 합니다. *어트리뷰트*가 아닙니다.**
 
 <div class="callout is-helpful">
 
 <header>
+<!--
   A world without attributes
+-->
+어트리뷰트가 없는 세상
 </header>
 
+<!--
 In the world of Angular, the only role of attributes is to initialize element and directive state.
 When you write a data binding, you're dealing exclusively with properties and events of the target object.
 HTML attributes effectively disappear.
+-->
+Angular에서는 어트리뷰트가 엘리먼트의 초기값을 지정하거나 디렉티브의 초기 상태를 지정하는 역할만 합니다.
+데이터 바인딩을 할 때도 온전히 프로퍼티나 이벤트를 객체와 연결할 뿐입니다.
+HTML 어트리뷰트의 역할은 거의 없습니다.
 
 </div>
 
+<!--
 With this model firmly in mind, read on to learn about binding targets.
+-->
+이런 내용을 염두에 두면서, 바인딩 대상에 대해 알아봅시다.
 
 ### Binding targets
 
