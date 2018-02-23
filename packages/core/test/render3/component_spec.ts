@@ -11,7 +11,7 @@ import {withBody} from '@angular/core/testing';
 import {DoCheck, ViewEncapsulation} from '../../src/core';
 import {detectChanges, getRenderedText, whenRendered} from '../../src/render3/component';
 import {defineComponent, markDirty} from '../../src/render3/index';
-import {bind, componentRefresh, container, containerRefreshEnd, containerRefreshStart, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, text, textBinding} from '../../src/render3/instructions';
+import {bind, container, containerRefreshEnd, containerRefreshStart, directiveRefresh, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, text, textBinding} from '../../src/render3/instructions';
 import {createRendererType2} from '../../src/view/index';
 
 import {getRendererFactory2} from './imported_renderer2';
@@ -114,7 +114,7 @@ describe('component with a container', () => {
     }
     elementProperty(0, 'items', bind(ctx.items));
     WrapperComponent.ngComponentDef.h(1, 0);
-    componentRefresh(1, 0);
+    directiveRefresh(1, 0);
   }
 
   it('should re-render on input change', () => {
@@ -140,7 +140,7 @@ describe('encapsulation', () => {
           elementEnd();
         }
         EncapsulatedComponent.ngComponentDef.h(1, 0);
-        componentRefresh(1, 0);
+        directiveRefresh(1, 0);
       },
       factory: () => new WrapperComponent,
     });
@@ -157,7 +157,7 @@ describe('encapsulation', () => {
           elementEnd();
         }
         LeafComponent.ngComponentDef.h(2, 1);
-        componentRefresh(2, 1);
+        directiveRefresh(2, 1);
       },
       factory: () => new EncapsulatedComponent,
       rendererType:
@@ -205,7 +205,7 @@ describe('encapsulation', () => {
             elementEnd();
           }
           LeafComponentwith.ngComponentDef.h(1, 0);
-          componentRefresh(1, 0);
+          directiveRefresh(1, 0);
         },
         factory: () => new WrapperComponentWith,
         rendererType:

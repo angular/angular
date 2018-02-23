@@ -372,7 +372,7 @@ export function renderComponentOrTemplate<T>(
     } else {
       // Element was stored at 0 and directive was stored at 1 in renderComponent
       // so to refresh the component, refresh() needs to be called with (1, 0)
-      componentRefresh(1, 0);
+      directiveRefresh(1, 0);
     }
   } finally {
     if (rendererFactory.end) {
@@ -1208,14 +1208,15 @@ export function embeddedViewEnd(): void {
 /////////////
 
 /**
- * Refreshes the component view.
+ * Refreshes the directive, triggering init and content hooks.
  *
- * In other words, enters the component's view and processes it to update bindings, queries, etc.
+ * When it is a component, it also enters the component's view and processes it to update bindings,
+ * queries, etc.
  *
  * @param directiveIndex
  * @param elementIndex
  */
-export function componentRefresh<T>(directiveIndex: number, elementIndex: number): void {
+export function directiveRefresh<T>(directiveIndex: number, elementIndex: number): void {
   executeInitHooks(currentView, currentView.tView, creationMode);
   executeContentHooks(currentView, currentView.tView, creationMode);
   const template = (tData[directiveIndex] as ComponentDef<T>).template;
