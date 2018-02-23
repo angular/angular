@@ -85,15 +85,21 @@ withEachNg1Version(() => {
       let element: angular.IAugmentedJQuery;
 
       class mockScope implements angular.IScope {
+        private destroyListeners: (() => void)[] = [];
+
         $new() { return this; }
         $watch(exp: angular.Ng1Expression, fn?: (a1?: any, a2?: any) => void) {
           return () => {};
         }
         $on(event: string, fn?: (event?: any, ...args: any[]) => void) {
+          if (event === '$destroy' && fn) {
+            this.destroyListeners.push(fn);
+          }
           return () => {};
         }
         $destroy() {
-          return () => {};
+          let listener: (() => void)|undefined;
+          while ((listener = this.destroyListeners.shift())) listener();
         }
         $apply(exp?: angular.Ng1Expression) {
           return () => {};
