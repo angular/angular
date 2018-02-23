@@ -4,7 +4,7 @@
 {% extends 'base.template.html' -%}
 
 {% block body %}
-  <p>{$ doc.whatItDoes | marked $}</p>
+  <p class="short-description">{$ doc.shortDescription | marked $}</p>
   {% include "includes/security-notes.html" %}
   {% include "includes/deprecation.html" %}
   {% block overview %}
@@ -25,5 +25,5 @@
 
     {% block annotations %}{% include "includes/annotations.html" %}{% endblock %}
   {% endblock %}
-  {% include "includes/how-to-use.html" %}
+  {% include "includes/usageNotes.html" %}
 {% endblock %}
