@@ -7,6 +7,7 @@
  */
 
 import {SimpleChange} from '../change_detection/change_detection_util';
+import {ChangeDetectionStrategy} from '../change_detection/constants';
 import {PipeTransform} from '../change_detection/pipe_transform';
 import {OnChanges, SimpleChanges} from '../metadata/lifecycle_hooks';
 import {RendererType2} from '../render/api';
@@ -55,7 +56,9 @@ export function defineComponent<T>(componentDefinition: ComponentDefArgs<T>): Co
     afterContentChecked: type.prototype.ngAfterContentChecked || null,
     afterViewInit: type.prototype.ngAfterViewInit || null,
     afterViewChecked: type.prototype.ngAfterViewChecked || null,
-    onDestroy: type.prototype.ngOnDestroy || null
+    onDestroy: type.prototype.ngOnDestroy || null,
+    onPush: (componentDefinition as ComponentDefArgs<T>).changeDetection ===
+        ChangeDetectionStrategy.OnPush
   };
   const feature = componentDefinition.features;
   feature && feature.forEach((fn) => fn(def));

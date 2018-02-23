@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {ChangeDetectionStrategy} from '../../change_detection/constants';
 import {PipeTransform} from '../../change_detection/pipe_transform';
 import {RendererType2} from '../../render/api';
 import {Type} from '../../type';
@@ -124,6 +125,9 @@ export interface ComponentDef<T> extends DirectiveDef<T> {
    * NOTE: only used with component directives.
    */
   readonly rendererType: RendererType2|null;
+
+  /** Whether or not this component's ChangeDetectionStrategy is OnPush */
+  readonly onPush: boolean;
 }
 
 /**
@@ -169,6 +173,7 @@ export interface ComponentDefArgs<T> extends DirectiveDefArgs<T> {
   template: ComponentTemplate<T>;
   features?: ComponentDefFeature[];
   rendererType?: RendererType2;
+  changeDetection?: ChangeDetectionStrategy;
 }
 
 export type DirectiveDefFeature = <T>(directiveDef: DirectiveDef<T>) => void;
