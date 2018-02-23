@@ -205,19 +205,6 @@ describe('pipe', () => {
   });
 
   describe('impure', () => {
-    @Pipe({name: 'countingImpurePipe', pure: false})
-    class CountingImpurePipe implements PipeTransform {
-      state: number = 0;
-
-      transform(value: any) { return `${value} state:${this.state++}`; }
-
-      static ngPipeDef = definePipe({
-        type: CountingImpurePipe,
-        factory: function CountingImpurePipe_Factory() { return new CountingImpurePipe(); },
-        pure: false,
-      });
-    }
-
     it('should call impure pipes on each change detection run', () => {
       function Template(person: Person, cm: boolean) {
         if (cm) {
@@ -306,8 +293,7 @@ describe('pipe', () => {
       expect(renderLog.log).toEqual(['someProp=Megatron']);
     });
 
-    // TODO: enable this test once #22352 lands
-    xit('should record unwrapped values via ngOnChanges', () => {
+    it('should record unwrapped values via ngOnChanges', () => {
       @Directive({selector: '[testDirective]'})
       class TestDirective implements OnChanges {
         name: any;
@@ -320,7 +306,8 @@ describe('pipe', () => {
           type: TestDirective,
           factory: () => new TestDirective(),
           features: [NgOnChangesFeature],
-          inputs: {name: 'testDirective', a: 'a', b: 'b'}
+          inputs: {name: 'testDirective', a: 'a', b: 'b'},
+          inputsPropertyName: {name: 'name'}
         });
       }
 
@@ -354,21 +341,19 @@ describe('pipe', () => {
       let testDirectiveChanges: SimpleChanges = {};
 
       detectChanges(componentInstance);
-      // TODO: it should be 'name' instead of 'testDirective', to be fixed
       expect(testDirectiveChanges).toEqual({
         'name': new SimpleChange('aName', 'aName', false),
         'b': new SimpleChange(2, 2, false)
       });
 
       detectChanges(componentInstance);
-      // TODO: it should be 'name' instead of 'testDirective', to be fixed
       expect(testDirectiveChanges).toEqual({
         'name': new SimpleChange('aName', 'aName', false),
         'b': new SimpleChange(2, 2, false)
       });
     });
 
-    it('should support passing wrapped value to the next pipe', () => {
+    it('should support passing wrapped value to the next pure pipe', () => {
       // {{person.name | wrappedPipe | multiArgPipe:0:1}}
       function Template(person: Person, cm: boolean) {
         if (cm) {
@@ -381,6 +366,21 @@ describe('pipe', () => {
       }
       person.init('value', null);
       expect(renderToHtml(Template, person)).toEqual('value 0 1 default');
+    });
+
+    it('should support passing wrapped value to the next impure pipe', () => {
+      // {{person.name | wrappedPipe | countingImpurePipe}}
+      function Template(person: Person, cm: boolean) {
+        if (cm) {
+          text(0);
+          pipe(1, WrappedPipe.ngPipeDef);
+          pipe(2, CountingImpurePipe.ngPipeDef);
+        }
+        debugger;
+        textBinding(0, interpolation1('', pipeBind1(2, pipeBind1(1, person.name)), ''));
+      }
+      person.init('value', null);
+      expect(renderToHtml(Template, person)).toEqual('value state:0');
     });
   });
 
@@ -397,8 +397,7 @@ describe('pipe', () => {
       });
     }
 
-    // TODO: enable this test once #22350 lands
-    xit('should call ngOnDestroy on pipes', () => {
+    it('should call ngOnDestroy on pipes', () => {
       function Template(person: Person, cm: boolean) {
         if (cm) {
           container(0);
@@ -439,6 +438,19 @@ class CountingPipe implements PipeTransform {
   static ngPipeDef = definePipe({
     type: CountingPipe,
     factory: function CountingPipe_Factory() { return new CountingPipe(); },
+  });
+}
+
+@Pipe({name: 'countingImpurePipe', pure: false})
+class CountingImpurePipe implements PipeTransform {
+  state: number = 0;
+
+  transform(value: any) { return `${value} state:${this.state++}`; }
+
+  static ngPipeDef = definePipe({
+    type: CountingImpurePipe,
+    factory: function CountingImpurePipe_Factory() { return new CountingImpurePipe(); },
+    pure: false,
   });
 }
 
