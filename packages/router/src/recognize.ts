@@ -247,8 +247,9 @@ function split(
   if (slicedSegments.length === 0 &&
       containsEmptyPathMatches(segmentGroup, slicedSegments, config)) {
     const s = new UrlSegmentGroup(
-        segmentGroup.segments, addEmptyPathsToChildrenIfNeeded(
-                                   segmentGroup, slicedSegments, config, segmentGroup.children));
+        segmentGroup.segments,
+        addEmptyPathsToChildrenIfNeeded(
+            segmentGroup, consumedSegments, slicedSegments, config, segmentGroup.children));
     s._sourceSegment = segmentGroup;
     s._segmentIndexShift = consumedSegments.length;
     return {segmentGroup: s, slicedSegments};
@@ -261,14 +262,15 @@ function split(
 }
 
 function addEmptyPathsToChildrenIfNeeded(
-    segmentGroup: UrlSegmentGroup, slicedSegments: UrlSegment[], routes: Route[],
+    segmentGroup: UrlSegmentGroup, consumedSegments: UrlSegment[], slicedSegments: UrlSegment[],
+    routes: Route[],
     children: {[name: string]: UrlSegmentGroup}): {[name: string]: UrlSegmentGroup} {
   const res: {[name: string]: UrlSegmentGroup} = {};
   for (const r of routes) {
     if (emptyPathMatch(segmentGroup, slicedSegments, r) && !children[getOutlet(r)]) {
       const s = new UrlSegmentGroup([], {});
       s._sourceSegment = segmentGroup;
-      s._segmentIndexShift = segmentGroup.segments.length;
+      s._segmentIndexShift = consumedSegments.length;
       res[getOutlet(r)] = s;
     }
   }
