@@ -17,7 +17,7 @@
     {$ memberHelpers.renderMethodDetails(doc.staticMethods, 'static-methods', 'static-method', 'Static Methods') $}
     {% if doc.constructorDoc %}
     <h2>Constructor</h2>
-    {$ memberHelpers.renderMethodDetail(doc.constructorDoc) $}{% endif %}
+    {$ memberHelpers.renderMethodDetail(doc.constructorDoc, 'constructor') $}{% endif %}
 
     {$ memberHelpers.renderProperties(doc.properties, 'instance-properties', 'instance-property', 'Properties') $}
 

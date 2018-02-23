@@ -108,7 +108,7 @@
 {%- macro renderMethodDetails(methods, containerClass, itemClass, headingText) -%}
 {% if methods.length %}
 <section class="{$ containerClass $}">
-  {% if headingText %}<h2>{$ headingText $}</h2>{% endif %}
+  <h2>{$ headingText $}</h2>
   {% for member in methods %}{% if not member.internal %}
     {$ renderMethodDetail(member, itemClass) $}
   {% endif %}{% endfor %}
