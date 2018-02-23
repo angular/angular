@@ -140,18 +140,28 @@
 <br><br>
 
 <div>
-  <!-- #docregion hero-detail-1 -->
+  <!-- #docregion hero-detail-1! -->
   <!-- Normal HTML -->
   <div class="special">Mental Model</div>
   <!-- Wow! A new element! -->
+  <app-hero-detail></app-hero-detail>
+  <!-- #enddocregion hero-detail-1! -->
+  <!-- #docregion hero-detail-1 -->
+  <!-- 일반 HTML -->
+  <div class="special">Mental Model</div>
+  <!-- 와우! 사용할 수 있는 엘리먼트가 늘어납니다! -->
   <app-hero-detail></app-hero-detail>
   <!-- #enddocregion hero-detail-1 -->
 </div>
 <br><br>
 
 <div>
-  <!-- #docregion disabled-button-1 -->
+  <!-- #docregion disabled-button-1! -->
   <!-- Bind button disabled state to `isUnchanged` property -->
+  <button [disabled]="isUnchanged">Save</button>
+  <!-- #enddocregion disabled-button-1! -->
+  <!-- #docregion disabled-button-1 -->
+  <!-- 버튼의 disabled 상태와 `isUnchanged` 프로퍼티를 바인딩합니다. -->
   <button [disabled]="isUnchanged">Save</button>
   <!-- #enddocregion disabled-button-1 -->
 </div>
@@ -248,9 +258,13 @@ button</button>
 <img bind-src="heroImageUrl">
 <!-- #enddocregion property-binding-5 -->
 
-<!-- #docregion property-binding-6 -->
+<!-- #docregion property-binding-6! -->
 <!-- ERROR: HeroDetailComponent.hero expects a
      Hero object, not the string "currentHero" -->
+<!-- #enddocregion property-binding-6! -->
+<!-- #docregion property-binding-6 -->
+<!-- 에러: HeroDetailComponent.hero 프로퍼티에는 Hero 객체를 사용해야 합니다.
+     대괄호가 없으면 "currentHero"는 단순한 문자열일 뿐입니다. -->
 <!-- #enddocregion property-binding-6 -->
 <div *ngIf="false">
 <!-- #docregion property-binding-6 -->

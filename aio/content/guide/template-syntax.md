@@ -299,7 +299,7 @@ Please follow these guidelines:
 * [Simplicity](guide/template-syntax#simplicity)
 * [Idempotence](guide/template-syntax#idempotence)
 -->
-* [사이드 이펙트 방지](guide/template-syntax#사이드-이펙트-방지)
+* [외부 영향 최소화](guide/template-syntax#외부-영향-최소화)
 * [실행시간은 최대한 짧게](guide/template-syntax#실행시간은-최대한-짧게)
 * [로직은 최대한 단순하게](guide/template-syntax#로직은-최대한-단순하게)
 * [멱등성](guide/template-syntax#멱등성)
@@ -312,7 +312,7 @@ The only exceptions to these guidelines should be in specific circumstances that
 <!--
 #### No visible side effects
 -->
-#### 사이드 이펙트 방지
+#### 외부 영향 최소화
 
 <!--
 A template expression should not change any application state other than the value of the
@@ -377,7 +377,7 @@ it is free of side effects and improves Angular's change detection performance.
 [멱등성](https://en.wikipedia.org/wiki/Idempotence)은 어떤 연산을 몇 번 반복해도 결과가 같은 상태를 뜻하며, 다음과 같은 연산은 멱등성이 있다고 할 수 있습니다.
 `7 x 0 = 7 x 0 x 0 x 0 x 0`
 
-이 법칙을 따르는 템플릿 표현식은 사이드 이펙트를 걱정할 필요가 없고, Angular의 변화 감지 성능도 향상시킬 수 있기 때문에 가장 좋습니다.
+이 법칙을 따르는 템플릿 표현식은 다른 프로퍼티값의 변화를 걱정할 필요가 없고, Angular의 변화 감지 성능도 향상시킬 수 있기 때문에 가장 좋습니다.
 
 <!--
 In Angular terms, an idempotent expression always returns *exactly the same thing* until
@@ -1224,7 +1224,7 @@ Technically, Angular is matching the name to a directive [input](guide/template-
 one of the property names listed in the directive's `inputs` array or a property decorated with `@Input()`.
 Such inputs map to the directive's own properties.
 -->
-문법적으로 보면 디렉티브의 [입력값](guide/template-syntax#inputs-outputs)으로 지정된 프로퍼티의 이름을 기준으로 바인딩됩니다.
+문법적으로 보면 디렉티브의 [입력 프로퍼티](guide/template-syntax#입출력-프로퍼티)로 지정된 프로퍼티 중에 같은 이름인 프로퍼티에 바인딩됩니다.
 이 때 디렉티브에서는 입력값을 받기 위해 `inputs` 배열을 지정하거나 `@Input()` 데코레이터를 지정해야 합니다.
 
 </div>
@@ -1234,40 +1234,77 @@ If the name fails to match a property of a known directive or element, Angular r
 -->
 디렉티브나 엘리먼트에서 프로퍼티 이름을 찾지 못하면 “unknown directive” 에러가 발생합니다.
 
+<!--
 ### Avoid side effects
+-->
+### 외부 영향 최소화
 
+<!--
 As mentioned previously, evaluation of a template expression should have no visible side effects.
 The expression language itself does its part to keep you safe.
 You can't assign a value to anything in a property binding expression nor use the increment and decrement operators.
+-->
+이전에도 언급했듯이, 템플릿 표현식은 외부의 영향을 최소한으로 받도록 작성해야 합니다.
+그리고 템플릿 표현식 자체도 간단하게 작성해서 불필요한 동작을 최소화해야 하며, 비슷한 이유로 템플릿 표현식에서는 값을 할당하거나 증감연산자를 사용할 수 없습니다.
 
+<!--
 Of course, the expression might invoke a property or method that has side effects.
 Angular has no way of knowing that or stopping you.
+-->
+템플릿 표현식에서 프로퍼티나 메소드를 잘못 사용하더라도, Angular는 로직이 잘못된 것을 감지할 수는 없으니 주의해야 합니다.
 
+<!--
 The expression could call something like `getFoo()`. Only you know what `getFoo()` does.
 If `getFoo()` changes something and you happen to be binding to that something, you risk an unpleasant experience.
 Angular may or may not display the changed value. Angular may detect the change and throw a warning error.
 In general, stick to data properties and to methods that return values and do no more.
+-->
+예를 들어 템플릿 표현식에서 `getFoo()`라는 함수를 실행할 수 있습니다. 그런데 `getFoo()`가 어떤 동작을 하는지는 이 코드를 작성한 사람만 알 수 있습니다.
+만약 `getFoo()` 함수가 어떤 프로퍼티의 값을 바꾸는데, 이 프로퍼티가 다른 곳에 바인딩 되어 있으면 결과적으로 어떤 현상이 발생할 지 예측하기 어려워집니다.
+이 동작의 결과를 뷰에서 확인할 수 있다면 다행이지만 겉으로 보이지 않을 수도 있습니다. 이렇게 값이 연쇄적으로 변경되는 로직은 Angular가 검출하고 경고 메시지를 출력합니다.
+보통 데이터를 바인딩할 때는 데이터 프로퍼티를 직접 연결하거나, 함수의 실행 결과를 연결하는 것 이상은 하지 않는 것이 좋습니다.
 
+<!--
 ### Return the proper type
+-->
+### 어울리는 반환값 타입 사용하기
 
+<!--
 The template expression should evaluate to the type of value expected by the target property.
 Return a string if the target property expects a string.
 Return a number if the target property expects a number.
 Return an object if the target property expects an object.
+-->
+템플릿 표현식의 실행 결과는 바인딩 대상이 되는 프로퍼티에 어울리는 타입이어야 합니다.
+대상 프로퍼티가 문자열로 설정된다면 템플릿 표현식은 문자열을 반환해야 하며, 대상 프로퍼티가 사용하는 타입이 숫자, 객체인 경우에도 마찬가지입니다.
 
+<!--
 The `hero` property of the `HeroDetail` component expects a `Hero` object, which is exactly what you're sending in the property binding:
+-->
+`HeroDetail` 컴포넌트에 정의된 `hero` 프로퍼티는 `Hero` 객체 타입이어야 한다고 합시다. 그러면 컴포넌트 외부에서 `hero` 프로퍼티에 데이터를 전달할 때도 `Hero` 타입을 전달해야 합니다:
 
 <code-example path="template-syntax/src/app/app.component.html" region="property-binding-4" title="src/app/app.component.html" linenums="false">
 </code-example>
 
+<!--
 ### Remember the brackets
+-->
+### 괄호 빼먹지 않기
 
+<!--
 The brackets tell Angular to evaluate the template expression.
 If you omit the brackets, Angular treats the string as a constant
 and *initializes the target property* with that string.
 It does *not* evaluate the string!
+-->
+템플릿 표현식은 프로퍼티를 대괄호로 감싸야 Angular가 템플릿 표현식이라고 인식하고 실행할 수 있습니다.
+그래서 대괄호가 없으면 Angular는 이 문장을 단순하게 문자열로 판단하고 *대상 프로퍼티를 그 문자열로 초기화*할 것입니다.
+그 문자열은 *표현식으로 평가되지 않으며* 단순하게 문자열일 뿐입니다!
 
+<!--
 Don't make the following mistake:
+-->
+다음과 같은 경우는 예상하지 못한 에러가 발생할 수도 있습니다:
 
 <code-example path="template-syntax/src/app/app.component.html" region="property-binding-6" title="src/app/app.component.html" linenums="false">
 </code-example>
@@ -2016,7 +2053,7 @@ The text assigned to `*ngFor` is the instruction that guides the repeater proces
 
 {@a microsyntax}
 
-#### *ngFor microsyntax
+#### *ngFor* microsyntax
 
 The string assigned to `*ngFor` is not a [template expression](guide/template-syntax#template-expressions).
 It's a *microsyntax* &mdash; a little language of its own that Angular interprets.
@@ -2055,7 +2092,7 @@ and then passed in a binding to the `hero` property of the `<hero-detail>` compo
 Learn more about _template input variables_ in the
 [_Structural Directives_](guide/structural-directives#template-input-variable) guide.
 
-#### *ngFor with _index_
+#### *ngFor* with _index_
 
 The `index` property of the `NgForOf` directive context returns the zero-based index of the item in each iteration.
 You can capture the `index` in a template input variable and use it in the template.
@@ -2074,7 +2111,7 @@ and `odd` in the [NgForOf API reference](api/common/NgForOf).
 
 {@a trackBy}
 
-#### *ngFor with _trackBy_
+#### *ngFor* with _trackBy_
 
 The `NgForOf` directive may perform poorly, especially with large lists.
 A small change to one item, an item removed, or an item added can trigger a cascade of DOM manipulations.
@@ -2145,9 +2182,15 @@ because they add or remove elements from the DOM.
 * `NgSwitchCase` adds its element to the DOM when its bound value equals the switch value.
 * `NgSwitchDefault` adds its element to the DOM when there is no selected `NgSwitchCase`.
 
+<!--
 The switch directives are particularly useful for adding and removing *component elements*.
 This example switches among four "emotional hero" components defined in the `hero-switch.components.ts` file.
 Each component has a `hero` [input property](guide/template-syntax#inputs-outputs "Input property")
+which is bound to the `currentHero` of the parent component.
+-->
+The switch directives are particularly useful for adding and removing *component elements*.
+This example switches among four "emotional hero" components defined in the `hero-switch.components.ts` file.
+Each component has a `hero` [input property](guide/template-syntax#입출력-프로퍼티 "Input property")
 which is bound to the `currentHero` of the parent component.
 
 Switch directives work as well with native elements and web components too.
@@ -2235,8 +2278,12 @@ This example declares the `fax` variable as `ref-fax` instead of `#fax`.
 <hr/>
 
 {@a inputs-outputs}
+{@a 입출력 프로퍼티}
 
+<!--
 ## Input and Output properties
+-->
+## 입출력 프로퍼티
 
 An _Input_ property is a _settable_ property annotated with an `@Input` decorator.
 Values flow _into_ the property when it is data bound with a [property binding](#property-binding)
@@ -2510,7 +2557,7 @@ the null property path should display as blank just as the `title` property does
 
 Unfortunately, the app crashes when the `currentHero` is null.
 
-You could code around that problem with [*ngIf](guide/template-syntax#ngIf).
+You could code around that problem with [*ngIf*](guide/template-syntax#ngIf).
 
 <code-example path="template-syntax/src/app/app.component.html" region="safe-4" title="src/app/app.component.html" linenums="false">
 </code-example>
@@ -2551,7 +2598,7 @@ You tell the type checker that it can't happen by applying the post-fix
 
 The _Angular_ **non-null assertion operator (`!`)** serves the same purpose in an Angular template.
 
-For example, after you use [*ngIf](guide/template-syntax#ngIf) to check that `hero` is defined, you can assert that
+For example, after you use [*ngIf*](guide/template-syntax#ngIf) to check that `hero` is defined, you can assert that
 `hero` properties are also defined.
 
 <code-example path="template-syntax/src/app/app.component.html" region="non-null-assertion-1" title="src/app/app.component.html" linenums="false">
