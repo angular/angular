@@ -49,7 +49,6 @@ else
     GHCURL="curl -H \"Authorization: token $TOKEN\""
 fi
 
-CURRENT_BRANCH=`git rev-parse --abbrev-ref HEAD`
 PULL_JSON=`$GHCURL -s https://api.github.com/repos/angular/angular/pulls/$PR_NUMBER`
 PR_SHA_COUNT=`node $BASEDIR/utils/json_extract.js commits <<< """$PULL_JSON"""`
 STATUS_JSON_URL=`node $BASEDIR/utils/json_extract.js _links.statuses.href <<< """$PULL_JSON"""`
@@ -59,10 +58,9 @@ PR_ACTION=`echo "$PR_LABELS" | node $BASEDIR/utils/json_extract.js "name=^PR act
 PR_TARGET=`echo "$PR_LABELS"  | node $BASEDIR/utils/json_extract.js "name=^PR target:"`
 PR_CLA=`echo "$PR_LABELS"  | node $BASEDIR/utils/json_extract.js "name=^cla"`
 MASTER_BRANCH='master'
-PATCH_BRANCH=`git ls-remote --heads  git@github.com:angular/angular.git | grep -E 'refs\/heads\/[0-9]+\.[0-9]+\.x' | cut -d '/' -f3 | sort -r | head -n1`
 
-if [[ "$PR_ACTION" != "PR action: merge" ]]; then
-  echo The PR is missing 'PR action: merge' label, found: $PR_ACTION
+if [[ ! "$PR_ACTION" =~ "PR action: merge" ]]; then
+  echo The PR is missing 'PR action: merge(-assistance)' label, found: $PR_ACTION
   exit 1
 fi
 
@@ -95,16 +93,19 @@ else
   exit 1;
 fi
 
+CURRENT_BRANCH=`git rev-parse --abbrev-ref HEAD`
+PATCH_BRANCH=`git ls-remote --heads  git@github.com:angular/angular.git | grep -E 'refs\/heads\/[0-9]+\.[0-9]+\.x' | cut -d '/' -f3 | sort -r | head -n1`
 
 CHECKOUT_MASTER="git checkout merge_pr_master"
 CHECKOUT_PATCH="git checkout merge_pr_patch"
 RESTORE_BRANCH="git checkout $CURRENT_BRANCH"
+
 FETCH_PR="git fetch git@github.com:angular/angular.git pull/$PR_NUMBER/head:merge_pr heads/master:merge_pr_master heads/$PATCH_BRANCH:merge_pr_patch -f"
 BASE_PR="git checkout merge_pr~$PR_SHA_COUNT -B merge_pr_base"
-PUSH_BRANCHES="git push git@github.com:angular/angular.git merge_pr_master:master merge_pr_patch:$PATCH_BRANCH"
 SQUASH_PR="git rebase --autosquash --interactive merge_pr_base merge_pr"
-CHERRY_PICK_PR="git cherry-pick merge_pr_base..merge_pr"
 REWRITE_MESSAGE="git filter-branch -f --msg-filter \"$BASEDIR/utils/github_closes.js $PR_NUMBER\" merge_pr_base..merge_pr"
+PUSH_BRANCHES="git push git@github.com:angular/angular.git merge_pr_master:master merge_pr_patch:$PATCH_BRANCH"
+CHERRY_PICK_PR="git cherry-pick merge_pr_base..merge_pr"
 
 echo "======================"
 echo "GitHub Merge PR Steps"
