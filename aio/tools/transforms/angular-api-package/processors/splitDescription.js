@@ -3,7 +3,7 @@
  * * `shortDescription`: the first paragraph
  * * `description`: the rest of the paragraphs
  */
-module.exports = function splitDescription(log, createDocMessage) {
+module.exports = function splitDescription() {
   return {
     $runAfter: ['tags-extracted', 'migrateLegacyJSDocTags'],
     $runBefore: ['processing-docs'],
