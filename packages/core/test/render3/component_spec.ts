@@ -9,9 +9,9 @@
 import {withBody} from '@angular/core/testing';
 
 import {DoCheck, ViewEncapsulation} from '../../src/core';
-import {detectChanges, getRenderedText, whenRendered} from '../../src/render3/component';
+import {getRenderedText, whenRendered} from '../../src/render3/component';
 import {defineComponent, markDirty} from '../../src/render3/index';
-import {bind, container, containerRefreshEnd, containerRefreshStart, directiveRefresh, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, text, textBinding} from '../../src/render3/instructions';
+import {bind, container, containerRefreshEnd, containerRefreshStart, detectChanges, directiveRefresh, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, text, textBinding} from '../../src/render3/instructions';
 import {createRendererType2} from '../../src/view/index';
 
 import {getRendererFactory2} from './imported_renderer2';

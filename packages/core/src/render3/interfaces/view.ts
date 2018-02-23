@@ -24,16 +24,7 @@ import {Renderer3} from './renderer';
  * don't have to edit the data array based on which views are present.
  */
 export interface LView {
-  /**
-   * Flags for this view.
-   *
-   * First bit: Whether or not the view is in creationMode.
-   *
-   * This must be stored in the view rather than using `data` as a marker so that
-   * we can properly support embedded views. Otherwise, when exiting a child view
-   * back into the parent view, `data` will be defined and `creationMode` will be
-   * improperly reported as false.
-   */
+  /** Flags for this view (see LViewFlags for definition of each bit). */
   flags: LViewFlags;
 
   /**
@@ -182,9 +173,23 @@ export interface LView {
   queries: LQueries|null;
 }
 
-/** Flags associated with an LView (see LView.flags) */
-export enum LViewFlags {
-  CreationMode = 0b001
+/** Flags associated with an LView (saved in LView.flags) */
+export const enum LViewFlags {
+  /**
+   * Whether or not the view is in creationMode.
+   *
+   * This must be stored in the view rather than using `data` as a marker so that
+   * we can properly support embedded views. Otherwise, when exiting a child view
+   * back into the parent view, `data` will be defined and `creationMode` will be
+   * improperly reported as false.
+   */
+  CreationMode = 0b001,
+
+  /** Whether this view has default change detection strategy (checks always) or onPush */
+  CheckAlways = 0b010,
+
+  /** Whether or not this view is currently dirty (needing check) */
+  Dirty = 0b100
 }
 
 /** Interface necessary to work with view tree traversal */

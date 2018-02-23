@@ -12,14 +12,14 @@ import {assertEqual, assertLessThan, assertNotEqual, assertNotNull, assertNull, 
 import {LContainer, TContainer} from './interfaces/container';
 import {CssSelector, LProjection} from './interfaces/projection';
 import {LQueries} from './interfaces/query';
-import {LView, LViewFlags, LifecycleStage, TData, TView} from './interfaces/view';
+import {LView, LViewFlags, LifecycleStage, RootContext, TData, TView} from './interfaces/view';
 
 import {LContainerNode, LElementNode, LNode, LNodeFlags, LProjectionNode, LTextNode, LViewNode, TNode, TContainerNode, InitialInputData, InitialInputs, PropertyAliases, PropertyAliasValue,} from './interfaces/node';
 import {assertNodeType} from './node_assert';
 import {appendChild, insertChild, insertView, appendProjectedNode, removeView, canInsertNativeNode} from './node_manipulation';
 import {matchingSelectorIndex} from './node_selector_matcher';
 import {ComponentDef, ComponentTemplate, ComponentType, DirectiveDef, DirectiveType} from './interfaces/definition';
-import {RElement, RText, Renderer3, RendererFactory3, ProceduralRenderer3, ObjectOrientedRenderer3, RendererStyleFlags3, isProceduralRenderer} from './interfaces/renderer';
+import {RElement, RText, Renderer3, RendererFactory3, ProceduralRenderer3, RendererStyleFlags3, isProceduralRenderer} from './interfaces/renderer';
 import {isDifferent, stringify} from './util';
 import {executeHooks, executeContentHooks, queueLifecycleHooks, queueInitHooks, executeInitHooks} from './hooks';
 
@@ -29,6 +29,13 @@ import {executeHooks, executeContentHooks, queueLifecycleHooks, queueInitHooks, 
  * facilitate jumping from an instance to the host node.
  */
 export const NG_HOST_SYMBOL = '__ngHostLNode__';
+
+/**
+ * A permanent marker promise which signifies that the current CD tree is
+ * clean.
+ */
+const _CLEAN_PROMISE = Promise.resolve(null);
+
 
 /**
  * This property gets set before entering a template.
@@ -159,7 +166,7 @@ export function enterView(newView: LView, host: LElementNode | LViewNode | null)
   data = newView && newView.data;
   bindingIndex = newView && newView.bindingStartIndex || 0;
   tData = newView && newView.tView.data;
-  creationMode = newView && (newView.flags & LViewFlags.CreationMode) === 1;
+  creationMode = newView && (newView.flags & LViewFlags.CreationMode) === LViewFlags.CreationMode;
 
   cleanup = newView && newView.cleanup;
   renderer = newView && newView.renderer;
@@ -183,7 +190,8 @@ export function leaveView(newView: LView): void {
   executeHooks(
       currentView.data, currentView.tView.viewHooks, currentView.tView.viewCheckHooks,
       creationMode);
-  currentView.flags &= ~LViewFlags.CreationMode;  // Clear creationMode bit in view flags
+  // Views should be clean and in update mode after being checked, so these bits are cleared
+  currentView.flags &= ~(LViewFlags.CreationMode | LViewFlags.Dirty);
   currentView.lifecycleStage = LifecycleStage.INIT;
   currentView.tView.firstTemplatePass = false;
   enterView(newView, null);
@@ -191,11 +199,11 @@ export function leaveView(newView: LView): void {
 
 export function createLView(
     viewId: number, renderer: Renderer3, tView: TView, template: ComponentTemplate<any>| null,
-    context: any | null): LView {
+    context: any | null, flags: LViewFlags): LView {
   const newView = {
     parent: currentView,
     id: viewId,  // -1 for component views
-    flags: LViewFlags.CreationMode,
+    flags: flags | LViewFlags.CreationMode,
     node: null !,  // until we initialize it in createNode.
     data: [],
     tView: tView,
@@ -326,7 +334,7 @@ export function renderTemplate<T>(
         null, LNodeFlags.Element, hostNode,
         createLView(
             -1, providedRendererFactory.createRenderer(null, null), getOrCreateTView(template),
-            null, null));
+            null, {}, LViewFlags.CheckAlways));
   }
   const hostView = host.data !;
   ngDevMode && assertNotNull(hostView, 'Host node should have an LView defined in host.data.');
@@ -344,7 +352,8 @@ export function renderEmbeddedTemplate<T>(
     previousOrParentNode = null !;
     let cm: boolean = false;
     if (viewNode == null) {
-      const view = createLView(-1, renderer, createTView(), template, context);
+      const view =
+          createLView(-1, renderer, createTView(), template, context, LViewFlags.CheckAlways);
       viewNode = createLNode(null, LNodeFlags.View, null, view);
       cm = true;
     }
@@ -431,9 +440,10 @@ export function elementStart(
       let componentView: LView|null = null;
       if (isHostElement) {
         const tView = getOrCreateTView(hostComponentDef !.template);
-        componentView = addToViewTree(createLView(
+        const hostView = createLView(
             -1, rendererFactory.createRenderer(native, hostComponentDef !.rendererType), tView,
-            null, null));
+            null, null, hostComponentDef !.onPush ? LViewFlags.Dirty : LViewFlags.CheckAlways);
+        componentView = addToViewTree(hostView);
       }
 
       // Only component views should be added to the view tree directly. Embedded views are
@@ -583,8 +593,9 @@ export function locateHostElement(
 export function hostElement(rNode: RElement | null, def: ComponentDef<any>) {
   resetApplicationState();
   createLNode(
-      0, LNodeFlags.Element, rNode,
-      createLView(-1, renderer, getOrCreateTView(def.template), null, null));
+      0, LNodeFlags.Element, rNode, createLView(
+                                        -1, renderer, getOrCreateTView(def.template), null, null,
+                                        def.onPush ? LViewFlags.Dirty : LViewFlags.CheckAlways));
 }
 
 
@@ -602,15 +613,17 @@ export function listener(eventName: string, listener: EventListener, useCapture 
   ngDevMode && assertPreviousIsParent();
   const node = previousOrParentNode;
   const native = node.native as RElement;
+  const wrappedListener = wrapListenerWithDirtyLogic(currentView, listener);
 
   // In order to match current behavior, native DOM event listeners must be added for all
   // events (including outputs).
+  const cleanupFns = cleanup || (cleanup = currentView.cleanup = []);
   if (isProceduralRenderer(renderer)) {
-    const cleanupFn = renderer.listen(native, eventName, listener);
-    (cleanup || (cleanup = currentView.cleanup = [])).push(cleanupFn, null);
+    const cleanupFn = renderer.listen(native, eventName, wrappedListener);
+    cleanupFns.push(cleanupFn, null);
   } else {
-    native.addEventListener(eventName, listener, useCapture);
-    (cleanup || (cleanup = currentView.cleanup = [])).push(eventName, native, listener, useCapture);
+    native.addEventListener(eventName, wrappedListener, useCapture);
+    cleanupFns.push(eventName, native, wrappedListener, useCapture);
   }
 
   let tNode: TNode|null = node.tNode !;
@@ -703,6 +716,7 @@ export function elementProperty<T>(index: number, propName: string, value: T | N
   let dataValue: PropertyAliasValue|undefined;
   if (inputData && (dataValue = inputData[propName])) {
     setInputsForProperty(dataValue, value);
+    markDirtyIfOnPush(node);
   } else {
     const native = node.native;
     isProceduralRenderer(renderer) ? renderer.setProperty(native, propName, value) :
@@ -1149,7 +1163,8 @@ export function embeddedViewStart(viewBlockId: number): boolean {
   } else {
     // When we create a new LView, we always reset the state of the instructions.
     const newView = createLView(
-        viewBlockId, renderer, getOrCreateEmbeddedTView(viewBlockId, container), null, null);
+        viewBlockId, renderer, getOrCreateEmbeddedTView(viewBlockId, container), null, null,
+        LViewFlags.CheckAlways);
     if (lContainer.queries) {
       newView.queries = lContainer.queries.enterView(lContainer.nextIndex);
     }
@@ -1226,15 +1241,19 @@ export function directiveRefresh<T>(directiveIndex: number, elementIndex: number
     ngDevMode && assertNodeType(element, LNodeFlags.Element);
     ngDevMode &&
         assertNotNull(element.data, `Component's host node should have an LView attached.`);
-    ngDevMode && assertDataInRange(directiveIndex);
-    const directive = getDirectiveInstance<T>(data[directiveIndex]);
     const hostView = element.data !;
-    const oldView = enterView(hostView, element);
-    try {
-      template(directive, creationMode);
-    } finally {
-      refreshDynamicChildren();
-      leaveView(oldView);
+
+    // Only CheckAlways components or dirty OnPush components should be checked
+    if (hostView.flags & (LViewFlags.CheckAlways | LViewFlags.Dirty)) {
+      ngDevMode && assertDataInRange(directiveIndex);
+      const directive = getDirectiveInstance<T>(data[directiveIndex]);
+      const oldView = enterView(hostView, element);
+      try {
+        template(directive, creationMode);
+      } finally {
+        refreshDynamicChildren();
+        leaveView(oldView);
+      }
     }
   }
 }
@@ -1387,6 +1406,97 @@ export function addToViewTree<T extends LView|LContainer>(state: T): T {
   currentView.tail ? (currentView.tail.next = state) : (currentView.child = state);
   currentView.tail = state;
   return state;
+}
+
+///////////////////////////////
+//// Change detection
+///////////////////////////////
+
+/** If node is an OnPush component, marks its LView dirty. */
+export function markDirtyIfOnPush(node: LElementNode): void {
+  // Because data flows down the component tree, ancestors do not need to be marked dirty
+  if (node.data && !(node.data.flags & LViewFlags.CheckAlways)) {
+    node.data.flags |= LViewFlags.Dirty;
+  }
+}
+
+/**
+ * Wraps an event listener so its host view and its ancestor views will be marked dirty
+ * whenever the event fires. Necessary to support OnPush components.
+ */
+export function wrapListenerWithDirtyLogic(view: LView, listener: EventListener): EventListener {
+  return function(e: Event) {
+    markViewDirty(view);
+    listener(e);
+  };
+}
+
+/** Marks current view and all ancestors dirty */
+function markViewDirty(view: LView): void {
+  let currentView: LView|null = view;
+
+  while (currentView.parent != null) {
+    currentView.flags |= LViewFlags.Dirty;
+    currentView = currentView.parent;
+  }
+  currentView.flags |= LViewFlags.Dirty;
+
+  ngDevMode && assertNotNull(currentView !.context, 'rootContext');
+  scheduleChangeDetection(currentView !.context as RootContext);
+}
+
+
+/** Given a root context, schedules change detection at that root. */
+export function scheduleChangeDetection<T>(rootContext: RootContext) {
+  if (rootContext.clean == _CLEAN_PROMISE) {
+    let res: null|((val: null) => void);
+    rootContext.clean = new Promise<null>((r) => res = r);
+    rootContext.scheduler(() => {
+      detectChanges(rootContext.component);
+      res !(null);
+      rootContext.clean = _CLEAN_PROMISE;
+    });
+  }
+}
+
+/**
+ * Synchronously perform change detection on a component (and possibly its sub-components).
+ *
+ * This function triggers change detection in a synchronous way on a component. There should
+ * be very little reason to call this function directly since a preferred way to do change
+ * detection is to {@link markDirty} the component and wait for the scheduler to call this method
+ * at some future point in time. This is because a single user action often results in many
+ * components being invalidated and calling change detection on each component synchronously
+ * would be inefficient. It is better to wait until all components are marked as dirty and
+ * then perform single change detection across all of the components
+ *
+ * @param component The component which the change detection should be performed on.
+ */
+export function detectChanges<T>(component: T): void {
+  const hostNode = _getComponentHostLElementNode(component);
+  ngDevMode && assertNotNull(hostNode.data, 'Component host node should be attached to an LView');
+  renderComponentOrTemplate(hostNode, hostNode.view, component);
+}
+
+
+/**
+ * Mark the component as dirty (needing change detection).
+ *
+ * Marking a component dirty will schedule a change detection on this
+ * component at some point in the future. Marking an already dirty
+ * component as dirty is a noop. Only one outstanding change detection
+ * can be scheduled per component tree. (Two components bootstrapped with
+ * separate `renderComponent` will have separate schedulers)
+ *
+ * When the root component is bootstrapped with `renderComponent`, a scheduler
+ * can be provided.
+ *
+ * @param component Component to mark as dirty.
+ */
+export function markDirty<T>(component: T) {
+  ngDevMode && assertNotNull(component, 'component');
+  const lElementNode = _getComponentHostLElementNode(component);
+  markViewDirty(lElementNode.view);
 }
 
 ///////////////////////////////
@@ -1649,3 +1759,12 @@ function assertDataInRange(index: number, arr?: any[]) {
 function assertDataNext(index: number) {
   assertEqual(data.length, index, 'index expected to be at the end of data');
 }
+
+export function _getComponentHostLElementNode<T>(component: T): LElementNode {
+  ngDevMode && assertNotNull(component, 'expecting component got null');
+  const lElementNode = (component as any)[NG_HOST_SYMBOL] as LElementNode;
+  ngDevMode && assertNotNull(component, 'object is not a component');
+  return lElementNode;
+}
+
+export const CLEAN_PROMISE = _CLEAN_PROMISE;

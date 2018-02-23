@@ -13,11 +13,11 @@ import {ComponentRef as viewEngine_ComponentRef} from '../linker/component_facto
 import {EmbeddedViewRef as viewEngine_EmbeddedViewRef} from '../linker/view_ref';
 
 import {assertNotNull} from './assert';
-import {NG_HOST_SYMBOL, createError, createLView, createTView, directiveCreate, enterView, getDirectiveInstance, hostElement, leaveView, locateHostElement, renderComponentOrTemplate} from './instructions';
+import {CLEAN_PROMISE, NG_HOST_SYMBOL, _getComponentHostLElementNode, createError, createLView, createTView, detectChanges, directiveCreate, enterView, getDirectiveInstance, hostElement, leaveView, locateHostElement, scheduleChangeDetection} from './instructions';
 import {ComponentDef, ComponentType} from './interfaces/definition';
 import {LElementNode} from './interfaces/node';
 import {RElement, Renderer3, RendererFactory3, domRendererFactory3} from './interfaces/renderer';
-import {RootContext} from './interfaces/view';
+import {LViewFlags, RootContext} from './interfaces/view';
 import {notImplemented, stringify} from './util';
 
 
@@ -170,12 +170,6 @@ export const NULL_INJECTOR: Injector = {
 };
 
 /**
- * A permanent marker promise which signifies that the current CD tree is
- * clean.
- */
-const CLEAN_PROMISE = Promise.resolve(null);
-
-/**
  * Bootstraps a Component into an existing host element and returns an instance
  * of the component.
  *
@@ -204,7 +198,7 @@ export function renderComponent<T>(
   const oldView = enterView(
       createLView(
           -1, rendererFactory.createRenderer(hostNode, componentDef.rendererType), createTView(),
-          null, rootContext),
+          null, rootContext, componentDef.onPush ? LViewFlags.Dirty : LViewFlags.CheckAlways),
       null !);
   try {
     // Create element node at index 0 in data array
@@ -221,51 +215,6 @@ export function renderComponent<T>(
   return component;
 }
 
-/**
- * Synchronously perform change detection on a component (and possibly its sub-components).
- *
- * This function triggers change detection in a synchronous way on a component. There should
- * be very little reason to call this function directly since a preferred way to do change
- * detection is to {@link markDirty} the component and wait for the scheduler to call this method
- * at some future point in time. This is because a single user action often results in many
- * components being invalidated and calling change detection on each component synchronously
- * would be inefficient. It is better to wait until all components are marked as dirty and
- * then perform single change detection across all of the components
- *
- * @param component The component which the change detection should be performed on.
- */
-export function detectChanges<T>(component: T): void {
-  const hostNode = _getComponentHostLElementNode(component);
-  ngDevMode && assertNotNull(hostNode.data, 'Component host node should be attached to an LView');
-  renderComponentOrTemplate(hostNode, hostNode.view, component);
-}
-
-/**
- * Mark the component as dirty (needing change detection).
- *
- * Marking a component dirty will schedule a change detection on this
- * component at some point in the future. Marking an already dirty
- * component as dirty is a noop. Only one outstanding change detection
- * can be scheduled per component tree. (Two components bootstrapped with
- * separate `renderComponent` will have separate schedulers)
- *
- * When the root component is bootstrapped with `renderComponent` a scheduler
- * can be provided.
- *
- * @param component Component to mark as dirty.
- */
-export function markDirty<T>(component: T) {
-  const rootContext = getRootContext(component);
-  if (rootContext.clean == CLEAN_PROMISE) {
-    let res: null|((val: null) => void);
-    rootContext.clean = new Promise<null>((r) => res = r);
-    rootContext.scheduler(() => {
-      detectChanges(rootContext.component);
-      res !(null);
-      rootContext.clean = CLEAN_PROMISE;
-    });
-  }
-}
 
 /**
  * Retrieve the root component of any component by walking the parent `LView` until
@@ -283,13 +232,6 @@ function getRootContext(component: any): RootContext {
   const rootContext = lView.context as RootContext;
   ngDevMode && assertNotNull(rootContext, 'rootContext');
   return rootContext;
-}
-
-function _getComponentHostLElementNode<T>(component: T): LElementNode {
-  ngDevMode && assertNotNull(component, 'expecting component got null');
-  const lElementNode = (component as any)[NG_HOST_SYMBOL] as LElementNode;
-  ngDevMode && assertNotNull(component, 'object is not a component');
-  return lElementNode;
 }
 
 /**
