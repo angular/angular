@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {NumberFormatStyle, NumberSymbol, getLocaleNumberFormat, getLocaleNumberSymbol, getNbOfCurrencyDigits} from './locale_data_api';
+import {NumberFormatStyle, NumberSymbol, getLocaleNumberFormat, getLocaleNumberSymbol, getNumberOfCurrencyDigits} from './locale_data_api';
 
 export const NUMBER_FORMAT_REGEXP = /^(\d+)?\.((\d+)(-(\d+))?)?$/;
 const MAX_DIGITS = 22;
@@ -21,7 +21,7 @@ const PERCENT_CHAR = '%';
 /**
  * Transforms a number to a locale string based on a style and a format
  */
-function formatNbToLocaleString(
+function formatNumberToLocaleString(
     value: number, pattern: ParsedNumberFormat, locale: string, groupSymbol: NumberSymbol,
     decimalSymbol: NumberSymbol, digitsInfo?: string, isPercent = false): string {
   let formattedText = '';
@@ -145,10 +145,10 @@ export function formatCurrency(
   const format = getLocaleNumberFormat(locale, NumberFormatStyle.Currency);
   const pattern = parseNumberFormat(format, getLocaleNumberSymbol(locale, NumberSymbol.MinusSign));
 
-  pattern.minFrac = getNbOfCurrencyDigits(currencyCode !);
+  pattern.minFrac = getNumberOfCurrencyDigits(currencyCode !);
   pattern.maxFrac = pattern.minFrac;
 
-  const res = formatNbToLocaleString(
+  const res = formatNumberToLocaleString(
       value, pattern, locale, NumberSymbol.CurrencyGroup, NumberSymbol.CurrencyDecimal, digitsInfo);
   return res
       .replace(CURRENCY_CHAR, currency)
@@ -173,7 +173,7 @@ export function formatCurrency(
 export function formatPercent(value: number, locale: string, digitsInfo?: string): string {
   const format = getLocaleNumberFormat(locale, NumberFormatStyle.Percent);
   const pattern = parseNumberFormat(format, getLocaleNumberSymbol(locale, NumberSymbol.MinusSign));
-  const res = formatNbToLocaleString(
+  const res = formatNumberToLocaleString(
       value, pattern, locale, NumberSymbol.Group, NumberSymbol.Decimal, digitsInfo, true);
   return res.replace(
       new RegExp(PERCENT_CHAR, 'g'), getLocaleNumberSymbol(locale, NumberSymbol.PercentSign));
@@ -197,7 +197,7 @@ export function formatPercent(value: number, locale: string, digitsInfo?: string
 export function formatNumber(value: number, locale: string, digitsInfo?: string): string {
   const format = getLocaleNumberFormat(locale, NumberFormatStyle.Decimal);
   const pattern = parseNumberFormat(format, getLocaleNumberSymbol(locale, NumberSymbol.MinusSign));
-  return formatNbToLocaleString(
+  return formatNumberToLocaleString(
       value, pattern, locale, NumberSymbol.Group, NumberSymbol.Decimal, digitsInfo);
 }
 
