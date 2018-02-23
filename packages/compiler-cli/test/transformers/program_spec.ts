@@ -529,6 +529,31 @@ describe('ng program', () => {
     testSupport.shouldExist('built/main.ngsummary.json');
   });
 
+  it('should emit the bundled metadata through ts.CompilerHost', () => {
+    testSupport.writeFiles({
+      'src/main.ts': createModuleAndCompSource('main'),
+      'src/index.ts': `
+          export * from './main';
+        `
+    });
+    const options = testSupport.createCompilerOptions({
+      rootDir: path.resolve(testSupport.basePath, 'src'),
+      flatModuleOutFile: 'my-bundled-sources'
+    });
+    const host = ng.createCompilerHost({options});
+    const writtenFileNames: string[] = [];
+    const oldWriteFile = host.writeFile;
+    host.writeFile = (fileName, data, writeByteOrderMark, onError, sourceFiles) => {
+      writtenFileNames.push(fileName);
+      oldWriteFile(fileName, data, writeByteOrderMark, onError, sourceFiles);
+    };
+
+    compile(/*oldProgram*/ undefined, options, /*rootNames*/ undefined, host);
+
+    // verify that `compilerHost.writeFile()` was called for the metadata json
+    expect(writtenFileNames.some(f => /built\/my-bundled-sources.metadata.json/.test(f))).toBe(true);
+  });
+
   describe('createSrcToOutPathMapper', () => {
     it('should return identity mapping if no outDir is present', () => {
       const mapper = createSrcToOutPathMapper(undefined, undefined, undefined);
