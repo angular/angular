@@ -7,7 +7,7 @@
  */
 
 import {CommonModule} from '@angular/common';
-import {Component, ContentChild, NgModule, TemplateRef, Type, ViewChild, ViewContainerRef} from '@angular/core';
+import {ChangeDetectionStrategy, Component, ContentChild, NgModule, TemplateRef, Type, ViewChild, ViewContainerRef} from '@angular/core';
 import {ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
 import {Router} from '@angular/router';
 import {RouterTestingModule} from '@angular/router/testing';
@@ -108,6 +108,35 @@ describe('Integration', () => {
          advance(fixture);
 
          expect(fixture.nativeElement.innerHTML).toContain('isActive: false');
+       }));
+
+    it('should set isActive with OnPush change detection - #19934', fakeAsync(() => {
+         @Component({
+           template: `
+             <div routerLink="/simple" #rla="routerLinkActive" routerLinkActive>
+               isActive: {{rla.isActive}}
+             </div>
+           `,
+           changeDetection: ChangeDetectionStrategy.OnPush
+         })
+         class OnPushComponent {
+         }
+
+         @Component({template: 'simple'})
+         class SimpleCmp {
+         }
+
+         TestBed.configureTestingModule({
+           imports: [RouterTestingModule.withRoutes([{path: 'simple', component: SimpleCmp}])],
+           declarations: [OnPushComponent, SimpleCmp]
+         });
+
+         const router: Router = TestBed.get(Router);
+         const fixture = createRoot(router, OnPushComponent);
+         router.navigateByUrl('/simple');
+         advance(fixture);
+
+         expect(fixture.nativeElement.innerHTML).toContain('isActive: true');
        }));
   });
 });
