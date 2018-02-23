@@ -74,6 +74,12 @@ import {el, stringifyElement} from '@angular/platform-browser/testing/src/browse
       expect(getDOM().getStyle(d, 'background-url')).toBe('url(http://test.com/bg.jpg)');
     });
 
+    it('should parse camel-case styles correctly', () => {
+      const d = getDOM().createElement('div');
+      getDOM().setStyle(d, 'marginRight', '10px');
+      expect(getDOM().getStyle(d, 'margin-right')).toBe('10px');
+    });
+
     if (getDOM().supportsDOMEvents()) {
       describe('getBaseHref', () => {
         beforeEach(() => getDOM().resetBaseElement());

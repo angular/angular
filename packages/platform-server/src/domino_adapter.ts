@@ -135,48 +135,20 @@ export class DominoAdapter extends BrowserDomAdapter {
     return href;
   }
 
-  /** @internal */
-  _readStyleAttribute(element: any) {
-    const styleMap = {};
-    const styleAttribute = element.getAttribute('style');
-    if (styleAttribute) {
-      const styleList = styleAttribute.split(/;+/g);
-      for (let i = 0; i < styleList.length; i++) {
-        if (styleList[i].length > 0) {
-          const style = styleList[i] as string;
-          const colon = style.indexOf(':');
-          if (colon === -1) {
-            throw new Error(`Invalid CSS style: ${style}`);
-          }
-          (styleMap as any)[style.substr(0, colon).trim()] = style.substr(colon + 1).trim();
-        }
-      }
-    }
-    return styleMap;
-  }
-  /** @internal */
-  _writeStyleAttribute(element: any, styleMap: any) {
-    let styleAttrValue = '';
-    for (const key in styleMap) {
-      const newValue = styleMap[key];
-      if (newValue) {
-        styleAttrValue += key + ':' + styleMap[key] + ';';
-      }
-    }
-    element.setAttribute('style', styleAttrValue);
-  }
   setStyle(element: any, styleName: string, styleValue?: string|null) {
-    const styleMap = this._readStyleAttribute(element);
-    (styleMap as any)[styleName] = styleValue;
-    this._writeStyleAttribute(element, styleMap);
+    styleName = styleName.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase();
+    element.style[styleName] = styleValue;
   }
-  removeStyle(element: any, styleName: string) { this.setStyle(element, styleName, null); }
+  removeStyle(element: any, styleName: string) {
+    // IE requires '' instead of null
+    // see https://github.com/angular/angular/issues/7916
+    element.style[styleName] = '';
+  }
   getStyle(element: any, styleName: string): string {
-    const styleMap = this._readStyleAttribute(element);
-    return styleMap.hasOwnProperty(styleName) ? (styleMap as any)[styleName] : '';
+    return element.style[styleName] || element.style.getPropertyValue(styleName);
   }
   hasStyle(element: any, styleName: string, styleValue?: string): boolean {
-    const value = this.getStyle(element, styleName) || '';
+    const value = this.getStyle(element, styleName);
     return styleValue ? value == styleValue : value.length > 0;
   }
 
