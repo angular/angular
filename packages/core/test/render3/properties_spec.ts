@@ -9,7 +9,7 @@
 import {EventEmitter} from '@angular/core';
 
 import {defineComponent, defineDirective} from '../../src/render3/index';
-import {NO_CHANGE, bind, componentRefresh, container, containerRefreshEnd, containerRefreshStart, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, interpolation1, listener, load, text, textBinding} from '../../src/render3/instructions';
+import {NO_CHANGE, bind, container, containerRefreshEnd, containerRefreshStart, directiveRefresh, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, interpolation1, listener, load, text, textBinding} from '../../src/render3/instructions';
 
 import {renderToHtml} from './render_util';
 
@@ -157,7 +157,7 @@ describe('elementProperty', () => {
         }
         elementProperty(0, 'id', bind(ctx.id));
         Comp.ngComponentDef.h(1, 0);
-        componentRefresh(1, 0);
+        directiveRefresh(1, 0);
       }
 
       expect(renderToHtml(Template, {id: 1})).toEqual(`<comp></comp>`);
@@ -502,7 +502,7 @@ describe('elementProperty', () => {
               elementEnd();
             }
             Comp.ngComponentDef.h(1, 0);
-            componentRefresh(1, 0);
+            directiveRefresh(1, 0);
             embeddedViewEnd();
           }
         }

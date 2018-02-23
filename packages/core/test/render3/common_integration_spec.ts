@@ -9,7 +9,7 @@
 import {NgForOfContext} from '@angular/common';
 
 import {defineComponent} from '../../src/render3/index';
-import {bind, componentRefresh, container, containerRefreshEnd, containerRefreshStart, elementEnd, elementProperty, elementStart, text, textBinding} from '../../src/render3/instructions';
+import {bind, container, containerRefreshEnd, containerRefreshStart, directiveRefresh, elementEnd, elementProperty, elementStart, text, textBinding} from '../../src/render3/instructions';
 
 import {NgForOf} from './common_with_def';
 import {renderComponent, toHtml} from './render_util';
@@ -35,7 +35,7 @@ describe('@angular/common integration', () => {
             }
             elementProperty(1, 'ngForOf', bind(myApp.items));
             containerRefreshStart(1);
-            componentRefresh(2, 0);
+            directiveRefresh(2, 0);
             containerRefreshEnd();
 
             function liTemplate(row: NgForOfContext<string>, cm: boolean) {
