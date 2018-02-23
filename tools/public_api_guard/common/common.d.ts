@@ -64,6 +64,18 @@ export declare class DeprecatedPercentPipe implements PipeTransform {
 /** @stable */
 export declare const DOCUMENT: InjectionToken<Document>;
 
+/** @stable */
+export declare function formatCurrency(value: number | string, locale: string, currency: string, currencyCode?: string, digitsInfo?: string): string;
+
+/** @stable */
+export declare function formatDate(value: any, pattern: string, locale: string, timezone?: string): string;
+
+/** @stable */
+export declare function formatNumber(value: number | string, locale: string, digitsInfo?: string): string;
+
+/** @stable */
+export declare function formatPercent(value: number | string, locale: string, digitsInfo?: string): string;
+
 /** @experimental */
 export declare enum FormatWidth {
     Short = 0,
