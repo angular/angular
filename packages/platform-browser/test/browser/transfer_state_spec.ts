@@ -7,10 +7,11 @@
  */
 
 
-import {TestBed} from '@angular/core/testing';
+import {TestBed, async} from '@angular/core/testing';
 import {BrowserModule, BrowserTransferStateModule, TransferState} from '@angular/platform-browser';
 import {StateKey, escapeHtml, makeStateKey, unescapeHtml} from '@angular/platform-browser/src/browser/transfer_state';
 import {DOCUMENT} from '@angular/platform-browser/src/dom/dom_tokens';
+import {Observable} from 'rxjs/Observable';
 
 (function() {
   function removeScriptTag(doc: Document, id: string) {
@@ -32,6 +33,53 @@ import {DOCUMENT} from '@angular/platform-browser/src/dom/dom_tokens';
 
     doc.body.appendChild(script);
   }
+
+  describe('TransferState with async', () => {
+    const APP_ID = 'test-app';
+    let doc: Document;
+
+    const TEST_KEY = makeStateKey<number>('test');
+    const DELAYED_KEY = makeStateKey<string>('delayed');
+
+    beforeEach(() => {
+      TestBed.configureTestingModule({
+        imports: [
+          BrowserModule.withServerTransition({appId: APP_ID}),
+          BrowserTransferStateModule.withAsyncRetrieval(),
+        ]
+      });
+      doc = TestBed.get(DOCUMENT);
+    });
+
+    afterEach(() => { removeScriptTag(doc, APP_ID + '-state'); });
+
+    it('supports async get', async(() => {
+         addScriptTag(doc, APP_ID, {test: 10});
+         const transferState: TransferState = TestBed.get(TransferState);
+         transferState.getAsync(TEST_KEY, 0).subscribe(value => { expect(value).toBe(10); });
+       }));
+
+    it('supports async hasHey', async(() => {
+         addScriptTag(doc, APP_ID, {test: 10});
+         const transferState: TransferState = TestBed.get(TransferState);
+         transferState.hasKeyAsync(TEST_KEY).subscribe(value => { expect(value).toBe(true); });
+       }));
+
+    it('should throw when not initilized with withAsyncRetrieval', () => {
+      TestBed.resetTestingModule();
+      TestBed.configureTestingModule({
+        imports: [
+          BrowserModule.withServerTransition({appId: APP_ID}),
+          BrowserTransferStateModule,
+        ]
+      });
+      doc = TestBed.get(DOCUMENT);
+      addScriptTag(doc, APP_ID, {test: 10});
+      const transferState: TransferState = TestBed.get(TransferState);
+      expect(() => transferState.getAsync(TEST_KEY, 0).subscribe())
+          .toThrowError('To use getAsync you must use BrowserTransferStateModule.withAsync()');
+    });
+  });
 
   describe('TransferState', () => {
     const APP_ID = 'test-app';

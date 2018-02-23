@@ -16,7 +16,9 @@ import {HelloWorldServerModuleNgFactory} from './helloworld/app.server.ngfactory
 const helloworld = require('raw-loader!./helloworld/index.html');
 
 import {TransferStateServerModuleNgFactory} from './transferstate/app.server.ngfactory';
+import {TransferStateAsyncServerModuleNgFactory} from './transferstate_async/app.server.ngfactory';
 const transferstate = require('raw-loader!./transferstate/index.html');
+const transferstate_async = require('raw-loader!./transferstate_async/index.html');
 
 const app = express();
 
@@ -40,5 +42,6 @@ app.get('/favicon.ico', (req, res) => { res.send(''); });
 //-----------ADD YOUR SERVER SIDE RENDERED APP HERE ----------------------
 app.get('/helloworld', render(HelloWorldServerModuleNgFactory, helloworld));
 app.get('/transferstate', render(TransferStateServerModuleNgFactory, transferstate));
-
+app.get(
+    '/transferstate_async', render(TransferStateAsyncServerModuleNgFactory, transferstate_async));
 app.listen(9876, function() { console.log('Server listening on port 9876!'); });
