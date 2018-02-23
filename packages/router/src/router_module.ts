@@ -417,6 +417,36 @@ export interface ExtraOptions {
    * - `'eager'`, updates browser URL at the beginning of navigation.
    */
   urlUpdateStrategy?: 'deferred'|'eager';
+
+  /**
+   * Enables a bug fix that corrects relative link resolution in components with empty paths.
+   * Example:
+   *
+   * ```
+   * const routes = [
+   *   {
+   *     path: '',
+   *     component: ContainerComponent,
+   *     children: [
+   *       { path: 'a', component: AComponent },
+   *       { path: 'b', component: BComponent },
+   *     ]
+   *   }
+   * ];
+   * ```
+   *
+   * From the `ContainerComponent`, this will not work:
+   *
+   * `<a [routerLink]="['./a']">Link to A</a>`
+   *
+   * However, this will work:
+   *
+   * `<a [routerLink]="['../a']">Link to A</a>`
+   *
+   * In other words, you're required to use `../` rather than `./`. The current default in v6
+   * is `legacy`, and this option will be removed in v7 to default to the corrected behavior.
+   */
+  relativeLinkResolution?: 'legacy'|'corrected';
 }
 
 export function setupRouter(
@@ -463,6 +493,10 @@ export function setupRouter(
 
   if (opts.urlUpdateStrategy) {
     router.urlUpdateStrategy = opts.urlUpdateStrategy;
+  }
+
+  if (opts.relativeLinkResolution) {
+    router.relativeLinkResolution = opts.relativeLinkResolution;
   }
 
   return router;
