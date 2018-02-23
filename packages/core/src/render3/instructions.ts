@@ -183,7 +183,8 @@ export function leaveView(newView: LView): void {
   executeHooks(
       currentView.data, currentView.tView.viewHooks, currentView.tView.viewCheckHooks,
       creationMode);
-  currentView.flags &= ~LViewFlags.CreationMode;  // Clear creationMode bit in view flags
+  // Views should be clean and in update mode after being checked, so these bits are cleared
+  currentView.flags &= ~(LViewFlags.CreationMode | LViewFlags.Dirty);
   currentView.lifecycleStage = LifecycleStage.INIT;
   currentView.tView.firstTemplatePass = false;
   enterView(newView, null);
@@ -191,11 +192,11 @@ export function leaveView(newView: LView): void {
 
 export function createLView(
     viewId: number, renderer: Renderer3, tView: TView, template: ComponentTemplate<any>| null,
-    context: any | null): LView {
+    context: any | null, onPush: boolean): LView {
   const newView = {
     parent: currentView,
     id: viewId,  // -1 for component views
-    flags: LViewFlags.CreationMode,
+    flags: buildViewFlags(onPush),
     node: null !,  // until we initialize it in createNode.
     data: [],
     tView: tView,
@@ -213,6 +214,12 @@ export function createLView(
   };
 
   return newView;
+}
+
+/** Builds the view flags based on whether the view should be OnPush */
+function buildViewFlags(onPush: boolean): LViewFlags {
+  return onPush ? (LViewFlags.Dirty | LViewFlags.OnPush | LViewFlags.CreationMode) :
+                  LViewFlags.CreationMode;
 }
 
 /**
@@ -326,7 +333,7 @@ export function renderTemplate<T>(
         null, LNodeFlags.Element, hostNode,
         createLView(
             -1, providedRendererFactory.createRenderer(null, null), getOrCreateTView(template),
-            null, null));
+            null, null, false));
   }
   const hostView = host.data !;
   ngDevMode && assertNotNull(hostView, 'Host node should have an LView defined in host.data.');
@@ -344,7 +351,7 @@ export function renderEmbeddedTemplate<T>(
     previousOrParentNode = null !;
     let cm: boolean = false;
     if (viewNode == null) {
-      const view = createLView(-1, renderer, createTView(), template, context);
+      const view = createLView(-1, renderer, createTView(), template, context, false);
       viewNode = createLNode(null, LNodeFlags.View, null, view);
       cm = true;
     }
@@ -431,9 +438,10 @@ export function elementStart(
       let componentView: LView|null = null;
       if (isHostElement) {
         const tView = getOrCreateTView(hostComponentDef !.template);
-        componentView = addToViewTree(createLView(
+        const hostView = createLView(
             -1, rendererFactory.createRenderer(native, hostComponentDef !.rendererType), tView,
-            null, null));
+            null, null, hostComponentDef !.onPush);
+        componentView = addToViewTree(hostView);
       }
 
       // Only component views should be added to the view tree directly. Embedded views are
@@ -584,7 +592,7 @@ export function hostElement(rNode: RElement | null, def: ComponentDef<any>) {
   resetApplicationState();
   createLNode(
       0, LNodeFlags.Element, rNode,
-      createLView(-1, renderer, getOrCreateTView(def.template), null, null));
+      createLView(-1, renderer, getOrCreateTView(def.template), null, null, def.onPush));
 }
 
 
@@ -602,15 +610,17 @@ export function listener(eventName: string, listener: EventListener, useCapture 
   ngDevMode && assertPreviousIsParent();
   const node = previousOrParentNode;
   const native = node.native as RElement;
+  const wrappedListener = wrapListenerWithDirtyLogic(currentView, listener);
 
   // In order to match current behavior, native DOM event listeners must be added for all
   // events (including outputs).
   if (isProceduralRenderer(renderer)) {
-    const cleanupFn = renderer.listen(native, eventName, listener);
+    const cleanupFn = renderer.listen(native, eventName, wrappedListener);
     (cleanup || (cleanup = currentView.cleanup = [])).push(cleanupFn, null);
   } else {
-    native.addEventListener(eventName, listener, useCapture);
-    (cleanup || (cleanup = currentView.cleanup = [])).push(eventName, native, listener, useCapture);
+    native.addEventListener(eventName, wrappedListener, useCapture);
+    (cleanup || (cleanup = currentView.cleanup = [
+     ])).push(eventName, native, wrappedListener, useCapture);
   }
 
   let tNode: TNode|null = node.tNode !;
@@ -624,6 +634,24 @@ export function listener(eventName: string, listener: EventListener, useCapture 
   let outputData: PropertyAliasValue|undefined;
   if (outputs && (outputData = outputs[eventName])) {
     createOutput(outputData, listener);
+  }
+}
+
+/**
+ * Wraps an event listener so its host view and its ancestor views will be marked dirty
+ * whenever the event fires. Necessary to support OnPush components.
+ */
+function wrapListenerWithDirtyLogic(view: LView, listener: EventListener): EventListener {
+  return function(e: Event) {
+    markSelfAndParentsDirty(view);
+    listener(e);
+  };
+}
+
+export function markSelfAndParentsDirty(view: LView): void {
+  while (view != null) {
+    view.flags |= LViewFlags.Dirty;
+    view = view.parent !;
   }
 }
 
@@ -703,11 +731,20 @@ export function elementProperty<T>(index: number, propName: string, value: T | N
   let dataValue: PropertyAliasValue|undefined;
   if (inputData && (dataValue = inputData[propName])) {
     setInputsForProperty(dataValue, value);
+    markOnPushDirty(node);
   } else {
     const native = node.native;
     isProceduralRenderer(renderer) ? renderer.setProperty(native, propName, value) :
                                      (native.setProperty ? native.setProperty(propName, value) :
                                                            (native as any)[propName] = value);
+  }
+}
+
+/** If node is an OnPush component, marks its LView dirty. */
+export function markOnPushDirty(node: LElementNode): void {
+  // Because data flows down the component tree, ancestors do not need to be marked dirty
+  if (node.data && node.data.flags & LViewFlags.OnPush) {
+    node.data.flags |= LViewFlags.Dirty;
   }
 }
 
@@ -1149,7 +1186,7 @@ export function embeddedViewStart(viewBlockId: number): boolean {
   } else {
     // When we create a new LView, we always reset the state of the instructions.
     const newView = createLView(
-        viewBlockId, renderer, getOrCreateEmbeddedTView(viewBlockId, container), null, null);
+        viewBlockId, renderer, getOrCreateEmbeddedTView(viewBlockId, container), null, null, false);
     if (lContainer.queries) {
       newView.queries = lContainer.queries.enterView(lContainer.nextIndex);
     }
@@ -1226,9 +1263,15 @@ export function directiveRefresh<T>(directiveIndex: number, elementIndex: number
     ngDevMode && assertNodeType(element, LNodeFlags.Element);
     ngDevMode &&
         assertNotNull(element.data, `Component's host node should have an LView attached.`);
+    const hostView = element.data !;
+
+    // OnPush components that aren't dirty should not be checked
+    if (hostView.flags & LViewFlags.OnPush && (hostView.flags & LViewFlags.Dirty) == 0) {
+      return;
+    }
+
     ngDevMode && assertDataInRange(directiveIndex);
     const directive = getDirectiveInstance<T>(data[directiveIndex]);
-    const hostView = element.data !;
     const oldView = enterView(hostView, element);
     try {
       template(directive, creationMode);

@@ -204,7 +204,7 @@ export function renderComponent<T>(
   const oldView = enterView(
       createLView(
           -1, rendererFactory.createRenderer(hostNode, componentDef.rendererType), createTView(),
-          null, rootContext),
+          null, rootContext, componentDef.onPush),
       null !);
   try {
     // Create element node at index 0 in data array

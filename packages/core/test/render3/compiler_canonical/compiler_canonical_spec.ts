@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, ContentChild, ContentChildren, Directive, HostBinding, HostListener, Injectable, Input, NgModule, OnDestroy, Optional, Pipe, PipeTransform, QueryList, SimpleChanges, TemplateRef, ViewChild, ViewChildren, ViewContainerRef} from '../../../src/core';
+import {ChangeDetectionStrategy, Component, ContentChild, ContentChildren, Directive, HostBinding, HostListener, Injectable, Input, NgModule, OnDestroy, Optional, Pipe, PipeTransform, QueryList, SimpleChanges, TemplateRef, ViewChild, ViewChildren, ViewContainerRef} from '../../../src/core';
 import * as $r3$ from '../../../src/core_render3_private_export';
 
 import {renderComponent, toHtml} from '../render_util';
@@ -314,6 +314,65 @@ describe('compiler specification', () => {
       }
 
       expect(renderComp(MyApp)).toEqual(`<div aria-label="some label" hostbindingdir=""></div>`);
+    });
+
+    it('should support onPush components', () => {
+      type $MyApp$ = MyApp;
+      type $MyComp$ = MyComp;
+
+      @Component({
+        selector: 'my-comp',
+        template: `
+          {{ name }}
+        `,
+        changeDetection: ChangeDetectionStrategy.OnPush
+      })
+      class MyComp {
+        @Input() name: string;
+
+        // NORMATIVE
+        static ngComponentDef = $r3$.ɵdefineComponent({
+          type: MyComp,
+          tag: 'my-comp',
+          factory: function MyComp_Factory() { return new MyComp(); },
+          template: function MyComp_Template(ctx: $MyComp$, cm: $boolean$) {
+            if (cm) {
+              $r3$.ɵT(0);
+            }
+            $r3$.ɵt(0, $r3$.ɵb(ctx.name));
+          },
+          inputs: {name: 'name'},
+          changeDetection: ChangeDetectionStrategy.OnPush
+        });
+        // /NORMATIVE
+      }
+
+      @Component({
+        selector: 'my-app',
+        template: `
+          <my-comp [name]="name"></my-comp>
+        `
+      })
+      class MyApp {
+        name = 'some name';
+
+        static ngComponentDef = $r3$.ɵdefineComponent({
+          type: MyApp,
+          tag: 'my-app',
+          factory: function MyApp_Factory() { return new MyApp(); },
+          template: function MyApp_Template(ctx: $MyApp$, cm: $boolean$) {
+            if (cm) {
+              $r3$.ɵE(0, MyComp);
+              $r3$.ɵe();
+            }
+            $r3$.ɵp(0, 'name', $r3$.ɵb(ctx.name));
+            MyComp.ngComponentDef.h(1, 0);
+            $r3$.ɵr(1, 0);
+          }
+        });
+      }
+
+      expect(renderComp(MyApp)).toEqual(`<my-comp>some name</my-comp>`);
     });
 
     xit('should support structural directives', () => {
