@@ -902,44 +902,77 @@ With this model firmly in mind, read on to learn about binding targets.
 -->
 이런 내용을 염두에 두면서, 바인딩 대상에 대해 알아봅시다.
 
+<!--
 ### Binding targets
+-->
+### 바인딩 대상
 
+<!--
 The **target of a data binding** is something in the DOM.
 Depending on the binding type, the target can be an
 (element | component | directive) property, an
 (element | component | directive) event, or (rarely) an attribute name.
 The following table summarizes:
+-->
+*데이터 바인딩의 대상*은 DOM에 있는 무언가 입니다.
+이 대상은 바인딩의 종류에 따라 (엘리먼트 | 컴포넌트 | 디렉티브)의 프로퍼티나, (엘리먼트 | 컴포넌트 | 디렉티브)의 이벤트, (가끔은) 어트리뷰트가 되기도 합니다.
+표로 정리해보면 다음과 같습니다.
 
 <style>
   td, th {vertical-align: top}
 </style>
 
 <table width="100%">
+  <!--
   <col width="10%">
   </col>
   <col width="15%">
   </col>
   <col width="75%">
   </col>
+  -->
+  <col width="15%">
+  </col>
+  <col width="21%">
+  </col>
+  <col width="64%">
+  </col>
   <tr>
     <th>
+      <!--
       Type
+  	  -->
+  	  종류
     </th>
     <th>
+      <!--
       Target
+      -->
+      대상
     </th>
     <th>
+      <!--
       Examples
+      -->
+      예제
     </th>
   </tr>
   <tr>
     <td>
+      <!--
       Property
+      -->
+      프로퍼티
     </td>
     <td>
+      <!--
       Element&nbsp;property<br>
       Component&nbsp;property<br>
       Directive&nbsp;property
+      -->
+      엘리먼트 프로퍼티<br>
+      컴포넌트 프로퍼티<br>
+      디렉티브 프로퍼티
     </td>
     <td>
       <code-example path="template-syntax/src/app/app.component.html" region="property-binding-syntax-1" title="src/app/app.component.html" linenums="false">
@@ -948,12 +981,20 @@ The following table summarizes:
   </tr>
   <tr>
     <td>
+      <!--
       Event
+      -->
+      이벤트
     </td>
     <td>
+      <!--
       Element&nbsp;event<br>
       Component&nbsp;event<br>
       Directive&nbsp;event
+      -->
+      엘리먼트 이벤트<br>
+      컴포넌트 이벤트<br>
+      디렉티브 이벤트
     </td>
     <td>
       <code-example path="template-syntax/src/app/app.component.html" region="event-binding-syntax-1" title="src/app/app.component.html" linenums="false">
@@ -962,10 +1003,16 @@ The following table summarizes:
   </tr>
   <tr>
     <td>
+      <!--
       Two-way
+      -->
+      양방향
     </td>
     <td>
+      <!--
       Event and property
+      -->
+      이벤트나 프로퍼티
     </td>
     <td>
       <code-example path="template-syntax/src/app/app.component.html" region="2-way-binding-syntax-1" title="src/app/app.component.html" linenums="false">
@@ -974,11 +1021,17 @@ The following table summarizes:
   </tr>
   <tr>
     <td>
+      <!--
       Attribute
+      -->
+      어트리뷰트
     </td>
     <td>
+      <!--
       Attribute
       (the&nbsp;exception)
+      -->
+      어트리뷰트(일부)
     </td>
     <td>
       <code-example path="template-syntax/src/app/app.component.html" region="attribute-binding-syntax-1" title="src/app/app.component.html" linenums="false">
@@ -987,10 +1040,16 @@ The following table summarizes:
   </tr>
   <tr>
     <td>
+      <!--
       Class
+      -->
+      클래스
     </td>
     <td>
+      <!--
       <code>class</code> property
+      -->
+      <code>class</code> 프로퍼티
     </td>
     <td>
       <code-example path="template-syntax/src/app/app.component.html" region="class-binding-syntax-1" title="src/app/app.component.html" linenums="false">
@@ -999,10 +1058,16 @@ The following table summarizes:
   </tr>
   <tr>
     <td>
+      <!--
       Style
+      -->
+      스타일
     </td>
     <td>
+      <!--
       <code>style</code> property
+      -->
+      <code>style</code> 프로퍼티
     </td>
     <td>
       <code-example path="template-syntax/src/app/app.component.html" region="style-binding-syntax-1" title="src/app/app.component.html" linenums="false">
@@ -1011,96 +1076,163 @@ The following table summarizes:
   </tr>
 </table>
 
+<!--
 With this broad view in mind, you're ready to look at binding types in detail.
+-->
+이제 하나씩 자세하게 알아봅시다.
 
 <hr/>
 
 {@a property-binding}
 
-## Property binding ( <span class="syntax">[property]</span> )
+{@a 프로퍼티-바인딩}
 
+<!--
+## Property binding ( <span class="syntax">[property]</span> )
+-->
+## 프로퍼티 바인딩 ( <span class="syntax">[프로퍼티]</span> )
+
+<!--
 Write a template **property binding** to set a property of a view element.
 The binding sets the property to the value of a [template expression](guide/template-syntax#template-expressions).
+-->
+**프로퍼티 바인딩**은 뷰 엘리먼트의 프로퍼티를 연결하는 바인딩입니다.
+이 때 프로퍼티 값은 [템플릿 표현식](guide/template-syntax#템플릿-표현식)의 결과값으로 지정됩니다.
 
+<!--
 The most common property binding sets an element property to a component property value. An example is
 binding the `src` property of an image element to a component's `heroImageUrl` property:
+-->
+프로퍼티 바인딩은 컴포넌트의 프로퍼티 값을 엘리먼트의 프로퍼티 값으로 지정하는 용도에 주로 사용합니다.
+그래서 컴포넌트에 있는 `heroImageUrl` 프로퍼티 값을 이미지 엘리먼트의 `src` 프로퍼티에 지정하려면 다음과 같이 사용합니다:
 
 <code-example path="template-syntax/src/app/app.component.html" region="property-binding-1" title="src/app/app.component.html" linenums="false">
 </code-example>
 
+<!--
 Another example is disabling a button when the component says that it `isUnchanged`:
+-->
+그리고 컴포넌트에 있는 `isUnchanged` 프로퍼티 값에 따라 버튼을 비활성화 하려면 다음과 같이 사용합니다:
 
 <code-example path="template-syntax/src/app/app.component.html" region="property-binding-2" title="src/app/app.component.html" linenums="false">
 </code-example>
 
+<!--
 Another is setting a property of a directive:
+-->
+디렉티브 프로퍼티를 설정하려면 다음과 같이 사용합니다:
 
 <code-example path="template-syntax/src/app/app.component.html" region="property-binding-3" title="src/app/app.component.html" linenums="false">
 </code-example>
 
+<!--
 Yet another is setting the model property of a custom component (a great way
 for parent and child components to communicate):
+-->
+그리고 커스텀 컴포넌트의 모델 프로퍼티를 설정하려면 다음과 같이 사용합니다. 이 방법을 사용하면 부모 컴포넌트에서 자식 컴포넌트로 간단하게 데이터를 전달할 수 있습니다:
 
 <code-example path="template-syntax/src/app/app.component.html" region="property-binding-4" title="src/app/app.component.html" linenums="false">
 </code-example>
 
+<!--
 ### One-way *in*
+-->
+### 단방향 바인딩
 
+<!--
 People often describe property binding as *one-way data binding* because it flows a value in one direction,
 from a component's data property into a target element property.
+-->
+프로퍼티 바인딩은 컴포넌트의 데이터 프로퍼티에서 대상 엘리먼트 프로퍼티로만 값이 반영되기 때문에 *단방향 데이터 바인딩* 이라고도 합니다.
 
+<!--
 You cannot use property binding to pull values *out* of the target element.
 You can't bind to a property of the target element to _read_ it. You can only _set_ it.
+-->
+그래서 대상 엘리먼트의 값을 *가져오는* 용도로는 프로퍼티 바인딩을 사용할 수 없습니다.
+이 말은 대상 엘리먼트의 값을 *읽는 용도*로는 프로퍼티를 바인딩 할 수 없다는 뜻입니다. 대상 엘리먼트의 값을 *설정하는 용도로만* 프로퍼티 바인딩 할 수 있습니다.
 
 <div class="l-sub-section">
 
+<!--
 Similarly, you cannot use property binding to *call* a method on the target element.
+-->
+이와 비슷하게, 대상 엘리먼트에 있는 메소드를 *실행* 하는 용도로 프로퍼티 바인딩 할 수는 없습니다.
 
 <!--
 If the element raises events, you can listen to them with an [event binding](guide/template-syntax#event-binding).
 -->
-If the element raises events, you can listen to them with an [event binding](guide/template-syntax#이벤트-바인딩).
+그래서 엘리먼트에서 발생하는 이벤트는 [이벤트 바인딩](guide/template-syntax#이벤트-바인딩) 으로 처리할 수 있습니다.
 
+<!--
 If you must read a target element property or call one of its methods,
 you'll need a different technique.
 See the API reference for
 [ViewChild](api/core/ViewChild) and
 [ContentChild](api/core/ContentChild).
+-->
+대상 엘리먼트의 프로퍼티 값을 참조해야 하거나, 대상 엘리먼트의 메소드를 실행해야 한다면 다른 방법을 사용해야 합니다.
+[ViewChild](api/core/ViewChild)나 [ContentChild](api/core/ContentChild)를 참고하세요.
 
 </div>
 
+<!--
 ### Binding target
+-->
+### 바인딩 대상
 
+<!--
 An element property between enclosing square brackets identifies the target property.
 The target property in the following code is the image element's `src` property.
+-->
+엘리먼트의 프로퍼티를 대괄호(`[`, `]`)로 감싸면 프로퍼티 바인딩 대상으로 지정할 수 있습니다.
+그래서 다음 코드에서는 이미지 엘리먼트의 `src` 프로퍼티가 프로퍼티 바인딩의 대상 프로퍼티입니다.
 
 <code-example path="template-syntax/src/app/app.component.html" region="property-binding-1" title="src/app/app.component.html" linenums="false">
 </code-example>
 
+<!--
 Some people prefer the `bind-` prefix alternative, known as the *canonical form*:
+-->
+이 방식이 익숙하지 않다면 다음과 같이 `bind-` 접두사를 사용할 수도 있습니다.
 
 <code-example path="template-syntax/src/app/app.component.html" region="property-binding-5" title="src/app/app.component.html" linenums="false">
 </code-example>
 
+<!--
 The target name is always the name of a property, even when it appears to be the name of something else.
 You see `src` and may think it's the name of an attribute. No. It's the name of an image element property.
+-->
+이 때 대괄호로 감싸는 대상은 반드시 프로퍼티 이름이어야 합니다.
+위 코드에서 `src`가 어트리뷰트 이름처럼 보일 수 있지만, `src`는 이미지 엘리먼트의 프로퍼티 이름입니다.
 
+<!--
 Element properties may be the more common targets,
 but Angular looks first to see if the name is a property of a known directive,
 as it is in the following example:
+-->
+바인딩되는 프로퍼티는 대상 엘리먼트의 프로퍼티인 것이 일반적이지만, 다음과 같이 Angular에서 제공하는 디렉티브의 프로퍼티일 수도 있습니다.
+이 때는 엘리먼트 프로퍼티보다 디렉티브 프로퍼티의 우선순위가 높습니다:
 
 <code-example path="template-syntax/src/app/app.component.html" region="property-binding-3" title="src/app/app.component.html" linenums="false">
 </code-example>
 
 <div class="l-sub-section">
 
+<!--
 Technically, Angular is matching the name to a directive [input](guide/template-syntax#inputs-outputs),
 one of the property names listed in the directive's `inputs` array or a property decorated with `@Input()`.
 Such inputs map to the directive's own properties.
+-->
+문법적으로 보면 디렉티브의 [입력값](guide/template-syntax#inputs-outputs)으로 지정된 프로퍼티의 이름을 기준으로 바인딩됩니다.
+이 때 디렉티브에서는 입력값을 받기 위해 `inputs` 배열을 지정하거나 `@Input()` 데코레이터를 지정해야 합니다.
 
 </div>
 
+<!--
 If the name fails to match a property of a known directive or element, Angular reports an “unknown directive” error.
+-->
+디렉티브나 엘리먼트에서 프로퍼티 이름을 찾지 못하면 “unknown directive” 에러가 발생합니다.
 
 ### Avoid side effects
 
