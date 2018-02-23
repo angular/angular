@@ -1971,9 +1971,9 @@ domain-browser@^1.1.1:
   version "1.1.7"
   resolved "https://registry.yarnpkg.com/domain-browser/-/domain-browser-1.1.7.tgz#867aa4b093faa05f1de08c06f4d7b21fdf8698bc"
 
-domino@1.0.29:
-  version "1.0.29"
-  resolved "https://registry.yarnpkg.com/domino/-/domino-1.0.29.tgz#de8aa1f6f98e3c5538feb7a61fa69c1eabbace06"
+domino@2.0.1:
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/domino/-/domino-2.0.1.tgz#9e1d63215d0fe8dcb8202bff07effa1a216db504"
 
 dot-prop@^3.0.0:
   version "3.0.0"
