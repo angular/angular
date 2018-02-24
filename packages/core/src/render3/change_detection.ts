@@ -7,7 +7,6 @@
  */
 
 import {assertNotNull} from './assert';
-import {scheduleChangeDetection} from './component';
 import {LElementNode} from './interfaces/node';
 import {LView, LViewFlags, RootContext} from './interfaces/view';
 
@@ -24,15 +23,16 @@ export function markOnPushDirty(node: LElementNode): void {
  * Wraps an event listener so its host view and its ancestor views will be marked dirty
  * whenever the event fires. Necessary to support OnPush components.
  */
-export function wrapListenerWithDirtyLogic(view: LView, listener: EventListener): EventListener {
+export function wrapListenerWithDirtyLogic(
+    view: LView, listener: EventListener, scheduler: (c: any) => void): EventListener {
   return function(e: Event) {
-    markSelfAndParentsDirty(view);
+    markSelfAndParentsDirty(view, scheduler);
     listener(e);
   };
 }
 
 /** Marks current view and all ancestors dirty */
-function markSelfAndParentsDirty(view: LView): void {
+function markSelfAndParentsDirty(view: LView, scheduler: (c: any) => void): void {
   let currentView: LView|null = view;
 
   while (currentView.parent != null) {
@@ -42,5 +42,5 @@ function markSelfAndParentsDirty(view: LView): void {
   currentView.flags |= LViewFlags.Dirty;
 
   ngDevMode && assertNotNull(currentView !.context, 'rootContext');
-  scheduleChangeDetection(currentView !.context as RootContext);
+  scheduler(currentView !.context as RootContext);
 }

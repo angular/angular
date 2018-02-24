@@ -7,9 +7,9 @@
  */
 
 import {ChangeDetectionStrategy, DoCheck} from '../../src/core';
-import {detectChanges, getRenderedText} from '../../src/render3/component';
+import {getRenderedText} from '../../src/render3/component';
 import {defineComponent} from '../../src/render3/index';
-import {bind, directiveRefresh, elementEnd, elementProperty, elementStart, interpolation1, interpolation2, listener, text, textBinding} from '../../src/render3/instructions';
+import {bind, detectChanges, directiveRefresh, elementEnd, elementProperty, elementStart, interpolation1, interpolation2, listener, text, textBinding} from '../../src/render3/instructions';
 import {containerEl, renderComponent, requestAnimationFrame} from './render_util';
 
 describe('OnPush change detection', () => {

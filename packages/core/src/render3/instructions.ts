@@ -12,7 +12,7 @@ import {assertEqual, assertLessThan, assertNotEqual, assertNotNull, assertNull, 
 import {LContainer, TContainer} from './interfaces/container';
 import {CssSelector, LProjection} from './interfaces/projection';
 import {LQueries} from './interfaces/query';
-import {LView, LViewFlags, LifecycleStage, TData, TView} from './interfaces/view';
+import {LView, LViewFlags, LifecycleStage, RootContext, TData, TView} from './interfaces/view';
 
 import {LContainerNode, LElementNode, LNode, LNodeFlags, LProjectionNode, LTextNode, LViewNode, TNode, TContainerNode, InitialInputData, InitialInputs, PropertyAliases, PropertyAliasValue,} from './interfaces/node';
 import {assertNodeType} from './node_assert';
@@ -30,6 +30,13 @@ import {wrapListenerWithDirtyLogic, markOnPushDirty} from './change_detection';
  * facilitate jumping from an instance to the host node.
  */
 export const NG_HOST_SYMBOL = '__ngHostLNode__';
+
+/**
+ * A permanent marker promise which signifies that the current CD tree is
+ * clean.
+ */
+const CLEAN_PROMISE = Promise.resolve(null);
+
 
 /**
  * This property gets set before entering a template.
@@ -607,7 +614,8 @@ export function listener(eventName: string, listener: EventListener, useCapture 
   ngDevMode && assertPreviousIsParent();
   const node = previousOrParentNode;
   const native = node.native as RElement;
-  const wrappedListener = wrapListenerWithDirtyLogic(currentView, listener);
+  const wrappedListener =
+      wrapListenerWithDirtyLogic(currentView, listener, scheduleChangeDetection);
 
   // In order to match current behavior, native DOM event listeners must be added for all
   // events (including outputs).
@@ -1402,6 +1410,38 @@ export function addToViewTree<T extends LView|LContainer>(state: T): T {
   return state;
 }
 
+/** Given a root context, schedules change detection at that root. */
+export function scheduleChangeDetection<T>(rootContext: RootContext) {
+  if (rootContext.clean == CLEAN_PROMISE) {
+    let res: null|((val: null) => void);
+    rootContext.clean = new Promise<null>((r) => res = r);
+    rootContext.scheduler(() => {
+      detectChanges(rootContext.component);
+      res !(null);
+      rootContext.clean = CLEAN_PROMISE;
+    });
+  }
+}
+
+/**
+ * Synchronously perform change detection on a component (and possibly its sub-components).
+ *
+ * This function triggers change detection in a synchronous way on a component. There should
+ * be very little reason to call this function directly since a preferred way to do change
+ * detection is to {@link markDirty} the component and wait for the scheduler to call this method
+ * at some future point in time. This is because a single user action often results in many
+ * components being invalidated and calling change detection on each component synchronously
+ * would be inefficient. It is better to wait until all components are marked as dirty and
+ * then perform single change detection across all of the components
+ *
+ * @param component The component which the change detection should be performed on.
+ */
+export function detectChanges<T>(component: T): void {
+  const hostNode = _getComponentHostLElementNode(component);
+  ngDevMode && assertNotNull(hostNode.data, 'Component host node should be attached to an LView');
+  renderComponentOrTemplate(hostNode, hostNode.view, component);
+}
+
 ///////////////////////////////
 //// Bindings & interpolations
 ///////////////////////////////
@@ -1661,4 +1701,15 @@ function assertDataInRange(index: number, arr?: any[]) {
 
 function assertDataNext(index: number) {
   assertEqual(data.length, index, 'index expected to be at the end of data');
+}
+
+export function _getComponentHostLElementNode<T>(component: T): LElementNode {
+  ngDevMode && assertNotNull(component, 'expecting component got null');
+  const lElementNode = (component as any)[NG_HOST_SYMBOL] as LElementNode;
+  ngDevMode && assertNotNull(component, 'object is not a component');
+  return lElementNode;
+}
+
+export function getCleanPromise(): Promise<null> {
+  return CLEAN_PROMISE;
 }
