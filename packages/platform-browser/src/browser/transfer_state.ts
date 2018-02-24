@@ -6,8 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {APP_ID, Injectable, NgModule} from '@angular/core';
-import {DOCUMENT} from '../dom/dom_tokens';
+import {DOCUMENT, isPlatformServer} from '@angular/common';
+import {APP_ID, Inject, Injectable, NgModule, PLATFORM_ID} from '@angular/core';
+import {Observable} from 'rxjs/Observable';
+import {Subscriber} from 'rxjs/Subscriber';
 
 export function escapeHtml(text: string): string {
   const escapedText: {[k: string]: string} = {
@@ -80,18 +82,32 @@ export function makeStateKey<T = void>(key: string): StateKey<T> {
  */
 @Injectable()
 export class TransferState {
+  private contentLoaded: boolean;
   private store: {[k: string]: {} | undefined} = {};
   private onSerializeCallbacks: {[k: string]: () => {} | undefined} = {};
 
-  /** @internal */
-  static init(initState: {}) {
-    const transferState = new TransferState();
-    transferState.store = initState;
-    return transferState;
+  constructor(
+      @Inject(DOCUMENT) private doc: any, @Inject(APP_ID) appId: string,
+      @Inject(PLATFORM_ID) platformId: Object) {
+    const script = doc.getElementById(appId + '-state');
+    this.contentLoaded = isPlatformServer(platformId) || (script && script.textContent);
+
+    if (this.contentLoaded) {
+      this.store = getTransferState(doc, appId);
+    } else {
+      const handler = () => {
+        this.store = getTransferState(doc, appId);
+        this.contentLoaded = true;
+        doc.removeEventListener('DOMContentLoaded', handler);
+      };
+
+      doc.addEventListener('DOMContentLoaded', handler);
+    }
   }
 
   /**
    * Get the value corresponding to a key. Return `defaultValue` if key is not found.
+   * @deprecated use get$
    */
   get<T>(key: StateKey<T>, defaultValue: T): T {
     return this.store[key] !== undefined ? this.store[key] as T : defaultValue;
@@ -100,17 +116,18 @@ export class TransferState {
   /**
    * Set the value corresponding to a key.
    */
-  set<T>(key: StateKey<T>, value: T): void { this.store[key] = value; }
+  set<T>(key: StateKey<T>, value: T) { this.store[key] = value; }
 
   /**
    * Remove a key from the store.
    */
-  remove<T>(key: StateKey<T>): void { delete this.store[key]; }
+  remove<T>(key: StateKey<T>) { delete this.store[key]; }
 
   /**
    * Test whether a key exists in the store.
+   * @deprecated use hasKey$
    */
-  hasKey<T>(key: StateKey<T>) { return this.store.hasOwnProperty(key); }
+  hasKey<T>(key: StateKey<T>): boolean { return this.store.hasOwnProperty(key); }
 
   /**
    * Register a callback to provide the value for a key when `toJson` is called.
@@ -135,9 +152,34 @@ export class TransferState {
     }
     return JSON.stringify(this.store);
   }
+
+  /**
+   * Get the value corresponding to a key. Return `defaultValue` if key is not found.
+   */
+  get$<T>(key: StateKey<T>, defaultValue: T): Observable<T> {
+    return Observable.create((observer: Subscriber<T>) => {
+      const handler = () => observer.next(this.get(key, defaultValue));
+      const teardown = () => this.doc.removeEventListener('DOMContentLoaded', handler);
+      this.contentLoaded ? handler() : this.doc.addEventListener('DOMContentLoaded', handler);
+      return this.contentLoaded ? () => {} : teardown;
+    });
+  }
+
+  /**
+   * Test whether a key exists in the store.
+   */
+  hasKey$<T>(key: StateKey<T>): Observable<boolean> {
+    return Observable.create((observer: Subscriber<boolean>) => {
+      const handler = () => observer.next(this.hasKey(key));
+      const teardown = () => this.doc.removeEventListener('DOMContentLoaded', handler);
+      this.contentLoaded ? handler() : this.doc.addEventListener('DOMContentLoaded', handler);
+      return this.contentLoaded ? () => {} : teardown;
+    });
+  }
 }
 
-export function initTransferState(doc: Document, appId: string) {
+/** Retrieve the TransferState object from the DOM */
+function getTransferState(doc: Document, appId: string) {
   // Locate the script tag with the JSON data transferred from the server.
   // The id of the script tag is set to the Angular appId + 'state'.
   const script = doc.getElementById(appId + '-state');
@@ -149,7 +191,8 @@ export function initTransferState(doc: Document, appId: string) {
       console.warn('Exception while restoring TransferState for app ' + appId, e);
     }
   }
-  return TransferState.init(initialState);
+
+  return initialState;
 }
 
 /**
@@ -159,7 +202,7 @@ export function initTransferState(doc: Document, appId: string) {
  * @experimental
  */
 @NgModule({
-  providers: [{provide: TransferState, useFactory: initTransferState, deps: [DOCUMENT, APP_ID]}],
+  providers: [TransferState],
 })
 export class BrowserTransferStateModule {
 }

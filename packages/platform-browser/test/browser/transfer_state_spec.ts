@@ -7,10 +7,10 @@
  */
 
 
-import {TestBed} from '@angular/core/testing';
+import {DOCUMENT} from '@angular/common';
+import {TestBed, async} from '@angular/core/testing';
 import {BrowserModule, BrowserTransferStateModule, TransferState} from '@angular/platform-browser';
 import {StateKey, escapeHtml, makeStateKey, unescapeHtml} from '@angular/platform-browser/src/browser/transfer_state';
-import {DOCUMENT} from '@angular/platform-browser/src/dom/dom_tokens';
 
 (function() {
   function removeScriptTag(doc: Document, id: string) {
@@ -115,6 +115,34 @@ import {DOCUMENT} from '@angular/platform-browser/src/dom/dom_tokens';
 
       expect(transferState.toJson()).toBe('{"test":20,"delayed":"changed"}');
     });
+  });
+
+  describe('TransferState async', () => {
+    const APP_ID = 'test-app';
+    let doc: Document;
+
+    const TEST_KEY = makeStateKey<number>('test');
+    beforeEach(() => {
+      TestBed.configureTestingModule({
+        imports: [
+          BrowserModule.withServerTransition({appId: APP_ID}),
+          BrowserTransferStateModule,
+        ]
+      });
+      doc = TestBed.get(DOCUMENT);
+    });
+
+    it('should retrieve data', async(() => {
+         addScriptTag(doc, APP_ID, {test: 10});
+         const transferState: TransferState = TestBed.get(TransferState);
+         transferState.get$(TEST_KEY, 0).subscribe(v => { expect(v).toBe(10); });
+       }));
+
+    it('should check data', async(() => {
+         addScriptTag(doc, APP_ID, {test: 10});
+         const transferState: TransferState = TestBed.get(TransferState);
+         transferState.hasKey$(TEST_KEY).subscribe(v => { expect(v).toBe(true); });
+       }));
   });
 
   describe('escape/unescape', () => {
