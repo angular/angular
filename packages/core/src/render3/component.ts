@@ -17,7 +17,7 @@ import {NG_HOST_SYMBOL, createError, createLView, createTView, directiveCreate, 
 import {ComponentDef, ComponentType} from './interfaces/definition';
 import {LElementNode} from './interfaces/node';
 import {RElement, Renderer3, RendererFactory3, domRendererFactory3} from './interfaces/renderer';
-import {RootContext} from './interfaces/view';
+import {LViewFlags, RootContext} from './interfaces/view';
 import {notImplemented, stringify} from './util';
 
 
@@ -204,7 +204,7 @@ export function renderComponent<T>(
   const oldView = enterView(
       createLView(
           -1, rendererFactory.createRenderer(hostNode, componentDef.rendererType), createTView(),
-          null, rootContext, componentDef.onPush),
+          null, rootContext, componentDef.onPush ? LViewFlags.Dirty : LViewFlags.CheckAlways),
       null !);
   try {
     // Create element node at index 0 in data array
@@ -255,7 +255,11 @@ export function detectChanges<T>(component: T): void {
  * @param component Component to mark as dirty.
  */
 export function markDirty<T>(component: T) {
-  const rootContext = getRootContext(component);
+  scheduleChangeDetection(getRootContext(component));
+}
+
+/** Given a root context, schedules change detection at that root. */
+export function scheduleChangeDetection<T>(rootContext: RootContext) {
   if (rootContext.clean == CLEAN_PROMISE) {
     let res: null|((val: null) => void);
     rootContext.clean = new Promise<null>((r) => res = r);

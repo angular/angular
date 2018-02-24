@@ -10,7 +10,7 @@ import {ChangeDetectionStrategy, DoCheck} from '../../src/core';
 import {detectChanges, getRenderedText} from '../../src/render3/component';
 import {defineComponent} from '../../src/render3/index';
 import {bind, directiveRefresh, elementEnd, elementProperty, elementStart, interpolation1, interpolation2, listener, text, textBinding} from '../../src/render3/instructions';
-import {containerEl, renderComponent} from './render_util';
+import {containerEl, renderComponent, requestAnimationFrame} from './render_util';
 
 describe('OnPush change detection', () => {
   let comp: MyComponent;
@@ -112,11 +112,11 @@ describe('OnPush change detection', () => {
 
   it('should check OnPush components in update mode when component events occur', () => {
     const myApp = renderComponent(MyApp);
-    const button = containerEl.querySelector('button');
     expect(getRenderedText(myApp)).toEqual('1 - Nancy');
 
-    button !.click();
-    detectChanges(myApp);
+    const button = containerEl.querySelector('button') !;
+    button.click();
+    requestAnimationFrame.flush();
     expect(getRenderedText(myApp)).toEqual('2 - Nancy');
 
     detectChanges(myApp);
@@ -151,9 +151,9 @@ describe('OnPush change detection', () => {
     const buttonParent = renderComponent(ButtonParent);
     expect(getRenderedText(buttonParent)).toEqual('1 - Nancy');
 
-    const button = containerEl.querySelector('button#parent');
-    (button as HTMLButtonElement) !.click();
-    detectChanges(buttonParent);
+    const button = containerEl.querySelector('button#parent') !;
+    (button as HTMLButtonElement).click();
+    requestAnimationFrame.flush();
     expect(getRenderedText(buttonParent)).toEqual('1 - Nancy');
   });
 
@@ -213,7 +213,7 @@ describe('OnPush change detection', () => {
 
     const button = containerEl.querySelector('button');
     button !.click();
-    detectChanges(myButtonApp);
+    requestAnimationFrame.flush();
     expect(parent !.doCheckCount).toEqual(3);
     expect(comp !.doCheckCount).toEqual(2);
     expect(getRenderedText(myButtonApp)).toEqual('3 - 2 - Nancy');

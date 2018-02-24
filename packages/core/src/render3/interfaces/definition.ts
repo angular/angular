@@ -12,7 +12,6 @@ import {RendererType2} from '../../render/api';
 import {Type} from '../../type';
 import {resolveRendererType2} from '../../view/util';
 
-
 /**
  * Definition of what a template rendering function should look like.
  */

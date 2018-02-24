@@ -185,8 +185,8 @@ export const enum LViewFlags {
    */
   CreationMode = 0b001,
 
-  /** Whether or not this is the view for an OnPush component. */
-  OnPush = 0b010,
+  /** Whether this view has default change detection strategy (checks always) or onPush */
+  CheckAlways = 0b010,
 
   /** Whether or not this view is currently dirty (needing check) */
   Dirty = 0b100
