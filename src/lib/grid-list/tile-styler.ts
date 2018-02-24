@@ -106,7 +106,7 @@ export abstract class TileStyler {
 
     // The width and horizontal position of each tile is always calculated the same way, but the
     // height and vertical position depends on the rowMode.
-    let side = this._direction === 'ltr' ? 'left' : 'right';
+    let side = this._direction === 'rtl' ? 'right' : 'left';
     tile._setStyle(side, this.getTilePosition(baseTileWidth, colIndex));
     tile._setStyle('width', calc(this.getTileSize(baseTileWidth, tile.colspan)));
   }

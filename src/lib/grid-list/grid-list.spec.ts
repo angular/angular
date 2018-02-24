@@ -3,6 +3,7 @@ import {Component, DebugElement} from '@angular/core';
 import {By} from '@angular/platform-browser';
 import {MatGridList, MatGridListModule} from './index';
 import {MatGridTile, MatGridTileText} from './grid-tile';
+import {Directionality} from '@angular/cdk/bidi';
 
 
 describe('MatGridList', () => {
@@ -29,6 +30,8 @@ describe('MatGridList', () => {
         GridListWithFootersWithoutLines,
         GridListWithFooterContainingTwoLines,
         GridListWithoutMatchingGap,
+        GridListWithEmptyDirectionality,
+        GridListWithRtl,
       ],
     });
 
@@ -297,6 +300,23 @@ describe('MatGridList', () => {
         .toBe(true, 'Expected none of the tiles to have a negative `left`');
   });
 
+  it('should default to LTR if empty directionality is given', () => {
+    const fixture = TestBed.createComponent(GridListWithEmptyDirectionality);
+    const tile: HTMLElement = fixture.debugElement.query(By.css('mat-grid-tile')).nativeElement;
+    fixture.detectChanges();
+
+    expect(tile.style.left).toBe('0px');
+    expect(tile.style.right).toBe('');
+  });
+
+  it('should set `right` styles for RTL', () => {
+    const fixture = TestBed.createComponent(GridListWithRtl);
+    const tile: HTMLElement = fixture.debugElement.query(By.css('mat-grid-tile')).nativeElement;
+    fixture.detectChanges();
+
+    expect(tile.style.left).toBe('');
+    expect(tile.style.right).toBe('0px');
+  });
 });
 
 
@@ -315,7 +335,6 @@ function getComputedLeft(element: DebugElement): number {
 
   return elementRect.left - bodyRect.left;
 }
-
 
 
 @Component({template: '<mat-grid-list></mat-grid-list>'})
@@ -478,3 +497,15 @@ class GridListWithFooterContainingTwoLines { }
   </mat-grid-list>
 `})
 class GridListWithoutMatchingGap { }
+
+@Component({
+  template: `<mat-grid-list cols="1"><mat-grid-tile>Hello</mat-grid-tile></mat-grid-list>`,
+  providers: [{provide: Directionality, useValue: {}}]
+})
+class GridListWithEmptyDirectionality { }
+
+@Component({
+  template: `<mat-grid-list cols="1"><mat-grid-tile>Hello</mat-grid-tile></mat-grid-list>`,
+  providers: [{provide: Directionality, useValue: {value: 'rtl'}}]
+})
+class GridListWithRtl { }
