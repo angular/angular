@@ -12,13 +12,13 @@ import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 import * as angular from '@angular/upgrade/src/common/angular1';
 import {UpgradeAdapter, UpgradeAdapterRef} from '@angular/upgrade/src/dynamic/upgrade_adapter';
-import {$digest, html, multiTrim} from './test_helpers';
+import {$digest, html, multiTrim, withEachNg1Version} from './test_helpers';
 
 declare global {
   export var inject: Function;
 }
 
-{
+withEachNg1Version(() => {
   describe('adapter: ng1 to ng2', () => {
     beforeEach(() => destroyPlatform());
     afterEach(() => destroyPlatform());
@@ -2909,11 +2909,12 @@ declare global {
         upgradeAdapterRef = upgradeAdapter.registerForNg1Tests(['ng1']);
       });
 
-      beforeEach(
-          inject((_$compile_: angular.ICompileService, _$rootScope_: angular.IRootScopeService) => {
-            $compile = _$compile_;
-            $rootScope = _$rootScope_;
-          }));
+      beforeEach(() => {
+        inject((_$compile_: angular.ICompileService, _$rootScope_: angular.IRootScopeService) => {
+          $compile = _$compile_;
+          $rootScope = _$rootScope_;
+        });
+      });
 
       it('should be able to test ng1 components that use ng2 components', async(() => {
            upgradeAdapterRef.ready(() => {
@@ -2924,4 +2925,4 @@ declare global {
          }));
     });
   });
-}
+});

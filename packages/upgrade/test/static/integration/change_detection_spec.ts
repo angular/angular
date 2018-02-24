@@ -10,12 +10,12 @@ import {Component, Directive, ElementRef, Injector, Input, NgModule, NgZone, Sim
 import {async} from '@angular/core/testing';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
-import * as angular from '@angular/upgrade/src/common/angular1';
 import {UpgradeComponent, UpgradeModule, downgradeComponent} from '@angular/upgrade/static';
+import * as angular from '@angular/upgrade/static/src/common/angular1';
 
-import {bootstrap, html} from '../test_helpers';
+import {bootstrap, html, withEachNg1Version} from '../test_helpers';
 
-{
+withEachNg1Version(() => {
   describe('scope/component change-detection', () => {
     beforeEach(() => destroyPlatform());
     afterEach(() => destroyPlatform());
@@ -156,4 +156,4 @@ import {bootstrap, html} from '../test_helpers';
     //      });
     //    }));
   });
-}
+});
