@@ -280,8 +280,7 @@ export class DefaultUrlSerializer implements UrlSerializer {
   serialize(tree: UrlTree): string {
     const segment = `/${serializeSegment(tree.root, true)}`;
     const query = serializeQueryParams(tree.queryParams);
-    const fragment =
-        typeof tree.fragment === `string` ? `#${encodeUriFragment(tree.fragment !)}` : '';
+    const fragment = typeof tree.fragment === `string` ? `#${encodeURI(tree.fragment !)}` : '';
 
     return `${segment}${query}${fragment}`;
   }
@@ -327,10 +326,9 @@ function serializeSegment(segment: UrlSegmentGroup, root: boolean): string {
 }
 
 /**
- * Encodes a URI string with the default encoding. This function will only ever be called from
- * `encodeUriQuery` or `encodeUriSegment` as it's the base set of encodings to be used. We need
- * a custom encoding because encodeURIComponent is too aggressive and encodes stuff that doesn't
- * have to be encoded per http://tools.ietf.org/html/rfc3986:
+ * This method is intended for encoding *key* or *value* parts of query component. We need a custom
+ * method because encodeURIComponent is too aggressive and encodes stuff that doesn't have to be
+ * encoded per http://tools.ietf.org/html/rfc3986:
  *    query         = *( pchar / "/" / "?" )
  *    pchar         = unreserved / pct-encoded / sub-delims / ":" / "@"
  *    unreserved    = ALPHA / DIGIT / "-" / "." / "_" / "~"
@@ -338,47 +336,13 @@ function serializeSegment(segment: UrlSegmentGroup, root: boolean): string {
  *    sub-delims    = "!" / "$" / "&" / "'" / "(" / ")"
  *                     / "*" / "+" / "," / ";" / "="
  */
-function encodeUriString(s: string): string {
+export function encode(s: string): string {
   return encodeURIComponent(s)
       .replace(/%40/g, '@')
       .replace(/%3A/gi, ':')
       .replace(/%24/g, '$')
-      .replace(/%2C/gi, ',');
-}
-
-/**
- * This function should be used to encode both keys and values in a query string key/value. In
- * the following URL, you need to call encodeUriQuery on "k" and "v":
- *
- * http://www.site.org/html;mk=mv?k=v#f
- */
-export function encodeUriQuery(s: string): string {
-  return encodeUriString(s).replace(/%2F/gi, '/').replace(/%3F/gi, '?').replace(/%3B/gi, ';');
-}
-
-/**
- * This function should be run on any URI fragment. In the following URL, you need to call
- * encodeUriSegment on "f":
- *
- * http://www.site.org/html;mk=mv?k=v#f
- */
-export function encodeUriFragment(s: string): string {
-  return encodeUriQuery(s).replace(/%23/g, '#');
-}
-
-/**
- * This function should be run on any URI segment as well as the key and value in a key/value
- * pair for matrix params. In the following URL, you need to call encodeUriSegment on "html",
- * "mk", and "mv":
- *
- * http://www.site.org/html;mk=mv?k=v#f
- */
-export function encodeUriSegment(s: string): string {
-  return encodeUriString(s)
-      .replace(/\(/g, '%28')
-      .replace(/\)/g, '%29')
-      .replace(/%2B/gi, '+')
-      .replace(/%26/gi, '&');
+      .replace(/%2C/gi, ',')
+      .replace(/%3B/gi, ';');
 }
 
 export function decode(s: string): string {
@@ -386,21 +350,18 @@ export function decode(s: string): string {
 }
 
 export function serializePath(path: UrlSegment): string {
-  return `${encodeUriSegment(path.path)}${serializeMatrixParams(path.parameters)}`;
+  return `${encode(path.path)}${serializeParams(path.parameters)}`;
 }
 
-function serializeMatrixParams(params: {[key: string]: string}): string {
-  return Object.keys(params)
-      .map(key => `;${encodeUriSegment(key)}=${encodeUriSegment(params[key])}`)
-      .join('');
+function serializeParams(params: {[key: string]: string}): string {
+  return Object.keys(params).map(key => `;${encode(key)}=${encode(params[key])}`).join('');
 }
 
 function serializeQueryParams(params: {[key: string]: any}): string {
   const strParams: string[] = Object.keys(params).map((name) => {
     const value = params[name];
-    return Array.isArray(value) ?
-        value.map(v => `${encodeUriQuery(name)}=${encodeUriQuery(v)}`).join('&') :
-        `${encodeUriQuery(name)}=${encodeUriQuery(value)}`;
+    return Array.isArray(value) ? value.map(v => `${encode(name)}=${encode(v)}`).join('&') :
+                                  `${encode(name)}=${encode(value)}`;
   });
 
   return strParams.length ? `?${strParams.join("&")}` : '';
@@ -453,7 +414,7 @@ class UrlParser {
   }
 
   parseFragment(): string|null {
-    return this.consumeOptional('#') ? decodeURIComponent(this.remaining) : null;
+    return this.consumeOptional('#') ? decodeURI(this.remaining) : null;
   }
 
   private parseChildren(): {[outlet: string]: UrlSegmentGroup} {
