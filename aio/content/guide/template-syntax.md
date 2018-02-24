@@ -1310,43 +1310,80 @@ Don't make the following mistake:
 </code-example>
 
 {@a one-time-initialization}
+{@a 문자열로-그대로-사용하는-경우 }
 
+<!--
 ### One-time string initialization
+-->
+### 문자열로 그대로 사용하는 경우
 
+<!--
 You *should* omit the brackets when all of the following are true:
+-->
+다음과 같은 경우라면 프로퍼티 바인딩에 사용하는 대괄호를 사용하지 않는 것이 좋습니다.
 
+<!--
 * The target property accepts a string value.
 * The string is a fixed value that you can bake into the template.
 * This initial value never changes.
+-->
+* 바인딩 대상 프로퍼티에 문자열 값을 할당하는 경우
+* 변경되지 않는 문자열
 
+<!--
 You routinely initialize attributes this way in standard HTML, and it works
 just as well for directive and component property initialization.
 The following example initializes the `prefix` property of the `HeroDetailComponent` to a fixed string,
 not a template expression. Angular sets it and forgets about it.
+-->
+보통 HTML에서 어트리뷰트를 초기화하는 방식은 Angular에서도 유효하며, 디렉티브나 컴포넌트 프로퍼티를 초기화할 때도 같은 방식을 사용합니다.
+다음 예제를 보면 `HeroDetailComponent` 에 사용할 `prefix` 프로퍼티를 초기화하는데, 이 때 템플릿 표현식을 사용하지 않고 고정된 문자열을 사용했습니다.
+그러면 Angular는 대상 프로퍼티의 초기값을 설정할 때만 이 문자열을 사용하고, 이후에는 신경쓰지 않습니다.
 
 <code-example path="template-syntax/src/app/app.component.html" region="property-binding-7" title="src/app/app.component.html" linenums="false">
 </code-example>
 
+<!--
 The `[hero]` binding, on the other hand, remains a live binding to the component's `currentHero` property.
+-->
+하지만 `[hero]`는 컴포넌트의 `currentHero` 프로퍼티와 바인딩 되어 있습니다. 이 때는 대괄호를 사용해서 프로퍼티 바인딩으로 선언했기 때문에 `currentHero` 프로퍼티 값이 변경될 때마다 `hero` 프로퍼티가 갱신됩니다.
 
 {@a property-binding-or-interpolation}
+{@a 프로퍼티-바인딩-문자열-바인딩}
 
+<!--
 ### Property binding or interpolation?
+-->
+### 프로퍼티 바인딩? 문자열 바인딩?
 
+<!--
 You often have a choice between interpolation and property binding.
 The following binding pairs do the same thing:
+-->
+코드를 작성하다보면 프로퍼티 바인딩을 해야할 지 문자열 바인딩(Interpolation)을 해야할 지 고민될 때가 있습니다.
+코드를 보면서 생각해봅시다:
 
 <code-example path="template-syntax/src/app/app.component.html" region="property-binding-vs-interpolation" title="src/app/app.component.html" linenums="false">
 </code-example>
 
+<!--
 _Interpolation_ is a convenient alternative to _property binding_ in many cases.
+-->
+_문자열 바인딩_을 사용하면 _프로퍼티 바인딩_ 을 사용하는 것보다 더 편한 경우도 있습니다.
 
+<!--
 When rendering data values as strings, there is no technical reason to prefer one form to the other.
 You lean toward readability, which tends to favor interpolation.
 You suggest establishing coding style rules and choosing the form that
 both conforms to the rules and feels most natural for the task at hand.
+-->
+사실, 데이터를 그대로 뷰에 렌더링 한다면 두 바인딩 방식의 차이는 없습니다.
+단순하게 코드를 작성하면서 가독성이 더 좋은 방식을 선택하면 됩니다.
 
+<!--
 When setting an element property to a non-string data value, you must use _property binding_.
+-->
+하지만 바인딩되는 프로퍼티의 타입이 문자열이 아니라면 반드시 _프로퍼티 바인딩_ 을 사용해야 합니다.
 
 #### Content security
 
