@@ -22,7 +22,7 @@
       </script>
     {% for crumb in doc.breadCrumbs %}{% if not loop.last %}
       {$ slash() $}
-      {% if crumb.path %}<a href="{$ crumb.path $}">{$ crumb.text $}<a>{% else %}{$ crumb.text $}{% endif %}
+      {% if crumb.path %}<a href="{$ crumb.path $}">{$ crumb.text $}</a>{% else %}{$ crumb.text $}{% endif %}
     {% endif %}{% endfor %}
   </div>
   <header class="api-header">
