@@ -60,7 +60,7 @@ export declare class HammerGestureConfig {
 }
 
 /** @experimental */
-export declare function makeStateKey<T =
+export declare function makeStateKey<T = void>(key: string): StateKey<T>;
 
 /** @experimental */
 export declare class Meta {
