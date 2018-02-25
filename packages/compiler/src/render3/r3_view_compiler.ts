@@ -477,9 +477,15 @@ class TemplateDefinitionBuilder implements TemplateAstVisitor, LocalResolver {
       const instruction = BINDING_INSTRUCTION_MAP[input.type];
       if (instruction) {
         // TODO(chuckj): runtime: security context?
-        this.instruction(
-            this._bindingMode, input.sourceSpan, instruction, o.literal(elementIndex),
-            o.literal(input.name), convertedBinding);
+        if (input.unit) {
+          this.instruction(
+              this._bindingMode, input.sourceSpan, instruction, o.literal(elementIndex),
+              o.literal(input.name), convertedBinding, o.literal(input.unit));
+        } else {
+          this.instruction(
+              this._bindingMode, input.sourceSpan, instruction, o.literal(elementIndex),
+              o.literal(input.name), convertedBinding);
+        }
       } else {
         this.unsupported(`binding ${PropertyBindingType[input.type]}`);
       }

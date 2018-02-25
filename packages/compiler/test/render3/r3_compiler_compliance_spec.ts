@@ -64,6 +64,83 @@ describe('compiler compliance', () => {
       expectEmit(result.source, factory, 'Incorrect factory');
       expectEmit(result.source, template, 'Incorrect template');
     });
+
+    describe('bindings', () => {
+      function testBindingOnElement(template: string, instructions: string) {
+        const files = {
+          app: {
+            'spec.ts': `
+                import {Component, NgModule} from '@angular/core';
+  
+                @Component({
+                  selector: 'my-component',
+                  template: \`${template}\`
+                })
+                export class MyComponent {
+                  someProperty: string = 'initial';
+                }
+  
+                @NgModule({declarations: [MyComponent]})
+                export class MyModule {}
+            `
+          }
+        };
+
+        const MyComponentDefinition = `
+          static ngComponentDef = $r3$.ɵdefineComponent({
+            type: MyComponent,
+            tag: 'my-component',
+            factory: function MyComponent_Factory() { return new MyComponent(); },
+            template: function MyComponent_Template(ctx: IDENT, cm: IDENT) {
+              if (cm) {
+                $r3$.ɵE(0, 'div');
+                $r3$.ɵe();
+              }
+              ${instructions}
+            }
+          });
+        `;
+
+        const result = compile(files, angularFiles);
+        expectEmit(result.source, MyComponentDefinition, 'Invalid MyComponent definition');
+      }
+
+      it('should bind to property', () => {
+        testBindingOnElement(
+            `<div [id]="someProperty"></div>`, `$r3$.ɵp(0, 'id', ctx.someProperty);`);
+      });
+
+      it('should bind to attribute', () => {
+        testBindingOnElement(
+            `<div [attr.title]="someProperty"></div>`, `$r3$.ɵa(0, 'title', ctx.someProperty);`);
+      });
+
+      it('should bind to a specific class', () => {
+        testBindingOnElement(
+            `<div [class.foo]="someProperty"></div>`, `$r3$.ɵk(0, 'foo', ctx.someProperty);`);
+      });
+
+      it('should bind to a specific style', () => {
+        testBindingOnElement(
+            `<div [style.color]="someProperty" [style.width.px]="someOtherProperty"></div>`,
+            `$r3$.ɵs(0, 'color', ctx.someProperty);
+        $r3$.ɵs(0, 'width', ctx.someOtherProperty, 'px');`);
+      });
+
+      it('should bind to class ([class] binds to the className property)', () => {
+        testBindingOnElement(
+            `<div [class]="someProperty"></div>`, `$r3$.ɵp(0, 'className', ctx.someProperty);`);
+      });
+
+      it('should bind to many and keep order', () => {
+        testBindingOnElement(
+            `<div [class]="someProperty+1" [id]="someProperty+2" [class.foo]="someProperty=='initial'" [attr.style]="'color: red;'"></div>`,
+            `$r3$.ɵp(0, 'className', (ctx.someProperty + 1));
+        $r3$.ɵp(0, 'id', (ctx.someProperty + 2));
+        $r3$.ɵk(0, 'foo', (ctx.someProperty == 'initial'));
+        $r3$.ɵa(0, 'style', 'color: red;');`);
+      });
+    });
   });
 
   describe('components & directives', () => {
