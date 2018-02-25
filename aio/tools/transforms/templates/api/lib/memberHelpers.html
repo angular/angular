@@ -29,9 +29,7 @@
 {%- macro renderOverloadInfo(overload, cssClass, method) -%}
   {% if overload.description and (overload.description != method.description) %}{$ overload.description | marked $}{% endif %}
 
-  <code-example language="ts" hideCopy="true" class="no-box api-heading">
-    {%- if overload.isCallMember %}{$ overload.containerDoc.name $}{% endif -%}
-    {$ renderMemberSyntax(overload) $}</code-example>
+  <code-example language="ts" hideCopy="true" class="no-box api-heading">{$ renderMemberSyntax(overload) $}</code-example>
 
   <h4 class="no-anchor">Parameters</h4>
   {$ params.renderParameters(overload.parameterDocs, cssClass + '-parameters', cssClass + '-parameter') $}
@@ -53,8 +51,8 @@
 <a id="{$ method.anchor $}"></a>
 <table class="is-full-width method-table {$ cssClass $}">
   <thead><tr><th><h3>
-    {% if method.isCallMember %}<i>callable signature</i>
-    {% elseif method.isNewMember %}<i>constructable signature</i>
+    {% if method.isCallMember %}<i>call signature</i>
+    {% elseif method.isNewMember %}<i>construct signature</i>
     {% else %}{$ method.name $}()
     {% endif %}
   </h3></th></tr></thead>
