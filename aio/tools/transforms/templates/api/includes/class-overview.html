@@ -2,18 +2,10 @@
 
 <section class="{$ doc.docType $}-overview">
 <h2>Overview</h2>
-{% if (doc.descendants | filterByPropertyValue('docType', 'class')).length or doc.see.length %}
-<div class="sidebar">
-  {$ descendants.renderDescendants(doc, 'class', 'Subclasses') $}
-  {% include "includes/see-also.html" %}
-</div>
-{% endif %}
 <code-example language="ts" hideCopy="true">
 {$ doc.docType $} {$ doc.name $}{$ doc.typeParams | escape $}{$ memberHelper.renderHeritage(doc) $} {{$ memberHelper.renderMembers(doc) $}
 }
 </code-example>
-<div class="inline-sidebar">
-  {$ descendants.renderDescendants(doc, 'class', 'Subclasses') $}
-  {% include "includes/see-also.html" %}
-</div>
+{$ descendants.renderDescendants(doc, 'class', 'Subclasses') $}
+{% include "includes/see-also.html" %}
 </section>
