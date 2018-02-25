@@ -10,10 +10,20 @@
 {%- endmacro -%}
 
 {%- macro renderMembers(doc) -%}
-{%- if doc.members.length %}{% for member in doc.members %}{% if not member.internal %}
-  <a class="code-anchor" href="{$ doc.path $}#{$ member.anchor | urlencode $}">{$ renderMemberSyntax(member, 1) $}</a>{% endif %}{% endfor %}{% endif %}
-{%- for ancestor in doc.extendsClauses %}{% if ancestor.doc %}
-  // inherited from <a class="code-anchor" href="{$ ancestor.doc.path $}">{$ ancestor.doc.id $}</a>{$ renderMembers(ancestor.doc) $}{% endif %}{% endfor %}
+  {%- for member in doc.staticProperties %}{% if not member.internal %}
+  <a class="code-anchor" href="{$ doc.path $}#{$ member.anchor | urlencode $}">{$ renderMemberSyntax(member, 1) $}</a>{% endif %}{% endfor -%}
+  {% for member in doc.staticMethods %}{% if not member.internal %}
+  <a class="code-anchor" href="{$ doc.path $}#{$ member.anchor | urlencode $}">{$ renderMemberSyntax(member, 1) $}</a>{% endif %}{% endfor -%}
+  {% if doc.constructorDoc and not doc.constructorDoc.internal %}
+  <a class="code-anchor" href="{$ doc.path $}#{$ doc.constructorDoc.anchor | urlencode $}">{$ renderMemberSyntax(doc.constructorDoc, 1) $}</a>{% endif -%}
+  {% for member in doc.properties %}{% if not member.internal %}
+  <a class="code-anchor" href="{$ doc.path $}#{$ member.anchor | urlencode $}">{$ renderMemberSyntax(member, 1) $}</a>{% endif %}{% endfor -%}
+  {% for member in doc.methods %}{% if not member.internal %}
+  <a class="code-anchor" href="{$ doc.path $}#{$ member.anchor | urlencode $}">{$ renderMemberSyntax(member, 1) $}</a>{% endif %}{% endfor -%}
+
+  {%- for ancestor in doc.extendsClauses %}{% if ancestor.doc %}
+
+  // inherited from <a class="code-anchor" href="{$ ancestor.doc.path $}">{$ ancestor.doc.id $}</a>{$ renderMembers(ancestor.doc) $}{% endif %}{% endfor -%}
 {%- endmacro -%}
 
 {%- macro renderMemberSyntax(member, truncateLines) -%}
