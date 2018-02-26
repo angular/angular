@@ -130,6 +130,20 @@ describe('MatMenu', () => {
     expect(document.activeElement).toBe(triggerEl);
   }));
 
+  it('should be able to set a custom class on the backdrop', fakeAsync(() => {
+    const fixture = TestBed.createComponent(SimpleMenu);
+
+    fixture.componentInstance.backdropClass = 'custom-backdrop';
+    fixture.detectChanges();
+    fixture.componentInstance.trigger.openMenu();
+    fixture.detectChanges();
+    tick(500);
+
+    const backdrop = <HTMLElement>overlayContainerElement.querySelector('.cdk-overlay-backdrop');
+
+    expect(backdrop.classList).toContain('custom-backdrop');
+  }));
+
   it('should restore focus to the root trigger when the menu was opened by mouse', fakeAsync(() => {
     const fixture = TestBed.createComponent(SimpleMenu);
     fixture.detectChanges();
@@ -1336,7 +1350,12 @@ describe('MatMenu default overrides', () => {
 @Component({
   template: `
     <button [matMenuTriggerFor]="menu" #triggerEl>Toggle menu</button>
-    <mat-menu class="custom-one custom-two" #menu="matMenu" (closed)="closeCallback($event)">
+    <mat-menu
+      #menu="matMenu"
+      class="custom-one custom-two"
+      (closed)="closeCallback($event)"
+      [backdropClass]="backdropClass">
+
       <button mat-menu-item> Item </button>
       <button mat-menu-item disabled> Disabled </button>
       <button mat-menu-item disableRipple>
@@ -1352,6 +1371,7 @@ class SimpleMenu {
   @ViewChild(MatMenu) menu: MatMenu;
   @ViewChildren(MatMenuItem) items: QueryList<MatMenuItem>;
   closeCallback = jasmine.createSpy('menu closed callback');
+  backdropClass: string;
 }
 
 @Component({

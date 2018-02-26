@@ -340,7 +340,7 @@ export class MatMenuTrigger implements AfterContentInit, OnDestroy {
     return new OverlayConfig({
       positionStrategy: this._getPosition(),
       hasBackdrop: !this.triggersSubmenu(),
-      backdropClass: 'cdk-overlay-transparent-backdrop',
+      backdropClass: this.menu.backdropClass || 'cdk-overlay-transparent-backdrop',
       direction: this.dir,
       scrollStrategy: this._scrollStrategy()
     });

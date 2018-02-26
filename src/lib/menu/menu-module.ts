@@ -37,6 +37,7 @@ import {MatMenuContent} from './menu-content';
         overlapTrigger: true,
         xPosition: 'after',
         yPosition: 'below',
+        backdropClass: 'cdk-overlay-transparent-backdrop'
       },
     }
   ],
