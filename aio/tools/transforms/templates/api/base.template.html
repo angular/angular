@@ -30,9 +30,7 @@
     {% if doc.experimental !== undefined %}<label class="api-status-label experimental">experimental</label>{% endif %}
     {% if doc.stable !== undefined %}<label class="api-status-label stable">stable</label>{% endif %}
     <label class="api-type-label {$ doc.docType $}">{$ doc.docType $}</label>
-    <h1>
-      {$ doc.name $}
-    </h1>
+    <h1>{$ doc.name $}</h1>
     <span class="version">{$ version $}</span>
   </header>
   <div class="page-actions">
