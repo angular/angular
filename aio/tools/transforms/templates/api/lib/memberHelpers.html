@@ -60,7 +60,12 @@
 {%- macro renderMethodDetail(method, cssClass) -%}
 <a id="{$ method.anchor $}"></a>
 <table class="is-full-width method-table {$ cssClass $}">
-  <thead><tr><th><h3>{$ method.name $}()</h3></th></tr></thead>
+  <thead><tr><th><h3>
+    {% if method.isCallMember %}<i>call signature</i>
+    {% elseif method.isNewMember %}<i>construct signature</i>
+    {% else %}{$ method.name $}()
+    {% endif %}
+  </h3></th></tr></thead>
   <tbody>
     <tr>
       <td>
