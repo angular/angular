@@ -287,7 +287,7 @@ The `HttpClient.put()` method takes three parameters
 The URL is unchanged. The heroes web API knows which hero to update by looking at the hero's `id`.
 
 The heroes web API expects a special header in HTTP save requests.
-That header is in the `httpOption` constant defined in the `HeroService`.
+That header is in the `httpOptions` constant defined in the `HeroService`.
 
 <code-example 
   path="toh-pt6/src/app/hero.service.ts" 
