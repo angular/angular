@@ -1387,22 +1387,31 @@ When setting an element property to a non-string data value, you must use _prope
 
 #### Content security
 
+<!--
 Imagine the following *malicious content*.
+-->
+다음 코드를 봅시다. 이 코드는 *악성 코드*입니다.
 
 <code-example path="template-syntax/src/app/app.component.ts" region="evil-title" title="src/app/app.component.ts" linenums="false">
 </code-example>
 
+<!--
 Fortunately, Angular data binding is on alert for dangerous HTML.
 It [*sanitizes*](guide/security#sanitization-and-security-contexts) the values before displaying them.
 It **will not** allow HTML with script tags to leak into the browser, neither with interpolation
 nor property binding.
+-->
+다행히, 위험한 HTML 코드로 프로퍼티 바인딩을 시도하면 Angular가 감지하고 경고를 표시합니다.
+Angular는 템플릿에 값을 반영하기 전에 값을 [*소독*](guide/security#sanitization-and-security-contexts)합니다.
 
 <code-example path="template-syntax/src/app/app.component.html" region="property-binding-vs-interpolation-sanitization" title="src/app/app.component.html" linenums="false">
 </code-example>
 
+<!--
 Interpolation handles the script tags differently than property binding but both approaches render the
 content harmlessly.
-
+-->
+그런데 데이터 바인딩을 사용할 떄는 스크립트 태그를 프로퍼티 바인딩할 때
 
 <figure>
   <img src='generated/images/guide/template-syntax/evil-title.png' alt="evil title made safe">
