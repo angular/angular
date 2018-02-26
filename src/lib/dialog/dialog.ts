@@ -269,17 +269,21 @@ export class MatDialog {
     const userInjector = config && config.viewContainerRef && config.viewContainerRef.injector;
     const injectionTokens = new WeakMap();
 
-    injectionTokens.set(MatDialogRef, dialogRef);
     // The MatDialogContainer is injected in the portal as the MatDialogContainer and the dialog's
     // content are created out of the same ViewContainerRef and as such, are siblings for injector
-    // purposes.  To allow the hierarchy that is expected, the MatDialogContainer is explicitly
+    // purposes. To allow the hierarchy that is expected, the MatDialogContainer is explicitly
     // added to the injection tokens.
-    injectionTokens.set(MatDialogContainer, dialogContainer);
-    injectionTokens.set(MAT_DIALOG_DATA, config.data);
-    injectionTokens.set(Directionality, {
-      value: config.direction,
-      change: observableOf()
-    });
+    injectionTokens
+      .set(MatDialogContainer, dialogContainer)
+      .set(MAT_DIALOG_DATA, config.data)
+      .set(MatDialogRef, dialogRef);
+
+    if (!userInjector || !userInjector.get(Directionality, null)) {
+      injectionTokens.set(Directionality, {
+        value: config.direction,
+        change: observableOf()
+      });
+    }
 
     return new PortalInjector(userInjector || this._injector, injectionTokens);
   }

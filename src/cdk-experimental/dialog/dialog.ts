@@ -264,13 +264,17 @@ export class Dialog {
     const userInjector = config && config.viewContainerRef && config.viewContainerRef.injector;
     const injectionTokens = new WeakMap();
 
-    injectionTokens.set(this.injector.get(DIALOG_REF), dialogRef);
-    injectionTokens.set(this.injector.get(DIALOG_CONTAINER), dialogContainer);
-    injectionTokens.set(DIALOG_DATA, config.data);
-    injectionTokens.set(Directionality, {
-      value: config.direction,
-      change: observableOf()
-    });
+    injectionTokens
+      .set(this.injector.get(DIALOG_REF), dialogRef)
+      .set(this.injector.get(DIALOG_CONTAINER), dialogContainer)
+      .set(DIALOG_DATA, config.data);
+
+    if (!userInjector || !userInjector.get(Directionality, null)) {
+      injectionTokens.set(Directionality, {
+        value: config.direction,
+        change: observableOf()
+      });
+    }
 
     return new PortalInjector(userInjector || this.injector, injectionTokens);
   }
