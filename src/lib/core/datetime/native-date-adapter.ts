@@ -67,6 +67,11 @@ export class NativeDateAdapter extends DateAdapter<Date> {
    * Without this `Intl.DateTimeFormat` sometimes chooses the wrong timeZone, which can throw off
    * the result. (e.g. in the en-US locale `new Date(1800, 7, 14).toLocaleDateString()`
    * will produce `'8/13/1800'`.
+   *
+   * TODO(mmalerba): drop this variable. It's not being used in the code right now. We're now
+   * getting the string representation of a Date object from it's utc representation. We're keeping
+   * it here for sometime, just for precaution, in case we decide to revert some of these changes
+   * though.
    */
   useUtcForDisplay: boolean = true;
 
@@ -97,34 +102,35 @@ export class NativeDateAdapter extends DateAdapter<Date> {
 
   getMonthNames(style: 'long' | 'short' | 'narrow'): string[] {
     if (SUPPORTS_INTL_API) {
-      let dtf = new Intl.DateTimeFormat(this.locale, {month: style});
-      return range(12, i => this._stripDirectionalityCharacters(dtf.format(new Date(2017, i, 1))));
+      const dtf = new Intl.DateTimeFormat(this.locale, {month: style, timeZone: 'utc'});
+      return range(12, i =>
+          this._stripDirectionalityCharacters(this._format(dtf, new Date(2017, i, 1))));
     }
     return DEFAULT_MONTH_NAMES[style];
   }
 
   getDateNames(): string[] {
     if (SUPPORTS_INTL_API) {
-      let dtf = new Intl.DateTimeFormat(this.locale, {day: 'numeric'});
+      const dtf = new Intl.DateTimeFormat(this.locale, {day: 'numeric', timeZone: 'utc'});
       return range(31, i => this._stripDirectionalityCharacters(
-          dtf.format(new Date(2017, 0, i + 1))));
+          this._format(dtf, new Date(2017, 0, i + 1))));
     }
     return DEFAULT_DATE_NAMES;
   }
 
   getDayOfWeekNames(style: 'long' | 'short' | 'narrow'): string[] {
     if (SUPPORTS_INTL_API) {
-      let dtf = new Intl.DateTimeFormat(this.locale, {weekday: style});
+      const dtf = new Intl.DateTimeFormat(this.locale, {weekday: style, timeZone: 'utc'});
       return range(7, i => this._stripDirectionalityCharacters(
-          dtf.format(new Date(2017, 0, i + 1))));
+          this._format(dtf, new Date(2017, 0, i + 1))));
     }
     return DEFAULT_DAY_OF_WEEK_NAMES[style];
   }
 
   getYearName(date: Date): string {
     if (SUPPORTS_INTL_API) {
-      let dtf = new Intl.DateTimeFormat(this.locale, {year: 'numeric'});
-      return this._stripDirectionalityCharacters(dtf.format(date));
+      const dtf = new Intl.DateTimeFormat(this.locale, {year: 'numeric', timeZone: 'utc'});
+      return this._stripDirectionalityCharacters(this._format(dtf, date));
     }
     return String(this.getYear(date));
   }
@@ -155,7 +161,6 @@ export class NativeDateAdapter extends DateAdapter<Date> {
     }
 
     let result = this._createDateWithOverflow(year, month, date);
-
     // Check that the date wasn't above the upper bound for the month, causing the month to overflow
     if (result.getMonth() != month) {
       throw Error(`Invalid date "${date}" for month with index "${month}".`);
@@ -190,15 +195,10 @@ export class NativeDateAdapter extends DateAdapter<Date> {
         date.setFullYear(Math.max(1, Math.min(9999, date.getFullYear())));
       }
 
-      if (this.useUtcForDisplay) {
-        date = new Date(Date.UTC(
-            date.getFullYear(), date.getMonth(), date.getDate(), date.getHours(),
-            date.getMinutes(), date.getSeconds(), date.getMilliseconds()));
-        displayFormat = {...displayFormat, timeZone: 'utc'};
-      }
+      displayFormat = {...displayFormat, timeZone: 'utc'};
 
       const dtf = new Intl.DateTimeFormat(this.locale, displayFormat);
-      return this._stripDirectionalityCharacters(dtf.format(date));
+      return this._stripDirectionalityCharacters(this._format(dtf, date));
     }
     return this._stripDirectionalityCharacters(date.toDateString());
   }
@@ -271,7 +271,7 @@ export class NativeDateAdapter extends DateAdapter<Date> {
 
   /** Creates a date but allows the month and date to overflow. */
   private _createDateWithOverflow(year: number, month: number, date: number) {
-    let result = new Date(year, month, date);
+    const result = new Date(year, month, date);
 
     // We need to correct for the fact that JS native Date treats years in range [0, 99] as
     // abbreviations for 19xx.
@@ -299,5 +299,23 @@ export class NativeDateAdapter extends DateAdapter<Date> {
    */
   private _stripDirectionalityCharacters(str: string) {
     return str.replace(/[\u200e\u200f]/g, '');
+  }
+
+  /**
+   * When converting Date object to string, javascript built-in functions may return wrong
+   * results because it applies its internal DST rules. The DST rules around the world change
+   * very frequently, and the current valid rule is not always valid in previous years though.
+   * We work around this problem building a new Date object which has its internal UTC
+   * representation with the local date and time.
+   * @param dtf Intl.DateTimeFormat object, containg the desired string format. It must have
+   *    timeZone set to 'utc' to work fine.
+   * @param date Date from which we want to get the string representation according to dtf
+   * @returns A Date object with its UTC representation based on the passed in date info
+   */
+  private _format(dtf: Intl.DateTimeFormat, date: Date) {
+    const d = new Date(Date.UTC(
+        date.getFullYear(), date.getMonth(), date.getDate(), date.getHours(),
+        date.getMinutes(), date.getSeconds(), date.getMilliseconds()));
+    return dtf.format(d);
   }
 }
