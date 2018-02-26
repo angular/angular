@@ -32,7 +32,7 @@ $mat-mini-fab-size: 40px !default;
 $mat-mini-fab-padding: 8px !default;
 
 // Applies base styles to all button types.
-%mat-button-base {
+@mixin mat-button-base {
   box-sizing: border-box;
   position: relative;
 
@@ -73,9 +73,8 @@ $mat-mini-fab-padding: 8px !default;
 }
 
 // Applies styles to buttons with backgrounds: raised, fab, and mini-fab
-%mat-raised-button {
-  @extend %mat-button-base;
-
+@mixin mat-raised-button {
+  @include mat-button-base;
   @include mat-overridable-elevation(2);
 
   // Force hardware acceleration.
@@ -96,8 +95,7 @@ $mat-mini-fab-padding: 8px !default;
 
 // Applies styles to fab and mini-fab button types only
 @mixin mat-fab($size, $padding) {
-  @extend %mat-raised-button;
-
+  @include mat-raised-button;
   @include mat-overridable-elevation(6);
 
   // Reset the min-width from the button base.

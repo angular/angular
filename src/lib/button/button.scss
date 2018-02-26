@@ -4,9 +4,11 @@
 @import '../core/style/layout-common';
 @import '../../cdk/a11y/a11y';
 
-.mat-button, .mat-icon-button {
-  @extend %mat-button-base;
+.mat-button, .mat-icon-button, .mat-stroked-button, .mat-flat-button {
+  @include mat-button-base;
+}
 
+.mat-button, .mat-icon-button {
   .mat-button-focus-overlay {
     transition: none;
     opacity: 0;
@@ -21,12 +23,10 @@
 }
 
 .mat-raised-button {
-  @extend %mat-raised-button;
+  @include mat-raised-button;
 }
 
 .mat-stroked-button {
-  @extend %mat-button-base;
-
   @include mat-overridable-elevation(0);
 
   border: 1px solid currentColor;
@@ -35,8 +35,6 @@
 }
 
 .mat-flat-button {
-  @extend %mat-button-base;
-
   @include mat-overridable-elevation(0);
 }
 
