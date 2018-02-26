@@ -28,13 +28,14 @@ $mat-dense-two-line-height: 60px;
 $mat-dense-three-line-height: 76px;
 $mat-dense-multi-line-padding: 16px;
 $mat-dense-list-icon-size: 20px;
+$mat-dense-avatar-size: 36px;
 
 $mat-list-item-inset-divider-offset: 72px;
 
 // This mixin provides all list-item styles, changing font size and height
 // based on whether the list is in dense mode.
-@mixin mat-list-item-base($base-height, $avatar-height, $two-line-height,
-  $three-line-height, $multi-line-padding, $icon-size) {
+@mixin mat-list-item-base($base-height, $height-with-avatar, $two-line-height,
+  $three-line-height, $multi-line-padding, $icon-size, $avatar-size) {
 
   // Prevents the wrapper `mat-list-item-content` from collapsing due to it
   // being `inline` by default.
@@ -68,8 +69,8 @@ $mat-list-item-inset-divider-offset: 72px;
     pointer-events: none;
   }
 
-  &.mat-list-item-avatar {
-    height: $avatar-height;
+  &.mat-list-item-with-avatar {
+    height: $height-with-avatar;
   }
 
   &.mat-2-line {
@@ -128,12 +129,12 @@ $mat-list-item-inset-divider-offset: 72px;
 
   .mat-list-avatar {
     flex-shrink: 0;
-    width: $mat-list-avatar-size;
-    height: $mat-list-avatar-size;
+    width: $avatar-size;
+    height: $avatar-size;
     border-radius: 50%;
 
     ~ .mat-divider-inset {
-      @include mat-inset-divider-offset($mat-list-avatar-size, $mat-list-side-padding);
+      @include mat-inset-divider-offset($avatar-size, $mat-list-side-padding);
     }
   }
 
@@ -210,7 +211,8 @@ $mat-list-item-inset-divider-offset: 72px;
       $mat-list-two-line-height,
       $mat-list-three-line-height,
       $mat-list-multi-line-padding,
-      $mat-list-icon-size
+      $mat-list-icon-size,
+      $mat-list-avatar-size
     );
   }
 }
@@ -232,7 +234,8 @@ $mat-list-item-inset-divider-offset: 72px;
       $mat-dense-two-line-height,
       $mat-dense-three-line-height,
       $mat-dense-multi-line-padding,
-      $mat-dense-list-icon-size
+      $mat-dense-list-icon-size,
+      $mat-dense-avatar-size
     );
   }
 }
