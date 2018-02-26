@@ -2312,9 +2312,9 @@ devtools-timeline-model@1.1.6:
     chrome-devtools-frontend "1.0.401423"
     resolve "1.1.7"
 
-dgeni-packages@0.24.1:
-  version "0.24.1"
-  resolved "https://registry.yarnpkg.com/dgeni-packages/-/dgeni-packages-0.24.1.tgz#e3e99eb82615b30a9e43fe1a9bb9911ff6bbf913"
+dgeni-packages@^0.24.3:
+  version "0.24.3"
+  resolved "https://registry.yarnpkg.com/dgeni-packages/-/dgeni-packages-0.24.3.tgz#153ce2bf9d71a70cd8c71171c7f49adf0d725ab9"
   dependencies:
     canonical-path "0.0.2"
     catharsis "^0.8.1"
