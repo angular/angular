@@ -15,9 +15,6 @@
     "name": "Symbol$1"
   },
   {
-    "name": "WrappedValue"
-  },
-  {
     "name": "__global$1"
   },
   {
@@ -88,6 +85,9 @@
   },
   {
     "name": "renderEmbeddedTemplate"
+  },
+  {
+    "name": "stringify"
   },
   {
     "name": "stringify$1"

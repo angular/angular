@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {getSymbolIterator, looseIdentical} from '../util';
+import {getSymbolIterator, looseIdentical, stringify} from '../util';
 
 export function devModeEqual(a: any, b: any): boolean {
   const isListLikeIterableA = isListLikeIterable(a);
@@ -48,6 +48,8 @@ export class WrappedValue {
   wrapped: any;
 
   constructor(value: any) { this.wrapped = value; }
+
+  toString() { return this.wrapped == null ? '' : stringify(this.wrapped); }
 
   /** Creates a wrapped value. */
   static wrap(value: any): WrappedValue { return new WrappedValue(value); }

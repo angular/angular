@@ -339,7 +339,7 @@ describe('array literals', () => {
       }
       elementProperty(0, 'names', bind(pureFunction1(e0_ff, ctx.customName)));
       MyComp.ngComponentDef.h(1, 0);
-      componentRefresh(1, 0);
+      directiveRefresh(1, 0);
     }
 
     renderToHtml(Template, {customName: WrappedValue.wrap('Carson')});
@@ -516,7 +516,7 @@ describe('object literals', () => {
       }
       elementProperty(0, 'config', bind(pureFunction1(e0_ff, ctx.name)));
       ObjectComp.ngComponentDef.h(1, 0);
-      componentRefresh(1, 0);
+      directiveRefresh(1, 0);
     }
 
     renderToHtml(Template, {name: WrappedValue.wrap('slide')});

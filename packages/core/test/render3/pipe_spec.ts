@@ -11,7 +11,7 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
 
 import {detectChanges} from '../../src/render3/component';
 import {NgOnChangesFeature, defineComponent, defineDirective, definePipe} from '../../src/render3/definition';
-import {bind, componentRefresh, container, containerRefreshEnd, containerRefreshStart, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, interpolation1, load, text, textBinding} from '../../src/render3/instructions';
+import {bind, container, containerRefreshEnd, containerRefreshStart, directiveRefresh, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, interpolation1, load, text, textBinding} from '../../src/render3/instructions';
 import {pipe, pipeBind1, pipeBind3, pipeBind4, pipeBindV} from '../../src/render3/pipe';
 
 import {RenderLog, getRendererFactory2, patchLoggingRenderer2} from './imported_renderer2';
@@ -74,7 +74,7 @@ describe('pipe', () => {
       }
       MyDir.ngDirectiveDef.h(1, 0);
       elementProperty(0, 'elprop', bind(pipeBind1(2, ctx)));
-      componentRefresh(1, 0);
+      directiveRefresh(1, 0);
       directive = load(1);
     }
     renderToHtml(Template, 'a');
@@ -276,6 +276,19 @@ describe('pipe', () => {
       });
     }
 
+    it('should support interpolation', () => {
+      function Template(person: Person, cm: boolean) {
+        if (cm) {
+          text(0);
+          pipe(1, WrappedPipe.ngPipeDef);
+        }
+        textBinding(0, interpolation1('', pipeBind1(1, person.name), ''));
+      }
+      person.init('bob', null);
+      expect(renderToHtml(Template, person)).toEqual('bob');
+    });
+
+
     it('should unwrap the wrapped value and force a change', () => {
       function Template(person: Person, cm: boolean) {
         if (cm) {
@@ -330,7 +343,7 @@ describe('pipe', () => {
             elementProperty(0, 'testDirective', bind(pipeBind1(2, ctx.testDirective)));
             elementProperty(0, 'a', bind(ctx.a));
             elementProperty(0, 'b', bind(pipeBind1(3, ctx.b)));
-            componentRefresh(1, 0);
+            directiveRefresh(1, 0);
           },
           factory: () => new SomeComponent,
           inputs: {testDirective: 'testDirective', a: 'a', b: 'b'}
@@ -422,6 +435,16 @@ describe('pipe', () => {
       renderToHtml(Template, person);
 
       person.age = 15;
+      renderToHtml(Template, person);
+      expect(log).toEqual(['pipeWithOnDestroy - ngOnDestroy']);
+
+      log = [];
+      person.age = 30;
+      renderToHtml(Template, person);
+      expect(log).toEqual([]);
+
+      log = [];
+      person.age = 10;
       renderToHtml(Template, person);
       expect(log).toEqual(['pipeWithOnDestroy - ngOnDestroy']);
     });

@@ -20,15 +20,17 @@ import {unwrap} from './util';
  * @param index Pipe index where the pipe will be stored.
  * @param pipeDef Pipe definition object for registering life cycle hooks.
  * @param firstInstance (optional) The first instance of the pipe that can be reused for pure pipes.
- * @returns T the instance of the pipe which was stored in the bindings array.
+ * @returns T the instance of the pipe.
  */
 export function pipe<T>(index: number, pipeDef: PipeDef<T>, firstInstance?: T): T {
   const tView = getTView();
-  tView.data[index] = pipeDef;
-  if (pipeDef.onDestroy != null) {
-    (tView.destroyHooks || (tView.destroyHooks = [])).push(index, pipeDef.onDestroy);
+  if (tView.firstTemplatePass) {
+    tView.data[index] = pipeDef;
+    if (pipeDef.onDestroy != null) {
+      (tView.destroyHooks || (tView.destroyHooks = [])).push(index, pipeDef.onDestroy);
+    }
   }
-  let pipeInstance = pipeDef.pure && firstInstance ? firstInstance : pipeDef.n();
+  const pipeInstance = pipeDef.pure && firstInstance ? firstInstance : pipeDef.n();
   store(index, pipeInstance);
   return pipeInstance;
 }
@@ -110,9 +112,17 @@ export function pipeBind4(index: number, v1: any, v2: any, v3: any, v4: any): an
  */
 export function pipeBindV(index: number, values: any[]): any {
   const pipeInstance = load<PipeTransform>(index);
-  return isPure(index) ?
-      pureFunctionV(pipeInstance.transform, values, pipeInstance) :
-      pipeInstance.transform.apply(pipeInstance, values.map(value => unwrap(value)));
+  let result: any;
+  if (isPure(index)) {
+    result = pureFunctionV(pipeInstance.transform, values, pipeInstance);
+  } else {
+    const unwrappedValues = [];
+    for (let i = 0; i < values.length; i++) {
+      unwrappedValues[i] = unwrap(values[i]);
+    }
+    result = pipeInstance.transform.apply(pipeInstance, unwrappedValues);
+  }
+  return result;
 }
 
 function isPure(index: number): boolean {
