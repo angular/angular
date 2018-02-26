@@ -12,6 +12,9 @@ import {DOCUMENT} from '../dom_tokens';
 
 import {EventManagerPlugin} from './event_manager';
 
+/**
+ * Supported HammerJS recognizer event names.
+ */
 const EVENT_NAMES = {
   // pan
   'pan': true,
@@ -51,8 +54,8 @@ const EVENT_NAMES = {
 };
 
 /**
- * A DI token that you can use to provide{@link HammerGestureConfig} to Angular. Use it to configure
- * Hammer gestures.
+ * DI token for providing {@link http://hammerjs.github.io/ HammerJS} support to Angular. 
+ * @see  {@link HammerGestureConfig HammerGestureConfig} 
  *
  * @experimental
  */
@@ -64,14 +67,44 @@ export interface HammerInstance {
 }
 
 /**
+ * An injectable {@link http://hammerjs.github.io/api/#hammer.manager HammerJS Manager}
+ * for gesture recognition. Configures specific event recognition.
  * @experimental
  */
 @Injectable()
 export class HammerGestureConfig {
+  /**
+   * @description A set of supported event names for gestures to be used in Angular. Angular supports
+   * all built-in recognizers, as listed in  
+   * {@link http://hammerjs.github.io/ HammerJS documentation}.
+   */
   events: string[] = [];
 
+   /**
+   * @description Maps gesture event names to a set of configuration options
+   * that specify overrides to the default values for specific properties.
+   * 
+   * The key is a supported event name to be configured, 
+   * and the options object contains a set of properties, with override values
+   * to be applied to the named recognizer event.  
+   * For example, to disable recognition of the rotate event, specify
+   *  `{"rotate": {"enable": false}}`.
+   * 
+   * Properties that are not present take the HammerJS default values.
+   * For information about which properties are supported for which events,
+   * and their allowed and default values, see 
+   * {@link http://hammerjs.github.io/ HammerJS documentation}. 
+   *  
+   */
   overrides: {[key: string]: Object} = {};
 
+  /**
+   * @description Properties whose default values can be overridden for a given recognizer event.
+   * Different sets of properties apply to different events. 
+   * For information about which properties are supported for which events,
+   * and their allowed and default values, see 
+   * {@link http://hammerjs.github.io/ HammerJS documentation}.
+   */
   options?: {
     cssProps?: any; domEvents?: boolean; enable?: boolean | ((manager: any) => boolean);
     preset?: any[];
@@ -80,6 +113,13 @@ export class HammerGestureConfig {
     inputClass?: any;
     inputTarget?: EventTarget;
   };
+
+  /**
+   * @description Creates a {@link http://hammerjs.github.io/api/#hammer.manager HammerJS Manager} and 
+   * attaches it to a given HTML element.
+   * @param element The element that will recognize gestures.
+   * @returns A {@link http://hammerjs.github.io/api/#hammer.manager HammerJS Manager}
+   */
 
   buildHammer(element: HTMLElement): HammerInstance {
     const mc = new Hammer(element, this.options);
@@ -95,6 +135,12 @@ export class HammerGestureConfig {
   }
 }
 
+// This doesn't show up in generated doc
+/**
+ * @experimental
+ * @description An injectable service that supports {@link http://hammerjs.github.io/ HammerJS} 
+ * gesture recognition in Angular. 
+ */
 @Injectable()
 export class HammerGesturesPlugin extends EventManagerPlugin {
   constructor(
@@ -103,7 +149,14 @@ export class HammerGesturesPlugin extends EventManagerPlugin {
       private console: Console) {
     super(doc);
   }
-
+ 
+ /**
+ * Reports whether a Hammer recognizer event is supported for the associated element.   
+ * @param eventName A recognizer event name. 
+ *    
+ * @returns True if the named event is supported, false otherwise.
+ * @throws An error if {@link http://hammerjs.github.io/ HammerJS} is not loaded.
+ */
   supports(eventName: string): boolean {
     if (!EVENT_NAMES.hasOwnProperty(eventName.toLowerCase()) && !this.isCustomEvent(eventName)) {
       return false;
@@ -117,6 +170,14 @@ export class HammerGesturesPlugin extends EventManagerPlugin {
     return true;
   }
 
+  /**
+  * Associates an event handler with a supported recognizer event.
+  * @param element The HTML element that recognizes the event.
+  * @param eventName The event to listen for. 
+  *     
+  * @param handler An event-handler function to run when the event occurs.
+  * @returns The Hammer instance that detects and responds to HammerJS events.
+  */
   addEventListener(element: HTMLElement, eventName: string, handler: Function): Function {
     const zone = this.manager.getZone();
     eventName = eventName.toLowerCase();
@@ -132,5 +193,10 @@ export class HammerGesturesPlugin extends EventManagerPlugin {
     });
   }
 
+   /**
+    * Reports whether a given event is a custom event.
+    * @param eventName The event to check
+    * @returns True if the named event is not in the list of built-in HammerJS events.
+    */
   isCustomEvent(eventName: string): boolean { return this._config.events.indexOf(eventName) > -1; }
 }
