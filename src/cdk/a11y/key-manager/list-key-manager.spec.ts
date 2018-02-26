@@ -139,6 +139,28 @@ describe('Key managers', () => {
         expect(fakeKeyEvents.unsupported.defaultPrevented).toBe(false);
       });
 
+      it('should ignore the horizontal keys when only in vertical mode', () => {
+        keyManager.withVerticalOrientation().withHorizontalOrientation(null);
+
+        expect(keyManager.activeItemIndex).toBe(0);
+
+        keyManager.onKeydown(fakeKeyEvents.rightArrow);
+
+        expect(keyManager.activeItemIndex).toBe(0);
+        expect(fakeKeyEvents.rightArrow.defaultPrevented).toBe(false);
+      });
+
+      it('should ignore the horizontal keys when only in horizontal mode', () => {
+        keyManager.withVerticalOrientation(false).withHorizontalOrientation('ltr');
+
+        expect(keyManager.activeItemIndex).toBe(0);
+
+        keyManager.onKeydown(fakeKeyEvents.downArrow);
+
+        expect(keyManager.activeItemIndex).toBe(0);
+        expect(fakeKeyEvents.downArrow.defaultPrevented).toBe(false);
+      });
+
       describe('with `vertical` direction', () => {
         beforeEach(() => {
           keyManager.withVerticalOrientation();

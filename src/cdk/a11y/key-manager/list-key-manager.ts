@@ -171,12 +171,16 @@ export class ListKeyManager<T extends ListKeyManagerOption> {
         if (this._vertical) {
           this.setNextItemActive();
           break;
+        } else {
+          return;
         }
 
       case UP_ARROW:
         if (this._vertical) {
           this.setPreviousItemActive();
           break;
+        } else {
+          return;
         }
 
       case RIGHT_ARROW:
@@ -186,6 +190,8 @@ export class ListKeyManager<T extends ListKeyManagerOption> {
         } else if (this._horizontal === 'rtl') {
           this.setPreviousItemActive();
           break;
+        } else {
+          return;
         }
 
       case LEFT_ARROW:
@@ -195,6 +201,8 @@ export class ListKeyManager<T extends ListKeyManagerOption> {
         } else if (this._horizontal === 'rtl') {
           this.setNextItemActive();
           break;
+        } else {
+          return;
         }
 
       default:
