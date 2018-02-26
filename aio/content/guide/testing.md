@@ -1075,7 +1075,7 @@ Calling `tick()` simulates the passage of time until all pending asynchronous ac
 including the resolution of the `getQuote` promise in this test case.
 
 It returns nothing. There is no promise to wait for.
-Proceed with the same test code that appeared in the `whenStable.then()` callback.
+Proceed with the same test code that appeared in the `whenStable().then()` callback.
 
 Even this simple example is easier to read than the third test.
 To more fully appreciate the improvement, imagine a succession of asynchronous operations,
