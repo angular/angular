@@ -1,25 +1,32 @@
-import {Directionality, Direction} from '@angular/cdk/bidi';
+import {Direction, Directionality} from '@angular/cdk/bidi';
 import {
+  DOWN_ARROW,
+  END,
   ENTER,
+  HOME,
   LEFT_ARROW,
   RIGHT_ARROW,
-  UP_ARROW,
-  DOWN_ARROW,
   SPACE,
-  HOME,
-  END,
+  UP_ARROW,
 } from '@angular/cdk/keycodes';
+import {StepperOrientation} from '@angular/cdk/stepper';
 import {dispatchKeyboardEvent} from '@angular/cdk/testing';
 import {Component, DebugElement} from '@angular/core';
-import {async, ComponentFixture, TestBed, inject} from '@angular/core/testing';
-import {AbstractControl, AsyncValidatorFn, FormControl, FormGroup, ReactiveFormsModule,
-  ValidationErrors, Validators} from '@angular/forms';
+import {async, ComponentFixture, inject, TestBed} from '@angular/core/testing';
+import {
+  AbstractControl,
+  AsyncValidatorFn,
+  FormControl,
+  FormGroup,
+  ReactiveFormsModule,
+  ValidationErrors,
+  Validators
+} from '@angular/forms';
 import {By} from '@angular/platform-browser';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
-import {StepperOrientation} from '@angular/cdk/stepper';
+import {Observable} from 'rxjs/Observable';
 import {map} from 'rxjs/operators/map';
 import {take} from 'rxjs/operators/take';
-import {Observable} from 'rxjs/Observable';
 import {Subject} from 'rxjs/Subject';
 import {MatStepperModule} from './index';
 import {MatHorizontalStepper, MatStep, MatStepper, MatVerticalStepper} from './stepper';
@@ -44,6 +51,7 @@ describe('MatStepper', () => {
         SimpleStepperWithoutStepControl,
         SimpleStepperWithStepControlAndCompletedBinding,
         SimpleMatHorizontalStepperApp,
+        LinearStepperWithValidOptionalStep,
       ],
       providers: [
         {provide: Directionality, useFactory: () => ({value: dir})}
@@ -491,6 +499,8 @@ describe('MatStepper', () => {
       testComponent.oneGroup.get('oneCtrl')!.setValue('input');
       testComponent.twoGroup.get('twoCtrl')!.setValue('input');
       testComponent.validationTrigger.next();
+      stepperComponent.selectedIndex = 1;
+      fixture.detectChanges();
       stepperComponent.selectedIndex = 2;
       fixture.detectChanges();
 
@@ -559,6 +569,8 @@ describe('MatStepper', () => {
         testComponent.twoGroup.get('twoCtrl')!.setValue('input');
         testComponent.threeGroup.get('threeCtrl')!.setValue('valid');
         testComponent.validationTrigger.next();
+        stepperComponent.selectedIndex = 1;
+        fixture.detectChanges();
         stepperComponent.selectedIndex = 2;
         fixture.detectChanges();
         stepperComponent.selectedIndex = 3;
@@ -693,6 +705,43 @@ describe('MatStepper', () => {
 
       let stepHeaders = fixture.debugElement.queryAll(By.css('.mat-horizontal-stepper-header'));
       assertArrowKeyInteractionInRtl(fixture, stepHeaders);
+    });
+  });
+
+  describe('valid step in linear stepper', () => {
+    let fixture: ComponentFixture<LinearStepperWithValidOptionalStep>;
+    let testComponent: LinearStepperWithValidOptionalStep;
+    let stepper: MatStepper;
+
+    beforeEach(() => {
+      fixture = TestBed.createComponent(LinearStepperWithValidOptionalStep);
+      fixture.detectChanges();
+
+      testComponent = fixture.componentInstance;
+      stepper = fixture.debugElement
+          .query(By.css('mat-horizontal-stepper')).componentInstance;
+    });
+
+    it('must be visited if not optional', () => {
+      stepper.selectedIndex = 2;
+      fixture.detectChanges();
+      expect(stepper.selectedIndex).toBe(0);
+
+      stepper.selectedIndex = 1;
+      fixture.detectChanges();
+      expect(stepper.selectedIndex).toBe(1);
+
+      stepper.selectedIndex = 2;
+      fixture.detectChanges();
+      expect(stepper.selectedIndex).toBe(2);
+    });
+
+    it('can be skipped entirely if optional', () => {
+      testComponent.step2Optional = true;
+      fixture.detectChanges();
+      stepper.selectedIndex = 2;
+      fixture.detectChanges();
+      expect(stepper.selectedIndex).toBe(2);
     });
   });
 });
@@ -986,3 +1035,17 @@ class SimpleStepperWithStepControlAndCompletedBinding {
 `
 })
 class IconOverridesStepper {}
+
+@Component({
+  template: `
+    <mat-horizontal-stepper linear>
+      <mat-step label="Step 1" [stepControl]="controls[0]"></mat-step>
+      <mat-step label="Step 2" [stepControl]="controls[1]" [optional]="step2Optional"></mat-step>
+      <mat-step label="Step 3" [stepControl]="controls[2]"></mat-step>
+    </mat-horizontal-stepper>
+  `
+})
+class LinearStepperWithValidOptionalStep {
+  controls = [0, 0, 0].map(() => new FormControl());
+  step2Optional = false;
+}
