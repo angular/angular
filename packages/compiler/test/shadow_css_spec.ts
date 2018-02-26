@@ -355,6 +355,20 @@ import {normalizeCSS} from '@angular/platform-browser/testing/src/browser_util';
                    (cssRule: CssRule) => new CssRule(cssRule.selector, cssRule.content + '2')))
             .toEqual('a {b2}');
       });
+
+      it('should collapse whitespace between rules', () => {
+        expect(processRules(
+                   'a { }      b {c} d   {e; f}',
+                   (cssRule: CssRule) => new CssRule(cssRule.selector, cssRule.content)))
+            .toEqual('a { } b {c} d {e; f}');
+      });
+
+      it('should not collapse whitespace within a rule body', () => {
+        expect(processRules(
+                   'a { content: \'    \' } b { a;   c }',
+                   (cssRule: CssRule) => new CssRule(cssRule.selector, cssRule.content)))
+            .toEqual('a { content: \'    \' } b { a;   c }');
+      });
     });
   });
 }
