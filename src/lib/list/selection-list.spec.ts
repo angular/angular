@@ -5,8 +5,8 @@ import {
   dispatchEvent,
   dispatchKeyboardEvent,
 } from '@angular/cdk/testing';
-import {Component, DebugElement} from '@angular/core';
-import {async, ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
+import {Component, DebugElement, ChangeDetectionStrategy} from '@angular/core';
+import {async, ComponentFixture, fakeAsync, TestBed, tick, flush} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 import {
   MatListModule,
@@ -592,7 +592,8 @@ describe('MatSelectionList with forms', () => {
         SelectionListWithModel,
         SelectionListWithFormControl,
         SelectionListWithPreselectedOption,
-        SelectionListWithPreselectedOptionAndModel
+        SelectionListWithPreselectedOptionAndModel,
+        SelectionListWithPreselectedFormControlOnPush,
       ]
     });
 
@@ -800,6 +801,20 @@ describe('MatSelectionList with forms', () => {
       expect(fixture.componentInstance.selectedOptions).toEqual(['opt1', 'opt2']);
     }));
 
+    it('should show the item as selected when preselected inside OnPush parent', fakeAsync(() => {
+      const fixture = TestBed.createComponent(SelectionListWithPreselectedFormControlOnPush);
+      fixture.detectChanges();
+
+      const option = fixture.debugElement.queryAll(By.directive(MatListOption))[1];
+
+      fixture.detectChanges();
+      flush();
+      fixture.detectChanges();
+
+      expect(option.componentInstance.selected).toBe(true);
+      expect(option.nativeElement.querySelector('.mat-pseudo-checkbox-checked')).toBeTruthy();
+    }));
+
   });
 });
 
@@ -948,4 +963,18 @@ class SelectionListWithPreselectedOption {
 })
 class SelectionListWithPreselectedOptionAndModel {
   selectedOptions = ['opt1'];
+}
+
+
+@Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: `
+    <mat-selection-list [formControl]="formControl">
+      <mat-list-option *ngFor="let opt of opts" [value]="opt">{{opt}}</mat-list-option>
+    </mat-selection-list>
+  `
+})
+class SelectionListWithPreselectedFormControlOnPush {
+  opts = ['opt1', 'opt2', 'opt3'];
+  formControl = new FormControl(['opt2']);
 }
