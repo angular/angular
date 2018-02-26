@@ -69,7 +69,7 @@ function runInTestZone(
         'Please make sure that your environment includes zone.js/dist/async-test.js');
   }
   const ProxyZoneSpec = (Zone as any)['ProxyZoneSpec'] as {
-    get(): {setDelegate(spec: ZoneSpec): void; getDelegate(): ZoneSpec;};
+    get(): {setDelegate(spec: ZoneSpec): void; getDelegate(): ZoneSpec};
     assertPresent: () => void;
   };
   if (ProxyZoneSpec === undefined) {
@@ -87,23 +87,19 @@ function runInTestZone(
     const testZoneSpec: ZoneSpec = new AsyncTestZoneSpec(
         () => {
           // Need to restore the original zone.
-          currentZone.run(() => {
-            if (proxyZoneSpec.getDelegate() == testZoneSpec) {
-              // Only reset the zone spec if it's sill this one. Otherwise, assume it's OK.
-              proxyZoneSpec.setDelegate(previousDelegate);
-            }
-            finishCallback();
-          });
+          if (proxyZoneSpec.getDelegate() == testZoneSpec) {
+            // Only reset the zone spec if it's sill this one. Otherwise, assume it's OK.
+            proxyZoneSpec.setDelegate(previousDelegate);
+          }
+          currentZone.run(() => { finishCallback(); });
         },
         (error: any) => {
           // Need to restore the original zone.
-          currentZone.run(() => {
-            if (proxyZoneSpec.getDelegate() == testZoneSpec) {
-              // Only reset the zone spec if it's sill this one. Otherwise, assume it's OK.
-              proxyZoneSpec.setDelegate(previousDelegate);
-            }
-            failCallback(error);
-          });
+          if (proxyZoneSpec.getDelegate() == testZoneSpec) {
+            // Only reset the zone spec if it's sill this one. Otherwise, assume it's OK.
+            proxyZoneSpec.setDelegate(previousDelegate);
+          }
+          currentZone.run(() => { failCallback(error); });
         },
         'test');
     proxyZoneSpec.setDelegate(testZoneSpec);
