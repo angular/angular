@@ -34,9 +34,6 @@ $mat-dialog-button-margin: 8px !default;
   max-height: $mat-dialog-max-height;
   overflow: auto;
   -webkit-overflow-scrolling: touch;
-
-  // Promote the content to a new GPU layer to avoid repaints on scroll.
-  @include backface-visibility(hidden);
 }
 
 .mat-dialog-title {

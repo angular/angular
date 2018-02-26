@@ -1,8 +1,6 @@
 @import '../core/style/vendor-prefixes';
 
 .mat-tab-body-content {
-  // Avoids repainting while scrolling.
-  @include backface-visibility(hidden);
   height: 100%;
   overflow: auto;
 
