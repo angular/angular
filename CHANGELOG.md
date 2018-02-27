@@ -1,3 +1,20 @@
+<a name="6.0.0-beta.3"></a>
+# [6.0.0-beta.3](https://github.com/angular/material2/compare/6.0.0-beta-2...6.0.0-beta.3) (2018-02-27)
+
+
+### Bug Fixes
+
+* **select:** animation jumping on IE11 ([#10050](https://github.com/angular/material2/issues/10050)) ([a5909db](https://github.com/angular/material2/commit/a5909db))
+* **tree:** fix type error in tree ([#10095](https://github.com/angular/material2/issues/10095)) ([6d94aec](https://github.com/angular/material2/commit/6d94aec))
+
+
+### Features
+
+* **menu:** allow for backdrop class to be customized ([#10097](https://github.com/angular/material2/issues/10097)) ([2ece035](https://github.com/angular/material2/commit/2ece035)), closes [#10062](https://github.com/angular/material2/issues/10062)
+* **tree:** merge tree branch to master ([#9796](https://github.com/angular/material2/issues/9796)) ([c975ca8](https://github.com/angular/material2/commit/c975ca8))
+
+
+
 <a name="6.0.0-beta.2"></a>
 # [6.0.0-beta.2](https://github.com/angular/material2/compare/6.0.0-beta-0...6.0.0-beta.2) (2018-02-21)
 
@@ -53,6 +70,25 @@
 * **form-field, chip:** merge new form-field and chip features to master ([#9762](https://github.com/angular/material2/issues/9762)) ([4a5287c](https://github.com/angular/material2/commit/4a5287c)), closes [#9743](https://github.com/angular/material2/issues/9743) [#9759](https://github.com/angular/material2/issues/9759) [#9767](https://github.com/angular/material2/issues/9767)
 * **schematics:** add initial schematics utils ([#9451](https://github.com/angular/material2/issues/9451)) ([673d56e](https://github.com/angular/material2/commit/673d56e))
 * **tabs:** add ability to lazy load tab content ([#8921](https://github.com/angular/material2/issues/8921)) ([6feaf62](https://github.com/angular/material2/commit/6feaf62))
+
+
+<a name="5.2.3"></a>
+## [5.2.3 diamond-silhouette](https://github.com/angular/material2/compare/5.2.2...5.2.3) (2018-02-27)
+
+
+### Bug Fixes
+
+* **cdk-dialog:** decorate dialog as an injectable ([#10052](https://github.com/angular/material2/issues/10052)) ([07b4250](https://github.com/angular/material2/commit/07b4250))
+* **datepicker:** improve native adapter DST handling ([#10068](https://github.com/angular/material2/issues/10068)) ([2837196](https://github.com/angular/material2/commit/2837196))
+* avoid layout jumping on elements with ripples in RTL ([#10026](https://github.com/angular/material2/issues/10026)) ([c93103b](https://github.com/angular/material2/commit/c93103b))
+* **dialog:** actions not being pulled down when trapping focus ([#10007](https://github.com/angular/material2/issues/10007)) ([9a39e24](https://github.com/angular/material2/commit/9a39e24)), closes [#9722](https://github.com/angular/material2/issues/9722)
+* **dialog:** don't provide directionality if user injector has one already ([#10004](https://github.com/angular/material2/issues/10004)) ([6ec0af1](https://github.com/angular/material2/commit/6ec0af1))
+* **grid-list:** default to LTR when Directionality value is empty ([#10111](https://github.com/angular/material2/issues/10111)) ([65810bc](https://github.com/angular/material2/commit/65810bc))
+* **grid-list:** invalid style declaration during server-side rendering ([#10131](https://github.com/angular/material2/issues/10131)) ([1576a99](https://github.com/angular/material2/commit/1576a99))
+* **list:** align avatar size in dense list with spec ([#10028](https://github.com/angular/material2/issues/10028)) ([7d81b6f](https://github.com/angular/material2/commit/7d81b6f)), closes [#10019](https://github.com/angular/material2/issues/10019)
+* **list-key-manager:** not ignoring vertical key events in horizontal-only mode ([#10075](https://github.com/angular/material2/issues/10075)) ([f31a2f1](https://github.com/angular/material2/commit/f31a2f1))
+* **selection-list:** repeated preselected items not appearing as selected with OnPush parent ([#10100](https://github.com/angular/material2/issues/10100)) ([f93d0f4](https://github.com/angular/material2/commit/f93d0f4)), closes [#10090](https://github.com/angular/material2/issues/10090)
+* **stepper:** require users to visit non-optional steps ([#10048](https://github.com/angular/material2/issues/10048)) ([d26aa6e](https://github.com/angular/material2/commit/d26aa6e))
 
 
 <a name="5.2.2"></a>
