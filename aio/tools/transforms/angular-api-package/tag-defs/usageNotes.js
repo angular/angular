@@ -1,4 +1,4 @@
-module.exports = function(log, createDocMessage) {
+module.exports = function() {
   return {
     name: 'usageNotes'
   };
