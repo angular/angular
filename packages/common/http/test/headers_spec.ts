@@ -39,6 +39,13 @@ import {HttpHeaders} from '../src/headers';
         expect(c.getAll('foo')).toEqual(['a', 'b', 'c']);
       });
 
+      it('should handle undefined values', () => {
+        const src = new HttpHeaders({
+          'X-My-Custom-Header': undefined,
+        });
+        expect(src.has('X-My-Custom-Header')).toEqual(true);
+      });
+
       it('should keep the last value when initialized from an object', () => {
         const headers = new HttpHeaders({
           'foo': 'first',
