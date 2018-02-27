@@ -139,7 +139,6 @@ describe('TwainComponent', () => {
     }));
     // #enddocregion async-test
 
-
     // #docregion quote-done-test
     it('should show last quote (quote done)', (done: DoneFn) => {
       fixture.detectChanges();
@@ -180,5 +179,21 @@ describe('TwainComponent', () => {
       expect(quoteEl.textContent).toBe('...', 'should show placeholder');
     }));
     // #enddocregion async-error-test
+  });
+
+  describe('simple async test', () => {
+    const log: string[] = [];
+    // #docregion async-test-finish-callback
+    it('should call finish callback after async tasks done', async(() => {
+      setTimeout(() => {
+        log.push('timeout1');
+      });
+      setTimeout(() => {
+        log.push('timeout2');
+      });
+    }, () => {
+      expect(log).toEqual(['timeout1', 'timeout2']);
+    }));
+    // #enddocregion async-test-finish-callback
   });
 });

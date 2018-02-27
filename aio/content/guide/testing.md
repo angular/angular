@@ -1167,6 +1167,15 @@ which breaks the linear flow of control.
 
 {@a when-stable}
 
+You can also pass a finishCallback(optional) to async() which will be invoked when
+all async task finished. This is useful when you just want to test some simple async
+operations and don't want to use fixture at all.
+
+<code-example 
+  path="testing/src/app/twain/twain.component.spec.ts" 
+  region="async-test-finish-callback">
+</code-example>
+
 #### _whenStable_
 
 The test must wait for the `getQuote()` observable to emit the next quote.

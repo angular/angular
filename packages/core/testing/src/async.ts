@@ -27,7 +27,7 @@ const _global = <any>(typeof window === 'undefined' ? global : window);
  *
  * @stable
  */
-export function async(fn: Function): (done: any) => any {
+export function async(fn: Function, finishCallback?: (error?: any) => void): (done: any) => any {
   // If we're running using the Jasmine test framework, adapt to call the 'done'
   // function when asynchronous activity is finished.
   if (_global.jasmine) {
@@ -36,10 +36,27 @@ export function async(fn: Function): (done: any) => any {
       if (!done) {
         // if we run beforeEach in @angular/core/testing/testing_internal then we get no done
         // fake it here and assume sync.
-        done = function() {};
-        done.fail = function(e: any) { throw e; };
+        done = function() {
+          if (finishCallback) {
+            finishCallback();
+          }
+        };
+        done.fail = function(e: any) { 
+          if (finishCallback) {
+            finishCallback(e);
+          }
+          throw e; 
+        };
       }
-      runInTestZone(fn, this, done, (err: any) => {
+      runInTestZone(fn, this, function() {
+        if (finishCallback) {
+          finishCallback();
+        }
+        done();
+      }, (err: any) => {
+        if (finishCallback) {
+          finishCallback(err);
+        }
         if (typeof err === 'string') {
           return done.fail(new Error(<string>err));
         } else {
