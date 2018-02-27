@@ -19,11 +19,9 @@ unexpected definitions.
 
 ## Ahead-of-time (AOT) compilation
 
-You can compile Angular applications at build time.
+You can compile Angular applications at build time. 
 By compiling your application using the compiler-cli, `ngc`, you can bootstrap directly to a module factory, meaning you don't need to include the Angular compiler in your JavaScript bundle.
 Ahead-of-time compiled applications also benefit from decreased load time and increased performance.
-
-
 
 ## Annotation
 
@@ -121,7 +119,6 @@ between a "token"&mdash;also referred to as a "key"&mdash;and a dependency [prov
 
 ## Bootstrap
 
-
 You launch an Angular application by "bootstrapping" it using the application root NgModule (`AppModule`).
 
 Bootstrapping identifies an application's top level "root" [component](guide/glossary#component),
@@ -151,7 +148,6 @@ Learn more in the [Getting Started](guide/quickstart) guide.
 
 {@a component}
 
-
 ## Component
 
 An Angular class responsible for exposing data to a [view](guide/glossary#view) and handling most of the view’s display and user-interaction logic.
@@ -166,6 +162,16 @@ as a view.
 
 Those familiar with "MVC" and "MVVM" patterns will recognize
 the component in the role of "controller" or "view model".
+
+{@a custom-element}
+
+## Custom element
+
+A JavaScript (ES2015) feature, currently supported by Chrome and Opera, and available in other browsers through polyfills (see [Browser Support](https://angular.io/guide/browser-support)). 
+
+The custom element feature extends HTML by allowing you to define a tag whose content is created and controlled by JavaScript code. A custom elements is recognized by a browser when it is added to the [CustomElementRegistry](https://developer.mozilla.org/en-US/docs/Web/API/CustomElementRegistry).
+
+For use with Angular, see [NgElement](guide/glossary#ng-element).
 
 
 {@a D}
@@ -348,25 +354,20 @@ in ES8 or a dialect that strives to be
 compatible with it, such as [TypeScript](guide/glossary#typescript).
 
 Most modern browsers only support the much older "ECMAScript 5" (also known as "ES5") standard.
-Applications written in ES2017, ES2016, ES2015, or one of their dialects must be [transpiled](guide/glossary#transpile)
-to ES5 JavaScript.
+Applications written in ES2017, ES2016, ES2015, or one of their dialects must be [transpiled](guide/glossary#transpile) to ES5 JavaScript.
 
 Angular developers can write in ES5 directly.
 
+{@a element}
 
-## ES2015
+## Element
 
-Short hand for [ECMAScript](guide/glossary#ecmascript) 2015.
+Angular defines an `ElementRef` class to wrap render-specific native UI elements. This allows you use Angular templates and  data-binding to access DOM elements without reference to the native element in most cases.
 
+The documentation generally refers to either elements (`ElementRef` instances) or  DOM elements (which could be accessed directly if necessary).
 
-## ES5
+Compare [Custom element](guide/glossary#custom-element), [NgElement](guide/glossary#ng-element).
 
-Short hand for [ECMAScript](guide/glossary#ecmascript) 5, the version of JavaScript run by most modern browsers.
-
-
-## ES6
-
-Short hand for [ECMAScript](guide/glossary#ecmascript) 2015.
 
 
 {@a F}
@@ -508,6 +509,14 @@ You rarely access Angular feature modules directly. You usually import them from
 
 
 {@a N}
+
+{@ ng-element}
+
+## NgElement
+
+An Angular component that has been converted to a [custom element](guide/glossary#custom-element).  Use the API to encapsulate an Angular component so that it can be registered with the browser as a custom element. 
+
+After it has been registered with the browser, the defined tag can be included in any HTML imported into an Angular app. This allows you to build change-detection and data-binding into imported HTML that would otherwise be displayed without Angular processing.
 
 
 ## NgModule
