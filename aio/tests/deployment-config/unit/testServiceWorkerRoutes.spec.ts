@@ -1,4 +1,4 @@
-import { loadLegacyUrls, loadSitemapUrls, loadSWRoutes } from './helpers';
+import { loadLegacyUrls, loadSitemapUrls, loadSWRoutes } from '../shared/helpers';
 
 describe('service-worker routes', () => {
 
