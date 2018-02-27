@@ -4,7 +4,6 @@ import {
   HttpRequest, HttpResponse
 } from '@angular/common/http';
 
-import { Observable } from 'rxjs/Observable';
 // #docregion excerpt
 import { finalize, tap } from 'rxjs/operators';
 import { MessageService } from '../message.service';

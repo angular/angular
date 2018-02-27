@@ -8,8 +8,7 @@
 
 import {Injectable} from '@angular/core';
 import {ɵgetDOM as getDOM} from '@angular/platform-browser';
-import {Observable} from 'rxjs/Observable';
-import {Observer} from 'rxjs/Observer';
+import {Observable, Observer} from 'rxjs';
 import {ResponseOptions} from '../base_response_options';
 import {ContentType, ReadyState, RequestMethod, ResponseContentType, ResponseType} from '../enums';
 import {Headers} from '../headers';

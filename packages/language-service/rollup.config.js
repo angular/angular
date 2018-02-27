@@ -35,9 +35,8 @@ function resolve(id, from) {
         loc + packageName + '/fesm5/' + packageName + '.js';
     return r;
   }
-  if (id && id.startsWith('rxjs/')) {
-    const resolved = `${rxjsLocation}${id.replace('rxjs', '')}.js`;
-    return resolved;
+  if (id && (id == 'rxjs' || id.startsWith('rxjs/'))) {
+    return `${rxjsLocation}${id.replace('rxjs', '')}/index.js`;
   }
   if (id == 'tslib') {
     return tslibLocation + '/tslib.es6.js';

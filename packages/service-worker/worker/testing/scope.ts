@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Subject} from 'rxjs/Subject';
+import {Subject} from 'rxjs';
 
 import {Adapter, Context} from '../src/adapter';
 import {AssetGroupConfig, Manifest} from '../src/manifest';

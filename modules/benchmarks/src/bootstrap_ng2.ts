@@ -37,12 +37,14 @@
           '@angular/http': '/packages-dist/http/bundles/http.umd.js',
           '@angular/upgrade': '/packages-dist/upgrade/bundles/upgrade.umd.js',
           '@angular/router': '/packages-dist/router/bundles/router.umd.js',
-          '@angular/core/src/facade': '/all/@angular/core/src/facade',
-          'rxjs': '/all/benchmarks/vendor/rxjs'
+          'rxjs': '/all/benchmarks/vendor/rxjs',
         },
         packages: {
-          '@angular/core/src/facade': {defaultExtension: 'js'},
-          'rxjs': {defaultExtension: 'js'}
+          'rxjs/ajax': {main: 'index.js', defaultExtension: 'js'},
+          'rxjs/operators': {main: 'index.js', defaultExtension: 'js'},
+          'rxjs/testing': {main: 'index.js', defaultExtension: 'js'},
+          'rxjs/websocket': {main: 'index.js', defaultExtension: 'js'},
+          'rxjs': {main: 'index.js', defaultExtension: 'js'},
         }
       });
     } else {
@@ -63,7 +65,11 @@
           '@angular/platform-browser': {main: 'index.js', defaultExtension: 'js'},
           '@angular/platform-browser-dynamic': {main: 'index.js', defaultExtension: 'js'},
           '@angular/upgrade': {main: 'index.js', defaultExtension: 'js'},
-          'rxjs': {defaultExtension: 'js'}
+          'rxjs/ajax': {main: 'index.js', defaultExtension: 'js'},
+          'rxjs/operators': {main: 'index.js', defaultExtension: 'js'},
+          'rxjs/testing': {main: 'index.js', defaultExtension: 'js'},
+          'rxjs/websocket': {main: 'index.js', defaultExtension: 'js'},
+          'rxjs': {main: 'index.js', defaultExtension: 'js'},
         }
       });
     }
