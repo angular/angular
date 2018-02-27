@@ -6,11 +6,6 @@
 {% block overview %}{% include "includes/interface-overview.html" %}{% endblock %}
 {% block details %}
   {% include "includes/description.html" %}
-  <div class="inline-sidebar">
-    {$ descendants.renderDescendants(doc, 'interface', 'Child Interfaces') $}
-    {$ descendants.renderDescendants(doc, 'class', 'Class Implementations') $}
-    {% include "includes/see-also.html" %}
-  </div>
   {$ memberHelper.renderProperties(doc.properties, 'instance-properties', 'instance-property', 'Properties') $}
   {$ memberHelper.renderMethodDetails(doc.methods, 'instance-methods', 'instance-method', 'Methods') $}
 {% endblock %}

@@ -8,37 +8,6 @@
     }
   }
 
-  .sidebar {
-      box-shadow: 0 2px 2px rgba(10, 16, 20, 0.24), 0 0 2px rgba(10, 16, 20, 0.12);
-      border-radius: 2px;
-      background: #FAFAFA;
-      float: right;
-      margin: 20px;
-      padding: 0 24px 14px;
-
-      h2 {
-        margin: 18px 0 4px;
-      }
-
-      ul {
-        margin: 0;
-        padding-left: 14px;
-      }
-  }
-  .inline-sidebar {
-      display: none;
-  }
-
-  @media (max-width: 1200px) {
-      .sidebar {
-          display: none;
-      }
-      .inline-sidebar {
-          display: block;
-      }
-  }
-
-
   .method-table {
     h3 {
       margin: 6px 0;
