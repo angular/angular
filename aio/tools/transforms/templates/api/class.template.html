@@ -15,7 +15,9 @@
     {% include "includes/description.html" %}
     {$ memberHelpers.renderProperties(doc.staticProperties, 'static-properties', 'static-property', 'Static Properties') $}
     {$ memberHelpers.renderMethodDetails(doc.staticMethods, 'static-methods', 'static-method', 'Static Methods') $}
-    {% if doc.constructorDoc %}{$ memberHelpers.renderMethodDetail(doc.constructorDoc, 'constructor') $}{% endif %}
+    {% if doc.constructorDoc %}
+    <h2>Constructor</h2>
+    {$ memberHelpers.renderMethodDetail(doc.constructorDoc, 'constructor') $}{% endif %}
 
     {$ memberHelpers.renderProperties(doc.properties, 'instance-properties', 'instance-property', 'Properties') $}
 
