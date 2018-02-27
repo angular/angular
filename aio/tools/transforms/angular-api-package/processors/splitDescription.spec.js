@@ -2,7 +2,7 @@ const testPackage = require('../../helpers/test-package');
 const processorFactory = require('./splitDescription');
 const Dgeni = require('dgeni');
 
-describe('splitDescription processor', () => {
+fdescribe('splitDescription processor', () => {
 
   it('should be available on the injector', () => {
     const dgeni = new Dgeni([testPackage('angular-api-package')]);
@@ -33,6 +33,7 @@ describe('splitDescription processor', () => {
       { docType: 'test', description: 'abc\ncde' },
       { docType: 'test', description: 'abc\ncde\n' },
       { docType: 'test', description: 'abc\n\ncde' },
+      { docType: 'test', description: 'abc\n  \ncde' },
       { docType: 'test', description: 'abc\n\n\ncde' },
       { docType: 'test', description: 'abc\n\ncde\nfgh' },
       { docType: 'test', description: 'abc\n\ncde\n\nfgh' },
@@ -46,6 +47,7 @@ describe('splitDescription processor', () => {
       { docType: 'test', shortDescription: 'abc', description: '' },
       { docType: 'test', shortDescription: 'abc\ncde', description: '' },
       { docType: 'test', shortDescription: 'abc\ncde', description: '' },
+      { docType: 'test', shortDescription: 'abc', description: 'cde' },
       { docType: 'test', shortDescription: 'abc', description: 'cde' },
       { docType: 'test', shortDescription: 'abc', description: 'cde' },
       { docType: 'test', shortDescription: 'abc', description: 'cde\nfgh' },

@@ -12,7 +12,7 @@ module.exports = function splitDescription() {
       docs.forEach(doc => {
         if (this.docTypes.indexOf(doc.docType) !== -1 && doc.description !== undefined) {
           const description = doc.description.trim();
-          const endOfParagraph = description.indexOf('\n\n');
+          const endOfParagraph = description.search(/\n\s*\n/);
           if (endOfParagraph === -1) {
             doc.shortDescription = description;
             doc.description = '';
