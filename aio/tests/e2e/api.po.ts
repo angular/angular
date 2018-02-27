@@ -31,4 +31,8 @@ export class ApiPage extends SitePage {
   getOverview(docType) {
     return element(by.css(`.${docType}-overview`));
   }
+
+  getSection(cls) {
+    return element(by.css(`section.${cls}`));
+  }
 }
