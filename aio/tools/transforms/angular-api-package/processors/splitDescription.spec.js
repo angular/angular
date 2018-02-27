@@ -2,7 +2,7 @@ const testPackage = require('../../helpers/test-package');
 const processorFactory = require('./splitDescription');
 const Dgeni = require('dgeni');
 
-fdescribe('splitDescription processor', () => {
+describe('splitDescription processor', () => {
 
   it('should be available on the injector', () => {
     const dgeni = new Dgeni([testPackage('angular-api-package')]);
