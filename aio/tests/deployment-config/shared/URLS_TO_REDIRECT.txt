@@ -1,3 +1,5 @@
+/api/animate/AnimationBuilder	/api/animations/AnimationBuilder
+/api/animate/CssAnimationBuilder	/api/animations/CssAnimationBuilder
 /api/api/core/ElementRef	/api/core/ElementRef
 /api/common/Control-class	/api/forms/FormControl
 /api/common/CORE_DIRECTIVES	/api/common/CommonModule
