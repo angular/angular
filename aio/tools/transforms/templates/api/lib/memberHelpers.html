@@ -106,36 +106,40 @@
 {% endmacro -%}
 
 {%- macro renderMethodDetails(methods, containerClass, itemClass, headingText) -%}
-{% if methods.length %}
+{% set nonInternalMethods = methods | filterByPropertyValue('internal', undefined) %}
+{% if nonInternalMethods.length %}
 <section class="{$ containerClass $}">
   <h2>{$ headingText $}</h2>
-  {% for member in methods %}{% if not member.internal %}
+  {% for member in nonInternalMethods %}
     {$ renderMethodDetail(member, itemClass) $}
-  {% endif %}{% endfor %}
+  {% endfor %}
 </section>
 {% endif %}
 {%- endmacro -%}
 
 
 {%- macro renderProperties(properties, containerClass, propertyClass, headingText) -%}
-{%- if properties.length -%}
-<h2>{$ headingText $}</h2>
-<table class="is-full-width list-table properties-table">
-  <thead>
-    <tr><th>Property</th><th>Type</th><th>Description</th></tr>
-  </thead>
-  <tbody>
-  {% for property in properties %}{% if not property.internal %}
-    <tr class="{$ propertyClass $}">
-      <td><a id="{$ property.anchor $}"></a>{$ property.name $}</td>
-      <td><label class="property-type-label"><code>{$ property.type | escape $}</code></label></td>
-      <td>
-        {$ (property.description or property.constructorParamDoc.description) | marked $}
-        {% if property.constructorParamDoc %} <span class='from-constructor'>Declared in constructor.</span>{% endif %}
-      </td>
-  </tr>
-  {% endif %}{% endfor %}
-  </tbody>
-</table>
+{% set nonInternalProperties = properties | filterByPropertyValue('internal', undefined) %}
+{% if nonInternalProperties.length -%}
+<section class="{$ containerClass $}">
+  <h2>{$ headingText $}</h2>
+  <table class="is-full-width list-table properties-table">
+    <thead>
+      <tr><th>Property</th><th>Type</th><th>Description</th></tr>
+    </thead>
+    <tbody>
+    {% for property in nonInternalProperties %}
+      <tr class="{$ propertyClass $}">
+        <td><a id="{$ property.anchor $}"></a>{$ property.name $}</td>
+        <td><label class="property-type-label"><code>{$ property.type | escape $}</code></label></td>
+        <td>
+          {$ (property.description or property.constructorParamDoc.description) | marked $}
+          {% if property.constructorParamDoc %} <span class='from-constructor'>Declared in constructor.</span>{% endif %}
+        </td>
+    </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</section>
 {%- endif -%}
 {%- endmacro -%}
