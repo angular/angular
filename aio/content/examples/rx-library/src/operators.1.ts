@@ -1,12 +1,10 @@
-import { Observable } from 'rxjs/Observable';
-import 'rxjs/add/observable/of';
+import { of, pipe } from 'rxjs';
 
 // #docregion
 
-import { pipe } from 'rxjs/util/pipe';
 import { filter, map } from 'rxjs/operators';
 
-const nums = Observable.of(1, 2, 3, 4, 5);
+const nums = of(1, 2, 3, 4, 5);
 
 // Create a function that accepts an Observable.
 const squareOddVals = pipe(

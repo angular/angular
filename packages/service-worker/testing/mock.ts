@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Subject} from 'rxjs/Subject';
+import {Subject} from 'rxjs';
 
 export class MockServiceWorkerContainer {
   private onControllerChange: Function[] = [];

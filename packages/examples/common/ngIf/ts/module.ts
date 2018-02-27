@@ -8,7 +8,7 @@
 
 import {Component, NgModule, OnInit, TemplateRef, ViewChild} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
-import {Subject} from 'rxjs/Subject';
+import {Subject} from 'rxjs';
 
 
 // #docregion NgIfSimple

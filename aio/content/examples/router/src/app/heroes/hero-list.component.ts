@@ -2,8 +2,8 @@
 // #docregion
 // TODO SOMEDAY: Feature Componetized like CrisisCenter
 // #docregion rxjs-imports
-import 'rxjs/add/operator/switchMap';
-import { Observable } from 'rxjs/Observable';
+import { Observable } from 'rxjs';
+import { switchMap } from 'rxjs/operators';
 // #enddocregion rxjs-imports
 import { Component, OnInit } from '@angular/core';
 // #docregion import-router
@@ -41,12 +41,13 @@ export class HeroListComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.heroes$ = this.route.paramMap
-      .switchMap((params: ParamMap) => {
+    this.heroes$ = this.route.paramMap.pipe(
+      switchMap((params: ParamMap) => {
         // (+) before `params.get()` turns the string into a number
         this.selectedId = +params.get('id');
         return this.service.getHeroes();
-      });
+      })
+    );
   }
   // #enddocregion ctor
 // #docregion ctor

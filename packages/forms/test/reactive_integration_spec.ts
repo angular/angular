@@ -12,9 +12,8 @@ import {AbstractControl, AsyncValidator, AsyncValidatorFn, COMPOSITION_BUFFER_MO
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util';
-import {merge} from 'rxjs/observable/merge';
-import {timer} from 'rxjs/observable/timer';
-import {_do} from 'rxjs/operator/do';
+import {merge, timer} from 'rxjs';
+import {tap} from 'rxjs/operators';
 
 import {MyInput, MyInputForm} from './value_accessor_integration_spec';
 
@@ -2433,7 +2432,7 @@ function uniqLoginAsyncValidator(expectedValue: string, timeout: number = 0) {
 
 function observableValidator(resultArr: number[]): AsyncValidatorFn {
   return (c: AbstractControl) => {
-    return _do.call(timer(100), (resp: any) => resultArr.push(resp));
+    return timer(100).pipe(tap((resp: any) => resultArr.push(resp)));
   };
 }
 

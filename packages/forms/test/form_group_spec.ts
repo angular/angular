@@ -10,7 +10,7 @@ import {EventEmitter} from '@angular/core';
 import {async, fakeAsync, tick} from '@angular/core/testing';
 import {AsyncTestCompleter, beforeEach, describe, inject, it} from '@angular/core/testing/src/testing_internal';
 import {AbstractControl, FormArray, FormControl, FormGroup, ValidationErrors, Validators} from '@angular/forms';
-import {of } from 'rxjs/observable/of';
+import {of } from 'rxjs';
 
 
 (function() {

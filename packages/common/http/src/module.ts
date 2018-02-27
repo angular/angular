@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injectable, Injector, ModuleWithProviders, NgModule, Optional} from '@angular/core';
-import {Observable} from 'rxjs/Observable';
+import {Injectable, Injector, ModuleWithProviders, NgModule} from '@angular/core';
+import {Observable} from 'rxjs';
 
 import {HttpBackend, HttpHandler} from './backend';
 import {HttpClient} from './client';

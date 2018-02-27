@@ -1,8 +1,7 @@
 import { Injectable, OnDestroy } from '@angular/core';
 
-import { Observable } from 'rxjs/Observable';
-import { of }         from 'rxjs/observable/of';
-import { delay }      from 'rxjs/operator/delay';
+import { Observable, of } from 'rxjs';
+import { delay }      from 'rxjs/operators';
 
 export class Customer {
   constructor(public id: number, public name: string) { }
@@ -27,11 +26,11 @@ export class CustomersService implements OnDestroy {
   ngOnDestroy() { console.log('CustomersService instance destroyed.'); }
 
   getCustomers(): Observable<Customer[]>  {
-    return delay.call(of(CUSTOMERS), FETCH_LATENCY);
+    return of(CUSTOMERS).pipe(delay(FETCH_LATENCY));
   }
 
   getCustomer(id: number | string): Observable<Customer> {
     const customer$ = of(CUSTOMERS.find(customer => customer.id === +id));
-    return delay.call(customer$, FETCH_LATENCY);
+    return customer$.pipe(delay(FETCH_LATENCY));
   }
 }

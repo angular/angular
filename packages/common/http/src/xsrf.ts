@@ -8,7 +8,7 @@
 
 import {DOCUMENT, ɵparseCookieValue as parseCookieValue} from '@angular/common';
 import {Inject, Injectable, InjectionToken, PLATFORM_ID} from '@angular/core';
-import {Observable} from 'rxjs/Observable';
+import {Observable} from 'rxjs';
 
 import {HttpHandler} from './backend';
 import {HttpInterceptor} from './interceptor';

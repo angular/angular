@@ -8,13 +8,14 @@
 
 import {LocationStrategy} from '@angular/common';
 import {Attribute, Directive, ElementRef, HostBinding, HostListener, Input, OnChanges, OnDestroy, Renderer2, isDevMode} from '@angular/core';
-import {Subscription} from 'rxjs/Subscription';
+import {Subscription} from 'rxjs';
 
 import {QueryParamsHandling} from '../config';
-import {NavigationEnd} from '../events';
+import {NavigationEnd, RouterEvent} from '../events';
 import {Router} from '../router';
 import {ActivatedRoute} from '../router_state';
 import {UrlTree} from '../url_tree';
+
 
 /**
  * @whatItDoes Lets you link to specific parts of your app.
@@ -184,7 +185,7 @@ export class RouterLinkWithHref implements OnChanges, OnDestroy {
   constructor(
       private router: Router, private route: ActivatedRoute,
       private locationStrategy: LocationStrategy) {
-    this.subscription = router.events.subscribe(s => {
+    this.subscription = router.events.subscribe((s: RouterEvent) => {
       if (s instanceof NavigationEnd) {
         this.updateTargetUrlAndHref();
       }

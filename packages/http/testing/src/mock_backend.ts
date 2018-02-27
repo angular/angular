@@ -8,9 +8,8 @@
 
 import {Injectable} from '@angular/core';
 import {Connection, ConnectionBackend, ReadyState, Request, Response} from '@angular/http';
-import {ReplaySubject} from 'rxjs/ReplaySubject';
-import {Subject} from 'rxjs/Subject';
-import {take} from 'rxjs/operator/take';
+import {ReplaySubject, Subject} from 'rxjs';
+import {take} from 'rxjs/operators';
 
 
 /**
@@ -40,7 +39,7 @@ export class MockConnection implements Connection {
   response: ReplaySubject<Response>;
 
   constructor(req: Request) {
-    this.response = <any>take.call(new ReplaySubject(1), 1);
+    this.response = <any>new ReplaySubject(1).pipe(take(1));
     this.readyState = ReadyState.Open;
     this.request = req;
   }

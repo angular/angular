@@ -7,25 +7,24 @@
  */
 
 import {ChangeDetectorRef, EventEmitter, OnDestroy, Pipe, PipeTransform, WrappedValue, ɵisObservable, ɵisPromise} from '@angular/core';
-import {Observable} from 'rxjs/Observable';
-import {ISubscription} from 'rxjs/Subscription';
+import {Observable, SubscriptionLike} from 'rxjs';
 import {invalidPipeArgumentError} from './invalid_pipe_argument_error';
 
 interface SubscriptionStrategy {
-  createSubscription(async: Observable<any>|Promise<any>, updateLatestValue: any): ISubscription
+  createSubscription(async: Observable<any>|Promise<any>, updateLatestValue: any): SubscriptionLike
       |Promise<any>;
-  dispose(subscription: ISubscription|Promise<any>): void;
-  onDestroy(subscription: ISubscription|Promise<any>): void;
+  dispose(subscription: SubscriptionLike|Promise<any>): void;
+  onDestroy(subscription: SubscriptionLike|Promise<any>): void;
 }
 
 class ObservableStrategy implements SubscriptionStrategy {
-  createSubscription(async: Observable<any>, updateLatestValue: any): ISubscription {
+  createSubscription(async: Observable<any>, updateLatestValue: any): SubscriptionLike {
     return async.subscribe({next: updateLatestValue, error: (e: any) => { throw e; }});
   }
 
-  dispose(subscription: ISubscription): void { subscription.unsubscribe(); }
+  dispose(subscription: SubscriptionLike): void { subscription.unsubscribe(); }
 
-  onDestroy(subscription: ISubscription): void { subscription.unsubscribe(); }
+  onDestroy(subscription: SubscriptionLike): void { subscription.unsubscribe(); }
 }
 
 class PromiseStrategy implements SubscriptionStrategy {
@@ -71,7 +70,7 @@ export class AsyncPipe implements OnDestroy, PipeTransform {
   private _latestValue: any = null;
   private _latestReturnedValue: any = null;
 
-  private _subscription: ISubscription|Promise<any>|null = null;
+  private _subscription: SubscriptionLike|Promise<any>|null = null;
   private _obj: Observable<any>|Promise<any>|EventEmitter<any>|null = null;
   private _strategy: SubscriptionStrategy = null !;
 

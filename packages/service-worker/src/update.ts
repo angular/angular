@@ -7,12 +7,10 @@
  */
 
 import {Injectable} from '@angular/core';
-import {Observable} from 'rxjs/Observable';
-import {defer as obs_defer} from 'rxjs/observable/defer';
-import {never as obs_never} from 'rxjs/observable/never';
-import {map as op_map} from 'rxjs/operator/map';
+import {NEVER, Observable} from 'rxjs';
 
 import {ERR_SW_NOT_SUPPORTED, NgswCommChannel, UpdateActivatedEvent, UpdateAvailableEvent} from './low_level';
+
 
 
 /**
@@ -28,12 +26,12 @@ export class SwUpdate {
 
   constructor(private sw: NgswCommChannel) {
     if (!sw.isEnabled) {
-      this.available = obs_never();
-      this.activated = obs_never();
+      this.available = NEVER;
+      this.activated = NEVER;
       return;
     }
-    this.available = this.sw.eventsOfType('UPDATE_AVAILABLE');
-    this.activated = this.sw.eventsOfType('UPDATE_ACTIVATED');
+    this.available = this.sw.eventsOfType<UpdateAvailableEvent>('UPDATE_AVAILABLE');
+    this.activated = this.sw.eventsOfType<UpdateActivatedEvent>('UPDATE_ACTIVATED');
   }
 
   /**

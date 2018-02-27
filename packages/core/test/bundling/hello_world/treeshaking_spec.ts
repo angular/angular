@@ -18,6 +18,14 @@ const PACKAGE = 'angular/packages/core/test/bundling/hello_world';
 import * as domino from 'domino';
 
 describe('treeshaking with uglify', () => {
+
+  beforeAll(() => {
+    // initialize window so that when rxjs is loaded it is loaded and initialized as if it was
+    // loaded in a browser
+    // even when the test runs in node
+    (global as any).window = domino.createWindow('', 'http://localhost');
+  });
+
   let content: string;
   const contentPath = require.resolve(path.join(PACKAGE, 'bundle.min_debug.js'));
   beforeAll(() => { content = fs.readFileSync(contentPath, UTF8); });

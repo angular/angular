@@ -16,10 +16,9 @@ System.config({
   baseURL: '/all',
 
   map: {
-    'rxjs': '/all/playground/vendor/rxjs',
     'base64-js': '/all/playground/vendor/base64-js',
+    'rxjs': '/all/playground/vendor/rxjs',
   },
-
   packages: {
     '@angular/core': {main: 'index.js', defaultExtension: 'js'},
     '@angular/compiler': {main: 'index.js', defaultExtension: 'js'},
@@ -29,8 +28,12 @@ System.config({
     '@angular/platform-webworker': {main: 'index.js', defaultExtension: 'js'},
     '@angular/platform-webworker-dynamic': {main: 'index.js', defaultExtension: 'js'},
     '@angular/router': {main: 'index.js', defaultExtension: 'js'},
-    'rxjs': {defaultExtension: 'js'},
     'base64-js': {main: 'index.js', defaultExtension: 'js'},
+    'rxjs/ajax': {main: 'index.js', defaultExtension: 'js'},
+    'rxjs/operators': {main: 'index.js', defaultExtension: 'js'},
+    'rxjs/testing': {main: 'index.js', defaultExtension: 'js'},
+    'rxjs/websocket': {main: 'index.js', defaultExtension: 'js'},
+    'rxjs': {main: 'index.js', defaultExtension: 'js'},
   },
 
   defaultJSExtensions: true

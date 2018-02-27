@@ -2,9 +2,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 
-import { Observable } from 'rxjs/Observable';
-import { ErrorObservable } from 'rxjs/observable/ErrorObservable';
-import { of } from 'rxjs/observable/of';
+import { Observable, of, throwError } from 'rxjs';
 import { concat, map, retryWhen, switchMap, take, tap } from 'rxjs/operators';
 
 import { Quote } from './quote';
@@ -35,11 +33,11 @@ export class TwainService {
           }
           // Some other HTTP error.
           console.error(error);
-          return new ErrorObservable('Cannot get Twain quotes from the server');
+          return throwError('Cannot get Twain quotes from the server');
         }),
         take(2),
         // If a second retry value, then didn't find id:1 and triggers the following error
-        concat(new ErrorObservable('There are no Twain quotes')) // didn't find id:1
+        concat(throwError('There are no Twain quotes')) // didn't find id:1
       ))
     );
   }

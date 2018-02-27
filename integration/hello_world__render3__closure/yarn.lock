@@ -868,9 +868,9 @@ globby@^5.0.0:
     pify "^2.0.0"
     pinkie-promise "^2.0.0"
 
-google-closure-compiler@20180101.0.0:
-  version "20180101.0.0"
-  resolved "https://registry.yarnpkg.com/google-closure-compiler/-/google-closure-compiler-20180101.0.0.tgz#d1d817dc60e008be94b61be7073aa63e92978e64"
+google-closure-compiler@20171023.0.1:
+  version "20171023.0.1"
+  resolved "https://registry.yarnpkg.com/google-closure-compiler/-/google-closure-compiler-20171023.0.1.tgz#8d0df115e7481902dac3019e55010b6004d29eb5"
   dependencies:
     chalk "^1.0.0"
     vinyl "^2.0.1"

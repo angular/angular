@@ -6,8 +6,7 @@ import { HttpClient } from '@angular/common/http';
 import { HttpErrorResponse, HttpResponse } from '@angular/common/http';
 
 // #docregion rxjs-imports
-import { Observable } from 'rxjs/Observable';
-import { ErrorObservable } from 'rxjs/observable/ErrorObservable';
+import { Observable, throwError } from 'rxjs';
 import { catchError, retry } from 'rxjs/operators';
 // #enddocregion rxjs-imports
 
@@ -82,8 +81,8 @@ export class ConfigService {
         `Backend returned code ${error.status}, ` +
         `body was: ${error.error}`);
     }
-    // return an ErrorObservable with a user-facing error message
-    return new ErrorObservable(
+    // return an observable with a user-facing error message
+    return throwError(
       'Something bad happened; please try again later.');
   };
   // #enddocregion handleError

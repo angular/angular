@@ -7,8 +7,7 @@
  */
 
 import {Injectable} from '@angular/core';
-import {Observable} from 'rxjs/Observable';
-import {Observer} from 'rxjs/Observer';
+import {Observable, Observer} from 'rxjs';
 
 import {ResponseOptions} from '../base_response_options';
 import {ReadyState, RequestMethod, ResponseType} from '../enums';

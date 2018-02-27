@@ -8,8 +8,7 @@
 
 import {NgModuleRef} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
-import {Observable} from 'rxjs/Observable';
-import {of } from 'rxjs/observable/of';
+import {Observable, of } from 'rxjs';
 
 import {applyRedirects} from '../src/apply_redirects';
 import {LoadedRouterConfig, Routes} from '../src/config';

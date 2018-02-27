@@ -1,6 +1,6 @@
 // #docregion
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { Subscription } from 'rxjs/Subscription';
+import { Subscription } from 'rxjs';
 
 import { LoggerService } from '../logger.service';
 import { SpinnerState, SpinnerService } from './spinner.service';

@@ -14,7 +14,7 @@ import {Request} from '@angular/http/src/static_request';
 import {Response} from '@angular/http/src/static_response';
 import {MockBackend, MockConnection} from '@angular/http/testing/src/mock_backend';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
-import {ReplaySubject} from 'rxjs/ReplaySubject';
+import {ReplaySubject} from 'rxjs';
 
 {
   describe('MockBackend', () => {

@@ -10,12 +10,8 @@ const resolve = require('rollup-plugin-node-resolve');
 const sourcemaps = require('rollup-plugin-sourcemaps');
 
 const globals = {
-  'rxjs/Observable': 'Rx',
-  'rxjs/Subject': 'Rx',
-  'rxjs/Observer': 'Rx',
-  'rxjs/Subscription': 'Rx',
-  'rxjs/observable/merge': 'Rx.Observable',
-  'rxjs/operator/share': 'Rx.Observable.prototype'
+  'rxjs': 'rxjs',
+  'rxjs/operators': 'rxjs.operators'
 };
 
 module.exports = {

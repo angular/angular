@@ -7,9 +7,8 @@
  */
 
 import {Type} from '@angular/core';
-import {BehaviorSubject} from 'rxjs/BehaviorSubject';
-import {Observable} from 'rxjs/Observable';
-import {map} from 'rxjs/operator/map';
+import {BehaviorSubject, Observable} from 'rxjs';
+import {map} from 'rxjs/operators';
 
 import {Data, ResolveData, Route} from './config';
 import {PRIMARY_OUTLET, ParamMap, Params, convertToParamMap} from './shared';
@@ -157,7 +156,7 @@ export class ActivatedRoute {
 
   get paramMap(): Observable<ParamMap> {
     if (!this._paramMap) {
-      this._paramMap = map.call(this.params, (p: Params): ParamMap => convertToParamMap(p));
+      this._paramMap = this.params.pipe(map((p: Params): ParamMap => convertToParamMap(p)));
     }
     return this._paramMap;
   }
@@ -165,7 +164,7 @@ export class ActivatedRoute {
   get queryParamMap(): Observable<ParamMap> {
     if (!this._queryParamMap) {
       this._queryParamMap =
-          map.call(this.queryParams, (p: Params): ParamMap => convertToParamMap(p));
+          this.queryParams.pipe(map((p: Params): ParamMap => convertToParamMap(p)));
     }
     return this._queryParamMap;
   }

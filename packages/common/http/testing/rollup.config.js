@@ -14,12 +14,8 @@ const globals = {
   '@angular/platform-browser': 'ng.platformBrowser',
   '@angular/common': 'ng.common',
   '@angular/common/http': 'ng.common.http',
-  'rxjs/Observable': 'Rx',
-  'rxjs/Observer': 'Rx',
-  'rxjs/ReplaySubject': 'Rx',
-  'rxjs/Subject': 'Rx',
-
-  'rxjs/operator/startWith': 'Rx.Observable.prototype',
+  'rxjs': 'rxjs',
+  'rxjs/operators': 'rxjs.operators',
 };
 
 module.exports = {

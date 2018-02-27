@@ -13,8 +13,7 @@ const globals = {
   '@angular/core': 'ng.core',
   '@angular/core/testing': 'ng.core.testing',
   '@angular/compiler': 'ng.compiler',
-  'rxjs/Observable': 'Rx',
-  'rxjs/Subject': 'Rx'
+  'rxjs': 'rxjs',
 };
 
 module.exports = {

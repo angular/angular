@@ -8,7 +8,7 @@
 
 // We are temporarily importing the existing viewEngine_from core so we can be sure we are
 // correctly implementing its interfaces for backwards compatibility.
-import {Observable} from 'rxjs/Observable';
+import {Observable} from 'rxjs';
 
 import {EventEmitter} from '../event_emitter';
 import {QueryList as viewEngine_QueryList} from '../linker/query_list';

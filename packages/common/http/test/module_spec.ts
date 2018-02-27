@@ -6,11 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import 'rxjs/add/operator/map';
-
 import {Injectable, Injector} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
-import {Observable} from 'rxjs/Observable';
+import {Observable} from 'rxjs';
+import {map} from 'rxjs/operators';
 
 import {HttpHandler} from '../src/backend';
 import {HttpClient} from '../src/client';
@@ -28,14 +27,14 @@ class TestInterceptor implements HttpInterceptor {
     const existing = req.headers.get('Intercepted');
     const next = !!existing ? existing + ',' + this.value : this.value;
     req = req.clone({setHeaders: {'Intercepted': next}});
-    return delegate.handle(req).map(event => {
+    return delegate.handle(req).pipe(map(event => {
       if (event instanceof HttpResponse) {
         const existing = event.headers.get('Intercepted');
         const next = !!existing ? existing + ',' + this.value : this.value;
         return event.clone({headers: event.headers.set('Intercepted', next)});
       }
       return event;
-    });
+    }));
   }
 }
 

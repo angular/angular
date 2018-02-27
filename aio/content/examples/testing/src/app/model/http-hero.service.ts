@@ -6,9 +6,9 @@ import { Http, Response } from '@angular/http';
 import { Headers, RequestOptions } from '@angular/http';
 import { Hero }           from './hero';
 
-import { Observable } from 'rxjs/Observable';
-import { ErrorObservable } from 'rxjs/observable/ErrorObservable';
-import { catchError, map, tap } from 'rxjs/operators';
+import { Observable } from 'rxjs';
+import { throwError } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
 
 @Injectable()
 export class HttpHeroService {
@@ -64,6 +64,6 @@ export class HttpHeroService {
     // In a real world app, we might send the error to remote logging infrastructure
     let errMsg = error.message || 'Server error';
     console.error(errMsg); // log to console instead
-    return new ErrorObservable(errMsg);
+    return throwError(errMsg);
   }
 }

@@ -9,13 +9,13 @@
 import {APP_BASE_HREF, HashLocationStrategy, LOCATION_INITIALIZED, Location, LocationStrategy, PathLocationStrategy, PlatformLocation} from '@angular/common';
 import {ANALYZE_FOR_ENTRY_COMPONENTS, APP_BOOTSTRAP_LISTENER, APP_INITIALIZER, ApplicationRef, Compiler, ComponentRef, Inject, Injectable, InjectionToken, Injector, ModuleWithProviders, NgModule, NgModuleFactoryLoader, NgProbeToken, Optional, Provider, SkipSelf, SystemJsNgModuleLoader} from '@angular/core';
 import {ɵgetDOM as getDOM} from '@angular/platform-browser';
-import {Subject} from 'rxjs/Subject';
-import {of } from 'rxjs/observable/of';
+import {Subject, of } from 'rxjs';
 
 import {Route, Routes} from './config';
 import {RouterLink, RouterLinkWithHref} from './directives/router_link';
 import {RouterLinkActive} from './directives/router_link_active';
 import {RouterOutlet} from './directives/router_outlet';
+import {RouterEvent} from './events';
 import {RouteReuseStrategy} from './route_reuse_strategy';
 import {ErrorHandler, Router} from './router';
 import {ROUTES} from './router_config_loader';
@@ -25,6 +25,7 @@ import {ActivatedRoute} from './router_state';
 import {UrlHandlingStrategy} from './url_handling_strategy';
 import {DefaultUrlSerializer, UrlSerializer} from './url_tree';
 import {flatten} from './utils/collection';
+
 
 
 /**
@@ -312,7 +313,7 @@ export function setupRouter(
 
   if (opts.enableTracing) {
     const dom = getDOM();
-    router.events.subscribe(e => {
+    router.events.subscribe((e: RouterEvent) => {
       dom.logGroup(`Router Event: ${(<any>e.constructor).name}`);
       dom.log(e.toString());
       dom.log(e);

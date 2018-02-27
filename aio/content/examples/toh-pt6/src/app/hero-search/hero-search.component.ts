@@ -3,9 +3,7 @@
 import { Component, OnInit } from '@angular/core';
 
 // #docregion rxjs-imports
-import { Observable } from 'rxjs/Observable';
-import { Subject }    from 'rxjs/Subject';
-import { of }         from 'rxjs/observable/of';
+import { Observable, Subject } from 'rxjs';
 
 import {
    debounceTime, distinctUntilChanged, switchMap

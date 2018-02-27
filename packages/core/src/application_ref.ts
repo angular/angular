@@ -6,11 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Observable} from 'rxjs/Observable';
-import {Observer} from 'rxjs/Observer';
-import {Subscription} from 'rxjs/Subscription';
-import {merge} from 'rxjs/observable/merge';
-import {share} from 'rxjs/operator/share';
+import {Observable, Observer, Subscription, merge} from 'rxjs';
+import {share} from 'rxjs/operators';
 
 import {ErrorHandler} from '../src/error_handler';
 import {scheduleMicroTask, stringify} from '../src/util';
@@ -445,7 +442,7 @@ export class ApplicationRef {
     });
 
     (this as{isStable: Observable<boolean>}).isStable =
-        merge(isCurrentlyStable, share.call(isStable));
+        merge(isCurrentlyStable, isStable.pipe(share()));
   }
 
   /**

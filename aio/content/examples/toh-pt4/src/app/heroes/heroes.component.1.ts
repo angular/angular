@@ -1,6 +1,6 @@
 import { Hero } from '../hero';
 import { HeroService } from '../hero.service';
-import { Observable } from 'rxjs/Observable';
+import { Observable } from 'rxjs';
 
 class DummyHeroesComponent {
 

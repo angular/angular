@@ -1,6 +1,6 @@
 
-import { fromEvent } from 'rxjs/observable/fromEvent';
-import { ajax } from 'rxjs/observable/dom/ajax';
+import { fromEvent } from 'rxjs';
+import { ajax } from 'rxjs/ajax';
 import { map, filter, debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
 
 const searchBox = document.getElementById('search-box');

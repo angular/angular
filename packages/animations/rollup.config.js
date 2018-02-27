@@ -12,8 +12,7 @@ const sourcemaps = require('rollup-plugin-sourcemaps');
 const globals = {
   '@angular/core': 'ng.core',
   '@angular/animations': 'ng.animations',
-  'rxjs/Observable': 'Rx',
-  'rxjs/Subject': 'Rx',
+  'rxjs': 'rxjs',
 };
 
 module.exports = {

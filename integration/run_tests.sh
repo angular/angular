@@ -2,7 +2,9 @@
 
 set -e -o pipefail
 
-cd `dirname $0`
+currentDir=$(cd $(dirname $0); pwd)
+cd ${currentDir}
+
 
 readonly thisDir=$(cd $(dirname $0); pwd)
 

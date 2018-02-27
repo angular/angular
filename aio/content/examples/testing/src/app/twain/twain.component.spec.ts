@@ -3,10 +3,8 @@ import { async, fakeAsync, ComponentFixture, TestBed, tick } from '@angular/core
 
 import { asyncData, asyncError }  from '../../testing';
 
-import { Observable } from 'rxjs/Observable';
-import { of } from 'rxjs/observable/of';
+import { of, throwError } from 'rxjs';
 
-import { ErrorObservable } from 'rxjs/observable/ErrorObservable';
 import { last } from 'rxjs/operators';
 
 import { TwainService }   from './twain.service';
@@ -75,7 +73,7 @@ describe('TwainComponent', () => {
     it('should display error when TwainService fails', fakeAsync(() => {
       // tell spy to return an error observable
       getQuoteSpy.and.returnValue(
-        new ErrorObservable('TwainService test failure'));
+        throwError('TwainService test failure'));
 
       fixture.detectChanges(); // onInit()
       // sync spy errors immediately after init

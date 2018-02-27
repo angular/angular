@@ -9,11 +9,6 @@ export default {
   treeshake: true,
   moduleName: 'lazy',
   plugins: [
-    commonjs({
-      include: 'node_modules/**'
-    }),
-    nodeResolve({
-      jsnext: true, main: true, module: true
-    })
+    nodeResolve()
   ]
 };

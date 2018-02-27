@@ -6,11 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Observable} from 'rxjs/Observable';
-import {take} from 'rxjs/operator/take';
-import {toPromise} from 'rxjs/operator/toPromise';
+import {Observable} from 'rxjs';
+import {take} from 'rxjs/operators';
 
-import {NgswCommChannel, UpdateAvailableEvent} from '../src/low_level';
+import {NgswCommChannel} from '../src/low_level';
 import {SwPush} from '../src/push';
 import {SwUpdate} from '../src/update';
 import {MockServiceWorkerContainer, MockServiceWorkerRegistration} from '../testing/mock';
@@ -28,8 +27,7 @@ const dist = new MockFileSystemBuilder().addFile('/only.txt', 'this is only').bu
 const distUpdate = new MockFileSystemBuilder().addFile('/only.txt', 'this is only v2').build();
 
 function obsToSinglePromise<T>(obs: Observable<T>): Promise<T> {
-  const takeOne = take.call(obs, 1);
-  return toPromise.call(takeOne);
+  return obs.pipe(take(1)).toPromise();
 }
 
 const manifest: Manifest = {

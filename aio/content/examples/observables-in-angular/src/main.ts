@@ -1,6 +1,6 @@
 
 import { Component, Output, OnInit, EventEmitter, NgModule } from '@angular/core';
-import { Observable } from 'rxjs/Observable';
+import { Observable } from 'rxjs';
 
 // #docregion eventemitter
 

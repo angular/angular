@@ -6,10 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import 'rxjs/add/operator/toArray';
-import 'rxjs/add/operator/toPromise';
-
 import {ddescribe, describe, iit, it} from '@angular/core/testing/src/testing_internal';
+import {toArray} from 'rxjs/operators';
 
 import {HttpClient} from '../src/client';
 import {HttpErrorResponse, HttpEventType, HttpResponse} from '../src/response';
@@ -77,7 +75,7 @@ import {HttpClientTestingBackend} from '../testing/src/backend';
         backend.expectOne('/test').flush(body);
       });
       it('that returns a stream of events', (done: DoneFn) => {
-        client.get('/test', {observe: 'events'}).toArray().toPromise().then(events => {
+        client.get('/test', {observe: 'events'}).pipe(toArray()).toPromise().then(events => {
           expect(events.length).toBe(2);
           let x = HttpResponse;
           expect(events[0].type).toBe(HttpEventType.Sent);

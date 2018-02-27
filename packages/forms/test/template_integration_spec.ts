@@ -6,13 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, Directive, Type, ViewChild, forwardRef} from '@angular/core';
+import {Component, Directive, Type, forwardRef} from '@angular/core';
 import {ComponentFixture, TestBed, async, fakeAsync, tick} from '@angular/core/testing';
 import {AbstractControl, AsyncValidator, COMPOSITION_BUFFER_MODE, FormControl, FormsModule, NG_ASYNC_VALIDATORS, NgForm, NgModel} from '@angular/forms';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util';
-import {merge} from 'rxjs/observable/merge';
+import {merge} from 'rxjs';
 
 import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integration_spec';
 

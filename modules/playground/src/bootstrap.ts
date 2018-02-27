@@ -47,7 +47,12 @@
         },
         packages: {
           'app': {defaultExtension: 'js'},
-          'rxjs': {defaultExtension: 'js'},
+          'rxjs/ajax': {main: 'index.js', defaultExtension: 'js'},
+          'rxjs/operators': {main: 'index.js', defaultExtension: 'js'},
+          'rxjs/testing': {main: 'index.js', defaultExtension: 'js'},
+          'rxjs/websocket': {main: 'index.js', defaultExtension: 'js'},
+          'rxjs': {main: 'index.js', defaultExtension: 'js'},
+
         }
       });
     } else {
@@ -58,7 +63,7 @@
         map: {
           'index': 'index.js',
           '@angular': '/all/@angular',
-          'rxjs': '/all/playground/vendor/rxjs'
+          'rxjs': '/all/playground/vendor/rxjs',
         },
         packages: {
           'app': {defaultExtension: 'js'},
@@ -74,7 +79,11 @@
           '@angular/platform-webworker-dynamic': {main: 'index.js', defaultExtension: 'js'},
           '@angular/router': {main: 'index.js', defaultExtension: 'js'},
           '@angular/upgrade': {main: 'index.js', defaultExtension: 'js'},
-          'rxjs': {defaultExtension: 'js'}
+          'rxjs/ajax': {main: 'index.js', defaultExtension: 'js'},
+          'rxjs/operators': {main: 'index.js', defaultExtension: 'js'},
+          'rxjs/testing': {main: 'index.js', defaultExtension: 'js'},
+          'rxjs/websocket': {main: 'index.js', defaultExtension: 'js'},
+          'rxjs': {main: 'index.js', defaultExtension: 'js'},
         }
       });
     }

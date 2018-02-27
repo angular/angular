@@ -60,6 +60,8 @@ export interface EmitterOptions {
 
 function calcPathsOnDisc() {
   const moduleFilename = module.filename.replace(/\\/g, '/');
+  // TODO(i): this is suspicious because it relies on build.sh output
+  //   which is problematic when we are running tests under bazel - review with Chuck
   const distIndex = moduleFilename.indexOf('/dist/all');
   if (distIndex >= 0) {
     rootPath = moduleFilename.substr(0, distIndex);

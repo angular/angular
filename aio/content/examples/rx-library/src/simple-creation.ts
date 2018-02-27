@@ -1,7 +1,7 @@
 
 // #docregion promise
 
-import { fromPromise } from 'rxjs/observable/fromPromise';
+import { fromPromise } from 'rxjs';
 
 // Create an Observable out of a promise
 const data = fromPromise(fetch('/api/endpoint'));
@@ -16,7 +16,7 @@ data.subscribe({
 
 // #docregion interval
 
-import { interval } from 'rxjs/observable/interval';
+import { interval } from 'rxjs';
 
 // Create an Observable that will publish a value on an interval
 const secondsCounter = interval(1000);
@@ -29,7 +29,7 @@ secondsCounter.subscribe(n =>
 
 // #docregion event
 
-import { fromEvent } from 'rxjs/observable/fromEvent';
+import { fromEvent } from 'rxjs';
 
 const el = document.getElementById('my-element');
 
@@ -53,7 +53,7 @@ const subscription = mouseMoves.subscribe((evt: MouseEvent) => {
 
 // #docregion ajax
 
-import { ajax } from 'rxjs/observable/dom/ajax';
+import { ajax } from 'rxjs/ajax';
 
 // Create an Observable that will create an AJAX request
 const apiData = ajax('/api/data');

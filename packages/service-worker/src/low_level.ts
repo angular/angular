@@ -7,23 +7,9 @@
  */
 
 import {isPlatformBrowser} from '@angular/common';
-import {Inject, Injectable, PLATFORM_ID} from '@angular/core';
-import {BehaviorSubject} from 'rxjs/BehaviorSubject';
-import {Observable} from 'rxjs/Observable';
-import {ConnectableObservable} from 'rxjs/observable/ConnectableObservable';
-import {concat as obs_concat} from 'rxjs/observable/concat';
-import {defer as obs_defer} from 'rxjs/observable/defer';
-import {fromEvent as obs_fromEvent} from 'rxjs/observable/fromEvent';
-import {of as obs_of} from 'rxjs/observable/of';
-import {_throw as obs_throw} from 'rxjs/observable/throw';
-import {_do as op_do} from 'rxjs/operator/do';
-import {filter as op_filter} from 'rxjs/operator/filter';
-import {map as op_map} from 'rxjs/operator/map';
-import {publish as op_publish} from 'rxjs/operator/publish';
-import {startWith as op_startWith} from 'rxjs/operator/startWith';
-import {switchMap as op_switchMap} from 'rxjs/operator/switchMap';
-import {take as op_take} from 'rxjs/operator/take';
-import {toPromise as op_toPromise} from 'rxjs/operator/toPromise';
+import {Inject, PLATFORM_ID} from '@angular/core';
+import {ConnectableObservable, Observable, concat, defer, fromEvent, of , throwError} from 'rxjs';
+import {filter, map, publish, switchMap, take, tap} from 'rxjs/operators';
 
 export const ERR_SW_NOT_SUPPORTED = 'Service workers are disabled or not supported by this browser';
 
@@ -52,9 +38,7 @@ export interface UpdateActivatedEvent {
 
 export type IncomingEvent = UpdateAvailableEvent | UpdateActivatedEvent;
 
-interface TypedEvent {
-  type: string;
-}
+export interface TypedEvent { type: string; }
 
 interface StatusEvent {
   type: 'STATUS';
@@ -65,7 +49,7 @@ interface StatusEvent {
 
 
 function errorObservable(message: string): Observable<any> {
-  return obs_defer(() => obs_throw(new Error(message)));
+  return defer(() => throwError(new Error(message)));
 }
 
 /**
@@ -85,7 +69,7 @@ export class NgswCommChannel {
   /**
    * @internal
    */
-  readonly events: Observable<IncomingEvent>;
+  readonly events: Observable<TypedEvent>;
 
   constructor(
       private serviceWorker: ServiceWorkerContainer|undefined,
@@ -95,28 +79,27 @@ export class NgswCommChannel {
       this.worker = this.events = this.registration = errorObservable(ERR_SW_NOT_SUPPORTED);
     } else {
       const controllerChangeEvents =
-          <Observable<any>>(obs_fromEvent(serviceWorker, 'controllerchange'));
+          <Observable<any>>(fromEvent(serviceWorker, 'controllerchange'));
       const controllerChanges = <Observable<ServiceWorker|null>>(
-          op_map.call(controllerChangeEvents, () => serviceWorker.controller));
+          controllerChangeEvents.pipe(map(() => serviceWorker.controller)));
 
       const currentController =
-          <Observable<ServiceWorker|null>>(obs_defer(() => obs_of(serviceWorker.controller)));
+          <Observable<ServiceWorker|null>>(defer(() => of (serviceWorker.controller)));
 
       const controllerWithChanges =
-          <Observable<ServiceWorker|null>>(obs_concat(currentController, controllerChanges));
+          <Observable<ServiceWorker|null>>(concat(currentController, controllerChanges));
       this.worker = <Observable<ServiceWorker>>(
-          op_filter.call(controllerWithChanges, (c: ServiceWorker) => !!c));
+          controllerWithChanges.pipe(filter((c: ServiceWorker) => !!c)));
 
       this.registration = <Observable<ServiceWorkerRegistration>>(
-          op_switchMap.call(this.worker, () => serviceWorker.getRegistration()));
+          this.worker.pipe(switchMap(() => serviceWorker.getRegistration())));
 
-      const rawEvents = obs_fromEvent(serviceWorker, 'message');
+      const rawEvents = fromEvent(serviceWorker, 'message');
 
-      const rawEventPayload =
-          <Observable<Object>>(op_map.call(rawEvents, (event: MessageEvent) => event.data));
-      const eventsUnconnected = <Observable<IncomingEvent>>(
-          op_filter.call(rawEventPayload, (event: Object) => !!event && !!(event as any)['type']));
-      const events = <ConnectableObservable<IncomingEvent>>(op_publish.call(eventsUnconnected));
+      const rawEventPayload = rawEvents.pipe(map((event: MessageEvent) => event.data));
+      const eventsUnconnected =
+          (rawEventPayload.pipe(filter((event: Object) => !!event && !!(event as any)['type'])));
+      const events = eventsUnconnected.pipe(publish()) as ConnectableObservable<IncomingEvent>;
       this.events = events;
       events.connect();
     }
@@ -126,13 +109,14 @@ export class NgswCommChannel {
    * @internal
    */
   postMessage(action: string, payload: Object): Promise<void> {
-    const worker = op_take.call(this.worker, 1);
-    const sideEffect = op_do.call(worker, (sw: ServiceWorker) => {
-      sw.postMessage({
-          action, ...payload,
-      });
-    });
-    return <Promise<void>>(op_toPromise.call(sideEffect).then(() => undefined));
+    return this.worker
+        .pipe(take(1), tap((sw: ServiceWorker) => {
+                sw.postMessage({
+                    action, ...payload,
+                });
+              }))
+        .toPromise()
+        .then(() => undefined);
   }
 
   /**
@@ -152,33 +136,35 @@ export class NgswCommChannel {
   /**
    * @internal
    */
-  eventsOfType<T>(type: string): Observable<T> {
-    return <Observable<T>>(
-        op_filter.call(this.events, (event: T & TypedEvent) => { return event.type === type; }));
+  // TODO(i): the typings and casts in this method are wonky, we should revisit it and make the
+  // types flow correctly
+  eventsOfType<T extends TypedEvent>(type: string): Observable<T> {
+    return <Observable<T>>this.events.pipe(filter((event) => { return event.type === type; }));
   }
 
   /**
    * @internal
    */
-  nextEventOfType<T>(type: string): Observable<T> {
-    return <Observable<T>>(op_take.call(this.eventsOfType(type), 1));
+  // TODO(i): the typings and casts in this method are wonky, we should revisit it and make the
+  // types flow correctly
+  nextEventOfType<T extends TypedEvent>(type: string): Observable<T> {
+    return <Observable<T>>(this.eventsOfType(type).pipe(take(1)));
   }
 
   /**
    * @internal
    */
   waitForStatus(nonce: number): Promise<void> {
-    const statusEventsWithNonce = <Observable<StatusEvent>>(
-        op_filter.call(this.eventsOfType('STATUS'), (event: StatusEvent) => event.nonce === nonce));
-    const singleStatusEvent = <Observable<StatusEvent>>(op_take.call(statusEventsWithNonce, 1));
-    const mapErrorAndValue =
-        <Observable<void>>(op_map.call(singleStatusEvent, (event: StatusEvent) => {
-          if (event.status) {
-            return undefined;
-          }
-          throw new Error(event.error !);
-        }));
-    return op_toPromise.call(mapErrorAndValue);
+    return this.eventsOfType<StatusEvent>('STATUS')
+        .pipe(
+            filter((event: StatusEvent) => event.nonce === nonce), take(1),
+            map((event: StatusEvent) => {
+              if (event.status) {
+                return undefined;
+              }
+              throw new Error(event.error !);
+            }))
+        .toPromise();
   }
 
   get isEnabled(): boolean { return !!this.serviceWorker; }

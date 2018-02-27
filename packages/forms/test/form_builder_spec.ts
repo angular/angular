@@ -8,7 +8,7 @@
 import {fakeAsync, tick} from '@angular/core/testing';
 import {beforeEach, describe, expect, it} from '@angular/core/testing/src/testing_internal';
 import {FormBuilder} from '@angular/forms';
-import {of } from 'rxjs/observable/of';
+import {of } from 'rxjs';
 
 (function() {
   function syncValidator(_: any /** TODO #9100 */): any /** TODO #9100 */ { return null; }
