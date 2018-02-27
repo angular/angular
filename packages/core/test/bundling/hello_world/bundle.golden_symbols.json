@@ -1,9 +1,24 @@
 [
   {
+    "name": "Action"
+  },
+  {
+    "name": "AnimationFrameAction"
+  },
+  {
+    "name": "AsapAction"
+  },
+  {
+    "name": "AsyncAction"
+  },
+  {
+    "name": "AsyncScheduler"
+  },
+  {
     "name": "CLEAN_PROMISE"
   },
   {
-    "name": "EMPTY$1"
+    "name": "EMPTY$2"
   },
   {
     "name": "EMPTY_RENDERER_TYPE_ID"
@@ -15,31 +30,73 @@
     "name": "INeedToExistEvenThoughtIAmNotNeeded"
   },
   {
+    "name": "Immediate"
+  },
+  {
     "name": "NG_HOST_SYMBOL"
   },
   {
     "name": "NG_PROJECT_AS_ATTR_NAME"
   },
   {
-    "name": "Symbol$1"
+    "name": "Observable"
+  },
+  {
+    "name": "QueueAction"
+  },
+  {
+    "name": "SafeSubscriber"
+  },
+  {
+    "name": "Scheduler"
+  },
+  {
+    "name": "Subscriber"
+  },
+  {
+    "name": "Subscription"
   },
   {
     "name": "UNDEFINED_RENDERER_TYPE_ID"
   },
   {
-    "name": "__global$1"
+    "name": "UnsubscriptionError"
   },
   {
-    "name": "__self$1"
+    "name": "__extends$1"
   },
   {
-    "name": "__window$1"
+    "name": "__extends$10"
+  },
+  {
+    "name": "__extends$11"
+  },
+  {
+    "name": "__extends$12"
+  },
+  {
+    "name": "__extends$13"
+  },
+  {
+    "name": "__extends$14"
+  },
+  {
+    "name": "__extends$17"
+  },
+  {
+    "name": "__extends$18"
+  },
+  {
+    "name": "__extends$19"
+  },
+  {
+    "name": "__extends$2"
+  },
+  {
+    "name": "__extends$20"
   },
   {
     "name": "_renderCompCount"
-  },
-  {
-    "name": "_root"
   },
   {
     "name": "appendChild"
@@ -58,6 +115,9 @@
   },
   {
     "name": "componentRefresh"
+  },
+  {
+    "name": "config"
   },
   {
     "name": "createLNode"
@@ -84,7 +144,13 @@
     "name": "domRendererFactory3"
   },
   {
+    "name": "empty"
+  },
+  {
     "name": "enterView"
+  },
+  {
+    "name": "errorObject"
   },
   {
     "name": "executeHooks"
@@ -96,13 +162,19 @@
     "name": "executeInitHooks"
   },
   {
+    "name": "flattenUnsubscriptionErrors"
+  },
+  {
     "name": "getDirectiveInstance"
   },
   {
     "name": "getOrCreateTView"
   },
   {
-    "name": "getSymbolObservable"
+    "name": "getPromiseCtor"
+  },
+  {
+    "name": "getSymbolIterator$1"
   },
   {
     "name": "hostElement"
@@ -114,6 +186,15 @@
     "name": "invertObject"
   },
   {
+    "name": "isArray"
+  },
+  {
+    "name": "isFunction"
+  },
+  {
+    "name": "isObject"
+  },
+  {
     "name": "isProceduralRenderer"
   },
   {
@@ -121,6 +202,18 @@
   },
   {
     "name": "locateHostElement"
+  },
+  {
+    "name": "nextHandle"
+  },
+  {
+    "name": "noop"
+  },
+  {
+    "name": "observable"
+  },
+  {
+    "name": "pipeFromArray"
   },
   {
     "name": "refreshChildComponents"
@@ -150,6 +243,12 @@
     "name": "rootDirectiveIndices"
   },
   {
+    "name": "runIfPresent"
+  },
+  {
+    "name": "rxSubscriber"
+  },
+  {
     "name": "setHostBindings"
   },
   {
@@ -159,10 +258,19 @@
     "name": "stringify$1"
   },
   {
-    "name": "symbolIteratorPonyfill"
+    "name": "tasksByHandle"
   },
   {
     "name": "text"
+  },
+  {
+    "name": "toSubscriber"
+  },
+  {
+    "name": "tryCatch"
+  },
+  {
+    "name": "tryCatcher"
   },
   {
     "name": "viewAttached"

@@ -13,9 +13,7 @@ const globals = {
   '@angular/core': 'ng.core',
   '@angular/compiler': 'ng.compiler',
   '@angular/platform-browser': 'ng.platformBrowser',
-  'rxjs/Observable': 'Rx',
-  'rxjs/Observer': 'Rx',
-  'rxjs/Subject': 'Rx'
+  'rxjs': 'rxjs'
 };
 
 module.exports = {

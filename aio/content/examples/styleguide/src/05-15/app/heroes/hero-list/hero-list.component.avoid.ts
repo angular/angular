@@ -4,10 +4,8 @@
 import { OnInit } from '@angular/core';
 import { Http, Response } from '@angular/http';
 
-import { Observable } from 'rxjs/Observable';
-import 'rxjs/add/operator/catch';
-import 'rxjs/add/operator/finally';
-import 'rxjs/add/operator/map';
+import { Observable } from 'rxjs';
+import { catchError, finalize, map } from 'rxjs/operators';
 
 import { Hero } from '../shared/hero.model';
 
@@ -18,11 +16,11 @@ export class HeroListComponent implements OnInit {
   constructor(private http: Http) {}
   getHeroes() {
     this.heroes = [];
-    this.http.get(heroesUrl)
-      .map((response: Response) => <Hero[]>response.json().data)
-      .catch(this.catchBadResponse)
-      .finally(() => this.hideSpinner())
-      .subscribe((heroes: Hero[]) => this.heroes = heroes);
+    this.http.get(heroesUrl).pipe(
+      map((response: Response) => <Hero[]>response.json().data),
+      catchError(this.catchBadResponse),
+      finalize(() => this.hideSpinner())
+    ).subscribe((heroes: Hero[]) => this.heroes = heroes);
   }
   ngOnInit() {
     this.getHeroes();

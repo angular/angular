@@ -1,9 +1,7 @@
 
-import { ajax } from 'rxjs/observable/dom/ajax';
-import { range } from 'rxjs/observable/range';
-import { timer } from 'rxjs/observable/timer';
-import { pipe } from 'rxjs/util/pipe';
-import { retryWhen, zip, map, mergeMap } from 'rxjs/operators';
+import { pipe, range, timer, zip } from 'rxjs';
+import { ajax } from 'rxjs/ajax';
+import { retryWhen, map, mergeMap } from 'rxjs/operators';
 
 function backoff(maxTries, ms) {
  return pipe(

@@ -7,9 +7,8 @@
  */
 
 import {ApplicationRef, ComponentFactory, ComponentFactoryResolver, ComponentRef, EventEmitter, Injector, OnChanges, SimpleChange, SimpleChanges, Type} from '@angular/core';
-import {Observable} from 'rxjs/Observable';
-import {merge} from 'rxjs/observable/merge';
-import {map} from 'rxjs/operator/map';
+import {Observable, merge} from 'rxjs';
+import {map} from 'rxjs/operators';
 
 import {NgElementStrategy, NgElementStrategyEvent, NgElementStrategyFactory} from './element-strategy';
 import {extractProjectableNodes} from './extract-projectable-nodes';
@@ -180,7 +179,7 @@ export class ComponentNgElementStrategy implements NgElementStrategy {
   protected initializeOutputs(): void {
     const eventEmitters = this.componentFactory.outputs.map(({propName, templateName}) => {
       const emitter = (this.componentRef !.instance as any)[propName] as EventEmitter<any>;
-      return map.call(emitter, (value: any) => ({name: templateName, value}));
+      return emitter.pipe(map((value: any) => ({name: templateName, value})));
     });
 
     this.events = merge(...eventEmitters);

@@ -7,7 +7,7 @@
  */
 
 import {Directive, Input, OnChanges, SimpleChanges, StaticProvider, forwardRef} from '@angular/core';
-import {Observable} from 'rxjs/Observable';
+import {Observable} from 'rxjs';
 
 import {AbstractControl} from '../model';
 import {NG_VALIDATORS, Validators} from '../validators';

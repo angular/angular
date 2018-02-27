@@ -1,12 +1,10 @@
-import { Observable } from 'rxjs/Observable';
-import 'rxjs/add/observable/of';
+import { Observable, of } from 'rxjs';
 
 // #docregion
 
-import { filter } from 'rxjs/operators/filter';
-import { map } from 'rxjs/operators/map';
+import { filter, map } from 'rxjs/operators';
 
-const squareOdd = Observable.of(1, 2, 3, 4, 5)
+const squareOdd = of(1, 2, 3, 4, 5)
   .pipe(
     filter(n => n % 2),
     map(n => n * n)

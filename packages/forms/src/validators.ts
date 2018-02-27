@@ -7,10 +7,8 @@
  */
 
 import {InjectionToken, ɵisObservable as isObservable, ɵisPromise as isPromise} from '@angular/core';
-import {Observable} from 'rxjs/Observable';
-import {forkJoin} from 'rxjs/observable/forkJoin';
-import {fromPromise} from 'rxjs/observable/fromPromise';
-import {map} from 'rxjs/operator/map';
+import {Observable, forkJoin, from} from 'rxjs';
+import {map} from 'rxjs/operators';
 import {AsyncValidatorFn, ValidationErrors, Validator, ValidatorFn} from './directives/validators';
 import {AbstractControl, FormControl} from './model';
 
@@ -217,7 +215,7 @@ export class Validators {
 
     return function(control: AbstractControl) {
       const observables = _executeAsyncValidators(control, presentValidators).map(toObservable);
-      return map.call(forkJoin(observables), _mergeErrors);
+      return forkJoin(observables).pipe(map(_mergeErrors));
     };
   }
 }
@@ -227,7 +225,7 @@ function isPresent(o: any): boolean {
 }
 
 export function toObservable(r: any): Observable<any> {
-  const obs = isPromise(r) ? fromPromise(r) : r;
+  const obs = isPromise(r) ? from(r) : r;
   if (!(isObservable(obs))) {
     throw new Error(`Expected validator to return Promise or Observable.`);
   }
