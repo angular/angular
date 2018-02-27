@@ -1,21 +1,24 @@
-const { readFileSync } = require('fs');
-const path = require('canonical-path');
-const cjson = require('cjson');
+import { resolve } from 'canonical-path';
+import { load as loadJson } from 'cjson';
+import { readFileSync } from 'fs';
 
-import { FirebaseRedirector, FirebaseRedirectConfig } from '../../tools/firebase-test-utils/FirebaseRedirector';
+import { FirebaseRedirector, FirebaseRedirectConfig } from '../../../tools/firebase-test-utils/FirebaseRedirector';
+
+
+const AIO_DIR = resolve(__dirname, '../../..');
 
 export function getRedirector() {
   return new FirebaseRedirector(loadRedirects());
 }
 
 export function loadRedirects(): FirebaseRedirectConfig[] {
-  const pathToFirebaseJSON = path.resolve(__dirname, '../../firebase.json');
-  const contents = cjson.load(pathToFirebaseJSON);
+  const pathToFirebaseJSON = `${AIO_DIR}/firebase.json`;
+  const contents = loadJson(pathToFirebaseJSON);
   return contents.hosting.redirects;
 }
 
 export function loadSitemapUrls() {
-  const pathToSiteMap = path.resolve(__dirname, '../../src/generated/sitemap.xml');
+  const pathToSiteMap = `${AIO_DIR}/src/generated/sitemap.xml`;
   const xml = readFileSync(pathToSiteMap, 'utf8');
   const urls: string[] = [];
   xml.replace(/<loc>([^<]+)<\/loc>/g, (_, loc) => urls.push(loc.replace('%%DEPLOYMENT_HOST%%', '')));
@@ -23,14 +26,14 @@ export function loadSitemapUrls() {
 }
 
 export function loadLegacyUrls() {
-  const pathToLegacyUrls = path.resolve(__dirname, 'URLS_TO_REDIRECT.txt');
+  const pathToLegacyUrls = `${__dirname}/URLS_TO_REDIRECT.txt`;
   const urls = readFileSync(pathToLegacyUrls, 'utf8').split('\n').map(line => line.split('\t'));
   return urls;
 }
 
 export function loadSWRoutes() {
-  const pathToSWManifest = path.resolve(__dirname, '../../ngsw-manifest.json');
-  const contents = cjson.load(pathToSWManifest);
+  const pathToSWManifest = `${AIO_DIR}/ngsw-manifest.json`;
+  const contents = loadJson(pathToSWManifest);
   const routes = contents.routing.routes;
   return Object.keys(routes).map(route => {
     const routeConfig = routes[route];
