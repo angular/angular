@@ -100,7 +100,7 @@
     "source-map": "0.5.7",
     "source-map-support": "0.4.18",
     "systemjs": "0.18.10",
-    "ts-api-guardian": "0.2.2",
+    "ts-api-guardian": "^0.3.0",
     "tsickle": "0.26.0",
     "tslint": "5.7.0",
     "tslint-eslint-rules": "4.1.1",
