@@ -75,7 +75,10 @@ template. Never generate template source code by concatenating user input and te
 To prevent these vulnerabilities, use
 the [offline template compiler](guide/security#offline-template-compiler), also known as _template injection_.
 
+<!--
 ### Sanitization and security contexts
+-->
+### 코드 안전성 검사와 보안 영역
 
 _Sanitization_ is the inspection of an untrusted value, turning it into a value that's safe to insert into
 the DOM. In many cases, sanitization doesn't change a value at all. Sanitization depends on context:

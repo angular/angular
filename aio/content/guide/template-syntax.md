@@ -1385,12 +1385,15 @@ When setting an element property to a non-string data value, you must use _prope
 -->
 하지만 바인딩되는 프로퍼티의 타입이 문자열이 아니라면 반드시 _프로퍼티 바인딩_ 을 사용해야 합니다.
 
+<!--
 #### Content security
+-->
+#### 코드 안전성 검증
 
 <!--
 Imagine the following *malicious content*.
 -->
-다음 코드를 봅시다. 이 코드는 *악성 코드*입니다.
+`<script>` 태그가 포함된 악성 코드로 프로퍼티 바인딩 하는 경우를 생각해봅시다.
 
 <code-example path="template-syntax/src/app/app.component.ts" region="evil-title" title="src/app/app.component.ts" linenums="false">
 </code-example>
@@ -1401,8 +1404,9 @@ It [*sanitizes*](guide/security#sanitization-and-security-contexts) the values b
 It **will not** allow HTML with script tags to leak into the browser, neither with interpolation
 nor property binding.
 -->
-다행히, 위험한 HTML 코드로 프로퍼티 바인딩을 시도하면 Angular가 감지하고 경고를 표시합니다.
-Angular는 템플릿에 값을 반영하기 전에 값을 [*소독*](guide/security#sanitization-and-security-contexts)합니다.
+다행히, Angular는 템플릿에 값을 반영하기 전에 코드의 안전성을 [*검증*](guide/security#코드-안전성-검사와-보안-영역) 하기 때문에,
+위험한 HTML 코드로 프로퍼티 바인딩을 시도하면 Angular가 감지하고 경고를 표시합니다.
+그래서 `<script>` 태그를 문자열 바인딩이나 프로퍼티 바인딩에 사용해도 `<script>` 태그로 동작하지 않습니다.
 
 <code-example path="template-syntax/src/app/app.component.html" region="property-binding-vs-interpolation-sanitization" title="src/app/app.component.html" linenums="false">
 </code-example>
@@ -1411,7 +1415,7 @@ Angular는 템플릿에 값을 반영하기 전에 값을 [*소독*](guide/secur
 Interpolation handles the script tags differently than property binding but both approaches render the
 content harmlessly.
 -->
-그런데 데이터 바인딩을 사용할 떄는 스크립트 태그를 프로퍼티 바인딩할 때
+문자열 바인딩도 프로퍼티 바인딩과 마찬가지로 코드의 안전성을 검증하지만, `<script>` 태그를 처리하는 방식이 다르기 때문에 템플릿에 표시되는 결과가 약간 다릅니다.
 
 <figure>
   <img src='generated/images/guide/template-syntax/evil-title.png' alt="evil title made safe">
@@ -1421,14 +1425,27 @@ content harmlessly.
 <hr/>
 
 {@a other-bindings}
+{@a 기타-바인딩}
 
+<!--
 ## Attribute, class, and style bindings
+-->
+## 어트리뷰트, 클래스, 스타일 바인딩
 
+<!--
 The template syntax provides specialized one-way bindings for scenarios less well suited to property binding.
+-->
+Angular 템플릿에서는 프로퍼티 바인딩 외에도 다음과 같은 특수한 바인딩을 사용할 수 있습니다.
 
+<!--
 ### Attribute binding
+-->
+### 어트리뷰트 바인딩
 
+<!--
 You can set the value of an attribute directly with an **attribute binding**.
+-->
+**어트리뷰트 바인딩** 을 사용하면 어트리뷰트의 값을 직접 설정할 수 있습니다.
 
 <div class="l-sub-section">
 

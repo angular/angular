@@ -283,9 +283,17 @@ button</button>
 <p>"<span [innerHTML]="title"></span>" is the <i>property bound</i> title.</p>
 <!-- #enddocregion property-binding-vs-interpolation -->
 
-<!-- #docregion property-binding-vs-interpolation-sanitization -->
+<!-- #docregion property-binding-vs-interpolation-sanitization! -->
 <!--
   Angular generates warnings for these two lines as it sanitizes them
+  WARNING: sanitizing HTML stripped some content (see http://g.co/ng/security#xss).
+ -->
+<p><span>"{{evilTitle}}" is the <i>interpolated</i> evil title.</span></p>
+<p>"<span [innerHTML]="evilTitle"></span>" is the <i>property bound</i> evil title.</p>
+<!-- #enddocregion property-binding-vs-interpolation-sanitization! -->
+<!-- #docregion property-binding-vs-interpolation-sanitization -->
+<!--
+  다음 두 줄의 코드는 Angular가 안전성을 검사하면서 경고 메시지를 출력합니다.
   WARNING: sanitizing HTML stripped some content (see http://g.co/ng/security#xss).
  -->
 <p><span>"{{evilTitle}}" is the <i>interpolated</i> evil title.</span></p>
