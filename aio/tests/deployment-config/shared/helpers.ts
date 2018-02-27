@@ -27,8 +27,11 @@ export function loadSitemapUrls() {
 
 export function loadLegacyUrls() {
   const pathToLegacyUrls = `${__dirname}/URLS_TO_REDIRECT.txt`;
-  const urls = readFileSync(pathToLegacyUrls, 'utf8').split('\n').map(line => line.split('\t'));
-  return urls;
+  return readFileSync(pathToLegacyUrls, 'utf8')
+      .split('\n')                               // Split text into lines.
+      .map(line => line.trim())                  // Trim leading/trailing whitespace.
+      .filter(line => line && !/^#/.test(line))  // Remove empty lines and comments.
+      .map(line => line.split('\t'));            // Split lines into URL pairs.
 }
 
 export function loadSWRoutes() {

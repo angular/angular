@@ -1,3 +1,5 @@
+# Note: Empty lines and lines starting with `#` are ignored.
+
 /api/api/core/ElementRef	/api/core/ElementRef
 /api/common/Control-class	/api/forms/FormControl
 /api/common/CORE_DIRECTIVES	/api/common/CommonModule
@@ -180,3 +182,8 @@
 /news.html	https://blog.angular.io/
 /testing	/guide/testing
 /testing/first-app-tests.html	/guide/testing
+
+# These URLs are deliberately put at the end in order to ensure that the ServiceWorker will have
+# been installed. This allows verifying that the SW will indeed let them pass through to the server.
+/api/animate/AnimationBuilder	/api/animations/AnimationBuilder
+/api/animate/CssAnimationBuilder	/api/animations/CssAnimationBuilder
