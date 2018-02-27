@@ -1,4 +1,4 @@
-import { getRedirector, loadLegacyUrls, loadRedirects, loadSitemapUrls } from './helpers';
+import { getRedirector, loadLegacyUrls, loadRedirects, loadSitemapUrls } from '../shared/helpers';
 
 describe('firebase.json redirect config', () => {
   describe('with sitemap urls', () => {
