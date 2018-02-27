@@ -355,6 +355,11 @@ import {normalizeCSS} from '@angular/platform-browser/testing/src/browser_util';
                    (cssRule: CssRule) => new CssRule(cssRule.selector, cssRule.content + '2')))
             .toEqual('a {b2}');
       });
+    });
+
+    describe('whitespace', () => {
+
+      // See issue #20105
 
       it('should collapse whitespace between rules', () => {
         expect(processRules(
@@ -369,6 +374,6 @@ import {normalizeCSS} from '@angular/platform-browser/testing/src/browser_util';
                    (cssRule: CssRule) => new CssRule(cssRule.selector, cssRule.content)))
             .toEqual('a { content: \'    \' } b { a;   c }');
       });
-    });
+    })
   });
 }

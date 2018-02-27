@@ -565,8 +565,10 @@ export class CssRule {
 export function processRules(input: string, ruleCallback: (rule: CssRule) => CssRule): string {
   const inputWithEscapedBlocks = escapeBlocks(input);
   let nextBlockIndex = 0;
-  // NOTE: Collapsing extra whitespace from escaped CSS to avoid catastrophic
-  // backtrack issue in `_ruleRe`. See #20105
+  // NOTE: Collapsing extra whitespace from escaped CSS to avoid a whitespace
+  // backtracking issue in `_ruleRe`.
+  //  See https://github.com/angular/angular/issues/20105#issuecomment-368368216
+  //  See http://stackstatus.net/post/147710624694/outage-postmortem-july-20-2016
   return inputWithEscapedBlocks.escapedString.replace(/\s+/g, ' ')
       .replace(_ruleRe, function(...m: string[]) {
         const selector = m[2];
