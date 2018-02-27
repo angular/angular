@@ -98,9 +98,28 @@ jobs:
             - "node_modules"
             - "~/bazel_repository_cache"
 
+  aio_monitoring:
+    <<: *job_defaults
+    steps:
+      - checkout:
+          <<: *post_checkout
+      - restore_cache:
+          key: *cache_key
+      - run: xvfb-run --auto-servernum ./aio/scripts/test-production.sh
+
 workflows:
   version: 2
   default_workflow:
     jobs:
       - lint
       - build
+  aio_monitoring:
+    jobs:
+      - aio_monitoring
+    triggers:
+      - schedule:
+          cron: "0 0 * * *"
+          filters:
+            branches:
+              only:
+                - master
