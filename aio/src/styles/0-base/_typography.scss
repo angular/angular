@@ -14,16 +14,6 @@ h1 {
   margin: 8px 0px;
 }
 
-h1:after {
-  content: "";
-  display: block;
-  height: 1px;
-  width: 40%;
-  margin: 24px 0px 10px;
-  background: $lightgray;
-  clear: both;
-}
-
 h2 {
   font-size: 22px;
   font-weight: 500;
