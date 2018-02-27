@@ -51,7 +51,7 @@ describe('migrateLegacyJSDocTags processor', () => {
     expect(docs[2].description).toEqual('the description');
   });
 
-  it('should ignore docs that have neither `howToUseIt` nor `whatItDoes` properties', () => {
+  it('should ignore docs that have neither `howToUse` nor `whatItDoes` properties', () => {
     const processor = processorFactory(log, createDocMessage);
     const docs = [
       { },
