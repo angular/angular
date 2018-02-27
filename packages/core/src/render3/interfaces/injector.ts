@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {ChangeDetectorRef} from '../../change_detection/change_detector_ref';
 import {Injector} from '../../di/injector';
 import {ElementRef} from '../../linker/element_ref';
 import {TemplateRef} from '../../linker/template_ref';
@@ -66,6 +67,12 @@ export interface LInjector {
 
   /** Stores the ElementRef so subsequent injections of the ElementRef get the same instance. */
   elementRef: ElementRef|null;
+
+  /**
+   * Stores the ChangeDetectorRef so subsequent injections of the ChangeDetectorRef get the
+   * same instance.
+   */
+  changeDetectorRef: ChangeDetectorRef|null;
 }
 
 // Note: This hack is necessary so we don't erroneously get a circular dependency

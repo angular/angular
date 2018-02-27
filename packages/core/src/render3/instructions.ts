@@ -10,6 +10,7 @@ import './ng_dev_mode';
 
 import {assertEqual, assertLessThan, assertNotEqual, assertNotNull, assertNull, assertSame} from './assert';
 import {LContainer, TContainer} from './interfaces/container';
+import {LInjector} from './interfaces/injector';
 import {CssSelector, LProjection} from './interfaces/projection';
 import {LQueries} from './interfaces/query';
 import {LView, LViewFlags, LifecycleStage, RootContext, TData, TView} from './interfaces/view';
@@ -465,12 +466,21 @@ export function elementStart(
       if (hostComponentDef) {
         // TODO(mhevery): This assumes that the directives come in correct order, which
         // is not guaranteed. Must be refactored to take it into account.
-        directiveCreate(++index, hostComponentDef.n(), hostComponentDef, queryName);
+        const instance = hostComponentDef.n();
+        directiveCreate(++index, instance, hostComponentDef, queryName);
+        initChangeDetectorIfExisting(node.nodeInjector, instance);
       }
       hack_declareDirectives(index, directiveTypes, localRefs);
     }
   }
   return native;
+}
+
+/** Sets the context for a ChangeDetectorRef to the given instance. */
+export function initChangeDetectorIfExisting(injector: LInjector | null, instance: any): void {
+  if (injector && injector.changeDetectorRef != null) {
+    (injector.changeDetectorRef as any)._setComponentContext(instance);
+  }
 }
 
 /**
@@ -590,9 +600,9 @@ export function locateHostElement(
  * @param rNode Render host element.
  * @param def ComponentDef
  */
-export function hostElement(rNode: RElement | null, def: ComponentDef<any>) {
+export function hostElement(rNode: RElement | null, def: ComponentDef<any>): LElementNode {
   resetApplicationState();
-  createLNode(
+  return createLNode(
       0, LNodeFlags.Element, rNode, createLView(
                                         -1, renderer, getOrCreateTView(def.template), null, null,
                                         def.onPush ? LViewFlags.Dirty : LViewFlags.CheckAlways));
