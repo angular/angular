@@ -10,16 +10,14 @@
 // correctly implementing its interfaces for backwards compatibility.
 import {Injector} from '../di/injector';
 import {ComponentRef as viewEngine_ComponentRef} from '../linker/component_factory';
-import {EmbeddedViewRef as viewEngine_EmbeddedViewRef} from '../linker/view_ref';
 
 import {assertNotNull} from './assert';
-import {CLEAN_PROMISE, NG_HOST_SYMBOL, _getComponentHostLElementNode, createError, createLView, createTView, detectChanges, directiveCreate, enterView, getDirectiveInstance, hostElement, leaveView, locateHostElement, scheduleChangeDetection} from './instructions';
+import {CLEAN_PROMISE, _getComponentHostLElementNode, createLView, createTView, detectChanges, directiveCreate, enterView, getDirectiveInstance, hostElement, initChangeDetectorIfExisting, leaveView, locateHostElement, scheduleChangeDetection} from './instructions';
 import {ComponentDef, ComponentType} from './interfaces/definition';
-import {LElementNode} from './interfaces/node';
-import {RElement, Renderer3, RendererFactory3, domRendererFactory3} from './interfaces/renderer';
+import {RElement, RendererFactory3, domRendererFactory3} from './interfaces/renderer';
 import {LViewFlags, RootContext} from './interfaces/view';
-import {notImplemented, stringify} from './util';
-
+import {stringify} from './util';
+import {createViewRef} from './view_ref';
 
 
 /** Options that control how the component should be bootstrapped. */
@@ -69,7 +67,7 @@ export interface CreateComponentOptions {
 export function createComponentRef<T>(
     componentType: ComponentType<T>, opts: CreateComponentOptions): viewEngine_ComponentRef<T> {
   const component = renderComponent(componentType, opts);
-  const hostView = createViewRef(() => detectChanges(component), component);
+  const hostView = createViewRef(component);
   return {
     location: {nativeElement: getHostElement(component)},
     injector: opts.injector || NULL_INJECTOR,
@@ -81,84 +79,6 @@ export function createComponentRef<T>(
     destroy: () => {},
     onDestroy: (cb: Function) => {}
   };
-}
-
-/**
- * Creates an EmbeddedViewRef.
- *
- * @param detectChanges The detectChanges function for this view
- * @param context The context for this view
- * @returns The EmbeddedViewRef
- */
-function createViewRef<T>(detectChanges: () => void, context: T): EmbeddedViewRef<T> {
-  return addDestroyable(new EmbeddedViewRef(detectChanges), context);
-}
-
-class EmbeddedViewRef<T> implements viewEngine_EmbeddedViewRef<T> {
-  // TODO: rootNodes should be replaced when properly implemented
-  rootNodes = null !;
-  context: T;
-  destroyed: boolean;
-
-  constructor(public detectChanges: () => void) {}
-
-  // inherited from core/ChangeDetectorRef
-  markForCheck() {
-    if (ngDevMode) {
-      throw notImplemented();
-    }
-  }
-  detach() {
-    if (ngDevMode) {
-      throw notImplemented();
-    }
-  }
-
-  checkNoChanges() {
-    if (ngDevMode) {
-      throw notImplemented();
-    }
-  }
-
-  reattach() {
-    if (ngDevMode) {
-      throw notImplemented();
-    }
-  }
-
-  destroy(): void {}
-
-  onDestroy(cb: Function): void {}
-}
-
-/** Interface for destroy logic. Implemented by addDestroyable. */
-interface DestroyRef<T> {
-  context: T;
-  /** Whether or not this object has been destroyed */
-  destroyed: boolean;
-  /** Destroy the instance and call all onDestroy callbacks. */
-  destroy(): void;
-  /** Register callbacks that should be called onDestroy */
-  onDestroy(cb: Function): void;
-}
-
-/**
- * Decorates an object with destroy logic (implementing the DestroyRef interface)
- * and returns the enhanced object.
- *
- * @param obj The object to decorate
- * @returns The object with destroy logic
- */
-function addDestroyable<T, C>(obj: any, context: C): T&DestroyRef<C> {
-  let destroyFn: Function[]|null = null;
-  obj.destroyed = false;
-  obj.destroy = function() {
-    destroyFn && destroyFn.forEach((fn) => fn());
-    this.destroyed = true;
-  };
-  obj.onDestroy = (fn: Function) => (destroyFn || (destroyFn = [])).push(fn);
-  obj.context = context;
-  return obj;
 }
 
 
@@ -202,10 +122,12 @@ export function renderComponent<T>(
       null !);
   try {
     // Create element node at index 0 in data array
-    hostElement(hostNode, componentDef);
+    const elementNode = hostElement(hostNode, componentDef);
     // Create directive instance with n() and store at index 1 in data array (el is 0)
+    const instance = componentDef.n();
     component = rootContext.component =
-        getDirectiveInstance(directiveCreate(1, componentDef.n(), componentDef));
+        getDirectiveInstance(directiveCreate(1, instance, componentDef));
+    initChangeDetectorIfExisting(elementNode.nodeInjector, instance);
   } finally {
     leaveView(oldView);
   }
