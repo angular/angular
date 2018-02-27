@@ -13,12 +13,13 @@ import {ComponentRef as viewEngine_ComponentRef} from '../linker/component_facto
 import {EmbeddedViewRef as viewEngine_EmbeddedViewRef} from '../linker/view_ref';
 
 import {assertNotNull} from './assert';
-import {NG_HOST_SYMBOL, _getComponentHostLElementNode, createError, createLView, createTView, detectChanges, directiveCreate, enterView, getCleanPromise, getDirectiveInstance, hostElement, leaveView, locateHostElement, scheduleChangeDetection} from './instructions';
+import {CLEAN_PROMISE, NG_HOST_SYMBOL, _getComponentHostLElementNode, createError, createLView, createTView, detectChanges, directiveCreate, enterView, getDirectiveInstance, hostElement, leaveView, locateHostElement, scheduleChangeDetection} from './instructions';
 import {ComponentDef, ComponentType} from './interfaces/definition';
 import {LElementNode} from './interfaces/node';
 import {RElement, Renderer3, RendererFactory3, domRendererFactory3} from './interfaces/renderer';
 import {LViewFlags, RootContext} from './interfaces/view';
 import {notImplemented, stringify} from './util';
+
 
 
 /** Options that control how the component should be bootstrapped. */
@@ -192,7 +193,7 @@ export function renderComponent<T>(
     // Incomplete initialization due to circular reference.
     component: null !,
     scheduler: opts.scheduler || requestAnimationFrame,
-    clean: getCleanPromise(),
+    clean: CLEAN_PROMISE,
   };
   const oldView = enterView(
       createLView(
@@ -213,23 +214,7 @@ export function renderComponent<T>(
   detectChanges(component);
   return component;
 }
-/**
- * Mark the component as dirty (needing change detection).
- *
- * Marking a component dirty will schedule a change detection on this
- * component at some point in the future. Marking an already dirty
- * component as dirty is a noop. Only one outstanding change detection
- * can be scheduled per component tree. (Two components bootstrapped with
- * separate `renderComponent` will have separate schedulers)
- *
- * When the root component is bootstrapped with `renderComponent` a scheduler
- * can be provided.
- *
- * @param component Component to mark as dirty.
- */
-export function markDirty<T>(component: T) {
-  scheduleChangeDetection(getRootContext(component));
-}
+
 
 /**
  * Retrieve the root component of any component by walking the parent `LView` until

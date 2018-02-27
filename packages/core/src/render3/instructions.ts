@@ -22,7 +22,6 @@ import {ComponentDef, ComponentTemplate, ComponentType, DirectiveDef, DirectiveT
 import {RElement, RText, Renderer3, RendererFactory3, ProceduralRenderer3, RendererStyleFlags3, isProceduralRenderer} from './interfaces/renderer';
 import {isDifferent, stringify} from './util';
 import {executeHooks, executeContentHooks, queueLifecycleHooks, queueInitHooks, executeInitHooks} from './hooks';
-import {wrapListenerWithDirtyLogic, markOnPushDirty} from './change_detection';
 
 /**
  * Directive (D) sets a property on all component instances using this constant as a key and the
@@ -35,7 +34,7 @@ export const NG_HOST_SYMBOL = '__ngHostLNode__';
  * A permanent marker promise which signifies that the current CD tree is
  * clean.
  */
-const CLEAN_PROMISE = Promise.resolve(null);
+const _CLEAN_PROMISE = Promise.resolve(null);
 
 
 /**
@@ -614,8 +613,7 @@ export function listener(eventName: string, listener: EventListener, useCapture 
   ngDevMode && assertPreviousIsParent();
   const node = previousOrParentNode;
   const native = node.native as RElement;
-  const wrappedListener =
-      wrapListenerWithDirtyLogic(currentView, listener, scheduleChangeDetection);
+  const wrappedListener = wrapListenerWithDirtyLogic(currentView, listener);
 
   // In order to match current behavior, native DOM event listeners must be added for all
   // events (including outputs).
@@ -718,7 +716,7 @@ export function elementProperty<T>(index: number, propName: string, value: T | N
   let dataValue: PropertyAliasValue|undefined;
   if (inputData && (dataValue = inputData[propName])) {
     setInputsForProperty(dataValue, value);
-    markOnPushDirty(node);
+    markDirtyIfOnPush(node);
   } else {
     const native = node.native;
     isProceduralRenderer(renderer) ? renderer.setProperty(native, propName, value) :
@@ -1410,15 +1408,53 @@ export function addToViewTree<T extends LView|LContainer>(state: T): T {
   return state;
 }
 
+///////////////////////////////
+//// Change detection
+///////////////////////////////
+
+/** If node is an OnPush component, marks its LView dirty. */
+export function markDirtyIfOnPush(node: LElementNode): void {
+  // Because data flows down the component tree, ancestors do not need to be marked dirty
+  if (node.data && !(node.data.flags & LViewFlags.CheckAlways)) {
+    node.data.flags |= LViewFlags.Dirty;
+  }
+}
+
+/**
+ * Wraps an event listener so its host view and its ancestor views will be marked dirty
+ * whenever the event fires. Necessary to support OnPush components.
+ */
+export function wrapListenerWithDirtyLogic(view: LView, listener: EventListener): EventListener {
+  return function(e: Event) {
+    markViewDirty(view);
+    listener(e);
+  };
+}
+
+/** Marks current view and all ancestors dirty */
+function markViewDirty(view: LView): void {
+  let currentView: LView|null = view;
+
+  while (currentView.parent != null) {
+    currentView.flags |= LViewFlags.Dirty;
+    currentView = currentView.parent;
+  }
+  currentView.flags |= LViewFlags.Dirty;
+
+  ngDevMode && assertNotNull(currentView !.context, 'rootContext');
+  scheduleChangeDetection(currentView !.context as RootContext);
+}
+
+
 /** Given a root context, schedules change detection at that root. */
 export function scheduleChangeDetection<T>(rootContext: RootContext) {
-  if (rootContext.clean == CLEAN_PROMISE) {
+  if (rootContext.clean == _CLEAN_PROMISE) {
     let res: null|((val: null) => void);
     rootContext.clean = new Promise<null>((r) => res = r);
     rootContext.scheduler(() => {
       detectChanges(rootContext.component);
       res !(null);
-      rootContext.clean = CLEAN_PROMISE;
+      rootContext.clean = _CLEAN_PROMISE;
     });
   }
 }
@@ -1440,6 +1476,27 @@ export function detectChanges<T>(component: T): void {
   const hostNode = _getComponentHostLElementNode(component);
   ngDevMode && assertNotNull(hostNode.data, 'Component host node should be attached to an LView');
   renderComponentOrTemplate(hostNode, hostNode.view, component);
+}
+
+
+/**
+ * Mark the component as dirty (needing change detection).
+*
+* Marking a component dirty will schedule a change detection on this
+* component at some point in the future. Marking an already dirty
+* component as dirty is a noop. Only one outstanding change detection
+* can be scheduled per component tree. (Two components bootstrapped with
+  * separate `renderComponent` will have separate schedulers)
+*
+* When the root component is bootstrapped with `renderComponent`, a scheduler
+* can be provided.
+*
+* @param component Component to mark as dirty.
+*/
+export function markDirty<T>(component: T) {
+  ngDevMode && assertNotNull(component, 'component');
+  const lElementNode = _getComponentHostLElementNode(component);
+  markViewDirty(lElementNode.view);
 }
 
 ///////////////////////////////
@@ -1710,6 +1767,4 @@ export function _getComponentHostLElementNode<T>(component: T): LElementNode {
   return lElementNode;
 }
 
-export function getCleanPromise(): Promise<null> {
-  return CLEAN_PROMISE;
-}
+export const CLEAN_PROMISE = _CLEAN_PROMISE;
