@@ -5,8 +5,7 @@ import {
   HttpEventType, HttpProgressEvent
 } from '@angular/common/http';
 
-import { Observable } from 'rxjs/Observable';
-import { of } from 'rxjs/observable/of';
+import { Observable } from 'rxjs';
 
 /** Simulate server replying to file upload request */
 @Injectable()

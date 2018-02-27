@@ -9,7 +9,7 @@
 import {Component, EventEmitter, Injector, Input, NgModule, Output, destroyPlatform} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
-import {Subject} from 'rxjs/Subject';
+import {Subject} from 'rxjs';
 
 import {NgElementConstructor, createCustomElement} from '../src/create-custom-element';
 import {NgElementStrategy, NgElementStrategyEvent, NgElementStrategyFactory} from '../src/element-strategy';

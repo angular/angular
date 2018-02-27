@@ -7,7 +7,7 @@
  */
 
 import {NgModuleFactory, NgModuleRef, Type} from '@angular/core';
-import {Observable} from 'rxjs/Observable';
+import {Observable} from 'rxjs';
 import {PRIMARY_OUTLET} from './shared';
 import {UrlSegment, UrlSegmentGroup} from './url_tree';
 

@@ -3,8 +3,7 @@
 import { Injectable } from '@angular/core';
 
 // #docregion import-observable
-import { Observable } from 'rxjs/Observable';
-import { of } from 'rxjs/observable/of';
+import { Observable, of } from 'rxjs';
 // #enddocregion import-observable
 
 // #docregion import-heroes

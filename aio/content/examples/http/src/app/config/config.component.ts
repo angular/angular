@@ -30,7 +30,7 @@ export class ConfigComponent {
     this.configService.getConfig()
   // #enddocregion v1, v2
       .subscribe(
-        data => this.config = { ...data }, // success path
+        (data: Config) => this.config = { ...data }, // success path
         error => this.error = error // error path
       );
   }
@@ -39,7 +39,7 @@ export class ConfigComponent {
   showConfig_v1() {
     this.configService.getConfig_1()
   // #docregion v1, v1_callback
-      .subscribe(data => this.config = {
+      .subscribe((data: Config) => this.config = {
           heroesUrl: data['heroesUrl'],
           textfile:  data['textfile']
       });
@@ -51,7 +51,7 @@ export class ConfigComponent {
     this.configService.getConfig()
   // #docregion v2, v2_callback
       // clone the data object, using its known Config shape
-      .subscribe(data => this.config = { ...data });
+      .subscribe((data: Config) => this.config = { ...data });
   // #enddocregion v2_callback
   }
   // #enddocregion v2

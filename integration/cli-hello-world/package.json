@@ -23,9 +23,9 @@
     "@angular/platform-browser": "file:../../dist/packages-dist/platform-browser",
     "@angular/platform-browser-dynamic": "file:../../dist/packages-dist/platform-browser-dynamic",
     "@angular/router": "file:../../dist/packages-dist/router",
-    "core-js": "^2.4.1",
-    "rxjs": "^5.5.6",
-    "zone.js": "^0.8.19"
+    "core-js": "file:../../node_modules/core-js",
+    "rxjs": "file:../../node_modules/rxjs",
+    "zone.js": "file:../../node_modules/zone.js"
   },
   "devDependencies": {
     "@angular/cli": "1.6.6",

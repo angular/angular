@@ -10,8 +10,7 @@
 *
 * Using `asap` scheduler - as in `of(value, asap)` - doesn't work either.
 */
-import { Observable } from 'rxjs/Observable';
-import { defer } from 'rxjs/observable/defer';
+import { defer } from 'rxjs';
 
 // #docregion async-data
 /** Create async observable that emits-once and completes

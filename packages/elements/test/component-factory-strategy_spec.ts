@@ -8,7 +8,7 @@
 
 import {ComponentFactory, ComponentRef, Injector, NgModuleRef, SimpleChange, SimpleChanges, Type} from '@angular/core';
 import {fakeAsync, tick} from '@angular/core/testing';
-import {Subject} from 'rxjs/Subject';
+import {Subject} from 'rxjs';
 
 import {ComponentNgElementStrategy, ComponentNgElementStrategyFactory} from '../src/component-factory-strategy';
 import {NgElementStrategyEvent} from '../src/element-strategy';
