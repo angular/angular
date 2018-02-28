@@ -231,7 +231,7 @@ export function injectViewContainerRef(): viewEngine_ViewContainerRef {
 
 /** Returns a ChangeDetectorRef (a.k.a. a ViewRef) */
 export function injectChangeDetectorRef(): viewEngine_ChangeDetectorRef {
-  return getOrCreateChangeDetectorRef(getOrCreateNodeInjector());
+  return getOrCreateChangeDetectorRef(getOrCreateNodeInjector(), null);
 }
 
 /**
@@ -240,7 +240,8 @@ export function injectChangeDetectorRef(): viewEngine_ChangeDetectorRef {
  *
  * @returns The ChangeDetectorRef to use
  */
-export function getOrCreateChangeDetectorRef(di: LInjector): viewEngine_ChangeDetectorRef {
+export function getOrCreateChangeDetectorRef(
+    di: LInjector, context: any): viewEngine_ChangeDetectorRef {
   if (di.changeDetectorRef) return di.changeDetectorRef;
 
   const currentNode = di.node;
@@ -249,7 +250,7 @@ export function getOrCreateChangeDetectorRef(di: LInjector): viewEngine_ChangeDe
     return di.changeDetectorRef = getOrCreateHostChangeDetector(currentNode.view.node);
   } else if ((currentNode.flags & LNodeFlags.TYPE_MASK) === LNodeFlags.Element) {
     // if it's an element node with data, it's a component and context will be set later
-    return di.changeDetectorRef = createViewRef(null);
+    return di.changeDetectorRef = createViewRef(context);
   }
   return null !;
 }

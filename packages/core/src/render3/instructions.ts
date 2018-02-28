@@ -23,6 +23,7 @@ import {ComponentDef, ComponentTemplate, ComponentType, DirectiveDef, DirectiveT
 import {RElement, RText, Renderer3, RendererFactory3, ProceduralRenderer3, RendererStyleFlags3, isProceduralRenderer} from './interfaces/renderer';
 import {isDifferent, stringify} from './util';
 import {executeHooks, executeContentHooks, queueLifecycleHooks, queueInitHooks, executeInitHooks} from './hooks';
+import {ViewRef} from './view_ref';
 
 /**
  * Directive (D) sets a property on all component instances using this constant as a key and the
@@ -479,7 +480,7 @@ export function elementStart(
 /** Sets the context for a ChangeDetectorRef to the given instance. */
 export function initChangeDetectorIfExisting(injector: LInjector | null, instance: any): void {
   if (injector && injector.changeDetectorRef != null) {
-    (injector.changeDetectorRef as any)._setComponentContext(instance);
+    (injector.changeDetectorRef as ViewRef<any>)._setComponentContext(instance);
   }
 }
 
@@ -599,6 +600,8 @@ export function locateHostElement(
  *
  * @param rNode Render host element.
  * @param def ComponentDef
+ *
+ * @returns LElementNode created
  */
 export function hostElement(rNode: RElement | null, def: ComponentDef<any>): LElementNode {
   resetApplicationState();

@@ -405,13 +405,12 @@ describe('di', () => {
     it('should inject host component ChangeDetectorRef into directives on containers', () => {
       class IfDirective {
         /* @Input */
-        if
-          = true;
+        myIf = true;
 
         constructor(public template: TemplateRef<any>, public vcr: ViewContainerRef) {}
 
         ngOnChanges() {
-          if (this.if) {
+          if (this.myIf) {
             this.vcr.createEmbeddedView(this.template);
           }
         }
@@ -419,7 +418,7 @@ describe('di', () => {
         static ngDirectiveDef = defineDirective({
           type: IfDirective,
           factory: () => new IfDirective(injectTemplateRef(), injectViewContainerRef()),
-          inputs: {if: 'if'},
+          inputs: {myIf: 'myIf'},
           features: [PublicFeature, NgOnChangesFeature]
         });
       }
@@ -433,7 +432,7 @@ describe('di', () => {
           type: MyApp,
           tag: 'my-app',
           factory: () => new MyApp(injectChangeDetectorRef()),
-          /** <div *if="showing" dir dirSameInstance #dir="dir"> {{ dir.value }} </div> */
+          /** <div *myIf="showing" dir dirSameInstance #dir="dir"> {{ dir.value }} </div> */
           template: function(ctx: MyApp, cm: boolean) {
             if (cm) {
               container(0, [IfDirective], C1);
