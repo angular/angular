@@ -1,10 +1,11 @@
-import { Component, DebugElement } from '@angular/core';
+import { Component, ViewChild, AfterViewInit } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { MatSnackBarModule, MatSnackBar } from '@angular/material';
+import { MatSnackBar } from '@angular/material';
 import { By } from '@angular/platform-browser';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 
 import { CodeComponent } from './code.component';
+import { CodeModule } from './code.module';
 import { CopierService } from 'app/shared//copier.service';
 import { Logger } from 'app/shared/logger.service';
 import { PrettyPrinter } from './pretty-printer.service';
@@ -22,11 +23,8 @@ const smallMultiLineCode = `
 const bigMultiLineCode = smallMultiLineCode + smallMultiLineCode + smallMultiLineCode;
 
 describe('CodeComponent', () => {
-  let codeComponentDe: DebugElement;
-  let codeComponent: CodeComponent;
   let hostComponent: HostComponent;
   let fixture: ComponentFixture<HostComponent>;
-
 
   // WARNING: Chance of cross-test pollution
   // CodeComponent injects PrettyPrintService
@@ -42,14 +40,14 @@ describe('CodeComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [ MatSnackBarModule, NoopAnimationsModule ],
-      declarations: [ CodeComponent, HostComponent ],
+      imports: [ NoopAnimationsModule, CodeModule ],
+      declarations: [ HostComponent ],
       providers: [
         PrettyPrinter,
         CopierService,
         {provide: Logger, useClass: TestLogger }
      ]
-    });
+    }).compileComponents();
   });
 
   // Must be async because
@@ -58,26 +56,20 @@ describe('CodeComponent', () => {
   beforeEach(async(() => {
     fixture = TestBed.createComponent(HostComponent);
     hostComponent = fixture.componentInstance;
-    codeComponentDe = fixture.debugElement.children[0];
-    codeComponent = codeComponentDe.componentInstance;
+
     fixture.detectChanges();
   }));
-
-  it('should create CodeComponent', () => {
-    expect(codeComponentDe.name).toBe('aio-code', 'selector');
-    expect(codeComponent).toBeTruthy('CodeComponent');
-  });
 
   describe('pretty printing', () => {
     it('should format a one-line code sample', () => {
       // 'pln' spans are a tell-tale for syntax highlighing
-      const spans = codeComponentDe.nativeElement.querySelectorAll('span.pln');
+      const spans = fixture.nativeElement.querySelectorAll('span.pln');
       expect(spans.length).toBeGreaterThan(0, 'formatted spans');
     });
 
     function hasLineNumbers() {
       // presence of `<li>`s are a tell-tale for line numbers
-      return 0 < codeComponentDe.nativeElement.querySelectorAll('li').length;
+      return 0 < fixture.nativeElement.querySelectorAll('li').length;
     }
 
     it('should format a one-line code sample without linenums by default', () => {
@@ -87,25 +79,25 @@ describe('CodeComponent', () => {
     it('should add line numbers to one-line code sample when linenums set true', () => {
       hostComponent.linenums = 'true';
       fixture.detectChanges();
+
       expect(hasLineNumbers()).toBe(true);
     });
 
     it('should format a small multi-line code without linenums by default', () => {
-      hostComponent.code = smallMultiLineCode;
-      fixture.detectChanges();
+      hostComponent.setCode(smallMultiLineCode);
       expect(hasLineNumbers()).toBe(false);
     });
 
     it('should add line numbers to a big multi-line code by default', () => {
-      hostComponent.code = bigMultiLineCode;
-      fixture.detectChanges();
+      hostComponent.setCode(bigMultiLineCode);
       expect(hasLineNumbers()).toBe(true);
     });
 
     it('should format big multi-line code without linenums when linenums set false', () => {
       hostComponent.linenums = false;
-      hostComponent.code = bigMultiLineCode;
       fixture.detectChanges();
+
+      hostComponent.setCode(bigMultiLineCode);
       expect(hasLineNumbers()).toBe(false);
     });
   });
@@ -113,25 +105,27 @@ describe('CodeComponent', () => {
   describe('whitespace handling', () => {
     it('should remove common indentation from the code before rendering', () => {
       hostComponent.linenums = false;
-      hostComponent.code = '  abc\n   let x = text.split(\'\\n\');\n  ghi\n\n  jkl\n';
       fixture.detectChanges();
-      const codeContent = codeComponentDe.nativeElement.querySelector('code').textContent;
+
+      hostComponent.setCode('  abc\n   let x = text.split(\'\\n\');\n  ghi\n\n  jkl\n');
+      const codeContent = fixture.nativeElement.querySelector('code').textContent;
       expect(codeContent).toEqual('abc\n let x = text.split(\'\\n\');\nghi\n\njkl');
     });
 
     it('should trim whitespace from the code before rendering', () => {
       hostComponent.linenums = false;
-      hostComponent.code = '\n\n\n' + smallMultiLineCode + '\n\n\n';
       fixture.detectChanges();
-      const codeContent = codeComponentDe.nativeElement.querySelector('code').textContent;
+
+      hostComponent.setCode('\n\n\n' + smallMultiLineCode + '\n\n\n');
+      const codeContent = fixture.nativeElement.querySelector('code').textContent;
       expect(codeContent).toEqual(codeContent.trim());
     });
 
     it('should trim whitespace from code before computing whether to format linenums', () => {
-      hostComponent.code = '\n\n\n' + hostComponent.code + '\n\n\n';
-      fixture.detectChanges();
+      hostComponent.setCode('\n\n\n' + oneLineCode + '\n\n\n');
+
       // `<li>`s are a tell-tale for line numbers
-      const lis = codeComponentDe.nativeElement.querySelectorAll('li');
+      const lis = fixture.nativeElement.querySelectorAll('li');
       expect(lis.length).toBe(0, 'should be no linenums');
     });
   });
@@ -139,39 +133,38 @@ describe('CodeComponent', () => {
   describe('error message', () => {
 
     function getErrorMessage() {
-      const missing: HTMLElement = codeComponentDe.nativeElement.querySelector('.code-missing');
+      const missing: HTMLElement = fixture.nativeElement.querySelector('.code-missing');
       return missing ? missing.textContent : null;
     }
 
     it('should not display "code-missing" class when there is some code', () => {
-      fixture.detectChanges();
       expect(getErrorMessage()).toBeNull('should not have element with "code-missing" class');
     });
 
     it('should display error message when there is no code (after trimming)', () => {
-      hostComponent.code = ' \n ';
-      fixture.detectChanges();
+      hostComponent.setCode(' \n ');
       expect(getErrorMessage()).toContain('missing');
     });
 
     it('should show path and region in missing-code error message', () => {
-      hostComponent.code = ' \n ';
       hostComponent.path = 'fizz/buzz/foo.html';
       hostComponent.region = 'something';
       fixture.detectChanges();
+
+      hostComponent.setCode(' \n ');
       expect(getErrorMessage()).toMatch(/for[\s\S]fizz\/buzz\/foo\.html#something$/);
     });
 
     it('should show path only in missing-code error message when no region', () => {
-      hostComponent.code = ' \n ';
       hostComponent.path = 'fizz/buzz/foo.html';
       fixture.detectChanges();
+
+      hostComponent.setCode(' \n ');
       expect(getErrorMessage()).toMatch(/for[\s\S]fizz\/buzz\/foo\.html$/);
     });
 
     it('should show simple missing-code error message when no path/region', () => {
-      hostComponent.code = ' \n ';
-      fixture.detectChanges();
+      hostComponent.setCode(' \n ');
       expect(getErrorMessage()).toMatch(/missing.$/);
     });
   });
@@ -190,12 +183,10 @@ describe('CodeComponent', () => {
     });
 
     it('should have title', () => {
-      fixture.detectChanges();
       expect(getButton().title).toBe('Copy code snippet');
     });
 
     it('should have no aria-label by default', () => {
-      fixture.detectChanges();
       expect(getButton().getAttribute('aria-label')).toBe('');
     });
 
@@ -226,12 +217,11 @@ describe('CodeComponent', () => {
       const expectedCode = smallMultiLineCode.trim().replace(/&lt;/g, '<').replace(/&gt;/g, '>');
       let actualCode;
 
-      hostComponent.code = smallMultiLineCode;
+      hostComponent.setCode(smallMultiLineCode);
 
       [false, true, 42].forEach(linenums => {
         hostComponent.linenums = linenums;
         fixture.detectChanges();
-        codeComponent.ngOnChanges();
         getButton().click();
         actualCode = spy.calls.mostRecent().args[0];
 
@@ -271,19 +261,29 @@ describe('CodeComponent', () => {
 @Component({
   selector: 'aio-host-comp',
   template: `
-    <aio-code [code]="code" [language]="language"
+    <aio-code [language]="language"
     [linenums]="linenums" [path]="path" [region]="region"
     [hideCopy]="hideCopy" [title]="title"></aio-code>
   `
 })
-class HostComponent {
-  code = oneLineCode;
+class HostComponent implements AfterViewInit {
   hideCopy: boolean;
   language: string;
   linenums: boolean | number | string;
   path: string;
   region: string;
   title: string;
+
+  @ViewChild(CodeComponent) codeComponent: CodeComponent;
+
+  ngAfterViewInit() {
+    this.setCode(oneLineCode);
+  }
+
+  /** Changes the displayed code on the code component. */
+  setCode(code: string) {
+    this.codeComponent.code = code;
+  }
 }
 
 class TestLogger {
