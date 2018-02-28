@@ -757,17 +757,11 @@ rules that depend on other `ng_module` rules.
 The `ng_module` rule will still use `ngc` to produce the Angular output but,
 when producing ivy output, it no longer will need the `.ngsummary.json` file.
 
-#### `ivy_sources`
+#### `ng_experimental_ivy_srcs`
 
-The `ivy_sources` can be used as use to cause the ivy versions of files to be
-generated and is intended to be the direct dependency of an `ts_library` rule
-that contains the application bootstrap code. In the case of an ivy
-application, it contains call to the application module back-patch function
-and the `renderComponent()` of the application component. Alternately, it can
-import the root module's module factory and call the Renderer2 bootstrap.
-
-The bootstrap `ts_library` is then the dependencies of the `ts_dev_server`
-rule.
+The `ng_experimental_ivy_srcs` can be used as use to cause the ivy versions of
+files to be generated. It is intended the sole dependency of a `ts_dev_server`
+rule and the `ts_dev_server` sources move to `ng_experimental_iv_srcs`.
 
 #### `ng_module` ivy output
 
@@ -789,5 +783,53 @@ where `moduleName` is the name of the as it would appear in an import statement
 in a `.ts` file at the same relative location in the source tree. All the
 references in this file are also relative this location.
 
+##### example
+
+The following is a typical Angular application build in bazel:
+
+*src/BUILD.bazel*
+```py
+ng_module(
+  name = "src",
+  srcs = glob(["*.ts"]),
+  deps= ["//common/component"],
+)
+
+ts_dev_server(
+  name = "server",
+  srcs = ":src",
+)
+```
+
+To use produce an ivy version you would add:
+
+```py
+ng_experimental_ivy_srcs(
+  name = "ivy_srcs",
+  srcs = ":src",
+)
+
+ts_dev_server(
+  name = "server_ivy",
+  srcs = [":ivy_srcs"]
+)
+```
+
+To serve the Renderer2 version, you would run:
+
+```sh
+bazel run :server
+```
+
+to serve the ivy version you would run
+
+```sh
+bazel run :server_ivy
+```
+
+The `ng_experimental_ivy_srcs` rule is only needed when ivy is experimental. Once ivy
+is released the `ng_experimental_ivy_srcs`, dependent rules, can be removed.
+
+---
 <a name="myfootnote1"><sup>1</sup></a> More correctly, it calls `performCompilation`
 from the `@angular/compiler-cli` which is what `ngc` does too.
