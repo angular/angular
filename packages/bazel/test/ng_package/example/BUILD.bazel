@@ -1,0 +1,25 @@
+package(default_visibility = ["//packages/bazel/test:__subpackages__"])
+
+load("//packages/bazel:index.bzl", "ng_module", "ng_package")
+
+ng_module(
+    name = "example",
+    srcs = glob(["*.ts"]),
+    deps = ["//packages/bazel/test/ng_package/example/secondary"],
+)
+
+ng_package(
+    name = "npm_package",
+    srcs = [
+        "package.json",
+        "some-file.txt",
+        "//packages/bazel/test/ng_package/example/secondary:package.json",
+    ],
+    entry_point = "packages/bazel/test/ng_package/example/index.js",
+    secondary_entry_points = ["secondary"],
+    deps = [
+        ":example",
+        # FIXME(#22419)
+        "//packages/bazel/test/ng_package/example/secondary",
+    ],
+)
