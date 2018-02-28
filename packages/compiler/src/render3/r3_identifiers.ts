@@ -10,18 +10,12 @@ import * as o from '../output/output_ast';
 
 const CORE = '@angular/core';
 
-// Copied from core and must be in sync with the value in the runtime.
-export const enum LifeCycleGuard {ON_INIT = 1, ON_DESTROY = 2, ON_CHANGES = 4}
-
-// TODO: Include assignments that use the enum literals
-//  e.g. { let a: core.LifeCycleGuard.ON_INIT = LifeCycleGuard.ON_INIT; ...}
-// Ensure these get removed in bundling.
-
 export class Identifiers {
   /* Methods */
   static NEW_METHOD = 'n';
   static HOST_BINDING_METHOD = 'h';
   static TRANSFORM_METHOD = 'transform';
+  static PATCH_DEPS = 'patchedDeps';
 
   /* Instructions */
   static createElement: o.ExternalReference = {name: 'ɵE', moduleName: CORE};

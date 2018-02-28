@@ -21,6 +21,7 @@ import {AttrAst, BoundDirectivePropertyAst, BoundElementPropertyAst, BoundEventA
 import {OutputContext, error} from '../util';
 
 import {Identifiers as R3} from './r3_identifiers';
+import {BUILD_OPTIMIZER_COLOCATE, OutputMode} from './r3_types';
 
 
 
@@ -41,7 +42,7 @@ const IMPLICIT_REFERENCE = '$implicit';
 
 export function compileDirective(
     outputCtx: OutputContext, directive: CompileDirectiveMetadata, reflector: CompileReflector,
-    bindingParser: BindingParser) {
+    bindingParser: BindingParser, mode: OutputMode) {
   const definitionMapValues: {key: string, quoted: boolean, value: o.Expression}[] = [];
 
   const field = (key: string, value: o.Expression | null) => {
@@ -68,24 +69,38 @@ export function compileDirective(
   const className = identifierName(directive.type) !;
   className || error(`Cannot resolver the name of ${directive.type}`);
 
-  // Create the partial class to be merged with the actual class.
-  outputCtx.statements.push(new o.ClassStmt(
-      /* name */ className,
-      /* parent */ null,
-      /* fields */[new o.ClassField(
-          /* name */ outputCtx.constantPool.propertyNameOf(DefinitionKind.Directive),
-          /* type */ o.INFERRED_TYPE,
-          /* modifiers */[o.StmtModifier.Static],
-          /* initializer */ o.importExpr(R3.defineDirective).callFn([o.literalMap(
-              definitionMapValues)]))],
-      /* getters */[],
-      /* constructorMethod */ new o.ClassMethod(null, [], []),
-      /* methods */[]));
+  const definitionField = outputCtx.constantPool.propertyNameOf(DefinitionKind.Directive);
+  const definitionFunction =
+      o.importExpr(R3.defineDirective).callFn([o.literalMap(definitionMapValues)]);
+
+  if (mode === OutputMode.PartialClass) {
+    // Create the partial class to be merged with the actual class.
+    outputCtx.statements.push(new o.ClassStmt(
+        /* name */ className,
+        /* parent */ null,
+        /* fields */[new o.ClassField(
+            /* name */ definitionField,
+            /* type */ o.INFERRED_TYPE,
+            /* modifiers */[o.StmtModifier.Static],
+            /* initializer */ definitionFunction)],
+        /* getters */[],
+        /* constructorMethod */ new o.ClassMethod(null, [], []),
+        /* methods */[]));
+  } else {
+    // Create back-patch definition.
+    const classReference = outputCtx.importExpr(directive.type.reference);
+
+    // Create the back-patch statement
+    outputCtx.statements.push(new o.CommentStmt(BUILD_OPTIMIZER_COLOCATE));
+    outputCtx.statements.push(
+        classReference.prop(definitionField).set(definitionFunction).toStmt());
+  }
 }
 
 export function compileComponent(
     outputCtx: OutputContext, component: CompileDirectiveMetadata, pipes: CompilePipeSummary[],
-    template: TemplateAst[], reflector: CompileReflector, bindingParser: BindingParser) {
+    template: TemplateAst[], reflector: CompileReflector, bindingParser: BindingParser,
+    mode: OutputMode) {
   const definitionMapValues: {key: string, quoted: boolean, value: o.Expression}[] = [];
 
   const field = (key: string, value: o.Expression | null) => {
@@ -150,22 +165,33 @@ export function compileComponent(
     field('features', o.literalArr(features));
   }
 
-  const className = identifierName(component.type) !;
-  className || error(`Cannot resolver the name of ${component.type}`);
+  const definitionField = outputCtx.constantPool.propertyNameOf(DefinitionKind.Component);
+  const definitionFunction =
+      o.importExpr(R3.defineComponent).callFn([o.literalMap(definitionMapValues)]);
+  if (mode === OutputMode.PartialClass) {
+    const className = identifierName(component.type) !;
+    className || error(`Cannot resolver the name of ${component.type}`);
 
-  // Create the partial class to be merged with the actual class.
-  outputCtx.statements.push(new o.ClassStmt(
-      /* name */ className,
-      /* parent */ null,
-      /* fields */[new o.ClassField(
-          /* name */ outputCtx.constantPool.propertyNameOf(DefinitionKind.Component),
-          /* type */ o.INFERRED_TYPE,
-          /* modifiers */[o.StmtModifier.Static],
-          /* initializer */ o.importExpr(R3.defineComponent).callFn([o.literalMap(
-              definitionMapValues)]))],
-      /* getters */[],
-      /* constructorMethod */ new o.ClassMethod(null, [], []),
-      /* methods */[]));
+    // Create the partial class to be merged with the actual class.
+    outputCtx.statements.push(new o.ClassStmt(
+        /* name */ className,
+        /* parent */ null,
+        /* fields */[new o.ClassField(
+            /* name */ definitionField,
+            /* type */ o.INFERRED_TYPE,
+            /* modifiers */[o.StmtModifier.Static],
+            /* initializer */ definitionFunction)],
+        /* getters */[],
+        /* constructorMethod */ new o.ClassMethod(null, [], []),
+        /* methods */[]));
+  } else {
+    const classReference = outputCtx.importExpr(component.type.reference);
+
+    // Create the back-patch statement
+    outputCtx.statements.push(
+        new o.CommentStmt(BUILD_OPTIMIZER_COLOCATE),
+        classReference.prop(definitionField).set(definitionFunction).toStmt());
+  }
 }
 
 // TODO: Remove these when the things are fully supported
