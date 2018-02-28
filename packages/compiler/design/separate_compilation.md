@@ -763,7 +763,7 @@ application, it contains call to the application module back-patch function
 and the `renderComponent()` of the application component. Alternately, it can
 import the root module's module factory and call the Render2 bootstrap.
 
-The bootstrap `ts_library` is then the dependencies of the `ts_dev_sources`
+The bootstrap `ts_library` is then the dependencies of the `ts_dev_server`
 rule.
 
 #### `ng_module` ivy output
