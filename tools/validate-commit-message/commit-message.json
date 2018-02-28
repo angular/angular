@@ -21,6 +21,7 @@
     "compiler",
     "compiler-cli",
     "core",
+    "elements",
     "forms",
     "http",
     "ivy",

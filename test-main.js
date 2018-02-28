@@ -65,25 +65,40 @@ System.config({
     '@angular/platform-server': {main: 'index.js', defaultExtension: 'js'},
     '@angular/platform-webworker': {main: 'index.js', defaultExtension: 'js'},
     '@angular/platform-webworker-dynamic': {main: 'index.js', defaultExtension: 'js'},
+    '@angular/elements': {main: 'index.js', defaultExtension: 'js'},
   }
 });
 
 
-// Set up the test injector, then import all the specs, execute their `main()`
-// method and kick off Karma (Jasmine).
-System.import('@angular/core/testing')
-    .then(function(coreTesting) {
-      return Promise
-          .all([
-            System.import('@angular/platform-browser-dynamic/testing'),
-            System.import('@angular/platform-browser/animations')
-          ])
-          .then(function(mods) {
-            coreTesting.TestBed.initTestEnvironment(
-                [mods[0].BrowserDynamicTestingModule, mods[1].NoopAnimationsModule],
-                mods[0].platformBrowserDynamicTesting());
-          });
+// Load browser-specific CustomElement polyfills, set up the test injector, import all the specs,
+// execute their `main()` method and kick off Karma (Jasmine).
+Promise
+    .resolve()
+
+    // Load browser-specific polyfills for custom elements.
+    .then(function() { return loadCustomElementsPolyfills(); })
+
+    // Load necessary testing packages.
+    .then(function() {
+      return Promise.all([
+        System.import('@angular/core/testing'),
+        System.import('@angular/platform-browser-dynamic/testing'),
+        System.import('@angular/platform-browser/animations')
+      ]);
     })
+
+    // Set up the test injector.
+    .then(function(mods) {
+      var coreTesting = mods[0];
+      var pbdTesting = mods[1];
+      var pbAnimations = mods[2];
+
+      coreTesting.TestBed.initTestEnvironment(
+          [pbdTesting.BrowserDynamicTestingModule, pbAnimations.NoopAnimationsModule],
+          pbdTesting.platformBrowserDynamicTesting());
+    })
+
+    // Import all the specs and execute their `main()` method.
     .then(function() {
       return Promise.all(Object
                              .keys(window.__karma__.files)  // All files served by Karma.
@@ -97,8 +112,103 @@ System.import('@angular/core/testing')
                                });
                              }));
     })
+
+    // Kick off karma (Jasmine).
     .then(function() { __karma__.start(); }, function(error) { console.error(error); });
 
+
+function loadCustomElementsPolyfills() {
+  var loadedPromise = Promise.resolve();
+
+  // The custom elements polyfill relies on `MutationObserver`.
+  if (!window.MutationObserver) {
+    loadedPromise =
+        loadedPromise
+            .then(function() { return System.import('node_modules/mutation-observer/index.js'); })
+            .then(function(MutationObserver) { window.MutationObserver = MutationObserver; });
+  }
+
+  // The custom elements polyfill relies on `Object.setPrototypeOf()`.
+  if (!Object.setPrototypeOf) {
+    var getDescriptor = function getDescriptor(obj, prop) {
+      var descriptor;
+      while (obj && !descriptor) {
+        descriptor = Object.getOwnPropertyDescriptor(obj, prop);
+        obj = Object.getPrototypeOf(obj);
+      }
+      return descriptor || {};
+    };
+    var setPrototypeOf = function setPrototypeOf(obj, proto) {
+      for (var prop in proto) {
+        if (!obj.hasOwnProperty(prop)) {
+          Object.defineProperty(obj, prop, getDescriptor(proto, prop));
+        }
+      }
+      return obj;
+    };
+
+    Object.defineProperty(setPrototypeOf, '$$shimmed', {value: true});
+    Object.setPrototypeOf = setPrototypeOf;
+  }
+
+  // The custom elements polyfill will patch `(HTML)Element` properties, including `innerHTML`:
+  // https://github.com/webcomponents/custom-elements/blob/32f043c3a5e5fc3e035342c0ef10c6786fa416d7/src/Patch/Element.js#L28-L78
+  // The patched `innerHTML` setter will try to traverse the DOM (via `nextSibling`), which leads to
+  // infinite loops when testing `HtmlSanitizer` with cloberred elements on browsers that do not
+  // support the `<template>` element:
+  // https://github.com/angular/angular/blob/213baa37b0b71e72d00ad7b606ebfc2ade06b934/packages/platform-browser/src/security/html_sanitizer.ts#L29-L38
+  // To avoid that, we "unpatch" `(HTML)Element#innerHTML` and apply the patch only for the relevant
+  // `@angular/elements` tests.
+  var patchTarget;
+  var originalDescriptor;
+  if (!window.customElements) {
+    ['Element', 'HTMLElement']
+        .map(function(name) { return window[name].prototype; })
+        .some(function(candidatePatchTarget) {
+          var candidateOriginalDescriptor =
+              Object.getOwnPropertyDescriptor(candidatePatchTarget, 'innerHTML');
+
+          if (candidateOriginalDescriptor) {
+            patchTarget = candidatePatchTarget;
+            originalDescriptor = candidateOriginalDescriptor;
+            return true;
+          }
+        });
+  }
+
+  var polyfillPath = !window.customElements ?
+      // Load custom elements polyfill.
+      'node_modules/@webcomponents/custom-elements/custom-elements.min.js' :
+      // Allow ES5 functions as custom element constructors.
+      'node_modules/@webcomponents/custom-elements/src/native-shim.js';
+
+  loadedPromise =
+      loadedPromise.then(function() { return System.import(polyfillPath); }).then(function() {
+        // `packages/compiler/test/schema/schema_extractor.ts` relies on `HTMLElement.name`,
+        // but custom element polyfills will replace `HTMLElement` with an anonymous function.
+        Object.defineProperty(HTMLElement, 'name', {value: 'HTMLElement'});
+
+        // Create helper functions on `window` for patching/restoring `(HTML)Element#innerHTML`.
+        if (!patchTarget) {
+          window.$$patchInnerHtmlProp = window.$$restoreInnerHtmlProp = function() {};
+        } else {
+          var patchedDescriptor = Object.getOwnPropertyDescriptor(patchTarget, 'innerHTML');
+
+          window.$$patchInnerHtmlProp = function() {
+            Object.defineProperty(patchTarget, 'innerHTML', patchedDescriptor);
+          };
+          window.$$restoreInnerHtmlProp = function() {
+            Object.defineProperty(patchTarget, 'innerHTML', originalDescriptor);
+          };
+
+          // Restore `innerHTML`. The patch will be manually applied only during the
+          // `@angular/elements` tests that need it.
+          window.$$restoreInnerHtmlProp();
+        }
+      });
+
+  return loadedPromise;
+}
 
 function onlySpecFiles(path) {
   return /_spec\.js$/.test(path);

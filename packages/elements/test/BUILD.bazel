@@ -1,0 +1,49 @@
+load("//tools:defaults.bzl", "ts_library")
+load("@build_bazel_rules_typescript//:defs.bzl", "ts_web_test")
+load("@build_bazel_rules_nodejs//:defs.bzl", "jasmine_node_test")
+
+ts_library(
+    name = "test_lib",
+    testonly = 1,
+    srcs = glob(["**/*.ts"]),
+    deps = [
+        "//packages:types",
+        "//packages/compiler",
+        "//packages/core",
+        "//packages/core/testing",
+        "//packages/elements",
+        "//packages/elements/testing",
+        "//packages/platform-browser",
+        "//packages/platform-browser-dynamic",
+        "//packages/platform-browser-dynamic/testing",
+        "//packages/platform-browser/testing",
+        "@rxjs",
+    ],
+)
+
+filegroup(
+    name = "elements_test_bootstrap_scripts",
+    # do not sort
+    srcs = [
+        "//:node_modules/@webcomponents/webcomponentsjs/custom-elements-es5-adapter.js",
+        "//:node_modules/reflect-metadata/Reflect.js",
+        "//:node_modules/zone.js/dist/zone.js",
+        "//:node_modules/zone.js/dist/async-test.js",
+        "//:node_modules/zone.js/dist/sync-test.js",
+        "//:node_modules/zone.js/dist/fake-async-test.js",
+        "//:node_modules/zone.js/dist/proxy.js",
+        "//:node_modules/zone.js/dist/jasmine-patch.js",
+    ],
+)
+
+ts_web_test(
+    name = "test",
+    bootstrap = [
+        ":elements_test_bootstrap_scripts",
+    ],
+    # do not sort
+    deps = [
+        "//tools/testing:browser",
+        ":test_lib",
+    ],
+)

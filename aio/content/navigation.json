@@ -458,6 +458,11 @@
           ]
         },
         {
+          "url": "guide/elements",
+          "title": "Elements",
+          "tooltip": "Exporting Angular Components as Web Components"
+        },
+        {
           "title": "Service Workers",
           "tooltip": "Angular service workers: Controlling caching of application resources.",
           "children": [
