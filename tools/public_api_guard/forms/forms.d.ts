@@ -251,7 +251,7 @@ export declare class FormControl extends AbstractControl {
 }
 
 /** @stable */
-export declare class FormControlDirective extends NgControl implements OnChanges {
+export declare class FormControlDirective extends NgControl implements OnChanges, OnDestroy {
     readonly asyncValidator: AsyncValidatorFn | null;
     readonly control: FormControl;
     form: FormControl;
@@ -263,6 +263,7 @@ export declare class FormControlDirective extends NgControl implements OnChanges
     viewModel: any;
     constructor(validators: Array<Validator | ValidatorFn>, asyncValidators: Array<AsyncValidator | AsyncValidatorFn>, valueAccessors: ControlValueAccessor[], _ngModelWarningConfig: string | null);
     ngOnChanges(changes: SimpleChanges): void;
+    ngOnDestroy(): void;
     viewToModelUpdate(newValue: any): void;
 }
 
