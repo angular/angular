@@ -33,8 +33,8 @@ export class PrettyPrinter {
         .then(
           () => (window as any)['prettyPrintOne'],
           err => {
-            const msg = `Cannot get prettify.js from server: ${err.message}`;
-            this.logger.error(new Error(msg));
+            const msg = 'Cannot get prettify.js from server';
+            this.logger.error(msg, err);
             // return a pretty print fn that always fails.
             return () => { throw new Error(msg); };
           });

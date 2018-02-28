@@ -1,4 +1,3 @@
-import { ComponentRef } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Title, Meta } from '@angular/platform-browser';
 
@@ -6,11 +5,11 @@ import { Observable } from 'rxjs/Observable';
 import { of } from 'rxjs/observable/of';
 
 import { FILE_NOT_FOUND_ID, FETCHING_ERROR_ID } from 'app/documents/document.service';
-import { EmbedComponentsService } from 'app/embed-components/embed-components.service';
 import { Logger } from 'app/shared/logger.service';
+import { CustomElementsModule } from 'app/custom-elements/custom-elements.module';
 import { TocService } from 'app/shared/toc.service';
 import {
-  MockEmbedComponentsService, MockTitle, MockTocService, ObservableWithSubscriptionSpies,
+  MockTitle, MockTocService, ObservableWithSubscriptionSpies,
   TestDocViewerComponent, TestModule, TestParentComponent
 } from 'testing/doc-viewer-utils';
 import { MockLogger } from 'testing/logger.service';
@@ -25,7 +24,7 @@ describe('DocViewerComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [TestModule]
+      imports: [TestModule, CustomElementsModule],
     });
 
     parentFixture = TestBed.createComponent(TestParentComponent);
@@ -87,44 +86,7 @@ describe('DocViewerComponent', () => {
     });
   });
 
-  describe('#ngDoCheck()', () => {
-    let componentInstances: ComponentRef<any>[];
-
-    beforeEach(() => {
-      componentInstances = [
-        {changeDetectorRef: {detectChanges: jasmine.createSpy('detectChanges')}},
-        {changeDetectorRef: {detectChanges: jasmine.createSpy('detectChanges')}},
-        {changeDetectorRef: {detectChanges: jasmine.createSpy('detectChanges')}},
-      ] as any;
-      docViewer.embeddedComponentRefs.push(...componentInstances);
-    });
-
-    afterEach(() => {
-      // Clean up the fake component instances, to avoid error in `ngOnDestroy()`.
-      docViewer.embeddedComponentRefs = [];
-    });
-
-    it('should detect changes on each active component instance', () => {
-      parentFixture.detectChanges();
-      componentInstances.forEach(({changeDetectorRef: cd}) => {
-        expect(cd.detectChanges).toHaveBeenCalledTimes(1);
-      });
-
-      parentFixture.detectChanges();
-      componentInstances.forEach(({changeDetectorRef: cd}) => {
-        expect(cd.detectChanges).toHaveBeenCalledTimes(2);
-      });
-    });
-  });
-
   describe('#ngOnDestroy()', () => {
-    it('should destroy the active embedded component instances', () => {
-      const destroyEmbeddedComponentsSpy = spyOn(docViewer, 'destroyEmbeddedComponents');
-      docViewer.ngOnDestroy();
-
-      expect(destroyEmbeddedComponentsSpy).toHaveBeenCalledTimes(1);
-    });
-
     it('should stop responding to document changes', () => {
       const renderSpy = spyOn(docViewer, 'render').and.returnValue([undefined]);
 
@@ -140,33 +102,6 @@ describe('DocViewerComponent', () => {
 
       docViewer.doc = {contents: 'More content', id: 'more-id'};
       expect(renderSpy).toHaveBeenCalledTimes(1);
-    });
-  });
-
-  describe('#destroyEmbeddedComponents()', () => {
-    let componentInstances: ComponentRef<any>[];
-
-    beforeEach(() => {
-      componentInstances = [
-        {destroy: jasmine.createSpy('destroy#1')},
-        {destroy: jasmine.createSpy('destroy#2')},
-        {destroy: jasmine.createSpy('destroy#3')},
-      ] as any;
-      docViewer.embeddedComponentRefs.push(...componentInstances);
-    });
-
-    it('should destroy each active component instance', () => {
-      docViewer.destroyEmbeddedComponents();
-
-      expect(componentInstances.length).toBe(3);
-      componentInstances.forEach(comp => expect(comp.destroy).toHaveBeenCalledTimes(1));
-    });
-
-    it('should clear the list of active component instances', () => {
-      expect(docViewer.embeddedComponentRefs.length).toBeGreaterThan(0);
-
-      docViewer.destroyEmbeddedComponents();
-      expect(docViewer.embeddedComponentRefs.length).toBe(0);
     });
   });
 
@@ -357,8 +292,6 @@ describe('DocViewerComponent', () => {
   });
 
   describe('#render()', () => {
-    let destroyEmbeddedComponentsSpy: jasmine.Spy;
-    let embedIntoSpy: jasmine.Spy;
     let prepareTitleAndTocSpy: jasmine.Spy;
     let swapViewsSpy: jasmine.Spy;
 
@@ -367,10 +300,6 @@ describe('DocViewerComponent', () => {
         docViewer.render({contents, id}).subscribe(resolve, reject));
 
     beforeEach(() => {
-      const embedComponentsService = TestBed.get(EmbedComponentsService) as MockEmbedComponentsService;
-
-      destroyEmbeddedComponentsSpy = spyOn(docViewer, 'destroyEmbeddedComponents');
-      embedIntoSpy = embedComponentsService.embedInto.and.returnValue(of([]));
       prepareTitleAndTocSpy = spyOn(docViewer, 'prepareTitleAndToc');
       swapViewsSpy = spyOn(docViewer, 'swapViews').and.returnValue(of(undefined));
     });
@@ -404,7 +333,7 @@ describe('DocViewerComponent', () => {
         expect(docViewerEl.textContent).toBe('');
       });
 
-      it('should prepare the title and ToC (before embedding components)', async () => {
+      it('should prepare the title and ToC', async () => {
         prepareTitleAndTocSpy.and.callFake((targetEl: HTMLElement, docId: string) => {
           expect(targetEl.innerHTML).toBe('Some content');
           expect(docId).toBe('foo');
@@ -413,7 +342,6 @@ describe('DocViewerComponent', () => {
         await doRender('Some content', 'foo');
 
         expect(prepareTitleAndTocSpy).toHaveBeenCalledTimes(1);
-        expect(prepareTitleAndTocSpy).toHaveBeenCalledBefore(embedIntoSpy);
       });
 
       it('should set the title and ToC (after the content has been set)', async () => {
@@ -456,73 +384,7 @@ describe('DocViewerComponent', () => {
       });
     });
 
-    describe('(embedding components)', () => {
-      it('should embed components', async () => {
-        await doRender('Some content');
-        expect(embedIntoSpy).toHaveBeenCalledTimes(1);
-        expect(embedIntoSpy).toHaveBeenCalledWith(docViewer.nextViewContainer);
-      });
-
-      it('should attempt to embed components even if the document is empty', async () => {
-        await doRender('');
-        await doRender(null);
-
-        expect(embedIntoSpy).toHaveBeenCalledTimes(2);
-        expect(embedIntoSpy.calls.argsFor(0)).toEqual([docViewer.nextViewContainer]);
-        expect(embedIntoSpy.calls.argsFor(1)).toEqual([docViewer.nextViewContainer]);
-      });
-
-      it('should store the embedded components', async () => {
-        const embeddedComponents: ComponentRef<any>[] = [];
-        embedIntoSpy.and.returnValue(of(embeddedComponents));
-
-        await doRender('Some content');
-
-        expect(docViewer.embeddedComponentRefs).toBe(embeddedComponents);
-      });
-
-      it('should unsubscribe from the previous "embed" observable when unsubscribed from', () => {
-        const obs = new ObservableWithSubscriptionSpies();
-        embedIntoSpy.and.returnValue(obs);
-
-        const renderObservable = docViewer.render({contents: 'Some content', id: 'foo'});
-        const subscription = renderObservable.subscribe();
-
-        expect(obs.subscribeSpy).toHaveBeenCalledTimes(1);
-        expect(obs.unsubscribeSpies[0]).not.toHaveBeenCalled();
-
-        subscription.unsubscribe();
-
-        expect(obs.subscribeSpy).toHaveBeenCalledTimes(1);
-        expect(obs.unsubscribeSpies[0]).toHaveBeenCalledTimes(1);
-      });
-    });
-
-    describe('(destroying old embedded components)', () => {
-      it('should destroy old embedded components after creating new embedded components', async () => {
-        await doRender('<div></div>');
-
-        expect(destroyEmbeddedComponentsSpy).toHaveBeenCalledTimes(1);
-        expect(embedIntoSpy).toHaveBeenCalledBefore(destroyEmbeddedComponentsSpy);
-      });
-
-      it('should still destroy old embedded components if the new document is empty', async () => {
-        await doRender('');
-        expect(destroyEmbeddedComponentsSpy).toHaveBeenCalledTimes(1);
-
-        await doRender(null);
-        expect(destroyEmbeddedComponentsSpy).toHaveBeenCalledTimes(2);
-      });
-    });
-
     describe('(swapping views)', () => {
-      it('should swap the views after destroying old embedded components', async () => {
-        await doRender('<div></div>');
-
-        expect(swapViewsSpy).toHaveBeenCalledTimes(1);
-        expect(destroyEmbeddedComponentsSpy).toHaveBeenCalledBefore(swapViewsSpy);
-      });
-
       it('should still swap the views if the document is empty', async () => {
         await doRender('');
         expect(swapViewsSpy).toHaveBeenCalledTimes(1);
@@ -572,8 +434,6 @@ describe('DocViewerComponent', () => {
         await doRender('Some content', 'foo');
 
         expect(prepareTitleAndTocSpy).toHaveBeenCalledTimes(1);
-        expect(embedIntoSpy).not.toHaveBeenCalled();
-        expect(destroyEmbeddedComponentsSpy).not.toHaveBeenCalled();
         expect(swapViewsSpy).not.toHaveBeenCalled();
         expect(docViewer.nextViewContainer.innerHTML).toBe('');
         expect(logger.output.error).toEqual([
@@ -584,49 +444,6 @@ describe('DocViewerComponent', () => {
         expect(TestBed.get(Meta).addTag).toHaveBeenCalledWith({ name: 'robots', content: 'noindex' });
       });
 
-      it('when `EmbedComponentsService.embedInto()` fails', async () => {
-        const error = Error('Typical `embedInto()` error');
-        embedIntoSpy.and.callFake(() => {
-          expect(docViewer.nextViewContainer.innerHTML).not.toBe('');
-          throw error;
-        });
-
-        await doRender('Some content', 'bar');
-
-        expect(prepareTitleAndTocSpy).toHaveBeenCalledTimes(1);
-        expect(embedIntoSpy).toHaveBeenCalledTimes(1);
-        expect(destroyEmbeddedComponentsSpy).not.toHaveBeenCalled();
-        expect(swapViewsSpy).not.toHaveBeenCalled();
-        expect(docViewer.nextViewContainer.innerHTML).toBe('');
-        expect(logger.output.error).toEqual([
-          [jasmine.any(Error)]
-        ]);
-        expect(logger.output.error[0][0].message).toEqual(`[DocViewer] Error preparing document 'bar': ${error.stack}`);
-        expect(TestBed.get(Meta).addTag).toHaveBeenCalledWith({ name: 'googlebot', content: 'noindex' });
-        expect(TestBed.get(Meta).addTag).toHaveBeenCalledWith({ name: 'robots', content: 'noindex' });
-      });
-
-      it('when `destroyEmbeddedComponents()` fails', async () => {
-        const error = Error('Typical `destroyEmbeddedComponents()` error');
-        destroyEmbeddedComponentsSpy.and.callFake(() => {
-          expect(docViewer.nextViewContainer.innerHTML).not.toBe('');
-          throw error;
-        });
-
-        await doRender('Some content', 'baz');
-
-        expect(prepareTitleAndTocSpy).toHaveBeenCalledTimes(1);
-        expect(embedIntoSpy).toHaveBeenCalledTimes(1);
-        expect(destroyEmbeddedComponentsSpy).toHaveBeenCalledTimes(1);
-        expect(swapViewsSpy).not.toHaveBeenCalled();
-        expect(docViewer.nextViewContainer.innerHTML).toBe('');
-        expect(logger.output.error).toEqual([
-          [jasmine.any(Error)]
-        ]);
-        expect(logger.output.error[0][0].message).toEqual(`[DocViewer] Error preparing document 'baz': ${error.stack}`);
-        expect(TestBed.get(Meta).addTag).toHaveBeenCalledWith({ name: 'googlebot', content: 'noindex' });
-        expect(TestBed.get(Meta).addTag).toHaveBeenCalledWith({ name: 'robots', content: 'noindex' });
-      });
 
       it('when `swapViews()` fails', async () => {
         const error = Error('Typical `swapViews()` error');
@@ -638,8 +455,6 @@ describe('DocViewerComponent', () => {
         await doRender('Some content', 'qux');
 
         expect(prepareTitleAndTocSpy).toHaveBeenCalledTimes(1);
-        expect(embedIntoSpy).toHaveBeenCalledTimes(1);
-        expect(destroyEmbeddedComponentsSpy).toHaveBeenCalledTimes(1);
         expect(swapViewsSpy).toHaveBeenCalledTimes(1);
         expect(docViewer.nextViewContainer.innerHTML).toBe('');
         expect(logger.output.error).toEqual([
@@ -671,25 +486,13 @@ describe('DocViewerComponent', () => {
     });
 
     describe('(events)', () => {
-      it('should emit `docReady` after embedding components', async () => {
+      it('should emit `docReady`', async () => {
         const onDocReadySpy = jasmine.createSpy('onDocReady');
         docViewer.docReady.subscribe(onDocReadySpy);
 
         await doRender('Some content');
 
         expect(onDocReadySpy).toHaveBeenCalledTimes(1);
-        expect(embedIntoSpy).toHaveBeenCalledBefore(onDocReadySpy);
-      });
-
-      it('should emit `docReady` before destroying old embedded components and swapping views', async () => {
-        const onDocReadySpy = jasmine.createSpy('onDocReady');
-        docViewer.docReady.subscribe(onDocReadySpy);
-
-        await doRender('Some content');
-
-        expect(onDocReadySpy).toHaveBeenCalledTimes(1);
-        expect(onDocReadySpy).toHaveBeenCalledBefore(destroyEmbeddedComponentsSpy);
-        expect(onDocReadySpy).toHaveBeenCalledBefore(swapViewsSpy);
       });
 
       it('should emit `docRendered` after swapping views', async () => {
