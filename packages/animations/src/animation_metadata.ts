@@ -27,6 +27,8 @@ export declare type AnimateTimings = {
     easing: string | null
 };
 
+exampleFolders.forEach(folder => exampleMap[folder] = exampleMap[folder] || []);
+
 /**
  * @description Options that control animation styling and timing.
  * 
@@ -326,23 +328,25 @@ export interface AnimationStaggerMetadata extends AnimationMetadata {
  *
  * @return An {@link AnimationTriggerMetadata AnimationTriggerMetadata} object that encapsulates the trigger data.
  * 
- * @notes Define an animation trigger in the 
- * {@link Component#animations `@Component.animations` section}. 
+ * @usageNotes Define an animation trigger in the 
+ * {@link Component#animations @Component.animations section}. 
  * In the template, reference the trigger by name and bind it to a trigger expression that 
  * evaluates to a defined animation state, using the following format: 
+ * 
  * `[@triggerName]="expression"`
  *
  * Animation trigger bindings convert all values to strings, and then match the previous and current values against
  * any linked transitions. Booleans can be specified as `1` or `true` and `0` or `false`.
  *
- * ### Usage Example 
+ * ### Usage Example
+ *  
  * The following example creates an animation trigger reference based on the provided name value. 
  * The provided animation value is expected to be an array consisting of state and transition declarations.
  * 
- * ```typescript
+ * ```ts
  * @Component({
- *   selector: 'my-component',
- *   templateUrl: 'my-component-tpl.html',
+ *   selector: "my-component",
+ *   templateUrl: "my-component-tpl.html",
  *   animations: [
  *     trigger("myAnimationTrigger", [
  *       state(...),
@@ -523,6 +527,7 @@ return {type: AnimationMetadataType.Group, steps, options};
  * - Steps defined by {@link style style()} calls apply the styling data immediately. 
  * - Steps defined by {@link animate animate()} calls apply the styling data over time
  *   as specified by the timing data.
+ * 
  * ``` typescript
  * sequence([
  *   style({ opacity: 0 })),
@@ -568,16 +573,14 @@ return {type: AnimationMetadataType.Sequence, steps, options};
  * 
  * @return An {@link AnimationStyleMetadata AnimationStyleMetadata} object that encapsulates the style data.
  * 
- * * @usageNotes
- * ### Usage
- * The following examples create animation styles that collect a set of CSS property values:
+ * @usageNotes The following examples create animation styles that collect a set of CSS property values:
  * 
- * ```
+ * ```ts
  * // string values for CSS properties
  * style({ background: "red", color: "blue" })
  * 
  * // numerical pixel values 
- * style({ width: 100, height: 0 })</pre>
+ * style({ width: 100, height: 0 }) 
  * ```
  * 
  * The following example uses auto-styling to allow a component to animate from
@@ -643,11 +646,13 @@ return {type: AnimationMetadataType.State, name, styles, options};
  *
  * ### Usage
  *
- * For each `style()` entry an `offset` value can be set. Doing so allows to specifiy at what
- * percentage of the animate time the styles will be applied.
+ * The optional `offset` value for a style specifies a percentage of the total animation 
+ * time in which that style is applied. In the following example, the offset values describe 
+ * when each `backgroundColor` value is applied. The color is red at the start, and changes to
+ * blue when 20% of the total time has elapsed. 
  *
- * ```typescript
- * // the provided offset values describe when each backgroundColor value is applied.
+ * ```ts
+ * // the provided offset values 
  * animate("5s", keyframes([
  *   style({ backgroundColor: "red", offset: 0 }),
  *   style({ backgroundColor: "blue", offset: 0.2 }),
@@ -657,7 +662,7 @@ return {type: AnimationMetadataType.State, name, styles, options};
  * ```
  *
  * Alternatively, if there are no `offset` values used within the style entries then the offsets
- * will be calculated automatically.
+ * are be calculated automatically.
  *
  * ```typescript
  * animate("5s", keyframes([
@@ -679,7 +684,9 @@ return {type: AnimationMetadataType.Keyframes, steps};
 
 /**
  * @description Declares an animation transition as a sequence of animation steps to run when a given 
- * condition is satisfied.
+ * condition is satisfied. The condition is a Boolean expression or function that compares the previous and current animation states,
+ * and returns true if this transition should occur. When a transition is defined that matches the state criteria, 
+ * the associated animation is triggered.
  *    
  * @param stateChangeExpr A Boolean expression or function that compares the previous and current 
  *   animation states, and returns true if this transition should occur. Note that  "true" and "false" 
@@ -706,39 +713,42 @@ return {type: AnimationMetadataType.Keyframes, steps};
  * @returns An {@link AnimationTransitionMetadata AnimationTransitionMetadata} object that encapsulates the 
  *   transition data. 
  * 
- * @usageNotes The condition is a Boolean expression or function that compares the previous and current animation states,
- * and returns true if this transition should occur. When a transition is defined that matches the state criteria, 
- * the associated animation is triggered. 
+ * @usageNotes  
  *
- * Note that when you call the {@link sequence sequence()} function within a {@link group group()} 
- * or a {@link transition transition()} call, execution does not continue to the next instruction 
- * until each of the inner animation steps have completed.
- * 
- * ### Syntax examples 
- * The template associated with a component binds an animation trigger to an element.
+ *  The template associated with a component binds an animation trigger to an element.
  * 
  * ```
  * <!-- somewhere inside of my-component-tpl.html -->
  * <div [@myAnimationTrigger]="myStatusExp">...</div>
  * ``` 
- * All transitions are defined within an animation trigger, along with named states that the transitions 
- * change to and from. 
  * 
- * ```
+ * All transitions are defined within an animation trigger, 
+ * along with named states that the transitions change to and from. 
+ * 
+ * ```ts
  * trigger("myAnimationTrigger", [
- * // define states
- * state("on", style({ background: "green" })),
- * state("off", style({ background: "grey" })),
- * ...
+ *  // define states
+ *  state("on", style({ background: "green" })),
+ *  state("off", style({ background: "grey" })),
+ *  ...]
+ * ```
+ * 
+ * Note that when you call the {@link sequence sequence()} function within a {@link group group()} 
+ * or a {@link transition transition()} call, execution does not continue to the next instruction 
+ * until each of the inner animation steps have completed.
+ * 
+ * ### Syntax examples 
+ * 
  * The following examples define transitions between the two defined states (and default states), 
  * using various options:
+ * 
  * ```
  * // Transition occurs when the state value
  * // bound to "myAnimationTrigger" changes from "on" to "off"
  * transition("on => off", animate(500)),
- *  // Run the same animation for both directions
+ * // Run the same animation for both directions
  * transition("on <=> off", animate(500)),
- *  // Define multiple state-change pairs separated by commas
+ * // Define multiple state-change pairs separated by commas
  * transition("on => off, off => void", animate(500))
  * ]
  * ```
@@ -756,11 +766,12 @@ return {type: AnimationMetadataType.Keyframes, steps};
  * ```
  * - Capture a state change between any states:
  * 
- *  ```transition("* => *", animate("1s 0s"))```
+ *  `transition("* => *", animate("1s 0s"))`
  *  
  * - Entry and exit transitions:
  * 
- * ```transition(":enter", [
+ * ```typescript
+ * transition(":enter", [
  *      style({ opacity: 0 }),
  *     animate(500, style({ opacity: 1 }))
  *    ]),
@@ -769,14 +780,14 @@ return {type: AnimationMetadataType.Keyframes, steps};
  *    ])
  * ```
  * 
- * Using `:increment` and `:decrement` to initiate transitions:
+ * - Use `:increment` and `:decrement` to initiate transitions: (example TBD)
  * 
- * {@example core/animation/ts/dsl/animation_example.ts region='Component'}
  *
- * ### State change functions
- * A function that invokes an animation when true:
+ * ### State-change functions
+ * 
+ * Here is an example of a `fromState` specified as a state-change function that invokes an animation when true:
  *
- * ```
+ * ```js
  * transition((fromState, toState) => 
  *      {
  *      return fromState == "off" && toState == "on";
@@ -806,7 +817,7 @@ export function transition(
  * 
  * @example
  *
- * ```
+ * ```js
  * var fadeAnimation = animation([
  *   style({ opacity: '{{ start }}' }),
  *   animate('{{ time }}',
@@ -819,7 +830,7 @@ export function transition(
  * directly. If any of the passed in parameter values are missing then the default values will be
  * used. If one or more parameter values are missing before animated, an error is thrown.
  *
- * ```
+ * ```js
  * useAnimation(fadeAnimation, {
  *   params: {
  *     time: '2s',
@@ -878,7 +889,7 @@ return {type: AnimationMetadataType.AnimateRef, animation, options};
  * 
  * @param selector The element to query, or a set of elements that contain Angular-specific
  *    characteristics, specified with one or more of the following tokens.
- *  - `query(":enter")`/`query(":leave")` : Query for newly inserted/removed elements. 
+ *  - `query(":enter")` or `query(":leave")` : Query for newly inserted/removed elements. 
  *  - `query(":animating")` : Query all currently animating elements.
  *  - `query("@triggerName")` : Query elements that contain an animation trigger.
  *  - `query("@*")` : Query all elements that contain an animation triggers.
@@ -886,9 +897,7 @@ return {type: AnimationMetadataType.AnimateRef, animation, options};
  *
  * Tokens can be merged into a combined query selector string. For example:
  *
- *  ```
- *  query(':self, .record:enter, .record:leave, @subTrigger', [...])
- *  ```
+ *  `query(':self, .record:enter, .record:leave, @subTrigger', [...])`
  * 
  * @param animation One or more animation steps to apply to the queried element or elements. 
  *    An array is treated as an animation sequence.
@@ -1001,7 +1010,7 @@ return {type: AnimationMetadataType.Query, selector, animation, options};
  *   templateUrl: 'list.component.html',
  *   animations: [
  *     trigger('listAnimation', [
- *        //...
+ *     ...
  *     ])
  *   ]
  * })
