@@ -89,47 +89,51 @@ promise.then(() => {
 The following code snippets illustrate how the same kind of operation is defined using observables and promises.
 
 <table>
-  <tr>
-    <th>Operation</th>
-    <th>Observable</th>
-    <th>Promise</th>
-  </tr>
-  <tr>
-    <td>Creation</td>
-    <td>
-      <pre>new Observable((observer) => {
-  observer.next(123);
-});</pre>
-    </td>
-    <td>
-      <pre>new Promise((resolve, reject) => {
-  resolve(123);
-});</pre>
-    </td>
-  </tr>
-  <tr>
-    <td>Transform</td>
-    <td><pre>obs.map((value) => value * 2 );</pre></td>
-    <td><pre>promise.then((value) => value * 2);</pre></td>
-  </tr>
-  <tr>
-    <td>Subscribe</td>
-    <td>
-      <pre>sub = obs.subscribe((value) => {
-  console.log(value)
-});</pre>
-    </td>
-    <td>
-      <pre>promise.then((value) => {
-  console.log(value);
-});</pre>
-    </td>
-  </tr>
-  <tr>
-    <td>Unsubscribe</td>
-    <td><pre>sub.unsubscribe();</pre></td>
-    <td>Implied by promise resolution.</td>
-  </tr>
+  <thead>
+    <tr>
+      <th>Operation</th>
+      <th>Observable</th>
+      <th>Promise</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Creation</td>
+      <td>
+        <pre>new Observable((observer) => {
+    observer.next(123);
+  });</pre>
+      </td>
+      <td>
+        <pre>new Promise((resolve, reject) => {
+    resolve(123);
+  });</pre>
+      </td>
+    </tr>
+    <tr>
+      <td>Transform</td>
+      <td><pre>obs.map((value) => value * 2 );</pre></td>
+      <td><pre>promise.then((value) => value * 2);</pre></td>
+    </tr>
+    <tr>
+      <td>Subscribe</td>
+      <td>
+        <pre>sub = obs.subscribe((value) => {
+    console.log(value)
+  });</pre>
+      </td>
+      <td>
+        <pre>promise.then((value) => {
+    console.log(value);
+  });</pre>
+      </td>
+    </tr>
+    <tr>
+      <td>Unsubscribe</td>
+      <td><pre>sub.unsubscribe();</pre></td>
+      <td>Implied by promise resolution.</td>
+    </tr>
+  </tbody>
 </table>
 
 ## Observables compared to events API
