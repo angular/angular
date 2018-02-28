@@ -34,3 +34,16 @@ jasmine_node_test(
     srcs = [":common_spec_lib"],
     data = ["//packages/common:npm_package"],
 )
+
+ts_library(
+    name = "example_spec_lib",
+    testonly = True,
+    srcs = ["example_package.spec.ts"],
+    deps = ["//packages:types"],
+)
+
+jasmine_node_test(
+    name = "example_package",
+    srcs = [":example_spec_lib"],
+    data = ["//packages/bazel/test/ng_package/example:npm_package"],
+)
