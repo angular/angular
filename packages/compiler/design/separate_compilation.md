@@ -485,9 +485,9 @@ for them and back-patching, at runtime, the static property into the class.
 
 #### Back-patching module (`"renderer2BackPatching"`)
 
-When an application contains Renderer2 target libraries (libraries compiled with
-Angular 5.0 or non-ivy 6.0), the ivy definitions need to be back-patch onto the
-component, directive, module, pipe, and injectable classes.
+When an application contains Renderer2 target libraries the ivy definitions
+need to be back-patch onto the component, directive, module, pipe, and
+injectable classes.
 
 If the Angular compiler option `"renderer2BackPatching"` is enabled, the
 compiler will generate an `angular.back-patch` module in the to root output
@@ -647,10 +647,7 @@ not contain the root application module or a lazy loaded module.
 
 The purpose of the "package" target is to produce a library package that will
 be an entry point for an npm package. Each entry point should be separately
-compiled using a "package" target. Note that this makes explicit the limitation
-that a module from a package cannot be directly lazily loaded. It must be
-imported into a module compiled as an "application" target and then that
-module can be lazily loaded.
+compiled using a "package" target.
 
 ##### example - application
 
