@@ -7,8 +7,8 @@
  */
 
 import {TNode} from '../../src/render3/interfaces/node';
-import {CssSelector, CssSelectorWithNegations, SimpleCssSelector} from '../../src/render3/interfaces/projection';
-import {isNodeMatchingSelector, isNodeMatchingSelectorWithNegations, isNodeMatchingSimpleSelector} from '../../src/render3/node_selector_matcher';
+import {CssSelector, CssSelectorWithNegations, NG_PROJECT_AS_ATTR_NAME, SimpleCssSelector} from '../../src/render3/interfaces/projection';
+import {getProjectAsAttrValue, isNodeMatchingSelector, isNodeMatchingSelectorWithNegations, isNodeMatchingSimpleSelector} from '../../src/render3/node_selector_matcher';
 
 function testLStaticData(tagName: string, attrs: string[] | null): TNode {
   return {
@@ -181,6 +181,28 @@ describe('css selector matching', () => {
         [['div'], null], [['', 'foo', 'baz'], null]
       ])).toBeFalsy();
     });
+  });
+
+  describe('reading the ngProjectAs attribute value', function() {
+
+    function testTNode(attrs: string[] | null) { return testLStaticData('tag', attrs); }
+
+    it('should get ngProjectAs value if present', function() {
+      expect(getProjectAsAttrValue(testTNode([NG_PROJECT_AS_ATTR_NAME, 'tag[foo=bar]'])))
+          .toBe('tag[foo=bar]');
+    });
+
+    it('should return null if there are no attributes',
+       function() { expect(getProjectAsAttrValue(testTNode(null))).toBe(null); });
+
+    it('should return if ngProjectAs is not present', function() {
+      expect(getProjectAsAttrValue(testTNode(['foo', 'bar']))).toBe(null);
+    });
+
+    it('should not accidentally identify ngProjectAs in attribute values', function() {
+      expect(getProjectAsAttrValue(testTNode(['foo', NG_PROJECT_AS_ATTR_NAME]))).toBe(null);
+    });
+
   });
 
 });
