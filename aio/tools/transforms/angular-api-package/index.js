@@ -130,6 +130,6 @@ module.exports = new Package('angular-api', [basePackage, typeScriptPackage])
     ]);
     convertToJsonProcessor.docTypes = convertToJsonProcessor.docTypes.concat(DOCS_TO_CONVERT);
     postProcessHtml.docTypes = convertToJsonProcessor.docTypes.concat(DOCS_TO_CONVERT);
-    autoLinkCode.docTypes = DOCS_TO_CONVERT;
+    autoLinkCode.docTypes = DOCS_TO_CONVERT.concat(['member']);
     autoLinkCode.codeElements = ['code', 'code-example', 'code-pane'];
   });
