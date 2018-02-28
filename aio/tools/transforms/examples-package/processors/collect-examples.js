@@ -27,6 +27,7 @@ module.exports = function collectExamples(exampleMap, regionParser, log, createD
     },
     $process(docs) {
       const exampleFolders = this.exampleFolders;
+      exampleFolders.forEach(folder => exampleMap[folder] = exampleMap[folder] || {});
       const regionDocs = [];
       docs = docs.filter((doc) => {
         if (doc.docType === 'example-file') {
@@ -36,7 +37,6 @@ module.exports = function collectExamples(exampleMap, regionParser, log, createD
               if (doc.fileInfo.relativePath.indexOf(folder) === 0) {
                 const relativePath =
                     doc.fileInfo.relativePath.substr(folder.length).replace(/^\//, '');
-                exampleMap[folder] = exampleMap[folder] || {};
                 exampleMap[folder][relativePath] = doc;
 
                 // We treat files that end in `.annotated` specially
