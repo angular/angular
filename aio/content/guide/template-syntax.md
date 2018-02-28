@@ -1456,55 +1456,97 @@ This is the only binding that creates and sets an attribute.
 
 </div>
 
+<!--
 This guide stresses repeatedly that setting an element property with a property binding
 is always preferred to setting the attribute with a string. Why does Angular offer attribute binding?
+-->
+조금 지루하겠지만 중요한 내용이니 다시 언급하자면, 엘리먼트의 프로퍼티 값은 어트리뷰트에 문자열로 직접 지정하는 것보다 프로퍼티 바인딩을 사용하는 것이 언제나 좋습니다.
+그러면 Angular는 왜 어트리뷰트 바인딩을 제공할까요?
 
+<!--
 **You must use attribute binding when there is no element property to bind.**
+-->
+**어트리뷰트 바인딩은 지정하려는 속성이 프로퍼티에 없고 어트리뷰트에 있을 때만 사용해야 합니다.**
 
+<!--
 Consider the [ARIA](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA),
 [SVG](https://developer.mozilla.org/en-US/docs/Web/SVG), and
 table span attributes. They are pure attributes.
 They do not correspond to element properties, and they do not set element properties.
 There are no property targets to bind to.
+-->
+[ARIA](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA)나
+[SVG](https://developer.mozilla.org/en-US/docs/Web/SVG),
+`<table>` 엘리먼트의 `span` 어트리뷰트에 대해 생각해봅시다. 이 객체들은 순수하게 어트리뷰트만으로 구성됩니다.
+이 객체들에 사용하는 어트리뷰트는 같은 역할을 하는 프로퍼티가 없기 때문에 프로퍼티 바인딩을 사용할 수 없습니다.
 
+<!--
 This fact becomes painfully obvious when you write something like this.
+-->
+코드를 다음과 같이 작성했다고 합시다.
 
 <code-example language="html">
   &lt;tr&gt;&lt;td colspan="{{1 + 1}}"&gt;Three-Four&lt;/td&gt;&lt;/tr&gt;
 </code-example>
 
+<!--
 And you get this error:
+-->
+그러면 에러가 발생합니다:
 
 <code-example format="nocode">
   Template parse errors:
   Can't bind to 'colspan' since it isn't a known native property
 </code-example>
 
+<!--
 As the message says, the `<td>` element does not have a `colspan` property.
 It has the "colspan" *attribute*, but
 interpolation and property binding can set only *properties*, not attributes.
+-->
+이 에러 메시지는 `<td>` 엘리먼트의 `colspan` 프로퍼티를 문자열 바인딩으로 지정할 수 없다는 뜻입니다.
+"colspan"은 *어트리뷰트*입니다. 따라서 이 어트리뷰트 값을 지정하기 위해 문자열 바인딩이나 프로퍼티 바인딩은 사용할 수 없습니다.
+문자열 바인딩이나 프로퍼티 바인딩은 *프로퍼티*를 바인딩 할 때만 사용할 수 있습니다.
 
+<!--
 You need attribute bindings to create and bind to such attributes.
+-->
+이런 경우에 어트리뷰트 바인딩을 사용합니다.
 
+<!--
 Attribute binding syntax resembles property binding.
 Instead of an element property between brackets, start with the prefix **`attr`**,
 followed by a dot (`.`) and the name of the attribute.
 You then set the attribute value, using an expression that resolves to a string.
+-->
+어트리뷰트 바인딩 문법은 프로퍼티 바인딩 문법과 비슷합니다.
+다만, 프로퍼티 바인딩처럼 엘리먼트 프로퍼티 이름을 단순하게 대괄호로 감싸지 않고, **`attr`** 접두사와 마침표(`.`)를 쓴 이후에
+어트리뷰트 이름을 지정합니다.
+그리고 지정되는 어트리뷰트 값은 문자열로 지정합니다.
 
+<!--
 Bind `[attr.colspan]` to a calculated value:
+-->
+그래서 `colspan` 어트리뷰트는 `[attr.colspan]` 와 같이 바인딩합니다.
 
 <code-example path="template-syntax/src/app/app.component.html" region="attrib-binding-colspan" title="src/app/app.component.html" linenums="false">
 </code-example>
 
+<!--
 Here's how the table renders:
+-->
+그러면 다음과 같이 표가 렌더링됩니다:
 
 <table border="1px">
   <tr><td colspan="2">One-Two</td></tr>
   <tr><td>Five</td><td>Six</td></tr>
  </table>
 
+<!--
 One of the primary use cases for attribute binding
 is to set ARIA attributes, as in this example:
+-->
+어트리뷰트 바인딩은 ARIA 어트리뷰트를 바인딩하기 위해 주로 사용합니다:
 
 <code-example path="template-syntax/src/app/app.component.html" region="attrib-binding-aria" title="src/app/app.component.html" linenums="false">
 </code-example>

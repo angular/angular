@@ -306,7 +306,7 @@ button</button>
 <hr><h2 id="attribute-binding">Attribute Binding</h2>
 
 <!--  create and set a colspan attribute -->
-<!-- #docregion attrib-binding-colspan -->
+<!-- #docregion attrib-binding-colspan! -->
 <table border=1>
   <!--  expression calculates colspan=2 -->
   <tr><td [attr.colspan]="1 + 1">One-Two</td></tr>
@@ -317,11 +317,27 @@ button</button>
 
   <tr><td>Five</td><td>Six</td></tr>
 </table>
+<!-- #enddocregion attrib-binding-colspan! -->
+<!-- #docregion attrib-binding-colspan -->
+<table border=1>
+  <!--  표현식의 결과값인 2가 colspan에 바인딩 됩니다. -->
+  <tr><td [attr.colspan]="1 + 1">One-Two</td></tr>
+
+  <!-- ERROR: `colspan` 프로퍼티는 없습니다!
+    <tr><td colspan="{{1 + 1}}">Three-Four</td></tr>
+  -->
+
+  <tr><td>Five</td><td>Six</td></tr>
+</table>
 <!-- #enddocregion attrib-binding-colspan -->
 
 <br>
-<!-- #docregion attrib-binding-aria -->
+<!-- #docregion attrib-binding-aria! -->
 <!-- create and set an aria attribute for assistive technology -->
+<button [attr.aria-label]="actionName">{{actionName}} with Aria</button>
+<!-- #enddocregion attrib-binding-aria! -->
+<!-- #docregion attrib-binding-aria -->
+<!-- 웹 접근성 향상을 위해 ARIA 어트리뷰트를 지정합니다. -->
 <button [attr.aria-label]="actionName">{{actionName}} with Aria</button>
 <!-- #enddocregion attrib-binding-aria -->
 <br><br>
