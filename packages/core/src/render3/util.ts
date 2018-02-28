@@ -6,9 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {WrappedValue} from '../change_detection/change_detection_util';
-import {stringify as _stringify} from '../util';
-
 /**
 * Must use this method for CD (instead of === ) since NaN !== NaN
 */
@@ -19,16 +16,10 @@ export function isDifferent(a: any, b: any): boolean {
 }
 
 export function stringify(value: any): string {
-  return value == null ? '' : _stringify(value);
-}
-
-/**
- * Unwraps the input value when it is a WrappedValue; returns the input value otherwise.
- * @param value the input value, which can be anything.
- * @returns any the underlying value if any, the input value otherwise.
- */
-export function unwrap(value: any): any {
-  return WrappedValue.unwrap(value);
+  if (typeof value == 'function') return value.name || value;
+  if (typeof value == 'string') return value;
+  if (value == null) return '';
+  return '' + value;
 }
 
 /**

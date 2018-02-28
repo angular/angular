@@ -19,9 +19,9 @@ import {LContainerNode, LElementNode, LNode, LNodeFlags, LProjectionNode, LTextN
 import {assertNodeType} from './node_assert';
 import {appendChild, insertChild, insertView, appendProjectedNode, removeView, canInsertNativeNode} from './node_manipulation';
 import {matchingSelectorIndex} from './node_selector_matcher';
-import {ComponentDef, ComponentTemplate, ComponentType, DirectiveDef, DirectiveType, PipeDef} from './interfaces/definition';
-import {RElement, RText, Renderer3, RendererFactory3, ProceduralRenderer3, RendererStyleFlags3, isProceduralRenderer} from './interfaces/renderer';
-import {isDifferent, stringify, unwrap} from './util';
+import {ComponentDef, ComponentTemplate, ComponentType, DirectiveDef, DirectiveType} from './interfaces/definition';
+import {RElement, RText, Renderer3, RendererFactory3, ProceduralRenderer3, ObjectOrientedRenderer3, RendererStyleFlags3, isProceduralRenderer} from './interfaces/renderer';
+import {isDifferent, stringify} from './util';
 import {executeHooks, executeContentHooks, queueLifecycleHooks, queueInitHooks, executeInitHooks} from './hooks';
 import {ViewRef} from './view_ref';
 
@@ -1567,8 +1567,7 @@ function initBindings() {
 export function bind<T>(value: T | NO_CHANGE): T|NO_CHANGE {
   if (creationMode) {
     initBindings();
-    data[bindingIndex++] = value;
-    return unwrap(value);
+    return data[bindingIndex++] = value;
   }
 
   const changed: boolean = value !== NO_CHANGE && isDifferent(data[bindingIndex], value);
@@ -1576,7 +1575,7 @@ export function bind<T>(value: T | NO_CHANGE): T|NO_CHANGE {
     data[bindingIndex] = value;
   }
   bindingIndex++;
-  return changed ? unwrap(value) : NO_CHANGE;
+  return changed ? value : NO_CHANGE;
 }
 
 /**

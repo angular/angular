@@ -5,7 +5,6 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {WrappedValue} from '../../src/change_detection/change_detection_util';
 import {defineComponent} from '../../src/render3/index';
 import {bind, container, containerRefreshEnd, containerRefreshStart, directiveRefresh, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, load} from '../../src/render3/instructions';
 import {pureFunction1, pureFunction2, pureFunction3, pureFunction4, pureFunction5, pureFunction6, pureFunction7, pureFunction8, pureFunctionV} from '../../src/render3/pure_function';
@@ -327,30 +326,6 @@ describe('array literals', () => {
     ]);
   });
 
-  it('should support an array literal with a wrapped binding', () => {
-    const e0_ff = (v: any) => ['Nancy', v, 'Bess'];
-
-    /** Equivalent to <my-comp [names]="['Nancy', customName | someWrappingPipe, 'Bess']"></my-comp>
-     */
-    function Template(ctx: any, cm: boolean) {
-      if (cm) {
-        elementStart(0, MyComp);
-        elementEnd();
-      }
-      elementProperty(0, 'names', bind(pureFunction1(e0_ff, ctx.customName)));
-      MyComp.ngComponentDef.h(1, 0);
-      directiveRefresh(1, 0);
-    }
-
-    renderToHtml(Template, {customName: WrappedValue.wrap('Carson')});
-    const firstArray = myComp !.names;
-    expect(firstArray).toEqual(['Nancy', 'Carson', 'Bess']);
-
-    renderToHtml(Template, {customName: WrappedValue.wrap('Carson')});
-    expect(myComp !.names).toEqual(['Nancy', 'Carson', 'Bess']);
-    expect(firstArray).not.toBe(myComp !.names);
-  });
-
 });
 describe('object literals', () => {
   let objectComp: ObjectComp;
@@ -504,27 +479,4 @@ describe('object literals', () => {
     expect(objectComps[1].config).toEqual({opacity: 1, duration: 600});
   });
 
-  it('should support an object literal with a wrapped binding', () => {
-    const e0_ff = (v: any) => { return {duration: 500, animation: v}; };
-
-    /** Equivalent to <object-comp [config]="{duration: 500, animation: name |
-     * someWrappingBinding}"></object-comp> */
-    function Template(ctx: any, cm: boolean) {
-      if (cm) {
-        elementStart(0, ObjectComp);
-        elementEnd();
-      }
-      elementProperty(0, 'config', bind(pureFunction1(e0_ff, ctx.name)));
-      ObjectComp.ngComponentDef.h(1, 0);
-      directiveRefresh(1, 0);
-    }
-
-    renderToHtml(Template, {name: WrappedValue.wrap('slide')});
-    const firstObj = objectComp !.config;
-    expect(objectComp !.config).toEqual({duration: 500, animation: 'slide'});
-
-    renderToHtml(Template, {name: WrappedValue.wrap('slide')});
-    expect(objectComp !.config).toEqual({duration: 500, animation: 'slide'});
-    expect(firstObj).not.toBe(objectComp !.config);
-  });
 });

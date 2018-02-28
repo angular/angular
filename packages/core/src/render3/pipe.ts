@@ -11,7 +11,6 @@ import {PipeTransform} from '../change_detection/pipe_transform';
 import {getTView, load, store} from './instructions';
 import {PipeDef} from './interfaces/definition';
 import {pureFunction1, pureFunction2, pureFunction3, pureFunction4, pureFunctionV} from './pure_function';
-import {unwrap} from './util';
 
 
 /**
@@ -47,7 +46,7 @@ export function pipe<T>(index: number, pipeDef: PipeDef<T>, firstInstance?: T): 
 export function pipeBind1(index: number, v1: any): any {
   const pipeInstance = load<PipeTransform>(index);
   return isPure(index) ? pureFunction1(pipeInstance.transform, v1, pipeInstance) :
-                         pipeInstance.transform(unwrap(v1));
+                         pipeInstance.transform(v1);
 }
 
 /**
@@ -63,7 +62,7 @@ export function pipeBind1(index: number, v1: any): any {
 export function pipeBind2(index: number, v1: any, v2: any): any {
   const pipeInstance = load<PipeTransform>(index);
   return isPure(index) ? pureFunction2(pipeInstance.transform, v1, v2, pipeInstance) :
-                         pipeInstance.transform(unwrap(v1), unwrap(v2));
+                         pipeInstance.transform(v1, v2);
 }
 
 /**
@@ -80,7 +79,7 @@ export function pipeBind2(index: number, v1: any, v2: any): any {
 export function pipeBind3(index: number, v1: any, v2: any, v3: any): any {
   const pipeInstance = load<PipeTransform>(index);
   return isPure(index) ? pureFunction3(pipeInstance.transform.bind(pipeInstance), v1, v2, v3) :
-                         pipeInstance.transform(unwrap(v1), unwrap(v2), unwrap(v3));
+                         pipeInstance.transform(v1, v2, v3);
 }
 
 /**
@@ -98,7 +97,7 @@ export function pipeBind3(index: number, v1: any, v2: any, v3: any): any {
 export function pipeBind4(index: number, v1: any, v2: any, v3: any, v4: any): any {
   const pipeInstance = load<PipeTransform>(index);
   return isPure(index) ? pureFunction4(pipeInstance.transform, v1, v2, v3, v4, pipeInstance) :
-                         pipeInstance.transform(unwrap(v1), unwrap(v2), unwrap(v3), unwrap(v4));
+                         pipeInstance.transform(v1, v2, v3, v4);
 }
 
 /**
@@ -112,17 +111,8 @@ export function pipeBind4(index: number, v1: any, v2: any, v3: any, v4: any): an
  */
 export function pipeBindV(index: number, values: any[]): any {
   const pipeInstance = load<PipeTransform>(index);
-  let result: any;
-  if (isPure(index)) {
-    result = pureFunctionV(pipeInstance.transform, values, pipeInstance);
-  } else {
-    const unwrappedValues = [];
-    for (let i = 0; i < values.length; i++) {
-      unwrappedValues[i] = unwrap(values[i]);
-    }
-    result = pipeInstance.transform.apply(pipeInstance, unwrappedValues);
-  }
-  return result;
+  return isPure(index) ? pureFunctionV(pipeInstance.transform, values, pipeInstance) :
+                         pipeInstance.transform.apply(pipeInstance, values);
 }
 
 function isPure(index: number): boolean {

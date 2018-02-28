@@ -87,9 +87,6 @@
     "name": "renderEmbeddedTemplate"
   },
   {
-    "name": "stringify"
-  },
-  {
     "name": "stringify$1"
   }
 ]
