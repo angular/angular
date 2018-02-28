@@ -1,12 +1,11 @@
-var _ = require('lodash');
-
 /**
  * @dgService getDocFromAlias
  * @description Get an array of docs that match this alias, relative to the originating doc.
  *
- * @property {(alias: string, originatingDoc: Doc, ambiguousDocs: Doc[]) => Doc[]} disambiguators a collection of functions
- *           that attempt to resolve ambiguous links. Each disambiguator returns a new collection of docs with
- *           unwanted ambiguous docs removed (see links-package/service/disambiguators for examples).
+ * @property {Array<(alias: string, originatingDoc: Doc, ambiguousDocs: Doc[]) => Doc[]>} disambiguators
+ *           a collection of functions that attempt to resolve ambiguous links. Each disambiguator returns
+ *           a new collection of docs with unwanted ambiguous docs removed (see links-package/service/disambiguators
+ *           for examples).
  */
 module.exports = function getDocFromAlias(aliasMap) {
 
@@ -20,5 +19,5 @@ module.exports = function getDocFromAlias(aliasMap) {
       // Start with the docs that match the alias
       aliasMap.getDocs(alias)
     );
-  };
+  }
 };

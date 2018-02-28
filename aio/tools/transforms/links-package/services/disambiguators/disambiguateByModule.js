@@ -10,5 +10,3 @@ module.exports = function disambiguateByModule() {
     return docs;
   };
 };
-
-

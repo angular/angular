@@ -28,7 +28,7 @@ describe('getDocFromAlias', () => {
     getDocFromAlias.disambiguators = [
       (alias, originatingDoc, docs) => docs.filter(doc => doc.name.indexOf('X') !== -1), // only if X appears in name
       (alias, originatingDoc, docs) => docs.filter(doc => doc.name.indexOf('Y') !== -1)  // only if Y appears in name
-    ]
+    ];
 
     var doc1 = {name: 'X', aliases: ['a', 'b', 'c']};
     var doc2 = {name: 'Y', aliases: ['a', 'b']};
