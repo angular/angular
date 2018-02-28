@@ -1481,18 +1481,18 @@ export function detectChanges<T>(component: T): void {
 
 /**
  * Mark the component as dirty (needing change detection).
-*
-* Marking a component dirty will schedule a change detection on this
-* component at some point in the future. Marking an already dirty
-* component as dirty is a noop. Only one outstanding change detection
-* can be scheduled per component tree. (Two components bootstrapped with
-  * separate `renderComponent` will have separate schedulers)
-*
-* When the root component is bootstrapped with `renderComponent`, a scheduler
-* can be provided.
-*
-* @param component Component to mark as dirty.
-*/
+ *
+ * Marking a component dirty will schedule a change detection on this
+ * component at some point in the future. Marking an already dirty
+ * component as dirty is a noop. Only one outstanding change detection
+ * can be scheduled per component tree. (Two components bootstrapped with
+ * separate `renderComponent` will have separate schedulers)
+ *
+ * When the root component is bootstrapped with `renderComponent`, a scheduler
+ * can be provided.
+ *
+ * @param component Component to mark as dirty.
+ */
 export function markDirty<T>(component: T) {
   ngDevMode && assertNotNull(component, 'component');
   const lElementNode = _getComponentHostLElementNode(component);
