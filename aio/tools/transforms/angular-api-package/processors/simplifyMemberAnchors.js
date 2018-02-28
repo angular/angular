@@ -12,13 +12,13 @@ module.exports = function simplifyMemberAnchors() {
         if (doc.members) {
           doc.members.forEach(member => {
             member.anchor = computeAnchor(member);
-            member.path = member.containerDoc.path + '#' + member.anchor;
+            member.path = doc.path + '#' + member.anchor;
           });
         }
         if (doc.statics) {
           doc.statics.forEach(member => {
             member.anchor = computeAnchor(member);
-            member.path = member.containerDoc.path + '#' + member.anchor;
+            member.path = doc.path + '#' + member.anchor;
           });
         }
       });
