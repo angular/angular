@@ -110,6 +110,11 @@ export function isNavigationCancelingError(error: Error) {
 // Matches the route configuration (`route`) against the actual URL (`segments`).
 export function defaultUrlMatcher(
     segments: UrlSegment[], segmentGroup: UrlSegmentGroup, route: Route): UrlMatchResult|null {
+  if (!route.hasOwnProperty('path')) {
+    // This is an invalid router config
+    return null;
+  }
+
   const parts = route.path !.split('/');
 
   if (parts.length > segments.length) {
