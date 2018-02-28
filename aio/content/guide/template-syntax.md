@@ -1437,6 +1437,8 @@ The template syntax provides specialized one-way bindings for scenarios less wel
 -->
 Angular 템플릿에서는 프로퍼티 바인딩 외에도 다음과 같은 특수한 바인딩을 사용할 수 있습니다.
 
+{@a attribute-binding}
+
 <!--
 ### Attribute binding
 -->
