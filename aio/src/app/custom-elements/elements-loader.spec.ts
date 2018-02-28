@@ -39,7 +39,7 @@ describe('ElementsLoader', () => {
 
   // ElementsLoader uses the window's customElements API. Provide a fake for this test.
   beforeEach(() => {
-    fakeCustomElements = jasmine.createSpyObj('customElements', ['define']);
+    fakeCustomElements = jasmine.createSpyObj('customElements', ['define', 'whenDefined']);
     window.customElements = fakeCustomElements;
   });
   afterEach(() => {
