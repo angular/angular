@@ -29,6 +29,12 @@ $backdrop-animation-timing-function: cubic-bezier(0.25, 0.8, 0.25, 1) !default;
   .cdk-overlay-container {
     position: fixed;
     z-index: $cdk-z-index-overlay-container;
+
+    &:empty {
+      // Hide the element when it doesn't have any child nodes. This doesn't
+      // include overlays that have been detached, rather than disposed.
+      display: none;
+    }
   }
 
   // We use an extra wrapper element in order to use make the overlay itself a flex item.
