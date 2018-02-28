@@ -17,6 +17,7 @@ export {
   inject as ɵinject,
   injectTemplateRef as ɵinjectTemplateRef,
   injectViewContainerRef as ɵinjectViewContainerRef,
+  injectChangeDetectorRef as ɵinjectChangeDetectorRef,
   InjectFlags as ɵInjectFlags,
   PublicFeature as ɵPublicFeature,
   NgOnChangesFeature as ɵNgOnChangesFeature,
