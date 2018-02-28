@@ -14,6 +14,7 @@ import {PublicFeature, defineDirective, inject, injectElementRef, injectTemplate
 import {bind, container, containerRefreshEnd, containerRefreshStart, createLNode, createLView, createTView, elementEnd, elementStart, embeddedViewEnd, embeddedViewStart, enterView, interpolation2, leaveView, load, text, textBinding} from '../../src/render3/instructions';
 import {LInjector} from '../../src/render3/interfaces/injector';
 import {LNodeFlags} from '../../src/render3/interfaces/node';
+import {LViewFlags} from '../../src/render3/interfaces/view';
 
 import {renderComponent, renderToHtml} from './render_util';
 
@@ -320,7 +321,8 @@ describe('di', () => {
 
   describe('getOrCreateNodeInjector', () => {
     it('should handle initial undefined state', () => {
-      const contentView = createLView(-1, null !, createTView(), null, null);
+      const contentView =
+          createLView(-1, null !, createTView(), null, null, LViewFlags.CheckAlways);
       const oldView = enterView(contentView, null !);
       try {
         const parent = createLNode(0, LNodeFlags.Element, null, null);
