@@ -1,7 +1,7 @@
 import { ApplicationRef, Injectable, OnDestroy } from '@angular/core';
 import { NgServiceWorker } from '@angular/service-worker';
 import { concat, of, Subject } from 'rxjs';
-import { debounceTime, filter, first, map, startWith, takeUntil, tap } from 'rxjs/operators';
+import { debounceTime, defaultIfEmpty, filter, first, map, startWith, takeUntil, tap } from 'rxjs/operators';
 
 import { Logger } from 'app/shared/logger.service';
 
@@ -31,7 +31,7 @@ export class SwUpdatesService implements OnDestroy {
   );
 
   constructor(appRef: ApplicationRef, private logger: Logger, private sw: NgServiceWorker) {
-    const appIsStable$ = appRef.isStable.pipe(filter(v => v), first());
+    const appIsStable$ = appRef.isStable.pipe(first(v => v));
     const checkForUpdates$ = this.checkForUpdateSubj.pipe(debounceTime(this.checkInterval), startWith<void>(undefined));
 
     concat(appIsStable$, checkForUpdates$)
@@ -51,10 +51,11 @@ export class SwUpdatesService implements OnDestroy {
 
   private checkForUpdate() {
     this.log('Checking for update...');
-    // Temp workaround for https://github.com/angular/mobile-toolkit/pull/137.
-    // TODO (gkalpak): Remove once #137 is fixed.
-    concat(this.sw.checkForUpdate(), of(false))
+    this.sw.checkForUpdate()
         .pipe(
+            // Temp workaround for https://github.com/angular/mobile-toolkit/pull/137.
+            // TODO (gkalpak): Remove once #137 is fixed.
+            defaultIfEmpty(false),
             first(),
             tap(v => this.log(`Update available: ${v}`)),
         )
