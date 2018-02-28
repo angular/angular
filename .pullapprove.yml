@@ -7,6 +7,7 @@
 #
 # alexeagle - Alex Eagle
 # alxhub - Alex Rickabaugh
+# andrewseguin - Andrew Seguin
 # brocco - Mike Brocchi
 # chuckjaz - Chuck Jazdzewski
 # filipesilva - Filipe Silva
@@ -298,6 +299,16 @@ groups:
         - "packages/service-worker/*"
     users:
       - alxhub #primary
+      - gkalpak
+      - IgorMinar #fallback
+      - mhevery #fallback
+
+  elements:
+    conditions:
+      files:
+        - "packages/elements/*"
+    users:
+      - andrewseguin #primary
       - gkalpak
       - IgorMinar #fallback
       - mhevery #fallback
