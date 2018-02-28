@@ -34,16 +34,16 @@ requiring modules and components that depend on them being recompiled.
 
 The mental model of Ivy is that the decorator is the compiler. That is
 the decorator can be thought of as parameters to a class transformer that
-transforms the information in the decorator into the corresponding
-definition. An `@Component` decorator transforms the class by adding
+transforms the class by generating definitions based on the decorator
+parameters. An `@Component` decorator transforms the class by adding
 an `ngComponentDef` static property, `@Directive` adds `ngDirectiveDef`,
 `@Pipe` adds `ngPipeDef`, etc. In most cases values supplied to the
 decorator is sufficient to generate the definition. However, in the case of
 interpreting the template, the compiler needs to know the selector defined for
 each component, directive and pipe that are in scope of the template. The
-purpose of this document is to define what information is needed by the
-compiler that is not provided by the decorator is serialized, discovered and
-used.
+purpose of this document is to define the information is needed by the
+compiler and how that information is is serialized to be discovered and
+used by subsequent calls to `ngc`.
 
 ## Information needed
 
@@ -55,7 +55,7 @@ class:
 
 ### `CompileDirectiveSummary`
 
-| field               | ivy                   |
+| field               | destination           |
 |---------------------|-----------------------|
 | `type`              | implicit              |
 | `isComponent`       | `ngComponentDef`      |
@@ -87,7 +87,7 @@ For `CompilePipeSummary` the table looks like:
 
 #### `CompilePipeSummary`
 
-| field               | ivy                   |
+| field               | destination           |
 |---------------------|-----------------------|
 | `type`              | implicit              |
 | `name`              | `ngModuleScope`       |
@@ -250,7 +250,6 @@ export class MyPipe implements PipeTransform {
 export class MyPipe {
   transform(...) ...
   static ngPipeDef = definePipe({...});
-  static ngSelector = 'myPipe';
 }
 ```
 
