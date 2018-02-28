@@ -111,6 +111,18 @@ describe('MatMenu', () => {
     expect(overlayContainerElement.textContent).toBe('');
   }));
 
+  it('should be able to remove the backdrop', fakeAsync(() => {
+    const fixture = TestBed.createComponent(SimpleMenu);
+    fixture.detectChanges();
+
+    fixture.componentInstance.menu.hasBackdrop = false;
+    fixture.componentInstance.trigger.openMenu();
+    fixture.detectChanges();
+    tick(500);
+
+    expect(overlayContainerElement.querySelector('.cdk-overlay-backdrop')).toBeFalsy();
+  }));
+
   it('should restore focus to the trigger when the menu was opened by keyboard', fakeAsync(() => {
     const fixture = TestBed.createComponent(SimpleMenu);
     fixture.detectChanges();
