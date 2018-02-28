@@ -3,7 +3,6 @@ import {patchLogService} from './patch-log-service';
 import {DocsPrivateFilter} from './processors/docs-private-filter';
 import {Categorizer} from './processors/categorizer';
 import {FilterDuplicateExports} from './processors/filter-duplicate-exports';
-import {FilterExportAliases} from './processors/filter-export-aliases';
 import {MergeInheritedProperties} from './processors/merge-inherited-properties';
 import {ComponentGrouper} from './processors/component-grouper';
 import {ReadTypeScriptModules} from 'dgeni-packages/typescript/processors/readTypeScriptModules';
@@ -52,9 +51,6 @@ export const apiDocsPackage = new Package('material2-api-docs', [
 
 // Processor that filters out duplicate exports that should not be shown in the docs.
 apiDocsPackage.processor(new FilterDuplicateExports());
-
-// Processor that filters out aliased exports that should not be shown in the docs.
-apiDocsPackage.processor(new FilterExportAliases());
 
 // Processor that merges inherited properties of a class with the class doc.
 apiDocsPackage.processor(new MergeInheritedProperties());
