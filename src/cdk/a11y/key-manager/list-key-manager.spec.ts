@@ -11,8 +11,11 @@ import {Subject} from 'rxjs/Subject';
 
 
 class FakeFocusable {
-  constructor(private _label = '') { }
+  /** Whether the item is disabled or not. */
   disabled = false;
+  /** Test property that can be used to test the `skipPredicate` functionality. */
+  skipItem = false;
+  constructor(private _label = '') {}
   focus(_focusOrigin?: FocusOrigin) {}
   getLabel() { return this._label; }
 }
@@ -499,6 +502,31 @@ describe('Key managers', () => {
         itemList.items.forEach(item => item.disabled = true);
 
         keyManager.onKeydown(fakeKeyEvents.downArrow);
+      });
+    });
+
+    describe('skip predicate', () => {
+
+      it('should skip disabled items by default', () => {
+        itemList.items[1].disabled = true;
+
+        expect(keyManager.activeItemIndex).toBe(0);
+
+        keyManager.onKeydown(fakeKeyEvents.downArrow);
+
+        expect(keyManager.activeItemIndex).toBe(2);
+      });
+
+      it('should be able to skip items with a custom predicate', () => {
+        keyManager.skipPredicate(item => item.skipItem);
+
+        itemList.items[1].skipItem = true;
+
+        expect(keyManager.activeItemIndex).toBe(0);
+
+        keyManager.onKeydown(fakeKeyEvents.downArrow);
+
+        expect(keyManager.activeItemIndex).toBe(2);
       });
     });
 

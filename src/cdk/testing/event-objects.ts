@@ -74,7 +74,7 @@ export function createKeyboardEvent(type: string, keyCode: number, target?: Elem
 }
 
 /** Creates a fake event object with any desired event type. */
-export function createFakeEvent(type: string, canBubble = true, cancelable = true) {
+export function createFakeEvent(type: string, canBubble = false, cancelable = true) {
   const event = document.createEvent('Event');
   event.initEvent(type, canBubble, cancelable);
   return event;

@@ -240,24 +240,19 @@ $mat-list-item-inset-divider-offset: 72px;
   }
 }
 
-
 .mat-nav-list {
   a {
     text-decoration: none;
     color: inherit;
   }
 
-  .mat-list-item-content {
+  .mat-list-item {
     cursor: pointer;
-
-    &:hover, &.mat-list-item-focus {
-      outline: none;
-    }
+    outline: none;
   }
 }
 
-.mat-list-option {
-  &:not(.mat-list-item-disabled) {
-    cursor: pointer;
-  }
+.mat-list-option:not(.mat-list-item-disabled) {
+  cursor: pointer;
+  outline: none;
 }
