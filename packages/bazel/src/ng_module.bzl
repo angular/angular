@@ -312,8 +312,11 @@ def ng_module_impl(ctx, ts_compile_actions):
   # and only under Bazel
   if hasattr(ctx.executable, "_index_bundler"):
     bundle_index_metadata = _write_bundle_index(ctx)
-    # note, not recursive
-    providers["angular"]["flat_module_metadata"] = depset(bundle_index_metadata)
+    providers["angular"]["flat_module_metadata"] = depset(bundle_index_metadata,
+        transitive = [
+            d.angular.flat_module_metadata
+            for d in ctx.attr.deps
+            if hasattr(d, "angular")])
 
   return providers
 

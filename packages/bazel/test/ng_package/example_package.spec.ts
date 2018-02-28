@@ -41,6 +41,16 @@ describe('ng_package', () => {
     expect(shx.ls('-R', 'esm5').stdout.split('\n').filter(n => !!n).sort()).toEqual(expected);
     expect(shx.ls('-R', 'esm2015').stdout.split('\n').filter(n => !!n).sort()).toEqual(expected);
   });
+  it('should have right secondary sources', () => {
+    const expected = [
+      'index.d.ts',
+      'package.json',
+      'secondary.d.ts',
+      'secondary.metadata.json',
+      'secondarymodule.d.ts',
+    ];
+    expect(shx.ls('-R', 'secondary').stdout.split('\n').filter(n => !!n).sort()).toEqual(expected);
+  });
   it('should have main entry point package.json properties set', () => {
     const packageJson = JSON.parse(fs.readFileSync('package.json', UTF8));
     expect(packageJson['main']).toBe('./bundles/example.umd.js');

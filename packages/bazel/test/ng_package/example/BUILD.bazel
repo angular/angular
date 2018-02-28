@@ -17,9 +17,5 @@ ng_package(
     ],
     entry_point = "packages/bazel/test/ng_package/example/index.js",
     secondary_entry_points = ["secondary"],
-    deps = [
-        ":example",
-        # FIXME(#22419)
-        "//packages/bazel/test/ng_package/example/secondary",
-    ],
+    deps = [":example"],
 )
