@@ -8,7 +8,7 @@
 
 import {Component, Directive, Input, Type, forwardRef} from '@angular/core';
 import {ComponentFixture, TestBed, fakeAsync, tick} from '@angular/core/testing';
-import {AbstractControl, AsyncValidator, AsyncValidatorFn, COMPOSITION_BUFFER_MODE, FormArray, FormControl, FormControlDirective, FormControlName, FormGroup, FormGroupDirective, FormsModule, NG_ASYNC_VALIDATORS, NG_VALIDATORS, ReactiveFormsModule, Validators} from '@angular/forms';
+import {AbstractControl, AsyncValidator, AsyncValidatorFn, COMPOSITION_BUFFER_MODE, DefaultValueAccessor, FormArray, FormControl, FormControlDirective, FormControlName, FormGroup, FormGroupDirective, FormsModule, NG_ASYNC_VALIDATORS, NG_VALIDATORS, ReactiveFormsModule, Validators} from '@angular/forms';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util';
@@ -73,6 +73,47 @@ import {MyInput, MyInputForm} from './value_accessor_integration_spec';
         dispatchEvent(input.nativeElement, 'input');
 
         expect(form.value).toEqual({'login': 'updatedValue'});
+      });
+
+      it('cleans up when control is replaced with the new one', () => {
+        const oldControl = new FormControl();
+        const newControl = new FormControl();
+
+        const fixture = initTest(FormControlNgIfWrapper);
+
+        fixture.componentInstance.control = oldControl;
+        fixture.detectChanges();
+
+        fixture.componentInstance.control = newControl;
+        fixture.detectChanges();
+
+        const spy = spyOn(DefaultValueAccessor.prototype, 'writeValue');
+
+        oldControl.setValue('My Value');
+
+        // oldControl is not longer connected to value accessor, so it should
+        // not call writeValue on it.
+        expect(spy).not.toHaveBeenCalled();
+      });
+
+      it('cleans up when FormControlDirective is destroyed', () => {
+        const control = new FormControl();
+
+        const fixture = initTest(FormControlNgIfWrapper);
+
+        fixture.componentInstance.control = control;
+        fixture.detectChanges();
+
+        fixture.componentInstance.visible = false;
+        fixture.detectChanges();
+
+        const spy = spyOn(DefaultValueAccessor.prototype, 'writeValue');
+
+        control.setValue('My Value');
+
+        // FormControlDirective have been destroyed and connection to value
+        // accessor should be destroyed together with it.
+        expect(spy).not.toHaveBeenCalled();
       });
 
     });
@@ -2635,4 +2676,13 @@ class FormControlCheckboxRequiredValidator {
 class UniqLoginWrapper {
   // TODO(issue/24571): remove '!'.
   form !: FormGroup;
+}
+
+@Component({
+  selector: 'form-control-ng-if-wrapper',
+  template: '<input *ngIf="visible" type="text" [formControl]="control" required>'
+})
+class FormControlNgIfWrapper {
+  visible = true;
+  control = new FormControl();
 }
