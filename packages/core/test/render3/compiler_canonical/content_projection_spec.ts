@@ -39,8 +39,9 @@ describe('content projection', () => {
     }
 
     // NORMATIVE
-    const $pD_0$: $r3$.ɵCssSelector[] =
+    const $pD_0P$: $r3$.ɵCssSelector[] =
         [[[['span', 'title', 'toFirst'], null]], [[['span', 'title', 'toSecond'], null]]];
+    const $pD_0R$: string[] = ['span[title=toFirst]', 'span[title=toSecond]'];
     // /NORMATIVE
 
     @Component({
@@ -57,7 +58,7 @@ describe('content projection', () => {
         factory: () => new ComplexComponent(),
         template: function(ctx: $ComplexComponent$, cm: $boolean$) {
           if (cm) {
-            $r3$.ɵpD(0, $pD_0$);
+            $r3$.ɵpD(0, $pD_0P$, $pD_0R$);
             $r3$.ɵE(1, 'div', ['id', 'first']);
             $r3$.ɵP(2, 0, 1);
             $r3$.ɵe();

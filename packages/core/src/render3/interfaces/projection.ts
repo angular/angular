@@ -45,6 +45,8 @@ export type CssSelectorWithNegations = [SimpleCssSelector | null, SimpleCssSelec
  */
 export type CssSelector = CssSelectorWithNegations[];
 
+export const NG_PROJECT_AS_ATTR_NAME = 'ngProjectAs';
+
 // Note: This hack is necessary so we don't erroneously get a circular dependency
 // failure based on types.
 export const unusedValueExportToPlacateAjd = 1;

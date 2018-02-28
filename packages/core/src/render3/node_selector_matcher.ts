@@ -10,7 +10,7 @@ import './ng_dev_mode';
 
 import {assertNotNull} from './assert';
 import {TNode, unusedValueExportToPlacateAjd as unused1} from './interfaces/node';
-import {CssSelector, CssSelectorWithNegations, SimpleCssSelector, unusedValueExportToPlacateAjd as unused2} from './interfaces/projection';
+import {CssSelector, CssSelectorWithNegations, NG_PROJECT_AS_ATTR_NAME, SimpleCssSelector, unusedValueExportToPlacateAjd as unused2} from './interfaces/projection';
 
 const unusedValueToPlacateAjd = unused1 + unused2;
 
@@ -115,13 +115,34 @@ export function isNodeMatchingSelector(tNode: TNode, selector: CssSelector): boo
   return false;
 }
 
+export function getProjectAsAttrValue(tNode: TNode): string|null {
+  const nodeAttrs = tNode.attrs;
+  if (nodeAttrs != null) {
+    const ngProjectAsAttrIdx = nodeAttrs.indexOf(NG_PROJECT_AS_ATTR_NAME);
+    // only check for ngProjectAs in attribute names, don't accidentally match attribute's value
+    // (attribute names are stored at even indexes)
+    if ((ngProjectAsAttrIdx & 1) === 0) {
+      return nodeAttrs[ngProjectAsAttrIdx + 1];
+    }
+  }
+  return null;
+}
+
 /**
  * Checks a given node against matching selectors and returns
- * selector index (or 0 if none matched);
+ * selector index (or 0 if none matched).
+ *
+ * This function takes into account the ngProjectAs attribute: if present its value will be compared
+ * to the raw (un-parsed) CSS selector instead of using standard selector matching logic.
  */
-export function matchingSelectorIndex(tNode: TNode, selectors: CssSelector[]): number {
+export function matchingSelectorIndex(
+    tNode: TNode, selectors: CssSelector[], textSelectors: string[]): number {
+  const ngProjectAsAttrVal = getProjectAsAttrValue(tNode);
   for (let i = 0; i < selectors.length; i++) {
-    if (isNodeMatchingSelector(tNode, selectors[i])) {
+    // if a node has the ngProjectAs attribute match it against unparsed selector
+    // match a node against a parsed selector only if ngProjectAs attribute is not present
+    if (ngProjectAsAttrVal === textSelectors[i] ||
+        ngProjectAsAttrVal === null && isNodeMatchingSelector(tNode, selectors[i])) {
       return i + 1;  // first matching selector "captures" a given node
     }
   }
