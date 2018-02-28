@@ -426,7 +426,7 @@ compiler or dependent tool chain. It also allows third-party code generators
 with possibly different component syntaxes to generate a component fully
 understood by the compiler.
 
-Unfortunately, however, manually generated module contain references to
+Unfortunately, however, manually generated modules contain references to
 classes that might not be necessary at runtime. Manually or third-party
 components can get the same payload properties of an Angular generated
 component by annotating the `ngSelector` and `ngModuleScope` properties with
@@ -483,7 +483,7 @@ the library is compiled.
 The ivy compile can adapt Renderer2 target libraries by generating the factories
 for them and back-patching, at runtime, the static property into the class.
 
-#### Back-patching file (`"renderer2BackPatching"`)
+#### Back-patching module (`"renderer2BackPatching"`)
 
 When an application contains Renderer2 target libraries (libraries compiled with
 Angular 5.0 or non-ivy 6.0), the ivy definitions need to be back-patch onto the
@@ -517,7 +517,7 @@ module.
 
 Renderer2 style factories are created when the `"generateRenderer2Factories"`
 Angular compiler option is `true`. Setting `"generateRenderer2Factories"` implies
-`"Renderer2BackPatching"` is also `true` and it is an error to explicitly set it
+`"renderer2BackPatching"` is also `true` and it is an error to explicitly set it
 to `false`. `"generateRenderer2Factories"` is ignored if `"enableIvy"` is
 `false`.
 
@@ -533,7 +533,7 @@ The recommended options for producing a ivy application are
 |--------------------------------|----------|-------------|
 | `"enableIvy"`                  | `true`   | required    |
 | `"generateRenderer2Factories"` | `true`   | implied     |
-| `"Renderer2BackPatching"`      | `true`   | implied     |
+| `"renderer2BackPatching"`      | `true`   | implied     |
 | `"generateCodeForLibraries"`   | `true`   | default     |
 | `"annotationsAs"`              | `remove` | implied     |
 | `"enableLegacyTemplate"`       | `false`  | default     |
@@ -571,7 +571,7 @@ The recommended options for producing a ivy library are:
 |--------------------------------|----------|-------------|
 | `"enableIvy"`                  | `true`   | required    |
 | `"generateRenderer2Factories"` | `false`  |             |
-| `"Renderer2BackPatching"`      | `false`  | default     |
+| `"renderer2BackPatching"`      | `false`  | default     |
 | `"generateCodeForLibraries"`   | `false`  |             |
 | `"annotationsAs"`              | `remove` | implied     |
 | `"enableLegacyTemplate"`       | `false`  | default     |
@@ -595,7 +595,7 @@ depending on the target:
 | target            | option                         | value        |             |
 |-------------------|--------------------------------|--------------|-------------|
 | `"application"`   | `"generateRenderer2Factories"` | `true`       | enforced    |
-|                   | `"Renderer2BackPatching"`      | `true`       | enforced    |
+|                   | `"renderer2BackPatching"`      | `true`       | enforced    |
 |                   | `"generateCodeForLibraries"`   | `true`       |             |
 |                   | `"annotationsAs"`              | `remove`     |             |
 |                   | `"enableLegacyTemplate"`       | `false`      |             |
@@ -607,7 +607,7 @@ depending on the target:
 |                   | `"enableLegacyTemplate"`       | `false`      |             |
 |                   |                                |              |             |
 | `"library"`       | `"generateRenderer2Factories"` | `false`      | enforced    |
-|                   | `"Renderer2BackPatching"`      | `false`      | enforced    |
+|                   | `"renderer2BackPatching"`      | `false`      | enforced    |
 |                   | `"generateCodeForLibraries"`   | `false`      | enforced    |
 |                   | `"annotationsAs"`              | `decorators` |             |
 |                   | `"enableLegacyTemplate"`       | `false`      |             |
@@ -622,7 +622,7 @@ depending on the target:
 |                   | `"flatModuleId"`               |              | required    |
 |                   | `"enableIvy"`                  | `false`      | enforced    |
 |                   | `"generateRenderer2Factories"` | `false`      | enforced    |
-|                   | `"Renderer2BackPatching"`      | `false`      | enforced    |
+|                   | `"renderer2BackPatching"`      | `false`      | enforced    |
 |                   | `"generateCodeForLibraries"`   | `false`      | enforced    |
 |                   | `"annotationsAs"`              | `remove`     |             |
 |                   | `"enableLegacyTemplate"`       | `false`      |             |
