@@ -7,7 +7,7 @@ AUTHOR: chuckj@
 ### Angular 5
 
 In 5.0 and prior versions of Angular the compiler performs whole program
-analysis and generates template and injector definitions that are use
+analysis and generates template and injector definitions that are using
 this global knowledge to flatten injector scope definitions, inline
 directives into the component, pre-calculate queries, pre-calculate
 content projection, etc. This global knowledge requires that module and
@@ -28,7 +28,7 @@ decorators.
 ### Angular Ivy
 
 In Ivy, the runtime is crafted in a way that allows for separate compilation
-by preforming at runtime much of what was previously pre-calculated by
+by performing at runtime much of what was previously pre-calculated by
 compiler. This allows the definition of components to change without
 requiring modules and components that depend on them being recompiled.
 
@@ -36,7 +36,7 @@ The mental model of Ivy is that the decorator is the compiler. That is
 the decorator can be thought of as parameters to a class transformer that
 transforms the information in the decorator into the corresponding
 definition. An `@Component` decorator transforms the class by adding
-an `ngComponentDef` static variable, `@Directive` adds `ngDirectiveDef`,
+an `ngComponentDef` static property, `@Directive` adds `ngDirectiveDef`,
 `@Pipe` adds `ngPipeDef`, etc. In most cases values supplied to the
 decorator is sufficient to generate the definition. However, in the case of
 interpreting the template, the compiler needs to know the selector defined for
@@ -48,7 +48,7 @@ used.
 ## Information needed
 
 The information available across compilations in Angular 5 is represented in
-the  compiler by a summary description. For example, components and directive
+the  compiler by a summary description. For example, components and directives
 are represented by the [`CompileDirectiveSummary`](https://github.com/angular/angular/blob/d3827a0017fd5ff5ac0f6de8a19692ce47bf91b4/packages/compiler/src/compile_metadata.ts#L257).
 The following table shows where this information ends up in an ivy compiled
 class:
@@ -96,7 +96,7 @@ For `CompilePipeSummary` the table looks like:
 The only pieces of information that are not generated into the definition are
 the directive selector and the pipe name as they go into the module scope.
 
-The information needed to build a `ngModuleScope` needs to be communicated
+The information needed to build an `ngModuleScope` needs to be communicated
 from the directive and pipe to the module that declares them.
 
 ## Metadata
@@ -104,12 +104,12 @@ from the directive and pipe to the module that declares them.
 ### Angular 5
 
 Angular 5 uses `.metadata.json` files to store information that is directly
-inferred form the `.ts` files and include value information that is not
+inferred from the `.ts` files and include value information that is not
 included in the `.d.ts` file produced by TypeScript. Because only exports for
 types are included in `.d.ts` files and might not include the exports necessary
 for values, the metadata includes export clauses from the `.ts` file.
 
-When a module is flattened into a FESM (Flat EcmaScript Module), a flat
+When a module is flattened into a FESM (Flat ECMAScript Module), a flat
 metadata file is also produced which is the metadata for all symbols exported
 from the module index. The metadata represents what the `.metadata.json` file
 would look like if all the symbols were declared in the index instead of
@@ -143,14 +143,14 @@ The metadata for a component is transformed by:
 ```ts
 @Component({
   selector: 'my-comp',
-  template: `<h1>Hello, {{name}}!`
+  template: `<h1>Hello, {{name}}!</h1>`
 })
 export class MyComponent {
   @Input() name: string;
 }
 ```
 
-*my.component.ts*
+*my.component.js*
 ```js
 export class MyComponent {
   name: string;
@@ -276,7 +276,7 @@ export class MyPipe {
 The metadata for a module is transformed by:
 
 1. Remove the `@NgModule` directive.
-2. Add  `"ngPipeDef": {}` static field.
+2. Add  `"ngInjectorDef": {}` static field.
 3. Add `"ngModuleScope": <module-scope>` static field.
 
 The scope value is an array the following type:
@@ -312,7 +312,7 @@ where the `type` values are generated as references.
 @NgModule({
   imports: [CommonModule, UtilityModule],
   declarations: [MyComponent, MyDirective, MyComponent],
-  exports: [MyComponent, MyDirective, MyComponent, UtilityModule],
+  exports: [MyComponent, MyDirective, MyPipe, UtilityModule],
   providers: [{
     provide: Service, useClass: ServiceImpl
   }]
