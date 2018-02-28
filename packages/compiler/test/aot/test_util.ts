@@ -55,6 +55,7 @@ export const settings: ts.CompilerOptions = {
 export interface EmitterOptions {
   emitMetadata: boolean;
   mockData?: MockDirectory;
+  context?: Map<string, string>;
 }
 
 function calcPathsOnDisc() {
@@ -74,12 +75,16 @@ export class EmittingCompilerHost implements ts.CompilerHost {
   private scriptNames: string[];
   private root = '/';
   private collector = new MetadataCollector();
+  private cachedAddedDirectories: Set<string>|undefined;
 
   constructor(scriptNames: string[], private options: EmitterOptions) {
     // Rewrite references to scripts with '@angular' to its corresponding location in
     // the source tree.
     this.scriptNames = scriptNames.map(f => this.effectiveName(f));
     this.root = rootPath;
+    if (options.context) {
+      this.addedFiles = mergeMaps(options.context);
+    }
   }
 
   public writtenAngularFiles(target = new Map<string, string>()): Map<string, string> {
@@ -93,12 +98,14 @@ export class EmittingCompilerHost implements ts.CompilerHost {
   public addScript(fileName: string, content: string) {
     const scriptName = this.effectiveName(fileName);
     this.addedFiles.set(scriptName, content);
+    this.cachedAddedDirectories = undefined;
     this.scriptNames.push(scriptName);
   }
 
   public override(fileName: string, content: string) {
     const scriptName = this.effectiveName(fileName);
     this.addedFiles.set(scriptName, content);
+    this.cachedAddedDirectories = undefined;
   }
 
   public addWrittenFile(fileName: string, content: string) {
@@ -140,6 +147,7 @@ export class EmittingCompilerHost implements ts.CompilerHost {
 
   directoryExists(directoryName: string): boolean {
     return directoryExists(directoryName, this.options.mockData) ||
+        this.getAddedDirectories().has(directoryName) ||
         (fs.existsSync(directoryName) && fs.statSync(directoryName).isDirectory());
   }
 
@@ -188,6 +196,23 @@ export class EmittingCompilerHost implements ts.CompilerHost {
   }
   useCaseSensitiveFileNames(): boolean { return false; }
   getNewLine(): string { return '\n'; }
+
+  private getAddedDirectories(): Set<string> {
+    let result = this.cachedAddedDirectories;
+    if (!result) {
+      const newCache = new Set<string>();
+      const addFile = (fileName: string) => {
+        const directory = fileName.substr(0, fileName.lastIndexOf('/'));
+        if (!newCache.has(directory)) {
+          newCache.add(directory);
+          addFile(directory);
+        }
+      };
+      Array.from(this.addedFiles.keys()).forEach(addFile);
+      this.cachedAddedDirectories = result = newCache;
+    }
+    return result;
+  }
 }
 
 export class MockCompilerHost implements ts.CompilerHost {
@@ -702,4 +727,44 @@ function stripNgResourceSuffix(fileName: string): string {
 
 function addNgResourceSuffix(fileName: string): string {
   return `${fileName}.$ngresource$`;
+}
+
+function extractFileNames(directory: MockDirectory): string[] {
+  const result: string[] = [];
+  const scan = (directory: MockDirectory, prefix: string) => {
+    for (let name of Object.getOwnPropertyNames(directory)) {
+      const entry = directory[name];
+      const fileName = `${prefix}/${name}`;
+      if (typeof entry === 'string') {
+        result.push(fileName);
+      } else if (entry) {
+        scan(entry, fileName);
+      }
+    }
+  };
+  scan(directory, '');
+  return result;
+}
+
+export function emitLibrary(
+    context: Map<string, string>, mockData: MockDirectory,
+    scriptFiles?: string[]): Map<string, string> {
+  const emittingHost = new EmittingCompilerHost(
+      scriptFiles || extractFileNames(mockData), {emitMetadata: true, mockData, context});
+  const emittingProgram = ts.createProgram(emittingHost.scripts, settings, emittingHost);
+  expectNoDiagnostics(emittingProgram);
+  emittingProgram.emit();
+  return emittingHost.written;
+}
+
+export function mergeMaps<K, V>(...maps: Map<K, V>[]): Map<K, V> {
+  const result = new Map<K, V>();
+
+  for (const map of maps) {
+    for (const [key, value] of Array.from(map.entries())) {
+      result.set(key, value);
+    }
+  }
+
+  return result;
 }
