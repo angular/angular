@@ -447,6 +447,9 @@ export interface HostDecorator {
 /** @stable */
 export declare const HostListener: HostListenerDecorator;
 
+/** @experimental */
+export declare function inject<T>(token: Type<T> | InjectionToken<T>, notFoundValue?: undefined, flags?: InjectFlags): T;
+
 /** @stable */
 export declare const Inject: InjectDecorator;
 
