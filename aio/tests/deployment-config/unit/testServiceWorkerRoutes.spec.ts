@@ -1,8 +1,8 @@
-import { loadLegacyUrls, loadLocalSitemapUrls, loadSWRoutes } from '../shared/helpers';
+import { loadLegacyUrls, loadSitemapUrls, loadSWRoutes } from '../shared/helpers';
 
 describe('service-worker routes', () => {
 
-  loadLocalSitemapUrls().forEach(url => {
+  loadSitemapUrls().forEach(url => {
     it('should process URLs in the Sitemap', () => {
       const routes = loadSWRoutes();
       expect(routes.some(test => test(url))).toBeTruthy(url);
