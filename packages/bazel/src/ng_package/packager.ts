@@ -45,23 +45,20 @@ function main(args: string[]): number {
    * @param content current file content
    */
   function amendPackageJson(filePath: string, content: string) {
-    if (path.basename(filePath) === 'package.json') {
-      const parsedPackage = JSON.parse(content);
-      let nameParts = parsedPackage['name'].split('/');
-      // for scoped packages, we don't care about the scope segment of the path
-      if (nameParts[0].startsWith('@')) nameParts = nameParts.splice(1);
-      let rel = Array(nameParts.length - 1).fill('..').join('/');
-      if (!rel) {
-        rel = '.';
-      }
-      const indexFile = nameParts[nameParts.length - 1];
-      parsedPackage['main'] = `${rel}/bundles/${nameParts.join('-')}.umd.js`;
-      parsedPackage['module'] = `${rel}/esm5/${indexFile}.js`;
-      parsedPackage['es2015'] = `${rel}/esm2015/${indexFile}.js`;
-      parsedPackage['typings'] = `./${indexFile}.d.ts`;
-      return JSON.stringify(parsedPackage, null, 2);
+    const parsedPackage = JSON.parse(content);
+    let nameParts = parsedPackage['name'].split('/');
+    // for scoped packages, we don't care about the scope segment of the path
+    if (nameParts[0].startsWith('@')) nameParts = nameParts.splice(1);
+    let rel = Array(nameParts.length - 1).fill('..').join('/');
+    if (!rel) {
+      rel = '.';
     }
-    return content;
+    const indexFile = nameParts[nameParts.length - 1];
+    parsedPackage['main'] = `${rel}/bundles/${nameParts.join('-')}.umd.js`;
+    parsedPackage['module'] = `${rel}/esm5/${indexFile}.js`;
+    parsedPackage['es2015'] = `${rel}/esm2015/${indexFile}.js`;
+    parsedPackage['typings'] = `./${indexFile}.d.ts`;
+    return JSON.stringify(parsedPackage, null, 2);
   }
 
   function writeFesm(file: string, baseDir: string) {
@@ -132,8 +129,12 @@ function main(args: string[]): number {
   for (const src of srcs) {
     let content = fs.readFileSync(src, {encoding: 'utf-8'});
     content = replaceVersionPlaceholders(src, content);
-    content = amendPackageJson(src, content);
-    fs.writeFileSync(path.join(out, path.relative(srcDir, src)), content);
+    if (path.basename(src) === 'package.json') {
+      content = amendPackageJson(src, content);
+    }
+    const outputPath = path.join(out, path.relative(srcDir, src));
+    shx.mkdir('-p', path.dirname(outputPath));
+    fs.writeFileSync(outputPath, content);
   }
 
   allsrcs.filter(filter('.bundle_index.metadata.json')).forEach((f: string) => {

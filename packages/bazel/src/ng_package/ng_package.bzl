@@ -172,7 +172,9 @@ def _ng_package_impl(ctx):
       progress_message = "Angular Packaging: building npm package for %s" % ctx.label.name,
       mnemonic = "AngularPackage",
       inputs = esm5_sources.to_list() +
-          ctx.files.deps +
+          depset(transitive = [d.typescript.transitive_declarations
+              for d in ctx.attr.deps
+              if hasattr(d, "typescript")]).to_list() +
           ctx.files.srcs +
           other_inputs,
       outputs = [npm_package_directory],
