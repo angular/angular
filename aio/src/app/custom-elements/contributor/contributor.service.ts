@@ -6,6 +6,8 @@ import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/publishLast';
 
 import { Contributor, ContributorGroup } from './contributors.model';
+
+// TODO(andrewjs): Look into changing this so that we don't import the service just to get the const
 import { CONTENT_URL_PREFIX } from 'app/documents/document.service';
 
 const contributorsPath = CONTENT_URL_PREFIX + 'contributors.json';

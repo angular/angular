@@ -4,7 +4,9 @@ import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { ApiListComponent } from './api-list.component';
 import { ApiItem, ApiSection, ApiService } from './api.service';
 import { LocationService } from 'app/shared/location.service';
-import { SharedModule } from 'app/shared/shared.module';
+import { Logger } from 'app/shared/logger.service';
+import { MockLogger } from 'testing/logger.service';
+import { ApiListModule } from './api-list.module';
 
 describe('ApiListComponent', () => {
   let component: ApiListComponent;
@@ -13,10 +15,10 @@ describe('ApiListComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [ SharedModule ],
-      declarations: [ ApiListComponent ],
+      imports: [ ApiListModule ],
       providers: [
         { provide: ApiService, useClass: TestApiService },
+        { provide: Logger, useClass: MockLogger },
         { provide: LocationService, useClass: TestLocationService }
       ]
     });
@@ -37,11 +39,11 @@ describe('ApiListComponent', () => {
       let badItem: ApiItem|undefined;
       expect(filtered.length).toBeGreaterThan(0, 'expected something');
       expect(filtered.every(section => section.items.every(
-        item => {
-          const ok = item.show === itemTest(item);
-          if (!ok) { badItem = item; }
-          return ok;
-        }
+          item => {
+            const ok = item.show === itemTest(item);
+            if (!ok) { badItem = item; }
+            return ok;
+          }
       ))).toBe(true, `${label} fail: ${JSON.stringify(badItem, null, 2)}`);
     });
   }
