@@ -9,7 +9,7 @@ describe('autoLinkCode post-processor', () => {
     const dgeni = new Dgeni([testPackage]);
     const injector = dgeni.configureInjector();
     autoLinkCode = injector.get('autoLinkCode');
-    autoLinkCode.docTypes = ['class', 'pipe', 'function', 'const'];
+    autoLinkCode.docTypes = ['class', 'pipe', 'function', 'const', 'member'];
     aliasMap = injector.get('aliasMap');
     processor = injector.get('postProcessHtml');
     processor.docTypes = ['test-doc'];
@@ -29,6 +29,13 @@ describe('autoLinkCode post-processor', () => {
     const doc = { docType: 'test-doc', renderedContent: '<code>foo.MyClass</code>' };
     processor.$process([doc]);
     expect(doc.renderedContent).toEqual('<code><a href="a/b/myclass" class="code-anchor">foo.MyClass</a></code>');
+  });
+
+  it('should match code items within a block of code that contain a dot in their identifier', () => {
+    aliasMap.addDoc({ docType: 'member', id: 'MyEnum.Value', aliases: ['Value', 'MyEnum.Value'], path: 'a/b/myenum' });
+    const doc = { docType: 'test-doc', renderedContent: '<code>someFn(): MyEnum.Value</code>' };
+    processor.$process([doc]);
+    expect(doc.renderedContent).toEqual('<code>someFn(): <a href="a/b/myenum" class="code-anchor">MyEnum.Value</a></code>');
   });
 
   it('should ignore code items that do not match a link to an API doc', () => {
