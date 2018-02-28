@@ -39,6 +39,12 @@ exports.config = {
       loadRemoteSitemapUrls(browser.baseUrl),
       loadLegacyUrls(),
     ]).then(([config, sitemapUrls, legacyUrls]) => {
+      if (sitemapUrls.length <= 100) {
+        throw new Error(`Too few sitemap URLs. (Expected: >100 | Found: ${sitemapUrls.length})`);
+      } else if (legacyUrls.length <= 100) {
+        throw new Error(`Too few legacy URLs. (Expected: >100 | Found: ${legacyUrls.length})`);
+      }
+
       Object.assign(config.params, {sitemapUrls, legacyUrls});
       jasmine.getEnv().addReporter(new SpecReporter({spec: {displayStacktrace: true}}));
     });

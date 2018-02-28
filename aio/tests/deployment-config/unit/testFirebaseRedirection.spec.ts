@@ -1,8 +1,8 @@
-import { getRedirector, loadLegacyUrls, loadRedirects, loadSitemapUrls } from '../shared/helpers';
+import { getRedirector, loadLegacyUrls, loadLocalSitemapUrls, loadRedirects } from '../shared/helpers';
 
 describe('firebase.json redirect config', () => {
   describe('with sitemap urls', () => {
-    loadSitemapUrls().forEach(url => {
+    loadLocalSitemapUrls().forEach(url => {
       it('should not redirect any urls in the sitemap', () => {
         expect(getRedirector().redirect(url)).toEqual(url);
       });
