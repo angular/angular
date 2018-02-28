@@ -25,7 +25,7 @@ class SearchCriteria {
 
 @Component({
   selector: 'aio-api-list',
-  templateUrl: './api-list.component.html'
+  templateUrl: './api-list.component.html',
 })
 export class ApiListComponent implements OnInit {
 
@@ -69,7 +69,6 @@ export class ApiListComponent implements OnInit {
     private locationService: LocationService) { }
 
   ngOnInit() {
-
     this.filteredSections = combineLatest(
       this.apiService.sections,
       this.criteriaSubject,
