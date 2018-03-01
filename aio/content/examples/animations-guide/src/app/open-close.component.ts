@@ -4,9 +4,9 @@ import {trigger, transition, state, animate, style} from '@angular/animations';
 // #docregion component
 @Component({
   selector: 'open-close-component',
+// #docregion trigger
   animations: [
     trigger('openClose', [
-// #docregion trigger
 // #docregion state1
       state('open', style({
         height: '200px',

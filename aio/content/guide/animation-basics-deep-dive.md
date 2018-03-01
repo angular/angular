@@ -1,87 +1,19 @@
-# Animation Basics Deep Dive
+{@a animation-deep-dive}
+# Animation basics deep dive
 
-This page contains supplemental details on Angular animations basic functionality.
+This page exapands on the topics discussed in the Animations basics page.
 
-## Basic code structure
+## Details of transition() function
 
-The following code sample shows the basic structure of a TypeScript file for a simple Angular component, including:
+This section contains advanced details of the topics discussed in the [Simple Transition Example](guide/animations#simple-transition-example) section.
 
-* Module imports
+### animate() function
 
-* Function imports
-
-* Embedded HTML template code block
-
-* Embedded CSS styles
-
-* `@Component` decorator with an animation
-
-* Exported class for the component
-
-* `@NgModule` imports
-
-<code-example hideCopy language="typescript">
-
-import {animate, state, style, transition, trigger} from '@angular/animations';
-import {Component, NgModule} from '@angular/core';
-import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
- 
-@Component({
- selector: 'example-app',
- styles: [`
-   .toggle-container {
-     background-color:white;
-     border:10px solid black;
-     width:200px;
-     text-align:center;
-     line-height:100px;
-     font-size:50px;
-     box-sizing:border-box;
-     overflow:hidden;
-   }
- `],
- animations: [trigger(
-     'openClose',
-     [
-       state('collapsed, void', style({height: '0px', color: 'maroon', borderColor: 'maroon'})),
-       state('expanded', style({height: '*', borderColor: 'green', color: 'green'})),
-       transition(
-           'collapsed <=> expanded', [animate(500, style({height: '250px'})), animate(500)])
-     ])],
- template: `
-   <button (click)="expand()">Open</button>
-   <button (click)="collapse()">Closed</button>
-   <hr />
-   <div class="toggle-container" [@openClose]="stateExpression">
-     Look at this box
-   </div>
- `
-})
-export class MyExpandoCmp {
- stateExpression: string;
- constructor() { this.collapse(); }
- expand() { this.stateExpression = 'expanded'; }
- collapse() { this.stateExpression = 'collapsed'; }
-}
- 
-@NgModule(
-   {imports: [BrowserAnimationsModule], declarations: [MyExpandoCmp], bootstrap: [MyExpandoCmp]})
-export class AppModule {
-}
-
-</code-example>
-
-## Details from simple transition
-
-This section contains details from the topics discussed in the [Simple Transition]() section of the Animation Basics page.
-
-### animation() details
-
-The `animation()` function controls the timing of a single animation.
+ Use the `animate()` function within an animation sequnce, group or a transition. The `animate()` function accepts two input parameters: timing and styles. These parameters let you specify an animation step that will apply the provided `styles` data for the specified amount of time.
 
 #### Duration, delay, and easing
 
-The `animate()` function takes one argument as a single string. This string may contain the following information:
+The 'timing' argument allows you to define the length, delay and easing of a transition. It takes this as a single string. This string may contain the following information:
 
 >`animate ('duration delay easing')`
 
@@ -93,13 +25,12 @@ The first part, `duration`, is required. Duration can be expressed in millisecon
 
 * In a string, as seconds: `'0.1s'`
 
-The second argument, `delay`, has the same syntax as duration. For example:
+The second part, `delay`, has the same syntax as duration. For example:
 
 
 * Wait for 100ms and then run for 200ms: `'0.2s 100ms'`
 
-
-The third argument, `easing`, controls how the animation [accelerates and decelerates](http://easings.net/) during its runtime. For example, 'ease-in' causes the animation to begin slowly, and to pick up speed as it progresses.
+The third part `easing`, controls how the animation [accelerates and decelerates](http://easings.net/) during its runtime. For example, 'ease-in' causes the animation to begin slowly, and to pick up speed as it progresses.
 
 
 * Wait for 100ms, run for 200ms. Use a deceleration curve to start out fast and slowly decelerate to a resting point:  
@@ -111,7 +42,8 @@ The third argument, `easing`, controls how the animation [accelerates and decele
 `'0.2s ease-in'`
 
 <div class="l-sub-section">
-NOTE: See the Angular Material Design web site’s topic on [Natural easing curves](https://material.io/guidelines/motion/duration-easing.html#duration-easing-natural-easing-curves) for general information on easing curves.
+
+NOTE: See the Angular Material Design web site’s topic on [Natural easing curves](https://materialio/guidelines/motion/duration-easinghtml#duration-easing-natural-easing-curves) for general information on easing curves.
 </div>
 
 #### Valid values for easing
@@ -128,74 +60,8 @@ The `animate()` function takes the following valid values for easing:
 
 * `cubic-bezier ( a , b , c , d )` where `a b c d` represent the four defined points needed for a Bezier curve as applied specifically to define web animation timings.
 
-### trigger() details
 
-#### Disabling an animation on an HTML element
-
-A special animation control binding called `@.disabled` can be placed on an HTML element to disable animations on that element, as well as any inner animations for elements nested within the disabled element. When true, the `@.disabled` binding prevents all animations from rendering. 
-
-The code sample below shows how to use this feature. Note that the HTML template code is embedded inside the component code in this example:
-
->@Component ({
->  selector: 'my-component',
->  // HTML template code
->  template: `
->    <div [ @.disabled ]= "isDisabled" >
->      <div [ @childAnimation ]= "exp" ></div>
->    </div>
->  `,
->  animations: [
->    trigger ( "childAnimation", [
->      // ...
->    ])
->  ]
->})
->class MyComponent {
->  isDisabled = true;
->  exp = '...';
->}
-
-The `@childAnimation` trigger will not animate because the `@.disabled` binding (when true) prevents it from happening.
-
-Note that `@.disabled` disables all animations running on the same element. You can't selectively disable multiple animations on a single element.
-
-#### Disabling animations application-wide
-
-To disable all animations for an entire Angular app, place the @.disabled host binding on the topmost Angular component.
-
-<code-example hideCopy language="typescript">
-import { Component, HostBinding } from '@angular/core';
-@Component ({
-  selector: 'app-component',
-  templateUrl: 'app.component.html',
-})
-class AppComponent {
-  @HostBinding ( '@.disabled' )
-  public animationsDisabled = true;
-}
-</code-example>	
-
-#### Multiple triggers and states active simultaneously
-
-Within each trigger() function call, an element can only be in one state at any given time. However, it is possible for multiple triggers to be active at once.
-
-<div class="l-sub-section">
-Even if inner animations are disabled, a parent animation can still use query() for inner elements located in disabled areas of the HTML template and animate them. This is also the case for when a sub-animation is queried by a parent, and then later animated using animateChild().
-</div>
-
-#### Notes on state-to-state transitions
-
-* Styles defined using `state()` will persist after the animation has completed.
-
-* A double arrow syntax specifies state-to-state transitions that go in either direction, for example:  
-transition `( 'on <=> off', … `
-
-* You can include multiple state pairs within the same `transition()` argument:  
-`transition( 'on => off, off => void', … `
-
-### transition() details
-
-#### Functions in transitions
+### Functions in transition()
 
 The `transition()` function also takes additional functions as well as named states:
 
@@ -209,7 +75,7 @@ trigger ( 'myAnimationTrigger', [
 
 The above code snippet shows an example using a trigger called `myAnimationTrigger`. When the expression evaluates to 'true' (in this case, when `fromState` is 'off' and `toState` is 'on'), this condition allows the animation that follows to be invoked. 
 
-The following HTML template example binds to to a `<div>` element using the same trigger name, `myAnimationTrigger`.
+The following HTML template example binds to a `<div>` element using the same trigger name, `myAnimationTrigger`:
 
 >**<div [ @myAnimationTrigger ]="myStatusExp">...</div>**
 
@@ -217,7 +83,7 @@ The following HTML template example binds to to a `<div>` element using the same
 
 If a trigger contains a Boolean value as a binding value, then this value can be matched using a `transition()` expression that compares `true` and `false`, or `1` and `0`.
 
-In this example, the HTML template binds a `<div>` element to a trigger named `openClose`, with a status expression of `open`, with possible values of `true` and `false`. This is an alternative to the practice of simply creating two named states of open and close.
+In the following example, the HTML template binds a `<div>` element to a trigger named `openClose`, with a status expression of `open`, with possible values of `true` and `false`. This is an alternative to the practice of simply creating two named states of open and close.
 
 >**<div [ @openClose ]= 'open ? true : false' > … </div>**
 
@@ -303,6 +169,7 @@ The `* => *` transition applies when any change between two states takes place.
 Transitions are matched in the order in which they are defined. Thus, you can apply other transitions on top of the  `* => *`  ("any-to-any") transition. For example, you can define style changes or animations that would apply just to `open  => closed`, or just  to `closed => open`, and then use `* => *` as a fallback for state pairings that aren't otherwise called out. 
 
 To do this, list the more specific transitions _before_ the `* => *`. 
+
 
 #### Wildcard styles *
 
@@ -390,11 +257,13 @@ HTML elements that are inserted or removed from a view use special enter and lea
 
 #### Use of *ngIf and *ngFor with :enter and :leave
 
-The `:enter` transition runs when any `*ngIf` or `*ngFor` views are placed on the page, and `:leave` runs when those views are removed from the page. Let’s say that we have a special trigger for the enter and leave animation called `myInsertRemoveTrigger`.
+When an item is inserted and removed from a view you can make the animation conditional using `*ngIf` or `*ngFor` in the expression along with the animation trigger in the HTML template.
 
-The HTML template contains:
+For example, let’s say that we have a special trigger for the enter and leave animation called `myInsertRemoveTrigger`. And the `:enter` transition runs when any `*ngIf` views are placed on the page, and `:leave` runs when those views are removed from the page.
 
->**<div @myInsertRemoveTrigger *ngIf = 'expression'>**
+Then the HTML template contains:
+
+&lt;div *ngIf="exp" @myInsertRemoveTrigger&gt;...&lt;/div&gt;
 
 In the component file, the enter transition first sets an initial opacity of 0, and then animates it to change that opacity to 1 as the element is inserted into the view:
 
@@ -416,6 +285,81 @@ Note that this example does not need to use `state()`.
 
 The `transition()` function takes additional selector values, `:increment` and `:decrement`. Use these to kick off a transition when a numeric value has increased or decreased in value.
 
+<div class="l-sub-section">
+
+Notes on state-to-state transitions
+
+* Styles defined using `state()` will persist after the animation has completed.
+
+* A double arrow syntax specifies state-to-state transitions that go in either direction, for example:  
+transition `( 'on <=> off', … `
+
+* You can include multiple state pairs within the same `transition()` argument:  
+`transition( 'on => off, off => void', … `
+
+</div>
+
+## Details of trigger() fucntion
+
+### Disabling an animation on an HTML element
+
+A special animation control binding called `@.disabled` can be placed on an HTML element to disable animations on that element, as well as any inner animations for elements nested within the disabled element. When true, the `@.disabled` binding prevents all animations from rendering. 
+
+The code sample below shows how to use this feature. Note that the HTML template code is embedded inside the component code in this example:
+
+<code-example hideCopy language="typescript">
+@Component ({
+  selector: 'my-component',
+  // HTML template code
+  template: 
+  
+   &lt;div [ @.disabled ]= "isDisabled" &gt;
+      &lt;div [ @childAnimation ]= "exp" &gt;&lt;/div&gt;
+    &lt;/div&gt;
+  ,
+  animations: [
+    trigger ( "childAnimation", [
+      // ...
+    ])
+  ]
+})
+class MyComponent {
+  isDisabled = true;
+  exp = '...';
+}
+</code-example>
+
+The `@childAnimation` trigger will not animate because the `@.disabled` binding (when true) prevents it from happening.
+
+Note that `@.disabled` disables all animations running on the same element. You can't selectively disable multiple animations on a single element.
+
+#### Disabling animations application-wide
+
+To disable all animations for an entire Angular app, place the @.disabled host binding on the topmost Angular component.
+
+<code-example hideCopy language="typescript">
+import { Component, HostBinding } from '@angular/core';
+@Component ({
+  selector: 'app-component',
+  templateUrl: 'app.component.html',
+})
+class AppComponent {
+  @HostBinding ( '@.disabled' )
+  public animationsDisabled = true;
+}
+</code-example>	
+
+### Parent-Child Animations
+
+Each time an animation is triggered in Angular, the parent animation always get priority and child animations are blocked. In order for a child animation to run, the parent animation must query each of the elements contatining child animations and then allow the animations to run using [animateChild](https://angular.io/api/animations/animateChild). 
+
+Normally, when an element within an HTML template has animations disabled using @.disabled host binding, animations are disabled on all inner elements as well. 
+However, selective child animations can still be run on a disabled parent in one of the following ways:
+
+* A parent animation can use `query()` to collect inner elements located in disabled areas of the HTML template. Those elements can still animate. 
+
+* A sub-animation can be queried by a parent and then later animated with `animateChild()`.
+
 ### Animation callbacks
 
 The animation `trigger()` function emits _callbacks_ when it starts and when it finishes. 
@@ -431,11 +375,15 @@ class openCloseComponent {
 
 In the HTML template, the animation event is passed back via `$event`, as `@trigger.start` and `@trigger.done`, where `trigger` is the name of the trigger being used. In our example, the trigger `openClose` appears as follows:
 
-><div *ngIf = "expression"
->   @openClose {
->      (@openClose.start) = "onAnimationEvent ( $event )"
->      (@openClose.done) = "onAnimationEvent ( $event )"
->…</div>
+
+<code-example hideCopy language="typescript">
+&lt;div *ngIf = "expression"
+   @openClose {
+     (@openClose.start) = "onAnimationEvent ( $event )"
+     (@openClose.done) = "onAnimationEvent ( $event )"
+…
+&gt;&lt;/div&gt;
+</code-example>
 
 A potential use for animation callbacks could be to cover for a slow API call, such as a database lookup. For example, the "InProgress" button could actually have its own looping animation where it pulsates or does some other visual motion while the back-end system operation finishes.
 
@@ -540,11 +488,17 @@ query (':self, .record:enter, .record:leave, @trigger', [
 
 Refer to the [API reference](api) for more information.
 
-### Use of :increment and :decrement with transition ( ), query ( ), :enter and :leave
+### Usage example of :increment and :decrement with transition ( ), query ( ), :enter and :leave
 
-Here's an example using several special selector values, including In the animation demo. Click Advanced and then go to Filter Animation to see the code. The functionality is what occurs when you type filter criteria into the Filter box in the upper left.
+Here's an example code from the [demo](http://animationsftw.in/#/advanced) page that shows usage of several selector values.
 
-// <div [ @filterAnimation ]="totalItems">
+The HTML template is as follows:
+
+&lt;div [ @filterAnimation ]="totalItems"&gt;
+
+On the Advanced tab (demo page), when you enter some text into the “FILTER RESULTS” text box, such as “COOL” or “STYLE” following component code gets executed:
+
+<code-example hideCopy language="typescript">
 trigger ( 'filterAnimation', [
   // this will ignore animations on enter 
   // and when there are none to display
@@ -573,6 +527,7 @@ trigger ( 'filterAnimation', [
     ])
   ]),
 ])
+</code-example>
 
 ### Use of :increment and :decrement with transition(), query(), and group()
 
@@ -583,6 +538,9 @@ Here's another code sample using `:increment` and `:decrement`, with `group()`:
 In the example below, the HTML code has a `<div>` element containing list of items generated by an *ngFor. directive. Within the `<div>` container is a trigger called `listAnimation`.
 
 The HTML code is as follows:
+<!--
+Need code
+-->
 
 In the component file, the `listAnimation` trigger performs a query for each of the inner HTML elements, for anything entering or leaving the page. Items entering are faded in, while items leaving are faded out. If multiple items are entering or leaving, they are staggered as they fade in or out.
 
@@ -631,15 +589,7 @@ class ListComponent {
 }
 </code-example>	
 
-## Details from Parent-Child Animations
 
-Normally, when an element within an HTML template has animations disabled using @.disabled host binding, animations are disabled on all inner elements as well. 
-
-However, selective child animations can still be run on a disabled parent in one of the following ways:
-
-* A parent animation can use `query()` to collect inner elements located in disabled areas of the HTML template. Those elements can still animate. 
-
-* A sub-animation can be queried by a parent and then later animated with `animateChild()`.
 
 
 

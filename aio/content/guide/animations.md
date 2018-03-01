@@ -1,4 +1,4 @@
-# Animation Basics
+# Animation basics
 
 Animation provides the illusion of motion: elements change styling over time.
 
@@ -46,9 +46,6 @@ Each section follows a similar pattern:
 * Details of implementation and expanded usage examples are on a separate "[Animation Basics Deep Dive](guide/animation-basics-deep-dive)" page following all the concept sections.
 
 
-
-
-
 ## Getting Started
 
 To make the code samples work, you’ll need to import the animation-specific modules along with standard Angular functionality. 
@@ -79,6 +76,7 @@ Import `BrowserModule` and `BrowserAnimationsModule` into your Angular root appl
 </code-example>
 
 <div class="l-sub-section">
+
 The root application module is typically located in `src/app` and is named `app.module.ts`.
 </div>
 
@@ -90,6 +88,7 @@ Perform this step for every component file that uses animations.
 </code-example>	
 
 <div class="l-sub-section">
+
 Import the specific functions that you plan to use, from the items listed under the Animation DSL section of this document.
 </div>
 
@@ -100,9 +99,9 @@ In the component file, add a property called `animations:` to the `@Component` d
 <code-example path="animations-guide/src/app/app.component.ts" title="src/app/app.component.ts" region="decorator">
 </code-example>
 
-{@a simple-transitoon}
+{@a simple-transiton}
 
-## Simple Transition Example
+## Simple transition example
 
 We’ll start with an animation example that changes a single HTML element from one state to another. 
 For example, a button can show as either `open` or `closed`, depending on the user's last action. 
@@ -149,6 +148,7 @@ We will also add a transition from `closed` to `open` state with a 0.5s duration
 </code-example>
 
 <div class="l-sub-section">
+
 You can also define styles nested directly within the `transition()` function, with the following distinction between them:
 
 * Use `state()` to define steady-state styles that are applied at the end of each transition. 
@@ -176,39 +176,14 @@ Here's the trigger function that describes and names the new trigger:
 <code-example path="animations-guide/src/app/open-close.component.ts" title="src/app/open-close.component.ts" region="trigger">
 </code-example>
 
-### Defining and linking the animation
+<div class="l-sub-section">
+
+Within each trigger() function call, an element can only be in one state at any given time. However, it is possible for multiple triggers to be active at once.
+</div>
+
+### Attaching animation to the HTML template
 
 Animations are  defined in the metadata of the component that controls the HTML element to be animated. Put the code that defines your animations under the `animations:` property within the `@Component` decorator:
-
-<code-example hideCopy language="typescript">
-@Component({
-  selector: 'selectorName',
-  templateUrl: 'componentHtmlFile',
-  animations: [
-    //animation description here
-  ] 
-})
-//...
-</code-example>
-
-When you have defined an animation trigger for a component, you can bind it to an element in that component's template using standard Angular property binding syntax. On the triggering element in the HTML template, add the trigger property using this format:
-
-<code-example hideCopy language="typescript">
-// this should match what `name` value is inside of the trigger(name)
-[@triggerName] = "expression"
-</code-example>
-
-where `triggerName` is the name of the trigger you defined in the `animations` property of your app component, and  `expression` evaluates to a defined animation state.  The full HTML syntax looks like this:
-
-<code-example hideCopy language="typescript">
-&lt;div [@triggerName]="expression"&gt;...&lt;/div&gt;
-</code-example>
-
-The animation is executed or triggered when the expression value changes to a new state. 
-
-### Linking to the HTML template
-
-The trigger is bound to the component in the component metadata, under the `@Component` decorator using the `animations:` property. 
 
 <code-example hideCopy language="typescript">
 @Component({
@@ -222,8 +197,13 @@ The trigger is bound to the component in the component metadata, under the `@Com
       })),
 </code-example> 
 
-Here, we have `openClose` as the trigger name.
-In the HTML template for the above component, we bind the `openClose` trigger to the HTML element to be animated, along with a trigger expression.  
+When you have defined an animation trigger for a component, you can attach it to an element in that component's template by wrapping the trigger name in brackets and preceeding it with an @ symbol. Then, you can bind it to a template expression using standard Angular property binding syntax as shown below:
+
+<code-example hideCopy language="typescript">
+// this should match what `name` value is inside of the trigger(name)
+[@openClose]] = "expression"
+</code-example>
+The animation is executed or triggered when the expression value changes to a new state.
 
 #### HTML template file
 
@@ -232,7 +212,8 @@ In the HTML template for the above component, we bind the `openClose` trigger to
 
  In the above code snippet, when the `isOpen` expression evaluates to a defined state: `open` or `closed`, it will notify the trigger `openClose` of a state change. It is then up to `openClose` code to handle the state change and kick off a state change animation.
 
-_Note_: For elements entering or leaving a page (inserted or removed  from the DOM), you can make the animation conditional – for example, use `*ngIf` in the expression along with the animation trigger in the HTML template.
+
+
 
 ### Code sample, simple transition
 
@@ -256,7 +237,15 @@ On the [Animation Basics Deep Dive](guide/animation-basics-deep-dive) page, we g
 
 ## Reusable Animations
 
-Angular animation provides [AnimationOptions](https://angular.io/api/animations/AnimationOptions) to configure or override options for each of the step-based animation methods such as trigger and transition.
+Angular animation provides [AnimationOptions](https://angular.io/api/animations/AnimationOptions) to configure or override options for each of the step-based animation methods.
+
+These methods are:
+
+* `sequence([...], { /* options */ })`
+* `group([...], { /* options */ })`
+* `trigger([...], { /* options */ })`
+* `transition([...], { /* options */ })`
+* `query([...], { /* options */ })`
 
 <code-example hideCopy language="typescript">
 transition('open => closed', [style({
@@ -275,9 +264,11 @@ transition('open => closed', [style({
 
 In the above code snippet, both time and opacity inputs will be replaced during runtime.
 
-This allows you to reuse an Animation across different components. Use the `animation()` and `useAnimation()` API calls to acheive this. 
+[AnimationOptions](https://angular.io/api/animations/AnimationOptions) allow you to reuse an animation across different components. Create a reusable animation in a seperate .ts file  using the [animation()](https://angular.io/api/animations/animation) method and export it as a const variable. You can then reuse it in any of your app components using the [useAnimation()](https://angular.io/api/animations/useAnimation) API.
 
 <code-example hideCopy language="typescript">
+// inside animation.ts
+
 import {animation, style, animate} from "@angular/animations";
 export var transAnimation = animation([ 
   style({ height: "{{ height }}",
@@ -285,7 +276,7 @@ export var transAnimation = animation([
   animate("{{ time }}" ])
 </code-example>
 
-Now, you can import the reusable `transAnimation` in your component class and reuse it using the `useAnimation()` method as shown below:
+In the above code snippet, `transAnimation` is made reusable by declaring it as an export variable.  You can import the reusable `transAnimation` in your component class and reuse it using the `useAnimation()` method as shown below:
 
 <code-example hideCopy language="typescript">
 // inside of @Component.animations...
@@ -351,10 +342,10 @@ The code snippet for this animation might look like this:
 </code-example>
 
 <div class="l-sub-section">
-The use of the wildcard state `*` under `transition()` in the above code snippet is described on the [Animation Basics Deep Dive](guide/animation-basics-deep-dive).
-</div>
 
-### Code sample, keyframes
+The use of the wildcard state `*` under `transition()` in the above code snippet is described on the [Animation Basics Deep Dive](guide/animation-basics-deep-dive).
+
+</div>
 
 ### Summary
 
@@ -376,6 +367,7 @@ Functions that control complex animation sequences are as follows:
 First, we describe the grouping and choreographing of multiple animated HTML elements. The functions that allow this to happen are `query()` and `stagger()`. 
 
 <div class="l-sub-section">
+
 The function known as `group()` is used to group animation steps, rather than animated elements.
 </div>
 
@@ -383,11 +375,11 @@ The `query()` function targets specific HTML elements within a parent component 
 
 ### Multiple elements with query()
 
-This [demo](http://animationsftw.in/#/) shows an example of a choreographed animation involving multiple elements in a grid. The Advanced tab contains three image galleries, each consisting of a grid with tiled photo images. 
+This [demo](http://animationsftw.in/#/) shows an example of a choreographed animation involving multiple elements in a grid. To see the portion that is relevant to this `query()` description, click **Advanced**. The Advanced tab contains three image galleries, each consisting of a grid with tiled photo images. 
 
-The page opens with an introductory sequence. To see the portion that is relevant to this `query()` description, click **Advanced**. The entire grid for Gallery One cascades in, with a slight delay from row to row from the bottom up. Within each row, the elements slide down and fade into place starting from right to left.
+The page opens with an introductory sequence. The entire grid for Gallery One cascades in, with a slight delay from row to row from the bottom up. Within each row, the elements slide down and fade into place starting from right to left. To acheive this, the code uses both query() and stagger() methods.
 
-### Page entry query stagger example
+#### Page entry query stagger example
 
 The page entry animation code is as follows:
 
@@ -424,13 +416,9 @@ In addition to the page animation that runs when you click **Advanced** from any
 
 ### Filter animation example
 
-Let’s take a look at another animation on this same demo page. In the upper left-hand corner of the **Advanced** page, enter some text into the “FILTER RESULTS” text box, such as “COOL” or “STYLE”.
+Let’s take a look at another animation on the [demo](http://animationsftw.in/#/)  page. In the upper left-hand corner of the **Advanced** page, enter some text into the “FILTER RESULTS” text box, such as “COOL” or “STYLE”.
 
 The filter works real-time as you type. Elements (images) leave the page as the filter gets progressively stricter, when you type each new letter. The images successively re-enter the page, as you delete each letter in the filter box.
-
-The HTML template contains a trigger called filterAnimation:
-
->**<div [@filterAnimation]="totalItems">**
 
 The component file contains 3 transitions:
 
@@ -460,8 +448,11 @@ trigger( 'filterAnimation', [
 </code-example>	
 
 <div class="l-sub-section">
+
 NOTE: The use of the special aliases `:enter`, `:leave`, `:increment`, and `:decrement` are described on the [Animation Basics Deep Dive](guide/animation-basics-deep-dive).
+
 </div>
+
 
 The animation does the following:
 
@@ -489,7 +480,7 @@ A second function called `sequence()` lets you run those same animations one aft
 
 ### Summary
 
-Angular functions for choreographing multiple elements start with `query()` to find inner elements, for example gathering all images within a <div>. The remaining functions, `stagger()`, `group()`, and `sequence()`, apply cascades or allow you to control how multiple animation steps are applied.
+Angular functions for choreographing multiple elements start with `query()` to find inner elements, for example gathering all images within a `<div>`. The remaining functions, `stagger()`, `group()`, and `sequence()`, apply cascades or allow you to control how multiple animation steps are applied.
 
 ## Animation DSL
 
