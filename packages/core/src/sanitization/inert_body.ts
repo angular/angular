@@ -6,8 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {DomAdapter, getDOM} from '../dom/dom_adapter';
-
 /**
  * This helper class is used to get hold of an inert tree of DOM elements containing dirty HTML
  * that needs sanitizing.
@@ -18,22 +16,22 @@ import {DomAdapter, getDOM} from '../dom/dom_adapter';
  */
 export class InertBodyHelper {
   private inertBodyElement: HTMLElement;
+  private inertDocument: Document;
 
-  constructor(private defaultDoc: any, private DOM: DomAdapter) {
-    const inertDocument = this.DOM.createHtmlDocument();
-    this.inertBodyElement = inertDocument.body;
+  constructor(private defaultDoc: Document) {
+    this.inertDocument = this.defaultDoc.implementation.createHTMLDocument('sanitization-inert');
+    this.inertBodyElement = this.inertDocument.body;
 
     if (this.inertBodyElement == null) {
       // usually there should be only one body element in the document, but IE doesn't have any, so
       // we need to create one.
-      const inertHtml = this.DOM.createElement('html', inertDocument);
-      this.inertBodyElement = this.DOM.createElement('body', inertDocument);
-      this.DOM.appendChild(inertHtml, this.inertBodyElement);
-      this.DOM.appendChild(inertDocument, inertHtml);
+      const inertHtml = this.inertDocument.createElement('html');
+      this.inertDocument.appendChild(inertHtml);
+      this.inertBodyElement = this.inertDocument.createElement('body');
+      inertHtml.appendChild(this.inertBodyElement);
     }
 
-    this.DOM.setInnerHTML(
-        this.inertBodyElement, '<svg><g onload="this.parentNode.remove()"></g></svg>');
+    this.inertBodyElement.innerHTML = '<svg><g onload="this.parentNode.remove()"></g></svg>';
     if (this.inertBodyElement.querySelector && !this.inertBodyElement.querySelector('svg')) {
       // We just hit the Safari 10.1 bug - which allows JS to run inside the SVG G element
       // so use the XHR strategy.
@@ -41,8 +39,8 @@ export class InertBodyHelper {
       return;
     }
 
-    this.DOM.setInnerHTML(
-        this.inertBodyElement, '<svg><p><style><img src="</style><img src=x onerror=alert(1)//">');
+    this.inertBodyElement.innerHTML =
+        '<svg><p><style><img src="</style><img src=x onerror=alert(1)//">';
     if (this.inertBodyElement.querySelector && this.inertBodyElement.querySelector('svg img')) {
       // We just hit the Firefox bug - which prevents the inner img JS from being sanitized
       // so use the DOMParser strategy, if it is available.
@@ -118,17 +116,17 @@ export class InertBodyHelper {
    */
   private getInertBodyElement_InertDocument(html: string) {
     // Prefer using <template> element if supported.
-    const templateEl = this.DOM.createElement('template');
+    const templateEl = this.inertDocument.createElement('template');
     if ('content' in templateEl) {
-      this.DOM.setInnerHTML(templateEl, html);
+      templateEl.innerHTML = html;
       return templateEl;
     }
 
-    this.DOM.setInnerHTML(this.inertBodyElement, html);
+    this.inertBodyElement.innerHTML = html;
 
     // Support: IE 9-11 only
     // strip custom-namespaced attributes on IE<=11
-    if (this.defaultDoc.documentMode) {
+    if ((this.defaultDoc as any).documentMode) {
       this.stripCustomNsAttrs(this.inertBodyElement);
     }
 
@@ -144,13 +142,19 @@ export class InertBodyHelper {
    * strips them all.
    */
   private stripCustomNsAttrs(el: Element) {
-    this.DOM.attributeMap(el).forEach((_, attrName) => {
+    const elAttrs = el.attributes;
+    // loop backwards so that we can support removals.
+    for (let i = elAttrs.length - 1; 0 < i; i--) {
+      const attrib = elAttrs.item(i);
+      const attrName = attrib.name;
       if (attrName === 'xmlns:ns1' || attrName.indexOf('ns1:') === 0) {
-        this.DOM.removeAttribute(el, attrName);
+        el.removeAttribute(attrName);
       }
-    });
-    for (const n of this.DOM.childNodesAsList(el)) {
-      if (this.DOM.isElementNode(n)) this.stripCustomNsAttrs(n as Element);
+    }
+    let childNode = el.firstChild;
+    while (childNode) {
+      if (childNode.nodeType === Node.ELEMENT_NODE) this.stripCustomNsAttrs(childNode as Element);
+      childNode = childNode.nextSibling;
     }
   }
 }

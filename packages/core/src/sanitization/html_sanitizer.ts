@@ -8,8 +8,6 @@
 
 import {isDevMode} from '@angular/core';
 
-import {DomAdapter, getDOM} from '../dom/dom_adapter';
-
 import {InertBodyHelper} from './inert_body';
 import {sanitizeSrcset, sanitizeUrl} from './url_sanitizer';
 
@@ -95,58 +93,61 @@ class SanitizingHtmlSerializer {
   // because characters were re-encoded.
   public sanitizedSomething = false;
   private buf: string[] = [];
-  private DOM = getDOM();
 
   sanitizeChildren(el: Element): string {
     // This cannot use a TreeWalker, as it has to run on Angular's various DOM adapters.
     // However this code never accesses properties off of `document` before deleting its contents
     // again, so it shouldn't be vulnerable to DOM clobbering.
-    let current: Node = this.DOM.firstChild(el) !;
+    let current: Node = el.firstChild !;
     while (current) {
-      if (this.DOM.isElementNode(current)) {
+      if (current.nodeType === Node.ELEMENT_NODE) {
         this.startElement(current as Element);
-      } else if (this.DOM.isTextNode(current)) {
-        this.chars(this.DOM.nodeValue(current) !);
+      } else if (current.nodeType === Node.TEXT_NODE) {
+        this.chars(current.nodeValue !);
       } else {
         // Strip non-element, non-text nodes.
         this.sanitizedSomething = true;
       }
-      if (this.DOM.firstChild(current)) {
-        current = this.DOM.firstChild(current) !;
+      if (current.firstChild) {
+        current = current.firstChild !;
         continue;
       }
       while (current) {
         // Leaving the element. Walk up and to the right, closing tags as we go.
-        if (this.DOM.isElementNode(current)) {
+        if (current.nodeType === Node.ELEMENT_NODE) {
           this.endElement(current as Element);
         }
 
-        let next = this.checkClobberedElement(current, this.DOM.nextSibling(current) !);
+        let next = this.checkClobberedElement(current, current.nextSibling !);
 
         if (next) {
           current = next;
           break;
         }
 
-        current = this.checkClobberedElement(current, this.DOM.parentElement(current) !);
+        current = this.checkClobberedElement(current, current.parentNode !);
       }
     }
     return this.buf.join('');
   }
 
   private startElement(element: Element) {
-    const tagName = this.DOM.nodeName(element).toLowerCase();
+    const tagName = element.nodeName.toLowerCase();
     if (!VALID_ELEMENTS.hasOwnProperty(tagName)) {
       this.sanitizedSomething = true;
       return;
     }
     this.buf.push('<');
     this.buf.push(tagName);
-    this.DOM.attributeMap(element).forEach((value: string, attrName: string) => {
+    const elAttrs = element.attributes;
+    for (let i = 0; i < elAttrs.length; i++) {
+      const elAttr = elAttrs.item(i);
+      const attrName = elAttr.name;
+      let value = elAttr.value;
       const lower = attrName.toLowerCase();
       if (!VALID_ATTRS.hasOwnProperty(lower)) {
         this.sanitizedSomething = true;
-        return;
+        continue;
       }
       // TODO(martinprobst): Special case image URIs for data:image/...
       if (URI_ATTRS[lower]) value = sanitizeUrl(value);
@@ -156,12 +157,12 @@ class SanitizingHtmlSerializer {
       this.buf.push('="');
       this.buf.push(encodeEntities(value));
       this.buf.push('"');
-    });
+    };
     this.buf.push('>');
   }
 
   private endElement(current: Element) {
-    const tagName = this.DOM.nodeName(current).toLowerCase();
+    const tagName = current.nodeName.toLowerCase();
     if (VALID_ELEMENTS.hasOwnProperty(tagName) && !VOID_ELEMENTS.hasOwnProperty(tagName)) {
       this.buf.push('</');
       this.buf.push(tagName);
@@ -172,9 +173,9 @@ class SanitizingHtmlSerializer {
   private chars(chars: string) { this.buf.push(encodeEntities(chars)); }
 
   checkClobberedElement(node: Node, nextNode: Node): Node {
-    if (nextNode && this.DOM.contains(node, nextNode)) {
+    if (nextNode && node.contains(nextNode)) {
       throw new Error(
-          `Failed to sanitize html because the element is clobbered: ${this.DOM.getOuterHTML(node)}`);
+          `Failed to sanitize html because the element is clobbered: ${(node as Element).outerHTML}`);
     }
     return nextNode;
   }
@@ -214,10 +215,9 @@ let inertBodyHelper: InertBodyHelper;
  * the DOM in a browser environment.
  */
 export function sanitizeHtml(defaultDoc: any, unsafeHtmlInput: string): string {
-  const DOM = getDOM();
   let inertBodyElement: HTMLElement|null = null;
   try {
-    inertBodyHelper = inertBodyHelper || new InertBodyHelper(defaultDoc, DOM);
+    inertBodyHelper = inertBodyHelper || new InertBodyHelper(defaultDoc);
     // Make sure unsafeHtml is actually a string (TypeScript types are not enforced at runtime).
     let unsafeHtml = unsafeHtmlInput ? String(unsafeHtmlInput) : '';
     inertBodyElement = inertBodyHelper.getInertBodyElement(unsafeHtml);
@@ -234,25 +234,33 @@ export function sanitizeHtml(defaultDoc: any, unsafeHtmlInput: string): string {
       mXSSAttempts--;
 
       unsafeHtml = parsedHtml;
-      parsedHtml = DOM.getInnerHTML(inertBodyElement);
+      parsedHtml = inertBodyElement !.innerHTML;
       inertBodyElement = inertBodyHelper.getInertBodyElement(unsafeHtml);
     } while (unsafeHtml !== parsedHtml);
 
     const sanitizer = new SanitizingHtmlSerializer();
-    const safeHtml =
-        sanitizer.sanitizeChildren(DOM.getTemplateContent(inertBodyElement) || inertBodyElement);
+    const safeHtml = sanitizer.sanitizeChildren(
+        getTemplateContent(inertBodyElement !) as Element || inertBodyElement);
     if (isDevMode() && sanitizer.sanitizedSomething) {
-      DOM.log('WARNING: sanitizing HTML stripped some content (see http://g.co/ng/security#xss).');
+      console.warn(
+          'WARNING: sanitizing HTML stripped some content (see http://g.co/ng/security#xss).');
     }
 
     return safeHtml;
   } finally {
     // In case anything goes wrong, clear out inertElement to reset the entire DOM structure.
     if (inertBodyElement) {
-      const parent = DOM.getTemplateContent(inertBodyElement) || inertBodyElement;
-      for (const child of DOM.childNodesAsList(parent)) {
-        DOM.removeChild(parent, child);
+      const parent = getTemplateContent(inertBodyElement) || inertBodyElement;
+      while (parent.firstChild) {
+        parent.removeChild(parent.firstChild);
       }
     }
   }
+}
+
+function getTemplateContent(el: Node): Node|null {
+  return 'content' in el && isTemplateElement(el) ? (<any>el).content : null;
+}
+function isTemplateElement(el: Node): boolean {
+  return el.nodeType === Node.ELEMENT_NODE && el.nodeName === 'TEMPLATE';
 }

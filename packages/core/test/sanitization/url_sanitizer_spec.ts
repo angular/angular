@@ -8,8 +8,7 @@
 
 import * as t from '@angular/core/testing/src/testing_internal';
 
-import {getDOM} from '../../src/dom/dom_adapter';
-import {sanitizeSrcset, sanitizeUrl} from '../../src/security/url_sanitizer';
+import {sanitizeSrcset, sanitizeUrl} from '../../src/sanitization/url_sanitizer';
 
 {
   t.describe('URL sanitizer', () => {
@@ -18,10 +17,11 @@ import {sanitizeSrcset, sanitizeUrl} from '../../src/security/url_sanitizer';
 
     t.beforeEach(() => {
       logMsgs = [];
-      originalLog = getDOM().log;  // Monkey patch DOM.log.
-      getDOM().log = (msg) => logMsgs.push(msg);
+      originalLog = console.warn;  // Monkey patch DOM.log.
+      console.warn = (msg: any) => logMsgs.push(msg);
     });
-    t.afterEach(() => { getDOM().log = originalLog; });
+
+    afterEach(() => { console.warn = originalLog; });
 
     t.it('reports unsafe URLs', () => {
       t.expect(sanitizeUrl('javascript:evil()')).toBe('unsafe:javascript:evil()');
