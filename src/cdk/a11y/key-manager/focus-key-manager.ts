@@ -32,11 +32,20 @@ export class FocusKeyManager<T> extends ListKeyManager<FocusableOption & T> {
   }
 
   /**
-   * This method sets the active item to the item at the specified index.
-   * It also adds focuses the newly active item.
+   * Sets the active item to the item at the specified
+   * index and focuses the newly active item.
+   * @param index Index of the item to be set as active.
    */
-  setActiveItem(index: number): void {
-    super.setActiveItem(index);
+  setActiveItem(index: number): void;
+
+  /**
+   * Sets the active item to the item that is specified and focuses it.
+   * @param item Item to be set as active.
+   */
+  setActiveItem(item: T): void;
+
+  setActiveItem(item: any): void {
+    super.setActiveItem(item);
 
     if (this.activeItem) {
       this.activeItem.focus(this._origin);

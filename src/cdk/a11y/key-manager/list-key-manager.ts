@@ -162,14 +162,21 @@ export class ListKeyManager<T extends ListKeyManagerOption> {
    * Sets the active item to the item at the index specified.
    * @param index The index of the item to be set as active.
    */
-  setActiveItem(index: number): void {
+  setActiveItem(index: number): void;
+
+  /**
+   * Sets the active item to the specified item.
+   * @param item The item to be set as active.
+   */
+  setActiveItem(item: T): void;
+
+  setActiveItem(item: any): void {
     const previousIndex = this._activeItemIndex;
 
-    this._activeItemIndex = index;
-    this._activeItem = this._items.toArray()[index];
+    this.updateActiveItem(item);
 
     if (this._activeItemIndex !== previousIndex) {
-      this.change.next(index);
+      this.change.next(this._activeItemIndex);
     }
   }
 
@@ -273,11 +280,33 @@ export class ListKeyManager<T extends ListKeyManagerOption> {
   }
 
   /**
+   * Allows setting the active without any other effects.
+   * @param index Index of the item to be set as active.
+   */
+  updateActiveItem(index: number): void;
+
+  /**
+   * Allows setting the active item without any other effects.
+   * @param item Item to be set as active.
+   */
+  updateActiveItem(item: T): void;
+
+  updateActiveItem(item: any): void {
+    const itemArray = this._items.toArray();
+    const index = typeof item === 'number' ? item : itemArray.indexOf(item);
+
+    this._activeItemIndex = index;
+    this._activeItem = itemArray[index];
+  }
+
+  /**
    * Allows setting of the activeItemIndex without any other effects.
    * @param index The new activeItemIndex.
+   * @deprecated Use `updateActiveItem` instead.
+   * @deletion-target 7.0.0
    */
-  updateActiveItemIndex(index: number) {
-    this._activeItemIndex = index;
+  updateActiveItemIndex(index: number): void {
+    this.updateActiveItem(index);
   }
 
   /**

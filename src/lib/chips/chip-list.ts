@@ -567,14 +567,11 @@ export class MatChipList extends _MatChipListMixinBase implements MatFormFieldCo
       // Shift focus to the active item. Note that we shouldn't do this in multiple
       // mode, because we don't know what chip the user interacted with last.
       if (correspondingChip) {
-        const correspondingChipIndex = this.chips.toArray().indexOf(correspondingChip);
-
         if (isUserInput) {
-          this._keyManager.setActiveItem(correspondingChipIndex);
+          this._keyManager.setActiveItem(correspondingChip);
         } else {
-          this._keyManager.updateActiveItemIndex(correspondingChipIndex);
+          this._keyManager.updateActiveItem(correspondingChip);
         }
-
       }
     }
   }

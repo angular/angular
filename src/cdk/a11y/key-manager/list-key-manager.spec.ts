@@ -349,6 +349,29 @@ describe('Key managers', () => {
             .toBe(1, `Expected activeItemIndex to be updated when setActiveItem() was called.`);
       });
 
+      it('should be able to set the active item by reference', () => {
+        expect(keyManager.activeItemIndex)
+            .toBe(0, `Expected first item of the list to be active.`);
+
+        keyManager.setActiveItem(itemList.items[2]);
+        expect(keyManager.activeItemIndex)
+            .toBe(2, `Expected activeItemIndex to be updated.`);
+      });
+
+      it('should be able to set the active item without emitting an event', () => {
+        const spy = jasmine.createSpy('change spy');
+        const subscription = keyManager.change.subscribe(spy);
+
+        expect(keyManager.activeItemIndex).toBe(0);
+
+        keyManager.updateActiveItem(2);
+
+        expect(keyManager.activeItemIndex).toBe(2);
+        expect(spy).not.toHaveBeenCalled();
+
+        subscription.unsubscribe();
+      });
+
       it('should expose the active item correctly', () => {
         keyManager.onKeydown(fakeKeyEvents.downArrow);
 
