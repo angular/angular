@@ -18,7 +18,7 @@ import {ViewContainerRef as viewEngine_ViewContainerRef} from '../linker/view_co
 import {EmbeddedViewRef as viewEngine_EmbeddedViewRef, ViewRef as viewEngine_ViewRef} from '../linker/view_ref';
 import {Type} from '../type';
 
-import {assertLessThan} from './assert';
+import {assertLessThan, assertNotNull} from './assert';
 import {assertPreviousIsParent, getDirectiveInstance, getPreviousOrParentNode, getRenderer, renderEmbeddedTemplate} from './instructions';
 import {ComponentTemplate, DirectiveDef} from './interfaces/definition';
 import {LInjector} from './interfaces/injector';
@@ -232,6 +232,54 @@ export function injectViewContainerRef(): viewEngine_ViewContainerRef {
 /** Returns a ChangeDetectorRef (a.k.a. a ViewRef) */
 export function injectChangeDetectorRef(): viewEngine_ChangeDetectorRef {
   return getOrCreateChangeDetectorRef(getOrCreateNodeInjector(), null);
+}
+
+/**
+ * Inject static attribute value into directive constructor.
+ *
+ * This method is used with `factory` functions which are generated as part of
+ * `defineDirective` or `defineComponent`. The method retrieves the static value
+ * of an attribute. (Dynamic attributes are not supported since they are not resolved
+ *  at the time of injection and can change over time.)
+ *
+ * # Example
+ * Given:
+ * ```
+ * @Component(...)
+ * class MyComponent {
+ *   constructor(@Attribute('title') title: string) { ... }
+ * }
+ * ```
+ * When instantiated with
+ * ```
+ * <my-component title="Hello"></my-component>
+ * ```
+ *
+ * Then factory method generated is:
+ * ```
+ * MyComponent.ngComponentDef = defineComponent({
+ *   factory: () => new MyComponent(injectAttribute('title'))
+ *   ...
+ * })
+ * ```
+ *
+ * @experimental
+ */
+export function injectAttribute(attrName: string): string|undefined {
+  ngDevMode && assertPreviousIsParent();
+  const lElement = getPreviousOrParentNode() as LElementNode;
+  ngDevMode && assertNodeType(lElement, LNodeFlags.Element);
+  const tElement = lElement.tNode !;
+  ngDevMode && assertNotNull(tElement, 'expecting tNode');
+  const attrs = tElement.attrs;
+  if (attrs) {
+    for (let i = 0; i < attrs.length; i = i + 2) {
+      if (attrs[i] == attrName) {
+        return attrs[i + 1];
+      }
+    }
+  }
+  return undefined;
 }
 
 /**

@@ -9,7 +9,7 @@
 import {ChangeDetectorRef, ElementRef, TemplateRef, ViewContainerRef} from '@angular/core';
 
 import {defineComponent} from '../../src/render3/definition';
-import {InjectFlags, bloomAdd, bloomFindPossibleInjector, getOrCreateNodeInjector} from '../../src/render3/di';
+import {InjectFlags, bloomAdd, bloomFindPossibleInjector, getOrCreateNodeInjector, injectAttribute} from '../../src/render3/di';
 import {NgOnChangesFeature, PublicFeature, defineDirective, inject, injectChangeDetectorRef, injectElementRef, injectTemplateRef, injectViewContainerRef} from '../../src/render3/index';
 import {bind, container, containerRefreshEnd, containerRefreshStart, createLNode, createLView, createTView, directiveRefresh, elementEnd, elementStart, embeddedViewEnd, embeddedViewStart, enterView, interpolation2, leaveView, load, projection, projectionDef, text, textBinding} from '../../src/render3/instructions';
 import {LInjector} from '../../src/render3/interfaces/injector';
@@ -463,6 +463,29 @@ describe('di', () => {
 
       expect(dir !.cdr).toBe(app.cdr);
       expect(dir !.cdr).toBe(dirSameInstance !.cdr);
+    });
+
+    it('should injectAttribute', () => {
+      let exist: string|undefined = 'wrong';
+      let nonExist: string|undefined = 'wrong';
+      class MyApp {
+        static ngComponentDef = defineComponent({
+          type: MyApp,
+          tag: 'my-app',
+          factory: () => new MyApp(),
+          template: function(ctx: MyApp, cm: boolean) {
+            if (cm) {
+              elementStart(0, 'div', ['exist', 'existValue', 'other', 'ignore']);
+              exist = injectAttribute('exist');
+              nonExist = injectAttribute('nonExist');
+            }
+          }
+        });
+      }
+
+      const app = renderComponent(MyApp);
+      expect(exist).toEqual('existValue');
+      expect(nonExist).toEqual(undefined);
     });
 
   });
