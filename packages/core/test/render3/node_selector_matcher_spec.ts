@@ -7,8 +7,7 @@
  */
 
 import {TNode} from '../../src/render3/interfaces/node';
-import {NG_PROJECT_AS_ATTR_NAME} from '../../src/render3/interfaces/projection';
-import {CssSelector, CssSelectorWithNegations, SimpleCssSelector} from '../../src/render3/interfaces/projection';
+import {CssSelector, CssSelectorWithNegations, NG_PROJECT_AS_ATTR_NAME, SimpleCssSelector} from '../../src/render3/interfaces/projection';
 import {getProjectAsAttrValue, isNodeMatchingSelector, isNodeMatchingSelectorWithNegations, isNodeMatchingSimpleSelector} from '../../src/render3/node_selector_matcher';
 
 function testLStaticData(tagName: string, attrs: string[] | null): TNode {
@@ -184,7 +183,7 @@ describe('css selector matching', () => {
     });
   });
 
-  describe('getProjectAsAttrValue', function() {
+  describe('reading the ngProjectAs attribute value', function() {
 
     function testTNode(attrs: string[] | null) { return testLStaticData('tag', attrs); }
 
