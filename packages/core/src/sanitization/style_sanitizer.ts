@@ -8,8 +8,6 @@
 
 import {isDevMode} from '@angular/core';
 
-import {getDOM} from '../dom/dom_adapter';
-
 import {sanitizeUrl} from './url_sanitizer';
 
 
@@ -98,7 +96,7 @@ export function sanitizeStyle(value: string): string {
   }
 
   if (isDevMode()) {
-    getDOM().log(
+    console.warn(
         `WARNING: sanitizing unsafe style value ${value} (see http://g.co/ng/security#xss).`);
   }
 

@@ -8,8 +8,7 @@
 
 import {browserDetection} from '@angular/platform-browser/testing/src/browser_util';
 
-import {getDOM} from '../../src/dom/dom_adapter';
-import {sanitizeHtml} from '../../src/security/html_sanitizer';
+import {sanitizeHtml} from '../../src/sanitization/html_sanitizer';
 
 {
   describe('HTML sanitizer', () => {
@@ -18,13 +17,13 @@ import {sanitizeHtml} from '../../src/security/html_sanitizer';
     let logMsgs: string[];
 
     beforeEach(() => {
-      defaultDoc = getDOM().supportsDOMEvents() ? document : getDOM().createHtmlDocument();
+      defaultDoc = document;
       logMsgs = [];
-      originalLog = getDOM().log;  // Monkey patch DOM.log.
-      getDOM().log = (msg) => logMsgs.push(msg);
+      originalLog = console.warn;  // Monkey patch DOM.log.
+      console.warn = (msg: any) => logMsgs.push(msg);
     });
 
-    afterEach(() => { getDOM().log = originalLog; });
+    afterEach(() => { console.warn = originalLog; });
 
     it('serializes nested structures', () => {
       expect(sanitizeHtml(defaultDoc, '<div alt="x"><p>a</p>b<b>c<a alt="more">d</a></b>e</div>'))

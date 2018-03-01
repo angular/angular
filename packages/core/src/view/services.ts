@@ -13,7 +13,7 @@ import {ErrorHandler} from '../error_handler';
 import {ComponentFactory} from '../linker/component_factory';
 import {NgModuleRef} from '../linker/ng_module_factory';
 import {Renderer2, RendererFactory2, RendererStyleFlags2, RendererType2} from '../render/api';
-import {Sanitizer} from '../security';
+import {Sanitizer} from '../sanitization/security';
 import {Type} from '../type';
 
 import {isViewDebugError, viewDestroyedError, viewWrappedDebugError} from './errors';
