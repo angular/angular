@@ -47,7 +47,7 @@ describe('outputs', () => {
       if (cm) {
         elementStart(0, ButtonToggle);
         {
-          listener('change', function() { ctx.onChange(); });
+          listener('change', function() { return ctx.onChange(); });
         }
         elementEnd();
       }
@@ -72,8 +72,8 @@ describe('outputs', () => {
       if (cm) {
         elementStart(0, ButtonToggle);
         {
-          listener('change', function() { ctx.onChange(); });
-          listener('reset', function() { ctx.onReset(); });
+          listener('change', function() { return ctx.onChange(); });
+          listener('reset', function() { return ctx.onReset(); });
         }
         elementEnd();
       }
@@ -99,7 +99,7 @@ describe('outputs', () => {
       if (cm) {
         elementStart(0, ButtonToggle);
         {
-          listener('change', function() { ctx.counter++; });
+          listener('change', function() { return ctx.counter++; });
         }
         elementEnd();
       }
@@ -135,7 +135,7 @@ describe('outputs', () => {
           if (embeddedViewStart(0)) {
             elementStart(0, ButtonToggle);
             {
-              listener('change', function() { ctx.onChange(); });
+              listener('change', function() { return ctx.onChange(); });
             }
             elementEnd();
           }
@@ -187,7 +187,7 @@ describe('outputs', () => {
               if (embeddedViewStart(0)) {
                 elementStart(0, ButtonToggle);
                 {
-                  listener('change', function() { ctx.onChange(); });
+                  listener('change', function() { return ctx.onChange(); });
                 }
                 elementEnd();
               }
@@ -249,13 +249,13 @@ describe('outputs', () => {
           if (embeddedViewStart(0)) {
             elementStart(0, 'button');
             {
-              listener('click', function() { ctx.onClick(); });
+              listener('click', function() { return ctx.onClick(); });
               text(1, 'Click me');
             }
             elementEnd();
             elementStart(2, ButtonToggle);
             {
-              listener('change', function() { ctx.onChange(); });
+              listener('change', function() { return ctx.onChange(); });
             }
             elementEnd();
             elementStart(4, DestroyComp);
@@ -311,7 +311,7 @@ describe('outputs', () => {
       if (cm) {
         elementStart(0, 'button', null, [MyButton]);
         {
-          listener('click', function() { ctx.onClick(); });
+          listener('click', function() { return ctx.onClick(); });
         }
         elementEnd();
       }
@@ -336,7 +336,7 @@ describe('outputs', () => {
       if (cm) {
         elementStart(0, ButtonToggle, null, [OtherDir]);
         {
-          listener('change', function() { ctx.onChange(); });
+          listener('change', function() { return ctx.onChange(); });
         }
         elementEnd();
       }
@@ -369,7 +369,7 @@ describe('outputs', () => {
       if (cm) {
         elementStart(0, ButtonToggle, null, [OtherDir]);
         {
-          listener('change', function() { ctx.onChange(); });
+          listener('change', function() { return ctx.onChange(); });
         }
         elementEnd();
       }
@@ -403,7 +403,7 @@ describe('outputs', () => {
       if (cm) {
         elementStart(0, 'button');
         {
-          listener('click', function() { ctx.onClick(); });
+          listener('click', function() { return ctx.onClick(); });
           text(1, 'Click me');
         }
         elementEnd();
@@ -415,7 +415,7 @@ describe('outputs', () => {
           if (embeddedViewStart(0)) {
             elementStart(0, ButtonToggle);
             {
-              listener('change', function() { ctx.onChange(); });
+              listener('change', function() { return ctx.onChange(); });
             }
             elementEnd();
           }
@@ -426,7 +426,7 @@ describe('outputs', () => {
           if (embeddedViewStart(1)) {
             elementStart(0, 'div', null, [OtherDir]);
             {
-              listener('change', function() { ctx.onChange(); });
+              listener('change', function() { return ctx.onChange(); });
             }
             elementEnd();
           }
