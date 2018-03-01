@@ -33,13 +33,10 @@
     "gulp-typescript": "^4.0.1",
     "gulp-util": "^3.0.8",
     "merge2": "^1.2.1",
+    "jasmine": "^3.1.0",
     "source-map": "^0.7.1",
     "source-map-support": "^0.5.3",
     "typescript": "~2.6.2"
-  },
-  "scripts": {
-    "prepublish": "gulp compile",
-    "test": "gulp test.unit"
   },
   "repository": {},
   "keywords": [
@@ -54,7 +51,7 @@
   ],
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/angular/ts-api-guardian/issues"
+    "url": "https://github.com/angular/angular/issues"
   },
-  "homepage": "https://github.com/angular/ts-api-guardian"
+  "homepage": "https://github.com/angular/angular/tools/ts-api-guardian"
 }

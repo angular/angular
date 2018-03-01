@@ -1,6 +1,15 @@
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
 import * as chai from 'chai';
 import * as ts from 'typescript';
-import { publicApiInternal, SerializationOptions } from '../lib/serializer';
+
+import {SerializationOptions, publicApiInternal} from '../lib/serializer';
 
 const classesAndInterfaces = `
   export declare class A {
@@ -20,7 +29,7 @@ const classesAndInterfaces = `
 `;
 
 describe('unit test', () => {
-  let _warn = null;
+  let _warn: any = null;
   let warnings: string[] = [];
   beforeEach(() => {
     _warn = console.warn;
@@ -47,7 +56,7 @@ describe('unit test', () => {
           protected fb(): void;
       }
     `;
-    check({ 'file.d.ts': input }, expected);
+    check({'file.d.ts': input}, expected);
   });
 
   it('should ignore private props', () => {
@@ -64,7 +73,7 @@ describe('unit test', () => {
           protected fb: any;
       }
     `;
-    check({ 'file.d.ts': input }, expected);
+    check({'file.d.ts': input}, expected);
   });
 
   it('should support imports without capturing imports', () => {
@@ -79,7 +88,7 @@ describe('unit test', () => {
           field: A;
       }
     `;
-    check({ 'classes_and_interfaces.d.ts': classesAndInterfaces, 'file.d.ts': input }, expected);
+    check({'classes_and_interfaces.d.ts': classesAndInterfaces, 'file.d.ts': input}, expected);
   });
 
   it('should throw on aliased reexports', () => {
@@ -87,8 +96,8 @@ describe('unit test', () => {
       export { A as Apple } from './classes_and_interfaces';
     `;
     checkThrows(
-      { 'classes_and_interfaces.d.ts': classesAndInterfaces, 'file.d.ts': input },
-      'Symbol "A" was aliased as "Apple". Aliases are not supported.');
+        {'classes_and_interfaces.d.ts': classesAndInterfaces, 'file.d.ts': input},
+        'Symbol "A" was aliased as "Apple". Aliases are not supported.');
   });
 
   it('should remove reexported external symbols', () => {
@@ -97,9 +106,9 @@ describe('unit test', () => {
     `;
     const expected = `
     `;
-    check({ 'classes_and_interfaces.d.ts': classesAndInterfaces, 'file.d.ts': input }, expected);
+    check({'classes_and_interfaces.d.ts': classesAndInterfaces, 'file.d.ts': input}, expected);
     chai.assert.deepEqual(
-      warnings, ['file.d.ts(1,1): error: No export declaration found for symbol "Foo"']);
+        warnings, ['file.d.ts(1,1): error: No export declaration found for symbol "Foo"']);
   });
 
   it('should sort exports', () => {
@@ -134,7 +143,7 @@ describe('unit test', () => {
 
       export declare type E = string;
     `;
-    check({ 'file.d.ts': input }, expected);
+    check({'file.d.ts': input}, expected);
   });
 
   it('should sort class members', () => {
@@ -158,7 +167,7 @@ describe('unit test', () => {
         static foo(): void;
       }
     `;
-    check({ 'file.d.ts': input }, expected);
+    check({'file.d.ts': input}, expected);
   });
 
   it('should sort interface members', () => {
@@ -180,7 +189,7 @@ describe('unit test', () => {
         c(): void;
       }
     `;
-    check({ 'file.d.ts': input }, expected);
+    check({'file.d.ts': input}, expected);
   });
 
   it('should sort class members including readonly', () => {
@@ -215,7 +224,7 @@ describe('unit test', () => {
           constructor(nativeNode: any, parent: DebugNode | null, _debugContext: any);
       }
     `;
-    check({ 'file.d.ts': input }, expected);
+    check({'file.d.ts': input}, expected);
   });
 
   it('should sort two call signatures', () => {
@@ -231,7 +240,7 @@ describe('unit test', () => {
         (b: number): void;
       }
     `;
-    check({ 'file.d.ts': input }, expected);
+    check({'file.d.ts': input}, expected);
   });
 
   it('should sort exports including re-exports', () => {
@@ -269,7 +278,7 @@ describe('unit test', () => {
 
       export declare type E = string;
     `;
-    check({ 'submodule.d.ts': submodule, 'file.d.ts': input }, expected);
+    check({'submodule.d.ts': submodule, 'file.d.ts': input}, expected);
   });
 
   it('should remove module comments', () => {
@@ -289,7 +298,7 @@ describe('unit test', () => {
 
       export declare function foo(): boolean;
     `;
-    check({ 'file.d.ts': input }, expected);
+    check({'file.d.ts': input}, expected);
   });
 
   it('should remove class and field comments', () => {
@@ -314,7 +323,7 @@ describe('unit test', () => {
           name: string;
       }
     `;
-    check({ 'file.d.ts': input }, expected);
+    check({'file.d.ts': input}, expected);
   });
 
   it('should skip symbols matching specified pattern', () => {
@@ -327,7 +336,7 @@ describe('unit test', () => {
       export class B {
       }
     `;
-    check({ 'file.d.ts': input }, expected, { stripExportPattern: /^__.*/ });
+    check({'file.d.ts': input}, expected, {stripExportPattern: /^__.*/});
   });
 
   it('should throw on using non-whitelisted module imports in expression position', () => {
@@ -337,8 +346,8 @@ describe('unit test', () => {
       }
     `;
     checkThrows(
-      { 'file.d.ts': input }, 'file.d.ts(2,32): error: Module identifier "foo" is not allowed. ' +
-      'Remove it from source or whitelist it via --allowModuleIdentifiers.');
+        {'file.d.ts': input}, 'file.d.ts(2,32): error: Module identifier "foo" is not allowed. ' +
+            'Remove it from source or whitelist it via --allowModuleIdentifiers.');
   });
 
   it('should throw on using non-whitelisted module imports in type position', () => {
@@ -347,8 +356,8 @@ describe('unit test', () => {
       export type A = foo.A;
     `;
     checkThrows(
-      { 'file.d.ts': input }, 'file.d.ts(2,17): error: Module identifier "foo" is not allowed. ' +
-      'Remove it from source or whitelist it via --allowModuleIdentifiers.');
+        {'file.d.ts': input}, 'file.d.ts(2,17): error: Module identifier "foo" is not allowed. ' +
+            'Remove it from source or whitelist it via --allowModuleIdentifiers.');
   });
 
   it('should not throw on using whitelisted module imports', () => {
@@ -361,7 +370,7 @@ describe('unit test', () => {
       export declare class A extends foo.A {
       }
     `;
-    check({ 'file.d.ts': input }, expected, { allowModuleIdentifiers: ['foo'] });
+    check({'file.d.ts': input}, expected, {allowModuleIdentifiers: ['foo']});
   });
 
   it('should not throw if non-whitelisted module imports are not written', () => {
@@ -374,7 +383,7 @@ describe('unit test', () => {
       export declare class A {
       }
     `;
-    check({ 'file.d.ts': input }, expected);
+    check({'file.d.ts': input}, expected);
   });
 
   it('should keep stability annotations of exports in docstrings', () => {
@@ -404,7 +413,7 @@ describe('unit test', () => {
       /** @stable */
       export declare var c: number;
     `;
-    check({ 'file.d.ts': input }, expected);
+    check({'file.d.ts': input}, expected);
   });
 
   it('should keep stability annotations of fields in docstrings', () => {
@@ -431,7 +440,7 @@ describe('unit test', () => {
         /** @deprecated */ foo(): void;
       }
     `;
-    check({ 'file.d.ts': input }, expected);
+    check({'file.d.ts': input}, expected);
   });
 
   it('should warn on onStabilityMissing: warn', () => {
@@ -445,20 +454,20 @@ describe('unit test', () => {
         constructor();
       }
     `;
-    check({ 'file.d.ts': input }, expected, { onStabilityMissing: 'warn' });
+    check({'file.d.ts': input}, expected, {onStabilityMissing: 'warn'});
     chai.assert.deepEqual(
-      warnings, ['file.d.ts(1,1): error: No stability annotation found for symbol "A"']);
+        warnings, ['file.d.ts(1,1): error: No stability annotation found for symbol "A"']);
   });
 });
 
-function getMockHost(files: { [name: string]: string }): ts.CompilerHost {
+function getMockHost(files: {[name: string]: string}): ts.CompilerHost {
   return {
     getSourceFile: (sourceName, languageVersion) => {
       if (!files[sourceName]) return undefined;
       return ts.createSourceFile(
-        sourceName, stripExtraIndentation(files[sourceName]), languageVersion, true);
+          sourceName, stripExtraIndentation(files[sourceName]), languageVersion, true);
     },
-    writeFile: (name, text, writeByteOrderMark) => { },
+    writeFile: (name, text, writeByteOrderMark) => {},
     fileExists: (filename) => !!files[filename],
     readFile: (filename) => stripExtraIndentation(files[filename]),
     getDefaultLibFileName: () => 'lib.ts',
@@ -471,12 +480,12 @@ function getMockHost(files: { [name: string]: string }): ts.CompilerHost {
 }
 
 function check(
-  files: { [name: string]: string }, expected: string, options: SerializationOptions = {}) {
+    files: {[name: string]: string}, expected: string, options: SerializationOptions = {}) {
   const actual = publicApiInternal(getMockHost(files), 'file.d.ts', {}, options);
   chai.assert.equal(actual.trim(), stripExtraIndentation(expected).trim());
 }
 
-function checkThrows(files: { [name: string]: string }, error: string) {
+function checkThrows(files: {[name: string]: string}, error: string) {
   chai.assert.throws(() => { publicApiInternal(getMockHost(files), 'file.d.ts', {}); }, error);
 }
 
@@ -485,7 +494,7 @@ function stripExtraIndentation(text: string) {
   // Ignore first and last new line
   lines = lines.slice(1, lines.length - 1);
   const commonIndent = lines.reduce((min, line) => {
-    const indent = /^( *)/.exec(line)[1].length;
+    const indent = /^( *)/.exec(line) ![1].length;
     // Ignore empty line
     return line.length ? Math.min(min, indent) : min;
   }, text.length);

@@ -1,3 +1,11 @@
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
 import * as chai from 'chai';
 import * as fs from 'fs';
 import * as path from 'path';
@@ -5,7 +13,7 @@ import * as main from '../lib/main';
 import {assertFileEqual, unlinkRecursively} from './helpers';
 
 describe('integration test: public api', () => {
-  let _warn = null;
+  let _warn: any = null;
   let warnings: string[] = [];
   beforeEach(() => {
     _warn = console.warn;
@@ -71,7 +79,7 @@ describe('integration test: public api', () => {
 });
 
 describe('integration test: generateGoldenFile', () => {
-  const outDir = path.resolve(__dirname, '../../build/tmp');
+  const outDir = path.join(process.env['TEST_TMPDIR'], 'tmp');
   const outFile = path.join(outDir, 'out.d.ts');
   const deepOutFile = path.join(outDir, 'a/b/c/out.d.ts');
 
