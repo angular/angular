@@ -1520,8 +1520,7 @@ followed by a dot (`.`) and the name of the attribute.
 You then set the attribute value, using an expression that resolves to a string.
 -->
 어트리뷰트 바인딩 문법은 프로퍼티 바인딩 문법과 비슷합니다.
-다만, 프로퍼티 바인딩처럼 엘리먼트 프로퍼티 이름을 단순하게 대괄호로 감싸지 않고, **`attr`** 접두사와 마침표(`.`)를 쓴 이후에
-어트리뷰트 이름을 지정합니다.
+어트리뷰트 바인딩은 **`attr`** 접두사와 마침표(`.`)를 쓴 이후에 어트리뷰트 이름을 지정합니다.
 그리고 지정되는 어트리뷰트 값은 문자열로 지정합니다.
 
 <!--
@@ -1554,72 +1553,118 @@ is to set ARIA attributes, as in this example:
 
 <hr/>
 
+<!--
 ### Class binding
+-->
+### 클래스 바인딩
 
+<!--
 You can add and remove CSS class names from an element's `class` attribute with
 a **class binding**.
+-->
+엘리먼트의 `class` 어트리뷰트를 바인딩하면 CSS 클래스를 동적으로 지정할 수 있습니다. 이것을 **클래스 바인딩**이라고 합니다.
 
+<!--
 Class binding syntax resembles property binding.
 Instead of an element property between brackets, start with the prefix `class`,
 optionally followed by a dot (`.`) and the name of a CSS class: `[class.class-name]`.
+-->
+클래스 바인딩 문법은 프로퍼티 바인딩 문법과 비슷합니다.
+클래스 바인딩은 `class` 접두사와 마침표(`.`) 를 사용해서 `[class.클래스-이름]` 과 같이 작성합니다.
 
+<!--
 The following examples show how to add and remove the application's "special" class
 with class bindings.  Here's how to set the attribute without binding:
+-->
+이제 클래스 바인디을 사용해서 "special" 클래스를 동적으로 지정하는 방법을 알아봅시다.
+먼저, 바인딩을 사용하지 않고 원래 사용하던 방식대로 클래스를 적용하려면 다음과 같이 작성합니다:
 
 <code-example path="template-syntax/src/app/app.component.html" region="class-binding-1" title="src/app/app.component.html" linenums="false">
 </code-example>
 
+<!--
 You can replace that with a binding to a string of the desired class names; this is an all-or-nothing, replacement binding.
+-->
+`class` 어트리뷰트를 바인딩하면 이미 지정된 클래스 전체를 새로운 값으로 초기화합니다. 하지만 이 방식은 이미 지정된 클래스 전체를 새로운 값으로 덮어쓰는 방식입니다.
 
 <code-example path="template-syntax/src/app/app.component.html" region="class-binding-2" title="src/app/app.component.html" linenums="false">
 </code-example>
 
+<!--
 Finally, you can bind to a specific class name.
 Angular adds the class when the template expression evaluates to truthy.
 It removes the class when the expression is falsy.
+-->
+원하는 클래스만 바인딩해 봅시다.
+다음과 같이 작성하면 템플릿 표현식의 평가값이 참일 때 해당 클래스가 지정되고, 평가값이 거짓일 때 해당 클래스가 해제됩니다.
 
 <code-example path="template-syntax/src/app/app.component.html" region="class-binding-3" title="src/app/app.component.html" linenums="false">
 </code-example>
 
 <div class="l-sub-section">
 
+<!--
 While this is a fine way to toggle a single class name,
 the [NgClass directive](guide/template-syntax#ngClass) is usually preferred when managing multiple class names at the same time.
+-->
+실제로 DOM에 클래스를 지정할 때는 이 방법을 사용하지 않고 [NgClass 디렉티브](guide/template-syntax#ngClass)를 사용합니다.
+`ngClass`를 사용하면 여러 클래스 중 어떤 클래스를 지정할지 자유롭게 조작할 수 있습니다.
 
 </div>
 
 
 <hr/>
 
+<!--
 ### Style binding
+-->
+### 스타일 바인딩
 
+<!--
 You can set inline styles with a **style binding**.
+-->
+인라인 스타일은 **스타일 바인딩**으로도 지정할 수 있습니다.
 
+<!--
 Style binding syntax resembles property binding.
 Instead of an element property between brackets, start with the prefix `style`,
 followed by a dot (`.`) and the name of a CSS style property: `[style.style-property]`.
+-->
+스타일 바인딩 문법은 프로퍼티 바인딩 문법과 비슷합니다.
+스타일 바인딩은 `style` 접두사와 마침표(`.`) 를 사용해서 `[style.스타일-프로퍼티]`와 같이 작성합니다.
 
 <code-example path="template-syntax/src/app/app.component.html" region="style-binding-1" title="src/app/app.component.html" linenums="false">
 </code-example>
 
+<!--
 Some style binding styles have a unit extension.
 The following example conditionally sets the font size in  “em” and “%” units .
+-->
+그리고 스타일을 바인딩하면서 단위를 함께 사용할 수도 있습니다.
+글자 크기를 지정하면서 “em” 이나 “%” 단위를 사용하려면 다음과 같이 작성합니다.
 
 <code-example path="template-syntax/src/app/app.component.html" region="style-binding-2" title="src/app/app.component.html" linenums="false">
 </code-example>
 
 <div class="l-sub-section">
 
+<!--
 While this is a fine way to set a single style,
 the [NgStyle directive](guide/template-syntax#ngStyle) is generally preferred when setting several inline styles at the same time.
+-->
+실제로 DOM에 스타일을 지정할 때는 이 방법을 사용하지 않고 [NgStyle directive](guide/template-syntax#ngStyle)를 사용합니다.
+`ngStyle`을 사용하면 여러 스타일 중 어떤 스타일을 지정할지 자유롭게 조작할 수 있습니다.
 
 </div>
 
 <div class="l-sub-section">
 
+<!--
 Note that a _style property_ name can be written in either
 [dash-case](guide/glossary#dash-case), as shown above, or
 [camelCase](guide/glossary#camelcase), such as `fontSize`.
+-->
+_스타일 프로퍼티_ 이름은 [대시 케이스](guide/glossary#dash-case)를 사용하거나 [캐멀 케이스](guide/glossary#camelcase)를 사용할 수 있습니다.
 
 </div>
 

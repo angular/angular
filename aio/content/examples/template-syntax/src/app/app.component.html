@@ -358,24 +358,43 @@ button</button>
 <!-- class binding -->
 <hr><h2 id="class-binding">Class Binding</h2>
 
-<!-- #docregion class-binding-1 -->
+<!-- #docregion class-binding-1! -->
 <!-- standard class attribute setting  -->
+<div class="bad curly special">Bad curly special</div>
+<!-- #enddocregion class-binding-1! -->
+<!-- #docregion class-binding-1 -->
+<!-- 일반적으로 클래스 어트리뷰트를 지정하는 방법  -->
 <div class="bad curly special">Bad curly special</div>
 <!-- #enddocregion class-binding-1 -->
 
-<!-- #docregion class-binding-2 -->
+<!-- #docregion class-binding-2! -->
 <!-- reset/override all class names with a binding  -->
+<div class="bad curly special"
+     [class]="badCurly">Bad curly</div>
+<!-- #enddocregion class-binding-2! -->
+<!-- #docregion class-binding-2 -->
+<!-- 클래스 전체를 초기화하는 바인딩  -->
 <div class="bad curly special"
      [class]="badCurly">Bad curly</div>
 <!-- #enddocregion class-binding-2 -->
 
-<!-- #docregion class-binding-3 -->
+<!-- #docregion class-binding-3! -->
 <!-- #docregion class-binding-3a -->
 <!-- toggle the "special" class on/off with a property -->
 <div [class.special]="isSpecial">The class binding is special</div>
 <!-- #enddocregion class-binding-3a -->
 
 <!-- binding to `class.special` trumps the class attribute -->
+<div class="special"
+     [class.special]="!isSpecial">This one is not so special</div>
+<!-- #enddocregion class-binding-3! -->
+<!-- #docregion class-binding-3 -->
+<!-- #docregion class-binding-3a -->
+<!-- `isSpecial` 프로퍼티 값으로 "special" 클래스를 지정하는 바인딩  -->
+<div [class.special]="isSpecial">The class binding is special</div>
+<!-- #enddocregion class-binding-3a -->
+
+<!-- 기본 클래스를 지정해두고 프로퍼티 값으로 덮어쓰는 바인딩 -->
 <div class="special"
      [class.special]="!isSpecial">This one is not so special</div>
 <!-- #enddocregion class-binding-3 -->
