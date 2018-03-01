@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Ng1Token} from '@angular/upgrade/src/common/angular1';
-import {compileFactory, injectorFactory, parseFactory, rootScopeFactory, setTempInjectorRef} from '@angular/upgrade/src/static/angular1_providers';
+import {Ng1Token} from '@angular/upgrade/static/src/common/angular1';
+import {compileFactory, injectorFactory, parseFactory, rootScopeFactory, setTempInjectorRef} from '@angular/upgrade/static/src/static/angular1_providers';
 
 {
   describe('upgrade angular1_providers', () => {

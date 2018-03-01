@@ -48,7 +48,8 @@ export class CodeExampleComponent implements OnInit {
     // Now remove the title attribute to prevent unwanted tooltip popups when hovering over the code.
     element.removeAttribute('title');
 
-    this.isAvoid = this.path.indexOf('.avoid.') !== -1;
+    const avoid = getBoolFromAttribute(element, 'avoid');
+    this.isAvoid = avoid || this.path.indexOf('.avoid.') !== -1;
     this.hideCopy = this.isAvoid || getBoolFromAttribute(element, ['hidecopy', 'hide-copy']);
 
     this.classes = {

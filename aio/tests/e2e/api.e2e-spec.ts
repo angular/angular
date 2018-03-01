@@ -40,4 +40,14 @@ describe('Api pages', function() {
     const page = new ApiPage('api/common/HashLocationStrategy');
     expect(page.getOverview('class').getText()).toContain('path(includeHash: boolean = false): string');
   });
+
+  it('should show a "Properties" section if there are public properties', () => {
+    const page = new ApiPage('api/core/ViewContainerRef');
+    expect(page.getSection('instance-properties').isPresent()).toBe(true);
+  });
+
+  it('should not show a "Properties" section if there are only internal properties', () => {
+    const page = new ApiPage('api/forms/FormControl');
+    expect(page.getSection('instance-properties').isPresent()).toBe(false);
+  });
 });

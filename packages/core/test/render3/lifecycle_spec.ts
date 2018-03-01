@@ -6,8 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ComponentTemplate, defineComponent, defineDirective} from '../../src/render3/index';
-import {bind, componentRefresh, container, containerRefreshEnd, containerRefreshStart, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, listener, projection, projectionDef, store, text} from '../../src/render3/instructions';
+import {SimpleChanges} from '../../src/core';
+import {ComponentTemplate, NgOnChangesFeature, defineComponent, defineDirective} from '../../src/render3/index';
+import {bind, container, containerRefreshEnd, containerRefreshStart, directiveRefresh, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, listener, projection, projectionDef, store, text} from '../../src/render3/instructions';
 
 import {containerEl, renderToHtml} from './render_util';
 
@@ -21,7 +22,7 @@ describe('lifecycles', () => {
       }
       elementProperty(0, 'val', bind(ctx.val));
       type.ngComponentDef.h(1, 0);
-      componentRefresh(1, 0);
+      directiveRefresh(1, 0);
     };
   }
 
@@ -59,6 +60,12 @@ describe('lifecycles', () => {
       };
     }
 
+    class Directive {
+      ngOnInit() { events.push('dir'); }
+
+      static ngDirectiveDef = defineDirective({type: Directive, factory: () => new Directive()});
+    }
+
     it('should call onInit method after inputs are set in creation mode (and not in update mode)',
        () => {
          /** <comp [val]="val"></comp> */
@@ -69,7 +76,7 @@ describe('lifecycles', () => {
            }
            elementProperty(0, 'val', bind(ctx.val));
            Comp.ngComponentDef.h(1, 0);
-           componentRefresh(1, 0);
+           directiveRefresh(1, 0);
          }
 
          renderToHtml(Template, {val: '1'});
@@ -91,7 +98,7 @@ describe('lifecycles', () => {
           elementEnd();
         }
         Parent.ngComponentDef.h(1, 0);
-        componentRefresh(1, 0);
+        directiveRefresh(1, 0);
       }
 
       renderToHtml(Template, {});
@@ -117,8 +124,8 @@ describe('lifecycles', () => {
         elementProperty(2, 'val', 2);
         Parent.ngComponentDef.h(1, 0);
         Parent.ngComponentDef.h(3, 2);
-        componentRefresh(1, 0);
-        componentRefresh(3, 2);
+        directiveRefresh(1, 0);
+        directiveRefresh(3, 2);
       }
 
       renderToHtml(Template, {});
@@ -145,7 +152,7 @@ describe('lifecycles', () => {
               elementEnd();
             }
             Comp.ngComponentDef.h(1, 0);
-            componentRefresh(1, 0);
+            directiveRefresh(1, 0);
             embeddedViewEnd();
           }
         }
@@ -176,8 +183,8 @@ describe('lifecycles', () => {
         }
         Comp.ngComponentDef.h(1, 0);
         ProjectedComp.ngComponentDef.h(3, 2);
-        componentRefresh(1, 0);
-        componentRefresh(3, 2);
+        directiveRefresh(1, 0);
+        directiveRefresh(3, 2);
       }
 
       renderToHtml(Template, {});
@@ -210,10 +217,10 @@ describe('lifecycles', () => {
         ProjectedComp.ngComponentDef.h(3, 2);
         Comp.ngComponentDef.h(5, 4);
         ProjectedComp.ngComponentDef.h(7, 6);
-        componentRefresh(1, 0);
-        componentRefresh(3, 2);
-        componentRefresh(5, 4);
-        componentRefresh(7, 6);
+        directiveRefresh(1, 0);
+        directiveRefresh(3, 2);
+        directiveRefresh(5, 4);
+        directiveRefresh(7, 6);
       }
 
       renderToHtml(Template, {});
@@ -221,19 +228,16 @@ describe('lifecycles', () => {
     });
 
     it('should be called on directives after component', () => {
-      class Directive {
-        ngOnInit() { events.push('dir'); }
-
-        static ngDirectiveDef = defineDirective({type: Directive, factory: () => new Directive()});
-      }
-
+      /** <comp directive></comp> */
       function Template(ctx: any, cm: boolean) {
         if (cm) {
           elementStart(0, Comp, null, [Directive]);
           elementEnd();
         }
         Comp.ngComponentDef.h(1, 0);
-        componentRefresh(1, 0);
+        Directive.ngDirectiveDef.h(2, 0);
+        directiveRefresh(1, 0);
+        directiveRefresh(2, 0);
       }
 
       renderToHtml(Template, {});
@@ -242,6 +246,24 @@ describe('lifecycles', () => {
       renderToHtml(Template, {});
       expect(events).toEqual(['comp', 'dir']);
 
+    });
+
+    it('should be called on directives on an element', () => {
+      /** <div directive></div> */
+      function Template(ctx: any, cm: boolean) {
+        if (cm) {
+          elementStart(0, 'div', null, [Directive]);
+          elementEnd();
+        }
+        Directive.ngDirectiveDef.h(1, 0);
+        directiveRefresh(1, 0);
+      }
+
+      renderToHtml(Template, {});
+      expect(events).toEqual(['dir']);
+
+      renderToHtml(Template, {});
+      expect(events).toEqual(['dir']);
     });
 
     it('should call onInit properly in for loop', () => {
@@ -274,13 +296,13 @@ describe('lifecycles', () => {
             }
             elementProperty(0, 'val', j);
             Comp.ngComponentDef.h(1, 0);
-            componentRefresh(1, 0);
+            directiveRefresh(1, 0);
             embeddedViewEnd();
           }
         }
         containerRefreshEnd();
-        componentRefresh(1, 0);
-        componentRefresh(4, 3);
+        directiveRefresh(1, 0);
+        directiveRefresh(4, 3);
       }
 
       renderToHtml(Template, {});
@@ -320,13 +342,13 @@ describe('lifecycles', () => {
             }
             elementProperty(0, 'val', j);
             Parent.ngComponentDef.h(1, 0);
-            componentRefresh(1, 0);
+            directiveRefresh(1, 0);
             embeddedViewEnd();
           }
         }
         containerRefreshEnd();
-        componentRefresh(1, 0);
-        componentRefresh(4, 3);
+        directiveRefresh(1, 0);
+        directiveRefresh(4, 3);
       }
 
       renderToHtml(Template, {});
@@ -340,7 +362,6 @@ describe('lifecycles', () => {
     });
 
   });
-
 
   describe('doCheck', () => {
     let events: string[];
@@ -368,6 +389,12 @@ describe('lifecycles', () => {
       };
     }
 
+    class Directive {
+      ngDoCheck() { events.push('dir'); }
+
+      static ngDirectiveDef = defineDirective({type: Directive, factory: () => new Directive()});
+    }
+
     it('should call doCheck on every refresh', () => {
       /** <comp></comp> */
       function Template(ctx: any, cm: boolean) {
@@ -376,7 +403,7 @@ describe('lifecycles', () => {
           elementEnd();
         }
         Comp.ngComponentDef.h(1, 0);
-        componentRefresh(1, 0);
+        directiveRefresh(1, 0);
       }
 
       renderToHtml(Template, {});
@@ -398,7 +425,7 @@ describe('lifecycles', () => {
           elementEnd();
         }
         Parent.ngComponentDef.h(1, 0);
-        componentRefresh(1, 0);
+        directiveRefresh(1, 0);
       }
 
       renderToHtml(Template, {});
@@ -413,7 +440,7 @@ describe('lifecycles', () => {
           elementEnd();
         }
         Comp.ngComponentDef.h(1, 0);
-        componentRefresh(1, 0);
+        directiveRefresh(1, 0);
       }
 
       renderToHtml(Template, {});
@@ -421,6 +448,45 @@ describe('lifecycles', () => {
 
       renderToHtml(Template, {});
       expect(allEvents).toEqual(['init comp', 'check comp', 'check comp']);
+    });
+
+    it('should be called on directives after component', () => {
+      /** <comp directive></comp> */
+      function Template(ctx: any, cm: boolean) {
+        if (cm) {
+          elementStart(0, Comp, null, [Directive]);
+          elementEnd();
+        }
+        Comp.ngComponentDef.h(1, 0);
+        Directive.ngDirectiveDef.h(2, 0);
+        directiveRefresh(1, 0);
+        directiveRefresh(2, 0);
+      }
+
+      renderToHtml(Template, {});
+      expect(events).toEqual(['comp', 'dir']);
+
+      renderToHtml(Template, {});
+      expect(events).toEqual(['comp', 'dir', 'comp', 'dir']);
+
+    });
+
+    it('should be called on directives on an element', () => {
+      /** <div directive></div> */
+      function Template(ctx: any, cm: boolean) {
+        if (cm) {
+          elementStart(0, 'div', null, [Directive]);
+          elementEnd();
+        }
+        Directive.ngDirectiveDef.h(1, 0);
+        directiveRefresh(1, 0);
+      }
+
+      renderToHtml(Template, {});
+      expect(events).toEqual(['dir']);
+
+      renderToHtml(Template, {});
+      expect(events).toEqual(['dir', 'dir']);
     });
 
   });
@@ -450,7 +516,7 @@ describe('lifecycles', () => {
       }
       elementProperty(1, 'val', bind(ctx.val));
       Comp.ngComponentDef.h(2, 1);
-      componentRefresh(2, 1);
+      directiveRefresh(2, 1);
     });
 
     let ProjectedComp = createAfterContentInitComp('projected', (ctx: any, cm: boolean) => {
@@ -488,7 +554,7 @@ describe('lifecycles', () => {
           elementEnd();
         }
         Comp.ngComponentDef.h(1, 0);
-        componentRefresh(1, 0);
+        directiveRefresh(1, 0);
       }
 
       renderToHtml(Template, {});
@@ -517,7 +583,7 @@ describe('lifecycles', () => {
               elementEnd();
             }
             Comp.ngComponentDef.h(1, 0);
-            componentRefresh(1, 0);
+            directiveRefresh(1, 0);
             embeddedViewEnd();
           }
         }
@@ -534,30 +600,6 @@ describe('lifecycles', () => {
       expect(events).toEqual(['comp', 'comp']);
     });
 
-    it('should be called on directives after component', () => {
-      class Directive {
-        ngAfterContentInit() { events.push('dir'); }
-
-        static ngDirectiveDef = defineDirective({type: Directive, factory: () => new Directive()});
-      }
-
-      function Template(ctx: any, cm: boolean) {
-        if (cm) {
-          elementStart(0, Comp, null, [Directive]);
-          elementEnd();
-        }
-        Comp.ngComponentDef.h(1, 0);
-        componentRefresh(1, 0);
-      }
-
-      renderToHtml(Template, {});
-      expect(events).toEqual(['comp', 'dir']);
-
-      renderToHtml(Template, {});
-      expect(events).toEqual(['comp', 'dir']);
-
-    });
-
     it('should be called in parents before children', () => {
       /**
        * <parent>content</parent>
@@ -571,7 +613,7 @@ describe('lifecycles', () => {
           elementEnd();
         }
         Parent.ngComponentDef.h(1, 0);
-        componentRefresh(1, 0);
+        directiveRefresh(1, 0);
       }
 
       renderToHtml(Template, {});
@@ -598,8 +640,8 @@ describe('lifecycles', () => {
         elementProperty(3, 'val', 2);
         Parent.ngComponentDef.h(1, 0);
         Parent.ngComponentDef.h(4, 3);
-        componentRefresh(1, 0);
-        componentRefresh(4, 3);
+        directiveRefresh(1, 0);
+        directiveRefresh(4, 3);
       }
 
       renderToHtml(Template, {});
@@ -629,8 +671,8 @@ describe('lifecycles', () => {
         }
         Parent.ngComponentDef.h(1, 0);
         ProjectedComp.ngComponentDef.h(3, 2);
-        componentRefresh(1, 0);
-        componentRefresh(3, 2);
+        directiveRefresh(1, 0);
+        directiveRefresh(3, 2);
       }
 
       renderToHtml(Template, {});
@@ -676,10 +718,10 @@ describe('lifecycles', () => {
         ProjectedComp.ngComponentDef.h(3, 2);
         Parent.ngComponentDef.h(6, 5);
         ProjectedComp.ngComponentDef.h(8, 7);
-        componentRefresh(1, 0);
-        componentRefresh(3, 2);
-        componentRefresh(6, 5);
-        componentRefresh(8, 7);
+        directiveRefresh(1, 0);
+        directiveRefresh(3, 2);
+        directiveRefresh(6, 5);
+        directiveRefresh(8, 7);
       }
 
       renderToHtml(Template, {});
@@ -718,13 +760,13 @@ describe('lifecycles', () => {
             }
             elementProperty(0, 'val', i);
             Comp.ngComponentDef.h(1, 0);
-            componentRefresh(1, 0);
+            directiveRefresh(1, 0);
             embeddedViewEnd();
           }
         }
         containerRefreshEnd();
-        componentRefresh(1, 0);
-        componentRefresh(5, 4);
+        directiveRefresh(1, 0);
+        directiveRefresh(5, 4);
       }
 
       renderToHtml(Template, {});
@@ -755,13 +797,13 @@ describe('lifecycles', () => {
           }
           elementProperty(0, 'val', i);
           Parent.ngComponentDef.h(1, 0);
-          componentRefresh(1, 0);
+          directiveRefresh(1, 0);
           embeddedViewEnd();
         }
       }
       containerRefreshEnd();
-      componentRefresh(1, 0);
-      componentRefresh(5, 4);
+      directiveRefresh(1, 0);
+      directiveRefresh(5, 4);
     }
 
     it('should be called in correct order in a for loop with children', () => {
@@ -789,7 +831,7 @@ describe('lifecycles', () => {
             elementEnd();
           }
           Comp.ngComponentDef.h(1, 0);
-          componentRefresh(1, 0);
+          directiveRefresh(1, 0);
         }
 
         renderToHtml(Template, {});
@@ -800,6 +842,47 @@ describe('lifecycles', () => {
 
       });
 
+    });
+
+    describe('directives', () => {
+      class Directive {
+        ngAfterContentInit() { events.push('init'); }
+        ngAfterContentChecked() { events.push('check'); }
+
+        static ngDirectiveDef = defineDirective({type: Directive, factory: () => new Directive()});
+      }
+
+      it('should be called on directives after component', () => {
+        /** <comp directive></comp> */
+        function Template(ctx: any, cm: boolean) {
+          if (cm) {
+            elementStart(0, Comp, null, [Directive]);
+            elementEnd();
+          }
+          Comp.ngComponentDef.h(1, 0);
+          Directive.ngDirectiveDef.h(2, 0);
+          directiveRefresh(1, 0);
+          directiveRefresh(2, 0);
+        }
+
+        renderToHtml(Template, {});
+        expect(events).toEqual(['comp', 'init', 'check']);
+      });
+
+      it('should be called on directives on an element', () => {
+        /** <div directive></div> */
+        function Template(ctx: any, cm: boolean) {
+          if (cm) {
+            elementStart(0, 'div', null, [Directive]);
+            elementEnd();
+          }
+          Directive.ngDirectiveDef.h(1, 0);
+          directiveRefresh(1, 0);
+        }
+
+        renderToHtml(Template, {});
+        expect(events).toEqual(['init', 'check']);
+      });
     });
   });
 
@@ -855,7 +938,7 @@ describe('lifecycles', () => {
           elementEnd();
         }
         Comp.ngComponentDef.h(1, 0);
-        componentRefresh(1, 0);
+        directiveRefresh(1, 0);
       }
 
       renderToHtml(Template, {});
@@ -883,7 +966,7 @@ describe('lifecycles', () => {
               elementEnd();
             }
             Comp.ngComponentDef.h(1, 0);
-            componentRefresh(1, 0);
+            directiveRefresh(1, 0);
             embeddedViewEnd();
           }
         }
@@ -913,7 +996,7 @@ describe('lifecycles', () => {
           elementEnd();
         }
         Parent.ngComponentDef.h(1, 0);
-        componentRefresh(1, 0);
+        directiveRefresh(1, 0);
       }
 
       renderToHtml(Template, {});
@@ -939,8 +1022,8 @@ describe('lifecycles', () => {
         elementProperty(2, 'val', 2);
         Parent.ngComponentDef.h(1, 0);
         Parent.ngComponentDef.h(3, 2);
-        componentRefresh(1, 0);
-        componentRefresh(3, 2);
+        directiveRefresh(1, 0);
+        directiveRefresh(3, 2);
       }
       renderToHtml(Template, {});
       expect(events).toEqual(['comp1', 'comp2', 'parent1', 'parent2']);
@@ -964,8 +1047,8 @@ describe('lifecycles', () => {
         }
         Comp.ngComponentDef.h(1, 0);
         ProjectedComp.ngComponentDef.h(3, 2);
-        componentRefresh(1, 0);
-        componentRefresh(3, 2);
+        directiveRefresh(1, 0);
+        directiveRefresh(3, 2);
       }
 
       renderToHtml(Template, {});
@@ -1004,10 +1087,10 @@ describe('lifecycles', () => {
         ProjectedComp.ngComponentDef.h(3, 2);
         Comp.ngComponentDef.h(5, 4);
         ProjectedComp.ngComponentDef.h(7, 6);
-        componentRefresh(1, 0);
-        componentRefresh(3, 2);
-        componentRefresh(5, 4);
-        componentRefresh(7, 6);
+        directiveRefresh(1, 0);
+        directiveRefresh(3, 2);
+        directiveRefresh(5, 4);
+        directiveRefresh(7, 6);
       }
 
       renderToHtml(Template, {});
@@ -1033,8 +1116,8 @@ describe('lifecycles', () => {
         elementProperty(2, 'val', bind(ctx.val));
         Comp.ngComponentDef.h(1, 0);
         ProjectedComp.ngComponentDef.h(3, 2);
-        componentRefresh(1, 0);
-        componentRefresh(3, 2);
+        directiveRefresh(1, 0);
+        directiveRefresh(3, 2);
       });
 
       /**
@@ -1052,8 +1135,8 @@ describe('lifecycles', () => {
         elementProperty(2, 'val', 2);
         ParentComp.ngComponentDef.h(1, 0);
         ParentComp.ngComponentDef.h(3, 2);
-        componentRefresh(1, 0);
-        componentRefresh(3, 2);
+        directiveRefresh(1, 0);
+        directiveRefresh(3, 2);
       }
 
       renderToHtml(Template, {});
@@ -1089,13 +1172,13 @@ describe('lifecycles', () => {
             }
             elementProperty(0, 'val', i);
             Comp.ngComponentDef.h(1, 0);
-            componentRefresh(1, 0);
+            directiveRefresh(1, 0);
             embeddedViewEnd();
           }
         }
         containerRefreshEnd();
-        componentRefresh(1, 0);
-        componentRefresh(4, 3);
+        directiveRefresh(1, 0);
+        directiveRefresh(4, 3);
       }
 
       renderToHtml(Template, {});
@@ -1132,13 +1215,13 @@ describe('lifecycles', () => {
             }
             elementProperty(0, 'val', i);
             Parent.ngComponentDef.h(1, 0);
-            componentRefresh(1, 0);
+            directiveRefresh(1, 0);
             embeddedViewEnd();
           }
         }
         containerRefreshEnd();
-        componentRefresh(1, 0);
-        componentRefresh(4, 3);
+        directiveRefresh(1, 0);
+        directiveRefresh(4, 3);
       }
 
       renderToHtml(Template, {});
@@ -1146,7 +1229,6 @@ describe('lifecycles', () => {
           ['comp2', 'parent2', 'comp3', 'parent3', 'comp1', 'comp4', 'parent1', 'parent4']);
 
     });
-
 
     describe('ngAfterViewChecked', () => {
 
@@ -1158,7 +1240,7 @@ describe('lifecycles', () => {
             elementEnd();
           }
           Comp.ngComponentDef.h(1, 0);
-          componentRefresh(1, 0);
+          directiveRefresh(1, 0);
         }
 
         renderToHtml(Template, {});
@@ -1177,7 +1259,7 @@ describe('lifecycles', () => {
           }
           elementProperty(0, 'val', bind(ctx.myVal));
           Comp.ngComponentDef.h(1, 0);
-          componentRefresh(1, 0);
+          directiveRefresh(1, 0);
         }
 
         renderToHtml(Template, {myVal: 5});
@@ -1216,13 +1298,13 @@ describe('lifecycles', () => {
               }
               elementProperty(0, 'val', i);
               Parent.ngComponentDef.h(1, 0);
-              componentRefresh(1, 0);
+              directiveRefresh(1, 0);
               embeddedViewEnd();
             }
           }
           containerRefreshEnd();
-          componentRefresh(1, 0);
-          componentRefresh(4, 3);
+          directiveRefresh(1, 0);
+          directiveRefresh(4, 3);
         }
 
         renderToHtml(Template, {});
@@ -1236,6 +1318,46 @@ describe('lifecycles', () => {
 
     });
 
+    describe('directives', () => {
+      class Directive {
+        ngAfterViewInit() { events.push('init'); }
+        ngAfterViewChecked() { events.push('check'); }
+
+        static ngDirectiveDef = defineDirective({type: Directive, factory: () => new Directive()});
+      }
+
+      it('should be called on directives after component', () => {
+        /** <comp directive></comp> */
+        function Template(ctx: any, cm: boolean) {
+          if (cm) {
+            elementStart(0, Comp, null, [Directive]);
+            elementEnd();
+          }
+          Comp.ngComponentDef.h(1, 0);
+          Directive.ngDirectiveDef.h(2, 0);
+          directiveRefresh(1, 0);
+          directiveRefresh(2, 0);
+        }
+
+        renderToHtml(Template, {});
+        expect(events).toEqual(['comp', 'init', 'check']);
+      });
+
+      it('should be called on directives on an element', () => {
+        /** <div directive></div> */
+        function Template(ctx: any, cm: boolean) {
+          if (cm) {
+            elementStart(0, 'div', null, [Directive]);
+            elementEnd();
+          }
+          Directive.ngDirectiveDef.h(1, 0);
+          directiveRefresh(1, 0);
+        }
+
+        renderToHtml(Template, {});
+        expect(events).toEqual(['init', 'check']);
+      });
+    });
   });
 
   describe('onDestroy', () => {
@@ -1266,6 +1388,12 @@ describe('lifecycles', () => {
       };
     }
 
+    class Directive {
+      ngOnDestroy() { events.push('dir'); }
+
+      static ngDirectiveDef = defineDirective({type: Directive, factory: () => new Directive()});
+    }
+
     it('should call destroy when view is removed', () => {
       /**
        * % if (condition) {
@@ -1285,7 +1413,7 @@ describe('lifecycles', () => {
               elementEnd();
             }
             Comp.ngComponentDef.h(1, 0);
-            componentRefresh(1, 0);
+            directiveRefresh(1, 0);
             embeddedViewEnd();
           }
         }
@@ -1322,8 +1450,8 @@ describe('lifecycles', () => {
             elementProperty(2, 'val', bind('2'));
             Comp.ngComponentDef.h(1, 0);
             Comp.ngComponentDef.h(3, 2);
-            componentRefresh(1, 0);
-            componentRefresh(3, 2);
+            directiveRefresh(1, 0);
+            directiveRefresh(3, 2);
             embeddedViewEnd();
           }
         }
@@ -1356,7 +1484,7 @@ describe('lifecycles', () => {
               elementEnd();
             }
             Parent.ngComponentDef.h(1, 0);
-            componentRefresh(1, 0);
+            directiveRefresh(1, 0);
             embeddedViewEnd();
           }
         }
@@ -1384,7 +1512,7 @@ describe('lifecycles', () => {
           elementEnd();
         }
         Parent.ngComponentDef.h(1, 0);
-        componentRefresh(1, 0);
+        directiveRefresh(1, 0);
       });
 
       function Template(ctx: any, cm: boolean) {
@@ -1399,7 +1527,7 @@ describe('lifecycles', () => {
               elementEnd();
             }
             Grandparent.ngComponentDef.h(1, 0);
-            componentRefresh(1, 0);
+            directiveRefresh(1, 0);
             embeddedViewEnd();
           }
         }
@@ -1453,10 +1581,10 @@ describe('lifecycles', () => {
             ProjectedComp.ngComponentDef.h(3, 2);
             Comp.ngComponentDef.h(5, 4);
             ProjectedComp.ngComponentDef.h(7, 6);
-            componentRefresh(1, 0);
-            componentRefresh(3, 2);
-            componentRefresh(5, 4);
-            componentRefresh(7, 6);
+            directiveRefresh(1, 0);
+            directiveRefresh(3, 2);
+            directiveRefresh(5, 4);
+            directiveRefresh(7, 6);
             embeddedViewEnd();
           }
         }
@@ -1508,13 +1636,13 @@ describe('lifecycles', () => {
                 }
                 elementProperty(0, 'val', bind('2'));
                 Comp.ngComponentDef.h(1, 0);
-                componentRefresh(1, 0);
+                directiveRefresh(1, 0);
                 embeddedViewEnd();
               }
             }
             containerRefreshEnd();
-            componentRefresh(1, 0);
-            componentRefresh(4, 3);
+            directiveRefresh(1, 0);
+            directiveRefresh(4, 3);
             embeddedViewEnd();
           }
         }
@@ -1584,13 +1712,13 @@ describe('lifecycles', () => {
                 }
                 elementProperty(0, 'val', bind(j));
                 Comp.ngComponentDef.h(1, 0);
-                componentRefresh(1, 0);
+                directiveRefresh(1, 0);
                 embeddedViewEnd();
               }
             }
             containerRefreshEnd();
-            componentRefresh(1, 0);
-            componentRefresh(4, 3);
+            directiveRefresh(1, 0);
+            directiveRefresh(4, 3);
             embeddedViewEnd();
           }
         }
@@ -1659,7 +1787,7 @@ describe('lifecycles', () => {
               elementEnd();
             }
             Comp.ngComponentDef.h(3, 2);
-            componentRefresh(3, 2);
+            directiveRefresh(3, 2);
             embeddedViewEnd();
           }
         }
@@ -1689,6 +1817,504 @@ describe('lifecycles', () => {
       expect(ctx.counter).toEqual(2);
     });
 
+    it('should be called on directives after component', () => {
+      /**
+       * % if (condition) {
+       *   <comp></comp>
+       * % }
+       */
+
+      function Template(ctx: any, cm: boolean) {
+        if (cm) {
+          container(0);
+        }
+        containerRefreshStart(0);
+        {
+          if (ctx.condition) {
+            if (embeddedViewStart(0)) {
+              elementStart(0, Comp, null, [Directive]);
+              elementEnd();
+            }
+            Comp.ngComponentDef.h(1, 0);
+            Directive.ngDirectiveDef.h(2, 0);
+            directiveRefresh(1, 0);
+            directiveRefresh(2, 0);
+            embeddedViewEnd();
+          }
+        }
+        containerRefreshEnd();
+      }
+
+      renderToHtml(Template, {condition: true});
+      expect(events).toEqual([]);
+
+      renderToHtml(Template, {condition: false});
+      expect(events).toEqual(['comp', 'dir']);
+
+    });
+
+    it('should be called on directives on an element', () => {
+      /**
+       * % if (condition) {
+       *   <div directive></div>
+       * % }
+       */
+
+      function Template(ctx: any, cm: boolean) {
+        if (cm) {
+          container(0);
+        }
+        containerRefreshStart(0);
+        {
+          if (ctx.condition) {
+            if (embeddedViewStart(0)) {
+              elementStart(0, 'div', null, [Directive]);
+              elementEnd();
+            }
+            Directive.ngDirectiveDef.h(1, 0);
+            directiveRefresh(1, 0);
+            embeddedViewEnd();
+          }
+        }
+        containerRefreshEnd();
+      }
+
+      renderToHtml(Template, {condition: true});
+      expect(events).toEqual([]);
+
+      renderToHtml(Template, {condition: false});
+      expect(events).toEqual(['dir']);
+    });
+
+  });
+
+  describe('onChanges', () => {
+    let events: string[];
+
+    beforeEach(() => { events = []; });
+
+    const Comp = createOnChangesComponent('comp', (ctx: any, cm: boolean) => {
+      if (cm) {
+        projectionDef(0);
+        elementStart(1, 'div');
+        { projection(2, 0); }
+        elementEnd();
+      }
+    });
+    const Parent = createOnChangesComponent('parent', (ctx: any, cm: boolean) => {
+      if (cm) {
+        elementStart(0, Comp);
+        elementEnd();
+      }
+      elementProperty(0, 'val1', bind(ctx.a));
+      elementProperty(0, 'publicName', bind(ctx.b));
+      Comp.ngComponentDef.h(1, 0);
+      directiveRefresh(1, 0);
+    });
+    const ProjectedComp = createOnChangesComponent('projected', (ctx: any, cm: boolean) => {
+      if (cm) {
+        text(0, 'content');
+      }
+    });
+
+
+    function createOnChangesComponent(name: string, template: ComponentTemplate<any>) {
+      return class Component {
+        // @Input() val1: string;
+        // @Input('publicName') val2: string;
+        a: string = 'wasVal1BeforeMinification';
+        b: string = 'wasVal2BeforeMinification';
+        ngOnChanges(simpleChanges: SimpleChanges) {
+          events.push(
+              `comp=${name} val1=${this.a} val2=${this.b} - changed=[${Object.getOwnPropertyNames(simpleChanges).join(',')}]`);
+        }
+
+        static ngComponentDef = defineComponent({
+          type: Component,
+          tag: name,
+          factory: () => new Component(),
+          features: [NgOnChangesFeature],
+          inputs: {a: 'val1', b: 'publicName'},
+          inputsPropertyName: {b: 'val2'}, template
+        });
+      };
+    }
+
+    class Directive {
+      // @Input() val1: string;
+      // @Input('publicName') val2: string;
+      a: string = 'wasVal1BeforeMinification';
+      b: string = 'wasVal2BeforeMinification';
+      ngOnChanges(simpleChanges: SimpleChanges) {
+        events.push(
+            `dir - val1=${this.a} val2=${this.b} - changed=[${Object.getOwnPropertyNames(simpleChanges).join(',')}]`);
+      }
+
+      static ngDirectiveDef = defineDirective({
+        type: Directive,
+        factory: () => new Directive(),
+        features: [NgOnChangesFeature],
+        inputs: {a: 'val1', b: 'publicName'},
+        inputsPropertyName: {b: 'val2'}
+      });
+    }
+
+    it('should call onChanges method after inputs are set in creation and update mode', () => {
+      /** <comp [val1]="val1" [publicName]="val2"></comp> */
+      function Template(ctx: any, cm: boolean) {
+        if (cm) {
+          elementStart(0, Comp);
+          elementEnd();
+        }
+        elementProperty(0, 'val1', bind(ctx.val1));
+        elementProperty(0, 'publicName', bind(ctx.val2));
+        Comp.ngComponentDef.h(1, 0);
+        directiveRefresh(1, 0);
+      }
+
+      renderToHtml(Template, {val1: '1', val2: 'a'});
+      expect(events).toEqual(['comp=comp val1=1 val2=a - changed=[val1,val2]']);
+
+      renderToHtml(Template, {val1: '2', val2: 'b'});
+      expect(events).toEqual([
+        'comp=comp val1=1 val2=a - changed=[val1,val2]',
+        'comp=comp val1=2 val2=b - changed=[val1,val2]'
+      ]);
+    });
+
+    it('should call parent onChanges before child onChanges', () => {
+      /**
+       * <parent></parent>
+       * parent temp: <comp></comp>
+       */
+
+      function Template(ctx: any, cm: boolean) {
+        if (cm) {
+          elementStart(0, Parent);
+          elementEnd();
+        }
+        elementProperty(0, 'val1', bind(ctx.val1));
+        elementProperty(0, 'publicName', bind(ctx.val2));
+        Parent.ngComponentDef.h(1, 0);
+        directiveRefresh(1, 0);
+      }
+
+      renderToHtml(Template, {val1: '1', val2: 'a'});
+      expect(events).toEqual([
+        'comp=parent val1=1 val2=a - changed=[val1,val2]',
+        'comp=comp val1=1 val2=a - changed=[val1,val2]'
+      ]);
+    });
+
+    it('should call all parent onChanges across view before calling children onChanges', () => {
+      /**
+       * <parent [val]="1"></parent>
+       * <parent [val]="2"></parent>
+       *
+       * parent temp: <comp [val]="val"></comp>
+       */
+
+      function Template(ctx: any, cm: boolean) {
+        if (cm) {
+          elementStart(0, Parent);
+          elementEnd();
+          elementStart(2, Parent);
+          elementEnd();
+        }
+        elementProperty(0, 'val1', bind(1));
+        elementProperty(0, 'publicName', bind(1));
+        elementProperty(2, 'val1', bind(2));
+        elementProperty(2, 'publicName', bind(2));
+        Parent.ngComponentDef.h(1, 0);
+        Parent.ngComponentDef.h(3, 2);
+        directiveRefresh(1, 0);
+        directiveRefresh(3, 2);
+      }
+
+      renderToHtml(Template, {});
+      expect(events).toEqual([
+        'comp=parent val1=1 val2=1 - changed=[val1,val2]',
+        'comp=parent val1=2 val2=2 - changed=[val1,val2]',
+        'comp=comp val1=1 val2=1 - changed=[val1,val2]',
+        'comp=comp val1=2 val2=2 - changed=[val1,val2]'
+      ]);
+    });
+
+
+    it('should call onChanges every time a new view is created (if block)', () => {
+      /**
+       * % if (condition) {
+       *   <comp></comp>
+       * % }
+       */
+
+      function Template(ctx: any, cm: boolean) {
+        if (cm) {
+          container(0);
+        }
+        containerRefreshStart(0);
+        {
+          if (ctx.condition) {
+            if (embeddedViewStart(0)) {
+              elementStart(0, Comp);
+              elementEnd();
+            }
+            elementProperty(0, 'val1', bind(1));
+            elementProperty(0, 'publicName', bind(1));
+            Comp.ngComponentDef.h(1, 0);
+            directiveRefresh(1, 0);
+            embeddedViewEnd();
+          }
+        }
+        containerRefreshEnd();
+      }
+
+      renderToHtml(Template, {condition: true});
+      expect(events).toEqual(['comp=comp val1=1 val2=1 - changed=[val1,val2]']);
+
+      renderToHtml(Template, {condition: false});
+      expect(events).toEqual(['comp=comp val1=1 val2=1 - changed=[val1,val2]']);
+
+      renderToHtml(Template, {condition: true});
+      expect(events).toEqual([
+        'comp=comp val1=1 val2=1 - changed=[val1,val2]',
+        'comp=comp val1=1 val2=1 - changed=[val1,val2]'
+      ]);
+    });
+
+    it('should call onChanges in hosts before their content children', () => {
+      /**
+       * <comp>
+       *   <projected-comp></projected-comp>
+       * </comp>
+       */
+      function Template(ctx: any, cm: boolean) {
+        if (cm) {
+          elementStart(0, Comp);
+          { elementStart(2, ProjectedComp); }
+          elementEnd();
+        }
+        elementProperty(0, 'val1', bind(1));
+        elementProperty(0, 'publicName', bind(1));
+        elementProperty(2, 'val1', bind(2));
+        elementProperty(2, 'publicName', bind(2));
+        Comp.ngComponentDef.h(1, 0);
+        ProjectedComp.ngComponentDef.h(3, 2);
+        directiveRefresh(1, 0);
+        directiveRefresh(3, 2);
+      }
+
+      renderToHtml(Template, {});
+      expect(events).toEqual([
+        'comp=comp val1=1 val2=1 - changed=[val1,val2]',
+        'comp=projected val1=2 val2=2 - changed=[val1,val2]'
+      ]);
+    });
+
+    it('should call onChanges in host and its content children before next host', () => {
+      /**
+       * <comp [val]="1">
+       *   <projected-comp [val]="1"></projected-comp>
+       * </comp>
+       * <comp [val]="2">
+       *   <projected-comp [val]="1"></projected-comp>
+       * </comp>
+       */
+      function Template(ctx: any, cm: boolean) {
+        if (cm) {
+          elementStart(0, Comp);
+          { elementStart(2, ProjectedComp); }
+          elementEnd();
+          elementStart(4, Comp);
+          { elementStart(6, ProjectedComp); }
+          elementEnd();
+        }
+        elementProperty(0, 'val1', bind(1));
+        elementProperty(0, 'publicName', bind(1));
+        elementProperty(2, 'val1', bind(2));
+        elementProperty(2, 'publicName', bind(2));
+        elementProperty(4, 'val1', bind(3));
+        elementProperty(4, 'publicName', bind(3));
+        elementProperty(6, 'val1', bind(4));
+        elementProperty(6, 'publicName', bind(4));
+        Comp.ngComponentDef.h(1, 0);
+        ProjectedComp.ngComponentDef.h(3, 2);
+        Comp.ngComponentDef.h(5, 4);
+        ProjectedComp.ngComponentDef.h(7, 6);
+        directiveRefresh(1, 0);
+        directiveRefresh(3, 2);
+        directiveRefresh(5, 4);
+        directiveRefresh(7, 6);
+      }
+
+      renderToHtml(Template, {});
+      expect(events).toEqual([
+        'comp=comp val1=1 val2=1 - changed=[val1,val2]',
+        'comp=projected val1=2 val2=2 - changed=[val1,val2]',
+        'comp=comp val1=3 val2=3 - changed=[val1,val2]',
+        'comp=projected val1=4 val2=4 - changed=[val1,val2]'
+      ]);
+    });
+
+    it('should be called on directives after component', () => {
+      /** <comp directive></comp> */
+      function Template(ctx: any, cm: boolean) {
+        if (cm) {
+          elementStart(0, Comp, null, [Directive]);
+          elementEnd();
+        }
+        elementProperty(0, 'val1', bind(1));
+        elementProperty(0, 'publicName', bind(1));
+        Comp.ngComponentDef.h(1, 0);
+        directiveRefresh(1, 0);
+      }
+
+      renderToHtml(Template, {});
+      expect(events).toEqual([
+        'comp=comp val1=1 val2=1 - changed=[val1,val2]', 'dir - val1=1 val2=1 - changed=[val1,val2]'
+      ]);
+
+      renderToHtml(Template, {});
+      expect(events).toEqual([
+        'comp=comp val1=1 val2=1 - changed=[val1,val2]', 'dir - val1=1 val2=1 - changed=[val1,val2]'
+      ]);
+
+    });
+
+    it('should be called on directives on an element', () => {
+      /** <div directive></div> */
+      function Template(ctx: any, cm: boolean) {
+        if (cm) {
+          elementStart(0, 'div', null, [Directive]);
+          elementEnd();
+        }
+        elementProperty(0, 'val1', bind(1));
+        elementProperty(0, 'publicName', bind(1));
+        Directive.ngDirectiveDef.h(1, 0);
+        directiveRefresh(1, 0);
+      }
+
+      renderToHtml(Template, {});
+      expect(events).toEqual(['dir - val1=1 val2=1 - changed=[val1,val2]']);
+
+      renderToHtml(Template, {});
+      expect(events).toEqual(['dir - val1=1 val2=1 - changed=[val1,val2]']);
+    });
+
+    it('should call onChanges properly in for loop', () => {
+      /**
+       *  <comp [val]="1"></comp>
+       * % for (let j = 2; j < 5; j++) {
+       *   <comp [val]="j"></comp>
+       * % }
+       *  <comp [val]="5"></comp>
+       */
+
+      function Template(ctx: any, cm: boolean) {
+        if (cm) {
+          elementStart(0, Comp);
+          elementEnd();
+          container(2);
+          elementStart(3, Comp);
+          elementEnd();
+        }
+        elementProperty(0, 'val1', bind(1));
+        elementProperty(0, 'publicName', bind(1));
+        elementProperty(3, 'val1', bind(5));
+        elementProperty(3, 'publicName', bind(5));
+        Comp.ngComponentDef.h(1, 0);
+        Comp.ngComponentDef.h(4, 3);
+        containerRefreshStart(2);
+        {
+          for (let j = 2; j < 5; j++) {
+            if (embeddedViewStart(0)) {
+              elementStart(0, Comp);
+              elementEnd();
+            }
+            elementProperty(0, 'val1', bind(j));
+            elementProperty(0, 'publicName', bind(j));
+            Comp.ngComponentDef.h(1, 0);
+            directiveRefresh(1, 0);
+            embeddedViewEnd();
+          }
+        }
+        containerRefreshEnd();
+        directiveRefresh(1, 0);
+        directiveRefresh(4, 3);
+      }
+
+      renderToHtml(Template, {});
+
+      // onChanges is called top to bottom, so top level comps (1 and 5) are called
+      // before the comps inside the for loop's embedded view (2, 3, and 4)
+      expect(events).toEqual([
+        'comp=comp val1=1 val2=1 - changed=[val1,val2]',
+        'comp=comp val1=5 val2=5 - changed=[val1,val2]',
+        'comp=comp val1=2 val2=2 - changed=[val1,val2]',
+        'comp=comp val1=3 val2=3 - changed=[val1,val2]',
+        'comp=comp val1=4 val2=4 - changed=[val1,val2]'
+      ]);
+    });
+
+    it('should call onChanges properly in for loop with children', () => {
+      /**
+       *  <parent [val]="1"></parent>
+       * % for (let j = 2; j < 5; j++) {
+       *   <parent [val]="j"></parent>
+       * % }
+       *  <parent [val]="5"></parent>
+       */
+
+      function Template(ctx: any, cm: boolean) {
+        if (cm) {
+          elementStart(0, Parent);
+          elementEnd();
+          container(2);
+          elementStart(3, Parent);
+          elementEnd();
+        }
+        elementProperty(0, 'val1', bind(1));
+        elementProperty(0, 'publicName', bind(1));
+        elementProperty(3, 'val1', bind(5));
+        elementProperty(3, 'publicName', bind(5));
+        Parent.ngComponentDef.h(1, 0);
+        Parent.ngComponentDef.h(4, 3);
+        containerRefreshStart(2);
+        {
+          for (let j = 2; j < 5; j++) {
+            if (embeddedViewStart(0)) {
+              elementStart(0, Parent);
+              elementEnd();
+            }
+            elementProperty(0, 'val1', bind(j));
+            elementProperty(0, 'publicName', bind(j));
+            Parent.ngComponentDef.h(1, 0);
+            directiveRefresh(1, 0);
+            embeddedViewEnd();
+          }
+        }
+        containerRefreshEnd();
+        directiveRefresh(1, 0);
+        directiveRefresh(4, 3);
+      }
+
+      renderToHtml(Template, {});
+
+      // onChanges is called top to bottom, so top level comps (1 and 5) are called
+      // before the comps inside the for loop's embedded view (2, 3, and 4)
+      expect(events).toEqual([
+        'comp=parent val1=1 val2=1 - changed=[val1,val2]',
+        'comp=parent val1=5 val2=5 - changed=[val1,val2]',
+        'comp=parent val1=2 val2=2 - changed=[val1,val2]',
+        'comp=comp val1=2 val2=2 - changed=[val1,val2]',
+        'comp=parent val1=3 val2=3 - changed=[val1,val2]',
+        'comp=comp val1=3 val2=3 - changed=[val1,val2]',
+        'comp=parent val1=4 val2=4 - changed=[val1,val2]',
+        'comp=comp val1=4 val2=4 - changed=[val1,val2]',
+        'comp=comp val1=1 val2=1 - changed=[val1,val2]',
+        'comp=comp val1=5 val2=5 - changed=[val1,val2]'
+      ]);
+    });
 
   });
 
@@ -1700,6 +2326,8 @@ describe('lifecycles', () => {
     function createAllHooksComponent(name: string, template: ComponentTemplate<any>) {
       return class Component {
         val: string = '';
+
+        ngOnChanges() { events.push(`changes ${name}${this.val}`); }
 
         ngOnInit() { events.push(`init ${name}${this.val}`); }
         ngDoCheck() { events.push(`check ${name}${this.val}`); }
@@ -1714,7 +2342,8 @@ describe('lifecycles', () => {
           type: Component,
           tag: name,
           factory: () => new Component(),
-          inputs: {val: 'val'}, template
+          inputs: {val: 'val'}, template,
+          features: [NgOnChangesFeature]
         });
       };
     }
@@ -1738,22 +2367,22 @@ describe('lifecycles', () => {
         elementProperty(2, 'val', 2);
         Comp.ngComponentDef.h(1, 0);
         Comp.ngComponentDef.h(3, 2);
-        componentRefresh(1, 0);
-        componentRefresh(3, 2);
+        directiveRefresh(1, 0);
+        directiveRefresh(3, 2);
       }
 
       renderToHtml(Template, {});
       expect(events).toEqual([
-        'init comp1', 'check comp1', 'init comp2', 'check comp2', 'contentInit comp1',
-        'contentCheck comp1', 'contentInit comp2', 'contentCheck comp2', 'viewInit comp1',
-        'viewCheck comp1', 'viewInit comp2', 'viewCheck comp2'
+        'changes comp1', 'init comp1', 'check comp1', 'changes comp2', 'init comp2', 'check comp2',
+        'contentInit comp1', 'contentCheck comp1', 'contentInit comp2', 'contentCheck comp2',
+        'viewInit comp1', 'viewCheck comp1', 'viewInit comp2', 'viewCheck comp2'
       ]);
 
       events = [];
       renderToHtml(Template, {});
       expect(events).toEqual([
-        'check comp1', 'check comp2', 'contentCheck comp1', 'contentCheck comp2', 'viewCheck comp1',
-        'viewCheck comp2'
+        'changes comp1', 'check comp1', 'changes comp2', 'check comp2', 'contentCheck comp1',
+        'contentCheck comp2', 'viewCheck comp1', 'viewCheck comp2'
       ]);
     });
 
@@ -1768,7 +2397,7 @@ describe('lifecycles', () => {
         }
         elementProperty(0, 'val', bind(ctx.val));
         Comp.ngComponentDef.h(1, 0);
-        componentRefresh(1, 0);
+        directiveRefresh(1, 0);
       });
 
       /**
@@ -1786,28 +2415,31 @@ describe('lifecycles', () => {
         elementProperty(2, 'val', 2);
         Parent.ngComponentDef.h(1, 0);
         Parent.ngComponentDef.h(3, 2);
-        componentRefresh(1, 0);
-        componentRefresh(3, 2);
+        directiveRefresh(1, 0);
+        directiveRefresh(3, 2);
       }
 
       renderToHtml(Template, {});
       expect(events).toEqual([
-        'init parent1',        'check parent1',        'init parent2',
-        'check parent2',       'contentInit parent1',  'contentCheck parent1',
-        'contentInit parent2', 'contentCheck parent2', 'init comp1',
-        'check comp1',         'contentInit comp1',    'contentCheck comp1',
-        'viewInit comp1',      'viewCheck comp1',      'init comp2',
-        'check comp2',         'contentInit comp2',    'contentCheck comp2',
-        'viewInit comp2',      'viewCheck comp2',      'viewInit parent1',
-        'viewCheck parent1',   'viewInit parent2',     'viewCheck parent2'
+        'changes parent1',      'init parent1',         'check parent1',
+        'changes parent2',      'init parent2',         'check parent2',
+        'contentInit parent1',  'contentCheck parent1', 'contentInit parent2',
+        'contentCheck parent2', 'changes comp1',        'init comp1',
+        'check comp1',          'contentInit comp1',    'contentCheck comp1',
+        'viewInit comp1',       'viewCheck comp1',      'changes comp2',
+        'init comp2',           'check comp2',          'contentInit comp2',
+        'contentCheck comp2',   'viewInit comp2',       'viewCheck comp2',
+        'viewInit parent1',     'viewCheck parent1',    'viewInit parent2',
+        'viewCheck parent2'
       ]);
 
       events = [];
       renderToHtml(Template, {});
       expect(events).toEqual([
-        'check parent1', 'check parent2', 'contentCheck parent1', 'contentCheck parent2',
-        'check comp1', 'contentCheck comp1', 'viewCheck comp1', 'check comp2', 'contentCheck comp2',
-        'viewCheck comp2', 'viewCheck parent1', 'viewCheck parent2'
+        'changes parent1', 'check parent1', 'changes parent2', 'check parent2',
+        'contentCheck parent1', 'contentCheck parent2', 'check comp1', 'contentCheck comp1',
+        'viewCheck comp1', 'check comp2', 'contentCheck comp2', 'viewCheck comp2',
+        'viewCheck parent1', 'viewCheck parent2'
       ]);
 
     });

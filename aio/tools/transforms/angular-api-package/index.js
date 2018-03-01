@@ -14,6 +14,8 @@ const { API_SOURCE_PATH, API_TEMPLATES_PATH, requireFolder } = require('../confi
 module.exports = new Package('angular-api', [basePackage, typeScriptPackage])
 
   // Register the processors
+  .processor(require('./processors/migrateLegacyJSDocTags'))
+  .processor(require('./processors/splitDescription'))
   .processor(require('./processors/convertPrivateClassesToInterfaces'))
   .processor(require('./processors/generateApiListDoc'))
   .processor(require('./processors/addNotYetDocumentedProperty'))
@@ -90,6 +92,10 @@ module.exports = new Package('angular-api', [basePackage, typeScriptPackage])
         parseTagsProcessor.tagDefinitions.concat(getInjectables(requireFolder(__dirname, './tag-defs')));
   })
 
+  .config(function(splitDescription, EXPORT_DOC_TYPES) {
+    // Only split the description on the API docs
+    splitDescription.docTypes = EXPORT_DOC_TYPES;
+  })
 
   .config(function(computePathsProcessor, EXPORT_DOC_TYPES, generateApiListDoc) {
 
@@ -124,6 +130,6 @@ module.exports = new Package('angular-api', [basePackage, typeScriptPackage])
     ]);
     convertToJsonProcessor.docTypes = convertToJsonProcessor.docTypes.concat(DOCS_TO_CONVERT);
     postProcessHtml.docTypes = convertToJsonProcessor.docTypes.concat(DOCS_TO_CONVERT);
-    autoLinkCode.docTypes = DOCS_TO_CONVERT;
+    autoLinkCode.docTypes = DOCS_TO_CONVERT.concat(['member']);
     autoLinkCode.codeElements = ['code', 'code-example', 'code-pane'];
   });

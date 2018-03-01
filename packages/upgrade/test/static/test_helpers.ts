@@ -7,10 +7,11 @@
  */
 
 import {NgZone, PlatformRef, Type} from '@angular/core';
-import * as angular from '@angular/upgrade/src/common/angular1';
-import {$ROOT_SCOPE} from '@angular/upgrade/src/common/constants';
 import {UpgradeModule} from '@angular/upgrade/static';
+import * as angular from '@angular/upgrade/static/src/common/angular1';
+import {$ROOT_SCOPE} from '@angular/upgrade/static/src/common/constants';
 
+import {createWithEachNg1VersionFn} from '../common/test_helpers';
 export * from '../common/test_helpers';
 
 export function bootstrap(
@@ -34,6 +35,8 @@ export function bootstrap(
     return upgrade;
   });
 }
+
+export const withEachNg1Version = createWithEachNg1VersionFn(angular.setAngularJSGlobal);
 
 export function $apply(adapter: UpgradeModule, exp: angular.Ng1Expression) {
   const $rootScope = adapter.$injector.get($ROOT_SCOPE) as angular.IRootScopeService;

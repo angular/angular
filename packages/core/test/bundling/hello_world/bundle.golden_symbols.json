@@ -6,6 +6,9 @@
     "name": "EMPTY$1"
   },
   {
+    "name": "NG_HOST_SYMBOL"
+  },
+  {
     "name": "NO_CHANGE"
   },
   {
@@ -37,6 +40,9 @@
   },
   {
     "name": "currentView"
+  },
+  {
+    "name": "detectChanges"
   },
   {
     "name": "domRendererFactory3"
@@ -76,9 +82,6 @@
   },
   {
     "name": "refreshDynamicChildren"
-  },
-  {
-    "name": "renderComponentOrTemplate"
   },
   {
     "name": "renderEmbeddedTemplate"

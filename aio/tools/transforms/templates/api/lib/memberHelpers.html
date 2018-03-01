@@ -10,10 +10,20 @@
 {%- endmacro -%}
 
 {%- macro renderMembers(doc) -%}
-{%- if doc.members.length %}{% for member in doc.members %}{% if not member.internal %}
-  <a class="code-anchor" href="{$ doc.path $}#{$ member.anchor | urlencode $}">{$ renderMemberSyntax(member, 1) $}</a>{% endif %}{% endfor %}{% endif %}
-{%- for ancestor in doc.extendsClauses %}{% if ancestor.doc %}
-  // inherited from <a class="code-anchor" href="{$ ancestor.doc.path $}">{$ ancestor.doc.id $}</a>{$ renderMembers(ancestor.doc) $}{% endif %}{% endfor %}
+  {%- for member in doc.staticProperties %}{% if not member.internal %}
+  <a class="code-anchor" href="{$ doc.path $}#{$ member.anchor | urlencode $}">{$ renderMemberSyntax(member, 1) $}</a>{% endif %}{% endfor -%}
+  {% for member in doc.staticMethods %}{% if not member.internal %}
+  <a class="code-anchor" href="{$ doc.path $}#{$ member.anchor | urlencode $}">{$ renderMemberSyntax(member, 1) $}</a>{% endif %}{% endfor -%}
+  {% if doc.constructorDoc and not doc.constructorDoc.internal %}
+  <a class="code-anchor" href="{$ doc.path $}#{$ doc.constructorDoc.anchor | urlencode $}">{$ renderMemberSyntax(doc.constructorDoc, 1) $}</a>{% endif -%}
+  {% for member in doc.properties %}{% if not member.internal %}
+  <a class="code-anchor" href="{$ doc.path $}#{$ member.anchor | urlencode $}">{$ renderMemberSyntax(member, 1) $}</a>{% endif %}{% endfor -%}
+  {% for member in doc.methods %}{% if not member.internal %}
+  <a class="code-anchor" href="{$ doc.path $}#{$ member.anchor | urlencode $}">{$ renderMemberSyntax(member, 1) $}</a>{% endif %}{% endfor -%}
+
+  {%- for ancestor in doc.extendsClauses %}{% if ancestor.doc %}
+
+  // inherited from <a class="code-anchor" href="{$ ancestor.doc.path $}">{$ ancestor.doc.id $}</a>{$ renderMembers(ancestor.doc) $}{% endif %}{% endfor -%}
 {%- endmacro -%}
 
 {%- macro renderMemberSyntax(member, truncateLines) -%}
@@ -50,13 +60,18 @@
 {%- macro renderMethodDetail(method, cssClass) -%}
 <a id="{$ method.anchor $}"></a>
 <table class="is-full-width method-table {$ cssClass $}">
-  <thead><tr><th><h3>{$ method.name $}()</h3></th></tr></thead>
+  {% if method.name !== 'constructor' %}<thead><tr><th><h3>
+    {% if method.isCallMember %}<i>call signature</i>
+    {% elseif method.isNewMember %}<i>construct signature</i>
+    {% else %}{$ method.name $}()
+    {% endif %}
+  </h3></th></tr></thead>{% endif %}
   <tbody>
-    <tr>
+    {% if method.description %}<tr>
       <td>
-        {% if method.description %}{$ method.description | marked $}{% endif %}
+        {$ method.description | marked $}
       </td>
-    </tr>
+    </tr>{% endif %}
   {% if method.overloads.length == 0 %}
     <tr>
       <td>
@@ -91,36 +106,40 @@
 {% endmacro -%}
 
 {%- macro renderMethodDetails(methods, containerClass, itemClass, headingText) -%}
-{% if methods.length %}
+{% set nonInternalMethods = methods | filterByPropertyValue('internal', undefined) %}
+{% if nonInternalMethods.length %}
 <section class="{$ containerClass $}">
   <h2>{$ headingText $}</h2>
-  {% for member in methods %}{% if not member.internal %}
+  {% for member in nonInternalMethods %}
     {$ renderMethodDetail(member, itemClass) $}
-  {% endif %}{% endfor %}
+  {% endfor %}
 </section>
 {% endif %}
 {%- endmacro -%}
 
 
 {%- macro renderProperties(properties, containerClass, propertyClass, headingText) -%}
-{%- if properties.length -%}
-<h2>{$ headingText $}</h2>
-<table class="is-full-width list-table properties-table">
-  <thead>
-    <tr><th>Property</th><th>Type</th><th>Description</th></tr>
-  </thead>
-  <tbody>
-  {% for property in properties %}{% if not property.internal %}
-    <tr class="{$ propertyClass $}">
-      <td><a id="{$ property.anchor $}"></a>{$ property.name $}</td>
-      <td><label class="property-type-label"><code>{$ property.type | escape $}</code></label></td>
-      <td>
-        {$ (property.description or property.constructorParamDoc.description) | marked $}
-        {% if property.constructorParamDoc %} <span class='from-constructor'>Declared in constructor.</span>{% endif %}
-      </td>
-  </tr>
-  {% endif %}{% endfor %}
-  </tbody>
-</table>
+{% set nonInternalProperties = properties | filterByPropertyValue('internal', undefined) %}
+{% if nonInternalProperties.length -%}
+<section class="{$ containerClass $}">
+  <h2>{$ headingText $}</h2>
+  <table class="is-full-width list-table properties-table">
+    <thead>
+      <tr><th>Property</th><th>Type</th><th>Description</th></tr>
+    </thead>
+    <tbody>
+    {% for property in nonInternalProperties %}
+      <tr class="{$ propertyClass $}">
+        <td><a id="{$ property.anchor $}"></a>{$ property.name $}</td>
+        <td><label class="property-type-label"><code>{$ property.type | escape $}</code></label></td>
+        <td>
+          {$ (property.description or property.constructorParamDoc.description) | marked $}
+          {% if property.constructorParamDoc %} <span class='from-constructor'>Declared in constructor.</span>{% endif %}
+        </td>
+    </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</section>
 {%- endif -%}
 {%- endmacro -%}

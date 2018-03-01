@@ -80,12 +80,14 @@ merge:
 
 # options for the triage plugin
 triage:
+  # number of the milestone to apply when the issue has not been triaged yet
+  needsTriageMilestone: 83,
   # number of the milestone to apply when the issue is triaged
   defaultMilestone: 82,
   # arrays of labels that determine if an issue is triaged
   triagedLabels:
     -
-      - "type: bug"
+      - "type: bug/fix"
       - "severity*"
       - "freq*"
       - "comp: *"

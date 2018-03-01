@@ -174,8 +174,10 @@ class UpgradeNg1ComponentAdapter implements OnInit, OnChanges, DoCheck {
     }
     for (let j = 0; j < outputs.length; j++) {
       const emitter = (this as any)[outputs[j]] = new EventEmitter<any>();
-      this.setComponentProperty(
-          outputs[j], (emitter => (value: any) => emitter.emit(value))(emitter));
+      if (this.propOuts.indexOf(outputs[j]) === -1) {
+        this.setComponentProperty(
+            outputs[j], (emitter => (value: any) => emitter.emit(value))(emitter));
+      }
     }
     for (let k = 0; k < propOuts.length; k++) {
       this.checkLastValues.push(INITIAL_VALUE);
@@ -261,6 +263,8 @@ class UpgradeNg1ComponentAdapter implements OnInit, OnChanges, DoCheck {
     if (this.controllerInstance && isFunction(this.controllerInstance.$onDestroy)) {
       this.controllerInstance.$onDestroy();
     }
+
+    this.componentScope.$destroy();
   }
 
   setComponentProperty(name: string, value: any) {

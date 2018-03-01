@@ -19,9 +19,13 @@
     <tr class="{$ parameterClass $}">
       <td class="param-name"><a id="{$ parameter.anchor $}"></a>{$ parameter.name $}</td>
       <td class="param-description">
-        {% if parameter.description | trim %}{$ parameter.description | marked $}
+      {% marked %}
+        {% if parameter.isOptional or parameter.defaultValue !== undefined %}Optional. Default is `{$ parameter.defaultValue === undefined and 'undefined' or parameter.defaultValue $}`.{% endif %}
+
+        {% if parameter.description | trim %}{$ parameter.description $}
         {% elseif parameter.type %}<code>{$ parameter.type $}</code>
         {% endif %}
+      {% endmarked %}
       </td>
     </tr>{% endfor %}
   </tbody>

@@ -418,7 +418,7 @@ To see the form model, add the following line after the
 closing `form` tag in the `hero-detail.component.html`:
 
 
-<code-example path="reactive-forms/src/app/hero-detail/hero-detail-3.component.html" region="form-value-json" title="src/app/hero-detail/hero-detail.component.html" linenums="false">
+<code-example path="reactive-forms/src/app/hero-detail/hero-detail-2.component.html" region="form-value-json" title="src/app/hero-detail/hero-detail.component.html" linenums="false">
 
 </code-example>
 

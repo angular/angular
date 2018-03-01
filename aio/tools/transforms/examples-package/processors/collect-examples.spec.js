@@ -25,6 +25,12 @@ describe('collectExampleRegions processor', () => {
 
   describe('$process', () => {
 
+    it('should initialise the `exampleMap` even if there are no examples to collect', () => {
+      processor.$process([]);
+      expect(exampleMap['examples-1']).toEqual(jasmine.any(Object));
+      expect(exampleMap['examples-2']).toEqual(jasmine.any(Object));
+    });
+
     it('should identify example files that are in the exampleFolders', () => {
       const docs = [
         createDoc('A', 'examples-1/x/app.js'), createDoc('B', 'examples-1/y/index.html'),

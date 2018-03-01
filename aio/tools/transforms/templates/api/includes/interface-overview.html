@@ -2,14 +2,11 @@
 
 <section class="interface-overview">
 <h2>Interface Overview</h2>
-<div class="sidebar">
-  {$ descendants.renderDescendants(doc, 'interface', 'Child Interfaces') $}
-  {$ descendants.renderDescendants(doc, 'class', 'Class Implementations') $}
-  {% include "includes/see-also.html" %}
-</div>
 <code-example language="ts" hideCopy="true">
-interface {$ doc.name $}{$ doc.typeParams | escape $}{$ memberHelper.renderHeritage(doc) $} { {% if doc.members.length %}{% for member in doc.members %}{% if not member.internal %}
-  <a class="code-anchor" href="#{$ member.anchor | urlencode $}">{$ memberHelper.renderMemberSyntax(member, 1) $}</a>{% endif %}{% endfor %}{% endif %}
+interface {$ doc.name $}{$ doc.typeParams | escape $}{$ memberHelper.renderHeritage(doc) $} {{$ memberHelper.renderMembers(doc) $}
 }
 </code-example>
+{$ descendants.renderDescendants(doc, 'interface', 'Child Interfaces') $}
+{$ descendants.renderDescendants(doc, 'class', 'Class Implementations') $}
+{% include "includes/see-also.html" %}
 </section>

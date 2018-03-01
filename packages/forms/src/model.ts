@@ -357,9 +357,17 @@ export abstract class AbstractControl {
 
   /**
    * Marks the control as `pending`.
+   *
+   * An event will be emitted by `statusChanges` by default.
+   *
+   * Passing `false` for `emitEvent` will cause `statusChanges` to not event an event.
    */
-  markAsPending(opts: {onlySelf?: boolean} = {}): void {
+  markAsPending(opts: {onlySelf?: boolean, emitEvent?: boolean} = {}): void {
     (this as{status: string}).status = PENDING;
+
+    if (opts.emitEvent !== false) {
+      (this.statusChanges as EventEmitter<any>).emit(this.status);
+    }
 
     if (this._parent && !opts.onlySelf) {
       this._parent.markAsPending(opts);

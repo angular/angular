@@ -10,9 +10,9 @@ import {TestBed, getTestBed, inject} from '@angular/core/testing';
 import * as angular from '@angular/upgrade/src/common/angular1';
 import {DowngradeComponentAdapter, groupNodesBySelector} from '@angular/upgrade/src/common/downgrade_component_adapter';
 
-import {nodes} from './test_helpers';
+import {nodes, withEachNg1Version} from './test_helpers';
 
-{
+withEachNg1Version(() => {
   describe('DowngradeComponentAdapter', () => {
     describe('groupNodesBySelector', () => {
       it('should return an array of node collections for each selector', () => {
@@ -85,15 +85,21 @@ import {nodes} from './test_helpers';
       let element: angular.IAugmentedJQuery;
 
       class mockScope implements angular.IScope {
+        private destroyListeners: (() => void)[] = [];
+
         $new() { return this; }
         $watch(exp: angular.Ng1Expression, fn?: (a1?: any, a2?: any) => void) {
           return () => {};
         }
         $on(event: string, fn?: (event?: any, ...args: any[]) => void) {
+          if (event === '$destroy' && fn) {
+            this.destroyListeners.push(fn);
+          }
           return () => {};
         }
         $destroy() {
-          return () => {};
+          let listener: (() => void)|undefined;
+          while ((listener = this.destroyListeners.shift())) listener();
         }
         $apply(exp?: angular.Ng1Expression) {
           return () => {};
@@ -190,4 +196,4 @@ import {nodes} from './test_helpers';
     });
 
   });
-}
+});
