@@ -784,9 +784,6 @@ The animation is executed or triggered when the expression value changes to a ne
 
 In the above code snippet, when the `isOpen` expression evaluates to a defined state: `open` or `closed`, it will notify the trigger `openClose` of a state change. It is then up to `openClose` code to handle the state change and kick off a state change animation.
 
-
-
-
 ### Code sample, simple transition
 
 Here are the code files discussed on the transition example.
