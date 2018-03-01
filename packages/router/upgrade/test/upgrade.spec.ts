@@ -78,4 +78,24 @@ describe('setUpLocationSync', () => {
     expect(RouterMock.navigateByUrl).toHaveBeenCalledTimes(1);
     expect(RouterMock.navigateByUrl).toHaveBeenCalledWith(normalizedPathname + query + hash);
   });
+
+  it('should work correctly on browsers that do not start pathname with `/`', () => {
+    const anchorProto = HTMLAnchorElement.prototype;
+    const originalDescriptor = Object.getOwnPropertyDescriptor(anchorProto, 'pathname');
+    Object.defineProperty(anchorProto, 'pathname', {get: () => 'foo/bar'});
+
+    try {
+      const $rootScope = jasmine.createSpyObj('$rootScope', ['$on']);
+      upgradeModule.$injector.get.and.returnValue($rootScope);
+
+      setUpLocationSync(upgradeModule);
+
+      const callback = $rootScope.$on.calls.argsFor(0)[1];
+      callback({}, '', '');
+
+      expect(LocationMock.normalize).toHaveBeenCalledWith('/foo/bar');
+    } finally {
+      Object.defineProperty(anchorProto, 'pathname', originalDescriptor !);
+    }
+  });
 });

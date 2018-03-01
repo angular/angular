@@ -68,12 +68,46 @@ export function setUpLocationSync(ngUpgrade: UpgradeModule) {
 
   const router: Router = ngUpgrade.injector.get(Router);
   const location: Location = ngUpgrade.injector.get(Location);
-  const url = document.createElement('a');
 
   ngUpgrade.$injector.get('$rootScope')
       .$on('$locationChangeStart', (_: any, next: string, __: string) => {
-        url.href = next;
-        const path: string = location.normalize(url.pathname);
+        const url = resolveUrl(next);
+        const path = location.normalize(url.pathname);
         router.navigateByUrl(path + url.search + url.hash);
       });
+}
+
+/**
+ * Normalize and parse a URL.
+ *
+ * - Normalizing means that a relative URL will be resolved into an absolute URL in the context of
+ *   the application document.
+ * - Parsing means that the anchor's `protocol`, `hostname`, `port`, `pathname` and related
+ *   properties are all populated to reflect the normalized URL.
+ *
+ * While this approach has wide compatibility, it doesn't work as expected on IE. On IE, normalizing
+ * happens similar to other browsers, but the parsed components will not be set. (E.g. if you assign
+ * `a.href = 'foo'`, then `a.protocol`, `a.host`, etc. will not be correctly updated.)
+ * We work around that by performing the parsing in a 2nd step by taking a previously normalized URL
+ * and assigning it again. This correctly populates all properties.
+ *
+ * See
+ * https://github.com/angular/angular.js/blob/2c7400e7d07b0f6cec1817dab40b9250ce8ebce6/src/ng/urlUtils.js#L26-L33
+ * for more info.
+ */
+let anchor: HTMLAnchorElement|undefined;
+function resolveUrl(url: string): {pathname: string, search: string, hash: string} {
+  if (!anchor) {
+    anchor = document.createElement('a');
+  }
+
+  anchor.setAttribute('href', url);
+  anchor.setAttribute('href', anchor.href);
+
+  return {
+    // IE does not start `pathname` with `/` like other browsers.
+    pathname: `/${anchor.pathname.replace(/^\//, '')}`,
+    search: anchor.search,
+    hash: anchor.hash
+  };
 }
