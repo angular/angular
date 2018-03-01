@@ -246,6 +246,24 @@ describe('MatExpansionPanel', () => {
     expect(fixture.componentInstance.expanded).toBe(false);
   });
 
+  it('should not set the mat-expanded class until the open animation is done', fakeAsync(() => {
+    const fixture = TestBed.createComponent(PanelWithContent);
+    const contentEl = fixture.nativeElement.querySelector('.mat-expansion-panel-content');
+
+    fixture.detectChanges();
+    expect(contentEl.classList).not.toContain('mat-expanded',
+        'Expected class not to be there on init');
+
+    fixture.componentInstance.expanded = true;
+    fixture.detectChanges();
+    expect(contentEl.classList).not.toContain('mat-expanded',
+        'Expected class not to be added immediately after becoming expanded');
+
+    flush();
+    expect(contentEl.classList).toContain('mat-expanded',
+        'Expected class to be added after the animation has finished');
+  }));
+
   describe('disabled state', () => {
     let fixture: ComponentFixture<PanelWithContent>;
     let panel: HTMLElement;
