@@ -95,6 +95,13 @@ export function compile({allowNonHermeticReads, allDepsCompiledWithBazel = true,
 }): {diagnostics: ng.Diagnostics, program: ng.Program} {
   let fileLoader: FileLoader;
 
+  if (bazelOpts.maxCacheSizeMb !== undefined) {
+    const maxCacheSizeBytes = bazelOpts.maxCacheSizeMb * (1 << 20);
+    fileCache.setMaxCacheSize(maxCacheSizeBytes);
+  } else {
+    fileCache.resetMaxCacheSize();
+  }
+
   if (inputs) {
     fileLoader = new CachedFileLoader(fileCache, allowNonHermeticReads);
     // Resolve the inputs to absolute paths to match TypeScript internals
