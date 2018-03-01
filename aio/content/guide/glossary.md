@@ -196,6 +196,7 @@ operations and supporting declaration syntax.
 
  Read about the following forms of binding in the [Template Syntax](guide/template-syntax) page:
 
+<!--
  * [Interpolation](guide/template-syntax#interpolation).
  * [Property binding](guide/template-syntax#property-binding).
  * [Event binding](guide/template-syntax#event-binding).
@@ -203,7 +204,14 @@ operations and supporting declaration syntax.
  * [Class binding](guide/template-syntax#class-binding).
  * [Style binding](guide/template-syntax#style-binding).
  * [Two-way data binding with ngModel](guide/template-syntax#ngModel).
-
+-->
+ * [문자열 바인딩](guide/template-syntax#문자열-바인딩).
+ * [프로퍼티 바인딩](guide/template-syntax#프로퍼티-바인딩).
+ * [이벤트 바인딩](guide/template-syntax#이벤트-바인딩).
+ * [어트리뷰트 바인딩](guide/template-syntax#어트리뷰트-바인딩).
+ * [클래스 바인딩](guide/template-syntax#클래스-바인딩).
+ * [스타일 바인딩](guide/template-syntax#스타일-바인딩).
+ * [ngModel을 사용하는 양방향 바인딩](guide/template-syntax#ngModel).
 
 {@a decorator}
 

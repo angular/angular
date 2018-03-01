@@ -319,7 +319,7 @@ _선택된 히어로_ 의 색은 [이전에 추가한 스타일](#styles)에 선
 <!-- The Angular [class binding](guide/template-syntax#class-binding) makes it easy to add and remove a CSS class conditionally. 
 Just add `[class.some-css-class]="some-condition"` to the element you want to style. -->
 
-Angular의 [class binding](guide/template-syntax#class-binding)은 CSS 클래스를 조건에 따라 추가하거나 제거하는 것을 도와줍니다.
+Angular의 [클래스 바인딩](guide/template-syntax#클래스-바인딩)은 CSS 클래스를 조건에 따라 추가하거나 제거하는 것을 도와줍니다.
 디자인하고 싶은 엘리먼트에 `[class.some-css-class]="some-condition"`만 추가하면 됩니다.
 
 <!-- Add the following `[class.selected]` binding to  the `<li>` in the `HeroesComponent` template: -->

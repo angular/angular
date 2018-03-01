@@ -1922,7 +1922,10 @@ You typically control how elements appear
 by adding and removing CSS classes dynamically.
 You can bind to the `ngClass` to add or remove several classes simultaneously.
 
+<!--
 A [class binding](guide/template-syntax#class-binding) is a good way to add or remove a *single* class.
+-->
+A [클래스 바인딩](guide/template-syntax#클래스-바인딩) is a good way to add or remove a *single* class.
 
 <code-example path="template-syntax/src/app/app.component.html" region="class-binding-3a" title="src/app/app.component.html" linenums="false">
 </code-example>
@@ -1960,7 +1963,10 @@ It's up to you to call `setCurrentClasses()`, both initially and when the depend
 You can set inline styles dynamically, based on the state of the component.
 With `NgStyle` you can set many inline styles simultaneously.
 
+<!--
 A [style binding](guide/template-syntax#style-binding) is an easy way to set a *single* style value.
+-->
+A [스타일 바인딩](guide/template-syntax#스타일-바인딩) is an easy way to set a *single* style value.
 
 <code-example path="template-syntax/src/app/app.component.html" region="NgStyle-1" title="src/app/app.component.html" linenums="false">
 </code-example>
@@ -2132,8 +2138,12 @@ from the DOM, destroying that component and all of its sub-components.
 
 #### Show/hide is not the same thing
 
+<!--
 You can control the visibility of an element with a
 [class](guide/template-syntax#class-binding) or [style](guide/template-syntax#style-binding) binding:
+-->
+You can control the visibility of an element with a
+[클래스](guide/template-syntax#클래스-바인딩) or [스타일](guide/template-syntax#스타일-바인딩) binding:
 
 <code-example path="template-syntax/src/app/app.component.html" region="NgIf-3" title="src/app/app.component.html" linenums="false">
 </code-example>

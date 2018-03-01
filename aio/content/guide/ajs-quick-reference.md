@@ -647,7 +647,11 @@ The following are some of the key AngularJS built-in directives and their equiva
 
       Angular also has **style binding**, which is good way to set a single style. This is shown in the second example.
 
+      <!--
       For more information on style binding, see the [Style binding](guide/template-syntax#style-binding) section of the
+      [Template Syntax](guide/template-syntax) page.
+      -->
+      For more information on style binding, see the [스타일 바인딩](guide/template-syntax#스타일-바인딩) section of the
       [Template Syntax](guide/template-syntax) page.
 
       For more information on the `ngStyle` directive, see [NgStyle](guide/template-syntax#ngStyle)
