@@ -46,7 +46,7 @@ export const scheduler = {
 /**
  * Convert a camelCased string to kebab-cased.
  */
-export function camelToKebabCase(input: string): string {
+export function camelToDashCase(input: string): string {
   return input.replace(/[A-Z]/g, char => `-${char.toLowerCase()}`);
 }
 

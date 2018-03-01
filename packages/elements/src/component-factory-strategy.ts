@@ -13,7 +13,7 @@ import {map} from 'rxjs/operator/map';
 
 import {NgElementStrategy, NgElementStrategyEvent, NgElementStrategyFactory} from './element-strategy';
 import {extractProjectableNodes} from './extract-projectable-nodes';
-import {camelToKebabCase, isFunction, scheduler, strictEquals} from './utils';
+import {camelToDashCase, isFunction, scheduler, strictEquals} from './utils';
 
 /** Time in milliseconds to wait before destroying the component ref when disconnected. */
 const DESTROY_DELAY = 10;
@@ -28,7 +28,7 @@ export function getConfigFromComponentFactory(
     componentFactory: ComponentFactory<any>, injector: Injector) {
   const attributeToPropertyInputs = new Map<string, string>();
   componentFactory.inputs.forEach(({propName, templateName}) => {
-    const attr = camelToKebabCase(templateName);
+    const attr = camelToDashCase(templateName);
     attributeToPropertyInputs.set(attr, propName);
   });
 
@@ -114,8 +114,11 @@ export class ComponentFactoryNgElementStrategy implements NgElementStrategy {
 
     // Schedule the component to be destroyed after a small timeout in case it is being
     // moved elsewhere in the DOM
-    this.scheduledDestroyFn =
-        scheduler.schedule(() => { this.componentRef !.destroy(); }, DESTROY_DELAY);
+    this.scheduledDestroyFn = scheduler.schedule(() => {
+      if (this.componentRef) {
+        this.componentRef !.destroy();
+      }
+    }, DESTROY_DELAY);
   }
 
   /**
