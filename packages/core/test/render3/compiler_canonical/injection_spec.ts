@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, ContentChild, ContentChildren, Directive, HostBinding, HostListener, Injectable, Input, NgModule, OnDestroy, Optional, Pipe, PipeTransform, QueryList, SimpleChanges, TemplateRef, ViewChild, ViewChildren, ViewContainerRef} from '../../../src/core';
+import {Attribute, ChangeDetectionStrategy, ChangeDetectorRef, Component, ContentChild, ContentChildren, Directive, HostBinding, HostListener, Injectable, Input, NgModule, OnDestroy, Optional, Pipe, PipeTransform, QueryList, SimpleChanges, TemplateRef, ViewChild, ViewChildren, ViewContainerRef} from '../../../src/core';
 import * as $r3$ from '../../../src/core_render3_private_export';
 import {renderComponent, toHtml} from '../render_util';
 
@@ -58,6 +58,51 @@ describe('injection', () => {
     const app = renderComponent(MyApp);
     // ChangeDetectorRef is the token, ViewRef is historically the constructor
     expect(toHtml(app)).toEqual('<my-comp>ViewRef</my-comp>');
+  });
+
+  it('should inject attributes', () => {
+    type $MyComp$ = MyComp;
+    type $MyApp$ = MyApp;
+
+    @Component({selector: 'my-comp', template: `{{ title }}`})
+    class MyComp {
+      constructor(@Attribute('title') public title: string|undefined) {}
+
+      // NORMATIVE
+      static ngComponentDef = $r3$.ɵdefineComponent({
+        type: MyComp,
+        tag: 'my-comp',
+        factory: function MyComp_Factory() { return new MyComp($r3$.ɵinjectAttribute('title')); },
+        template: function MyComp_Template(ctx: $MyComp$, cm: $boolean$) {
+          if (cm) {
+            $r3$.ɵT(0);
+          }
+          $r3$.ɵt(0, $r3$.ɵb(ctx.title));
+        }
+      });
+      // /NORMATIVE
+    }
+
+    class MyApp {
+      static ngComponentDef = $r3$.ɵdefineComponent({
+        type: MyApp,
+        tag: 'my-app',
+        factory: function MyApp_Factory() { return new MyApp(); },
+        /** <my-comp></my-comp> */
+        template: function MyApp_Template(ctx: $MyApp$, cm: $boolean$) {
+          if (cm) {
+            $r3$.ɵE(0, MyComp, e0_attrs);
+            $r3$.ɵe();
+          }
+          MyComp.ngComponentDef.h(1, 0);
+          $r3$.ɵr(1, 0);
+        }
+      });
+    }
+    const e0_attrs = ['title', 'WORKS'];
+    const app = renderComponent(MyApp);
+    // ChangeDetectorRef is the token, ViewRef is historically the constructor
+    expect(toHtml(app)).toEqual('<my-comp title="WORKS">WORKS</my-comp>');
   });
 
 });
