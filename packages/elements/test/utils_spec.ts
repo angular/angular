@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {camelToKebabCase, createCustomEvent, isElement, isFunction, kebabToCamelCase, matchesSelector, scheduler, strictEquals} from '../src/utils';
+import {camelToDashCase, createCustomEvent, isElement, isFunction, kebabToCamelCase, matchesSelector, scheduler, strictEquals} from '../src/utils';
 
 describe('utils', () => {
   describe('scheduler', () => {
@@ -77,12 +77,12 @@ describe('utils', () => {
 
   describe('camelToKebabCase()', () => {
     it('should convert camel-case to kebab-case', () => {
-      expect(camelToKebabCase('fooBarBazQux')).toBe('foo-bar-baz-qux');
-      expect(camelToKebabCase('foo1Bar2Baz3Qux4')).toBe('foo1-bar2-baz3-qux4');
+      expect(camelToDashCase('fooBarBazQux')).toBe('foo-bar-baz-qux');
+      expect(camelToDashCase('foo1Bar2Baz3Qux4')).toBe('foo1-bar2-baz3-qux4');
     });
 
     it('should keep existing dashes',
-       () => { expect(camelToKebabCase('fooBar-baz-Qux')).toBe('foo-bar-baz--qux'); });
+       () => { expect(camelToDashCase('fooBar-baz-Qux')).toBe('foo-bar-baz--qux'); });
   });
 
   describe('createCustomEvent()', () => {
