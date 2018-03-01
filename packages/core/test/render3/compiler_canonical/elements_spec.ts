@@ -74,9 +74,9 @@ describe('elements', () => {
           if (cm) {
             $r3$.ɵE(0, 'button');
             $r3$.ɵL('click', function ListenerComp_click_Handler() { return ctx.onClick(); });
-            $r3$.ɵL('keypress', function ListenerComp_keypress_Handler($e$: $any$) {
-              ctx.onPress($e$);
-              return ctx.onPress2($e$);
+            $r3$.ɵL('keypress', function ListenerComp_keypress_Handler($event: $any$) {
+              ctx.onPress($event);
+              return ctx.onPress2($event);
             });
             $r3$.ɵT(1, 'Click');
             $r3$.ɵe();
