@@ -12,6 +12,7 @@ import {withBody} from '@angular/core/testing';
 
 import * as r3 from '../../../src/render3/index';
 
+/// See: `normative.md`
 
 
 // TODO: remove once https://github.com/angular/angular/pull/22005 lands
