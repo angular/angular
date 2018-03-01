@@ -1,13 +1,21 @@
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
 import chai = require('chai');
 import * as child_process from 'child_process';
 import * as fs from 'fs';
 import * as path from 'path';
 import {assertFileEqual, unlinkRecursively} from './helpers';
 
-const BINARY = path.resolve(__dirname, '../../bin/ts-api-guardian');
+const BINARY = 'ts-api-guardian/bin/ts-api-guardian';
 
 describe('cli: e2e test', () => {
-  const outDir = path.resolve(__dirname, '../../build/tmp');
+  const outDir = path.join(process.env['TEST_TMPDIR'], 'tmp');
 
   beforeEach(() => {
     if (!fs.existsSync(outDir)) {
@@ -29,8 +37,8 @@ describe('cli: e2e test', () => {
 
   it('should generate golden file with --out', () => {
     const simpleFile = path.join(outDir, 'simple.d.ts');
-    const {status} = execute(['--out', simpleFile, 'test/fixtures/simple.d.ts']);
-    chai.assert.equal(status, 0);
+    const {status, stderr} = execute(['--out', simpleFile, 'test/fixtures/simple.d.ts']);
+    chai.assert.equal(status, 0, stderr);
     assertFileEqual(simpleFile, 'test/fixtures/simple_expected.d.ts');
   });
 
@@ -117,7 +125,7 @@ describe('cli: e2e test', () => {
         stderr,
         'test/fixtures/simple.d.ts(1,1): error: No stability annotation found for symbol "A"\n' +
             'test/fixtures/simple.d.ts(2,1): error: No stability annotation found for symbol "B"\n');
-    chai.assert.equal(status, 0);
+    chai.assert.equal(status, 0, stderr);
   });
 });
 
@@ -126,8 +134,12 @@ function copyFile(sourceFile: string, targetFile: string) {
 }
 
 function execute(args: string[]): {stdout: string, stderr: string, status: number} {
-  const output = child_process.spawnSync(BINARY, args);
-  chai.assert(!output.error, 'Child process failed or timed out');
+  const output = child_process.spawnSync(process.execPath, [path.resolve(BINARY), ...args], {
+    env: {
+      'NODE_PATH': process.cwd(),
+    }
+  });
+  chai.assert(!output.error, 'Child process failed or timed out: ' + output.error);
   chai.assert(!output.signal, `Child process killed by signal ${output.signal}`);
 
   return {

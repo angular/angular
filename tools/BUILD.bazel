@@ -1,3 +1,5 @@
+exports_files(["tsconfig.json"])
+
 # Executes the workspace_status_command and provides the result.
 # See the section on stamping in docs/BAZEL.md
 genrule(

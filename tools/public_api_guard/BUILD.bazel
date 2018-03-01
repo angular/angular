@@ -1,0 +1,26 @@
+load("//tools/ts-api-guardian:index.bzl", "ts_api_guardian_test")
+
+[
+    ts_api_guardian_test(
+        name = "%s_api" % i.replace("/", "_"),
+        actual = "packages/%s/npm_package/%s.d.ts" % (
+            i.split("/")[0],
+            "/".join(i.split("/")[1:]),
+        ),
+        data = glob([
+            "%s/**/*.d.ts" % i.split("/")[0],
+        ]) + [
+            "//packages/%s:npm_package" % i.split("/")[0],
+        ],
+        golden = "tools/public_api_guard/%s.d.ts" % i,
+    )
+    for i in [
+        "core/core",
+        "core/testing",
+        "common/http/testing",
+        "common/common",
+        "common/http",
+        "common/testing",
+        # TODO(alexeagle): add remaining packages here once they have ng_package's
+    ]
+]

@@ -1,3 +1,11 @@
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
 import * as path from 'path';
 import * as ts from 'typescript';
 
@@ -37,8 +45,8 @@ export function publicApi(fileName: string, options: SerializationOptions = {}):
 }
 
 export function publicApiInternal(
-  host: ts.CompilerHost, fileName: string, tsOptions: ts.CompilerOptions,
-  options: SerializationOptions = {}): string {
+    host: ts.CompilerHost, fileName: string, tsOptions: ts.CompilerOptions,
+    options: SerializationOptions = {}): string {
   const entrypoint = path.normalize(fileName);
 
   if (!entrypoint.match(/\.d\.ts$/)) {
@@ -50,7 +58,7 @@ export function publicApiInternal(
 }
 
 interface Diagnostic {
-  type: DiagnosticSeverity;
+  type?: DiagnosticSeverity;
   message: string;
 }
 
@@ -87,7 +95,8 @@ class ResolvedDeclarationEmitter {
         continue;
       }
 
-      let decl: ts.Node = symbol.valueDeclaration || symbol.declarations && symbol.declarations[0];
+      let decl: ts.Node|undefined =
+          symbol.valueDeclaration || symbol.declarations && symbol.declarations[0];
       if (!decl) {
         this.diagnostics.push({
           type: 'warn',
@@ -115,11 +124,11 @@ class ResolvedDeclarationEmitter {
         const match = stabilityAnnotationPattern.exec(trivia);
         if (match) {
           output += `/** @${match[1]} */\n`;
-        } else if (['warn', 'error'].indexOf(this.options.onStabilityMissing) >= 0) {
+        } else if (['warn', 'error'].indexOf(this.options.onStabilityMissing as string) >= 0) {
           this.diagnostics.push({
             type: this.options.onStabilityMissing,
             message: createErrorMessage(
-              decl, `No stability annotation found for symbol "${symbol.name}"`)
+                decl, `No stability annotation found for symbol "${symbol.name}"`)
           });
         }
 
@@ -129,7 +138,7 @@ class ResolvedDeclarationEmitter {
         this.diagnostics.push({
           type: 'warn',
           message:
-            createErrorMessage(decl, `No export declaration found for symbol "${symbol.name}"`)
+              createErrorMessage(decl, `No export declaration found for symbol "${symbol.name}"`)
         });
       }
     }
@@ -161,8 +170,8 @@ class ResolvedDeclarationEmitter {
             return s;
           }
           throw new Error(
-            `Symbol "${resolvedSymbol.name}" was aliased as "${s.name}". ` +
-            `Aliases are not supported."`);
+              `Symbol "${resolvedSymbol.name}" was aliased as "${s.name}". ` +
+              `Aliases are not supported."`);
         }
 
         return resolvedSymbol;
@@ -177,28 +186,31 @@ class ResolvedDeclarationEmitter {
       return '';
     }
 
-    const firstQualifier: ts.Identifier = getFirstQualifier(node);
+    const firstQualifier: ts.Identifier|null = getFirstQualifier(node);
 
     if (firstQualifier) {
       let isAllowed = false;
 
       // Try to resolve the qualifier.
       const resolvedSymbol = this.typeChecker.getSymbolAtLocation(firstQualifier);
-      if (resolvedSymbol && resolvedSymbol.declarations.length > 0) {
-        // If the qualifier can be resolved, and it's not a namespaced import, then it should be allowed.
-        isAllowed = resolvedSymbol.declarations.every(decl => decl.kind !== ts.SyntaxKind.NamespaceImport);
+      if (resolvedSymbol && resolvedSymbol.declarations && resolvedSymbol.declarations.length > 0) {
+        // If the qualifier can be resolved, and it's not a namespaced import, then it should be
+        // allowed.
+        isAllowed =
+            resolvedSymbol.declarations.every(decl => decl.kind !== ts.SyntaxKind.NamespaceImport);
       }
 
       // If it is not allowed otherwise, it's allowed if it's on the list of allowed identifiers.
-      isAllowed = isAllowed || !(!this.options.allowModuleIdentifiers ||
-        this.options.allowModuleIdentifiers.indexOf(firstQualifier.text) < 0);
+      isAllowed = isAllowed ||
+          !(!this.options.allowModuleIdentifiers ||
+            this.options.allowModuleIdentifiers.indexOf(firstQualifier.text) < 0);
       if (!isAllowed) {
         this.diagnostics.push({
           type: 'error',
           message: createErrorMessage(
-            firstQualifier,
-            `Module identifier "${firstQualifier.text}" is not allowed. Remove it ` +
-            `from source or whitelist it via --allowModuleIdentifiers.`)
+              firstQualifier,
+              `Module identifier "${firstQualifier.text}" is not allowed. Remove it ` +
+                  `from source or whitelist it via --allowModuleIdentifiers.`)
         });
       }
     }
@@ -220,15 +232,14 @@ class ResolvedDeclarationEmitter {
               children.sort((a: ts.NamedDeclaration, b: ts.NamedDeclaration) => {
                 // Static after normal
                 return compareFunction(
-                  hasModifier(a, ts.SyntaxKind.StaticKeyword),
-                  hasModifier(b, ts.SyntaxKind.StaticKeyword)
-                ) ||
-                  // Our predefined order
-                  compareFunction(
-                    memberDeclarationOrder[a.kind], memberDeclarationOrder[b.kind]) ||
-                  // Alphebetical order
-                  // We need safe dereferencing due to edge cases, e.g. having two call signatures
-                  compareFunction((a.name || a).getText(), (b.name || b).getText());
+                           hasModifier(a, ts.SyntaxKind.StaticKeyword),
+                           hasModifier(b, ts.SyntaxKind.StaticKeyword)) ||
+                    // Our predefined order
+                    compareFunction(
+                           memberDeclarationOrder[a.kind], memberDeclarationOrder[b.kind]) ||
+                    // Alphebetical order
+                    // We need safe dereferencing due to edge cases, e.g. having two call signatures
+                    compareFunction((a.name || a).getText(), (b.name || b).getText());
               });
             }
             break;
@@ -236,10 +247,9 @@ class ResolvedDeclarationEmitter {
         }
       }
 
-      let output = children
-        .filter(x => x.kind !== ts.SyntaxKind.JSDocComment)
-        .map(n => this.emitNode(n))
-        .join('');
+      let output: string = children.filter(x => x.kind !== ts.SyntaxKind.JSDocComment)
+                               .map(n => this.emitNode(n))
+                               .join('');
 
       // Print stability annotation for fields
       if (node.kind in memberDeclarationOrder) {
@@ -273,7 +283,7 @@ function compareFunction<T>(a: T, b: T) {
   return a === b ? 0 : a > b ? 1 : -1;
 }
 
-const memberDeclarationOrder = {
+const memberDeclarationOrder: {[key: number]: number} = {
   [ts.SyntaxKind.PropertySignature]: 0,
   [ts.SyntaxKind.PropertyDeclaration]: 0,
   [ts.SyntaxKind.GetAccessor]: 0,
@@ -295,7 +305,7 @@ function stripEmptyLines(text: string): string {
 /**
  * Returns the first qualifier if the input node is a dotted expression.
  */
-function getFirstQualifier(node: ts.Node): ts.Identifier {
+function getFirstQualifier(node: ts.Node): ts.Identifier|null {
   switch (node.kind) {
     case ts.SyntaxKind.PropertyAccessExpression: {
       // For expression position
@@ -324,7 +334,7 @@ function createErrorMessage(node: ts.Node, message: string): string {
   const sourceFile = node.getSourceFile();
   let position;
   if (sourceFile) {
-    const { line, character } = sourceFile.getLineAndCharacterOfPosition(node.getStart());
+    const {line, character} = sourceFile.getLineAndCharacterOfPosition(node.getStart());
     position = `${sourceFile.fileName}(${line + 1},${character + 1})`;
   } else {
     position = '<unknown>';
