@@ -64,6 +64,17 @@ export class Identifiers {
   static interpolation8: o.ExternalReference = {name: 'ɵi8', moduleName: CORE};
   static interpolationV: o.ExternalReference = {name: 'ɵiV', moduleName: CORE};
 
+  static pureFunction0: o.ExternalReference = {name: 'ɵf0', moduleName: CORE};
+  static pureFunction1: o.ExternalReference = {name: 'ɵf1', moduleName: CORE};
+  static pureFunction2: o.ExternalReference = {name: 'ɵf2', moduleName: CORE};
+  static pureFunction3: o.ExternalReference = {name: 'ɵf3', moduleName: CORE};
+  static pureFunction4: o.ExternalReference = {name: 'ɵf4', moduleName: CORE};
+  static pureFunction5: o.ExternalReference = {name: 'ɵf5', moduleName: CORE};
+  static pureFunction6: o.ExternalReference = {name: 'ɵf6', moduleName: CORE};
+  static pureFunction7: o.ExternalReference = {name: 'ɵf7', moduleName: CORE};
+  static pureFunction8: o.ExternalReference = {name: 'ɵf8', moduleName: CORE};
+  static pureFunctionV: o.ExternalReference = {name: 'ɵfV', moduleName: CORE};
+
   static pipeBind1: o.ExternalReference = {name: 'ɵpb1', moduleName: CORE};
   static pipeBind2: o.ExternalReference = {name: 'ɵpb2', moduleName: CORE};
   static pipeBind3: o.ExternalReference = {name: 'ɵpb3', moduleName: CORE};
