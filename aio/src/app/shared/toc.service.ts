@@ -16,7 +16,7 @@ export interface TocItem {
 export class TocService {
   tocList = new ReplaySubject<TocItem[]>(1);
   activeItemIndex = new ReplaySubject<number | null>(1);
-  private scrollSpyInfo: ScrollSpyInfo | null;
+  private scrollSpyInfo: ScrollSpyInfo | null = null;
 
   constructor(
       @Inject(DOCUMENT) private document: any,
@@ -53,15 +53,25 @@ export class TocService {
 
   // This bad boy exists only to strip off the anchor link attached to a heading
   private extractHeadingSafeHtml(heading: HTMLHeadingElement) {
-    const a = this.document.createElement('a') as HTMLAnchorElement;
-    a.innerHTML = heading.innerHTML;
-    const anchorLink = a.querySelector('a');
-    if (anchorLink) {
-      a.removeChild(anchorLink);
+    const div: HTMLDivElement = this.document.createElement('div');
+    div.innerHTML = heading.innerHTML;
+    const anchorLinks: NodeListOf<HTMLAnchorElement> = div.querySelectorAll('a');
+    for (let i = 0; i < anchorLinks.length; i++) {
+      const anchorLink = anchorLinks[i];
+      if (!anchorLink.classList.contains('header-link')) {
+        // this is an anchor that contains actual content that we want to keep
+        // move the contents of the anchor into its parent
+        const parent = anchorLink.parentNode!;
+        while (anchorLink.childNodes.length) {
+          parent.insertBefore(anchorLink.childNodes[0], anchorLink);
+        }
+      }
+      // now remove the anchor
+      anchorLink.remove();
     }
     // security: the document element which provides this heading content
     // is always authored by the documentation team and is considered to be safe
-    return this.domSanitizer.bypassSecurityTrustHtml(a.innerHTML.trim());
+    return this.domSanitizer.bypassSecurityTrustHtml(div.innerHTML.trim());
   }
 
   private findTocHeadings(docElement: Element): HTMLHeadingElement[] {
