@@ -115,11 +115,13 @@ export function isNodeMatchingSelector(tNode: TNode, selector: CssSelector): boo
   return false;
 }
 
-function getProjectAsAttrValue(tNode: TNode): string|null {
+export function getProjectAsAttrValue(tNode: TNode): string|null {
   const nodeAttrs = tNode.attrs;
   if (nodeAttrs != null) {
     const ngProjectAsAttrIdx = nodeAttrs.indexOf(NG_PROJECT_AS_ATTR_NAME);
-    if (ngProjectAsAttrIdx > -1) {
+    // only check for ngProjectAs in attribute names, don't accidentally match attribute's value
+    // (attribute names are stored at even indexes)
+    if ((ngProjectAsAttrIdx & 1) === 0) {
       return nodeAttrs[ngProjectAsAttrIdx + 1];
     }
   }
