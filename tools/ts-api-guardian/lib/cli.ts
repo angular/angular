@@ -1,6 +1,17 @@
-import chalk from 'chalk';
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+// tslint:disable:no-console
+
+// TODO(alexeagle): why not import chalk from 'chalk'?
+// Something to do with TS default export in UMD emit...
+const chalk = require('chalk');
 import * as minimist from 'minimist';
-import {ParsedArgs} from 'minimist';
 import * as path from 'path';
 
 import {SerializationOptions, generateGoldenFile, verifyAgainstGoldenFile} from './main';
@@ -35,7 +46,7 @@ export function startCli() {
     onStabilityMissing: argv['onStabilityMissing'] || 'none'
   };
 
-  if (['warn', 'error', 'none'].indexOf(options.onStabilityMissing) < 0) {
+  if (['warn', 'error', 'none'].indexOf(options.onStabilityMissing as string) < 0) {
     throw new Error(
         'Argument for "--onStabilityMissing" option must be one of: "warn", "error", "none"');
   }
@@ -65,7 +76,8 @@ export function startCli() {
             lines.pop();  // Remove trailing newline
           }
           for (const line of lines) {
-            const chalkMap = {'-': chalk.red, '+': chalk.green, '@': chalk.cyan};
+            const chalkMap: {[key: string]:
+                                 any} = {'-': chalk.red, '+': chalk.green, '@': chalk.cyan};
             const chalkFunc = chalkMap[line[0]] || chalk.reset;
             console.log(chalkFunc(line));
           }
@@ -73,6 +85,11 @@ export function startCli() {
       }
 
       if (hasDiff) {
+        // Under bazel, give instructions how to use bazel run to accept the golden file.
+        if (!!process.env['BAZEL_TARGET']) {
+          console.error('\n\nAccept the new golden file:');
+          console.error(`  bazel run ${process.env['BAZEL_TARGET']}.accept`);
+        }
         process.exit(1);
       }
     }
@@ -80,9 +97,9 @@ export function startCli() {
 }
 
 export function parseArguments(input: string[]):
-    {argv: ParsedArgs, mode: string, errors?: string[]} {
+    {argv: minimist.ParsedArgs, mode: string, errors: string[]} {
   let help = false;
-  const errors = [];
+  const errors: string[] = [];
 
   const argv = minimist(input, {
     string: [
@@ -95,7 +112,7 @@ export function parseArguments(input: string[]):
       'color', 'no-color'
     ],
     alias: {'outFile': 'out', 'verifyFile': 'verify'},
-    unknown: option => {
+    unknown: (option: string) => {
       if (option[0] === '-') {
         errors.push(`Unknown option: ${option}`);
         help = true;
@@ -171,7 +188,7 @@ Options:
 }
 
 export function generateFileNamePairs(
-    argv: ParsedArgs, mode: string): {entrypoint: string, goldenFile: string}[] {
+    argv: minimist.ParsedArgs, mode: string): {entrypoint: string, goldenFile: string}[] {
   if (argv[mode]) {
     return [{entrypoint: argv._[0], goldenFile: argv[mode]}];
 
@@ -179,7 +196,7 @@ export function generateFileNamePairs(
     let rootDir = argv['rootDir'] || '.';
     const goldenDir = argv[mode + 'Dir'];
 
-    return argv._.map(fileName => {
+    return argv._.map((fileName: string) => {
       return {
         entrypoint: fileName,
         goldenFile: path.join(goldenDir, path.relative(rootDir, fileName))

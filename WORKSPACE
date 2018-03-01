@@ -1,9 +1,5 @@
 workspace(name = "angular")
 
-# Using a pre-release snapshot to pick up a commit that makes all nodejs_binary
-# programs produce source-mapped stack traces and uglify sourcemaps.
-RULES_NODEJS_VERSION = "f3fc23b7e1f32984a3e5d0c7eabe3baa127fb32a"
-
 http_archive(
     name = "build_bazel_rules_nodejs",
     url = "https://github.com/bazelbuild/rules_nodejs/archive/0.5.0.zip",
@@ -14,7 +10,10 @@ http_archive(
 load("@build_bazel_rules_nodejs//:defs.bzl", "check_bazel_version", "node_repositories")
 
 check_bazel_version("0.9.0")
-node_repositories(package_json = ["//:package.json"])
+node_repositories(package_json = [
+    "//:package.json",
+    "//tools/ts-api-guardian:package.json",
+])
 
 http_archive(
     name = "build_bazel_rules_typescript",

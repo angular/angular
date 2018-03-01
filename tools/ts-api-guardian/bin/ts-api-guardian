@@ -1,3 +1,3 @@
 #!/usr/bin/env node
 
-require('../build/lib/cli').startCli();
+require('../lib/cli').startCli();
