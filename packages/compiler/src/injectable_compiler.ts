@@ -55,10 +55,11 @@ export class InjectableCompiler {
           }
         }
       }
+      const tokenExpr = typeof token === 'string' ? o.literal(token) : ctx.importExpr(token);
       if (flags !== InjectFlags.Default || defaultValue !== undefined) {
-        args = [ctx.importExpr(token), o.literal(defaultValue), o.literal(flags)];
+        args = [tokenExpr, o.literal(defaultValue), o.literal(flags)];
       } else {
-        args = [ctx.importExpr(token)];
+        args = [tokenExpr];
       }
       return o.importExpr(Identifiers.inject).callFn(args);
     });
