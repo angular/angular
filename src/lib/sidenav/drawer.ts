@@ -41,6 +41,7 @@ import {startWith} from 'rxjs/operators/startWith';
 import {takeUntil} from 'rxjs/operators/takeUntil';
 import {debounceTime} from 'rxjs/operators/debounceTime';
 import {map} from 'rxjs/operators/map';
+import {fromEvent} from 'rxjs/observable/fromEvent';
 import {Subject} from 'rxjs/Subject';
 import {Observable} from 'rxjs/Observable';
 import {matDrawerAnimations} from './drawer-animations';
@@ -119,7 +120,6 @@ export class MatDrawerContent implements AfterContentInit {
     '[@transform]': '_animationState',
     '(@transform.start)': '_onAnimationStart($event)',
     '(@transform.done)': '_onAnimationEnd($event)',
-    '(keydown)': 'handleKeydown($event)',
     // must prevent the browser from aligning text based on value
     '[attr.align]': 'null',
     '[class.mat-drawer-end]': 'position === "end"',
@@ -258,6 +258,7 @@ export class MatDrawer implements AfterContentInit, AfterContentChecked, OnDestr
               private _focusTrapFactory: FocusTrapFactory,
               private _focusMonitor: FocusMonitor,
               private _platform: Platform,
+              private _ngZone: NgZone,
               @Optional() @Inject(DOCUMENT) private _doc: any) {
 
     this.openedChange.subscribe((opened: boolean) => {
@@ -272,6 +273,20 @@ export class MatDrawer implements AfterContentInit, AfterContentChecked, OnDestr
       } else {
         this._restoreFocus();
       }
+    });
+
+    /**
+     * Listen to `keydown` events outside the zone so that change detection is not run every
+     * time a key is pressed. Instead we re-enter the zone only if the `ESC` key is pressed
+     * and we don't have close disabled.
+     */
+    this._ngZone.runOutsideAngular(() => {
+        fromEvent(this._elementRef.nativeElement, 'keydown').pipe(
+            filter((event: KeyboardEvent) => event.keyCode === ESCAPE && !this.disableClose)
+        ).subscribe((event) => this._ngZone.run(() => {
+            this.close();
+            event.stopPropagation();
+        }));
     });
   }
 
@@ -380,17 +395,6 @@ export class MatDrawer implements AfterContentInit, AfterContentChecked, OnDestr
         resolve(new MatDrawerToggleResult(open ? 'open' : 'close', true));
       });
     });
-  }
-
-  /**
-   * Handles the keyboard events.
-   * @docs-private
-   */
-  handleKeydown(event: KeyboardEvent): void {
-    if (event.keyCode === ESCAPE && !this.disableClose) {
-      this.close();
-      event.stopPropagation();
-    }
   }
 
   _onAnimationStart(event: AnimationEvent) {

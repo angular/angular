@@ -57,7 +57,6 @@ export class MatSidenavContent extends MatDrawerContent {
     '[@transform]': '_animationState',
     '(@transform.start)': '_onAnimationStart($event)',
     '(@transform.done)': '_onAnimationEnd($event)',
-    '(keydown)': 'handleKeydown($event)',
     // must prevent the browser from aligning text based on value
     '[attr.align]': 'null',
     '[class.mat-drawer-end]': 'position === "end"',
