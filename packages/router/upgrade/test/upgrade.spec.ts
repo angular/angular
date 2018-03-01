@@ -16,21 +16,22 @@ describe('setUpLocationSync', () => {
   let upgradeModule: UpgradeModule;
   let RouterMock: any;
   let LocationMock: any;
+
   beforeEach(() => {
     RouterMock = jasmine.createSpyObj('Router', ['navigateByUrl']);
     LocationMock = jasmine.createSpyObj('Location', ['normalize']);
+
     TestBed.configureTestingModule({
       providers: [
         UpgradeModule, {provide: Router, useValue: RouterMock},
         {provide: Location, useValue: LocationMock}
       ],
     });
-    upgradeModule = TestBed.get(UpgradeModule);
 
+    upgradeModule = TestBed.get(UpgradeModule);
     upgradeModule.$injector = {
       get: jasmine.createSpy('$injector.get').and.returnValue({'$on': () => undefined})
     };
-
   });
 
   it('should throw an error if the UpgradeModule.bootstrap has not been called', () => {
@@ -44,7 +45,6 @@ describe('setUpLocationSync', () => {
 
   it('should get the $rootScope from AngularJS and set an $on watch on $locationChangeStart',
      () => {
-
        const $rootScope = jasmine.createSpyObj('$rootScope', ['$on']);
 
        upgradeModule.$injector.get.and.callFake(
@@ -54,31 +54,28 @@ describe('setUpLocationSync', () => {
 
        expect($rootScope.$on).toHaveBeenCalledTimes(1);
        expect($rootScope.$on).toHaveBeenCalledWith('$locationChangeStart', jasmine.any(Function));
-
      });
 
   it('should navigate by url every time $locationChangeStart is broadcasted', () => {
-
+    const url = 'https://google.com';
+    const pathname = '/custom/route';
+    const normalizedPathname = 'foo';
+    const query = '?query=1&query2=3';
+    const hash = '#new/hash';
     const $rootScope = jasmine.createSpyObj('$rootScope', ['$on']);
+
     upgradeModule.$injector.get.and.returnValue($rootScope);
+    LocationMock.normalize.and.returnValue(normalizedPathname);
 
     setUpLocationSync(upgradeModule);
 
-    const url = 'https://google.com';
-    const pathname = '/custom/route';
-    const query = '?query=1&query2=3';
-    const hash = '#new/hash';
     const callback = $rootScope.$on.calls.argsFor(0)[1];
-
-    LocationMock.normalize.and.returnValue(pathname);
-
     callback({}, url + pathname + query + hash, '');
 
     expect(LocationMock.normalize).toHaveBeenCalledTimes(1);
     expect(LocationMock.normalize).toHaveBeenCalledWith(pathname);
 
     expect(RouterMock.navigateByUrl).toHaveBeenCalledTimes(1);
-    expect(RouterMock.navigateByUrl).toHaveBeenCalledWith(pathname + query + hash);
+    expect(RouterMock.navigateByUrl).toHaveBeenCalledWith(normalizedPathname + query + hash);
   });
-
 });
