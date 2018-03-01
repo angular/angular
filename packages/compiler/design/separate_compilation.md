@@ -600,11 +600,10 @@ depending on the target:
 |                   | `"annotationsAs"`              | `remove`     |             |
 |                   | `"enableLegacyTemplate"`       | `false`      |             |
 |                   | `"preserveWhitespaces"`        | `false`      |             |
-|                   | `"skipMetadataEmit"`           | `false`      |             |
+|                   | `"skipMetadataEmit"`           | `true`       |             |
 |                   | `"strictMetadataEmit"`         | `true`       |             |
 |                   | `"skipTemplateCodegen"`        | `false`      |             |
 |                   | `"fullTemplateTypeCheck"`      | `true`       |             |
-|                   | `"enableLegacyTemplate"`       | `false`      |             |
 |                   |                                |              |             |
 | `"library"`       | `"generateRenderer2Factories"` | `false`      | enforced    |
 |                   | `"renderer2BackPatching"`      | `false`      | enforced    |
@@ -614,9 +613,8 @@ depending on the target:
 |                   | `"preserveWhitespaces"`        | `false`      |             |
 |                   | `"skipMetadataEmit"`           | `false`      | enforced    |
 |                   | `"strictMetadataEmit"`         | `true`       |             |
-|                   | `"skipTemplateCodegen"`        | `false`      | enforced    |
+|                   | `"skipTemplateCodegen"`        | `true`       | enforced    |
 |                   | `"fullTemplateTypeCheck"`      | `true`       |             |
-|                   | `"enableLegacyTemplate"`       | `false`      |             |
 |                   |                                |              |             |
 | `"package"`       | `"flatModuleOutFile"`          |              | required    |
 |                   | `"flatModuleId"`               |              | required    |
@@ -629,9 +627,8 @@ depending on the target:
 |                   | `"preserveWhitespaces"`        | `false`      |             |
 |                   | `"skipMetadataEmit"`           | `false`      | enforced    |
 |                   | `"strictMetadataEmit"`         | `true`       |             |
-|                   | `"skipTemplateCodegen"`        | `false`      | enforced    |
+|                   | `"skipTemplateCodegen"`        | `true`       | enforced    |
 |                   | `"fullTemplateTypeCheck"`      | `true`       |             |
-|                   | `"enableLegacyTemplate"`       | `false`      |             |
 
 Options that are marked "enforced" are reported as an error if they are
 explicitly set to a value different from what is specified here. The options

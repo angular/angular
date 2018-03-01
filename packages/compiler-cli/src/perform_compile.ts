@@ -118,9 +118,133 @@ export function calcProjectFileAndBasePath(project: string):
   return {projectFile, basePath};
 }
 
+interface TargetOptions {
+  application: api.CompilerOptions;
+  library: api.CompilerOptions;
+  package: api.CompilerOptions;
+  [index: string]: api.CompilerOptions;
+}
+
+// The defaults options for the listed targets.
+const defaults: TargetOptions = {
+  application: {
+    generateRenderer2Factories: true,
+    renderer2BackPatching: true,
+    generateCodeForLibraries: true,
+    enableLegacyTemplate: false,
+    preserveWhitespaces: false,
+    skipMetadataEmit: true,
+    skipTemplateCodegen: false,
+    fullTemplateTypeCheck: true,
+  },
+  library: {
+    generateRenderer2Factories: false,
+    renderer2BackPatching: false,
+    generateCodeForLibraries: false,
+    skipMetadataEmit: false,
+    skipTemplateCodegen: true,
+    enableLegacyTemplate: false,
+    preserveWhitespaces: false,
+    fullTemplateTypeCheck: true,
+  },
+  package: {
+    generateRenderer2Factories: false,
+    renderer2BackPatching: false,
+    generateCodeForLibraries: false,
+    enableIvy: false,
+    skipMetadataEmit: false,
+    skipTemplateCodegen: true,
+    enableLegacyTemplate: false,
+    preserveWhitespaces: false,
+    fullTemplateTypeCheck: true,
+  }
+};
+
+// The values these options must be if they "target" is used.
+const enforced: TargetOptions = {
+  application: {
+    generateRenderer2Factories: true,
+    renderer2BackPatching: true,
+  },
+  library: {
+    generateRenderer2Factories: false,
+    renderer2BackPatching: false,
+    generateCodeForLibraries: false,
+    skipMetadataEmit: false,
+    skipTemplateCodegen: true,
+  },
+  package: {
+    generateRenderer2Factories: false,
+    renderer2BackPatching: false,
+    generateCodeForLibraries: false,
+    enableIvy: false,
+    skipMetadataEmit: false,
+    skipTemplateCodegen: true,
+
+    // `undefined` means that it must be set but no value set value is enforced.
+    flatModuleId: undefined,
+    flatModuleOutFile: undefined,
+  }
+};
+
+export interface NgOptions {
+  options: api.CompilerOptions;
+  errors: Diagnostics;
+}
+
+export function processTargetAndValidateNgCompilerOptions(options: any): NgOptions {
+  const errors: (api.Diagnostic | ts.Diagnostic)[] = [];
+  function reportError(messageText: string) {
+    errors.push({
+      category: ts.DiagnosticCategory.Error,
+      messageText: `Angular compiler configuration error, ${messageText}`,
+      source: api.SOURCE,
+      code: api.UNKNOWN_ERROR_CODE
+    });
+  }
+
+  // If generateRenderer2Factories is specified then renderer2BackPatching defaults to `true`
+  if (options.generateRenderer2Factories) {
+    options = {renderer2BackPatching: true, ...options};
+  }
+
+  // If a target is specified then apply the defaults and ensure the results are consistent.
+  if (options.target) {
+    const defaultOptions = defaults[options.target];
+    const enforcedOptions = enforced[options.target];
+    if (!defaultOptions) {
+      reportError(`expected "target" option to be one of "application", "library", "package"`);
+    } else {
+      options = {...defaultOptions, ...options};
+      for (const name of Object.getOwnPropertyNames(enforcedOptions)) {
+        if (enforcedOptions[name] === undefined) {
+          if (!options.hasOwnProperty(name)) {
+            reportError(`target "${options.target}" requires "${name}" to be specified`);
+          }
+        } else if (options[name] !== enforcedOptions[name]) {
+          reportError(
+              `target "${options.target}" requires "${name}" to be "${enforcedOptions[name]}"`);
+        }
+      }
+    }
+    delete options.target;
+  }
+
+  // "generateRenderer2Factories" requires "renderer2BackPatching"
+  if (options.generateRenderer2Factories && !options.renderer2BackPatching) {
+    reportError('"generateRenderer2Factories" requires "renderer2BackPatching" to be "true"');
+  }
+
+  return {options, errors};
+}
+
 export function createNgCompilerOptions(
-    basePath: string, config: any, tsOptions: ts.CompilerOptions): api.CompilerOptions {
-  return {...tsOptions, ...config.angularCompilerOptions, genDir: basePath, basePath};
+    basePath: string, config: any, tsOptions: ts.CompilerOptions): NgOptions {
+  const angularOptions = processTargetAndValidateNgCompilerOptions(config.angularCompilerOptions);
+  return {
+    options: {...tsOptions, ...angularOptions.options, genDir: basePath, basePath},
+    errors: angularOptions.errors
+  };
 }
 
 export function readConfiguration(
@@ -149,7 +273,7 @@ export function readConfiguration(
         ts.parseJsonConfigFileContent(config, parseConfigHost, basePath, existingOptions);
     const rootNames = parsed.fileNames.map(f => path.normalize(f));
 
-    const options = createNgCompilerOptions(basePath, config, parsed.options);
+    const {options, errors} = createNgCompilerOptions(basePath, config, parsed.options);
     let emitFlags = api.EmitFlags.Default;
     if (!(options.skipMetadataEmit || options.flatModuleOutFile)) {
       emitFlags |= api.EmitFlags.Metadata;
@@ -157,7 +281,12 @@ export function readConfiguration(
     if (options.skipTemplateCodegen) {
       emitFlags = emitFlags & ~api.EmitFlags.Codegen;
     }
-    return {project: projectFile, rootNames, options, errors: parsed.errors, emitFlags};
+    return {
+      project: projectFile,
+      rootNames,
+      options,
+      errors: [...parsed.errors, ...errors], emitFlags
+    };
   } catch (e) {
     const errors: Diagnostics = [{
       category: ts.DiagnosticCategory.Error,

@@ -175,6 +175,12 @@ export interface CompilerOptions extends ts.CompilerOptions {
    */
   enableIvy?: boolean;
 
+  // Generate Renderer2 compatibility factories (enableIvy only)
+  generateRenderer2Factories?: boolean;
+
+  // Generate Renderer2 back-patch adapters (enableIvy only)
+  renderer2BackPatching?: boolean;
+
   /** @internal */
   collectAllErrors?: boolean;
 }

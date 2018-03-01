@@ -55,7 +55,8 @@ export function runOneBuild(args: string[], inputs?: {[path: string]: string}): 
   const expectedOuts = config['angularCompilerOptions']['expectedOut'];
 
   const {basePath} = ng.calcProjectFileAndBasePath(project);
-  const compilerOpts = ng.createNgCompilerOptions(basePath, config, tsOptions);
+  const {options: compilerOpts, errors: errorsOpts} =
+      ng.createNgCompilerOptions(basePath, config, tsOptions);
   const tsHost = ts.createCompilerHost(compilerOpts, true);
   const {diagnostics} = compile({
     allowNonHermeticReads: ALLOW_NON_HERMETIC_READS,
@@ -67,8 +68,8 @@ export function runOneBuild(args: string[], inputs?: {[path: string]: string}): 
     inputs,
     expectedOuts
   });
-  if (diagnostics.length) {
-    console.error(ng.formatDiagnostics(diagnostics));
+  if (diagnostics.length || errorsOpts.length) {
+    console.error(ng.formatDiagnostics([...diagnostics, ...errorsOpts]));
   }
   return diagnostics.every(d => d.category !== ts.DiagnosticCategory.Error);
 }
