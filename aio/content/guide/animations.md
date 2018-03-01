@@ -1,3 +1,4 @@
+
 # Animation basics
 
 Animation provides the illusion of motion: elements change styling over time.
