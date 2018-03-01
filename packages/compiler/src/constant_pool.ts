@@ -222,11 +222,11 @@ class KeyVisitor implements o.ExpressionVisitor {
   visitLiteralExpr(ast: o.LiteralExpr): string {
     return `${typeof ast.value === 'string' ? '"' + ast.value + '"' : ast.value}`;
   }
-  visitLiteralArrayExpr(ast: o.LiteralArrayExpr, context: string): string {
+  visitLiteralArrayExpr(ast: o.LiteralArrayExpr, context: object): string {
     return `[${ast.entries.map(entry => entry.visitExpression(this, context)).join(',')}]`;
   }
 
-  visitLiteralMapExpr(ast: o.LiteralMapExpr, context: string): string {
+  visitLiteralMapExpr(ast: o.LiteralMapExpr, context: object): string {
     const mapEntry = (entry: o.LiteralMapEntry) =>
         `${entry.key}:${entry.value.visitExpression(this, context)}`;
     return `{${ast.entries.map(mapEntry).join(',')}`;
