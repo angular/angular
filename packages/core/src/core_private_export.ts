@@ -18,6 +18,9 @@ export {CodegenComponentFactoryResolver as ɵCodegenComponentFactoryResolver} fr
 export {ReflectionCapabilities as ɵReflectionCapabilities} from './reflection/reflection_capabilities';
 export {GetterFn as ɵGetterFn, MethodFn as ɵMethodFn, SetterFn as ɵSetterFn} from './reflection/types';
 export {DirectRenderer as ɵDirectRenderer, RenderDebugInfo as ɵRenderDebugInfo} from './render/api';
+export {sanitizeHtml as ɵsanitizeHtml} from './sanitization/html_sanitizer';
+export {sanitizeStyle as ɵsanitizeStyle} from './sanitization/style_sanitizer';
+export {sanitizeUrl as ɵsanitizeUrl} from './sanitization/url_sanitizer';
 export {global as ɵglobal, looseIdentical as ɵlooseIdentical, stringify as ɵstringify} from './util';
 export {makeDecorator as ɵmakeDecorator} from './util/decorators';
 export {isObservable as ɵisObservable, isPromise as ɵisPromise} from './util/lang';

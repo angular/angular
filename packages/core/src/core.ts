@@ -33,7 +33,7 @@ export {EventEmitter} from './event_emitter';
 export {ErrorHandler} from './error_handler';
 export * from './core_private_export';
 export * from './core_render3_private_export';
-export {Sanitizer, SecurityContext} from './security';
+export {Sanitizer, SecurityContext} from './sanitization/security';
 export * from './codegen_private_exports';
 export * from './animation/animation_metadata_wrapped';
 import {AnimationTriggerMetadata} from './animation/animation_metadata_wrapped';

@@ -8,8 +8,6 @@
 
 import {isDevMode} from '@angular/core';
 
-import {getDOM} from '../dom/dom_adapter';
-
 
 /**
  * A pattern that recognizes a commonly useful subset of URLs that are safe.
@@ -51,7 +49,7 @@ export function sanitizeUrl(url: string): string {
   if (url.match(SAFE_URL_PATTERN) || url.match(DATA_URL_PATTERN)) return url;
 
   if (isDevMode()) {
-    getDOM().log(`WARNING: sanitizing unsafe URL value ${url} (see http://g.co/ng/security#xss)`);
+    console.warn(`WARNING: sanitizing unsafe URL value ${url} (see http://g.co/ng/security#xss)`);
   }
 
   return 'unsafe:' + url;

@@ -72,3 +72,7 @@ export {
   Pp as ɵPp,
 } from './render3/index';
 // clang-format on
+
+export {htmlSanitizer as ɵhtmlSanitizer} from './sanitization/html_sanitizer';
+export {styleSanitizer as ɵstyleSanitizer} from './sanitization/style_sanitizer';
+export {urlSanitizer as ɵurlSanitizer, resourceUrlSanitizer as ɵresourceUrlSanitizer} from './sanitization/url_sanitizer';
