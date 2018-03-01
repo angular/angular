@@ -560,7 +560,7 @@ const DEFAULT_NB_OF_CURRENCY_DIGITS = 2;
  *
  * @experimental i18n support is experimental.
  */
-export function getNbOfCurrencyDigits(code: string): number {
+export function getNumberOfCurrencyDigits(code: string): number {
   let digits;
   const currency = CURRENCIES_EN[code];
   if (currency) {

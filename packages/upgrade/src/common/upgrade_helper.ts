@@ -122,9 +122,15 @@ export class UpgradeHelper {
   prepareTransclusion(): angular.ILinkFn|undefined {
     const transclude = this.directive.transclude;
     const contentChildNodes = this.extractChildNodes();
+    const attachChildrenFn: angular.ILinkFn = (scope, cloneAttachFn) => {
+      // Since AngularJS v1.5.8, `cloneAttachFn` will try to destroy the transclusion scope if
+      // `$template` is empty. Since the transcluded content comes from Angular, not AngularJS,
+      // there will be no transclusion scope here.
+      // Provide a dummy `scope.$destroy()` method to prevent `cloneAttachFn` from throwing.
+      scope = scope || {$destroy: () => undefined};
+      return cloneAttachFn !($template, scope);
+    };
     let $template = contentChildNodes;
-    let attachChildrenFn: angular.ILinkFn|undefined = (scope, cloneAttach) =>
-        cloneAttach !($template, scope);
 
     if (transclude) {
       const slots = Object.create(null);

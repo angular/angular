@@ -72,11 +72,39 @@ describe('CodeExampleComponent', () => {
     expect(codeExampleDe.nativeElement.getAttribute('title')).toEqual(null);
   });
 
-  it('should pass hideCopy to CodeComonent', () => {
+  it('should pass hideCopy to CodeComponent', () => {
     TestBed.overrideComponent(HostComponent, {
       set: {template: '<code-example hideCopy="true"></code-example>'}});
     createComponent(oneLineCode);
     expect(codeComponent.hideCopy).toBe(true);
+  });
+
+  it('should have `avoidFile` class when `avoid` atty present', () => {
+    TestBed.overrideComponent(HostComponent, {
+      set: {template: '<code-example avoid></code-example>'}});
+    createComponent(oneLineCode);
+    const classes: DOMTokenList = codeExampleDe.nativeElement.classList;
+    expect(classes.contains('avoidFile')).toBe(true, 'has avoidFile class');
+    expect(codeExampleComponent.isAvoid).toBe(true, 'isAvoid flag');
+    expect(codeComponent.hideCopy).toBe(true, 'hiding copy button');
+  });
+
+  it('should have `avoidFile` class when `.avoid` in path', () => {
+    TestBed.overrideComponent(HostComponent, {
+      set: {template: '<code-example path="test.avoid.ts"></code-example>'}});
+    createComponent(oneLineCode);
+    const classes: DOMTokenList = codeExampleDe.nativeElement.classList;
+    expect(classes.contains('avoidFile')).toBe(true, 'has avoidFile class');
+    expect(codeExampleComponent.isAvoid).toBe(true, 'isAvoid flag');
+    expect(codeComponent.hideCopy).toBe(true, 'hide copy button flag');
+  });
+
+  it('should not have `avoidFile` class in normal case', () => {
+    createComponent(oneLineCode);
+    const classes: DOMTokenList = codeExampleDe.nativeElement.classList;
+    expect(classes.contains('avoidFile')).toBe(false, 'avoidFile class');
+    expect(codeExampleComponent.isAvoid).toBe(false, 'isAvoid flag');
+    expect(codeComponent.hideCopy).toBe(false, 'hide copy button flag');
   });
 });
 

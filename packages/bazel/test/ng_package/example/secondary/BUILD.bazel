@@ -1,0 +1,11 @@
+package(default_visibility = ["//packages/bazel/test:__subpackages__"])
+
+load("//packages/bazel:index.bzl", "ng_module")
+
+exports_files(["package.json"])
+
+ng_module(
+    name = "secondary",
+    srcs = glob(["*.ts"]),
+    deps = ["//packages/core"],
+)

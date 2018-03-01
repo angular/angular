@@ -1,48 +1,18 @@
 .sidenav-content {
   h1, h2, h3, h4, h5, h6 {
 
-    &.no-anchor .header-link {
-      display: none;
-    }
-
     .header-link {
-      box-sizing: border-box;
       color: $mediumgray;
-      display: inline-block;
-      margin-left: -42px;
-      padding: 0 8px;
+      margin-left: 8px;
       text-decoration: none;
       user-select: none;
-      vertical-align: middle;
       visibility: hidden;
-      width: 40px;
-
-      @media (max-width: 600px) {
-        float: right;
-        margin-left: 0;
-      }
+      display: inline-block;
+      vertical-align: text-top;
     }
 
     &:hover .header-link {
       visibility: visible;
-    }
-  }
-
-  .l-sub-section {
-    h1, h2, h3, h4, h5, h6 {
-      a {
-        padding-right: 24px;
-        margin-left: -74px;
-      }
-    }
-  }
-
-  .alert {
-    h1, h2, h3, h4, h5, h6 {
-      a {
-        padding-right: 40px;
-        margin-left: -90px;
-      }
     }
   }
 }

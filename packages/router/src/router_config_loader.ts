@@ -12,7 +12,7 @@ import {fromPromise} from 'rxjs/observable/fromPromise';
 import {of } from 'rxjs/observable/of';
 import {map} from 'rxjs/operator/map';
 import {mergeMap} from 'rxjs/operator/mergeMap';
-import {LoadChildren, LoadedRouterConfig, Route} from './config';
+import {LoadChildren, LoadedRouterConfig, Route, copyConfig} from './config';
 import {flatten, wrapIntoObservable} from './utils/collection';
 
 /**
@@ -41,7 +41,7 @@ export class RouterConfigLoader {
 
       const module = factory.create(parentInjector);
 
-      return new LoadedRouterConfig(flatten(module.injector.get(ROUTES)), module);
+      return new LoadedRouterConfig(flatten(module.injector.get(ROUTES)).map(copyConfig), module);
     });
   }
 

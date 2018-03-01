@@ -18,5 +18,8 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/angular/angular.git"
+  },
+  "ng-update": {
+    "packageGroup": "NG_UPDATE_PACKAGE_GROUP"
   }
 }

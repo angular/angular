@@ -622,6 +622,36 @@ import {of } from 'rxjs/observable/of';
         expect(c.pending).toEqual(true);
         expect(a.pending).toEqual(false);
       });
+
+      describe('status change events', () => {
+        let logger: string[];
+
+        beforeEach(() => {
+          logger = [];
+          a.statusChanges.subscribe((status) => logger.push(status));
+        });
+
+        it('should emit event after marking control as pending', () => {
+          c.markAsPending();
+          expect(logger).toEqual(['PENDING']);
+        });
+
+        it('should not emit event from parent when onlySelf is true', () => {
+          c.markAsPending({onlySelf: true});
+          expect(logger).toEqual([]);
+        });
+
+        it('should not emit event when emitEvent = false', () => {
+          c.markAsPending({emitEvent: false});
+          expect(logger).toEqual([]);
+        });
+
+        it('should emit event when parent is markedAsPending', () => {
+          a.markAsPending();
+          expect(logger).toEqual(['PENDING']);
+        });
+      });
+
     });
 
     describe('valueChanges', () => {

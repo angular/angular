@@ -235,6 +235,30 @@ export function allowPreviousPlayerStylesMerge(duration: number, delay: number) 
   return duration === 0 || delay === 0;
 }
 
+export function balancePreviousStylesIntoKeyframes(
+    element: any, keyframes: {[key: string]: any}[], previousStyles: {[key: string]: any}) {
+  const previousStyleProps = Object.keys(previousStyles);
+  if (previousStyleProps.length && keyframes.length) {
+    let startingKeyframe = keyframes[0];
+    let missingStyleProps: string[] = [];
+    previousStyleProps.forEach(prop => {
+      if (!startingKeyframe.hasOwnProperty(prop)) {
+        missingStyleProps.push(prop);
+      }
+      startingKeyframe[prop] = previousStyles[prop];
+    });
+
+    if (missingStyleProps.length) {
+      // tslint:disable-next-line
+      for (var i = 1; i < keyframes.length; i++) {
+        let kf = keyframes[i];
+        missingStyleProps.forEach(function(prop) { kf[prop] = computeStyle(element, prop); });
+      }
+    }
+  }
+  return keyframes;
+}
+
 export function visitDslNode(
     visitor: AnimationDslVisitor, node: AnimationMetadata, context: any): any;
 export function visitDslNode(
@@ -270,4 +294,8 @@ export function visitDslNode(visitor: any, node: any, context: any): any {
     default:
       throw new Error(`Unable to resolve animation metadata node #${node.type}`);
   }
+}
+
+export function computeStyle(element: any, prop: string): string {
+  return (<any>window.getComputedStyle(element))[prop];
 }

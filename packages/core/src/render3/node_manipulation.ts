@@ -233,7 +233,9 @@ export function destroyViewTree(rootView: LView): void {
     }
 
     if (next == null) {
-      while (viewOrContainer && !viewOrContainer !.next) {
+      // If the viewOrContainer is the rootView, then the cleanup is done twice.
+      // Without this check, ngOnDestroy would be called twice for a directive on an element.
+      while (viewOrContainer && !viewOrContainer !.next && viewOrContainer !== rootView) {
         cleanUpView(viewOrContainer as LView);
         viewOrContainer = getParentState(viewOrContainer, rootView);
       }

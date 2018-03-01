@@ -1,6 +1,6 @@
 package(default_visibility = ["//visibility:public"])
 
-load("//tools:defaults.bzl", "ng_module")
+load("//tools:defaults.bzl", "ng_module", "ng_package")
 
 ng_module(
     name = "common",
@@ -14,5 +14,21 @@ ng_module(
     deps = [
         "//packages/core",
         "@rxjs",
+    ],
+)
+
+ng_package(
+    name = "npm_package",
+    entry_point = "packages/common/index.js",
+    secondary_entry_points = [
+        "testing",
+        "http",
+        "http/testing",
+    ],
+    deps = [
+        "//packages/common",
+        "//packages/common/http",
+        "//packages/common/http/testing",
+        "//packages/common/testing",
     ],
 )

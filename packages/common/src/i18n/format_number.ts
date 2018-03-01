@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {NumberFormatStyle, NumberSymbol, getLocaleNumberFormat, getLocaleNumberSymbol, getNbOfCurrencyDigits} from './locale_data_api';
+import {NumberFormatStyle, NumberSymbol, getLocaleNumberFormat, getLocaleNumberSymbol, getNumberOfCurrencyDigits} from './locale_data_api';
 
 export const NUMBER_FORMAT_REGEXP = /^(\d+)?\.((\d+)(-(\d+))?)?$/;
 const MAX_DIGITS = 22;
@@ -19,33 +19,18 @@ const CURRENCY_CHAR = '¤';
 const PERCENT_CHAR = '%';
 
 /**
- * Transforms a string into a number (if needed)
- */
-function strToNumber(value: number | string): number {
-  // Convert strings to numbers
-  if (typeof value === 'string' && !isNaN(+value - parseFloat(value))) {
-    return +value;
-  }
-  if (typeof value !== 'number') {
-    throw new Error(`${value} is not a number`);
-  }
-  return value;
-}
-
-/**
  * Transforms a number to a locale string based on a style and a format
  */
-function formatNumber(
-    value: number | string, pattern: ParsedNumberFormat, locale: string, groupSymbol: NumberSymbol,
+function formatNumberToLocaleString(
+    value: number, pattern: ParsedNumberFormat, locale: string, groupSymbol: NumberSymbol,
     decimalSymbol: NumberSymbol, digitsInfo?: string, isPercent = false): string {
   let formattedText = '';
   let isZero = false;
-  const num = strToNumber(value);
 
-  if (!isFinite(num)) {
+  if (!isFinite(value)) {
     formattedText = getLocaleNumberSymbol(locale, NumberSymbol.Infinity);
   } else {
-    let parsedNumber = parseNumber(num);
+    let parsedNumber = parseNumber(value);
 
     if (isPercent) {
       parsedNumber = toPercent(parsedNumber);
@@ -128,7 +113,7 @@ function formatNumber(
     }
   }
 
-  if (num < 0 && !isZero) {
+  if (value < 0 && !isZero) {
     formattedText = pattern.negPre + formattedText + pattern.negSuf;
   } else {
     formattedText = pattern.posPre + formattedText + pattern.posSuf;
@@ -138,20 +123,32 @@ function formatNumber(
 }
 
 /**
- * Formats a currency to a locale string
+ * @ngModule CommonModule
+ * @whatItDoes Formats a number as currency using locale rules.
+ * @description
  *
- * @internal
+ * Use `currency` to format a number as currency.
+ *
+ * Where:
+ * - `value` is a number.
+ * - `locale` is a `string` defining the locale to use.
+ * - `currency` is the string that represents the currency, it can be its symbol or its name.
+ * - `currencyCode` is the [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217) currency code, such
+ *    as `USD` for the US dollar and `EUR` for the euro.
+ * - `digitInfo` See {@link DecimalPipe} for more details.
+ *
+ * @stable
  */
 export function formatCurrency(
-    value: number | string, locale: string, currency: string, currencyCode?: string,
+    value: number, locale: string, currency: string, currencyCode?: string,
     digitsInfo?: string): string {
   const format = getLocaleNumberFormat(locale, NumberFormatStyle.Currency);
   const pattern = parseNumberFormat(format, getLocaleNumberSymbol(locale, NumberSymbol.MinusSign));
 
-  pattern.minFrac = getNbOfCurrencyDigits(currencyCode !);
+  pattern.minFrac = getNumberOfCurrencyDigits(currencyCode !);
   pattern.maxFrac = pattern.minFrac;
 
-  const res = formatNumber(
+  const res = formatNumberToLocaleString(
       value, pattern, locale, NumberSymbol.CurrencyGroup, NumberSymbol.CurrencyDecimal, digitsInfo);
   return res
       .replace(CURRENCY_CHAR, currency)
@@ -160,28 +157,48 @@ export function formatCurrency(
 }
 
 /**
- * Formats a percentage to a locale string
+ * @ngModule CommonModule
+ * @whatItDoes Formats a number as a percentage according to locale rules.
+ * @description
  *
- * @internal
+ * Formats a number as percentage.
+ *
+ * Where:
+ * - `value` is a number.
+ * - `locale` is a `string` defining the locale to use.
+ * - `digitInfo` See {@link DecimalPipe} for more details.
+ *
+ * @stable
  */
-export function formatPercent(value: number | string, locale: string, digitsInfo?: string): string {
+export function formatPercent(value: number, locale: string, digitsInfo?: string): string {
   const format = getLocaleNumberFormat(locale, NumberFormatStyle.Percent);
   const pattern = parseNumberFormat(format, getLocaleNumberSymbol(locale, NumberSymbol.MinusSign));
-  const res = formatNumber(
+  const res = formatNumberToLocaleString(
       value, pattern, locale, NumberSymbol.Group, NumberSymbol.Decimal, digitsInfo, true);
   return res.replace(
       new RegExp(PERCENT_CHAR, 'g'), getLocaleNumberSymbol(locale, NumberSymbol.PercentSign));
 }
 
 /**
- * Formats a number to a locale string
+ * @ngModule CommonModule
+ * @whatItDoes Formats a number according to locale rules.
+ * @description
  *
- * @internal
+ * Formats a number as text. Group sizing and separator and other locale-specific
+ * configurations are based on the locale.
+ *
+ * Where:
+ * - `value` is a number.
+ * - `locale` is a `string` defining the locale to use.
+ * - `digitInfo` See {@link DecimalPipe} for more details.
+ *
+ * @stable
  */
-export function formatDecimal(value: number | string, locale: string, digitsInfo?: string): string {
+export function formatNumber(value: number, locale: string, digitsInfo?: string): string {
   const format = getLocaleNumberFormat(locale, NumberFormatStyle.Decimal);
   const pattern = parseNumberFormat(format, getLocaleNumberSymbol(locale, NumberSymbol.MinusSign));
-  return formatNumber(value, pattern, locale, NumberSymbol.Group, NumberSymbol.Decimal, digitsInfo);
+  return formatNumberToLocaleString(
+      value, pattern, locale, NumberSymbol.Group, NumberSymbol.Decimal, digitsInfo);
 }
 
 interface ParsedNumberFormat {
@@ -335,7 +352,7 @@ function parseNumber(num: number): ParsedNumber {
     digits = [];
     // Convert string to array of digits without leading/trailing zeros.
     for (j = 0; i <= zeros; i++, j++) {
-      digits[j] = +numStr.charAt(i);
+      digits[j] = Number(numStr.charAt(i));
     }
   }
 
@@ -424,7 +441,6 @@ function roundNumber(parsedNumber: ParsedNumber, minFrac: number, maxFrac: numbe
   }
 }
 
-/** @internal */
 export function parseIntAutoRadix(text: string): number {
   const result: number = parseInt(text);
   if (isNaN(result)) {
