@@ -29,8 +29,8 @@ export interface NgElementStrategy {
 
   connect(element: HTMLElement): void;
   disconnect(): void;
-  getPropertyValue(propName: string): any;
-  setPropertyValue(propName: string, value: string): void;
+  getInputValue(propName: string): any;
+  setInputValue(propName: string, value: string): void;
 }
 
 /**

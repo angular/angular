@@ -42,6 +42,8 @@ export abstract class NgElement extends HTMLElement {
 /**
  * Additional type information that can be added to the NgElement class for properties added based
  * on the inputs and methods of the underlying component.
+ *
+ * @experimental
  */
 export type WithProperties<P> = {
   [property in keyof P]: P[property]
@@ -59,14 +61,14 @@ export interface NgElementConfig {
   injector: Injector;
   strategyFactory?: NgElementStrategyFactory;
   propertyInputs?: string[];
-  attributeToPropertyInputs?: Map<string, string>;
+  attributeToPropertyInputs?: {[key: string]: string};
 }
 
 /** Gets a map of default set of attributes to observe and the properties they affect. */
 function getDefaultAttributeToPropertyInputs(inputs: {propName: string, templateName: string}[]) {
-  const attributeToPropertyInputs = new Map<string, string>();
+  const attributeToPropertyInputs: {[key: string]: string} = {};
   inputs.forEach(({propName, templateName}) => {
-    attributeToPropertyInputs.set(camelToDashCase(templateName), propName);
+    attributeToPropertyInputs[camelToDashCase(templateName)] = propName;
   });
 
   return attributeToPropertyInputs;
@@ -100,7 +102,7 @@ export function createNgElementConstructor<P>(
       config.attributeToPropertyInputs || getDefaultAttributeToPropertyInputs(inputs);
 
   class NgElementImpl extends NgElement {
-    static readonly observedAttributes = Array.from(attributeToPropertyInputs.keys());
+    static readonly observedAttributes = Object.keys(attributeToPropertyInputs);
 
     constructor(strategyFactoryOverride?: NgElementStrategyFactory) {
       super();
@@ -113,16 +115,16 @@ export function createNgElementConstructor<P>(
 
     attributeChangedCallback(
         attrName: string, oldValue: string|null, newValue: string, namespace?: string): void {
-      const propName = attributeToPropertyInputs.get(attrName) !;
-      this.ngElementStrategy.setPropertyValue(propName, newValue);
+      const propName = attributeToPropertyInputs[attrName] !;
+      this.ngElementStrategy.setInputValue(propName, newValue);
     }
 
     connectedCallback(): void {
       // Take element attribute inputs and set them as inputs on the strategy
-      attributeToPropertyInputs.forEach((propName, attrName) => {
-        const value = this.getAttribute(attrName);
-        if (value) {
-          this.ngElementStrategy.setPropertyValue(propName, value);
+      NgElementImpl.observedAttributes.forEach(attrName => {
+        const propName = attributeToPropertyInputs[attrName] !;
+        if (this.hasAttribute(attrName)) {
+          this.ngElementStrategy.setInputValue(propName, this.getAttribute(attrName) !);
         }
       });
 
@@ -150,8 +152,8 @@ export function createNgElementConstructor<P>(
   const propertyInputs = config.propertyInputs || inputs.map(({propName}) => propName);
   propertyInputs.forEach(property => {
     Object.defineProperty(NgElementImpl.prototype, property, {
-      get: function() { return this.ngElementStrategy.getPropertyValue(property); },
-      set: function(newValue: any) { this.ngElementStrategy.setPropertyValue(property, newValue); },
+      get: function() { return this.ngElementStrategy.getInputValue(property); },
+      set: function(newValue: any) { this.ngElementStrategy.setInputValue(property, newValue); },
       configurable: true,
       enumerable: true,
     });

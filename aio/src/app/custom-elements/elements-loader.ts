@@ -32,8 +32,6 @@ export class ElementsLoader {
 
     if (!selectors.length) { return of(null); }
 
-    selectors.forEach(s => this.register(s));
-
     // Returns observable that completes when all discovered elements have been registered.
     return fromPromise(Promise.all(selectors.map(s => this.register(s))).then(result => null));
   }

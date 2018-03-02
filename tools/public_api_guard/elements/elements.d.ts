@@ -12,7 +12,9 @@ export declare abstract class NgElement extends HTMLElement {
 
 /** @experimental */
 export interface NgElementConfig {
-    attributeToPropertyInputs?: Map<string, string>;
+    attributeToPropertyInputs?: {
+        [key: string]: string;
+    };
     injector: Injector;
     propertyInputs?: string[];
     strategyFactory?: NgElementStrategyFactory;
@@ -29,8 +31,8 @@ export interface NgElementStrategy {
     events: Observable<NgElementStrategyEvent>;
     connect(element: HTMLElement): void;
     disconnect(): void;
-    getPropertyValue(propName: string): any;
-    setPropertyValue(propName: string, value: string): void;
+    getInputValue(propName: string): any;
+    setInputValue(propName: string, value: string): void;
 }
 
 /** @experimental */
@@ -46,3 +48,8 @@ export interface NgElementStrategyFactory {
 
 /** @experimental */
 export declare const VERSION: Version;
+
+/** @experimental */
+export declare type WithProperties<P> = {
+    [property in keyof P]: P[property];
+};

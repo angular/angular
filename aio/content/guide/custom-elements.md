@@ -15,7 +15,6 @@ detection APIs.
 ```ts
 //hello-world.ts
 import { Component, Input, NgModule } from '@angular/core';
-import { createNgElementConstructor, getConfigFromComponentFactory } from '@angular/elements';
 
 @Component({
   selector: 'hello-world',
@@ -37,7 +36,7 @@ export class HelloWorldModule {}
 import { Component, NgModuleRef } from '@angular/core';
 import { createNgElementConstructor } from '@angular/elements';
 
-import { HelloWorld } from './hello-world.ngfactory';
+import { HelloWorld } from './hello-world';
 
 @Component({
   selector: 'app-root',
@@ -45,9 +44,8 @@ import { HelloWorld } from './hello-world.ngfactory';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
-  constructor(ngModuleRef: NgModuleRef) {
-    const ngElementConfig = getConfigFromComponentFactory(HelloWorld, injector);
-    const NgElementConstructor = createNgElementConstructor(ngElementConfig);
+  constructor(injector: Injector) {
+    const NgElementConstructor = createNgElementConstructor(HelloWorld, {injector});
     customElements.register('hello-world', NgElementConstructor);
   }
 }

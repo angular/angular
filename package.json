@@ -49,7 +49,6 @@
     "@types/source-map": "^0.5.1",
     "@types/systemjs": "0.19.32",
     "@webcomponents/custom-elements": "^1.0.4",
-    "@webcomponents/webcomponentsjs": "^1.1.0",
     "angular": "npm:angular@1.6",
     "angular-1.5": "npm:angular@1.5",
     "angular-mocks": "npm:angular-mocks@1.6",

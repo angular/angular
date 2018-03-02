@@ -76,7 +76,7 @@ Promise
     .resolve()
 
     // Load browser-specific polyfills for custom elements.
-    .then(function() { return loadCustomElementsPolyfills(); })
+    // .then(function() { return loadCustomElementsPolyfills(); })
 
     // Load necessary testing packages.
     .then(function() {
