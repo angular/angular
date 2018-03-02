@@ -63,6 +63,8 @@ export function updateSourceFile(
     sourceFile: ts.SourceFile, module: PartialModule,
     context: ts.TransformationContext): [ts.SourceFile, Map<ts.Node, Node>] {
   const converter = new _NodeEmitterVisitor();
+  converter.loadExportedVariableIdentifiers(sourceFile);
+
   const prefixStatements = module.statements.filter(statement => !(statement instanceof ClassStmt));
   const classes =
       module.statements.filter(statement => statement instanceof ClassStmt) as ClassStmt[];
@@ -158,6 +160,11 @@ function createLiteral(value: any) {
   }
 }
 
+function isExportTypeStatement(statement: ts.Statement): boolean {
+  return !!statement.modifiers &&
+      statement.modifiers.some(mod => mod.kind === ts.SyntaxKind.ExportKeyword);
+}
+
 /**
  * Visits an output ast and produces the corresponding TypeScript synthetic nodes.
  */
@@ -166,6 +173,26 @@ class _NodeEmitterVisitor implements StatementVisitor, ExpressionVisitor {
   private _importsWithPrefixes = new Map<string, string>();
   private _reexports = new Map<string, {name: string, as: string}[]>();
   private _templateSources = new Map<ParseSourceFile, ts.SourceMapSource>();
+  private _exportedVariableIdentifiers = new Map<string, ts.Identifier>();
+
+  /**
+   * Process the source file and collect exported identifiers that refer to variables.
+   *
+   * Only variables are collected because exported classes still exist in the module scope in
+   * CommonJS, whereas variables have their declarations moved onto the `exports` object, and all
+   * references are updated accordingly.
+   */
+  loadExportedVariableIdentifiers(sourceFile: ts.SourceFile): void {
+    sourceFile.statements.forEach(statement => {
+      if (ts.isVariableStatement(statement) && isExportTypeStatement(statement)) {
+        statement.declarationList.declarations.forEach(declaration => {
+          if (ts.isIdentifier(declaration.name)) {
+            this._exportedVariableIdentifiers.set(declaration.name.text, declaration.name);
+          }
+        });
+      }
+    });
+  }
 
   getReexports(): ts.Statement[] {
     return Array.from(this._reexports.entries())
@@ -612,7 +639,8 @@ class _NodeEmitterVisitor implements StatementVisitor, ExpressionVisitor {
   }
 
   private _visitIdentifier(value: ExternalReference): ts.Expression {
-    const {name, moduleName} = value;
+    // name can only be null during JIT which never executes this code.
+    const moduleName = value.moduleName, name = value.name !;
     let prefixIdent: ts.Identifier|null = null;
     if (moduleName) {
       let prefix = this._importsWithPrefixes.get(moduleName);
@@ -622,10 +650,17 @@ class _NodeEmitterVisitor implements StatementVisitor, ExpressionVisitor {
       }
       prefixIdent = ts.createIdentifier(prefix);
     }
-    // name can only be null during JIT which never executes this code.
-    let result: ts.Expression =
-        prefixIdent ? ts.createPropertyAccess(prefixIdent, name !) : ts.createIdentifier(name !);
-    return result;
+    if (prefixIdent) {
+      return ts.createPropertyAccess(prefixIdent, name);
+    } else {
+      const id = ts.createIdentifier(name);
+      if (this._exportedVariableIdentifiers.has(name)) {
+        // In order for this new identifier node to be properly rewritten in CommonJS output,
+        // it must have its original node set to a parsed instance of the same identifier.
+        ts.setOriginalNode(id, this._exportedVariableIdentifiers.get(name));
+      }
+      return id;
+    }
   }
 }
 
