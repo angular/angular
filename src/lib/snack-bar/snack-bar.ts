@@ -10,7 +10,15 @@ import {LiveAnnouncer} from '@angular/cdk/a11y';
 import {BreakpointObserver, Breakpoints} from '@angular/cdk/layout';
 import {Overlay, OverlayConfig, OverlayRef} from '@angular/cdk/overlay';
 import {ComponentPortal, ComponentType, PortalInjector} from '@angular/cdk/portal';
-import {ComponentRef, Injectable, Injector, Optional, SkipSelf} from '@angular/core';
+import {
+  ComponentRef,
+  Inject,
+  Injectable,
+  Injector,
+  InjectionToken,
+  Optional,
+  SkipSelf,
+} from '@angular/core';
 import {take} from 'rxjs/operators/take';
 import {takeUntil} from 'rxjs/operators/takeUntil';
 import {SimpleSnackBar} from './simple-snack-bar';
@@ -18,6 +26,10 @@ import {MAT_SNACK_BAR_DATA, MatSnackBarConfig} from './snack-bar-config';
 import {MatSnackBarContainer} from './snack-bar-container';
 import {MatSnackBarRef} from './snack-bar-ref';
 
+
+/** Injection token that can be used to specify default snack bar. */
+export const MAT_SNACK_BAR_DEFAULT_OPTIONS =
+    new InjectionToken<MatSnackBarConfig>('mat-snack-bar-default-options');
 
 /**
  * Service to dispatch Material Design snack bar messages.
@@ -50,7 +62,8 @@ export class MatSnackBar {
       private _live: LiveAnnouncer,
       private _injector: Injector,
       private _breakpointObserver: BreakpointObserver,
-      @Optional() @SkipSelf() private _parentSnackBar: MatSnackBar) {}
+      @Optional() @SkipSelf() private _parentSnackBar: MatSnackBar,
+      @Inject(MAT_SNACK_BAR_DEFAULT_OPTIONS) private _defaultConfig: MatSnackBarConfig) {}
 
   /**
    * Creates and dispatches a snack bar with a custom component for the content, removing any
@@ -60,7 +73,7 @@ export class MatSnackBar {
    * @param config Extra configuration for the snack bar.
    */
   openFromComponent<T>(component: ComponentType<T>, config?: MatSnackBarConfig): MatSnackBarRef<T> {
-    const _config = _applyConfigDefaults(config);
+    const _config = {...this._defaultConfig, ...config};
     const snackBarRef = this._attach(component, _config);
 
     // When the snackbar is dismissed, clear the reference to it.
@@ -104,7 +117,7 @@ export class MatSnackBar {
    */
   open(message: string, action: string = '', config?: MatSnackBarConfig):
       MatSnackBarRef<SimpleSnackBar> {
-    const _config = _applyConfigDefaults(config);
+    const _config = {...this._defaultConfig, ...config};
 
     // Since the user doesn't have access to the component, we can
     // override the data to pass in our own message and action.
@@ -215,13 +228,4 @@ export class MatSnackBar {
 
     return new PortalInjector(userInjector || this._injector, injectionTokens);
   }
-}
-
-/**
- * Applies default options to the snackbar config.
- * @param config The configuration to which the defaults will be applied.
- * @returns The new configuration object with defaults applied.
- */
-function _applyConfigDefaults(config?: MatSnackBarConfig): MatSnackBarConfig {
-  return {...new MatSnackBarConfig(), ...config};
 }

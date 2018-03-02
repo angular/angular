@@ -72,6 +72,19 @@ export class MessageArchivedComponent {
   constructor(@Inject(MAT_SNACK_BAR_DATA) public data: any) { }
 }
 ```
+
+### Setting the global configuration defaults
+If you want to override the default snack bar options, you can do so using the
+`MAT_SNACK_BAR_DEFAULT_OPTIONS` injection token.
+
+```ts
+@NgModule({
+  providers: [
+    {provide: MAT_SNACK_BAR_DEFAULT_OPTIONS, useValue: {duration: 2500}}
+  ]
+})
+```
+
 ### Accessibility
 Snack-bar messages are announced via an `aria-live` region. Focus is not moved to
 the snack-bar element, as this would be disruptive to a user in the middle of a

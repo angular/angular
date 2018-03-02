@@ -18,6 +18,7 @@ import {
   MatSnackBarRef,
   SimpleSnackBar,
   MAT_SNACK_BAR_DATA,
+  MAT_SNACK_BAR_DEFAULT_OPTIONS,
 } from './index';
 
 describe('MatSnackBar', () => {
@@ -387,6 +388,32 @@ describe('MatSnackBar', () => {
     expect(pane.getAttribute('dir')).toBe('rtl', 'Expected the pane to be in RTL mode.');
   });
 
+  it('should be able to override the default config', fakeAsync(() => {
+    overlayContainer.ngOnDestroy();
+    viewContainerFixture.destroy();
+
+    TestBed
+      .resetTestingModule()
+      .overrideProvider(MAT_SNACK_BAR_DEFAULT_OPTIONS, {
+        deps: [],
+        useFactory: () => ({panelClass: 'custom-class'})
+      })
+      .configureTestingModule({imports: [MatSnackBarModule, NoopAnimationsModule]})
+      .compileComponents();
+
+    inject([MatSnackBar, OverlayContainer], (sb: MatSnackBar, oc: OverlayContainer) => {
+      snackBar = sb;
+      overlayContainer = oc;
+      overlayContainerElement = oc.getContainerElement();
+    })();
+
+    snackBar.open(simpleMessage);
+    flush();
+
+    expect(overlayContainerElement.querySelector('snack-bar-container')!.classList)
+        .toContain('custom-class', 'Expected class applied through the defaults to be applied.');
+  }));
+
   describe('with custom component', () => {
     it('should open a custom component', () => {
       const snackBarRef = snackBar.openFromComponent(BurritosNotification);
@@ -503,7 +530,6 @@ describe('MatSnackBar with parent MatSnackBar', () => {
         .toContain('Taco', 'Expected child snackbar msg to be dismissed by opening from parent');
   }));
 });
-
 
 describe('MatSnackBar Positioning', () => {
   let snackBar: MatSnackBar;
