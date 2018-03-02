@@ -12,7 +12,6 @@ ts_library(
         "//packages/core",
         "//packages/core/testing",
         "//packages/elements",
-        "//packages/elements/testing",
         "//packages/platform-browser",
         "//packages/platform-browser-dynamic",
         "//packages/platform-browser-dynamic/testing",
@@ -25,7 +24,7 @@ filegroup(
     name = "elements_test_bootstrap_scripts",
     # do not sort
     srcs = [
-        "//:node_modules/@webcomponents/webcomponentsjs/custom-elements-es5-adapter.js",
+        "//:node_modules/@webcomponents/custom-elements/src/native-shim.js",
         "//:node_modules/reflect-metadata/Reflect.js",
         "//:node_modules/zone.js/dist/zone.js",
         "//:node_modules/zone.js/dist/async-test.js",

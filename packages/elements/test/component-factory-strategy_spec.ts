@@ -40,7 +40,7 @@ describe('ComponentFactoryNgElementStrategy', () => {
   describe('after connected', () => {
     beforeEach(() => {
       // Set up an initial value to make sure it is passed to the component
-      strategy.setPropertyValue('fooFoo', 'fooFoo-1');
+      strategy.setInputValue('fooFoo', 'fooFoo-1');
       strategy.connect(document.createElement('div'));
     });
 
@@ -65,7 +65,7 @@ describe('ComponentFactoryNgElementStrategy', () => {
     });
 
     it('should initialize the component with initial values', () => {
-      expect(strategy.getPropertyValue('fooFoo')).toBe('fooFoo-1');
+      expect(strategy.getInputValue('fooFoo')).toBe('fooFoo-1');
       expect(componentRef.instance.fooFoo).toBe('fooFoo-1');
     });
 
@@ -85,15 +85,15 @@ describe('ComponentFactoryNgElementStrategy', () => {
 
   describe('when inputs change and not connected', () => {
     it('should cache the value', () => {
-      strategy.setPropertyValue('fooFoo', 'fooFoo-1');
-      expect(strategy.getPropertyValue('fooFoo')).toBe('fooFoo-1');
+      strategy.setInputValue('fooFoo', 'fooFoo-1');
+      expect(strategy.getInputValue('fooFoo')).toBe('fooFoo-1');
 
       // Sanity check: componentRef isn't changed since its not even on the strategy
       expect(componentRef.instance.fooFoo).toBe(undefined);
     });
 
     it('should not detect changes', fakeAsync(() => {
-         strategy.setPropertyValue('fooFoo', 'fooFoo-1');
+         strategy.setInputValue('fooFoo', 'fooFoo-1');
          tick(16);  // scheduler waits 16ms if RAF is unavailable
          expect(componentRef.changeDetectorRef.detectChanges).toHaveBeenCalledTimes(0);
        }));
@@ -103,16 +103,16 @@ describe('ComponentFactoryNgElementStrategy', () => {
     beforeEach(() => { strategy.connect(document.createElement('div')); });
 
     it('should be set on the component instance', () => {
-      strategy.setPropertyValue('fooFoo', 'fooFoo-1');
+      strategy.setInputValue('fooFoo', 'fooFoo-1');
       expect(componentRef.instance.fooFoo).toBe('fooFoo-1');
-      expect(strategy.getPropertyValue('fooFoo')).toBe('fooFoo-1');
+      expect(strategy.getInputValue('fooFoo')).toBe('fooFoo-1');
     });
 
     it('should detect changes', fakeAsync(() => {
          // Connect detected changes automatically
          expect(componentRef.changeDetectorRef.detectChanges).toHaveBeenCalledTimes(1);
 
-         strategy.setPropertyValue('fooFoo', 'fooFoo-1');
+         strategy.setInputValue('fooFoo', 'fooFoo-1');
          tick(16);  // scheduler waits 16ms if RAF is unavailable
          expect(componentRef.changeDetectorRef.detectChanges).toHaveBeenCalledTimes(2);
        }));
@@ -121,14 +121,14 @@ describe('ComponentFactoryNgElementStrategy', () => {
          // Connect detected changes automatically
          expect(componentRef.changeDetectorRef.detectChanges).toHaveBeenCalledTimes(1);
 
-         strategy.setPropertyValue('fooFoo', 'fooFoo-1');
-         strategy.setPropertyValue('barBar', 'barBar-1');
+         strategy.setInputValue('fooFoo', 'fooFoo-1');
+         strategy.setInputValue('barBar', 'barBar-1');
          tick(16);  // scheduler waits 16ms if RAF is unavailable
          expect(componentRef.changeDetectorRef.detectChanges).toHaveBeenCalledTimes(2);
        }));
 
     it('should call ngOnChanges', fakeAsync(() => {
-         strategy.setPropertyValue('fooFoo', 'fooFoo-1');
+         strategy.setInputValue('fooFoo', 'fooFoo-1');
          tick(16);  // scheduler waits 16ms if RAF is unavailable
          expectSimpleChanges(
              componentRef.instance.simpleChanges[0],
@@ -136,8 +136,8 @@ describe('ComponentFactoryNgElementStrategy', () => {
        }));
 
     it('should call ngOnChanges once for multiple input changes', fakeAsync(() => {
-         strategy.setPropertyValue('fooFoo', 'fooFoo-1');
-         strategy.setPropertyValue('barBar', 'barBar-1');
+         strategy.setInputValue('fooFoo', 'fooFoo-1');
+         strategy.setInputValue('barBar', 'barBar-1');
          tick(16);  // scheduler waits 16ms if RAF is unavailable
          expectSimpleChanges(componentRef.instance.simpleChanges[0], {
            fooFoo: new SimpleChange(undefined, 'fooFoo-1', true),
@@ -147,16 +147,16 @@ describe('ComponentFactoryNgElementStrategy', () => {
 
     it('should call ngOnChanges twice for changes in different rounds with previous values',
        fakeAsync(() => {
-         strategy.setPropertyValue('fooFoo', 'fooFoo-1');
-         strategy.setPropertyValue('barBar', 'barBar-1');
+         strategy.setInputValue('fooFoo', 'fooFoo-1');
+         strategy.setInputValue('barBar', 'barBar-1');
          tick(16);  // scheduler waits 16ms if RAF is unavailable
          expectSimpleChanges(componentRef.instance.simpleChanges[0], {
            fooFoo: new SimpleChange(undefined, 'fooFoo-1', true),
            barBar: new SimpleChange(undefined, 'barBar-1', true)
          });
 
-         strategy.setPropertyValue('fooFoo', 'fooFoo-2');
-         strategy.setPropertyValue('barBar', 'barBar-2');
+         strategy.setInputValue('fooFoo', 'fooFoo-2');
+         strategy.setInputValue('barBar', 'barBar-2');
          tick(16);  // scheduler waits 16ms if RAF is unavailable
          expectSimpleChanges(componentRef.instance.simpleChanges[1], {
            fooFoo: new SimpleChange('fooFoo-1', 'fooFoo-2', false),

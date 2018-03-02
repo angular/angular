@@ -104,7 +104,7 @@ export class ComponentFactoryNgElementStrategy implements NgElementStrategy {
    * Returns the component property value. If the component has not yet been created, the value is
    * retrieved from the cached initialization values.
    */
-  getPropertyValue(property: string): any {
+  getInputValue(property: string): any {
     if (!this.componentRef) {
       return this.initialInputValues.get(property);
     }
@@ -116,8 +116,8 @@ export class ComponentFactoryNgElementStrategy implements NgElementStrategy {
    * Sets the input value for the property. If the component has not yet been created, the value is
    * cached and set when the component is created.
    */
-  setPropertyValue(property: string, value: any): void {
-    if (strictEquals(value, this.getPropertyValue(property))) {
+  setInputValue(property: string, value: any): void {
+    if (strictEquals(value, this.getInputValue(property))) {
       return;
     }
 
@@ -158,7 +158,7 @@ export class ComponentFactoryNgElementStrategy implements NgElementStrategy {
     this.componentFactory.inputs.forEach(({propName}) => {
       const initialValue = this.initialInputValues.get(propName);
       if (initialValue) {
-        this.setPropertyValue(propName, initialValue);
+        this.setInputValue(propName, initialValue);
       } else {
         // Keep track of inputs that were not initialized in case we need to know this for
         // calling ngOnChanges with SimpleChanges
@@ -185,8 +185,11 @@ export class ComponentFactoryNgElementStrategy implements NgElementStrategy {
       return;
     }
 
-    (this.componentRef !.instance as any as OnChanges).ngOnChanges(this.inputChanges);
+    // Cache the changes and set inputChanges to null to capture any changes that might occur
+    // during ngOnChanges.
+    const inputChanges = this.inputChanges;
     this.inputChanges = null;
+    (this.componentRef !.instance as any as OnChanges).ngOnChanges(inputChanges);
   }
 
   /**
@@ -199,8 +202,8 @@ export class ComponentFactoryNgElementStrategy implements NgElementStrategy {
     }
 
     this.scheduledChangeDetectionFn = scheduler.scheduleBeforeRender(() => {
-      this.detectChanges();
       this.scheduledChangeDetectionFn = null;
+      this.detectChanges();
     });
   }
 
@@ -209,7 +212,7 @@ export class ComponentFactoryNgElementStrategy implements NgElementStrategy {
    */
   protected recordInputChange(property: string, currentValue: any): void {
     // Do not record the change if the component does not implement `OnChanges`.
-    if (!this.componentRef || !this.implementsOnChanges) {
+    if (this.componentRef && !this.implementsOnChanges) {
       return;
     }
 
@@ -228,7 +231,7 @@ export class ComponentFactoryNgElementStrategy implements NgElementStrategy {
     const isFirstChange = this.uninitializedInputs.has(property);
     this.uninitializedInputs.delete(property);
 
-    const previousValue = isFirstChange ? undefined : this.getPropertyValue(property);
+    const previousValue = isFirstChange ? undefined : this.getInputValue(property);
     this.inputChanges[property] = new SimpleChange(previousValue, currentValue, isFirstChange);
   }
 
