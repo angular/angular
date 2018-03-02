@@ -396,8 +396,14 @@ with a registered [provider](guide/glossary#provider).
 
 ## Input
 
+<!--
 A directive property that can be the *target* of a
 [property binding](guide/template-syntax#property-binding) (explained in detail in the [Template Syntax](guide/template-syntax) page).
+Data values flow *into* this property from the data source identified
+in the template expression to the right of the equal sign.
+-->
+A directive property that can be the *target* of a
+[프로퍼티 바인딩](guide/template-syntax#프로퍼티-바인딩) (explained in detail in the [Template Syntax](guide/template-syntax) page).
 Data values flow *into* this property from the data source identified
 in the template expression to the right of the equal sign.
 
@@ -411,7 +417,6 @@ A form of [property data binding](guide/glossary#data-binding) in which a
 renders as text.  That text may be concatenated with neighboring text
 before it is assigned to an element property
 or displayed between element tags, as in this example.
-
 
 <code-example language="html" escape="html">
   <label>My current hero is {{hero.name}}</label>
@@ -747,10 +752,14 @@ in the [Forms](guide/forms) page.
 A TypeScript-like syntax that Angular evaluates within
 a [data binding](guide/glossary#data-binding).
 
+<!--
 Read about how to write template expressions
 in the [Template expressions](guide/template-syntax#template-expressions) section
 of the [Template Syntax](guide/template-syntax) page.
-
+-->
+Read about how to write template expressions
+in the [Template expressions](guide/template-syntax#템플릿-표현식) section
+of the [Template Syntax](guide/template-syntax) page.
 
 ## Transpile
 

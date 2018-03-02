@@ -4322,9 +4322,10 @@ helps instantly identify which members of the component serve which purpose.
 <div class="s-why-last">
 
 
-
+<!--
 **Why?** Angular allows for an [alternative syntax](guide/template-syntax#binding-syntax) `on-*`. If the event itself was prefixed with `on` this would result in an `on-onEvent` binding expression.
-
+-->
+**Why?** Angular allows for an [alternative syntax](guide/template-syntax#바인딩-문법) `on-*`. If the event itself was prefixed with `on` this would result in an `on-onEvent` binding expression.
 
 </div>
 

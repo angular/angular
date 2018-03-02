@@ -142,7 +142,7 @@ It's convenient to think so, and you rarely suffer for this mistake.
 Though this is not exactly true. Interpolation is a special syntax that Angular converts into a
 [property binding](guide/template-syntax#property-binding), as is explained [below](guide/template-syntax#property-binding-or-interpolation).
 -->
-이 과정은 템플릿 표현식의 결과값이 엘리먼트 태그의 값이나 속성값으로 바로 삽입된다고 생각할 수도 있습니다. 이렇게 단순하게 이해하는 것도 틀린 것은 아닙니다만, 정확한 것은 아닙니다. 문자열 바인딩은 [프로퍼티 바인딩](guide/template-syntax#property-binding)의 특별한 케이스이며, [아래](guide/template-syntax#property-binding-or-interpolation)에서 자세하게 설명할 것입니다.
+이 과정은 템플릿 표현식의 결과값이 엘리먼트 태그의 값이나 속성값으로 바로 삽입된다고 생각할 수도 있습니다. 이렇게 단순하게 이해하는 것도 틀린 것은 아닙니다만, 정확한 것은 아닙니다. 문자열 바인딩은 [프로퍼티 바인딩](guide/template-syntax#프로퍼티-바인딩)의 특별한 케이스이며, [아래](guide/template-syntax#프로퍼티-바인딩-문자열-바인딩)에서 자세하게 설명할 것입니다.
 
 <!--
 But first, let's take a closer look at template expressions and statements.
@@ -152,7 +152,9 @@ But first, let's take a closer look at template expressions and statements.
 
 <hr/>
 
+<!--
 {@a template-expressions}
+-->
 
 {@a 템플릿-표현식}
 
@@ -175,7 +177,7 @@ In the [property binding](guide/template-syntax#property-binding) section below,
 a template expression appears in quotes to the right of the&nbsp;`=` symbol as in `[property]="expression"`.
 -->
 `{{1 + 1}}` 이라는 표현은 템플릿 표현식 `1 + 1`을 문자열 바인딩 표현식으로 감싼 것입니다.
-이후에 알아볼 [프로퍼티 바인딩](guide/template-syntax#property-binding)에서 자세히 설명하겠지만,
+이후에 알아볼 [프로퍼티 바인딩](guide/template-syntax#프로퍼티-바인딩)에서 자세히 설명하겠지만,
 템플릿 표현식은 큰따옴표로 둘러싸서 `=` 기호 오른쪽에 `[property]="expression"` 와 같이 사용합니다.
 
 <!--
@@ -213,7 +215,9 @@ Other notable differences from JavaScript syntax include:
 * 비트 연산자 `|`, `&` 는 템플릿 표현식에서 지원하지 않습니다.
 * `|`, `?.`, `!`와 같은 [템플릿 표현식 전용 연산자](guide/template-syntax#템플릿-표현식-전용-연산자)도 있습니다.
 
+<!--
 {@a expression-context}
+-->
 
 {@a 템플릿-표현식의-컨텍스트}
 
@@ -277,7 +281,9 @@ members of the expression context.
 
 {@a no-side-effects}
 
+<!--
 {@a expression-guidelines}
+-->
 
 {@a 템플릿-표현식-가이드라인}
 
@@ -397,7 +403,9 @@ it returns the same object *reference* when called twice in a row.
 
 <hr/>
 
+<!--
 {@a template-statements}
+-->
 
 {@a 템플릿-실행문}
 
@@ -535,7 +543,9 @@ you're ready to learn about the varieties of data binding syntax beyond interpol
 
 <hr/>
 
+<!--
 {@a binding-syntax}
+-->
 
 {@a 바인딩-문법}
 
@@ -1083,7 +1093,9 @@ With this broad view in mind, you're ready to look at binding types in detail.
 
 <hr/>
 
+<!--
 {@a property-binding}
+-->
 
 {@a 프로퍼티-바인딩}
 
@@ -1689,9 +1701,16 @@ The only way to know about a user action is to listen for certain events such as
 keystrokes, mouse movements, clicks, and touches.
 You declare your interest in user actions through Angular event binding.
 
+<!--
 Event binding syntax consists of a **target event** name
 within parentheses on the left of an equal sign, and a quoted
 [template statement](guide/template-syntax#template-statements) on the right.
+The following event binding listens for the button's click events, calling
+the component's `onSave()` method whenever a click occurs:
+-->
+Event binding syntax consists of a **target event** name
+within parentheses on the left of an equal sign, and a quoted
+[템플릿 실행문](guide/template-syntax#템플릿-실행문) on the right.
 The following event binding listens for the button's click events, calling
 the component's `onSave()` method whenever a click occurs:
 
@@ -2217,7 +2236,12 @@ The text assigned to `*ngFor` is the instruction that guides the repeater proces
 
 #### *ngFor* microsyntax
 
+<!--
 The string assigned to `*ngFor` is not a [template expression](guide/template-syntax#template-expressions).
+It's a *microsyntax* &mdash; a little language of its own that Angular interprets.
+The string `"let hero of heroes"` means:
+-->
+The string assigned to `*ngFor` is not a [템플릿 표현식](guide/template-syntax#템플릿-표현식).
 It's a *microsyntax* &mdash; a little language of its own that Angular interprets.
 The string `"let hero of heroes"` means:
 
@@ -2447,8 +2471,12 @@ This example declares the `fax` variable as `ref-fax` instead of `#fax`.
 -->
 ## 입출력 프로퍼티
 
+<!--
 An _Input_ property is a _settable_ property annotated with an `@Input` decorator.
 Values flow _into_ the property when it is data bound with a [property binding](#property-binding)
+-->
+An _Input_ property is a _settable_ property annotated with an `@Input` decorator.
+Values flow _into_ the property when it is data bound with a [프로퍼티 바인딩](#프로퍼티-바인딩)
 
 <!--
 An _Output_ property is an _observable_ property annotated with an `@Output` decorator.

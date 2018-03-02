@@ -410,7 +410,11 @@ The following are some of the key AngularJS built-in directives and their equiva
       Angular uses property binding; there is no built-in *href* directive.
       Place the element's `href` property in square brackets and set it to a quoted template expression.
 
+      <!--
       For more information see the [Property binding](guide/template-syntax#property-binding)
+      section of the [Template Syntax](guide/template-syntax) page.
+      -->
+      For more information see the [프로퍼티 바인딩](guide/template-syntax#프로퍼티-바인딩)
       section of the [Template Syntax](guide/template-syntax) page.
 
       In Angular, `href` is no longer used for routing. Routing uses `routerLink`, as shown in the following example.
@@ -573,7 +577,11 @@ The following are some of the key AngularJS built-in directives and their equiva
 
       In this example, the `<div>` element is hidden if the `favoriteHero` variable is not truthy.
 
+      <!--
       For more information on property binding, see the [Property binding](guide/template-syntax#property-binding)
+      section of the [Template Syntax](guide/template-syntax) page.
+      -->
+      For more information on property binding, see the [프로퍼티 바인딩](guide/template-syntax#프로퍼티-바인딩)
       section of the [Template Syntax](guide/template-syntax) page.
     </td>
 
@@ -607,7 +615,11 @@ The following are some of the key AngularJS built-in directives and their equiva
       Angular uses property binding; there is no built-in *src* directive.
       Place the `src` property in square brackets and set it to a quoted template expression.
 
+      <!--
       For more information on property binding, see the [Property binding](guide/template-syntax#property-binding)
+      section of the [Template Syntax](guide/template-syntax) page.
+      -->
+      For more information on property binding, see the [프로퍼티 바인딩](guide/template-syntax#프로퍼티-바인딩)
       section of the [Template Syntax](guide/template-syntax) page.
     </td>
 

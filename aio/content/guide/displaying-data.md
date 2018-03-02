@@ -515,7 +515,7 @@ see the [template expressions](guide/template-syntax#template-expressions) secti
 템플릿 표현식은 이중 중괄호 안에 `*ngIf="heroes.length > 3"` 와 같이 작성합니다. 이 문법은 TypeScript와 비슷해 보이고, 동작도 비슷합니다.
 이 코드를 추가한 후에 컴포넌트에 배열로 정의한 히어로 목록의 길이가 3을 넘어가면 Angular가 이 엘리먼트를 DOM에 추가해서 화면에 표시합니다.
 그리고 배열의 길이가 3 이하이면 이 엘리먼트를 DOM에서 제거합니다.
-좀 더 자세한 내용은 [템플릿 문법](guide/template-syntax) 문서에 있는 [템플릿 표현식](guide/template-syntax#template-expressions)을 참고하세요.
+좀 더 자세한 내용은 [템플릿 문법](guide/template-syntax) 문서에 있는 [템플릿 표현식](guide/template-syntax#템플릿-표현식)을 참고하세요.
 
 
 <div class="alert is-helpful">

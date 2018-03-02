@@ -965,7 +965,11 @@ Learn about the how you can also use the _link parameters array_ in the [appendi
 
 ### *RouterLinkActive* binding
 
+<!--
 On each anchor tag, you also see [property bindings](guide/template-syntax#property-binding) to
+the `RouterLinkActive` directive that look like `routerLinkActive="..."`.
+-->
+On each anchor tag, you also see [프로퍼티 바인딩](guide/template-syntax#프로퍼티-바인딩) to
 the `RouterLinkActive` directive that look like `routerLinkActive="..."`.
 
 The template expression to the right of the equals (=) contains a space-delimited string of CSS classes

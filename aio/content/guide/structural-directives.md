@@ -39,9 +39,17 @@ An asterisk (*) precedes the directive attribute name as in this example.
 
 No brackets. No parentheses. Just `*ngIf` set to a string.
 
+<!--
 You'll learn in this guide that the [asterisk (*) is a convenience notation](guide/structural-directives#asterisk)
 and the string is a [_microsyntax_](guide/structural-directives#microsyntax) rather than the usual
 [template expression](guide/template-syntax#template-expressions).
+Angular desugars this notation into a marked-up `<ng-template>` that surrounds the
+host element and its descendents.
+Each structural directive does something different with that template.
+-->
+You'll learn in this guide that the [asterisk (*) is a convenience notation](guide/structural-directives#asterisk)
+and the string is a [_microsyntax_](guide/structural-directives#microsyntax) rather than the usual
+[템플릿 표현식](guide/template-syntax#템플릿-표현식).
 Angular desugars this notation into a marked-up `<ng-template>` that surrounds the
 host element and its descendents.
 Each structural directive does something different with that template.

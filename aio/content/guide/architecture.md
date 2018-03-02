@@ -550,7 +550,7 @@ displays the component's `hero.name` property value within the `<li>` element.
 * The `[hero]` [*property binding*](guide/template-syntax#property-binding) passes the value of `selectedHero` from
 the parent `HeroListComponent` to the `hero` property of the child `HeroDetailComponent`.
 -->
-* `[hero]` 와 같이 [*프로퍼티 바인딩*](guide/template-syntax#property-binding) 하면 부모 컴포넌트 `HeroListComponent` 에 있는 `selectedHero` 값을 자식 컴포넌트 `HeroDetailComponent` 의 `hero` 프로퍼티로 전달합니다.
+* `[hero]` 와 같이 [*프로퍼티 바인딩*](guide/template-syntax#프로퍼티-바인딩) 하면 부모 컴포넌트 `HeroListComponent` 에 있는 `selectedHero` 값을 자식 컴포넌트 `HeroDetailComponent` 의 `hero` 프로퍼티로 전달합니다.
 
 <!--
 * The `(click)` [*event binding*](guide/user-input#click) calls the component's `selectHero` method when the user clicks a hero's name.
