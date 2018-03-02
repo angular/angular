@@ -5,6 +5,7 @@
     (keydown)="_handleKeydown($event)"
     (click)="closed.emit('click')"
     [@transformMenu]="_panelAnimationState"
+    (@transformMenu.done)="_onAnimationDone()"
     tabindex="-1"
     role="menu">
     <div class="mat-menu-content">
