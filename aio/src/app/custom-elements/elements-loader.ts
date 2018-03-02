@@ -1,15 +1,14 @@
 import {
-  ComponentFactory,
   Inject,
   Injectable,
   NgModuleFactoryLoader,
   NgModuleRef,
 } from '@angular/core';
-import { ELEMENT_MODULE_PATHS_TOKEN, WithCustomElementComponent } from './element-registry';
+import { ELEMENT_MODULE_PATHS_TOKEN } from './element-registry';
 import { of } from 'rxjs/observable/of';
 import { Observable } from 'rxjs/Observable';
 import { fromPromise } from 'rxjs/observable/fromPromise';
-import { createNgElementConstructor, getConfigFromComponentFactory } from '@angular/elements';
+import { createNgElementConstructor } from '@angular/elements';
 
 @Injectable()
 export class ElementsLoader {
@@ -45,26 +44,15 @@ export class ElementsLoader {
     return this.moduleFactoryLoader.load(modulePath).then(elementModuleFactory => {
       if (!this.elementsToLoad.has(selector)) { return; }
 
-      const injector = this.moduleRef.injector;
-      const elementModuleRef = elementModuleFactory.create(injector);
-      const componentFactory = this.getCustomElementComponentFactory(elementModuleRef);
-
-      const ngElementConfig = getConfigFromComponentFactory(componentFactory, injector);
-      const NgElement = createNgElementConstructor(ngElementConfig);
+      const elementModuleRef = elementModuleFactory.create(this.moduleRef.injector);
+      const CustomElementComponent = elementModuleRef.instance.customElementComponent;
+      const NgElement =
+          createNgElementConstructor(CustomElementComponent, {injector: elementModuleRef.injector});
 
       customElements!.define(selector, NgElement);
       this.elementsToLoad.delete(selector);
 
       return customElements.whenDefined(selector);
     });
-  }
-
-  /** Gets the component factory of the custom element defined on the NgModuleRef. */
-  private getCustomElementComponentFactory(
-      customElementModuleRef: NgModuleRef<WithCustomElementComponent>): ComponentFactory<string> {
-    const resolver = customElementModuleRef.componentFactoryResolver;
-    const customElementComponent = customElementModuleRef.instance.customElementComponent;
-
-    return resolver.resolveComponentFactory(customElementComponent);
   }
 }

@@ -19,27 +19,6 @@ import {camelToDashCase, isFunction, scheduler, strictEquals} from './utils';
 const DESTROY_DELAY = 10;
 
 /**
- * Creates an NgElementConfig based on the provided component factory and injector. By default,
- * the observed attributes on the NgElement will be the kebab-case version of the component inputs.
- *
- * @experimental
- */
-export function getConfigFromComponentFactory(
-    componentFactory: ComponentFactory<any>, injector: Injector) {
-  const attributeToPropertyInputs = new Map<string, string>();
-  componentFactory.inputs.forEach(({propName, templateName}) => {
-    const attr = camelToDashCase(templateName);
-    attributeToPropertyInputs.set(attr, propName);
-  });
-
-  return {
-    strategyFactory: new ComponentFactoryNgElementStrategyFactory(componentFactory, injector),
-    propertyInputs: componentFactory.inputs.map(({propName}) => propName),
-    attributeToPropertyInputs,
-  };
-}
-
-/**
  * Factory that creates new ComponentFactoryNgElementStrategy instances with the strategy factory's
  * injector. A new strategy instance is created with the provided component factory which will
  * create its components on connect.
