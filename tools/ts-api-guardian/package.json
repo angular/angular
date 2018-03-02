@@ -1,0 +1,60 @@
+{
+  "name": "ts-api-guardian",
+  "version": "0.3.0",
+  "description": "Guards the API of TypeScript libraries!",
+  "main": "build/lib/main.js",
+  "typings": "build/definitions/main.d.ts",
+  "bin": {
+    "ts-api-guardian": "./bin/ts-api-guardian"
+  },
+  "directories": {
+    "test": "test"
+  },
+  "peerDependencies": {
+    "typescript": "^2.6.1"
+  },
+  "dependencies": {
+    "chalk": "^2.3.1",
+    "diff": "^3.4.0",
+    "minimist": "^1.2.0"
+  },
+  "devDependencies": {
+    "@types/chai": "^4.1.2",
+    "@types/diff": "^3.2.2",
+    "@types/minimist": "^1.2.0",
+    "@types/mocha": "^2.2.48",
+    "@types/node": "^0.12.15",
+    "chai": "^4.1.2",
+    "clang-format": "^1.0.25",
+    "gulp": "^3.8.11",
+    "gulp-clang-format": "^1.0.25",
+    "gulp-mocha": "^5.0.0",
+    "gulp-sourcemaps": "^2.6.4",
+    "gulp-typescript": "^4.0.1",
+    "gulp-util": "^3.0.8",
+    "merge2": "^1.2.1",
+    "source-map": "^0.7.1",
+    "source-map-support": "^0.5.3",
+    "typescript": "~2.6.2"
+  },
+  "scripts": {
+    "prepublish": "gulp compile",
+    "test": "gulp test.unit"
+  },
+  "repository": {},
+  "keywords": [
+    "typescript"
+  ],
+  "contributors": [
+    "Alan Agius <alan.agius4@gmail.com> (https://github.com/alan-agius4/)",
+    "Alex Eagle <alexeagle@google.com> (https://angular.io/)",
+    "Martin Probst <martinprobst@google.com> (https://angular.io/)",
+    "Victor Savkin<vsavkin@google.com> (https://victorsavkin.com)",
+    "Igor Minar<iminar@google.com> (https://angular.io/)"
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/angular/ts-api-guardian/issues"
+  },
+  "homepage": "https://github.com/angular/ts-api-guardian"
+}
