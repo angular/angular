@@ -6,13 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, ComponentFactory, EventEmitter, Input, NgModule, Output, destroyPlatform} from '@angular/core';
+import {Component, EventEmitter, Injector, Input, NgModule, Output, destroyPlatform} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 import {Subject} from 'rxjs/Subject';
 
 import {NgElementStrategy, NgElementStrategyEvent, NgElementStrategyFactory} from '../src/element-strategy';
-import {NgElementConfig, NgElementConstructor, createNgElementConstructor} from '../src/ng-element-constructor';
+import {NgElementConstructor, createNgElementConstructor} from '../src/ng-element-constructor';
 import {patchEnv, restoreEnv} from '../testing/index';
 
 type WithFooBar = {
@@ -23,9 +23,9 @@ type WithFooBar = {
 if (typeof customElements !== 'undefined') {
   describe('createNgElementConstructor', () => {
     let NgElementCtor: NgElementConstructor<WithFooBar>;
-    let factory: ComponentFactory<TestComponent>;
     let strategy: TestStrategy;
     let strategyFactory: TestStrategyFactory;
+    let injector: Injector;
 
     beforeAll(() => patchEnv());
     beforeAll(done => {
@@ -33,17 +33,11 @@ if (typeof customElements !== 'undefined') {
       platformBrowserDynamic()
           .bootstrapModule(TestModule)
           .then(ref => {
-            factory = ref.componentFactoryResolver.resolveComponentFactory(TestComponent);
+            injector = ref.injector;
             strategyFactory = new TestStrategyFactory();
             strategy = strategyFactory.testStrategy;
 
-            const config: NgElementConfig = {
-              strategyFactory,
-              propertyInputs: ['fooFoo', 'barBar'],
-              attributeToPropertyInputs:
-                  new Map<string, string>([['foo-foo', 'fooFoo'], ['barbar', 'barBar']])
-            };
-            NgElementCtor = createNgElementConstructor(config);
+            NgElementCtor = createNgElementConstructor(TestComponent, {injector, strategyFactory});
 
             // The `@webcomponents/custom-elements/src/native-shim.js` polyfill allows us to create
             // new instances of the NgElement which extends HTMLElement, as long as we define it.
@@ -110,8 +104,9 @@ if (typeof customElements !== 'undefined') {
       beforeAll(() => {
         strategyFactory = new TestStrategyFactory();
         strategy = strategyFactory.testStrategy;
-        NgElementCtorWithChangedAttr = createNgElementConstructor({
-          strategyFactory: strategyFactory,
+        NgElementCtorWithChangedAttr = createNgElementConstructor(TestComponent, {
+          injector,
+          strategyFactory,
           propertyInputs: ['prop1', 'prop2'],
           attributeToPropertyInputs:
               new Map<string, string>([['attr-1', 'prop1'], ['attr-2', 'prop2']])

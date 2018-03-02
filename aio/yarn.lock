@@ -131,7 +131,7 @@
     tslib "^1.7.1"
 
 "@angular/elements@file:../dist/packages-dist/elements":
-  version "6.0.0-beta.5-8531ff3335"
+  version "6.0.0-beta.5-0968e9f16a"
   dependencies:
     tslib "^1.7.1"
 
@@ -339,10 +339,6 @@
 "@webcomponents/custom-elements@^1.0.8":
   version "1.0.8"
   resolved "https://registry.yarnpkg.com/@webcomponents/custom-elements/-/custom-elements-1.0.8.tgz#b7b8ef7248f7681d1ad4286a0ada5fe3c2bc7228"
-
-"@webcomponents/webcomponentsjs@^1.1.0":
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/@webcomponents/webcomponentsjs/-/webcomponentsjs-1.1.0.tgz#1392799c266fca142622a720176f688beb74d181"
 
 JSONStream@^1.2.1:
   version "1.3.1"

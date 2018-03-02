@@ -6,10 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {ComponentFactoryResolver, Injector, Type} from '@angular/core';
 import {Subscription} from 'rxjs/Subscription';
 
+import {ComponentFactoryNgElementStrategyFactory} from './component-factory-strategy';
 import {NgElementStrategy, NgElementStrategyFactory} from './element-strategy';
-import {createCustomEvent} from './utils';
+import {camelToDashCase, createCustomEvent} from './utils';
 
 /**
  * Class constructor based on an Angular Component to be used for custom element registration.
@@ -54,9 +56,20 @@ export type WithProperties<P> = {
  * @experimental
  */
 export interface NgElementConfig {
-  strategyFactory: NgElementStrategyFactory;
-  propertyInputs: string[];
-  attributeToPropertyInputs: Map<string, string>;
+  injector: Injector;
+  strategyFactory?: NgElementStrategyFactory;
+  propertyInputs?: string[];
+  attributeToPropertyInputs?: Map<string, string>;
+}
+
+/** Gets a map of default set of attributes to observe and the properties they affect. */
+function getDefaultAttributeToPropertyInputs(inputs: {propName: string, templateName: string}[]) {
+  const attributeToPropertyInputs = new Map<string, string>();
+  inputs.forEach(({propName, templateName}) => {
+    attributeToPropertyInputs.set(camelToDashCase(templateName), propName);
+  });
+
+  return attributeToPropertyInputs;
 }
 
 /**
@@ -73,28 +86,40 @@ export interface NgElementConfig {
  *
  * @experimental
  */
-export function createNgElementConstructor<P>(config: NgElementConfig): NgElementConstructor<P> {
+export function createNgElementConstructor<P>(
+    component: Type<any>, config: NgElementConfig): NgElementConstructor<P> {
+  const componentFactoryResolver =
+      config.injector.get(ComponentFactoryResolver) as ComponentFactoryResolver;
+  const componentFactory = componentFactoryResolver.resolveComponentFactory(component);
+  const inputs = componentFactory.inputs;
+
+  const defaultStrategyFactory = config.strategyFactory ||
+      new ComponentFactoryNgElementStrategyFactory(componentFactory, config.injector);
+
+  const attributeToPropertyInputs =
+      config.attributeToPropertyInputs || getDefaultAttributeToPropertyInputs(inputs);
+
   class NgElementImpl extends NgElement {
-    static readonly observedAttributes = Array.from(config.attributeToPropertyInputs.keys());
+    static readonly observedAttributes = Array.from(attributeToPropertyInputs.keys());
 
     constructor(strategyFactoryOverride?: NgElementStrategyFactory) {
       super();
 
       // Use the constructor's strategy factory override if it is present, otherwise default to
       // the config's factory.
-      const strategyFactory = strategyFactoryOverride || config.strategyFactory;
+      const strategyFactory = strategyFactoryOverride || defaultStrategyFactory;
       this.ngElementStrategy = strategyFactory.create();
     }
 
     attributeChangedCallback(
         attrName: string, oldValue: string|null, newValue: string, namespace?: string): void {
-      const propName = config.attributeToPropertyInputs.get(attrName) !;
+      const propName = attributeToPropertyInputs.get(attrName) !;
       this.ngElementStrategy.setPropertyValue(propName, newValue);
     }
 
     connectedCallback(): void {
       // Take element attribute inputs and set them as inputs on the strategy
-      config.attributeToPropertyInputs.forEach((propName, attrName) => {
+      attributeToPropertyInputs.forEach((propName, attrName) => {
         const value = this.getAttribute(attrName);
         if (value) {
           this.ngElementStrategy.setPropertyValue(propName, value);
@@ -120,9 +145,10 @@ export function createNgElementConstructor<P>(config: NgElementConfig): NgElemen
     }
   }
 
-  // Add getters and setters for each input defined on the Angular Component so that the input
-  // changes can be known.
-  config.propertyInputs.forEach(property => {
+  // Add getters and setters to the prototype for each property input. If the config does not
+  // contain property inputs, use all inputs by default.
+  const propertyInputs = config.propertyInputs || inputs.map(({propName}) => propName);
+  propertyInputs.forEach(property => {
     Object.defineProperty(NgElementImpl.prototype, property, {
       get: function() { return this.ngElementStrategy.getPropertyValue(property); },
       set: function(newValue: any) { this.ngElementStrategy.setPropertyValue(property, newValue); },

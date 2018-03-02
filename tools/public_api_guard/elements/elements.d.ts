@@ -1,35 +1,5 @@
 /** @experimental */
-export declare class ComponentFactoryNgElementStrategy implements NgElementStrategy {
-    events: Observable<NgElementStrategyEvent>;
-    constructor(componentFactory: ComponentFactory<any>, injector: Injector);
-    protected callNgOnChanges(): void;
-    connect(element: HTMLElement): void;
-    protected detectChanges(): void;
-    disconnect(): void;
-    getPropertyValue(property: string): any;
-    protected initializeComponent(element: HTMLElement): void;
-    protected initializeInputs(): void;
-    protected initializeOutputs(): void;
-    protected recordInputChange(property: string, currentValue: any): void;
-    protected scheduleDetectChanges(): void;
-    setPropertyValue(property: string, value: any): void;
-}
-
-/** @experimental */
-export declare class ComponentFactoryNgElementStrategyFactory implements NgElementStrategyFactory {
-    constructor(componentFactory: ComponentFactory<any>, injector: Injector);
-    create(): ComponentFactoryNgElementStrategy;
-}
-
-/** @experimental */
-export declare function createNgElementConstructor<P>(config: NgElementConfig): NgElementConstructor<P>;
-
-/** @experimental */
-export declare function getConfigFromComponentFactory(componentFactory: ComponentFactory<any>, injector: Injector): {
-    strategyFactory: ComponentFactoryNgElementStrategyFactory;
-    propertyInputs: string[];
-    attributeToPropertyInputs: Map<string, string>;
-};
+export declare function createNgElementConstructor<P>(component: Type<any>, config: NgElementConfig): NgElementConstructor<P>;
 
 /** @experimental */
 export declare abstract class NgElement extends HTMLElement {
@@ -42,9 +12,10 @@ export declare abstract class NgElement extends HTMLElement {
 
 /** @experimental */
 export interface NgElementConfig {
-    attributeToPropertyInputs: Map<string, string>;
-    propertyInputs: string[];
-    strategyFactory: NgElementStrategyFactory;
+    attributeToPropertyInputs?: Map<string, string>;
+    injector: Injector;
+    propertyInputs?: string[];
+    strategyFactory?: NgElementStrategyFactory;
 }
 
 /** @experimental */

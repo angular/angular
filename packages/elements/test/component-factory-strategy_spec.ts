@@ -10,7 +10,7 @@ import {ComponentFactory, ComponentRef, Injector, NgModuleRef, SimpleChange, Sim
 import {fakeAsync, tick} from '@angular/core/testing';
 import {Subject} from 'rxjs/Subject';
 
-import {ComponentFactoryNgElementStrategy, ComponentFactoryNgElementStrategyFactory, getConfigFromComponentFactory} from '../src/component-factory-strategy';
+import {ComponentFactoryNgElementStrategy, ComponentFactoryNgElementStrategyFactory} from '../src/component-factory-strategy';
 import {NgElementStrategyEvent} from '../src/element-strategy';
 
 describe('ComponentFactoryNgElementStrategy', () => {
@@ -30,14 +30,6 @@ describe('ComponentFactoryNgElementStrategy', () => {
     injector.get.and.returnValue(applicationRef);
 
     strategy = new ComponentFactoryNgElementStrategy(factory, injector);
-  });
-
-  it('should generate a default config for NgElement', () => {
-    let config = getConfigFromComponentFactory(factory, injector);
-    expect(config.strategyFactory).toBeTruthy();
-    expect(config.propertyInputs).toEqual(['fooFoo', 'barBar']);
-    expect(config.attributeToPropertyInputs.get('foo-foo')).toBe('fooFoo');
-    expect(config.attributeToPropertyInputs.get('my-bar-bar')).toBe('barBar');
   });
 
   it('should create a new strategy from the factory', () => {
