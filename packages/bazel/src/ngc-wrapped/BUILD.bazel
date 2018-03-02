@@ -16,7 +16,7 @@ ts_library(
         # Users will get this dependency from node_modules.
         "//packages/compiler-cli",
         # END-INTERNAL
-        "@build_bazel_rules_typescript//internal/tsc_wrapped",
+        "@build_bazel_rules_typescript//internal:tsc_wrapped",
     ],
 )
 
