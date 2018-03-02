@@ -177,22 +177,24 @@
               "url": "guide/pipes",
               "title": "Pipes",
               "tooltip": "Pipes transform displayed values within a template."
-            },
+            }
+          ]
+        },
+        {
+          "title": "Animations",
+          "tooltip": "Angular Animations",
+          "children": [
             {
-              "title": "Animations",
-              "tooltip": "Angular Animations",
-             "children": [
-              {
-                "url": "guide/animations",
-                "title": "Animation Basics",
-                "tooltip": "Angular animation basic concepts."
+              "url": "guide/animations",
+              "title": "Animation Basics",
+              "tooltip": "Angular animation basic concepts."
             },
             {
               "url": "guide/animation-basics-deep-dive",
               "title": "Animation Basics Deep Dive",
               "tooltip": "Details of Angular animation basics."
             }
-          ]    
+          ]
         },
         {
           "title": "Forms",
