@@ -34,7 +34,6 @@ $mat-mini-fab-padding: 8px !default;
 // Applies base styles to all button types.
 @mixin mat-button-base {
   box-sizing: border-box;
-  overflow: hidden;
   position: relative;
 
   // Reset browser <button> styles.
