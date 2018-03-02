@@ -1310,6 +1310,57 @@ describe('StaticReflector', () => {
       });
     });
   });
+
+  describe('static members', () => {
+    const fileName = '/tmp/src/my-file.ts';
+
+    function initWith(content: string) {
+      init({
+        ...DEFAULT_TEST_DATA,
+        [fileName]: `import {Component} from '@angular/core';\n${content}`
+      });
+    }
+
+    it('should be able to return the static properties of a class', () => {
+      initWith(`
+        export class MyClass {
+          constructor(public  data: string) {}
+
+          static someStatic = 'test';
+          static someOtherStatic = 'otherTest';
+        }
+      `);
+
+      const members = reflector.staticMembers(reflector.getStaticSymbol(fileName, 'MyClass'));
+      expect(members).toEqual(['someStatic', 'someOtherStatic'].map(name => reflector.getStaticSymbol(fileName, 'MyClass', [name])));
+    });
+
+    it('should be able to get the value of a static member', () => {
+      initWith(`
+        export class MyClass {
+          constructor(public  data: string) {}
+
+          static someStatic = 'test';
+        }
+      `);
+      const value = reflector.staticMemberValue(reflector.getStaticSymbol(fileName, 'MyClass', ['someStatic']));
+      expect(value).toEqual('test');
+    });
+
+    it('should be able to simplify an static initializer expression', () => {
+      initWith(`
+        const a = 10;
+        const b = 20;
+        export class MyClass {
+          constructor(public  data: string) {}
+
+          static someStatic = a * b * 10 + 20;
+        }
+      `);
+      const value = reflector.staticMemberValue(reflector.getStaticSymbol(fileName, 'MyClass', ['someStatic']));
+      expect(value).toEqual(2020);
+    });
+  });
 });
 
 const DEFAULT_TEST_DATA: {[key: string]: any} = {

@@ -348,6 +348,35 @@ export class StaticReflector implements CompileReflector {
     return result;
   }
 
+  staticMembers(type: any): StaticSymbol[] {
+    if (!(type instanceof StaticSymbol)) {
+      this.reportError(
+          new Error(`staticMember received ${JSON.stringify(type)} which is not a StaticSymbol`), type);
+      return [];
+    }
+    const staticMembers = this._staticMembers(type);
+    return staticMembers.map(member => this.getStaticSymbol(type.filePath, type.name, [member]));
+  }
+
+  staticMemberValue(member: any): any {
+    if (!(member instanceof StaticSymbol)) {
+      this.reportError(
+          new Error(`staticMemberValue received ${JSON.stringify(member)} which is not a StaticSymbol`), member);
+      return undefined;
+    }
+    if (!member.members || member.members.length !== 1) {
+      this.reportError(
+        new Error(`staticMemberValue received an invalid static symbol`), member);
+      return undefined;
+    }
+    const memberName = member.members[0];
+    const type = this.getStaticSymbol(member.filePath, member.name);
+    const typeInfo = this.getTypeMetadata(type);
+    const statics = typeInfo && typeInfo['statics'];
+    const value =  statics && statics[memberName];
+    return value && this.simplify(type, value);
+  }
+
   private _registerDecoratorOrConstructor(type: StaticSymbol, ctor: any): void {
     this.conversionMap.set(type, (context: StaticSymbol, args: any[]) => new ctor(...args));
   }
