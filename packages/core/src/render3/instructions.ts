@@ -38,6 +38,12 @@ export const NG_HOST_SYMBOL = '__ngHostLNode__';
  */
 const _CLEAN_PROMISE = Promise.resolve(null);
 
+/**
+ * Function used to stringify the value before writing it into the renderer.
+ * Also used for sanitization.
+ */
+export type Stringifier = (value: any) => string;
+
 
 /**
  * This property gets set before entering a template.
@@ -685,20 +691,23 @@ export function elementEnd() {
  * Updates the value of removes an attribute on an Element.
  *
  * @param number index The index of the element in the data array
- * @param string name The name of the attribute.
- * @param any value The attribute is removed when value is `null` or `undefined`.
+ * @param name name The name of the attribute.
+ * @param value value The attribute is removed when value is `null` or `undefined`.
  *                  Otherwise the attribute value is set to the stringified value.
+ * @param stringifier An optional function used to transform the value typically used for
+ * sanitization.
  */
-export function elementAttribute(index: number, name: string, value: any): void {
+export function elementAttribute(
+    index: number, name: string, value: any, stringifier?: Stringifier): void {
   if (value !== NO_CHANGE) {
     const element: LElementNode = data[index];
     if (value == null) {
       isProceduralRenderer(renderer) ? renderer.removeAttribute(element.native, name) :
                                        element.native.removeAttribute(name);
     } else {
-      isProceduralRenderer(renderer) ?
-          renderer.setAttribute(element.native, name, stringify(value)) :
-          element.native.setAttribute(name, stringify(value));
+      const strValue = stringifier == null ? stringify(value) : stringifier(value);
+      isProceduralRenderer(renderer) ? renderer.setAttribute(element.native, name, strValue) :
+                                       element.native.setAttribute(name, strValue);
     }
   }
 }
@@ -714,9 +723,12 @@ export function elementAttribute(index: number, name: string, value: any): void 
  * @param propName Name of property. Because it is going to DOM, this is not subject to
  *        renaming as part of minification.
  * @param value New value to write.
+ * @param stringifier An optional function used to transform the value typically used for
+ * sanitization.
  */
 
-export function elementProperty<T>(index: number, propName: string, value: T | NO_CHANGE): void {
+export function elementProperty<T>(
+    index: number, propName: string, value: T | NO_CHANGE, stringifier?: Stringifier): void {
   if (value === NO_CHANGE) return;
   const node = data[index] as LElementNode;
   const tNode = node.tNode !;
@@ -733,6 +745,7 @@ export function elementProperty<T>(index: number, propName: string, value: T | N
     setInputsForProperty(dataValue, value);
     markDirtyIfOnPush(node);
   } else {
+    value = (stringifier != null ? stringifier(value) : stringify(value)) as any;
     const native = node.native;
     isProceduralRenderer(renderer) ? renderer.setProperty(native, propName, value) :
                                      (native.setProperty ? native.setProperty(propName, value) :
@@ -838,10 +851,13 @@ export function elementClass<T>(index: number, className: string, value: T | NO_
  * @param styleName Name of property. Because it is going to DOM this is not subject to
  *        renaming as part of minification.
  * @param value New value to write (null to remove).
- * @param suffix Suffix to add to style's value (optional).
+ * @param suffix Optional suffix. Used with scalar values to add unit such as `px`.
+ * @param stringifier An optional function used to transform the value typically used for
+ *        sanitization.
  */
 export function elementStyle<T>(
-    index: number, styleName: string, value: T | NO_CHANGE, suffix?: string): void {
+    index: number, styleName: string, value: T | NO_CHANGE, suffix?: string | null,
+    stringifier?: Stringifier): void {
   if (value !== NO_CHANGE) {
     const lElement = data[index] as LElementNode;
     if (value == null) {
@@ -849,7 +865,8 @@ export function elementStyle<T>(
           renderer.removeStyle(lElement.native, styleName, RendererStyleFlags3.DashCase) :
           lElement.native.style.removeProperty(styleName);
     } else {
-      const strValue = suffix ? stringify(value) + suffix : stringify(value);
+      let strValue = stringifier == null ? stringify(value) : stringifier(value);
+      if (suffix) strValue = strValue + (stringifier == null ? suffix : stringifier(suffix));
       isProceduralRenderer(renderer) ?
           renderer.setStyle(lElement.native, styleName, strValue, RendererStyleFlags3.DashCase) :
           lElement.native.style.setProperty(styleName, strValue);

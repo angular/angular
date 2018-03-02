@@ -8,7 +8,7 @@
 
 import * as t from '@angular/core/testing/src/testing_internal';
 
-import {sanitizeStyle} from '../../src/sanitization/style_sanitizer';
+import {_sanitizeStyle} from '../../src/sanitization/style_sanitizer';
 
 {
   t.describe('Style sanitizer', () => {
@@ -23,7 +23,7 @@ import {sanitizeStyle} from '../../src/sanitization/style_sanitizer';
 
     afterEach(() => { console.warn = originalLog; });
 
-    function expectSanitize(v: string) { return t.expect(sanitizeStyle(v)); }
+    function expectSanitize(v: string) { return t.expect(_sanitizeStyle(v)); }
 
     t.it('sanitizes values', () => {
       expectSanitize('').toEqual('');

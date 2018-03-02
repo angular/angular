@@ -6,9 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {isDevMode} from '@angular/core';
-
-import {sanitizeUrl} from './url_sanitizer';
+import {isDevMode} from '../application_ref';
+import {_sanitizeUrl} from './url_sanitizer';
 
 
 /**
@@ -83,14 +82,14 @@ function hasBalancedQuotes(value: string) {
  * Sanitizes the given untrusted CSS style property value (i.e. not an entire object, just a single
  * value) and returns a value that is safe to use in a browser environment.
  */
-export function sanitizeStyle(value: string): string {
+export function _sanitizeStyle(value: string): string {
   value = String(value).trim();  // Make sure it's actually a string.
   if (!value) return '';
 
   // Single url(...) values are supported, but only for URLs that sanitize cleanly. See above for
   // reasoning behind this.
   const urlMatch = value.match(URL_RE);
-  if ((urlMatch && sanitizeUrl(urlMatch[1]) === urlMatch[1]) ||
+  if ((urlMatch && _sanitizeUrl(urlMatch[1]) === urlMatch[1]) ||
       value.match(SAFE_STYLE_VALUE) && hasBalancedQuotes(value)) {
     return value;  // Safe style values.
   }
