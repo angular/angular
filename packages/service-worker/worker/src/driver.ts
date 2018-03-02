@@ -243,7 +243,7 @@ export class Driver implements Debuggable, UpdateSource {
   }
 
   private async handlePush(data: any): Promise<void> {
-    this.broadcast({
+    await this.broadcast({
       type: 'PUSH',
       data,
     });
@@ -254,7 +254,7 @@ export class Driver implements Debuggable, UpdateSource {
     let options: {[key: string]: string | undefined} = {};
     NOTIFICATION_OPTION_NAMES.filter(name => desc.hasOwnProperty(name))
         .forEach(name => options[name] = desc[name]);
-    this.scope.registration.showNotification(desc['title'] !, options);
+    await this.scope.registration.showNotification(desc['title'] !, options);
   }
 
   private async reportStatus(client: Client, promise: Promise<void>, nonce: number): Promise<void> {
@@ -614,7 +614,7 @@ export class Driver implements Debuggable, UpdateSource {
     if (!res.ok) {
       if (res.status === 404) {
         await this.deleteAllCaches();
-        this.scope.registration.unregister();
+        await this.scope.registration.unregister();
       }
       throw new Error('Manifest fetch failed!');
     }
@@ -707,7 +707,7 @@ export class Driver implements Debuggable, UpdateSource {
     // Firstly, check if the manifest version is correct.
     if (manifest.configVersion !== SUPPORTED_CONFIG_VERSION) {
       await this.deleteAllCaches();
-      this.scope.registration.unregister();
+      await this.scope.registration.unregister();
       throw new Error(
           `Invalid config version: expected ${SUPPORTED_CONFIG_VERSION}, got ${manifest.configVersion}.`);
     }
