@@ -164,7 +164,7 @@ They are _not inherited_ by any components nested within the template nor by any
 
 </div>
 
-The CLI defines an empty `styles` array when you create the component with the `--inline-styles` flag.
+The CLI defines an empty `styles` array when you create the component with the `--inline-style` flag.
 
 <code-example language="sh" class="code-shell">
 ng generate component hero-app --inline-style
@@ -189,7 +189,7 @@ They are _not inherited_ by any components nested within the template nor by any
 
 <div class="l-sub-section">
 
-  You can specify more than one styles file or even a combination of `style` and `styleUrls`.
+  You can specify more than one styles file or even a combination of `styles` and `styleUrls`.
 
 </div>
 
