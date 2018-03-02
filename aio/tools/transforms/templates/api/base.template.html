@@ -2,7 +2,11 @@
 {% set comma = joiner(',') %}
 {% set slash = joiner('/') %}
 <article>
-  <div class="breadcrumb">
+    <div class="page-actions">
+      <a href="{$ github.githubEditHref(doc, versionInfo) $}" aria-label="Suggest Edits" title="Suggest Edits"><i class="material-icons" aria-hidden="true" role="img">mode_edit</i></a>
+      <a href="{$ github.githubViewHref(doc, versionInfo) $}" aria-label="View Source" title="View Source"><i class="material-icons" aria-hidden="true" role="img">code</i></a>
+    </div>
+    <div class="breadcrumb">
     <script type="application/ld+json">
       {
         "@context": "http://schema.org",
@@ -33,10 +37,6 @@
     <h1>{$ doc.name $}</h1>
     <span class="version">{$ version $}</span>
   </header>
-  <div class="page-actions">
-      <a href="#"><label class="raised page-label"><i class="material-icons">mode_edit</i>suggest edits</label></a>
-      <a href="{$ github.githubHref(doc, versionInfo) $}"><label class="raised page-label"><i class="material-icons">code</i>view source</label></a>
-  </div>
 
   <div class="api-body">
     {% block body %}{% endblock %}
