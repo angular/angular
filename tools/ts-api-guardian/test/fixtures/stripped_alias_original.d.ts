@@ -1,0 +1,1 @@
+export let original_symbol: number;
