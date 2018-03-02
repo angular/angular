@@ -119,15 +119,15 @@ export function calcProjectFileAndBasePath(project: string):
 }
 
 interface TargetOptions {
-  application: api.CompilerOptions;
-  library: api.CompilerOptions;
-  package: api.CompilerOptions;
+  'application': api.CompilerOptions;
+  'library': api.CompilerOptions;
+  'package': api.CompilerOptions;
   [index: string]: api.CompilerOptions;
 }
 
 // The defaults options for the listed targets.
 const defaults: TargetOptions = {
-  application: {
+  'application': {
     generateRenderer2Factories: true,
     renderer2BackPatching: true,
     generateCodeForLibraries: true,
@@ -137,7 +137,7 @@ const defaults: TargetOptions = {
     skipTemplateCodegen: false,
     fullTemplateTypeCheck: true,
   },
-  library: {
+  'library': {
     generateRenderer2Factories: false,
     renderer2BackPatching: false,
     generateCodeForLibraries: false,
@@ -147,7 +147,7 @@ const defaults: TargetOptions = {
     preserveWhitespaces: false,
     fullTemplateTypeCheck: true,
   },
-  package: {
+  'package': {
     generateRenderer2Factories: false,
     renderer2BackPatching: false,
     generateCodeForLibraries: false,
@@ -160,20 +160,22 @@ const defaults: TargetOptions = {
   }
 };
 
-// The values these options must be if they "target" is used.
+const MUST_BE_SPECIFIED = undefined;
+
+// The values these options must be if "target" is used.
 const enforced: TargetOptions = {
-  application: {
+  'application': {
     generateRenderer2Factories: true,
     renderer2BackPatching: true,
   },
-  library: {
+  'library': {
     generateRenderer2Factories: false,
     renderer2BackPatching: false,
     generateCodeForLibraries: false,
     skipMetadataEmit: false,
     skipTemplateCodegen: true,
   },
-  package: {
+  'package': {
     generateRenderer2Factories: false,
     renderer2BackPatching: false,
     generateCodeForLibraries: false,
@@ -181,9 +183,9 @@ const enforced: TargetOptions = {
     skipMetadataEmit: false,
     skipTemplateCodegen: true,
 
-    // `undefined` means that it must be set but no value set value is enforced.
-    flatModuleId: undefined,
-    flatModuleOutFile: undefined,
+    // These must be specified but no specific value is enforced.
+    flatModuleId: MUST_BE_SPECIFIED,
+    flatModuleOutFile: MUST_BE_SPECIFIED,
   }
 };
 
@@ -197,10 +199,14 @@ export function processTargetAndValidateNgCompilerOptions(options: any): NgOptio
   function reportError(messageText: string) {
     errors.push({
       category: ts.DiagnosticCategory.Error,
-      messageText: `Angular compiler configuration error, ${messageText}`,
+      messageText: `Angular compiler configuration error: ${messageText}`,
       source: api.SOURCE,
       code: api.UNKNOWN_ERROR_CODE
     });
+  }
+
+  if (!options) {
+    return {options, errors};
   }
 
   // If generateRenderer2Factories is specified then renderer2BackPatching defaults to `true`
@@ -217,7 +223,7 @@ export function processTargetAndValidateNgCompilerOptions(options: any): NgOptio
     } else {
       options = {...defaultOptions, ...options};
       for (const name of Object.getOwnPropertyNames(enforcedOptions)) {
-        if (enforcedOptions[name] === undefined) {
+        if (enforcedOptions[name] === MUST_BE_SPECIFIED) {
           if (!options.hasOwnProperty(name)) {
             reportError(`target "${options.target}" requires "${name}" to be specified`);
           }

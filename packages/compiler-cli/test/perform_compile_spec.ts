@@ -14,7 +14,7 @@ describe('perform watch', () => {
   describe('option validation', () => {
     it('should enforce renderer2BackPatching is true when generateRenderer2Factories is true',
        () => {
-         const {options, errors} = processTargetAndValidateNgCompilerOptions(
+         const {errors} = processTargetAndValidateNgCompilerOptions(
              {generateRenderer2Factories: true, renderer2BackPatching: false});
          expectError(
              '"generateRenderer2Factories" requires "renderer2BackPatching" to be "true"', errors);
@@ -22,7 +22,7 @@ describe('perform watch', () => {
 
     describe('target option', () => {
       it('should require application, library or package', () => {
-        const {options, errors} = processTargetAndValidateNgCompilerOptions({target: 'nonsense'});
+        const {errors} = processTargetAndValidateNgCompilerOptions({target: 'nonsense'});
         expectError(
             'expected "target" option to be one of "application", "library", "package"', errors);
       });
@@ -46,14 +46,14 @@ describe('perform watch', () => {
 
         describe('enforcing required options', () => {
           it('should enforce "generateRenderer2Factories" to be "true"', () => {
-            const {options, errors} = processTargetAndValidateNgCompilerOptions(
+            const {errors} = processTargetAndValidateNgCompilerOptions(
                 {target: 'application', generateRenderer2Factories: false});
             expectError(
                 'target "application" requires "generateRenderer2Factories" to be "true"', errors);
           });
 
           it('should enforce "renderer2BackPatching" to be "true"', () => {
-            const {options, errors} = processTargetAndValidateNgCompilerOptions(
+            const {errors} = processTargetAndValidateNgCompilerOptions(
                 {target: 'application', renderer2BackPatching: false});
             expectError(
                 'target "application" requires "renderer2BackPatching" to be "true"', errors);
@@ -61,38 +61,38 @@ describe('perform watch', () => {
         });
 
         describe('non-enforced options', () => {
-          it('should allow changing "enableIvy""', () => {
-            const {options, errors} =
+          it('should allow changing "enableIvy"', () => {
+            const {errors} =
                 processTargetAndValidateNgCompilerOptions({target: 'application', enableIvy: true});
             expectNoErrors(errors);
           });
           it('should allow changing "generateCodeForLibraries""', () => {
-            const {options, errors} = processTargetAndValidateNgCompilerOptions(
+            const {errors} = processTargetAndValidateNgCompilerOptions(
                 {target: 'application', generateCodeForLibraries: false});
             expectNoErrors(errors);
           });
           it('should allow changing "enableLegacyTemplate""', () => {
-            const {options, errors} = processTargetAndValidateNgCompilerOptions(
+            const {errors} = processTargetAndValidateNgCompilerOptions(
                 {target: 'application', enableLegacyTemplate: true});
             expectNoErrors(errors);
           });
           it('should allow changing "preserveWhitespaces""', () => {
-            const {options, errors} = processTargetAndValidateNgCompilerOptions(
+            const {errors} = processTargetAndValidateNgCompilerOptions(
                 {target: 'application', preserveWhitespaces: true});
             expectNoErrors(errors);
           });
           it('should allow changing "skipMetadataEmit""', () => {
-            const {options, errors} = processTargetAndValidateNgCompilerOptions(
+            const {errors} = processTargetAndValidateNgCompilerOptions(
                 {target: 'application', skipMetadataEmit: true});
             expectNoErrors(errors);
           });
           it('should allow changing "skipTemplateCodegen""', () => {
-            const {options, errors} = processTargetAndValidateNgCompilerOptions(
+            const {errors} = processTargetAndValidateNgCompilerOptions(
                 {target: 'application', skipTemplateCodegen: true});
             expectNoErrors(errors);
           });
           it('should allow changing "fullTemplateTypeCheck""', () => {
-            const {options, errors} = processTargetAndValidateNgCompilerOptions(
+            const {errors} = processTargetAndValidateNgCompilerOptions(
                 {target: 'application', fullTemplateTypeCheck: false});
             expectNoErrors(errors);
           });
@@ -118,50 +118,50 @@ describe('perform watch', () => {
 
         describe('enforcing required options', () => {
           it('should enforce "generateRenderer2Factories" to be "false"', () => {
-            const {options, errors} = processTargetAndValidateNgCompilerOptions(
+            const {errors} = processTargetAndValidateNgCompilerOptions(
                 {target: 'library', generateRenderer2Factories: true});
             expectError(
                 'target "library" requires "generateRenderer2Factories" to be "false"', errors);
           });
 
           it('should enforce "generateRenderer2Factories" to be "false"', () => {
-            const {options, errors} = processTargetAndValidateNgCompilerOptions(
+            const {errors} = processTargetAndValidateNgCompilerOptions(
                 {target: 'library', renderer2BackPatching: true});
             expectError('target "library" requires "renderer2BackPatching" to be "false"', errors);
           });
 
           it('should enforce "generateCodeForLibraries" to be "false"', () => {
-            const {options, errors} = processTargetAndValidateNgCompilerOptions(
+            const {errors} = processTargetAndValidateNgCompilerOptions(
                 {target: 'library', generateCodeForLibraries: true});
             expectError(
                 'target "library" requires "generateCodeForLibraries" to be "false"', errors);
           });
 
           it('should enforce "skipMetadataEmit" to be "false"', () => {
-            const {options, errors} = processTargetAndValidateNgCompilerOptions(
+            const {errors} = processTargetAndValidateNgCompilerOptions(
                 {target: 'library', skipMetadataEmit: true});
             expectError('target "library" requires "skipMetadataEmit" to be "false"', errors);
           });
 
           it('should enforce "skipTemplateCodegen" to be "true"', () => {
-            const {options, errors} = processTargetAndValidateNgCompilerOptions(
+            const {errors} = processTargetAndValidateNgCompilerOptions(
                 {target: 'library', skipTemplateCodegen: false});
             expectError('target "library" requires "skipTemplateCodegen" to be "true"', errors);
           });
         });
         describe('non-enforced options', () => {
           it('should allow changing "enableIvy""', () => {
-            const {options, errors} =
+            const {errors} =
                 processTargetAndValidateNgCompilerOptions({target: 'library', enableIvy: true});
             expectNoErrors(errors);
           });
           it('should allow changing "preserveWhitespaces""', () => {
-            const {options, errors} = processTargetAndValidateNgCompilerOptions(
+            const {errors} = processTargetAndValidateNgCompilerOptions(
                 {target: 'library', preserveWhitespaces: true});
             expectNoErrors(errors);
           });
           it('should allow changing "fullTemplateTypeCheck""', () => {
-            const {options, errors} = processTargetAndValidateNgCompilerOptions(
+            const {errors} = processTargetAndValidateNgCompilerOptions(
                 {target: 'library', fullTemplateTypeCheck: false});
             expectNoErrors(errors);
           });
@@ -193,7 +193,7 @@ describe('perform watch', () => {
 
         describe('enforcing required options', () => {
           it('should enforce "enableIvy" to be "false"', () => {
-            const {options, errors} = processTargetAndValidateNgCompilerOptions({
+            const {errors} = processTargetAndValidateNgCompilerOptions({
               target: 'package',
               flatModuleId: 'some-module',
               flatModuleOutFile: 'index.js',
@@ -202,7 +202,7 @@ describe('perform watch', () => {
             expectError('target "package" requires "enableIvy" to be "false"', errors);
           });
           it('should enforce "generateRenderer2Factories" to be "false"', () => {
-            const {options, errors} = processTargetAndValidateNgCompilerOptions({
+            const {errors} = processTargetAndValidateNgCompilerOptions({
               target: 'package',
               flatModuleId: 'some-module',
               flatModuleOutFile: 'index.js',
@@ -213,7 +213,7 @@ describe('perform watch', () => {
           });
 
           it('should enforce "generateRenderer2Factories" to be "false"', () => {
-            const {options, errors} = processTargetAndValidateNgCompilerOptions({
+            const {errors} = processTargetAndValidateNgCompilerOptions({
               target: 'package',
               flatModuleId: 'some-module',
               flatModuleOutFile: 'index.js',
@@ -223,7 +223,7 @@ describe('perform watch', () => {
           });
 
           it('should enforce "generateCodeForLibraries" to be "false"', () => {
-            const {options, errors} = processTargetAndValidateNgCompilerOptions({
+            const {errors} = processTargetAndValidateNgCompilerOptions({
               target: 'package',
               flatModuleId: 'some-module',
               flatModuleOutFile: 'index.js',
@@ -234,7 +234,7 @@ describe('perform watch', () => {
           });
 
           it('should enforce "skipMetadataEmit" to be "false"', () => {
-            const {options, errors} = processTargetAndValidateNgCompilerOptions({
+            const {errors} = processTargetAndValidateNgCompilerOptions({
               target: 'package',
               flatModuleId: 'some-module',
               flatModuleOutFile: 'index.js',
@@ -244,7 +244,7 @@ describe('perform watch', () => {
           });
 
           it('should enforce "skipTemplateCodegen" to be "true"', () => {
-            const {options, errors} = processTargetAndValidateNgCompilerOptions({
+            const {errors} = processTargetAndValidateNgCompilerOptions({
               target: 'package',
               flatModuleId: 'some-module',
               flatModuleOutFile: 'index.js',
@@ -255,7 +255,7 @@ describe('perform watch', () => {
         });
         describe('non-enforced options', () => {
           it('should allow changing "preserveWhitespaces""', () => {
-            const {options, errors} = processTargetAndValidateNgCompilerOptions({
+            const {errors} = processTargetAndValidateNgCompilerOptions({
               target: 'package',
               flatModuleId: 'some-module',
               flatModuleOutFile: 'index.js',
@@ -264,7 +264,7 @@ describe('perform watch', () => {
             expectNoErrors(errors);
           });
           it('should allow changing "fullTemplateTypeCheck""', () => {
-            const {options, errors} = processTargetAndValidateNgCompilerOptions({
+            const {errors} = processTargetAndValidateNgCompilerOptions({
               target: 'package',
               flatModuleId: 'some-module',
               flatModuleOutFile: 'index.js',
