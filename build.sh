@@ -33,8 +33,16 @@ TSC_PACKAGES=(compiler-cli
 NODE_PACKAGES=(compiler-cli
   benchpress)
 
+SCOPED_PACKAGES=$(
+  for P in ${PACKAGES[@]}; do echo @angular/${P}; done
+)
 NG_UPDATE_PACKAGE_GROUP=$(
-  echo \[\"${PACKAGES[@]}\"] | sed 's/ /", "/g'
+  # The first sed creates an array of strings
+  # The second sed is to allow it to be run in the perl expression so forward slashes don't end
+  #   the regular expression.
+  echo \[\"${SCOPED_PACKAGES[@]}\"] \
+    | sed 's/ /", "/g' \
+    | sed 's/\//\\\//g'
 )
 
 
@@ -497,7 +505,7 @@ do
     rsync -am --include="*.externs.js" --include="*/" --exclude=* ${SRC_DIR}/ ${NPM_DIR}/
 
     # Replace the NG_UPDATE_PACKAGE_GROUP value with the JSON array of packages.
-    perl -p -i -e "s/\"NG_UPDATE_PACKAGE_GROUP\"/${NG_UPDATE_PACKAGE_GROUP}/g" ${NPM_DIR}/package.json < /dev/null 2> /dev/null
+    perl -p -i -e "s/\"NG_UPDATE_PACKAGE_GROUP\"/${NG_UPDATE_PACKAGE_GROUP}/g" ${NPM_DIR}/package.json < /dev/null
 
     cp ${ROOT_DIR}/README.md ${NPM_DIR}/
   fi
