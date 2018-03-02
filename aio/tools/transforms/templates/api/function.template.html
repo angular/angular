@@ -7,7 +7,7 @@
   {% for overload in doc.overloads -%}
     {$ memberHelpers.renderOverloadInfo(overload, 'function-overload', doc) $}
     {% if not loop.last %}<hr class="hr-margin fullwidth">{% endif %}
-    {% endfor -%}
+  {% endfor -%}
 {% else %}
   {$ memberHelpers.renderOverloadInfo(doc, 'function-overload', doc) $}
 {% endif %}
