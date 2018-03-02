@@ -2,7 +2,7 @@
   <mat-step-header  class="mat-vertical-stepper-header"
                    (click)="step.select()"
                    (keydown)="_onKeydown($event)"
-                   [tabIndex]="_focusIndex == i ? 0 : -1"
+                   [tabIndex]="_getFocusIndex() == i ? 0 : -1"
                    [id]="_getStepLabelId(i)"
                    [attr.aria-controls]="_getStepContentId(i)"
                    [attr.aria-selected]="selectedIndex === i"

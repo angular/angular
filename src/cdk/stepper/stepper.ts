@@ -7,13 +7,13 @@
  */
 
 import {
+  AfterViewInit,
   ContentChildren,
   EventEmitter,
   Input,
   Output,
   QueryList,
   Directive,
-  ElementRef,
   Component,
   ContentChild,
   ViewChild,
@@ -28,10 +28,6 @@ import {
   OnDestroy
 } from '@angular/core';
 import {
-  LEFT_ARROW,
-  RIGHT_ARROW,
-  DOWN_ARROW,
-  UP_ARROW,
   ENTER,
   SPACE,
   HOME,
@@ -42,6 +38,7 @@ import {coerceBooleanProperty} from '@angular/cdk/coercion';
 import {AbstractControl} from '@angular/forms';
 import {Direction, Directionality} from '@angular/cdk/bidi';
 import {Subject} from 'rxjs/Subject';
+import {FocusKeyManager, FocusableOption} from '@angular/cdk/a11y';
 
 /** Used to generate unique ID for each stepper component. */
 let nextId = 0;
@@ -156,15 +153,18 @@ export class CdkStep implements OnChanges {
   selector: '[cdkStepper]',
   exportAs: 'cdkStepper',
 })
-export class CdkStepper implements OnDestroy {
+export class CdkStepper implements AfterViewInit, OnDestroy {
   /** Emits when the component is destroyed. */
   protected _destroyed = new Subject<void>();
+
+  /** Used for managing keyboard focus. */
+  private _keyManager: FocusKeyManager<FocusableOption>;
 
   /** The list of step components that the stepper is holding. */
   @ContentChildren(CdkStep) _steps: QueryList<CdkStep>;
 
   /** The list of step headers of the steps in the stepper. */
-  _stepHeader: QueryList<ElementRef>;
+  _stepHeader: QueryList<FocusableOption>;
 
   /** Whether the validity of previous steps should be checked or not. */
   @Input()
@@ -182,16 +182,15 @@ export class CdkStepper implements OnDestroy {
         throw Error('cdkStepper: Cannot assign out-of-bounds value to `selectedIndex`.');
       }
 
-      if (this._anyControlsInvalidOrPending(index) || index < this._selectedIndex &&
-          !this._steps.toArray()[index].editable) {
-        // remove focus from clicked step header if the step is not able to be selected
-        this._stepHeader.toArray()[index].nativeElement.blur();
-      } else if (this._selectedIndex != index) {
+      if (this._selectedIndex != index &&
+          !this._anyControlsInvalidOrPending(index) &&
+          (index >= this._selectedIndex || this._steps.toArray()[index].editable)) {
+
         this._emitStepperSelectionEvent(index);
-        this._focusIndex = this._selectedIndex;
+        this._keyManager.updateActiveItemIndex(this._selectedIndex);
       }
     } else {
-      this._selectedIndex = this._focusIndex = index;
+      this._selectedIndex = index;
     }
   }
   private _selectedIndex = 0;
@@ -207,9 +206,6 @@ export class CdkStepper implements OnDestroy {
   @Output() selectionChange: EventEmitter<StepperSelectionEvent>
       = new EventEmitter<StepperSelectionEvent>();
 
-  /** The index of the step that the focus can be set. */
-  _focusIndex: number = 0;
-
   /** Used to track unique ID for each stepper component. */
   _groupId: number;
 
@@ -219,6 +215,15 @@ export class CdkStepper implements OnDestroy {
     @Optional() private _dir: Directionality,
     private _changeDetectorRef: ChangeDetectorRef) {
     this._groupId = nextId++;
+  }
+
+  ngAfterViewInit() {
+    this._keyManager = new FocusKeyManager(this._stepHeader)
+      .withWrap()
+      .withHorizontalOrientation(this._layoutDirection())
+      .withVerticalOrientation(this._orientation === 'vertical');
+
+    this._keyManager.updateActiveItemIndex(this._selectedIndex);
   }
 
   ngOnDestroy() {
@@ -279,6 +284,11 @@ export class CdkStepper implements OnDestroy {
     }
   }
 
+  /** Returns the index of the currently-focused step header. */
+  _getFocusIndex() {
+    return this._keyManager ? this._keyManager.activeItemIndex : this._selectedIndex;
+  }
+
   private _emitStepperSelectionEvent(newIndex: number): void {
     const stepsArray = this._steps.toArray();
     this.selectionChange.emit({
@@ -294,51 +304,18 @@ export class CdkStepper implements OnDestroy {
   _onKeydown(event: KeyboardEvent) {
     const keyCode = event.keyCode;
 
-    // Note that the left/right arrows work both in vertical and horizontal mode.
-    if (keyCode === RIGHT_ARROW) {
-      this._layoutDirection() === 'rtl' ? this._focusPreviousStep() : this._focusNextStep();
+    if (this._keyManager.activeItemIndex != null && (keyCode === SPACE || keyCode === ENTER)) {
+      this.selectedIndex = this._keyManager.activeItemIndex;
       event.preventDefault();
-    }
-
-    if (keyCode === LEFT_ARROW) {
-      this._layoutDirection() === 'rtl' ? this._focusNextStep() : this._focusPreviousStep();
+    } else if (keyCode === HOME) {
+      this._keyManager.setFirstItemActive();
       event.preventDefault();
-    }
-
-    // Note that the up/down arrows only work in vertical mode.
-    // See: https://www.w3.org/TR/wai-aria-practices-1.1/#tabpanel
-    if (this._orientation === 'vertical' && (keyCode === UP_ARROW || keyCode === DOWN_ARROW)) {
-      keyCode === UP_ARROW ? this._focusPreviousStep() : this._focusNextStep();
+    } else if (keyCode === END) {
+      this._keyManager.setLastItemActive();
       event.preventDefault();
+    } else {
+      this._keyManager.onKeydown(event);
     }
-
-    if (keyCode === SPACE || keyCode === ENTER) {
-      this.selectedIndex = this._focusIndex;
-      event.preventDefault();
-    }
-
-    if (keyCode === HOME) {
-      this._focusStep(0);
-      event.preventDefault();
-    }
-
-    if (keyCode === END) {
-      this._focusStep(this._steps.length - 1);
-      event.preventDefault();
-    }
-  }
-
-  private _focusNextStep() {
-    this._focusStep((this._focusIndex + 1) % this._steps.length);
-  }
-
-  private _focusPreviousStep() {
-    this._focusStep((this._focusIndex + this._steps.length - 1) % this._steps.length);
-  }
-
-  private _focusStep(index: number) {
-    this._focusIndex = index;
-    this._stepHeader.toArray()[this._focusIndex].nativeElement.focus();
   }
 
   private _anyControlsInvalidOrPending(index: number): boolean {

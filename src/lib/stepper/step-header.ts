@@ -100,4 +100,8 @@ export class MatStepHeader implements OnDestroy {
   _getHostElement() {
     return this._element.nativeElement;
   }
+
+  focus() {
+    this._getHostElement().focus();
+  }
 }

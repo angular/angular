@@ -14,7 +14,6 @@ import {
   ContentChild,
   ContentChildren,
   Directive,
-  ElementRef,
   forwardRef,
   Inject,
   QueryList,
@@ -76,7 +75,7 @@ export class MatStep extends CdkStep implements ErrorStateMatcher {
 })
 export class MatStepper extends CdkStepper implements AfterContentInit {
   /** The list of step headers of the steps in the stepper. */
-  @ViewChildren(MatStepHeader, {read: ElementRef}) _stepHeader: QueryList<ElementRef>;
+  @ViewChildren(MatStepHeader) _stepHeader: QueryList<MatStepHeader>;
 
   /** Steps that the stepper holds. */
   @ContentChildren(MatStep) _steps: QueryList<MatStep>;
