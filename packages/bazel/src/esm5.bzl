@@ -113,7 +113,7 @@ esm5_outputs_aspect = aspect(
         # For some reason, having the compiler output as an input to the action above
         # is not sufficient.
         "_tsc_wrapped": attr.label(
-            default = Label("@build_bazel_rules_typescript//internal/tsc_wrapped:tsc_wrapped_bin"),
+            default = Label("@build_bazel_rules_typescript//internal:tsc_wrapped_bin"),
             executable = True,
             cfg = "host",
         ),
