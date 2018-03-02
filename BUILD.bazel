@@ -40,7 +40,7 @@ filegroup(
         "reflect-metadata",
         "source-map-support",
         "minimist",
-        "@webcomponents/webcomponentsjs",
+        "@webcomponents/custom-elements",
         "tslib",
     ] for ext in [
         "*.js",
