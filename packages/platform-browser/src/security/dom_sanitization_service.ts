@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Inject, Injectable, Sanitizer, SecurityContext, ɵsanitizeHtml as sanitizeHtml, ɵsanitizeStyle as sanitizeStyle, ɵsanitizeUrl as sanitizeUrl} from '@angular/core';
+import {Inject, Injectable, Sanitizer, SecurityContext, ɵ_sanitizeHtml as _sanitizeHtml, ɵ_sanitizeStyle as _sanitizeStyle, ɵ_sanitizeUrl as _sanitizeUrl} from '@angular/core';
 
 import {DOCUMENT} from '../dom/dom_tokens';
 
@@ -156,11 +156,11 @@ export class DomSanitizerImpl extends DomSanitizer {
       case SecurityContext.HTML:
         if (value instanceof SafeHtmlImpl) return value.changingThisBreaksApplicationSecurity;
         this.checkNotSafeValue(value, 'HTML');
-        return sanitizeHtml(this._doc, String(value));
+        return _sanitizeHtml(this._doc, String(value));
       case SecurityContext.STYLE:
         if (value instanceof SafeStyleImpl) return value.changingThisBreaksApplicationSecurity;
         this.checkNotSafeValue(value, 'Style');
-        return sanitizeStyle(value as string);
+        return _sanitizeStyle(value as string);
       case SecurityContext.SCRIPT:
         if (value instanceof SafeScriptImpl) return value.changingThisBreaksApplicationSecurity;
         this.checkNotSafeValue(value, 'Script');
@@ -171,7 +171,7 @@ export class DomSanitizerImpl extends DomSanitizer {
           return value.changingThisBreaksApplicationSecurity;
         }
         this.checkNotSafeValue(value, 'URL');
-        return sanitizeUrl(String(value));
+        return _sanitizeUrl(String(value));
       case SecurityContext.RESOURCE_URL:
         if (value instanceof SafeResourceUrlImpl) {
           return value.changingThisBreaksApplicationSecurity;

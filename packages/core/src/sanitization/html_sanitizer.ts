@@ -6,10 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {isDevMode} from '@angular/core';
-
+import {isDevMode} from '../application_ref';
 import {InertBodyHelper} from './inert_body';
-import {sanitizeSrcset, sanitizeUrl} from './url_sanitizer';
+import {_sanitizeUrl, sanitizeSrcset} from './url_sanitizer';
 
 function tagSet(tags: string): {[k: string]: boolean} {
   const res: {[k: string]: boolean} = {};
@@ -143,21 +142,17 @@ class SanitizingHtmlSerializer {
     for (let i = 0; i < elAttrs.length; i++) {
       const elAttr = elAttrs.item(i);
       const attrName = elAttr.name;
-      let value = elAttr.value;
       const lower = attrName.toLowerCase();
       if (!VALID_ATTRS.hasOwnProperty(lower)) {
         this.sanitizedSomething = true;
         continue;
       }
+      let value = elAttr.value;
       // TODO(martinprobst): Special case image URIs for data:image/...
-      if (URI_ATTRS[lower]) value = sanitizeUrl(value);
+      if (URI_ATTRS[lower]) value = _sanitizeUrl(value);
       if (SRCSET_ATTRS[lower]) value = sanitizeSrcset(value);
-      this.buf.push(' ');
-      this.buf.push(attrName);
-      this.buf.push('="');
-      this.buf.push(encodeEntities(value));
-      this.buf.push('"');
-    };
+      this.buf.push(' ', attrName, '="', encodeEntities(value), '"');
+    }
     this.buf.push('>');
   }
 
@@ -173,7 +168,9 @@ class SanitizingHtmlSerializer {
   private chars(chars: string) { this.buf.push(encodeEntities(chars)); }
 
   checkClobberedElement(node: Node, nextNode: Node): Node {
-    if (nextNode && node.contains(nextNode)) {
+    if (nextNode &&
+        (node.compareDocumentPosition(nextNode) &
+         Node.DOCUMENT_POSITION_CONTAINED_BY) === Node.DOCUMENT_POSITION_CONTAINED_BY) {
       throw new Error(
           `Failed to sanitize html because the element is clobbered: ${(node as Element).outerHTML}`);
     }
@@ -214,7 +211,7 @@ let inertBodyHelper: InertBodyHelper;
  * Sanitizes the given unsafe, untrusted HTML fragment, and returns HTML text that is safe to add to
  * the DOM in a browser environment.
  */
-export function sanitizeHtml(defaultDoc: any, unsafeHtmlInput: string): string {
+export function _sanitizeHtml(defaultDoc: any, unsafeHtmlInput: string): string {
   let inertBodyElement: HTMLElement|null = null;
   try {
     inertBodyHelper = inertBodyHelper || new InertBodyHelper(defaultDoc);
@@ -259,8 +256,8 @@ export function sanitizeHtml(defaultDoc: any, unsafeHtmlInput: string): string {
 }
 
 function getTemplateContent(el: Node): Node|null {
-  return 'content' in el && isTemplateElement(el) ? (<any>el).content : null;
+  return 'content' in el && isTemplateElement(el) ? el.content : null;
 }
-function isTemplateElement(el: Node): boolean {
+function isTemplateElement(el: Node): el is HTMLTemplateElement {
   return el.nodeType === Node.ELEMENT_NODE && el.nodeName === 'TEMPLATE';
 }
