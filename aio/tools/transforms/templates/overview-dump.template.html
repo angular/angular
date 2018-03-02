@@ -47,20 +47,20 @@
 
   {% for export in module.exports %}
   <h3 {% if export.notYetDocumented %}class="not-documented"{% endif %}>
-    <a href="{$ github.githubHref(export, versionInfo) $}">
+    <a href="{$ github.githubViewHref(export, versionInfo) $}">
     <code>{$ export.docType $} {$ export.name $}</code>
     </a>
   </h3>
       {%- if export.constructorDoc %}
       <h4  {% if export.constructorDoc.notYetDocumented %}class="not-documented"{% endif %}>
-        <a href="{$ github.githubHref(export.constructorDoc, versionInfo) $}">
+        <a href="{$ github.githubViewHref(export.constructorDoc, versionInfo) $}">
         <code>{$ export.constructorDoc.name $}{$ params.paramList(export.constructorDoc.params) $}</code>
         </a>
       </h4>
     {% endif -%}
     {%- for member in export.members %}
       <h4 {% if member.notYetDocumented %}class="not-documented"{% endif %}>
-        <a href="{$ github.githubHref(member, versionInfo) $}">
+        <a href="{$ github.githubViewHref(member, versionInfo) $}">
         <code>{$ member.name $}{$ params.paramList(member.params) $}</code>
         </a>
       </h4>
