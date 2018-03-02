@@ -36,7 +36,14 @@ NODE_PACKAGES=(compiler-cli
 BUILD_ALL=true
 BUNDLE=true
 VERSION_PREFIX=$(node -p "require('./package.json').version")
-VERSION_SUFFIX="-$(git log --oneline -1 | awk '{print $1}')"
+
+if [ -d .git ]; then
+  VERSION_SUFFIX="-$(git log --oneline -1 | awk '{print $1}')"
+else
+  VERSION_SUFFIX="0.0.0-PLACEHOLDER"
+  echo "WARNING: Unable to determine version from git repository status, defaulting to $VERSION_SUFFIX"
+fi
+
 REMOVE_BENCHPRESS=false
 BUILD_EXAMPLES=true
 COMPILE_SOURCE=true
