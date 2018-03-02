@@ -2158,5 +2158,30 @@ describe('ngc transformer command-line', () => {
       expect(source).toMatch(/ngInjectableDef.*token: Service/);
       expect(source).toMatch(/ngInjectableDef.*scope: .+\.Module/);
     });
+
+    it('generates exports.* references when outputting commonjs', () => {
+      writeConfig(`{
+        "extends": "./tsconfig-base.json",
+        "compilerOptions": {
+          "module": "commonjs"
+        },
+        "files": ["service.ts"]
+      }`);
+      const source = compileService(`
+        import {Inject, Injectable, InjectionToken, APP_ROOT_SCOPE} from '@angular/core';
+        import {Module} from './module';
+
+        export const TOKEN = new InjectionToken<string>('test token', {
+          scope: APP_ROOT_SCOPE,
+          factory: () => 'this is a test',
+        });
+
+        @Injectable({scope: APP_ROOT_SCOPE})
+        export class Service {
+          constructor(@Inject(TOKEN) token: any) {}
+        }
+      `);
+      expect(source).toMatch(/new Service\(i0\.inject\(exports\.TOKEN\)\);/);
+    });
   });
 });
