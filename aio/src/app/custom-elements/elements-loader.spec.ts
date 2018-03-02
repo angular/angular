@@ -23,8 +23,8 @@ class FakeComponentFactory extends ComponentFactory<any> {
   create(injector: Injector,
          projectableNodes?: any[][],
          rootSelectorOrNode?: string | any,
-         ngModule?: NgModuleRef<any>): ComponentRef<string> {
-    return jasmine.createSpyObj('ComponentRef', ['methods']);
+         ngModule?: NgModuleRef<any>): ComponentRef<any> {
+    return (jasmine.createSpy('ComponentRef') as any) as ComponentRef<any>;
   };
 }
 
@@ -32,7 +32,7 @@ const FAKE_COMPONENT_FACTORIES = new Map([
   ['element-a-module-path', new FakeComponentFactory('element-a-input')]
 ]);
 
-describe('ElementsLoader', () => {
+fdescribe('ElementsLoader', () => {
   let elementsLoader: ElementsLoader;
   let injectedModuleRef: NgModuleRef<any>;
   let fakeCustomElements;
@@ -87,7 +87,7 @@ describe('ElementsLoader', () => {
     elementsLoader.loadContainingCustomElements(hostEl);
     tick(); // Tick for the module factory loader's async `load` function
 
-    // Call again to to check how many times registerAsCustomElements was called.
+    // Call again to to check how many times customElements.define was called.
     elementsLoader.loadContainingCustomElements(hostEl);
     tick(); // Tick for the module factory loader's async `load` function
 

@@ -51,7 +51,7 @@ export const ELEMENT_MODULE_PATHS_AS_ROUTES = [
  * a custom element.
  */
 export interface WithCustomElementComponent {
-  customElementComponent: Type<string>;
+  customElementComponent: Type<any>;
 }
 
 /** Injection token to provide the element path modules. */

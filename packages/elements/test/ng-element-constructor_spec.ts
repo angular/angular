@@ -13,7 +13,6 @@ import {Subject} from 'rxjs/Subject';
 
 import {NgElementStrategy, NgElementStrategyEvent, NgElementStrategyFactory} from '../src/element-strategy';
 import {NgElementConstructor, createNgElementConstructor} from '../src/ng-element-constructor';
-import {patchEnv, restoreEnv} from '../testing/index';
 
 type WithFooBar = {
   fooFoo: string,
@@ -27,7 +26,6 @@ if (typeof customElements !== 'undefined') {
     let strategyFactory: TestStrategyFactory;
     let injector: Injector;
 
-    beforeAll(() => patchEnv());
     beforeAll(done => {
       destroyPlatform();
       platformBrowserDynamic()
@@ -47,7 +45,6 @@ if (typeof customElements !== 'undefined') {
     });
 
     afterAll(() => destroyPlatform());
-    afterAll(() => restoreEnv());
 
     it('should use a default strategy for converting component inputs', () => {
       expect(NgElementCtor.observedAttributes).toEqual(['foo-foo', 'barbar']);
@@ -60,8 +57,8 @@ if (typeof customElements !== 'undefined') {
       element.connectedCallback();
       expect(strategy.connectedElement).toBe(element);
 
-      expect(strategy.getPropertyValue('fooFoo')).toBe('value-foo-foo');
-      expect(strategy.getPropertyValue('barBar')).toBe('value-barbar');
+      expect(strategy.getInputValue('fooFoo')).toBe('value-foo-foo');
+      expect(strategy.getInputValue('barBar')).toBe('value-barbar');
     });
 
     it('should listen to output events after connected', () => {
@@ -108,8 +105,7 @@ if (typeof customElements !== 'undefined') {
           injector,
           strategyFactory,
           propertyInputs: ['prop1', 'prop2'],
-          attributeToPropertyInputs:
-              new Map<string, string>([['attr-1', 'prop1'], ['attr-2', 'prop2']])
+          attributeToPropertyInputs: {'attr-1': 'prop1', 'attr-2': 'prop2'}
         });
 
         customElements.define('test-element-with-changed-attributes', NgElementCtorWithChangedAttr);
@@ -128,9 +124,9 @@ if (typeof customElements !== 'undefined') {
         element.setAttribute('attr-3', 'value-3');  // Made-up attribute
         element.connectedCallback();
 
-        expect(strategy.getPropertyValue('prop1')).toBe('value-1');
-        expect(strategy.getPropertyValue('prop2')).toBe('value-2');
-        expect(strategy.getPropertyValue('prop3')).not.toBe('value-3');
+        expect(strategy.getInputValue('prop1')).toBe('value-1');
+        expect(strategy.getInputValue('prop2')).toBe('value-2');
+        expect(strategy.getInputValue('prop3')).not.toBe('value-3');
       });
     });
   });
@@ -169,9 +165,9 @@ export class TestStrategy implements NgElementStrategy {
 
   disconnect(): void { this.disconnectCalled = true; }
 
-  getPropertyValue(propName: string): any { return this.inputs.get(propName); }
+  getInputValue(propName: string): any { return this.inputs.get(propName); }
 
-  setPropertyValue(propName: string, value: string): void { this.inputs.set(propName, value); }
+  setInputValue(propName: string, value: string): void { this.inputs.set(propName, value); }
 }
 
 export class TestStrategyFactory implements NgElementStrategyFactory {
