@@ -252,7 +252,7 @@ export function compile(
       /* importFilter */ e => e.moduleName != null && e.moduleName.startsWith('/app'));
 
   if (errors.length) {
-    throw new Error('Unexpected errors:' + errors.map(e => e.toString).join(', '));
+    throw new Error('Unexpected errors:' + errors.map(e => e.toString()).join(', '));
   }
 
   return {source: result.sourceText, outputContext: fakeOutputContext};
