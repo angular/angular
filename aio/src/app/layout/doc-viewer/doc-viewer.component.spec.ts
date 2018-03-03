@@ -175,6 +175,7 @@ describe('DocViewerComponent', () => {
     const DOC_WITHOUT_H1 = 'Some content';
     const DOC_WITH_H1 = '<h1>Features</h1>Some content';
     const DOC_WITH_NO_TOC_H1 = '<h1 class="no-toc">Features</h1>Some content';
+    const DOC_WITH_EMBEDDED_TOC = '<h1>Features</h1><aio-toc class="embedded"></aio-toc>Some content';
     const DOC_WITH_HIDDEN_H1_CONTENT = '<h1><i style="visibility: hidden">link</i>Features</h1>Some content';
     let titleService: MockTitle;
     let tocService: MockTocService;
@@ -290,6 +291,11 @@ describe('DocViewerComponent', () => {
 
         doPrepareTitleAndToc(EMPTY_DOC);
         expect(getTocEl()).toBeFalsy();
+      });
+
+      it('should not add a second ToC element if there is already one', () => {
+        doPrepareTitleAndToc(DOC_WITH_EMBEDDED_TOC);
+        expect(targetEl.querySelectorAll('aio-toc').length).toEqual(1);
       });
 
       it('should generate ToC entries if there is an `<h1>` heading', () => {

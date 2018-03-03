@@ -114,7 +114,8 @@ export class DocViewerComponent implements DoCheck, OnDestroy {
     const titleEl = targetElem.querySelector('h1');
     const hasToc = !!titleEl && !/no-?toc/i.test(titleEl.className);
 
-    if (hasToc) {
+    // Add an embedded ToC if it's needed and there isn't one in the content already.
+    if (hasToc && !targetElem.querySelector('aio-toc')) {
       titleEl!.insertAdjacentHTML('afterend', '<aio-toc class="embedded"></aio-toc>');
     }
 
