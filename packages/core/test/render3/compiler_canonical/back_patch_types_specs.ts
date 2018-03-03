@@ -6,14 +6,15 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, ContentChild, Directive, Injectable, Injector, Input, NgModule, OnDestroy, Optional, Pipe, PipeTransform, QueryList, SimpleChanges, TemplateRef, Type, ViewChild, ViewContainerRef} from '../../../src/core';
+import {Component, ContentChild, Directive, Injectable, Injector, Input, NgModule, NgModuleFactory, NgModuleRef, OnDestroy, Optional, Pipe, PipeTransform, QueryList, SimpleChanges, TemplateRef, Type, ViewChild, ViewContainerRef} from '../../../src/core';
 import * as r3 from '../../../src/render3/index';
-import {pending_pull_22005} from './small_app_spec';
-import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
-import { platformBrowser } from '@angular/platform-browser';
-import { NgModuleFactory, NgModuleRef } from 'core';
 
-const details_elided = {} as any;
+import {pending_pull_22005} from './small_app_spec';
+
+const details_elided = {
+  type: Object,
+} as any;
+export type $ComponentDef$ = any;
 
 ///////////
 // Lib A - Compiled pre-Ivy
@@ -22,22 +23,21 @@ const details_elided = {} as any;
 
 // BEGIN FILE: node_modules/libA/module.ts (Compiled without Ivy)
 @Component({})
-export class LibAComponent {}
+export class LibAComponent {
+}
 
-@NgModule({
-  declarations: [ LibAComponent ],
-  imports: []
-})
-export class LibAModule {}
+@NgModule({declarations: [LibAComponent], imports: []})
+export class LibAModule {
+}
 // END FILE: node_modules/libA/module.ts
 // BEGIN FILE: node_modules/libA/module.metadata.json
 // Abridged version of metadata
 const node_modules_libA_module_metadata = {
-  'LibAModule': { 
-    refs: ["LibAComponent"], 
+  'LibAModule': {
+    refs: ['LibAComponent'],
     constructorDes: [],
   },
-  "LibAComponent": { 
+  'LibAComponent': {
     constructorDes: [],
   }
 };
@@ -54,13 +54,10 @@ const node_modules_libA_module_metadata = {
 @Component({})
 export class LibBComponent {
   // COMPILER GENERATED
-  static ngComponentDef = r3.defineComponent(details_elided);
+  static ngComponentDef: $ComponentDef$ = r3.defineComponent(details_elided);
 }
 
-@NgModule({
-  declarations: [ LibAComponent ],
-  imports: []
-})
+@NgModule({declarations: [LibAComponent], imports: []})
 export class LibBModule {
   // COMPILER GENERATED
   static ngInjectorDef = pending_pull_22005.defineInjector(details_elided);
@@ -71,15 +68,8 @@ export class LibBModule {
 // Must still generate metadata in case it should be consumed with non-ivy application
 // Must mark the metadata with `hasNgDef: true` so that Ivy knows to ignore it.
 const node_modules_libB_module_metadata = {
-  'LibBModule': { 
-    refs: ["LibBComponent"], 
-    constructorDes: [], 
-    hasNgDef: true
-  },
-  "LibBComponent": { 
-    constructorDes: [], 
-    hasNgDef: true
-  }
+  'LibBModule': {refs: ['LibBComponent'], constructorDes: [], hasNgDef: true},
+  'LibBComponent': {constructorDes: [], hasNgDef: true}
 };
 // END FILE: node_modules/libA/module.metadata.json
 
@@ -96,13 +86,10 @@ const node_modules_libB_module_metadata = {
 @Component({})
 export class AppComponent {
   // COMPILER GENERATED
-  static ngComponentDef = r3.defineComponent(details_elided);
+  static ngComponentDef: $ComponentDef$ = r3.defineComponent(details_elided);
 }
 
-@NgModule({
-  declarations: [ LibAComponent ],
-  imports: []
-})
+@NgModule({declarations: [LibAComponent], imports: []})
 export class AppModule {
   // COMPILER GENERATED
   static ngInjectorDef = pending_pull_22005.defineInjector(details_elided);
@@ -110,7 +97,7 @@ export class AppModule {
 // END FILE: src/app.ts
 
 // BEGIN FILE: src/main.ts
-platformBrowserDynamic().bootstrapModule(AppModule);
+// platformBrowserDynamic().bootstrapModule(AppModule);
 // CLI rewrites it later to:
 // platformBrowser().bootstrapModuleFactory(AppModuleFactory);
 // END FILE: src/main.ts
@@ -129,22 +116,23 @@ function ngBackPatch_node_modules_libB_module_LibAModule() {
   (LibAModule as any).ngInjectorDef = pending_pull_22005.defineInjector(details_elided);
 }
 
-export const AppModuleFactory: NgModuleFactory<AppModule>&{patchedDeps: boolean} =  {
+export const AppModuleFactory: NgModuleFactory<AppModule>&{patchedDeps: boolean} = {
   moduleType: AppModule,
   patchedDeps: false,
-  create(parentInjector: Injector | null): NgModuleRef<AppModule> {
-    this.patchedDeps && ngBackPatch_node_modules_libB_module() && (this.patchedDeps = true);
-    return details_elided;
-  }
+  create(parentInjector: Injector | null): NgModuleRef<AppModule>{
+      this.patchedDeps && ngBackPatch_node_modules_libB_module() && (this.patchedDeps = true);
+      return details_elided;}
 };
 // BEGIN FILE: src/app.ngfactory.ts
 
 
-// ISSUE: I don't think this works. The issue is that multiple modules get flattened into single module and hence we can't patch transitively.
-// ISSUE: can non-ivy @NgModule import Ivy @NgModule? I assume no, since the flattening of modules happens during compilation.
+// ISSUE: I don't think this works. The issue is that multiple modules get flattened into single
+// module and hence we can't patch transitively.
+// ISSUE: can non-ivy @NgModule import Ivy @NgModule? I assume no, since the flattening of modules
+// happens during compilation.
 
 // BEGIN FILE: src/main.ts
 // platformBrowserDynamic().bootstrapModule(AppModule);
 // CLI rewrites it to:
-platformBrowser().bootstrapModuleFactory(AppModuleFactory);
+// platformBrowser().bootstrapModuleFactory(AppModuleFactory);
 // END FILE: src/main.ts
