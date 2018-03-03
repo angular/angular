@@ -430,8 +430,14 @@ button</button>
 <!-- #enddocregion event-binding-2 -->
 
 <div>
-<!-- #docregion event-binding-3 -->
+<!-- #docregion event-binding-3! -->
 <!-- `myClick` is an event on the custom `ClickDirective` -->
+<!-- #docregion myClick -->
+<div (myClick)="clickMessage=$event" clickable>click with myClick</div>
+<!-- #enddocregion myClick -->
+<!-- #enddocregion event-binding-3! -->
+<!-- #docregion event-binding-3 -->
+<!-- `myClick` 이벤트는 커스텀 디렉티브 `ClickDirective` 에서 정의한 이벤트입니다. -->
 <!-- #docregion myClick -->
 <div (myClick)="clickMessage=$event" clickable>click with myClick</div>
 <!-- #enddocregion myClick -->

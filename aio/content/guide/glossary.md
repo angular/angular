@@ -555,8 +555,15 @@ Observables are a proposed feature for ES2016, the next version of JavaScript.
 
 ## Output
 
+<!--
 A directive property that can be the *target* of event binding
 (read more in the [event binding](guide/template-syntax#event-binding)
+section of the [Template Syntax](guide/template-syntax) page).
+Events stream *out* of this property to the receiver identified
+in the template expression to the right of the equal sign.
+-->
+A directive property that can be the *target* of event binding
+(read more in the [이벤트 바인딩](guide/template-syntax#이벤트-바인딩)
 section of the [Template Syntax](guide/template-syntax) page).
 Events stream *out* of this property to the receiver identified
 in the template expression to the right of the equal sign.

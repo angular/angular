@@ -1682,8 +1682,6 @@ _스타일 프로퍼티_ 이름은 [대시 케이스](guide/glossary#dash-case)�
 
 <hr/>
 
-{@a event-binding}
-
 {@a 이벤트-바인딩}
 
 <!--
@@ -1691,15 +1689,26 @@ _스타일 프로퍼티_ 이름은 [대시 케이스](guide/glossary#dash-case)�
 -->
 ## 이벤트 바인딩 ( <span class="syntax">(event)</span> )
 
+<!--
 The bindings directives you've met so far flow data in one direction: **from a component to an element**.
+-->
+지금까지 알아본 바인딩은 **컴포넌트에서 엘리먼트로** 향하는 단방향 바인딩이었습니다.
 
+<!--
 Users don't just stare at the screen. They enter text into input boxes. They pick items from lists.
 They click buttons. Such user actions may result in a flow of data in the opposite direction:
 **from an element to a component**.
+-->
+하지만 사용자가 화면만 보고 있는 것은 아닙니다. 입력 필드에 텍스트를 입력하기도 하고, 리스트에 있는 아이템을 선택하기도 하며, 버튼을 클릭하기도 합니다.
+이런 사용자 동작에 대한 정보는 **엘리먼트에서 컴포넌트로** 향하는 방향으로 전달되어야 합니다.
 
+<!--
 The only way to know about a user action is to listen for certain events such as
 keystrokes, mouse movements, clicks, and touches.
 You declare your interest in user actions through Angular event binding.
+-->
+사용자의 동작에 반응하려면 키 입력이나 마우스 이벤트, 터치 이벤트가 발생하는지 컴포넌트가 감지하고 있어야 합니다.
+이 때 Angular에서는 제공하는 이벤트 바인딩 기능을 사용하면 이런 이벤트를 감지할 수 있습니다.
 
 <!--
 Event binding syntax consists of a **target event** name
@@ -1708,43 +1717,58 @@ within parentheses on the left of an equal sign, and a quoted
 The following event binding listens for the button's click events, calling
 the component's `onSave()` method whenever a click occurs:
 -->
-Event binding syntax consists of a **target event** name
-within parentheses on the left of an equal sign, and a quoted
-[템플릿 실행문](guide/template-syntax#템플릿-실행문) on the right.
-The following event binding listens for the button's click events, calling
-the component's `onSave()` method whenever a click occurs:
+이벤트 바인딩은 **대상 이벤트** 이름을 괄호(`(`, `)`)로 감싸고 [템플릿 실행문](guide/template-syntax#템플릿-실행문) 을 등호로 연결해서 작성합니다.
+예를 들어 버튼의 클릭 이벤트를 감지하고 있다가 사용자가 버튼을 클릭할 때 컴포넌트에 있는 `onSave()` 메소드를 실행하려면 다음과 같이 구현합니다.
 
 <code-example path="template-syntax/src/app/app.component.html" region="event-binding-1" title="src/app/app.component.html" linenums="false">
 </code-example>
 
+<!--
 ### Target event
+-->
+### 대상 이벤트
 
+<!--
 A **name between parentheses** &mdash; for example, `(click)` &mdash;
 identifies the target event. In the following example, the target is the button's click event.
+-->
+대상 이벤트는 **괄호로 둘러싼 이벤트 이름**으로 구별합니다. 위 코드에서는 `click` 이벤트를 괄호로 감싸서 `(click)`과 같이 구현했기 때문에 `click` 이벤트가 대상 이벤트이며, 아래 코드에서도 바인딩 대상 이벤트는 버튼의 클릭 이벤트입니다.
 
 <code-example path="template-syntax/src/app/app.component.html" region="event-binding-1" title="src/app/app.component.html" linenums="false">
 </code-example>
 
+<!--
 Some people prefer the `on-` prefix alternative, known as the **canonical form**:
+-->
+이 방식이 익숙하지 않다면 다음과 같이 `on-` 접두사를 사용할 수도 있습니다.
 
 <code-example path="template-syntax/src/app/app.component.html" region="event-binding-2" title="src/app/app.component.html" linenums="false">
 </code-example>
 
+<!--
 Element events may be the more common targets, but Angular looks first to see if the name matches an event property
 of a known directive, as it does in the following example:
+-->
+엘리먼트에서 발생하는 이벤트는 HTML 스펙에 정의된 이벤트인 경우가 대부분입니다. 하지만 커스텀 이벤트가 정의되어 있다면 그 이벤트도 같은 방식으로 사용할 수 있습니다. 커스텀 이벤트의 이름이 일반 이벤트 이름과 겹치면 커스텀 이벤트의 우선순위가 더 높습니다:
 
 <code-example path="template-syntax/src/app/app.component.html" region="event-binding-3" title="src/app/app.component.html" linenums="false">
 </code-example>
 
 <div class="l-sub-section">
 
+<!--
 The `myClick` directive is further described in the section
 on [aliasing input/output properties](guide/template-syntax#aliasing-io).
+-->
+`myClick` 디렉티브는 [입출력 프로퍼티 이름 변경하기](guide/template-syntax#aliasing-io) 섹션에서 자세하게 알아봅니다.
 
 </div>
 
+<!--
 If the name fails to match an element event or an output property of a known directive,
 Angular reports an “unknown directive” error.
+-->
+그리고 엘리먼트 이벤트나 커스텀 디렉티브에서 해당되는 이벤트 이름을 찾지 못하면 “unknown directive” 에러가 발생합니다.
 
 ### *$event* and event handling statements
 

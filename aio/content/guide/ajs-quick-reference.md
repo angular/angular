@@ -309,9 +309,12 @@ The following are some of the key AngularJS built-in directives and their equiva
 
       For a list of DOM events, see: https://developer.mozilla.org/en-US/docs/Web/Events.
 
+      <!--
       For more information, see the [Event binding](guide/template-syntax#event-binding)
       section of the [Template Syntax](guide/template-syntax) page.
-
+      -->
+      For more information, see the [이벤트 바인딩](guide/template-syntax#이벤트-바인딩)
+      section of the [템플릿 문법](guide/template-syntax) page.
     </td>
 
   </tr>

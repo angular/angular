@@ -179,7 +179,7 @@ and update the hero detail. -->
 </code-example>
 
 <!-- This is an example of Angular's [event binding](guide/template-syntax#event-binding) syntax. -->
-위 코드는 Angular의 [이벤트 바인딩](guide/template-syntax#event-binding) 문법입니다.
+위 코드는 Angular의 [이벤트 바인딩](guide/template-syntax#이벤트-바인딩) 문법입니다.
 
 <!-- The parentheses around `click` tell Angular to listen for the `<li>` element's  `click` event.
 When the user clicks in the `<li>`, Angular executes the `onSelect(hero)` expression. -->
