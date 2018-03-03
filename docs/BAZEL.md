@@ -173,6 +173,11 @@ Contact Alex Eagle with questions.
 
 ## Known issues
 
+### Webstorm
+
+The autocompletion in WebStorm can be added via a Bazel plugin intended for IntelliJ IDEA, but the plugin needs to be installed in a special way.
+See [bazelbuild/intellij#246](https://github.com/bazelbuild/intellij/issues/246) for more info.
+
 ### Xcode
 
 If you see the following error:
