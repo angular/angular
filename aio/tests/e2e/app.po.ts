@@ -10,10 +10,9 @@ export class SitePage {
   sidenav = element(by.css('mat-sidenav'));
   docViewer = element(by.css('aio-doc-viewer'));
   codeExample = element.all(by.css('aio-doc-viewer pre > code'));
-  ghLink = this.docViewer
+  ghLinks = this.docViewer
     .all(by.css('a'))
-    .filter((a: ElementFinder) => a.getAttribute('href').then(href => githubRegex.test(href)))
-    .first();
+    .filter((a: ElementFinder) => a.getAttribute('href').then(href => githubRegex.test(href)));
 
   static setWindowWidth(newWidth: number) {
     const win = browser.driver.manage().window();
