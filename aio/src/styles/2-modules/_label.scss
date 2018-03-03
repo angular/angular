@@ -38,6 +38,14 @@ label.raised, .api-header label {
 
 .api-header label {
 
+    // The API badges should be a little smaller
+    padding: 2px 10px;
+    font-size: 12px;
+
+    @media screen and (max-width: 600px) {
+        margin: 4px 0;
+    }
+
     &.api-status-label {
         background-color: $mediumgray;
     }
