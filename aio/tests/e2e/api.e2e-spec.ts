@@ -55,9 +55,9 @@ describe('Api pages', function() {
     const page = new ApiPage('api/core/EventEmitter');
     /* tslint:disable:max-line-length */
     expect(page.ghLinks.get(0).getAttribute('href'))
-      .toMatch(/https:\/\/github.com\/angular\/angular\/edit\/master\/packages\/core\/src\/event_emitter\.ts\?message=docs\(API%20Reference\)%3A%20describe%20your%20change\.\.\.#L\d+-L\d+/);
+      .toMatch(/https:\/\/github\.com\/angular\/angular\/edit\/master\/packages\/core\/src\/event_emitter\.ts\?message=docs\(core\)%3A%20describe%20your%20change\.\.\.#L\d+-L\d+/);
     expect(page.ghLinks.get(1).getAttribute('href'))
-      .toMatch(/https:\/\/github.com\/angular\/angular\/tree\/[^/]+\/packages\/core\/src\/event_emitter\.ts#L\d+-L\d+/);
+      .toMatch(/https:\/\/github\.com\/angular\/angular\/tree\/[^/]+\/packages\/core\/src\/event_emitter\.ts#L\d+-L\d+/);
     /* tslint:enable:max-line-length */
   });
 });
