@@ -25,8 +25,8 @@
     {% if doc.deprecated !== undefined %}<label class="api-status-label deprecated">deprecated</label>{% endif %}
     {% if doc.experimental !== undefined %}<label class="api-status-label experimental">experimental</label>{% endif %}
     {% if doc.stable !== undefined %}<label class="api-status-label stable">stable</label>{% endif %}
-    <aio-toc class="embedded"></aio-toc>
   </header>
+  <aio-toc class="embedded"></aio-toc>
 
   <div class="api-body">
     {% block body %}{% endblock %}
