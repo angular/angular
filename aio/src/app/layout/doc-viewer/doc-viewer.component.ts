@@ -112,10 +112,15 @@ export class DocViewerComponent implements DoCheck, OnDestroy {
    */
   protected prepareTitleAndToc(targetElem: HTMLElement, docId: string): () => void {
     const titleEl = targetElem.querySelector('h1');
-    const hasToc = !!titleEl && !/no-?toc/i.test(titleEl.className);
+    const needsToc = !!titleEl && !/no-?toc/i.test(titleEl.className);
+    const embeddedToc = targetElem.querySelector('aio-toc.embedded');
 
-    if (hasToc) {
+    if (needsToc && !embeddedToc) {
+      // Add an embedded ToC if it's needed and there isn't one in the content already.
       titleEl!.insertAdjacentHTML('afterend', '<aio-toc class="embedded"></aio-toc>');
+    } else if (!needsToc && embeddedToc) {
+      // Remove the embedded Toc if it's there and not needed.
+      embeddedToc.remove();
     }
 
     return () => {
@@ -127,7 +132,7 @@ export class DocViewerComponent implements DoCheck, OnDestroy {
       if (titleEl) {
         title = (typeof titleEl.innerText === 'string') ? titleEl.innerText : titleEl.textContent;
 
-        if (hasToc) {
+        if (needsToc) {
           this.tocService.genToc(targetElem, docId);
         }
       }
