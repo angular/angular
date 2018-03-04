@@ -38,24 +38,35 @@
 {%- endmacro -%}
 
 {%- macro renderOverloadInfo(overload, cssClass, method) -%}
-  {% if overload.description and (overload.description != method.description) %}{$ overload.description | marked $}{% endif %}
 
-  <code-example language="ts" hideCopy="true" class="no-box api-heading">{$ renderMemberSyntax(overload) $}</code-example>
+<code-example language="ts" hideCopy="true" class="no-box api-heading">{$ renderMemberSyntax(overload) $}</code-example>
 
-  <h4 class="no-anchor">Parameters</h4>
-  {$ params.renderParameters(overload.parameterDocs, cssClass + '-parameters', cssClass + '-parameter') $}
+{% if overload.shortDescription and (overload.shortDescription != method.shortDescription) %}
+<div class="short-description">
+  {$ overload.shortDescription | marked $}
+</div>{% endif %}
 
-  {% if overload.type or overload.returns.type %}
-    <h4 class="no-anchor">Returns</h4>
-    {% marked %}`{$ (overload.type or overload.returns.type) $}`{% if overload.returns %}: {$ overload.returns.description $}{% endif %}{% endmarked %}
-  {% endif %}
+<h4 class="no-anchor">Parameters</h4>
+{$ params.renderParameters(overload.parameterDocs, cssClass + '-parameters', cssClass + '-parameter') $}
 
-  {% if overload.throws.length %}
-  <h4 class="no-anchor">Throws</h4>
-  {% for error in overload.throws %}
-    {% marked %}`{$ (error.typeList or 'Error') $}` {$ error.description $}{% endmarked %}
-  {% endfor %}
-  {% endif %}
+{% if overload.type or overload.returns.type %}
+<h4 class="no-anchor">Returns</h4>
+{% marked %}`{$ (overload.type or overload.returns.type) $}`{% if overload.returns %}: {$ overload.returns.description $}{% endif %}{% endmarked %}
+{% endif %}
+
+
+{% if overload.throws.length %}
+<h4 class="no-anchor">Throws</h4>
+{% for error in overload.throws %}
+{% marked %}`{$ (error.typeList or 'Error') $}` {$ error.description $}{% endmarked %}
+{% endfor %}
+{% endif %}
+
+{% if overload.description and (overload.description != method.description) -%}
+<div class="description">
+  {$ overload.description | marked $}
+</div>
+{%- endif %}
 {%- endmacro -%}
 
 {%- macro renderMethodDetail(method, cssClass) -%}
@@ -68,9 +79,9 @@
     {% endif %}
   </h3></th></tr></thead>{% endif %}
   <tbody>
-    {% if method.description %}<tr>
-      <td>
-        {$ method.description | marked $}
+    {% if method.shortDescription %}<tr>
+      <td class="short-description">
+        {$ method.shortDescription | marked $}
       </td>
     </tr>{% endif %}
   {% if method.overloads.length == 0 %}
@@ -102,6 +113,11 @@
       </td>
     </tr>
   {% endif %}
+  {% if method.description %}<tr>
+      <td class="description">
+        {$ method.description | marked $}
+      </td>
+    </tr>{% endif %}
   </tbody>
 </table>
 {% endmacro -%}
@@ -135,6 +151,7 @@
         <td><label class="property-type-label"><code>{$ property.type | escape $}</code></label></td>
         <td>
           {%- if (property.isGetAccessor or property.isReadonly) and not property.isSetAccessor %}<span class='read-only-property'>Read-only.</span>{% endif %}
+          {% if property.shortDescription %}{$ property.shortDescription | marked $}{% endif %}
           {$ (property.description or property.constructorParamDoc.description) | marked $}
           {% if property.constructorParamDoc %} <span class='from-constructor'>Declared in constructor.</span>{% endif %}
         </td>
