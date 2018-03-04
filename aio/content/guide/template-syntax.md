@@ -1770,37 +1770,68 @@ Angular reports an “unknown directive” error.
 -->
 그리고 엘리먼트 이벤트나 커스텀 디렉티브에서 해당되는 이벤트 이름을 찾지 못하면 “unknown directive” 에러가 발생합니다.
 
+<!--
 ### *$event* and event handling statements
+-->
+### *$event* 객체와 이벤트 처리 실행문
 
+<!--
 In an event binding, Angular sets up an event handler for the target event.
+-->
+이벤트를 바인딩하면 Angular의 이벤트 처리 함수가 대상 이벤트와 연결됩니다.
 
+<!--
 When the event is raised, the handler executes the template statement.
 The template statement typically involves a receiver, which performs an action
 in response to the event, such as storing a value from the HTML control
 into a model.
+-->
+그러면 이벤트가 발생했을 때 Angular 프레임워크의 이벤트 처리 함수가 템플릿 실행문을 실행하는데,
+이 템플릿 실행문을 사용해서 원하는 동작을 실행할 수 있습니다.
 
+<!--
 The binding conveys information about the event, including data values, through
 an **event object named `$event`**.
+-->
+이 때 템플릿 실행문에는 이벤트에 대한 정보와 이벤트가 발생한 HTML 컨트롤에 대한 정보가 `$event` 라는 객체에 담겨 전달됩니다.
 
+<!--
 The shape of the event object is determined by the target event.
 If the target event is a native DOM element event, then `$event` is a
 [DOM event object](https://developer.mozilla.org/en-US/docs/Web/Events),
 with properties such as `target` and `target.value`.
+-->
+이벤트 객체의 형식은 대상 이벤트에 따라 달라집니다.
+대상 이벤트가 네이티브 DOM 엘리먼트의 이벤트라면 `$envet` 객체는 [DOM 이벤트 객체](https://developer.mozilla.org/en-US/docs/Web/Events)이며, 이 객체에서 `target` 프로퍼티나 `target.value` 값을 참조할 수 있습니다.
 
+<!--
 Consider this example:
+-->
+다음 예제를 봅시다:
 
 <code-example path="template-syntax/src/app/app.component.html" region="without-NgModel" title="src/app/app.component.html" linenums="false">
 </code-example>
 
+<!--
 This code sets the input box `value` property by binding to the `name` property.
 To listen for changes to the value, the code binds to the input box's `input` event.
 When the user makes changes, the `input` event is raised, and the binding executes
 the statement within a context that includes the DOM event object, `$event`.
+-->
+이 코드에서는 `currentHero.hero` 값을 입력 필드의 `value` 프로퍼티로 바인딩하면서 초기값을 지정합니다.
+그리고 값이 변경되는 것을 감지하기 위해 `input` 이벤트를 `(input)` 으로 바인딩합니다.
+사용자가 입력 필드의 값을 변경하면 `input` 이벤트가 발생하고 이 이벤트에 연결된 템플릿 실행문이 실행되는데, 이 때 DOM 이벤트 객체가 `$event` 객체로 템플릿 실행문에 전달됩니다.
 
+<!--
 To update the `name` property, the changed text is retrieved by following the path `$event.target.value`.
+-->
+그리고 이벤트 객체에서 값을 참조해서 `name` 프로퍼티 값을 다시 지정하기 위해 템플릿 실행문을 `$event.target.value` 와 같이 작성했습니다.
 
+<!--
 If the event belongs to a directive (recall that components are directives),
 `$event` has whatever shape the directive decides to produce.
+-->
+대상 이벤트가 DOM 엘리먼트의 이벤트가 아니고 커스텀 디렉티브(컴포넌트)에서 정의하는 이벤트라면, `$event` 객체는 해당 디렉티브에서 정의하는 형식의 객체가 됩니다.
 
 {@a eventemitter}
 
