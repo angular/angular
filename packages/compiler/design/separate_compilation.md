@@ -715,7 +715,7 @@ To produce an ivy application the options would look like,
 
 ##### example - ivy library
 
-To produce an ivy application the options would look like,
+To produce an ivy library the options would look like,
 
 ```json
 {
