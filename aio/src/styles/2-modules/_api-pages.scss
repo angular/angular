@@ -81,7 +81,7 @@
     background-color: rgba(241, 241, 241, 0.2);
   }
 
-  .from-constructor {
+  .from-constructor, .read-only-property {
     font-style: italic;
     color: $blue;
   }
