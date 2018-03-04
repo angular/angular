@@ -1,3 +1,15 @@
+.page-actions {
+  float: right;
+  .material-icons {
+    border-radius: 4px;
+    padding: 4px;
+    font-size: 20px;
+    &:hover {
+      background-color: $mist;
+    }
+  }
+}
+
 .api-body {
 
   .class-overview {
@@ -24,6 +36,11 @@
   .api-heading {
     padding: 5px 0;
     font-size: 16px;
+    font-weight: bold;
+  }
+
+  .short-description {
+    margin: 6px 0 0 10px;
   }
 
   .properties-table {
