@@ -1835,20 +1835,40 @@ If the event belongs to a directive (recall that components are directives),
 
 {@a eventemitter}
 
+<!--
 {@a custom-event}
+-->
+{@a 커스텀-이벤트}
 
+<!--
 ### Custom events with <span class="syntax">EventEmitter</span>
+-->
+### 커스텀 이벤트와 <span class="syntax">EventEmitter</span>
 
+<!--
 Directives typically raise custom events with an Angular [EventEmitter](api/core/EventEmitter).
 The directive creates an `EventEmitter` and exposes it as a property.
 The directive calls `EventEmitter.emit(payload)` to fire an event, passing in a message payload, which can be anything.
 Parent directives listen for the event by binding to this property and accessing the payload through the `$event` object.
+-->
+Angular에서 제공하는 [EventEmitter](api/core/EventEmitter)를 사용하면 커스텀 이벤트를 만들 수 있습니다.
+우선, 디렉티브에 `EventEmitter` 타입의 프로퍼티를 선언하고 이 프로퍼티를 디렉티브 외부로 열어줍니다.
+그런 뒤 `EventEmitter` 객체의 `emit(데이터)` 함수를 실행하면 데이터가 `$event` 객체에 담겨 디렉티브 외부로 전달됩니다.
+부모 디렉티브에서는 자식 디렉티브의 이벤트 프로퍼티를 바인딩해서 이 커스텀 이벤트를 감지하고 있다가, 이벤트가 발생했을 때 `$event` 이벤트에 담긴 데이터를 받아서 처리하면 됩니다.
 
+<!--
 Consider a `HeroDetailComponent` that presents hero information and responds to user actions.
 Although the `HeroDetailComponent` has a delete button it doesn't know how to delete the hero itself.
 The best it can do is raise an event reporting the user's delete request.
+-->
+`HeroDetailComponent` 는 히어로의 정보를 보여주면서 사용자의 동작에도 반응해야 한다고 합시다.
+이 컴포넌트에 히어로 삭제 버튼을 마련해 둘 수 있지만, 이 컴포넌트에서는 히어로를 어떻게 삭제하는지 알지 못합니다.
+이 동작을 구현하려면 사용자가 삭제 요청을 했을 때 이벤트를 발생시키고, 부모 컴포넌트에서 이 이벤트를 받아 처리하는 방법이 가장 좋습니다.
 
+<!--
 Here are the pertinent excerpts from that `HeroDetailComponent`:
+-->
+`HeroDetailComponent` 코드에서 관련된 부분을 봅시다:
 
 <code-example path="template-syntax/src/app/hero-detail.component.ts" linenums="false" title="src/app/hero-detail.component.ts (template)" region="template-1">
 </code-example>
@@ -1856,27 +1876,48 @@ Here are the pertinent excerpts from that `HeroDetailComponent`:
 <code-example path="template-syntax/src/app/hero-detail.component.ts" linenums="false" title="src/app/hero-detail.component.ts (deleteRequest)" region="deleteRequest">
 </code-example>
 
+<!--
 The component defines a `deleteRequest` property that returns an `EventEmitter`.
 When the user clicks *delete*, the component invokes the `delete()` method,
 telling the `EventEmitter` to emit a `Hero` object.
+-->
+사용자가 *삭제* 버튼을 클릭하면 `delete()` 메소드를 실행하고,
+이 함수에서는 컴포넌트에 `EventEmitter` 타입으로 선언한 `deleteRequest` 프로퍼티에 `Hero` 객체를 담아 컴포넌트 외부로 보냅니다.
 
+<!--
 Now imagine a hosting parent component that binds to the `HeroDetailComponent`'s `deleteRequest` event.
+-->
+그러면 부모 컴포넌트에서 이 이벤트를 받기 위해 `deleteRequest` 프로퍼티를 바인딩하고 있어야 합니다.
 
 <code-example path="template-syntax/src/app/app.component.html" linenums="false" title="src/app/app.component.html (event-binding-to-component)" region="event-binding-to-component">
 </code-example>
 
+<!--
 When the `deleteRequest` event fires, Angular calls the parent component's `deleteHero` method,
 passing the *hero-to-delete* (emitted by `HeroDetail`) in the `$event` variable.
+-->
+최종적으로 `deleteRequest` 이벤트가 발생하면 Angular는 부모 컴포넌트의 `deleteHero` 메소드를 실행하면서
+*삭제해야할 히어로*에 대한 정보를 `$event` 변수에 담아 전달합니다.
 
+<!--
 ### Template statements have side effects
+-->
+### 템플릿 실행문의 영향
 
+<!--
 The `deleteHero` method has a side effect: it deletes a hero.
 Template statement side effects are not just OK, but expected.
+-->
+`deleteHero()` 메소드는 히어로 목록 중 하나를 삭제합니다.
+템플릿 실행문이 항상 애플리케이션에 영향을 줄지 정확하게 알 수는 없지만, 영향을 줄 가능성은 있습니다.
 
+<!--
 Deleting the hero updates the model, perhaps triggering other changes
 including queries and saves to a remote server.
 These changes percolate through the system and are ultimately displayed in this and other views.
-
+-->
+예제 코드로 보면, 히어로를 삭제하면 모델이 업데이트 되면서 서버에 새로운 목록을 요청하거나 삭제 요청을 보내는 등 다른 동작을 유발할 수 있습니다.
+이런 동작들은 뷰 데이터를 갱신하고 서버에 반영하면서 시스템을 자연스럽게 유지합니다.
 
 <hr/>
 
