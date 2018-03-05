@@ -152,6 +152,8 @@ export class RouterModule {
    * * `preloadingStrategy` configures a preloading strategy (see `PreloadAllModules`).
    * * `onSameUrlNavigation` configures how the router handles navigation to the current URL. See
    * `ExtraOptions` for more details.
+   * * `paramsInheritanceStrategy` defines how the router merges params, data and resolved data
+   * from parent to child routes.
    */
   static forRoot(routes: Routes, config?: ExtraOptions): ModuleWithProviders {
     return {
