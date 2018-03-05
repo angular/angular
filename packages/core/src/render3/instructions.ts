@@ -1457,8 +1457,7 @@ export function wrapListenerWithDirtyAndDefault(
     markViewDirty(view);
     if (listenerFn(e) === false) {
       e.preventDefault();
-      // Add `returnValue` to the event object for browsers that don't support it
-      // (e.g. Firefox). Necessary to mimic current renderer2 behavior.
+      // Necessary for legacy browsers that don't support preventDefault (e.g. IE)
       e.returnValue = false;
     }
   };

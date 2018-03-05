@@ -15,7 +15,6 @@ import {containerEl, renderComponent, renderToHtml} from './render_util';
 
 describe('event listeners', () => {
   let comps: MyComp[] = [];
-  let event: Event|null;
 
   class MyComp {
     showing = true;
@@ -47,9 +46,16 @@ describe('event listeners', () => {
 
   class PreventDefaultComp {
     handlerReturnValue: any = true;
+    event: Event;
 
-    onClick(e: Event) {
-      event = e;
+    onClick(e: any) {
+      this.event = e;
+
+      // stub preventDefault() to check whether it's called
+      Object.defineProperty(
+          this.event, 'preventDefault',
+          {value: jasmine.createSpy('preventDefault'), writable: true});
+
       return this.handlerReturnValue;
     }
 
@@ -62,7 +68,7 @@ describe('event listeners', () => {
         if (cm) {
           elementStart(0, 'button');
           {
-            listener('click', function(e) { return ctx.onClick(e); });
+            listener('click', function($event: any) { return ctx.onClick($event); });
             text(1, 'Click');
           }
           elementEnd();
@@ -71,10 +77,7 @@ describe('event listeners', () => {
     });
   }
 
-  beforeEach(() => {
-    comps = [];
-    event = null;
-  });
+  beforeEach(() => { comps = []; });
 
   it('should call function on event emit', () => {
     const comp = renderComponent(MyComp);
@@ -91,17 +94,15 @@ describe('event listeners', () => {
     const button = containerEl.querySelector('button') !;
 
     button.click();
-    expect(event !.defaultPrevented).toBe(false);
+    expect(preventDefaultComp.event !.preventDefault).not.toHaveBeenCalled();
 
     preventDefaultComp.handlerReturnValue = undefined;
     button.click();
-    expect(event !.defaultPrevented).toBe(false);
+    expect(preventDefaultComp.event !.preventDefault).not.toHaveBeenCalled();
 
     preventDefaultComp.handlerReturnValue = false;
     button.click();
-    expect(event !.defaultPrevented).toBe(true);
-    expect(event !.returnValue).toBe(false);
-
+    expect(preventDefaultComp.event !.preventDefault).toHaveBeenCalled();
   });
 
   it('should retain event handler return values with renderer2', () => {
@@ -109,16 +110,15 @@ describe('event listeners', () => {
     const button = containerEl.querySelector('button') !;
 
     button.click();
-    expect(event !.defaultPrevented).toBe(false);
+    expect(preventDefaultComp.event !.preventDefault).not.toHaveBeenCalled();
 
     preventDefaultComp.handlerReturnValue = undefined;
     button.click();
-    expect(event !.defaultPrevented).toBe(false);
+    expect(preventDefaultComp.event !.preventDefault).not.toHaveBeenCalled();
 
     preventDefaultComp.handlerReturnValue = false;
     button.click();
-    expect(event !.defaultPrevented).toBe(true);
-    expect(event !.returnValue).toBe(false);
+    expect(preventDefaultComp.event !.preventDefault).toHaveBeenCalled();
   });
 
   it('should call function chain on event emit', () => {

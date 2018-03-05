@@ -58,7 +58,7 @@ describe('elements', () => {
     @Component({
       selector: 'listener-comp',
       template:
-        `<button (click)="onClick()" (keypress)="onPress($event); onPress2($event)">Click</button>`
+          `<button (click)="onClick()" (keypress)="onPress($event); onPress2($event)">Click</button>`
     })
     class ListenerComp {
       onClick() {}
