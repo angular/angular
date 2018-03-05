@@ -89,11 +89,11 @@ promise.then(() => {
 The following code snippets illustrate how the same kind of operation is defined using observables and promises.
 
 <table>
-  <th>
-    <td>Operation</td>
-    <td>Observable</td>
-    <td>Promise</td>
-  </th>
+  <tr>
+    <th>Operation</th>
+    <th>Observable</th>
+    <th>Promise</th>
+  </tr>
   <tr>
     <td>Creation</td>
     <td>
@@ -141,10 +141,11 @@ Using observables to handle events and asynchronous operations can have the adva
 Here are some code samples that illustrate how the same kind of operation is defined using observables and the events API.
 
 <table>
-  <th>
-    <td>Observable</td>
-    <td>Events API</td>
-  </th>
+  <tr>
+    <th></th>
+    <th>Observable</th>
+    <th>Events API</th>
+  </tr>
   <tr>
     <td>Creation & cancellation</td>
     <td>
@@ -203,10 +204,11 @@ button.removeEventListener(‘click’, handler);
 An observable produces values over time. An array is created as a static set of values. In a sense, observables are asynchronous where arrays are synchronous. In the following examples, ➞ implies asynchronous value delivery.
 
 <table>
-  <th>
-    <td>Observable</td>
-    <td>Array</td>
-  </th>
+  <tr>
+    <th></th>
+    <th>Observable</th>
+    <th>Array</th>
+  </tr>
   <tr>
     <td>Given</td>
     <td>
