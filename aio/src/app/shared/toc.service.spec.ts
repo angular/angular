@@ -291,23 +291,20 @@ describe('TocService', () => {
     });
   });
 
-  describe('TocItem for an h2 with anchor link and extra whitespace', () => {
+  describe('TocItem for an h2 with links and extra whitespace', () => {
     let docId: string;
-    let docEl: HTMLDivElement;
     let tocItem: TocItem;
-    let expectedTocContent: string;
 
     beforeEach(() => {
       docId = 'fizz/buzz/';
-      expectedTocContent = 'Setup to develop <i>locally</i>.';
 
       // An almost-actual <h2> ... with extra whitespace
-      docEl = callGenToc(`
+      callGenToc(`
         <h2 id="setup-to-develop-locally">
-          <a href="tutorial/toh-pt1#setup-to-develop-locally" aria-hidden="true">
+          Setup to <a href="moo">develop</a> <i>locally</i>.
+          <a class="header-link" href="tutorial/toh-pt1#setup-to-develop-locally" aria-hidden="true">
             <span class="icon icon-link"></span>
           </a>
-          ${expectedTocContent}
         </h2>
       `, docId);
 
@@ -331,7 +328,7 @@ describe('TocService', () => {
     it('should have bypassed HTML sanitizing of heading\'s innerHTML ', () => {
       const domSanitizer: TestDomSanitizer = injector.get(DomSanitizer);
       expect(domSanitizer.bypassSecurityTrustHtml)
-        .toHaveBeenCalledWith(expectedTocContent);
+        .toHaveBeenCalledWith('Setup to develop <i>locally</i>.');
     });
   });
 });
@@ -352,13 +349,20 @@ class TestDomSanitizer {
 }
 
 class MockScrollSpyService {
-  $lastInfo: {
+  private $$lastInfo: {
     active: Subject<ScrollItem | null>,
-    unspy: jasmine.Spy
-  };
+    unspy: jasmine.Spy,
+  } | undefined;
+
+  get $lastInfo() {
+    if (!this.$$lastInfo) {
+      throw new Error('$lastInfo is not yet defined. You must call `spyOn` first.');
+    }
+    return this.$$lastInfo;
+  }
 
   spyOn(headings: HTMLHeadingElement[]): ScrollSpyInfo {
-    return this.$lastInfo = {
+    return this.$$lastInfo = {
       active: new Subject<ScrollItem | null>(),
       unspy: jasmine.createSpy('unspy'),
     };
