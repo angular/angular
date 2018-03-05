@@ -6,6 +6,7 @@ https://github.com/{$ versionInfo.gitRepoInfo.owner $}/{$ versionInfo.gitRepoInf
 {% macro githubEditHref(doc, versionInfo) -%}
 https://github.com/{$ versionInfo.gitRepoInfo.owner $}/{$ versionInfo.gitRepoInfo.repo $}/edit/master/packages/{$ doc.fileInfo.realProjectRelativePath $}?message=docs(
   {%- if doc.moduleDoc %}{$ doc.moduleDoc.id.split('/')[0] $}
-  {%- if doc.docType === 'module' %}{$ doc.id.split('/')[0] $}
-  {%- else %}...{%- endif%})%3A%20describe%20your%20change...#L{$ doc.startingLine + 1 $}-L{$ doc.endingLine + 1 $}
+  {%- elseif doc.docType === 'module' %}{$ doc.id.split('/')[0] $}
+  {%- else %}...{%- endif -%}
+)%3A%20describe%20your%20change...#L{$ doc.startingLine + 1 $}-L{$ doc.endingLine + 1 $}
 {%- endmacro %}
