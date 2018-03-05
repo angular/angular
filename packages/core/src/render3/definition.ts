@@ -47,7 +47,6 @@ export function defineComponent<T>(componentDefinition: ComponentDefArgs<T>): Co
     inputs: invertObject(componentDefinition.inputs),
     inputsPropertyName: componentDefinition.inputsPropertyName || null,
     outputs: invertObject(componentDefinition.outputs),
-    methods: invertObject(componentDefinition.methods),
     rendererType: resolveRendererType2(componentDefinition.rendererType) || null,
     exportAs: componentDefinition.exportAs,
     onInit: type.prototype.ngOnInit || null,

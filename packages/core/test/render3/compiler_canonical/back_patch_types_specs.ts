@@ -9,7 +9,7 @@
 import {Component, ContentChild, Directive, Injectable, Injector, Input, NgModule, NgModuleFactory, NgModuleRef, OnDestroy, Optional, Pipe, PipeTransform, QueryList, SimpleChanges, TemplateRef, Type, ViewChild, ViewContainerRef} from '../../../src/core';
 import * as r3 from '../../../src/render3/index';
 
-import {pending_pull_22005} from './small_app_spec';
+import {$pending_pr_22458$} from './pending_api_spec';
 
 const details_elided = {
   type: Object,
@@ -60,7 +60,7 @@ export class LibBComponent {
 @NgModule({declarations: [LibAComponent], imports: []})
 export class LibBModule {
   // COMPILER GENERATED
-  static ngInjectorDef = pending_pull_22005.defineInjector(details_elided);
+  static ngInjectorDef = $pending_pr_22458$.defineInjector(details_elided);
 }
 // END FILE: node_modules/libB/module.ts
 // BEGIN FILE: node_modules/libB/module.metadata.json
@@ -92,7 +92,7 @@ export class AppComponent {
 @NgModule({declarations: [LibAComponent], imports: []})
 export class AppModule {
   // COMPILER GENERATED
-  static ngInjectorDef = pending_pull_22005.defineInjector(details_elided);
+  static ngInjectorDef = $pending_pr_22458$.defineInjector(details_elided);
 }
 // END FILE: src/app.ts
 
@@ -113,7 +113,7 @@ function ngBackPatch_node_modules_libB_module_LibAComponent() {
 }
 
 function ngBackPatch_node_modules_libB_module_LibAModule() {
-  (LibAModule as any).ngInjectorDef = pending_pull_22005.defineInjector(details_elided);
+  (LibAModule as any).ngInjectorDef = $pending_pr_22458$.defineInjector(details_elided);
 }
 
 export const AppModuleFactory: NgModuleFactory<AppModule>&{patchedDeps: boolean} = {

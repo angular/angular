@@ -174,7 +174,7 @@ export function diPublic(def: DirectiveDef<any>): void {
 }
 
 /**
- * Searches for an instance of the given directive type up the injector tree and returns
+ * Searches for an instance of the given type up the injector tree and returns
  * that instance if found.
  *
  * If not found, it will propagate up to the next parent injector until the token
@@ -187,15 +187,18 @@ export function diPublic(def: DirectiveDef<any>): void {
  *
  *   static ngDirectiveDef = defineDirective({
  *     type: SomeDirective,
- *     factory: () => new SomeDirective(inject(DirectiveA))
+ *     factory: () => new SomeDirective(directiveInject(DirectiveA))
  *   });
  * }
+ *
+ * NOTE: use `directiveInject` with `@Directive`, `@Component`, and `@Pipe`. For
+ * all other injection use `inject` which does not walk the DOM render tree.
  *
  * @param token The directive type to search for
  * @param flags Injection flags (e.g. CheckParent)
  * @returns The instance found
  */
-export function inject<T>(token: Type<T>, flags?: InjectFlags, defaultValue?: T): T {
+export function directiveInject<T>(token: Type<T>, flags?: InjectFlags, defaultValue?: T): T {
   return getOrCreateInjectable<T>(getOrCreateNodeInjector(), token, flags, defaultValue);
 }
 

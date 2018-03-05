@@ -11,22 +11,9 @@ import {Component, ContentChild, Directive, EventEmitter, Injectable, Input, NgM
 import {withBody} from '@angular/core/testing';
 
 import * as r3 from '../../../src/render3/index';
+import {$pending_pr_22458$} from './pending_api_spec';
 
 /// See: `normative.md`
-
-
-// TODO: remove once https://github.com/angular/angular/pull/22005 lands
-export class pending_pull_22005 {
-  static defineInjectable<T>({scope, factory}: {scope?: Type<any>, factory: () => T}):
-      {scope: Type<any>| null, factory: () => T} {
-    return {scope: scope || null, factory: factory};
-  }
-
-  static defineInjector<T>({factory, providers}: {factory: () => T, providers: any[]}):
-      {factory: () => T, providers: any[]} {
-    return {factory: factory, providers: providers};
-  }
-}
 
 
 
@@ -46,7 +33,7 @@ class AppState {
   ];
 
   // NORMATIVE
-  static ngInjectableDef = pending_pull_22005.defineInjectable({factory: () => new AppState()});
+  static ngInjectableDef = $pending_pr_22458$.defineInjectable({factory: () => new AppState()});
   // /NORMATIVE
 }
 
@@ -74,7 +61,7 @@ class ToDoAppComponent {
     type: ToDoAppComponent,
     tag: 'todo-app',
     factory: function ToDoAppComponent_Factory() {
-      return new ToDoAppComponent(r3.inject(AppState));
+      return new ToDoAppComponent(r3.directiveInject(AppState));
     },
     template: function ToDoAppComponent_Template(ctx: ToDoAppComponent, cm: boolean) {
       if (cm) {
@@ -171,7 +158,7 @@ const e1_attrs = ['type', 'checkbox'];
 })
 class ToDoAppModule {
   // NORMATIVE
-  static ngInjectorDef = pending_pull_22005.defineInjector({
+  static ngInjectorDef = $pending_pr_22458$.defineInjector({
     factory: () => new ToDoAppModule(),
     providers: [AppState],
   });
