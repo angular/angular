@@ -1921,67 +1921,124 @@ These changes percolate through the system and are ultimately displayed in this 
 
 <hr/>
 
+<!--
 {@a two-way}
+-->
+{@a 양방향-바인딩}
 
+<!--
 ## Two-way binding ( <span class="syntax">[(...)]</span> )
+-->
+## 양방향 바인딩 ( <span class="syntax">[(...)]</span> )
 
+<!--
 You often want to both display a data property and update that property when the user makes changes.
+-->
+어떤 데이터는 화면에 표시되기도 하지만 사용자의 동작에 따라 새로운 값으로 갱신되어야 하는 경우도 있습니다.
 
+<!--
 On the element side that takes a combination of setting a specific element property
 and listening for an element change event.
+-->
+이 동작은 지금까지 살펴본 두 종류의 단방향 바인딩, 컴포넌트 프로퍼티 값을 템플릿에 반영하거나 템플릿에서 발생한 이벤트를 컴포넌트로 바인딩하는 방법을 조합해서 구현할 수 있습니다.
 
+<!--
 Angular offers a special _two-way data binding_ syntax for this purpose, **`[(x)]`**.
 The `[(x)]` syntax combines the brackets
 of _property binding_, `[x]`, with the parentheses of _event binding_, `(x)`.
+-->
+이렇게 구현하는 바인딩을 양방향 바인딩이라고 하며, 
+양방향 바인딩은 _프로퍼티 바인딩_ 문법인 `[x]`과 _이벤트 바인딩_ 문법인 `(x)`를 조합해서 **`[(x)]`**와 같이 구현합니다.
 
 <div class="callout is-important">
 
 <header>
+<!--
   [( )] = banana in a box
+-->
+  [( )] = 상자 안에 든 바나나
 </header>
 
+<!--
 Visualize a *banana in a box* to remember that the parentheses go _inside_ the brackets.
+-->
+두 괄호 중 어떤 괄호가 안에 들어가는지 헷갈린다면 *상자 안에 든 바나나* 의 모양을 떠올려 보세요.
 
 </div>
 
+<!--
 The `[(x)]` syntax is easy to demonstrate when the element has a settable property called `x`
 and a corresponding event named `xChange`.
 Here's a `SizerComponent` that fits the pattern.
 It has a `size` value property and a companion `sizeChange` event:
+-->
+`[(x)]` 라고 사용하면 컴포넌트에서 이름이 `x`인 프로퍼티가 프로퍼티 바인딩 되면서, 이벤트 이름이 `xChange`인 이벤트가 함께 이벤트 바인딩 됩니다.
+`SizerComponent` 예제를 보면서 이 내용을 확인해봅시다.
+이 컴포넌트에는 `size` 프로퍼티와 `sizeChange` 이벤트가 선언되어 있습니다.
 
 <code-example path="template-syntax/src/app/sizer.component.ts" title="src/app/sizer.component.ts">
 </code-example>
 
+<!--
 The initial `size` is an input value from a property binding.
 Clicking the buttons increases or decreases the `size`, within min/max values constraints,
 and then raises (_emits_) the `sizeChange` event with the adjusted size.
+-->
+`size` 프로퍼티의 초기값은 프로퍼티 바인딩에 의해 할당됩니다.
+그리고 사용자가 증가 버튼이나 감소 버튼을 클릭하면 `size` 값을 증가시키거나 감소시키고,
+`sizeChange` 프로퍼티를 통해 커스텀 이벤트를 발생시킵니다.
 
+<!--
 Here's an example in which the `AppComponent.fontSizePx` is two-way bound to the `SizerComponent`:
+-->
+이 때 받은 커스텀 이벤트를 활용해서 `SizerComponent` 의 부모 컴포넌트인 `AppComponent`의 `fontSizePx` 프로퍼티를 양방향 바인딩으로 연결해 봅시다.
 
 <code-example path="template-syntax/src/app/app.component.html" linenums="false" title="src/app/app.component.html (two-way-1)" region="two-way-1">
 </code-example>
 
+<!--
 The `AppComponent.fontSizePx` establishes the initial `SizerComponent.size` value.
 Clicking the buttons updates the `AppComponent.fontSizePx` via the two-way binding.
 The revised `AppComponent.fontSizePx` value flows through to the _style_ binding,
 making the displayed text bigger or smaller.
+-->
+`AppComponent`에서도 `fontSizePx` 프로퍼티의 초기값은 `SizerComponent.size` 값으로 초기화 됩니다.
+그리고 증감 버튼을 누를때마다 `AppComponent.fontSizePx`값이 양방향 바인딩에 의해 갱신됩니다.
+이렇게 갱신된 `AppComponent.fontSizePx` 값은 _스타일_ 바인딩으로 연결되면서, `Resizable Text`의 크기가 커지거나 작아집니다.
 
+<!--
 The two-way binding syntax is really just syntactic sugar for a _property_ binding and an _event_ binding.
 Angular _desugars_ the `SizerComponent` binding into this:
+-->
+엄밀히 얘기하면, 양방향 바인딩 문법은 _프로퍼티_ 바인딩과 _이벤트_ 바인딩을 묶어둔 문법 설탕(syntatic sugar)일 뿐입니다.
+프로퍼티 바인딩과 이벤트 바인딩을 구분해서 사용하면 다음과 같이 구현할 수 있습니다:
 
 <code-example path="template-syntax/src/app/app.component.html" linenums="false" title="src/app/app.component.html (two-way-2)" region="two-way-2">
 </code-example>
 
+<!--
 The `$event` variable contains the payload of the `SizerComponent.sizeChange` event.
 Angular assigns the `$event` value to the `AppComponent.fontSizePx` when the user clicks the buttons.
+-->
+`$event` 객체에는 `SizeComponent.sizeChange` 이벤트에서 보내는 폰트 크기값이 담겨 있습니다.
+그래서 사용자가 증감 버튼을 클릭해서 이벤트가 발생할 때마다 `AppComponent.fontSizePx` 프로퍼티의 값을 새로운 값으로 할당하고 있습니다.
 
+<!--
 Clearly the two-way binding syntax is a great convenience compared to separate property and event bindings.
+-->
+이렇게 보면 프로퍼티 바인딩과 이벤트 바인딩을 각각 구현하는 것보다 양방향 바인딩 문법을 사용하는 것이 훨씬 간단합니다.
 
+<!--
 It would be convenient to use two-way binding with HTML form elements like `<input>` and `<select>`.
 However, no native HTML element follows the `x` value and `xChange` event pattern.
+-->
+그리고 양방향 바인딩을 `<input>` 엘리먼트나 `<select>` 엘리먼트와 같은 HTML 폼 엘리먼트에 사용한다면 양방향 문법의 편리함을 확실하게 느낄 수 있습니다.
+하지만 네이티브 HTML 엘리먼트에 `x` 프로퍼티나 `xChange` 라는 이벤트가 있지는 않습니다.
 
+<!--
 Fortunately, the Angular [_NgModel_](guide/template-syntax#ngModel) directive is a bridge that enables two-way binding to form elements.
-
+-->
+다행히 Angular는 폼 엘리먼트에 양방향 바인딩을 간편하게 연결할 수 있도록 [_NgModel_](guide/template-syntax#ngModel) 디렉티브를 제공합니다.
 
 <hr/>
 
@@ -2169,10 +2226,16 @@ You can't apply `[(ngModel)]` to a non-form native element or a third-party cust
 until you write a suitable *value accessor*,
 a technique that is beyond the scope of this guide.
 
+<!--
 You don't need a _value accessor_ for an Angular component that you write because you
 can name the value and event properties
 to suit Angular's basic [two-way binding syntax](guide/template-syntax#two-way) and skip `NgModel` altogether.
 The [`sizer` shown above](guide/template-syntax#two-way) is an example of this technique.
+-->
+You don't need a _value accessor_ for an Angular component that you write because you
+can name the value and event properties
+to suit Angular's basic [two-way binding syntax](guide/template-syntax#양방향-바인딩) and skip `NgModel` altogether.
+The [`sizer` shown above](guide/template-syntax#양방향-바인딩) is an example of this technique.
 
 </div>
 
