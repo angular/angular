@@ -62,10 +62,11 @@
 {% endfor %}
 {% endif %}
 
-{% if overload.description and (overload.description != method.description) %}
+{% if overload.description and (overload.description != method.description) -%}
 <div class="description">
-  {$ overload.description | marked $}{% endif %}
+  {$ overload.description | marked $}
 </div>
+{%- endif %}
 {%- endmacro -%}
 
 {%- macro renderMethodDetail(method, cssClass) -%}
