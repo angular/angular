@@ -363,10 +363,7 @@ export function encodeUriQuery(s: string): string {
  * http://www.site.org/html;mk=mv?k=v#f
  */
 export function encodeUriSegment(s: string): string {
-  return encodeUriString(s)
-      .replace(/\(/g, '%28')
-      .replace(/\)/g, '%29')
-      .replace(/%26/gi, '&');
+  return encodeUriString(s).replace(/\(/g, '%28').replace(/\)/g, '%29').replace(/%26/gi, '&');
 }
 
 export function decode(s: string): string {
