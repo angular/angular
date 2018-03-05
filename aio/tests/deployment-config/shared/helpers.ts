@@ -43,7 +43,9 @@ export async function loadRemoteSitemapUrls(host: string) {
         .on('error', reject));
   });
 
-  return extractSitemapUrls(xml, host);
+  // Currently, all sitemaps use `angular.io` as host in URLs (which is fine since we only use the
+  // sitemap `angular.io`). See also `aio/src/extra-files/*/robots.txt`.
+  return extractSitemapUrls(xml, 'https://angular.io/');
 }
 
 export function loadSWRoutes() {
