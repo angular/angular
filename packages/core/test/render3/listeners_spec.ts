@@ -9,6 +9,7 @@
 import {defineComponent, defineDirective} from '../../src/render3/index';
 import {container, containerRefreshEnd, containerRefreshStart, directiveRefresh, elementEnd, elementStart, embeddedViewEnd, embeddedViewStart, listener, text} from '../../src/render3/instructions';
 
+import {getRendererFactory2} from './imported_renderer2';
 import {containerEl, renderComponent, renderToHtml} from './render_util';
 
 
@@ -29,7 +30,7 @@ describe('event listeners', () => {
         if (cm) {
           elementStart(0, 'button');
           {
-            listener('click', function() { ctx.onClick(); });
+            listener('click', function() { return ctx.onClick(); });
             text(1, 'Click me');
           }
           elementEnd();
@@ -39,6 +40,39 @@ describe('event listeners', () => {
         let comp = new MyComp();
         comps.push(comp);
         return comp;
+      }
+    });
+  }
+
+  class PreventDefaultComp {
+    handlerReturnValue: any = true;
+    event: Event;
+
+    onClick(e: any) {
+      this.event = e;
+
+      // stub preventDefault() to check whether it's called
+      Object.defineProperty(
+          this.event, 'preventDefault',
+          {value: jasmine.createSpy('preventDefault'), writable: true});
+
+      return this.handlerReturnValue;
+    }
+
+    static ngComponentDef = defineComponent({
+      type: PreventDefaultComp,
+      tag: 'prevent-default-comp',
+      factory: () => new PreventDefaultComp(),
+      /** <button (click)="onClick($event)">Click</button> */
+      template: (ctx: PreventDefaultComp, cm: boolean) => {
+        if (cm) {
+          elementStart(0, 'button');
+          {
+            listener('click', function($event: any) { return ctx.onClick($event); });
+            text(1, 'Click');
+          }
+          elementEnd();
+        }
       }
     });
   }
@@ -55,6 +89,38 @@ describe('event listeners', () => {
     expect(comp.counter).toEqual(2);
   });
 
+  it('should retain event handler return values using document', () => {
+    const preventDefaultComp = renderComponent(PreventDefaultComp);
+    const button = containerEl.querySelector('button') !;
+
+    button.click();
+    expect(preventDefaultComp.event !.preventDefault).not.toHaveBeenCalled();
+
+    preventDefaultComp.handlerReturnValue = undefined;
+    button.click();
+    expect(preventDefaultComp.event !.preventDefault).not.toHaveBeenCalled();
+
+    preventDefaultComp.handlerReturnValue = false;
+    button.click();
+    expect(preventDefaultComp.event !.preventDefault).toHaveBeenCalled();
+  });
+
+  it('should retain event handler return values with renderer2', () => {
+    const preventDefaultComp = renderComponent(PreventDefaultComp, getRendererFactory2(document));
+    const button = containerEl.querySelector('button') !;
+
+    button.click();
+    expect(preventDefaultComp.event !.preventDefault).not.toHaveBeenCalled();
+
+    preventDefaultComp.handlerReturnValue = undefined;
+    button.click();
+    expect(preventDefaultComp.event !.preventDefault).not.toHaveBeenCalled();
+
+    preventDefaultComp.handlerReturnValue = false;
+    button.click();
+    expect(preventDefaultComp.event !.preventDefault).toHaveBeenCalled();
+  });
+
   it('should call function chain on event emit', () => {
     /** <button (click)="onClick(); onClick2(); "> Click me </button> */
     function Template(ctx: any, cm: boolean) {
@@ -63,7 +129,7 @@ describe('event listeners', () => {
         {
           listener('click', function() {
             ctx.onClick();
-            ctx.onClick2();
+            return ctx.onClick2();
           });
           text(1, 'Click me');
         }
@@ -96,7 +162,7 @@ describe('event listeners', () => {
       if (cm) {
         elementStart(0, 'button');
         {
-          listener('click', function() { ctx.showing = !ctx.showing; });
+          listener('click', function() { return ctx.showing = !ctx.showing; });
           text(1, 'Click me');
         }
         elementEnd();
@@ -131,7 +197,7 @@ describe('event listeners', () => {
           if (embeddedViewStart(1)) {
             elementStart(0, 'button');
             {
-              listener('click', function() { ctx.onClick(); });
+              listener('click', function() { return ctx.onClick(); });
               text(1, 'Click me');
             }
             elementEnd();
@@ -170,7 +236,7 @@ describe('event listeners', () => {
         type: HostListenerDir,
         factory: function HostListenerDir_Factory() {
           const $dir$ = new HostListenerDir();
-          listener('click', function() { $dir$.onClick(); });
+          listener('click', function() { return $dir$.onClick(); });
           return $dir$;
         },
       });
@@ -222,7 +288,7 @@ describe('event listeners', () => {
               if (embeddedViewStart(0)) {
                 elementStart(0, 'button');
                 {
-                  listener('click', function() { ctx.onClick(); });
+                  listener('click', function() { return ctx.onClick(); });
                   text(1, 'Click');
                 }
                 elementEnd();
@@ -337,7 +403,7 @@ describe('event listeners', () => {
               if (embeddedViewStart(0)) {
                 elementStart(0, 'button');
                 {
-                  listener('click', function() { ctx.counter1++; });
+                  listener('click', function() { return ctx.counter1++; });
                   text(1, 'Click');
                 }
                 elementEnd();
@@ -352,7 +418,7 @@ describe('event listeners', () => {
               if (embeddedViewStart(0)) {
                 elementStart(0, 'button');
                 {
-                  listener('click', function() { ctx.counter2++; });
+                  listener('click', function() { return ctx.counter2++; });
                   text(1, 'Click');
                 }
                 elementEnd();

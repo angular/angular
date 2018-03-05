@@ -619,22 +619,24 @@ export function hostElement(rNode: RElement | null, def: ComponentDef<any>): LEl
  * and saves the subscription for later cleanup.
  *
  * @param eventName Name of the event
- * @param listener The function to be called when event emits
+ * @param listenerFn The function to be called when event emits
  * @param useCapture Whether or not to use capture in event listener.
  */
-export function listener(eventName: string, listener: EventListener, useCapture = false): void {
+export function listener(
+    eventName: string, listenerFn: (e?: any) => any, useCapture = false): void {
   ngDevMode && assertPreviousIsParent();
   const node = previousOrParentNode;
   const native = node.native as RElement;
-  const wrappedListener = wrapListenerWithDirtyLogic(currentView, listener);
 
   // In order to match current behavior, native DOM event listeners must be added for all
   // events (including outputs).
   const cleanupFns = cleanup || (cleanup = currentView.cleanup = []);
   if (isProceduralRenderer(renderer)) {
+    const wrappedListener = wrapListenerWithDirtyLogic(currentView, listenerFn);
     const cleanupFn = renderer.listen(native, eventName, wrappedListener);
     cleanupFns.push(cleanupFn, null);
   } else {
+    const wrappedListener = wrapListenerWithDirtyAndDefault(currentView, listenerFn);
     native.addEventListener(eventName, wrappedListener, useCapture);
     cleanupFns.push(eventName, native, wrappedListener, useCapture);
   }
@@ -649,7 +651,7 @@ export function listener(eventName: string, listener: EventListener, useCapture 
   const outputs = tNode.outputs;
   let outputData: PropertyAliasValue|undefined;
   if (outputs && (outputData = outputs[eventName])) {
-    createOutput(outputData, listener);
+    createOutput(outputData, listenerFn);
   }
 }
 
@@ -1437,10 +1439,27 @@ export function markDirtyIfOnPush(node: LElementNode): void {
  * Wraps an event listener so its host view and its ancestor views will be marked dirty
  * whenever the event fires. Necessary to support OnPush components.
  */
-export function wrapListenerWithDirtyLogic(view: LView, listener: EventListener): EventListener {
+export function wrapListenerWithDirtyLogic(view: LView, listenerFn: (e?: any) => any): (e: Event) =>
+    any {
+  return function(e: any) {
+    markViewDirty(view);
+    return listenerFn(e);
+  };
+}
+
+/**
+ * Wraps an event listener so its host view and its ancestor views will be marked dirty
+ * whenever the event fires. Also wraps with preventDefault behavior.
+ */
+export function wrapListenerWithDirtyAndDefault(
+    view: LView, listenerFn: (e?: any) => any): EventListener {
   return function(e: Event) {
     markViewDirty(view);
-    listener(e);
+    if (listenerFn(e) === false) {
+      e.preventDefault();
+      // Necessary for legacy browsers that don't support preventDefault (e.g. IE)
+      e.returnValue = false;
+    }
   };
 }
 

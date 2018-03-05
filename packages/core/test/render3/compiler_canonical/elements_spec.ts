@@ -51,4 +51,42 @@ describe('elements', () => {
     expect(toHtml(renderComponent(MyComponent)))
         .toEqual('<div class="my-app" title="Hello">Hello <b>World</b>!</div>');
   });
+
+  it('should support listeners', () => {
+    type $ListenerComp$ = ListenerComp;
+
+    @Component({
+      selector: 'listener-comp',
+      template:
+          `<button (click)="onClick()" (keypress)="onPress($event); onPress2($event)">Click</button>`
+    })
+    class ListenerComp {
+      onClick() {}
+      onPress(e: Event) {}
+      onPress2(e: Event) {}
+
+      // NORMATIVE
+      static ngComponentDef = $r3$.ɵdefineComponent({
+        type: ListenerComp,
+        tag: 'listener-comp',
+        factory: function ListenerComp_Factory() { return new ListenerComp(); },
+        template: function ListenerComp_Template(ctx: $ListenerComp$, cm: $boolean$) {
+          if (cm) {
+            $r3$.ɵE(0, 'button');
+            $r3$.ɵL('click', function ListenerComp_click_Handler() { return ctx.onClick(); });
+            $r3$.ɵL('keypress', function ListenerComp_keypress_Handler($event: $any$) {
+              ctx.onPress($event);
+              return ctx.onPress2($event);
+            });
+            $r3$.ɵT(1, 'Click');
+            $r3$.ɵe();
+          }
+        }
+      });
+      // /NORMATIVE
+    }
+
+    const listenerComp = renderComponent(ListenerComp);
+    expect(toHtml(listenerComp)).toEqual('<button>Click</button>');
+  });
 });
