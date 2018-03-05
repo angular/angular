@@ -134,6 +134,7 @@
         <td><a id="{$ property.anchor $}"></a>{$ property.name $}</td>
         <td><label class="property-type-label"><code>{$ property.type | escape $}</code></label></td>
         <td>
+          {%- if (property.isGetAccessor or property.isReadonly) and not property.isSetAccessor %}<span class='read-only-property'>Read-only.</span>{% endif %}
           {$ (property.description or property.constructorParamDoc.description) | marked $}
           {% if property.constructorParamDoc %} <span class='from-constructor'>Declared in constructor.</span>{% endif %}
         </td>
