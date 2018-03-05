@@ -10,7 +10,7 @@ import {ChangeDetectorRef, ElementRef, TemplateRef, ViewContainerRef} from '@ang
 
 import {defineComponent} from '../../src/render3/definition';
 import {InjectFlags, bloomAdd, bloomFindPossibleInjector, getOrCreateNodeInjector, injectAttribute} from '../../src/render3/di';
-import {NgOnChangesFeature, PublicFeature, defineDirective, inject, injectChangeDetectorRef, injectElementRef, injectTemplateRef, injectViewContainerRef} from '../../src/render3/index';
+import {NgOnChangesFeature, PublicFeature, defineDirective, directiveInject, injectChangeDetectorRef, injectElementRef, injectTemplateRef, injectViewContainerRef} from '../../src/render3/index';
 import {bind, container, containerRefreshEnd, containerRefreshStart, createLNode, createLView, createTView, directiveRefresh, elementEnd, elementStart, embeddedViewEnd, embeddedViewStart, enterView, interpolation2, leaveView, load, projection, projectionDef, text, textBinding} from '../../src/render3/instructions';
 import {LInjector} from '../../src/render3/interfaces/injector';
 import {LNodeFlags} from '../../src/render3/interfaces/node';
@@ -59,7 +59,7 @@ describe('di', () => {
         constructor(a: DirectiveA, b: DirectiveB) { this.value = a.value + b.value; }
         static ngDirectiveDef = defineDirective({
           type: DirectiveC,
-          factory: () => new DirectiveC(inject(DirectiveA), inject(DirectiveB))
+          factory: () => new DirectiveC(directiveInject(DirectiveA), directiveInject(DirectiveB))
         });
       }
 
@@ -101,7 +101,7 @@ describe('di', () => {
         }
         static ngDirectiveDef = defineDirective({
           type: DirectiveSameInstance,
-          factory: () => new DirectiveSameInstance(injectElementRef(), inject(Directive))
+          factory: () => new DirectiveSameInstance(injectElementRef(), directiveInject(Directive))
         });
       }
 
@@ -141,7 +141,7 @@ describe('di', () => {
         }
         static ngDirectiveDef = defineDirective({
           type: DirectiveSameInstance,
-          factory: () => new DirectiveSameInstance(injectTemplateRef(), inject(Directive))
+          factory: () => new DirectiveSameInstance(injectTemplateRef(), directiveInject(Directive))
         });
       }
 
@@ -181,7 +181,8 @@ describe('di', () => {
         }
         static ngDirectiveDef = defineDirective({
           type: DirectiveSameInstance,
-          factory: () => new DirectiveSameInstance(injectViewContainerRef(), inject(Directive))
+          factory:
+              () => new DirectiveSameInstance(injectViewContainerRef(), directiveInject(Directive))
         });
       }
 
@@ -540,7 +541,8 @@ describe('di', () => {
           static ngComponentDef = defineComponent({
             type: MyApp,
             tag: 'my-app',
-            factory: () => new MyApp(inject(String as any, InjectFlags.Default, 'DefaultValue')),
+            factory: () => new MyApp(
+                         directiveInject(String as any, InjectFlags.Default, 'DefaultValue')),
             template: () => null
           });
         }
@@ -565,7 +567,7 @@ describe('di', () => {
         }
         static ngDirectiveDef = defineDirective({
           type: ChildDirective,
-          factory: () => new ChildDirective(inject(ParentDirective)),
+          factory: () => new ChildDirective(directiveInject(ParentDirective)),
           features: [PublicFeature]
         });
       }
@@ -577,7 +579,8 @@ describe('di', () => {
         }
         static ngDirectiveDef = defineDirective({
           type: Child2Directive,
-          factory: () => new Child2Directive(inject(ParentDirective), inject(ChildDirective))
+          factory: () => new Child2Directive(
+                       directiveInject(ParentDirective), directiveInject(ChildDirective))
         });
       }
 

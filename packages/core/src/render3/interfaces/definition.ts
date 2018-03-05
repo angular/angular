@@ -8,9 +8,12 @@
 
 import {ChangeDetectionStrategy} from '../../change_detection/constants';
 import {PipeTransform} from '../../change_detection/pipe_transform';
+import {Provider} from '../../core';
 import {RendererType2} from '../../render/api';
 import {Type} from '../../type';
 import {resolveRendererType2} from '../../view/util';
+
+
 
 /**
  * Definition of what a template rendering function should look like.
@@ -19,16 +22,37 @@ export type ComponentTemplate<T> = {
   (ctx: T, creationMode: boolean): void; ngPrivateData?: never;
 };
 
+/**
+ * A subclass of `Type` which has a static `ngComponentDef`:`ComponentDef` field making it
+ * consumable for rendering.
+ */
 export interface ComponentType<T> extends Type<T> { ngComponentDef: ComponentDef<T>; }
 
+/**
+ * A subclass of `Type` which has a static `ngDirectiveDef`:`DirectiveDef` field making it
+ * consumable for rendering.
+ */
 export interface DirectiveType<T> extends Type<T> { ngDirectiveDef: DirectiveDef<T>; }
 
 export const enum DirectiveDefFlags {ContentQuery = 0b10}
 
+/**
+ * A subclass of `Type` which has a static `ngPipeDef`:`PipeDef` field making it
+ * consumable for rendering.
+ */
 export interface PipeType<T> extends Type<T> { ngPipeDef: PipeDef<T>; }
 
 /**
- * `DirectiveDef` is a compiled version of the Directive used by the renderer instructions.
+ * Runtime link information for Directives.
+ *
+ * This is internal data structure used by the render to link
+ * directives into templates.
+ *
+ * NOTE: Always use `defineDirective` function to create this object,
+ * never create the object directly since the shape of this object
+ * can change between versions.
+ *
+ * See: {@link defineDirective}
  */
 export interface DirectiveDef<T> {
   /** Token representing the directive. Used by DI. */
@@ -58,11 +82,6 @@ export interface DirectiveDef<T> {
    * (as in `@Output('alias') propertyName: any;`).
    */
   readonly outputs: {[P in keyof T]: P};
-
-  /**
-   * A dictionary mapping the methods' minified names to their original unminified ones.
-   */
-  readonly methods: {[P in keyof T]: P};
 
   /**
    * Name under which the directive is exported (for use with local references in template)
@@ -104,6 +123,18 @@ export interface DirectiveDef<T> {
   onDestroy: (() => void)|null;
 }
 
+/**
+ * Runtime link information for Components.
+ *
+ * This is internal data structure used by the render to link
+ * components into templates.
+ *
+ * NOTE: Always use `defineComponent` function to create this object,
+ * never create the object directly since the shape of this object
+ * can change between versions.
+ *
+ * See: {@link defineComponent}
+ */
 export interface ComponentDef<T> extends DirectiveDef<T> {
   /**
    * The tag name which should be used by the component.
@@ -128,10 +159,31 @@ export interface ComponentDef<T> extends DirectiveDef<T> {
 
   /** Whether or not this component's ChangeDetectionStrategy is OnPush */
   readonly onPush: boolean;
+
+  /**
+   * Defines the set of injectable providers that are visible to a Directive and its content DOM
+   * children.
+   */
+  readonly providers?: Provider[];
+
+  /**
+   * Defines the set of injectable providers that are visible to a Directive and its view DOM
+   * children only.
+   */
+  readonly viewProviders?: Provider[];
 }
 
 /**
+ * Runtime link information for Pipes.
  *
+ * This is internal data structure used by the renderer to link
+ * pipes into templates.
+ *
+ * NOTE: Always use `definePipe` function to create this object,
+ * never create the object directly since the shape of this object
+ * can change between versions.
+ *
+ * See: {@link definePipe}
  */
 export interface PipeDef<T> {
   /**
@@ -154,30 +206,142 @@ export interface PipeDef<T> {
   onDestroy: (() => void)|null;
 }
 
-
+/**
+ * Arguments for `defineDirective`
+ */
 export interface DirectiveDefArgs<T> {
+  /**
+   * Directive type, needed to configure the injector.
+   */
   type: Type<T>;
+
+  /**
+   * Factory method used to create an instance of directive.
+   */
   factory: () => T | [T];
+
+  /**
+   * Static attributes to set on host element.
+   *
+   * Even indices: attribute name
+   * Odd indices: attribute value
+   */
   attributes?: string[];
+
+  /**
+   * A map of input names.
+   *
+   * The format is in: `{[actualPropertyName: string]:string}`.
+   *
+   * Which the minifier may translate to: `{[minifiedPropertyName: string]:string}`.
+   *
+   * This allows the render to re-construct the minified and non-minified names
+   * of properties.
+   */
   inputs?: {[P in keyof T]?: string};
+
+  /**
+   * TODO: Remove per https://github.com/angular/angular/issues/22591
+   */
   inputsPropertyName?: {[P in keyof T]?: string};
+
+  /**
+   * A map of output names.
+   *
+   * The format is in: `{[actualPropertyName: string]:string}`.
+   *
+   * Which the minifier may translate to: `{[minifiedPropertyName: string]:string}`.
+   *
+   * This allows the render to re-construct the minified and non-minified names
+   * of properties.
+   */
   outputs?: {[P in keyof T]?: string};
-  methods?: {[P in keyof T]?: string};
+
+  /**
+   * A list of optional features to apply.
+   *
+   * See: {@link NgOnChangesFeature}, {@link PublicFeature}
+   */
   features?: DirectiveDefFeature[];
+
+  /**
+   * Function executed by the parent template to allow child directive to apply host bindings.
+   */
   hostBindings?: (directiveIndex: number, elementIndex: number) => void;
+
+  /**
+   * Defines the name that can be used in the template to assign this directive to a variable.
+   *
+   * See: {@link Directive.exportAs}
+   */
   exportAs?: string;
 }
 
+/**
+ * Arguments for `defineComponent`.
+ */
 export interface ComponentDefArgs<T> extends DirectiveDefArgs<T> {
+  /**
+   * HTML tag name to use in place where this component should be instantiated.
+   */
   tag: string;
+
+  /**
+   * Template function use for rendering DOM.
+   *
+   * This function has following structure.
+   *
+   * ```
+   * function Template<T>(ctx:T, creationMode: boolean) {
+   *   if (creationMode) {
+   *     // Contains creation mode instructions.
+   *   }
+   *   // Contains binding update instructions
+   * }
+   * ```
+   *
+   * Common instructions are:
+   * Creation mode instructions:
+   *  - `elementStart`, `elementEnd`
+   *  - `text`
+   *  - `container`
+   *  - `listener`
+   *
+   * Binding update instructions:
+   * - `bind`
+   * - `elementAttribute`
+   * - `elementProperty`
+   * - `elementClass`
+   * - `elementStyle`
+   *
+   */
   template: ComponentTemplate<T>;
+
+  /**
+   * A list of optional features to apply.
+   *
+   * See: {@link NgOnChancesFeature}, {@link PublicFeature}
+   */
   features?: ComponentDefFeature[];
+
   rendererType?: RendererType2;
+
   changeDetection?: ChangeDetectionStrategy;
+
+  /**
+   * Defines the set of injectable objects that are visible to a Directive and its light DOM
+   * children.
+   */
+  providers?: Provider[];
+
+  /**
+   * Defines the set of injectable objects that are visible to its view DOM children.
+   */
+  viewProviders?: Provider[];
 }
 
 export type DirectiveDefFeature = <T>(directiveDef: DirectiveDef<T>) => void;
-export type ComponentDefFeature = <T>(directiveDef: DirectiveDef<T>) => void;
+export type ComponentDefFeature = <T>(componentDef: ComponentDef<T>) => void;
 
 // Note: This hack is necessary so we don't erroneously get a circular dependency
 // failure based on types.
