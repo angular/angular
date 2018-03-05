@@ -14,7 +14,7 @@ export {
   detectChanges as ɵdetectChanges,
   renderComponent as ɵrenderComponent,
   ComponentType as ɵComponentType,
-  inject as ɵinject,
+  directiveInject as ɵdirectiveInject,
   injectTemplateRef as ɵinjectTemplateRef,
   injectViewContainerRef as ɵinjectViewContainerRef,
   injectChangeDetectorRef as ɵinjectChangeDetectorRef,

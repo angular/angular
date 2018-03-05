@@ -11,7 +11,7 @@ import {NgOnChangesFeature, PublicFeature, defineComponent, defineDirective, def
 import {InjectFlags} from './di';
 import {ComponentDef, ComponentTemplate, ComponentType, DirectiveDef, DirectiveDefFlags, DirectiveType} from './interfaces/definition';
 
-export {InjectFlags, QUERY_READ_CONTAINER_REF, QUERY_READ_ELEMENT_REF, QUERY_READ_FROM_NODE, QUERY_READ_TEMPLATE_REF, inject, injectAttribute, injectChangeDetectorRef, injectElementRef, injectTemplateRef, injectViewContainerRef} from './di';
+export {InjectFlags, QUERY_READ_CONTAINER_REF, QUERY_READ_ELEMENT_REF, QUERY_READ_FROM_NODE, QUERY_READ_TEMPLATE_REF, directiveInject, injectAttribute, injectChangeDetectorRef, injectElementRef, injectTemplateRef, injectViewContainerRef} from './di';
 export {CssSelector} from './interfaces/projection';
 
 

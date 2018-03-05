@@ -187,7 +187,7 @@ export function diPublic(def: DirectiveDef<any>): void {
  *
  *   static ngDirectiveDef = defineDirective({
  *     type: SomeDirective,
- *     factory: () => new SomeDirective(inject(DirectiveA))
+ *     factory: () => new SomeDirective(directiveInject(DirectiveA))
  *   });
  * }
  *
@@ -195,7 +195,7 @@ export function diPublic(def: DirectiveDef<any>): void {
  * @param flags Injection flags (e.g. CheckParent)
  * @returns The instance found
  */
-export function inject<T>(token: Type<T>, flags?: InjectFlags, defaultValue?: T): T {
+export function directiveInject<T>(token: Type<T>, flags?: InjectFlags, defaultValue?: T): T {
   return getOrCreateInjectable<T>(getOrCreateNodeInjector(), token, flags, defaultValue);
 }
 
