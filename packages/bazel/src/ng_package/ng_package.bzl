@@ -144,9 +144,8 @@ def _ng_package_impl(ctx):
                                         for dep in ctx.attr.deps
                                         if hasattr(dep, "angular")])
 
-  # TODO: the args look long, maybe need to spill to a params file:
-  # https://docs.bazel.build/versions/master/skylark/lib/Args.html#use_param_file
   args = ctx.actions.args()
+  args.use_param_file("%s", use_always = True)
   args.add(npm_package_directory.path)
   args.add(ctx.label.package)
   args.add([ctx.bin_dir.path, ctx.label.package], join_with="/")
