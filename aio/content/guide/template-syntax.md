@@ -2042,47 +2042,89 @@ Fortunately, the Angular [_NgModel_](guide/template-syntax#ngModel) directive is
 
 <hr/>
 
+<!--
 {@a directives}
+-->
+{@a 디렉티브}
 
+<!--
 ## Built-in directives
+-->
+## 기본 디렉티브
 
+<!--
 Earlier versions of Angular included over seventy built-in directives.
 The community contributed many more, and countless private directives
 have been created for internal applications.
+-->
+Angular 1.x 버전이었던 AngularJS에는 프레임워크가 제공하는 디렉티브가 70개 이상 있었습니다.
+이것은 Angular 커뮤니티에서 너무 큰 의욕을 가지고 개발에 참여한 결과이며, 내부용으로만 쓰이던 디렉티브도 끝없이 늘어나고 있었습니다.
 
+<!--
 You don't need many of those directives in Angular.
 You can often achieve the same results with the more capable and expressive Angular binding system.
 Why create a directive to handle a click when you can write a simple binding such as this?
+-->
+이제 Angular에 이렇게 많은 디렉티브는 필요없습니다.
+AngularJS에서 디렉티브로 해야 했던 많은 작업들은 이제 바인딩 시스템으로 더 간단하고 우아하게 구현할 수 있습니다.
+클릭 이벤트를 처리하는 경우만 생각해봐도, 이벤트 바인딩이 이렇게 간단한데 클릭 이벤트를 처리하는 디렉티브를 굳이 만들 필요는 없겠죠?
 
 <code-example path="template-syntax/src/app/app.component.html" region="event-binding-1" title="src/app/app.component.html" linenums="false">
 </code-example>
 
+<!--
 You still benefit from directives that simplify complex tasks.
 Angular still ships with built-in directives; just not as many.
 You'll write your own directives, just not as many.
+-->
+하지만 복잡한 로직을 간단하게 표현하는 디렉티브의 역할은 아직 유효합니다.
+그리고 이전보다 줄었지만 Angular가 제공하는 기본 디렉티브도 아직 있습니다.
+필요하면 얼마든지 디렉티브를 만들어서 활용할 수 있습니다.
 
+<!--
 This segment reviews some of the most frequently used built-in directives,
 classified as either [_attribute_ directives](guide/template-syntax#attribute-directives) or [_structural_ directives](guide/template-syntax#structural-directives).
+-->
+이번에는 기본 디렉티브 중에서 가장 많이 쓰이는 디렉티브인 [_어트리뷰트_ 디렉티브](guide/template-syntax#어트리뷰트-디렉티브)와 [_구조 디렉티브_](guide/template-syntax#구조-디렉티브)에 대해 알아보겠습니다.
 
 <hr/>
 
+<!--
 {@a attribute-directives}
+-->
+{@a 어트리뷰트-디렉티브}
 
+<!--
 ## Built-in _attribute_ directives
+-->
+## 기본 _어트리뷰트_ 디렉티브
 
+<!--
 Attribute directives listen to and modify the behavior of
 other HTML elements, attributes, properties, and components.
 They are usually applied to elements as if they were HTML attributes, hence the name.
+-->
+어트리뷰트 디렉티브는 HTML 엘리먼트나 어트리뷰트, 프로퍼티, 컴포넌트의 동작을 조작합니다.
+같은 이름의 어트리뷰트가 있으면 어트리뷰트 디렉티브의 우선순위가 더 높습니다.
 
+<!--
 Many details are covered in the [_Attribute Directives_](guide/attribute-directives) guide.
 Many NgModules such as the [`RouterModule`](guide/router "Routing and Navigation")
 and the [`FormsModule`](guide/forms "Forms") define their own attribute directives.
 This section is an introduction to the most commonly used attribute directives:
+-->
+어트리뷰트 디렉티브는 별도의 [_어트리뷰트 디렉티브_](guide/attribute-directives) 가이드 문서에서 자세하게 다룹니다.
+그리고 [`RouterModule`](guide/router "Routing and Navigation")이나 [`FormsModule`](guide/forms "Forms")같은 모듈은 해당 모듈에 필요한 어트리뷰트 디렉티브를 따로 정의해두기도 합니다.
+다음과 같은 어트리뷰트 디렉티브는 개발하면서 자주 사용하게 될 것입니다:
 
+<!--
 * [`NgClass`](guide/template-syntax#ngClass) - add and remove a set of CSS classes
 * [`NgStyle`](guide/template-syntax#ngStyle) - add and remove a set of HTML styles
 * [`NgModel`](guide/template-syntax#ngModel) - two-way data binding to an HTML form element
-
+-->
+* [`NgClass`](guide/template-syntax#ngClass) - CSS 클래스를 추가하거나 제거합니다.
+* [`NgStyle`](guide/template-syntax#ngStyle) - HTML 스타일을 추가하거나 제거합니다.
+* [`NgModel`](guide/template-syntax#ngModel) - HTML 폼 엘리먼트에 양방향 바인딩을 연결합니다.
 
 <hr/>
 
@@ -2266,7 +2308,10 @@ Here are all variations in action, including the uppercase version:
 
 <hr/>
 
+<!--
 {@a structural-directives}
+-->
+{@a 구조-디렉티브}
 
 ## Built-in _structural_ directives
 
