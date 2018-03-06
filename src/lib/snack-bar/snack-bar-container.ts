@@ -23,6 +23,7 @@ import {
   BasePortalOutlet,
   ComponentPortal,
   CdkPortalOutlet,
+  TemplatePortal,
 } from '@angular/cdk/portal';
 import {take} from 'rxjs/operators/take';
 import {Observable} from 'rxjs/Observable';
@@ -78,31 +79,16 @@ export class MatSnackBarContainer extends BasePortalOutlet implements OnDestroy 
 
   /** Attach a component portal as content to this snack bar container. */
   attachComponentPortal<T>(portal: ComponentPortal<T>): ComponentRef<T> {
-    if (this._portalOutlet.hasAttached()) {
-      throw Error('Attempting to attach snack bar content after content is already attached');
-    }
-
-    const element: HTMLElement = this._elementRef.nativeElement;
-
-    if (this.snackBarConfig.panelClass || this.snackBarConfig.extraClasses) {
-      this._setCssClasses(this.snackBarConfig.panelClass);
-      this._setCssClasses(this.snackBarConfig.extraClasses);
-    }
-
-    if (this.snackBarConfig.horizontalPosition === 'center') {
-      element.classList.add('mat-snack-bar-center');
-    }
-
-    if (this.snackBarConfig.verticalPosition === 'top') {
-      element.classList.add('mat-snack-bar-top');
-    }
-
+    this._assertNotAttached();
+    this._applySnackBarClasses();
     return this._portalOutlet.attachComponentPortal(portal);
   }
 
   /** Attach a template portal as content to this snack bar container. */
-  attachTemplatePortal(): EmbeddedViewRef<any> {
-    throw Error('Not yet implemented');
+  attachTemplatePortal<C>(portal: TemplatePortal<C>): EmbeddedViewRef<C> {
+    this._assertNotAttached();
+    this._applySnackBarClasses();
+    return this._portalOutlet.attachTemplatePortal(portal);
   }
 
   /** Handle end of animations, updating the state of the snackbar. */
@@ -169,6 +155,31 @@ export class MatSnackBarContainer extends BasePortalOutlet implements OnDestroy 
       classList.forEach(cssClass => element.classList.add(cssClass));
     } else {
       element.classList.add(classList);
+    }
+  }
+
+  /** Applies the various positioning and user-configured CSS classes to the snack bar. */
+  private _applySnackBarClasses() {
+    const element: HTMLElement = this._elementRef.nativeElement;
+
+    if (this.snackBarConfig.panelClass || this.snackBarConfig.extraClasses) {
+      this._setCssClasses(this.snackBarConfig.panelClass);
+      this._setCssClasses(this.snackBarConfig.extraClasses);
+    }
+
+    if (this.snackBarConfig.horizontalPosition === 'center') {
+      element.classList.add('mat-snack-bar-center');
+    }
+
+    if (this.snackBarConfig.verticalPosition === 'top') {
+      element.classList.add('mat-snack-bar-top');
+    }
+  }
+
+  /** Asserts that no content is already attached to the container. */
+  private _assertNotAttached() {
+    if (this._portalOutlet.hasAttached()) {
+      throw Error('Attempting to attach snack bar content after content is already attached');
     }
   }
 }

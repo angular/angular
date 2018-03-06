@@ -9,15 +9,17 @@
 import {LiveAnnouncer} from '@angular/cdk/a11y';
 import {BreakpointObserver, Breakpoints} from '@angular/cdk/layout';
 import {Overlay, OverlayConfig, OverlayRef} from '@angular/cdk/overlay';
-import {ComponentPortal, ComponentType, PortalInjector} from '@angular/cdk/portal';
+import {ComponentPortal, TemplatePortal, ComponentType, PortalInjector} from '@angular/cdk/portal';
 import {
   ComponentRef,
+  EmbeddedViewRef,
   Inject,
   Injectable,
   Injector,
   InjectionToken,
   Optional,
   SkipSelf,
+  TemplateRef,
 } from '@angular/core';
 import {take} from 'rxjs/operators/take';
 import {takeUntil} from 'rxjs/operators/takeUntil';
@@ -72,41 +74,21 @@ export class MatSnackBar {
    * @param component Component to be instantiated.
    * @param config Extra configuration for the snack bar.
    */
-  openFromComponent<T>(component: ComponentType<T>, config?: MatSnackBarConfig): MatSnackBarRef<T> {
-    const _config = {...this._defaultConfig, ...config};
-    const snackBarRef = this._attach(component, _config);
+  openFromComponent<T>(component: ComponentType<T>, config?: MatSnackBarConfig):
+    MatSnackBarRef<T> {
+    return this._attach(component, config) as MatSnackBarRef<T>;
+  }
 
-    // When the snackbar is dismissed, clear the reference to it.
-    snackBarRef.afterDismissed().subscribe(() => {
-      // Clear the snackbar ref if it hasn't already been replaced by a newer snackbar.
-      if (this._openedSnackBarRef == snackBarRef) {
-        this._openedSnackBarRef = null;
-      }
-    });
-
-    if (this._openedSnackBarRef) {
-      // If a snack bar is already in view, dismiss it and enter the
-      // new snack bar after exit animation is complete.
-      this._openedSnackBarRef.afterDismissed().subscribe(() => {
-        snackBarRef.containerInstance.enter();
-      });
-      this._openedSnackBarRef.dismiss();
-    } else {
-      // If no snack bar is in view, enter the new snack bar.
-      snackBarRef.containerInstance.enter();
-    }
-
-    // If a dismiss timeout is provided, set up dismiss based on after the snackbar is opened.
-    if (_config.duration && _config.duration > 0) {
-      snackBarRef.afterOpened().subscribe(() => snackBarRef._dismissAfter(_config!.duration!));
-    }
-
-    if (_config.announcementMessage) {
-      this._live.announce(_config.announcementMessage, _config.politeness);
-    }
-
-    this._openedSnackBarRef = snackBarRef;
-    return this._openedSnackBarRef;
+  /**
+   * Creates and dispatches a snack bar with a custom template for the content, removing any
+   * currently opened snack bars.
+   *
+   * @param template Template to be instantiated.
+   * @param config Extra configuration for the snack bar.
+   */
+  openFromTemplate(template: TemplateRef<any>, config?: MatSnackBarConfig):
+    MatSnackBarRef<EmbeddedViewRef<any>> {
+    return this._attach(template, config);
   }
 
   /**
@@ -148,18 +130,31 @@ export class MatSnackBar {
   }
 
   /**
-   * Places a new component as the content of the snack bar container.
+   * Places a new component or a template as the content of the snack bar container.
    */
-  private _attach<T>(component: ComponentType<T>, config: MatSnackBarConfig): MatSnackBarRef<T> {
+  private _attach<T>(content: ComponentType<T> | TemplateRef<T>, userConfig?: MatSnackBarConfig):
+    MatSnackBarRef<T | EmbeddedViewRef<any>> {
+
+    const config = {...this._defaultConfig, ...userConfig};
     const overlayRef = this._createOverlay(config);
     const container = this._attachSnackBarContainer(overlayRef, config);
-    const snackBarRef = new MatSnackBarRef<T>(container, overlayRef);
-    const injector = this._createInjector(config, snackBarRef);
-    const portal = new ComponentPortal(component, undefined, injector);
-    const contentRef = container.attachComponentPortal(portal);
+    const snackBarRef = new MatSnackBarRef<T | EmbeddedViewRef<any>>(container, overlayRef);
 
-    // We can't pass this via the injector, because the injector is created earlier.
-    snackBarRef.instance = contentRef.instance;
+    if (content instanceof TemplateRef) {
+      const portal = new TemplatePortal(content, null!, {
+        $implicit: config.data,
+        snackBarRef
+      } as any);
+
+      snackBarRef.instance = container.attachTemplatePortal(portal);
+    } else {
+      const injector = this._createInjector(config, snackBarRef);
+      const portal = new ComponentPortal(content, undefined, injector);
+      const contentRef = container.attachComponentPortal<T>(portal);
+
+      // We can't pass this via the injector, because the injector is created earlier.
+      snackBarRef.instance = contentRef.instance;
+    }
 
     // Subscribe to the breakpoint observer and attach the mat-snack-bar-handset class as
     // appropriate. This class is applied to the overlay element because the overlay must expand to
@@ -174,7 +169,41 @@ export class MatSnackBar {
       }
     });
 
-    return snackBarRef;
+    this._animateSnackBar(snackBarRef, config);
+    this._openedSnackBarRef = snackBarRef;
+    return this._openedSnackBarRef;
+  }
+
+  /** Animates the old snack bar out and the new one in. */
+  private _animateSnackBar(snackBarRef: MatSnackBarRef<any>, config: MatSnackBarConfig) {
+    // When the snackbar is dismissed, clear the reference to it.
+    snackBarRef.afterDismissed().subscribe(() => {
+      // Clear the snackbar ref if it hasn't already been replaced by a newer snackbar.
+      if (this._openedSnackBarRef == snackBarRef) {
+        this._openedSnackBarRef = null;
+      }
+    });
+
+    if (this._openedSnackBarRef) {
+      // If a snack bar is already in view, dismiss it and enter the
+      // new snack bar after exit animation is complete.
+      this._openedSnackBarRef.afterDismissed().subscribe(() => {
+        snackBarRef.containerInstance.enter();
+      });
+      this._openedSnackBarRef.dismiss();
+    } else {
+      // If no snack bar is in view, enter the new snack bar.
+      snackBarRef.containerInstance.enter();
+    }
+
+    // If a dismiss timeout is provided, set up dismiss based on after the snackbar is opened.
+    if (config.duration && config.duration > 0) {
+      snackBarRef.afterOpened().subscribe(() => snackBarRef._dismissAfter(config.duration!));
+    }
+
+    if (config.announcementMessage) {
+      this._live.announce(config.announcementMessage, config.politeness);
+    }
   }
 
   /**

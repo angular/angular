@@ -50,4 +50,12 @@
   </p>
 </div>
 
-<button mat-raised-button (click)="open()">OPEN</button>
+<p>
+  <button mat-raised-button (click)="open()">OPEN</button>
+</p>
+
+<button mat-raised-button (click)="openTemplate()">OPEN TEMPLATE</button>
+
+<ng-template #template>
+  Template snack bar: {{message}}
+</ng-template>

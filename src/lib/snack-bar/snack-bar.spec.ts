@@ -6,7 +6,15 @@ import {
   tick,
   flush,
 } from '@angular/core/testing';
-import {NgModule, Component, Directive, ViewChild, ViewContainerRef, Inject} from '@angular/core';
+import {
+  NgModule,
+  Component,
+  Directive,
+  ViewChild,
+  ViewContainerRef,
+  Inject,
+  TemplateRef,
+} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {OverlayContainer} from '@angular/cdk/overlay';
@@ -464,6 +472,42 @@ describe('MatSnackBar', () => {
 
   });
 
+  describe('with TemplateRef', () => {
+    let templateFixture: ComponentFixture<ComponentWithTemplateRef>;
+
+    beforeEach(() => {
+      templateFixture = TestBed.createComponent(ComponentWithTemplateRef);
+      templateFixture.detectChanges();
+    });
+
+    it('should be able to open a snack bar using a TemplateRef', () => {
+      templateFixture.componentInstance.localValue = 'Pizza';
+      snackBar.openFromTemplate(templateFixture.componentInstance.templateRef);
+      templateFixture.detectChanges();
+
+      const containerElement = overlayContainerElement.querySelector('snack-bar-container')!;
+
+      expect(containerElement.textContent).toContain('Fries');
+      expect(containerElement.textContent).toContain('Pizza');
+
+      templateFixture.componentInstance.localValue = 'Pasta';
+      templateFixture.detectChanges();
+
+      expect(containerElement.textContent).toContain('Pasta');
+    });
+
+    it('should be able to pass in contextual data when opening with a TemplateRef', () => {
+      snackBar.openFromTemplate(templateFixture.componentInstance.templateRef, {
+        data: {value: 'Oranges'}
+      });
+
+      const containerElement = overlayContainerElement.querySelector('snack-bar-container')!;
+
+      expect(containerElement.textContent).toContain('Oranges');
+    });
+
+  });
+
 });
 
 describe('MatSnackBar with parent MatSnackBar', () => {
@@ -810,6 +854,20 @@ class ComponentWithChildViewContainer {
   }
 }
 
+@Component({
+  selector: 'arbitrary-component-with-template-ref',
+  template: `
+    <ng-template let-data>
+      Fries {{localValue}} {{data?.value}}
+    </ng-template>
+  `,
+})
+class ComponentWithTemplateRef {
+  @ViewChild(TemplateRef) templateRef: TemplateRef<any>;
+  localValue: string;
+}
+
+
 /** Simple component for testing ComponentPortal. */
 @Component({template: '<p>Burritos are on the way.</p>'})
 class BurritosNotification {
@@ -835,7 +893,8 @@ class ComponentThatProvidesMatSnackBar {
  */
 const TEST_DIRECTIVES = [ComponentWithChildViewContainer,
                          BurritosNotification,
-                         DirectiveWithViewContainer];
+                         DirectiveWithViewContainer,
+                         ComponentWithTemplateRef];
 @NgModule({
   imports: [CommonModule, MatSnackBarModule],
   exports: TEST_DIRECTIVES,

@@ -7,7 +7,7 @@
  */
 
 import {Dir} from '@angular/cdk/bidi';
-import {Component, ViewEncapsulation} from '@angular/core';
+import {Component, ViewEncapsulation, ViewChild, TemplateRef} from '@angular/core';
 import {
   MatSnackBar,
   MatSnackBarConfig,
@@ -25,6 +25,7 @@ import {
   preserveWhitespaces: false,
 })
 export class SnackBarDemo {
+  @ViewChild('template') template: TemplateRef<any>;
   message: string = 'Snack Bar opened.';
   actionButtonLabel: string = 'Retry';
   action: boolean = false;
@@ -38,12 +39,22 @@ export class SnackBarDemo {
   }
 
   open() {
-    let config = new MatSnackBarConfig();
+    const config = this._createConfig();
+    this.snackBar.open(this.message, this.action ? this.actionButtonLabel : undefined, config);
+  }
+
+  openTemplate() {
+    const config = this._createConfig();
+    this.snackBar.openFromTemplate(this.template, config);
+  }
+
+  private _createConfig() {
+    const config = new MatSnackBarConfig();
     config.verticalPosition = this.verticalPosition;
     config.horizontalPosition = this.horizontalPosition;
     config.duration = this.setAutoHide ? this.autoHide : 0;
     config.panelClass = this.addExtraClass ? ['party'] : undefined;
     config.direction = this.dir.value;
-    this.snackBar.open(this.message, this.action ? this.actionButtonLabel : undefined, config);
+    return config;
   }
 }
