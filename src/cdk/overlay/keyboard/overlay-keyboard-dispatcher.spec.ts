@@ -151,6 +151,20 @@ describe('OverlayKeyboardDispatcher', () => {
     expect(spy).toHaveBeenCalledTimes(1);
   });
 
+  it('should dispose of the global keyboard event handler correctly', () => {
+    const overlayRef = overlay.create();
+    const body = document.body;
+
+    spyOn(body, 'addEventListener');
+    spyOn(body, 'removeEventListener');
+
+    keyboardDispatcher.add(overlayRef);
+    expect(body.addEventListener).toHaveBeenCalledWith('keydown', jasmine.any(Function), true);
+
+    overlayRef.dispose();
+    expect(body.removeEventListener).toHaveBeenCalledWith('keydown', jasmine.any(Function), true);
+  });
+
 });
 
 
