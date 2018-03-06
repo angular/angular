@@ -1,4 +1,5 @@
 @import '../core/style/elevation';
+@import '../../cdk/a11y/a11y';
 
 // The bottom sheet minimum width on larger screen sizes is based
 // on increments of the toolbar, according to the spec. See:
@@ -16,6 +17,10 @@ $mat-bottom-sheet-container-horizontal-padding: 16px !default;
   box-sizing: border-box;
   display: block;
   outline: 0;
+
+  @include cdk-high-contrast {
+    outline: 1px solid;
+  }
 }
 
 .mat-bottom-sheet-container-medium {
