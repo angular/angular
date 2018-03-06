@@ -153,7 +153,15 @@ export class MatDatepicker<D> implements OnDestroy, CanColor {
   @Input() startView: 'month' | 'year' = 'month';
 
   /** Color palette to use on the datepicker's calendar. */
-  @Input() color: ThemePalette;
+  @Input()
+  get color(): ThemePalette {
+    return this._color ||
+        (this._datepickerInput ? this._datepickerInput._getThemePalette() : undefined);
+  }
+  set color(value: ThemePalette) {
+    this._color = value;
+  }
+  _color: ThemePalette;
 
   /**
    * Whether the calendar UI is in touch mode. In touch mode the calendar opens in a dialog rather
@@ -464,13 +472,10 @@ export class MatDatepicker<D> implements OnDestroy, CanColor {
 
   /** Passes the current theme color along to the calendar overlay. */
   private _setColor(): void {
-    const input = this._datepickerInput;
-    const color = this.color || (input ? input._getThemePalette() : undefined);
-
+    const color = this.color;
     if (this._popupComponentRef) {
       this._popupComponentRef.instance.color = color;
     }
-
     if (this._dialogRef) {
       this._dialogRef.componentInstance.color = color;
     }

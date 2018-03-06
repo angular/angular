@@ -99,6 +99,14 @@ As with other types of `<input>`, the datepicker works with `@angular/forms` dir
 
 <!-- example(datepicker-value) -->
 
+### Changing the datepicker colors
+
+The datepicker popup will automatically inherit the color palette (`primary`, `accent`, or `warn`)
+from the `mat-form-field` it is attached to. If you would like to specify a different palette for
+the popup you can do so by setting the `color` property on `mat-datepicker`.
+
+<!-- example(datepicker-color) -->
+
 ### Date validation
 
 There are three properties that add date validation to the datepicker input. The first two are the
