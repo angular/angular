@@ -28,8 +28,7 @@
     "benchmarks/src/old",
     "benchmarks/src/**/index_aot.ts",
     "benchmarks_external",
-    "payload_tests",
-    "rollup-test"
+    "payload_tests"
   ],
   "angularCompilerOptions": {
     "skipTemplateCodegen": true
