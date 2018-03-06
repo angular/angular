@@ -181,14 +181,14 @@ describe('encapsulation', () => {
   }
 
   it('should encapsulate children, but not host nor grand children', () => {
-    renderComponent(WrapperComponent, getRendererFactory2(document));
+    renderComponent(WrapperComponent, {rendererFactory: getRendererFactory2(document)});
     expect(containerEl.outerHTML)
         .toMatch(
             /<div host=""><encapsulated _nghost-c(\d+)="">foo<leaf _ngcontent-c\1=""><span>bar<\/span><\/leaf><\/encapsulated><\/div>/);
   });
 
   it('should encapsulate host', () => {
-    renderComponent(EncapsulatedComponent, getRendererFactory2(document));
+    renderComponent(EncapsulatedComponent, {rendererFactory: getRendererFactory2(document)});
     expect(containerEl.outerHTML)
         .toMatch(
             /<div host="" _nghost-c(\d+)="">foo<leaf _ngcontent-c\1=""><span>bar<\/span><\/leaf><\/div>/);
@@ -230,7 +230,7 @@ describe('encapsulation', () => {
       });
     }
 
-    renderComponent(WrapperComponentWith, getRendererFactory2(document));
+    renderComponent(WrapperComponentWith, {rendererFactory: getRendererFactory2(document)});
     expect(containerEl.outerHTML)
         .toMatch(
             /<div host="" _nghost-c(\d+)=""><leaf _ngcontent-c\1="" _nghost-c(\d+)=""><span _ngcontent-c\2="">bar<\/span><\/leaf><\/div>/);
