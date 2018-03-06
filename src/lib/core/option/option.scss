@@ -27,6 +27,23 @@
       padding-right: $mat-menu-side-padding * 2;
     }
   }
+
+  @include cdk-high-contrast {
+    $high-contrast-border-width: 1px;
+
+    // Add a margin to offset the border that we're adding to active option, in order
+    // to avoid the options shifting as the user is moving through the list.
+    margin: 0 $high-contrast-border-width;
+
+    &.mat-active {
+      // We use a border here, rather than an outline, because the outline will be cut off
+      // by the `overflow: hidden` on the panel wrapping the options, whereas a border
+      // will push the element inwards. This could be done using `outline-offset: -1px`,
+      // however the property isn't supported on IE11.
+      border: solid $high-contrast-border-width currentColor;
+      margin: 0;
+    }
+  }
 }
 
 // Collapses unwanted whitespace created by newlines in code like the following:
