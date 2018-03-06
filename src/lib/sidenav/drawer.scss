@@ -45,6 +45,12 @@ $mat-drawer-over-drawer-z-index: 4;
       overflow: hidden;
     }
   }
+
+  // When the consumer explicitly enabled the backdrop,
+  // we have to pull the side drawers above it.
+  &.mat-drawer-container-explicit-backdrop .mat-drawer-side {
+    z-index: $mat-drawer-backdrop-z-index;
+  }
 }
 
 .mat-drawer-backdrop {

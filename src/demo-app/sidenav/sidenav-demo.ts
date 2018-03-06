@@ -25,6 +25,7 @@ export class SidenavDemo {
   showHeader = false;
   showFooter = false;
   modeIndex = 0;
+  hasBackdrop: boolean;
   get mode() { return ['side', 'over', 'push'][this.modeIndex]; }
   get fixedTop() { return this.fixed && this.showHeader && !this.coverHeader ? 64 : 0; }
   get fixedBottom() { return this.fixed && this.showFooter && !this.coverHeader ? 64 : 0; }

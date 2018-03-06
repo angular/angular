@@ -643,6 +643,35 @@ describe('MatDrawerContainer', () => {
       expect(fixture.nativeElement.querySelector('.mat-drawer-backdrop')).toBeFalsy();
     }));
 
+    it('should be able to explicitly enable the backdrop in `side` mode', fakeAsync(() => {
+      const fixture = TestBed.createComponent(BasicTestApp);
+      const root = fixture.nativeElement;
+
+      fixture.componentInstance.drawer.mode = 'side';
+      fixture.detectChanges();
+      fixture.componentInstance.drawer.open();
+      fixture.detectChanges();
+      tick();
+      fixture.detectChanges();
+
+      let backdrop = root.querySelector('.mat-drawer-backdrop.mat-drawer-shown');
+
+      expect(backdrop).toBeFalsy();
+
+      fixture.componentInstance.hasBackdrop = true;
+      fixture.detectChanges();
+      backdrop = root.querySelector('.mat-drawer-backdrop.mat-drawer-shown');
+
+      expect(backdrop).toBeTruthy();
+      expect(fixture.componentInstance.drawer.opened).toBe(true);
+
+      backdrop.click();
+      fixture.detectChanges();
+      tick();
+
+      expect(fixture.componentInstance.drawer.opened).toBe(false);
+    }));
+
 });
 
 
@@ -666,7 +695,7 @@ class DrawerContainerTwoDrawerTestApp {
 @Component({
   template: `
     <mat-drawer-container (backdropClick)="backdropClicked()" [hasBackdrop]="hasBackdrop">
-      <mat-drawer #drawer position="start"
+      <mat-drawer #drawer="matDrawer" position="start"
                  (opened)="open()"
                  (openedStart)="openStart()"
                  (closed)="close()"
@@ -683,8 +712,9 @@ class BasicTestApp {
   closeCount = 0;
   closeStartCount = 0;
   backdropClickedCount = 0;
-  hasBackdrop = true;
+  hasBackdrop: boolean | null = null;
 
+  @ViewChild('drawer') drawer: MatDrawer;
   @ViewChild('drawerButton') drawerButton: ElementRef;
   @ViewChild('openButton') openButton: ElementRef;
   @ViewChild('closeButton') closeButton: ElementRef;

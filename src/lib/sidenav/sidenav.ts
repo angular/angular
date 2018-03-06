@@ -106,6 +106,7 @@ export class MatSidenav extends MatDrawer {
   styleUrls: ['drawer.css'],
   host: {
     'class': 'mat-drawer-container mat-sidenav-container',
+    '[class.mat-drawer-container-explicit-backdrop]': '_backdropOverride',
   },
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,

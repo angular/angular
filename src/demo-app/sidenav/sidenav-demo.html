@@ -4,7 +4,7 @@
 
 <div class="demo-sidenav-area" *ngIf="isLaunched">
   <mat-toolbar *ngIf="showHeader && !coverHeader">Header</mat-toolbar>
-  <mat-sidenav-container>
+  <mat-sidenav-container [hasBackdrop]="hasBackdrop">
     <mat-sidenav #start (open)="myinput.focus()" [mode]="mode"
                  [fixedInViewport]="fixed" [fixedTopGap]="fixedTop" [fixedBottomGap]="fixedBottom">
       Start Side Sidenav
@@ -41,6 +41,7 @@
           <h3>Sidenav</h3>
           <button mat-button (click)="start.toggle(undefined, 'mouse')">Toggle Start Side Sidenav</button>
           <button mat-button (click)="end.toggle(undefined, 'mouse')">Toggle End Side Sidenav</button>
+          <mat-checkbox [(ngModel)]="hasBackdrop">Has backdrop</mat-checkbox>
           <mat-checkbox [(ngModel)]="fixed">Fixed mode</mat-checkbox>
           <mat-checkbox [(ngModel)]="coverHeader">Sidenav covers header/footer</mat-checkbox>
         </div>

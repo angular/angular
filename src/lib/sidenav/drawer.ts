@@ -430,6 +430,7 @@ export class MatDrawer implements AfterContentInit, AfterContentChecked, OnDestr
   styleUrls: ['drawer.css'],
   host: {
     'class': 'mat-drawer-container',
+    '[class.mat-drawer-container-explicit-backdrop]': '_backdropOverride',
   },
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
@@ -458,19 +459,23 @@ export class MatDrawerContainer implements AfterContentInit, OnDestroy {
   set autosize(value: boolean) { this._autosize = coerceBooleanProperty(value); }
   private _autosize: boolean;
 
-  /** Whether the drawer container should have a backdrop while one of the sidenavs is open. */
+  /**
+   * Whether the drawer container should have a backdrop while one of the sidenavs is open.
+   * If explicitly set to `true`, the backdrop will be enabled for drawers in the `side`
+   * mode as well.
+   */
   @Input()
   get hasBackdrop() {
-    if (this._hasBackdrop == null) {
+    if (this._backdropOverride == null) {
       return !this._start || this._start.mode !== 'side' || !this._end || this._end.mode !== 'side';
     }
 
-    return this._hasBackdrop;
+    return this._backdropOverride;
   }
   set hasBackdrop(value: any) {
-    this._hasBackdrop = value == null ? null : coerceBooleanProperty(value);
+    this._backdropOverride = value == null ? null : coerceBooleanProperty(value);
   }
-  private _hasBackdrop: boolean | null;
+  _backdropOverride: boolean | null;
 
   /** Event emitted when the drawer backdrop is clicked. */
   @Output() readonly backdropClick: EventEmitter<void> = new EventEmitter<void>();
@@ -663,8 +668,8 @@ export class MatDrawerContainer implements AfterContentInit, OnDestroy {
 
   /** Whether the container is being pushed to the side by one of the drawers. */
   private _isPushed() {
-    return (this._isDrawerOpen(this._start) && this._start!.mode != 'over') ||
-           (this._isDrawerOpen(this._end) && this._end!.mode != 'over');
+    return (this._isDrawerOpen(this._start) && this._start.mode != 'over') ||
+           (this._isDrawerOpen(this._end) && this._end.mode != 'over');
   }
 
   _onBackdropClicked() {
@@ -675,16 +680,20 @@ export class MatDrawerContainer implements AfterContentInit, OnDestroy {
   _closeModalDrawer() {
     // Close all open drawers where closing is not disabled and the mode is not `side`.
     [this._start, this._end]
-      .filter(drawer => drawer && !drawer.disableClose && drawer.mode !== 'side')
+      .filter(drawer => drawer && !drawer.disableClose && this._canHaveBackdrop(drawer))
       .forEach(drawer => drawer!.close());
   }
 
   _isShowingBackdrop(): boolean {
-    return (this._isDrawerOpen(this._start) && this._start!.mode != 'side')
-        || (this._isDrawerOpen(this._end) && this._end!.mode != 'side');
+    return (this._isDrawerOpen(this._start) && this._canHaveBackdrop(this._start)) ||
+           (this._isDrawerOpen(this._end) && this._canHaveBackdrop(this._end));
   }
 
-  private _isDrawerOpen(drawer: MatDrawer | null): boolean {
+  private _canHaveBackdrop(drawer: MatDrawer): boolean {
+    return drawer.mode !== 'side' || !!this._backdropOverride;
+  }
+
+  private _isDrawerOpen(drawer: MatDrawer | null): drawer is MatDrawer {
     return drawer != null && drawer.opened;
   }
 
