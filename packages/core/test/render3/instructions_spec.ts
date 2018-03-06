@@ -59,8 +59,8 @@ describe('instructions', () => {
           () => elementStyle(
               0, 'background-image', bypassSanitizationTrustStyle('url("http://server")'), null,
               sanitizeStyle));
-      expect(t.html).toEqual(
-          '<div style="background-image: url(&quot;http://server&quot;);"></div>');
+      expect((t.hostElement.firstChild as HTMLElement).style.getPropertyValue('background-image'))
+          .toEqual('url("http://server")');
     });
   });
 });

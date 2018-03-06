@@ -63,7 +63,7 @@ export class TemplateFixture {
    * Current state of rendered HTML.
    */
   get html(): string {
-    return (this.hostNode.native as any as Element).innerHTML.replace(' style=""', '');
+    return (this.hostNode.native as any as Element).innerHTML.replace(/ style=""/g, '');
   }
 }
 
