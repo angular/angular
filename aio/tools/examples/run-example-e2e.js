@@ -147,7 +147,7 @@ function runProtractorSystemJS(prepPromise, appDir, appRunSpawnInfo, outputFile)
       let transpileError = false;
 
       // Start protractor.
-
+      console.log(`\n\n=========== Running aio example tests for: ${appDir}`);
       const spawnInfo = spawnExt('yarn', ['protractor',
         PROTRACTOR_CONFIG_FILENAME,
         `--specs=${specFilename}`,
@@ -199,6 +199,7 @@ function runProtractorAoT(appDir, outputFile) {
 // All protractor output is appended to the outputFile.
 // CLI version
 function runE2eTestsCLI(appDir, outputFile) {
+  console.log(`\n\n=========== Running aio example tests for: ${appDir}`);
   // `--preserve-symlinks` is needed due the symlinked `node_modules/` in each example.
   // `--no-webdriver-update` is needed to preserve the ChromeDriver version already installed.
   const args = ['e2e', '--preserve-symlinks', '--no-webdriver-update'];
