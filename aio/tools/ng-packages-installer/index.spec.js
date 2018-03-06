@@ -58,7 +58,7 @@ describe('NgPackagesInstaller', () => {
         '@angular/core': {
           parentDir: packagesDir,
           packageJsonPath: `${packagesDir}/core/package.json`,
-          config: { peerDependencies: { rxjs: '5.0.1' } }
+          config: { peerDependencies: { 'some-package': '5.0.1' } }
         },
         '@angular/common': {
           parentDir: packagesDir,
@@ -112,7 +112,7 @@ describe('NgPackagesInstaller', () => {
         },
         devDependencies: {
           '@angular/compiler-cli': `file:${toolsDir}/compiler-cli`,
-          rxjs: '5.0.1',
+          'some-package': '5.0.1',
           typescript: '^2.4.2'
         },
         __angular: { local: true }
