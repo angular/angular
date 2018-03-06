@@ -175,6 +175,9 @@ describe('DocViewerComponent', () => {
     const DOC_WITHOUT_H1 = 'Some content';
     const DOC_WITH_H1 = '<h1>Features</h1>Some content';
     const DOC_WITH_NO_TOC_H1 = '<h1 class="no-toc">Features</h1>Some content';
+    const DOC_WITH_EMBEDDED_TOC = '<h1>Features</h1><aio-toc class="embedded"></aio-toc>Some content';
+    const DOC_WITH_EMBEDDED_TOC_WITHOUT_H1 = '<aio-toc class="embedded"></aio-toc>Some content';
+    const DOC_WITH_EMBEDDED_TOC_WITH_NO_TOC_H1 = '<aio-toc class="embedded"></aio-toc>Some content';
     const DOC_WITH_HIDDEN_H1_CONTENT = '<h1><i style="visibility: hidden">link</i>Features</h1>Some content';
     let titleService: MockTitle;
     let tocService: MockTocService;
@@ -271,26 +274,45 @@ describe('DocViewerComponent', () => {
     });
 
     describe('(ToC)', () => {
-      it('should add an embedded ToC element if there is an `<h1>` heading', () => {
-        doPrepareTitleAndToc(DOC_WITH_H1);
-        const tocEl = getTocEl()!;
+      describe('needed', () => {
+        it('should add an embedded ToC element if there is an `<h1>` heading', () => {
+          doPrepareTitleAndToc(DOC_WITH_H1);
+          const tocEl = getTocEl()!;
 
-        expect(tocEl).toBeTruthy();
-        expect(tocEl.classList.contains('embedded')).toBe(true);
+          expect(tocEl).toBeTruthy();
+          expect(tocEl.classList.contains('embedded')).toBe(true);
+        });
+
+        it('should not add a second ToC element if there a hard coded one in place', () => {
+          doPrepareTitleAndToc(DOC_WITH_EMBEDDED_TOC);
+          expect(targetEl.querySelectorAll('aio-toc').length).toEqual(1);
+        });
       });
 
-      it('should not add a ToC element if there is a `.no-toc` `<h1>` heading', () => {
-        doPrepareTitleAndToc(DOC_WITH_NO_TOC_H1);
-        expect(getTocEl()).toBeFalsy();
+
+      describe('not needed', () => {
+        it('should not add a ToC element if there is a `.no-toc` `<h1>` heading', () => {
+          doPrepareTitleAndToc(DOC_WITH_NO_TOC_H1);
+          expect(getTocEl()).toBeFalsy();
+        });
+
+        it('should not add a ToC element if there is no `<h1>` heading', () => {
+          doPrepareTitleAndToc(DOC_WITHOUT_H1);
+          expect(getTocEl()).toBeFalsy();
+
+          doPrepareTitleAndToc(EMPTY_DOC);
+          expect(getTocEl()).toBeFalsy();
+        });
+
+        it('should remove ToC a hard coded one', () => {
+          doPrepareTitleAndToc(DOC_WITH_EMBEDDED_TOC_WITHOUT_H1);
+          expect(getTocEl()).toBeFalsy();
+
+          doPrepareTitleAndToc(DOC_WITH_EMBEDDED_TOC_WITH_NO_TOC_H1);
+          expect(getTocEl()).toBeFalsy();
+        });
       });
 
-      it('should not add a ToC element if there is no `<h1>` heading', () => {
-        doPrepareTitleAndToc(DOC_WITHOUT_H1);
-        expect(getTocEl()).toBeFalsy();
-
-        doPrepareTitleAndToc(EMPTY_DOC);
-        expect(getTocEl()).toBeFalsy();
-      });
 
       it('should generate ToC entries if there is an `<h1>` heading', () => {
         doAddTitleAndToc(DOC_WITH_H1, 'foo');
