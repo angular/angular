@@ -1,3 +1,45 @@
+<a name="6.0.0-beta.4"></a>
+# [6.0.0-beta.4](https://github.com/angular/material2/compare/6.0.0-beta-2...6.0.0-beta.4) (2018-03-05)
+
+### Highlights
+
+* New tree component! The base behavior lives in `@angular/cdk` with Material Design flavors in
+  `@angular/material`.
+
+
+### Bug Fixes
+
+* **button:** hide overflow of buttons to prevent overflow of hover/ripple ([#9424](https://github.com/angular/material2/issues/9424)) ([915a2b7](https://github.com/angular/material2/commit/915a2b7))
+* avoid layout jumping on elements with ripples in RTL ([#10026](https://github.com/angular/material2/issues/10026)) ([900716a](https://github.com/angular/material2/commit/900716a))
+* **chips:** Update chips in chip list, and add margin to chip input ([#8579](https://github.com/angular/material2/issues/8579)) ([67e710c](https://github.com/angular/material2/commit/67e710c))
+* **datepicker:** improve native adapter DST handling ([#10068](https://github.com/angular/material2/issues/10068)) ([2fad732](https://github.com/angular/material2/commit/2fad732))
+* **dialog:** actions not being pulled down when trapping focus ([#10007](https://github.com/angular/material2/issues/10007)) ([8a402d0](https://github.com/angular/material2/commit/8a402d0)), closes [#9722](https://github.com/angular/material2/issues/9722)
+* **dialog:** don't provide directionality if user injector has one already ([#10004](https://github.com/angular/material2/issues/10004)) ([e3d7aec](https://github.com/angular/material2/commit/e3d7aec))
+* **expansion-panel:** entire body content being shown on animation start ([#10138](https://github.com/angular/material2/issues/10138)) ([b4b76bd](https://github.com/angular/material2/commit/b4b76bd)), closes [#10134](https://github.com/angular/material2/issues/10134)
+* **grid-list:** default to LTR when Directionality value is empty ([#10111](https://github.com/angular/material2/issues/10111)) ([64ef3a8](https://github.com/angular/material2/commit/64ef3a8))
+* **grid-list:** invalid style declaration during server-side rendering ([#10131](https://github.com/angular/material2/issues/10131)) ([a27d9df](https://github.com/angular/material2/commit/a27d9df))
+* **list:** align avatar size in dense list with spec ([#10028](https://github.com/angular/material2/issues/10028)) ([d4a4f61](https://github.com/angular/material2/commit/d4a4f61)), closes [#10019](https://github.com/angular/material2/issues/10019)
+* **list-key-manager:** not ignoring vertical key events in horizontal-only mode ([#10075](https://github.com/angular/material2/issues/10075)) ([ffbb425](https://github.com/angular/material2/commit/ffbb425))
+* **menu:** detach lazily-rendered content when the menu is closed ([#10005](https://github.com/angular/material2/issues/10005)) ([bb1803d](https://github.com/angular/material2/commit/bb1803d)), closes [#9915](https://github.com/angular/material2/issues/9915)
+* **overlay:** hide overlay container when there are no attached overlays ([#10139](https://github.com/angular/material2/issues/10139)) ([4b528f6](https://github.com/angular/material2/commit/4b528f6)), closes [#6882](https://github.com/angular/material2/issues/6882) [#10033](https://github.com/angular/material2/issues/10033)
+* **paginator:** first/last icons being thrown off on IE and Edge; simplify icon setup ([#9776](https://github.com/angular/material2/issues/9776)) ([dd082cb](https://github.com/angular/material2/commit/dd082cb))
+* **select:** animation jumping on IE11 ([#10050](https://github.com/angular/material2/issues/10050)) ([a5909db](https://github.com/angular/material2/commit/a5909db))
+* **selection-list:** improve accessibility of selection list ([#10137](https://github.com/angular/material2/issues/10137)) ([51fce51](https://github.com/angular/material2/commit/51fce51)), closes [#9995](https://github.com/angular/material2/issues/9995)
+* **selection-list:** repeated preselected items not appearing as selected with OnPush parent ([#10100](https://github.com/angular/material2/issues/10100)) ([cdd224a](https://github.com/angular/material2/commit/cdd224a)), closes [#10090](https://github.com/angular/material2/issues/10090)
+* **tree:** fix type error in tree ([#10095](https://github.com/angular/material2/issues/10095)) ([6d94aec](https://github.com/angular/material2/commit/6d94aec))
+
+
+### Features
+
+* **list-key-manager:** accept item references in setActiveItem ([#10029](https://github.com/angular/material2/issues/10029)) ([92ed9c8](https://github.com/angular/material2/commit/92ed9c8))
+* **menu:** allow for backdrop class to be customized ([#10097](https://github.com/angular/material2/issues/10097)) ([2ece035](https://github.com/angular/material2/commit/2ece035)), closes [#10062](https://github.com/angular/material2/issues/10062)
+* **menu:** allow for backdrop to be disabled ([#10070](https://github.com/angular/material2/issues/10070)) ([e42f0bc](https://github.com/angular/material2/commit/e42f0bc)), closes [#9938](https://github.com/angular/material2/issues/9938)
+* **snack-bar:** add injection token for overriding the default options ([#9849](https://github.com/angular/material2/issues/9849)) ([a943b36](https://github.com/angular/material2/commit/a943b36)), closes [#9821](https://github.com/angular/material2/issues/9821)
+* **stepper:** require users to visit non-optional steps ([#10048](https://github.com/angular/material2/issues/10048)) ([77c8d8f](https://github.com/angular/material2/commit/77c8d8f))
+* **tree:** merge tree branch to master ([#9796](https://github.com/angular/material2/issues/9796)) ([c975ca8](https://github.com/angular/material2/commit/c975ca8))
+
+
+
 <a name="6.0.0-beta.3"></a>
 # [6.0.0-beta.3](https://github.com/angular/material2/compare/6.0.0-beta-2...6.0.0-beta.3) (2018-02-27)
 
