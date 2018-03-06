@@ -1284,14 +1284,7 @@ export function directiveRefresh<T>(directiveIndex: number, elementIndex: number
     // Only CheckAlways components or dirty OnPush components should be checked
     if (hostView.flags & (LViewFlags.CheckAlways | LViewFlags.Dirty)) {
       ngDevMode && assertDataInRange(directiveIndex);
-      const directive = getDirectiveInstance<T>(data[directiveIndex]);
-      const oldView = enterView(hostView, element);
-      try {
-        template(directive, creationMode);
-      } finally {
-        refreshDynamicChildren();
-        leaveView(oldView);
-      }
+      detectChangesInternal(hostView, element, getDirectiveInstance<T>(data[directiveIndex]));
     }
   }
 }
@@ -1511,21 +1504,69 @@ function markViewDirty(view: LView): void {
   currentView.flags |= LViewFlags.Dirty;
 
   ngDevMode && assertNotNull(currentView !.context, 'rootContext');
-  scheduleChangeDetection(currentView !.context as RootContext);
+  scheduleTick(currentView !.context as RootContext);
 }
 
 
-/** Given a root context, schedules change detection at that root. */
-export function scheduleChangeDetection<T>(rootContext: RootContext) {
+/**
+ * Used to schedule change detection on the whole application.
+ *
+ * Unlike `tick`, `scheduleTick` coalesces multiple calls into one change detection run.
+ * It is usually called indirectly by calling `markDirty` when the view needs to be
+ * re-rendered.
+ *
+ * Typically `scheduleTick` uses `requestAnimationFrame` to coalesce multiple
+ * `scheduleTick` requests. The scheduling function can be overridden in
+ * `renderComponent`'s `scheduler` option.
+ */
+export function scheduleTick<T>(rootContext: RootContext) {
   if (rootContext.clean == _CLEAN_PROMISE) {
     let res: null|((val: null) => void);
     rootContext.clean = new Promise<null>((r) => res = r);
     rootContext.scheduler(() => {
-      detectChanges(rootContext.component);
+      tick(rootContext.component);
       res !(null);
       rootContext.clean = _CLEAN_PROMISE;
     });
   }
+}
+
+/**
+ * Used to perform change detection on the whole application.
+ *
+ * This is equivalent to `detectChanges`, but invoked on root component. Additionally, `tick`
+ * executes lifecycle hooks and conditionally checks components based on their
+ * `ChangeDetectionStrategy` and dirtiness.
+ *
+ * The preferred way to trigger change detection is to call `markDirty`. `markDirty` internally
+ * schedules `tick` using a scheduler in order to coalesce multiple `markDirty` calls into a
+ * single change detection run. By default, the scheduler is `requestAnimationFrame`, but can
+ * be changed when calling `renderComponent` and providing the `scheduler` option.
+ */
+export function tick<T>(component: T): void {
+  const rootView = getRootView(component);
+  const rootComponent = (rootView.context as RootContext).component;
+  const hostNode = _getComponentHostLElementNode(rootComponent);
+
+  ngDevMode && assertNotNull(hostNode.data, 'Component host node should be attached to an LView');
+  renderComponentOrTemplate(hostNode, rootView, rootComponent);
+}
+
+/**
+ * Retrieve the root view from any component by walking the parent `LView` until
+ * reaching the root `LView`.
+ *
+ * @param component any component
+ */
+
+export function getRootView(component: any): LView {
+  ngDevMode && assertNotNull(component, 'component');
+  const lElementNode = _getComponentHostLElementNode(component);
+  let lView = lElementNode.view;
+  while (lView.parent) {
+    lView = lView.parent;
+  }
+  return lView;
 }
 
 /**
@@ -1544,7 +1585,24 @@ export function scheduleChangeDetection<T>(rootContext: RootContext) {
 export function detectChanges<T>(component: T): void {
   const hostNode = _getComponentHostLElementNode(component);
   ngDevMode && assertNotNull(hostNode.data, 'Component host node should be attached to an LView');
-  renderComponentOrTemplate(hostNode, hostNode.view, component);
+  detectChangesInternal(hostNode.data as LView, hostNode, component);
+}
+
+
+/** Checks the view of the component provided. Does not gate on dirty checks or execute doCheck. */
+function detectChangesInternal<T>(hostView: LView, hostNode: LElementNode, component: T) {
+  const componentIndex = hostNode.flags >> LNodeFlags.INDX_SHIFT;
+  const template = (hostNode.view.tView.data[componentIndex] as ComponentDef<T>).template;
+  const oldView = enterView(hostView, hostNode);
+
+  if (template != null) {
+    try {
+      template(component, creationMode);
+    } finally {
+      refreshDynamicChildren();
+      leaveView(oldView);
+    }
+  }
 }
 
 
