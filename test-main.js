@@ -76,7 +76,7 @@ Promise
     .resolve()
 
     // Load browser-specific polyfills for custom elements.
-    // .then(function() { return loadCustomElementsPolyfills(); })
+    .then(function() { return loadCustomElementsPolyfills(); })
 
     // Load necessary testing packages.
     .then(function() {
@@ -151,29 +151,35 @@ function loadCustomElementsPolyfills() {
     Object.setPrototypeOf = setPrototypeOf;
   }
 
-  // The custom elements polyfill will patch `(HTML)Element` properties, including `innerHTML`:
-  // https://github.com/webcomponents/custom-elements/blob/32f043c3a5e5fc3e035342c0ef10c6786fa416d7/src/Patch/Element.js#L28-L78
-  // The patched `innerHTML` setter will try to traverse the DOM (via `nextSibling`), which leads to
-  // infinite loops when testing `HtmlSanitizer` with cloberred elements on browsers that do not
-  // support the `<template>` element:
+  // The custom elements polyfill will patch properties and methods on `(HTML)Element` and `Node`
+  // (among others), including `(HTML)Element#innerHTML` and `Node#removeChild()`:
+  // https://github.com/webcomponents/custom-elements/blob/4f7072c0dbda4beb505d16967acfffd33337b325/src/Patch/Element.js#L28-L73
+  // https://github.com/webcomponents/custom-elements/blob/4f7072c0dbda4beb505d16967acfffd33337b325/src/Patch/Node.js#L105-L120
+  // The patched `innerHTML` setter and `removeChild()` method will try to traverse the DOM (via
+  // `nextSibling` and `parentNode` respectively), which leads to infinite loops when testing
+  // `HtmlSanitizer` with cloberred elements on browsers that do not support the `<template>`
+  // element:
   // https://github.com/angular/angular/blob/213baa37b0b71e72d00ad7b606ebfc2ade06b934/packages/platform-browser/src/security/html_sanitizer.ts#L29-L38
-  // To avoid that, we "unpatch" `(HTML)Element#innerHTML` and apply the patch only for the relevant
+  // To avoid that, we "unpatch" these properties/methods and apply the patch only for the relevant
   // `@angular/elements` tests.
-  var patchTarget;
-  var originalDescriptor;
+  var patchConfig = {'innerHTML': ['Element', 'HTMLElement'], 'removeChild': ['Node']};
+  var patchTargets = {};
+  var originalDescriptors = {};
   if (!window.customElements) {
-    ['Element', 'HTMLElement']
-        .map(function(name) { return window[name].prototype; })
-        .some(function(candidatePatchTarget) {
-          var candidateOriginalDescriptor =
-              Object.getOwnPropertyDescriptor(candidatePatchTarget, 'innerHTML');
+    Object.keys(patchConfig).forEach(function(prop) {
+      patchConfig[prop]
+          .map(function(name) { return window[name].prototype; })
+          .some(function(candidatePatchTarget) {
+            var candidateOriginalDescriptor =
+                Object.getOwnPropertyDescriptor(candidatePatchTarget, prop);
 
-          if (candidateOriginalDescriptor) {
-            patchTarget = candidatePatchTarget;
-            originalDescriptor = candidateOriginalDescriptor;
-            return true;
-          }
-        });
+            if (candidateOriginalDescriptor) {
+              patchTargets[prop] = candidatePatchTarget;
+              originalDescriptors[prop] = candidateOriginalDescriptor;
+              return true;
+            }
+          });
+    });
   }
 
   var polyfillPath = !window.customElements ?
@@ -188,23 +194,31 @@ function loadCustomElementsPolyfills() {
         // but custom element polyfills will replace `HTMLElement` with an anonymous function.
         Object.defineProperty(HTMLElement, 'name', {value: 'HTMLElement'});
 
-        // Create helper functions on `window` for patching/restoring `(HTML)Element#innerHTML`.
-        if (!patchTarget) {
-          window.$$patchInnerHtmlProp = window.$$restoreInnerHtmlProp = function() {};
-        } else {
-          var patchedDescriptor = Object.getOwnPropertyDescriptor(patchTarget, 'innerHTML');
+        // Create helper functions on `window` for patching/restoring properties/methods.
+        Object.keys(patchConfig).forEach(function(prop) {
+          var patchMethod = '$$patch_' + prop;
+          var restoreMethod = '$$restore_' + prop;
 
-          window.$$patchInnerHtmlProp = function() {
-            Object.defineProperty(patchTarget, 'innerHTML', patchedDescriptor);
-          };
-          window.$$restoreInnerHtmlProp = function() {
-            Object.defineProperty(patchTarget, 'innerHTML', originalDescriptor);
-          };
+          if (!patchTargets[prop]) {
+            // No patching detected. Create no-op functions.
+            window[patchMethod] = window[restoreMethod] = function() {};
+          } else {
+            var patchTarget = patchTargets[prop];
+            var originalDescriptor = originalDescriptors[prop];
+            var patchedDescriptor = Object.getOwnPropertyDescriptor(patchTarget, prop);
 
-          // Restore `innerHTML`. The patch will be manually applied only during the
-          // `@angular/elements` tests that need it.
-          window.$$restoreInnerHtmlProp();
-        }
+            window[patchMethod] = function() {
+              Object.defineProperty(patchTarget, prop, patchedDescriptor);
+            };
+            window[restoreMethod] = function() {
+              Object.defineProperty(patchTarget, prop, originalDescriptor);
+            };
+
+            // Restore `prop`. The patch will be manually applied only during the
+            // `@angular/elements` tests that need it.
+            window[restoreMethod]();
+          }
+        });
       });
 
   return loadedPromise;

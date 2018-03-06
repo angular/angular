@@ -34,8 +34,6 @@ import { CodeComponent } from './code.component';
 export class CodeExampleComponent implements AfterViewInit {
   classes: {};
 
-  code: string;
-
   @Input() language: string;
 
   @Input() linenums: string;
