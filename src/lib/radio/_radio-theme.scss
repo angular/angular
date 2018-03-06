@@ -2,7 +2,7 @@
 @import '../core/theming/theming';
 @import '../core/typography/typography-utils';
 
-@mixin mat-radio-color($palette) {
+@mixin _mat-radio-color($palette) {
   &.mat-radio-checked .mat-radio-outer-circle {
     border-color: mat-color($palette);
   }
@@ -43,15 +43,15 @@
 
   .mat-radio-button {
     &.mat-primary {
-      @include mat-radio-color($primary);
+      @include _mat-radio-color($primary);
     }
 
     &.mat-accent {
-      @include mat-radio-color($accent);
+      @include _mat-radio-color($accent);
     }
 
     &.mat-warn {
-      @include mat-radio-color($warn);
+      @include _mat-radio-color($warn);
     }
   }
 }
