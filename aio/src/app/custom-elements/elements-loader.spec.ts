@@ -9,8 +9,6 @@ import {TestBed, fakeAsync, tick} from '@angular/core/testing';
 import { ElementsLoader } from './elements-loader';
 import { ELEMENT_MODULE_PATHS_TOKEN, WithCustomElementComponent } from './element-registry';
 
-const actualCustomElements = window.customElements;
-
 class FakeComponentFactory extends ComponentFactory<any> {
   selector: string;
   componentType: Type<any>;
@@ -29,21 +27,26 @@ class FakeComponentFactory extends ComponentFactory<any> {
 }
 
 const FAKE_COMPONENT_FACTORIES = new Map([
-  ['element-a-module-path', new FakeComponentFactory('element-a-input')]
+  ['element-a-module-path', new FakeComponentFactory('element-a-input')],
+  ['element-b-module-path', new FakeComponentFactory('element-b-input')],
 ]);
 
-fdescribe('ElementsLoader', () => {
+describe('ElementsLoader', () => {
   let elementsLoader: ElementsLoader;
   let injectedModuleRef: NgModuleRef<any>;
-  let fakeCustomElements;
+  let actualCustomElementsDefine;
+  let fakeCustomElementsDefine;
 
   // ElementsLoader uses the window's customElements API. Provide a fake for this test.
   beforeEach(() => {
-    fakeCustomElements = jasmine.createSpyObj('customElements', ['define', 'whenDefined']);
-    window.customElements = fakeCustomElements;
+    actualCustomElementsDefine = window.customElements.define;
+
+    fakeCustomElementsDefine = jasmine.createSpy('define');
+
+    window.customElements.define = fakeCustomElementsDefine;
   });
   afterEach(() => {
-    window.customElements = actualCustomElements;
+    window.customElements.define = actualCustomElementsDefine;
   });
 
   beforeEach(() => {
@@ -52,7 +55,8 @@ fdescribe('ElementsLoader', () => {
         ElementsLoader,
         { provide: NgModuleFactoryLoader, useClass: FakeModuleFactoryLoader },
         { provide: ELEMENT_MODULE_PATHS_TOKEN, useValue: new Map([
-          ['element-a-selector', 'element-a-module-path']
+          ['element-a-selector', 'element-a-module-path'],
+          ['element-b-selector', 'element-b-module-path']
         ])},
       ]
     });
@@ -71,13 +75,37 @@ fdescribe('ElementsLoader', () => {
     elementsLoader.loadContainingCustomElements(hostEl);
     tick();
 
-    const defineArgs = fakeCustomElements.define.calls.argsFor(0);
+    const defineArgs = fakeCustomElementsDefine.calls.argsFor(0);
     expect(defineArgs[0]).toBe('element-a-selector');
 
     // Verify the right component was loaded/created
     expect(defineArgs[1].observedAttributes[0]).toBe('element-a-input');
 
     expect(elementsLoader.elementsToLoad.has('element-a-selector')).toBeFalsy();
+  }));
+
+  it('should be able to register multiple elements', fakeAsync(() => {
+    // Verify that the elements loader considered `element-a-selector` to be unregistered.
+    expect(elementsLoader.elementsToLoad.has('element-a-selector')).toBeTruthy();
+
+    const hostEl = document.createElement('div');
+    hostEl.innerHTML = `
+      <element-a-selector></element-a-selector>
+      <element-b-selector></element-b-selector>
+    `;
+
+    elementsLoader.loadContainingCustomElements(hostEl);
+    tick();
+
+    const defineElementA = fakeCustomElementsDefine.calls.argsFor(0);
+    expect(defineElementA[0]).toBe('element-a-selector');
+    expect(defineElementA[1].observedAttributes[0]).toBe('element-a-input');
+    expect(elementsLoader.elementsToLoad.has('element-a-selector')).toBeFalsy();
+
+    const defineElementB = fakeCustomElementsDefine.calls.argsFor(1);
+    expect(defineElementB[0]).toBe('element-b-selector');
+    expect(defineElementB[1].observedAttributes[0]).toBe('element-b-input');
+    expect(elementsLoader.elementsToLoad.has('element-b-selector')).toBeFalsy();
   }));
 
   it('should only register an element one time', fakeAsync(() => {

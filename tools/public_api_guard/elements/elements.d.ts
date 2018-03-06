@@ -16,14 +16,13 @@ export interface NgElementConfig {
         [key: string]: string;
     };
     injector: Injector;
-    propertyInputs?: string[];
     strategyFactory?: NgElementStrategyFactory;
 }
 
 /** @experimental */
 export interface NgElementConstructor<P> {
     readonly observedAttributes: string[];
-    new (): NgElement & WithProperties<P>;
+    new (injector: Injector): NgElement & WithProperties<P>;
 }
 
 /** @experimental */
@@ -43,7 +42,7 @@ export interface NgElementStrategyEvent {
 
 /** @experimental */
 export interface NgElementStrategyFactory {
-    create(): NgElementStrategy;
+    create(injector: Injector): NgElementStrategy;
 }
 
 /** @experimental */

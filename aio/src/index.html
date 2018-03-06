@@ -110,6 +110,15 @@
     }
   </script>
 
+  <script>
+    // Custom elements should always rely on the polyfill to avoid having to include a shim that
+    // handles downleveled ES2015 classes. Especially since that shim would break on IE11 which
+    // can't even parse such code.
+    if (window.customElements) {
+      window.customElements['forcePolyfill'] = true;
+    }
+  </script>
+
 </head>
 <body>
 

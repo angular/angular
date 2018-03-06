@@ -5,8 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-
-import {Type} from '@angular/core';
+import {ComponentFactoryResolver, Injector, Type} from '@angular/core';
 
 const elProto = Element.prototype as any;
 const matches = elProto.matches || elProto.matchesSelector || elProto.mozMatchesSelector ||
@@ -100,4 +99,26 @@ export function matchesSelector(element: Element, selector: string): boolean {
  */
 export function strictEquals(value1: any, value2: any): boolean {
   return value1 === value2 || (value1 !== value1 && value2 !== value2);
+}
+
+/** Gets a map of default set of attributes to observe and the properties they affect. */
+export function getDefaultAttributeToPropertyInputs(
+    inputs: {propName: string, templateName: string}[]) {
+  const attributeToPropertyInputs: {[key: string]: string} = {};
+  inputs.forEach(({propName, templateName}) => {
+    attributeToPropertyInputs[camelToDashCase(templateName)] = propName;
+  });
+
+  return attributeToPropertyInputs;
+}
+
+/**
+ * Gets a component's set of inputs. Uses the injector to get the component factory where the inputs
+ * are defined.
+ */
+export function getComponentInputs(
+    component: Type<any>, injector: Injector): {propName: string, templateName: string}[] {
+  const componentFactoryResolver: ComponentFactoryResolver = injector.get(ComponentFactoryResolver);
+  const componentFactory = componentFactoryResolver.resolveComponentFactory(component);
+  return componentFactory.inputs;
 }

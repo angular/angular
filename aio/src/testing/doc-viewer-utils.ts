@@ -8,6 +8,7 @@ import { DocViewerComponent } from 'app/layout/doc-viewer/doc-viewer.component';
 import { Logger } from 'app/shared/logger.service';
 import { TocService } from 'app/shared/toc.service';
 import { MockLogger } from 'testing/logger.service';
+import { ElementsLoader } from 'app/custom-elements/elements-loader';
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -54,6 +55,11 @@ export class MockTocService {
   reset = jasmine.createSpy('TocService#reset');
 }
 
+export class MockElementsLoader {
+  loadContainingCustomElements =
+      jasmine.createSpy('MockElementsLoader#loadContainingCustomElements');
+}
+
 @NgModule({
   declarations: [
     DocViewerComponent,
@@ -64,6 +70,7 @@ export class MockTocService {
     { provide: Title, useClass: MockTitle },
     { provide: Meta, useClass: MockMeta },
     { provide: TocService, useClass: MockTocService },
+    { provide: ElementsLoader, useClass: MockElementsLoader },
   ],
 })
 export class TestModule { }

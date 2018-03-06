@@ -51,7 +51,7 @@ if (typeof customElements !== 'undefined') {
     });
 
     it('should send input values from attributes when connected', () => {
-      const element = new NgElementCtor();
+      const element = new NgElementCtor(injector);
       element.setAttribute('foo-foo', 'value-foo-foo');
       element.setAttribute('barbar', 'value-barbar');
       element.connectedCallback();
@@ -62,7 +62,7 @@ if (typeof customElements !== 'undefined') {
     });
 
     it('should listen to output events after connected', () => {
-      const element = new NgElementCtor();
+      const element = new NgElementCtor(injector);
       element.connectedCallback();
 
       let eventValue: any = null;
@@ -73,7 +73,7 @@ if (typeof customElements !== 'undefined') {
     });
 
     it('should not listen to output events after disconnected', () => {
-      const element = new NgElementCtor();
+      const element = new NgElementCtor(injector);
       element.connectedCallback();
       element.disconnectedCallback();
       expect(strategy.disconnectCalled).toBe(true);
@@ -86,7 +86,7 @@ if (typeof customElements !== 'undefined') {
     });
 
     it('should properly set getters/setters on the element', () => {
-      const element = new NgElementCtor();
+      const element = new NgElementCtor(injector);
       element.fooFoo = 'foo-foo-value';
       element.barBar = 'barBar-value';
 
@@ -104,29 +104,26 @@ if (typeof customElements !== 'undefined') {
         NgElementCtorWithChangedAttr = createNgElementConstructor(TestComponent, {
           injector,
           strategyFactory,
-          propertyInputs: ['prop1', 'prop2'],
-          attributeToPropertyInputs: {'attr-1': 'prop1', 'attr-2': 'prop2'}
+          attributeToPropertyInputs: {'attr-1': 'fooFoo', 'attr-2': 'barbar'}
         });
 
         customElements.define('test-element-with-changed-attributes', NgElementCtorWithChangedAttr);
       });
 
-      beforeEach(() => { element = new NgElementCtorWithChangedAttr(); });
+      beforeEach(() => { element = new NgElementCtorWithChangedAttr(injector); });
 
       it('should affect which attributes are watched', () => {
         expect(NgElementCtorWithChangedAttr.observedAttributes).toEqual(['attr-1', 'attr-2']);
       });
 
       it('should send attribute values as inputs when connected', () => {
-        const element = new NgElementCtorWithChangedAttr();
+        const element = new NgElementCtorWithChangedAttr(injector);
         element.setAttribute('attr-1', 'value-1');
         element.setAttribute('attr-2', 'value-2');
-        element.setAttribute('attr-3', 'value-3');  // Made-up attribute
         element.connectedCallback();
 
-        expect(strategy.getInputValue('prop1')).toBe('value-1');
-        expect(strategy.getInputValue('prop2')).toBe('value-2');
-        expect(strategy.getInputValue('prop3')).not.toBe('value-3');
+        expect(strategy.getInputValue('fooFoo')).toBe('value-1');
+        expect(strategy.getInputValue('barbar')).toBe('value-2');
       });
     });
   });

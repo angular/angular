@@ -67,12 +67,12 @@ export class DocViewerComponent implements OnDestroy {
   @Output() docRendered = new EventEmitter<void>();
 
   constructor(
-    elementRef: ElementRef,
-    private logger: Logger,
-    private titleService: Title,
-    private metaService: Meta,
-    private tocService: TocService,
-    private elementsLoader: ElementsLoader) {
+      elementRef: ElementRef,
+      private logger: Logger,
+      private titleService: Title,
+      private metaService: Meta,
+      private tocService: TocService,
+      private elementsLoader: ElementsLoader) {
     this.hostElement = elementRef.nativeElement;
     // Security: the initialDocViewerContent comes from the prerendered DOM and is considered to be secure
     this.hostElement.innerHTML = initialDocViewerContent;

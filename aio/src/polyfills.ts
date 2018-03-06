@@ -33,9 +33,6 @@ import './environments/environment';
 /** Add support for window.customElements */
 import '@webcomponents/custom-elements/custom-elements.min';
 
-/** Required for custom elements for apps building to es5. */
-import '@webcomponents/custom-elements/src/native-shim';
-
 /** ALL Firefox browsers require the following to support `@angular/animation`. **/
 // import 'web-animations-js';  // Run `npm install --save web-animations-js`.
 

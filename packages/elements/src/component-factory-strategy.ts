@@ -6,29 +6,35 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ApplicationRef, ComponentFactory, ComponentRef, EventEmitter, Injector, OnChanges, SimpleChange, SimpleChanges} from '@angular/core';
+import {ApplicationRef, ComponentFactory, ComponentFactoryResolver, ComponentRef, EventEmitter, Injector, OnChanges, SimpleChange, SimpleChanges, Type} from '@angular/core';
 import {Observable} from 'rxjs/Observable';
 import {merge} from 'rxjs/observable/merge';
 import {map} from 'rxjs/operator/map';
 
 import {NgElementStrategy, NgElementStrategyEvent, NgElementStrategyFactory} from './element-strategy';
 import {extractProjectableNodes} from './extract-projectable-nodes';
-import {camelToDashCase, isFunction, scheduler, strictEquals} from './utils';
+import {isFunction, scheduler, strictEquals} from './utils';
 
 /** Time in milliseconds to wait before destroying the component ref when disconnected. */
 const DESTROY_DELAY = 10;
 
 /**
- * Factory that creates new ComponentFactoryNgElementStrategy instances with the strategy factory's
- * injector. A new strategy instance is created with the provided component factory which will
- * create its components on connect.
+ * Factory that creates new ComponentNgElementStrategy instance. Gets the component factory with the
+ * constructor's injector's factory resolver and passes that factory to each strategy.
  *
  * @experimental
  */
-export class ComponentFactoryNgElementStrategyFactory implements NgElementStrategyFactory {
-  constructor(private componentFactory: ComponentFactory<any>, private injector: Injector) {}
+export class ComponentNgElementStrategyFactory implements NgElementStrategyFactory {
+  componentFactory: ComponentFactory<any>;
 
-  create() { return new ComponentFactoryNgElementStrategy(this.componentFactory, this.injector); }
+  constructor(private component: Type<any>, private injector: Injector) {
+    this.componentFactory =
+        injector.get(ComponentFactoryResolver).resolveComponentFactory(component);
+  }
+
+  create(injector: Injector) {
+    return new ComponentNgElementStrategy(this.componentFactory, injector);
+  }
 }
 
 /**
@@ -37,12 +43,12 @@ export class ComponentFactoryNgElementStrategyFactory implements NgElementStrate
  *
  * @experimental
  */
-export class ComponentFactoryNgElementStrategy implements NgElementStrategy {
+export class ComponentNgElementStrategy implements NgElementStrategy {
   /** Merged stream of the component's output events. */
   events: Observable<NgElementStrategyEvent>;
 
   /** Reference to the component that was created on connect. */
-  private componentRef: ComponentRef<any>;
+  private componentRef: ComponentRef<any>|null;
 
   /** Changes that have been made to the component ref since the last time onChanges was called. */
   private inputChanges: SimpleChanges|null = null;
@@ -96,6 +102,7 @@ export class ComponentFactoryNgElementStrategy implements NgElementStrategy {
     this.scheduledDestroyFn = scheduler.schedule(() => {
       if (this.componentRef) {
         this.componentRef !.destroy();
+        this.componentRef = null;
       }
     }, DESTROY_DELAY);
   }

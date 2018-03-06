@@ -145,7 +145,7 @@ export class DominoAdapter extends BrowserDomAdapter {
     element.style[styleName] = '';
   }
   getStyle(element: any, styleName: string): string {
-    return element.style[styleName] || element.style.getInputValue(styleName);
+    return element.style[styleName] || element.style.getPropertyValue(styleName);
   }
   hasStyle(element: any, styleName: string, styleValue?: string): boolean {
     const value = this.getStyle(element, styleName);

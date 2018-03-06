@@ -10,12 +10,12 @@ import {ComponentFactory, ComponentRef, Injector, NgModuleRef, SimpleChange, Sim
 import {fakeAsync, tick} from '@angular/core/testing';
 import {Subject} from 'rxjs/Subject';
 
-import {ComponentFactoryNgElementStrategy, ComponentFactoryNgElementStrategyFactory} from '../src/component-factory-strategy';
+import {ComponentNgElementStrategy, ComponentNgElementStrategyFactory} from '../src/component-factory-strategy';
 import {NgElementStrategyEvent} from '../src/element-strategy';
 
 describe('ComponentFactoryNgElementStrategy', () => {
   let factory: FakeComponentFactory;
-  let strategy: ComponentFactoryNgElementStrategy;
+  let strategy: ComponentNgElementStrategy;
 
   let injector: any;
   let componentRef: any;
@@ -25,22 +25,26 @@ describe('ComponentFactoryNgElementStrategy', () => {
     factory = new FakeComponentFactory();
     componentRef = factory.componentRef;
 
-    injector = jasmine.createSpyObj('injector', ['get']);
     applicationRef = jasmine.createSpyObj('applicationRef', ['attachView']);
-    injector.get.and.returnValue(applicationRef);
 
-    strategy = new ComponentFactoryNgElementStrategy(factory, injector);
+    strategy = new ComponentNgElementStrategy(factory, injector);
   });
 
   it('should create a new strategy from the factory', () => {
-    const strategyFactory = new ComponentFactoryNgElementStrategyFactory(factory, injector);
-    expect(strategyFactory.create()).toBeTruthy();
+    const factoryResolver = jasmine.createSpyObj('factoryResolver', ['resolveComponentFactory']);
+    factoryResolver.resolveComponentFactory.and.returnValue(factory);
+    injector = jasmine.createSpyObj('injector', ['get']);
+    injector.get.and.returnValue(factoryResolver);
+
+    const strategyFactory = new ComponentNgElementStrategyFactory(FakeComponent, injector);
+    expect(strategyFactory.create(injector)).toBeTruthy();
   });
 
   describe('after connected', () => {
     beforeEach(() => {
       // Set up an initial value to make sure it is passed to the component
       strategy.setInputValue('fooFoo', 'fooFoo-1');
+      injector.get.and.returnValue(applicationRef);
       strategy.connect(document.createElement('div'));
     });
 
@@ -95,7 +99,7 @@ describe('ComponentFactoryNgElementStrategy', () => {
     it('should not detect changes', fakeAsync(() => {
          strategy.setInputValue('fooFoo', 'fooFoo-1');
          tick(16);  // scheduler waits 16ms if RAF is unavailable
-         expect(componentRef.changeDetectorRef.detectChanges).toHaveBeenCalledTimes(0);
+         expect(componentRef.changeDetectorRef.detectChanges).not.toHaveBeenCalled();
        }));
   });
 
