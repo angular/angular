@@ -24,6 +24,9 @@
     "name": "__window$1"
   },
   {
+    "name": "_getComponentHostLElementNode"
+  },
+  {
     "name": "_renderCompCount"
   },
   {
@@ -40,9 +43,6 @@
   },
   {
     "name": "currentView"
-  },
-  {
-    "name": "detectChanges"
   },
   {
     "name": "domRendererFactory3"
@@ -81,7 +81,19 @@
     "name": "noop$2"
   },
   {
+    "name": "queueContentHooks"
+  },
+  {
+    "name": "queueDestroyHooks"
+  },
+  {
+    "name": "queueViewHooks"
+  },
+  {
     "name": "refreshDynamicChildren"
+  },
+  {
+    "name": "renderComponentOrTemplate"
   },
   {
     "name": "renderEmbeddedTemplate"
