@@ -16,6 +16,7 @@ function filter(ext: string): (path: string) => boolean {
 
 function main(args: string[]): number {
   shx.set('-e');
+  args = fs.readFileSync(args[0], {encoding: 'utf-8'}).split('\n').map(s => s === '\'\'' ? '' : s);
   const
       [out, srcDir, binDir, readmeMd, fesms2015Arg, fesms5Arg, bundlesArg, srcsArg, stampData,
        licenseFile] = args;
@@ -32,7 +33,13 @@ function main(args: string[]): number {
   function replaceVersionPlaceholders(filePath: string, content: string) {
     if (stampData) {
       const version = shx.grep('BUILD_SCM_VERSION', stampData).split(' ')[1].trim();
-      return content.replace(/0.0.0-PLACEHOLDER/g, version);
+      // Split the replacement into separate strings so we don't match it while publishing
+      return content.replace(
+          new RegExp(
+              '0.0.0' +
+                  '-PLACEHOLDER',
+              'g'),
+          version);
     }
     return content;
   }
