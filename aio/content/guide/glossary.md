@@ -23,6 +23,15 @@ You can compile Angular applications at build time.
 By compiling your application using the compiler-cli, `ngc`, you can bootstrap directly to a module factory, meaning you don't need to include the Angular compiler in your JavaScript bundle.
 Ahead-of-time compiled applications also benefit from decreased load time and increased performance.
 
+{@a angular-custom-element}
+
+## Angular custom element
+
+An Angular component that has been converted to a [custom element](guide/glossary#custom-element).
+
+Use the [NgElement](guide/glossary#ng-element) API to encapsulate an Angular component so that it can be registered with the browser and used in any HTML that you add directly to the DOM within an Angular app. The custom element tag inserts the component's template, with change-detection and data-binding functionality, into HTML content that would otherwise be displayed without Angular processing.
+
+
 ## Annotation
 
 In practice, a synonym for [Decoration](guide/glossary#decorator).
@@ -50,7 +59,7 @@ Learn about them in the [_Attribute Directives_](guide/attribute-directives) gui
 ## Barrel
 
 A way to *roll up exports* from several ES2015 modules into a single convenient ES2015 module.
-The barrel itself is an ES2015 module file that re-exports *selected* exports of other ES2015 modules.
+The barrel itself is an ES2015 module file that re-exports selected exports of other ES2015 modules.
 
 For example, imagine three ES2015 modules in a `heroes` folder:
 
@@ -169,9 +178,9 @@ the component in the role of "controller" or "view model".
 
 A JavaScript (ES2015) feature, currently supported by Chrome and Opera, and available in other browsers through polyfills (see [Browser Support](https://angular.io/guide/browser-support)). 
 
-The custom element feature extends HTML by allowing you to define a tag whose content is created and controlled by JavaScript code. A custom elements is recognized by a browser when it is added to the [CustomElementRegistry](https://developer.mozilla.org/en-US/docs/Web/API/CustomElementRegistry).
+The custom element feature extends HTML by allowing you to define a tag whose content is created and controlled by JavaScript code. A custom element (also called a *web component*) is recognized by a browser when it is added to the [CustomElementRegistry](https://developer.mozilla.org/en-US/docs/Web/API/CustomElementRegistry).
 
-For use with Angular, see [NgElement](guide/glossary#ng-element).
+For use with Angular, see [Angular custom element](guide/glossary#angular-custom-element).
 
 
 {@a D}
@@ -188,7 +197,7 @@ spelled in dash-case.
 
 ## Data binding
 
-Applications display data values to a user and respond to user
+Data binding allow apps to display data values to a user and respond to user
 actions (such as clicks, touches, and keystrokes).
 
 In data binding, you declare the relationship between an HTML widget and data source
@@ -221,7 +230,7 @@ operations and supporting declaration syntax.
 
 A *function* that adds metadata to a class, its members (properties, methods) and function arguments.
 
-Decorators are an experimental (stage 2), JavaScript language [feature](https://github.com/wycats/javascript-decorators). TypeScript adds support for decorators.
+Decorators (also called annotations) are an experimental (stage 2), JavaScript language [feature](https://github.com/wycats/javascript-decorators). TypeScript adds support for decorators.
 
 To apply a decorator, position it immediately above or to the left of the item it decorates.
 
@@ -229,6 +238,7 @@ Angular has its own set of decorators to help it interoperate with your applicat
 The following example is a `@Component` decorator that identifies a
 class as an Angular [component](guide/glossary#component) and an `@Input` decorator applied to the `name` property
 of that component. The elided object argument to the `@Component` decorator would contain the pertinent component metadata.
+
 ```
 @Component({...})
 export class AppComponent {
@@ -236,6 +246,7 @@ export class AppComponent {
   @Input() name:string;
 }
 ```
+
 The scope of a decorator is limited to the language feature
 that it decorates. None of the decorations shown here will "leak" to other
 classes that follow it in the file.
@@ -343,6 +354,10 @@ elements and their children.
 
 {@a E}
 
+{@a es5}
+{@a es2015}
+
+
 ## ECMAScript
 
 The [official JavaScript language specification](https://en.wikipedia.org/wiki/ECMAScript).
@@ -418,6 +433,11 @@ Read more about [interpolation](guide/template-syntax#interpolation) in the
 
 
 {@a J}
+
+## JavaScript
+
+See [ECMAScript](guide/glossary#es5), [TypeScript](guide/glossary#typescript).
+
 
 {@a jit}
 
@@ -510,13 +530,13 @@ You rarely access Angular feature modules directly. You usually import them from
 
 {@a N}
 
-{@ ng-element}
+{@a ng-element}
 
 ## NgElement
 
-An Angular component that has been converted to a [custom element](guide/glossary#custom-element).  Use the API to encapsulate an Angular component so that it can be registered with the browser as a custom element. 
+A type that encapsulates an Angular component which has been transformed to a [custom element](guide/glossary#custom-element). The API provides configurable transformation support. 
 
-After it has been registered with the browser, the defined tag can be included in any HTML imported into an Angular app. This allows you to build change-detection and data-binding into imported HTML that would otherwise be displayed without Angular processing.
+See [Angular custom element](guide/glossary#angular-custom-element).
 
 
 ## NgModule
@@ -531,8 +551,6 @@ For details and examples, see [NgModules](guide/ngmodules) and the
 related files in that section.
 
 
-
-
 {@a O}
 
 ## Observable
@@ -541,8 +559,11 @@ An array whose items arrive asynchronously over time.
 Observables help you manage asynchronous data, such as data coming from a backend service.
 Observables are used within Angular itself, including Angular's event system and its HTTP client service.
 
-To use observables, Angular uses a third-party library called Reactive Extensions (RxJS).
 Observables are a proposed feature for ES2016, the next version of JavaScript.
+Currently, Angular provides observables using a third-party library called Reactive Extensions (RxJS).
+
+For more information, see the [Observables guide](guide/observables).
+
 
 
 ## Output
@@ -693,6 +714,9 @@ For more information, see the [Services](tutorial/toh-pt4) page of the [Tour of 
 The practice of writing compound words or phrases such that an
 underscore (`_`) separates one word from the next. This form is also known as *underscore case*.
 
+## Strategy
+
+In the [NgElement](guide/glossary#ng-element) API, a customizable strategy determines how an [Angular custom element](guide/glossary#angular-custom-element) will incorporate change detection, event handling, and setup/teardown. A default strategy provides typical recommended usage. 
 
 {@a structural-directive}
 
@@ -749,7 +773,9 @@ of the [Template Syntax](guide/template-syntax) page.
 ## Transpile
 
 The process of transforming code written in one form of JavaScript
-(such as TypeScript) into another form of JavaScript  (such as [ES5](guide/glossary#es5)).
+(such as TypeScript) into another form of JavaScript  (such as [ES5](guide/glossary#es2015)).
+
+{@a typescript}
 
 
 ## TypeScript
@@ -757,13 +783,13 @@ The process of transforming code written in one form of JavaScript
 A version of JavaScript that supports most [ECMAScript 2015](guide/glossary#es2015)
 language features such as [decorators](guide/glossary#decorator).
 
-TypeScript is also notable for its optional typing system, which provides
+TypeScript is notable for its optional typing system, which provides
 compile-time type checking and strong tooling support (such as "intellisense,"
 code completion, refactoring, and intelligent search). Many code editors
 and IDEs support TypeScript either natively or with plugins.
 
 TypeScript is the preferred language for Angular development, although
-you can use other JavaScript dialects such as [ES5](guide/glossary#es5).
+you can use other JavaScript dialects such as [ES5](guide/glossary#es2015).
 
 Read more about TypeScript at [typescriptlang.org](http://www.typescriptlang.org/).
 
@@ -788,6 +814,10 @@ under the control of a [router](guide/glossary#router).
 
 
 {@a W}
+
+## Web component
+
+See [Custom element](guide/glossary#custom-element)
 
 
 {@a X}
