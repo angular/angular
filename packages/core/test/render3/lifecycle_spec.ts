@@ -7,10 +7,10 @@
  */
 
 import {SimpleChanges} from '../../src/core';
-import {ComponentTemplate, NgOnChangesFeature, defineComponent, defineDirective} from '../../src/render3/index';
-import {bind, container, containerRefreshEnd, containerRefreshStart, directiveRefresh, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, listener, projection, projectionDef, store, text} from '../../src/render3/instructions';
+import {ComponentTemplate, NgOnChangesFeature, RootLifecycleHooks, defineComponent, defineDirective} from '../../src/render3/index';
+import {bind, container, containerRefreshEnd, containerRefreshStart, directiveRefresh, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, listener, markDirty, projection, projectionDef, store, text} from '../../src/render3/instructions';
 
-import {containerEl, renderToHtml} from './render_util';
+import {containerEl, renderComponent, renderToHtml, requestAnimationFrame} from './render_util';
 
 describe('lifecycles', () => {
 
@@ -85,6 +85,15 @@ describe('lifecycles', () => {
          renderToHtml(Template, {val: '2'});
          expect(events).toEqual(['comp1']);
        });
+
+    it('should be called on root component in creation mode', () => {
+      const comp = renderComponent(Comp, {features: [RootLifecycleHooks]});
+      expect(events).toEqual(['comp']);
+
+      markDirty(comp);
+      requestAnimationFrame.flush();
+      expect(events).toEqual(['comp']);
+    });
 
     it('should call parent onInit before child onInit', () => {
       /**
@@ -413,6 +422,15 @@ describe('lifecycles', () => {
       expect(events).toEqual(['comp', 'comp']);
     });
 
+    it('should be called on root component', () => {
+      const comp = renderComponent(Comp, {features: [RootLifecycleHooks]});
+      expect(events).toEqual(['comp']);
+
+      markDirty(comp);
+      requestAnimationFrame.flush();
+      expect(events).toEqual(['comp', 'comp']);
+    });
+
     it('should call parent doCheck before child doCheck', () => {
       /**
        * <parent></parent>
@@ -561,6 +579,15 @@ describe('lifecycles', () => {
       expect(events).toEqual(['comp']);
 
       renderToHtml(Template, {});
+      expect(events).toEqual(['comp']);
+    });
+
+    it('should be called on root component in creation mode', () => {
+      const comp = renderComponent(Comp, {features: [RootLifecycleHooks]});
+      expect(events).toEqual(['comp']);
+
+      markDirty(comp);
+      requestAnimationFrame.flush();
       expect(events).toEqual(['comp']);
     });
 
@@ -842,6 +869,15 @@ describe('lifecycles', () => {
 
       });
 
+      it('should be called on root component', () => {
+        const comp = renderComponent(Comp, {features: [RootLifecycleHooks]});
+        expect(allEvents).toEqual(['comp init', 'comp check']);
+
+        markDirty(comp);
+        requestAnimationFrame.flush();
+        expect(allEvents).toEqual(['comp init', 'comp check', 'comp check']);
+      });
+
     });
 
     describe('directives', () => {
@@ -945,6 +981,15 @@ describe('lifecycles', () => {
       expect(events).toEqual(['comp']);
 
       renderToHtml(Template, {});
+      expect(events).toEqual(['comp']);
+    });
+
+    it('should be called on root component in creation mode', () => {
+      const comp = renderComponent(Comp, {features: [RootLifecycleHooks]});
+      expect(events).toEqual(['comp']);
+
+      markDirty(comp);
+      requestAnimationFrame.flush();
       expect(events).toEqual(['comp']);
     });
 
@@ -1247,6 +1292,15 @@ describe('lifecycles', () => {
         expect(allEvents).toEqual(['comp init', 'comp check']);
 
         renderToHtml(Template, {});
+        expect(allEvents).toEqual(['comp init', 'comp check', 'comp check']);
+      });
+
+      it('should be called on root component', () => {
+        const comp = renderComponent(Comp, {features: [RootLifecycleHooks]});
+        expect(allEvents).toEqual(['comp init', 'comp check']);
+
+        markDirty(comp);
+        requestAnimationFrame.flush();
         expect(allEvents).toEqual(['comp init', 'comp check', 'comp check']);
       });
 

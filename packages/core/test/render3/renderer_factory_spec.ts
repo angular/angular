@@ -74,7 +74,7 @@ describe('renderer factory lifecycle', () => {
   beforeEach(() => { logs = []; });
 
   it('should work with a component', () => {
-    const component = renderComponent(SomeComponent, rendererFactory);
+    const component = renderComponent(SomeComponent, {rendererFactory});
     expect(logs).toEqual(['create', 'create', 'begin', 'component', 'end']);
 
     logs = [];
@@ -83,7 +83,7 @@ describe('renderer factory lifecycle', () => {
   });
 
   it('should work with a component which throws', () => {
-    expect(() => renderComponent(SomeComponentWhichThrows, rendererFactory)).toThrow();
+    expect(() => renderComponent(SomeComponentWhichThrows, {rendererFactory})).toThrow();
     expect(logs).toEqual(['create', 'create', 'begin', 'end']);
   });
 
@@ -177,13 +177,13 @@ describe('animation renderer factory', () => {
   }
 
   it('should work with components without animations', () => {
-    renderComponent(SomeComponent, getAnimationRendererFactory2(document));
+    renderComponent(SomeComponent, {rendererFactory: getAnimationRendererFactory2(document)});
     expect(toHtml(containerEl)).toEqual('foo');
   });
 
   isBrowser && it('should work with animated components', (done) => {
-    const factory = getAnimationRendererFactory2(document);
-    const component = renderComponent(SomeComponentWithAnimation, factory);
+    const rendererFactory = getAnimationRendererFactory2(document);
+    const component = renderComponent(SomeComponentWithAnimation, {rendererFactory});
     expect(toHtml(containerEl))
         .toMatch(/<div class="ng-tns-c\d+-0 ng-trigger ng-trigger-myAnimation">foo<\/div>/);
 
@@ -197,7 +197,7 @@ describe('animation renderer factory', () => {
     ]);
     player.finish();
 
-    factory.whenRenderingDone !().then(() => {
+    rendererFactory.whenRenderingDone !().then(() => {
       expect(eventLogs).toEqual(['void - start', 'void - done', 'on - start', 'on - done']);
       done();
     });

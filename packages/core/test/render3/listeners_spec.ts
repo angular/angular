@@ -106,7 +106,8 @@ describe('event listeners', () => {
   });
 
   it('should retain event handler return values with renderer2', () => {
-    const preventDefaultComp = renderComponent(PreventDefaultComp, getRendererFactory2(document));
+    const preventDefaultComp =
+        renderComponent(PreventDefaultComp, {rendererFactory: getRendererFactory2(document)});
     const button = containerEl.querySelector('button') !;
 
     button.click();
