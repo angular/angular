@@ -69,7 +69,6 @@ const ignoreMouseEventsTimeout = 800;
  * @docs-private
  */
 export class RippleRenderer {
-
   /** Element where the ripples are being added to. */
   private _containerElement: HTMLElement;
 
@@ -90,6 +89,12 @@ export class RippleRenderer {
 
   /** Options that apply to all the event listeners that are bound by the renderer. */
   private _eventOptions = supportsPassiveEventListeners() ? ({passive: true} as any) : false;
+
+  /**
+   * Cached dimensions of the ripple container. Set when the first
+   * ripple is shown and cleared once no more ripples are visible.
+   */
+  private _containerRect: ClientRect | null;
 
   constructor(private _target: RippleTarget,
               private _ngZone: NgZone,
@@ -117,7 +122,8 @@ export class RippleRenderer {
    * @param config Extra ripple options.
    */
   fadeInRipple(x: number, y: number, config: RippleConfig = {}): RippleRef {
-    const containerRect = this._containerElement.getBoundingClientRect();
+    const containerRect = this._containerRect =
+                          this._containerRect || this._containerElement.getBoundingClientRect();
     const animationConfig = {...defaultRippleAnimationConfig, ...config.animation};
 
     if (config.centered) {
@@ -173,8 +179,15 @@ export class RippleRenderer {
 
   /** Fades out a ripple reference. */
   fadeOutRipple(rippleRef: RippleRef) {
+    const wasActive = this._activeRipples.delete(rippleRef);
+
+    // Clear out the cached bounding rect if we have no more ripples.
+    if (!this._activeRipples.size) {
+      this._containerRect = null;
+    }
+
     // For ripples that are not active anymore, don't re-un the fade-out animation.
-    if (!this._activeRipples.delete(rippleRef)) {
+    if (!wasActive) {
       return;
     }
 
@@ -183,7 +196,6 @@ export class RippleRenderer {
 
     rippleEl.style.transitionDuration = `${animationConfig.exitDuration}ms`;
     rippleEl.style.opacity = '0';
-
     rippleRef.state = RippleState.FADING_OUT;
 
     // Once the ripple faded out, the ripple can be safely removed from the DOM.
