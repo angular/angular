@@ -42,6 +42,7 @@ describe('MatSlider without forms', () => {
         SliderWithTabIndexBinding,
         SliderWithNativeTabindexAttr,
         VerticalSlider,
+        SliderWithCustomThumbLabelFormatting,
       ],
       providers: [
         {provide: HAMMER_GESTURE_CONFIG, useFactory: () => {
@@ -599,6 +600,38 @@ describe('MatSlider without forms', () => {
 
       // The thumb label text is set to the slider's value. These should always be the same.
       expect(thumbLabelTextElement.textContent).toBe(`${sliderInstance.value}`);
+    });
+  });
+
+  describe('slider with custom thumb label formatting', () => {
+    let fixture: ComponentFixture<SliderWithCustomThumbLabelFormatting>;
+    let sliderInstance: MatSlider;
+    let thumbLabelTextElement: Element;
+
+    beforeEach(() => {
+      fixture = TestBed.createComponent(SliderWithCustomThumbLabelFormatting);
+      fixture.detectChanges();
+
+      const sliderDebugElement = fixture.debugElement.query(By.directive(MatSlider));
+      const sliderNativeElement = sliderDebugElement.nativeElement;
+      sliderInstance = sliderDebugElement.componentInstance;
+      thumbLabelTextElement = sliderNativeElement.querySelector('.mat-slider-thumb-label-text')!;
+    });
+
+    it('should invoke the passed-in `displayWith` function with the value', () => {
+      spyOn(fixture.componentInstance, 'displayWith').and.callThrough();
+
+      sliderInstance.value = 1337;
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance.displayWith).toHaveBeenCalledWith(1337);
+    });
+
+    it('should format the thumb label based on the passed-in `displayWith` function', () => {
+      sliderInstance.value = 200000;
+      fixture.detectChanges();
+
+      expect(thumbLabelTextElement.textContent).toBe('200k');
     });
   });
 
@@ -1425,6 +1458,26 @@ class SliderWithSetTickInterval {
   styles: [styles],
 })
 class SliderWithThumbLabel { }
+
+
+@Component({
+  template: `<mat-slider min="1" max="100000" [displayWith]="displayWith" thumbLabel></mat-slider>`,
+  styles: [styles],
+})
+class SliderWithCustomThumbLabelFormatting {
+  displayWith(value: number | null) {
+    if (!value) {
+      return 0;
+    }
+
+    if (value >= 1000) {
+      return (value / 1000) + 'k';
+    }
+
+    return value;
+  }
+}
+
 
 @Component({
   template: `<mat-slider [value]="val"></mat-slider>`,
