@@ -6,10 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {withBody} from '@angular/core/testing';
 
 import {DoCheck, ViewEncapsulation} from '../../src/core';
-import {getRenderedText, whenRendered} from '../../src/render3/component';
 import {defineComponent, markDirty} from '../../src/render3/index';
 import {bind, container, containerRefreshEnd, containerRefreshStart, detectChanges, directiveRefresh, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, text, textBinding} from '../../src/render3/instructions';
 import {createRendererType2} from '../../src/view/index';
@@ -236,68 +234,4 @@ describe('encapsulation', () => {
             /<div host="" _nghost-c(\d+)=""><leaf _ngcontent-c\1="" _nghost-c(\d+)=""><span _ngcontent-c\2="">bar<\/span><\/leaf><\/div>/);
   });
 
-  describe('markDirty, detectChanges, whenRendered, getRenderedText', () => {
-    class MyComponent implements DoCheck {
-      value: string = 'works';
-      doCheckCount = 0;
-      ngDoCheck(): void { this.doCheckCount++; }
-
-      static ngComponentDef = defineComponent({
-        type: MyComponent,
-        tag: 'my-comp',
-        factory: () => new MyComponent(),
-        template: (ctx: MyComponent, cm: boolean) => {
-          if (cm) {
-            elementStart(0, 'span');
-            text(1);
-            elementEnd();
-          }
-          textBinding(1, bind(ctx.value));
-        }
-      });
-    }
-
-    it('should mark a component dirty and schedule change detection', withBody('my-comp', () => {
-         const myComp = renderComponent(MyComponent);
-         expect(getRenderedText(myComp)).toEqual('works');
-         myComp.value = 'updated';
-         markDirty(myComp);
-         expect(getRenderedText(myComp)).toEqual('works');
-         requestAnimationFrame.flush();
-         expect(getRenderedText(myComp)).toEqual('updated');
-       }));
-
-    it('should detectChanges on a component', withBody('my-comp', () => {
-         const myComp = renderComponent(MyComponent);
-         expect(getRenderedText(myComp)).toEqual('works');
-         myComp.value = 'updated';
-         detectChanges(myComp);
-         expect(getRenderedText(myComp)).toEqual('updated');
-       }));
-
-    it('should detectChanges only once if markDirty is called multiple times',
-       withBody('my-comp', () => {
-         const myComp = renderComponent(MyComponent);
-         expect(getRenderedText(myComp)).toEqual('works');
-         expect(myComp.doCheckCount).toBe(1);
-         myComp.value = 'ignore';
-         markDirty(myComp);
-         myComp.value = 'updated';
-         markDirty(myComp);
-         expect(getRenderedText(myComp)).toEqual('works');
-         requestAnimationFrame.flush();
-         expect(getRenderedText(myComp)).toEqual('updated');
-         expect(myComp.doCheckCount).toBe(2);
-       }));
-
-    it('should notify whenRendered', withBody('my-comp', async() => {
-         const myComp = renderComponent(MyComponent);
-         await whenRendered(myComp);
-         myComp.value = 'updated';
-         markDirty(myComp);
-         setTimeout(requestAnimationFrame.flush, 0);
-         await whenRendered(myComp);
-         expect(getRenderedText(myComp)).toEqual('updated');
-       }));
-  });
 });

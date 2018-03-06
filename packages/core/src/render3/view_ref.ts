@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {EmbeddedViewRef as viewEngine_EmbeddedViewRef, ViewRef as viewEngine_ViewRef} from '../linker/view_ref';
-
+import {EmbeddedViewRef as viewEngine_EmbeddedViewRef} from '../linker/view_ref';
+import {detectChanges} from './instructions';
 import {ComponentTemplate} from './interfaces/definition';
 import {LViewNode} from './interfaces/node';
 import {notImplemented} from './util';
@@ -26,7 +26,9 @@ export class ViewRef<T> implements viewEngine_EmbeddedViewRef<T> {
   onDestroy(callback: Function) { notImplemented(); }
   markForCheck(): void { notImplemented(); }
   detach(): void { notImplemented(); }
-  detectChanges(): void { notImplemented(); }
+
+  detectChanges(): void { detectChanges(this.context); }
+
   checkNoChanges(): void { notImplemented(); }
   reattach(): void { notImplemented(); }
 }

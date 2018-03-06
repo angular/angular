@@ -7,7 +7,7 @@
  */
 
 import {SimpleChanges} from '../../src/core';
-import {ComponentTemplate, NgOnChangesFeature, RootLifecycleHooks, defineComponent, defineDirective} from '../../src/render3/index';
+import {ComponentTemplate, LifecycleHooksFeature, NgOnChangesFeature, defineComponent, defineDirective} from '../../src/render3/index';
 import {bind, container, containerRefreshEnd, containerRefreshStart, directiveRefresh, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, listener, markDirty, projection, projectionDef, store, text} from '../../src/render3/instructions';
 
 import {containerEl, renderComponent, renderToHtml, requestAnimationFrame} from './render_util';
@@ -87,7 +87,7 @@ describe('lifecycles', () => {
        });
 
     it('should be called on root component in creation mode', () => {
-      const comp = renderComponent(Comp, {features: [RootLifecycleHooks]});
+      const comp = renderComponent(Comp, {hostFeatures: [LifecycleHooksFeature]});
       expect(events).toEqual(['comp']);
 
       markDirty(comp);
@@ -423,7 +423,7 @@ describe('lifecycles', () => {
     });
 
     it('should be called on root component', () => {
-      const comp = renderComponent(Comp, {features: [RootLifecycleHooks]});
+      const comp = renderComponent(Comp, {hostFeatures: [LifecycleHooksFeature]});
       expect(events).toEqual(['comp']);
 
       markDirty(comp);
@@ -583,7 +583,7 @@ describe('lifecycles', () => {
     });
 
     it('should be called on root component in creation mode', () => {
-      const comp = renderComponent(Comp, {features: [RootLifecycleHooks]});
+      const comp = renderComponent(Comp, {hostFeatures: [LifecycleHooksFeature]});
       expect(events).toEqual(['comp']);
 
       markDirty(comp);
@@ -870,7 +870,7 @@ describe('lifecycles', () => {
       });
 
       it('should be called on root component', () => {
-        const comp = renderComponent(Comp, {features: [RootLifecycleHooks]});
+        const comp = renderComponent(Comp, {hostFeatures: [LifecycleHooksFeature]});
         expect(allEvents).toEqual(['comp init', 'comp check']);
 
         markDirty(comp);
@@ -985,7 +985,7 @@ describe('lifecycles', () => {
     });
 
     it('should be called on root component in creation mode', () => {
-      const comp = renderComponent(Comp, {features: [RootLifecycleHooks]});
+      const comp = renderComponent(Comp, {hostFeatures: [LifecycleHooksFeature]});
       expect(events).toEqual(['comp']);
 
       markDirty(comp);
@@ -1296,7 +1296,7 @@ describe('lifecycles', () => {
       });
 
       it('should be called on root component', () => {
-        const comp = renderComponent(Comp, {features: [RootLifecycleHooks]});
+        const comp = renderComponent(Comp, {hostFeatures: [LifecycleHooksFeature]});
         expect(allEvents).toEqual(['comp init', 'comp check']);
 
         markDirty(comp);

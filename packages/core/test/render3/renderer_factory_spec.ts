@@ -11,7 +11,7 @@ import {MockAnimationDriver, MockAnimationPlayer} from '@angular/animations/brow
 
 import {RendererType2, ViewEncapsulation} from '../../src/core';
 import {defineComponent, detectChanges} from '../../src/render3/index';
-import {bind, directiveRefresh, elementEnd, elementProperty, elementStart, listener, text} from '../../src/render3/instructions';
+import {bind, directiveRefresh, elementEnd, elementProperty, elementStart, listener, text, tick} from '../../src/render3/instructions';
 import {createRendererType2} from '../../src/view/index';
 
 import {getAnimationRendererFactory2, getRendererFactory2} from './imported_renderer2';
@@ -78,7 +78,7 @@ describe('renderer factory lifecycle', () => {
     expect(logs).toEqual(['create', 'create', 'begin', 'component', 'end']);
 
     logs = [];
-    detectChanges(component);
+    tick(component);
     expect(logs).toEqual(['begin', 'component', 'end']);
   });
 
@@ -188,7 +188,7 @@ describe('animation renderer factory', () => {
         .toMatch(/<div class="ng-tns-c\d+-0 ng-trigger ng-trigger-myAnimation">foo<\/div>/);
 
     component.exp = 'on';
-    detectChanges(component);
+    tick(component);
 
     const [player] = getLog();
     expect(player.keyframes).toEqual([

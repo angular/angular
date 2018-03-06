@@ -13,7 +13,7 @@ import {ComponentRef as viewEngine_ComponentRef} from '../linker/component_facto
 
 import {assertNotNull} from './assert';
 import {queueLifecycleHooks} from './hooks';
-import {CLEAN_PROMISE, _getComponentHostLElementNode, createLView, createTView, detectChanges, directiveCreate, enterView, getDirectiveInstance, hostElement, initChangeDetectorIfExisting, leaveView, locateHostElement, scheduleChangeDetection} from './instructions';
+import {CLEAN_PROMISE, _getComponentHostLElementNode, createLView, createTView, directiveCreate, enterView, getDirectiveInstance, getRootView, hostElement, initChangeDetectorIfExisting, leaveView, locateHostElement, scheduleTick, tick} from './instructions';
 import {ComponentDef, ComponentType} from './interfaces/definition';
 import {RElement, RendererFactory3, domRendererFactory3} from './interfaces/renderer';
 import {LViewFlags, RootContext} from './interfaces/view';
@@ -43,12 +43,12 @@ export interface CreateComponentOptions {
    * Typically, the features in this list are features that cannot be added to the
    * other features list in the component definition because they rely on other factors.
    *
-   * Example: RootLifecycleHooks is a function that adds lifecycle hook capabilities
+   * Example: `RootLifecycleHooks` is a function that adds lifecycle hook capabilities
    * to root components in a tree-shakable way. It cannot be added to the component
    * features list because there's no way of knowing when the component will be used as
    * a root component.
    */
-  features?: (<T>(component: T, componentDef: ComponentDef<T>) => void)[];
+  hostFeatures?: (<T>(component: T, componentDef: ComponentDef<T>) => void)[];
 
   /**
    * A function which is used to schedule change detection work in the future.
@@ -141,11 +141,10 @@ export function renderComponent<T>(
     enterView(oldView, null);
   }
 
-  opts.features && opts.features.forEach((feature) => feature(component, componentDef));
-  detectChanges(component);
+  opts.hostFeatures && opts.hostFeatures.forEach((feature) => feature(component, componentDef));
+  tick(component);
   return component;
 }
-
 
 /**
  * Used to enable lifecycle hooks on the root component.
@@ -156,9 +155,11 @@ export function renderComponent<T>(
  *
  * Example:
  *
+ * ```
  * renderComponent(AppComponent, {features: [RootLifecycleHooks]});
+ * ```
  */
-export function RootLifecycleHooks(component: any, def: ComponentDef<any>): void {
+export function LifecycleHooksFeature(component: any, def: ComponentDef<any>): void {
   const elementNode = _getComponentHostLElementNode(component);
   queueLifecycleHooks(elementNode.flags, elementNode.view);
 }
@@ -170,13 +171,7 @@ export function RootLifecycleHooks(component: any, def: ComponentDef<any>): void
  * @param component any component
  */
 function getRootContext(component: any): RootContext {
-  ngDevMode && assertNotNull(component, 'component');
-  const lElementNode = _getComponentHostLElementNode(component);
-  let lView = lElementNode.view;
-  while (lView.parent) {
-    lView = lView.parent;
-  }
-  const rootContext = lView.context as RootContext;
+  const rootContext = getRootView(component).context as RootContext;
   ngDevMode && assertNotNull(rootContext, 'rootContext');
   return rootContext;
 }
