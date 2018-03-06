@@ -50,14 +50,13 @@ describe('instructions', () => {
   describe('elementStyle', () => {
     it('should use sanitizer function', () => {
       const t = new TemplateFixture(createDiv);
-      t.update(
-          () => elementStyle(0, 'background-image', 'url("http://server")', null, sanitizeStyle));
+      t.update(() => elementStyle(0, 'background-image', 'url("http://server")', sanitizeStyle));
       // nothing is set because sanitizer suppresses it.
       expect(t.html).toEqual('<div></div>');
 
       t.update(
           () => elementStyle(
-              0, 'background-image', bypassSanitizationTrustStyle('url("http://server")'), null,
+              0, 'background-image', bypassSanitizationTrustStyle('url("http://server")'),
               sanitizeStyle));
       expect((t.hostElement.firstChild as HTMLElement).style.getPropertyValue('background-image'))
           .toEqual('url("http://server")');
