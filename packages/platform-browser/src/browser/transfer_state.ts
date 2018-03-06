@@ -6,7 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {APP_ID, Injectable, NgModule} from '@angular/core';
+import {APP_ID, Inject, Injectable, InjectionToken, ModuleWithProviders, NgModule, Optional} from '@angular/core';
+import {Observable} from 'rxjs/Observable';
+import {map} from 'rxjs/operator/map';
 import {DOCUMENT} from '../dom/dom_tokens';
 
 export function escapeHtml(text: string): string {
@@ -81,21 +83,47 @@ export function makeStateKey<T = void>(key: string): StateKey<T> {
 @Injectable()
 export class TransferState {
   private store: {[k: string]: {} | undefined} = {};
+  private initialized$: Observable<{[k: string]: {} | undefined}>;
   private onSerializeCallbacks: {[k: string]: () => {} | undefined} = {};
 
   /** @internal */
-  static init(initState: {}) {
+  static init(initState: {}, initialStore?: Promise<{[k: string]: {} | undefined}>) {
     const transferState = new TransferState();
-    transferState.store = initState;
-    return transferState;
+    if (initialStore) {
+      transferState.initialized$ = new Observable(obs => {
+        initialStore !.then(store => {
+          transferState.store = store;
+          obs.next();
+          obs.complete();
+        });
+      });
+      return transferState;
+    } else {
+      transferState.store = initState;
+      return transferState;
+    }
+  }
+
+  private _get<T>(key: StateKey<T>, defaultValue: T): T {
+    return this.store[key] !== undefined ? this.store[key] as T : defaultValue;
+  }
+
+  /**
+   *  Get the value corresponding to a key. Return `defaultValue` if key is not found.
+   */
+  getAsync<T>(key: StateKey<T>, defaultValue: T): Observable<T> {
+    if (!this.initialized$) {
+      throw new Error('To use getAsync you must use BrowserTransferStateModule.withAsync()');
+    }
+    return map.call(this.initialized$, (_: any) => this._get(key, defaultValue));
   }
 
   /**
    * Get the value corresponding to a key. Return `defaultValue` if key is not found.
+   *
+   * @deprecated Use getAsync instead.
    */
-  get<T>(key: StateKey<T>, defaultValue: T): T {
-    return this.store[key] !== undefined ? this.store[key] as T : defaultValue;
-  }
+  get<T>(key: StateKey<T>, defaultValue: T): T { return this._get(key, defaultValue); }
 
   /**
    * Set the value corresponding to a key.
@@ -107,10 +135,24 @@ export class TransferState {
    */
   remove<T>(key: StateKey<T>): void { delete this.store[key]; }
 
+  private _hasKey<T>(key: StateKey<T>): boolean { return this.store.hasOwnProperty(key); }
+
   /**
    * Test whether a key exists in the store.
    */
-  hasKey<T>(key: StateKey<T>) { return this.store.hasOwnProperty(key); }
+  hasKeyAsync<T>(key: StateKey<T>): Observable<boolean> {
+    if (!this.initialized$) {
+      throw new Error('To use hasKeyAsync you must use BrowserTransferStateModule.withAsync()');
+    }
+    return map.call(this.initialized$, (_: any) => this._hasKey(key));
+  }
+
+  /**
+   * Test whether a key exists in the store.
+   *
+   * @deprecated Use hasKeyAsync instead.
+   */
+  hasKey<T>(key: StateKey<T>): boolean { return this._hasKey(key); }
 
   /**
    * Register a callback to provide the value for a key when `toJson` is called.
@@ -137,19 +179,47 @@ export class TransferState {
   }
 }
 
-export function initTransferState(doc: Document, appId: string) {
-  // Locate the script tag with the JSON data transferred from the server.
-  // The id of the script tag is set to the Angular appId + 'state'.
-  const script = doc.getElementById(appId + '-state');
-  let initialState = {};
-  if (script && script.textContent) {
-    try {
-      initialState = JSON.parse(unescapeHtml(script.textContent));
-    } catch (e) {
-      console.warn('Exception while restoring TransferState for app ' + appId, e);
+export function initTransferState(doc: Document, appId: string, useAsync = false) {
+  const getTransferedState: () => {} = () => {
+    // Locate the script tag with the JSON data transferred from the server.
+    // The id of the script tag is set to the Angular appId + 'state'.
+    const script = doc.getElementById(appId + '-state');
+    let initialState = {};
+    if (script && script.textContent) {
+      try {
+        initialState = JSON.parse(unescapeHtml(script.textContent));
+      } catch (e) {
+        console.warn('Exception while restoring TransferState for app ' + appId, e);
+      }
     }
+    return initialState;
+  };
+
+  if (useAsync) {
+    const initialContent: Promise<{[k: string]: {} | undefined}> =
+        new Promise((resolve, reject) => {
+          const contentDoneLoaded = (e?: Event) => {
+            doc.removeEventListener('DOMContentLoaded', contentDoneLoaded);
+            resolve(getTransferedState());
+          };
+          if (doc.readyState === 'complete' || doc.readyState === 'loaded') {
+            contentDoneLoaded();
+          } else {
+            doc.addEventListener('DOMContentLoaded', contentDoneLoaded);
+          }
+        });
+
+    const transferState = TransferState.init({}, initialContent);
+
+    return transferState;
+  } else {
+    const initialState = getTransferedState();
+    return TransferState.init(initialState);
   }
-  return TransferState.init(initialState);
+}
+
+export function initTransferStateAsync(doc: Document, appId: string) {
+  return initTransferState(doc, appId, true);
 }
 
 /**
@@ -162,4 +232,11 @@ export function initTransferState(doc: Document, appId: string) {
   providers: [{provide: TransferState, useFactory: initTransferState, deps: [DOCUMENT, APP_ID]}],
 })
 export class BrowserTransferStateModule {
+  static withAsyncRetrieval(): ModuleWithProviders {
+    return {
+      ngModule: BrowserTransferStateModule,
+      providers:
+          [{provide: TransferState, useFactory: initTransferStateAsync, deps: [DOCUMENT, APP_ID]}]
+    };
+  }
 }
