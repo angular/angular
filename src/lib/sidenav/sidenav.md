@@ -117,7 +117,15 @@ If no `mode` is specified, `over` is used by default.
 
 <!-- example(sidenav-mode) -->
 
-`<mat-drawer>` also supports all of these same modes.
+The `over` and `push` sidenav modes show a backdrop by default, while the `side` mode does not. This
+can be customized by setting the `hasBackdrop` property on `mat-sidenav-container`. Explicitly
+setting `hasBackdrop` to `true` or `false` will override the default backdrop visibility setting for
+all sidenavs regadless of mode. Leaving the property unset or setting it to `null` will use the
+default backdrop visibility for each mode.
+
+<!-- example(sidenav-backdrop) -->
+
+`<mat-drawer>` also supports all of these same modes and options.
 
 ### Disabling automatic close
 
