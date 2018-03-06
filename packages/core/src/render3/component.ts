@@ -12,6 +12,7 @@ import {Injector} from '../di/injector';
 import {ComponentRef as viewEngine_ComponentRef} from '../linker/component_factory';
 
 import {assertNotNull} from './assert';
+import {queueLifecycleHooks} from './hooks';
 import {CLEAN_PROMISE, _getComponentHostLElementNode, createLView, createTView, detectChanges, directiveCreate, enterView, getDirectiveInstance, hostElement, initChangeDetectorIfExisting, leaveView, locateHostElement, scheduleChangeDetection} from './instructions';
 import {ComponentDef, ComponentType} from './interfaces/definition';
 import {RElement, RendererFactory3, domRendererFactory3} from './interfaces/renderer';
@@ -124,12 +125,15 @@ export function renderComponent<T>(
     // Create element node at index 0 in data array
     const elementNode = hostElement(hostNode, componentDef);
     // Create directive instance with n() and store at index 1 in data array (el is 0)
-    const instance = componentDef.n();
     component = rootContext.component =
-        getDirectiveInstance(directiveCreate(1, instance, componentDef));
-    initChangeDetectorIfExisting(elementNode.nodeInjector, instance);
+        getDirectiveInstance(directiveCreate(1, componentDef.n(), componentDef));
+    initChangeDetectorIfExisting(elementNode.nodeInjector, component);
+    queueLifecycleHooks(elementNode.flags, elementNode.view);
   } finally {
-    leaveView(oldView);
+    // We must not use leaveView here because it will set creationMode to false too early,
+    // causing init-only hooks not to run. The detectChanges call below will execute
+    // leaveView at the appropriate time in the lifecycle.
+    enterView(oldView, null);
   }
 
   opts.features && opts.features.forEach((feature) => feature(component, componentDef));
