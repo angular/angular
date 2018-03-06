@@ -12,6 +12,7 @@ import {Injector} from '../di/injector';
 import {ComponentRef as viewEngine_ComponentRef} from '../linker/component_factory';
 
 import {assertNotNull} from './assert';
+import {queueLifecycleHooks} from './hooks';
 import {CLEAN_PROMISE, _getComponentHostLElementNode, createLView, createTView, detectChanges, directiveCreate, enterView, getDirectiveInstance, hostElement, initChangeDetectorIfExisting, leaveView, locateHostElement, scheduleChangeDetection} from './instructions';
 import {ComponentDef, ComponentType} from './interfaces/definition';
 import {RElement, RendererFactory3, domRendererFactory3} from './interfaces/renderer';
@@ -39,7 +40,13 @@ export interface CreateComponentOptions {
    * List of features to be applied to the created component. Features are simply
    * functions that decorate a component with a certain behavior.
    *
-   * Example: PublicFeature is a function that makes the component public to the DI system.
+   * Typically, the features in this list are features that cannot be added to the
+   * other features list in the component definition because they rely on other factors.
+   *
+   * Example: RootLifecycleHooks is a function that adds lifecycle hook capabilities
+   * to root components in a tree-shakable way. It cannot be added to the component
+   * features list because there's no way of knowing when the component will be used as
+   * a root component.
    */
   features?: (<T>(component: T, componentDef: ComponentDef<T>) => void)[];
 
@@ -124,12 +131,14 @@ export function renderComponent<T>(
     // Create element node at index 0 in data array
     const elementNode = hostElement(hostNode, componentDef);
     // Create directive instance with n() and store at index 1 in data array (el is 0)
-    const instance = componentDef.n();
     component = rootContext.component =
-        getDirectiveInstance(directiveCreate(1, instance, componentDef));
-    initChangeDetectorIfExisting(elementNode.nodeInjector, instance);
+        getDirectiveInstance(directiveCreate(1, componentDef.n(), componentDef));
+    initChangeDetectorIfExisting(elementNode.nodeInjector, component);
   } finally {
-    leaveView(oldView);
+    // We must not use leaveView here because it will set creationMode to false too early,
+    // causing init-only hooks not to run. The detectChanges call below will execute
+    // leaveView at the appropriate time in the lifecycle.
+    enterView(oldView, null);
   }
 
   opts.features && opts.features.forEach((feature) => feature(component, componentDef));
@@ -139,7 +148,23 @@ export function renderComponent<T>(
 
 
 /**
- * Retrieve the root component of any component by walking the parent `LView` until
+ * Used to enable lifecycle hooks on the root component.
+ *
+ * Include this feature when calling `renderComponent` if the root component
+ * you are rendering has lifecycle hooks defined. Otherwise, the hooks won't
+ * be called properly.
+ *
+ * Example:
+ *
+ * renderComponent(AppComponent, {features: [RootLifecycleHooks]});
+ */
+export function RootLifecycleHooks(component: any, def: ComponentDef<any>): void {
+  const elementNode = _getComponentHostLElementNode(component);
+  queueLifecycleHooks(elementNode.flags, elementNode.view);
+}
+
+/**
+ * Retrieve the root context for any component by walking the parent `LView` until
  * reaching the root `LView`.
  *
  * @param component any component

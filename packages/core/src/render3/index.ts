@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {createComponentRef, getHostElement, getRenderedText, renderComponent, whenRendered} from './component';
+import {RootLifecycleHooks, createComponentRef, getHostElement, getRenderedText, renderComponent, whenRendered} from './component';
 import {NgOnChangesFeature, PublicFeature, defineComponent, defineDirective, definePipe} from './definition';
 import {InjectFlags} from './di';
 import {ComponentDef, ComponentTemplate, ComponentType, DirectiveDef, DirectiveDefFlags, DirectiveType} from './interfaces/definition';
@@ -109,6 +109,7 @@ export {
   DirectiveType,
   NgOnChangesFeature,
   PublicFeature,
+  RootLifecycleHooks,
   defineComponent,
   defineDirective,
   definePipe,

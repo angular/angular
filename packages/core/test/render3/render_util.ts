@@ -10,6 +10,7 @@ import {stringifyElement} from '@angular/platform-browser/testing/src/browser_ut
 
 import {ComponentTemplate, ComponentType, DirectiveType, PublicFeature, defineComponent, defineDirective, renderComponent as _renderComponent} from '../../src/render3/index';
 import {NG_HOST_SYMBOL, createLNode, createLView, renderTemplate} from '../../src/render3/instructions';
+import {CreateComponentOptions} from '../../src/render3/component';
 import {DirectiveDefArgs} from '../../src/render3/interfaces/definition';
 import {LElementNode, LNodeFlags} from '../../src/render3/interfaces/node';
 import {RElement, RText, Renderer3, RendererFactory3, domRendererFactory3} from '../../src/render3/interfaces/renderer';
@@ -112,11 +113,12 @@ export function renderToHtml(
 
 beforeEach(resetDOM);
 
-export function renderComponent<T>(type: ComponentType<T>, rendererFactory?: RendererFactory3): T {
+export function renderComponent<T>(type: ComponentType<T>, opts?: CreateComponentOptions): T {
   return _renderComponent(type, {
-    rendererFactory: rendererFactory || testRendererFactory,
+    rendererFactory: opts && opts.rendererFactory || testRendererFactory,
     host: containerEl,
     scheduler: requestAnimationFrame,
+    features: opts && opts.features
   });
 }
 
