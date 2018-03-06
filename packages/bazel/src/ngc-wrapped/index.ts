@@ -7,7 +7,7 @@
  */
 
 import * as ng from '@angular/compiler-cli';
-import {BazelOptions, CachedFileLoader, CompilerHost, FileCache, FileLoader, UncachedFileLoader, constructManifest, debug, fixUmdModuleDeclarations, parseTsconfig, runAsWorker, runWorkerLoop} from '@bazel/typescript';
+import {BazelOptions, CachedFileLoader, CompilerHost, FileCache, FileLoader, UncachedFileLoader, constructManifest, debug, fixUmdModuleDeclarations, parseTsconfig, resolveNormalizedPath, runAsWorker, runWorkerLoop} from '@bazel/typescript';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as tsickle from 'tsickle';
@@ -77,7 +77,7 @@ export function relativeToRootDirs(filePath: string, rootDirs: string[]): string
   if (!filePath) return filePath;
   // NB: the rootDirs should have been sorted longest-first
   for (const dir of rootDirs || []) {
-    const rel = path.relative(dir, filePath);
+    const rel = path.posix.relative(dir, filePath);
     if (rel.indexOf('.') != 0) return rel;
   }
   return filePath;
@@ -107,7 +107,7 @@ export function compile({allowNonHermeticReads, allDepsCompiledWithBazel = true,
     // Resolve the inputs to absolute paths to match TypeScript internals
     const resolvedInputs: {[path: string]: string} = {};
     for (const key of Object.keys(inputs)) {
-      resolvedInputs[path.resolve(key)] = inputs[key];
+      resolvedInputs[resolveNormalizedPath(key)] = inputs[key];
     }
     fileCache.updateCache(resolvedInputs);
   } else {
@@ -133,7 +133,7 @@ export function compile({allowNonHermeticReads, allDepsCompiledWithBazel = true,
   tsHost.writeFile =
       (fileName: string, content: string, writeByteOrderMark: boolean,
        onError?: (message: string) => void, sourceFiles?: ts.SourceFile[]) => {
-        const relative = relativeToRootDirs(fileName, [compilerOpts.rootDir]);
+        const relative = relativeToRootDirs(fileName.replace(/\\/g, '/'), [compilerOpts.rootDir]);
         const expectedIdx = writtenExpectedOuts.findIndex(o => o === relative);
         if (expectedIdx >= 0) {
           writtenExpectedOuts.splice(expectedIdx, 1);
@@ -196,7 +196,7 @@ export function compile({allowNonHermeticReads, allDepsCompiledWithBazel = true,
     }
     return bazelOpts.workspaceName + '/' + result;
   };
-  ngHost.toSummaryFileName = (fileName: string, referringSrcFileName: string) => path.join(
+  ngHost.toSummaryFileName = (fileName: string, referringSrcFileName: string) => path.posix.join(
       bazelOpts.workspaceName,
       relativeToRootDirs(fileName, compilerOpts.rootDirs).replace(EXT, ''));
   if (allDepsCompiledWithBazel) {
@@ -206,7 +206,7 @@ export function compile({allowNonHermeticReads, allDepsCompiledWithBazel = true,
     // as that has a different implementation of fromSummaryFileName / toSummaryFileName
     ngHost.fromSummaryFileName = (fileName: string, referringLibFileName: string) => {
       const workspaceRelative = fileName.split('/').splice(1).join('/');
-      return path.resolve(bazelBin, workspaceRelative) + '.d.ts';
+      return resolveNormalizedPath(bazelBin, workspaceRelative) + '.d.ts';
     };
   }
   // Patch a property on the ngHost that allows the resourceNameToModuleName function to
