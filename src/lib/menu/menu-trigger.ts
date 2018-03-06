@@ -155,7 +155,7 @@ export class MatMenuTrigger implements AfterContentInit, OnDestroy {
       this._destroyMenu();
 
       // If a click closed the menu, we should close the entire chain of nested menus.
-      if (reason === 'click' && this._parentMenu) {
+      if ((reason === 'click' || reason === 'tab') && this._parentMenu) {
         this._parentMenu.closed.emit(reason);
       }
     });
