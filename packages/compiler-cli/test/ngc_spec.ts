@@ -1244,6 +1244,51 @@ describe('ngc transformer command-line', () => {
         expect(main(['-p', path.join(basePath, 'app', 'tsconfig-app.json')], errorSpy)).toBe(0);
       }
     });
+
+    describe('enableResourceInlining', () => {
+      it('should inline templateUrl and styleUrl in JS and metadata', () => {
+        writeConfig(`{
+          "extends": "./tsconfig-base.json",
+          "files": ["mymodule.ts"],
+          "angularCompilerOptions": {
+            "enableResourceInlining": true
+          }
+        }`);
+        write('my.component.ts', `
+        import {Component} from '@angular/core';
+        @Component({
+          templateUrl: './my.component.html',
+          styleUrls: ['./my.component.css'],
+        })
+        export class MyComp {}
+      `);
+        write('my.component.html', `<h1>Some template content</h1>`);
+        write('my.component.css', `h1 {color: blue}`);
+        write('mymodule.ts', `
+        import {NgModule} from '@angular/core';
+        import {MyComp} from './my.component';
+
+        @NgModule({declarations: [MyComp]})
+        export class MyModule {}
+      `);
+
+        const exitCode = main(['-p', basePath]);
+        expect(exitCode).toEqual(0);
+        outDir = path.resolve(basePath, 'built');
+        const outputJs = fs.readFileSync(path.join(outDir, 'my.component.js'), {encoding: 'utf-8'});
+        expect(outputJs).not.toContain('templateUrl');
+        expect(outputJs).not.toContain('styleUrls');
+        expect(outputJs).toContain('Some template content');
+        expect(outputJs).toContain('color: blue');
+
+        const outputMetadata =
+            fs.readFileSync(path.join(outDir, 'my.component.metadata.json'), {encoding: 'utf-8'});
+        expect(outputMetadata).not.toContain('templateUrl');
+        expect(outputMetadata).not.toContain('styleUrls');
+        expect(outputMetadata).toContain('Some template content');
+        expect(outputMetadata).toContain('color: blue');
+      });
+    });
   });
 
   describe('expression lowering', () => {
@@ -1972,12 +2017,12 @@ describe('ngc transformer command-line', () => {
       it('on simple services', () => {
         const source = compileService(`
         import {Injectable, NgModule} from '@angular/core';
-        
+
         @Injectable()
         export class Service {
           constructor(public param: string) {}
         }
-        
+
         @NgModule({
           providers: [{provide: Service, useValue: new Service('test')}],
         })
@@ -1988,7 +2033,7 @@ describe('ngc transformer command-line', () => {
       it('on a service with a base class service', () => {
         const source = compileService(`
         import {Injectable, NgModule} from '@angular/core';
-        
+
         @Injectable()
         export class Dep {}
 
@@ -1997,7 +2042,7 @@ describe('ngc transformer command-line', () => {
         }
         @Injectable()
         export class Service extends Base {}
-        
+
         @NgModule({
           providers: [Service],
         })

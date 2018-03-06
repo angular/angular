@@ -17,6 +17,7 @@ import {MetadataCollector, ModuleMetadata, createBundleIndexHost} from '../metad
 
 import {CompilerHost, CompilerOptions, CustomTransformers, DEFAULT_ERROR_CODE, Diagnostic, DiagnosticMessageChain, EmitFlags, LazyRoute, LibrarySummary, Program, SOURCE, TsEmitArguments, TsEmitCallback} from './api';
 import {CodeGenerator, TsCompilerAotCompilerTypeCheckHostAdapter, getOriginalReferences} from './compiler_host';
+import {InlineResourcesMetadataTransformer, getInlineResourcesTransformFactory} from './inline_resources';
 import {LowerMetadataTransform, getExpressionLoweringTransformFactory} from './lower_expressions';
 import {MetadataCache, MetadataTransformer} from './metadata_cache';
 import {getAngularEmitterTransformFactory} from './node_emitter_transform';
@@ -471,10 +472,16 @@ class AngularCompilerProgram implements Program {
   private calculateTransforms(
       genFiles: Map<string, GeneratedFile>|undefined, partialModules: PartialModule[]|undefined,
       customTransformers?: CustomTransformers): ts.CustomTransformers {
-    const beforeTs: ts.TransformerFactory<ts.SourceFile>[] = [];
+    const beforeTs: Array<ts.TransformerFactory<ts.SourceFile>> = [];
+    const metadataTransforms: MetadataTransformer[] = [];
+    if (this.options.enableResourceInlining) {
+      beforeTs.push(getInlineResourcesTransformFactory(this.tsProgram, this.hostAdapter));
+      metadataTransforms.push(new InlineResourcesMetadataTransformer(this.hostAdapter));
+    }
     if (!this.options.disableExpressionLowering) {
       beforeTs.push(
           getExpressionLoweringTransformFactory(this.loweringMetadataTransform, this.tsProgram));
+      metadataTransforms.push(this.loweringMetadataTransform);
     }
     if (genFiles) {
       beforeTs.push(getAngularEmitterTransformFactory(genFiles, this.getTsProgram()));
@@ -484,11 +491,13 @@ class AngularCompilerProgram implements Program {
 
       // If we have partial modules, the cached metadata might be incorrect as it doesn't reflect
       // the partial module transforms.
-      this.metadataCache = this.createMetadataCache(
-          [this.loweringMetadataTransform, new PartialModuleMetadataTransformer(partialModules)]);
+      metadataTransforms.push(new PartialModuleMetadataTransformer(partialModules));
     }
     if (customTransformers && customTransformers.beforeTs) {
       beforeTs.push(...customTransformers.beforeTs);
+    }
+    if (metadataTransforms.length > 0) {
+      this.metadataCache = this.createMetadataCache(metadataTransforms);
     }
     const afterTs = customTransformers ? customTransformers.afterTs : undefined;
     return {before: beforeTs, after: afterTs};
