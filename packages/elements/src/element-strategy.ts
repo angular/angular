@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {ComponentFactory} from '@angular/core';
+import {ComponentFactory, Injector} from '@angular/core';
 import {Observable} from 'rxjs/Observable';
 
 /**
@@ -38,4 +38,7 @@ export interface NgElementStrategy {
  *
  * @experimental
  */
-export interface NgElementStrategyFactory { create(): NgElementStrategy; }
+export interface NgElementStrategyFactory {
+  /** Creates a new instance to be used for an NgElement. */
+  create(injector: Injector): NgElementStrategy;
+}
