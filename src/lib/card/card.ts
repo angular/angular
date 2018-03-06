@@ -155,7 +155,6 @@ export class MatCardAvatar {}
   templateUrl: 'card.html',
   styleUrls: ['card.css'],
   encapsulation: ViewEncapsulation.None,
-  preserveWhitespaces: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {'class': 'mat-card'}
 })
@@ -172,7 +171,6 @@ export class MatCard {}
   selector: 'mat-card-header',
   templateUrl: 'card-header.html',
   encapsulation: ViewEncapsulation.None,
-  preserveWhitespaces: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {'class': 'mat-card-header'}
 })
@@ -189,7 +187,6 @@ export class MatCardHeader {}
   selector: 'mat-card-title-group',
   templateUrl: 'card-title-group.html',
   encapsulation: ViewEncapsulation.None,
-  preserveWhitespaces: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {'class': 'mat-card-title-group'}
 })

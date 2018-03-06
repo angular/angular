@@ -114,7 +114,6 @@ export type MatFormFieldAppearance = 'legacy' | 'standard' | 'fill' | 'outline';
   },
   inputs: ['color'],
   encapsulation: ViewEncapsulation.None,
-  preserveWhitespaces: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 

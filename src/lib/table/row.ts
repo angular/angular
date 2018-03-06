@@ -51,7 +51,6 @@ export class MatRowDef<T> extends CdkRowDef<T> {
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
   exportAs: 'matHeaderRow',
-  preserveWhitespaces: false,
 })
 export class MatHeaderRow extends CdkHeaderRow { }
 
@@ -67,6 +66,5 @@ export class MatHeaderRow extends CdkHeaderRow { }
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
   exportAs: 'matRow',
-  preserveWhitespaces: false,
 })
 export class MatRow extends CdkRow { }

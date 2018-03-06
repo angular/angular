@@ -82,7 +82,6 @@ export const MAT_DRAWER_DEFAULT_AUTOSIZE =
   },
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
-  preserveWhitespaces: false,
 })
 export class MatDrawerContent implements AfterContentInit {
   /**
@@ -130,7 +129,6 @@ export class MatDrawerContent implements AfterContentInit {
   },
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
-  preserveWhitespaces: false,
 })
 export class MatDrawer implements AfterContentInit, AfterContentChecked, OnDestroy {
   private _focusTrap: FocusTrap;
@@ -434,7 +432,6 @@ export class MatDrawer implements AfterContentInit, AfterContentChecked, OnDestr
   },
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
-  preserveWhitespaces: false,
 })
 export class MatDrawerContainer implements AfterContentInit, OnDestroy {
   @ContentChildren(MatDrawer) _drawers: QueryList<MatDrawer>;

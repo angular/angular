@@ -45,7 +45,6 @@ import {createMissingDateImplError} from './datepicker-errors';
   templateUrl: 'year-view.html',
   exportAs: 'matYearView',
   encapsulation: ViewEncapsulation.None,
-  preserveWhitespaces: false,
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class MatYearView<D> implements AfterContentInit {

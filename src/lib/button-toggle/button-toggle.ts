@@ -242,7 +242,6 @@ export const _MatButtonToggleMixinBase = mixinDisableRipple(MatButtonToggleBase)
   templateUrl: 'button-toggle.html',
   styleUrls: ['button-toggle.css'],
   encapsulation: ViewEncapsulation.None,
-  preserveWhitespaces: false,
   exportAs: 'matButtonToggle',
   changeDetection: ChangeDetectionStrategy.OnPush,
   inputs: ['disableRipple'],

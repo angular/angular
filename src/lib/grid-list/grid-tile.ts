@@ -30,7 +30,6 @@ import {coerceToNumber} from './grid-list-measure';
   templateUrl: 'grid-tile.html',
   styleUrls: ['grid-list.css'],
   encapsulation: ViewEncapsulation.None,
-  preserveWhitespaces: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MatGridTile {
@@ -64,7 +63,6 @@ export class MatGridTile {
   templateUrl: 'grid-tile-text.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
-  preserveWhitespaces: false,
 })
 export class MatGridTileText implements AfterContentInit {
   /**

@@ -54,7 +54,6 @@ let uniqueId = 0;
   exportAs: 'matExpansionPanel',
   templateUrl: './expansion-panel.html',
   encapsulation: ViewEncapsulation.None,
-  preserveWhitespaces: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
   inputs: ['disabled', 'expanded'],
   outputs: ['opened', 'closed', 'expandedChange'],

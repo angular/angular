@@ -22,7 +22,6 @@ import {CDK_TABLE_TEMPLATE, CdkTable} from '@angular/cdk/table';
     'class': 'mat-table',
   },
   encapsulation: ViewEncapsulation.None,
-  preserveWhitespaces: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MatTable<T> extends CdkTable<T> { }

@@ -15,7 +15,6 @@ import {MatAccordion} from '@angular/material';
   styleUrls: ['expansion-demo.css'],
   templateUrl: 'expansion-demo.html',
   encapsulation: ViewEncapsulation.None,
-  preserveWhitespaces: false,
 })
 export class ExpansionDemo {
   @ViewChild(MatAccordion) accordion: MatAccordion;

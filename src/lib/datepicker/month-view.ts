@@ -49,7 +49,6 @@ const DAYS_PER_WEEK = 7;
   templateUrl: 'month-view.html',
   exportAs: 'matMonthView',
   encapsulation: ViewEncapsulation.None,
-  preserveWhitespaces: false,
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class MatMonthView<D> implements AfterContentInit {

@@ -82,7 +82,6 @@ export const _MatSlideToggleMixinBase =
   providers: [MAT_SLIDE_TOGGLE_VALUE_ACCESSOR],
   inputs: ['disabled', 'disableRipple', 'color', 'tabIndex'],
   encapsulation: ViewEncapsulation.None,
-  preserveWhitespaces: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MatSlideToggle extends _MatSlideToggleMixinBase implements OnDestroy, AfterContentInit,

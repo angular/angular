@@ -34,7 +34,6 @@ import {coerceBooleanProperty, coerceNumberProperty} from '@angular/cdk/coercion
   },
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
-  preserveWhitespaces: false,
 })
 export class MatSidenavContent extends MatDrawerContent {
   constructor(
@@ -69,7 +68,6 @@ export class MatSidenavContent extends MatDrawerContent {
   },
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
-  preserveWhitespaces: false,
 })
 export class MatSidenav extends MatDrawer {
   /** Whether the sidenav is fixed in the viewport. */
@@ -110,7 +108,6 @@ export class MatSidenav extends MatDrawer {
   },
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
-  preserveWhitespaces: false,
 })
 export class MatSidenavContainer extends MatDrawerContainer {
   @ContentChildren(MatSidenav) _drawers: QueryList<MatSidenav>;

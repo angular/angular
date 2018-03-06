@@ -21,7 +21,6 @@ const defaultConfig = new MatBottomSheetConfig();
   styleUrls: ['bottom-sheet-demo.css'],
   templateUrl: 'bottom-sheet-demo.html',
   encapsulation: ViewEncapsulation.None,
-  preserveWhitespaces: false,
 })
 export class BottomSheetDemo {
   config: MatBottomSheetConfig = {

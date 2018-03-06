@@ -50,7 +50,6 @@ export class MatToolbarRow {}
   },
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
-  preserveWhitespaces: false,
 })
 export class MatToolbar extends _MatToolbarMixinBase implements CanColor, AfterViewInit {
   private _document: Document;

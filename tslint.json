@@ -98,7 +98,6 @@
       "Component": {
         "encapsulation": "\\.None$",
         "moduleId": "^module\\.id$",
-        "preserveWhitespaces": "false$",
         "changeDetection": "\\.OnPush$",
         "!styles": ".*",
         "!host": "\\[class\\]"

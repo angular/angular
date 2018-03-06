@@ -82,7 +82,6 @@ const MAT_MENU_BASE_ELEVATION = 2;
   styleUrls: ['menu.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
-  preserveWhitespaces: false,
   animations: [
     matMenuAnimations.transformMenu,
     matMenuAnimations.fadeInItems

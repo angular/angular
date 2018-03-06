@@ -42,7 +42,6 @@ export const _MatListItemMixinBase = mixinDisableRipple(MatListItemBase);
   styleUrls: ['list.css'],
   inputs: ['disableRipple'],
   encapsulation: ViewEncapsulation.None,
-  preserveWhitespaces: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MatNavList extends _MatListMixinBase implements CanDisableRipple {}
@@ -56,7 +55,6 @@ export class MatNavList extends _MatListMixinBase implements CanDisableRipple {}
   styleUrls: ['list.css'],
   inputs: ['disableRipple'],
   encapsulation: ViewEncapsulation.None,
-  preserveWhitespaces: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MatList extends _MatListMixinBase implements CanDisableRipple {}
@@ -107,7 +105,6 @@ export class MatListSubheaderCssMatStyler {}
   inputs: ['disableRipple'],
   templateUrl: 'list-item.html',
   encapsulation: ViewEncapsulation.None,
-  preserveWhitespaces: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MatListItem extends _MatListItemMixinBase implements AfterContentInit,

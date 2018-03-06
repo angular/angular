@@ -70,7 +70,6 @@ export const _MatButtonMixinBase = mixinColor(mixinDisabled(mixinDisableRipple(M
   styleUrls: ['button.css'],
   inputs: ['disabled', 'disableRipple', 'color'],
   encapsulation: ViewEncapsulation.None,
-  preserveWhitespaces: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MatButton extends _MatButtonMixinBase
@@ -155,7 +154,6 @@ export class MatButton extends _MatButtonMixinBase
   templateUrl: 'button.html',
   styleUrls: ['button.css'],
   encapsulation: ViewEncapsulation.None,
-  preserveWhitespaces: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MatAnchor extends MatButton {

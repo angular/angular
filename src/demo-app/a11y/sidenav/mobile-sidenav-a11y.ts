@@ -17,7 +17,6 @@ import {ChangeDetectorRef, Component, OnDestroy, ViewEncapsulation} from '@angul
   styleUrls: ['shared.css', 'mobile-sidenav-a11y.css'],
   host: {'class': 'a11y-demo-sidenav-app'},
   encapsulation: ViewEncapsulation.None,
-  preserveWhitespaces: false,
 })
 export class SidenavMobileAccessibilityDemo implements OnDestroy {
   mobileQuery: MediaQueryList;

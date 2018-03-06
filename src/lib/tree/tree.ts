@@ -24,7 +24,6 @@ import {MatTreeNodeOutlet} from './outlet';
   },
   styleUrls: ['tree.css'],
   encapsulation: ViewEncapsulation.None,
-  preserveWhitespaces: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [{provide: CdkTree, useExisting: MatTree}]
 })

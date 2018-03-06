@@ -22,7 +22,6 @@ import {
   styleUrls: ['snack-bar-demo.css'],
   templateUrl: 'snack-bar-demo.html',
   encapsulation: ViewEncapsulation.None,
-  preserveWhitespaces: false,
 })
 export class SnackBarDemo {
   @ViewChild('template') template: TemplateRef<any>;

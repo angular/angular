@@ -20,7 +20,6 @@ import {Component, ElementRef, ViewEncapsulation} from '@angular/core';
   selector: 'entry-app',
   template: '<router-outlet></router-outlet>',
   encapsulation: ViewEncapsulation.None,
-  preserveWhitespaces: false,
 })
 export class EntryApp {}
 
@@ -45,7 +44,6 @@ export class Home {}
   templateUrl: 'demo-app.html',
   styleUrls: ['demo-app.css'],
   encapsulation: ViewEncapsulation.None,
-  preserveWhitespaces: false,
 })
 export class DemoApp {
   dark = false;

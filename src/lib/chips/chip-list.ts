@@ -92,7 +92,6 @@ export class MatChipListChange {
   providers: [{provide: MatFormFieldControl, useExisting: MatChipList}],
   styleUrls: ['chips.css'],
   encapsulation: ViewEncapsulation.None,
-  preserveWhitespaces: false,
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class MatChipList extends _MatChipListMixinBase implements MatFormFieldControl<any>,

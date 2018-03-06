@@ -94,7 +94,6 @@ const INDETERMINATE_ANIMATION_TEMPLATE = `
   styleUrls: ['progress-spinner.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
-  preserveWhitespaces: false,
 })
 export class MatProgressSpinner extends _MatProgressSpinnerMixinBase implements CanColor,
   OnChanges {
@@ -260,7 +259,6 @@ export class MatProgressSpinner extends _MatProgressSpinnerMixinBase implements 
   styleUrls: ['progress-spinner.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
-  preserveWhitespaces: false,
 })
 export class MatSpinner extends MatProgressSpinner {
   constructor(elementRef: ElementRef, platform: Platform,

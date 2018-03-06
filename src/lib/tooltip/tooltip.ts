@@ -494,7 +494,6 @@ export type TooltipVisibility = 'initial' | 'visible' | 'hidden';
   templateUrl: 'tooltip.html',
   styleUrls: ['tooltip.css'],
   encapsulation: ViewEncapsulation.None,
-  preserveWhitespaces: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
   animations: [matTooltipAnimations.tooltipState],
   host: {

@@ -94,7 +94,6 @@ export const _MatDatepickerContentMixinBase = mixinColor(MatDatepickerContentBas
   },
   exportAs: 'matDatepickerContent',
   encapsulation: ViewEncapsulation.None,
-  preserveWhitespaces: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
   inputs: ['color'],
 })
@@ -134,7 +133,6 @@ export class MatDatepickerContent<D> extends _MatDatepickerContentMixinBase
   exportAs: 'matDatepicker',
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
-  preserveWhitespaces: false,
 })
 export class MatDatepicker<D> implements OnDestroy, CanColor {
   /** The date to open the calendar to initially. */

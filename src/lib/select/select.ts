@@ -188,7 +188,6 @@ export class MatSelectTrigger {}
   styleUrls: ['select.css'],
   inputs: ['disabled', 'disableRipple', 'tabIndex'],
   encapsulation: ViewEncapsulation.None,
-  preserveWhitespaces: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     'role': 'listbox',

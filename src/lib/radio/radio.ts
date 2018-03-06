@@ -319,7 +319,6 @@ export const _MatRadioButtonMixinBase =
   styleUrls: ['radio.css'],
   inputs: ['color', 'disableRipple', 'tabIndex'],
   encapsulation: ViewEncapsulation.None,
-  preserveWhitespaces: false,
   exportAs: 'matRadioButton',
   host: {
     'class': 'mat-radio-button',

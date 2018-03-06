@@ -45,7 +45,6 @@ const MAT_FIT_MODE = 'fit';
   },
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
-  preserveWhitespaces: false,
 })
 export class MatGridList implements OnInit, AfterContentChecked {
   /** Number of columns being rendered. */

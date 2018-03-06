@@ -69,7 +69,6 @@ export const _MatIconMixinBase = mixinColor(MatIconBase);
     'class': 'mat-icon',
   },
   encapsulation: ViewEncapsulation.None,
-  preserveWhitespaces: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MatIcon extends _MatIconMixinBase implements OnChanges, OnInit, CanColor {

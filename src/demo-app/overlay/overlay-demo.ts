@@ -26,7 +26,6 @@ import {tap} from 'rxjs/operators/tap';
   templateUrl: 'overlay-demo.html',
   styleUrls: ['overlay-demo.css'],
   encapsulation: ViewEncapsulation.None,
-  preserveWhitespaces: false,
 })
 export class OverlayDemo {
   nextPosition: number = 0;

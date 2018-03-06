@@ -42,7 +42,6 @@ import {matSnackBarAnimations} from './snack-bar-animations';
   styleUrls: ['snack-bar-container.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
-  preserveWhitespaces: false,
   animations: [matSnackBarAnimations.snackBarState],
   host: {
     'role': 'alert',

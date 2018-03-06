@@ -22,7 +22,6 @@ import {matSnackBarAnimations} from './snack-bar-animations';
   templateUrl: 'simple-snack-bar.html',
   styleUrls: ['simple-snack-bar.css'],
   encapsulation: ViewEncapsulation.None,
-  preserveWhitespaces: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
   animations: [matSnackBarAnimations.contentFade],
   host: {

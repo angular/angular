@@ -51,7 +51,6 @@ export const _MatMenuItemMixinBase = mixinDisableRipple(mixinDisabled(MatMenuIte
   },
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
-  preserveWhitespaces: false,
   templateUrl: 'menu-item.html',
 })
 export class MatMenuItem extends _MatMenuItemMixinBase

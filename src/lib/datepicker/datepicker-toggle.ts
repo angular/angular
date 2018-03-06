@@ -47,7 +47,6 @@ export class MatDatepickerToggleIcon {}
   },
   exportAs: 'matDatepickerToggle',
   encapsulation: ViewEncapsulation.None,
-  preserveWhitespaces: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MatDatepickerToggle<D> implements AfterContentInit, OnChanges, OnDestroy {

@@ -102,7 +102,6 @@ export class MatSelectionListChange {
   },
   templateUrl: 'list-option.html',
   encapsulation: ViewEncapsulation.None,
-  preserveWhitespaces: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MatListOption extends _MatListOptionMixinBase
@@ -292,7 +291,6 @@ export class MatListOption extends _MatListOptionMixinBase
   styleUrls: ['list.css'],
   encapsulation: ViewEncapsulation.None,
   providers: [MAT_SELECTION_LIST_VALUE_ACCESSOR],
-  preserveWhitespaces: false,
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class MatSelectionList extends _MatSelectionListMixinBase implements FocusableOption,

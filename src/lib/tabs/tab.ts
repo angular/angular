@@ -39,7 +39,6 @@ export const _MatTabMixinBase = mixinDisabled(MatTabBase);
   inputs: ['disabled'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
-  preserveWhitespaces: false,
   exportAs: 'matTab',
 })
 export class MatTab extends _MatTabMixinBase implements OnInit, CanDisable, OnChanges, OnDestroy {

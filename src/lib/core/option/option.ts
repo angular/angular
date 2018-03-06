@@ -81,7 +81,6 @@ export const MAT_OPTION_PARENT_COMPONENT =
   styleUrls: ['option.css'],
   templateUrl: 'option.html',
   encapsulation: ViewEncapsulation.None,
-  preserveWhitespaces: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MatOption implements AfterViewChecked {

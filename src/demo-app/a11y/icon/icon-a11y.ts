@@ -14,7 +14,6 @@ import {MatSnackBar} from '@angular/material';
   selector: 'icon-a11y',
   templateUrl: 'icon-a11y.html',
   encapsulation: ViewEncapsulation.None,
-  preserveWhitespaces: false,
 })
 export class IconAccessibilityDemo {
   constructor(private snackBar: MatSnackBar) {}

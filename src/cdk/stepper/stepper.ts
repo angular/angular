@@ -73,7 +73,6 @@ export class StepperSelectionEvent {
   exportAs: 'cdkStep',
   templateUrl: 'step.html',
   encapsulation: ViewEncapsulation.None,
-  preserveWhitespaces: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CdkStep implements OnChanges {

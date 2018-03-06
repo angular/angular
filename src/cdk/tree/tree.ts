@@ -132,7 +132,6 @@ export class CdkTreeNode<T>  implements FocusableOption, OnDestroy {
     'role': 'tree',
   },
   encapsulation: ViewEncapsulation.None,
-  preserveWhitespaces: false,
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class CdkTree<T> implements CollectionViewer, OnInit, OnDestroy {

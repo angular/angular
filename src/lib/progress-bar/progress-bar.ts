@@ -48,7 +48,6 @@ let progressbarId = 0;
   styleUrls: ['progress-bar.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
-  preserveWhitespaces: false,
 })
 export class MatProgressBar extends _MatProgressBarMixinBase implements CanColor {
 

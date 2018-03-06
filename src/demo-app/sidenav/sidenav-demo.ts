@@ -15,7 +15,6 @@ import {Component, ViewEncapsulation} from '@angular/core';
   templateUrl: 'sidenav-demo.html',
   styleUrls: ['sidenav-demo.css'],
   encapsulation: ViewEncapsulation.None,
-  preserveWhitespaces: false,
 })
 export class SidenavDemo {
   isLaunched = false;

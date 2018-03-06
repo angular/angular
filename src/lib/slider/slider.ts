@@ -131,7 +131,6 @@ export const _MatSliderMixinBase =
   styleUrls: ['slider.css'],
   inputs: ['disabled', 'color', 'tabIndex'],
   encapsulation: ViewEncapsulation.None,
-  preserveWhitespaces: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MatSlider extends _MatSliderMixinBase

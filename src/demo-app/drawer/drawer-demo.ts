@@ -15,7 +15,6 @@ import {Component, ViewEncapsulation} from '@angular/core';
   templateUrl: 'drawer-demo.html',
   styleUrls: ['drawer-demo.css'],
   encapsulation: ViewEncapsulation.None,
-  preserveWhitespaces: false,
 })
 export class DrawerDemo {
   invert = false;

@@ -45,7 +45,6 @@ import {MatYearView} from './year-view';
   },
   exportAs: 'matCalendar',
   encapsulation: ViewEncapsulation.None,
-  preserveWhitespaces: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MatCalendar<D> implements AfterContentInit, OnDestroy, OnChanges {

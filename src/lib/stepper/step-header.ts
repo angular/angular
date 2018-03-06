@@ -33,7 +33,6 @@ import {MatStepperIntl} from './stepper-intl';
     'role': 'tab',
   },
   encapsulation: ViewEncapsulation.None,
-  preserveWhitespaces: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MatStepHeader implements OnDestroy {

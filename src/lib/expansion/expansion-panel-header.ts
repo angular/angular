@@ -37,7 +37,6 @@ import {matExpansionAnimations} from './expansion-animations';
   styleUrls: ['./expansion-panel-header.css'],
   templateUrl: './expansion-panel-header.html',
   encapsulation: ViewEncapsulation.None,
-  preserveWhitespaces: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
   animations: [
     matExpansionAnimations.indicatorRotate,

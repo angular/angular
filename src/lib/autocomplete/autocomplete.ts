@@ -71,7 +71,6 @@ export const MAT_AUTOCOMPLETE_DEFAULT_OPTIONS =
   templateUrl: 'autocomplete.html',
   styleUrls: ['autocomplete.css'],
   encapsulation: ViewEncapsulation.None,
-  preserveWhitespaces: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
   exportAs: 'matAutocomplete',
   inputs: ['disableRipple'],

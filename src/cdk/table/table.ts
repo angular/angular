@@ -94,7 +94,6 @@ abstract class RowViewRef<T> extends EmbeddedViewRef<CdkCellOutletRowContext<T>>
     'class': 'cdk-table',
   },
   encapsulation: ViewEncapsulation.None,
-  preserveWhitespaces: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CdkTable<T> implements CollectionViewer, OnInit, AfterContentChecked {
