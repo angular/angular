@@ -418,6 +418,16 @@ describe('MatAutocomplete', () => {
       expect(fixture.componentInstance.openedSpy).toHaveBeenCalled();
     });
 
+    it('should not emit the `opened` event when no options are being shown', () => {
+      fixture.componentInstance.filteredStates = fixture.componentInstance.states = [];
+      fixture.detectChanges();
+
+      fixture.componentInstance.trigger.openPanel();
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance.openedSpy).not.toHaveBeenCalled();
+    });
+
     it('should not emit the opened event multiple times while typing', fakeAsync(() => {
       fixture.componentInstance.trigger.openPanel();
       fixture.detectChanges();
@@ -440,6 +450,19 @@ describe('MatAutocomplete', () => {
       fixture.detectChanges();
 
       expect(fixture.componentInstance.closedSpy).toHaveBeenCalled();
+    });
+
+    it('should not emit the `closed` event when no options were shown', () => {
+      fixture.componentInstance.filteredStates = fixture.componentInstance.states = [];
+      fixture.detectChanges();
+
+      fixture.componentInstance.trigger.openPanel();
+      fixture.detectChanges();
+
+      fixture.componentInstance.trigger.closePanel();
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance.closedSpy).not.toHaveBeenCalled();
     });
 
   });
