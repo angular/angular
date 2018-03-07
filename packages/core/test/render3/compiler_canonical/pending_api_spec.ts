@@ -12,9 +12,9 @@ import {InjectFlags, InjectionToken, Injector, Type} from '@angular/core';
 
 // TODO: remove once https://github.com/angular/angular/pull/22458 lands
 export class $pending_pr_22458$ {
-  static defineInjectable<T>({scope, factory}: {scope?: Type<any>, factory: () => T}):
-      {scope: Type<any>| null, factory: () => T} {
-    return {scope: scope || null, factory: factory};
+  static defineProvider<T>({providerFor, factory}: {providerFor?: Type<any>, factory: () => T}):
+      {providerFor: Type<any>| null, factory: () => T} {
+    return {providerFor: providerFor || null, factory: factory};
   }
 
   static defineInjector<T>({factory, providers}: {factory: () => T, providers: any[]}):

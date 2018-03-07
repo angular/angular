@@ -119,7 +119,7 @@ describe('injection', () => {
       @Injectable()
       class ServiceA {
         // NORMATIVE
-        static ngInjectableDef = $pending_pr_22458$.defineInjectable({
+        static ngInjectableDef = $pending_pr_22458$.defineProvider({
           factory: function ServiceA_Factory() { return new ServiceA(); },
         });
         // /NORMATIVE
@@ -128,7 +128,7 @@ describe('injection', () => {
       @Injectable()
       class ServiceB {
         // NORMATIVE
-        static ngInjectableDef = $pending_pr_22458$.defineInjectable({
+        static ngInjectableDef = $pending_pr_22458$.defineProvider({
           factory: function ServiceA_Factory() { return new ServiceB(); },
         });
         // /NORMATIVE
@@ -170,7 +170,7 @@ describe('injection', () => {
       constructor(@Inject(String) name: String, injector: Injector) {}
 
       // NORMATIVE
-      static ngInjectableDef = $pending_pr_22458$.defineInjectable({
+      static ngInjectableDef = $pending_pr_22458$.defineProvider({
         factory: function ServiceA_Factory() {
           return new ServiceA(
               $pending_pr_22458$.inject(String), $pending_pr_22458$.injectInjector());
@@ -183,7 +183,7 @@ describe('injection', () => {
     class ServiceB {
       constructor(serviceA: ServiceA, @SkipSelf() injector: Injector) {}
       // NORMATIVE
-      static ngInjectableDef = $pending_pr_22458$.defineInjectable({
+      static ngInjectableDef = $pending_pr_22458$.defineProvider({
         factory: function ServiceA_Factory() {
           return new ServiceB(
               $pending_pr_22458$.inject(ServiceA),
