@@ -1,6 +1,6 @@
 package(default_visibility = ["//visibility:public"])
 
-load("//tools:defaults.bzl", "ng_module")
+load("//tools:defaults.bzl", "ng_module", "ng_package")
 
 ng_module(
     name = "platform-server",
@@ -22,5 +22,18 @@ ng_module(
         "//packages/platform-browser-dynamic",
         "//packages/platform-browser/animations",
         "@rxjs",
+    ],
+)
+
+ng_package(
+    name = "npm_package",
+    srcs = ["package.json"],
+    entry_point = "packages/platform-server/index.js",
+    secondary_entry_points = [
+        "testing",
+    ],
+    deps = [
+        ":platform-server",
+        "//packages/platform-server/testing",
     ],
 )

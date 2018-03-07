@@ -19,6 +19,7 @@ ng_module(
 
 ng_package(
     name = "npm_package",
+    srcs = ["package.json"],
     entry_point = "packages/common/index.js",
     secondary_entry_points = [
         "testing",

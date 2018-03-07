@@ -1,6 +1,6 @@
 package(default_visibility = ["//visibility:public"])
 
-load("//tools:defaults.bzl", "ng_module")
+load("//tools:defaults.bzl", "ng_module", "ng_package")
 
 ng_module(
     name = "forms",
@@ -15,5 +15,14 @@ ng_module(
         "//packages/core",
         "//packages/platform-browser",
         "@rxjs",
+    ],
+)
+
+ng_package(
+    name = "npm_package",
+    srcs = ["package.json"],
+    entry_point = "packages/forms/index.js",
+    deps = [
+        ":forms",
     ],
 )

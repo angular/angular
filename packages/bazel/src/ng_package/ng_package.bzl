@@ -16,28 +16,41 @@ load("//packages/bazel/src:esm5.bzl", "esm5_outputs_aspect", "ESM5Info")
 # TODO(alexeagle): this list is incomplete, add more as material ramps up
 WELL_KNOWN_GLOBALS = {
     "@angular/core": "ng.core",
+    "@angular/core/testing": "ng.core.testing",
     "@angular/common": "ng.common",
+    "@angular/compiler": "ng.compiler",
+    "@angular/compiler/testing": "ng.compiler.testing",
     "@angular/platform-browser": "ng.platformBrowser",
+    "@angular/platform-browser/testing": "ng.platformBrowser.testing",
+    "@angular/platform-browser-dynamic": "ng.platformBrowserDynamic",
 }
 WELL_KNOWN_GLOBALS.update({"rxjs/%s" % s: "Rx" for s in [
     "BehaviorSubject",
+    "ConnectableObservable",
     "Observable",
     "Observer",
     "Subject",
     "Subscription",
+    "ReplaySubject",
     "util/EmptyError",
 ]})
 WELL_KNOWN_GLOBALS.update({"rxjs/observable/%s" % s: "Rx.Observable" for s in [
+    "concat",
+    "defer",
     "from",
+    "fromEvent",
     "fromPromise",
     "forkJoin",
     "merge",
+    "never",
     "of",
+    "throw",
 ]})
 WELL_KNOWN_GLOBALS.update({"rxjs/operator/%s" % s: "Rx.Observable.prototype" for s in [
     "catch",
     "concatAll",
     "concatMap",
+    "do",
     "every",
     "first",
     "filter",
@@ -45,8 +58,12 @@ WELL_KNOWN_GLOBALS.update({"rxjs/operator/%s" % s: "Rx.Observable.prototype" for
     "map",
     "mergeAll",
     "mergeMap",
+    "publish",
     "reduce",
     "share",
+    "startWith",
+    "switchMap",
+    "take",
     "toPromise",
 ]})
 
@@ -238,7 +255,7 @@ def ng_package_outputs(name, entry_point):
   # we assume the files should be named "package.*.js"
   basename = entry_point.split("/")[-2] if entry_point.find("/") >=0 else name
   return {
-      "fesm5": "%s.js" % basename,
+      "fesm5": "fesm5/%s.js" % basename,
       "fesm2015": "fesm2015/%s.js" % basename,
       "umd": "%s.umd.js" % basename,
       "umd_min": "%s.umd.min.js" % basename,

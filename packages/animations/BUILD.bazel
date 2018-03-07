@@ -1,6 +1,6 @@
 package(default_visibility = ["//visibility:public"])
 
-load("//tools:defaults.bzl", "ng_module")
+load("//tools:defaults.bzl", "ng_module", "ng_package")
 
 ng_module(
     name = "animations",
@@ -13,5 +13,20 @@ ng_module(
     module_name = "@angular/animations",
     deps = [
         "//packages/core",
+    ],
+)
+
+ng_package(
+    name = "npm_package",
+    srcs = ["package.json"],
+    entry_point = "packages/animations/index.js",
+    secondary_entry_points = [
+        "browser",
+        "browser/testing",
+    ],
+    deps = [
+        ":animations",
+        "//packages/animations/browser",
+        "//packages/animations/browser/testing",
     ],
 )
