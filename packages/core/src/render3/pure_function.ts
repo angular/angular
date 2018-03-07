@@ -17,7 +17,7 @@ import {bindingUpdated, bindingUpdated2, bindingUpdated4, checkAndUpdateBinding,
  * @param pureFn Function that returns a value
  * @returns value
  */
-export function pureFunction0<T>(pureFn: () => T, thisArg: any = null): T {
+export function pureFunction0<T>(pureFn: () => T, thisArg?: any): T {
   return getCreationMode() ? checkAndUpdateBinding(thisArg ? pureFn.call(thisArg) : pureFn()) :
                              consumeBinding();
 }
@@ -30,7 +30,7 @@ export function pureFunction0<T>(pureFn: () => T, thisArg: any = null): T {
  * @param exp Updated expression value
  * @returns Updated value
  */
-export function pureFunction1(pureFn: (v: any) => any, exp: any, thisArg: any = null): any {
+export function pureFunction1(pureFn: (v: any) => any, exp: any, thisArg?: any): any {
   return bindingUpdated(exp) ?
       checkAndUpdateBinding(thisArg ? pureFn.call(thisArg, exp) : pureFn(exp)) :
       consumeBinding();
@@ -46,7 +46,7 @@ export function pureFunction1(pureFn: (v: any) => any, exp: any, thisArg: any = 
  * @returns Updated value
  */
 export function pureFunction2(
-    pureFn: (v1: any, v2: any) => any, exp1: any, exp2: any, thisArg: any = null): any {
+    pureFn: (v1: any, v2: any) => any, exp1: any, exp2: any, thisArg?: any): any {
   return bindingUpdated2(exp1, exp2) ?
       checkAndUpdateBinding(thisArg ? pureFn.call(thisArg, exp1, exp2) : pureFn(exp1, exp2)) :
       consumeBinding();
@@ -64,7 +64,7 @@ export function pureFunction2(
  */
 export function pureFunction3(
     pureFn: (v1: any, v2: any, v3: any) => any, exp1: any, exp2: any, exp3: any,
-    thisArg: any = null): any {
+    thisArg?: any): any {
   const different = bindingUpdated2(exp1, exp2);
   return bindingUpdated(exp3) || different ?
       checkAndUpdateBinding(
@@ -85,7 +85,7 @@ export function pureFunction3(
  */
 export function pureFunction4(
     pureFn: (v1: any, v2: any, v3: any, v4: any) => any, exp1: any, exp2: any, exp3: any, exp4: any,
-    thisArg: any = null): any {
+    thisArg?: any): any {
   return bindingUpdated4(exp1, exp2, exp3, exp4) ?
       checkAndUpdateBinding(
           thisArg ? pureFn.call(thisArg, exp1, exp2, exp3, exp4) : pureFn(exp1, exp2, exp3, exp4)) :
@@ -106,7 +106,7 @@ export function pureFunction4(
  */
 export function pureFunction5(
     pureFn: (v1: any, v2: any, v3: any, v4: any, v5: any) => any, exp1: any, exp2: any, exp3: any,
-    exp4: any, exp5: any, thisArg: any = null): any {
+    exp4: any, exp5: any, thisArg?: any): any {
   const different = bindingUpdated4(exp1, exp2, exp3, exp4);
   return bindingUpdated(exp5) || different ?
       checkAndUpdateBinding(
@@ -130,7 +130,7 @@ export function pureFunction5(
  */
 export function pureFunction6(
     pureFn: (v1: any, v2: any, v3: any, v4: any, v5: any, v6: any) => any, exp1: any, exp2: any,
-    exp3: any, exp4: any, exp5: any, exp6: any, thisArg: any = null): any {
+    exp3: any, exp4: any, exp5: any, exp6: any, thisArg?: any): any {
   const different = bindingUpdated4(exp1, exp2, exp3, exp4);
   return bindingUpdated2(exp5, exp6) || different ?
       checkAndUpdateBinding(
@@ -155,7 +155,7 @@ export function pureFunction6(
  */
 export function pureFunction7(
     pureFn: (v1: any, v2: any, v3: any, v4: any, v5: any, v6: any, v7: any) => any, exp1: any,
-    exp2: any, exp3: any, exp4: any, exp5: any, exp6: any, exp7: any, thisArg: any = null): any {
+    exp2: any, exp3: any, exp4: any, exp5: any, exp6: any, exp7: any, thisArg?: any): any {
   let different = bindingUpdated4(exp1, exp2, exp3, exp4);
   different = bindingUpdated2(exp5, exp6) || different;
   return bindingUpdated(exp7) || different ?
@@ -183,7 +183,7 @@ export function pureFunction7(
 export function pureFunction8(
     pureFn: (v1: any, v2: any, v3: any, v4: any, v5: any, v6: any, v7: any, v8: any) => any,
     exp1: any, exp2: any, exp3: any, exp4: any, exp5: any, exp6: any, exp7: any, exp8: any,
-    thisArg: any = null): any {
+    thisArg?: any): any {
   const different = bindingUpdated4(exp1, exp2, exp3, exp4);
   return bindingUpdated4(exp5, exp6, exp7, exp8) || different ?
       checkAndUpdateBinding(
@@ -203,7 +203,7 @@ export function pureFunction8(
  * @param exp An array of binding values
  * @returns Updated value
  */
-export function pureFunctionV(pureFn: (...v: any[]) => any, exps: any[], thisArg: any = null): any {
+export function pureFunctionV(pureFn: (...v: any[]) => any, exps: any[], thisArg?: any): any {
   let different = false;
 
   for (let i = 0; i < exps.length; i++) {

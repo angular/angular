@@ -12,6 +12,7 @@ import {containerEl, renderComponent, toHtml} from '../render_util';
 
 /// See: `normative.md`
 describe('pipes', () => {
+  type $any$ = any;
   type $boolean$ = boolean;
 
   let myPipeTransformCalls = 0;
@@ -114,13 +115,43 @@ describe('pipes', () => {
 
   it('should render many pipes and forward the first instance (pure or impure pipe)', () => {
     type $MyApp$ = MyApp;
+    type $MyPurePipe$ = MyPurePipe;
     myPipeTransformCalls = 0;
     myPurePipeTransformCalls = 0;
 
-    @Component({template: `{{name | myPurePipe:size}}{{name | myPurePipe:size}}`})
+    @Directive({
+      selector: '[oneTimeIf]',
+    })
+    class OneTimeIf {
+      @Input() oneTimeIf: any;
+      constructor(private view: ViewContainerRef, private template: TemplateRef<any>) {}
+      ngDoCheck(): void {
+        if (this.oneTimeIf) {
+          this.view.createEmbeddedView(this.template);
+        }
+      }
+      // NORMATIVE
+      static ngDirectiveDef = $r3$.ɵdefineDirective({
+        type: OneTimeIf,
+        factory: () => new OneTimeIf($r3$.ɵinjectViewContainerRef(), $r3$.ɵinjectTemplateRef()),
+        inputs: {oneTimeIf: 'oneTimeIf'}
+      });
+      // /NORMATIVE
+    }
+
+    // Important: keep arrays outside of function to not create new instances.
+    // NORMATIVE
+    const $c1_dirs$ = [OneTimeIf];
+    // /NORMATIVE
+
+    @Component({
+      template: `{{name | myPurePipe:size}}{{name | myPurePipe:size}}
+       <div *oneTimeIf="more">{{name | myPurePipe:size}}</div>`
+    })
     class MyApp {
       name = '1World';
       size = 1;
+      more = true;
 
       // NORMATIVE
       static ngComponentDef = $r3$.ɵdefineComponent({
@@ -128,23 +159,38 @@ describe('pipes', () => {
         tag: 'my-app',
         factory: function MyApp_Factory() { return new MyApp(); },
         template: function MyApp_Template(ctx: $MyApp$, cm: $boolean$) {
-          let pi: MyPurePipe;
+          let $pi$: $MyPurePipe$;
           if (cm) {
             $r3$.ɵT(0);
-            pi = $r3$.ɵPp(1, $MyPurePipe_ngPipeDef$);
+            $pi$ = $r3$.ɵPp(1, $MyPurePipe_ngPipeDef$);
             $r3$.ɵT(2);
-            $r3$.ɵPp(3, $MyPurePipe_ngPipeDef$, pi);
+            $r3$.ɵPp(3, $MyPurePipe_ngPipeDef$, $pi$);
+            $r3$.ɵC(4, $c1_dirs$, C4);
           }
           $r3$.ɵt(0, $r3$.ɵi1('', $r3$.ɵpb2(1, ctx.name, ctx.size), ''));
           $r3$.ɵt(2, $r3$.ɵi1('', $r3$.ɵpb2(3, ctx.name, ctx.size), ''));
+          $r3$.ɵp(4, 'oneTimeIf', $r3$.ɵb(ctx.more));
+          $r3$.ɵcR(4);
+          $r3$.ɵr(5, 4);
+          $r3$.ɵcr();
+
+          function C4(ctx1: $any$, cm: $boolean$) {
+            if (cm) {
+              $r3$.ɵE(0, 'div');
+              $r3$.ɵT(1);
+              $r3$.ɵPp(2, $MyPurePipe_ngPipeDef$, $pi$);
+              $r3$.ɵe();
+            }
+            $r3$.ɵt(1, $r3$.ɵi1('', $r3$.ɵpb2(2, ctx.name, ctx.size), ''));
+          }
         }
       });
       // /NORMATIVE
     }
 
     let myApp: MyApp = renderComponent(MyApp);
-    expect(toHtml(containerEl)).toEqual('WorldWorld');
-    expect(myPurePipeTransformCalls).toEqual(2);
+    expect(toHtml(containerEl)).toEqual('WorldWorld<div>World</div>');
+    expect(myPurePipeTransformCalls).toEqual(3);
     expect(myPipeTransformCalls).toEqual(0);
   });
 });
