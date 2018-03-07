@@ -152,7 +152,8 @@ nothing to distinguish it from any component you've written before.
 Understanding this component requires only the Angular concepts covered in previous pages.
 
 * The code imports the Angular core library and the `Hero` model you just created.
-* The `@Component` selector value of "hero-form" means you can drop this form in a parent template with a `<hero-form>` tag.
+* The `@Component` selector value of "app-hero-form" means you can drop this form in a parent
+template with a `<app-hero-form>` tag.
 * The `templateUrl` property points to a separate file for the template HTML.
 * You defined dummy data for `model` and `powers`, as befits a demo.
 
