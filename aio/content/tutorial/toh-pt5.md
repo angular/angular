@@ -15,7 +15,7 @@ When you’re done, users will be able to navigate the app like this:
 
 </figure>
 
-## Add the _AppRoutingModule_
+## Add the `AppRoutingModule`
 
 An Angular best practice is to load and configure the router in a separate, top-level module
 that is dedicated to routing and imported by the root `AppModule`.
@@ -138,7 +138,7 @@ You should see the familiar heroes master/detail view.
 
 {@a routerlink}
 
-## Add a navigation link (_routerLink_)
+## Add a navigation link (`routerLink`)
 
 Users shouldn't have to paste a route URL into the address bar. 
 They should be able to click a link to navigate.
@@ -283,7 +283,7 @@ The user should be able to get to these details in three ways.
 In this section, you'll enable navigation to the `HeroDetailsComponent`
 and liberate it from the `HeroesComponent`.
 
-### Delete _hero details_ from _HeroesComponent_
+### Delete _hero details_ from `HeroesComponent`
 
 When the user clicks a hero item in the `HeroesComponent`,
 the app should navigate to the `HeroDetailComponent`,
@@ -325,7 +325,7 @@ At this point, all application routes are in place.
   title="src/app/app-routing.module.ts (all routes)">
 </code-example>
 
-### _DashboardComponent_ hero links
+### `DashboardComponent` hero links
 
 The `DashboardComponent` hero links do nothing at the moment.
 
@@ -343,7 +343,7 @@ to insert the current interation's `hero.id` into each
 [`routerLink`](#routerlink).
 
 {@a heroes-component-links}
-### _HeroesComponent_ hero links
+### `HeroesComponent` hero links
 
 The hero items in the `HeroesComponent` are `<li>` elements whose click events
 are bound to the component's `onSelect()` method.
@@ -446,7 +446,7 @@ The browser refreshes and the app crashes with a compiler error.
 `HeroService` doesn't have a `getHero()` method.
 Add it now.
 
-### Add *HeroService.getHero()*
+### Add `HeroService.getHero()`
 
 Open `HeroService` and add this `getHero()` method
 
@@ -518,7 +518,7 @@ Here are the code files discussed on this page and your app should look like thi
 
 {@a approutingmodule}
 {@a appmodule}
-#### _AppRoutingModule_ and _AppModule_
+#### _AppRoutingModule_, _AppModule_, and _HeroService_
 
 <code-tabs>
   <code-pane 
@@ -528,6 +528,10 @@ Here are the code files discussed on this page and your app should look like thi
   <code-pane 
     title="src/app/app.module.ts" 
     path="toh-pt5/src/app/app.module.ts">
+  </code-pane>
+  <code-pane 
+    title="src/app/hero.service.ts" 
+    path="toh-pt5/src/app/hero.service.ts">
   </code-pane>
 </code-tabs>
 
@@ -565,6 +569,7 @@ Here are the code files discussed on this page and your app should look like thi
 
 {@a heroescomponent}
 #### _HeroesComponent_
+
 <code-tabs>
   <code-pane 
     title="src/app/heroes/heroes.component.html" path="toh-pt5/src/app/heroes/heroes.component.html">
