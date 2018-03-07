@@ -561,7 +561,7 @@ the `AfterContentComponent`'s parent. Here's the parent's template:
 
 <code-example path="lifecycle-hooks/src/app/after-content.component.ts" region="parent-template" title="AfterContentParentComponent (template excerpt)" linenums="false"></code-example>
 
-Notice that the `<my-child>` tag is tucked between the `<after-content>` tags.
+Notice that the `<app-child>` tag is tucked between the `<after-content>` tags.
 Never put content between a component's element tags *unless you intend to project that content
 into the component*.
 
