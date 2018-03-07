@@ -1627,9 +1627,94 @@ import {MyInput, MyInputForm} from './value_accessor_integration_spec';
 
     describe('ngModel interactions', () => {
 
+      describe('deprecation warnings', () => {
+        let warnSpy: any;
+
+        beforeEach(() => {
+          warnSpy = jasmine.createSpy('warn');
+          console.warn = warnSpy;
+        });
+
+        it('should warn once by default when using ngModel with formControlName', fakeAsync(() => {
+             const fixture = initTest(FormGroupNgModel);
+             fixture.componentInstance.form =
+                 new FormGroup({'login': new FormControl(''), 'password': new FormControl('')});
+             fixture.detectChanges();
+             tick();
+
+             expect(warnSpy.calls.count()).toEqual(1);
+             expect(warnSpy.calls.mostRecent().args[0])
+                 .toMatch(
+                     /It looks like you're using ngModel on the same form field as formControlName/gi);
+
+             fixture.componentInstance.login = 'some value';
+             fixture.detectChanges();
+             tick();
+
+             expect(warnSpy.calls.count()).toEqual(1);
+           }));
+
+        it('should warn once by default when using ngModel with formControl', fakeAsync(() => {
+             const fixture = initTest(FormControlNgModel);
+             fixture.componentInstance.control = new FormControl('');
+             fixture.componentInstance.passwordControl = new FormControl('');
+             fixture.detectChanges();
+             tick();
+
+             expect(warnSpy.calls.count()).toEqual(1);
+             expect(warnSpy.calls.mostRecent().args[0])
+                 .toMatch(
+                     /It looks like you're using ngModel on the same form field as formControl/gi);
+
+             fixture.componentInstance.login = 'some value';
+             fixture.detectChanges();
+             tick();
+
+             expect(warnSpy.calls.count()).toEqual(1);
+           }));
+
+        it('should warn once for each instance when global provider is provided with "always"',
+           fakeAsync(() => {
+             TestBed.configureTestingModule({
+               declarations: [FormControlNgModel],
+               imports:
+                   [ReactiveFormsModule.withConfig({warnOnNgModelWithFormControl: 'always'})]
+             });
+
+             const fixture = TestBed.createComponent(FormControlNgModel);
+             fixture.componentInstance.control = new FormControl('');
+             fixture.componentInstance.passwordControl = new FormControl('');
+             fixture.detectChanges();
+             tick();
+
+             expect(warnSpy.calls.count()).toEqual(2);
+             expect(warnSpy.calls.mostRecent().args[0])
+                 .toMatch(
+                     /It looks like you're using ngModel on the same form field as formControl/gi);
+           }));
+
+        it('should silence warnings when global provider is provided with "never"',
+           fakeAsync(() => {
+             TestBed.configureTestingModule({
+               declarations: [FormControlNgModel],
+               imports: [ReactiveFormsModule.withConfig({warnOnNgModelWithFormControl: 'never'})]
+             });
+
+             const fixture = TestBed.createComponent(FormControlNgModel);
+             fixture.componentInstance.control = new FormControl('');
+             fixture.componentInstance.passwordControl = new FormControl('');
+             fixture.detectChanges();
+             tick();
+
+             expect(warnSpy).not.toHaveBeenCalled();
+           }));
+
+      });
+
       it('should support ngModel for complex forms', fakeAsync(() => {
            const fixture = initTest(FormGroupNgModel);
-           fixture.componentInstance.form = new FormGroup({'login': new FormControl('')});
+           fixture.componentInstance.form =
+               new FormGroup({'login': new FormControl(''), 'password': new FormControl('')});
            fixture.componentInstance.login = 'oldValue';
            fixture.detectChanges();
            tick();
@@ -1647,6 +1732,7 @@ import {MyInput, MyInputForm} from './value_accessor_integration_spec';
       it('should support ngModel for single fields', fakeAsync(() => {
            const fixture = initTest(FormControlNgModel);
            fixture.componentInstance.control = new FormControl('');
+           fixture.componentInstance.passwordControl = new FormControl('');
            fixture.componentInstance.login = 'oldValue';
            fixture.detectChanges();
            tick();
@@ -1665,6 +1751,7 @@ import {MyInput, MyInputForm} from './value_accessor_integration_spec';
            if (isNode) return;
            const fixture = initTest(FormControlNgModel);
            fixture.componentInstance.control = new FormControl('');
+           fixture.componentInstance.passwordControl = new FormControl('');
            fixture.detectChanges();
            tick();
 
@@ -1682,7 +1769,8 @@ import {MyInput, MyInputForm} from './value_accessor_integration_spec';
 
       it('should work with updateOn submit', fakeAsync(() => {
            const fixture = initTest(FormGroupNgModel);
-           const formGroup = new FormGroup({login: new FormControl('', {updateOn: 'submit'})});
+           const formGroup = new FormGroup(
+               {login: new FormControl('', {updateOn: 'submit'}), password: new FormControl('')});
            fixture.componentInstance.form = formGroup;
            fixture.componentInstance.login = 'initial';
            fixture.detectChanges();
@@ -2449,20 +2537,27 @@ class FormArrayNestedGroup {
   template: `
   <form [formGroup]="form">
     <input type="text" formControlName="login" [(ngModel)]="login">
+    <input type="text" formControlName="password" [(ngModel)]="password">
    </form>`
 })
 class FormGroupNgModel {
   form: FormGroup;
   login: string;
+  password: string;
 }
 
 @Component({
   selector: 'form-control-ng-model',
-  template: `<input type="text" [formControl]="control" [(ngModel)]="login">`
+  template: `
+    <input type="text" [formControl]="control" [(ngModel)]="login">
+    <input type="text" [formControl]="passwordControl" [(ngModel)]="password">
+  `
 })
 class FormControlNgModel {
   control: FormControl;
   login: string;
+  passwordControl: FormControl;
+  password: string;
 }
 
 @Component({
