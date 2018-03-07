@@ -268,7 +268,9 @@ class TestObj {
           constructor(@ParamDecorator('a') a: A, @ParamDecorator('b') b: B) {}
         }
 
-        class Child extends Parent {}
+        @ClassDecorator({value: 'child'})
+        class Child extends Parent {
+        }
 
         @ClassDecorator({value: 'child'})
         class ChildWithDecorator extends Parent {
