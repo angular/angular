@@ -57,7 +57,8 @@ export function ngswAppInitializer(
 export function ngswCommChannelFactory(
     opts: RegistrationOptions, platformId: string): NgswCommChannel {
   return new NgswCommChannel(
-      opts.enabled !== false ? navigator.serviceWorker : undefined, platformId);
+      isPlatformBrowser(platformId) && ('serviceWorker' in navigator) && opts.enabled !== false ?
+      navigator.serviceWorker : undefined, platformId);
 }
 
 /**
