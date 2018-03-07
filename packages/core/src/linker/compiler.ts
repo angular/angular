@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injectable, InjectionToken, StaticProvider} from '../di';
+import {InjectionToken, StaticProvider, NotTheSameInjectable} from '../di';
 import {MissingTranslationStrategy} from '../i18n/tokens';
 import {ViewEncapsulation} from '../metadata';
 import {Type} from '../type';
@@ -41,8 +41,12 @@ function _throwError() {
  * of components.
  * @stable
  */
-@Injectable()
+@NotTheSameInjectable()
 export class Compiler {
+  static ngInjectableDef = {
+    scope: undefined,
+    factory: () => new Compiler(),
+  };
   /**
    * Compiles the given NgModule and all of its components. All templates of the components listed
    * in `entryComponents` have to be inlined.

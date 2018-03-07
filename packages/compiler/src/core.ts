@@ -136,6 +136,8 @@ export interface Injectable {
 }
 export const createInjectable =
     makeMetadataFactory('Injectable', (injectable: Injectable = {}) => injectable);
+export const createNotTheSameInjectable =
+    makeMetadataFactory('NotTheSameInjectable', (injectable: Injectable = {}) => injectable);
 export interface SchemaMetadata { name: string; }
 
 export const CUSTOM_ELEMENTS_SCHEMA: SchemaMetadata = {

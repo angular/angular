@@ -7,7 +7,7 @@
  */
 
 
-import {Injectable, Optional} from '../di';
+import {inject, Optional, NotTheSameInjectable} from '../di';
 
 import {Compiler} from './compiler';
 import {NgModuleFactory} from './ng_module_factory';
@@ -45,11 +45,16 @@ const DEFAULT_CONFIG: SystemJsNgModuleLoaderConfig = {
  * NgModuleFactoryLoader that uses SystemJS to load NgModuleFactory
  * @experimental
  */
-@Injectable()
+@NotTheSameInjectable()
 export class SystemJsNgModuleLoader implements NgModuleFactoryLoader {
   private _config: SystemJsNgModuleLoaderConfig;
 
-  constructor(private _compiler: Compiler, @Optional() config?: SystemJsNgModuleLoaderConfig) {
+  static ngInjectableDef = {
+    scope: undefined,
+    factory: () => new SystemJsNgModuleLoader(inject(Compiler), inject(SystemJsNgModuleLoaderConfig as any, null))
+  }
+
+  constructor(private _compiler: Compiler, @Optional() config?: SystemJsNgModuleLoaderConfig|null) {
     this._config = config || DEFAULT_CONFIG;
   }
 

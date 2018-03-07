@@ -19,7 +19,7 @@ import {isPromise} from '../src/util/lang';
 import {ApplicationInitStatus} from './application_init';
 import {APP_BOOTSTRAP_LISTENER, PLATFORM_INITIALIZER} from './application_tokens';
 import {Console} from './console';
-import {Injectable, InjectionToken, Injector, StaticProvider} from './di';
+import {inject, InjectionToken, Injector, StaticProvider, NotTheSameInjectable} from './di';
 import {CompilerFactory, CompilerOptions} from './linker/compiler';
 import {ComponentFactory, ComponentRef} from './linker/component_factory';
 import {ComponentFactoryBoundToModule, ComponentFactoryResolver} from './linker/component_factory_resolver';
@@ -186,11 +186,15 @@ export interface BootstrapOptions {
  *
  * @stable
  */
-@Injectable()
+@NotTheSameInjectable()
 export class PlatformRef {
   private _modules: NgModuleRef<any>[] = [];
   private _destroyListeners: Function[] = [];
   private _destroyed: boolean = false;
+  static ngInjectableDef = {
+    scope: undefined,
+    factory: () => new PlatformRef(inject(Injector as any)),
+  };
 
   /** @internal */
   constructor(private _injector: Injector) {}
@@ -364,7 +368,7 @@ function optionsReducer<T extends Object>(dst: any, objs: T | T[]): T {
  *
  * @stable
  */
-@Injectable()
+@NotTheSameInjectable()
 export class ApplicationRef {
   /** @internal */
   static _tickScope: WtfScopeFn = wtfCreateScope('ApplicationRef#tick()');
@@ -389,6 +393,13 @@ export class ApplicationRef {
    * Returns an Observable that indicates when the application is stable or unstable.
    */
   public readonly isStable: Observable<boolean>;
+
+  static ngInjectableDef = {
+    scope: 'root',
+    factory: () => new ApplicationRef(
+      inject(NgZone), inject(Console), inject(Injector as any), inject(ErrorHandler),
+      inject(ComponentFactoryResolver as any), inject(ApplicationInitStatus)),
+  };
 
   /** @internal */
   constructor(

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injectable} from '../di';
+import {inject, NotTheSameInjectable} from '../di';
 import {scheduleMicroTask} from '../util';
 import {NgZone} from '../zone/ng_zone';
 
@@ -28,7 +28,7 @@ export declare interface PublicTestability {
  * application on the page will have an instance of Testability.
  * @experimental
  */
-@Injectable()
+@NotTheSameInjectable()
 export class Testability implements PublicTestability {
   /** @internal */
   _pendingCount: number = 0;
@@ -43,6 +43,11 @@ export class Testability implements PublicTestability {
   _didWork: boolean = false;
   /** @internal */
   _callbacks: Function[] = [];
+  static ngInjectableDef = {
+    scope: undefined,
+    factory: () => new Testability(inject(NgZone)),
+  }
+
   constructor(private _ngZone: NgZone) { this._watchAngularEvents(); }
 
   /** @internal */
@@ -141,10 +146,15 @@ export class Testability implements PublicTestability {
  * A global registry of {@link Testability} instances for specific elements.
  * @experimental
  */
-@Injectable()
+@NotTheSameInjectable()
 export class TestabilityRegistry {
   /** @internal */
   _applications = new Map<any, Testability>();
+
+  static ngInjectableDef = {
+    scope: undefined,
+    factory: () => new TestabilityRegistry(),
+  };
 
   constructor() { _testabilityGetter.addToWindow(this); }
 

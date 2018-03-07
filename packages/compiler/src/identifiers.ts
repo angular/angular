@@ -121,6 +121,7 @@ export class Identifiers {
     moduleName: CORE,
   };
   static createComponentFactory: o.ExternalReference = {name: 'ɵccf', moduleName: CORE};
+  static APP_ROOT_SCOPE: o.ExternalReference = {name: 'APP_ROOT_SCOPE', moduleName: CORE};
 }
 
 export function createTokenForReference(reference: any): CompileTokenMetadata {

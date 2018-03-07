@@ -13,7 +13,7 @@
  */
 
 export * from './di/metadata';
-export {defineInjectable, Injectable, InjectableDecorator, InjectableProvider, InjectableType} from './di/injectable';
+export {defineInjectable, Injectable, InjectableDecorator, NotTheSameInjectable, InjectableProvider, InjectableType} from './di/injectable';
 
 export {forwardRef, resolveForwardRef, ForwardRefFn} from './di/forward_ref';
 

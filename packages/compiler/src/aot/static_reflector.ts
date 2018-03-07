@@ -8,7 +8,7 @@
 
 import {CompileSummaryKind} from '../compile_metadata';
 import {CompileReflector} from '../compile_reflector';
-import {MetadataFactory, createAttribute, createComponent, createContentChild, createContentChildren, createDirective, createHost, createHostBinding, createHostListener, createInject, createInjectable, createInput, createNgModule, createOptional, createOutput, createPipe, createSelf, createSkipSelf, createViewChild, createViewChildren} from '../core';
+import {MetadataFactory, createAttribute, createNotTheSameInjectable, createComponent, createContentChild, createContentChildren, createDirective, createHost, createHostBinding, createHostListener, createInject, createInjectable, createInput, createNgModule, createOptional, createOutput, createPipe, createSelf, createSkipSelf, createViewChild, createViewChildren} from '../core';
 import * as o from '../output/output_ast';
 import {SummaryResolver} from '../summary_resolver';
 import {syntaxError} from '../util';
@@ -343,6 +343,8 @@ export class StaticReflector implements CompileReflector {
   private initializeConversionMap(): void {
     this._registerDecoratorOrConstructor(
         this.findDeclaration(ANGULAR_CORE, 'Injectable'), createInjectable);
+    this._registerDecoratorOrConstructor(
+        this.findDeclaration(ANGULAR_CORE, 'NotTheSameInjectable'), createNotTheSameInjectable);
     this.injectionToken = this.findDeclaration(ANGULAR_CORE, 'InjectionToken');
     this.opaqueToken = this.findDeclaration(ANGULAR_CORE, 'OpaqueToken');
     this.ROUTES = this.tryFindDeclaration(ANGULAR_ROUTER, 'ROUTES');
