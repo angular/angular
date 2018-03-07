@@ -2132,39 +2132,60 @@ This section is an introduction to the most commonly used attribute directives:
 
 ### NgClass
 
+<!--
 You typically control how elements appear
 by adding and removing CSS classes dynamically.
 You can bind to the `ngClass` to add or remove several classes simultaneously.
+-->
+엘리먼트가 화면에 표시되는 형식을 지정할 때는 보통 CSS 클래스를 사용하는데,
+이 때 `ngClass`를 사용하면 여러 개의 클래스를 조건에 따라 각각 지정하거나 해제할 수 있습니다.
 
 <!--
 A [class binding](guide/template-syntax#class-binding) is a good way to add or remove a *single* class.
 -->
-A [클래스 바인딩](guide/template-syntax#클래스-바인딩) is a good way to add or remove a *single* class.
+클래스 *하나만* 조작한다면 [클래스 바인딩](guide/template-syntax#클래스-바인딩)을 사용하는 것도 나쁘지 않습니다.
 
 <code-example path="template-syntax/src/app/app.component.html" region="class-binding-3a" title="src/app/app.component.html" linenums="false">
 </code-example>
 
+<!--
 To add or remove *many* CSS classes at the same time, the `NgClass` directive may be the better choice.
+-->
+하지만 클래스 *여러 개를 동시에* 조작한다면 클래스 바인딩을 사용하는 것보다 `NgClass` 디렉티브를 사용하는 것이 더 좋습니다.
 
+<!--
 Try binding `ngClass` to a key:value control object.
 Each key of the object is a CSS class name; its value is `true` if the class should be added,
 `false` if it should be removed.
+-->
+`ngClass`에는 `키:값` 형식의 객체를 바인딩합니다.
+이 때 각각의 키에 CSS 클래스 이름을 지정하며, 키 값이 `true`면 해당 클래스가 지정되고 키 값이 `false`면 해당 클래스가 해제됩니다.
 
+<!--
 Consider a `setCurrentClasses` component method that sets a component property,
 `currentClasses` with an object that adds or removes three classes based on the
 `true`/`false` state of three other component properties:
+-->
+지정해야 하는 클래스가 여러 개라면 컴포넌트 프로퍼티를 따로 선언하고, 이 프로퍼티 값을 함수로 지정하는 것도 고려해볼만 합니다.
+아래 예제에서는 다른 프로퍼티 값에 따라 3개의 클래스를 각각 제어하기 위해 `currentClasses` 프로퍼티 값을 지정하는 `setCurrentClasses` 메소드를 정의했습니다.
 
 <code-example path="template-syntax/src/app/app.component.ts" region="setClasses" title="src/app/app.component.ts" linenums="false">
 </code-example>
 
+<!--
 Adding an `ngClass` property binding to `currentClasses` sets the element's classes accordingly:
+-->
+그리고 `currentClasses`를 `ngClass` 디렉티브에 바인딩하려면 다음과 같이 구현합니다:
 
 <code-example path="template-syntax/src/app/app.component.html" region="NgClass-1" title="src/app/app.component.html" linenums="false">
 </code-example>
 
 <div class="l-sub-section">
 
+<!--
 It's up to you to call `setCurrentClasses()`, both initially and when the dependent properties change.
+-->
+`setCurrentClasses()` 함수는 컴포넌트가 초기화될 때 실행되고, 연결된 컴포넌트 프로퍼티의 값이 변경될 때마다 실행됩니다.
 
 </div>
 
@@ -2174,36 +2195,56 @@ It's up to you to call `setCurrentClasses()`, both initially and when the depend
 
 ### NgStyle
 
+<!--
 You can set inline styles dynamically, based on the state of the component.
 With `NgStyle` you can set many inline styles simultaneously.
+-->
+`NgStyle` 디렉티브를 사용하면 여러 개의 인라인 스타일을 각각 조건에 맞게 동적으로 지정할 수 있습니다.
 
 <!--
 A [style binding](guide/template-syntax#style-binding) is an easy way to set a *single* style value.
 -->
-A [스타일 바인딩](guide/template-syntax#스타일-바인딩) is an easy way to set a *single* style value.
+이 때 지정해야 하는 스타일이 *하나*라면 [스타일 바인딩](guide/template-syntax#스타일-바인딩)을 사용하는 것이 간단할 수 있습니다.
 
 <code-example path="template-syntax/src/app/app.component.html" region="NgStyle-1" title="src/app/app.component.html" linenums="false">
 </code-example>
 
+<!--
 To set *many* inline styles at the same time, the `NgStyle` directive may be the better choice.
+-->
+하지만 *여러 개*의 인라인 스타일을 한 번에 지정하려면 `NgStyle` 디렉티브를 사용하는 것이 더 좋습니다.
 
+<!--
 Try binding `ngStyle` to a key:value control object.
 Each key of the object is a style name; its value is whatever is appropriate for that style.
+-->
+`ngStyle`에는 `키:값` 형식의 객체를 바인딩합니다.
+이 때 각각의 키에 스타일 이름을 지정하며, 해당 스타일은 키 값으로 지정됩니다.
 
+<!--
 Consider a `setCurrentStyles` component method that sets a component property, `currentStyles`
 with an object that defines three styles, based on the state of three other component properties:
+-->
+지정해야 하는 스타일이 여러 개라면 컴포넌트 프로퍼티를 따로 선언하고, 이 프로퍼티 값을 함수로 지정하는 것도 고려해볼만 합니다.
+아래 예제에서는 다른 프로퍼티 값에 따라 3개의 스타일을 각각 제어하기 위해 `currentStyles` 프로퍼티 값을 지정하는 `setCurrentStyles` 메소드를 정의했습니다.
 
 <code-example path="template-syntax/src/app/app.component.ts" region="setStyles" title="src/app/app.component.ts" linenums="false">
 </code-example>
 
+<!--
 Adding an `ngStyle` property binding to `currentStyles` sets the element's styles accordingly:
+-->
+그리고 `currentStyles`를 `ngStyle` 디렉티브에 바인딩하려면 다음과 같이 구현합니다:
 
 <code-example path="template-syntax/src/app/app.component.html" region="NgStyle-2" title="src/app/app.component.html" linenums="false">
 </code-example>
 
 <div class="l-sub-section">
 
+<!--
 It's up to you to call `setCurrentStyles()`, both initially and when the dependent properties change.
+-->
+`setCurrentStyles()` 함수는 컴포넌트가 초기화될 때 실행되고, 연결된 컴포넌트 프로퍼티의 값이 변경될 때마다 실행됩니다.
 
 </div>
 
