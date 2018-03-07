@@ -541,7 +541,8 @@ describe('di', () => {
           static ngComponentDef = defineComponent({
             type: MyApp,
             tag: 'my-app',
-            factory: () => new MyApp(inject(String as any, InjectFlags.Default, 'DefaultValue')),
+            factory: () => new MyApp(
+                         directiveInject(String as any, InjectFlags.Default, 'DefaultValue')),
             template: () => null
           });
         }
@@ -566,7 +567,7 @@ describe('di', () => {
         }
         static ngDirectiveDef = defineDirective({
           type: ChildDirective,
-          factory: () => new ChildDirective(inject(ParentDirective)),
+          factory: () => new ChildDirective(directiveInject(ParentDirective)),
           features: [PublicFeature]
         });
       }
@@ -578,7 +579,8 @@ describe('di', () => {
         }
         static ngDirectiveDef = defineDirective({
           type: Child2Directive,
-          factory: () => new Child2Directive(inject(ParentDirective), inject(ChildDirective))
+          factory: () => new Child2Directive(
+                       directiveInject(ParentDirective), directiveInject(ChildDirective))
         });
       }
 
