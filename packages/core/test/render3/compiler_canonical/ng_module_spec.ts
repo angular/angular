@@ -14,7 +14,7 @@ import {renderComponent, toHtml} from '../render_util';
 xdescribe('NgModule', () => {
 
   interface Injectable {
-    scope?: /*InjectorDefType<any>*/ any;
+    providedIn?: /*InjectorDefType<any>*/ any;
     factory: Function;
   }
 
@@ -67,7 +67,7 @@ xdescribe('NgModule', () => {
       constructor(@Optional() toast: Toast|null, name: String) {}
       // NORMATIVE
       static ngInjectableDef = defineInjectable({
-        scope: MyModule,
+        providedIn: MyModule,
         factory: () => new BurntToast(
                      $r3$.ɵdirectiveInject(Toast, $r3$.ɵInjectFlags.Optional),
                      $r3$.ɵdirectiveInject(String)),
