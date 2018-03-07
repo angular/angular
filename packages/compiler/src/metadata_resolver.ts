@@ -801,7 +801,7 @@ export class CompileMetadataResolver {
     return {
       symbol: type,
       type: typeMetadata,
-      module: meta.scope || undefined,
+      providedIn: meta.providedIn,
       useValue: meta.useValue,
       useClass: meta.useClass,
       useExisting: meta.useExisting,

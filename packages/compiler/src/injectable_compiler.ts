@@ -89,16 +89,24 @@ export class InjectableCompiler {
   }
 
   injectableDef(injectable: CompileInjectableMetadata, ctx: OutputContext): o.Expression {
+    let providedIn: o.Expression = o.NULL_EXPR;
+    if (injectable.providedIn) {
+      if (typeof injectable.providedIn === 'string') {
+        providedIn = o.literal(injectable.providedIn);
+      } else {
+        providedIn = ctx.importExpr(injectable.providedIn);
+      }
+    }
     const def: MapLiteral = [
       mapEntry('factory', this.factoryFor(injectable, ctx)),
       mapEntry('token', ctx.importExpr(injectable.type.reference)),
-      mapEntry('scope', ctx.importExpr(injectable.module !)),
+      mapEntry('providedIn', providedIn),
     ];
     return o.importExpr(Identifiers.defineInjectable).callFn([o.literalMap(def)]);
   }
 
   compile(injectable: CompileInjectableMetadata, ctx: OutputContext): void {
-    if (injectable.module) {
+    if (injectable.providedIn) {
       const className = identifierName(injectable.type) !;
       const clazz = new o.ClassStmt(
           className, null,

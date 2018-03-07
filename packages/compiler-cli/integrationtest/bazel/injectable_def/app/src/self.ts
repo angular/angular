@@ -36,6 +36,6 @@ export class AppComponent {
 export class SelfAppModule {
 }
 
-@Injectable({scope: SelfAppModule})
+@Injectable({providedIn: SelfAppModule})
 export class ShakeableService {
 }

@@ -113,9 +113,6 @@ export declare const APP_ID: InjectionToken<string>;
 export declare const APP_INITIALIZER: InjectionToken<(() => void)[]>;
 
 /** @experimental */
-export declare const APP_ROOT_SCOPE: Type<any>;
-
-/** @experimental */
 export declare class ApplicationInitStatus {
     readonly done: boolean;
     readonly donePromise: Promise<any>;
@@ -347,7 +344,10 @@ export declare class DefaultIterableDiffer<V> implements IterableDiffer<V>, Iter
 }
 
 /** @experimental */
-export declare function defineInjectable(opts: Injectable): Injectable;
+export declare function defineInjectable<T>(opts: {
+    providedIn?: Type<any> | 'root' | null;
+    factory: () => T;
+}): InjectableDef<T>;
 
 /** @experimental */
 export declare function destroyPlatform(): void;
@@ -461,11 +461,11 @@ export declare const Injectable: InjectableDecorator;
 export interface InjectableDecorator {
     /** @stable */ (): any;
     (options?: {
-        scope: Type<any>;
+        providedIn: Type<any> | 'root' | null;
     } & InjectableProvider): any;
     new (): Injectable;
     new (options?: {
-        scope: Type<any>;
+        providedIn: Type<any> | 'root' | null;
     } & InjectableProvider): Injectable;
 }
 
@@ -474,7 +474,7 @@ export declare type InjectableProvider = ValueSansProvider | ExistingSansProvide
 
 /** @experimental */
 export interface InjectableType<T> extends Type<T> {
-    ngInjectableDef?: Injectable;
+    ngInjectableDef: InjectableDef<T>;
 }
 
 /** @stable */
@@ -493,9 +493,9 @@ export declare const enum InjectFlags {
 /** @stable */
 export declare class InjectionToken<T> {
     protected _desc: string;
-    readonly ngInjectableDef: Injectable | undefined;
+    readonly ngInjectableDef: InjectableDef<T> | undefined;
     constructor(_desc: string, options?: {
-        scope: Type<any>;
+        providedIn?: Type<any> | 'root' | null;
         factory: () => T;
     });
     toString(): string;

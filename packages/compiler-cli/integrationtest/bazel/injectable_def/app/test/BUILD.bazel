@@ -14,6 +14,7 @@ ts_library(
     deps = [
         "//packages/compiler-cli/integrationtest/bazel/injectable_def/app",
         "//packages/core",
+        "//packages/core/testing",
         "//packages/platform-server",
     ],
 )
