@@ -10,8 +10,8 @@ import {InjectFlags, InjectionToken, Injector, Type} from '@angular/core';
 
 
 
-// TODO: remove once https://github.com/angular/angular/pull/22005 lands
-export class pending_pr_22458 {
+// TODO: remove once https://github.com/angular/angular/pull/22458 lands
+export class $pending_pr_22458$ {
   static defineInjectable<T>({scope, factory}: {scope?: Type<any>, factory: () => T}):
       {scope: Type<any>| null, factory: () => T} {
     return {scope: scope || null, factory: factory};

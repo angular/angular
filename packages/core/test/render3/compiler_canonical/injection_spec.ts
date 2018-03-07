@@ -10,7 +10,7 @@ import {Attribute, ChangeDetectionStrategy, ChangeDetectorRef, Component, Conten
 import * as $r3$ from '../../../src/core_render3_private_export';
 import {renderComponent, toHtml} from '../render_util';
 
-import {pending_pr_22458} from './pending_api_spec';
+import {$pending_pr_22458$} from './pending_api_spec';
 
 
 
@@ -113,13 +113,13 @@ describe('injection', () => {
       expect(toHtml(app)).toEqual('<my-comp title="WORKS">WORKS</my-comp>');
     });
 
-    it('should inject service', () => {
+    it('should inject into an injectable', () => {
       type $MyApp$ = MyApp;
 
       @Injectable()
       class ServiceA {
         // NORMATIVE
-        static ngInjectableDef = pending_pr_22458.defineInjectable({
+        static ngInjectableDef = $pending_pr_22458$.defineInjectable({
           factory: function ServiceA_Factory() { return new ServiceA(); },
         });
         // /NORMATIVE
@@ -128,7 +128,7 @@ describe('injection', () => {
       @Injectable()
       class ServiceB {
         // NORMATIVE
-        static ngInjectableDef = pending_pr_22458.defineInjectable({
+        static ngInjectableDef = $pending_pr_22458$.defineInjectable({
           factory: function ServiceA_Factory() { return new ServiceB(); },
         });
         // /NORMATIVE
@@ -148,13 +148,10 @@ describe('injection', () => {
           factory: function MyApp_Factory() {
             return new MyApp(
                 $r3$.ɵdirectiveInject(ServiceA), $r3$.ɵdirectiveInject(ServiceB),
-                pending_pr_22458.injectInjector());
+                $pending_pr_22458$.injectInjector());
           },
           /**  */
-          template: function MyApp_Template(ctx: $MyApp$, cm: $boolean$) {
-            if (cm) {
-            }
-          },
+          template: function MyApp_Template(ctx: $MyApp$, cm: $boolean$) {},
           providers: [ServiceA],
           viewProviders: [ServiceB],
         });
@@ -173,9 +170,10 @@ describe('injection', () => {
       constructor(@Inject(String) name: String, injector: Injector) {}
 
       // NORMATIVE
-      static ngInjectableDef = pending_pr_22458.defineInjectable({
+      static ngInjectableDef = $pending_pr_22458$.defineInjectable({
         factory: function ServiceA_Factory() {
-          return new ServiceA(pending_pr_22458.inject(String), pending_pr_22458.injectInjector());
+          return new ServiceA(
+              $pending_pr_22458$.inject(String), $pending_pr_22458$.injectInjector());
         },
       });
       // /NORMATIVE
@@ -185,11 +183,11 @@ describe('injection', () => {
     class ServiceB {
       constructor(serviceA: ServiceA, @SkipSelf() injector: Injector) {}
       // NORMATIVE
-      static ngInjectableDef = pending_pr_22458.defineInjectable({
+      static ngInjectableDef = $pending_pr_22458$.defineInjectable({
         factory: function ServiceA_Factory() {
           return new ServiceB(
-              pending_pr_22458.inject(ServiceA),
-              pending_pr_22458.injectInjector(InjectFlags.SkipSelf));
+              $pending_pr_22458$.inject(ServiceA),
+              $pending_pr_22458$.injectInjector(InjectFlags.SkipSelf));
         },
       });
       // /NORMATIVE

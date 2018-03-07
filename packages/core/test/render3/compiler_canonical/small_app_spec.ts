@@ -11,7 +11,7 @@ import {Component, ContentChild, Directive, EventEmitter, Injectable, Input, NgM
 import {withBody} from '@angular/core/testing';
 
 import * as r3 from '../../../src/render3/index';
-import {pending_pr_22458} from './pending_api_spec';
+import {$pending_pr_22458$} from './pending_api_spec';
 
 /// See: `normative.md`
 
@@ -33,7 +33,7 @@ class AppState {
   ];
 
   // NORMATIVE
-  static ngInjectableDef = pending_pr_22458.defineInjectable({factory: () => new AppState()});
+  static ngInjectableDef = $pending_pr_22458$.defineInjectable({factory: () => new AppState()});
   // /NORMATIVE
 }
 
@@ -158,7 +158,7 @@ const e1_attrs = ['type', 'checkbox'];
 })
 class ToDoAppModule {
   // NORMATIVE
-  static ngInjectorDef = pending_pr_22458.defineInjector({
+  static ngInjectorDef = $pending_pr_22458$.defineInjector({
     factory: () => new ToDoAppModule(),
     providers: [AppState],
   });

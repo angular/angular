@@ -48,7 +48,7 @@ export interface PipeType<T> extends Type<T> { ngPipeDef: PipeDef<T>; }
  * This is internal data structure used by the render to link
  * directives into templates.
  *
- * NOTE: Always use `defineDirective` method to create this object,
+ * NOTE: Always use `defineDirective` function to create this object,
  * never create the object directly since the shape of this object
  * can change between versions.
  *
@@ -129,7 +129,7 @@ export interface DirectiveDef<T> {
  * This is internal data structure used by the render to link
  * components into templates.
  *
- * NOTE: Always use `defineComponent` method to create this object,
+ * NOTE: Always use `defineComponent` function to create this object,
  * never create the object directly since the shape of this object
  * can change between versions.
  *
@@ -161,13 +161,14 @@ export interface ComponentDef<T> extends DirectiveDef<T> {
   readonly onPush: boolean;
 
   /**
-   * Defines the set of injectable objects that are visible to a Directive and its light DOM
+   * Defines the set of injectable providers that are visible to a Directive and its content DOM
    * children.
    */
   readonly providers?: Provider[];
 
   /**
-   * Defines the name that can be used in the template to assign this directive to a variable.
+   * Defines the set of injectable providers that are visible to a Directive and its view DOM
+   * children only.
    */
   readonly viewProviders?: Provider[];
 }
@@ -175,14 +176,14 @@ export interface ComponentDef<T> extends DirectiveDef<T> {
 /**
  * Runtime link information for Pipes.
  *
- * This is internal data structure used by the render to link
+ * This is internal data structure used by the renderer to link
  * pipes into templates.
  *
- * NOTE: Always use `definePipe` method to create this object,
+ * NOTE: Always use `definePipe` function to create this object,
  * never create the object directly since the shape of this object
  * can change between versions.
  *
- * See: {@link defineComponent}
+ * See: {@link definePipe}
  */
 export interface PipeDef<T> {
   /**
@@ -234,7 +235,7 @@ export interface DirectiveDefArgs<T> {
    *
    * Which the minifier may translate to: `{[minifiedPropertyName: string]:string}`.
    *
-   * This allows the render to re-constructor the minified and non-minified names
+   * This allows the render to re-construct the minified and non-minified names
    * of properties.
    */
   inputs?: {[P in keyof T]?: string};
@@ -251,7 +252,7 @@ export interface DirectiveDefArgs<T> {
    *
    * Which the minifier may translate to: `{[minifiedPropertyName: string]:string}`.
    *
-   * This allows the render to re-constructor the minified and non-minified names
+   * This allows the render to re-construct the minified and non-minified names
    * of properties.
    */
   outputs?: {[P in keyof T]?: string};
@@ -259,7 +260,7 @@ export interface DirectiveDefArgs<T> {
   /**
    * A list of optional features to apply.
    *
-   * See: {@link NgOnChancesFeature}, {@link PublicFeature}
+   * See: {@link NgOnChangesFeature}, {@link PublicFeature}
    */
   features?: DirectiveDefFeature[];
 
@@ -277,7 +278,7 @@ export interface DirectiveDefArgs<T> {
 }
 
 /**
- * Arguments for `defineDirective`.
+ * Arguments for `defineComponent`.
  */
 export interface ComponentDefArgs<T> extends DirectiveDefArgs<T> {
   /**
@@ -286,7 +287,33 @@ export interface ComponentDefArgs<T> extends DirectiveDefArgs<T> {
   tag: string;
 
   /**
-   * Template function.
+   * Template function use for rendering DOM.
+   *
+   * This function has following structure.
+   *
+   * ```
+   * function Template<T>(ctx:T, creationMode: boolean) {
+   *   if (creationMode) {
+   *     // Contains creation mode instructions.
+   *   }
+   *   // Contains binding update instructions
+   * }
+   * ```
+   *
+   * Common instructions are:
+   * Creation mode instructions:
+   *  - `elementStart`, `elementEnd`
+   *  - `text`
+   *  - `container`
+   *  - `listener`
+   *
+   * Binding update instructions:
+   * - `bind`
+   * - `elementAttribute`
+   * - `elementProperty`
+   * - `elementClass`
+   * - `elementStyle`
+   *
    */
   template: ComponentTemplate<T>;
 
@@ -297,14 +324,8 @@ export interface ComponentDefArgs<T> extends DirectiveDefArgs<T> {
    */
   features?: ComponentDefFeature[];
 
-  /**
-   * Renderer type to use.
-   */
   rendererType?: RendererType2;
 
-  /**
-   * Change detection strategy.
-   */
   changeDetection?: ChangeDetectionStrategy;
 
   /**
