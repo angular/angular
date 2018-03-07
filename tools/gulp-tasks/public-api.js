@@ -7,20 +7,15 @@
  */
 
 // NOTE: This list shold be in sync with aio/tools/transforms/angular-api-package/index.js
+// NOTE: Some packages have moved to Bazel; these are tested in tools/public_api_guard/BUILD.bazel
 const entrypoints = [
   'dist/packages-dist/animations/animations.d.ts',
   'dist/packages-dist/animations/browser.d.ts',
   'dist/packages-dist/animations/browser/testing.d.ts',
-  'dist/packages-dist/common/common.d.ts',
-  'dist/packages-dist/common/testing.d.ts',
-  'dist/packages-dist/common/http.d.ts',
-  'dist/packages-dist/common/http/testing.d.ts',
   // The API surface of the compiler is currently unstable - all of the important APIs are exposed
   // via @angular/core, @angular/platform-browser or @angular/platform-browser-dynamic instead.
   //'dist/packages-dist/compiler/index.d.ts',
   //'dist/packages-dist/compiler/testing.d.ts',
-  'dist/packages-dist/core/core.d.ts',
-  'dist/packages-dist/core/testing.d.ts',
   'dist/packages-dist/forms/forms.d.ts',
   'dist/packages-dist/http/http.d.ts',
   'dist/packages-dist/http/testing.d.ts',
@@ -33,9 +28,6 @@ const entrypoints = [
   'dist/packages-dist/platform-webworker-dynamic/platform-webworker-dynamic.d.ts',
   'dist/packages-dist/platform-server/platform-server.d.ts',
   'dist/packages-dist/platform-server/testing.d.ts',
-  'dist/packages-dist/router/router.d.ts',
-  'dist/packages-dist/router/testing.d.ts',
-  'dist/packages-dist/router/upgrade.d.ts',
   'dist/packages-dist/service-worker/service-worker.d.ts',
   'dist/packages-dist/service-worker/config.d.ts',
   'dist/packages-dist/upgrade/upgrade.d.ts',
