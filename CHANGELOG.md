@@ -1,3 +1,29 @@
+<a name="6.0.0-beta.7"></a>
+# [6.0.0-beta.7](https://github.com/angular/angular/compare/6.0.0-beta.6...6.0.0-beta.7) (2018-03-07)
+
+
+### Bug Fixes
+
+* **bazel:** fixes for ng_package on Windows ([#22597](https://github.com/angular/angular/issues/22597)) ([4c40812](https://github.com/angular/angular/commit/4c40812))
+* **compiler:** allow tree-shakeable injectables to depend on string tokens ([#22376](https://github.com/angular/angular/issues/22376)) ([dd53447](https://github.com/angular/angular/commit/dd53447))
+* **router:** fix URL serialization so special characters are only encoded where needed ([#22337](https://github.com/angular/angular/issues/22337)) ([fa974c7](https://github.com/angular/angular/commit/fa974c7)), closes [#10280](https://github.com/angular/angular/issues/10280)
+
+
+
+<a name="5.2.8"></a>
+## [5.2.8](https://github.com/angular/angular/compare/5.2.7...5.2.8) (2018-03-07)
+
+
+### Bug Fixes
+
+* **platform-server:** generate correct stylings for camel case names ([#22263](https://github.com/angular/angular/issues/22263)) ([de02a7a](https://github.com/angular/angular/commit/de02a7a)), closes [#19235](https://github.com/angular/angular/issues/19235)
+* **router:** don't mutate route configs ([#22358](https://github.com/angular/angular/issues/22358)) ([8f0a064](https://github.com/angular/angular/commit/8f0a064)), closes [#22203](https://github.com/angular/angular/issues/22203)
+* **router:** fix URL serialization so special characters are only encoded where needed ([#22337](https://github.com/angular/angular/issues/22337)) ([789a47e](https://github.com/angular/angular/commit/789a47e)), closes [#10280](https://github.com/angular/angular/issues/10280)
+* **upgrade:** correctly destroy nested downgraded component ([#22400](https://github.com/angular/angular/issues/22400)) ([4aef9de](https://github.com/angular/angular/commit/4aef9de)), closes [#22392](https://github.com/angular/angular/issues/22392)
+* **upgrade:** correctly handle `=` bindings in `[@angular](https://github.com/angular)/upgrade` ([#22167](https://github.com/angular/angular/issues/22167)) ([6638390](https://github.com/angular/angular/commit/6638390))
+* **upgrade:** fix empty transclusion content with AngularJS@>=1.5.8 ([#22167](https://github.com/angular/angular/issues/22167)) ([a9a0e27](https://github.com/angular/angular/commit/a9a0e27)), closes [#22175](https://github.com/angular/angular/issues/22175)
+
+
 <a name="6.0.0-beta.6"></a>
 # [6.0.0-beta.6](https://github.com/angular/angular/compare/6.0.0-beta.5...6.0.0-beta.6) (2018-02-28)
 
