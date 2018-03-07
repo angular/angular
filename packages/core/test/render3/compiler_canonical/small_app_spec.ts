@@ -33,7 +33,7 @@ class AppState {
   ];
 
   // NORMATIVE
-  static ngInjectableDef = $pending_pr_22458$.defineProvider({factory: () => new AppState()});
+  static ngInjectableDef = $pending_pr_22458$.defineInjectable({factory: () => new AppState()});
   // /NORMATIVE
 }
 

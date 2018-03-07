@@ -12,7 +12,7 @@ import {InjectFlags, InjectionToken, Injector, Type} from '@angular/core';
 
 // TODO: remove once https://github.com/angular/angular/pull/22458 lands
 export class $pending_pr_22458$ {
-  static defineProvider<T>({providerFor, factory}: {providerFor?: Type<any>, factory: () => T}):
+  static defineInjectable<T>({providerFor, factory}: {providerFor?: Type<any>, factory: () => T}):
       {providerFor: Type<any>| null, factory: () => T} {
     return {providerFor: providerFor || null, factory: factory};
   }

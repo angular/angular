@@ -9,7 +9,7 @@
 import {Component, ContentChild, Directive, Injectable, Injector, Input, NgModule, NgModuleFactory, NgModuleRef, OnDestroy, Optional, Pipe, PipeTransform, QueryList, SimpleChanges, TemplateRef, Type, ViewChild, ViewContainerRef} from '../../../src/core';
 import * as r3 from '../../../src/render3/index';
 
-import {$pending_pr_22458$} from './small_app_spec';
+import {$pending_pr_22458$} from './pending_api_spec';
 
 const details_elided = {
   type: Object,
