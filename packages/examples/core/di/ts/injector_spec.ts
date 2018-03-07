@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {APP_ROOT_SCOPE, InjectFlags, InjectionToken, Injector, ReflectiveInjector, Type, inject, ɵsetCurrentInjector as setCurrentInjector} from '@angular/core';
+import {InjectFlags, InjectionToken, Injector, ReflectiveInjector, Type, inject, ɵsetCurrentInjector as setCurrentInjector} from '@angular/core';
 
 class MockRootScopeInjector implements Injector {
   constructor(readonly parent: Injector) {}
@@ -14,7 +14,7 @@ class MockRootScopeInjector implements Injector {
   get<T>(
       token: Type<T>|InjectionToken<T>, defaultValue?: any,
       flags: InjectFlags = InjectFlags.Default): T {
-    if ((token as any).ngInjectableDef && (token as any).ngInjectableDef.scope === APP_ROOT_SCOPE) {
+    if ((token as any).ngInjectableDef && (token as any).ngInjectableDef.providedIn === 'root') {
       const old = setCurrentInjector(this);
       try {
         return (token as any).ngInjectableDef.factory();
@@ -56,7 +56,7 @@ class MockRootScopeInjector implements Injector {
       // #enddocregion
     });
 
-    it('injects a tree-shaekable InjectionToken', () => {
+    it('injects a tree-shakeable InjectionToken', () => {
       class MyDep {}
       const injector = new MockRootScopeInjector(ReflectiveInjector.resolveAndCreate([MyDep]));
 
@@ -66,7 +66,7 @@ class MockRootScopeInjector implements Injector {
       }
 
       const MY_SERVICE_TOKEN = new InjectionToken<MyService>('Manually constructed MyService', {
-        scope: APP_ROOT_SCOPE,
+        providedIn: 'root',
         factory: () => new MyService(inject(MyDep)),
       });
 

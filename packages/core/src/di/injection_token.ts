@@ -8,7 +8,7 @@
 
 import {Type} from '../type';
 
-import {Injectable, defineInjectable} from './injectable';
+import {InjectableDef, defineInjectable} from './injectable';
 
 /**
  * Creates a token that can be used in a DI Provider.
@@ -36,12 +36,15 @@ export class InjectionToken<T> {
   /** @internal */
   readonly ngMetadataName = 'InjectionToken';
 
-  readonly ngInjectableDef: Injectable|undefined;
+  readonly ngInjectableDef: InjectableDef<T>|undefined;
 
-  constructor(protected _desc: string, options?: {scope: Type<any>, factory: () => T}) {
+  constructor(protected _desc: string, options?: {
+    providedIn?: Type<any>| 'root' | null,
+    factory: () => T
+  }) {
     if (options !== undefined) {
       this.ngInjectableDef = defineInjectable({
-        scope: options.scope,
+        providedIn: options.providedIn || 'root',
         factory: options.factory,
       });
     } else {

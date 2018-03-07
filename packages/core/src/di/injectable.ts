@@ -55,9 +55,9 @@ export interface InjectableDecorator {
    * @stable
    */
   (): any;
-  (options?: {scope: Type<any>}&InjectableProvider): any;
+  (options?: {providedIn: Type<any>| 'root' | null}&InjectableProvider): any;
   new (): Injectable;
-  new (options?: {scope: Type<any>}&InjectableProvider): Injectable;
+  new (options?: {providedIn: Type<any>| 'root' | null}&InjectableProvider): Injectable;
 }
 
 /**
@@ -66,7 +66,7 @@ export interface InjectableDecorator {
  * @experimental
  */
 export interface Injectable {
-  scope?: Type<any>;
+  providedIn?: Type<any>|'root'|null;
   factory: () => any;
 }
 
@@ -109,12 +109,19 @@ export function convertInjectableProviderToFactory(
 }
 
 /**
-* Define injectable
+* Construct an `InjectableDef` which defines how a token will be constructed by the DI system, and
+* in which injectors (if any) it will be available.
 *
 * @experimental
 */
-export function defineInjectable(opts: Injectable): Injectable {
-  return opts;
+export function defineInjectable<T>(opts: {
+  providedIn?: Type<any>| 'root' | null,
+  factory: () => T,
+}): InjectableDef<T> {
+  return {
+    providedIn: opts.providedIn || null,
+    factory: opts.factory,
+  };
 }
 
 /**
@@ -125,19 +132,24 @@ export function defineInjectable(opts: Injectable): Injectable {
 */
 export const Injectable: InjectableDecorator = makeDecorator(
     'Injectable', undefined, undefined, undefined,
-    (injectableType: Type<any>, options: {scope: Type<any>} & InjectableProvider) => {
-      if (options && options.scope) {
+    (injectableType: Type<any>,
+     options: {providedIn?: Type<any>| 'root' | null} & InjectableProvider) => {
+      if (options && options.providedIn) {
         (injectableType as InjectableType<any>).ngInjectableDef = defineInjectable({
-          scope: options.scope,
+          providedIn: options.providedIn,
           factory: convertInjectableProviderToFactory(injectableType, options)
         });
       }
     });
 
+export interface InjectableDef<T> {
+  providedIn: Type<any>|'root'|null;
+  factory: () => T;
+}
 
 /**
  * Type representing injectable service.
  *
  * @experimental
  */
-export interface InjectableType<T> extends Type<T> { ngInjectableDef?: Injectable; }
+export interface InjectableType<T> extends Type<T> { ngInjectableDef: InjectableDef<T>; }

@@ -140,7 +140,7 @@ export interface CompileInjectableMetadata {
   symbol: StaticSymbol;
   type: CompileTypeMetadata;
 
-  module?: StaticSymbol;
+  providedIn?: StaticSymbol;
 
   useValue?: any;
   useClass?: StaticSymbol;
