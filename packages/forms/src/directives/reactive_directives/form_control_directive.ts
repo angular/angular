@@ -69,8 +69,6 @@ export class FormControlDirective extends NgControl implements OnChanges {
   viewModel: any;
 
   @Input('formControl') form: FormControl;
-  @Input('ngModel') model: any;
-  @Output('ngModelChange') update = new EventEmitter();
 
   @Input('disabled')
   set isDisabled(isDisabled: boolean) { ReactiveErrors.disabledAttrWarning(); }
@@ -93,10 +91,6 @@ export class FormControlDirective extends NgControl implements OnChanges {
                   }
                   this.form.updateValueAndValidity({emitEvent: false});
                 }
-                if (isPropertyUpdated(changes, this.viewModel)) {
-                  this.form.setValue(this.model);
-                  this.viewModel = this.model;
-                }
               }
 
               get path(): string[] { return []; }
@@ -109,10 +103,7 @@ export class FormControlDirective extends NgControl implements OnChanges {
 
               get control(): FormControl { return this.form; }
 
-              viewToModelUpdate(newValue: any): void {
-                this.viewModel = newValue;
-                this.update.emit(newValue);
-              }
+              viewToModelUpdate(newValue: any): void { this.viewModel = newValue; }
 
               private _isControlChanged(changes: {[key: string]: any}): boolean {
                 return changes.hasOwnProperty('form');

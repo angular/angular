@@ -256,9 +256,7 @@ export declare class FormControlDirective extends NgControl implements OnChanges
     readonly control: FormControl;
     form: FormControl;
     isDisabled: boolean;
-    model: any;
     readonly path: string[];
-    update: EventEmitter<{}>;
     readonly validator: ValidatorFn | null;
     viewModel: any;
     constructor(validators: Array<Validator | ValidatorFn>, asyncValidators: Array<AsyncValidator | AsyncValidatorFn>, valueAccessors: ControlValueAccessor[]);
