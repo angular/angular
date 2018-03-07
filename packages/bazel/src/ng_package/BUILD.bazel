@@ -1,5 +1,11 @@
 package(default_visibility = ["//visibility:public"])
 
+filegroup(
+    name = "package_assets",
+    srcs = glob(["*"]),
+    visibility = ["//packages/bazel:__subpackages__"],
+)
+
 load("@build_bazel_rules_nodejs//:defs.bzl", "nodejs_binary")
 load("@build_bazel_rules_typescript//:defs.bzl", "ts_library")
 

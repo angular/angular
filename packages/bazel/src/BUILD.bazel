@@ -1,5 +1,14 @@
 package(default_visibility = ["//visibility:public"])
 
+filegroup(
+    name = "package_assets",
+    srcs = glob(["*"]) + [
+        "//packages/bazel/src/ng_package:package_assets",
+        "//packages/bazel/src/ngc-wrapped:package_assets",
+    ],
+    visibility = ["//packages/bazel:__subpackages__"],
+)
+
 load("@build_bazel_rules_nodejs//:defs.bzl", "nodejs_binary")
 
 nodejs_binary(

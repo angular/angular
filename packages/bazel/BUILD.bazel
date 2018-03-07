@@ -1,1 +1,23 @@
-# Empty marker file, indicating this directory is a Bazel package.
+load("@build_bazel_rules_nodejs//:defs.bzl", "npm_package")
+
+genrule(
+    name = "workspace",
+    outs = ["WORKSPACE"],
+    cmd = "echo 'workspace(name=\"angular\")' > $@",
+)
+
+npm_package(
+    name = "npm_package",
+    srcs = [
+        "package.json",
+        "index.bzl",
+        "//packages/bazel/src:package_assets",
+    ],
+    deps = [":workspace"],
+    # Re-host //packages/bazel/ which is just // in the public distro
+    replacements = {
+        "//packages/bazel/": "//",
+        "angular/packages/bazel/": "angular/",
+    },
+    stamp_data = "//tools:stamp_data",
+)
