@@ -1,6 +1,6 @@
 package(default_visibility = ["//visibility:public"])
 
-load("//tools:defaults.bzl", "ng_module")
+load("//tools:defaults.bzl", "ng_module", "ng_package")
 
 ng_module(
     name = "router",
@@ -17,5 +17,20 @@ ng_module(
         "//packages/platform-browser",
         "//packages/upgrade/static",
         "@rxjs",
+    ],
+)
+
+ng_package(
+    name = "npm_package",
+    srcs = ["package.json"],
+    entry_point = "packages/router/index.js",
+    secondary_entry_points = [
+        "testing",
+        "upgrade",
+    ],
+    deps = [
+        ":router",
+        "//packages/router/testing",
+        "//packages/router/upgrade",
     ],
 )

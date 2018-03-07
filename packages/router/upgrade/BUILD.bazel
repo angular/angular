@@ -3,12 +3,10 @@ package(default_visibility = ["//visibility:public"])
 load("//tools:defaults.bzl", "ng_module")
 
 ng_module(
-    name = "testing",
+    name = "upgrade",
     srcs = glob(["**/*.ts"]),
-    module_name = "@angular/router/testing",
+    module_name = "@angular/router/upgrade",
     deps = [
-        "//packages/common",
-        "//packages/common/testing",
         "//packages/core",
         "//packages/router",
     ],
