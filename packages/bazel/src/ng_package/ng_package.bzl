@@ -18,17 +18,38 @@ WELL_KNOWN_GLOBALS = {
     "@angular/core": "ng.core",
     "@angular/common": "ng.common",
     "@angular/platform-browser": "ng.platformBrowser",
-    "rxjs/Observable": "Rx",
-    "rxjs/Observer": "Rx",
-    "rxjs/Subject": "Rx",
-    "rxjs/Subscription": "Rx",
-    "rxjs/observable/merge": "Rx.Observable",
-    "rxjs/observable/of": "Rx.Observable.prototype",
-    "rxjs/operator/concatMap": "Rx.Observable.prototype",
-    "rxjs/operator/filter": "Rx.Observable.prototype",
-    "rxjs/operator/map": "Rx.Observable.prototype",
-    "rxjs/operator/share": "Rx.Observable.prototype",
 }
+WELL_KNOWN_GLOBALS.update({"rxjs/%s" % s: "Rx" for s in [
+    "BehaviorSubject",
+    "Observable",
+    "Observer",
+    "Subject",
+    "Subscription",
+    "util/EmptyError",
+]})
+WELL_KNOWN_GLOBALS.update({"rxjs/observable/%s" % s: "Rx.Observable" for s in [
+    "from",
+    "fromPromise",
+    "forkJoin",
+    "merge",
+    "of",
+]})
+WELL_KNOWN_GLOBALS.update({"rxjs/operator/%s" % s: "Rx.Observable.prototype" for s in [
+    "catch",
+    "concatAll",
+    "concatMap",
+    "every",
+    "first",
+    "filter",
+    "last",
+    "map",
+    "mergeAll",
+    "mergeMap",
+    "reduce",
+    "share",
+    "toPromise",
+]})
+
 
 def _rollup(ctx, rollup_config, entry_point, inputs, js_output, format = "es"):
   map_output = ctx.actions.declare_file(js_output.basename + ".map", sibling = js_output)
@@ -102,7 +123,7 @@ def _ng_package_impl(ctx):
   esm5 = []
   bundles = []
 
-  for entry_point in [''] + ctx.attr.secondary_entry_points:
+  for entry_point in [""] + ctx.attr.secondary_entry_points:
     es2015_entry_point = "/".join([p for p in [
         ctx.bin_dir.path,
         ctx.label.package,
