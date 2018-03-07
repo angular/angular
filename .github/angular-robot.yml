@@ -26,9 +26,7 @@ merge:
     # list of patterns to check for the files changed by the PR
     # this list must be manually kept in sync with google3/third_party/javascript/angular2/copy.bara.sky
     include:
-      - "BUILD.bazel"
       - "LICENSE"
-      - "WORKSPACE"
       - "modules/**"
       - "packages/**"
     # list of patterns to ignore for the files changed by the PR
@@ -36,6 +34,11 @@ merge:
       - "packages/language-service/**"
       - "**/.gitignore"
       - "**/.gitkeep"
+      - "**/tsconfig-build.json"
+      - "**/tsconfig.json"
+      - "**/rollup.config.js"
+      - "**/BUILD.bazel"
+      - "packages/**/test/**"
 
   # comment that will be added to a PR when there is a conflict, leave empty or set to false to disable
   mergeConflictComment: "Hi @{{PRAuthor}}! This PR has merge conflicts due to recent upstream merges.
