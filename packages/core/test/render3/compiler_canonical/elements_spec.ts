@@ -9,7 +9,7 @@
 import {browserDetection} from '@angular/platform-browser/testing/src/browser_util';
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, ContentChild, ContentChildren, Directive, HostBinding, HostListener, Injectable, Input, NgModule, OnDestroy, Optional, Pipe, PipeTransform, QueryList, SimpleChanges, TemplateRef, ViewChild, ViewChildren, ViewContainerRef} from '../../../src/core';
 import * as $r3$ from '../../../src/core_render3_private_export';
-import {renderComponent, toHtml} from '../render_util';
+import {ComponentFixture, renderComponent, toHtml} from '../render_util';
 
 /// See: `normative.md`
 describe('elements', () => {
@@ -263,6 +263,37 @@ describe('elements', () => {
       comp.someString = 'changed';
       $r3$.ɵdetectChanges(comp);
       expect(toHtml(comp)).toEqual('<div class="" id="changed1" style="color: red;"></div>');
+    });
+
+    it('should bind [class] and [style] to the element', () => {
+      type $StyleComponent$ = StyleComponent;
+
+      @Component(
+          {selector: 'style-comp', template: `<div [class]="classExp" [style]="styleExp"></div>`})
+      class StyleComponent {
+        classExp: string[]|string = 'some-name';
+        styleExp: {[name: string]: string} = {'background-color': 'red'};
+
+        // NORMATIVE
+        static ngComponentDef = $r3$.ɵdefineComponent({
+          type: StyleComponent,
+          tag: 'style-comp',
+          factory: function StyleComponent_Factory() { return new StyleComponent(); },
+          template: function StyleComponent_Template(ctx: $StyleComponent$, cm: $boolean$) {
+            if (cm) {
+              $r3$.ɵE(0, 'div');
+              $r3$.ɵe();
+            }
+            $r3$.ɵk(0, $r3$.ɵb(ctx.classExp));
+            $r3$.ɵs(0, $r3$.ɵb(ctx.styleExp));
+          }
+        });
+        // /NORMATIVE
+      }
+
+      const styleFixture = new ComponentFixture(StyleComponent);
+      expect(styleFixture.html)
+          .toEqual(`<div class="some-name" style="background-color: red;"></div>`);
     });
   });
 });

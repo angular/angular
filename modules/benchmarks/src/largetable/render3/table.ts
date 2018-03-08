@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ɵC as C, ɵE as E, ɵT as T, ɵV as V, ɵb as b, ɵcR as cR, ɵcr as cr, ɵdefineComponent as defineComponent, ɵdetectChanges as detectChanges, ɵe as e, ɵs as s, ɵt as t, ɵv as v} from '@angular/core';
+import {ɵC as C, ɵE as E, ɵT as T, ɵV as V, ɵb as b, ɵcR as cR, ɵcr as cr, ɵdefineComponent as defineComponent, ɵdetectChanges as detectChanges, ɵe as e, ɵsn as sn, ɵt as t, ɵv as v} from '@angular/core';
 import {ComponentDef} from '@angular/core/src/render3/interfaces/definition';
 
 import {TableCell, buildTable, emptyTable} from '../util';
@@ -48,7 +48,7 @@ export class LargeTableComponent {
                     { T(1); }
                     e();
                   }
-                  s(0, 'background-color', b(cell.row % 2 ? '' : 'grey'));
+                  sn(0, 'background-color', b(cell.row % 2 ? '' : 'grey'));
                   t(1, b(cell.value));
                 }
                 v();
