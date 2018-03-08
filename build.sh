@@ -34,7 +34,7 @@ NODE_PACKAGES=(compiler-cli
   benchpress)
 
 SCOPED_PACKAGES=$(
-  for P in ${PACKAGES[@]}; do echo @angular/${P}; done
+  for P in ${PACKAGES[@]}; do echo \\@angular/${P}; done
 )
 NG_UPDATE_PACKAGE_GROUP=$(
   # The first sed creates an array of strings
