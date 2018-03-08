@@ -168,7 +168,7 @@ describe('elements', () => {
               $r3$.ɵE(0, 'div');
               $r3$.ɵe();
             }
-            $r3$.ɵk(0, 'foo', $r3$.ɵb(ctx.someFlag));
+            $r3$.ɵkn(0, 'foo', $r3$.ɵb(ctx.someFlag));
           }
         });
         // /NORMATIVE
@@ -202,8 +202,8 @@ describe('elements', () => {
               $r3$.ɵE(0, 'div');
               $r3$.ɵe();
             }
-            $r3$.ɵs(0, 'color', $r3$.ɵb(ctx.someColor));
-            $r3$.ɵs(0, 'width', $r3$.ɵb(ctx.someWidth), 'px');
+            $r3$.ɵsn(0, 'color', $r3$.ɵb(ctx.someColor));
+            $r3$.ɵsn(0, 'width', $r3$.ɵb(ctx.someWidth), 'px');
           }
         });
         // /NORMATIVE
@@ -251,7 +251,7 @@ describe('elements', () => {
               $r3$.ɵe();
             }
             $r3$.ɵp(0, 'id', $r3$.ɵb(ctx.someString + 1));
-            $r3$.ɵk(0, 'foo', $r3$.ɵb(ctx.someString == 'initial'));
+            $r3$.ɵkn(0, 'foo', $r3$.ɵb(ctx.someString == 'initial'));
           }
         });
         // /NORMATIVE

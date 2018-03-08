@@ -210,8 +210,8 @@ function unsupported(feature: string): never {
 const BINDING_INSTRUCTION_MAP: {[index: number]: o.ExternalReference | undefined} = {
   [PropertyBindingType.Property]: R3.elementProperty,
   [PropertyBindingType.Attribute]: R3.elementAttribute,
-  [PropertyBindingType.Class]: R3.elementClass,
-  [PropertyBindingType.Style]: R3.elementStyle
+  [PropertyBindingType.Class]: R3.elementClassNamed,
+  [PropertyBindingType.Style]: R3.elementStyleNamed
 };
 
 function interpolate(args: o.Expression[]): o.Expression {
