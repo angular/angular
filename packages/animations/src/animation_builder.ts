@@ -13,7 +13,7 @@ import {AnimationPlayer} from './players/animation_player';
  * BrowserAnimationsModule BrowserAnimationsModule} or {@link NoopAnimationsModule
  * NoopAnimationsModule} modules are used within an application.
  *
- * The purpose if this service is to produce an animation sequence programmatically within an
+ * The purpose of this service is to produce an animation sequence programmatically within an
  * angular component or directive.
  *
  * Programmatic animations are first built and then a player is created when the build animation is
