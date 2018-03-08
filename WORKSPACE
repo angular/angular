@@ -4,7 +4,7 @@ workspace(name = "angular_material_src")
 git_repository(
   name = "build_bazel_rules_nodejs",
   remote = "https://github.com/bazelbuild/rules_nodejs.git",
-  commit = "0.3.1",
+  commit = "0.5.1",
 )
 
 # NOTE: this rule installs nodejs, npm, and yarn, but does NOT install
@@ -26,7 +26,7 @@ sass_repositories()
 git_repository(
   name = "build_bazel_rules_typescript",
   remote = "https://github.com/bazelbuild/rules_typescript.git",
-  tag = "0.10.0",
+  tag = "0.11.1",
 )
 
 # Setup TypeScript Bazel workspace
