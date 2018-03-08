@@ -256,12 +256,12 @@ export declare class FormControlDirective extends NgControl implements OnChanges
     readonly control: FormControl;
     form: FormControl;
     isDisabled: boolean;
-    model: any;
+    /** @deprecated */ model: any;
     readonly path: string[];
-    update: EventEmitter<{}>;
+    /** @deprecated */ update: EventEmitter<{}>;
     readonly validator: ValidatorFn | null;
     viewModel: any;
-    constructor(validators: Array<Validator | ValidatorFn>, asyncValidators: Array<AsyncValidator | AsyncValidatorFn>, valueAccessors: ControlValueAccessor[]);
+    constructor(validators: Array<Validator | ValidatorFn>, asyncValidators: Array<AsyncValidator | AsyncValidatorFn>, valueAccessors: ControlValueAccessor[], _ngModelWarningConfig: string | null);
     ngOnChanges(changes: SimpleChanges): void;
     viewToModelUpdate(newValue: any): void;
 }
@@ -272,12 +272,12 @@ export declare class FormControlName extends NgControl implements OnChanges, OnD
     readonly control: FormControl;
     readonly formDirective: any;
     isDisabled: boolean;
-    model: any;
+    /** @deprecated */ model: any;
     name: string;
     readonly path: string[];
-    update: EventEmitter<{}>;
+    /** @deprecated */ update: EventEmitter<{}>;
     readonly validator: ValidatorFn | null;
-    constructor(parent: ControlContainer, validators: Array<Validator | ValidatorFn>, asyncValidators: Array<AsyncValidator | AsyncValidatorFn>, valueAccessors: ControlValueAccessor[]);
+    constructor(parent: ControlContainer, validators: Array<Validator | ValidatorFn>, asyncValidators: Array<AsyncValidator | AsyncValidatorFn>, valueAccessors: ControlValueAccessor[], _ngModelWarningConfig: string | null);
     ngOnChanges(changes: SimpleChanges): void;
     ngOnDestroy(): void;
     viewToModelUpdate(newValue: any): void;
@@ -491,6 +491,8 @@ export declare class RadioControlValueAccessor implements ControlValueAccessor, 
 
 /** @stable */
 export declare class ReactiveFormsModule {
+    static withConfig(opts: { warnOnNgModelWithFormControl: 'never' | 'once' | 'always';
+    }): ModuleWithProviders;
 }
 
 /** @stable */
