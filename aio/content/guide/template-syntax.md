@@ -2253,61 +2253,107 @@ It's up to you to call `setCurrentStyles()`, both initially and when the depende
 
 {@a ngModel}
 
+<!--
 ### NgModel - Two-way binding to form elements with <span class="syntax">[(ngModel)]</span>
+-->
+### NgModel - 양방향 바인딩 디렉티브 <span class="syntax">[(ngModel)]</span>
 
+<!--
 When developing data entry forms, you often both display a data property and
 update that property when the user makes changes.
+-->
+폼을 사용해서 데이터를 입력받을 때, 폼에 있는 데이터를 뷰에 표시하면서 뷰에서 사용자가 변경하는 값을 다시 폼 데이터에 반영해야 하는 경우가 있습니다.
 
+<!--
 Two-way data binding with the `NgModel` directive makes that easy. Here's an example:
+-->
+이 때 `NgModel` 디렉티브를 사용하면 양방향 바인딩을 간단하게 구현할 수 있습니다. `NgModel` 디렉티브는 다음과 같이 사용합니다:
 
 <code-example path="template-syntax/src/app/app.component.html" linenums="false" title="src/app/app.component.html (NgModel-1)" region="NgModel-1">
 </code-example>
 
+<!--
 #### _FormsModule_ is required to use _ngModel_
+-->
+#### _ngModel_ 을 사용하려면 _FormsModule_ 이 필요합니다.
 
+<!--
 Before using the `ngModel` directive in a two-way data binding,
 you must import the `FormsModule` and add it to the NgModule's `imports` list.
 Learn more about the `FormsModule` and `ngModel` in the
 [Forms](guide/forms#ngModel) guide.
+-->
+`ngModel` 디렉티브로 양방향 바인딩을 구현하려면 NgModule의 `imports` 목록에 `FormsModule`을 추가해야 합니다.
+`FormsModule`과 `ngModel`에 대한 자세한 설명은 [Forms](guide/forms#ngModel) 문서를 참고하세요.
 
+<!--
 Here's how to import the `FormsModule` to make `[(ngModel)]` available.
+-->
+NgModule에 `FormsModule` 을 다음과 같이 추가합니다.
 
 <code-example path="template-syntax/src/app/app.module.1.ts" linenums="false" title="src/app/app.module.ts (FormsModule import)">
 </code-example>
 
+<!--
 #### Inside <span class="syntax">[(ngModel)]</span>
+-->
+#### <span class="syntax">[(ngModel)]</span> 동작 원리
 
+<!--
 Looking back at the `name` binding, note that
 you could have achieved the same result with separate bindings to
 the `<input>` element's  `value` property and `input` event.
+-->
+`<input>` 엘리먼트에 `name` 프로퍼티를 양방향 바인딩 한 것을 `value` 프로퍼티 바인딩과 `input` 이벤트 바인딩으로 나눠서 구현하면
+다음과 같이 구현할 수 있습니다.
 
 <code-example path="template-syntax/src/app/app.component.html" region="without-NgModel" title="src/app/app.component.html" linenums="false">
 </code-example>
 
+<!--
 That's cumbersome. Who can remember which element property to set and which element event emits user changes?
 How do you extract the currently displayed text from the input box so you can update the data property?
 Who wants to look that up each time?
+-->
+하지만 이런 구현방식은 비효율적입니다. 지정해야 할 프로퍼티 이름과 바인딩 해야 할 이벤트 이름을 계속 기억할 수 있을까요?
+그리고 사용자가 입력한 값이 바뀔 때마다 연결된 프로퍼티를 찾아서 새로운 값으로 갱신하는 로직을 직접 작성해야 합니다.
+입력 필드마다 이런 작업을 할 필요가 있을까요?
 
+<!--
 That `ngModel` directive hides these onerous details behind its own  `ngModel` input and `ngModelChange` output properties.
+-->
+`ngModel` 디렉티브를 사용하면 같은 로직을 `ngModel` 프로퍼티와 `ngModelChange` 이벤트로 간단하게 연결할 수 있습니다.
 
 <code-example path="template-syntax/src/app/app.component.html" region="NgModel-3" title="src/app/app.component.html" linenums="false">
 </code-example>
 
 <div class="l-sub-section">
 
+<!--
 The `ngModel` data property sets the element's value property and the `ngModelChange` event property
 listens for changes to the element's value.
+-->
+`ngModel` 프로퍼티는 엘리먼트의 프로퍼티 값을 지정하고 `ngModelChange` 이벤트 프로퍼티는 엘리먼트 값이 변경되는 것을 감지합니다.
 
+<!--
 The details are specific to each kind of element and therefore the `NgModel` directive only works for an element
 supported by a [ControlValueAccessor](api/forms/ControlValueAccessor)
 that adapts an element to this protocol.
 The `<input>` box is one of those elements.
 Angular provides *value accessors* for all of the basic HTML form elements and the
 [_Forms_](guide/forms) guide shows how to bind to them.
+-->
+`<input>` 엘리먼트가 아닌 경우에도 `NgModel` 디렉티브는 [ControlValueAccessor](api/forms/ControlValueAccessor)를 정의하고 있기 때문에 어떤 폼 엘리먼트에서도 같은 효과를 확인할 수 있습니다.
+`<input>` 도 이렇게 정의되어 있는 ControlValueAccessor 중 하나를 활용합니다.
+Angular는 모든 HTML 폼 엘리먼트에 대해 *값을 참조할 수 있는 중개자*를 제공하며, 더 자세한 내용은 [_Forms_](guide/forms) 문서를 참고하세요.
 
+<!--
 You can't apply `[(ngModel)]` to a non-form native element or a third-party custom component
 until you write a suitable *value accessor*,
 a technique that is beyond the scope of this guide.
+-->
+HTML 기본 폼 엘리먼트가 아니거나 서드 파티에서 불러온 커스텀 컴포넌트에는 `[(ngModel)]`을 사용할 수 없습니다.
+이것은 Angular에서 제공하는 폼 중개자가 없기 때문이며, 이 문서에서 설명하는 범위를 넘어서는 문제입니다.
 
 <!--
 You don't need a _value accessor_ for an Angular component that you write because you
@@ -2315,33 +2361,52 @@ can name the value and event properties
 to suit Angular's basic [two-way binding syntax](guide/template-syntax#two-way) and skip `NgModel` altogether.
 The [`sizer` shown above](guide/template-syntax#two-way) is an example of this technique.
 -->
-You don't need a _value accessor_ for an Angular component that you write because you
-can name the value and event properties
-to suit Angular's basic [two-way binding syntax](guide/template-syntax#양방향-바인딩) and skip `NgModel` altogether.
-The [`sizer` shown above](guide/template-syntax#양방향-바인딩) is an example of this technique.
+직접 Angular 컴포넌트를 만들어서 사용하는 경우라면 *값을 참조하는 중개자*를 따로 준비할 필요가 없습니다.
+왜냐하면 컴포넌트를 정의할 때 Angular의 [양방향 바인딩 문법](guide/template-syntax#양방향-바인딩)에 맞게 프로퍼티 이름과 이벤트 이름을 지정해야 하기 때문입니다.
+이전에 살펴본 [`sizer` 예제](guide/template-syntax#양방향-바인딩)를 다시 한 번 확인해 보세요.
 
 </div>
 
+<!--
 Separate `ngModel` bindings is an improvement over binding to the element's native properties. You can do better.
+-->
+하지만 `ngModel`과 `ngModelChange`로 구현하는 양방향 바인딩이 최선의 방법은 아닙니다.
+더 간단한 문법을 사용할 수 있습니다.
 
+<!--
 You shouldn't have to mention the data property twice. Angular should be able to capture
 the component's data property and set it
 with a single declaration, which it can with the `[(ngModel)]` syntax:
+-->
+데이터 프로퍼티를 두 번이나 참조할 필요는 없습니다. `[(ngModel)]` 문법을 다음과 같이 사용하면 컴포넌트의 데이터 프로퍼티를 아주 간단하게 양방향 바인딩할 수 있습니다.
 
 <code-example path="template-syntax/src/app/app.component.html" region="NgModel-1" title="src/app/app.component.html" linenums="false">
 </code-example>
 
+<!--
 Is `[(ngModel)]` all you need? Is there ever a reason to fall back to its expanded form?
+-->
+이것으로 끝난 걸까요? 폼을 처리하는 로직이 더 복잡하면 어떻게 해야 할까요?
 
+<!--
 The `[(ngModel)]` syntax can only _set_ a data-bound property.
 If you need to do something more or something different, you can write the expanded form.
+-->
+`[(ngModel)]` 문법은 데이터 프로퍼티의 값을 *갱신*하기만 합니다.
+데이터 프로퍼티 값을 갱신하고 다른 작업이 더 필요하다면, 두 종류 바인딩으로 나눠서 구현해야 합니다.
 
+<!--
 The following contrived example forces the input value to uppercase:
+-->
+그래서 입력 필드에 있는 값을 대문자로 바꿔서 사용해야 한다면 다음과 같이 구현하면 됩니다:
 
 <code-example path="template-syntax/src/app/app.component.html" region="NgModel-4" title="src/app/app.component.html" linenums="false">
 </code-example>
 
+<!--
 Here are all variations in action, including the uppercase version:
+-->
+`ngModel` 디렉티브는 다음과 같이 다양한 문법으로 사용할 수 있습니다.
 
 <figure>
   <img src='generated/images/guide/template-syntax/ng-model-anim.gif' alt="NgModel variations">
