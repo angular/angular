@@ -2,6 +2,13 @@
 {
   "$schema": "./node_modules/@angular-devkit/schematics/collection-schema.json",
   "schematics": {
+    // Creates a table component
+    "materialTable": {
+      "description": "Create a table component",
+      "factory": "./table/index",
+      "schema": "./table/schema.json",
+      "aliases": [ "material-table" ]
+    },
     // Creates toolbar and navigation components
     "materialNav": {
       "description": "Create a responsive navigation component",
