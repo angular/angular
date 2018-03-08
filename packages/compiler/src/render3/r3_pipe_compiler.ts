@@ -16,6 +16,9 @@ import {Identifiers as R3} from './r3_identifiers';
 import {BUILD_OPTIMIZER_COLOCATE, OutputMode} from './r3_types';
 import {createFactory} from './r3_view_compiler';
 
+/**
+ * Write a pipe definition to the output context.
+ */
 export function compilePipe(
     outputCtx: OutputContext, pipe: CompilePipeMetadata, reflector: CompileReflector,
     mode: OutputMode) {
@@ -58,8 +61,8 @@ export function compilePipe(
     const classReference = outputCtx.importExpr(pipe.type.reference);
 
     // Create the back-patch statement
-    outputCtx.statements.push(new o.CommentStmt(BUILD_OPTIMIZER_COLOCATE));
     outputCtx.statements.push(
+        new o.CommentStmt(BUILD_OPTIMIZER_COLOCATE),
         classReference.prop(definitionField).set(definitionFunction).toStmt());
   }
 }

@@ -8,8 +8,10 @@
 
 import {StaticReflector} from '../aot/static_reflector';
 import {CompileDirectiveMetadata, CompileIdentifierMetadata, CompileNgModuleMetadata, CompilePipeSummary, CompileTypeMetadata} from '../compile_metadata';
+import {DEFAULT_INTERPOLATION_CONFIG, DomElementSchemaRegistry, Lexer, ParseError, Parser} from '../compiler';
 import {CompileMetadataResolver} from '../metadata_resolver';
 import * as o from '../output/output_ast';
+import {BindingParser} from '../template_parser/binding_parser';
 import {TemplateAst} from '../template_parser/template_ast';
 import {OutputContext} from '../util';
 
@@ -22,6 +24,9 @@ export const enum ModuleKind {
   Renderer3,
 }
 
+/**
+ * Produce the back-patching function for the given module to the output context.
+ */
 export function compileModuleBackPatch(
     outputCtx: OutputContext, name: string, module: CompileNgModuleMetadata, kind: ModuleKind,
     backPatchReferenceOf: (module: CompileTypeMetadata) => o.Expression,
@@ -42,7 +47,7 @@ export function compileModuleBackPatch(
     // e.g. // @BUILD_OPTIMIZER_REMOVE
     imports.push(new o.CommentStmt(BUILD_OPTIMIZER_REMOVE));
 
-    // e.g. ngBackPatch_dome_other_module_Module();
+    // e.g. ngBackPatch_some_other_module_Module();
     imports.push(importBackPatchFunction.callFn([]).toStmt());
   }
 
@@ -58,10 +63,14 @@ export function compileModuleBackPatch(
 
   // e.g. export function ngBackPatch_some_module_Lib1Module()
   if (kind === ModuleKind.Renderer2) {
-    const pipes =
-        module.transitiveModule.pipes.map(pipe => resolver.getPipeSummary(pipe.reference));
     // For all Renderer2 modules generate back-patching code for all the components, directives,
     // pipes, and injectables as well as the injector def for the module itself.
+
+    const expressionParser = new Parser(new Lexer());
+    const elementSchemaRegistry = new DomElementSchemaRegistry();
+    const errors: ParseError[] = [];
+    const hostBindingParser = new BindingParser(
+        expressionParser, DEFAULT_INTERPOLATION_CONFIG, elementSchemaRegistry, [], errors);
 
     // Back-patch all declared directive and components
     for (const declaredDirective of module.declaredDirectives) {
@@ -71,9 +80,11 @@ export function compileModuleBackPatch(
             parseTemplate(declaredDirectiveMetadata, module, module.transitiveModule.directives);
         compileComponent(
             localCtx, declaredDirectiveMetadata, parsedPipes, parsedTemplate, reflector,
-            OutputMode.BackPatch);
+            hostBindingParser, OutputMode.BackPatch);
       } else {
-        compileDirective(localCtx, declaredDirectiveMetadata, reflector, OutputMode.BackPatch);
+        compileDirective(
+            localCtx, declaredDirectiveMetadata, reflector, hostBindingParser,
+            OutputMode.BackPatch);
       }
     }
 
@@ -81,8 +92,12 @@ export function compileModuleBackPatch(
     for (const pipeType of module.declaredPipes) {
       const pipeMetadata = resolver.getPipeMetadata(pipeType.reference);
       if (pipeMetadata) {
-        compilePipe(localCtx, pipeMetadata, reflector, OutputMode.PartialClass);
+        compilePipe(localCtx, pipeMetadata, reflector, OutputMode.BackPatch);
       }
+    }
+
+    if (errors.length) {
+      throw new Error(errors.map(e => e.toString()).join('\n'));
     }
   }
 

@@ -216,7 +216,8 @@ function doCompile(
   }
 
   compileAction(
-      fakeOutputContext, analyzedModules, resolver, htmlParser, templateParser, hostBindingParser, staticReflector);
+      fakeOutputContext, analyzedModules, resolver, htmlParser, templateParser, hostBindingParser,
+      staticReflector);
 
   fakeOutputContext.statements.unshift(...fakeOutputContext.constantPool.statements);
 
@@ -264,10 +265,11 @@ export function compile(
               const parsedTemplate = templateParser.parse(
                   metadata, htmlAst, directives, pipes, module.schemas, fakeUrl, false);
               compileComponent(
-                  outputCtx, metadata, pipes, parsedTemplate.template, reflector,
-                  hostBindingParser, OutputMode.PartialClass);
+                  outputCtx, metadata, pipes, parsedTemplate.template, reflector, hostBindingParser,
+                  OutputMode.PartialClass);
             } else {
-              compileDirective(outputCtx, metadata, reflector, hostBindingParser, OutputMode.PartialClass);
+              compileDirective(
+                  outputCtx, metadata, reflector, hostBindingParser, OutputMode.PartialClass);
             }
           } else if (resolver.isPipe(pipeOrDirective)) {
             const metadata = resolver.getPipeMetadata(pipeOrDirective);

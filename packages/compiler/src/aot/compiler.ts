@@ -369,7 +369,9 @@ export class AotCompiler {
             context, directiveMetadata, parsedPipes, parsedTemplate, this._reflector,
             hostBindingParser, OutputMode.PartialClass);
       } else {
-        compileIvyDirective(context, directiveMetadata, this._reflector, hostBindingParser, OutputMode.PartialClass);
+        compileIvyDirective(
+            context, directiveMetadata, this._reflector, hostBindingParser,
+            OutputMode.PartialClass);
       }
     });
 

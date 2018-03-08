@@ -49,16 +49,25 @@ describe('r3_back_patch_compiler', () => {
               getSomeInfo() { return 'some info'; }
             }
           `,
+          'pipe.ts': `
+            import {Pipe} from '@angular/core';
+
+            @Pipe({name: 'lib1Pipe', pure: true})
+            export class Lib1Pipe {
+              transform(v: any) { return v; }
+            }
+          `,
           'module.ts': `
             import {NgModule} from '@angular/core';
 
             import {Lib1Component} from './component';
             import {Lib1Directive} from './directive';
             import {Lib1Service} from './service';
+            import {Lib1Pipe} from './pipe';
 
             @NgModule({
-              exports: [Lib1Component, Lib1Directive],
-              declarations: [Lib1Component, Lib1Directive],
+              exports: [Lib1Component, Lib1Directive, Lib1Pipe],
+              declarations: [Lib1Component, Lib1Directive, Lib1Pipe],
               providers: [Lib1Service]
             })
             export class Lib1Module {}
@@ -94,6 +103,14 @@ describe('r3_back_patch_compiler', () => {
               getSomeInfo() { return 'some info'; }
             }
           `,
+          'pipe.ts': `
+            import {Pipe} from '@angular/core';
+
+            @Pipe({name: 'lib2Pipe', pure: true})
+            export class Lib2Pipe {
+              transform(v: any) { return v; }
+            }
+          `,
           'module.ts': `
             import {NgModule} from '@angular/core';
 
@@ -101,11 +118,12 @@ describe('r3_back_patch_compiler', () => {
             import {Lib2Component} from './component';
             import {Lib2Directive} from './directive';
             import {Lib2Service} from './service';
+            import {Lib2Pipe} from './pipe';
 
             @NgModule({
               imports: [Lib1Module],
-              exports: [Lib2Component, Lib2Directive],
-              declarations: [Lib2Component, Lib2Directive],
+              exports: [Lib2Component, Lib2Directive, Lib2Pipe],
+              declarations: [Lib2Component, Lib2Directive, Lib2Pipe],
               providers: [Lib2Service]
             })
             export class Lib2Module {}
@@ -124,8 +142,8 @@ describe('r3_back_patch_compiler', () => {
             @Component({
               selector: 'app-cmp',
               template: \`
-                <lib1-cmp lib2-dir></lib1-cmp>
-                <lib2-cmp lib1-dir></lib2-cmp>
+                <lib1-cmp lib2-dir>{{'v' | lib1Pipe | lib2Pipe}}</lib1-cmp>
+                <lib2-cmp lib1-dir>{{'v' | lib2Pipe | lib2Pipe}}</lib2-cmp>
               \`
             })
             export class AppComponent {
@@ -157,6 +175,9 @@ describe('r3_back_patch_compiler', () => {
 
         // @__BUILD_OPTIMIZER_COLOCATE__
         $lib1_d$.Lib1Directive.ngDirectiveDef = $r3$.ɵdefineDirective(…);
+
+        // @__BUILD_OPTIMIZER_COLOCATE__
+        $lib1_p$.Lib1Pipe.ngPipeDef = $r3$.ɵdefinePipe(…);
       }
     `;
 
@@ -170,6 +191,9 @@ describe('r3_back_patch_compiler', () => {
 
         // @__BUILD_OPTIMIZER_COLOCATE__
         $lib2_d$.Lib2Directive.ngDirectiveDef = $r3$.ɵdefineDirective(…);
+
+        // @__BUILD_OPTIMIZER_COLOCATE__
+        $lib1_p$.Lib2Pipe.ngPipeDef = $r3$.ɵdefinePipe(…);
       }
     `;
 
@@ -190,4 +214,5 @@ describe('r3_back_patch_compiler', () => {
     expectEmit(result.source, lib2_module_back_patch, 'Invalid lib2 back-patch');
     expectEmit(result.source, app_module_back_patch, 'Invalid app module back-patch');
   });
+
 });

@@ -14,6 +14,9 @@ import {OutputContext} from '../util';
 
 import {Identifiers as R3} from './r3_identifiers';
 
+/**
+ * Write a Renderer2 compatibility module factory to the output context.
+ */
 export function compileModuleFactory(
     outputCtx: OutputContext, module: CompileNgModuleMetadata,
     backPatchReferenceOf: (module: CompileTypeMetadata) => o.Expression,

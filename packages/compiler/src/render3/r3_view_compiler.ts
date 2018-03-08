@@ -99,7 +99,8 @@ export function compileDirective(
 
 export function compileComponent(
     outputCtx: OutputContext, component: CompileDirectiveMetadata, pipes: CompilePipeSummary[],
-    template: TemplateAst[], reflector: CompileReflector, bindingParser: BindingParser, mode: OutputMode) {
+    template: TemplateAst[], reflector: CompileReflector, bindingParser: BindingParser,
+    mode: OutputMode) {
   const definitionMapValues: {key: string, quoted: boolean, value: o.Expression}[] = [];
 
   const field = (key: string, value: o.Expression | null) => {
@@ -187,8 +188,8 @@ export function compileComponent(
     const classReference = outputCtx.importExpr(component.type.reference);
 
     // Create the back-patch statement
-    outputCtx.statements.push(new o.CommentStmt(BUILD_OPTIMIZER_COLOCATE));
     outputCtx.statements.push(
+        new o.CommentStmt(BUILD_OPTIMIZER_COLOCATE),
         classReference.prop(definitionField).set(definitionFunction).toStmt());
   }
 }
