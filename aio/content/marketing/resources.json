@@ -345,6 +345,13 @@
             "title": "Angular Material",
             "url": "https://github.com/angular/material2"
           },
+          "mcc": {
+            "desc": "Material components made by the community",
+            "logo": "",
+            "rev": true,
+            "title": "Material Community Components",
+            "url": "https://github.com/tiaguinho/material-community-components"
+          },
           "aggrid": {
             "desc": "A datagrid for Angular with enterprise style features such as sorting, filtering, custom rendering, editing, grouping, aggregation and pivoting.",
             "rev": true,
