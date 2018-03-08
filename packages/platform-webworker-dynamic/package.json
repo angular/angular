@@ -9,7 +9,7 @@
   "author": "angular",
   "license": "MIT",
   "dependencies": {
-    "tslib": "^1.7.1"
+    "tslib": "^1.9.0"
   },
   "peerDependencies": {
     "@angular/common": "0.0.0-PLACEHOLDER",
