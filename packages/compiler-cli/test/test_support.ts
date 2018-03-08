@@ -15,7 +15,7 @@ import * as ng from '../index';
 // TEST_TMPDIR is set by bazel.
 const tmpdir = process.env.TEST_TMPDIR || os.tmpdir();
 
-function getNgRootDir() {
+export function getNgRootDir() {
   const moduleFilename = module.filename.replace(/\\/g, '/');
   const distIndex = moduleFilename.indexOf('/dist/all');
   return moduleFilename.substr(0, distIndex);

@@ -23,8 +23,6 @@ import {OutputContext, error} from '../util';
 import {Identifiers as R3} from './r3_identifiers';
 import {BUILD_OPTIMIZER_COLOCATE, OutputMode} from './r3_types';
 
-
-
 /** Name of the context parameter passed into a template function */
 const CONTEXT_NAME = 'ctx';
 
@@ -82,7 +80,13 @@ export function compileDirective(
             /* name */ definitionField,
             /* type */ o.INFERRED_TYPE,
             /* modifiers */[o.StmtModifier.Static],
-            /* initializer */ definitionFunction)],
+            /* initializer */ definitionFunction), 
+            ...(directive.selector ? [new o.ClassField(
+              /* name */ 'ngSelector',
+              /* type */ o.INFERRED_TYPE,
+              /* modifiers */[o.StmtModifier.Static, o.StmtModifier.Hidden],
+              /* initializer */ o.literal(directive.selector))] :
+          [])],
         /* getters */[],
         /* constructorMethod */ new o.ClassMethod(null, [], []),
         /* methods */[]));
@@ -180,7 +184,13 @@ export function compileComponent(
             /* name */ definitionField,
             /* type */ o.INFERRED_TYPE,
             /* modifiers */[o.StmtModifier.Static],
-            /* initializer */ definitionFunction)],
+            /* initializer */ definitionFunction),
+            ...(component.selector ? [new o.ClassField(
+              /* name */ 'ngSelector',
+              /* type */ o.INFERRED_TYPE,
+              /* modifiers */[o.StmtModifier.Static, o.StmtModifier.Hidden],
+              /* initializer */ o.literal(component.selector))] :
+          [])],
         /* getters */[],
         /* constructorMethod */ new o.ClassMethod(null, [], []),
         /* methods */[]));

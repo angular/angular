@@ -11,13 +11,9 @@ import * as path from 'path';
 import * as ts from 'typescript';
 
 import {main, readCommandLineAndConfiguration, watchMode} from '../src/main';
-import {makeTempDir} from './test_support';
 
-function getNgRootDir() {
-  const moduleFilename = module.filename.replace(/\\/g, '/');
-  const distIndex = moduleFilename.indexOf('/dist/all');
-  return moduleFilename.substr(0, distIndex);
-}
+import {getNgRootDir, makeTempDir} from './test_support';
+
 
 describe('ngc transformer command-line', () => {
   let basePath: string;

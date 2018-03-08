@@ -216,6 +216,10 @@ class _TsEmitterVisitor extends AbstractEmitterVisitor implements o.TypeVisitor 
   }
 
   private _visitClassField(field: o.ClassField, ctx: EmitterVisitorContext) {
+    if (field.hasModifier(o.StmtModifier.Hidden)) {
+      // Hidden fields are for metadata so ignore them.
+      return;
+    }
     if (field.hasModifier(o.StmtModifier.Private)) {
       // comment out as a workaround for #10967
       ctx.print(null, `/*private*/ `);

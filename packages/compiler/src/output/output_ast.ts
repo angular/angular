@@ -732,6 +732,7 @@ export enum StmtModifier {
   Private,
   Exported,
   Static,
+  Hidden,
 }
 
 export abstract class Statement {

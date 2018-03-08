@@ -241,6 +241,7 @@ export enum EmitFlags {
   Metadata = 1 << 2,
   I18nBundle = 1 << 3,
   Codegen = 1 << 4,
+  FlatIndex = 1 << 5,
 
   Default = DTS | JS | Codegen,
   All = DTS | JS | Metadata | I18nBundle | Codegen,

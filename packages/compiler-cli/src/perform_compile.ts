@@ -154,6 +154,9 @@ export function readConfiguration(
     if (!(options.skipMetadataEmit || options.flatModuleOutFile)) {
       emitFlags |= api.EmitFlags.Metadata;
     }
+    if (options.flatModuleOutFile) {
+      emitFlags |= api.EmitFlags.FlatIndex;
+    }
     if (options.skipTemplateCodegen) {
       emitFlags = emitFlags & ~api.EmitFlags.Codegen;
     }

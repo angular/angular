@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ClassStmt, PartialModule, Statement, StmtModifier} from '@angular/compiler';
+import {ClassStmt, LiteralExpr, PartialModule, Statement, StmtModifier} from '@angular/compiler';
 import * as ts from 'typescript';
 
-import {MetadataCollector, MetadataValue, ModuleMetadata, isClassMetadata} from '../metadata/index';
+import {MetadataCollector, MetadataValue, ModuleMetadata, isClassMetadata, isMetadataImportedSymbolReferenceExpression, isMetadataSymbolicCallExpression} from '../metadata/index';
 
 import {MetadataTransformer, ValueTransform} from './metadata_cache';
 
@@ -34,10 +34,23 @@ export class PartialModuleMetadataTransformer implements MetadataTransformer {
             if (classDeclaration.name) {
               const partialClass = classMap.get(classDeclaration.name.text);
               if (partialClass) {
+                // Add fields
                 for (const field of partialClass.fields) {
                   if (field.name && field.modifiers &&
                       field.modifiers.some(modifier => modifier === StmtModifier.Static)) {
-                    value.statics = {...(value.statics || {}), [field.name]: {}};
+                    let val: any = {};
+
+                    // If it is a string, number or boolean, keep it.
+                    if (field.initializer && field.initializer instanceof LiteralExpr) {
+                      const initializer = field.initializer.value;
+                      const initializerType = typeof initializer;
+                      if (initializerType === 'string' || initializerType === 'number' ||
+                          initializerType === 'boolean') {
+                        val = initializer;
+                      }
+                    }
+
+                    value.statics = {...(value.statics || {}), [field.name]: val};
                   }
                 }
               }
@@ -52,4 +65,32 @@ export class PartialModuleMetadataTransformer implements MetadataTransformer {
 
 function isClassStmt(v: Statement): v is ClassStmt {
   return v instanceof ClassStmt;
+}
+
+export class RemoveAngularDecoratorMetadataTransformer implements MetadataTransformer {
+  start(sourceFile: ts.SourceFile): ValueTransform|undefined {
+    return (value: MetadataValue, node: ts.Node): MetadataValue => {
+      if (isClassMetadata(value) && node.kind === ts.SyntaxKind.ClassDeclaration) {
+        const classDeclaration = node as ts.ClassDeclaration;
+        if (value.decorators) {
+          const newDecorators = value.decorators.filter(d => !isAngularDirective(d));
+          if (newDecorators.length === 0) {
+            delete value.decorators;
+          } else {
+            value.decorators = newDecorators;
+          }
+        }
+      }
+      return value;
+    };
+  }
+}
+
+function isAngularDirective(directive: any): boolean {
+  if (isMetadataSymbolicCallExpression(directive)) {
+    const target = directive.expression;
+    return isMetadataImportedSymbolReferenceExpression(target) &&
+        target.module.startsWith('@angular/');
+  }
+  return false;
 }

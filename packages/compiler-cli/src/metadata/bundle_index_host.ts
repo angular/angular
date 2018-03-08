@@ -11,6 +11,7 @@ import * as path from 'path';
 import * as ts from 'typescript';
 
 import {CompilerOptions} from '../transformers/api';
+import {MetadataCache} from '../transformers/metadata_cache';
 
 import {CompilerHostAdapter, MetadataBundler} from './bundler';
 import {privateEntriesToIndex} from './index_writer';
@@ -87,4 +88,41 @@ export function createBundleIndexHost<H extends ts.CompilerHost>(
   const content = privateEntriesToIndex(libraryIndex, metadataBundle.privates);
   host = createSyntheticIndexHost(host, {name, content, metadata});
   return {host, indexName: name};
+}
+
+export function createCachedMetadataBundleIndexHost<H extends ts.CompilerHost>(
+    ngOptions: CompilerOptions, rootFiles: ReadonlyArray<string>, host: H,
+    cache: MetadataCache): {host: H, indexName?: string, errors?: ts.Diagnostic[]} {
+  const files = rootFiles.filter(f => !DTS.test(f));
+  if (files.length != 1) {
+    return {
+      host,
+      errors: [{
+        file: null as any as ts.SourceFile,
+        start: null as any as number,
+        length: null as any as number,
+        messageText:
+            'Angular compiler option "flatModuleIndex" requires one and only one .ts file in the "files" field.',
+        category: ts.DiagnosticCategory.Error,
+        code: 0
+      }]
+    };
+  }
+  const file = files[0];
+  const indexModule = file.replace(/\.ts$/, '');
+  const bundler = new MetadataBundler(indexModule, ngOptions.flatModuleId, {
+    getMetadataFor(moduleName: string) {
+      const sourceFile = host.getSourceFile(moduleName + '.ts', ts.ScriptTarget.Latest);
+      return sourceFile && cache.getMetadata(sourceFile);
+    }
+  });
+  const metadataBundle = bundler.getMetadataBundle();
+  const metadata = JSON.stringify(metadataBundle.metadata);
+  const name =
+      path.join(path.dirname(indexModule), ngOptions.flatModuleOutFile !.replace(JS_EXT, '.ts'));
+  const libraryIndex = `./${path.basename(indexModule)}`;
+  const content = privateEntriesToIndex(libraryIndex, metadataBundle.privates);
+  const syntheticHost = createSyntheticIndexHost(host, {name, content, metadata});
+
+  return {host: syntheticHost, indexName: name};
 }

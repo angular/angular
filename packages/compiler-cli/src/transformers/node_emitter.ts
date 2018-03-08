@@ -350,14 +350,15 @@ class _NodeEmitterVisitor implements StatementVisitor, ExpressionVisitor {
 
   visitDeclareClassStmt(stmt: ClassStmt) {
     const modifiers = this.getModifiers(stmt);
-    const fields = stmt.fields.map(
-        field => ts.createProperty(
-            /* decorators */ undefined, /* modifiers */ translateModifiers(field.modifiers),
-            field.name,
-            /* questionToken */ undefined,
-            /* type */ undefined,
-            field.initializer == null ? ts.createNull() :
-                                        field.initializer.visitExpression(this, null)));
+    const fields = stmt.fields.filter(f => !f.hasModifier(StmtModifier.Hidden))
+                       .map(
+                           field => ts.createProperty(
+                               /* decorators */ undefined,
+                               /* modifiers */ translateModifiers(field.modifiers), field.name,
+                               /* questionToken */ undefined,
+                               /* type */ undefined, field.initializer == null ?
+                                   ts.createNull() :
+                                   field.initializer.visitExpression(this, null)));
     const getters = stmt.getters.map(
         getter => ts.createGetAccessor(
             /* decorators */ undefined, /* modifiers */ undefined, getter.name, /* parameters */[],
@@ -696,5 +697,7 @@ function modifierFromModifier(modifier: StmtModifier): ts.Modifier {
 }
 
 function translateModifiers(modifiers: StmtModifier[] | null): ts.Modifier[]|undefined {
-  return modifiers == null ? undefined : modifiers !.map(modifierFromModifier);
+  return modifiers == null ?
+      undefined :
+      modifiers !.filter(m => m !== StmtModifier.Hidden).map(modifierFromModifier);
 }

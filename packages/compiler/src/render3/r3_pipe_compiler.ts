@@ -52,7 +52,14 @@ export function compilePipe(
             /* name */ definitionField,
             /* type */ o.INFERRED_TYPE,
             /* modifiers */[o.StmtModifier.Static],
-            /* initializer */ definitionFunction)],
+            /* initializer */ definitionFunction),
+            ...(pipe.name ? [new o.ClassField(
+                /* name */ 'ngSelector',
+                /* type */ o.INFERRED_TYPE,
+                /* modifiers */[o.StmtModifier.Static, o.StmtModifier.Hidden],
+                /* initializer */ o.literal(pipe.name))] :
+            [])
+        ],
         /* getters */[],
         /* constructorMethod */ new o.ClassMethod(null, [], []),
         /* methods */[]));

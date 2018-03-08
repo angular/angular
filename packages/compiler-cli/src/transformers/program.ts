@@ -13,7 +13,7 @@ import * as path from 'path';
 import * as ts from 'typescript';
 
 import {TypeCheckHost, translateDiagnostics} from '../diagnostics/translate_diagnostics';
-import {MetadataCollector, ModuleMetadata, createBundleIndexHost} from '../metadata/index';
+import {MetadataCollector, ModuleMetadata, createBundleIndexHost, createCachedMetadataBundleIndexHost} from '../metadata/index';
 
 import {CompilerHost, CompilerOptions, CustomTransformers, DEFAULT_ERROR_CODE, Diagnostic, DiagnosticMessageChain, EmitFlags, LazyRoute, LibrarySummary, Program, SOURCE, TsEmitArguments, TsEmitCallback} from './api';
 import {CodeGenerator, TsCompilerAotCompilerTypeCheckHostAdapter, getOriginalReferences} from './compiler_host';
@@ -21,7 +21,7 @@ import {InlineResourcesMetadataTransformer, getInlineResourcesTransformFactory} 
 import {LowerMetadataTransform, getExpressionLoweringTransformFactory} from './lower_expressions';
 import {MetadataCache, MetadataTransformer} from './metadata_cache';
 import {getAngularEmitterTransformFactory} from './node_emitter_transform';
-import {PartialModuleMetadataTransformer} from './r3_metadata_transform';
+import {PartialModuleMetadataTransformer, RemoveAngularDecoratorMetadataTransformer} from './r3_metadata_transform';
 import {StripDecoratorsMetadataTransformer, getDecoratorStripTransformerFactory} from './r3_strip_decorators';
 import {getAngularClassTransformerFactory} from './r3_transform';
 import {DTS, GENERATED_FILES, StructureIsReused, TS, createMessageDiagnostic, isInRootDir, ngToTsDiagnostic, tsStructureIsReused, userError} from './util';
@@ -135,7 +135,8 @@ class AngularCompilerProgram implements Program {
       this.oldProgramEmittedSourceFiles = oldProgram.getEmittedSourceFiles();
     }
 
-    if (options.flatModuleOutFile) {
+    if (options.flatModuleOutFile && !options.enableIvy) {
+      // Use the old location for pre-ivy. Ivy needs the transformed metadata.
       const {host: bundleHost, indexName, errors} =
           createBundleIndexHost(options, this.rootNames, host);
       if (errors) {
@@ -298,6 +299,7 @@ class AngularCompilerProgram implements Program {
     const modules =
         this.compiler.emitAllPartialModules(this.analyzedModules, this._analyzedInjectables !);
 
+    const outSrcMapping: Array<{sourceFile: ts.SourceFile, outFileName: string}> = [];
     const writeTsFile: ts.WriteFileCallback =
         (outFileName, outData, writeByteOrderMark, onError?, sourceFiles?) => {
           const sourceFile = sourceFiles && sourceFiles.length == 1 ? sourceFiles[0] : null;
@@ -305,6 +307,9 @@ class AngularCompilerProgram implements Program {
           if (this.options.annotateForClosureCompiler && sourceFile &&
               TS.test(sourceFile.fileName)) {
             outData = this._annotateR3Properties(outData);
+          }
+          if (sourceFile) {
+            outSrcMapping.push({outFileName: outFileName, sourceFile});
           }
           this.writeFile(outFileName, outData, writeByteOrderMark, onError, undefined, sourceFiles);
         };
@@ -322,6 +327,54 @@ class AngularCompilerProgram implements Program {
       writeFile: writeTsFile, emitOnlyDtsFiles,
       customTransformers: tsCustomTransformers
     });
+
+    // If metadata is requested, emit it.
+    let metadataJsonCount = 0;
+    if (emitFlags & EmitFlags.Metadata) {
+      let sampleSrcFileName: string|undefined;
+      let sampleOutFileName: string|undefined;
+      if (outSrcMapping.length) {
+        sampleSrcFileName = outSrcMapping[0].sourceFile.fileName;
+        sampleOutFileName = outSrcMapping[0].outFileName;
+      }
+      const srcToOutPath =
+          createSrcToOutPathMapper(this.options.outDir, sampleSrcFileName, sampleOutFileName);
+      this.tsProgram.getSourceFiles().forEach(sf => {
+        if (!sf.isDeclarationFile && !GENERATED_FILES.test(sf.fileName)) {
+          metadataJsonCount++;
+          const metadata = this.metadataCache.getMetadata(sf);
+          if (metadata) {
+            const metadataText = JSON.stringify([metadata]);
+            const outFileName = srcToOutPath(sf.fileName.replace(/\.tsx?$/, '.metadata.json'));
+            this.writeFile(outFileName, metadataText, false, undefined, undefined, [sf]);
+          }
+        }
+      });
+    }
+
+    if (emitFlags & EmitFlags.FlatIndex) {
+      const {host: bundleHost, indexName, errors} = createCachedMetadataBundleIndexHost(
+          this.options, this.rootNames, this.host, this.metadataCache);
+
+      if (errors) {
+        this._optionsDiagnostics.push(...errors.map(e => ({
+                                                      category: e.category,
+                                                      messageText: e.messageText as string,
+                                                      source: SOURCE,
+                                                      code: DEFAULT_ERROR_CODE
+                                                    })));
+      } else if (indexName) {
+        // Create a program and only emit the index from it.
+        const flatModuleProgram = ts.createProgram([indexName], this.options, bundleHost);
+        const sourceFile = flatModuleProgram.getSourceFile(indexName) !;
+        if (!sourceFile) {
+          throw new Error(
+              `Internal Error: could not find source file for flat module index ${indexName}`);
+        }
+        flatModuleProgram.emit(sourceFile);
+      }
+    }
+
 
     return emitResult;
   }
@@ -567,6 +620,9 @@ class AngularCompilerProgram implements Program {
     }
     if (genFiles) {
       beforeTs.push(getAngularEmitterTransformFactory(genFiles, this.getTsProgram()));
+    }
+    if (this.options.enableIvy) {
+      metadataTransforms.push(new RemoveAngularDecoratorMetadataTransformer());
     }
     if (partialModules) {
       beforeTs.push(getAngularClassTransformerFactory(partialModules));
