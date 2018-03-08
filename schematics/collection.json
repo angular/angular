@@ -2,6 +2,13 @@
 {
   "$schema": "./node_modules/@angular-devkit/schematics/collection-schema.json",
   "schematics": {
+    // Creates toolbar and navigation components
+    "materialNav": {
+      "description": "Create a responsive navigation component",
+      "factory": "./nav/index",
+      "schema": "./nav/schema.json",
+      "aliases": [ "material-nav" ]
+    },
     // Adds Angular Material to an application without changing any templates
     "materialShell": {
       "description": "Create a Material shell",

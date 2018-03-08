@@ -1,0 +1,99 @@
+{
+  "$schema": "http://json-schema.org/schema",
+  "id": "SchematicsMaterialNav",
+  "title": "Material Nav Options Schema",
+  "type": "object",
+  "properties": {
+    "path": {
+      "type": "string",
+      "description": "The path to create the component.",
+      "default": "app",
+      "visible": false
+    },
+    "sourceDir": {
+      "type": "string",
+      "description": "The path of the source directory.",
+      "default": "src",
+      "alias": "sd",
+      "visible": false
+    },
+    "appRoot": {
+      "type": "string",
+      "description": "The root of the application.",
+      "visible": false
+    },
+    "name": {
+      "type": "string",
+      "description": "The name of the component."
+    },
+    "inlineStyle": {
+      "description": "Specifies if the style will be in the ts file.",
+      "type": "boolean",
+      "default": false,
+      "alias": "is"
+    },
+    "inlineTemplate": {
+      "description": "Specifies if the template will be in the ts file.",
+      "type": "boolean",
+      "default": false,
+      "alias": "it"
+    },
+    "viewEncapsulation": {
+      "description": "Specifies the view encapsulation strategy.",
+      "enum": ["Emulated", "Native", "None"],
+      "type": "string",
+      "default": "Emulated",
+      "alias": "ve"
+    },
+    "changeDetection": {
+      "description": "Specifies the change detection strategy.",
+      "enum": ["Default", "OnPush"],
+      "type": "string",
+      "default": "Default",
+      "alias": "cd"
+    },
+    "prefix": {
+      "type": "string",
+      "description": "The prefix to apply to generated selectors.",
+      "default": "app",
+      "alias": "p"
+    },
+    "styleext": {
+      "description": "The file extension to be used for style files.",
+      "type": "string",
+      "default": "css"
+    },
+    "spec": {
+      "type": "boolean",
+      "description": "Specifies if a spec file is generated.",
+      "default": true
+    },
+    "flat": {
+      "type": "boolean",
+      "description": "Flag to indicate if a dir is created.",
+      "default": false
+    },
+    "skipImport": {
+      "type": "boolean",
+      "description": "Flag to skip the module import.",
+      "default": false
+    },
+    "selector": {
+      "type": "string",
+      "description": "The selector to use for the component."
+    },
+    "module":  {
+      "type": "string",
+      "description": "Allows specification of the declaring module.",
+      "alias": "m"
+    },
+    "export": {
+      "type": "boolean",
+      "default": false,
+      "description": "Specifies if declaring module exports the component."
+    }
+  },
+  "required": [
+    "name"
+  ]
+}
