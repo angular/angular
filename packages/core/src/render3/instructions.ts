@@ -875,7 +875,7 @@ function generatePropertyAliases(lNodeFlags: number, direction: BindingDirection
  *        renaming as part of minification.
  * @param value A value indicating if a given class should be added or removed.
  */
-export function elementClass<T>(index: number, className: string, value: T | NO_CHANGE): void {
+export function elementClassNamed<T>(index: number, className: string, value: T | NO_CHANGE): void {
   if (value !== NO_CHANGE) {
     const lElement = data[index] as LElementNode;
     if (value) {
@@ -900,11 +900,11 @@ export function elementClass<T>(index: number, className: string, value: T | NO_
  * @param sanitizer An optional function used to transform the value typically used for
  *        sanitization.
  */
-export function elementStyle<T>(
+export function elementStyleNamed<T>(
     index: number, styleName: string, value: T | NO_CHANGE, suffix?: string): void;
-export function elementStyle<T>(
+export function elementStyleNamed<T>(
     index: number, styleName: string, value: T | NO_CHANGE, sanitizer?: Sanitizer): void;
-export function elementStyle<T>(
+export function elementStyleNamed<T>(
     index: number, styleName: string, value: T | NO_CHANGE,
     suffixOrSanitizer?: string | Sanitizer): void {
   if (value !== NO_CHANGE) {
