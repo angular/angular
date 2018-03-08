@@ -97,12 +97,14 @@ To run tests:
 $ ./test.sh node             # Run all angular tests on node
 
 $ ./test.sh browser          # Run all angular tests in browser
-$ ./test.sh browserNoRouter  # Optionally run all angular tests without router in browser
+$ ./test.sh router           # Run just the router tests in browser
+$ ./test.sh browserNoRouter  # Run all angular tests minus the router tests in browser
 
 $ ./test.sh tools            # Run angular tooling (not framework) tests
 ```
 
-You should execute the 3 test suites before submitting a PR to github.
+You should execute the 3 test suites before submitting a PR to github. Note that the suites are
+independent, so using `fit` or `fdescribe` while debugging will only affect whichever suite that test lives in.
 
 See [DEBUG.md](DEBUG.md) for information on debugging the code while running the unit tests.
 
