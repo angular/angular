@@ -172,7 +172,7 @@
               "url": "guide/structural-directives",
               "title": "Structural Directives",
               "tooltip": "Structural directives manipulate the layout of the page."
-            }, 
+            },
             {
               "url": "guide/pipes",
               "title": "Pipes",
@@ -430,6 +430,11 @@
               "tooltip": "Learn how to deploy your Angular app."
             }
           ]
+        },
+        {
+          "url": "guide/custom-elements",
+          "title": "Custom Elements",
+          "tooltip": "Using Angular Components as Custom Elements."
         },
         {
           "title": "Service Workers",

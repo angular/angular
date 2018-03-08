@@ -1,0 +1,27 @@
+{
+  "extends": "../tsconfig-build.json",
+
+  "compilerOptions": {
+    "baseUrl": ".",
+    "rootDir": ".",
+    "paths": {
+      "@angular/core": ["../../dist/packages/core"],
+      "@angular/platform-browser": ["../../dist/packages/platform-browser"],
+      "rxjs/*": ["../../node_modules/rxjs/*"]
+    },
+    "outDir": "../../dist/packages/elements"
+  },
+
+  "files": [
+    "public_api.ts",
+    "../../node_modules/zone.js/dist/zone.js.d.ts"
+  ],
+
+  "angularCompilerOptions": {
+    "annotateForClosureCompiler": true,
+    "strictMetadataEmit": false,
+    "skipTemplateCodegen": true,
+    "flatModuleOutFile": "elements.js",
+    "flatModuleId": "@angular/elements"
+  }
+}
