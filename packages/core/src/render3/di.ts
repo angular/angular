@@ -582,6 +582,10 @@ class ViewContainerRef implements viewEngine_ViewContainerRef {
     const lView = (viewRef as EmbeddedViewRef<any>)._lViewNode;
     insertView(this._node, lView, index);
 
+    // TODO(pk): this is super-hackish, but we need to adjust nextIndex so the containerRefreshEnd
+    // instruction is not removing dynamically inserted views
+    this._node.data.nextIndex = this._node.data.views.length;
+
     // If the view is dynamic (has a template), it needs to be counted both at the container
     // level and at the node above the container.
     if (lView.data.template !== null) {
