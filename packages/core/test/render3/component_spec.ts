@@ -32,7 +32,6 @@ describe('component', () => {
       },
       factory: () => new CounterComponent,
       inputs: {count: 'count'},
-      methods: {increment: 'increment'}
     });
   }
 
