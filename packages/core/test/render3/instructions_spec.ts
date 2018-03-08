@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {elementAttribute, elementEnd, elementProperty, elementStart, elementStyle, renderTemplate} from '../../src/render3/instructions';
+import {elementAttribute, elementEnd, elementProperty, elementStart, elementStyleNamed, renderTemplate} from '../../src/render3/instructions';
 import {LElementNode, LNode} from '../../src/render3/interfaces/node';
 import {RElement, domRendererFactory3} from '../../src/render3/interfaces/renderer';
 import {bypassSanitizationTrustStyle, bypassSanitizationTrustUrl, sanitizeStyle, sanitizeUrl} from '../../src/sanitization/sanitization';
@@ -55,15 +55,15 @@ describe('instructions', () => {
     });
   });
 
-  describe('elementStyle', () => {
+  describe('elementStyleNamed', () => {
     it('should use sanitizer function', () => {
       const t = new TemplateFixture(createDiv);
-      t.update(() => elementStyle(0, 'background-image', 'url("http://server")', sanitizeStyle));
+      t.update(() => elementStyleNamed(0, 'background-image', 'url("http://server")', sanitizeStyle));
       // nothing is set because sanitizer suppresses it.
       expect(t.html).toEqual('<div></div>');
 
       t.update(
-          () => elementStyle(
+          () => elementStyleNamed(
               0, 'background-image', bypassSanitizationTrustStyle('url("http://server")'),
               sanitizeStyle));
       expect((t.hostElement.firstChild as HTMLElement).style.getPropertyValue('background-image'))

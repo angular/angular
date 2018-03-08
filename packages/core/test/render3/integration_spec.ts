@@ -7,7 +7,7 @@
  */
 
 import {defineComponent, defineDirective} from '../../src/render3/index';
-import {NO_CHANGE, bind, container, containerRefreshEnd, containerRefreshStart, elementAttribute, elementClass, elementEnd, elementProperty, elementStart, elementStyle, embeddedViewEnd, embeddedViewStart, interpolation1, interpolation2, interpolation3, interpolation4, interpolation5, interpolation6, interpolation7, interpolation8, interpolationV, load, projection, projectionDef, text, textBinding} from '../../src/render3/instructions';
+import {NO_CHANGE, bind, container, containerRefreshEnd, containerRefreshStart, elementAttribute, elementClassNamed, elementEnd, elementProperty, elementStart, elementStyleNamed, embeddedViewEnd, embeddedViewStart, interpolation1, interpolation2, interpolation3, interpolation4, interpolation5, interpolation6, interpolation7, interpolation8, interpolationV, load, projection, projectionDef, text, textBinding} from '../../src/render3/instructions';
 
 import {containerEl, renderToHtml} from './render_util';
 
@@ -659,7 +659,7 @@ describe('render3 integration test', () => {
             elementStart(0, 'span');
             elementEnd();
           }
-          elementStyle(0, 'border-color', bind(ctx));
+          elementStyleNamed(0, 'border-color', bind(ctx));
         }
 
         expect(renderToHtml(Template, 'red')).toEqual('<span style="border-color: red;"></span>');
@@ -674,7 +674,7 @@ describe('render3 integration test', () => {
             elementStart(0, 'span');
             elementEnd();
           }
-          elementStyle(0, 'font-size', bind(ctx), 'px');
+          elementStyleNamed(0, 'font-size', bind(ctx), 'px');
         }
 
         expect(renderToHtml(Template, '100')).toEqual('<span style="font-size: 100px;"></span>');
@@ -691,7 +691,7 @@ describe('render3 integration test', () => {
             elementStart(0, 'span');
             elementEnd();
           }
-          elementClass(0, 'active', bind(ctx));
+          elementClassNamed(0, 'active', bind(ctx));
         }
 
         expect(renderToHtml(Template, true)).toEqual('<span class="active"></span>');
@@ -712,7 +712,7 @@ describe('render3 integration test', () => {
             elementStart(0, 'span', ['class', 'existing']);
             elementEnd();
           }
-          elementClass(0, 'active', bind(ctx));
+          elementClassNamed(0, 'active', bind(ctx));
         }
 
         expect(renderToHtml(Template, true)).toEqual('<span class="existing active"></span>');

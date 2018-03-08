@@ -7,7 +7,7 @@
  */
 
 import {defineComponent, defineDirective} from '../../src/render3/index';
-import {bind, container, containerRefreshEnd, containerRefreshStart, elementAttribute, elementClass, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, load, text, textBinding} from '../../src/render3/instructions';
+import {bind, container, containerRefreshEnd, containerRefreshStart, elementAttribute, elementClassNamed, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, load, text, textBinding} from '../../src/render3/instructions';
 
 import {renderToHtml} from './render_util';
 
@@ -169,7 +169,7 @@ describe('exports', () => {
           elementEnd();
         }
         let myInput = elementStart(1);
-        elementClass(0, 'red', bind(myInput && (myInput as any).checked));
+        elementClassNamed(0, 'red', bind(myInput && (myInput as any).checked));
       }
 
       expect(renderToHtml(Template, {}))
