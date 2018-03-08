@@ -1204,8 +1204,9 @@ export function containerRefreshEnd(): void {
   container.native = undefined;
   ngDevMode && assertNodeType(container, LNodeFlags.Container);
   const nextIndex = container.data.nextIndex;
+
+  // remove extra views at the end of the container
   while (nextIndex < container.data.views.length) {
-    // remove extra view.
     removeView(container, nextIndex);
   }
 }
@@ -1223,6 +1224,35 @@ function refreshDynamicChildren() {
 }
 
 /**
+ * Looks for a view with a given view block id inside a provided LContainer.
+ * Removes views that need to be deleted in the process.
+ *
+ * @param containerNode where to search for views
+ * @param startIdx starting index in the views array to search from
+ * @param viewBlockId exact view block id to look for
+ * @returns index of a found view or -1 if not found
+ */
+function scanForView(
+    containerNode: LContainerNode, startIdx: number, viewBlockId: number): LViewNode|null {
+  const views = containerNode.data.views;
+  for (let i = startIdx; i < views.length; i++) {
+    const viewAtPositionId = views[i].data.id;
+    if (viewAtPositionId === viewBlockId) {
+      return views[i];
+    } else if (viewAtPositionId < viewBlockId) {
+      // found a view that should not be at this position - remove
+      removeView(containerNode, i);
+    } else {
+      // found a view with id grater than the one we are searching for
+      // which means that required view doesn't exist and can't be found at
+      // later positions in the views array - stop the search here
+      break;
+    }
+  }
+  return null;
+}
+
+/**
  * Marks the start of an embedded view.
  *
  * @param viewBlockId The ID of this view
@@ -1233,17 +1263,13 @@ export function embeddedViewStart(viewBlockId: number): boolean {
       (isParent ? previousOrParentNode : previousOrParentNode.parent !) as LContainerNode;
   ngDevMode && assertNodeType(container, LNodeFlags.Container);
   const lContainer = container.data;
-  const views = lContainer.views;
+  const existingViewNode = scanForView(container, lContainer.nextIndex, viewBlockId);
 
-  const existingView: LViewNode|false =
-      !creationMode && lContainer.nextIndex < views.length && views[lContainer.nextIndex];
-  let viewUpdateMode = existingView && viewBlockId === (existingView as LViewNode).data.id;
-
-  if (viewUpdateMode) {
-    previousOrParentNode = views[lContainer.nextIndex++];
+  if (existingViewNode) {
+    previousOrParentNode = existingViewNode;
     ngDevMode && assertNodeType(previousOrParentNode, LNodeFlags.View);
     isParent = true;
-    enterView((existingView as LViewNode).data, previousOrParentNode as LViewNode);
+    enterView((existingViewNode as LViewNode).data, existingViewNode as LViewNode);
   } else {
     // When we create a new LView, we always reset the state of the instructions.
     const newView = createLView(
@@ -1254,10 +1280,9 @@ export function embeddedViewStart(viewBlockId: number): boolean {
     }
 
     enterView(newView, createLNode(null, LNodeFlags.View, null, newView));
-    lContainer.nextIndex++;
   }
 
-  return !viewUpdateMode;
+  return !existingViewNode;
 }
 
 /**
@@ -1286,19 +1311,18 @@ export function embeddedViewEnd(): void {
   refreshChildComponents();
   isParent = false;
   const viewNode = previousOrParentNode = currentView.node as LViewNode;
-  const container = previousOrParentNode.parent as LContainerNode;
-  if (container) {
+  const containerNode = previousOrParentNode.parent as LContainerNode;
+  if (containerNode) {
     ngDevMode && assertNodeType(viewNode, LNodeFlags.View);
-    ngDevMode && assertNodeType(container, LNodeFlags.Container);
-    const containerState = container.data;
-    const previousView = containerState.nextIndex <= containerState.views.length ?
-        containerState.views[containerState.nextIndex - 1] as LViewNode :
-        null;
-    const viewIdChanged = previousView == null ? true : previousView.data.id !== viewNode.data.id;
+    ngDevMode && assertNodeType(containerNode, LNodeFlags.Container);
+    const lContainer = containerNode.data;
 
-    if (viewIdChanged) {
-      insertView(container, viewNode, containerState.nextIndex - 1);
+    if (creationMode) {
+      // it is a new view, insert it into collection of views for a given container
+      insertView(containerNode, viewNode, lContainer.nextIndex);
     }
+
+    lContainer.nextIndex++;
   }
   leaveView(currentView !.parent !);
   ngDevMode && assertEqual(isParent, false, 'isParent');
