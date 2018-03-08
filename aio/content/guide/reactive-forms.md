@@ -914,6 +914,20 @@ error messages if you have a typo or if you've nested controls incorrectly.
 On the other hand,`setValue` will catch
 the error and report it clearly.
 
+For example, if you call `setValue` with a data object which doesn't match the FormGroup
+structure as following,
+
+```
+this.heroForm.setValue({
+  name:    this.hero.name,
+  power: '',
+  sidekick: ''
+});
+```
+
+Angular will report error `Must supply a value for form control with name: 'address'`, because 
+the data object has no `address` property.
+
 Notice that you can _almost_ use the entire `hero` as the argument to `setValue`
 because its shape is similar to the component's `FormGroup` structure.
 
@@ -1012,7 +1026,46 @@ A little refactoring and `ngOnChanges` becomes this:
 
 </code-example>
 
+The `reset` method doesn't like `setValue` method which need to provide a data object to FormGroup sturcture, but doesn't like `patchValue` method either, `patchValue` will only update the specified `key`, but `reset` will not only update the specified `key`, but will also `reset` other `keys`, the rule of `reset` is:
+- if the control is `FormControl`, the value will be reset to `null`.
+- if the control is `FormArray`, the value will be reset to `emptry array`.
 
+For example: 
+
+```
+// initial form value
+this.heroForm = this.fb.group({
+  name: ['name', Validators.required],
+  address: this.hero.address[0] : new Address(),
+  power: '',
+  sidekick: ''
+});
+
+// this.heroForm.value will be {name: "name", addresses: Array(1), power: "", sidekick: ""}
+
+// patchValue: update name property
+this.heroForm.patchValue({
+  name: 'patchedName'
+});
+
+// this.heroForm.value will be {name: "patchedName", addresses: Array(1), power: "", sidekick: ""}, only name is patched
+
+// patchValue: update name1 property where name1 not exists
+this.heroForm.patchValue({
+  name1: 'typo'
+});
+
+// this.heroForm.value will still be {name: "patchedName", addresses: Array(1), power: "", sidekick: ""}, no error will be thrown
+
+// reset name
+this.heroForm.reset({
+  name: 'resetName'
+});
+
+// this.heroForm.value will be {name: "resetName", addresses: [], power: null, sidekick: null}, name is updated, other field was reset.
+// the rule of reset is, if the control is FormControl, the value will be reset to null, if the control is FormArray, the value will
+// be reset to empty array. 
+```
 
 {@a hero-list}
 
@@ -1231,7 +1284,62 @@ You do not want to save changes when the user clicks the _Add a Secret Lair_ but
 
 </div>
 
+### setValue/patchValue/reset to _FormArray_
 
+You can still use `setValue`, `patchValue`, `reset` to update `FormArray`.
+
+```
+// initial form value
+this.heroForm = this.fb.group({
+  name: ['name', Validators.required],
+  secretLairs: this.fb.array([]),
+  power: '',
+  sidekick: ''
+});
+
+// this.heroForm.value will be {name: "name", secretLairs: Array(0), power: "", sidekick: ""}
+
+// add a secretLair
+this.secretLairs.push(this.fb.group(new Address()));
+
+// this.heroForm.value will be {name: "name", secretLairs: [{ "street": "", "city": "", "state": "", "zip": "" }], power: "", sidekick: ""}
+
+// setValue with empty array will throw error
+// because there is already one secretLair formGroup,
+// so you must set a array with 1 Address element 
+/*
+this.heroForm.setValue({
+  name:    this.hero.name,
+  secretLairs: [],
+  power: '100',
+  sidekick: '200'
+});
+*/
+
+const newAddress = new Address();
+newAddress.street = 'new street';
+this.heroForm.setValue({
+  name:    this.hero.name,
+  secretLairs: [newAddress],
+  power: '100',
+  sidekick: '200'
+});
+
+// this.heroForm.value will be {name: "name", secretLairs: [{ "street": "new street", "city": "", "state": "", "zip": "" }], power: "", sidekick: ""}
+
+this.heroForm.patchValue({
+  name:    'patched' + this.hero.name,
+});
+
+// this.heroForm.value will be {name: "patchedName", secretLairs: [{ "street": "new street", "city": "", "state": "", "zip": "" }], power: "", sidekick: ""}, only name is patched
+
+// reset name
+this.heroForm.reset({
+  name: 'resetName'
+});
+
+// this.heroForm.value will be {name: "resetName", secreLairs: [{ "street": null, "city": null, "state": null, "zip": null }], power: null, sidekick: null}, name is updated, other field was reset. 
+```
 
 ### Try it!
 

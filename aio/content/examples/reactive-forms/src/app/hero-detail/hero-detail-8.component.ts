@@ -49,7 +49,7 @@ export class HeroDetailComponent8 implements OnChanges {
   // #docregion get-secret-lairs
   get secretLairs(): FormArray {
     return this.heroForm.get('secretLairs') as FormArray;
-  };
+  }
   // #enddocregion get-secret-lairs
 
   // #docregion set-addresses
