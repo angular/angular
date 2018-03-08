@@ -866,7 +866,7 @@ function generatePropertyAliases(lNodeFlags: number, direction: BindingDirection
 }
 
 /**
- * Add or remove a class in a classList.
+ * Add or remove a class in a `classList` on a DOM element.
  *
  * This instruction is meant to handle the [class.foo]="exp" case
  *
@@ -890,6 +890,29 @@ export function elementClassNamed<T>(index: number, className: string, value: T 
 }
 
 /**
+ * Set the `className` property on a DOM element.
+ *
+ * This instruction is meant to handle the `[class]="exp"` usage.
+ *
+ * `elementClass` instruction writes the value to the "element's" `className` property.
+ *
+ * @param index The index of the element to update in the data array
+ * @param value A value indicating a set of classes which should be applied. The method overrides
+ *   any existing classes. The value is stringified (`toString`) before it is applied to the
+ *   element.
+ */
+export function elementClass<T>(index: number, value: T | NO_CHANGE): void {
+  if (value !== NO_CHANGE) {
+    // TODO: This is a naive implementation which simply writes value to the `className`. In the
+    // future
+    // we will add logic here which would work with the animation code.
+    const lElement: LElementNode = data[index];
+    isProceduralRenderer(renderer) ? renderer.setProperty(lElement.native, 'className', value) :
+                                     lElement.native['className'] = stringify(value);
+  }
+}
+
+/**
  * Update a given style on an Element.
  *
  * @param index Index of the element to change in the data array
@@ -908,21 +931,55 @@ export function elementStyleNamed<T>(
     index: number, styleName: string, value: T | NO_CHANGE,
     suffixOrSanitizer?: string | Sanitizer): void {
   if (value !== NO_CHANGE) {
-    const lElement = data[index] as LElementNode;
+    const lElement: LElementNode = data[index];
     if (value == null) {
       isProceduralRenderer(renderer) ?
           renderer.removeStyle(lElement.native, styleName, RendererStyleFlags3.DashCase) :
-          lElement.native.style.removeProperty(styleName);
+          lElement.native['style'].removeProperty(styleName);
     } else {
       let strValue =
           typeof suffixOrSanitizer == 'function' ? suffixOrSanitizer(value) : stringify(value);
       if (typeof suffixOrSanitizer == 'string') strValue = strValue + suffixOrSanitizer;
       isProceduralRenderer(renderer) ?
           renderer.setStyle(lElement.native, styleName, strValue, RendererStyleFlags3.DashCase) :
-          lElement.native.style.setProperty(styleName, strValue);
+          lElement.native['style'].setProperty(styleName, strValue);
     }
   }
 }
+
+/**
+ * Set the `style` property on a DOM element.
+ *
+ * This instruction is meant to handle the `[style]="exp"` usage.
+ *
+ *
+ * @param index The index of the element to update in the data array
+ * @param value A value indicating if a given style should be added or removed.
+ *   The expected shape of `value` is an object where keys are style names and the values
+ *   are their corresponding values to set. If value is falsy than the style is remove. An absence
+ *   of style does not cause that style to be removed. `NO_CHANGE` implies that no update should be
+ *   performed.
+ */
+export function elementStyle<T>(
+    index: number, value: {[styleName: string]: any} | NO_CHANGE): void {
+  if (value !== NO_CHANGE) {
+    // TODO: This is a naive implementation which simply writes value to the `style`. In the future
+    // we will add logic here which would work with the animation code.
+    const lElement = data[index] as LElementNode;
+    if (isProceduralRenderer(renderer)) {
+      renderer.setProperty(lElement.native, 'style', value);
+    } else {
+      const style = lElement.native['style'];
+      for (let i = 0, keys = Object.keys(value); i < keys.length; i++) {
+        const styleName: string = keys[i];
+        const styleValue: any = (value as any)[styleName];
+        styleValue == null ? style.removeProperty(styleName) :
+                             style.setProperty(styleName, styleValue);
+      }
+    }
+  }
+}
+
 
 
 //////////////////////////

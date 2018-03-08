@@ -45,10 +45,12 @@ export {
   containerRefreshEnd as cr,
 
   elementAttribute as a,
+  elementClass as k,
   elementClassNamed as kn,
   elementEnd as e,
   elementProperty as p,
   elementStart as E,
+  elementStyle as s,
   elementStyleNamed as sn,
 
   listener as L,
