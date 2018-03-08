@@ -748,6 +748,14 @@ describe('recognize', () => {
         expect(Object.isFrozen(s.root.queryParams)).toBeTruthy();
       });
     });
+
+    it('should not freeze UrlTree query params', () => {
+      const url = tree('a?q=11');
+      recognize(RootComponent, [{path: 'a', component: ComponentA}], url, 'a?q=11')
+          .subscribe((s: RouterStateSnapshot) => {
+            expect(Object.isFrozen(url.queryParams)).toBe(false);
+          });
+    });
   });
 
   describe('fragment', () => {
