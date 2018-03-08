@@ -100,6 +100,8 @@ export class TemplateParser {
       private _htmlParser: I18NHtmlParser, private _console: Console,
       public transforms: TemplateAstVisitor[]) {}
 
+  public get expressionParser() { return this._exprParser; }
+
   parse(
       component: CompileDirectiveMetadata, template: string|ParseTreeResult,
       directives: CompileDirectiveSummary[], pipes: CompilePipeSummary[], schemas: SchemaMetadata[],
@@ -434,6 +436,7 @@ class TemplateParseVisitor implements html.Visitor {
 
     const bindParts = name.match(BIND_NAME_REGEXP);
     let hasBinding = false;
+    const boundEvents: BoundEventAst[] = [];
 
     if (bindParts !== null) {
       hasBinding = true;
@@ -814,7 +817,7 @@ class ElementOrDirectiveRef {
   }
 }
 
-/** Splits a raw, potentially comma-delimted `exportAs` value into an array of names. */
+/** Splits a raw, potentially comma-delimited `exportAs` value into an array of names. */
 function splitExportAs(exportAs: string | null): string[] {
   return exportAs ? exportAs.split(',').map(e => e.trim()) : [];
 }
