@@ -81,15 +81,6 @@
     "name": "noop$2"
   },
   {
-    "name": "queueContentHooks"
-  },
-  {
-    "name": "queueDestroyHooks"
-  },
-  {
-    "name": "queueViewHooks"
-  },
-  {
     "name": "refreshDynamicChildren"
   },
   {
