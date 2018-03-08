@@ -270,16 +270,11 @@ export function insertView(
     setViewNext(views[index - 1], newView);
   }
 
-  if (index < views.length && views[index].data.id !== newView.data.id) {
-    // View ID change replace the view.
+  if (index < views.length) {
     setViewNext(newView, views[index]);
     views.splice(index, 0, newView);
-  } else if (index >= views.length) {
+  } else {
     views.push(newView);
-  }
-
-  if (state.nextIndex <= index) {
-    state.nextIndex++;
   }
 
   // If the container's renderParent is null, we know that it is a root node of its own parent view
