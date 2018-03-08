@@ -19,9 +19,17 @@ import {isFunction, scheduler, strictEquals} from './utils';
 const DESTROY_DELAY = 10;
 
 /**
- * Factory that creates new ComponentNgElementStrategy instance. Gets the component factory with the
- * constructor's injector's factory resolver and passes that factory to each strategy.
- *
+ * @description Defines a default configuration for transforming an Angular component
+ * to a custom element.
+ * 
+ * In the default configuration:
+ *  - Inputs set on the factory are converted to observed attributes for the element, 
+ * with the property names transformed to dash-separated lowercase.
+ *  - All inputs are set as proxy properties on the element.
+ *  - The underlying strategy uses the component factory and injector to create new components.
+ * @param componentFactory The factory for the component to be converted to a custom element. 
+ * @param injector The component's dependency injector.
+ * @return A configuration object for a custom element created from the component.
  * @experimental
  */
 export class ComponentNgElementStrategyFactory implements NgElementStrategyFactory {
@@ -38,8 +46,8 @@ export class ComponentNgElementStrategyFactory implements NgElementStrategyFacto
 }
 
 /**
- * Creates and destroys a component ref using a component factory and handles change detection
- * in response to input changes.
+ * Defines a custom-element strategy that creates and destroys a component ref
+ * using a component factory, and handles change detection in response to input changes.
  *
  * @experimental
  */
@@ -68,11 +76,15 @@ export class ComponentNgElementStrategy implements NgElementStrategy {
   /** Set of inputs that were not initially set when the component was created. */
   private readonly uninitializedInputs = new Set<string>();
 
+  /**
+   * Initializes a strategy instance.
+   */
   constructor(private componentFactory: ComponentFactory<any>, private injector: Injector) {}
 
   /**
-   * Initializes a new component if one has not yet been created and cancels any scheduled
+   * Initializes a new custom-element component if one has not yet been created and cancels any scheduled
    * destruction.
+   * @param element The custom element to initialize.
    */
   connect(element: HTMLElement) {
     // If the element is marked to be destroyed, cancel the task since the component was reconnected
@@ -88,8 +100,8 @@ export class ComponentNgElementStrategy implements NgElementStrategy {
   }
 
   /**
-   * Schedules the component to be destroyed after some small delay in case the element is just
-   * being moved across the DOM.
+   * Schedules this component to be destroyed (after a small delay in case the element is just
+   * being moved across the DOM).
    */
   disconnect() {
     // Return if there is no componentRef or the component is already scheduled for destruction
@@ -108,8 +120,10 @@ export class ComponentNgElementStrategy implements NgElementStrategy {
   }
 
   /**
-   * Returns the component property value. If the component has not yet been created, the value is
+   * Retrieves a data value from a component. If the component has not yet been created, the value is
    * retrieved from the cached initialization values.
+   * @param property The property name.
+   * @returns The property value.
    */
   getInputValue(property: string): any {
     if (!this.componentRef) {
@@ -120,8 +134,12 @@ export class ComponentNgElementStrategy implements NgElementStrategy {
   }
 
   /**
-   * Sets the input value for the property. If the component has not yet been created, the value is
+   * Sets the input value for a component property. 
+   * If the component has not yet been created, the value is
    * cached and set when the component is created.
+   * @param property The property name.
+   * @param value The new value.
+   * @returns Nothing.
    */
   setInputValue(property: string, value: any): void {
     if (strictEquals(value, this.getInputValue(property))) {
@@ -138,9 +156,12 @@ export class ComponentNgElementStrategy implements NgElementStrategy {
     this.scheduleDetectChanges();
   }
 
-  /**
-   * Creates a new component through the component factory with the provided element host and
+    /**
+   * Creates a new component using the component factory with the provided element host, and
    * sets up its initial inputs, listens for outputs changes, and runs an initial change detection.
+   * 
+   * @param element The custom element to initialize.
+   * 
    */
   protected initializeComponent(element: HTMLElement) {
     const childInjector = Injector.create({providers: [], parent: this.injector});
@@ -160,7 +181,7 @@ export class ComponentNgElementStrategy implements NgElementStrategy {
     applicationRef.attachView(this.componentRef.hostView);
   }
 
-  /** Set any stored initial inputs on the component's properties. */
+  /** Sets any stored initial inputs on the component's properties. */
   protected initializeInputs(): void {
     this.componentFactory.inputs.forEach(({propName}) => {
       const initialValue = this.initialInputValues.get(propName);
@@ -215,7 +236,12 @@ export class ComponentNgElementStrategy implements NgElementStrategy {
   }
 
   /**
-   * Records input changes so that the component receives SimpleChanges in its onChanges function.
+   * Records input changes so that the component receives
+   * changes that have been made to the component since the last time 
+   * the `onChanges` handler was called. 
+   * 
+   * @param property A property to record.
+   * @param currentValue The value to record.
    */
   protected recordInputChange(property: string, currentValue: any): void {
     // Do not record the change if the component does not implement `OnChanges`.

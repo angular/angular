@@ -14,7 +14,9 @@ import {NgElementStrategy, NgElementStrategyFactory} from './element-strategy';
 import {createCustomEvent, getComponentInputs, getDefaultAttributeToPropertyInputs} from './utils';
 
 /**
- * Class constructor based on an Angular Component to be used for custom element registration.
+ * @description Class constructor based on an Angular component, to be used for custom element registration.
+ * The browser instantiates this class when the registered custom element is added to the DOM.
+ * The encapsulated component is self-booting and it view can use Angular change-detection and data-binding.
  *
  * @experimental
  */
@@ -25,22 +27,45 @@ export interface NgElementConstructor<P> {
 }
 
 /**
- * Class that extends HTMLElement and implements the functionality needed for a custom element.
+ * @description Base class for encapsulating an Angular component as a custom element.
+ * Extends HTMLElement with Angular-specific functionality. 
  *
  * @experimental
  */
 export abstract class NgElement extends HTMLElement {
+  /**
+   * The strategy determines how the custom element handles connection and disconnection,
+   * change-detection, and data binding.
+   * Default is {@link ComponentFactoryNgElementStrategy}.
+   */
   protected ngElementStrategy: NgElementStrategy;
+  /**
+   * ??? An event listener that registers the callback implementations for event handling.
+   */
   protected ngElementEventsSubscription: Subscription|null = null;
 
+  /**
+   * Implementation defines change-event handling.
+   * @param attrName The name of the attribute that has changed.
+   * @param oldValue The previous value.
+   * @param newValue The new value.
+   * @param namespace Optional ???
+   */
   abstract attributeChangedCallback(
       attrName: string, oldValue: string|null, newValue: string, namespace?: string): void;
-  abstract connectedCallback(): void;
+  /**
+   * Implementation defines connection behavior.
+   */
+      abstract connectedCallback(): void;
+  /**
+   * Implementation defines disconnection behavior.
+   */
   abstract disconnectedCallback(): void;
 }
 
 /**
- * Additional type information that can be added to the NgElement class for properties added based
+ * Additional type information that can be added to the NgElement class
+ * for properties that are added dynamically based
  * on the inputs and methods of the underlying component.
  *
  * @experimental
@@ -50,31 +75,41 @@ export type WithProperties<P> = {
 };
 
 /**
- * Initialization configuration for the NgElementConstructor which contains the injector to be used
- * for retrieving the component's factory as well as the default context for the component. May
- * provide a custom strategy factory to be used instead of the default. May provide a custom mapping
- * of attribute names to component inputs.
- *
+ * Initialization configuration for the NgElementConstructor, which 
+ * takes a component factory and provides a map of which attributes should be observed on
+ * the element and which component properties they are associated with.
+ *  
  * @experimental
  */
-export interface NgElementConfig {
+export interface NgElementConfig { 
+  /**
+   * The injector to be used for retrieving the component's factory.
+   */
   injector: Injector;
+  /**
+   * An optional custom strategy factory to be used instead of the default.
+   */
   strategyFactory?: NgElementStrategyFactory;
+  /** 
+   * An optional custom mapping of attribute names to component inputs.
+   */
   attributeToPropertyInputs?: {[key: string]: string};
 }
 
 /**
- * @whatItDoes Creates a custom element class based on an Angular Component. Takes a configuration
- * that provides initialization information to the created class. E.g. the configuration's injector
- * will be the initial injector set on the class which will be used for each created instance.
- *
- * @description Builds a class that encapsulates the functionality of the provided component and
- * uses the config's information to provide more context to the class. Takes the component factory's
- * inputs and outputs to convert them to the proper custom element API and add hooks to input
- * changes. Passes the config's injector to each created instance (may be overriden with the
- * static property to affect all newly created instances, or as a constructor argument for
- * one-off creations).
- *
+ * @description Creates a custom element class based on an Angular component.
+ * 
+ * @param config A configuration object that provides initialization information to the created class.
+ *  
+ * @usageNotes Takes the component factory's inputs and outputs, converts them to the proper custom element API, 
+ *  and adds hooks to input changes.
+ * 
+ *  By default, the configuration's injector is set on the returned class, and used for each created instance.
+ *  You can change the default injector by setting the static `injector` property in the configuration object,
+ *  or override it for individual instances by providing `injector` as a construction argument.
+ * 
+ * @returns An Angular custom-element class that can be registered with browser's `CustomElementRegistry`.
+ *    The browser instantiates this class when the associated custom element is added to the DOM.
  * @experimental
  */
 export function createNgElementConstructor<P>(
