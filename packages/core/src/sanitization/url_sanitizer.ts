@@ -6,10 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {isDevMode} from '@angular/core';
-
-import {getDOM} from '../dom/dom_adapter';
-
+import {isDevMode} from '../application_ref';
 
 /**
  * A pattern that recognizes a commonly useful subset of URLs that are safe.
@@ -46,12 +43,12 @@ const SAFE_SRCSET_PATTERN = /^(?:(?:https?|file):|[^&:/?#]*(?:[/?#]|$))/gi;
 const DATA_URL_PATTERN =
     /^data:(?:image\/(?:bmp|gif|jpeg|jpg|png|tiff|webp)|video\/(?:mpeg|mp4|ogg|webm)|audio\/(?:mp3|oga|ogg|opus));base64,[a-z0-9+\/]+=*$/i;
 
-export function sanitizeUrl(url: string): string {
+export function _sanitizeUrl(url: string): string {
   url = String(url);
   if (url.match(SAFE_URL_PATTERN) || url.match(DATA_URL_PATTERN)) return url;
 
   if (isDevMode()) {
-    getDOM().log(`WARNING: sanitizing unsafe URL value ${url} (see http://g.co/ng/security#xss)`);
+    console.warn(`WARNING: sanitizing unsafe URL value ${url} (see http://g.co/ng/security#xss)`);
   }
 
   return 'unsafe:' + url;
@@ -59,5 +56,5 @@ export function sanitizeUrl(url: string): string {
 
 export function sanitizeSrcset(srcset: string): string {
   srcset = String(srcset);
-  return srcset.split(',').map((srcset) => sanitizeUrl(srcset.trim())).join(', ');
+  return srcset.split(',').map((srcset) => _sanitizeUrl(srcset.trim())).join(', ');
 }

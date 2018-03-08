@@ -16,6 +16,58 @@ import {RElement, RText, Renderer3, RendererFactory3, domRendererFactory3} from 
 
 import {getRendererFactory2} from './imported_renderer2';
 
+function noop() {}
+/**
+ * Fixture for testing template functions in a convenient way.
+ *
+ * This fixture allows:
+ * - specifying the creation block and update block as two separate functions,
+ * - maintaining the template state between invocations,
+ * - access to the render `html`.
+ */
+export class TemplateFixture {
+  hostElement: HTMLElement;
+
+  hostNode: LElementNode;
+
+  /**
+   *
+   * @param createBlock Instructions which go into the creation block:
+   *          `if (creationMode) { __here__ }`.
+   * @param updateBlock Optional instructions which go after the creation block:
+   *          `if (creationMode) { ... } __here__`.
+   */
+  constructor(private createBlock: () => void, private updateBlock: () => void = noop) {
+    this.updateBlock = updateBlock || function() {};
+    this.hostElement = document.createElement('div');
+    this.hostNode = renderTemplate(this.hostElement, (ctx: any, cm: boolean) => {
+      if (cm) {
+        this.createBlock();
+      }
+      this.updateBlock();
+    }, null !, domRendererFactory3, null);
+  }
+
+  /**
+   * Update the existing template
+   *
+   * @param updateBlock Optional update block.
+   */
+  update(updateBlock?: () => void): void {
+    renderTemplate(
+        this.hostNode.native, updateBlock || this.updateBlock, null !, domRendererFactory3,
+        this.hostNode);
+  }
+
+  /**
+   * Current state of rendered HTML.
+   */
+  get html(): string {
+    return (this.hostNode.native as any as Element).innerHTML.replace(/ style=""/g, '');
+  }
+}
+
+
 export const document = ((global || window) as any).document;
 export let containerEl: HTMLElement = null !;
 let host: LElementNode|null;
