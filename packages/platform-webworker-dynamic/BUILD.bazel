@@ -1,8 +1,8 @@
 package(default_visibility = ["//visibility:public"])
 
-load("//tools:defaults.bzl", "ts_library")
+load("//tools:defaults.bzl", "ng_module", "ng_package")
 
-ts_library(
+ng_module(
     name = "platform-webworker-dynamic",
     srcs = glob(
         [
@@ -18,4 +18,11 @@ ts_library(
         "//packages/core",
         "//packages/platform-browser-dynamic",
     ],
+)
+
+ng_package(
+    name = "npm_package",
+    srcs = ["package.json"],
+    entry_point = "packages/platform-webworker-dynamic/index.js",
+    deps = [":platform-webworker-dynamic"],
 )

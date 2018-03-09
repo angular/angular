@@ -1,6 +1,6 @@
 package(default_visibility = ["//visibility:public"])
 
-load("//tools:defaults.bzl", "ng_module")
+load("//tools:defaults.bzl", "ng_module", "ng_package")
 
 ng_module(
     name = "upgrade",
@@ -15,5 +15,18 @@ ng_module(
         "//packages/core",
         "//packages/platform-browser",
         "//packages/platform-browser-dynamic",
+    ],
+)
+
+ng_package(
+    name = "npm_package",
+    srcs = ["package.json"],
+    entry_point = "packages/upgrade/index.js",
+    secondary_entry_points = [
+        "static",
+    ],
+    deps = [
+        ":upgrade",
+        "//packages/upgrade/static",
     ],
 )
