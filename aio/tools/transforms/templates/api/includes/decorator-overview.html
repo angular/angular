@@ -2,7 +2,6 @@
 
 {% if doc.members.length %}
 <section class="decorator-overview">
-<h2>Metadata Overview</h2>
 <code-example language="ts" hideCopy="true">
 @{$ doc.name $}{$ doc.typeParams | escape $}({ {$ memberHelper.renderMembers(doc) $}
 })
