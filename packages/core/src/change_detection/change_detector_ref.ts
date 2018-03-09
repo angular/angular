@@ -13,9 +13,9 @@ export abstract class ChangeDetectorRef {
   /**
    * Marks a view and all of its ancestors dirty.
    *
-   * This can be used to ensure an OnPush component is checked when it needs to be re-rendered
-   * but the two normal triggers haven't marked it dirty (i.e. inputs haven't changed and events
-   * haven't fired in the view).
+   * This can be used to ensure an {@link ChangeDetectionStrategy#OnPush OnPush} component is
+   * checked when it needs to be re-rendered but the two normal triggers haven't marked it
+   * dirty (i.e. inputs haven't changed and events haven't fired in the view).
    *
    * <!-- TODO: Add a link to a chapter on OnPush components -->
    *
