@@ -2419,28 +2419,52 @@ Here are all variations in action, including the uppercase version:
 -->
 {@a 구조-디렉티브}
 
+<!--
 ## Built-in _structural_ directives
+-->
+## 기본 _구조_ 디렉티브
 
+<!--
 Structural directives are responsible for HTML layout.
 They shape or reshape the DOM's _structure_, typically by adding, removing, and manipulating
 the host elements to which they are attached.
+-->
+구조 디렉티브는 DOM 엘리먼트의 모양을 바꾸거나, DOM 트리에서 DOM 엘리먼트를 추가하거나 제거하는 등 HTML 레이아웃을 조작합니다.
 
+<!--
 The deep details of structural directives are covered in the
 [_Structural Directives_](guide/structural-directives) guide
 where you'll learn:
+-->
+구조 디렉티브에 대한 자세한 설명은 [_구조 디렉티브_](guide/structural-directives) 문서에서 다루며,
+이런 내용을 다룹니다:
 
+<!--
 * why you
 [_prefix the directive name with an asterisk_ (\*)](guide/structural-directives#asterisk "The * in *ngIf").
 * to use [`<ng-container>`](guide/structural-directives#ngcontainer "<ng-container>")
 to group elements when there is no suitable host element for the directive.
 * how to write your own structural directive.
 * that you can only apply [one structural directive](guide/structural-directives#one-per-element "one per host element") to an element.
+-->
+* [_왜 디렉티브 이름 앞에 (\*)가 붙는지_](guide/structural-directives#asterisk "The * in *ngIf")
+* 엘리먼트를 그룹으로 묶는 [`<ng-container>`](guide/structural-directives#ngcontainer "<ng-container>") 사용하기
+* 커스텀 구조 디렉티브 정의하기
+* 한 엘리먼트에는 [하나의 구조 디렉티브만](guide/structural-directives#one-per-element "one per host element") 사용할 수 있다는 것
 
+<!--
 _This_ section is an introduction to the common structural directives:
+-->
+그리고 _이 문서_ 에서는 구조 디렉티브 중에 가장 많이 사용하는 다음 디렉티브들에 대해 알아봅니다.
 
+<!--
 * [`NgIf`](guide/template-syntax#ngIf) - conditionally add or remove an element from the DOM
 * [`NgSwitch`](guide/template-syntax#ngSwitch) - a set of directives that switch among alternative views
 * [NgForOf](guide/template-syntax#ngFor) - repeat a template for each item in a list
+-->
+* [`NgIf`](guide/template-syntax#ngIf) - 조건에 따라 DOM을 추가하거나 제거합니다.
+* [`NgSwitch`](guide/template-syntax#ngSwitch) - 조건에 따라 여러 뷰 중 하나를 선택합니다.
+* [NgForOf](guide/template-syntax#ngFor) - 배열의 각 항목마다 템플릿을 반복합니다.
 
 <hr/>
 
@@ -2448,68 +2472,114 @@ _This_ section is an introduction to the common structural directives:
 
 ### NgIf
 
+<!--
 You can add or remove an element from the DOM by applying an `NgIf` directive to
 that element (called the _host element_).
 Bind the directive to a condition expression like `isActive` in this example.
+-->
+`NgIf` 디렉티브를 사용하면 조건에 따라 원하는 위치(_호스트 엘리먼트_)에 엘리먼트를 추가하거나 제거할 수 있습니다.
+다음 예제에서 보면 `isActive`값에 따라 디렉티브가 뷰에 추가되거나 제거됩니다.
 
 <code-example path="template-syntax/src/app/app.component.html" region="NgIf-1" title="src/app/app.component.html" linenums="false">
 </code-example>
 
 <div class="alert is-critical">
 
+<!--
 Don't forget the asterisk (`*`) in front of `ngIf`.
+-->
+`ngIf` 앞에 아스테리스크(`*`)를 꼭 붙여야 합니다.
 
 </div>
 
+<!--
 When the `isActive` expression returns a truthy value, `NgIf` adds the `HeroDetailComponent` to the DOM.
 When the expression is falsy, `NgIf` removes the `HeroDetailComponent`
 from the DOM, destroying that component and all of its sub-components.
+-->
+이 코드에서는 `isActive` 표현식의 값이 참으로 평가되면 `NgIf` 디렉티브가 `HeroDetailComponent`를 DOM에 추가합니다.
+그리고 표현식의 값이 거짓으로 평가되면 이 컴포넌트를 DOM에서 제거합니다. 이 때 이 컴포넌트와 이 컴포넌트의 하위 컴포넌트는 모두 종료됩니다.
 
+<!--
 #### Show/hide is not the same thing
+-->
+#### 보이게 하거나 숨기는 것과는 다릅니다.
 
 <!--
 You can control the visibility of an element with a
 [class](guide/template-syntax#class-binding) or [style](guide/template-syntax#style-binding) binding:
 -->
-You can control the visibility of an element with a
-[클래스](guide/template-syntax#클래스-바인딩) or [스타일](guide/template-syntax#스타일-바인딩) binding:
+엘리먼트가 표시되는 것을 제어할 때는 다음과 같이 [클래스 바인딩](guide/template-syntax#클래스-바인딩)이나 [스타일 바인딩](guide/template-syntax#스타일-바인딩)을 사용해도 됩니다:
 
 <code-example path="template-syntax/src/app/app.component.html" region="NgIf-3" title="src/app/app.component.html" linenums="false">
 </code-example>
 
+<!--
 Hiding an element is quite different from removing an element with `NgIf`.
+-->
+하지만 `NgIf` 디렉티브의 값이 거짓으로 평가되면 DOM에서 엘리먼트를 완전히 제거합니다.
 
+<!--
 When you hide an element, that element and all of its descendents remain in the DOM.
 All components for those elements stay in memory and
 Angular may continue to check for changes.
 You could be holding onto considerable computing resources and degrading performance,
 for something the user can't see.
+-->
+엘리먼트를 뷰에서 숨기더라도 그 엘리먼트와 하위 엘리먼트는 여전히 DOM에 남아있습니다.
+이 엘리먼트는 여전히 메모리에도 남아있으며, Angular에서 변화를 감지할 때도 이 엘리먼트가 검사 대상에 포함됩니다.
+이로 인해 엘리먼트가 보이지 않는 상황에서도 불필요한 연산이 실행될 수 있으며, 성능면에서도 좋지 않습니다.
 
+<!--
 When `NgIf` is `false`, Angular removes the element and its descendents from the DOM.
 It destroys their components, potentially freeing up substantial resources,
 resulting in a more responsive user experience.
+-->
+하지만 `NgIf` 디렉티브의 값이 `false`로 평가되면 Angular는 그 엘리먼트와 하위 엘리먼트를 DOM에서 완전히 제거합니다.
+엘리먼트에 해당하는 컴포넌트도 종료되며, 컴포넌트가 종료된 만큼 사용하던 리소스도 반환됩니다.
+애플리케이션의 성능도 물론 좋아집니다.
 
+<!--
 The show/hide technique is fine for a few elements with few children.
 You should be wary when hiding large component trees; `NgIf` may be the safer choice.
+-->
+DOM 구조가 단순하다면 엘리먼트를 보이게 하거나 감추는 것만으로도 충분할 수 있습니다.
+하지만 DOM 구조가 좀 더 복잡해질 수록 `NgIf`를 사용하는 것이 더 안전합니다.
 
+<!--
 #### Guard against null
+-->
+#### null 방지
 
+<!--
 The `ngIf` directive is often used to guard against null.
 Show/hide is useless as a guard.
 Angular will throw an error if a nested expression tries to access a property of `null`.
+-->
+`ngIf` 디렉티브는 null 값을 방지하는 용도로도 사용합니다.
+왜냐하면 엘리먼트를 숨기거나 표시하는 것만으로는 엘리먼트에 바인딩되는 값이 null일 때 대응할 수 없기 때문입니다.
+`null` 객체가 바인딩 된 엘리먼트를 화면에서는 숨겨놨지만, 이 엘리먼트 안쪽의 템플릿 표현식에서 `null` 객체의 프로퍼티를 참조하려고 하면 Angular가 에러를 발생시킵니다.
 
+<!--
 Here we see `NgIf` guarding two `<div>`s.
 The `currentHero` name will appear only when there is a `currentHero`.
 The `nullHero` will never be displayed.
+-->
+그래서 `NgIf` 는 다음과 같이 `null` 값을 방지하는 용도로 사용할 수 있습니다.
+이 코드에서 `currentHero` 가 바인딩 된 `<div>` 는 `currentHero` 객체가 존재할 때만 표시됩니다.
+그리고 `nullHero` 가 바인딩 된 `<div>`는 절대 표시되지 않을 것입니다.
 
 <code-example path="template-syntax/src/app/app.component.html" region="NgIf-2" title="src/app/app.component.html" linenums="false">
 </code-example>
 
 <div class="l-sub-section">
 
+<!--
 See also the
 [_safe navigation operator_](guide/template-syntax#safe-navigation-operator "Safe navigation operator (?.)")
 described below.
+-->
+[_안전 참조 연산자_](guide/template-syntax#안전-참조-연산자 "Safe navigation operator (?.)") 에 대해서도 확인해 보세요.
 
 </div>
 
@@ -3010,9 +3080,15 @@ The generated output would look something like this
 
 <hr/>
 
+<!--
 {@a safe-navigation-operator}
+-->
+{@a 안전-참조-연산자}
 
+<!--
 ### The safe navigation operator ( <span class="syntax">?.</span> ) and null property paths
+-->
+### 안전 참조 연산자( <span class="syntax">?.</span> )와 null 객체 참조
 
 The Angular **safe navigation operator (`?.`)** is a fluent and convenient way to
 guard against null and undefined values in property paths.
@@ -3107,7 +3183,12 @@ For example, after you use [*ngIf*](guide/template-syntax#ngIf) to check that `h
 When the Angular compiler turns your template into TypeScript code,
 it prevents TypeScript from reporting that `hero.name` might be null or undefined.
 
+<!--
 Unlike the [_safe navigation operator_](guide/template-syntax#safe-navigation-operator "Safe navigation operator (?.)"),
+the **non-null assertion operator** does not guard against null or undefined.
+Rather it tells the TypeScript type checker to suspend strict null checks for a specific property expression.
+-->
+Unlike the [_안전 참조 연산자_](guide/template-syntax#안전-참조-연산자 "Safe navigation operator (?.)"),
 the **non-null assertion operator** does not guard against null or undefined.
 Rather it tells the TypeScript type checker to suspend strict null checks for a specific property expression.
 

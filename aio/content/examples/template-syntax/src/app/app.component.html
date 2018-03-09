@@ -616,7 +616,7 @@ bindon-ngModel
   <app-hero-detail></app-hero-detail>
 </ng-template>
 
-<!-- #docregion NgIf-3 -->
+<!-- #docregion NgIf-3! -->
 <!-- isSpecial is true -->
 <div [class.hidden]="!isSpecial">Show with class</div>
 <div [class.hidden]="isSpecial">Hide with class</div>
@@ -626,6 +626,17 @@ bindon-ngModel
 
 <div [style.display]="isSpecial ? 'block' : 'none'">Show with style</div>
 <div [style.display]="isSpecial ? 'none'  : 'block'">Hide with style</div>
+<!-- #enddocregion NgIf-3! -->
+<!-- #docregion NgIf-3 -->
+<!-- isSpecial이 true일 때 -->
+<div [class.hidden]="!isSpecial">클래스를 사용해서 표시할 때</div>
+<div [class.hidden]="isSpecial">클리스를 사용해서 숨길 때</div>
+
+<!-- HeroDetail 컴포넌트는 DOM에 존재하지만 표시되지 않습니다. -->
+<app-hero-detail [class.hidden]="isSpecial"></app-hero-detail>
+
+<div [style.display]="isSpecial ? 'block' : 'none'">스타일을 사용해서 표시할 때</div>
+<div [style.display]="isSpecial ? 'none'  : 'block'">스타일을 사용해서 숨길 때</div>
 <!-- #enddocregion NgIf-3 -->
 
 <a class="to-toc" href="#toc">top</a>
