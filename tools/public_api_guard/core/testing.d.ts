@@ -156,3 +156,4 @@ export declare function withBody<T>(html: string, blockFn: T): T;
 
 /** @experimental */
 export declare function withModule(moduleDef: TestModuleMetadata): InjectSetupWrapper;
+export declare function withModule(moduleDef: TestModuleMetadata, fn: Function): () => any;
