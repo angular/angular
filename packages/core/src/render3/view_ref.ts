@@ -8,7 +8,7 @@
 
 import {EmbeddedViewRef as viewEngine_EmbeddedViewRef} from '../linker/view_ref';
 
-import {detectChanges} from './instructions';
+import {detectChanges, markViewDirty} from './instructions';
 import {ComponentTemplate} from './interfaces/definition';
 import {LViewNode} from './interfaces/node';
 import {LView, LViewFlags} from './interfaces/view';
@@ -26,7 +26,18 @@ export class ViewRef<T> implements viewEngine_EmbeddedViewRef<T> {
   destroy(): void { notImplemented(); }
   destroyed: boolean;
   onDestroy(callback: Function) { notImplemented(); }
-  markForCheck(): void { notImplemented(); }
+
+  /**
+   * Marks a view and all of its ancestors dirty.
+   *
+   * It also triggers change detection by calling `scheduleTick` internally, which coalesces
+   * multiple `markForCheck` calls to into one change detection run.
+   *
+   * This can be used to ensure an OnPush component is checked when it needs to be re-rendered
+   * but the two normal triggers haven't marked it dirty (i.e. inputs haven't changed and events
+   * haven't fired in the view).
+   */
+  markForCheck(): void { markViewDirty(this._view); }
 
   /**
    * Detaches a view from the change detection tree.

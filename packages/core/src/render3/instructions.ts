@@ -1499,7 +1499,7 @@ export function wrapListenerWithDirtyAndDefault(
 }
 
 /** Marks current view and all ancestors dirty */
-function markViewDirty(view: LView): void {
+export function markViewDirty(view: LView): void {
   let currentView: LView|null = view;
 
   while (currentView.parent != null) {
