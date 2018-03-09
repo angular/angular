@@ -7,7 +7,8 @@
  */
 
 import {fakeAsync} from '@angular/core/testing/src/fake_async';
-import {SyncAsync, escapeRegExp, splitAtColon, utf8Encode} from '../src/util';
+
+import {SyncAsync, escapeRegExp, splitAtColon, stringify, utf8Encode} from '../src/util';
 
 {
   describe('util', () => {
@@ -73,6 +74,24 @@ import {SyncAsync, escapeRegExp, splitAtColon, utf8Encode} from '../src/util';
         ];
         tests.forEach(
             ([input, output]: [string, string]) => { expect(utf8Encode(input)).toEqual(output); });
+      });
+    });
+
+    describe('stringify', () => {
+      it('should pretty print an Object', () => {
+        const result = stringify({hello: 'world'});
+        expect(result).toBe('{"hello":"world"}');
+      });
+
+      it('should truncate large object', () => {
+        const result = stringify({
+          selector: 'app-root',
+          preserveWhitespaces: false,
+          templateUrl: './app.component.ng.html',
+          styleUrls: ['./app.component.css']
+        });
+        expect(result).toBe(
+            '{"selector":"app-root","preserveWhitespaces":false,"templateUrl":"./app.component.ng.html","styleUrl...');
       });
     });
   });

@@ -163,6 +163,8 @@ export interface OutputContext {
   importExpr(reference: any, typeParams?: o.Type[]|null, useSummaries?: boolean): o.Expression;
 }
 
+const MAX_LENGTH_STRINGIFY = 100;
+
 export function stringify(token: any): string {
   if (typeof token === 'string') {
     return token;
@@ -184,14 +186,27 @@ export function stringify(token: any): string {
     return `${token.name}`;
   }
 
-  const res = token.toString();
+  let res;
+  try {
+    res = JSON.stringify(token);
+  } catch {
+    res = token.toString();
+  }
 
   if (res == null) {
     return '' + res;
   }
 
   const newLineIndex = res.indexOf('\n');
-  return newLineIndex === -1 ? res : res.substring(0, newLineIndex);
+  if (0 < newLineIndex) {
+    res = res.substring(0, newLineIndex);
+  }
+
+  if (MAX_LENGTH_STRINGIFY < res.length) {
+    res = res.substring(0, MAX_LENGTH_STRINGIFY) + '...';
+  }
+
+  return res;
 }
 
 /**
