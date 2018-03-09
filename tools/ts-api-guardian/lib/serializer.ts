@@ -215,7 +215,15 @@ class ResolvedDeclarationEmitter {
       }
     }
 
-    let children = node.getChildren();
+    let children: ts.Node[] = [];
+    if (ts.isFunctionDeclaration(node)) {
+      // Used ts.isFunctionDeclaration instead of node.kind because this is a type guard
+      const symbol = this.typeChecker.getSymbolAtLocation(node.name);
+      symbol.declarations.forEach(x => children = children.concat(x.getChildren()));
+    } else {
+      children = node.getChildren();
+    }
+
     const sourceText = node.getSourceFile().text;
     if (children.length) {
       // Sort declarations under a class or an interface
@@ -252,7 +260,7 @@ class ResolvedDeclarationEmitter {
                                .join('');
 
       // Print stability annotation for fields
-      if (node.kind in memberDeclarationOrder) {
+      if (ts.isParameter(node) || node.kind in memberDeclarationOrder) {
         const trivia = sourceText.substr(node.pos, node.getLeadingTriviaWidth());
         const match = stabilityAnnotationPattern.exec(trivia);
         if (match) {
