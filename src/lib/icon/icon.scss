@@ -19,6 +19,11 @@ $mat-icon-size: 24px !default;
   }
 }
 
+// Icons that will be mirrored in RTL.
+[dir='rtl'] .mat-icon-rtl-mirror {
+  transform: scale(-1, 1);
+}
+
 .mat-form-field:not(.mat-form-field-appearance-legacy) {
   .mat-form-field-prefix,
   .mat-form-field-suffix {

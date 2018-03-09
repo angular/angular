@@ -39,16 +39,16 @@ explicitly set by calling `MatIconRegistry.setDefaultFontSetClass`.
 When an `mat-icon` component displays an SVG icon, it does so by directly inlining the SVG content
 into the page as a child of the component. (Rather than using an <img> tag or a div background
 image). This makes it easier to apply CSS styles to SVG icons. For example, the default color of the
-SVG content is the CSS 
-[currentColor](https://developer.mozilla.org/en-US/docs/Web/CSS/color_value#currentColor_keyword) 
-value. This makes SVG icons by default have the same color as surrounding text, and allows you to 
+SVG content is the CSS
+[currentColor](https://developer.mozilla.org/en-US/docs/Web/CSS/color_value#currentColor_keyword)
+value. This makes SVG icons by default have the same color as surrounding text, and allows you to
 change the color by setting the "color" style on the `mat-icon` element.
 
-In order to prevent XSS vulnerabilities, any SVG URLs passed to the `MatIconRegistry` must be 
+In order to prevent XSS vulnerabilities, any SVG URLs passed to the `MatIconRegistry` must be
 marked as trusted resource URLs by using Angular's `DomSanitizer` service.
 
-Also note that all SVG icons are fetched via XmlHttpRequest, and due to the same-origin policy, 
-their URLs must be on the same domain as the containing page, or their servers must be configured 
+Also note that all SVG icons are fetched via XmlHttpRequest, and due to the same-origin policy,
+their URLs must be on the same domain as the containing page, or their servers must be configured
 to allow cross-domain access.
 
 #### Named icons
@@ -74,8 +74,8 @@ more than one icon set, the icon from the most recently registered set will be u
 
 ### Theming
 
-By default, icons will use the current font color (`currentColor`). this color can be changed to 
-match the current theme's colors using the `color` attribute. This can be changed to 
+By default, icons will use the current font color (`currentColor`). this color can be changed to
+match the current theme's colors using the `color` attribute. This can be changed to
 `'primary'`, `'accent'`, or `'warn'`.
 
 ### Accessibility
@@ -90,6 +90,16 @@ In thinking about accessibility, it is useful to place icon use into one of thre
 1. **Decorative**: the icon conveys no real semantic meaning and is purely cosmetic.
 2. **Interactive**: a user will click or otherwise interact with the icon to perform some action.
 3. **Indicator**: the icon is not interactive, but it conveys some information, such as a status.
+
+### Bidirectionality
+
+By default icons in an RTL layout will look exactly the same as in LTR, however certain icons have
+to be [mirrored for RTL users](https://material.io/guidelines/usability/bidirectionality.html). If
+you want to mirror an icon only in an RTL layout, you can use the `mat-icon-rtl-mirror` CSS class.
+
+```html
+<mat-icon class="mat-icon-rtl-mirror" svgIcon="thumb-up"></mat-icon>
+```
 
 #### Decorative icons
 When the icon is puely cosmetic and conveys no real semantic meaning, the `<mat-icon>` element
