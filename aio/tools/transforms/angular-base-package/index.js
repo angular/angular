@@ -24,7 +24,6 @@ module.exports = new Package('angular-base', [
 
   // Register the processors
   .processor(require('./processors/generateKeywords'))
-  .processor(require('./processors/createOverviewDump'))
   .processor(require('./processors/createSitemap'))
   .processor(require('./processors/checkUnbalancedBackTicks'))
   .processor(require('./processors/convertToJson'))
