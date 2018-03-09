@@ -141,29 +141,18 @@ export class MatSnackBarContainer extends BasePortalOutlet implements OnDestroy 
     });
   }
 
-  /** Applies the user-specified list of CSS classes to the element. */
-  private _setCssClasses(classList: undefined|string|string[]) {
-    if (!classList) {
-      return;
-    }
-
-    const element = this._elementRef.nativeElement;
-
-    if (Array.isArray(classList)) {
-      // Note that we can't use a spread here, because IE doesn't support multiple arguments.
-      classList.forEach(cssClass => element.classList.add(cssClass));
-    } else {
-      element.classList.add(classList);
-    }
-  }
-
   /** Applies the various positioning and user-configured CSS classes to the snack bar. */
   private _applySnackBarClasses() {
     const element: HTMLElement = this._elementRef.nativeElement;
+    const panelClasses = this.snackBarConfig.panelClass;
 
-    if (this.snackBarConfig.panelClass || this.snackBarConfig.extraClasses) {
-      this._setCssClasses(this.snackBarConfig.panelClass);
-      this._setCssClasses(this.snackBarConfig.extraClasses);
+    if (panelClasses) {
+      if (Array.isArray(panelClasses)) {
+        // Note that we can't use a spread here, because IE doesn't support multiple arguments.
+        panelClasses.forEach(cssClass => element.classList.add(cssClass));
+      } else {
+        element.classList.add(panelClasses);
+      }
     }
 
     if (this.snackBarConfig.horizontalPosition === 'center') {
