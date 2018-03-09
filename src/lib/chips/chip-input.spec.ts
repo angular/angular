@@ -51,6 +51,10 @@ describe('MatChipInput', () => {
       chipInputDirective._keydown(ENTER_EVENT);
       expect(testChipInput.add).toHaveBeenCalled();
     });
+
+    it('should have a default id', () => {
+      expect(inputNativeElement.getAttribute('id')).toBeTruthy();
+    });
   });
 
   describe('[addOnBlur]', () => {

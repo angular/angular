@@ -21,6 +21,9 @@ export interface MatChipInputEvent {
   value: string;
 }
 
+// Increasing integer for generating unique ids.
+let nextUniqueId = 0;
+
 /**
  * Directive that adds chip-specific behaviors to an input element inside `<mat-form-field>`.
  * May be placed inside or outside of an `<mat-chip-list>`.
@@ -34,6 +37,7 @@ export interface MatChipInputEvent {
     '(blur)': '_blur()',
     '(focus)': '_focus()',
     '(input)': '_onInput()',
+    '[id]': 'id',
   }
 })
 export class MatChipInput {
@@ -72,6 +76,9 @@ export class MatChipInput {
 
   /** The input's placeholder text. */
   @Input() placeholder: string = '';
+
+  /** Unique id for the input. */
+  @Input() id: string = `mat-chip-list-input-${nextUniqueId++}`;
 
   /** Whether the input is empty. */
   get empty(): boolean { return !this._inputElement.value; }
