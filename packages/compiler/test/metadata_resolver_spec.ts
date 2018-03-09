@@ -409,7 +409,7 @@ import {TEST_COMPILER_PROVIDERS} from './test_bindings';
 
          expect(() => { resolver.getNgModuleMetadata(InvalidModule); })
              .toThrowError(
-                 `Unexpected value '[object Object]' imported by the module 'InvalidModule'. Please add a @NgModule annotation.`);
+                 `Unexpected value '{"ngModule":true}' imported by the module 'InvalidModule'. Please add a @NgModule annotation.`);
        }));
   });
 
