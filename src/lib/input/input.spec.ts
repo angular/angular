@@ -20,7 +20,7 @@ import {
 import {
   getMatFormFieldDuplicatedHintError,
   getMatFormFieldMissingControlError,
-  getMatFormFieldPlaceholderConflictError,
+  getMatFormFieldPlaceholderConflictError, MAT_FORM_FIELD_DEFAULT_OPTIONS,
   MatFormField,
   MatFormFieldAppearance,
   MatFormFieldModule,
@@ -1216,6 +1216,77 @@ describe('MatInput with appearance', () => {
       expect(testComponent.formField.floatLabel).toBe('auto');
     }
   }));
+});
+
+describe('MatFormField default options', () => {
+  it('should be legacy appearance if no default options provided', fakeAsync(() => {
+    TestBed.configureTestingModule({
+      imports: [
+        FormsModule,
+        MatFormFieldModule,
+        MatInputModule,
+        NoopAnimationsModule,
+        PlatformModule,
+      ],
+      declarations: [
+        MatInputWithAppearance,
+      ],
+    });
+
+    TestBed.compileComponents();
+
+    const fixture = TestBed.createComponent(MatInputWithAppearance);
+    fixture.detectChanges();
+    flush();
+    expect(fixture.componentInstance.formField.appearance).toBe('legacy');
+  }));
+
+  it('should be legacy appearance if empty default options provided', fakeAsync(() => {
+    TestBed.configureTestingModule({
+      imports: [
+        FormsModule,
+        MatFormFieldModule,
+        MatInputModule,
+        NoopAnimationsModule,
+        PlatformModule,
+      ],
+      declarations: [
+        MatInputWithAppearance,
+      ],
+      providers: [{provide: MAT_FORM_FIELD_DEFAULT_OPTIONS, useValue: {}}],
+    });
+
+    TestBed.compileComponents();
+
+    const fixture = TestBed.createComponent(MatInputWithAppearance);
+    fixture.detectChanges();
+    flush();
+    expect(fixture.componentInstance.formField.appearance).toBe('legacy');
+  }));
+
+  it('should be custom default appearance if custom appearance specified in default options',
+      fakeAsync(() => {
+        TestBed.configureTestingModule({
+          imports: [
+            FormsModule,
+            MatFormFieldModule,
+            MatInputModule,
+            NoopAnimationsModule,
+            PlatformModule,
+          ],
+          declarations: [
+            MatInputWithAppearance,
+          ],
+          providers: [{provide: MAT_FORM_FIELD_DEFAULT_OPTIONS, useValue: {appearance: 'fill'}}],
+        });
+
+        TestBed.compileComponents();
+
+        const fixture = TestBed.createComponent(MatInputWithAppearance);
+        fixture.detectChanges();
+        flush();
+        expect(fixture.componentInstance.formField.appearance).toBe('fill');
+      }));
 });
 
 @Component({
