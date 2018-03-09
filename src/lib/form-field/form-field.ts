@@ -316,8 +316,7 @@ export class MatFormField extends _MatFormFieldMixinBase
   }
 
   _shouldLabelFloat() {
-    return this._canLabelFloat && (this._control.shouldLabelFloat ||
-        this._control.shouldPlaceholderFloat || this._shouldAlwaysFloat);
+    return this._canLabelFloat && (this._control.shouldLabelFloat || this._shouldAlwaysFloat);
   }
 
   _hideControlPlaceholder() {
