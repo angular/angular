@@ -7,7 +7,7 @@
  */
 
 import {PRIMARY_OUTLET} from '../src/shared';
-import {DefaultUrlSerializer, UrlSegmentGroup, encodeUriQuery, encodeUriSegment, serializePath} from '../src/url_tree';
+import {DefaultUrlSerializer, UrlSegmentGroup, encodeUriFragment, encodeUriQuery, encodeUriSegment, serializePath} from '../src/url_tree';
 
 describe('url serializer', () => {
   const url = new DefaultUrlSerializer();
@@ -254,11 +254,11 @@ describe('url serializer', () => {
     });
 
     it('should encode/decode fragment', () => {
-      const u = `/one#${encodeUriQuery('one two=three four')}`;
+      const u = `/one#${encodeUriFragment('one two=three four')}`;
       const tree = url.parse(u);
 
       expect(tree.fragment).toEqual('one two=three four');
-      expect(url.serialize(tree)).toEqual('/one#one%20two%3Dthree%20four');
+      expect(url.serialize(tree)).toEqual('/one#one%20two=three%20four');
     });
   });
 
@@ -311,7 +311,7 @@ describe('url serializer', () => {
     // From http://www.ietf.org/rfc/rfc3986.txt
     const unreserved = `abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._~`;
 
-    it('should encode a minimal set of special characters in queryParams and fragment', () => {
+    it('should encode a minimal set of special characters in queryParams', () => {
       const notEncoded = unreserved + `:@!$'*,();`;
       const encode = ` +%&=#[]/?`;
       const encoded = `%20%2B%25%26%3D%23%5B%5D%2F%3F`;
@@ -324,9 +324,9 @@ describe('url serializer', () => {
     });
 
     it('should encode a minimal set of special characters in fragment', () => {
-      const notEncoded = unreserved + `:@!$'*,();`;
-      const encode = ` +%&=#[]/?`;
-      const encoded = `%20%2B%25%26%3D%23%5B%5D%2F%3F`;
+      const notEncoded = unreserved + `:@!$'*,();+&=#/?`;
+      const encode = ' %<>`"[]';
+      const encoded = `%20%25%3C%3E%60%22%5B%5D`;
 
       const parsed = url.parse('/foo');
 
