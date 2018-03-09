@@ -16,7 +16,7 @@ import {queueLifecycleHooks} from './hooks';
 import {CLEAN_PROMISE, _getComponentHostLElementNode, createLView, createTView, directiveCreate, enterView, getDirectiveInstance, getRootView, hostElement, initChangeDetectorIfExisting, leaveView, locateHostElement, scheduleTick, tick} from './instructions';
 import {ComponentDef, ComponentType} from './interfaces/definition';
 import {RElement, RendererFactory3, domRendererFactory3} from './interfaces/renderer';
-import {LViewFlags, RootContext} from './interfaces/view';
+import {LView, LViewFlags, RootContext} from './interfaces/view';
 import {stringify} from './util';
 import {createViewRef} from './view_ref';
 
@@ -74,13 +74,14 @@ export interface CreateComponentOptions {
 export function createComponentRef<T>(
     componentType: ComponentType<T>, opts: CreateComponentOptions): viewEngine_ComponentRef<T> {
   const component = renderComponent(componentType, opts);
-  const hostView = createViewRef(component);
+  const hostView = _getComponentHostLElementNode(component).data as LView;
+  const hostViewRef = createViewRef(hostView, component);
   return {
     location: {nativeElement: getHostElement(component)},
     injector: opts.injector || NULL_INJECTOR,
     instance: component,
-    hostView: hostView,
-    changeDetectorRef: hostView,
+    hostView: hostViewRef,
+    changeDetectorRef: hostViewRef,
     componentType: componentType,
     // TODO: implement destroy and onDestroy
     destroy: () => {},

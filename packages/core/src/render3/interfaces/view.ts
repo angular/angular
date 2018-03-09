@@ -183,13 +183,16 @@ export const enum LViewFlags {
    * back into the parent view, `data` will be defined and `creationMode` will be
    * improperly reported as false.
    */
-  CreationMode = 0b001,
+  CreationMode = 0b0001,
 
   /** Whether this view has default change detection strategy (checks always) or onPush */
-  CheckAlways = 0b010,
+  CheckAlways = 0b0010,
 
   /** Whether or not this view is currently dirty (needing check) */
-  Dirty = 0b100
+  Dirty = 0b0100,
+
+  /** Whether or not this view is currently attached to change detection tree. */
+  Attached = 0b1000,
 }
 
 /** Interface necessary to work with view tree traversal */
