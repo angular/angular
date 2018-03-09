@@ -6,14 +6,18 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AotCompilerHost, AotCompilerOptions, AotSummaryResolver, CompileDirectiveMetadata, CompileMetadataResolver, CompilePipeSummary, CompilerConfig, DEFAULT_INTERPOLATION_CONFIG, DirectiveNormalizer, DirectiveResolver, DomElementSchemaRegistry, HtmlParser, I18NHtmlParser, Lexer, NgModuleResolver, ParseError, Parser, PipeResolver, StaticReflector, StaticSymbol, StaticSymbolCache, StaticSymbolResolver, TemplateParser, TypeScriptEmitter, analyzeNgModules, createAotUrlResolver} from '@angular/compiler';
+import {AotCompilerHost, AotCompilerOptions, AotSummaryResolver, CompileDirectiveMetadata, CompileIdentifierMetadata, CompileMetadataResolver, CompileNgModuleMetadata, CompilePipeSummary, CompileTypeMetadata, CompilerConfig, DEFAULT_INTERPOLATION_CONFIG, DirectiveNormalizer, DirectiveResolver, DomElementSchemaRegistry, HtmlParser, I18NHtmlParser, Lexer, NgModuleResolver, ParseError, Parser, PipeResolver, StaticReflector, StaticSymbol, StaticSymbolCache, StaticSymbolResolver, TemplateParser, TypeScriptEmitter, analyzeNgModules, createAotUrlResolver, templateSourceUrl} from '@angular/compiler';
 import {ViewEncapsulation} from '@angular/core';
 import * as ts from 'typescript';
 
+import {NgAnalyzedModules} from '../../src/aot/compiler';
 import {ConstantPool} from '../../src/constant_pool';
 import {ParserError} from '../../src/expression_parser/ast';
 import * as o from '../../src/output/output_ast';
+import {ModuleKind, compileModuleBackPatch} from '../../src/render3/r3_back_patch_compiler';
+import {compileModuleFactory} from '../../src/render3/r3_module_factory_compiler';
 import {compilePipe} from '../../src/render3/r3_pipe_compiler';
+import {OutputMode} from '../../src/render3/r3_types';
 import {compileComponent, compileDirective} from '../../src/render3/r3_view_compiler';
 import {BindingParser} from '../../src/template_parser/binding_parser';
 import {OutputContext} from '../../src/util';
@@ -122,9 +126,13 @@ function r(...pieces: (string | RegExp)[]): RegExp {
   return new RegExp(results.join(''));
 }
 
-export function compile(
+function doCompile(
     data: MockDirectory, angularFiles: MockData, options: AotCompilerOptions = {},
-    errorCollector: (error: any, fileName?: string) => void = error => { throw error;}) {
+    errorCollector: (error: any, fileName?: string) => void = error => { throw error; },
+    compileAction: (
+        outputCtx: OutputContext, analyzedModules: NgAnalyzedModules,
+        resolver: CompileMetadataResolver, htmlParser: HtmlParser, templateParser: TemplateParser,
+        hostBindingParser: BindingParser, reflector: StaticReflector) => void) {
   const testFiles = toMockFileArray(data);
   const scripts = testFiles.map(entry => entry.fileName);
   const angularFilesArray = toMockFileArray(angularFiles);
@@ -207,37 +215,9 @@ export function compile(
     resolver.loadNgModuleDirectiveAndPipeMetadata(module.type.reference, true);
   }
 
-  // Compile the directives.
-  for (const pipeOrDirective of pipesOrDirectives) {
-    const module = analyzedModules.ngModuleByPipeOrDirective.get(pipeOrDirective);
-    if (!module || !module.type.reference.filePath.startsWith('/app')) {
-      continue;
-    }
-    if (resolver.isDirective(pipeOrDirective)) {
-      const metadata = resolver.getDirectiveMetadata(pipeOrDirective);
-      if (metadata.isComponent) {
-        const fakeUrl = 'ng://fake-template-url.html';
-        const htmlAst = htmlParser.parse(metadata.template !.template !, fakeUrl);
-
-        const directives = module.transitiveModule.directives.map(
-            dir => resolver.getDirectiveSummary(dir.reference));
-        const pipes =
-            module.transitiveModule.pipes.map(pipe => resolver.getPipeSummary(pipe.reference));
-        const parsedTemplate = templateParser.parse(
-            metadata, htmlAst, directives, pipes, module.schemas, fakeUrl, false);
-        compileComponent(
-            fakeOutputContext, metadata, pipes, parsedTemplate.template, staticReflector,
-            hostBindingParser);
-      } else {
-        compileDirective(fakeOutputContext, metadata, staticReflector, hostBindingParser);
-      }
-    } else if (resolver.isPipe(pipeOrDirective)) {
-      const metadata = resolver.getPipeMetadata(pipeOrDirective);
-      if (metadata) {
-        compilePipe(fakeOutputContext, metadata, staticReflector);
-      }
-    }
-  }
+  compileAction(
+      fakeOutputContext, analyzedModules, resolver, htmlParser, templateParser, hostBindingParser,
+      staticReflector);
 
   fakeOutputContext.statements.unshift(...fakeOutputContext.constantPool.statements);
 
@@ -256,4 +236,110 @@ export function compile(
   }
 
   return {source: result.sourceText, outputContext: fakeOutputContext};
+}
+
+export function compile(
+    data: MockDirectory, angularFiles: MockData, options: AotCompilerOptions = {},
+    errorCollector: (error: any, fileName?: string) => void = error => { throw error;}) {
+  return doCompile(
+      data, angularFiles, options, errorCollector,
+      (outputCtx: OutputContext, analyzedModules: NgAnalyzedModules,
+       resolver: CompileMetadataResolver, htmlParser: HtmlParser, templateParser: TemplateParser,
+       hostBindingParser: BindingParser, reflector: StaticReflector) => {
+        const pipesOrDirectives = Array.from(analyzedModules.ngModuleByPipeOrDirective.keys());
+        for (const pipeOrDirective of pipesOrDirectives) {
+          const module = analyzedModules.ngModuleByPipeOrDirective.get(pipeOrDirective);
+          if (!module || !module.type.reference.filePath.startsWith('/app')) {
+            continue;
+          }
+          if (resolver.isDirective(pipeOrDirective)) {
+            const metadata = resolver.getDirectiveMetadata(pipeOrDirective);
+            if (metadata.isComponent) {
+              const fakeUrl = 'ng://fake-template-url.html';
+              const htmlAst = htmlParser.parse(metadata.template !.template !, fakeUrl);
+
+              const directives = module.transitiveModule.directives.map(
+                  dir => resolver.getDirectiveSummary(dir.reference));
+              const pipes = module.transitiveModule.pipes.map(
+                  pipe => resolver.getPipeSummary(pipe.reference));
+              const parsedTemplate = templateParser.parse(
+                  metadata, htmlAst, directives, pipes, module.schemas, fakeUrl, false);
+              compileComponent(
+                  outputCtx, metadata, pipes, parsedTemplate.template, reflector, hostBindingParser,
+                  OutputMode.PartialClass);
+            } else {
+              compileDirective(
+                  outputCtx, metadata, reflector, hostBindingParser, OutputMode.PartialClass);
+            }
+          } else if (resolver.isPipe(pipeOrDirective)) {
+            const metadata = resolver.getPipeMetadata(pipeOrDirective);
+            if (metadata) {
+              compilePipe(outputCtx, metadata, reflector, OutputMode.PartialClass);
+            }
+          }
+        }
+
+      });
+}
+
+const DTS = /\.d\.ts$/;
+const EXT = /(\.\w+)+$/;
+const NONE_WORD = /\W/g;
+const NODE_MODULES = /^.*\/node_modules\//;
+
+function getBackPatchFunctionName(type: CompileTypeMetadata) {
+  const filePath = (type.reference.filePath as string)
+                       .replace(EXT, '')
+                       .replace(NODE_MODULES, '')
+                       .replace(NONE_WORD, '_');
+  return `ngBackPatch_${filePath.split('/').filter(s => !!s).join('_')}_${type.reference.name}`;
+}
+
+function getBackPatchReference(type: CompileTypeMetadata): o.Expression {
+  return o.variable(getBackPatchFunctionName(type));
+}
+
+export function backPatch(
+    data: MockDirectory, angularFiles: MockData, options: AotCompilerOptions = {},
+    errorCollector: (error: any, fileName?: string) => void = error => { throw error;}) {
+  return doCompile(
+      data, angularFiles, options, errorCollector,
+      (outputCtx: OutputContext, analyzedModules: NgAnalyzedModules,
+       resolver: CompileMetadataResolver, htmlParser: HtmlParser, templateParser: TemplateParser,
+       hostBindingParser: BindingParser, reflector: StaticReflector) => {
+
+        const parseTemplate =
+            (compMeta: CompileDirectiveMetadata, ngModule: CompileNgModuleMetadata,
+             directiveIdentifiers: CompileIdentifierMetadata[]) => {
+              const directives =
+                  directiveIdentifiers.map(dir => resolver.getDirectiveSummary(dir.reference));
+              const pipes = ngModule.transitiveModule.pipes.map(
+                  pipe => resolver.getPipeSummary(pipe.reference));
+              return templateParser.parse(
+                  compMeta, compMeta.template !.htmlAst !, directives, pipes, ngModule.schemas,
+                  templateSourceUrl(ngModule.type, compMeta, compMeta.template !), true);
+            };
+
+        for (const module of analyzedModules.ngModules) {
+          compileModuleBackPatch(
+              outputCtx, getBackPatchFunctionName(module.type), module,
+              DTS.test(module.type.reference.filePath) ? ModuleKind.Renderer2 :
+                                                         ModuleKind.Renderer3,
+              getBackPatchReference, parseTemplate, reflector, resolver);
+        }
+      });
+}
+
+export function createFactories(
+    data: MockDirectory, context: MockData, options: AotCompilerOptions = {},
+    errorCollector: (error: any, fileName?: string) => void = error => { throw error;}) {
+  return doCompile(
+      data, context, options, errorCollector,
+      (outputCtx: OutputContext, analyzedModules: NgAnalyzedModules,
+       resolver: CompileMetadataResolver, htmlParser: HtmlParser, templateParser: TemplateParser,
+       hostBindingParser: BindingParser, reflector: StaticReflector) => {
+        for (const module of analyzedModules.ngModules) {
+          compileModuleFactory(outputCtx, module, getBackPatchReference, resolver);
+        }
+      });
 }

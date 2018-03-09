@@ -21,6 +21,7 @@ import {OutputEmitter} from '../output/abstract_emitter';
 import * as o from '../output/output_ast';
 import {ParseError} from '../parse_util';
 import {compilePipe as compileIvyPipe} from '../render3/r3_pipe_compiler';
+import {OutputMode} from '../render3/r3_types';
 import {compileComponent as compileIvyComponent, compileDirective as compileIvyDirective} from '../render3/r3_view_compiler';
 import {CompiledStylesheet, StyleCompiler} from '../style_compiler';
 import {SummaryResolver} from '../summary_resolver';
@@ -170,7 +171,7 @@ export class AotCompiler {
       _createEmptyStub(outputCtx);
     }
     // Note: for the stubs, we don't need a property srcFileUrl,
-    // as lateron in emitAllImpls we will create the proper GeneratedFiles with the
+    // as later on in emitAllImpls we will create the proper GeneratedFiles with the
     // correct srcFileUrl.
     // This is good as e.g. for .ngstyle.ts files we can't derive
     // the url of components based on the genFileUrl.
@@ -223,7 +224,7 @@ export class AotCompiler {
     let componentId = 0;
     file.ngModules.forEach((ngModuleMeta, ngModuleIndex) => {
       // Note: the code below needs to executed for StubEmitFlags.Basic and StubEmitFlags.TypeCheck,
-      // so we don't change the .ngfactory file too much when adding the typecheck block.
+      // so we don't change the .ngfactory file too much when adding the type-check block.
 
       // create exports that user code can reference
       this._ngModuleCompiler.createStub(outputCtx, ngModuleMeta.type.reference);
@@ -256,7 +257,7 @@ export class AotCompiler {
       });
 
       if (emitFlags & StubEmitFlags.TypeCheck) {
-        // add the typecheck block for all components of the NgModule
+        // add the type-check block for all components of the NgModule
         ngModuleMeta.declaredDirectives.forEach((dirId) => {
           const compMeta = this._metadataResolver.getDirectiveMetadata(dirId.reference);
           if (!compMeta.isComponent) {
@@ -366,16 +367,18 @@ export class AotCompiler {
             this._parseTemplate(directiveMetadata, module, module.transitiveModule.directives);
         compileIvyComponent(
             context, directiveMetadata, parsedPipes, parsedTemplate, this._reflector,
-            hostBindingParser);
+            hostBindingParser, OutputMode.PartialClass);
       } else {
-        compileIvyDirective(context, directiveMetadata, this._reflector, hostBindingParser);
+        compileIvyDirective(
+            context, directiveMetadata, this._reflector, hostBindingParser,
+            OutputMode.PartialClass);
       }
     });
 
     pipes.forEach(pipeType => {
       const pipeMetadata = this._metadataResolver.getPipeMetadata(pipeType);
       if (pipeMetadata) {
-        compileIvyPipe(context, pipeMetadata, this._reflector);
+        compileIvyPipe(context, pipeMetadata, this._reflector, OutputMode.PartialClass);
       }
     });
 

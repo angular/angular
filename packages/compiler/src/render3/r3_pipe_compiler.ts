@@ -13,10 +13,15 @@ import * as o from '../output/output_ast';
 import {OutputContext, error} from '../util';
 
 import {Identifiers as R3} from './r3_identifiers';
+import {BUILD_OPTIMIZER_COLOCATE, OutputMode} from './r3_types';
 import {createFactory} from './r3_view_compiler';
 
+/**
+ * Write a pipe definition to the output context.
+ */
 export function compilePipe(
-    outputCtx: OutputContext, pipe: CompilePipeMetadata, reflector: CompileReflector) {
+    outputCtx: OutputContext, pipe: CompilePipeMetadata, reflector: CompileReflector,
+    mode: OutputMode) {
   const definitionMapValues: {key: string, quoted: boolean, value: o.Expression}[] = [];
 
   // e.g. 'type: MyPipe`
@@ -35,16 +40,29 @@ export function compilePipe(
   const className = identifierName(pipe.type) !;
   className || error(`Cannot resolve the name of ${pipe.type}`);
 
-  outputCtx.statements.push(new o.ClassStmt(
-      /* name */ className,
-      /* parent */ null,
-      /* fields */[new o.ClassField(
-          /* name */ outputCtx.constantPool.propertyNameOf(DefinitionKind.Pipe),
-          /* type */ o.INFERRED_TYPE,
-          /* modifiers */[o.StmtModifier.Static],
-          /* initializer */ o.importExpr(R3.definePipe).callFn([o.literalMap(
-              definitionMapValues)]))],
-      /* getters */[],
-      /* constructorMethod */ new o.ClassMethod(null, [], []),
-      /* methods */[]));
+  const definitionField = outputCtx.constantPool.propertyNameOf(DefinitionKind.Pipe);
+  const definitionFunction =
+      o.importExpr(R3.definePipe).callFn([o.literalMap(definitionMapValues)]);
+
+  if (mode === OutputMode.PartialClass) {
+    outputCtx.statements.push(new o.ClassStmt(
+        /* name */ className,
+        /* parent */ null,
+        /* fields */[new o.ClassField(
+            /* name */ definitionField,
+            /* type */ o.INFERRED_TYPE,
+            /* modifiers */[o.StmtModifier.Static],
+            /* initializer */ definitionFunction)],
+        /* getters */[],
+        /* constructorMethod */ new o.ClassMethod(null, [], []),
+        /* methods */[]));
+  } else {
+    // Create back-patch definition.
+    const classReference = outputCtx.importExpr(pipe.type.reference);
+
+    // Create the back-patch statement
+    outputCtx.statements.push(
+        new o.CommentStmt(BUILD_OPTIMIZER_COLOCATE),
+        classReference.prop(definitionField).set(definitionFunction).toStmt());
+  }
 }
