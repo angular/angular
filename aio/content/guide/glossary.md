@@ -296,6 +296,10 @@ You can register your own providers.
 
 Read more in the [Dependency Injection](guide/dependency-injection) page.
 
+## Dependency injection token
+
+A lookup token associated with a dependency provider, for use with the dependency injection system. 
+These tokens can be anything - such as objects, classes, strings, etc.
 
 {@a directive}
 
@@ -371,6 +375,10 @@ Short hand for [ECMAScript](guide/glossary#ecmascript) 2015.
 
 {@a F}
 
+## Factory Providers
+Creates a new instance of a dependency based on certain condition or information.
+
+Read more about [Factory providers](guide/dependency-injection#factory-providers) in the [Angular Dependency Injection](guide/dependency-injection) page.
 
 {@a G}
 
@@ -736,12 +744,24 @@ Read about how to write template expressions
 in the [Template expressions](guide/template-syntax#template-expressions) section
 of the [Template Syntax](guide/template-syntax) page.
 
+## Token
+An unique identifier used for efficient table lookup. 
+See [Dependency injection token](guide/glossary#dependency-injection-token).
 
 ## Transpile
 
 The process of transforming code written in one form of JavaScript
 (such as TypeScript) into another form of JavaScript  (such as [ES5](guide/glossary#es5)).
 
+## Tree Shaking
+
+A compilation technique that optimizes an app by finding unused code and removing it from the final bundle.
+
+## Tree-shakable providers
+
+When provider information is included in the `@Injectable` decorator of the provided service, the Angular compiler can use tree-shaking to exclude that service from the final bundle if the service is not actually used in the app.
+
+Read more about [Tree-shakable providers](guide/dependency-injection#providers) in the Dependency Injection page.
 
 ## TypeScript
 
