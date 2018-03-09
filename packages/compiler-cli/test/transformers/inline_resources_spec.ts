@@ -42,12 +42,18 @@ describe('inline resources transformer', () => {
       const actual = convert(`import {Component} from '@angular/core';
         @Component({
           templateUrl: './thing.html',
-	  otherProp: 3,
-	}) export class Foo {}`);
+	        otherProp: 3,
+	      }) export class Foo {}`);
       expect(actual).not.toContain('templateUrl:');
       expect(actual.replace(/\s+/g, ' '))
           .toContain(
-              'Foo = __decorate([ core_1.Component({ template: "Some template", otherProp: 3, }) ], Foo)');
+              'Foo = __decorate([ core_1.Component({ template: "Some template", otherProp: 3 }) ], Foo)');
+    });
+    it('should allow different quotes', () => {
+      const actual = convert(`import {Component} from '@angular/core';
+        @Component({"templateUrl": \`./thing.html\`}) export class Foo {}`);
+      expect(actual).not.toContain('templateUrl:');
+      expect(actual).toContain('{ template: "Some template" }');
     });
     it('should replace styleUrls', () => {
       const actual = convert(`import {Component} from '@angular/core';
@@ -58,11 +64,21 @@ describe('inline resources transformer', () => {
       expect(actual).not.toContain('styleUrls:');
       expect(actual).toContain('styles: [".some_style {}", ".some_other_style {}"]');
     });
+    it('should preserve existing styles', () => {
+      const actual = convert(`import {Component} from '@angular/core';
+        @Component({
+          styles: ['h1 { color: blue }'],
+          styleUrls: ['./thing1.css'],
+        })
+        export class Foo {}`);
+      expect(actual).not.toContain('styleUrls:');
+      expect(actual).toContain(`styles: ['h1 { color: blue }', ".some_style {}"]`);
+    });
     it('should handle empty styleUrls', () => {
       const actual = convert(`import {Component} from '@angular/core';
-        @Component({styleUrls: []}) export class Foo {}`);
+        @Component({styleUrls: [], styles: []}) export class Foo {}`);
       expect(actual).not.toContain('styleUrls:');
-      expect(actual).toContain('styles: []');
+      expect(actual).not.toContain('styles:');
     });
   });
   describe('annotation input', () => {
@@ -115,6 +131,7 @@ describe('metadata transformer', () => {
       @Component({
         templateUrl: './thing.html',
         styleUrls: ['./thing1.css', './thing2.css'],
+        styles: ['h1 { color: red }'],
       })
       export class Foo {}
     `;
@@ -135,7 +152,7 @@ describe('metadata transformer', () => {
         expect(JSON.stringify(classData)).toContain('"template":"Some template"');
         expect(JSON.stringify(classData)).not.toContain('styleUrls');
         expect(JSON.stringify(classData))
-            .toContain('"styles":[".some_style {}",".some_other_style {}"]');
+            .toContain('"styles":["h1 { color: red }",".some_style {}",".some_other_style {}"]');
       }
     }
   });

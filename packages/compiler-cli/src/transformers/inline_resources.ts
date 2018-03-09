@@ -67,12 +67,16 @@ export class InlineResourcesMetadataTransformer implements MetadataTransformer {
       arg['template'] = loader.get(arg['templateUrl']);
       delete arg.templateUrl;
     }
-    if (arg['styleUrls']) {
-      const styleUrls = arg['styleUrls'];
-      if (Array.isArray(styleUrls)) {
-        arg['styles'] = styleUrls.map(styleUrl => loader.get(styleUrl));
-        delete arg.styleUrls;
-      }
+
+    const styles = arg['styles'] || [];
+    const styleUrls = arg['styleUrls'] || [];
+    if (!Array.isArray(styles)) throw new Error('styles should be an array');
+    if (!Array.isArray(styleUrls)) throw new Error('styleUrls should be an array');
+
+    styles.push(...styleUrls.map(styleUrl => loader.get(styleUrl)));
+    if (styles.length > 0) {
+      arg['styles'] = styles;
+      delete arg.styleUrls;
     }
 
     return arg;
@@ -262,49 +266,59 @@ function updateComponentProperties(
     // argument
     return args;
   }
-  const newArgument = ts.updateObjectLiteral(
-      componentArg, ts.visitNodes(componentArg.properties, (node: ts.ObjectLiteralElementLike) => {
-        if (!ts.isPropertyAssignment(node)) {
-          // Error: unsupported
-          return node;
+
+  const newProperties: ts.ObjectLiteralElementLike[] = [];
+  const newStyleExprs: ts.Expression[] = [];
+  componentArg.properties.forEach(prop => {
+    if (!ts.isPropertyAssignment(prop) || ts.isComputedPropertyName(prop.name)) {
+      newProperties.push(prop);
+      return;
+    }
+
+    switch (prop.name.text) {
+      case 'styles':
+        if (!ts.isArrayLiteralExpression(prop.initializer)) {
+          throw new Error('styles takes an array argument');
         }
+        newStyleExprs.push(...prop.initializer.elements);
+        break;
 
-        if (ts.isComputedPropertyName(node.name)) {
-          // computed names are not supported
-          return node;
+      case 'styleUrls':
+        if (!ts.isArrayLiteralExpression(prop.initializer)) {
+          throw new Error('styleUrls takes an array argument');
         }
+        newStyleExprs.push(...prop.initializer.elements.map((expr: ts.Expression) => {
+          if (!ts.isStringLiteral(expr) && !ts.isNoSubstitutionTemplateLiteral(expr)) {
+            throw new Error(
+                'Can only accept string literal arguments to styleUrls. ' + PRECONDITIONS_TEXT);
+          }
+          const styles = loader.get(expr.text);
+          return ts.createLiteral(styles);
+        }));
+        break;
 
-        const name = node.name.text;
-        switch (name) {
-          case 'styleUrls':
-            if (!ts.isArrayLiteralExpression(node.initializer)) {
-              // Error: unsupported
-              return node;
-            }
-            const styleUrls = node.initializer.elements;
-
-            return ts.updatePropertyAssignment(
-                node, ts.createIdentifier('styles'),
-                ts.createArrayLiteral(ts.visitNodes(styleUrls, (expr: ts.Expression) => {
-                  if (ts.isStringLiteral(expr)) {
-                    const styles = loader.get(expr.text);
-                    return ts.createLiteral(styles);
-                  }
-                  return expr;
-                })));
-
-
-          case 'templateUrl':
-            if (ts.isStringLiteral(node.initializer)) {
-              const template = loader.get(node.initializer.text);
-              return ts.updatePropertyAssignment(
-                  node, ts.createIdentifier('template'), ts.createLiteral(template));
-            }
-            return node;
-
-          default:
-            return node;
+      case 'templateUrl':
+        if (!ts.isStringLiteral(prop.initializer) &&
+            !ts.isNoSubstitutionTemplateLiteral(prop.initializer)) {
+          throw new Error(
+              'Can only accept a string literal argument to templateUrl. ' + PRECONDITIONS_TEXT);
         }
-      }));
-  return ts.createNodeArray<ts.Expression>([newArgument]);
+        const template = loader.get(prop.initializer.text);
+        newProperties.push(ts.updatePropertyAssignment(
+            prop, ts.createIdentifier('template'), ts.createLiteral(template)));
+        break;
+
+      default:
+        newProperties.push(prop);
+    }
+  });
+
+  // Add the non-inline styles
+  if (newStyleExprs.length > 0) {
+    const newStyles = ts.createPropertyAssignment(
+        ts.createIdentifier('styles'), ts.createArrayLiteral(newStyleExprs));
+    newProperties.push(newStyles);
+  }
+
+  return ts.createNodeArray([ts.updateObjectLiteral(componentArg, newProperties)]);
 }
