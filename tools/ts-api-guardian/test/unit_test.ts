@@ -59,6 +59,24 @@ describe('unit test', () => {
     check({'file.d.ts': input}, expected);
   });
 
+  it('should support overloads functions', () => {
+    const input = `
+      export declare function group(steps: AnimationMetadata[], options?: AnimationOptions | null): AnimationGroupMetadata;
+
+      export declare function registerLocaleData(data: any, extraData?: any): void;
+      export declare function registerLocaleData(data: any, localeId?: string, extraData?: any): void;
+    `;
+
+    const expected = `
+      export declare function group(steps: AnimationMetadata[], options?: AnimationOptions | null): AnimationGroupMetadata;
+
+      export declare function registerLocaleData(data: any, extraData?: any): void;
+      export declare function registerLocaleData(data: any, localeId?: string, extraData?: any): void;
+    `;
+
+    check({'file.d.ts': input}, expected);
+  });
+
   it('should ignore private props', () => {
     const input = `
       export declare class A {
