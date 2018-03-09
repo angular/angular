@@ -11,7 +11,7 @@ import {withBody} from '@angular/core/testing';
 import {ChangeDetectionStrategy, ChangeDetectorRef, DoCheck, EmbeddedViewRef, TemplateRef, ViewContainerRef} from '../../src/core';
 import {getRenderedText, whenRendered} from '../../src/render3/component';
 import {NgOnChangesFeature, PublicFeature, defineComponent, defineDirective, injectChangeDetectorRef, injectTemplateRef, injectViewContainerRef} from '../../src/render3/index';
-import {bind, container, containerRefreshEnd, containerRefreshStart, detectChanges, directiveRefresh, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, interpolation1, interpolation2, listener, markDirty, text, textBinding} from '../../src/render3/instructions';
+import {bind, container, containerRefreshEnd, containerRefreshStart, detectChanges, directiveRefresh, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, interpolation1, interpolation2, listener, markDirty, text, textBinding, tick} from '../../src/render3/instructions';
 
 import {containerEl, renderComponent, requestAnimationFrame, toHtml} from './render_util';
 
@@ -146,21 +146,21 @@ describe('change detection', () => {
     it('should call doCheck even when OnPush components are not dirty', () => {
       const myApp = renderComponent(MyApp);
 
-      detectChanges(myApp);
+      tick(myApp);
       expect(comp.doCheckCount).toEqual(2);
 
-      detectChanges(myApp);
+      tick(myApp);
       expect(comp.doCheckCount).toEqual(3);
     });
 
     it('should skip OnPush components in update mode when they are not dirty', () => {
       const myApp = renderComponent(MyApp);
 
-      detectChanges(myApp);
+      tick(myApp);
       // doCheckCount is 2, but 1 should be rendered since it has not been marked dirty.
       expect(getRenderedText(myApp)).toEqual('1 - Nancy');
 
-      detectChanges(myApp);
+      tick(myApp);
       // doCheckCount is 3, but 1 should be rendered since it has not been marked dirty.
       expect(getRenderedText(myApp)).toEqual('1 - Nancy');
     });
@@ -169,14 +169,14 @@ describe('change detection', () => {
       const myApp = renderComponent(MyApp);
 
       myApp.name = 'Bess';
-      detectChanges(myApp);
+      tick(myApp);
       expect(getRenderedText(myApp)).toEqual('2 - Bess');
 
       myApp.name = 'George';
-      detectChanges(myApp);
+      tick(myApp);
       expect(getRenderedText(myApp)).toEqual('3 - George');
 
-      detectChanges(myApp);
+      tick(myApp);
       expect(getRenderedText(myApp)).toEqual('3 - George');
     });
 
@@ -189,7 +189,7 @@ describe('change detection', () => {
       requestAnimationFrame.flush();
       expect(getRenderedText(myApp)).toEqual('2 - Nancy');
 
-      detectChanges(myApp);
+      tick(myApp);
       expect(getRenderedText(myApp)).toEqual('2 - Nancy');
     });
 
@@ -275,7 +275,7 @@ describe('change detection', () => {
       expect(comp !.doCheckCount).toEqual(1);
       expect(getRenderedText(myButtonApp)).toEqual('1 - 1 - Nancy');
 
-      detectChanges(myButtonApp);
+      tick(myButtonApp);
       expect(parent !.doCheckCount).toEqual(2);
       // parent isn't checked, so child doCheck won't run
       expect(comp !.doCheckCount).toEqual(1);
@@ -573,6 +573,185 @@ describe('change detection', () => {
 
         const comp = renderComponent(DetectChangesComp);
         expect(getRenderedText(comp)).toEqual('1');
+      });
+
+    });
+
+    describe('attach/detach', () => {
+      let comp: DetachedComp;
+
+      class MyApp {
+        constructor(public cdr: ChangeDetectorRef) {}
+
+        static ngComponentDef = defineComponent({
+          type: MyApp,
+          tag: 'my-app',
+          factory: () => new MyApp(injectChangeDetectorRef()),
+          /** <detached-comp></detached-comp> */
+          template: (ctx: MyApp, cm: boolean) => {
+            if (cm) {
+              elementStart(0, DetachedComp);
+              elementEnd();
+            }
+            DetachedComp.ngComponentDef.h(1, 0);
+            directiveRefresh(1, 0);
+          }
+        });
+      }
+
+      class DetachedComp {
+        value = 'one';
+        doCheckCount = 0;
+
+        constructor(public cdr: ChangeDetectorRef) {}
+
+        ngDoCheck() { this.doCheckCount++; }
+
+        static ngComponentDef = defineComponent({
+          type: DetachedComp,
+          tag: 'detached-comp',
+          factory: () => comp = new DetachedComp(injectChangeDetectorRef()),
+          /** {{ value }} */
+          template: (ctx: DetachedComp, cm: boolean) => {
+            if (cm) {
+              text(0);
+            }
+            textBinding(0, bind(ctx.value));
+          }
+        });
+      }
+
+      it('should not check detached components', () => {
+        const app = renderComponent(MyApp);
+        expect(getRenderedText(app)).toEqual('one');
+
+        comp.cdr.detach();
+
+        comp.value = 'two';
+        tick(app);
+        expect(getRenderedText(app)).toEqual('one');
+      });
+
+      it('should check re-attached components', () => {
+        const app = renderComponent(MyApp);
+        expect(getRenderedText(app)).toEqual('one');
+
+        comp.cdr.detach();
+        comp.value = 'two';
+
+        comp.cdr.reattach();
+        tick(app);
+        expect(getRenderedText(app)).toEqual('two');
+      });
+
+      it('should call lifecycle hooks on detached components', () => {
+        const app = renderComponent(MyApp);
+        expect(comp.doCheckCount).toEqual(1);
+
+        comp.cdr.detach();
+
+        tick(app);
+        expect(comp.doCheckCount).toEqual(2);
+      });
+
+      it('should check detached component when detectChanges is called', () => {
+        const app = renderComponent(MyApp);
+        expect(getRenderedText(app)).toEqual('one');
+
+        comp.cdr.detach();
+
+        comp.value = 'two';
+        detectChanges(comp);
+        expect(getRenderedText(app)).toEqual('two');
+      });
+
+      it('should not check detached component when markDirty is called', () => {
+        const app = renderComponent(MyApp);
+        expect(getRenderedText(app)).toEqual('one');
+
+        comp.cdr.detach();
+
+        comp.value = 'two';
+        markDirty(comp);
+        requestAnimationFrame.flush();
+
+        expect(getRenderedText(app)).toEqual('one');
+      });
+
+      it('should detach any child components when parent is detached', () => {
+        const app = renderComponent(MyApp);
+        expect(getRenderedText(app)).toEqual('one');
+
+        app.cdr.detach();
+
+        comp.value = 'two';
+        tick(app);
+        expect(getRenderedText(app)).toEqual('one');
+
+        app.cdr.reattach();
+
+        tick(app);
+        expect(getRenderedText(app)).toEqual('two');
+      });
+
+      it('should detach OnPush components properly', () => {
+        let onPushComp: OnPushComp;
+
+        class OnPushComp {
+          /** @Input() */
+          value: string;
+
+          constructor(public cdr: ChangeDetectorRef) {}
+
+          static ngComponentDef = defineComponent({
+            type: OnPushComp,
+            tag: 'on-push-comp',
+            factory: () => onPushComp = new OnPushComp(injectChangeDetectorRef()),
+            /** {{ value }} */
+            template: (ctx: OnPushComp, cm: boolean) => {
+              if (cm) {
+                text(0);
+              }
+              textBinding(0, bind(ctx.value));
+            },
+            changeDetection: ChangeDetectionStrategy.OnPush,
+            inputs: {value: 'value'}
+          });
+        }
+
+        class OnPushApp {
+          value = 'one';
+
+          static ngComponentDef = defineComponent({
+            type: OnPushApp,
+            tag: 'on-push-app',
+            factory: () => new OnPushApp(),
+            /** <on-push-comp [value]="value"></on-push-comp> */
+            template: (ctx: OnPushApp, cm: boolean) => {
+              if (cm) {
+                elementStart(0, OnPushComp);
+                elementEnd();
+              }
+              elementProperty(0, 'value', bind(ctx.value));
+              OnPushComp.ngComponentDef.h(1, 0);
+              directiveRefresh(1, 0);
+            }
+          });
+        }
+
+        const app = renderComponent(OnPushApp);
+        expect(getRenderedText(app)).toEqual('one');
+
+        onPushComp !.cdr.detach();
+
+        app.value = 'two';
+        tick(app);
+        expect(getRenderedText(app)).toEqual('one');
+
+        onPushComp !.cdr.reattach();
+
+        tick(app);
+        expect(getRenderedText(app)).toEqual('two');
       });
 
     });

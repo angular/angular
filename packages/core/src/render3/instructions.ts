@@ -210,7 +210,7 @@ export function createLView(
   const newView = {
     parent: currentView,
     id: viewId,  // -1 for component views
-    flags: flags | LViewFlags.CreationMode,
+    flags: flags | LViewFlags.CreationMode | LViewFlags.Attached,
     node: null !,  // until we initialize it in createNode.
     data: [],
     tView: tView,
@@ -1281,12 +1281,17 @@ export function directiveRefresh<T>(directiveIndex: number, elementIndex: number
         assertNotNull(element.data, `Component's host node should have an LView attached.`);
     const hostView = element.data !;
 
-    // Only CheckAlways components or dirty OnPush components should be checked
-    if (hostView.flags & (LViewFlags.CheckAlways | LViewFlags.Dirty)) {
+    // Only attached CheckAlways components or attached, dirty OnPush components should be checked
+    if (viewAttached(hostView) && hostView.flags & (LViewFlags.CheckAlways | LViewFlags.Dirty)) {
       ngDevMode && assertDataInRange(directiveIndex);
       detectChangesInternal(hostView, element, getDirectiveInstance<T>(data[directiveIndex]));
     }
   }
+}
+
+/** Returns a boolean for whether the view is attached */
+function viewAttached(view: LView): boolean {
+  return (view.flags & LViewFlags.Attached) === LViewFlags.Attached;
 }
 
 /**

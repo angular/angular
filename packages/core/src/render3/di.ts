@@ -25,6 +25,7 @@ import {LInjector} from './interfaces/injector';
 import {LContainerNode, LElementNode, LNode, LNodeFlags, LViewNode} from './interfaces/node';
 import {QueryReadType} from './interfaces/query';
 import {Renderer3} from './interfaces/renderer';
+import {LView} from './interfaces/view';
 import {assertNodeOfPossibleTypes, assertNodeType} from './node_assert';
 import {insertView} from './node_manipulation';
 import {notImplemented, stringify} from './util';
@@ -301,7 +302,7 @@ export function getOrCreateChangeDetectorRef(
     return di.changeDetectorRef = getOrCreateHostChangeDetector(currentNode.view.node);
   } else if ((currentNode.flags & LNodeFlags.TYPE_MASK) === LNodeFlags.Element) {
     // if it's an element node with data, it's a component and context will be set later
-    return di.changeDetectorRef = createViewRef(context);
+    return di.changeDetectorRef = createViewRef(currentNode.data as LView, context);
   }
   return null !;
 }
@@ -313,8 +314,10 @@ function getOrCreateHostChangeDetector(currentNode: LViewNode | LElementNode):
   const hostInjector = hostNode.nodeInjector;
   const existingRef = hostInjector && hostInjector.changeDetectorRef;
 
-  return existingRef ? existingRef :
-                       createViewRef(hostNode.view.data[hostNode.flags >> LNodeFlags.INDX_SHIFT]);
+  return existingRef ?
+      existingRef :
+      createViewRef(
+          hostNode.data as LView, hostNode.view.data[hostNode.flags >> LNodeFlags.INDX_SHIFT]);
 }
 
 /**
