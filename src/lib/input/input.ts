@@ -68,7 +68,7 @@ export const _MatInputMixinBase = mixinErrorState(MatInputBase);
     // Native input properties that are overwritten by Angular inputs need to be synced with
     // the native input element. Otherwise property bindings for those don't work.
     '[attr.id]': 'id',
-    '[placeholder]': 'placeholder',
+    '[attr.placeholder]': 'placeholder',
     '[disabled]': 'disabled',
     '[required]': 'required',
     '[readonly]': 'readonly',
@@ -152,7 +152,7 @@ export class MatInput extends _MatInputMixinBase implements MatFormFieldControl<
    * Implemented as part of MatFormFieldControl.
    * @docs-private
    */
-  @Input() placeholder: string = '';
+  @Input() placeholder: string;
 
   /**
    * Implemented as part of MatFormFieldControl.

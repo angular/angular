@@ -71,6 +71,7 @@ describe('MatInput without forms', () => {
         MatInputOnPush,
         MatInputWithReadonlyInput,
         MatInputWithLabelAndPlaceholder,
+        MatInputWithoutPlaceholder,
       ],
     });
 
@@ -792,6 +793,14 @@ describe('MatInput without forms', () => {
     const container = fixture.debugElement.query(By.css('mat-form-field')).nativeElement;
 
     expect(container.classList).not.toContain('mat-form-field-hide-placeholder');
+  });
+
+  it('should not add the `placeholder` attribute if there is no placeholder', () => {
+    const fixture = TestBed.createComponent(MatInputWithoutPlaceholder);
+    fixture.detectChanges();
+    const input = fixture.debugElement.query(By.css('input')).nativeElement;
+
+    expect(input.hasAttribute('placeholder')).toBe(false);
   });
 
   it('should not show the native placeholder when floatLabel is set to "never"', () => {
@@ -1638,4 +1647,14 @@ class MatInputWithLabelAndPlaceholder {
 class MatInputWithAppearance {
   @ViewChild(MatFormField) formField: MatFormField;
   appearance: MatFormFieldAppearance;
+}
+
+@Component({
+  template: `
+    <mat-form-field>
+      <input matInput>
+    </mat-form-field>
+  `
+})
+class MatInputWithoutPlaceholder {
 }
