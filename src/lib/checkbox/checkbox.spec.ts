@@ -701,7 +701,7 @@ describe('MatCheckbox', () => {
     }));
   });
 
-  describe('with provided aria-label ', () => {
+  describe('aria-label ', () => {
     let checkboxDebugElement: DebugElement;
     let checkboxNativeElement: HTMLElement;
     let inputElement: HTMLInputElement;
@@ -714,6 +714,13 @@ describe('MatCheckbox', () => {
 
       fixture.detectChanges();
       expect(inputElement.getAttribute('aria-label')).toBe('Super effective');
+    });
+
+    it('should not set the aria-label attribute if no value is provided', () => {
+      fixture = TestBed.createComponent(SingleCheckbox);
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.querySelector('input').hasAttribute('aria-label')).toBe(false);
     });
   });
 

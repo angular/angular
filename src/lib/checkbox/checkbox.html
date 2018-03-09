@@ -11,7 +11,7 @@
            [attr.name]="name"
            [tabIndex]="tabIndex"
            [indeterminate]="indeterminate"
-           [attr.aria-label]="ariaLabel"
+           [attr.aria-label]="ariaLabel || null"
            [attr.aria-labelledby]="ariaLabelledby"
            [attr.aria-checked]="_getAriaChecked()"
            (change)="_onInteractionEvent($event)"
