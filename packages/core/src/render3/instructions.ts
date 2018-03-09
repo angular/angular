@@ -755,7 +755,9 @@ export function elementProperty<T>(
     setInputsForProperty(dataValue, value);
     markDirtyIfOnPush(node);
   } else {
-    value = (sanitizer != null ? sanitizer(value) : stringify(value)) as any;
+    // It is assumed that the sanitizer is only added when the compiler determines that the property
+    // is risky, so sanitization can be done without further checks.
+    value = sanitizer != null ? (sanitizer(value) as any) : value;
     const native = node.native;
     isProceduralRenderer(renderer) ? renderer.setProperty(native, propName, value) :
                                      (native.setProperty ? native.setProperty(propName, value) :
