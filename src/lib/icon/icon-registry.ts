@@ -459,9 +459,6 @@ export class MatIconRegistry {
    * Sets the default attributes for an SVG element to be used as an icon.
    */
   private _setSvgAttributes(svg: SVGElement): SVGElement {
-    if (!svg.getAttribute('xmlns')) {
-      svg.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
-    }
     svg.setAttribute('fit', '');
     svg.setAttribute('height', '100%');
     svg.setAttribute('width', '100%');

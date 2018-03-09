@@ -15,7 +15,10 @@ const result = renderModuleFactory(KitchenSinkServerModuleNgFactory, {
 
 result
   .then(content => {
-    writeFileSync(join(__dirname, 'index-prerendered.html'), content, 'utf-8');
+    const filename = join(__dirname, 'index-prerendered.html');
+
+    console.log(`Outputting result to ${filename}`);
+    writeFileSync(filename, content, 'utf-8');
     log('Prerender done.');
   })
   // If rendering the module factory fails, exit the process with an error code because otherwise
