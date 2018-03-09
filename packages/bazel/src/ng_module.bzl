@@ -88,6 +88,10 @@ def _ngc_tsconfig(ctx, files, srcs, **kwargs):
 
   return dict(tsc_wrapped_tsconfig(ctx, files, srcs, **kwargs), **{
       "angularCompilerOptions": {
+          # Always assume that resources can be loaded statically at build time
+          # TODO(alexeagle): if someone has a legitimate use case for dynamic
+          # template loading, maybe we need to make this configurable.
+          "enableResourceInlining": True,
           "generateCodeForLibraries": False,
           "allowEmptyCodegenFiles": True,
           "enableSummariesForJit": True,
