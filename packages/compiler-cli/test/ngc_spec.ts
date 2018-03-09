@@ -2067,6 +2067,27 @@ describe('ngc transformer command-line', () => {
       expect(source).toMatch(/ngInjectableDef.*scope: .+\.Module/);
     });
 
+    it('ngInjectableDef in es5 mode is annotated @nocollapse when closure options are enabled',
+       () => {
+         writeConfig(`{
+        "extends": "./tsconfig-base.json",
+        "angularCompilerOptions": {
+          "annotateForClosureCompiler": true
+        },
+        "files": ["service.ts"]
+      }`);
+         const source = compileService(`
+        import {Injectable} from '@angular/core';
+        import {Module} from './module';
+
+        @Injectable({
+          scope: Module,
+        })
+        export class Service {}
+      `);
+         expect(source).toMatch(/\/\*\* @nocollapse \*\/ Service\.ngInjectableDef =/);
+       });
+
     it('compiles a useValue InjectableDef', () => {
       const source = compileService(`
         import {Injectable} from '@angular/core';
