@@ -68,6 +68,8 @@ Add `ServiceWorkerModule` to the `@NgModule` `imports` array. Use the `register(
 
 The file `ngsw-worker.js` is the name of the prebuilt service worker script, which the CLI copies into `dist/` to deploy along with your server.
 
+At this point, there should be no need to provide the three Services in `providers`. They are used for [Communicating with service workers](guide/service-worker-communications) for later.
+
 ### Step 4: Create the configuration file, `ngsw-config.json`
 
 The Angular CLI needs a service worker configuration file, called `ngsw-config.json`. The configuration file controls how the service worker caches files and data 
