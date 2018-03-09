@@ -7,16 +7,18 @@
  */
 
 import {EmbeddedViewRef as viewEngine_EmbeddedViewRef} from '../linker/view_ref';
+
 import {detectChanges} from './instructions';
 import {ComponentTemplate} from './interfaces/definition';
 import {LViewNode} from './interfaces/node';
+import {LView, LViewFlags} from './interfaces/view';
 import {notImplemented} from './util';
 
 export class ViewRef<T> implements viewEngine_EmbeddedViewRef<T> {
   context: T;
   rootNodes: any[];
 
-  constructor(context: T|null) { this.context = context !; }
+  constructor(private _view: LView, context: T|null, ) { this.context = context !; }
 
   /** @internal */
   _setComponentContext(context: T) { this.context = context; }
@@ -25,12 +27,27 @@ export class ViewRef<T> implements viewEngine_EmbeddedViewRef<T> {
   destroyed: boolean;
   onDestroy(callback: Function) { notImplemented(); }
   markForCheck(): void { notImplemented(); }
-  detach(): void { notImplemented(); }
+
+  /**
+   * Detaches a view from the change detection tree.
+   *
+   * Detached views will not be checked during change detection runs, even if the view
+   * is dirty. This can be used in combination with detectChanges to implement local
+   * change detection checks.
+   */
+  detach(): void { this._view.flags &= ~LViewFlags.Attached; }
+
+  /**
+   * Re-attaches a view to the change detection tree.
+   *
+   * This can be used to re-attach views that were previously detached from the tree
+   * using detach(). Views are attached to the tree by default.
+   */
+  reattach(): void { this._view.flags |= LViewFlags.Attached; }
 
   detectChanges(): void { detectChanges(this.context); }
 
   checkNoChanges(): void { notImplemented(); }
-  reattach(): void { notImplemented(); }
 }
 
 
@@ -41,7 +58,7 @@ export class EmbeddedViewRef<T> extends ViewRef<T> {
   _lViewNode: LViewNode;
 
   constructor(viewNode: LViewNode, template: ComponentTemplate<T>, context: T) {
-    super(context);
+    super(viewNode.data, context);
     this._lViewNode = viewNode;
   }
 }
@@ -52,9 +69,9 @@ export class EmbeddedViewRef<T> extends ViewRef<T> {
  * @param context The context for this view
  * @returns The ViewRef
  */
-export function createViewRef<T>(context: T): ViewRef<T> {
+export function createViewRef<T>(view: LView, context: T): ViewRef<T> {
   // TODO: add detectChanges back in when implementing ChangeDetectorRef.detectChanges
-  return addDestroyable(new ViewRef(context));
+  return addDestroyable(new ViewRef(view, context));
 }
 
 /** Interface for destroy logic. Implemented by addDestroyable. */
