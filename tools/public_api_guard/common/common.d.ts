@@ -303,7 +303,7 @@ export declare class NgLocaleLocalization extends NgLocalization {
     /** @deprecated */ protected deprecatedPluralFn: ((locale: string, value: string | number) => Plural) | null | undefined;
     protected locale: string;
     constructor(locale: string,
-        deprecatedPluralFn?: ((locale: string, value: string | number) => Plural) | null | undefined);
+        /** @deprecated */ deprecatedPluralFn?: ((locale: string, value: string | number) => Plural) | null | undefined);
     getPluralCategory(value: any, locale?: string): string;
 }
 
