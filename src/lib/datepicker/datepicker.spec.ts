@@ -98,40 +98,19 @@ describe('MatDatepicker', () => {
             .not.toBeNull();
       });
 
-      it('should pass the datepicker theme color to the overlay', fakeAsync(() => {
-        testComponent.datepicker.color = 'primary';
-        testComponent.datepicker.open();
-        fixture.detectChanges();
-
-        let contentEl = document.querySelector('.mat-datepicker-content')!;
-
-        expect(contentEl.classList).toContain('mat-primary');
-
-        testComponent.datepicker.close();
-        fixture.detectChanges();
-        flush();
-
-        testComponent.datepicker.color = 'warn';
-        testComponent.datepicker.open();
-
-        contentEl = document.querySelector('.mat-datepicker-content')!;
-        fixture.detectChanges();
-
-        expect(contentEl.classList).toContain('mat-warn');
-        expect(contentEl.classList).not.toContain('mat-primary');
-      }));
-
-      it('should open datepicker if opened input is set to true', () => {
+      it('should open datepicker if opened input is set to true', fakeAsync(() => {
         testComponent.opened = true;
         fixture.detectChanges();
+        flush();
 
         expect(document.querySelector('.mat-datepicker-content')).not.toBeNull();
 
         testComponent.opened = false;
         fixture.detectChanges();
+        flush();
 
         expect(document.querySelector('.mat-datepicker-content')).toBeNull();
-      });
+      }));
 
       it('open in disabled mode should not open the calendar', () => {
         testComponent.disabled = true;
@@ -165,7 +144,7 @@ describe('MatDatepicker', () => {
         fixture.detectChanges();
         flush();
 
-        let popup = document.querySelector('.cdk-overlay-pane')!;
+        const popup = document.querySelector('.cdk-overlay-pane')!;
         expect(popup).not.toBeNull();
         expect(parseInt(getComputedStyle(popup).height as string)).not.toBe(0);
 
@@ -211,6 +190,7 @@ describe('MatDatepicker', () => {
 
         testComponent.datepicker.open();
         fixture.detectChanges();
+        flush();
 
         expect(document.querySelector('mat-dialog-container')).not.toBeNull();
         expect(testComponent.datepickerInput.value).toEqual(new Date(2020, JAN, 1));
@@ -224,28 +204,30 @@ describe('MatDatepicker', () => {
         expect(testComponent.datepickerInput.value).toEqual(new Date(2020, JAN, 2));
       }));
 
-      it('setting selected via enter press should update input and close calendar', () => {
-        testComponent.touch = true;
-        fixture.detectChanges();
+      it('setting selected via enter press should update input and close calendar',
+        fakeAsync(() => {
+          testComponent.touch = true;
+          fixture.detectChanges();
 
-        testComponent.datepicker.open();
-        fixture.detectChanges();
+          testComponent.datepicker.open();
+          fixture.detectChanges();
+          flush();
 
-        expect(document.querySelector('mat-dialog-container')).not.toBeNull();
-        expect(testComponent.datepickerInput.value).toEqual(new Date(2020, JAN, 1));
+          expect(document.querySelector('mat-dialog-container')).not.toBeNull();
+          expect(testComponent.datepickerInput.value).toEqual(new Date(2020, JAN, 1));
 
-        let calendarBodyEl = document.querySelector('.mat-calendar-body') as HTMLElement;
+          let calendarBodyEl = document.querySelector('.mat-calendar-body') as HTMLElement;
 
-        dispatchKeyboardEvent(calendarBodyEl, 'keydown', RIGHT_ARROW);
-        fixture.detectChanges();
-        dispatchKeyboardEvent(calendarBodyEl, 'keydown', ENTER);
-        fixture.detectChanges();
+          dispatchKeyboardEvent(calendarBodyEl, 'keydown', RIGHT_ARROW);
+          fixture.detectChanges();
+          flush();
+          dispatchKeyboardEvent(calendarBodyEl, 'keydown', ENTER);
+          fixture.detectChanges();
+          flush();
 
-        fixture.whenStable().then(() => {
           expect(document.querySelector('mat-dialog-container')).toBeNull();
           expect(testComponent.datepickerInput.value).toEqual(new Date(2020, JAN, 2));
-        });
-      });
+        }));
 
       it('clicking the currently selected date should close the calendar ' +
          'without firing selectedChanged', fakeAsync(() => {
@@ -1341,6 +1323,52 @@ describe('MatDatepicker', () => {
       expect(input.value).toMatch(/0?1\.0?9\.2017/);
       expect(testComponent.datepickerInput.value).toBe(selected);
     }));
+  });
+
+  describe('popup animations', () => {
+    let fixture: ComponentFixture<StandardDatepicker>;
+
+    beforeEach(fakeAsync(() => {
+      TestBed.configureTestingModule({
+        imports: [MatDatepickerModule, MatNativeDateModule, NoopAnimationsModule],
+        declarations: [StandardDatepicker],
+      }).compileComponents();
+
+      fixture = TestBed.createComponent(StandardDatepicker);
+      fixture.detectChanges();
+    }));
+
+    it('should not set the `mat-datepicker-content-above` class when opening downwards',
+      fakeAsync(() => {
+        fixture.componentInstance.datepicker.open();
+        fixture.detectChanges();
+        flush();
+        fixture.detectChanges();
+
+        const content =
+            document.querySelector('.cdk-overlay-pane mat-datepicker-content')! as HTMLElement;
+
+        expect(content.classList).not.toContain('mat-datepicker-content-above');
+      }));
+
+    it('should set the `mat-datepicker-content-above` class when opening upwards', fakeAsync(() => {
+      const input = fixture.debugElement.nativeElement.querySelector('input');
+
+      // Push the input to the bottom of the page to force the calendar to open upwards
+      input.style.position = 'fixed';
+      input.style.bottom = '0';
+
+      fixture.componentInstance.datepicker.open();
+      fixture.detectChanges();
+      flush();
+      fixture.detectChanges();
+
+      const content =
+          document.querySelector('.cdk-overlay-pane mat-datepicker-content')! as HTMLElement;
+
+      expect(content.classList).toContain('mat-datepicker-content-above');
+    }));
+
   });
 });
 
