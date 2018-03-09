@@ -303,40 +303,6 @@ export class FocusTrapFactory {
   }
 }
 
-
-/**
- * Directive for trapping focus within a region.
- * @docs-private
- * @deprecated
- * @deletion-target 6.0.0
- */
-@Directive({
-  selector: 'cdk-focus-trap',
-})
-export class FocusTrapDeprecatedDirective implements OnDestroy, AfterContentInit {
-  focusTrap: FocusTrap;
-
-  /** Whether the focus trap is active. */
-  @Input()
-  get disabled(): boolean { return !this.focusTrap.enabled; }
-  set disabled(val: boolean) {
-    this.focusTrap.enabled = !coerceBooleanProperty(val);
-  }
-
-  constructor(private _elementRef: ElementRef, private _focusTrapFactory: FocusTrapFactory) {
-    this.focusTrap = this._focusTrapFactory.create(this._elementRef.nativeElement, true);
-  }
-
-  ngOnDestroy() {
-    this.focusTrap.destroy();
-  }
-
-  ngAfterContentInit() {
-    this.focusTrap.attachAnchors();
-  }
-}
-
-
 /** Directive for trapping focus within a region. */
 @Directive({
   selector: '[cdkTrapFocus]',

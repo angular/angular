@@ -15,7 +15,6 @@ import {
   OnDestroy,
   Optional,
   Output,
-  Renderer2,
   SkipSelf,
 } from '@angular/core';
 import {Observable} from 'rxjs/Observable';
@@ -75,30 +74,13 @@ export class FocusMonitor implements OnDestroy {
   constructor(private _ngZone: NgZone, private _platform: Platform) {}
 
   /**
-   * @docs-private
-   * @deprecated renderer param no longer needed.
-   * @deletion-target 6.0.0
-   */
-  monitor(element: HTMLElement, renderer: Renderer2, checkChildren: boolean):
-      Observable<FocusOrigin>;
-  /**
    * Monitors focus on an element and applies appropriate CSS classes.
    * @param element The element to monitor
    * @param checkChildren Whether to count the element as focused when its children are focused.
    * @returns An observable that emits when the focus state of the element changes.
    *     When the element is blurred, null will be emitted.
    */
-  monitor(element: HTMLElement, checkChildren?: boolean): Observable<FocusOrigin>;
-  monitor(
-      element: HTMLElement,
-      renderer?: Renderer2 | boolean,
-      checkChildren?: boolean): Observable<FocusOrigin> {
-    // TODO(mmalerba): clean up after deprecated signature is removed.
-    if (!(renderer instanceof Renderer2)) {
-      checkChildren = renderer;
-    }
-    checkChildren = !!checkChildren;
-
+  monitor(element: HTMLElement, checkChildren: boolean = false): Observable<FocusOrigin> {
     // Do nothing if we're not on the browser platform.
     if (!this._platform.isBrowser) {
       return observableOf(null);
