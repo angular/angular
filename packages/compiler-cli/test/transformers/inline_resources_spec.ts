@@ -38,12 +38,15 @@ describe('inline resources transformer', () => {
       });
     });
 
-    it('should replace templateUrl', () => {
+    fit('should replace templateUrl', () => {
       const actual = convert(`import {Component} from '@angular/core';
-        @Component({templateUrl: './thing.html'} export class Foo {}`);
+        @Component({
+          templateUrl: './thing.html',
+	  otherProp: 3,
+	}) export class Foo {}`);
       expect(actual).not.toContain('templateUrl:');
       expect(actual.replace(/\s+/g, ' '))
-          .toContain('Foo = __decorate([ core_1.Component({ template: "Some template" }) ], Foo)');
+          .toContain('Foo = __decorate([ core_1.Component({ template: "Some template", otherProp: 3, }) ], Foo)');
     });
     it('should replace styleUrls', () => {
       const actual = convert(`import {Component} from '@angular/core';

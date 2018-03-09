@@ -35,30 +35,38 @@ export class InlineResourcesMetadataTransformer implements MetadataTransformer {
     };
   }
 
+  inlineResource(url: MetadataValue): string|undefined {
+    if (typeof url === 'string') {
+      const content = this.host.loadResource(url);
+      if (typeof content === 'string') {
+        return content;
+      }
+    }
+  }
+
   updateDecoratorMetadata(arg: MetadataObject): MetadataObject {
     if (arg['templateUrl']) {
-      const templateUrl = arg['templateUrl'];
-      if (typeof templateUrl === 'string') {
-        const template = this.host.loadResource(templateUrl);
-        if (typeof template === 'string') {
-          arg['template'] = template;
-          delete arg.templateUrl;
-        }
+
+      const template = this.inlineResource(arg['templateUrl']);
+      if (template) {
+        arg['template'] = template;
+        delete arg.templateUrl;
       }
     }
     if (arg['styleUrls']) {
       const styleUrls = arg['styleUrls'];
       if (Array.isArray(styleUrls)) {
-        arg['styles'] = styleUrls.map(styleUrl => {
-          if (typeof styleUrl === 'string') {
-            const style = this.host.loadResource(styleUrl);
-            if (typeof style === 'string') {
-              return style;
-            }
-          }
+        let allStylesInlined = true;
+        const newStyles = styleUrls.map(styleUrl => {
+          const style = this.inlineResource(styleUrl);
+          if (style) return style;
+          allStylesInlined = false;
           return styleUrl;
         });
-        delete arg.styleUrls;
+        if (allStylesInlined) {
+          arg['styles'] = newStyles;
+          delete arg.styleUrls;
+        }
       }
     }
 
@@ -214,13 +222,15 @@ function isComponentSymbol(identifier: ts.Node, typeChecker: ts.TypeChecker) {
     return false;
   }
 
-  const declaration = symbol.declarations[0] !;
+  const declaration = symbol.declarations[0];
 
-  if (!ts.isImportSpecifier(declaration)) {
+  if (!declaration || !ts.isImportSpecifier(declaration)) {
     return false;
   }
 
   const name = (declaration.propertyName || declaration.name).text;
+  // We know that parent pointers are set because we created the SourceFile ourselves.
+  // The number of parent references here match the recursion depth at this point.
   const moduleId =
       (declaration.parent !.parent !.parent !.moduleSpecifier as ts.StringLiteral).text;
   return moduleId === '@angular/core' && name === 'Component';
@@ -290,7 +300,7 @@ function updateComponentProperties(
             return node;
 
           default:
-            break;
+            return node;
         }
       }));
   return ts.createNodeArray<ts.Expression>([newArgument]);
