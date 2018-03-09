@@ -756,6 +756,161 @@ describe('change detection', () => {
 
     });
 
+    describe('markForCheck()', () => {
+      let comp: OnPushComp;
+
+      class OnPushComp {
+        value = 'one';
+
+        doCheckCount = 0;
+
+        constructor(public cdr: ChangeDetectorRef) {}
+
+        ngDoCheck() { this.doCheckCount++; }
+
+        static ngComponentDef = defineComponent({
+          type: OnPushComp,
+          tag: 'on-push-comp',
+          factory: () => comp = new OnPushComp(injectChangeDetectorRef()),
+          /** {{ value }} */
+          template: (ctx: OnPushComp, cm: boolean) => {
+            if (cm) {
+              text(0);
+            }
+            textBinding(0, bind(ctx.value));
+          },
+          changeDetection: ChangeDetectionStrategy.OnPush
+        });
+      }
+
+      class OnPushParent {
+        value = 'one';
+
+        static ngComponentDef = defineComponent({
+          type: OnPushParent,
+          tag: 'on-push-parent',
+          factory: () => new OnPushParent(),
+          /**
+           * {{ value }} -
+           * <on-push-comp></on-push-comp>
+           */
+          template: (ctx: OnPushParent, cm: boolean) => {
+            if (cm) {
+              text(0);
+              elementStart(1, OnPushComp);
+              elementEnd();
+            }
+            textBinding(0, interpolation1('', ctx.value, ' - '));
+            OnPushComp.ngComponentDef.h(2, 1);
+            directiveRefresh(2, 1);
+          },
+          changeDetection: ChangeDetectionStrategy.OnPush
+        });
+      }
+
+      it('should schedule check on OnPush components', () => {
+        const parent = renderComponent(OnPushParent);
+        expect(getRenderedText(parent)).toEqual('one - one');
+
+        comp.value = 'two';
+        tick(parent);
+        expect(getRenderedText(parent)).toEqual('one - one');
+
+        comp.cdr.markForCheck();
+        requestAnimationFrame.flush();
+        expect(getRenderedText(parent)).toEqual('one - two');
+      });
+
+      it('should only run change detection once with multiple calls to markForCheck', () => {
+        renderComponent(OnPushParent);
+        expect(comp.doCheckCount).toEqual(1);
+
+        comp.cdr.markForCheck();
+        comp.cdr.markForCheck();
+        comp.cdr.markForCheck();
+        comp.cdr.markForCheck();
+        comp.cdr.markForCheck();
+        requestAnimationFrame.flush();
+
+        expect(comp.doCheckCount).toEqual(2);
+      });
+
+      it('should schedule check on ancestor OnPush components', () => {
+        const parent = renderComponent(OnPushParent);
+        expect(getRenderedText(parent)).toEqual('one - one');
+
+        parent.value = 'two';
+        tick(parent);
+        expect(getRenderedText(parent)).toEqual('one - one');
+
+        comp.cdr.markForCheck();
+        requestAnimationFrame.flush();
+        expect(getRenderedText(parent)).toEqual('two - one');
+
+      });
+
+      it('should schedule check on OnPush components in embedded views', () => {
+        class EmbeddedViewParent {
+          value = 'one';
+          showing = true;
+
+          static ngComponentDef = defineComponent({
+            type: EmbeddedViewParent,
+            tag: 'embedded-view-parent',
+            factory: () => new EmbeddedViewParent(),
+            /**
+             * {{ value }} -
+             * % if (ctx.showing) {
+             *   <on-push-comp></on-push-comp>
+             * % }
+             */
+            template: (ctx: EmbeddedViewParent, cm: boolean) => {
+              if (cm) {
+                text(0);
+                container(1);
+              }
+              textBinding(0, interpolation1('', ctx.value, ' - '));
+              containerRefreshStart(1);
+              {
+                if (ctx.showing) {
+                  if (embeddedViewStart(0)) {
+                    elementStart(0, OnPushComp);
+                    elementEnd();
+                  }
+                  OnPushComp.ngComponentDef.h(1, 0);
+                  directiveRefresh(1, 0);
+                  embeddedViewEnd();
+                }
+              }
+              containerRefreshEnd();
+            },
+            changeDetection: ChangeDetectionStrategy.OnPush
+          });
+        }
+
+        const parent = renderComponent(EmbeddedViewParent);
+        expect(getRenderedText(parent)).toEqual('one - one');
+
+        comp.value = 'two';
+        tick(parent);
+        expect(getRenderedText(parent)).toEqual('one - one');
+
+        comp.cdr.markForCheck();
+        requestAnimationFrame.flush();
+        expect(getRenderedText(parent)).toEqual('one - two');
+
+        parent.value = 'two';
+        tick(parent);
+        expect(getRenderedText(parent)).toEqual('one - two');
+
+        comp.cdr.markForCheck();
+        requestAnimationFrame.flush();
+        expect(getRenderedText(parent)).toEqual('two - two');
+      });
+
+      // TODO(kara): add test for dynamic views once bug fix is in
+    });
+
   });
 
 });
