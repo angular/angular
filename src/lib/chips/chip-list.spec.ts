@@ -169,6 +169,22 @@ describe('MatChipList', () => {
           // It focuses the next-to-last item
           expect(manager.activeItemIndex).toEqual(lastIndex - 1);
         });
+
+        it('should not focus if chip list is not focused', () => {
+          let array = chips.toArray();
+          let midItem = array[2];
+
+          // Focus and blur the middle item
+          midItem.focus();
+          midItem._blur();
+
+          // Destroy the middle item
+          testComponent.remove = 2;
+          fixture.detectChanges();
+
+          // Should not have focus
+          expect(chipListInstance._keyManager.activeItemIndex).toEqual(-1);
+        });
       });
     });
 

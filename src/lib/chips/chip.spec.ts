@@ -79,12 +79,17 @@ describe('Chips', () => {
         expect(chipNativeElement.classList).not.toContain('mat-basic-chip');
       });
 
-      it('emits focus on click', () => {
-        spyOn(chipInstance, 'focus').and.callThrough();
+      it('emits focus only once for multiple clicks', () => {
+        let counter = 0;
+        chipInstance._onFocus.subscribe(() => {
+          counter ++ ;
+        });
 
-        chipNativeElement.click();
+        chipNativeElement.focus();
+        chipNativeElement.focus();
+        fixture.detectChanges();
 
-        expect(chipInstance.focus).toHaveBeenCalledTimes(1);
+        expect(counter).toBe(1);
       });
 
       it('emits destroy on destruction', () => {

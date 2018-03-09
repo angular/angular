@@ -108,7 +108,7 @@ export class MatChipTrailingIcon {}
     '[attr.aria-selected]': 'ariaSelected',
     '(click)': '_handleClick($event)',
     '(keydown)': '_handleKeydown($event)',
-    '(focus)': '_hasFocus = true',
+    '(focus)': 'focus()',
     '(blur)': '_blur()',
   },
 })
@@ -310,8 +310,11 @@ export class MatChip extends _MatChipMixinBase implements FocusableOption, OnDes
 
   /** Allows for programmatic focusing of the chip. */
   focus(): void {
-    this._elementRef.nativeElement.focus();
-    this._onFocus.next({chip: this});
+    if (!this._hasFocus) {
+      this._elementRef.nativeElement.focus();
+      this._onFocus.next({chip: this});
+    }
+    this._hasFocus = true;
   }
 
   /**
@@ -335,8 +338,6 @@ export class MatChip extends _MatChipMixinBase implements FocusableOption, OnDes
 
     event.preventDefault();
     event.stopPropagation();
-
-    this.focus();
   }
 
   /** Handle custom key presses. */

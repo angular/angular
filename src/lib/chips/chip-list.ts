@@ -518,7 +518,7 @@ export class MatChipList extends _MatChipListMixinBase implements MatFormFieldCo
   protected _updateFocusForDestroyedChips() {
     let chipsArray = this.chips;
 
-    if (this._lastDestroyedIndex != null && chipsArray.length > 0) {
+    if (this._lastDestroyedIndex != null && chipsArray.length > 0 && this.focused) {
       // Check whether the destroyed chip was the last item
       const newFocusIndex = Math.min(this._lastDestroyedIndex, chipsArray.length - 1);
       this._keyManager.setActiveItem(newFocusIndex);
@@ -567,8 +567,6 @@ export class MatChipList extends _MatChipListMixinBase implements MatFormFieldCo
       if (correspondingChip) {
         if (isUserInput) {
           this._keyManager.setActiveItem(correspondingChip);
-        } else {
-          this._keyManager.updateActiveItem(correspondingChip);
         }
       }
     }
@@ -652,6 +650,7 @@ export class MatChipList extends _MatChipListMixinBase implements MatFormFieldCo
 
   /** When blurred, mark the field as touched when focus moved outside the chip list. */
   _blur() {
+    this._keyManager.setActiveItem(-1);
     if (!this.disabled) {
       if (this._chipInput) {
         // If there's a chip input, we should check whether the focus moved to chip input.
