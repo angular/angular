@@ -12,14 +12,41 @@ import {MetadataObject, MetadataValue, isClassMetadata, isMetadataImportedSymbol
 
 import {MetadataTransformer, ValueTransform} from './metadata_cache';
 
-export type ResourceLoader = {
+const PRECONDITIONS_TEXT =
+    'angularCompilerOptions.enableResourceInlining requires all resources to be statically resolvable.';
+
+/** A subset of members from AotCompilerHost */
+export type ResourcesHost = {
+  resourceNameToFileName(resourceName: string, containingFileName: string): string | null;
   loadResource(path: string): Promise<string>| string;
 };
 
+export type StaticResourceLoader = {
+  get(url: string | MetadataValue): string;
+};
+
+function getResourceLoader(host: ResourcesHost, containingFileName: string): StaticResourceLoader {
+  return {
+    get(url: string | MetadataValue): string{
+      if (typeof url !== 'string') {
+        throw new Error('templateUrl and stylesUrl must be string literals. ' + PRECONDITIONS_TEXT);
+      } const fileName = host.resourceNameToFileName(url, containingFileName);
+      if (fileName) {
+        const content = host.loadResource(fileName);
+        if (typeof content !== 'string') {
+          throw new Error('Cannot handle async resource. ' + PRECONDITIONS_TEXT);
+        }
+        return content;
+      } throw new Error(`Failed to resolve ${url} from ${containingFileName}. ${PRECONDITIONS_TEXT}`);
+    }
+  };
+}
+
 export class InlineResourcesMetadataTransformer implements MetadataTransformer {
-  constructor(private host: ResourceLoader) {}
+  constructor(private host: ResourcesHost) {}
 
   start(sourceFile: ts.SourceFile): ValueTransform|undefined {
+    const loader = getResourceLoader(this.host, sourceFile.fileName);
     return (value: MetadataValue, node: ts.Node): MetadataValue => {
       if (isClassMetadata(value) && ts.isClassDeclaration(node) && value.decorators) {
         value.decorators.forEach(d => {
@@ -27,7 +54,7 @@ export class InlineResourcesMetadataTransformer implements MetadataTransformer {
               isMetadataImportedSymbolReferenceExpression(d.expression) &&
               d.expression.module === '@angular/core' && d.expression.name === 'Component' &&
               d.arguments) {
-            d.arguments = d.arguments.map(this.updateDecoratorMetadata.bind(this));
+            d.arguments = d.arguments.map(this.updateDecoratorMetadata.bind(this, loader));
           }
         });
       }
@@ -35,37 +62,16 @@ export class InlineResourcesMetadataTransformer implements MetadataTransformer {
     };
   }
 
-  inlineResource(url: MetadataValue): string|undefined {
-    if (typeof url === 'string') {
-      const content = this.host.loadResource(url);
-      if (typeof content === 'string') {
-        return content;
-      }
-    }
-  }
-
-  updateDecoratorMetadata(arg: MetadataObject): MetadataObject {
+  updateDecoratorMetadata(loader: StaticResourceLoader, arg: MetadataObject): MetadataObject {
     if (arg['templateUrl']) {
-      const template = this.inlineResource(arg['templateUrl']);
-      if (template) {
-        arg['template'] = template;
-        delete arg.templateUrl;
-      }
+      arg['template'] = loader.get(arg['templateUrl']);
+      delete arg.templateUrl;
     }
     if (arg['styleUrls']) {
       const styleUrls = arg['styleUrls'];
       if (Array.isArray(styleUrls)) {
-        let allStylesInlined = true;
-        const newStyles = styleUrls.map(styleUrl => {
-          const style = this.inlineResource(styleUrl);
-          if (style) return style;
-          allStylesInlined = false;
-          return styleUrl;
-        });
-        if (allStylesInlined) {
-          arg['styles'] = newStyles;
-          delete arg.styleUrls;
-        }
+        arg['styles'] = styleUrls.map(styleUrl => loader.get(styleUrl));
+        delete arg.styleUrls;
       }
     }
 
@@ -74,8 +80,9 @@ export class InlineResourcesMetadataTransformer implements MetadataTransformer {
 }
 
 export function getInlineResourcesTransformFactory(
-    program: ts.Program, host: ResourceLoader): ts.TransformerFactory<ts.SourceFile> {
+    program: ts.Program, host: ResourcesHost): ts.TransformerFactory<ts.SourceFile> {
   return (context: ts.TransformationContext) => (sourceFile: ts.SourceFile) => {
+    const loader = getResourceLoader(host, sourceFile.fileName);
     const visitor: ts.Visitor = node => {
       // Components are always classes; skip any other node
       if (!ts.isClassDeclaration(node)) {
@@ -86,7 +93,7 @@ export function getInlineResourcesTransformFactory(
       // @Component()
       const newDecorators = ts.visitNodes(node.decorators, (node: ts.Decorator) => {
         if (isComponentDecorator(node, program.getTypeChecker())) {
-          return updateDecorator(node, host);
+          return updateDecorator(node, loader);
         }
         return node;
       });
@@ -95,7 +102,7 @@ export function getInlineResourcesTransformFactory(
       // static decorators: {type: Function, args?: any[]}[]
       const newMembers = ts.visitNodes(
           node.members,
-          (node: ts.ClassElement) => updateAnnotations(node, host, program.getTypeChecker()));
+          (node: ts.ClassElement) => updateAnnotations(node, loader, program.getTypeChecker()));
 
       // Create a new AST subtree with our modifications
       return ts.updateClassDeclaration(
@@ -110,15 +117,15 @@ export function getInlineResourcesTransformFactory(
 /**
  * Update a Decorator AST node to inline the resources
  * @param node the @Component decorator
- * @param host provides access to load resources
+ * @param loader provides access to load resources
  */
-function updateDecorator(node: ts.Decorator, host: ResourceLoader): ts.Decorator {
+function updateDecorator(node: ts.Decorator, loader: StaticResourceLoader): ts.Decorator {
   if (!ts.isCallExpression(node.expression)) {
     // User will get an error somewhere else with bare @Component
     return node;
   }
   const expr = node.expression;
-  const newArguments = updateComponentProperties(expr.arguments, host);
+  const newArguments = updateComponentProperties(expr.arguments, loader);
   return ts.updateDecorator(
       node, ts.updateCall(expr, expr.expression, expr.typeArguments, newArguments));
 }
@@ -126,11 +133,12 @@ function updateDecorator(node: ts.Decorator, host: ResourceLoader): ts.Decorator
 /**
  * Update an Annotations AST node to inline the resources
  * @param node the static decorators property
- * @param host provides access to load resources
+ * @param loader provides access to load resources
  * @param typeChecker provides access to symbol table
  */
 function updateAnnotations(
-    node: ts.ClassElement, host: ResourceLoader, typeChecker: ts.TypeChecker): ts.ClassElement {
+    node: ts.ClassElement, loader: StaticResourceLoader,
+    typeChecker: ts.TypeChecker): ts.ClassElement {
   // Looking for a member of this shape:
   // PropertyDeclaration called decorators, with static modifier
   // Initializer is ArrayLiteralExpression
@@ -172,7 +180,7 @@ function updateAnnotations(
 
       const newDecoratorArgs = ts.updatePropertyAssignment(
           prop, prop.name,
-          ts.createArrayLiteral(updateComponentProperties(prop.initializer.elements, host)));
+          ts.createArrayLiteral(updateComponentProperties(prop.initializer.elements, loader)));
 
       return newDecoratorArgs;
     });
@@ -239,11 +247,11 @@ function isComponentSymbol(identifier: ts.Node, typeChecker: ts.TypeChecker) {
  * For each property in the object literal, if it's templateUrl or styleUrls, replace it
  * with content.
  * @param node the arguments to @Component() or args property of decorators: [{type:Component}]
- * @param host provides access to the loadResource method of the host
+ * @param loader provides access to the loadResource method of the host
  * @returns updated arguments
  */
 function updateComponentProperties(
-    args: ts.NodeArray<ts.Expression>, host: ResourceLoader): ts.NodeArray<ts.Expression> {
+    args: ts.NodeArray<ts.Expression>, loader: StaticResourceLoader): ts.NodeArray<ts.Expression> {
   if (args.length !== 1) {
     // User should have gotten a type-check error because @Component takes one argument
     return args;
@@ -279,10 +287,8 @@ function updateComponentProperties(
                 node, ts.createIdentifier('styles'),
                 ts.createArrayLiteral(ts.visitNodes(styleUrls, (expr: ts.Expression) => {
                   if (ts.isStringLiteral(expr)) {
-                    const styles = host.loadResource(expr.text);
-                    if (typeof styles === 'string') {
-                      return ts.createLiteral(styles);
-                    }
+                    const styles = loader.get(expr.text);
+                    return ts.createLiteral(styles);
                   }
                   return expr;
                 })));
@@ -290,11 +296,9 @@ function updateComponentProperties(
 
           case 'templateUrl':
             if (ts.isStringLiteral(node.initializer)) {
-              const template = host.loadResource(node.initializer.text);
-              if (typeof template === 'string') {
-                return ts.updatePropertyAssignment(
-                    node, ts.createIdentifier('template'), ts.createLiteral(template));
-              }
+              const template = loader.get(node.initializer.text);
+              return ts.updatePropertyAssignment(
+                  node, ts.createIdentifier('template'), ts.createLiteral(template));
             }
             return node;
 

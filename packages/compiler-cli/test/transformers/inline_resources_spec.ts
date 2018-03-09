@@ -122,7 +122,8 @@ describe('metadata transformer', () => {
         'someFile.ts', source, ts.ScriptTarget.Latest, /* setParentNodes */ true);
     const cache = new MetadataCache(
         new MetadataCollector(), /* strict */ true,
-        [new InlineResourcesMetadataTransformer({loadResource})]);
+        [new InlineResourcesMetadataTransformer(
+            {loadResource, resourceNameToFileName: (u: string) => u})]);
     const metadata = cache.getMetadata(sourceFile);
     expect(metadata).toBeDefined('Expected metadata from test source file');
     if (metadata) {
@@ -164,7 +165,8 @@ function convert(source: string) {
       host);
   const moduleSourceFile = program.getSourceFile(fileName);
   const transformers: ts.CustomTransformers = {
-    before: [getInlineResourcesTransformFactory(program, {loadResource})]
+    before: [getInlineResourcesTransformFactory(
+        program, {loadResource, resourceNameToFileName: (u: string) => u})]
   };
   let result = '';
   const emitResult = program.emit(
