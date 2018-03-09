@@ -10,6 +10,13 @@ $mat-icon-size: 24px !default;
   fill: currentColor;
   height: $mat-icon-size;
   width: $mat-icon-size;
+
+  &.mat-icon-inline {
+    font-size: inherit;
+    height: inherit;
+    line-height: inherit;
+    width: inherit;
+  }
 }
 
 .mat-form-field:not(.mat-form-field-appearance-legacy) {

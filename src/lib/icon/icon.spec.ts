@@ -50,6 +50,7 @@ describe('MatIcon', () => {
         IconFromSvgName,
         IconWithAriaHiddenFalse,
         IconWithBindingAndNgIf,
+        InlineIcon,
       ]
     });
 
@@ -82,14 +83,26 @@ describe('MatIcon', () => {
     const fixture = TestBed.createComponent(IconWithLigature);
     const iconElement = fixture.debugElement.nativeElement.querySelector('mat-icon');
     expect(iconElement.getAttribute('aria-hidden'))
-        .toBe('true', 'Expected the mat-icon element has aria-hidden="true" by default');
+      .toBe('true', 'Expected the mat-icon element has aria-hidden="true" by default');
   });
 
   it('should not override a user-provided aria-hidden attribute', () => {
     const fixture = TestBed.createComponent(IconWithAriaHiddenFalse);
     const iconElement = fixture.debugElement.nativeElement.querySelector('mat-icon');
     expect(iconElement.getAttribute('aria-hidden'))
-        .toBe('false', 'Expected the mat-icon element has the user-provided aria-hidden value');
+      .toBe('false', 'Expected the mat-icon element has the user-provided aria-hidden value');
+  });
+
+  it('should apply inline styling', () => {
+    const fixture = TestBed.createComponent(InlineIcon);
+    const iconElement = fixture.debugElement.nativeElement.querySelector('mat-icon');
+    expect(iconElement.classList.contains('mat-icon-inline'))
+      .toBeFalsy('Expected the mat-icon element to not include the inline styling class');
+
+    fixture.debugElement.componentInstance.inline = true;
+    fixture.detectChanges();
+    expect(iconElement.classList.contains('mat-icon-inline'))
+      .toBeTruthy('Expected the mat-icon element to include the inline styling class');
   });
 
   describe('Ligature icons', () => {
@@ -500,10 +513,15 @@ class IconFromSvgName {
 }
 
 @Component({template: '<mat-icon aria-hidden="false">face</mat-icon>'})
-class IconWithAriaHiddenFalse { }
+class IconWithAriaHiddenFalse {}
 
 @Component({template: `<mat-icon [svgIcon]="iconName" *ngIf="showIcon">{{iconName}}</mat-icon>`})
 class IconWithBindingAndNgIf {
   iconName = 'fluffy';
   showIcon = true;
+}
+
+@Component({template: `<mat-icon [inline]="inline">{{iconName}}</mat-icon>`})
+class InlineIcon {
+  inline = false;
 }
