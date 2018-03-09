@@ -38,7 +38,7 @@ describe('inline resources transformer', () => {
       });
     });
 
-    fit('should replace templateUrl', () => {
+    it('should replace templateUrl', () => {
       const actual = convert(`import {Component} from '@angular/core';
         @Component({
           templateUrl: './thing.html',
