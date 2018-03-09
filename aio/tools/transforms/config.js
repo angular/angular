@@ -10,7 +10,7 @@ const GUIDE_EXAMPLES_PATH = resolve(CONTENTS_PATH, 'examples');
 const SRC_PATH = resolve(AIO_PATH, 'src');
 const OUTPUT_PATH = resolve(SRC_PATH, 'generated');
 const DOCS_OUTPUT_PATH = resolve(OUTPUT_PATH, 'docs');
-const API_SOURCE_PATH = resolve(PROJECT_ROOT, 'packages');
+const API_SOURCE_PATH = resolve(CONTENTS_PATH, 'rxjs/src');
 
 function requireFolder(dirname, folderPath) {
   const absolutePath = resolve(dirname, folderPath);

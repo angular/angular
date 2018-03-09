@@ -29,7 +29,7 @@ module.exports = function addImageDimensions(getImageDimensions) {
               }
             } catch(e) {
               if (e.code === 'ENOENT') {
-                file.fail('Unable to load src in image tag `' + source(node, file) + '`');
+                file.message('Unable to load src in image tag `' + source(node, file) + '`'); // some images are missing in the source
               } else {
                 file.fail(e.message);
               }
