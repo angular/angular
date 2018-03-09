@@ -82,6 +82,9 @@ export class MatBottomSheetContainer extends BasePortalOutlet implements OnDestr
   /** Server-side rendering-compatible reference to the global document object. */
   private _document: Document;
 
+  /** Whether the component has been destroyed. */
+  private _destroyed: boolean;
+
   constructor(
     private _elementRef: ElementRef,
     private _changeDetectorRef: ChangeDetectorRef,
@@ -121,18 +124,23 @@ export class MatBottomSheetContainer extends BasePortalOutlet implements OnDestr
 
   /** Begin animation of bottom sheet entrance into view. */
   enter(): void {
-    this._animationState = 'visible';
-    this._changeDetectorRef.detectChanges();
+    if (!this._destroyed) {
+      this._animationState = 'visible';
+      this._changeDetectorRef.detectChanges();
+    }
   }
 
   /** Begin animation of the bottom sheet exiting from view. */
   exit(): void {
-    this._animationState = 'hidden';
-    this._changeDetectorRef.markForCheck();
+    if (!this._destroyed) {
+      this._animationState = 'hidden';
+      this._changeDetectorRef.markForCheck();
+    }
   }
 
   ngOnDestroy() {
     this._breakpointSubscription.unsubscribe();
+    this._destroyed = true;
   }
 
   _onAnimationDone(event: AnimationEvent) {

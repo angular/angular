@@ -290,6 +290,17 @@ describe('MatBottomSheet', () => {
     expect(overlayContainerElement.textContent).toContain('Taco');
   }));
 
+  it('should not throw when opening multiple bottom sheet in quick succession', fakeAsync(() => {
+    expect(() => {
+      for (let i = 0; i < 3; i++) {
+        bottomSheet.open(PizzaMsg);
+        viewContainerFixture.detectChanges();
+      }
+
+      flush();
+    }).not.toThrow();
+  }));
+
   it('should remove bottom sheet if another is shown while its still animating open',
     fakeAsync(() => {
       bottomSheet.open(PizzaMsg);
