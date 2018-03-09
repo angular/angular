@@ -46,7 +46,6 @@ export class InlineResourcesMetadataTransformer implements MetadataTransformer {
 
   updateDecoratorMetadata(arg: MetadataObject): MetadataObject {
     if (arg['templateUrl']) {
-
       const template = this.inlineResource(arg['templateUrl']);
       if (template) {
         arg['template'] = template;
