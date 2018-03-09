@@ -7,7 +7,6 @@
  */
 
 import {FocusMonitor} from '@angular/cdk/a11y';
-import {coerceBooleanProperty, coerceNumberProperty} from '@angular/cdk/coercion';
 import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
@@ -48,28 +47,16 @@ export class MatStepHeader implements OnDestroy {
   @Input() iconOverrides: {[key: string]: TemplateRef<any>};
 
   /** Index of the given step. */
-  @Input()
-  get index(): number { return this._index; }
-  set index(value: number) { this._index = coerceNumberProperty(value); }
-  private _index: number;
+  @Input() index: number;
 
   /** Whether the given step is selected. */
-  @Input()
-  get selected(): boolean { return this._selected; }
-  set selected(value: boolean) { this._selected = coerceBooleanProperty(value); }
-  private _selected: boolean;
+  @Input() selected: boolean;
 
   /** Whether the given step label is active. */
-  @Input()
-  get active(): boolean { return this._active; }
-  set active(value: boolean) { this._active = coerceBooleanProperty(value); }
-  private _active: boolean;
+  @Input() active: boolean;
 
   /** Whether the given step is optional. */
-  @Input()
-  get optional(): boolean { return this._optional; }
-  set optional(value: boolean) { this._optional = coerceBooleanProperty(value); }
-  private _optional: boolean;
+  @Input() optional: boolean;
 
   constructor(
     public _intl: MatStepperIntl,
