@@ -70,7 +70,7 @@ export class CdkTreeNodePadding<T> implements OnDestroy {
 
   _setPadding() {
     const padding = this._paddingIndent();
-    const paddingProp = this._dir && this._dir.value === 'rtl' ? 'padding-right' : 'padding-left';
+    const paddingProp = this._dir && this._dir.value === 'rtl' ? 'paddingRight' : 'paddingLeft';
 
     this._renderer.setStyle(this._element.nativeElement, paddingProp, padding);
   }
