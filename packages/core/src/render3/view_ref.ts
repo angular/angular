@@ -8,7 +8,7 @@
 
 import {EmbeddedViewRef as viewEngine_EmbeddedViewRef} from '../linker/view_ref';
 
-import {detectChanges, markViewDirty} from './instructions';
+import {checkNoChanges, detectChanges, markViewDirty} from './instructions';
 import {ComponentTemplate} from './interfaces/definition';
 import {LViewNode} from './interfaces/node';
 import {LView, LViewFlags} from './interfaces/view';
@@ -195,7 +195,13 @@ export class ViewRef<T> implements viewEngine_EmbeddedViewRef<T> {
    */
   detectChanges(): void { detectChanges(this.context); }
 
-  checkNoChanges(): void { notImplemented(); }
+  /**
+   * Checks the change detector and its children, and throws if any changes are detected.
+   *
+   * This is used in development mode to verify that running change detection doesn't
+   * introduce other changes.
+   */
+  checkNoChanges(): void { checkNoChanges(this.context); }
 }
 
 
