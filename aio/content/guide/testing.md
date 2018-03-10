@@ -2365,7 +2365,7 @@ Focus on the `overrideComponent` method.
 <code-example path="testing/src/app/hero/hero-detail.component.spec.ts" region="override-component-method" title="app/hero/hero-detail.component.spec.ts (overrideComponent)" linenums="false"></code-example>
 
 It takes two arguments: the component type to override (`HeroDetailComponent`) and an override metadata object.
-The [overide metadata object](#metadata-override-object) is a generic defined as follows:
+The [override metadata object](#metadata-override-object) is a generic defined as follows:
 
 <code-example format="." language="javascript">
   type MetadataOverride<T> = {

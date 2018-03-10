@@ -797,7 +797,7 @@ export interface Pipe {
    *
    * Normally pipe's `transform` method is only invoked when the inputs to pipe`s
    * `transform` method change. If the pipe has internal state (it's result are
-   * dependant on state other than its arguments) than set `pure` to `false` so
+   * dependent on state other than its arguments) than set `pure` to `false` so
    * that the pipe is invoked on each change-detection even if the arguments to the
    * pipe do not change.
    */

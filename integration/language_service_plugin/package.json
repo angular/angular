@@ -2,7 +2,7 @@
   "name": "language_service_plugin",
   "version": "0.0.0",
   "license": "MIT",
-  "decription": "Angular Language Service plugin integration test",
+  "description": "Angular Language Service plugin integration test",
   "dependencies": {
     "@angular/animations": "file:../../dist/packages-dist/animations",
     "@angular/common": "file:../../dist/packages-dist/common",

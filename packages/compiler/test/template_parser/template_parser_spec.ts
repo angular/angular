@@ -1433,7 +1433,7 @@ Binding to attribute 'onEvent' is disallowed for security reasons ("<my-componen
           ]);
         });
 
-        it('should report references with values that dont match a directive as errors', () => {
+        it('should report references with values that don\'t match a directive as errors', () => {
           expect(() => parse('<div #a="dirA"></div>', [])).toThrowError(`Template parse errors:
 There is no directive with "exportAs" set to "dirA" ("<div [ERROR ->]#a="dirA"></div>"): TestComp@0:5`);
         });
@@ -1455,7 +1455,7 @@ Reference "#a" is defined several times ("<div #a></div><div [ERROR ->]#a></div>
 
         });
 
-        it('should report duplicate reference names when using mutliple exportAs names', () => {
+        it('should report duplicate reference names when using multiple exportAs names', () => {
           const pizzaDirective =
               compileDirectiveMetadataCreate({
                 selector: '[dessert-pizza]',

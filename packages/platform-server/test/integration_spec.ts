@@ -195,7 +195,7 @@ export class HttpAfterExampleModule {
   declarations: [MyServerApp],
   imports: [ServerModule, HttpClientModule, HttpClientTestingModule],
 })
-export class HttpClientExmapleModule {
+export class HttpClientExampleModule {
 }
 
 @Component({selector: 'app', template: `<img [src]="'link'">`})
@@ -562,7 +562,7 @@ class EscapedTransferStoreModule {
            });
          }));
 
-      it('should call mutliple render hooks', async(() => {
+      it('should call multiple render hooks', async(() => {
            const consoleSpy = spyOn(console, 'warn');
            renderModule(MultiRenderHookModule, {document: doc}).then(output => {
              // title should be added by the render hook.
@@ -675,14 +675,14 @@ class EscapedTransferStoreModule {
       it('can inject HttpClient', async(() => {
            const platform = platformDynamicServer(
                [{provide: INITIAL_CONFIG, useValue: {document: '<app></app>'}}]);
-           platform.bootstrapModule(HttpClientExmapleModule).then(ref => {
+           platform.bootstrapModule(HttpClientExampleModule).then(ref => {
              expect(ref.injector.get(HttpClient) instanceof HttpClient).toBeTruthy();
            });
          }));
       it('can make HttpClient requests', async(() => {
            const platform = platformDynamicServer(
                [{provide: INITIAL_CONFIG, useValue: {document: '<app></app>'}}]);
-           platform.bootstrapModule(HttpClientExmapleModule).then(ref => {
+           platform.bootstrapModule(HttpClientExampleModule).then(ref => {
              const mock = ref.injector.get(HttpTestingController) as HttpTestingController;
              const http = ref.injector.get(HttpClient);
              ref.injector.get<NgZone>(NgZone).run(() => {
@@ -697,7 +697,7 @@ class EscapedTransferStoreModule {
       it('requests are macrotasks', async(() => {
            const platform = platformDynamicServer(
                [{provide: INITIAL_CONFIG, useValue: {document: '<app></app>'}}]);
-           platform.bootstrapModule(HttpClientExmapleModule).then(ref => {
+           platform.bootstrapModule(HttpClientExampleModule).then(ref => {
              const mock = ref.injector.get(HttpTestingController) as HttpTestingController;
              const http = ref.injector.get(HttpClient);
              ref.injector.get<NgZone>(NgZone).run(() => {
