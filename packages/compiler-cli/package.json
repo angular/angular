@@ -18,6 +18,9 @@
     "typescript": ">=2.7.2 <2.8",
     "@angular/compiler": "0.0.0-PLACEHOLDER"
   },
+  "engines" : {
+    "node" : ">=8.0"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/angular/angular.git"
