@@ -403,7 +403,7 @@ export class AnimationTransitionNamespace {
 
       // when this `if statement` does not continue forward it means that
       // a previous animation query has selected the current element and
-      // is animating it. In this situation want to continue fowards and
+      // is animating it. In this situation want to continue forwards and
       // allow the element to be queued up for animation later.
       if (currentPlayers && currentPlayers.length) {
         containsPotentialParentTransition = true;

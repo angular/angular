@@ -9,7 +9,7 @@
 import {verifyNoBrowserErrors} from 'e2e_util/e2e_util';
 import {browser, by, element} from 'protractor';
 
-// TODO(i): reenable once we are using a version of protractor containing the
+// TODO(i): re-enable once we are using a version of protractor containing the
 // change in https://github.com/angular/protractor/pull/3403
 xdescribe('ngUpgrade', function() {
   const URL = 'all/playground/src/upgrade/index.html';

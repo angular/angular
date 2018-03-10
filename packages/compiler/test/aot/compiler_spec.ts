@@ -208,7 +208,7 @@ describe('compiler (unbundled Angular)', () => {
 
     });
 
-    it('should error if not all arguments of an @Injectable class can be resolved if strictInjectionParamters is true',
+    it('should error if not all arguments of an @Injectable class can be resolved if strictInjectionParameters is true',
        () => {
          const FILES: MockDirectory = {
            app: {

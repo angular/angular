@@ -83,7 +83,7 @@ export class Symbols {
           }
           const from = stripQuotes(importDecl.moduleSpecifier.getText());
           if (importDecl.importClause.name) {
-            // An `import <identifier> form <module-specifier>` clause. Record the defualt symbol.
+            // An `import <identifier> form <module-specifier>` clause. Record the default symbol.
             symbols.set(
                 importDecl.importClause.name.text,
                 {__symbolic: 'reference', module: from, default: true});

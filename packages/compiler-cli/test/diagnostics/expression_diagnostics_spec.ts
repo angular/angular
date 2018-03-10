@@ -51,7 +51,7 @@ describe('expression diagnostics', () => {
     function expectNoDiagnostics(diagnostics: ts.Diagnostic[]) {
       if (diagnostics && diagnostics.length) {
         const message =
-            'messags: ' + diagnostics.map(d => messageToString(d.messageText)).join('\n');
+            'messages: ' + diagnostics.map(d => messageToString(d.messageText)).join('\n');
         expect(message).toEqual('');
       }
     }
@@ -175,7 +175,7 @@ describe('expression diagnostics', () => {
   it('should reject an uncalled event handler',
      () => reject(
          '<div (click)="click">{{person.name.first}}</div>', 'Unexpected callable expression'));
-  describe('with comparisions between nullable and non-nullable', () => {
+  describe('with comparisons between nullable and non-nullable', () => {
     it('should accept ==', () => accept(`<div>{{e == 1 ? 'a' : 'b'}}</div>`));
     it('should accept ===', () => accept(`<div>{{e === 1 ? 'a' : 'b'}}</div>`));
     it('should accept !=', () => accept(`<div>{{e != 1 ? 'a' : 'b'}}</div>`));
