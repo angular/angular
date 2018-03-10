@@ -1,6 +1,5 @@
 {
   "compilerOptions": {
-    "baseUrl": "tsconfig",
     "lib": [
       "es2017",
       "dom"
@@ -8,7 +7,6 @@
     "module": "commonjs",
     "moduleResolution": "node",
     "noEmitOnError": false,
-    "rootDir": "src/",
     "skipDefaultLibCheck": true,
     "skipLibCheck": true,
     "sourceMap": true,
