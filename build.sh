@@ -219,7 +219,8 @@ minify() {
     base_file=$( basename "${file}" )
     if [[ "${base_file}" =~ $regex && "${base_file##*.}" != "map" ]]; then
       local out_file=$(dirname "${file}")/${BASH_REMATCH[1]}.min.js
-      $UGLIFYJS -c --screw-ie8 --comments -o ${out_file} --source-map ${out_file}.map --prefix relative --source-map-include-sources ${file}
+      echo "======          $UGLIFY -c --comments -o ${out_file} --source-map "includeSources=true,content='${file}.map',filename='${out_file}.map'" ${file}"
+      $UGLIFY -c --comments -o ${out_file} --source-map "includeSources=true,content='${file}.map',filename='${out_file}.map'" ${file}
     fi
   done
 }
@@ -344,7 +345,7 @@ N="
 "
 TSC=`pwd`/node_modules/.bin/tsc
 NGC="node --max-old-space-size=3000 `pwd`/dist/tools/@angular/compiler-cli/src/main"
-UGLIFYJS=`pwd`/node_modules/.bin/uglifyjs
+UGLIFY=`pwd`/node_modules/.bin/uglifyjs
 TSCONFIG=./tools/tsconfig.json
 ROLLUP=`pwd`/node_modules/.bin/rollup
 
