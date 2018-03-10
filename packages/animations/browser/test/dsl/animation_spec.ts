@@ -381,8 +381,8 @@ function createDiv() {
         });
       });
 
-      describe('subtitutions', () => {
-        it('should allow params to be subtituted even if they are not defaulted in a reusable animation',
+      describe('substitutions', () => {
+        it('should allow params to be substituted even if they are not defaulted in a reusable animation',
            () => {
              const myAnimation = animation([
                style({left: '{{ start }}'}),

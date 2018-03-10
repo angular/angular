@@ -73,7 +73,7 @@ export interface CompilerOptions extends ts.CompilerOptions {
   // Whether to generate a flat module index of the given name and the corresponding
   // flat module metadata. This option is intended to be used when creating flat
   // modules similar to how `@angular/core` and `@angular/common` are packaged.
-  // When this option is used the `package.json` for the library should refered to the
+  // When this option is used the `package.json` for the library should referred to the
   // generated flat module index instead of the library index file. When using this
   // option only one .metadata.json file is produced that contains all the metadata
   // necessary for symbols exported from the library index.
@@ -223,7 +223,7 @@ export interface CompilerHost extends ts.CompilerHost {
   /**
    * Load a referenced resource either statically or asynchronously. If the host returns a
    * `Promise<string>` it is assumed the user of the corresponding `Program` will call
-   * `loadNgStructureAsync()`. Returing  `Promise<string>` outside `loadNgStructureAsync()` will
+   * `loadNgStructureAsync()`. Returning  `Promise<string>` outside `loadNgStructureAsync()` will
    * cause a diagnostics diagnostic error or an exception to be thrown.
    */
   readResource?(fileName: string): Promise<string>|string;
@@ -323,7 +323,7 @@ export interface Program {
   getNgStructuralDiagnostics(cancellationToken?: ts.CancellationToken): ReadonlyArray<Diagnostic>;
 
   /**
-   * Retrieve the semantic diagnostics from TypeScript. This is equivilent to calling
+   * Retrieve the semantic diagnostics from TypeScript. This is equivalent to calling
    * `getTsProgram().getSemanticDiagnostics()` directly and is included for completeness.
    */
   getTsSemanticDiagnostics(sourceFile?: ts.SourceFile, cancellationToken?: ts.CancellationToken):

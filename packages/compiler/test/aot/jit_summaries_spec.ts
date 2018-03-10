@@ -255,7 +255,7 @@ describe('aot summaries for jit', () => {
   });
 
   it('should create and use reexports for imported NgModules ' +
-         'accross compilation units',
+         'across compilation units',
      () => {
        const lib1In = {
          'lib1': {

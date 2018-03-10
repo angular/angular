@@ -310,7 +310,7 @@ export class MetadataBundler {
     const exportAlls = new Set<string>();
     for (const symbol of exportedSymbols) {
       if (symbol.reexport) {
-        // symbol.declaration is guarenteed to be defined during the phase this method is called.
+        // symbol.declaration is guaranteed to be defined during the phase this method is called.
         const declaration = symbol.declaration !;
         const module = declaration.module;
         if (declaration !.name == '*') {

@@ -1923,7 +1923,7 @@ class TestLocals {
   }
 }
 
-@Component({selector: 'root', template: 'emtpy'})
+@Component({selector: 'root', template: 'empty'})
 class Person {
   age: number;
   name: string;

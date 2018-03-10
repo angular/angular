@@ -645,7 +645,7 @@ export function state(
  * destination, keyframes can describe how each style entry is applied and at what point within the
  * animation arc (much like CSS Keyframe Animations do).
  *
- * For each `style()` entry an `offset` value can be set. Doing so allows to specifiy at what
+ * For each `style()` entry an `offset` value can be set. Doing so allows to specify at what
  * percentage of the animate time the styles will be applied.
  *
  * ```typescript
@@ -1052,7 +1052,7 @@ export function useAnimation(
  *
  * ### Usage
  *
- * query() is designed to collect mutiple elements and works internally by using
+ * query() is designed to collect multiple elements and works internally by using
  * `element.querySelectorAll`. An additional options object can be provided which
  * can be used to limit the total amount of items to be collected.
  *

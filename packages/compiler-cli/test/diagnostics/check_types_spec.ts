@@ -757,7 +757,7 @@ describe('ng type checker', () => {
     it('should reject an access to a nullable field of a method result', () => {
       r('<div>{{getMaybePerson().name}}</div>', `Object is possibly 'undefined'.`, '0:5');
     });
-    it('should accept a nullable assert of a nullable field refernces of a method result',
+    it('should accept a nullable assert of a nullable field references of a method result',
        () => { a('{{getMaybePerson()!.name}}'); });
     it('should accept a safe property access of a nullable field reference of a method result',
        () => { a('{{getMaybePerson()?.name}}'); });

@@ -172,7 +172,7 @@ export class Location {
 
   /**
    * If url has a trailing slash, remove it, otherwise return url as is. This
-   * method looks for the first occurence of either #, ?, or the end of the
+   * method looks for the first occurrence of either #, ?, or the end of the
    * line as `/` characters after any of these should not be replaced.
    */
   public static stripTrailingSlash(url: string): string {
