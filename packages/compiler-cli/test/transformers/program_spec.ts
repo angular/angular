@@ -20,11 +20,22 @@ import {TestSupport, expectNoDiagnosticsInProgram, setup} from '../test_support'
 describe('ng program', () => {
   let testSupport: TestSupport;
   let errorSpy: jasmine.Spy&((s: string) => void);
+  // store ts version before altering it during unit tests
+  const realTsVersion = ts.version;
+
+  afterAll(() => { recoverRealTsVersion(); });
 
   beforeEach(() => {
     errorSpy = jasmine.createSpy('consoleError').and.callFake(console.error);
     testSupport = setup();
+    // make sure that whatever added future specs, the typescript version is correct is always
+    // correct in the beginning
+    recoverRealTsVersion();
   });
+
+  function dangerouslySetTsVersion(version: string) { (ts as any).version = version; }
+
+  function recoverRealTsVersion() { (ts as any).version = realTsVersion; }
 
   function createModuleAndCompSource(prefix: string, template: string = prefix + 'template') {
     const templateEntry =
@@ -1032,5 +1043,45 @@ describe('ng program', () => {
          expect(structuralErrors[0].messageText)
              .toContain('Function expressions are not supported');
        });
+  });
+
+  describe('TypeScript versions', () => {
+
+    afterAll(() => { recoverRealTsVersion(); });
+
+    beforeEach(() => { recoverRealTsVersion(); });
+
+    const versionError = (version: string) =>
+        `The Angular Compiler requires TypeScript >=2.4.2 and <2.7 but ${version} was found instead.`;
+    function createProgramWithOptions(overrideOptions: ng.CompilerOptions = {}) {
+      testSupport.writeFiles({
+        'src/index.ts': createModuleAndCompSource('main'),
+      });
+      compile(undefined, overrideOptions);
+    }
+
+    it('should not throw when a supported TypeScript version is used', () => {
+      dangerouslySetTsVersion('2.4.2');
+      expect(() => createProgramWithOptions()).not.toThrow();
+      expect(() => createProgramWithOptions({disableTypeScriptVersionCheck: false})).not.toThrow();
+      expect(() => createProgramWithOptions({disableTypeScriptVersionCheck: true})).not.toThrow();
+    });
+
+    it('should throw when using a TypeScript version < the minimum supported one', () => {
+      dangerouslySetTsVersion('2.4.1');
+      expect(() => createProgramWithOptions()).toThrowError(versionError('2.4.1'));
+      expect(() => createProgramWithOptions({disableTypeScriptVersionCheck: false}))
+          .toThrowError(versionError('2.4.1'));
+      expect(() => createProgramWithOptions({disableTypeScriptVersionCheck: true}))
+          .toThrowError(versionError('2.4.1'));
+    });
+
+    it('should handle a TypeScript version > the maximum supported one', () => {
+      dangerouslySetTsVersion('2.7.0');
+      expect(() => createProgramWithOptions()).toThrowError(versionError('2.7.0'));
+      expect(() => createProgramWithOptions({disableTypeScriptVersionCheck: false}))
+          .toThrowError(versionError('2.7.0'));
+      expect(() => createProgramWithOptions({disableTypeScriptVersionCheck: true})).not.toThrow();
+    });
   });
 });
