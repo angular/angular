@@ -11,19 +11,20 @@
   {%- if returnType %}: {$ returnType | escape $}{% endif -%}
 {%- endmacro -%}
 
-{%- macro renderParameters(parameters, containerClass, parameterClass) -%}
+{%- macro renderParameters(parameters, containerClass, parameterClass, showType) -%}
 {%- if parameters.length -%}
 <table class="is-full-width list-table parameters-table {$ containerClass $}">
   <tbody>
   {% for parameter in parameters %}
     <tr class="{$ parameterClass $}">
       <td class="param-name"><a id="{$ parameter.anchor $}"></a>{$ parameter.name $}</td>
+      {% if showType %}<td class="param-type"><code>{$ parameter.type $}</code></td>{% endif %}
       <td class="param-description">
       {% marked %}
         {% if parameter.isOptional or parameter.defaultValue !== undefined %}Optional. Default is `{$ parameter.defaultValue === undefined and 'undefined' or parameter.defaultValue $}`.{% endif %}
 
         {% if parameter.description | trim %}{$ parameter.description $}
-        {% elseif parameter.type %}<code>{$ parameter.type $}</code>
+        {% elseif not showType and parameter.type %}<p>Type: <code>{$ parameter.type $}</code>.</p>
         {% endif %}
       {% endmarked %}
       </td>

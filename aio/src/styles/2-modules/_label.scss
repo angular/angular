@@ -48,6 +48,10 @@ label.raised, .api-header label {
 
     &.api-status-label {
         background-color: $mediumgray;
+
+        &.impure-pipe {
+            background-color: $brightred;
+        }
     }
 
     &.api-type-label {

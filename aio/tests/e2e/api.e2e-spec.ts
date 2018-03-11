@@ -51,6 +51,12 @@ describe('Api pages', function() {
     expect(page.getSection('instance-properties').isPresent()).toBe(false);
   });
 
+  it('should show "impure" badge if pipe is not pure', () => {
+    const page = new ApiPage('api/common/AsyncPipe');
+    const impureBadge = page.getBadge('impure-pipe');
+    expect(impureBadge.isPresent()).toBe(true);
+  });
+
   it('should show links to github', () => {
     const page = new ApiPage('api/core/EventEmitter');
     /* tslint:disable:max-line-length */
