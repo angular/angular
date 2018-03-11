@@ -45,7 +45,7 @@ decorator is sufficient to generate the definition. However, in the case of
 interpreting the template, the compiler needs to know the selector defined for
 each component, directive and pipe that are in scope of the template. The
 purpose of this document is to define the information is needed by the
-compiler and how that information is is serialized to be discovered and
+compiler and how that information is serialized to be discovered and
 used by subsequent calls to `ngc`.
 
 This document refers to this style of code generation as ivy after the code
@@ -317,7 +317,7 @@ where the `type` values are generated as references.
 ```ts
 @NgModule({
   imports: [CommonModule, UtilityModule],
-  declarations: [MyComponent, MyDirective, MyComponent],
+  declarations: [MyComponent, MyDirective, MyPipe],
   exports: [MyComponent, MyDirective, MyPipe, UtilityModule],
   providers: [{
     provide: Service, useClass: ServiceImpl
@@ -490,9 +490,9 @@ need to be back-patch onto the component, directive, module, pipe, and
 injectable classes.
 
 If the Angular compiler option `"renderer2BackPatching"` is enabled, the
-compiler will generate an `angular.back-patch` module in the to root output
+compiler will generate an `angular.back-patch` module into the root output
 directory of the project. If `"generateRenderer2Factories"` is set to `true`
-then the default value for `"renderer2BackPatching"` is `true` and it is and
+then the default value for `"renderer2BackPatching"` is `true` and it is an
 error for it to be `false`. `"renderer2BackPatching"` is ignored if `"enableIvy"`
 is `false`.
 
