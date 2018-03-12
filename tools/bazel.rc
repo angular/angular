@@ -36,6 +36,9 @@ test --test_output=errors
 build --experimental_ui
 test --experimental_ui
 
+# Output to a more coventional location
+build --symlink_prefix=dist/bazel/
+
 ###############################
 # Typescript / Angular / Sass #
 ###############################

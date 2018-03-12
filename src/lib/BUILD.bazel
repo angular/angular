@@ -1,0 +1,15 @@
+load("//tools:sass_bundle.bzl", "sass_bundle")
+load("//:components.bzl", "MATERIAL_PACKAGES")
+
+
+sass_bundle(
+  name = "theming_bundle",
+  srcs = [
+    "//src/cdk/a11y:a11y_scss_partials",
+    "//src/cdk/overlay:overlay_scss_partials",
+  ] + [
+    "//src/lib/%s:%s_scss_partials" % (p, p.replace('-', '_')) for p in MATERIAL_PACKAGES
+  ],
+  entry_point = '//src/lib/core:theming/_all-theme.scss',
+  output_name = "_theming.scss",
+)

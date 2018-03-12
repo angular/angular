@@ -22,6 +22,11 @@ ng_module(
   tsconfig = ":tsconfig-build.json",
 )
 
+# TODO(jelbourn): replace this w/ sass_library when it supports acting like a filegroup
+filegroup(
+  name = "select_scss_partials",
+  srcs = glob(["**/_*.scss"]),
+)
 
 sass_binary(
   name = "select_scss",

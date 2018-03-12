@@ -6,11 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, Input, ElementRef, Inject, Optional, NgZone, OnDestroy} from '@angular/core';
-import {coerceBooleanProperty} from '@angular/cdk/coercion';
-import {ThemePalette} from '@angular/material/core';
 import {AriaDescriber} from '@angular/cdk/a11y';
+import {coerceBooleanProperty} from '@angular/cdk/coercion';
 import {DOCUMENT} from '@angular/common';
+import {Directive, ElementRef, Inject, Input, NgZone, OnDestroy, Optional} from '@angular/core';
+import {ThemePalette} from '@angular/material/core';
+
 
 let nextId = 0;
 

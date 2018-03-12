@@ -1,4 +1,4 @@
-workspace(name = "angular_material_src")
+workspace(name = "angular_material")
 
 # Add nodejs rules
 git_repository(

@@ -3,11 +3,6 @@ load("@angular//:index.bzl", "ng_module")
 load("@io_bazel_rules_sass//sass:sass.bzl", "sass_library")
 load("@build_bazel_rules_typescript//:defs.bzl", "ts_library", "ts_web_test")
 
-sass_library(
-  name = "a11y_scss_lib",
-  srcs = glob(["**/_*.scss"]),
-)
-
 
 ng_module(
   name = "a11y",
@@ -20,6 +15,17 @@ ng_module(
     "@rxjs",
   ],
   tsconfig = ":tsconfig-build.json",
+)
+
+# TODO(jelbourn): remove this when sass_library acts like a filegroup
+filegroup(
+  name = "a11y_scss_partials",
+  srcs = glob(["**/_*.scss"]),
+)
+
+sass_library(
+  name = "a11y_scss_lib",
+  srcs = [":a11y_scss_partials"],
 )
 
 ts_library(

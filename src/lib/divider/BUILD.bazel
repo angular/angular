@@ -16,12 +16,17 @@ ng_module(
 )
 
 
+# TODO(jelbourn): replace this w/ sass_library when it supports acting like a filegroup
+filegroup(
+  name = "divider_scss_partials",
+  srcs = glob(["**/_*.scss"]),
+)
+
 sass_library(
   name = "divider_scss_lib",
   srcs = ["divider.scss"],
   deps = ["//src/lib/core:core_scss_lib"],
 )
-
 
 sass_binary(
   name = "divider_scss",

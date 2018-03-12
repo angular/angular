@@ -26,10 +26,16 @@ ng_module(
 )
 
 
+# TODO(jelbourn): remove this when sass_library acts like a filegroup
+filegroup(
+  name = "tabs_scss_partials",
+  srcs = glob(["**/_*.scss"]),
+)
+
 # Library of all tabs scss partials.
 sass_library(
   name = "tabs_scss_lib",
-  srcs = glob(["**/_*.scss"]),
+  srcs = [":tabs_scss_partials"],
   deps = ["//src/lib/core:core_scss_lib"],
 )
 

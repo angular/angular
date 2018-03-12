@@ -16,11 +16,16 @@ ng_module(
   tsconfig = ":tsconfig-build.json",
 )
 
+# TODO(jelbourn): remove this when sass_library acts like a filegroup
+filegroup(
+  name = "button_scss_partials",
+  srcs = glob(["**/_*.scss"]),
+)
 
 # Library of all button scss partials.
 sass_library(
   name = "button_scss_lib",
-  srcs = glob(["**/_*.scss"]),
+  srcs = [":button_scss_partials"],
   deps = ["//src/lib/core:core_scss_lib"],
 )
 
