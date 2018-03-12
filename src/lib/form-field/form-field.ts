@@ -97,12 +97,11 @@ export const MAT_FORM_FIELD_DEFAULT_OPTIONS =
   ],
   animations: [matFormFieldAnimations.transitionMessages],
   host: {
-    'class': 'mat-input-container mat-form-field',
+    'class': 'mat-form-field',
     '[class.mat-form-field-appearance-standard]': 'appearance == "standard"',
     '[class.mat-form-field-appearance-fill]': 'appearance == "fill"',
     '[class.mat-form-field-appearance-outline]': 'appearance == "outline"',
     '[class.mat-form-field-appearance-legacy]': 'appearance == "legacy"',
-    '[class.mat-input-invalid]': '_control.errorState',
     '[class.mat-form-field-invalid]': '_control.errorState',
     '[class.mat-form-field-can-float]': '_canLabelFloat',
     '[class.mat-form-field-should-float]': '_shouldLabelFloat()',

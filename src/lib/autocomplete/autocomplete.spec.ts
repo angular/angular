@@ -1298,7 +1298,7 @@ describe('MatAutocomplete', () => {
       fixture.detectChanges();
 
       input = fixture.debugElement.query(By.css('input')).nativeElement;
-      inputReference = fixture.debugElement.query(By.css('.mat-input-flex')).nativeElement;
+      inputReference = fixture.debugElement.query(By.css('.mat-form-field-flex')).nativeElement;
     });
 
     it('should use below positioning by default', fakeAsync(() => {
