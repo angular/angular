@@ -25,12 +25,13 @@ describe('compiler sanitization', () => {
 
     @Component({
       selector: 'my-component',
-      template: `<div [innerHTML]="innerHTML"></div>` +
+      template: `<div [innerHTML]="innerHTML" [hidden]="hidden"></div>` +
           `<img [style.background-image]="style" [src]="src">` +
           `<script [attr.src]=src></script>`
     })
     class MyComponent {
       innerHTML: string = '<frame></frame>';
+      hidden: boolean = true;
       style: string = `url("http://evil")`;
       url: string = 'javascript:evil()';
 
@@ -47,6 +48,7 @@ describe('compiler sanitization', () => {
             $r3$.ɵe();
           }
           $r3$.ɵp(0, 'innerHTML', $r3$.ɵb(ctx.innerHTML), $r3$.ɵsanitizeHtml);
+          $r3$.ɵp(0, 'hidden', $r3$.ɵb(ctx.hidden));
           $r3$.ɵs(1, 'background-image', $r3$.ɵb(ctx.style), $r3$.ɵsanitizeStyle);
           $r3$.ɵp(1, 'src', $r3$.ɵb(ctx.url), $r3$.ɵsanitizeUrl);
           $r3$.ɵa(1, 'srcset', $r3$.ɵb(ctx.url), $r3$.ɵsanitizeUrl);
@@ -59,6 +61,7 @@ describe('compiler sanitization', () => {
     const div = getHostElement(myComponent).querySelector('div') !;
     // because sanitizer removed it is working.
     expect(div.innerHTML).toEqual('');
+    expect(div.hidden).toEqual(true);
 
     const img = getHostElement(myComponent).querySelector('img') !;
     // because sanitizer removed it is working.

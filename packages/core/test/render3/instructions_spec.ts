@@ -34,7 +34,7 @@ describe('instructions', () => {
   });
 
   describe('elementProperty', () => {
-    it('should use sanitizer function', () => {
+    it('should use sanitizer function when available', () => {
       const t = new TemplateFixture(createDiv);
 
       t.update(() => elementProperty(0, 'title', 'javascript:true', sanitizeUrl));
@@ -44,6 +44,14 @@ describe('instructions', () => {
           () => elementProperty(
               0, 'title', bypassSanitizationTrustUrl('javascript:false'), sanitizeUrl));
       expect(t.html).toEqual('<div title="javascript:false"></div>');
+    });
+
+    it('should not stringify non string values', () => {
+      const t = new TemplateFixture(createDiv);
+
+      t.update(() => elementProperty(0, 'hidden', false));
+      // The hidden property would be true if `false` was stringified into `"false"`.
+      expect((t.hostNode.native as HTMLElement).querySelector('div') !.hidden).toEqual(false);
     });
   });
 
