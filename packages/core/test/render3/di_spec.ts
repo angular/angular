@@ -420,7 +420,7 @@ describe('di', () => {
           type: IfDirective,
           factory: () => new IfDirective(injectTemplateRef(), injectViewContainerRef()),
           inputs: {myIf: 'myIf'},
-          features: [PublicFeature, NgOnChangesFeature]
+          features: [PublicFeature, NgOnChangesFeature()]
         });
       }
 
