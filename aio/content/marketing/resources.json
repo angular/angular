@@ -64,7 +64,8 @@
       }
     }
   },
-  "Development": {
+  "개발": {
+    "//Development": "",
     "order": 1,
     "subCategories": {
       "Cross-Platform Development": {
@@ -146,206 +147,239 @@
           }
         }
       },
-      "IDEs": {
+      "IDE 지원": {
+        "//IDEs": "",
         "order": 1,
         "resources": {
           "ab": {
-            "desc": "VS Code is a Free, Lightweight Tool for Editing and Debugging Web Apps.",
+            "//desc": "VS Code is a Free, Lightweight Tool for Editing and Debugging Web Apps.",
+            "desc": "VS Code는 웹 앱을 개발하거나 디버깅할 때 사용합니다. 가볍고 무료입니다.",
             "logo": "",
             "rev": true,
             "title": "Visual Studio Code",
             "url": "http://code.visualstudio.com/"
           },
           "ab2": {
-            "desc": "Lightweight yet powerful IDE, perfectly equipped for complex client-side development and server-side development with Node.js",
+            "//desc": "Lightweight yet powerful IDE, perfectly equipped for complex client-side development and server-side development with Node.js",
+            "desc": "가볍지만 강력한 IDE입니다. 복잡한 클라이언트 애플리케이션이나 node.js 서버를 개발한다면 단언컨대 최고의 선택입니다.",
             "logo": "",
             "rev": true,
             "title": "Webstorm",
             "url": "https://www.jetbrains.com/webstorm/"
           },
           "ab3": {
-            "desc": "Capable and Ergonomic  Java * IDE",
+            "//desc": "Capable and Ergonomic  Java * IDE",
+            "desc": "Java 개발 환경에서도 Angular를 개발할 수 있습니다.",
             "logo": "",
             "rev": true,
             "title": "IntelliJ IDEA",
             "url": "https://www.jetbrains.com/idea/"
           },
           "angular-ide": {
-            "desc": "Built first and foremost for Angular. Turnkey setup for beginners; powerful for experts.",
+            "//desc": "Built first and foremost for Angular. Turnkey setup for beginners; powerful for experts.",
+            "desc": "Angular 개발에 특화되어 개발된 IDE입니다. Angular 개발을 처음 접하는 개발자는 물론이고, 개발에 이미 익숙한 사람도 편하게 사용할 수 있습니다.",
             "rev": true,
             "title": "Angular IDE by Webclipse",
             "url": "https://www.genuitec.com/products/angular-ide"
           }
         }
       },
-      "Tooling": {
+      "개발 툴": {
+        "//Tooling": "",
         "order": 2,
         "resources": {
           "-KLIzHfBEr1qMMUDxfq3": {
-            "desc": "Generate an Angular CRUD application from an existing database schema",
+            "//desc": "Generate an Angular CRUD application from an existing database schema",
+            "desc": "기존 DB를 그대로 활용하는 Angular CRUD 애플리케이션을 만들어보세요.",
             "rev": true,
             "title": "Celerio Angular Quickstart",
             "url": "https://github.com/jaxio/celerio-angular-quickstart"
           },
           "a1": {
-            "desc": "A Google Chrome Dev Tools extension for debugging Angular applications.",
+            "//desc": "A Google Chrome Dev Tools extension for debugging Angular applications.",
+            "desc": "Chrome 개발자 도구에서도 Angular 애플리케이션을 디버깅할 수 있습니다.",
             "logo": "https://augury.angular.io/images/augury-logo.svg",
             "rev": true,
             "title": "Augury",
             "url": "http://augury.angular.io/"
           },
           "b1": {
-            "desc": "Server-side Rendering for Angular apps.",
+            "//desc": "Server-side Rendering for Angular apps.",
+            "desc": "Angular 애플리케이션에 서버사이드 렌더링 기능을 더해보세요.",
             "logo": "https://cloud.githubusercontent.com/assets/1016365/10639063/138338bc-7806-11e5-8057-d34c75f3cafc.png",
             "rev": true,
             "title": "Angular Universal",
             "url": "https://github.com/angular/universal"
           },
           "c1": {
-            "desc": "Lightweight development only node server",
+            "//desc": "Lightweight development only node server",
+            "desc": "아주 간단한 node 서버입니다.",
             "logo": "",
             "rev": true,
             "title": "Lite-server",
             "url": "https://github.com/johnpapa/lite-server"
           },
           "cli": {
-            "desc": "The official Angular CLI makes it easy to create and develop applications from initial commit to production deployment. It already follows our best practices right out of the box!",
+            "//desc": "The official Angular CLI makes it easy to create and develop applications from initial commit to production deployment. It already follows our best practices right out of the box!",
+            "desc": "프로젝트 생성부터 제품 배포까지 모든 개발 단계에 활용할 수 있는 공식 Angular 커맨드라인 툴입니다. 많은 사람들이 주목하고 있는 프로젝트를 지금 확인해보세요!",
             "rev": true,
             "title": "Angular CLI",
             "url": "https://cli.angular.io"
           },
           "d1": {
-            "desc": "Static analysis for Angular projects.",
+            "//desc": "Static analysis for Angular projects.",
+            "desc": "Angular 애플리케이션 정적 분석툴입니다.",
             "logo": "",
             "rev": true,
             "title": "Codelyzer",
             "url": "https://github.com/mgechev/codelyzer"
           },
           "e1": {
-            "desc": "This package provides facilities for developers building Angular applications on ASP.NET.",
+            "//desc": "This package provides facilities for developers building Angular applications on ASP.NET.",
+            "desc": "ASP.NET 환경에서도 Angular 애플리케이션을 제공할 수 있습니다.",
             "logo": "",
             "rev": true,
             "title": "Universal for ASP.NET",
             "url": "https://github.com/aspnet/nodeservices"
           },
           "f1": {
-            "desc": "This tool generates dedicated documentation for Angular applications.",
+            "//desc": "This tool generates dedicated documentation for Angular applications.",
+            "desc": "Angular 애플리케이션을 개발자 문서로 추출하려면 이 툴을 확인해보세요.",
             "logo": "",
             "rev": true,
             "title": "Compodoc",
             "url": "https://github.com/compodoc/compodoc"
           },
           "ncg": {
-            "desc": "Generate several types of CRUD apps complete with e2e testing using template-sets for Angular, Material Design, Bootstrap, Kendo UI, Ionic, ...",
+            "//desc": "Generate several types of CRUD apps complete with e2e testing using template-sets for Angular, Material Design, Bootstrap, Kendo UI, Ionic, ...",
+            "desc": "e2e 테스트까지 완벽하게 준비된 Angular CRUD 앱을 만들어보세요. Angular, 머티리얼 디자인, 부트스트랩, Kendo UI, Ionic 등 모든 것이 준비되어 있습니다.",
             "logo": "https://avatars3.githubusercontent.com/u/27976684",
             "rev": true,
-            "title": "NinjaCodeGen - Angular CRUD Generator",
+            "//title": "NinjaCodeGen - Angular CRUD Generator",
+            "title": "NinjaCodeGen - Angular CRUD 생성기",
             "url": "https://ninjaCodeGen.com"
           }
         }
       },
-      "UI Components": {
+      "UI 컴포넌트": {
+        "//UI Components" : "",
         "order": 4,
         "resources": {
           "IgniteUIforAngular": {
-            "desc": "Ignite UI for Angular is a dependency-free Angular toolkit for building modern web apps.",
+            "//desc": "Ignite UI for Angular is a dependency-free Angular toolkit for building modern web apps.",
+            "desc": "Ignite UI는 Angular 애플리케이션을 구성하는 툴입니다. 의존성이 복잡하지도 않습니다.",
             "rev": true,
             "title": "Ignite UI for Angular",
             "url": "https://www.infragistics.com/products/ignite-ui-angular"
           },
           "DevExtreme": {
-            "desc": "50+ UI components including data grid, pivot grid, scheduler, charts, editors, maps and other multi-purpose controls for creating highly responsive web applications for touch devices and traditional desktops.",
+            "//desc": "50+ UI components including data grid, pivot grid, scheduler, charts, editors, maps and other multi-purpose controls for creating highly responsive web applications for touch devices and traditional desktops.",
+            "desc": "데이터 그리드나 피봇 그리드, 달력, 차트, 에디터, 지도 등 50개 이상의 UI 컴포넌트를 제공합니다. 모든 컴포넌트는 반응형 웹에 최적화되어 있으며, 터치 디바이스나 데스크탑에 함께 사용할 수 있습니다.",
             "rev": true,
             "title": "DevExtreme",
             "url": "https://js.devexpress.com/Overview/Angular/"
           },
           "234237": {
-            "desc": "UX guidelines, HTML/CSS framework, and Angular components working together to craft exceptional experiences",
+            "//desc": "UX guidelines, HTML/CSS framework, and Angular components working together to craft exceptional experiences",
+            "dest": "Angular 컴포넌트에 어울리는 UX를 고민한다면 이 디자인 가이드를 확인해보세요.",
             "rev": true,
             "title": "Clarity Design System",
             "url": "https://vmware.github.io/clarity/"
           },
           "-KLIzI9BTvvP_hUwutXk": {
-            "desc": "UI components for Angular using Semantic UI",
+            "//desc": "UI components for Angular using Semantic UI",
+            "desc": "사용자에게 친근한 UI 컴포넌트를 제공합니다.",
             "rev": true,
             "title": "Semantic UI",
             "url": "https://github.com/vladotesanovic/ngSemantic"
           },
           "-KMVB8P4TDfht8c0L1AE": {
-            "desc": "The Angular version of the Angular UI Bootstrap library. This library is being built from scratch in Typescript using the Bootstrap 4 CSS framework.",
+            "//desc": "The Angular version of the Angular UI Bootstrap library. This library is being built from scratch in Typescript using the Bootstrap 4 CSS framework.",
+            "desc": "Boostrap 라이브러리의 Angular 버전입니다. 이 라이브러리는 Bootstrap 4 CSS 프레임워크를 바탕으로 TypeScript로 재작성되었습니다.",
             "rev": true,
             "title": "ng-bootstrap",
             "url": "https://ng-bootstrap.github.io/"
           },
           "4ab": {
-            "desc": "Native Angular components & directives for Lightning Design System",
+            "//desc": "Native Angular components & directives for Lightning Design System",
+            "desc": "Lightning Design System에서 만든 네이티브 Angular 컴포넌트와 디렉티브입니다.",
             "logo": "http://ng-lightning.github.io/ng-lightning/img/shield.svg",
             "rev": true,
             "title": "ng-lightning",
             "url": "http://ng-lightning.github.io/ng-lightning/"
           },
           "7ab": {
-            "desc": "UI components for hybrid mobile apps with bindings for both Angular & AngularJS.",
+            "//desc": "UI components for hybrid mobile apps with bindings for both Angular & AngularJS.",
+            "desc": "Angular와 AngularJS를 함께 사용하는 환경에서 활용할 수 있는 UI 컴포넌트를 제공합니다.",
             "rev": true,
             "title": "Onsen UI",
             "url": "https://onsen.io/v2/"
           },
           "a2b": {
-            "desc": "PrimeNG is a collection of rich UI components for Angular",
+            "//desc": "PrimeNG is a collection of rich UI components for Angular",
+            "desc": "PrimeNG는 Angular 환경을 위해 개발된 UI 컴포넌트 라이브러리입니다.",
             "logo": "http://www.primefaces.org/primeng/showcase/resources/images/primeng.svg",
             "rev": true,
             "title": "Prime Faces",
             "url": "http://www.primefaces.org/primeng/"
           },
           "a3b": {
-            "desc": "One of the first major UI frameworks to support Angular",
+            "//desc": "One of the first major UI frameworks to support Angular",
+            "desc": "Kendo UI는 Angular용 UI 프레임워크를 가장 먼저 시작한 프레임워크 중 하나입니다.",
             "logo": "",
             "rev": true,
             "title": "Kendo UI",
             "url": "http://www.telerik.com/kendo-angular-ui/"
           },
           "a5b": {
-            "desc": "High-performance UI controls with the most complete Angular support available. Wijmo’s controls are all written in TypeScript and have zero dependencies. FlexGrid control includes full declarative markup, including cell templates.",
+            "//desc": "High-performance UI controls with the most complete Angular support available. Wijmo’s controls are all written in TypeScript and have zero dependencies. FlexGrid control includes full declarative markup, including cell templates.",
+            "desc": "훌륭한 성능의 Angular용 UI 컨트롤을 제공합니다. Wijmo에서 제공하는 컨트롤은 모두 TypeScript로 작성되었으며, 연결된 의존성도 없습니다. 이 라이브러리는 FlexGrid에 특화되어 있습니다.",
             "logo": "http://wijmocdn.azureedge.net/wijmositeblob/wijmo-theme/logos/wijmo-55.png",
             "rev": true,
             "title": "Wijmo",
             "url": "http://wijmo.com/products/wijmo-5/"
           },
           "a6b": {
-            "desc": "Material design inspired UI components for building great web apps. For mobile and desktop.",
+            "//desc": "Material design inspired UI components for building great web apps. For mobile and desktop.",
+            "desc": "머티리얼 디자인을 적용한 UI 컴포넌트입니다. 모바일과 데스크탑에서 모두 사용할 수 있습니다.",
             "logo": "",
             "rev": true,
             "title": "Vaadin",
             "url": "https://vaadin.com/elements"
           },
           "a7b": {
-            "desc": "Native Angular directives for Bootstrap",
+            "//desc": "Native Angular directives for Bootstrap",
+            "desc": "Angular용 Bootstrap 라이브러리입니다.",
             "logo": "",
             "rev": true,
             "title": "ngx-bootstrap",
             "url": "http://valor-software.com/ngx-bootstrap/#/"
           },
           "ab": {
-            "desc": "Material Design components for Angular",
+            "//desc": "Material Design components for Angular",
+            "desc": "공식 Angular 머티리얼 디자인 컴포넌트입니다.",
             "logo": "",
             "rev": true,
             "title": "Angular Material",
             "url": "https://github.com/angular/material2"
           },
           "aggrid": {
-            "desc": "A datagrid for Angular with enterprise style features such as sorting, filtering, custom rendering, editing, grouping, aggregation and pivoting.",
+            "//desc": "A datagrid for Angular with enterprise style features such as sorting, filtering, custom rendering, editing, grouping, aggregation and pivoting.",
+            "desc": "정렬, 필터링, 커스텀 렌더링, 편집, 그룹화, 합계, 피봇 기능 등, 기업에서 활용할 수 있는 데이터 그리드를 제공합니다.",
             "rev": true,
             "title": "ag-Grid",
             "url": "https://www.ag-grid.com/best-angular-2-data-grid/"
           },
           "jqwidgets": {
-            "desc": "Angular UI Components including data grid, tree grid, pivot grid, scheduler, charts, editors and other multi-purpose components",
+            "//desc": "Angular UI Components including data grid, tree grid, pivot grid, scheduler, charts, editors and other multi-purpose components",
+            "desc": "데이터 그리드나 트리 그리드, 피봇 그리드, 달력, 차트, 편집 기능 등 다양하게 활용할 수 있는 컴포넌트를 제공합니다.",
             "rev": true,
             "title": "jQWidgets",
             "url": "https://www.jqwidgets.com/angular/"
           },
           "amexio": {
-            "desc": "Amexio (Angular MetaMagic EXtensions for Inputs and Outputs)  is a rich set of Angular components powered by Bootstrap for Responsive Design. UI Components include Standard Form Components, Data Grids, Tree Grids, Tabs etc. Open Source (Apache 2 License) & Free and backed by MetaMagic Global Inc",
+            "//desc": "Amexio (Angular MetaMagic EXtensions for Inputs and Outputs)  is a rich set of Angular components powered by Bootstrap for Responsive Design. UI Components include Standard Form Components, Data Grids, Tree Grids, Tabs etc. Open Source (Apache 2 License) & Free and backed by MetaMagic Global Inc",
+            "desc": "Amexio(Angular MetaMagic EXtensions for Inputs and Outputs)는 Bootstrap과 반응형 디자인을 고려하여 만들어진 Angular 컴포넌트 라이브러리입니다. 기본 폼부터 시작해서 데이터 그리드, 트리 그리드, 탭 등 다양한 컴포넌트를 지원합니다. 이 라이브러리는 오픈 소스(Apache 2 라이센스)이며, 무료입니다.",
             "rev": true,
             "title": "Amexio - Angular Extensions",
             "url": "http://www.amexio.tech/",
