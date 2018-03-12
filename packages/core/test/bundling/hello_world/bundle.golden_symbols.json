@@ -36,6 +36,9 @@
     "name": "canInsertNativeNode"
   },
   {
+    "name": "checkNoChangesMode"
+  },
+  {
     "name": "createLNode"
   },
   {

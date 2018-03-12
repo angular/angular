@@ -911,6 +911,162 @@ describe('change detection', () => {
       // TODO(kara): add test for dynamic views once bug fix is in
     });
 
+    describe('checkNoChanges', () => {
+      let comp: NoChangesComp;
+
+      class NoChangesComp {
+        value = 1;
+        doCheckCount = 0;
+        contentCheckCount = 0;
+        viewCheckCount = 0;
+
+        ngDoCheck() { this.doCheckCount++; }
+
+        ngAfterContentChecked() { this.contentCheckCount++; }
+
+        ngAfterViewChecked() { this.viewCheckCount++; }
+
+        constructor(public cdr: ChangeDetectorRef) {}
+
+        static ngComponentDef = defineComponent({
+          type: NoChangesComp,
+          tag: 'no-changes-comp',
+          factory: () => comp = new NoChangesComp(injectChangeDetectorRef()),
+          template: (ctx: NoChangesComp, cm: boolean) => {
+            if (cm) {
+              text(0);
+            }
+            textBinding(0, bind(ctx.value));
+          }
+        });
+      }
+
+      class AppComp {
+        value = 1;
+
+        constructor(public cdr: ChangeDetectorRef) {}
+
+        static ngComponentDef = defineComponent({
+          type: AppComp,
+          tag: 'app-comp',
+          factory: () => new AppComp(injectChangeDetectorRef()),
+          /**
+           * {{ value }} -
+           * <no-changes-comp></no-changes-comp>
+           */
+          template: (ctx: AppComp, cm: boolean) => {
+            if (cm) {
+              text(0);
+              elementStart(1, NoChangesComp);
+              elementEnd();
+            }
+            textBinding(0, interpolation1('', ctx.value, ' - '));
+            NoChangesComp.ngComponentDef.h(2, 1);
+            directiveRefresh(2, 1);
+          }
+        });
+      }
+
+      it('should throw if bindings in current view have changed', () => {
+        const comp = renderComponent(NoChangesComp);
+
+        expect(() => comp.cdr.checkNoChanges()).not.toThrow();
+
+        comp.value = 2;
+        expect(() => comp.cdr.checkNoChanges())
+            .toThrowError(
+                /ExpressionChangedAfterItHasBeenCheckedError: .+ Previous value: '1'. Current value: '2'/gi);
+      });
+
+      it('should throw if interpolations in current view have changed', () => {
+        const app = renderComponent(AppComp);
+
+        expect(() => app.cdr.checkNoChanges()).not.toThrow();
+
+        app.value = 2;
+        expect(() => app.cdr.checkNoChanges())
+            .toThrowError(
+                /ExpressionChangedAfterItHasBeenCheckedError: .+ Previous value: '1'. Current value: '2'/gi);
+      });
+
+      it('should throw if bindings in children of current view have changed', () => {
+        const app = renderComponent(AppComp);
+
+        expect(() => app.cdr.checkNoChanges()).not.toThrow();
+
+        comp.value = 2;
+        expect(() => app.cdr.checkNoChanges())
+            .toThrowError(
+                /ExpressionChangedAfterItHasBeenCheckedError: .+ Previous value: '1'. Current value: '2'/gi);
+      });
+
+      it('should throw if bindings in embedded view have changed', () => {
+        class EmbeddedViewApp {
+          value = 1;
+          showing = true;
+
+          constructor(public cdr: ChangeDetectorRef) {}
+
+          static ngComponentDef = defineComponent({
+            type: EmbeddedViewApp,
+            tag: 'embedded-view-app',
+            factory: () => new EmbeddedViewApp(injectChangeDetectorRef()),
+            /**
+             * % if (showing) {
+             *  {{ value }}
+             * %}
+             */
+            template: (ctx: EmbeddedViewApp, cm: boolean) => {
+              if (cm) {
+                container(0);
+              }
+              containerRefreshStart(0);
+              {
+                if (ctx.showing) {
+                  if (embeddedViewStart(0)) {
+                    text(0);
+                  }
+                  textBinding(0, bind(ctx.value));
+                  embeddedViewEnd();
+                }
+              }
+              containerRefreshEnd();
+            }
+          });
+        }
+
+        const app = renderComponent(EmbeddedViewApp);
+
+        expect(() => app.cdr.checkNoChanges()).not.toThrow();
+
+        app.value = 2;
+        expect(() => app.cdr.checkNoChanges())
+            .toThrowError(
+                /ExpressionChangedAfterItHasBeenCheckedError: .+ Previous value: '1'. Current value: '2'/gi);
+      });
+
+      it('should NOT call lifecycle hooks', () => {
+        const app = renderComponent(AppComp);
+        expect(comp.doCheckCount).toEqual(1);
+        expect(comp.contentCheckCount).toEqual(1);
+        expect(comp.viewCheckCount).toEqual(1);
+
+        comp.value = 2;
+        expect(() => app.cdr.checkNoChanges()).toThrow();
+        expect(comp.doCheckCount).toEqual(1);
+        expect(comp.contentCheckCount).toEqual(1);
+        expect(comp.viewCheckCount).toEqual(1);
+      });
+
+      it('should NOT throw if bindings in ancestors of current view have changed', () => {
+        const app = renderComponent(AppComp);
+
+        app.value = 2;
+        expect(() => comp.cdr.checkNoChanges()).not.toThrow();
+      });
+
+    });
+
   });
 
 });
