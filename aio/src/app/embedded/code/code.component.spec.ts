@@ -254,10 +254,14 @@ describe('CodeComponent', () => {
     it('should display an error when copy fails', () => {
       const snackBar: MatSnackBar = TestBed.get(MatSnackBar);
       const copierService: CopierService = TestBed.get(CopierService);
+      const logger: TestLogger = TestBed.get(Logger);
       spyOn(snackBar, 'open');
       spyOn(copierService, 'copyText').and.returnValue(false);
       getButton().click();
       expect(snackBar.open).toHaveBeenCalledWith('Copy failed. Please try again!', '', { duration: 800 });
+      expect(logger.error).toHaveBeenCalledTimes(1);
+      expect(logger.error).toHaveBeenCalledWith(jasmine.any(Error));
+      expect(logger.error.calls.mostRecent().args[0].message).toMatch(/^ERROR copying code to clipboard:/);
     });
   });
 });
