@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ApplicationInitStatus, CompilerOptions, Component, Directive, InjectionToken, Injector, ModuleWithComponentFactories, NgModule, NgModuleFactory, NgModuleRef, NgZone, Optional, Pipe, PlatformRef, Provider, SchemaMetadata, SkipSelf, StaticProvider, Type, ɵDepFlags as DepFlags, ɵNodeFlags as NodeFlags, ɵclearOverrides as clearOverrides, ɵgetComponentViewDefinitionFactory as getComponentViewDefinitionFactory, ɵoverrideComponentView as overrideComponentView, ɵoverrideProvider as overrideProvider, ɵstringify as stringify} from '@angular/core';
+import {ApplicationInitStatus, CompilerOptions, Component, Directive, InjectionToken, Injector, ModuleWithComponentFactories, NgModule, NgModuleFactory, NgModuleRef, NgZone, Optional, Pipe, PlatformRef, Provider, SchemaMetadata, SkipSelf, StaticProvider, Type, ɵAPP_ROOT as APP_ROOT, ɵDepFlags as DepFlags, ɵNodeFlags as NodeFlags, ɵclearOverrides as clearOverrides, ɵgetComponentViewDefinitionFactory as getComponentViewDefinitionFactory, ɵoverrideComponentView as overrideComponentView, ɵoverrideProvider as overrideProvider, ɵstringify as stringify} from '@angular/core';
 
 import {AsyncTestCompleter} from './async_test_completer';
 import {ComponentFixture} from './component_fixture';
@@ -224,6 +224,9 @@ export class TestBed implements Injector {
   private _aotSummaries: Array<() => any[]> = [];
   private _templateOverrides: Array<{component: Type<any>, templateOf: Type<any>}> = [];
 
+  private _isRoot: boolean = true;
+  private _rootProviderOverrides: Provider[] = [];
+
   platform: PlatformRef = null !;
 
   ngModule: Type<any>|Type<any>[] = null !;
@@ -274,6 +277,9 @@ export class TestBed implements Injector {
     this._componentOverrides = [];
     this._directiveOverrides = [];
     this._pipeOverrides = [];
+
+    this._isRoot = true;
+    this._rootProviderOverrides = [];
 
     this._moduleRef = null !;
     this._moduleFactory = null !;
@@ -375,7 +381,22 @@ export class TestBed implements Injector {
     const providers = this._providers.concat([{provide: TestBed, useValue: this}]);
     const declarations =
         [...this._declarations, ...this._templateOverrides.map(entry => entry.templateOf)];
-    const imports = [this.ngModule, this._imports];
+
+    const rootScopeImports = [];
+    const rootProviderOverrides = this._rootProviderOverrides;
+    if (this._isRoot) {
+      @NgModule({
+        providers: [
+          ...rootProviderOverrides,
+        ],
+      })
+      class RootScopeModule {
+      }
+      rootScopeImports.push(RootScopeModule);
+    }
+    providers.push({provide: APP_ROOT, useValue: this._isRoot});
+
+    const imports = [rootScopeImports, this.ngModule, this._imports];
     const schemas = this._schemas;
 
     @NgModule({providers, declarations, imports, schemas})
@@ -477,6 +498,15 @@ export class TestBed implements Injector {
         deps?: any[],
       },
       deprecated = false): void {
+    if (typeof token !== 'string' && token.ngInjectableDef &&
+        token.ngInjectableDef.providedIn === 'root') {
+      if (provider.useFactory) {
+        this._rootProviderOverrides.push(
+            {provide: token, useFactory: provider.useFactory, deps: provider.deps || []});
+      } else {
+        this._rootProviderOverrides.push({provide: token, useValue: provider.useValue});
+      }
+    }
     let flags: NodeFlags = 0;
     let value: any;
     if (provider.useFactory) {

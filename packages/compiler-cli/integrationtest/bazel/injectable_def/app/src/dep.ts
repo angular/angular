@@ -35,7 +35,7 @@ export class AppComponent {
 export class DepAppModule {
 }
 
-@Injectable({scope: DepAppModule})
+@Injectable({providedIn: DepAppModule})
 export class ShakeableService {
   constructor(readonly normal: NormalService) {}
 }

@@ -2058,13 +2058,13 @@ describe('ngc transformer command-line', () => {
         import {Module} from './module';
 
         @Injectable({
-          scope: Module,
+          providedIn: Module,
         })
         export class Service {}
       `);
       expect(source).toMatch(/ngInjectableDef = .+\.defineInjectable\(/);
       expect(source).toMatch(/ngInjectableDef.*token: Service/);
-      expect(source).toMatch(/ngInjectableDef.*scope: .+\.Module/);
+      expect(source).toMatch(/ngInjectableDef.*providedIn: .+\.Module/);
     });
 
     it('ngInjectableDef in es5 mode is annotated @nocollapse when closure options are enabled',
@@ -2081,7 +2081,7 @@ describe('ngc transformer command-line', () => {
         import {Module} from './module';
 
         @Injectable({
-          scope: Module,
+          providedIn: Module,
         })
         export class Service {}
       `);
@@ -2096,7 +2096,7 @@ describe('ngc transformer command-line', () => {
         export const CONST_SERVICE: Service = null;
 
         @Injectable({
-          scope: Module,
+          providedIn: Module,
           useValue: CONST_SERVICE
         })
         export class Service {}
@@ -2113,7 +2113,7 @@ describe('ngc transformer command-line', () => {
         export class Existing {}
 
         @Injectable({
-          scope: Module,
+          providedIn: Module,
           useExisting: Existing,
         })
         export class Service {}
@@ -2130,7 +2130,7 @@ describe('ngc transformer command-line', () => {
         export class Existing {}
 
         @Injectable({
-          scope: Module,
+          providedIn: Module,
           useFactory: (existing: Existing|null) => new Service(existing),
           deps: [[new Optional(), Existing]],
         })
@@ -2150,7 +2150,7 @@ describe('ngc transformer command-line', () => {
         export class Existing {}
 
         @Injectable({
-          scope: Module,
+          providedIn: Module,
           useFactory: (existing: Existing) => new Service(existing),
           deps: [[new SkipSelf(), Existing]],
         })
@@ -2166,10 +2166,10 @@ describe('ngc transformer command-line', () => {
         import {Inject, Injectable, InjectionToken} from '@angular/core';
         import {Module} from './module';
 
-        export const TOKEN = new InjectionToken('desc', {scope: Module, factory: () => true});
+        export const TOKEN = new InjectionToken('desc', {providedIn: Module, factory: () => true});
 
         @Injectable({
-          scope: Module,
+          providedIn: Module,
         })
         export class Service {
           constructor(@Inject(TOKEN) value: boolean) {}
@@ -2177,7 +2177,7 @@ describe('ngc transformer command-line', () => {
       `);
       expect(source).toMatch(/ngInjectableDef = .+\.defineInjectable\(/);
       expect(source).toMatch(/ngInjectableDef.*token: Service/);
-      expect(source).toMatch(/ngInjectableDef.*scope: .+\.Module/);
+      expect(source).toMatch(/ngInjectableDef.*providedIn: .+\.Module/);
     });
 
     it('generates exports.* references when outputting commonjs', () => {
@@ -2189,15 +2189,15 @@ describe('ngc transformer command-line', () => {
         "files": ["service.ts"]
       }`);
       const source = compileService(`
-        import {Inject, Injectable, InjectionToken, APP_ROOT_SCOPE} from '@angular/core';
+        import {Inject, Injectable, InjectionToken} from '@angular/core';
         import {Module} from './module';
 
         export const TOKEN = new InjectionToken<string>('test token', {
-          scope: APP_ROOT_SCOPE,
+          providedIn: 'root',
           factory: () => 'this is a test',
         });
 
-        @Injectable({scope: APP_ROOT_SCOPE})
+        @Injectable({providedIn: 'root'})
         export class Service {
           constructor(@Inject(TOKEN) token: any) {}
         }
