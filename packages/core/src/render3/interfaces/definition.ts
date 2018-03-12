@@ -69,14 +69,6 @@ export interface DirectiveDef<T> {
   readonly inputs: {[P in keyof T]: P};
 
   /**
-   * A dictionary mapping the inputs' minified property names to the original unminified property
-   * names.
-   *
-   * An entry is added if and only if the alias is different from the property name.
-   */
-  readonly inputsPropertyName: {[P in keyof T]: P};
-
-  /**
    * A dictionary mapping the outputs' minified property names to their public API names, which
    * are their aliases if any, or their original unminified property names
    * (as in `@Output('alias') propertyName: any;`).
@@ -239,11 +231,6 @@ export interface DirectiveDefArgs<T> {
    * of properties.
    */
   inputs?: {[P in keyof T]?: string};
-
-  /**
-   * TODO: Remove per https://github.com/angular/angular/issues/22591
-   */
-  inputsPropertyName?: {[P in keyof T]?: string};
 
   /**
    * A map of output names.

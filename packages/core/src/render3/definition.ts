@@ -15,7 +15,7 @@ import {Type} from '../type';
 import {resolveRendererType2} from '../view/util';
 
 import {diPublic} from './di';
-import {ComponentDef, ComponentDefArgs, DirectiveDef, DirectiveDefArgs, PipeDef, PipeType} from './interfaces/definition';
+import {ComponentDef, ComponentDefArgs, DirectiveDef, DirectiveDefArgs, DirectiveDefFeature, PipeDef} from './interfaces/definition';
 
 
 
@@ -45,7 +45,6 @@ export function defineComponent<T>(componentDefinition: ComponentDefArgs<T>): Co
     h: componentDefinition.hostBindings || noop,
     attributes: componentDefinition.attributes || null,
     inputs: invertObject(componentDefinition.inputs),
-    inputsPropertyName: componentDefinition.inputsPropertyName || null,
     outputs: invertObject(componentDefinition.outputs),
     rendererType: resolveRendererType2(componentDefinition.rendererType) || null,
     exportAs: componentDefinition.exportAs,
@@ -72,48 +71,73 @@ type OnChangesExpando = OnChanges & {
   [key: string]: any;
 };
 
-export function NgOnChangesFeature(definition: DirectiveDef<any>): void {
-  const inputs = definition.inputs;
-  const proto = definition.type.prototype;
-  const inputsPropertyName = definition.inputsPropertyName;
-  // Place where we will store SimpleChanges if there is a change
-  Object.defineProperty(proto, PRIVATE_PREFIX, {value: undefined, writable: true});
-  for (let pubKey in inputs) {
-    const minKey = inputs[pubKey];
-    const propertyName = inputsPropertyName && inputsPropertyName[minKey] || pubKey;
-    const privateMinKey = PRIVATE_PREFIX + minKey;
-    // Create a place where the actual value will be stored and make it non-enumerable
-    Object.defineProperty(proto, privateMinKey, {value: undefined, writable: true});
+/**
+ * Creates an NgOnChangesFeature function for a component's features list.
+ *
+ * It accepts an optional map of minified input property names to original property names,
+ * if any input properties have a public alias.
+ *
+ * The NgOnChangesFeature function that is returned decorates a component with support for
+ * the ngOnChanges lifecycle hook, so it should be included in any component that implements
+ * that hook.
+ *
+ * Example usage:
+ *
+ * ```
+ * static ngComponentDef = defineComponent({
+ *   ...
+ *   inputs: {name: 'publicName'},
+ *   features: [NgOnChangesFeature({name: 'name'})]
+ * });
+ * ```
+ *
+ * @param inputPropertyNames Map of input property names, if they are aliased
+ * @returns DirectiveDefFeature
+ */
+export function NgOnChangesFeature(inputPropertyNames?: {[key: string]: string}):
+    DirectiveDefFeature {
+  return function(definition: DirectiveDef<any>): void {
+    const inputs = definition.inputs;
+    const proto = definition.type.prototype;
+    // Place where we will store SimpleChanges if there is a change
+    Object.defineProperty(proto, PRIVATE_PREFIX, {value: undefined, writable: true});
+    for (let pubKey in inputs) {
+      const minKey = inputs[pubKey];
+      const propertyName = inputPropertyNames && inputPropertyNames[minKey] || pubKey;
+      const privateMinKey = PRIVATE_PREFIX + minKey;
+      // Create a place where the actual value will be stored and make it non-enumerable
+      Object.defineProperty(proto, privateMinKey, {value: undefined, writable: true});
 
-    const existingDesc = Object.getOwnPropertyDescriptor(proto, minKey);
+      const existingDesc = Object.getOwnPropertyDescriptor(proto, minKey);
 
-    // create a getter and setter for property
-    Object.defineProperty(proto, minKey, {
-      get: function(this: OnChangesExpando) {
-        return (existingDesc && existingDesc.get) ? existingDesc.get.call(this) :
-                                                    this[privateMinKey];
-      },
-      set: function(this: OnChangesExpando, value: any) {
-        let simpleChanges = this[PRIVATE_PREFIX];
-        let isFirstChange = simpleChanges === undefined;
-        if (simpleChanges == null) {
-          simpleChanges = this[PRIVATE_PREFIX] = {};
+      // create a getter and setter for property
+      Object.defineProperty(proto, minKey, {
+        get: function(this: OnChangesExpando) {
+          return (existingDesc && existingDesc.get) ? existingDesc.get.call(this) :
+                                                      this[privateMinKey];
+        },
+        set: function(this: OnChangesExpando, value: any) {
+          let simpleChanges = this[PRIVATE_PREFIX];
+          let isFirstChange = simpleChanges === undefined;
+          if (simpleChanges == null) {
+            simpleChanges = this[PRIVATE_PREFIX] = {};
+          }
+          simpleChanges[propertyName] = new SimpleChange(this[privateMinKey], value, isFirstChange);
+          (existingDesc && existingDesc.set) ? existingDesc.set.call(this, value) :
+                                               this[privateMinKey] = value;
         }
-        simpleChanges[propertyName] = new SimpleChange(this[privateMinKey], value, isFirstChange);
-        (existingDesc && existingDesc.set) ? existingDesc.set.call(this, value) :
-                                             this[privateMinKey] = value;
-      }
-    });
-  }
+      });
+    }
 
-  // If an onInit hook is defined, it will need to wrap the ngOnChanges call
-  // so the call order is changes-init-check in creation mode. In subsequent
-  // change detection runs, only the check wrapper will be called.
-  if (definition.onInit != null) {
-    definition.onInit = onChangesWrapper(definition.onInit);
-  }
+    // If an onInit hook is defined, it will need to wrap the ngOnChanges call
+    // so the call order is changes-init-check in creation mode. In subsequent
+    // change detection runs, only the check wrapper will be called.
+    if (definition.onInit != null) {
+      definition.onInit = onChangesWrapper(definition.onInit);
+    }
 
-  definition.doCheck = onChangesWrapper(definition.doCheck);
+    definition.doCheck = onChangesWrapper(definition.doCheck);
+  };
 
   function onChangesWrapper(delegateHook: (() => void) | null) {
     return function(this: OnChangesExpando) {

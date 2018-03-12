@@ -19,7 +19,7 @@ NgForOf.ngDirectiveDef = defineDirective({
   factory: () => new NgForOfDef(
                injectViewContainerRef(), injectTemplateRef(),
                directiveInject(IterableDiffers, InjectFlags.Default, defaultIterableDiffers)),
-  features: [NgOnChangesFeature],
+  features: [NgOnChangesFeature()],
   inputs: {
     ngForOf: 'ngForOf',
     ngForTrackBy: 'ngForTrackBy',

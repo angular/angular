@@ -1987,9 +1987,8 @@ describe('lifecycles', () => {
           type: Component,
           tag: name,
           factory: () => new Component(),
-          features: [NgOnChangesFeature],
-          inputs: {a: 'val1', b: 'publicName'},
-          inputsPropertyName: {b: 'val2'}, template
+          features: [NgOnChangesFeature({b: 'val2'})],
+          inputs: {a: 'val1', b: 'publicName'}, template
         });
       };
     }
@@ -2007,9 +2006,8 @@ describe('lifecycles', () => {
       static ngDirectiveDef = defineDirective({
         type: Directive,
         factory: () => new Directive(),
-        features: [NgOnChangesFeature],
-        inputs: {a: 'val1', b: 'publicName'},
-        inputsPropertyName: {b: 'val2'}
+        features: [NgOnChangesFeature({b: 'val2'})],
+        inputs: {a: 'val1', b: 'publicName'}
       });
     }
 
@@ -2397,7 +2395,7 @@ describe('lifecycles', () => {
           tag: name,
           factory: () => new Component(),
           inputs: {val: 'val'}, template,
-          features: [NgOnChangesFeature]
+          features: [NgOnChangesFeature()]
         });
       };
     }
