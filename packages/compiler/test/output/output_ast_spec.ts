@@ -21,5 +21,22 @@ import * as o from '../../src/output/output_ast';
         expect(o.collectExternalReferences([stmt])).toEqual([ref1, ref2]);
       });
     });
+
+    describe('comments', () => {
+      it('different JSDocCommentStmt should not be equivalent', () => {
+        const comment1 = new o.JSDocCommentStmt([{text: 'text'}]);
+        const comment2 = new o.JSDocCommentStmt([{text: 'text2'}]);
+        const comment3 = new o.JSDocCommentStmt([{tagName: o.JSDocTagName.Desc, text: 'text2'}]);
+        const comment4 = new o.JSDocCommentStmt([{text: 'text2'}, {text: 'text3'}]);
+
+        expect(comment1.isEquivalent(comment2)).toBeFalsy();
+        expect(comment1.isEquivalent(comment3)).toBeFalsy();
+        expect(comment1.isEquivalent(comment4)).toBeFalsy();
+        expect(comment2.isEquivalent(comment3)).toBeFalsy();
+        expect(comment2.isEquivalent(comment4)).toBeFalsy();
+        expect(comment3.isEquivalent(comment4)).toBeFalsy();
+        expect(comment1.isEquivalent(comment1)).toBeTruthy();
+      });
+    });
   });
 }

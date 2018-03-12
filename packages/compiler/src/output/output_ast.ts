@@ -897,9 +897,8 @@ export class IfStmt extends Statement {
   }
 }
 
-
 export class CommentStmt extends Statement {
-  constructor(public comment: string, sourceSpan?: ParseSourceSpan|null) {
+  constructor(public comment: string, public multiline = false, sourceSpan?: ParseSourceSpan|null) {
     super(null, sourceSpan);
   }
   isEquivalent(stmt: Statement): boolean { return stmt instanceof CommentStmt; }
@@ -908,6 +907,18 @@ export class CommentStmt extends Statement {
   }
 }
 
+export class JSDocCommentStmt extends Statement {
+  constructor(public tags: JSDocTag[] = [], sourceSpan?: ParseSourceSpan|null) {
+    super(null, sourceSpan);
+  }
+  isEquivalent(stmt: Statement): boolean {
+    return stmt instanceof JSDocCommentStmt && this.toString() === stmt.toString();
+  }
+  visitStatement(visitor: StatementVisitor, context: any): any {
+    return visitor.visitJSDocCommentStmt(this, context);
+  }
+  toString(): string { return serializeTags(this.tags); }
+}
 
 export class TryCatchStmt extends Statement {
   constructor(
@@ -947,6 +958,7 @@ export interface StatementVisitor {
   visitTryCatchStmt(stmt: TryCatchStmt, context: any): any;
   visitThrowStmt(stmt: ThrowStmt, context: any): any;
   visitCommentStmt(stmt: CommentStmt, context: any): any;
+  visitJSDocCommentStmt(stmt: JSDocCommentStmt, context: any): any;
 }
 
 export class AstTransformer implements StatementVisitor, ExpressionVisitor {
@@ -1157,6 +1169,10 @@ export class AstTransformer implements StatementVisitor, ExpressionVisitor {
     return this.transformStmt(stmt, context);
   }
 
+  visitJSDocCommentStmt(stmt: JSDocCommentStmt, context: any): any {
+    return this.transformStmt(stmt, context);
+  }
+
   visitAllStatements(stmts: Statement[], context: any): Statement[] {
     return stmts.map(stmt => stmt.visitStatement(this, context));
   }
@@ -1321,6 +1337,7 @@ export class RecursiveAstVisitor implements StatementVisitor, ExpressionVisitor 
     return stmt;
   }
   visitCommentStmt(stmt: CommentStmt, context: any): any { return stmt; }
+  visitJSDocCommentStmt(stmt: JSDocCommentStmt, context: any): any { return stmt; }
   visitAllStatements(stmts: Statement[], context: any): void {
     stmts.forEach(stmt => stmt.visitStatement(this, context));
   }
@@ -1467,3 +1484,54 @@ export function literal(
     value: any, type?: Type | null, sourceSpan?: ParseSourceSpan | null): LiteralExpr {
   return new LiteralExpr(value, type, sourceSpan);
 }
+
+// The list of JSDoc tags that we currently support. Extend it if needed.
+export const enum JSDocTagName {Desc = 'desc', Id = 'id', Meaning = 'meaning'}
+
+/*
+ * TypeScript has an API for JSDoc already, but it's not exposed.
+ * https://github.com/Microsoft/TypeScript/issues/7393
+ * For now we create types that are similar to theirs so that migrating
+ * to their API will be easier. See e.g. `ts.JSDocTag` and `ts.JSDocComment`.
+ */
+export type JSDocTag = {
+  // `tagName` is e.g. "param" in an `@param` declaration
+  tagName: JSDocTagName | string;
+  // Any remaining text on the tag, e.g. the description
+  text?: string;
+} | {// no `tagName` for plain text documentation that occurs before any `@param` lines
+     tagName?: undefined
+  text: string,
+};
+
+  /*
+   * Serializes a `Tag` into a string.
+   * Returns a string like " @foo {bar} baz" (note the leading whitespace before `@foo`).
+   */
+  function tagToString(tag: JSDocTag): string {
+    let out = '';
+    if (tag.tagName) {
+      out += ` @${tag.tagName}`;
+    }
+    if (tag.text) {
+      if (tag.text.match(/\/\*|\*\//)) {
+        throw new Error('JSDoc text cannot contain "/*" and "*/"');
+      }
+      out += ' ' + tag.text.replace(/@/g, '\\@');
+    }
+    return out;
+  }
+
+  function serializeTags(tags: JSDocTag[]): string {
+    if (tags.length === 0) return '';
+
+    let out = '*\n';
+    for (const tag of tags) {
+      out += ' *';
+      // If the tagToString is multi-line, insert " * " prefixes on subsequent lines.
+      out += tagToString(tag).replace(/\n/g, '\n * ');
+      out += '\n';
+    }
+    out += ' ';
+    return out;
+  }
