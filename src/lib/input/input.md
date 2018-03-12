@@ -17,6 +17,7 @@ also contains an `<mat-placeholder>` element.
 
 The following [input types](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input) can
 be used with `matInput`:
+* color
 * date
 * datetime-local
 * email

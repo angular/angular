@@ -13,6 +13,31 @@ The following Angular Material components are designed to work inside a `<mat-fo
 
 <!-- example(form-field-overview) -->
 
+### Form field appearance variants
+The `mat-form-field` supports 4 different appearance variants which can be set via the `appearance`
+input. The `legacy` appearance is the default style that the `mat-form-field` has traditionally had.
+It shows the input box with an underline underneath it. The `standard` appearance is a slightly
+updated version of the `legacy` appearance that has spacing that is more consistent with the `fill`
+and `outline` appearances. The `fill` appearance displays the form field with a filled background
+box in addition to the underline. Finally the `outline` appearance shows the form field with a
+border all the way around, not just an underline.
+
+There are a couple differences to be aware of between the `legacy` appearance and the newer
+`standard`, `fill`, and `outline` appearances. The `matPrefix` and `matSuffix` elements are center
+aligned by default for the newer appearances. The Material Design spec shows this as being the
+standard way to align prefix and suffix icons in the newer appearance variants. We do not recommend
+using text prefix and suffixes in the new variants because the label and input do not have the same
+alignment. It is therefore impossible to align the prefix or suffix in a way that looks good when
+compared with both the label and input text.
+
+The second important difference is that the `standard`, `fill`, and `outline` appearances do not
+promote placeholders to labels. For the `legacy` appearance specifying
+`<input placeholder="placeholder">` will result in a floating label being added to the
+`mat-form-field`. For the newer variants it will just add a normal placeholder to the input. If you
+want a floating label, add a `<mat-label>` to the `mat-form-filed`.
+
+<!-- example(form-field-appearance) -->
+
 ### Floating label
 
 The floating label is a text label displayed on top of the form field control when
