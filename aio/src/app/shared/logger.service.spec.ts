@@ -34,8 +34,10 @@ describe('logger service', () => {
 
   describe('error', () => {
     it('should delegate to ErrorHandler', () => {
-      logger.error('param1', 'param2', 'param3');
-      expect(errorHandler.handleError).toHaveBeenCalledWith('param1 param2 param3');
+      let err: Error;
+      try { throw new Error('some error message'); } catch (e) { err = e; }
+      logger.error(err);
+      expect(errorHandler.handleError).toHaveBeenCalledWith(err);
     });
   });
 });

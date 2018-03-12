@@ -69,15 +69,20 @@ describe('DocumentService', () => {
     it('should emit the not-found document if the document is not found on the server', () => {
       let currentDocument: DocumentContents|undefined;
       const notFoundDoc = { id: FILE_NOT_FOUND_ID, contents: '<h1>Page Not Found</h1>' };
-      const { docService } = getServices('missing/doc');
+      const { docService, logger } = getServices('missing/doc');
       docService.currentDocument.subscribe(doc => currentDocument = doc);
 
       // Initial request return 404.
       httpMock.expectOne({}).flush(null, {status: 404, statusText: 'NOT FOUND'});
+      expect(logger.output.error).toEqual([
+        [jasmine.any(Error)]
+      ]);
+      expect(logger.output.error[0][0].message).toEqual(`Document file not found at 'missing/doc'`);
 
       // Subsequent request for not-found document.
+      logger.output.error = [];
       httpMock.expectOne(CONTENT_URL_PREFIX + 'file-not-found.json').flush(notFoundDoc);
-
+      expect(logger.output.error).toEqual([]); // does not report repeate errors
       expect(currentDocument).toEqual(notFoundDoc);
     });
 
@@ -102,12 +107,17 @@ describe('DocumentService', () => {
       let latestDocument: DocumentContents|undefined;
       const doc1 = { contents: 'doc 1' };
       const doc2 = { contents: 'doc 2' };
-      const { docService, locationService } = getServices('initial/doc');
+      const { docService, locationService, logger } = getServices('initial/doc');
 
       docService.currentDocument.subscribe(doc => latestDocument = doc);
 
       httpMock.expectOne({}).flush(null, {status: 500, statusText: 'Server Error'});
       expect(latestDocument!.id).toEqual(FETCHING_ERROR_ID);
+      expect(logger.output.error).toEqual([
+        [jasmine.any(Error)]
+      ]);
+      expect(logger.output.error[0][0].message)
+          .toEqual(`Error fetching document 'initial/doc': (Http failure response for generated/docs/initial/doc.json: 500 Server Error)`);
 
       locationService.go('new/doc');
       httpMock.expectOne({}).flush(doc1);

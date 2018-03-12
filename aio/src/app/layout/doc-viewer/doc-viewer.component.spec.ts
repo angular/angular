@@ -577,8 +577,9 @@ describe('DocViewerComponent', () => {
         expect(swapViewsSpy).not.toHaveBeenCalled();
         expect(docViewer.nextViewContainer.innerHTML).toBe('');
         expect(logger.output.error).toEqual([
-          [`[DocViewer] Error preparing document 'foo': ${error.stack}`],
+          [jasmine.any(Error)]
         ]);
+        expect(logger.output.error[0][0].message).toEqual(`[DocViewer] Error preparing document 'foo': ${error.stack}`);
         expect(TestBed.get(Meta).addTag).toHaveBeenCalledWith({ name: 'googlebot', content: 'noindex' });
         expect(TestBed.get(Meta).addTag).toHaveBeenCalledWith({ name: 'robots', content: 'noindex' });
       });
@@ -598,8 +599,9 @@ describe('DocViewerComponent', () => {
         expect(swapViewsSpy).not.toHaveBeenCalled();
         expect(docViewer.nextViewContainer.innerHTML).toBe('');
         expect(logger.output.error).toEqual([
-          [`[DocViewer] Error preparing document 'bar': ${error.stack}`],
+          [jasmine.any(Error)]
         ]);
+        expect(logger.output.error[0][0].message).toEqual(`[DocViewer] Error preparing document 'bar': ${error.stack}`);
         expect(TestBed.get(Meta).addTag).toHaveBeenCalledWith({ name: 'googlebot', content: 'noindex' });
         expect(TestBed.get(Meta).addTag).toHaveBeenCalledWith({ name: 'robots', content: 'noindex' });
       });
@@ -619,8 +621,9 @@ describe('DocViewerComponent', () => {
         expect(swapViewsSpy).not.toHaveBeenCalled();
         expect(docViewer.nextViewContainer.innerHTML).toBe('');
         expect(logger.output.error).toEqual([
-          [`[DocViewer] Error preparing document 'baz': ${error.stack}`],
+          [jasmine.any(Error)]
         ]);
+        expect(logger.output.error[0][0].message).toEqual(`[DocViewer] Error preparing document 'baz': ${error.stack}`);
         expect(TestBed.get(Meta).addTag).toHaveBeenCalledWith({ name: 'googlebot', content: 'noindex' });
         expect(TestBed.get(Meta).addTag).toHaveBeenCalledWith({ name: 'robots', content: 'noindex' });
       });
@@ -640,8 +643,9 @@ describe('DocViewerComponent', () => {
         expect(swapViewsSpy).toHaveBeenCalledTimes(1);
         expect(docViewer.nextViewContainer.innerHTML).toBe('');
         expect(logger.output.error).toEqual([
-          [`[DocViewer] Error preparing document 'qux': ${error.stack}`],
+          [jasmine.any(Error)]
         ]);
+        expect(logger.output.error[0][0].message).toEqual(`[DocViewer] Error preparing document 'qux': ${error.stack}`);
         expect(TestBed.get(Meta).addTag).toHaveBeenCalledWith({ name: 'googlebot', content: 'noindex' });
         expect(TestBed.get(Meta).addTag).toHaveBeenCalledWith({ name: 'robots', content: 'noindex' });
       });
@@ -658,8 +662,9 @@ describe('DocViewerComponent', () => {
         expect(swapViewsSpy).toHaveBeenCalledTimes(1);
         expect(docViewer.nextViewContainer.innerHTML).toBe('');
         expect(logger.output.error).toEqual([
-          [`[DocViewer] Error preparing document 'qux': ${error}`],
+          [jasmine.any(Error)]
         ]);
+        expect(logger.output.error[0][0].message).toEqual(`[DocViewer] Error preparing document 'qux': ${error}`);
         expect(TestBed.get(Meta).addTag).toHaveBeenCalledWith({ name: 'googlebot', content: 'noindex' });
         expect(TestBed.get(Meta).addTag).toHaveBeenCalledWith({ name: 'robots', content: 'noindex' });
       });

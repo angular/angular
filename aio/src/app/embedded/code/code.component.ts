@@ -148,7 +148,7 @@ export class CodeComponent implements OnChanges {
         duration: 800,
       });
     } else {
-      this.logger.error('ERROR copying code to clipboard:', code);
+      this.logger.error(new Error(`ERROR copying code to clipboard: "${code}"`));
       // failure snackbar alert
       this.snackbar.open('Copy failed. Please try again!', '', {
         duration: 800,
