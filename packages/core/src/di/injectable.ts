@@ -60,6 +60,11 @@ export interface InjectableDecorator {
   new (options?: {scope: Type<any>}&InjectableProvider): Injectable;
 }
 
+export interface NotTheSameInjectableDecorator {
+  (): any;
+  new (): any;
+}
+
 /**
  * Type of the Injectable metadata.
  *
@@ -128,12 +133,13 @@ export const Injectable: InjectableDecorator = makeDecorator(
     (injectableType: Type<any>, options: {scope: Type<any>} & InjectableProvider) => {
       if (options && options.scope) {
         (injectableType as InjectableType<any>).ngInjectableDef = defineInjectable({
-          scope: options.scope,
+          scope: options.scope || 'root',
           factory: convertInjectableProviderToFactory(injectableType, options)
         });
       }
     });
 
+export const NotTheSameInjectable: NotTheSameInjectableDecorator = makeDecorator('NotTheSameInjectable');
 
 /**
  * Type representing injectable service.

@@ -8,7 +8,7 @@
 
 import {isPromise} from '../src/util/lang';
 
-import {Inject, Injectable, InjectionToken, Optional} from './di';
+import {Inject, InjectionToken, Optional, inject, NotTheSameInjectable} from './di';
 
 
 /**
@@ -22,7 +22,7 @@ export const APP_INITIALIZER = new InjectionToken<Array<() => void>>('Applicatio
  *
  * @experimental
  */
-@Injectable()
+@NotTheSameInjectable()
 export class ApplicationInitStatus {
   private resolve: Function;
   private reject: Function;
@@ -30,12 +30,17 @@ export class ApplicationInitStatus {
   public readonly donePromise: Promise<any>;
   public readonly done = false;
 
-  constructor(@Inject(APP_INITIALIZER) @Optional() private appInits: (() => any)[]) {
+  constructor(@Inject(APP_INITIALIZER) @Optional() private appInits: (() => any)[]|null) {
     this.donePromise = new Promise((res, rej) => {
       this.resolve = res;
       this.reject = rej;
     });
   }
+  
+  static ngInjectableDef = {
+    scope: 'root',
+    factory: () => new ApplicationInitStatus(inject(APP_INITIALIZER, null)),
+  };
 
   /** @internal */
   runInitializers() {

@@ -89,26 +89,30 @@ export class InjectableCompiler {
   }
 
   injectableDef(injectable: CompileInjectableMetadata, ctx: OutputContext): o.Expression {
+    let scope: o.Expression;
+    if (injectable.module) {
+      scope = ctx.importExpr(injectable.module);
+    } else {
+      scope = o.importExpr(Identifiers.APP_ROOT_SCOPE);
+    }
     const def: MapLiteral = [
       mapEntry('factory', this.factoryFor(injectable, ctx)),
       mapEntry('token', ctx.importExpr(injectable.type.reference)),
-      mapEntry('scope', ctx.importExpr(injectable.module !)),
+      mapEntry('scope', scope),
     ];
     return o.importExpr(Identifiers.defineInjectable).callFn([o.literalMap(def)]);
   }
 
   compile(injectable: CompileInjectableMetadata, ctx: OutputContext): void {
-    if (injectable.module) {
-      const className = identifierName(injectable.type) !;
-      const clazz = new o.ClassStmt(
-          className, null,
-          [
-            new o.ClassField(
-                'ngInjectableDef', o.INFERRED_TYPE, [o.StmtModifier.Static],
-                this.injectableDef(injectable, ctx)),
-          ],
-          [], new o.ClassMethod(null, [], []), []);
-      ctx.statements.push(clazz);
-    }
+    const className = identifierName(injectable.type) !;
+    const clazz = new o.ClassStmt(
+        className, null,
+        [
+          new o.ClassField(
+              'ngInjectableDef', o.INFERRED_TYPE, [o.StmtModifier.Static],
+              this.injectableDef(injectable, ctx)),
+        ],
+        [], new o.ClassMethod(null, [], []), []);
+    ctx.statements.push(clazz);
   }
 }

@@ -1,3 +1,5 @@
+import { NotTheSameInjectable } from "./di";
+
 /**
  * @license
  * Copyright Google Inc. All Rights Reserved.
@@ -6,10 +8,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injectable} from './di';
-
-@Injectable()
+@NotTheSameInjectable()
 export class Console {
+  static ngInjectableDef = {
+    scope: undefined,
+    factory: () => new Console(),
+  };
+
   log(message: string): void {
     // tslint:disable-next-line:no-console
     console.log(message);

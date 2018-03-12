@@ -23,5 +23,4 @@ import {InjectionToken} from './injection_token';
  *
  * @experimental
  */
-export const APP_ROOT_SCOPE: Type<any> = new InjectionToken<boolean>(
-    'The presence of this token marks an injector as being the root injector.') as any;
+export const APP_ROOT_SCOPE: Type<any> = 'root' as any;
