@@ -201,7 +201,7 @@ export function enterView(newView: LView, host: LElementNode | LViewNode | null)
  * the direction of traversal (up or down the view tree) a bit clearer.
  */
 export function leaveView(newView: LView): void {
-  if (checkNoChangesMode === false) {
+  if (!checkNoChangesMode) {
     executeHooks(
         currentView.data, currentView.tView.viewHooks, currentView.tView.viewCheckHooks,
         creationMode);
@@ -1144,7 +1144,7 @@ export function containerRefreshStart(index: number): void {
                    (previousOrParentNode as LContainerNode).native, undefined,
                    `the container's native element should not have been set yet.`);
 
-  if (checkNoChangesMode === false) {
+  if (!checkNoChangesMode) {
     // We need to execute init hooks here so ngOnInit hooks are called in top level views
     // before they are called in embedded views (for backwards compatibility).
     executeInitHooks(currentView, currentView.tView, creationMode);
@@ -1281,7 +1281,7 @@ export function embeddedViewEnd(): void {
  * @param elementIndex
  */
 export function directiveRefresh<T>(directiveIndex: number, elementIndex: number): void {
-  if (checkNoChangesMode === false) {
+  if (!checkNoChangesMode) {
     executeInitHooks(currentView, currentView.tView, creationMode);
     executeContentHooks(currentView, currentView.tView, creationMode);
   }
