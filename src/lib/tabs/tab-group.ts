@@ -102,14 +102,6 @@ export class MatTabGroup extends _MatTabGroupMixinBase implements AfterContentIn
   set dynamicHeight(value: boolean) { this._dynamicHeight = coerceBooleanProperty(value); }
   private _dynamicHeight: boolean = false;
 
-  /**
-   * @deprecated
-   * @deletion-target 6.0.0
-   */
-  @Input('mat-dynamic-height')
-  get _dynamicHeightDeprecated(): boolean { return this._dynamicHeight; }
-  set _dynamicHeightDeprecated(value: boolean) { this._dynamicHeight = value; }
-
   /** The index of the active tab. */
   @Input()
   get selectedIndex(): number | null { return this._selectedIndex; }
@@ -150,13 +142,6 @@ export class MatTabGroup extends _MatTabGroupMixinBase implements AfterContentIn
   /** Event emitted when the tab selection has changed. */
   @Output() readonly selectedTabChange: EventEmitter<MatTabChangeEvent> =
       new EventEmitter<MatTabChangeEvent>(true);
-
-  /**
-   * Event emitted when the tab selection has changed.
-   * @deprecated Use `selectedTabChange` instead.
-   * @deletion-target 6.0.0
-   */
-  @Output() readonly selectChange: EventEmitter<MatTabChangeEvent> = this.selectedTabChange;
 
   private _groupId: number;
 
