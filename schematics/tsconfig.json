@@ -1,11 +1,9 @@
 {
   "compilerOptions": {
-    "lib": [
-      "es2017",
-      "dom"
-    ],
+    "lib": ["es2017", "dom"],
     "module": "commonjs",
     "moduleResolution": "node",
+    "outDir": "../dist/schematics",
     "noEmitOnError": false,
     "skipDefaultLibCheck": true,
     "skipLibCheck": true,
@@ -17,6 +15,7 @@
     ]
   },
   "exclude": [
-    "*/files/**/*"
+    "*/files/**/*",
+    "**/*spec*"
   ]
 }

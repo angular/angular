@@ -4,11 +4,14 @@ import {writeFileSync, mkdirpSync} from 'fs-extra';
 import {Bundler} from 'scss-bundle';
 import {composeRelease, buildConfig, sequenceTask} from 'material2-build-tools';
 import {materialPackage} from '../packages';
+import {tsBuildTask} from '../util/task_helpers';
+
 
 // There are no type definitions available for these imports.
 const gulpRename = require('gulp-rename');
 
 const distDir = buildConfig.outputDir;
+const schematicsDir = join(buildConfig.projectDir, 'schematics');
 const {sourceDir, outputDir} = materialPackage;
 
 /** Path to the directory where all releases are created. */
@@ -25,20 +28,39 @@ const prebuiltThemeGlob = join(outputDir, '**/theming/prebuilt/*.css?(.map)');
 // Matches all SCSS files in the different packages.
 const allScssGlob = join(buildConfig.packagesDir, '**/*.scss');
 
+// Pattern matching schematics files to be copied into the @angular/material package.
+const schematicsGlobs = [
+  // File templates and schemas are copied as-is from source.
+  join(schematicsDir, '**/files/**/*'),
+  join(schematicsDir, '**/+(schema|collection).json'),
+
+  // JavaScript files compiled from the TypeScript sources.
+  join(distDir, 'schematics', '**/*.js?(.map)'),
+];
+
 /**
  * Overwrite the release task for the material package. The material release will include special
  * files, like a bundled theming SCSS file or all prebuilt themes.
  */
 task('material:build-release', ['material:prepare-release'], () => composeRelease(materialPackage));
 
+/** Compile the schematics TypeScript to JavaScript */
+task('schematics:build', tsBuildTask(join(schematicsDir, 'tsconfig.json')));
+
 /**
- * Task that will build the material package. It will also copy all prebuilt themes and build
- * a bundled SCSS file for theming
+ * Task that will build the material package. Special treatment for this package includes:
+ * - Copying all prebuilt themes into the package
+ * - Bundling theming scss into a single theming file
+ * - Copying schematics code into the packatge
  */
 task('material:prepare-release', sequenceTask(
-  'material:build',
-  ['material:copy-prebuilt-themes', 'material:bundle-theming-scss']
+  ['material:build', 'schematics:build'],
+  ['material:copy-prebuilt-themes', 'material:bundle-theming-scss', 'material:copy-schematics'],
 ));
+
+task('material:copy-schematics', () => {
+  src(schematicsGlobs).pipe(dest(join(releasePath, 'schematics')));
+});
 
 /** Copies all prebuilt themes into the release package under `prebuilt-themes/` */
 task('material:copy-prebuilt-themes', () => {

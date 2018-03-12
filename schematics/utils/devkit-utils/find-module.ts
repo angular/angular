@@ -5,9 +5,8 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import { Path, join, normalize, relative } from '@angular-devkit/core';
+import { Path, join, normalize, relative, strings } from '@angular-devkit/core';
 import { DirEntry, Tree } from '@angular-devkit/schematics';
-import { dasherize } from '@schematics/angular/strings';
 
 
 export interface ModuleOptions {
@@ -31,7 +30,7 @@ export function findModuleFromOptions(host: Tree, options: ModuleOptions): Path 
 
   if (!options.module) {
     const pathToCheck = (options.sourceDir || '') + '/' + (options.path || '')
-                      + (options.flat ? '' : '/' + dasherize(options.name));
+                      + (options.flat ? '' : '/' + strings.dasherize(options.name));
 
     return normalize(findModule(host, pathToCheck));
   } else {

@@ -27,6 +27,10 @@
     "@angular/common": "0.0.0-NG"
   },
   "dependencies": {
-    "tslib": "^1.7.1"
-  }
+    "tslib": "^1.7.1",
+    "@angular-devkit/core": "^0.4.5",
+    "@angular-devkit/schematics": "^0.4.5",
+    "@schematics/angular": "^0.4.5"
+  },
+  "schematics": "./schematics/collection.json"
 }

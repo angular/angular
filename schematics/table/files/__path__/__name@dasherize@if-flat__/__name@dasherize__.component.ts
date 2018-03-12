@@ -1,7 +1,6 @@
-import { Component, OnInit, ViewChild, <% if(!!viewEncapsulation) { %>, ViewEncapsulation<% }%><% if(changeDetection !== 'Default') { %>, ChangeDetectionStrategy<% }%> } from '@angular/core';
-import { Observable } from 'rxjs/Observable';
+import { Component, OnInit, ViewChild<% if(!!viewEncapsulation) { %>, ViewEncapsulation<% }%><% if(changeDetection !== 'Default') { %>, ChangeDetectionStrategy<% }%> } from '@angular/core';
 import { MatPaginator, MatSort } from '@angular/material';
-import { <%= classify(name) %>DataSource } from '<%= dasherize(name) %>-datasource';
+import { <%= classify(name) %>DataSource } from './<%= dasherize(name) %>-datasource';
 
 @Component({
   selector: '<%= selector %>',<% if(inlineTemplate) { %>

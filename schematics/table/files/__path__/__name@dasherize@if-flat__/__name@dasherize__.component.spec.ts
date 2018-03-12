@@ -16,7 +16,7 @@ describe('<%= classify(name) %>Component', () => {
     fixture = TestBed.createComponent(<%= classify(name) %>Component);
     component = fixture.componentInstance;
     fixture.detectChanges();
-  });
+  }));
 
   it('should compile', () => {
     expect(component).toBeTruthy();

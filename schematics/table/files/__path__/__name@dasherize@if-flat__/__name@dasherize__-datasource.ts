@@ -12,7 +12,7 @@ export interface <%= classify(name) %>Item {
 }
 
 // TODO: replace this with real data from your application
-const EXAMPLE_DATA = <%= classify(name) %>Item[] = [
+const EXAMPLE_DATA: <%= classify(name) %>Item[] = [
   {id: 1, name: 'Hydrogen'},
   {id: 2, name: 'Helium'},
   {id: 3, name: 'Lithium'},
