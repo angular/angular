@@ -45,8 +45,7 @@ describe('lifecycle hooks', () => {
       factory: function LifecycleComp_Factory() { return new LifecycleComp(); },
       template: function LifecycleComp_Template(ctx: $LifecycleComp$, cm: $boolean$) {},
       inputs: {nameMin: 'name'},
-      inputsPropertyName: {nameMin: 'nameMin'},
-      features: [$r3$.ɵNgOnChangesFeature]
+      features: [$r3$.ɵNgOnChangesFeature({nameMin: 'nameMin'})]
     });
     // /NORMATIVE
   }
