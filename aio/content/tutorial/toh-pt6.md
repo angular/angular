@@ -62,6 +62,13 @@ Add the `InMemoryWebApiModule` to the `@NgModule.imports` array&mdash;
 _after importing the `HttpClient`_,
 &mdash;while configuring it with the `InMemoryDataService`.
 
+As for angular-in-memory-web-api **ver0.5.0** or above, you need add below line 
+**`InMemoryWebApiModule.forRoot(InMemoryDataService, { dataEncapsulation: true }),`**
+into `@NgModule.imports` array
+instead of 
+**`InMemoryWebApiModule.forRoot(InMemoryDataService),`**
+It caused by the broken change of angular-in-memory-web-api, you can refer to [angular-in-memory-web-api](https://www.npmjs.com/package/angular-in-memory-web-api) explanation if would like to know the detail.
+
 <code-example   
   path="toh-pt6/src/app/app.module.ts" 
   region="in-mem-web-api-imports">
