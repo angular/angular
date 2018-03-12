@@ -13,9 +13,8 @@ export class Logger {
     }
   }
 
-  error(value: any, ...rest: any[]) {
-    const message = [value, ...rest].join(' ');
-    this.errorHandler.handleError(message);
+  error(error: Error) {
+    this.errorHandler.handleError(error);
   }
 
   warn(value: any, ...rest: any[]) {

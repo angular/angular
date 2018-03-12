@@ -78,7 +78,7 @@ export class DocumentService {
 
   private getFileNotFoundDoc(id: string): Observable<DocumentContents> {
     if (id !== FILE_NOT_FOUND_ID) {
-      this.logger.error(`Document file not found at '${id}'`);
+      this.logger.error(new Error(`Document file not found at '${id}'`));
       // using `getDocument` means that we can fetch the 404 doc contents from the server and cache it
       return this.getDocument(FILE_NOT_FOUND_ID);
     } else {
@@ -90,7 +90,7 @@ export class DocumentService {
   }
 
   private getErrorDoc(id: string, error: HttpErrorResponse): Observable<DocumentContents> {
-    this.logger.error('Error fetching document', error);
+    this.logger.error(new Error(`Error fetching document '${id}': (${error.message})`));
     this.cache.delete(id);
     return Observable.of({
       id: FETCHING_ERROR_ID,

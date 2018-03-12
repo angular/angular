@@ -162,7 +162,7 @@ export class DocViewerComponent implements DoCheck, OnDestroy {
         .do(() => this.docRendered.emit())
         .catch(err => {
           const errorMessage = (err instanceof Error) ? err.stack : err;
-          this.logger.error(`[DocViewer] Error preparing document '${doc.id}': ${errorMessage}`);
+          this.logger.error(new Error(`[DocViewer] Error preparing document '${doc.id}': ${errorMessage}`));
           this.nextViewContainer.innerHTML = '';
           this.setNoIndex(true);
           return this.void$;
