@@ -68,6 +68,7 @@ groups:
           - "packages/*"
           - "tools/*"
     users:
+      - alexeagle
       - IgorMinar
       - mhevery
 
