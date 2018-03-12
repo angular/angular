@@ -79,7 +79,7 @@ export class CheckboxDemo {
   isIndeterminate: boolean = false;
   isChecked: boolean = false;
   isDisabled: boolean = false;
-  alignment: string = 'start';
+  labelPosition: string = 'after';
   useAlternativeColor: boolean = false;
 
   printResult() {

@@ -9,9 +9,9 @@
 
     <section class="example-section">
       <label class="example-margin">Align:</label>
-      <mat-radio-group [(ngModel)]="align">
-        <mat-radio-button class="example-margin" value="start">Start</mat-radio-button>
-        <mat-radio-button class="example-margin" value="end">End</mat-radio-button>
+      <mat-radio-group [(ngModel)]="labelPosition">
+        <mat-radio-button class="example-margin" value="after">After</mat-radio-button>
+        <mat-radio-button class="example-margin" value="before">Before</mat-radio-button>
       </mat-radio-group>
     </section>
 
@@ -30,7 +30,7 @@
           class="example-margin"
           [(ngModel)]="checked"
           [(indeterminate)]="indeterminate"
-          [align]="align"
+          [labelPosition]="labelPosition"
           [disabled]="disabled">
         I'm a checkbox
       </mat-checkbox>

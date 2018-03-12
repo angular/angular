@@ -7,7 +7,7 @@
              (change)="isIndeterminate = false"
              [indeterminate]="isIndeterminate"
              [disabled]="isDisabled"
-             [align]="alignment">
+             [labelPosition]="labelPosition">
   Do you want to <em>foobar</em> the <em>bazquux</em>?
 
 </mat-checkbox> - <strong>{{printResult()}}</strong>
@@ -24,23 +24,23 @@
 <label for="color-toggle">Toggle Color</label>
 </div>
 <div>
-  <p>Alignment:</p>
+  <p>Label position:</p>
   <div>
-    <input #start type="radio"
-                  value="start"
-                  id="align-start"
-                  name="alignment"
-                  (click)="alignment = start.value"
+    <input #after type="radio"
+                  value="after"
+                  id="align-after"
+                  name="labelPosition"
+                  (click)="labelPosition = after.value"
                   checked>
-    <label for="align-start">Start</label>
+    <label for="align-after">After</label>
   </div>
   <div>
-    <input #end type="radio"
-                  value="end"
-                  id="align-end"
-                  name="alignment"
-                  (click)="alignment = end.value">
-    <label for="align-end">End</label>
+    <input #before type="radio"
+                  value="before"
+                  id="align-before"
+                  name="labelPosition"
+                  (click)="labelPosition = before.value">
+    <label for="align-before">Before</label>
   </div>
 </div>
 
