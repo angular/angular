@@ -17,15 +17,15 @@
 
 <ng-template
   cdk-connected-overlay
-  hasBackdrop
+  cdkConnectedOverlayHasBackdrop
   cdkConnectedOverlayLockPosition
-  backdropClass="cdk-overlay-transparent-backdrop"
-  [scrollStrategy]="_scrollStrategy"
-  [origin]="origin"
-  [open]="panelOpen"
-  [positions]="_positions"
-  [minWidth]="_triggerRect?.width"
-  [offsetY]="_offsetY"
+  cdkConnectedOverlayBackdropClass="cdk-overlay-transparent-backdrop"
+  [cdkConnectedOverlayScrollStrategy]="_scrollStrategy"
+  [cdkConnectedOverlayOrigin]="origin"
+  [cdkConnectedOverlayOpen]="panelOpen"
+  [cdkConnectedOverlayPositions]="_positions"
+  [cdkConnectedOverlayMinWidth]="_triggerRect?.width"
+  [cdkConnectedOverlayOffsetY]="_offsetY"
   (backdropClick)="close()"
   (attach)="_onAttached()"
   (detach)="close()">

@@ -19,7 +19,12 @@
   Open menu
 </button>
 
-<ng-template cdk-connected-overlay [origin]="trigger" [width]="500" hasBackdrop [open]="isMenuOpen"
+<ng-template
+  cdk-connected-overlay
+  [cdkConnectedOverlayOrigin]="trigger"
+  [cdkConnectedOverlayWidth]="500"
+  cdkConnectedOverlayHasBackdrop
+  [cdkConnectedOverlayOpen]="isMenuOpen"
   (backdropClick)="isMenuOpen=false">
   <div style="background-color: mediumpurple" >
     This is the menu panel.

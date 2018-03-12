@@ -402,12 +402,21 @@ describe('Overlay directives', () => {
   <button cdk-overlay-origin id="trigger" #trigger="cdkOverlayOrigin">Toggle menu</button>
   <button cdk-overlay-origin id="otherTrigger" #otherTrigger="cdkOverlayOrigin">Toggle menu</button>
 
-  <ng-template cdk-connected-overlay [open]="isOpen" [width]="width" [height]="height"
+  <ng-template cdk-connected-overlay
+            [cdkConnectedOverlayOpen]="isOpen"
+            [cdkConnectedOverlayWidth]="width"
+            [cdkConnectedOverlayHeight]="height"
             [cdkConnectedOverlayOrigin]="triggerOverride || trigger"
-            [hasBackdrop]="hasBackdrop" backdropClass="mat-test-class"
-            (backdropClick)="backdropClickHandler($event)" [offsetX]="offsetX" [offsetY]="offsetY"
-            (positionChange)="positionChangeHandler($event)" (attach)="attachHandler()"
-            (detach)="detachHandler()" [minWidth]="minWidth" [minHeight]="minHeight"
+            [cdkConnectedOverlayHasBackdrop]="hasBackdrop"
+            cdkConnectedOverlayBackdropClass="mat-test-class"
+            (backdropClick)="backdropClickHandler($event)"
+            [cdkConnectedOverlayOffsetX]="offsetX"
+            [cdkConnectedOverlayOffsetY]="offsetY"
+            (positionChange)="positionChangeHandler($event)"
+            (attach)="attachHandler()"
+            (detach)="detachHandler()"
+            [cdkConnectedOverlayMinWidth]="minWidth"
+            [cdkConnectedOverlayMinHeight]="minHeight"
             [cdkConnectedOverlayPositions]="positionOverrides">
     <p>Menu content</p>
   </ng-template>`,
