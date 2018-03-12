@@ -280,7 +280,8 @@ export class DefaultUrlSerializer implements UrlSerializer {
   serialize(tree: UrlTree): string {
     const segment = `/${serializeSegment(tree.root, true)}`;
     const query = serializeQueryParams(tree.queryParams);
-    const fragment = typeof tree.fragment === `string` ? `#${encodeUriQuery(tree.fragment !)}` : '';
+    const fragment =
+        typeof tree.fragment === `string` ? `#${encodeUriFragment(tree.fragment !)}` : '';
 
     return `${segment}${query}${fragment}`;
   }
@@ -329,13 +330,7 @@ function serializeSegment(segment: UrlSegmentGroup, root: boolean): string {
  * Encodes a URI string with the default encoding. This function will only ever be called from
  * `encodeUriQuery` or `encodeUriSegment` as it's the base set of encodings to be used. We need
  * a custom encoding because encodeURIComponent is too aggressive and encodes stuff that doesn't
- * have to be encoded per http://tools.ietf.org/html/rfc3986:
- *    query         = *( pchar / "/" / "?" )
- *    pchar         = unreserved / pct-encoded / sub-delims / ":" / "@"
- *    unreserved    = ALPHA / DIGIT / "-" / "." / "_" / "~"
- *    pct-encoded   = "%" HEXDIG HEXDIG
- *    sub-delims    = "!" / "$" / "&" / "'" / "(" / ")"
- *                     / "*" / "+" / "," / ";" / "="
+ * have to be encoded per https://url.spec.whatwg.org.
  */
 function encodeUriString(s: string): string {
   return encodeURIComponent(s)
@@ -346,13 +341,23 @@ function encodeUriString(s: string): string {
 }
 
 /**
- * This function should be used to encode both keys and values in a query string key/value or the
- * URL fragment. In the following URL, you need to call encodeUriQuery on "k", "v" and "f":
+ * This function should be used to encode both keys and values in a query string key/value. In
+ * the following URL, you need to call encodeUriQuery on "k" and "v":
  *
  * http://www.site.org/html;mk=mv?k=v#f
  */
 export function encodeUriQuery(s: string): string {
   return encodeUriString(s).replace(/%3B/gi, ';');
+}
+
+/**
+ * This function should be used to encode a URL fragment. In the following URL, you need to call
+ * encodeUriFragment on "f":
+ *
+ * http://www.site.org/html;mk=mv?k=v#f
+ */
+export function encodeUriFragment(s: string): string {
+  return encodeURI(s);
 }
 
 /**
