@@ -233,10 +233,18 @@ export abstract class AbstractEmitterVisitor implements o.StatementVisitor, o.Ex
     return null;
   }
   visitCommentStmt(stmt: o.CommentStmt, ctx: EmitterVisitorContext): any {
-    const lines = stmt.comment.split('\n');
-    lines.forEach((line) => { ctx.println(stmt, `// ${line}`); });
+    if (stmt.multiline) {
+      ctx.println(stmt, `/* ${stmt.comment} */`);
+    } else {
+      stmt.comment.split('\n').forEach((line) => { ctx.println(stmt, `// ${line}`); });
+    }
     return null;
   }
+  visitJSDocCommentStmt(stmt: o.JSDocCommentStmt, ctx: EmitterVisitorContext) {
+    ctx.println(stmt, `/*${stmt.toString()}*/`);
+    return null;
+  }
+
   abstract visitDeclareVarStmt(stmt: o.DeclareVarStmt, ctx: EmitterVisitorContext): any;
 
   visitWriteVarExpr(expr: o.WriteVarExpr, ctx: EmitterVisitorContext): any {
