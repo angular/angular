@@ -190,9 +190,12 @@ export function getExpressionLoweringTransformFactory(
   // Return the factory
   return (context: ts.TransformationContext) => (sourceFile: ts.SourceFile): ts.SourceFile => {
     // We need to use the original SourceFile for reading metadata, and not the transformed one.
-    const requests = requestsMap.getRequests(program.getSourceFile(sourceFile.fileName));
-    if (requests && requests.size) {
-      return transformSourceFile(sourceFile, requests, context);
+    const originalFile = program.getSourceFile(sourceFile.fileName);
+    if (originalFile) {
+      const requests = requestsMap.getRequests(originalFile);
+      if (requests && requests.size) {
+        return transformSourceFile(sourceFile, requests, context);
+      }
     }
     return sourceFile;
   };

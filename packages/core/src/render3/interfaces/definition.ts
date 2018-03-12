@@ -218,7 +218,7 @@ export interface DirectiveDefArgs<T> {
   /**
    * Factory method used to create an instance of directive.
    */
-  factory: () => T | [T];
+  factory: () => T | ({0: T} & any[]); /* trying to say T | [T, ...any] */
 
   /**
    * Static attributes to set on host element.

@@ -85,15 +85,21 @@ export declare const VERSION: Version;
 export declare const WORKER_APP_LOCATION_PROVIDERS: ({
     provide: typeof PlatformLocation;
     useClass: typeof WebWorkerPlatformLocation;
+    useFactory?: undefined;
+    multi?: undefined;
+    deps?: undefined;
 } | {
     provide: InjectionToken<(() => void)[]>;
-    useFactory: (platformLocation: WebWorkerPlatformLocation, zone: NgZone) => () => Promise<boolean>;
+    useFactory: typeof appInitFnFactory;
     multi: boolean;
     deps: (typeof NgZone | typeof PlatformLocation)[];
+    useClass?: undefined;
 } | {
     provide: InjectionToken<Promise<any>>;
-    useFactory: (platformLocation: WebWorkerPlatformLocation) => Promise<any>;
+    useFactory: typeof locationInitialized;
     deps: (typeof PlatformLocation)[];
+    useClass?: undefined;
+    multi?: undefined;
 })[];
 
 /** @experimental */

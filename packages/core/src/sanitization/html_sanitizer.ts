@@ -256,7 +256,9 @@ export function _sanitizeHtml(defaultDoc: any, unsafeHtmlInput: string): string 
 }
 
 function getTemplateContent(el: Node): Node|null {
-  return 'content' in el && isTemplateElement(el) ? el.content : null;
+  return 'content' in (el as any /** Microsoft/TypeScript#21517 */) && isTemplateElement(el) ?
+      el.content :
+      null;
 }
 function isTemplateElement(el: Node): el is HTMLTemplateElement {
   return el.nodeType === Node.ELEMENT_NODE && el.nodeName === 'TEMPLATE';

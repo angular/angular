@@ -279,7 +279,7 @@ describe('compiler (unbundled Angular)', () => {
       };
       compile([FILES, angularFiles], {
         postCompile: program => {
-          const factorySource = program.getSourceFile('/app/app.ngfactory.ts');
+          const factorySource = program.getSourceFile('/app/app.ngfactory.ts') !;
           expect(factorySource.text).not.toContain('\'/app/app.ngfactory\'');
         }
       });
