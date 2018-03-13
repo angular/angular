@@ -134,7 +134,7 @@ describe('JS control flow', () => {
     *     1
     *   % }; if(ctx.condition2) {
     *     2
-    *   % } ; if(ctx.condition3) {
+    *   % }; if(ctx.condition3) {
     *     3
     *   % }
     */
@@ -149,14 +149,14 @@ describe('JS control flow', () => {
           text(0, '1');
         }
         embeddedViewEnd();
-      };
+      }  // can't have ; here due linting rules
       if (ctx.condition2) {
         const cm2 = embeddedViewStart(2);
         if (cm2) {
           text(0, '2');
         }
         embeddedViewEnd();
-      };
+      }  // can't have ; here due linting rules
       if (ctx.condition3) {
         const cm3 = embeddedViewStart(3);
         if (cm3) {
