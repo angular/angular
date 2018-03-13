@@ -48,6 +48,9 @@ An example of chip input placed outside the chip-list element.
 </mat-form-field>
 ```
 
+An example of chip input with an autocomplete placed inside the chip-list element.
+<!-- example(chips-autocomplete) -->
+
 ### Keyboard interaction
 Users can move through the chips using the arrow keys and select/deselect them with the space. Chips
 also gain focus when clicked, ensuring keyboard navigation starts at the appropriate chip.
