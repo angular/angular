@@ -6,13 +6,22 @@
     "name": "EMPTY$1"
   },
   {
+    "name": "EMPTY_RENDERER_TYPE_ID"
+  },
+  {
     "name": "NG_HOST_SYMBOL"
+  },
+  {
+    "name": "NG_PROJECT_AS_ATTR_NAME"
   },
   {
     "name": "NO_CHANGE"
   },
   {
     "name": "Symbol$1"
+  },
+  {
+    "name": "UNDEFINED_RENDERER_TYPE_ID"
   },
   {
     "name": "__global$1"
@@ -33,6 +42,15 @@
     "name": "_root"
   },
   {
+    "name": "appendChild"
+  },
+  {
+    "name": "bindingUpdated"
+  },
+  {
+    "name": "callHooks"
+  },
+  {
     "name": "canInsertNativeNode"
   },
   {
@@ -45,7 +63,22 @@
     "name": "createLView"
   },
   {
+    "name": "createTView"
+  },
+  {
     "name": "currentView"
+  },
+  {
+    "name": "defineComponent"
+  },
+  {
+    "name": "detectChangesInternal"
+  },
+  {
+    "name": "directiveCreate"
+  },
+  {
+    "name": "directiveRefresh"
   },
   {
     "name": "domRendererFactory3"
@@ -54,10 +87,22 @@
     "name": "enterView"
   },
   {
+    "name": "executeContentHooks"
+  },
+  {
     "name": "executeHooks"
   },
   {
+    "name": "executeInitHooks"
+  },
+  {
     "name": "findFirstRNode"
+  },
+  {
+    "name": "findNextRNodeSibling"
+  },
+  {
+    "name": "generateInitialInputs"
   },
   {
     "name": "getDirectiveInstance"
@@ -69,7 +114,34 @@
     "name": "getNextOrParentSiblingNode"
   },
   {
+    "name": "getOrCreateTView"
+  },
+  {
+    "name": "getRootView"
+  },
+  {
+    "name": "getSymbolObservable"
+  },
+  {
+    "name": "hostElement"
+  },
+  {
+    "name": "initBindings"
+  },
+  {
+    "name": "initChangeDetectorIfExisting"
+  },
+  {
+    "name": "insertChild"
+  },
+  {
+    "name": "interpolation1"
+  },
+  {
     "name": "invertObject"
+  },
+  {
+    "name": "isDifferent"
   },
   {
     "name": "isProceduralRenderer"
@@ -84,7 +156,13 @@
     "name": "noop$2"
   },
   {
+    "name": "queueInitHooks"
+  },
+  {
     "name": "refreshDynamicChildren"
+  },
+  {
+    "name": "renderComponent"
   },
   {
     "name": "renderComponentOrTemplate"
@@ -93,6 +171,36 @@
     "name": "renderEmbeddedTemplate"
   },
   {
+    "name": "resetApplicationState"
+  },
+  {
+    "name": "resolveRendererType2"
+  },
+  {
+    "name": "setInputsFromAttrs"
+  },
+  {
+    "name": "setUpAttributes"
+  },
+  {
     "name": "stringify$1"
+  },
+  {
+    "name": "symbolIteratorPonyfill"
+  },
+  {
+    "name": "text"
+  },
+  {
+    "name": "textBinding"
+  },
+  {
+    "name": "throwErrorIfNoChangesMode"
+  },
+  {
+    "name": "tick"
+  },
+  {
+    "name": "viewAttached"
   }
 ]
