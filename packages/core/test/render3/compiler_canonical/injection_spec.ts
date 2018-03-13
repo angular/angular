@@ -58,7 +58,6 @@ describe('injection', () => {
               $r3$.ɵe();
             }
             MyComp.ngComponentDef.h(1, 0);
-            $r3$.ɵr(1, 0);
           }
         });
       }
@@ -103,7 +102,6 @@ describe('injection', () => {
               $r3$.ɵe();
             }
             MyComp.ngComponentDef.h(1, 0);
-            $r3$.ɵr(1, 0);
           }
         });
       }

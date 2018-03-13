@@ -7,7 +7,7 @@
  */
 
 import {defineComponent, defineDirective} from '../../src/render3/index';
-import {container, containerRefreshEnd, containerRefreshStart, directiveRefresh, elementEnd, elementStart, embeddedViewEnd, embeddedViewStart, listener, text} from '../../src/render3/instructions';
+import {container, containerRefreshEnd, containerRefreshStart, elementEnd, elementStart, embeddedViewEnd, embeddedViewStart, listener, text} from '../../src/render3/instructions';
 
 import {getRendererFactory2} from './imported_renderer2';
 import {containerEl, renderComponent, renderToHtml} from './render_util';
@@ -250,7 +250,6 @@ describe('event listeners', () => {
         elementEnd();
       }
       HostListenerDir.ngDirectiveDef.h(1, 0);
-      directiveRefresh(1, 0);
     }
 
     renderToHtml(Template, {});
@@ -346,8 +345,6 @@ describe('event listeners', () => {
           }
           MyComp.ngComponentDef.h(2, 1);
           MyComp.ngComponentDef.h(4, 3);
-          directiveRefresh(2, 1);
-          directiveRefresh(4, 3);
           embeddedViewEnd();
         }
       }

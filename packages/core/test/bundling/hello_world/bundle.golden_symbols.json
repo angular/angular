@@ -57,6 +57,9 @@
     "name": "checkNoChangesMode"
   },
   {
+    "name": "componentRefresh"
+  },
+  {
     "name": "createLNode"
   },
   {
@@ -93,7 +96,7 @@
     "name": "executeHooks"
   },
   {
-    "name": "executeInitHooks"
+    "name": "executeInitAndContentHooks"
   },
   {
     "name": "findFirstRNode"
@@ -166,6 +169,9 @@
   },
   {
     "name": "renderComponentOrTemplate"
+  },
+  {
+    "name": "refreshChildComponents"
   },
   {
     "name": "renderEmbeddedTemplate"

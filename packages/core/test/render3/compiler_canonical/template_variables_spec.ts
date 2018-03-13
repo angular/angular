@@ -104,7 +104,6 @@ describe('template variables', () => {
           }
           $r3$.ɵp(1, 'forOf', $r3$.ɵb(ctx.items));
           $r3$.ɵcR(1);
-          $r3$.ɵr(2, 1);
           $r3$.ɵcr();
 
           function MyComponent_ForOfDirective_Template_1(ctx1: $any$, cm: $boolean$) {
@@ -173,7 +172,6 @@ describe('template variables', () => {
           }
           $r3$.ɵp(1, 'forOf', $r3$.ɵb(ctx.items));
           $r3$.ɵcR(1);
-          $r3$.ɵr(2, 1);
           $r3$.ɵcr();
 
           function MyComponent_ForOfDirective_Template_1(ctx1: $any$, cm: $boolean$) {
@@ -191,7 +189,6 @@ describe('template variables', () => {
             $r3$.ɵp(4, 'forOf', $r3$.ɵb($l0_item$.infos));
             $r3$.ɵt(2, $r3$.ɵi1('', $l0_item$.name, ''));
             $r3$.ɵcR(4);
-            $r3$.ɵr(5, 4);
             $r3$.ɵcr();
 
             function MyComponent_ForOfDirective_ForOfDirective_Template_3(

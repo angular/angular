@@ -171,7 +171,6 @@ describe('pipes', () => {
           $r3$.ɵt(2, $r3$.ɵi1('', $r3$.ɵpb2(3, ctx.name, ctx.size), ''));
           $r3$.ɵp(4, 'oneTimeIf', $r3$.ɵb(ctx.more));
           $r3$.ɵcR(4);
-          $r3$.ɵr(5, 4);
           $r3$.ɵcr();
 
           function C4(ctx1: $any$, cm: $boolean$) {

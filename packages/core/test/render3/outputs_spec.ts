@@ -9,7 +9,7 @@
 import {EventEmitter} from '@angular/core';
 
 import {defineComponent, defineDirective} from '../../src/render3/index';
-import {bind, container, containerRefreshEnd, containerRefreshStart, directiveRefresh, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, listener, text} from '../../src/render3/instructions';
+import {bind, container, containerRefreshEnd, containerRefreshStart, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, listener, text} from '../../src/render3/instructions';
 
 import {containerEl, renderToHtml} from './render_util';
 
@@ -52,7 +52,6 @@ describe('outputs', () => {
         elementEnd();
       }
       ButtonToggle.ngComponentDef.h(1, 0);
-      directiveRefresh(1, 0);
     }
 
     let counter = 0;
@@ -78,7 +77,6 @@ describe('outputs', () => {
         elementEnd();
       }
       ButtonToggle.ngComponentDef.h(1, 0);
-      directiveRefresh(1, 0);
     }
 
     let counter = 0;
@@ -104,7 +102,6 @@ describe('outputs', () => {
         elementEnd();
       }
       ButtonToggle.ngComponentDef.h(1, 0);
-      directiveRefresh(1, 0);
     }
 
     const ctx = {counter: 0};
@@ -140,7 +137,6 @@ describe('outputs', () => {
             elementEnd();
           }
           ButtonToggle.ngComponentDef.h(1, 0);
-          directiveRefresh(1, 0);
           embeddedViewEnd();
         }
       }
@@ -192,7 +188,6 @@ describe('outputs', () => {
                 elementEnd();
               }
               ButtonToggle.ngComponentDef.h(1, 0);
-              directiveRefresh(1, 0);
               embeddedViewEnd();
             }
           }
@@ -263,8 +258,6 @@ describe('outputs', () => {
           }
           ButtonToggle.ngComponentDef.h(3, 2);
           DestroyComp.ngComponentDef.h(5, 4);
-          directiveRefresh(3, 2);
-          directiveRefresh(5, 4);
           embeddedViewEnd();
         }
       }
@@ -341,7 +334,6 @@ describe('outputs', () => {
         elementEnd();
       }
       ButtonToggle.ngComponentDef.h(1, 0);
-      directiveRefresh(1, 0);
     }
 
     let counter = 0;
@@ -375,7 +367,6 @@ describe('outputs', () => {
       }
       elementProperty(0, 'change', bind(ctx.change));
       ButtonToggle.ngComponentDef.h(1, 0);
-      directiveRefresh(1, 0);
     }
 
     let counter = 0;
@@ -420,7 +411,6 @@ describe('outputs', () => {
             elementEnd();
           }
           ButtonToggle.ngComponentDef.h(1, 0);
-          directiveRefresh(1, 0);
           embeddedViewEnd();
         } else {
           if (embeddedViewStart(1)) {

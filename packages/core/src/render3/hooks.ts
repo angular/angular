@@ -97,20 +97,7 @@ function queueDestroyHooks(def: DirectiveDef<any>, tView: TView, i: number): voi
 export function executeInitHooks(currentView: LView, tView: TView, creationMode: boolean): void {
   if (currentView.lifecycleStage === LifecycleStage.INIT) {
     executeHooks(currentView.data, tView.initHooks, tView.checkHooks, creationMode);
-    currentView.lifecycleStage = LifecycleStage.CONTENT_INIT;
-  }
-}
-
-/**
- * Calls all afterContentInit and afterContentChecked hooks for the view, then splices
- * out afterContentInit hooks to prep for the next run in update mode.
- *
- * @param currentView The current view
- */
-export function executeContentHooks(currentView: LView, tView: TView, creationMode: boolean): void {
-  if (currentView.lifecycleStage < LifecycleStage.VIEW_INIT) {
-    executeHooks(currentView.data, tView.contentHooks, tView.contentCheckHooks, creationMode);
-    currentView.lifecycleStage = LifecycleStage.VIEW_INIT;
+    currentView.lifecycleStage = LifecycleStage.AFTER_INIT;
   }
 }
 

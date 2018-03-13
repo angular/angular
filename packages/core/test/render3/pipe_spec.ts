@@ -10,7 +10,7 @@ import {Directive, OnChanges, OnDestroy, Pipe, PipeTransform, SimpleChange, Simp
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
 import {NgOnChangesFeature, defineComponent, defineDirective, definePipe} from '../../src/render3/definition';
-import {bind, container, containerRefreshEnd, containerRefreshStart, directiveRefresh, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, interpolation1, load, text, textBinding} from '../../src/render3/instructions';
+import {bind, container, containerRefreshEnd, containerRefreshStart, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, interpolation1, load, text, textBinding} from '../../src/render3/instructions';
 import {pipe, pipeBind1, pipeBind3, pipeBind4, pipeBindV} from '../../src/render3/pipe';
 
 import {RenderLog, getRendererFactory2, patchLoggingRenderer2} from './imported_renderer2';
@@ -73,7 +73,6 @@ describe('pipe', () => {
       }
       MyDir.ngDirectiveDef.h(1, 0);
       elementProperty(0, 'elprop', bind(pipeBind1(2, ctx)));
-      directiveRefresh(1, 0);
       directive = load(1);
     }
     renderToHtml(Template, 'a');
