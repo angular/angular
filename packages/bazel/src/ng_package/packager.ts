@@ -16,33 +16,18 @@ function filter(ext: string): (path: string) => boolean {
 
 function main(args: string[]): number {
   shx.set('-e');
+
   args = fs.readFileSync(args[0], {encoding: 'utf-8'}).split('\n').map(s => s === '\'\'' ? '' : s);
   const
-      [out, srcDir, binDir, readmeMd, fesms2015Arg, fesms5Arg, bundlesArg, srcsArg, stampData,
-       licenseFile] = args;
-  const fesms2015 = fesms2015Arg.split(',').filter(s => !!s);
-  const fesms5 = fesms5Arg.split(',').filter(s => !!s);
+      [out, srcDir, primaryEntryPoint, secondaryEntryPointsArg, binDir, readmeMd, esm2015Arg,
+       esm5Arg, bundlesArg, srcsArg, licenseFile] = args;
+  const esm2015 = esm2015Arg.split(',').filter(s => !!s);
+  const esm5 = esm5Arg.split(',').filter(s => !!s);
   const bundles = bundlesArg.split(',').filter(s => !!s);
   const srcs = srcsArg.split(',').filter(s => !!s);
+  const secondaryEntryPoints = secondaryEntryPointsArg.split(',').filter(s => !!s);
 
   shx.mkdir('-p', out);
-
-  let primaryEntryPoint: string|null = null;
-  const secondaryEntryPoints = new Set<string>();
-
-  function replaceVersionPlaceholders(filePath: string, content: string) {
-    if (stampData) {
-      const version = shx.grep('BUILD_SCM_VERSION', stampData).split(' ')[1].trim();
-      // Split the replacement into separate strings so we don't match it while publishing
-      return content.replace(
-          new RegExp(
-              '0.0.0' +
-                  '-PLACEHOLDER',
-              'g'),
-          version);
-    }
-    return content;
-  }
 
   /**
    * Inserts properties into the package.json file(s) in the package so that
@@ -60,22 +45,18 @@ function main(args: string[]): number {
     if (!rel) {
       rel = '.';
     }
-    const indexFile = nameParts[nameParts.length - 1];
+    const basename = nameParts[nameParts.length - 1];
+    const indexName = [...nameParts, `${basename}.js`].splice(1).join('/');
     parsedPackage['main'] = `${rel}/bundles/${nameParts.join('-')}.umd.js`;
-    parsedPackage['module'] = `${rel}/esm5/${indexFile}.js`;
-    parsedPackage['es2015'] = `${rel}/esm2015/${indexFile}.js`;
-    parsedPackage['typings'] = `./${indexFile}.d.ts`;
+    parsedPackage['module'] = `${rel}/esm5/${indexName}`;
+    parsedPackage['es2015'] = `${rel}/esm2015/${indexName}`;
+    parsedPackage['typings'] = `./${basename}.d.ts`;
     return JSON.stringify(parsedPackage, null, 2);
   }
 
   function writeFesm(file: string, baseDir: string) {
     const parts = path.basename(file).split('__');
     const entryPointName = parts.join('/').replace(/\..*/, '');
-    if (primaryEntryPoint === null || primaryEntryPoint === entryPointName) {
-      primaryEntryPoint = entryPointName;
-    } else {
-      secondaryEntryPoints.add(entryPointName);
-    }
     const filename = parts.splice(-1)[0];
     const dir = path.join(baseDir, ...parts);
     shx.mkdir('-p', dir);
@@ -83,36 +64,45 @@ function main(args: string[]): number {
     shx.mv(path.join(dir, path.basename(file)), path.join(dir, filename));
   }
 
-  function moveBundleIndex(f: string) {
-    let ext: string;
+  function writeFile(file: string, relative: string, baseDir: string) {
+    const dir = path.join(baseDir, path.dirname(relative));
+    shx.mkdir('-p', dir);
+    shx.cp(file, dir);
+  }
 
-    if (f.endsWith('.d.ts'))
-      ext = '.d.ts';
-    else if (f.endsWith('.metadata.json'))
-      ext = '.metadata.json';
-    else
-      throw new Error('Bundle index files should be .d.ts or .metadata.json');
-
+  // Copy these bundle_index outputs from the ng_module rules in the deps
+  // Mapping looks like:
+  //  $bin/_core.bundle_index.d.ts
+  //    -> $out/core.d.ts
+  //  $bin/testing/_testing.bundle_index.d.ts
+  //    -> $out/testing/testing.d.ts
+  //  $bin/_core.bundle_index.metadata.json
+  //    -> $out/core.metadata.json
+  //  $bin/testing/_testing.bundle_index.metadata.json
+  //    -> $out/testing/testing.metadata.json
+  // JS is a little different, as controlled by the `dir` parameter
+  //  $bin/_core.bundle_index.js
+  //    -> $out/esm5/core.js
+  //  $bin/testing/_testing.bundle_index.js
+  //    -> $out/esm5/testing.js
+  function moveBundleIndex(f: string, dir = '.') {
     const relative = path.relative(binDir, f);
-    let outputPath: string|undefined = undefined;
-    for (const secondary of secondaryEntryPoints.values()) {
-      if (relative.startsWith(secondary)) {
-        const filename = secondary.split('/').pop();
-        outputPath = path.join(out, secondary, filename + ext);
-      }
-    }
-    if (!outputPath) {
-      outputPath = path.join(out, primaryEntryPoint + ext);
-    }
-    return outputPath;
+    return path.join(out, dir, relative.replace(/_(.*)\.bundle_index/, '$1'));
   }
 
   if (readmeMd) {
     shx.cp(readmeMd, path.join(out, 'README.md'));
   }
 
-  fesms2015.forEach(fesm2015 => writeFesm(fesm2015, path.join(out, 'esm2015')));
-  fesms5.forEach(fesm5 => writeFesm(fesm5, path.join(out, 'esm5')));
+  function writeEsmFile(file, suffix, outDir) {
+    const root = file.substr(0, file.lastIndexOf(suffix + path.sep) + suffix.length + 1);
+    const rel = path.relative(path.join(root, srcDir), file);
+    if (!rel.startsWith('..')) {
+      writeFile(file, rel, path.join(out, outDir));
+    }
+  }
+  esm2015.forEach(file => writeEsmFile(file, '.es6', 'esm2015'));
+  esm5.forEach(file => writeEsmFile(file, '.esm5', 'esm5'));
 
   const bundlesDir = path.join(out, 'bundles');
   shx.mkdir('-p', bundlesDir);
@@ -132,10 +122,14 @@ function main(args: string[]): number {
     shx.mkdir('-p', path.dirname(outputPath));
     fs.writeFileSync(outputPath, content);
   });
+  allsrcs.filter(filter('.bundle_index.js')).forEach((f: string) => {
+    const content = fs.readFileSync(f, {encoding: 'utf-8'});
+    fs.writeFileSync(moveBundleIndex(f, 'esm5'), content);
+    fs.writeFileSync(moveBundleIndex(f, 'esm2015'), content);
+  });
 
   for (const src of srcs) {
     let content = fs.readFileSync(src, {encoding: 'utf-8'});
-    content = replaceVersionPlaceholders(src, content);
     if (path.basename(src) === 'package.json') {
       content = amendPackageJson(src, content);
     }
@@ -145,14 +139,14 @@ function main(args: string[]): number {
   }
 
   allsrcs.filter(filter('.bundle_index.metadata.json')).forEach((f: string) => {
-    fs.writeFileSync(
-        moveBundleIndex(f), replaceVersionPlaceholders(f, fs.readFileSync(f, {encoding: 'utf-8'})));
+    fs.writeFileSync(moveBundleIndex(f), fs.readFileSync(f, {encoding: 'utf-8'}));
   });
 
   const licenseBanner = licenseFile ? fs.readFileSync(licenseFile, {encoding: 'utf-8'}) : '';
 
-  for (const secondaryEntryPoint of secondaryEntryPoints.values()) {
+  for (const secondaryEntryPoint of secondaryEntryPoints) {
     const baseName = secondaryEntryPoint.split('/').pop();
+    if (!baseName) throw new Error('secondaryEntryPoint has no slash');
     const dirName = path.join(...secondaryEntryPoint.split('/').slice(0, -1));
 
     fs.writeFileSync(path.join(out, dirName, `${baseName}.metadata.json`), JSON.stringify({
