@@ -187,9 +187,13 @@ export function selectValueAccessor(
     dir: NgControl, valueAccessors: ControlValueAccessor[]): ControlValueAccessor|null {
   if (!valueAccessors) return null;
 
+  if (!Array.isArray(valueAccessors))
+    _throwError(dir, 'Value accessor was not provided as an array for form control with');
+
   let defaultAccessor: ControlValueAccessor|undefined = undefined;
   let builtinAccessor: ControlValueAccessor|undefined = undefined;
   let customAccessor: ControlValueAccessor|undefined = undefined;
+
   valueAccessors.forEach((v: ControlValueAccessor) => {
     if (v.constructor === DefaultValueAccessor) {
       defaultAccessor = v;

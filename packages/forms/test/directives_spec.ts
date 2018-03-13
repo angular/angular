@@ -55,6 +55,12 @@ function asyncValidator(expected: any, timeout = 0) {
         it('should throw when given an empty array',
            () => { expect(() => selectValueAccessor(dir, [])).toThrowError(); });
 
+        it('should throw when accessor is not provided as array', () => {
+          expect(() => selectValueAccessor(dir, {} as any[]))
+              .toThrowError(
+                  `Value accessor was not provided as an array for form control with unspecified name attribute`);
+        });
+
         it('should return the default value accessor when no other provided',
            () => { expect(selectValueAccessor(dir, [defaultAccessor])).toEqual(defaultAccessor); });
 

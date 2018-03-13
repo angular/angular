@@ -16,6 +16,6 @@ export class SpyChangeDetectorRef extends SpyObject {
   }
 }
 
-export class SpyNgControl extends SpyObject {}
+export class SpyNgControl extends SpyObject { path = []; }
 
 export class SpyValueAccessor extends SpyObject { writeValue: any; }
