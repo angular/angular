@@ -119,6 +119,24 @@ module.exports = new Package('angular-api', [basePackage, typeScriptPackage])
     addNotYetDocumentedProperty.docTypes = API_DOC_TYPES;
   })
 
+  .config(function(checkContentRules, EXPORT_DOC_TYPES) {
+    const createNoMarkdownHeadings = require('./content-rules/noMarkdownHeadings');
+    const noMarkdownHeadings = createNoMarkdownHeadings();
+    const allowOnlyLevel3Headings = createNoMarkdownHeadings(1, 2, '4,');
+    const DOC_TYPES_TO_CHECK = EXPORT_DOC_TYPES.concat(['member', 'overload-info']);
+    const PROPS_TO_CHECK = ['description', 'shortDescription'];
+
+    DOC_TYPES_TO_CHECK.forEach(docType => {
+      const ruleSet = checkContentRules.docTypeRules[docType] = checkContentRules.docTypeRules[docType] || {};
+      PROPS_TO_CHECK.forEach(prop => {
+        const rules = ruleSet[prop] = ruleSet[prop] || [];
+        rules.push(noMarkdownHeadings);
+      });
+      const rules = ruleSet['usageNotes'] = ruleSet['usageNotes'] || [];
+      rules.push(allowOnlyLevel3Headings);
+    });
+  })
+
   .config(function(computePathsProcessor, EXPORT_DOC_TYPES, generateApiListDoc) {
 
     const API_SEGMENT = 'api';
