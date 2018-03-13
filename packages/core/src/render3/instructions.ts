@@ -22,7 +22,7 @@ import {matchingSelectorIndex} from './node_selector_matcher';
 import {ComponentDef, ComponentTemplate, ComponentType, DirectiveDef, DirectiveType} from './interfaces/definition';
 import {RElement, RText, Renderer3, RendererFactory3, ProceduralRenderer3, ObjectOrientedRenderer3, RendererStyleFlags3, isProceduralRenderer} from './interfaces/renderer';
 import {isDifferent, stringify} from './util';
-import {executeHooks, executeContentHooks, queueLifecycleHooks, queueInitHooks, executeInitHooks} from './hooks';
+import {executeHooks, queueLifecycleHooks, queueInitHooks, executeInitHooks} from './hooks';
 import {ViewRef} from './view_ref';
 
 /**
@@ -209,8 +209,29 @@ export function leaveView(newView: LView): void {
   // Views should be clean and in update mode after being checked, so these bits are cleared
   currentView.flags &= ~(LViewFlags.CreationMode | LViewFlags.Dirty);
   currentView.lifecycleStage = LifecycleStage.INIT;
-  currentView.tView.firstTemplatePass = false;
   enterView(newView, null);
+}
+
+/** Refreshes the views of child components, triggering any init/content hooks existing.  */
+function refreshChildComponents() {
+  executeInitAndContentHooks();
+  // This needs to be set before children are processed to support recursive components
+  currentView.tView.firstTemplatePass = false;
+
+  const components = currentView.tView.components;
+  if (components != null) {
+    for (let i = 0; i < components.length; i++) {
+      componentRefresh(components[i] + 1, components[i]);
+    }
+  }
+}
+
+function executeInitAndContentHooks(): void {
+  if (!checkNoChangesMode) {
+    const tView = currentView.tView;
+    executeInitHooks(currentView, tView, creationMode);
+    executeHooks(currentView.data, tView.contentHooks, tView.contentCheckHooks, creationMode);
+  }
 }
 
 export function createLView(
@@ -376,8 +397,9 @@ export function renderEmbeddedTemplate<T>(
     enterView(viewNode.data, viewNode);
 
     template(context, cm);
-  } finally {
     refreshDynamicChildren();
+    refreshChildComponents();
+  } finally {
     leaveView(currentView !.parent !);
     isParent = _isParent;
     previousOrParentNode = _previousOrParentNode;
@@ -394,10 +416,12 @@ export function renderComponentOrTemplate<T>(
     }
     if (template) {
       template(componentOrContext !, creationMode);
+      refreshChildComponents();
     } else {
+      executeInitAndContentHooks();
       // Element was stored at 0 and directive was stored at 1 in renderComponent
       // so to refresh the component, refresh() needs to be called with (1, 0)
-      directiveRefresh(1, 0);
+      componentRefresh(1, 0);
     }
   } finally {
     if (rendererFactory.end) {
@@ -482,6 +506,7 @@ export function elementStart(
         // TODO(mhevery): This assumes that the directives come in correct order, which
         // is not guaranteed. Must be refactored to take it into account.
         const instance = hostComponentDef.n();
+        storeComponentIndex(index);
         directiveCreate(++index, instance, hostComponentDef, queryName);
         initChangeDetectorIfExisting(node.nodeInjector, instance);
       }
@@ -489,6 +514,13 @@ export function elementStart(
     }
   }
   return native;
+}
+
+/** Stores index of component so it will be queued for refresh during change detection. */
+function storeComponentIndex(index: number): void {
+  if (currentView.tView.firstTemplatePass) {
+    (currentView.tView.components || (currentView.tView.components = [])).push(index);
+  }
 }
 
 /** Sets the context for a ChangeDetectorRef to the given instance. */
@@ -565,7 +597,8 @@ export function createTView(): TView {
     contentCheckHooks: null,
     viewHooks: null,
     viewCheckHooks: null,
-    destroyHooks: null
+    destroyHooks: null,
+    components: null
   };
 }
 
@@ -1250,6 +1283,7 @@ function getOrCreateEmbeddedTView(viewIndex: number, parent: LContainerNode): TV
 
 /** Marks the end of an embedded view. */
 export function embeddedViewEnd(): void {
+  refreshChildComponents();
   isParent = false;
   const viewNode = previousOrParentNode = currentView.node as LViewNode;
   const container = previousOrParentNode.parent as LContainerNode;
@@ -1274,7 +1308,7 @@ export function embeddedViewEnd(): void {
 /////////////
 
 /**
- * Refreshes the directive, triggering init and content hooks.
+ * Refreshes the directive.
  *
  * When it is a component, it also enters the component's view and processes it to update bindings,
  * queries, etc.
@@ -1282,11 +1316,7 @@ export function embeddedViewEnd(): void {
  * @param directiveIndex
  * @param elementIndex
  */
-export function directiveRefresh<T>(directiveIndex: number, elementIndex: number): void {
-  if (!checkNoChangesMode) {
-    executeInitHooks(currentView, currentView.tView, creationMode);
-    executeContentHooks(currentView, currentView.tView, creationMode);
-  }
+export function componentRefresh<T>(directiveIndex: number, elementIndex: number): void {
   const template = (tData[directiveIndex] as ComponentDef<T>).template;
   if (template != null) {
     ngDevMode && assertDataInRange(elementIndex);
@@ -1649,8 +1679,9 @@ function detectChangesInternal<T>(hostView: LView, hostNode: LElementNode, compo
   if (template != null) {
     try {
       template(component, creationMode);
-    } finally {
       refreshDynamicChildren();
+      refreshChildComponents();
+    } finally {
       leaveView(oldView);
     }
   }

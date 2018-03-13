@@ -11,7 +11,7 @@ import {ChangeDetectorRef, ElementRef, TemplateRef, ViewContainerRef} from '@ang
 import {defineComponent} from '../../src/render3/definition';
 import {InjectFlags, bloomAdd, bloomFindPossibleInjector, getOrCreateNodeInjector, injectAttribute} from '../../src/render3/di';
 import {NgOnChangesFeature, PublicFeature, defineDirective, directiveInject, injectChangeDetectorRef, injectElementRef, injectTemplateRef, injectViewContainerRef} from '../../src/render3/index';
-import {bind, container, containerRefreshEnd, containerRefreshStart, createLNode, createLView, createTView, directiveRefresh, elementEnd, elementStart, embeddedViewEnd, embeddedViewStart, enterView, interpolation2, leaveView, load, projection, projectionDef, text, textBinding} from '../../src/render3/instructions';
+import {bind, container, containerRefreshEnd, containerRefreshStart, createLNode, createLView, createTView, elementEnd, elementStart, embeddedViewEnd, embeddedViewStart, enterView, interpolation2, leaveView, load, projection, projectionDef, text, textBinding} from '../../src/render3/instructions';
 import {LInjector} from '../../src/render3/interfaces/injector';
 import {LNodeFlags} from '../../src/render3/interfaces/node';
 import {LViewFlags} from '../../src/render3/interfaces/view';
@@ -261,9 +261,6 @@ describe('di', () => {
             MyComp.ngComponentDef.h(1, 0);
             Directive.ngDirectiveDef.h(2, 0);
             DirectiveSameInstance.ngDirectiveDef.h(3, 0);
-            directiveRefresh(1, 0);
-            directiveRefresh(2, 0);
-            directiveRefresh(3, 0);
           }
         });
       }
@@ -296,8 +293,6 @@ describe('di', () => {
             textBinding(3, bind(load<Directive>(1).value));
             Directive.ngDirectiveDef.h(1, 0);
             DirectiveSameInstance.ngDirectiveDef.h(2, 0);
-            directiveRefresh(1, 0);
-            directiveRefresh(2, 0);
           }
         });
       }
@@ -338,9 +333,6 @@ describe('di', () => {
             MyComp.ngComponentDef.h(1, 0);
             Directive.ngDirectiveDef.h(3, 2);
             DirectiveSameInstance.ngDirectiveDef.h(4, 2);
-            directiveRefresh(1, 0);
-            directiveRefresh(3, 2);
-            directiveRefresh(4, 2);
           }
         });
       }
@@ -385,8 +377,6 @@ describe('di', () => {
                 textBinding(3, bind(load<Directive>(1).value));
                 Directive.ngDirectiveDef.h(1, 0);
                 DirectiveSameInstance.ngDirectiveDef.h(2, 0);
-                directiveRefresh(1, 0);
-                directiveRefresh(2, 0);
               }
               embeddedViewEnd();
             }
@@ -439,7 +429,6 @@ describe('di', () => {
               container(0, [IfDirective], C1);
             }
             containerRefreshStart(0);
-            { directiveRefresh(1, 0); }
             containerRefreshEnd();
 
             function C1(ctx1: any, cm1: boolean) {
@@ -451,8 +440,6 @@ describe('di', () => {
               textBinding(3, bind(load<Directive>(1).value));
               Directive.ngDirectiveDef.h(1, 0);
               DirectiveSameInstance.ngDirectiveDef.h(2, 0);
-              directiveRefresh(1, 0);
-              directiveRefresh(2, 0);
             }
           }
         });

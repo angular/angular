@@ -57,6 +57,9 @@
     "name": "checkNoChangesMode"
   },
   {
+    "name": "componentRefresh"
+  },
+  {
     "name": "createLNode"
   },
   {
@@ -78,19 +81,16 @@
     "name": "directiveCreate"
   },
   {
-    "name": "directiveRefresh"
-  },
-  {
     "name": "domRendererFactory3"
   },
   {
     "name": "enterView"
   },
   {
-    "name": "executeContentHooks"
+    "name": "executeHooks"
   },
   {
-    "name": "executeHooks"
+    "name": "executeInitAndContentHooks"
   },
   {
     "name": "executeInitHooks"
@@ -157,6 +157,9 @@
   },
   {
     "name": "queueInitHooks"
+  },
+  {
+    "name": "refreshChildComponents"
   },
   {
     "name": "refreshDynamicChildren"

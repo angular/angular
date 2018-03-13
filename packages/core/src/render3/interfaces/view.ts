@@ -276,6 +276,12 @@ export interface TView {
    * Odd indices: Hook function
    */
   destroyHooks: HookData|null;
+
+  /**
+   * A list of element indices for child components that will need to be refreshed when the
+   * current view has finished its check.
+   */
+  components: number[]|null;
 }
 
 /**
@@ -312,15 +318,14 @@ export interface RootContext {
 export type HookData = (number | (() => void))[];
 
 /** Possible values of LView.lifecycleStage, used to determine which hooks to run.  */
+// TODO: Remove this enum when containerRefresh instructions are removed
 export const enum LifecycleStage {
+
   /* Init hooks need to be run, if any. */
   INIT = 1,
 
   /* Content hooks need to be run, if any. Init hooks have already run. */
-  CONTENT_INIT = 2,
-
-  /* View hooks need to be run, if any. Any init hooks/content hooks have ran. */
-  VIEW_INIT = 3
+  AFTER_INIT = 2,
 }
 
 /**

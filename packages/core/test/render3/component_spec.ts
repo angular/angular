@@ -8,8 +8,9 @@
 
 
 import {DoCheck, ViewEncapsulation} from '../../src/core';
-import {defineComponent, markDirty} from '../../src/render3/index';
-import {bind, container, containerRefreshEnd, containerRefreshStart, detectChanges, directiveRefresh, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, text, textBinding} from '../../src/render3/instructions';
+import {getRenderedText} from '../../src/render3/component';
+import {LifecycleHooksFeature, defineComponent, markDirty} from '../../src/render3/index';
+import {bind, container, containerRefreshEnd, containerRefreshStart, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, text, textBinding, tick} from '../../src/render3/instructions';
 import {createRendererType2} from '../../src/view/index';
 
 import {getRendererFactory2} from './imported_renderer2';
@@ -111,7 +112,6 @@ describe('component with a container', () => {
     }
     elementProperty(0, 'items', bind(ctx.items));
     WrapperComponent.ngComponentDef.h(1, 0);
-    directiveRefresh(1, 0);
   }
 
   it('should re-render on input change', () => {
@@ -137,7 +137,6 @@ describe('encapsulation', () => {
           elementEnd();
         }
         EncapsulatedComponent.ngComponentDef.h(1, 0);
-        directiveRefresh(1, 0);
       },
       factory: () => new WrapperComponent,
     });
@@ -154,7 +153,6 @@ describe('encapsulation', () => {
           elementEnd();
         }
         LeafComponent.ngComponentDef.h(2, 1);
-        directiveRefresh(2, 1);
       },
       factory: () => new EncapsulatedComponent,
       rendererType:
@@ -202,7 +200,6 @@ describe('encapsulation', () => {
             elementEnd();
           }
           LeafComponentwith.ngComponentDef.h(1, 0);
-          directiveRefresh(1, 0);
         },
         factory: () => new WrapperComponentWith,
         rendererType:
@@ -233,4 +230,79 @@ describe('encapsulation', () => {
             /<div host="" _nghost-c(\d+)=""><leaf _ngcontent-c\1="" _nghost-c(\d+)=""><span _ngcontent-c\2="">bar<\/span><\/leaf><\/div>/);
   });
 
+});
+
+describe('recursive components', () => {
+  let events: string[] = [];
+  let count = 0;
+
+  class TreeNode {
+    constructor(
+        public value: number, public depth: number, public left: TreeNode|null,
+        public right: TreeNode|null) {}
+  }
+
+  class TreeComponent {
+    data: TreeNode = _buildTree(0);
+
+    ngDoCheck() { events.push('check' + this.data.value); }
+
+    static ngComponentDef = defineComponent({
+      type: TreeComponent,
+      tag: 'tree-comp',
+      factory: () => new TreeComponent(),
+      template: (ctx: TreeComponent, cm: boolean) => {
+        if (cm) {
+          text(0);
+          container(1);
+          container(2);
+        }
+        textBinding(0, bind(ctx.data.value));
+        containerRefreshStart(1);
+        {
+          if (ctx.data.left != null) {
+            if (embeddedViewStart(0)) {
+              elementStart(0, TreeComponent);
+              elementEnd();
+            }
+            elementProperty(0, 'data', bind(ctx.data.left));
+            TreeComponent.ngComponentDef.h(1, 0);
+            embeddedViewEnd();
+          }
+        }
+        containerRefreshEnd();
+        containerRefreshStart(2);
+        {
+          if (ctx.data.right != null) {
+            if (embeddedViewStart(0)) {
+              elementStart(0, TreeComponent);
+              elementEnd();
+            }
+            elementProperty(0, 'data', bind(ctx.data.right));
+            TreeComponent.ngComponentDef.h(1, 0);
+            embeddedViewEnd();
+          }
+        }
+        containerRefreshEnd();
+      },
+      inputs: {data: 'data'}
+    });
+  }
+
+
+  function _buildTree(currDepth: number): TreeNode {
+    const children = currDepth < 2 ? _buildTree(currDepth + 1) : null;
+    const children2 = currDepth < 2 ? _buildTree(currDepth + 1) : null;
+    return new TreeNode(count++, currDepth, children, children2);
+  }
+
+  it('should check each component just once', () => {
+    const comp = renderComponent(TreeComponent, {hostFeatures: [LifecycleHooksFeature]});
+    expect(getRenderedText(comp)).toEqual('6201534');
+    expect(events).toEqual(['check6', 'check2', 'check0', 'check1', 'check5', 'check3', 'check4']);
+
+    events = [];
+    tick(comp);
+    expect(events).toEqual(['check6', 'check2', 'check0', 'check1', 'check5', 'check3', 'check4']);
+  });
 });
