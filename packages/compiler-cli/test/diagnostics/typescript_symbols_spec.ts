@@ -13,7 +13,7 @@ import {ReflectorHost} from '@angular/language-service/src/reflector_host';
 import * as ts from 'typescript';
 
 import {Symbol, SymbolQuery, SymbolTable} from '../../src/diagnostics/symbols';
-import {getSymbolQuery} from '../../src/diagnostics/typescript_symbols';
+import {getSymbolQuery, toSymbolTableFactory} from '../../src/diagnostics/typescript_symbols';
 import {CompilerOptions} from '../../src/transformers/api';
 import {Directory} from '../mocks';
 
@@ -54,6 +54,19 @@ describe('symbol query', () => {
     const unknownType = context.getStaticSymbol('/unkonwn/file.ts', 'UnknownType');
     const symbol = query.getTypeSymbol(unknownType);
     expect(symbol).toBeUndefined();
+  });
+});
+
+describe('toSymbolTableFactory(tsVersion)', () => {
+  it('should return a Map for versions of TypeScript >= 2.2 and a dictionary otherwise', () => {
+    const a = { name: 'a' } as ts.Symbol;
+    const b = { name: 'b' } as ts.Symbol;
+
+    expect(toSymbolTableFactory('2.1')([a, b]) instanceof Map).toEqual(false);
+    expect(toSymbolTableFactory('2.4')([a, b]) instanceof Map).toEqual(true);
+
+    // Check that for the lower bound version `2.2`, toSymbolTableFactory('2.2') returns a map
+    expect(toSymbolTableFactory('2.2')([a, b]) instanceof Map).toEqual(true);
   });
 });
 
