@@ -24,8 +24,8 @@ export class AnimationTransitionFactory {
       private _triggerName: string, public ast: TransitionAst,
       private _stateStyles: {[stateName: string]: AnimationStateStyles}) {}
 
-  match(currentState: any, nextState: any): boolean {
-    return oneOrMoreTransitionsMatch(this.ast.matchers, currentState, nextState);
+  match(currentState: any, nextState: any, element: any, params: {[key: string]: any}): boolean {
+    return oneOrMoreTransitionsMatch(this.ast.matchers, currentState, nextState, element, params);
   }
 
   buildStyles(stateName: string, params: {[key: string]: any}, errors: any[]) {
@@ -89,8 +89,9 @@ export class AnimationTransitionFactory {
 }
 
 function oneOrMoreTransitionsMatch(
-    matchFns: TransitionMatcherFn[], currentState: any, nextState: any): boolean {
-  return matchFns.some(fn => fn(currentState, nextState));
+    matchFns: TransitionMatcherFn[], currentState: any, nextState: any, element: any,
+    params: {[key: string]: any}): boolean {
+  return matchFns.some(fn => fn(currentState, nextState, element, params));
 }
 
 export class AnimationStateStyles {
