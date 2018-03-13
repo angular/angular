@@ -22,7 +22,11 @@ ng_module(
 
 ng_package(
     name = "npm_package",
-    srcs = ["package.json"],
+    srcs = [
+        "package.json",
+        "//packages/router/testing:package.json",
+        "//packages/router/upgrade:package.json",
+    ],
     entry_point = "packages/router/index.js",
     secondary_entry_points = [
         "testing",

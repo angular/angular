@@ -1,4 +1,4 @@
-load("@build_bazel_rules_nodejs//:defs.bzl", "npm_package")
+load("//tools:defaults.bzl", "npm_package")
 
 genrule(
     name = "workspace",
@@ -9,6 +9,7 @@ genrule(
 npm_package(
     name = "npm_package",
     srcs = [
+        "BUILD.bazel",
         "index.bzl",
         "package.json",
         "//packages/bazel/src:package_assets",
@@ -18,6 +19,5 @@ npm_package(
         "//packages/bazel/": "//",
         "angular/packages/bazel/": "angular/",
     },
-    stamp_data = "//tools:stamp_data",
     deps = [":workspace"],
 )

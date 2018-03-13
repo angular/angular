@@ -11,12 +11,17 @@ ts_library(
         ],
     ),
     module_name = "@angular/compiler",
+    # module_root = "index.d.ts",
 )
 
 ng_package(
     name = "npm_package",
-    srcs = ["package.json"],
+    srcs = [
+        "package.json",
+        "//packages/compiler/testing:package.json",
+    ],
     entry_point = "packages/compiler/compiler.js",
+    include_devmode_srcs = True,
     secondary_entry_points = [
         "testing",
     ],

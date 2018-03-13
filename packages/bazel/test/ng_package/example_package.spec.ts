@@ -18,7 +18,7 @@ shx.cd(path.join(
     process.env['TEST_SRCDIR'], 'angular', 'packages', 'bazel', 'test', 'ng_package', 'example',
     'npm_package'));
 
-describe('ng_package', () => {
+describe('example ng_package', () => {
   it('should have right bundle files', () => {
     expect(shx.ls('-R', 'bundles').stdout.split('\n').filter(n => !!n).sort()).toEqual([
       'example-secondary.umd.js',
@@ -31,7 +31,8 @@ describe('ng_package', () => {
       'example.umd.min.js.map',
     ]);
   });
-  it('should have right fesm files', () => {
+  // FESMS currently not part of APF v6
+  xit('should have right fesm files', () => {
     const expected = [
       'example.js',
       'example.js.map',
@@ -61,8 +62,8 @@ describe('ng_package', () => {
   it('should have secondary entry point package.json properties set', () => {
     const packageJson = JSON.parse(fs.readFileSync(path.join('secondary', 'package.json'), UTF8));
     expect(packageJson['main']).toBe('../bundles/example-secondary.umd.js');
-    expect(packageJson['module']).toBe('../esm5/secondary.js');
-    expect(packageJson['es2015']).toBe('../esm2015/secondary.js');
+    expect(packageJson['module']).toBe('../esm5/secondary/secondary.js');
+    expect(packageJson['es2015']).toBe('../esm2015/secondary/secondary.js');
     expect(packageJson['typings']).toBe('./secondary.d.ts');
   });
 });

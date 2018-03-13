@@ -1,8 +1,36 @@
 """Re-export of some bazel rules with repository-wide defaults."""
+load("@build_bazel_rules_nodejs//:defs.bzl", _npm_package = "npm_package")
 load("@build_bazel_rules_typescript//:defs.bzl", _ts_library = "ts_library")
 load("//packages/bazel:index.bzl", _ng_module = "ng_module", _ng_package = "ng_package")
 
 DEFAULT_TSCONFIG = "//packages:tsconfig-build.json"
+
+# Packages which are versioned together on npm
+ANGULAR_SCOPED_PACKAGES = ["@angular/%s" % p for p in [
+  "bazel",
+  "core",
+  "common",
+  "compiler",
+  "compiler-cli",
+  "animations",
+  "platform-browser",
+  "platform-browser-dynamic",
+  "forms",
+  "http",
+  "platform-server",
+  "platform-webworker",
+  "platform-webworker-dynamic",
+  "upgrade",
+  "router",
+  "language-service",
+  "service-worker",
+]]
+
+PKG_GROUP_REPLACEMENTS = {
+    "\"NG_UPDATE_PACKAGE_GROUP\"": """[
+      %s
+    ]""" % ",\n      ".join(["\"%s\"" % s for s in ANGULAR_SCOPED_PACKAGES])
+}
 
 def ts_library(tsconfig = None, **kwargs):
   if not tsconfig:
@@ -29,4 +57,12 @@ def ng_package(name, readme_md = None, license_banner = None, stamp_data = None,
       readme_md = readme_md,
       license_banner = license_banner,
       stamp_data = stamp_data,
+      replacements = PKG_GROUP_REPLACEMENTS,
+      **kwargs)
+
+def npm_package(name, replacements = {}, **kwargs):
+  _npm_package(
+      name = name,
+      stamp_data = "//tools:stamp_data",
+      replacements = dict(replacements, **PKG_GROUP_REPLACEMENTS),
       **kwargs)

@@ -20,7 +20,11 @@ ng_module(
 
 ng_package(
     name = "npm_package",
-    srcs = ["package.json"],
+    srcs = [
+        "package.json",
+        "//packages/platform-browser/animations:package.json",
+        "//packages/platform-browser/testing:package.json",
+    ],
     entry_point = "packages/platform-browser/index.js",
     secondary_entry_points = [
         "animations",
