@@ -38,7 +38,8 @@ export interface AnimationStateMetadata extends AnimationMetadata {
  * @deprecated This symbol has moved. Please Import from @angular/animations instead!
  */
 export interface AnimationTransitionMetadata extends AnimationMetadata {
-  expr: string|((fromState: string, toState: string) => boolean);
+  expr: string|
+      ((fromState: string, toState: string, element: any, params: {[key: string]: any}) => boolean);
   animation: AnimationMetadata|AnimationMetadata[];
 }
 

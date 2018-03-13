@@ -301,12 +301,15 @@ const DEFAULT_COMPONENT_ID = '1';
 
       it('should allow a transition to use a function to determine what method to run', () => {
         let valueToMatch = '';
-        const transitionFn =
-            (fromState: string, toState: string) => { return toState == valueToMatch; };
+        let capturedElement: any;
+        const transitionFn = (fromState: string, toState: string, element: any) => {
+          capturedElement = element;
+          return toState == valueToMatch;
+        };
 
         @Component({
           selector: 'if-cmp',
-          template: '<div [@myAnimation]="exp"></div>',
+          template: '<div #element [@myAnimation]="exp"></div>',
           animations: [
             trigger('myAnimation', [transition(
                                        transitionFn,
@@ -314,6 +317,8 @@ const DEFAULT_COMPONENT_ID = '1';
           ]
         })
         class Cmp {
+          @ViewChild('element')
+          element: any;
           exp: any = '';
         }
 
@@ -323,11 +328,13 @@ const DEFAULT_COMPONENT_ID = '1';
         const cmp = fixture.componentInstance;
         valueToMatch = cmp.exp = 'something';
         fixture.detectChanges();
+        const element = cmp.element.nativeElement;
 
         let players = getLog();
         expect(players.length).toEqual(1);
         let [p1] = players;
         expect(p1.totalTime).toEqual(1234);
+        expect(capturedElement).toEqual(element);
         resetLog();
 
         valueToMatch = 'something-else';
@@ -337,6 +344,49 @@ const DEFAULT_COMPONENT_ID = '1';
         players = getLog();
         expect(players.length).toEqual(0);
       });
+
+      it('should allow a transition to use a function to determine what method to run and expose any parameter values',
+         () => {
+           const transitionFn =
+               (fromState: string, toState: string, element: any, params: {[key: string]: any}) => {
+                 return params['doMatch'] == true;
+               };
+
+           @Component({
+             selector: 'if-cmp',
+             template: '<div [@myAnimation]="{value:exp, params: {doMatch:doMatch}}"></div>',
+             animations: [
+               trigger(
+                   'myAnimation',
+                   [transition(
+                       transitionFn, [style({opacity: 0}), animate(3333, style({opacity: 1}))])]),
+             ]
+           })
+           class Cmp {
+             doMatch = false;
+             exp: any = '';
+           }
+
+           TestBed.configureTestingModule({declarations: [Cmp]});
+
+           const fixture = TestBed.createComponent(Cmp);
+           const cmp = fixture.componentInstance;
+           cmp.doMatch = true;
+           fixture.detectChanges();
+
+           let players = getLog();
+           expect(players.length).toEqual(1);
+           let [p1] = players;
+           expect(p1.totalTime).toEqual(3333);
+           resetLog();
+
+           cmp.doMatch = false;
+           cmp.exp = 'this-wont-match';
+           fixture.detectChanges();
+
+           players = getLog();
+           expect(players.length).toEqual(0);
+         });
 
       it('should allow a state value to be `0`', () => {
         @Component({
