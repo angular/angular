@@ -71,6 +71,29 @@ type OnChangesExpando = OnChanges & {
   [key: string]: any;
 };
 
+/**
+ * Creates an NgOnChangesFeature function for a component's features list.
+ *
+ * It accepts an optional map of minified input property names to original property names,
+ * if any input properties have a public alias.
+ *
+ * The NgOnChangesFeature function that is returned decorates a component with support for
+ * the ngOnChanges lifecycle hook, so it should be included in any component that implements
+ * that hook.
+ *
+ * Example usage:
+ *
+ * ```
+ * static ngComponentDef = defineComponent({
+ *   ...
+ *   inputs: {name: 'publicName'},
+ *   features: [NgOnChangesFeature({name: 'name'})]
+ * });
+ * ```
+ *
+ * @param inputPropertyNames Map of input property names, if they are aliased
+ * @returns DirectiveDefFeature
+ */
 export function NgOnChangesFeature(inputPropertyNames?: {[key: string]: string}):
     DirectiveDefFeature {
   return function(definition: DirectiveDef<any>): void {
