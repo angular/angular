@@ -65,6 +65,7 @@ export {
   embeddedViewEnd as v,
   detectChanges,
   markDirty,
+  tick,
 } from './instructions';
 
 export {
