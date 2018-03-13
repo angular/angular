@@ -194,14 +194,6 @@ export class MatSlider extends _MatSliderMixinBase
   private _thumbLabel: boolean = false;
 
   /**
-   * @deprecated
-   * @deletion-target 6.0.0
-   */
-  @Input('thumb-label')
-  get _thumbLabelDeprecated(): boolean { return this._thumbLabel; }
-  set _thumbLabelDeprecated(value) { this._thumbLabel = value; }
-
-  /**
    * How often to show ticks. Relative to the step so that a tick always appears on a step.
    * Ex: Tick interval of 4 with a step of 3 will draw a tick every 4 steps (every 12 values).
    */
@@ -217,14 +209,6 @@ export class MatSlider extends _MatSliderMixinBase
     }
   }
   private _tickInterval: 'auto' | number = 0;
-
-  /**
-   * @deprecated
-   * @deletion-target 6.0.0
-   */
-  @Input('tick-interval')
-  get _tickIntervalDeprecated() { return this.tickInterval; }
-  set _tickIntervalDeprecated(v) { this.tickInterval = v; }
 
   /** Value of the slider. */
   @Input()
