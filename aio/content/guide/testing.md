@@ -785,6 +785,25 @@ There is no harm in calling `detectChanges()` more often than is strictly necess
 
 <hr>
 
+{@a dispatch-event}
+
+#### Change an input value with _dispatchEvent()_
+
+To simulate user input, you can find the input element and set its `value` property.
+
+You will call `fixture.detectChanges()` to trigger Angular's change detection.
+But there is an essential, intermediate step.
+
+Angular doesn't know that you set the input element's `value` property.
+It won't read that property until you raise the element's `input` event by calling `dispatchEvent()`. 
+_Then_ you call `detectChanges()`.
+
+The following example demonstrates the proper sequence.
+
+<code-example path="testing/src/app/hero/hero-detail.component.spec.ts" region="title-case-pipe" title="app/hero/hero-detail.component.spec.ts (pipe test)"></code-example>
+
+<hr>
+
 ### Component with external files
 
 The `BannerComponent` above is defined with an _inline template_ and _inline css_, specified in the `@Component.template` and `@Component.styles` properties respectively.
