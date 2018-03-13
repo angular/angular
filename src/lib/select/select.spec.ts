@@ -2686,7 +2686,7 @@ describe('MatSelect', () => {
       const spy = jasmine.createSpy('change spy');
 
       fixture.detectChanges();
-      instance.select.change.subscribe(() => spy(instance.selectedFood));
+      instance.select.selectionChange.subscribe(() => spy(instance.selectedFood));
 
       expect(instance.selectedFood).toBeFalsy();
 

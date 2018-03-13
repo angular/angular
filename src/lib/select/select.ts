@@ -432,42 +432,17 @@ export class MatSelect extends _MatSelectMixinBase implements AfterContentInit, 
    /** Event emitted when the select panel has been toggled. */
    @Output() readonly openedChange: EventEmitter<boolean> = new EventEmitter<boolean>();
 
-   /** Event emitted when the select has been opened. */
-   @Output('opened')
-   get _openedStream(): Observable<void> {
-    return this.openedChange.pipe(filter(o => o), map(() => {}));
-  }
+  /** Event emitted when the select has been opened. */
+  @Output('opened') readonly _openedStream: Observable<void> =
+      this.openedChange.pipe(filter(o => o), map(() => {}));
 
   /** Event emitted when the select has been closed. */
-  @Output('closed')
-  get _closedStream(): Observable<void> {
-    return this.openedChange.pipe(filter(o => !o), map(() => {}));
-  }
-
-  /**
-   * Event emitted when the select has been opened.
-   * @deprecated Use `openedChange` instead.
-   * @deletion-target 6.0.0
-   */
-  @Output() readonly onOpen: Observable<void> = this._openedStream;
-
-  /**
-   * Event emitted when the select has been closed.
-   * @deprecated Use `openedChange` instead.
-   * @deletion-target 6.0.0
-   */
-  @Output() readonly onClose: Observable<void> = this._closedStream;
+  @Output('closed') readonly _closedStream: Observable<void> =
+      this.openedChange.pipe(filter(o => !o), map(() => {}));
 
    /** Event emitted when the selected value has been changed by the user. */
   @Output() readonly selectionChange: EventEmitter<MatSelectChange> =
       new EventEmitter<MatSelectChange>();
-
-  /**
-   * Event emitted when the selected value has been changed by the user.
-   * @deprecated Use `selectionChange` instead.
-   * @deletion-target 6.0.0
-   */
-  @Output() readonly change: EventEmitter<MatSelectChange> = this.selectionChange;
 
   /**
    * Event that emits whenever the raw value of the select changes. This is here primarily
