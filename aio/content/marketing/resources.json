@@ -1,60 +1,73 @@
 {
-  "Community": {
+  "커뮤니티": {
+    "//Community": "",
     "order": 3,
     "subCategories": {
-      "Community Curations": {
+      "추천 커뮤니티": {
+        "//Community Curations": "",
         "order": 1,
         "resources": {
           "awesome-angular-components": {
-            "desc": "A community index of components and libraries maintained on GitHub",
+            "//desc": "A community index of components and libraries maintained on GitHub",
+            "desc": "Angular 서드파티 컴포넌트와 라이브러리를 소개하는 GitHub 커뮤니티입니다.",
             "rev": true,
-            "title": "Catalog of Angular Components & Libraries",
+            "//title": "Catalog of Angular Components & Libraries",
+            "title": "Angular 서드파티 컴포넌트 & 라이브러리 소개",
             "url": "https://github.com/brillout/awesome-angular-components"
           },
           "angular-ru": {
-            "desc": "Angular-RU Community on GitHub is a single entry point for all resources, chats, podcasts and meetups for Angular in Russia.",
+            "//desc": "Angular-RU Community on GitHub is a single entry point for all resources, chats, podcasts and meetups for Angular in Russia.",
+            "desc": "러시아에서 열렸던 Angular 밋업부터 팟캐스트, 채팅 등 모든 자료를 Angular-RU 커뮤니티에서 확인하세요.",
             "rev": true,
-            "title": "Angular Conferences and Angular Camps in Moscow, Russia.",
+            "//title": "Angular Conferences and Angular Camps in Moscow, Russia.",
+            "title": "Angular 러시아",
             "url": "https://angular-ru.github.io/"
           }
         }
       },
-      "Groups": {
+      "밋업": {
+        "//Groups": "",
         "order": 2,
         "resources": {
           "sldkjfslkjfslkjdsklj": {
-            "desc": "Meetup in Barcelona, Spain. Express your motivations, share your ideas and play together creating awesome things in team.",
+            "//desc": "Meetup in Barcelona, Spain. Express your motivations, share your ideas and play together creating awesome things in team.",
+            "desc": "2018. 6. 18~ 20 스페인 바르셀로나에서 열리는 밋업에 대한 커뮤니티입니다. 밋업에 참가해서 많은 사람들과 새로운 아이디어를 공유해 보세요.",
             "rev": true,
             "title": "Angular Beers",
             "url": "http://www.meetup.com/AngularJS-Beers/"
           },
           "sldkjfslkjfslkjdskzzzlj": {
-            "desc": "Angular Conferences and Angular Camps in Barcelona, Spain.",
+            "//desc": "Angular Conferences and Angular Camps in Barcelona, Spain.",
+            "desc": "2018. 6. 18 ~ 20 스페인 바르셀로나에서 열리는 밋업 공식 사이트입니다. ",
             "rev": true,
             "title": "Angular Camp",
             "url": "http://angularcamp.org/"
           }
         }
       },
-      "Podcasts": {
+      "팟캐스트": {
+        "//Podcasts": "",
         "order": 3,
         "resources": {
           "sdfjkdkfj": {
-            "desc": "Adventures in Angular is a weekly podcast dedicated to the Angular platform and related technologies, tools, languages, and practices.",
+            "//desc": "Adventures in Angular is a weekly podcast dedicated to the Angular platform and related technologies, tools, languages, and practices.",
+            "desc": "Adventures in Angular는 Angular 플랫폼과 관련 기술, 툴, 언어, 활용방안에 대해 일주일에 한 번씩 방송하는 채널입니다.",
             "logo": "",
             "rev": true,
             "title": "Adventures in Angular",
             "url": "https://devchat.tv/adventures-in-angular"
           },
           "sdlkfjsldfkj": {
-            "desc": "Weekly video podcast hosted by Jeff Whelpley with all the latest and greatest happenings in the wild world of Angular.",
+            "//desc": "Weekly video podcast hosted by Jeff Whelpley with all the latest and greatest happenings in the wild world of Angular.",
+            "desc": "Jeff Whelpley는 일주일에 한 번씩 Angular 생태계에서 일어나는 다양한 소식을 전합니다.",
             "logo": "",
             "rev": true,
             "title": "AngularAir",
             "url": "https://angularair.com/"
           },
           "sldkfjsldjf": {
-            "desc": "The live broadcast podcast all about JavaScript",
+            "//desc": "The live broadcast podcast all about JavaScript",
+            "desc": "JavaScript에 대한 모든 것을 다루는 생방송 채널입니다.",
             "logo": "",
             "rev": true,
             "title": "Javascript Air",
@@ -68,78 +81,91 @@
     "//Development": "",
     "order": 1,
     "subCategories": {
-      "Cross-Platform Development": {
+      "크로스 플랫폼 개발": {
+        "//Cross-Platform Development": "",
         "order": 5,
         "resources": {
           "a2b": {
-            "desc": "Angular and React Native to build applications for Android and iOS",
+            "//desc": "Angular and React Native to build applications for Android and iOS",
+            "desc": "Angular와 React Native를 사용해서 Android와 iOS 애플리케이션을 동시에 만들어 보세요.",
             "logo": "",
             "rev": true,
             "title": "ReactNative",
             "url": "http://angular.github.io/react-native-renderer/"
           },
           "a3b": {
-            "desc": "Ionic offers a library of mobile-optimized HTML, CSS and JS components and tools for building highly interactive native and progressive web apps.",
+            "//desc": "Ionic offers a library of mobile-optimized HTML, CSS and JS components and tools for building highly interactive native and progressive web apps.",
+            "desc": "Ionic은 모바일에 최적화된 HTML 구조와 CSS, JS 컴포넌트를 제공하는 라이브러리입니다. Ionic을 사용하면 훌륭한 UX를 제공하는 네이티브 앱과 프로그레시브 웹 앱을 동시에 만들 수 있습니다.",
             "logo": "http://ionicframework.com/img/ionic-logo-white.svg",
             "rev": true,
             "title": "Ionic",
             "url": "http://ionicframework.com/docs/v2/"
           },
           "a4b": {
-            "desc": "Electron Platform for Angular.",
+            "//desc": "Electron Platform for Angular.",
+            "desc": "Electron 환경에서도 Angular를 활용해 보세요.",
             "logo": "",
             "rev": true,
             "title": "Electron",
             "url": "http://github.com/angular/angular-electron"
           },
           "ab": {
-            "desc": "NativeScript is how you build cross-platform, native iOS and Android apps with Angular and TypeScript. Get 100% access to native APIs via JavaScript and reuse of packages from NPM, CocoaPods and Gradle. Open source and backed by Telerik.​​​",
+            "//desc": "NativeScript is how you build cross-platform, native iOS and Android apps with Angular and TypeScript. Get 100% access to native APIs via JavaScript and reuse of packages from NPM, CocoaPods and Gradle. Open source and backed by Telerik.​​​",
+            "desc": "NativeScript는 Angular와 TypeScript를 활용해서 iOS와 안드로이드 환경에 동작하는 네이티브 앱을 만드는 프레임워크입니다. npm 패키지를 그대로 사용할 수 있는 환경에서 네이티브 API에도 자유롭게 접근할 수 있으며, CocoaPod와 Gradle도 활용할 수 있습니다. Teleric이 만든 오픈소스이며, 활발하게 운영되고 있습니다.",
             "logo": "",
             "rev": true,
             "title": "NativeScript",
             "url": "https://github.com/NativeScript/nativescript-angular"
           },
           "ab5": {
-            "desc": "An Universal Windows App (uwp) powered by Angular",
+            "//desc": "An Universal Windows App (uwp) powered by Angular",
+            "desc": "유니버설 Windows 환경에서 동작하는 애플리케이션을 Angular로 만들어 보세요.",
             "logo": "",
             "rev": true,
-            "title": "Windows (UWP)",
+            "//title": "Windows (UWP)",
+            "title": "Universal Windows App (UWP)",
             "url": "http://github.com/preboot/angular2-universal-windows-app"
           }
         }
       },
-      "Data Libraries": {
+      "데이터 관리": {
+        "Data Libraries": "",
         "order": 3,
         "resources": {
           "-KLIzHDRfiB3d7W7vk-e": {
-            "desc": "Reactive Extensions for Angular",
+            "//desc": "Reactive Extensions for Angular",
+            "desc": "Angular의 Rx 라이브러리를 확장하는 라이브러리입니다.",
             "rev": true,
             "title": "ngrx",
             "url": "http://github.com/ngrx"
           },
           "ab": {
-            "desc": "The official library for Firebase and Angular",
+            "//desc": "The official library for Firebase and Angular",
+            "desc": "Angular 환경에서 사용하는 Firebase 공식 라이브러리입니다.",
             "logo": "",
             "rev": true,
             "title": "Angular Fire",
             "url": "https://github.com/angular/angularfire2"
           },
           "ab2": {
-            "desc": "Use Angular and Meteor to build full-stack JavaScript apps  for Mobile and Desktop.",
+            "//desc": "Use Angular and Meteor to build full-stack JavaScript apps  for Mobile and Desktop.",
+            "desc": "Angular와 Meteor를 함께 활용하면 모바일과 데스크탑 환경에서 동작하는 풀스택 애플리케이션을 만들 수 있습니다.",
             "logo": "http://www.angular-meteor.com/images/logo.png",
             "rev": true,
             "title": "Meteor",
             "url": "http://www.angular-meteor.com/angular2"
           },
           "ab3": {
-            "desc": "Apollo is a data stack for modern apps, built with GraphQL.",
+            "//desc": "Apollo is a data stack for modern apps, built with GraphQL.",
+            "desc": "Apollo는 GraphQL을 활용하는 데이터 스택 라이브러리입니다.",
             "logo": "http://docs.apollostack.com/logo/large.png",
             "rev": true,
             "title": "Apollo",
             "url": "http://docs.apollostack.com/apollo-client/angular2.html"
           },
           "ab4": {
-            "desc": "Angular Commerce is a solution for building modern e-commerce applications with power of Google Firebase. Set of components is design agnostic and allows to easily extend functionality.",
+            "//desc": "Angular Commerce is a solution for building modern e-commerce applications with power of Google Firebase. Set of components is design agnostic and allows to easily extend functionality.",
+            "desc": "Angular Commerce는 Google Firebase를 활용하며 전자상거래 애플리케이션을 만들 수 있는 라이브러리입니다. 라이브러리를 그대로 활용할 수도 있고, 간단하게 확장할 수도 있습니다.",
             "logo": "",
             "rev": true,
             "title": "AngularCommerce",
