@@ -1,36 +1,29 @@
-import {Component, ViewChild} from '@angular/core';
-import {FormsModule} from '@angular/forms';
-import {ComponentFixture, TestBed, async, fakeAsync, flush, tick} from '@angular/core/testing';
-import {By} from '@angular/platform-browser';
-import {MatInputModule} from './index';
-import {MatTextareaAutosize} from './autosize';
-import {MatStepperModule} from '@angular/material/stepper';
-import {MatTabsModule} from '@angular/material/tabs';
-import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {dispatchFakeEvent} from '@angular/cdk/testing';
+import {Component, ViewChild} from '@angular/core';
+import {async, ComponentFixture, fakeAsync, flush, TestBed, tick} from '@angular/core/testing';
+import {FormsModule} from '@angular/forms';
+import {By} from '@angular/platform-browser';
+import {NoopAnimationsModule} from '@angular/platform-browser/animations';
+import {CdkTextareaAutosize} from './autosize';
+import {TextFieldModule} from './text-field-module';
 
 
-describe('MatTextareaAutosize', () => {
+describe('CdkTextareaAutosize', () => {
   let fixture: ComponentFixture<AutosizeTextAreaWithContent>;
   let textarea: HTMLTextAreaElement;
-  let autosize: MatTextareaAutosize;
+  let autosize: CdkTextareaAutosize;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       imports: [
         FormsModule,
-        MatInputModule,
-        MatStepperModule,
-        MatTabsModule,
+        TextFieldModule,
         NoopAnimationsModule,
       ],
       declarations: [
-        AutosizeTextareaInAStep,
-        AutosizeTextareaInATab,
         AutosizeTextAreaWithContent,
         AutosizeTextAreaWithValue,
         AutosizeTextareaWithNgModel,
-        AutosizeTextareaWithLongPlaceholder
       ],
     });
 
@@ -43,7 +36,7 @@ describe('MatTextareaAutosize', () => {
 
     textarea = fixture.nativeElement.querySelector('textarea');
     autosize = fixture.debugElement.query(
-        By.directive(MatTextareaAutosize)).injector.get<MatTextareaAutosize>(MatTextareaAutosize);
+        By.directive(CdkTextareaAutosize)).injector.get<CdkTextareaAutosize>(CdkTextareaAutosize);
   });
 
   it('should resize the textarea based on its content', () => {
@@ -116,7 +109,7 @@ describe('MatTextareaAutosize', () => {
         .toBeGreaterThan(previousMaxHeight, 'Expected increased max-height with maxRows increase.');
   });
 
-  it('should export the matAutosize reference', () => {
+  it('should export the cdkAutosize reference', () => {
     expect(fixture.componentInstance.autosize).toBeTruthy();
     expect(fixture.componentInstance.autosize.resizeToFitContent).toBeTruthy();
   });
@@ -163,7 +156,7 @@ describe('MatTextareaAutosize', () => {
     // detection should be triggered after a multiline content is set.
     fixture = TestBed.createComponent(AutosizeTextAreaWithContent);
     textarea = fixture.nativeElement.querySelector('textarea');
-    autosize = fixture.debugElement.query(By.css('textarea')).injector.get(MatTextareaAutosize);
+    autosize = fixture.debugElement.query(By.css('textarea')).injector.get(CdkTextareaAutosize);
 
     fixture.componentInstance.content = `
       Line
@@ -176,27 +169,6 @@ describe('MatTextareaAutosize', () => {
 
     expect(textarea.clientHeight)
       .toBe(textarea.scrollHeight, 'Expected textarea height to match its scrollHeight');
-  });
-
-  it('should not calculate wrong content height due to long placeholders', () => {
-    const fixtureWithPlaceholder = TestBed.createComponent(AutosizeTextareaWithLongPlaceholder);
-    fixtureWithPlaceholder.detectChanges();
-
-    textarea = fixtureWithPlaceholder.nativeElement.querySelector('textarea');
-    autosize = fixtureWithPlaceholder.debugElement.query(
-      By.directive(MatTextareaAutosize)).injector.get<MatTextareaAutosize>(MatTextareaAutosize);
-
-    autosize.resizeToFitContent(true);
-
-    const heightWithLongPlaceholder = textarea.clientHeight;
-
-    fixtureWithPlaceholder.componentInstance.placeholder = 'Short';
-    fixtureWithPlaceholder.detectChanges();
-
-    autosize.resizeToFitContent(true);
-
-    expect(textarea.clientHeight).toBe(heightWithLongPlaceholder,
-        'Expected the textarea height to be the same with a long placeholder.');
   });
 
   it('should resize when an associated form control value changes', fakeAsync(() => {
@@ -237,20 +209,6 @@ describe('MatTextareaAutosize', () => {
         .toBeGreaterThan(previousHeight, 'Expected the textarea height to have increased.');
   }));
 
-  it('should work in a tab', () => {
-    const fixtureWithForms = TestBed.createComponent(AutosizeTextareaInATab);
-    fixtureWithForms.detectChanges();
-    textarea = fixtureWithForms.nativeElement.querySelector('textarea');
-    expect(textarea.getBoundingClientRect().height).toBeGreaterThan(1);
-  });
-
-  it('should work in a step', () => {
-    const fixtureWithForms = TestBed.createComponent(AutosizeTextareaInAStep);
-    fixtureWithForms.detectChanges();
-    textarea = fixtureWithForms.nativeElement.querySelector('textarea');
-    expect(textarea.getBoundingClientRect().height).toBeGreaterThan(1);
-  });
-
   it('should trigger a resize when the window is resized', fakeAsync(() => {
     spyOn(autosize, 'resizeToFitContent');
 
@@ -271,21 +229,21 @@ const textareaStyleReset = `
 
 @Component({
   template: `
-    <textarea matTextareaAutosize [matAutosizeMinRows]="minRows" [matAutosizeMaxRows]="maxRows"
-        #autosize="matTextareaAutosize">
+    <textarea cdkTextareaAutosize [cdkAutosizeMinRows]="minRows" [cdkAutosizeMaxRows]="maxRows"
+        #autosize="cdkTextareaAutosize">
       {{content}}
     </textarea>`,
   styles: [textareaStyleReset],
 })
 class AutosizeTextAreaWithContent {
-  @ViewChild('autosize') autosize: MatTextareaAutosize;
+  @ViewChild('autosize') autosize: CdkTextareaAutosize;
   minRows: number | null = null;
   maxRows: number | null = null;
   content: string = '';
 }
 
 @Component({
-  template: `<textarea matTextareaAutosize [value]="value"></textarea>`,
+  template: `<textarea cdkTextareaAutosize [value]="value"></textarea>`,
   styles: [textareaStyleReset],
 })
 class AutosizeTextAreaWithValue {
@@ -293,50 +251,9 @@ class AutosizeTextAreaWithValue {
 }
 
 @Component({
-  template: `<textarea matTextareaAutosize [(ngModel)]="model"></textarea>`,
+  template: `<textarea cdkTextareaAutosize [(ngModel)]="model"></textarea>`,
   styles: [textareaStyleReset],
 })
 class AutosizeTextareaWithNgModel {
   model = '';
 }
-
-@Component({
-  template: `
-    <mat-form-field style="width: 100px">
-      <textarea matInput matTextareaAutosize [placeholder]="placeholder"></textarea>
-    </mat-form-field>`,
-  styles: [textareaStyleReset],
-})
-class AutosizeTextareaWithLongPlaceholder {
-  placeholder = 'Long Long Long Long Long Long Long Long Placeholder';
-}
-
-@Component({
-  template: `
-    <mat-tab-group>
-      <mat-tab label="Tab 1">
-        <mat-form-field>
-          <textarea matInput matTextareaAutosize>
-            Blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah
-          </textarea>
-        </mat-form-field>
-      </mat-tab>
-    </mat-tab-group>
-  `
-})
-class AutosizeTextareaInATab {}
-
-@Component({
-  template: `
-    <mat-horizontal-stepper>
-      <mat-step label="Step 1">
-        <mat-form-field>
-          <textarea matInput matTextareaAautosize>
-            Blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah
-          </textarea>
-        </mat-form-field>
-      </mat-step>
-    </mat-horizontal-stepper>
-  `
-})
-class AutosizeTextareaInAStep {}

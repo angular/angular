@@ -24,7 +24,7 @@ import {FormGroupDirective, NgControl, NgForm} from '@angular/forms';
 import {CanUpdateErrorState, ErrorStateMatcher, mixinErrorState} from '@angular/material/core';
 import {MatFormFieldControl} from '@angular/material/form-field';
 import {Subject} from 'rxjs/Subject';
-import {AutofillMonitor} from './autofill';
+import {AutofillMonitor} from '@angular/cdk/text-field';
 import {getMatInputUnsupportedTypeError} from './input-errors';
 import {MAT_INPUT_VALUE_ACCESSOR} from './input-value-accessor';
 

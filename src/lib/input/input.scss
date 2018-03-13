@@ -87,10 +87,8 @@ textarea.mat-input-element {
   // Only allow resizing along the Y axis.
   resize: vertical;
   overflow: auto;
-}
 
-// Remove the resize handle on autosizing textareas, because whatever height
-// the user resized to will be overwritten once they start typing again.
-textarea.mat-autosize {
-  resize: none;
+  &.cdk-textarea-autosize {
+    resize: none;
+  }
 }

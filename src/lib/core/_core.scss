@@ -2,7 +2,7 @@
 // up into a single flat scss file for material.
 @import '../../cdk/overlay/overlay';
 @import '../../cdk/a11y/a11y';
-@import '../input/autofill';
+@import '../../cdk/text-field/text-field';
 
 // Core styles that can be used to apply material design treatments to any element.
 @import 'style/elevation';
@@ -27,7 +27,7 @@
   @include mat-ripple();
   @include cdk-a11y();
   @include cdk-overlay();
-  @include mat-input-autofill();
+  @include cdk-text-field();
 }
 
 // Mixin that renders all of the core styles that depend on the theme.

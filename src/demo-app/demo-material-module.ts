@@ -9,6 +9,7 @@
 import {A11yModule} from '@angular/cdk/a11y';
 import {CdkAccordionModule} from '@angular/cdk/accordion';
 import {BidiModule} from '@angular/cdk/bidi';
+import {TextFieldModule} from '@angular/cdk/text-field';
 import {ObserversModule} from '@angular/cdk/observers';
 import {OverlayModule} from '@angular/cdk/overlay';
 import {PlatformModule} from '@angular/cdk/platform';
@@ -101,6 +102,7 @@ import {
     A11yModule,
     BidiModule,
     CdkAccordionModule,
+    TextFieldModule,
     ObserversModule,
     OverlayModule,
     PlatformModule,

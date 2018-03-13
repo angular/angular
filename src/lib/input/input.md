@@ -77,9 +77,9 @@ globally cause input errors to show when the input is dirty and invalid.
 ### Auto-resizing `<textarea>` elements
 
 `<textarea>` elements can be made to automatically resize to fit their contents by applying the
-`matTextareaAutosize` directive. This works with `<textarea matInput>` elements as well as plain
+`cdkTextareaAutosize` directive. This works with `<textarea matInput>` elements as well as plain
 native `<textarea>` elements. The min and max size of the textarea can be specified in rows, using
-the `matAutosizeMinRows` and `matAutosizeMaxRows` properties respectively.
+the `cdkAutosizeMinRows` and `cdkAutosizeMaxRows` properties respectively.
 
 <!-- example(input-autosize-textarea) -->
 

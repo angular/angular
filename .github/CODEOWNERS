@@ -72,6 +72,7 @@
 /src/cdk/stepper/**                                @mmalerba
 /src/cdk/table/**                                  @andrewseguin
 /src/cdk/testing/**                                @devversion
+/src/cdk/text-field/**                             @mmalerba
 /src/cdk/tree/**                                   @tinayuangao
 
 # Moment adapter package

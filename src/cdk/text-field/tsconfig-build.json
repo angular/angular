@@ -1,0 +1,14 @@
+{
+  "extends": "../tsconfig-build",
+  "files": [
+    "public-api.ts"
+  ],
+  "angularCompilerOptions": {
+    "annotateForClosureCompiler": true,
+    "strictMetadataEmit": false, // Workaround for Angular #22210
+    "flatModuleOutFile": "index.js",
+    "flatModuleId": "@angular/cdk/text-field",
+    "skipTemplateCodegen": true,
+    "fullTemplateTypeCheck": true
+  }
+}

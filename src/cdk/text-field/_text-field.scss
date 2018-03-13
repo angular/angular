@@ -1,0 +1,50 @@
+// Core styles that enable monitoring autofill state of text fields.
+@mixin cdk-text-field {
+  // Keyframes that apply no styles, but allow us to monitor when an text field becomes autofilled
+  // by watching for the animation events that are fired when they start.
+  // Based on: https://medium.com/@brunn/detecting-autofilled-fields-in-javascript-aed598d25da7
+  @keyframes cdk-text-field-autofill-start {}
+  @keyframes cdk-text-field-autofill-end {}
+
+  .cdk-text-field-autofill-monitored:-webkit-autofill {
+    animation-name: cdk-text-field-autofill-start;
+  }
+
+  .cdk-text-field-autofill-monitored:not(:-webkit-autofill) {
+    animation-name: cdk-text-field-autofill-end;
+  }
+
+  // Remove the resize handle on autosizing textareas, because whatever height
+  // the user resized to will be overwritten once they start typing again.
+  textarea.cdk-textarea-autosize {
+    resize: none;
+  }
+}
+
+// Used to generate UIDs for keyframes used to change the text field autofill styles.
+$cdk-text-field-autofill-color-frame-count: 0;
+
+// Mixin used to apply custom background and foreground colors to an autofilled text field.
+// Based on: https://stackoverflow.com/questions/2781549/
+// removing-input-background-colour-for-chrome-autocomplete#answer-37432260
+@mixin cdk-text-field-autofill-color($background, $foreground:'') {
+  @keyframes cdk-text-field-autofill-color-#{$cdk-text-field-autofill-color-frame-count} {
+    to {
+      background: $background;
+      @if $foreground != '' { color: $foreground; }
+    }
+  }
+
+  &:-webkit-autofill {
+    animation-name: cdk-text-field-autofill-color-#{$cdk-text-field-autofill-color-frame-count};
+    animation-fill-mode: both;
+  }
+
+  &.cdk-text-field-autofill-monitored:-webkit-autofill {
+    animation-name: cdk-text-field-autofill-start,
+                    cdk-text-field-autofill-color-#{$cdk-text-field-autofill-color-frame-count};
+  }
+
+  $cdk-text-field-autofill-color-frame-count:
+      $cdk-text-field-autofill-color-frame-count + 1 !global;
+}

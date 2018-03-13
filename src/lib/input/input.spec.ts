@@ -20,7 +20,8 @@ import {
 import {
   getMatFormFieldDuplicatedHintError,
   getMatFormFieldMissingControlError,
-  getMatFormFieldPlaceholderConflictError, MAT_FORM_FIELD_DEFAULT_OPTIONS,
+  getMatFormFieldPlaceholderConflictError,
+  MAT_FORM_FIELD_DEFAULT_OPTIONS,
   MatFormField,
   MatFormFieldAppearance,
   MatFormFieldModule,
@@ -29,6 +30,9 @@ import {By} from '@angular/platform-browser';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {MatInputModule} from './index';
 import {MatInput} from './input';
+import {MatStepperModule} from '@angular/material/stepper';
+import {MatTabsModule} from '@angular/material/tabs';
+import {MatTextareaAutosize} from './autosize';
 
 describe('MatInput without forms', () => {
   beforeEach(fakeAsync(() => {
@@ -1298,6 +1302,61 @@ describe('MatFormField default options', () => {
       }));
 });
 
+describe('MatInput with textarea autosize', () => {
+  beforeEach(fakeAsync(() => {
+    TestBed.configureTestingModule({
+      imports: [
+        FormsModule,
+        MatInputModule,
+        MatStepperModule,
+        MatTabsModule,
+        NoopAnimationsModule,
+      ],
+      declarations: [
+        AutosizeTextareaInAStep,
+        AutosizeTextareaInATab,
+        AutosizeTextareaWithLongPlaceholder,
+      ],
+    });
+
+    TestBed.compileComponents();
+  }));
+
+  it('should not calculate wrong content height due to long placeholders', () => {
+    const fixture = TestBed.createComponent(AutosizeTextareaWithLongPlaceholder);
+    fixture.detectChanges();
+
+    const textarea = fixture.nativeElement.querySelector('textarea');
+    const autosize = fixture.componentInstance.autosize;
+
+    autosize.resizeToFitContent(true);
+
+    const heightWithLongPlaceholder = textarea.clientHeight;
+
+    fixture.componentInstance.placeholder = 'Short';
+    fixture.detectChanges();
+
+    autosize.resizeToFitContent(true);
+
+    expect(textarea.clientHeight).toBe(heightWithLongPlaceholder,
+        'Expected the textarea height to be the same with a long placeholder.');
+  });
+
+  it('should work in a tab', () => {
+    const fixture = TestBed.createComponent(AutosizeTextareaInATab);
+    fixture.detectChanges();
+    const textarea = fixture.nativeElement.querySelector('textarea');
+    expect(textarea.getBoundingClientRect().height).toBeGreaterThan(1);
+  });
+
+  it('should work in a step', () => {
+    const fixture = TestBed.createComponent(AutosizeTextareaInAStep);
+    fixture.detectChanges();
+    const textarea = fixture.nativeElement.querySelector('textarea');
+    expect(textarea.getBoundingClientRect().height).toBeGreaterThan(1);
+  });
+});
+
 @Component({
   template: `
     <mat-form-field>
@@ -1658,3 +1717,53 @@ class MatInputWithAppearance {
 })
 class MatInputWithoutPlaceholder {
 }
+
+// Styles to reset padding and border to make measurement comparisons easier.
+const textareaStyleReset = `
+    textarea {
+      padding: 0;
+      border: none;
+      overflow: auto;
+    }`;
+
+@Component({
+  template: `
+    <mat-form-field style="width: 100px">
+      <textarea matInput matTextareaAutosize [placeholder]="placeholder"></textarea>
+    </mat-form-field>`,
+  styles: [textareaStyleReset],
+})
+class AutosizeTextareaWithLongPlaceholder {
+  placeholder = 'Long Long Long Long Long Long Long Long Placeholder';
+  @ViewChild(MatTextareaAutosize) autosize: MatTextareaAutosize;
+}
+
+@Component({
+  template: `
+    <mat-tab-group>
+      <mat-tab label="Tab 1">
+        <mat-form-field>
+          <textarea matInput matTextareaAutosize>
+            Blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah
+          </textarea>
+        </mat-form-field>
+      </mat-tab>
+    </mat-tab-group>
+  `
+})
+class AutosizeTextareaInATab {}
+
+@Component({
+  template: `
+    <mat-horizontal-stepper>
+      <mat-step label="Step 1">
+        <mat-form-field>
+          <textarea matInput matTextareaAautosize>
+            Blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah
+          </textarea>
+        </mat-form-field>
+      </mat-step>
+    </mat-horizontal-stepper>
+  `
+})
+class AutosizeTextareaInAStep {}

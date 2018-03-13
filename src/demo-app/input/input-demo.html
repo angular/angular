@@ -541,15 +541,13 @@
   <mat-toolbar color="primary">Textarea Autosize</mat-toolbar>
   <mat-card-content>
     <h3>Regular &lt;textarea&gt;</h3>
-    <textarea class="demo-textarea" matTextareaAutosize matAutosizeMaxRows="10"></textarea>
+    <textarea class="demo-textarea" cdkTextareaAutosize cdkAutosizeMaxRows="10"></textarea>
 
     <h3>&lt;textarea&gt; with mat-form-field</h3>
     <div>
       <mat-form-field>
         <mat-label>Autosized textarea</mat-label>
-        <textarea matInput
-                  matTextareaAutosize
-                  matAutosizeMaxRows="10"></textarea>
+        <textarea matInput cdkTextareaAutosize cdkAutosizeMaxRows="10"></textarea>
       </mat-form-field>
     </div>
 
@@ -559,7 +557,7 @@
     </div>
     <label>
       Plain textarea with auto size
-      <textarea matTextareaAutosize [(ngModel)]="textareaNgModelValue"></textarea>
+      <textarea cdkTextareaAutosize [(ngModel)]="textareaNgModelValue"></textarea>
     </label>
   </mat-card-content>
 </mat-card>
@@ -641,7 +639,7 @@
       </mat-checkbox>
       <mat-form-field>
         <mat-label>Autofill monitored</mat-label>
-        <input matInput (matAutofill)="isAutofilled = $event.isAutofilled" name="autofill"
+        <input matInput (cdkAutofill)="isAutofilled = $event.isAutofilled" name="autofill"
                [class.demo-custom-autofill-style]="customAutofillStyle">
       </mat-form-field>
       <button color="primary" mat-raised-button>Submit</button>

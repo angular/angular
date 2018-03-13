@@ -53,7 +53,7 @@
 <section>
   <h2>Textarea input (e.g.  comment box)</h2>
   <mat-form-field>
-    <textarea matInput aria-label="Comment" [(ngModel)]="comment" matTextareaAutosize
+    <textarea matInput aria-label="Comment" [(ngModel)]="comment" cdkTextareaAutosize
               [maxlength]="commentMax" #commentModel="ngModel"></textarea>
     <mat-hint>Leave us a comment!</mat-hint>
     <mat-hint align="end">{{commentCount}}/{{commentMax}}</mat-hint>
