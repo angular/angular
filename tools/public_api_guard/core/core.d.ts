@@ -94,7 +94,9 @@ export interface AnimationTransitionEvent {
 /** @deprecated */
 export interface AnimationTransitionMetadata extends AnimationMetadata {
     animation: AnimationMetadata | AnimationMetadata[];
-    expr: string | ((fromState: string, toState: string) => boolean);
+    expr: string | ((fromState: string, toState: string, element: any, params: {
+        [key: string]: any;
+    }) => boolean);
 }
 
 /** @deprecated */

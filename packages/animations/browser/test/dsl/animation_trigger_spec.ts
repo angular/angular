@@ -103,7 +103,7 @@ import {makeTrigger} from '../shared';
       it('should null when no results are found', () => {
         const result = makeTrigger('name', [transition('a => b', animate(1111))]);
 
-        const trigger = result.matchTransition('b', 'a');
+        const trigger = result.matchTransition('b', 'a', {}, {});
         expect(trigger).toBeFalsy();
       });
 
@@ -226,7 +226,8 @@ function buildTransition(
     trigger: AnimationTrigger, element: any, fromState: any, toState: any,
     fromOptions?: AnimationOptions, toOptions?: AnimationOptions): AnimationTransitionInstruction|
     null {
-  const trans = trigger.matchTransition(fromState, toState) !;
+  const params = toOptions && toOptions.params || {};
+  const trans = trigger.matchTransition(fromState, toState, element, params) !;
   if (trans) {
     const driver = new MockAnimationDriver();
     return trans.build(
