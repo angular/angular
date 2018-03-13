@@ -32,10 +32,19 @@ module.exports = new Package('angular-api', [basePackage, typeScriptPackage])
   .processor(require('./processors/simplifyMemberAnchors'))
   .processor(require('./processors/computeStability'))
 
+  /**
+   * These are the API doc types that will be rendered to actual files.
+   * This is a super set of the exported docs, since we convert some classes to
+   * more Angular specific API types, such as decorators and directives.
+   */
   .factory(function API_DOC_TYPES_TO_RENDER(EXPORT_DOC_TYPES) {
     return EXPORT_DOC_TYPES.concat(['decorator', 'directive', 'pipe', 'module']);
   })
 
+  /**
+   * These are the doc types that are API docs, including ones that will be merged into container docs,
+   * such as members and overloads.
+   */
   .factory(function API_DOC_TYPES(API_DOC_TYPES_TO_RENDER) {
     return API_DOC_TYPES_TO_RENDER.concat(['member', 'function-overload']);
   })
