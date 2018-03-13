@@ -120,9 +120,16 @@ module.exports = new Package('angular-api', [basePackage, typeScriptPackage])
   })
 
   .config(function(checkContentRules, EXPORT_DOC_TYPES) {
-    const createNoMarkdownHeadings = require('./content-rules/noMarkdownHeadings');
-    const noMarkdownHeadings = createNoMarkdownHeadings();
-    const allowOnlyLevel3Headings = createNoMarkdownHeadings(1, 2, '4,');
+    // Min length rules
+    const createMinLengthRule = require('./content-rules/minLength');
+    const paramRuleSet = checkContentRules.docTypeRules['parameter'] = checkContentRules.docTypeRules['parameter'] || {};
+    const paramRules = paramRuleSet['name'] = paramRuleSet['name'] || [];
+    paramRules.push(createMinLengthRule());
+
+    // Heading rules
+    const createNoMarkdownHeadingsRule = require('./content-rules/noMarkdownHeadings');
+    const noMarkdownHeadings = createNoMarkdownHeadingsRule();
+    const allowOnlyLevel3Headings = createNoMarkdownHeadingsRule(1, 2, '4,');
     const DOC_TYPES_TO_CHECK = EXPORT_DOC_TYPES.concat(['member', 'overload-info']);
     const PROPS_TO_CHECK = ['description', 'shortDescription'];
 
