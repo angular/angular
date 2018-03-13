@@ -12,7 +12,8 @@ import * as ts from 'typescript';
 
 import {CompilerOptions, DEFAULT_ERROR_CODE, Diagnostic, SOURCE} from './api';
 
-export const GENERATED_FILES = /(.*?)\.(ngfactory|shim\.ngstyle|ngstyle|ngsummary)\.(js|d\.ts|ts)$/;
+export const GENERATED_FILES =
+    /(.*?)\.(ngfactory|shim\.ngstyle|ngstyle|ngsummary|ngbackpatch)\.(js|d\.ts|ts)$/;
 export const DTS = /\.d\.ts$/;
 export const TS = /^(?!.*\.d\.ts$).*\.ts$/;
 

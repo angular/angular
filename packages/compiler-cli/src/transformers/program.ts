@@ -24,7 +24,7 @@ import {getAngularEmitterTransformFactory} from './node_emitter_transform';
 import {PartialModuleMetadataTransformer, RemoveAngularDecoratorMetadataTransformer} from './r3_metadata_transform';
 import {StripDecoratorsMetadataTransformer, getDecoratorStripTransformerFactory} from './r3_strip_decorators';
 import {getAngularClassTransformerFactory} from './r3_transform';
-import {DTS, GENERATED_FILES, StructureIsReused, TS, createMessageDiagnostic, isInRootDir, ngToTsDiagnostic, tsStructureIsReused, userError} from './util';
+import {DTS, GENERATED_FILES, StructureIsReused, TS, createMessageDiagnostic, error, isInRootDir, ngToTsDiagnostic, tsStructureIsReused, userError} from './util';
 
 
 // Closure compiler transforms the form `Service.ngInjectableDef = X` into
@@ -300,10 +300,30 @@ class AngularCompilerProgram implements Program {
         this.compiler.emitAllPartialModules(this.analyzedModules, this._analyzedInjectables !);
 
     const outSrcMapping: Array<{sourceFile: ts.SourceFile, outFileName: string}> = [];
+
+    // Generate the back-patch file and compatibility factories if requested.
+    const backPatchFileResult = this.compiler.emitBackPatch();
+    const compatibilityFactories = backPatchFileResult && this.options.generateRenderer2Factories ?
+        this.compiler.emitCompatibilityFactories(
+            this.analyzedModules, backPatchFileResult.genFile.genFileUrl,
+            backPatchFileResult.nameMap) :
+        [];
+    let genFileByFileName = backPatchFileResult ?
+        new Map<string, GeneratedFile>(
+            [[backPatchFileResult.genFile.genFileUrl, backPatchFileResult.genFile]]) :
+        undefined;
+
+    if (genFileByFileName) {
+      for (const factoryFile of compatibilityFactories) {
+        genFileByFileName.set(factoryFile.genFileUrl, factoryFile);
+      }
+    }
+
     const writeTsFile: ts.WriteFileCallback =
         (outFileName, outData, writeByteOrderMark, onError?, sourceFiles?) => {
           const sourceFile = sourceFiles && sourceFiles.length == 1 ? sourceFiles[0] : null;
-          let genFile: GeneratedFile|undefined;
+          const genFile =
+            sourceFile && genFileByFileName && genFileByFileName.get(sourceFile.fileName);
           if (this.options.annotateForClosureCompiler && sourceFile &&
               TS.test(sourceFile.fileName)) {
             outData = this._annotateR3Properties(outData);
@@ -311,13 +331,14 @@ class AngularCompilerProgram implements Program {
           if (sourceFile) {
             outSrcMapping.push({outFileName: outFileName, sourceFile});
           }
-          this.writeFile(outFileName, outData, writeByteOrderMark, onError, undefined, sourceFiles);
+          this.writeFile(outFileName, outData, writeByteOrderMark, onError, genFile, sourceFiles);
         };
+
 
     const emitOnlyDtsFiles = (emitFlags & (EmitFlags.DTS | EmitFlags.JS)) == EmitFlags.DTS;
 
     const tsCustomTransformers = this.calculateTransforms(
-        /* genFiles */ undefined, /* partialModules */ modules,
+        /* genFiles */ genFileByFileName, /* partialModules */ modules,
         /* stripDecorators */ this.reifiedDecorators, customTransformers);
 
     const emitResult = emitCallback({
@@ -367,10 +388,7 @@ class AngularCompilerProgram implements Program {
         // Create a program and only emit the index from it.
         const flatModuleProgram = ts.createProgram([indexName], this.options, bundleHost);
         const sourceFile = flatModuleProgram.getSourceFile(indexName) !;
-        if (!sourceFile) {
-          throw new Error(
-              `Internal Error: could not find source file for flat module index ${indexName}`);
-        }
+        sourceFile || error(`could not find source file for flat module index ${indexName}`);
         flatModuleProgram.emit(sourceFile);
       }
     }
@@ -492,8 +510,7 @@ class AngularCompilerProgram implements Program {
       // Restore the references back to the augmented value to ensure that the
       // checks that TypeScript makes for project structure reuse will succeed.
       for (const [sourceFile, references] of Array.from(augmentedReferences)) {
-        // TODO(chuckj): Remove any cast after updating build to 2.6
-        (sourceFile as any).referencedFiles = references;
+        sourceFile.referencedFiles = references;
       }
     }
     this.emittedSourceFiles = emittedSourceFiles;
@@ -673,7 +690,8 @@ class AngularCompilerProgram implements Program {
 
     this._hostAdapter = new TsCompilerAotCompilerTypeCheckHostAdapter(
         this.rootNames, this.options, this.host, this.metadataCache, codegen,
-        this.oldProgramLibrarySummaries);
+        this.oldProgramLibrarySummaries,
+        this.options.enableIvy && this.options.renderer2BackPatching);
     const aotOptions = getAotCompilerOptions(this.options);
     const errorCollector = (this.options.collectAllErrors || this.options.fullTemplateTypeCheck) ?
         (err: any) => this._addStructuralDiagnostics(err) :
@@ -693,13 +711,6 @@ class AngularCompilerProgram implements Program {
     // Note: This is important to not produce a memory leak!
     const oldTsProgram = this.oldTsProgram;
     this.oldTsProgram = undefined;
-
-    const codegen: CodeGenerator = {
-      generateFile: (genFileName, baseFileName) =>
-                        this.compiler.emitBasicStub(genFileName, baseFileName),
-      findGeneratedFileNames: (fileName) => this.compiler.findGeneratedFileNames(fileName),
-    };
-
 
     let rootNames = [...this.rootNames];
     if (this.options.generateCodeForLibraries !== false) {
@@ -844,7 +855,7 @@ class AngularCompilerProgram implements Program {
 
   private writeFile(
       outFileName: string, outData: string, writeByteOrderMark: boolean,
-      onError?: (message: string) => void, genFile?: GeneratedFile,
+      onError?: (message: string) => void, genFile?: GeneratedFile|null,
       sourceFiles?: ReadonlyArray<ts.SourceFile>) {
     // collect emittedLibrarySummaries
     let baseFile: ts.SourceFile|undefined;
@@ -888,9 +899,10 @@ class AngularCompilerProgram implements Program {
     }
     if (baseFile) {
       sourceFiles = sourceFiles ? [...sourceFiles, baseFile] : [baseFile];
+    } else {
+      sourceFiles = sourceFiles || [];
     }
-    // TODO: remove any when TS 2.4 support is removed.
-    this.host.writeFile(outFileName, outData, writeByteOrderMark, onError, sourceFiles as any);
+    this.host.writeFile(outFileName, outData, writeByteOrderMark, onError, sourceFiles);
   }
 }
 

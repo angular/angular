@@ -490,13 +490,13 @@ need to be back-patch onto the component, directive, module, pipe, and
 injectable classes.
 
 If the Angular compiler option `"renderer2BackPatching"` is enabled, the
-compiler will generate an `angular.back-patch` module into the root output
+compiler will generate an `angular.ngbackpatch` module into the root output
 directory of the project. If `"generateRenderer2Factories"` is set to `true`
 then the default value for `"renderer2BackPatching"` is `true` and it is an
 error for it to be `false`. `"renderer2BackPatching"` is ignored if `"enableIvy"`
 is `false`.
 
-`angular.back-patch` exports a function per `@NgModule` for the entire
+`angular.ngbackpatch` exports a function per `@NgModule` for the entire
 application, including previously compiled libraries. The name of the function
 is determined by name of the imported module with all non alphanumeric
 character, including '`/`' and '`.`', replaced by '`_`'.
@@ -512,7 +512,7 @@ instance is created.
 `ngc` can generate an implementation of `NgModuleFactory` in the same location
 that Angular 5.0 would generate it. This implementation of `NgModuleFactory`
 will back-patch the Renderer2 style classes when the first module instance is
-created by calling the correct back-patching function generated in the`angular.back-patch`
+created by calling the correct back-patching function generated in the`angular.ngbackpatch`
 module.
 
 Renderer2 style factories are created when the `"generateRenderer2Factories"`

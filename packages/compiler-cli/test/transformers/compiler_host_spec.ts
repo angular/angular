@@ -141,7 +141,7 @@ describe('NgCompilerHost', () => {
           .toBe('/tmp/src/a/child.d.ts');
     });
 
-    it('should allow to skip the containg file for package imports', () => {
+    it('should allow to skip the containing file for package imports', () => {
       const host =
           createHost({files: {'tmp': {'node_modules': {'@core': {'index.d.ts': dummyModule}}}}});
       expect(host.moduleNameToFileName('@core/index')).toBe('/tmp/node_modules/@core/index.d.ts');
@@ -218,11 +218,11 @@ describe('NgCompilerHost', () => {
         }
       });
 
-      const sf = host.getSourceFile('/tmp/src/index.ts', ts.ScriptTarget.Latest);
+      const sf = host.getSourceFile('/tmp/src/index.ts', ts.ScriptTarget.Latest) !;
       expect(sf.referencedFiles[0].fileName).toBe('main.ts');
       expect(sf.referencedFiles[1].fileName).toBe('/tmp/src/index.ngfactory.ts');
 
-      const genSf = host.getSourceFile('/tmp/src/index.ngfactory.ts', ts.ScriptTarget.Latest);
+      const genSf = host.getSourceFile('/tmp/src/index.ngfactory.ts', ts.ScriptTarget.Latest) !;
       expect(genSf.text).toBe(aGeneratedFileText);
 
       // the codegen should have been cached
@@ -245,10 +245,10 @@ describe('NgCompilerHost', () => {
         }
       });
 
-      const genSf = host.getSourceFile('/tmp/src/index.ngfactory.ts', ts.ScriptTarget.Latest);
+      const genSf = host.getSourceFile('/tmp/src/index.ngfactory.ts', ts.ScriptTarget.Latest) !;
       expect(genSf.text).toBe(aGeneratedFileText);
 
-      const sf = host.getSourceFile('/tmp/src/index.ts', ts.ScriptTarget.Latest);
+      const sf = host.getSourceFile('/tmp/src/index.ts', ts.ScriptTarget.Latest) !;
       expect(sf.referencedFiles[0].fileName).toBe('main.ts');
       expect(sf.referencedFiles[1].fileName).toBe('/tmp/src/index.ngfactory.ts');
 
@@ -291,10 +291,10 @@ describe('NgCompilerHost', () => {
       codeGenerator.generateFile.and.returnValue(aGeneratedFile);
       const host = createHost({files: {'tmp': {'src': {'index.tsx': ``}}}});
 
-      const genSf = host.getSourceFile('/tmp/src/index.ngfactory.ts', ts.ScriptTarget.Latest);
+      const genSf = host.getSourceFile('/tmp/src/index.ngfactory.ts', ts.ScriptTarget.Latest) !;
       expect(genSf.text).toBe(aGeneratedFileText);
 
-      const sf = host.getSourceFile('/tmp/src/index.tsx', ts.ScriptTarget.Latest);
+      const sf = host.getSourceFile('/tmp/src/index.tsx', ts.ScriptTarget.Latest) !;
       expect(sf.referencedFiles[0].fileName).toBe('/tmp/src/index.ngfactory.ts');
 
       // the codegen should have been cached
@@ -309,13 +309,13 @@ describe('NgCompilerHost', () => {
       codeGenerator.generateFile.and.returnValue(aGeneratedFile);
       const host = createHost({files: {'tmp': {'src': {'index.ts': ''}}}});
 
-      let genSf = host.getSourceFile('/tmp/src/index.ngfactory.ts', ts.ScriptTarget.Latest);
+      let genSf = host.getSourceFile('/tmp/src/index.ngfactory.ts', ts.ScriptTarget.Latest) !;
       expect(genSf.text).toBe(aGeneratedFileText);
 
       host.updateGeneratedFile(new compiler.GeneratedFile(
           '/tmp/src/index.ts', '/tmp/src/index.ngfactory.ts',
           [new compiler.DeclareVarStmt('x', new compiler.LiteralExpr(2))]));
-      genSf = host.getSourceFile('/tmp/src/index.ngfactory.ts', ts.ScriptTarget.Latest);
+      genSf = host.getSourceFile('/tmp/src/index.ngfactory.ts', ts.ScriptTarget.Latest) !;
       expect(genSf.text).toBe(`var x:any = 2;\n`);
     });
 

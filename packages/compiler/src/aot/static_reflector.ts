@@ -15,7 +15,7 @@ import {syntaxError} from '../util';
 
 import {FormattedMessageChain, formattedError} from './formatted_error';
 import {StaticSymbol} from './static_symbol';
-import {StaticSymbolResolver} from './static_symbol_resolver';
+import {DTS, StaticSymbolResolver} from './static_symbol_resolver';
 
 const ANGULAR_CORE = '@angular/core';
 const ANGULAR_ROUTER = '@angular/router';
@@ -31,6 +31,8 @@ const PROVIDE = 'provide';
 const REFERENCE_SET = new Set([USE_VALUE, 'useFactory', 'data']);
 const TYPEGUARD_POSTFIX = 'TypeGuard';
 const USE_IF = 'UseIf';
+const KNOWN_R3_DEFINITION =
+    new Set(['ngComponentDef', 'ngDirectiveDef', 'ngInjectorDef', 'ngPipeDef']);
 
 function shouldIgnore(value: any): boolean {
   return value && value.__symbolic == 'ignore';
@@ -100,6 +102,20 @@ export class StaticReflector implements CompileReflector {
       this.resolvedExternalReferences.set(key, declarationSymbol);
     }
     return declarationSymbol;
+  }
+
+  rendererTarget(typeOrFunc: StaticSymbol): number {
+    // The renderer target of the symbol is 2 the file is a .d.ts file and the metadata
+    // file for the symbol does not contain a known render static fields.
+    if (typeOrFunc instanceof StaticSymbol) {
+      if (DTS.test(typeOrFunc.filePath)) {
+        if (this.staticMembers(typeOrFunc).some(symbol => KNOWN_R3_DEFINITION.has(symbol.name))) {
+          return 3;
+        }
+        return 2;
+      }
+    }
+    return 3;
   }
 
   findDeclaration(moduleUrl: string, name: string, containingFile?: string): StaticSymbol {
@@ -351,7 +367,8 @@ export class StaticReflector implements CompileReflector {
   staticMembers(type: any): StaticSymbol[] {
     if (!(type instanceof StaticSymbol)) {
       this.reportError(
-          new Error(`staticMember received ${JSON.stringify(type)} which is not a StaticSymbol`), type);
+          new Error(`staticMember received ${JSON.stringify(type)} which is not a StaticSymbol`),
+          type);
       return [];
     }
     const staticMembers = this._staticMembers(type);
@@ -361,19 +378,20 @@ export class StaticReflector implements CompileReflector {
   staticMemberValue(member: any): any {
     if (!(member instanceof StaticSymbol)) {
       this.reportError(
-          new Error(`staticMemberValue received ${JSON.stringify(member)} which is not a StaticSymbol`), member);
+          new Error(
+              `staticMemberValue received ${JSON.stringify(member)} which is not a StaticSymbol`),
+          member);
       return undefined;
     }
     if (!member.members || member.members.length !== 1) {
-      this.reportError(
-        new Error(`staticMemberValue received an invalid static symbol`), member);
+      this.reportError(new Error(`staticMemberValue received an invalid static symbol`), member);
       return undefined;
     }
     const memberName = member.members[0];
     const type = this.getStaticSymbol(member.filePath, member.name);
     const typeInfo = this.getTypeMetadata(type);
     const statics = typeInfo && typeInfo['statics'];
-    const value =  statics && statics[memberName];
+    const value = statics && statics[memberName];
     return value && this.simplify(type, value);
   }
 

@@ -50,6 +50,7 @@ export class JitReflector implements CompileReflector {
   resolveExternalReference(ref: ExternalReference): any {
     return builtinExternalReferences.get(ref) || ref.runtime;
   }
+  rendererTarget(type: /*Type*/ any): number { return 3; }
 }
 
 

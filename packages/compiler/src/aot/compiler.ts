@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CompileDirectiveMetadata, CompileDirectiveSummary, CompileIdentifierMetadata, CompileInjectableMetadata, CompileNgModuleMetadata, CompileNgModuleSummary, CompilePipeMetadata, CompilePipeSummary, CompileProviderMetadata, CompileShallowModuleMetadata, CompileStylesheetMetadata, CompileSummaryKind, CompileTypeMetadata, CompileTypeSummary, componentFactoryName, flatten, identifierName, templateSourceUrl, tokenReference} from '../compile_metadata';
+import {CompileDirectiveMetadata, CompileDirectiveSummary, CompileIdentifierMetadata, CompileInjectableMetadata, CompileNgModuleMetadata, CompileNgModuleSummary, CompilePipeMetadata, CompilePipeSummary, CompileProviderMetadata, CompileShallowModuleMetadata, CompileStylesheetMetadata, CompileSummaryKind, CompileTypeMetadata, CompileTypeSummary, componentFactoryName, flatten, identifierName, sanitizeIdentifier, templateSourceUrl, tokenReference} from '../compile_metadata';
 import {CompilerConfig} from '../config';
 import {ConstantPool} from '../constant_pool';
 import {ViewEncapsulation} from '../core';
@@ -21,6 +21,8 @@ import {OutputEmitter} from '../output/abstract_emitter';
 import * as o from '../output/output_ast';
 import {ParseError} from '../parse_util';
 import {compileNgModule as compileIvyModule} from '../render3/r3_module_compiler';
+import {ModuleKind, compileModuleBackPatch} from '../render3/r3_back_patch_compiler';
+import {compileModuleFactory} from '../render3/r3_module_factory_compiler';
 import {compilePipe as compileIvyPipe} from '../render3/r3_pipe_compiler';
 import {OutputMode} from '../render3/r3_types';
 import {compileComponent as compileIvyComponent, compileDirective as compileIvyDirective} from '../render3/r3_view_compiler';
@@ -55,6 +57,7 @@ export class AotCompiler {
       new Map<StaticSymbol, {template: TemplateAst[], pipes: CompilePipeSummary[]}>();
   private _analyzedFiles = new Map<string, NgAnalyzedFile>();
   private _analyzedFilesForInjectables = new Map<string, NgAnalyzedFileWithInjectables>();
+  private _backPatchName: string|undefined;
 
   constructor(
       private _config: CompilerConfig, private _options: AotCompilerOptions,
@@ -170,13 +173,67 @@ export class AotCompiler {
       }
     } else if (genFileName.endsWith('.ngstyle.ts')) {
       _createEmptyStub(outputCtx);
+    } else if (genFileName.endsWith('.ngbackpatch.ts')) {
+      this._createBackPatch(outputCtx, /* stub */ true);
     }
+
     // Note: for the stubs, we don't need a property srcFileUrl,
     // as later on in emitAllImpls we will create the proper GeneratedFiles with the
     // correct srcFileUrl.
     // This is good as e.g. for .ngstyle.ts files we can't derive
     // the url of components based on the genFileUrl.
     return this._codegenSourceModule('unknown', outputCtx);
+  }
+
+  private _createBackPatch(outputCtx: OutputContext, stub: boolean): Map<any, string> {
+    if (this._backPatchName && this._backPatchName !== outputCtx.genFilePath) {
+      throw new Error(
+          `Duplicate patch files: a patch file called "${outputCtx.genFilePath}" requested but "${this._backPatchName}" was already generated.`);
+    }
+
+    // Record the name of the file used to emit the back-patch stub
+    this._backPatchName = outputCtx.genFilePath;
+
+    // Create a back-patch function map
+    const nameMap = new Map<any, string>();
+    for (const [fileName, analyzedFile] of Array.from(this._analyzedFiles.entries())) {
+      if (analyzedFile.ngModules.length > 0) {
+        const moduleName = this._fileNameToModuleName(fileName, outputCtx.genFilePath);
+        const normalizedModuleName =
+            moduleName.startsWith('./') ? moduleName.substr(2) : `node_modules_${moduleName}`;
+        const identifierPrefix = sanitizeIdentifier(normalizedModuleName);
+        for (const ngModule of analyzedFile.ngModules) {
+          nameMap.set(
+              ngModule.type.reference,
+              `ngBackPatch_${identifierPrefix}_${sanitizeIdentifier(ngModule.type.reference.name)}`);
+        }
+      }
+    }
+
+    const backPatchName: (moduleType: CompileTypeMetadata) => string = moduleType =>
+        nameMap.get(moduleType.reference) !;
+
+    // Create the back-patch functions
+    for (const [fileName, analyzedFile] of Array.from(this._analyzedFiles.entries())) {
+      for (const ngModule of analyzedFile.ngModules) {
+        const functionName = backPatchName(ngModule.type);
+        functionName ||
+            error(`Could not find function name for module ${ngModule.type.reference.name}`);
+        if (stub) {
+          // Emit a stub that will be replaced, during emit, with the actual back-patch function.
+          outputCtx.statements.push(new o.DeclareFunctionStmt(
+              functionName, [], [], o.INFERRED_TYPE, [o.StmtModifier.Exported]));
+        } else {
+          compileModuleBackPatch(
+              outputCtx, functionName, ngModule,
+              ngModule.isRenderer3 ? ModuleKind.Renderer3 : ModuleKind.Renderer2,
+              module => o.variable(backPatchName(module)), this._parseTemplate.bind(this),
+              this.reflector, this._metadataResolver);
+        }
+      }
+    }
+
+    return nameMap;
   }
 
   emitTypeCheckStub(genFileName: string, originalFileName: string): GeneratedFile|null {
@@ -434,6 +491,39 @@ export class AotCompiler {
             file.injectables));
     return flatten(sourceModules);
   }
+
+  emitBackPatch(): {genFile: GeneratedFile, nameMap: Map<any, string>}|undefined {
+    if (this._backPatchName) {
+      const outputContext = this._createOutputContext(this._backPatchName);
+      const nameMap = this._createBackPatch(outputContext, /* stub */ false);
+      return {genFile: this._codegenSourceModule('angular.ngbackpatch.ts', outputContext), nameMap};
+    }
+    return undefined;
+  }
+
+  emitCompatibilityFactories(
+      analyzeResult: NgAnalyzedModules, backPatchFile: string,
+      nameMap: Map<any, string>): GeneratedFile[] {
+    const result: GeneratedFile[] = [];
+    const backPatchModule = backPatchFile.replace(/(\.d)?\.tsx?$/, '');
+    for (const file of analyzeResult.files) {
+      if (file.ngModules.length > 0) {
+        const factoryPath = ngfactoryFilePath(file.fileName, true);
+        const outputContext = this._createOutputContext(factoryPath);
+        for (const ngModule of file.ngModules) {
+          compileModuleFactory(
+              outputContext, ngModule,
+              module => outputContext.importExpr(this._symbolResolver.getStaticSymbol(
+                  backPatchModule, assert(nameMap.get(module.reference)))),
+              this._metadataResolver);
+        }
+        result.push(this._codegenSourceModule(file.fileName, outputContext));
+      }
+    }
+    return result;
+  }
+
+  private _emitCompatibilityFactory(module: CompileNgModuleMetadata) {}
 
   private _compileImplFile(
       srcFileUrl: string, ngModuleByPipeOrDirective: Map<StaticSymbol, CompileNgModuleMetadata>,
@@ -870,9 +960,8 @@ export function analyzeFile(
           }
         }
       }
-      if (!isNgSymbol) {
-        exportsNonSourceFiles =
-            exportsNonSourceFiles || isValueExportingNonSourceFile(host, symbolMeta);
+      if (!isNgSymbol && !exportsNonSourceFiles) {
+        exportsNonSourceFiles = isValueExportingNonSourceFile(host, symbolMeta);
       }
     });
   }
@@ -966,4 +1055,12 @@ export function mergeAnalyzedFiles(analyzedFiles: NgAnalyzedFile[]): NgAnalyzedM
 
 function mergeAndValidateNgFiles(files: NgAnalyzedFile[]): NgAnalyzedModules {
   return validateAnalyzedModules(mergeAnalyzedFiles(files));
+}
+
+function assert<T>(value: T | null | undefined): T {
+  if (value == null) {
+    error('Received a value that was assumed to be defined');
+    throw new Error();
+  }
+  return value;
 }

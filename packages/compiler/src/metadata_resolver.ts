@@ -693,6 +693,7 @@ export class CompileMetadataResolver {
       exportedModules,
       transitiveModule,
       id: meta.id || null,
+      isRenderer3: this._reflector.rendererTarget(moduleType) === 3
     });
 
     entryComponents.forEach((id) => transitiveModule.addEntryComponent(id));

@@ -43,7 +43,7 @@ export interface CodeGenerator {
 
 function assert<T>(condition: T | null | undefined) {
   if (!condition) {
-    // TODO(chuckjaz): do the right thing
+    // TODO(chuckj): do the right thing
   }
   return condition !;
 }
@@ -79,7 +79,8 @@ export class TsCompilerAotCompilerTypeCheckHostAdapter implements ts.CompilerHos
       private rootFiles: ReadonlyArray<string>, private options: CompilerOptions,
       private context: CompilerHost, private metadataProvider: MetadataProvider,
       private codeGenerator: CodeGenerator,
-      private librarySummaries = new Map<string, LibrarySummary>()) {
+      private librarySummaries = new Map<string, LibrarySummary>(),
+      private backPatch: boolean = false) {
     this.moduleResolutionCache = ts.createModuleResolutionCache(
         this.context.getCurrentDirectory !(), this.context.getCanonicalFileName.bind(this.context));
     const basePath = this.options.basePath !;
@@ -146,12 +147,9 @@ export class TsCompilerAotCompilerTypeCheckHostAdapter implements ts.CompilerHos
   // and that we can tell ts.Program about our different opinion about
   // ResolvedModule.isExternalLibraryImport
   // (see our isSourceFile method).
-  resolveModuleNames(moduleNames: string[], containingFile: string): ts.ResolvedModule[] {
-    // TODO(tbosch): this seems to be a typing error in TypeScript,
-    // as it contains assertions that the result contains the same number of entries
-    // as the given module names.
-    return <ts.ResolvedModule[]>moduleNames.map(
-        moduleName => this.resolveModuleName(moduleName, containingFile));
+  resolveModuleNames(moduleNames: string[], containingFile: string): (ts.ResolvedModule|
+                                                                      undefined)[] {
+    return moduleNames.map(moduleName => this.resolveModuleName(moduleName, containingFile));
   }
 
   moduleNameToFileName(m: string, containingFile?: string): string|null {
@@ -182,7 +180,7 @@ export class TsCompilerAotCompilerTypeCheckHostAdapter implements ts.CompilerHos
    * 2. if the importedFile is in a node_modules package,
    *    use a path that starts with the package name.
    * 3. Error if the containingFile is in the node_modules package
-   *    and the importedFile is in the project soures,
+   *    and the importedFile is in the project sources,
    *    as that is a violation of the principle that node_modules packages cannot
    *    import project sources.
    */
@@ -196,11 +194,11 @@ export class TsCompilerAotCompilerTypeCheckHostAdapter implements ts.CompilerHos
 
     // drop extension
     importedFile = importedFile.replace(EXT, '');
-    const importedFilePackagName = getPackageName(importedFile);
+    const importedFilePackageName = getPackageName(importedFile);
     const containingFilePackageName = getPackageName(containingFile);
 
     let moduleName: string;
-    if (importedFilePackagName === containingFilePackageName ||
+    if (importedFilePackageName === containingFilePackageName ||
         GENERATED_FILES.test(originalImportedFile)) {
       const rootedContainingFile = relativeToRootDirs(containingFile, this.rootDirs);
       const rootedImportedFile = relativeToRootDirs(importedFile, this.rootDirs);
@@ -211,7 +209,7 @@ export class TsCompilerAotCompilerTypeCheckHostAdapter implements ts.CompilerHos
         importedFile = rootedImportedFile;
       }
       moduleName = dotRelative(path.dirname(containingFile), importedFile);
-    } else if (importedFilePackagName) {
+    } else if (importedFilePackageName) {
       moduleName = stripNodeModulesPrefix(importedFile);
     } else {
       throw new Error(
@@ -337,10 +335,14 @@ export class TsCompilerAotCompilerTypeCheckHostAdapter implements ts.CompilerHos
     }
     let baseFileName: string|undefined;
     if (genSuffix.indexOf('ngstyle') >= 0) {
-      // Note: ngstyle files have names like `afile.css.ngstyle.ts`
+      // Note: ngstyle files have names like `file.css.ngstyle.ts`
       if (!this.originalFileExists(base)) {
         return {generate: false};
       }
+    } else if (genSuffix === 'ngbackpatch') {
+      // The generated back-patch file doesn't have an original file nor does it need
+      // a baseFileName calculated.
+      return {generate: this.backPatch};
     } else {
       // Note: on-the-fly generated files always have a `.ts` suffix,
       // but the file from which we generated it can be a `.ts`/ `.tsx`/ `.d.ts`
@@ -363,7 +365,7 @@ export class TsCompilerAotCompilerTypeCheckHostAdapter implements ts.CompilerHos
 
   getSourceFile(
       fileName: string, languageVersion: ts.ScriptTarget,
-      onError?: ((message: string) => void)|undefined): ts.SourceFile {
+      onError?: ((message: string) => void)|undefined): ts.SourceFile|undefined {
     // Note: Don't exit early in this method to make sure
     // we always have up to date references on the file!
     let genFileNames: string[] = [];
@@ -395,9 +397,8 @@ export class TsCompilerAotCompilerTypeCheckHostAdapter implements ts.CompilerHos
     if (sf) {
       addReferencesToSourceFile(sf, genFileNames);
     }
-    // TODO(tbosch): TypeScript's typings for getSourceFile are incorrect,
-    // as it can very well return undefined.
-    return sf !;
+
+    return sf || undefined;
   }
 
   private getGeneratedFile(fileName: string): ts.SourceFile|null {
@@ -445,7 +446,7 @@ export class TsCompilerAotCompilerTypeCheckHostAdapter implements ts.CompilerHos
   }
 
   isSourceFile(filePath: string): boolean {
-    // Don't generate any files nor typecheck them
+    // Don't generate any files nor type-check them
     // if skipTemplateCodegen is set and fullTemplateTypeCheck is not yet set,
     // for backwards compatibility.
     if (this.options.skipTemplateCodegen && !this.options.fullTemplateTypeCheck) {

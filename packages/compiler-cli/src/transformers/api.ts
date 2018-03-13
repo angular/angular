@@ -185,6 +185,18 @@ export interface CompilerOptions extends ts.CompilerOptions {
    */
   enableIvy?: boolean;
 
+  /**
+   * Tells the compiler to generate a back-patching module called `angular.ngbackpatch`
+   * that back-patches renderer2 classes to include the corresponding renderer3
+   * definition.
+   */
+  renderer2BackPatching?: boolean;
+
+  /**
+   * Tells the compiler to generate renderer2 style compatibility factories.
+   */
+  generateRenderer2Factories?: boolean;
+
   /** @internal */
   collectAllErrors?: boolean;
 }

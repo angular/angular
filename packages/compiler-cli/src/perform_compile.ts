@@ -211,7 +211,7 @@ export function performCompilation({rootNames, options, host, oldProgram, emitCa
     program = ng.createProgram({rootNames, host, options, oldProgram});
 
     const beforeDiags = Date.now();
-    allDiagnostics.push(...gatherDiagnostics(program !));
+    allDiagnostics.push(...gatherDiagnostics(program));
     if (options.diagnostics) {
       const afterDiags = Date.now();
       allDiagnostics.push(
@@ -219,7 +219,7 @@ export function performCompilation({rootNames, options, host, oldProgram, emitCa
     }
 
     if (!hasErrors(allDiagnostics)) {
-      emitResult = program !.emit({emitCallback, customTransformers, emitFlags});
+      emitResult = program.emit({emitCallback, customTransformers, emitFlags});
       allDiagnostics.push(...emitResult.diagnostics);
       return {diagnostics: allDiagnostics, program, emitResult};
     }

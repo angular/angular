@@ -12,8 +12,8 @@ import {ValueTransformer, visitValue} from '../util';
 import {StaticSymbol, StaticSymbolCache} from './static_symbol';
 import {isGeneratedFile, stripSummaryForJitFileSuffix, stripSummaryForJitNameSuffix, summaryForJitFileName, summaryForJitName} from './util';
 
-const DTS = /\.d\.ts$/;
-const TS = /^(?!.*\.d\.ts$).*\.ts$/;
+export const DTS = /\.d\.ts$/;
+export const TS = /^(?!.*\.d\.ts$).*\.ts$/;
 
 export class ResolvedStaticSymbol {
   constructor(public symbol: StaticSymbol, public metadata: any) {}

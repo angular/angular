@@ -285,7 +285,7 @@ describe('separate compilation ', () => {
         import {OtherModule} from './some-other-module';
 
         const ITEMS = [SomeComponent, SomeDirective, SomePipe];
-        
+
         @NgModule({
           imports: [OtherModule],
           declarations: ITEMS, exports: ITEMS
@@ -303,15 +303,285 @@ describe('separate compilation ', () => {
 
       ngc();
 
-      const module_metadata = `FILL THIS IN`;
+      const some_component_metadata = `
+        "SomeComponent": {
+            "__symbolic":"class",
+            "members":{},
+            "statics":{
+              "ngComponentDef":{},
+              "ngSelector":"some-component"
+            }
+        }`;
 
-      expectWritten('index.metadata.json', module_metadata, 'Invalid pipe metadata');
+      const some_directive_metadata = `
+        "SomeDirective": {
+          "__symbolic":"class",
+          "members":{},
+          "statics":{
+            "ngDirectiveDef":{},
+            "ngSelector":"[some-directive]"
+          }
+        }`;
+
+      const some_pipe_metadata = `
+        "SomePipe":{
+          "__symbolic":"class",
+          "members":{},
+          "statics":{
+            "ngPipeDef":{},"ngSelector":"somePipe"
+          }
+        }`;
+
+      expectWritten('index.metadata.json', some_component_metadata, 'Invalid component metadata');
+      expectWritten('index.metadata.json', some_directive_metadata, 'Invalid directive metadata');
+      expectWritten('index.metadata.json', some_pipe_metadata, 'Invalid pipe metadata');
     });
   });
 
   describe('separate compiles', () => {
 
-    it('should compile ivy application using a Renderer2 library and an Ivy library', () => {
+    it('should compile ivy application using Renderer2 library', () => {
+      // Library using Renderer2
+      writeConfig('library1/tsconfig.json', {
+        extends: '../tsconfig-base.json',
+        files: ['public-api.ts'],
+        angularCompilerOptions:
+            {skipTemplateCodegen: true, flatModuleOutFile: 'index.js', flatModuleId: 'library1'}
+      });
+
+      write('library1/component.ts', `
+        import {Component} from '@angular/core';
+
+        @Component({
+          selector: 'lib1-comp',
+          template: 'Hello from lib1!'
+        })
+        export class Lib1Component { }
+      `);
+
+      write('library1/directive.ts', `
+        import {Directive} from '@angular/core';
+
+        @Directive({selector: '[lib1-dir]'})
+        export class Lib1Directive { }
+      `);
+
+      write('library1/pipe.ts', `
+        import {Pipe} from '@angular/core';
+
+        @Pipe({name: 'lib1Pipe'})
+        export class Lib1Pipe { }
+      `);
+
+      write('library1/module.ts', `
+        import {NgModule} from '@angular/core';
+
+        import {Lib1Component} from './component';
+        import {Lib1Directive} from './directive';
+        import {Lib1Pipe} from './pipe';
+
+        @NgModule({
+          declarations: [Lib1Component, Lib1Directive, Lib1Pipe],
+          exports: [Lib1Component, Lib1Directive, Lib1Pipe]
+        })
+        export class Lib1Module {}
+      `);
+
+      write('library1/public-api.ts', `
+        export * from './module';
+        export * from './component';
+        export * from './directive';
+        export * from './pipe';
+      `);
+
+      ngc('library1');
+
+      // Application that imports library1 and generates ivy plus back-patching
+      writeConfig('app/tsconfig.json', {
+        extends: '../tsconfig-base.json',
+        files: ['module.ts'],
+        compilerOptions: {paths: {'library1': ['built/library1']}},
+        angularCompilerOptions: {
+          enableIvy: true,
+          skipMetadataEmit: true,
+          generateRenderer2Factories: true,
+          renderer2BackPatching: true,
+          generateCodeForLibraries: true
+        }
+      });
+
+      write('app/component.ts', `
+        import {Component} from '@angular/core';
+
+        @Component({
+          selector: 'app-comp',
+          template: 'Hello from the app <lib1-comp lib1-dir></lib1-comp> {{value | lib1Pipe}}'
+        })
+        export class AppComponent {
+          value = 'piped!'
+        }
+      `);
+
+      write('app/module.ts', `
+        import {NgModule} from '@angular/core';
+
+        import {Lib1Module} from 'library1';
+        import {AppComponent} from './component';
+
+        import {ngBackPatch_app_module_AppModule} from '../angular.ngbackpatch';
+
+        @NgModule({
+          imports: [Lib1Module],
+          declarations: [AppComponent]
+        })
+        export class AppModule {}
+
+        ngBackPatch_app_module_AppModule();
+      `);
+
+      ngc('app');
+
+      const app_component_def = `
+        ngComponentDef = $r3$.ɵdefineComponent({
+          type: AppComponent,
+          tag: "app-comp",
+          factory: function AppComponent_Factory() { return new AppComponent(); },
+          template: function AppComponent_Template(ctx, cm) {
+            …
+          }
+        }
+      `;
+
+      const app_module_factory = `AppModuleNgFactory = { moduleType: $am$.AppModule, create: … }`;
+
+      const lib1_component_def = `
+        ngComponentDef = $r3$.ɵdefineComponent({
+          type: $l1c$.Lib1Component,
+          tag: "lib1-comp",
+          factory: function Lib1Component_Factory() { return new $l1c$.Lib1Component(); },
+          template: function Lib1Component_Template(ctx, cm) {
+            …
+          }
+        }
+      `;
+
+      // Expect the component definition in the .js file
+      expectWritten('app/component.js', app_component_def, 'Invalid application component');
+
+      // Expect the library1 definition in the back-patch file.
+      expectWritten(
+          'angular.ngbackpatch.js', lib1_component_def, 'Back-patch for library 1 missing');
+      expectNotWritten(
+          'angular.ngbackpatch.js', 'AppComponent_Template',
+          'Back-patch file contains back patches for Ivy generated classes');
+
+      // Expect a compatibility factory created along side the component
+      expectWritten(
+          'app/module.ngfactory.js', app_module_factory, 'Invalid application module factory');
+    });
+
+    fit('should compiler an ivy application using an ivy library', () => {
+      // Library using ivy
+      writeConfig('library2/tsconfig.json', {
+        extends: '../tsconfig-base.json',
+        files: ['index.ts'],
+        angularCompilerOptions: {
+          enableIvy: true,
+          generateRenderer2Factories: false,
+          renderer2BackPatching: false,
+          generateCodeForLibraries: false
+        }
+      });
+
+      write('library2/component.ts', `
+        import {Component} from '@angular/core';
+
+        @Component({
+          selector: 'lib2-comp',
+          template: 'Hello from lib2!'
+        })
+        export class Lib2Component { }
+      `);
+
+      write('library2/directive.ts', `
+        import {Directive} from '@angular/core';
+
+        @Directive({selector: '[lib2-dir]'})
+        export class Lib2Directive { }
+      `);
+
+      write('library2/pipe.ts', `
+        import {Pipe} from '@angular/core';
+
+        @Pipe({name: 'lib1Pipe'})
+        export class Lib2Pipe { }
+      `);
+
+      write('library2/module.ts', `
+        import {NgModule} from '@angular/core';
+
+        import {Lib2Component} from './component';
+        import {Lib2Directive} from './directive';
+        import {Lib2Pipe} from './pipe';
+
+        @NgModule({
+          declarations: [Lib2Component, Lib2Directive, Lib2Pipe],
+          exports: [Lib2Component, Lib2Directive, Lib2Pipe]
+        })
+        export class Lib2Module {}
+      `);
+
+      write('library2/index.ts', `
+        export * from './module';
+        export * from './component';
+        export * from './directive';
+        export * from './pipe';
+      `);
+
+      ngc('library2');
+
+      // Application that imports both and generates ivy plus back-patching
+      writeConfig('app/tsconfig.json', {
+        extends: '../tsconfig-base.json',
+        files: ['module.ts'],
+        compilerOptions: {paths: {'library1': ['built/library1'], 'library2': ['built/library2']}},
+        angularCompilerOptions: {
+          enableIvy: true,
+          generateRenderer2Factories: true,
+          renderer2BackPatching: true,
+          generateCodeForLibraries: true
+        }
+      });
+
+      write('app/component.ts', `
+        import {Component} from '@angular/core';
+
+        @Component({
+          selector: 'app-comp',
+          template: 'Hello from the app <lib2-comp lib2-dir></lib2-comp> {{value | lib2Pipe}}'
+        })
+        export class AppComponent {
+          value = 'piped!'
+        }
+      `);
+
+      write('app/module.ts', `
+        import {NgModule} from '@angular/core';
+
+        import {Lib2Module} from 'library2';
+        import {AppComponent} from './component';
+
+        @NgModule({
+          imports: [Lib2Module],
+          declarations: [AppComponent]
+        })
+        export class AppModule {}
+      `);
+
+      ngc('app');
+    });
+
+    xit('should compile ivy application using a Renderer2 library and an Ivy library', () => {
 
       // Library using Renderer2
       writeConfig('library1/tsconfig.json', {
@@ -351,7 +621,7 @@ describe('separate compilation ', () => {
         import {Lib1Component} from './component';
         import {Lib1Directive} from './directive';
         import {Lib1Pipe} from './pipe';
-        
+
         @NgModule({
           declarations: [Lib1Component, Lib1Directive, Lib1Pipe],
           exports: [Lib1Component, Lib1Directive, Lib1Pipe]
@@ -410,7 +680,7 @@ describe('separate compilation ', () => {
         import {Lib2Component} from './component';
         import {Lib2Directive} from './directive';
         import {Lib2Pipe} from './pipe';
-        
+
         @NgModule({
           declarations: [Lib2Component, Lib2Directive, Lib2Pipe],
           exports: [Lib2Component, Lib2Directive, Lib2Pipe]
@@ -447,7 +717,7 @@ describe('separate compilation ', () => {
           selector: 'app-comp',
           template: 'Hello from the app <lib1-comp lib2-dir></lib1-comp> <lib2-comp lib1-dir></lib2-comp> {{value | lib1Pipe | lib2Pipe}}'
         })
-        export class AppComponent { 
+        export class AppComponent {
           value = 'piped!'
         }
       `);
@@ -498,7 +768,7 @@ describe('separate compilation ', () => {
           template: function Lib1Component_Template(ctx: $Lib1Component$, cm: $boolean$) {
             …
           }
-        }  
+        }
       `;
 
       expectWritten('app/component.js', app_component, 'Invalid application component');
@@ -535,11 +805,18 @@ describe('separate compilation ', () => {
     write(fileName, JSON.stringify(config, null, ' '));
   }
 
-  function expectWritten(fileName: string, expected: string, description: string) {
+  function readFile(fileName: string, cb: (content: string) => void) {
     shouldExist(fileName);
     const filePath = path.resolve(outDir, fileName);
     const content = fs.readFileSync(filePath, 'utf8');
-    expectEmit(content, expected, description);
+    cb(content);
+  }
+  function expectWritten(fileName: string, expected: string, description: string) {
+    readFile(fileName, content => { expectEmit(content, expected, description); });
+  }
+
+  function expectNotWritten(fileName: string, notExpected: string, description: string) {
+    readFile(fileName, content => { expect(content).not.toContain(notExpected, description); });
   }
 
   function ngc(projectFile?: string) {

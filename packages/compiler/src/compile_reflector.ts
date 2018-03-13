@@ -22,4 +22,5 @@ export abstract class CompileReflector {
   abstract guards(typeOrFunc: /* Type */ any): {[key: string]: any};
   abstract componentModuleUrl(type: /*Type*/ any, cmpMetadata: Component): string;
   abstract resolveExternalReference(ref: o.ExternalReference): any;
+  abstract rendererTarget(type: /*Type*/ any): number;
 }
