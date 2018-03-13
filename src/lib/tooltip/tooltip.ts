@@ -142,21 +142,11 @@ export class MatTooltip implements OnDestroy {
     }
   }
 
-  /**
-   * @deprecated
-   * @deletion-target 6.0.0
-   */
-  @Input('tooltip-position')
-  get _positionDeprecated(): TooltipPosition { return this._position; }
-  set _positionDeprecated(value: TooltipPosition) { this._position = value; }
-
   /** The default delay in ms before showing the tooltip after show is called */
-  @Input('matTooltipShowDelay') showDelay =
-      this._defaultOptions ? this._defaultOptions.showDelay : 0;
+  @Input('matTooltipShowDelay') showDelay = this._defaultOptions.showDelay;
 
   /** The default delay in ms before hiding the tooltip after hide is called */
-  @Input('matTooltipHideDelay') hideDelay =
-      this._defaultOptions ? this._defaultOptions.hideDelay : 0;
+  @Input('matTooltipHideDelay') hideDelay = this._defaultOptions.hideDelay;
 
   private _message = '';
 
@@ -204,10 +194,7 @@ export class MatTooltip implements OnDestroy {
     @Inject(MAT_TOOLTIP_SCROLL_STRATEGY) private _scrollStrategy,
     @Optional() private _dir: Directionality,
     @Optional() @Inject(MAT_TOOLTIP_DEFAULT_OPTIONS)
-      private _defaultOptions?: MatTooltipDefaultOptions) {
-
-    // TODO(crisbeto): make the `_defaultOptions` a required param next time we do breaking changes.
-    // @deletion-target 6.0.0
+      private _defaultOptions: MatTooltipDefaultOptions) {
 
     const element: HTMLElement = _elementRef.nativeElement;
 
@@ -306,7 +293,7 @@ export class MatTooltip implements OnDestroy {
 
   /** Handles the touchend events on the host element. */
   _handleTouchend() {
-    this.hide(this._defaultOptions ? this._defaultOptions.touchendHideDelay : 1500);
+    this.hide(this._defaultOptions.touchendHideDelay);
   }
 
   /** Create the overlay config and position strategy */
