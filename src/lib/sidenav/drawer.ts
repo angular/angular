@@ -54,18 +54,8 @@ export function throwMatDuplicatedDrawerError(position: string) {
 }
 
 
-/**
- * Drawer toggle promise result.
- * @deprecated
- * @deletion-target 6.0.0
- */
-export class MatDrawerToggleResult {
-  constructor(
-    /** Whether the drawer is opened or closed. */
-    public type: 'open' | 'close',
-    /** Whether the drawer animation is finished. */
-    public animationFinished: boolean) {}
-}
+/** Result of the toggle promise that indicates the state of the drawer. */
+export type MatDrawerToggleResult = 'open' | 'close';
 
 /** Configures whether drawers should use auto sizing by default. */
 export const MAT_DRAWER_DEFAULT_AUTOSIZE =
@@ -145,19 +135,10 @@ export class MatDrawer implements AfterContentInit, AfterContentChecked, OnDestr
     value = value === 'end' ? 'end' : 'start';
     if (value != this._position) {
       this._position = value;
-      this.onAlignChanged.emit();
       this.onPositionChanged.emit();
     }
   }
   private _position: 'start' | 'end' = 'start';
-
-  /**
-   * @deprecated
-   * @deletion-target 6.0.0
-   */
-  @Input()
-  get align(): 'start' | 'end' { return this.position; }
-  set align(value: 'start' | 'end') { this.position = value; }
 
   /** Mode of the drawer; one of 'over', 'push' or 'side'. */
   @Input()
@@ -218,28 +199,8 @@ export class MatDrawer implements AfterContentInit, AfterContentChecked, OnDestr
     );
   }
 
-  /**
-   * Event emitted when the drawer is fully opened.
-   * @deprecated Use `opened` instead.
-   * @deletion-target 6.0.0
-   */
-  @Output('open') readonly onOpen: Observable<void> = this._openedStream;
-
-  /**
-   * Event emitted when the drawer is fully closed.
-   * @deprecated Use `closed` instead.
-   * @deletion-target 6.0.0
-   */
-  @Output('close') readonly onClose: Observable<void> = this._closedStream;
-
   /** Event emitted when the drawer's position changes. */
   @Output('positionChanged') onPositionChanged: EventEmitter<void> = new EventEmitter<void>();
-
-  /**
-   * @deprecated
-   * @deletion-target 6.0.0
-   */
-  @Output('align-changed') onAlignChanged: EventEmitter<void> = new EventEmitter<void>();
 
   /**
    * An observable that emits when the drawer mode changes. This is used by the drawer container to
@@ -353,12 +314,12 @@ export class MatDrawer implements AfterContentInit, AfterContentChecked, OnDestr
    * @param openedVia Whether the drawer was opened by a key press, mouse click or programmatically.
    * Used for focus management after the sidenav is closed.
    */
-  open(openedVia?: FocusOrigin): Promise<void> {
+  open(openedVia?: FocusOrigin): Promise<MatDrawerToggleResult> {
     return this.toggle(true, openedVia);
   }
 
   /** Close the drawer. */
-  close(): Promise<void> {
+  close(): Promise<MatDrawerToggleResult> {
     return this.toggle(false);
   }
 
@@ -369,7 +330,7 @@ export class MatDrawer implements AfterContentInit, AfterContentChecked, OnDestr
    * Used for focus management after the sidenav is closed.
    */
   toggle(isOpen: boolean = !this.opened, openedVia: FocusOrigin = 'program'):
-    Promise<void> {
+    Promise<MatDrawerToggleResult> {
 
     this._opened = isOpen;
 
@@ -385,13 +346,8 @@ export class MatDrawer implements AfterContentInit, AfterContentChecked, OnDestr
       this._focusTrap.enabled = this._isFocusTrapEnabled;
     }
 
-    // TODO(crisbeto): This promise is here for backwards-compatibility.
-    // It should be removed next time we do breaking changes in the drawer.
-    // @deletion-target 6.0.0
-    return new Promise<any>(resolve => {
-      this.openedChange.pipe(take(1)).subscribe(open => {
-        resolve(new MatDrawerToggleResult(open ? 'open' : 'close', true));
-      });
+    return new Promise<MatDrawerToggleResult>(resolve => {
+      this.openedChange.pipe(take(1)).subscribe(open => resolve(open ? 'open' : 'close'));
     });
   }
 

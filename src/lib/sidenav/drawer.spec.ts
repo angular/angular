@@ -94,22 +94,18 @@ describe('MatDrawer', () => {
       expect(getComputedStyle(drawerBackdropElement.nativeElement).visibility).toBe('hidden');
     }));
 
-    it('should resolve the open method promise with an object', fakeAsync(() => {
+    it('should resolve the open method promise with the new state of the drawer', fakeAsync(() => {
       const fixture = TestBed.createComponent(BasicTestApp);
       fixture.detectChanges();
       const drawer = fixture.debugElement.query(By.directive(MatDrawer));
 
-      drawer.componentInstance.open().then(result => {
-        expect(result).toBeTruthy();
-        expect(result.type).toBe('open');
-        expect(result.animationFinished).toBe(true);
-      });
+      drawer.componentInstance.open().then(result => expect(result).toBe('open'));
       fixture.detectChanges();
       tick();
       fixture.detectChanges();
     }));
 
-    it('should resolve the close method promise with an object', fakeAsync(() => {
+    it('should resolve the close method promise with the new state of the drawer', fakeAsync(() => {
       const fixture = TestBed.createComponent(BasicTestApp);
       fixture.detectChanges();
       const drawer = fixture.debugElement.query(By.directive(MatDrawer));
@@ -119,11 +115,7 @@ describe('MatDrawer', () => {
       tick();
       fixture.detectChanges();
 
-      drawer.componentInstance.close().then(result => {
-        expect(result).toBeTruthy();
-        expect(result.type).toBe('close');
-        expect(result.animationFinished).toBe(true);
-      });
+      drawer.componentInstance.close().then(result => expect(result).toBe('close'));
       fixture.detectChanges();
       tick();
       fixture.detectChanges();
