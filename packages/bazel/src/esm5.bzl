@@ -77,6 +77,7 @@ def _esm5_outputs_aspect(target, ctx):
       arguments = [tsconfig.path],
       executable = target.typescript.replay_params.compiler,
       execution_requirements = {
+          # TODO(alexeagle): enable worker mode for these compilations
           "supports-workers": "0",
       },
   )

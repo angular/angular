@@ -1,5 +1,7 @@
 package(default_visibility = ["//visibility:public"])
 
+exports_files(["package.json"])
+
 load("//tools:defaults.bzl", "ng_module")
 
 ng_module(
@@ -12,9 +14,4 @@ ng_module(
         "//packages:types",
         "//packages/core",
     ],
-)
-
-filegroup(
-    name = "npm_package_assets",
-    srcs = ["package.json"],
 )
