@@ -16,7 +16,6 @@ import {
   ViewContainerRef,
   OnDestroy,
   OnInit,
-  Input,
   EventEmitter,
   Output,
 } from '@angular/core';
@@ -67,22 +66,6 @@ export class CdkPortalOutlet extends BasePortalOutlet implements OnInit, OnDestr
       private _viewContainerRef: ViewContainerRef) {
     super();
   }
-
-  /**
-   * @deprecated
-   * @deletion-target 6.0.0
-   */
-  @Input('portalHost')
-  get _deprecatedPortal() { return this.portal; }
-  set _deprecatedPortal(v) { this.portal = v; }
-
-  /**
-   * @deprecated
-   * @deletion-target 6.0.0
-   */
-  @Input('cdkPortalHost')
-  get _deprecatedPortalHost() { return this.portal; }
-  set _deprecatedPortalHost(v) { this.portal = v; }
 
   /** Portal associated with the Portal outlet. */
   get portal(): Portal<any> | null {
