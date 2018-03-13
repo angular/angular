@@ -129,16 +129,18 @@ by placing a `matStepperIcon` for each of the icons that you want to override:
 ```html
 <mat-vertical-stepper>
   <ng-template matStepperIcon="edit">
-    <custom-icon>edit</custom-icon>
+    <mat-icon>insert_drive_file</mat-icon>
   </ng-template>
 
   <ng-template matStepperIcon="done">
-    <custom-icon>done</custom-icon>
+    <mat-icon>done_all</mat-icon>
   </ng-template>
 
   <!-- Stepper steps go here -->
 </mat-vertical-stepper>
 ```
+
+Note that you aren't limited to using the `mat-icon` component when providing custom icons.
 
 ### Keyboard interaction
 - <kbd>LEFT_ARROW</kbd>: Focuses the previous step header
