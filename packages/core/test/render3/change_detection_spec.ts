@@ -8,12 +8,12 @@
 
 import {withBody} from '@angular/core/testing';
 
-import {ChangeDetectionStrategy, ChangeDetectorRef, DoCheck, EmbeddedViewRef, TemplateRef, ViewContainerRef} from '../../src/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, DoCheck} from '../../src/core';
 import {getRenderedText, whenRendered} from '../../src/render3/component';
-import {NgOnChangesFeature, PublicFeature, defineComponent, defineDirective, injectChangeDetectorRef, injectTemplateRef, injectViewContainerRef} from '../../src/render3/index';
-import {bind, container, containerRefreshEnd, containerRefreshStart, detectChanges, directiveRefresh, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, interpolation1, interpolation2, listener, markDirty, text, textBinding, tick} from '../../src/render3/instructions';
+import {defineComponent, defineDirective, injectChangeDetectorRef} from '../../src/render3/index';
+import {bind, container, containerRefreshEnd, containerRefreshStart, detectChanges, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, interpolation1, interpolation2, listener, markDirty, text, textBinding, tick} from '../../src/render3/instructions';
 
-import {containerEl, renderComponent, requestAnimationFrame, toHtml} from './render_util';
+import {containerEl, renderComponent, requestAnimationFrame} from './render_util';
 
 describe('change detection', () => {
 
@@ -133,7 +133,6 @@ describe('change detection', () => {
           }
           elementProperty(0, 'name', bind(ctx.name));
           MyComponent.ngComponentDef.h(1, 0);
-          directiveRefresh(1, 0);
         }
       });
     }
@@ -214,7 +213,6 @@ describe('change detection', () => {
               elementEnd();
             }
             MyComponent.ngComponentDef.h(1, 0);
-            directiveRefresh(1, 0);
           }
         });
       }
@@ -247,7 +245,6 @@ describe('change detection', () => {
             }
             textBinding(0, interpolation1('', ctx.doCheckCount, ' - '));
             MyComponent.ngComponentDef.h(2, 1);
-            directiveRefresh(2, 1);
           },
           changeDetection: ChangeDetectionStrategy.OnPush
         });
@@ -265,7 +262,6 @@ describe('change detection', () => {
               elementEnd();
             }
             ButtonParent.ngComponentDef.h(1, 0);
-            directiveRefresh(1, 0);
           }
         });
       }
@@ -342,7 +338,6 @@ describe('change detection', () => {
             }
             textBinding(0, interpolation1('', ctx.doCheckCount, ' - '));
             MyComp.ngComponentDef.h(2, 1);
-            directiveRefresh(2, 1);
           }
         });
       }
@@ -422,8 +417,6 @@ describe('change detection', () => {
               }
               MyComp.ngComponentDef.h(1, 0);
               Dir.ngDirectiveDef.h(2, 0);
-              directiveRefresh(1, 0);
-              directiveRefresh(2, 0);
             }
           });
         }
@@ -456,7 +449,6 @@ describe('change detection', () => {
               }
               textBinding(1, bind(ctx.name));
               Dir.ngDirectiveDef.h(2, 1);
-              directiveRefresh(2, 1);
             }
           });
         }
@@ -500,7 +492,6 @@ describe('change detection', () => {
                     elementEnd();
                   }
                   Dir.ngDirectiveDef.h(1, 0);
-                  directiveRefresh(1, 0);
                 }
                 embeddedViewEnd();
               }
@@ -594,7 +585,6 @@ describe('change detection', () => {
               elementEnd();
             }
             DetachedComp.ngComponentDef.h(1, 0);
-            directiveRefresh(1, 0);
           }
         });
       }
@@ -734,7 +724,6 @@ describe('change detection', () => {
               }
               elementProperty(0, 'value', bind(ctx.value));
               OnPushComp.ngComponentDef.h(1, 0);
-              directiveRefresh(1, 0);
             }
           });
         }
@@ -802,7 +791,6 @@ describe('change detection', () => {
             }
             textBinding(0, interpolation1('', ctx.value, ' - '));
             OnPushComp.ngComponentDef.h(2, 1);
-            directiveRefresh(2, 1);
           },
           changeDetection: ChangeDetectionStrategy.OnPush
         });
@@ -878,7 +866,6 @@ describe('change detection', () => {
                     elementEnd();
                   }
                   OnPushComp.ngComponentDef.h(1, 0);
-                  directiveRefresh(1, 0);
                   embeddedViewEnd();
                 }
               }
@@ -962,7 +949,6 @@ describe('change detection', () => {
             }
             textBinding(0, interpolation1('', ctx.value, ' - '));
             NoChangesComp.ngComponentDef.h(2, 1);
-            directiveRefresh(2, 1);
           }
         });
       }

@@ -63,7 +63,6 @@ describe('queries', () => {
           $r3$.ɵqR($tmp$ = $r3$.ɵld<QueryList<any>>(1)) &&
               (ctx.someDirList = $tmp$ as QueryList<any>);
           SomeDirective.ngDirectiveDef.h(3, 2);
-          $r3$.ɵr(3, 2);
         }
       });
       // /NORMATIVE
@@ -148,8 +147,6 @@ describe('queries', () => {
           }
           ContentQueryComponent.ngComponentDef.h(1, 0);
           SomeDirective.ngDirectiveDef.h(3, 2);
-          $r3$.ɵr(1, 0);
-          $r3$.ɵr(3, 2);
         }
       });
       // /NON-NORMATIVE

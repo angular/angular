@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ɵC as C, ɵE as E, ɵT as T, ɵV as V, ɵb as b, ɵcR as cR, ɵcr as cr, ɵdefineComponent as defineComponent, ɵdetectChanges as _detectChanges, ɵe as e, ɵi1 as i1, ɵp as p, ɵr as r, ɵs as s, ɵt as t, ɵv as v} from '@angular/core';
+import {ɵC as C, ɵE as E, ɵT as T, ɵV as V, ɵb as b, ɵcR as cR, ɵcr as cr, ɵdefineComponent as defineComponent, ɵdetectChanges as _detectChanges, ɵe as e, ɵi1 as i1, ɵp as p, ɵs as s, ɵt as t, ɵv as v} from '@angular/core';
 import {ComponentDef} from '@angular/core/src/render3/interfaces/definition';
 
 import {TreeNode, buildTree, emptyTree} from '../util';
@@ -59,7 +59,6 @@ export class TreeComponent {
             }
             p(0, 'data', b(ctx.data.left));
             TreeComponent.ngComponentDef.h(1, 0);
-            r(1, 0);
           }
           v();
         }
@@ -76,7 +75,6 @@ export class TreeComponent {
             }
             p(0, 'data', b(ctx.data.right));
             TreeComponent.ngComponentDef.h(1, 0);
-            r(1, 0);
           }
           v();
         }

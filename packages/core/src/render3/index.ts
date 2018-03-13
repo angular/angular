@@ -40,8 +40,6 @@ export {
   interpolation8 as i8,
   interpolationV as iV,
 
-  directiveRefresh as r,
-
   container as C,
   containerRefreshStart as cR,
   containerRefreshEnd as cr,
