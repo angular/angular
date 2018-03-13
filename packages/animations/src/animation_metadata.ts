@@ -115,7 +115,9 @@ export interface AnimationStateMetadata extends AnimationMetadata {
  * @experimental Animation support is experimental.
  */
 export interface AnimationTransitionMetadata extends AnimationMetadata {
-  expr: string|((fromState: string, toState: string) => boolean);
+  expr: string|
+      ((fromState: string, toState: string, element?: any,
+        params?: {[key: string]: any}) => boolean);
   animation: AnimationMetadata|AnimationMetadata[];
   options: AnimationOptions|null;
 }
@@ -293,6 +295,38 @@ export interface AnimationStaggerMetadata extends AnimationMetadata {
  * <!-- somewhere inside of my-component-tpl.html -->
  * <div [@myAnimationTrigger]="myStatusExp">...</div>
  * ```
+ *
+ * ### Using an inline function
+ * The `transition` animation method also supports reading an inline function which can decide
+ * if its associated animation should be run.
+ *
+ * ```
+ * // this method will be run each time the `myAnimationTrigger`
+ * // trigger value changes...
+ * function myInlineMatcherFn(fromState: string, toState: string, element: any, params: {[key:
+ string]: any}): boolean {
+ *   // notice that `element` and `params` are also available here
+ *   return toState == 'yes-please-animate';
+ * }
+ *
+ * @Component({
+ *   selector: 'my-component',
+ *   templateUrl: 'my-component-tpl.html',
+ *   animations: [
+ *     trigger('myAnimationTrigger', [
+ *       transition(myInlineMatcherFn, [
+ *         // the animation sequence code
+ *       ]),
+ *     ])
+ *   ]
+ * })
+ * class MyComponent {
+ *   myStatusExp = "yes-please-animate";
+ * }
+ * ```
+ *
+ * The inline method will be run each time the trigger
+ * value changes
  *
  * ## Disable Animations
  * A special animation control binding called `@.disabled` can be placed on an element which will
@@ -844,7 +878,8 @@ export function keyframes(steps: AnimationStyleMetadata[]): AnimationKeyframesSe
  * @experimental Animation support is experimental.
  */
 export function transition(
-    stateChangeExpr: string | ((fromState: string, toState: string) => boolean),
+    stateChangeExpr: string | ((fromState: string, toState: string, element?: any,
+                                params?: {[key: string]: any}) => boolean),
     steps: AnimationMetadata | AnimationMetadata[],
     options: AnimationOptions | null = null): AnimationTransitionMetadata {
   return {type: AnimationMetadataType.Transition, expr: stateChangeExpr, animation: steps, options};
