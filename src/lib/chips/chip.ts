@@ -183,7 +183,7 @@ export class MatChip extends _MatChipMixinBase implements FocusableOption, OnDes
   protected _selectable: boolean = true;
 
   /**
-   * Determines whether or not the chip displays the remove styling and emits (remove) events.
+   * Determines whether or not the chip displays the remove styling and emits (removed) events.
    */
   @Input()
   get removable(): boolean { return this._removable; }
@@ -205,22 +205,8 @@ export class MatChip extends _MatChipMixinBase implements FocusableOption, OnDes
   /** Emitted when the chip is destroyed. */
   @Output() readonly destroyed: EventEmitter<MatChipEvent> = new EventEmitter<MatChipEvent>();
 
-  /**
-   * Emitted when the chip is destroyed.
-   * @deprecated Use 'destroyed' instead.
-   * @deletion-target 6.0.0
-   */
-  @Output() readonly destroy: EventEmitter<MatChipEvent> = this.destroyed;
-
   /** Emitted when a chip is to be removed. */
   @Output() readonly removed: EventEmitter<MatChipEvent> = new EventEmitter<MatChipEvent>();
-
-  /**
-   * Emitted when a chip is to be removed.
-   * @deprecated Use `removed` instead.
-   * @deletion-target 6.0.0
-   */
-  @Output('remove') onRemove: EventEmitter<MatChipEvent> = this.removed;
 
   /** The ARIA selected applied to the chip. */
   get ariaSelected(): string | null {

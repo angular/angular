@@ -306,7 +306,7 @@ export class MatChipList extends _MatChipListMixinBase implements MatFormFieldCo
 
   /** Combined stream of all of the child chips' remove change events. */
   get chipRemoveChanges(): Observable<MatChipEvent> {
-    return merge(...this.chips.map(chip => chip.destroy));
+    return merge(...this.chips.map(chip => chip.destroyed));
   }
 
   /** Event emitted when the selected chip list value has been changed by the user. */

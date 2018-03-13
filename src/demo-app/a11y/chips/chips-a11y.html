@@ -23,7 +23,7 @@
 
   <mat-form-field>
     <mat-chip-list matPrefix #chipList>
-      <mat-chip *ngFor="let person of people" [color]="color" (remove)="remove(person)">
+      <mat-chip *ngFor="let person of people" [color]="color" (removed)="remove(person)">
         {{person.name}}
         <mat-icon matChipRemove>cancel</mat-icon>
       </mat-chip>

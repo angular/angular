@@ -36,7 +36,7 @@ describe('Chip Remove', () => {
       expect(hrefElement.classList).toContain('mat-chip-remove');
     });
 
-    it('should emits (remove) on click', () => {
+    it('should emits (removed) on click', () => {
       let hrefElement = chipNativeElement.querySelector('a')!;
 
       testChip.removable = true;
@@ -53,7 +53,7 @@ describe('Chip Remove', () => {
 
 @Component({
   template: `
-    <mat-chip [removable]="removable" (remove)="didRemove()"><a matChipRemove></a></mat-chip>
+    <mat-chip [removable]="removable" (removed)="didRemove()"><a matChipRemove></a></mat-chip>
   `
 })
 class TestChip {

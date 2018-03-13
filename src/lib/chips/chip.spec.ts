@@ -215,7 +215,7 @@ describe('Chips', () => {
           fixture.detectChanges();
         });
 
-        it('DELETE emits the (remove) event', () => {
+        it('DELETE emits the (removed) event', () => {
           const DELETE_EVENT = createKeyboardEvent('keydown', DELETE) as KeyboardEvent;
 
           spyOn(testComponent, 'chipRemove');
@@ -227,7 +227,7 @@ describe('Chips', () => {
           expect(testComponent.chipRemove).toHaveBeenCalled();
         });
 
-        it('BACKSPACE emits the (remove) event', () => {
+        it('BACKSPACE emits the (removed) event', () => {
           const BACKSPACE_EVENT = createKeyboardEvent('keydown', BACKSPACE) as KeyboardEvent;
 
           spyOn(testComponent, 'chipRemove');
@@ -246,7 +246,7 @@ describe('Chips', () => {
           fixture.detectChanges();
         });
 
-        it('DELETE does not emit the (remove) event', () => {
+        it('DELETE does not emit the (removed) event', () => {
           const DELETE_EVENT = createKeyboardEvent('keydown', DELETE) as KeyboardEvent;
 
           spyOn(testComponent, 'chipRemove');
@@ -258,7 +258,7 @@ describe('Chips', () => {
           expect(testComponent.chipRemove).not.toHaveBeenCalled();
         });
 
-        it('BACKSPACE does not emit the (remove) event', () => {
+        it('BACKSPACE does not emit the (removed) event', () => {
           const BACKSPACE_EVENT = createKeyboardEvent('keydown', BACKSPACE) as KeyboardEvent;
 
           spyOn(testComponent, 'chipRemove');
