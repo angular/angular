@@ -197,20 +197,21 @@ function heroModuleSetup() {
 
     // #docregion title-case-pipe
     it('should convert hero name to Title Case', () => {
-      const inputName = 'quick BROWN  fox';
-      const titleCaseName = 'Quick Brown  Fox';
-      const { nameInput, nameDisplay } = page;
+      // get the name's input and display elements from the DOM
+      const hostElement = fixture.nativeElement;
+      const nameInput: HTMLInputElement = hostElement.querySelector('input');
+      const nameDisplay: HTMLElement = hostElement.querySelector('span');
 
-      // simulate user entering new name into the input box
-      nameInput.value = inputName;
+      // simulate user entering a new name into the input box
+      nameInput.value = 'quick BROWN  fOx';
 
       // dispatch a DOM event so that Angular learns of input value change.
       nameInput.dispatchEvent(newEvent('input'));
 
-      // Tell Angular to update the output span through the title pipe
+      // Tell Angular to update the display binding through the title pipe
       fixture.detectChanges();
 
-      expect(nameDisplay.textContent).toBe(titleCaseName);
+      expect(nameDisplay.textContent).toBe('Quick Brown  Fox');
     });
     // #enddocregion title-case-pipe
   // #enddocregion selected-tests
