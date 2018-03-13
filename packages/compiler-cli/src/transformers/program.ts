@@ -13,6 +13,7 @@ import * as path from 'path';
 import * as ts from 'typescript';
 
 import {TypeCheckHost, translateDiagnostics} from '../diagnostics/translate_diagnostics';
+import {compareVersions} from '../diagnostics/typescript_version';
 import {MetadataCollector, ModuleMetadata, createBundleIndexHost} from '../metadata/index';
 
 import {CompilerHost, CompilerOptions, CustomTransformers, DEFAULT_ERROR_CODE, Diagnostic, DiagnosticMessageChain, EmitFlags, LazyRoute, LibrarySummary, Program, SOURCE, TsEmitArguments, TsEmitCallback, TsMergeEmitResultsCallback} from './api';
@@ -95,6 +96,19 @@ const defaultEmitCallback: TsEmitCallback =
         program.emit(
             targetSourceFile, writeFile, cancellationToken, emitOnlyDtsFiles, customTransformers);
 
+/**
+ * Minimum supported TypeScript version
+ * ∀ supported typescript version v, v >= MIN_TS_VERSION
+ */
+const MIN_TS_VERSION = '2.7.2';
+
+/**
+ * Supremum of supported TypeScript versions
+ * ∀ supported typescript version v, v < MAX_TS_VERSION
+ * MAX_TS_VERSION is not considered as a supported TypeScript version
+ */
+const MAX_TS_VERSION = '2.8.0';
+
 class AngularCompilerProgram implements Program {
   private rootNames: string[];
   private metadataCache: MetadataCache;
@@ -124,10 +138,7 @@ class AngularCompilerProgram implements Program {
       private host: CompilerHost, oldProgram?: Program) {
     this.rootNames = [...rootNames];
 
-    if ((ts.version < '2.7.2' || ts.version >= '2.8.0') && !options.disableTypeScriptVersionCheck) {
-      throw new Error(
-          `The Angular Compiler requires TypeScript >=2.7.2 and <2.8.0 but ${ts.version} was found instead.`);
-    }
+    checkVersion(ts.version, MIN_TS_VERSION, MAX_TS_VERSION, options.disableTypeScriptVersionCheck);
 
     this.oldTsProgram = oldProgram ? oldProgram.getTsProgram() : undefined;
     if (oldProgram) {
@@ -844,6 +855,34 @@ class AngularCompilerProgram implements Program {
     }
     // TODO: remove any when TS 2.4 support is removed.
     this.host.writeFile(outFileName, outData, writeByteOrderMark, onError, sourceFiles as any);
+  }
+}
+
+/**
+ * Checks whether a given version ∈ [minVersion, maxVersion[
+ * An error will be thrown if the following statements are simultaneously true:
+ * - the given version ∉ [minVersion, maxVersion[,
+ * - the result of the version check is not meant to be bypassed (the parameter disableVersionCheck
+ * is false)
+ *
+ * @param version The version on which the check will be performed
+ * @param minVersion The lower bound version. A valid version needs to be greater than minVersion
+ * @param maxVersion The upper bound version. A valid version needs to be strictly less than
+ * maxVersion
+ * @param disableVersionCheck Indicates whether version check should be bypassed
+ *
+ * @throws Will throw an error if the following statements are simultaneously true:
+ * - the given version ∉ [minVersion, maxVersion[,
+ * - the result of the version check is not meant to be bypassed (the parameter disableVersionCheck
+ * is false)
+ */
+export function checkVersion(
+    version: string, minVersion: string, maxVersion: string,
+    disableVersionCheck: boolean | undefined) {
+  if ((compareVersions(version, minVersion) < 0 || compareVersions(version, maxVersion) >= 0) &&
+      !disableVersionCheck) {
+    throw new Error(
+        `The Angular Compiler requires TypeScript >=${minVersion} and <${maxVersion} but ${version} was found instead.`);
   }
 }
 
