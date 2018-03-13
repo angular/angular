@@ -175,11 +175,13 @@ export declare class NavigationCancel extends RouterEvent {
 }
 
 export declare class NavigationEnd extends RouterEvent {
+    extras?: Partial<NavigationExtras> | undefined;
     urlAfterRedirects: string;
     constructor(
     id: number,
     url: string,
-    urlAfterRedirects: string);
+    urlAfterRedirects: string,
+    extras?: Partial<NavigationExtras> | undefined);
     toString(): string;
 }
 

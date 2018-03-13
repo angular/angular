@@ -11,7 +11,7 @@ import {Compiler, Injectable, Injector, isDevMode, NgModuleFactoryLoader, NgModu
 import {BehaviorSubject, EMPTY, Observable, of, Subject, Subscription} from 'rxjs';
 import {catchError, filter, finalize, map, switchMap, tap} from 'rxjs/operators';
 
-import {QueryParamsHandling, Route, Routes, standardizeConfig, validateConfig} from './config';
+import {NavigationExtras, Route, Routes, standardizeConfig, validateConfig} from './config';
 import {createRouterState} from './create_router_state';
 import {createUrlTree} from './create_url_tree';
 import {Event, GuardsCheckEnd, GuardsCheckStart, NavigationCancel, NavigationEnd, NavigationError, NavigationStart, NavigationTrigger, ResolveEnd, ResolveStart, RouteConfigLoadEnd, RouteConfigLoadStart, RoutesRecognized} from './events';
@@ -24,141 +24,13 @@ import {switchTap} from './operators/switch_tap';
 import {DefaultRouteReuseStrategy, RouteReuseStrategy} from './route_reuse_strategy';
 import {RouterConfigLoader} from './router_config_loader';
 import {ChildrenOutletContexts} from './router_outlet_context';
-import {ActivatedRoute, createEmptyState, RouterState, RouterStateSnapshot} from './router_state';
+import {createEmptyState, RouterState, RouterStateSnapshot} from './router_state';
 import {isNavigationCancelingError, navigationCancelingError, Params} from './shared';
 import {DefaultUrlHandlingStrategy, UrlHandlingStrategy} from './url_handling_strategy';
 import {containsTree, createEmptyUrlTree, UrlSerializer, UrlTree} from './url_tree';
 import {Checks, getAllRouteGuards} from './utils/preactivation';
 import {isUrlTree} from './utils/type_guards';
 
-
-
-/**
- * @description
- *
- * Options that modify the navigation strategy.
- *
- * @publicApi
- */
-export interface NavigationExtras {
-  /**
-   * Specifies a root URI to use for relative navigation.
-   *
-   * For example, consider the following route configuration where the parent route
-   * has two children.
-   *
-   * ```
-   * [{
-   *   path: 'parent',
-   *   component: ParentComponent,
-   *   children: [{
-   *     path: 'list',
-   *     component: ListComponent
-   *   },{
-   *     path: 'child',
-   *     component: ChildComponent
-   *   }]
-   * }]
-   * ```
-   *
-   * The following `go()` function navigates to the `list` route by
-   * interpreting the destination URI as relative to the activated `child`  route
-   *
-   * ```
-   *  @Component({...})
-   *  class ChildComponent {
-   *    constructor(private router: Router, private route: ActivatedRoute) {}
-   *
-   *    go() {
-   *      this.router.navigate(['../list'], { relativeTo: this.route });
-   *    }
-   *  }
-   * ```
-   */
-  relativeTo?: ActivatedRoute|null;
-
-  /**
-   * Sets query parameters to the URL.
-   *
-   * ```
-   * // Navigate to /results?page=1
-   * this.router.navigate(['/results'], { queryParams: { page: 1 } });
-   * ```
-   */
-  queryParams?: Params|null;
-
-  /**
-   * Sets the hash fragment for the URL.
-   *
-   * ```
-   * // Navigate to /results#top
-   * this.router.navigate(['/results'], { fragment: 'top' });
-   * ```
-   */
-  fragment?: string;
-
-  /**
-   * **DEPRECATED**: Use `queryParamsHandling: "preserve"` instead to preserve
-   * query parameters for the next navigation.
-   *
-   * @deprecated since v4
-   */
-  preserveQueryParams?: boolean;
-
-  /**
-   * How to handle query parameters in the router link for the next navigation.
-   * One of:
-   * * `merge` : Merge new with current parameters.
-   * * `preserve` : Preserve current parameters.
-   *
-   * ```
-   * // from /results?page=1 to /view?page=1&page=2
-   * this.router.navigate(['/view'], { queryParams: { page: 2 },  queryParamsHandling: "merge" });
-   * ```
-   */
-  queryParamsHandling?: QueryParamsHandling|null;
-  /**
-   * When true, preserves the URL fragment for the next navigation
-   *
-   * ```
-   * // Preserve fragment from /results#top to /view#top
-   * this.router.navigate(['/view'], { preserveFragment: true });
-   * ```
-   */
-  preserveFragment?: boolean;
-  /**
-   * When true, navigates without pushing a new state into history.
-   *
-   * ```
-   * // Navigate silently to /view
-   * this.router.navigate(['/view'], { skipLocationChange: true });
-   * ```
-   */
-  skipLocationChange?: boolean;
-  /**
-   * When true, navigates while replacing the current state in history.
-   *
-   * ```
-   * // Navigate to /view
-   * this.router.navigate(['/view'], { replaceUrl: true });
-   * ```
-   */
-  replaceUrl?: boolean;
-  /**
-   * Developer-defined state that can be passed to any navigation.
-   * Access this value through the `Navigation.extras` object
-   * returned from `router.getCurrentNavigation()` while a navigation is executing.
-   *
-   * After a navigation completes, the router writes an object containing this
-   * value together with a `navigationId` to `history.state`.
-   * The value is written when `location.go()` or `location.replaceState()`
-   * is called before activating this route.
-   *
-   * Note that `history.state` does not pass an object equality test because
-   * the router adds the `navigationId` on each navigation.
-   */
-  state?: {[k: string]: any};
-}
 
 /**
  * Error handler that is invoked when a navigation error occurs.
@@ -1112,7 +984,10 @@ export class Router {
           this.lastSuccessfulId = t.id;
           (this.events as Subject<Event>)
               .next(new NavigationEnd(
-                  t.id, this.serializeUrl(t.extractedUrl), this.serializeUrl(this.currentUrlTree)));
+                  t.id, this.serializeUrl(t.extractedUrl), this.serializeUrl(this.currentUrlTree), {
+                    skipLocationChange: t.extras?.skipLocationChange,
+                    replaceUrl: t.extras?.replaceUrl
+                  }));
           this.lastSuccessfulNavigation = this.currentNavigation;
           this.currentNavigation = null;
           t.resolve(true);

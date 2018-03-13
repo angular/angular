@@ -12,7 +12,7 @@ import {ChangeDetectionStrategy, Component, Injectable, NgModule, NgModuleFactor
 import {ComponentFixture, fakeAsync, inject, TestBed, tick} from '@angular/core/testing';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
-import {ActivatedRoute, ActivatedRouteSnapshot, ActivationEnd, ActivationStart, CanActivate, CanDeactivate, ChildActivationEnd, ChildActivationStart, DefaultUrlSerializer, DetachedRouteHandle, Event, GuardsCheckEnd, GuardsCheckStart, Navigation, NavigationCancel, NavigationEnd, NavigationError, NavigationStart, ParamMap, Params, PreloadAllModules, PreloadingStrategy, PRIMARY_OUTLET, Resolve, ResolveEnd, ResolveStart, RouteConfigLoadEnd, RouteConfigLoadStart, Router, RouteReuseStrategy, RouterEvent, RouterModule, RouterPreloader, RouterStateSnapshot, RoutesRecognized, RunGuardsAndResolvers, UrlHandlingStrategy, UrlSegmentGroup, UrlSerializer, UrlTree} from '@angular/router';
+import {ActivatedRoute, ActivatedRouteSnapshot, ActivationEnd, ActivationStart, CanActivate, CanDeactivate, ChildActivationEnd, ChildActivationStart, DefaultUrlSerializer, DetachedRouteHandle, Event, GuardsCheckEnd, GuardsCheckStart, Navigation, NavigationCancel, NavigationEnd, NavigationError, NavigationExtras, NavigationStart, ParamMap, Params, PreloadAllModules, PreloadingStrategy, PRIMARY_OUTLET, Resolve, ResolveEnd, ResolveStart, RouteConfigLoadEnd, RouteConfigLoadStart, Router, RouteReuseStrategy, RouterEvent, RouterModule, RouterPreloader, RouterStateSnapshot, RoutesRecognized, RunGuardsAndResolvers, UrlHandlingStrategy, UrlSegmentGroup, UrlSerializer, UrlTree} from '@angular/router';
 import {EMPTY, Observable, Observer, of, Subscription} from 'rxjs';
 import {filter, first, map, tap} from 'rxjs/operators';
 
@@ -615,6 +615,39 @@ describe('Integration', () => {
        expect(location.path()).toEqual('/team/22');
 
        expect(fixture.nativeElement).toHaveText('team 33 [ , right:  ]');
+     })));
+
+  it('should provide skipLocationUpdate in the NavigationEnd event when changed with navigateByUrl',
+     fakeAsync(inject([Router, Location], (router: Router) => {
+       const fixture = TestBed.createComponent(RootCmp);
+       let extras: Partial<NavigationExtras>|undefined;
+
+       router.resetConfig([{path: 'team/:id', component: TeamCmp}]);
+       router.events.subscribe(event => {
+         if (event instanceof NavigationEnd) {
+           extras = (event as NavigationEnd).extras;
+         }
+       });
+
+       router.navigateByUrl('/team/33', {skipLocationChange: true});
+       advance(fixture);
+       expect(extras?.skipLocationChange).toBe(true);
+     })));
+
+  it('should provide replaceUrl in the NavigationEnd event when changed with navigateByUrl',
+     fakeAsync(inject([Router, Location], (router: Router) => {
+       const fixture = TestBed.createComponent(RootCmp);
+       let extras: Partial<NavigationExtras>|undefined;
+       router.resetConfig([{path: 'team/:id', component: TeamCmp}]);
+       router.events.subscribe(event => {
+         if (event instanceof NavigationEnd) {
+           extras = (event as NavigationEnd).extras;
+         }
+       });
+
+       router.navigateByUrl('/team/33', {replaceUrl: true});
+       advance(fixture);
+       expect(extras?.replaceUrl).toBe(true);
      })));
 
   it('should navigate after navigation with skipLocationChange',

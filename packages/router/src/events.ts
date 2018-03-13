@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Route} from './config';
+import {NavigationExtras, Route} from './config';
 import {ActivatedRouteSnapshot, RouterStateSnapshot} from './router_state';
 
 /**
@@ -113,14 +113,19 @@ export class NavigationEnd extends RouterEvent {
       /** @docsNotRequired */
       url: string,
       /** @docsNotRequired */
-      public urlAfterRedirects: string) {
+      public urlAfterRedirects: string,
+      /**
+         Contains the NavigationExtras#skipLocationChange and NavigationExtras#replaceUrl values
+         used during the navigation.
+       */
+      public extras?: Partial<NavigationExtras>) {
     super(id, url);
   }
 
   /** @docsNotRequired */
   toString(): string {
     return `NavigationEnd(id: ${this.id}, url: '${this.url}', urlAfterRedirects: '${
-        this.urlAfterRedirects}')`;
+        this.urlAfterRedirects}', extras: '${this.extras}')`;
   }
 }
 
