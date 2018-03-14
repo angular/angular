@@ -125,6 +125,54 @@ describe('JS control flow', () => {
     expect(renderToHtml(Template, ctx)).toEqual('<div><span>Hello</span></div>');
   });
 
+  it('should work with adjacent if blocks managing views in the same container', () => {
+
+    const ctx = {condition1: true, condition2: true, condition3: true};
+
+    /**
+    *   % if(ctx.condition1) {
+    *     1
+    *   % }; if(ctx.condition2) {
+    *     2
+    *   % }; if(ctx.condition3) {
+    *     3
+    *   % }
+    */
+    function Template(ctx: any, cm: boolean) {
+      if (cm) {
+        container(0);
+      }
+      containerRefreshStart(0);
+      if (ctx.condition1) {
+        const cm1 = embeddedViewStart(1);
+        if (cm1) {
+          text(0, '1');
+        }
+        embeddedViewEnd();
+      }  // can't have ; here due linting rules
+      if (ctx.condition2) {
+        const cm2 = embeddedViewStart(2);
+        if (cm2) {
+          text(0, '2');
+        }
+        embeddedViewEnd();
+      }  // can't have ; here due linting rules
+      if (ctx.condition3) {
+        const cm3 = embeddedViewStart(3);
+        if (cm3) {
+          text(0, '3');
+        }
+        embeddedViewEnd();
+      }
+      containerRefreshEnd();
+    }
+
+    expect(renderToHtml(Template, ctx)).toEqual('123');
+
+    ctx.condition2 = false;
+    expect(renderToHtml(Template, ctx)).toEqual('13');
+  });
+
   it('should work with containers with views as parents', () => {
     function Template(ctx: any, cm: boolean) {
       if (cm) {
@@ -490,6 +538,15 @@ describe('JS for loop', () => {
     const ctx: {data1: string[] | null,
                 data2: number[] | null} = {data1: ['a', 'b', 'c'], data2: [1, 2]};
 
+    /**
+     * <div>
+     *    % for (let i = 0; i < ctx.data1.length; i++) {
+     *        {{data1[i]}}
+     *    % } for (let j = 0; j < ctx.data2.length; j++) {
+     *        {{data1[j]}}
+     *    % }
+     * </div>
+     */
     function Template(ctx: any, cm: boolean) {
       if (cm) {
         elementStart(0, 'div');
