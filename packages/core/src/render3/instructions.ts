@@ -209,13 +209,14 @@ export function leaveView(newView: LView): void {
   // Views should be clean and in update mode after being checked, so these bits are cleared
   currentView.flags &= ~(LViewFlags.CreationMode | LViewFlags.Dirty);
   currentView.lifecycleStage = LifecycleStage.INIT;
-  currentView.tView.firstTemplatePass = false;
   enterView(newView, null);
 }
 
 /** Refreshes the views of child components, triggering any init/content hooks existing.  */
 function refreshChildComponents() {
   executeInitAndContentHooks();
+  // This needs to be set before children are processed to support recursive components
+  currentView.tView.firstTemplatePass = false;
 
   const components = currentView.tView.components;
   if (components != null) {
@@ -396,9 +397,9 @@ export function renderEmbeddedTemplate<T>(
     enterView(viewNode.data, viewNode);
 
     template(context, cm);
+    refreshDynamicChildren();
     refreshChildComponents();
   } finally {
-    refreshDynamicChildren();
     leaveView(currentView !.parent !);
     isParent = _isParent;
     previousOrParentNode = _previousOrParentNode;
@@ -1678,9 +1679,9 @@ function detectChangesInternal<T>(hostView: LView, hostNode: LElementNode, compo
   if (template != null) {
     try {
       template(component, creationMode);
+      refreshDynamicChildren();
       refreshChildComponents();
     } finally {
-      refreshDynamicChildren();
       leaveView(oldView);
     }
   }
