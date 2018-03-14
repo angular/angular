@@ -55,7 +55,7 @@ describe('Api pages', function() {
     const page = new ApiPage('api/common/AsyncPipe');
     const impureBadge = page.getBadge('impure-pipe');
     expect(impureBadge.isPresent()).toBe(true);
-  })
+  });
 
   it('should show links to github', () => {
     const page = new ApiPage('api/core/EventEmitter');
