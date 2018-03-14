@@ -37,8 +37,12 @@ def _expected_outs(ctx):
   for src in ctx.files.srcs + ctx.files.assets:
     package_prefix = ctx.label.package + "/" if ctx.label.package else ""
 
-    if src.short_path.endswith(".ts") and not src.short_path.endswith(".d.ts"):
-      basename = src.short_path[len(package_prefix):-len(".ts")]
+    # Strip external repository name from path if src is from external repository
+    # If src is from external repository, it's short_path will be ../<external_repo_name>/...
+    short_path = src.short_path if src.short_path[0:2] != ".." else "/".join(src.short_path.split("/")[2:])
+
+    if short_path.endswith(".ts") and not short_path.endswith(".d.ts"):
+      basename = short_path[len(package_prefix):-len(".ts")]
       if len(factory_basename_set) == 0 or basename in factory_basename_set:
         devmode_js = [
             ".ngfactory.js",
@@ -49,8 +53,8 @@ def _expected_outs(ctx):
       else:
         devmode_js = [".js"]
         summaries = []
-    elif src.short_path.endswith(".css"):
-      basename = src.short_path[len(package_prefix):-len(".css")]
+    elif short_path.endswith(".css"):
+      basename = short_path[len(package_prefix):-len(".css")]
       devmode_js = [
           ".css.shim.ngstyle.js",
           ".css.ngstyle.js",
