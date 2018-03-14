@@ -1,3 +1,15 @@
+
+<a name="5.2.9"></a>
+## [5.2.9](https://github.com/angular/angular/compare/5.2.8...5.2.9) (2018-03-14)
+
+
+### Bug Fixes
+
+* **platform-server:** add styles to elements correctly ([#22527](https://github.com/angular/angular/issues/22527)) ([fc6dfc2](https://github.com/angular/angular/commit/fc6dfc2))
+* **router:** correct over-encoding of URL fragment ([#22687](https://github.com/angular/angular/issues/22687)) ([86517f2](https://github.com/angular/angular/commit/86517f2))
+
+
+
 <a name="6.0.0-beta.7"></a>
 # [6.0.0-beta.7](https://github.com/angular/angular/compare/6.0.0-beta.6...6.0.0-beta.7) (2018-03-07)
 
