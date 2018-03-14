@@ -11,10 +11,10 @@
  * (A range can be open ended on the upper bound by not specifying a value after the comma.)
  *
  * @example
- * To creeate a rule that will only allow level 3 headings:
+ * To create a rule that will only allow level 3 headings:
  *
  * ```
- * const rule = createrNoMarkdownHeadingRule(1, 2, '4,');
+ * const rule = createNoMarkdownHeadingRule(1, 2, '4,');
  * ```
  *
  */
