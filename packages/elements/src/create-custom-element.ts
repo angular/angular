@@ -71,13 +71,13 @@ export interface NgElementConfig {
  * @description Builds a class that encapsulates the functionality of the provided component and
  * uses the config's information to provide more context to the class. Takes the component factory's
  * inputs and outputs to convert them to the proper custom element API and add hooks to input
- * changes. Passes the config's injector to each created instance (may be overriden with the
+ * changes. Passes the config's injector to each created instance (may be overridden with the
  * static property to affect all newly created instances, or as a constructor argument for
  * one-off creations).
  *
  * @experimental
  */
-export function createNgElementConstructor<P>(
+export function createCustomElement<P>(
     component: Type<any>, config: NgElementConfig): NgElementConstructor<P> {
   const inputs = getComponentInputs(component, config.injector);
 

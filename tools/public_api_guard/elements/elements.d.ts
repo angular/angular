@@ -1,5 +1,5 @@
 /** @experimental */
-export declare function createNgElementConstructor<P>(component: Type<any>, config: NgElementConfig): NgElementConstructor<P>;
+export declare function createCustomElement<P>(component: Type<any>, config: NgElementConfig): NgElementConstructor<P>;
 
 /** @experimental */
 export declare abstract class NgElement extends HTMLElement {
