@@ -169,6 +169,47 @@ function runNgZoneNoLog(fn: () => any) {
            });
          }), testTimeout);
     });
+
+    describe('ngZoneOverride', () => {
+      function getZoneAncestors() {
+        let currentZone = Zone.current;
+        let ancestors = [];
+        while (currentZone) {
+          ancestors.unshift(currentZone.name);
+          currentZone = currentZone.parent;
+        }
+        return ancestors;
+      }
+
+      afterEach(() => { NgZone.resetEnabledZones(); });
+
+      it('allows disabling which zones are installed', async(() => {
+           NgZone.setZoneEnabled('TaskTrackingZoneSpec', false);
+           _zone = createZone(true);
+           _zone.run(() => {
+             let ancestors = getZoneAncestors();
+             expect(ancestors).not.toContain('TaskTrackingZoneSpec');
+           });
+         }));
+
+      it('allows enabling which zones are installed', async(() => {
+           NgZone.setZoneEnabled('TaskTrackingZoneSpec', true);
+           _zone = createZone(true);
+           _zone.run(() => {
+             let ancestors = getZoneAncestors();
+             expect(ancestors).toContain('TaskTrackingZoneSpec');
+           });
+         }));
+
+      it('respects enableLongStackTrace regardless of override', async(() => {
+           _zone = createZone(true);
+           _zone.run(() => {
+             let ancestors = getZoneAncestors();
+             expect(ancestors).toContain('long-stack-trace');
+           });
+         }));
+
+    });
   });
 
   describe('NoopNgZone', () => {
