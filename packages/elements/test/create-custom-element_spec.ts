@@ -11,8 +11,8 @@ import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 import {Subject} from 'rxjs/Subject';
 
-import {NgElementStrategy, NgElementStrategyEvent, NgElementStrategyFactory} from '../src/element-strategy';
 import {NgElementConstructor, createCustomElement} from '../src/create-custom-element';
+import {NgElementStrategy, NgElementStrategyEvent, NgElementStrategyFactory} from '../src/element-strategy';
 
 type WithFooBar = {
   fooFoo: string,
