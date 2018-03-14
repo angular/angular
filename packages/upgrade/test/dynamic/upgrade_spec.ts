@@ -2909,6 +2909,29 @@ withEachNg1Version(() => {
            }, 100);
          }));
 
+      it('should propagate return value of resumeBootstrap', fakeAsync(() => {
+           @NgModule({imports: [BrowserModule]})
+           class MyNg2Module {
+           }
+
+           const adapter: UpgradeAdapter = new UpgradeAdapter(MyNg2Module);
+           const ng1Module = angular.module('ng1', []);
+           let a1Injector: angular.IInjectorService|undefined;
+           ng1Module.run([
+             '$injector', function($injector: angular.IInjectorService) { a1Injector = $injector; }
+           ]);
+
+           const element = html('<div></div>');
+           window.name = 'NG_DEFER_BOOTSTRAP!' + window.name;
+
+           adapter.bootstrap(element, [ng1Module.name]).ready((ref) => { ref.dispose(); });
+
+           tick(100);
+
+           const value = (<any>window).angular.resumeBootstrap();
+           expect(value).toBe(a1Injector);
+         }));
+
       it('should wait for ng2 testability', async(() => {
            @NgModule({imports: [BrowserModule]})
            class MyNg2Module {
