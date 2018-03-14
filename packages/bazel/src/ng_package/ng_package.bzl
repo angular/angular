@@ -292,6 +292,8 @@ def _ng_package_impl(ctx):
 
   args = ctx.actions.args()
   args.use_param_file("%s", use_always = True)
+
+  # The order of arguments matters here, as they are read in order in packager.ts.
   args.add(npm_package_directory.path)
   args.add(ctx.label.package)
   args.add([ctx.bin_dir.path, ctx.label.package], join_with="/")
