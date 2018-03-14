@@ -8,7 +8,7 @@
 
 import {NgModule, Testability, destroyPlatform} from '@angular/core';
 import {NgZone} from '@angular/core/src/zone/ng_zone';
-import {fakeAsync, tick} from '@angular/core/testing';
+import {fakeAsync, flush, tick} from '@angular/core/testing';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 import {UpgradeModule} from '@angular/upgrade/static';
@@ -46,6 +46,25 @@ withEachNg1Version(() => {
          tick(100);
          expect(applicationRunning).toEqual(true);
          expect(stayedInTheZone).toEqual(true);
+       }));
+
+    it('should propagate return value of resumeBootstrap', fakeAsync(() => {
+         const ng1Module = angular.module('ng1', []);
+         let a1Injector: angular.IInjectorService|undefined;
+         ng1Module.run([
+           '$injector', function($injector: angular.IInjectorService) { a1Injector = $injector; }
+         ]);
+         const element = html('<div></div>');
+         window.name = 'NG_DEFER_BOOTSTRAP!' + window.name;
+
+         bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module);
+
+         tick(100);
+
+         const value = (<any>window).angular.resumeBootstrap();
+         expect(value).toBe(a1Injector);
+
+         flush();
        }));
 
     it('should wait for ng2 testability', fakeAsync(() => {
