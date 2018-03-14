@@ -1,37 +1,33 @@
-<div class="demo-tree-container">
-  <mat-card>
-    <mat-card-header>Flattened tree</mat-card-header>
 
+
+<mat-accordion class="demo-tree-container">
+
+  <mat-expansion-panel>
+    <mat-expansion-panel-header>Flattened tree</mat-expansion-panel-header>
     <mat-tree [dataSource]="dataSource" [treeControl]="treeControl">
       <mat-tree-node *matTreeNodeDef="let node" matTreeNodeToggle matTreeNodePadding>
-          {{node.filename}} : {{node.type}}
+        {{node.filename}} : {{node.type}}
       </mat-tree-node>
-
       <mat-tree-node *matTreeNodeDef="let node;when: hasChild" matTreeNodePadding>
-          <button mat-icon-button matTreeNodeToggle
-                  [attr.aria-label]="'toggle ' + node.filename">
-            <mat-icon>
-              {{treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
-            </mat-icon>
-          </button>
-          {{node.filename}} : {{node.type}}
+        <button mat-icon-button matTreeNodeToggle
+                [attr.aria-label]="'toggle ' + node.filename">
+          <mat-icon>
+            {{treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
+          </mat-icon>
+        </button>
+        {{node.filename}} : {{node.type}}
       </mat-tree-node>
     </mat-tree>
+  </mat-expansion-panel>
 
-  </mat-card>
-
-
-
-  <mat-card>
-    <mat-card-header>Nested tree</mat-card-header>
-
+  <mat-expansion-panel>
+    <mat-expansion-panel-header>Nested tree</mat-expansion-panel-header>
     <mat-tree [dataSource]="nestedDataSource" [treeControl]="nestedTreeControl">
       <mat-tree-node *matTreeNodeDef="let node" matTreeNodeToggle>
         <li>
           <div>{{node.filename}}:  {{node.type}}</div>
         </li>
       </mat-tree-node>
-
       <mat-nested-tree-node *matTreeNodeDef="let node; when: hasNestedChild">
         <li>
           <div class="mat-tree-node">
@@ -49,21 +45,49 @@
         </li>
       </mat-nested-tree-node>
     </mat-tree>
-  </mat-card>
+  </mat-expansion-panel>
 
-  <mat-card>
-    <mat-card-header>Todo list Flattened tree</mat-card-header>
+  <mat-expansion-panel>
+    <mat-expansion-panel-header>CDK Flattened tree</mat-expansion-panel-header>
+    <cdk-tree [dataSource]="dataSource" [treeControl]="treeControl">
+      <cdk-tree-node *cdkTreeNodeDef="let node" cdkTreeNodePadding class="demo-tree-node">
+        <a [attr.aria-label]="'toggle ' + node.filename" cdkTreeNodeToggle class="demo-tree-toggle">
+          {{treeControl.isExpanded(node) ? '-' : '+'}}
+        </a>
+        {{node.filename}}:  {{node.type}}
+      </cdk-tree-node>
+    </cdk-tree>
+  </mat-expansion-panel>
+
+  <mat-expansion-panel>
+    <mat-expansion-panel-header>CDK Nested tree</mat-expansion-panel-header>
+    <cdk-tree [dataSource]="nestedDataSource" [treeControl]="nestedTreeControl">
+      <cdk-nested-tree-node *cdkTreeNodeDef="let node" class="demo-tree-node">
+        <a [attr.aria-label]="'toggle ' + node.filename" cdkTreeNodeToggle class="demo-tree-toggle">
+          {{nestedTreeControl.isExpanded(node) ? '-' : '+'}}
+        </a>
+        {{node.filename}}:  {{node.type}}
+        <div [class.tree-demo-invisible]="!nestedTreeControl.isExpanded(node)" class="demo-tree-nested-node">
+          <ng-container cdkTreeNodeOutlet></ng-container>
+        </div>
+      </cdk-nested-tree-node>
+    </cdk-tree>
+  </mat-expansion-panel>
+
+  <mat-expansion-panel>
+    <mat-expansion-panel-header>Todo list Flattened tree</mat-expansion-panel-header>
     <checklist-tree-demo></checklist-tree-demo>
-  </mat-card>
+  </mat-expansion-panel>
 
-  <mat-card>
-    <mat-card-header>Dynamic flat tree</mat-card-header>
+  <mat-expansion-panel>
+    <mat-expansion-panel-header>Dynamic flat tree</mat-expansion-panel-header>
     <dynamic-tree-demo></dynamic-tree-demo>
-  </mat-card>
+  </mat-expansion-panel>
 
-  <mat-card>
-    <mat-card-header>Loadmore flat tree</mat-card-header>
+  <mat-expansion-panel>
+    <mat-expansion-panel-header>Loadmore flat tree</mat-expansion-panel-header>
     <loadmore-tree-demo></loadmore-tree-demo>
-  </mat-card>
+  </mat-expansion-panel>
 
-</div>
+
+</mat-accordion>

@@ -11,7 +11,7 @@ import {NgModule} from '@angular/core';
 import {FormsModule} from '@angular/forms';
 import {
   MatButtonModule,
-  MatCardModule,
+  MatExpansionModule,
   MatCheckboxModule,
   MatFormFieldModule,
   MatIconModule,
@@ -29,7 +29,7 @@ import {LoadmoreTreeDemo} from './loadmore-tree-demo/loadmore-tree-demo';
     CommonModule,
     FormsModule,
     MatButtonModule,
-    MatCardModule,
+    MatExpansionModule,
     MatCheckboxModule,
     MatFormFieldModule,
     MatIconModule,

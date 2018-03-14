@@ -1,4 +1,17 @@
 .demo-tree-container {
+  .demo-tree-node {
+    display: block;
+  }
+
+  .demo-tree-toggle {
+    font-size: 24px;
+    padding-right: 4px;
+  }
+
+  .demo-tree-nested-node {
+    padding-left: 20px;
+  }
+
   .tree-demo-invisible {
     display: none;
   }
