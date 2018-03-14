@@ -150,13 +150,26 @@ function firstAfter<T>(a: T[], predicate: (value: T) => boolean) {
 // NodeEmitterVisitor
 type RecordedNode<T extends ts.Node = ts.Node> = (T & { __recorded: any; }) | null;
 
+function escapeDoubleQuotes(value: string): string {
+  return value.replace(/\"/g, '\\"');
+}
+
 function createLiteral(value: any) {
   if (value === null) {
     return ts.createNull();
   } else if (value === undefined) {
     return ts.createIdentifier('undefined');
   } else {
-    return ts.createLiteral(value);
+    const result = ts.createLiteral(value);
+    if (ts.isStringLiteral(result) && result.text.indexOf('\\') >= 0) {
+      // Hack to avoid problems cause indirectly by:
+      //    https://github.com/Microsoft/TypeScript/issues/20192
+      // This avoids the string escaping normally performed for a string relying on that
+      // TypeScript just emits the text raw for a numeric literal.
+      (result as any).kind = ts.SyntaxKind.NumericLiteral;
+      result.text = `"${escapeDoubleQuotes(result.text)}"`;
+    }
+    return result;
   }
 }
 
