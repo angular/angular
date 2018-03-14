@@ -114,6 +114,21 @@
 * **tabs:** add ability to lazy load tab content ([#8921](https://github.com/angular/material2/issues/8921)) ([6feaf62](https://github.com/angular/material2/commit/6feaf62))
 
 
+<a name="5.2.4"></a>
+## [5.2.4 ash-submarine](https://github.com/angular/material2/compare/5.2.3...5.2.4) (2018-03-06)
+
+
+### Bug Fixes
+
+* **chips:** Update chips in chip list, and add margin to chip input ([#8579](https://github.com/angular/material2/issues/8579)) ([3074b45](https://github.com/angular/material2/commit/3074b45))
+* **expansion-panel:** entire body content being shown on animation start ([#10138](https://github.com/angular/material2/issues/10138)) ([35b66f9](https://github.com/angular/material2/commit/35b66f9)), closes [#10134](https://github.com/angular/material2/issues/10134)
+* **menu:** detach lazily-rendered content when the menu is closed ([#10005](https://github.com/angular/material2/issues/10005)) ([37b1a09](https://github.com/angular/material2/commit/37b1a09)), closes [#9915](https://github.com/angular/material2/issues/9915)
+* **menu:** Fix [#10005](https://github.com/angular/material2/issues/10005) lint error ([c8ca770](https://github.com/angular/material2/commit/c8ca770))
+* **overlay:** hide overlay container when there are no attached overlays ([#10139](https://github.com/angular/material2/issues/10139)) ([d0bc91d](https://github.com/angular/material2/commit/d0bc91d)), closes [#6882](https://github.com/angular/material2/issues/6882) [#10033](https://github.com/angular/material2/issues/10033)
+* **paginator:** first/last icons being thrown off on IE and Edge; simplify icon setup ([#9776](https://github.com/angular/material2/issues/9776)) ([85f9491](https://github.com/angular/material2/commit/85f9491))
+* **selection-list:** improve accessibility of selection list ([#10137](https://github.com/angular/material2/issues/10137)) ([cbe11d4](https://github.com/angular/material2/commit/cbe11d4)), closes [#9995](https://github.com/angular/material2/issues/9995)
+
+
 <a name="5.2.3"></a>
 ## [5.2.3 diamond-silhouette](https://github.com/angular/material2/compare/5.2.2...5.2.3) (2018-02-27)
 
