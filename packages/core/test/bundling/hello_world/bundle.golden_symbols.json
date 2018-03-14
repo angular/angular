@@ -81,22 +81,19 @@
     "name": "directiveCreate"
   },
   {
-    "name": "directiveRefresh"
-  },
-  {
     "name": "domRendererFactory3"
   },
   {
     "name": "enterView"
   },
   {
-    "name": "executeContentHooks"
-  },
-  {
     "name": "executeHooks"
   },
   {
     "name": "executeInitAndContentHooks"
+  },
+  {
+    "name": "executeInitHooks"
   },
   {
     "name": "findFirstRNode"
@@ -162,6 +159,9 @@
     "name": "queueInitHooks"
   },
   {
+    "name": "refreshChildComponents"
+  },
+  {
     "name": "refreshDynamicChildren"
   },
   {
@@ -169,9 +169,6 @@
   },
   {
     "name": "renderComponentOrTemplate"
-  },
-  {
-    "name": "refreshChildComponents"
   },
   {
     "name": "renderEmbeddedTemplate"
