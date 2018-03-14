@@ -15,14 +15,6 @@ import {
 } from '@angular/animations';
 import {AnimationCurves, AnimationDurations} from '@angular/material/core';
 
-/** @docs-private */
-export const SHOW_ANIMATION =
-  `${AnimationDurations.ENTERING} ${AnimationCurves.DECELERATION_CURVE}`;
-
-/** @docs-private */
-export const HIDE_ANIMATION =
-  `${AnimationDurations.EXITING} ${AnimationCurves.ACCELERATION_CURVE}`;
-
 /** Animations used by the Material snack bar. */
 export const matSnackBarAnimations: {
   readonly contentFade: AnimationTriggerMetadata;
@@ -40,7 +32,8 @@ export const matSnackBarAnimations: {
   snackBarState: trigger('state', [
     state('visible-top, visible-bottom', style({transform: 'translateY(0%)'})),
     transition('visible-top => hidden-top, visible-bottom => hidden-bottom',
-      animate(HIDE_ANIMATION)),
-    transition('void => visible-top, void => visible-bottom', animate(SHOW_ANIMATION)),
+      animate(`${AnimationDurations.EXITING} ${AnimationCurves.ACCELERATION_CURVE}`)),
+    transition('void => visible-top, void => visible-bottom',
+      animate(`${AnimationDurations.ENTERING} ${AnimationCurves.DECELERATION_CURVE}`)),
   ])
 };
