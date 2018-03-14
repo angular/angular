@@ -56,19 +56,6 @@ export const MAT_SELECTION_LIST_VALUE_ACCESSOR: any = {
   multi: true
 };
 
-/**
- * Change event object emitted by MatListOption whenever the selected state changes.
- * @deprecated Use the `MatSelectionListChange` event on the selection list instead.
- * @deletion-target 6.0.0
- */
-export class MatListOptionChange {
-  constructor(
-    /** Reference to the list option that changed. */
-    public source: MatListOption,
-    /** The new selected state of the option. */
-    public selected: boolean) {}
-}
-
 /** Change event that is being fired whenever the selected state of an option changes. */
 export class MatSelectionListChange {
   constructor(
@@ -148,14 +135,6 @@ export class MatListOption extends _MatListOptionMixinBase
     }
   }
 
-  /**
-   * Emits a change event whenever the selected state of an option changes.
-   * @deprecated Use the `selectionChange` event on the `<mat-selection-list>` instead.
-   * @deletion-target 6.0.0
-   */
-  @Output() readonly selectionChange: EventEmitter<MatListOptionChange> =
-    new EventEmitter<MatListOptionChange>();
-
   constructor(private _element: ElementRef,
               private _changeDetector: ChangeDetectorRef,
               /** @docs-private */
@@ -224,9 +203,6 @@ export class MatListOption extends _MatListOptionMixinBase
 
       // Emit a change event if the selected state of the option changed through user interaction.
       this.selectionList._emitChangeEvent(this);
-
-      // TODO: the `selectionChange` event on the option is deprecated. Remove that in the future.
-      this._emitDeprecatedChangeEvent();
     }
   }
 
@@ -260,12 +236,6 @@ export class MatListOption extends _MatListOptionMixinBase
     }
 
     this._changeDetector.markForCheck();
-  }
-
-  /** Emits a selectionChange event for this option. */
-  _emitDeprecatedChangeEvent() {
-    // TODO: the `selectionChange` event on the option is deprecated. Remove that in the future.
-    this.selectionChange.emit(new MatListOptionChange(this, this.selected));
   }
 }
 
@@ -492,9 +462,6 @@ export class MatSelectionList extends _MatSelectionListMixinBase implements Focu
         // Emit a change event because the focused option changed its state through user
         // interaction.
         this._emitChangeEvent(focusedOption);
-
-        // TODO: the `selectionChange` event on the option is deprecated. Remove that in the future.
-        focusedOption._emitDeprecatedChangeEvent();
       }
     }
   }

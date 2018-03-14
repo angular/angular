@@ -11,7 +11,6 @@ import {By} from '@angular/platform-browser';
 import {
   MatListModule,
   MatListOption,
-  MatListOptionChange,
   MatSelectionList,
   MatSelectionListChange
 } from './index';
@@ -89,22 +88,6 @@ describe('MatSelectionList without forms', () => {
       fixture.detectChanges();
 
       expect(fixture.componentInstance.onValueChange).toHaveBeenCalledTimes(1);
-    });
-
-    it('should emit a deprecated selectionChange event on the list option that got clicked', () => {
-      const optionInstance = listOptions[2].componentInstance as MatListOption;
-      let lastChangeEvent: MatListOptionChange | null = null;
-
-      optionInstance.selectionChange.subscribe(ev => lastChangeEvent = ev);
-
-      expect(lastChangeEvent).toBeNull();
-
-      dispatchFakeEvent(listOptions[2].nativeElement, 'click');
-      fixture.detectChanges();
-
-      expect(lastChangeEvent).not.toBeNull();
-      expect(lastChangeEvent!.source).toBe(optionInstance);
-      expect(lastChangeEvent!.selected).toBe(true);
     });
 
     it('should be able to dispatch one selected item', () => {
