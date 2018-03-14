@@ -20,8 +20,7 @@ Here's an example of a service class that logs to the browser console:
 
 <code-example path="architecture/src/app/logger.service.ts" linenums="false" title="src/app/logger.service.ts (class)" region="class"></code-example>
 
-Here's a `HeroService` that uses a [Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise) to fetch heroes.
-The `HeroService` depends on the `Logger` service and another `BackendService` that handles the server communication grunt work.
+Services can depend on other services. For example, here's a `HeroService` that depends on the `Logger` service, and also uses `BackendService` to get heroes. That service in turn might depend on the `HttpClient` service to fetch heroes asynchronously from a server.
 
 <code-example path="architecture/src/app/hero.service.ts" linenums="false" title="src/app/hero.service.ts (class)" region="class"></code-example>
 
@@ -31,17 +30,21 @@ The `HeroService` depends on the `Logger` service and another `BackendService` t
 
 <img src="generated/images/guide/architecture/dependency-injection.png" alt="Service" class="left">
 
-Components consume services; that is, you can *inject* a service into a component, giving the component access to that service class. To define a class as a service in Angular, use the `@Injectable` decorator to provide the metadata that allows Angular to inject it into a component as a *dependency*. Most dependencies are services.
- 
-*Dependency injection* (often called DI) is wired into the Angular framework and used everywhere to provide new components with the services they need.
+Components consume services; that is, you can *inject* a service into a component, giving the component access to that service class. 
+
+To define a class as a service in Angular, use the `@Injectable` decorator to provide the metadata that allows Angular to inject it into a component as a *dependency*.  
+
+Similarly, use the `@Injectable` decorator to indicate that a component or other class (such as another service, a pipe, or an NgModule) _has_ a dependency. A dependency doesn't have to be a service&mdash;it could be a function, for example, or a value. 
+
+*Dependency injection* (often called DI) is wired into the Angular framework and used everywhere to provide new components with the services or other things they need.
 
 * The *injector* is the main mechanism. You don't have to create an Angular injector. Angular creates an application-wide injector for you during the bootstrap process.
 
-* The injector maintains a *container* of service instances that it has already created, and reuses them if possible.
+* The injector maintains a *container* of dependency instances that it has already created, and reuses them if possible.
 
-* A *provider* is a recipe for creating a service -- typically the service class itself. For any service you need in your app, you must register a provider with the app's injector, so that the injector can use it to create new service instances.
+* A *provider* is a recipe for creating a dependency. For a service, this is typically the service class itself. For any dependency you need in your app, you must register a provider with the app's injector, so that the injector can use it to create new instances.
 
-When Angular creates a new instance of a component class, it determines which services that component needs by looking at the types of its constructor parameters. For example, the constructor of `HeroListComponent` needs a `HeroService`:
+When Angular creates a new instance of a component class, it determines which services or other dependencies that component needs by looking at the types of its constructor parameters. For example, the constructor of `HeroListComponent` needs a `HeroService`:
 
 <code-example path="architecture/src/app/hero-list.component.ts" linenums="false" title="src/app/hero-list.component.ts (constructor)" region="ctor"></code-example>
 

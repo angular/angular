@@ -2,7 +2,7 @@
 
 <img src="generated/images/guide/architecture/hero-component.png" alt="Component" class="left">
 
-A _component_ controls a patch of screen called a *view*. For example, individual components define and control each of the following views from the Tutorial:
+A _component_ controls a patch of screen called a *view*. For example, individual components define and control each of the following views from the [Tutorial](tutorial/index):
 
 * The app root with the navigation links.
 * The list of heroes.
@@ -50,17 +50,17 @@ in order to get the list of heroes to display.
 
 You define a component's view with its companion template. A template is a form of HTML that tells Angular how to render the component.
 
-Components and their associated views are typically arranged hierarchically, allowing you to modify or show and hide entire UI sections or pages as a unit. The template immediately associated with a component defines that component's _host view_. The template can also define a _view hierarchy_, which can contain _embedded views_, as well as views hosted by other components.
+Views are typically arranged hierarchically, allowing you to modify or show and hide entire UI sections or pages as a unit. The template immediately associated with a component defines that component's _host view_. The component can also define a _view hierarchy_, which contains _embedded views_, hosted by other components.
 
 <figure>
 <img src="generated/images/guide/architecture/component-tree.png" alt="Component tree" class="left">
 </figure>
 
-A view hierarchy can include views from the component's own child components, but it also can (and often does) include views from components that are defined in different NgModules.
+A view hierarchy can include views from components in the same NgModule, but it also can (and often does) include views from components that are defined in different NgModules.
 
 ## Template syntax
 
-A template looks like regular HTML, except that it also contains Angular [template syntax](guide/template-syntax), which alters the HTML before the view is rendered, based on your app's logic and the state of app and DOM data. Your template can use _data binding_ to coordinate the app and DOM data, _pipes_ to transform data before it is displayed, and _directives_ to apply app logic to what gets displayed.
+A template looks like regular HTML, except that it also contains Angular [template syntax](guide/template-syntax), which alters the HTML based on your app's logic and the state of app and DOM data. Your template can use _data binding_ to coordinate the app and DOM data, _pipes_ to transform data before it is displayed, and _directives_ to apply app logic to what gets displayed.
 
 For example, here is a template for the Tutorial's `HeroListComponent`:
 
@@ -70,7 +70,7 @@ This template uses typical HTML elements like `<h2>` and  `<p>`, and also includ
 
 * The  `*ngFor` directive tells Angular to iterate over a list.
 * The `{{hero.name}}`, `(click)`, and `[hero]` bind program data to and from the DOM, responding to user input. See more about [data binding](#data-binding) below.
-* The `<app-hero-detail>` tag in the example is a custom element that represents a new component, `HeroDetailComponent`.  The `HeroDetailComponent`  (code not shown) is a child component of the `HeroListComponent` that defines the Hero-detail view. Notice how custom components like this mix seamlessly with native HTML in the same layouts.
+* The `<app-hero-detail>` tag in the example is an element that represents a new component, `HeroDetailComponent`.  The `HeroDetailComponent`  (code not shown) is a child component of the `HeroListComponent` that defines the Hero-detail view. Notice how custom components like this mix seamlessly with native HTML in the same layouts.
 
 ### Data binding
 
@@ -94,9 +94,9 @@ displays the component's `hero.name` property value within the `<li>` element.
 * The `[hero]` [*property binding*](guide/template-syntax#property-binding) passes the value of `selectedHero` from
 the parent `HeroListComponent` to the `hero` property of the child `HeroDetailComponent`.
 
-* The `(click)` [*event binding*](guide/user-input#click) calls the component's `selectHero` method when the user clicks a hero's name.
+* The `(click)` [*event binding*](guide/user-input#binding-to-user-input-events) calls the component's `selectHero` method when the user clicks a hero's name.
 
-**Two-way data binding** is an important fourth form that combines property and event binding in a single notation, using the `ngModel` directive. Here's an example from the `HeroDetailComponent` template:
+**Two-way data binding** is an important fourth form that combines property and event binding in a single notation. Here's an example from the `HeroDetailComponent` template that uses two-way data binding with the `ngModel` directive:
 
 <code-example path="architecture/src/app/hero-detail.component.html" linenums="false" title="src/app/hero-detail.component.html (ngModel)" region="ngModel"></code-example>
 
@@ -121,13 +121,24 @@ Data binding plays an important role in communication between a template and its
 
  Angular pipes let you declare display-value transformations in your template HTML. A class with the `@Pipe` decorator defines a function that transforms input values to output values for display in a view.
 
- Angular defines various pipes, such as the [Date](https://angular.io/api/common/DatePipe) pipe and [Currency](https://angular.io/api/common/CurrencyPipe) pipe; for a complete list, see the [Pipes API list](https://angular.io/api?type=pipe). You can also define new pipes.
+ Angular defines various pipes, such as the [date](https://angular.io/api/common/DatePipe) pipe and [currency](https://angular.io/api/common/CurrencyPipe) pipe; for a complete list, see the [Pipes API list](https://angular.io/api?type=pipe). You can also define new pipes.
 
  To specify a value transformation in an HTML template, use the [pipe operator (|)](https://angular.io/guide/template-syntax#pipe):
 
  `{{interpolated_value | pipe_name}}`
 
- You can chain pipes, sending the output of one pipe function to be transformed by another pipe function.
+ You can chain pipes, sending the output of one pipe function to be transformed by another pipe function. A pipe can also take arguments that control how it performs its transformation. For example, you can pass the desired format to the `date` pipe:
+
+ ```
+  <!-- Default format: output 'Jun 15, 2015'-->
+  <p>Today is {{today | date}}</p>
+
+ <!-- fullDate format: output 'Monday, June 15, 2015'-->
+ <p>The date is {{today | date:'fullDate'}}</p>
+
+  <!-- shortTime format: output '9:43 AM'-->
+  <p>The time is {{today | date:'shortTime'}}</p>
+```
 
 <hr/>
 

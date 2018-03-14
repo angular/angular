@@ -18,7 +18,7 @@ An NgModule is defined as a class decorated with `@NgModule`. The `@NgModule` de
 
 * `imports`&mdash;Other modules whose exported classes are needed by component templates declared in _this_ NgModule.
 
-* `providers`&mdash;Creators of [services](guide/architecture-services) that this NgModule contributes to the global collection of services; they become accessible in all parts of the app.
+* `providers`&mdash;Creators of [services](guide/architecture-services) that this NgModule contributes to the global collection of services; they become accessible in all parts of the app. (You can also specify providers at the component level, which is often preferred.)
 
 * `bootstrap`&mdash;The main application view, called the _root component_, which hosts all other app views. Only the _root NgModule_ should set this `bootstrap` property.
 
@@ -28,13 +28,13 @@ Here's a simple root NgModule definition:
 
 <div class="l-sub-section">
 
-  The `export` of `AppComponent` is just to show how to export; it isn't actually necessary in this example. A root NgModule has no reason to _export_ anything because other components don't need to _import_ the root NgModule.
+  The `export` of `AppComponent` is just to show how to export; it isn't actually necessary in this example. A root NgModule has no reason to _export_ anything because other modules don't need to _import_ the root NgModule.
 
 </div>
 
 ## NgModules and components
 
-NgModules provide a _compilation context_ for their components. An NgModule has a root component, created during bootstrap, and any number of additional components that can be loaded (through the router) or created (through the template). The components that belong to an NgModule share a compilation context.
+NgModules provide a _compilation context_ for their components. A root NgModule always has a root component that is created during bootstrap, but any NgModule can include any number of additional components, which can be loaded through the router or created through the template. The components that belong to an NgModule share a compilation context.
 
 <figure>
 
