@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {QUERY_READ_CONTAINER_REF, QUERY_READ_ELEMENT_REF, QUERY_READ_FROM_NODE, QUERY_READ_TEMPLATE_REF} from '../../src/render3/di';
-import {QueryList, detectChanges} from '../../src/render3/index';
+import {QueryList, detectChanges, defineComponent} from '../../src/render3/index';
 import {container, containerRefreshEnd, containerRefreshStart, elementEnd, elementStart, embeddedViewEnd, embeddedViewStart, load} from '../../src/render3/instructions';
 import {query, queryRefresh} from '../../src/render3/query';
 
@@ -372,7 +372,7 @@ describe('query', () => {
 
       let childInstance;
       /**
-       * <cmpt #foo></cmpt>
+       * <child #foo></child>
        * class Cmpt {
        *  @ViewChildren('foo') query;
        * }
@@ -392,6 +392,41 @@ describe('query', () => {
       const qList = (cmptInstance.query as QueryList<any>);
       expect(qList.length).toBe(1);
       expect(qList.first).toBe(childInstance);
+    });
+
+    it('should read component instance with explicit exportAs', () => {
+      let childInstance: Child;
+
+      class Child {
+        static ngComponentDef = defineComponent({
+          type: Child,
+          tag: 'child',
+          factory: () => childInstance = new Child(),
+          template: (ctx: Child, cm: boolean) => {},
+          exportAs: 'child'
+        });
+      }
+
+      /**
+       * <child #foo="child"></child>
+       * class Cmpt {
+       *  @ViewChildren('foo') query;
+       * }
+       */
+      const Cmpt = createComponent('cmpt', function(ctx: any, cm: boolean) {
+        let tmp: any;
+        if (cm) {
+          query(0, ['foo'], true, QUERY_READ_FROM_NODE);
+          elementStart(1, Child, null, null, ['foo', 'child']);
+          elementEnd();
+        }
+        queryRefresh(tmp = load<QueryList<any>>(0)) && (ctx.query = tmp as QueryList<any>);
+      });
+
+      const cmptInstance = renderComponent(Cmpt);
+      const qList = (cmptInstance.query as QueryList<any>);
+      expect(qList.length).toBe(1);
+      expect(qList.first).toBe(childInstance !);
     });
 
     it('should read directive instance if element queried for has an exported directive with a matching name',
@@ -454,7 +489,7 @@ describe('query', () => {
       expect(qList.last).toBe(child2Instance);
     });
 
-    it('should match match on exported directive name and read a requested token', () => {
+    it('should match on exported directive name and read a requested token', () => {
       const Child = createDirective({exportAs: 'child'});
 
       let div;
