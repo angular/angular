@@ -24,10 +24,10 @@ module.exports = function createrNoMarkdownHeadingRule() {
   if (!disallowedHeadings.length) {
     disallowedHeadings.push('#{1,}');
   }
-  const regex = new RegExp(`^ ?(${disallowedHeadings.join('|')}) +.*$`, 'mg');
+  const regex = new RegExp(`^ {0,3}(${disallowedHeadings.join('|')}) +.*$`, 'mg');
   return (doc, prop, value) => {
     let match, matches = [];
-    while(match = regex.exec(value)) {
+    while(match = regex.exec(value)) { // eslint-disable-line no-cond-assign
       matches.push(match[0]);
     }
     if (matches.length) {

@@ -19,6 +19,15 @@ describe('createNoMarkdownHeadings rule', () => {
         .toEqual('Invalid headings found in "description" property: "# heading 1".');
   });
 
+  it('should cope with up to 3 spaces before the heading marker', () => {
+    expect(noMarkdownHeadings({}, 'description', ' # heading 1'))
+        .toEqual('Invalid headings found in "description" property: " # heading 1".');
+    expect(noMarkdownHeadings({}, 'description', '  # heading 1'))
+        .toEqual('Invalid headings found in "description" property: "  # heading 1".');
+    expect(noMarkdownHeadings({}, 'description', '   # heading 1'))
+        .toEqual('Invalid headings found in "description" property: "   # heading 1".');
+  });
+
   it('should return an error message for each heading found', () => {
     expect(noMarkdownHeadings({}, 'description', '# heading 1\nsome text\n## heading 2\nmore text\n### heading 3'))
         .toEqual('Invalid headings found in "description" property: "# heading 1", "## heading 2" and "### heading 3".');
