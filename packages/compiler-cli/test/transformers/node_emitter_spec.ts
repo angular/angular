@@ -182,6 +182,8 @@ describe('TypeScriptNodeEmitter', () => {
     expect(emitStmt(o.literal('"some value"').toStmt())).toEqual('"\\"some value\\"";');
     expect(emitStmt(o.literal('"some \\0025BC value"').toStmt()))
         .toEqual('"\\"some \\\\0025BC value\\"";');
+    expect(emitStmt(o.literal('\n \\0025BC \n ').toStmt())).toEqual('"\\n \\\\0025BC \\n ";');
+    expect(emitStmt(o.literal('\r \\0025BC \r ').toStmt())).toEqual('"\\r \\\\0025BC \\r ";');
   });
 
   it('should support blank literals', () => {

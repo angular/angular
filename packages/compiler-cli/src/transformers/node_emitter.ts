@@ -150,8 +150,10 @@ function firstAfter<T>(a: T[], predicate: (value: T) => boolean) {
 // NodeEmitterVisitor
 type RecordedNode<T extends ts.Node = ts.Node> = (T & { __recorded: any; }) | null;
 
-function escapeDoubleQuotes(value: string): string {
-  return value.replace(/(\"|\\)/g, '\\$1');
+function escapeLiteral(value: string): string {
+  return value.replace(/(\"|\\)/g, '\\$1').replace(/(\n)|(\r)/g, function(v, n, r) {
+    return n ? '\\n' : '\\r';
+  });
 }
 
 function createLiteral(value: any) {
@@ -167,7 +169,7 @@ function createLiteral(value: any) {
       // This avoids the string escaping normally performed for a string relying on that
       // TypeScript just emits the text raw for a numeric literal.
       (result as any).kind = ts.SyntaxKind.NumericLiteral;
-      result.text = `"${escapeDoubleQuotes(result.text)}"`;
+      result.text = `"${escapeLiteral(result.text)}"`;
     }
     return result;
   }
