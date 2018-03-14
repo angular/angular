@@ -45,7 +45,7 @@ const NG_ELEMENT_ID = '__NG_ELEMENT_ID__';
  * directives that will share slots, and thus, the fewer false positives when checking for
  * the existence of a directive.
  */
-const BLOOM_SIZE = 128;
+const BLOOM_SIZE = 256;
 
 /** Counter used to generate unique IDs for directives. */
 let nextNgElementId = 0;
@@ -66,9 +66,9 @@ export function bloomAdd(injector: LInjector, type: Type<any>): void {
     id = (type as any)[NG_ELEMENT_ID] = nextNgElementId++;
   }
 
-  // We only have BLOOM_SIZE (128) slots in our bloom filter (4 buckets * 32 bits each),
-  // so all unique IDs must be modulo-ed into a number from 0 - 127 to fit into the filter.
-  // This means that after 128, some directives will share slots, leading to some false positives
+  // We only have BLOOM_SIZE (256) slots in our bloom filter (8 buckets * 32 bits each),
+  // so all unique IDs must be modulo-ed into a number from 0 - 255 to fit into the filter.
+  // This means that after 255, some directives will share slots, leading to some false positives
   // when checking for a directive's presence.
   const bloomBit = id % BLOOM_SIZE;
 
@@ -78,20 +78,14 @@ export function bloomAdd(injector: LInjector, type: Type<any>): void {
   const mask = 1 << bloomBit;
 
   // Use the raw bloomBit number to determine which bloom filter bucket we should check
-  // e.g: bf0 = [0 - 31], bf1 = [32 - 63], bf2 = [64 - 95], bf3 = [96 - 127]
-  if (bloomBit < 64) {
-    if (bloomBit < 32) {
-      // Then use the mask to flip on the bit (0-31) associated with the directive in that bucket
-      injector.bf0 |= mask;
-    } else {
-      injector.bf1 |= mask;
-    }
+  // e.g: bf0 = [0 - 31], bf1 = [32 - 63], bf2 = [64 - 95], bf3 = [96 - 127], etc
+  if (bloomBit < 128) {
+    // Then use the mask to flip on the bit (0-31) associated with the directive in that bucket
+    bloomBit < 64 ? (bloomBit < 32 ? (injector.bf0 |= mask) : (injector.bf1 |= mask)) :
+                    (bloomBit < 96 ? (injector.bf2 |= mask) : (injector.bf3 |= mask));
   } else {
-    if (bloomBit < 96) {
-      injector.bf2 |= mask;
-    } else {
-      injector.bf3 |= mask;
-    }
+    bloomBit < 192 ? (bloomBit < 160 ? (injector.bf4 |= mask) : (injector.bf5 |= mask)) :
+                     (bloomBit < 224 ? (injector.bf6 |= mask) : (injector.bf7 |= mask));
   }
 }
 
@@ -119,10 +113,18 @@ export function getOrCreateNodeInjectorForNode(node: LElementNode | LContainerNo
     bf1: 0,
     bf2: 0,
     bf3: 0,
+    bf4: 0,
+    bf5: 0,
+    bf6: 0,
+    bf7: 0,
     cbf0: parentInjector == null ? 0 : parentInjector.cbf0 | parentInjector.bf0,
     cbf1: parentInjector == null ? 0 : parentInjector.cbf1 | parentInjector.bf1,
     cbf2: parentInjector == null ? 0 : parentInjector.cbf2 | parentInjector.bf2,
     cbf3: parentInjector == null ? 0 : parentInjector.cbf3 | parentInjector.bf3,
+    cbf4: parentInjector == null ? 0 : parentInjector.cbf4 | parentInjector.bf4,
+    cbf5: parentInjector == null ? 0 : parentInjector.cbf5 | parentInjector.bf5,
+    cbf6: parentInjector == null ? 0 : parentInjector.cbf6 | parentInjector.bf6,
+    cbf7: parentInjector == null ? 0 : parentInjector.cbf7 | parentInjector.bf7,
     injector: null,
     templateRef: null,
     viewContainerRef: null,
@@ -461,11 +463,17 @@ export function bloomFindPossibleInjector(startInjector: LInjector, bloomBit: nu
   // match.
   let injector: LInjector|null = startInjector;
   while (injector) {
-    // Our bloom filter size is 128 bits, which is four 32-bit bloom filter buckets:
-    // bf0 = [0 - 31], bf1 = [32 - 63], bf2 = [64 - 95], bf3 = [96 - 127]
+    // Our bloom filter size is 256 bits, which is eight 32-bit bloom filter buckets:
+    // bf0 = [0 - 31], bf1 = [32 - 63], bf2 = [64 - 95], bf3 = [96 - 127], etc.
     // Get the bloom filter value from the appropriate bucket based on the directive's bloomBit.
-    let value: number = bloomBit < 64 ? (bloomBit < 32 ? injector.bf0 : injector.bf1) :
-                                        (bloomBit < 96 ? injector.bf2 : injector.bf3);
+    let value: number;
+    if (bloomBit < 128) {
+      value = bloomBit < 64 ? (bloomBit < 32 ? injector.bf0 : injector.bf1) :
+                              (bloomBit < 96 ? injector.bf2 : injector.bf3);
+    } else {
+      value = bloomBit < 192 ? (bloomBit < 160 ? injector.bf4 : injector.bf5) :
+                               (bloomBit < 224 ? injector.bf6 : injector.bf7);
+    }
 
     // If the bloom filter value has the bit corresponding to the directive's bloomBit flipped on,
     // this injector is a potential match.
@@ -474,9 +482,14 @@ export function bloomFindPossibleInjector(startInjector: LInjector, bloomBit: nu
     }
 
     // If the current injector does not have the directive, check the bloom filters for the ancestor
-    // injectors (cbf0 - cbf3). These filters capture *all* ancestor injectors.
-    value = bloomBit < 64 ? (bloomBit < 32 ? injector.cbf0 : injector.cbf1) :
-                            (bloomBit < 96 ? injector.cbf2 : injector.cbf3);
+    // injectors (cbf0 - cbf7). These filters capture *all* ancestor injectors.
+    if (bloomBit < 128) {
+      value = bloomBit < 64 ? (bloomBit < 32 ? injector.cbf0 : injector.cbf1) :
+                              (bloomBit < 96 ? injector.cbf2 : injector.cbf3);
+    } else {
+      value = bloomBit < 192 ? (bloomBit < 160 ? injector.cbf4 : injector.cbf5) :
+                               (bloomBit < 224 ? injector.cbf6 : injector.cbf7);
+    }
 
     // If the ancestor bloom filter value has the bit corresponding to the directive, traverse up to
     // find the specific injector. If the ancestor bloom filter does not have the bit, we can abort.
