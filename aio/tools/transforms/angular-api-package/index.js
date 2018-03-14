@@ -111,10 +111,11 @@ module.exports = new Package('angular-api', [basePackage, typeScriptPackage])
         parseTagsProcessor.tagDefinitions.concat(getInjectables(requireFolder(__dirname, './tag-defs')));
   })
 
-  .config(function(computeStability, splitDescription, EXPORT_DOC_TYPES, API_DOC_TYPES) {
+  .config(function(computeStability, splitDescription, addNotYetDocumentedProperty, EXPORT_DOC_TYPES, API_DOC_TYPES) {
     computeStability.docTypes = EXPORT_DOC_TYPES;
     // Only split the description on the API docs
     splitDescription.docTypes = API_DOC_TYPES;
+    addNotYetDocumentedProperty.docTypes = API_DOC_TYPES;
   })
 
   .config(function(computePathsProcessor, EXPORT_DOC_TYPES, generateApiListDoc) {
