@@ -101,11 +101,11 @@ def _ngc_tsconfig(ctx, files, srcs, **kwargs):
 def _collect_summaries_aspect_impl(target, ctx):
   results = depset(target.angular.summaries if hasattr(target, "angular") else [])
 
-  # If we are visiting empty-srcs ts_library, this is a re-export
+  # If we are visiting an empty-srcs or non-empty-srcs ts_library or an empty-srcs
+  # ng_module rule, this is a re-export. See https://github.com/angular/angular/issues/22612
+  # "re-export" rules should expose all the angular summary files of their deps
   srcs = ctx.rule.attr.srcs if hasattr(ctx.rule.attr, "srcs") else []
-
-  # "re-export" rules should expose all the files of their deps
-  if not srcs:
+  if not srcs or not hasattr(target, "angular"):
     for dep in ctx.rule.attr.deps:
       if (hasattr(dep, "angular")):
         results = depset(dep.angular.summaries, transitive = [results])
