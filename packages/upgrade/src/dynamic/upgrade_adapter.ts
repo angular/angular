@@ -389,8 +389,9 @@ export class UpgradeAdapter {
         const originalResumeBootstrap: () => void = windowAngular.resumeBootstrap;
         windowAngular.resumeBootstrap = function() {
           windowAngular.resumeBootstrap = originalResumeBootstrap;
-          windowAngular.resumeBootstrap.apply(this, arguments);
+          const r = windowAngular.resumeBootstrap.apply(this, arguments);
           resolve();
+          return r;
         };
       } else {
         resolve();
