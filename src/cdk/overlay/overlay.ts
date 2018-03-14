@@ -57,20 +57,15 @@ export class Overlay {
    * @returns Reference to the created overlay.
    */
   create(config?: OverlayConfig): OverlayRef {
-    const pane = this._createPaneElement();
+    const host = this._createHostElement();
+    const pane = this._createPaneElement(host);
     const portalOutlet = this._createPortalOutlet(pane);
     const overlayConfig = new OverlayConfig(config);
 
     overlayConfig.direction = overlayConfig.direction || this._directionality.value;
 
-    return new OverlayRef(
-      portalOutlet,
-      pane,
-      overlayConfig,
-      this._ngZone,
-      this._keyboardDispatcher,
-      this._document
-    );
+    return new OverlayRef(portalOutlet, host, pane, overlayConfig, this._ngZone,
+      this._keyboardDispatcher, this._document);
   }
 
   /**
@@ -86,14 +81,25 @@ export class Overlay {
    * Creates the DOM element for an overlay and appends it to the overlay container.
    * @returns Newly-created pane element
    */
-  private _createPaneElement(): HTMLElement {
+  private _createPaneElement(host: HTMLElement): HTMLElement {
     const pane = this._document.createElement('div');
 
     pane.id = `cdk-overlay-${nextUniqueId++}`;
     pane.classList.add('cdk-overlay-pane');
-    this._overlayContainer.getContainerElement().appendChild(pane);
+    host.appendChild(pane);
 
     return pane;
+  }
+
+  /**
+   * Creates the host element that wraps around an overlay
+   * and can be used for advanced positioning.
+   * @returns Newly-create host element.
+   */
+  private _createHostElement(): HTMLElement {
+    const host = this._document.createElement('div');
+    this._overlayContainer.getContainerElement().appendChild(host);
+    return host;
   }
 
   /**

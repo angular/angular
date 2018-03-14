@@ -30,27 +30,39 @@ import {Overlay} from './overlay';
 import {OverlayConfig} from './overlay-config';
 import {OverlayRef} from './overlay-ref';
 import {
-  ConnectedOverlayPositionChange,
-  ConnectionPositionPair,
-} from './position/connected-position';
-import {ConnectedPositionStrategy} from './position/connected-position-strategy';
+  FlexibleConnectedPositionStrategy,
+  ConnectedPosition,
+} from './position/flexible-connected-position-strategy';
+import {ConnectedOverlayPositionChange} from './position/connected-position';
 import {RepositionScrollStrategy, ScrollStrategy} from './scroll/index';
 
 
 /** Default set of positions for the overlay. Follows the behavior of a dropdown. */
-const defaultPositionList = [
-  new ConnectionPositionPair(
-      {originX: 'start', originY: 'bottom'},
-      {overlayX: 'start', overlayY: 'top'}),
-  new ConnectionPositionPair(
-      {originX: 'start', originY: 'top'},
-      {overlayX: 'start', overlayY: 'bottom'}),
-  new ConnectionPositionPair(
-    {originX: 'end', originY: 'top'},
-    {overlayX: 'end', overlayY: 'bottom'}),
-  new ConnectionPositionPair(
-    {originX: 'end', originY: 'bottom'},
-    {overlayX: 'end', overlayY: 'top'}),
+const defaultPositionList: ConnectedPosition[] = [
+  {
+    originX: 'start',
+    originY: 'bottom',
+    overlayX: 'start',
+    overlayY: 'top'
+  },
+  {
+    originX: 'start',
+    originY: 'top',
+    overlayX: 'start',
+    overlayY: 'bottom'
+  },
+  {
+    originX: 'end',
+    originY: 'top',
+    overlayX: 'end',
+    overlayY: 'bottom'
+  },
+  {
+    originX: 'end',
+    originY: 'bottom',
+    overlayX: 'end',
+    overlayY: 'top'
+  }
 ];
 
 /** Injection token that determines the scroll handling while the connected overlay is open. */
@@ -101,21 +113,22 @@ export class CdkConnectedOverlay implements OnDestroy, OnChanges {
   private _backdropSubscription = Subscription.EMPTY;
   private _offsetX: number = 0;
   private _offsetY: number = 0;
-  private _position: ConnectedPositionStrategy;
+  private _position: FlexibleConnectedPositionStrategy;
 
   /** Origin for the connected overlay. */
   @Input('cdkConnectedOverlayOrigin') origin: CdkOverlayOrigin;
 
   /** Registered connected position pairs. */
-  @Input('cdkConnectedOverlayPositions') positions: ConnectionPositionPair[];
+  @Input('cdkConnectedOverlayPositions') positions: ConnectedPosition[];
 
   /** The offset in pixels for the overlay connection point on the x-axis */
   @Input('cdkConnectedOverlayOffsetX')
   get offsetX(): number { return this._offsetX; }
   set offsetX(offsetX: number) {
     this._offsetX = offsetX;
+
     if (this._position) {
-      this._position.withOffsetX(offsetX);
+      this._setPositions(this._position);
     }
   }
 
@@ -124,8 +137,9 @@ export class CdkConnectedOverlay implements OnDestroy, OnChanges {
   get offsetY() { return this._offsetY; }
   set offsetY(offsetY: number) {
     this._offsetY = offsetY;
+
     if (this._position) {
-      this._position.withOffsetY(offsetY);
+      this._setPositions(this._position);
     }
   }
 
@@ -264,26 +278,40 @@ export class CdkConnectedOverlay implements OnDestroy, OnChanges {
   }
 
   /** Returns the position strategy of the overlay to be set on the overlay config */
-  private _createPositionStrategy(): ConnectedPositionStrategy {
-    const primaryPosition = this.positions[0];
-    const originPoint = {originX: primaryPosition.originX, originY: primaryPosition.originY};
-    const overlayPoint = {overlayX: primaryPosition.overlayX, overlayY: primaryPosition.overlayY};
+  private _createPositionStrategy(): FlexibleConnectedPositionStrategy {
     const strategy = this._overlay.position()
-      .connectedTo(this.origin.elementRef, originPoint, overlayPoint)
-      .withOffsetX(this.offsetX)
-      .withOffsetY(this.offsetY)
+      .flexibleConnectedTo(this.origin.elementRef)
+      // Turn off all of the flexible positioning features for now to have it behave
+      // the same way as the old ConnectedPositionStrategy and to avoid breaking changes.
+      // TODO(crisbeto): make these on by default and add inputs for them
+      // next time we do breaking changes.
+      .withFlexibleHeight(false)
+      .withFlexibleWidth(false)
+      .withPush(false)
+      .withGrowAfterOpen(false)
       .withLockedPosition(this.lockPosition);
 
-    for (let i = 1; i < this.positions.length; i++) {
-      strategy.withFallbackPosition(
-          {originX: this.positions[i].originX, originY: this.positions[i].originY},
-          {overlayX: this.positions[i].overlayX, overlayY: this.positions[i].overlayY}
-      );
-    }
-
-    strategy.onPositionChange.subscribe(pos => this.positionChange.emit(pos));
+    this._setPositions(strategy);
+    strategy.positionChanges.subscribe(p => this.positionChange.emit(p));
 
     return strategy;
+  }
+
+  /**
+   * Sets the primary and fallback positions of a positions strategy,
+   * based on the current directive inputs.
+   */
+  private _setPositions(positionStrategy: FlexibleConnectedPositionStrategy) {
+    const positions: ConnectedPosition[] = this.positions.map(pos => ({
+      originX: pos.originX,
+      originY: pos.originY,
+      overlayX: pos.overlayX,
+      overlayY: pos.overlayY,
+      offsetX: this.offsetX,
+      offsetY: this.offsetY
+    }));
+
+    positionStrategy.withPositions(positions);
   }
 
   /** Attaches the overlay and subscribes to backdrop clicks if backdrop exists */
@@ -306,7 +334,6 @@ export class CdkConnectedOverlay implements OnDestroy, OnChanges {
       });
     }
 
-    this._position.withDirection(this.dir);
     this._overlayRef.setDirection(this.dir);
 
     if (!this._overlayRef.hasAttached()) {

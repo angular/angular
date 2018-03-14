@@ -125,9 +125,9 @@ describe('Overlay', () => {
     pizzaOverlayRef.attach(componentPortal);
     cakeOverlayRef.attach(templatePortal);
 
-    expect(pizzaOverlayRef.overlayElement.nextSibling)
+    expect(pizzaOverlayRef.hostElement.nextSibling)
         .toBeTruthy('Expected pizza to be on the bottom.');
-    expect(cakeOverlayRef.overlayElement.nextSibling)
+    expect(cakeOverlayRef.hostElement.nextSibling)
         .toBeFalsy('Expected cake to be on top.');
 
     pizzaOverlayRef.dispose();
@@ -137,27 +137,27 @@ describe('Overlay', () => {
     pizzaOverlayRef.attach(componentPortal);
     cakeOverlayRef.attach(templatePortal);
 
-    expect(pizzaOverlayRef.overlayElement.nextSibling)
+    expect(pizzaOverlayRef.hostElement.nextSibling)
         .toBeTruthy('Expected pizza to still be on the bottom.');
-    expect(cakeOverlayRef.overlayElement.nextSibling)
+    expect(cakeOverlayRef.hostElement.nextSibling)
         .toBeFalsy('Expected cake to still be on top.');
   }));
 
   it('should take the default direction from the global Directionality', () => {
     dir = 'rtl';
-    overlay.create().attach(componentPortal);
+    const overlayRef = overlay.create();
 
-    const pane = overlayContainerElement.children[0] as HTMLElement;
-    expect(pane.getAttribute('dir')).toBe('rtl');
+    overlayRef.attach(componentPortal);
+    expect(overlayRef.overlayElement.getAttribute('dir')).toBe('rtl');
   });
 
   it('should set the direction', () => {
     const config = new OverlayConfig({direction: 'rtl'});
+    const overlayRef = overlay.create(config);
 
-    overlay.create(config).attach(componentPortal);
+    overlayRef.attach(componentPortal);
 
-    const pane = overlayContainerElement.children[0] as HTMLElement;
-    expect(pane.getAttribute('dir')).toBe('rtl');
+    expect(overlayRef.overlayElement.getAttribute('dir')).toEqual('rtl');
   });
 
   it('should emit when an overlay is attached', () => {
@@ -312,77 +312,86 @@ describe('Overlay', () => {
     it('should apply the width set in the config', () => {
       config.width = 500;
 
-      overlay.create(config).attach(componentPortal);
-      const pane = overlayContainerElement.children[0] as HTMLElement;
-      expect(pane.style.width).toEqual('500px');
+      const overlayRef = overlay.create(config);
+
+      overlayRef.attach(componentPortal);
+      expect(overlayRef.overlayElement.style.width).toEqual('500px');
     });
 
     it('should support using other units if a string width is provided', () => {
       config.width = '200%';
 
-      overlay.create(config).attach(componentPortal);
-      const pane = overlayContainerElement.children[0] as HTMLElement;
-      expect(pane.style.width).toEqual('200%');
+      const overlayRef = overlay.create(config);
+
+      overlayRef.attach(componentPortal);
+      expect(overlayRef.overlayElement.style.width).toEqual('200%');
     });
 
     it('should apply the height set in the config', () => {
       config.height = 500;
 
-      overlay.create(config).attach(componentPortal);
-      const pane = overlayContainerElement.children[0] as HTMLElement;
-      expect(pane.style.height).toEqual('500px');
+      const overlayRef = overlay.create(config);
+
+      overlayRef.attach(componentPortal);
+      expect(overlayRef.overlayElement.style.height).toEqual('500px');
     });
 
     it('should support using other units if a string height is provided', () => {
       config.height = '100vh';
 
-      overlay.create(config).attach(componentPortal);
-      const pane = overlayContainerElement.children[0] as HTMLElement;
-      expect(pane.style.height).toEqual('100vh');
+      const overlayRef = overlay.create(config);
+
+      overlayRef.attach(componentPortal);
+      expect(overlayRef.overlayElement.style.height).toEqual('100vh');
     });
 
     it('should apply the min width set in the config', () => {
       config.minWidth = 200;
 
-      overlay.create(config).attach(componentPortal);
-      const pane = overlayContainerElement.children[0] as HTMLElement;
-      expect(pane.style.minWidth).toEqual('200px');
+      const overlayRef = overlay.create(config);
+
+      overlayRef.attach(componentPortal);
+      expect(overlayRef.overlayElement.style.minWidth).toEqual('200px');
     });
 
 
     it('should apply the min height set in the config', () => {
       config.minHeight = 500;
 
-      overlay.create(config).attach(componentPortal);
-      const pane = overlayContainerElement.children[0] as HTMLElement;
-      expect(pane.style.minHeight).toEqual('500px');
+      const overlayRef = overlay.create(config);
+
+      overlayRef.attach(componentPortal);
+      expect(overlayRef.overlayElement.style.minHeight).toEqual('500px');
     });
 
     it('should apply the max width set in the config', () => {
       config.maxWidth = 200;
 
-      overlay.create(config).attach(componentPortal);
-      const pane = overlayContainerElement.children[0] as HTMLElement;
-      expect(pane.style.maxWidth).toEqual('200px');
+      const overlayRef = overlay.create(config);
+
+      overlayRef.attach(componentPortal);
+      expect(overlayRef.overlayElement.style.maxWidth).toEqual('200px');
     });
 
 
     it('should apply the max height set in the config', () => {
       config.maxHeight = 500;
 
-      overlay.create(config).attach(componentPortal);
-      const pane = overlayContainerElement.children[0] as HTMLElement;
-      expect(pane.style.maxHeight).toEqual('500px');
+      const overlayRef = overlay.create(config);
+
+      overlayRef.attach(componentPortal);
+      expect(overlayRef.overlayElement.style.maxHeight).toEqual('500px');
     });
 
     it('should support zero widths and heights', () => {
       config.width = 0;
       config.height = 0;
 
-      overlay.create(config).attach(componentPortal);
-      const pane = overlayContainerElement.children[0] as HTMLElement;
-      expect(pane.style.width).toEqual('0px');
-      expect(pane.style.height).toEqual('0px');
+      const overlayRef = overlay.create(config);
+
+      overlayRef.attach(componentPortal);
+      expect(overlayRef.overlayElement.style.width).toEqual('0px');
+      expect(overlayRef.overlayElement.style.height).toEqual('0px');
     });
   });
 
@@ -458,20 +467,20 @@ describe('Overlay', () => {
       expect(backdrop.style.pointerEvents).toBe('none');
     });
 
-    it('should insert the backdrop before the overlay pane in the DOM order', () => {
-      let overlayRef = overlay.create(config);
-      overlayRef.attach(componentPortal);
+    it('should insert the backdrop before the overlay host in the DOM order', () => {
+      const overlayRef = overlay.create(config);
 
+      overlayRef.attach(componentPortal);
       viewContainerFixture.detectChanges();
 
-      let backdrop = overlayContainerElement.querySelector('.cdk-overlay-backdrop');
-      let pane = overlayContainerElement.querySelector('.cdk-overlay-pane');
-      let children = Array.prototype.slice.call(overlayContainerElement.children);
+      const backdrop = overlayContainerElement.querySelector('.cdk-overlay-backdrop');
+      const host = overlayContainerElement.querySelector('.cdk-overlay-pane')!.parentElement!;
+      const children = Array.prototype.slice.call(overlayContainerElement.children);
 
       expect(children.indexOf(backdrop)).toBeGreaterThan(-1);
-      expect(children.indexOf(pane)).toBeGreaterThan(-1);
+      expect(children.indexOf(host)).toBeGreaterThan(-1);
       expect(children.indexOf(backdrop))
-        .toBeLessThan(children.indexOf(pane), 'Expected backdrop to be before the pane in the DOM');
+        .toBeLessThan(children.indexOf(host), 'Expected backdrop to be before the host in the DOM');
     });
 
   });

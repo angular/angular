@@ -13,6 +13,7 @@ $mat-autocomplete-panel-max-height: 256px !default;
   max-width: none;
   max-height: $mat-autocomplete-panel-max-height;
   position: relative;
+  width: 100%;
 
   &.mat-autocomplete-visible {
     visibility: visible;

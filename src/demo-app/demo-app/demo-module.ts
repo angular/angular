@@ -63,6 +63,7 @@ import {DEMO_APP_ROUTES} from './routes';
 import {TableDemoModule} from '../table/table-demo-module';
 import {BadgeDemo} from '../badge/badge-demo';
 import {TreeDemoModule} from '../tree/tree-demo-module';
+import {ConnectedOverlayDemo, DemoOverlay} from '../connected-overlay/connected-overlay-demo';
 
 @NgModule({
   imports: [
@@ -130,6 +131,9 @@ import {TreeDemoModule} from '../tree/tree-demo-module';
     TooltipDemo,
     TypographyDemo,
     ExampleBottomSheet,
+    ExpansionDemo,
+    ConnectedOverlayDemo,
+    DemoOverlay,
   ],
   providers: [
     {provide: OverlayContainer, useClass: FullscreenOverlayContainer},
@@ -144,6 +148,7 @@ import {TreeDemoModule} from '../tree/tree-demo-module';
     ScienceJoke,
     SpagettiPanel,
     ExampleBottomSheet,
+    DemoOverlay,
   ],
 })
 export class DemoModule {}

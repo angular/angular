@@ -431,12 +431,12 @@ describe('MatTooltip', () => {
       tooltipDirective.position = 'after';
       expect(tooltipDirective._getOrigin().main).toEqual(rightOrigin);
 
-      // Test expectations in LTR
+      // Test expectations in RTL
       dir.value = 'rtl';
       tooltipDirective.position = 'before';
-      expect(tooltipDirective._getOrigin().main).toEqual(rightOrigin);
-      tooltipDirective.position = 'after';
       expect(tooltipDirective._getOrigin().main).toEqual(leftOrigin);
+      tooltipDirective.position = 'after';
+      expect(tooltipDirective._getOrigin().main).toEqual(rightOrigin);
     });
 
     it('should consistently position before and after overlay position in ltr and rtl dir', () => {
@@ -451,15 +451,15 @@ describe('MatTooltip', () => {
       tooltipDirective.position = 'after';
       expect(tooltipDirective._getOverlayPosition().main).toEqual(rightOverlayPosition);
 
-      // Test expectations in LTR
+      // Test expectations in RTL
       dir.value = 'rtl';
       tooltipDirective.position = 'before';
-      expect(tooltipDirective._getOverlayPosition().main).toEqual(rightOverlayPosition);
-      tooltipDirective.position = 'after';
       expect(tooltipDirective._getOverlayPosition().main).toEqual(leftOverlayPosition);
+      tooltipDirective.position = 'after';
+      expect(tooltipDirective._getOverlayPosition().main).toEqual(rightOverlayPosition);
     });
 
-    it('should have consistent left transform origin in any dir', () => {
+    it('should have consistent left transform origin in ltr', () => {
       tooltipDirective.position = 'right';
       tooltipDirective.show();
       fixture.detectChanges();
@@ -469,7 +469,9 @@ describe('MatTooltip', () => {
       tooltipDirective.show();
       fixture.detectChanges();
       expect(tooltipDirective._tooltipInstance!._transformOrigin).toBe('left');
+    });
 
+    it('should have consistent left transform origin in rtl', () => {
       dir.value = 'rtl';
       tooltipDirective.position = 'before';
       tooltipDirective.show();
@@ -477,7 +479,7 @@ describe('MatTooltip', () => {
       expect(tooltipDirective._tooltipInstance!._transformOrigin).toBe('left');
     });
 
-    it('should have consistent right transform origin in any dir', () => {
+    it('should have consistent right transform origin in ltr', () => {
       // Move the button away from the edge of the screen so
       // we don't get into the fallback positions.
       fixture.componentInstance.button.nativeElement.style.margin = '300px';
@@ -491,6 +493,12 @@ describe('MatTooltip', () => {
       tooltipDirective.show();
       fixture.detectChanges();
       expect(tooltipDirective._tooltipInstance!._transformOrigin).toBe('right');
+    });
+
+    it('should have consistent right transform origin in rtl', () => {
+      // Move the button away from the edge of the screen so
+      // we don't get into the fallback positions.
+      fixture.componentInstance.button.nativeElement.style.margin = '300px';
 
       dir.value = 'rtl';
       tooltipDirective.position = 'after';

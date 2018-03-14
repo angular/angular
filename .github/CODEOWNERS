@@ -100,6 +100,7 @@
 /src/demo-app/card/**                              @jelbourn
 /src/demo-app/checkbox/**                          @tinayuangao @devversion
 /src/demo-app/chips/**                             @tinayuangao
+/src/demo-app/connected-overlay/**                 @jelbourn @crisbeto
 /src/demo-app/dataset/**                           @andrewseguin
 /src/demo-app/datepicker/**                        @mmalerba
 /src/demo-app/demo-app/**                          @jelbourn

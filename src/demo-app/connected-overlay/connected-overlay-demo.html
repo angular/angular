@@ -1,0 +1,95 @@
+<div style="height: 500px"></div>
+
+<div class="demo-options">
+  <div>
+    <h4>Origin X</h4>
+    <mat-radio-group [(ngModel)]="originX">
+      <mat-radio-button value="start">start</mat-radio-button>
+      <mat-radio-button value="center">center</mat-radio-button>
+      <mat-radio-button value="end">end</mat-radio-button>
+    </mat-radio-group>
+  </div>
+
+  <div>
+    <h4>Origin Y</h4>
+    <mat-radio-group [(ngModel)]="originY">
+      <mat-radio-button value="top">top</mat-radio-button>
+      <mat-radio-button value="center">center</mat-radio-button>
+      <mat-radio-button value="bottom">bottom</mat-radio-button>
+    </mat-radio-group>
+  </div>
+
+  <div>
+    <h4>Overlay X</h4>
+    <mat-radio-group [(ngModel)]="overlayX">
+      <mat-radio-button value="start">start</mat-radio-button>
+      <mat-radio-button value="center">center</mat-radio-button>
+      <mat-radio-button value="end">end</mat-radio-button>
+    </mat-radio-group>
+  </div>
+
+  <div>
+    <h4>Overlay Y</h4>
+    <mat-radio-group [(ngModel)]="overlayY">
+      <mat-radio-button value="top">top</mat-radio-button>
+      <mat-radio-button value="center">center</mat-radio-button>
+      <mat-radio-button value="bottom">bottom</mat-radio-button>
+    </mat-radio-group>
+  </div>
+
+  <div>
+    <h4>Offsets</h4>
+
+    <div>
+      <label>
+        offsetX
+        <input type="number" [(ngModel)]="offsetX">
+      </label>
+    </div>
+
+    <div>
+      <label>
+        offsetY
+        <input type="number" [(ngModel)]="offsetY">
+      </label>
+    </div>
+  </div>
+
+  <div>
+    <label>
+      Number of items in the overlay
+      <input #count type="number" value="25" (input)="updateCount(count.value)">
+    </label>
+
+    <div>
+      <mat-checkbox [(ngModel)]="isFlexible">Allow flexible dimensions</mat-checkbox>
+    </div>
+
+    <div>
+      <mat-checkbox [(ngModel)]="canPush">Allow push</mat-checkbox>
+    </div>
+
+    <div>
+      <mat-checkbox [checked]="showBoundingBox" [disabled]="!overlayRef"
+          (click)="toggleShowBoundingBox()">
+        Show bounding box
+      </mat-checkbox>
+    </div>
+  </div>
+
+  <div>
+    <button mat-raised-button type="button" (click)="close()" [disabled]="!overlayRef">Close</button>
+  </div>
+</div>
+
+
+<div class="demo-trigger">
+  <div style="width: 50px;"></div>
+  <button mat-raised-button
+      cdkOverlayOrigin
+      type="button"
+      [disabled]="overlayRef"
+      (click)="openWithConfig()">Open</button>
+</div>
+
+<div style="height: 500px"></div>

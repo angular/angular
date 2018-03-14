@@ -52,9 +52,16 @@ $backdrop-animation-timing-function: cubic-bezier(0.25, 0.8, 0.25, 1) !default;
   // A single overlay pane.
   .cdk-overlay-pane {
     position: absolute;
+
     pointer-events: auto;
     box-sizing: border-box;
     z-index: $cdk-z-index-overlay;
+
+    // For connected-position overlays, we set `display: flex` in
+    // order to force `max-width` and `max-height` to take effect.
+    display: flex;
+    max-width: 100%;
+    max-height: 100%;
   }
 
   .cdk-overlay-backdrop {
@@ -94,6 +101,24 @@ $backdrop-animation-timing-function: cubic-bezier(0.25, 0.8, 0.25, 1) !default;
     &, &.cdk-overlay-backdrop-showing {
       opacity: 0;
     }
+  }
+
+  // Overlay parent element used with the connected position strategy. Used to constrain the
+  // overlay element's size to fit within the viewport.
+  .cdk-overlay-connected-position-bounding-box {
+    position: absolute;
+    z-index: $cdk-z-index-overlay;
+
+    // We use `display: flex` on this element exclusively for centering connected overlays.
+    // When *not* centering, a top/left/bottom/right will be set which overrides the normal
+    // flex layout.
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    // Add some dimensions so the element has an `innerText` which some people depend on in tests.
+    min-width: 1px;
+    min-height: 1px;
   }
 
   // Used when disabling global scrolling.

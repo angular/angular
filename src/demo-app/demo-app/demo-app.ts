@@ -54,6 +54,8 @@ export class DemoApp {
     {name: 'Button Toggle', route: '/button-toggle'},
     {name: 'Button', route: '/button'},
     {name: 'Card', route: '/card'},
+    {name: 'Chips', route: '/chips'},
+    {name: 'Connected Overlay', route: '/connected-overlay'},
     {name: 'Checkbox', route: '/checkbox'},
     {name: 'Chips', route: '/chips'},
     {name: 'Datepicker', route: '/datepicker'},

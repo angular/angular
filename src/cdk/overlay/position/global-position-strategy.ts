@@ -19,21 +19,15 @@ import {OverlayRef} from '../overlay-ref';
 export class GlobalPositionStrategy implements PositionStrategy {
   /** The overlay to which this strategy is attached. */
   private _overlayRef: OverlayRef;
-
-  private _cssPosition = 'static';
-  private _topOffset = '';
-  private _bottomOffset = '';
-  private _leftOffset = '';
-  private _rightOffset = '';
-  private _alignItems = '';
-  private _justifyContent = '';
-  private _width = '';
-  private _height = '';
-
-  /** A lazily-created wrapper for the overlay element that is used as a flex container. */
-  private _wrapper: HTMLElement | null = null;
-
-  constructor(private _document: any) {}
+  private _cssPosition: string = 'static';
+  private _topOffset: string = '';
+  private _bottomOffset: string = '';
+  private _leftOffset: string = '';
+  private _rightOffset: string = '';
+  private _alignItems: string = '';
+  private _justifyContent: string = '';
+  private _width: string = '';
+  private _height: string = '';
 
   attach(overlayRef: OverlayRef): void {
     const config = overlayRef.getConfig();
@@ -47,6 +41,8 @@ export class GlobalPositionStrategy implements PositionStrategy {
     if (this._height && !config.height) {
       overlayRef.updateSize({height: this._height});
     }
+
+    overlayRef.hostElement.classList.add('cdk-global-overlay-wrapper');
   }
 
   /**
@@ -152,8 +148,6 @@ export class GlobalPositionStrategy implements PositionStrategy {
   /**
    * Apply the position to the element.
    * @docs-private
-   *
-   * @returns Resolved when the styles have been applied.
    */
   apply(): void {
     // Since the overlay ref applies the strategy asynchronously, it could
@@ -163,17 +157,8 @@ export class GlobalPositionStrategy implements PositionStrategy {
       return;
     }
 
-    const element = this._overlayRef.overlayElement;
-
-    if (!this._wrapper && element.parentNode) {
-      this._wrapper = this._document.createElement('div');
-      this._wrapper!.classList.add('cdk-global-overlay-wrapper');
-      element.parentNode.insertBefore(this._wrapper!, element);
-      this._wrapper!.appendChild(element);
-    }
-
-    const styles = element.style;
-    const parentStyles = (element.parentNode as HTMLElement).style;
+    const styles = this._overlayRef.overlayElement.style;
+    const parentStyles = this._overlayRef.hostElement.style;
     const config = this._overlayRef.getConfig();
 
     styles.position = this._cssPosition;
@@ -186,11 +171,9 @@ export class GlobalPositionStrategy implements PositionStrategy {
     parentStyles.alignItems = config.height === '100%' ? 'flex-start' : this._alignItems;
   }
 
-  /** Removes the wrapper element from the DOM. */
-  dispose(): void {
-    if (this._wrapper && this._wrapper.parentNode) {
-      this._wrapper.parentNode.removeChild(this._wrapper);
-      this._wrapper = null;
-    }
-  }
+  /**
+   * Noop implemented as a part of the PositionStrategy interface.
+   * @docs-private
+   */
+  dispose(): void { }
 }

@@ -18,7 +18,7 @@ import {TooltipPosition} from '@angular/material';
   encapsulation: ViewEncapsulation.None,
 })
 export class TooltipDemo {
-  position: TooltipPosition = 'below';
+  position: TooltipPosition = 'after';
   message: string = 'Here is the tooltip';
   tooltips: string[] = [];
   disabled = false;

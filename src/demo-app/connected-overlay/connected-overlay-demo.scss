@@ -1,0 +1,35 @@
+.demo-options {
+  display: flex;
+  margin: 20px;
+
+  & > div {
+    margin: 16px;
+  }
+}
+
+demo-overlay {
+  display: block;
+
+  background: lightblue;
+  min-width: 50px;
+  min-height: 50px;
+
+  max-height: 100%;
+  overflow: auto;
+}
+
+.demo-trigger {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px;
+}
+
+.cdk-overlay-connected-position-bounding-box.demo-show-box {
+  background: orangered;
+  opacity: 0.2;
+
+  .cdk-overlay-pane {
+    opacity: 1;
+  }
+}

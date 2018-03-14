@@ -92,6 +92,7 @@ describe('MatMenu', () => {
     expect(() => {
       fixture.componentInstance.trigger.openMenu();
       fixture.componentInstance.trigger.openMenu();
+      fixture.detectChanges();
 
       expect(overlayContainerElement.textContent).toContain('Item');
       expect(overlayContainerElement.textContent).toContain('Disabled');
@@ -259,6 +260,7 @@ describe('MatMenu', () => {
 
     fixture.detectChanges();
     fixture.componentInstance.trigger.openMenu();
+    fixture.detectChanges();
 
     const menuEl = fixture.debugElement.query(By.css('mat-menu')).nativeElement;
     const panel = overlayContainerElement.querySelector('.mat-menu-panel')!;
@@ -721,6 +723,7 @@ describe('MatMenu', () => {
       fixture.detectChanges();
 
       fixture.componentInstance.trigger.openMenu();
+      fixture.detectChanges();
 
       const item = fixture.debugElement.query(By.css('.mat-menu-item'));
       const ripple = item.query(By.css('.mat-ripple')).injector.get<MatRipple>(MatRipple);
@@ -733,8 +736,8 @@ describe('MatMenu', () => {
       fixture.detectChanges();
 
       fixture.componentInstance.trigger.openMenu();
+      fixture.detectChanges();
 
-      // The second menu item in the `SimpleMenu` component is disabled.
       const items = fixture.debugElement.queryAll(By.css('.mat-menu-item'));
       const ripple = items[1].query(By.css('.mat-ripple')).injector.get<MatRipple>(MatRipple);
 
@@ -746,6 +749,7 @@ describe('MatMenu', () => {
       fixture.detectChanges();
 
       fixture.componentInstance.trigger.openMenu();
+      fixture.detectChanges();
 
       // The third menu item in the `SimpleMenu` component has ripples disabled.
       const items = fixture.debugElement.queryAll(By.css('.mat-menu-item'));
@@ -762,6 +766,7 @@ describe('MatMenu', () => {
       fixture = TestBed.createComponent(SimpleMenu);
       fixture.detectChanges();
       fixture.componentInstance.trigger.openMenu();
+      fixture.detectChanges();
     });
 
     it('should emit an event when a menu item is clicked', () => {

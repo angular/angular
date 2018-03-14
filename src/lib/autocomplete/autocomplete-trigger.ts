@@ -8,7 +8,7 @@
 import {Directionality} from '@angular/cdk/bidi';
 import {DOWN_ARROW, ENTER, ESCAPE, UP_ARROW, TAB} from '@angular/cdk/keycodes';
 import {
-  ConnectedPositionStrategy,
+  FlexibleConnectedPositionStrategy,
   Overlay,
   OverlayRef,
   OverlayConfig,
@@ -130,7 +130,7 @@ export class MatAutocompleteTrigger implements ControlValueAccessor, OnDestroy {
   private _previousValue: string | number | null;
 
   /** Strategy that is used to position the panel. */
-  private _positionStrategy: ConnectedPositionStrategy;
+  private _positionStrategy: FlexibleConnectedPositionStrategy;
 
   /** Whether or not the label state is being overridden. */
   private _manuallyFloatingLabel = false;
@@ -412,7 +412,7 @@ export class MatAutocompleteTrigger implements ControlValueAccessor, OnDestroy {
   private _subscribeToClosingActions(): Subscription {
     const firstStable = this._zone.onStable.asObservable().pipe(take(1));
     const optionChanges = this.autocomplete.options.changes.pipe(
-      tap(() => this._positionStrategy.recalculateLastPosition()),
+      tap(() => this._positionStrategy.reapplyLastPosition()),
       // Defer emitting to the stream until the next tick, because changing
       // bindings in here will cause "changed after checked" errors.
       delay(0)
@@ -530,12 +530,13 @@ export class MatAutocompleteTrigger implements ControlValueAccessor, OnDestroy {
   }
 
   private _getOverlayPosition(): PositionStrategy {
-    this._positionStrategy = this._overlay.position().connectedTo(
-        this._getConnectedElement(),
-        {originX: 'start', originY: 'bottom'}, {overlayX: 'start', overlayY: 'top'})
-        .withFallbackPosition(
-            {originX: 'start', originY: 'top'}, {overlayX: 'start', overlayY: 'bottom'}
-        );
+    this._positionStrategy = this._overlay.position()
+      .flexibleConnectedTo(this._getConnectedElement())
+      .withPositions([
+        {originX: 'start', originY: 'bottom', overlayX: 'start', overlayY: 'top'},
+        {originX: 'start', originY: 'top', overlayX: 'start', overlayY: 'bottom'}
+      ]);
+
     return this._positionStrategy;
   }
 

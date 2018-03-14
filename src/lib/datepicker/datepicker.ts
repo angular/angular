@@ -16,7 +16,7 @@ import {
   PositionStrategy,
   RepositionScrollStrategy,
   ScrollStrategy,
-  ConnectedPositionStrategy,
+  FlexibleConnectedPositionStrategy,
 } from '@angular/cdk/overlay';
 import {ComponentPortal} from '@angular/cdk/portal';
 import {take} from 'rxjs/operators/take';
@@ -134,9 +134,9 @@ export class MatDatepickerContent<D> extends _MatDatepickerContentMixinBase
     }
 
     const positionStrategy =
-      this.datepicker._popupRef.getConfig().positionStrategy! as ConnectedPositionStrategy;
+      this.datepicker._popupRef.getConfig().positionStrategy! as FlexibleConnectedPositionStrategy;
 
-    this._positionChange = positionStrategy.onPositionChange.subscribe(change => {
+    this._positionChange = positionStrategy.positionChanges.subscribe(change => {
       const isAbove = change.connectionPair.overlayY === 'bottom';
 
       if (isAbove !== this._isAbove) {
@@ -490,22 +490,36 @@ export class MatDatepicker<D> implements OnDestroy, CanColor {
   /** Create the popup PositionStrategy. */
   private _createPopupPositionStrategy(): PositionStrategy {
     return this._overlay.position()
-      .connectedTo(this._datepickerInput.getConnectedOverlayOrigin(),
-        {originX: 'start', originY: 'bottom'},
-        {overlayX: 'start', overlayY: 'top'}
-      )
-      .withFallbackPosition(
-        {originX: 'start', originY: 'top'},
-        {overlayX: 'start', overlayY: 'bottom'},
-      )
-      .withFallbackPosition(
-        {originX: 'end', originY: 'bottom'},
-        {overlayX: 'end', overlayY: 'top'}
-      )
-      .withFallbackPosition(
-        {originX: 'end', originY: 'top'},
-        {overlayX: 'end', overlayY: 'bottom'},
-      );
+      .flexibleConnectedTo(this._datepickerInput.getPopupConnectionElementRef())
+      .withFlexibleHeight(false)
+      .withFlexibleWidth(false)
+      .withViewportMargin(8)
+      .withPositions([
+        {
+          originX: 'start',
+          originY: 'bottom',
+          overlayX: 'start',
+          overlayY: 'top'
+        },
+        {
+          originX: 'start',
+          originY: 'top',
+          overlayX: 'start',
+          overlayY: 'bottom'
+        },
+        {
+          originX: 'end',
+          originY: 'bottom',
+          overlayX: 'end',
+          overlayY: 'top'
+        },
+        {
+          originX: 'end',
+          originY: 'top',
+          overlayX: 'end',
+          overlayY: 'bottom'
+        }
+      ]);
   }
 
   /**

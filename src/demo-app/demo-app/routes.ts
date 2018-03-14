@@ -53,6 +53,7 @@ import {DemoApp, Home} from './demo-app';
 import {TableDemoPage} from '../table/table-demo-page';
 import {TABLE_DEMO_ROUTES} from '../table/routes';
 import {BadgeDemo} from '../badge/badge-demo';
+import {ConnectedOverlayDemo} from '../connected-overlay/connected-overlay-demo';
 
 export const DEMO_APP_ROUTES: Routes = [
   {path: '', component: DemoApp, children: [
@@ -100,6 +101,7 @@ export const DEMO_APP_ROUTES: Routes = [
     {path: 'expansion', component: ExpansionDemo},
     {path: 'stepper', component: StepperDemo},
     {path: 'screen-type', component: ScreenTypeDemo},
+    {path: 'connected-overlay', component: ConnectedOverlayDemo},
   ]}
 ];
 
