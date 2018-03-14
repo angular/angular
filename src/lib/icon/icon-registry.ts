@@ -110,8 +110,7 @@ export class MatIconRegistry {
   constructor(
     @Optional() private _httpClient: HttpClient,
     private _sanitizer: DomSanitizer,
-    @Optional() @Inject(DOCUMENT) document?: any) {
-      // TODO(crisbeto): make _document required next major release.
+    @Optional() @Inject(DOCUMENT) document: any) {
       this._document = document;
     }
 
@@ -427,17 +426,15 @@ export class MatIconRegistry {
    * Creates a DOM element from the given SVG string.
    */
   private _svgElementFromString(str: string): SVGElement {
-    if (this._document || typeof document !== 'undefined') {
-      const div = (this._document || document).createElement('DIV');
-      div.innerHTML = str;
-      const svg = div.querySelector('svg') as SVGElement;
-      if (!svg) {
-        throw Error('<svg> tag not found');
-      }
-      return svg;
+    const div = this._document.createElement('DIV');
+    div.innerHTML = str;
+    const svg = div.querySelector('svg') as SVGElement;
+
+    if (!svg) {
+      throw Error('<svg> tag not found');
     }
 
-    throw new Error('MatIconRegistry could not resolve document.');
+    return svg;
   }
 
   /**
