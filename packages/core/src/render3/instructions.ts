@@ -462,15 +462,16 @@ export function elementStart(
     ngDevMode &&
         assertNull(currentView.bindingStartIndex, 'elements should be created before any bindings');
     const isHostElement = typeof nameOrComponentType !== 'string';
-    // MEGAMORPHIC: `ngComponentDef` is a megamorphic property access here.
-    // This is OK, since we will refactor this code and store the result in `TView.data`
-    // which means that we will be reading this value only once. We are trading clean/simple
-    // template
-    // code for slight startup(first run) performance. (No impact on subsequent runs)
-    // TODO(misko): refactor this to store the `ComponentDef` in `TView.data`.
-    const hostComponentDef =
-        isHostElement ? (nameOrComponentType as ComponentType<any>).ngComponentDef : null;
-    const name = isHostElement ? hostComponentDef !.tag : nameOrComponentType as string;
+
+    let hostComponentDef: ComponentDef<any>|null = null;
+    let name = nameOrComponentType as string;
+    if (isHostElement) {
+      hostComponentDef = currentView.tView.firstTemplatePass ?
+          (nameOrComponentType as ComponentType<any>).ngComponentDef :
+          tData[index + 1] as ComponentDef<any>;
+      name = hostComponentDef !.tag;
+    }
+
     if (name === null) {
       // TODO: future support for nameless components.
       throw 'for now name is required';
@@ -541,16 +542,12 @@ function hack_declareDirectives(
     // TODO(mhevery): This assumes that the directives come in correct order, which
     // is not guaranteed. Must be refactored to take it into account.
     for (let i = 0; i < directiveTypes.length; i++) {
-      // MEGAMORPHIC: `ngDirectiveDef` is a megamorphic property access here.
-      // This is OK, since we will refactor this code and store the result in `TView.data`
-      // which means that we will be reading this value only once. We are trading clean/simple
-      // template
-      // code for slight startup(first run) performance. (No impact on subsequent runs)
-      // TODO(misko): refactor this to store the `DirectiveDef` in `TView.data`.
+      index++;
       const directiveType = directiveTypes[i];
-      const directiveDef = directiveType.ngDirectiveDef;
+      const directiveDef = currentView.tView.firstTemplatePass ? directiveType.ngDirectiveDef :
+                                                                 tData[index] as DirectiveDef<any>;
       directiveCreate(
-          ++index, directiveDef.n(), directiveDef, hack_findQueryName(directiveDef, localRefs));
+          index, directiveDef.n(), directiveDef, hack_findQueryName(directiveDef, localRefs));
     }
   }
 }
