@@ -8,7 +8,7 @@ import { ELEMENT_MODULE_PATHS_TOKEN } from './element-registry';
 import { of } from 'rxjs/observable/of';
 import { Observable } from 'rxjs/Observable';
 import { fromPromise } from 'rxjs/observable/fromPromise';
-import { createNgElementConstructor } from '@angular/elements';
+import { createCustomElement } from '@angular/elements';
 
 @Injectable()
 export class ElementsLoader {
@@ -44,10 +44,10 @@ export class ElementsLoader {
 
       const elementModuleRef = elementModuleFactory.create(this.moduleRef.injector);
       const CustomElementComponent = elementModuleRef.instance.customElementComponent;
-      const NgElement =
-          createNgElementConstructor(CustomElementComponent, {injector: elementModuleRef.injector});
+      const CustomElement =
+          createCustomElement(CustomElementComponent, {injector: elementModuleRef.injector});
 
-      customElements!.define(selector, NgElement);
+      customElements!.define(selector, CustomElement);
       this.elementsToLoad.delete(selector);
 
       return customElements.whenDefined(selector);

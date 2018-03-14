@@ -12,7 +12,7 @@ import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 import {Subject} from 'rxjs/Subject';
 
 import {NgElementStrategy, NgElementStrategyEvent, NgElementStrategyFactory} from '../src/element-strategy';
-import {NgElementConstructor, createNgElementConstructor} from '../src/ng-element-constructor';
+import {NgElementConstructor, createCustomElement} from '../src/create-custom-element';
 
 type WithFooBar = {
   fooFoo: string,
@@ -20,7 +20,7 @@ type WithFooBar = {
 };
 
 if (typeof customElements !== 'undefined') {
-  describe('createNgElementConstructor', () => {
+  describe('createCustomElement', () => {
     let NgElementCtor: NgElementConstructor<WithFooBar>;
     let strategy: TestStrategy;
     let strategyFactory: TestStrategyFactory;
@@ -35,7 +35,7 @@ if (typeof customElements !== 'undefined') {
             strategyFactory = new TestStrategyFactory();
             strategy = strategyFactory.testStrategy;
 
-            NgElementCtor = createNgElementConstructor(TestComponent, {injector, strategyFactory});
+            NgElementCtor = createCustomElement(TestComponent, {injector, strategyFactory});
 
             // The `@webcomponents/custom-elements/src/native-shim.js` polyfill allows us to create
             // new instances of the NgElement which extends HTMLElement, as long as we define it.
@@ -101,7 +101,7 @@ if (typeof customElements !== 'undefined') {
       beforeAll(() => {
         strategyFactory = new TestStrategyFactory();
         strategy = strategyFactory.testStrategy;
-        NgElementCtorWithChangedAttr = createNgElementConstructor(TestComponent, {
+        NgElementCtorWithChangedAttr = createCustomElement(TestComponent, {
           injector,
           strategyFactory,
           attributeToPropertyInputs: {'attr-1': 'fooFoo', 'attr-2': 'barbar'}
