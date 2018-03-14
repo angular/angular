@@ -13,7 +13,7 @@ module.exports = function extractPipeParams(createDocMessage) {
           doc.valueParam = transformFn.parameterDocs[0];
           doc.pipeParams = transformFn.parameterDocs.slice(1);
         }
-      })
+      });
     }
-  }
-}
+  };
+};

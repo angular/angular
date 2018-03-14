@@ -3,10 +3,11 @@
 
 <section class="{$ doc.docType $}-overview">
   <code-example hideCopy="true" class="no-box api-heading">{{ {$ doc.valueParam.name $}_expression | <span class="kwd nocode">{$ doc.pipeName $}</span>
-    {%- for param in doc.pipeParams %} : {% if param.isOptional or param.defaultValue !== undefined %}[ {% endif -%}
-    {$ param.name $}
+    {%- for param in doc.pipeParams %}
+      {%- if param.isOptional or param.defaultValue !== undefined %} [{% endif %} : {$ param.name $}
     {%- endfor %}
-    {%- for param in doc.pipeParams %}{% if param.isOptional or param.defaultValue !== undefined %} ]{% endif %}
+    {%- for param in doc.pipeParams %}
+      {%- if param.isOptional or param.defaultValue !== undefined %} ]{% endif %}
     {%- endfor %} }}</code-example>
 
   {% if doc.valueParam.type %}

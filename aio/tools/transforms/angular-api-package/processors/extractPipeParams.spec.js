@@ -1,5 +1,4 @@
 const testPackage = require('../../helpers/test-package');
-const processorFactory = require('./extractPipeParams');
 const Dgeni = require('dgeni');
 
 describe('extractPipeParams processor', () => {
@@ -31,7 +30,7 @@ describe('extractPipeParams processor', () => {
   it('should extract the pipe name', () => {
     const docs = [ { docType: 'pipe', pipeOptions: { name: 'testPipe' }, members: [ { name: 'transform', parameterDocs: [] }] } ];
     processor.$process(docs);
-    expect(docs[0].pipeName).toEqual('testPipe')
+    expect(docs[0].pipeName).toEqual('testPipe');
   });
 
   it('should extract the value parameter', () => {
@@ -42,7 +41,7 @@ describe('extractPipeParams processor', () => {
       { name: 'transform', parameterDocs: [valueParam, pipeParam1, pipeParam2] }
     ] } ];
     processor.$process(docs);
-    expect(docs[0].valueParam).toEqual(valueParam)
+    expect(docs[0].valueParam).toBe(valueParam);
   });
 
   it('should extract the pipe parameters', () => {
@@ -53,7 +52,9 @@ describe('extractPipeParams processor', () => {
       { name: 'transform', parameterDocs: [valueParam, pipeParam1, pipeParam2] }
     ] } ];
     processor.$process(docs);
-    expect(docs[0].pipeParams).toEqual([pipeParam1, pipeParam2]);
+    expect(docs[0].pipeParams.length).toEqual(2);
+    expect(docs[0].pipeParams[0]).toBe(pipeParam1);
+    expect(docs[0].pipeParams[1]).toBe(pipeParam2);
   });
 });
 
