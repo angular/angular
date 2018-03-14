@@ -151,7 +151,7 @@ function firstAfter<T>(a: T[], predicate: (value: T) => boolean) {
 type RecordedNode<T extends ts.Node = ts.Node> = (T & { __recorded: any; }) | null;
 
 function escapeDoubleQuotes(value: string): string {
-  return value.replace(/\"/g, '\\"');
+  return value.replace(/(\"|\\)/g, '\\$1');
 }
 
 function createLiteral(value: any) {

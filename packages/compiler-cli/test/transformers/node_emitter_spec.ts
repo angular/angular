@@ -178,10 +178,10 @@ describe('TypeScriptNodeEmitter', () => {
         .toEqual(`({someKey:1,a:"a","b":"b","*":"star"});`);
 
     // Regressions #22774
-    expect(emitStmt(o.literal('\\\\0025BC').toStmt())).toEqual('"\\\\0025BC";');
+    expect(emitStmt(o.literal('\\0025BC').toStmt())).toEqual('"\\\\0025BC";');
     expect(emitStmt(o.literal('"some value"').toStmt())).toEqual('"\\"some value\\"";');
     expect(emitStmt(o.literal('"some \\0025BC value"').toStmt()))
-        .toEqual('"\\"some \\0025BC value\\"";');
+        .toEqual('"\\"some \\\\0025BC value\\"";');
   });
 
   it('should support blank literals', () => {
