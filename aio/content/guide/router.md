@@ -2206,7 +2206,7 @@ the other to animate the component down as it leaves the application view (`:lea
 You could create more triggers with different transitions for other route components. This trigger is sufficient for the current milestone.
 
 
-Back in the `HeroDetailComponent`, import the `slideInDownAnimation` from `'./animations.ts`.
+Back in the `HeroDetailComponent`, import the `slideInDownAnimation` from `'../animations.ts`.
 Add the `HostBinding` decorator  to the imports from `@angular/core`; you'll need it in a moment.
 
 Add an `animations` array to the `@Component` metadata's that contains the `slideInDownAnimation`.
@@ -2304,6 +2304,10 @@ After these changes, the folder structure looks like this:
 
         </div>
 
+	<div class='file>
+	  animations.ts
+	</div>
+
         <div class='file'>
           app.component.ts
         </div>
@@ -2355,6 +2359,10 @@ After these changes, the folder structure looks like this:
 Here are the relevant files for this version of the sample application.
 
 <code-tabs>
+
+  <code-pane title="animations.ts" path="router/src/app/animations.ts">
+
+  </code-pane>
 
   <code-pane title="app.component.ts" path="router/src/app/app.component.1.ts">
 
