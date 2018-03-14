@@ -35,7 +35,6 @@ module.exports = function checkContentRules(log, createDocMessage) {
     $runBefore: ['processing-docs'],
     $process(docs) {
       const errors = [];
-      // Ensure that we have ruleFns for all regex rules
       docs.forEach(doc => {
         const docErrors = [];
         const rules = this.docTypeRules[doc.docType] || {};
