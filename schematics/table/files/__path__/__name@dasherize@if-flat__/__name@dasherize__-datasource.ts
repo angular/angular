@@ -61,8 +61,11 @@ export class <%= classify(name) %>DataSource extends DataSource<<%= classify(nam
       this.sort.sortChange
     ];
 
+    // Set the paginators length
+    this.paginator.length = this.data.length;
+
     return merge(...dataMutations).pipe(map(() => {
-      return this.getPagedData(this.getSortedData(this.data));
+      return this.getPagedData(this.getSortedData([...this.data]));
     }));
   }
 
@@ -91,7 +94,7 @@ export class <%= classify(name) %>DataSource extends DataSource<<%= classify(nam
     }
 
     return data.sort((a, b) => {
-      const isAsc = this.sort.direction == 'asc';
+      const isAsc = this.sort.direction === 'asc';
       switch (this.sort.active) {
         case 'name': return compare(a.name, b.name, isAsc);
         case 'id': return compare(+a.id, +b.id, isAsc);
