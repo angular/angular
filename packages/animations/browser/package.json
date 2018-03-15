@@ -3,5 +3,6 @@
   "typings": "./browser.d.ts",
   "main": "../bundles/animations-browser.umd.js",
   "module": "../esm5/browser.js",
-  "es2015": "../esm2015/browser.js"
+  "es2015": "../esm2015/browser.js",
+  "sideEffects": false
 }

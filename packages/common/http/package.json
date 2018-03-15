@@ -3,5 +3,6 @@
   "typings": "./http.d.ts",
   "main": "../bundles/common-http.umd.js",
   "module": "../esm5/http.js",
-  "es2015": "../esm2015/http.js"
+  "es2015": "../esm2015/http.js",
+  "sideEffects": false
 }
