@@ -8,10 +8,11 @@
 
 // We are temporarily importing the existing viewEngine from core so we can be sure we are
 // correctly implementing its interfaces for backwards compatibility.
+import {Type} from '../core';
 import {Injector} from '../di/injector';
 import {ComponentRef as viewEngine_ComponentRef} from '../linker/component_factory';
 
-import {assertNotNull} from './assert';
+import {assertComponentType, assertNotNull} from './assert';
 import {queueInitHooks, queueLifecycleHooks} from './hooks';
 import {CLEAN_PROMISE, _getComponentHostLElementNode, baseDirectiveCreate, createLView, createTView, enterView, getRootView, hostElement, initChangeDetectorIfExisting, locateHostElement, renderComponentOrTemplate} from './instructions';
 import {ComponentDef, ComponentType} from './interfaces/definition';
@@ -113,9 +114,13 @@ export const NULL_INJECTOR: Injector = {
  * @param options Optional parameters which control bootstrapping
  */
 export function renderComponent<T>(
-    componentType: ComponentType<T>, opts: CreateComponentOptions = {}): T {
+    componentType: ComponentType<T>|
+        Type<T>/* Type as workaround for: Microsoft/TypeScript/issues/4881 */
+    ,
+    opts: CreateComponentOptions = {}): T {
+  ngDevMode && assertComponentType(componentType);
   const rendererFactory = opts.rendererFactory || domRendererFactory3;
-  const componentDef = componentType.ngComponentDef as ComponentDef<T>;
+  const componentDef = (componentType as ComponentType<T>).ngComponentDef as ComponentDef<T>;
   if (componentDef.type != componentType) componentDef.type = componentType;
   let component: T;
   const hostNode = locateHostElement(rendererFactory, opts.host || componentDef.tag);

@@ -22,13 +22,14 @@ export class SymbolExtractor {
   static parse(path: string, contents: string): Symbol[] {
     const symbols: Symbol[] = [];
     const source: ts.SourceFile = ts.createSourceFile(path, contents, ts.ScriptTarget.Latest, true);
-    let fnDepth = 0;
+    let fnRecurseDepth = 0;
     function visitor(child: ts.Node) {
+      // Left for easier debugging.
+      // console.log('>>>', ts.SyntaxKind[child.kind]);
       switch (child.kind) {
         case ts.SyntaxKind.FunctionExpression:
-          fnDepth++;
-          if (fnDepth <= 1) {
-            // Only go into function expression once for the outer closure.
+          fnRecurseDepth++;
+          if (fnRecurseDepth <= 1) {
             ts.forEachChild(child, visitor);
           }
           break;
@@ -44,8 +45,11 @@ export class SymbolExtractor {
           break;
         case ts.SyntaxKind.VariableDeclaration:
           const varDecl = child as ts.VariableDeclaration;
-          if (varDecl.initializer) {
+          if (varDecl.initializer && fnRecurseDepth !== 0) {
             symbols.push({name: varDecl.name.getText()});
+          }
+          if (fnRecurseDepth == 0 && isStoringIIFE(child.parent as ts.VariableDeclarationList)) {
+            ts.forEachChild(child, visitor);
           }
           break;
         case ts.SyntaxKind.FunctionDeclaration:
@@ -113,4 +117,19 @@ function toSymbol(v: string | Symbol): Symbol {
 
 function toName(symbol: Symbol): string {
   return symbol.name;
+}
+
+/**
+ * Detects if VariableDeclarationList is format `var x = function(){}()`;
+ *
+ * Rollup produces this format when it wants to export symbols from a bundle.
+ * @param child
+ */
+function isStoringIIFE(child: ts.VariableDeclarationList): boolean {
+  if (child.declarations.length !== 1) return false;
+  const decl: ts.VariableDeclaration = child.declarations[0];
+  if (decl.initializer && decl.initializer.kind == ts.SyntaxKind.CallExpression) {
+    return true;
+  }
+  return false;
 }

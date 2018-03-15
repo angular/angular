@@ -9,6 +9,12 @@
     "name": "EMPTY_RENDERER_TYPE_ID"
   },
   {
+    "name": "HelloWorld"
+  },
+  {
+    "name": "INeedToExistEvenThoughtIAmNotNeeded"
+  },
+  {
     "name": "NG_HOST_SYMBOL"
   },
   {
@@ -67,6 +73,9 @@
   },
   {
     "name": "defineComponent"
+  },
+  {
+    "name": "defineInjector"
   },
   {
     "name": "detectChangesInternal"
