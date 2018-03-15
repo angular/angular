@@ -12,7 +12,7 @@ import {Directionality} from '@angular/cdk/bidi';
 import {
   HorizontalConnectionPos,
   Overlay,
-  OverlayOrigin,
+  CdkOverlayOrigin,
   OverlayRef,
   VerticalConnectionPos
 } from '@angular/cdk/overlay';
@@ -28,7 +28,7 @@ let itemCount = 25;
   encapsulation: ViewEncapsulation.None,
 })
 export class ConnectedOverlayDemo {
-  @ViewChild(OverlayOrigin) _overlayOrigin: OverlayOrigin;
+  @ViewChild(CdkOverlayOrigin) _overlayOrigin: CdkOverlayOrigin;
 
   originX: HorizontalConnectionPos = 'start';
   originY: VerticalConnectionPos = 'bottom';
