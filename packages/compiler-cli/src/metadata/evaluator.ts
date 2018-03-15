@@ -511,6 +511,9 @@ export class Evaluator {
         return (<ts.LiteralLikeNode>node).text;
       case ts.SyntaxKind.NumericLiteral:
         return parseFloat((<ts.LiteralExpression>node).text);
+      case ts.SyntaxKind.RegularExpressionLiteral:
+        return recordEntry(
+            {__symbolic: 'reference', name: (<ts.LiteralExpression>node).text}, node);
       case ts.SyntaxKind.AnyKeyword:
         return recordEntry({__symbolic: 'reference', name: 'any'}, node);
       case ts.SyntaxKind.StringKeyword:

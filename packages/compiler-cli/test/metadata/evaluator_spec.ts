@@ -225,6 +225,20 @@ describe('Evaluator', () => {
         .toEqual({__symbolic: 'new', expression: {__symbolic: 'reference', name: 'f'}});
   });
 
+  it('should treat RegExp literal as reference', () => {
+    const source = sourceFileOf(`
+      export var a = [
+        { provide: 'someValue': useValue: /\\d/ }
+      ];
+    `);
+    const expr = findVar(source, 'a');
+
+    expect(evaluator.evaluateNode(expr !.initializer !)).toEqual([
+      {provide: 'someValue', useValue: {__symbolic: 'reference', name: '/\\d/'}}
+    ]);
+
+  });
+
   describe('with substitution', () => {
     let evaluator: Evaluator;
     const lambdaTemp = 'lambdaTemp';
