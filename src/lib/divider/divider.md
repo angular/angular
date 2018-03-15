@@ -45,11 +45,11 @@ in a list, because it will overlap with the section divider.
       <mat-divider [inset]="true" *ngIf="!last"></mat-divider>
    </mat-list-item>
    <mat-divider></mat-divider>
-   <h3 md-subheader>Notes</h3>
+   <h3 mat-subheader>Notes</h3>
    <mat-list-item *ngFor="let note of notes">
-      <mat-icon md-list-icon>note</mat-icon>
-      <h4 md-line>{{note.name}}</h4>
-      <p md-line class="demo-2"> {{note.updated}} </p>
+      <mat-icon mat-list-icon>note</mat-icon>
+      <h4 mat-line>{{note.name}}</h4>
+      <p mat-line class="demo-2"> {{note.updated}} </p>
    </mat-list-item>
 </mat-list>
 ```
