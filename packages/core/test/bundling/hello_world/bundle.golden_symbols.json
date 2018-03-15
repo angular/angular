@@ -171,6 +171,9 @@
     "name": "createLNode"
   },
   {
+    "name": "createLNodeObject"
+  },
+  {
     "name": "createLView"
   },
   {
