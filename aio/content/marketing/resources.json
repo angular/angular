@@ -415,200 +415,238 @@
       }
     }
   },
-  "Education": {
+  "교육": {
+    "Education": "",
     "order": 2,
     "subCategories": {
-      "Books": {
+      "도서": {
+        "Books": "",
         "order": 1,
         "resources": {
           "-KLI8vJ0ZkvWhqPembZ7": {
-            "desc": "A guide that helps developers get up to speed quickly on Angular and its accompanying technologies.",
+            "//desc": "A guide that helps developers get up to speed quickly on Angular and its accompanying technologies.",
+            "desc": "Angular와 관련기술을 활용하는 방법에 대해 소개합니다.",
             "rev": true,
             "title": "How to Get Started and Productive in Angular Fast",
             "url": "http://www.amazon.com/How-Started-Productive-Angular-Fast-ebook/dp/B01D3B0ET4/ref=sr_1_1_twi_kin_2?ie=UTF8&qid=1462381159&sr=8-1"
           },
           "-KLIzGEp8Mh5W-FkiQnL": {
-            "desc": "Your quick, no-nonsense guide to building real-world apps with Angular",
+            "//desc": "Your quick, no-nonsense guide to building real-world apps with Angular",
+            "desc": "Angular로 운영용 애플리케이션을 만드는 방법을 쉽고 합리적인 방법으로 안내합니다.",
             "rev": true,
             "title": "Learning Angular",
             "url": "https://www.packtpub.com/web-development/learning-angular-2"
           },
           "3ab": {
-            "desc": "More than 15 books from O'Reilly about Angular",
+            "//desc": "More than 15 books from O'Reilly about Angular",
+            "desc": "O'reilly 출판사에서도 15종 이상의 Angular 서적을 출판했습니다.",
             "rev": true,
             "title": "O'Reilly Media",
             "url": "https://ssearch.oreilly.com/?q=angular+2&x=0&y=0"
           },
           "8ab": {
-            "desc": "This books shows all the steps necessary for the development of SPA (Single Page Application) applications with the brand new Angular",
+            "//desc": "This books shows all the steps necessary for the development of SPA (Single Page Application) applications with the brand new Angular",
+            "desc": "이 책은 Angular로 SPA(싱글 페이지 애플리케이션)를 만드는 방법을 처음부터 차근차근 소개합니다.",
             "rev": true,
             "title": "Practical Angular",
             "url": "https://leanpub.com/practical-angular-2"
           },
           "a2b": {
-            "desc": "Publications and books from Manning about Angular",
+            "//desc": "Publications and books from Manning about Angular",
+            "desc": "Manning 출판사의 Angular 도서 목록",
             "rev": true,
             "title": "Manning Publications",
             "url": "https://www.manning.com/search?q=angular"
           },
           "a4b": {
-            "desc": "From getting started with the Angular toolchain to writing applications with scalable front end architectures, this book walks you through everything you need to know.",
+            "//desc": "From getting started with the Angular toolchain to writing applications with scalable front end architectures, this book walks you through everything you need to know.",
+            "desc": "Angular를 처음 시작하는 것부터 크게 확장된 프론트엔드 아키텍처까지, 개발에 필요한 모든 내용을 이 책에서 다룹니다.",
             "rev": true,
             "title": "Rangle's Angular Training Book",
             "url": "http://ngcourse.rangle.io/"
           },
           "a5b": {
-            "desc": "The in-depth, complete, and up-to-date book on Angular. Become an Angular expert today.",
+            "//desc": "The in-depth, complete, and up-to-date book on Angular. Become an Angular expert today.",
+            "desc": "Angular 최신 버전이 나올때마다 갱신되는 ebook입니다. 최신 코드를 깊이 있게 공부해 보세요.",
             "rev": true,
             "title": "ng-book",
             "url": "https://www.ng-book.com/2/"
           },
           "a6b": {
-            "desc": "A Practical Introduction to the new Web Development Platform Angular",
+            "//desc": "A Practical Introduction to the new Web Development Platform Angular",
+            "desc": "Angular를 실제 프로젝트에 어떻게 도입하는 것이 좋을지 소개합니다.",
             "rev": true,
             "title": "Angular Book",
             "url": "https://leanpub.com/angular2-book"
           },
           "a7b": {
-            "desc": "This ebook will help you getting the philosophy of the framework: what comes from 1.x, what has been introduced and why",
+            "//desc": "This ebook will help you getting the philosophy of the framework: what comes from 1.x, what has been introduced and why",
+            "desc": "1.x 버전의 어떤 내용이 새로운 버전에도 도입되었는지, 어떤 내용이 새로운 내용이며 왜 그 내용이 도입되었는지 등 Angular 프레임워크의 철학을 이해하려면 이 책을 보는 것이 좋습니다.",
             "rev": true,
             "title": "Becoming a Ninja with Angular",
             "url": "https://books.ninja-squad.com/angular"
           },
           "ab": {
-            "desc": "More than 10 books from Packt Publishing about Angular",
+            "//desc": "More than 10 books from Packt Publishing about Angular",
+            "desc": "Packts 출판사는 10종 이상의 Angular 서적을 출판했습니다.",
             "rev": true,
             "title": "Packt Publishing",
             "url": "https://www.packtpub.com/all/?search=angular%202#"
           },
           "cnoring-rxjs-fundamentals": {
-            "desc": "A free book that covers all facets of working with Rxjs from your first Observable to how to make your code run at optimal speed with Schedulers.",
+            "//desc": "A free book that covers all facets of working with Rxjs from your first Observable to how to make your code run at optimal speed with Schedulers.",
+            "desc": "옵저버블과 RxJS를 다루면서 만나는 내용 대부분을 무료로 소개하는 ebook입니다. 스케쥴러를 사용해서 코드를 최적화하는 내용을 중심으로 다룹니다.",
             "rev": true,
             "title": "RxJS 5 Ultimate",
             "url": "https://www.gitbook.com/book/chrisnoring/rxjs-5-ultimate/details"
           },
           "vsavkin-angular-router": {
-            "desc": "This book is a comprehensive guide to the Angular router written by its designer. The book explores the library in depth, including the mental model, design constraints, subtleties of the API.",
+            "//desc": "This book is a comprehensive guide to the Angular router written by its designer. The book explores the library in depth, including the mental model, design constraints, subtleties of the API.",
+            "desc": "이 책은 Angular 라우터를 깊이 있게 다룹니다. Angular 라우터 라이브러리에 대한 것은 물론이고, 모델 구조, 제약 조건, API의 구체적인 사용방법까지 다룹니다.",
             "rev": true,
             "title": "Angular Router",
             "url": "https://leanpub.com/router"
           },
           "vsavkin-essential-angular": {
-            "desc": "The book is a short, but at the same time, fairly complete overview of the key aspects of Angular written by its core contributors Victor Savkin and Jeff Cross. The book will give you a strong foundation. It will help you put all the concepts into right places. So you will get a good understanding of why the framework is the way it is.",
+            "//desc": "The book is a short, but at the same time, fairly complete overview of the key aspects of Angular written by its core contributors Victor Savkin and Jeff Cross. The book will give you a strong foundation. It will help you put all the concepts into right places. So you will get a good understanding of why the framework is the way it is.",
+            "desc": "이 책은 Angular 컨트리뷰터인 Victor Savkin과 Jeff Cross가 함께 집필했으며, 아주 얇지만 Angular에 대한 기본 내용을 충실하게 담고 있습니다. Angular 프레임워크의 기본 내용을 공부하려면 이 책이 큰 도움이 될 것입니다.",
             "rev": true,
             "title": "Essential Angular",
             "url": "https://gumroad.com/l/essential_angular"
           }
         }
       },
-      "Online Training": {
+      "온라인 학습": {
+        "Online Training": "",
         "order": 3,
         "resources": {
           "-KLIBoTWXMiBcvG0dAM6": {
-            "desc": "This course introduces you to the essentials of this \"superheroic\" framework, including declarative templates, two-way data binding, and dependency injection.",
+            "//desc": "This course introduces you to the essentials of this \"superheroic\" framework, including declarative templates, two-way data binding, and dependency injection.",
+            "desc": "이 코스는 선언형 템플릿, 양방향 바인딩, 의존성 주입 등 Angular 프레임워크의 기초에 대해 다룹니다.",
             "rev": true,
             "title": "Angular: Essential Training",
             "url": "https://www.lynda.com/AngularJS-tutorials/Angular-2-Essential-Training/540347-2.html"
           },
           "-KLIzGq3CiFeoZUemVyE": {
-            "desc": "Learn the core concepts, play with the code, become a competent Angular developer",
+            "//desc": "Learn the core concepts, play with the code, become a competent Angular developer",
+            "desc": "Angular의 기초를 배우고 코드를 작성하면서 Angular 전문가가 되어보세요.",
             "rev": true,
             "title": "Angular Concepts, Code and Collective Wisdom",
             "url": "https://www.udemy.com/angular-2-concepts-code-and-collective-wisdom/"
           },
           "-KLIzHwg-glQLXni1hvL": {
-            "desc": "Spanish language Angular articles and information",
+            "//desc": "Spanish language Angular articles and information",
+            "desc": "스페인어로 제공되는 Angular 문서",
             "rev": true,
-            "title": "Academia Binaria (español)",
+            "//title": "Academia Binaria (español)",
+            "title": "Academia Binaria (스페인어)",
             "url": "http://academia-binaria.com/"
           },
           "-KLIzIOgdPXzI4LMOzYP": {
-            "desc": "In this course, you will learn the features listed above and so much more. This amazing Angular tutorial will cover the fundamentals of Angular (you don’t even need to know Angular), TypeScript, and introduction to the programming concepts such as conditions, arrays, functions, directives, pipes, etc.",
+            "//desc": "In this course, you will learn the features listed above and so much more. This amazing Angular tutorial will cover the fundamentals of Angular (you don’t even need to know Angular), TypeScript, and introduction to the programming concepts such as conditions, arrays, functions, directives, pipes, etc.",
+            "desc": "Angular의 기초부터 심화 내용까지 다룹니다. Angular, TypeScript는 물론, 배열과 함수, 디렉티브, 파이프가 어떤 철학을 갖고 만들어졌는지도 다룹니다.",
             "rev": true,
             "title": "Eduonix Angular Fundamentals",
             "url": "https://www.eduonix.com/courses/Web-Development/angular-2-fundamentals-for-web-developers"
           },
           "-KMUuOWwciL_S_o0fzFO": {
-            "desc": "The ngMigrate project is brought to you by Todd Motto, a Developer Advocate at Telerik, spreading the good word of Kendo UI, NativeScript and Angular & AngularJS. You can follow him on Twitter for questions, or even requests about this guide.",
+            "//desc": "The ngMigrate project is brought to you by Todd Motto, a Developer Advocate at Telerik, spreading the good word of Kendo UI, NativeScript and Angular & AngularJS. You can follow him on Twitter for questions, or even requests about this guide.",
+            "desc": "ngMigrate는 Telerik의 개발자인 Todd Motto가 관리하는 프로젝트입니다. Telerik은 Kendo UI, NativeScript로 유명하며, 이 프로젝트에 대해 궁금한 내용이 있으면 트위터로 질문하거나 도움을 요청할 수도 있습니다.",
             "rev": true,
             "title": "ngMigrate",
             "url": "http://ngmigrate.telerik.com/"
           },
           "-KN3uNQvxifu26D6WKJW": {
             "category": "Education",
-            "desc": "Create the future of web applications by taking Angular for a test drive.",
+            "//desc": "Create the future of web applications by taking Angular for a test drive.",
+            "desc": "Angular로 웹 애플리케이션의 최신 기술을 활용해보세요.",
             "rev": true,
             "subcategory": "Online Training",
             "title": "CodeSchool: Accelerating Through Angular",
             "url": "https://www.codeschool.com/courses/accelerating-through-angular-2"
           },
           "a2b": {
-            "desc": "Hundreds of Angular courses for all skill levels",
+            "//desc": "Hundreds of Angular courses for all skill levels",
+            "desc": "수준에 맞는 Angular 코스를 다양하게 준비했습니다.",
             "logo": "",
             "rev": true,
             "title": "Pluralsight",
             "url": "https://www.pluralsight.com/search?q=angular+2&categories=all"
           },
           "ab": {
-            "desc": "Take this introduction to Angular course, to learn the fundamentals in just two days, free of charge.",
+            "//desc": "Take this introduction to Angular course, to learn the fundamentals in just two days, free of charge.",
+            "desc": "2일만에 Angular 기초를 공부하는 코스가 무료로 제공됩니다.",
             "logo": "",
             "rev": true,
             "title": "Rangle.io",
             "url": "https://rangle.io/services/javascript-training/training-angular1-angular2-with-ngupgrade/"
           },
           "ab3": {
-            "desc": "Angular courses hosted by  Udemy",
+            "//desc": "Angular courses hosted by  Udemy",
+            "desc": "Udemy에서 제공하는 Angular 코스",
             "logo": "",
             "rev": true,
             "title": "Udemy",
             "url": "https://www.udemy.com/courses/search/?ref=home&src=ukw&q=angular+2&lang=en"
           },
           "ab4": {
-            "desc": "Angular Fundamentals and advanced topics focused on Redux Style Angular Applications",
+            "//desc": "Angular Fundamentals and advanced topics focused on Redux Style Angular Applications",
+            "desc": "Angular를 기초부터 심화까지 공부해 보세요. 이 코스는 Redux를 활용하는 것에 초점이 맞춰져 있습니다.",
             "logo": "",
             "rev": true,
             "title": "Egghead.io",
             "url": "https://egghead.io/technologies/angular2"
           },
           "ab5": {
-            "desc": "Build Web Apps with Angular - recorded video content",
+            "//desc": "Build Web Apps with Angular - recorded video content",
+            "desc": "Angular로 웹 애플리케이션을 만들어 보세요.",
             "logo": "",
             "rev": true,
             "title": "Frontend Masters",
             "url": "https://frontendmasters.com/courses/angular-2/"
           },
           "ac6": {
-            "desc": "French language Angular course covering TypeScript, ES6, Dependency Injection, Observables, and more.",
+            "//desc": "French language Angular course covering TypeScript, ES6, Dependency Injection, Observables, and more.",
+            "desc": "TypeScript, ES6, 의존성 주입, 옵저버블 등에 대한 내용이 프랑스어로 제공되는 코스입니다.",
             "rev": true,
-            "title": "Wishtack's Angular Course (francais)",
+            "//title": "Wishtack's Angular Course (francais)",
+            "title": "Wishtack's Angular Course (프랑스어)",
             "url": "http://courses.wishtack.com/angular-2/ecmascript-6"
           },
           "angular-love": {
-            "desc": "Polish language Angular articles and information",
+            "//desc": "Polish language Angular articles and information",
+            "desc": "폴란드어로 제공되는 Angular 수업입니다.",
             "rev": true,
-            "title": "angular.love (Polski)",
+            "//title": "angular.love (Polski)",
+            "title": "angular.love (폴란드어)",
             "url": "http://www.angular.love/"
           },
           "angular2forms": {
-            "desc": "Learn about how to use Reactive Forms with Angular.",
+            "//desc": "Learn about how to use Reactive Forms with Angular.",
+            "desc": "Angular 반응형 폼에 대해 공부해 보세요.",
             "rev": true,
-            "title": "Angular Forms: Data Binding and Validation",
+            "//title": "Angular Forms: Data Binding and Validation",
+            "title": "Angular 폼 : 데이터 바인딩과 유효성 검사",
             "url": "https://www.lynda.com/AngularJS-tutorials/Angular-2-Forms-Data-Binding-Validation/461451-2.html"
           },
           "learn-angular-fr": {
             "desc": "French language Angular content.",
+            "desc": "프랑스어로 제공되는 Angular 문서입니다.",
             "rev": true,
             "title": "Learn Angular (francais)",
+            "//title": "Learn Angular (프랑스어)",
             "url": "http://www.learn-angular.fr/"
           },
           "toddmotto-ultimateangular": {
-            "desc": "Online courses providing in-depth coverage of the Angular ecosystem, AngularJS, Angular and TypeScript, with functional code samples and a full-featured seed environment. Get a deep understanding of Angular and TypeScript from foundation to functional application, then move on to advanced topics with Todd Motto and collaborators.",
+            "//desc": "Online courses providing in-depth coverage of the Angular ecosystem, AngularJS, Angular and TypeScript, with functional code samples and a full-featured seed environment. Get a deep understanding of Angular and TypeScript from foundation to functional application, then move on to advanced topics with Todd Motto and collaborators.",
+            "desc": "Angular와 AngularJS, TypeScript를 샘플 코드와 함께 설명합니다. 애플리케이션을 구성하는 기초부터 시작해서 컨트리뷰터들이 어떻게 활동하고 있는지도 알아봅니다.",
             "rev": true,
             "title": "Ultimate Angular",
             "url": "https://ultimateangular.com/"
           },
           "angular-firebase": {
-            "desc": "Video lessons covering progressive web apps with Angular, Firebase, RxJS, and related APIs.",
+            "//desc": "Video lessons covering progressive web apps with Angular, Firebase, RxJS, and related APIs.",
+            "desc": "Angular를 활용하는 프로그레시브 웹 앱과 Firebase, RxJs에 대해 다룹니다.",
             "rev": true,
             "title": "AngularFirebase.com",
             "url": "https://angularfirebase.com/"
