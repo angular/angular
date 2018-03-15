@@ -12,7 +12,7 @@ const sourcemaps = require('rollup-plugin-sourcemaps');
 const globals = {};
 
 module.exports = {
-  entry: '../../../dist/packages-dist/service-worker/esm5/config.js',
+  entry: '../../../dist/packages-dist/service-worker/fesm5/config.js',
   dest: '../../../dist/packages-dist/service-worker/bundles/service-worker-config.umd.js',
   format: 'umd',
   exports: 'named',

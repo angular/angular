@@ -41,7 +41,7 @@ const globals = {
 };
 
 module.exports = {
-  entry: '../../dist/packages-dist/router/esm5/router.js',
+  entry: '../../dist/packages-dist/router/fesm5/router.js',
   dest: '../../dist/packages-dist/router/bundles/router.umd.js',
   format: 'umd',
   exports: 'named',

@@ -30,7 +30,7 @@ const globals = {
 };
 
 module.exports = {
-  entry: '../../dist/packages-dist/platform-server/esm5/platform-server.js',
+  entry: '../../dist/packages-dist/platform-server/fesm5/platform-server.js',
   dest: '../../dist/packages-dist/platform-server/bundles/platform-server.umd.js',
   format: 'umd',
   exports: 'named',

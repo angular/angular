@@ -37,7 +37,7 @@ const globals = {
 };
 
 module.exports = {
-  entry: '../../dist/packages-dist/service-worker/esm5/service-worker.js',
+  entry: '../../dist/packages-dist/service-worker/fesm5/service-worker.js',
   dest: '../../dist/packages-dist/service-worker/bundles/service-worker.umd.js',
   format: 'umd',
   exports: 'named',

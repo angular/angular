@@ -18,7 +18,7 @@ const globals = {
 };
 
 module.exports = {
-  entry: '../../dist/packages-dist/common/esm5/common.js',
+  entry: '../../dist/packages-dist/common/fesm5/common.js',
   dest: '../../dist/packages-dist/common/bundles/common.umd.js',
   format: 'umd',
   exports: 'named',
