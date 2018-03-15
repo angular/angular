@@ -51,18 +51,9 @@ you can install the package directly from `file:../../node_modules`.
 
 ## Running integration tests
 
-First you must run `build.sh` to create the current distribution.
-
-You can iterate on the tests by keeping the dist folder up-to-date.
-See the `package.json` of the test(s) you're debugging, to see which dist/ folders they install from.
-Then run the right `tsc --watch` command to keep those dist folders up-to-date, for example:
-
-```
-$ ./node_modules/.bin/tsc -p packages/core/tsconfig-build.json --watch
-```
-
-Now you can run the integration test, it will re-install from the dist/ folder on each run.
-
 ```
 $ ./integration/run_tests.sh
 ```
+
+The test runner will first re-build any stale npm packages, then `cd` into each
+subdirectory to execute the test.
