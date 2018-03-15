@@ -38,14 +38,7 @@ const ANCHOR_ELEMENT = new InjectionToken('AnchorElement');
 function declareTests({useJit}: {useJit: boolean}) {
   describe('integration tests', function() {
 
-    beforeEach(() => {
-      TestBed.configureCompiler({
-        useJit,
-        providers: [
-          {provide: CompilerConfig, useValue: new CompilerConfig({enableLegacyTemplate: true})}
-        ]
-      });
-    });
+    beforeEach(() => { TestBed.configureCompiler({useJit}); });
 
     describe('react to record changes', function() {
       it('should consume text node changes', () => {
@@ -418,22 +411,6 @@ function declareTests({useJit}: {useJit: boolean}) {
         const childNodesOfWrapper = getDOM().childNodes(fixture.nativeElement);
         expect(childNodesOfWrapper.length).toBe(1);
         expect(getDOM().isCommentNode(childNodesOfWrapper[0])).toBe(true);
-      });
-
-      it('should support template directives via `template` attribute.', () => {
-        TestBed.configureTestingModule({declarations: [MyComp, SomeViewport]});
-        const template =
-            '<span template="some-viewport: let greeting=someTmpl">{{greeting}}</span>';
-        TestBed.overrideComponent(MyComp, {set: {template}});
-        const fixture = TestBed.createComponent(MyComp);
-
-        fixture.detectChanges();
-
-        const childNodesOfWrapper = getDOM().childNodes(fixture.nativeElement);
-        // 1 template + 2 copies.
-        expect(childNodesOfWrapper.length).toBe(3);
-        expect(childNodesOfWrapper[1]).toHaveText('hello');
-        expect(childNodesOfWrapper[2]).toHaveText('again');
       });
 
       it('should allow to transplant TemplateRefs into other ViewContainers', () => {

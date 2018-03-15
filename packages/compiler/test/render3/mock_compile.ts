@@ -158,7 +158,6 @@ function doCompile(
   const config = new CompilerConfig({
     defaultEncapsulation: ViewEncapsulation.Emulated,
     useJit: false,
-    enableLegacyTemplate: options.enableLegacyTemplate === true,
     missingTranslation: options.missingTranslation,
     preserveWhitespaces: options.preserveWhitespaces,
     strictInjectionParameters: options.strictInjectionParameters,
