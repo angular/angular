@@ -18,7 +18,7 @@ const globals = {
 
 
 module.exports = {
-  entry: '../../../dist/packages-dist/router/esm5/upgrade.js',
+  entry: '../../../dist/packages-dist/router/fesm5/upgrade.js',
   dest: '../../../dist/packages-dist/router/bundles/router-upgrade.umd.js',
   format: 'umd',
   exports: 'named',

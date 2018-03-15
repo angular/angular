@@ -14,7 +14,7 @@ const globals = {
 };
 
 module.exports = {
-  entry: '../../../dist/packages-dist/upgrade/esm5/static.js',
+  entry: '../../../dist/packages-dist/upgrade/fesm5/static.js',
   dest: '../../../dist/packages-dist/upgrade/bundles/upgrade-static.umd.js',
   format: 'umd',
   exports: 'named',
