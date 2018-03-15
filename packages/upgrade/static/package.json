@@ -3,5 +3,6 @@
   "typings": "./static.d.ts",
   "main": "../bundles/upgrade-static.umd.js",
   "module": "../esm5/static.js",
-  "es2015": "../esm2015/static.js"
+  "es2015": "../esm2015/static.js",
+  "sideEffects": false
 }
