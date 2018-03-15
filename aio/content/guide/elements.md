@@ -1,20 +1,26 @@
-# Angular Custom Elements Overview
-
-Angular works with JavaScript custom elements to provide an easy path to creating dynamic HTML content in your Angular app.
-The `createCustomElement()` API provides a bridge from Angular's component interface and change detection functionality to the built-in DOM API. 
+# Custom Elements Overview
 
 [Custom elements](https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_custom_elements) are a Web Platform feature, currently supported by Chrome, Opera, and Safari, and available in other browsers through polyfills (see [Browser Support](#browser-support)).
 A custom element extends HTML by allowing you to define a tag whose content is created and controlled by JavaScript code. 
 The browser maintains a `CustomElementRegistry` of defined custom elements (also called web components), which maps an instantiable JavaScript class to an HTML tag.
 
-HTML content that you add directly to the DOM in an Angular app is normally displayed without Angular processing, unless you define a _dynamic component_, adding your own code to connect the HTML tag to your app data, and participate in change detection.  
+The `createCustomElement()` API provides a bridge from Angular's component interface and change detection functionality to the built-in DOM API. 
 
-Transforming a component to a custom element makes all of the required Angular infrastructure available to the browser. Creating a custom element is simple and straightforward, and automatically connects your component-defined view with Angular change detection and data binding. 
-Custom elements bootstrap themselves - they start automatically when they are added to the DOM, and are automatically destroyed when removed from the DOM.  
+Transforming a component to a custom element makes all of the required Angular infrastructure available to the browser. Creating a custom element is simple and straightforward, and automatically connects your component-defined view with change detection and data binding, mapping Angular functionality to the corresponding native HTML equivalents. 
+
+Custom elements bootstrap themselves - they start automatically when they are added to the DOM, and are automatically destroyed when removed from the DOM. Once a custom element is added to the DOM for any page, it looks and behaves like any other HTML element, and does not require any special knowledge of Angular terms or usage conventions.  
+
+- Easy dynamic content in an Angular app
+  Transforming a component to a custom element provides an easy path to creating dynamic HTML content in your Angular app. HTML content that you add directly to the DOM in an Angular app is normally displayed without Angular processing, unless you define a _dynamic component_, adding your own code to connect the HTML tag to your app data, and participate in change detection. With a custom element, all of that wiring is taken care of automatically.
+
+- Content-rich applications
+  (need a succinct description of this use case)
+
+
 
 ## Basic usage
 
-Use the `createCustomElement()`function to convert a component into a class that can be registered with the browser as a custom element. 
+Use the `createCustomElement()` function to convert a component into a class that can be registered with the browser as a custom element. 
 After you register your configured class with the browser's custom-element registry, you can use the new element just like a built-in HTML element in content that you add directly into the DOM: 
 
 ```
@@ -115,7 +121,7 @@ For more information about browser support and polyfills, see [Browser Support](
 
 Previously, when you wanted to add a component to an app at runtime, you had to define a _dynamic component_. 
 The app module would have to list your dynamic component under `entry-components`, so that the app wouldn't expect it to be present at startup, and then you would have to load it, attach it to an element in the DOM, and wire up all of the dependencies, change detection, and event handling, as described in [Dynamic Component Loader](guide/dynamic-component-loader).
-Using an Angular custom element makes the process much simpler and more transparent, by providing all of the infrastructure and framework automatically -- all you have to do is define the kind of event handling you want.
+Using an Angular custom element makes the process much simpler and more transparent, by providing all of the infrastructure and framework automatically&mdash;all you have to do is define the kind of event handling you want.
 The Popup Service example app compares the two methodologies by defining a component that you can either load dynamically or convert to a custom element. 
 
 - `popup.component.ts`  defines a simple pop-up element that displays an input message, with some animation and styling. 
