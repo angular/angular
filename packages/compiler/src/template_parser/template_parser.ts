@@ -66,6 +66,8 @@ const TEXT_CSS_SELECTOR = CssSelector.parse('*')[0];
 
 const TEMPLATE_ELEMENT_DEPRECATION_WARNING =
     'The <template> element is deprecated. Use <ng-template> instead';
+const TEMPLATE_ELEMENT_DEPRECATION_ERROR =
+    'The <template> element is no longer supported in Angular. Use <ng-template> instead';
 const TEMPLATE_ATTR_DEPRECATION_WARNING =
     'The template attribute is deprecated. Use an ng-template element instead.';
 
@@ -296,7 +298,7 @@ class TemplateParseVisitor implements html.Visitor {
     let hasInlineTemplates = false;
     const attrs: AttrAst[] = [];
     const isTemplateElement = isTemplate(
-        element, this.config.enableLegacyTemplate,
+        element,
         (m: string, span: ParseSourceSpan) => this._reportError(m, span, ParseErrorLevel.WARNING));
 
     element.attrs.forEach(attr => {
@@ -912,16 +914,12 @@ function isEmptyExpression(ast: AST): boolean {
 
 // `template` is deprecated in 4.x
 function isTemplate(
-    el: html.Element, enableLegacyTemplate: boolean,
-    reportDeprecation: (m: string, span: ParseSourceSpan) => void): boolean {
+    el: html.Element, reportDeprecation: (m: string, span: ParseSourceSpan) => void): boolean {
   if (isNgTemplate(el.name)) return true;
   const tagNoNs = splitNsName(el.name)[1];
   // `<template>` is HTML and case insensitive
   if (tagNoNs.toLowerCase() === TEMPLATE_ELEMENT) {
-    if (enableLegacyTemplate && tagNoNs.toLowerCase() === TEMPLATE_ELEMENT) {
-      reportDeprecation(TEMPLATE_ELEMENT_DEPRECATION_WARNING, el.sourceSpan !);
-      return true;
-    }
+    throw new Error(TEMPLATE_ELEMENT_DEPRECATION_WARNING);
   }
   return false;
 }
