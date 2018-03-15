@@ -246,6 +246,7 @@ def _write_bundle_index(ctx):
   tsconfig_file = ctx.actions.declare_file("%s.tsconfig.json" % basename)
   metadata_file = ctx.actions.declare_file("%s.metadata.json" % basename)
   tstyping_file = ctx.actions.declare_file("%s.d.ts" % basename)
+  js_file = ctx.actions.declare_file("%s.js" % basename)
 
   tsconfig = dict(tsc_wrapped_tsconfig(ctx, ctx.files.srcs, ctx.files.srcs), **{
     "angularCompilerOptions": {
@@ -271,7 +272,7 @@ def _write_bundle_index(ctx):
 
   ctx.actions.write(tsconfig_file, json_marshal(tsconfig))
 
-  outputs = [metadata_file, tstyping_file]
+  outputs = [metadata_file, tstyping_file, js_file]
 
   ctx.action(
       progress_message = "Producing metadata for bundle %s" % ctx.label.name,
