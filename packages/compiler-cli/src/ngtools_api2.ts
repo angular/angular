@@ -50,7 +50,6 @@ export interface CompilerOptions extends ts.CompilerOptions {
   annotateForClosureCompiler?: boolean;
   annotationsAs?: 'decorators'|'static fields';
   trace?: boolean;
-  enableLegacyTemplate?: boolean;
   disableExpressionLowering?: boolean;
   i18nOutLocale?: string;
   i18nOutFormat?: string;

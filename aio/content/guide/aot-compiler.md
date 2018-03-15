@@ -215,13 +215,6 @@ value           | description
 
 This tells the compiler to print extra information while compiling templates.
 
-### *enableLegacyTemplate*
-
-The use of `<template>` element was deprecated starting in Angular 4.0 in favor of using
-`<ng-template>` to avoid colliding with the DOM's element of the same name. Setting this option to
-`true` enables the use of the deprecated `<template>` element . This option
-is `false` by default. This option might be required by some third-party Angular libraries.
-
 ### *disableExpressionLowering*
 
 The Angular template compiler transforms code that is used, or could be used, in an annotation

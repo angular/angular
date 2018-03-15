@@ -25,9 +25,9 @@ import {ScrollAreaComponent} from './scroll_area';
     <div style="display: flex">
       <scroll-area id="testArea"></scroll-area>
     </div>
-    <div template="ngIf scrollAreas.length > 0">
+    <div *ngIf="scrollAreas.length > 0">
       <p>Following tables are only here to add weight to the UI:</p>
-      <scroll-area template="ngFor let scrollArea of scrollAreas"></scroll-area>
+      <scroll-area *ngFor="let scrollArea of scrollAreas"></scroll-area>
     </div>
   </div>`
 })

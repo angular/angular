@@ -536,7 +536,6 @@ The recommended options for producing a ivy application are
 | `"renderer2BackPatching"`      | `true`   | implied     |
 | `"generateCodeForLibraries"`   | `true`   | default     |
 | `"annotationsAs"`              | `remove` | implied     |
-| `"enableLegacyTemplate"`       | `false`  | default     |
 | `"preserveWhitespaces"`        | `false`  | default     |
 | `"skipMetadataEmit"`           | `true`   | default     |
 | `"strictMetadataEmit"`         | `false`  | implied     |
@@ -574,7 +573,6 @@ The recommended options for producing a ivy library are:
 | `"renderer2BackPatching"`      | `false`  | default     |
 | `"generateCodeForLibraries"`   | `false`  |             |
 | `"annotationsAs"`              | `remove` | implied     |
-| `"enableLegacyTemplate"`       | `false`  | default     |
 | `"preserveWhitespaces"`        | `false`  | default     |
 | `"skipMetadataEmit"`           | `false`  |             |
 | `"strictMetadataEmit"`         | `true `  |             |
@@ -598,25 +596,21 @@ depending on the target:
 |                   | `"renderer2BackPatching"`      | `true`       | enforced    |
 |                   | `"generateCodeForLibraries"`   | `true`       |             |
 |                   | `"annotationsAs"`              | `remove`     |             |
-|                   | `"enableLegacyTemplate"`       | `false`      |             |
 |                   | `"preserveWhitespaces"`        | `false`      |             |
 |                   | `"skipMetadataEmit"`           | `false`      |             |
 |                   | `"strictMetadataEmit"`         | `true`       |             |
 |                   | `"skipTemplateCodegen"`        | `false`      |             |
 |                   | `"fullTemplateTypeCheck"`      | `true`       |             |
-|                   | `"enableLegacyTemplate"`       | `false`      |             |
 |                   |                                |              |             |
 | `"library"`       | `"generateRenderer2Factories"` | `false`      | enforced    |
 |                   | `"renderer2BackPatching"`      | `false`      | enforced    |
 |                   | `"generateCodeForLibraries"`   | `false`      | enforced    |
 |                   | `"annotationsAs"`              | `decorators` |             |
-|                   | `"enableLegacyTemplate"`       | `false`      |             |
 |                   | `"preserveWhitespaces"`        | `false`      |             |
 |                   | `"skipMetadataEmit"`           | `false`      | enforced    |
 |                   | `"strictMetadataEmit"`         | `true`       |             |
 |                   | `"skipTemplateCodegen"`        | `false`      | enforced    |
 |                   | `"fullTemplateTypeCheck"`      | `true`       |             |
-|                   | `"enableLegacyTemplate"`       | `false`      |             |
 |                   |                                |              |             |
 | `"package"`       | `"flatModuleOutFile"`          |              | required    |
 |                   | `"flatModuleId"`               |              | required    |
@@ -625,13 +619,11 @@ depending on the target:
 |                   | `"renderer2BackPatching"`      | `false`      | enforced    |
 |                   | `"generateCodeForLibraries"`   | `false`      | enforced    |
 |                   | `"annotationsAs"`              | `remove`     |             |
-|                   | `"enableLegacyTemplate"`       | `false`      |             |
 |                   | `"preserveWhitespaces"`        | `false`      |             |
 |                   | `"skipMetadataEmit"`           | `false`      | enforced    |
 |                   | `"strictMetadataEmit"`         | `true`       |             |
 |                   | `"skipTemplateCodegen"`        | `false`      | enforced    |
 |                   | `"fullTemplateTypeCheck"`      | `true`       |             |
-|                   | `"enableLegacyTemplate"`       | `false`      |             |
 
 Options that are marked "enforced" are reported as an error if they are
 explicitly set to a value different from what is specified here. The options
