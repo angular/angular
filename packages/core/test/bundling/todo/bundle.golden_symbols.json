@@ -345,6 +345,9 @@
     "name": "checkNoChangesMode"
   },
   {
+    "name": "cleanUpView"
+  },
+  {
     "name": "componentRefresh"
   },
   {
@@ -360,7 +363,13 @@
     "name": "createInjector"
   },
   {
+    "name": "createLContainer"
+  },
+  {
     "name": "createLNode"
+  },
+  {
+    "name": "createLNodeObject"
   },
   {
     "name": "createLView"
@@ -394,6 +403,9 @@
   },
   {
     "name": "defineInjector"
+  },
+  {
+    "name": "destroyViewTree"
   },
   {
     "name": "detectChanges"
@@ -474,6 +486,12 @@
     "name": "executeInitHooks"
   },
   {
+    "name": "executeOnDestroys"
+  },
+  {
+    "name": "executePipeOnDestroys"
+  },
+  {
     "name": "extendStatics"
   },
   {
@@ -541,6 +559,9 @@
   },
   {
     "name": "getOrCreateTemplateRef"
+  },
+  {
+    "name": "getParentState"
   },
   {
     "name": "getPreviousIndex"
@@ -766,6 +787,12 @@
   },
   {
     "name": "refreshDynamicChildren"
+  },
+  {
+    "name": "removeListeners"
+  },
+  {
+    "name": "removeView"
   },
   {
     "name": "renderComponent"
