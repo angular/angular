@@ -1,13 +1,11 @@
 import {Component, Injectable} from '@angular/core';
-import {FlatTreeControl} from '@angular/cdk/tree';
-import {MatTreeFlattener, MatTreeFlatDataSource} from '@angular/material/tree';
+import {NestedTreeControl} from '@angular/cdk/tree';
+import {MatTreeNestedDataSource} from '@angular/material/tree';
 import {of} from 'rxjs/observable/of';
-import {Observable} from 'rxjs/Observable';
 import {BehaviorSubject} from 'rxjs/BehaviorSubject';
 
 /**
- * File node data with nested structure.
- * Each node has a filename, and a type or a list of children.
+ * Json node data with nested structure. Each node has a filename and a value or a list of children
  */
 export class FileNode {
   children: FileNode[];
@@ -15,16 +13,8 @@ export class FileNode {
   type: any;
 }
 
-/** Flat node with expandable and level information */
-export class FileFlatNode {
-  filename: string;
-  type: any;
-  level: number;
-  expandable: boolean;
-}
-
 /**
- * The file structure tree data in string. The data could be parsed into a Json object
+ * The Json tree data in string. The data could be parsed into Json object
  */
 const TREE_DATA = `
   {
@@ -61,7 +51,7 @@ const TREE_DATA = `
         "Calendar": "app",
         "Webstorm": "app"
     }
-}`;
+  }`;
 
 /**
  * File database, it can build a tree structured Json object from string.
@@ -116,47 +106,27 @@ export class FileDatabase {
 }
 
 /**
- * @title Tree with flat nodes
+ * @title Tree with nested nodes
  */
 @Component({
-  selector: 'tree-flat-overview-example',
-  templateUrl: 'tree-flat-overview-example.html',
-  styleUrls: ['tree-flat-overview-example.css'],
+  selector: 'cdk-tree-nested-example',
+  templateUrl: 'cdk-tree-nested-example.html',
+  styleUrls: ['cdk-tree-nested-example.css'],
   providers: [FileDatabase]
 })
-export class TreeFlatOverviewExample {
+export class CdkTreeNestedExample {
+  nestedTreeControl: NestedTreeControl<FileNode>;
 
-  treeControl: FlatTreeControl<FileFlatNode>;
-
-  treeFlattener: MatTreeFlattener<FileNode, FileFlatNode>;
-
-  dataSource: MatTreeFlatDataSource<FileNode, FileFlatNode>;
+  nestedDataSource: MatTreeNestedDataSource<FileNode>;
 
   constructor(database: FileDatabase) {
-    this.treeFlattener = new MatTreeFlattener(this.transformer, this._getLevel,
-      this._isExpandable, this._getChildren);
-    this.treeControl = new FlatTreeControl<FileFlatNode>(this._getLevel, this._isExpandable);
-    this.dataSource = new MatTreeFlatDataSource(this.treeControl, this.treeFlattener);
+    this.nestedTreeControl = new NestedTreeControl<FileNode>(this._getChildren);
+    this.nestedDataSource = new MatTreeNestedDataSource();
 
-    database.dataChange.subscribe(data => {
-      this.dataSource.data = data;
-    });
+    database.dataChange.subscribe(data => this.nestedDataSource.data = data);
   }
 
-  transformer = (node: FileNode, level: number) => {
-    let flatNode = new FileFlatNode();
-    flatNode.filename = node.filename;
-    flatNode.type = node.type;
-    flatNode.level = level;
-    flatNode.expandable = !!node.children;
-    return flatNode;
-  }
+  private _getChildren = (node: FileNode) => { return of(node.children); };
 
-  private _getLevel = (node: FileFlatNode) => { return node.level; };
-
-  private _isExpandable = (node: FileFlatNode) => { return node.expandable; };
-
-  private _getChildren = (node: FileNode): Observable<FileNode[]> => { return of(node.children); };
-
-  hasChild = (_: number, _nodeData: FileFlatNode) => { return _nodeData.expandable; };
+  hasNestedChild = (_: number, nodeData: FileNode) => {return !(nodeData.type); };
 }

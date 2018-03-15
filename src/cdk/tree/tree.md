@@ -7,6 +7,9 @@ these two types of trees.
 
 #### Flat tree
 
+<!-- example(cdk-tree-flat) -->
+
+
 In a flat tree, the hierarchy is flattened; nodes are not rendered inside of each other, but instead
 are rendered as siblings in sequence. An instance of `TreeFlattener` is used to generate the flat
 list of items from hierarchical data. The "level" of each tree node is read through the `getLevel`
@@ -27,6 +30,8 @@ variations, such as infinite or virtual scrolling.
 
 
 #### Nested tree
+
+<!-- example(cdk-tree-nested) -->
 
 In nested tree, children nodes are placed inside their parent node in DOM. The parent node contains
 a node outlet into which children are projected.

@@ -8,3 +8,8 @@
   margin-bottom: 0;
   list-style-type: none;
 }
+
+.example-tree-node {
+  display: block;
+  padding-left: 40px;
+}

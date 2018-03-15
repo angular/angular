@@ -1,7 +1,8 @@
 <mat-tree [dataSource]="nestedDataSource" [treeControl]="nestedTreeControl" class="example-tree">
   <mat-tree-node *matTreeNodeDef="let node" matTreeNodeToggle>
-    <li>
-      <div>{{node.filename}}:  {{node.type}}</div>
+    <li class="mat-tree-node">
+      <button mat-icon-button disabled></button>
+      {{node.filename}}:  {{node.type}}
     </li>
   </mat-tree-node>
 

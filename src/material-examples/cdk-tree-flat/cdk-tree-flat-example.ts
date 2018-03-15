@@ -119,12 +119,12 @@ export class FileDatabase {
  * @title Tree with flat nodes
  */
 @Component({
-  selector: 'tree-flat-overview-example',
-  templateUrl: 'tree-flat-overview-example.html',
-  styleUrls: ['tree-flat-overview-example.css'],
+  selector: 'cdk-tree-flat-example',
+  templateUrl: 'cdk-tree-flat-example.html',
+  styleUrls: ['cdk-tree-flat-example.css'],
   providers: [FileDatabase]
 })
-export class TreeFlatOverviewExample {
+export class CdkTreeFlatExample {
 
   treeControl: FlatTreeControl<FileFlatNode>;
 
