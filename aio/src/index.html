@@ -111,11 +111,24 @@
   </script>
 
   <script>
-    // Custom elements should always rely on the polyfill to avoid having to include a shim that
-    // handles downleveled ES2015 classes. Especially since that shim would break on IE11 which
-    // can't even parse such code.
-    if (window.customElements) {
-      window.customElements['forcePolyfill'] = true;
+    //load CE polyfill
+    //HACK: webpack's html plugin mangles the document.write calls if we don't trick it.
+
+    //load the ES5 shim for browsers with native CE support
+    function loadCustomElementsShim(){
+      document.write('<scri' + 'pt src="assets/js/native-shim.js"><' + '/script>');
+    }
+
+    //load the full custom elements polyfill for browsers without support
+    function loadCustomElementsPolyfill(){
+      document.write('<scri' + 'pt src="assets/js/custom-elements.min.js"><' + '/script>');
+    }
+    //detect if we have native CE support
+    if(!window.customElements){
+      loadCustomElementsPolyfill();
+    }
+    else {
+      loadCustomElementsShim();
     }
   </script>
 
