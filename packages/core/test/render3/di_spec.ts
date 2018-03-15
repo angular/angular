@@ -487,23 +487,42 @@ describe('di', () => {
         di.bf1 = 0;
         di.bf2 = 0;
         di.bf3 = 0;
+        di.bf4 = 0;
+        di.bf5 = 0;
+        di.bf6 = 0;
+        di.bf7 = 0;
+        di.bf3 = 0;
         di.cbf0 = 0;
         di.cbf1 = 0;
         di.cbf2 = 0;
         di.cbf3 = 0;
+        di.cbf4 = 0;
+        di.cbf5 = 0;
+        di.cbf6 = 0;
+        di.cbf7 = 0;
       });
 
-      function bloomState() { return [di.bf3, di.bf2, di.bf1, di.bf0]; }
+      function bloomState() {
+        return [di.bf7, di.bf6, di.bf5, di.bf4, di.bf3, di.bf2, di.bf1, di.bf0];
+      }
 
       it('should add values', () => {
         bloomAdd(di, { __NG_ELEMENT_ID__: 0 } as any);
-        expect(bloomState()).toEqual([0, 0, 0, 1]);
+        expect(bloomState()).toEqual([0, 0, 0, 0, 0, 0, 0, 1]);
         bloomAdd(di, { __NG_ELEMENT_ID__: 32 + 1 } as any);
-        expect(bloomState()).toEqual([0, 0, 2, 1]);
+        expect(bloomState()).toEqual([0, 0, 0, 0, 0, 0, 2, 1]);
         bloomAdd(di, { __NG_ELEMENT_ID__: 64 + 2 } as any);
-        expect(bloomState()).toEqual([0, 4, 2, 1]);
+        expect(bloomState()).toEqual([0, 0, 0, 0, 0, 4, 2, 1]);
         bloomAdd(di, { __NG_ELEMENT_ID__: 96 + 3 } as any);
-        expect(bloomState()).toEqual([8, 4, 2, 1]);
+        expect(bloomState()).toEqual([0, 0, 0, 0, 8, 4, 2, 1]);
+        bloomAdd(di, { __NG_ELEMENT_ID__: 128 + 4 } as any);
+        expect(bloomState()).toEqual([0, 0, 0, 16, 8, 4, 2, 1]);
+        bloomAdd(di, { __NG_ELEMENT_ID__: 160 + 5 } as any);
+        expect(bloomState()).toEqual([0, 0, 32, 16, 8, 4, 2, 1]);
+        bloomAdd(di, { __NG_ELEMENT_ID__: 192 + 6 } as any);
+        expect(bloomState()).toEqual([0, 64, 32, 16, 8, 4, 2, 1]);
+        bloomAdd(di, { __NG_ELEMENT_ID__: 224 + 7 } as any);
+        expect(bloomState()).toEqual([128, 64, 32, 16, 8, 4, 2, 1]);
       });
 
       it('should query values', () => {
@@ -511,12 +530,22 @@ describe('di', () => {
         bloomAdd(di, { __NG_ELEMENT_ID__: 32 } as any);
         bloomAdd(di, { __NG_ELEMENT_ID__: 64 } as any);
         bloomAdd(di, { __NG_ELEMENT_ID__: 96 } as any);
+        bloomAdd(di, { __NG_ELEMENT_ID__: 127 } as any);
+        bloomAdd(di, { __NG_ELEMENT_ID__: 161 } as any);
+        bloomAdd(di, { __NG_ELEMENT_ID__: 188 } as any);
+        bloomAdd(di, { __NG_ELEMENT_ID__: 223 } as any);
+        bloomAdd(di, { __NG_ELEMENT_ID__: 255 } as any);
 
         expect(bloomFindPossibleInjector(di, 0)).toEqual(di);
         expect(bloomFindPossibleInjector(di, 1)).toEqual(null);
         expect(bloomFindPossibleInjector(di, 32)).toEqual(di);
         expect(bloomFindPossibleInjector(di, 64)).toEqual(di);
         expect(bloomFindPossibleInjector(di, 96)).toEqual(di);
+        expect(bloomFindPossibleInjector(di, 127)).toEqual(di);
+        expect(bloomFindPossibleInjector(di, 161)).toEqual(di);
+        expect(bloomFindPossibleInjector(di, 188)).toEqual(di);
+        expect(bloomFindPossibleInjector(di, 223)).toEqual(di);
+        expect(bloomFindPossibleInjector(di, 255)).toEqual(di);
       });
     });
 
