@@ -30,9 +30,6 @@
 /** HACK: force import of environment.ts/environment.prod.ts to load env specific polyfills */
 import './environments/environment';
 
-/** Add support for window.customElements */
-import '@webcomponents/custom-elements/custom-elements.min';
-
 /** ALL Firefox browsers require the following to support `@angular/animation`. **/
 // import 'web-animations-js';  // Run `npm install --save web-animations-js`.
 
