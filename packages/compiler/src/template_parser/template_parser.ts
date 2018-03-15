@@ -55,19 +55,10 @@ const IDENT_PROPERTY_IDX = 9;
 // Group 10 = identifier inside ()
 const IDENT_EVENT_IDX = 10;
 
-// deprecated in 4.x
-const TEMPLATE_ELEMENT = 'template';
-// deprecated in 4.x
-const TEMPLATE_ATTR = 'template';
 const TEMPLATE_ATTR_PREFIX = '*';
 const CLASS_ATTR = 'class';
 
 const TEXT_CSS_SELECTOR = CssSelector.parse('*')[0];
-
-const TEMPLATE_ELEMENT_DEPRECATION_WARNING =
-    'The <template> element is deprecated. Use <ng-template> instead';
-const TEMPLATE_ATTR_DEPRECATION_WARNING =
-    'The template attribute is deprecated. Use an ng-template element instead.';
 
 let warningCounts: {[warning: string]: number} = {};
 
@@ -109,10 +100,7 @@ export class TemplateParser {
       preserveWhitespaces: boolean): {template: TemplateAst[], pipes: CompilePipeSummary[]} {
     const result = this.tryParse(
         component, template, directives, pipes, schemas, templateUrl, preserveWhitespaces);
-    const warnings =
-        result.errors !.filter(error => error.level === ParseErrorLevel.WARNING)
-            .filter(warnOnlyOnce(
-                [TEMPLATE_ATTR_DEPRECATION_WARNING, TEMPLATE_ELEMENT_DEPRECATION_WARNING]));
+    const warnings = result.errors !.filter(error => error.level === ParseErrorLevel.WARNING);
 
     const errors = result.errors !.filter(error => error.level === ParseErrorLevel.ERROR);
 
@@ -295,9 +283,7 @@ class TemplateParseVisitor implements html.Visitor {
 
     let hasInlineTemplates = false;
     const attrs: AttrAst[] = [];
-    const isTemplateElement = isTemplate(
-        element, this.config.enableLegacyTemplate,
-        (m: string, span: ParseSourceSpan) => this._reportError(m, span, ParseErrorLevel.WARNING));
+    const isTemplateElement = isNgTemplate(element.name);
 
     element.attrs.forEach(attr => {
       const hasBinding = this._parseAttr(
@@ -306,13 +292,9 @@ class TemplateParseVisitor implements html.Visitor {
 
       let templateBindingsSource: string|undefined;
       let prefixToken: string|undefined;
-      let normalizedName = this._normalizeAttributeName(attr.name);
+      const normalizedName = this._normalizeAttributeName(attr.name);
 
-      if (this.config.enableLegacyTemplate && normalizedName == TEMPLATE_ATTR) {
-        this._reportError(
-            TEMPLATE_ATTR_DEPRECATION_WARNING, attr.sourceSpan, ParseErrorLevel.WARNING);
-        templateBindingsSource = attr.value;
-      } else if (normalizedName.startsWith(TEMPLATE_ATTR_PREFIX)) {
+      if (normalizedName.startsWith(TEMPLATE_ATTR_PREFIX)) {
         templateBindingsSource = attr.value;
         prefixToken = normalizedName.substring(TEMPLATE_ATTR_PREFIX.length) + ':';
       }
@@ -321,7 +303,7 @@ class TemplateParseVisitor implements html.Visitor {
       if (hasTemplateBinding) {
         if (hasInlineTemplates) {
           this._reportError(
-              `Can't have multiple template bindings on one element. Use only one attribute named 'template' or prefixed with *`,
+              `Can't have multiple template bindings on one element. Use only one attribute prefixed with *`,
               attr.sourceSpan);
         }
         hasInlineTemplates = true;
@@ -400,7 +382,7 @@ class TemplateParseVisitor implements html.Visitor {
 
     if (hasInlineTemplates) {
       const templateQueryStartIndex = this.contentQueryStartId;
-      const templateSelector = createElementCssSelector(TEMPLATE_ELEMENT, templateMatchableAttrs);
+      const templateSelector = createElementCssSelector('ng-template', templateMatchableAttrs);
       const {directives: templateDirectiveMetas} =
           this._parseDirectives(this.selectorMatcher, templateSelector);
       const templateBoundDirectivePropNames = new Set<string>();
@@ -908,20 +890,4 @@ function isEmptyExpression(ast: AST): boolean {
     ast = ast.ast;
   }
   return ast instanceof EmptyExpr;
-}
-
-// `template` is deprecated in 4.x
-function isTemplate(
-    el: html.Element, enableLegacyTemplate: boolean,
-    reportDeprecation: (m: string, span: ParseSourceSpan) => void): boolean {
-  if (isNgTemplate(el.name)) return true;
-  const tagNoNs = splitNsName(el.name)[1];
-  // `<template>` is HTML and case insensitive
-  if (tagNoNs.toLowerCase() === TEMPLATE_ELEMENT) {
-    if (enableLegacyTemplate && tagNoNs.toLowerCase() === TEMPLATE_ELEMENT) {
-      reportDeprecation(TEMPLATE_ELEMENT_DEPRECATION_WARNING, el.sourceSpan !);
-      return true;
-    }
-  }
-  return false;
 }
