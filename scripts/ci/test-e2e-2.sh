@@ -13,12 +13,6 @@ travisFoldStart "test.e2e.buildPackages"
   ./build.sh
 travisFoldEnd "test.e2e.buildPackages"
 
-
-travisFoldStart "test.e2e.integration"
-  ./integration/run_tests.sh
-travisFoldEnd "test.e2e.integration"
-
-
 # TODO(i): temporarily disable this test because we don't have rxjs backwards compatibility package
 #   and cdk+material are not yet compatible with rxjs v6
 #   uncomment when we have cdk and material releases compatible with rxjs v6

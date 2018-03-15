@@ -82,6 +82,10 @@ jobs:
       # NOTE: Angular developers should typically just bazel build //packages/... or bazel test //packages/...
       - run: bazel query --output=label //... | xargs bazel test
 
+      # We run the integration tests outside of Bazel for now.
+      # See comments inside this script.
+      - run: xvfb-run --auto-servernum ./integration/run_tests.sh
+
       # CircleCI will allow us to go back and view/download these artifacts from past builds.
       # Also we can use a service like https://buildsize.org/ to automatically track binary size of these artifacts.
       - store_artifacts:
