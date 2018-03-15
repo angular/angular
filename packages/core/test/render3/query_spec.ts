@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {QUERY_READ_CONTAINER_REF, QUERY_READ_ELEMENT_REF, QUERY_READ_FROM_NODE, QUERY_READ_TEMPLATE_REF} from '../../src/render3/di';
-import {QueryList, detectChanges, defineComponent} from '../../src/render3/index';
+import {QueryList, defineComponent, detectChanges} from '../../src/render3/index';
 import {container, containerRefreshEnd, containerRefreshStart, elementEnd, elementStart, embeddedViewEnd, embeddedViewStart, load} from '../../src/render3/instructions';
 import {query, queryRefresh} from '../../src/render3/query';
 
@@ -189,6 +189,42 @@ describe('query', () => {
       const qList = (cmptInstance.query as QueryList<any>);
       expect(qList.length).toBe(1);
       expect(qList.first.nativeElement).toEqual(elToQuery);
+    });
+
+    it('should query multiple locals on the same element', () => {
+      let elToQuery;
+
+      /**
+       * <div #foo #bar></div>
+       * <div></div>
+       * class Cmpt {
+       *  @ViewChildren('foo') fooQuery;
+       *  @ViewChildren('bar') barQuery;
+       * }
+       */
+      const Cmpt = createComponent('cmpt', function(ctx: any, cm: boolean) {
+        let tmp: any;
+        if (cm) {
+          query(0, ['foo'], false, QUERY_READ_FROM_NODE);
+          query(1, ['bar'], false, QUERY_READ_FROM_NODE);
+          elToQuery = elementStart(2, 'div', null, null, ['foo', '', 'bar', '']);
+          elementEnd();
+          elementStart(3, 'div');
+          elementEnd();
+        }
+        queryRefresh(tmp = load<QueryList<any>>(0)) && (ctx.fooQuery = tmp as QueryList<any>);
+        queryRefresh(tmp = load<QueryList<any>>(1)) && (ctx.barQuery = tmp as QueryList<any>);
+      });
+
+      const cmptInstance = renderComponent(Cmpt);
+
+      const fooList = (cmptInstance.fooQuery as QueryList<any>);
+      expect(fooList.length).toBe(1);
+      expect(fooList.first.nativeElement).toEqual(elToQuery);
+
+      const barList = (cmptInstance.barQuery as QueryList<any>);
+      expect(barList.length).toBe(1);
+      expect(barList.first.nativeElement).toEqual(elToQuery);
     });
 
     it('should query for multiple elements and read ElementRef by default', () => {
@@ -487,6 +523,41 @@ describe('query', () => {
       expect(qList.length).toBe(2);
       expect(qList.first).toBe(child1Instance);
       expect(qList.last).toBe(child2Instance);
+    });
+
+    it('should read multiple locals exporting the same directive from a given element', () => {
+      const Child = createDirective({exportAs: 'child'});
+      let childInstance;
+
+      /**
+       * <div child #foo="child" #bar="child"></div>
+       * class Cmpt {
+       *  @ViewChildren('foo') fooQuery;
+       *  @ViewChildren('bar') barQuery;
+       * }
+       */
+      const Cmpt = createComponent('cmpt', function(ctx: any, cm: boolean) {
+        let tmp: any;
+        if (cm) {
+          query(0, ['foo'], true, QUERY_READ_FROM_NODE);
+          query(1, ['bar'], true, QUERY_READ_FROM_NODE);
+          elementStart(2, 'div', null, [Child], ['foo', 'child', 'bar', 'child']);
+          { childInstance = load(3); }
+          elementEnd();
+        }
+        queryRefresh(tmp = load<QueryList<any>>(0)) && (ctx.fooQuery = tmp as QueryList<any>);
+        queryRefresh(tmp = load<QueryList<any>>(1)) && (ctx.barQuery = tmp as QueryList<any>);
+      });
+
+      const cmptInstance = renderComponent(Cmpt);
+
+      const fooList = cmptInstance.fooQuery as QueryList<any>;
+      expect(fooList.length).toBe(1);
+      expect(fooList.first).toBe(childInstance);
+
+      const barList = cmptInstance.barQuery as QueryList<any>;
+      expect(barList.length).toBe(1);
+      expect(barList.first).toBe(childInstance);
     });
 
     it('should match on exported directive name and read a requested token', () => {
