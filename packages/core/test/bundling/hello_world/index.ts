@@ -6,19 +6,16 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ɵT as T, ɵdefineComponent as defineComponent, ɵrenderComponent as renderComponent} from '@angular/core';
+import {Component, NgModule, ɵrenderComponent as renderComponent} from '@angular/core';
 
-class HelloWorld {
-  static ngComponentDef = defineComponent({
-    type: HelloWorld,
-    tag: 'hello-world',
-    factory: () => new HelloWorld(),
-    template: function HelloWorldTemplate(ctx: HelloWorld, cm: boolean) {
-      if (cm) {
-        T(0, 'Hello World!');
-      }
-    }
-  });
+@Component({selector: 'hello-world', template: 'Hello World!'})
+export class HelloWorld {
 }
+// TODO(misko): Forgetting to export HelloWorld and not having NgModule fails silently.
+
+@NgModule({declarations: [HelloWorld]})
+export class INeedToExistEvenThoughtIAmNotNeeded {
+}
+// TODO(misko): Package should not be required to make this work.
 
 renderComponent(HelloWorld);
