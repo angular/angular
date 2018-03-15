@@ -153,8 +153,11 @@ class LruList {
     // If it is not, then it has a next. First, grab the previous node.
     const previous = this.state.map[node.previous !] !;
 
-    // Fix the forward pointer to skip over node and go directly to node.next.
-    previous.next = node.next;
+    // Check if there was a previous before accessing its next property.
+    if (previous !== undefined) {
+      // Fix the forward pointer to skip over node and go directly to node.next.
+      previous.next = node.next;
+    }
 
     // node.next may or may not be set. If it is, fix the back pointer to skip over node.
     // If it's not set, then this node happened to be the tail, and the tail needs to be
