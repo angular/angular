@@ -66,7 +66,10 @@ describe('AnnouncementBarComponent', () => {
       const request = httpMock.expectOne('generated/announcements.json');
       request.flush('some random response');
       expect(component.announcement).toBeUndefined();
-      expect(mockLogger.output.error[0][0]).toContain('generated/announcements.json contains invalid data:');
+      expect(mockLogger.output.error).toEqual([
+        [jasmine.any(Error)]
+      ]);
+      expect(mockLogger.output.error[0][0].message).toMatch(/^generated\/announcements\.json contains invalid data:/);
     });
 
     it('should handle a failed request for `announcements.json`', () => {
@@ -74,7 +77,10 @@ describe('AnnouncementBarComponent', () => {
       const request = httpMock.expectOne('generated/announcements.json');
       request.error(new ErrorEvent('404'));
       expect(component.announcement).toBeUndefined();
-      expect(mockLogger.output.error[0][0]).toContain('generated/announcements.json request failed:');
+      expect(mockLogger.output.error).toEqual([
+        [jasmine.any(Error)]
+      ]);
+      expect(mockLogger.output.error[0][0].message).toMatch(/^generated\/announcements\.json request failed:/);
     });
   });
 

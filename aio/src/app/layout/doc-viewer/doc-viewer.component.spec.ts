@@ -496,7 +496,7 @@ describe('DocViewerComponent', () => {
         expect(swapViewsSpy).not.toHaveBeenCalled();
         expect(docViewer.nextViewContainer.innerHTML).toBe('');
         expect(logger.output.error).toEqual([
-          [`[DocViewer] Error preparing document 'bar': ${error.stack}`],
+          [jasmine.any(Error)]
         ]);
         expect(TestBed.get(Meta).addTag).toHaveBeenCalledWith({ name: 'googlebot', content: 'noindex' });
         expect(TestBed.get(Meta).addTag).toHaveBeenCalledWith({ name: 'robots', content: 'noindex' });
