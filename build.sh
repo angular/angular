@@ -452,7 +452,9 @@ do
   OUT_DIR_ESM5=${ROOT_OUT_DIR}/${PACKAGE}/esm5
   NPM_DIR=${PWD}/dist/packages-dist/${PACKAGE}
   ESM2015_DIR=${NPM_DIR}/esm2015
+  FESM2015_DIR=${NPM_DIR}/fesm2015
   ESM5_DIR=${NPM_DIR}/esm5
+  FESM5_DIR=${NPM_DIR}/fesm5
   BUNDLES_DIR=${NPM_DIR}/bundles
 
   LICENSE_BANNER=${ROOT_DIR}/license-banner.txt
@@ -474,12 +476,16 @@ do
 
       (
         cd  ${SRC_DIR}
+        echo "======         Copy ESM2015 for ${PACKAGE}"
+        rsync -a --exclude="locale/**" --exclude="**/*.d.ts" --exclude="**/*.metadata.json" ${OUT_DIR}/ ${ESM2015_DIR}
+
         echo "======         Rollup ${PACKAGE}"
-        rollupIndex ${OUT_DIR} ${ESM2015_DIR} ${PACKAGE}
+        rollupIndex ${OUT_DIR} ${FESM2015_DIR} ${PACKAGE}
 
         echo "======         Produce ESM5 version"
         compilePackageES5 ${SRC_DIR} ${OUT_DIR_ESM5} ${PACKAGE}
-        rollupIndex ${OUT_DIR_ESM5} ${ESM5_DIR} ${PACKAGE}
+        rsync -a --exclude="locale/**" --exclude="**/*.d.ts" --exclude="**/*.metadata.json" ${OUT_DIR_ESM5}/ ${ESM5_DIR}
+        rollupIndex ${OUT_DIR_ESM5} ${FESM5_DIR} ${PACKAGE}
 
         echo "======         Run rollup conversions on ${PACKAGE}"
         runRollup ${SRC_DIR}

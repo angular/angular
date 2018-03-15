@@ -19,7 +19,7 @@ const globals = {
 };
 
 module.exports = {
-  entry: '../../dist/packages-dist/core/esm5/core.js',
+  entry: '../../dist/packages-dist/core/fesm5/core.js',
   dest: '../../dist/packages-dist/core/bundles/core.umd.js',
   format: 'umd',
   exports: 'named',
