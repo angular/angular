@@ -114,6 +114,7 @@ export function getParseErrors(error: Error): ParseError[] {
   return (error as any)[ERROR_PARSE_ERRORS] || [];
 }
 
+// Escape characters that have a special meaning in Regular Expressions
 export function escapeRegExp(s: string): string {
   return s.replace(/([.*+?^=!:${}()|[\]\/\\])/g, '\\$1');
 }
