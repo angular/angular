@@ -79,7 +79,7 @@
     "lite-server": "^2.2.2",
     "lodash": "^4.16.2",
     "phantomjs-prebuilt": "^2.1.7",
-    "protractor": "~5.1.0",
+    "protractor": "^5.3.0",
     "rimraf": "^2.5.4",
     "rollup": "^0.41.6",
     "rollup-plugin-commonjs": "^8.0.2",
