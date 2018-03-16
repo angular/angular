@@ -168,42 +168,40 @@ export class DowngradeComponentAdapter {
     const outputs = this.componentFactory.outputs || [];
     for (let j = 0; j < outputs.length; j++) {
       const output = new PropertyBinding(outputs[j].propName, outputs[j].templateName);
-      let expr: string|null = null;
-      let assignExpr = false;
-
       const bindonAttr = output.bindonAttr.substring(0, output.bindonAttr.length - 6);
       const bracketParenAttr =
           `[(${output.bracketParenAttr.substring(2, output.bracketParenAttr.length - 8)})]`;
-
+      // order below is important - first update bindings then evaluate expressions
+      if (attrs.hasOwnProperty(bindonAttr)) {
+        this.subscribeToOutput(output, attrs[bindonAttr], true);
+      }
+      if (attrs.hasOwnProperty(bracketParenAttr)) {
+        this.subscribeToOutput(output, attrs[bracketParenAttr], true);
+      }
       if (attrs.hasOwnProperty(output.onAttr)) {
-        expr = attrs[output.onAttr];
-      } else if (attrs.hasOwnProperty(output.parenAttr)) {
-        expr = attrs[output.parenAttr];
-      } else if (attrs.hasOwnProperty(bindonAttr)) {
-        expr = attrs[bindonAttr];
-        assignExpr = true;
-      } else if (attrs.hasOwnProperty(bracketParenAttr)) {
-        expr = attrs[bracketParenAttr];
-        assignExpr = true;
+        this.subscribeToOutput(output, attrs[output.onAttr]);
       }
+      if (attrs.hasOwnProperty(output.parenAttr)) {
+        this.subscribeToOutput(output, attrs[output.parenAttr]);
+      }
+    }
+  }
 
-      if (expr != null && assignExpr != null) {
-        const getter = this.$parse(expr);
-        const setter = getter.assign;
-        if (assignExpr && !setter) {
-          throw new Error(`Expression '${expr}' is not assignable!`);
-        }
-        const emitter = this.component[output.prop] as EventEmitter<any>;
-        if (emitter) {
-          emitter.subscribe({
-            next: assignExpr ? (v: any) => setter !(this.scope, v) :
-                               (v: any) => getter(this.scope, {'$event': v})
-          });
-        } else {
-          throw new Error(
-              `Missing emitter '${output.prop}' on component '${getComponentName(this.componentFactory.componentType)}'!`);
-        }
-      }
+  private subscribeToOutput(output: PropertyBinding, expr: string, isAssignment: boolean = false) {
+    const getter = this.$parse(expr);
+    const setter = getter.assign;
+    if (isAssignment && !setter) {
+      throw new Error(`Expression '${expr}' is not assignable!`);
+    }
+    const emitter = this.component[output.prop] as EventEmitter<any>;
+    if (emitter) {
+      emitter.subscribe({
+        next: isAssignment ? (v: any) => setter !(this.scope, v) :
+                             (v: any) => getter(this.scope, {'$event': v})
+      });
+    } else {
+      throw new Error(
+          `Missing emitter '${output.prop}' on component '${getComponentName(this.componentFactory.componentType)}'!`);
     }
   }
 
