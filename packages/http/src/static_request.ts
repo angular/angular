@@ -167,6 +167,10 @@ export class Request extends Body {
         return null;
     }
   }
+
+  toString(): string {
+    return `Request for URL: ${this.url} using method: ${RequestMethod[this.action]}`;
+  }
 }
 
 function urlEncodeParams(params: {[key: string]: any}): URLSearchParams {
