@@ -1,6 +1,6 @@
 """Re-export of some bazel rules with repository-wide defaults."""
 load("@build_bazel_rules_nodejs//:defs.bzl", _npm_package = "npm_package")
-load("@build_bazel_rules_typescript//:defs.bzl", _ts_library = "ts_library")
+load("@build_bazel_rules_typescript//:defs.bzl", _ts_library = "ts_library", _ts_web_test = "ts_web_test")
 load("//packages/bazel:index.bzl", _ng_module = "ng_module", _ng_package = "ng_package")
 
 DEFAULT_TSCONFIG = "//packages:tsconfig-build.json"
@@ -65,4 +65,17 @@ def npm_package(name, replacements = {}, **kwargs):
       name = name,
       stamp_data = "//tools:stamp_data",
       replacements = dict(replacements, **PKG_GROUP_REPLACEMENTS),
+      **kwargs)
+
+def ts_web_test(bootstrap = [], deps = [], **kwargs):
+  if not bootstrap:
+    bootstrap = ["//:web_test_bootstrap_scripts"]
+  local_deps = [
+    "//:node_modules/tslib/tslib.js",
+    "//tools/testing:browser",
+  ] + deps
+
+  _ts_web_test(
+      bootstrap = bootstrap,
+      deps = local_deps,
       **kwargs)
