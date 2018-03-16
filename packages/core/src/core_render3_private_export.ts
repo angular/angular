@@ -85,3 +85,5 @@ export {
   sanitizeResourceUrl as ɵsanitizeResourceUrl, 
 } from './sanitization/sanitization';
 // clang-format on
+export {defineInjector as ɵdefineInjector} from './di/defs';
+export {createInjector as ɵcreateInjector} from './di/r3_injector';
