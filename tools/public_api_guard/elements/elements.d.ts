@@ -12,9 +12,6 @@ export declare abstract class NgElement extends HTMLElement {
 
 /** @experimental */
 export interface NgElementConfig {
-    attributeToPropertyInputs?: {
-        [key: string]: string;
-    };
     injector: Injector;
     strategyFactory?: NgElementStrategyFactory;
 }
