@@ -116,7 +116,12 @@ def _ng_package_impl(ctx):
     if f.path.endswith(".js"):
       esm2015.append(struct(js = f, map = None))
 
-  for entry_point in [""] + ctx.attr.secondary_entry_points:
+  entry_points = []
+  for dep in ctx.attr.deps:
+    if dep.label.package.startswith(ctx.label.package):
+      entry_points.append(dep.label.package[len(ctx.label.package) + 1:])
+
+  for entry_point in entry_points:
     es2015_entry_point = "/".join([p for p in [
         ctx.bin_dir.path,
         ctx.label.package,
@@ -158,9 +163,14 @@ def _ng_package_impl(ctx):
         config_name = entry_point.replace("/", "_"))
     bundles.append(struct(js = min_output, map = uglify_sourcemap))
 
-  metadata_files = depset(transitive = [getattr(dep, "angular").flat_module_metadata
-                                        for dep in ctx.attr.deps
-                                        if hasattr(dep, "angular")])
+  inputs = (
+      ctx.files.srcs +
+      esm5_sources.to_list() +
+      depset(transitive = [d.typescript.transitive_declarations
+                           for d in ctx.attr.deps
+                           if hasattr(d, "typescript")]).to_list() +
+      [f.js for f in esm2015 + esm5 + bundles] +
+      [f.map for f in esm2015 + esm5 + bundles if f.map])
 
   args = ctx.actions.args()
   args.use_param_file("%s", use_always = True)
@@ -168,33 +178,47 @@ def _ng_package_impl(ctx):
   # The order of arguments matters here, as they are read in order in packager.ts.
   args.add(npm_package_directory.path)
   args.add(ctx.label.package)
-  args.add(primary_entry_point_name(ctx.attr.name, ctx.attr.entry_point))
-  args.add(ctx.attr.secondary_entry_points, join_with=",")
   args.add([ctx.bin_dir.path, ctx.label.package], join_with="/")
-  args.add(ctx.file.readme_md.path if ctx.file.readme_md else "")
+
+  flat_module_metadata = depset(transitive = [
+      getattr(dep, "angular").flat_module_metadata
+      for dep in ctx.attr.deps
+      if hasattr(dep, "angular")])
+  # Marshal the metadata into a JSON string so we can parse the data structure
+  # in the TypeScript program easily.
+  metadata_arg = {}
+  for m in flat_module_metadata.to_list():
+    inputs.extend([m.index_file, m.typings_file, m.metadata_file])
+    metadata_arg[m.module_name] = {
+        "index": m.index_file.path,
+        "typings": m.typings_file.path,
+        "metadata": m.metadata_file.path,
+    }
+  args.add(str(metadata_arg))
+
+  if ctx.file.readme_md:
+    inputs.append(ctx.file.readme_md)
+    args.add(ctx.file.readme_md.path)
+  else:
+    # placeholder
+    args.add("")
+
   args.add(_flatten_paths(esm2015), join_with=",")
   args.add(_flatten_paths(esm5), join_with=",")
   args.add(_flatten_paths(bundles), join_with=",")
   args.add([s.path for s in ctx.files.srcs], join_with=",")
-  args.add(ctx.file.license_banner.path if ctx.file.license_banner else "")
 
-  other_inputs = (metadata_files.to_list() +
-      [f.js for f in esm2015 + esm5 + bundles] +
-      [f.map for f in esm2015 + esm5 + bundles if f.map])
-  if ctx.file.readme_md:
-    other_inputs.append(ctx.file.readme_md)
   if ctx.file.license_banner:
-    other_inputs.append(ctx.file.license_banner)
+    inputs.append(ctx.file.license_banner)
+    args.add(ctx.file.license_banner.path)
+  else:
+    # placeholder
+    args.add("")
 
   ctx.actions.run(
       progress_message = "Angular Packaging: building npm package for %s" % ctx.label.name,
       mnemonic = "AngularPackage",
-      inputs = esm5_sources.to_list() +
-          depset(transitive = [d.typescript.transitive_declarations
-              for d in ctx.attr.deps
-              if hasattr(d, "typescript")]).to_list() +
-          ctx.files.srcs +
-          other_inputs,
+      inputs = inputs,
       outputs = [npm_package_directory],
       executable = ctx.executable._ng_packager,
       arguments = [args],
@@ -220,7 +244,6 @@ NG_PACKAGE_ATTRS = dict(NPM_PACKAGE_ATTRS, **dict(ROLLUP_ATTRS, **{
     "include_devmode_srcs": attr.bool(default = False),
     "readme_md": attr.label(allow_single_file = FileType([".md"])),
     "globals": attr.string_dict(default={}),
-    "secondary_entry_points": attr.string_list(),
     "_ng_packager": attr.label(
         default=Label("//packages/bazel/src/ng_package:packager"),
         executable=True, cfg="host"),

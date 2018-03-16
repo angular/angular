@@ -1,5 +1,5 @@
 load("//tools:defaults.bzl", "ts_library")
-load("@build_bazel_rules_nodejs//:defs.bzl", "jasmine_node_test")
+load("@build_bazel_rules_nodejs//:defs.bzl", "jasmine_node_test", "nodejs_binary")
 
 exports_files(["package.json"])
 
@@ -37,7 +37,6 @@ jasmine_node_test(
 
 ts_library(
     name = "example_spec_lib",
-    testonly = True,
     srcs = ["example_package.spec.ts"],
     deps = ["//packages:types"],
 )
@@ -45,5 +44,19 @@ ts_library(
 jasmine_node_test(
     name = "example_package",
     srcs = [":example_spec_lib"],
-    data = ["//packages/bazel/test/ng_package/example:npm_package"],
+    data = [
+        "example_package.golden",
+        "//packages/bazel/test/ng_package/example:npm_package",
+    ],
+)
+
+nodejs_binary(
+    name = "example_package.accept",
+    data = [
+        "example_package.golden",
+        ":example_spec_lib",
+        "//packages/bazel/test/ng_package/example:npm_package",
+    ],
+    entry_point = "angular/packages/bazel/test/ng_package/example_package.spec.js",
+    templated_args = ["--accept"],
 )

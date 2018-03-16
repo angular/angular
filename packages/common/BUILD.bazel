@@ -26,11 +26,6 @@ ng_package(
         "//packages/common/testing:package.json",
     ],
     entry_point = "packages/common/index.js",
-    secondary_entry_points = [
-        "testing",
-        "http",
-        "http/testing",
-    ],
     deps = [
         "//packages/common",
         "//packages/common/http",

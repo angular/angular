@@ -8,62 +8,52 @@
 
 import * as fs from 'fs';
 import * as path from 'path';
-import * as shx from 'shelljs';
 
-const UTF8 = {
-  encoding: 'utf-8'
-};
+const TEST_DIR = path.resolve(path.join('packages', 'bazel', 'test', 'ng_package'));
 
-shx.cd(path.join(
-    process.env['TEST_SRCDIR'], 'angular', 'packages', 'bazel', 'test', 'ng_package', 'example',
-    'npm_package'));
+function listDirectories(p: string, depth = 0) {
+  const result: string[] = [];
+  if (fs.statSync(p).isDirectory()) {
+    fs.readdirSync(p).forEach(f => {
+      result.push(
+          '  '.repeat(depth) + path.join(p, f), ...listDirectories(path.join(p, f), depth + 1));
+    });
+  }
+  return result;
+}
 
-describe('example ng_package', () => {
-  it('should have right bundle files', () => {
-    expect(shx.ls('-R', 'bundles').stdout.split('\n').filter(n => !!n).sort()).toEqual([
-      'example-secondary.umd.js',
-      'example-secondary.umd.js.map',
-      'example-secondary.umd.min.js',
-      'example-secondary.umd.min.js.map',
-      'example.umd.js',
-      'example.umd.js.map',
-      'example.umd.min.js',
-      'example.umd.min.js.map',
-    ]);
+function catFiles(p: string) {
+  const result: string[] = [];
+  if (fs.statSync(p).isDirectory()) {
+    fs.readdirSync(p).forEach(dir => { result.push(...catFiles(path.join(p, dir))); });
+  } else {
+    result.push(`--- ${p} ---`, '', fs.readFileSync(p, 'utf-8'), '');
+  }
+  return result;
+}
+
+const goldenFile = path.join(TEST_DIR, 'example_package.golden');
+process.chdir(path.join(TEST_DIR, 'example/npm_package'));
+const actual = [...listDirectories('.'), ...catFiles('.')].join('\n').replace(
+    /bazel-out\/.*\/bin/g, 'bazel-bin');
+const expected = fs.readFileSync(goldenFile, 'utf-8');
+
+if (require.main === module) {
+  const args = process.argv.slice(2);
+  if (args[0] === '--accept') {
+    fs.writeFileSync(require.resolve(goldenFile), actual, 'utf-8');
+  }
+} else {
+  describe('example ng_package', () => {
+    it('should match golden file', () => {
+      if (actual === expected) {
+        return;
+      }
+      fail(`example ng_package differs from golden file
+    
+    Accept the new golden file:
+      bazel run ${process.env['BAZEL_TARGET']}.accept
+      `);
+    });
   });
-  // FESMS currently not part of APF v6
-  xit('should have right fesm files', () => {
-    const expected = [
-      'example.js',
-      'example.js.map',
-      'secondary.js',
-      'secondary.js.map',
-    ];
-    expect(shx.ls('-R', 'esm5').stdout.split('\n').filter(n => !!n).sort()).toEqual(expected);
-    expect(shx.ls('-R', 'esm2015').stdout.split('\n').filter(n => !!n).sort()).toEqual(expected);
-  });
-  it('should have right secondary sources', () => {
-    const expected = [
-      'index.d.ts',
-      'package.json',
-      'secondary.d.ts',
-      'secondary.metadata.json',
-      'secondarymodule.d.ts',
-    ];
-    expect(shx.ls('-R', 'secondary').stdout.split('\n').filter(n => !!n).sort()).toEqual(expected);
-  });
-  it('should have main entry point package.json properties set', () => {
-    const packageJson = JSON.parse(fs.readFileSync('package.json', UTF8));
-    expect(packageJson['main']).toBe('./bundles/example.umd.js');
-    expect(packageJson['module']).toBe('./esm5/example.js');
-    expect(packageJson['es2015']).toBe('./esm2015/example.js');
-    expect(packageJson['typings']).toBe('./example.d.ts');
-  });
-  it('should have secondary entry point package.json properties set', () => {
-    const packageJson = JSON.parse(fs.readFileSync(path.join('secondary', 'package.json'), UTF8));
-    expect(packageJson['main']).toBe('../bundles/example-secondary.umd.js');
-    expect(packageJson['module']).toBe('../esm5/secondary/secondary.js');
-    expect(packageJson['es2015']).toBe('../esm2015/secondary/secondary.js');
-    expect(packageJson['typings']).toBe('./secondary.d.ts');
-  });
-});
+}

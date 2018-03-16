@@ -32,9 +32,6 @@ ng_package(
         "//packages/platform-server/testing:package.json",
     ],
     entry_point = "packages/platform-server/index.js",
-    secondary_entry_points = [
-        "testing",
-    ],
     deps = [
         ":platform-server",
         "//packages/platform-server/testing",
