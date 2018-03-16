@@ -633,8 +633,8 @@
             "desc": "French language Angular content.",
             "desc": "프랑스어로 제공되는 Angular 문서입니다.",
             "rev": true,
-            "title": "Learn Angular (francais)",
-            "//title": "Learn Angular (프랑스어)",
+            "//title": "Learn Angular (francais)",
+            "title": "Learn Angular (프랑스어)",
             "url": "http://www.learn-angular.fr/"
           },
           "toddmotto-ultimateangular": {
@@ -653,99 +653,122 @@
           }
         }
       },
-      "Workshops & Onsite Training": {
+      "워크샵 & 온라인 교육": {
+        "Workshops & Onsite Training": "",
         "order": 2,
         "resources": {
           "-KLIBo3ANF3-1B9wxsoB": {
-            "desc": "Angular Classes from Intertech in Minnesota",
+            "//desc": "Angular Classes from Intertech in Minnesota",
+            "desc": "Minnesota Intertech에서 제공하는 Angular 수업입니다.",
             "rev": true,
             "title": "Intertech",
             "url": "http://www.intertech.com/Training/Web-Dev/AngularJS/AngularJS/Angular-2-Training"
           },
           "-KLIBoFWStce29UCwkvY": {
-            "desc": "Private Angular Training and Mentoring",
+            "//desc": "Private Angular Training and Mentoring",
+            "desc": "강사의 멘토링도 받을 수 있는 전일제 수업입니다.",
             "rev": true,
             "title": "Chariot Solutions",
             "url": "http://chariotsolutions.com/course/angular2-workshop-fundamentals-architecture/"
           },
           "-KLIBoN0p9be3kwC6-ga": {
-            "desc": "Angular Academy is a two day hands-on public course given in-person across Canada!",
+            "//desc": "Angular Academy is a two day hands-on public course given in-person across Canada!",
+            "desc": "Angular Academy는 캐나다 전 지역을 돌며 진행되는 2일제 수업입니다.",
             "rev": true,
-            "title": "Angular Academy (Canada)",
+            "//title": "Angular Academy (Canada)",
+            "title": "Angular Academy (캐나다)",
             "url": "http://www.angularacademy.ca"
           },
           "-KLIBo_lm-WrK1Sjtt-2": {
-            "desc": "Basic and Advanced training across Europe in German",
+            "//desc": "Basic and Advanced training across Europe in German",
+            "desc": "Angular의 기본 내용과 심화 내용을 학습해 보세요. 독일에서 진행됩니다.",
             "rev": true,
-            "title": "TheCodeCampus (German)",
+            "//title": "TheCodeCampus (German)",
+            "title": "TheCodeCampus (독일)",
             "url": "https://www.thecodecampus.de/#!/angularjs"
           },
           "-KLIzFhfGKi1xttqJ7Uh": {
-            "desc": "4 day in-depth Angular training in Israel",
+            "//desc": "4 day in-depth Angular training in Israel",
+            "desc": "이스라엘에서 4일동안 진행되는 집중 코스입니다.",
             "rev": true,
-            "title": "ng-course (Israel)",
+            "//title": "ng-course (Israel)",
+            "title": "ng-course (이스라엘)",
             "url": "http://ng-course.org/"
           },
           "-KLIzIcRoDq3TzCJWnYc": {
-            "desc": "Virtual and in-person training in Canada and the US",
+            "//desc": "Virtual and in-person training in Canada and the US",
+            "desc": "캐나다와 미국에 제공되는 온라인 수업입니다.",
             "rev": true,
             "title": "Web Age Solutions",
             "url": "http://www.webagesolutions.com/courses/WA2533-angular-2-programming"
           },
           "500tech": {
-            "desc": "Learn from 500Tech, an Angular consultancy in Israel.  This course was built by an expert developer, who lives and breathes Angular, and has practical experience  with real world large scale Angular apps.",
+            "//desc": "Learn from 500Tech, an Angular consultancy in Israel.  This course was built by an expert developer, who lives and breathes Angular, and has practical experience  with real world large scale Angular apps.",
+            "desc": "500Tech에서 준비한 Angular 수업입니다. 이 수업은 Angular를 직접 사용하는 전문 개발자가 주관하며, 실제 운영 환경에서는 Angular 애플리케이션을 어떻게 만들어야 할지 안내합니다.",
             "rev": true,
-            "title": "Angular Hands-on Course (Israel)",
+            "//title": "Angular Hands-on Course (Israel)",
+            "title": "Angular 실습 코스 (이스라엘)",
             "url": "http://angular2.courses.500tech.com/"
           },
           "9ab": {
-            "desc": "OnSite Training From the Authors of  \"Become A Ninja with Angular\"",
+            "//desc": "OnSite Training From the Authors of  \"Become A Ninja with Angular\"",
+            "desc": "\"Beceome A Ninja with Angular\" 책의 저자가 직접 진행하는 수업입니다.",
             "rev": true,
             "title": "Ninja Squad",
             "url": "http://ninja-squad.com/formations/formation-angular2"
           },
           "a2b": {
-            "desc": "Angular Boot Camp covers introductory and intermediate content. It includes extensive workshop session, with hands-on help from our experienced developer-trainers. At the end of this class, student are usually able to use AngularJS to make an end-to-end, working application.",
+            "//desc": "Angular Boot Camp covers introductory and intermediate content. It includes extensive workshop session, with hands-on help from our experienced developer-trainers. At the end of this class, student are usually able to use AngularJS to make an end-to-end, working application.",
+            "desc": "Angular Boot Camp는 Angular의 기초를 다루며, 이 수업에서는 이론과 함께 전문 트레이너의 도움을 받을 수도 있습니다. 수업을 마치고 나면 현업에서 사용할 수 있는 Angular 애플리케이션을 만들 수 있을 것입니다.",
             "logo": "",
             "rev": true,
             "title": "Angular Boot Camp",
             "url": "https://angularbootcamp.com"
           },
           "ab": {
-            "desc": "With Rangle’s Custom Training, you can cover Angular in comprehensive detail, on your premises or theirs. Learn directly from Angular experts who will tailor course material to suit your specific application needs.",
+            "//desc": "With Rangle’s Custom Training, you can cover Angular in comprehensive detail, on your premises or theirs. Learn directly from Angular experts who will tailor course material to suit your specific application needs.",
+            "desc": "Rangle이 진행하는 수업입니다. Angular의 기초부터 자세하게 안내하며, 이 수업이 끝나면 웹 애플리케이션을 만들 수 있을만큼 전문가가 될 것입니다.",
             "logo": "",
             "rev": true,
             "title": "Rangle.io",
             "url": "http://rangle.io/services/javascript-training/angular2-training/"
           },
           "ab3": {
-            "desc": "Trainings & Code Reviews. We help people to get a deep understanding of different technologies through trainings and code reviews. Our services can be arranged online, making it possible to join in from anywhere in the world, or on-site to get the best experience possible.",
+            "//desc": "Trainings & Code Reviews. We help people to get a deep understanding of different technologies through trainings and code reviews. Our services can be arranged online, making it possible to join in from anywhere in the world, or on-site to get the best experience possible.",
+            "desc": "수업과 코드 리뷰를 진행하면서 Angular의 심화 내용까지 집중적으로 안내합니다. 현장 수업과 함께 전세계 어디에서라도 들을 수 있는 온라인 수업을 준비했습니다.",
             "logo": "",
             "rev": true,
             "title": "Thoughtram",
             "url": "http://thoughtram.io/"
           },
           "jsru": {
-            "desc": "Complete Angular online course. Constantly updating. Real-time webinars with immediate feedback from the teacher.",
+            "//desc": "Complete Angular online course. Constantly updating. Real-time webinars with immediate feedback from the teacher.",
+            "desc": "온라인으로 진행되는 수업입니다. 실시간으로 진행되며, 강사의 피드백도 바로 확인할 수 있습니다.",
             "logo": "https://learn.javascript.ru/img/sitetoolbar__logo_ru.svg",
             "rev": true,
-            "title": "Learn Javascript (Russian)",
+            "//title": "Learn Javascript (Russian)",
+            "title": "Learn Javascript (러시아)",
             "url": "https://learn.javascript.ru/courses/angular"
           },
           "sa200": {
-            "desc": "Free Angular training delivered by SFEIR in France",
+            "//desc": "Free Angular training delivered by SFEIR in France",
+            "desc": "프랑스 SFEIR에서 제공하는 무료 수업입니다.",
             "rev": true,
-            "title": "SFEIR School (French)",
+            "//title": "SFEIR School (French)",
+            "title": "SFEIR School (프랑스)",
             "url": "https://school.sfeir.com/project/sa200/"
           },
           "formationjs": {
-            "desc": "Angular onsite training in Paris (France). Monthly Angular workshops and custom onsite classes. We are focused on Angular, so we are always up to date.",
+            "//desc": "Angular onsite training in Paris (France). Monthly Angular workshops and custom onsite classes. We are focused on Angular, so we are always up to date.",
+            "desc": "프랑스 파리에서 진행되는 Angular 현장 코스입니다. 매달 진행되며 항상 Angular 최신버전을 대상으로 수업합니다.",
             "rev": true,
-            "title": "Formation JavaScript (French)",
+            "//title": "Formation JavaScript (French)",
+            "title": "Formation JavaScript (프랑스)",
             "url": "https://formationjavascript.com/formation-angular/"
           },
           "wao": {
-            "desc": "Onsite Angular Training delivered by We Are One Sàrl in Switzerland",
+            "//desc": "Onsite Angular Training delivered by We Are One Sàrl in Switzerland",
+            "desc": "스위스 We Are One Sàrl에서 진행하는 현장 교육입니다.",
             "logo": "https://weareone.ch/wordpress/wao-content/uploads/2014/12/logo_200_2x.png",
             "rev": true,
             "title": "We Are One Sàrl",
