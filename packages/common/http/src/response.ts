@@ -197,6 +197,10 @@ export abstract class HttpResponseBase {
     // Cache the ok value to avoid defining a getter.
     this.ok = this.status >= 200 && this.status < 300;
   }
+
+  toString(): string {
+    return `Response with status: ${this.status} ${this.statusText} for URL: ${this.url}`;
+  }
 }
 
 /**
