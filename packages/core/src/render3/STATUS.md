@@ -1,13 +1,23 @@
+# Overview
+
+Ivy is a new backwards-compatible Angular renderer focused on further speed improvements, size reduction, and increased flexibility.
+
+Ivy is currently not feature complete, but can be tested via [`enableIvy: true`](https://next.angular.io/guide/aot-compiler#enableivy) [`angularCompilerOptions` flag](https://next.angular.io/guide/aot-compiler#angular-compiler-options).
+
+We currently expect Ivy to remain behind the flag until it's feature complete and battle tested at Google. In the meantime you can check out this [Hello World demo](https://ng-ivy-demo.firebaseapp.com/).
+
+# Implementation Status
+
 ## Annotations
 | Annotation          | `defineXXX()`                  | Run time | Spec     | Compiler | Back Patch |
 | -------------------- | ------------------------------ | ------- | -------- | -------- | -------- |
-| `@Component`         | ✅ `defineComponent()`         |    ✅   |  ✅      |  ✅      |  ❌      |
-| `@Directive`         | ✅ `defineDirective()`         |    ✅   |  ✅      |  ✅      |  ❌      |
-| `@Directive`         | ❌ `defineAbstractDirective()` |    ❌   |  ❌      |  ❌      |  ❌      |
-| `@Pipe`              | ✅ `definePipe()`              |    ✅   |  ✅      |  ✅      |  ❌      |
-| `@Injectable`        | ❌ `defineInjectable()`        |    ❌   |  ❌      |  ❌      |  ❌      |
-| `@NgModule`          | ❌ `defineInjector()`          |    ❌   |  ❌      |  ❌      |  ❌      |
-| `@ConfigureInjector` | ❌ `defineInjector()`          |    ❌   |  ❌      |  ❌      |  ❌      |
+| `@Component`         | ✅ `defineComponent()`         |    ✅    |  ✅      |  ✅      |  ❌      |
+| `@Directive`         | ✅ `defineDirective()`         |    ✅    |  ✅      |  ✅      |  ❌      |
+| `@Directive`         | ❌ `defineAbstractDirective()` |    ❌    |  ❌      |  ❌      |  ❌      |
+| `@Pipe`              | ✅ `definePipe()`              |    ✅    |  ✅      |  ✅      |  ❌      |
+| `@Injectable`        | ✅ `defineInjectable()`        |    ✅    |  ❌      |  ❌      |  ❌      |
+| `@NgModule`          | ✅ `defineInjector()`          |    ✅    |  ❌      |  ❌      |  ❌      |
+| `@ConfigureInjector` | ❌ `defineInjector()`          |    ❌    |  ❌      |  ❌      |  ❌      |
 
 
 
@@ -55,24 +65,24 @@
 | `<div style="literal">`          |  ✅     |  ✅      |  ✅      |
 | `<div [style]="exp">`            |  ❌     |  ❌      |  ❌      |
 | `<div [style.foo]="exp">`        |  ✅     |  ✅      |  ❌      |
-| `{{ ['literal', exp ] }}`        |  ✅     |  ✅      |  ❌      |
-| `{{ { a: 'literal', b: exp } }}` |  ✅     |  ✅      |  ❌      |
-| `{{ exp \| pipe: arg }}`         |  ✅     |  ✅       |  ❌      |
+| `{{ ['literal', exp ] }}`        |  ✅     |  ✅      |  ✅      |
+| `{{ { a: 'literal', b: exp } }}` |  ✅     |  ✅      |  ✅      |
+| `{{ exp \| pipe: arg }}`         |  ✅     |  ✅      |  ✅      |
 
 
 
 ## `@Query`
 | Feature                         | Runtime | Spec     | Compiler |
 | ------------------------------- | ------- | -------- | -------- |
-| `@Query(descendants)`           |  ✅     |  ✅      |  ❌      |
-| `@Query(one)`                   |  ✅     |  ✅      |  ❌      |
-| `@Query(read)`                  |  ✅     |  ✅      |  ❌      |
-| `@Query(selector)`              |  ✅     |  ✅      |  ❌      |
-| `@Query(Type)`                  |  ✅     |  ✅      |  ❌      |
-| `@ContentChildred`              |  ✅     |  ✅      |  ❌      |
-| `@ContentChild`                 |  ✅     |  ✅      |  ❌      |
-| `@ViewChildren`                 |  ✅     |  ✅      |  ❌      |
-| `@ViewChild`                    |  ✅     |  ✅      |  ❌      |
+| `@Query(descendants)`           |  ✅     |  ✅      |  n/a      |
+| `@Query(one)`                   |  ✅     |  ✅      |  n/a      |
+| `@Query(read)`                  |  ✅     |  ✅      |  n/a      |
+| `@Query(selector)`              |  ✅     |  ✅      |  n/a      |
+| `@Query(Type)`                  |  ✅     |  ✅      |  n/a      |
+| `@ContentChildred`              |  ✅     |  ✅      |  ❌       |
+| `@ContentChild`                 |  ✅     |  ✅      |  ✅       |
+| `@ViewChildren`                 |  ✅     |  ✅      |  ❌       |
+| `@ViewChild`                    |  ✅     |  ✅      |  ✅       |
 
 
 
@@ -81,7 +91,7 @@
 | ------------------------------- | ------- | -------- | -------- |
 | `<ng-content>`                  |  ✅     |  ✅      |  ✅      |
 | `<ng-content selector="...">`   |  ✅     |  ✅      |  ✅      |
-| container `projectAs`           |    ✅    |  ✅      |  ❌      |
+| container `projectAs`           |  ✅     |  ✅      |  ❌      |
 
 
 
@@ -91,7 +101,7 @@
 | `inject(Type)`                      |  ✅     |  ✅      |  ✅      |
 | `directiveInject(Type)`             |  ✅     |  ✅      |  ❌      |
 | `inject(Type, SkipSelf)`            |  ❌     |  ❌      |  ❌      |
-| `attribute('name')`                 |  ✅      |  ✅       |  ❌      |
+| `attribute('name')`                 |  ✅     |  ✅      |  ❌      |
 | `injectChangeDetectionRef()`        |  ✅     |  ✅      |  ❌      |
 | `injectElementRef()`                |  ✅     |  ✅      |  ✅      |
 | `injectViewContainerRef()`          |  ✅     |  ✅      |  ✅      |
@@ -106,12 +116,12 @@
 | ----------------------------------- | ------- | 
 | `markDirty()`                       |  ✅     | 
 | `detectChanges()`                   |  ✅     | 
-| `tick()`            |  ✅    | 
+| `tick()`                            |  ✅     | 
 | `attach()`                          |  ✅     | 
 | `detach()`                          |  ✅     | 
 | `ON_PUSH`                           |  ✅     | 
-| `ALWAYS`                            |  ✅    | 
-| `DIRTY`                        |  ✅    | 
+| `ALWAYS`                            |  ✅     | 
+| `DIRTY`                             |  ✅     | 
 | `ATTACHED`                          |  ✅     | 
 
 
@@ -121,7 +131,7 @@
 | ----------------------------------- | ------- | 
 | `renderComponent()`                 |  ✅     | 
 | `getHostElement()`                  |  ✅     | 
-| `Injector.create()`                 |  ❌     | 
+| `createInjector()`                  |  ❌     | 
 
 
 
@@ -129,7 +139,7 @@
 | Feature                             | Runtime | Spec     | Compiler |
 | ----------------------------------- | ------- | -------- | -------- |
 | translate text literals             |  ❌     |  ❌      |  ❌      |
-| rearrange text nodes                 |  ❌     |  ❌      |  ❌      |
+| rearrange text nodes                |  ❌     |  ❌      |  ❌      |
 | ICU                                 |  ❌     |  ❌      |  ❌      |
 
 
