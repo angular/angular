@@ -143,6 +143,9 @@ describe('@angular/core ng_package', () => {
         expect(shx.cat('bundles/core.umd.js'))
             .toMatch(/@license Angular v\d+\.\d+\.\d+(?!-PLACEHOLDER)/);
       });
+
+      it('should have tslib helpers',
+         () => { expect(shx.cat('bundles/core.umd.js')).not.toContain('undefined.__extends'); });
     });
   });
 

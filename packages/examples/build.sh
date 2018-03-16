@@ -13,7 +13,7 @@ cd `dirname $0`
 
 DIST="../../dist/examples";
 rm -rf -- $DIST
-$(npm bin)/tsc -p ./tsconfig-build.json
+$(npm bin)/tsc -p ./tsconfig-build.json --importHelpers false
 
 mkdir $DIST/vendor/
 
