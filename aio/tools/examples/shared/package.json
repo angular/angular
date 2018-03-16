@@ -43,7 +43,7 @@
     "zone.js": "^0.8.4"
   },
   "devDependencies": {
-    "@angular/cli": "1.6.5",
+    "@angular/cli": "github:angular/cli-builds#67ad5e7676fa9c00074c9f03b95efa783055b62c",
     "@types/angular": "^1.5.16",
     "@types/angular-animate": "^1.5.5",
     "@types/angular-cookies": "^1.4.2",
@@ -79,7 +79,7 @@
     "lite-server": "^2.2.2",
     "lodash": "^4.16.2",
     "phantomjs-prebuilt": "^2.1.7",
-    "protractor": "~5.1.0",
+    "protractor": "^5.3.0",
     "rimraf": "^2.5.4",
     "rollup": "^0.41.6",
     "rollup-plugin-commonjs": "^8.0.2",
