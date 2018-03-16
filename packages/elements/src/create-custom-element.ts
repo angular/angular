@@ -52,15 +52,13 @@ export type WithProperties<P> = {
 /**
  * Initialization configuration for the NgElementConstructor which contains the injector to be used
  * for retrieving the component's factory as well as the default context for the component. May
- * provide a custom strategy factory to be used instead of the default. May provide a custom mapping
- * of attribute names to component inputs.
+ * provide a custom strategy factory to be used instead of the default.
  *
  * @experimental
  */
 export interface NgElementConfig {
   injector: Injector;
   strategyFactory?: NgElementStrategyFactory;
-  attributeToPropertyInputs?: {[key: string]: string};
 }
 
 /**
@@ -84,8 +82,7 @@ export function createCustomElement<P>(
   const strategyFactory =
       config.strategyFactory || new ComponentNgElementStrategyFactory(component, config.injector);
 
-  const attributeToPropertyInputs =
-      config.attributeToPropertyInputs || getDefaultAttributeToPropertyInputs(inputs);
+  const attributeToPropertyInputs = getDefaultAttributeToPropertyInputs(inputs);
 
   class NgElementImpl extends NgElement {
     static readonly observedAttributes = Object.keys(attributeToPropertyInputs);
