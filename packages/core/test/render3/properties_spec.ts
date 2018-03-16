@@ -8,10 +8,10 @@
 
 import {EventEmitter} from '@angular/core';
 
-import {defineComponent, defineDirective} from '../../src/render3/index';
+import {defineComponent, defineDirective, tick} from '../../src/render3/index';
 import {NO_CHANGE, bind, container, containerRefreshEnd, containerRefreshStart, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, interpolation1, listener, load, text, textBinding} from '../../src/render3/instructions';
 
-import {renderToHtml} from './render_util';
+import {ComponentFixture, renderToHtml} from './render_util';
 
 describe('elementProperty', () => {
 
@@ -60,6 +60,30 @@ describe('elementProperty', () => {
 
     expect(renderToHtml(Template, 'testId')).toEqual('<span id="_testId_"></span>');
     expect(renderToHtml(Template, 'otherId')).toEqual('<span id="_otherId_"></span>');
+  });
+
+  it('should support host bindings on root component', () => {
+    class HostBindingComp {
+      id = 'my-id';
+
+      static ngComponentDef = defineComponent({
+        type: HostBindingComp,
+        tag: 'host-binding-comp',
+        factory: () => new HostBindingComp(),
+        hostBindings: (dirIndex: number, elIndex: number) => {
+          const instance = load(dirIndex) as HostBindingComp;
+          elementProperty(elIndex, 'id', bind(instance.id));
+        },
+        template: (ctx: HostBindingComp, cm: boolean) => {}
+      });
+    }
+
+    const fixture = new ComponentFixture(HostBindingComp);
+    expect(fixture.hostElement.id).toBe('my-id');
+
+    fixture.component.id = 'other-id';
+    tick(fixture.component);
+    expect(fixture.hostElement.id).toBe('other-id');
   });
 
   describe('input properties', () => {
@@ -156,7 +180,6 @@ describe('elementProperty', () => {
           elementEnd();
         }
         elementProperty(0, 'id', bind(ctx.id));
-        Comp.ngComponentDef.h(1, 0);
       }
 
       expect(renderToHtml(Template, {id: 1})).toEqual(`<comp></comp>`);
@@ -500,7 +523,6 @@ describe('elementProperty', () => {
               elementStart(0, Comp);
               elementEnd();
             }
-            Comp.ngComponentDef.h(1, 0);
             embeddedViewEnd();
           }
         }

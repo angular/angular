@@ -158,6 +158,9 @@ let cleanup: any[]|null;
  */
 let checkNoChangesMode = false;
 
+/** Whether or not this is the first time the current view has been processed. */
+let firstTemplatePass = true;
+
 const enum BindingDirection {
   Input,
   Output,
@@ -181,6 +184,7 @@ export function enterView(newView: LView, host: LElementNode | LViewNode | null)
   bindingIndex = newView && newView.bindingStartIndex || 0;
   tData = newView && newView.tView.data;
   creationMode = newView && (newView.flags & LViewFlags.CreationMode) === LViewFlags.CreationMode;
+  firstTemplatePass = newView && newView.tView.firstTemplatePass;
 
   cleanup = newView && newView.cleanup;
   renderer = newView && newView.renderer;
@@ -212,13 +216,33 @@ export function leaveView(newView: LView): void {
   enterView(newView, null);
 }
 
-/** Refreshes the views of child components, triggering any init/content hooks existing.  */
-function refreshChildComponents() {
+/**  Refreshes directives in this view and triggers any init/content hooks.  */
+function refreshDirectives() {
   executeInitAndContentHooks();
-  // This needs to be set before children are processed to support recursive components
-  currentView.tView.firstTemplatePass = false;
 
-  const components = currentView.tView.components;
+  const tView = currentView.tView;
+  // This needs to be set before children are processed to support recursive components
+  // so to refresh the component, refresh() needs to be called with (1, 0)
+  tView.firstTemplatePass = firstTemplatePass = false;
+
+  setHostBindings(tView.hostBindings);
+  refreshChildComponents(tView.components);
+}
+
+/** Sets the host bindings for the current view. */
+function setHostBindings(bindings: number[] | null): void {
+  if (bindings != null) {
+    for (let i = 0; i < bindings.length; i += 2) {
+      const dirIndex = bindings[i];
+      const elementIndex = bindings[i | 1];
+      const def = tData[dirIndex] as DirectiveDef<any>;
+      def.h && def.h(dirIndex, elementIndex);
+    }
+  }
+}
+
+/** Refreshes child components in the current view. */
+function refreshChildComponents(components: number[] | null): void {
   if (components != null) {
     for (let i = 0; i < components.length; i++) {
       componentRefresh(components[i] + 1, components[i]);
@@ -398,7 +422,7 @@ export function renderEmbeddedTemplate<T>(
 
     template(context, cm);
     refreshDynamicChildren();
-    refreshChildComponents();
+    refreshDirectives();
   } finally {
     leaveView(currentView !.parent !);
     isParent = _isParent;
@@ -416,11 +440,12 @@ export function renderComponentOrTemplate<T>(
     }
     if (template) {
       template(componentOrContext !, creationMode);
-      refreshChildComponents();
+      refreshDirectives();
     } else {
       executeInitAndContentHooks();
+
       // Element was stored at 0 and directive was stored at 1 in renderComponent
-      // so to refresh the component, refresh() needs to be called with (1, 0)
+      setHostBindings([1, 0]);
       componentRefresh(1, 0);
     }
   } finally {
@@ -466,7 +491,7 @@ export function elementStart(
     let hostComponentDef: ComponentDef<any>|null = null;
     let name = nameOrComponentType as string;
     if (isHostElement) {
-      hostComponentDef = currentView.tView.firstTemplatePass ?
+      hostComponentDef = firstTemplatePass ?
           (nameOrComponentType as ComponentType<any>).ngComponentDef :
           tData[index + 1] as ComponentDef<any>;
       name = hostComponentDef !.tag;
@@ -501,24 +526,36 @@ export function elementStart(
       if (attrs) setUpAttributes(native, attrs);
       appendChild(node.parent !, native, currentView);
 
+      const elementIndex = index;
+
       if (hostComponentDef) {
         // TODO(mhevery): This assumes that the directives come in correct order, which
         // is not guaranteed. Must be refactored to take it into account.
         const instance = hostComponentDef.n();
-        storeComponentIndex(index);
         directiveCreate(++index, instance, hostComponentDef, null);
         initChangeDetectorIfExisting(node.nodeInjector, instance);
+        queueComponentIndexForCheck(elementIndex);
+        if (hostComponentDef.h) queueHostBindingForCheck(index, elementIndex);
       }
-      hack_declareDirectives(index, directiveTypes, localRefs);
+      hack_declareDirectives(index, elementIndex, directiveTypes, localRefs);
     }
   }
   return native;
 }
 
-/** Stores index of component so it will be queued for refresh during change detection. */
-function storeComponentIndex(index: number): void {
-  if (currentView.tView.firstTemplatePass) {
-    (currentView.tView.components || (currentView.tView.components = [])).push(index);
+/** Stores index of component's host element so it will be queued for view refresh during CD. */
+function queueComponentIndexForCheck(elIndex: number): void {
+  if (firstTemplatePass) {
+    (currentView.tView.components || (currentView.tView.components = [])).push(elIndex);
+  }
+}
+
+/** Stores index of directive and host element so it will be queued for binding refresh during CD.
+ */
+function queueHostBindingForCheck(dirIndex: number, elIndex: number): void {
+  if (firstTemplatePass) {
+    (currentView.tView.hostBindings || (currentView.tView.hostBindings = [
+     ])).push(dirIndex, elIndex);
   }
 }
 
@@ -534,7 +571,7 @@ export function initChangeDetectorIfExisting(injector: LInjector | null, instanc
  * come in the correct order for DI.
  */
 function hack_declareDirectives(
-    index: number, directiveTypes: DirectiveType<any>[] | null | undefined,
+    index: number, elIndex: number, directiveTypes: DirectiveType<any>[] | null | undefined,
     localRefs: string[] | null | undefined, ) {
   if (directiveTypes) {
     // TODO(mhevery): This assumes that the directives come in correct order, which
@@ -542,13 +579,12 @@ function hack_declareDirectives(
     for (let i = 0; i < directiveTypes.length; i++) {
       index++;
       const directiveType = directiveTypes[i];
-      const directiveDef = currentView.tView.firstTemplatePass ? directiveType.ngDirectiveDef :
-                                                                 tData[index] as DirectiveDef<any>;
-      const localNames = currentView.tView.firstTemplatePass ?
-          findMatchingLocalNames(directiveDef, localRefs, index) :
-          null;
-
+      const directiveDef =
+          firstTemplatePass ? directiveType.ngDirectiveDef : tData[index] as DirectiveDef<any>;
+      const localNames =
+          firstTemplatePass ? findMatchingLocalNames(directiveDef, localRefs, index) : null;
       directiveCreate(index, directiveDef.n(), directiveDef, localNames);
+      if (directiveDef.h) queueHostBindingForCheck(index, elIndex);
     }
   }
 }
@@ -598,6 +634,7 @@ export function createTView(): TView {
     viewHooks: null,
     viewCheckHooks: null,
     destroyHooks: null,
+    hostBindings: null,
     components: null
   };
 }
@@ -777,12 +814,12 @@ export function elementProperty<T>(
   const tNode = node.tNode !;
   // if tNode.inputs is undefined, a listener has created outputs, but inputs haven't
   // yet been checked
-  if (tNode.inputs === undefined) {
+  if (tNode && tNode.inputs === undefined) {
     // mark inputs as checked
     tNode.inputs = generatePropertyAliases(node.flags, BindingDirection.Input);
   }
 
-  const inputData = tNode.inputs;
+  const inputData = tNode && tNode.inputs;
   let dataValue: PropertyAliasValue|undefined;
   if (inputData && (dataValue = inputData[propName])) {
     setInputsForProperty(dataValue, value);
@@ -1209,7 +1246,7 @@ export function container(
   // Containers are added to the current view tree instead of their embedded views
   // because views can be removed and re-inserted.
   addToViewTree(node.data);
-  hack_declareDirectives(index, directiveTypes, localRefs);
+  hack_declareDirectives(index, index, directiveTypes, localRefs);
 
   isParent = false;
   ngDevMode && assertNodeType(previousOrParentNode, LNodeFlags.Container);
@@ -1366,7 +1403,7 @@ function getOrCreateEmbeddedTView(viewIndex: number, parent: LContainerNode): TV
 
 /** Marks the end of an embedded view. */
 export function embeddedViewEnd(): void {
-  refreshChildComponents();
+  refreshDirectives();
   isParent = false;
   const viewNode = previousOrParentNode = currentView.node as LViewNode;
   const containerNode = previousOrParentNode.parent as LContainerNode;
@@ -1390,29 +1427,22 @@ export function embeddedViewEnd(): void {
 /////////////
 
 /**
- * Refreshes the directive.
- *
- * When it is a component, it also enters the component's view and processes it to update bindings,
- * queries, etc.
+ * Refreshes components by entering the component view and processing its bindings, queries, etc.
  *
  * @param directiveIndex
  * @param elementIndex
  */
 export function componentRefresh<T>(directiveIndex: number, elementIndex: number): void {
-  const template = (tData[directiveIndex] as ComponentDef<T>).template;
-  if (template != null) {
-    ngDevMode && assertDataInRange(elementIndex);
-    const element = data ![elementIndex] as LElementNode;
-    ngDevMode && assertNodeType(element, LNodeFlags.Element);
-    ngDevMode &&
-        assertNotNull(element.data, `Component's host node should have an LView attached.`);
-    const hostView = element.data !;
+  ngDevMode && assertDataInRange(elementIndex);
+  const element = data ![elementIndex] as LElementNode;
+  ngDevMode && assertNodeType(element, LNodeFlags.Element);
+  ngDevMode && assertNotNull(element.data, `Component's host node should have an LView attached.`);
+  const hostView = element.data !;
 
-    // Only attached CheckAlways components or attached, dirty OnPush components should be checked
-    if (viewAttached(hostView) && hostView.flags & (LViewFlags.CheckAlways | LViewFlags.Dirty)) {
-      ngDevMode && assertDataInRange(directiveIndex);
-      detectChangesInternal(hostView, element, getDirectiveInstance<T>(data[directiveIndex]));
-    }
+  // Only attached CheckAlways components or attached, dirty OnPush components should be checked
+  if (viewAttached(hostView) && hostView.flags & (LViewFlags.CheckAlways | LViewFlags.Dirty)) {
+    ngDevMode && assertDataInRange(directiveIndex);
+    detectChangesInternal(hostView, element, getDirectiveInstance<T>(data[directiveIndex]));
   }
 }
 
@@ -1756,16 +1786,14 @@ function throwErrorIfNoChangesMode(oldValue: any, currValue: any): never|void {
 function detectChangesInternal<T>(hostView: LView, hostNode: LElementNode, component: T) {
   const componentIndex = hostNode.flags >> LNodeFlags.INDX_SHIFT;
   const template = (hostNode.view.tView.data[componentIndex] as ComponentDef<T>).template;
-  const oldView = enterView(hostView, hostNode);
 
-  if (template != null) {
-    try {
-      template(component, creationMode);
-      refreshDynamicChildren();
-      refreshChildComponents();
-    } finally {
-      leaveView(oldView);
-    }
+  const oldView = enterView(hostView, hostNode);
+  try {
+    template(component, creationMode);
+    refreshDynamicChildren();
+    refreshDirectives();
+  } finally {
+    leaveView(oldView);
   }
 }
 

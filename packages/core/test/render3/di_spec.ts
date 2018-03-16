@@ -258,9 +258,6 @@ describe('di', () => {
               text(4);
             }
             textBinding(4, bind(load<Directive>(2).value));
-            MyComp.ngComponentDef.h(1, 0);
-            Directive.ngDirectiveDef.h(2, 0);
-            DirectiveSameInstance.ngDirectiveDef.h(3, 0);
           }
         });
       }
@@ -291,8 +288,6 @@ describe('di', () => {
               elementEnd();
             }
             textBinding(3, bind(load<Directive>(1).value));
-            Directive.ngDirectiveDef.h(1, 0);
-            DirectiveSameInstance.ngDirectiveDef.h(2, 0);
           }
         });
       }
@@ -330,9 +325,6 @@ describe('di', () => {
               text(5);
             }
             textBinding(5, bind(load<Directive>(3).value));
-            MyComp.ngComponentDef.h(1, 0);
-            Directive.ngDirectiveDef.h(3, 2);
-            DirectiveSameInstance.ngDirectiveDef.h(4, 2);
           }
         });
       }
@@ -375,8 +367,6 @@ describe('di', () => {
                   elementEnd();
                 }
                 textBinding(3, bind(load<Directive>(1).value));
-                Directive.ngDirectiveDef.h(1, 0);
-                DirectiveSameInstance.ngDirectiveDef.h(2, 0);
               }
               embeddedViewEnd();
             }
@@ -438,8 +428,6 @@ describe('di', () => {
                 elementEnd();
               }
               textBinding(3, bind(load<Directive>(1).value));
-              Directive.ngDirectiveDef.h(1, 0);
-              DirectiveSameInstance.ngDirectiveDef.h(2, 0);
             }
           }
         });

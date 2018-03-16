@@ -21,7 +21,6 @@ describe('lifecycles', () => {
         elementEnd();
       }
       elementProperty(0, 'val', bind(ctx.val));
-      type.ngComponentDef.h(1, 0);
     };
   }
 
@@ -74,7 +73,6 @@ describe('lifecycles', () => {
              elementEnd();
            }
            elementProperty(0, 'val', bind(ctx.val));
-           Comp.ngComponentDef.h(1, 0);
          }
 
          renderToHtml(Template, {val: '1'});
@@ -104,7 +102,6 @@ describe('lifecycles', () => {
           elementStart(0, Parent);
           elementEnd();
         }
-        Parent.ngComponentDef.h(1, 0);
       }
 
       renderToHtml(Template, {});
@@ -128,8 +125,6 @@ describe('lifecycles', () => {
         }
         elementProperty(0, 'val', 1);
         elementProperty(2, 'val', 2);
-        Parent.ngComponentDef.h(1, 0);
-        Parent.ngComponentDef.h(3, 2);
       }
 
       renderToHtml(Template, {});
@@ -155,7 +150,6 @@ describe('lifecycles', () => {
               elementStart(0, Comp);
               elementEnd();
             }
-            Comp.ngComponentDef.h(1, 0);
             embeddedViewEnd();
           }
         }
@@ -184,8 +178,6 @@ describe('lifecycles', () => {
           { elementStart(2, ProjectedComp); }
           elementEnd();
         }
-        Comp.ngComponentDef.h(1, 0);
-        ProjectedComp.ngComponentDef.h(3, 2);
       }
 
       renderToHtml(Template, {});
@@ -214,10 +206,6 @@ describe('lifecycles', () => {
         elementProperty(2, 'val', 1);
         elementProperty(4, 'val', 2);
         elementProperty(6, 'val', 2);
-        Comp.ngComponentDef.h(1, 0);
-        ProjectedComp.ngComponentDef.h(3, 2);
-        Comp.ngComponentDef.h(5, 4);
-        ProjectedComp.ngComponentDef.h(7, 6);
       }
 
       renderToHtml(Template, {});
@@ -231,8 +219,6 @@ describe('lifecycles', () => {
           elementStart(0, Comp, null, [Directive]);
           elementEnd();
         }
-        Comp.ngComponentDef.h(1, 0);
-        Directive.ngDirectiveDef.h(2, 0);
       }
 
       renderToHtml(Template, {});
@@ -250,7 +236,6 @@ describe('lifecycles', () => {
           elementStart(0, 'div', null, [Directive]);
           elementEnd();
         }
-        Directive.ngDirectiveDef.h(1, 0);
       }
 
       renderToHtml(Template, {});
@@ -279,8 +264,6 @@ describe('lifecycles', () => {
         }
         elementProperty(0, 'val', 1);
         elementProperty(3, 'val', 5);
-        Comp.ngComponentDef.h(1, 0);
-        Comp.ngComponentDef.h(4, 3);
         containerRefreshStart(2);
         {
           for (let j = 2; j < 5; j++) {
@@ -289,7 +272,6 @@ describe('lifecycles', () => {
               elementEnd();
             }
             elementProperty(0, 'val', j);
-            Comp.ngComponentDef.h(1, 0);
             embeddedViewEnd();
           }
         }
@@ -322,8 +304,6 @@ describe('lifecycles', () => {
         }
         elementProperty(0, 'val', 1);
         elementProperty(3, 'val', 5);
-        Parent.ngComponentDef.h(1, 0);
-        Parent.ngComponentDef.h(4, 3);
         containerRefreshStart(2);
         {
           for (let j = 2; j < 5; j++) {
@@ -332,7 +312,6 @@ describe('lifecycles', () => {
               elementEnd();
             }
             elementProperty(0, 'val', j);
-            Parent.ngComponentDef.h(1, 0);
             embeddedViewEnd();
           }
         }
@@ -390,7 +369,6 @@ describe('lifecycles', () => {
           elementStart(0, Comp);
           elementEnd();
         }
-        Comp.ngComponentDef.h(1, 0);
       }
 
       renderToHtml(Template, {});
@@ -420,7 +398,6 @@ describe('lifecycles', () => {
           elementStart(0, Parent);
           elementEnd();
         }
-        Parent.ngComponentDef.h(1, 0);
       }
 
       renderToHtml(Template, {});
@@ -434,7 +411,6 @@ describe('lifecycles', () => {
           elementStart(0, Comp);
           elementEnd();
         }
-        Comp.ngComponentDef.h(1, 0);
       }
 
       renderToHtml(Template, {});
@@ -451,8 +427,6 @@ describe('lifecycles', () => {
           elementStart(0, Comp, null, [Directive]);
           elementEnd();
         }
-        Comp.ngComponentDef.h(1, 0);
-        Directive.ngDirectiveDef.h(2, 0);
       }
 
       renderToHtml(Template, {});
@@ -470,7 +444,6 @@ describe('lifecycles', () => {
           elementStart(0, 'div', null, [Directive]);
           elementEnd();
         }
-        Directive.ngDirectiveDef.h(1, 0);
       }
 
       renderToHtml(Template, {});
@@ -506,7 +479,6 @@ describe('lifecycles', () => {
         elementEnd();
       }
       elementProperty(1, 'val', bind(ctx.val));
-      Comp.ngComponentDef.h(2, 1);
     });
 
     let ProjectedComp = createAfterContentInitComp('projected', (ctx: any, cm: boolean) => {
@@ -543,7 +515,6 @@ describe('lifecycles', () => {
           { text(2, 'content'); }
           elementEnd();
         }
-        Comp.ngComponentDef.h(1, 0);
       }
 
       renderToHtml(Template, {});
@@ -580,7 +551,6 @@ describe('lifecycles', () => {
               { text(2, 'content'); }
               elementEnd();
             }
-            Comp.ngComponentDef.h(1, 0);
             embeddedViewEnd();
           }
         }
@@ -609,7 +579,6 @@ describe('lifecycles', () => {
           { text(2, 'content'); }
           elementEnd();
         }
-        Parent.ngComponentDef.h(1, 0);
       }
 
       renderToHtml(Template, {});
@@ -634,8 +603,6 @@ describe('lifecycles', () => {
         }
         elementProperty(0, 'val', 1);
         elementProperty(3, 'val', 2);
-        Parent.ngComponentDef.h(1, 0);
-        Parent.ngComponentDef.h(4, 3);
       }
 
       renderToHtml(Template, {});
@@ -663,8 +630,6 @@ describe('lifecycles', () => {
           }
           elementEnd();
         }
-        Parent.ngComponentDef.h(1, 0);
-        ProjectedComp.ngComponentDef.h(3, 2);
       }
 
       renderToHtml(Template, {});
@@ -706,10 +671,6 @@ describe('lifecycles', () => {
         elementProperty(2, 'val', 1);
         elementProperty(5, 'val', 2);
         elementProperty(7, 'val', 2);
-        Parent.ngComponentDef.h(1, 0);
-        ProjectedComp.ngComponentDef.h(3, 2);
-        Parent.ngComponentDef.h(6, 5);
-        ProjectedComp.ngComponentDef.h(8, 7);
       }
 
       renderToHtml(Template, {});
@@ -736,8 +697,6 @@ describe('lifecycles', () => {
         }
         elementProperty(0, 'val', 1);
         elementProperty(4, 'val', 4);
-        Comp.ngComponentDef.h(1, 0);
-        Comp.ngComponentDef.h(5, 4);
         containerRefreshStart(3);
         {
           for (let i = 2; i < 4; i++) {
@@ -747,7 +706,6 @@ describe('lifecycles', () => {
               elementEnd();
             }
             elementProperty(0, 'val', i);
-            Comp.ngComponentDef.h(1, 0);
             embeddedViewEnd();
           }
         }
@@ -770,8 +728,6 @@ describe('lifecycles', () => {
       }
       elementProperty(0, 'val', 1);
       elementProperty(4, 'val', 4);
-      Parent.ngComponentDef.h(1, 0);
-      Parent.ngComponentDef.h(5, 4);
       containerRefreshStart(3);
       {
         for (let i = 2; i < 4; i++) {
@@ -781,7 +737,6 @@ describe('lifecycles', () => {
             elementEnd();
           }
           elementProperty(0, 'val', i);
-          Parent.ngComponentDef.h(1, 0);
           embeddedViewEnd();
         }
       }
@@ -812,7 +767,6 @@ describe('lifecycles', () => {
             { text(2, 'content'); }
             elementEnd();
           }
-          Comp.ngComponentDef.h(1, 0);
         }
 
         renderToHtml(Template, {});
@@ -849,8 +803,6 @@ describe('lifecycles', () => {
             elementStart(0, Comp, null, [Directive]);
             elementEnd();
           }
-          Comp.ngComponentDef.h(1, 0);
-          Directive.ngDirectiveDef.h(2, 0);
         }
 
         renderToHtml(Template, {});
@@ -864,7 +816,6 @@ describe('lifecycles', () => {
             elementStart(0, 'div', null, [Directive]);
             elementEnd();
           }
-          Directive.ngDirectiveDef.h(1, 0);
         }
 
         renderToHtml(Template, {});
@@ -924,7 +875,6 @@ describe('lifecycles', () => {
           elementStart(0, Comp);
           elementEnd();
         }
-        Comp.ngComponentDef.h(1, 0);
       }
 
       renderToHtml(Template, {});
@@ -960,7 +910,6 @@ describe('lifecycles', () => {
               elementStart(0, Comp);
               elementEnd();
             }
-            Comp.ngComponentDef.h(1, 0);
             embeddedViewEnd();
           }
         }
@@ -989,7 +938,6 @@ describe('lifecycles', () => {
           elementStart(0, Parent);
           elementEnd();
         }
-        Parent.ngComponentDef.h(1, 0);
       }
 
       renderToHtml(Template, {});
@@ -1013,8 +961,6 @@ describe('lifecycles', () => {
         }
         elementProperty(0, 'val', 1);
         elementProperty(2, 'val', 2);
-        Parent.ngComponentDef.h(1, 0);
-        Parent.ngComponentDef.h(3, 2);
       }
       renderToHtml(Template, {});
       expect(events).toEqual(['comp1', 'comp2', 'parent1', 'parent2']);
@@ -1036,8 +982,6 @@ describe('lifecycles', () => {
           }
           elementEnd();
         }
-        Comp.ngComponentDef.h(1, 0);
-        ProjectedComp.ngComponentDef.h(3, 2);
       }
 
       renderToHtml(Template, {});
@@ -1072,10 +1016,6 @@ describe('lifecycles', () => {
         elementProperty(2, 'val', 1);
         elementProperty(4, 'val', 2);
         elementProperty(6, 'val', 2);
-        Comp.ngComponentDef.h(1, 0);
-        ProjectedComp.ngComponentDef.h(3, 2);
-        Comp.ngComponentDef.h(5, 4);
-        ProjectedComp.ngComponentDef.h(7, 6);
       }
 
       renderToHtml(Template, {});
@@ -1099,8 +1039,6 @@ describe('lifecycles', () => {
         }
         elementProperty(0, 'val', bind(ctx.val));
         elementProperty(2, 'val', bind(ctx.val));
-        Comp.ngComponentDef.h(1, 0);
-        ProjectedComp.ngComponentDef.h(3, 2);
       });
 
       /**
@@ -1116,8 +1054,6 @@ describe('lifecycles', () => {
         }
         elementProperty(0, 'val', 1);
         elementProperty(2, 'val', 2);
-        ParentComp.ngComponentDef.h(1, 0);
-        ParentComp.ngComponentDef.h(3, 2);
       }
 
       renderToHtml(Template, {});
@@ -1142,8 +1078,6 @@ describe('lifecycles', () => {
         }
         elementProperty(0, 'val', 1);
         elementProperty(3, 'val', 4);
-        Comp.ngComponentDef.h(1, 0);
-        Comp.ngComponentDef.h(4, 3);
         containerRefreshStart(2);
         {
           for (let i = 2; i < 4; i++) {
@@ -1152,7 +1086,6 @@ describe('lifecycles', () => {
               elementEnd();
             }
             elementProperty(0, 'val', i);
-            Comp.ngComponentDef.h(1, 0);
             embeddedViewEnd();
           }
         }
@@ -1182,8 +1115,6 @@ describe('lifecycles', () => {
         }
         elementProperty(0, 'val', 1);
         elementProperty(3, 'val', 4);
-        Parent.ngComponentDef.h(1, 0);
-        Parent.ngComponentDef.h(4, 3);
         containerRefreshStart(2);
         {
           for (let i = 2; i < 4; i++) {
@@ -1192,7 +1123,6 @@ describe('lifecycles', () => {
               elementEnd();
             }
             elementProperty(0, 'val', i);
-            Parent.ngComponentDef.h(1, 0);
             embeddedViewEnd();
           }
         }
@@ -1214,7 +1144,6 @@ describe('lifecycles', () => {
             elementStart(0, Comp);
             elementEnd();
           }
-          Comp.ngComponentDef.h(1, 0);
         }
 
         renderToHtml(Template, {});
@@ -1241,7 +1170,6 @@ describe('lifecycles', () => {
             elementEnd();
           }
           elementProperty(0, 'val', bind(ctx.myVal));
-          Comp.ngComponentDef.h(1, 0);
         }
 
         renderToHtml(Template, {myVal: 5});
@@ -1269,8 +1197,6 @@ describe('lifecycles', () => {
           }
           elementProperty(0, 'val', 1);
           elementProperty(3, 'val', 4);
-          Parent.ngComponentDef.h(1, 0);
-          Parent.ngComponentDef.h(4, 3);
           containerRefreshStart(2);
           {
             for (let i = 2; i < 4; i++) {
@@ -1279,7 +1205,6 @@ describe('lifecycles', () => {
                 elementEnd();
               }
               elementProperty(0, 'val', i);
-              Parent.ngComponentDef.h(1, 0);
               embeddedViewEnd();
             }
           }
@@ -1312,8 +1237,6 @@ describe('lifecycles', () => {
             elementStart(0, Comp, null, [Directive]);
             elementEnd();
           }
-          Comp.ngComponentDef.h(1, 0);
-          Directive.ngDirectiveDef.h(2, 0);
         }
 
         renderToHtml(Template, {});
@@ -1327,7 +1250,6 @@ describe('lifecycles', () => {
             elementStart(0, 'div', null, [Directive]);
             elementEnd();
           }
-          Directive.ngDirectiveDef.h(1, 0);
         }
 
         renderToHtml(Template, {});
@@ -1388,7 +1310,6 @@ describe('lifecycles', () => {
               elementStart(0, Comp);
               elementEnd();
             }
-            Comp.ngComponentDef.h(1, 0);
             embeddedViewEnd();
           }
         }
@@ -1423,8 +1344,6 @@ describe('lifecycles', () => {
             }
             elementProperty(0, 'val', bind('1'));
             elementProperty(2, 'val', bind('2'));
-            Comp.ngComponentDef.h(1, 0);
-            Comp.ngComponentDef.h(3, 2);
             embeddedViewEnd();
           }
         }
@@ -1456,7 +1375,6 @@ describe('lifecycles', () => {
               elementStart(0, Parent);
               elementEnd();
             }
-            Parent.ngComponentDef.h(1, 0);
             embeddedViewEnd();
           }
         }
@@ -1483,7 +1401,6 @@ describe('lifecycles', () => {
           elementStart(0, Parent);
           elementEnd();
         }
-        Parent.ngComponentDef.h(1, 0);
       });
 
       function Template(ctx: any, cm: boolean) {
@@ -1497,7 +1414,6 @@ describe('lifecycles', () => {
               elementStart(0, Grandparent);
               elementEnd();
             }
-            Grandparent.ngComponentDef.h(1, 0);
             embeddedViewEnd();
           }
         }
@@ -1547,10 +1463,6 @@ describe('lifecycles', () => {
             elementProperty(2, 'val', 1);
             elementProperty(4, 'val', 2);
             elementProperty(6, 'val', 2);
-            Comp.ngComponentDef.h(1, 0);
-            ProjectedComp.ngComponentDef.h(3, 2);
-            Comp.ngComponentDef.h(5, 4);
-            ProjectedComp.ngComponentDef.h(7, 6);
             embeddedViewEnd();
           }
         }
@@ -1591,8 +1503,6 @@ describe('lifecycles', () => {
             }
             elementProperty(0, 'val', bind('1'));
             elementProperty(3, 'val', bind('3'));
-            Comp.ngComponentDef.h(1, 0);
-            Comp.ngComponentDef.h(4, 3);
             containerRefreshStart(2);
             {
               if (ctx.condition2) {
@@ -1601,7 +1511,6 @@ describe('lifecycles', () => {
                   elementEnd();
                 }
                 elementProperty(0, 'val', bind('2'));
-                Comp.ngComponentDef.h(1, 0);
                 embeddedViewEnd();
               }
             }
@@ -1664,8 +1573,6 @@ describe('lifecycles', () => {
             }
             elementProperty(0, 'val', bind('1'));
             elementProperty(3, 'val', bind('5'));
-            Comp.ngComponentDef.h(1, 0);
-            Comp.ngComponentDef.h(4, 3);
             containerRefreshStart(2);
             {
               for (let j = 2; j < ctx.len; j++) {
@@ -1674,7 +1581,6 @@ describe('lifecycles', () => {
                   elementEnd();
                 }
                 elementProperty(0, 'val', bind(j));
-                Comp.ngComponentDef.h(1, 0);
                 embeddedViewEnd();
               }
             }
@@ -1746,7 +1652,6 @@ describe('lifecycles', () => {
               }
               elementEnd();
             }
-            Comp.ngComponentDef.h(3, 2);
             embeddedViewEnd();
           }
         }
@@ -1794,8 +1699,6 @@ describe('lifecycles', () => {
               elementStart(0, Comp, null, [Directive]);
               elementEnd();
             }
-            Comp.ngComponentDef.h(1, 0);
-            Directive.ngDirectiveDef.h(2, 0);
             embeddedViewEnd();
           }
         }
@@ -1828,7 +1731,6 @@ describe('lifecycles', () => {
               elementStart(0, 'div', null, [Directive]);
               elementEnd();
             }
-            Directive.ngDirectiveDef.h(1, 0);
             embeddedViewEnd();
           }
         }
@@ -1864,7 +1766,6 @@ describe('lifecycles', () => {
       }
       elementProperty(0, 'val1', bind(ctx.a));
       elementProperty(0, 'publicName', bind(ctx.b));
-      Comp.ngComponentDef.h(1, 0);
     });
     const ProjectedComp = createOnChangesComponent('projected', (ctx: any, cm: boolean) => {
       if (cm) {
@@ -1921,7 +1822,6 @@ describe('lifecycles', () => {
         }
         elementProperty(0, 'val1', bind(ctx.val1));
         elementProperty(0, 'publicName', bind(ctx.val2));
-        Comp.ngComponentDef.h(1, 0);
       }
 
       renderToHtml(Template, {val1: '1', val2: 'a'});
@@ -1947,7 +1847,6 @@ describe('lifecycles', () => {
         }
         elementProperty(0, 'val1', bind(ctx.val1));
         elementProperty(0, 'publicName', bind(ctx.val2));
-        Parent.ngComponentDef.h(1, 0);
       }
 
       renderToHtml(Template, {val1: '1', val2: 'a'});
@@ -1976,8 +1875,6 @@ describe('lifecycles', () => {
         elementProperty(0, 'publicName', bind(1));
         elementProperty(2, 'val1', bind(2));
         elementProperty(2, 'publicName', bind(2));
-        Parent.ngComponentDef.h(1, 0);
-        Parent.ngComponentDef.h(3, 2);
       }
 
       renderToHtml(Template, {});
@@ -2010,7 +1907,6 @@ describe('lifecycles', () => {
             }
             elementProperty(0, 'val1', bind(1));
             elementProperty(0, 'publicName', bind(1));
-            Comp.ngComponentDef.h(1, 0);
             embeddedViewEnd();
           }
         }
@@ -2046,8 +1942,6 @@ describe('lifecycles', () => {
         elementProperty(0, 'publicName', bind(1));
         elementProperty(2, 'val1', bind(2));
         elementProperty(2, 'publicName', bind(2));
-        Comp.ngComponentDef.h(1, 0);
-        ProjectedComp.ngComponentDef.h(3, 2);
       }
 
       renderToHtml(Template, {});
@@ -2083,10 +1977,6 @@ describe('lifecycles', () => {
         elementProperty(4, 'publicName', bind(3));
         elementProperty(6, 'val1', bind(4));
         elementProperty(6, 'publicName', bind(4));
-        Comp.ngComponentDef.h(1, 0);
-        ProjectedComp.ngComponentDef.h(3, 2);
-        Comp.ngComponentDef.h(5, 4);
-        ProjectedComp.ngComponentDef.h(7, 6);
       }
 
       renderToHtml(Template, {});
@@ -2107,7 +1997,6 @@ describe('lifecycles', () => {
         }
         elementProperty(0, 'val1', bind(1));
         elementProperty(0, 'publicName', bind(1));
-        Comp.ngComponentDef.h(1, 0);
       }
 
       renderToHtml(Template, {});
@@ -2131,7 +2020,6 @@ describe('lifecycles', () => {
         }
         elementProperty(0, 'val1', bind(1));
         elementProperty(0, 'publicName', bind(1));
-        Directive.ngDirectiveDef.h(1, 0);
       }
 
       renderToHtml(Template, {});
@@ -2162,8 +2050,6 @@ describe('lifecycles', () => {
         elementProperty(0, 'publicName', bind(1));
         elementProperty(3, 'val1', bind(5));
         elementProperty(3, 'publicName', bind(5));
-        Comp.ngComponentDef.h(1, 0);
-        Comp.ngComponentDef.h(4, 3);
         containerRefreshStart(2);
         {
           for (let j = 2; j < 5; j++) {
@@ -2173,7 +2059,6 @@ describe('lifecycles', () => {
             }
             elementProperty(0, 'val1', bind(j));
             elementProperty(0, 'publicName', bind(j));
-            Comp.ngComponentDef.h(1, 0);
             embeddedViewEnd();
           }
         }
@@ -2214,8 +2099,6 @@ describe('lifecycles', () => {
         elementProperty(0, 'publicName', bind(1));
         elementProperty(3, 'val1', bind(5));
         elementProperty(3, 'publicName', bind(5));
-        Parent.ngComponentDef.h(1, 0);
-        Parent.ngComponentDef.h(4, 3);
         containerRefreshStart(2);
         {
           for (let j = 2; j < 5; j++) {
@@ -2225,7 +2108,6 @@ describe('lifecycles', () => {
             }
             elementProperty(0, 'val1', bind(j));
             elementProperty(0, 'publicName', bind(j));
-            Parent.ngComponentDef.h(1, 0);
             embeddedViewEnd();
           }
         }
@@ -2299,8 +2181,6 @@ describe('lifecycles', () => {
         }
         elementProperty(0, 'val', 1);
         elementProperty(2, 'val', 2);
-        Comp.ngComponentDef.h(1, 0);
-        Comp.ngComponentDef.h(3, 2);
       }
 
       renderToHtml(Template, {});
@@ -2328,7 +2208,6 @@ describe('lifecycles', () => {
           elementEnd();
         }
         elementProperty(0, 'val', bind(ctx.val));
-        Comp.ngComponentDef.h(1, 0);
       });
 
       /**
@@ -2344,8 +2223,6 @@ describe('lifecycles', () => {
         }
         elementProperty(0, 'val', 1);
         elementProperty(2, 'val', 2);
-        Parent.ngComponentDef.h(1, 0);
-        Parent.ngComponentDef.h(3, 2);
       }
 
       renderToHtml(Template, {});

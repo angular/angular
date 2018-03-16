@@ -41,7 +41,6 @@ describe('ViewContainerRef', () => {
         }
         containerRefreshStart(0);
         cmp.testDir = load<TestDirective>(1);
-        TestDirective.ngDirectiveDef.h(1, 0);
         containerRefreshEnd();
       },
     });

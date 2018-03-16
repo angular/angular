@@ -95,7 +95,7 @@ export interface DirectiveDef<T> {
    * Refreshes host bindings on the associated directive. Also calls lifecycle hooks
    * like ngOnInit and ngDoCheck, if they are defined on the directive.
    */
-  h(directiveIndex: number, elementIndex: number): void;
+  h: ((directiveIndex: number, elementIndex: number) => void)|null;
 
   /**
    * Static attributes to set on host element.
