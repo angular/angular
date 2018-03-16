@@ -25,7 +25,6 @@ ng_package(
         "//packages/service-worker/config:package.json",
     ],
     entry_point = "packages/service-worker/index.js",
-    secondary_entry_points = ["config"],
     deps = [
         ":service-worker",
         "//packages/service-worker/config",

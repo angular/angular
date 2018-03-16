@@ -24,10 +24,6 @@ ng_package(
         "//packages/animations/browser/testing:package.json",
     ],
     entry_point = "packages/animations/index.js",
-    secondary_entry_points = [
-        "browser",
-        "browser/testing",
-    ],
     deps = [
         ":animations",
         "//packages/animations/browser",
