@@ -6,15 +6,17 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AotCompilerHost, AotCompilerOptions, AotSummaryResolver, CompileDirectiveMetadata, CompileIdentifierMetadata, CompileMetadataResolver, CompileNgModuleMetadata, CompilePipeSummary, CompileTypeMetadata, CompilerConfig, DEFAULT_INTERPOLATION_CONFIG, DirectiveNormalizer, DirectiveResolver, DomElementSchemaRegistry, HtmlParser, I18NHtmlParser, Lexer, NgModuleResolver, ParseError, Parser, PipeResolver, StaticReflector, StaticSymbol, StaticSymbolCache, StaticSymbolResolver, TemplateParser, TypeScriptEmitter, analyzeNgModules, createAotUrlResolver, templateSourceUrl} from '@angular/compiler';
+import {AotCompilerHost, AotCompilerOptions, AotSummaryResolver, CompileDirectiveMetadata, CompileIdentifierMetadata, CompileMetadataResolver, CompileNgModuleMetadata, CompilePipeSummary, CompileShallowModuleMetadata, CompileTypeMetadata, CompilerConfig, DEFAULT_INTERPOLATION_CONFIG, DirectiveNormalizer, DirectiveResolver, DomElementSchemaRegistry, HtmlParser, I18NHtmlParser, Lexer, NgAnalyzedFileWithInjectables, NgModuleResolver, ParseError, Parser, PipeResolver, StaticReflector, StaticSymbol, StaticSymbolCache, StaticSymbolResolver, TemplateParser, TypeScriptEmitter, analyzeInjectables, analyzeNgModules, createAotUrlResolver, templateSourceUrl} from '@angular/compiler';
 import {ViewEncapsulation} from '@angular/core';
 import * as ts from 'typescript';
 
 import {NgAnalyzedModules} from '../../src/aot/compiler';
 import {ConstantPool} from '../../src/constant_pool';
 import {ParserError} from '../../src/expression_parser/ast';
+import {InjectableCompiler} from '../../src/injectable_compiler';
 import * as o from '../../src/output/output_ast';
 import {ModuleKind, compileModuleBackPatch} from '../../src/render3/r3_back_patch_compiler';
+import {compileNgModule} from '../../src/render3/r3_module_compiler';
 import {compileModuleFactory} from '../../src/render3/r3_module_factory_compiler';
 import {compilePipe} from '../../src/render3/r3_pipe_compiler';
 import {OutputMode} from '../../src/render3/r3_types';
@@ -22,6 +24,9 @@ import {compileComponent, compileDirective} from '../../src/render3/r3_view_comp
 import {BindingParser} from '../../src/template_parser/binding_parser';
 import {OutputContext} from '../../src/util';
 import {MockAotCompilerHost, MockCompilerHost, MockData, MockDirectory, arrayToMockDir, expectNoDiagnostics, settings, setup, toMockFileArray} from '../aot/test_util';
+
+const DTS = /\.d\.ts$/;
+const TS = /^(?!.*\.d\.ts$).*\.ts$/;
 
 const IDENTIFIER = /[A-Za-z_$ɵ][A-Za-z0-9_$]*/;
 const OPERATOR =
@@ -131,8 +136,9 @@ function doCompile(
     errorCollector: (error: any, fileName?: string) => void = error => { throw error; },
     compileAction: (
         outputCtx: OutputContext, analyzedModules: NgAnalyzedModules,
-        resolver: CompileMetadataResolver, htmlParser: HtmlParser, templateParser: TemplateParser,
-        hostBindingParser: BindingParser, reflector: StaticReflector) => void) {
+        analyzedInjectables: NgAnalyzedFileWithInjectables[], resolver: CompileMetadataResolver,
+        htmlParser: HtmlParser, templateParser: TemplateParser, hostBindingParser: BindingParser,
+        reflector: StaticReflector, injectableCompiler: InjectableCompiler) => void) {
   const testFiles = toMockFileArray(data);
   const scripts = testFiles.map(entry => entry.fileName);
   const angularFilesArray = toMockFileArray(angularFiles);
@@ -173,8 +179,7 @@ function doCompile(
       config, htmlParser, new NgModuleResolver(staticReflector),
       new DirectiveResolver(staticReflector), new PipeResolver(staticReflector), summaryResolver,
       elementSchemaRegistry, normalizer, console, symbolCache, staticReflector, errorCollector);
-
-
+  const injectableCompiler = new InjectableCompiler(staticReflector, true);
 
   // Create the TypeScript program
   const sourceFiles = program.getSourceFiles().map(sf => sf.fileName);
@@ -183,7 +188,8 @@ function doCompile(
   // TODO(chuckj): Eventually this should not be necessary as the ts.SourceFile should be sufficient
   // to generate a template definition.
   const analyzedModules = analyzeNgModules(sourceFiles, compilerHost, symbolResolver, resolver);
-
+  const tsFiles = sourceFiles.filter(fileName => TS.test(fileName) && !DTS.test(fileName));
+  const analyzedInjectables = analyzeInjectables(tsFiles, compilerHost, symbolResolver, resolver);
   const pipesOrDirectives = Array.from(analyzedModules.ngModuleByPipeOrDirective.keys());
 
   const fakeOutputContext: OutputContext = {
@@ -216,8 +222,8 @@ function doCompile(
   }
 
   compileAction(
-      fakeOutputContext, analyzedModules, resolver, htmlParser, templateParser, hostBindingParser,
-      staticReflector);
+      fakeOutputContext, analyzedModules, analyzedInjectables, resolver, htmlParser, templateParser,
+      hostBindingParser, staticReflector, injectableCompiler);
 
   fakeOutputContext.statements.unshift(...fakeOutputContext.constantPool.statements);
 
@@ -244,8 +250,9 @@ export function compile(
   return doCompile(
       data, angularFiles, options, errorCollector,
       (outputCtx: OutputContext, analyzedModules: NgAnalyzedModules,
-       resolver: CompileMetadataResolver, htmlParser: HtmlParser, templateParser: TemplateParser,
-       hostBindingParser: BindingParser, reflector: StaticReflector) => {
+       analyzedInjectables: NgAnalyzedFileWithInjectables[], resolver: CompileMetadataResolver,
+       htmlParser: HtmlParser, templateParser: TemplateParser, hostBindingParser: BindingParser,
+       reflector: StaticReflector, injectableCompiler: InjectableCompiler) => {
         const pipesOrDirectives = Array.from(analyzedModules.ngModuleByPipeOrDirective.keys());
         for (const pipeOrDirective of pipesOrDirectives) {
           const module = analyzedModules.ngModuleByPipeOrDirective.get(pipeOrDirective);
@@ -279,10 +286,18 @@ export function compile(
           }
         }
 
+        // SelectMany pattern to collect all the modules
+        const shallowModules =
+            analyzedInjectables.reduce<CompileShallowModuleMetadata[]>((p, file) => {
+              p.push(...file.shallowModules);
+              return p;
+            }, []);
+        for (const module of shallowModules) {
+          compileNgModule(outputCtx, module, injectableCompiler, resolver, OutputMode.PartialClass);
+        }
       });
 }
 
-const DTS = /\.d\.ts$/;
 const EXT = /(\.\w+)+$/;
 const NONE_WORD = /\W/g;
 const NODE_MODULES = /^.*\/node_modules\//;
@@ -305,8 +320,9 @@ export function backPatch(
   return doCompile(
       data, angularFiles, options, errorCollector,
       (outputCtx: OutputContext, analyzedModules: NgAnalyzedModules,
-       resolver: CompileMetadataResolver, htmlParser: HtmlParser, templateParser: TemplateParser,
-       hostBindingParser: BindingParser, reflector: StaticReflector) => {
+       analyzedInjectables: NgAnalyzedFileWithInjectables[], resolver: CompileMetadataResolver,
+       htmlParser: HtmlParser, templateParser: TemplateParser, hostBindingParser: BindingParser,
+       reflector: StaticReflector, injectableCompiler: InjectableCompiler) => {
 
         const parseTemplate =
             (compMeta: CompileDirectiveMetadata, ngModule: CompileNgModuleMetadata,
@@ -320,11 +336,11 @@ export function backPatch(
                   templateSourceUrl(ngModule.type, compMeta, compMeta.template !), true);
             };
 
+        // Create  modules
         for (const module of analyzedModules.ngModules) {
           compileModuleBackPatch(
               outputCtx, getBackPatchFunctionName(module.type), module,
-              DTS.test(module.type.reference.filePath) ? ModuleKind.Renderer2 :
-                                                         ModuleKind.Renderer3,
+              module.isRenderer3 ? ModuleKind.Renderer3 : ModuleKind.Renderer2,
               getBackPatchReference, parseTemplate, reflector, resolver);
         }
       });
@@ -336,8 +352,9 @@ export function createFactories(
   return doCompile(
       data, context, options, errorCollector,
       (outputCtx: OutputContext, analyzedModules: NgAnalyzedModules,
-       resolver: CompileMetadataResolver, htmlParser: HtmlParser, templateParser: TemplateParser,
-       hostBindingParser: BindingParser, reflector: StaticReflector) => {
+       analyzedInjectables: NgAnalyzedFileWithInjectables[], resolver: CompileMetadataResolver,
+       htmlParser: HtmlParser, templateParser: TemplateParser, hostBindingParser: BindingParser,
+       reflector: StaticReflector) => {
         for (const module of analyzedModules.ngModules) {
           compileModuleFactory(outputCtx, module, getBackPatchReference, resolver);
         }

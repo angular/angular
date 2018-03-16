@@ -533,13 +533,21 @@ export class CompileShallowModuleMetadata {
   rawExports: any;
   rawImports: any;
   rawProviders: any;
+
+  constructor(
+      {type, rawExports, rawImports, rawProviders}:
+          {type: CompileTypeMetadata, rawExports: any, rawImports: any, rawProviders: any}) {
+    this.type = type || null;
+    this.rawExports = rawExports;
+    this.rawImports = rawImports;
+    this.rawProviders = rawProviders;
+  }
 }
 
 /**
  * Metadata regarding compilation of a module.
  */
-export class CompileNgModuleMetadata {
-  type: CompileTypeMetadata;
+export class CompileNgModuleMetadata extends CompileShallowModuleMetadata {
   declaredDirectives: CompileIdentifierMetadata[];
   exportedDirectives: CompileIdentifierMetadata[];
   declaredPipes: CompileIdentifierMetadata[];
@@ -557,10 +565,14 @@ export class CompileNgModuleMetadata {
 
   transitiveModule: TransitiveCompileNgModuleMetadata;
 
-  constructor({type, providers, declaredDirectives, exportedDirectives, declaredPipes,
-               exportedPipes, entryComponents, bootstrapComponents, importedModules,
-               exportedModules, schemas, transitiveModule, id, isRenderer3}: {
+  constructor({type, rawExports, rawImports, rawProviders, providers, declaredDirectives,
+               exportedDirectives, declaredPipes, exportedPipes, entryComponents,
+               bootstrapComponents, importedModules, exportedModules, schemas, transitiveModule, id,
+               isRenderer3}: {
     type: CompileTypeMetadata,
+    rawExports: any,
+    rawImports: any,
+    rawProviders: any,
     providers: CompileProviderMetadata[],
     declaredDirectives: CompileIdentifierMetadata[],
     exportedDirectives: CompileIdentifierMetadata[],
@@ -575,7 +587,7 @@ export class CompileNgModuleMetadata {
     id: string|null,
     isRenderer3: boolean
   }) {
-    this.type = type || null;
+    super({type, rawExports, rawImports, rawProviders});
     this.declaredDirectives = _normalizeArray(declaredDirectives);
     this.exportedDirectives = _normalizeArray(exportedDirectives);
     this.declaredPipes = _normalizeArray(declaredPipes);

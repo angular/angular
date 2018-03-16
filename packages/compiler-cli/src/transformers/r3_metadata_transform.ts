@@ -6,17 +6,81 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ClassStmt, LiteralExpr, PartialModule, Statement, StmtModifier} from '@angular/compiler';
+import {ClassStmt, LiteralExpr, PartialModule, Statement, StmtModifier, Expression, ExpressionVisitor, ExternalExpr, StaticReflector, LiteralArrayExpr, LiteralMapExpr} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {MetadataCollector, MetadataValue, ModuleMetadata, isClassMetadata, isMetadataImportedSymbolReferenceExpression, isMetadataSymbolicCallExpression} from '../metadata/index';
 
 import {MetadataTransformer, ValueTransform} from './metadata_cache';
 
+const UNSUPPORTED = {};
+
+const unsupported = () => UNSUPPORTED;
+class ExpressionConverter implements ExpressionVisitor {
+
+  constructor(private reflector: StaticReflector) {}
+
+  visitReadVarExpr = unsupported;
+  visitWriteVarExpr = unsupported;
+  visitWriteKeyExpr = unsupported;
+  visitWritePropExpr = unsupported;
+  visitInvokeMethodExpr = unsupported;
+  visitInvokeFunctionExpr = unsupported;
+  visitInstantiateExpr = unsupported;
+  visitLiteralExpr(ast: LiteralExpr) { return ast.value; }
+
+  visitExternalExpr(ast: ExternalExpr) {
+    return ast.value.moduleName && ast.value.name ?
+      this.reflector.getStaticSymbol(ast.value.moduleName, ast.value.name) : UNSUPPORTED;
+  }
+
+  visitConditionalExpr = unsupported;
+  visitNotExpr = unsupported;
+  visitAssertNotNullExpr = unsupported;
+  visitCastExpr = unsupported;
+  visitFunctionExpr = unsupported;
+  visitBinaryOperatorExpr = unsupported;
+  visitReadPropExpr = unsupported;
+  visitReadKeyExpr = unsupported;
+  visitLiteralArrayExpr(ast: LiteralArrayExpr, context: any) {
+    let supported = true;
+    const result = ast.entries.map(v => {
+      if (supported) {
+         const result = v.visitExpression(this, context);
+         if (result !== UNSUPPORTED) return result;
+      }
+      supported = false;
+      return UNSUPPORTED;
+    });
+    return supported ? result : UNSUPPORTED;
+  }
+  visitLiteralMapExpr(ast: LiteralMapExpr, context: any) {
+    let supported = true;
+    const result: any = {};
+    ast.entries.forEach(v => {
+      if (supported) {
+         const value = v.value.visitExpression(this, context);
+         if (value !== UNSUPPORTED) {
+           result[v.key] = value;
+         } else {
+          supported = false;
+         }
+      }
+    });
+    return supported ? result : UNSUPPORTED;
+  }
+  visitCommaExpr = unsupported;
+}
+
+function convertToMetadata(expression: Expression | undefined, reflector: StaticReflector): any {
+  return expression ?
+    expression.visitExpression(new ExpressionConverter(reflector), null) : {};
+}
+
 export class PartialModuleMetadataTransformer implements MetadataTransformer {
   private moduleMap: Map<string, PartialModule>;
 
-  constructor(modules: PartialModule[]) {
+  constructor(modules: PartialModule[], private reflector: StaticReflector) {
     this.moduleMap = new Map(modules.map<[string, PartialModule]>(m => [m.fileName, m]));
   }
 
@@ -38,18 +102,7 @@ export class PartialModuleMetadataTransformer implements MetadataTransformer {
                 for (const field of partialClass.fields) {
                   if (field.name && field.modifiers &&
                       field.modifiers.some(modifier => modifier === StmtModifier.Static)) {
-                    let val: any = {};
-
-                    // If it is a string, number or boolean, keep it.
-                    if (field.initializer && field.initializer instanceof LiteralExpr) {
-                      const initializer = field.initializer.value;
-                      const initializerType = typeof initializer;
-                      if (initializerType === 'string' || initializerType === 'number' ||
-                          initializerType === 'boolean') {
-                        val = initializer;
-                      }
-                    }
-
+                    let val = convertToMetadata(field.initializer, this.reflector);
                     value.statics = {...(value.statics || {}), [field.name]: val};
                   }
                 }

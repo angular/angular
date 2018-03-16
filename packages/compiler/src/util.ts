@@ -76,6 +76,35 @@ export class ValueTransformer implements ValueVisitor {
   visitOther(value: any, context: any): any { return value; }
 }
 
+export class ValueVisit implements ValueVisitor {
+  visitArray(arr: any[], context: any): void {
+    for (const value of arr) {
+      visitValue(value, this, context);
+    }
+  }
+  visitStringMap(map: {[key: string]: any}, context: any): void {
+    for (const key of Object.keys(map)) {
+      visitValue(map[key], this, context);
+    }
+  }
+  visitPrimitive(value: any, context: any): void {}
+  visitOther(value: any, context: any): void {}
+}
+
+
+export function valueCollectOthers(value: any, predicate?: (value: any) => boolean): any[] {
+  const result: any[] = [];
+  class ValueCollector extends ValueVisit {
+    visitOther(value: any): void {
+      if (!predicate || predicate(value)) {
+        result.push(value);
+      }
+    }
+  }
+  visitValue(value, new ValueCollector(), null);
+  return result;
+}
+
 export type SyncAsync<T> = T | Promise<T>;
 
 export const SyncAsync = {

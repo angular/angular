@@ -115,11 +115,11 @@ class _TsEmitterVisitor extends AbstractEmitterVisitor implements o.TypeVisitor 
   // TODO: narrow the cast to a more explicit type, or use a pattern that does not
   // start with [].concat. see https://github.com/angular/angular/pull/11846
   visitLiteralArrayExpr(ast: o.LiteralArrayExpr, ctx: EmitterVisitorContext): any {
-    if (ast.entries.length === 0) {
+    if (ast.entries.length === 0 && ast.type !== o.INFERRED_TYPE) {
       ctx.print(ast, '(');
     }
     const result = super.visitLiteralArrayExpr(ast, ctx);
-    if (ast.entries.length === 0) {
+    if (ast.entries.length === 0 && ast.type !== o.INFERRED_TYPE) {
       ctx.print(ast, ' as any[])');
     }
     return result;

@@ -136,7 +136,7 @@ describe('separate compilation ', () => {
     });
 
     // TODO: Pending merge with ngInjectorDef code
-    xit('should transform @NgModule', () => {
+    fit('should transform @NgModule', () => {
       write('files/some-component.ts', `
         import {Component} from '@angular/core';
 
@@ -480,7 +480,7 @@ describe('separate compilation ', () => {
           'app/module.ngfactory.js', app_module_factory, 'Invalid application module factory');
     });
 
-    fit('should compiler an ivy application using an ivy library', () => {
+    xit('should compiler an ivy application using an ivy library', () => {
       // Library using ivy
       writeConfig('library2/tsconfig.json', {
         extends: '../tsconfig-base.json',

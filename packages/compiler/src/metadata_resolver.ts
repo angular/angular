@@ -681,6 +681,9 @@ export class CompileMetadataResolver {
 
     compileMeta = new cpl.CompileNgModuleMetadata({
       type: this._getTypeMetadata(moduleType),
+      rawProviders: meta.providers,
+      rawImports: meta.imports,
+      rawExports: meta.exports,
       providers,
       entryComponents,
       bootstrapComponents,
@@ -805,12 +808,12 @@ export class CompileMetadataResolver {
   }
 
   getInjectableMetadata(
-      type: any, dependencies: any[]|null = null,
-      throwOnUnknownDeps: boolean = true): cpl.CompileInjectableMetadata|null {
+      type: any, dependencies: any[]|null = null, throwOnUnknownDeps: boolean = true,
+      warn = true): cpl.CompileInjectableMetadata|null {
     const typeSummary = this._loadSummary(type, cpl.CompileSummaryKind.Injectable);
     const typeMetadata = typeSummary ?
         typeSummary.type :
-        this._getTypeMetadata(type, dependencies, throwOnUnknownDeps);
+        this._getTypeMetadata(type, dependencies, throwOnUnknownDeps, warn);
 
     const annotations: Injectable[] =
         this._reflector.annotations(type).filter(ann => createInjectable.isTypeOf(ann));
@@ -832,12 +835,14 @@ export class CompileMetadataResolver {
     };
   }
 
-  private _getTypeMetadata(type: Type, dependencies: any[]|null = null, throwOnUnknownDeps = true):
-      cpl.CompileTypeMetadata {
+  private _getTypeMetadata(
+      type: Type, dependencies: any[]|null = null, throwOnUnknownDeps = true,
+      warn = true): cpl.CompileTypeMetadata {
     const identifier = this._getIdentifierMetadata(type);
     return {
       reference: identifier.reference,
-      diDeps: this._getDependenciesMetadata(identifier.reference, dependencies, throwOnUnknownDeps),
+      diDeps: this._getDependenciesMetadata(
+          identifier.reference, dependencies, throwOnUnknownDeps, warn),
       lifecycleHooks: getAllLifecycleHooks(this._reflector, identifier.reference),
     };
   }
@@ -898,8 +903,8 @@ export class CompileMetadataResolver {
   }
 
   private _getDependenciesMetadata(
-      typeOrFunc: Type|Function, dependencies: any[]|null,
-      throwOnUnknownDeps = true): cpl.CompileDiDependencyMetadata[] {
+      typeOrFunc: Type|Function, dependencies: any[]|null, throwOnUnknownDeps = true,
+      warn = true): cpl.CompileDiDependencyMetadata[] {
     let hasUnknownDeps = false;
     const params = dependencies || this._reflector.parameters(typeOrFunc) || [];
 
@@ -958,7 +963,7 @@ export class CompileMetadataResolver {
           `Can't resolve all parameters for ${stringifyType(typeOrFunc)}: (${depsTokens}).`;
       if (throwOnUnknownDeps || this._config.strictInjectionParameters) {
         this._reportError(syntaxError(message), typeOrFunc);
-      } else {
+      } else if (warn) {
         this._console.warn(`Warning: ${message} This will become an error in Angular v6.x`);
       }
     }

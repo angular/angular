@@ -76,17 +76,21 @@ export function compileDirective(
     outputCtx.statements.push(new o.ClassStmt(
         /* name */ className,
         /* parent */ null,
-        /* fields */[new o.ClassField(
-            /* name */ definitionField,
-            /* type */ o.INFERRED_TYPE,
-            /* modifiers */[o.StmtModifier.Static],
-            /* initializer */ definitionFunction), 
-            ...(directive.selector ? [new o.ClassField(
-              /* name */ 'ngSelector',
+        /* fields */
+        [
+          new o.ClassField(
+              /* name */ definitionField,
               /* type */ o.INFERRED_TYPE,
-              /* modifiers */[o.StmtModifier.Static, o.StmtModifier.Hidden],
-              /* initializer */ o.literal(directive.selector))] :
-          [])],
+              /* modifiers */[o.StmtModifier.Static],
+              /* initializer */ definitionFunction),
+          ...(directive.selector ?
+                  [new o.ClassField(
+                      /* name */ 'ngSelector',
+                      /* type */ o.INFERRED_TYPE,
+                      /* modifiers */[o.StmtModifier.Static, o.StmtModifier.Hidden],
+                      /* initializer */ o.literal(directive.selector))] :
+                  [])
+        ],
         /* getters */[],
         /* constructorMethod */ new o.ClassMethod(null, [], []),
         /* methods */[]));
@@ -180,17 +184,21 @@ export function compileComponent(
     outputCtx.statements.push(new o.ClassStmt(
         /* name */ className,
         /* parent */ null,
-        /* fields */[new o.ClassField(
-            /* name */ definitionField,
-            /* type */ o.INFERRED_TYPE,
-            /* modifiers */[o.StmtModifier.Static],
-            /* initializer */ definitionFunction),
-            ...(component.selector ? [new o.ClassField(
-              /* name */ 'ngSelector',
+        /* fields */
+        [
+          new o.ClassField(
+              /* name */ definitionField,
               /* type */ o.INFERRED_TYPE,
-              /* modifiers */[o.StmtModifier.Static, o.StmtModifier.Hidden],
-              /* initializer */ o.literal(component.selector))] :
-          [])],
+              /* modifiers */[o.StmtModifier.Static],
+              /* initializer */ definitionFunction),
+          ...(component.selector ?
+                  [new o.ClassField(
+                      /* name */ 'ngSelector',
+                      /* type */ o.INFERRED_TYPE,
+                      /* modifiers */[o.StmtModifier.Static, o.StmtModifier.Hidden],
+                      /* initializer */ o.literal(component.selector))] :
+                  [])
+        ],
         /* getters */[],
         /* constructorMethod */ new o.ClassMethod(null, [], []),
         /* methods */[]));
@@ -304,7 +312,8 @@ class BindingScope {
 
   set(name: string, value: o.Expression): BindingScope {
     !this.map.has(name) ||
-        error(`The name ${name} is already defined in scope to be ${this.map.get(name)}`);
+        error(
+            `The name ${name} is already defined in scope to be ${this.map.get(name)}, trying to set it to ${value}`);
     this.map.set(name, value);
     return this;
   }
@@ -946,11 +955,7 @@ class ValueConverter extends AstMemoryEfficientTransformer {
   // AstMemoryEfficientTransformer
   visitPipe(ast: BindingPipe, context: any): AST {
     // Allocate a slot to create the pipe
-    let slot = this.pipeSlots.get(ast.name);
-    if (slot == null) {
-      slot = this.allocateSlot();
-      this.pipeSlots.set(ast.name, slot);
-    }
+    let slot = this.allocateSlot();
     const slotPseudoLocal = `PIPE:${slot}`;
     const target = new PropertyRead(ast.span, new ImplicitReceiver(ast.span), slotPseudoLocal);
     const bindingId = pipeBinding(ast.args);

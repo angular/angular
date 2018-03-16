@@ -178,6 +178,15 @@ describe('r3_back_patch_compiler', () => {
 
         // @__BUILD_OPTIMIZER_COLOCATE__
         $lib1_p$.Lib1Pipe.ngPipeDef = $r3$.ɵdefinePipe(…);
+
+        // @__BUILD_OPTIMIZER_COLOCATE__
+        $lib1_s$.Lib1Service.ngInjectableDef = $r3$.defineInjectable(…);
+
+        // @__BUILD_OPTIMIZER_COLOCATE__
+        $lib1_m$.Lib1Module.ngInjectorDef = $r3$.ɵdefineInjector(…);
+
+        // @__BUILD_OPTIMIZER_REMOVE__
+        $lib1_m$.Lib1Module.ngModuleScope = […];
       }
     `;
 
@@ -193,7 +202,16 @@ describe('r3_back_patch_compiler', () => {
         $lib2_d$.Lib2Directive.ngDirectiveDef = $r3$.ɵdefineDirective(…);
 
         // @__BUILD_OPTIMIZER_COLOCATE__
-        $lib1_p$.Lib2Pipe.ngPipeDef = $r3$.ɵdefinePipe(…);
+        $lib2_p$.Lib2Pipe.ngPipeDef = $r3$.ɵdefinePipe(…);
+
+        // @__BUILD_OPTIMIZER_COLOCATE__
+        $lib2_s$.Lib2Service.ngInjectableDef = $r3$.defineInjectable(…);
+
+        // @__BUILD_OPTIMIZER_COLOCATE__
+        $lib2_m$.Lib2Module.ngInjectorDef = $r3$.ɵdefineInjector(…);
+
+        // @__BUILD_OPTIMIZER_REMOVE__
+        $lib2_m$.Lib2Module.ngModuleScope = […];
       }
     `;
 

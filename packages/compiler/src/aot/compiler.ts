@@ -20,8 +20,8 @@ import {NgModuleCompiler} from '../ng_module_compiler';
 import {OutputEmitter} from '../output/abstract_emitter';
 import * as o from '../output/output_ast';
 import {ParseError} from '../parse_util';
-import {compileNgModule as compileIvyModule} from '../render3/r3_module_compiler';
 import {ModuleKind, compileModuleBackPatch} from '../render3/r3_back_patch_compiler';
+import {compileNgModule as compileIvyModule} from '../render3/r3_module_compiler';
 import {compileModuleFactory} from '../render3/r3_module_factory_compiler';
 import {compilePipe as compileIvyPipe} from '../render3/r3_pipe_compiler';
 import {OutputMode} from '../render3/r3_types';
@@ -420,7 +420,10 @@ export class AotCompiler {
   private _compileShallowModules(
       fileName: string, shallowModules: CompileShallowModuleMetadata[],
       context: OutputContext): void {
-    shallowModules.forEach(module => compileIvyModule(context, module, this._injectableCompiler));
+    shallowModules.forEach(
+        module => compileIvyModule(
+            context, module, this._injectableCompiler, this._metadataResolver,
+            OutputMode.PartialClass));
   }
 
   private _compilePartialModule(
@@ -968,6 +971,13 @@ export function analyzeFile(
   return {
       fileName, directives, pipes, ngModules, injectables, exportsNonSourceFiles,
   };
+}
+
+export function analyzeInjectables(
+    tsFiles: string[], host: NgAnalyzeModulesHost, staticSymbolResolver: StaticSymbolResolver,
+    metadataResolver: CompileMetadataResolver): NgAnalyzedFileWithInjectables[] {
+  return tsFiles.map(
+      tsFile => analyzeFileForInjectables(host, staticSymbolResolver, metadataResolver, tsFile));
 }
 
 export function analyzeFileForInjectables(

@@ -9,14 +9,17 @@
 import {StaticReflector} from '../aot/static_reflector';
 import {CompileDirectiveMetadata, CompileIdentifierMetadata, CompileNgModuleMetadata, CompilePipeSummary, CompileTypeMetadata} from '../compile_metadata';
 import {DEFAULT_INTERPOLATION_CONFIG, DomElementSchemaRegistry, Lexer, ParseError, Parser} from '../compiler';
+import {InjectableCompiler} from '../injectable_compiler';
 import {CompileMetadataResolver} from '../metadata_resolver';
 import * as o from '../output/output_ast';
 import {BindingParser} from '../template_parser/binding_parser';
 import {TemplateAst} from '../template_parser/template_ast';
 import {OutputContext} from '../util';
 
+import {compileNgModule} from './r3_module_compiler';
 import {compilePipe} from './r3_pipe_compiler';
-import {BUILD_OPTIMIZER_REMOVE, OutputMode} from './r3_types';
+import {BUILD_OPTIMIZER_COLOCATE, BUILD_OPTIMIZER_REMOVE, OutputMode} from './r3_types';
+import {collectStaticSymbols} from './r3_utils';
 import {compileComponent, compileDirective} from './r3_view_compiler';
 
 export const enum ModuleKind {
@@ -71,6 +74,7 @@ export function compileModuleBackPatch(
     const errors: ParseError[] = [];
     const hostBindingParser = new BindingParser(
         expressionParser, DEFAULT_INTERPOLATION_CONFIG, elementSchemaRegistry, [], errors);
+    const injectableCompiler = new InjectableCompiler(reflector, /* alwaysGenerateDef */ true);
 
     // Back-patch all declared directive and components
     for (const declaredDirective of module.declaredDirectives) {
@@ -95,6 +99,28 @@ export function compileModuleBackPatch(
         compilePipe(localCtx, pipeMetadata, reflector, OutputMode.BackPatch);
       }
     }
+
+    // Back-patch all the injectables
+    const providedSymbols = collectStaticSymbols(module.rawProviders);
+    for (const providedSymbol of providedSymbols) {
+      if (reflector.rendererTarget(providedSymbol) === 2) {
+        const metadata = resolver.getInjectableMetadata(
+            providedSymbol, null, /* throwOnUnknownDeps */ false, /* warn */ false);
+        if (metadata && metadata.useValue === undefined && metadata.useExisting === undefined &&
+            metadata.useFactory === undefined) {
+          // useClass or class
+          const injectableDef = injectableCompiler.injectableDef(metadata, outputCtx);
+          localCtx.statements.push(
+              new o.CommentStmt(BUILD_OPTIMIZER_COLOCATE), outputCtx.importExpr(providedSymbol)
+                                                               .prop('ngInjectableDef')
+                                                               .set(injectableDef)
+                                                               .toStmt());
+        }
+      }
+    }
+
+    // Back-patch the module itself
+    compileNgModule(localCtx, module, injectableCompiler, resolver, OutputMode.BackPatch);
 
     if (errors.length) {
       throw new Error(errors.map(e => e.toString()).join('\n'));

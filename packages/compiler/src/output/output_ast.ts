@@ -453,12 +453,20 @@ export class ExternalExpr extends Expression {
   visitExpression(visitor: ExpressionVisitor, context: any): any {
     return visitor.visitExternalExpr(this, context);
   }
+
+  toString(): string {
+    return `ExternalExpr(${this.value instanceof ExternalReference ? this.value : JSON.stringify(this.value)})`;
+  }
 }
 
 export class ExternalReference {
   constructor(public moduleName: string|null, public name: string|null, public runtime?: any|null) {
   }
   // Note: no isEquivalent method here as we use this as an interface too.
+
+  toString(): string {
+    return `ExternalReference(m:${this.moduleName},n:${this.name},r:${this.runtime})`;
+  }
 }
 
 export class ConditionalExpr extends Expression {
