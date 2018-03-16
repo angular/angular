@@ -71,7 +71,6 @@ describe('pipe', () => {
         pipe(2, DoublePipe.ngPipeDef);
         elementEnd();
       }
-      MyDir.ngDirectiveDef.h(1, 0);
       elementProperty(0, 'elprop', bind(pipeBind1(2, ctx)));
       directive = load(1);
     }

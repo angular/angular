@@ -153,13 +153,13 @@
     "name": "locateHostElement"
   },
   {
-    "name": "noop$2"
-  },
-  {
     "name": "queueInitHooks"
   },
   {
     "name": "refreshChildComponents"
+  },
+  {
+    "name": "refreshDirectives"
   },
   {
     "name": "refreshDynamicChildren"
@@ -178,6 +178,12 @@
   },
   {
     "name": "resolveRendererType2"
+  },
+  {
+    "name": "rootDirectiveIndices"
+  },
+  {
+    "name": "setHostBindings"
   },
   {
     "name": "setInputsFromAttrs"
