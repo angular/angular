@@ -42,6 +42,7 @@ function shouldIgnore(value: any): boolean {
  */
 export class StaticReflector implements CompileReflector {
   private annotationCache = new Map<StaticSymbol, any[]>();
+  private shallowAnnotationCache = new Map<StaticSymbol, any[]>();
   private propertyCache = new Map<StaticSymbol, {[key: string]: any[]}>();
   private parameterCache = new Map<StaticSymbol, any[]>();
   private methodCache = new Map<StaticSymbol, {[key: string]: boolean}>();
@@ -106,8 +107,9 @@ export class StaticReflector implements CompileReflector {
         this.symbolResolver.getSymbolByModule(moduleUrl, name, containingFile));
   }
 
-  tryFindDeclaration(moduleUrl: string, name: string): StaticSymbol {
-    return this.symbolResolver.ignoreErrorsFor(() => this.findDeclaration(moduleUrl, name));
+  tryFindDeclaration(moduleUrl: string, name: string, containingFile?: string): StaticSymbol {
+    return this.symbolResolver.ignoreErrorsFor(
+        () => this.findDeclaration(moduleUrl, name, containingFile));
   }
 
   findSymbolDeclaration(symbol: StaticSymbol): StaticSymbol {
@@ -135,7 +137,21 @@ export class StaticReflector implements CompileReflector {
   }
 
   public annotations(type: StaticSymbol): any[] {
-    let annotations = this.annotationCache.get(type);
+    return this._annotations(
+        type, (type: StaticSymbol, decorators: any) => this.simplify(type, decorators),
+        this.annotationCache);
+  }
+
+  public shallowAnnotations(type: StaticSymbol): any[] {
+    return this._annotations(
+        type, (type: StaticSymbol, decorators: any) => this.simplify(type, decorators, true),
+        this.shallowAnnotationCache);
+  }
+
+  private _annotations(
+      type: StaticSymbol, simplify: (type: StaticSymbol, decorators: any) => any,
+      annotationCache: Map<StaticSymbol, any[]>): any[] {
+    let annotations = annotationCache.get(type);
     if (!annotations) {
       annotations = [];
       const classMetadata = this.getTypeMetadata(type);
@@ -146,7 +162,7 @@ export class StaticReflector implements CompileReflector {
       }
       let ownAnnotations: any[] = [];
       if (classMetadata['decorators']) {
-        ownAnnotations = this.simplify(type, classMetadata['decorators']);
+        ownAnnotations = simplify(type, classMetadata['decorators']);
         annotations.push(...ownAnnotations);
       }
       if (parentType && !this.summaryResolver.isLibraryFile(type.filePath) &&
@@ -169,7 +185,7 @@ export class StaticReflector implements CompileReflector {
           }
         }
       }
-      this.annotationCache.set(type, annotations.filter(ann => !!ann));
+      annotationCache.set(type, annotations.filter(ann => !!ann));
     }
     return annotations;
   }
@@ -414,7 +430,7 @@ export class StaticReflector implements CompileReflector {
   }
 
   /** @internal */
-  public simplify(context: StaticSymbol, value: any): any {
+  public simplify(context: StaticSymbol, value: any, lazy: boolean = false): any {
     const self = this;
     let scope = BindingScope.empty;
     const calling = new Map<StaticSymbol, boolean>();
@@ -775,7 +791,7 @@ export class StaticReflector implements CompileReflector {
 
     let result: any;
     try {
-      result = simplifyInContext(context, value, 0, 0);
+      result = simplifyInContext(context, value, 0, lazy ? 1 : 0);
     } catch (e) {
       if (this.errorRecorder) {
         this.reportError(e, context);

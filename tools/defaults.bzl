@@ -2,6 +2,7 @@
 load("@build_bazel_rules_nodejs//:defs.bzl", _npm_package = "npm_package")
 load("@build_bazel_rules_typescript//:defs.bzl", _ts_library = "ts_library", _ts_web_test = "ts_web_test")
 load("//packages/bazel:index.bzl", _ng_module = "ng_module", _ng_package = "ng_package")
+load("//packages/bazel/src:ng_module.bzl", _ivy_ng_module = "internal_ivy_ng_module")
 
 DEFAULT_TSCONFIG = "//packages:tsconfig-build.json"
 
@@ -79,3 +80,8 @@ def ts_web_test(bootstrap = [], deps = [], **kwargs):
       bootstrap = bootstrap,
       deps = local_deps,
       **kwargs)
+
+def ivy_ng_module(name, tsconfig = None, **kwargs):
+  if not tsconfig:
+    tsconfig = DEFAULT_TSCONFIG
+  _ivy_ng_module(name = name, tsconfig = tsconfig, **kwargs)

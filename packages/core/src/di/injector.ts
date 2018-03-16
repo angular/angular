@@ -8,6 +8,8 @@
 
 import {Type} from '../type';
 import {stringify} from '../util';
+
+import {InjectableDef, defineInjectable} from './defs';
 import {resolveForwardRef} from './forward_ref';
 import {InjectionToken} from './injection_token';
 import {Inject, Optional, Self, SkipSelf} from './metadata';
@@ -17,7 +19,17 @@ export const SOURCE = '__source';
 const _THROW_IF_NOT_FOUND = new Object();
 export const THROW_IF_NOT_FOUND = _THROW_IF_NOT_FOUND;
 
-class _NullInjector implements Injector {
+/**
+ * An InjectionToken that gets the current `Injector` for `createInjector()`-style injectors.
+ *
+ * Requesting this token instead of `Injector` allows `StaticInjector` to be tree-shaken from a
+ * project.
+ *
+ * @experimental
+ */
+export const INJECTOR = new InjectionToken<Injector>('INJECTOR');
+
+export class NullInjector implements Injector {
   get(token: any, notFoundValue: any = _THROW_IF_NOT_FOUND): any {
     if (notFoundValue === _THROW_IF_NOT_FOUND) {
       throw new Error(`NullInjectorError: No provider for ${stringify(token)}!`);
@@ -48,7 +60,7 @@ class _NullInjector implements Injector {
  */
 export abstract class Injector {
   static THROW_IF_NOT_FOUND = _THROW_IF_NOT_FOUND;
-  static NULL: Injector = new _NullInjector();
+  static NULL: Injector = new NullInjector();
 
   /**
    * Retrieves an instance from the injector based on the provided token.
@@ -87,6 +99,11 @@ export abstract class Injector {
       return new StaticInjector(options.providers, options.parent, options.name || null);
     }
   }
+
+  static ngInjectableDef = defineInjectable({
+    providedIn: 'any' as any,
+    factory: () => inject(INJECTOR),
+  });
 }
 
 
@@ -100,7 +117,7 @@ const MULTI_PROVIDER_FN = function(): any[] {
   return Array.prototype.slice.call(arguments);
 };
 const GET_PROPERTY_NAME = {} as any;
-const USE_VALUE =
+export const USE_VALUE =
     getClosureSafeProperty<ValueProvider>({provide: String, useValue: GET_PROPERTY_NAME});
 const NG_TOKEN_PATH = 'ngTokenPath';
 const NG_TEMP_TOKEN_PATH = 'ngTempTokenPath';
@@ -127,6 +144,8 @@ export class StaticInjector implements Injector {
     const records = this._records = new Map<any, Record>();
     records.set(
         Injector, <Record>{token: Injector, fn: IDENT, deps: EMPTY, value: this, useNew: false});
+    records.set(
+        INJECTOR, <Record>{token: Injector, fn: IDENT, deps: EMPTY, value: this, useNew: false});
     recursivelyProcessProviders(records, providers);
   }
 
