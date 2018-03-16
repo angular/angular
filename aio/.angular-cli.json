@@ -13,7 +13,9 @@
         "app/search/search-worker.js",
         "favicon.ico",
         "pwa-manifest.json",
-        "google385281288605d160.html"
+        "google385281288605d160.html",
+        { "glob": "custom-elements.min.js", "input": "../node_modules/@webcomponents/custom-elements", "output": "./assets/js" },
+        { "glob": "native-shim.js", "input": "../node_modules/@webcomponents/custom-elements/src", "output": "./assets/js" }
       ],
       "index": "index.html",
       "main": "main.ts",
