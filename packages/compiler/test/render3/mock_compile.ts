@@ -20,70 +20,64 @@ import {compilePipe} from '../../src/render3/r3_pipe_compiler';
 import {OutputMode} from '../../src/render3/r3_types';
 import {compileComponent, compileDirective} from '../../src/render3/r3_view_compiler';
 import {BindingParser} from '../../src/template_parser/binding_parser';
-import {OutputContext} from '../../src/util';
+import {OutputContext, escapeRegExp} from '../../src/util';
 import {MockAotCompilerHost, MockCompilerHost, MockData, MockDirectory, arrayToMockDir, expectNoDiagnostics, settings, toMockFileArray} from '../aot/test_util';
 
 const IDENTIFIER = /[A-Za-z_$ɵ][A-Za-z0-9_$]*/;
 const OPERATOR =
-    /!|%|\*|\/|\^|\&|\&\&\|\||\|\||\(|\)|\{|\}|\[|\]|:|;|\.|<|<=|>|>=|=|==|===|!=|!==|=>|\+|\+\+|-|--|@|,|\.|\.\.\./;
-const STRING = /\'[^'\n]*\'|"[^'\n]*"|`[^`]*`/;
-const NUMBER = /[0-9]+/;
+    /!|%|\*|\/|\^|&{1,2}|\|{1,2}|\(|\)|\{|\}|\[|\]|:|;|<=?|>=?|={1,3}|!={1,2}|=>|\+{1,2}|-{1,2}|@|,|\.|\.\.\./;
+const STRING = /'[^']*'|"[^"]*"|`[\s\S]*?`/;
+const NUMBER = /\d+/;
+
 const ELLIPSIS = '…';
 const TOKEN = new RegExp(
-    `^((${IDENTIFIER.source})|(${OPERATOR.source})|(${STRING.source})|${NUMBER.source}|${ELLIPSIS})`);
-const WHITESPACE = /^\s+/;
+    `\\s*((${IDENTIFIER.source})|(${OPERATOR.source})|(${STRING.source})|${NUMBER.source}|${ELLIPSIS})`,
+    'y');
 
 type Piece = string | RegExp;
 
-const IDENT = /[A-Za-z$_][A-Za-z0-9$_]*/;
 const SKIP = /(?:.|\n|\r)*/;
 const MATCHING_IDENT = /^\$.*\$$/;
 
+// Transform the expected output to set of tokens
 function tokenize(text: string): Piece[] {
-  function matches(exp: RegExp): string|false {
-    const m = text.match(exp);
-    if (!m) return false;
-    text = text.substr(m[0].length);
-    return m[0];
-  }
-  function next(): string {
-    const result = matches(TOKEN);
-    if (!result) {
-      throw Error(`Invalid test, no token found for '${text.substr(0, 30)}...'`);
-    }
-    matches(WHITESPACE);
-    return result;
-  }
+  TOKEN.lastIndex = 0;
 
+  let match: RegExpMatchArray|null;
   const pieces: Piece[] = [];
-  matches(WHITESPACE);
-  while (text) {
-    const token = next();
+
+  while ((match = TOKEN.exec(text)) !== null) {
+    const token = match[1];
     if (token === 'IDENT') {
-      pieces.push(IDENT);
+      pieces.push(IDENTIFIER);
     } else if (token === ELLIPSIS) {
       pieces.push(SKIP);
     } else {
       pieces.push(token);
     }
   }
+
+  if (TOKEN.lastIndex !== 0) {
+    const from = TOKEN.lastIndex;
+    const to = from + 30;
+    throw Error(`Invalid test, no token found for '${text.substr(from, to)}...'`)
+  }
+
   return pieces;
 }
 
-const contextWidth = 100;
-export function expectEmit(source: string, emitted: string, description: string) {
-  const pieces = tokenize(emitted);
-  const expr = r(...pieces);
+export function expectEmit(source: string, expected: string, description: string) {
+  const pieces = tokenize(expected);
+  const expr = r(pieces);
   if (!expr.test(source)) {
     let last: number = 0;
-    for (let i = 1; i <= pieces.length; i++) {
-      const t = r(...pieces.slice(0, i));
+    for (let i = 1; i < pieces.length; i++) {
+      const t = r(pieces.slice(0, i));
       const m = source.match(t);
-      const expected = pieces[i - 1] == IDENT ? '<IDENT>' : pieces[i - 1];
+      const expectedPiece = pieces[i - 1] == IDENTIFIER ? '<IDENT>' : pieces[i - 1];
       if (!m) {
-        const contextPieceWidth = contextWidth / 2;
         fail(
-            `${description}: Expected to find ${expected} '${source.substr(0,last)}[<---HERE expected "${expected}"]${source.substr(last)}'`);
+            `${description}: Expected to find ${expectedPiece} '${source.substr(0,last)}[<---HERE expected "${expectedPiece}"]${source.substr(last)}'`);
         return;
       } else {
         last = (m.index || 0) + m[0].length;
@@ -95,8 +89,7 @@ export function expectEmit(source: string, emitted: string, description: string)
 }
 
 const IDENT_LIKE = /^[a-z][A-Z]/;
-const SPECIAL_RE_CHAR = /\/|\(|\)|\||\*|\+|\[|\]|\{|\}|\$/g;
-function r(...pieces: (string | RegExp)[]): RegExp {
+function r(pieces: (string | RegExp)[]): RegExp {
   const results: string[] = [];
   let first = true;
   let group = 0;
@@ -110,14 +103,14 @@ function r(...pieces: (string | RegExp)[]): RegExp {
       if (MATCHING_IDENT.test(piece)) {
         const matchGroup = groups.get(piece);
         if (!matchGroup) {
-          results.push('(' + IDENT.source + ')');
+          results.push('(' + IDENTIFIER.source + ')');
           const newGroup = ++group;
           groups.set(piece, newGroup);
         } else {
           results.push(`\\${matchGroup}`);
         }
       } else {
-        results.push(piece.replace(SPECIAL_RE_CHAR, s => '\\' + s));
+        results.push(escapeRegExp(piece));
       }
     } else {
       results.push('(?:' + piece.source + ')');
