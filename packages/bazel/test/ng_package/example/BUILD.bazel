@@ -5,6 +5,7 @@ load("//packages/bazel:index.bzl", "ng_module", "ng_package")
 ng_module(
     name = "example",
     srcs = glob(["*.ts"]),
+    module_name = "example",
     deps = ["//packages/bazel/test/ng_package/example/secondary"],
 )
 
@@ -13,9 +14,10 @@ ng_package(
     srcs = [
         "package.json",
         "some-file.txt",
-        "//packages/bazel/test/ng_package/example/secondary:package.json",
     ],
     entry_point = "packages/bazel/test/ng_package/example/index.js",
-    secondary_entry_points = ["secondary"],
-    deps = [":example"],
+    deps = [
+        ":example",
+        "//packages/bazel/test/ng_package/example/secondary",
+    ],
 )

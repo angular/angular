@@ -253,46 +253,53 @@ def _ts_expected_outs(ctx, label):
   return _expected_outs(ctx)
 
 def _write_bundle_index(ctx):
-  basename = "_%s.bundle_index" % ctx.label.name
-  tsconfig_file = ctx.actions.declare_file("%s.tsconfig.json" % basename)
-  metadata_file = ctx.actions.declare_file("%s.metadata.json" % basename)
-  tstyping_file = ctx.actions.declare_file("%s.d.ts" % basename)
-  js_file = ctx.actions.declare_file("%s.js" % basename)
+  # Provide a default for the flat_module_out_file attribute.
+  # We cannot use the default="" parameter of ctx.attr because the value is calculated
+  # from other attributes (name)
+  flat_module_out_file = ctx.attr.flat_module_out_file if ctx.attr.flat_module_out_file else "%s_public_index" % ctx.label.name
+
+  tsconfig_file = ctx.actions.declare_file("%s.tsconfig.json" % flat_module_out_file)
+  metadata_file = ctx.actions.declare_file("%s.metadata.json" % flat_module_out_file)
+  typings_file = ctx.actions.declare_file("%s.d.ts" % flat_module_out_file)
+  index_file = ctx.actions.declare_file("%s.js" % flat_module_out_file)
 
   tsconfig = dict(tsc_wrapped_tsconfig(ctx, ctx.files.srcs, ctx.files.srcs), **{
     "angularCompilerOptions": {
-      "flatModuleOutFile": basename,
+      "flatModuleOutFile": flat_module_out_file,
     },
   })
-  if ctx.attr.module_name:
-    tsconfig["angularCompilerOptions"]["flatModuleId"] = ctx.attr.module_name
+  if not ctx.attr.module_name:
+    fail("Only ng_module with a module_name attribute should be exposed as flat module")
+  tsconfig["angularCompilerOptions"]["flatModuleId"] = ctx.attr.module_name
 
   entry_point = ctx.attr.entry_point if ctx.attr.entry_point else "index.ts"
   # createBundleIndexHost in bundle_index_host.ts will throw if the "files" has more than one entry.
   # We don't want to fail() here, however, because not all ng_module's will have the bundle index written.
   # So we make the assumption that the index.ts file in the highest parent directory is the entry point.
-  index_file = None
+  index = None
 
   for f in tsconfig["files"]:
     if f.endswith("/" + entry_point):
-      if not index_file or len(f) < len(index_file):
-        index_file = f
+      if not index or len(f) < len(index):
+        index = f
 
-  if index_file:
-    tsconfig["files"] = [index_file]
+  if index:
+    tsconfig["files"] = [index]
 
   ctx.actions.write(tsconfig_file, json_marshal(tsconfig))
-
-  outputs = [metadata_file, tstyping_file, js_file]
 
   ctx.action(
       progress_message = "Producing metadata for bundle %s" % ctx.label.name,
       executable = ctx.executable._index_bundler,
       inputs = ctx.files.srcs + [tsconfig_file],
-      outputs = outputs,
+      outputs = [metadata_file, typings_file, index_file],
       arguments = ["-p", tsconfig_file.path],
   )
-  return outputs
+  return struct(
+      module_name = ctx.attr.module_name,
+      metadata_file = metadata_file,
+      typings_file = typings_file,
+      index_file = index_file)
 
 def ng_module_impl(ctx, ts_compile_actions, ivy = False):
   """Implementation function for the ng_module rule.
@@ -326,13 +333,12 @@ def ng_module_impl(ctx, ts_compile_actions, ivy = False):
 
   # Only produces the flattened "index bundle" metadata when requested by some other rule
   # and only under Bazel
-  if hasattr(ctx.executable, "_index_bundler"):
-    bundle_index_metadata = _write_bundle_index(ctx)
-    providers["angular"]["flat_module_metadata"] = depset(bundle_index_metadata,
-        transitive = [
-            d.angular.flat_module_metadata
-            for d in ctx.attr.deps
-            if hasattr(d, "angular")])
+  if hasattr(ctx.executable, "_index_bundler") and ctx.attr.module_name:
+    bundle_index_metadata = [_write_bundle_index(ctx)]
+  else:
+    bundle_index_metadata = []
+
+  providers["angular"]["flat_module_metadata"] = depset(bundle_index_metadata)
 
   return providers
 
@@ -391,6 +397,15 @@ NG_MODULE_RULE_ATTRS = dict(dict(COMMON_ATTRIBUTES, **NG_MODULE_ATTRIBUTES), **{
     ),
 
     "entry_point": attr.string(),
+
+    # Default is %{name}_public_index
+    # The suffix points to the generated "bundle index" files that users import from
+    # The default is intended to avoid collisions with the users input files.
+    # Later packaging rules will point to these generated files as the entry point
+    # into the package.
+    # See the flatModuleOutFile documentation in
+    # https://github.com/angular/angular/blob/master/packages/compiler-cli/src/transformers/api.ts
+    "flat_module_out_file": attr.string(),
 
     "_index_bundler": attr.label(
         executable = True,

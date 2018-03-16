@@ -24,7 +24,6 @@ ng_package(
         "//packages/core/testing:package.json",
     ],
     entry_point = "packages/core/index.js",
-    secondary_entry_points = ["testing"],
     deps = [
         ":core",
         "//packages/core/testing",
