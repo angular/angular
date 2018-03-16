@@ -93,39 +93,6 @@ if (typeof customElements !== 'undefined') {
       expect(strategy.inputs.get('fooFoo')).toBe('foo-foo-value');
       expect(strategy.inputs.get('barBar')).toBe('barBar-value');
     });
-
-    describe('with different attribute strategy', () => {
-      let NgElementCtorWithChangedAttr: NgElementConstructor<WithFooBar>;
-      let element: HTMLElement;
-
-      beforeAll(() => {
-        strategyFactory = new TestStrategyFactory();
-        strategy = strategyFactory.testStrategy;
-        NgElementCtorWithChangedAttr = createCustomElement(TestComponent, {
-          injector,
-          strategyFactory,
-          attributeToPropertyInputs: {'attr-1': 'fooFoo', 'attr-2': 'barbar'}
-        });
-
-        customElements.define('test-element-with-changed-attributes', NgElementCtorWithChangedAttr);
-      });
-
-      beforeEach(() => { element = new NgElementCtorWithChangedAttr(injector); });
-
-      it('should affect which attributes are watched', () => {
-        expect(NgElementCtorWithChangedAttr.observedAttributes).toEqual(['attr-1', 'attr-2']);
-      });
-
-      it('should send attribute values as inputs when connected', () => {
-        const element = new NgElementCtorWithChangedAttr(injector);
-        element.setAttribute('attr-1', 'value-1');
-        element.setAttribute('attr-2', 'value-2');
-        element.connectedCallback();
-
-        expect(strategy.getInputValue('fooFoo')).toBe('value-1');
-        expect(strategy.getInputValue('barbar')).toBe('value-2');
-      });
-    });
   });
 }
 
