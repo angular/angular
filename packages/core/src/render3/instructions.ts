@@ -43,6 +43,13 @@ const _CLEAN_PROMISE = Promise.resolve(null);
  */
 export type Sanitizer = (value: any) => string;
 
+/**
+ * Directive and element indices for top-level directive.
+ *
+ * Saved here to avoid re-instantiating an array on every change detection run.
+ */
+const rootDirectiveIndices = [1, 0];
+
 
 /**
  * This property gets set before entering a template.
@@ -236,7 +243,7 @@ function setHostBindings(bindings: number[] | null): void {
       const dirIndex = bindings[i];
       const elementIndex = bindings[i | 1];
       const def = tData[dirIndex] as DirectiveDef<any>;
-      def.h && def.h(dirIndex, elementIndex);
+      def.hostBindings && def.hostBindings(dirIndex, elementIndex);
     }
   }
 }
@@ -445,7 +452,7 @@ export function renderComponentOrTemplate<T>(
       executeInitAndContentHooks();
 
       // Element was stored at 0 and directive was stored at 1 in renderComponent
-      setHostBindings([1, 0]);
+      setHostBindings(rootDirectiveIndices);
       componentRefresh(1, 0);
     }
   } finally {
@@ -531,11 +538,11 @@ export function elementStart(
       if (hostComponentDef) {
         // TODO(mhevery): This assumes that the directives come in correct order, which
         // is not guaranteed. Must be refactored to take it into account.
-        const instance = hostComponentDef.n();
+        const instance = hostComponentDef.factory();
         directiveCreate(++index, instance, hostComponentDef, null);
         initChangeDetectorIfExisting(node.nodeInjector, instance);
         queueComponentIndexForCheck(elementIndex);
-        if (hostComponentDef.h) queueHostBindingForCheck(index, elementIndex);
+        if (hostComponentDef.hostBindings) queueHostBindingForCheck(index, elementIndex);
       }
       hack_declareDirectives(index, elementIndex, directiveTypes, localRefs);
     }
@@ -583,8 +590,8 @@ function hack_declareDirectives(
           firstTemplatePass ? directiveType.ngDirectiveDef : tData[index] as DirectiveDef<any>;
       const localNames =
           firstTemplatePass ? findMatchingLocalNames(directiveDef, localRefs, index) : null;
-      directiveCreate(index, directiveDef.n(), directiveDef, localNames);
-      if (directiveDef.h) queueHostBindingForCheck(index, elIndex);
+      directiveCreate(index, directiveDef.factory(), directiveDef, localNames);
+      if (directiveDef.hostBindings) queueHostBindingForCheck(index, elIndex);
     }
   }
 }

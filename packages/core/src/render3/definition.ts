@@ -39,10 +39,10 @@ export function defineComponent<T>(componentDefinition: ComponentDefArgs<T>): Co
   const def = <ComponentDef<any>>{
     type: type,
     diPublic: null,
-    n: componentDefinition.factory,
+    factory: componentDefinition.factory,
     tag: (componentDefinition as ComponentDefArgs<T>).tag || null !,
     template: (componentDefinition as ComponentDefArgs<T>).template || null !,
-    h: componentDefinition.hostBindings || null,
+    hostBindings: componentDefinition.hostBindings || null,
     attributes: componentDefinition.attributes || null,
     inputs: invertObject(componentDefinition.inputs),
     outputs: invertObject(componentDefinition.outputs),

@@ -35,7 +35,7 @@ describe('define', () => {
           });
         }
 
-        const myDir = MyDirective.ngDirectiveDef.n() as MyDirective;
+        const myDir = MyDirective.ngDirectiveDef.factory() as MyDirective;
         myDir.valA = 'first';
         expect(myDir.valA).toEqual('first');
         myDir.valB = 'second';

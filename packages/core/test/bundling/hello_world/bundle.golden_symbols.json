@@ -180,6 +180,9 @@
     "name": "resolveRendererType2"
   },
   {
+    "name": "rootDirectiveIndices"
+  },
+  {
     "name": "setHostBindings"
   },
   {
