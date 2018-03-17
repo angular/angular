@@ -42,6 +42,9 @@
     "name": "appendChild"
   },
   {
+    "name": "baseDirectiveCreate"
+  },
+  {
     "name": "bindingUpdated"
   },
   {
@@ -75,9 +78,6 @@
     "name": "detectChangesInternal"
   },
   {
-    "name": "directiveCreate"
-  },
-  {
     "name": "domRendererFactory3"
   },
   {
@@ -97,9 +97,6 @@
   },
   {
     "name": "findNextRNodeSibling"
-  },
-  {
-    "name": "generateInitialInputs"
   },
   {
     "name": "getDirectiveInstance"
@@ -147,9 +144,6 @@
     "name": "locateHostElement"
   },
   {
-    "name": "queueInitHooks"
-  },
-  {
     "name": "refreshChildComponents"
   },
   {
@@ -178,9 +172,6 @@
   },
   {
     "name": "setHostBindings"
-  },
-  {
-    "name": "setInputsFromAttrs"
   },
   {
     "name": "setUpAttributes"
