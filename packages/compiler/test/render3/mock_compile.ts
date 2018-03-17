@@ -25,7 +25,7 @@ import {MockAotCompilerHost, MockCompilerHost, MockData, MockDirectory, arrayToM
 
 const IDENTIFIER = /[A-Za-z_$ɵ][A-Za-z0-9_$]*/;
 const OPERATOR =
-    /!|%|\*|\/|\^|&{1,2}|\|{1,2}|\(|\)|\{|\}|\[|\]|:|;|<=?|>=?|={1,3}|!={1,2}|=>|\+{1,2}|-{1,2}|@|,|\.|\.\.\./;
+    /!|%|\*|\/|\^|&&?|\|\|?|\(|\)|\{|\}|\[|\]|:|;|<=?|>=?|={1,3}|!==?|=>|\+\+?|--?|@|,|\.|\.\.\./;
 const STRING = /'[^']*'|"[^"]*"|`[\s\S]*?`/;
 const NUMBER = /\d+/;
 
@@ -37,8 +37,8 @@ const TOKEN = new RegExp(
 type Piece = string | RegExp;
 
 const SKIP = /(?:.|\n|\r)*/;
-const MATCHING_IDENT = /^\$.*\$$/;
 
+const ERROR_CONTEXT_WIDTH = 30;
 // Transform the expected output to set of tokens
 function tokenize(text: string): Piece[] {
   TOKEN.lastIndex = 0;
@@ -57,23 +57,26 @@ function tokenize(text: string): Piece[] {
     }
   }
 
-  if (TOKEN.lastIndex !== 0) {
+  if (pieces.length === 0 || TOKEN.lastIndex !== 0) {
     const from = TOKEN.lastIndex;
-    const to = from + 30;
-    throw Error(`Invalid test, no token found for '${text.substr(from, to)}...'`)
+    const to = from + ERROR_CONTEXT_WIDTH;
+    throw Error(`Invalid test, no token found for '${text.substr(from, to)}...'`);
   }
 
   return pieces;
 }
 
-export function expectEmit(source: string, expected: string, description: string) {
+export function expectEmit(
+    source: string, expected: string, description: string,
+    assertIdentifiers?: {[name: string]: RegExp}) {
   const pieces = tokenize(expected);
-  const expr = r(pieces);
-  if (!expr.test(source)) {
+  const {regexp, groups} = buildMatcher(pieces);
+  const matches = source.match(regexp);
+  if (matches === null) {
     let last: number = 0;
     for (let i = 1; i < pieces.length; i++) {
-      const t = r(pieces.slice(0, i));
-      const m = source.match(t);
+      const {regexp} = buildMatcher(pieces.slice(0, i));
+      const m = source.match(regexp);
       const expectedPiece = pieces[i - 1] == IDENTIFIER ? '<IDENT>' : pieces[i - 1];
       if (!m) {
         fail(
@@ -85,11 +88,42 @@ export function expectEmit(source: string, expected: string, description: string
     }
     fail(
         `Test helper failure: Expected expression failed but the reporting logic could not find where it failed in: ${source}`);
+  } else {
+    if (assertIdentifiers) {
+      // It might be possible to add the constraints in the original regexp (see `buildMatcher`)
+      // by transforming the assertion regexps when using anchoring, grouping, back references,
+      // flags, ...
+      //
+      // Checking identifiers after they have matched allows for a simple and flexible
+      // implementation.
+      // The overall performance are not impacted when `assertIdentifiers` is empty.
+      const ids = Object.keys(assertIdentifiers);
+      for (let i = 0; i < ids.length; i++) {
+        const id = ids[i];
+        if (groups.has(id)) {
+          const name = matches[groups.get(id) as number];
+          const regexp = assertIdentifiers[id];
+          if (!regexp.test(name)) {
+            throw Error(
+                `${description}: The matching identifier "${id}" is "${name}" which doesn't match ${regexp}`);
+          }
+        }
+      }
+    }
   }
 }
 
 const IDENT_LIKE = /^[a-z][A-Z]/;
-function r(pieces: (string | RegExp)[]): RegExp {
+const MATCHING_IDENT = /^\$.*\$$/;
+
+/*
+ * Builds a regexp that matches the given `pieces`
+ *
+ * It returns:
+ * - the `regexp` to be used to match the generated code,
+ * - the `groups` which maps `$...$` identifier to their position in the regexp matches.
+ */
+function buildMatcher(pieces: (string | RegExp)[]): {regexp: RegExp, groups: Map<string, number>} {
   const results: string[] = [];
   let first = true;
   let group = 0;
@@ -116,7 +150,10 @@ function r(pieces: (string | RegExp)[]): RegExp {
       results.push('(?:' + piece.source + ')');
     }
   }
-  return new RegExp(results.join(''));
+  return {
+    regexp: new RegExp(results.join('')),
+    groups,
+  };
 }
 
 function doCompile(
@@ -163,8 +200,6 @@ function doCompile(
       config, htmlParser, new NgModuleResolver(staticReflector),
       new DirectiveResolver(staticReflector), new PipeResolver(staticReflector), summaryResolver,
       elementSchemaRegistry, normalizer, console, symbolCache, staticReflector, errorCollector);
-
-
 
   // Create the TypeScript program
   const sourceFiles = program.getSourceFiles().map(sf => sf.fileName);
