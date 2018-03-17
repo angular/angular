@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ChangeDetectorRef, EventEmitter, OnDestroy, Pipe, PipeTransform, WrappedValue, ɵisObservable, ɵisPromise} from '@angular/core';
+import {ChangeDetectorRef, EventEmitter, NgZone, OnDestroy, Optional, Pipe, PipeTransform, WrappedValue, ɵNoopNgZone, ɵisObservable, ɵisPromise} from '@angular/core';
 import {Observable} from 'rxjs/Observable';
 import {ISubscription} from 'rxjs/Subscription';
 import {invalidPipeArgumentError} from './invalid_pipe_argument_error';
@@ -75,7 +75,11 @@ export class AsyncPipe implements OnDestroy, PipeTransform {
   private _obj: Observable<any>|Promise<any>|EventEmitter<any>|null = null;
   private _strategy: SubscriptionStrategy = null !;
 
-  constructor(private _ref: ChangeDetectorRef) {}
+  private readonly _usePush: boolean = false;
+
+  constructor(private _ref: ChangeDetectorRef, @Optional() zone?: NgZone) {
+    this._usePush = !!zone && zone instanceof ɵNoopNgZone;
+  }
 
   ngOnDestroy(): void {
     if (this._subscription) {
@@ -139,7 +143,11 @@ export class AsyncPipe implements OnDestroy, PipeTransform {
   private _updateLatestValue(async: any, value: Object): void {
     if (async === this._obj) {
       this._latestValue = value;
-      this._ref.markForCheck();
+      if (this._usePush) {
+        this._ref.detectChanges();
+      } else {
+        this._ref.markForCheck();
+      }
     }
   }
 }

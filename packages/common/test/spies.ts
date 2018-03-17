@@ -13,6 +13,7 @@ export class SpyChangeDetectorRef extends SpyObject {
   constructor() {
     super(ChangeDetectorRef);
     this.spy('markForCheck');
+    this.spy('detectChanges');
   }
 }
 
