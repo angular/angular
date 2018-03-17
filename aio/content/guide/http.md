@@ -1040,6 +1040,6 @@ Call `request.error()` with an `ErrorEvent` instead of `request.flush()`, as in 
 
 <code-example 
   path="http/src/testing/http-client.spec.ts"
-  region="404" 
+  region="network-error"
   linenums="false">
 </code-example>
