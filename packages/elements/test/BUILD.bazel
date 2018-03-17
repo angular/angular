@@ -42,6 +42,7 @@ ts_web_test(
     ],
     # do not sort
     deps = [
+        "//:node_modules/tslib/tslib.js",
         "//tools/testing:browser",
         ":test_lib",
     ],
