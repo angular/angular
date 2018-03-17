@@ -6,20 +6,17 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ɵT as T, ɵdefineComponent as defineComponent, ɵi1 as i1, ɵrenderComponent as renderComponent, ɵt as t} from '@angular/core';
+import {ɵT as T, ɵdefineComponent as defineComponent, ɵrenderComponent as renderComponent} from '@angular/core';
 
 class HelloWorld {
-  name = 'World';
-
   static ngComponentDef = defineComponent({
     type: HelloWorld,
     tag: 'hello-world',
     factory: () => new HelloWorld(),
     template: function HelloWorldTemplate(ctx: HelloWorld, cm: boolean) {
       if (cm) {
-        T(0);
+        T(0, 'Hello World!');
       }
-      t(0, i1('Hello ', ctx.name, '!'));
     }
   });
 }
