@@ -10,7 +10,7 @@ import {withBody} from '@angular/core/testing';
 
 import {ChangeDetectionStrategy, ChangeDetectorRef, DoCheck} from '../../src/core';
 import {getRenderedText, whenRendered} from '../../src/render3/component';
-import {defineComponent, defineDirective, injectChangeDetectorRef} from '../../src/render3/index';
+import {LifecycleHooksFeature, defineComponent, defineDirective, injectChangeDetectorRef} from '../../src/render3/index';
 import {bind, container, containerRefreshEnd, containerRefreshStart, detectChanges, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, interpolation1, interpolation2, listener, markDirty, text, textBinding, tick} from '../../src/render3/instructions';
 
 import {containerEl, renderComponent, requestAnimationFrame} from './render_util';
@@ -39,7 +39,7 @@ describe('change detection', () => {
     }
 
     it('should mark a component dirty and schedule change detection', withBody('my-comp', () => {
-         const myComp = renderComponent(MyComponent);
+         const myComp = renderComponent(MyComponent, {hostFeatures: [LifecycleHooksFeature]});
          expect(getRenderedText(myComp)).toEqual('works');
          myComp.value = 'updated';
          markDirty(myComp);
@@ -49,7 +49,7 @@ describe('change detection', () => {
        }));
 
     it('should detectChanges on a component', withBody('my-comp', () => {
-         const myComp = renderComponent(MyComponent);
+         const myComp = renderComponent(MyComponent, {hostFeatures: [LifecycleHooksFeature]});
          expect(getRenderedText(myComp)).toEqual('works');
          myComp.value = 'updated';
          detectChanges(myComp);
@@ -58,7 +58,7 @@ describe('change detection', () => {
 
     it('should detectChanges only once if markDirty is called multiple times',
        withBody('my-comp', () => {
-         const myComp = renderComponent(MyComponent);
+         const myComp = renderComponent(MyComponent, {hostFeatures: [LifecycleHooksFeature]});
          expect(getRenderedText(myComp)).toEqual('works');
          expect(myComp.doCheckCount).toBe(1);
          myComp.value = 'ignore';
@@ -72,7 +72,7 @@ describe('change detection', () => {
        }));
 
     it('should notify whenRendered', withBody('my-comp', async() => {
-         const myComp = renderComponent(MyComponent);
+         const myComp = renderComponent(MyComponent, {hostFeatures: [LifecycleHooksFeature]});
          await whenRendered(myComp);
          myComp.value = 'updated';
          markDirty(myComp);
@@ -347,7 +347,7 @@ describe('change detection', () => {
 
       it('should check the component view when called by component (even when OnPush && clean)',
          () => {
-           const comp = renderComponent(MyComp);
+           const comp = renderComponent(MyComp, {hostFeatures: [LifecycleHooksFeature]});
            expect(getRenderedText(comp)).toEqual('Nancy');
 
            comp.name = 'Bess';  // as this is not an Input, the component stays clean
@@ -356,7 +356,7 @@ describe('change detection', () => {
          });
 
       it('should NOT call component doCheck when called by a component', () => {
-        const comp = renderComponent(MyComp);
+        const comp = renderComponent(MyComp, {hostFeatures: [LifecycleHooksFeature]});
         expect(comp.doCheckCount).toEqual(1);
 
         // NOTE: in current Angular, detectChanges does not itself trigger doCheck, but you
@@ -367,7 +367,7 @@ describe('change detection', () => {
       });
 
       it('should NOT check the component parent when called by a child component', () => {
-        const parentComp = renderComponent(ParentComp);
+        const parentComp = renderComponent(ParentComp, {hostFeatures: [LifecycleHooksFeature]});
         expect(getRenderedText(parentComp)).toEqual('1 - Nancy');
 
         parentComp.doCheckCount = 100;
@@ -378,7 +378,7 @@ describe('change detection', () => {
 
       it('should check component children when called by component if dirty or check-always',
          () => {
-           const parentComp = renderComponent(ParentComp);
+           const parentComp = renderComponent(ParentComp, {hostFeatures: [LifecycleHooksFeature]});
            expect(parentComp.doCheckCount).toEqual(1);
 
            myComp.name = 'Bess';
@@ -390,7 +390,7 @@ describe('change detection', () => {
          });
 
       it('should not group detectChanges calls (call every time)', () => {
-        const parentComp = renderComponent(ParentComp);
+        const parentComp = renderComponent(ParentComp, {hostFeatures: [LifecycleHooksFeature]});
         expect(myComp.doCheckCount).toEqual(1);
 
         parentComp.cdr.detectChanges();
@@ -524,7 +524,7 @@ describe('change detection', () => {
           });
         }
 
-        const comp = renderComponent(DetectChangesComp);
+        const comp = renderComponent(DetectChangesComp, {hostFeatures: [LifecycleHooksFeature]});
         expect(getRenderedText(comp)).toEqual('1');
       });
 
@@ -553,7 +553,7 @@ describe('change detection', () => {
           });
         }
 
-        const comp = renderComponent(DetectChangesComp);
+        const comp = renderComponent(DetectChangesComp, {hostFeatures: [LifecycleHooksFeature]});
         expect(getRenderedText(comp)).toEqual('1');
       });
 
@@ -940,7 +940,7 @@ describe('change detection', () => {
       }
 
       it('should throw if bindings in current view have changed', () => {
-        const comp = renderComponent(NoChangesComp);
+        const comp = renderComponent(NoChangesComp, {hostFeatures: [LifecycleHooksFeature]});
 
         expect(() => comp.cdr.checkNoChanges()).not.toThrow();
 

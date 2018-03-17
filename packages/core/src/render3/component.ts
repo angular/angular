@@ -12,14 +12,15 @@ import {Injector} from '../di/injector';
 import {ComponentRef as viewEngine_ComponentRef} from '../linker/component_factory';
 
 import {assertNotNull} from './assert';
-import {queueLifecycleHooks} from './hooks';
-import {CLEAN_PROMISE, _getComponentHostLElementNode, createLView, createTView, directiveCreate, enterView, getDirectiveInstance, getRootView, hostElement, initChangeDetectorIfExisting, locateHostElement, renderComponentOrTemplate} from './instructions';
+import {queueInitHooks, queueLifecycleHooks} from './hooks';
+import {CLEAN_PROMISE, _getComponentHostLElementNode, baseDirectiveCreate, createLView, createTView, enterView, getRootView, hostElement, initChangeDetectorIfExisting, locateHostElement, renderComponentOrTemplate} from './instructions';
 import {ComponentDef, ComponentType} from './interfaces/definition';
 import {LElementNode} from './interfaces/node';
 import {RElement, RendererFactory3, domRendererFactory3} from './interfaces/renderer';
 import {LView, LViewFlags, RootContext} from './interfaces/view';
 import {stringify} from './util';
 import {createViewRef} from './view_ref';
+
 
 
 /** Options that control how the component should be bootstrapped. */
@@ -135,7 +136,7 @@ export function renderComponent<T>(
     // Create element node at index 0 in data array
     elementNode = hostElement(hostNode, componentDef);
     // Create directive instance with n() and store at index 1 in data array (el is 0)
-    component = rootContext.component = directiveCreate(1, componentDef.factory(), componentDef) as T;
+    component = rootContext.component = baseDirectiveCreate(1, componentDef.factory(), componentDef) as T;
     initChangeDetectorIfExisting(elementNode.nodeInjector, component);
   } finally {
     // We must not use leaveView here because it will set creationMode to false too early,
@@ -164,6 +165,9 @@ export function renderComponent<T>(
  */
 export function LifecycleHooksFeature(component: any, def: ComponentDef<any>): void {
   const elementNode = _getComponentHostLElementNode(component);
+
+  // Root component is always created at dir index 1, after host element at 0
+  queueInitHooks(1, def.onInit, def.doCheck, elementNode.view.tView);
   queueLifecycleHooks(elementNode.flags, elementNode.view);
 }
 

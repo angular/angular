@@ -1096,6 +1096,34 @@ export function textBinding<T>(index: number, value: T | NO_CHANGE): void {
 export function directiveCreate<T>(
     index: number, directive: T, directiveDef: DirectiveDef<T>,
     localNames?: (string | number)[] | null): T {
+  const instance = baseDirectiveCreate(index, directive, directiveDef);
+
+  ngDevMode && assertNotNull(previousOrParentNode.tNode, 'previousOrParentNode.tNode');
+  const tNode: TNode|null = previousOrParentNode.tNode !;
+
+  if (currentView.tView.firstTemplatePass && localNames) {
+    tNode.localNames = tNode.localNames ? tNode.localNames.concat(localNames) : localNames;
+  }
+
+  if (tNode && tNode.attrs) {
+    setInputsFromAttrs<T>(instance, directiveDef !.inputs, tNode);
+  }
+
+  // Init hooks are queued now so ngOnInit is called in host components before
+  // any projected components.
+  queueInitHooks(index, directiveDef.onInit, directiveDef.doCheck, currentView.tView);
+
+  return instance;
+}
+
+/**
+ * A lighter version of directiveCreate() that is used for the root component
+ *
+ * This version does not contain features that we don't already support at root in
+ * current Angular. Example: local refs and inputs on root component.
+ */
+export function baseDirectiveCreate<T>(
+    index: number, directive: T, directiveDef: DirectiveDef<T>): T {
   let instance;
   ngDevMode &&
       assertNull(currentView.bindingStartIndex, 'directives should be created before any bindings');
@@ -1117,11 +1145,6 @@ export function directiveCreate<T>(
 
   if (index >= tData.length) {
     tData[index] = directiveDef !;
-    if (localNames) {
-      ngDevMode && assertNotNull(previousOrParentNode.tNode, 'previousOrParentNode.tNode');
-      const tNode = previousOrParentNode !.tNode !;
-      tNode.localNames = tNode.localNames ? tNode.localNames.concat(localNames) : localNames;
-    }
   }
 
   const diPublic = directiveDef !.diPublic;
@@ -1134,15 +1157,6 @@ export function directiveCreate<T>(
     setUpAttributes(
         (previousOrParentNode as LElementNode).native, directiveDef !.attributes as string[]);
   }
-
-  const tNode: TNode|null = previousOrParentNode.tNode !;
-  if (tNode && tNode.attrs) {
-    setInputsFromAttrs<T>(instance, directiveDef !.inputs, tNode);
-  }
-
-  // Init hooks are queued now so ngOnInit is called in host components before
-  // any projected components.
-  queueInitHooks(index, directiveDef.onInit, directiveDef.doCheck, currentView.tView);
 
   return instance;
 }

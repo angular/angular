@@ -9,7 +9,7 @@
 import {defineComponent, defineDirective} from '../../src/render3/index';
 import {NO_CHANGE, bind, container, containerRefreshEnd, containerRefreshStart, elementAttribute, elementClassNamed, elementEnd, elementProperty, elementStart, elementStyleNamed, embeddedViewEnd, embeddedViewStart, interpolation1, interpolation2, interpolation3, interpolation4, interpolation5, interpolation6, interpolation7, interpolation8, interpolationV, load, projection, projectionDef, text, textBinding} from '../../src/render3/instructions';
 
-import {containerEl, renderToHtml} from './render_util';
+import {ComponentFixture, containerEl, renderToHtml} from './render_util';
 
 describe('render3 integration test', () => {
 
@@ -267,6 +267,21 @@ describe('render3 integration test', () => {
       expect(renderToHtml(Template, {})).toEqual('<todo title="one">one</todo>');
       cmptInstance !.title = 'two';
       expect(renderToHtml(Template, {})).toEqual('<todo title="two">two</todo>');
+    });
+
+    it('should support root component with host attribute', () => {
+      class HostAttributeComp {
+        static ngComponentDef = defineComponent({
+          type: HostAttributeComp,
+          tag: 'host-attr-comp',
+          factory: () => new HostAttributeComp(),
+          template: (ctx: HostAttributeComp, cm: boolean) => {},
+          attributes: ['role', 'button']
+        });
+      }
+
+      const fixture = new ComponentFixture(HostAttributeComp);
+      expect(fixture.hostElement.getAttribute('role')).toEqual('button');
     });
 
     it('should support component with bindings in template', () => {
