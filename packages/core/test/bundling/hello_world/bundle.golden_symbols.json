@@ -15,9 +15,6 @@
     "name": "NG_PROJECT_AS_ATTR_NAME"
   },
   {
-    "name": "NO_CHANGE"
-  },
-  {
     "name": "Symbol$1"
   },
   {
@@ -43,9 +40,6 @@
   },
   {
     "name": "baseDirectiveCreate"
-  },
-  {
-    "name": "bindingUpdated"
   },
   {
     "name": "callHooks"
@@ -93,19 +87,7 @@
     "name": "executeInitHooks"
   },
   {
-    "name": "findFirstRNode"
-  },
-  {
-    "name": "findNextRNodeSibling"
-  },
-  {
     "name": "getDirectiveInstance"
-  },
-  {
-    "name": "getNextLNodeWithProjection"
-  },
-  {
-    "name": "getNextOrParentSiblingNode"
   },
   {
     "name": "getOrCreateTView"
@@ -117,22 +99,10 @@
     "name": "hostElement"
   },
   {
-    "name": "initBindings"
-  },
-  {
     "name": "initChangeDetectorIfExisting"
   },
   {
-    "name": "insertChild"
-  },
-  {
-    "name": "interpolation1"
-  },
-  {
     "name": "invertObject"
-  },
-  {
-    "name": "isDifferent"
   },
   {
     "name": "isProceduralRenderer"
@@ -184,12 +154,6 @@
   },
   {
     "name": "text"
-  },
-  {
-    "name": "textBinding"
-  },
-  {
-    "name": "throwErrorIfNoChangesMode"
   },
   {
     "name": "viewAttached"
