@@ -13,8 +13,9 @@ import {ComponentRef as viewEngine_ComponentRef} from '../linker/component_facto
 
 import {assertNotNull} from './assert';
 import {queueLifecycleHooks} from './hooks';
-import {CLEAN_PROMISE, _getComponentHostLElementNode, createLView, createTView, directiveCreate, enterView, getDirectiveInstance, getRootView, hostElement, initChangeDetectorIfExisting, leaveView, locateHostElement, scheduleTick, tick} from './instructions';
+import {CLEAN_PROMISE, _getComponentHostLElementNode, createLView, createTView, directiveCreate, enterView, getDirectiveInstance, getRootView, hostElement, initChangeDetectorIfExisting, locateHostElement, renderComponentOrTemplate} from './instructions';
 import {ComponentDef, ComponentType} from './interfaces/definition';
+import {LElementNode} from './interfaces/node';
 import {RElement, RendererFactory3, domRendererFactory3} from './interfaces/renderer';
 import {LView, LViewFlags, RootContext} from './interfaces/view';
 import {stringify} from './util';
@@ -123,17 +124,18 @@ export function renderComponent<T>(
     scheduler: opts.scheduler || requestAnimationFrame,
     clean: CLEAN_PROMISE,
   };
-  const oldView = enterView(
-      createLView(
-          -1, rendererFactory.createRenderer(hostNode, componentDef.rendererType), createTView(),
-          null, rootContext, componentDef.onPush ? LViewFlags.Dirty : LViewFlags.CheckAlways),
-      null !);
+  const rootView = createLView(
+      -1, rendererFactory.createRenderer(hostNode, componentDef.rendererType), createTView(), null,
+      rootContext, componentDef.onPush ? LViewFlags.Dirty : LViewFlags.CheckAlways);
+
+  const oldView = enterView(rootView, null !);
+
+  let elementNode: LElementNode;
   try {
     // Create element node at index 0 in data array
-    const elementNode = hostElement(hostNode, componentDef);
+    elementNode = hostElement(hostNode, componentDef);
     // Create directive instance with n() and store at index 1 in data array (el is 0)
-    component = rootContext.component =
-        getDirectiveInstance(directiveCreate(1, componentDef.factory(), componentDef));
+    component = rootContext.component = directiveCreate(1, componentDef.factory(), componentDef) as T;
     initChangeDetectorIfExisting(elementNode.nodeInjector, component);
   } finally {
     // We must not use leaveView here because it will set creationMode to false too early,
@@ -143,7 +145,7 @@ export function renderComponent<T>(
   }
 
   opts.hostFeatures && opts.hostFeatures.forEach((feature) => feature(component, componentDef));
-  tick(component);
+  renderComponentOrTemplate(elementNode, rootView, component);
   return component;
 }
 

@@ -33,9 +33,6 @@
     "name": "__window$1"
   },
   {
-    "name": "_getComponentHostLElementNode"
-  },
-  {
     "name": "_renderCompCount"
   },
   {
@@ -115,9 +112,6 @@
   },
   {
     "name": "getOrCreateTView"
-  },
-  {
-    "name": "getRootView"
   },
   {
     "name": "getSymbolObservable"
@@ -205,9 +199,6 @@
   },
   {
     "name": "throwErrorIfNoChangesMode"
-  },
-  {
-    "name": "tick"
   },
   {
     "name": "viewAttached"
