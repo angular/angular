@@ -85,17 +85,11 @@ export interface DirectiveDef<T> {
    *
    * Usually returns the directive instance, but if the directive has a content query,
    * it instead returns an array that contains the instance as well as content query data.
-   *
-   * NOTE: this property is short (1 char) because it is used in
-   * component templates which is sensitive to size.
    */
-  n(): T|[T];
+  factory(): T|[T];
 
-  /**
-   * Refreshes host bindings on the associated directive. Also calls lifecycle hooks
-   * like ngOnInit and ngDoCheck, if they are defined on the directive.
-   */
-  h(directiveIndex: number, elementIndex: number): void;
+  /** Refreshes host bindings on the associated directive. */
+  hostBindings: ((directiveIndex: number, elementIndex: number) => void)|null;
 
   /**
    * Static attributes to set on host element.

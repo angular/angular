@@ -132,7 +132,6 @@ describe('change detection', () => {
             elementEnd();
           }
           elementProperty(0, 'name', bind(ctx.name));
-          MyComponent.ngComponentDef.h(1, 0);
         }
       });
     }
@@ -212,7 +211,6 @@ describe('change detection', () => {
               { listener('click', () => ctx.noop()); }
               elementEnd();
             }
-            MyComponent.ngComponentDef.h(1, 0);
           }
         });
       }
@@ -244,7 +242,6 @@ describe('change detection', () => {
               elementEnd();
             }
             textBinding(0, interpolation1('', ctx.doCheckCount, ' - '));
-            MyComponent.ngComponentDef.h(2, 1);
           },
           changeDetection: ChangeDetectionStrategy.OnPush
         });
@@ -261,7 +258,6 @@ describe('change detection', () => {
               elementStart(0, ButtonParent);
               elementEnd();
             }
-            ButtonParent.ngComponentDef.h(1, 0);
           }
         });
       }
@@ -337,7 +333,6 @@ describe('change detection', () => {
               elementEnd();
             }
             textBinding(0, interpolation1('', ctx.doCheckCount, ' - '));
-            MyComp.ngComponentDef.h(2, 1);
           }
         });
       }
@@ -415,8 +410,6 @@ describe('change detection', () => {
                 elementStart(0, MyComp, ['dir', ''], [Dir]);
                 elementEnd();
               }
-              MyComp.ngComponentDef.h(1, 0);
-              Dir.ngDirectiveDef.h(2, 0);
             }
           });
         }
@@ -448,7 +441,6 @@ describe('change detection', () => {
                 elementEnd();
               }
               textBinding(1, bind(ctx.name));
-              Dir.ngDirectiveDef.h(2, 1);
             }
           });
         }
@@ -491,7 +483,6 @@ describe('change detection', () => {
                     elementStart(0, 'div', ['dir', ''], [Dir]);
                     elementEnd();
                   }
-                  Dir.ngDirectiveDef.h(1, 0);
                 }
                 embeddedViewEnd();
               }
@@ -584,7 +575,6 @@ describe('change detection', () => {
               elementStart(0, DetachedComp);
               elementEnd();
             }
-            DetachedComp.ngComponentDef.h(1, 0);
           }
         });
       }
@@ -723,7 +713,6 @@ describe('change detection', () => {
                 elementEnd();
               }
               elementProperty(0, 'value', bind(ctx.value));
-              OnPushComp.ngComponentDef.h(1, 0);
             }
           });
         }
@@ -790,7 +779,6 @@ describe('change detection', () => {
               elementEnd();
             }
             textBinding(0, interpolation1('', ctx.value, ' - '));
-            OnPushComp.ngComponentDef.h(2, 1);
           },
           changeDetection: ChangeDetectionStrategy.OnPush
         });
@@ -865,7 +853,6 @@ describe('change detection', () => {
                     elementStart(0, OnPushComp);
                     elementEnd();
                   }
-                  OnPushComp.ngComponentDef.h(1, 0);
                   embeddedViewEnd();
                 }
               }
@@ -948,7 +935,6 @@ describe('change detection', () => {
               elementEnd();
             }
             textBinding(0, interpolation1('', ctx.value, ' - '));
-            NoChangesComp.ngComponentDef.h(2, 1);
           }
         });
       }

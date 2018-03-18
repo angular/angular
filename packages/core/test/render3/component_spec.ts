@@ -111,7 +111,6 @@ describe('component with a container', () => {
       elementEnd();
     }
     elementProperty(0, 'items', bind(ctx.items));
-    WrapperComponent.ngComponentDef.h(1, 0);
   }
 
   it('should re-render on input change', () => {
@@ -136,7 +135,6 @@ describe('encapsulation', () => {
           elementStart(0, EncapsulatedComponent);
           elementEnd();
         }
-        EncapsulatedComponent.ngComponentDef.h(1, 0);
       },
       factory: () => new WrapperComponent,
     });
@@ -152,7 +150,6 @@ describe('encapsulation', () => {
           elementStart(1, LeafComponent);
           elementEnd();
         }
-        LeafComponent.ngComponentDef.h(2, 1);
       },
       factory: () => new EncapsulatedComponent,
       rendererType:
@@ -199,7 +196,6 @@ describe('encapsulation', () => {
             elementStart(0, LeafComponentwith);
             elementEnd();
           }
-          LeafComponentwith.ngComponentDef.h(1, 0);
         },
         factory: () => new WrapperComponentWith,
         rendererType:
@@ -266,7 +262,6 @@ describe('recursive components', () => {
               elementEnd();
             }
             elementProperty(0, 'data', bind(ctx.data.left));
-            TreeComponent.ngComponentDef.h(1, 0);
             embeddedViewEnd();
           }
         }
@@ -279,7 +274,6 @@ describe('recursive components', () => {
               elementEnd();
             }
             elementProperty(0, 'data', bind(ctx.data.right));
-            TreeComponent.ngComponentDef.h(1, 0);
             embeddedViewEnd();
           }
         }

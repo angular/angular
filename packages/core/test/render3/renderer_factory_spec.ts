@@ -67,7 +67,6 @@ describe('renderer factory lifecycle', () => {
       elementStart(1, SomeComponent);
       elementEnd();
     }
-    SomeComponent.ngComponentDef.h(2, 1);
   }
 
   beforeEach(() => { logs = []; });

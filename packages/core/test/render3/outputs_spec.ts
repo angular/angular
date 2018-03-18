@@ -51,7 +51,6 @@ describe('outputs', () => {
         }
         elementEnd();
       }
-      ButtonToggle.ngComponentDef.h(1, 0);
     }
 
     let counter = 0;
@@ -76,7 +75,6 @@ describe('outputs', () => {
         }
         elementEnd();
       }
-      ButtonToggle.ngComponentDef.h(1, 0);
     }
 
     let counter = 0;
@@ -101,7 +99,6 @@ describe('outputs', () => {
         }
         elementEnd();
       }
-      ButtonToggle.ngComponentDef.h(1, 0);
     }
 
     const ctx = {counter: 0};
@@ -136,7 +133,6 @@ describe('outputs', () => {
             }
             elementEnd();
           }
-          ButtonToggle.ngComponentDef.h(1, 0);
           embeddedViewEnd();
         }
       }
@@ -187,7 +183,6 @@ describe('outputs', () => {
                 }
                 elementEnd();
               }
-              ButtonToggle.ngComponentDef.h(1, 0);
               embeddedViewEnd();
             }
           }
@@ -256,8 +251,6 @@ describe('outputs', () => {
             elementStart(4, DestroyComp);
             elementEnd();
           }
-          ButtonToggle.ngComponentDef.h(3, 2);
-          DestroyComp.ngComponentDef.h(5, 4);
           embeddedViewEnd();
         }
       }
@@ -333,7 +326,6 @@ describe('outputs', () => {
         }
         elementEnd();
       }
-      ButtonToggle.ngComponentDef.h(1, 0);
     }
 
     let counter = 0;
@@ -366,7 +358,6 @@ describe('outputs', () => {
         elementEnd();
       }
       elementProperty(0, 'change', bind(ctx.change));
-      ButtonToggle.ngComponentDef.h(1, 0);
     }
 
     let counter = 0;
@@ -410,7 +401,6 @@ describe('outputs', () => {
             }
             elementEnd();
           }
-          ButtonToggle.ngComponentDef.h(1, 0);
           embeddedViewEnd();
         } else {
           if (embeddedViewStart(1)) {

@@ -35,7 +35,6 @@ describe('array literals', () => {
         elementEnd();
       }
       elementProperty(0, 'names', bind(pureFunction1(e0_ff, ctx.customName)));
-      MyComp.ngComponentDef.h(1, 0);
     }
 
     renderToHtml(Template, {customName: 'Carson'});
@@ -89,7 +88,6 @@ describe('array literals', () => {
       }
       elementProperty(0, 'names1', bind(pureFunction1(e0_ff, ctx.customName)));
       elementProperty(0, 'names2', bind(pureFunction1(e0_ff_1, ctx.customName2)));
-      ManyPropComp.ngComponentDef.h(1, 0);
     }
 
     renderToHtml(Template, {customName: 'Carson', customName2: 'George'});
@@ -126,7 +124,6 @@ describe('array literals', () => {
             elementEnd();
           }
           elementProperty(0, 'names', bind(ctx.someFn(pureFunction1(e0_ff, ctx.customName))));
-          MyComp.ngComponentDef.h(1, 0);
         }
       });
     }
@@ -138,8 +135,6 @@ describe('array literals', () => {
         elementStart(2, ParentComp);
         elementEnd();
       }
-      ParentComp.ngComponentDef.h(1, 0);
-      ParentComp.ngComponentDef.h(3, 2);
     }
 
     renderToHtml(Template, {});
@@ -166,7 +161,6 @@ describe('array literals', () => {
         elementEnd();
       }
       elementProperty(0, 'names', bind(pureFunction2(e0_ff, ctx.customName, ctx.customName2)));
-      MyComp.ngComponentDef.h(1, 0);
     }
 
     renderToHtml(Template, {customName: 'Carson', customName2: 'Hannah'});
@@ -243,12 +237,6 @@ describe('array literals', () => {
           8, 'names', bind(pureFunction7(e8_ff, c[1], c[2], c[3], c[4], c[5], c[6], c[7])));
       elementProperty(
           10, 'names', bind(pureFunction8(e10_ff, c[0], c[1], c[2], c[3], c[4], c[5], c[6], c[7])));
-      MyComp.ngComponentDef.h(1, 0);
-      MyComp.ngComponentDef.h(3, 2);
-      MyComp.ngComponentDef.h(5, 4);
-      MyComp.ngComponentDef.h(7, 6);
-      MyComp.ngComponentDef.h(9, 8);
-      MyComp.ngComponentDef.h(11, 10);
     }
 
     renderToHtml(Template, ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i']);
@@ -295,7 +283,6 @@ describe('array literals', () => {
       elementProperty(0, 'names', bind(pureFunctionV(e0_ff, [
                         c[0], c[1], c[2], c[3], pureFunction1(e0_ff_1, c[4]), c[5], c[6], c[7], c[8]
                       ])));
-      MyComp.ngComponentDef.h(1, 0);
     }
 
     expect(myComp !.names).toEqual([
@@ -339,7 +326,6 @@ describe('object literals', () => {
         elementEnd();
       }
       elementProperty(0, 'config', bind(pureFunction1(e0_ff, ctx.name)));
-      ObjectComp.ngComponentDef.h(1, 0);
     }
 
     renderToHtml(Template, {name: 'slide'});
@@ -376,7 +362,6 @@ describe('object literals', () => {
           0, 'config',
           bind(pureFunction2(
               e0_ff, ctx.name, pureFunction1(e0_ff_1, pureFunction1(e0_ff_2, ctx.duration)))));
-      ObjectComp.ngComponentDef.h(1, 0);
     }
 
     renderToHtml(Template, {name: 'slide', duration: 100});
@@ -443,7 +428,6 @@ describe('object literals', () => {
           elementProperty(
               0, 'config',
               bind(pureFunction2(e0_ff, ctx.configs[i].opacity, ctx.configs[i].duration)));
-          ObjectComp.ngComponentDef.h(1, 0);
           embeddedViewEnd();
         }
       }

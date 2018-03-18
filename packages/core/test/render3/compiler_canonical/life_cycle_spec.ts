@@ -75,8 +75,6 @@ describe('lifecycle hooks', () => {
         }
         $r3$.ɵp(0, 'name', $r3$.ɵb(ctx.name1));
         $r3$.ɵp(2, 'name', $r3$.ɵb(ctx.name2));
-        LifecycleComp.ngComponentDef.h(1, 0);
-        LifecycleComp.ngComponentDef.h(3, 2);
       }
     });
     // /NORMATIVE

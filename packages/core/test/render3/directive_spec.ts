@@ -34,7 +34,6 @@ describe('directive', () => {
           elementStart(0, 'span', null, [Directive]);
           elementEnd();
         }
-        Directive.ngDirectiveDef.h(1, 0);
       }
 
       expect(renderToHtml(Template, {})).toEqual('<span class="foo"></span>');

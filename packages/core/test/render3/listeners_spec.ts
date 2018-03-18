@@ -249,7 +249,6 @@ describe('event listeners', () => {
         text(2, 'Click');
         elementEnd();
       }
-      HostListenerDir.ngDirectiveDef.h(1, 0);
     }
 
     renderToHtml(Template, {});
@@ -343,8 +342,6 @@ describe('event listeners', () => {
             elementStart(3, MyComp);
             elementEnd();
           }
-          MyComp.ngComponentDef.h(2, 1);
-          MyComp.ngComponentDef.h(4, 3);
           embeddedViewEnd();
         }
       }
