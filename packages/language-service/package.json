@@ -13,6 +13,5 @@
   },
   "ng-update": {
     "packageGroup": "NG_UPDATE_PACKAGE_GROUP"
-  },
-  "sideEffects": false
+  }
 }
