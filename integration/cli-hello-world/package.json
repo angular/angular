@@ -5,10 +5,12 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": "ng build --prod --build-optimizer",
+    "build": "ng build --prod --sourcemaps",
     "test": "ng test --single-run",
     "lint": "ng lint",
-    "e2e": "ng e2e"
+    "e2e": "ng e2e",
+    "postinstall": "patch for https://github.com/angular/devkit/pull/524",
+    "postinstall": "sed -i.bak  's/]esm5/]f?esm5/' node_modules/@angular-devkit/build-optimizer/src/build-optimizer/build-optimizer.js"
   },
   "private": true,
   "dependencies": {

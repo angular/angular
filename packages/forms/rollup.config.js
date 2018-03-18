@@ -22,7 +22,7 @@ const globals = {
 };
 
 module.exports = {
-  entry: '../../dist/packages-dist/forms/esm5/forms.js',
+  entry: '../../dist/packages-dist/forms/fesm5/forms.js',
   dest: '../../dist/packages-dist/forms/bundles/forms.umd.js',
   format: 'umd',
   exports: 'named',

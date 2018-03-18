@@ -23,7 +23,7 @@ const globals = {
 };
 
 module.exports = {
-  entry: '../../../../dist/packages-dist/common/esm5/http/testing.js',
+  entry: '../../../../dist/packages-dist/common/fesm5/http/testing.js',
   dest: '../../../../dist/packages-dist/common/bundles/common-http-testing.umd.js',
   format: 'umd',
   exports: 'named',

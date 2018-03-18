@@ -18,7 +18,7 @@ const globals = {
 };
 
 module.exports = {
-  entry: '../../../dist/packages-dist/platform-browser/esm5/animations.js',
+  entry: '../../../dist/packages-dist/platform-browser/fesm5/animations.js',
   dest: '../../../dist/packages-dist/platform-browser/bundles/platform-browser-animations.umd.js',
   format: 'umd',
   exports: 'named',

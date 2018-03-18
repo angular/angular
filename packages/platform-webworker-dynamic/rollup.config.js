@@ -19,7 +19,7 @@ const globals = {
 };
 
 module.exports = {
-  entry: '../../dist/packages-dist/platform-webworker-dynamic/esm5/platform-webworker-dynamic.js',
+  entry: '../../dist/packages-dist/platform-webworker-dynamic/fesm5/platform-webworker-dynamic.js',
   dest:
       '../../dist/packages-dist/platform-webworker-dynamic/bundles/platform-webworker-dynamic.umd.js',
   format: 'umd',
