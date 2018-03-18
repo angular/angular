@@ -936,12 +936,21 @@ function declareTests({useJit}: {useJit: boolean}) {
       });
 
       it('should not use template variables for expressions in hostListeners', () => {
-        @Directive({selector: '[host-listener]', host: {'(click)': 'doIt(id, unknownProp)'}})
+        @Directive({
+          selector: '[host-listener]',
+          host: {
+            '(click)': 'doIt(id, unknownProp)',
+            '(mouseover.nozone)': 'mouseover(id, unknownProp)',
+            '(mousemove.nozone.capture.once.passive)': 'mousemove(id, unknownProp)'
+          }
+        })
         class DirectiveWithHostListener {
           id = 'one';
           receivedArgs: any[];
 
           doIt(...args: any[]) { this.receivedArgs = args; }
+          mouseover(...args: any[]) { this.receivedArgs = args; }
+          mousemove(...args: any[]) { this.receivedArgs = args; }
         }
 
         const fixture =
@@ -954,6 +963,12 @@ function declareTests({useJit}: {useJit: boolean}) {
         const tc = fixture.debugElement.children[0];
         tc.triggerEventHandler('click', {});
         const dir: DirectiveWithHostListener = tc.injector.get(DirectiveWithHostListener);
+        expect(dir.receivedArgs).toEqual(['one', undefined]);
+        dir.receivedArgs = [];
+        tc.triggerEventHandler('mouseover', {});
+        expect(dir.receivedArgs).toEqual(['one', undefined]);
+        dir.receivedArgs = [];
+        tc.triggerEventHandler('mousemove', {});
         expect(dir.receivedArgs).toEqual(['one', undefined]);
       });
 

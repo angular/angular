@@ -13,7 +13,7 @@ import {InjectableType} from '../di/injectable';
 import {ErrorHandler} from '../error_handler';
 import {ComponentFactory} from '../linker/component_factory';
 import {NgModuleRef} from '../linker/ng_module_factory';
-import {Renderer2, RendererFactory2, RendererStyleFlags2, RendererType2} from '../render/api';
+import {EventOptions, Renderer2, RendererFactory2, RendererStyleFlags2, RendererType2} from '../render/api';
 import {Sanitizer} from '../sanitization/security';
 import {Type} from '../type';
 import {tokenKey} from '../view/util';
@@ -820,16 +820,16 @@ class DebugRenderer2 implements Renderer2 {
   }
 
   listen(
-      target: 'document'|'windows'|'body'|any, eventName: string,
-      callback: (event: any) => boolean): () => void {
+      target: 'document'|'windows'|'body'|any, eventName: string, callback: (event: any) => boolean,
+      eventOptions?: EventOptions): () => void {
     if (typeof target !== 'string') {
       const debugEl = getDebugNode(target);
       if (debugEl) {
-        debugEl.listeners.push(new EventListener(eventName, callback));
+        debugEl.listeners.push(new EventListener(eventName, callback, eventOptions));
       }
     }
 
-    return this.delegate.listen(target, eventName, callback);
+    return this.delegate.listen(target, eventName, callback, eventOptions);
   }
 
   parentNode(node: any): any { return this.delegate.parentNode(node); }

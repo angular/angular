@@ -27,6 +27,7 @@ module.exports = function(config) {
       {pattern: 'node_modules/angular/angular.js', included: false, watched: false},
       {pattern: 'node_modules/angular-mocks/angular-mocks.js', included: false, watched: false},
 
+      'test-events.js',
       'node_modules/core-js/client/core.js',
       'node_modules/zone.js/dist/zone.js',
       'node_modules/zone.js/dist/long-stack-trace-zone.js',
@@ -38,7 +39,6 @@ module.exports = function(config) {
       'node_modules/zone.js/dist/fake-async-test.js',
 
       // Including systemjs because it defines `__eval`, which produces correct stack traces.
-      'test-events.js',
       'shims_for_IE.js',
       'node_modules/systemjs/dist/system.src.js',
 

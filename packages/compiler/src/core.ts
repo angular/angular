@@ -105,9 +105,11 @@ export const createHostBinding = makeMetadataFactory<HostBinding>(
 export interface HostListener {
   eventName?: string;
   args?: string[];
+  modifier?: string;
 }
 export const createHostListener = makeMetadataFactory<HostListener>(
-    'HostListener', (eventName?: string, args?: string[]) => ({eventName, args}));
+    'HostListener',
+    (eventName?: string, args?: string[], modifier?: string) => ({eventName, args, modifier}));
 
 export interface NgModule {
   providers?: Provider[];

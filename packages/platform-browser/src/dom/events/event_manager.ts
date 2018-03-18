@@ -6,9 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Inject, Injectable, InjectionToken, NgZone} from '@angular/core';
+import {EventOptions, Inject, Injectable, InjectionToken, NgZone} from '@angular/core';
 
 import {getDOM} from '../dom_adapter';
+
+
 
 /**
  * @stable
@@ -29,14 +31,17 @@ export class EventManager {
     this._plugins = plugins.slice().reverse();
   }
 
-  addEventListener(element: HTMLElement, eventName: string, handler: Function): Function {
+  addEventListener(
+      element: HTMLElement, eventName: string, handler: Function,
+      eventOptions?: EventOptions): Function {
     const plugin = this._findPluginFor(eventName);
-    return plugin.addEventListener(element, eventName, handler);
+    return plugin.addEventListener(element, eventName, handler, eventOptions);
   }
 
-  addGlobalEventListener(target: string, eventName: string, handler: Function): Function {
+  addGlobalEventListener(
+      target: string, eventName: string, handler: Function, eventOptions?: EventOptions): Function {
     const plugin = this._findPluginFor(eventName);
-    return plugin.addGlobalEventListener(target, eventName, handler);
+    return plugin.addGlobalEventListener(target, eventName, handler, eventOptions);
   }
 
   getZone(): NgZone { return this._zone; }
@@ -67,13 +72,17 @@ export abstract class EventManagerPlugin {
 
   abstract supports(eventName: string): boolean;
 
-  abstract addEventListener(element: HTMLElement, eventName: string, handler: Function): Function;
+  abstract addEventListener(
+      element: HTMLElement, eventName: string, handler: Function,
+      eventOptions?: EventOptions): Function;
 
-  addGlobalEventListener(element: string, eventName: string, handler: Function): Function {
+  addGlobalEventListener(
+      element: string, eventName: string, handler: Function,
+      eventOptions?: EventOptions): Function {
     const target: HTMLElement = getDOM().getGlobalEventTarget(this._doc, element);
     if (!target) {
       throw new Error(`Unsupported event target ${target} for event ${eventName}`);
     }
-    return this.addEventListener(target, eventName, handler);
+    return this.addEventListener(target, eventName, handler, eventOptions);
   }
 }

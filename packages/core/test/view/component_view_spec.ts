@@ -17,8 +17,10 @@ import {callMostRecentEventListenerHandler, compViewDef, createAndGetRootNodes, 
 /**
  * We map addEventListener to the Zones internal name. This is because we want to be fast
  * and bypass the zone bookkeeping. We know that we can do the bookkeeping faster.
+ * TODO @JiaLiPassion, current DOMEventManager does not bypass zone.js correctly
+ * so we will still map to addEventListener/removeEventListener
  */
-const addEventListener = '__zone_symbol__addEventListener';
+const addEventListener = 'addEventListener';
 
 {
   describe(`Component Views`, () => {

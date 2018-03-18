@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {RendererType2} from '../render/api';
+import {EventOptions, RendererType2} from '../render/api';
 import {SecurityContext} from '../sanitization/security';
 
 import {BindingDef, BindingFlags, ElementData, ElementHandleEventFn, NodeDef, NodeFlags, OutputDef, OutputType, QueryValueType, ViewData, ViewDefinitionFactory, asElementData} from './types';
@@ -174,6 +174,34 @@ export function createElement(view: ViewData, renderHost: any, def: NodeDef): El
   return el;
 }
 
+function parseEventOptions(eventNameWithModifiers: string):
+    {eventName: string, options: EventOptions} {
+  const options: EventOptions = {};
+  const eventNames: string[] = [];
+  eventNameWithModifiers.split('.').forEach(modifier => {
+    const lowerModifier = modifier.toLowerCase();
+    switch (lowerModifier) {
+      case 'capture':
+        options.capture = true;
+        break;
+      case 'once':
+        options.once = true;
+        break;
+      case 'passive':
+        options.passive = true;
+        break;
+      case 'ngzone':
+      case 'nozone':
+        options.zone = lowerModifier;
+        break;
+      default:
+        eventNames.push(modifier);
+        break;
+    }
+  });
+  return {eventName: eventNames.join('.'), options: options};
+}
+
 export function listenToElementOutputs(view: ViewData, compView: ViewData, def: NodeDef, el: any) {
   for (let i = 0; i < def.outputs.length; i++) {
     const output = def.outputs[i];
@@ -185,8 +213,10 @@ export function listenToElementOutputs(view: ViewData, compView: ViewData, def: 
       listenTarget = null;
       listenerView = compView;
     }
-    const disposable =
-        <any>listenerView.renderer.listen(listenTarget || el, output.eventName, handleEventClosure);
+    const eventNameWithOptions = parseEventOptions(output.eventName);
+    const disposable = <any>listenerView.renderer.listen(
+        listenTarget || el, eventNameWithOptions.eventName, handleEventClosure,
+        eventNameWithOptions.options);
     view.disposables ![def.outputIndex + i] = disposable;
   }
 }

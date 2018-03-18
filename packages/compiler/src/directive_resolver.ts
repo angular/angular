@@ -98,7 +98,11 @@ export class DirectiveResolver {
       const hostListeners = propertyMetadata[propName].filter(a => createHostListener.isTypeOf(a));
       hostListeners.forEach(hostListener => {
         const args = hostListener.args || [];
-        host[`(${hostListener.eventName})`] = `${propName}(${args.join(',')})`;
+        if (hostListener.modifier) {
+          host[`(${hostListener.eventName})`] = `${propName}(${args.join(',')})`;
+        } else {
+          host[`(${hostListener.eventName})`] = `${propName}(${args.join(',')})`;
+        }
       });
       const query = findLast(
           propertyMetadata[propName], (a) => QUERY_METADATA_IDENTIFIERS.some(i => i.isTypeOf(a)));

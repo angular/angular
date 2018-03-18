@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, Directive, ElementRef, Injectable, NgModule, Renderer} from '@angular/core';
+import {Component, Directive, ElementRef, HostListener, Injectable, NgModule, Renderer} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 
@@ -47,14 +47,31 @@ export class RedDec {
   // Expressions in the template (like {{greeting}}) are evaluated in the
   // context of the HelloCmp class below.
   template: `<div class="greeting">{{greeting}} <span red>world</span>!</div>
-           <button class="changeButton" (click)="changeGreeting()">change greeting</button>`
+           <button class="changeButton" (click)="changeGreeting()">change greeting</button>           <button class="changeButton" (click)="changeGreeting()">change greeting</button>
+           <div class="windowZone">window click zone: {{windowZone}}</div>
+          <div class="compZone">Hello Component click zone: {{compZone}}</div>
+          <div class="divZone" (click.nozone.capture.once)="divClick()">div click zone: {{divZone}}</div>`
 })
 export class HelloCmp {
   greeting: string;
+  windowZone: string;
+  compZone: string;
+  divZone: string;
 
   constructor(service: GreetingService) { this.greeting = service.greeting; }
 
-  changeGreeting(): void { this.greeting = 'howdy'; }
+  changeGreeting(): void {
+    this.greeting = 'howdy';
+    this.windowZone = '';
+    this.divZone = '';
+  }
+  @HostListener('click.nozone', null)
+  onClick() { this.compZone = Zone.current.name; }
+
+  @HostListener('window:click.nozone', null)
+  onWindowClick() { this.windowZone = Zone.current.name; }
+
+  divClick() { this.divZone = Zone.current.name; }
 }
 
 @NgModule({declarations: [HelloCmp, RedDec], bootstrap: [HelloCmp], imports: [BrowserModule]})

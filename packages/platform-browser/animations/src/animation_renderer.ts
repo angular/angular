@@ -7,7 +7,7 @@
  */
 import {AnimationTriggerMetadata} from '@angular/animations';
 import {ɵAnimationEngine as AnimationEngine} from '@angular/animations/browser';
-import {Injectable, NgZone, Renderer2, RendererFactory2, RendererStyleFlags2, RendererType2} from '@angular/core';
+import {EventOptions, Injectable, NgZone, Renderer2, RendererFactory2, RendererStyleFlags2, RendererType2} from '@angular/core';
 
 const ANIMATION_PREFIX = '@';
 const DISABLE_ANIMATIONS_FLAG = '@.disabled';
@@ -188,8 +188,10 @@ export class BaseAnimationRenderer implements Renderer2 {
 
   setValue(node: any, value: string): void { this.delegate.setValue(node, value); }
 
-  listen(target: any, eventName: string, callback: (event: any) => boolean | void): () => void {
-    return this.delegate.listen(target, eventName, callback);
+  listen(
+      target: any, eventName: string, callback: (event: any) => boolean | void,
+      eventOptions?: EventOptions): () => void {
+    return this.delegate.listen(target, eventName, callback, eventOptions);
   }
 
   protected disableAnimations(element: any, value: boolean) {
@@ -218,8 +220,9 @@ export class AnimationRenderer extends BaseAnimationRenderer implements Renderer
     }
   }
 
-  listen(target: 'window'|'document'|'body'|any, eventName: string, callback: (event: any) => any):
-      () => void {
+  listen(
+      target: 'window'|'document'|'body'|any, eventName: string, callback: (event: any) => any,
+      eventOptions?: EventOptions): () => void {
     if (eventName.charAt(0) == ANIMATION_PREFIX) {
       const element = resolveElementFromTarget(target);
       let name = eventName.substr(1);
@@ -234,7 +237,7 @@ export class AnimationRenderer extends BaseAnimationRenderer implements Renderer
         this.factory.scheduleListenerCallback(countId, callback, event);
       });
     }
-    return this.delegate.listen(target, eventName, callback);
+    return this.delegate.listen(target, eventName, callback, eventOptions);
   }
 }
 

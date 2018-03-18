@@ -14,7 +14,6 @@ import {LifecycleHooks} from '../lifecycle_reflector';
 import {ParseSourceSpan} from '../parse_util';
 
 
-
 /**
  * An Abstract Syntax Tree node representing part of a parsed Angular template.
  */

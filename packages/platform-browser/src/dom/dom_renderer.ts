@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injectable, Renderer2, RendererFactory2, RendererStyleFlags2, RendererType2, ViewEncapsulation} from '@angular/core';
+import {EventOptions, Injectable, Renderer2, RendererFactory2, RendererStyleFlags2, RendererType2, ViewEncapsulation} from '@angular/core';
 
 import {EventManager} from './events/event_manager';
 import {DomSharedStylesHost} from './shared_styles_host';
@@ -205,15 +205,16 @@ class DefaultDomRenderer2 implements Renderer2 {
 
   setValue(node: any, value: string): void { node.nodeValue = value; }
 
-  listen(target: 'window'|'document'|'body'|any, event: string, callback: (event: any) => boolean):
-      () => void {
+  listen(
+      target: 'window'|'document'|'body'|any, event: string, callback: (event: any) => boolean,
+      eventOptions?: EventOptions): () => void {
     checkNoSyntheticProp(event, 'listener');
     if (typeof target === 'string') {
       return <() => void>this.eventManager.addGlobalEventListener(
-          target, event, decoratePreventDefault(callback));
+          target, event, decoratePreventDefault(callback), eventOptions);
     }
     return <() => void>this.eventManager.addEventListener(
-               target, event, decoratePreventDefault(callback)) as() => void;
+               target, event, decoratePreventDefault(callback), eventOptions) as() => void;
   }
 }
 

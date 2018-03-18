@@ -7,10 +7,11 @@
  */
 
 import {Injector} from '../di';
+import {EventOptions} from '../render/api';
 import {DebugContext} from '../view/index';
 
 export class EventListener {
-  constructor(public name: string, public callback: Function) {}
+  constructor(public name: string, public callback: Function, public options?: EventOptions) {}
 }
 
 /**

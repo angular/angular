@@ -939,6 +939,21 @@ the component's `onSave()` method whenever a click occurs:
 <code-example path="template-syntax/src/app/app.component.html" region="event-binding-1" title="src/app/app.component.html" linenums="false">
 </code-example>
 
+Event binding also support pass the following options.
+- capture
+- passive
+- once
+- ngzone
+- nozone
+
+The capture/passive/once are the options will be passed to addEventListener. ngzone/nozone will define which zone the event handler will run into, by default, the event handler will run into the zone when the addEventListener was called(in most cases, it will be ngZone), but sometimes user may want to run the event handler outside of ngZone or explicitly in ngZone.
+
+To pass those modifiers, user can write like this.
+
+<code-example language="html">
+  &lt;button (click.capture.passive.once.nozone)="onSave()"&gt;Save&lt;/button&gt;
+</code-example>
+
 ### Target event
 
 A **name between parentheses** &mdash; for example, `(click)` &mdash;

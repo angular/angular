@@ -257,7 +257,7 @@ so the <code>@Directive</code> configuration applies to components as well</p>
 </td>
 </tr><tr>
 <td><code><b>@HostListener('click', ['$event'])</b> onClick(e) {...}</code></td>
-<td><p>Subscribes to a host element event (<code>click</code>) with a directive/component method (<code>onClick</code>), optionally passing an argument (<code>$event</code>).</p>
+<td><p>Subscribes to a host element event (<code>click</code>) with a directive/component method (<code>onClick</code>), optionally passing an argument (<code>$event</code>).You can also pass passive/capture/once/ngzone/nozone as as the modifier of the event name like (<code>click.capture.once.ngzone</code>)</p>
 </td>
 </tr><tr>
 <td><code><b>@ContentChild(myPredicate)</b> myChildComponent;</code></td>

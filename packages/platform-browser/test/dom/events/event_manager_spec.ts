@@ -19,6 +19,10 @@ import {el} from '../../../testing/src/browser_util';
   let doc: any;
   let zone: NgZone;
 
+  function dispatchEventInRootZone(target: any, event: any) {
+    Zone.root.run(() => { getDOM().dispatchEvent(target, event); });
+  }
+
   describe('EventManager', () => {
 
     beforeEach(() => {
@@ -69,7 +73,7 @@ import {el} from '../../../testing/src/browser_util';
       const handler = (e: any /** TODO #9100 */) => { receivedEvent = e; };
       const manager = new EventManager([domEventPlugin], new FakeNgZone());
       manager.addEventListener(element, 'click', handler);
-      getDOM().dispatchEvent(child, dispatchedEvent);
+      dispatchEventInRootZone(child, dispatchedEvent);
 
       expect(receivedEvent).toBe(dispatchedEvent);
     });
@@ -83,12 +87,12 @@ import {el} from '../../../testing/src/browser_util';
       const manager = new EventManager([domEventPlugin], new FakeNgZone());
 
       const remover = manager.addGlobalEventListener('document', 'click', handler);
-      getDOM().dispatchEvent(element, dispatchedEvent);
+      dispatchEventInRootZone(element, dispatchedEvent);
       expect(receivedEvent).toBe(dispatchedEvent);
 
       receivedEvent = null;
       remover();
-      getDOM().dispatchEvent(element, dispatchedEvent);
+      dispatchEventInRootZone(element, dispatchedEvent);
       expect(receivedEvent).toBe(null);
     });
 
@@ -108,13 +112,13 @@ import {el} from '../../../testing/src/browser_util';
 
       let remover: any = null;
       Zone.root.run(() => { remover = manager.addEventListener(element, 'click', handler); });
-      getDOM().dispatchEvent(element, dispatchedEvent);
+      dispatchEventInRootZone(element, dispatchedEvent);
       expect(receivedEvent).toBe(dispatchedEvent);
       expect(receivedZone.name).toBe(Zone.root.name);
 
       receivedEvent = null;
       remover && remover();
-      getDOM().dispatchEvent(element, dispatchedEvent);
+      dispatchEventInRootZone(element, dispatchedEvent);
       expect(receivedEvent).toBe(null);
     });
 
@@ -142,14 +146,14 @@ import {el} from '../../../testing/src/browser_util';
       Zone.root.fork({name: 'test'}).run(() => {
         remover2 = manager.addEventListener(element, 'click', handler2);
       });
-      getDOM().dispatchEvent(element, dispatchedEvent);
+      dispatchEventInRootZone(element, dispatchedEvent);
       expect(receivedEvents).toEqual([dispatchedEvent, dispatchedEvent]);
       expect(receivedZones).toEqual([Zone.root.name, 'test']);
 
       receivedEvents = [];
       remover1 && remover1();
       remover2 && remover2();
-      getDOM().dispatchEvent(element, dispatchedEvent);
+      dispatchEventInRootZone(element, dispatchedEvent);
       expect(receivedEvents).toEqual([]);
     });
 
@@ -178,14 +182,14 @@ import {el} from '../../../testing/src/browser_util';
       Zone.root.fork({name: 'test'}).run(() => {
         remover2 = manager.addEventListener(element, 'click', handler2);
       });
-      getDOM().dispatchEvent(element, dispatchedEvent);
+      dispatchEventInRootZone(element, dispatchedEvent);
       expect(receivedEvents).toEqual([dispatchedEvent]);
       expect(receivedZones).toEqual([Zone.root.name]);
 
       receivedEvents = [];
       remover1 && remover1();
       remover2 && remover2();
-      getDOM().dispatchEvent(element, dispatchedEvent);
+      dispatchEventInRootZone(element, dispatchedEvent);
       expect(receivedEvents).toEqual([]);
     });
 
@@ -214,14 +218,14 @@ import {el} from '../../../testing/src/browser_util';
       Zone.root.fork({name: 'test'}).run(() => {
         remover2 = manager.addEventListener(element, 'click', handler2);
       });
-      getDOM().dispatchEvent(element, dispatchedEvent);
+      dispatchEventInRootZone(element, dispatchedEvent);
       expect(receivedEvents).toEqual([dispatchedEvent, dispatchedEvent]);
       expect(receivedZones).toEqual([Zone.root.name, 'test']);
 
       receivedEvents = [];
       remover1 && remover1();
       remover2 && remover2();
-      getDOM().dispatchEvent(element, dispatchedEvent);
+      dispatchEventInRootZone(element, dispatchedEvent);
       expect(receivedEvents).toEqual([]);
     });
 
@@ -245,14 +249,14 @@ import {el} from '../../../testing/src/browser_util';
       Zone.root.fork({name: 'test'}).run(() => {
         remover2 = manager.addEventListener(element, 'click', handler);
       });
-      getDOM().dispatchEvent(element, dispatchedEvent);
+      dispatchEventInRootZone(element, dispatchedEvent);
       expect(receivedEvents).toEqual([dispatchedEvent]);
       expect(receivedZones).toEqual([Zone.root.name]);
 
       receivedEvents = [];
       remover1 && remover1();
       remover2 && remover2();
-      getDOM().dispatchEvent(element, dispatchedEvent);
+      dispatchEventInRootZone(element, dispatchedEvent);
       expect(receivedEvents).toEqual([]);
     });
 
@@ -282,14 +286,14 @@ import {el} from '../../../testing/src/browser_util';
       Zone.root.fork({name: 'fakeAngularZone', properties: {isAngularZone: true}}).run(() => {
         remover2 = manager.addEventListener(element, 'click', handler2);
       });
-      getDOM().dispatchEvent(element, dispatchedEvent);
+      dispatchEventInRootZone(element, dispatchedEvent);
       expect(receivedEvents).toEqual([dispatchedEvent, dispatchedEvent]);
       expect(receivedZones).toEqual([Zone.root.name, 'fakeAngularZone']);
 
       receivedEvents = [];
       remover1 && remover1();
       remover2 && remover2();
-      getDOM().dispatchEvent(element, dispatchedEvent);
+      dispatchEventInRootZone(element, dispatchedEvent);
       // handler1 and handler2 are added in different zone
       // one is angular zone, the other is not
       // should still be able to remove them correctly
@@ -310,13 +314,53 @@ import {el} from '../../../testing/src/browser_util';
       const manager = new EventManager([domEventPlugin], new FakeNgZone());
 
       let remover = manager.addEventListener(element, 'scroll', handler);
-      getDOM().dispatchEvent(element, dispatchedEvent);
+      dispatchEventInRootZone(element, dispatchedEvent);
       expect(receivedEvent).toBe(dispatchedEvent);
       expect(receivedZone.name).toBe(Zone.root.name);
 
       receivedEvent = null;
       remover && remover();
+      dispatchEventInRootZone(element, dispatchedEvent);
+      expect(receivedEvent).toBe(null);
+    });
+
+    it('should keep zone which is passed in addEventListener', () => {
+      const Zone = (window as any)['Zone'];
+
+      const element = el('<div><div></div></div>');
+      getDOM().appendChild(doc.body, element);
+      const dispatchedEvent = getDOM().createMouseEvent('click');
+      let receivedEvent: any /** TODO #9100 */ = null;
+      let receivedZone: any = null;
+      const handler = (e: any /** TODO #9100 */) => {
+        receivedEvent = e;
+        receivedZone = Zone.current;
+      };
+      const fakeNgZone = new FakeNgZone();
+      const manager = new EventManager([domEventPlugin], fakeNgZone);
+
+      let remover: any = null;
+      Zone.root.run(() => { remover = manager.addEventListener(element, 'click', handler); });
       getDOM().dispatchEvent(element, dispatchedEvent);
+      expect(receivedEvent).toBe(dispatchedEvent);
+      expect(receivedZone.name).toBe('<root>');
+
+      receivedEvent = null;
+      remover && remover();
+      getDOM().dispatchEvent(element, dispatchedEvent);
+      expect(receivedEvent).toBe(null);
+
+      fakeNgZone.run(() => {
+        remover = manager.addEventListener(element, 'click', handler, {zone: 'nozone'});
+      });
+      Zone.root.run(() => { getDOM().dispatchEvent(element, dispatchedEvent); });
+      expect(receivedEvent).toBe(dispatchedEvent);
+      expect(receivedZone.name).toBe('<root>');
+
+      receivedEvent = null;
+      remover && remover();
+      getDOM().dispatchEvent(element, dispatchedEvent);
+      expect(receivedEvent).toBe(null);
       expect(receivedEvent).toBe(null);
     });
   });

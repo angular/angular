@@ -851,6 +851,20 @@ Binding to attribute 'onEvent' is disallowed for security reasons ("<my-componen
           ]);
         });
 
+        it('should parse bound events with modifiers', () => {
+          expect(humanizeTplAst(parse('<div (event.nozone.capture.passive.once)="v">', []))).toEqual([
+            [ElementAst, 'div'],
+            [BoundEventAst, 'event.nozone.capture.passive.once', null, 'v'],
+          ]);
+        });
+
+        it('should parse bound events with modifiers and target', () => {
+          expect(humanizeTplAst(parse('<div (window:event.nozone.capture.passive.once)="v">', []))).toEqual([
+            [ElementAst, 'div'],
+            [BoundEventAst, 'event.nozone.capture.passive.once', 'window', 'v'],
+          ]);
+        });
+
         it('should report an error on empty expression', () => {
           expect(() => parse('<div (event)="">', []))
               .toThrowError(/Empty expressions are not allowed/);
@@ -1018,6 +1032,17 @@ Binding to attribute 'onEvent' is disallowed for security reasons ("<my-componen
                        }).toSummary();
           expect(humanizeTplAst(parse('<div></div>', [dirA]))).toEqual([
             [ElementAst, 'div'], [DirectiveAst, dirA], [BoundEventAst, 'a', null, 'expr']
+          ]);
+        });
+
+        it('should parse directive host listeners with modifiers', () => {
+          const dirA = compileDirectiveMetadataCreate({
+                         selector: 'div',
+                         type: createTypeMeta({reference: {filePath: someModuleUrl, name: 'DirA'}}),
+                         host: {'(a.nozone.capture.once.passive)': 'expr'}
+                       }).toSummary();
+          expect(humanizeTplAst(parse('<div></div>', [dirA]))).toEqual([
+            [ElementAst, 'div'], [DirectiveAst, dirA], [BoundEventAst, 'a.nozone.capture.once.passive', null, 'expr']
           ]);
         });
 

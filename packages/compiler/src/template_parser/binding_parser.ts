@@ -316,12 +316,53 @@ export class BindingParser {
     }
   }
 
+  private parseEventModifiers(eventNameWithModifiers: string[]):
+      {eventName: string, phase: string} {
+    const modifiers: string[] = [];
+    const eventNames: string[] = [];
+    let phase: string = '';
+    eventNameWithModifiers.forEach(modifier => {
+      const lowerModifier = modifier.toLowerCase();
+      switch (lowerModifier) {
+        case 'capture':
+          modifiers.push('capture');
+          break;
+        case 'once':
+          modifiers.push('once');
+          break;
+        case 'passive':
+          modifiers.push('passive');
+          break;
+        case 'ngzone':
+        case 'nozone':
+          modifiers.push(lowerModifier);
+          break;
+        case 'start':
+        case 'done':
+          phase = lowerModifier;
+          break;
+        case '':
+          break;
+        default:
+          eventNames.push(modifier);
+          break;
+      }
+    });
+    const eventNamesWithoutPhase = eventNames.concat(modifiers);
+    return {
+      eventName: eventNamesWithoutPhase.length > 1 ? eventNamesWithoutPhase.join('.') :
+                                                     eventNames[0],
+      phase: phase
+    };
+  }
+
   private _parseAnimationEvent(
       name: string, expression: string, sourceSpan: ParseSourceSpan,
       targetEvents: BoundEventAst[]) {
     const matches = splitAtPeriod(name, [name, '']);
-    const eventName = matches[0];
-    const phase = matches[1].toLowerCase();
+    const modifier = this.parseEventModifiers(matches);
+    const eventName = modifier.eventName;
+    const phase = modifier.phase;
     if (phase) {
       switch (phase) {
         case 'start':
@@ -347,7 +388,10 @@ export class BindingParser {
       name: string, expression: string, sourceSpan: ParseSourceSpan,
       targetMatchableAttrs: string[][], targetEvents: BoundEventAst[]) {
     // long format: 'target: eventName'
-    const [target, eventName] = splitAtColon(name, [null !, name]);
+    const [target, eventNames] = splitAtColon(name, [null !, name]);
+    const matches = splitAtPeriod(eventNames, [eventNames, '']);
+    const modifier = this.parseEventModifiers(matches);
+    const eventName = modifier.eventName;
     const ast = this._parseAction(expression, sourceSpan);
     targetMatchableAttrs.push([name !, ast.source !]);
     targetEvents.push(new BoundEventAst(eventName, target, null, ast, sourceSpan));

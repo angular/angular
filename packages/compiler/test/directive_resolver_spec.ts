@@ -54,6 +54,16 @@ class SomeDirectiveWithHostListeners {
   onA() {}
   @HostListener('b', ['$event.value'])
   onB(value: any) {}
+  @HostListener('t:f.ngzone', ['$event.value'])
+  onF(value: any) {}
+  @HostListener('g.h.nozone', ['$event.value'])
+  onG(value: any) {}
+  @HostListener('i:j.k.nozone', ['$event.value'])
+  onH(value: any) {}
+  @HostListener('l.m', ['$event.value'])
+  onI(value: any) {}
+  @HostListener('n:o.nozone.capture.once.passive', ['$event.value'])
+  onP(value: any) {}
 }
 
 @Directive({selector: 'someDirective', queries: {'cs': new ContentChildren('c')}})
@@ -306,8 +316,16 @@ class SomeDirectiveWithoutMetadata {}
 
       it('should append host listeners', () => {
         const directiveMetadata = resolver.resolve(SomeDirectiveWithHostListeners);
-        expect(directiveMetadata.host)
-            .toEqual({'(c)': 'onC()', '(a)': 'onA()', '(b)': 'onB($event.value)'});
+        expect(directiveMetadata.host).toEqual({
+          '(c)': 'onC()',
+          '(a)': 'onA()',
+          '(b)': 'onB($event.value)',
+          '(t:f.ngzone)': 'onF($event.value)',
+          '(g.h.nozone)': 'onG($event.value)',
+          '(i:j.k.nozone)': 'onH($event.value)',
+          '(l.m)': 'onI($event.value)',
+          '(n:o.nozone.capture.once.passive)': 'onP($event.value)'
+        });
       });
 
       it('should throw when @HostBinding name starts with "("', () => {
