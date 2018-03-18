@@ -136,7 +136,8 @@ export function renderComponent<T>(
     // Create element node at index 0 in data array
     elementNode = hostElement(hostNode, componentDef);
     // Create directive instance with n() and store at index 1 in data array (el is 0)
-    component = rootContext.component = baseDirectiveCreate(1, componentDef.factory(), componentDef) as T;
+    component = rootContext.component =
+        baseDirectiveCreate(1, componentDef.factory(), componentDef) as T;
     initChangeDetectorIfExisting(elementNode.nodeInjector, component);
   } finally {
     // We must not use leaveView here because it will set creationMode to false too early,
