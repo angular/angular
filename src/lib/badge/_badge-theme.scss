@@ -131,7 +131,7 @@ $mat-badge-large-size: $mat-badge-default-size + 6;
     text-align: center;
     display: inline-block;
     border-radius: 50%;
-    transition: all 0.2 ease-in-out;
+    transition: transform 200ms ease-in-out;
     transform: scale(0.6);
     overflow: hidden;
     white-space: nowrap;
@@ -142,7 +142,8 @@ $mat-badge-large-size: $mat-badge-default-size + 6;
   // The active class is added after the element is added
   // so it can animate scale to default
   .mat-badge-content.mat-badge-active {
-    transform: scale(1);
+    // Scale to `none` instead of `1` to avoid blurry text in some browsers.
+    transform: none;
   }
 
   .mat-badge-small {
