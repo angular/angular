@@ -49,7 +49,8 @@ export class SymbolExtractor {
           if (varDecl.initializer && fnRecurseDepth !== 0) {
             symbols.push({name: varDecl.name.getText()});
           }
-          if (fnRecurseDepth == 0 && isRollupExportSymbol(child.parent as ts.VariableDeclarationList)) {
+          if (fnRecurseDepth == 0 &&
+              isRollupExportSymbol(child.parent as ts.VariableDeclarationList)) {
             ts.forEachChild(child, visitor);
           }
           break;
