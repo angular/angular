@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ChangeDetectorRef, Compiler, Component, ComponentFactoryResolver, Directive, ElementRef, EventEmitter, Injector, Input, NgModule, NgModuleRef, OnChanges, OnDestroy, SimpleChanges, destroyPlatform} from '@angular/core';
+import {ChangeDetectorRef, Compiler, Component, ComponentFactoryResolver, Directive, ElementRef, EventEmitter, Injector, Input, NgModule, NgModuleRef, OnChanges, OnDestroy, Output, SimpleChanges, destroyPlatform} from '@angular/core';
 import {async, fakeAsync, tick} from '@angular/core/testing';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
@@ -145,6 +145,58 @@ withEachNg1Version(() => {
                    'literal: Text; interpolate: Hello everyone; ' +
                    'oneWayA: A; oneWayB: B; twoWayA: newA; twoWayB: newB; (3) | ' +
                    'modelA: newA; modelB: newB; eventA: aFired; eventB: bFired;');
+         });
+       }));
+
+    it('should support two-way binding and event listener', async(() => {
+         const listenerSpy = jasmine.createSpy('$rootScope.listener');
+         const ng1Module = angular.module('ng1', []).run(($rootScope: angular.IScope) => {
+           $rootScope['value'] = 'world';
+           $rootScope['listener'] = listenerSpy;
+         });
+
+         @Component({selector: 'ng2', template: `model: {{model}};`})
+         class Ng2Component implements OnChanges {
+           ngOnChangesCount = 0;
+           @Input() model = '?';
+           @Output() modelChange = new EventEmitter();
+
+           ngOnChanges(changes: SimpleChanges) {
+             switch (this.ngOnChangesCount++) {
+               case 0:
+                 expect(changes.model.currentValue).toBe('world');
+                 this.modelChange.emit('newC');
+                 break;
+               case 1:
+                 expect(changes.model.currentValue).toBe('newC');
+                 break;
+               default:
+                 throw new Error('Called too many times! ' + JSON.stringify(changes));
+             }
+           }
+         }
+
+         ng1Module.directive('ng2', downgradeComponent({component: Ng2Component}));
+
+         @NgModule({
+           declarations: [Ng2Component],
+           entryComponents: [Ng2Component],
+           imports: [BrowserModule, UpgradeModule]
+         })
+         class Ng2Module {
+           ngDoBootstrap() {}
+         }
+
+         const element = html(`
+          <div>
+            <ng2 [(model)]="value" (model-change)="listener($event)"></ng2>
+            | value: {{value}}
+          </div>
+        `);
+
+         bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then((upgrade) => {
+           expect(multiTrim(element.textContent)).toEqual('model: newC; | value: newC');
+           expect(listenerSpy).toHaveBeenCalledWith('newC');
          });
        }));
 
