@@ -2590,123 +2590,210 @@ described below.
 
 ### NgForOf
 
+<!--
 `NgForOf` is a _repeater_ directive &mdash; a way to present a list of items.
 You define a block of HTML that defines how a single item should be displayed.
 You tell Angular to use that block as a template for rendering each item in the list.
+-->
+`NgForOf`는 템플릿을 반복하는 디렉티브이며, 배열의 각 항목을 뷰에 표시할 때 주로 사용합니다.
+이 디렉티브를 사용할 때는 배열의 한 항목을 뷰로 어떻게 표시할지 HTML 템플릿으로 먼저 정의합니다.
+그러면 Angular가 템플릿을 반복할 때마다 배열의 항목이 하나씩 전달되면서 뷰를 표시합니다.
 
+<!--
 Here is an example of `NgForOf` applied to a simple `<div>`:
+-->
+`<div>` 엘리먼트에 간단하게 적용해보면 다음과 같이 사용할 수 있습니다:
 
 <code-example path="template-syntax/src/app/app.component.html" region="NgFor-1" title="src/app/app.component.html" linenums="false">
 </code-example>
 
+<!--
 You can also apply an `NgForOf` to a component element, as in this example:
+-->
+그리고 `NgForOf` 디렉티브는 컴포넌트에도 직접 사용할 수 있습니다:
 
 <code-example path="template-syntax/src/app/app.component.html" region="NgFor-2" title="src/app/app.component.html" linenums="false">
 </code-example>
 
 <div class="alert is-critical">
 
+<!--
 Don't forget the asterisk (`*`) in front of `ngFor`.
+-->
+`*ngFor` 를 사용할 때 별표(\*)를 잊지 마세요.
 
 </div>
 
+<!--
 The text assigned to `*ngFor` is the instruction that guides the repeater process.
+-->
+`*ngFor`의 반복 과정은 `*ngFor` 디렉티브의 오른쪽에 할당하는 문자열로 지정합니다.
 
 {@a microsyntax}
 
+<!--
 #### *ngFor* microsyntax
+-->
+#### *ngFor* 세부 문법
 
 <!--
 The string assigned to `*ngFor` is not a [template expression](guide/template-syntax#template-expressions).
 It's a *microsyntax* &mdash; a little language of its own that Angular interprets.
 The string `"let hero of heroes"` means:
 -->
-The string assigned to `*ngFor` is not a [템플릿 표현식](guide/template-syntax#템플릿-표현식).
-It's a *microsyntax* &mdash; a little language of its own that Angular interprets.
-The string `"let hero of heroes"` means:
+`*ngFor`에 할당하는 문자열은 [템플릿 표현식](guide/template-syntax#템플릿-표현식)과는 다릅니다.
+이 문법은 *ngFor에만 적용되는 세부 문법* 이며, Angular에서 `ngFor` 디렉티브를 처리할 때만 사용됩니다.
+`"let hero of heroes"` 이라는 문법은 다음과 같은 의미입니다:
 
+<!--
 > *Take each hero in the `heroes` array, store it in the local `hero` looping variable, and
 make it available to the templated HTML for each iteration.*
+-->
+> *`heroes` 배열에서 히어로를 하나씩 가져오고, 반복문 안에서만 유효한 지역 변수 `hero`에 할당합니다. 그러면 반복되는 템플릿 안에서 이 변수를 사용할 수 있습니다.*
 
+<!--
 Angular translates this instruction into a `<ng-template>` around the host element,
 then uses this template repeatedly to create a new set of elements and bindings for each `hero`
 in the list.
+-->
+Angular는 부모 엘리먼트 안에 `<ng-template>` 을 만들고, 배열의 항목마다 새로운 템플릿을 생성합니다.
 
+<!--
 Learn about the _microsyntax_ in the [_Structural Directives_](guide/structural-directives#microsyntax) guide.
+-->
+_ngFor 세부 문법_ 에 대한 자세한 설명은 [_구조 디렉티브_](guide/structural-directives#microsyntax) 가이드를 참고하세요.
+
 
 {@a template-input-variable}
 
-{@a template-input-variables}
+{@a 템플릿-입력-변수}
 
 <!--
 ### Template input variables
 -->
 ### 템플릿 입력 변수
 
+<!--
 The `let` keyword before `hero` creates a _template input variable_ called `hero`.
 The `NgForOf` directive iterates over the `heroes` array returned by the parent component's `heroes` property
 and sets `hero` to the current item from the array during each iteration.
+-->
+`hero` 안에 있는 `let` 키워드는 _템플릿 입력 변수_ `hero`를 만드는 키워드입니다.
+그리고 `NgForOf` 디렉티브는 부모 컴포넌트의 `heroes` 배열의 각 항목을 반환하면서 이 문법을 반복하고, 각각의 반복마다 새로운 `hero` 아이템을 템플릿에 적용합니다.
 
+<!--
 You reference the `hero` input variable within the `NgForOf` host element
 (and within its descendants) to access the hero's properties.
 Here it is referenced first in an interpolation
 and then passed in a binding to the `hero` property of the `<hero-detail>` component.
+-->
+`NgForOf` 반복문 안에서는 템플릿 입력변수 `hero`를 참조해서 객체 안에 있는 데이터에 접근할 수 있습니다.
+아래 코드의 첫번째 반복문은 전달된 `hero` 객체에서 `name` 프로퍼티를 뷰에 표시하는 코드이며,
+두 번째 반복문은 반복되는 `hero` 객체를 `<app-hero-detail>` 컴포넌트에 바인딩해서 표시하는 문법입니다.
 
 <code-example path="template-syntax/src/app/app.component.html" region="NgFor-1-2" title="src/app/app.component.html" linenums="false">
 </code-example>
 
-Learn more about _template input variables_ in the
+<!--Learn more about _template input variables_ in the
 [_Structural Directives_](guide/structural-directives#template-input-variable) guide.
+-->
+_템플릿 입력 변수_ 에 대한 자세한 설명은 [_구조 디렉티브_](guide/structural-directives#template-input-variable) 가이드를 참고하세요.
 
+<!--
 #### *ngFor* with _index_
+-->
+#### _인덱스_ 와 함께 사용하기
 
+<!--
 The `index` property of the `NgForOf` directive context returns the zero-based index of the item in each iteration.
 You can capture the `index` in a template input variable and use it in the template.
+-->
+`NgForOf` 디렉티브에서 제공하는 `index` 프로퍼티는 반복문이 반복되는 횟수를 나타내는 인덱스입니다.
+이 `index` 프로퍼티는 템플릿 입력 변수로 할당 받아 템플릿 안에서 사용할 수 있습니다.
 
+<!--
 The next example captures the `index` in a variable named `i` and displays it with the hero name like this.
+-->
+다음 코드는 `index` 프로퍼티를 변수 `i`로 할당하고 히어로의 이름과 함께 표시하는 예제입니다.
 
 <code-example path="template-syntax/src/app/app.component.html" region="NgFor-3" title="src/app/app.component.html" linenums="false">
 </code-example>
 
 <div class="l-sub-section">
 
+<!--
 `NgFor` is implemented by the `NgForOf` directive. Read more about the other `NgForOf` context values such as `last`, `even`,
 and `odd` in the [NgForOf API reference](api/common/NgForOf).
+-->
+`NgFor`는 `NgForOf` 디렉티브로 만들어진 또 다른 디렉티브입니다. `NgForOf` 컨텍스트에서 제공되는 변수인 `last`나 `even`, `odd`에 대해 더 알아보려면 [NgForOf API 문서](api/common/NgForOf)를 참고하세요.
 
 </div>
 
 {@a trackBy}
 
+<!--
 #### *ngFor* with _trackBy_
+-->
+#### _trackBy_ 와 함께 사용하기
 
+<!--
 The `NgForOf` directive may perform poorly, especially with large lists.
 A small change to one item, an item removed, or an item added can trigger a cascade of DOM manipulations.
+-->
+배열의 길이가 길수록 `NgForOf` 디렉티브의 성능이 나빠질 수 있습니다.
+항목의 내용이 변하거나 목록에서 하나가 제거될 때, 목록에 아이템이 추가될 때마다 DOM을 조작하는 동작이 연쇄적으로 실행될 수도 있습니다.
 
+<!--
 For example, re-querying the server could reset the list with all new hero objects.
+-->
+서버에서 새로 리스트를 받아오면서 배열을 초기화하는 경우를 생각해 봅시다.
 
+<!--
 Most, if not all, are previously displayed heroes.
 *You* know this because the `id` of each hero hasn't changed.
 But Angular sees only a fresh list of new object references.
 It has no choice but to tear down the old DOM elements and insert all new DOM elements.
+-->
+항상 그렇지는 않겠지만, 목록 전체가 새로운 데이터로 바뀌는 것은 아닙니다.
+그리고 *개발자*는 각각의 영웅마다 고유한 값으로 할당되는 `id` 프로퍼티가 있다는 것을 알고 있습니다.
+새로운 객체가 배열에 할당되면 Angular는 이것을 새로운 객체에 대한 참조로 인식하기 때문에 이전 DOM을 모두 제거하고 새로운 DOM으로 추가할 수 밖에 없습니다.
+변경되지 않은 데이터가 있는데 DOM을 비우고 배열에 모든 항목에 대해 DOM을 다시 추가하는 것은 비효율적입니다.
 
+<!--
 Angular can avoid this churn with `trackBy`.
 Add a method to the component that returns the value `NgForOf` _should_ track.
 In this case, that value is the hero's `id`.
+-->
+이 때 Angular에서 제공하는 `trackBy`를 활용할 수 있습니다.
+`trackBy`를 사용하려면 `NgForOf` 디렉티브가 기준으로 삼을 값을 반환하는 함수를 지정합니다.
+위에서 설명한 것처럼, `hero` 객체에 있는 `id` 프로퍼티를 활용하려면 다음과 같이 작성합니다.
 
 <code-example path="template-syntax/src/app/app.component.ts" region="trackByHeroes" title="src/app/app.component.ts" linenums="false">
 </code-example>
 
+<!--
 In the microsyntax expression, set `trackBy` to this method.
+-->
+그리고 세부 문법에 `trackBy`를 사용해서 이 함수를 지정합니다.
 
 <code-example path="template-syntax/src/app/app.component.html" region="trackBy" title="src/app/app.component.html" linenums="false">
 </code-example>
 
+<!--
 Here is an illustration of the _trackBy_ effect.
 "Reset heroes" creates new heroes with the same `hero.id`s.
 "Change ids" creates new heroes with new `hero.id`s.
+-->
+_trackBy_ 가 어떻게 동작하는지 다음 그림을 보면서 확인해 보세요.
+"Reset heroes" 버튼은 히어로 목록을 초기화하면서 고정된 `id` 프로퍼티 값을 할당합니다.
+그리고 "Change ids" 버튼은 히어로의 `id` 프로퍼티를 새로운 값으로 지정합니다.
 
+<!--
 * With no `trackBy`, both buttons trigger complete DOM element replacement.
 * With `trackBy`, only changing the `id` triggers element replacement.
+-->
+* `trackBy`가 없는 경우에는 목록을 초기화하는 동작과 `id` 프로퍼티를 변경하는 값 모두 DOM 엘리먼트를 갱신합니다.
+* `trackBy`가 있는 경우에는 `id` 프로퍼티가 변경되었을 때만 엘리먼트를 갱신합니다.
 
 <figure>
   <img src="generated/images/guide/template-syntax/ng-for-track-by-anim.gif" alt="trackBy">
