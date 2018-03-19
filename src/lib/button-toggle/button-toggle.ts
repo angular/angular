@@ -154,26 +154,10 @@ export class MatButtonToggleGroup extends _MatButtonToggleGroupMixinBase impleme
    */
   @Output() readonly valueChange = new EventEmitter<any>();
 
-  /**
-   * Selected button toggles in the group.
-   * @deprecated
-   * @deletion-target 6.0.0
-   */
-  @Input()
+  /** Selected button toggles in the group. */
   get selected() {
     const selected = this._selectionModel.selected;
     return this.multiple ? selected : (selected[0] || null);
-  }
-  set selected(selected: MatButtonToggle | MatButtonToggle[] | null) {
-    if (this._buttonToggles) {
-      this._clearSelection();
-
-      if (Array.isArray(selected)) {
-        selected.forEach(toggle => toggle.checked = true);
-      } else if (selected) {
-        selected.checked = true;
-      }
-    }
   }
 
   /** Whether multiple button toggles can be selected. */
