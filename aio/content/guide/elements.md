@@ -65,7 +65,7 @@ When the browser encounters the tag for the registered element, it uses the cons
 
 </figure>
 
-## Mapping components to custom elements
+## Mapping 
 
 A custom element _hosts_ an Angular component, providing a bridge between the data and logic defined in the component and standard DOM APIs. Component properties and logic maps directly into HTML attributes and the browser's event system.
  
@@ -85,7 +85,8 @@ A customizable configuration controls how Angular performs the transformations. 
  @HostBinding('[attr.x-foo]') => <my-element x-foo="boundValue">
  @HostBinding('someProp') => el.someProp = 'some value'
  @HostListener('some-event') => el.addEventListener('some-event', ...)
-```
+
+ ```
 
 
 {@a browser-support}
