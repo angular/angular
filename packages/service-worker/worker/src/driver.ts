@@ -607,16 +607,22 @@ export class Driver implements Debuggable, UpdateSource {
 
   /**
    * Retrieve a copy of the latest manifest from the server.
+   * Return `null` if `ignoreOfflineError` is true (default: false) and the server or client are
+   * offline (detected as response status 504).
    */
-  private async fetchLatestManifest(): Promise<Manifest> {
+  private async fetchLatestManifest(ignoreOfflineError?: false): Promise<Manifest>;
+  private async fetchLatestManifest(ignoreOfflineError: true): Promise<Manifest | null>;
+  private async fetchLatestManifest(ignoreOfflineError = false): Promise<Manifest | null> {
     const res =
         await this.safeFetch(this.adapter.newRequest('ngsw.json?ngsw-cache-bust=' + Math.random()));
     if (!res.ok) {
       if (res.status === 404) {
         await this.deleteAllCaches();
         await this.scope.registration.unregister();
+      } else if (res.status === 504 && ignoreOfflineError) {
+        return null;
       }
-      throw new Error('Manifest fetch failed!');
+      throw new Error(`Manifest fetch failed! (status: ${res.status})`);
     }
     this.lastUpdateCheck = this.adapter.time;
     return res.json();
@@ -728,7 +734,15 @@ export class Driver implements Debuggable, UpdateSource {
   async checkForUpdate(): Promise<boolean> {
     let hash: string = '(unknown)';
     try {
-      const manifest = await this.fetchLatestManifest();
+      const manifest = await this.fetchLatestManifest(true);
+
+      if (manifest === null) {
+        // Client or server offline. Unable to check for updates at this time.
+        // Continue to service clients (existing and new).
+        this.debugger.log('Check for update aborted. (Client or server offline.)');
+        return false;
+      }
+
       hash = hashManifest(manifest);
 
       // Check whether this is really an update.
