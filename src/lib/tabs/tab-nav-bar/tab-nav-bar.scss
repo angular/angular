@@ -8,6 +8,7 @@
 
 .mat-tab-links {
   position: relative;
+  display: flex;
 }
 
 // Wraps each link in the header
@@ -17,7 +18,13 @@
   text-decoration: none;  // Removes anchor underline styling
   position: relative;
   overflow: hidden;  // Keeps the ripple from extending outside the element bounds
+
+  [mat-stretch-tabs] & {
+    flex-basis: 0;
+    flex-grow: 1;
+  }
 }
+
 
 @media ($mat-xsmall) {
   .mat-tab-link {
