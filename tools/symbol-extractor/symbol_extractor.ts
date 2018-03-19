@@ -129,5 +129,5 @@ function toName(symbol: Symbol): string {
 function isRollupExportSymbol(child: ts.VariableDeclarationList): boolean {
   if (child.declarations.length !== 1) return false;
   const decl: ts.VariableDeclaration = child.declarations[0];
-  return (decl.initializer && decl.initializer.kind == ts.SyntaxKind.CallExpression);
+  return !!(decl.initializer && decl.initializer.kind == ts.SyntaxKind.CallExpression);
 }
