@@ -96,6 +96,7 @@ export class MockServerState {
   private gate: Promise<void> = Promise.resolve();
   private resolve: Function|null = null;
   private resolveNextRequest: Function;
+  online = true;
   nextRequest: Promise<Request>;
 
   constructor(private resources: Map<string, Response>, private errors: Set<string>) {
@@ -107,6 +108,10 @@ export class MockServerState {
     this.nextRequest = new Promise(resolve => { this.resolveNextRequest = resolve; });
 
     await this.gate;
+
+    if (!this.online) {
+      throw new Error('Offline.');
+    }
 
     if (req.credentials === 'include') {
       return new MockResponse(null, {status: 0, statusText: '', type: 'opaque'});
@@ -171,6 +176,7 @@ export class MockServerState {
     this.nextRequest = new Promise(resolve => { this.resolveNextRequest = resolve; });
     this.gate = Promise.resolve();
     this.resolve = null;
+    this.online = true;
   }
 }
 
