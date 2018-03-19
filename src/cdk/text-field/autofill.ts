@@ -14,7 +14,8 @@ import {
   Injectable,
   OnDestroy,
   OnInit,
-  Output
+  Output,
+  NgZone,
 } from '@angular/core';
 import {Observable} from 'rxjs/Observable';
 import {empty as observableEmpty} from 'rxjs/observable/empty';
@@ -50,7 +51,7 @@ const listenerOptions: any = supportsPassiveEventListeners() ? {passive: true} :
 export class AutofillMonitor implements OnDestroy {
   private _monitoredElements = new Map<Element, MonitoredElementInfo>();
 
-  constructor(private _platform: Platform) {}
+  constructor(private _platform: Platform, private _ngZone: NgZone) {}
 
   /**
    * Monitor for changes in the autofill state of the given input element.
@@ -63,6 +64,7 @@ export class AutofillMonitor implements OnDestroy {
     }
 
     const info = this._monitoredElements.get(element);
+
     if (info) {
       return info.subject.asObservable();
     }
@@ -78,8 +80,10 @@ export class AutofillMonitor implements OnDestroy {
       }
     };
 
-    element.addEventListener('animationstart', listener, listenerOptions);
-    element.classList.add('cdk-text-field-autofill-monitored');
+    this._ngZone.runOutsideAngular(() => {
+      element.addEventListener('animationstart', listener, listenerOptions);
+      element.classList.add('cdk-text-field-autofill-monitored');
+    });
 
     this._monitoredElements.set(element, {
       subject: result,
@@ -118,6 +122,7 @@ export class AutofillMonitor implements OnDestroy {
   selector: '[cdkAutofill]',
 })
 export class CdkAutofill implements OnDestroy, OnInit {
+  /** Emits when the autofill state of the element changes. */
   @Output() cdkAutofill: EventEmitter<AutofillEvent> = new EventEmitter<AutofillEvent>();
 
   constructor(private _elementRef: ElementRef, private _autofillMonitor: AutofillMonitor) {}
