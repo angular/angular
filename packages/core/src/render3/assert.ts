@@ -52,10 +52,12 @@ export function assertNotNull<T>(actual: T, msg: string) {
   }
 }
 
-export function assertComponentType(actual: any) {
+export function assertComponentType(
+    actual: any,
+    msg: string =
+        'Type passed in is not ComponentType, it does not have \'ngComponentDef\' property.') {
   if (!actual.ngComponentDef) {
-    throwError(
-        'Type passed in is not ComponentType, it does not have \'ngComponentDef\' property.');
+    throwError(msg);
   }
 }
 
