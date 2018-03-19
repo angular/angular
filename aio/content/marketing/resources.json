@@ -597,12 +597,6 @@
       "Workshops & Onsite Training": {
         "order": 2,
         "resources": {
-          "-KLIBo3ANF3-1B9wxsoB": {
-            "desc": "Angular Classes from Intertech in Minnesota",
-            "rev": true,
-            "title": "Intertech",
-            "url": "http://www.intertech.com/Training/Web-Dev/AngularJS/AngularJS/Angular-2-Training"
-          },
           "-KLIBoFWStce29UCwkvY": {
             "desc": "Private Angular Training and Mentoring",
             "rev": true,
