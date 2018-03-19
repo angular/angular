@@ -232,7 +232,7 @@ describe('MatDatepicker', () => {
       it('clicking the currently selected date should close the calendar ' +
          'without firing selectedChanged', fakeAsync(() => {
         const selectedChangedSpy =
-            spyOn(testComponent.datepicker.selectedChanged, 'emit').and.callThrough();
+            spyOn(testComponent.datepicker._selectedChanged, 'next').and.callThrough();
 
         for (let changeCount = 1; changeCount < 3; changeCount++) {
           const currentDay = changeCount;
@@ -256,7 +256,7 @@ describe('MatDatepicker', () => {
       it('pressing enter on the currently selected date should close the calendar without ' +
          'firing selectedChanged', () => {
         const selectedChangedSpy =
-            spyOn(testComponent.datepicker.selectedChanged, 'emit').and.callThrough();
+            spyOn(testComponent.datepicker._selectedChanged, 'next').and.callThrough();
 
         testComponent.datepicker.open();
         fixture.detectChanges();
