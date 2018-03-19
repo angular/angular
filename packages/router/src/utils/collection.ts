@@ -89,7 +89,7 @@ export function waitForMap<A, B>(
     }
   });
 
-  const concat$ = concatAll.call(of (...waitHead, ...waitTail));
+  const concat$ = concatAll.call(of.apply(null, waitHead.concat(waitTail)));
   const last$ = l.last.call(concat$);
   return map.call(last$, () => res);
 }
