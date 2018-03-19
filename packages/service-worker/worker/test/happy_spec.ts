@@ -516,6 +516,17 @@ const manifestUpdateHash = sha1(JSON.stringify(manifestUpdate));
       expect(await scope.caches.keys()).toEqual([]);
     });
 
+    async_it('does not unregister or change state when offline (i.e. manifest 504s)', async() => {
+      expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
+      await driver.initialized;
+      server.online = false;
+
+      expect(await driver.checkForUpdate()).toEqual(false);
+      expect(driver.state).toEqual(DriverReadyState.NORMAL);
+      expect(scope.unregistered).toBeFalsy();
+      expect(await scope.caches.keys()).not.toEqual([]);
+    });
+
     describe('unhashed requests', () => {
       async_beforeEach(async() => {
         expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
