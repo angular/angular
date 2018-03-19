@@ -12,6 +12,8 @@ import {ErrorStateMatcher} from '@angular/material/core';
 import {MatChip, MatChipAvatar, MatChipRemove, MatChipTrailingIcon} from './chip';
 import {MatChipInput} from './chip-input';
 import {MatChipList} from './chip-list';
+import {MAT_CHIPS_DEFAULT_OPTIONS, MatChipsDefaultOptions} from './chip-default-options';
+import {ENTER} from '@angular/cdk/keycodes';
 
 const CHIP_DECLARATIONS = [
   MatChipList,
@@ -26,6 +28,14 @@ const CHIP_DECLARATIONS = [
   imports: [PlatformModule],
   exports: CHIP_DECLARATIONS,
   declarations: CHIP_DECLARATIONS,
-  providers: [ErrorStateMatcher]
+  providers: [
+    ErrorStateMatcher,
+    {
+      provide: MAT_CHIPS_DEFAULT_OPTIONS,
+      useValue: {
+        separatorKeyCodes: [ENTER]
+      } as MatChipsDefaultOptions
+    }
+  ]
 })
 export class MatChipsModule {}

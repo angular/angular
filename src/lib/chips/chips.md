@@ -20,7 +20,7 @@ _Hint: `<mat-basic-chip>` receives the `mat-basic-chip` CSS class in addition to
 Chips can be selected via the `selected` property. Selection can be disabled by setting
 `selectable` to `false` on the `<mat-chip-list>`.
 
-Whenever the selection state changes, a `ChipSelectionChange` event will be emitted via 
+Whenever the selection state changes, a `ChipSelectionChange` event will be emitted via
 `(selectionChange)`.
 
 ### Disabled chips
@@ -65,6 +65,23 @@ the `mat-chip-list-stacked` class, as well as the `aria-orientation="vertical"` 
   <mat-chip>Naan</mat-chip>
   <mat-chip>Dal</mat-chip>
 </mat-chip-list>
+```
+
+### Specifying global configuration defaults
+Default options for the chips module can be specified using the `MAT_CHIPS_DEFAULT_OPTIONS`
+injection token.
+
+```ts
+@NgModule({
+  providers: [
+    {
+      provide: MAT_CHIPS_DEFAULT_OPTIONS,
+      useValue: {
+        separatorKeyCodes: [ENTER, COMMA]
+      }
+    }
+  ]
+})
 ```
 
 ### Theming

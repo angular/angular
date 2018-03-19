@@ -7,9 +7,9 @@
  */
 
 import {coerceBooleanProperty} from '@angular/cdk/coercion';
-import {ENTER} from '@angular/cdk/keycodes';
-import {Directive, ElementRef, EventEmitter, Input, Output} from '@angular/core';
+import {Directive, ElementRef, EventEmitter, Input, Output, Inject} from '@angular/core';
 import {MatChipList} from './chip-list';
+import {MAT_CHIPS_DEFAULT_OPTIONS, MatChipsDefaultOptions} from './chip-default-options';
 
 
 /** Represents an input event on a `matChipInput`. */
@@ -68,7 +68,8 @@ export class MatChipInput {
    * Defaults to `[ENTER]`.
    */
   // TODO(tinayuangao): Support Set here
-  @Input('matChipInputSeparatorKeyCodes') separatorKeyCodes: number[] = [ENTER];
+  @Input('matChipInputSeparatorKeyCodes')
+  separatorKeyCodes: number[] = this._defaultOptions.separatorKeyCodes;
 
   /** Emitted when a chip is to be added. */
   @Output('matChipInputTokenEnd')
@@ -86,7 +87,9 @@ export class MatChipInput {
   /** The native input element to which this directive is attached. */
   protected _inputElement: HTMLInputElement;
 
-  constructor(protected _elementRef: ElementRef) {
+  constructor(
+    protected _elementRef: ElementRef,
+    @Inject(MAT_CHIPS_DEFAULT_OPTIONS) private _defaultOptions: MatChipsDefaultOptions) {
     this._inputElement = this._elementRef.nativeElement as HTMLInputElement;
   }
 
