@@ -8,7 +8,7 @@
 
 import {Type} from '@angular/core';
 import {BehaviorSubject} from 'rxjs/BehaviorSubject';
-import {Observable} from 'rxjs/Observable';
+import {AnonymousSubject} from 'rxjs/Subject';
 import {map} from 'rxjs/operator/map';
 
 import {Data, ResolveData, Route} from './config';
@@ -96,7 +96,7 @@ export function createEmptyStateSnapshot(
  * class MyComponent {
  *   constructor(route: ActivatedRoute) {
  *     const id: Observable<string> = route.params.map(p => p.id);
- *     const url: Observable<string> = route.url.map(segments => segments.join(''));
+ *     const url: BehaviorSubject<string> = route.url.map(segments => segments.join(''));
  *     // route.data includes both `data` and `resolve`
  *     const user = route.data.map(d => d.user);
  *   }
@@ -113,22 +113,22 @@ export class ActivatedRoute {
   /** @internal */
   _routerState: RouterState;
   /** @internal */
-  _paramMap: Observable<ParamMap>;
+  _paramMap: AnonymousSubject<ParamMap>;
   /** @internal */
-  _queryParamMap: Observable<ParamMap>;
+  _queryParamMap: AnonymousSubject<ParamMap>;
 
   /** @internal */
   constructor(
       /** An observable of the URL segments matched by this route */
-      public url: Observable<UrlSegment[]>,
+      public url: BehaviorSubject<UrlSegment[]>,
       /** An observable of the matrix parameters scoped to this route */
-      public params: Observable<Params>,
+      public params: BehaviorSubject<Params>,
       /** An observable of the query parameters shared by all the routes */
-      public queryParams: Observable<Params>,
+      public queryParams: BehaviorSubject<Params>,
       /** An observable of the URL fragment shared by all the routes */
-      public fragment: Observable<string>,
+      public fragment: BehaviorSubject<string>,
       /** An observable of the static and resolved data of this route. */
-      public data: Observable<Data>,
+      public data: BehaviorSubject<Data>,
       /** The outlet name of the route. It's a constant */
       public outlet: string,
       /** The component of the route. It's a constant */
@@ -155,14 +155,14 @@ export class ActivatedRoute {
   /** The path from the root of the router state tree to this route */
   get pathFromRoot(): ActivatedRoute[] { return this._routerState.pathFromRoot(this); }
 
-  get paramMap(): Observable<ParamMap> {
+  get paramMap(): AnonymousSubject<ParamMap> {
     if (!this._paramMap) {
       this._paramMap = map.call(this.params, (p: Params): ParamMap => convertToParamMap(p));
     }
     return this._paramMap;
   }
 
-  get queryParamMap(): Observable<ParamMap> {
+  get queryParamMap(): AnonymousSubject<ParamMap> {
     if (!this._queryParamMap) {
       this._queryParamMap =
           map.call(this.queryParams, (p: Params): ParamMap => convertToParamMap(p));
