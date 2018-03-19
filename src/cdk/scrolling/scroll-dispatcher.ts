@@ -6,15 +6,22 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ElementRef, Injectable, NgZone, Optional, SkipSelf, OnDestroy} from '@angular/core';
 import {Platform} from '@angular/cdk/platform';
-import {Subject} from 'rxjs/Subject';
-import {Subscription} from 'rxjs/Subscription';
+import {
+  ElementRef,
+  Injectable,
+  NgZone,
+  OnDestroy,
+  Optional,
+  SkipSelf,
+} from '@angular/core';
 import {Observable} from 'rxjs/Observable';
-import {of as observableOf} from 'rxjs/observable/of';
 import {fromEvent} from 'rxjs/observable/fromEvent';
+import {of as observableOf} from 'rxjs/observable/of';
 import {auditTime} from 'rxjs/operators/auditTime';
 import {filter} from 'rxjs/operators/filter';
+import {Subject} from 'rxjs/Subject';
+import {Subscription} from 'rxjs/Subscription';
 import {CdkScrollable} from './scrollable';
 
 
@@ -25,7 +32,7 @@ export const DEFAULT_SCROLL_TIME = 20;
  * Service contained all registered Scrollable references and emits an event when any one of the
  * Scrollable references emit a scrolled event.
  */
-@Injectable()
+@Injectable({providedIn: 'root'})
 export class ScrollDispatcher implements OnDestroy {
   constructor(private _ngZone: NgZone, private _platform: Platform) { }
 
@@ -166,13 +173,14 @@ export class ScrollDispatcher implements OnDestroy {
   }
 }
 
-/** @docs-private */
+
+/** @docs-private @deprecated @deletion-target 7.0.0 */
 export function SCROLL_DISPATCHER_PROVIDER_FACTORY(
     parentDispatcher: ScrollDispatcher, ngZone: NgZone, platform: Platform) {
   return parentDispatcher || new ScrollDispatcher(ngZone, platform);
 }
 
-/** @docs-private */
+/** @docs-private @deprecated @deletion-target 7.0.0 */
 export const SCROLL_DISPATCHER_PROVIDER = {
   // If there is already a ScrollDispatcher available, use that. Otherwise, provide a new one.
   provide: ScrollDispatcher,

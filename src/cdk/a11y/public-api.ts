@@ -12,6 +12,7 @@ export * from './key-manager/list-key-manager';
 export * from './focus-trap/focus-trap';
 export * from './interactivity-checker/interactivity-checker';
 export * from './live-announcer/live-announcer';
+export * from './live-announcer/live-announcer-token';
 export * from './focus-monitor/focus-monitor';
 export * from './fake-mousedown';
 export * from './a11y-module';

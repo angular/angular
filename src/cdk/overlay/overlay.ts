@@ -6,27 +6,30 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {Directionality} from '@angular/cdk/bidi';
+import {DomPortalOutlet} from '@angular/cdk/portal';
+import {DOCUMENT} from '@angular/common';
 import {
-  ComponentFactoryResolver,
-  Injectable,
   ApplicationRef,
+  ComponentFactoryResolver,
+  Inject,
+  Injectable,
   Injector,
   NgZone,
-  Inject,
 } from '@angular/core';
-import {DomPortalOutlet} from '@angular/cdk/portal';
+import {OverlayKeyboardDispatcher} from './keyboard/overlay-keyboard-dispatcher';
 import {OverlayConfig} from './overlay-config';
+import {OverlayContainer} from './overlay-container';
 import {OverlayRef} from './overlay-ref';
 import {OverlayPositionBuilder} from './position/overlay-position-builder';
-import {OverlayKeyboardDispatcher} from './keyboard/overlay-keyboard-dispatcher';
-import {OverlayContainer} from './overlay-container';
 import {ScrollStrategyOptions} from './scroll/index';
-import {DOCUMENT} from '@angular/common';
-import {Directionality} from '@angular/cdk/bidi';
 
 
 /** Next overlay unique ID. */
 let nextUniqueId = 0;
+
+// Note that Overlay is *not* scoped to the app root because the ComponentFactoryResolver
+// it needs is different based on where OverlayModule is imported.
 
 /**
  * Service to create Overlays. Overlays are dynamically added pieces of floating UI, meant to be

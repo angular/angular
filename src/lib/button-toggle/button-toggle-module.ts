@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {NgModule} from '@angular/core';
-import {MatButtonToggleGroup, MatButtonToggle} from './button-toggle';
-import {MatCommonModule, MatRippleModule} from '@angular/material/core';
 import {A11yModule} from '@angular/cdk/a11y';
+import {NgModule} from '@angular/core';
+import {MatCommonModule, MatRippleModule} from '@angular/material/core';
+import {MatButtonToggle, MatButtonToggleGroup} from './button-toggle';
 
 
 @NgModule({

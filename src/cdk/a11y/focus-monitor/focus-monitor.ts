@@ -5,6 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
 import {Platform, supportsPassiveEventListeners} from '@angular/cdk/platform';
 import {
   Directive,
@@ -39,7 +40,7 @@ type MonitoredElementInfo = {
 
 
 /** Monitors mouse and keyboard events to determine the cause of focus events. */
-@Injectable()
+@Injectable({providedIn: 'root'})
 export class FocusMonitor implements OnDestroy {
   /** The focus origin that the next focus event is a result of. */
   private _origin: FocusOrigin = null;
@@ -380,13 +381,13 @@ export class CdkMonitorFocus implements OnDestroy {
   }
 }
 
-/** @docs-private */
+/** @docs-private @deprecated @deletion-target 7.0.0 */
 export function FOCUS_MONITOR_PROVIDER_FACTORY(
     parentDispatcher: FocusMonitor, ngZone: NgZone, platform: Platform) {
   return parentDispatcher || new FocusMonitor(ngZone, platform);
 }
 
-/** @docs-private */
+/** @docs-private @deprecated @deletion-target 7.0.0 */
 export const FOCUS_MONITOR_PROVIDER = {
   // If there is already a FocusMonitor available, use that. Otherwise, provide a new one.
   provide: FocusMonitor,

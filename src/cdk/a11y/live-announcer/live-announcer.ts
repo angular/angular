@@ -6,25 +6,24 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {
-  Injectable,
-  InjectionToken,
-  Optional,
-  Inject,
-  SkipSelf,
-  OnDestroy,
-} from '@angular/core';
 import {DOCUMENT} from '@angular/common';
+import {
+  Inject,
+  Injectable,
+  OnDestroy,
+  Optional,
+  Provider,
+  SkipSelf,
+} from '@angular/core';
+import {LIVE_ANNOUNCER_ELEMENT_TOKEN} from './live-announcer-token';
 
-
-export const LIVE_ANNOUNCER_ELEMENT_TOKEN = new InjectionToken<HTMLElement>('liveAnnouncerElement');
 
 /** Possible politeness levels. */
 export type AriaLivePoliteness = 'off' | 'polite' | 'assertive';
 
-@Injectable()
+@Injectable({providedIn: 'root'})
 export class LiveAnnouncer implements OnDestroy {
-  private _liveElement: Element;
+  private readonly _liveElement: Element;
 
   constructor(
       @Optional() @Inject(LIVE_ANNOUNCER_ELEMENT_TOKEN) elementToken: any,
@@ -81,14 +80,15 @@ export class LiveAnnouncer implements OnDestroy {
 
 }
 
-/** @docs-private */
+
+/** @docs-private @deprecated @deletion-target 7.0.0 */
 export function LIVE_ANNOUNCER_PROVIDER_FACTORY(
     parentDispatcher: LiveAnnouncer, liveElement: any, _document: any) {
   return parentDispatcher || new LiveAnnouncer(liveElement, _document);
 }
 
-/** @docs-private */
-export const LIVE_ANNOUNCER_PROVIDER = {
+/** @docs-private @deprecated @deletion-target 7.0.0 */
+export const LIVE_ANNOUNCER_PROVIDER: Provider = {
   // If there is already a LiveAnnouncer available, use that. Otherwise, provide a new one.
   provide: LiveAnnouncer,
   deps: [

@@ -6,30 +6,30 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CdkStep, CdkStepper} from '@angular/cdk/stepper';
 import {Directionality} from '@angular/cdk/bidi';
+import {CdkStep, CdkStepper} from '@angular/cdk/stepper';
 import {
   AfterContentInit,
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
   Component,
   ContentChild,
   ContentChildren,
   Directive,
   forwardRef,
   Inject,
+  Optional,
   QueryList,
   SkipSelf,
+  TemplateRef,
   ViewChildren,
   ViewEncapsulation,
-  ChangeDetectorRef,
-  ChangeDetectionStrategy,
-  Optional,
-  TemplateRef,
 } from '@angular/core';
 import {FormControl, FormGroupDirective, NgForm} from '@angular/forms';
 import {ErrorStateMatcher} from '@angular/material/core';
+import {takeUntil} from 'rxjs/operators/takeUntil';
 import {MatStepHeader} from './step-header';
 import {MatStepLabel} from './step-label';
-import {takeUntil} from 'rxjs/operators/takeUntil';
 import {matStepperAnimations} from './stepper-animations';
 import {MatStepperIcon} from './stepper-icon';
 

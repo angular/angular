@@ -6,12 +6,19 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injectable, InjectionToken, Inject, Optional, SkipSelf, OnDestroy} from '@angular/core';
 import {DOCUMENT} from '@angular/common';
+import {
+  Inject,
+  Injectable,
+  InjectionToken,
+  OnDestroy,
+  Optional,
+  SkipSelf,
+} from '@angular/core';
 
 
 /** Container inside which all overlays will render. */
-@Injectable()
+@Injectable({providedIn: 'root'})
 export class OverlayContainer implements OnDestroy {
   protected _containerElement: HTMLElement;
 
@@ -47,13 +54,14 @@ export class OverlayContainer implements OnDestroy {
   }
 }
 
-/** @docs-private */
+
+/** @docs-private @deprecated @deletion-target 7.0.0 */
 export function OVERLAY_CONTAINER_PROVIDER_FACTORY(parentContainer: OverlayContainer,
   _document: any) {
   return parentContainer || new OverlayContainer(_document);
 }
 
-/** @docs-private */
+/** @docs-private @deprecated @deletion-target 7.0.0 */
 export const OVERLAY_CONTAINER_PROVIDER = {
   // If there is already an OverlayContainer available, use that. Otherwise, provide a new one.
   provide: OverlayContainer,

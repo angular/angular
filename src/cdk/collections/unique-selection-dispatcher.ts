@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injectable, Optional, SkipSelf, OnDestroy} from '@angular/core';
+import {Injectable, OnDestroy} from '@angular/core';
 
 
 // Users of the Dispatcher never need to see this type, but TypeScript requires it to be exported.
@@ -21,7 +21,7 @@ export type UniqueSelectionDispatcherListener = (id: string, name: string) => vo
  * This service does not *store* any IDs and names because they may change at any time, so it is
  * less error-prone if they are simply passed through when the events occur.
  */
-@Injectable()
+@Injectable({providedIn: 'root'})
 export class UniqueSelectionDispatcher implements OnDestroy {
   private _listeners: UniqueSelectionDispatcherListener[] = [];
 
@@ -53,17 +53,3 @@ export class UniqueSelectionDispatcher implements OnDestroy {
     this._listeners = [];
   }
 }
-
-/** @docs-private */
-export function UNIQUE_SELECTION_DISPATCHER_PROVIDER_FACTORY(
-    parentDispatcher: UniqueSelectionDispatcher) {
-  return parentDispatcher || new UniqueSelectionDispatcher();
-}
-
-/** @docs-private */
-export const UNIQUE_SELECTION_DISPATCHER_PROVIDER = {
-  // If there is already a dispatcher available, use that. Otherwise, provide a new one.
-  provide: UniqueSelectionDispatcher,
-  deps: [[new Optional(), new SkipSelf(), UniqueSelectionDispatcher]],
-  useFactory: UNIQUE_SELECTION_DISPATCHER_PROVIDER_FACTORY
-};

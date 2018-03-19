@@ -6,16 +6,24 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injectable, Inject, InjectionToken, Optional, SkipSelf, OnDestroy} from '@angular/core';
-import {OverlayRef} from '../overlay-ref';
 import {DOCUMENT} from '@angular/common';
+import {
+  Inject,
+  Injectable,
+  InjectionToken,
+  OnDestroy,
+  Optional,
+  SkipSelf,
+} from '@angular/core';
+import {OverlayRef} from '../overlay-ref';
+
 
 /**
  * Service for dispatching keyboard events that land on the body to appropriate overlay ref,
  * if any. It maintains a list of attached overlays to determine best suited overlay based
  * on event target and order of overlay opens.
  */
-@Injectable()
+@Injectable({providedIn: 'root'})
 export class OverlayKeyboardDispatcher implements OnDestroy {
 
   /** Currently attached overlays in the order they were attached. */
@@ -86,13 +94,14 @@ export class OverlayKeyboardDispatcher implements OnDestroy {
   }
 }
 
-/** @docs-private */
+
+/** @docs-private @deprecated @deletion-target 7.0.0 */
 export function OVERLAY_KEYBOARD_DISPATCHER_PROVIDER_FACTORY(
     dispatcher: OverlayKeyboardDispatcher, _document: any) {
   return dispatcher || new OverlayKeyboardDispatcher(_document);
 }
 
-/** @docs-private */
+/** @docs-private @deprecated @deletion-target 7.0.0 */
 export const OVERLAY_KEYBOARD_DISPATCHER_PROVIDER = {
   // If there is already an OverlayKeyboardDispatcher available, use that.
   // Otherwise, provide a new one.

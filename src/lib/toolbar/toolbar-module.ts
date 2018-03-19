@@ -6,10 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {PlatformModule} from '@angular/cdk/platform';
 import {NgModule} from '@angular/core';
 import {MatCommonModule} from '@angular/material/core';
-import {PlatformModule} from '@angular/cdk/platform';
 import {MatToolbar, MatToolbarRow} from './toolbar';
+
 
 @NgModule({
   imports: [MatCommonModule, PlatformModule],

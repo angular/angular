@@ -6,14 +6,15 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injectable, Optional, SkipSelf, NgZone, OnDestroy} from '@angular/core';
 import {Platform} from '@angular/cdk/platform';
+import {Injectable, NgZone, OnDestroy, Optional, SkipSelf} from '@angular/core';
 import {Observable} from 'rxjs/Observable';
 import {fromEvent} from 'rxjs/observable/fromEvent';
 import {merge} from 'rxjs/observable/merge';
+import {of as observableOf} from 'rxjs/observable/of';
 import {auditTime} from 'rxjs/operators/auditTime';
 import {Subscription} from 'rxjs/Subscription';
-import {of as observableOf} from 'rxjs/observable/of';
+
 
 /** Time in ms to throttle the resize events by default. */
 export const DEFAULT_RESIZE_TIME = 20;
@@ -22,7 +23,7 @@ export const DEFAULT_RESIZE_TIME = 20;
  * Simple utility for getting the bounds of the browser viewport.
  * @docs-private
  */
-@Injectable()
+@Injectable({providedIn: 'root'})
 export class ViewportRuler implements OnDestroy {
   /** Cached viewport dimensions. */
   private _viewportSize: {width: number; height: number};
@@ -112,7 +113,7 @@ export class ViewportRuler implements OnDestroy {
 
   /**
    * Returns a stream that emits whenever the size of the viewport changes.
-   * @param throttle Time in milliseconds to throttle the stream.
+   * @param throttleTime Time in milliseconds to throttle the stream.
    */
   change(throttleTime: number = DEFAULT_RESIZE_TIME): Observable<Event> {
     return throttleTime > 0 ? this._change.pipe(auditTime(throttleTime)) : this._change;
@@ -126,14 +127,15 @@ export class ViewportRuler implements OnDestroy {
   }
 }
 
-/** @docs-private */
+
+/** @docs-private @deprecated @deletion-target 7.0.0 */
 export function VIEWPORT_RULER_PROVIDER_FACTORY(parentRuler: ViewportRuler,
                                                 platform: Platform,
                                                 ngZone: NgZone) {
   return parentRuler || new ViewportRuler(platform, ngZone);
 }
 
-/** @docs-private */
+/** @docs-private @deprecated @deletion-target 7.0.0 */
 export const VIEWPORT_RULER_PROVIDER = {
   // If there is already a ViewportRuler available, use that. Otherwise, provide a new one.
   provide: ViewportRuler,

@@ -6,20 +6,20 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {coerceBooleanProperty} from '@angular/cdk/coercion';
+import {DOCUMENT} from '@angular/common';
 import {
+  AfterContentInit,
   Directive,
   ElementRef,
+  Inject,
+  Injectable,
   Input,
   NgZone,
   OnDestroy,
-  AfterContentInit,
-  Injectable,
-  Inject,
 } from '@angular/core';
-import {coerceBooleanProperty} from '@angular/cdk/coercion';
 import {take} from 'rxjs/operators/take';
 import {InteractivityChecker} from '../interactivity-checker/interactivity-checker';
-import {DOCUMENT} from '@angular/common';
 
 
 /**
@@ -278,7 +278,7 @@ export class FocusTrap {
 
 
 /** Factory that allows easy instantiation of focus traps. */
-@Injectable()
+@Injectable({providedIn: 'root'})
 export class FocusTrapFactory {
   private _document: Document;
 

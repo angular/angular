@@ -7,17 +7,11 @@
  */
 
 import {NgModule} from '@angular/core';
-import {DOCUMENT} from '@angular/common';
 import {Dir} from './dir';
-import {DIR_DOCUMENT, Directionality} from './directionality';
 
 
 @NgModule({
   exports: [Dir],
   declarations: [Dir],
-  providers: [
-    {provide: DIR_DOCUMENT, useExisting: DOCUMENT},
-    Directionality,
-  ]
 })
 export class BidiModule { }

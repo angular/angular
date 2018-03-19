@@ -6,29 +6,30 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {coerceBooleanProperty} from '@angular/cdk/coercion';
 import {
+  AfterContentInit,
   Directive,
   ElementRef,
-  NgModule,
-  Output,
-  Input,
   EventEmitter,
-  OnDestroy,
-  AfterContentInit,
   Injectable,
+  Input,
+  NgModule,
   NgZone,
   OnChanges,
+  OnDestroy,
+  Output,
   SimpleChanges,
 } from '@angular/core';
-import {coerceBooleanProperty} from '@angular/cdk/coercion';
-import {Subject} from 'rxjs/Subject';
 import {debounceTime} from 'rxjs/operators/debounceTime';
+import {Subject} from 'rxjs/Subject';
+
 
 /**
  * Factory that creates a new MutationObserver and allows us to stub it out in unit tests.
  * @docs-private
  */
-@Injectable()
+@Injectable({providedIn: 'root'})
 export class MutationObserverFactory {
   create(callback: MutationCallback): MutationObserver | null {
     return typeof MutationObserver === 'undefined' ? null : new MutationObserver(callback);

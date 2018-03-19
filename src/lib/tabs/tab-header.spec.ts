@@ -1,24 +1,24 @@
+import {Direction, Directionality} from '@angular/cdk/bidi';
+import {END, ENTER, HOME, LEFT_ARROW, RIGHT_ARROW, SPACE} from '@angular/cdk/keycodes';
+import {PortalModule} from '@angular/cdk/portal';
+import {ScrollDispatchModule, ViewportRuler} from '@angular/cdk/scrolling';
+import {dispatchFakeEvent, dispatchKeyboardEvent} from '@angular/cdk/testing';
+import {CommonModule} from '@angular/common';
+import {Component, ViewChild} from '@angular/core';
 import {
   async,
   ComponentFixture,
-  TestBed,
-  fakeAsync,
-  tick,
   discardPeriodicTasks,
+  fakeAsync,
+  TestBed,
+  tick,
 } from '@angular/core/testing';
-import {Component, ViewChild} from '@angular/core';
-import {CommonModule} from '@angular/common';
-import {By} from '@angular/platform-browser';
-import {ENTER, LEFT_ARROW, RIGHT_ARROW, SPACE, HOME, END} from '@angular/cdk/keycodes';
-import {PortalModule} from '@angular/cdk/portal';
-import {Direction, Directionality} from '@angular/cdk/bidi';
-import {dispatchFakeEvent, dispatchKeyboardEvent} from '@angular/cdk/testing';
-import {MatTabHeader} from './tab-header';
 import {MatRippleModule} from '@angular/material/core';
-import {MatInkBar} from './ink-bar';
-import {MatTabLabelWrapper} from './tab-label-wrapper';
+import {By} from '@angular/platform-browser';
 import {Subject} from 'rxjs/Subject';
-import {VIEWPORT_RULER_PROVIDER, ScrollDispatchModule} from '@angular/cdk/scrolling';
+import {MatInkBar} from './ink-bar';
+import {MatTabHeader} from './tab-header';
+import {MatTabLabelWrapper} from './tab-label-wrapper';
 
 
 describe('MatTabHeader', () => {
@@ -38,7 +38,7 @@ describe('MatTabHeader', () => {
         SimpleTabHeaderApp,
       ],
       providers: [
-        VIEWPORT_RULER_PROVIDER,
+        ViewportRuler,
         {provide: Directionality, useFactory: () => ({value: dir, change: change.asObservable()})},
       ]
     });

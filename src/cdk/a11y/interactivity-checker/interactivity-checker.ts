@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injectable} from '@angular/core';
 import {Platform} from '@angular/cdk/platform';
+import {Injectable} from '@angular/core';
 
 
 // The InteractivityChecker leans heavily on the ally.js accessibility utilities.
@@ -18,7 +18,7 @@ import {Platform} from '@angular/cdk/platform';
  * Utility for checking the interactivity of an element, such as whether is is focusable or
  * tabbable.
  */
-@Injectable()
+@Injectable({providedIn: 'root'})
 export class InteractivityChecker {
 
   constructor(private _platform: Platform) {}

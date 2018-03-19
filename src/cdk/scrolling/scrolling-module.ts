@@ -6,15 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {NgModule} from '@angular/core';
-import {SCROLL_DISPATCHER_PROVIDER} from './scroll-dispatcher';
-import {CdkScrollable} from  './scrollable';
 import {PlatformModule} from '@angular/cdk/platform';
+import {NgModule} from '@angular/core';
+import {CdkScrollable} from './scrollable';
 
 @NgModule({
   imports: [PlatformModule],
   exports: [CdkScrollable],
   declarations: [CdkScrollable],
-  providers: [SCROLL_DISPATCHER_PROVIDER],
 })
 export class ScrollDispatchModule {}

@@ -5,13 +5,13 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {Injectable, NgZone, Inject} from '@angular/core';
+
+import {ScrollDispatcher, ViewportRuler} from '@angular/cdk/scrolling';
+import {DOCUMENT} from '@angular/common';
+import {Inject, Injectable, NgZone} from '@angular/core';
+import {BlockScrollStrategy} from './block-scroll-strategy';
 import {CloseScrollStrategy, CloseScrollStrategyConfig} from './close-scroll-strategy';
 import {NoopScrollStrategy} from './noop-scroll-strategy';
-import {BlockScrollStrategy} from './block-scroll-strategy';
-import {ScrollDispatcher} from '@angular/cdk/scrolling';
-import {ViewportRuler} from '@angular/cdk/scrolling';
-import {DOCUMENT} from '@angular/common';
 import {
   RepositionScrollStrategy,
   RepositionScrollStrategyConfig,
@@ -24,7 +24,7 @@ import {
  * Users can provide a custom value for `ScrollStrategyOptions` to replace the default
  * behaviors. This class primarily acts as a factory for ScrollStrategy instances.
  */
-@Injectable()
+@Injectable({providedIn: 'root'})
 export class ScrollStrategyOptions {
   private _document: Document;
 

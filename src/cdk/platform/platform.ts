@@ -8,6 +8,7 @@
 
 import {Injectable} from '@angular/core';
 
+
 // Whether the current platform supports the V8 Break Iterator. The V8 check
 // is necessary to detect all Blink based browsers.
 const hasV8BreakIterator = (typeof Intl !== 'undefined' && (Intl as any).v8BreakIterator);
@@ -16,7 +17,7 @@ const hasV8BreakIterator = (typeof Intl !== 'undefined' && (Intl as any).v8Break
  * Service to detect the current platform by comparing the userAgent strings and
  * checking browser-specific global properties.
  */
-@Injectable()
+@Injectable({providedIn: 'root'})
 export class Platform {
   /** Whether the Angular application is being rendered in the browser. */
   isBrowser: boolean = typeof document === 'object' && !!document;

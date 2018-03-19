@@ -1,6 +1,6 @@
 import {TestBed, inject, fakeAsync, tick} from '@angular/core/testing';
 import {ScrollDispatchModule} from './public-api';
-import {ViewportRuler, VIEWPORT_RULER_PROVIDER} from './viewport-ruler';
+import {ViewportRuler} from './viewport-ruler';
 import {dispatchFakeEvent} from '@angular/cdk/testing';
 
 
@@ -25,7 +25,7 @@ describe('ViewportRuler', () => {
 
   beforeEach(() => TestBed.configureTestingModule({
     imports: [ScrollDispatchModule],
-    providers: [VIEWPORT_RULER_PROVIDER]
+    providers: [ViewportRuler]
   }));
 
   beforeEach(inject([ViewportRuler], (viewportRuler: ViewportRuler) => {
