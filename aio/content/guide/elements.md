@@ -1,12 +1,14 @@
 # Custom Elements Overview
 
-[Custom elements](https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_custom_elements) are a Web Platform feature, currently supported by Chrome, Opera, and Safari, and available in other browsers through polyfills (see [Browser Support](#browser-support)).
+[Custom elements](https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_custom_elements)  are a Web Platform feature currently supported by Chrome, Opera, and Safari, and available in other browsers through polyfills (see [Browser Support](#browser-support)).
 A custom element extends HTML by allowing you to define a tag whose content is created and controlled by JavaScript code. 
-The browser maintains a `CustomElementRegistry` of defined custom elements (also called web components), which maps an instantiable JavaScript class to an HTML tag.
+The browser maintains a `CustomElementRegistry` of defined custom elements (also called Web Components), which maps an instantiable JavaScript class to an HTML tag.
 
 The `createCustomElement()` API provides a bridge from Angular's component interface and change detection functionality to the built-in DOM API. 
 
 Transforming a component to a custom element makes all of the required Angular infrastructure available to the browser. Creating a custom element is simple and straightforward, and automatically connects your component-defined view with change detection and data binding, mapping Angular functionality to the corresponding native HTML equivalents. 
+
+## Using custom elements
 
 Custom elements bootstrap themselves - they start automatically when they are added to the DOM, and are automatically destroyed when removed from the DOM. Once a custom element is added to the DOM for any page, it looks and behaves like any other HTML element, and does not require any special knowledge of Angular terms or usage conventions.  
 
@@ -16,9 +18,7 @@ Custom elements bootstrap themselves - they start automatically when they are ad
 - Content-rich applications
   (need a succinct description of this use case)
 
-
-
-## Basic usage
+### How it works
 
 Use the `createCustomElement()` function to convert a component into a class that can be registered with the browser as a custom element. 
 After you register your configured class with the browser's custom-element registry, you can use the new element just like a built-in HTML element in content that you add directly into the DOM: 
@@ -45,7 +45,7 @@ When your custom element is placed on a page, the browser creates an instance of
 
 </div>
 
-## Creating an Angular custom element
+## Transforming components to custom elements
 
 Angular provides the `createCustomElement()` function for converting an Angular component, 
 together with its dependencies, to a custom element. The function collects the component's 
@@ -74,11 +74,18 @@ A customizable configuration controls how Angular performs the transformations. 
 - The creation API parses the component looking for input properties, and defines corresponding attributes for the custom element. It transforms the property names to make them compatible with custom elements, which do not recognize case distinctions.
 
  For example, for a component with `@Input('myInputProp') inputProp`, the corresponding custom element defines an attribute `my-input-prop`.
-- ???Output properties (`@Output(`myEvent`) doSomething`) become HTML events. ???
 
- For example, ... 
+- Output properties in the component become [Custom Events](https://developer.mozilla.org/en-US/docs/Web/API/CustomEvent). For example: 
+ ```
+ @Output('myEvent') -> element.addEventListener('myEvent', e => console.log(e));
+ ```
 
-- ??? @HostBinding/Listener -> CE Attributes / ObservedAttributes ???
+- Data bindings (implemented through directives that use @HostBinding and @HostListener) translate to element Attributes and ObservedAttributes. For example: 
+ ```
+ @HostBinding('[attr.x-foo]') => <my-element x-foo="boundValue">
+ @HostBinding('someProp') => el.someProp = 'some value'
+ @HostListener('some-event') => el.addEventListener('some-event', ...)
+```
 
 
 {@a browser-support}
@@ -114,14 +121,15 @@ The recently-developed [custom elements](https://developer.mozilla.org/en-US/doc
 </tr>
 </table>
   
-For more information about browser support and polyfills, see [Browser Support](guide/browser-support).
+For more information about polyfills and browser support, see  [https://www.webcomponents.org/polyfills](https://www.webcomponents.org/polyfills) and [Browser Support](guide/browser-support).
 
 
 ## Example: A Popup Service
 
-Previously, when you wanted to add a component to an app at runtime, you had to define a _dynamic component_. 
-The app module would have to list your dynamic component under `entry-components`, so that the app wouldn't expect it to be present at startup, and then you would have to load it, attach it to an element in the DOM, and wire up all of the dependencies, change detection, and event handling, as described in [Dynamic Component Loader](guide/dynamic-component-loader).
-Using an Angular custom element makes the process much simpler and more transparent, by providing all of the infrastructure and framework automatically&mdash;all you have to do is define the kind of event handling you want.
+Previously, when you wanted to add a component to an app at runtime, you had to define a _dynamic component_. The app module would have to list your dynamic component under `entryComponents`, so that the app wouldn't expect it to be present at startup, and then you would have to load it, attach it to an element in the DOM, and wire up all of the dependencies, change detection, and event handling, as described in [Dynamic Component Loader](guide/dynamic-component-loader).
+
+Using an Angular custom element makes the process much simpler and more transparent, by providing all of the infrastructure and framework automatically&mdash;all you have to do is define the kind of event handling you want. (You do still have to exclude the component from compilation, if you are not going to use it in your app.)
+
 The Popup Service example app compares the two methodologies by defining a component that you can either load dynamically or convert to a custom element. 
 
 - `popup.component.ts`  defines a simple pop-up element that displays an input message, with some animation and styling. 
@@ -200,7 +208,7 @@ export class PopupService {
               private applicationRef: ApplicationRef,
               private componentFactoryResolver: ComponentFactoryResolver) {}
 
-  // Use the dynamic-loading method to set up infrastructure
+  // Previous dynamic-loading method required you to set up infrastructure
   // before adding the popup to the DOM.
   showAsComponent(message: string) {
     // Create element
@@ -226,7 +234,7 @@ export class PopupService {
     document.body.appendChild(popup);
   }
 
-  // Use the custom-element method to add the popup to the DOM.
+  // This uses the new custom-element method to add the popup to the DOM.
   showAsElement(message: string) {
     // Create element
     const popupEl = document.createElement('popup-element');
@@ -275,7 +283,7 @@ createNgElementConstructor(PopupComponent, {injector: this.injector});
 }
 ```
 
-- `app.module.ts` supports the dynamic-loading method by listing PopupComponent in the module's entryComponents. When you add it as a custom element, you don't need this.
+- `app.module.ts` adds the PopupComponent in the module's `entryComponents` list, to exclude it from compilation and avoid startup warnings or errors.
 
 ```
 import {BrowserModule} from '@angular/platform-browser';
