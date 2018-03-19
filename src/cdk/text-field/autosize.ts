@@ -64,9 +64,7 @@ export class CdkTextareaAutosize implements AfterViewInit, DoCheck, OnDestroy {
   constructor(
     private _elementRef: ElementRef,
     private _platform: Platform,
-    private _ngZone?: NgZone) {}
-
-  // TODO(crisbeto): make the `_ngZone` a required param in the next major version.
+    private _ngZone: NgZone) {}
 
   /** Sets the minimum height of the textarea as determined by minRows. */
   _setMinHeight(): void {
@@ -92,13 +90,11 @@ export class CdkTextareaAutosize implements AfterViewInit, DoCheck, OnDestroy {
     if (this._platform.isBrowser) {
       this.resizeToFitContent();
 
-      if (this._ngZone) {
-        this._ngZone.runOutsideAngular(() => {
-          fromEvent(window, 'resize')
-            .pipe(auditTime(16), takeUntil(this._destroyed))
-            .subscribe(() => this.resizeToFitContent(true));
-        });
-      }
+      this._ngZone.runOutsideAngular(() => {
+        fromEvent(window, 'resize')
+          .pipe(auditTime(16), takeUntil(this._destroyed))
+          .subscribe(() => this.resizeToFitContent(true));
+      });
     }
   }
 
