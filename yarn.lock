@@ -6577,7 +6577,7 @@ source-map@^0.4.4, source-map@~0.4.1:
   dependencies:
     amdefine ">=0.0.4"
 
-source-map@^0.6.0, source-map@~0.6.1:
+source-map@^0.6.0:
   version "0.6.1"
   resolved "https://registry.yarnpkg.com/source-map/-/source-map-0.6.1.tgz#74722af32e9614e9c287a8d0bbde48b5e2f1a263"
 
