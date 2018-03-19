@@ -5,7 +5,8 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {LayoutModule, BreakpointObserver, BreakpointState} from './index';
+import {LayoutModule} from './layout-module';
+import {BreakpointObserver, BreakpointState} from './breakpoints-observer';
 import {MediaMatcher} from './media-matcher';
 import {async, TestBed, inject} from '@angular/core/testing';
 import {Injectable} from '@angular/core';
@@ -77,11 +78,9 @@ describe('BreakpointObserver', () => {
       queryMatchState = state.matches;
     });
 
-    async(() => {
-      expect(queryMatchState).toBeTruthy();
-      mediaMatcher.setMatchesQuery(query, false);
-      expect(queryMatchState).toBeFalsy();
-    });
+    expect(queryMatchState).toBeTruthy();
+    mediaMatcher.setMatchesQuery(query, false);
+    expect(queryMatchState).toBeFalsy();
   });
 
   it('emits a true matches state when the query is matched', () => {
