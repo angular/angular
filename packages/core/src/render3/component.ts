@@ -140,7 +140,7 @@ export function renderComponent<T>(
   try {
     // Create element node at index 0 in data array
     elementNode = hostElement(hostNode, componentDef);
-    // Create directive instance with n() and store at index 1 in data array (el is 0)
+    // Create directive instance with factory() and store at index 1 in data array (el is 0)
     component = rootContext.component =
         baseDirectiveCreate(1, componentDef.factory(), componentDef) as T;
     initChangeDetectorIfExisting(elementNode.nodeInjector, component);

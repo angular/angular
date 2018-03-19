@@ -5,6 +5,11 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
+/**
+ * Rollup exports symbols in this particular way. This test demonstrates that we can correctly read
+ * symbols.
+ */
 var fooBar = function(exports) {
   'use strict';
   // tslint:disable-next-line:no-console

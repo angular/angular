@@ -32,6 +32,7 @@ export class SymbolExtractor {
           if (fnRecurseDepth <= 1) {
             ts.forEachChild(child, visitor);
           }
+          fnRecurseDepth--;
           break;
         case ts.SyntaxKind.SourceFile:
         case ts.SyntaxKind.VariableStatement:
@@ -48,7 +49,7 @@ export class SymbolExtractor {
           if (varDecl.initializer && fnRecurseDepth !== 0) {
             symbols.push({name: varDecl.name.getText()});
           }
-          if (fnRecurseDepth == 0 && isStoringIIFE(child.parent as ts.VariableDeclarationList)) {
+          if (fnRecurseDepth == 0 && isRollupExportSymbol(child.parent as ts.VariableDeclarationList)) {
             ts.forEachChild(child, visitor);
           }
           break;
@@ -125,11 +126,8 @@ function toName(symbol: Symbol): string {
  * Rollup produces this format when it wants to export symbols from a bundle.
  * @param child
  */
-function isStoringIIFE(child: ts.VariableDeclarationList): boolean {
+function isRollupExportSymbol(child: ts.VariableDeclarationList): boolean {
   if (child.declarations.length !== 1) return false;
   const decl: ts.VariableDeclaration = child.declarations[0];
-  if (decl.initializer && decl.initializer.kind == ts.SyntaxKind.CallExpression) {
-    return true;
-  }
-  return false;
+  return (decl.initializer && decl.initializer.kind == ts.SyntaxKind.CallExpression);
 }
