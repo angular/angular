@@ -73,6 +73,10 @@ export function downgradeComponent(info: {
     // When using `downgradeModule()` though, we need to ensure such callbacks are run inside the
     // Angular zone.
     let needsNgZone = false;
+    // this is only needed when downgradeModule is used to make sure that trees below would work
+    //  * ng1 > ng2-downgraded > ng1-upgraded > ng2-downgraded
+    //  * ng1 > ng2-downgraded (and lazy loaded)
+    let attachToApp = false;
     let wrapCallback = <T>(cb: () => T) => cb;
     let ngZone: NgZone;
 
@@ -90,9 +94,11 @@ export function downgradeComponent(info: {
         let parentInjector: Injector|Thenable<Injector>|undefined = required[0];
         let ranAsync = false;
 
+        const lazyModuleRef = $injector.get(LAZY_MODULE_REF) as LazyModuleRef;
+        attachToApp = !!lazyModuleRef.needsNgZone;
+
         if (!parentInjector) {
-          const lazyModuleRef = $injector.get(LAZY_MODULE_REF) as LazyModuleRef;
-          needsNgZone = lazyModuleRef.needsNgZone;
+          needsNgZone = attachToApp;
           parentInjector = lazyModuleRef.injector || lazyModuleRef.promise as Promise<Injector>;
         }
 
@@ -113,7 +119,7 @@ export function downgradeComponent(info: {
 
           const projectableNodes = facade.compileContents();
           facade.createComponent(projectableNodes);
-          facade.setupInputs(needsNgZone, info.propagateDigest);
+          facade.setupInputs(attachToApp, info.propagateDigest);
           facade.setupOutputs();
           facade.registerCleanup();
 
