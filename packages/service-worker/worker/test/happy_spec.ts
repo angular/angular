@@ -170,7 +170,11 @@ const manifestUpdateHash = sha1(JSON.stringify(manifestUpdate));
     let driver: Driver;
 
     beforeEach(() => {
-      server.clearRequests();
+      server.reset();
+      serverUpdate.reset();
+      server404.reset();
+      brokenServer.reset();
+
       scope = new SwTestHarnessBuilder().withServerState(server).build();
       driver = new Driver(scope, scope, new CacheDatabase(scope, scope));
     });
@@ -240,39 +244,6 @@ const manifestUpdateHash = sha1(JSON.stringify(manifestUpdate));
       expect(await makeRequest(scope, '/qux.txt')).toEqual('this is qux');
       server.assertSawRequestFor('/qux.txt');
       server.assertNoOtherRequests();
-    });
-
-    async_it('updates to new content when requested', async() => {
-      expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
-      await driver.initialized;
-
-      const client = scope.clients.getMock('default') !;
-      expect(client.messages).toEqual([]);
-
-      scope.updateServerState(serverUpdate);
-      expect(await driver.checkForUpdate()).toEqual(true);
-      serverUpdate.assertSawRequestFor('ngsw.json');
-      serverUpdate.assertSawRequestFor('/foo.txt');
-      serverUpdate.assertSawRequestFor('/redirected.txt');
-      serverUpdate.assertNoOtherRequests();
-
-      expect(client.messages).toEqual([{
-        type: 'UPDATE_AVAILABLE',
-        current: {hash: manifestHash, appData: {version: 'original'}},
-        available: {hash: manifestUpdateHash, appData: {version: 'update'}},
-      }]);
-
-      // Default client is still on the old version of the app.
-      expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
-
-      // Sending a new client id should result in the updated version being returned.
-      expect(await makeRequest(scope, '/foo.txt', 'new')).toEqual('this is foo v2');
-
-      // Of course, the old version should still work.
-      expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
-
-      expect(await makeRequest(scope, '/bar.txt')).toEqual('this is bar');
-      serverUpdate.assertNoOtherRequests();
     });
 
     async_it('updates to new content when requested', async() => {
@@ -403,8 +374,8 @@ const manifestUpdateHash = sha1(JSON.stringify(manifestUpdate));
       serverUpdate.clearRequests();
 
       scope = new SwTestHarnessBuilder()
-                  .withServerState(serverUpdate)
                   .withCacheState(scope.caches.dehydrate())
+                  .withServerState(serverUpdate)
                   .build();
       driver = new Driver(scope, scope, new CacheDatabase(scope, scope));
 
@@ -478,6 +449,10 @@ const manifestUpdateHash = sha1(JSON.stringify(manifestUpdate));
       await driver.initialized;
       serverUpdate.assertNoOtherRequests();
 
+      let keys = await scope.caches.keys();
+      let hasOriginalCaches = keys.some(name => name.startsWith(`ngsw:${manifestHash}:`));
+      expect(hasOriginalCaches).toEqual(true);
+
       scope.clients.remove('default');
 
       scope.advance(12000);
@@ -487,10 +462,9 @@ const manifestUpdateHash = sha1(JSON.stringify(manifestUpdate));
       driver = new Driver(scope, scope, new CacheDatabase(scope, scope));
       expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo v2');
 
-      const oldManifestHash = sha1(JSON.stringify(manifest));
-      const keys = await scope.caches.keys();
-      const hasOldCaches = keys.some(name => name.startsWith(oldManifestHash + ':'));
-      expect(hasOldCaches).toEqual(false);
+      keys = await scope.caches.keys();
+      hasOriginalCaches = keys.some(name => name.startsWith(`ngsw:${manifestHash}:`));
+      expect(hasOriginalCaches).toEqual(false);
     });
 
     async_it('shows notifications for push notifications', async() => {
@@ -639,6 +613,7 @@ const manifestUpdateHash = sha1(JSON.stringify(manifestUpdate));
         serverUpdate.assertNoOtherRequests();
       });
     });
+
     describe('routing', () => {
       async_beforeEach(async() => {
         expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
@@ -680,6 +655,7 @@ const manifestUpdateHash = sha1(JSON.stringify(manifestUpdate));
           headers: {
             'Accept': 'text/plain, text/html, text/css',
           },
+          mode: 'navigate',
         })).toBeNull();
         server.assertSawRequestFor('/baz.html');
       });
@@ -726,11 +702,11 @@ const manifestUpdateHash = sha1(JSON.stringify(manifestUpdate));
 })();
 
 async function makeRequest(
-    scope: SwTestHarness, url: string, clientId?: string, init?: Object): Promise<string|null> {
-  const [resPromise, done] = scope.handleFetch(new MockRequest(url, init), clientId || 'default');
+    scope: SwTestHarness, url: string, clientId = 'default', init?: Object): Promise<string|null> {
+  const [resPromise, done] = scope.handleFetch(new MockRequest(url, init), clientId);
   await done;
   const res = await resPromise;
-  scope.clients.add(clientId || 'default');
+  scope.clients.add(clientId);
   if (res !== undefined && res.ok) {
     return res.text();
   }
