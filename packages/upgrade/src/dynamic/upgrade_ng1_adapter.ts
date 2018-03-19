@@ -186,14 +186,17 @@ class UpgradeNg1ComponentAdapter implements OnInit, OnChanges, DoCheck {
 
   ngOnInit() {
     // Collect contents, insert and compile template
-    const attachChildNodes: angular.ILinkFn|undefined = this.helper.prepareTransclusion();
+    const attachChildNodes: angular.ILinkFn = this.helper.prepareTransclusion();
     const linkFn = this.helper.compileTemplate(this.template);
 
     // Instantiate controller (if not already done so)
     const controllerType = this.directive.controller;
     const bindToController = this.directive.bindToController;
     if (controllerType && !bindToController) {
-      this.controllerInstance = this.helper.buildController(controllerType, this.componentScope);
+      const $transclude: angular.ITranscludeFn|undefined =
+          this.helper.getTranscludeFn(attachChildNodes);
+      this.controllerInstance =
+          this.helper.buildController(controllerType, this.componentScope, undefined, $transclude);
     }
 
     // Require other controllers

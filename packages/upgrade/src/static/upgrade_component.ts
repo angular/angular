@@ -126,14 +126,17 @@ export class UpgradeComponent implements OnInit, OnChanges, DoCheck, OnDestroy {
 
   ngOnInit() {
     // Collect contents, insert and compile template
-    const attachChildNodes: angular.ILinkFn|undefined = this.helper.prepareTransclusion();
+    const attachChildNodes: angular.ILinkFn = this.helper.prepareTransclusion();
     const linkFn = this.helper.compileTemplate();
 
     // Instantiate controller
     const controllerType = this.directive.controller;
     const bindToController = this.directive.bindToController;
     if (controllerType) {
-      this.controllerInstance = this.helper.buildController(controllerType, this.$componentScope);
+      const $transclude: angular.ITranscludeFn|undefined =
+          this.helper.getTranscludeFn(attachChildNodes);
+      this.controllerInstance =
+          this.helper.buildController(controllerType, this.$componentScope, undefined, $transclude);
     } else if (bindToController) {
       throw new Error(
           `Upgraded directive '${this.directive.name}' specifies 'bindToController' but no controller.`);

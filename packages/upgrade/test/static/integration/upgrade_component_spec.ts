@@ -2569,6 +2569,166 @@ withEachNg1Version(() => {
              expect(multiTrim(element.textContent, true)).toBe('ng2(ng1(x(baz1)|default(qux2)))');
            });
          }));
+
+      it('should support dynamic transclusion in controller', async(() => {
+           let ng2ComponentInstance: Ng2Component;
+           let injectedTransclude: angular.ITranscludeFn, injectedAttrs: any = null;
+           // Define `ng1Component`
+           const ng1Component: angular.IComponent = {
+             controller: [
+               '$attrs', '$transclude',
+               function($attrs: any, $transclude: angular.ITranscludeFn) {
+                 injectedAttrs = $attrs;
+                 injectedTransclude = $transclude;
+               }
+             ],
+             template: 'ng1()',
+             transclude: true
+           };
+
+           // Define `Ng1ComponentFacade`
+           @Directive({selector: 'ng1'})
+           class Ng1ComponentFacade extends UpgradeComponent {
+             constructor(elementRef: ElementRef, injector: Injector) {
+               super('ng1', elementRef, injector);
+             }
+           }
+
+           // Define `Ng2Component`
+           @Component({
+             selector: 'ng2',
+             template: `
+              ng2(
+                <ng1>
+                  <content-x>{{ x }}1</content-x>
+                  <content-y>{{ y }}1</content-y>
+                  <content-x>{{ x }}2</content-x>
+                  <content-y>{{ y }}2</content-y>
+                </ng1>
+              )`
+           })
+           class Ng2Component {
+             x = 'foo';
+             y = 'bar';
+             constructor() { ng2ComponentInstance = this; }
+           }
+
+           // Define `ng1Module`
+           const ng1Module = angular.module('ng1Module', [])
+                                 .component('ng1', ng1Component)
+                                 .directive('ng2', downgradeComponent({component: Ng2Component}));
+
+           // Define `Ng2Module`
+           @NgModule({
+             imports: [BrowserModule, UpgradeModule],
+             declarations: [Ng1ComponentFacade, Ng2Component],
+             entryComponents: [Ng2Component],
+             schemas: [NO_ERRORS_SCHEMA]
+           })
+           class Ng2Module {
+             ngDoBootstrap() {}
+           }
+
+           // Bootstrap
+           const element = html(`<ng2></ng2>`);
+
+           bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then(adapter => {
+
+             expect(injectedAttrs).toBe(undefined);
+             expect(injectedTransclude.isSlotFilled !('slotX')).toBe(false);
+             expect(injectedTransclude.isSlotFilled !('slotY')).toBe(false);
+
+             injectedTransclude(undefined as any, (element) => {
+               expect(element ![0].textContent).toEqual('foo1');
+               expect(element ![1].textContent).toEqual('bar1');
+               expect(element ![2].textContent).toEqual('foo2');
+               expect(element ![3].textContent).toEqual('bar2');
+             });
+
+           });
+         }));
+
+      it('should support dynamic multi-slot transclusion in controller', async(() => {
+           let ng2ComponentInstance: Ng2Component;
+           let injectedTransclude: angular.ITranscludeFn, injectedAttrs: any = null;
+           // Define `ng1Component`
+           const ng1Component: angular.IComponent = {
+             controller: [
+               '$attrs', '$transclude',
+               function($attrs: any, $transclude: angular.ITranscludeFn) {
+                 injectedAttrs = $attrs;
+                 injectedTransclude = $transclude;
+               }
+             ],
+             template: 'ng1(y(<div ng-transclude="slotY"></div>))',
+             transclude: {slotX: 'contentX', slotY: 'contentY'}
+           };
+
+           // Define `Ng1ComponentFacade`
+           @Directive({selector: 'ng1'})
+           class Ng1ComponentFacade extends UpgradeComponent {
+             constructor(elementRef: ElementRef, injector: Injector) {
+               super('ng1', elementRef, injector);
+             }
+           }
+
+           // Define `Ng2Component`
+           @Component({
+             selector: 'ng2',
+             template: `
+              ng2(
+                <ng1>
+                  <content-x>{{ x }}1</content-x>
+                  <content-y>{{ y }}1</content-y>
+                  <content-x>{{ x }}2</content-x>
+                  <content-y>{{ y }}2</content-y>
+                </ng1>
+              )`
+           })
+           class Ng2Component {
+             x = 'foo';
+             y = 'bar';
+             constructor() { ng2ComponentInstance = this; }
+           }
+
+           // Define `ng1Module`
+           const ng1Module = angular.module('ng1Module', [])
+                                 .component('ng1', ng1Component)
+                                 .directive('ng2', downgradeComponent({component: Ng2Component}));
+
+           // Define `Ng2Module`
+           @NgModule({
+             imports: [BrowserModule, UpgradeModule],
+             declarations: [Ng1ComponentFacade, Ng2Component],
+             entryComponents: [Ng2Component],
+             schemas: [NO_ERRORS_SCHEMA]
+           })
+           class Ng2Module {
+             ngDoBootstrap() {}
+           }
+
+           // Bootstrap
+           const element = html(`<ng2></ng2>`);
+
+           bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then(adapter => {
+
+             expect(injectedAttrs).toBe(undefined);
+             expect(injectedTransclude.isSlotFilled !('slotX')).toBe(true);
+             expect(injectedTransclude.isSlotFilled !('slotY')).toBe(true);
+
+             injectedTransclude(undefined as any, (element) => {
+               expect(element ![0].textContent).toEqual('foo1');
+               expect(element ![1].textContent).toEqual('foo2');
+             }, undefined, 'slotX');
+
+             injectedTransclude(undefined as any, (element) => {
+               expect(element ![0].textContent).toEqual('bar1');
+               expect(element ![1].textContent).toEqual('bar2');
+             }, undefined, 'slotY');
+
+           });
+         }));
+
     });
 
     describe('lifecycle hooks', () => {

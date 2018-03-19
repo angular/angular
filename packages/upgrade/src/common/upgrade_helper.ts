@@ -100,10 +100,13 @@ export class UpgradeHelper {
     }
   }
 
-  buildController(controllerType: angular.IController, $scope: angular.IScope) {
+  buildController(
+      controllerType: angular.IController, $scope: angular.IScope,
+      $attrs?: angular.IAttributes|null, $transclude?: angular.ITranscludeFn) {
     // TODO: Document that we do not pre-assign bindings on the controller instance.
     // Quoted properties below so that this code can be optimized with Closure Compiler.
-    const locals = {'$scope': $scope, '$element': this.$element};
+    const locals =
+        {'$scope': $scope, '$element': this.$element, $attrs: $attrs, $transclude: $transclude};
     const controller = this.$controller(controllerType, locals, null, this.directive.controllerAs);
 
     this.$element.data !(controllerKey(this.directive.name !), controller);
@@ -119,7 +122,7 @@ export class UpgradeHelper {
     return this.compileHtml(template);
   }
 
-  prepareTransclusion(): angular.ILinkFn|undefined {
+  prepareTransclusion(): angular.ILinkFn {
     const transclude = this.directive.transclude;
     const contentChildNodes = this.extractChildNodes();
     const attachChildrenFn: angular.ILinkFn = (scope, cloneAttachFn) => {
@@ -199,6 +202,24 @@ export class UpgradeHelper {
     }
 
     return attachChildrenFn;
+  }
+
+  getTranscludeFn(attachChildrenFn: angular.ILinkFn): angular.ITranscludeFn|undefined {
+    if (!attachChildrenFn.$$slots) {
+      return;
+    }
+    const slots = attachChildrenFn.$$slots;
+    const transclude: angular.ITranscludeFn =
+        (scope: angular.IScope, cloneAttachFn?: angular.ICloneAttachFunction,
+         futureParentElement?: Node, slotName?: string) => {
+          if (slotName) {
+            return slots[slotName](scope, cloneAttachFn);
+          }
+          return attachChildrenFn(scope, cloneAttachFn);
+        };
+    // Expose `isSlotFilled` helper function
+    transclude.isSlotFilled = (slotName) => !!slots[slotName];
+    return transclude;
   }
 
   resolveAndBindRequiredControllers(controllerInstance: IControllerInstance|null) {
