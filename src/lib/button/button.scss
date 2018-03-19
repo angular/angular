@@ -65,27 +65,6 @@
   }
 }
 
-// Align icon-buttons correctly inside of standard, fill, and outline form-field appearances.
-.mat-form-field:not(.mat-form-field-appearance-legacy) {
-  .mat-form-field-prefix,
-  .mat-form-field-suffix {
-    .mat-icon-button {
-      display: block;
-      font-size: inherit;
-      width: 2.5em;
-      height: 2.5em;
-    }
-  }
-}
-
-// The text and icon should be vertical aligned inside a button
-.mat-button, .mat-raised-button, .mat-icon-button, .mat-fab, .mat-mini-fab {
-  color: currentColor;
-  .mat-button-wrapper > * {
-    vertical-align: middle;
-  }
-}
-
 // The ripple container should match the bounds of the entire button.
 .mat-button-ripple, .mat-button-focus-overlay {
   @include mat-fill;
@@ -120,6 +99,27 @@
   // z-index needed to make clipping to border-radius work correctly.
   // http://stackoverflow.com/questions/20001515/
   z-index: 1;
+}
+
+// Elements inside of all type of buttons should be vertical aligned in the middle.
+.mat-button, .mat-flat-button, .mat-stroked-button, .mat-raised-button, .mat-icon-button,
+.mat-fab, .mat-mini-fab {
+  .mat-button-wrapper > * {
+    vertical-align: middle;
+  }
+}
+
+// Align icon-buttons correctly inside of standard, fill, and outline form-field appearances.
+.mat-form-field:not(.mat-form-field-appearance-legacy) {
+  .mat-form-field-prefix,
+  .mat-form-field-suffix {
+    .mat-icon-button {
+      display: block;
+      font-size: inherit;
+      width: 2.5em;
+      height: 2.5em;
+    }
+  }
 }
 
 // Add an outline to make buttons more visible in high contrast mode. Stroked buttons

@@ -2,7 +2,7 @@ import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 import {Component, DebugElement} from '@angular/core';
 import {By} from '@angular/platform-browser';
 import {MatButtonModule, MatButton} from './index';
-import {MatRipple} from '@angular/material/core';
+import {MatRipple, ThemePalette} from '@angular/material/core';
 
 
 describe('MatButton', () => {
@@ -259,6 +259,7 @@ class TestApp {
   clickCount: number = 0;
   isDisabled: boolean = false;
   rippleDisabled: boolean = false;
+  buttonColor: ThemePalette;
 
   increment() {
     this.clickCount++;
