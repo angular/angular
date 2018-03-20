@@ -157,6 +157,23 @@ export interface ComponentDef<T> extends DirectiveDef<T> {
    * children only.
    */
   readonly viewProviders?: Provider[];
+
+  /**
+   * List of directives which are active on this component.
+   *
+   * The property is either an array of `DirectiveDef`s or a function which returns the array of
+   * `DireciveDef`s. The function is necessary to be able to support forward declarations.
+   */
+  directiveDefs: (() => Array<DirectiveDef<any>|ComponentDef<any>>)|
+      Array<DirectiveDef<any>|ComponentDef<any>>|null;
+
+  /**
+   * List of pipes which are active on this component.
+   *
+   * The property is either an array of `PipeDef`s or a function which returns the array of
+   * `PipeDef`s. The function is necessary to be able to support forward declarations.
+   */
+  pipeDefs: (() => PipeDef<any>[])|PipeDef<any>[]|null;
 }
 
 /**
@@ -172,6 +189,13 @@ export interface ComponentDef<T> extends DirectiveDef<T> {
  * See: {@link definePipe}
  */
 export interface PipeDef<T> {
+  /**
+   * Pipe name.
+   *
+   * Used to resolve pipe with the template.
+   */
+  name: string;
+
   /**
    * factory function used to create a new directive instance.
    *

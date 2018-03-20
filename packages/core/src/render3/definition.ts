@@ -56,7 +56,9 @@ export function defineComponent<T>(componentDefinition: ComponentDefArgs<T>): Co
     afterViewChecked: type.prototype.ngAfterViewChecked || null,
     onDestroy: type.prototype.ngOnDestroy || null,
     onPush: (componentDefinition as ComponentDefArgs<T>).changeDetection ===
-        ChangeDetectionStrategy.OnPush
+        ChangeDetectionStrategy.OnPush,
+    directiveDefs: null,
+    pipeDefs: null,
   };
   const feature = componentDefinition.features;
   feature && feature.forEach((fn) => fn(def));
@@ -202,7 +204,8 @@ export const defineDirective = defineComponent as<T>(directiveDefinition: Direct
  * @param pure Whether the pipe is pure.
  */
 export function definePipe<T>(
-    {type, factory, pure}: {type: Type<T>, factory: () => T, pure?: boolean}): PipeDef<T> {
+    {name, type, factory, pure}: {name?: string, type: Type<T>, factory: () => T, pure?: boolean}):
+    PipeDef<T> {
   return <PipeDef<T>>{
     n: factory,
     pure: pure !== false,
