@@ -10,7 +10,6 @@ import { FileNotFoundSearchComponent } from './file-not-found-search.component';
 
 
 describe('FileNotFoundSearchComponent', () => {
-  let element: HTMLElement;
   let fixture: ComponentFixture<FileNotFoundSearchComponent>;
   let searchService: SearchService;
   let searchResultSubject: Subject<SearchResults>;
@@ -30,7 +29,6 @@ describe('FileNotFoundSearchComponent', () => {
     searchResultSubject = new Subject<SearchResults>();
     spyOn(searchService, 'search').and.callFake(() => searchResultSubject.asObservable());
     fixture.detectChanges();
-    element = fixture.nativeElement;
   });
 
   it('should run a search with a query built from the current url', () => {
