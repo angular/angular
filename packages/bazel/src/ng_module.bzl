@@ -253,6 +253,20 @@ def _ts_expected_outs(ctx, label):
   return _expected_outs(ctx)
 
 def _write_bundle_index(ctx):
+  """ Provide an action that runs the bundle_index_main in ngc.
+
+  The action will only be executed when bundling with ng_package with a dep[] on this ng_module.
+
+  This creates:
+  - "flat module" metadata files
+  - "bundle index" js files with private symbol re-export, and their accompanying .d.ts files
+
+  Args:
+    ctx: the skylark rule execution context
+
+  Returns:
+    A struct indicating where the files were produced, which is passed through an ng_package rule to packager.ts
+  """
   # Provide a default for the flat_module_out_file attribute.
   # We cannot use the default="" parameter of ctx.attr because the value is calculated
   # from other attributes (name)
@@ -269,7 +283,8 @@ def _write_bundle_index(ctx):
     },
   })
   if not ctx.attr.module_name:
-    fail("Only ng_module with a module_name attribute should be exposed as flat module")
+    fail("""Internal error: bundle index files are only produced for ng_module targets with a module_name.
+            Please file a bug at https://github.com/angular/angular/issues""")
   tsconfig["angularCompilerOptions"]["flatModuleId"] = ctx.attr.module_name
 
   entry_point = ctx.attr.entry_point if ctx.attr.entry_point else "index.ts"
