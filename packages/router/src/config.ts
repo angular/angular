@@ -287,7 +287,7 @@ export type UrlMatchResult = {
  * @experimental
  */
 export type UrlMatcher = (segments: UrlSegment[], group: UrlSegmentGroup, route: Route) =>
-    UrlMatchResult;
+    UrlMatchResult | null;
 
 /**
  * @whatItDoes Represents the static data associated with a particular route.

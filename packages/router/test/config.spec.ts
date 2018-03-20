@@ -6,8 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {validateConfig} from '../src/config';
+import {Route, validateConfig} from '../src/config';
 import {PRIMARY_OUTLET} from '../src/shared';
+import {UrlSegment, UrlSegmentGroup} from '../src/url_tree';
 
 describe('config', () => {
   describe('validateConfig', () => {
@@ -20,6 +21,11 @@ describe('config', () => {
     it('should not throw when a matcher is provided', () => {
       expect(() => validateConfig([{matcher: <any>'someFunc', component: ComponentA}]))
           .not.toThrow();
+    });
+
+    it('should not throw when a null matcher is provided', () => {
+      const matcher = (segments: UrlSegment[], group: UrlSegmentGroup, route: Route) => null;
+      expect(() => validateConfig([{matcher, component: ComponentA}])).not.toThrow();
     });
 
     it('should throw for undefined route', () => {
