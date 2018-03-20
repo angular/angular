@@ -1352,6 +1352,46 @@ describe('MatAutocomplete', () => {
           .toEqual(Math.floor(panelBottom), `Expected panel to fall back to above position.`);
     }));
 
+    it('should allow the panel to expand when the number of results increases', fakeAsync(() => {
+      let fixture = createComponent(SimpleAutocomplete);
+      fixture.detectChanges();
+
+      let inputEl = fixture.debugElement.query(By.css('input')).nativeElement;
+      let inputReference = fixture.debugElement.query(By.css('.mat-form-field-flex')).nativeElement;
+
+      // Push the element down so it has a little bit of space, but not enough to render.
+      inputReference.style.bottom = '10px';
+      inputReference.style.position = 'fixed';
+
+      // Type enough to only show one option.
+      typeInElement('California', inputEl);
+      fixture.detectChanges();
+      tick();
+
+      fixture.componentInstance.trigger.openPanel();
+      fixture.detectChanges();
+      zone.simulateZoneExit();
+
+      let panel = overlayContainerElement.querySelector('.cdk-overlay-pane')!;
+      let initialPanelHeight = panel.getBoundingClientRect().height;
+
+      fixture.componentInstance.trigger.closePanel();
+      fixture.detectChanges();
+
+      // Change the text so we get more than one result.
+      typeInElement('C', inputEl);
+      fixture.detectChanges();
+      tick();
+
+      fixture.componentInstance.trigger.openPanel();
+      fixture.detectChanges();
+      zone.simulateZoneExit();
+
+      panel = overlayContainerElement.querySelector('.cdk-overlay-pane')!;
+
+      expect(panel.getBoundingClientRect().height).toBeGreaterThan(initialPanelHeight);
+    }));
+
     it('should align panel properly when filtering in "above" position', fakeAsync(() => {
       let fixture = createComponent(SimpleAutocomplete);
       fixture.detectChanges();
