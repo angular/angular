@@ -84,7 +84,8 @@ export function waitForMap<A, B>(
     }
   });
 
-  return of (...waitHead, ...waitTail).pipe(concatAll(), lastValue(), map(() => res));
+  // Closure compiler has problem with using spread operator here. So just using Array.concat.
+  return of .apply(null, waitHead.concat(waitTail)).pipe(concatAll(), lastValue(), map(() => res));
 }
 
 /**
