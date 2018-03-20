@@ -159,17 +159,15 @@ describe('FlexibleConnectedPositionStrategy', () => {
         // Scroll the page such that the origin element is roughly in the
         // center of the visible viewport (2500 - 1024/2, 2500 - 768/2).
         document.body.appendChild(veryLargeElement);
-        document.body.scrollTop = 2100;
-        document.body.scrollLeft = 2100;
+        window.scroll(2100, 2100);
 
         originElement.style.top = `${ORIGIN_TOP}px`;
         originElement.style.left = `${ORIGIN_LEFT}px`;
       });
 
       afterEach(() => {
+        window.scroll(0, 0);
         document.body.removeChild(veryLargeElement);
-        document.body.scrollTop = 0;
-        document.body.scrollLeft = 0;
       });
 
       // Preconditions are set, now just run the full set of simple position tests.
@@ -1157,6 +1155,38 @@ describe('FlexibleConnectedPositionStrategy', () => {
       // The overlay should be back to full height.
       expect(Math.floor(overlayRect.height)).toBe(OVERLAY_HEIGHT);
     });
+
+    it('should calculate the `bottom` value correctly with upward-flowing content ' +
+      'and a scrolled page', () => {
+        const veryLargeElement = document.createElement('div');
+
+        originElement.style.left = '200px';
+        originElement.style.top = `200px`;
+
+        veryLargeElement.style.width = '100%';
+        veryLargeElement.style.height = '2000px';
+        document.body.appendChild(veryLargeElement);
+        window.scroll(0, 50);
+
+        positionStrategy
+          .withFlexibleHeight()
+          .withPositions([{
+            overlayY: 'bottom',
+            overlayX: 'start',
+            originY: 'bottom',
+            originX: 'start'
+          }]);
+
+        attachOverlay({positionStrategy});
+
+        const overlayRect = overlayRef.overlayElement.getBoundingClientRect();
+        const originRect = originElement.getBoundingClientRect();
+
+        expect(Math.floor(overlayRect.bottom)).toBe(Math.floor(originRect.bottom));
+
+        window.scroll(0, 0);
+        document.body.removeChild(veryLargeElement);
+      });
 
   });
 

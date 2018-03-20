@@ -564,8 +564,8 @@ export class FlexibleConnectedPositionStrategy implements PositionStrategy {
       height = viewport.bottom - origin.y;
     } else if (position.overlayY === 'bottom') {
       // Overlay is opening "upward" and thus is bound by the top viewport edge.
-      bottom = viewport.bottom - origin.y + this._viewportMargin;
-      height = origin.y - viewport.top;
+      bottom = viewport.height - origin.y + this._viewportMargin;
+      height = viewport.height - bottom;
     } else {
       // If neither top nor bottom, it means that the overlay
       // is vertically centered on the origin point.
