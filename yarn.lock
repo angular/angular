@@ -6214,9 +6214,9 @@ rx-lite@^3.1.2:
   version "3.1.2"
   resolved "https://registry.yarnpkg.com/rx-lite/-/rx-lite-3.1.2.tgz#19ce502ca572665f3b647b10939f97fd1615f102"
 
-rxjs@6.0.0-alpha.4:
-  version "6.0.0-alpha.4"
-  resolved "https://registry.yarnpkg.com/rxjs/-/rxjs-6.0.0-alpha.4.tgz#e24afa7457d95a981f081d2979c3ba69b20c8ca3"
+rxjs@6.0.0-beta.0:
+  version "6.0.0-beta.0"
+  resolved "https://registry.yarnpkg.com/rxjs/-/rxjs-6.0.0-beta.0.tgz#cf241936be39d8279ed0b2be4bf417777301f65a"
   dependencies:
     tslib "^1.9.0"
 

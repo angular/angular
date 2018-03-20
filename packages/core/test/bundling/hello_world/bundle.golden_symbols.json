@@ -96,6 +96,9 @@
     "name": "__extends$20"
   },
   {
+    "name": "_enable_super_gross_mode_that_will_cause_bad_things"
+  },
+  {
     "name": "_renderCompCount"
   },
   {
@@ -178,6 +181,9 @@
   },
   {
     "name": "hostElement"
+  },
+  {
+    "name": "hostReportError"
   },
   {
     "name": "initChangeDetectorIfExisting"
