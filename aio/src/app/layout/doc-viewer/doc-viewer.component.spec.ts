@@ -1,8 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Title, Meta } from '@angular/platform-browser';
 
-import { Observable } from 'rxjs/Observable';
-import { of } from 'rxjs/observable/of';
+import { Observable, of } from 'rxjs';
 
 import { FILE_NOT_FOUND_ID, FETCHING_ERROR_ID } from 'app/documents/document.service';
 import { Logger } from 'app/shared/logger.service';
@@ -297,13 +296,11 @@ describe('DocViewerComponent', () => {
     let loadElementsSpy: jasmine.Spy;
 
     const doRender = (contents: string | null, id = 'foo') =>
-      new Promise<void>((resolve, reject) =>
-        docViewer.render({contents, id}).subscribe(resolve, reject));
+      docViewer.render({contents, id}).toPromise();
 
     beforeEach(() => {
       const elementsLoader = TestBed.get(ElementsLoader) as MockElementsLoader;
-      loadElementsSpy =
-          elementsLoader.loadContainingCustomElements.and.returnValue(of([]));
+      loadElementsSpy = elementsLoader.loadContainingCustomElements.and.returnValue(of(undefined));
       prepareTitleAndTocSpy = spyOn(docViewer, 'prepareTitleAndToc');
       swapViewsSpy = spyOn(docViewer, 'swapViews').and.returnValue(of(undefined));
     });

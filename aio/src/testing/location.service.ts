@@ -1,4 +1,4 @@
-import { BehaviorSubject } from 'rxjs/BehaviorSubject';
+import { BehaviorSubject } from 'rxjs';
 
 export class MockLocationService {
   urlSubject = new BehaviorSubject<string>(this.initialUrl);

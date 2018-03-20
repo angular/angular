@@ -1,7 +1,7 @@
 import { ReflectiveInjector } from '@angular/core';
 import { PlatformLocation } from '@angular/common';
 
-import { of } from 'rxjs/observable/of';
+import { of } from 'rxjs';
 
 import { ResourceListComponent } from './resource-list.component';
 import { ResourceService } from './resource.service';

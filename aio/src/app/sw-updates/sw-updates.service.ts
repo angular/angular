@@ -1,7 +1,6 @@
 import { Injectable, OnDestroy } from '@angular/core';
 import { NgServiceWorker } from '@angular/service-worker';
-import { Observable } from 'rxjs/Observable';
-import { Subject } from 'rxjs/Subject';
+import { Observable, Subject } from 'rxjs';
 import 'rxjs/add/observable/of';
 import 'rxjs/add/operator/concat';
 import 'rxjs/add/operator/debounceTime';

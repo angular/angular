@@ -6,8 +6,7 @@ import { HttpClient } from '@angular/common/http';
 import { MatProgressBar, MatSidenav } from '@angular/material';
 import { By } from '@angular/platform-browser';
 
-import { Observable } from 'rxjs/Observable';
-import { timer } from 'rxjs/observable/timer';
+import { Observable, timer } from 'rxjs';
 import 'rxjs/add/operator/mapTo';
 
 import { AppComponent } from './app.component';

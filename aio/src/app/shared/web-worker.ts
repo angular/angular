@@ -5,7 +5,7 @@ can be found in the LICENSE file at http://angular.io/license
 */
 
 import {NgZone} from '@angular/core';
-import {Observable} from 'rxjs/Observable';
+import {Observable} from 'rxjs';
 
 export interface WebWorkerMessage {
   type: string;
