@@ -2804,14 +2804,27 @@ _trackBy_ 가 어떻게 동작하는지 다음 그림을 보면서 확인해 보
 
 {@a ngSwitch}
 
+<!--
 ### The _NgSwitch_ directives
+-->
+### _NgSwitch_ 디렉티브
 
+<!--
 *NgSwitch* is like the JavaScript `switch` statement.
 It can display _one_ element from among several possible elements, based on a _switch condition_.
 Angular puts only the *selected* element into the DOM.
+-->
+*NgSwitch* 디렉티브는 JavaScript의 `switch` 문법과 비슷합니다.
+이 디렉티브는 가능한 경우 몇가지 중에서 _스위치 조건_ 에 만족하는 엘리먼트 _하나를_ 뷰에 표시합니다.
+이 때 *선택된* 엘리먼트만 DOM에 추가되며, 조건을 만족하지 않는 엘리먼트들은 DOM에 존재하지 않습니다.
 
+<!--
 *NgSwitch* is actually a set of three, cooperating directives:
 `NgSwitch`, `NgSwitchCase`, and `NgSwitchDefault` as seen in this example.
+-->
+실제로는 *NgSwitch* 디렉티브 하나만 사용하지는 않습니다.
+스위칭 동작을 하려면 `NgSwitch`, `NgSwitchCase`, `NgSwitchDefault` 3개의 디렉티브를 함께 사용합니다.
+예제 코드를 확인해 보세요.
 
 <code-example path="template-syntax/src/app/app.component.html" region="NgSwitch" title="src/app/app.component.html" linenums="false">
 </code-example>
@@ -2820,20 +2833,37 @@ Angular puts only the *selected* element into the DOM.
   <img src="generated/images/guide/template-syntax/switch-anim.gif" alt="trackBy">
 </figure>
 
+<!--
 `NgSwitch` is the controller directive. Bind it to an expression that returns the *switch value*.
 The `emotion` value in this example is a string, but the switch value can be of any type.
+-->
+`NgSwitch`는 해당하는 조건을 선택하는 디렉티브입니다. 이 디렉티브는 템플릿 표현식이 반환하는 값에 해당하는 *특정 조건*을 선택합니다.
+위 예제에서는 문자열 타입의 `emotion` 변수로 조건을 판단했지만, 타입은 자유롭게 사용할 수 있습니다.
 
+<!--
 **Bind to `[ngSwitch]`**. You'll get an error if you try to set `*ngSwitch` because
 `NgSwitch` is an *attribute* directive, not a *structural* directive.
 It changes the behavior of its companion directives.
 It doesn't touch the DOM directly.
+-->
+스위칭 조건을 판단하는 템플릿 표현식은 **`[ngSwitch]`** 와 같이 바인딩합니다.
+이 때 문법을 `*ngSwitch`로 사용해도 되지 않을까 생각할 수 있지만, `NgSwitch`는 *구조* 디렉티브가 아니라 *어트리뷰트* 디렉티브이기 때문에 `*ngSwitch`로 사용하면 에러가 발생합니다.
+`NgSwitch`는 엘리먼트의 동작을 변화시키는 디렉티브이며, DOM을 직접 조작하지는 않습니다.
 
+<!--
 **Bind to `*ngSwitchCase` and `*ngSwitchDefault`**.
 The `NgSwitchCase` and `NgSwitchDefault` directives are _structural_ directives
 because they add or remove elements from the DOM.
+-->
+`NgSwitch`와는 다르게 `NgSwitchCase`와 `NgSwitchDefault`는 _구조_ 디렉티브이며, `*ngSwitchCase`, `*ngSwitchDefault`와 같이 사용합니다.
+두 디렉티브는 DOM에 엘리먼트를 직접 추가하거나 제거하는 디렉티브입니다.
 
+<!--
 * `NgSwitchCase` adds its element to the DOM when its bound value equals the switch value.
 * `NgSwitchDefault` adds its element to the DOM when there is no selected `NgSwitchCase`.
+-->
+* `NgSwitchCase`는 스위칭 조건이 맞을 때 해당 엘리먼트를 DOM에 추가합니다.
+* `NgSwitchDefault`는 `NgSwitchCase`가 하나도 선택되지 않았을 때 DOM에 추가하는 엘리먼트를 지정합니다.
 
 <!--
 The switch directives are particularly useful for adding and removing *component elements*.
@@ -2841,13 +2871,16 @@ This example switches among four "emotional hero" components defined in the `her
 Each component has a `hero` [input property](guide/template-syntax#inputs-outputs "Input property")
 which is bound to the `currentHero` of the parent component.
 -->
-The switch directives are particularly useful for adding and removing *component elements*.
-This example switches among four "emotional hero" components defined in the `hero-switch.components.ts` file.
-Each component has a `hero` [input property](guide/template-syntax#입출력-프로퍼티 "Input property")
-which is bound to the `currentHero` of the parent component.
+스위치 디렉티브는 *컴포넌트 엘리먼트를* DOM에 추가하거나 제거하는 용도로도 많이 사용합니다.
+위에서 살펴본 예제는 `hero-switch.component.ts` 파일에 정의된 컴포넌트 4개를 하나씩 선택해서 적용하는 예제입니다.
+각각의 컴포넌트는 부모 컴포넌트에서 전달되는 `currentHero` 프로퍼티를 `hero`를 [입력 프로퍼티](guide/template-syntax#입출력-프로퍼티 "Input property")로 바인딩합니다.
 
+<!--
 Switch directives work as well with native elements and web components too.
 For example, you could replace the `<confused-hero>` switch case with the following.
+-->
+그리고 스위치 디렉티브는 네이티브 엘리먼트나 웹 컴포넌트에도 자연스럽게 적용할 수 있습니다.
+위 예제에서 `<confused-hero>`에 사용했던 스위치 디렉티브는 다음과 같이 네이티브 엘리먼트에도 사용할 수 있습니다.
 
 <code-example path="template-syntax/src/app/app.component.html" region="NgSwitch-div" title="src/app/app.component.html" linenums="false">
 </code-example>
