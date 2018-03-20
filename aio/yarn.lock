@@ -130,8 +130,9 @@
   dependencies:
     tslib "^1.7.1"
 
-"@angular/elements@file:../dist/packages-dist/elements":
-  version "6.0.0-beta.5-0968e9f16a"
+"@angular/elements@6.0.0-beta.8":
+  version "6.0.0-beta.8"
+  resolved "https://registry.yarnpkg.com/@angular/elements/-/elements-6.0.0-beta.8.tgz#54bc566520663819a5e87162bce47a2e9f0fdf0d"
   dependencies:
     tslib "^1.7.1"
 
