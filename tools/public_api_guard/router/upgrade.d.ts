@@ -2,7 +2,7 @@
 export declare const RouterUpgradeInitializer: {
     provide: InjectionToken<((compRef: ComponentRef<any>) => void)[]>;
     multi: boolean;
-    useFactory: typeof locationSyncBootstrapListener;
+    useFactory: (ngUpgrade: UpgradeModule) => () => void;
     deps: (typeof UpgradeModule)[];
 };
 
