@@ -33,8 +33,8 @@ describe('@angular/common ng_package', () => {
       'common.umd.min.js.map',
     ]);
   });
-  // FESMS currently not part of APF v6
-  xit('should have right fesm files', () => {
+
+  it('should have right fesm files', () => {
     const expected = [
       'common.js',
       'common.js.map',
@@ -46,8 +46,8 @@ describe('@angular/common ng_package', () => {
       'testing.js',
       'testing.js.map',
     ];
-    expect(shx.ls('-R', 'esm5').stdout.split('\n').filter(n => !!n).sort()).toEqual(expected);
-    expect(shx.ls('-R', 'esm2015').stdout.split('\n').filter(n => !!n).sort()).toEqual(expected);
+    expect(shx.ls('-R', 'fesm5').stdout.split('\n').filter(n => !!n).sort()).toEqual(expected);
+    expect(shx.ls('-R', 'fesm2015').stdout.split('\n').filter(n => !!n).sort()).toEqual(expected);
   });
   describe('should have module resolution properties in the package.json file for', () => {
     // https://github.com/angular/common-builds/blob/master/package.json
@@ -59,8 +59,8 @@ describe('@angular/common ng_package', () => {
     it('/http', () => {
       const actual = JSON.parse(fs.readFileSync('http/package.json', {encoding: 'utf-8'}));
       expect(actual['main']).toEqual('../bundles/common-http.umd.js');
-      expect(actual['es2015']).toEqual('../esm2015/http/http.js');
-      expect(actual['module']).toEqual('../esm5/http/http.js');
+      expect(actual['es2015']).toEqual('../fesm2015/http.js');
+      expect(actual['module']).toEqual('../fesm5/http.js');
       expect(actual['typings']).toEqual('./http.d.ts');
     });
     // https://github.com/angular/common-builds/blob/master/testing/package.json
@@ -72,8 +72,8 @@ describe('@angular/common ng_package', () => {
     it('/http/testing', () => {
       const actual = JSON.parse(fs.readFileSync('http/testing/package.json', {encoding: 'utf-8'}));
       expect(actual['main']).toEqual('../../bundles/common-http-testing.umd.js');
-      expect(actual['es2015']).toEqual('../../esm2015/http/testing/testing.js');
-      expect(actual['module']).toEqual('../../esm5/http/testing/testing.js');
+      expect(actual['es2015']).toEqual('../../fesm2015/http/testing.js');
+      expect(actual['module']).toEqual('../../fesm5/http/testing.js');
       expect(actual['typings']).toEqual('./testing.d.ts');
     });
   });
