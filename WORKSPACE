@@ -34,6 +34,13 @@ local_repository(
     path = "node_modules/rxjs/src",
 )
 
+# Point to the integration test workspace just so that Bazel doesn't descend into it
+# when expanding the //... pattern
+local_repository(
+    name = "bazel_integration_test",
+    path = "integration/bazel",
+)
+
 # This commit matches the version of buildifier in angular/ngcontainer
 # If you change this, also check if it matches the version in the angular/ngcontainer
 # version in /.circleci/config.yml
