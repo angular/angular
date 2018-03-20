@@ -9,13 +9,14 @@
 import {SimpleChange} from '../change_detection/change_detection_util';
 import {ChangeDetectionStrategy} from '../change_detection/constants';
 import {PipeTransform} from '../change_detection/pipe_transform';
+import {Provider} from '../core';
 import {OnChanges, SimpleChanges} from '../metadata/lifecycle_hooks';
 import {RendererType2} from '../render/api';
 import {Type} from '../type';
 import {resolveRendererType2} from '../view/util';
 
 import {diPublic} from './di';
-import {ComponentDef, ComponentDefArgs, DirectiveDef, DirectiveDefArgs, DirectiveDefFeature, PipeDef} from './interfaces/definition';
+import {ComponentDef, ComponentDefFeature, ComponentTemplate, DirectiveDef, DirectiveDefFeature, PipeDef} from './interfaces/definition';
 
 
 
@@ -34,14 +35,126 @@ import {ComponentDef, ComponentDefArgs, DirectiveDef, DirectiveDefArgs, Directiv
  * }
  * ```
  */
-export function defineComponent<T>(componentDefinition: ComponentDefArgs<T>): ComponentDef<T> {
+export function defineComponent<T>(componentDefinition: {
+  /**
+   * Directive type, needed to configure the injector.
+   */
+  type: Type<T>;
+
+  /**
+   * Factory method used to create an instance of directive.
+   */
+  factory: () => T | ({0: T} & any[]); /* trying to say T | [T, ...any] */
+
+  /**
+   * Static attributes to set on host element.
+   *
+   * Even indices: attribute name
+   * Odd indices: attribute value
+   */
+  attributes?: string[];
+
+  /**
+   * A map of input names.
+   *
+   * The format is in: `{[actualPropertyName: string]:string}`.
+   *
+   * Which the minifier may translate to: `{[minifiedPropertyName: string]:string}`.
+   *
+   * This allows the render to re-construct the minified and non-minified names
+   * of properties.
+   */
+  inputs?: {[P in keyof T]?: string};
+
+  /**
+   * A map of output names.
+   *
+   * The format is in: `{[actualPropertyName: string]:string}`.
+   *
+   * Which the minifier may translate to: `{[minifiedPropertyName: string]:string}`.
+   *
+   * This allows the render to re-construct the minified and non-minified names
+   * of properties.
+   */
+  outputs?: {[P in keyof T]?: string};
+
+  /**
+   * Function executed by the parent template to allow child directive to apply host bindings.
+   */
+  hostBindings?: (directiveIndex: number, elementIndex: number) => void;
+
+  /**
+   * Defines the name that can be used in the template to assign this directive to a variable.
+   *
+   * See: {@link Directive.exportAs}
+   */
+  exportAs?: string;
+
+  /**
+   * HTML tag name to use in place where this component should be instantiated.
+   */
+  tag: string;
+
+  /**
+   * Template function use for rendering DOM.
+   *
+   * This function has following structure.
+   *
+   * ```
+   * function Template<T>(ctx:T, creationMode: boolean) {
+   *   if (creationMode) {
+   *     // Contains creation mode instructions.
+   *   }
+   *   // Contains binding update instructions
+   * }
+   * ```
+   *
+   * Common instructions are:
+   * Creation mode instructions:
+   *  - `elementStart`, `elementEnd`
+   *  - `text`
+   *  - `container`
+   *  - `listener`
+   *
+   * Binding update instructions:
+   * - `bind`
+   * - `elementAttribute`
+   * - `elementProperty`
+   * - `elementClass`
+   * - `elementStyle`
+   *
+   */
+  template: ComponentTemplate<T>;
+
+  /**
+   * A list of optional features to apply.
+   *
+   * See: {@link NgOnChangesFeature}, {@link PublicFeature}
+   */
+  features?: ComponentDefFeature[];
+
+  rendererType?: RendererType2;
+
+  changeDetection?: ChangeDetectionStrategy;
+
+  /**
+   * Defines the set of injectable objects that are visible to a Directive and its light DOM
+   * children.
+   */
+  providers?: Provider[];
+
+  /**
+   * Defines the set of injectable objects that are visible to its view DOM children.
+   */
+  viewProviders?: Provider[];
+}): ComponentDef<T> {
   const type = componentDefinition.type;
   const def = <ComponentDef<any>>{
     type: type,
     diPublic: null,
     factory: componentDefinition.factory,
-    tag: (componentDefinition as ComponentDefArgs<T>).tag || null !,
-    template: (componentDefinition as ComponentDefArgs<T>).template || null !,
+    tag: componentDefinition.tag || null !,
+    template: componentDefinition.template || null !,
     hostBindings: componentDefinition.hostBindings || null,
     attributes: componentDefinition.attributes || null,
     inputs: invertObject(componentDefinition.inputs),
@@ -55,8 +168,7 @@ export function defineComponent<T>(componentDefinition: ComponentDefArgs<T>): Co
     afterViewInit: type.prototype.ngAfterViewInit || null,
     afterViewChecked: type.prototype.ngAfterViewChecked || null,
     onDestroy: type.prototype.ngOnDestroy || null,
-    onPush: (componentDefinition as ComponentDefArgs<T>).changeDetection ===
-        ChangeDetectionStrategy.OnPush
+    onPush: componentDefinition.changeDetection === ChangeDetectionStrategy.OnPush
   };
   const feature = componentDefinition.features;
   feature && feature.forEach((fn) => fn(def));
@@ -182,8 +294,68 @@ function invertObject(obj: any): any {
  * }
  * ```
  */
-export const defineDirective = defineComponent as<T>(directiveDefinition: DirectiveDefArgs<T>) =>
-    DirectiveDef<T>;
+export const defineDirective = defineComponent as any as<T>(directiveDefinition: {
+  /**
+   * Directive type, needed to configure the injector.
+   */
+  type: Type<T>;
+
+  /**
+   * Factory method used to create an instance of directive.
+   */
+  factory: () => T | ({0: T} & any[]); /* trying to say T | [T, ...any] */
+
+  /**
+   * Static attributes to set on host element.
+   *
+   * Even indices: attribute name
+   * Odd indices: attribute value
+   */
+  attributes?: string[];
+
+  /**
+   * A map of input names.
+   *
+   * The format is in: `{[actualPropertyName: string]:string}`.
+   *
+   * Which the minifier may translate to: `{[minifiedPropertyName: string]:string}`.
+   *
+   * This allows the render to re-construct the minified and non-minified names
+   * of properties.
+   */
+  inputs?: {[P in keyof T]?: string};
+
+  /**
+   * A map of output names.
+   *
+   * The format is in: `{[actualPropertyName: string]:string}`.
+   *
+   * Which the minifier may translate to: `{[minifiedPropertyName: string]:string}`.
+   *
+   * This allows the render to re-construct the minified and non-minified names
+   * of properties.
+   */
+  outputs?: {[P in keyof T]?: string};
+
+  /**
+   * A list of optional features to apply.
+   *
+   * See: {@link NgOnChangesFeature}, {@link PublicFeature}
+   */
+  features?: DirectiveDefFeature[];
+
+  /**
+   * Function executed by the parent template to allow child directive to apply host bindings.
+   */
+  hostBindings?: (directiveIndex: number, elementIndex: number) => void;
+
+  /**
+   * Defines the name that can be used in the template to assign this directive to a variable.
+   *
+   * See: {@link Directive.exportAs}
+   */
+  exportAs?: string;
+}) => DirectiveDef<T>;
 
 /**
  * Create a pipe definition object.
