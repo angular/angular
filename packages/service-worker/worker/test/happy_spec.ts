@@ -708,6 +708,15 @@ const manifestUpdateHash = sha1(JSON.stringify(manifestUpdate));
 
         expect(driver.state).toEqual(DriverReadyState.EXISTING_CLIENTS_ONLY);
       });
+
+      async_it('ignores invalid `only-if-cached` requests ', async() => {
+        const requestFoo = (cache: RequestCache | 'only-if-cached', mode: RequestMode) =>
+            makeRequest(scope, '/foo.txt', undefined, {cache, mode});
+
+        expect(await requestFoo('default', 'no-cors')).toBe('this is foo');
+        expect(await requestFoo('only-if-cached', 'same-origin')).toBe('this is foo');
+        expect(await requestFoo('only-if-cached', 'no-cors')).toBeNull();
+      });
     });
   });
 })();
