@@ -186,6 +186,7 @@ export function exitCodeFromResult(diags: Diagnostics | undefined): number {
 }
 
 export function performCompilation({rootNames, options, host, oldProgram, emitCallback,
+                                    mergeEmitResultsCallback,
                                     gatherDiagnostics = defaultGatherDiagnostics,
                                     customTransformers, emitFlags = api.EmitFlags.Default}: {
   rootNames: string[],
@@ -193,6 +194,7 @@ export function performCompilation({rootNames, options, host, oldProgram, emitCa
   host?: api.CompilerHost,
   oldProgram?: api.Program,
   emitCallback?: api.TsEmitCallback,
+  mergeEmitResultsCallback?: api.TsMergeEmitResultsCallback,
   gatherDiagnostics?: (program: api.Program) => Diagnostics,
   customTransformers?: api.CustomTransformers,
   emitFlags?: api.EmitFlags
@@ -216,7 +218,8 @@ export function performCompilation({rootNames, options, host, oldProgram, emitCa
     }
 
     if (!hasErrors(allDiagnostics)) {
-      emitResult = program !.emit({emitCallback, customTransformers, emitFlags});
+      emitResult =
+          program !.emit({emitCallback, mergeEmitResultsCallback, customTransformers, emitFlags});
       allDiagnostics.push(...emitResult.diagnostics);
       return {diagnostics: allDiagnostics, program, emitResult};
     }

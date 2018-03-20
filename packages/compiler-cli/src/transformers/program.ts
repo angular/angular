@@ -15,7 +15,7 @@ import * as ts from 'typescript';
 import {TypeCheckHost, translateDiagnostics} from '../diagnostics/translate_diagnostics';
 import {MetadataCollector, ModuleMetadata, createBundleIndexHost} from '../metadata/index';
 
-import {CompilerHost, CompilerOptions, CustomTransformers, DEFAULT_ERROR_CODE, Diagnostic, DiagnosticMessageChain, EmitFlags, LazyRoute, LibrarySummary, Program, SOURCE, TsEmitArguments, TsEmitCallback} from './api';
+import {CompilerHost, CompilerOptions, CustomTransformers, DEFAULT_ERROR_CODE, Diagnostic, DiagnosticMessageChain, EmitFlags, LazyRoute, LibrarySummary, Program, SOURCE, TsEmitArguments, TsEmitCallback, TsMergeEmitResultsCallback} from './api';
 import {CodeGenerator, TsCompilerAotCompilerTypeCheckHostAdapter, getOriginalReferences} from './compiler_host';
 import {InlineResourcesMetadataTransformer, getInlineResourcesTransformFactory} from './inline_resources';
 import {LowerMetadataTransform, getExpressionLoweringTransformFactory} from './lower_expressions';
@@ -270,7 +270,8 @@ class AngularCompilerProgram implements Program {
     emitFlags?: EmitFlags,
     cancellationToken?: ts.CancellationToken,
     customTransformers?: CustomTransformers,
-    emitCallback?: TsEmitCallback
+    emitCallback?: TsEmitCallback,
+    mergeEmitResultsCallback?: TsMergeEmitResultsCallback,
   } = {}): ts.EmitResult {
     return this.options.enableIvy === true ? this._emitRender3(parameters) :
                                              this._emitRender2(parameters);
@@ -281,12 +282,15 @@ class AngularCompilerProgram implements Program {
   }
 
   private _emitRender3(
-      {emitFlags = EmitFlags.Default, cancellationToken, customTransformers,
-       emitCallback = defaultEmitCallback}: {
+      {
+          emitFlags = EmitFlags.Default, cancellationToken, customTransformers,
+          emitCallback = defaultEmitCallback, mergeEmitResultsCallback = mergeEmitResults,
+      }: {
         emitFlags?: EmitFlags,
         cancellationToken?: ts.CancellationToken,
         customTransformers?: CustomTransformers,
-        emitCallback?: TsEmitCallback
+        emitCallback?: TsEmitCallback,
+        mergeEmitResultsCallback?: TsMergeEmitResultsCallback,
       } = {}): ts.EmitResult {
     const emitStart = Date.now();
     if ((emitFlags & (EmitFlags.JS | EmitFlags.DTS | EmitFlags.Metadata | EmitFlags.Codegen)) ===
@@ -328,12 +332,15 @@ class AngularCompilerProgram implements Program {
   }
 
   private _emitRender2(
-      {emitFlags = EmitFlags.Default, cancellationToken, customTransformers,
-       emitCallback = defaultEmitCallback}: {
+      {
+          emitFlags = EmitFlags.Default, cancellationToken, customTransformers,
+          emitCallback = defaultEmitCallback, mergeEmitResultsCallback = mergeEmitResults,
+      }: {
         emitFlags?: EmitFlags,
         cancellationToken?: ts.CancellationToken,
         customTransformers?: CustomTransformers,
-        emitCallback?: TsEmitCallback
+        emitCallback?: TsEmitCallback,
+        mergeEmitResultsCallback?: TsMergeEmitResultsCallback,
       } = {}): ts.EmitResult {
     const emitStart = Date.now();
     if (emitFlags & EmitFlags.I18nBundle) {
@@ -416,7 +423,7 @@ class AngularCompilerProgram implements Program {
           (sourceFilesToEmit.length + genTsFiles.length) < MAX_FILE_COUNT_FOR_SINGLE_FILE_EMIT) {
         const fileNamesToEmit =
             [...sourceFilesToEmit.map(sf => sf.fileName), ...genTsFiles.map(gf => gf.genFileUrl)];
-        emitResult = mergeEmitResults(
+        emitResult = mergeEmitResultsCallback(
             fileNamesToEmit.map((fileName) => emitResult = emitCallback({
                                   program: this.tsProgram,
                                   host: this.host,
@@ -777,11 +784,12 @@ class AngularCompilerProgram implements Program {
   private getSourceFilesForEmit(): ts.SourceFile[]|undefined {
     // TODO(tbosch): if one of the files contains a `const enum`
     // always emit all files -> return undefined!
-    let sourceFilesToEmit: ts.SourceFile[]|undefined;
+    let sourceFilesToEmit = this.tsProgram.getSourceFiles().filter(
+        sf => { return !sf.isDeclarationFile && !GENERATED_FILES.test(sf.fileName); });
     if (this.oldProgramEmittedSourceFiles) {
-      sourceFilesToEmit = this.tsProgram.getSourceFiles().filter(sf => {
+      sourceFilesToEmit = sourceFilesToEmit.filter(sf => {
         const oldFile = this.oldProgramEmittedSourceFiles !.get(sf.fileName);
-        return !sf.isDeclarationFile && !GENERATED_FILES.test(sf.fileName) && sf !== oldFile;
+        return sf !== oldFile;
       });
     }
     return sourceFilesToEmit;
@@ -1020,7 +1028,7 @@ function mergeEmitResults(emitResults: ts.EmitResult[]): ts.EmitResult {
   for (const er of emitResults) {
     diagnostics.push(...er.diagnostics);
     emitSkipped = emitSkipped || er.emitSkipped;
-    emittedFiles.push(...er.emittedFiles);
+    emittedFiles.push(...(er.emittedFiles || []));
   }
   return {diagnostics, emitSkipped, emittedFiles};
 }
