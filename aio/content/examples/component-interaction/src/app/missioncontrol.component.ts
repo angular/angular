@@ -4,13 +4,13 @@ import { Component }          from '@angular/core';
 import { MissionService }     from './mission.service';
 
 @Component({
-  selector: 'mission-control',
+  selector: 'app-mission-control',
   template: `
     <h2>Mission Control</h2>
     <button (click)="announce()">Announce mission</button>
-    <my-astronaut *ngFor="let astronaut of astronauts"
+    <app-astronaut *ngFor="let astronaut of astronauts"
       [astronaut]="astronaut">
-    </my-astronaut>
+    </app-astronaut>
     <h3>History</h3>
     <ul>
       <li *ngFor="let event of history">{{event}}</li>

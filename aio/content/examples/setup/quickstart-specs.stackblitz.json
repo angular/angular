@@ -1,0 +1,12 @@
+{
+  "description": "Quickstart AppComponent Testing",
+  "files":[
+    "src/browser-test-shim.js",
+    "src/app/app.component.ts",
+    "src/app/app.component.spec.ts",
+    "src/quickstart-specs.html"
+  ],
+  "main": "src/quickstart-specs.html",
+  "file": "src/app/app.component.spec.ts",
+  "tags": ["quickstart", "setup", "testing"]
+}

@@ -12,7 +12,7 @@ import * as i18n from '../../../src/i18n/i18n_ast';
 import {Xtb} from '../../../src/i18n/serializers/xtb';
 
 
-export function main(): void {
+{
   describe('XTB serializer', () => {
     const serializer = new Xtb();
 

@@ -7,6 +7,10 @@ export declare class BrowserModule {
 }
 
 /** @experimental */
+export declare class BrowserTransferStateModule {
+}
+
+/** @experimental */
 export declare class By {
     static all(): Predicate<DebugElement>;
     static css(selector: string): Predicate<DebugElement>;
@@ -49,11 +53,24 @@ export declare const HAMMER_GESTURE_CONFIG: InjectionToken<HammerGestureConfig>;
 /** @experimental */
 export declare class HammerGestureConfig {
     events: string[];
+    options?: {
+        cssProps?: any;
+        domEvents?: boolean;
+        enable?: boolean | ((manager: any) => boolean);
+        preset?: any[];
+        touchAction?: string;
+        recognizers?: any[];
+        inputClass?: any;
+        inputTarget?: EventTarget;
+    };
     overrides: {
         [key: string]: Object;
     };
     buildHammer(element: HTMLElement): HammerInstance;
 }
+
+/** @experimental */
+export declare function makeStateKey<T = void>(key: string): StateKey<T>;
 
 /** @experimental */
 export declare class Meta {
@@ -82,15 +99,8 @@ export declare type MetaDefinition = {
     [prop: string]: string;
 };
 
-/** @deprecated */
-export declare class NgProbeToken {
-    name: string;
-    token: any;
-    constructor(name: string, token: any);
-}
-
 /** @stable */
-export declare const platformBrowser: (extraProviders?: Provider[]) => PlatformRef;
+export declare const platformBrowser: (extraProviders?: StaticProvider[]) => PlatformRef;
 
 /** @stable */
 export interface SafeHtml extends SafeValue {
@@ -117,10 +127,25 @@ export interface SafeValue {
 }
 
 /** @experimental */
+export declare type StateKey<T> = string & {
+    __not_a_string: never;
+};
+
+/** @experimental */
 export declare class Title {
     constructor(_doc: any);
     getTitle(): string;
     setTitle(newTitle: string): void;
+}
+
+/** @experimental */
+export declare class TransferState {
+    get<T>(key: StateKey<T>, defaultValue: T): T;
+    hasKey<T>(key: StateKey<T>): boolean;
+    onSerialize<T>(key: StateKey<T>, callback: () => T): void;
+    remove<T>(key: StateKey<T>): void;
+    set<T>(key: StateKey<T>, value: T): void;
+    toJson(): string;
 }
 
 /** @stable */

@@ -1,0 +1,10 @@
+package(default_visibility = ["//packages/bazel/test:__subpackages__"])
+
+load("//packages/bazel:index.bzl", "ng_module")
+
+ng_module(
+    name = "secondary",
+    srcs = glob(["*.ts"]),
+    module_name = "example/secondary",
+    deps = ["//packages/core"],
+)

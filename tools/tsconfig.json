@@ -21,8 +21,9 @@
     "skipLibCheck": true
   },
   "exclude": [
+    "testing",
     "node_modules",
-    "ngc-wrapped",
+    "ts-api-guardian",
     "typings-test",
     "public_api_guard",
     "docs"

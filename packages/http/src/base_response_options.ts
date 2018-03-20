@@ -39,7 +39,7 @@ import {ResponseOptionsArgs} from './interfaces';
  * console.log('res.json():', res.json()); // Object {name: "Jeff"}
  * ```
  *
- * @experimental
+ * @deprecated use @angular/common/http instead
  */
 export class ResponseOptions {
   // TODO: FormData | Blob
@@ -156,7 +156,7 @@ export class ResponseOptions {
  * console.log('res.text():', res.text()); // Angular;
  * ```
  *
- * @experimental
+ * @deprecated use @angular/common/http instead
  */
 @Injectable()
 export class BaseResponseOptions extends ResponseOptions {

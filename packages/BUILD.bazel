@@ -1,0 +1,18 @@
+package(default_visibility = ["//visibility:public"])
+
+exports_files([
+    "tsconfig-build.json",
+    "tsconfig.json",
+])
+
+load("//tools:defaults.bzl", "ts_library")
+
+ts_library(
+    name = "types",
+    srcs = glob(["*.ts"]),
+)
+
+exports_files([
+    "license-banner.txt",
+    "README.md",
+])

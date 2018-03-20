@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Location, PlatformLocation } from '@angular/common';
 
-import { Observable } from 'rxjs/Observable';
 import { ReplaySubject } from 'rxjs/ReplaySubject';
 import 'rxjs/add/operator/do';
 
@@ -19,7 +18,7 @@ export class LocationService {
     .map(url => this.stripSlashes(url));
 
   currentPath = this.currentUrl
-    .map(url => url.match(/[^?#]*/)[0]) // strip query and hash
+    .map(url => (url.match(/[^?#]*/) || [])[0]) // strip query and hash
     .do(path => this.gaService.locationChanged(path));
 
   constructor(
@@ -31,14 +30,14 @@ export class LocationService {
     this.urlSubject.next(location.path(true));
 
     this.location.subscribe(state => {
-      return this.urlSubject.next(state.url);
+      return this.urlSubject.next(state.url || '');
     });
 
     swUpdates.updateActivated.subscribe(() => this.swUpdateActivated = true);
   }
 
   // TODO?: ignore if url-without-hash-or-search matches current location?
-  go(url: string) {
+  go(url: string|null|undefined) {
     if (!url) { return; }
     url = this.stripSlashes(url);
     if (/^http/.test(url) || this.swUpdateActivated) {
@@ -55,12 +54,16 @@ export class LocationService {
     window.location.assign(url);
   }
 
+  replace(url: string) {
+    window.location.replace(url);
+  }
+
   private stripSlashes(url: string) {
     return url.replace(/^\/+/, '').replace(/\/+(\?|#|$)/, '$1');
   }
 
-  search(): { [index: string]: string; } {
-    const search = {};
+  search() {
+    const search: { [index: string]: string|undefined; } = {};
     const path = this.location.path();
     const q = path.indexOf('?');
     if (q > -1) {
@@ -77,11 +80,10 @@ export class LocationService {
     return search;
   }
 
-  setSearch(label: string, params: {}) {
+  setSearch(label: string, params: { [key: string]: string|undefined}) {
     const search = Object.keys(params).reduce((acc, key) => {
       const value = params[key];
-      // tslint:disable-next-line:triple-equals
-      return value == undefined ? acc :
+      return (value === undefined) ? acc :
         acc += (acc ? '&' : '?') + `${encodeURIComponent(key)}=${encodeURIComponent(value)}`;
     }, '');
 

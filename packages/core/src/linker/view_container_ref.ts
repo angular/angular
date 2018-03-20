@@ -73,8 +73,8 @@ export abstract class ViewContainerRef {
    * Instantiates a single {@link Component} and inserts its Host View into this container at the
    * specified `index`.
    *
-   * The component is instantiated using its {@link ComponentFactory} which can be
-   * obtained via {@link ComponentFactoryResolver#resolveComponentFactory}.
+   * The component is instantiated using its {@link ComponentFactory} which can be obtained via
+   * {@link ComponentFactoryResolver#resolveComponentFactory resolveComponentFactory}.
    *
    * If `index` is not specified, the new View will be inserted as the last View in the container.
    *

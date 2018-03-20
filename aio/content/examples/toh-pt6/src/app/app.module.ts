@@ -1,52 +1,56 @@
 // #docplaster
-// #docregion
-// #docregion v1, v2
-import { NgModule }      from '@angular/core';
-import { BrowserModule } from '@angular/platform-browser';
-import { FormsModule }   from '@angular/forms';
-import { HttpModule }    from '@angular/http';
+// #docregion, v1
+import { NgModule }       from '@angular/core';
+import { BrowserModule }  from '@angular/platform-browser';
+import { FormsModule }    from '@angular/forms';
+import { HttpClientModule }    from '@angular/common/http';
 
-import { AppRoutingModule } from './app-routing.module';
-
-// #enddocregion v1
-// Imports for loading & configuring the in-memory web api
-import { InMemoryWebApiModule } from 'angular-in-memory-web-api';
+// #docregion import-in-mem-stuff
+import { HttpClientInMemoryWebApiModule } from 'angular-in-memory-web-api';
 import { InMemoryDataService }  from './in-memory-data.service';
+// #enddocregion import-in-mem-stuff
 
-// #docregion v1
+import { AppRoutingModule }     from './app-routing.module';
+
 import { AppComponent }         from './app.component';
-import { DashboardComponent }   from './dashboard.component';
-import { HeroesComponent }      from './heroes.component';
-import { HeroDetailComponent }  from './hero-detail.component';
+import { DashboardComponent }   from './dashboard/dashboard.component';
+import { HeroDetailComponent }  from './hero-detail/hero-detail.component';
+import { HeroesComponent }      from './heroes/heroes.component';
+// #enddocregion v1
+import { HeroSearchComponent }  from './hero-search/hero-search.component';
+// #docregion v1
 import { HeroService }          from './hero.service';
-// #enddocregion v1, v2
-import { HeroSearchComponent }  from './hero-search.component';
-// #docregion v1, v2
+import { MessageService }       from './message.service';
+import { MessagesComponent }    from './messages/messages.component';
 
 @NgModule({
   imports: [
     BrowserModule,
     FormsModule,
-    HttpModule,
-    // #enddocregion v1
-    // #docregion in-mem-web-api
-    InMemoryWebApiModule.forRoot(InMemoryDataService),
-    // #enddocregion in-mem-web-api
-    // #docregion v1
-    AppRoutingModule
+    AppRoutingModule,
+    // #docregion in-mem-web-api-imports
+    HttpClientModule,
+
+    // The HttpClientInMemoryWebApiModule module intercepts HTTP requests
+    // and returns simulated server responses.
+    // Remove it when a real server is ready to receive requests.
+    HttpClientInMemoryWebApiModule.forRoot(
+      InMemoryDataService, { dataEncapsulation: false }
+    )
+    // #enddocregion in-mem-web-api-imports
   ],
-  // #docregion search
   declarations: [
     AppComponent,
     DashboardComponent,
-    HeroDetailComponent,
     HeroesComponent,
-  // #enddocregion v1, v2
+    HeroDetailComponent,
+    MessagesComponent,
+    // #enddocregion v1
     HeroSearchComponent
-  // #docregion v1, v2
+    // #docregion v1
   ],
-  // #enddocregion search
-  providers: [ HeroService ],
+  providers: [ HeroService, MessageService ],
   bootstrap: [ AppComponent ]
 })
 export class AppModule { }
+// #enddocregion , v1

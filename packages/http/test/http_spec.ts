@@ -6,18 +6,17 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injector, ReflectiveInjector} from '@angular/core';
+import {Injector} from '@angular/core';
 import {TestBed, getTestBed} from '@angular/core/testing';
 import {AsyncTestCompleter, afterEach, beforeEach, describe, inject, it} from '@angular/core/testing/src/testing_internal';
+import {stringToArrayBuffer} from '@angular/http/src/http_utils';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
-import {Observable} from 'rxjs/Observable';
-import {zip} from 'rxjs/observable/zip';
+import {Observable, zip} from 'rxjs';
 
 import {BaseRequestOptions, ConnectionBackend, Http, HttpModule, JSONPBackend, Jsonp, JsonpModule, Request, RequestMethod, RequestOptions, Response, ResponseContentType, ResponseOptions, URLSearchParams, XHRBackend} from '../index';
-import {stringToArrayBuffer} from '../src/http_utils';
 import {MockBackend, MockConnection} from '../testing/src/mock_backend';
 
-export function main() {
+{
   describe('injectables', () => {
     const url = 'http://foo.bar';
     let http: Http;
@@ -42,7 +41,7 @@ export function main() {
 
          http = injector.get(Http);
          jsonp = injector.get(Jsonp);
-         jsonpBackend = injector.get(JSONPBackend) as MockBackend;
+         jsonpBackend = injector.get(JSONPBackend) as any as MockBackend;
          xhrBackend = injector.get(XHRBackend) as any as MockBackend;
 
          let xhrCreatedConnections = 0;
@@ -79,8 +78,8 @@ export function main() {
     let jsonp: Jsonp;
 
     beforeEach(() => {
-      injector = ReflectiveInjector.resolveAndCreate([
-        BaseRequestOptions, MockBackend, {
+      injector = Injector.create([
+        {provide: BaseRequestOptions, deps: []}, {provide: MockBackend, deps: []}, {
           provide: Http,
           useFactory: function(backend: ConnectionBackend, defaultOptions: BaseRequestOptions) {
             return new Http(backend, defaultOptions);

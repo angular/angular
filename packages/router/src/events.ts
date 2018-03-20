@@ -7,19 +7,87 @@
  */
 
 import {Route} from './config';
-import {RouterStateSnapshot} from './router_state';
+import {ActivatedRouteSnapshot, RouterStateSnapshot} from './router_state';
+
+/**
+ * @whatItDoes Identifies the trigger of the navigation.
+ *
+ * * 'imperative'--triggered by `router.navigateByUrl` or `router.navigate`.
+ * * 'popstate'--triggered by a popstate event
+ * * 'hashchange'--triggered by a hashchange event
+ *
+ * @experimental
+ */
+export type NavigationTrigger = 'imperative' | 'popstate' | 'hashchange';
+
+/**
+ * @whatItDoes Base for events the Router goes through, as opposed to events tied to a specific
+ * Route. `RouterEvent`s will only be fired one time for any given navigation.
+ *
+ * Example:
+ *
+ * ```
+ * class MyService {
+ *   constructor(public router: Router, logger: Logger) {
+ *     router.events.filter(e => e instanceof RouterEvent).subscribe(e => {
+ *       logger.log(e.id, e.url);
+ *     });
+ *   }
+ * }
+ * ```
+ *
+ * @experimental
+ */
+export class RouterEvent {
+  constructor(
+      /** @docsNotRequired */
+      public id: number,
+      /** @docsNotRequired */
+      public url: string) {}
+}
 
 /**
  * @whatItDoes Represents an event triggered when a navigation starts.
  *
  * @stable
  */
-export class NavigationStart {
+export class NavigationStart extends RouterEvent {
+  /**
+   * Identifies the trigger of the navigation.
+   *
+   * * 'imperative'--triggered by `router.navigateByUrl` or `router.navigate`.
+   * * 'popstate'--triggered by a popstate event
+   * * 'hashchange'--triggered by a hashchange event
+   */
+  navigationTrigger?: 'imperative'|'popstate'|'hashchange';
+
+  /**
+   * This contains the navigation id that pushed the history record that the router navigates
+   * back to. This is not null only when the navigation is triggered by a popstate event.
+   *
+   * The router assigns a navigationId to every router transition/navigation. Even when the user
+   * clicks on the back button in the browser, a new navigation id will be created. So from
+   * the perspective of the router, the router never "goes back". By using the `restoredState`
+   * and its navigationId, you can implement behavior that differentiates between creating new
+   * states
+   * and popstate events. In the latter case you can restore some remembered state (e.g., scroll
+   * position).
+   */
+  restoredState?: {navigationId: number}|null;
+
   constructor(
       /** @docsNotRequired */
-      public id: number,
+      id: number,
       /** @docsNotRequired */
-      public url: string) {}
+      url: string,
+      /** @docsNotRequired */
+      navigationTrigger: 'imperative'|'popstate'|'hashchange' = 'imperative',
+      /** @docsNotRequired */
+      restoredState: {navigationId: number}|null = null) {
+    super(id, url);
+    this.navigationTrigger = navigationTrigger;
+    this.restoredState = restoredState;
+  }
 
   /** @docsNotRequired */
   toString(): string { return `NavigationStart(id: ${this.id}, url: '${this.url}')`; }
@@ -30,14 +98,16 @@ export class NavigationStart {
  *
  * @stable
  */
-export class NavigationEnd {
+export class NavigationEnd extends RouterEvent {
   constructor(
       /** @docsNotRequired */
-      public id: number,
+      id: number,
       /** @docsNotRequired */
-      public url: string,
+      url: string,
       /** @docsNotRequired */
-      public urlAfterRedirects: string) {}
+      public urlAfterRedirects: string) {
+    super(id, url);
+  }
 
   /** @docsNotRequired */
   toString(): string {
@@ -50,14 +120,16 @@ export class NavigationEnd {
  *
  * @stable
  */
-export class NavigationCancel {
+export class NavigationCancel extends RouterEvent {
   constructor(
       /** @docsNotRequired */
-      public id: number,
+      id: number,
       /** @docsNotRequired */
-      public url: string,
+      url: string,
       /** @docsNotRequired */
-      public reason: string) {}
+      public reason: string) {
+    super(id, url);
+  }
 
   /** @docsNotRequired */
   toString(): string { return `NavigationCancel(id: ${this.id}, url: '${this.url}')`; }
@@ -68,14 +140,16 @@ export class NavigationCancel {
  *
  * @stable
  */
-export class NavigationError {
+export class NavigationError extends RouterEvent {
   constructor(
       /** @docsNotRequired */
-      public id: number,
+      id: number,
       /** @docsNotRequired */
-      public url: string,
+      url: string,
       /** @docsNotRequired */
-      public error: any) {}
+      public error: any) {
+    super(id, url);
+  }
 
   /** @docsNotRequired */
   toString(): string {
@@ -88,16 +162,18 @@ export class NavigationError {
  *
  * @stable
  */
-export class RoutesRecognized {
+export class RoutesRecognized extends RouterEvent {
   constructor(
       /** @docsNotRequired */
-      public id: number,
+      id: number,
       /** @docsNotRequired */
-      public url: string,
+      url: string,
       /** @docsNotRequired */
       public urlAfterRedirects: string,
       /** @docsNotRequired */
-      public state: RouterStateSnapshot) {}
+      public state: RouterStateSnapshot) {
+    super(id, url);
+  }
 
   /** @docsNotRequired */
   toString(): string {
@@ -106,42 +182,22 @@ export class RoutesRecognized {
 }
 
 /**
- * @whatItDoes Represents an event triggered before lazy loading a route config.
- *
- * @experimental
- */
-export class RouteConfigLoadStart {
-  constructor(public route: Route) {}
-
-  toString(): string { return `RouteConfigLoadStart(path: ${this.route.path})`; }
-}
-
-/**
- * @whatItDoes Represents an event triggered when a route has been lazy loaded.
- *
- * @experimental
- */
-export class RouteConfigLoadEnd {
-  constructor(public route: Route) {}
-
-  toString(): string { return `RouteConfigLoadEnd(path: ${this.route.path})`; }
-}
-
-/**
  * @whatItDoes Represents the start of the Guard phase of routing.
  *
  * @experimental
  */
-export class GuardsCheckStart {
+export class GuardsCheckStart extends RouterEvent {
   constructor(
       /** @docsNotRequired */
-      public id: number,
+      id: number,
       /** @docsNotRequired */
-      public url: string,
+      url: string,
       /** @docsNotRequired */
       public urlAfterRedirects: string,
       /** @docsNotRequired */
-      public state: RouterStateSnapshot) {}
+      public state: RouterStateSnapshot) {
+    super(id, url);
+  }
 
   toString(): string {
     return `GuardsCheckStart(id: ${this.id}, url: '${this.url}', urlAfterRedirects: '${this.urlAfterRedirects}', state: ${this.state})`;
@@ -153,18 +209,20 @@ export class GuardsCheckStart {
  *
  * @experimental
  */
-export class GuardsCheckEnd {
+export class GuardsCheckEnd extends RouterEvent {
   constructor(
       /** @docsNotRequired */
-      public id: number,
+      id: number,
       /** @docsNotRequired */
-      public url: string,
+      url: string,
       /** @docsNotRequired */
       public urlAfterRedirects: string,
       /** @docsNotRequired */
       public state: RouterStateSnapshot,
       /** @docsNotRequired */
-      public shouldActivate: boolean) {}
+      public shouldActivate: boolean) {
+    super(id, url);
+  }
 
   toString(): string {
     return `GuardsCheckEnd(id: ${this.id}, url: '${this.url}', urlAfterRedirects: '${this.urlAfterRedirects}', state: ${this.state}, shouldActivate: ${this.shouldActivate})`;
@@ -179,16 +237,18 @@ export class GuardsCheckEnd {
  *
  * @experimental
  */
-export class ResolveStart {
+export class ResolveStart extends RouterEvent {
   constructor(
       /** @docsNotRequired */
-      public id: number,
+      id: number,
       /** @docsNotRequired */
-      public url: string,
+      url: string,
       /** @docsNotRequired */
       public urlAfterRedirects: string,
       /** @docsNotRequired */
-      public state: RouterStateSnapshot) {}
+      public state: RouterStateSnapshot) {
+    super(id, url);
+  }
 
   toString(): string {
     return `ResolveStart(id: ${this.id}, url: '${this.url}', urlAfterRedirects: '${this.urlAfterRedirects}', state: ${this.state})`;
@@ -201,19 +261,109 @@ export class ResolveStart {
  *
  * @experimental
  */
-export class ResolveEnd {
+export class ResolveEnd extends RouterEvent {
   constructor(
       /** @docsNotRequired */
-      public id: number,
+      id: number,
       /** @docsNotRequired */
-      public url: string,
+      url: string,
       /** @docsNotRequired */
       public urlAfterRedirects: string,
       /** @docsNotRequired */
-      public state: RouterStateSnapshot) {}
+      public state: RouterStateSnapshot) {
+    super(id, url);
+  }
 
   toString(): string {
     return `ResolveEnd(id: ${this.id}, url: '${this.url}', urlAfterRedirects: '${this.urlAfterRedirects}', state: ${this.state})`;
+  }
+}
+
+/**
+ * @whatItDoes Represents an event triggered before lazy loading a route config.
+ *
+ * @experimental
+ */
+export class RouteConfigLoadStart {
+  constructor(
+      /** @docsNotRequired */
+      public route: Route) {}
+  toString(): string { return `RouteConfigLoadStart(path: ${this.route.path})`; }
+}
+
+/**
+ * @whatItDoes Represents an event triggered when a route has been lazy loaded.
+ *
+ * @experimental
+ */
+export class RouteConfigLoadEnd {
+  constructor(
+      /** @docsNotRequired */
+      public route: Route) {}
+  toString(): string { return `RouteConfigLoadEnd(path: ${this.route.path})`; }
+}
+
+/**
+ * @whatItDoes Represents the start of end of the Resolve phase of routing. See note on
+ * {@link ChildActivationEnd} for use of this experimental API.
+ *
+ * @experimental
+ */
+export class ChildActivationStart {
+  constructor(
+      /** @docsNotRequired */
+      public snapshot: ActivatedRouteSnapshot) {}
+  toString(): string {
+    const path = this.snapshot.routeConfig && this.snapshot.routeConfig.path || '';
+    return `ChildActivationStart(path: '${path}')`;
+  }
+}
+
+/**
+ * @whatItDoes Represents the start of end of the Resolve phase of routing. See note on
+ * {@link ChildActivationStart} for use of this experimental API.
+ *
+ * @experimental
+ */
+export class ChildActivationEnd {
+  constructor(
+      /** @docsNotRequired */
+      public snapshot: ActivatedRouteSnapshot) {}
+  toString(): string {
+    const path = this.snapshot.routeConfig && this.snapshot.routeConfig.path || '';
+    return `ChildActivationEnd(path: '${path}')`;
+  }
+}
+
+/**
+ * @whatItDoes Represents the start of end of the Resolve phase of routing. See note on
+ * {@link ActivationEnd} for use of this experimental API.
+ *
+ * @experimental
+ */
+export class ActivationStart {
+  constructor(
+      /** @docsNotRequired */
+      public snapshot: ActivatedRouteSnapshot) {}
+  toString(): string {
+    const path = this.snapshot.routeConfig && this.snapshot.routeConfig.path || '';
+    return `ActivationStart(path: '${path}')`;
+  }
+}
+
+/**
+ * @whatItDoes Represents the start of end of the Resolve phase of routing. See note on
+ * {@link ActivationStart} for use of this experimental API.
+ *
+ * @experimental
+ */
+export class ActivationEnd {
+  constructor(
+      /** @docsNotRequired */
+      public snapshot: ActivatedRouteSnapshot) {}
+  toString(): string {
+    const path = this.snapshot.routeConfig && this.snapshot.routeConfig.path || '';
+    return `ActivationEnd(path: '${path}')`;
   }
 }
 
@@ -227,15 +377,18 @@ export class ResolveEnd {
  * - {@link RouteConfigLoadEnd},
  * - {@link RoutesRecognized},
  * - {@link GuardsCheckStart},
+ * - {@link ChildActivationStart},
+ * - {@link ActivationStart},
  * - {@link GuardsCheckEnd},
  * - {@link ResolveStart},
  * - {@link ResolveEnd},
+ * - {@link ActivationEnd}
+ * - {@link ChildActivationEnd}
  * - {@link NavigationEnd},
  * - {@link NavigationCancel},
  * - {@link NavigationError}
  *
  * @stable
  */
-export type Event = NavigationStart | NavigationEnd | NavigationCancel | NavigationError |
-    RoutesRecognized | RouteConfigLoadStart | RouteConfigLoadEnd | GuardsCheckStart |
-    GuardsCheckEnd | ResolveStart | ResolveEnd;
+export type Event = RouterEvent | RouteConfigLoadStart | RouteConfigLoadEnd | ChildActivationStart |
+    ChildActivationEnd | ActivationStart | ActivationEnd;

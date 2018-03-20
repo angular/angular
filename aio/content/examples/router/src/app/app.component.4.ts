@@ -2,7 +2,7 @@
 import { Component } from '@angular/core';
 
 @Component({
-  selector: 'my-app',
+  selector: 'app-root',
   // #docregion template
   template: `
     <h1 class="title">Angular Router</h1>

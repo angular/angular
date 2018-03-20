@@ -1,14 +1,35 @@
-package(default_visibility=["//visibility:public"])
-load("@build_bazel_rules_typescript//:defs.bzl", "ts_library")
+package(default_visibility = ["//visibility:public"])
 
-ts_library(
+load("//tools:defaults.bzl", "ng_module", "ng_package")
+
+ng_module(
     name = "common",
-    srcs = glob(["**/*.ts"], exclude=[
-      "http/**",
-      "test/**",
-      "testing/**",
-    ]),
+    srcs = glob(
+        [
+            "*.ts",
+            "src/**/*.ts",
+        ],
+    ),
     module_name = "@angular/common",
-    deps = ["//packages/core"],
-    tsconfig = ":tsconfig-build.json",
+    deps = [
+        "//packages/core",
+        "@rxjs",
+    ],
+)
+
+ng_package(
+    name = "npm_package",
+    srcs = [
+        "package.json",
+        "//packages/common/http:package.json",
+        "//packages/common/http/testing:package.json",
+        "//packages/common/testing:package.json",
+    ],
+    entry_point = "packages/common/index.js",
+    deps = [
+        "//packages/common",
+        "//packages/common/http",
+        "//packages/common/http/testing",
+        "//packages/common/testing",
+    ],
 )

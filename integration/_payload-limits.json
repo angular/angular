@@ -1,0 +1,43 @@
+{
+  "cli-hello-world": {
+    "master": {
+      "uncompressed": {
+        "inline": 1508,
+        "main": "TODO(i): temporarily increase the payload size limit to 352346 from 155112, we need CLI v6 to bring the size down",
+        "main": 251064,
+        "polyfills": 59483
+      }
+    }
+  },
+  "hello_world__closure": {
+    "master": {
+      "uncompressed": {
+        "bundle": "TODO(i): temporarily increase the payload size limit to 221852 from 105779 - we need CLI v6 to bring the size down",
+        "bundle": 221852
+      }
+    }
+  },
+  "hello_world__render3__closure": {
+    "master": {
+      "uncompressed": {
+        "bundle": 8153
+      }
+    }
+  },
+  "hello_world__render3__rollup": {
+    "master": {
+      "uncompressed": {
+        "bundle": 10129
+      }
+    }
+  },
+  "hello_world__render3__cli": {
+    "master": {
+      "uncompressed": {
+        "inline": 1447,
+        "main": 40513,
+        "polyfills": 61085
+      }
+    }
+  }
+}

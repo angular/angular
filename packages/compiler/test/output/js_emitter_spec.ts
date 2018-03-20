@@ -13,14 +13,13 @@ import * as o from '@angular/compiler/src/output/output_ast';
 import {stripSourceMapAndNewLine} from './abstract_emitter_spec';
 
 const someGenFilePath = 'somePackage/someGenFile';
-const someSourceFilePath = 'somePackage/someSourceFile';
 const anotherModuleUrl = 'somePackage/someOtherPath';
 
 const sameModuleIdentifier = new o.ExternalReference(null, 'someLocalId', null);
 
 const externalModuleIdentifier = new o.ExternalReference(anotherModuleUrl, 'someExternalId', null);
 
-export function main() {
+{
   // Note supported features of our OutputAstin JavaScript / ES5:
   // - types
   // - declaring fields
@@ -35,7 +34,7 @@ export function main() {
     });
 
     function emitStmt(stmt: o.Statement, preamble?: string): string {
-      const source = emitter.emitStatements(someSourceFilePath, someGenFilePath, [stmt], preamble);
+      const source = emitter.emitStatements(someGenFilePath, [stmt], preamble);
       return stripSourceMapAndNewLine(source);
     }
 

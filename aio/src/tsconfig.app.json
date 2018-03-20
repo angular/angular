@@ -12,5 +12,8 @@
     "test.ts",
     "test-specs.ts",
     "**/*.spec.ts"
-  ]
+  ],
+  "angularCompilerOptions": {
+    "preserveWhitespaces": false
+  }
 }

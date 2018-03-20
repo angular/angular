@@ -1,0 +1,7 @@
+{
+  "compilerOptions": {
+    "paths": {
+      "@angular/core": ["../../../../dist/packages/core"]
+    }
+  }
+}

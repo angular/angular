@@ -48,13 +48,13 @@ describe('ngIf', () => {
       browser.get(URL);
       waitForElement(comp);
       expect(element.all(by.css(comp)).get(0).getText())
-          .toEqual('hide Switch Primary show = true\nPrimary text to show');
+          .toEqual('hideSwitch Primary show = true\nPrimary text to show');
       element.all(by.css(comp + ' button')).get(1).click();
       expect(element.all(by.css(comp)).get(0).getText())
-          .toEqual('hide Switch Primary show = true\nSecondary text to show');
+          .toEqual('hideSwitch Primary show = true\nSecondary text to show');
       element.all(by.css(comp + ' button')).get(0).click();
       expect(element.all(by.css(comp)).get(0).getText())
-          .toEqual('show Switch Primary show = false\nAlternate text while primary text is hidden');
+          .toEqual('showSwitch Primary show = false\nAlternate text while primary text is hidden');
     });
   });
 

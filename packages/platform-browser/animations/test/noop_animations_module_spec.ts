@@ -12,7 +12,7 @@ import {TestBed} from '@angular/core/testing';
 
 import {NoopAnimationsModule} from '../src/module';
 
-export function main() {
+{
   describe('NoopAnimationsModule', () => {
     beforeEach(() => { TestBed.configureTestingModule({imports: [NoopAnimationsModule]}); });
 

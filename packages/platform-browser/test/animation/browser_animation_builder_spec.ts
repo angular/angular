@@ -15,8 +15,9 @@ import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {BrowserAnimationBuilder} from '../../animations/src/animation_builder';
 import {el} from '../../testing/src/browser_util';
 
-export function main() {
+{
   describe('BrowserAnimationBuilder', () => {
+    if (isNode) return;
     let element: any;
     beforeEach(() => {
       element = el('<div></div>');

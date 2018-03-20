@@ -9,7 +9,7 @@
 
 
 export class CopierService {
-    private fakeElem: HTMLTextAreaElement;
+    private fakeElem: HTMLTextAreaElement|null;
 
     /**
      * Creates a fake textarea element, sets its value from `text` property,

@@ -1,32 +1,24 @@
+// #docplaster
 import { NgModule } from '@angular/core';
 import { BrowserModule }  from '@angular/platform-browser';
 
+import { APP_CONFIG, HERO_DI_CONFIG }    from './app.config';
 import { AppComponent } from './app.component';
 import { CarComponent } from './car/car.component';
 import { HeroesComponent } from './heroes/heroes.component';
 import { HeroListComponent } from './heroes/hero-list.component';
 import { InjectorComponent } from './injector.component';
+import { Logger } from './logger.service';
 import { TestComponent } from './test.component';
-import { APP_CONFIG, HERO_DI_CONFIG }    from './app.config';
 import { UserService } from './user.service';
-import {
-  ProvidersComponent,
-  Provider1Component,
-  Provider3Component,
-  Provider4Component,
-  Provider5Component,
-  Provider6aComponent,
-  Provider6bComponent,
-  Provider7Component,
-  Provider8Component,
-  Provider9Component,
-  Provider10Component,
-} from './providers.component';
+
+import { ProvidersModule } from './providers.module';
 
 // #docregion ngmodule
 @NgModule({
   imports: [
-    BrowserModule
+    BrowserModule,
+    ProvidersModule
   ],
   declarations: [
     AppComponent,
@@ -35,26 +27,19 @@ import {
     // #enddocregion ngmodule
     HeroListComponent,
     InjectorComponent,
-    TestComponent,
-    ProvidersComponent,
-    Provider1Component,
-    Provider3Component,
-    Provider4Component,
-    Provider5Component,
-    Provider6aComponent,
-    Provider6bComponent,
-    Provider7Component,
-    Provider8Component,
-    Provider9Component,
-    Provider10Component,
+    TestComponent
     // #docregion ngmodule
   ],
-  // #docregion ngmodule-providers
+  // #docregion providers, providers-2
   providers: [
+    // #enddocregion providers
+    Logger,
+    // #docregion providers
     UserService,
     { provide: APP_CONFIG, useValue: HERO_DI_CONFIG }
   ],
-  // #enddocregion ngmodule-providers
+  // #enddocregion providers, providers-2
+  exports: [ CarComponent, HeroesComponent ],
   bootstrap: [ AppComponent ]
 })
 export class AppModule { }

@@ -8,12 +8,15 @@
 
 
 
+import {CompileReflector} from '../compile_reflector';
+
 import * as o from './output_ast';
 import {debugOutputAstAsTypeScript} from './ts_emitter';
 
-export function interpretStatements(statements: o.Statement[]): {[key: string]: any} {
+export function interpretStatements(
+    statements: o.Statement[], reflector: CompileReflector): {[key: string]: any} {
   const ctx = new _ExecutionContext(null, null, null, new Map<string, any>());
-  const visitor = new StatementInterpreter();
+  const visitor = new StatementInterpreter(reflector);
   visitor.visitAllStatements(statements, ctx);
   const result: {[key: string]: any} = {};
   ctx.exports.forEach((exportName) => { result[exportName] = ctx.vars.get(exportName); });
@@ -88,10 +91,12 @@ function createDynamicClass(
 }
 
 class StatementInterpreter implements o.StatementVisitor, o.ExpressionVisitor {
+  constructor(private reflector: CompileReflector) {}
   debugAst(ast: o.Expression|o.Statement|o.Type): string { return debugOutputAstAsTypeScript(ast); }
 
   visitDeclareVarStmt(stmt: o.DeclareVarStmt, ctx: _ExecutionContext): any {
-    ctx.vars.set(stmt.name, stmt.value.visitExpression(this, ctx));
+    const initialValue = stmt.value ? stmt.value.visitExpression(this, ctx) : undefined;
+    ctx.vars.set(stmt.name, initialValue);
     if (stmt.hasModifier(o.StmtModifier.Exported)) {
       ctx.exports.push(stmt.name);
     }
@@ -221,13 +226,16 @@ class StatementInterpreter implements o.StatementVisitor, o.ExpressionVisitor {
     throw stmt.error.visitExpression(this, ctx);
   }
   visitCommentStmt(stmt: o.CommentStmt, context?: any): any { return null; }
+  visitJSDocCommentStmt(stmt: o.JSDocCommentStmt, context?: any): any { return null; }
   visitInstantiateExpr(ast: o.InstantiateExpr, ctx: _ExecutionContext): any {
     const args = this.visitAllExpressions(ast.args, ctx);
     const clazz = ast.classExpr.visitExpression(this, ctx);
     return new clazz(...args);
   }
   visitLiteralExpr(ast: o.LiteralExpr, ctx: _ExecutionContext): any { return ast.value; }
-  visitExternalExpr(ast: o.ExternalExpr, ctx: _ExecutionContext): any { return ast.value.runtime; }
+  visitExternalExpr(ast: o.ExternalExpr, ctx: _ExecutionContext): any {
+    return this.reflector.resolveExternalReference(ast.value);
+  }
   visitConditionalExpr(ast: o.ConditionalExpr, ctx: _ExecutionContext): any {
     if (ast.condition.visitExpression(this, ctx)) {
       return ast.trueCase.visitExpression(this, ctx);

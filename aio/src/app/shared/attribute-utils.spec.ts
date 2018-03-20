@@ -8,29 +8,26 @@ describe('Attribute Utilities', () => {
   beforeEach(() => {
     const div = document.createElement('div');
     div.innerHTML = `<div a b="true" c="false" D="foo" d-E></div>`;
-    testEl = div.querySelector('div');
+    testEl = div.querySelector('div')!;
   });
 
   describe('getAttrs', () => {
-
-    beforeEach(() => {
-      this.expectedMap = {
-        a: '',
-        b: 'true',
-        c: 'false',
-        d: 'foo',
-        'd-e': ''
-      };
-    });
+    const expectedMap = {
+      a: '',
+      b: 'true',
+      c: 'false',
+      d: 'foo',
+      'd-e': ''
+    };
 
     it('should get attr map from getAttrs(element)', () => {
       const actual = getAttrs(testEl);
-      expect(actual).toEqual(this.expectedMap);
+      expect(actual).toEqual(expectedMap);
     });
 
     it('should get attr map from getAttrs(elementRef)', () => {
       const actual = getAttrs(new ElementRef(testEl));
-      expect(actual).toEqual(this.expectedMap);
+      expect(actual).toEqual(expectedMap);
     });
   });
 

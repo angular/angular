@@ -1,9 +1,0 @@
-{
-  "description": "Lifecycle Hooks",
-  "basePath": "src/",
-  "files":["!**/*.d.ts",  "!**/*.js"],
-  "tags": ["lifecycle", "hooks",
-           "OnInit", "OnDestroy", "OnChange", "DoCheck",
-           "AfterContentInit", "AfterContentChecked",
-           "AfterViewInit", "AfterViewChecked"]
-}

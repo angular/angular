@@ -15,11 +15,12 @@
     "@angular/core": "file:../../../dist/packages-dist/core",
     "@angular/http": "file:../../../dist/packages-dist/http",
     "@angular/platform-browser": "file:../../../dist/packages-dist/platform-browser",
+    "@angular/platform-browser-dynamic": "file:../../../dist/packages-dist/platform-browser-dynamic",
     "@angular/platform-server": "file:../../../dist/packages-dist/platform-server",
     "express": "^4.14.1",
     "rxjs": "file:../../../node_modules/rxjs",
-    "typescript": "2.1.6",
-    "zone.js": "^0.8.10"
+    "typescript": "file:../../../node_modules/typescript",
+    "zone.js": "file:../../../node_modules/zone.js"
   },
   "devDependencies": {
     "@types/jasmine": "2.5.41",
@@ -32,7 +33,7 @@
     "webpack": "^2.2.1"
   },
   "scripts": {
-    "postinstall": "webdriver-manager update",
+    "postinstall": "webdriver-manager update --gecko false --standalone false $CHROMEDRIVER_VERSION_ARG",
     "build": "./build.sh",
     "test": "npm run build && concurrently \"npm run serve\" \"npm run protractor\" --kill-others --success first",
     "serve": "node built/server-bundle.js",

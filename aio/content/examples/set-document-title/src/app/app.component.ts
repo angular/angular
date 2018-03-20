@@ -5,7 +5,7 @@ import { Component } from '@angular/core';
 import { Title }     from '@angular/platform-browser';
 
 @Component({
-selector: 'my-app',
+selector: 'app-root',
 template:
   `<p>
     Select a title to set on the current HTML document:

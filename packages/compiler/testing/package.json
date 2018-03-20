@@ -1,7 +1,11 @@
 {
   "name": "@angular/compiler/testing",
-  "typings": "../testing.d.ts",
+  "typings": "./testing.d.ts",
   "main": "../bundles/compiler-testing.umd.js",
-  "module": "../@angular/compiler/testing.es5.js",
-  "es2015": "../@angular/compiler/testing.js"
+  "module": "../fesm5/testing.js",
+  "es2015": "../fesm2015/testing.js",
+  "esm5": "../esm5/testing/testing.js",
+  "esm2015": "../esm2015/testing/testing.js",
+  "fesm5": "../fesm5/testing.js",
+  "fesm2015": "../fesm2015/testing.js"
 }

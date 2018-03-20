@@ -10,24 +10,16 @@ import {EventEmitter, Injectable, Type, ɵstringify as stringify} from '@angular
 import {MessageBus} from './message_bus';
 import {Serializer, SerializerTypes} from './serializer';
 
-
-
 /**
  * @experimental WebWorker support in Angular is experimental.
  */
-export abstract class ClientMessageBrokerFactory {
-  /**
-   * Initializes the given channel and attaches a new {@link ClientMessageBroker} to it.
-   */
-  abstract createMessageBroker(channel: string, runInZone?: boolean): ClientMessageBroker;
-}
-
 @Injectable()
-export class ClientMessageBrokerFactory_ extends ClientMessageBrokerFactory {
+export class ClientMessageBrokerFactory {
   /** @internal */
   _serializer: Serializer;
+
+  /** @internal */
   constructor(private _messageBus: MessageBus, _serializer: Serializer) {
-    super();
     this._serializer = _serializer;
   }
 
@@ -36,16 +28,8 @@ export class ClientMessageBrokerFactory_ extends ClientMessageBrokerFactory {
    */
   createMessageBroker(channel: string, runInZone: boolean = true): ClientMessageBroker {
     this._messageBus.initChannel(channel, runInZone);
-    return new ClientMessageBroker_(this._messageBus, this._serializer, channel);
+    return new ClientMessageBroker(this._messageBus, this._serializer, channel);
   }
-}
-
-/**
- * @experimental WebWorker support in Angular is experimental.
- */
-export abstract class ClientMessageBroker {
-  abstract runOnService(args: UiArguments, returnType: Type<any>|SerializerTypes|null):
-      Promise<any>|null;
 }
 
 interface PromiseCompleter {
@@ -53,14 +37,17 @@ interface PromiseCompleter {
   reject: (err: any) => void;
 }
 
-export class ClientMessageBroker_ extends ClientMessageBroker {
+/**
+ * @experimental WebWorker support in Angular is experimental.
+ */
+export class ClientMessageBroker {
   private _pending = new Map<string, PromiseCompleter>();
   private _sink: EventEmitter<any>;
   /** @internal */
   public _serializer: Serializer;
 
-  constructor(messageBus: MessageBus, _serializer: Serializer, public channel: any) {
-    super();
+  /** @internal */
+  constructor(messageBus: MessageBus, _serializer: Serializer, private channel: any) {
     this._sink = messageBus.to(channel);
     this._serializer = _serializer;
     const source = messageBus.from(channel);
@@ -79,7 +66,7 @@ export class ClientMessageBroker_ extends ClientMessageBroker {
     return id;
   }
 
-  runOnService(args: UiArguments, returnType: Type<any>|SerializerTypes): Promise<any>|null {
+  runOnService(args: UiArguments, returnType: Type<any>|SerializerTypes|null): Promise<any>|null {
     const fnArgs: any[] = [];
     if (args.args) {
       args.args.forEach(argument => {

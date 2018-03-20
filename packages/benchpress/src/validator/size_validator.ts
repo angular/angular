@@ -17,7 +17,10 @@ import {Validator} from '../validator';
 @Injectable()
 export class SizeValidator extends Validator {
   static SAMPLE_SIZE = new InjectionToken('SizeValidator.sampleSize');
-  static PROVIDERS = [SizeValidator, {provide: SizeValidator.SAMPLE_SIZE, useValue: 10}];
+  static PROVIDERS = [
+    {provide: SizeValidator, deps: [SizeValidator.SAMPLE_SIZE]},
+    {provide: SizeValidator.SAMPLE_SIZE, useValue: 10}
+  ];
 
   constructor(@Inject(SizeValidator.SAMPLE_SIZE) private _sampleSize: number) { super(); }
 

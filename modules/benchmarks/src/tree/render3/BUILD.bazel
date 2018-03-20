@@ -1,0 +1,18 @@
+package(default_visibility = ["//visibility:public"])
+
+load("//tools:defaults.bzl", "ng_module")
+
+ng_module(
+    name = "render3_lib",
+    srcs = glob(
+        [
+            "**/*.ts",
+        ],
+    ),
+    deps = [
+        "//modules/benchmarks/src/tree:util_lib",
+        "//packages:types",
+        "//packages/core",
+        "@rxjs",
+    ],
+)

@@ -32,7 +32,7 @@ import {Headers} from './headers';
  * can be accessed many times. There are other differences in the implementation, but this is the
  * most significant.
  *
- * @experimental
+ * @deprecated use @angular/common/http instead
  */
 export class Response extends Body {
   /**

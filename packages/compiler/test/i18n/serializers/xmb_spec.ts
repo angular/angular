@@ -11,7 +11,7 @@ import {Xmb} from '@angular/compiler/src/i18n/serializers/xmb';
 import {HtmlParser} from '@angular/compiler/src/ml_parser/html_parser';
 import {DEFAULT_INTERPOLATION_CONFIG} from '@angular/compiler/src/ml_parser/interpolation_config';
 
-export function main(): void {
+{
   describe('XMB serializer', () => {
     const HTML = `
 <p>not translatable</p>

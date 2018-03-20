@@ -7,7 +7,7 @@ import { Hero } from './hero';
 // #docregion input-output-2
 @Component({
 // #enddocregion input-output-2
-  selector: 'hero-detail',
+  selector: 'app-hero-detail',
   // #docregion input-output-2
   inputs: ['hero'],
   outputs: ['deleteRequest'],
@@ -30,12 +30,12 @@ export class HeroDetailComponent {
   hero: Hero = new Hero(-1, '', 'Zzzzzzzz'); // default sleeping hero
   // heroImageUrl = 'http://www.wpclipart.com/cartoon/people/hero/hero_silhoutte_T.png';
   // Public Domain terms of use: http://www.wpclipart.com/terms.html
-  heroImageUrl = 'images/hero.png';
+  heroImageUrl = 'assets/images/hero.png';
   lineThrough = '';
   @Input() prefix = '';
 
   // #docregion deleteRequest
-  // This component make a request but it can't actually delete a hero.
+  // This component makes a request but it can't actually delete a hero.
   deleteRequest = new EventEmitter<Hero>();
 
   delete() {
@@ -48,7 +48,7 @@ export class HeroDetailComponent {
 }
 
 @Component({
-  selector: 'big-hero-detail',
+  selector: 'app-big-hero-detail',
   template: `
   <div class="detail">
     <img src="{{heroImageUrl}}">

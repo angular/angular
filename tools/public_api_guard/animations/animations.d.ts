@@ -43,6 +43,7 @@ export declare abstract class AnimationBuilder {
 
 /** @experimental */
 export interface AnimationEvent {
+    disabled: boolean;
     element: any;
     fromState: string;
     phaseName: string;
@@ -151,6 +152,11 @@ export interface AnimationStaggerMetadata extends AnimationMetadata {
 /** @experimental */
 export interface AnimationStateMetadata extends AnimationMetadata {
     name: string;
+    options?: {
+        params: {
+            [name: string]: any;
+        };
+    };
     styles: AnimationStyleMetadata;
 }
 
@@ -167,7 +173,9 @@ export interface AnimationStyleMetadata extends AnimationMetadata {
 /** @experimental */
 export interface AnimationTransitionMetadata extends AnimationMetadata {
     animation: AnimationMetadata | AnimationMetadata[];
-    expr: string;
+    expr: string | ((fromState: string, toState: string, element?: any, params?: {
+        [key: string]: any;
+    }) => boolean);
     options: AnimationOptions | null;
 }
 
@@ -194,8 +202,8 @@ export declare function keyframes(steps: AnimationStyleMetadata[]): AnimationKey
 /** @experimental */
 export declare class NoopAnimationPlayer implements AnimationPlayer {
     parentPlayer: AnimationPlayer | null;
-    totalTime: number;
-    constructor();
+    readonly totalTime: number;
+    constructor(duration?: number, delay?: number);
     destroy(): void;
     finish(): void;
     getPosition(): number;
@@ -221,7 +229,11 @@ export declare function sequence(steps: AnimationMetadata[], options?: Animation
 export declare function stagger(timings: string | number, animation: AnimationMetadata | AnimationMetadata[]): AnimationStaggerMetadata;
 
 /** @experimental */
-export declare function state(name: string, styles: AnimationStyleMetadata): AnimationStateMetadata;
+export declare function state(name: string, styles: AnimationStyleMetadata, options?: {
+    params: {
+        [name: string]: any;
+    };
+}): AnimationStateMetadata;
 
 /** @experimental */
 export declare function style(tokens: '*' | {
@@ -231,7 +243,9 @@ export declare function style(tokens: '*' | {
 }>): AnimationStyleMetadata;
 
 /** @experimental */
-export declare function transition(stateChangeExpr: string, steps: AnimationMetadata | AnimationMetadata[], options?: AnimationOptions | null): AnimationTransitionMetadata;
+export declare function transition(stateChangeExpr: string | ((fromState: string, toState: string, element?: any, params?: {
+    [key: string]: any;
+}) => boolean), steps: AnimationMetadata | AnimationMetadata[], options?: AnimationOptions | null): AnimationTransitionMetadata;
 
 /** @experimental */
 export declare function trigger(name: string, definitions: AnimationMetadata[]): AnimationTriggerMetadata;

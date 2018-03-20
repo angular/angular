@@ -7,7 +7,6 @@
  */
 
 import * as chars from '../chars';
-import {CompilerInjectable} from '../injectable';
 import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from '../ml_parser/interpolation_config';
 import {escapeRegExp} from '../util';
 
@@ -29,7 +28,6 @@ function _createInterpolateRegExp(config: InterpolationConfig): RegExp {
   return new RegExp(pattern, 'g');
 }
 
-@CompilerInjectable()
 export class Parser {
   private errors: ParserError[] = [];
 
@@ -479,7 +477,9 @@ export class _ParseAST {
       switch (operator) {
         case '+':
           this.advance();
-          return this.parsePrefix();
+          result = this.parsePrefix();
+          return new Binary(
+              this.span(start), '-', result, new LiteralPrimitive(new ParseSpan(start, start), 0));
         case '-':
           this.advance();
           result = this.parsePrefix();

@@ -22,7 +22,7 @@ export class ServerRendererFactory2 implements RendererFactory2 {
       private ngZone: NgZone, @Inject(DOCUMENT) private document: any,
       private sharedStylesHost: SharedStylesHost) {
     this.defaultRenderer = new DefaultServerRenderer2(document, ngZone, this.schema);
-  };
+  }
 
   createRenderer(element: any, type: RendererType2|null): Renderer2 {
     if (!element || !type) {

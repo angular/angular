@@ -37,7 +37,7 @@ class BadTemplateUrl {
 
 // Tests for angular/testing bundle specific to the browser environment.
 // For general tests, see test/testing/testing_public_spec.ts.
-export function main() {
+{
   describe('test APIs for the browser', () => {
     describe('using the async helper', () => {
       let actuallyDone: boolean;
@@ -123,7 +123,7 @@ export function main() {
            TestBed.compileComponents().then(() => {
              const componentFixture = TestBed.createComponent(ExternalTemplateComp);
              componentFixture.detectChanges();
-             expect(componentFixture.nativeElement.textContent).toEqual('from external template\n');
+             expect(componentFixture.nativeElement.textContent).toEqual('from external template');
            });
          }),
          10000);  // Long timeout here because this test makes an actual ResourceLoader request, and

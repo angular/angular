@@ -2,11 +2,8 @@
 import { Component } from '@angular/core';
 
 @Component({
-  selector: 'my-app',
-  template: `
-  <div class="container">
-    <h1>Reactive Forms</h1>
-    <hero-list></hero-list>
-  </div>`
+  selector: 'app-root',
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.css']
 })
 export class AppComponent { }

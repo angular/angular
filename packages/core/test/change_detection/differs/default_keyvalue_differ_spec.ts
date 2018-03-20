@@ -12,7 +12,7 @@ import {kvChangesAsString, testChangesAsString} from '../../change_detection/uti
 
 
 // todo(vicb): Update the code & tests for object equality
-export function main() {
+{
   describe('keyvalue differ', function() {
     describe('DefaultKeyValueDiffer', function() {
       let differ: DefaultKeyValueDiffer<any, any>;

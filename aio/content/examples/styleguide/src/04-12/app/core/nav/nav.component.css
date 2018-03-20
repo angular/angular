@@ -28,13 +28,6 @@
     background: rgb(83,109,254);
 }
 
-.md-title-icon > i {
-  background-image: url("assets/ng.png");
-  background-repeat: no-repeat;
-  background-position: center center;
-  padding: 1em 2em;
-}
-
 .mdl-layout__header-row {
   height: 56px;
   padding: 0 16px 0 72px;

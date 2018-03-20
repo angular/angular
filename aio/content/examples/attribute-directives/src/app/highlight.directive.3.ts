@@ -1,15 +1,16 @@
 /* tslint:disable:member-ordering */
-// #docregion
+// #docregion, imports
 import { Directive, ElementRef, HostListener, Input } from '@angular/core';
+// #enddocregion imports
 
 @Directive({
-  selector: '[myHighlight]'
+  selector: '[appHighlight]'
 })
 export class HighlightDirective {
 
   constructor(private el: ElementRef) { }
 
-  @Input('myHighlight') highlightColor: string;
+  @Input('appHighlight') highlightColor: string;
 
   // #docregion mouse-enter
   @HostListener('mouseenter') onMouseEnter() {

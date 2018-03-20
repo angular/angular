@@ -1,3 +1,98 @@
+// VARIABLES
+$hamburgerShownMargin: 0;
+$hamburgerHiddenMargin: 0 24px 0 -88px;
+
+
+// DOCS PAGE / STANDARD: TOPNAV TOOLBAR FIXED
+mat-toolbar.mat-toolbar {
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: 0;
+  z-index: 10;
+  box-shadow: 0 2px 5px 0 rgba(0,0,0,0.30);
+
+  mat-toolbar-row {
+    padding: 0 16px 0 0;
+  }
+
+  mat-icon {
+    color: $white;
+  }
+}
+
+
+// HOME PAGE OVERRIDE: TOPNAV TOOLBAR
+aio-shell.page-home mat-toolbar.mat-toolbar {
+  background-color: $blue;
+
+  @media (min-width: 481px) {
+    &:not(.transitioning) {
+      background-color: transparent;
+      transition: background-color .2s linear;
+    }
+  }
+}
+
+
+// MARKETING PAGES OVERRIDE: TOPNAV TOOLBAR AND HAMBURGER
+aio-shell.page-home mat-toolbar.mat-toolbar,
+aio-shell.page-features mat-toolbar.mat-toolbar,
+aio-shell.page-events mat-toolbar.mat-toolbar,
+aio-shell.page-resources mat-toolbar.mat-toolbar {
+  box-shadow: none;
+
+  // FIXED TOPNAV TOOLBAR FOR SMALL MOBILE
+  @media (min-width: 481px) {
+    position: absolute;
+  }
+}
+
+
+// DOCS PAGES OVERRIDE: HAMBURGER
+aio-shell.folder-api mat-toolbar.mat-toolbar,
+aio-shell.folder-docs mat-toolbar.mat-toolbar,
+aio-shell.folder-guide mat-toolbar.mat-toolbar,
+aio-shell.folder-tutorial mat-toolbar.mat-toolbar {
+  @media (min-width: 992px) {
+    .hamburger.mat-button {
+      // Hamburger shown on non-marketing pages on large screens.
+      margin: $hamburgerShownMargin;
+    }
+  }
+}
+
+
+// HAMBURGER BUTTON
+.hamburger.mat-button {
+  height: 100%;
+  margin: $hamburgerShownMargin;
+  padding: 0;
+
+  &:not(.starting) {
+    transition-duration: .4s;
+    transition-property: color, margin;
+    transition-timing-function: cubic-bezier(.25, .8, .25, 1);
+  }
+
+  @media (min-width: 992px) {
+    // Hamburger hidden by default on large screens.
+    // (Will be shown per doc.)
+    margin: $hamburgerHiddenMargin;
+  }
+
+  &:hover {
+    color: $offwhite;
+  }
+
+  & .mat-icon {
+    color: white;
+    position: inherit;
+  }
+}
+
+
+// HOME NAV-LINK
 .nav-link.home img {
   position: relative;
   margin-top: -21px;
@@ -12,6 +107,8 @@
   }
 }
 
+
+// TOP MENU
 aio-top-menu {
   display: flex;
   flex-direction: row;
@@ -56,55 +153,6 @@ aio-top-menu {
   }
 }
 
-// HOME PAGE OVERRIDE: TOPNAV TOOLBAR HAMBURGER MENU
-aio-shell.page-home md-toolbar.app-toolbar.mat-toolbar {
-  background-color: transparent;
-  transition: background-color .2s linear .3s;
-
-  @media (max-width: 480px) {
-    background-color: $blue;
-  }
-}
-
-// DOCS PAGE / STANDARD: TOPNAV TOOLBAR FIXED
-md-toolbar.mat-toolbar {
-  position: fixed;
-  top: 0;
-  right: 0;
-  left: 0;
-  z-index: 10;
-  padding: 0 16px 0 0;
-  box-shadow: 0 2px 5px 0 rgba(0,0,0,0.30);
-
-  md-icon {
-    color: $white;
-  }
-}
-
-// MARKETING PAGES OVERRIDE: TOPNAV TOOLBAR AND HAMBURGER
-aio-shell.page-home md-toolbar.mat-toolbar,
-aio-shell.page-features md-toolbar.mat-toolbar,
-aio-shell.page-events md-toolbar.mat-toolbar,
-aio-shell.page-resources md-toolbar.mat-toolbar {
-  // FIXED TOPNAV TOOLBAR FOR SMALL MOBILE
-  @media (min-width: 481px) {
-    position: absolute;
-  }
-
-  @media (min-width: 992px) {
-    button.hamburger {
-      margin: 0 24px 0 -88px;
-    }
-  }
-}
-
-// REMOVE BOX SHADOW ON CERTAIN MARKETING PAGES
-aio-shell.page-home md-toolbar.mat-toolbar,
-aio-shell.page-events md-toolbar.mat-toolbar,
-aio-shell.page-resources md-toolbar.mat-toolbar {
-  box-shadow: none;
-}
-
 
 // SEARCH BOX
 aio-search-box.search-container {
@@ -125,6 +173,7 @@ aio-search-box.search-container {
     width: 180px;
     max-width: 240px;
     height: 50%;
+    -webkit-appearance: none;
 
     &:focus {
         outline: none;

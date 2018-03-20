@@ -68,7 +68,7 @@ export class DoCheckComponent implements DoCheck {
 
   reset() {
     this.changeDetected = true;
-    this.changeLog.length = 0;
+    this.changeLog = [];
   }
 }
 

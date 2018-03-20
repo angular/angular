@@ -6,20 +6,20 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ReflectiveInjector, ɵglobal as global} from '@angular/core';
-import {ApplicationRef, ApplicationRef_} from '@angular/core/src/application_ref';
+import {Injector, ɵglobal as global} from '@angular/core';
+import {ApplicationRef} from '@angular/core/src/application_ref';
 import {SpyObject} from '@angular/core/testing/src/testing_internal';
 
 export class SpyApplicationRef extends SpyObject {
-  constructor() { super(ApplicationRef_); }
+  constructor() { super(ApplicationRef); }
 }
 
 export class SpyComponentRef extends SpyObject {
   injector: any /** TODO #9100 */;
   constructor() {
     super();
-    this.injector = ReflectiveInjector.resolveAndCreate(
-        [{provide: ApplicationRef, useClass: SpyApplicationRef}]);
+    this.injector =
+        Injector.create([{provide: ApplicationRef, useClass: SpyApplicationRef, deps: []}]);
   }
 }
 

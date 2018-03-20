@@ -1,9 +1,9 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 
 import { TopMenuComponent } from './top-menu.component';
-import { NavigationService, NavigationViews, NavigationNode } from 'app/navigation/navigation.service';
+import { NavigationService, NavigationViews } from 'app/navigation/navigation.service';
 
 describe('TopMenuComponent', () => {
   let component: TopMenuComponent;

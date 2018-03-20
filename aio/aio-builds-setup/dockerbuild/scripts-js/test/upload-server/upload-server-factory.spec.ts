@@ -116,7 +116,7 @@ describe('uploadServerFactory', () => {
 
     it('should log the server address info on \'listening\'', () => {
       const consoleInfoSpy = spyOn(console, 'info');
-      const server = createUploadServer('builds/dir');
+      const server = createUploadServer();
       server.address = () => ({address: 'foo', family: '', port: 1337});
 
       expect(consoleInfoSpy).not.toHaveBeenCalled();

@@ -1,7 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { Router }            from '@angular/router';
 
-import { Hero, HeroService } from '../model';
+import { Observable } from 'rxjs';
+
+import { Hero } from '../model/hero';
+import { HeroService } from '../model/hero.service';
 
 @Component({
   selector: 'app-heroes',
@@ -9,7 +12,7 @@ import { Hero, HeroService } from '../model';
   styleUrls: [ './hero-list.component.css' ]
 })
 export class HeroListComponent implements OnInit {
-  heroes: Promise<Hero[]>;
+  heroes: Observable<Hero[]>;
   selectedHero: Hero;
 
   constructor(

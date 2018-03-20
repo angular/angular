@@ -10,11 +10,13 @@ import {Component, NgModule} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 
 import {AsyncObservablePipeComponent, AsyncPromisePipeComponent} from './async_pipe';
-import {DatePipeComponent} from './date_pipe';
+import {CurrencyPipeComponent, DeprecatedCurrencyPipeComponent} from './currency_pipe';
+import {DatePipeComponent, DeprecatedDatePipeComponent} from './date_pipe';
 import {I18nPluralPipeComponent, I18nSelectPipeComponent} from './i18n_pipe';
 import {JsonPipeComponent} from './json_pipe';
 import {LowerUpperPipeComponent} from './lowerupper_pipe';
-import {CurrencyPipeComponent, NumberPipeComponent, PercentPipeComponent} from './number_pipe';
+import {DeprecatedNumberPipeComponent, NumberPipeComponent} from './number_pipe';
+import {DeprecatedPercentPipeComponent, PercentPipeComponent} from './percent_pipe';
 import {SlicePipeListComponent, SlicePipeStringComponent} from './slice_pipe';
 
 @Component({
@@ -55,8 +57,9 @@ export class ExampleAppComponent {
 @NgModule({
   declarations: [
     AsyncPromisePipeComponent, AsyncObservablePipeComponent, ExampleAppComponent, JsonPipeComponent,
-    DatePipeComponent, LowerUpperPipeComponent, NumberPipeComponent, PercentPipeComponent,
-    CurrencyPipeComponent, SlicePipeStringComponent, SlicePipeListComponent,
+    DatePipeComponent, DeprecatedDatePipeComponent, LowerUpperPipeComponent, NumberPipeComponent,
+    PercentPipeComponent, DeprecatedPercentPipeComponent, CurrencyPipeComponent,
+    DeprecatedCurrencyPipeComponent, SlicePipeStringComponent, SlicePipeListComponent,
     I18nPluralPipeComponent, I18nSelectPipeComponent
   ],
   imports: [BrowserModule],

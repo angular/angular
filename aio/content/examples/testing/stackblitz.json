@@ -1,0 +1,19 @@
+{
+  "description": "Heroes Test App",
+  "files":[
+    "src/styles.css",
+
+    "src/app/**/*.css",
+    "src/app/**/*.html",
+    "src/app/**/*.ts",
+
+    "!src/app/bag/*.*",
+
+    "!src/test.ts",
+
+    "src/test.css",
+    "src/main.ts",
+    "src/index.html"
+  ],
+  "tags": ["testing"]
+}

@@ -9,7 +9,6 @@
 import {DebugContext} from './view';
 
 export const ERROR_TYPE = 'ngType';
-export const ERROR_COMPONENT_TYPE = 'ngComponentType';
 export const ERROR_DEBUG_CONTEXT = 'ngDebugContext';
 export const ERROR_ORIGINAL_ERROR = 'ngOriginalError';
 export const ERROR_LOGGER = 'ngErrorLogger';

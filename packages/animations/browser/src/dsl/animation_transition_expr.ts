@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 export const ANY_STATE = '*';
-export declare type TransitionMatcherFn = (fromState: any, toState: any) => boolean;
+export declare type TransitionMatcherFn =
+    (fromState: any, toState: any, element: any, params: {[key: string]: any}) => boolean;
 
 export function parseTransitionExpr(
     transitionValue: string | TransitionMatcherFn, errors: string[]): TransitionMatcherFn[] {
@@ -65,16 +66,26 @@ function parseAnimationAlias(alias: string, errors: string[]): string|Transition
   }
 }
 
+// DO NOT REFACTOR ... keep the follow set instantiations
+// with the values intact (closure compiler for some reason
+// removes follow-up lines that add the values outside of
+// the constructor...
+const TRUE_BOOLEAN_VALUES = new Set<string>(['true', '1']);
+const FALSE_BOOLEAN_VALUES = new Set<string>(['false', '0']);
+
 function makeLambdaFromStates(lhs: string, rhs: string): TransitionMatcherFn {
+  const LHS_MATCH_BOOLEAN = TRUE_BOOLEAN_VALUES.has(lhs) || FALSE_BOOLEAN_VALUES.has(lhs);
+  const RHS_MATCH_BOOLEAN = TRUE_BOOLEAN_VALUES.has(rhs) || FALSE_BOOLEAN_VALUES.has(rhs);
+
   return (fromState: any, toState: any): boolean => {
     let lhsMatch = lhs == ANY_STATE || lhs == fromState;
     let rhsMatch = rhs == ANY_STATE || rhs == toState;
 
-    if (!lhsMatch && typeof fromState === 'boolean') {
-      lhsMatch = fromState ? lhs === 'true' : lhs === 'false';
+    if (!lhsMatch && LHS_MATCH_BOOLEAN && typeof fromState === 'boolean') {
+      lhsMatch = fromState ? TRUE_BOOLEAN_VALUES.has(lhs) : FALSE_BOOLEAN_VALUES.has(lhs);
     }
-    if (!rhsMatch && typeof toState === 'boolean') {
-      rhsMatch = toState ? rhs === 'true' : rhs === 'false';
+    if (!rhsMatch && RHS_MATCH_BOOLEAN && typeof toState === 'boolean') {
+      rhsMatch = toState ? TRUE_BOOLEAN_VALUES.has(rhs) : FALSE_BOOLEAN_VALUES.has(rhs);
     }
 
     return lhsMatch && rhsMatch;

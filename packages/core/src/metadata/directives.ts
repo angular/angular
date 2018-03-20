@@ -54,7 +54,8 @@ export interface DirectiveDecorator {
    *
    * **Metadata Properties:**
    *
-   * * **exportAs** - name under which the component instance is exported in a template
+   * * **exportAs** - name under which the component instance is exported in a template. Can be
+   * given a single name or a comma-delimited list of names.
    * * **host** - map of class property to host element bindings for events, properties and
    * attributes
    * * **inputs** - list of class property names to data-bind as component inputs
@@ -675,6 +676,74 @@ export interface Component extends Directive {
    * {@link ComponentFactoryResolver}.
    */
   entryComponents?: Array<Type<any>|any[]>;
+
+  /**
+   * If {@link Component#preserveWhitespaces Component.preserveWhitespaces} is set to `false`
+   * potentially superfluous whitespace characters (ones matching the `\s` character class in
+   * JavaScript regular expressions) will be removed from a compiled template. This can greatly
+   * reduce AOT-generated code size as well as speed up view creation.
+   *
+   * Current implementation works according to the following rules:
+   * - all whitespaces at the beginning and the end of a template are removed (trimmed);
+   * - text nodes consisting of whitespaces only are removed (ex.:
+   *   `<button>Action 1</button>  <button>Action 2</button>` will be converted to
+   *   `<button>Action 1</button><button>Action 2</button>` (no whitespaces between buttons);
+   * - series of whitespaces in text nodes are replaced with one space (ex.:
+   *   `<span>\n some text\n</span>` will be converted to `<span> some text </span>`);
+   * - text nodes are left as-is inside HTML tags where whitespaces are significant (ex. `<pre>`,
+   *   `<textarea>`).
+   *
+   * Described transformations may (potentially) influence DOM nodes layout. However, the impact
+   * should so be minimal. That's why starting from Angular 6, the
+   * `preserveWhitespaces` option is `false` by default (whitespace removal).
+   * If you want to change the default setting for all components in your application you can use
+   * the `preserveWhitespaces` option of the AOT compiler.
+   *
+   * Even with the default behavior of whitespace removal, there are ways of preserving whitespaces
+   * in certain fragments of a template. You can either exclude entire DOM sub-tree by using the
+   * `ngPreserveWhitespaces` attribute, ex.:
+   *
+   * ```html
+   * <div ngPreserveWhitespaces>
+   *     whitespaces are preserved here
+   *     <span>    and here </span>
+   * </div>
+   * ```
+   *
+   * Alternatively you can force a space to be preserved in a text node by using the `&ngsp;`
+   * pseudo-entity. `&ngsp;` will be replaced with a space character by Angular's template
+   * compiler, ex.:
+   *
+   * ```html
+   * <a>Spaces</a>&ngsp;<a>between</a>&ngsp;<a>links.</a>
+   * ```
+   *
+   * will be compiled to the equivalent of:
+   *
+   * ```html
+   * <a>Spaces</a> <a>between</a> <a>links.</a>
+   * ```
+   *
+   * Please note that sequences of `&ngsp;` are still collapsed to just one space character when
+   * the `preserveWhitespaces` option is set to `false`. Ex.:
+   *
+   * ```html
+   * <a>before</a>&ngsp;&ngsp;&ngsp;<a>after</a>
+   * ```
+   *
+   * would be equivalent to:
+   *
+   * ```html
+   * <a>before</a> <a>after</a>
+   * ```
+   *
+   * The `&ngsp;` pseudo-entity is useful for forcing presence of
+   * one space (a text node having `&ngsp;` pseudo-entities will never be removed), but it is not
+   * meant to mark sequences of whitespace characters. The previously described
+   * `ngPreserveWhitespaces` attribute is more useful for preserving sequences of whitespace
+   * characters.
+   */
+  preserveWhitespaces?: boolean;
 }
 
 /**
@@ -714,12 +783,35 @@ export interface PipeDecorator {
  * @stable
  */
 export interface Pipe {
+  /**
+   * Name of the pipe.
+   *
+   * The pipe name is used in template bindings. For example if a pipe is named
+   * `myPipe` then it would be used in the template binding expression like
+   * so:  `{{ exp | myPipe }}`.
+   */
   name: string;
+
+  /**
+   * If Pipe is pure (its output depends only on its input.)
+   *
+   * Normally pipe's `transform` method is only invoked when the inputs to pipe`s
+   * `transform` method change. If the pipe has internal state (it's result are
+   * dependant on state other than its arguments) than set `pure` to `false` so
+   * that the pipe is invoked on each change-detection even if the arguments to the
+   * pipe do not change.
+   */
   pure?: boolean;
 }
 
 /**
  * Pipe decorator and metadata.
+ *
+ * Use the `@Pipe` annotation to declare that a given class is a pipe. A pipe
+ * class must also implement {@link PipeTransform} interface.
+ *
+ * To use the pipe include a reference to the pipe class in
+ * {@link NgModule#declarations}.
  *
  * @stable
  * @Annotation

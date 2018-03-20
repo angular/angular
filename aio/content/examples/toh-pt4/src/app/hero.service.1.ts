@@ -1,24 +1,24 @@
+/* Newly generated and synchronous versions */
 // #docplaster
-// #docregion
-// #docregion empty-class, full
+// #docregion, new
 import { Injectable } from '@angular/core';
 
-// #enddocregion empty-class
+// #enddocregion new
 import { Hero } from './hero';
 import { HEROES } from './mock-heroes';
 
-// #docregion empty-class, getHeroes-stub
+// #docregion new
 @Injectable()
 export class HeroService {
-  // #enddocregion empty-class, getHeroes-stub, full
-  /*
-  // #docregion getHeroes-stub
-  getHeroes(): void {} // stub
-  // #enddocregion getHeroes-stub
-  */
-  // #docregion full
+
+  constructor() { }
+
+  // #enddocregion new
+  // #docregion getHeroes
   getHeroes(): Hero[] {
     return HEROES;
   }
-  // #docregion empty-class, getHeroes-stub
+  // #enddocregion getHeroes
+  // #docregion new
 }
+// #enddocregion, new

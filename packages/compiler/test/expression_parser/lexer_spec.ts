@@ -58,7 +58,7 @@ function expectErrorToken(token: Token, index: any, message: string) {
   expect(token.toString()).toEqual(message);
 }
 
-export function main() {
+{
   describe('lexer', () => {
     describe('token', () => {
       it('should tokenize a simple identifier', () => {

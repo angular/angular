@@ -6,10 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ɵDepFlags as DepFlags, ɵNodeFlags as NodeFlags} from '@angular/core';
-
 import {CompileDiDependencyMetadata, CompileEntryComponentMetadata, CompileProviderMetadata, CompileTokenMetadata} from '../compile_metadata';
 import {CompileReflector} from '../compile_reflector';
+import {DepFlags, NodeFlags} from '../core';
 import {Identifiers, createTokenForExternalReference} from '../identifiers';
 import {LifecycleHooks} from '../lifecycle_reflector';
 import * as o from '../output/output_ast';
@@ -29,6 +28,9 @@ export function providerDef(ctx: OutputContext, providerAst: ProviderAst): {
   }
   if (providerAst.providerType === ProviderAstType.PrivateService) {
     flags |= NodeFlags.PrivateProvider;
+  }
+  if (providerAst.isModule) {
+    flags |= NodeFlags.TypeModuleProvider;
   }
   providerAst.lifecycleHooks.forEach((lifecycleHook) => {
     // for regular providers, we only support ngOnDestroy
@@ -127,7 +129,7 @@ function tokenExpr(ctx: OutputContext, tokenMeta: CompileTokenMetadata): o.Expre
 
 export function depDef(ctx: OutputContext, dep: CompileDiDependencyMetadata): o.Expression {
   // Note: the following fields have already been normalized out by provider_analyzer:
-  // - isAttribute, isSelf, isHost
+  // - isAttribute, isHost
   const expr = dep.isValue ? convertValueToOutputAst(ctx, dep.value) : tokenExpr(ctx, dep.token !);
   let flags = DepFlags.None;
   if (dep.isSkipSelf) {
@@ -135,6 +137,9 @@ export function depDef(ctx: OutputContext, dep: CompileDiDependencyMetadata): o.
   }
   if (dep.isOptional) {
     flags |= DepFlags.Optional;
+  }
+  if (dep.isSelf) {
+    flags |= DepFlags.Self;
   }
   if (dep.isValue) {
     flags |= DepFlags.Value;

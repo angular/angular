@@ -9,7 +9,7 @@
 
 import {BrowserDetection} from '../testing/src/browser_util';
 
-export function main() {
+{
   describe('BrowserDetection', () => {
 
     const browsers = [

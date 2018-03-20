@@ -24,9 +24,10 @@ import {resolveForwardRef} from './forward_ref';
  * `Key` should not be created directly. {@link ReflectiveInjector} creates keys automatically when
  * resolving
  * providers.
- * @experimental
+ * @deprecated No replacement
  */
 export class ReflectiveKey {
+  public readonly displayName: string;
   /**
    * Private
    */
@@ -34,12 +35,8 @@ export class ReflectiveKey {
     if (!token) {
       throw new Error('Token must be defined!');
     }
+    this.displayName = stringify(this.token);
   }
-
-  /**
-   * Returns a stringified token.
-   */
-  get displayName(): string { return stringify(this.token); }
 
   /**
    * Retrieves a `Key` for a token.
@@ -54,9 +51,6 @@ export class ReflectiveKey {
   static get numberOfKeys(): number { return _globalKeyRegistry.numberOfKeys; }
 }
 
-/**
- * @internal
- */
 export class KeyRegistry {
   private _allKeys = new Map<Object, ReflectiveKey>();
 

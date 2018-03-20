@@ -9,7 +9,6 @@
 import * as html from '../ml_parser/ast';
 import {InterpolationConfig} from '../ml_parser/interpolation_config';
 import {ParseTreeResult} from '../ml_parser/parser';
-
 import * as i18n from './i18n_ast';
 import {createI18nMessageFactory} from './i18n_parser';
 import {I18nError} from './parse_util';
@@ -20,6 +19,7 @@ const _I18N_ATTR_PREFIX = 'i18n-';
 const _I18N_COMMENT_PREFIX_REGEXP = /^i18n:?/;
 const MEANING_SEPARATOR = '|';
 const ID_SEPARATOR = '@@';
+let i18nCommentsWarned = false;
 
 /**
  * Extract translatable messages from an html AST
@@ -176,6 +176,14 @@ class _Visitor implements html.Visitor {
     if (!this._inI18nNode && !this._inIcu) {
       if (!this._inI18nBlock) {
         if (isOpening) {
+          // deprecated from v5 you should use <ng-container i18n> instead of i18n comments
+          if (!i18nCommentsWarned && <any>console && <any>console.warn) {
+            i18nCommentsWarned = true;
+            const details = comment.sourceSpan.details ? `, ${comment.sourceSpan.details}` : '';
+            // TODO(ocombe): use a log service once there is a public one available
+            console.warn(
+                `I18n comments are deprecated, use an <ng-container> element instead (${comment.sourceSpan.start}${details})`);
+          }
           this._inI18nBlock = true;
           this._blockStartDepth = this._depth;
           this._blockChildren = [];

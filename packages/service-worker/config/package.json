@@ -1,0 +1,11 @@
+{
+  "name": "@angular/service-worker/config",
+  "typings": "./index.d.ts",
+  "main": "../bundles/service-worker-config.umd.js",
+  "module": "../fesm5/config/index.js",
+  "es2015": "../fesm15/config/index.js",
+  "esm5": "../esm5/config/index.js",
+  "esm2015": "../esm2015/config/index.js",
+  "fesm5": "../fesm5/config/index.js",
+  "fesm2015": "../fesm2015/config/index.js"
+}

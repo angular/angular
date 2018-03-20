@@ -6,7 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '@angular/compiler';
 import * as o from '@angular/compiler/src/output/output_ast';
+import {MappingItem, RawSourceMap, SourceMapConsumer} from 'source-map';
 import * as ts from 'typescript';
 
 import {TypeScriptNodeEmitter} from '../../src/transformers/node_emitter';
@@ -34,7 +36,8 @@ describe('TypeScriptNodeEmitter', () => {
     someVar = o.variable('someVar', null, null);
   });
 
-  function emitStmt(stmt: o.Statement | o.Statement[], preamble?: string): string {
+  function emitStmt(
+      stmt: o.Statement | o.Statement[], format: Format = Format.Flat, preamble?: string): string {
     const stmts = Array.isArray(stmt) ? stmt : [stmt];
 
     const program = ts.createProgram(
@@ -55,7 +58,7 @@ describe('TypeScriptNodeEmitter', () => {
             result = data;
           }
         }, undefined, undefined, transformers);
-    return normalizeResult(result);
+    return normalizeResult(result, format);
   }
 
   it('should declare variables', () => {
@@ -63,7 +66,7 @@ describe('TypeScriptNodeEmitter', () => {
     expect(emitStmt(someVar.set(o.literal(1)).toDeclStmt(null, [o.StmtModifier.Final])))
         .toEqual(`var someVar = 1;`);
     expect(emitStmt(someVar.set(o.literal(1)).toDeclStmt(null, [o.StmtModifier.Exported])))
-        .toEqual(`exports.someVar = 1;`);
+        .toEqual(`var someVar = 1; exports.someVar = someVar;`);
   });
 
   describe('declare variables with ExternExpressions as values', () => {
@@ -71,7 +74,7 @@ describe('TypeScriptNodeEmitter', () => {
       // identifier is in the same module -> no reexport
       expect(emitStmt(someVar.set(o.importExpr(sameModuleIdentifier)).toDeclStmt(null, [
         o.StmtModifier.Exported
-      ]))).toEqual('exports.someVar = someLocalId;');
+      ]))).toEqual('var someVar = someLocalId; exports.someVar = someVar;');
     });
 
     it('should create no reexport if the variable is not exported', () => {
@@ -84,7 +87,7 @@ describe('TypeScriptNodeEmitter', () => {
       expect(emitStmt(someVar.set(o.importExpr(externalModuleIdentifier))
                           .toDeclStmt(o.DYNAMIC_TYPE, [o.StmtModifier.Exported])))
           .toEqual(
-              `const i0 = require("/somePackage/someOtherPath"); exports.someVar = i0.someExternalId;`);
+              `const i0 = require("/somePackage/someOtherPath"); var someVar = i0.someExternalId; exports.someVar = someVar;`);
     });
 
     it('should create a reexport', () => {
@@ -169,16 +172,25 @@ describe('TypeScriptNodeEmitter', () => {
     expect(emitStmt(o.literalMap([
                        {key: 'someKey', value: o.literal(1), quoted: false},
                        {key: 'a', value: o.literal('a'), quoted: false},
-                       {key: '*', value: o.literal('star'), quoted: true},
+                       {key: 'b', value: o.literal('b'), quoted: true},
+                       {key: '*', value: o.literal('star'), quoted: false},
                      ]).toStmt())
                .replace(/\s+/gm, ''))
-        .toEqual(`({someKey:1,a:"a","*":"star"});`);
+        .toEqual(`({someKey:1,a:"a","b":"b","*":"star"});`);
+
+    // Regressions #22774
+    expect(emitStmt(o.literal('\\0025BC').toStmt())).toEqual('"\\\\0025BC";');
+    expect(emitStmt(o.literal('"some value"').toStmt())).toEqual('"\\"some value\\"";');
+    expect(emitStmt(o.literal('"some \\0025BC value"').toStmt()))
+        .toEqual('"\\"some \\\\0025BC value\\"";');
+    expect(emitStmt(o.literal('\n \\0025BC \n ').toStmt())).toEqual('"\\n \\\\0025BC \\n ";');
+    expect(emitStmt(o.literal('\r \\0025BC \r ').toStmt())).toEqual('"\\r \\\\0025BC \\r ";');
   });
 
   it('should support blank literals', () => {
     expect(emitStmt(o.literal(null).toStmt())).toEqual('null;');
     expect(emitStmt(o.literal(undefined).toStmt())).toEqual('undefined;');
-    expect(emitStmt(o.variable('a', null).isBlank().toStmt())).toEqual('a == null;');
+    expect(emitStmt(o.variable('a', null).isBlank().toStmt())).toEqual('(a == null);');
   });
 
   it('should support external identifiers', () => {
@@ -194,23 +206,28 @@ describe('TypeScriptNodeEmitter', () => {
     expect(emitStmt(o.not(someVar).toStmt())).toEqual('!someVar;');
     expect(emitStmt(o.assertNotNull(someVar).toStmt())).toEqual('someVar;');
     expect(emitStmt(someVar.conditional(o.variable('trueCase'), o.variable('falseCase')).toStmt()))
-        .toEqual('someVar ? trueCase : falseCase;');
+        .toEqual('(someVar ? trueCase : falseCase);');
+    expect(emitStmt(someVar.conditional(o.variable('trueCase'), o.variable('falseCase'))
+                        .conditional(o.variable('trueCase'), o.variable('falseCase'))
+                        .toStmt()))
+        .toEqual('((someVar ? trueCase : falseCase) ? trueCase : falseCase);');
 
-    expect(emitStmt(lhs.equals(rhs).toStmt())).toEqual('lhs == rhs;');
-    expect(emitStmt(lhs.notEquals(rhs).toStmt())).toEqual('lhs != rhs;');
-    expect(emitStmt(lhs.identical(rhs).toStmt())).toEqual('lhs === rhs;');
-    expect(emitStmt(lhs.notIdentical(rhs).toStmt())).toEqual('lhs !== rhs;');
-    expect(emitStmt(lhs.minus(rhs).toStmt())).toEqual('lhs - rhs;');
-    expect(emitStmt(lhs.plus(rhs).toStmt())).toEqual('lhs + rhs;');
-    expect(emitStmt(lhs.divide(rhs).toStmt())).toEqual('lhs / rhs;');
-    expect(emitStmt(lhs.multiply(rhs).toStmt())).toEqual('lhs * rhs;');
-    expect(emitStmt(lhs.modulo(rhs).toStmt())).toEqual('lhs % rhs;');
-    expect(emitStmt(lhs.and(rhs).toStmt())).toEqual('lhs && rhs;');
-    expect(emitStmt(lhs.or(rhs).toStmt())).toEqual('lhs || rhs;');
-    expect(emitStmt(lhs.lower(rhs).toStmt())).toEqual('lhs < rhs;');
-    expect(emitStmt(lhs.lowerEquals(rhs).toStmt())).toEqual('lhs <= rhs;');
-    expect(emitStmt(lhs.bigger(rhs).toStmt())).toEqual('lhs > rhs;');
-    expect(emitStmt(lhs.biggerEquals(rhs).toStmt())).toEqual('lhs >= rhs;');
+    expect(emitStmt(lhs.equals(rhs).toStmt())).toEqual('(lhs == rhs);');
+    expect(emitStmt(lhs.notEquals(rhs).toStmt())).toEqual('(lhs != rhs);');
+    expect(emitStmt(lhs.identical(rhs).toStmt())).toEqual('(lhs === rhs);');
+    expect(emitStmt(lhs.notIdentical(rhs).toStmt())).toEqual('(lhs !== rhs);');
+    expect(emitStmt(lhs.minus(rhs).toStmt())).toEqual('(lhs - rhs);');
+    expect(emitStmt(lhs.plus(rhs).toStmt())).toEqual('(lhs + rhs);');
+    expect(emitStmt(lhs.divide(rhs).toStmt())).toEqual('(lhs / rhs);');
+    expect(emitStmt(lhs.multiply(rhs).toStmt())).toEqual('(lhs * rhs);');
+    expect(emitStmt(lhs.plus(rhs).multiply(rhs).toStmt())).toEqual('((lhs + rhs) * rhs);');
+    expect(emitStmt(lhs.modulo(rhs).toStmt())).toEqual('(lhs % rhs);');
+    expect(emitStmt(lhs.and(rhs).toStmt())).toEqual('(lhs && rhs);');
+    expect(emitStmt(lhs.or(rhs).toStmt())).toEqual('(lhs || rhs);');
+    expect(emitStmt(lhs.lower(rhs).toStmt())).toEqual('(lhs < rhs);');
+    expect(emitStmt(lhs.lowerEquals(rhs).toStmt())).toEqual('(lhs <= rhs);');
+    expect(emitStmt(lhs.bigger(rhs).toStmt())).toEqual('(lhs > rhs);');
+    expect(emitStmt(lhs.biggerEquals(rhs).toStmt())).toEqual('(lhs >= rhs);');
   });
 
   it('should support function expressions', () => {
@@ -232,7 +249,52 @@ describe('TypeScriptNodeEmitter', () => {
     ]))).toEqual(`function someFn(param1) { }`);
   });
 
-  it('should support comments', () => { expect(emitStmt(new o.CommentStmt('a\nb'))).toEqual(''); });
+  describe('comments', () => {
+    it('should support a preamble', () => {
+      expect(emitStmt(o.variable('a').toStmt(), Format.Flat, '/* SomePreamble */'))
+          .toBe('/* SomePreamble */ a;');
+    });
+
+    it('should support singleline comments',
+       () => { expect(emitStmt(new o.CommentStmt('Simple comment'))).toBe('// Simple comment'); });
+
+    it('should support multiline comments', () => {
+      expect(emitStmt(new o.CommentStmt('Multiline comment', true)))
+          .toBe('/* Multiline comment */');
+      expect(emitStmt(new o.CommentStmt(`Multiline\ncomment`, true), Format.Raw))
+          .toBe(`/* Multiline\ncomment */`);
+    });
+
+    describe('JSDoc comments', () => {
+      it('should be supported', () => {
+        expect(emitStmt(new o.JSDocCommentStmt([{text: 'Intro comment'}]), Format.Raw))
+            .toBe(`/**\n * Intro comment\n */`);
+        expect(emitStmt(
+                   new o.JSDocCommentStmt([{tagName: o.JSDocTagName.Desc, text: 'description'}]),
+                   Format.Raw))
+            .toBe(`/**\n * @desc description\n */`);
+        expect(emitStmt(
+                   new o.JSDocCommentStmt([
+                     {text: 'Intro comment'},
+                     {tagName: o.JSDocTagName.Desc, text: 'description'},
+                     {tagName: o.JSDocTagName.Id, text: '{number} identifier 123'},
+                   ]),
+                   Format.Raw))
+            .toBe(
+                `/**\n * Intro comment\n * @desc description\n * @id {number} identifier 123\n */`);
+      });
+
+      it('should escape @ in the text', () => {
+        expect(emitStmt(new o.JSDocCommentStmt([{text: 'email@google.com'}]), Format.Raw))
+            .toBe(`/**\n * email\\@google.com\n */`);
+      });
+
+      it('should not allow /* and */ in the text', () => {
+        expect(() => emitStmt(new o.JSDocCommentStmt([{text: 'some text /* */'}]), Format.Raw))
+            .toThrowError(`JSDoc text cannot contain "/*" and "*/"`);
+      });
+    });
+  });
 
   it('should support if stmt', () => {
     const trueCase = o.variable('trueCase').callFn([]).toStmt();
@@ -375,25 +437,140 @@ describe('TypeScriptNodeEmitter', () => {
     expect(emitStmt(writeVarExpr.toDeclStmt(new o.MapType(o.INT_TYPE)))).toEqual('var a = null;');
   });
 
-  it('should support a preamble', () => {
-    expect(emitStmt(o.variable('a').toStmt(), '/* SomePreamble */')).toBe('/* SomePreamble */ a;');
+  describe('source maps', () => {
+    function emitStmt(stmt: o.Statement | o.Statement[], preamble?: string): string {
+      const stmts = Array.isArray(stmt) ? stmt : [stmt];
+
+      const program = ts.createProgram(
+          [someGenFileName], {
+            module: ts.ModuleKind.CommonJS,
+            target: ts.ScriptTarget.ES2017,
+            sourceMap: true,
+            inlineSourceMap: true,
+            inlineSources: true,
+          },
+          host);
+      const moduleSourceFile = program.getSourceFile(someGenFileName);
+      const transformers: ts.CustomTransformers = {
+        before: [context => {
+          return sourceFile => {
+            const [newSourceFile] = emitter.updateSourceFile(sourceFile, stmts, preamble);
+            return newSourceFile;
+          };
+        }]
+      };
+      let result: string = '';
+      const emitResult = program.emit(
+          moduleSourceFile, (fileName, data, writeByteOrderMark, onError, sourceFiles) => {
+            if (fileName.startsWith(someGenFilePath)) {
+              result = data;
+            }
+          }, undefined, undefined, transformers);
+      return result;
+    }
+
+    function mappingItemsOf(text: string): MappingItem[] {
+      // find the source map:
+      const sourceMapMatch = /sourceMappingURL\=data\:application\/json;base64,(.*)$/.exec(text);
+      const sourceMapBase64 = sourceMapMatch ![1];
+      const sourceMapBuffer = Buffer.from(sourceMapBase64, 'base64');
+      const sourceMapText = sourceMapBuffer.toString('utf8');
+      const sourceMap: RawSourceMap = JSON.parse(sourceMapText);
+      const consumer = new SourceMapConsumer(sourceMap);
+      const mappings: MappingItem[] = [];
+      consumer.eachMapping(mapping => { mappings.push(mapping); });
+      return mappings;
+    }
+
+    it('should produce a source map that maps back to the source', () => {
+      const statement = someVar.set(o.literal(1)).toDeclStmt();
+      const text = '<my-comp> a = 1 </my-comp>';
+      const sourceName = '/some/file.html';
+      const sourceUrl = '../some/file.html';
+      const file = new ParseSourceFile(text, sourceName);
+      const start = new ParseLocation(file, 0, 0, 0);
+      const end = new ParseLocation(file, text.length, 0, text.length);
+      statement.sourceSpan = new ParseSourceSpan(start, end);
+
+      const result = emitStmt(statement);
+      const mappings = mappingItemsOf(result);
+
+      expect(mappings).toEqual([
+        {
+          source: sourceUrl,
+          generatedLine: 3,
+          generatedColumn: 0,
+          originalLine: 1,
+          originalColumn: 0,
+          name: null
+        },
+        {
+          source: sourceUrl,
+          generatedLine: 3,
+          generatedColumn: 16,
+          originalLine: 1,
+          originalColumn: 26,
+          name: null
+        }
+      ]);
+    });
+
+    it('should produce a mapping per range instead of a mapping per node', () => {
+      const text = '<my-comp> a = 1 </my-comp>';
+      const sourceName = '/some/file.html';
+      const sourceUrl = '../some/file.html';
+      const file = new ParseSourceFile(text, sourceName);
+      const start = new ParseLocation(file, 0, 0, 0);
+      const end = new ParseLocation(file, text.length, 0, text.length);
+      const stmt = (loc: number) => {
+        const start = new ParseLocation(file, loc, 0, loc);
+        const end = new ParseLocation(file, loc + 1, 0, loc + 1);
+        const span = new ParseSourceSpan(start, end);
+        return someVar
+            .set(new o.BinaryOperatorExpr(
+                o.BinaryOperator.Plus, o.literal(loc, null, span), o.literal(loc, null, span), null,
+                span))
+            .toDeclStmt();
+      };
+      const stmts = [1, 2, 3, 4, 5, 6].map(stmt);
+      const result = emitStmt(stmts);
+      const mappings = mappingItemsOf(result);
+
+      // The span is used in three different nodes but should only be emitted at most twice
+      // (once for the start and once for the end of a span).
+      const maxDup = Math.max(
+          ...Array.from(countsOfDuplicatesMap(mappings.map(m => m.originalColumn)).values()));
+      expect(maxDup <= 2).toBeTruthy('A redundant range was emitted');
+    });
   });
 });
+
+function countsOfDuplicatesMap<T>(a: T[]): Map<T, number> {
+  const result = new Map<T, number>();
+  for (const item of a) {
+    result.set(item, (result.get(item) || 0) + 1);
+  }
+  return result;
+}
 
 const FILES: Directory = {
   somePackage: {'someGenFile.ts': `export var a: number;`}
 };
 
-function normalizeResult(result: string): string {
+const enum Format { Raw, Flat }
+
+function normalizeResult(result: string, format: Format): string {
   // Remove TypeScript prefixes
+  let res = result.replace('"use strict";', ' ')
+                .replace('exports.__esModule = true;', ' ')
+                .replace('Object.defineProperty(exports, "__esModule", { value: true });', ' ');
+
   // Remove new lines
   // Squish adjacent spaces
+  if (format === Format.Flat) {
+    return res.replace(/\n/g, ' ').replace(/ +/g, ' ').replace(/^ /g, '').replace(/ $/g, '');
+  }
+
   // Remove prefix and postfix spaces
-  return result.replace('"use strict";', ' ')
-      .replace('exports.__esModule = true;', ' ')
-      .replace('Object.defineProperty(exports, "__esModule", { value: true });', ' ')
-      .replace(/\n/g, ' ')
-      .replace(/ +/g, ' ')
-      .replace(/^ /g, '')
-      .replace(/ $/g, '');
+  return res.trim();
 }

@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AUTO_STYLE, AnimationPlayer, animate, animateChild, query, stagger, state, style, transition, trigger, ɵAnimationGroupPlayer as AnimationGroupPlayer} from '@angular/animations';
+import {AUTO_STYLE, AnimationPlayer, animate, animateChild, group, query, sequence, stagger, state, style, transition, trigger, ɵAnimationGroupPlayer as AnimationGroupPlayer} from '@angular/animations';
 import {AnimationDriver, ɵAnimationEngine} from '@angular/animations/browser';
 import {matchesElement} from '@angular/animations/browser/src/render/shared';
 import {ENTER_CLASSNAME, LEAVE_CLASSNAME} from '@angular/animations/browser/src/util';
@@ -19,7 +19,7 @@ import {TestBed} from '../../testing';
 import {fakeAsync, flushMicrotasks} from '../../testing/src/fake_async';
 
 
-export function main() {
+(function() {
   // these tests are only mean't to be run within the DOM (for now)
   if (typeof Element == 'undefined') return;
 
@@ -409,31 +409,29 @@ export function main() {
            const fixture = TestBed.createComponent(Cmp);
            const cmp = fixture.componentInstance;
 
-           cmp.exp0 = 0;
-
            cmp.exp1 = 0;
            cmp.exp2 = 0;
            cmp.exp3 = 0;
            cmp.exp4 = 0;
            cmp.exp5 = 0;
            fixture.detectChanges();
-           engine.flush();
+
+           cmp.exp0 = 0;
+           fixture.detectChanges();
 
            let players = engine.players;
            cancelAllPlayers(players);
 
-           cmp.exp0 = 1;
-
            cmp.exp2 = 1;
            cmp.exp4 = 1;
            fixture.detectChanges();
-           engine.flush();
+
+           cmp.exp0 = 1;
+           fixture.detectChanges();
 
            players = engine.players;
            cancelAllPlayers(players);
            expect(players.length).toEqual(3);
-
-           cmp.exp0 = 2;
 
            cmp.exp1 = 2;
            cmp.exp2 = 2;
@@ -441,7 +439,9 @@ export function main() {
            cmp.exp4 = 2;
            cmp.exp5 = 2;
            fixture.detectChanges();
-           engine.flush();
+
+           cmp.exp0 = 2;
+           fixture.detectChanges();
 
            players = engine.players;
            cancelAllPlayers(players);
@@ -449,7 +449,6 @@ export function main() {
 
            cmp.exp0 = 3;
            fixture.detectChanges();
-           engine.flush();
 
            players = engine.players;
            cancelAllPlayers(players);
@@ -461,8 +460,8 @@ export function main() {
           selector: 'ani-cmp',
           template: `
             <div [@myAnimation]="exp">
-              <header></header> 
-              <footer></footer> 
+              <header></header>
+              <footer></footer>
             </div>
           `,
           animations: [
@@ -587,8 +586,8 @@ export function main() {
           selector: 'ani-cmp',
           template: `
             <div [@myAnimation]="exp">
-              <header></header> 
-              <footer></footer> 
+              <header></header>
+              <footer></footer>
             </div>
           `,
           animations: [
@@ -640,9 +639,9 @@ export function main() {
           template: `
           <div [@myAnimation]="exp">
             <div *ngFor="let item of items" class="item">
-              {{ item }} 
-            </div> 
-          </div> 
+              {{ item }}
+            </div>
+          </div>
         `,
           animations: [
             trigger(
@@ -706,9 +705,9 @@ export function main() {
           template: `
           <div [@myAnimation]="exp">
             <div *ngFor="let item of items" class="item">
-              {{ item }} 
-            </div> 
-          </div> 
+              {{ item }}
+            </div>
+          </div>
         `,
           animations: [trigger(
               'myAnimation',
@@ -809,8 +808,8 @@ export function main() {
           template: `
             <div @myAnimation>
               <div *ngFor="let item of items" class="child">
-                {{ item }} 
-              </div> 
+                {{ item }}
+              </div>
             </div>
           `,
           animations: [trigger(
@@ -923,8 +922,8 @@ export function main() {
           template: `
             <div [@myAnimation]="exp" class="parent">
               <div *ngFor="let item of items" class="child">
-                {{ item }} 
-              </div> 
+                {{ item }}
+              </div>
             </div>
           `,
           animations: [trigger(
@@ -1111,8 +1110,8 @@ export function main() {
           template: `
             <div [@myAnimation]="exp" class="parent">
               <div *ngFor="let item of items" class="child">
-                {{ item }} 
-              </div> 
+                {{ item }}
+              </div>
             </div>
           `,
           animations: [trigger(
@@ -1333,8 +1332,8 @@ export function main() {
           template: `
             <div [@myAnimation]="exp" class="parent">
               <div *ngFor="let item of items" class="child">
-                {{ item }} 
-              </div> 
+                {{ item }}
+              </div>
             </div>
           `,
           animations: [trigger(
@@ -1385,8 +1384,8 @@ export function main() {
           template: `
             <div [@myAnimation]="exp" class="parent">
               <div *ngFor="let item of items" class="child">
-                {{ item }} 
-              </div> 
+                {{ item }}
+              </div>
             </div>
           `,
           animations: [trigger(
@@ -1436,8 +1435,8 @@ export function main() {
           template: `
             <div [@one]="exp1" [@two]="exp2" class="parent">
               <div *ngFor="let item of items" class="child">
-                {{ item }} 
-              </div> 
+                {{ item }}
+              </div>
             </div>
           `,
           animations: [
@@ -1519,8 +1518,8 @@ export function main() {
              template: `
             <div [@myAnimation]="exp" class="parent">
               <div *ngFor="let item of items" class="child">
-                {{ item }} 
-              </div> 
+                {{ item }}
+              </div>
             </div>
           `,
              animations: [trigger(
@@ -1569,8 +1568,8 @@ export function main() {
             template: `
             <div [@myAnimation]="exp" class="parent">
               <div *ngFor="let item of items" class="child">
-                {{ item }} 
-              </div> 
+                {{ item }}
+              </div>
             </div>
           `,
             animations: [
@@ -1713,6 +1712,106 @@ export function main() {
            expect(players[1].element.innerText.trim()).toEqual('5');
            expect(players[2].element.innerText.trim()).toEqual('6');
          });
+
+      describe('options.limit', () => {
+        it('should limit results when a limit value is passed into the query options', () => {
+          @Component({
+            selector: 'cmp',
+            template: `
+             <div [@myAnimation]="exp">
+              <div *ngFor="let item of items" class="item">
+                {{ item }}
+              </div>
+             </div>
+          `,
+            animations: [
+              trigger(
+                  'myAnimation',
+                  [
+                    transition(
+                        '* => go',
+                        [
+                          query(
+                              '.item',
+                              [
+                                style({opacity: 0}),
+                                animate('1s', style({opacity: 1})),
+                              ],
+                              {limit: 2}),
+                        ]),
+                  ]),
+            ]
+          })
+          class Cmp {
+            public exp: any;
+            public items: any[] = [];
+          }
+
+          TestBed.configureTestingModule({declarations: [Cmp]});
+          const fixture = TestBed.createComponent(Cmp);
+          const cmp = fixture.componentInstance;
+          cmp.items = ['a', 'b', 'c', 'd', 'e'];
+          fixture.detectChanges();
+
+          cmp.exp = 'go';
+          fixture.detectChanges();
+
+          const players = getLog() as any[];
+          expect(players.length).toEqual(2);
+          expect(players[0].element.innerText.trim()).toEqual('a');
+          expect(players[1].element.innerText.trim()).toEqual('b');
+        });
+
+        it('should support negative limit values by pulling in elements from the end of the query',
+           () => {
+             @Component({
+               selector: 'cmp',
+               template: `
+             <div [@myAnimation]="exp">
+              <div *ngFor="let item of items" class="item">
+                {{ item }}
+              </div>
+             </div>
+          `,
+               animations: [
+                 trigger(
+                     'myAnimation',
+                     [
+                       transition(
+                           '* => go',
+                           [
+                             query(
+                                 '.item',
+                                 [
+                                   style({opacity: 0}),
+                                   animate('1s', style({opacity: 1})),
+                                 ],
+                                 {limit: -3}),
+                           ]),
+                     ]),
+               ]
+             })
+             class Cmp {
+               public exp: any;
+               public items: any[] = [];
+             }
+
+             TestBed.configureTestingModule({declarations: [Cmp]});
+             const fixture = TestBed.createComponent(Cmp);
+             const cmp = fixture.componentInstance;
+             cmp.items = ['a', 'b', 'c', 'd', 'e'];
+             fixture.detectChanges();
+
+             cmp.exp = 'go';
+             fixture.detectChanges();
+
+             const players = getLog() as any[];
+             expect(players.length).toEqual(3);
+             expect(players[0].element.innerText.trim()).toEqual('c');
+             expect(players[1].element.innerText.trim()).toEqual('d');
+             expect(players[2].element.innerText.trim()).toEqual('e');
+           });
+      });
     });
 
     describe('sub triggers', () => {
@@ -2188,25 +2287,148 @@ export function main() {
            }
 
            TestBed.configureTestingModule({declarations: [ParentCmp, ChildCmp]});
-
-           const engine = TestBed.get(ɵAnimationEngine);
            const fixture = TestBed.createComponent(ParentCmp);
            const cmp = fixture.componentInstance;
 
            fixture.detectChanges();
-           engine.flush();
 
            const childCmp = cmp.childElm;
 
            cmp.exp = false;
            fixture.detectChanges();
-           engine.flush();
            flushMicrotasks();
 
            expect(cmp.childEvent.toState).toEqual('void');
            expect(cmp.childEvent.totalTime).toEqual(1000);
            expect(childCmp.childEvent.toState).toEqual('void');
            expect(childCmp.childEvent.totalTime).toEqual(1000);
+         }));
+
+      it('should emulate a leave animation on a sub component\'s inner elements when a parent leave animation occurs with animateChild',
+         () => {
+           @Component({
+             selector: 'ani-cmp',
+             template: `
+            <div @myAnimation *ngIf="exp" class="parent">
+              <child-cmp></child-cmp>
+            </div>
+          `,
+             animations: [
+               trigger(
+                   'myAnimation',
+                   [
+                     transition(
+                         ':leave',
+                         [
+                           query('@*', animateChild()),
+                         ]),
+                   ]),
+             ]
+           })
+           class ParentCmp {
+             public exp: boolean = true;
+           }
+
+           @Component({
+             selector: 'child-cmp',
+             template: `
+               <section>
+                 <div class="inner-div" @myChildAnimation></div>
+               </section>
+             `,
+             animations: [
+               trigger(
+                   'myChildAnimation',
+                   [
+                     transition(
+                         ':leave',
+                         [
+                           style({opacity: 0}),
+                           animate('1s', style({opacity: 1})),
+                         ]),
+                   ]),
+             ]
+           })
+           class ChildCmp {
+           }
+
+           TestBed.configureTestingModule({declarations: [ParentCmp, ChildCmp]});
+
+           const engine = TestBed.get(ɵAnimationEngine);
+           const fixture = TestBed.createComponent(ParentCmp);
+           const cmp = fixture.componentInstance;
+
+           cmp.exp = true;
+           fixture.detectChanges();
+
+           cmp.exp = false;
+           fixture.detectChanges();
+
+           let players = getLog();
+           expect(players.length).toEqual(1);
+           const [player] = players;
+
+           expect(player.element.classList.contains('inner-div')).toBeTruthy();
+           expect(player.keyframes).toEqual([
+             {opacity: '0', offset: 0},
+             {opacity: '1', offset: 1},
+           ]);
+         });
+
+      it('should not cause a removal of inner @trigger DOM nodes when a parent animation occurs',
+         fakeAsync(() => {
+           @Component({
+             selector: 'ani-cmp',
+             template: `
+            <div @parent *ngIf="exp" class="parent">
+              this <div @child>child</div>
+            </div>
+          `,
+             animations: [
+               trigger(
+                   'parent',
+                   [
+                     transition(
+                         ':leave',
+                         [
+                           style({opacity: 0}),
+                           animate('1s', style({opacity: 1})),
+                         ]),
+                   ]),
+               trigger(
+                   'child',
+                   [
+                     transition(
+                         '* => something',
+                         [
+                           style({opacity: 0}),
+                           animate('1s', style({opacity: 1})),
+                         ]),
+                   ]),
+             ]
+           })
+           class Cmp {
+             public exp: boolean = true;
+           }
+
+           TestBed.configureTestingModule({declarations: [Cmp]});
+
+           const fixture = TestBed.createComponent(Cmp);
+           const cmp = fixture.componentInstance;
+
+           cmp.exp = true;
+           fixture.detectChanges();
+           flushMicrotasks();
+
+           cmp.exp = false;
+           fixture.detectChanges();
+           flushMicrotasks();
+
+           const players = getLog();
+           expect(players.length).toEqual(1);
+
+           const element = players[0] !.element;
+           expect(element.innerText.trim()).toMatch(/this\s+child/mg);
          }));
 
       it('should only mark outermost *directive nodes :enter and :leave when inserts and removals occur',
@@ -2314,7 +2536,7 @@ export function main() {
                   </div>
                 </div>
               </section>
-            </div>  
+            </div>
           `
         })
         class Cmp {
@@ -2448,8 +2670,8 @@ export function main() {
            fixture.detectChanges();
            flushMicrotasks();
            expect(cmp.log).toEqual([
-             'c1-start', 'c1-done', 'c2-start', 'c2-done', 'p-start', 'p-done', 'c3-start',
-             'c3-done'
+             'c1-start', 'c1-done', 'c2-start', 'c2-done', 'p-start', 'c3-start', 'c3-done',
+             'p-done'
            ]);
          }));
 
@@ -2500,6 +2722,196 @@ export function main() {
 
         expect(engine.players[0].getRealPlayer()).toBe(players[1]);
       });
+
+      it('should fire and synchronize the start/done callbacks on sub triggers even if they are not allowed to animate within the animation',
+         fakeAsync(() => {
+           @Component({
+             selector: 'parent-cmp',
+             animations: [
+               trigger(
+                   'parent',
+                   [
+                     transition(
+                         '* => go',
+                         [
+                           style({height: '0px'}),
+                           animate(1000, style({height: '100px'})),
+                         ]),
+                   ]),
+             ],
+             template: `
+            <div *ngIf="!remove"
+                 [@parent]="exp"
+                 (@parent.start)="track($event)"
+                 (@parent.done)="track($event)">
+                 <child-cmp #child></child-cmp>
+            </div>
+          `
+           })
+           class ParentCmp {
+             @ViewChild('child') public childCmp: any;
+
+             public exp: any;
+             public log: string[] = [];
+             public remove = false;
+
+             track(event: any) { this.log.push(`${event.triggerName}-${event.phaseName}`); }
+           }
+
+           @Component({
+             selector: 'child-cmp',
+             animations: [
+               trigger(
+                   'child',
+                   [
+                     transition(
+                         '* => go',
+                         [
+                           style({width: '0px'}),
+                           animate(1000, style({width: '100px'})),
+                         ]),
+                   ]),
+             ],
+             template: `
+            <div [@child]="exp"
+                 (@child.start)="track($event)"
+                 (@child.done)="track($event)"></div>
+          `
+           })
+           class ChildCmp {
+             public exp: any;
+             public log: string[] = [];
+             track(event: any) { this.log.push(`${event.triggerName}-${event.phaseName}`); }
+           }
+
+           TestBed.configureTestingModule({declarations: [ParentCmp, ChildCmp]});
+           const engine = TestBed.get(ɵAnimationEngine);
+           const fixture = TestBed.createComponent(ParentCmp);
+           fixture.detectChanges();
+           flushMicrotasks();
+
+           const cmp = fixture.componentInstance;
+           const child = cmp.childCmp;
+
+           expect(cmp.log).toEqual(['parent-start', 'parent-done']);
+           expect(child.log).toEqual(['child-start', 'child-done']);
+
+           cmp.log = [];
+           child.log = [];
+           cmp.exp = 'go';
+           cmp.childCmp.exp = 'go';
+           fixture.detectChanges();
+           flushMicrotasks();
+
+           expect(cmp.log).toEqual(['parent-start']);
+           expect(child.log).toEqual(['child-start']);
+
+           const players = engine.players;
+           expect(players.length).toEqual(1);
+           players[0].finish();
+
+           expect(cmp.log).toEqual(['parent-start', 'parent-done']);
+           expect(child.log).toEqual(['child-start', 'child-done']);
+
+           cmp.log = [];
+           child.log = [];
+           cmp.remove = true;
+           fixture.detectChanges();
+           flushMicrotasks();
+
+           expect(cmp.log).toEqual(['parent-start', 'parent-done']);
+           expect(child.log).toEqual(['child-start', 'child-done']);
+         }));
+
+      it('should fire and synchronize the start/done callbacks on multiple blocked sub triggers',
+         fakeAsync(() => {
+           @Component({
+             selector: 'cmp',
+             animations: [
+               trigger(
+                   'parent1',
+                   [
+                     transition(
+                         '* => go, * => go-again',
+                         [
+                           style({opacity: 0}),
+                           animate('1s', style({opacity: 1})),
+                         ]),
+                   ]),
+               trigger(
+                   'parent2',
+                   [
+                     transition(
+                         '* => go, * => go-again',
+                         [
+                           style({lineHeight: '0px'}),
+                           animate('1s', style({lineHeight: '10px'})),
+                         ]),
+                   ]),
+               trigger(
+                   'child1',
+                   [
+                     transition(
+                         '* => go, * => go-again',
+                         [
+                           style({width: '0px'}),
+                           animate('1s', style({width: '100px'})),
+                         ]),
+                   ]),
+               trigger(
+                   'child2',
+                   [
+                     transition(
+                         '* => go, * => go-again',
+                         [
+                           style({height: '0px'}),
+                           animate('1s', style({height: '100px'})),
+                         ]),
+                   ]),
+             ],
+             template: `
+               <div [@parent1]="parent1Exp" (@parent1.start)="track($event)"
+                    [@parent2]="parent2Exp" (@parent2.start)="track($event)">
+                 <div [@child1]="child1Exp" (@child1.start)="track($event)"
+                      [@child2]="child2Exp" (@child2.start)="track($event)"></div>
+               </div>
+          `
+           })
+           class Cmp {
+             public parent1Exp = '';
+             public parent2Exp = '';
+             public child1Exp = '';
+             public child2Exp = '';
+             public log: string[] = [];
+
+             track(event: any) { this.log.push(`${event.triggerName}-${event.phaseName}`); }
+           }
+
+           TestBed.configureTestingModule({declarations: [Cmp]});
+           const engine = TestBed.get(ɵAnimationEngine);
+           const fixture = TestBed.createComponent(Cmp);
+           fixture.detectChanges();
+           flushMicrotasks();
+
+           const cmp = fixture.componentInstance;
+           cmp.log = [];
+           cmp.parent1Exp = 'go';
+           cmp.parent2Exp = 'go';
+           cmp.child1Exp = 'go';
+           cmp.child2Exp = 'go';
+           fixture.detectChanges();
+           flushMicrotasks();
+
+           expect(cmp.log).toEqual(
+               ['parent1-start', 'parent2-start', 'child1-start', 'child2-start']);
+
+           cmp.parent1Exp = 'go-again';
+           cmp.parent2Exp = 'go-again';
+           cmp.child1Exp = 'go-again';
+           cmp.child2Exp = 'go-again';
+           fixture.detectChanges();
+           flushMicrotasks();
+         }));
 
       it('should stretch the starting keyframe of a child animation queries are issued by the parent',
          () => {
@@ -2646,6 +3058,137 @@ export function main() {
              {offset: 0, width: '0px'}, {offset: .67, width: '0px'}, {offset: 1, width: '200px'}
            ]);
          });
+
+      it('should scope :enter queries between sub animations', () => {
+        @Component({
+          selector: 'cmp',
+          animations: [
+            trigger(
+                'parent',
+                [
+                  transition(':enter', group([
+                               sequence([
+                                 style({opacity: 0}),
+                                 animate(1000, style({opacity: 1})),
+                               ]),
+                               query(':enter @child', animateChild()),
+                             ])),
+                ]),
+            trigger(
+                'child',
+                [
+                  transition(
+                      ':enter',
+                      [
+                        query(
+                            ':enter .item',
+                            [style({opacity: 0}), animate(1000, style({opacity: 1}))]),
+                      ]),
+                ]),
+          ],
+          template: `
+               <div @parent *ngIf="exp1" class="container">
+                 <div *ngIf="exp2">
+                   <div @child>
+                     <div *ngIf="exp3">
+                       <div class="item"></div>
+                     </div>
+                   </div>
+                 </div>
+               </div>
+             `
+        })
+        class Cmp {
+          public exp1: any;
+          public exp2: any;
+          public exp3: any;
+        }
+
+        TestBed.configureTestingModule({declarations: [Cmp]});
+
+        const fixture = TestBed.createComponent(Cmp);
+        fixture.detectChanges();
+        resetLog();
+
+        const cmp = fixture.componentInstance;
+        cmp.exp1 = true;
+        cmp.exp2 = true;
+        cmp.exp3 = true;
+        fixture.detectChanges();
+
+        const players = getLog();
+        expect(players.length).toEqual(2);
+
+        const [p1, p2] = players;
+        expect(p1.element.classList.contains('container')).toBeTruthy();
+        expect(p2.element.classList.contains('item')).toBeTruthy();
+      });
+
+      it('should scope :leave queries between sub animations', () => {
+        @Component({
+          selector: 'cmp',
+          animations: [
+            trigger(
+                'parent',
+                [
+                  transition(':leave', group([
+                               sequence([
+                                 style({opacity: 0}),
+                                 animate(1000, style({opacity: 1})),
+                               ]),
+                               query(':leave @child', animateChild()),
+                             ])),
+                ]),
+            trigger(
+                'child',
+                [
+                  transition(
+                      ':leave',
+                      [
+                        query(
+                            ':leave .item',
+                            [style({opacity: 0}), animate(1000, style({opacity: 1}))]),
+                      ]),
+                ]),
+          ],
+          template: `
+               <div @parent *ngIf="exp1" class="container">
+                 <div *ngIf="exp2">
+                   <div @child>
+                     <div *ngIf="exp3">
+                       <div class="item"></div>
+                     </div>
+                   </div>
+                 </div>
+               </div>
+             `
+        })
+        class Cmp {
+          public exp1: any;
+          public exp2: any;
+          public exp3: any;
+        }
+
+        TestBed.configureTestingModule({declarations: [Cmp]});
+
+        const fixture = TestBed.createComponent(Cmp);
+        const cmp = fixture.componentInstance;
+        cmp.exp1 = true;
+        cmp.exp2 = true;
+        cmp.exp3 = true;
+        fixture.detectChanges();
+        resetLog();
+
+        cmp.exp1 = false;
+        fixture.detectChanges();
+
+        const players = getLog();
+        expect(players.length).toEqual(2);
+
+        const [p1, p2] = players;
+        expect(p1.element.classList.contains('container')).toBeTruthy();
+        expect(p2.element.classList.contains('item')).toBeTruthy();
+      });
     });
 
     describe('animation control flags', () => {
@@ -2757,7 +3300,7 @@ export function main() {
       });
     });
   });
-}
+})();
 
 function cancelAllPlayers(players: AnimationPlayer[]) {
   players.forEach(p => p.destroy());

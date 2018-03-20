@@ -104,6 +104,14 @@ export class CssSelector {
                                                   `<${tagName}${classAttr}${attrs}></${tagName}>`;
   }
 
+  getAttrs(): string[] {
+    const result: string[] = [];
+    if (this.classNames.length > 0) {
+      result.push('class', this.classNames.join(' '));
+    }
+    return result.concat(this.attrs);
+  }
+
   addAttribute(name: string, value: string = '') {
     this.attrs.push(name, value && value.toLowerCase() || '');
   }

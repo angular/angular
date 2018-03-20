@@ -160,6 +160,33 @@ export class MyComponent {
 
   });
 
+  it('should respect paths configuration', () => {
+    mockHost.overrideOptions(options => {
+      options.baseUrl = '/app';
+      options.paths = {'bar/*': ['foo/bar/*']};
+      return options;
+    });
+    mockHost.addScript('/app/foo/bar/shared.ts', `
+      export interface Node {
+        children: Node[];
+      }
+    `);
+    mockHost.addScript('/app/my.component.ts', `
+      import { Component } from '@angular/core';
+      import { Node } from 'bar/shared';
+
+      @Component({
+        selector: 'my-component',
+        template: '{{tree.~{tree} }}'
+      })
+      export class MyComponent {
+        tree: Node;
+      }
+    `);
+    ngHost.updateAnalyzedModules();
+    contains('/app/my.component.ts', 'tree', 'children');
+  });
+
   function addCode(code: string, cb: (fileName: string, content?: string) => void) {
     const fileName = '/app/app.component.ts';
     const originalContent = mockHost.getFileContent(fileName);

@@ -24,3 +24,12 @@ export interface PlatformConfig {
  * @experimental
  */
 export const INITIAL_CONFIG = new InjectionToken<PlatformConfig>('Server.INITIAL_CONFIG');
+
+/**
+ * A function that will be executed when calling `renderModuleFactory` or `renderModule` just
+ * before current platform state is rendered to string.
+ *
+ * @experimental
+ */
+export const BEFORE_APP_SERIALIZED =
+    new InjectionToken<Array<() => void>>('Server.RENDER_MODULE_HOOK');

@@ -7,7 +7,7 @@
  */
 
 import {NgModuleFactory, NgModuleRef, Type} from '@angular/core';
-import {Observable} from 'rxjs/Observable';
+import {Observable} from 'rxjs';
 import {PRIMARY_OUTLET} from './shared';
 import {UrlSegment, UrlSegmentGroup} from './url_tree';
 
@@ -277,11 +277,11 @@ export type UrlMatchResult = {
  * For instance, the following matcher matches html files.
  *
  * ```
- * function htmlFiles(url: UrlSegment[]) {
- *  return url.length === 1 && url[0].path.endsWith('.html') ? ({consumed: url}) : null;
+ * export function htmlFiles(url: UrlSegment[]) {
+ *   return url.length === 1 && url[0].path.endsWith('.html') ? ({consumed: url}) : null;
  * }
  *
- * const routes = [{ matcher: htmlFiles, component: HtmlCmp }];
+ * export const routes = [{ matcher: htmlFiles, component: AnyComponent }];
  * ```
  *
  * @experimental
@@ -456,4 +456,10 @@ function getFullPath(parentPath: string, currentRoute: Route): string {
   } else {
     return `${parentPath}/${currentRoute.path}`;
   }
+}
+
+
+export function copyConfig(r: Route): Route {
+  const children = r.children && r.children.map(copyConfig);
+  return children ? {...r, children} : {...r};
 }

@@ -1,4 +1,4 @@
-import { Inject, Injectable, OnDestroy } from '@angular/core';
+import { Injectable, OnDestroy } from '@angular/core';
 import { NgServiceWorker } from '@angular/service-worker';
 import { Observable } from 'rxjs/Observable';
 import { Subject } from 'rxjs/Subject';
@@ -51,7 +51,7 @@ export class SwUpdatesService implements OnDestroy {
 
   private activateUpdate() {
     this.log('Activating update...');
-    this.sw.activateUpdate(null)
+    this.sw.activateUpdate(null as any) // expects a non-null string
         .subscribe(() => this.scheduleCheckForUpdate());
   }
 

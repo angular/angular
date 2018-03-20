@@ -1,10 +1,18 @@
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
 import {Component, Directive, EventEmitter, Input, Output, Type} from '@angular/core';
 import {ComponentFixture, TestBed, async, fakeAsync, tick} from '@angular/core/testing';
-import {AbstractControl, ControlValueAccessor, FormControl, FormGroup, FormsModule, NG_VALIDATORS, NG_VALUE_ACCESSOR, NgControl, NgForm, ReactiveFormsModule, Validators} from '@angular/forms';
+import {AbstractControl, ControlValueAccessor, FormControl, FormGroup, FormsModule, NG_VALIDATORS, NG_VALUE_ACCESSOR, NgControl, NgForm, NgModel, ReactiveFormsModule, Validators} from '@angular/forms';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util';
 
-export function main() {
+{
   describe('value accessors', () => {
 
     function initTest<T>(component: Type<T>, ...directives: Type<any>[]): ComponentFixture<T> {
@@ -156,6 +164,7 @@ export function main() {
       describe('in reactive forms', () => {
 
         it(`should support primitive values`, () => {
+          if (isNode) return;
           const fixture = initTest(FormControlNameSelect);
           fixture.detectChanges();
 
@@ -175,6 +184,7 @@ export function main() {
         });
 
         it(`should support objects`, () => {
+          if (isNode) return;
           const fixture = initTest(FormControlSelectNgValue);
           fixture.detectChanges();
 
@@ -193,6 +203,7 @@ export function main() {
         });
 
         it('should compare options using provided compareWith function', () => {
+          if (isNode) return;
           const fixture = initTest(FormControlSelectWithCompareFn);
           fixture.detectChanges();
 
@@ -202,10 +213,37 @@ export function main() {
           expect(sfOption.nativeElement.selected).toBe(true);
         });
 
+        it('should support re-assigning the options array with compareWith', () => {
+          if (isNode) return;
+          const fixture = initTest(FormControlSelectWithCompareFn);
+          fixture.detectChanges();
+
+          // Option IDs start out as 0 and 1, so setting the select value to "1: Object"
+          // will select the second option (NY).
+          const select = fixture.debugElement.query(By.css('select'));
+          select.nativeElement.value = '1: Object';
+          dispatchEvent(select.nativeElement, 'change');
+          fixture.detectChanges();
+
+          expect(fixture.componentInstance.form.value).toEqual({city: {id: 2, name: 'NY'}});
+
+          fixture.componentInstance.cities = [{id: 1, name: 'SF'}, {id: 2, name: 'NY'}];
+          fixture.detectChanges();
+
+          // Now that the options array has been re-assigned, new option instances will
+          // be created by ngFor. These instances will have different option IDs, subsequent
+          // to the first: 2 and 3. For the second option to stay selected, the select
+          // value will need to have the ID of the current second option: 3.
+          const nyOption = fixture.debugElement.queryAll(By.css('option'))[1];
+          expect(select.nativeElement.value).toEqual('3: Object');
+          expect(nyOption.nativeElement.selected).toBe(true);
+        });
+
       });
 
       describe('in template-driven forms', () => {
         it('with option values that are objects', fakeAsync(() => {
+             if (isNode) return;
              const fixture = initTest(NgModelSelectForm);
              const comp = fixture.componentInstance;
              comp.cities = [{'name': 'SF'}, {'name': 'NYC'}, {'name': 'Buffalo'}];
@@ -230,6 +268,7 @@ export function main() {
            }));
 
         it('when new options are added', fakeAsync(() => {
+             if (isNode) return;
              const fixture = initTest(NgModelSelectForm);
              const comp = fixture.componentInstance;
              comp.cities = [{'name': 'SF'}, {'name': 'NYC'}];
@@ -267,6 +306,7 @@ export function main() {
            }));
 
         it('when option values have same content, but different identities', fakeAsync(() => {
+             if (isNode) return;
              const fixture = initTest(NgModelSelectForm);
              const comp = fixture.componentInstance;
              comp.cities = [{'name': 'SF'}, {'name': 'NYC'}, {'name': 'NYC'}];
@@ -314,6 +354,7 @@ export function main() {
         });
 
         it('should compare options using provided compareWith function', fakeAsync(() => {
+             if (isNode) return;
              const fixture = initTest(NgModelSelectWithCustomCompareFnForm);
              const comp = fixture.componentInstance;
              comp.selectedCity = {id: 1, name: 'SF'};
@@ -327,6 +368,38 @@ export function main() {
              expect(sfOption.nativeElement.selected).toBe(true);
            }));
 
+        it('should support re-assigning the options array with compareWith', fakeAsync(() => {
+             if (isNode) return;
+             const fixture = initTest(NgModelSelectWithCustomCompareFnForm);
+             fixture.componentInstance.selectedCity = {id: 1, name: 'SF'};
+             fixture.componentInstance.cities = [{id: 1, name: 'SF'}, {id: 2, name: 'NY'}];
+             fixture.detectChanges();
+             tick();
+
+             // Option IDs start out as 0 and 1, so setting the select value to "1: Object"
+             // will select the second option (NY).
+             const select = fixture.debugElement.query(By.css('select'));
+             select.nativeElement.value = '1: Object';
+             dispatchEvent(select.nativeElement, 'change');
+             fixture.detectChanges();
+
+             const model = fixture.debugElement.children[0].injector.get(NgModel);
+             expect(model.value).toEqual({id: 2, name: 'NY'});
+
+             fixture.componentInstance.cities = [{id: 1, name: 'SF'}, {id: 2, name: 'NY'}];
+             fixture.detectChanges();
+             tick();
+
+             // Now that the options array has been re-assigned, new option instances will
+             // be created by ngFor. These instances will have different option IDs, subsequent
+             // to the first: 2 and 3. For the second option to stay selected, the select
+             // value will need to have the ID of the current second option: 3.
+             const nyOption = fixture.debugElement.queryAll(By.css('option'))[1];
+             expect(select.nativeElement.value).toEqual('3: Object');
+             expect(nyOption.nativeElement.selected).toBe(true);
+           }));
+
+
       });
 
     });
@@ -336,6 +409,7 @@ export function main() {
       describe('in reactive forms', () => {
 
         it('should support primitive values', () => {
+          if (isNode) return;
           const fixture = initTest(FormControlSelectMultiple);
           fixture.detectChanges();
 
@@ -346,6 +420,7 @@ export function main() {
         });
 
         it('should support objects', () => {
+          if (isNode) return;
           const fixture = initTest(FormControlSelectMultipleNgValue);
           fixture.detectChanges();
 
@@ -363,6 +438,7 @@ export function main() {
         });
 
         it('should compare options using provided compareWith function', fakeAsync(() => {
+             if (isNode) return;
              const fixture = initTest(FormControlSelectMultipleWithCompareFn);
              fixture.detectChanges();
              tick();
@@ -414,6 +490,7 @@ export function main() {
 
         it('should reflect state of model after option selected and new options subsequently added',
            fakeAsync(() => {
+             if (isNode) return;
              setSelectedCities([]);
 
              selectOptionViaUI('1: Object');
@@ -427,6 +504,7 @@ export function main() {
 
         it('should reflect state of model after option selected and then other options removed',
            fakeAsync(() => {
+             if (isNode) return;
              setSelectedCities([]);
 
              selectOptionViaUI('1: Object');
@@ -448,6 +526,7 @@ export function main() {
       });
 
       it('should compare options using provided compareWith function', fakeAsync(() => {
+           if (isNode) return;
            const fixture = initTest(NgModelSelectMultipleWithCustomCompareFnForm);
            const comp = fixture.componentInstance;
            comp.cities = [{id: 1, name: 'SF'}, {id: 2, name: 'LA'}];
@@ -1073,7 +1152,7 @@ class FormControlSelectNgValue {
 })
 class FormControlSelectWithCompareFn {
   compareFn:
-      (o1: any, o2: any) => boolean = (o1: any, o2: any) => o1 && o2? o1.id === o2.id: o1 === o2;
+      (o1: any, o2: any) => boolean = (o1: any, o2: any) => o1 && o2? o1.id === o2.id: o1 === o2
   cities = [{id: 1, name: 'SF'}, {id: 2, name: 'NY'}];
   form = new FormGroup({city: new FormControl({id: 1, name: 'SF'})});
 }
@@ -1117,7 +1196,7 @@ class FormControlSelectMultipleNgValue {
 })
 class FormControlSelectMultipleWithCompareFn {
   compareFn:
-      (o1: any, o2: any) => boolean = (o1: any, o2: any) => o1 && o2? o1.id === o2.id: o1 === o2;
+      (o1: any, o2: any) => boolean = (o1: any, o2: any) => o1 && o2? o1.id === o2.id: o1 === o2
   cities = [{id: 1, name: 'SF'}, {id: 2, name: 'NY'}];
   form = new FormGroup({city: new FormControl([{id: 1, name: 'SF'}])});
 }
@@ -1160,7 +1239,7 @@ class NgModelSelectWithNullForm {
 })
 class NgModelSelectWithCustomCompareFnForm {
   compareFn:
-      (o1: any, o2: any) => boolean = (o1: any, o2: any) => o1 && o2? o1.id === o2.id: o1 === o2;
+      (o1: any, o2: any) => boolean = (o1: any, o2: any) => o1 && o2? o1.id === o2.id: o1 === o2
   selectedCity: any = {};
   cities: any[] = [];
 }
@@ -1176,7 +1255,7 @@ class NgModelSelectWithCustomCompareFnForm {
 })
 class NgModelSelectMultipleWithCustomCompareFnForm {
   compareFn:
-      (o1: any, o2: any) => boolean = (o1: any, o2: any) => o1 && o2? o1.id === o2.id: o1 === o2;
+      (o1: any, o2: any) => boolean = (o1: any, o2: any) => o1 && o2? o1.id === o2.id: o1 === o2
   selectedCities: any[] = [];
   cities: any[] = [];
 }

@@ -18,9 +18,8 @@ import {EmbeddedViewRef} from './view_ref';
  * the constructor of the directive using the `TemplateRef` Token. Alternatively you can query for
  * the `TemplateRef` from a Component or a Directive via {@link Query}.
  *
- * To instantiate Embedded Views based on a Template, use
- * {@link ViewContainerRef#createEmbeddedView}, which will create the View and attach it to the
- * View Container.
+ * To instantiate Embedded Views based on a Template, use {@link ViewContainerRef#
+ * createEmbeddedView}, which will create the View and attach it to the View Container.
  * @stable
  */
 export abstract class TemplateRef<C> {

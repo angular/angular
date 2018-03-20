@@ -15,3 +15,7 @@
 /// <reference path="../node_modules/@types/selenium-webdriver/index.d.ts" />
 /// <reference path="./es6-subset.d.ts" />
 /// <reference path="./system.d.ts" />
+/// <reference path="./goog.d.ts" />
+
+declare let isNode: boolean;
+declare let isBrowser: boolean;

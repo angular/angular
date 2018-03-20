@@ -13,10 +13,8 @@ const AIO_REPO_SLUG = getEnvVar('AIO_REPO_SLUG');
 const AIO_TRUSTED_PR_LABEL = getEnvVar('AIO_TRUSTED_PR_LABEL');
 const AIO_UPLOAD_HOSTNAME = getEnvVar('AIO_UPLOAD_HOSTNAME');
 const AIO_UPLOAD_PORT = +getEnvVar('AIO_UPLOAD_PORT');
-const AIO_WWW_USER = getEnvVar('AIO_WWW_USER');
 
 // Run
-process.setuid(AIO_WWW_USER);   // TODO(gkalpak): Find more suitable way to run as `www-data`.
 _main();
 
 // Functions

@@ -6,7 +6,7 @@ import { QuestionBase }              from './question-base';
 import { QuestionControlService }    from './question-control.service';
 
 @Component({
-  selector: 'dynamic-form',
+  selector: 'app-dynamic-form',
   templateUrl: './dynamic-form.component.html',
   providers: [ QuestionControlService ]
 })

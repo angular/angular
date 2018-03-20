@@ -8,7 +8,7 @@
 
 import {Location} from '../../src/location/location';
 
-export function main() {
+{
   const baseUrl = '/base';
 
   describe('Location Class', () => {

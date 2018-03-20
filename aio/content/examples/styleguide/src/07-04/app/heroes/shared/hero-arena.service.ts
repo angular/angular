@@ -3,7 +3,7 @@
 import { Injectable } from '@angular/core';
 import { Http } from '@angular/http';
 
-import { HeroService } from './index';
+import { HeroService } from './hero.service';
 
 // #docregion example
 @Injectable()

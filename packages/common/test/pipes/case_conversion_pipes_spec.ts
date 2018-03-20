@@ -8,7 +8,7 @@
 
 import {LowerCasePipe, TitleCasePipe, UpperCasePipe} from '@angular/common';
 
-export function main() {
+{
   describe('LowerCasePipe', () => {
     let pipe: LowerCasePipe;
 

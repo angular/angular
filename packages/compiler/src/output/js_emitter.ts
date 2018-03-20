@@ -15,9 +15,7 @@ import {AbstractJsEmitterVisitor} from './abstract_js_emitter';
 import * as o from './output_ast';
 
 export class JavaScriptEmitter implements OutputEmitter {
-  emitStatements(
-      srcFilePath: string, genFilePath: string, stmts: o.Statement[],
-      preamble: string = ''): string {
+  emitStatements(genFilePath: string, stmts: o.Statement[], preamble: string = ''): string {
     const converter = new JsEmitterVisitor();
     const ctx = EmitterVisitorContext.createRoot();
     converter.visitAllStatements(stmts, ctx);
@@ -30,8 +28,7 @@ export class JavaScriptEmitter implements OutputEmitter {
           `uire('${importedModuleName}');`);
     });
 
-    const sm =
-        ctx.toSourceMapGenerator(srcFilePath, genFilePath, preambleLines.length).toJsComment();
+    const sm = ctx.toSourceMapGenerator(genFilePath, preambleLines.length).toJsComment();
     const lines = [...preambleLines, ctx.toSource(), sm];
     if (sm) {
       // always add a newline at the end, as some tools have bugs without it.

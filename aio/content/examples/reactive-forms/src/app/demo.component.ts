@@ -1,12 +1,13 @@
 /* tslint:disable:member-ordering */
 import { Component }  from '@angular/core';
-import { Observable } from 'rxjs/Observable';
+import { Observable } from 'rxjs';
+import { finalize } from 'rxjs/operators';
 
 import { Hero }        from './data-model';
 import { HeroService } from './hero.service';
 
 @Component({
-  selector: 'my-app',
+  selector: 'app-root',
   templateUrl: './demo.component.html'
 })
 export class DemoComponent {
@@ -33,8 +34,9 @@ export class DemoComponent {
 
   getHeroes() {
     this.isLoading = true;
-    this.heroes = this.heroService.getHeroes()
-                      .finally(() => this.isLoading = false);
+    this.heroes = this.heroService.getHeroes().pipe(
+                      finalize(() => this.isLoading = false)
+    );
     this.selectedHero = undefined;
   }
 

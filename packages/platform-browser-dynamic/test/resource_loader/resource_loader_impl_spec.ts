@@ -9,7 +9,7 @@
 import {AsyncTestCompleter, beforeEach, describe, expect, inject, it} from '@angular/core/testing/src/testing_internal';
 import {ResourceLoaderImpl} from '../../src/resource_loader/resource_loader_impl';
 
-export function main() {
+{
   describe('ResourceLoaderImpl', () => {
     let resourceLoader: ResourceLoaderImpl;
 

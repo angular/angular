@@ -6,5 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+export {CompilerImpl as ɵCompilerImpl} from './compiler_factory';
+export {platformCoreDynamic as ɵplatformCoreDynamic} from './platform_core_dynamic';
 export {INTERNAL_BROWSER_DYNAMIC_PLATFORM_PROVIDERS as ɵINTERNAL_BROWSER_DYNAMIC_PLATFORM_PROVIDERS} from './platform_providers';
 export {ResourceLoaderImpl as ɵResourceLoaderImpl} from './resource_loader/resource_loader_impl';

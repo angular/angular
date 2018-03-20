@@ -6,13 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Compiler, InjectionToken, Injector, NgModuleFactory, NgModuleFactoryLoader, NgModuleRef} from '@angular/core';
-import {Observable} from 'rxjs/Observable';
-import {fromPromise} from 'rxjs/observable/fromPromise';
-import {of } from 'rxjs/observable/of';
-import {map} from 'rxjs/operator/map';
-import {mergeMap} from 'rxjs/operator/mergeMap';
-import {LoadChildren, LoadedRouterConfig, Route} from './config';
+import {Compiler, InjectionToken, Injector, NgModuleFactory, NgModuleFactoryLoader} from '@angular/core';
+// TODO(i): switch to fromPromise once it's expored in rxjs
+import {Observable, from, of } from 'rxjs';
+import {map, mergeMap} from 'rxjs/operators';
+import {LoadChildren, LoadedRouterConfig, Route, copyConfig} from './config';
 import {flatten, wrapIntoObservable} from './utils/collection';
 
 /**
@@ -34,28 +32,28 @@ export class RouterConfigLoader {
 
     const moduleFactory$ = this.loadModuleFactory(route.loadChildren !);
 
-    return map.call(moduleFactory$, (factory: NgModuleFactory<any>) => {
+    return moduleFactory$.pipe(map((factory: NgModuleFactory<any>) => {
       if (this.onLoadEndListener) {
         this.onLoadEndListener(route);
       }
 
       const module = factory.create(parentInjector);
 
-      return new LoadedRouterConfig(flatten(module.injector.get(ROUTES)), module);
-    });
+      return new LoadedRouterConfig(flatten(module.injector.get(ROUTES)).map(copyConfig), module);
+    }));
   }
 
   private loadModuleFactory(loadChildren: LoadChildren): Observable<NgModuleFactory<any>> {
     if (typeof loadChildren === 'string') {
-      return fromPromise(this.loader.load(loadChildren));
+      return from(this.loader.load(loadChildren));
     } else {
-      return mergeMap.call(wrapIntoObservable(loadChildren()), (t: any) => {
+      return wrapIntoObservable(loadChildren()).pipe(mergeMap((t: any) => {
         if (t instanceof NgModuleFactory) {
           return of (t);
         } else {
-          return fromPromise(this.compiler.compileModuleAsync(t));
+          return from(this.compiler.compileModuleAsync(t));
         }
-      });
+      }));
     }
   }
 }

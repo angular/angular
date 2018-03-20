@@ -9,7 +9,7 @@
 import {MockResourceLoader} from '@angular/compiler/testing/src/resource_loader_mock';
 import {AsyncTestCompleter, beforeEach, describe, expect, inject, it} from '@angular/core/testing/src/testing_internal';
 
-export function main() {
+{
   describe('MockResourceLoader', () => {
     let resourceLoader: MockResourceLoader;
 

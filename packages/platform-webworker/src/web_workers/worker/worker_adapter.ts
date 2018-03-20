@@ -25,8 +25,10 @@ export class WorkerDomAdapter extends DomAdapter {
     }
   }
 
-  // tslint:disable-next-line:no-console
-  log(error: any) { console.log(error); }
+  log(error: any) {
+    // tslint:disable-next-line:no-console
+    console.log(error);
+  }
 
   logGroup(error: any) {
     if (console.group) {
@@ -128,6 +130,7 @@ export class WorkerDomAdapter extends DomAdapter {
   removeAttributeNS(element: any, ns: string, attribute: string) { throw 'not implemented'; }
   templateAwareRoot(el: any) { throw 'not implemented'; }
   createHtmlDocument(): HTMLDocument { throw 'not implemented'; }
+  getDefaultDocument(): Document { throw 'not implemented'; }
   getBoundingClientRect(el: any) { throw 'not implemented'; }
   getTitle(doc: Document): string { throw 'not implemented'; }
   setTitle(doc: Document, newTitle: string) { throw 'not implemented'; }

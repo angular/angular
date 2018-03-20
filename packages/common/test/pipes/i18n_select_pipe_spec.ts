@@ -7,10 +7,10 @@
  */
 
 import {I18nSelectPipe} from '@angular/common';
-import {JitReflector} from '@angular/compiler';
 import {PipeResolver} from '@angular/compiler/src/pipe_resolver';
+import {JitReflector} from '@angular/platform-browser-dynamic/src/compiler_reflector';
 
-export function main() {
+{
   describe('I18nSelectPipe', () => {
     const pipe: I18nSelectPipe = new I18nSelectPipe();
     const mapping = {'male': 'Invite him.', 'female': 'Invite her.', 'other': 'Invite them.'};

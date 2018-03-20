@@ -14,7 +14,7 @@ import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../src/parse_u
 import {serializeNodes} from '../ml_parser/ast_serializer_spec';
 import {_extractMessages} from './i18n_parser_spec';
 
-export function main(): void {
+{
   describe('TranslationBundle', () => {
     const file = new ParseSourceFile('content', 'url');
     const startLocation = new ParseLocation(file, 0, 0, 0);

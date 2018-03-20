@@ -127,6 +127,8 @@ export type IAugmentedJQuery = Node[] & {
   controller?: (name: string) => any;
   isolateScope?: () => IScope;
   injector?: () => IInjectorService;
+  remove?: () => void;
+  removeData?: () => void;
 };
 export interface IProvider { $get: IInjectable; }
 export interface IProvideService {
@@ -228,7 +230,7 @@ let angular: {
   bootstrap: noNg,
   module: noNg,
   element: noNg,
-  version: noNg,
+  version: undefined,
   resumeBootstrap: noNg,
   getTestability: noNg
 };
@@ -242,22 +244,37 @@ try {
 }
 
 /**
- * Resets the AngularJS library.
- *
- * Used when angularjs is loaded lazily, and not available on `window`.
- *
- * @stable
+ * @deprecated Use {@link setAngularJSGlobal} instead.
  */
 export function setAngularLib(ng: any): void {
-  angular = ng;
+  setAngularJSGlobal(ng);
 }
 
 /**
- * Returns the current version of the AngularJS library.
+ * @deprecated Use {@link getAngularJSGlobal} instead.
+ */
+export function getAngularLib(): any {
+  return getAngularJSGlobal();
+}
+
+/**
+ * Resets the AngularJS global.
+ *
+ * Used when AngularJS is loaded lazily, and not available on `window`.
  *
  * @stable
  */
-export function getAngularLib(): any {
+export function setAngularJSGlobal(ng: any): void {
+  angular = ng;
+  version = ng && ng.version;
+}
+
+/**
+ * Returns the current AngularJS global.
+ *
+ * @stable
+ */
+export function getAngularJSGlobal(): any {
   return angular;
 }
 
@@ -274,4 +291,4 @@ export const resumeBootstrap = () => angular.resumeBootstrap();
 
 export const getTestability = (e: Element) => angular.getTestability(e);
 
-export const version = angular.version;
+export let version = angular.version;

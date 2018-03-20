@@ -1,21 +1,18 @@
 // #docplaster
-// #docregion full, v1
-import { Component }          from '@angular/core';
+// #docregion, v1
+import { Component } from '@angular/core';
 // #enddocregion v1
+import { HeroService } from './hero.service';
 
-import { HeroService }        from './hero.service';
-// #enddocregion full
-
-// #docregion full, v1
-
+// #docregion v1
 @Component({
-  selector: 'my-heroes',
+  selector: 'app-heroes',
     // #enddocregion v1
-  providers: [HeroService],
+  providers: [ HeroService ],
   // #docregion v1
   template: `
-  <h2>Heroes</h2>
-  <hero-list></hero-list>
+    <h2>Heroes</h2>
+    <app-hero-list></app-hero-list>
   `
 })
 export class HeroesComponent { }

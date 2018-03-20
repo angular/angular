@@ -1,0 +1,22 @@
+{% macro renderDescendantList(descendants, docType, recursed) %}
+{% if descendants.length %}
+<ul>
+  {% for descendant in descendants %}
+    <li>
+      <code>{$ descendant.name $}</code>
+      {$ renderDescendantList(descendant.descendants | filterByPropertyValue('docType', docType), docType, recursed) $}
+    </li>
+  {% endfor %}
+</ul>
+{% endif %}
+{% endmacro -%}
+
+{%- macro renderDescendants(doc, docType, title='', recursed=true) %}
+  {% set descendants = doc.descendants | filterByPropertyValue('docType', docType) %}
+  {% if descendants.length %}
+  <div class="descendants {$ docType $}">
+    {% if title %}<h2>{$ title $}</h2>{% endif %}
+    {$ renderDescendantList(descendants, docType, recursed) $}
+  </div>
+  {% endif %}
+{% endmacro %}

@@ -29,7 +29,7 @@ describe('ngComponentOutlet', () => {
     it('should render complete', () => {
       browser.get(URL);
       waitForElement('ng-component-outlet-complete-example');
-      expect(element.all(by.css('complete-component')).getText()).toEqual(['Complete: Ahoj Svet!']);
+      expect(element.all(by.css('complete-component')).getText()).toEqual(['Complete: AhojSvet!']);
     });
 
     it('should render other module', () => {

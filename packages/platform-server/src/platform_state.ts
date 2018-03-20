@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-const parse5 = require('parse5');
-
-import {Injectable, Inject} from '@angular/core';
+import {Inject, Injectable} from '@angular/core';
 import {DOCUMENT, ɵgetDOM as getDOM} from '@angular/platform-browser';
+
+import {serializeDocument} from './domino_adapter';
 
 /**
  * Representation of the current platform state.
@@ -23,7 +23,7 @@ export class PlatformState {
   /**
    * Renders the current state of the platform to string.
    */
-  renderToString(): string { return getDOM().getInnerHTML(this._doc); }
+  renderToString(): string { return serializeDocument(this._doc); }
 
   /**
    * Returns the current DOM state.

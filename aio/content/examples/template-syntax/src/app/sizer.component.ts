@@ -2,7 +2,7 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 
 @Component({
-  selector: 'my-sizer',
+  selector: 'app-sizer',
   template: `
   <div>
     <button (click)="dec()" title="smaller">-</button>

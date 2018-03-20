@@ -26,8 +26,8 @@ let viewFlags = ViewFlags.None;
 
 function TreeComponent_Host(): ViewDefinition {
   return viewDef(viewFlags, [
-    elementDef(NodeFlags.None, null, null, 1, 'tree', null, null, null, null, TreeComponent_0),
-    directiveDef(NodeFlags.Component, null, 0, TreeComponent, []),
+    elementDef(0, NodeFlags.None, null, null, 1, 'tree', null, null, null, null, TreeComponent_0),
+    directiveDef(1, NodeFlags.Component, null, 0, TreeComponent, []),
   ]);
 }
 
@@ -35,8 +35,9 @@ function TreeComponent_1() {
   return viewDef(
       viewFlags,
       [
-        elementDef(NodeFlags.None, null, null, 1, 'tree', null, null, null, null, TreeComponent_0),
-        directiveDef(NodeFlags.Component, null, 0, TreeComponent, [], {data: [0, 'data']}),
+        elementDef(
+            0, NodeFlags.None, null, null, 1, 'tree', null, null, null, null, TreeComponent_0),
+        directiveDef(1, NodeFlags.Component, null, 0, TreeComponent, [], {data: [0, 'data']}),
       ],
       (check, view) => {
         const cmp = view.component;
@@ -48,8 +49,9 @@ function TreeComponent_2() {
   return viewDef(
       viewFlags,
       [
-        elementDef(NodeFlags.None, null, null, 1, 'tree', null, null, null, null, TreeComponent_0),
-        directiveDef(NodeFlags.Component, null, 0, TreeComponent, [], {data: [0, 'data']}),
+        elementDef(
+            0, NodeFlags.None, null, null, 1, 'tree', null, null, null, null, TreeComponent_0),
+        directiveDef(1, NodeFlags.Component, null, 0, TreeComponent, [], {data: [0, 'data']}),
       ],
       (check, view) => {
         const cmp = view.component;
@@ -62,15 +64,15 @@ function TreeComponent_0(): ViewDefinition {
       viewFlags,
       [
         elementDef(
-            NodeFlags.None, null, null, 1, 'span', null,
+            0, NodeFlags.None, null, null, 1, 'span', null,
             [[BindingFlags.TypeElementStyle, 'backgroundColor', null]]),
-        textDef(null, [' ', ' ']),
+        textDef(1, null, [' ', ' ']),
         anchorDef(NodeFlags.EmbeddedViews, null, null, 1, null, TreeComponent_1),
         directiveDef(
-            NodeFlags.None, null, 0, NgIf, [ViewContainerRef, TemplateRef], {ngIf: [0, 'ngIf']}),
+            3, NodeFlags.None, null, 0, NgIf, [ViewContainerRef, TemplateRef], {ngIf: [0, 'ngIf']}),
         anchorDef(NodeFlags.EmbeddedViews, null, null, 1, null, TreeComponent_2),
         directiveDef(
-            NodeFlags.None, null, 0, NgIf, [ViewContainerRef, TemplateRef], {ngIf: [0, 'ngIf']}),
+            5, NodeFlags.None, null, 0, NgIf, [ViewContainerRef, TemplateRef], {ngIf: [0, 'ngIf']}),
       ],
       (check, view) => {
         const cmp = view.component;

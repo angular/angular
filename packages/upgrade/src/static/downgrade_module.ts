@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injector, NgModuleFactory, NgModuleRef, Provider} from '@angular/core';
+import {Injector, NgModuleFactory, NgModuleRef, StaticProvider} from '@angular/core';
 import {platformBrowser} from '@angular/platform-browser';
 
 import * as angular from '../common/angular1';
@@ -20,11 +20,11 @@ import {NgAdapterInjector} from './util';
 /** @experimental */
 export function downgradeModule<T>(
     moduleFactoryOrBootstrapFn: NgModuleFactory<T>|
-    ((extraProviders: Provider[]) => Promise<NgModuleRef<T>>)): string {
+    ((extraProviders: StaticProvider[]) => Promise<NgModuleRef<T>>)): string {
   const LAZY_MODULE_NAME = UPGRADE_MODULE_NAME + '.lazy';
   const bootstrapFn = isFunction(moduleFactoryOrBootstrapFn) ?
       moduleFactoryOrBootstrapFn :
-      (extraProviders: Provider[]) =>
+      (extraProviders: StaticProvider[]) =>
           platformBrowser(extraProviders).bootstrapModuleFactory(moduleFactoryOrBootstrapFn);
 
   let injector: Injector;

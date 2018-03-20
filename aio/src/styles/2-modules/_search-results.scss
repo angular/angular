@@ -29,6 +29,24 @@ aio-search-results {
     }
 }
 
+aio-search-results.embedded .search-results {
+    padding: 0;
+    color: inherit;
+    width: auto;
+    max-height: 100%;
+    position: relative;
+    background-color: inherit;
+    box-shadow: none;
+    box-sizing: border-box;
+
+    .search-area a {
+        color: lighten($darkgray, 10);
+        &:hover {
+            color: $accentblue;
+        }
+    }
+}
+
 .search-area {
     display: flex;
     flex-direction: column;

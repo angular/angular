@@ -31,7 +31,7 @@ describe('SwUpdatesService', () => {
     checkInterval = (service as any).checkInterval;
   };
   const tearDown = () => service.ngOnDestroy();
-  const run = specFn => () => {
+  const run = (specFn: VoidFunction) => () => {
     setup();
     specFn();
     tearDown();
@@ -90,7 +90,7 @@ describe('SwUpdatesService', () => {
   })));
 
   it('should emit on `updateActivated` when an update has been activated', run(() => {
-    const activatedVersions: string[] = [];
+    const activatedVersions: (string|undefined)[] = [];
     service.updateActivated.subscribe(v => activatedVersions.push(v));
 
     sw.$$updatesSubj.next({type: 'pending', version: 'foo'});
@@ -126,7 +126,7 @@ describe('SwUpdatesService', () => {
     })));
 
     it('should stop emitting on `updateActivated`', run(() => {
-      const activatedVersions: string[] = [];
+      const activatedVersions: (string|undefined)[] = [];
       service.updateActivated.subscribe(v => activatedVersions.push(v));
 
       sw.$$updatesSubj.next({type: 'pending', version: 'foo'});

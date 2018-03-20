@@ -1,3 +1,4 @@
+// The OLD Http module. See HeroService for use of the current HttpClient
 // #docplaster
 // #docregion
 import { Injectable }     from '@angular/core';
@@ -5,12 +6,9 @@ import { Http, Response } from '@angular/http';
 import { Headers, RequestOptions } from '@angular/http';
 import { Hero }           from './hero';
 
-import { Observable }     from 'rxjs/Observable';
-import 'rxjs/add/observable/throw';
-
-import 'rxjs/add/operator/do';
-import 'rxjs/add/operator/catch';
-import 'rxjs/add/operator/map';
+import { Observable } from 'rxjs';
+import { throwError } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
 
 @Injectable()
 export class HttpHeroService {
@@ -19,16 +17,17 @@ export class HttpHeroService {
   constructor (private http: Http) {}
 
   getHeroes (): Observable<Hero[]> {
-    return this.http.get(this._heroesUrl)
-                    .map(this.extractData)
-                    // .do(data => console.log(data)) // eyeball results in the console
-                    .catch(this.handleError);
+    return this.http.get(this._heroesUrl).pipe(
+      map(this.extractData),
+      // tap(data => console.log(data)), // eyeball results in the console
+      catchError(this.handleError)
+    );
   }
 
   getHero(id: number | string) {
-    return this.http
-            .get('app/heroes/?id=${id}')
-            .map((r: Response) => r.json().data as Hero[]);
+    return this.http.get('app/heroes/?id=${id}').pipe(
+      map((r: Response) => r.json().data as Hero[])
+    );
   }
 
   addHero (name: string): Observable<Hero>  {
@@ -36,9 +35,10 @@ export class HttpHeroService {
     let headers = new Headers({ 'Content-Type': 'application/json' });
     let options = new RequestOptions({ headers: headers });
 
-    return this.http.post(this._heroesUrl, body, options)
-                    .map(this.extractData)
-                    .catch(this.handleError);
+    return this.http.post(this._heroesUrl, body, options).pipe(
+      map(this.extractData),
+      catchError(this.handleError)
+    );
   }
 
   updateHero (hero: Hero): Observable<Hero>  {
@@ -46,9 +46,10 @@ export class HttpHeroService {
     let headers = new Headers({ 'Content-Type': 'application/json' });
     let options = new RequestOptions({ headers: headers });
 
-    return this.http.put(this._heroesUrl, body, options)
-                    .map(this.extractData)
-                    .catch(this.handleError);
+    return this.http.put(this._heroesUrl, body, options).pipe(
+      map(this.extractData),
+      catchError(this.handleError)
+    );
   }
 
   private extractData(res: Response) {
@@ -63,6 +64,6 @@ export class HttpHeroService {
     // In a real world app, we might send the error to remote logging infrastructure
     let errMsg = error.message || 'Server error';
     console.error(errMsg); // log to console instead
-    return Observable.throw(errMsg);
+    return throwError(errMsg);
   }
 }

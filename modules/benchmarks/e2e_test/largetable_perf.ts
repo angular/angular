@@ -56,6 +56,24 @@ describe('largetable benchmark perf', () => {
         }).then(done, done.fail);
       });
 
+      it('should run for render3', (done) => {
+        runTableBenchmark({
+          id: `largeTable.render3.${worker.id}`,
+          url: 'all/benchmarks/src/largetable/render3/index.html',
+          ignoreBrowserSynchronization: true,
+          worker: worker
+        }).then(done, done.fail);
+      });
+
+      it('should run for iv', (done) => {
+        runTableBenchmark({
+          id: `largeTable.iv.${worker.id}`,
+          url: 'all/benchmarks/src/largetable/iv/index.html',
+          ignoreBrowserSynchronization: true,
+          worker: worker
+        }).then(done, done.fail);
+      });
+
       it('should run for the baseline', (done) => {
         runTableBenchmark({
           id: `largeTable.baseline.${worker.id}`,

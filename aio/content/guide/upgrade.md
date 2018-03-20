@@ -387,7 +387,7 @@ bootstrapping the AngularJS module.
 
 <div class="l-sub-section">
 
-Read more about [NgModules](guide/ngmodule).
+For more information, see [NgModules](guide/ngmodules).
 
 </div>
 
@@ -588,7 +588,7 @@ and a controller:
 
 You can *upgrade* this component to Angular using the `UpgradeComponent` class.
 By creating a new Angular **directive** that extends `UpgradeComponent` and doing a `super` call
-inside it's constructor, you have a fully upgraded AngularJS component to be used inside Angular.
+inside its constructor, you have a fully upgraded AngularJS component to be used inside Angular.
 All that is left is to add it to `AppModule`'s `declarations` array.
 
 <code-example path="upgrade-module/src/app/upgrade-static/hero-detail.component.ts" region="hero-detail-upgrade" title="hero-detail.component.ts">
@@ -602,7 +602,7 @@ All that is left is to add it to `AppModule`'s `declarations` array.
 Upgraded components are Angular **directives**, instead of **components**, because Angular
 is unaware that AngularJS will create elements under it. As far as Angular knows, the upgraded
 component is just a directive - a tag - and Angular doesn't have to concern itself with
-it's children.
+its children.
 
 </div>
 
@@ -784,7 +784,7 @@ compilation can pick it up.
 <code-example path="upgrade-module/src/app/ajs-to-a-providers/app.module.ts" region="register" title="app.module.ts">
 </code-example>
 
-You can then inject it in Angular using it's class as a type annotation:
+You can then inject it in Angular using its class as a type annotation:
 
 <code-example path="upgrade-module/src/app/ajs-to-a-providers/hero-detail.component.ts" title="hero-detail.component.ts">
 
@@ -1260,7 +1260,7 @@ app. Switch to the [ngUpgrade bootstrap](#bootstrapping-hybrid-applications) met
 instead.
 
 First, remove the `ng-app` attribute from `index.html`.
-Then import `UpgradeModule` in the `AppModule`, and override it's `ngDoBootstrap` method:
+Then import `UpgradeModule` in the `AppModule`, and override its `ngDoBootstrap` method:
 
 <code-example path="upgrade-phonecat-2-hybrid/app/app.module.ts" region="upgrademodule" title="app/app.module.ts">
 </code-example>
@@ -1619,7 +1619,7 @@ instead of the default "push state" strategy.
 Now update the `AppModule` to import this `AppRoutingModule` and also the
 declare the root `AppComponent` as the bootstrap component.
 That tells Angular that it should bootstrap the app with the _root_ `AppComponent` and
-insert it's view into the host web page.
+insert its view into the host web page.
 
 You must also remove the bootstrap of the AngularJS module from `ngDoBootstrap()` in `app.module.ts`
 and the `UpgradeModule` import.
@@ -1695,7 +1695,7 @@ module configuration files and not needed in Angular:
 
 The external typings for AngularJS may be uninstalled as well. The only ones
 you still need are for Jasmine and Angular polyfills.
-The `@angular/upgrade` package and it's mapping in `systemjs.config.js` can also go.
+The `@angular/upgrade` package and its mapping in `systemjs.config.js` can also go.
 
 <code-example format="">
   npm uninstall @angular/upgrade --save

@@ -1,0 +1,9 @@
+<a href="{{actionUrl}}" class="content" (click)="dismiss()">
+  <mat-icon class="icon" [svgIcon]="icon" [attr.aria-label]="iconLabel"></mat-icon>
+  <span class="message"><ng-content></ng-content></span>
+  <span class="action-button">{{buttonText}}</span>
+</a>
+
+<button mat-icon-button class="close-button" aria-label="Close" (click)="dismiss()">
+  <mat-icon svgIcon="close" aria-label="Dismiss notification"></mat-icon>
+</button>

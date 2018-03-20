@@ -8,16 +8,16 @@
 
 import {AsyncTestCompleter, describe, expect, inject, it} from '@angular/core/testing/src/testing_internal';
 
-import {MeasureValues, MultiReporter, ReflectiveInjector, Reporter} from '../../index';
+import {Injector, MeasureValues, MultiReporter, Reporter} from '../../index';
 
-export function main() {
+(function() {
   function createReporters(ids: any[]) {
-    const r = ReflectiveInjector
-                  .resolveAndCreate([
+    const r = Injector
+                  .create([
                     ids.map(id => ({provide: id, useValue: new MockReporter(id)})),
                     MultiReporter.provideWith(ids)
                   ])
-                  .get(MultiReporter);
+                  .get<MultiReporter>(MultiReporter);
     return Promise.resolve(r);
   }
 
@@ -51,7 +51,7 @@ export function main() {
        }));
 
   });
-}
+})();
 
 class MockReporter extends Reporter {
   constructor(private _id: string) { super(); }

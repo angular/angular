@@ -1,33 +1,26 @@
 {
+  "extends": "../tsconfig-build.json",
+
   "compilerOptions": {
     "baseUrl": ".",
-    "declaration": true,
-    "stripInternal": true,
-    "experimentalDecorators": true,
-    "module": "es2015",
-    "moduleResolution": "node",
-    "outDir": "../../dist/packages/animations",
-    "paths": {
-    },
     "rootDir": ".",
-    "sourceMap": true,
-    "inlineSources": true,
-    "target": "es2015",
-    "lib": ["es2015", "dom"],
-    "skipLibCheck": true,
-    "strictNullChecks": true,
-    // don't auto-discover @types/node, it results in a ///<reference in the .d.ts output
-    "types": []
+    "paths": {
+      "@angular/core": ["../../dist/packages/core"]
+    },
+    "outDir": "../../dist/packages/animations"
   },
+
   "files": [
     "public_api.ts",
     "../../node_modules/zone.js/dist/zone.js.d.ts",
     "../system.d.ts"
   ],
+
   "angularCompilerOptions": {
     "annotateForClosureCompiler": true,
-    "strictMetadataEmit": true,
-    "flatModuleOutFile": "index.js",
+    "strictMetadataEmit": false,
+    "skipTemplateCodegen": true,
+    "flatModuleOutFile": "animations.js",
     "flatModuleId": "@angular/animations"
   }
 }

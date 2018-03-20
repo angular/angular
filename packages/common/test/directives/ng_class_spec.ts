@@ -9,7 +9,7 @@
 import {Component} from '@angular/core';
 import {ComponentFixture, TestBed, async} from '@angular/core/testing';
 
-export function main() {
+{
   describe('binding to CSS class list', () => {
     let fixture: ComponentFixture<any>|null;
 

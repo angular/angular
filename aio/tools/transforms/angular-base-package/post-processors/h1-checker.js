@@ -34,5 +34,5 @@ function getText(h1) {
     (node.properties.ariaHidden === 'true' || node.properties['aria-hidden'] === 'true')
   ));
 
-  return toString(cleaned);
+  return cleaned ? toString(cleaned) : '';
 }

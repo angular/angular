@@ -8,7 +8,7 @@
 
 import {Directive, EventEmitter, Host, Inject, Input, OnChanges, OnDestroy, Optional, Output, Self, SimpleChanges, forwardRef} from '@angular/core';
 
-import {FormControl} from '../model';
+import {FormControl, FormHooks} from '../model';
 import {NG_ASYNC_VALIDATORS, NG_VALIDATORS} from '../validators';
 
 import {AbstractFormGroupDirective} from './abstract_form_group_directive';
@@ -110,8 +110,7 @@ const resolvedPromise = Promise.resolve(null);
 })
 export class NgModel extends NgControl implements OnChanges,
     OnDestroy {
-  /** @internal */
-  _control = new FormControl();
+  public readonly control: FormControl = new FormControl();
   /** @internal */
   _registered = false;
   viewModel: any;
@@ -119,7 +118,45 @@ export class NgModel extends NgControl implements OnChanges,
   @Input() name: string;
   @Input('disabled') isDisabled: boolean;
   @Input('ngModel') model: any;
-  @Input('ngModelOptions') options: {name?: string, standalone?: boolean};
+
+  /**
+   * Options object for this `ngModel` instance. You can configure the following properties:
+   *
+   * **name**: An alternative to setting the name attribute on the form control element.
+   * Sometimes, especially with custom form components, the name attribute might be used
+   * as an `@Input` property for a different purpose. In cases like these, you can configure
+   * the `ngModel` name through this option.
+   *
+   * ```html
+   * <form>
+   *   <my-person-control name="Nancy" ngModel [ngModelOptions]="{name: 'user'}">
+   *   </my-person-control>
+   * </form>
+   * <!-- form value: {user: ''} -->
+   * ```
+   *
+   * **standalone**: Defaults to false. If this is set to true, the `ngModel` will not
+   * register itself with its parent form, and will act as if it's not in the form. This
+   * can be handy if you have form meta-controls, a.k.a. form elements nested in
+   * the `<form>` tag that control the display of the form, but don't contain form data.
+   *
+   * ```html
+   * <form>
+   *   <input name="login" ngModel placeholder="Login">
+   *   <input type="checkbox" ngModel [ngModelOptions]="{standalone: true}"> Show more options?
+   * </form>
+   * <!-- form value: {login: ''} -->
+   * ```
+   *
+   * **updateOn**: Defaults to `'change'`. Defines the event upon which the form control
+   * value and validity will update. Also accepts `'blur'` and `'submit'`.
+   *
+   * ```html
+   * <input [(ngModel)]="firstName" [ngModelOptions]="{updateOn: 'blur'}">
+   * ```
+   *
+   */
+  @Input('ngModelOptions') options: {name?: string, standalone?: boolean, updateOn?: FormHooks};
 
   @Output('ngModelChange') update = new EventEmitter();
 
@@ -150,8 +187,6 @@ export class NgModel extends NgControl implements OnChanges,
 
               ngOnDestroy(): void { this.formDirective && this.formDirective.removeControl(this); }
 
-              get control(): FormControl { return this._control; }
-
               get path(): string[] {
                 return this._parent ? controlPath(this.name, this._parent) : [this.name];
               }
@@ -170,9 +205,16 @@ export class NgModel extends NgControl implements OnChanges,
               }
 
               private _setUpControl(): void {
+                this._setUpdateStrategy();
                 this._isStandalone() ? this._setUpStandalone() :
                                        this.formDirective.addControl(this);
                 this._registered = true;
+              }
+
+              private _setUpdateStrategy(): void {
+                if (this.options && this.options.updateOn != null) {
+                  this.control._updateOn = this.options.updateOn;
+                }
               }
 
               private _isStandalone(): boolean {
@@ -180,8 +222,8 @@ export class NgModel extends NgControl implements OnChanges,
               }
 
               private _setUpStandalone(): void {
-                setUpControl(this._control, this);
-                this._control.updateValueAndValidity({emitEvent: false});
+                setUpControl(this.control, this);
+                this.control.updateValueAndValidity({emitEvent: false});
               }
 
               private _checkForErrors(): void {

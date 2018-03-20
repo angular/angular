@@ -18,15 +18,20 @@
     },
     "rootDir": ".",
     "inlineSourceMap": true,
-    "lib": ["es5", "dom", "es2015.promise", "es2015.collection", "es2015.iterable"],
+    "lib": ["es5", "dom", "es2015.promise", "es2015.collection", "es2015.iterable", "es2015.core"],
     "skipDefaultLibCheck": true,
     "skipLibCheck": true,
     "target": "es5",
     "types": ["angularjs"]
   },
+  "bazelOptions": {
+    "suppressTsconfigOverrideWarnings": true
+  },
   "exclude": [
+    "bazel",
     "compiler-cli/integrationtest",
     "platform-server/integrationtest",
-    "tsc-wrapped"
+    "common/locales"
   ]
+
 }

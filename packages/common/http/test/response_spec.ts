@@ -11,7 +11,7 @@ import {ddescribe, describe, it} from '@angular/core/testing/src/testing_interna
 import {HttpHeaders} from '../src/headers';
 import {HttpResponse} from '../src/response';
 
-export function main() {
+{
   describe('HttpResponse', () => {
     describe('constructor()', () => {
       it('fully constructs responses', () => {
@@ -39,6 +39,10 @@ export function main() {
         expect(resp.body).toBeNull();
         expect(resp.ok).toBeTruthy();
         expect(resp.url).toBeNull();
+      });
+      it('accepts a falsy body', () => {
+        expect(new HttpResponse({body: false}).body).toEqual(false);
+        expect(new HttpResponse({body: 0}).body).toEqual(0);
       });
     });
     it('.ok is determined by status', () => {

@@ -112,7 +112,7 @@ with the one already used in the plugin for TypeScript typechecking and emit.
 
 ## Design
 At a high level, this program
-- collects static metadata about the sources using the `tsc-wrapped` package
+- collects static metadata about the sources
 - uses the `OfflineCompiler` from `@angular/compiler` to codegen additional `.ts` files
 - these `.ts` files are written to the `genDir` path, then compiled together with the application.
 
@@ -130,7 +130,7 @@ $ ./scripts/ci/offline_compiler_test.sh
 
 # Recompile @angular/core module (needs to use tsc-ext to keep the metadata)
 $ export NODE_PATH=${NODE_PATH}:$(pwd)/dist/all:$(pwd)/dist/tools
-$ node dist/tools/@angular/tsc-wrapped/src/main -p packages/core/tsconfig-build.json
+$ node dist/tools/@angular/compiler-cli/src/main -p packages/core/tsconfig-build.json
 
 # Iterate on the test
 $ cd /tmp/wherever/e2e_test.1464388257/

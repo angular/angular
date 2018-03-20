@@ -20,13 +20,9 @@ unexpected definitions.
 ## Ahead-of-time (AOT) compilation
 
 You can compile Angular applications at build time.
-By compiling your application using the compiler-cli, `ngc`, you can bootstrap directly
-to a module factory, meaning you don't need to include the Angular compiler in your JavaScript bundle.
+By compiling your application using the compiler-cli, `ngc`, you can bootstrap directly to a module factory, meaning you don't need to include the Angular compiler in your JavaScript bundle.
 Ahead-of-time compiled applications also benefit from decreased load time and increased performance.
 
-
-
-</div>
 
 
 ## Annotation
@@ -126,13 +122,10 @@ between a "token"&mdash;also referred to as a "key"&mdash;and a dependency [prov
 ## Bootstrap
 
 
-<div class="l-sub-section">
-
 You launch an Angular application by "bootstrapping" it using the application root NgModule (`AppModule`).
 
 Bootstrapping identifies an application's top level "root" [component](guide/glossary#component),
 which is the first component that is loaded for the application.
-For more information, see the [Setup](guide/setup) page.
 
 You can bootstrap multiple apps in the same `index.html`, each app with its own top-level root.
 
@@ -149,6 +142,12 @@ Function, property, and method names are typically spelled in camelCase. For exa
 camelCase is also known as *lower camel case* to distinguish it from *upper camel case*, or [PascalCase](guide/glossary#pascalcase).
 In Angular documentation, "camelCase" always means *lower camel case*.
 
+
+## CLI
+
+The Angular CLI is a `command line interface` tool that can create a project, add files, and perform a variety of ongoing development tasks such as testing, bundling, and deployment.
+
+Learn more in the [Getting Started](guide/quickstart) guide.
 
 {@a component}
 
@@ -473,8 +472,10 @@ Read more in the [Lifecycle Hooks](guide/lifecycle-hooks) page.
 Angular has the following types of modules:
 
 * [NgModules](guide/glossary#ngmodule).
-For details and examples, see the [NgModules](guide/ngmodule) page.
+For details and examples, see the [NgModules](guide/ngmodules) page. 
 * ES2015 modules, as described in this section.
+
+For a comparison, see [JavaScript Modules vs. NgModules](guide/ngmodule-vs-jsmodule).
 
 
 </div>
@@ -496,7 +497,7 @@ is based on the [ES2015 module standard](http://www.2ality.com/2014/09/es6-modul
 An application that adheres to this standard requires a module loader to
 load modules on request and resolve inter-module dependencies.
 Angular doesn't include a module loader and doesn't have a preference
-for any particular third-party library (although most examples use SystemJS).
+for any particular third-party library.
 You can use any module library that conforms to the standard.
 
 Modules are typically named after the file in which the exported thing is defined.
@@ -511,20 +512,17 @@ You rarely access Angular feature modules directly. You usually import them from
 
 ## NgModule
 
-<div class="l-sub-section">
-
-
-
 Helps you organize an application into cohesive blocks of functionality.
 An NgModule identifies the components, directives, and pipes that the application uses along with the list of external NgModules that the application needs, such as `FormsModule`.
 
 Every Angular application has an application root-module class. By convention, the class is
 called `AppModule` and resides in a file named `app.module.ts`.
 
-For details and examples, see [NgModules](guide/ngmodule).
+For details and examples, see [NgModules](guide/ngmodules) and the 
+related files in that section.
 
 
-</div>
+
 
 {@a O}
 
@@ -628,8 +626,6 @@ For more information, see the [Routing & Navigation](guide/router) page.
 
 
 ## Router module
-
-<div class="l-sub-section">
 
 A separate [NgModule](guide/glossary#ngmodule) that provides the necessary service providers and directives for navigating through application views.
 

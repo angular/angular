@@ -4,7 +4,7 @@ import { MovieService } from './movie.service';
 import { IMovie } from './movie';
 
 @Component({
-  selector: 'my-app',
+  selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: [ './app.component.css' ],
   providers: [ MovieService ]

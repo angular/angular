@@ -43,8 +43,6 @@ const TAG_TO_PLACEHOLDER_NAMES: {[k: string]: string} = {
  * Creates unique names for placeholder with different content.
  *
  * Returns the same placeholder name when the content is identical.
- *
- * @internal
  */
 export class PlaceholderRegistry {
   // Count the occurrence of the base name top generate a unique name

@@ -75,23 +75,24 @@ export function listenOnPlayer(
     callback: (event: any) => any) {
   switch (eventName) {
     case 'start':
-      player.onStart(() => callback(event && copyAnimationEvent(event, 'start', player.totalTime)));
+      player.onStart(() => callback(event && copyAnimationEvent(event, 'start', player)));
       break;
     case 'done':
-      player.onDone(() => callback(event && copyAnimationEvent(event, 'done', player.totalTime)));
+      player.onDone(() => callback(event && copyAnimationEvent(event, 'done', player)));
       break;
     case 'destroy':
-      player.onDestroy(
-          () => callback(event && copyAnimationEvent(event, 'destroy', player.totalTime)));
+      player.onDestroy(() => callback(event && copyAnimationEvent(event, 'destroy', player)));
       break;
   }
 }
 
 export function copyAnimationEvent(
-    e: AnimationEvent, phaseName?: string, totalTime?: number): AnimationEvent {
+    e: AnimationEvent, phaseName: string, player: AnimationPlayer): AnimationEvent {
+  const totalTime = player.totalTime;
+  const disabled = (player as any).disabled ? true : false;
   const event = makeAnimationEvent(
       e.element, e.triggerName, e.fromState, e.toState, phaseName || e.phaseName,
-      totalTime == undefined ? e.totalTime : totalTime);
+      totalTime == undefined ? e.totalTime : totalTime, disabled);
   const data = (e as any)['_data'];
   if (data != null) {
     (event as any)['_data'] = data;
@@ -101,8 +102,8 @@ export function copyAnimationEvent(
 
 export function makeAnimationEvent(
     element: any, triggerName: string, fromState: string, toState: string, phaseName: string = '',
-    totalTime: number = 0): AnimationEvent {
-  return {element, triggerName, fromState, toState, phaseName, totalTime};
+    totalTime: number = 0, disabled?: boolean): AnimationEvent {
+  return {element, triggerName, fromState, toState, phaseName, totalTime, disabled: !!disabled};
 }
 
 export function getOrSetAsInMap(
@@ -164,6 +165,39 @@ if (typeof Element != 'undefined') {
     }
     return results;
   };
+}
+
+function containsVendorPrefix(prop: string): boolean {
+  // Webkit is the only real popular vendor prefix nowadays
+  // cc: http://shouldiprefix.com/
+  return prop.substring(1, 6) == 'ebkit';  // webkit or Webkit
+}
+
+let _CACHED_BODY: {style: any}|null = null;
+let _IS_WEBKIT = false;
+export function validateStyleProperty(prop: string): boolean {
+  if (!_CACHED_BODY) {
+    _CACHED_BODY = getBodyNode() || {};
+    _IS_WEBKIT = _CACHED_BODY !.style ? ('WebkitAppearance' in _CACHED_BODY !.style) : false;
+  }
+
+  let result = true;
+  if (_CACHED_BODY !.style && !containsVendorPrefix(prop)) {
+    result = prop in _CACHED_BODY !.style;
+    if (!result && _IS_WEBKIT) {
+      const camelProp = 'Webkit' + prop.charAt(0).toUpperCase() + prop.substr(1);
+      result = camelProp in _CACHED_BODY !.style;
+    }
+  }
+
+  return result;
+}
+
+export function getBodyNode(): any|null {
+  if (typeof document != 'undefined') {
+    return document.body;
+  }
+  return null;
 }
 
 export const matchesElement = _matches;

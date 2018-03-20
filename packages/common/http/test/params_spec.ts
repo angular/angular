@@ -8,12 +8,12 @@
 
 import {HttpParams} from '../src/params';
 
-export function main() {
+{
   describe('HttpUrlEncodedParams', () => {
     describe('initialization', () => {
       it('should be empty at construction', () => {
         const body = new HttpParams();
-        expect(body.toString()).toEqual('')
+        expect(body.toString()).toEqual('');
       });
 
       it('should parse an existing url', () => {

@@ -1,0 +1,47 @@
+load("@build_bazel_rules_nodejs//:defs.bzl", "nodejs_binary")
+load("@build_bazel_rules_typescript//:defs.bzl", "ts_library")
+
+filegroup(
+    name = "package_assets",
+    srcs = glob(["*"]),
+    visibility = ["//packages/bazel:__subpackages__"],
+)
+
+ts_library(
+    name = "ngc_lib",
+    srcs = [
+        "extract_i18n.ts",
+        "index.ts",
+    ],
+    module_name = "@angular/bazel",
+    tsconfig = ":tsconfig.json",
+    visibility = ["//packages/bazel/test/ngc-wrapped:__subpackages__"],
+    deps = [
+        # BEGIN-INTERNAL
+        # Only needed when compiling within the Angular repo.
+        # Users will get this dependency from node_modules.
+        "//packages/compiler-cli",
+        # END-INTERNAL
+        "@build_bazel_rules_typescript//internal:tsc_wrapped",
+    ],
+)
+
+nodejs_binary(
+    name = "ngc-wrapped",
+    data = [
+        ":ngc_lib",
+        "@build_bazel_rules_typescript//internal:worker_protocol.proto",
+    ],
+    entry_point = "angular/packages/bazel/src/ngc-wrapped/index.js",
+    node_modules = "@build_bazel_rules_typescript_tsc_wrapped_deps//:node_modules",
+    visibility = ["//visibility:public"],
+)
+
+nodejs_binary(
+    name = "xi18n",
+    data = [
+        ":ngc_lib",
+    ],
+    entry_point = "angular/packages/bazel/src/ngc-wrapped/index.js/extract_i18n.js",
+    visibility = ["//visibility:public"],
+)

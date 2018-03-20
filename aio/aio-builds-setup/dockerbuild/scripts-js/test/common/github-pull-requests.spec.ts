@@ -22,7 +22,7 @@ describe('GithubPullRequests', () => {
 
   describe('addComment()', () => {
     let prs: GithubPullRequests;
-    let deferred: {resolve: Function, reject: Function};
+    let deferred: {resolve: (v: any) => void, reject: (v: any) => void};
 
     beforeEach(() => {
       prs = new GithubPullRequests('12345', 'foo/bar');

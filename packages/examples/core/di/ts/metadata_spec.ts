@@ -9,7 +9,7 @@
 import {Component, Directive, Host, Inject, Injectable, Optional, ReflectiveInjector, Self, SkipSelf} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-export function main() {
+{
   describe('di metadata examples', () => {
     describe('Inject', () => {
       it('works', () => {

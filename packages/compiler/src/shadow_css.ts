@@ -146,10 +146,12 @@ export class ShadowCss {
   * - hostSelector is the attribute added to the host itself.
   */
   shimCssText(cssText: string, selector: string, hostSelector: string = ''): string {
-    const sourceMappingUrl: string = extractSourceMappingUrl(cssText);
+    const commentsWithHash = extractCommentsWithHash(cssText);
     cssText = stripComments(cssText);
     cssText = this._insertDirectives(cssText);
-    return this._scopeCssText(cssText, selector, hostSelector) + sourceMappingUrl;
+
+    const scopedCssText = this._scopeCssText(cssText, selector, hostSelector);
+    return [scopedCssText, ...commentsWithHash].join('\n');
   }
 
   private _insertDirectives(cssText: string): string {
@@ -435,19 +437,34 @@ export class ShadowCss {
     let startIndex = 0;
     let res: RegExpExecArray|null;
     const sep = /( |>|\+|~(?!=))\s*/g;
-    const scopeAfter = selector.indexOf(_polyfillHostNoCombinator);
+
+    // If a selector appears before :host it should not be shimmed as it
+    // matches on ancestor elements and not on elements in the host's shadow
+    // `:host-context(div)` is transformed to
+    // `-shadowcsshost-no-combinatordiv, div -shadowcsshost-no-combinator`
+    // the `div` is not part of the component in the 2nd selectors and should not be scoped.
+    // Historically `component-tag:host` was matching the component so we also want to preserve
+    // this behavior to avoid breaking legacy apps (it should not match).
+    // The behavior should be:
+    // - `tag:host` -> `tag[h]` (this is to avoid breaking legacy apps, should not match anything)
+    // - `tag :host` -> `tag [h]` (`tag` is not scoped because it's considered part of a
+    //   `:host-context(tag)`)
+    const hasHost = selector.indexOf(_polyfillHostNoCombinator) > -1;
+    // Only scope parts after the first `-shadowcsshost-no-combinator` when it is present
+    let shouldScope = !hasHost;
 
     while ((res = sep.exec(selector)) !== null) {
       const separator = res[1];
       const part = selector.slice(startIndex, res.index).trim();
-      // if a selector appears before :host-context it should not be shimmed as it
-      // matches on ancestor elements and not on elements in the host's shadow
-      const scopedPart = startIndex >= scopeAfter ? _scopeSelectorPart(part) : part;
+      shouldScope = shouldScope || part.indexOf(_polyfillHostNoCombinator) > -1;
+      const scopedPart = shouldScope ? _scopeSelectorPart(part) : part;
       scopedSelector += `${scopedPart} ${separator} `;
       startIndex = sep.lastIndex;
     }
 
-    scopedSelector += _scopeSelectorPart(selector.substring(startIndex));
+    const part = selector.substring(startIndex);
+    shouldScope = shouldScope || part.indexOf(_polyfillHostNoCombinator) > -1;
+    scopedSelector += shouldScope ? _scopeSelectorPart(part) : part;
 
     // replace the placeholders with their original values
     return safeContent.restore(scopedSelector);
@@ -482,7 +499,7 @@ class SafeSelector {
       this.index++;
       return pseudo + replaceBy;
     });
-  };
+  }
 
   restore(content: string): string {
     return content.replace(/__ph-(\d+)__/g, (ph, index) => this.placeholders[+index]);
@@ -529,12 +546,10 @@ function stripComments(input: string): string {
   return input.replace(_commentRe, '');
 }
 
-// all comments except inline source mapping
-const _sourceMappingUrlRe = /\/\*\s*#\s*sourceMappingURL=[\s\S]+?\*\//;
+const _commentWithHashRe = /\/\*\s*#\s*source(Mapping)?URL=[\s\S]+?\*\//g;
 
-function extractSourceMappingUrl(input: string): string {
-  const matcher = input.match(_sourceMappingUrlRe);
-  return matcher ? matcher[0] : '';
+function extractCommentsWithHash(input: string): string[] {
+  return input.match(_commentWithHashRe) || [];
 }
 
 const _ruleRe = /(\s*)([^;\{\}]+?)(\s*)((?:{%BLOCK%}?\s*;?)|(?:\s*;))/g;

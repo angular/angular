@@ -1,0 +1,20 @@
+{
+  "scripts": [
+    { "name": "start", "command": "ng serve --aot" },
+    { "name": "start:fr", "command": "ng serve --aot --i18nFile=src/locale/messages.fr.xlf --i18nFormat=xlf --locale=fr" },
+    { "name": "build", "command": "ng build --prod" },
+    { "name": "build:fr", "command": "ng build --prod --i18nFile=src/locale/messages.fr.xlf --i18nFormat=xlf --locale=fr" },
+    { "name": "test", "command": "ng test" },
+    { "name": "lint", "command": "ng lint" },
+    { "name": "e2e", "command": "ng e2e --aot --i18nFile=src/locale/messages.fr.xlf --i18nFormat=xlf --locale=fr" },
+    { "name": "extract", "command": "ng xi18n --outputPath=src/locale" }
+  ],
+  "dependencies": [],
+  "devDependencies": [
+    "@angular/cli",
+    "@types/jasminewd2",
+    "jasmine-spec-reporter",
+    "karma-coverage-istanbul-reporter",
+    "ts-node"
+  ]
+}

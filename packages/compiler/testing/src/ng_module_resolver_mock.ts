@@ -6,21 +6,18 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CompileReflector, NgModuleResolver} from '@angular/compiler';
-import {Compiler, Injectable, Injector, NgModule, Type} from '@angular/core';
+import {CompileReflector, NgModuleResolver, core} from '@angular/compiler';
 
-@Injectable()
 export class MockNgModuleResolver extends NgModuleResolver {
-  private _ngModules = new Map<Type<any>, NgModule>();
+  private _ngModules = new Map<core.Type, core.NgModule>();
 
-  constructor(private _injector: Injector, reflector: CompileReflector) { super(reflector); }
+  constructor(reflector: CompileReflector) { super(reflector); }
 
   /**
    * Overrides the {@link NgModule} for a module.
    */
-  setNgModule(type: Type<any>, metadata: NgModule): void {
+  setNgModule(type: core.Type, metadata: core.NgModule): void {
     this._ngModules.set(type, metadata);
-    this._clearCacheFor(type);
   }
 
   /**
@@ -29,11 +26,7 @@ export class MockNgModuleResolver extends NgModuleResolver {
    * default
    * `NgModuleResolver`, see `setNgModule`.
    */
-  resolve(type: Type<any>, throwIfNotFound = true): NgModule {
+  resolve(type: core.Type, throwIfNotFound = true): core.NgModule {
     return this._ngModules.get(type) || super.resolve(type, throwIfNotFound) !;
   }
-
-  private get _compiler(): Compiler { return this._injector.get(Compiler); }
-
-  private _clearCacheFor(component: Type<any>) { this._compiler.clearCacheFor(component); }
 }

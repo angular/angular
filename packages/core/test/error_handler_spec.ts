@@ -15,11 +15,11 @@ class MockConsole {
   error(...s: any[]): void { this.res.push(s); }
 }
 
-export function main() {
+(function() {
   function errorToString(error: any) {
     const logger = new MockConsole();
     const errorHandler = new ErrorHandler();
-    errorHandler._console = logger as any;
+    (errorHandler as any)._console = logger as any;
     errorHandler.handleError(error);
     return logger.res.map(line => line.join('#')).join('\n');
   }
@@ -62,7 +62,7 @@ ERROR CONTEXT#Context`);
       const err = new Error('test');
       const console = new MockConsole();
       const errorHandler = new ErrorHandler();
-      errorHandler._console = console as any;
+      (errorHandler as any)._console = console as any;
       const logger = jasmine.createSpy('logger');
       (err as any)[ERROR_LOGGER] = logger;
 
@@ -72,7 +72,7 @@ ERROR CONTEXT#Context`);
       expect(logger).toHaveBeenCalledWith(console, 'ERROR', err);
     });
   });
-}
+})();
 
 function debugError(originalError: any, context: any): Error {
   const error = wrappedError(`Error in ${context.source}`, originalError);

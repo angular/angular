@@ -1,0 +1,22 @@
+package(default_visibility = ["//visibility:public"])
+
+exports_files(["package.json"])
+
+load("//tools:defaults.bzl", "ng_module")
+
+ng_module(
+    name = "animations",
+    srcs = glob(
+        [
+            "*.ts",
+            "src/**/*.ts",
+        ],
+    ),
+    module_name = "@angular/platform-browser/animations",
+    deps = [
+        "//packages/animations",
+        "//packages/animations/browser",
+        "//packages/core",
+        "//packages/platform-browser",
+    ],
+)

@@ -7,10 +7,8 @@
  */
 
 import {InjectionToken, ɵisObservable as isObservable, ɵisPromise as isPromise} from '@angular/core';
-import {Observable} from 'rxjs/Observable';
-import {forkJoin} from 'rxjs/observable/forkJoin';
-import {fromPromise} from 'rxjs/observable/fromPromise';
-import {map} from 'rxjs/operator/map';
+import {Observable, forkJoin, from} from 'rxjs';
+import {map} from 'rxjs/operators';
 import {AsyncValidatorFn, ValidationErrors, Validator, ValidatorFn} from './directives/validators';
 import {AbstractControl, FormControl} from './model';
 
@@ -23,6 +21,20 @@ function isEmptyInputValue(value: any): boolean {
  * Providers for validators to be used for {@link FormControl}s in a form.
  *
  * Provide this using `multi: true` to add validators.
+ *
+ * ### Example
+ *
+ * ```typescript
+ * @Directive({
+ *   selector: '[custom-validator]',
+ *   providers: [{provide: NG_VALIDATORS, useExisting: CustomValidatorDirective, multi: true}]
+ * })
+ * class CustomValidatorDirective implements Validator {
+ *   validate(control: AbstractControl): ValidationErrors | null {
+ *     return {"custom": true};
+ *   }
+ * }
+ * ```
  *
  * @stable
  */
@@ -61,6 +73,8 @@ const EMAIL_REGEXP =
 export class Validators {
   /**
    * Validator that requires controls to have a value greater than a number.
+   *`min()` exists only as a function, not as a directive. For example,
+   * `control = new FormControl('', Validators.min(3));`.
    */
   static min(min: number): ValidatorFn {
     return (control: AbstractControl): ValidationErrors | null => {
@@ -76,6 +90,8 @@ export class Validators {
 
   /**
    * Validator that requires controls to have a value less than a number.
+   * `max()` exists only as a function, not as a directive. For example,
+   * `control = new FormControl('', Validators.max(15));`.
    */
   static max(max: number): ValidatorFn {
     return (control: AbstractControl): ValidationErrors | null => {
@@ -107,6 +123,9 @@ export class Validators {
    * Validator that performs email validation.
    */
   static email(control: AbstractControl): ValidationErrors|null {
+    if (isEmptyInputValue(control.value)) {
+      return null;  // don't validate empty values to allow optional controls
+    }
     return EMAIL_REGEXP.test(control.value) ? null : {'email': true};
   }
 
@@ -145,7 +164,14 @@ export class Validators {
     let regex: RegExp;
     let regexStr: string;
     if (typeof pattern === 'string') {
-      regexStr = `^${pattern}$`;
+      regexStr = '';
+
+      if (pattern.charAt(0) !== '^') regexStr += '^';
+
+      regexStr += pattern;
+
+      if (pattern.charAt(pattern.length - 1) !== '$') regexStr += '$';
+
       regex = new RegExp(regexStr);
     } else {
       regexStr = pattern.toString();
@@ -189,7 +215,7 @@ export class Validators {
 
     return function(control: AbstractControl) {
       const observables = _executeAsyncValidators(control, presentValidators).map(toObservable);
-      return map.call(forkJoin(observables), _mergeErrors);
+      return forkJoin(observables).pipe(map(_mergeErrors));
     };
   }
 }
@@ -199,7 +225,7 @@ function isPresent(o: any): boolean {
 }
 
 export function toObservable(r: any): Observable<any> {
-  const obs = isPromise(r) ? fromPromise(r) : r;
+  const obs = isPromise(r) ? from(r) : r;
   if (!(isObservable(obs))) {
     throw new Error(`Expected validator to return Promise or Observable.`);
   }

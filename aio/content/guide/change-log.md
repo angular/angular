@@ -84,7 +84,7 @@ HTTP guide.
 ## Testing: added component test plunkers (2016-12-02)
 
 Added two plunkers that each test _one simple component_ so you can write a component test plunker of your own: <live-example name="setup" plnkr="quickstart-specs">one</live-example> for the QuickStart seed's `AppComponent` and <live-example name="testing" plnkr="banner-specs">another</live-example> for the Testing guide's `BannerComponent`.
-Linked to these plunkers in [Testing](guide/testing#live-examples) and [Setup anatomy](guide/setup-systemjs-anatomy) guides.
+Linked to these plunkers in "Testing" and "Setup anatomy" guides.
 
 ## Internationalization: pluralization and _select_ (2016-11-30)
 
@@ -120,10 +120,12 @@ The documentation for the version prior to v.2.2.0 has been removed.
 
 ## ES6  described in "TypeScript to JavaScript" (2016-11-14)
 
-The updated [TypeScript to JavaScript](guide/ts-to-js) guide
-now explains how to write apps in ES6/7
+The updated TypeScript to JavaScript guide explains how to write apps in ES6/7
 by translating the common idioms in the TypeScript documentation examples
 (and elsewhere on the web) to ES6/7 and ES5.
+
+This was [removed in August 2017](https://github.com/angular/angular/pull/18694) but can still be
+viewed in the [v2 documentation](https://v2.angular.io/docs/ts/latest/cookbook/ts-to-js.html).
 
 ## Sync with Angular v.2.1.1 (2016-10-21)
 
@@ -181,7 +183,7 @@ The _Routing Module_ replaces the previous _routing object_ involving the `Modul
 
 All guided samples with routing use the _Routing Module_ and prose content has been updated,
 most conspicuously in the
-[NgModule](guide/ngmodule) guide and [NgModule FAQ](guide/ngmodule-faq) guide.
+[NgModule](guide/ngmodules) guide and [NgModule FAQ](guide/ngmodule-faq) guide.
 
 ## New "Internationalization" guide (2016-09-30)
 

@@ -8,13 +8,15 @@
 
 import {Injector} from '../di';
 import {ErrorHandler} from '../error_handler';
+import {ComponentFactory} from '../linker/component_factory';
 import {NgModuleRef} from '../linker/ng_module_factory';
 import {QueryList} from '../linker/query_list';
 import {TemplateRef} from '../linker/template_ref';
 import {ViewContainerRef} from '../linker/view_container_ref';
 import {Renderer2, RendererFactory2, RendererType2} from '../render/api';
-import {Sanitizer, SecurityContext} from '../security';
+import {Sanitizer, SecurityContext} from '../sanitization/security';
 import {Type} from '../type';
+
 
 // -------------------------------------
 // Defs
@@ -40,10 +42,11 @@ export interface Definition<DF extends DefinitionFactory<any>> { factory: DF|nul
 export interface NgModuleDefinition extends Definition<NgModuleDefinitionFactory> {
   providers: NgModuleProviderDef[];
   providersByKey: {[tokenKey: string]: NgModuleProviderDef};
+  modules: any[];
+  isRoot: boolean;
 }
 
 export interface NgModuleDefinitionFactory extends DefinitionFactory<NgModuleDefinition> {}
-;
 
 export interface ViewDefinition extends Definition<ViewDefinitionFactory> {
   flags: ViewFlags;
@@ -82,7 +85,7 @@ export interface NodeCheckFn {
    v3?: any, v4?: any, v5?: any, v6?: any, v7?: any, v8?: any, v9?: any): any;
 }
 
-export const enum ArgumentType {Inline, Dynamic}
+export const enum ArgumentType {Inline = 0, Dynamic = 1}
 
 export interface ViewHandleEventFn {
   (view: ViewData, nodeIndex: number, eventName: string, event: any): boolean;
@@ -104,11 +107,15 @@ export const enum ViewFlags {
  */
 export interface NodeDef {
   flags: NodeFlags;
-  index: number;
+  // Index of the node in view data and view definition (those are the same)
+  nodeIndex: number;
+  // Index of the node in the check functions
+  // Differ from nodeIndex when nodes are added or removed at runtime (ie after compilation)
+  checkIndex: number;
   parent: NodeDef|null;
   renderParent: NodeDef|null;
   /** this is checked against NgContentDef.index to find matched nodes */
-  ngContentIndex: number;
+  ngContentIndex: number|null;
   /** number of transitive children */
   childCount: number;
   /** aggregated NodeFlags for all transitive children (does not include self) **/
@@ -187,6 +194,7 @@ export const enum NodeFlags {
   TypeViewQuery = 1 << 27,
   StaticQuery = 1 << 28,
   DynamicQuery = 1 << 29,
+  TypeNgModule = 1 << 30,
   CatQuery = TypeContentQuery | TypeViewQuery,
 
   // mutually exclusive values...
@@ -225,14 +233,15 @@ export interface OutputDef {
 export const enum OutputType {ElementOutput, DirectiveOutput}
 
 export const enum QueryValueType {
-  ElementRef,
-  RenderElement,
-  TemplateRef,
-  ViewContainerRef,
-  Provider
+  ElementRef = 0,
+  RenderElement = 1,
+  TemplateRef = 2,
+  ViewContainerRef = 3,
+  Provider = 4
 }
 
 export interface ElementDef {
+  // set to null for `<ng-container>`
   name: string|null;
   ns: string|null;
   /** ns, name, value */
@@ -284,7 +293,8 @@ export const enum DepFlags {
   None = 0,
   SkipSelf = 1 << 0,
   Optional = 1 << 1,
-  Value = 2 << 2,
+  Self = 1 << 2,
+  Value = 1 << 3,
 }
 
 export interface TextDef { prefix: string; }
@@ -301,7 +311,7 @@ export interface QueryBindingDef {
   bindingType: QueryBindingType;
 }
 
-export const enum QueryBindingType {First, All}
+export const enum QueryBindingType {First = 0, All = 1}
 
 export interface NgContentDef {
   /**
@@ -348,6 +358,7 @@ export interface ViewData {
   state: ViewState;
   oldValues: any[];
   disposables: DisposableFn[]|null;
+  initIndex: number;
 }
 
 /**
@@ -363,8 +374,52 @@ export const enum ViewState {
   CheckProjectedViews = 1 << 6,
   Destroyed = 1 << 7,
 
+  // InitState Uses 3 bits
+  InitState_Mask = 7 << 8,
+  InitState_BeforeInit = 0 << 8,
+  InitState_CallingOnInit = 1 << 8,
+  InitState_CallingAfterContentInit = 2 << 8,
+  InitState_CallingAfterViewInit = 3 << 8,
+  InitState_AfterInit = 4 << 8,
+
   CatDetectChanges = Attached | ChecksEnabled,
-  CatInit = BeforeFirstCheck | CatDetectChanges
+  CatInit = BeforeFirstCheck | CatDetectChanges | InitState_BeforeInit
+}
+
+// Called before each cycle of a view's check to detect whether this is in the
+// initState for which we need to call ngOnInit, ngAfterContentInit or ngAfterViewInit
+// lifecycle methods. Returns true if this check cycle should call lifecycle
+// methods.
+export function shiftInitState(
+    view: ViewData, priorInitState: ViewState, newInitState: ViewState): boolean {
+  // Only update the InitState if we are currently in the prior state.
+  // For example, only move into CallingInit if we are in BeforeInit. Only
+  // move into CallingContentInit if we are in CallingInit. Normally this will
+  // always be true because of how checkCycle is called in checkAndUpdateView.
+  // However, if checkAndUpdateView is called recursively or if an exception is
+  // thrown while checkAndUpdateView is running, checkAndUpdateView starts over
+  // from the beginning. This ensures the state is monotonically increasing,
+  // terminating in the AfterInit state, which ensures the Init methods are called
+  // at least once and only once.
+  const state = view.state;
+  const initState = state & ViewState.InitState_Mask;
+  if (initState === priorInitState) {
+    view.state = (state & ~ViewState.InitState_Mask) | newInitState;
+    view.initIndex = -1;
+    return true;
+  }
+  return initState === newInitState;
+}
+
+// Returns true if the lifecycle init method should be called for the node with
+// the given init index.
+export function shouldCallLifecycleInitHook(
+    view: ViewData, initState: ViewState, index: number): boolean {
+  if ((view.state & ViewState.InitState_Mask) === initState && view.initIndex <= index) {
+    view.initIndex = index + 1;
+    return true;
+  }
+  return false;
 }
 
 export interface DisposableFn { (): void; }
@@ -502,6 +557,7 @@ export interface ProviderOverride {
   flags: NodeFlags;
   value: any;
   deps: ([DepFlags, any]|any)[];
+  deprecatedBehavior: boolean;
 }
 
 export interface Services {
@@ -517,7 +573,8 @@ export interface Services {
       moduleType: Type<any>, parent: Injector, bootstrapComponents: Type<any>[],
       def: NgModuleDefinition): NgModuleRef<any>;
   overrideProvider(override: ProviderOverride): void;
-  clearProviderOverrides(): void;
+  overrideComponentView(compType: Type<any>, compFactory: ComponentFactory<any>): void;
+  clearOverrides(): void;
   checkAndUpdateView(view: ViewData): void;
   checkNoChangesView(view: ViewData): void;
   destroyView(view: ViewData): void;
@@ -542,7 +599,8 @@ export const Services: Services = {
   createComponentView: undefined !,
   createNgModuleRef: undefined !,
   overrideProvider: undefined !,
-  clearProviderOverrides: undefined !,
+  overrideComponentView: undefined !,
+  clearOverrides: undefined !,
   checkAndUpdateView: undefined !,
   checkNoChangesView: undefined !,
   destroyView: undefined !,

@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-
 import {Route, UrlMatchResult} from './config';
 import {UrlSegment, UrlSegmentGroup} from './url_tree';
 
@@ -105,7 +104,7 @@ export function navigationCancelingError(message: string) {
 }
 
 export function isNavigationCancelingError(error: Error) {
-  return (error as any)[NAVIGATION_CANCELING_ERROR];
+  return error && (error as any)[NAVIGATION_CANCELING_ERROR];
 }
 
 // Matches the route configuration (`route`) against the actual URL (`segments`).

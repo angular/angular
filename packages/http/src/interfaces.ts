@@ -17,14 +17,14 @@ import {URLSearchParams} from './url_search_params';
  * The primary purpose of a `ConnectionBackend` is to create new connections to fulfill a given
  * {@link Request}.
  *
- * @experimental
+ * @deprecated use @angular/common/http instead
  */
 export abstract class ConnectionBackend { abstract createConnection(request: any): Connection; }
 
 /**
  * Abstract class from which real connections are derived.
  *
- * @experimental
+ * @deprecated use @angular/common/http instead
  */
 export abstract class Connection {
   readyState: ReadyState;
@@ -35,7 +35,7 @@ export abstract class Connection {
 /**
  * An XSRFStrategy configures XSRF protection (e.g. via headers) on an HTTP request.
  *
- * @experimental
+ * @deprecated use @angular/common/http instead
  */
 export abstract class XSRFStrategy { abstract configureRequest(req: Request): void; }
 
@@ -43,7 +43,7 @@ export abstract class XSRFStrategy { abstract configureRequest(req: Request): vo
  * Interface for options to construct a RequestOptions, based on
  * [RequestInit](https://fetch.spec.whatwg.org/#requestinit) from the Fetch spec.
  *
- * @experimental
+ * @deprecated use @angular/common/http instead
  */
 export interface RequestOptionsArgs {
   url?: string|null;
@@ -66,7 +66,7 @@ export interface RequestArgs extends RequestOptionsArgs { url: string|null; }
  * Interface for options to construct a Response, based on
  * [ResponseInit](https://fetch.spec.whatwg.org/#responseinit) from the Fetch spec.
  *
- * @experimental
+ * @deprecated use @angular/common/http instead
  */
 export interface ResponseOptionsArgs {
   body?: string|Object|FormData|ArrayBuffer|Blob|null;

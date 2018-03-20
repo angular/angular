@@ -1,10 +1,9 @@
 {%- if doc.selector %}
 <section class="selectors">
   <h2>Selectors</h2>
-  {% for selector in doc.selector.split(',') %}
-  <div class="selector">
-    <code>{$ selector $}</code>
-  </div>
-  {% endfor %}
+  <code-example hideCopy="true" class="no-box api-heading selector">
+  {%- for selector in doc.selector.split(',') %}
+  {$ selector $}{% endfor %}
+  </code-example>
 </section>
 {% endif %}

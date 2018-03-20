@@ -104,10 +104,11 @@ export function stringifyElement(el: any /** TODO #9100 */): string {
     for (let i = 0; i < keys.length; i++) {
       const key = keys[i];
       const attValue = attributeMap.get(key);
+      const lowerCaseKey = key.toLowerCase();
       if (typeof attValue !== 'string') {
-        result += ` ${key}`;
+        result += ` ${lowerCaseKey}`;
       } else {
-        result += ` ${key}="${attValue}"`;
+        result += ` ${lowerCaseKey}="${attValue}"`;
       }
     }
     result += '>';

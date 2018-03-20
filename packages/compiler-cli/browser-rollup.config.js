@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import commonjs from 'rollup-plugin-commonjs';
-import * as path from 'path';
+const commonjs = require('rollup-plugin-commonjs');
+const path = require('path');
 
-import 'reflect-metadata';
+require('reflect-metadata');
 
 var m = /^\@angular\/((\w|\-)+)(\/(\w|\d|\/|\-)+)?$/;
 var location = normalize('../../dist/packages-dist') + '/';
@@ -17,10 +17,7 @@ var rxjsLocation = normalize('../../node_modules/rxjs');
 var tslibLocation = normalize('../../node_modules/tslib');
 var esm = 'esm/';
 
-var locations = {
-  'tsc-wrapped': normalize('../../dist/tools/@angular') + '/',
-  'compiler-cli': normalize('../../dist/packages') + '/'
-};
+var locations = {'compiler-cli': normalize('../../dist/packages') + '/'};
 
 var esm_suffixes = {};
 
@@ -30,11 +27,6 @@ function normalize(fileName) {
 
 function resolve(id, from) {
   // console.log('Resolve id:', id, 'from', from)
-  if (id == '@angular/tsc-wrapped') {
-    // Hack to restrict the import to not include the index of @angular/tsc-wrapped so we don't
-    // rollup tsickle.
-    return locations['tsc-wrapped'] + 'tsc-wrapped/src/collector.js';
-  }
   var match = m.exec(id);
   if (match) {
     var packageName = match[1];
@@ -57,10 +49,11 @@ function resolve(id, from) {
 // hack to get around issues with default exports
 var banner = `ts['default'] = ts['default'] || ts; fs['default'] = fs['default'] || fs;`;
 
-export default {
+module.exports = {
   entry: '../../dist/packages-dist/compiler-cli/src/ngc.js',
   dest: './browser-bundle.umd.js',
   format: 'umd',
+  amd: {id: '@angular/compiler-cli-browser'},
   moduleName: 'ng.compiler_cli_browser',
   exports: 'named',
   external: [
@@ -76,4 +69,4 @@ export default {
   },
   banner: banner,
   plugins: [{resolveId: resolve}, commonjs()]
-}
+};

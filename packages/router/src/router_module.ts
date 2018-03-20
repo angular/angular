@@ -9,13 +9,13 @@
 import {APP_BASE_HREF, HashLocationStrategy, LOCATION_INITIALIZED, Location, LocationStrategy, PathLocationStrategy, PlatformLocation} from '@angular/common';
 import {ANALYZE_FOR_ENTRY_COMPONENTS, APP_BOOTSTRAP_LISTENER, APP_INITIALIZER, ApplicationRef, Compiler, ComponentRef, Inject, Injectable, InjectionToken, Injector, ModuleWithProviders, NgModule, NgModuleFactoryLoader, NgProbeToken, Optional, Provider, SkipSelf, SystemJsNgModuleLoader} from '@angular/core';
 import {ɵgetDOM as getDOM} from '@angular/platform-browser';
-import {Subject} from 'rxjs/Subject';
-import {of } from 'rxjs/observable/of';
+import {Subject, of } from 'rxjs';
 
 import {Route, Routes} from './config';
 import {RouterLink, RouterLinkWithHref} from './directives/router_link';
 import {RouterLinkActive} from './directives/router_link_active';
 import {RouterOutlet} from './directives/router_outlet';
+import {RouterEvent} from './events';
 import {RouteReuseStrategy} from './route_reuse_strategy';
 import {ErrorHandler, Router} from './router';
 import {ROUTES} from './router_config_loader';
@@ -25,6 +25,7 @@ import {ActivatedRoute} from './router_state';
 import {UrlHandlingStrategy} from './url_handling_strategy';
 import {DefaultUrlSerializer, UrlSerializer} from './url_tree';
 import {flatten} from './utils/collection';
+
 
 
 /**
@@ -129,12 +130,15 @@ export class RouterModule {
    * Creates a module with all the router providers and directives. It also optionally sets up an
    * application listener to perform an initial navigation.
    *
-   * Options:
+   * Options (see {@link ExtraOptions}):
    * * `enableTracing` makes the router log all its internal events to the console.
    * * `useHash` enables the location strategy that uses the URL fragment instead of the history
    * API.
    * * `initialNavigation` disables the initial navigation.
    * * `errorHandler` provides a custom error handler.
+   * * `preloadingStrategy` configures a preloading strategy (see {@link PreloadAllModules}).
+   * * `onSameUrlNavigation` configures how the router handles navigation to the current URL. See
+   * {@link ExtraOptions} for more details.
    */
   static forRoot(routes: Routes, config?: ExtraOptions): ModuleWithProviders {
     return {
@@ -267,6 +271,24 @@ export interface ExtraOptions {
    * Configures a preloading strategy. See {@link PreloadAllModules}.
    */
   preloadingStrategy?: any;
+
+  /**
+   * Define what the router should do if it receives a navigation request to the current URL.
+   * By default, the router will ignore this navigation. However, this prevents features such
+   * as a "refresh" button. Use this option to configure the behavior when navigating to the
+   * current URL. Default is 'ignore'.
+   */
+  onSameUrlNavigation?: 'reload'|'ignore';
+
+  /**
+   * Defines how the router merges params, data and resolved data from parent to child
+   * routes. Available options are:
+   *
+   * - `'emptyOnly'`, the default, only inherits parent params for path-less or component-less
+   *   routes.
+   * - `'always'`, enables unconditional inheritance of parent params.
+   */
+  paramsInheritanceStrategy?: 'emptyOnly'|'always';
 }
 
 export function setupRouter(
@@ -291,12 +313,20 @@ export function setupRouter(
 
   if (opts.enableTracing) {
     const dom = getDOM();
-    router.events.subscribe(e => {
+    router.events.subscribe((e: RouterEvent) => {
       dom.logGroup(`Router Event: ${(<any>e.constructor).name}`);
       dom.log(e.toString());
       dom.log(e);
       dom.logGroupEnd();
     });
+  }
+
+  if (opts.onSameUrlNavigation) {
+    router.onSameUrlNavigation = opts.onSameUrlNavigation;
+  }
+
+  if (opts.paramsInheritanceStrategy) {
+    router.paramsInheritanceStrategy = opts.paramsInheritanceStrategy;
   }
 
   return router;
@@ -366,7 +396,7 @@ export class RouterInitializer {
     const opts = this.injector.get(ROUTER_CONFIGURATION);
     const preloader = this.injector.get(RouterPreloader);
     const router = this.injector.get(Router);
-    const ref = this.injector.get(ApplicationRef);
+    const ref = this.injector.get<ApplicationRef>(ApplicationRef);
 
     if (bootstrappedComponentRef !== ref.components[0]) {
       return;

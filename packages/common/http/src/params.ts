@@ -11,7 +11,7 @@
  *
  * Used by `HttpParams`.
  *
- *  @experimental
+ * @stable
  **/
 export interface HttpParameterCodec {
   encodeKey(key: string): string;
@@ -25,7 +25,7 @@ export interface HttpParameterCodec {
  * A `HttpParameterCodec` that uses `encodeURIComponent` and `decodeURIComponent` to
  * serialize and parse URL parameter keys and values.
  *
- * @experimental
+ * @stable
  */
 export class HttpUrlEncodingCodec implements HttpParameterCodec {
   encodeKey(k: string): string { return standardEncoding(k); }
@@ -73,13 +73,28 @@ interface Update {
   op: 'a'|'d'|'s';
 }
 
+/** Options used to construct an `HttpParams` instance. */
+export interface HttpParamsOptions {
+  /**
+   * String representation of the HTTP params in URL-query-string format. Mutually exclusive with
+   * `fromObject`.
+   */
+  fromString?: string;
+
+  /** Object map of the HTTP params. Mutally exclusive with `fromString`. */
+  fromObject?: {[param: string]: string | string[]};
+
+  /** Encoding codec used to parse and serialize the params. */
+  encoder?: HttpParameterCodec;
+}
+
 /**
  * An HTTP request/response body that represents serialized parameters,
  * per the MIME type `application/x-www-form-urlencoded`.
  *
- * This class is immuatable - all mutation operations return a new instance.
+ * This class is immutable - all mutation operations return a new instance.
  *
- * @experimental
+ * @stable
  */
 export class HttpParams {
   private map: Map<string, string[]>|null;
@@ -87,12 +102,22 @@ export class HttpParams {
   private updates: Update[]|null = null;
   private cloneFrom: HttpParams|null = null;
 
-  constructor(options: {
-    fromString?: string,
-    encoder?: HttpParameterCodec,
-  } = {}) {
+  constructor(options: HttpParamsOptions = {} as HttpParamsOptions) {
     this.encoder = options.encoder || new HttpUrlEncodingCodec();
-    this.map = !!options.fromString ? paramParser(options.fromString, this.encoder) : null;
+    if (!!options.fromString) {
+      if (!!options.fromObject) {
+        throw new Error(`Cannot specify both fromString and fromObject.`);
+      }
+      this.map = paramParser(options.fromString, this.encoder);
+    } else if (!!options.fromObject) {
+      this.map = new Map<string, string[]>();
+      Object.keys(options.fromObject).forEach(key => {
+        const value = (options.fromObject as any)[key];
+        this.map !.set(key, Array.isArray(value) ? value : [value]);
+      });
+    } else {
+      this.map = null;
+    }
   }
 
   /**
@@ -161,7 +186,7 @@ export class HttpParams {
   }
 
   private clone(update: Update): HttpParams {
-    const clone = new HttpParams({encoder: this.encoder});
+    const clone = new HttpParams({ encoder: this.encoder } as HttpParamsOptions);
     clone.cloneFrom = this.cloneFrom || this;
     clone.updates = (this.updates || []).concat([update]);
     return clone;

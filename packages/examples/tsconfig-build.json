@@ -1,27 +1,19 @@
 {
+  "extends": "../tsconfig-build.json",
+
   "compilerOptions": {
-    "baseUrl": ".",
-    "declaration": true,
-    "stripInternal": true,
-    "experimentalDecorators": true,
-    "noImplicitAny": true,
-    "strictNullChecks": true,
-    "emitDecoratorMetadata": true,
     "module": "commonjs",
-    "moduleResolution": "node",
-    "outDir": "../../dist/examples",
+    "emitDecoratorMetadata": true,
+    "baseUrl": ".",
+    "rootDir": ".",
     "paths": {
       "@angular/*": ["../../dist/packages-dist/*"],
       "rxjs/*": ["../../node_modules/rxjs/*"]
     },
-    "rootDir": ".",
-    "sourceMap": true,
-    "inlineSources": true,
-    "target": "es5",
-    "lib": ["es2015", "dom"],
-    "skipLibCheck": true,
+    "outDir": "../../dist/examples",
     "types": ["jasmine", "node", "angularjs", "systemjs"]
   },
+
   "include": [
     "./**/*.ts",
     "../../node_modules/zone.js/dist/zone.js.d.ts",

@@ -7,17 +7,26 @@
  * Fails if the score is below `<min-score>`.
  * If `<log-file>` is defined, the full results will be logged there.
  *
- * (Ignores HTTPS-related audits, when run for HTTP URL.)
+ * (Skips HTTPS-related audits, when run for HTTP URL.)
  */
 
 // Imports
 const lighthouse = require('lighthouse');
-const chromeLauncher = require('lighthouse/chrome-launcher/chrome-launcher');
+const chromeLauncher = require('lighthouse/chrome-launcher');
 const printer = require('lighthouse/lighthouse-cli/printer');
 const config = require('lighthouse/lighthouse-core/config/default.js');
 
 // Constants
+const CHROME_LAUNCH_OPTS = {};
+const SKIPPED_HTTPS_AUDITS = ['redirects-http'];
 const VIEWER_URL = 'https://googlechrome.github.io/lighthouse/viewer/';
+
+
+// Specify the path and flags for Chrome on Travis
+if (process.env.TRAVIS) {
+  process.env.LIGHTHOUSE_CHROMIUM_PATH = process.env.CHROME_BIN;
+  CHROME_LAUNCH_OPTS.chromeFlags = ['--no-sandbox'];
+}
 
 // Run
 _main(process.argv.slice(2));
@@ -30,7 +39,7 @@ function _main(args) {
   console.log(`Running PWA audit for '${url}'...`);
 
   if (isOnHttp) {
-    ignoreHttpsAudits(config);
+    skipHttpsAudits(config);
   }
 
   launchChromeAndRunLighthouse(url, {}, config).
@@ -49,24 +58,8 @@ function evaluateScore(expectedScore, actualScore) {
   }
 }
 
-function ignoreHttpsAudits(config) {
-  const httpsAudits = [
-    'redirects-http'
-  ];
-
-  console.info(`Ignoring HTTPS-related audits (${httpsAudits.join(', ')})...`);
-
-  config.categories.pwa.audits.forEach(audit => {
-    if (httpsAudits.indexOf(audit.id) !== -1) {
-      // Ugly hack to ignore HTTPS-related audits.
-      // Only meant for use during development.
-      audit.weight = 0;
-     }
-   });
-}
-
 function launchChromeAndRunLighthouse(url, flags, config) {
-  return chromeLauncher.launch().then(chrome => {
+  return chromeLauncher.launch(CHROME_LAUNCH_OPTS).then(chrome => {
     flags.port = chrome.port;
     return lighthouse(url, flags, config).
       then(results => chrome.kill().then(() => results)).
@@ -100,9 +93,17 @@ function processResults(results, logFile) {
     console.log(`Saving results in '${logFile}'...`);
     console.log(`(LightHouse viewer: ${VIEWER_URL})`);
 
-    results.artifacts = undefined;   // Too large for the logs.
+    // Remove the artifacts, which are not necessary for the report.
+    // (Saves ~1,500,000 lines of formatted JSON output \o/)
+    results.artifacts = undefined;
+
     promise = printer.write(results, 'json', logFile);
   }
 
   return promise.then(() => Math.round(results.score));
+}
+
+function skipHttpsAudits(config) {
+  console.info(`Skipping HTTPS-related audits (${SKIPPED_HTTPS_AUDITS.join(', ')})...`);
+  config.settings.skipAudits = SKIPPED_HTTPS_AUDITS;
 }

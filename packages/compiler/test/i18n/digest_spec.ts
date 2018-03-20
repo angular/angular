@@ -8,7 +8,7 @@
 
 import {computeMsgId, digest, sha1} from '../../src/i18n/digest';
 
-export function main(): void {
+{
   describe('digest', () => {
     describe('digest', () => {
       it('must return the ID if it\'s explicit', () => {

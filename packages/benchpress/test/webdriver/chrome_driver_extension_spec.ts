@@ -8,10 +8,10 @@
 
 import {AsyncTestCompleter, describe, expect, iit, inject, it} from '@angular/core/testing/src/testing_internal';
 
-import {ChromeDriverExtension, Options, ReflectiveInjector, WebDriverAdapter, WebDriverExtension} from '../../index';
+import {ChromeDriverExtension, Injector, Options, WebDriverAdapter, WebDriverExtension} from '../../index';
 import {TraceEventFactory} from '../trace_event_factory';
 
-export function main() {
+{
   describe('chrome driver extension', () => {
     const CHROME45_USER_AGENT =
         '"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/45.0.2499.0 Safari/537.36"';
@@ -41,8 +41,8 @@ export function main() {
         userAgent = CHROME45_USER_AGENT;
       }
       log = [];
-      extension = ReflectiveInjector
-                      .resolveAndCreate([
+      extension = Injector
+                      .create([
                         ChromeDriverExtension.PROVIDERS, {
                           provide: WebDriverAdapter,
                           useValue: new MockDriverAdapter(log, perfRecords, messageMethod)

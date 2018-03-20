@@ -9,7 +9,7 @@
 import {INJECTOR_KEY} from '@angular/upgrade/src/common/constants';
 import {downgradeInjectable} from '@angular/upgrade/src/common/downgrade_injectable';
 
-export function main() {
+{
   describe('downgradeInjectable', () => {
     it('should return an AngularJS annotated factory for the token', () => {
       const factory = downgradeInjectable('someToken');

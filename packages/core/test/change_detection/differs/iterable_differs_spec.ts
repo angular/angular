@@ -6,12 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ReflectiveInjector} from '@angular/core';
+import {Injector} from '@angular/core';
 import {IterableDiffers} from '@angular/core/src/change_detection/differs/iterable_differs';
 
 import {SpyIterableDifferFactory} from '../../spies';
 
-export function main() {
+{
   describe('IterableDiffers', function() {
     let factory1: any;
     let factory2: any;
@@ -50,7 +50,7 @@ export function main() {
 
     describe('.extend()', () => {
       it('should throw if calling extend when creating root injector', () => {
-        const injector = ReflectiveInjector.resolveAndCreate([IterableDiffers.extend([])]);
+        const injector = Injector.create([IterableDiffers.extend([])]);
 
         expect(() => injector.get(IterableDiffers))
             .toThrowError(/Cannot extend IterableDiffers without a parent injector/);
@@ -58,12 +58,13 @@ export function main() {
 
       it('should extend di-inherited differs', () => {
         const parent = new IterableDiffers([factory1]);
-        const injector =
-            ReflectiveInjector.resolveAndCreate([{provide: IterableDiffers, useValue: parent}]);
-        const childInjector = injector.resolveAndCreateChild([IterableDiffers.extend([factory2])]);
+        const injector = Injector.create([{provide: IterableDiffers, useValue: parent}]);
+        const childInjector = Injector.create([IterableDiffers.extend([factory2])], injector);
 
-        expect(injector.get(IterableDiffers).factories).toEqual([factory1]);
-        expect(childInjector.get(IterableDiffers).factories).toEqual([factory2, factory1]);
+        expect(injector.get<IterableDiffers>(IterableDiffers).factories).toEqual([factory1]);
+        expect(childInjector.get<IterableDiffers>(IterableDiffers).factories).toEqual([
+          factory2, factory1
+        ]);
       });
     });
   });
