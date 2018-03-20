@@ -169,6 +169,7 @@ class NgPackagesInstaller {
     // FIXME: Temporarily use RxJS from root `node_modules/`.
     if (peerDependencies.rxjs) {
       peerDependencies.rxjs = `file:${ANGULAR_ROOT_DIR}/node_modules/rxjs`;
+      peerDependencies['rxjs-compat'] = '6.0.0-beta.0';
     }
 
     return [mergedDependencies, peerDependencies];
