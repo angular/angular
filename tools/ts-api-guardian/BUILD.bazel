@@ -9,31 +9,11 @@ load("@build_bazel_rules_typescript//:defs.bzl", "ts_library")
 
 exports_files(["bin/ts-api-guardian"])
 
-node_modules_filegroup(
-    name = "compile_time_deps",
-    packages = [
-        "chalk",
-        "typescript",
-        "@types",
-    ],
-)
-
 ts_library(
     name = "lib",
     srcs = glob(["lib/*.ts"]),
     module_name = "ts-api-guardian",
-    node_modules = ":compile_time_deps",
     tsconfig = "//tools:tsconfig.json",
-    visibility = ["//visibility:public"],
-)
-
-node_modules_filegroup(
-    name = "runtime_deps",
-    packages = [
-        "chai",
-        "chalk",
-        "jasmine",
-    ],
     visibility = ["//visibility:public"],
 )
 
@@ -66,7 +46,6 @@ ts_library(
     name = "test_lib",
     testonly = True,
     srcs = glob(["test/*.ts"]),
-    node_modules = ":compile_time_deps",
     deps = [":lib"],
 )
 
@@ -80,5 +59,5 @@ jasmine_node_test(
     ]) + [
         ":ts-api-guardian",
     ],
-    node_modules = ":runtime_deps",
+    node_modules = "@ts-api-guardian_runtime_deps//:node_modules",
 )
