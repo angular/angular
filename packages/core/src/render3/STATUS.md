@@ -79,7 +79,7 @@ We currently expect Ivy to remain behind the flag until it's feature complete an
 | `@Query(read)`                  |  ✅     |  ✅      |  n/a      |
 | `@Query(selector)`              |  ✅     |  ✅      |  n/a      |
 | `@Query(Type)`                  |  ✅     |  ✅      |  n/a      |
-| `@ContentChildred`              |  ✅     |  ✅      |  ❌       |
+| `@ContentChildren`              |  ✅     |  ✅      |  ❌       |
 | `@ContentChild`                 |  ✅     |  ✅      |  ✅       |
 | `@ViewChildren`                 |  ✅     |  ✅      |  ❌       |
 | `@ViewChild`                    |  ✅     |  ✅      |  ✅       |
