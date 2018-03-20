@@ -104,15 +104,15 @@ describe('DocumentService', () => {
     });
 
     it('should use a hard-coded error doc if the request fails (but not cache it)', () => {
-      let latestDocument: DocumentContents|undefined;
-      const doc1 = { contents: 'doc 1' };
-      const doc2 = { contents: 'doc 2' };
+      let latestDocument!: DocumentContents;
+      const doc1 = { contents: 'doc 1' } as DocumentContents;
+      const doc2 = { contents: 'doc 2' } as DocumentContents;
       const { docService, locationService, logger } = getServices('initial/doc');
 
       docService.currentDocument.subscribe(doc => latestDocument = doc);
 
       httpMock.expectOne({}).flush(null, {status: 500, statusText: 'Server Error'});
-      expect(latestDocument!.id).toEqual(FETCHING_ERROR_ID);
+      expect(latestDocument.id).toEqual(FETCHING_ERROR_ID);
       expect(logger.output.error).toEqual([
         [jasmine.any(Error)]
       ]);
@@ -129,14 +129,14 @@ describe('DocumentService', () => {
     });
 
     it('should not crash the app if the response is invalid JSON', () => {
-      let latestDocument: DocumentContents|undefined;
-      const doc1 = { contents: 'doc 1' };
+      let latestDocument!: DocumentContents;
+      const doc1 = { contents: 'doc 1' } as DocumentContents;
       const { docService, locationService } = getServices('initial/doc');
 
       docService.currentDocument.subscribe(doc => latestDocument = doc);
 
       httpMock.expectOne({}).flush('this is invalid JSON');
-      expect(latestDocument!.id).toEqual(FETCHING_ERROR_ID);
+      expect(latestDocument.id).toEqual(FETCHING_ERROR_ID);
 
       locationService.go('new/doc');
       httpMock.expectOne({}).flush(doc1);
@@ -144,11 +144,11 @@ describe('DocumentService', () => {
     });
 
     it('should not make a request to the server if the doc is in the cache already', () => {
-      let latestDocument: DocumentContents|undefined;
+      let latestDocument!: DocumentContents;
       let subscription: Subscription;
 
-      const doc0 = { contents: 'doc 0' };
-      const doc1 = { contents: 'doc 1' };
+      const doc0 = { contents: 'doc 0' } as DocumentContents;
+      const doc1 = { contents: 'doc 1' } as DocumentContents;
       const { docService, locationService } = getServices('url/0');
 
       subscription = docService.currentDocument.subscribe(doc => latestDocument = doc);
