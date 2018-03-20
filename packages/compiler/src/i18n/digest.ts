@@ -15,13 +15,8 @@ export function digest(message: i18n.Message): string {
 }
 
 export function decimalDigest(message: i18n.Message): string {
-  if (message.id) {
-    return message.id;
-  }
-
-  const visitor = new _SerializerIgnoreIcuExpVisitor();
-  const parts = message.nodes.map(a => a.visit(visitor, null));
-  return computeMsgId(parts.join(''), message.meaning);
+  return message.id ||
+      computeMsgId(serializeNodesIgnoringIcu(message.nodes).join(''), message.meaning);
 }
 
 /**
@@ -78,6 +73,12 @@ class _SerializerIgnoreIcuExpVisitor extends _SerializerVisitor {
     // Do not take the expression into account
     return `{${icu.type}, ${strCases.join(', ')}}`;
   }
+}
+
+const serializerIgnoreIcuVisitor = new _SerializerIgnoreIcuExpVisitor();
+
+export function serializeNodesIgnoringIcu(nodes: i18n.Node[]): string[] {
+  return nodes.map(a => a.visit(serializerIgnoreIcuVisitor, null));
 }
 
 /**

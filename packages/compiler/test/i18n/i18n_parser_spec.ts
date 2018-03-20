@@ -116,20 +116,20 @@ import {DEFAULT_INTERPOLATION_CONFIG} from '@angular/compiler/src/ml_parser/inte
     describe('interpolation', () => {
       it('should replace interpolation with placeholder', () => {
         expect(_humanizeMessages('<div i18n="m|d">before{{ exp }}after</div>')).toEqual([
-          [['[before, <ph name="INTERPOLATION"> exp </ph>, after]'], 'm', 'd'],
+          [['[before, <ph name="INTERPOLATION">exp</ph>, after]'], 'm', 'd'],
         ]);
       });
 
       it('should support named interpolation', () => {
         expect(_humanizeMessages('<div i18n="m|d">before{{ exp //i18n(ph="teSt") }}after</div>'))
             .toEqual([
-              [['[before, <ph name="TEST"> exp //i18n(ph="teSt") </ph>, after]'], 'm', 'd'],
+              [['[before, <ph name="TEST">exp //i18n(ph="teSt")</ph>, after]'], 'm', 'd'],
             ]);
 
         expect(
             _humanizeMessages('<div i18n=\'m|d\'>before{{ exp //i18n(ph=\'teSt\') }}after</div>'))
             .toEqual([
-              [[`[before, <ph name="TEST"> exp //i18n(ph='teSt') </ph>, after]`], 'm', 'd'],
+              [[`[before, <ph name="TEST">exp //i18n(ph='teSt')</ph>, after]`], 'm', 'd'],
             ]);
       });
     });
@@ -247,14 +247,14 @@ import {DEFAULT_INTERPOLATION_CONFIG} from '@angular/compiler/src/ml_parser/inte
         expect(_humanizeMessages(html)).toEqual([
           [
             [
-              '[<ph name="INTERPOLATION"> a </ph>, <ph name="INTERPOLATION"> a </ph>, <ph name="INTERPOLATION_1"> b </ph>]'
+              '[<ph name="INTERPOLATION">a</ph>, <ph name="INTERPOLATION">a</ph>, <ph name="INTERPOLATION_1">b</ph>]'
             ],
             'm', 'd'
           ],
         ]);
 
         expect(_humanizePlaceholders(html)).toEqual([
-          'INTERPOLATION={{ a }}, INTERPOLATION_1={{ b }}',
+          'INTERPOLATION={{a}}, INTERPOLATION_1={{b}}',
         ]);
       });
 
@@ -289,7 +289,6 @@ import {DEFAULT_INTERPOLATION_CONFIG} from '@angular/compiler/src/ml_parser/inte
           '',
           '',
         ]);
-
       });
     });
   });

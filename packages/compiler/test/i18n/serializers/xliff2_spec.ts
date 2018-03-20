@@ -39,12 +39,12 @@ const WRITE_XLIFF = `<?xml version="1.0" encoding="UTF-8" ?>
         <source>translatable attribute</source>
       </segment>
     </unit>
-    <unit id="7056919470098446707">
+    <unit id="2310767098919544249">
       <notes>
         <note category="location">file.ts:3</note>
       </notes>
       <segment>
-        <source>translatable element <pc id="0" equivStart="START_BOLD_TEXT" equivEnd="CLOSE_BOLD_TEXT" type="fmt" dispStart="&lt;b&gt;" dispEnd="&lt;/b&gt;">with placeholders</pc> <ph id="1" equiv="INTERPOLATION" disp="{{ interpolation}}"/></source>
+        <source>translatable element <pc id="0" equivStart="START_BOLD_TEXT" equivEnd="CLOSE_BOLD_TEXT" type="fmt" dispStart="&lt;b&gt;" dispEnd="&lt;/b&gt;">with placeholders</pc> <ph id="1" equiv="INTERPOLATION" disp="{{interpolation}}"/></source>
       </segment>
     </unit>
     <unit id="2981514368455622387">
