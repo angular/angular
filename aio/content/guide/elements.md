@@ -12,11 +12,13 @@ Transforming a component to a custom element makes all of the required Angular i
 
 Custom elements bootstrap themselves - they start automatically when they are added to the DOM, and are automatically destroyed when removed from the DOM. Once a custom element is added to the DOM for any page, it looks and behaves like any other HTML element, and does not require any special knowledge of Angular terms or usage conventions.  
 
-- Easy dynamic content in an Angular app
+- __Easy dynamic content in an Angular app__
+
   Transforming a component to a custom element provides an easy path to creating dynamic HTML content in your Angular app. HTML content that you add directly to the DOM in an Angular app is normally displayed without Angular processing, unless you define a _dynamic component_, adding your own code to connect the HTML tag to your app data, and participate in change detection. With a custom element, all of that wiring is taken care of automatically.
 
-- Content-rich applications
-  (need a succinct description of this use case)
+- __Content-rich applications__
+
+  If you have a content-rich app, such as Angular AIO, custom elements let you give your content providers sophisticated Angular functionality without requiring knowledge of Angular. For example, an Angular guide like this one is added directly to the DOM by the Angular navigation tools, but can include special elements like `<code-snippet>` that perform complex operations. All you need to tell your content provider is the syntax of your custom element. They don't need to know anything about Angular, or anything about your component's data structures or implementation.
 
 ### How it works
 
@@ -65,7 +67,7 @@ When the browser encounters the tag for the registered element, it uses the cons
 
 </figure>
 
-## Mapping 
+### Mapping 
 
 A custom element _hosts_ an Angular component, providing a bridge between the data and logic defined in the component and standard DOM APIs. Component properties and logic maps directly into HTML attributes and the browser's event system.
 
