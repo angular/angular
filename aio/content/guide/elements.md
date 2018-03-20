@@ -68,26 +68,13 @@ When the browser encounters the tag for the registered element, it uses the cons
 ## Mapping 
 
 A custom element _hosts_ an Angular component, providing a bridge between the data and logic defined in the component and standard DOM APIs. Component properties and logic maps directly into HTML attributes and the browser's event system.
+
+- The creation API parses the component looking for input properties, and defines corresponding attributes for the custom element. It transforms the property names to make them compatible with custom elements, which do not recognize case distinctions. The resulting attribute names use dash-separated lowercase. For example, for a component with `@Input('myInputProp') inputProp`, the corresponding custom element defines an attribute `my-input-prop`.
+
+- Component outputs are dispatched as HTML [Custom Events](https://developer.mozilla.org/en-US/docs/Web/API/CustomEvent), with the name of the custom event matching the output name. For example, for a component with `@Output(‘valueChanged’) valueChanged = new EventEmitter()`, the corresponding custom element will dispatch events with the name `valueChanged`, and the emitted data will be stored on the event’s `detail` property. 
+
+For more information, see Web Component documentation for [Creating custom events](https://developer.mozilla.org/en-US/docs/Web/Guide/Events/Creating_and_triggering_events#Creating_custom_events).
  
-A customizable configuration controls how Angular performs the transformations. The default configuration is useful for most cases. In the default configuration:
-
-- The creation API parses the component looking for input properties, and defines corresponding attributes for the custom element. It transforms the property names to make them compatible with custom elements, which do not recognize case distinctions.
-
- For example, for a component with `@Input('myInputProp') inputProp`, the corresponding custom element defines an attribute `my-input-prop`.
-
-- Output properties in the component become [Custom Events](https://developer.mozilla.org/en-US/docs/Web/API/CustomEvent). For example: 
- ```
- @Output('myEvent') -> element.addEventListener('myEvent', e => console.log(e));
- ```
-
-- Data bindings (implemented through directives that use @HostBinding and @HostListener) translate to element Attributes and ObservedAttributes. For example: 
- ```
- @HostBinding('[attr.x-foo]') => <my-element x-foo="boundValue">
- @HostBinding('someProp') => el.someProp = 'some value'
- @HostListener('some-event') => el.addEventListener('some-event', ...)
-
- ```
-
 
 {@a browser-support}
 
