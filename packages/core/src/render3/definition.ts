@@ -129,7 +129,7 @@ export function defineComponent<T>(componentDefinition: {
   /**
    * A list of optional features to apply.
    *
-   * See: {@link NgOnChancesFeature}, {@link PublicFeature}
+   * See: {@link NgOnChangesFeature}, {@link PublicFeature}
    */
   features?: ComponentDefFeature[];
 
