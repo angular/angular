@@ -3,8 +3,8 @@
     "master": {
       "uncompressed": {
         "inline": 1508,
-        "main": "TODO(i): temporarily increase the payload size limit to 352346 from 155112, we need CLI v6 to bring the size down",
-        "main": 251064,
+        "main": "TODO(i): temporarily increase the payload size limit to 257298 from 155112, we need CLI v6 to bring the size down",
+        "main": 257298,
         "polyfills": 59483
       }
     }
@@ -12,8 +12,8 @@
   "hello_world__closure": {
     "master": {
       "uncompressed": {
-        "bundle": "TODO(i): temporarily increase the payload size limit to 221852 from 105779 - we need CLI v6 to bring the size down",
-        "bundle": 221852
+        "bundle": "TODO(i): temporarily increase the payload size limit to 226340git  from 105779 - we need CLI v6 to bring the size down",
+        "bundle": 226340
       }
     }
   },
