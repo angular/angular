@@ -11,6 +11,7 @@ import {EventEmitter, WrappedValue} from '@angular/core';
 import {AsyncTestCompleter, beforeEach, describe, expect, inject, it} from '@angular/core/testing/src/testing_internal';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {browserDetection} from '@angular/platform-browser/testing/src/browser_util';
+import {BehaviorSubject} from 'rxjs/BehaviorSubject';
 
 import {SpyChangeDetectorRef} from '../spies';
 
@@ -82,6 +83,12 @@ import {SpyChangeDetectorRef} from '../spies';
                async.done();
              }, 10);
            }));
+
+        it('should return NaN when given NaN and the latest returned value is NaN', () => {
+          const subject = new BehaviorSubject<any>(NaN);
+          expect(pipe.transform(subject)).toBeNaN();
+          expect(pipe.transform(subject)).toBeNaN();
+        });
       });
 
       describe('ngOnDestroy', () => {

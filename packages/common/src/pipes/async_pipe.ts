@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ChangeDetectorRef, EventEmitter, OnDestroy, Pipe, PipeTransform, WrappedValue, ɵisObservable, ɵisPromise} from '@angular/core';
+import {ChangeDetectorRef, EventEmitter, OnDestroy, Pipe, PipeTransform, WrappedValue, ɵisObservable as isObservable, ɵisPromise as isPromise, ɵlooseIdentical as looseIdentical} from '@angular/core';
 import {Observable} from 'rxjs/Observable';
 import {ISubscription} from 'rxjs/Subscription';
 import {invalidPipeArgumentError} from './invalid_pipe_argument_error';
@@ -101,7 +101,7 @@ export class AsyncPipe implements OnDestroy, PipeTransform {
       return this.transform(obj as any);
     }
 
-    if (this._latestValue === this._latestReturnedValue) {
+    if (looseIdentical(this._latestValue, this._latestReturnedValue)) {
       return this._latestReturnedValue;
     }
 
@@ -117,11 +117,11 @@ export class AsyncPipe implements OnDestroy, PipeTransform {
   }
 
   private _selectStrategy(obj: Observable<any>|Promise<any>|EventEmitter<any>): any {
-    if (ɵisPromise(obj)) {
+    if (isPromise(obj)) {
       return _promiseStrategy;
     }
 
-    if (ɵisObservable(obj)) {
+    if (isObservable(obj)) {
       return _observableStrategy;
     }
 
