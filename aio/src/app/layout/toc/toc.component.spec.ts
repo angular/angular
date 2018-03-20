@@ -246,12 +246,10 @@ describe('TocComponent', () => {
 
   describe('when in side panel (not embedded)', () => {
     let fixture: ComponentFixture<HostNotEmbeddedTocComponent>;
-    let scrollToTopSpy: jasmine.Spy;
 
     beforeEach(() => {
       fixture = TestBed.createComponent(HostNotEmbeddedTocComponent);
 
-      scrollToTopSpy = TestBed.get(ScrollService).scrollToTop;
       tocComponentDe = fixture.debugElement.children[0];
       tocComponent = tocComponentDe.componentInstance;
       tocService = TestBed.get(TocService);

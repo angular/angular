@@ -49,17 +49,18 @@ describe('ApiService', () => {
 
   describe('#sections', () => {
 
-    it('first subscriber should fetch sections', () => {
+    it('first subscriber should fetch sections', done => {
       const data = [{name: 'a', title: 'A', items: []}, {name: 'b', title: 'B', items: []}];
 
       service.sections.subscribe(sections => {
         expect(sections).toEqual(data);
+        done();
       });
 
       httpMock.expectOne({}).flush(data);
     });
 
-    it('second subscriber should get previous sections and NOT trigger refetch', () => {
+    it('second subscriber should get previous sections and NOT trigger refetch', done => {
       const data = [{name: 'a', title: 'A', items: []}, {name: 'b', title: 'B', items: []}];
       let subscriptions = 0;
 
@@ -71,6 +72,8 @@ describe('ApiService', () => {
       service.sections.subscribe(sections => {
         subscriptions++;
         expect(sections).toEqual(data);
+        expect(subscriptions).toBe(2);
+        done();
       });
 
       httpMock.expectOne({}).flush(data);

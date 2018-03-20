@@ -14,7 +14,6 @@ describe('ResourceListComponent', () => {
 
   let injector: ReflectiveInjector;
   let location: TestPlatformLocation;
-  let resourceService: TestResourceService;
 
   beforeEach(() => {
     injector = ReflectiveInjector.resolveAndCreate([
@@ -24,7 +23,6 @@ describe('ResourceListComponent', () => {
     ]);
 
     location = injector.get(PlatformLocation);
-    resourceService = injector.get(ResourceService);
   });
 
   it('should set the location w/o leading slashes', () => {
