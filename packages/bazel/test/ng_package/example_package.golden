@@ -43,6 +43,16 @@ esm5
     esm5/secondary/secondarymodule.ngsummary.js
 example_public_index.d.ts
 example_public_index.metadata.json
+fesm2015
+  fesm2015/example.js
+  fesm2015/example.js.map
+  fesm2015/secondary.js
+  fesm2015/secondary.js.map
+fesm5
+  fesm5/example.js
+  fesm5/example.js.map
+  fesm5/secondary.js
+  fesm5/secondary.js.map
 index.d.ts
 mymodule.d.ts
 package.json
@@ -651,6 +661,178 @@ export * from './index';
 
 {"__symbolic":"module","version":4,"metadata":{"MyModule":{"__symbolic":"class","decorators":[{"__symbolic":"call","expression":{"__symbolic":"reference","module":"@angular/core","name":"NgModule","line":11,"character":1},"arguments":[{}]}],"members":{}}},"origins":{"MyModule":"./mymodule"},"importAs":"example"}
 
+--- fesm2015/example.js ---
+
+import { NgModule } from '@angular/core';
+
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes} checked by tsc
+ */
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+class MyModule {
+}
+MyModule.decorators = [
+    { type: NgModule, args: [{},] }
+];
+/** @nocollapse */
+MyModule.ctorParameters = () => [];
+
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes} checked by tsc
+ */
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+export { MyModule };
+//# sourceMappingURL=example.js.map
+
+
+--- fesm2015/example.js.map ---
+
+{"version":3,"file":"example.js","sources":["../../../../../../../../../../../../../execroot/angular/bazel-bin/packages/bazel/test/ng_package/example/npm_package.es6/packages/bazel/test/ng_package/example/index.js"],"sourcesContent":["/**\n * @fileoverview added by tsickle\n * @suppress {checkTypes} checked by tsc\n */\n/**\n * @license\n * Copyright Google Inc. All Rights Reserved.\n *\n * Use of this source code is governed by an MIT-style license that can be\n * found in the LICENSE file at https://angular.io/license\n */\nimport { NgModule } from '@angular/core';\nexport class MyModule {\n}\nMyModule.decorators = [\n    { type: NgModule, args: [{},] }\n];\n/** @nocollapse */\nMyModule.ctorParameters = () => [];\nfunction MyModule_tsickle_Closure_declarations() {\n    /** @type {!Array<{type: !Function, args: (undefined|!Array<?>)}>} */\n    MyModule.decorators;\n    /**\n     * @nocollapse\n     * @type {function(): !Array<(null|{type: ?, decorators: (undefined|!Array<{type: !Function, args: (undefined|!Array<?>)}>)})>}\n     */\n    MyModule.ctorParameters;\n}\n\n//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoibXltb2R1bGUuanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi9wYWNrYWdlcy9iYXplbC90ZXN0L25nX3BhY2thZ2UvZXhhbXBsZS9teW1vZHVsZS50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOzs7Ozs7Ozs7OztBQVFBLE9BQU8sRUFBQyxRQUFRLEVBQUMsTUFBTSxlQUFlLENBQUM7QUFJdkMsTUFBTTs7O1lBREwsUUFBUSxTQUFDLEVBQUUiLCJzb3VyY2VzQ29udGVudCI6WyIvKipcbiAqIEBsaWNlbnNlXG4gKiBDb3B5cmlnaHQgR29vZ2xlIEluYy4gQWxsIFJpZ2h0cyBSZXNlcnZlZC5cbiAqXG4gKiBVc2Ugb2YgdGhpcyBzb3VyY2UgY29kZSBpcyBnb3Zlcm5lZCBieSBhbiBNSVQtc3R5bGUgbGljZW5zZSB0aGF0IGNhbiBiZVxuICogZm91bmQgaW4gdGhlIExJQ0VOU0UgZmlsZSBhdCBodHRwczovL2FuZ3VsYXIuaW8vbGljZW5zZVxuICovXG5cbmltcG9ydCB7TmdNb2R1bGV9IGZyb20gJ0Bhbmd1bGFyL2NvcmUnO1xuaW1wb3J0IHthfSBmcm9tICcuL3NlY29uZGFyeS9zZWNvbmRhcnltb2R1bGUnO1xuXG5ATmdNb2R1bGUoe30pXG5leHBvcnQgY2xhc3MgTXlNb2R1bGUge1xufSJdfQ==","/**\n * @fileoverview added by tsickle\n * @suppress {checkTypes} checked by tsc\n */\n/**\n * @license\n * Copyright Google Inc. All Rights Reserved.\n *\n * Use of this source code is governed by an MIT-style license that can be\n * found in the LICENSE file at https://angular.io/license\n */\nexport { MyModule } from './mymodule';\n\n//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiaW5kZXguanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi9wYWNrYWdlcy9iYXplbC90ZXN0L25nX3BhY2thZ2UvZXhhbXBsZS9pbmRleC50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOzs7Ozs7Ozs7OztBQVFBLHlCQUFjLFlBQVksQ0FBQyIsInNvdXJjZXNDb250ZW50IjpbIi8qKlxuICogQGxpY2Vuc2VcbiAqIENvcHlyaWdodCBHb29nbGUgSW5jLiBBbGwgUmlnaHRzIFJlc2VydmVkLlxuICpcbiAqIFVzZSBvZiB0aGlzIHNvdXJjZSBjb2RlIGlzIGdvdmVybmVkIGJ5IGFuIE1JVC1zdHlsZSBsaWNlbnNlIHRoYXQgY2FuIGJlXG4gKiBmb3VuZCBpbiB0aGUgTElDRU5TRSBmaWxlIGF0IGh0dHBzOi8vYW5ndWxhci5pby9saWNlbnNlXG4gKi9cblxuZXhwb3J0ICogZnJvbSAnLi9teW1vZHVsZSc7Il19"],"names":[],"mappings":";;AAAA;;;;;;;;;;;AAWA,AACO,MAAM,QAAQ,CAAC;CACrB;AACD,QAAQ,CAAC,UAAU,GAAG;IAClB,EAAE,IAAI,EAAE,QAAQ,EAAE,IAAI,EAAE,CAAC,EAAE,EAAE,EAAE;CAClC,CAAC;;AAEF,QAAQ,CAAC,cAAc,GAAG,MAAM,EAAE,CAAC;;AClBnC;;;;;;;;;;GAUG;;;;"}
+
+--- fesm2015/secondary.js ---
+
+import { NgModule } from '@angular/core';
+
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes} checked by tsc
+ */
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+class SecondaryModule {
+}
+SecondaryModule.decorators = [
+    { type: NgModule, args: [{},] }
+];
+/** @nocollapse */
+SecondaryModule.ctorParameters = () => [];
+const a = 1;
+
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes} checked by tsc
+ */
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+export { SecondaryModule, a };
+//# sourceMappingURL=secondary.js.map
+
+
+--- fesm2015/secondary.js.map ---
+
+{"version":3,"file":"secondary.js","sources":["../../../../../../../../../../../../../execroot/angular/bazel-bin/packages/bazel/test/ng_package/example/npm_package.es6/packages/bazel/test/ng_package/example/secondary/index.js"],"sourcesContent":["/**\n * @fileoverview added by tsickle\n * @suppress {checkTypes} checked by tsc\n */\n/**\n * @license\n * Copyright Google Inc. All Rights Reserved.\n *\n * Use of this source code is governed by an MIT-style license that can be\n * found in the LICENSE file at https://angular.io/license\n */\nimport { NgModule } from '@angular/core';\nexport class SecondaryModule {\n}\nSecondaryModule.decorators = [\n    { type: NgModule, args: [{},] }\n];\n/** @nocollapse */\nSecondaryModule.ctorParameters = () => [];\nfunction SecondaryModule_tsickle_Closure_declarations() {\n    /** @type {!Array<{type: !Function, args: (undefined|!Array<?>)}>} */\n    SecondaryModule.decorators;\n    /**\n     * @nocollapse\n     * @type {function(): !Array<(null|{type: ?, decorators: (undefined|!Array<{type: !Function, args: (undefined|!Array<?>)}>)})>}\n     */\n    SecondaryModule.ctorParameters;\n}\nexport const /** @type {?} */ a = 1;\n\n//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoic2Vjb25kYXJ5bW9kdWxlLmpzIiwic291cmNlUm9vdCI6IiIsInNvdXJjZXMiOlsiLi4vLi4vLi4vLi4vLi4vLi4vLi4vLi4vLi4vcGFja2FnZXMvYmF6ZWwvdGVzdC9uZ19wYWNrYWdlL2V4YW1wbGUvc2Vjb25kYXJ5L3NlY29uZGFyeW1vZHVsZS50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOzs7Ozs7Ozs7OztBQVFBLE9BQU8sRUFBQyxRQUFRLEVBQUMsTUFBTSxlQUFlLENBQUM7QUFHdkMsTUFBTTs7O1lBREwsUUFBUSxTQUFDLEVBQUU7Ozs7Ozs7Ozs7Ozs7QUFJWixNQUFNLENBQUMsdUJBQU0sQ0FBQyxHQUFHLENBQUMsQ0FBQyIsInNvdXJjZXNDb250ZW50IjpbIi8qKlxuICogQGxpY2Vuc2VcbiAqIENvcHlyaWdodCBHb29nbGUgSW5jLiBBbGwgUmlnaHRzIFJlc2VydmVkLlxuICpcbiAqIFVzZSBvZiB0aGlzIHNvdXJjZSBjb2RlIGlzIGdvdmVybmVkIGJ5IGFuIE1JVC1zdHlsZSBsaWNlbnNlIHRoYXQgY2FuIGJlXG4gKiBmb3VuZCBpbiB0aGUgTElDRU5TRSBmaWxlIGF0IGh0dHBzOi8vYW5ndWxhci5pby9saWNlbnNlXG4gKi9cblxuaW1wb3J0IHtOZ01vZHVsZX0gZnJvbSAnQGFuZ3VsYXIvY29yZSc7XG5cbkBOZ01vZHVsZSh7fSlcbmV4cG9ydCBjbGFzcyBTZWNvbmRhcnlNb2R1bGUge1xufVxuXG5leHBvcnQgY29uc3QgYSA9IDE7XG4iXX0=","/**\n * @fileoverview added by tsickle\n * @suppress {checkTypes} checked by tsc\n */\n/**\n * @license\n * Copyright Google Inc. All Rights Reserved.\n *\n * Use of this source code is governed by an MIT-style license that can be\n * found in the LICENSE file at https://angular.io/license\n */\nexport { SecondaryModule, a } from './secondarymodule';\n\n//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiaW5kZXguanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi9wYWNrYWdlcy9iYXplbC90ZXN0L25nX3BhY2thZ2UvZXhhbXBsZS9zZWNvbmRhcnkvaW5kZXgudHMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6Ijs7Ozs7Ozs7Ozs7QUFRQSxtQ0FBYyxtQkFBbUIsQ0FBQyIsInNvdXJjZXNDb250ZW50IjpbIi8qKlxuICogQGxpY2Vuc2VcbiAqIENvcHlyaWdodCBHb29nbGUgSW5jLiBBbGwgUmlnaHRzIFJlc2VydmVkLlxuICpcbiAqIFVzZSBvZiB0aGlzIHNvdXJjZSBjb2RlIGlzIGdvdmVybmVkIGJ5IGFuIE1JVC1zdHlsZSBsaWNlbnNlIHRoYXQgY2FuIGJlXG4gKiBmb3VuZCBpbiB0aGUgTElDRU5TRSBmaWxlIGF0IGh0dHBzOi8vYW5ndWxhci5pby9saWNlbnNlXG4gKi9cblxuZXhwb3J0ICogZnJvbSAnLi9zZWNvbmRhcnltb2R1bGUnO1xuIl19"],"names":[],"mappings":";;AAAA;;;;;;;;;;;AAWA,AACO,MAAM,eAAe,CAAC;CAC5B;AACD,eAAe,CAAC,UAAU,GAAG;IACzB,EAAE,IAAI,EAAE,QAAQ,EAAE,IAAI,EAAE,CAAC,EAAE,EAAE,EAAE;CAClC,CAAC;;AAEF,eAAe,CAAC,cAAc,GAAG,MAAM,EAAE,CAAC;AAC1C,AASO,MAAuB,CAAC,GAAG,CAAC;;AC5BnC;;;;;;;;;;GAUG;;;;"}
+
+--- fesm5/example.js ---
+
+import { NgModule } from '@angular/core';
+
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+var __decorate = (undefined && undefined.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var MyModule = /** @class */ (function () {
+    function MyModule() {
+    }
+    MyModule = __decorate([
+        NgModule({})
+    ], MyModule);
+    return MyModule;
+}());
+
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+export { MyModule };
+//# sourceMappingURL=example.js.map
+
+
+--- fesm5/example.js.map ---
+
+{"version":3,"file":"example.js","sources":["../../../../../../../../../../../../../execroot/angular/bazel-bin/packages/bazel/test/ng_package/example/example.esm5/packages/bazel/test/ng_package/example/index.js"],"sourcesContent":["/**\n * @license\n * Copyright Google Inc. All Rights Reserved.\n *\n * Use of this source code is governed by an MIT-style license that can be\n * found in the LICENSE file at https://angular.io/license\n */\nvar __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {\n    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;\n    if (typeof Reflect === \"object\" && typeof Reflect.decorate === \"function\") r = Reflect.decorate(decorators, target, key, desc);\n    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;\n    return c > 3 && r && Object.defineProperty(target, key, r), r;\n};\nimport { NgModule } from '@angular/core';\nvar MyModule = /** @class */ (function () {\n    function MyModule() {\n    }\n    MyModule = __decorate([\n        NgModule({})\n    ], MyModule);\n    return MyModule;\n}());\nexport { MyModule };\n\n//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoibXltb2R1bGUuanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi9wYWNrYWdlcy9iYXplbC90ZXN0L25nX3BhY2thZ2UvZXhhbXBsZS9teW1vZHVsZS50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFBQTs7Ozs7O0dBTUc7Ozs7Ozs7QUFFSCxPQUFPLEVBQUMsUUFBUSxFQUFDLE1BQU0sZUFBZSxDQUFDO0FBSXZDO0lBQUE7SUFDQSxDQUFDO0lBRFksUUFBUTtRQURwQixRQUFRLENBQUMsRUFBRSxDQUFDO09BQ0EsUUFBUSxDQUNwQjtJQUFELGVBQUM7Q0FBQSxBQURELElBQ0M7U0FEWSxRQUFRIiwic291cmNlc0NvbnRlbnQiOlsiLyoqXG4gKiBAbGljZW5zZVxuICogQ29weXJpZ2h0IEdvb2dsZSBJbmMuIEFsbCBSaWdodHMgUmVzZXJ2ZWQuXG4gKlxuICogVXNlIG9mIHRoaXMgc291cmNlIGNvZGUgaXMgZ292ZXJuZWQgYnkgYW4gTUlULXN0eWxlIGxpY2Vuc2UgdGhhdCBjYW4gYmVcbiAqIGZvdW5kIGluIHRoZSBMSUNFTlNFIGZpbGUgYXQgaHR0cHM6Ly9hbmd1bGFyLmlvL2xpY2Vuc2VcbiAqL1xuXG5pbXBvcnQge05nTW9kdWxlfSBmcm9tICdAYW5ndWxhci9jb3JlJztcbmltcG9ydCB7YX0gZnJvbSAnLi9zZWNvbmRhcnkvc2Vjb25kYXJ5bW9kdWxlJztcblxuQE5nTW9kdWxlKHt9KVxuZXhwb3J0IGNsYXNzIE15TW9kdWxlIHtcbn0iXX0=","/**\n * @license\n * Copyright Google Inc. All Rights Reserved.\n *\n * Use of this source code is governed by an MIT-style license that can be\n * found in the LICENSE file at https://angular.io/license\n */\nexport * from './mymodule';\n\n//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiaW5kZXguanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi9wYWNrYWdlcy9iYXplbC90ZXN0L25nX3BhY2thZ2UvZXhhbXBsZS9pbmRleC50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFBQTs7Ozs7O0dBTUc7QUFFSCxjQUFjLFlBQVksQ0FBQyIsInNvdXJjZXNDb250ZW50IjpbIi8qKlxuICogQGxpY2Vuc2VcbiAqIENvcHlyaWdodCBHb29nbGUgSW5jLiBBbGwgUmlnaHRzIFJlc2VydmVkLlxuICpcbiAqIFVzZSBvZiB0aGlzIHNvdXJjZSBjb2RlIGlzIGdvdmVybmVkIGJ5IGFuIE1JVC1zdHlsZSBsaWNlbnNlIHRoYXQgY2FuIGJlXG4gKiBmb3VuZCBpbiB0aGUgTElDRU5TRSBmaWxlIGF0IGh0dHBzOi8vYW5ndWxhci5pby9saWNlbnNlXG4gKi9cblxuZXhwb3J0ICogZnJvbSAnLi9teW1vZHVsZSc7Il19"],"names":["this"],"mappings":";;AAAA;;;;;;;AAOA,IAAI,UAAU,GAAG,CAACA,SAAI,IAAIA,SAAI,CAAC,UAAU,KAAK,UAAU,UAAU,EAAE,MAAM,EAAE,GAAG,EAAE,IAAI,EAAE;IACnF,IAAI,CAAC,GAAG,SAAS,CAAC,MAAM,EAAE,CAAC,GAAG,CAAC,GAAG,CAAC,GAAG,MAAM,GAAG,IAAI,KAAK,IAAI,GAAG,IAAI,GAAG,MAAM,CAAC,wBAAwB,CAAC,MAAM,EAAE,GAAG,CAAC,GAAG,IAAI,EAAE,CAAC,CAAC;IAC7H,IAAI,OAAO,OAAO,KAAK,QAAQ,IAAI,OAAO,OAAO,CAAC,QAAQ,KAAK,UAAU,EAAE,CAAC,GAAG,OAAO,CAAC,QAAQ,CAAC,UAAU,EAAE,MAAM,EAAE,GAAG,EAAE,IAAI,CAAC,CAAC;SAC1H,KAAK,IAAI,CAAC,GAAG,UAAU,CAAC,MAAM,GAAG,CAAC,EAAE,CAAC,IAAI,CAAC,EAAE,CAAC,EAAE,EAAE,IAAI,CAAC,GAAG,UAAU,CAAC,CAAC,CAAC,EAAE,CAAC,GAAG,CAAC,CAAC,GAAG,CAAC,GAAG,CAAC,CAAC,CAAC,CAAC,GAAG,CAAC,GAAG,CAAC,GAAG,CAAC,CAAC,MAAM,EAAE,GAAG,EAAE,CAAC,CAAC,GAAG,CAAC,CAAC,MAAM,EAAE,GAAG,CAAC,KAAK,CAAC,CAAC;IAClJ,OAAO,CAAC,GAAG,CAAC,IAAI,CAAC,IAAI,MAAM,CAAC,cAAc,CAAC,MAAM,EAAE,GAAG,EAAE,CAAC,CAAC,EAAE,CAAC,CAAC;CACjE,CAAC;AACF,AACA,IAAI,QAAQ,kBAAkB,YAAY;IACtC,SAAS,QAAQ,GAAG;KACnB;IACD,QAAQ,GAAG,UAAU,CAAC;QAClB,QAAQ,CAAC,EAAE,CAAC;KACf,EAAE,QAAQ,CAAC,CAAC;IACb,OAAO,QAAQ,CAAC;CACnB,EAAE,CAAC;;ACrBJ;;;;;;GAMG;;;;"}
+
+--- fesm5/secondary.js ---
+
+import { NgModule } from '@angular/core';
+
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+var __decorate = (undefined && undefined.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var SecondaryModule = /** @class */ (function () {
+    function SecondaryModule() {
+    }
+    SecondaryModule = __decorate([
+        NgModule({})
+    ], SecondaryModule);
+    return SecondaryModule;
+}());
+var a = 1;
+
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+export { SecondaryModule, a };
+//# sourceMappingURL=secondary.js.map
+
+
+--- fesm5/secondary.js.map ---
+
+{"version":3,"file":"secondary.js","sources":["../../../../../../../../../../../../execroot/angular/bazel-bin/packages/bazel/test/ng_package/example/secondary/secondary.esm5/packages/bazel/test/ng_package/example/secondary/index.js"],"sourcesContent":["/**\n * @license\n * Copyright Google Inc. All Rights Reserved.\n *\n * Use of this source code is governed by an MIT-style license that can be\n * found in the LICENSE file at https://angular.io/license\n */\nvar __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {\n    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;\n    if (typeof Reflect === \"object\" && typeof Reflect.decorate === \"function\") r = Reflect.decorate(decorators, target, key, desc);\n    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;\n    return c > 3 && r && Object.defineProperty(target, key, r), r;\n};\nimport { NgModule } from '@angular/core';\nvar SecondaryModule = /** @class */ (function () {\n    function SecondaryModule() {\n    }\n    SecondaryModule = __decorate([\n        NgModule({})\n    ], SecondaryModule);\n    return SecondaryModule;\n}());\nexport { SecondaryModule };\nexport var a = 1;\n\n//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoic2Vjb25kYXJ5bW9kdWxlLmpzIiwic291cmNlUm9vdCI6IiIsInNvdXJjZXMiOlsiLi4vLi4vLi4vLi4vLi4vLi4vLi4vLi4vLi4vLi4vLi4vLi4vLi4vLi4vLi4vLi4vcGFja2FnZXMvYmF6ZWwvdGVzdC9uZ19wYWNrYWdlL2V4YW1wbGUvc2Vjb25kYXJ5L3NlY29uZGFyeW1vZHVsZS50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFBQTs7Ozs7O0dBTUc7Ozs7Ozs7QUFFSCxPQUFPLEVBQUMsUUFBUSxFQUFDLE1BQU0sZUFBZSxDQUFDO0FBR3ZDO0lBQUE7SUFDQSxDQUFDO0lBRFksZUFBZTtRQUQzQixRQUFRLENBQUMsRUFBRSxDQUFDO09BQ0EsZUFBZSxDQUMzQjtJQUFELHNCQUFDO0NBQUEsQUFERCxJQUNDO1NBRFksZUFBZTtBQUc1QixNQUFNLENBQUMsSUFBTSxDQUFDLEdBQUcsQ0FBQyxDQUFDIiwic291cmNlc0NvbnRlbnQiOlsiLyoqXG4gKiBAbGljZW5zZVxuICogQ29weXJpZ2h0IEdvb2dsZSBJbmMuIEFsbCBSaWdodHMgUmVzZXJ2ZWQuXG4gKlxuICogVXNlIG9mIHRoaXMgc291cmNlIGNvZGUgaXMgZ292ZXJuZWQgYnkgYW4gTUlULXN0eWxlIGxpY2Vuc2UgdGhhdCBjYW4gYmVcbiAqIGZvdW5kIGluIHRoZSBMSUNFTlNFIGZpbGUgYXQgaHR0cHM6Ly9hbmd1bGFyLmlvL2xpY2Vuc2VcbiAqL1xuXG5pbXBvcnQge05nTW9kdWxlfSBmcm9tICdAYW5ndWxhci9jb3JlJztcblxuQE5nTW9kdWxlKHt9KVxuZXhwb3J0IGNsYXNzIFNlY29uZGFyeU1vZHVsZSB7XG59XG5cbmV4cG9ydCBjb25zdCBhID0gMTtcbiJdfQ==","/**\n * @license\n * Copyright Google Inc. All Rights Reserved.\n *\n * Use of this source code is governed by an MIT-style license that can be\n * found in the LICENSE file at https://angular.io/license\n */\nexport * from './secondarymodule';\n\n//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiaW5kZXguanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi9wYWNrYWdlcy9iYXplbC90ZXN0L25nX3BhY2thZ2UvZXhhbXBsZS9zZWNvbmRhcnkvaW5kZXgudHMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBQUE7Ozs7OztHQU1HO0FBRUgsY0FBYyxtQkFBbUIsQ0FBQyIsInNvdXJjZXNDb250ZW50IjpbIi8qKlxuICogQGxpY2Vuc2VcbiAqIENvcHlyaWdodCBHb29nbGUgSW5jLiBBbGwgUmlnaHRzIFJlc2VydmVkLlxuICpcbiAqIFVzZSBvZiB0aGlzIHNvdXJjZSBjb2RlIGlzIGdvdmVybmVkIGJ5IGFuIE1JVC1zdHlsZSBsaWNlbnNlIHRoYXQgY2FuIGJlXG4gKiBmb3VuZCBpbiB0aGUgTElDRU5TRSBmaWxlIGF0IGh0dHBzOi8vYW5ndWxhci5pby9saWNlbnNlXG4gKi9cblxuZXhwb3J0ICogZnJvbSAnLi9zZWNvbmRhcnltb2R1bGUnO1xuIl19"],"names":["this"],"mappings":";;AAAA;;;;;;;AAOA,IAAI,UAAU,GAAG,CAACA,SAAI,IAAIA,SAAI,CAAC,UAAU,KAAK,UAAU,UAAU,EAAE,MAAM,EAAE,GAAG,EAAE,IAAI,EAAE;IACnF,IAAI,CAAC,GAAG,SAAS,CAAC,MAAM,EAAE,CAAC,GAAG,CAAC,GAAG,CAAC,GAAG,MAAM,GAAG,IAAI,KAAK,IAAI,GAAG,IAAI,GAAG,MAAM,CAAC,wBAAwB,CAAC,MAAM,EAAE,GAAG,CAAC,GAAG,IAAI,EAAE,CAAC,CAAC;IAC7H,IAAI,OAAO,OAAO,KAAK,QAAQ,IAAI,OAAO,OAAO,CAAC,QAAQ,KAAK,UAAU,EAAE,CAAC,GAAG,OAAO,CAAC,QAAQ,CAAC,UAAU,EAAE,MAAM,EAAE,GAAG,EAAE,IAAI,CAAC,CAAC;SAC1H,KAAK,IAAI,CAAC,GAAG,UAAU,CAAC,MAAM,GAAG,CAAC,EAAE,CAAC,IAAI,CAAC,EAAE,CAAC,EAAE,EAAE,IAAI,CAAC,GAAG,UAAU,CAAC,CAAC,CAAC,EAAE,CAAC,GAAG,CAAC,CAAC,GAAG,CAAC,GAAG,CAAC,CAAC,CAAC,CAAC,GAAG,CAAC,GAAG,CAAC,GAAG,CAAC,CAAC,MAAM,EAAE,GAAG,EAAE,CAAC,CAAC,GAAG,CAAC,CAAC,MAAM,EAAE,GAAG,CAAC,KAAK,CAAC,CAAC;IAClJ,OAAO,CAAC,GAAG,CAAC,IAAI,CAAC,IAAI,MAAM,CAAC,cAAc,CAAC,MAAM,EAAE,GAAG,EAAE,CAAC,CAAC,EAAE,CAAC,CAAC;CACjE,CAAC;AACF,AACA,IAAI,eAAe,kBAAkB,YAAY;IAC7C,SAAS,eAAe,GAAG;KAC1B;IACD,eAAe,GAAG,UAAU,CAAC;QACzB,QAAQ,CAAC,EAAE,CAAC;KACf,EAAE,eAAe,CAAC,CAAC;IACpB,OAAO,eAAe,CAAC;CAC1B,EAAE,CAAC,CAAC;AACL,AACO,IAAI,CAAC,GAAG,CAAC;;ACvBhB;;;;;;GAMG;;;;"}
+
 --- index.d.ts ---
 
 /**
@@ -674,11 +856,13 @@ export declare class MyModule {
 {
   "name": "example",
   "main": "./bundles/example.umd.js",
+  "fesm5": "./fesm5/example.js",
+  "fesm2015": "./fesm2015/example.js",
   "esm5": "./esm5/example_public_index.js",
-  "module": "./esm5/example_public_index.js",
   "esm2015": "./esm2015/example_public_index.js",
-  "es2015": "./esm2015/example_public_index.js",
-  "typings": "./example_public_index.d.ts"
+  "typings": "./example_public_index.d.ts",
+  "module": "./fesm5/example.js",
+  "es2015": "./fesm2015/example.js"
 }
 
 --- secondary/index.d.ts ---
@@ -698,11 +882,13 @@ export * from './secondarymodule';
 {
   "name": "example/secondary",
   "main": "../bundles/example-secondary.umd.js",
+  "fesm5": "../fesm5/secondary.js",
+  "fesm2015": "../fesm2015/secondary.js",
   "esm5": "../esm5/secondary/secondary_public_index.js",
-  "module": "../esm5/secondary/secondary_public_index.js",
   "esm2015": "../esm2015/secondary/secondary_public_index.js",
-  "es2015": "../esm2015/secondary/secondary_public_index.js",
-  "typings": "./secondary_public_index.d.ts"
+  "typings": "./secondary_public_index.d.ts",
+  "module": "../fesm5/secondary.js",
+  "es2015": "../fesm2015/secondary.js"
 }
 
 --- secondary/secondary_public_index.d.ts ---
