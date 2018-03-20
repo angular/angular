@@ -156,12 +156,13 @@ export class Driver implements Debuggable, UpdateSource {
    * asynchronous execution that eventually resolves for respondWith() and waitUntil().
    */
   private onFetch(event: FetchEvent): void {
+    const req = event.request;
+
     // The only thing that is served unconditionally is the debug page.
-    if (this.adapter.parseUrl(event.request.url, this.scope.registration.scope).path ===
-        '/ngsw/state') {
+    if (this.adapter.parseUrl(req.url, this.scope.registration.scope).path === '/ngsw/state') {
       // Allow the debugger to handle the request, but don't affect SW state in any
       // other way.
-      event.respondWith(this.debugger.handleFetch(event.request));
+      event.respondWith(this.debugger.handleFetch(req));
       return;
     }
 
@@ -174,6 +175,16 @@ export class Driver implements Debuggable, UpdateSource {
       // Even though the worker is in safe mode, idle tasks still need to happen so
       // things like update checks, etc. can take place.
       event.waitUntil(this.idle.trigger());
+      return;
+    }
+
+    // Under some circumstances (possibly related to opening Chrome DevTools), requests are made
+    // with `cache: 'only-if-cached'` and `mode: 'no-cors'`. These request will eventually fail,
+    // because `only-if-cached` is only allowed to be used with `mode: 'same-origin'`.
+    // This is likely a bug in Chrome DevTools. Avoid handling such requests.
+    // (See also https://github.com/angular/angular/issues/22362.)
+    // TODO(gkalpak): Remove once no longer necessary (i.e. fixed in Chrome DevTools).
+    if ((req.cache as string) === 'only-if-cached' && req.mode !== 'same-origin') {
       return;
     }
 
