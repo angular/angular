@@ -642,8 +642,8 @@ export class FlexibleConnectedPositionStrategy implements PositionStrategy {
       styles.height = '100%';
     } else {
       styles.height = `${boundingBoxRect.height}px`;
-      styles.top = boundingBoxRect.top ? `${boundingBoxRect.top}px` : '';
-      styles.bottom = boundingBoxRect.bottom ? `${boundingBoxRect.bottom}px` : '';
+      styles.top = boundingBoxRect.top != null ? `${boundingBoxRect.top}px` : '';
+      styles.bottom = boundingBoxRect.bottom != null ? `${boundingBoxRect.bottom}px` : '';
     }
 
     if (!this._hasFlexibleWidth || this._isPushed) {
@@ -652,8 +652,8 @@ export class FlexibleConnectedPositionStrategy implements PositionStrategy {
       styles.width = '100%';
     } else {
       styles.width = `${boundingBoxRect.width}px`;
-      styles.left = boundingBoxRect.left ? `${boundingBoxRect.left}px` : '';
-      styles.right = boundingBoxRect.right ? `${boundingBoxRect.right}px` : '';
+      styles.left = boundingBoxRect.left != null ? `${boundingBoxRect.left}px` : '';
+      styles.right = boundingBoxRect.right != null ? `${boundingBoxRect.right}px` : '';
     }
 
     const maxHeight = this._overlayRef.getConfig().maxHeight;

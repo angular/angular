@@ -1187,6 +1187,109 @@ describe('FlexibleConnectedPositionStrategy', () => {
         window.scroll(0, 0);
         document.body.removeChild(veryLargeElement);
       });
+    it('should set the proper styles when the `bottom` value is exactly zero', () => {
+      originElement.style.position = 'fixed';
+      originElement.style.bottom = '0';
+      originElement.style.left = '200px';
+
+      positionStrategy
+        .withFlexibleWidth()
+        .withFlexibleHeight()
+        .withPositions([{
+          overlayY: 'bottom',
+          overlayX: 'start',
+          originY: 'bottom',
+          originX: 'start'
+        }]);
+
+      attachOverlay({positionStrategy});
+
+      const boundingBox = overlayContainer
+        .getContainerElement()
+        .querySelector('.cdk-overlay-connected-position-bounding-box') as HTMLElement;
+
+      // Ensure that `0px` is set explicitly, rather than the
+      // property being left blank due to zero being falsy.
+      expect(boundingBox.style.bottom).toBe('0px');
+    });
+
+    it('should set the proper styles when the `top` value is exactly zero', () => {
+      originElement.style.position = 'fixed';
+      originElement.style.top = '0';
+      originElement.style.left = '200px';
+
+      positionStrategy
+        .withFlexibleWidth()
+        .withFlexibleHeight()
+        .withPositions([{
+          overlayY: 'top',
+          overlayX: 'start',
+          originY: 'top',
+          originX: 'start'
+        }]);
+
+      attachOverlay({positionStrategy});
+
+      const boundingBox = overlayContainer
+        .getContainerElement()
+        .querySelector('.cdk-overlay-connected-position-bounding-box') as HTMLElement;
+
+      // Ensure that `0px` is set explicitly, rather than the
+      // property being left blank due to zero being falsy.
+      expect(boundingBox.style.top).toBe('0px');
+    });
+
+    it('should set the proper styles when the `left` value is exactly zero', () => {
+      originElement.style.position = 'fixed';
+      originElement.style.left = '0';
+      originElement.style.top = '200px';
+
+      positionStrategy
+        .withFlexibleWidth()
+        .withFlexibleHeight()
+        .withPositions([{
+          overlayY: 'top',
+          overlayX: 'start',
+          originY: 'top',
+          originX: 'start'
+        }]);
+
+      attachOverlay({positionStrategy});
+
+      const boundingBox = overlayContainer
+        .getContainerElement()
+        .querySelector('.cdk-overlay-connected-position-bounding-box') as HTMLElement;
+
+      // Ensure that `0px` is set explicitly, rather than the
+      // property being left blank due to zero being falsy.
+      expect(boundingBox.style.left).toBe('0px');
+    });
+
+    it('should set the proper styles when the `right` value is exactly zero', () => {
+      originElement.style.position = 'fixed';
+      originElement.style.right = '0';
+      originElement.style.top = '200px';
+
+      positionStrategy
+        .withFlexibleWidth()
+        .withFlexibleHeight()
+        .withPositions([{
+          overlayY: 'top',
+          overlayX: 'end',
+          originY: 'top',
+          originX: 'end'
+        }]);
+
+      attachOverlay({positionStrategy});
+
+      const boundingBox = overlayContainer
+        .getContainerElement()
+        .querySelector('.cdk-overlay-connected-position-bounding-box') as HTMLElement;
+
+      // Ensure that `0px` is set explicitly, rather than the
+      // property being left blank due to zero being falsy.
+      expect(boundingBox.style.right).toBe('0px');
+    });
 
   });
 
