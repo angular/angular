@@ -180,7 +180,7 @@ describe('DocViewerComponent', () => {
         const querySelector_ = targetEl.querySelector;
         spyOn(targetEl, 'querySelector').and.callFake((selector: string) => {
           const elem = querySelector_.call(targetEl, selector);
-          return Object.defineProperties(elem, {
+          return elem && Object.defineProperties(elem, {
             innerText: {value: undefined},
             textContent: {value: 'Text Content'},
           });
@@ -195,7 +195,7 @@ describe('DocViewerComponent', () => {
         const querySelector_ = targetEl.querySelector;
         spyOn(targetEl, 'querySelector').and.callFake((selector: string) => {
           const elem = querySelector_.call(targetEl, selector);
-          return Object.defineProperties(elem, {
+          return elem && Object.defineProperties(elem, {
             innerText: { value: '' },
             textContent: { value: 'Text Content' }
           });
