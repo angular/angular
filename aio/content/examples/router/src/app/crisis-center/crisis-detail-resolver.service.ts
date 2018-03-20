@@ -15,7 +15,7 @@ export class CrisisDetailResolver implements Resolve<Crisis> {
   resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<Crisis> {
     let id = route.paramMap.get('id');
 
-    return this.cs.getCrisis(id).take(1).map(crisis => {
+    return this.cs.getCrisisById(id).take(1).map(crisis => {
       if (crisis) {
         return crisis;
       } else { // id not found

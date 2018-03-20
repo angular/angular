@@ -25,7 +25,7 @@ export class CrisisService {
 
   getCrises() { return this.crises$; }
 
-  getCrisis(id: number | string) {
+  getCrisisById(id: number | string) {
     return this.getCrises()
       .map(crises => crises.find(crisis => crisis.id === +id));
   }
