@@ -9,7 +9,13 @@ cd ${currentDir}
 readonly thisDir=$(cd $(dirname $0); pwd)
 
 # Track payload size functions
-source ../scripts/ci/payload-size.sh
+# TODO(alexeagle): finish migrating these to buildsize.org
+if [[ -v TRAVIS ]]; then
+  # We don't install this by default because it contains some broken Bazel setup
+  # and also it's a very big dependency that we never use except on Travis.
+  yarn add -D firebase-tools@3.12.0
+  source ../scripts/ci/payload-size.sh
+fi
 
 # Workaround https://github.com/yarnpkg/yarn/issues/2165
 # Yarn will cache file://dist URIs and not update Angular code
