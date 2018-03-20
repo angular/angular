@@ -6,7 +6,7 @@ import { Component, ContentChildren, Directive, EventEmitter,
          Pipe, PipeTransform,
          SimpleChange } from '@angular/core';
 
-import { of } from 'rxjs/observable/of';
+import { of } from 'rxjs';
 import { delay } from 'rxjs/operators';
 
 ////////// The App: Services and Components for the tests. //////////////

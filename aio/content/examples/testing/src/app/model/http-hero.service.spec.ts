@@ -14,9 +14,7 @@ import {
   HttpModule, Http, XHRBackend, Response, ResponseOptions
 } from '@angular/http';
 
-import { Observable } from 'rxjs/Observable';
-import { of } from 'rxjs/observable/of';
-import { catchError, tap } from 'rxjs/operators';
+import { of } from 'rxjs';
 
 import { Hero } from './hero';
 import { HttpHeroService } from './http-hero.service';

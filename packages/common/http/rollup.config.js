@@ -10,15 +10,8 @@ const globals = {
   '@angular/core': 'ng.core',
   '@angular/platform-browser': 'ng.platformBrowser',
   '@angular/common': 'ng.common',
-  'rxjs/Observable': 'Rx',
-  'rxjs/Observer': 'Rx',
-  'rxjs/Subject': 'Rx',
-
-  'rxjs/observable/of': 'Rx.Observable',
-
-  'rxjs/operator/concatMap': 'Rx.Observable.prototype',
-  'rxjs/operator/filter': 'Rx.Observable.prototype',
-  'rxjs/operator/map': 'Rx.Observable.prototype',
+  'rxjs': 'rxjs',
+  'rxjs/operators': 'rxjs.operators',
 };
 
 module.exports = {

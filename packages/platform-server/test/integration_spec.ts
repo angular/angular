@@ -17,10 +17,7 @@ import {MockBackend, MockConnection} from '@angular/http/testing';
 import {BrowserModule, DOCUMENT, StateKey, Title, TransferState, makeStateKey} from '@angular/platform-browser';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {BEFORE_APP_SERIALIZED, INITIAL_CONFIG, PlatformState, ServerModule, ServerTransferStateModule, platformDynamicServer, renderModule, renderModuleFactory} from '@angular/platform-server';
-import {Subscription} from 'rxjs/Subscription';
-import {filter} from 'rxjs/operator/filter';
-import {first} from 'rxjs/operator/first';
-import {toPromise} from 'rxjs/operator/toPromise';
+import {first} from 'rxjs/operators';
 
 @Component({selector: 'app', template: `Works!`})
 class MyServerApp {
@@ -476,15 +473,15 @@ class EscapedTransferStoreModule {
       });
       afterEach(() => { expect(called).toBe(true); });
 
-      it('using long from should work', async(() => {
+      it('using long form should work', async(() => {
            const platform =
                platformDynamicServer([{provide: INITIAL_CONFIG, useValue: {document: doc}}]);
 
            platform.bootstrapModule(AsyncServerModule)
                .then((moduleRef) => {
                  const applicationRef: ApplicationRef = moduleRef.injector.get(ApplicationRef);
-                 return toPromise.call(first.call(
-                     filter.call(applicationRef.isStable, (isStable: boolean) => isStable)));
+                 return applicationRef.isStable.pipe(first((isStable: boolean) => isStable))
+                     .toPromise();
                })
                .then((b) => {
                  expect(platform.injector.get(PlatformState).renderToString()).toBe(expectedOutput);

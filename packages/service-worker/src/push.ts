@@ -7,16 +7,11 @@
  */
 
 import {Injectable} from '@angular/core';
-import {Observable} from 'rxjs/Observable';
-import {Subject} from 'rxjs/Subject';
-import {merge as obs_merge} from 'rxjs/observable/merge';
-import {never as obs_never} from 'rxjs/observable/never';
-import {map as op_map} from 'rxjs/operator/map';
-import {switchMap as op_switchMap} from 'rxjs/operator/switchMap';
-import {take as op_take} from 'rxjs/operator/take';
-import {toPromise as op_toPromise} from 'rxjs/operator/toPromise';
+import {NEVER, Observable, Subject, merge} from 'rxjs';
+import {map, switchMap, take} from 'rxjs/operators';
 
 import {ERR_SW_NOT_SUPPORTED, NgswCommChannel} from './low_level';
+
 
 
 /**
@@ -35,20 +30,18 @@ export class SwPush {
 
   constructor(private sw: NgswCommChannel) {
     if (!sw.isEnabled) {
-      this.messages = obs_never();
-      this.subscription = obs_never();
+      this.messages = NEVER;
+      this.subscription = NEVER;
       return;
     }
-    this.messages =
-        op_map.call(this.sw.eventsOfType('PUSH'), (message: {data: object}) => message.data);
+    this.messages = this.sw.eventsOfType('PUSH').pipe(map((message: any) => message.data));
 
-    this.pushManager = <Observable<PushManager>>(op_map.call(
-        this.sw.registration,
-        (registration: ServiceWorkerRegistration) => { return registration.pushManager; }));
+    this.pushManager = this.sw.registration.pipe(
+        map((registration: ServiceWorkerRegistration) => { return registration.pushManager; }));
 
-    const workerDrivenSubscriptions = <Observable<PushSubscription|null>>(op_switchMap.call(
-        this.pushManager, (pm: PushManager) => pm.getSubscription().then(sub => { return sub; })));
-    this.subscription = obs_merge(workerDrivenSubscriptions, this.subscriptionChanges);
+    const workerDrivenSubscriptions = this.pushManager.pipe(
+        switchMap((pm: PushManager) => pm.getSubscription().then(sub => { return sub; })));
+    this.subscription = merge(workerDrivenSubscriptions, this.subscriptionChanges);
   }
 
   /**
@@ -68,20 +61,20 @@ export class SwPush {
       applicationServerKey[i] = key.charCodeAt(i);
     }
     pushOptions.applicationServerKey = applicationServerKey;
-    const subscribe = <Observable<PushSubscription>>(
-        op_switchMap.call(this.pushManager, (pm: PushManager) => pm.subscribe(pushOptions)));
-    const subscribeOnce = op_take.call(subscribe, 1);
-    return (op_toPromise.call(subscribeOnce) as Promise<PushSubscription>).then(sub => {
-      this.subscriptionChanges.next(sub);
-      return sub;
-    });
+
+    return this.pushManager.pipe(switchMap((pm: PushManager) => pm.subscribe(pushOptions)), take(1))
+        .toPromise()
+        .then(sub => {
+          this.subscriptionChanges.next(sub);
+          return sub;
+        });
   }
 
   unsubscribe(): Promise<void> {
     if (!this.sw.isEnabled) {
       return Promise.reject(new Error(ERR_SW_NOT_SUPPORTED));
     }
-    const unsubscribe = op_switchMap.call(this.subscription, (sub: PushSubscription | null) => {
+    const unsubscribe = this.subscription.pipe(switchMap((sub: PushSubscription | null) => {
       if (sub !== null) {
         return sub.unsubscribe().then(success => {
           if (success) {
@@ -94,8 +87,7 @@ export class SwPush {
       } else {
         throw new Error('Not subscribed to push notifications.');
       }
-    });
-    const unsubscribeOnce = op_take.call(unsubscribe, 1);
-    return op_toPromise.call(unsubscribeOnce) as Promise<void>;
+    }));
+    return unsubscribe.pipe(take(1)).toPromise();
   }
 }

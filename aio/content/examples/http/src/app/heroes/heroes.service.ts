@@ -6,8 +6,7 @@ import { HttpHeaders } from '@angular/common/http';
 
 // #enddocregion http-options
 
-import { Observable } from 'rxjs/Observable';
-import { of } from 'rxjs/observable/of';
+import { Observable } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 
 import { Hero } from './hero';

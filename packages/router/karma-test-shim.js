@@ -36,7 +36,10 @@ System.config({
 });
 
 System.config({
-  map: {'rxjs': 'node_modules/rxjs', '@angular': 'dist/all/@angular'},
+  map: {
+    '@angular': 'dist/all/@angular',
+    'rxjs': 'node_modules/rxjs',
+  },
   packages: {
     '@angular/core/testing': {main: 'index.js', defaultExtension: 'js'},
     '@angular/core': {main: 'index.js', defaultExtension: 'js'},
@@ -50,7 +53,11 @@ System.config({
     '@angular/platform-browser-dynamic': {main: 'index.js', defaultExtension: 'js'},
     '@angular/router/testing': {main: 'index.js', defaultExtension: 'js'},
     '@angular/router': {main: 'index.js', defaultExtension: 'js'},
-    'rxjs': {main: 'Rx.js', defaultExtension: 'js'},
+    'rxjs/ajax': {main: 'index.js', defaultExtension: 'js'},
+    'rxjs/operators': {main: 'index.js', defaultExtension: 'js'},
+    'rxjs/testing': {main: 'index.js', defaultExtension: 'js'},
+    'rxjs/websocket': {main: 'index.js', defaultExtension: 'js'},
+    'rxjs': {main: 'index.js', defaultExtension: 'js'},
   }
 });
 

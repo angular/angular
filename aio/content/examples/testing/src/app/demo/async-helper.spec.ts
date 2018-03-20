@@ -1,7 +1,7 @@
 // tslint:disable-next-line:no-unused-variable
 import { async, fakeAsync, tick } from '@angular/core/testing';
 
-import { of } from 'rxjs/observable/of';
+import { of } from 'rxjs';
 import { delay } from 'rxjs/operators';
 
 describe('Angular async helper', () => {

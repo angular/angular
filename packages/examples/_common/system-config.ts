@@ -24,10 +24,13 @@ System.config({
     '@angular/router': '/vendor/@angular/router/bundles/router.umd.js',
     '@angular/upgrade': '/vendor/@angular/upgrade/bundles/upgrade.umd.js',
     '@angular/upgrade/static': '/vendor/@angular/upgrade/bundles/upgrade-static.umd.js',
-    'rxjs': '/vendor/rxjs',
+    'rxjs': '/vendor/rxjs'
   },
   packages: {
-    // rxjs: {format: 'cjs', exports: 'Rx' }
-    rxjs: {defaultExtension: 'js'}
-  }
+    'rxjs/ajax': {main: 'index.js', defaultExtension: 'js'},
+    'rxjs/operators': {main: 'index.js', defaultExtension: 'js'},
+    'rxjs/testing': {main: 'index.js', defaultExtension: 'js'},
+    'rxjs/websocket': {main: 'index.js', defaultExtension: 'js'},
+    'rxjs': {main: 'index.js', defaultExtension: 'js'},
+  },
 });

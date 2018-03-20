@@ -75,7 +75,7 @@
     "@angular/common": "^5.2.0",
     "@angular/compiler": "^5.2.0",
     "@angular/core": "^5.2.0",
-    "@angular/elements": "file:../dist/packages-dist/elements",
+    "@angular/elements": "6.0.0-beta.8",
     "@angular/forms": "^5.2.0",
     "@angular/http": "^5.2.0",
     "@angular/material": "^5.0.0-rc.1",

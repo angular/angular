@@ -4,7 +4,7 @@ import {
   HttpRequest, HttpResponse, HttpErrorResponse
 } from '@angular/common/http';
 
-import { of } from 'rxjs/observable/of';
+import { of } from 'rxjs';
 import { catchError, last, map, tap } from 'rxjs/operators';
 
 import { MessageService } from '../message.service';

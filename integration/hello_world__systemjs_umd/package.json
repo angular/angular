@@ -16,7 +16,7 @@
     "@angular/compiler": "file:../../dist/packages-dist/compiler",
     "@angular/platform-browser": "file:../../dist/packages-dist/platform-browser",
     "@angular/platform-browser-dynamic": "file:../../dist/packages-dist/platform-browser-dynamic",
-    "core-js": "2.4.1",
+    "core-js": "file:../../node_modules/core-js",
     "plugin-typescript": "8.0.0",
     "rxjs": "file:../../node_modules/rxjs",
     "systemjs": "0.20.2",
