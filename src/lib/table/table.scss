@@ -19,7 +19,6 @@ $mat-row-horizontal-padding: 24px;
   border-bottom-width: 1px;
   border-bottom-style: solid;
   align-items: center;
-  padding: 0 $mat-row-horizontal-padding;
   box-sizing: border-box;
 
   // Workaround for https://goo.gl/pFmjJD in IE 11. Adds a pseudo
@@ -32,8 +31,19 @@ $mat-row-horizontal-padding: 24px;
   }
 }
 
+.mat-cell:first-child, .mat-header-cell:first-child {
+  padding-left: $mat-row-horizontal-padding;
+}
+
+.mat-cell:last-child, .mat-header-cell:last-child {
+  padding-right: $mat-row-horizontal-padding;
+}
+
 .mat-cell, .mat-header-cell {
   flex: 1;
+  display: flex;
+  align-items: center;
   overflow: hidden;
   word-wrap: break-word;
+  min-height: inherit;
 }
