@@ -260,6 +260,7 @@ export interface TsEmitArguments {
 }
 
 export interface TsEmitCallback { (args: TsEmitArguments): ts.EmitResult; }
+export interface TsMergeEmitResultsCallback { (results: ts.EmitResult[]): ts.EmitResult; }
 
 /**
  * @internal
@@ -353,11 +354,13 @@ export interface Program {
    *
    * Angular structural information is required to emit files.
    */
-  emit({emitFlags, cancellationToken, customTransformers, emitCallback}?: {
+  emit({emitFlags, cancellationToken, customTransformers, emitCallback,
+        mergeEmitResultsCallback}?: {
     emitFlags?: EmitFlags,
     cancellationToken?: ts.CancellationToken,
     customTransformers?: CustomTransformers,
-    emitCallback?: TsEmitCallback
+    emitCallback?: TsEmitCallback,
+    mergeEmitResultsCallback?: TsMergeEmitResultsCallback
   }): ts.EmitResult;
 
   /**

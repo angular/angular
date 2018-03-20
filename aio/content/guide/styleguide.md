@@ -4663,7 +4663,7 @@ Compare with the less preferred `host` metadata alternative.
 
 
 
-**Do** provide services to the Angular injector at the top-most component where they will be shared.
+**Do** provide service with the app root injector in the `@Injectable` decorator of the service. 
 
 
 </div>
@@ -4685,8 +4685,8 @@ Compare with the less preferred `host` metadata alternative.
 
 
 
-**Why?** When providing the service to a top level component,
-that instance is shared and available to all child components of that top level component.
+**Why?** When providing the service to a root injector,
+that instance of the service is shared and available in every class that needs the service. Additionally, when you register a service in the `@Injectable` decorator of the service, optimization tools such as those used by the CLI's production builds can perform tree shaking and remove services that aren't used by your app.
 
 
 </div>
@@ -4715,17 +4715,18 @@ that instance is shared and available to all child components of that top level 
 
 
 
-<code-tabs>
+<code-example>
 
-  <code-pane title="app/app.component.ts" path="styleguide/src/07-03/app/app.component.ts">
+  @NgModule({})
+  export class ServiceModule {}
 
-  </code-pane>
+  @Injectable({
 
-  <code-pane title="app/heroes/hero-list/hero-list.component.ts" path="styleguide/src/07-03/app/heroes/hero-list/hero-list.component.ts">
+    providedIn: 'root'
+  })
+  export class Service {}
 
-  </code-pane>
-
-</code-tabs>
+</code-example>
 
 
 
