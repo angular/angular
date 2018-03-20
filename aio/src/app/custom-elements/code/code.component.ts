@@ -1,8 +1,9 @@
-import { Component, ElementRef, ViewChild, Input, OnChanges } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, OnChanges, Output, ViewChild } from '@angular/core';
 import { Logger } from 'app/shared/logger.service';
 import { PrettyPrinter } from './pretty-printer.service';
 import { CopierService } from 'app/shared/copier.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import 'rxjs/add/operator/do';
 
 /**
  * If linenums is not set, this is the default maximum number of lines that
@@ -93,6 +94,8 @@ export class CodeComponent implements OnChanges {
   get title(): string { return this._title; }
   private _title: string;
 
+  @Output() codeFormatted = new EventEmitter<void>();
+
   /** The element in the template that will display the formatted code. */
   @ViewChild('codeContainer') codeContainer: ElementRef;
 
@@ -115,7 +118,9 @@ export class CodeComponent implements OnChanges {
     this.setCodeHtml(leftAlignedCode); // start with unformatted code
     this.codeText = this.getCodeText(); // store the unformatted code as text (for copying)
 
-    this.pretty.formatCode(leftAlignedCode, this.language, this.getLinenums(leftAlignedCode))
+    this.pretty
+        .formatCode(leftAlignedCode, this.language, this.getLinenums(leftAlignedCode))
+        .do(() => this.codeFormatted.emit())
         .subscribe(c => this.setCodeHtml(c), err => { /* ignore failure to format */ }
     );
   }

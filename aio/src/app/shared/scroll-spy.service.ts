@@ -1,8 +1,6 @@
 import { Inject, Injectable } from '@angular/core';
 import { DOCUMENT } from '@angular/platform-browser';
-import { Observable } from 'rxjs/Observable';
-import { ReplaySubject } from 'rxjs/ReplaySubject';
-import { Subject } from 'rxjs/Subject';
+import { Observable, ReplaySubject, Subject } from 'rxjs';
 import 'rxjs/add/observable/fromEvent';
 import 'rxjs/add/operator/auditTime';
 import 'rxjs/add/operator/distinctUntilChanged';

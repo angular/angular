@@ -3,6 +3,8 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatSnackBar } from '@angular/material';
 import { By } from '@angular/platform-browser';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import 'rxjs/add/operator/first';
+import 'rxjs/add/operator/toPromise';
 
 import { CodeComponent } from './code.component';
 import { CodeModule } from './code.module';
@@ -61,44 +63,53 @@ describe('CodeComponent', () => {
   }));
 
   describe('pretty printing', () => {
-    it('should format a one-line code sample', () => {
+    const untilCodeFormatted = () => {
+      const emitter = hostComponent.codeComponent.codeFormatted;
+      return emitter.first().toPromise();
+    };
+    const hasLineNumbers = async () => {
+      // presence of `<li>`s are a tell-tale for line numbers
+      await untilCodeFormatted();
+      return 0 < fixture.nativeElement.querySelectorAll('li').length;
+    };
+
+    it('should format a one-line code sample', async () => {
+      hostComponent.setCode(oneLineCode);
+      await untilCodeFormatted();
+
       // 'pln' spans are a tell-tale for syntax highlighing
       const spans = fixture.nativeElement.querySelectorAll('span.pln');
       expect(spans.length).toBeGreaterThan(0, 'formatted spans');
     });
 
-    function hasLineNumbers() {
-      // presence of `<li>`s are a tell-tale for line numbers
-      return 0 < fixture.nativeElement.querySelectorAll('li').length;
-    }
-
-    it('should format a one-line code sample without linenums by default', () => {
-      expect(hasLineNumbers()).toBe(false);
+    it('should format a one-line code sample without linenums by default', async () => {
+      hostComponent.setCode(oneLineCode);
+      expect(await hasLineNumbers()).toBe(false);
     });
 
-    it('should add line numbers to one-line code sample when linenums set true', () => {
+    it('should add line numbers to one-line code sample when linenums set true', async () => {
       hostComponent.linenums = 'true';
       fixture.detectChanges();
 
-      expect(hasLineNumbers()).toBe(true);
+      expect(await hasLineNumbers()).toBe(true);
     });
 
-    it('should format a small multi-line code without linenums by default', () => {
+    it('should format a small multi-line code without linenums by default', async () => {
       hostComponent.setCode(smallMultiLineCode);
-      expect(hasLineNumbers()).toBe(false);
+      expect(await hasLineNumbers()).toBe(false);
     });
 
-    it('should add line numbers to a big multi-line code by default', () => {
+    it('should add line numbers to a big multi-line code by default', async () => {
       hostComponent.setCode(bigMultiLineCode);
-      expect(hasLineNumbers()).toBe(true);
+      expect(await hasLineNumbers()).toBe(true);
     });
 
-    it('should format big multi-line code without linenums when linenums set false', () => {
+    it('should format big multi-line code without linenums when linenums set false', async () => {
       hostComponent.linenums = false;
       fixture.detectChanges();
 
       hostComponent.setCode(bigMultiLineCode);
-      expect(hasLineNumbers()).toBe(false);
+      expect(await hasLineNumbers()).toBe(false);
     });
   });
 

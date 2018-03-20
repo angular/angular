@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { BehaviorSubject } from 'rxjs/BehaviorSubject';
+import { BehaviorSubject } from 'rxjs';
 
 import { TopMenuComponent } from './top-menu.component';
 import { NavigationService, NavigationViews } from 'app/navigation/navigation.service';

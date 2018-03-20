@@ -1,9 +1,7 @@
 import { Component, ElementRef, EventEmitter, Input, OnDestroy, Output } from '@angular/core';
 import { Title, Meta } from '@angular/platform-browser';
 
-import { Observable } from 'rxjs/Observable';
-import { of } from 'rxjs/observable/of';
-import { timer } from 'rxjs/observable/timer';
+import { Observable, of, timer } from 'rxjs';
 import 'rxjs/add/operator/catch';
 import 'rxjs/add/operator/do';
 import 'rxjs/add/operator/switchMap';

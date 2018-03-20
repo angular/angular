@@ -8,9 +8,7 @@
 
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 
-import { Observable } from 'rxjs/Observable';
-import { ReplaySubject } from 'rxjs/ReplaySubject';
-import { combineLatest } from 'rxjs/observable/combineLatest';
+import { combineLatest, Observable, ReplaySubject } from 'rxjs';
 
 import { LocationService } from 'app/shared/location.service';
 import { ApiSection, ApiService } from './api.service';

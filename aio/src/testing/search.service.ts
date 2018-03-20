@@ -1,4 +1,4 @@
-import { Subject } from 'rxjs/Subject';
+import { Subject } from 'rxjs';
 import { SearchResults } from 'app/search/interfaces';
 
 export class MockSearchService {
