@@ -34,6 +34,8 @@ export class OverlayPositionBuilder {
    * @param elementRef
    * @param originPos
    * @param overlayPos
+   * @deprecated Use `flexibleConnectedTo` instead.
+   * @deletion-target 7.0.0
    */
   connectedTo(
       elementRef: ElementRef,

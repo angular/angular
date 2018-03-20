@@ -633,6 +633,45 @@ describe('FlexibleConnectedPositionStrategy', () => {
       expect(recalcSpy).toHaveBeenCalled();
     });
 
+    it('should not retain the last preferred position when overriding the positions', () => {
+      originElement.style.top = '100px';
+      originElement.style.left = '100px';
+
+      const originRect = originElement.getBoundingClientRect();
+
+      positionStrategy.withPositions([{
+        originX: 'start',
+        originY: 'top',
+        overlayX: 'start',
+        overlayY: 'top',
+        offsetX: 10,
+        offsetY: 20
+      }]);
+
+      attachOverlay({positionStrategy});
+
+      let overlayRect = overlayRef.overlayElement.getBoundingClientRect();
+
+      expect(Math.floor(overlayRect.top)).toBe(Math.floor(originRect.top) + 20);
+      expect(Math.floor(overlayRect.left)).toBe(Math.floor(originRect.left) + 10);
+
+      positionStrategy.withPositions([{
+        originX: 'start',
+        originY: 'top',
+        overlayX: 'start',
+        overlayY: 'top',
+        offsetX: 20,
+        offsetY: 40
+      }]);
+
+      positionStrategy.reapplyLastPosition();
+
+      overlayRect = overlayRef.overlayElement.getBoundingClientRect();
+
+      expect(Math.floor(overlayRect.top)).toBe(Math.floor(originRect.top) + 40);
+      expect(Math.floor(overlayRect.left)).toBe(Math.floor(originRect.left) + 20);
+    });
+
     /**
      * Run all tests for connecting the overlay to the origin such that first preferred
      * position does not go off-screen. We do this because there are several cases where we
