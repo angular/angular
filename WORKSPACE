@@ -7,13 +7,16 @@ http_archive(
     sha256 = "11c0d73bdcb4b2608abbe5967be5a910bdaebf848eb13e4e7f8413bbdeb940b8",
 )
 
-load("@build_bazel_rules_nodejs//:defs.bzl", "check_bazel_version", "node_repositories")
+load("@build_bazel_rules_nodejs//:defs.bzl", "check_bazel_version", "node_repositories", "yarn_install")
 
 check_bazel_version("0.9.0")
-node_repositories(package_json = [
-    "//:package.json",
-    "//tools/ts-api-guardian:package.json",
-])
+node_repositories(package_json = ["//:package.json"])
+
+yarn_install(
+    name = "ts-api-guardian_runtime_deps",
+    package_json = "//tools/ts-api-guardian:package.json",
+    yarn_lock = "//tools/ts-api-guardian:yarn.lock",
+)
 
 http_archive(
     name = "build_bazel_rules_typescript",
