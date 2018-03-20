@@ -27,9 +27,9 @@ sed('-i', '(\'response\' in xhr)', '(\'response\' in (xhr as any))',
     'node_modules/rxjs/src/observable/dom/AjaxObservable.ts');
 */
 
-// workaround to make our closure compiler integration tests in integration/i18n pass
-// https://github.com/ReactiveX/rxjs/pull/3431
-rm('-f', 'node_modules/rxjs/_esm2015/internal/umd.js');
-rm('-f', 'node_modules/rxjs/_esm5/internal/umd.js');
+// fixes rxjs bazel build: https://github.com/ReactiveX/rxjs/pull/3454
+sed('-i', /^  srcs = glob.*/,
+    'srcs = glob(["*.ts", "**/*.ts"], exclude = ["internal/Rx.ts", "internal-compatibility/**",  "internal/patching/**", "umd.ts"]),',
+    'node_modules/rxjs/src/BUILD.bazel');
 
 log('===== finished running the postinstall-patches.js script =====');
