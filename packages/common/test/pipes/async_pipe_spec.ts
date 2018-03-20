@@ -7,7 +7,8 @@
  */
 
 import {AsyncPipe} from '@angular/common';
-import {EventEmitter, WrappedValue} from '@angular/core';
+import {EventEmitter, NgZone, WrappedValue, ɵNoopNgZone} from '@angular/core';
+import {async} from '@angular/core/testing';
 import {AsyncTestCompleter, beforeEach, describe, expect, inject, it} from '@angular/core/testing/src/testing_internal';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {browserDetection} from '@angular/platform-browser/testing/src/browser_util';
@@ -27,6 +28,34 @@ import {SpyChangeDetectorRef} from '../spies';
         emitter = new EventEmitter();
         ref = new SpyChangeDetectorRef();
         pipe = new AsyncPipe(ref);
+      });
+
+      describe('noop zone', () => {
+        let zone: NgZone;
+        beforeEach(() => {
+          zone = new ɵNoopNgZone();
+          pipe = new AsyncPipe(ref, zone);
+        });
+        it('should be in push mode when NoopNgZone is injected',
+           () => { expect(pipe['_usePush']).toBe(true); });
+        it('should not be in push mode when NoopNgZone is injected', () => {
+          pipe = new AsyncPipe(ref);
+          expect(pipe['_usePush']).toBe(false);
+        });
+        it('should not be in push mode when NoopNgZone is injected', () => {
+          zone = new NgZone({});
+          pipe = new AsyncPipe(ref, zone);
+          expect(pipe['_usePush']).toBe(false);
+        });
+        it('should call detectChanges when in push', async(() => {
+             pipe.transform(emitter);
+             emitter.emit(message);
+
+             setTimeout(() => {
+               expect(ref.spy('detectChanges')).toHaveBeenCalled();
+               expect(ref.spy('markForCheck')).not.toHaveBeenCalled();
+             }, 0);
+           }));
       });
 
       describe('transform', () => {
@@ -119,6 +148,34 @@ import {SpyChangeDetectorRef} from '../spies';
         });
         ref = new SpyChangeDetectorRef();
         pipe = new AsyncPipe(<any>ref);
+      });
+
+      describe('noop zone', () => {
+        let zone: NgZone;
+        beforeEach(() => {
+          zone = new ɵNoopNgZone();
+          pipe = new AsyncPipe(<any>ref, zone);
+        });
+        it('should be in push mode when NoopNgZone is injected',
+           () => { expect(pipe['_usePush']).toBe(true); });
+        it('should not be in push mode when NoopNgZone is injected', () => {
+          pipe = new AsyncPipe(<any>ref);
+          expect(pipe['_usePush']).toBe(false);
+        });
+        it('should not be in push mode when NoopNgZone is injected', () => {
+          zone = new NgZone({});
+          pipe = new AsyncPipe(<any>ref, zone);
+          expect(pipe['_usePush']).toBe(false);
+        });
+        it('should call detectChanges when in push', async(() => {
+             pipe.transform(promise);
+             resolve(message);
+
+             setTimeout(() => {
+               expect(ref.spy('detectChanges')).toHaveBeenCalled();
+               expect(ref.spy('markForCheck')).not.toHaveBeenCalled();
+             }, 0);
+           }));
       });
 
       describe('transform', () => {
