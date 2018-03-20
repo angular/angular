@@ -43,7 +43,7 @@ def ng_module(name, tsconfig = None, entry_point = None, **kwargs):
     tsconfig = DEFAULT_TSCONFIG
   if not entry_point:
     entry_point = "public_api.ts"
-  _ng_module(name = name, tsconfig = tsconfig, entry_point = entry_point, **kwargs)
+  _ng_module(name = name, flat_module_out_file = name, tsconfig = tsconfig, entry_point = entry_point, **kwargs)
 
 def ng_package(name, readme_md = None, license_banner = None, stamp_data = None, **kwargs):
   if not readme_md:
