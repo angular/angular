@@ -204,7 +204,7 @@ JavaScript with [JsDoc](http://usejsdoc.org/) comments needed by the
 ### *annotationsAs*
 
 Use this option to modify how the Angular specific annotations are emitted to improve tree-shaking. Non-Angular
-annotations and decorators are unnaffected. Default is `static fields`.
+annotations and decorators are unaffected. Default is `static fields`.
 
 value           | description
 ----------------|-------------------------------------------------------------
