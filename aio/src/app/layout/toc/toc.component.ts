@@ -1,7 +1,5 @@
 import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, QueryList, ViewChildren } from '@angular/core';
-import { Observable } from 'rxjs/Observable';
-import { Subject } from 'rxjs/Subject';
-import { asap } from 'rxjs/scheduler/asap';
+import { asapScheduler as asap, Observable, Subject } from 'rxjs';
 import 'rxjs/add/observable/combineLatest';
 import 'rxjs/add/operator/subscribeOn';
 import 'rxjs/add/operator/takeUntil';

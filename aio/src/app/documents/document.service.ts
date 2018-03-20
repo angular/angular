@@ -1,9 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 
-import { Observable } from 'rxjs/Observable';
-import { AsyncSubject } from 'rxjs/AsyncSubject';
-import { of } from 'rxjs/observable/of';
+import { AsyncSubject, Observable, of } from 'rxjs';
 import 'rxjs/add/operator/catch';
 import 'rxjs/add/operator/switchMap';
 

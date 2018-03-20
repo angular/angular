@@ -5,10 +5,7 @@ can be found in the LICENSE file at http://angular.io/license
 */
 
 import { NgZone, Injectable } from '@angular/core';
-import { Observable } from 'rxjs/Observable';
-import { ReplaySubject } from 'rxjs/ReplaySubject';
-import { race } from 'rxjs/observable/race';
-import { timer } from 'rxjs/observable/timer';
+import { Observable, race, ReplaySubject, timer } from 'rxjs';
 import 'rxjs/add/operator/concatMap';
 import 'rxjs/add/operator/first';
 import 'rxjs/add/operator/publishReplay';

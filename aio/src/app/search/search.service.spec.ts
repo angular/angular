@@ -1,6 +1,6 @@
 import { ReflectiveInjector, NgZone } from '@angular/core';
 import { fakeAsync, tick } from '@angular/core/testing';
-import { Observable } from 'rxjs/Observable';
+import { Observable } from 'rxjs';
 import 'rxjs/add/observable/of';
 import { SearchService } from './search.service';
 import { WebWorkerClient } from 'app/shared/web-worker';

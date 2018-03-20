@@ -13,9 +13,7 @@ import { SearchResults } from 'app/search/interfaces';
 import { SearchService } from 'app/search/search.service';
 import { TocService } from 'app/shared/toc.service';
 
-import { Observable } from 'rxjs/Observable';
-import { BehaviorSubject } from 'rxjs/BehaviorSubject';
-import { combineLatest } from 'rxjs/observable/combineLatest';
+import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
 import 'rxjs/add/operator/first';
 
 const sideNavView = 'SideNav';

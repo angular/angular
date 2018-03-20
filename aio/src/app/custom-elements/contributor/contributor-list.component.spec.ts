@@ -1,6 +1,6 @@
 import { ReflectiveInjector } from '@angular/core';
 
-import { of } from 'rxjs/observable/of';
+import { of } from 'rxjs';
 
 import { ContributorGroup } from './contributors.model';
 import { ContributorListComponent } from './contributor-list.component';

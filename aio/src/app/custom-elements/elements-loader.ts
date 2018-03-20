@@ -5,9 +5,7 @@ import {
   NgModuleRef,
 } from '@angular/core';
 import { ELEMENT_MODULE_PATHS_TOKEN } from './element-registry';
-import { of } from 'rxjs/observable/of';
-import { Observable } from 'rxjs/Observable';
-import { fromPromise } from 'rxjs/observable/fromPromise';
+import { from as fromPromise, Observable, of } from 'rxjs';
 import { createCustomElement } from '@angular/elements';
 
 @Injectable()
@@ -26,14 +24,14 @@ export class ElementsLoader {
    * the browser. Custom elements that are registered will be removed from the list of unregistered
    * elements so that they will not be queried in subsequent calls.
    */
-  loadContainingCustomElements(element: HTMLElement): Observable<null> {
+  loadContainingCustomElements(element: HTMLElement): Observable<void> {
     const selectors: any[] = Array.from(this.elementsToLoad.keys())
         .filter(s => element.querySelector(s));
 
-    if (!selectors.length) { return of(null); }
+    if (!selectors.length) { return of(undefined); }
 
     // Returns observable that completes when all discovered elements have been registered.
-    return fromPromise(Promise.all(selectors.map(s => this.register(s))).then(result => null));
+    return fromPromise(Promise.all(selectors.map(s => this.register(s))).then(result => undefined));
   }
 
   /** Registers the custom element defined on the WithCustomElement module factory. */

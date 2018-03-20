@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild, ElementRef, EventEmitter, Output } from '@angular/core';
 import { LocationService } from 'app/shared/location.service';
-import { Subject } from 'rxjs/Subject';
+import { Subject } from 'rxjs';
 import 'rxjs/add/operator/distinctUntilChanged';
 
 /**

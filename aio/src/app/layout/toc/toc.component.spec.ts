@@ -1,8 +1,7 @@
 import { Component, CUSTOM_ELEMENTS_SCHEMA, DebugElement } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
-import { BehaviorSubject } from 'rxjs/BehaviorSubject';
-import { asap } from 'rxjs/scheduler/asap';
+import { asapScheduler as asap, BehaviorSubject } from 'rxjs';
 
 import { ScrollService } from 'app/shared/scroll.service';
 import { TocComponent } from './toc.component';

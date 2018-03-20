@@ -1,7 +1,7 @@
 import { ReflectiveInjector } from '@angular/core';
 import { fakeAsync, tick } from '@angular/core/testing';
 import { NgServiceWorker } from '@angular/service-worker';
-import { Subject } from 'rxjs/Subject';
+import { Subject } from 'rxjs';
 import 'rxjs/add/operator/take';
 
 import { Logger } from 'app/shared/logger.service';

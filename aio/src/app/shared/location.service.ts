@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Location, PlatformLocation } from '@angular/common';
 
-import { ReplaySubject } from 'rxjs/ReplaySubject';
+import { ReplaySubject } from 'rxjs';
 import 'rxjs/add/operator/do';
 
 import { GaService } from 'app/shared/ga.service';

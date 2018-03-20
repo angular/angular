@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 
-import { Observable } from 'rxjs/Observable';
-import { fromPromise } from 'rxjs/observable/fromPromise';
+import { from as fromPromise, Observable } from 'rxjs';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/first';
 
