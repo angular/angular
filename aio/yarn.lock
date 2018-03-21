@@ -7528,9 +7528,9 @@ rx@2.3.24:
   version "2.3.24"
   resolved "https://registry.yarnpkg.com/rx/-/rx-2.3.24.tgz#14f950a4217d7e35daa71bbcbe58eff68ea4b2b7"
 
-rxjs-compat@^6.0.0-beta.0:
-  version "6.0.0-beta.0"
-  resolved "https://registry.yarnpkg.com/rxjs-compat/-/rxjs-compat-6.0.0-beta.0.tgz#386007624f6d771ce89ec48e31460f9177d19ac4"
+rxjs-compat@^6.0.0-beta.1:
+  version "6.0.0-beta.1"
+  resolved "https://registry.yarnpkg.com/rxjs-compat/-/rxjs-compat-6.0.0-beta.1.tgz#ef7289354600f139253f719cbb2f0a6b2d572108"
 
 rxjs@^5.5.6:
   version "5.5.7"
@@ -7538,9 +7538,9 @@ rxjs@^5.5.6:
   dependencies:
     symbol-observable "1.0.1"
 
-rxjs@^6.0.0-beta.0:
-  version "6.0.0-beta.0"
-  resolved "https://registry.yarnpkg.com/rxjs/-/rxjs-6.0.0-beta.0.tgz#cf241936be39d8279ed0b2be4bf417777301f65a"
+rxjs@^6.0.0-beta.1:
+  version "6.0.0-beta.1"
+  resolved "https://registry.yarnpkg.com/rxjs/-/rxjs-6.0.0-beta.1.tgz#ac6b181251ece21051435c3da2538444b43a37c1"
   dependencies:
     tslib "^1.9.0"
 
