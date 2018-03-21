@@ -296,10 +296,6 @@ You can register your own providers.
 
 Read more in the [Dependency Injection](guide/dependency-injection) page.
 
-## Dependency injection token
-
-A lookup token associated with a dependency provider, for use with the dependency injection system. 
-These tokens can be anything - such as objects, classes, strings, etc.
 
 {@a directive}
 
@@ -393,6 +389,12 @@ An object in the Angular [dependency-injection system](guide/glossary#dependency
 that can find a named dependency in its cache or create a dependency
 with a registered [provider](guide/glossary#provider).
 
+## Injection token
+
+A lookup token associated with a dependency provider, for use with the dependency injection system. 
+These tokens can be anything - such as objects, classes, strings, etc.
+
+When a component requests a dependency, the dependency injection system starts to look at the component's injector for providers asociated with the token. If the component's injector lacks a provider, then the request is passed to the parent injector. If a provider is not found, then the request continues until Angular finds an injector that can handle the request or runs out of ancestor injectors. If it runs out of ancestors, Angular throws an error.
 
 ## Input
 
@@ -745,8 +747,9 @@ in the [Template expressions](guide/template-syntax#template-expressions) sectio
 of the [Template Syntax](guide/template-syntax) page.
 
 ## Token
-An unique identifier used for efficient table lookup. 
-See [Dependency injection token](guide/glossary#dependency-injection-token).
+A token is an Angular type (`InjectionToken`) used for referencing registered providers 
+in the dependency injection system. 
+See [Injection token](guide/glossary#injection-token).
 
 ## Transpile
 
