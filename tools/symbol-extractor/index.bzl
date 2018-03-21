@@ -6,9 +6,13 @@
 """This test verifies that a set of top level symbols from a javascript file match a gold file.
 """
 
-load("@build_bazel_rules_nodejs//:defs.bzl", "nodejs_test")
+# This does a deep import under //internal because of not wanting the wrapper macro 
+# because it introduces an extra target_bin target.
+load("@build_bazel_rules_nodejs//internal/node:node.bzl", "nodejs_test", "nodejs_binary")
 
 def js_expected_symbol_test(name, src, golden, **kwargs):
+  """This test verifies that a set of top level symbols from a javascript file match a gold file.
+  """
   all_data = [src, golden]
   all_data += [Label("//tools/symbol-extractor:lib")]
   entry_point = "angular/tools/symbol-extractor/cli.js"
@@ -18,5 +22,13 @@ def js_expected_symbol_test(name, src, golden, **kwargs):
       data = all_data,
       entry_point = entry_point,
       templated_args = ["$(location %s)" % src, "$(location %s)" % golden],
+      **kwargs
+  )
+
+  nodejs_binary(
+      name = name + '.accept',
+      data = all_data,
+      entry_point = entry_point,
+      templated_args = ["$(location %s)" % src, "$(location %s)" % golden, '--accept'],
       **kwargs
   )
