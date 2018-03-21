@@ -8,12 +8,27 @@ NODE_ONLY = [
     "render3/**/*.ts",
 ]
 
+UTILS = [
+    "aot/test_util.ts",
+]
+
+ts_library(
+    name = "test_utils",
+    srcs = UTILS,
+    visibility = ["//packages/compiler-cli/test:__subpackages__"],
+    deps = [
+        "//packages:types",
+        "//packages/compiler",
+        "//packages/compiler-cli",
+    ],
+)
+
 ts_library(
     name = "test_lib",
     testonly = 1,
     srcs = glob(
         ["**/*.ts"],
-        exclude = NODE_ONLY,
+        exclude = NODE_ONLY + UTILS,
     ),
     deps = [
         "//packages:types",
@@ -31,9 +46,13 @@ ts_library(
 ts_library(
     name = "test_node_only_lib",
     testonly = 1,
-    srcs = glob(NODE_ONLY),
+    srcs = glob(
+        NODE_ONLY,
+        exclude = UTILS,
+    ),
     deps = [
         ":test_lib",
+        ":test_utils",
         "//packages/compiler",
         "//packages/compiler-cli",
         "//packages/compiler/testing",
