@@ -13,7 +13,7 @@ import {InjectFlags, bloomAdd, bloomFindPossibleInjector, getOrCreateNodeInjecto
 import {NgOnChangesFeature, PublicFeature, defineDirective, directiveInject, injectChangeDetectorRef, injectElementRef, injectTemplateRef, injectViewContainerRef} from '../../src/render3/index';
 import {bind, container, containerRefreshEnd, containerRefreshStart, createLNode, createLView, createTView, elementEnd, elementStart, embeddedViewEnd, embeddedViewStart, enterView, interpolation2, leaveView, load, projection, projectionDef, text, textBinding} from '../../src/render3/instructions';
 import {LInjector} from '../../src/render3/interfaces/injector';
-import {LNodeFlags} from '../../src/render3/interfaces/node';
+import {LNodeType} from '../../src/render3/interfaces/node';
 import {LViewFlags} from '../../src/render3/interfaces/view';
 import {ViewRef} from '../../src/render3/view_ref';
 
@@ -623,7 +623,7 @@ describe('di', () => {
           createLView(-1, null !, createTView(), null, null, LViewFlags.CheckAlways);
       const oldView = enterView(contentView, null !);
       try {
-        const parent = createLNode(0, LNodeFlags.Element, null, null);
+        const parent = createLNode(0, LNodeType.Element, null, null);
 
         // Simulate the situation where the previous parent is not initialized.
         // This happens on first bootstrap because we don't init existing values

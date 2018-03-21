@@ -129,6 +129,9 @@
     "name": "createLView"
   },
   {
+    "name": "createTNode"
+  },
+  {
     "name": "createTView"
   },
   {
@@ -163,6 +166,9 @@
   },
   {
     "name": "executeInitHooks"
+  },
+  {
+    "name": "firstTemplatePass"
   },
   {
     "name": "flattenUnsubscriptionErrors"
