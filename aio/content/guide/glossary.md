@@ -371,8 +371,8 @@ Short hand for [ECMAScript](guide/glossary#ecmascript) 2015.
 
 {@a F}
 
-## Factory Providers
-Creates a new instance of a dependency based on certain condition or information.
+## Factory Provider
+A provider that creates a new instance of a service based on dynamically generated depandent value.
 
 Read more about [Factory providers](guide/dependency-injection#factory-providers) in the [Angular Dependency Injection](guide/dependency-injection) page.
 
@@ -760,9 +760,9 @@ The process of transforming code written in one form of JavaScript
 
 A compilation technique that optimizes an app by finding unused code and removing it from the final bundle.
 
-## Tree-shakable providers
+## Tree-shakable provider
 
-When [provider](guide/glossary#provider) information is included in the `@Injectable` decorator of the provided service, the Angular compiler can use tree-shaking to exclude that service from the final bundle if the service is not actually used in the app.
+A [provider](guide/glossary#provider) registered in the `@Injectable` decorator of the provided service. Tree-shakable provider enables the Angular compiler to execute [tree-shaking](guide/glossary#tree-shaking) on that service if the service is not actually used in the app.
 
 Read more about [Tree-shakable providers](guide/dependency-injection#providers) in the Dependency Injection page.
 
