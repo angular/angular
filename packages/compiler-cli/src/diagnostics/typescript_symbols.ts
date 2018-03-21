@@ -512,6 +512,9 @@ class PipesTable implements SymbolTable {
   values(): Symbol[] { return this.pipes.map(pipe => new PipeSymbol(pipe, this.context)); }
 }
 
+// This matches .d.ts files that look like ".../<package-name>/<package-name>.d.ts",
+const INDEX_PATTERN = /[\\|/](\w+)[\\|/]\1\.d\.ts$/;
+
 class PipeSymbol implements Symbol {
   private _tsType: ts.Type;
   public readonly kind: DeclarationKind = 'pipe';
@@ -600,7 +603,18 @@ class PipeSymbol implements Symbol {
 }
 
 function findClassSymbolInContext(type: StaticSymbol, context: TypeContext): ts.Symbol|undefined {
-  const sourceFile = context.program.getSourceFile(type.filePath);
+  let sourceFile = context.program.getSourceFile(type.filePath);
+  if (!sourceFile) {
+    // This handles a case where an <packageName>/index.d.ts and a <packageName>/<packageName>.d.ts
+    // are in the same directory. If we are looking for <packageName>/<packageName> and didn't
+    // find it, look for <packageName>/index.d.ts as the program might have found that instead.
+    const p = type.filePath as string;
+    const m = p.match(INDEX_PATTERN);
+    if (m) {
+      const indexVersion = path.join(p.substr(0, m.index ! + m[1].length + 1), 'index.d.ts');
+      sourceFile = context.program.getSourceFile(indexVersion);
+    }
+  }
   if (sourceFile) {
     const moduleSymbol = (sourceFile as any).module || (sourceFile as any).symbol;
     const exports = context.checker.getExportsOfModule(moduleSymbol);

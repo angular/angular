@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {isInBazel, setup} from '@angular/compiler-cli/test/test_support';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as ts from 'typescript';
@@ -75,12 +76,19 @@ export class MockTypescriptHost implements ts.LanguageServiceHost {
       private scriptNames: string[], private data: MockData,
       private node_modules: string = 'node_modules', private myPath: typeof path = path) {
     const moduleFilename = module.filename.replace(/\\/g, '/');
-    let angularIndex = moduleFilename.indexOf('@angular');
-    if (angularIndex >= 0)
-      this.angularPath = moduleFilename.substr(0, angularIndex).replace('/all/', '/all/@angular/');
-    let distIndex = moduleFilename.indexOf('/dist/all');
-    if (distIndex >= 0)
-      this.nodeModulesPath = myPath.join(moduleFilename.substr(0, distIndex), 'node_modules');
+    if (isInBazel()) {
+      const support = setup();
+      this.angularPath = path.join(support.basePath, 'node_modules/@angular');
+      this.nodeModulesPath = path.join(support.basePath, 'node_modules');
+    } else {
+      let angularIndex = moduleFilename.indexOf('@angular');
+      if (angularIndex >= 0)
+        this.angularPath =
+            moduleFilename.substr(0, angularIndex).replace('/all/', '/all/@angular/');
+      let distIndex = moduleFilename.indexOf('/dist/all');
+      if (distIndex >= 0)
+        this.nodeModulesPath = myPath.join(moduleFilename.substr(0, distIndex), 'node_modules');
+    }
     this.options = {
       target: ts.ScriptTarget.ES5,
       module: ts.ModuleKind.CommonJS,
