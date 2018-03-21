@@ -20,7 +20,7 @@ import {ReadFromInjectorFn, getOrCreateNodeInjectorForNode} from './di';
 import {assertPreviousIsParent, getCurrentQueries, store} from './instructions';
 import {DirectiveDef, unusedValueExportToPlacateAjd as unused1} from './interfaces/definition';
 import {LInjector, unusedValueExportToPlacateAjd as unused2} from './interfaces/injector';
-import {LContainerNode, LElementNode, LNode, LNodeFlags, TNode, unusedValueExportToPlacateAjd as unused3} from './interfaces/node';
+import {LContainerNode, LElementNode, LNode, TNode, TNodeFlags, unusedValueExportToPlacateAjd as unused3} from './interfaces/node';
 import {LQueries, QueryReadType, unusedValueExportToPlacateAjd as unused4} from './interfaces/query';
 import {flatten} from './util';
 
@@ -195,10 +195,9 @@ function getIdxOfMatchingSelector(tNode: TNode, selector: string): number|null {
  */
 function geIdxOfMatchingDirective(node: LNode, type: Type<any>): number|null {
   const tData = node.view.tView.data;
-  const flags = node.flags;
-  for (let i = flags >> LNodeFlags.INDX_SHIFT,
-           ii = i + ((flags & LNodeFlags.SIZE_MASK) >> LNodeFlags.SIZE_SHIFT);
-       i < ii; i++) {
+  const flags = node.tNode !.flags;
+  for (let i = flags >> TNodeFlags.INDX_SHIFT, ii = i + (flags & TNodeFlags.SIZE_MASK); i < ii;
+       i++) {
     const def = tData[i] as DirectiveDef<any>;
     if (def.diPublic && def.type === type) {
       return i;

@@ -9,7 +9,7 @@
 import {assertNotNull} from './assert';
 import {callHooks} from './hooks';
 import {LContainer, unusedValueExportToPlacateAjd as unused1} from './interfaces/container';
-import {LContainerNode, LElementNode, LNode, LNodeFlags, LProjectionNode, LTextNode, LViewNode, unusedValueExportToPlacateAjd as unused2} from './interfaces/node';
+import {LContainerNode, LElementNode, LNode, LNodeType, LProjectionNode, LTextNode, LViewNode, unusedValueExportToPlacateAjd as unused2} from './interfaces/node';
 import {unusedValueExportToPlacateAjd as unused3} from './interfaces/projection';
 import {ProceduralRenderer3, RElement, RNode, RText, isProceduralRenderer, unusedValueExportToPlacateAjd as unused4} from './interfaces/renderer';
 import {HookData, LView, LViewOrLContainer, TView, unusedValueExportToPlacateAjd as unused5} from './interfaces/view';
@@ -34,8 +34,7 @@ function findNextRNodeSibling(node: LNode | null, stopNode: LNode | null): RElem
   while (currentNode && currentNode !== stopNode) {
     let pNextOrParent = currentNode.pNextOrParent;
     if (pNextOrParent) {
-      let pNextOrParentType = pNextOrParent.flags & LNodeFlags.TYPE_MASK;
-      while (pNextOrParentType !== LNodeFlags.Projection) {
+      while (pNextOrParent.type !== LNodeType.Projection) {
         const nativeNode = findFirstRNode(pNextOrParent);
         if (nativeNode) {
           return nativeNode;
@@ -55,8 +54,8 @@ function findNextRNodeSibling(node: LNode | null, stopNode: LNode | null): RElem
       const parentNode = currentNode.parent;
       currentNode = null;
       if (parentNode) {
-        const parentType = parentNode.flags & LNodeFlags.TYPE_MASK;
-        if (parentType === LNodeFlags.Container || parentType === LNodeFlags.View) {
+        const parentType = parentNode.type;
+        if (parentType === LNodeType.Container || parentType === LNodeType.View) {
           currentNode = parentNode;
         }
       }
@@ -77,8 +76,7 @@ function getNextLNodeWithProjection(node: LNode): LNode|null {
 
   if (pNextOrParent) {
     // The node is projected
-    const isLastProjectedNode =
-        (pNextOrParent.flags & LNodeFlags.TYPE_MASK) === LNodeFlags.Projection;
+    const isLastProjectedNode = pNextOrParent.type === LNodeType.Projection;
     // returns pNextOrParent if we are not at the end of the list, null otherwise
     return isLastProjectedNode ? null : pNextOrParent;
   }
@@ -122,16 +120,15 @@ function getNextOrParentSiblingNode(initialNode: LNode, rootNode: LNode): LNode|
 function findFirstRNode(rootNode: LNode): RElement|RText|null {
   let node: LNode|null = rootNode;
   while (node) {
-    const type = node.flags & LNodeFlags.TYPE_MASK;
     let nextNode: LNode|null = null;
-    if (type === LNodeFlags.Element) {
+    if (node.type === LNodeType.Element) {
       // A LElementNode has a matching RNode in LElementNode.native
       return (node as LElementNode).native;
-    } else if (type === LNodeFlags.Container) {
+    } else if (node.type === LNodeType.Container) {
       // For container look at the first node of the view next
       const childContainerData: LContainer = (node as LContainerNode).data;
       nextNode = childContainerData.views.length ? childContainerData.views[0].child : null;
-    } else if (type === LNodeFlags.Projection) {
+    } else if (node.type === LNodeType.Projection) {
       // For Projection look at the first projected node
       nextNode = (node as LProjectionNode).data.head;
     } else {
@@ -164,17 +161,16 @@ export function addRemoveViewFromContainer(
 export function addRemoveViewFromContainer(
     container: LContainerNode, rootNode: LViewNode, insertMode: boolean,
     beforeNode?: RNode | null): void {
-  ngDevMode && assertNodeType(container, LNodeFlags.Container);
-  ngDevMode && assertNodeType(rootNode, LNodeFlags.View);
+  ngDevMode && assertNodeType(container, LNodeType.Container);
+  ngDevMode && assertNodeType(rootNode, LNodeType.View);
   const parentNode = container.data.renderParent;
   const parent = parentNode ? parentNode.native : null;
   let node: LNode|null = rootNode.child;
   if (parent) {
     while (node) {
-      const type = node.flags & LNodeFlags.TYPE_MASK;
       let nextNode: LNode|null = null;
       const renderer = container.view.renderer;
-      if (type === LNodeFlags.Element) {
+      if (node.type === LNodeType.Element) {
         if (insertMode) {
           isProceduralRenderer(renderer) ?
               renderer.insertBefore(parent, node.native !, beforeNode as RNode | null) :
@@ -184,13 +180,13 @@ export function addRemoveViewFromContainer(
                                            parent.removeChild(node.native !);
         }
         nextNode = node.next;
-      } else if (type === LNodeFlags.Container) {
+      } else if (node.type === LNodeType.Container) {
         // if we get to a container, it must be a root node of a view because we are only
         // propagating down into child views / containers and not child elements
         const childContainerData: LContainer = (node as LContainerNode).data;
         childContainerData.renderParent = parentNode;
         nextNode = childContainerData.views.length ? childContainerData.views[0].child : null;
-      } else if (type === LNodeFlags.Projection) {
+      } else if (node.type === LNodeType.Projection) {
         nextNode = (node as LProjectionNode).data.head;
       } else {
         nextNode = (node as LViewNode).child;
@@ -347,7 +343,7 @@ export function setViewNext(view: LViewNode, next: LViewNode | null): void {
  */
 export function getParentState(state: LViewOrLContainer, rootView: LView): LViewOrLContainer|null {
   let node;
-  if ((node = (state as LView) !.node) && (node.flags & LNodeFlags.TYPE_MASK) === LNodeFlags.View) {
+  if ((node = (state as LView) !.node) && node.type === LNodeType.View) {
     // if it's an embedded view, the state needs to go up to the container, in case the
     // container has a next
     return node.parent !.data as any;
@@ -410,7 +406,7 @@ function executeOnDestroys(view: LView): void {
  * @return boolean Whether the child element should be inserted.
  */
 export function canInsertNativeNode(parent: LNode, currentView: LView): boolean {
-  const parentIsElement = (parent.flags & LNodeFlags.TYPE_MASK) === LNodeFlags.Element;
+  const parentIsElement = parent.type === LNodeType.Element;
 
   return parentIsElement &&
       (parent.view !== currentView || parent.data === null /* Regular Element. */);
@@ -467,7 +463,7 @@ export function insertChild(node: LNode, currentView: LView): void {
 export function appendProjectedNode(
     node: LElementNode | LTextNode | LContainerNode, currentParent: LViewNode | LElementNode,
     currentView: LView): void {
-  if ((node.flags & LNodeFlags.TYPE_MASK) !== LNodeFlags.Container) {
+  if (node.type !== LNodeType.Container) {
     appendChild(currentParent, (node as LElementNode | LTextNode).native, currentView);
   } else if (canInsertNativeNode(currentParent, currentView)) {
     // The node we are adding is a Container and we are adding it to Element which

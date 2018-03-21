@@ -96,9 +96,6 @@
     "name": "__extends$20"
   },
   {
-    "name": "_enable_super_gross_mode_that_will_cause_bad_things"
-  },
-  {
     "name": "_renderCompCount"
   },
   {
@@ -127,6 +124,9 @@
   },
   {
     "name": "createLView"
+  },
+  {
+    "name": "createTNode"
   },
   {
     "name": "createTView"
@@ -165,6 +165,9 @@
     "name": "executeInitHooks"
   },
   {
+    "name": "firstTemplatePass"
+  },
+  {
     "name": "flattenUnsubscriptionErrors"
   },
   {
@@ -181,9 +184,6 @@
   },
   {
     "name": "hostElement"
-  },
-  {
-    "name": "hostReportError"
   },
   {
     "name": "initChangeDetectorIfExisting"

@@ -10,8 +10,8 @@ import {stringifyElement} from '@angular/platform-browser/testing/src/browser_ut
 
 import {CreateComponentOptions} from '../../src/render3/component';
 import {ComponentTemplate, ComponentType, DirectiveType, PublicFeature, defineComponent, defineDirective, renderComponent as _renderComponent, tick} from '../../src/render3/index';
-import {NG_HOST_SYMBOL, createLNode, createLView, renderTemplate} from '../../src/render3/instructions';
-import {LElementNode, LNodeFlags} from '../../src/render3/interfaces/node';
+import {NG_HOST_SYMBOL, renderTemplate} from '../../src/render3/instructions';
+import {LElementNode} from '../../src/render3/interfaces/node';
 import {RElement, RText, Renderer3, RendererFactory3, domRendererFactory3} from '../../src/render3/interfaces/renderer';
 
 import {getRendererFactory2} from './imported_renderer2';
