@@ -172,6 +172,7 @@ def _ng_package_impl(ctx):
 
   packager_inputs = (
       ctx.files.srcs +
+      ctx.files.data +
       esm5_sources.to_list() +
       depset(transitive = [d.typescript.transitive_declarations
                            for d in ctx.attr.deps
@@ -186,6 +187,7 @@ def _ng_package_impl(ctx):
   packager_args.add(npm_package_directory.path)
   packager_args.add(ctx.label.package)
   packager_args.add([ctx.bin_dir.path, ctx.label.package], join_with="/")
+  packager_args.add([ctx.genfiles_dir.path, ctx.label.package], join_with="/")
 
   # Marshal the metadata into a JSON string so we can parse the data structure
   # in the TypeScript program easily.
@@ -212,6 +214,9 @@ def _ng_package_impl(ctx):
   packager_args.add(_flatten_paths(esm5), join_with=",")
   packager_args.add(_flatten_paths(bundles), join_with=",")
   packager_args.add([s.path for s in ctx.files.srcs], join_with=",")
+
+  # TODO: figure out a better way to gather runfiles providers from the transitive closure.
+  packager_args.add([d.path for d in ctx.files.data], join_with=",")
 
   if ctx.file.license_banner:
     packager_inputs.append(ctx.file.license_banner)
@@ -246,6 +251,10 @@ NG_PACKAGE_ATTRS = dict(NPM_PACKAGE_ATTRS, **dict(ROLLUP_ATTRS, **{
         esm5_outputs_aspect,
         sources_aspect,
     ]),
+    "data": attr.label_list(
+        doc = "Additional, non-Angular files to be added to the package, e.g. global CSS assets.",
+        allow_files = True,
+    ),
     "include_devmode_srcs": attr.bool(default = False),
     "readme_md": attr.label(allow_single_file = FileType([".md"])),
     "globals": attr.string_dict(default={}),
