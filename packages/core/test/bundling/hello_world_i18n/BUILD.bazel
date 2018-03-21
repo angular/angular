@@ -1,0 +1,36 @@
+package(default_visibility = ["//visibility:public"])
+
+load("//tools:defaults.bzl", "ts_library", "ivy_ng_module")
+load("//packages/bazel/src:ng_rollup_bundle.bzl", "ng_rollup_bundle")
+load("@build_bazel_rules_typescript//:defs.bzl", "ts_devserver")
+
+ivy_ng_module(
+    name = "hello_world_i18n",
+    srcs = ["index.ts"],
+    deps = [
+        "//packages/core",
+    ],
+)
+
+ng_rollup_bundle(
+    name = "bundle",
+    # Remove once #22913 lands
+    entry_point = "packages/core/test/bundling/hello_world_i18n/index.js",
+    deps = [
+        ":hello_world_i18n",
+        "//packages/core",
+    ],
+)
+
+ts_devserver(
+    name = "devserver",
+    static_files = [
+        ":bundle.min_debug.js",
+        ":bundle.min.js",
+        "index.html",
+    ],
+    deps = [
+        # fix for ibazel until https://github.com/angular/angular/pull/22912 gets merged
+        "//packages/compiler",
+    ],
+)
