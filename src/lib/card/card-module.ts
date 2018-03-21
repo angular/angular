@@ -10,19 +10,19 @@ import {NgModule} from '@angular/core';
 import {MatCommonModule} from '@angular/material/core';
 import {
   MatCard,
-  MatCardHeader,
-  MatCardTitleGroup,
-  MatCardContent,
-  MatCardTitle,
-  MatCardSubtitle,
   MatCardActions,
-  MatCardFooter,
-  MatCardSmImage,
-  MatCardMdImage,
-  MatCardLgImage,
-  MatCardImage,
-  MatCardXlImage,
   MatCardAvatar,
+  MatCardContent,
+  MatCardFooter,
+  MatCardHeader,
+  MatCardImage,
+  MatCardLgImage,
+  MatCardMdImage,
+  MatCardSmImage,
+  MatCardSubtitle,
+  MatCardTitle,
+  MatCardTitleGroup,
+  MatCardXlImage,
 } from './card';
 
 

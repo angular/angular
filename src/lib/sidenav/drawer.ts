@@ -6,11 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {AnimationEvent} from '@angular/animations';
-import {FocusTrap, FocusTrapFactory, FocusMonitor, FocusOrigin} from '@angular/cdk/a11y';
+import {FocusMonitor, FocusOrigin, FocusTrap, FocusTrapFactory} from '@angular/cdk/a11y';
 import {Directionality} from '@angular/cdk/bidi';
 import {coerceBooleanProperty} from '@angular/cdk/coercion';
 import {ESCAPE} from '@angular/cdk/keycodes';
 import {Platform} from '@angular/cdk/platform';
+import {CdkScrollable} from '@angular/cdk/scrolling';
+import {DOCUMENT} from '@angular/common';
 import {
   AfterContentChecked,
   AfterContentInit,
@@ -23,29 +25,27 @@ import {
   EventEmitter,
   forwardRef,
   Inject,
+  InjectionToken,
   Input,
   NgZone,
   OnDestroy,
   Optional,
   Output,
   QueryList,
-  ViewEncapsulation,
-  InjectionToken,
   ViewChild,
+  ViewEncapsulation,
 } from '@angular/core';
-import {DOCUMENT} from '@angular/common';
-import {merge} from 'rxjs/observable/merge';
-import {filter} from 'rxjs/operators/filter';
-import {take} from 'rxjs/operators/take';
-import {startWith} from 'rxjs/operators/startWith';
-import {takeUntil} from 'rxjs/operators/takeUntil';
-import {debounceTime} from 'rxjs/operators/debounceTime';
-import {map} from 'rxjs/operators/map';
-import {fromEvent} from 'rxjs/observable/fromEvent';
-import {Subject} from 'rxjs/Subject';
 import {Observable} from 'rxjs/Observable';
+import {fromEvent} from 'rxjs/observable/fromEvent';
+import {merge} from 'rxjs/observable/merge';
+import {debounceTime} from 'rxjs/operators/debounceTime';
+import {filter} from 'rxjs/operators/filter';
+import {map} from 'rxjs/operators/map';
+import {startWith} from 'rxjs/operators/startWith';
+import {take} from 'rxjs/operators/take';
+import {takeUntil} from 'rxjs/operators/takeUntil';
+import {Subject} from 'rxjs/Subject';
 import {matDrawerAnimations} from './drawer-animations';
-import {CdkScrollable} from '@angular/cdk/scrolling';
 
 
 /** Throws an exception when two MatDrawer are matching the same position. */
@@ -59,7 +59,10 @@ export type MatDrawerToggleResult = 'open' | 'close';
 
 /** Configures whether drawers should use auto sizing by default. */
 export const MAT_DRAWER_DEFAULT_AUTOSIZE =
-    new InjectionToken<boolean>('MAT_DRAWER_DEFAULT_AUTOSIZE');
+    new InjectionToken<boolean>('MAT_DRAWER_DEFAULT_AUTOSIZE', {
+      providedIn: 'root',
+      factory: () => false,
+    });
 
 @Component({
   moduleId: module.id,

@@ -6,14 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
+import {NgModule} from '@angular/core';
 import {MatCommonModule, MatRippleModule} from '@angular/material/core';
-import {A11yModule} from '@angular/cdk/a11y';
-import {
-  MatAnchor,
-  MatButton,
-} from './button';
+import {MatAnchor, MatButton} from './button';
 
 
 @NgModule({
@@ -21,7 +17,6 @@ import {
     CommonModule,
     MatRippleModule,
     MatCommonModule,
-    A11yModule,
   ],
   exports: [
     MatButton,

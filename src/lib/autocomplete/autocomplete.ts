@@ -61,7 +61,10 @@ export interface MatAutocompleteDefaultOptions {
 
 /** Injection token to be used to override the default options for `mat-autocomplete`. */
 export const MAT_AUTOCOMPLETE_DEFAULT_OPTIONS =
-    new InjectionToken<MatAutocompleteDefaultOptions>('mat-autocomplete-default-options');
+    new InjectionToken<MatAutocompleteDefaultOptions>('mat-autocomplete-default-options', {
+      providedIn: 'root',
+      factory: () => ({autoActiveFirstOption: false}),
+    });
 
 
 @Component({

@@ -13,7 +13,7 @@ import {Subject} from 'rxjs/Subject';
  * To modify the labels and text displayed, create a new instance of MatPaginatorIntl and
  * include it in a custom provider
  */
-@Injectable()
+@Injectable({providedIn: 'root'})
 export class MatPaginatorIntl {
   /**
    * Stream that emits whenever the labels here are changed. Use this to notify

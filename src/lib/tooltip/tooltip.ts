@@ -7,26 +7,24 @@
  */
 import {AnimationEvent} from '@angular/animations';
 import {AriaDescriber, FocusMonitor} from '@angular/cdk/a11y';
-import {Directionality, Direction} from '@angular/cdk/bidi';
+import {Direction, Directionality} from '@angular/cdk/bidi';
 import {coerceBooleanProperty} from '@angular/cdk/coercion';
 import {ESCAPE} from '@angular/cdk/keycodes';
+import {BreakpointObserver, Breakpoints, BreakpointState} from '@angular/cdk/layout';
 import {
   ConnectionPositionPair,
+  FlexibleConnectedPositionStrategy,
   HorizontalConnectionPos,
   OriginConnectionPosition,
   Overlay,
-  ScrollDispatcher,
   OverlayConnectionPosition,
   OverlayRef,
-  RepositionScrollStrategy,
+  ScrollDispatcher,
   ScrollStrategy,
   VerticalConnectionPos,
-  FlexibleConnectedPositionStrategy,
 } from '@angular/cdk/overlay';
 import {Platform} from '@angular/cdk/platform';
 import {ComponentPortal} from '@angular/cdk/portal';
-import {take} from 'rxjs/operators/take';
-import {takeUntil} from 'rxjs/operators/takeUntil';
 import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
@@ -34,6 +32,7 @@ import {
   Directive,
   ElementRef,
   Inject,
+  inject,
   InjectionToken,
   Input,
   NgZone,
@@ -43,9 +42,10 @@ import {
   ViewEncapsulation,
 } from '@angular/core';
 import {Observable} from 'rxjs/Observable';
+import {take} from 'rxjs/operators/take';
+import {takeUntil} from 'rxjs/operators/takeUntil';
 import {Subject} from 'rxjs/Subject';
 import {matTooltipAnimations} from './tooltip-animations';
-import {BreakpointObserver, Breakpoints, BreakpointState} from '@angular/cdk/layout';
 
 
 export type TooltipPosition = 'left' | 'right' | 'above' | 'below' | 'before' | 'after';
@@ -63,20 +63,13 @@ export function getMatTooltipInvalidPositionError(position: string) {
 
 /** Injection token that determines the scroll handling while a tooltip is visible. */
 export const MAT_TOOLTIP_SCROLL_STRATEGY =
-    new InjectionToken<() => ScrollStrategy>('mat-tooltip-scroll-strategy');
-
-/** @docs-private */
-export function MAT_TOOLTIP_SCROLL_STRATEGY_PROVIDER_FACTORY(overlay: Overlay):
-    () => RepositionScrollStrategy {
-  return () => overlay.scrollStrategies.reposition({ scrollThrottle: SCROLL_THROTTLE_MS });
-}
-
-/** @docs-private */
-export const MAT_TOOLTIP_SCROLL_STRATEGY_PROVIDER = {
-  provide: MAT_TOOLTIP_SCROLL_STRATEGY,
-  deps: [Overlay],
-  useFactory: MAT_TOOLTIP_SCROLL_STRATEGY_PROVIDER_FACTORY
-};
+    new InjectionToken<() => ScrollStrategy>('mat-tooltip-scroll-strategy', {
+      providedIn: 'root',
+      factory: () => {
+        const overlay = inject(Overlay);
+        return () => overlay.scrollStrategies.reposition({scrollThrottle: SCROLL_THROTTLE_MS});
+      }
+    });
 
 /** Default `matTooltip` options that can be overridden. */
 export interface MatTooltipDefaultOptions {
@@ -87,7 +80,14 @@ export interface MatTooltipDefaultOptions {
 
 /** Injection token to be used to override the default options for `matTooltip`. */
 export const MAT_TOOLTIP_DEFAULT_OPTIONS =
-    new InjectionToken<MatTooltipDefaultOptions>('mat-tooltip-default-options');
+    new InjectionToken<MatTooltipDefaultOptions>('mat-tooltip-default-options', {
+      providedIn: 'root',
+      factory: () => ({
+        showDelay: 0,
+        hideDelay: 0,
+        touchendHideDelay: 1500,
+      })
+    });
 
 /**
  * Directive that attaches a material design tooltip to the host element. Animates the showing and

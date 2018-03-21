@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {A11yModule} from '@angular/cdk/a11y';
 import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
 import {MatCommonModule, MatRippleModule} from '@angular/material/core';
@@ -14,7 +13,7 @@ import {MatRadioButton, MatRadioGroup} from './radio';
 
 
 @NgModule({
-  imports: [CommonModule, MatRippleModule, MatCommonModule, A11yModule],
+  imports: [CommonModule, MatRippleModule, MatCommonModule],
   exports: [MatRadioGroup, MatRadioButton, MatCommonModule],
   declarations: [MatRadioGroup, MatRadioButton],
 })

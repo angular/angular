@@ -76,7 +76,7 @@ class SvgIconConfig {
  * - Registers aliases for CSS classes, for use with icon fonts.
  * - Loads icons from URLs and extracts individual icons from icon sets.
  */
-@Injectable()
+@Injectable({providedIn: 'root'})
 export class MatIconRegistry {
   private _document: Document;
 

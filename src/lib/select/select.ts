@@ -5,6 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
 import {ActiveDescendantKeyManager} from '@angular/cdk/a11y';
 import {Directionality} from '@angular/cdk/bidi';
 import {coerceBooleanProperty} from '@angular/cdk/coercion';
@@ -14,24 +15,12 @@ import {
   END,
   ENTER,
   HOME,
-  SPACE,
-  UP_ARROW,
   LEFT_ARROW,
   RIGHT_ARROW,
+  SPACE,
+  UP_ARROW,
 } from '@angular/cdk/keycodes';
-import {
-  CdkConnectedOverlay,
-  Overlay,
-  RepositionScrollStrategy,
-  ScrollStrategy,
-  ViewportRuler,
-} from '@angular/cdk/overlay';
-import {filter} from 'rxjs/operators/filter';
-import {take} from 'rxjs/operators/take';
-import {map} from 'rxjs/operators/map';
-import {switchMap} from 'rxjs/operators/switchMap';
-import {startWith} from 'rxjs/operators/startWith';
-import {takeUntil} from 'rxjs/operators/takeUntil';
+import {CdkConnectedOverlay, Overlay, ScrollStrategy, ViewportRuler} from '@angular/cdk/overlay';
 import {
   AfterContentInit,
   Attribute,
@@ -45,6 +34,7 @@ import {
   ElementRef,
   EventEmitter,
   Inject,
+  inject,
   InjectionToken,
   Input,
   isDevMode,
@@ -60,34 +50,35 @@ import {
   ViewChild,
   ViewEncapsulation,
 } from '@angular/core';
+import {ControlValueAccessor, FormGroupDirective, NgControl, NgForm} from '@angular/forms';
 import {
-  ControlValueAccessor,
-  FormGroupDirective,
-  NgControl,
-  NgForm
-} from '@angular/forms';
-import {
+  _countGroupLabelsBeforeOption,
+  _getOptionScrollPosition,
   CanDisable,
-  ErrorStateMatcher,
+  CanDisableRipple,
   CanUpdateErrorState,
-  mixinErrorState,
+  ErrorStateMatcher,
   HasTabIndex,
+  MAT_OPTION_PARENT_COMPONENT,
   MatOptgroup,
   MatOption,
   MatOptionSelectionChange,
   mixinDisabled,
-  mixinTabIndex,
-  MAT_OPTION_PARENT_COMPONENT,
   mixinDisableRipple,
-  CanDisableRipple,
-  _countGroupLabelsBeforeOption,
-  _getOptionScrollPosition,
+  mixinErrorState,
+  mixinTabIndex,
 } from '@angular/material/core';
 import {MatFormField, MatFormFieldControl} from '@angular/material/form-field';
 import {Observable} from 'rxjs/Observable';
-import {merge} from 'rxjs/observable/merge';
-import {Subject} from 'rxjs/Subject';
 import {defer} from 'rxjs/observable/defer';
+import {merge} from 'rxjs/observable/merge';
+import {filter} from 'rxjs/operators/filter';
+import {map} from 'rxjs/operators/map';
+import {startWith} from 'rxjs/operators/startWith';
+import {switchMap} from 'rxjs/operators/switchMap';
+import {take} from 'rxjs/operators/take';
+import {takeUntil} from 'rxjs/operators/takeUntil';
+import {Subject} from 'rxjs/Subject';
 import {matSelectAnimations} from './select-animations';
 import {
   getMatSelectDynamicMultipleError,
@@ -134,20 +125,13 @@ export const SELECT_PANEL_VIEWPORT_PADDING = 8;
 
 /** Injection token that determines the scroll handling while a select is open. */
 export const MAT_SELECT_SCROLL_STRATEGY =
-    new InjectionToken<() => ScrollStrategy>('mat-select-scroll-strategy');
-
-/** @docs-private */
-export function MAT_SELECT_SCROLL_STRATEGY_PROVIDER_FACTORY(overlay: Overlay):
-    () => RepositionScrollStrategy {
-  return () => overlay.scrollStrategies.reposition();
-}
-
-/** @docs-private */
-export const MAT_SELECT_SCROLL_STRATEGY_PROVIDER = {
-  provide: MAT_SELECT_SCROLL_STRATEGY,
-  deps: [Overlay],
-  useFactory: MAT_SELECT_SCROLL_STRATEGY_PROVIDER_FACTORY,
-};
+    new InjectionToken<() => ScrollStrategy>('mat-select-scroll-strategy', {
+      providedIn: 'root',
+      factory: () => {
+        const overlay = inject(Overlay);
+        return () => overlay.scrollStrategies.reposition();
+      }
+    });
 
 /** Change event object that is emitted when the select value has changed. */
 export class MatSelectChange {

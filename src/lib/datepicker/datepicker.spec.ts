@@ -1,8 +1,8 @@
 import {ENTER, ESCAPE, RIGHT_ARROW} from '@angular/cdk/keycodes';
-import {OverlayContainer, Overlay, ScrollDispatcher} from '@angular/cdk/overlay';
+import {Overlay, OverlayContainer, ScrollDispatcher} from '@angular/cdk/overlay';
 import {dispatchFakeEvent, dispatchKeyboardEvent, dispatchMouseEvent} from '@angular/cdk/testing';
 import {Component, ViewChild} from '@angular/core';
-import {fakeAsync, flush, ComponentFixture, inject, TestBed} from '@angular/core/testing';
+import {ComponentFixture, fakeAsync, flush, inject, TestBed} from '@angular/core/testing';
 import {FormControl, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {
   DEC,
@@ -14,15 +14,15 @@ import {
   NativeDateModule,
   SEP,
 } from '@angular/material/core';
-import {MatFormFieldModule, MatFormField} from '@angular/material/form-field';
+import {MatFormField, MatFormFieldModule} from '@angular/material/form-field';
 import {By} from '@angular/platform-browser';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
+import {Subject} from 'rxjs/Subject';
 import {MatInputModule} from '../input/index';
 import {MatDatepicker} from './datepicker';
 import {MatDatepickerInput} from './datepicker-input';
 import {MatDatepickerToggle} from './datepicker-toggle';
-import {MatDatepickerIntl, MatDatepickerModule, MAT_DATEPICKER_SCROLL_STRATEGY} from './index';
-import {Subject} from 'rxjs/Subject';
+import {MAT_DATEPICKER_SCROLL_STRATEGY, MatDatepickerIntl, MatDatepickerModule} from './index';
 
 describe('MatDatepicker', () => {
   const SUPPORTS_INTL = typeof Intl != 'undefined';

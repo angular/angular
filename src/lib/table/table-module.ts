@@ -16,11 +16,29 @@ import {MatCommonModule} from '@angular/material/core';
 
 @NgModule({
   imports: [CdkTableModule, CommonModule, MatCommonModule],
-  exports: [MatTable, MatCellDef, MatHeaderCellDef, MatColumnDef,
-    MatHeaderCell, MatCell, MatHeaderRow, MatRow,
-    MatHeaderRowDef, MatRowDef],
-  declarations: [MatTable, MatCellDef, MatHeaderCellDef, MatColumnDef,
-    MatHeaderCell, MatCell, MatHeaderRow, MatRow,
-    MatHeaderRowDef, MatRowDef],
+  exports: [
+    MatCell,
+    MatCellDef,
+    MatColumnDef,
+    MatHeaderCell,
+    MatHeaderCellDef,
+    MatHeaderRow,
+    MatHeaderRowDef,
+    MatRow,
+    MatRowDef,
+    MatTable,
+  ],
+  declarations: [
+    MatCell,
+    MatCellDef,
+    MatColumnDef,
+    MatHeaderCell,
+    MatHeaderCellDef,
+    MatHeaderRow,
+    MatHeaderRowDef,
+    MatRow,
+    MatRowDef,
+    MatTable,
+  ],
 })
 export class MatTableModule {}

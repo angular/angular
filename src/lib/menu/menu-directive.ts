@@ -61,12 +61,20 @@ export interface MatMenuDefaultOptions {
   backdropClass: string;
 
   /** Whether the menu has a backdrop. */
-  hasBackdrop: boolean;
+  hasBackdrop?: boolean;
 }
 
 /** Injection token to be used to override the default options for `mat-menu`. */
 export const MAT_MENU_DEFAULT_OPTIONS =
-    new InjectionToken<MatMenuDefaultOptions>('mat-menu-default-options');
+    new InjectionToken<MatMenuDefaultOptions>('mat-menu-default-options', {
+      providedIn: 'root',
+      factory: () => ({
+        overlapTrigger: true,
+        xPosition: 'after',
+        yPosition: 'below',
+        backdropClass: 'cdk-overlay-transparent-backdrop',
+      })
+    });
 
 /**
  * Start elevation for the menu panel.
@@ -159,11 +167,11 @@ export class MatMenu implements OnInit, AfterContentInit, MatMenuPanel, OnDestro
 
   /** Whether the menu has a backdrop. */
   @Input()
-  get hasBackdrop(): boolean { return this._hasBackdrop; }
-  set hasBackdrop(value: boolean) {
+  get hasBackdrop(): boolean | undefined { return this._hasBackdrop; }
+  set hasBackdrop(value: boolean | undefined) {
     this._hasBackdrop = coerceBooleanProperty(value);
   }
-  private _hasBackdrop: boolean = this._defaultOptions.hasBackdrop;
+  private _hasBackdrop: boolean | undefined = this._defaultOptions.hasBackdrop;
 
   /**
    * This method takes classes set on the host mat-menu element and applies them on the

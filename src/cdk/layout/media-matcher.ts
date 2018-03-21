@@ -14,7 +14,7 @@ import {Platform} from '@angular/cdk/platform';
 const styleElementForWebkitCompatibility: Map<string, HTMLStyleElement> = new Map();
 
 /** A utility for calling matchMedia queries. */
-@Injectable()
+@Injectable({providedIn: 'root'})
 export class MediaMatcher {
   /** The internal matchMedia method to return back a MediaQueryList like object. */
   private _matchMedia: (query: string) => MediaQueryList;

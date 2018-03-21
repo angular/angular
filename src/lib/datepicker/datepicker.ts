@@ -10,67 +10,60 @@ import {Directionality} from '@angular/cdk/bidi';
 import {coerceBooleanProperty} from '@angular/cdk/coercion';
 import {ESCAPE} from '@angular/cdk/keycodes';
 import {
+  FlexibleConnectedPositionStrategy,
   Overlay,
   OverlayConfig,
   OverlayRef,
   PositionStrategy,
-  RepositionScrollStrategy,
   ScrollStrategy,
-  FlexibleConnectedPositionStrategy,
 } from '@angular/cdk/overlay';
 import {ComponentPortal} from '@angular/cdk/portal';
-import {take} from 'rxjs/operators/take';
-import {filter} from 'rxjs/operators/filter';
+import {DOCUMENT} from '@angular/common';
 import {
   AfterContentInit,
   ChangeDetectionStrategy,
+  ChangeDetectorRef,
   Component,
   ComponentRef,
   ElementRef,
   EventEmitter,
   Inject,
+  inject,
   InjectionToken,
   Input,
   NgZone,
   OnDestroy,
+  OnInit,
   Optional,
   Output,
   ViewChild,
   ViewContainerRef,
   ViewEncapsulation,
-  ChangeDetectorRef,
-  OnInit,
 } from '@angular/core';
 import {CanColor, DateAdapter, mixinColor, ThemePalette} from '@angular/material/core';
 import {MatDialog, MatDialogRef} from '@angular/material/dialog';
-import {DOCUMENT} from '@angular/common';
+import {merge} from 'rxjs/observable/merge';
+import {filter} from 'rxjs/operators/filter';
+import {take} from 'rxjs/operators/take';
 import {Subject} from 'rxjs/Subject';
 import {Subscription} from 'rxjs/Subscription';
-import {merge} from 'rxjs/observable/merge';
-import {createMissingDateImplError} from './datepicker-errors';
-import {MatDatepickerInput} from './datepicker-input';
 import {MatCalendar} from './calendar';
 import {matDatepickerAnimations} from './datepicker-animations';
+import {createMissingDateImplError} from './datepicker-errors';
+import {MatDatepickerInput} from './datepicker-input';
 
 /** Used to generate a unique ID for each datepicker instance. */
 let datepickerUid = 0;
 
 /** Injection token that determines the scroll handling while the calendar is open. */
 export const MAT_DATEPICKER_SCROLL_STRATEGY =
-    new InjectionToken<() => ScrollStrategy>('mat-datepicker-scroll-strategy');
-
-/** @docs-private */
-export function MAT_DATEPICKER_SCROLL_STRATEGY_PROVIDER_FACTORY(overlay: Overlay):
-    () => RepositionScrollStrategy {
-  return () => overlay.scrollStrategies.reposition();
-}
-
-/** @docs-private */
-export const MAT_DATEPICKER_SCROLL_STRATEGY_PROVIDER = {
-  provide: MAT_DATEPICKER_SCROLL_STRATEGY,
-  deps: [Overlay],
-  useFactory: MAT_DATEPICKER_SCROLL_STRATEGY_PROVIDER_FACTORY,
-};
+    new InjectionToken<() => ScrollStrategy>('mat-datepicker-scroll-strategy', {
+      providedIn: 'root',
+      factory: () => {
+        const overlay = inject(Overlay);
+        return () => overlay.scrollStrategies.reposition();
+      }
+    });
 
 // Boilerplate for applying mixins to MatDatepickerContent.
 /** @docs-private */

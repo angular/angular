@@ -11,7 +11,10 @@ import {BidiModule} from '@angular/cdk/bidi';
 
 
 /** Injection token that configures whether the Material sanity checks are enabled. */
-export const MATERIAL_SANITY_CHECKS = new InjectionToken<boolean>('mat-sanity-checks');
+export const MATERIAL_SANITY_CHECKS = new InjectionToken<boolean>('mat-sanity-checks', {
+  providedIn: 'root',
+  factory: () => true,
+});
 
 
 /**
@@ -23,9 +26,6 @@ export const MATERIAL_SANITY_CHECKS = new InjectionToken<boolean>('mat-sanity-ch
 @NgModule({
   imports: [BidiModule],
   exports: [BidiModule],
-  providers: [{
-    provide: MATERIAL_SANITY_CHECKS, useValue: true,
-  }],
 })
 export class MatCommonModule {
   /** Whether we've done the global sanity checks (e.g. a theme is loaded, there is a doctype). */

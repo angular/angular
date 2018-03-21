@@ -6,16 +6,16 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {InjectionToken, LOCALE_ID} from '@angular/core';
+import {inject, InjectionToken, LOCALE_ID} from '@angular/core';
 import {Observable} from 'rxjs/Observable';
 import {Subject} from 'rxjs/Subject';
 
 
 /** InjectionToken for datepicker that can be used to override default locale code. */
-export const MAT_DATE_LOCALE = new InjectionToken<string>('MAT_DATE_LOCALE');
-
-/** Provider for MAT_DATE_LOCALE injection token. */
-export const MAT_DATE_LOCALE_PROVIDER = {provide: MAT_DATE_LOCALE, useExisting: LOCALE_ID};
+export const MAT_DATE_LOCALE = new InjectionToken<string>('MAT_DATE_LOCALE', {
+  providedIn: 'root',
+  factory: () => inject(LOCALE_ID)
+});
 
 /** Adapts type `D` to be usable as a date by cdk-based components that work with dates. */
 export abstract class DateAdapter<D> {

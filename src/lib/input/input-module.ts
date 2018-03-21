@@ -7,7 +7,6 @@
  */
 
 import {TextFieldModule} from '@angular/cdk/text-field';
-import {PlatformModule} from '@angular/cdk/platform';
 import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
 import {ErrorStateMatcher} from '@angular/material/core';
@@ -22,7 +21,6 @@ import {MatInput} from './input';
     CommonModule,
     TextFieldModule,
     MatFormFieldModule,
-    PlatformModule,
   ],
   exports: [
     TextFieldModule,

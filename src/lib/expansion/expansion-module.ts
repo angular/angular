@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {A11yModule} from '@angular/cdk/a11y';
 import {CdkAccordionModule} from '@angular/cdk/accordion';
 import {PortalModule} from '@angular/cdk/portal';
 import {CommonModule} from '@angular/common';
@@ -22,7 +21,7 @@ import {
 
 
 @NgModule({
-  imports: [CommonModule, A11yModule, CdkAccordionModule, PortalModule],
+  imports: [CommonModule, CdkAccordionModule, PortalModule],
   exports: [
     MatAccordion,
     MatExpansionPanel,

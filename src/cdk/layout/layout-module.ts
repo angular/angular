@@ -6,12 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {NgModule} from '@angular/core';
-import {PlatformModule} from '@angular/cdk/platform';
-import {BreakpointObserver} from './breakpoints-observer';
-import {MediaMatcher} from './media-matcher';
 
-@NgModule({
-  providers: [BreakpointObserver, MediaMatcher],
-  imports: [PlatformModule],
-})
+
+@NgModule()
 export class LayoutModule {}

@@ -10,15 +10,16 @@ import {Directionality} from '@angular/cdk/bidi';
 import {
   Overlay,
   OverlayConfig,
+  OverlayContainer,
   OverlayRef,
   ScrollStrategy,
-  OverlayContainer,
 } from '@angular/cdk/overlay';
 import {ComponentPortal, ComponentType, PortalInjector, TemplatePortal} from '@angular/cdk/portal';
 import {Location} from '@angular/common';
 import {
   ComponentRef,
   Inject,
+  inject,
   Injectable,
   InjectionToken,
   Injector,
@@ -44,7 +45,13 @@ export const MAT_DIALOG_DEFAULT_OPTIONS =
 
 /** Injection token that determines the scroll handling while the dialog is open. */
 export const MAT_DIALOG_SCROLL_STRATEGY =
-    new InjectionToken<() => ScrollStrategy>('mat-dialog-scroll-strategy');
+    new InjectionToken<() => ScrollStrategy>('mat-dialog-scroll-strategy', {
+      providedIn: 'root',
+      factory: () => {
+        const overlay = inject(Overlay);
+        return () => overlay.scrollStrategies.block();
+      }
+    });
 
 /** @docs-private */
 export function MAT_DIALOG_SCROLL_STRATEGY_PROVIDER_FACTORY(overlay: Overlay):

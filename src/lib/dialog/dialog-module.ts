@@ -6,22 +6,18 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {NgModule} from '@angular/core';
-import {CommonModule} from '@angular/common';
 import {OverlayModule} from '@angular/cdk/overlay';
 import {PortalModule} from '@angular/cdk/portal';
-import {A11yModule} from '@angular/cdk/a11y';
+import {CommonModule} from '@angular/common';
+import {NgModule} from '@angular/core';
 import {MatCommonModule} from '@angular/material/core';
-import {
-  MatDialog,
-  MAT_DIALOG_SCROLL_STRATEGY_PROVIDER
-} from './dialog';
+import {MAT_DIALOG_SCROLL_STRATEGY_PROVIDER, MatDialog} from './dialog';
 import {MatDialogContainer} from './dialog-container';
 import {
+  MatDialogActions,
   MatDialogClose,
   MatDialogContent,
   MatDialogTitle,
-  MatDialogActions
 } from './dialog-content-directives';
 
 
@@ -30,7 +26,6 @@ import {
     CommonModule,
     OverlayModule,
     PortalModule,
-    A11yModule,
     MatCommonModule,
   ],
   exports: [

@@ -6,8 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {A11yModule} from '@angular/cdk/a11y';
-import {BidiModule} from '@angular/cdk/bidi';
 import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
 import {GestureConfig, MatCommonModule} from '@angular/material/core';
@@ -16,7 +14,7 @@ import {MatSlider} from './slider';
 
 
 @NgModule({
-  imports: [CommonModule, MatCommonModule, BidiModule, A11yModule],
+  imports: [CommonModule, MatCommonModule],
   exports: [MatSlider, MatCommonModule],
   declarations: [MatSlider],
   providers: [{provide: HAMMER_GESTURE_CONFIG, useClass: GestureConfig}]

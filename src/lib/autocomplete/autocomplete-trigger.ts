@@ -6,21 +6,17 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {Directionality} from '@angular/cdk/bidi';
-import {DOWN_ARROW, ENTER, ESCAPE, UP_ARROW, TAB} from '@angular/cdk/keycodes';
+import {DOWN_ARROW, ENTER, ESCAPE, TAB, UP_ARROW} from '@angular/cdk/keycodes';
 import {
   FlexibleConnectedPositionStrategy,
   Overlay,
-  OverlayRef,
   OverlayConfig,
+  OverlayRef,
   PositionStrategy,
   ScrollStrategy,
 } from '@angular/cdk/overlay';
 import {TemplatePortal} from '@angular/cdk/portal';
-import {filter} from 'rxjs/operators/filter';
-import {take} from 'rxjs/operators/take';
-import {switchMap} from 'rxjs/operators/switchMap';
-import {tap} from 'rxjs/operators/tap';
-import {delay} from 'rxjs/operators/delay';
+import {DOCUMENT} from '@angular/common';
 import {
   ChangeDetectorRef,
   Directive,
@@ -28,6 +24,7 @@ import {
   forwardRef,
   Host,
   Inject,
+  inject,
   InjectionToken,
   Input,
   NgZone,
@@ -37,19 +34,23 @@ import {
 } from '@angular/core';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
 import {
+  _countGroupLabelsBeforeOption,
+  _getOptionScrollPosition,
   MatOption,
   MatOptionSelectionChange,
-  _getOptionScrollPosition,
-  _countGroupLabelsBeforeOption,
 } from '@angular/material/core';
 import {MatFormField} from '@angular/material/form-field';
-import {DOCUMENT} from '@angular/common';
 import {Observable} from 'rxjs/Observable';
-import {Subject} from 'rxjs/Subject';
 import {defer} from 'rxjs/observable/defer';
 import {fromEvent} from 'rxjs/observable/fromEvent';
 import {merge} from 'rxjs/observable/merge';
 import {of as observableOf} from 'rxjs/observable/of';
+import {delay} from 'rxjs/operators/delay';
+import {filter} from 'rxjs/operators/filter';
+import {switchMap} from 'rxjs/operators/switchMap';
+import {take} from 'rxjs/operators/take';
+import {tap} from 'rxjs/operators/tap';
+import {Subject} from 'rxjs/Subject';
 import {Subscription} from 'rxjs/Subscription';
 import {MatAutocomplete} from './autocomplete';
 
@@ -68,20 +69,13 @@ export const AUTOCOMPLETE_PANEL_HEIGHT = 256;
 
 /** Injection token that determines the scroll handling while the autocomplete panel is open. */
 export const MAT_AUTOCOMPLETE_SCROLL_STRATEGY =
-    new InjectionToken<() => ScrollStrategy>('mat-autocomplete-scroll-strategy');
-
-/** @docs-private */
-export function MAT_AUTOCOMPLETE_SCROLL_STRATEGY_PROVIDER_FACTORY(overlay: Overlay):
-    () => ScrollStrategy {
-  return () => overlay.scrollStrategies.reposition();
-}
-
-/** @docs-private */
-export const MAT_AUTOCOMPLETE_SCROLL_STRATEGY_PROVIDER = {
-  provide: MAT_AUTOCOMPLETE_SCROLL_STRATEGY,
-  deps: [Overlay],
-  useFactory: MAT_AUTOCOMPLETE_SCROLL_STRATEGY_PROVIDER_FACTORY,
-};
+    new InjectionToken<() => ScrollStrategy>('mat-autocomplete-scroll-strategy', {
+      providedIn: 'root',
+      factory: () => {
+        const overlay = inject(Overlay);
+        return () => overlay.scrollStrategies.reposition();
+      }
+    });
 
 /**
  * Provider that allows the autocomplete to register as a ControlValueAccessor.

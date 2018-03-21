@@ -14,7 +14,7 @@ import {SortDirection} from './sort-direction';
  * To modify the labels and text displayed, create a new instance of MatSortHeaderIntl and
  * include it in a custom provider.
  */
-@Injectable()
+@Injectable({providedIn: 'root'})
 export class MatSortHeaderIntl {
   /**
    * Stream that emits whenever the labels here are changed. Use this to notify

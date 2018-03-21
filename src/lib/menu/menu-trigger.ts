@@ -6,28 +6,26 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {isFakeMousedownFromScreenReader} from '@angular/cdk/a11y';
+import {FocusMonitor, FocusOrigin, isFakeMousedownFromScreenReader} from '@angular/cdk/a11y';
 import {Direction, Directionality} from '@angular/cdk/bidi';
 import {LEFT_ARROW, RIGHT_ARROW} from '@angular/cdk/keycodes';
 import {
   FlexibleConnectedPositionStrategy,
   HorizontalConnectionPos,
   Overlay,
-  OverlayRef,
   OverlayConfig,
-  RepositionScrollStrategy,
+  OverlayRef,
   ScrollStrategy,
   VerticalConnectionPos,
 } from '@angular/cdk/overlay';
 import {TemplatePortal} from '@angular/cdk/portal';
-import {filter} from 'rxjs/operators/filter';
-import {take} from 'rxjs/operators/take';
 import {
   AfterContentInit,
   Directive,
   ElementRef,
   EventEmitter,
   Inject,
+  inject,
   InjectionToken,
   Input,
   OnDestroy,
@@ -38,31 +36,24 @@ import {
 } from '@angular/core';
 import {merge} from 'rxjs/observable/merge';
 import {of as observableOf} from 'rxjs/observable/of';
+import {filter} from 'rxjs/operators/filter';
+import {take} from 'rxjs/operators/take';
 import {Subscription} from 'rxjs/Subscription';
 import {MatMenu} from './menu-directive';
 import {throwMatMenuMissingError} from './menu-errors';
 import {MatMenuItem} from './menu-item';
 import {MatMenuPanel} from './menu-panel';
 import {MenuPositionX, MenuPositionY} from './menu-positions';
-import {FocusMonitor, FocusOrigin} from '@angular/cdk/a11y';
 
 /** Injection token that determines the scroll handling while the menu is open. */
 export const MAT_MENU_SCROLL_STRATEGY =
-    new InjectionToken<() => ScrollStrategy>('mat-menu-scroll-strategy');
-
-/** @docs-private */
-export function MAT_MENU_SCROLL_STRATEGY_PROVIDER_FACTORY(overlay: Overlay):
-    () => RepositionScrollStrategy {
-  return () => overlay.scrollStrategies.reposition();
-}
-
-/** @docs-private */
-export const MAT_MENU_SCROLL_STRATEGY_PROVIDER = {
-  provide: MAT_MENU_SCROLL_STRATEGY,
-  deps: [Overlay],
-  useFactory: MAT_MENU_SCROLL_STRATEGY_PROVIDER_FACTORY,
-};
-
+    new InjectionToken<() => ScrollStrategy>('mat-menu-scroll-strategy', {
+      providedIn: 'root',
+      factory: () => {
+        const overlay = inject(Overlay);
+        return () => overlay.scrollStrategies.reposition();
+      }
+    });
 
 // TODO(andrewseguin): Remove the kebab versions in favor of camelCased attribute selectors
 
