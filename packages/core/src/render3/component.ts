@@ -16,7 +16,7 @@ import {assertComponentType, assertNotNull} from './assert';
 import {queueInitHooks, queueLifecycleHooks} from './hooks';
 import {CLEAN_PROMISE, _getComponentHostLElementNode, baseDirectiveCreate, createLView, createTView, enterView, getRootView, hostElement, initChangeDetectorIfExisting, locateHostElement, renderComponentOrTemplate} from './instructions';
 import {ComponentDef, ComponentType} from './interfaces/definition';
-import {LElementNode} from './interfaces/node';
+import {LElementNode, TNodeFlags} from './interfaces/node';
 import {RElement, RendererFactory3, domRendererFactory3} from './interfaces/renderer';
 import {LView, LViewFlags, RootContext} from './interfaces/view';
 import {stringify} from './util';
@@ -174,7 +174,7 @@ export function LifecycleHooksFeature(component: any, def: ComponentDef<any>): v
 
   // Root component is always created at dir index 1, after host element at 0
   queueInitHooks(1, def.onInit, def.doCheck, elementNode.view.tView);
-  queueLifecycleHooks(elementNode.flags, elementNode.view);
+  queueLifecycleHooks(elementNode.tNode !.flags, elementNode.view);
 }
 
 /**
