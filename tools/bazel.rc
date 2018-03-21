@@ -38,9 +38,6 @@ build --workspace_status_command=./tools/bazel_stamp_vars.sh
 # Prints eg. "ng_module rule //foo:bar" rather than just "//foo:bar"
 query --output=label_kind
 
-# Don't print every dependency in :node_modules, for example
-query --noimplicit_deps
-
 # By default, failing tests don't print any output, it goes to the log file
 test --test_output=errors
 
