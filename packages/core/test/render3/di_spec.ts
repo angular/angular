@@ -11,7 +11,7 @@ import {ChangeDetectorRef, ElementRef, TemplateRef, ViewContainerRef} from '@ang
 import {defineComponent} from '../../src/render3/definition';
 import {InjectFlags, bloomAdd, bloomFindPossibleInjector, getOrCreateNodeInjector, injectAttribute} from '../../src/render3/di';
 import {NgOnChangesFeature, PublicFeature, defineDirective, directiveInject, injectChangeDetectorRef, injectElementRef, injectTemplateRef, injectViewContainerRef} from '../../src/render3/index';
-import {bind, container, containerRefreshEnd, containerRefreshStart, createLNode, createLView, createTView, elementEnd, elementStart, embeddedViewEnd, embeddedViewStart, enterView, interpolation2, leaveView, load, projection, projectionDef, text, textBinding} from '../../src/render3/instructions';
+import {bind, container, containerRefreshEnd, containerRefreshStart, createLNode, createLView, createTView, elementEnd, elementStart, embeddedViewEnd, embeddedViewStart, enterView, interpolation2, leaveView, load, loadDirective, projection, projectionDef, text, textBinding} from '../../src/render3/instructions';
 import {LInjector} from '../../src/render3/interfaces/injector';
 import {LNodeType} from '../../src/render3/interfaces/node';
 import {LViewFlags} from '../../src/render3/interfaces/view';
@@ -30,10 +30,11 @@ describe('di', () => {
       function Template(ctx: any, cm: boolean) {
         if (cm) {
           elementStart(0, 'div', null, [Directive]);
-          { text(2); }
+          { text(1); }
           elementEnd();
         }
-        textBinding(2, bind(load<Directive>(1).value));
+        // TODO: remove loadDirective when removing directive references
+        textBinding(1, bind(loadDirective<Directive>(0).value));
       }
 
       expect(renderToHtml(Template, {})).toEqual('<div>Created</div>');
@@ -67,13 +68,14 @@ describe('di', () => {
         if (cm) {
           elementStart(0, 'div', null, [DirectiveA]);
           {
-            elementStart(2, 'span', null, [DirectiveB, DirectiveC]);
-            { text(5); }
+            elementStart(1, 'span', null, [DirectiveB, DirectiveC]);
+            { text(2); }
             elementEnd();
           }
           elementEnd();
         }
-        textBinding(5, bind(load<DirectiveC>(4).value));
+        // TODO: remove loadDirective when removing directive references
+        textBinding(2, bind(loadDirective<DirectiveC>(2).value));
       }
 
       expect(renderToHtml(Template, {})).toEqual('<div><span>AB</span></div>');
@@ -108,12 +110,14 @@ describe('di', () => {
       function Template(ctx: any, cm: boolean) {
         if (cm) {
           elementStart(0, 'div', null, [Directive, DirectiveSameInstance]);
-          { text(3); }
+          { text(1); }
           elementEnd();
         }
+        // TODO: remove loadDirective when removing directive references
         textBinding(
-            3, interpolation2(
-                   '', load<Directive>(1).value, '-', load<DirectiveSameInstance>(2).value, ''));
+            1, interpolation2(
+                   '', loadDirective<Directive>(0).value, '-',
+                   loadDirective<DirectiveSameInstance>(1).value, ''));
       }
 
       expect(renderToHtml(Template, {})).toEqual('<div>ElementRef-true</div>');
@@ -149,11 +153,13 @@ describe('di', () => {
       function Template(ctx: any, cm: any) {
         if (cm) {
           container(0, [Directive, DirectiveSameInstance], function() {});
-          text(3);
+          text(1);
         }
+        // TODO: remove loadDirective when removing directive references
         textBinding(
-            3, interpolation2(
-                   '', load<Directive>(1).value, '-', load<DirectiveSameInstance>(2).value, ''));
+            1, interpolation2(
+                   '', loadDirective<Directive>(0).value, '-',
+                   loadDirective<DirectiveSameInstance>(1).value, ''));
       }
 
       expect(renderToHtml(Template, {})).toEqual('TemplateRef-true');
@@ -189,12 +195,14 @@ describe('di', () => {
       function Template(ctx: any, cm: boolean) {
         if (cm) {
           elementStart(0, 'div', null, [Directive, DirectiveSameInstance]);
-          { text(3); }
+          { text(1); }
           elementEnd();
         }
+        // TODO: remove loadDirective when removing directive references
         textBinding(
-            3, interpolation2(
-                   '', load<Directive>(1).value, '-', load<DirectiveSameInstance>(2).value, ''));
+            1, interpolation2(
+                   '', loadDirective<Directive>(0).value, '-',
+                   loadDirective<DirectiveSameInstance>(1).value, ''));
       }
 
       expect(renderToHtml(Template, {})).toEqual('<div>ViewContainerRef-true</div>');
@@ -255,9 +263,10 @@ describe('di', () => {
             if (cm) {
               elementStart(0, MyComp, $e0_attrs$, [Directive, DirectiveSameInstance]);
               elementEnd();
-              text(4);
+              text(1);
             }
-            textBinding(4, bind(load<Directive>(2).value));
+            // TODO: remove loadDirective when removing directive references
+            textBinding(1, bind(loadDirective<Directive>(1).value));
           }
         });
       }
@@ -284,10 +293,11 @@ describe('di', () => {
           template: function(ctx: any, cm: boolean) {
             if (cm) {
               elementStart(0, 'div', $e0_attrs$, [Directive, DirectiveSameInstance]);
-              { text(3); }
+              { text(1); }
               elementEnd();
             }
-            textBinding(3, bind(load<Directive>(1).value));
+            // TODO: remove loadDirective when removing directive references
+            textBinding(1, bind(loadDirective<Directive>(0).value));
           }
         });
       }
@@ -318,13 +328,14 @@ describe('di', () => {
             if (cm) {
               elementStart(0, MyComp);
               {
-                elementStart(2, 'div', $e0_attrs$, [Directive, DirectiveSameInstance]);
+                elementStart(1, 'div', $e0_attrs$, [Directive, DirectiveSameInstance]);
                 elementEnd();
               }
               elementEnd();
-              text(5);
+              text(2);
             }
-            textBinding(5, bind(load<Directive>(3).value));
+            // TODO: remove loadDirective when removing directive references
+            textBinding(2, bind(loadDirective<Directive>(1).value));
           }
         });
       }
@@ -363,10 +374,11 @@ describe('di', () => {
               if (ctx.showing) {
                 if (embeddedViewStart(0)) {
                   elementStart(0, 'div', $e0_attrs$, [Directive, DirectiveSameInstance]);
-                  { text(3); }
+                  { text(1); }
                   elementEnd();
                 }
-                textBinding(3, bind(load<Directive>(1).value));
+                // TODO: remove loadDirective when removing directive references
+                textBinding(1, bind(loadDirective<Directive>(0).value));
               }
               embeddedViewEnd();
             }
@@ -424,10 +436,11 @@ describe('di', () => {
             function C1(ctx1: any, cm1: boolean) {
               if (cm1) {
                 elementStart(0, 'div', $e0_attrs$, [Directive, DirectiveSameInstance]);
-                { text(3); }
+                { text(1); }
                 elementEnd();
               }
-              textBinding(3, bind(load<Directive>(1).value));
+              // TODO: remove loadDirective when removing directive references
+              textBinding(1, bind(loadDirective<Directive>(0).value));
             }
           }
         });
@@ -591,19 +604,21 @@ describe('di', () => {
       function Template(ctx: any, cm: boolean) {
         if (cm) {
           elementStart(0, 'div', null, [ParentDirective]);
-          { container(2); }
+          { container(1); }
           elementEnd();
         }
-        containerRefreshStart(2);
+        containerRefreshStart(1);
         {
           if (embeddedViewStart(0)) {
             elementStart(0, 'span', null, [ChildDirective, Child2Directive]);
-            { text(3); }
+            { text(1); }
             elementEnd();
           }
+          // TODO: remove loadDirective when removing directive references
           textBinding(
-              3, interpolation2(
-                     '', load<ChildDirective>(1).value, '-', load<Child2Directive>(2).value, ''));
+              1, interpolation2(
+                     '', loadDirective<ChildDirective>(0).value, '-',
+                     loadDirective<Child2Directive>(1).value, ''));
           embeddedViewEnd();
         }
         containerRefreshEnd();

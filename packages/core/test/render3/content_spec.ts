@@ -7,7 +7,7 @@
  */
 
 import {detectChanges} from '../../src/render3/index';
-import {container, containerRefreshEnd, containerRefreshStart, elementEnd, elementStart, embeddedViewEnd, embeddedViewStart, load, projection, projectionDef, text} from '../../src/render3/instructions';
+import {container, containerRefreshEnd, containerRefreshStart, elementEnd, elementStart, embeddedViewEnd, embeddedViewStart, load, loadDirective, projection, projectionDef, text} from '../../src/render3/instructions';
 
 import {createComponent, renderComponent, toHtml} from './render_util';
 
@@ -32,7 +32,7 @@ describe('content projection', () => {
     const Parent = createComponent('parent', function(ctx: any, cm: boolean) {
       if (cm) {
         elementStart(0, Child);
-        { text(2, 'content'); }
+        { text(1, 'content'); }
         elementEnd();
       }
     });
@@ -50,7 +50,7 @@ describe('content projection', () => {
     const Parent = createComponent('parent', function(ctx: any, cm: boolean) {
       if (cm) {
         elementStart(0, Child);
-        { text(2, 'content'); }
+        { text(1, 'content'); }
         elementEnd();
       }
     });
@@ -71,7 +71,7 @@ describe('content projection', () => {
       if (cm) {
         projectionDef(0);
         elementStart(1, GrandChild);
-        { projection(3, 0); }
+        { projection(2, 0); }
         elementEnd();
       }
     });
@@ -79,10 +79,10 @@ describe('content projection', () => {
       if (cm) {
         elementStart(0, Child);
         {
-          elementStart(2, 'b');
-          text(3, 'Hello');
+          elementStart(1, 'b');
+          text(2, 'Hello');
           elementEnd();
-          text(4, 'World!');
+          text(3, 'World!');
         }
         elementEnd();
       }
@@ -119,7 +119,7 @@ describe('content projection', () => {
       if (cm) {
         elementStart(0, Child);
         {
-          elementStart(2, ProjectedComp);
+          elementStart(1, ProjectedComp);
           elementEnd();
         }
         elementEnd();
@@ -143,13 +143,13 @@ describe('content projection', () => {
       if (cm) {
         elementStart(0, Child);
         {
-          text(2, '(');
-          container(3);
-          text(4, ')');
+          text(1, '(');
+          container(2);
+          text(3, ')');
         }
         elementEnd();
       }
-      containerRefreshStart(3);
+      containerRefreshStart(2);
       {
         if (ctx.value) {
           if (embeddedViewStart(0)) {
@@ -180,10 +180,10 @@ describe('content projection', () => {
     const Parent = createComponent('parent', function(ctx: {value: any}, cm: boolean) {
       if (cm) {
         elementStart(0, Child);
-        { container(2); }
+        { container(1); }
         elementEnd();
       }
-      containerRefreshStart(2);
+      containerRefreshStart(1);
       {
         if (ctx.value) {
           if (embeddedViewStart(0)) {
@@ -219,13 +219,13 @@ describe('content projection', () => {
       if (cm) {
         elementStart(0, Child);
         {
-          text(2, '(');
-          container(3);
-          text(4, ')');
+          text(1, '(');
+          container(2);
+          text(3, ')');
         }
         elementEnd();
       }
-      containerRefreshStart(3);
+      containerRefreshStart(2);
       {
         if (ctx.value) {
           if (embeddedViewStart(0)) {
@@ -291,8 +291,8 @@ describe('content projection', () => {
       if (cm) {
         elementStart(0, Child);
         {
-          childCmptInstance = load(1);
-          text(2, 'content');
+          childCmptInstance = loadDirective(0);
+          text(1, 'content');
         }
         elementEnd();
       }
@@ -342,8 +342,8 @@ describe('content projection', () => {
          if (cm) {
            elementStart(0, Child);
            {
-             childCmptInstance = load(1);
-             text(2, 'content');
+             childCmptInstance = loadDirective(0);
+             text(1, 'content');
            }
            elementEnd();
          }
@@ -395,8 +395,8 @@ describe('content projection', () => {
          if (cm) {
            elementStart(0, Child);
            {
-             childCmptInstance = load(1);
-             text(2, 'content');
+             childCmptInstance = loadDirective(0);
+             text(1, 'content');
            }
            elementEnd();
          }
@@ -432,7 +432,7 @@ describe('content projection', () => {
     const Parent = createComponent('parent', function(ctx: any, cm: boolean) {
       if (cm) {
         elementStart(0, Child);
-        { text(2, 'content'); }
+        { text(1, 'content'); }
         elementEnd();
       }
     });
@@ -486,8 +486,8 @@ describe('content projection', () => {
       if (cm) {
         elementStart(0, Child);
         {
-          childCmptInstance = load(1);
-          text(2, 'content');
+          childCmptInstance = loadDirective(0);
+          text(1, 'content');
         }
         elementEnd();
       }
@@ -531,11 +531,11 @@ describe('content projection', () => {
         if (cm) {
           elementStart(0, Child);
           {
-            elementStart(2, 'span', ['title', 'toFirst']);
-            { text(3, '1'); }
+            elementStart(1, 'span', ['title', 'toFirst']);
+            { text(2, '1'); }
             elementEnd();
-            elementStart(4, 'span', ['title', 'toSecond']);
-            { text(5, '2'); }
+            elementStart(3, 'span', ['title', 'toSecond']);
+            { text(4, '2'); }
             elementEnd();
           }
           elementEnd();
@@ -577,11 +577,11 @@ describe('content projection', () => {
         if (cm) {
           elementStart(0, Child);
           {
-            elementStart(2, 'span', ['class', 'toFirst']);
-            { text(3, '1'); }
+            elementStart(1, 'span', ['class', 'toFirst']);
+            { text(2, '1'); }
             elementEnd();
-            elementStart(4, 'span', ['class', 'toSecond']);
-            { text(5, '2'); }
+            elementStart(3, 'span', ['class', 'toSecond']);
+            { text(4, '2'); }
             elementEnd();
           }
           elementEnd();
@@ -623,11 +623,11 @@ describe('content projection', () => {
         if (cm) {
           elementStart(0, Child);
           {
-            elementStart(2, 'span', ['class', 'other toFirst']);
-            { text(3, '1'); }
+            elementStart(1, 'span', ['class', 'other toFirst']);
+            { text(2, '1'); }
             elementEnd();
-            elementStart(4, 'span', ['class', 'toSecond noise']);
-            { text(5, '2'); }
+            elementStart(3, 'span', ['class', 'toSecond noise']);
+            { text(4, '2'); }
             elementEnd();
           }
           elementEnd();
@@ -669,11 +669,11 @@ describe('content projection', () => {
         if (cm) {
           elementStart(0, Child);
           {
-            elementStart(2, 'span', ['class', 'toFirst']);
-            { text(3, '1'); }
+            elementStart(1, 'span', ['class', 'toFirst']);
+            { text(2, '1'); }
             elementEnd();
-            elementStart(4, 'span', ['class', 'toSecond']);
-            { text(5, '2'); }
+            elementStart(3, 'span', ['class', 'toSecond']);
+            { text(4, '2'); }
             elementEnd();
           }
           elementEnd();
@@ -713,13 +713,13 @@ describe('content projection', () => {
         if (cm) {
           elementStart(0, Child);
           {
-            elementStart(2, 'span', ['class', 'toFirst']);
-            { text(3, '1'); }
+            elementStart(1, 'span', ['class', 'toFirst']);
+            { text(2, '1'); }
             elementEnd();
-            elementStart(4, 'span');
-            { text(5, 'remaining'); }
+            elementStart(3, 'span');
+            { text(4, 'remaining'); }
             elementEnd();
-            text(6, 'more remaining');
+            text(5, 'more remaining');
           }
           elementEnd();
         }
@@ -759,13 +759,13 @@ describe('content projection', () => {
         if (cm) {
           elementStart(0, Child);
           {
-            elementStart(2, 'span');
-            { text(3, '1'); }
+            elementStart(1, 'span');
+            { text(2, '1'); }
             elementEnd();
-            elementStart(4, 'span', ['class', 'toSecond']);
-            { text(5, '2'); }
+            elementStart(3, 'span', ['class', 'toSecond']);
+            { text(4, '2'); }
             elementEnd();
-            text(6, 'remaining');
+            text(5, 'remaining');
           }
           elementEnd();
         }
@@ -809,9 +809,9 @@ describe('content projection', () => {
           projectionDef(0);
           elementStart(1, GrandChild);
           {
-            projection(3, 0);
-            elementStart(4, 'span');
-            { text(5, 'in child template'); }
+            projection(2, 0);
+            elementStart(3, 'span');
+            { text(4, 'in child template'); }
             elementEnd();
           }
           elementEnd();
@@ -829,8 +829,8 @@ describe('content projection', () => {
         if (cm) {
           elementStart(0, Child);
           {
-            elementStart(2, 'span');
-            { text(3, 'parent content'); }
+            elementStart(1, 'span');
+            { text(2, 'parent content'); }
             elementEnd();
           }
           elementEnd();
@@ -873,10 +873,10 @@ describe('content projection', () => {
           projectionDef(0);
           elementStart(1, Card);
           {
-            elementStart(3, 'h1', ['card-title', '']);
-            { text(4, 'Title'); }
+            elementStart(2, 'h1', ['card-title', '']);
+            { text(3, 'Title'); }
             elementEnd();
-            projection(5, 0, 0, ['card-content', '']);
+            projection(4, 0, 0, ['card-content', '']);
           }
           elementEnd();
         }
@@ -890,7 +890,7 @@ describe('content projection', () => {
       const App = createComponent('app', function(ctx: any, cm: boolean) {
         if (cm) {
           elementStart(0, CardWithTitle);
-          { text(2, 'content'); }
+          { text(1, 'content'); }
           elementEnd();
         }
       });
@@ -932,10 +932,10 @@ describe('content projection', () => {
           projectionDef(0);
           elementStart(1, Card);
           {
-            elementStart(3, 'h1', ['ngProjectAs', '[card-title]']);
-            { text(4, 'Title'); }
+            elementStart(2, 'h1', ['ngProjectAs', '[card-title]']);
+            { text(3, 'Title'); }
             elementEnd();
-            projection(5, 0, 0, ['ngProjectAs', '[card-content]']);
+            projection(4, 0, 0, ['ngProjectAs', '[card-content]']);
           }
           elementEnd();
         }
@@ -949,7 +949,7 @@ describe('content projection', () => {
       const App = createComponent('app', function(ctx: any, cm: boolean) {
         if (cm) {
           elementStart(0, CardWithTitle);
-          { text(2, 'content'); }
+          { text(1, 'content'); }
           elementEnd();
         }
       });
@@ -982,11 +982,11 @@ describe('content projection', () => {
         if (cm) {
           elementStart(0, Child);
           {
-            elementStart(2, 'div', ['ngProjectAs', 'span']);
-            { text(3, 'should not project'); }
+            elementStart(1, 'div', ['ngProjectAs', 'span']);
+            { text(2, 'should not project'); }
             elementEnd();
-            elementStart(4, 'div');
-            { text(5, 'should project'); }
+            elementStart(3, 'div');
+            { text(4, 'should project'); }
             elementEnd();
           }
           elementEnd();
@@ -1021,10 +1021,10 @@ describe('content projection', () => {
       const Parent = createComponent('parent', function(ctx: {value: any}, cm: boolean) {
         if (cm) {
           elementStart(0, Child);
-          { container(2, undefined, undefined, 'div'); }
+          { container(1, undefined, undefined, 'div'); }
           elementEnd();
         }
-        containerRefreshStart(2);
+        containerRefreshStart(1);
         {
           if (true) {
             if (embeddedViewStart(0)) {

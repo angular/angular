@@ -25,8 +25,8 @@ export function pipe<T>(index: number, pipeDef: PipeDef<T>, firstInstance?: T): 
   const tView = getTView();
   if (tView.firstTemplatePass) {
     tView.data[index] = pipeDef;
-    if (pipeDef.onDestroy != null) {
-      (tView.destroyHooks || (tView.destroyHooks = [])).push(index, pipeDef.onDestroy);
+    if (pipeDef.onDestroy) {
+      (tView.pipeDestroyHooks || (tView.pipeDestroyHooks = [])).push(index, pipeDef.onDestroy);
     }
   }
   const pipeInstance = pipeDef.pure && firstInstance ? firstInstance : pipeDef.n();

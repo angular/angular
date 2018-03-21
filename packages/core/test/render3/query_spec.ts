@@ -7,7 +7,7 @@
  */
 import {QUERY_READ_CONTAINER_REF, QUERY_READ_ELEMENT_REF, QUERY_READ_FROM_NODE, QUERY_READ_TEMPLATE_REF} from '../../src/render3/di';
 import {QueryList, defineComponent, detectChanges} from '../../src/render3/index';
-import {container, containerRefreshEnd, containerRefreshStart, elementEnd, elementStart, embeddedViewEnd, embeddedViewStart, load} from '../../src/render3/instructions';
+import {container, containerRefreshEnd, containerRefreshStart, elementEnd, elementStart, embeddedViewEnd, embeddedViewStart, load, loadDirective} from '../../src/render3/instructions';
 import {query, queryRefresh} from '../../src/render3/query';
 
 import {createComponent, createDirective, renderComponent} from './render_util';
@@ -64,9 +64,9 @@ describe('query', () => {
         query(1, Child, true);
         elementStart(2, Child);
         {
-          child1 = load(3);
-          elementStart(4, Child);
-          { child2 = load(5); }
+          child1 = loadDirective(0);
+          elementStart(3, Child);
+          { child2 = loadDirective(1); }
           elementEnd();
         }
         elementEnd();
@@ -124,7 +124,7 @@ describe('query', () => {
         if (cm) {
           query(0, Child, false, OtherChild);
           elementStart(1, 'div', null, [Child, OtherChild]);
-          { otherChildInstance = load(3); }
+          { otherChildInstance = loadDirective(1); }
           elementEnd();
         }
         queryRefresh(tmp = load<QueryList<any>>(0)) && (ctx.query = tmp as QueryList<any>);
@@ -418,7 +418,7 @@ describe('query', () => {
         if (cm) {
           query(0, ['foo'], true, QUERY_READ_FROM_NODE);
           elementStart(1, Child, null, null, ['foo', '']);
-          { childInstance = load(2); }
+          { childInstance = loadDirective(0); }
           elementEnd();
         }
         queryRefresh(tmp = load<QueryList<any>>(0)) && (ctx.query = tmp as QueryList<any>);
@@ -481,7 +481,7 @@ describe('query', () => {
            if (cm) {
              query(0, ['foo'], true, QUERY_READ_FROM_NODE);
              elementStart(1, 'div', null, [Child], ['foo', 'child']);
-             childInstance = load(2);
+             childInstance = loadDirective(0);
              elementEnd();
            }
            queryRefresh(tmp = load<QueryList<any>>(0)) && (ctx.query = tmp as QueryList<any>);
@@ -510,8 +510,8 @@ describe('query', () => {
           query(0, ['foo', 'bar'], true, QUERY_READ_FROM_NODE);
           elementStart(1, 'div', null, [Child1, Child2], ['foo', 'child1', 'bar', 'child2']);
           {
-            child1Instance = load(2);
-            child2Instance = load(3);
+            child1Instance = loadDirective(0);
+            child2Instance = loadDirective(1);
           }
           elementEnd();
         }
@@ -542,7 +542,7 @@ describe('query', () => {
           query(0, ['foo'], true, QUERY_READ_FROM_NODE);
           query(1, ['bar'], true, QUERY_READ_FROM_NODE);
           elementStart(2, 'div', null, [Child], ['foo', 'child', 'bar', 'child']);
-          { childInstance = load(3); }
+          { childInstance = loadDirective(0); }
           elementEnd();
         }
         queryRefresh(tmp = load<QueryList<any>>(0)) && (ctx.fooQuery = tmp as QueryList<any>);
@@ -601,7 +601,7 @@ describe('query', () => {
         if (cm) {
           query(0, ['foo', 'bar'], undefined, QUERY_READ_FROM_NODE);
           div = elementStart(1, 'div', null, [Child], ['foo', '', 'bar', 'child']);
-          { childInstance = load(2); }
+          { childInstance = loadDirective(0); }
           elementEnd();
         }
         queryRefresh(tmp = load<QueryList<any>>(0)) && (ctx.query = tmp as QueryList<any>);
