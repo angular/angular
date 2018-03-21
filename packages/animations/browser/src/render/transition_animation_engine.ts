@@ -666,7 +666,14 @@ export class TransitionAnimationEngine {
     // code does not contain any animation code in it, but it is
     // just being called so that the node is marked as being inserted
     if (namespaceId) {
-      this._fetchNamespace(namespaceId).insertNode(element, parent);
+      // in a rare situation the namespace might've already been
+      // removed before a insertion has occured (due to a conflict)
+      // between the regsiter/deregistration of a view therefore it's
+      // important to check to see if the NS has been returned
+      const ns = this._fetchNamespace(namespaceId);
+      if (ns) {
+        ns.insertNode(element, parent);
+      }
     }
 
     // only *directives and host elements are inserted before
