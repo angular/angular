@@ -20,7 +20,7 @@ possible, and ideally also a include a good reproduction of the problem.
 ### Features
 
 * **core:** update the package output of build.sh to [APF v6](https://goo.gl/jB3GVv) ([#22808](https://github.com/angular/angular/issues/22808)) ([ce63dc6](https://github.com/angular/angular/commit/ce63dc6))
-* **core:** upgrade rxjs to 6.0.0-beta.0, please see this [RxJS Upgrade Guide](https://goo.gl/NTuwfs) for more info ([#22573](https://github.com/angular/angular/issues/22573)) ([b43f8bc](https://github.com/angular/angular/commit/b43f8bc))
+* **core:** upgrade rxjs to 6.0.0-beta.0, please see this [RxJS Upgrade Guide](https://goo.gl/osWFzo) for more info ([#22573](https://github.com/angular/angular/issues/22573)) ([b43f8bc](https://github.com/angular/angular/commit/b43f8bc))
 
 
 
