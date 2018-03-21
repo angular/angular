@@ -13,6 +13,10 @@ function _notImplemented(methodName: string) {
   return new Error('This method is not implemented in DominoAdapter: ' + methodName);
 }
 
+if (typeof Event === 'undefined' && domino.impl) {
+  (global as any)['Event'] = domino.impl.Event;
+}
+
 /**
  * Parses a document string to a Document object.
  */
