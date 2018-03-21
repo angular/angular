@@ -1,3 +1,5 @@
+arbitrary_bin.txt
+arbitrary_genfiles.txt
 bundles
   bundles/example-secondary.umd.js
   bundles/example-secondary.umd.js.map
@@ -43,6 +45,7 @@ esm5
     esm5/secondary/secondarymodule.ngsummary.js
 example_public_index.d.ts
 example_public_index.metadata.json
+extra-styles.css
 fesm2015
   fesm2015/example.js
   fesm2015/example.js.map
@@ -65,6 +68,16 @@ secondary
 secondary.d.ts
 secondary.metadata.json
 some-file.txt
+--- arbitrary_bin.txt ---
+
+World
+
+
+--- arbitrary_genfiles.txt ---
+
+Hello
+
+
 --- bundles/example-secondary.umd.js ---
 
 (function (global, factory) {
@@ -660,6 +673,13 @@ export * from './index';
 --- example_public_index.metadata.json ---
 
 {"__symbolic":"module","version":4,"metadata":{"MyModule":{"__symbolic":"class","decorators":[{"__symbolic":"call","expression":{"__symbolic":"reference","module":"@angular/core","name":"NgModule","line":11,"character":1},"arguments":[{}]}],"members":{}}},"origins":{"MyModule":"./mymodule"},"importAs":"example"}
+
+--- extra-styles.css ---
+
+.special {
+  color: goldenrod;
+}
+
 
 --- fesm2015/example.js ---
 

@@ -15,9 +15,31 @@ ng_package(
         "package.json",
         "some-file.txt",
     ],
+    data = [
+        ":arbitrary_bin_file",
+        ":arbitrary_genfiles_file",
+        ":extra-styles.css",
+    ],
     entry_point = "packages/bazel/test/ng_package/example/index.js",
     deps = [
         ":example",
         "//packages/bazel/test/ng_package/example/secondary",
     ],
+)
+
+# Use a genrule to create a file in bazel-genfiles to ensure that the genfiles output of
+# a rule can be passed through to the `data` of ng_package.
+genrule(
+    name = "arbitrary_genfiles_file",
+    outs = ["arbitrary_genfiles.txt"],
+    cmd = "echo Hello > $@",
+)
+
+# Use a genrule to create a file in bazel-bin to ensure that the bin output of
+# a rule can be passed through to the `data` of ng_package.
+genrule(
+    name = "arbitrary_bin_file",
+    outs = ["arbitrary_bin.txt"],
+    cmd = "echo World > $@",
+    output_to_bindir = True,
 )
