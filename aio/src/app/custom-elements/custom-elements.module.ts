@@ -1,5 +1,6 @@
 import { NgModule, NgModuleFactoryLoader, SystemJsNgModuleLoader } from '@angular/core';
 import { ROUTES} from '@angular/router';
+import { CustomElementsModule } from '@angular/elements';
 import { ElementsLoader } from './elements-loader';
 import {
   ELEMENT_MODULE_PATHS,
@@ -8,6 +9,9 @@ import {
 } from './element-registry';
 
 @NgModule({
+  imports: [
+    CustomElementsModule,
+  ],
   providers: [
     ElementsLoader,
     { provide: NgModuleFactoryLoader, useClass: SystemJsNgModuleLoader },
@@ -19,4 +23,4 @@ import {
     { provide: ROUTES, useValue: ELEMENT_MODULE_PATHS_AS_ROUTES, multi: true },
   ],
 })
-export class CustomElementsModule { }
+export class AppCustomElementsModule { }

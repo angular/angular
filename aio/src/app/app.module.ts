@@ -37,7 +37,7 @@ import { TocService } from 'app/shared/toc.service';
 import { CurrentDateToken, currentDateProvider } from 'app/shared/current-date';
 import { WindowToken, windowProvider } from 'app/shared/window';
 
-import { CustomElementsModule } from 'app/custom-elements/custom-elements.module';
+import { AppCustomElementsModule } from 'app/custom-elements/custom-elements.module';
 import { SharedModule } from 'app/shared/shared.module';
 import { SwUpdatesModule } from 'app/sw-updates/sw-updates.module';
 
@@ -91,7 +91,7 @@ export const svgIconProviders = [
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
-    CustomElementsModule,
+    AppCustomElementsModule,
     HttpClientModule,
     MatButtonModule,
     MatIconModule,

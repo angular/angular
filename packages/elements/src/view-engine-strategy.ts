@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ApplicationRef, ComponentFactory, ComponentFactoryResolver, ComponentRef, EventEmitter, Injector, OnChanges, SimpleChange, SimpleChanges, Type} from '@angular/core';
+import {ApplicationRef, ComponentFactory, ComponentFactoryResolver, ComponentRef, EventEmitter, Injectable, Injector, OnChanges, SimpleChange, SimpleChanges, Type} from '@angular/core';
 import {Observable, merge} from 'rxjs';
 import {map} from 'rxjs/operators';
 
@@ -18,21 +18,17 @@ import {isFunction, scheduler, strictEquals} from './utils';
 const DESTROY_DELAY = 10;
 
 /**
- * Factory that creates new ComponentNgElementStrategy instance. Gets the component factory with the
- * constructor's injector's factory resolver and passes that factory to each strategy.
+ * Factory that creates new ViewEngineNgElementStrategy instance. Gets the component factory with
+ * the constructor's injector's factory resolver and passes that factory to each strategy.
  *
  * @experimental
  */
-export class ComponentNgElementStrategyFactory implements NgElementStrategyFactory {
-  componentFactory: ComponentFactory<any>;
-
-  constructor(private component: Type<any>, private injector: Injector) {
-    this.componentFactory =
+@Injectable()
+export class ViewEngineNgElementStrategyFactory extends NgElementStrategyFactory {
+  create(component: Type<any>, injector: Injector) {
+    const componentFactory =
         injector.get(ComponentFactoryResolver).resolveComponentFactory(component);
-  }
-
-  create(injector: Injector) {
-    return new ComponentNgElementStrategy(this.componentFactory, injector);
+    return new ViewEngineNgElementStrategy(componentFactory, injector);
   }
 }
 
@@ -42,7 +38,7 @@ export class ComponentNgElementStrategyFactory implements NgElementStrategyFacto
  *
  * @experimental
  */
-export class ComponentNgElementStrategy implements NgElementStrategy {
+export class ViewEngineNgElementStrategy implements NgElementStrategy {
   /** Merged stream of the component's output events. */
   events: Observable<NgElementStrategyEvent>;
 

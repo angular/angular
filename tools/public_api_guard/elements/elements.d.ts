@@ -2,6 +2,10 @@
 export declare function createCustomElement<P>(component: Type<any>, config: NgElementConfig): NgElementConstructor<P>;
 
 /** @experimental */
+export declare class CustomElementsModule {
+}
+
+/** @experimental */
 export declare abstract class NgElement extends HTMLElement {
     protected ngElementEventsSubscription: Subscription | null;
     protected ngElementStrategy: NgElementStrategy;
@@ -38,8 +42,8 @@ export interface NgElementStrategyEvent {
 }
 
 /** @experimental */
-export interface NgElementStrategyFactory {
-    create(injector: Injector): NgElementStrategy;
+export declare abstract class NgElementStrategyFactory {
+    abstract create(component: Type<any>, injector: Injector): NgElementStrategy;
 }
 
 /** @experimental */

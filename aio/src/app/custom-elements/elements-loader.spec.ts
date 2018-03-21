@@ -126,7 +126,7 @@ describe('ElementsLoader', () => {
 
 // TEST CLASSES/HELPERS
 
-class FakeCustomElementModule implements WithCustomElementComponent {
+class FakeAppCustomElementModule implements WithCustomElementComponent {
   customElementComponent: Type<any>;
 }
 
@@ -141,7 +141,7 @@ class FakeComponentFactoryResolver extends ComponentFactoryResolver {
 class FakeModuleRef extends NgModuleRef<WithCustomElementComponent> {
   injector = jasmine.createSpyObj('injector', ['get']);
   componentFactoryResolver = new FakeComponentFactoryResolver(this.modulePath);
-  instance: WithCustomElementComponent = new FakeCustomElementModule();
+  instance: WithCustomElementComponent = new FakeAppCustomElementModule();
 
   constructor(private modulePath) {
     super();

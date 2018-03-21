@@ -15,6 +15,7 @@ detection APIs.
 ```ts
 //hello-world.ts
 import { Component, Input, NgModule } from '@angular/core';
+import { CustomElementsModule } from '@angular/elements';
 
 @Component({
   selector: 'hello-world',
@@ -25,6 +26,7 @@ export class HelloWorld {
 }
 
 @NgModule({
+  imports: [ CustomElementsModule ]
   declarations: [ HelloWorld ],
   entryComponents: [ HelloWorld ]
 })
