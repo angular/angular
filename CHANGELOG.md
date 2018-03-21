@@ -4,6 +4,9 @@
 v6 framework is now feature complete, the cli and material/cdk parts of the v6 release and other integrations are still
 in works and will be completed by the time we cut v6.0.0.
 
+Please [file new issues](https://github.com/angular/angular/issues/new) at our issue tracker with as many details as
+possible, and ideally also a include a good reproduction of the problem.
+
 ### Bug Fixes
 
 * **bazel:** correct expected outs for external sources in ng_module ([#22755](https://github.com/angular/angular/issues/22755)) ([bfe077a](https://github.com/angular/angular/commit/bfe077a))
@@ -22,7 +25,7 @@ in works and will be completed by the time we cut v6.0.0.
 
 
 <a name="6.0.0-beta.8"></a>
-# [6.0.0-beta.8](https://github.com/angular/angular/compare/6.0.0-beta.7...6.0.0-beta.8) (2018-03-21)
+# [6.0.0-beta.8](https://github.com/angular/angular/compare/6.0.0-beta.7...6.0.0-beta.8) (2018-03-16)
 
 
 ### Bug Fixes
