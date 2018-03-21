@@ -262,9 +262,6 @@ export interface TsEmitArguments {
 export interface TsEmitCallback { (args: TsEmitArguments): ts.EmitResult; }
 export interface TsMergeEmitResultsCallback { (results: ts.EmitResult[]): ts.EmitResult; }
 
-/**
- * @internal
- */
 export interface LibrarySummary {
   fileName: string;
   text: string;
@@ -367,8 +364,6 @@ export interface Program {
    * Returns the .d.ts / .ngsummary.json / .ngfactory.d.ts files of libraries that have been emitted
    * in this program or previous programs with paths that emulate the fact that these libraries
    * have been compiled before with no outDir.
-   *
-   * @internal
    */
   getLibrarySummaries(): Map<string, LibrarySummary>;
 

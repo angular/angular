@@ -12,7 +12,7 @@ import * as ts from 'typescript';
 
 import {mainXi18n} from '../src/extract_i18n';
 
-import {makeTempDir} from './test_support';
+import {isInBazel, makeTempDir, setup} from './test_support';
 
 function getNgRootDir() {
   const moduleFilename = module.filename.replace(/\\/g, '/');
@@ -110,41 +110,65 @@ describe('extract_i18n command line', () => {
 
   beforeEach(() => {
     errorSpy = jasmine.createSpy('consoleError').and.callFake(console.error);
-    basePath = makeTempDir();
-    write = (fileName: string, content: string) => {
-      const dir = path.dirname(fileName);
-      if (dir != '.') {
-        const newDir = path.join(basePath, dir);
-        if (!fs.existsSync(newDir)) fs.mkdirSync(newDir);
-      }
-      fs.writeFileSync(path.join(basePath, fileName), content, {encoding: 'utf-8'});
-    };
-    write('tsconfig-base.json', `{
-      "compilerOptions": {
-        "experimentalDecorators": true,
-        "skipLibCheck": true,
-        "noImplicitAny": true,
-        "types": [],
-        "outDir": "built",
-        "rootDir": ".",
-        "baseUrl": ".",
-        "declaration": true,
-        "target": "es5",
-        "module": "es2015",
-        "moduleResolution": "node",
-        "lib": ["es6", "dom"],
-        "typeRoots": ["node_modules/@types"]
-      }
-    }`);
-    outDir = path.resolve(basePath, 'built');
-    const ngRootDir = getNgRootDir();
-    const nodeModulesPath = path.resolve(basePath, 'node_modules');
-    fs.mkdirSync(nodeModulesPath);
-    fs.symlinkSync(
-        path.resolve(ngRootDir, 'dist', 'all', '@angular'),
-        path.resolve(nodeModulesPath, '@angular'));
-    fs.symlinkSync(
-        path.resolve(ngRootDir, 'node_modules', 'rxjs'), path.resolve(nodeModulesPath, 'rxjs'));
+    if (isInBazel()) {
+      const support = setup();
+      write = (fileName: string, content: string) => { support.write(fileName, content); };
+      write('tsconfig-base.json', `{
+        "compilerOptions": {
+          "experimentalDecorators": true,
+          "skipLibCheck": true,
+          "noImplicitAny": true,
+          "types": [],
+          "outDir": "built",
+          "rootDir": ".",
+          "baseUrl": ".",
+          "declaration": true,
+          "target": "es5",
+          "module": "es2015",
+          "moduleResolution": "node",
+          "lib": ["es6", "dom"],
+          "typeRoots": ["node_modules/@types"]
+        }
+      }`);
+      basePath = support.basePath;
+      outDir = path.join(basePath, 'built');
+    } else {
+      basePath = makeTempDir();
+      write = (fileName: string, content: string) => {
+        const dir = path.dirname(fileName);
+        if (dir != '.') {
+          const newDir = path.join(basePath, dir);
+          if (!fs.existsSync(newDir)) fs.mkdirSync(newDir);
+        }
+        fs.writeFileSync(path.join(basePath, fileName), content, {encoding: 'utf-8'});
+      };
+      write('tsconfig-base.json', `{
+        "compilerOptions": {
+          "experimentalDecorators": true,
+          "skipLibCheck": true,
+          "noImplicitAny": true,
+          "types": [],
+          "outDir": "built",
+          "rootDir": ".",
+          "baseUrl": ".",
+          "declaration": true,
+          "target": "es5",
+          "module": "es2015",
+          "moduleResolution": "node",
+          "lib": ["es6", "dom"],
+          "typeRoots": ["node_modules/@types"]
+        }
+      }`);
+      outDir = path.resolve(basePath, 'built');
+      const ngRootDir = getNgRootDir();
+      const nodeModulesPath = path.resolve(basePath, 'node_modules');
+      fs.mkdirSync(nodeModulesPath);
+      fs.symlinkSync(
+          path.resolve(ngRootDir, 'dist', 'all', '@angular'),
+          path.resolve(nodeModulesPath, '@angular'));
+      fs.symlinkSync(
+          path.resolve(ngRootDir, 'node_modules', 'rxjs'), path.resolve(nodeModulesPath, 'rxjs'));
+    }
   });
 
   function writeSources() {
