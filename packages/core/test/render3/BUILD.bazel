@@ -14,8 +14,6 @@ ts_library(
             "load_domino.ts",
         ],
     ),
-    # TODO(alexeagle): should not be different tsconfig
-    tsconfig = "//packages:tsconfig.json",
     deps = [
         "//packages:types",
         "//packages/animations",
