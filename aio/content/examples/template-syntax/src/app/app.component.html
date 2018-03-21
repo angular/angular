@@ -756,14 +756,24 @@ bindon-ngModel
 <!-- template reference variable -->
 <hr><h2 id="ref-vars">Template reference variables</h2>
 
+<!-- #docregion ref-phone! -->
+<!-- #docregion ref-var! -->
+<input #phone placeholder="phone number">
+<!-- #enddocregion ref-var! -->
+
+<!-- lots of other elements -->
+
+<!-- phone refers to the input element; pass its `value` to an event handler -->
+<button (click)="callPhone(phone.value)">Call</button>
+<!-- #enddocregion ref-phone! -->
 <!-- #docregion ref-phone -->
 <!-- #docregion ref-var -->
 <input #phone placeholder="phone number">
 <!-- #enddocregion ref-var -->
 
-<!-- lots of other elements -->
+<!-- 다른 엘리먼트들 -->
 
-<!-- phone refers to the input element; pass its `value` to an event handler -->
+<!-- phone 변수는 input 엘리먼트를 가리키며, 엘리먼트의 `value`를 직접 참조해서 이벤트 핸들러에 전달할 수 있습니다. -->
 <button (click)="callPhone(phone.value)">Call</button>
 <!-- #enddocregion ref-phone -->
 

@@ -2900,62 +2900,115 @@ For example, you could replace the `<confused-hero>` switch case with the follow
 -->
 ## 템플릿 참조 변수 ( <span class="syntax">#var</span> )
 
+<!--
 A **template reference variable** is often a reference to a DOM element within a template.
 It can also be a reference to an Angular component or directive or a
 <a href="https://developer.mozilla.org/en-US/docs/Web/Web_Components" title="MDN: Web Components">web component</a>.
+-->
+**템플릿 참조 변수**는 템플릿 안에서 DOM 엘리먼트를 가리킬 때 사용합니다.
+그리고 DOM뿐 아니라 Angular 컴포넌트나 디렉티브, <a href="https://developer.mozilla.org/en-US/docs/Web/Web_Components" title="MDN: Web Components">웹 컴포넌트</a>를 가리킬 때도 사용할 수 있습니다.
 
+<!--
 Use the hash symbol (#) to declare a reference variable.
 The `#phone` declares a `phone` variable on an `<input>` element.
+-->
+참조 변수는 해시 기호(#)를 사용해서 정의합니다.
+예를 들어, `<input>` 엘리먼트를 `phone` 변수로 가리키려면 `#phone` 과 같이 정의합니다.
 
 <code-example path="template-syntax/src/app/app.component.html" region="ref-var" title="src/app/app.component.html" linenums="false">
 </code-example>
 
+<!--
 You can refer to a template reference variable _anywhere_ in the template.
 The `phone` variable declared on this `<input>` is
 consumed in a `<button>` on the other side of the template
+-->
+템플릿 참조 변수는 템플릿 안이라면 _어디에서도_ 사용할 수 있습니다.
+그래서 템플릿 안에 있는 `<button>` 엘리먼트는 `phone` 변수를 사용해서 `<input>` 엘리먼트를 참조할 수 있습니다.
 
 <code-example path="template-syntax/src/app/app.component.html" region="ref-phone" title="src/app/app.component.html" linenums="false">
 </code-example>
 
+<!--
 <h3 class="no-toc">How a reference variable gets its value</h3>
+-->
+<h3 class="no-toc">참조 변수를 사용해서 입력값 얻기</h3>
 
+<!--
 In most cases, Angular sets the reference variable's value to the element on which it was declared.
 In the previous example, `phone` refers to the _phone number_ `<input>` box.
 The phone button click handler passes the _input_ value to the component's `callPhone` method.
 But a directive can change that behavior and set the value to something else, such as itself.
 The `NgForm` directive does that.
+-->
+템플릿 참조 변수는 입력 엘리먼트의 값에 접근하기 위해 주로 사용합니다.
+이전 예제에서 보면, `phone` 변수는 `<input>` 엘리먼트를 참조하며, 버튼을 클릭했을 때 실행되는 `callPhone` 메소드에 입력 필드의 값을 전달하기 위해 `phone.value`를 사용했습니다.
+이 방식은 하나의 방법일 뿐이며, 필요하다면 `<input>` 엘리먼트 자체를 넘겨서 사용할 수도 있을 것입니다.
+`NgForm` 디렉티브가 이런 방식으로 동작합니다.
 
+<!--
 The following is a *simplified* version of the form example in the [Forms](guide/forms) guide.
+-->
+[폼](guide/forms) 문서에 있는 예제를 *간단하게만* 살펴보면 다음과 같습니다.
 
 <code-example path="template-syntax/src/app/hero-form.component.html" title="src/app/hero-form.component.html" linenums="false">
 </code-example>
 
+<!--
 A template reference variable, `heroForm`, appears three times in this example, separated
 by a large amount of HTML.
 What is the value of `heroForm`?
+-->
+이 예제에서 템플릿 참조 변수 `heroForm`은 총 3번 사용됩니다.
+`heroForm`은 어떤 값을 갖고 있을까요?
 
+<!--
 If Angular hadn't taken it over when you imported the `FormsModule`,
 it would be the [HTMLFormElement](https://developer.mozilla.org/en-US/docs/Web/API/HTMLFormElement).
 The `heroForm` is actually a reference to an Angular [NgForm](api/forms/NgForm "API: NgForm")
 directive with the ability to track the value and validity of every control in the form.
+-->
+만약 `FormsModule`을 로드하지 않았다면 이 변수의 값은 [HTMLFormElement](https://developer.mozilla.org/en-US/docs/Web/API/HTMLFormElement)가 됩니다.
+실제로 `heroForm` 변수는 Angular [NgForm](api/forms/NgForm "API: NgForm") 디렉티브를 가리키는 변수입니다.
+`NgForm`은 폼에 입력된 값을 담고 있으며, 폼에 있는 모든 폼 컨트롤의 유효성에 대한 정보도 갖고 있습니다.
 
+<!--
 The native `<form>` element doesn't have a `form` property.
 But the `NgForm` directive does, which explains how you can disable the submit button
 if the `heroForm.form.valid` is invalid and pass the entire form control tree
 to the parent component's `onSubmit` method.
+-->
+네이티브 `<form>` 엘리멘트에는 `form`이라는 프로퍼티가 없습니다.
+하지만 `NgForm` 디렉티브에는 이 프로퍼티가 있고, `heroForm.form.valid` 값을 사용해서 제출 버튼을 비활성화 하거나, 모든 폼 유효성 검사가 통과했을 때 부모 컴포넌트의 `onSubmit` 메소드를 실행하도록 할 수 있습니다.
 
+<!--
 <h3 class="no-toc">Template reference variable warning notes</h3>
+-->
+<h3 class="no-toc">템플릿 참조 변수를 사용할 때 주의할 점</h3>
 
+<!--
 A template _reference_ variable (`#phone`) is _not_ the same as a template _input_ variable (`let phone`)
 such as you might see in an [`*ngFor`](guide/template-syntax#template-input-variable).
 Learn the difference in the [_Structural Directives_](guide/structural-directives#template-input-variable) guide.
+-->
+템플릿 _참조_ 변수 (`#phone`)는 [`*ngFor`](guide/template-syntax#템플릿-입력-변수)에서 살펴봤던 템플릿 _입력_ 변수 (`let phone`)와는 _다릅니다_.
+어떻게 다른지 자세하게 알아보려면 [_구조 디렉티브_](guide/structural-directives#템플릿-입력-변수) 문서를 참고하세요.
 
+<!--
 The scope of a reference variable is the _entire template_.
 Do not define the same variable name more than once in the same template.
 The runtime value will be unpredictable.
+-->
+템플릿 참조 변수를 사용할 수 있는 스코프는 _템플릿 전체_ 입니다.
+한 템플릿 안에서 같은 이름의 템플릿 참조 변수를 참조하지 않도록 주의하세요.
+에러는 나지 않더라도 어떤 동작을 할지 알 수 없습니다.
 
+<!--
 You can use the `ref-` prefix alternative to `#`.
 This example declares the `fax` variable as `ref-fax` instead of `#fax`.
+-->
+`#` 기호를 사용하는 것이 어색하다면 `ref-` 접두사를 대신 사용할 수도 있습니다.
+접두사를 사용해서 `ref-fax` 라고 작성하면 `#fax` 로 `fax` 변수를 정의한 것과 같습니다.
 
 <code-example path="template-syntax/src/app/app.component.html" region="ref-fax" title="src/app/app.component.html" linenums="false">
 </code-example>

@@ -328,6 +328,8 @@ is a great way to learn more.
 
 {@a template-input-variables}
 
+{@a 템플릿-입력-변수}
+
 
 ### Template input variable
 
