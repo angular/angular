@@ -10,7 +10,10 @@ ts_library(
         "mocks.ts",
         "test_support.ts",
     ],
-    visibility = [":__subpackages__"],
+    visibility = [
+        ":__subpackages__",
+        "//packages/language-service/test:__subpackages__",
+    ],
     deps = [
         "//packages:types",
         "//packages/compiler",
