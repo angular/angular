@@ -238,8 +238,12 @@ export function compile({allowNonHermeticReads, allDepsCompiledWithBazel = true,
     gatherDiagnostics = (program) =>
         gatherDiagnosticsForInputsOnly(compilerOpts, bazelOpts, program);
   }
-  const {diagnostics, emitResult, program} = ng.performCompilation(
-      {rootNames: files, options: compilerOpts, host: ngHost, emitCallback, gatherDiagnostics});
+  const {diagnostics, emitResult, program} = ng.performCompilation({
+    rootNames: files,
+    options: compilerOpts,
+    host: ngHost, emitCallback,
+    mergeEmitResultsCallback: tsickle.mergeEmitResults, gatherDiagnostics
+  });
   const tsickleEmitResult = emitResult as tsickle.EmitResult;
   let externs = '/** @externs */\n';
   if (!diagnostics.length) {
