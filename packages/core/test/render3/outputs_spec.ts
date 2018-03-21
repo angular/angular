@@ -248,7 +248,7 @@ describe('outputs', () => {
               listener('change', function() { return ctx.onChange(); });
             }
             elementEnd();
-            elementStart(4, DestroyComp);
+            elementStart(3, DestroyComp);
             elementEnd();
           }
           embeddedViewEnd();

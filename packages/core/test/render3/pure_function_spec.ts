@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {defineComponent} from '../../src/render3/index';
-import {bind, container, containerRefreshEnd, containerRefreshStart, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, load} from '../../src/render3/instructions';
+import {bind, container, containerRefreshEnd, containerRefreshStart, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, load, loadDirective} from '../../src/render3/instructions';
 import {pureFunction1, pureFunction2, pureFunction3, pureFunction4, pureFunction5, pureFunction6, pureFunction7, pureFunction8, pureFunctionV} from '../../src/render3/pure_function';
 import {renderToHtml} from '../../test/render3/render_util';
 
@@ -120,7 +120,7 @@ describe('array literals', () => {
         template: function(ctx: any, cm: boolean) {
           if (cm) {
             elementStart(0, MyComp);
-            myComps.push(load(1));
+            myComps.push(loadDirective(0));
             elementEnd();
           }
           elementProperty(0, 'names', bind(ctx.someFn(pureFunction1(e0_ff, ctx.customName))));
@@ -132,7 +132,7 @@ describe('array literals', () => {
       if (cm) {
         elementStart(0, ParentComp);
         elementEnd();
-        elementStart(2, ParentComp);
+        elementStart(1, ParentComp);
         elementEnd();
       }
     }
@@ -211,32 +211,32 @@ describe('array literals', () => {
     function Template(c: any, cm: boolean) {
       if (cm) {
         elementStart(0, MyComp);
-        f3Comp = load(1);
+        f3Comp = loadDirective(0);
+        elementEnd();
+        elementStart(1, MyComp);
+        f4Comp = loadDirective(1);
         elementEnd();
         elementStart(2, MyComp);
-        f4Comp = load(3);
+        f5Comp = loadDirective(2);
+        elementEnd();
+        elementStart(3, MyComp);
+        f6Comp = loadDirective(3);
         elementEnd();
         elementStart(4, MyComp);
-        f5Comp = load(5);
+        f7Comp = loadDirective(4);
         elementEnd();
-        elementStart(6, MyComp);
-        f6Comp = load(7);
-        elementEnd();
-        elementStart(8, MyComp);
-        f7Comp = load(9);
-        elementEnd();
-        elementStart(10, MyComp);
-        f8Comp = load(11);
+        elementStart(5, MyComp);
+        f8Comp = loadDirective(5);
         elementEnd();
       }
       elementProperty(0, 'names', bind(pureFunction3(e0_ff, c[5], c[6], c[7])));
-      elementProperty(2, 'names', bind(pureFunction4(e2_ff, c[4], c[5], c[6], c[7])));
-      elementProperty(4, 'names', bind(pureFunction5(e4_ff, c[3], c[4], c[5], c[6], c[7])));
-      elementProperty(6, 'names', bind(pureFunction6(e6_ff, c[2], c[3], c[4], c[5], c[6], c[7])));
+      elementProperty(1, 'names', bind(pureFunction4(e2_ff, c[4], c[5], c[6], c[7])));
+      elementProperty(2, 'names', bind(pureFunction5(e4_ff, c[3], c[4], c[5], c[6], c[7])));
+      elementProperty(3, 'names', bind(pureFunction6(e6_ff, c[2], c[3], c[4], c[5], c[6], c[7])));
       elementProperty(
-          8, 'names', bind(pureFunction7(e8_ff, c[1], c[2], c[3], c[4], c[5], c[6], c[7])));
+          4, 'names', bind(pureFunction7(e8_ff, c[1], c[2], c[3], c[4], c[5], c[6], c[7])));
       elementProperty(
-          10, 'names', bind(pureFunction8(e10_ff, c[0], c[1], c[2], c[3], c[4], c[5], c[6], c[7])));
+          5, 'names', bind(pureFunction8(e10_ff, c[0], c[1], c[2], c[3], c[4], c[5], c[6], c[7])));
     }
 
     renderToHtml(Template, ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i']);
@@ -422,7 +422,7 @@ describe('object literals', () => {
         for (let i = 0; i < 2; i++) {
           if (embeddedViewStart(0)) {
             elementStart(0, ObjectComp);
-            objectComps.push(load(1));
+            objectComps.push(loadDirective(0));
             elementEnd();
           }
           elementProperty(

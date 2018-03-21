@@ -70,11 +70,11 @@ describe('lifecycle hooks', () => {
         if (cm) {
           $r3$.ɵE(0, LifecycleComp);
           $r3$.ɵe();
-          $r3$.ɵE(2, LifecycleComp);
+          $r3$.ɵE(1, LifecycleComp);
           $r3$.ɵe();
         }
         $r3$.ɵp(0, 'name', $r3$.ɵb(ctx.name1));
-        $r3$.ɵp(2, 'name', $r3$.ɵb(ctx.name2));
+        $r3$.ɵp(1, 'name', $r3$.ɵb(ctx.name2));
       }
     });
     // /NORMATIVE
