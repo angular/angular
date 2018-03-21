@@ -940,8 +940,7 @@ with that hero's data values.
 
 A refresh button clears the hero list and the current selected hero before refetching the heroes.
 
-Notice that `hero-list.component.ts` imports `Observable` and `finally` while `hero.service.ts` imports `Observable`, `of`,
-and `delay` from `rxjs`.
+Notice that `hero-list.component.ts` imports `Observable` and the `finally` operator, while `hero.service.ts` imports `Observable`, `of` and the `delay` operator from `rxjs`.
 
 The remaining `HeroListComponent` and `HeroService` implementation details are beyond the scope of this tutorial.
 However, the techniques involved are covered elsewhere in the documentation, including the _Tour of Heroes_

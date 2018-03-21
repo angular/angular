@@ -313,7 +313,6 @@ It takes two more parameters:
 1. `httpOptions` - the method options which, in this case, [specify required headers](#adding-headers).
 
 Of course it catches errors in much the same manner [described above](#error-details).
-It also _taps_ the returned observable in order to log the successful POST.
 
 The `HeroesComponent` initiates the actual POST operation by subscribing to 
 the `Observable` returned by this service method.
@@ -347,18 +346,14 @@ the `Observable` returned by this service method.
   title="app/heroes/heroes.component.ts (deleteHero)" linenums="false">
 </code-example>
 
+The component isn't expecting a result from the delete operation, so it subscribes without a callback. Even though you are not using the result, you still have to subscribe. Calling the `subscribe()` method _executes_ the observable, which is what initiates the DELETE request. 
+
 <div class="alert is-important">
 
-You must call _subscribe()_ or nothing happens!
+You must call _subscribe()_ or nothing happens. Just calling `HeroService.deleteHero()` **does not initiate the DELETE request.**
 
 </div>
 
-The component isn't expecting a result from the delete operation and
-subscribes without a callback.
-The bare `.subscribe()` _seems_ pointless.
-
-In fact, it is essential.
-Merely calling `HeroService.deleteHero()` **does not initiate the DELETE request.**
 
 <code-example 
   path="http/src/app/heroes/heroes.component.ts"
@@ -366,7 +361,7 @@ Merely calling `HeroService.deleteHero()` **does not initiate the DELETE request
 </code-example>
 
 {@a always-subscribe}
-### Always _subscribe_!
+**Always _subscribe_!**
 
 An `HttpClient` method does not begin its HTTP request until you call `subscribe()` on the observable returned by that method. This is true for _all_ `HttpClient` _methods_.
 
@@ -378,8 +373,7 @@ The [`AsyncPipe`](api/common/AsyncPipe) subscribes (and unsubscribes) for you au
 
 All observables returned from `HttpClient` methods are _cold_ by design.
 Execution of the HTTP request is _deferred_, allowing you to extend the
-observable with additional operations such as  `tap` and `catchError`
- before anything actually happens.
+observable with additional operations such as  `tap` and `catchError` before anything actually happens.
 
 Calling `subscribe(...)` triggers execution of the observable and causes
 `HttpClient` to compose and send the HTTP request to the server.
@@ -417,7 +411,7 @@ in order to initiate the request.
 
 ## Advanced usage
 
-The above sections detail how to use the basic HTTP functionality in `@angular/common/http`, but sometimes you need to do more than make simple requests and get data back.
+We have discussed the basic HTTP functionality in `@angular/common/http`, but sometimes you need to do more than make simple requests and get data back.
 
 ### Configuring the request
 
@@ -454,7 +448,7 @@ Here is a `searchHeroes` method that queries for heroes whose names contain the 
   region="searchHeroes" linenums="false">
 </code-example>
 
-If there is a search term, the code constructs an options object with an HTML URL encoded search parameter. If the term were "foo", the GET request URL would be `api/heroes/?name=foo`.
+If there is a search term, the code constructs an options object with an HTML URL-encoded search parameter. If the term were "foo", the GET request URL would be `api/heroes/?name=foo`.
 
 The `HttpParms` are immutable so you'll have to use the `set()` method to update the options.
 
@@ -463,7 +457,7 @@ The `HttpParms` are immutable so you'll have to use the `set()` method to update
 The sample includes an _npm package search_ feature.
 
 When the user enters a name in a search-box, the `PackageSearchComponent` sends
-a search request for a package with that name to the NPM web api.
+a search request for a package with that name to the NPM web API.
 
 Here's a pertinent excerpt from the template:
 
@@ -486,7 +480,7 @@ That's easy to implement with RxJS operators, as shown in this excerpt.
 </code-example>
 
 The `searchText$` is the sequence of search-box values coming from the user.
-It's defined as an RxJS `Subject`, which means it is an `Observable`
+It's defined as an RxJS `Subject`, which means it is a multicasting `Observable`
 that can also produce values for itself by calling `next(value)`,
 as happens in the `search()` method.
 
@@ -820,7 +814,7 @@ Some folks describe it as a "_one and done_" observable.
 But an interceptor can change this to an _observable_ that emits more than once.
 
 A revised version of the `CachingInterceptor` optionally returns an _observable_ that
-immediately emits the cached response, sends the request to the npm web api anyway,
+immediately emits the cached response, sends the request to the NPM web API anyway,
 and emits again later with the updated search results.
 
 <code-example 
