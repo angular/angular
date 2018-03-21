@@ -3,7 +3,7 @@
     "master": {
       "uncompressed": {
         "inline": 1971,
-        "main": 743696,
+        "main": 595662,
         "polyfills": 40272,
         "prettify": 14888
       }
