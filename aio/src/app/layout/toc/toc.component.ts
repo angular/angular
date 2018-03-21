@@ -1,8 +1,6 @@
 import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, QueryList, ViewChildren } from '@angular/core';
-import { asapScheduler as asap, Observable, Subject } from 'rxjs';
-import 'rxjs/add/observable/combineLatest';
-import 'rxjs/add/operator/subscribeOn';
-import 'rxjs/add/operator/takeUntil';
+import { asapScheduler as asap, combineLatest, Subject } from 'rxjs';
+import { startWith, subscribeOn, takeUntil } from 'rxjs/operators';
 
 import { ScrollService } from 'app/shared/scroll.service';
 import { TocItem, TocService } from 'app/shared/toc.service';
@@ -34,7 +32,7 @@ export class TocComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngOnInit() {
     this.tocService.tocList
-        .takeUntil(this.onDestroy)
+        .pipe(takeUntil(this.onDestroy))
         .subscribe(tocList => {
           this.tocList = tocList;
           const itemCount = count(this.tocList, item => item.level !== 'h1');
@@ -54,8 +52,8 @@ export class TocComponent implements OnInit, AfterViewInit, OnDestroy {
       // We use the `asap` scheduler because updates to `activeItemIndex` are triggered by DOM changes,
       // which, in turn, are caused by the rendering that happened due to a ChangeDetection.
       // Without asap, we would be updating the model while still in a ChangeDetection handler, which is disallowed by Angular.
-      Observable.combineLatest(this.tocService.activeItemIndex.subscribeOn(asap), this.items.changes.startWith(this.items))
-          .takeUntil(this.onDestroy)
+      combineLatest(this.tocService.activeItemIndex.pipe(subscribeOn(asap)), this.items.changes.pipe(startWith(this.items)))
+          .pipe(takeUntil(this.onDestroy))
           .subscribe(([index, items]) => {
             this.activeIndex = index;
             if (index === null || index >= items.length) {

@@ -1,9 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
-import { Observable } from 'rxjs';
-import 'rxjs/add/operator/map';
-import 'rxjs/add/operator/publishLast';
+import { ConnectableObservable, Observable } from 'rxjs';
+import { map, publishLast } from 'rxjs/operators';
 
 import { Category, Resource, SubCategory } from './resource.model';
 import { CONTENT_URL_PREFIX } from 'app/documents/document.service';
@@ -20,11 +19,12 @@ export class ResourceService {
 
   private getCategories(): Observable<Category[]> {
 
-    const categories = this.http.get<any>(resourcesPath)
-      .map(data => mkCategories(data))
-      .publishLast();
+    const categories = this.http.get<any>(resourcesPath).pipe(
+      map(data => mkCategories(data)),
+      publishLast(),
+    );
 
-    categories.connect();
+    (categories as ConnectableObservable<Category[]>).connect();
     return categories;
   };
 }
