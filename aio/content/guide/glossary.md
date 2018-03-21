@@ -391,7 +391,7 @@ with a registered [provider](guide/glossary#provider).
 
 ## Injection token
 
-A lookup token associated with a dependency provider, for use with the dependency injection system. 
+A lookup token that is associated with a dependency provider, for use with the dependency injection system. 
 These tokens can be anything - such as objects, classes, strings, etc.
 
 When a component requests a dependency, the dependency injection system starts to look at the component's injector for providers asociated with the token. If the component's injector lacks a provider, then the request is passed to the parent injector. If a provider is not found, then the request continues until Angular finds an injector that can handle the request or runs out of ancestor injectors. If it runs out of ancestors, Angular throws an error.
