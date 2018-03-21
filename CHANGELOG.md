@@ -1,3 +1,118 @@
+<a name="6.0.0-rc.0"></a>
+# [6.0.0-rc.0](https://github.com/angular/angular/compare/6.0.0-beta.8...6.0.0-rc.0) (2018-03-21)
+
+v6 framework is now feature complete, the cli and material/cdk parts of the v6 release and other integrations are still
+in works and will be completed by the time we cut v6.0.0.
+
+### Bug Fixes
+
+* **bazel:** correct expected outs for external sources in ng_module ([#22755](https://github.com/angular/angular/issues/22755)) ([bfe077a](https://github.com/angular/angular/commit/bfe077a))
+* **compiler:** do not emit line/char in ngsummary files. ([#22840](https://github.com/angular/angular/issues/22840)) ([5c387a7](https://github.com/angular/angular/commit/5c387a7))
+* correct several esm2015 entry-points in package.jsons ([#22892](https://github.com/angular/angular/issues/22892)) ([7d095b9](https://github.com/angular/angular/commit/7d095b9))
+* **router:** don't use spread operator to workaround an issue in closure compiler ([#22884](https://github.com/angular/angular/issues/22884)) ([e6c731f](https://github.com/angular/angular/commit/e6c731f))
+* **router:** make locationSyncBootstrapListener public due to change in output after TS 2.7 update in [#22669](https://github.com/angular/angular/issues/22669) ([#22896](https://github.com/angular/angular/issues/22896)) ([623d769](https://github.com/angular/angular/commit/623d769))
+* **upgrade:** two-way binding and listening for event ([#22772](https://github.com/angular/angular/issues/22772)) ([2b3de63](https://github.com/angular/angular/commit/2b3de63)), closes [#22734](https://github.com/angular/angular/issues/22734)
+
+
+### Features
+
+* **core:** update the package output of build.sh to [APF v6](https://goo.gl/jB3GVv) ([#22808](https://github.com/angular/angular/issues/22808)) ([ce63dc6](https://github.com/angular/angular/commit/ce63dc6))
+* **core:** upgrade rxjs to 6.0.0-beta.0, please see this [RxJS Upgrade Guide](https://goo.gl/NTuwfs) for more info ([#22573](https://github.com/angular/angular/issues/22573)) ([b43f8bc](https://github.com/angular/angular/commit/b43f8bc))
+
+
+
+<a name="6.0.0-beta.8"></a>
+# [6.0.0-beta.8](https://github.com/angular/angular/compare/6.0.0-beta.7...6.0.0-beta.8) (2018-03-21)
+
+
+### Bug Fixes
+
+* **aio:** constrain error logging to improve reporting ([#22713](https://github.com/angular/angular/issues/22713)) ([049757b](https://github.com/angular/angular/commit/049757b))
+* **compiler-cli:** annotate Ivy fields as [@nocollapse](https://github.com/nocollapse) in closure mode ([#22691](https://github.com/angular/angular/issues/22691)) ([6e00410](https://github.com/angular/angular/commit/6e00410))
+* **compiler-cli:** disableTypeScriptVersionCheck should be applied even for older tsc versions ([#22669](https://github.com/angular/angular/issues/22669)) ([3f70aba](https://github.com/angular/angular/commit/3f70aba))
+* **compiler-cli:** emit correct css string escape sequences ([#22776](https://github.com/angular/angular/issues/22776)) ([6e5e819](https://github.com/angular/angular/commit/6e5e819))
+* **compiler-cli:** enableResourceInlining handles both styles and styleUrls ([#22688](https://github.com/angular/angular/issues/22688)) ([40315be](https://github.com/angular/angular/commit/40315be))
+* **compiler-cli:** generate proper exports.* identifiers in cjs output ([#22564](https://github.com/angular/angular/issues/22564)) ([0d8deb0](https://github.com/angular/angular/commit/0d8deb0))
+* **compiler-cli:** resolve resource URLs before loading them under enableResourceInlining ([#22688](https://github.com/angular/angular/issues/22688)) ([123efba](https://github.com/angular/angular/commit/123efba))
+* **core:** remove core animation import symbols ([#22692](https://github.com/angular/angular/issues/22692)) ([f5a98f4](https://github.com/angular/angular/commit/f5a98f4))
+* **elements:** fix elements test bootstrap ([#22839](https://github.com/angular/angular/issues/22839)) ([5d82d8d](https://github.com/angular/angular/commit/5d82d8d))
+* overloading a function doesn't generate all of the signatures ([#22569](https://github.com/angular/angular/issues/22569)) ([e8326e6](https://github.com/angular/angular/commit/e8326e6))
+* **platform-server:** add styles to elements correctly ([#22527](https://github.com/angular/angular/issues/22527)) ([cd2ebd2](https://github.com/angular/angular/commit/cd2ebd2))
+* **router:** correct over-encoding of URL fragment ([#22687](https://github.com/angular/angular/issues/22687)) ([0bf6fa5](https://github.com/angular/angular/commit/0bf6fa5))
+
+
+### Code Refactoring
+
+* **compiler:** Drop support for the deprecated `<template>`. Use `<ng-template>` instead ([#22783](https://github.com/angular/angular/issues/22783)) ([0ebd577](https://github.com/angular/angular/commit/0ebd577))
+
+
+### Features
+
+* **aio:** add hack, remove me ([#22413](https://github.com/angular/angular/issues/22413)) ([4d506ac](https://github.com/angular/angular/commit/4d506ac))
+* **aio:** migrate embedded comp to elements ([#22413](https://github.com/angular/angular/issues/22413)) ([7c9b411](https://github.com/angular/angular/commit/7c9b411))
+* **aio:** update payload size ([#22413](https://github.com/angular/angular/issues/22413)) ([400460c](https://github.com/angular/angular/commit/400460c))
+* **animations:** expose `element` and `params` within transition matchers ([#22693](https://github.com/angular/angular/issues/22693)) ([58b94e6](https://github.com/angular/angular/commit/58b94e6))
+* **bazel:** change ng_package rule to APF v6 ([#22782](https://github.com/angular/angular/issues/22782)) ([88b3198](https://github.com/angular/angular/commit/88b3198))
+* **compiler:** support for singleline, multiline & jsdoc comments ([#22715](https://github.com/angular/angular/issues/22715)) ([3b167be](https://github.com/angular/angular/commit/3b167be))
+* **compiler-cli:** add resource inlining to ngc ([#22615](https://github.com/angular/angular/issues/22615)) ([b5be18f](https://github.com/angular/angular/commit/b5be18f))
+* **compiler-cli:** require node 8 as runtime engine ([#22669](https://github.com/angular/angular/issues/22669)) ([c602563](https://github.com/angular/angular/commit/c602563))
+* **core:** add task tracking to Testability ([#16863](https://github.com/angular/angular/issues/16863)) ([37fedd0](https://github.com/angular/angular/commit/37fedd0))
+* **elements:** add polyfill for elements es5 shim ([#22413](https://github.com/angular/angular/issues/22413)) ([863aff1](https://github.com/angular/angular/commit/863aff1))
+* **elements:** add support for creating custom elements ([#22413](https://github.com/angular/angular/issues/22413)) ([22b96b9](https://github.com/angular/angular/commit/22b96b9))
+* **elements:** add tests for component factory strategy ([#22413](https://github.com/angular/angular/issues/22413)) ([d2be675](https://github.com/angular/angular/commit/d2be675))
+* **elements:** another polyfill solution ([#22413](https://github.com/angular/angular/issues/22413)) ([cf3ff7d](https://github.com/angular/angular/commit/cf3ff7d))
+* **elements:** fix lint ([#22413](https://github.com/angular/angular/issues/22413)) ([0b45dfa](https://github.com/angular/angular/commit/0b45dfa))
+* **elements:** fix payload size ([#22413](https://github.com/angular/angular/issues/22413)) ([fe21437](https://github.com/angular/angular/commit/fe21437))
+* **elements:** fix test ([#22413](https://github.com/angular/angular/issues/22413)) ([44f637a](https://github.com/angular/angular/commit/44f637a))
+* **elements:** George's comments ([#22413](https://github.com/angular/angular/issues/22413)) ([46efd4b](https://github.com/angular/angular/commit/46efd4b))
+* **elements:** injector create ([#22413](https://github.com/angular/angular/issues/22413)) ([87f60bc](https://github.com/angular/angular/commit/87f60bc))
+* **elements:** make bazel happy ([#22413](https://github.com/angular/angular/issues/22413)) ([39a12d2](https://github.com/angular/angular/commit/39a12d2))
+* **elements:** provide type, not factory; remove config need ([#22413](https://github.com/angular/angular/issues/22413)) ([1936808](https://github.com/angular/angular/commit/1936808))
+* **elements:** rebase ([#22413](https://github.com/angular/angular/issues/22413)) ([d72f445](https://github.com/angular/angular/commit/d72f445))
+* **elements:** remove attribute/input from config ([#22413](https://github.com/angular/angular/issues/22413)) ([688096b](https://github.com/angular/angular/commit/688096b))
+* **elements:** rename API to createCustomElement ([#22413](https://github.com/angular/angular/issues/22413)) ([167fdf7](https://github.com/angular/angular/commit/167fdf7))
+* **elements:** update package.json with latest ([#22413](https://github.com/angular/angular/issues/22413)) ([2e450f6](https://github.com/angular/angular/commit/2e450f6))
+* mark angular packages as side-effect free ([#22785](https://github.com/angular/angular/issues/22785)) ([44de10e](https://github.com/angular/angular/commit/44de10e))
+* tree-shakeable providers API updates ([#22655](https://github.com/angular/angular/issues/22655)) ([db56836](https://github.com/angular/angular/commit/db56836))
+* update tslib to 1.9.0 ([#22667](https://github.com/angular/angular/issues/22667)) ([489fec1](https://github.com/angular/angular/commit/489fec1))
+
+
+### BREAKING CHANGES
+
+* **compiler:** The `<template>` tag was deprecated in Angular v4 to avoid collisions (i.e. when
+using Web Components).
+
+This commit removes support for `<template>`. `<ng-template>` should be used
+instead.
+
+BEFORE:
+
+    <!-- html template -->
+    <template>some template content</template>
+
+    # tsconfig.json
+    {
+      # ...
+      "angularCompilerOptions": {
+        # ...
+        # This option is no more supported and will have no effect
+        "enableLegacyTemplate": [true|false]
+      }
+    }
+
+AFTER:
+
+    <!-- html template -->
+    <ng-template>some template content</ng-template>
+* **core:** it is no longer possible to import
+animation-related functions from @angular/core. All
+animation symbols must now be imported from @angular/animations.
+* after this change, npm and yarn will issue incompatible peerDependencies warning
+
+We don't expect this to actually break an application, but the application/library package.json
+will need to be updated to provide tslib 1.9.0 or higher.
+
+
 
 <a name="5.2.9"></a>
 ## [5.2.9](https://github.com/angular/angular/compare/5.2.8...5.2.9) (2018-03-14)
