@@ -7,7 +7,7 @@ import { MatProgressBar, MatSidenav } from '@angular/material';
 import { By } from '@angular/platform-browser';
 
 import { Observable, timer } from 'rxjs';
-import 'rxjs/add/operator/mapTo';
+import { mapTo } from 'rxjs/operators';
 
 import { AppComponent } from './app.component';
 import { AppModule } from './app.module';
@@ -1371,6 +1371,6 @@ class TestHttpClient {
     }
 
     // Preserve async nature of `HttpClient`.
-    return timer(1).mapTo(data);
+    return timer(1).pipe(mapTo(data));
   }
 }

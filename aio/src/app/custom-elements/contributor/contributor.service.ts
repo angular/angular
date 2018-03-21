@@ -1,9 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
-import { Observable } from 'rxjs';
-import 'rxjs/add/operator/map';
-import 'rxjs/add/operator/publishLast';
+import { ConnectableObservable, Observable } from 'rxjs';
+import { map, publishLast } from 'rxjs/operators';
 
 import { Contributor, ContributorGroup } from './contributors.model';
 
@@ -22,9 +21,9 @@ export class ContributorService {
   }
 
   private getContributors() {
-    const contributors = this.http.get<{[key: string]: Contributor}>(contributorsPath)
+    const contributors = this.http.get<{[key: string]: Contributor}>(contributorsPath).pipe(
       // Create group map
-      .map(contribs => {
+      map(contribs => {
         const contribMap: { [name: string]: Contributor[]} = {};
         Object.keys(contribs).forEach(key => {
           const contributor = contribs[key];
@@ -38,10 +37,10 @@ export class ContributorService {
         });
 
         return contribMap;
-      })
+      }),
 
       // Flatten group map into sorted group array of sorted contributors
-      .map(cmap => {
+      map(cmap => {
         return Object.keys(cmap).map(key => {
           const order = knownGroups.indexOf(key);
           return {
@@ -51,10 +50,12 @@ export class ContributorService {
           } as ContributorGroup;
         })
         .sort(compareGroups);
-      })
-      .publishLast();
+      }),
 
-    contributors.connect();
+      publishLast(),
+    );
+
+    (contributors as ConnectableObservable<ContributorGroup[]>).connect();
     return contributors;
   }
 }

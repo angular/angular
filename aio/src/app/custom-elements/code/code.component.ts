@@ -3,7 +3,7 @@ import { Logger } from 'app/shared/logger.service';
 import { PrettyPrinter } from './pretty-printer.service';
 import { CopierService } from 'app/shared/copier.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import 'rxjs/add/operator/do';
+import { tap } from 'rxjs/operators';
 
 /**
  * If linenums is not set, this is the default maximum number of lines that
@@ -120,7 +120,7 @@ export class CodeComponent implements OnChanges {
 
     this.pretty
         .formatCode(leftAlignedCode, this.language, this.getLinenums(leftAlignedCode))
-        .do(() => this.codeFormatted.emit())
+        .pipe(tap(() => this.codeFormatted.emit()))
         .subscribe(c => this.setCodeHtml(c), err => { /* ignore failure to format */ }
     );
   }
