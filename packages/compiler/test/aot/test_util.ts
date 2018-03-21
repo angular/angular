@@ -60,8 +60,6 @@ export interface EmitterOptions {
 
 function calcPathsOnDisc() {
   const moduleFilename = module.filename.replace(/\\/g, '/');
-  // TODO(i): this is suspicious because it relies on build.sh output
-  //   which is problematic when we are running tests under bazel - review with Chuck
   const distIndex = moduleFilename.indexOf('/dist/all');
   if (distIndex >= 0) {
     rootPath = moduleFilename.substr(0, distIndex);
@@ -83,7 +81,7 @@ export class EmittingCompilerHost implements ts.CompilerHost {
     // Rewrite references to scripts with '@angular' to its corresponding location in
     // the source tree.
     this.scriptNames = scriptNames.map(f => this.effectiveName(f));
-    this.root = rootPath;
+    this.root = rootPath || this.root;
     if (options.context) {
       this.addedFiles = mergeMaps(options.context);
     }
@@ -110,6 +108,12 @@ export class EmittingCompilerHost implements ts.CompilerHost {
     this.cachedAddedDirectories = undefined;
   }
 
+  public addFiles(map: Map<string, string>) {
+    for (const [name, content] of Array.from(map.entries())) {
+      this.addedFiles.set(name, content);
+    }
+  }
+
   public addWrittenFile(fileName: string, content: string) {
     this.writtenFiles.set(this.effectiveName(fileName), content);
   }
@@ -124,7 +128,7 @@ export class EmittingCompilerHost implements ts.CompilerHost {
 
   public effectiveName(fileName: string): string {
     const prefix = '@angular/';
-    return fileName.startsWith('@angular/') ?
+    return angularSourcePath && fileName.startsWith(prefix) ?
         path.join(angularSourcePath, fileName.substr(prefix.length)) :
         fileName;
   }
@@ -566,6 +570,38 @@ const minCoreIndex = `
   export * from './src/codegen_private_exports';
 `;
 
+function readBazelWrittenFilesFrom(
+    bazelPackageRoot: string, packageName: string, map: Map<string, string>,
+    skip: (name: string, fullName: string) => boolean = () => false) {
+  function processDirectory(dir: string, dest: string) {
+    const entries = fs.readdirSync(dir);
+    for (const name of entries) {
+      const fullName = path.join(dir, name);
+      const destName = path.join(dest, name);
+      const stat = fs.statSync(fullName);
+      if (!skip(name, fullName)) {
+        if (stat.isDirectory()) {
+          processDirectory(fullName, destName);
+        } else {
+          const content = fs.readFileSync(fullName, 'utf8');
+          map.set(destName, content);
+        }
+      }
+    }
+  }
+  try {
+    processDirectory(bazelPackageRoot, path.join('/node_modules/@angular', packageName));
+  } catch (e) {
+    console.error(
+        `Consider adding //packages/${packageName} as a data dependency in the BUILD.bazel rule for the failing test`);
+    throw e;
+  }
+}
+
+export function isInBazel(): boolean {
+  return process.env.TEST_SRCDIR != null;
+}
+
 export function setup(
     options: {compileAngular: boolean, compileAnimations: boolean, compileCommon?: boolean} = {
       compileAngular: true,
@@ -575,6 +611,36 @@ export function setup(
   let angularFiles = new Map<string, string>();
 
   beforeAll(() => {
+    const sources = process.env.TEST_SRCDIR;
+    if (sources) {
+      // If running under bazel then we get the compiled version of the files from the bazel package
+      // output.
+      const bundles = new Set([
+        'bundles', 'esm2015', 'esm5', 'testing', 'testing.d.ts', 'testing.metadata.json', 'browser',
+        'browser.d.ts'
+      ]);
+      const skipDirs = (name: string) => bundles.has(name);
+      if (options.compileAngular) {
+        // If this fails please add //packages/core:npm_package as a test data dependency.
+        readBazelWrittenFilesFrom(
+            path.join(sources, 'angular/packages/core/npm_package'), 'core', angularFiles,
+            skipDirs);
+      }
+      if (options.compileAnimations) {
+        // If this fails please add //packages/animations:npm_package as a test data dependency.
+        readBazelWrittenFilesFrom(
+            path.join(sources, 'angular/packages/animations/npm_package'), 'animations',
+            angularFiles, skipDirs);
+      }
+      if (options.compileCommon) {
+        // If this fails please add //packages/common:npm_package as a test data dependency.
+        readBazelWrittenFilesFrom(
+            path.join(sources, 'angular/packages/common/npm_package'), 'common', angularFiles,
+            skipDirs);
+      }
+      return;
+    }
+
     if (options.compileAngular) {
       const emittingHost = new EmittingCompilerHost([], {emitMetadata: true});
       emittingHost.addScript('@angular/core/index.ts', minCoreIndex);
