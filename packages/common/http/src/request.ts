@@ -382,4 +382,8 @@ export class HttpRequest<T> {
                                params, headers, reportProgress, responseType, withCredentials,
                            });
   }
+
+  toString(): string {
+    return `Request for URL: ${this.urlWithParams} using method: ${this.method}`;
+  }
 }
