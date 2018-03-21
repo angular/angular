@@ -3,8 +3,7 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatSnackBar } from '@angular/material';
 import { By } from '@angular/platform-browser';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
-import 'rxjs/add/operator/first';
-import 'rxjs/add/operator/toPromise';
+import { first } from 'rxjs/operators';
 
 import { CodeComponent } from './code.component';
 import { CodeModule } from './code.module';
@@ -65,7 +64,7 @@ describe('CodeComponent', () => {
   describe('pretty printing', () => {
     const untilCodeFormatted = () => {
       const emitter = hostComponent.codeComponent.codeFormatted;
-      return emitter.first().toPromise();
+      return emitter.pipe(first()).toPromise();
     };
     const hasLineNumbers = async () => {
       // presence of `<li>`s are a tell-tale for line numbers
