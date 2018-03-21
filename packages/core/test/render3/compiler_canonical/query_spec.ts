@@ -102,9 +102,9 @@ describe('queries', () => {
         hostBindings: function ContentQueryComponent_HostBindings(
             dirIndex: $number$, elIndex: $number$) {
           let $tmp$: any;
-          const $instance$ = $r3$.ɵld<any[]>(dirIndex)[0];
-          $r3$.ɵqR($tmp$ = $r3$.ɵld<any[]>(dirIndex)[1]) && ($instance$.someDir = $tmp$.first);
-          $r3$.ɵqR($tmp$ = $r3$.ɵld<any[]>(dirIndex)[2]) && ($instance$.someDirList = $tmp$);
+          const $instance$ = $r3$.ɵd<any[]>(dirIndex)[0];
+          $r3$.ɵqR($tmp$ = $r3$.ɵd<any[]>(dirIndex)[1]) && ($instance$.someDir = $tmp$.first);
+          $r3$.ɵqR($tmp$ = $r3$.ɵd<any[]>(dirIndex)[2]) && ($instance$.someDirList = $tmp$);
         },
         template: function ContentQueryComponent_Template(
             ctx: $ContentQueryComponent$, cm: $boolean$) {
@@ -139,8 +139,8 @@ describe('queries', () => {
         template: function MyApp_Template(ctx: $MyApp$, cm: $boolean$) {
           if (cm) {
             $r3$.ɵE(0, ContentQueryComponent);
-            contentQueryComp = $r3$.ɵld<any[]>(1)[0];
-            $r3$.ɵE(2, 'div', $e2_attrs$, $e2_dirs$);
+            contentQueryComp = $r3$.ɵd<any[]>(0)[0];
+            $r3$.ɵE(1, 'div', $e2_attrs$, $e2_dirs$);
             $r3$.ɵe();
             $r3$.ɵe();
           }

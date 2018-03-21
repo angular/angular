@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {assertEqual} from './assert';
 import {DirectiveDef} from './interfaces/definition';
 import {TNodeFlags} from './interfaces/node';
 import {HookData, LView, LifecycleStage, TView} from './interfaces/view';
@@ -24,15 +25,15 @@ import {HookData, LView, LifecycleStage, TView} from './interfaces/view';
  */
 export function queueInitHooks(
     index: number, onInit: (() => void) | null, doCheck: (() => void) | null, tView: TView): void {
-  if (tView.firstTemplatePass === true) {
-    if (onInit != null) {
-      (tView.initHooks || (tView.initHooks = [])).push(index, onInit);
-    }
+  ngDevMode &&
+      assertEqual(tView.firstTemplatePass, true, 'Should only be called on first template pass');
+  if (onInit) {
+    (tView.initHooks || (tView.initHooks = [])).push(index, onInit);
+  }
 
-    if (doCheck != null) {
-      (tView.initHooks || (tView.initHooks = [])).push(index, doCheck);
-      (tView.checkHooks || (tView.checkHooks = [])).push(index, doCheck);
-    }
+  if (doCheck) {
+    (tView.initHooks || (tView.initHooks = [])).push(index, doCheck);
+    (tView.checkHooks || (tView.checkHooks = [])).push(index, doCheck);
   }
 }
 
@@ -50,7 +51,7 @@ export function queueLifecycleHooks(flags: number, currentView: LView): void {
     // directiveCreate) so we can preserve the current hook order. Content, view, and destroy
     // hooks for projected components and directives must be called *before* their hosts.
     for (let i = start; i < end; i++) {
-      const def = (tView.data[i] as DirectiveDef<any>);
+      const def = (tView.directives ![i] as DirectiveDef<any>);
       queueContentHooks(def, tView, i);
       queueViewHooks(def, tView, i);
       queueDestroyHooks(def, tView, i);
@@ -60,11 +61,11 @@ export function queueLifecycleHooks(flags: number, currentView: LView): void {
 
 /** Queues afterContentInit and afterContentChecked hooks on TView */
 function queueContentHooks(def: DirectiveDef<any>, tView: TView, i: number): void {
-  if (def.afterContentInit != null) {
+  if (def.afterContentInit) {
     (tView.contentHooks || (tView.contentHooks = [])).push(i, def.afterContentInit);
   }
 
-  if (def.afterContentChecked != null) {
+  if (def.afterContentChecked) {
     (tView.contentHooks || (tView.contentHooks = [])).push(i, def.afterContentChecked);
     (tView.contentCheckHooks || (tView.contentCheckHooks = [])).push(i, def.afterContentChecked);
   }
@@ -72,11 +73,11 @@ function queueContentHooks(def: DirectiveDef<any>, tView: TView, i: number): voi
 
 /** Queues afterViewInit and afterViewChecked hooks on TView */
 function queueViewHooks(def: DirectiveDef<any>, tView: TView, i: number): void {
-  if (def.afterViewInit != null) {
+  if (def.afterViewInit) {
     (tView.viewHooks || (tView.viewHooks = [])).push(i, def.afterViewInit);
   }
 
-  if (def.afterViewChecked != null) {
+  if (def.afterViewChecked) {
     (tView.viewHooks || (tView.viewHooks = [])).push(i, def.afterViewChecked);
     (tView.viewCheckHooks || (tView.viewCheckHooks = [])).push(i, def.afterViewChecked);
   }
@@ -96,7 +97,7 @@ function queueDestroyHooks(def: DirectiveDef<any>, tView: TView, i: number): voi
  */
 export function executeInitHooks(currentView: LView, tView: TView, creationMode: boolean): void {
   if (currentView.lifecycleStage === LifecycleStage.INIT) {
-    executeHooks(currentView.data, tView.initHooks, tView.checkHooks, creationMode);
+    executeHooks(currentView.directives !, tView.initHooks, tView.checkHooks, creationMode);
     currentView.lifecycleStage = LifecycleStage.AFTER_INIT;
   }
 }
@@ -110,7 +111,7 @@ export function executeHooks(
     data: any[], allHooks: HookData | null, checkHooks: HookData | null,
     creationMode: boolean): void {
   const hooksToCall = creationMode ? allHooks : checkHooks;
-  if (hooksToCall != null) {
+  if (hooksToCall) {
     callHooks(data, hooksToCall);
   }
 }

@@ -7,7 +7,7 @@
  */
 
 import {defineComponent, defineDirective} from '../../src/render3/index';
-import {bind, container, containerRefreshEnd, containerRefreshStart, elementAttribute, elementClassNamed, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, load, text, textBinding} from '../../src/render3/instructions';
+import {bind, container, containerRefreshEnd, containerRefreshStart, elementAttribute, elementClassNamed, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, load, loadDirective, text, textBinding} from '../../src/render3/instructions';
 
 import {renderToHtml} from './render_util';
 
@@ -35,9 +35,10 @@ describe('exports', () => {
       if (cm) {
         elementStart(0, MyComponent, null, null, ['myComp', '']);
         elementEnd();
-        text(2);
+        text(1);
       }
-      textBinding(2, load<MyComponent>(1).name);
+      // TODO: replace loadDirective when removing directive refs
+      textBinding(1, loadDirective<MyComponent>(0).name);
     }
 
     class MyComponent {
@@ -80,10 +81,11 @@ describe('exports', () => {
       if (cm) {
         elementStart(0, MyComponent, null, null, ['myComp', '']);
         elementEnd();
-        elementStart(2, 'div', null, [MyDir]);
+        elementStart(1, 'div', null, [MyDir]);
         elementEnd();
       }
-      elementProperty(2, 'myDir', bind(load<MyComponent>(1)));
+      // TODO: replace loadDirective when removing directive refs
+      elementProperty(1, 'myDir', bind(loadDirective<MyComponent>(0)));
     }
 
     renderToHtml(Template, {});
@@ -97,14 +99,16 @@ describe('exports', () => {
       if (cm) {
         elementStart(0, 'div', null, [SomeDir], ['myDir', 'someDir']);
         elementEnd();
-        text(2);
+        text(1);
       }
-      textBinding(2, load<SomeDir>(1).name);
+      // TODO: replace loadDirective when removing directive refs
+      textBinding(1, loadDirective<SomeDir>(0).name);
     }
 
     class SomeDir {
       name = 'Drew';
-      static ngDirectiveDef = defineDirective({type: SomeDir, factory: () => new SomeDir});
+      static ngDirectiveDef =
+          defineDirective({type: SomeDir, factory: () => new SomeDir, exportAs: 'someDir'});
     }
 
     expect(renderToHtml(Template, {})).toEqual('<div></div>Drew');
@@ -206,10 +210,11 @@ describe('exports', () => {
         if (cm) {
           elementStart(0, 'div', null, [MyDir]);
           elementEnd();
-          elementStart(2, MyComponent, null, null, ['myComp', '']);
+          elementStart(1, MyComponent, null, null, ['myComp', '']);
           elementEnd();
         }
-        elementProperty(0, 'myDir', bind(load<MyComponent>(3)));
+        // TODO: replace loadDirective when removing directive refs
+        elementProperty(0, 'myDir', bind(loadDirective<MyComponent>(1)));
       }
 
       renderToHtml(Template, {});
@@ -225,11 +230,12 @@ describe('exports', () => {
           text(1);
           elementStart(2, MyComponent, null, null, ['myComp', '']);
           elementEnd();
-          elementStart(4, 'input', ['value', 'one'], null, ['myInput', '']);
+          elementStart(3, 'input', ['value', 'one'], null, ['myInput', '']);
           elementEnd();
         }
-        let myInput = elementStart(4);
-        let myComp = load<MyComponent>(3);
+        let myInput = elementStart(3);
+        // TODO: replace loadDirective when removing directive refs
+        let myComp = loadDirective<MyComponent>(0);
         textBinding(0, bind(myInput && (myInput as any).value));
         textBinding(1, bind(myComp && myComp.name));
       }

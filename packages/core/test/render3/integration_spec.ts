@@ -7,7 +7,7 @@
  */
 
 import {defineComponent, defineDirective} from '../../src/render3/index';
-import {NO_CHANGE, bind, container, containerRefreshEnd, containerRefreshStart, elementAttribute, elementClassNamed, elementEnd, elementProperty, elementStart, elementStyleNamed, embeddedViewEnd, embeddedViewStart, interpolation1, interpolation2, interpolation3, interpolation4, interpolation5, interpolation6, interpolation7, interpolation8, interpolationV, load, projection, projectionDef, text, textBinding} from '../../src/render3/instructions';
+import {NO_CHANGE, bind, container, containerRefreshEnd, containerRefreshStart, elementAttribute, elementClassNamed, elementEnd, elementProperty, elementStart, elementStyleNamed, embeddedViewEnd, embeddedViewStart, interpolation1, interpolation2, interpolation3, interpolation4, interpolation5, interpolation6, interpolation7, interpolation8, interpolationV, load, loadDirective, projection, projectionDef, text, textBinding} from '../../src/render3/instructions';
 
 import {ComponentFixture, containerEl, renderToHtml} from './render_util';
 
@@ -210,7 +210,7 @@ describe('render3 integration test', () => {
         if (cm) {
           elementStart(0, TodoComponent);
           elementEnd();
-          text(2, 'two');
+          text(1, 'two');
         }
       }
       expect(renderToHtml(Template, null)).toEqual('<todo><p>Todo one</p></todo>two');
@@ -225,7 +225,7 @@ describe('render3 integration test', () => {
         if (cm) {
           elementStart(0, TodoComponent);
           elementEnd();
-          elementStart(2, TodoComponent);
+          elementStart(1, TodoComponent);
           elementEnd();
         }
       }
@@ -252,7 +252,8 @@ describe('render3 integration test', () => {
           hostBindings: function(directiveIndex: number, elementIndex: number): void {
             // host bindings
             elementProperty(
-                elementIndex, 'title', bind(load<TodoComponentHostBinding>(directiveIndex).title));
+                elementIndex, 'title',
+                bind(loadDirective<TodoComponentHostBinding>(directiveIndex).title));
           }
         });
       }
@@ -460,12 +461,12 @@ describe('render3 integration test', () => {
     function parentTemplate(ctx: ParentCtx, cm: boolean) {
       if (cm) {
         elementStart(0, ChildComponent);
-        { container(2); }
+        { container(1); }
         elementEnd();
       }
       elementProperty(0, 'beforeTree', bind(ctx.beforeTree));
       elementProperty(0, 'afterTree', bind(ctx.afterTree));
-      containerRefreshStart(2);
+      containerRefreshStart(1);
       {
         const cm0 = embeddedViewStart(0);
         { showTree({tree: ctx.projectedTree}, cm0); }
@@ -636,7 +637,8 @@ describe('render3 integration test', () => {
               return hostBindingDir = new HostBindingDir();
             },
             hostBindings: function HostBindingDir_HostBindings(dirIndex: number, elIndex: number) {
-              elementAttribute(elIndex, 'aria-label', bind(load<HostBindingDir>(dirIndex).label));
+              elementAttribute(
+                  elIndex, 'aria-label', bind(loadDirective<HostBindingDir>(dirIndex).label));
             }
           });
         }

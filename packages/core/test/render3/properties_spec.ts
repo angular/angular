@@ -9,7 +9,7 @@
 import {EventEmitter} from '@angular/core';
 
 import {defineComponent, defineDirective, tick} from '../../src/render3/index';
-import {NO_CHANGE, bind, container, containerRefreshEnd, containerRefreshStart, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, interpolation1, listener, load, text, textBinding} from '../../src/render3/instructions';
+import {NO_CHANGE, bind, container, containerRefreshEnd, containerRefreshStart, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, interpolation1, listener, loadDirective, text, textBinding} from '../../src/render3/instructions';
 
 import {ComponentFixture, renderToHtml} from './render_util';
 
@@ -71,7 +71,7 @@ describe('elementProperty', () => {
         tag: 'host-binding-comp',
         factory: () => new HostBindingComp(),
         hostBindings: (dirIndex: number, elIndex: number) => {
-          const instance = load(dirIndex) as HostBindingComp;
+          const instance = loadDirective(dirIndex) as HostBindingComp;
           elementProperty(elIndex, 'id', bind(instance.id));
         },
         template: (ctx: HostBindingComp, cm: boolean) => {}
@@ -115,7 +115,7 @@ describe('elementProperty', () => {
       function Template(ctx: any, cm: boolean) {
         if (cm) {
           elementStart(0, 'button', null, [MyButton, OtherDir]);
-          { text(3, 'Click me'); }
+          { text(1, 'Click me'); }
           elementEnd();
         }
 
@@ -141,7 +141,7 @@ describe('elementProperty', () => {
       function Template(ctx: any, cm: boolean) {
         if (cm) {
           elementStart(0, 'button', null, [MyButton]);
-          { text(2, 'Click me'); }
+          { text(1, 'Click me'); }
           elementEnd();
         }
 
@@ -206,7 +206,7 @@ describe('elementProperty', () => {
       function Template(ctx: any, cm: boolean) {
         if (cm) {
           elementStart(0, 'button', null, [MyButton, OtherDisabledDir]);
-          { text(3, 'Click me'); }
+          { text(1, 'Click me'); }
           elementEnd();
         }
         elementProperty(0, 'disabled', bind(ctx.isDisabled));
@@ -230,7 +230,7 @@ describe('elementProperty', () => {
           elementStart(0, 'button', null, [OtherDir]);
           {
             listener('click', ctx.onClick.bind(ctx));
-            text(2, 'Click me');
+            text(1, 'Click me');
           }
           elementEnd();
         }
@@ -271,12 +271,12 @@ describe('elementProperty', () => {
       function Template(ctx: any, cm: boolean) {
         if (cm) {
           elementStart(0, 'button', null, [IdDir]);
-          { text(2, 'Click me'); }
+          { text(1, 'Click me'); }
           elementEnd();
-          container(3);
+          container(2);
         }
         elementProperty(0, 'id', bind(ctx.id1));
-        containerRefreshStart(3);
+        containerRefreshStart(2);
         {
           if (ctx.condition) {
             if (embeddedViewStart(0)) {
@@ -289,7 +289,7 @@ describe('elementProperty', () => {
           } else {
             if (embeddedViewStart(1)) {
               elementStart(0, 'button', null, [OtherDir]);
-              { text(2, 'Click me too'); }
+              { text(1, 'Click me too'); }
               elementEnd();
             }
             elementProperty(0, 'id', bind(ctx.id3));
@@ -322,7 +322,8 @@ describe('elementProperty', () => {
         type: MyDir,
         factory: () => myDir = new MyDir(),
         inputs: {role: 'role', direction: 'dir'},
-        outputs: {changeStream: 'change'}
+        outputs: {changeStream: 'change'},
+        exportAs: 'myDir'
       });
     }
 
@@ -419,7 +420,6 @@ describe('elementProperty', () => {
 
     it('should process attributes properly for directives with later indices', () => {
 
-
       /**
        * <div role="button" dir="rtl" myDir></div>
        * <div role="listbox" myDirB></div>
@@ -428,7 +428,7 @@ describe('elementProperty', () => {
         if (cm) {
           elementStart(0, 'div', ['role', 'button', 'dir', 'rtl'], [MyDir]);
           elementEnd();
-          elementStart(2, 'div', ['role', 'listbox'], [MyDirB]);
+          elementStart(1, 'div', ['role', 'listbox'], [MyDirB]);
           elementEnd();
         }
       }
@@ -454,9 +454,9 @@ describe('elementProperty', () => {
         if (cm) {
           elementStart(0, 'div', ['role', 'listbox'], [MyDir]);
           elementEnd();
-          container(2);
+          container(1);
         }
-        containerRefreshStart(2);
+        containerRefreshStart(1);
         {
           if (ctx.condition) {
             if (embeddedViewStart(0)) {
@@ -495,13 +495,15 @@ describe('elementProperty', () => {
         static ngComponentDef = defineComponent({
           type: Comp,
           tag: 'comp',
+          /** <div role="button" dir #dir="myDir"></div> {{ dir.role }} */
           template: function(ctx: any, cm: boolean) {
             if (cm) {
-              elementStart(0, 'div', ['role', 'button'], [MyDir]);
+              elementStart(0, 'div', ['role', 'button'], [MyDir], ['dir', 'myDir']);
               elementEnd();
-              text(2);
+              text(1);
             }
-            textBinding(2, bind(load<MyDir>(1).role));
+            // TODO: remove this loadDirective when removing MyDir
+            textBinding(1, bind(loadDirective<MyDir>(0).role));
           },
           factory: () => new Comp()
         });
