@@ -355,7 +355,7 @@ export type StaticProvider = ValueProvider | ExistingProvider | StaticClassProvi
  * @description
  *
  * Create an instance by invoking the `new` operator and supplying additional arguments.
- * This form is a short form of `TypeProvider`;
+ * This form is a short form of `ClassProvider`;
  *
  * For more details, see the {@linkDocs guide/dependency-injection "Dependency Injection Guide"}.
  *
