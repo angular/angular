@@ -29,6 +29,7 @@ describe('i18n support in the view compiler', () => {
                 <div i18n>Hello world</div>
                 <div>&</div>
                 <div i18n>farewell</div>
+                <div i18n>farewell</div>
               \`
             })
             export class MyComponent {}
@@ -40,16 +41,19 @@ describe('i18n support in the view compiler', () => {
       };
 
       const template = `
+      const $msg_1$ = goog.getMsg('Hello world');
+      const $msg_2$ = goog.getMsg('farewell');
+      …
       template: function MyComponent_Template(ctx: IDENT, cm: IDENT) {
         if (cm) {
           …
-          const $g2$ = goog.getMsg('Hello world');
-          $r3$.ɵT(1, $g2$);
+          $r3$.ɵT(1, $msg_1$);
           …
           $r3$.ɵT(3,'&');
           …
-          const $g3$ = goog.getMsg('farewell');
-          $r3$.ɵT(5, $g3$);
+          $r3$.ɵT(5, $msg_2$);
+          …
+          $r3$.ɵT(7, $msg_2$);
           …
         }
       }
@@ -80,27 +84,29 @@ describe('i18n support in the view compiler', () => {
       };
 
       const template = `
+      /**
+       * @desc desc
+       */
+      const $msg_1$ = goog.getMsg('introduction');
+      …
       const $c1$ = ($a1$:any) => {
         return ['title', $a1$];
       };
       …
+      /**
+       * @desc desc
+       * @meaning meaning
+       */
+      const $msg_2$ = goog.getMsg('Hello world');
+      …
       template: function MyComponent_Template(ctx: IDENT, cm: IDENT) {
         if (cm) {
-          /**
-           * @desc desc
-           */
-          const $g1$ = goog.getMsg('introduction');
-          $r3$.ɵE(0, 'div', $r3$.ɵf1($c1$, $g1$));
-          /**
-           * @desc desc
-           * @meaning meaning
-           */
-          const $g2$ = goog.getMsg('Hello world');
-          $r3$.ɵT(1, $g2$);
+          $r3$.ɵE(0, 'div', $r3$.ɵf1($c1$, $msg_1$));
+          $r3$.ɵT(1, $msg_2$);
           $r3$.ɵe();
         }
       }
-    `;
+      `;
 
       const result = compile(files, angularFiles);
       expectEmit(result.source, template, 'Incorrect template');
@@ -129,18 +135,19 @@ describe('i18n support in the view compiler', () => {
       };
 
       const template = `
+      /**
+       * @desc d
+       * @meaning m
+       */
+      const $msg_1$ = goog.getMsg('introduction');
+      …
       const $c1$ = ($a1$:any) => {
         return ['id', 'static', 'title', $a1$];
       };
       …
       template: function MyComponent_Template(ctx: IDENT, cm: IDENT) {
         if (cm) {
-          /**
-           * @desc d
-           * @meaning m
-           */
-          const $g1$ = goog.getMsg('introduction');
-          $r3$.ɵE(0, 'div', $r3$.ɵf1($c1$, $g1$));
+          $r3$.ɵE(0, 'div', $r3$.ɵf1($c1$, $msg_1$));
           $r3$.ɵe();
         }
       }
