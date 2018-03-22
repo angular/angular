@@ -60,7 +60,7 @@ module.exports = (config) => {
     },
 
     specReporter: {
-      maxLogLines: 1,
+      maxLogLines: Infinity, // Log out the entire stack trace on errors and failures.
       suppressSkipped: true,
       showSpecTiming: true,
     },
