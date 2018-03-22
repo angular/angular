@@ -7,6 +7,9 @@ import {AppComponent} from './app.component';
 import {PopupService} from './popup.service';
 import {PopupComponent} from './popup.component';
 
+// include the PopupService provider, 
+// but exclude PopupComponent from compilation,
+// because it will by added dynamically 
 @NgModule({
   declarations: [AppComponent, PopupComponent],
   imports: [BrowserModule, BrowserAnimationsModule],
