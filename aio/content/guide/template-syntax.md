@@ -3204,74 +3204,130 @@ That _other way_ is the `@Input()` and `@Output()` decorators.
 그리고 컴포넌트 외부로 프로퍼티를 공개할 때 Angular가 제공하는 방식을 사용할 수도 있습니다.
 이 때 사용되는 것이 `@Input()` 데코레이터와 `@Output()` 데코레이터입니다.
 
+<!--
 ### Declaring Input and Output properties
+-->
+### 입출력 프로퍼티 지정하기
 
+<!--
 In the sample for this guide, the bindings to `HeroDetailComponent` do not fail
 because the data bound properties are annotated with `@Input()` and `@Output()` decorators.
+-->
+위에서 살펴본 예제에서는 `HeroDetailComponent`에 바인딩하는 로직이 실패했습니다.
+왜냐하면 컴포넌트 외부에서 바인딩하는 프로퍼티를 참조할 때, 이 프로퍼티들이 입출력 프로퍼티로 선언되지 않았기 때문입니다.
+그래서 외부에서 입력을 받는 프로퍼티는 `@Input()` 데코레이터로, 외부로 이벤트를 보내는 프로퍼티는 `@Output()` 데코레이터로 다음과 같이 지정해야 합니다.
 
 <code-example path="template-syntax/src/app/hero-detail.component.ts" region="input-output-1" title="src/app/hero-detail.component.ts" linenums="false">
 </code-example>
 
 <div class="l-sub-section">
 
+<!--
 Alternatively, you can identify members in the `inputs` and `outputs` arrays
 of the directive metadata, as in this example:
+-->
+데코레이터를 사용하지 않고 디렉티브 메타데이터를 활용하려면, 아래와 같이 디렉티브 메타데이터의 `inputs` 멤버와 `outputs` 멤버를 사용해도 됩니다:
 
 <code-example path="template-syntax/src/app/hero-detail.component.ts" region="input-output-2" title="src/app/hero-detail.component.ts" linenums="false">
 </code-example>
 
 </div>
 
+<!--
 ### Input or output?
+-->
+### 입력일까? 출력일까?
 
+<!--
 *Input* properties usually receive data values.
 *Output* properties expose event producers, such as `EventEmitter` objects.
+-->
+*입력* 프로퍼티는 외부에서 데이터를 받을 때 사용합니다.
+*출력* 프로퍼티는 `EventEmitter` 와 같은 객체를 통해 외부로 이벤트를 보낼 때 사용합니다.
 
+<!--
 The terms _input_ and _output_ reflect the perspective of the target directive.
+-->
+그래서 _입력_ 이나 _출력_ 이라는 말은 바인딩 대상이 되는 디렉티브의 입장에서 표현하는 말입니다.
 
 <figure>
   <img src="generated/images/guide/template-syntax/input-output.png" alt="Inputs and outputs">
 </figure>
 
+<!--
 `HeroDetailComponent.hero` is an **input** property from the perspective of `HeroDetailComponent`
 because data flows *into* that property from a template binding expression.
+-->
+`HeroDetailComponent.hero`는 `HeroDetailComponent`의 입장에서 보면 **입력** 프로퍼티입니다.
+왜냐하면 템플릿 바인딩 표현식에 의해 데이터가 컴포넌트 *안으로* 전달되기 때문입니다.
 
+<!--
 `HeroDetailComponent.deleteRequest` is an **output** property from the perspective of `HeroDetailComponent`
 because events stream *out* of that property and toward the handler in a template binding statement.
+-->
+그리고 `HeroDetailComponent.deleteRequest` 는 `HeroDetailComponent`의 입장에서 볼 때 **출력** 프로퍼티입니다.
+이 컴포넌트가 *밖으로* 보내는 이벤트는 템플릿 바인딩 평가식에 의해 실행되는 함수로 전달됩니다.
 
 <h3 id='aliasing-io'>
+	<!--
   Aliasing input/output properties
+-->
+  입출력 프로퍼티 이름 변경하기
 </h3>
 
+<!--
 Sometimes the public name of an input/output property should be different from the internal name.
+-->
+어떤 경우에는 입출력 프로퍼티로 자주 사용하는 이름이 디렉티브 프로퍼티의 이름과 다를 수 있습니다.
 
+<!--
 This is frequently the case with [attribute directives](guide/attribute-directives).
 Directive consumers expect to bind to the name of the directive.
 For example, when you apply a directive with a `myClick` selector to a `<div>` tag,
 you expect to bind to an event property that is also called `myClick`.
+-->
+이런 경우는 [어트리뷰트 디렉티브](guide/attribute-directives)인 경우에 자주 발생합니다.
+디렉티브를 사용하는 입장에서는 자주 사용하던 이름을 그대로 사용하지만 디렉티브에는 이 프로퍼티가 없는 경우가 있을 수 있습니다.
+예를 들어 `<div>` 태그에 `myClick` 셀렉터로 지정하는 디렉티브가 있고, 이 디렉티브에서 발생하는 이벤트의 이름도 `myClick`이라고 합시다.
 
 <code-example path="template-syntax/src/app/app.component.html" region="myClick" title="src/app/app.component.html" linenums="false">
 </code-example>
 
+<!--
 However, the directive name is often a poor choice for the name of a property within the directive class.
 The directive name rarely describes what the property does.
 The `myClick` directive name is not a good name for a property that emits click messages.
+-->
+하지만 디렉티브 클래스 안에 있는 프로퍼티의 이름으로 디렉티브 이름을 정하는 것은 좋은 선택이 아닙니다.
+디렉티브 안에 있는 프로퍼티 하나가 그 디렉티브가 어떤 역할을 하는지 충분히 설명할 수 없기 때문입니다.
+그래서 이 예제처럼 `myClick` 디렉티브의 이름을 디렉티브 안에 있는 `myClick` 프로퍼티 이름과 똑같이 지정하는 것은 좋지 않습니다.
 
+<!--
 Fortunately, you can have a public name for the property that meets conventional expectations,
 while using a different name internally.
 In the example immediately above, you are actually binding *through the* `myClick` *alias* to
 the directive's own `clicks` property.
+-->
+다행히도, 디렉티브 밖에서 일반적으로 사용하는 이름을 그대로 사용하면서 디렉티브 안에서는 다른 이름으로 지정하는 방법이 있습니다.
+위에서 살펴본 예제를 다시 보면, 디렉티브 밖에서는 `myClick` 이라는 이벤트를 바인딩하지만 디렉티브 안에서는 이 이벤트를 `clicks` 라는 프로퍼티로 지정할 수 있습니다.
 
+<!--
 You can specify the alias for the property name by passing it into the input/output decorator like this:
+-->
+디렉티브 밖에서 사용하는 프로퍼티 이름과 디렉티브 안에서 사용하는 프로퍼티 이름을 다르게 하려면 다음과 같이 지정합니다:
 
 <code-example path="template-syntax/src/app/click.directive.ts" region="output-myClick" title="src/app/click.directive.ts" linenums="false">
 </code-example>
 
 <div class="l-sub-section">
 
+<!--
 You can also alias property names in the `inputs` and `outputs` arrays.
 You write a colon-delimited (`:`) string with
 the directive property name on the *left* and the public alias on the *right*:
+-->
+디렉티브 메타데이터의 `inputs`와 `outputs`를 사용할 때도 프로퍼티 이름을 변환해서 지정할 수 있습니다.
+이 때는 순서대로 디렉티브의 프로퍼티 이름, 콜론(`:`), 디렉티브 밖에서 사용하는 프로퍼티 이름 순으로 지정합니다:
 
 <code-example path="template-syntax/src/app/click.directive.ts" region="output-myClick2" title="src/app/click.directive.ts" linenums="false">
 </code-example>
