@@ -1,3 +1,4 @@
+// #docregion
 import {Component, Injector} from '@angular/core';
 import {createNgElementConstructor} from '../elements-dist';
 import {PopupService} from './popup.service';

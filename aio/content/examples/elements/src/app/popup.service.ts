@@ -1,3 +1,5 @@
+
+// #docregion
 import {ApplicationRef, ComponentFactoryResolver, Injectable, Injector} from '@angular/core';
 
 import {PopupComponent} from './popup.component';
