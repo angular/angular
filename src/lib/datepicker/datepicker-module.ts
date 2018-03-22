@@ -13,6 +13,7 @@ import {NgModule} from '@angular/core';
 import {MatButtonModule} from '@angular/material/button';
 import {MatDialogModule} from '@angular/material/dialog';
 import {MatCalendar} from './calendar';
+import {MatCalendarHeader} from './calendar';
 import {MatCalendarBody} from './calendar-body';
 import {MatDatepicker, MatDatepickerContent} from './datepicker';
 import {MatDatepickerInput} from './datepicker-input';
@@ -21,15 +22,17 @@ import {MatDatepickerToggle, MatDatepickerToggleIcon} from './datepicker-toggle'
 import {MatMonthView} from './month-view';
 import {MatMultiYearView} from './multi-year-view';
 import {MatYearView} from './year-view';
+import {PortalModule} from '@angular/cdk/portal';
 
 
 @NgModule({
   imports: [
-    A11yModule,
     CommonModule,
     MatButtonModule,
     MatDialogModule,
     OverlayModule,
+    A11yModule,
+    PortalModule,
   ],
   exports: [
     MatCalendar,
@@ -54,12 +57,14 @@ import {MatYearView} from './year-view';
     MatMonthView,
     MatYearView,
     MatMultiYearView,
+    MatCalendarHeader
   ],
   providers: [
     MatDatepickerIntl,
   ],
   entryComponents: [
     MatDatepickerContent,
+    MatCalendarHeader,
   ]
 })
 export class MatDatepickerModule {}

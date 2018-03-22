@@ -17,7 +17,7 @@ import {
   PositionStrategy,
   ScrollStrategy,
 } from '@angular/cdk/overlay';
-import {ComponentPortal} from '@angular/cdk/portal';
+import {ComponentPortal, ComponentType} from '@angular/cdk/portal';
 import {DOCUMENT} from '@angular/common';
 import {
   AfterContentInit,
@@ -176,6 +176,9 @@ export class MatDatepickerContent<D> extends _MatDatepickerContentMixinBase
   encapsulation: ViewEncapsulation.None,
 })
 export class MatDatepicker<D> implements OnDestroy, CanColor {
+  /** An input indicating the type of the custom header component for the calendar, if set. */
+  @Input() calendarHeaderComponent: ComponentType<any>;
+
   /** The date to open the calendar to initially. */
   @Input()
   get startAt(): D | null {

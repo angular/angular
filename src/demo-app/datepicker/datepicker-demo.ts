@@ -6,11 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ChangeDetectionStrategy, Component} from '@angular/core';
+import {ChangeDetectionStrategy, Component, Host} from '@angular/core';
 import {FormControl} from '@angular/forms';
 import {MatDatepickerInputEvent} from '@angular/material/datepicker';
+import {DateAdapter} from '@angular/material/core';
+import {MatCalendar} from '@angular/material';
 import {ThemePalette} from '@angular/material/core';
-
 
 @Component({
   moduleId: module.id,
@@ -40,4 +41,38 @@ export class DatepickerDemo {
 
   onDateInput = (e: MatDatepickerInputEvent<Date>) => this.lastDateInput = e.value;
   onDateChange = (e: MatDatepickerInputEvent<Date>) => this.lastDateChange = e.value;
+
+  // pass custom header component type as input
+  customHeader = CustomHeader;
+}
+
+// Custom header component for datepicker
+@Component({
+  moduleId: module.id,
+  selector: 'custom-header',
+  templateUrl: 'custom-header.html',
+  styleUrls: ['custom-header.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+})
+export class CustomHeader<D> {
+  constructor(@Host() private _calendar: MatCalendar<D>,
+              private _dateAdapter: DateAdapter<D>) {}
+
+  get periodLabel() {
+    const year = this._dateAdapter.getYearName(this._calendar.activeDate);
+    const month = (this._dateAdapter.getMonth(this._calendar.activeDate) + 1);
+    return `${month}/${year}`;
+  }
+
+  previousClicked(mode: 'month' | 'year') {
+    this._calendar.activeDate = mode == 'month' ?
+        this._dateAdapter.addCalendarMonths(this._calendar.activeDate, -1) :
+            this._dateAdapter.addCalendarYears(this._calendar.activeDate, -1);
+  }
+
+  nextClicked(mode: 'month' | 'year') {
+    this._calendar.activeDate = mode == 'month' ?
+        this._dateAdapter.addCalendarMonths(this._calendar.activeDate, 1) :
+            this._dateAdapter.addCalendarYears(this._calendar.activeDate, 1);
+  }
 }
