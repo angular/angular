@@ -7,24 +7,23 @@
  */
 
 import {assertEqual, assertNotNull} from './assert';
-import {LNode, LNodeFlags} from './interfaces/node';
+import {LNode, LNodeType} from './interfaces/node';
 
-export function assertNodeType(node: LNode, type: LNodeFlags) {
+export function assertNodeType(node: LNode, type: LNodeType) {
   assertNotNull(node, 'should be called with a node');
-  assertEqual(node.flags & LNodeFlags.TYPE_MASK, type, `should be a ${typeName(type)}`);
+  assertEqual(node.type, type, `should be a ${typeName(type)}`);
 }
 
-export function assertNodeOfPossibleTypes(node: LNode, ...types: LNodeFlags[]) {
+export function assertNodeOfPossibleTypes(node: LNode, ...types: LNodeType[]) {
   assertNotNull(node, 'should be called with a node');
-  const nodeType = node.flags & LNodeFlags.TYPE_MASK;
-  const found = types.some(type => nodeType === type);
+  const found = types.some(type => node.type === type);
   assertEqual(found, true, `Should be one of ${types.map(typeName).join(', ')}`);
 }
 
-function typeName(type: LNodeFlags): string {
-  if (type == LNodeFlags.Projection) return 'Projection';
-  if (type == LNodeFlags.Container) return 'Container';
-  if (type == LNodeFlags.View) return 'View';
-  if (type == LNodeFlags.Element) return 'Element';
+function typeName(type: LNodeType): string {
+  if (type == LNodeType.Projection) return 'Projection';
+  if (type == LNodeType.Container) return 'Container';
+  if (type == LNodeType.View) return 'View';
+  if (type == LNodeType.Element) return 'Element';
   return '<unknown>';
 }

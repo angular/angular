@@ -12,6 +12,7 @@ import {getProjectAsAttrValue, isNodeMatchingSelector, isNodeMatchingSelectorWit
 
 function testLStaticData(tagName: string, attrs: string[] | null): TNode {
   return {
+    flags: 0,
     tagName,
     attrs,
     localNames: null,
