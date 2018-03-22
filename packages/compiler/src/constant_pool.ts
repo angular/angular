@@ -227,8 +227,12 @@ class KeyVisitor implements o.ExpressionVisitor {
   }
 
   visitLiteralMapExpr(ast: o.LiteralMapExpr, context: object): string {
-    const mapEntry = (entry: o.LiteralMapEntry) =>
-        `${entry.key}:${entry.value.visitExpression(this, context)}`;
+    const mapKey =
+        (entry: o.LiteralMapEntry) => {
+          const quote = entry.quoted ? '"' : '';
+          return `${quote}${entry.key}${quote}`;
+        } const mapEntry = (entry: o.LiteralMapEntry) =>
+            `${mapKey(entry)}:${entry.value.visitExpression(this, context)}`;
     return `{${ast.entries.map(mapEntry).join(',')}`;
   }
 
