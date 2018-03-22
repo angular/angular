@@ -119,7 +119,8 @@ export const Injectable: InjectableDecorator = makeDecorator(
     'Injectable', undefined, undefined, undefined,
     (injectableType: InjectableType<any>,
      options: {providedIn?: Type<any>| 'root' | null} & InjectableProvider) => {
-      if (options && options.providedIn !== undefined) {
+      if (options && options.providedIn !== undefined &&
+          injectableType.ngInjectableDef === undefined) {
         injectableType.ngInjectableDef = defineInjectable({
           providedIn: options.providedIn,
           factory: convertInjectableProviderToFactory(injectableType, options)
