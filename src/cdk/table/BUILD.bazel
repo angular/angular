@@ -11,7 +11,7 @@ ng_module(
     "//src/cdk/collections",
     "@rxjs",
   ],
-  tsconfig = ":tsconfig-build.json",
+  tsconfig = "//src/cdk:tsconfig-build.json",
 )
 
 ts_library(
@@ -23,7 +23,7 @@ ts_library(
     "//src/cdk/collections",
     "@rxjs",
   ],
-  tsconfig = ":tsconfig-build.json",
+  tsconfig = "//src/cdk:tsconfig-build.json",
 )
 
 ts_web_test(

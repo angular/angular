@@ -7,8 +7,11 @@ ng_module(
   name = "observers",
   srcs = glob(["**/*.ts"], exclude=["**/*.spec.ts"]),
   module_name = "@angular/cdk/observers",
-  deps = ["@rxjs", "//src/cdk/coercion"],
-  tsconfig = ":tsconfig-build.json",
+  deps = [
+    "@rxjs",
+    "//src/cdk/coercion",
+  ],
+  tsconfig = "//src/cdk:tsconfig-build.json",
 )
 
 ts_library(
@@ -19,7 +22,7 @@ ts_library(
     ":observers",
     "@rxjs",
   ],
-  tsconfig = ":tsconfig-build.json",
+  tsconfig = "//src/cdk:tsconfig-build.json",
 )
 
 ts_web_test(

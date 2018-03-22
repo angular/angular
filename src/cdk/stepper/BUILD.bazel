@@ -12,5 +12,5 @@ ng_module(
     "//src/cdk/keycodes",
     "@rxjs",
   ],
-  tsconfig = ":tsconfig-build.json",
+  tsconfig = "//src/cdk:tsconfig-build.json",
 )

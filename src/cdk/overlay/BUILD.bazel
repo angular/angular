@@ -15,7 +15,7 @@ ng_module(
     "//src/cdk/scrolling",
     "@rxjs",
   ],
-  tsconfig = ":tsconfig-build.json",
+  tsconfig = "//src/cdk:tsconfig-build.json",
 )
 
 # TODO(jelbourn): replace this w/ sass_library when it supports acting like a filegroup
@@ -38,7 +38,7 @@ ts_library(
     "//src/cdk/testing",
     "@rxjs",
   ],
-  tsconfig = ":tsconfig-build.json",
+  tsconfig = "//src/cdk:tsconfig-build.json",
 )
 
 ts_web_test(

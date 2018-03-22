@@ -1,4 +1,22 @@
 # List of all @angular/material components / subpackages.
+CDK_PACKAGES = [
+  "coercion",
+  "keycodes",
+  "scrolling",
+  "accordion",
+  "observers",
+  "a11y",
+  "overlay",
+  "platform",
+  "bidi",
+  "table",
+  "tree",
+  "portal",
+  "layout",
+  "stepper",
+  "collections",
+]
+
 MATERIAL_PACKAGES = [
   "autocomplete",
   "badge",

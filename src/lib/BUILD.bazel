@@ -1,5 +1,6 @@
 load("//tools:sass_bundle.bzl", "sass_bundle")
-load("//:components.bzl", "MATERIAL_PACKAGES")
+load("//:packages.bzl", "MATERIAL_PACKAGES")
+load("@angular//:index.bzl", "ng_package")
 
 
 sass_bundle(

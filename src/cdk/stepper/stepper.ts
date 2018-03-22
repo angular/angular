@@ -67,7 +67,7 @@ export class StepperSelectionEvent {
   moduleId: module.id,
   selector: 'cdk-step',
   exportAs: 'cdkStep',
-  templateUrl: 'step.html',
+  template: '<ng-template><ng-content></ng-content></ng-template>',
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
