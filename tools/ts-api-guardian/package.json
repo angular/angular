@@ -19,23 +19,8 @@
     "minimist": "^1.2.0"
   },
   "devDependencies": {
-    "@types/chai": "^4.1.2",
-    "@types/diff": "^3.2.2",
-    "@types/minimist": "^1.2.0",
-    "@types/mocha": "^2.2.48",
-    "@types/node": "^0.12.15",
     "chai": "^4.1.2",
-    "clang-format": "^1.0.25",
-    "gulp": "^3.8.11",
-    "gulp-clang-format": "^1.0.25",
-    "gulp-mocha": "^5.0.0",
-    "gulp-sourcemaps": "^2.6.4",
-    "gulp-typescript": "^4.0.1",
-    "gulp-util": "^3.0.8",
-    "merge2": "^1.2.1",
     "jasmine": "^3.1.0",
-    "source-map": "^0.7.1",
-    "source-map-support": "^0.5.3",
     "typescript": "~2.6.2"
   },
   "repository": {},
