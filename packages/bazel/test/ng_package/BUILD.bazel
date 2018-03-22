@@ -48,6 +48,8 @@ jasmine_node_test(
         "example_package.golden",
         "//packages/bazel/test/ng_package/example:npm_package",
     ],
+    # TODO(alexeagle): re-enable this test
+    tags = ["manual"],
 )
 
 nodejs_binary(
