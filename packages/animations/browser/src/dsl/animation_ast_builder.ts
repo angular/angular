@@ -96,7 +96,7 @@ export class AnimationAstBuilderVisitor implements AnimationDslVisitor {
       if (def.type == AnimationMetadataType.State) {
         const stateDef = def as AnimationStateMetadata;
         const name = stateDef.name;
-        name.split(/\s*,\s*/).forEach(n => {
+        name.toString().split(/\s*,\s*/).forEach(n => {
           stateDef.name = n;
           states.push(this.visitState(stateDef, context));
         });
