@@ -3028,98 +3028,181 @@ This example declares the `fax` variable as `ref-fax` instead of `#fax`.
 An _Input_ property is a _settable_ property annotated with an `@Input` decorator.
 Values flow _into_ the property when it is data bound with a [property binding](#property-binding)
 -->
-An _Input_ property is a _settable_ property annotated with an `@Input` decorator.
-Values flow _into_ the property when it is data bound with a [프로퍼티 바인딩](#프로퍼티-바인딩)
+_입력 프로퍼티_ 는 컴포넌트 프로퍼티에 `@Input` 데코레이터를 붙여서 _외부에서 값을 받도록_ 한 프로퍼티입니다.
+이 때 데이터는 [프로퍼티 바인딩](#프로퍼티-바인딩)을 통해 컴포넌트 밖에서 컴포넌트 _안으로_ 전달됩니다.
 
 <!--
 An _Output_ property is an _observable_ property annotated with an `@Output` decorator.
 The property almost always returns an Angular [`EventEmitter`](api/core/EventEmitter).
 Values flow _out_ of the component as events bound with an [event binding](#event-binding).
 -->
-An _Output_ property is an _observable_ property annotated with an `@Output` decorator.
-The property almost always returns an Angular [`EventEmitter`](api/core/EventEmitter).
-Values flow _out_ of the component as events bound with an [이벤트 바인딩](#이벤트-바인딩).
+그리고 _출력 프로퍼티_ 는 컴포넌트 프로퍼티에 `@Output` 데코레이터를 붙여서 외부로 공개한 _옵저버블_ 프로퍼티입니다.
+이 때 옵저버블 프로퍼티는 Angular에서 제공하는 [`EventEmitter`](api/core/EventEmitter)를 사용하는 것이 일반적입니다.
+컴포넌트 안쪽에서 발생하는 이벤트는 [이벤트 바인딩](#이벤트-바인딩)을 통해 컴포넌트 _밖으로_ 전달됩니다.
 
+<!--
 You can only bind to _another_ component or directive through its _Input_ and _Output_ properties.
+-->
+컴포넌트나 디렉티브를 _다른_ 컴포넌트와 디렉티브와 직접 바인딩하려면 _입력_ 프로퍼티나 _출력_ 프로퍼티를 사용해야 합니다.
 
 <div class="alert is-important">
 
+<!--
 Remember that all **components** are **directives**.
+-->
+**컴포넌트**는 **디렉티브**의 종류 중 하나라는 것을 잊지 마세요.
 
+<!--
 The following discussion refers to _components_ for brevity and 
 because this topic is mostly a concern for component authors. 
+-->
+아래 설명에서는 컴포넌트를 개발하는 입장에서 설명하기 위해
+컴포넌트와 디렉티브를 간단하게 _컴포넌트_ 라고만 언급하겠습니다.
 </div>
 
+<!--
 <h3 class="no-toc">Discussion</h3>
+-->
+<h3 class="no-toc">개요</h3>
 
+<!--
 You are usually binding a template to its _own component class_.
 In such binding expressions, the component's property or method is to the _right_ of the (`=`).
+-->
+템플릿은 _컴포넌트 클래스_ 와 연결합니다.
+그래서 입출력 프로퍼티를 바인딩하기 위해 등호(`=`) _오른쪽_ 에 사용하는 표현식은 컴포넌트 안에 있는 프로퍼티나 메소드가 됩니다.
 
 <code-example path="template-syntax/src/app/app.component.html" region="io-1" title="src/app/app.component.html" linenums="false">
 </code-example>
 
+<!--
 The `iconUrl` and `onSave` are members of the `AppComponent` class.
 They are _not_ decorated with `@Input()` or `@Output`.
 Angular does not object.
+-->
+위 코드에서 `iconUrl`과 `onSave`는 `AppComponent` 클래스에 있는 프로퍼티와 메소드입니다.
+하지만 일반적인 프로퍼티 바인딩이나 이벤트 바인딩을 할 때는 `@Input()` 데코레이터와 `@Output` 데코레이터가 _필요 없습니다_ .
+이 데코레이터들은 자식 컴포넌트와 바인딩할 때 사용됩니다.
 
+<!--
 **You can always bind to a public property of a component in its own template.**
 It doesn't have to be an _Input_ or _Output_ property
+-->
+**그리고 입력 프로퍼티로 자식 컴포넌트에 연결하는 프로퍼티는 `public` 접근자로 지정되어야 템플릿에서 사용할 수 있습니다.**
+전달하는 컴포넌트의 입장에서 _입출력_ 프로퍼티일 필요는 없습니다.
 
+<!--
 A component's class and template are closely coupled.
 They are both parts of the same thing.
 Together they _are_ the component.
 Exchanges between a component class and its template are internal implementation details.
+-->
+컴포넌트 클래스와 템플릿은 긴밀하게 연결되어 있습니다.
+컴포넌트 클래스와 템플릿이 _모여서_ 컴포넌트를 구성하기 때문에 각각은 컴포넌트의 구성요소라고 할 수도 있습니다.
+컴포넌트 클래스와 템플릿 사이에 데이터가 전달되는 과정을 자세하게 알아봅시다.
 
+<!--
 ### Binding to a different component
+-->
+### 다른 컴포넌트와 바인딩하기
 
+<!--
 You can also bind to a property of a _different_ component.
 In such bindings, the _other_ component's property is to the _left_ of the (`=`).
+-->
+컴포넌트 프로퍼티는 _다른_ 컴포넌트로 바인딩할 수도 있습니다.
+이런 바인딩에서 _다른_ 컴포넌트의 프로퍼티는 괄호(`=`) _왼쪽_ 에 지정합니다.
 
+<!--
 In the following example, the `AppComponent` template binds `AppComponent` class members to properties of the `HeroDetailComponent` whose selector is `'app-hero-detail'`.
+-->
+아래 예제에서 `AppComponent`의 템플릿은 `AppComponent` 클래스 멤버를 `HeroDetailComponent`의 프로퍼티로 바인딩합니다.
+`HeroDetailComponent`는 `'app-hero-detail'` 셀렉터로 표현되는 컴포넌트입니다.
 
 <code-example path="template-syntax/src/app/app.component.html" region="io-2" title="src/app/app.component.html" linenums="false">
 </code-example>
 
+<!--
 The Angular compiler _may_ reject these bindings with errors like this one:
+-->
+하지만 이렇게 사용하면 Angular 컴파일 과정에서 다음과 같은 에러가 발생합니다:
 
 <code-example language="sh" class="code-shell">
 Uncaught Error: Template parse errors:
 Can't bind to 'hero' since it isn't a known property of 'app-hero-detail'
 </code-example>
 
+<!--
 You know that `HeroDetailComponent` has `hero` and `deleteRequest` properties.
 But the Angular compiler refuses to recognize them.
+-->
+`HeroDetailComponent`에는 `hero` 프로퍼티와 `deleteRequest` 메소드가 이미 있다고 합시다.
+하지만 Angular 컴파일러는 이 항목이 있는지 알 수 없습니다.
 
+<!--
 **The Angular compiler won't bind to properties of a different component
 unless they are Input or Output properties**.
+-->
+그래서 컴포넌트를 다른 컴포넌트와 연결할 수 있도록 Angular 컴파일러에게 정보를 제공하기 위해
+입출력 프로퍼티를 지정합니다.
 
+<!--
 There's a good reason for this rule.
+-->
+규칙은 단순합니다.
 
+<!--
 It's OK for a component to bind to its _own_ properties.
 The component author is in complete control of those bindings.
+-->
+컴포넌트 안에서 자신의 프로퍼티에 접근하는 것은 아무 문제가 없습니다.
+템플릿 안에서는 프로퍼티를 자유롭게 사용할 수 있습니다.
 
+<!--
 But other components shouldn't have that kind of unrestricted access.
 You'd have a hard time supporting your component if anyone could bind to any of its properties.
 Outside components should only be able to bind to the component's public binding API.
+-->
+하지만 다른 컴포넌트의 프로퍼티에 대한 접근은 기본적으로 제한되어 있습니다.
+다른 컴포넌트에서 컴포넌트 내부에 마음대로 접근하는 것은 컴포넌트를 관리하기에 그리 효율적이지 않습니다.
+컴포넌트 밖에서는 컴포넌트에서 공개하는 API에만 접근할 수 있게 하는 것이 좋습니다.
 
+<!--
 Angular asks you to be _explicit_ about that API.
 It's up to _you_ to decide which properties are available for binding by
 external components.
+-->
+그래서 Angular는 외부로 공개하는 API를 명확하게 지정하도록 요구하는 것입니다.
+어떤 프로퍼티를 컴포넌트 외부로 공개해서 다른 컴포넌트와 바인딩할 지 설정하는 것은 오로지 _개발자_ 의 판단에 달려있습니다.
 
+<!--
 #### TypeScript _public_ doesn't matter
+-->
+#### TypeScript 접근제어자 설정
 
+<!--
 You can't use the TypeScript _public_ and _private_ access modifiers to
 shape the component's public binding API.
+-->
+컴포넌트 외부로 공개되는 API는 TypeScript 접근 제어자인 _public_ 이나 _private_ 로 접근 권한을 제어할 수 없습니다.
 
 <div class="alert is-important">
 
+<!--
 All data bound properties must be TypeScript _public_ properties.
 Angular never binds to a TypeScript _private_ property.
+-->
+데이터가 바인딩되는 프로퍼티는 항상 TypeScript _public_ 프로퍼티로 지정되어야 합니다.
+_private_ 으로 지정된 프로퍼티를 바인딩하는 것은 Angular에서 허용하지 않습니다.
 
 </div>
 
+<!--
 Angular requires some other way to identify properties that _outside_ components are allowed to bind to.
 That _other way_ is the `@Input()` and `@Output()` decorators.
+-->
+그리고 컴포넌트 외부로 프로퍼티를 공개할 때 Angular가 제공하는 방식을 사용할 수도 있습니다.
+이 때 사용되는 것이 `@Input()` 데코레이터와 `@Output()` 데코레이터입니다.
 
 ### Declaring Input and Output properties
 
