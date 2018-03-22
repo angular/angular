@@ -128,173 +128,27 @@ Using an Angular custom element makes the process much simpler and more transpar
 The Popup Service example app compares the two methodologies by defining a component that you can either load dynamically or convert to a custom element. 
 
 - `popup.component.ts`  defines a simple pop-up element that displays an input message, with some animation and styling. 
-
-```
-import {Component, EventEmitter, Input, Output} from '@angular/core';
-import {AnimationEvent} from '@angular/animations';
-import {animate, state, style, transition, trigger} from '@angular/animations';
-
-@Component({
-  selector: 'my-popup',
-  template: 'Popup: {{message}}',
-  host: {
-    '[@state]': 'state',
-    '(@state.done)': 'onAnimationDone($event)',
-  },
-  animations: [
-    trigger('state', [
-      state('opened', style({transform: 'translateY(0%)'})),
-      state('void, closed', style({transform: 'translateY(100%)', opacity: 0})),
-      transition('* => *', animate('100ms ease-in')),
-    ])
-  ],
-  styles: [`
-    :host {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      background: #009cff;
-      height: 48px;
-      padding: 16px;
-      display: flex;
-      align-items: center;
-      border-top: 1px solid black;
-      font-size: 24px;
-    }
-  `]
-})
-
-export class PopupComponent {
-  private state: 'opened' | 'closed' = 'closed';
-
-  @Input()
-  set message(message: string) {
-    this._message = message;
-    this.state = 'opened';
-
-    setTimeout(() => this.state = 'closed', 2000);
-  }
-  get message(): string { return this._message; }
-  _message: string;
-
-  @Output()
-  closed = new EventEmitter();
-
-  onAnimationDone(e: AnimationEvent) {
-    if (e.toState === 'closed') {
-      this.closed.next();
-    }
-  }
-}
-```
-
 - `popup.service.ts` creates an injectable service that provides two different ways to invoke the PopupComponent; as a dynamic component, or as a custom element. Notice how much more setup is required for the dynamic-loading method.
-
-```
-import {ApplicationRef, ComponentFactoryResolver, Injectable, Injector} from '@angular/core';
-
-import {PopupComponent} from './popup.component';
-import {NgElementConstructor} from '../elements-dist';
-
-@Injectable()
-export class PopupService {
-  constructor(private injector: Injector,
-              private applicationRef: ApplicationRef,
-              private componentFactoryResolver: ComponentFactoryResolver) {}
-
-  // Previous dynamic-loading method required you to set up infrastructure
-  // before adding the popup to the DOM.
-  showAsComponent(message: string) {
-    // Create element
-    const popup = document.createElement('popup-component');
-
-    // Create the component and wire it up with the element
-    const factory = this.componentFactoryResolver.resolveComponentFactory(PopupComponent);
-    const popupComponentRef = factory.create(this.injector, [], popup);
-
-    // Attach to the view so that the change detector knows to run
-    this.applicationRef.attachView(popupComponentRef.hostView);
-
-    // Listen to the close event
-    popupComponentRef.instance.closed.subscribe(() => {
-      document.body.removeChild(popup);
-      this.applicationRef.detachView(popupComponentRef.hostView);
-    });
-
-    // Set the message
-    popupComponentRef.instance.message = message;
-
-    // Add to the DOM
-    document.body.appendChild(popup);
-  }
-
-  // This uses the new custom-element method to add the popup to the DOM.
-  showAsElement(message: string) {
-    // Create element
-    const popupEl = document.createElement('popup-element');
-
-    // Listen to the close event
-    popupEl.addEventListener('closed', () => document.body.removeChild(popupEl));
-
-    // Set the message
-    popupEl.message = message;
-
-    // Add to the DOM
-    document.body.appendChild(popupEl);
-  }
-}
-```
-
+- `app.module.ts` adds the PopupComponent in the module's `entryComponents` list, to exclude it from compilation and avoid startup warnings or errors.
 - `app.component.ts` defines the app's root component, which uses the PopupService to add the pop-up to the DOM at run time. When the app runs, the root component's constructor converts PopupComponent to a custom element. 
 
 For comparison, the demo shows both methods. One button adds the popup using the dynamic-loading method, and the other uses the custom element. You can see that the result is the same; only the preparation is different.
 
-```
-import {Component, Injector} from '@angular/core';
-import {createNgElementConstructor} from '../elements-dist';
-import {PopupService} from './popup.service';
-import {PopupComponent} from './popup.component';
+<code-tabs>
 
-@Component({
-  selector: 'app-root',
-  template: `
-    <input #input value="Message">
-    <button (click)="popup.showAsComponent(input.value)"> 
-        Show as component </button>
-    <button (click)="popup.showAsElement(input.value)"> 
-        Show as element </button>
-  `
-})
+  <code-pane title="popup.component.ts" path="elements/src/app/popup.component.ts">
 
-export class AppComponent {
-   constructor(private injector: Injector, public popup: PopupService) {
-    // on init, convert PopupComponent to a custom element 
-    const PopupElement = 
-createNgElementConstructor(PopupComponent, {injector: this.injector});
-    // register the custom element with the browser.
-       customElements.define('popup-element', PopupElement);
-  }
-}
-```
+  </code-pane>
 
-- `app.module.ts` adds the PopupComponent in the module's `entryComponents` list, to exclude it from compilation and avoid startup warnings or errors.
+  <code-pane title="popup.service.ts" path="elements/src/app/popup.service.ts">
 
-```
-import {BrowserModule} from '@angular/platform-browser';
-import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
-import {NgModule} from '@angular/core';
+  </code-pane>
 
-import {AppComponent} from './app.component';
-import {PopupService} from './popup.service';
-import {PopupComponent} from './popup.component';
+  <code-pane title="app.module.ts" path="elements/src/app.module.ts">
 
-@NgModule({
-  declarations: [AppComponent, PopupComponent],
-  imports: [BrowserModule, BrowserAnimationsModule],
-  providers: [PopupService],
-  bootstrap: [AppComponent],
-  entryComponents: [PopupComponent],
-})
-export class AppModule { }
-```
+  </code-pane>
+
+  <code-pane title="app.component.ts" path="elements/src/app/app.component.ts">
+
+  </code-pane>
+</code-tabs>
