@@ -31,7 +31,7 @@ Using the Angular CLI, create a service called `hero`.
 </code-example>
 
 The command generates skeleton `HeroService` class in `src/app/hero.service.ts`
-The `HeroService` class should look like the below.
+The `HeroService` class should look like the following example.
 
 <code-example path="toh-pt4/src/app/hero.service.1.ts" region="new"
  title="src/app/hero.service.ts (new service)" linenums="false">
@@ -40,19 +40,10 @@ The `HeroService` class should look like the below.
 ### _@Injectable()_ services
 
 Notice that the new service imports the Angular `Injectable` symbol and annotates
-the class with the `@Injectable()` decorator.
+the class with the `@Injectable()` decorator. This marks the class as one that participates in the _dependency injection system_. The `HeroService` class is going to provide an injectable service, and it can also have its own injected dependencies.
+It doesn't have any dependencies yet, but [it will soon](#inject-message-service).
 
-The `@Injectable()` decorator tells Angular that this service _might_ itself
-have injected dependencies.
-It doesn't have dependencies now but [it will soon](#inject-message-service).
-Whether it does or it doesn't, it's good practice to keep the decorator.
-
-<div class="l-sub-section">
-
-The Angular [style guidelines](guide/styleguide#style-07-04) strongly recommend keeping it
-and the linter enforces this rule.
-
-</div>
+The `@Injectable()` decorator accepts a metadata object for the service, the same way the `@Component()` decorator did for your component classes. 
 
 ### Get hero data
 
@@ -76,32 +67,39 @@ Add a `getHeroes` method to return the _mock heroes_.
 {@a provide}
 ## Provide the `HeroService`
 
-You must _provide_ the `HeroService` in the _dependency injection system_
+You must make the `HeroService` available to the dependency injection system 
 before Angular can _inject_ it into the `HeroesComponent`, 
-as you will do [below](#inject).
+as you will do [below](#inject). You do this by registering a _provider_. A provider is something that can create or deliver a service; in this case, it instantiates the `HeroService` class to provide the service.
 
-There are several ways to provide the `HeroService`: 
-in the `HeroesComponent`, in the `AppComponent`, in the `AppModule`.
-Each option has pros and cons. 
+Now, you need to make sure that the `HeroService` is registered as the provider of this service. 
+You are registering it with an _injector_, which is the object that is responsible for choosing and injecting the provider where it is required. 
 
-This tutorial chooses to provide it in the `AppModule`.
+By default, the Angular CLI command `ng generate service` registers a provider with the _root injector_ for your service by including provider metadata in the `@Injectable` decorator. 
 
-That's such a popular choice that you could have told the CLI to provide it there automatically
-by appending `--module=app`.
+If you look at the `@Injectable()` statement right before the `HeroService` class definition, you can see that the `providedIn` metadata value is 'root':    
+
+```
+@Injectable({
+  providedIn: 'root',
+})
+```
+
+When you provide the service at the root level, Angular creates a single, shared instance of `HeroService` and injects into any class that asks for it. 
+Registering the provider in the `@Injectable` metadata also allows Angular to optimize an app by removing the service if it turns out not to be used after all. 
+
+<div class="l-sub-section">
+
+If you need to, you can register providers at different levels: 
+in the `HeroesComponent`, in the `AppComponent`, in the `AppModule`. 
+For instance, you could have told the CLI to provide the service at the module level automatically by appending `--module=app`.
 
 <code-example language="sh" class="code-shell">
   ng generate service hero --module=app
 </code-example>
 
-Since you did not, you'll have to provide it yourself.
+To learn more about providers and injectors, see the [Dependency Injection guide](guide/dependency-injection).
 
-Open the `AppModule` class, import the `HeroService`, and add it to the `@NgModule.providers` array.
-
-<code-example path="toh-pt4/src/app/app.module.ts" linenums="false" title="src/app/app.module.ts (providers)" region="providers-heroservice">
-</code-example>
-
-The `providers` array tells Angular to create a single, shared instance of `HeroService`
-and inject into any class that asks for it.
+</div>
 
 The `HeroService` is now ready to plug into the `HeroesComponent`.
 
@@ -111,17 +109,12 @@ This is a interim code sample that will allow you to provide and use the `HeroSe
 
 </div>
 
-<div class="alert is-helpful">
-
-  Learn more about _providers_ in the [Providers](guide/providers) guide.
-
-</div>
 
 ## Update `HeroesComponent`
 
 Open the `HeroesComponent` class file.
 
-Delete the `HEROES` import as you won't need that anymore.
+Delete the `HEROES` import, because you won't need that anymore.
 Import the `HeroService` instead.
 
 <code-example path="toh-pt4/src/app/heroes/heroes.component.ts" title="src/app/heroes/heroes.component.ts (import HeroService)" region="hero-service-import">
@@ -295,10 +288,9 @@ You should see the default paragraph from `MessagesComponent` at the bottom of t
 ### Create the _MessageService_
 
 Use the CLI to create the `MessageService` in `src/app`. 
-The `--module=app` option tells the CLI to  [_provide_ this service](#provide) in the `AppModule`,
 
 <code-example language="sh" class="code-shell">
-  ng generate service message --module=app
+  ng generate service message
 </code-example>
 
 Open `MessageService` and replace its contents with the following.
@@ -442,7 +434,7 @@ Here are the code files discussed on this page and your app should look like thi
 ## Summary
 
 * You refactored data access to the `HeroService` class.
-* You _provided_ the `HeroService` in the root `AppModule` so that it can be injected anywhere.
+* You registered the `HeroService` as the _provider_ of its service at the root level so that it can be injected anywhere in the app.
 * You used [Angular Dependency Injection](guide/dependency-injection) to inject it into a component.
 * You gave the `HeroService` _get data_ method an asynchronous signature.
 * You discovered `Observable` and the RxJS _Observable_ library.
