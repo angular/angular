@@ -85,6 +85,7 @@ export function ensureDocument(): void {
     // we are in node.js.
     const window = domino.createWindow('', 'http://localhost');
     savedDocument = (global as any).document;
+    (global as any).window = window;
     (global as any).document = window.document;
     // Trick to avoid Event patching from
     // https://github.com/angular/angular/blob/7cf5e95ac9f0f2648beebf0d5bd9056b79946970/packages/platform-browser/src/dom/events/dom_events.ts#L112-L132
@@ -109,6 +110,7 @@ export function ensureDocument(): void {
 export function cleanupDocument(): void {
   if (savedDocument) {
     (global as any).document = savedDocument;
+    (global as any).window = undefined;
     savedDocument = undefined;
   }
   if (savedNode) {

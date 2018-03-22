@@ -129,7 +129,7 @@ export function renderComponent<T>(
   const rootContext: RootContext = {
     // Incomplete initialization due to circular reference.
     component: null !,
-    scheduler: opts.scheduler || requestAnimationFrame,
+    scheduler: opts.scheduler || requestAnimationFrame.bind(window),
     clean: CLEAN_PROMISE,
   };
   const rootView = createLView(
