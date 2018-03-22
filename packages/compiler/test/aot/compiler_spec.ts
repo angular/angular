@@ -924,7 +924,7 @@ describe('compiler (bundled Angular)', () => {
           new EmittingCompilerHost(['/bolder/index.ts'], {emitMetadata: false, mockData: LIBRARY});
 
       if (isInBazel()) {
-        // In bazel we need can just add the angular files from the ones read during setup.
+        // In bazel we can just add the angular files from the ones read during setup.
         emittingHost.addFiles(angularFiles);
       }
 
