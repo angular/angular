@@ -46,9 +46,6 @@ const I18N_ATTR_PREFIX = 'i18n-';
 const MEANING_SEPARATOR = '|';
 const ID_SEPARATOR = '@@';
 
-/** Closure functions **/
-const GOOG_GET_MSG = 'goog.getMsg';
-
 export function compileDirective(
     outputCtx: OutputContext, directive: CompileDirectiveMetadata, reflector: CompileReflector,
     bindingParser: BindingParser, mode: OutputMode) {
@@ -317,12 +314,6 @@ class BindingScope {
     const ref = `${REFERENCE_PREFIX}${current.referenceNameIndex++}`;
     return ref;
   }
-
-  // closure variables holding i18n messages are name `MSG_[A-Z0-9]+`
-  freshI18nName(): string {
-    const name = this.freshReferenceName();
-    return `MSG_${name}`.toUpperCase();
-  }
 }
 
 const ROOT_SCOPE = new BindingScope(null).set('$event', o.variable('$event'));
@@ -573,8 +564,8 @@ class TemplateDefinitionBuilder implements TemplateAstVisitor, LocalResolver {
       attributes.push(o.literal(name));
       if (attrI18nMetas.hasOwnProperty(name)) {
         hasI18nAttr = true;
-        const {statements, variable} = this.genI18nMessageStmts(value, attrI18nMetas[name]);
-        i18nMessages.push(...statements);
+        const meta = parseI18nMeta(attrI18nMetas[name]);
+        const variable = this.constantPool.getTranslation(value, meta);
         attributes.push(variable);
       } else {
         attributes.push(o.literal(value));
@@ -790,8 +781,8 @@ class TemplateDefinitionBuilder implements TemplateAstVisitor, LocalResolver {
   // i0.ɵT(1, MSG_XYZ);
   // ```
   visitSingleI18nTextChild(text: TextAst, i18nMeta: string) {
-    const {statements, variable} = this.genI18nMessageStmts(text.value, i18nMeta);
-    this._creationMode.push(...statements);
+    const meta = parseI18nMeta(i18nMeta);
+    const variable = this.constantPool.getTranslation(text.value, meta);
     this.instruction(
         this._creationMode, text.sourceSpan, R3.text, o.literal(this.allocateDataSlot()), variable);
   }
@@ -834,35 +825,6 @@ class TemplateDefinitionBuilder implements TemplateAstVisitor, LocalResolver {
 
   private bind(implicit: o.Expression, value: AST, sourceSpan: ParseSourceSpan): o.Expression {
     return this.convertPropertyBinding(implicit, value);
-  }
-
-  // Transforms an i18n message into a const declaration.
-  //
-  // `message`
-  // becomes
-  // ```
-  // /**
-  //  * @desc description?
-  //  * @meaning meaning?
-  //  */
-  // const MSG_XYZ = goog.getMsg('message');
-  // ```
-  private genI18nMessageStmts(msg: string, meta: string):
-      {statements: o.Statement[], variable: o.ReadVarExpr} {
-    const statements: o.Statement[] = [];
-    const m = parseI18nMeta(meta);
-    const docStmt = i18nMetaToDocStmt(m);
-    if (docStmt) {
-      statements.push(docStmt);
-    }
-
-    // Call closure to get the translation
-    const variable = o.variable(this.bindingScope.freshI18nName());
-    const fnCall = o.variable(GOOG_GET_MSG).callFn([o.literal(msg)]);
-    const msgStmt = variable.set(fnCall).toDeclStmt(o.INFERRED_TYPE, [o.StmtModifier.Final]);
-    statements.push(msgStmt);
-
-    return {statements, variable};
   }
 }
 
@@ -1220,21 +1182,4 @@ function parseI18nMeta(i18n?: string): {description?: string, id?: string, meani
   }
 
   return {description, id, meaning};
-}
-
-// Converts i18n meta informations for a message (description, meaning) to a JsDoc statement
-// formatted as expected by the Closure compiler.
-function i18nMetaToDocStmt(meta: {description?: string, id?: string, meaning?: string}):
-    o.JSDocCommentStmt|null {
-  const tags: o.JSDocTag[] = [];
-
-  if (meta.description) {
-    tags.push({tagName: o.JSDocTagName.Desc, text: meta.description});
-  }
-
-  if (meta.meaning) {
-    tags.push({tagName: o.JSDocTagName.Meaning, text: meta.meaning});
-  }
-
-  return tags.length == 0 ? null : new o.JSDocCommentStmt(tags);
 }
