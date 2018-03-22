@@ -27,7 +27,7 @@ calculateSize() {
 checkSize() {
   name="$1"
   limitFile="$2"
-  node ${PROJECT_ROOT}/scripts/ci/payload-size.js $limitFile $name $TRAVIS_BRANCH $TRAVIS_COMMIT
+  node ${PROJECT_ROOT}/scripts/ci/payload-size.js $limitFile $name $CIRCLE_BRANCH $CIRCLE_SHA1
 }
 
 # Write timestamp to global variable `$payloadData`.
@@ -42,7 +42,14 @@ addMessage() {
   # Grab the set of SHAs for the message. This can fail when you force push or do initial build
   # because $TRAVIS_COMMIT_RANGE will contain the previous SHA which will not be in the
   # force push or commit, hence we default to last commit.
-  message=$(git log --oneline $TRAVIS_COMMIT_RANGE -- || git log --oneline -n1)
+  # Extract commit range (or single commit)
+  COMMIT_RANGE=$(echo "${CIRCLE_COMPARE_URL}" | cut -d/ -f7)
+
+  # Fix single commit, unfortunately we don't always get a commit range from Circle CI
+  if [[ $COMMIT_RANGE != *"..."* ]]; then
+    COMMIT_RANGE="${COMMIT_RANGE}...${COMMIT_RANGE}"
+  fi
+  message=$(git log --oneline $COMMIT_RANGE -- || git log --oneline -n1)
   message=$(echo $message | sed 's/\\/\\\\/g' | sed 's/"/\\"/g')
   payloadData="$payloadData\"message\": \"$message\""
 }
@@ -52,8 +59,8 @@ addMessage() {
 # Update the change source in global variable `$payloadData`.
 addChange() {
   yarnChanged=false
-  allChangedFiles=$(git diff --name-only $TRAVIS_COMMIT_RANGE $parentDir | wc -l)
-  allChangedFileNames=$(git diff --name-only $TRAVIS_COMMIT_RANGE $parentDir)
+  allChangedFiles=$(git diff --name-only $CIRCLE_SHA1 $parentDir | wc -l)
+  allChangedFileNames=$(git diff --name-only $CIRCLE_SHA1 $parentDir)
 
   if [[ $allChangedFileNames == *"yarn.lock"* ]]; then
     yarnChanged=true
@@ -81,10 +88,10 @@ uploadData() {
 
   echo $payloadData > /tmp/current.log
 
-  readonly safeBranchName=$(echo $TRAVIS_BRANCH | sed -e 's/\./_/g')
+  readonly safeBranchName=$(echo $CIRCLE_BRANCH | sed -e 's/\./_/g')
 
-  if [[ "$TRAVIS_PULL_REQUEST" == "false" ]]; then
-    readonly dbPath=/payload/$name/$safeBranchName/$TRAVIS_COMMIT
+  if [ -z ${CIRCLE_PULL_REQUEST+x} ]; then
+    readonly dbPath=/payload/$name/$safeBranchName/$CIRCLE_SHA1
 
     # WARNING: FIREBASE_TOKEN should NOT be printed.
     set +x

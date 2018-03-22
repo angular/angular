@@ -4,6 +4,8 @@ set -eu -o pipefail
 
 rm -rf built
 
+PATH=$PATH:$(pwd)/node_modules/.bin
+
 ngc
 
 # This is to mainlt copy the index.html to be packaged into the server.

@@ -16,7 +16,7 @@ var HOSTNAME = 'localhost';
 var PORTS = [9876, 9877];
 var ACCESS_KEY = process.env.BROWSER_STACK_ACCESS_KEY;
 var READY_FILE = process.env.BROWSER_PROVIDER_READY_FILE;
-var TUNNEL_IDENTIFIER = process.env.TRAVIS_JOB_NUMBER;
+var TUNNEL_IDENTIFIER = process.env.CIRCLE_BUILD_NUM;
 
 // We need to start fake servers, otherwise the tunnel does not start.
 var fakeServers = [];

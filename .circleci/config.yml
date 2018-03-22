@@ -22,6 +22,23 @@ var_3: &setup-bazel-remote-cache
     command: ~/bazel-remote-proxy -backend circleci://
     background: true
 
+var_4: &install
+  run:
+    name: Install
+    command: ./scripts/ci/install.sh
+var_5: &build
+  run:
+    name: Build
+    command: ./scripts/ci/build.sh
+var_6: &test
+  run:
+    name: Run test
+    command: xvfb-run -a ./scripts/ci/test.sh
+var_7: &cleanup
+  run:
+    name: Clean up
+    command: ./scripts/ci/cleanup.sh
+
 # Settings common to each job
 anchor_1: &job_defaults
   working_directory: ~/ng
@@ -33,6 +50,20 @@ anchor_1: &job_defaults
 # See https://discuss.circleci.com/t/1662
 anchor_2: &post_checkout
   post: git pull --ff-only origin "refs/pull/${CIRCLE_PULL_REQUEST//*pull\//}/merge"
+
+anchor_3: &test-steps
+  steps:
+    - checkout:
+        <<: *post_checkout
+    - restore_cache:
+        key: *cache_key
+    - run: sudo apt-get install -y rsync # this line can be removed if angular/ngcontainer contains rsync
+    - run: scripts/ci/env.sh print >> $BASH_ENV
+    - run: mkdir ${LOGS_DIR}
+    - *install
+    - *build
+    - *test
+    - *cleanup
 
 version: 2
 jobs:
@@ -93,6 +124,61 @@ jobs:
           paths:
             - "node_modules"
             - "~/bazel_repository_cache"
+  test_e2e:
+    <<: *job_defaults
+    environment:
+      - CI_MODE=e2e
+    <<: *test-steps
+  test_e2e_2:
+    <<: *job_defaults
+    environment:
+      - CI_MODE=e2e_2
+    <<: *test-steps
+  test_js:
+    <<: *job_defaults
+    environment:
+      - CI_MODE=js
+    <<: *test-steps
+  test_saucelabs:
+    <<: *job_defaults
+    environment:
+      - CI_MODE=saucelabs_required
+    <<: *test-steps
+  test_browserstack:
+    <<: *job_defaults
+    environment:
+      - CI_MODE=browserstack_required
+    <<: *test-steps
+  test_aio_tools_test:
+    <<: *job_defaults
+    environment:
+      - CI_MODE=aio_tools_test
+    <<: *test-steps
+  test_aio:
+    <<: *job_defaults
+    environment:
+      - CI_MODE=aio
+    <<: *test-steps
+  test_aio_e2e_AIO_SHARD_0:
+    <<: *job_defaults
+    environment:
+      - CI_MODE=aio_e2e
+      - AIO_SHARD=0
+    <<: *test-steps
+  test_aio_e2e_AIO_SHARD_1:
+    <<: *job_defaults
+    environment:
+      - CI_MODE=aio_e2e
+      - AIO_SHARD=1
+    <<: *test-steps
+  deploy:
+    <<: *job_defaults
+    steps:
+    - checkout:
+        <<: *post_checkout
+    - restore_cache:
+        key: *cache_key
+    - run: scripts/ci/deploy.sh
 
 workflows:
   version: 2
@@ -100,3 +186,41 @@ workflows:
     jobs:
       - lint
       - build
+      - test_e2e:
+          requires:
+            - build
+      - test_e2e_2:
+          requires:
+            - build
+      - test_js:
+          requires:
+            - build
+      - test_saucelabs:
+          requires:
+            - build
+      - test_browserstack:
+          requires:
+            - build
+      - test_aio_tools_test:
+          requires:
+            - build
+      - test_aio:
+          requires:
+            - build
+      - test_aio_e2e_AIO_SHARD_0:
+          requires:
+            - build
+      - test_aio_e2e_AIO_SHARD_1:
+          requires:
+            - build
+      - deploy:
+          requires:
+            - test_e2e
+            - test_e2e_2
+            - test_js
+            - test_saucelabs
+            - test_browserstack
+            - test_aio_tools_test
+            - test_aio
+            - test_aio_e2e_AIO_SHARD_0
+            - test_aio_e2e_AIO_SHARD_1

@@ -68,10 +68,9 @@ merge:
 
     # list of PR statuses that need to be successful
     requiredStatuses:
-      - "continuous-integration/travis-ci/pr"
       - "code-review/pullapprove"
-      - "ci/circleci: build"
       - "ci/circleci: lint"
+      - "ci/circleci: deploy" # deploy is enough as depending on every test
 
     # the comment that will be added when the merge label is added despite failing checks, leave empty or set to false to disable
     # {{MERGE_LABEL}} will be replaced by the value of the mergeLabel option

@@ -44,8 +44,8 @@ SAUCE_ACCESS_KEY=`echo $SAUCE_ACCESS_KEY | rev`
 ARGS=""
 
 # Set tunnel-id only on Travis, to make local testing easier.
-if [ ! -z "$TRAVIS_JOB_NUMBER" ]; then
-  ARGS="$ARGS --tunnel-identifier $TRAVIS_JOB_NUMBER"
+if [ ! -z "$CIRCLE_BUILD_NUM" ]; then
+  ARGS="$ARGS --tunnel-identifier $CIRCLE_BUILD_NUM"
 fi
 if [ ! -z "$BROWSER_PROVIDER_READY_FILE" ]; then
   ARGS="$ARGS --readyfile $BROWSER_PROVIDER_READY_FILE"
