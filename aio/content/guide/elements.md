@@ -107,7 +107,9 @@ The recently-developed [custom elements](https://developer.mozilla.org/en-US/doc
 </tr>
 <tr>
   <td>Edge</td>
-  <td>Working on an implementation. Use polyfill. </td>
+  <td>Working on an implementation. <br>    
+ Use the <a href="https://cli.angular.io/" target="_blanks">CLI</a> to automatically set up your project with the correct polyfill: <code>ng add @angular/elements</code>.
+  </td>
 </tr>
 </table>
   
