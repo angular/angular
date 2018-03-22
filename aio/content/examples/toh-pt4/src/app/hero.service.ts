@@ -14,7 +14,9 @@ import { HEROES } from './mock-heroes';
 import { MessageService } from './message.service';
 // #enddocregion import-message-service
 
-@Injectable({ providedIn: 'root' })
+@Injectable({
+  providedIn: 'root',
+})
 export class HeroService {
 
   // #docregion ctor
