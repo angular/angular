@@ -10,12 +10,12 @@ import {ComponentFactory, ComponentRef, Injector, NgModuleRef, SimpleChange, Sim
 import {fakeAsync, tick} from '@angular/core/testing';
 import {Subject} from 'rxjs';
 
-import {ComponentNgElementStrategy, ComponentNgElementStrategyFactory} from '../src/component-factory-strategy';
 import {NgElementStrategyEvent} from '../src/element-strategy';
+import {ViewEngineNgElementStrategy, ViewEngineNgElementStrategyFactory} from '../src/view-engine-strategy';
 
-describe('ComponentFactoryNgElementStrategy', () => {
+describe('ViewEngineNgElementStrategyFactory', () => {
   let factory: FakeComponentFactory;
-  let strategy: ComponentNgElementStrategy;
+  let strategy: ViewEngineNgElementStrategy;
 
   let injector: any;
   let componentRef: any;
@@ -27,7 +27,7 @@ describe('ComponentFactoryNgElementStrategy', () => {
 
     applicationRef = jasmine.createSpyObj('applicationRef', ['attachView']);
 
-    strategy = new ComponentNgElementStrategy(factory, injector);
+    strategy = new ViewEngineNgElementStrategy(factory, injector);
   });
 
   it('should create a new strategy from the factory', () => {
@@ -36,8 +36,8 @@ describe('ComponentFactoryNgElementStrategy', () => {
     injector = jasmine.createSpyObj('injector', ['get']);
     injector.get.and.returnValue(factoryResolver);
 
-    const strategyFactory = new ComponentNgElementStrategyFactory(FakeComponent, injector);
-    expect(strategyFactory.create(injector)).toBeTruthy();
+    const strategyFactory = new ViewEngineNgElementStrategyFactory();
+    expect(strategyFactory.create(FakeComponent, injector)).toBeTruthy();
   });
 
   describe('after connected', () => {

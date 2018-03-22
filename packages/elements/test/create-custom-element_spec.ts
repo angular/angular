@@ -50,6 +50,12 @@ if (typeof customElements !== 'undefined') {
       expect(NgElementCtor.observedAttributes).toEqual(['foo-foo', 'barbar']);
     });
 
+    it('should throw an error if no strategy is provided', () => {
+      expect(() => createCustomElement(TestComponent, {injector}))
+        .toThrowError('Could not find custom element strategy factory. ' +
+            'Please include "CustomElementsModule" in your application.');
+    });
+
     it('should send input values from attributes when connected', () => {
       const element = new NgElementCtor(injector);
       element.setAttribute('foo-foo', 'value-foo-foo');

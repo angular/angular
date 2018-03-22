@@ -6,12 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injector, Type} from '@angular/core';
+import {Injector, NgModule, Type} from '@angular/core';
 import {Subscription} from 'rxjs';
 
-import {ComponentNgElementStrategyFactory} from './component-factory-strategy';
 import {NgElementStrategy, NgElementStrategyFactory} from './element-strategy';
 import {createCustomEvent, getComponentInputs, getDefaultAttributeToPropertyInputs} from './utils';
+import {ViewEngineNgElementStrategyFactory} from './view-engine-strategy';
 
 /**
  * Class constructor based on an Angular Component to be used for custom element registration.
@@ -62,6 +62,17 @@ export interface NgElementConfig {
 }
 
 /**
+ * Module that provides a default strategy factory for creating custom elements.
+ *
+ * @experimental
+ */
+@NgModule({
+  providers: [{provide: NgElementStrategyFactory, useClass: ViewEngineNgElementStrategyFactory}]
+})
+export class CustomElementsModule {
+}
+
+/**
  * @whatItDoes Creates a custom element class based on an Angular Component. Takes a configuration
  * that provides initialization information to the created class. E.g. the configuration's injector
  * will be the initial injector set on the class which will be used for each created instance.
@@ -79,8 +90,16 @@ export function createCustomElement<P>(
     component: Type<any>, config: NgElementConfig): NgElementConstructor<P> {
   const inputs = getComponentInputs(component, config.injector);
 
-  const strategyFactory =
-      config.strategyFactory || new ComponentNgElementStrategyFactory(component, config.injector);
+  let strategyFactory = config.strategyFactory;
+  if (!strategyFactory) {
+    try {
+      strategyFactory = config.injector.get(NgElementStrategyFactory);
+    } catch (e) {
+      throw new Error(
+          'Could not find custom element strategy factory. Please ' +
+          'include "CustomElementsModule" in your application.');
+    }
+  }
 
   const attributeToPropertyInputs = getDefaultAttributeToPropertyInputs(inputs);
 
@@ -89,7 +108,7 @@ export function createCustomElement<P>(
 
     constructor(injector?: Injector) {
       super();
-      this.ngElementStrategy = strategyFactory.create(injector || config.injector);
+      this.ngElementStrategy = strategyFactory !.create(component, injector || config.injector);
     }
 
     attributeChangedCallback(

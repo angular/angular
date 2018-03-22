@@ -6,7 +6,7 @@ import { of } from 'rxjs/observable/of';
 
 import { FILE_NOT_FOUND_ID, FETCHING_ERROR_ID } from 'app/documents/document.service';
 import { Logger } from 'app/shared/logger.service';
-import { CustomElementsModule } from 'app/custom-elements/custom-elements.module';
+import { AppCustomElementsModule } from 'app/custom-elements/custom-elements.module';
 import { TocService } from 'app/shared/toc.service';
 import { ElementsLoader } from 'app/custom-elements/elements-loader';
 import {
@@ -24,7 +24,7 @@ describe('DocViewerComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [CustomElementsModule, TestModule],
+      imports: [AppCustomElementsModule, TestModule],
     });
 
     parentFixture = TestBed.createComponent(TestParentComponent);
