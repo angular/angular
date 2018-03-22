@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {createPatch} from 'diff';
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -49,11 +50,20 @@ if (require.main === module) {
       if (actual === expected) {
         return;
       }
+
+      // Compute the patch and strip the header
+      let patch =
+          createPatch(goldenFile, expected, actual, 'Golden file', 'Generated file', {context: 5});
+      const endOfHeader = patch.indexOf('\n', patch.indexOf('\n') + 1) + 1;
+      patch = patch.substring(endOfHeader);
+
       fail(`example ng_package differs from golden file
-    
+    Diff:
+    ${patch}
+
     Accept the new golden file:
       bazel run ${process.env['BAZEL_TARGET']}.accept
-      `);
+    `);
     });
   });
 }
