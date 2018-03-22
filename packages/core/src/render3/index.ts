@@ -56,6 +56,7 @@ export {
   listener as L,
   store as st,
   load as ld,
+  loadDirective as d,
 
   projection as P,
   projectionDef as pD,

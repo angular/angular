@@ -246,7 +246,7 @@ describe('event listeners', () => {
     function Template(ctx: any, cm: boolean) {
       if (cm) {
         elementStart(0, 'button', ['hostListenerDir', ''], [HostListenerDir]);
-        text(2, 'Click');
+        text(1, 'Click');
         elementEnd();
       }
     }
@@ -339,7 +339,7 @@ describe('event listeners', () => {
             text(0, 'Hello');
             elementStart(1, MyComp);
             elementEnd();
-            elementStart(3, MyComp);
+            elementStart(2, MyComp);
             elementEnd();
           }
           embeddedViewEnd();

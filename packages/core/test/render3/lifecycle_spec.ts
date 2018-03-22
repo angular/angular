@@ -120,11 +120,11 @@ describe('lifecycles', () => {
         if (cm) {
           elementStart(0, Parent);
           elementEnd();
-          elementStart(2, Parent);
+          elementStart(1, Parent);
           elementEnd();
         }
         elementProperty(0, 'val', 1);
-        elementProperty(2, 'val', 2);
+        elementProperty(1, 'val', 2);
       }
 
       renderToHtml(Template, {});
@@ -175,7 +175,7 @@ describe('lifecycles', () => {
       function Template(ctx: any, cm: boolean) {
         if (cm) {
           elementStart(0, Comp);
-          { elementStart(2, ProjectedComp); }
+          { elementStart(1, ProjectedComp); }
           elementEnd();
         }
       }
@@ -196,16 +196,16 @@ describe('lifecycles', () => {
       function Template(ctx: any, cm: boolean) {
         if (cm) {
           elementStart(0, Comp);
-          { elementStart(2, ProjectedComp); }
+          { elementStart(1, ProjectedComp); }
           elementEnd();
-          elementStart(4, Comp);
-          { elementStart(6, ProjectedComp); }
+          elementStart(2, Comp);
+          { elementStart(3, ProjectedComp); }
           elementEnd();
         }
         elementProperty(0, 'val', 1);
-        elementProperty(2, 'val', 1);
-        elementProperty(4, 'val', 2);
-        elementProperty(6, 'val', 2);
+        elementProperty(1, 'val', 1);
+        elementProperty(2, 'val', 2);
+        elementProperty(3, 'val', 2);
       }
 
       renderToHtml(Template, {});
@@ -258,13 +258,13 @@ describe('lifecycles', () => {
         if (cm) {
           elementStart(0, Comp);
           elementEnd();
-          container(2);
-          elementStart(3, Comp);
+          container(1);
+          elementStart(2, Comp);
           elementEnd();
         }
         elementProperty(0, 'val', 1);
-        elementProperty(3, 'val', 5);
-        containerRefreshStart(2);
+        elementProperty(2, 'val', 5);
+        containerRefreshStart(1);
         {
           for (let j = 2; j < 5; j++) {
             if (embeddedViewStart(0)) {
@@ -298,13 +298,13 @@ describe('lifecycles', () => {
         if (cm) {
           elementStart(0, Parent);
           elementEnd();
-          container(2);
-          elementStart(3, Parent);
+          container(1);
+          elementStart(2, Parent);
           elementEnd();
         }
         elementProperty(0, 'val', 1);
-        elementProperty(3, 'val', 5);
-        containerRefreshStart(2);
+        elementProperty(2, 'val', 5);
+        containerRefreshStart(1);
         {
           for (let j = 2; j < 5; j++) {
             if (embeddedViewStart(0)) {
@@ -475,7 +475,7 @@ describe('lifecycles', () => {
       if (cm) {
         projectionDef(0);
         elementStart(1, Comp);
-        { projection(3, 0); }
+        { projection(2, 0); }
         elementEnd();
       }
       elementProperty(1, 'val', bind(ctx.val));
@@ -512,7 +512,7 @@ describe('lifecycles', () => {
       function Template(ctx: any, cm: boolean) {
         if (cm) {
           elementStart(0, Comp);
-          { text(2, 'content'); }
+          { text(1, 'content'); }
           elementEnd();
         }
       }
@@ -548,7 +548,7 @@ describe('lifecycles', () => {
           if (ctx.condition) {
             if (embeddedViewStart(0)) {
               elementStart(0, Comp);
-              { text(2, 'content'); }
+              { text(1, 'content'); }
               elementEnd();
             }
             embeddedViewEnd();
@@ -576,7 +576,7 @@ describe('lifecycles', () => {
       function Template(ctx: any, cm: boolean) {
         if (cm) {
           elementStart(0, Parent);
-          { text(2, 'content'); }
+          { text(1, 'content'); }
           elementEnd();
         }
       }
@@ -595,14 +595,14 @@ describe('lifecycles', () => {
       function Template(ctx: any, cm: boolean) {
         if (cm) {
           elementStart(0, Parent);
-          { text(2, 'content'); }
+          { text(1, 'content'); }
           elementEnd();
-          elementStart(3, Parent);
-          { text(5, 'content'); }
+          elementStart(2, Parent);
+          { text(3, 'content'); }
           elementEnd();
         }
         elementProperty(0, 'val', 1);
-        elementProperty(3, 'val', 2);
+        elementProperty(2, 'val', 2);
       }
 
       renderToHtml(Template, {});
@@ -624,8 +624,8 @@ describe('lifecycles', () => {
         if (cm) {
           elementStart(0, Parent);
           {
-            elementStart(2, ProjectedComp);
-            { text(4, 'content'); }
+            elementStart(1, ProjectedComp);
+            { text(2, 'content'); }
             elementEnd();
           }
           elementEnd();
@@ -654,23 +654,23 @@ describe('lifecycles', () => {
         if (cm) {
           elementStart(0, Parent);
           {
-            elementStart(2, ProjectedComp);
-            { text(4, 'content'); }
+            elementStart(1, ProjectedComp);
+            { text(2, 'content'); }
             elementEnd();
           }
           elementEnd();
-          elementStart(5, Parent);
+          elementStart(3, Parent);
           {
-            elementStart(7, ProjectedComp);
-            { text(9, 'content'); }
+            elementStart(4, ProjectedComp);
+            { text(5, 'content'); }
             elementEnd();
           }
           elementEnd();
         }
         elementProperty(0, 'val', 1);
-        elementProperty(2, 'val', 1);
-        elementProperty(5, 'val', 2);
-        elementProperty(7, 'val', 2);
+        elementProperty(1, 'val', 1);
+        elementProperty(3, 'val', 2);
+        elementProperty(4, 'val', 2);
       }
 
       renderToHtml(Template, {});
@@ -688,21 +688,21 @@ describe('lifecycles', () => {
       function Template(ctx: any, cm: boolean) {
         if (cm) {
           elementStart(0, Comp);
-          { text(2, 'content'); }
+          { text(1, 'content'); }
           elementEnd();
-          container(3);
-          elementStart(4, Comp);
-          { text(6, 'content'); }
+          container(2);
+          elementStart(3, Comp);
+          { text(4, 'content'); }
           elementEnd();
         }
         elementProperty(0, 'val', 1);
-        elementProperty(4, 'val', 4);
-        containerRefreshStart(3);
+        elementProperty(3, 'val', 4);
+        containerRefreshStart(2);
         {
           for (let i = 2; i < 4; i++) {
             if (embeddedViewStart(0)) {
               elementStart(0, Comp);
-              { text(2, 'content'); }
+              { text(1, 'content'); }
               elementEnd();
             }
             elementProperty(0, 'val', i);
@@ -719,21 +719,21 @@ describe('lifecycles', () => {
     function ForLoopWithChildrenTemplate(ctx: any, cm: boolean) {
       if (cm) {
         elementStart(0, Parent);
-        { text(2, 'content'); }
+        { text(1, 'content'); }
         elementEnd();
-        container(3);
-        elementStart(4, Parent);
-        { text(6, 'content'); }
+        container(2);
+        elementStart(3, Parent);
+        { text(4, 'content'); }
         elementEnd();
       }
       elementProperty(0, 'val', 1);
-      elementProperty(4, 'val', 4);
-      containerRefreshStart(3);
+      elementProperty(3, 'val', 4);
+      containerRefreshStart(2);
       {
         for (let i = 2; i < 4; i++) {
           if (embeddedViewStart(0)) {
             elementStart(0, Parent);
-            { text(2, 'content'); }
+            { text(1, 'content'); }
             elementEnd();
           }
           elementProperty(0, 'val', i);
@@ -764,7 +764,7 @@ describe('lifecycles', () => {
         function Template(ctx: any, cm: boolean) {
           if (cm) {
             elementStart(0, Comp);
-            { text(2, 'content'); }
+            { text(1, 'content'); }
             elementEnd();
           }
         }
@@ -956,11 +956,11 @@ describe('lifecycles', () => {
         if (cm) {
           elementStart(0, Parent);
           elementEnd();
-          elementStart(2, Parent);
+          elementStart(1, Parent);
           elementEnd();
         }
         elementProperty(0, 'val', 1);
-        elementProperty(2, 'val', 2);
+        elementProperty(1, 'val', 2);
       }
       renderToHtml(Template, {});
       expect(events).toEqual(['comp1', 'comp2', 'parent1', 'parent2']);
@@ -977,7 +977,7 @@ describe('lifecycles', () => {
         if (cm) {
           elementStart(0, Comp);
           {
-            elementStart(2, ProjectedComp);
+            elementStart(1, ProjectedComp);
             elementEnd();
           }
           elementEnd();
@@ -1001,21 +1001,21 @@ describe('lifecycles', () => {
         if (cm) {
           elementStart(0, Comp);
           {
-            elementStart(2, ProjectedComp);
+            elementStart(1, ProjectedComp);
             elementEnd();
           }
           elementEnd();
-          elementStart(4, Comp);
+          elementStart(2, Comp);
           {
-            elementStart(6, ProjectedComp);
+            elementStart(3, ProjectedComp);
             elementEnd();
           }
           elementEnd();
         }
         elementProperty(0, 'val', 1);
-        elementProperty(2, 'val', 1);
-        elementProperty(4, 'val', 2);
-        elementProperty(6, 'val', 2);
+        elementProperty(1, 'val', 1);
+        elementProperty(2, 'val', 2);
+        elementProperty(3, 'val', 2);
       }
 
       renderToHtml(Template, {});
@@ -1032,13 +1032,13 @@ describe('lifecycles', () => {
         if (cm) {
           elementStart(0, Comp);
           {
-            elementStart(2, ProjectedComp);
+            elementStart(1, ProjectedComp);
             elementEnd();
           }
           elementEnd();
         }
         elementProperty(0, 'val', bind(ctx.val));
-        elementProperty(2, 'val', bind(ctx.val));
+        elementProperty(1, 'val', bind(ctx.val));
       });
 
       /**
@@ -1049,11 +1049,11 @@ describe('lifecycles', () => {
         if (cm) {
           elementStart(0, ParentComp);
           elementEnd();
-          elementStart(2, ParentComp);
+          elementStart(1, ParentComp);
           elementEnd();
         }
         elementProperty(0, 'val', 1);
-        elementProperty(2, 'val', 2);
+        elementProperty(1, 'val', 2);
       }
 
       renderToHtml(Template, {});
@@ -1072,13 +1072,13 @@ describe('lifecycles', () => {
         if (cm) {
           elementStart(0, Comp);
           elementEnd();
-          container(2);
-          elementStart(3, Comp);
+          container(1);
+          elementStart(2, Comp);
           elementEnd();
         }
         elementProperty(0, 'val', 1);
-        elementProperty(3, 'val', 4);
-        containerRefreshStart(2);
+        elementProperty(2, 'val', 4);
+        containerRefreshStart(1);
         {
           for (let i = 2; i < 4; i++) {
             if (embeddedViewStart(0)) {
@@ -1109,13 +1109,13 @@ describe('lifecycles', () => {
         if (cm) {
           elementStart(0, Parent);
           elementEnd();
-          container(2);
-          elementStart(3, Parent);
+          container(1);
+          elementStart(2, Parent);
           elementEnd();
         }
         elementProperty(0, 'val', 1);
-        elementProperty(3, 'val', 4);
-        containerRefreshStart(2);
+        elementProperty(2, 'val', 4);
+        containerRefreshStart(1);
         {
           for (let i = 2; i < 4; i++) {
             if (embeddedViewStart(0)) {
@@ -1191,13 +1191,13 @@ describe('lifecycles', () => {
           if (cm) {
             elementStart(0, Parent);
             elementEnd();
-            container(2);
-            elementStart(3, Parent);
+            container(1);
+            elementStart(2, Parent);
             elementEnd();
           }
           elementProperty(0, 'val', 1);
-          elementProperty(3, 'val', 4);
-          containerRefreshStart(2);
+          elementProperty(2, 'val', 4);
+          containerRefreshStart(1);
           {
             for (let i = 2; i < 4; i++) {
               if (embeddedViewStart(0)) {
@@ -1339,11 +1339,11 @@ describe('lifecycles', () => {
             if (embeddedViewStart(0)) {
               elementStart(0, Comp);
               elementEnd();
-              elementStart(2, Comp);
+              elementStart(1, Comp);
               elementEnd();
             }
             elementProperty(0, 'val', bind('1'));
-            elementProperty(2, 'val', bind('2'));
+            elementProperty(1, 'val', bind('2'));
             embeddedViewEnd();
           }
         }
@@ -1448,21 +1448,21 @@ describe('lifecycles', () => {
             if (embeddedViewStart(0)) {
               elementStart(0, Comp);
               {
-                elementStart(2, ProjectedComp);
+                elementStart(1, ProjectedComp);
                 elementEnd();
               }
               elementEnd();
-              elementStart(4, Comp);
+              elementStart(2, Comp);
               {
-                elementStart(6, ProjectedComp);
+                elementStart(3, ProjectedComp);
                 elementEnd();
               }
               elementEnd();
             }
             elementProperty(0, 'val', 1);
-            elementProperty(2, 'val', 1);
-            elementProperty(4, 'val', 2);
-            elementProperty(6, 'val', 2);
+            elementProperty(1, 'val', 1);
+            elementProperty(2, 'val', 2);
+            elementProperty(3, 'val', 2);
             embeddedViewEnd();
           }
         }
@@ -1497,13 +1497,13 @@ describe('lifecycles', () => {
             if (embeddedViewStart(0)) {
               elementStart(0, Comp);
               elementEnd();
-              container(2);
-              elementStart(3, Comp);
+              container(1);
+              elementStart(2, Comp);
               elementEnd();
             }
             elementProperty(0, 'val', bind('1'));
-            elementProperty(3, 'val', bind('3'));
-            containerRefreshStart(2);
+            elementProperty(2, 'val', bind('3'));
+            containerRefreshStart(1);
             {
               if (ctx.condition2) {
                 if (embeddedViewStart(0)) {
@@ -1567,13 +1567,13 @@ describe('lifecycles', () => {
             if (embeddedViewStart(0)) {
               elementStart(0, Comp);
               elementEnd();
-              container(2);
-              elementStart(3, Comp);
+              container(1);
+              elementStart(2, Comp);
               elementEnd();
             }
             elementProperty(0, 'val', bind('1'));
-            elementProperty(3, 'val', bind('5'));
-            containerRefreshStart(2);
+            elementProperty(2, 'val', bind('5'));
+            containerRefreshStart(1);
             {
               for (let j = 2; j < ctx.len; j++) {
                 if (embeddedViewStart(0)) {
@@ -1645,10 +1645,10 @@ describe('lifecycles', () => {
               elementEnd();
               elementStart(2, Comp);
               elementEnd();
-              elementStart(4, 'button');
+              elementStart(3, 'button');
               {
                 listener('click', ctx.onClick.bind(ctx));
-                text(5, 'Click me');
+                text(4, 'Click me');
               }
               elementEnd();
             }
@@ -1868,13 +1868,13 @@ describe('lifecycles', () => {
         if (cm) {
           elementStart(0, Parent);
           elementEnd();
-          elementStart(2, Parent);
+          elementStart(1, Parent);
           elementEnd();
         }
         elementProperty(0, 'val1', bind(1));
         elementProperty(0, 'publicName', bind(1));
-        elementProperty(2, 'val1', bind(2));
-        elementProperty(2, 'publicName', bind(2));
+        elementProperty(1, 'val1', bind(2));
+        elementProperty(1, 'publicName', bind(2));
       }
 
       renderToHtml(Template, {});
@@ -1935,13 +1935,13 @@ describe('lifecycles', () => {
       function Template(ctx: any, cm: boolean) {
         if (cm) {
           elementStart(0, Comp);
-          { elementStart(2, ProjectedComp); }
+          { elementStart(1, ProjectedComp); }
           elementEnd();
         }
         elementProperty(0, 'val1', bind(1));
         elementProperty(0, 'publicName', bind(1));
-        elementProperty(2, 'val1', bind(2));
-        elementProperty(2, 'publicName', bind(2));
+        elementProperty(1, 'val1', bind(2));
+        elementProperty(1, 'publicName', bind(2));
       }
 
       renderToHtml(Template, {});
@@ -1963,20 +1963,20 @@ describe('lifecycles', () => {
       function Template(ctx: any, cm: boolean) {
         if (cm) {
           elementStart(0, Comp);
-          { elementStart(2, ProjectedComp); }
+          { elementStart(1, ProjectedComp); }
           elementEnd();
-          elementStart(4, Comp);
-          { elementStart(6, ProjectedComp); }
+          elementStart(2, Comp);
+          { elementStart(3, ProjectedComp); }
           elementEnd();
         }
         elementProperty(0, 'val1', bind(1));
         elementProperty(0, 'publicName', bind(1));
-        elementProperty(2, 'val1', bind(2));
-        elementProperty(2, 'publicName', bind(2));
-        elementProperty(4, 'val1', bind(3));
-        elementProperty(4, 'publicName', bind(3));
-        elementProperty(6, 'val1', bind(4));
-        elementProperty(6, 'publicName', bind(4));
+        elementProperty(1, 'val1', bind(2));
+        elementProperty(1, 'publicName', bind(2));
+        elementProperty(2, 'val1', bind(3));
+        elementProperty(2, 'publicName', bind(3));
+        elementProperty(3, 'val1', bind(4));
+        elementProperty(3, 'publicName', bind(4));
       }
 
       renderToHtml(Template, {});
@@ -2042,15 +2042,15 @@ describe('lifecycles', () => {
         if (cm) {
           elementStart(0, Comp);
           elementEnd();
-          container(2);
-          elementStart(3, Comp);
+          container(1);
+          elementStart(2, Comp);
           elementEnd();
         }
         elementProperty(0, 'val1', bind(1));
         elementProperty(0, 'publicName', bind(1));
-        elementProperty(3, 'val1', bind(5));
-        elementProperty(3, 'publicName', bind(5));
-        containerRefreshStart(2);
+        elementProperty(2, 'val1', bind(5));
+        elementProperty(2, 'publicName', bind(5));
+        containerRefreshStart(1);
         {
           for (let j = 2; j < 5; j++) {
             if (embeddedViewStart(0)) {
@@ -2091,15 +2091,15 @@ describe('lifecycles', () => {
         if (cm) {
           elementStart(0, Parent);
           elementEnd();
-          container(2);
-          elementStart(3, Parent);
+          container(1);
+          elementStart(2, Parent);
           elementEnd();
         }
         elementProperty(0, 'val1', bind(1));
         elementProperty(0, 'publicName', bind(1));
-        elementProperty(3, 'val1', bind(5));
-        elementProperty(3, 'publicName', bind(5));
-        containerRefreshStart(2);
+        elementProperty(2, 'val1', bind(5));
+        elementProperty(2, 'publicName', bind(5));
+        containerRefreshStart(1);
         {
           for (let j = 2; j < 5; j++) {
             if (embeddedViewStart(0)) {
@@ -2176,11 +2176,11 @@ describe('lifecycles', () => {
         if (cm) {
           elementStart(0, Comp);
           elementEnd();
-          elementStart(2, Comp);
+          elementStart(1, Comp);
           elementEnd();
         }
         elementProperty(0, 'val', 1);
-        elementProperty(2, 'val', 2);
+        elementProperty(1, 'val', 2);
       }
 
       renderToHtml(Template, {});
@@ -2218,11 +2218,11 @@ describe('lifecycles', () => {
         if (cm) {
           elementStart(0, Parent);
           elementEnd();
-          elementStart(2, Parent);
+          elementStart(1, Parent);
           elementEnd();
         }
         elementProperty(0, 'val', 1);
-        elementProperty(2, 'val', 2);
+        elementProperty(1, 'val', 2);
       }
 
       renderToHtml(Template, {});

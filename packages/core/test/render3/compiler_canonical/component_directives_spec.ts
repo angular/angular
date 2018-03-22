@@ -69,7 +69,7 @@ describe('components & directives', () => {
           if (cm) {
             $r3$.ɵE(0, ChildComponent, $e0_attrs$, $e0_dirs$);
             $r3$.ɵe();
-            $r3$.ɵT(3, '!');
+            $r3$.ɵT(1, '!');
           }
         }
       });
@@ -92,7 +92,7 @@ describe('components & directives', () => {
         type: HostBindingDir,
         factory: function HostBindingDir_Factory() { return new HostBindingDir(); },
         hostBindings: function HostBindingDir_HostBindings(dirIndex: $number$, elIndex: $number$) {
-          $r3$.ɵp(elIndex, 'id', $r3$.ɵb($r3$.ɵld<HostBindingDir>(dirIndex).dirId));
+          $r3$.ɵp(elIndex, 'id', $r3$.ɵb($r3$.ɵd<HostBindingDir>(dirIndex).dirId));
         }
       });
       // /NORMATIVE
@@ -161,7 +161,7 @@ describe('components & directives', () => {
         template: function MyApp_Template(ctx: $MyApp$, cm: $boolean$) {
           if (cm) {
             $r3$.ɵE(0, 'button', $e0_attrs$, $e0_dirs$);
-            $r3$.ɵT(2, 'Click');
+            $r3$.ɵT(1, 'Click');
             $r3$.ɵe();
           }
         }
@@ -224,7 +224,7 @@ describe('components & directives', () => {
         type: HostBindingDir,
         factory: function HostBindingDir_Factory() { return new HostBindingDir(); },
         hostBindings: function HostBindingDir_HostBindings(dirIndex: $number$, elIndex: $number$) {
-          $r3$.ɵa(elIndex, 'aria-label', $r3$.ɵb($r3$.ɵld<HostBindingDir>(dirIndex).label));
+          $r3$.ɵa(elIndex, 'aria-label', $r3$.ɵb($r3$.ɵd<HostBindingDir>(dirIndex).label));
         }
       });
       // /NORMATIVE

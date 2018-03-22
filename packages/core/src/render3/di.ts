@@ -316,10 +316,11 @@ function getOrCreateHostChangeDetector(currentNode: LViewNode | LElementNode):
   const hostInjector = hostNode.nodeInjector;
   const existingRef = hostInjector && hostInjector.changeDetectorRef;
 
-  return existingRef ? existingRef :
-                       createViewRef(
-                           hostNode.data as LView,
-                           hostNode.view.data[hostNode.tNode !.flags >> TNodeFlags.INDX_SHIFT]);
+  return existingRef ?
+      existingRef :
+      createViewRef(
+          hostNode.data as LView,
+          hostNode.view.directives ![hostNode.tNode !.flags >> TNodeFlags.INDX_SHIFT]);
 }
 
 /**
@@ -394,13 +395,13 @@ export function getOrCreateInjectable<T>(
         // nothing to the "left" of it so it doesn't need a mask.
         const start = flags >> TNodeFlags.INDX_SHIFT;
 
-        const tData = node.view.tView.data;
+        const defs = node.view.tView.directives !;
         for (let i = start, ii = start + size; i < ii; i++) {
           // Get the definition for the directive at this index and, if it is injectable (diPublic),
           // and matches the given token, return the directive instance.
-          const directiveDef = tData[i] as DirectiveDef<any>;
+          const directiveDef = defs[i] as DirectiveDef<any>;
           if (directiveDef.diPublic && directiveDef.type == token) {
-            return getDirectiveInstance(node.view.data[i]);
+            return getDirectiveInstance(node.view.directives ![i]);
           }
         }
       }
@@ -530,7 +531,7 @@ export const QUERY_READ_FROM_NODE =
     (new ReadFromInjectorFn<any>((injector: LInjector, node: LNode, directiveIdx: number) => {
       ngDevMode && assertNodeOfPossibleTypes(node, LNodeType.Container, LNodeType.Element);
       if (directiveIdx > -1) {
-        return node.view.data[directiveIdx];
+        return node.view.directives ![directiveIdx];
       } else if (node.type === LNodeType.Element) {
         return getOrCreateElementRef(injector);
       } else if (node.type === LNodeType.Container) {

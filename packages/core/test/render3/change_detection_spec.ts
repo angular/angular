@@ -207,7 +207,7 @@ describe('change detection', () => {
             if (cm) {
               elementStart(0, MyComponent);
               elementEnd();
-              elementStart(2, 'button', ['id', 'parent']);
+              elementStart(1, 'button', ['id', 'parent']);
               { listener('click', () => ctx.noop()); }
               elementEnd();
             }

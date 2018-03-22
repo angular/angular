@@ -8,7 +8,7 @@
 
 import {TemplateRef, ViewContainerRef} from '../../src/core';
 import {defineComponent, defineDirective, injectTemplateRef, injectViewContainerRef} from '../../src/render3/index';
-import {bind, container, containerRefreshEnd, containerRefreshStart, load, text, textBinding} from '../../src/render3/instructions';
+import {bind, container, containerRefreshEnd, containerRefreshStart, loadDirective, text, textBinding} from '../../src/render3/instructions';
 
 import {renderComponent, toHtml} from './render_util';
 
@@ -40,7 +40,7 @@ describe('ViewContainerRef', () => {
           container(0, [TestDirective], subTemplate);
         }
         containerRefreshStart(0);
-        cmp.testDir = load<TestDirective>(1);
+        cmp.testDir = loadDirective<TestDirective>(0);
         containerRefreshEnd();
       },
     });

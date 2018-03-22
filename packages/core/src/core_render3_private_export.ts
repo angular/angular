@@ -30,6 +30,7 @@ export {
   T as ɵT,
   V as ɵV,
   Q as ɵQ,
+  d as ɵd,
   P as ɵP,
   b as ɵb,
   i1 as ɵi1,
@@ -79,9 +80,9 @@ export {
   bypassSanitizationTrustScript as ɵbypassSanitizationTrustScript,
   bypassSanitizationTrustUrl as ɵbypassSanitizationTrustUrl,
   bypassSanitizationTrustResourceUrl as ɵbypassSanitizationTrustResourceUrl,
-  sanitizeHtml as ɵsanitizeHtml, 
-  sanitizeStyle as ɵsanitizeStyle, 
-  sanitizeUrl as ɵsanitizeUrl, 
-  sanitizeResourceUrl as ɵsanitizeResourceUrl, 
+  sanitizeHtml as ɵsanitizeHtml,
+  sanitizeStyle as ɵsanitizeStyle,
+  sanitizeUrl as ɵsanitizeUrl,
+  sanitizeResourceUrl as ɵsanitizeResourceUrl,
 } from './sanitization/sanitization';
 // clang-format on

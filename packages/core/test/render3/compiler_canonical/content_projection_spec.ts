@@ -84,7 +84,7 @@ describe('content projection', () => {
         template: function(ctx: $MyApp$, cm: $boolean$) {
           if (cm) {
             $r3$.ɵE(0, SimpleComponent);
-            $r3$.ɵT(2, 'content');
+            $r3$.ɵT(1, 'content');
             $r3$.ɵe();
           }
         }
