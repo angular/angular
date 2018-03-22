@@ -125,7 +125,7 @@ Previously, when you wanted to add a component to an app at runtime, you had to 
 
 Using an Angular custom element makes the process much simpler and more transparent, by providing all of the infrastructure and framework automatically&mdash;all you have to do is define the kind of event handling you want. (You do still have to exclude the component from compilation, if you are not going to use it in your app.)
 
-The Popup Service example app compares the two methodologies by defining a component that you can either load dynamically or convert to a custom element. 
+The Popup Service example app defines a component that you can either load dynamically or convert to a custom element. 
 
 - `popup.component.ts`  defines a simple pop-up element that displays an input message, with some animation and styling. 
 - `popup.service.ts` creates an injectable service that provides two different ways to invoke the PopupComponent; as a dynamic component, or as a custom element. Notice how much more setup is required for the dynamic-loading method.
