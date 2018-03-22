@@ -446,7 +446,9 @@ export function setCurrentInjector(injector: Injector | null): Injector|null {
 export function inject<T>(
     token: Type<T>| InjectionToken<T>, notFoundValue?: undefined, flags?: InjectFlags): T;
 export function inject<T>(
-    token: Type<T>| InjectionToken<T>, notFoundValue: T | null, flags?: InjectFlags): T|null;
+    token: Type<T>| InjectionToken<T>, notFoundValue: T, flags?: InjectFlags): T;
+export function inject<T>(
+    token: Type<T>| InjectionToken<T>, notFoundValue: null, flags?: InjectFlags): T|null;
 export function inject<T>(
     token: Type<T>| InjectionToken<T>, notFoundValue?: T | null, flags = InjectFlags.Default): T|
     null {
