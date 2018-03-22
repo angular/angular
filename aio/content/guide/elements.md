@@ -144,7 +144,7 @@ For comparison, the demo shows both methods. One button adds the popup using the
 
   </code-pane>
 
-  <code-pane title="app.module.ts" path="elements/src/app.module.ts">
+  <code-pane title="app.module.ts" path="elements/src/app/app.module.ts">
 
   </code-pane>
 
