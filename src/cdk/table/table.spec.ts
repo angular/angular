@@ -1,5 +1,13 @@
-import {async, ComponentFixture, TestBed} from '@angular/core/testing';
-import {Component, ContentChild, ContentChildren, Input, QueryList, ViewChild} from '@angular/core';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {
+  Component,
+  ContentChild,
+  ContentChildren,
+  Input,
+  QueryList,
+  ViewChild,
+  Type,
+} from '@angular/core';
 import {CdkTable} from './table';
 import {CollectionViewer, DataSource} from '@angular/cdk/collections';
 import {BehaviorSubject} from 'rxjs/BehaviorSubject';
@@ -18,51 +26,31 @@ import {CdkHeaderRowDef, CdkRowDef} from './row';
 import {CdkColumnDef} from './cell';
 
 describe('CdkTable', () => {
-  let fixture: ComponentFixture<SimpleCdkTableApp>;
-
-  let component: SimpleCdkTableApp;
-  let dataSource: FakeDataSource;
-  let table: CdkTable<any>;
-  let tableElement: HTMLElement;
-
-  beforeEach(async(() => {
+  function createComponent<T>(component: Type<T>, declarations: any[] = []): ComponentFixture<T> {
     TestBed.configureTestingModule({
       imports: [CdkTableModule],
-      declarations: [
-        SimpleCdkTableApp,
-        DynamicDataSourceCdkTableApp,
-        CustomRoleCdkTableApp,
-        TrackByCdkTableApp,
-        DynamicColumnDefinitionsCdkTableApp,
-        RowContextCdkTableApp,
-        DuplicateColumnDefNameCdkTableApp,
-        MissingColumnDefCdkTableApp,
-        CrazyColumnNameCdkTableApp,
-        UndefinedColumnsCdkTableApp,
-        WhenRowCdkTableApp,
-        WhenRowWithoutDefaultCdkTableApp,
-        WhenRowMultipleDefaultsCdkTableApp,
-        MissingRowDefsCdkTableApp,
-        BooleanRowCdkTableApp,
-        WrapperCdkTableApp,
-        OuterTableApp,
-        CdkTableWithDifferentDataInputsApp,
-      ],
+      declarations: [component, ...declarations],
     }).compileComponents();
-  }));
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(SimpleCdkTableApp);
-
-    component = fixture.componentInstance;
-    dataSource = component.dataSource as FakeDataSource;
-    table = component.table;
-    tableElement = fixture.nativeElement.querySelector('cdk-table');
-
-    fixture.detectChanges();
-  });
+    return TestBed.createComponent<T>(component);
+  }
 
   describe('should initialize', () => {
+    let fixture: ComponentFixture<SimpleCdkTableApp>;
+    let component: SimpleCdkTableApp;
+    let dataSource: FakeDataSource;
+    let table: CdkTable<any>;
+    let tableElement: HTMLElement;
+
+    beforeEach(() => {
+      fixture = createComponent(SimpleCdkTableApp);
+      fixture.detectChanges();
+      component = fixture.componentInstance;
+      dataSource = component.dataSource as FakeDataSource;
+      table = component.table;
+      tableElement = fixture.nativeElement.querySelector('cdk-table');
+    });
+
     it('with a connected data source', () => {
       expect(table.dataSource).toBe(dataSource);
       expect(dataSource.isConnected).toBe(true);
@@ -127,10 +115,9 @@ describe('CdkTable', () => {
     ];
 
     beforeEach(() => {
-      dataInputFixture = TestBed.createComponent(CdkTableWithDifferentDataInputsApp);
-      dataInputComponent = dataInputFixture.componentInstance;
+      dataInputFixture = createComponent(CdkTableWithDifferentDataInputsApp);
       dataInputFixture.detectChanges();
-
+      dataInputComponent = dataInputFixture.componentInstance;
       dataInputTableElement = dataInputFixture.nativeElement.querySelector('cdk-table');
     });
 
@@ -248,10 +235,11 @@ describe('CdkTable', () => {
   });
 
   it('should render cells even if row data is falsy', () => {
-    const booleanRowCdkTableAppFixture = TestBed.createComponent(BooleanRowCdkTableApp);
+    const booleanRowCdkTableAppFixture = createComponent(BooleanRowCdkTableApp);
+    booleanRowCdkTableAppFixture.detectChanges();
+
     const booleanRowCdkTableElement =
         booleanRowCdkTableAppFixture.nativeElement.querySelector('cdk-table');
-    booleanRowCdkTableAppFixture.detectChanges();
 
     expectTableToMatchContent(booleanRowCdkTableElement, [
       [''], // Header row
@@ -263,10 +251,11 @@ describe('CdkTable', () => {
   });
 
   it('should be able to apply class-friendly css class names for the column cells', () => {
-    const crazyColumnNameAppFixture = TestBed.createComponent(CrazyColumnNameCdkTableApp);
+    const crazyColumnNameAppFixture = createComponent(CrazyColumnNameCdkTableApp);
+    crazyColumnNameAppFixture.detectChanges();
+
     const crazyColumnNameTableElement =
         crazyColumnNameAppFixture.nativeElement.querySelector('cdk-table');
-    crazyColumnNameAppFixture.detectChanges();
 
     // Column was named 'crazy-column-NAME-1!@#$%^-_&*()2'
     expect(getHeaderCells(crazyColumnNameTableElement)[0].classList)
@@ -274,39 +263,43 @@ describe('CdkTable', () => {
   });
 
   it('should disconnect the data source when table is destroyed', () => {
-    expect(dataSource.isConnected).toBe(true);
+    const fixture = createComponent(SimpleCdkTableApp);
+    fixture.detectChanges();
 
+    const dataSource = fixture.componentInstance.dataSource as FakeDataSource;
+
+    expect(dataSource.isConnected).toBe(true);
     fixture.destroy();
     expect(dataSource.isConnected).toBe(false);
   });
 
   it('should not clobber an existing table role', () => {
-    fixture = TestBed.createComponent(CustomRoleCdkTableApp);
+    const fixture = createComponent(CustomRoleCdkTableApp);
     fixture.detectChanges();
 
     expect(fixture.nativeElement.querySelector('cdk-table').getAttribute('role')).toBe('treegrid');
   });
 
   it('should throw an error if two column definitions have the same name', () => {
-    expect(() => TestBed.createComponent(DuplicateColumnDefNameCdkTableApp).detectChanges())
+    expect(() => createComponent(DuplicateColumnDefNameCdkTableApp).detectChanges())
         .toThrowError(getTableDuplicateColumnNameError('column_a').message);
   });
 
   it('should throw an error if a column definition is requested but not defined', () => {
-    expect(() => TestBed.createComponent(MissingColumnDefCdkTableApp).detectChanges())
+    expect(() => createComponent(MissingColumnDefCdkTableApp).detectChanges())
         .toThrowError(getTableUnknownColumnError('column_a').message);
   });
 
   it('should throw an error if the row definitions are missing', () => {
-    expect(() => TestBed.createComponent(MissingRowDefsCdkTableApp).detectChanges())
+    expect(() => createComponent(MissingRowDefsCdkTableApp).detectChanges())
         .toThrowError(getTableMissingRowDefsError().message);
   });
 
   it('should not throw an error if columns are undefined on initialization', () => {
-    const undefinedColumnsFixture = TestBed.createComponent(UndefinedColumnsCdkTableApp);
+    const undefinedColumnsFixture = createComponent(UndefinedColumnsCdkTableApp);
     undefinedColumnsFixture.detectChanges();
 
-    tableElement = undefinedColumnsFixture.nativeElement.querySelector('cdk-table');
+    const tableElement = undefinedColumnsFixture.nativeElement.querySelector('cdk-table');
 
     expect(getHeaderRow(tableElement)).toBeNull('Should be no header without cells');
 
@@ -318,7 +311,7 @@ describe('CdkTable', () => {
   });
 
   it('should be able to dynamically add/remove column definitions', () => {
-    const dynamicColumnDefFixture = TestBed.createComponent(DynamicColumnDefinitionsCdkTableApp);
+    const dynamicColumnDefFixture = createComponent(DynamicColumnDefinitionsCdkTableApp);
     dynamicColumnDefFixture.detectChanges();
 
     const dynamicColumnDefTable = dynamicColumnDefFixture.nativeElement.querySelector('cdk-table');
@@ -358,6 +351,13 @@ describe('CdkTable', () => {
   });
 
   it('should re-render the rows when the data changes', () => {
+    const fixture = createComponent(SimpleCdkTableApp);
+    fixture.detectChanges();
+
+    const component = fixture.componentInstance;
+    const dataSource = component.dataSource as FakeDataSource;
+    const tableElement = fixture.nativeElement.querySelector('cdk-table');
+
     dataSource.addData();
     fixture.detectChanges();
 
@@ -370,7 +370,7 @@ describe('CdkTable', () => {
   });
 
   it('should be able to register column, row, and header row definitions outside content', () => {
-    const outerTableAppFixture = TestBed.createComponent(OuterTableApp);
+    const outerTableAppFixture = createComponent(OuterTableApp, [WrapperCdkTableApp]);
     outerTableAppFixture.detectChanges();
 
     // The first two columns were defined in the wrapped table component as content children,
@@ -387,10 +387,11 @@ describe('CdkTable', () => {
 
   describe('using when predicate', () => {
     it('should be able to display different row templates based on the row data', () => {
-      let whenFixture = TestBed.createComponent(WhenRowCdkTableApp);
+      const whenFixture = createComponent(WhenRowCdkTableApp);
       whenFixture.detectChanges();
 
-      let data = whenFixture.componentInstance.dataSource.data;
+      const data = whenFixture.componentInstance.dataSource.data;
+
       expectTableToMatchContent(whenFixture.nativeElement.querySelector('cdk-table'), [
         ['Column A', 'Column B', 'Column C'],
         [data[0].a, data[0].b, data[0].c],
@@ -401,19 +402,23 @@ describe('CdkTable', () => {
     });
 
     it('should error if there is row data that does not have a matching row template', () => {
-      let whenFixture = TestBed.createComponent(WhenRowWithoutDefaultCdkTableApp);
-      expect(() => whenFixture.detectChanges())
+      expect(() => createComponent(WhenRowWithoutDefaultCdkTableApp).detectChanges())
           .toThrowError(getTableMissingMatchingRowDefError().message);
     });
 
     it('should error if there are multiple rows that do not have a when function', () => {
-      let whenFixture = TestBed.createComponent(WhenRowMultipleDefaultsCdkTableApp);
-      expect(() => whenFixture.detectChanges())
+      expect(() => createComponent(WhenRowMultipleDefaultsCdkTableApp).detectChanges())
           .toThrowError(getTableMultipleDefaultRowDefsError().message);
     });
   });
 
   it('should use differ to add/remove/move rows', () => {
+    const fixture = createComponent(SimpleCdkTableApp);
+    fixture.detectChanges();
+
+    const component = fixture.componentInstance;
+    const tableElement = fixture.nativeElement.querySelector('cdk-table');
+
     // Each row receives an attribute 'initialIndex' the element's original place
     getRows(tableElement).forEach((row: Element, index: number) => {
       row.setAttribute('initialIndex', index.toString());
@@ -447,8 +452,12 @@ describe('CdkTable', () => {
   });
 
   it('should clear the row view containers on destroy', () => {
-    const rowPlaceholder = fixture.componentInstance.table._rowPlaceholder.viewContainer;
-    const headerPlaceholder = fixture.componentInstance.table._headerRowPlaceholder.viewContainer;
+    const fixture = createComponent(SimpleCdkTableApp);
+    fixture.detectChanges();
+
+    const component = fixture.componentInstance;
+    const rowPlaceholder = component.table._rowPlaceholder.viewContainer;
+    const headerPlaceholder = component.table._headerRowPlaceholder.viewContainer;
 
     spyOn(rowPlaceholder, 'clear').and.callThrough();
     spyOn(headerPlaceholder, 'clear').and.callThrough();
@@ -463,15 +472,14 @@ describe('CdkTable', () => {
 
     let trackByComponent: TrackByCdkTableApp;
     let trackByFixture: ComponentFixture<TrackByCdkTableApp>;
+    let tableElement: HTMLElement;
 
     function createTestComponentWithTrackyByTable(trackByStrategy) {
-      trackByFixture = TestBed.createComponent(TrackByCdkTableApp);
+      trackByFixture = createComponent(TrackByCdkTableApp);
 
       trackByComponent = trackByFixture.componentInstance;
       trackByComponent.trackByStrategy = trackByStrategy;
 
-      dataSource = trackByComponent.dataSource as FakeDataSource;
-      table = trackByComponent.table;
       tableElement = trackByFixture.nativeElement.querySelector('cdk-table');
       trackByFixture.detectChanges();
 
@@ -587,7 +595,13 @@ describe('CdkTable', () => {
   });
 
   it('should match the right table content with dynamic data', () => {
+    const fixture = createComponent(SimpleCdkTableApp);
+    fixture.detectChanges();
+
+    const dataSource = fixture.componentInstance.dataSource as FakeDataSource;
+    const tableElement = fixture.nativeElement.querySelector('cdk-table');
     const initialDataLength = dataSource.data.length;
+
     expect(dataSource.data.length).toBe(3);
 
     let data = dataSource.data;
@@ -614,10 +628,11 @@ describe('CdkTable', () => {
   });
 
   it('should match the right table content with dynamic data source', () => {
-    const dynamicDataSourceFixture = TestBed.createComponent(DynamicDataSourceCdkTableApp);
-    component = dynamicDataSourceFixture.componentInstance;
-    tableElement = dynamicDataSourceFixture.nativeElement.querySelector('cdk-table');
+    const dynamicDataSourceFixture = createComponent(DynamicDataSourceCdkTableApp);
     dynamicDataSourceFixture.detectChanges();
+
+    const component = dynamicDataSourceFixture.componentInstance;
+    const tableElement = dynamicDataSourceFixture.nativeElement.querySelector('cdk-table');
 
     // Expect that the component has no data source and the table element reflects empty data.
     expect(component.dataSource).toBeUndefined();
@@ -640,7 +655,7 @@ describe('CdkTable', () => {
     ]);
 
     // Remove the data source and check to make sure the table is empty again.
-    component.dataSource = undefined;
+    component.dataSource = undefined!;
     dynamicDataSourceFixture.detectChanges();
 
     // Expect that the old data source has been disconnected.
@@ -665,12 +680,11 @@ describe('CdkTable', () => {
   });
 
   it('should be able to apply classes to rows based on their context', () => {
-    const contextFixture = TestBed.createComponent(RowContextCdkTableApp);
-    const contextComponent = contextFixture.componentInstance;
-    tableElement = contextFixture.nativeElement.querySelector('cdk-table');
+    const contextFixture = createComponent(RowContextCdkTableApp);
     contextFixture.detectChanges();
 
-    let rowElements = contextFixture.nativeElement.querySelectorAll('cdk-row');
+    const contextComponent = contextFixture.componentInstance;
+    const rowElements = contextFixture.nativeElement.querySelectorAll('cdk-row');
 
     // Rows should not have any context classes
     for (let i = 0; i < rowElements.length; i++) {
@@ -701,11 +715,10 @@ describe('CdkTable', () => {
   });
 
   it('should be able to apply classes to cells based on their row context', () => {
-    const contextFixture = TestBed.createComponent(RowContextCdkTableApp);
-    const contextComponent = contextFixture.componentInstance;
-    tableElement = contextFixture.nativeElement.querySelector('cdk-table');
+    const contextFixture = createComponent(RowContextCdkTableApp);
     contextFixture.detectChanges();
 
+    const contextComponent = contextFixture.componentInstance;
     const rowElements = contextFixture.nativeElement.querySelectorAll('cdk-row');
 
     for (let i = 0; i < rowElements.length; i++) {
@@ -743,6 +756,13 @@ describe('CdkTable', () => {
   });
 
   it('should be able to dynamically change the columns for header and rows', () => {
+    const fixture = createComponent(SimpleCdkTableApp);
+    fixture.detectChanges();
+
+    const component = fixture.componentInstance;
+    const dataSource = component.dataSource as FakeDataSource;
+    const tableElement = fixture.nativeElement.querySelector('cdk-table');
+
     expect(dataSource.data.length).toBe(3);
 
     let data = dataSource.data;
