@@ -203,6 +203,17 @@ import {makeTrigger} from '../shared';
            ]);
          });
 
+      it('should treat numeric values (disguised as strings) as proper state values', () => {
+        const result = makeTrigger('name', [
+          state(1 as any as string, style({opacity: 0})),
+          state(0 as any as string, style({opacity: 0})), transition('* => *', animate(1000))
+        ]);
+
+        expect(() => {
+          const trans = buildTransition(result, element, false, true) !;
+        }).not.toThrow();
+      });
+
       describe('aliases', () => {
         it('should alias the :enter transition as void => *', () => {
           const result = makeTrigger('name', [transition(':enter', animate(3333))]);
