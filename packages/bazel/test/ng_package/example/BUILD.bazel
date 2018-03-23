@@ -1,6 +1,7 @@
 package(default_visibility = ["//packages/bazel/test:__subpackages__"])
 
 load("//packages/bazel:index.bzl", "ng_module", "ng_package")
+load("//tools:defaults.bzl", "npm_package")
 
 ng_module(
     name = "example",
@@ -21,6 +22,9 @@ ng_package(
         ":extra-styles.css",
     ],
     entry_point = "packages/bazel/test/ng_package/example/index.js",
+    packages = [
+        ":arbitrary_npm_package",
+    ],
     deps = [
         ":example",
         "//packages/bazel/test/ng_package/example/secondary",
@@ -42,4 +46,9 @@ genrule(
     outs = ["arbitrary_bin.txt"],
     cmd = "echo World > $@",
     output_to_bindir = True,
+)
+
+npm_package(
+    name = "arbitrary_npm_package",
+    srcs = [":arbitrary-npm-package-main.js"],
 )

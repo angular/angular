@@ -239,7 +239,11 @@ def _ng_package_impl(ctx):
     for d in ctx.attr.deps:
       devfiles = depset(transitive = [devfiles, d.files, d.node_sources])
 
-  package_dir = create_package(ctx, devfiles.to_list(), [npm_package_directory])
+  # Re-use the create_package function from the nodejs npm_package rule.
+  package_dir = create_package(
+      ctx,
+      devfiles.to_list(),
+      [npm_package_directory] + ctx.files.packages)
   return struct(
     files = depset([package_dir])
   )
