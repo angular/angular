@@ -9,6 +9,8 @@
 import {setup} from '../aot/test_util';
 import {compile, expectEmit} from './mock_compile';
 
+const TRANSLATION_NAME_REGEXP = /^MSG_[A-Z0-9]+/;
+
 describe('i18n support in the view compiler', () => {
   const angularFiles = setup({
     compileAngular: true,
@@ -60,7 +62,10 @@ describe('i18n support in the view compiler', () => {
     `;
 
       const result = compile(files, angularFiles);
-      expectEmit(result.source, template, 'Incorrect template');
+      expectEmit(result.source, template, 'Incorrect template', {
+        '$msg_1$': TRANSLATION_NAME_REGEXP,
+        '$msg_2$': TRANSLATION_NAME_REGEXP,
+      });
     });
 
     it('should add the meaning and description as JsDoc comments', () => {
@@ -109,7 +114,9 @@ describe('i18n support in the view compiler', () => {
       `;
 
       const result = compile(files, angularFiles);
-      expectEmit(result.source, template, 'Incorrect template');
+      expectEmit(result.source, template, 'Incorrect template', {
+        '$msg_1$': TRANSLATION_NAME_REGEXP,
+      });
     });
   });
 
@@ -154,7 +161,9 @@ describe('i18n support in the view compiler', () => {
     `;
 
       const result = compile(files, angularFiles);
-      expectEmit(result.source, template, 'Incorrect template');
+      expectEmit(result.source, template, 'Incorrect template', {
+        '$msg_1$': TRANSLATION_NAME_REGEXP,
+      });
     });
   });
 
