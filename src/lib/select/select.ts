@@ -23,10 +23,10 @@ import {
 import {
   CdkConnectedOverlay,
   Overlay,
+  RepositionScrollStrategy,
   ScrollStrategy,
   ViewportRuler,
 } from '@angular/cdk/overlay';
-import {filter, take, map, switchMap, takeUntil, startWith} from 'rxjs/operators';
 import {
   AfterContentInit,
   Attribute,
@@ -40,7 +40,6 @@ import {
   ElementRef,
   EventEmitter,
   Inject,
-  inject,
   InjectionToken,
   Input,
   isDevMode,
@@ -75,7 +74,8 @@ import {
   mixinTabIndex,
 } from '@angular/material/core';
 import {MatFormField, MatFormFieldControl} from '@angular/material/form-field';
-import {defer, Subject, merge, Observable} from 'rxjs';
+import {defer, merge, Observable, Subject} from 'rxjs';
+import {filter, map, startWith, switchMap, take, takeUntil} from 'rxjs/operators';
 import {matSelectAnimations} from './select-animations';
 import {
   getMatSelectDynamicMultipleError,
@@ -122,13 +122,20 @@ export const SELECT_PANEL_VIEWPORT_PADDING = 8;
 
 /** Injection token that determines the scroll handling while a select is open. */
 export const MAT_SELECT_SCROLL_STRATEGY =
-    new InjectionToken<() => ScrollStrategy>('mat-select-scroll-strategy', {
-      providedIn: 'root',
-      factory: () => {
-        const overlay = inject(Overlay);
-        return () => overlay.scrollStrategies.reposition();
-      }
-    });
+    new InjectionToken<() => ScrollStrategy>('mat-select-scroll-strategy');
+
+/** @docs-private */
+export function MAT_SELECT_SCROLL_STRATEGY_PROVIDER_FACTORY(overlay: Overlay):
+    () => RepositionScrollStrategy {
+  return () => overlay.scrollStrategies.reposition();
+}
+
+/** @docs-private */
+export const MAT_SELECT_SCROLL_STRATEGY_PROVIDER = {
+  provide: MAT_SELECT_SCROLL_STRATEGY,
+  deps: [Overlay],
+  useFactory: MAT_SELECT_SCROLL_STRATEGY_PROVIDER_FACTORY,
+};
 
 /** Change event object that is emitted when the select value has changed. */
 export class MatSelectChange {
