@@ -1,3 +1,151 @@
+<a name="6.0.0-beta.5"></a>
+# [6.0.0-beta.5](https://github.com/angular/material2/compare/5.2.4...6.0.0-beta.5) (2018-03-23)
+
+This release contains many breaking changes due to the deletion of deprecated targets. We are 
+currently working on a tool that will help migrate your app if you are affected by these changes.
+We expect to have the tool ready when we release version 6.0.0.  
+
+
+### BREAKING CHANGES
+
+* **typography:**  The `$mat-font-family` variable has been removed. Use the Material typography or redeclare in your project `$mat-font-family: Roboto, 'Helvetica Neue', sans-serif;`.
+* **datepicker:**  `MatDatePicker` now requires an animations module to be loaded
+* **datepicker:**  `selectedChanged` has been removed. Use `dateChange` or `dateInput` from `MatDatepickerInput`.
+* **button-toggle:**  `selected` is no longer an input and is now readonly.
+* **snack-bar:**  `SHOW_ANIMATION` has been removed.
+* `HIDE_ANIMATION` has been removed.
+* **icon:**  The `_document` parameter in the `MatIconRegistry` constructor is now required.
+* **list:**  `selectionChange` on the `MatListOption`, which was deprecated in 5.0.0 has been removed. Use `selectionChange` on the `MatSelectionList` instead.
+* `MatListOptionChange` which was deprecated in 5.0.0 has been removed.
+* **slider:**  `thumb-label` which was deprecated in 5.0.0 has been removed. Use `thumbLabel` instead.
+* `tick-interval` which was deprecated in 5.0.0 has been removed. Use `tickInterval` instead.
+* **tooltip:**  `tooltip-position` which was deprecated in 5.0.0 has been removed. Use `matTooltipPosition` instead.
+* The `_defaultOptions` parameter in the `MatTooltip` constructor is now required.
+* **select:**  `onOpen`, which was deprecated in 5.0.0, has been removed.
+* `onClose`, which was deprecated in 5.0.0, has been removed.
+* `change`, which was deprecated in 5.0.0, has been removed.
+* **chips:**  `remove` which was deprecated in 5.0.0 has been removed. Use `removed` instead.
+* `destroy` which was deprecated in 5.0.0 has been removed. Use `destroyed` instead.
+* **text-field:**  The `_ngZone` parameter in the `CdkTextareaAutosize` constructor is now required.
+* **sidenav:**  The `MatDrawerToggleResult` class has been turned into an type.
+* The promise returned from `open`, `close` and `toggle` now resolves with the `MatDrawerToggleResult` type rather than the class.
+* `align` which was deprecated in 5.0.0 has been removed. Use `position` instead.
+* `open` which was deprecated in 5.0.0 has been removed. Use `opened` instead.
+* `close` which was deprecated in 5.0.0 has been removed. Use `closed` instead.
+* `align-changed` which was deprecated in 5.0.0 has been removed. Use `positionChanged`.
+* **form-field:** - dividerColor which was deprecated in 5.0.0 has been removed. Use color instead.
+- floatPlaceholder which was deprecated in 5.0.0 has been removed. Use floatLabel instead.
+* **overlay:**  `ConnectedOverlayDirective` which was deprecated in 5.0.0 has been removed. Use `CdkConnectedOverlay` instead.
+* `OverlayOrigin` which was deprecated in 5.0.0 has been removed. Use `CdkOverlayOrigin` instead.
+* `hasBackdrop` which was deprecated in 5.0.0 has been removed. Use `cdkConnectedOverlayHasBackdrop` instead.
+* `open` which was deprecated in 5.0.0 has been removed. Use `cdkConnectedOverlayOpen` instead.
+* `scrollStrategy` which was deprecated in 5.0.0 has been removed. Use `cdkConnectedOverlayScrollStrategy` instead.
+* `backdropClass` which was deprecated in 5.0.0 has been removed. Use `cdkConnectedOverlayBackdropClass` instead.
+* `minHeight` which was deprecated in 5.0.0 has been removed. Use `cdkConnectedOverlayMinHeight` instead.
+* `minWidth` which was deprecated in 5.0.0 has been removed. Use `cdkConnectedOverlayMinWidth` instead.
+* `height` which was deprecated in 5.0.0 has been removed. Use `cdkConnectedOverlayHeight` instead.
+* `width` which was deprecated in 5.0.0 has been removed. Use `cdkConnectedOverlayWidth` instead.
+* `offsetX` which was deprecated in 5.0.0 has been removed. Use `cdkConnectedOverlayOffsetX` instead.
+* `offsetY` which was deprecated in 5.0.0 has been removed. Use `cdkConnectedOverlayOffsetY` instead.
+* `positions` which was deprecated in 5.0.0 has been removed. Use `cdkConnectedOverlayPositions` instead.
+* `origin` which was deprecated in 5.0.0 has been removed. Use `cdkConnectedOverlayOrigin` instead.
+* **tabs:**  `mat-dynamic-height` which was deprecated in 5.0.0 has been removed. Use `dynamicHeight` instead.
+* `selectChange` which was deprecated in 5.0.0 has been removed. Use `selectedTabChange`.
+* **checkbox:**  `align` which was deprecated in 5.0.0 has been removed. Use `labelPosition` instead. Note that the values are different.
+* **form-field:** - The following deprecated CSS classes have been removed:
+  - mat-input-container instead use mat-form-field
+  - mat-input-invalid instead use mat-form-field-invalid
+  - mat-input-wrapper instead use mat-form-field-wrapper
+  - mat-input-flex instead use mat-form-field-flex
+  - mat-input-prefix instead use mat-form-field-prefix
+  - mat-input-infix instead use mat-form-field-infix
+  - mat-input-placeholder-wrapper instead use mat-form-field-label-wrapper
+  - mat-input-placeholder instead use mat-form-field-label
+  - mat-input-suffix instead use mat-form-field-suffix
+  - mat-input-underline instead use mat-form-field-underline
+  - mat-input-ripple instead use mat-form-field-ripple
+  - mat-input-subscript-wrapper instead use mat-form-field-subscript-wrapper
+  - mat-input-hint-wrapper instead use mat-form-field-hint-wrapper
+  - mat-input-hint-spacer instead use mat-form-field-hint-spacer
+  - mat-form-field-placeholder-wrapper instead use mat-form-field-label-wrapper
+  - mat-form-field-placeholder instead use mat-form-field-label
+* **a11y:**  The `renderer` parameter in `FocusMonitor.monitor` has been removed.
+* `cdk-focus-trap` which was deprecated in 5.0.0 has been removed. Use `cdkTrapFocus` instead.
+* **autocomplete:**  The `defaults` parameter in the `MatAutocomplete` constructor is now required.
+* **form-field:**  MatFormFieldControl.shouldPlaceholderFloat which was deprecated in 5.0.0 has been removed. * MatFormFieldControl.shouldLabelFloat is no longer optional and should be used instead.
+* `FloatPlaceholderType` which was deprecated in 5.0.0 has been removed. Use `FloatLabelType` instead.
+* `PlaceholderOptions` which was deprecated in 5.0.0 has been removed. Use `LabelOptions` instead.
+* `MAT_PLACEHOLDER_GLOBAL_OPTIONS` which was deprecated in 5.0.0 has been removed. Use `MAT_LABEL_GLOBAL_OPTIONS` instead.
+* **snack-bar:**  `extraClasses` which was deprecated in 5.0.0 has been removed. Use `panelClass` instead.
+* **portal:**  The `portalHost` and `cdkPortalHost` inputs which were deprecated in 5.0.0 have been removed. Use `cdkPortalOutlet` instead.
+
+
+### Features
+
+* **button-toggle:** general component cleanup and support value input in multiple mode ([#9191](https://github.com/angular/material2/issues/9191)) ([a403bac](https://github.com/angular/material2/commit/a403bac)), closes [#2773](https://github.com/angular/material2/issues/2773) [#2773](https://github.com/angular/material2/issues/2773) [#9058](https://github.com/angular/material2/issues/9058)
+* **cdk:** switch injectables to new scope API ([#10301](https://github.com/angular/material2/issues/10301)) ([6405da9](https://github.com/angular/material2/commit/6405da9))
+* **cdk-input:** move input autofill and autosize utils into cdk ([#9831](https://github.com/angular/material2/issues/9831)) ([ced9c90](https://github.com/angular/material2/commit/ced9c90))
+* **chips:** allow for separatorKeyCodes to be configured globally ([#10264](https://github.com/angular/material2/issues/10264)) ([3c8a498](https://github.com/angular/material2/commit/3c8a498)), closes [#10256](https://github.com/angular/material2/issues/10256)
+* **datepicker:** add animation to calendar popup ([#8999](https://github.com/angular/material2/issues/8999)) ([c42549e](https://github.com/angular/material2/commit/c42549e))
+* **datepicker:** Add Custom Header to DatePicker ([#9639](https://github.com/angular/material2/issues/9639)) ([4e1bb26](https://github.com/angular/material2/commit/4e1bb26))
+* **form-field:** allow setting default appearance via provider ([#9815](https://github.com/angular/material2/issues/9815)) ([158b1db](https://github.com/angular/material2/commit/158b1db))
+* **icon:** add input for inline styling of icons ([#9984](https://github.com/angular/material2/issues/9984)) ([be1fc08](https://github.com/angular/material2/commit/be1fc08))
+* **icon:** add utility to mirror icons in RTL ([#10327](https://github.com/angular/material2/issues/10327)) ([11a3fe1](https://github.com/angular/material2/commit/11a3fe1)), closes [#10045](https://github.com/angular/material2/issues/10045)
+* **material:** use scoped injectables ([#10507](https://github.com/angular/material2/issues/10507)) ([f7b5d34](https://github.com/angular/material2/commit/f7b5d34))
+* **overlay:** add support for flexible connected positioning ([#9153](https://github.com/angular/material2/issues/9153)) ([27e5f6e](https://github.com/angular/material2/commit/27e5f6e)), closes [#6534](https://github.com/angular/material2/issues/6534) [#2725](https://github.com/angular/material2/issues/2725) [#5267](https://github.com/angular/material2/issues/5267)
+* **schematics:** dashboard schematic ([#10011](https://github.com/angular/material2/issues/10011)) ([6273d6a](https://github.com/angular/material2/commit/6273d6a))
+* **schematics:** navigation schematic ([#10009](https://github.com/angular/material2/issues/10009)) ([279c112](https://github.com/angular/material2/commit/279c112))
+* **schematics:** table schematic ([#10012](https://github.com/angular/material2/issues/10012)) ([e7533a5](https://github.com/angular/material2/commit/e7533a5))
+* **tabs:** support stretched tabs in mat-tab-nav-bar ([#10368](https://github.com/angular/material2/issues/10368)) ([89ea485](https://github.com/angular/material2/commit/89ea485)), closes [#8871](https://github.com/angular/material2/issues/8871)
+
+
+### Bug Fixes
+
+* **badge:** invalid style declaration and too broad transition ([#10433](https://github.com/angular/material2/issues/10433)) ([c14cf7c](https://github.com/angular/material2/commit/c14cf7c))
+* **bottom-sheet:** error when attempting to open multiple instances quickly ([#10147](https://github.com/angular/material2/issues/10147)) ([34e96f5](https://github.com/angular/material2/commit/34e96f5))
+* **button:** theme font color being overwritten ([#9771](https://github.com/angular/material2/issues/9771)) ([c3a8d0c](https://github.com/angular/material2/commit/c3a8d0c)), closes [#4614](https://github.com/angular/material2/issues/4614) [#9231](https://github.com/angular/material2/issues/9231) [#9634](https://github.com/angular/material2/issues/9634)
+* **checkbox:** setting blank aria-label by default ([#10281](https://github.com/angular/material2/issues/10281)) ([c12d7c4](https://github.com/angular/material2/commit/c12d7c4))
+* **chip-list:** set key manager active index to -1 when blurred ([#10335](https://github.com/angular/material2/issues/10335)) ([b10fff4](https://github.com/angular/material2/commit/b10fff4))
+* **chips:** form field label pointing to non-existing elements ([#9908](https://github.com/angular/material2/issues/9908)) ([9337ae1](https://github.com/angular/material2/commit/9337ae1))
+* **datepicker:** server-side rendering error for disabled input ([#10249](https://github.com/angular/material2/issues/10249)) ([af4fc9b](https://github.com/angular/material2/commit/af4fc9b)), closes [#10248](https://github.com/angular/material2/issues/10248)
+* **icon:** namespace error when registering an icon on the server ([#10175](https://github.com/angular/material2/issues/10175)) ([498534b](https://github.com/angular/material2/commit/498534b)), closes [#10170](https://github.com/angular/material2/issues/10170)
+* **input:** setting blank placeholder by default ([#10277](https://github.com/angular/material2/issues/10277)) ([889a9f2](https://github.com/angular/material2/commit/889a9f2))
+* **overlay:** clear last calculated position when new set of positions is provided ([#10462](https://github.com/angular/material2/issues/10462)) ([cdb6e40](https://github.com/angular/material2/commit/cdb6e40)), closes [#10457](https://github.com/angular/material2/issues/10457)
+* **overlay:** incorrect bounding box bottom position when page is scrolled and content is flowing upwards ([#10463](https://github.com/angular/material2/issues/10463)) ([1dd8a27](https://github.com/angular/material2/commit/1dd8a27))
+* **overlay:** incorrect bounding box styles if position is exactly zero ([#10470](https://github.com/angular/material2/issues/10470)) ([eefa9c4](https://github.com/angular/material2/commit/eefa9c4))
+* **overlay:** opaque backdrop appearing solid in high contrast mode ([#10252](https://github.com/angular/material2/issues/10252)) ([8366ec6](https://github.com/angular/material2/commit/8366ec6))
+* **select:** scroll strategy token cannot inject overlay ([#10535](https://github.com/angular/material2/issues/10535)) ([3eb71c2](https://github.com/angular/material2/commit/3eb71c2))
+* **table:** move padding from rows to cells ([#10499](https://github.com/angular/material2/issues/10499)) ([e0321db](https://github.com/angular/material2/commit/e0321db))
+* **tree:** fix mat-tree paddings ([#10349](https://github.com/angular/material2/issues/10349)) ([d065aea](https://github.com/angular/material2/commit/d065aea))
+* **tree:** invalid style declaration during server-side rendering ([#10326](https://github.com/angular/material2/issues/10326)) ([c205749](https://github.com/angular/material2/commit/c205749)), closes [#10131](https://github.com/angular/material2/issues/10131)
+
+
+### Code Refactoring
+
+* **a11y:** remove 6.0.0 deletion targets ([#10325](https://github.com/angular/material2/issues/10325)) ([7a42c35](https://github.com/angular/material2/commit/7a42c35))
+* **autocomplete:** remove 6.0.0 deletion targets ([#10319](https://github.com/angular/material2/issues/10319)) ([0af5bca](https://github.com/angular/material2/commit/0af5bca))
+* **button-toggle:** remove 6.0.0 deletion targets ([#10416](https://github.com/angular/material2/issues/10416)) ([f0bf6e7](https://github.com/angular/material2/commit/f0bf6e7))
+* **checkbox:** remove 6.0.0 deletion targets ([#10342](https://github.com/angular/material2/issues/10342)) ([9f8eec1](https://github.com/angular/material2/commit/9f8eec1))
+* **chips:** remove 6.0.0 deletion targets ([#10311](https://github.com/angular/material2/issues/10311)) ([1a8106d](https://github.com/angular/material2/commit/1a8106d))
+* **datepicker:** remove 6.0.0 deletion targets ([#10413](https://github.com/angular/material2/issues/10413)) ([8bc7ee9](https://github.com/angular/material2/commit/8bc7ee9))
+* **form-field:** remove deprecated @Inputs ([#10294](https://github.com/angular/material2/issues/10294)) ([f133da9](https://github.com/angular/material2/commit/f133da9)), closes [#10164](https://github.com/angular/material2/issues/10164)
+* **form-field:** remove deprecated CSS classes ([#10296](https://github.com/angular/material2/issues/10296)) ([aa2356d](https://github.com/angular/material2/commit/aa2356d))
+* **form-field:** remove deprecated placeholder options. ([#10291](https://github.com/angular/material2/issues/10291)) ([26ee3e7](https://github.com/angular/material2/commit/26ee3e7))
+* **icon:** remove 6.0.0 deletion targets ([#10389](https://github.com/angular/material2/issues/10389)) ([e8af5ae](https://github.com/angular/material2/commit/e8af5ae))
+* **list:** remove 6.0.0 deletion targets ([#10398](https://github.com/angular/material2/issues/10398)) ([d8a365e](https://github.com/angular/material2/commit/d8a365e))
+* **overlay:** remove 6.0.0 deletion targets ([#10161](https://github.com/angular/material2/issues/10161)) ([54252d5](https://github.com/angular/material2/commit/54252d5))
+* **portal:** remove 6.0.0 deletion targets ([#10257](https://github.com/angular/material2/issues/10257)) ([88abd9e](https://github.com/angular/material2/commit/88abd9e))
+* **select:** remove 6.0.0 deletion targets ([#10163](https://github.com/angular/material2/issues/10163)) ([2b745c4](https://github.com/angular/material2/commit/2b745c4))
+* **sidenav:** remove 6.0.0 deletion targets ([#10279](https://github.com/angular/material2/issues/10279)) ([c1d4666](https://github.com/angular/material2/commit/c1d4666))
+* **slider:** remove 6.0.0 deletion targets ([#10373](https://github.com/angular/material2/issues/10373)) ([c8cc414](https://github.com/angular/material2/commit/c8cc414))
+* **snack-bar:** remove 6.0.0 deletion targets ([#10253](https://github.com/angular/material2/issues/10253)) ([88bb6f3](https://github.com/angular/material2/commit/88bb6f3))
+* **snack-bar:** remove overly broad animation variables ([#10405](https://github.com/angular/material2/issues/10405)) ([9f3bf27](https://github.com/angular/material2/commit/9f3bf27))
+* **tabs:** remove 6.0.0 deletion targets ([#10309](https://github.com/angular/material2/issues/10309)) ([4d05cda](https://github.com/angular/material2/commit/4d05cda))
+* **text-field:** make constructor parameters required ([#10431](https://github.com/angular/material2/issues/10431)) ([5e5aae3](https://github.com/angular/material2/commit/5e5aae3))
+* **tooltip:** remove 6.0.0 deletion targets ([#10344](https://github.com/angular/material2/issues/10344)) ([999cb57](https://github.com/angular/material2/commit/999cb57))
+* **typography:** remove deprecated variable ([#10430](https://github.com/angular/material2/issues/10430)) ([9a1ae9c](https://github.com/angular/material2/commit/9a1ae9c))
+
+
 <a name="6.0.0-beta.4"></a>
 # [6.0.0-beta.4](https://github.com/angular/material2/compare/6.0.0-beta-2...6.0.0-beta.4) (2018-03-05)
 
