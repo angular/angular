@@ -125,10 +125,6 @@ describe('compiler compliance', () => {
               $r3$.ɵe();
               $r3$.ɵT(3, '!');
             }
-            ChildComponent.ngComponentDef.h(1, 0);
-            SomeDirective.ngDirectiveDef.h(2, 0);
-            $r3$.ɵr(1, 0);
-            $r3$.ɵr(2, 0);
           }
         });
       `;
@@ -266,9 +262,7 @@ describe('compiler compliance', () => {
               $r3$.ɵe();
             }
             const $foo$ = $r3$.ɵld(1);
-            IfDirective.ngDirectiveDef.h(3,2);
             $r3$.ɵcR(2);
-            $r3$.ɵr(3,2);
             $r3$.ɵcr();
 
             function MyComponent_IfDirective_Template_2(ctx0: IDENT, cm: IDENT) {
@@ -337,8 +331,6 @@ describe('compiler compliance', () => {
                 $r3$.ɵe();
               }
               $r3$.ɵp(0, 'names', $r3$.ɵb($r3$.ɵf1($e0_ff$, ctx.customName)));
-              MyComp.ngComponentDef.h(1, 0);
-              $r3$.ɵr(1, 0);
             }
           });
         `;
@@ -417,8 +409,6 @@ describe('compiler compliance', () => {
               $r3$.ɵp(
                   0, 'names',
                   $r3$.ɵb($r3$.ɵfV($e0_ff$, ctx.n0, ctx.n1, ctx.n2, ctx.n3, ctx.n4, ctx.n5, ctx.n6, ctx.n7, ctx.n8)));
-              MyComp.ngComponentDef.h(1, 0);
-              $r3$.ɵr(1, 0);
             }
           });
         `;
@@ -475,8 +465,6 @@ describe('compiler compliance', () => {
                 $r3$.ɵe();
               }
               $r3$.ɵp(0, 'config', $r3$.ɵb($r3$.ɵf1($e0_ff$, ctx.name)));
-              ObjectComp.ngComponentDef.h(1, 0);
-              $r3$.ɵr(1, 0);
             }
           });
         `;
@@ -542,8 +530,6 @@ describe('compiler compliance', () => {
                   0, 'config',
                   $r3$.ɵb($r3$.ɵf2(
                       $e0_ff_2$, ctx.name, $r3$.ɵf1($e0_ff_1$, $r3$.ɵf1($e0_ff$, ctx.duration)))));
-              NestedComp.ngComponentDef.h(1, 0);
-              $r3$.ɵr(1, 0);
             }
           });
         `;
@@ -683,8 +669,6 @@ describe('compiler compliance', () => {
                 $r3$.ɵe();
               }
               ($r3$.ɵqR(($tmp$ = $r3$.ɵld(0))) && (ctx.someDir = $tmp$.first));
-              SomeDirective.ngDirectiveDef.h(2, 1);
-              $r3$.ɵr(2, 1);
             }
           });`;
 
@@ -939,8 +923,6 @@ describe('compiler compliance', () => {
           });`;
 
         const SimpleLayoutDefinition = `
-          const $c1$ = LifecycleComp.ngComponentDef;
-          …
           static ngComponentDef = $r3$.ɵdefineComponent({
             type: SimpleLayout,
             selectors: [['simple-layout']],
@@ -954,10 +936,6 @@ describe('compiler compliance', () => {
               }
               $r3$.ɵp(0, 'name', $r3$.ɵb(ctx.name1));
               $r3$.ɵp(2, 'name', $r3$.ɵb(ctx.name2));
-              $c1$.h(1, 0);
-              $c1$.h(3, 2);
-              $r3$.ɵr(1, 0);
-              $r3$.ɵr(3, 2);
             }
           });`;
 
@@ -1074,9 +1052,7 @@ describe('compiler compliance', () => {
                 $r3$.ɵe();
               }
               $r3$.ɵp(1, 'forOf', $r3$.ɵb(ctx.items));
-              ForOfDirective.ngDirectiveDef.h(2, 1);
               $r3$.ɵcR(1);
-              $r3$.ɵr(2, 1);
               $r3$.ɵcr();
 
               function MyComponent_ForOfDirective_Template_1(ctx0: IDENT, cm: IDENT) {
@@ -1139,7 +1115,6 @@ describe('compiler compliance', () => {
 
         const MyComponentDefinition = `
           const $c1$ = [ForOfDirective];
-          const $c2$ = ForOfDirective.ngDirectiveDef;
           …
           static ngComponentDef = $r3$.ɵdefineComponent({
             type: MyComponent,
@@ -1152,9 +1127,7 @@ describe('compiler compliance', () => {
                 $r3$.ɵe();
               }
               $r3$.ɵp(1, 'forOf', $r3$.ɵb(ctx.items));
-              $c2$.h(2,1);
               $r3$.ɵcR(1);
-              $r3$.ɵr(2, 1);
               $r3$.ɵcr();
 
               function MyComponent_ForOfDirective_Template_1(ctx0: IDENT, cm: IDENT) {
@@ -1170,10 +1143,8 @@ describe('compiler compliance', () => {
                 }
                 const $item$ = ctx0.$implicit;
                 $r3$.ɵp(4, 'forOf', $r3$.ɵb(IDENT.infos));
-                $c2$.h(5,4);
                 $r3$.ɵt(2, $r3$.ɵi1('', IDENT.name, ''));
                 $r3$.ɵcR(4);
-                $r3$.ɵr(5, 4);
                 $r3$.ɵcr();
 
                 function MyComponent_ForOfDirective_ForOfDirective_Template_4(

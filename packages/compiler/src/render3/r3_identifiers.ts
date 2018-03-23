@@ -12,8 +12,7 @@ const CORE = '@angular/core';
 
 export class Identifiers {
   /* Methods */
-  static NEW_METHOD = 'n';
-  static HOST_BINDING_METHOD = 'h';
+  static NEW_METHOD = 'factory';
   static TRANSFORM_METHOD = 'transform';
   static PATCH_DEPS = 'patchedDeps';
 
