@@ -295,7 +295,7 @@ to every `HttpClient` save method.
 ### Making a POST request
 
 Apps often POST data to a server. They POST when submitting a form. 
-In the following example, the `HeroService` posts when adding a hero to the database.
+In the following example, the `HeroesService` posts when adding a hero to the database.
 
 <code-example 
   path="http/src/app/heroes/heroes.service.ts"
@@ -350,7 +350,7 @@ The component isn't expecting a result from the delete operation, so it subscrib
 
 <div class="alert is-important">
 
-You must call _subscribe()_ or nothing happens. Just calling `HeroService.deleteHero()` **does not initiate the DELETE request.**
+You must call _subscribe()_ or nothing happens. Just calling `HeroesService.deleteHero()` **does not initiate the DELETE request.**
 
 </div>
 
@@ -398,7 +398,7 @@ req.subscribe();
 ### Making a PUT request
 
 An app will send a PUT request to completely replace a resource with updated data.
-The following `HeroService` example is just like the POST example.
+The following `HeroesService` example is just like the POST example.
 
 <code-example 
   path="http/src/app/heroes/heroes.service.ts"
@@ -418,7 +418,7 @@ We have discussed the basic HTTP functionality in `@angular/common/http`, but so
 Other aspects of an outgoing request can be configured via the options object
 passed as the last argument to the `HttpClient` method.
 
-You [saw earlier](#adding-headers) that the `HeroService` sets the default headers by
+You [saw earlier](#adding-headers) that the `HeroesService` sets the default headers by
 passing an options object (`httpOptions`) to its save methods.
 You can do more.
 
