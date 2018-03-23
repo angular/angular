@@ -23,7 +23,7 @@ import {
   getSortDuplicateSortableIdError,
   getSortHeaderMissingIdError
 } from './sort-errors';
-import {Subject} from 'rxjs/Subject';
+import {Subject} from 'rxjs';
 
 /** Interface for a directive that holds sorting state consumed by `MatSortHeader`. */
 export interface MatSortable {

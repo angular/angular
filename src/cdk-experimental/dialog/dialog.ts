@@ -16,13 +16,11 @@ import {
   ComponentRef
 } from '@angular/core';
 import {ComponentPortal, PortalInjector, TemplatePortal} from '@angular/cdk/portal';
-import {Observable} from 'rxjs/Observable';
-import {Subject} from 'rxjs/Subject';
+import {of as observableOf, Observable, Subject, defer} from 'rxjs';
 import {DialogRef} from './dialog-ref';
 import {Location} from '@angular/common';
 import {DialogConfig} from './dialog-config';
 import {Directionality} from '@angular/cdk/bidi';
-import {of as observableOf} from 'rxjs/observable/of';
 import {CdkDialogContainer} from './dialog-container';
 import {
   ComponentType,
@@ -30,8 +28,7 @@ import {
   OverlayRef,
   OverlayConfig,
 } from '@angular/cdk/overlay';
-import {startWith} from 'rxjs/operators/startWith';
-import {defer} from 'rxjs/observable/defer';
+import {startWith} from 'rxjs/operators';
 
 import {
   DIALOG_SCROLL_STRATEGY,

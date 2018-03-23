@@ -1,7 +1,7 @@
 import {ElementRef, Component, NgModule, NgZone} from '@angular/core';
 import {TestBed, inject} from '@angular/core/testing';
 import {CdkScrollable} from '@angular/cdk/scrolling';
-import {Subscription} from 'rxjs/Subscription';
+import {Subscription} from 'rxjs';
 import {ScrollDispatchModule} from '@angular/cdk/scrolling';
 import {MockNgZone} from '@angular/cdk/testing';
 import {ComponentPortal, PortalModule} from '@angular/cdk/portal';

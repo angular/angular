@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {SelectionModel} from '@angular/cdk/collections';
-import {Observable} from 'rxjs/Observable';
+import {Observable} from 'rxjs';
 import {TreeControl} from './tree-control';
 
 /** Base tree control. It has basic toggle/expand/collapse operations on a single data node. */

@@ -8,7 +8,7 @@
 
 import {Component, ViewEncapsulation} from '@angular/core';
 import {BreakpointObserver, BreakpointState, Breakpoints} from '@angular/cdk/layout';
-import {Observable} from 'rxjs/Observable';
+import {Observable} from 'rxjs';
 
 @Component({
   moduleId: module.id,

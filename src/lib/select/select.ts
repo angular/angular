@@ -20,7 +20,13 @@ import {
   SPACE,
   UP_ARROW,
 } from '@angular/cdk/keycodes';
-import {CdkConnectedOverlay, Overlay, ScrollStrategy, ViewportRuler} from '@angular/cdk/overlay';
+import {
+  CdkConnectedOverlay,
+  Overlay,
+  ScrollStrategy,
+  ViewportRuler,
+} from '@angular/cdk/overlay';
+import {filter, take, map, switchMap, takeUntil, startWith} from 'rxjs/operators';
 import {
   AfterContentInit,
   Attribute,
@@ -69,16 +75,7 @@ import {
   mixinTabIndex,
 } from '@angular/material/core';
 import {MatFormField, MatFormFieldControl} from '@angular/material/form-field';
-import {Observable} from 'rxjs/Observable';
-import {defer} from 'rxjs/observable/defer';
-import {merge} from 'rxjs/observable/merge';
-import {filter} from 'rxjs/operators/filter';
-import {map} from 'rxjs/operators/map';
-import {startWith} from 'rxjs/operators/startWith';
-import {switchMap} from 'rxjs/operators/switchMap';
-import {take} from 'rxjs/operators/take';
-import {takeUntil} from 'rxjs/operators/takeUntil';
-import {Subject} from 'rxjs/Subject';
+import {defer, Subject, merge, Observable} from 'rxjs';
 import {matSelectAnimations} from './select-animations';
 import {
   getMatSelectDynamicMultipleError,

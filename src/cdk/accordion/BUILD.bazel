@@ -10,6 +10,7 @@ ng_module(
   deps = [
     "//src/cdk/coercion",
     "//src/cdk/collections",
+    "@rxjs",
   ],
   tsconfig = "//src/cdk:tsconfig-build.json",
 )
@@ -28,6 +29,7 @@ ts_library(
 ts_web_test(
   name = "unit_tests",
   bootstrap = ["//:web_test_bootstrap_scripts"],
+  tags = ["manual"],
 
   # Do not sort
   deps = [

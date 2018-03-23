@@ -14,9 +14,7 @@ import {
   ConnectionPositionPair,
   ScrollingVisibility,
 } from './connected-position';
-import {Subject} from 'rxjs/Subject';
-import {Subscription} from 'rxjs/Subscription';
-import {Observable} from 'rxjs/Observable';
+import {Observable, Subscription, Subject} from 'rxjs';
 import {OverlayRef} from '../overlay-ref';
 import {isElementScrolledOutsideView, isElementClippedByScrolling} from './scroll-clip';
 

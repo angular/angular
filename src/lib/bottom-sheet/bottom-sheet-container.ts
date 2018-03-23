@@ -30,7 +30,7 @@ import {
 import {BreakpointObserver, Breakpoints} from '@angular/cdk/layout';
 import {MatBottomSheetConfig} from './bottom-sheet-config';
 import {matBottomSheetAnimations} from './bottom-sheet-animations';
-import {Subscription} from 'rxjs/Subscription';
+import {Subscription} from 'rxjs';
 import {DOCUMENT} from '@angular/common';
 import {FocusTrap, FocusTrapFactory} from '@angular/cdk/a11y';
 

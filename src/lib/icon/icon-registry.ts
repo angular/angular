@@ -6,11 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {catchError} from 'rxjs/operators/catchError';
-import {tap} from 'rxjs/operators/tap';
-import {finalize} from 'rxjs/operators/finalize';
-import {map} from 'rxjs/operators/map';
-import {share} from 'rxjs/operators/share';
+import {catchError} from 'rxjs/operators';
+import {tap} from 'rxjs/operators';
+import {finalize} from 'rxjs/operators';
+import {map} from 'rxjs/operators';
+import {share} from 'rxjs/operators';
 import {
   Injectable,
   Inject,
@@ -21,10 +21,10 @@ import {
 } from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {DomSanitizer, SafeResourceUrl} from '@angular/platform-browser';
-import {Observable} from 'rxjs/Observable';
-import {forkJoin} from 'rxjs/observable/forkJoin';
-import {of as observableOf} from 'rxjs/observable/of';
-import {_throw as observableThrow} from 'rxjs/observable/throw';
+import {Observable} from 'rxjs';
+import {forkJoin} from 'rxjs';
+import {of as observableOf} from 'rxjs';
+import {throwError as observableThrow} from 'rxjs';
 import {DOCUMENT} from '@angular/common';
 
 

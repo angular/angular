@@ -1,4 +1,3 @@
-import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {
   Component,
   ContentChild,
@@ -8,12 +7,11 @@ import {
   ViewChild,
   Type,
 } from '@angular/core';
+import {ComponentFixture, TestBed, fakeAsync, flush} from '@angular/core/testing';
 import {CdkTable} from './table';
 import {CollectionViewer, DataSource} from '@angular/cdk/collections';
-import {BehaviorSubject} from 'rxjs/BehaviorSubject';
-import {combineLatest} from 'rxjs/observable/combineLatest';
+import {combineLatest, BehaviorSubject, Observable} from 'rxjs';
 import {CdkTableModule} from './index';
-import {Observable} from 'rxjs/Observable';
 import {
   getTableDuplicateColumnNameError,
   getTableMissingMatchingRowDefError,
@@ -401,15 +399,25 @@ describe('CdkTable', () => {
       ]);
     });
 
-    it('should error if there is row data that does not have a matching row template', () => {
-      expect(() => createComponent(WhenRowWithoutDefaultCdkTableApp).detectChanges())
-          .toThrowError(getTableMissingMatchingRowDefError().message);
-    });
+    it('should error if there is row data that does not have a matching row template',
+      fakeAsync(() => {
+        expect(() => {
+          try {
+            createComponent(WhenRowWithoutDefaultCdkTableApp).detectChanges();
+            flush();
+          } catch {
+            flush();
+          }
+        }).toThrowError(getTableMissingMatchingRowDefError().message);
+    }));
 
-    it('should error if there are multiple rows that do not have a when function', () => {
-      expect(() => createComponent(WhenRowMultipleDefaultsCdkTableApp).detectChanges())
-          .toThrowError(getTableMultipleDefaultRowDefsError().message);
-    });
+    it('should error if there are multiple rows that do not have a when function', fakeAsync(() => {
+      let whenFixture = createComponent(WhenRowMultipleDefaultsCdkTableApp);
+      expect(() => {
+        whenFixture.detectChanges();
+        flush();
+      }).toThrowError(getTableMultipleDefaultRowDefsError().message);
+    }));
   });
 
   it('should use differ to add/remove/move rows', () => {

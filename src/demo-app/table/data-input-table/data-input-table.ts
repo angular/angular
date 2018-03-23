@@ -10,7 +10,7 @@ import {Component, ViewChild} from '@angular/core';
 import {Element, ELEMENT_DATA} from '../element-data';
 import {CdkTable} from '@angular/cdk/table';
 import {MatRadioChange, MatTable, MatTableDataSource} from '@angular/material';
-import {Observable} from 'rxjs/Observable';
+import {Observable} from 'rxjs';
 import {DataSource} from '@angular/cdk/collections';
 
 @Component({

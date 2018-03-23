@@ -26,10 +26,10 @@ import {
 import {CdkAccordionItem} from '@angular/cdk/accordion';
 import {UniqueSelectionDispatcher} from '@angular/cdk/collections';
 import {TemplatePortal} from '@angular/cdk/portal';
-import {Subject} from 'rxjs/Subject';
-import {take} from 'rxjs/operators/take';
-import {filter} from 'rxjs/operators/filter';
-import {startWith} from 'rxjs/operators/startWith';
+import {Subject} from 'rxjs';
+import {take} from 'rxjs/operators';
+import {filter} from 'rxjs/operators';
+import {startWith} from 'rxjs/operators';
 import {MatAccordion} from './accordion';
 import {coerceBooleanProperty} from '@angular/cdk/coercion';
 import {MatExpansionPanelContent} from './expansion-panel-content';

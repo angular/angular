@@ -9,9 +9,9 @@
 import {FocusKeyManager} from '@angular/cdk/a11y';
 import {Direction} from '@angular/cdk/bidi';
 import {ESCAPE, LEFT_ARROW, RIGHT_ARROW} from '@angular/cdk/keycodes';
-import {startWith} from 'rxjs/operators/startWith';
-import {switchMap} from 'rxjs/operators/switchMap';
-import {take} from 'rxjs/operators/take';
+import {startWith} from 'rxjs/operators';
+import {switchMap} from 'rxjs/operators';
+import {take} from 'rxjs/operators';
 import {
   AfterContentInit,
   ChangeDetectionStrategy,
@@ -32,10 +32,10 @@ import {
   NgZone,
   OnInit,
 } from '@angular/core';
-import {Observable} from 'rxjs/Observable';
-import {Subject} from 'rxjs/Subject';
-import {merge} from 'rxjs/observable/merge';
-import {Subscription} from 'rxjs/Subscription';
+import {Observable} from 'rxjs';
+import {Subject} from 'rxjs';
+import {merge} from 'rxjs';
+import {Subscription} from 'rxjs';
 import {matMenuAnimations} from './menu-animations';
 import {throwMatMenuInvalidPositionX, throwMatMenuInvalidPositionY} from './menu-errors';
 import {MatMenuItem} from './menu-item';

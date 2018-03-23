@@ -8,11 +8,9 @@
 
 import {Component, ViewChild} from '@angular/core';
 import {DataSource} from '@angular/cdk/table';
-import {BehaviorSubject} from 'rxjs/BehaviorSubject';
-import {Observable} from 'rxjs/Observable';
+import {merge, Observable, BehaviorSubject} from 'rxjs';
 import {MatSort, MatPaginator} from '@angular/material';
-import {merge} from 'rxjs/observable/merge';
-import {map} from 'rxjs/operators/map';
+import {map} from 'rxjs/operators';
 
 export interface UserData {
   name: string;

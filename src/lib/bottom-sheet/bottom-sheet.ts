@@ -12,7 +12,7 @@ import {ComponentRef, TemplateRef, Injectable, Injector, Optional, SkipSelf} fro
 import {MatBottomSheetConfig, MAT_BOTTOM_SHEET_DATA} from './bottom-sheet-config';
 import {MatBottomSheetRef} from './bottom-sheet-ref';
 import {MatBottomSheetContainer} from './bottom-sheet-container';
-import {of as observableOf} from 'rxjs/observable/of';
+import {of as observableOf} from 'rxjs';
 import {Directionality} from '@angular/cdk/bidi';
 
 /**

@@ -19,6 +19,7 @@ import {
 } from '@angular/cdk/overlay';
 import {ComponentPortal, ComponentType} from '@angular/cdk/portal';
 import {DOCUMENT} from '@angular/common';
+import {take, filter} from 'rxjs/operators';
 import {
   AfterContentInit,
   ChangeDetectionStrategy,
@@ -42,15 +43,11 @@ import {
 } from '@angular/core';
 import {CanColor, DateAdapter, mixinColor, ThemePalette} from '@angular/material/core';
 import {MatDialog, MatDialogRef} from '@angular/material/dialog';
-import {merge} from 'rxjs/observable/merge';
-import {filter} from 'rxjs/operators/filter';
-import {take} from 'rxjs/operators/take';
-import {Subject} from 'rxjs/Subject';
-import {Subscription} from 'rxjs/Subscription';
-import {MatCalendar} from './calendar';
-import {matDatepickerAnimations} from './datepicker-animations';
+import {merge, Subject, Subscription} from 'rxjs';
 import {createMissingDateImplError} from './datepicker-errors';
 import {MatDatepickerInput} from './datepicker-input';
+import {MatCalendar} from './calendar';
+import {matDatepickerAnimations} from './datepicker-animations';
 
 /** Used to generate a unique ID for each datepicker instance. */
 let datepickerUid = 0;

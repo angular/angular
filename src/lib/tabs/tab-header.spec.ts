@@ -15,10 +15,10 @@ import {
 } from '@angular/core/testing';
 import {MatRippleModule} from '@angular/material/core';
 import {By} from '@angular/platform-browser';
-import {Subject} from 'rxjs/Subject';
 import {MatInkBar} from './ink-bar';
 import {MatTabHeader} from './tab-header';
 import {MatTabLabelWrapper} from './tab-label-wrapper';
+import {Subject} from 'rxjs';
 
 
 describe('MatTabHeader', () => {

@@ -18,7 +18,7 @@ import {
   NgZone,
   OnDestroy,
 } from '@angular/core';
-import {take} from 'rxjs/operators/take';
+import {take} from 'rxjs/operators';
 import {InteractivityChecker} from '../interactivity-checker/interactivity-checker';
 
 

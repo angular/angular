@@ -3,7 +3,7 @@ import {Component, ViewChild} from '@angular/core';
 import {By} from '@angular/platform-browser';
 import {dispatchFakeEvent, dispatchMouseEvent, createMouseEvent} from '@angular/cdk/testing';
 import {Direction, Directionality} from '@angular/cdk/bidi';
-import {Subject} from 'rxjs/Subject';
+import {Subject} from 'rxjs';
 import {MatTabLink, MatTabNav, MatTabsModule} from '../index';
 
 

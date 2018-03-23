@@ -18,7 +18,7 @@ import {
 import {UniqueSelectionDispatcher} from '@angular/cdk/collections';
 import {CdkAccordion} from './accordion';
 import {coerceBooleanProperty} from '@angular/cdk/coercion';
-import {Subscription} from 'rxjs/Subscription';
+import {Subscription} from 'rxjs';
 
 /** Used to generate unique ID for each accordion item. */
 let nextId = 0;

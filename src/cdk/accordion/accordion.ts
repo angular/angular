@@ -8,7 +8,7 @@
 
 import {Directive, Input} from '@angular/core';
 import {coerceBooleanProperty} from '@angular/cdk/coercion';
-import {Subject} from 'rxjs/Subject';
+import {Subject} from 'rxjs';
 
 /** Used to generate unique ID for each accordion. */
 let nextId = 0;

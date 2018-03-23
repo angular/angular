@@ -5,6 +5,7 @@
 /tmp
 /deploy
 /screenshots
+/bazel-out
 
 # Example module file will be auto-generated.
 /src/material-examples/example-module.ts

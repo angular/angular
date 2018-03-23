@@ -24,10 +24,10 @@ import {
 } from '@angular/forms';
 import {By} from '@angular/platform-browser';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
-import {Observable} from 'rxjs/Observable';
-import {map} from 'rxjs/operators/map';
-import {take} from 'rxjs/operators/take';
-import {Subject} from 'rxjs/Subject';
+import {Observable} from 'rxjs';
+import {map} from 'rxjs/operators';
+import {take} from 'rxjs/operators';
+import {Subject} from 'rxjs';
 import {MatStepperModule} from './index';
 import {MatHorizontalStepper, MatStep, MatStepper, MatVerticalStepper} from './stepper';
 import {MatStepperNext, MatStepperPrevious} from './stepper-button';

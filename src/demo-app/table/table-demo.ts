@@ -13,9 +13,9 @@ import {MatPaginator, MatSort, MatTableDataSource, PageEvent} from '@angular/mat
 import {DetailRow, PersonDetailDataSource} from './person-detail-data-source';
 import {animate, state, style, transition, trigger} from '@angular/animations';
 import {SelectionModel} from '@angular/cdk/collections';
-import {distinctUntilChanged} from 'rxjs/operators/distinctUntilChanged';
-import {debounceTime} from 'rxjs/operators/debounceTime';
-import {fromEvent} from 'rxjs/observable/fromEvent';
+import {distinctUntilChanged} from 'rxjs/operators';
+import {debounceTime} from 'rxjs/operators';
+import {fromEvent} from 'rxjs';
 
 export type UserProperties = 'userId' | 'userName' | 'progress' | 'color' | undefined;
 

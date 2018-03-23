@@ -3,7 +3,7 @@ import {Component, QueryList, ViewChild, ViewChildren} from '@angular/core';
 import {BrowserAnimationsModule, NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {By} from '@angular/platform-browser';
 import {dispatchFakeEvent} from '@angular/cdk/testing';
-import {Observable} from 'rxjs/Observable';
+import {Observable} from 'rxjs';
 import {MatTab, MatTabGroup, MatTabHeaderPosition, MatTabsModule} from './index';
 
 

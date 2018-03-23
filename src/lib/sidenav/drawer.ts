@@ -12,7 +12,6 @@ import {coerceBooleanProperty} from '@angular/cdk/coercion';
 import {ESCAPE} from '@angular/cdk/keycodes';
 import {Platform} from '@angular/cdk/platform';
 import {CdkScrollable} from '@angular/cdk/scrolling';
-import {DOCUMENT} from '@angular/common';
 import {
   AfterContentChecked,
   AfterContentInit,
@@ -35,16 +34,9 @@ import {
   ViewChild,
   ViewEncapsulation,
 } from '@angular/core';
-import {Observable} from 'rxjs/Observable';
-import {fromEvent} from 'rxjs/observable/fromEvent';
-import {merge} from 'rxjs/observable/merge';
-import {debounceTime} from 'rxjs/operators/debounceTime';
-import {filter} from 'rxjs/operators/filter';
-import {map} from 'rxjs/operators/map';
-import {startWith} from 'rxjs/operators/startWith';
-import {take} from 'rxjs/operators/take';
-import {takeUntil} from 'rxjs/operators/takeUntil';
-import {Subject} from 'rxjs/Subject';
+import {DOCUMENT} from '@angular/common';
+import {filter, take, startWith, takeUntil, map, debounceTime} from 'rxjs/operators';
+import {merge, fromEvent, Observable, Subject} from 'rxjs';
 import {matDrawerAnimations} from './drawer-animations';
 
 

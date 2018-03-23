@@ -8,11 +8,11 @@
 
 import {OverlayRef} from '@angular/cdk/overlay';
 import {ESCAPE} from '@angular/cdk/keycodes';
-import {Observable} from 'rxjs/Observable';
-import {Subject} from 'rxjs/Subject';
-import {merge} from 'rxjs/observable/merge';
-import {filter} from 'rxjs/operators/filter';
-import {take} from 'rxjs/operators/take';
+import {Observable} from 'rxjs';
+import {Subject} from 'rxjs';
+import {merge} from 'rxjs';
+import {filter} from 'rxjs/operators';
+import {take} from 'rxjs/operators';
 import {MatBottomSheetContainer} from './bottom-sheet-container';
 
 /**

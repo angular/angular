@@ -1,4 +1,4 @@
-import {of as observableOf} from 'rxjs/observable/of';
+import {of as observableOf} from 'rxjs';
 import {NestedTreeControl} from './nested-tree-control';
 
 

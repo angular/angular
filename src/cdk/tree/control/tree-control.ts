@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {SelectionModel} from '@angular/cdk/collections';
-import {Observable} from 'rxjs/Observable';
+import {Observable} from 'rxjs';
 
 /**
  * Tree control interface. User can implement TreeControl to expand/collapse dataNodes in the tree.

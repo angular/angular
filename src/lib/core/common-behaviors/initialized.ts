@@ -7,8 +7,8 @@
  */
 
 import {Constructor} from './constructor';
-import {Observable} from 'rxjs/Observable';
-import {Subscriber} from 'rxjs/Subscriber';
+import {Observable} from 'rxjs';
+import {Subscriber} from 'rxjs';
 
 /**
  * Mixin that adds an initialized property to a directive which, when subscribed to, will emit a

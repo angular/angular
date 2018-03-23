@@ -36,7 +36,7 @@ import {
   RippleRenderer,
   RippleTarget
 } from '@angular/material/core';
-import {Subject} from 'rxjs/Subject';
+import {Subject} from 'rxjs';
 
 
 /** Represents an event fired on an individual `mat-chip`. */

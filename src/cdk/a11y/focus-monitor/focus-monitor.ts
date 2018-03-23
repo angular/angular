@@ -18,10 +18,7 @@ import {
   Output,
   SkipSelf,
 } from '@angular/core';
-import {Observable} from 'rxjs/Observable';
-import {of as observableOf} from 'rxjs/observable/of';
-import {Subject} from 'rxjs/Subject';
-import {Subscription} from 'rxjs/Subscription';
+import {of as observableOf, Observable, Subject, Subscription} from 'rxjs';
 
 
 // This is the value used by AngularJS Material. Through trial and error (on iPhone 6S) they found

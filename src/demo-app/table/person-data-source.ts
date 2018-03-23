@@ -8,10 +8,9 @@
 
 import {MatPaginator, MatSort} from '@angular/material';
 import {DataSource} from '@angular/cdk/collections';
-import {Observable} from 'rxjs/Observable';
+import {merge, Observable} from 'rxjs';
 import {PeopleDatabase, UserData} from './people-database';
-import {merge} from 'rxjs/observable/merge';
-import {map} from 'rxjs/operators/map';
+import {map} from 'rxjs/operators';
 
 export class PersonDataSource extends DataSource<any> {
   constructor(private _peopleDatabase: PeopleDatabase,

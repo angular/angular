@@ -270,30 +270,51 @@ describe('MatInput without forms', () => {
     const labelElement: HTMLInputElement =
         fixture.debugElement.query(By.css('label')).nativeElement;
 
-    expect(inputElement.id).toBe('test-id');
-    expect(labelElement.getAttribute('for')).toBe('test-id');
-  }));
+        expect(inputElement.id).toBe('test-id');
+        expect(labelElement.getAttribute('for')).toBe('test-id');
+      }));
 
-  it('validates there\'s only one hint label per side', fakeAsync(() => {
-    let fixture = TestBed.createComponent(MatInputInvalidHintTestController);
+      it('validates there\'s only one hint label per side', fakeAsync(() => {
+        let fixture = TestBed.createComponent(MatInputInvalidHintTestController);
 
-    expect(() => fixture.detectChanges()).toThrowError(
-        wrappedErrorMessage(getMatFormFieldDuplicatedHintError('start')));
-  }));
+        expect(() => {
+          try {
+            fixture.detectChanges();
+            flush();
+          } catch {
+            flush();
+          }
+        }).toThrowError(
+            wrappedErrorMessage(getMatFormFieldDuplicatedHintError('start')));
+      }));
 
-  it('validates there\'s only one hint label per side (attribute)', fakeAsync(() => {
-    let fixture = TestBed.createComponent(MatInputInvalidHint2TestController);
+      it('validates there\'s only one hint label per side (attribute)', fakeAsync(() => {
+        let fixture = TestBed.createComponent(MatInputInvalidHint2TestController);
 
-    expect(() => fixture.detectChanges()).toThrowError(
-        wrappedErrorMessage(getMatFormFieldDuplicatedHintError('start')));
-  }));
+        expect(() => {
+          try {
+            fixture.detectChanges();
+            flush();
+          } catch {
+            flush();
+          }
+        }).toThrowError(
+            wrappedErrorMessage(getMatFormFieldDuplicatedHintError('start')));
+      }));
 
-  it('validates there\'s only one placeholder', fakeAsync(() => {
-    let fixture = TestBed.createComponent(MatInputInvalidPlaceholderTestController);
+      it('validates there\'s only one placeholder', fakeAsync(() => {
+        let fixture = TestBed.createComponent(MatInputInvalidPlaceholderTestController);
 
-    expect(() => fixture.detectChanges()).toThrowError(
-        wrappedErrorMessage(getMatFormFieldPlaceholderConflictError()));
-  }));
+        expect(() => {
+          try {
+            fixture.detectChanges();
+            flush();
+          } catch {
+            flush();
+          }
+        }).toThrowError(
+            wrappedErrorMessage(getMatFormFieldPlaceholderConflictError()));
+      }));
 
   it('validates that matInput child is present', fakeAsync(() => {
     let fixture = TestBed.createComponent(MatInputMissingMatInputTestController);

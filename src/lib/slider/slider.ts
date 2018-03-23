@@ -45,7 +45,7 @@ import {
   mixinDisabled,
   mixinTabIndex,
 } from '@angular/material/core';
-import {Subscription} from 'rxjs/Subscription';
+import {Subscription} from 'rxjs';
 
 /**
  * Visually, a 30px separation between tick marks looks best. This is very subjective but it is

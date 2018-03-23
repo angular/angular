@@ -9,9 +9,8 @@
 import {Direction} from '@angular/cdk/bidi';
 import {ComponentPortal, Portal, PortalOutlet, TemplatePortal} from '@angular/cdk/portal';
 import {ComponentRef, EmbeddedViewRef, NgZone} from '@angular/core';
-import {Observable} from 'rxjs/Observable';
-import {take} from 'rxjs/operators/take';
-import {Subject} from 'rxjs/Subject';
+import {Observable, Subject} from 'rxjs';
+import {take} from 'rxjs/operators';
 import {OverlayKeyboardDispatcher} from './keyboard/overlay-keyboard-dispatcher';
 import {OverlayConfig} from './overlay-config';
 

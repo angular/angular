@@ -25,12 +25,8 @@ import {
   ViewContainerRef,
   ViewEncapsulation
 } from '@angular/core';
-import {BehaviorSubject} from 'rxjs/BehaviorSubject';
-import {takeUntil} from 'rxjs/operators/takeUntil';
-import {Observable} from 'rxjs/Observable';
-import {of} from 'rxjs/observable/of';
-import {Subject} from 'rxjs/Subject';
-import {Subscription} from 'rxjs/Subscription';
+import {of, BehaviorSubject, Observable, Subject, Subscription} from 'rxjs';
+import {takeUntil} from 'rxjs/operators';
 import {CdkTreeNodeDef, CdkTreeNodeOutletContext} from './node';
 import {CdkTreeNodeOutlet} from './outlet';
 import {TreeControl} from './control/tree-control';

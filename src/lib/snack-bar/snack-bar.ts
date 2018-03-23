@@ -21,8 +21,8 @@ import {
   SkipSelf,
   TemplateRef,
 } from '@angular/core';
-import {take} from 'rxjs/operators/take';
-import {takeUntil} from 'rxjs/operators/takeUntil';
+import {take} from 'rxjs/operators';
+import {takeUntil} from 'rxjs/operators';
 import {SimpleSnackBar} from './simple-snack-bar';
 import {MAT_SNACK_BAR_DATA, MatSnackBarConfig} from './snack-bar-config';
 import {MatSnackBarContainer} from './snack-bar-container';

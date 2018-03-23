@@ -23,10 +23,10 @@ import {
   ViewEncapsulation,
 } from '@angular/core';
 import {coerceBooleanProperty, coerceNumberProperty} from '@angular/cdk/coercion';
-import {Subscription} from 'rxjs/Subscription';
+import {Subscription} from 'rxjs';
 import {MatTab} from './tab';
 import {MatTabHeader} from './tab-header';
-import {merge} from 'rxjs/observable/merge';
+import {merge} from 'rxjs';
 import {
   CanColor,
   CanDisableRipple,

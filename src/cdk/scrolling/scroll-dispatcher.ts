@@ -15,13 +15,8 @@ import {
   Optional,
   SkipSelf,
 } from '@angular/core';
-import {Observable} from 'rxjs/Observable';
-import {fromEvent} from 'rxjs/observable/fromEvent';
-import {of as observableOf} from 'rxjs/observable/of';
-import {auditTime} from 'rxjs/operators/auditTime';
-import {filter} from 'rxjs/operators/filter';
-import {Subject} from 'rxjs/Subject';
-import {Subscription} from 'rxjs/Subscription';
+import {fromEvent, of as observableOf, Subject, Subscription, Observable} from 'rxjs';
+import {auditTime, filter} from 'rxjs/operators';
 import {CdkScrollable} from './scrollable';
 
 

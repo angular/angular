@@ -27,11 +27,11 @@ import {
   SkipSelf,
   TemplateRef,
 } from '@angular/core';
-import {Observable} from 'rxjs/Observable';
-import {defer} from 'rxjs/observable/defer';
-import {of as observableOf} from 'rxjs/observable/of';
-import {startWith} from 'rxjs/operators/startWith';
-import {Subject} from 'rxjs/Subject';
+import {Observable} from 'rxjs';
+import {defer} from 'rxjs';
+import {of as observableOf} from 'rxjs';
+import {startWith} from 'rxjs/operators';
+import {Subject} from 'rxjs';
 import {MatDialogConfig} from './dialog-config';
 import {MatDialogContainer} from './dialog-container';
 import {MatDialogRef} from './dialog-ref';

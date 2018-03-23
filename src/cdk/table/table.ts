@@ -31,10 +31,8 @@ import {
 } from '@angular/core';
 import {CollectionViewer, DataSource} from '@angular/cdk/collections';
 import {CdkCellOutlet, CdkCellOutletRowContext, CdkHeaderRowDef, CdkRowDef} from './row';
-import {takeUntil} from 'rxjs/operators/takeUntil';
-import {BehaviorSubject} from 'rxjs/BehaviorSubject';
-import {Subscription} from 'rxjs/Subscription';
-import {Subject} from 'rxjs/Subject';
+import {takeUntil} from 'rxjs/operators';
+import {of as observableOf, BehaviorSubject, Observable, Subscription, Subject} from 'rxjs';
 import {CdkCellDef, CdkColumnDef, CdkHeaderCellDef} from './cell';
 import {
   getTableDuplicateColumnNameError,
@@ -44,8 +42,6 @@ import {
   getTableUnknownColumnError,
   getTableUnknownDataSourceError
 } from './table-errors';
-import {Observable} from 'rxjs/Observable';
-import {of as observableOf} from 'rxjs/observable/of';
 
 /**
  * Provides a handle for the table to grab the view container's ng-container to insert data rows.

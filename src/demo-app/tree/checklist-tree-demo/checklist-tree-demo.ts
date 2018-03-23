@@ -10,8 +10,8 @@ import {Component} from '@angular/core';
 import {SelectionModel} from '@angular/cdk/collections';
 import {FlatTreeControl} from '@angular/cdk/tree';
 import {MatTreeFlattener, MatTreeFlatDataSource} from '@angular/material/tree';
-import {of as ofObservable} from 'rxjs/observable/of';
-import {Observable} from 'rxjs/Observable';
+import {of as ofObservable} from 'rxjs';
+import {Observable} from 'rxjs';
 import {TodoItemNode, TodoItemFlatNode, ChecklistDatabase} from './checklist-database';
 
 /**

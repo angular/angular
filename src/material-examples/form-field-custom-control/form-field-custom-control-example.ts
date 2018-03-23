@@ -3,7 +3,7 @@ import {coerceBooleanProperty} from '@angular/cdk/coercion';
 import {Component, ElementRef, Input, OnDestroy} from '@angular/core';
 import {FormBuilder, FormGroup} from '@angular/forms';
 import {MatFormFieldControl} from '@angular/material';
-import {Subject} from 'rxjs/Subject';
+import {Subject} from 'rxjs';
 
 
 /** Data structure for holding telephone number. */

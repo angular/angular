@@ -21,7 +21,7 @@ import {
   mixinDisabled,
   mixinDisableRipple
 } from '@angular/material/core';
-import {Subject} from 'rxjs/Subject';
+import {Subject} from 'rxjs';
 import {DOCUMENT} from '@angular/common';
 
 // Boilerplate for applying mixins to MatMenuItem.

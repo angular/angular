@@ -8,10 +8,10 @@
 import {Injectable} from '@angular/core';
 import {FlatTreeControl} from '@angular/cdk/tree';
 import {CollectionViewer, SelectionChange} from '@angular/cdk/collections';
-import {BehaviorSubject} from 'rxjs/BehaviorSubject';
-import {Observable} from 'rxjs/Observable';
-import {merge} from 'rxjs/observable/merge';
-import {map} from 'rxjs/operators/map';
+import {BehaviorSubject} from 'rxjs';
+import {Observable} from 'rxjs';
+import {merge} from 'rxjs';
+import {map} from 'rxjs/operators';
 
 /** Flat node with expandable and level information */
 export class DynamicFlatNode {

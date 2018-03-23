@@ -13,8 +13,8 @@ import {
   MatTreeFlatDataSource,
   MatTreeNestedDataSource
 } from '@angular/material/tree';
-import {of as ofObservable} from 'rxjs/observable/of';
-import {Observable} from 'rxjs/Observable';
+import {of as ofObservable} from 'rxjs';
+import {Observable} from 'rxjs';
 
 import {FileNode, FileFlatNode, FileDatabase} from './file-database';
 

@@ -8,7 +8,7 @@
 
 import {coerceBooleanProperty} from '@angular/cdk/coercion';
 import {ENTER, SPACE} from '@angular/cdk/keycodes';
-import {Subject} from 'rxjs/Subject';
+import {Subject} from 'rxjs';
 import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,

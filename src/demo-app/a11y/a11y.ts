@@ -8,7 +8,7 @@
 
 import {Component, ElementRef, OnDestroy, ViewChild, ViewEncapsulation} from '@angular/core';
 import {NavigationEnd, Router} from '@angular/router';
-import {Subscription} from 'rxjs/Subscription';
+import {Subscription} from 'rxjs';
 
 @Component({
   moduleId: module.id,

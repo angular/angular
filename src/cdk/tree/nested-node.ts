@@ -13,7 +13,7 @@ import {
   OnDestroy,
   QueryList,
 } from '@angular/core';
-import {takeUntil} from 'rxjs/operators/takeUntil';
+import {takeUntil} from 'rxjs/operators';
 
 import {CdkTree, CdkTreeNode} from './tree';
 import {CdkTreeNodeOutlet} from './outlet';

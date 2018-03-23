@@ -16,7 +16,7 @@ import {
   ViewEncapsulation,
   NgZone,
 } from '@angular/core';
-import {take} from 'rxjs/operators/take';
+import {take} from 'rxjs/operators';
 
 /**
  * An internal class that represents the data corresponding to a single calendar cell.

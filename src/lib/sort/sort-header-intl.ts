@@ -7,7 +7,7 @@
  */
 
 import {Injectable, SkipSelf, Optional} from '@angular/core';
-import {Subject} from 'rxjs/Subject';
+import {Subject} from 'rxjs';
 import {SortDirection} from './sort-direction';
 
 /**

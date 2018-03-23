@@ -8,7 +8,7 @@
 
 import {FocusMonitor} from '@angular/cdk/a11y';
 import {ENTER, SPACE} from '@angular/cdk/keycodes';
-import {filter} from 'rxjs/operators/filter';
+import {filter} from 'rxjs/operators';
 import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
@@ -20,8 +20,8 @@ import {
   OnDestroy,
   ViewEncapsulation,
 } from '@angular/core';
-import {merge} from 'rxjs/observable/merge';
-import {Subscription} from 'rxjs/Subscription';
+import {merge} from 'rxjs';
+import {Subscription} from 'rxjs';
 import {MatExpansionPanel} from './expansion-panel';
 import {matExpansionAnimations} from './expansion-animations';
 

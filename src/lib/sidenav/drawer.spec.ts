@@ -335,7 +335,14 @@ describe('MatDrawer', () => {
       const testComponent: DrawerDynamicPosition = fixture.debugElement.componentInstance;
       testComponent.drawer1Position = 'end';
 
-      expect(() => fixture.detectChanges()).toThrow();
+      expect(() => {
+        try {
+          fixture.detectChanges();
+          tick(0);
+        } catch {
+          tick(0);
+        }
+      }).toThrow();
     }));
 
     it('should not throw when drawers swap positions', () => {

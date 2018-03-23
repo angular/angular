@@ -1,9 +1,7 @@
 import {Component, Injectable} from '@angular/core';
 import {FlatTreeControl} from '@angular/cdk/tree';
 import {MatTreeFlattener, MatTreeFlatDataSource} from '@angular/material/tree';
-import {of} from 'rxjs/observable/of';
-import {Observable} from 'rxjs/Observable';
-import {BehaviorSubject} from 'rxjs/BehaviorSubject';
+import {of, Observable, BehaviorSubject} from 'rxjs';
 
 /**
  * File node data with nested structure.

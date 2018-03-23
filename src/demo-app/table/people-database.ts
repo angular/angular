@@ -9,7 +9,7 @@
 import {Injectable} from '@angular/core';
 import {NAMES} from '../dataset/names';
 import {COLORS} from '../dataset/colors';
-import {BehaviorSubject} from 'rxjs/BehaviorSubject';
+import {BehaviorSubject} from 'rxjs';
 
 export let LATEST_ID: number = 0;
 

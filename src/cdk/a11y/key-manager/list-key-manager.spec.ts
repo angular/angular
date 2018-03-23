@@ -1,5 +1,5 @@
 import {DOWN_ARROW, TAB, UP_ARROW, LEFT_ARROW, RIGHT_ARROW} from '@angular/cdk/keycodes';
-import {take} from 'rxjs/operators/take';
+import {take} from 'rxjs/operators';
 import {QueryList} from '@angular/core';
 import {fakeAsync, tick} from '@angular/core/testing';
 import {createKeyboardEvent} from '@angular/cdk/testing';
@@ -7,7 +7,7 @@ import {ActiveDescendantKeyManager} from './activedescendant-key-manager';
 import {FocusKeyManager} from './focus-key-manager';
 import {ListKeyManager} from './list-key-manager';
 import {FocusOrigin} from '../focus-monitor/focus-monitor';
-import {Subject} from 'rxjs/Subject';
+import {Subject} from 'rxjs';
 
 
 class FakeFocusable {

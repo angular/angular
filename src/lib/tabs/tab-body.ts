@@ -27,7 +27,7 @@ import {
 import {AnimationEvent} from '@angular/animations';
 import {TemplatePortal, CdkPortalOutlet, PortalHostDirective} from '@angular/cdk/portal';
 import {Directionality, Direction} from '@angular/cdk/bidi';
-import {Subscription} from 'rxjs/Subscription';
+import {Subscription} from 'rxjs';
 import {matTabsAnimations} from './tabs-animations';
 
 /**

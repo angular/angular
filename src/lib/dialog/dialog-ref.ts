@@ -9,12 +9,12 @@
 import {OverlayRef, GlobalPositionStrategy} from '@angular/cdk/overlay';
 import {ESCAPE} from '@angular/cdk/keycodes';
 import {Location} from '@angular/common';
-import {filter} from 'rxjs/operators/filter';
-import {take} from 'rxjs/operators/take';
+import {filter} from 'rxjs/operators';
+import {take} from 'rxjs/operators';
 import {DialogPosition} from './dialog-config';
-import {Observable} from 'rxjs/Observable';
-import {Subject} from 'rxjs/Subject';
-import {Subscription, ISubscription} from 'rxjs/Subscription';
+import {Observable, SubscriptionLike} from 'rxjs';
+import {Subject} from 'rxjs';
+import {Subscription} from 'rxjs';
 import {MatDialogContainer} from './dialog-container';
 
 
@@ -46,7 +46,7 @@ export class MatDialogRef<T, R = any> {
   private _result: R | undefined;
 
   /** Subscription to changes in the user's location. */
-  private _locationChanges: ISubscription = Subscription.EMPTY;
+  private _locationChanges: SubscriptionLike = Subscription.EMPTY;
 
   constructor(
     private _overlayRef: OverlayRef,

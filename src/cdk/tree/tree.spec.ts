@@ -5,14 +5,12 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {ComponentFixture, TestBed, fakeAsync, flush} from '@angular/core/testing';
 import {Component, ViewChild} from '@angular/core';
 
 import {CollectionViewer, DataSource} from '@angular/cdk/collections';
-import {BehaviorSubject} from 'rxjs/BehaviorSubject';
-import {Observable} from 'rxjs/Observable';
-import {combineLatest} from 'rxjs/observable/combineLatest';
-import {map} from 'rxjs/operators/map';
+import {combineLatest, BehaviorSubject, Observable} from 'rxjs';
+import {map} from 'rxjs/operators';
 
 import {BaseTreeControl} from './control/base-tree-control';
 import {TreeControl} from './control/tree-control';
@@ -590,17 +588,29 @@ describe('CdkTree', () => {
       });
     });
 
-    it('should throw an error when missing function in nested tree', () => {
+    it('should throw an error when missing function in nested tree', fakeAsync(() => {
       configureCdkTreeTestingModule([NestedCdkErrorTreeApp]);
-      expect(() => TestBed.createComponent(NestedCdkErrorTreeApp).detectChanges())
-          .toThrowError(getTreeControlFunctionsMissingError().message);
-    });
+      expect(() => {
+        try {
+          TestBed.createComponent(NestedCdkErrorTreeApp).detectChanges();
+          flush();
+        } catch {
+          flush();
+        }
+      }).toThrowError(getTreeControlFunctionsMissingError().message);
+    }));
 
-    it('should throw an error when missing function in flat tree', () => {
+    it('should throw an error when missing function in flat tree', fakeAsync(() => {
       configureCdkTreeTestingModule([FlatCdkErrorTreeApp]);
-      expect(() => TestBed.createComponent(FlatCdkErrorTreeApp).detectChanges())
-        .toThrowError(getTreeControlFunctionsMissingError().message);
-    });
+      expect(() => {
+        try {
+          TestBed.createComponent(FlatCdkErrorTreeApp).detectChanges();
+          flush();
+        } catch {
+          flush();
+        }
+      }).toThrowError(getTreeControlFunctionsMissingError().message);
+    }));
   });
 });
 
@@ -640,7 +650,7 @@ class FakeDataSource extends DataSource<TestData> {
   connect(collectionViewer: CollectionViewer): Observable<TestData[]> {
     this.isConnected = true;
     const streams = [this._dataChange, collectionViewer.viewChange];
-    return combineLatest<[TestData[]]>(streams)
+    return combineLatest<TestData[]>(streams)
       .pipe(map(([data]) => {
         this.treeControl.dataNodes = data;
         return data;

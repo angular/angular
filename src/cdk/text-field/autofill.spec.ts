@@ -9,7 +9,7 @@
 import {supportsPassiveEventListeners} from '@angular/cdk/platform';
 import {Component, ElementRef, ViewChild} from '@angular/core';
 import {ComponentFixture, inject, TestBed} from '@angular/core/testing';
-import {empty as observableEmpty} from 'rxjs/observable/empty';
+import {empty as observableEmpty} from 'rxjs';
 import {AutofillEvent, AutofillMonitor} from './autofill';
 import {TextFieldModule} from './text-field-module';
 

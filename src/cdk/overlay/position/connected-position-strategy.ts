@@ -18,7 +18,7 @@ import {
   validateHorizontalPosition,
   validateVerticalPosition,
 } from './connected-position';
-import {Observable} from 'rxjs/Observable';
+import {Observable} from 'rxjs';
 import {CdkScrollable} from '@angular/cdk/scrolling';
 import {OverlayRef} from '../overlay-ref';
 import {FlexibleConnectedPositionStrategy} from './flexible-connected-position-strategy';

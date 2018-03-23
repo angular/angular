@@ -33,9 +33,9 @@ import {
   MAT_LABEL_GLOBAL_OPTIONS,
   mixinColor,
 } from '@angular/material/core';
-import {fromEvent} from 'rxjs/observable/fromEvent';
-import {startWith} from 'rxjs/operators/startWith';
-import {take} from 'rxjs/operators/take';
+import {fromEvent} from 'rxjs';
+import {startWith} from 'rxjs/operators';
+import {take} from 'rxjs/operators';
 import {MatError} from './error';
 import {matFormFieldAnimations} from './form-field-animations';
 import {MatFormFieldControl} from './form-field-control';

@@ -16,8 +16,8 @@ import {
 } from '@angular/core';
 import {coerceBooleanProperty} from '@angular/cdk/coercion';
 import {CdkColumnDef} from '@angular/cdk/table';
-import {Subscription} from 'rxjs/Subscription';
-import {merge} from 'rxjs/observable/merge';
+import {Subscription} from 'rxjs';
+import {merge} from 'rxjs';
 import {MatSort, MatSortable} from './sort';
 import {SortDirection} from './sort-direction';
 import {MatSortHeaderIntl} from './sort-header-intl';

@@ -44,8 +44,8 @@ import {
   DataSource
 } from '@angular/cdk/table';
 import {ViewportRuler} from '@angular/cdk/scrolling';
-import {of as observableOf} from 'rxjs/observable/of';
-import {Observable} from 'rxjs/Observable';
+import {of as observableOf} from 'rxjs';
+import {Observable} from 'rxjs';
 
 export class TableDataSource extends DataSource<any> {
   connect(): Observable<any> {

@@ -1,8 +1,8 @@
 import {Component, Injectable} from '@angular/core';
 import {NestedTreeControl} from '@angular/cdk/tree';
 import {MatTreeNestedDataSource} from '@angular/material/tree';
-import {of} from 'rxjs/observable/of';
-import {BehaviorSubject} from 'rxjs/BehaviorSubject';
+import {of} from 'rxjs';
+import {BehaviorSubject} from 'rxjs';
 
 /**
  * Json node data with nested structure. Each node has a filename and a value or a list of children

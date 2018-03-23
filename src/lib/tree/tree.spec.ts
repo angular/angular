@@ -15,8 +15,8 @@ import {
   MatTreeFlatDataSource,
   MatTreeNestedDataSource
 } from './index';
-import {BehaviorSubject} from 'rxjs/BehaviorSubject';
-import {Observable} from 'rxjs/Observable';
+import {BehaviorSubject} from 'rxjs';
+import {Observable} from 'rxjs';
 
 
 describe('MatTree', () => {

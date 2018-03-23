@@ -29,7 +29,7 @@ import {
 } from '@angular/cdk/portal';
 import {FocusTrapFactory} from '@angular/cdk/a11y';
 import {DialogConfig} from './dialog-config';
-import {Subject} from 'rxjs/Subject';
+import {Subject} from 'rxjs';
 
 
 export function throwDialogContentAlreadyAttachedError() {

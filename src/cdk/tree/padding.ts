@@ -9,8 +9,8 @@
 import {Directionality} from '@angular/cdk/bidi';
 import {coerceNumberProperty} from '@angular/cdk/coercion';
 import {Directive, ElementRef, Input, OnDestroy, Optional, Renderer2} from '@angular/core';
-import {takeUntil} from 'rxjs/operators/takeUntil';
-import {Subject} from 'rxjs/Subject';
+import {takeUntil} from 'rxjs/operators';
+import {Subject} from 'rxjs';
 import {CdkTree, CdkTreeNode} from './tree';
 
 /**

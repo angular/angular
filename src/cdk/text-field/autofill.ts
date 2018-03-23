@@ -17,9 +17,8 @@ import {
   Output,
   NgZone,
 } from '@angular/core';
-import {Observable} from 'rxjs/Observable';
-import {empty as observableEmpty} from 'rxjs/observable/empty';
-import {Subject} from 'rxjs/Subject';
+import {Observable, Subject} from 'rxjs';
+import {empty as observableEmpty} from 'rxjs';
 
 
 /** An event that is emitted when the autofill state of an input changes. */

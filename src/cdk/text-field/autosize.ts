@@ -16,10 +16,8 @@ import {
   NgZone,
 } from '@angular/core';
 import {Platform} from '@angular/cdk/platform';
-import {fromEvent} from 'rxjs/observable/fromEvent';
-import {auditTime} from 'rxjs/operators/auditTime';
-import {takeUntil} from 'rxjs/operators/takeUntil';
-import {Subject} from 'rxjs/Subject';
+import {auditTime, takeUntil} from 'rxjs/operators';
+import {fromEvent, Subject} from 'rxjs';
 
 
 /** Directive to automatically resize a textarea to fit its content. */

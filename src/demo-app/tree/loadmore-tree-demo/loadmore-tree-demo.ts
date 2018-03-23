@@ -9,7 +9,7 @@
 import {Component} from '@angular/core';
 import {FlatTreeControl} from '@angular/cdk/tree';
 import {MatTreeFlatDataSource, MatTreeFlattener} from '@angular/material/tree';
-import {Observable} from 'rxjs/Observable';
+import {Observable} from 'rxjs';
 import {LoadmoreNode, LoadmoreFlatNode, LoadmoreDatabase} from './loadmore-database';
 
 const LOAD_MORE = 'LOAD_MORE';

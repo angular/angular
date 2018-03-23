@@ -58,9 +58,9 @@ import {
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {By} from '@angular/platform-browser';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
-import {map} from 'rxjs/operators/map';
-import {Subject} from 'rxjs/Subject';
-import {Subscription} from 'rxjs/Subscription';
+import {map} from 'rxjs/operators';
+import {Subject} from 'rxjs';
+import {Subscription} from 'rxjs';
 import {MatSelectModule} from './index';
 import {MatSelect} from './select';
 import {

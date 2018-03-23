@@ -17,7 +17,7 @@ import {
   ViewEncapsulation,
   TemplateRef,
 } from '@angular/core';
-import {Subscription} from 'rxjs/Subscription';
+import {Subscription} from 'rxjs';
 import {MatStepLabel} from './step-label';
 import {MatStepperIntl} from './stepper-intl';
 

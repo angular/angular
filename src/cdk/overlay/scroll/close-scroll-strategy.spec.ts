@@ -1,6 +1,6 @@
 import {inject, TestBed, fakeAsync} from '@angular/core/testing';
 import {NgModule, Component, NgZone} from '@angular/core';
-import {Subject} from 'rxjs/Subject';
+import {Subject} from 'rxjs';
 import {ComponentPortal, PortalModule} from '@angular/cdk/portal';
 import {ScrollDispatcher, ViewportRuler} from '@angular/cdk/scrolling';
 import {

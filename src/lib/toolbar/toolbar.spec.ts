@@ -1,5 +1,5 @@
 import {Component} from '@angular/core';
-import {TestBed, async, ComponentFixture} from '@angular/core/testing';
+import {TestBed, async, ComponentFixture, fakeAsync, flush} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 import {MatToolbarModule} from './index';
 
@@ -67,17 +67,23 @@ describe('MatToolbar', () => {
       }).toThrowError(/attempting to combine different/i);
     });
 
-    it('should throw an error if a toolbar-row is added later', () => {
+    it('should throw an error if a toolbar-row is added later', fakeAsync(() => {
       const fixture = TestBed.createComponent(ToolbarMixedRowModes);
 
       fixture.componentInstance.showToolbarRow = false;
       fixture.detectChanges();
+      flush();
 
       expect(() => {
-        fixture.componentInstance.showToolbarRow = true;
-        fixture.detectChanges();
+        try {
+          fixture.componentInstance.showToolbarRow = true;
+          fixture.detectChanges();
+          flush();
+        } catch (e) {
+          flush();
+        }
       }).toThrowError(/attempting to combine different/i);
-    });
+    }));
   });
 
 });

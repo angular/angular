@@ -1,8 +1,8 @@
 import {Directionality} from '@angular/cdk/bidi';
 import {DOWN_ARROW, ENTER, ESCAPE, SPACE, UP_ARROW, TAB} from '@angular/cdk/keycodes';
 import {OverlayContainer, Overlay} from '@angular/cdk/overlay';
-import {map} from 'rxjs/operators/map';
-import {startWith} from 'rxjs/operators/startWith';
+import {map} from 'rxjs/operators';
+import {startWith} from 'rxjs/operators';
 import {ScrollDispatcher} from '@angular/cdk/scrolling';
 import {
   createKeyboardEvent,
@@ -36,9 +36,9 @@ import {MatOption, MatOptionSelectionChange} from '@angular/material/core';
 import {MatFormField, MatFormFieldModule} from '@angular/material/form-field';
 import {By} from '@angular/platform-browser';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
-import {Observable} from 'rxjs/Observable';
-import {Subject} from 'rxjs/Subject';
-import {Subscription} from 'rxjs/Subscription';
+import {Observable} from 'rxjs';
+import {Subject} from 'rxjs';
+import {Subscription} from 'rxjs';
 import {MatInputModule} from '../input/index';
 import {
   getMatAutocompleteMissingPanelError,

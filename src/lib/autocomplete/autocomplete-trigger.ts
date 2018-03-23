@@ -17,6 +17,7 @@ import {
 } from '@angular/cdk/overlay';
 import {TemplatePortal} from '@angular/cdk/portal';
 import {DOCUMENT} from '@angular/common';
+import {filter, take, switchMap, delay, tap} from 'rxjs/operators';
 import {
   ChangeDetectorRef,
   Directive,
@@ -40,18 +41,7 @@ import {
   MatOptionSelectionChange,
 } from '@angular/material/core';
 import {MatFormField} from '@angular/material/form-field';
-import {Observable} from 'rxjs/Observable';
-import {defer} from 'rxjs/observable/defer';
-import {fromEvent} from 'rxjs/observable/fromEvent';
-import {merge} from 'rxjs/observable/merge';
-import {of as observableOf} from 'rxjs/observable/of';
-import {delay} from 'rxjs/operators/delay';
-import {filter} from 'rxjs/operators/filter';
-import {switchMap} from 'rxjs/operators/switchMap';
-import {take} from 'rxjs/operators/take';
-import {tap} from 'rxjs/operators/tap';
-import {Subject} from 'rxjs/Subject';
-import {Subscription} from 'rxjs/Subscription';
+import {Subscription, defer, fromEvent, merge, of as observableOf, Subject, Observable} from 'rxjs';
 import {MatAutocomplete} from './autocomplete';
 
 

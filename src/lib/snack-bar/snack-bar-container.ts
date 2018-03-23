@@ -25,9 +25,9 @@ import {
   CdkPortalOutlet,
   TemplatePortal,
 } from '@angular/cdk/portal';
-import {take} from 'rxjs/operators/take';
-import {Observable} from 'rxjs/Observable';
-import {Subject} from 'rxjs/Subject';
+import {take} from 'rxjs/operators';
+import {Observable} from 'rxjs';
+import {Subject} from 'rxjs';
 import {MatSnackBarConfig} from './snack-bar-config';
 import {matSnackBarAnimations} from './snack-bar-animations';
 

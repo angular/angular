@@ -32,9 +32,8 @@ import {
   ViewEncapsulation,
 } from '@angular/core';
 import {AbstractControl} from '@angular/forms';
-import {Subject} from 'rxjs/Subject';
 import {CdkStepLabel} from './step-label';
-
+import {Subject} from 'rxjs';
 
 /** Used to generate unique ID for each stepper component. */
 let nextId = 0;

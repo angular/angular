@@ -8,7 +8,7 @@
 import {NgZone} from '@angular/core';
 import {ScrollStrategy, getMatScrollStrategyAlreadyAttachedError} from './scroll-strategy';
 import {OverlayRef} from '../overlay-ref';
-import {Subscription} from 'rxjs/Subscription';
+import {Subscription} from 'rxjs';
 import {ScrollDispatcher, ViewportRuler} from '@angular/cdk/scrolling';
 
 /**

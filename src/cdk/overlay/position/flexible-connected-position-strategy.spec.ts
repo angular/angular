@@ -2,8 +2,8 @@ import {ElementRef, NgModule, Component, NgZone} from '@angular/core';
 import {TestBed, inject} from '@angular/core/testing';
 import {CdkScrollable} from '@angular/cdk/scrolling';
 import {PortalModule, ComponentPortal} from '@angular/cdk/portal';
-import {Subscription} from 'rxjs/Subscription';
-import {map} from 'rxjs/operators/map';
+import {Subscription} from 'rxjs';
+import {map} from 'rxjs/operators';
 import {ScrollDispatchModule} from '@angular/cdk/scrolling';
 import {MockNgZone} from '@angular/cdk/testing';
 import {

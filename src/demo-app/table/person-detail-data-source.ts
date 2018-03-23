@@ -7,9 +7,9 @@
  */
 
 import {DataSource} from '@angular/cdk/collections';
-import {Observable} from 'rxjs/Observable';
+import {Observable} from 'rxjs';
 import {UserData} from './people-database';
-import {map} from 'rxjs/operators/map';
+import {map} from 'rxjs/operators';
 import {PersonDataSource} from './person-data-source';
 
 export interface DetailRow {

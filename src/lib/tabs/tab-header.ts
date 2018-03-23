@@ -26,9 +26,9 @@ import {
   ViewEncapsulation,
 } from '@angular/core';
 import {CanDisableRipple, mixinDisableRipple} from '@angular/material/core';
-import {merge} from 'rxjs/observable/merge';
-import {of as observableOf} from 'rxjs/observable/of';
-import {Subscription} from 'rxjs/Subscription';
+import {merge} from 'rxjs';
+import {of as observableOf} from 'rxjs';
+import {Subscription} from 'rxjs';
 import {coerceNumberProperty} from '@angular/cdk/coercion';
 import {MatInkBar} from './ink-bar';
 import {MatTabLabelWrapper} from './tab-label-wrapper';

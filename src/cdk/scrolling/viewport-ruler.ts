@@ -8,13 +8,8 @@
 
 import {Platform} from '@angular/cdk/platform';
 import {Injectable, NgZone, OnDestroy, Optional, SkipSelf} from '@angular/core';
-import {Observable} from 'rxjs/Observable';
-import {fromEvent} from 'rxjs/observable/fromEvent';
-import {merge} from 'rxjs/observable/merge';
-import {of as observableOf} from 'rxjs/observable/of';
-import {auditTime} from 'rxjs/operators/auditTime';
-import {Subscription} from 'rxjs/Subscription';
-
+import {merge, of as observableOf, fromEvent, Observable, Subscription} from 'rxjs';
+import {auditTime} from 'rxjs/operators';
 
 /** Time in ms to throttle the resize events by default. */
 export const DEFAULT_RESIZE_TIME = 20;
