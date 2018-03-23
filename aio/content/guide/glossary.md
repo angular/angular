@@ -392,9 +392,11 @@ with a registered [provider](guide/glossary#provider).
 ## Injection token
 
 A lookup token that is associated with a dependency provider, for use with the dependency injection system. 
-These tokens can be anything - such as objects, classes, strings, etc.
+These tokens can be anything - such as objects, classes, strings, etc. 
 
-When a component requests a dependency, the dependency injection system starts to look at the component's injector for providers asociated with the token. If the component's injector lacks a provider, then the request is passed to the parent injector. If a provider is not found, then the request continues until Angular finds an injector that can handle the request or runs out of ancestor injectors. If it runs out of ancestors, Angular throws an error.
+When you register a provider with an injector, you associate that provider with a dependency injection token. The injector maintains an internal token-provider map that it references when asked for a dependency. The token is the key to the map.
+
+When a component requests a dependency, the injector starts to look at the component's token-provider map for providers associated with the token. If the component's injector lacks a provider, then the request is passed to the parent injector. If a provider is not found, then the request continues until Angular finds an injector that can handle the request or runs out of ancestor injectors. If it runs out of ancestors, Angular throws an error.
 
 ## Input
 
@@ -747,9 +749,7 @@ in the [Template expressions](guide/template-syntax#template-expressions) sectio
 of the [Template Syntax](guide/template-syntax) page.
 
 ## Token
-A token is an Angular type (`InjectionToken`) used for referencing registered providers 
-in the dependency injection system. 
-See [Injection token](guide/glossary#injection-token).
+A unique key used for efficient table lookup.  One example of using tokens in Angular is the [Injection token](guide/glossary#injection-token) used with the Dependency Injection system. 
 
 ## Transpile
 
