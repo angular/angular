@@ -353,7 +353,6 @@ class TemplateDefinitionBuilder implements TemplateAstVisitor, LocalResolver {
   private _prefix: o.Statement[] = [];
   private _creationMode: o.Statement[] = [];
   private _bindingMode: o.Statement[] = [];
-  private _hostMode: o.Statement[] = [];
   private _refreshMode: o.Statement[] = [];
   private _postfix: o.Statement[] = [];
   private _contentProjections: Map<NgContentAst, NgContentInfo>;
@@ -482,8 +481,6 @@ class TemplateDefinitionBuilder implements TemplateAstVisitor, LocalResolver {
           ...creationMode,
           // Binding mode (i.e. ɵp(...))
           ...this._bindingMode,
-          // Host mode (i.e. Comp.h(...))
-          ...this._hostMode,
           // Refresh mode (i.e. Comp.r(...))
           ...this._refreshMode,
           // Nested templates (i.e. function CompTemplate() {})
@@ -508,19 +505,16 @@ class TemplateDefinitionBuilder implements TemplateAstVisitor, LocalResolver {
   }
 
   private _computeDirectivesArray(directives: DirectiveAst[]) {
-    const directiveIndexMap = new Map<any, number>();
     const directiveExpressions: o.Expression[] =
         directives.filter(directive => !directive.directive.isComponent).map(directive => {
-          directiveIndexMap.set(directive.directive.type.reference, this.allocateDataSlot());
+          this.allocateDataSlot(); // Allocate space for the directive
           return this.typeReference(directive.directive.type.reference);
         });
-    return {
-      directivesArray: directiveExpressions.length ?
-          this.constantPool.getConstLiteral(
-              o.literalArr(directiveExpressions), /* forceShared */ true) :
-          o.literal(null),
-      directiveIndexMap
-    };
+    return directiveExpressions.length ?
+        this.constantPool.getConstLiteral(
+            o.literalArr(directiveExpressions), /* forceShared */ true) :
+        o.literal(null, o.INFERRED_TYPE);
+    ;
   }
 
   // TemplateAstVisitor
@@ -605,13 +599,8 @@ class TemplateDefinitionBuilder implements TemplateAstVisitor, LocalResolver {
     parameters.push(attrArg);
 
     // Add directives array
-    const {directivesArray, directiveIndexMap} = this._computeDirectivesArray(element.directives);
-    parameters.push(directiveIndexMap.size > 0 ? directivesArray : nullNode);
-
-    if (component && componentIndex != null) {
-      // Record the data slot for the component
-      directiveIndexMap.set(component.directive.type.reference, componentIndex);
-    }
+    const directivesArray = this._computeDirectivesArray(element.directives);
+    parameters.push(directivesArray);
 
     if (element.references && element.references.length > 0) {
       const references =
@@ -633,7 +622,7 @@ class TemplateDefinitionBuilder implements TemplateAstVisitor, LocalResolver {
     }
 
     // Remove trailing null nodes as they are implied.
-    while (parameters[parameters.length - 1] === nullNode) {
+    while (o.isNull(parameters[parameters.length - 1])) {
       parameters.pop();
     }
 
@@ -644,6 +633,21 @@ class TemplateDefinitionBuilder implements TemplateAstVisitor, LocalResolver {
     this.instruction(this._creationMode, element.sourceSpan, R3.createElement, ...parameters);
 
     const implicit = o.variable(this.contextParameter);
+
+    // Generate Listeners (outputs)
+    element.outputs.forEach((outputAst: BoundEventAst) => {
+      const functionName = `${this.templateName}_${element.name}_${outputAst.name}_listener`;
+      const bindingExpr = convertActionBinding(
+          this, implicit, outputAst.handler, 'b', () => error('Unexpected interpolation'));
+      const handler = o.fn(
+          [new o.FnParam('$event', o.DYNAMIC_TYPE)],
+          [...bindingExpr.stmts, new o.ReturnStatement(bindingExpr.allowDefault)], o.INFERRED_TYPE,
+          null, functionName);
+      this.instruction(
+          this._creationMode, outputAst.sourceSpan, R3.listener, o.literal(outputAst.name),
+          handler);
+    });
+
 
     // Generate element input bindings
     for (let input of element.inputs) {
@@ -663,7 +667,7 @@ class TemplateDefinitionBuilder implements TemplateAstVisitor, LocalResolver {
     }
 
     // Generate directives input bindings
-    this._visitDirectives(element.directives, implicit, elementIndex, directiveIndexMap);
+    this._visitDirectives(element.directives, implicit, elementIndex);
 
     // Traverse element child nodes
     if (this._inI18nSection && element.children.length == 1 &&
@@ -682,12 +686,8 @@ class TemplateDefinitionBuilder implements TemplateAstVisitor, LocalResolver {
     this._inI18nSection = wasInI18nSection;
   }
 
-  private _visitDirectives(
-      directives: DirectiveAst[], implicit: o.Expression, nodeIndex: number,
-      directiveIndexMap: Map<any, number>) {
+  private _visitDirectives(directives: DirectiveAst[], implicit: o.Expression, nodeIndex: number) {
     for (let directive of directives) {
-      const directiveIndex = directiveIndexMap.get(directive.directive.type.reference);
-
       // Creation mode
       // e.g. D(0, TodoComponentDef.n(), TodoComponentDef);
       const directiveType = directive.directive.type.reference;
@@ -705,17 +705,6 @@ class TemplateDefinitionBuilder implements TemplateAstVisitor, LocalResolver {
             this._bindingMode, directive.sourceSpan, R3.elementProperty, o.literal(nodeIndex),
             o.literal(input.templateName), o.importExpr(R3.bind).callFn([convertedBinding]));
       }
-
-      // e.g. MyDirective.ngDirectiveDef.h(0, 0);
-      this._hostMode.push(
-          this.definitionOf(directiveType, kind)
-              .callMethod(R3.HOST_BINDING_METHOD, [o.literal(directiveIndex), o.literal(nodeIndex)])
-              .toStmt());
-
-      // e.g. r(0, 0);
-      this.instruction(
-          this._refreshMode, directive.sourceSpan, R3.refreshComponent, o.literal(directiveIndex),
-          o.literal(nodeIndex));
     }
   }
 
@@ -736,7 +725,7 @@ class TemplateDefinitionBuilder implements TemplateAstVisitor, LocalResolver {
         contextName ? `${contextName}_Template_${templateIndex}` : `Template_${templateIndex}`;
     const templateContext = `ctx${this.level}`;
 
-    const {directivesArray, directiveIndexMap} = this._computeDirectivesArray(ast.directives);
+    const directivesArray = this._computeDirectivesArray(ast.directives);
 
     // e.g. C(1, C1Template)
     this.instruction(
@@ -748,8 +737,7 @@ class TemplateDefinitionBuilder implements TemplateAstVisitor, LocalResolver {
         this._refreshMode, ast.sourceSpan, R3.containerRefreshStart, o.literal(templateIndex));
 
     // Generate directives
-    this._visitDirectives(
-        ast.directives, o.variable(this.contextParameter), templateIndex, directiveIndexMap);
+    this._visitDirectives(ast.directives, o.variable(this.contextParameter), templateIndex);
 
     // e.g. cr();
     this.instruction(this._refreshMode, ast.sourceSpan, R3.containerRefreshEnd);
@@ -1027,7 +1015,7 @@ function createHostBindingsFunction(
       const functionName =
           typeName && bindingName ? `${typeName}_${bindingName}_HostBindingHandler` : null;
       const handler = o.fn(
-          [new o.FnParam('event', o.DYNAMIC_TYPE)],
+          [new o.FnParam('$event', o.DYNAMIC_TYPE)],
           [...bindingExpr.stmts, new o.ReturnStatement(bindingExpr.allowDefault)], o.INFERRED_TYPE,
           null, functionName);
       statements.push(
