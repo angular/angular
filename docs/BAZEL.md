@@ -145,7 +145,8 @@ In our repo, here is how it's configured:
 
 1) In `tools/bazel_stamp_vars.sh` we run the `git` commands to generate our versioning info.
 1) In `tools/bazel.rc` we register this script as the value for the `workspace_status_command` flag. Bazel will run the script when it needs to stamp a binary.
-1) In `tools/BUILD.bazel` we have a target `stamp_data` with the special `stamp=1` attribute, which requests that Bazel run the `workspace_status_command`. The result is written to a text file that can be used as an input to other rules.
+
+Note that Bazel has a `--stamp` argument to `bazel build`, but this has no effect since our stamping takes place in Skylark rules. See https://github.com/bazelbuild/bazel/issues/1054
 
 ## Remote cache
 
