@@ -77,6 +77,16 @@ export declare function formatNumber(value: number, locale: string, digitsInfo?:
 export declare function formatPercent(value: number, locale: string, digitsInfo?: string): string;
 
 /** @experimental */
+export declare class EntriesPipe implements PipeTransform {
+    transform(object: {
+        [key: string]: any;
+    }): {
+        key: string;
+        value: any;
+    }[];
+}
+
+/** @experimental */
 export declare enum FormatWidth {
     Short = 0,
     Medium = 1,

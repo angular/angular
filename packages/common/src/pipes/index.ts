@@ -14,6 +14,7 @@
 import {AsyncPipe} from './async_pipe';
 import {LowerCasePipe, TitleCasePipe, UpperCasePipe} from './case_conversion_pipes';
 import {DatePipe} from './date_pipe';
+import {EntriesPipe} from './entries_pipe';
 import {I18nPluralPipe} from './i18n_plural_pipe';
 import {I18nSelectPipe} from './i18n_select_pipe';
 import {JsonPipe} from './json_pipe';
@@ -25,6 +26,7 @@ export {
   CurrencyPipe,
   DatePipe,
   DecimalPipe,
+  EntriesPipe,
   I18nPluralPipe,
   I18nSelectPipe,
   JsonPipe,
@@ -34,6 +36,7 @@ export {
   TitleCasePipe,
   UpperCasePipe
 };
+
 
 
 /**
@@ -52,4 +55,5 @@ export const COMMON_PIPES = [
   DatePipe,
   I18nPluralPipe,
   I18nSelectPipe,
+  EntriesPipe,
 ];
