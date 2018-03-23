@@ -57,8 +57,8 @@ def _rollup(ctx, rollup_config, entry_point, inputs, js_output, format = "es"):
   other_inputs = [ctx.executable._rollup, rollup_config]
   if ctx.file.license_banner:
     other_inputs.append(ctx.file.license_banner)
-  if ctx.file.stamp_data:
-    other_inputs.append(ctx.file.stamp_data)
+  if ctx.version_file:
+    other_inputs.append(ctx.version_file)
   ctx.actions.run(
       progress_message = "Angular Packaging: rolling up %s" % ctx.label.name,
       mnemonic = "AngularPackageRollup",
