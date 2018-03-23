@@ -32,7 +32,7 @@ ng_rollup_bundle(
 ts_library(
     name = "test_lib",
     testonly = 1,
-    srcs = ["domino_typings.d.ts"] + glob(["*_spec.ts"]),
+    srcs = glob(["*_spec.ts"]),
     deps = [
         "//packages:types",
         "//packages/core/testing",
