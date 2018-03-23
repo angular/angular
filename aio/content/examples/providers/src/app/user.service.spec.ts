@@ -3,9 +3,7 @@ import { UserService } from './user.service';
 
 describe('UserService', () => {
   beforeEach(() => {
-    TestBed.configureTestingModule({
-      providers: [UserService]
-    });
+    TestBed.configureTestingModule({});
   });
 
   it('should ...', inject([UserService], (service: UserService) => {
