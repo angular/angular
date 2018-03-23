@@ -23,7 +23,8 @@
     "preinstall": "node tools/yarn/check-yarn.js",
     "postinstall": "yarn update-webdriver && node ./tools/postinstall-patches.js",
     "update-webdriver": "webdriver-manager update --gecko false $CHROMEDRIVER_VERSION_ARG",
-    "check-env": "gulp check-env"
+    "check-env": "gulp check-env",
+    "commitmsg": "node ./scripts/git/commit-msg.js"
   },
   "dependencies": {
     "core-js": "^2.4.1",
@@ -79,6 +80,7 @@
     "gulp-conventional-changelog": "1.1.0",
     "gulp-tslint": "8.1.2",
     "hammerjs": "2.0.8",
+    "husky": "^0.14.3",
     "incremental-dom": "0.4.1",
     "jasmine": "2.4.1",
     "jasmine-core": "2.4.1",
