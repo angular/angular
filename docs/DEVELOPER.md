@@ -97,9 +97,10 @@ To run tests:
 $ ./test.sh node             # Run all angular tests on node
 
 $ ./test.sh browser          # Run all angular tests in browser
+
 $ ./test.sh browserNoRouter  # Optionally run all angular tests without router in browser
 
-$ ./test.sh tools            # Run angular tooling (not framework) tests
+$ ./test.sh router           # Optionally run only the router tests in browser
 ```
 
 You should execute the 3 test suites before submitting a PR to github.
