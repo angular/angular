@@ -811,20 +811,34 @@ bindon-ngModel
 <!-- Pipes -->
 <hr><h2 id="pipes">Pipes</h2>
 
-<!-- #docregion pipes-1 -->
+<!-- #docregion pipes-1! -->
 <div>Title through uppercase pipe: {{title | uppercase}}</div>
+<!-- #enddocregion pipes-1! -->
+<!-- #docregion pipes-1 -->
+<div>제목을 대문자로 변환하는 파이프: {{title | uppercase}}</div>
 <!-- #enddocregion pipes-1 -->
 
-<!-- #docregion pipes-2 -->
+<!-- #docregion pipes-2! -->
 <!-- Pipe chaining: convert title to uppercase, then to lowercase -->
 <div>
   Title through a pipe chain:
   {{title | uppercase | lowercase}}
 </div>
+<!-- #enddocregion pipes-2! -->
+<!-- #docregion pipes-2 -->
+<!-- 파이프 체이닝: 제목을 대문자로 바꾼 후에 소문자로 바꿉니다. -->
+<div>
+  제목에 파이프 여러개 적용하기:
+  {{title | uppercase | lowercase}}
+</div>
 <!-- #enddocregion pipes-2 -->
 
-<!-- #docregion pipes-3 -->
+<!-- #docregion pipes-3! -->
 <!-- pipe with configuration argument => "February 25, 1970" -->
+<div>Birthdate: {{currentHero?.birthdate | date:'longDate'}}</div>
+<!-- #enddocregion pipes-3! -->
+<!-- #docregion pipes-3 -->
+<!-- 미리 지정된 형태로 변환하는 파이프 => "February 25, 1970" -->
 <div>Birthdate: {{currentHero?.birthdate | date:'longDate'}}</div>
 <!-- #enddocregion pipes-3 -->
 

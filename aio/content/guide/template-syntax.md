@@ -3346,41 +3346,72 @@ the directive property name on the *left* and the public alias on the *right*:
 -->
 ## 템플릿 표현식 전용 연산자
 
+<!--
 The template expression language employs a subset of JavaScript syntax supplemented with a few special operators
 for specific scenarios. The next sections cover two of these operators: _pipe_ and _safe navigation operator_.
+-->
+템플릿 표현식의 문법은 JavaScript 문법의 일부와 템플릿에서만 사용할 수 있는 연산자가 추가되어 만들어진 것입니다.
+다음 섹션에서는 _파이프_ 와 _안전 참조 연산자_ 에 대해 알아보겠습니다.
 
 {@a pipe}
 
+<!--
 ### The pipe operator ( <span class="syntax">|</span> )
+-->
+### 파이프 연산자 ( <span class="syntax">|</span> )
 
+<!--
 The result of an expression might require some transformation before you're ready to use it in a binding.
 For example, you might display a number as a currency, force text to uppercase, or filter a list and sort it.
+-->
+템플릿 표현식의 결과값을 그대로 사용하지 않고 바인딩하기 전에 적당한 형태로 변환해야 하는 경우가 있습니다.
+숫자를 화폐 단위로 표시하거나, 문자열을 대문자로 변환하거나, 배열의 일부를 필터링하거나 정렬하는 경우가 이런 경우에 해당됩니다.
 
+<!--
 Angular [pipes](guide/pipes) are a good choice for small transformations such as these.
 Pipes are simple functions that accept an input value and return a transformed value.
 They're easy to apply within template expressions, using the **pipe operator (`|`)**:
+-->
+이 때 변환 로직이 복잡하지 않다면 Angular에서 제공하는 [파이프](guide/pipes)를 사용하는 것이 좋습니다.
+파이프는 입력값을 간단하게 변환해서 새로운 값으로 반환하는 함수입니다.
+템플릿에서는 다음과 같이 **파이프 연산자 (`|`)**를 사용해서 적용할 수 있습니다:
 
 <code-example path="template-syntax/src/app/app.component.html" region="pipes-1" title="src/app/app.component.html" linenums="false">
 </code-example>
 
+<!--
 The pipe operator passes the result of an expression on the left to a pipe function on the right.
+-->
+파이프 연산자 왼쪽에 있는 값은 파이프 연산자의 오른쪽으로 전달됩니다.
 
+<!--
 You can chain expressions through multiple pipes:
+-->
+그래서 다음과 같이 파이프 여러개를 연달아 사용할 수도 있습니다:
 
 <code-example path="template-syntax/src/app/app.component.html" region="pipes-2" title="src/app/app.component.html" linenums="false">
 </code-example>
 
+<!--
 And you can also [apply parameters](guide/pipes#parameterizing-a-pipe) to a pipe:
+-->
+그리고 파이프 함수에 [파이프 인자](guide/pipes#parameterizing-a-pipe)를 전달해서 파이프의 동작을 구체적으로 지정할 수도 있습니다:
 
 <code-example path="template-syntax/src/app/app.component.html" region="pipes-3" title="src/app/app.component.html" linenums="false">
 </code-example>
 
+<!--
 The `json` pipe is particularly helpful for debugging bindings:
+-->
+바인딩되는 객체를 확인해야 할때 `json` 파이프를 사용하면 디버깅이 훨씬 편해집니다:
 
 <code-example path="template-syntax/src/app/app.component.html" linenums="false" title="src/app/app.component.html (pipes-json)" region="pipes-json">
 </code-example>
 
+<!--
 The generated output would look something like this
+-->
+이 코드를 실행하면 화면에 다음과 같은 문자열이 표시됩니다.
 
 <code-example language="json">
   { "id": 0, "name": "Hercules", "emotion": "happy",
