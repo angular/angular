@@ -33,7 +33,7 @@
     "@angular/upgrade": "~5.0.0",
     "@nguniversal/express-engine": "^1.0.0-beta.3",
     "@nguniversal/module-map-ngfactory-loader": "^1.0.0-beta.3",
-    "angular-in-memory-web-api": "~0.5.0",
+    "angular-in-memory-web-api": "^0.6.0",
     "core-js": "^2.4.1",
     "express": "^4.14.1",
     "rxjs": "^5.5.0",
