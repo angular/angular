@@ -178,6 +178,11 @@ describe('Dependency Injection Tests', function () {
         expect(heroes.count()).toBeGreaterThan(0);
       });
 
+      it('authorized user should have multiple authorized heroes with tree-shakeable HeroesService', function () {
+        let heroes = element.all(by.css('#tspAuthorized app-hero-list div'));
+        expect(heroes.count()).toBeGreaterThan(0);
+      });
+
       it('authorized user should have secret heroes', function () {
         let heroes = element.all(by.css('#authorized app-hero-list div'));
         expect(heroes.count()).toBeGreaterThan(0);
