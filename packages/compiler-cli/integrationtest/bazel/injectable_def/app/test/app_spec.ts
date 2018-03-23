@@ -124,4 +124,22 @@ describe('ngInjectableDef Bazel Integration', () => {
 
     expect(TestBed.get(Service).value).toEqual('overridden');
   });
+
+  it('does not override existing ngInjectableDef', () => {
+    @Injectable({
+      providedIn: 'root',
+      useValue: new Service(false),
+    })
+    class Service {
+      constructor(public value: boolean) {}
+      static ngInjectableDef = {
+        providedIn: 'root',
+        factory: () => new Service(true),
+        token: Service,
+      };
+    }
+
+    TestBed.configureTestingModule({});
+    expect(TestBed.get(Service).value).toEqual(true);
+  });
 });
