@@ -1,6 +1,6 @@
 import { ReflectiveInjector } from '@angular/core';
 import { DOCUMENT, DomSanitizer, SafeHtml } from '@angular/platform-browser';
-import { Subject } from 'rxjs/Subject';
+import { Subject } from 'rxjs';
 
 import { ScrollItem, ScrollSpyInfo, ScrollSpyService } from 'app/shared/scroll-spy.service';
 import { TocItem, TocService } from './toc.service';

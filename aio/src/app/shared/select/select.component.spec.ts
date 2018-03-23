@@ -8,7 +8,6 @@ const options = [
   { title: 'Option B', value: 'option-b' }
 ];
 
-let component: SelectComponent;
 let host: HostComponent;
 let fixture: ComponentFixture<HostComponent>;
 let element: DebugElement;
@@ -25,7 +24,6 @@ describe('SelectComponent', () => {
     fixture = TestBed.createComponent(HostComponent);
     host = fixture.componentInstance;
     element = fixture.debugElement.query(By.directive(SelectComponent));
-    component = element.componentInstance;
   });
 
   describe('(initially)', () => {

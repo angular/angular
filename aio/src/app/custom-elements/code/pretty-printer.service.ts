@@ -1,9 +1,7 @@
 import { Injectable } from '@angular/core';
 
-import { Observable } from 'rxjs/Observable';
-import { fromPromise } from 'rxjs/observable/fromPromise';
-import 'rxjs/add/operator/map';
-import 'rxjs/add/operator/first';
+import { from as fromPromise, Observable } from 'rxjs';
+import { first, map, share } from 'rxjs/operators';
 
 import { Logger } from 'app/shared/logger.service';
 
@@ -22,7 +20,7 @@ export class PrettyPrinter {
   private prettyPrintOne: Observable<PrettyPrintOne>;
 
   constructor(private logger: Logger) {
-    this.prettyPrintOne = fromPromise(this.getPrettyPrintOne()).share();
+    this.prettyPrintOne = fromPromise(this.getPrettyPrintOne()).pipe(share());
   }
 
   private getPrettyPrintOne(): Promise<PrettyPrintOne> {
@@ -51,15 +49,17 @@ export class PrettyPrinter {
    * @returns Observable<string> - Observable of formatted code
    */
   formatCode(code: string, language?: string, linenums?: number | boolean) {
-    return this.prettyPrintOne.map(ppo => {
-      try {
-        return ppo(code, language, linenums);
-      } catch (err) {
-        const msg = `Could not format code that begins '${code.substr(0, 50)}...'.`;
-        console.error(msg, err);
-        throw new Error(msg);
-      }
-    })
-    .first(); // complete immediately
+    return this.prettyPrintOne.pipe(
+      map(ppo => {
+        try {
+          return ppo(code, language, linenums);
+        } catch (err) {
+          const msg = `Could not format code that begins '${code.substr(0, 50)}...'.`;
+          console.error(msg, err);
+          throw new Error(msg);
+        }
+      }),
+      first(),  // complete immediately
+    );
   }
 }

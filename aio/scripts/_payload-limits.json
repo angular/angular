@@ -2,10 +2,9 @@
   "aio": {
     "master": {
       "uncompressed": {
-        "inline": 2062,
-        "main": 467103,
-        "polyfills": 40274,
-        "embedded": 71711,
+        "inline": 1971,
+        "main": 584136,
+        "polyfills": 40272,
         "prettify": 14888
       }
     }

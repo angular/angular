@@ -7,7 +7,6 @@ import { NotificationComponent } from './notification.component';
 import { WindowToken } from 'app/shared/window';
 
 describe('NotificationComponent', () => {
-  let element: HTMLElement;
   let component: NotificationComponent;
   let fixture: ComponentFixture<TestComponent>;
 
@@ -26,7 +25,6 @@ describe('NotificationComponent', () => {
   function createComponent() {
     fixture = TestBed.createComponent(TestComponent);
     const debugElement = fixture.debugElement.query(By.directive(NotificationComponent));
-    element = debugElement.nativeElement;
     component = debugElement.componentInstance;
     component.ngOnInit();
     fixture.detectChanges();

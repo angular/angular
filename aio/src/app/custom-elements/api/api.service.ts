@@ -1,11 +1,8 @@
 import { Injectable, OnDestroy } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 
-import { ReplaySubject } from 'rxjs/ReplaySubject';
-import { Subject } from 'rxjs/Subject';
-import 'rxjs/add/operator/do';
-import 'rxjs/add/operator/map';
-import 'rxjs/add/operator/takeUntil';
+import { ReplaySubject, Subject } from 'rxjs';
+import { takeUntil, tap } from 'rxjs/operators';
 
 import { Logger } from 'app/shared/logger.service';
 import { DOC_CONTENT_URL_PREFIX } from 'app/documents/document.service';
@@ -35,7 +32,7 @@ export class ApiService implements OnDestroy {
   private firstTime = true;
   private onDestroy = new Subject();
   private sectionsSubject = new ReplaySubject<ApiSection[]>(1);
-  private _sections = this.sectionsSubject.takeUntil(this.onDestroy);
+  private _sections = this.sectionsSubject.pipe(takeUntil(this.onDestroy));
 
   /**
   * Return a cached observable of API sections from a JSON file.
@@ -71,8 +68,10 @@ export class ApiService implements OnDestroy {
     // TODO: get URL by configuration?
     const url = this.apiBase + (src || this.apiListJsonDefault);
     this.http.get<ApiSection[]>(url)
-      .takeUntil(this.onDestroy)
-      .do(() => this.logger.log(`Got API sections from ${url}`))
+      .pipe(
+        takeUntil(this.onDestroy),
+        tap(() => this.logger.log(`Got API sections from ${url}`)),
+      )
       .subscribe(
         sections => this.sectionsSubject.next(sections),
         (err: HttpErrorResponse) => {
