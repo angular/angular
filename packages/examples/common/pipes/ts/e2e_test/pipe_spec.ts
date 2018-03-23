@@ -17,10 +17,9 @@ function waitForElement(selector: string) {
 
 describe('pipe', () => {
   afterEach(verifyNoBrowserErrors);
+  const URL = '/common/pipes/ts/';
 
   describe('async', () => {
-    const URL = '/common/pipes/ts/';
-
     it('should resolve and display promise', () => {
       browser.get(URL);
       waitForElement('async-promise-pipe');
@@ -30,8 +29,10 @@ describe('pipe', () => {
       expect(element.all(by.css('async-promise-pipe span')).get(0).getText())
           .toEqual('Wait for it... hi there!');
     });
+  });
 
-    it('should update lowercase/uppercase', () => {
+  describe('lowercase/uppercase', () => {
+    it('should work properly', () => {
       browser.get(URL);
       waitForElement('lowerupper-pipe');
       element(by.css('lowerupper-pipe input')).sendKeys('Hello World!');
@@ -39,6 +40,21 @@ describe('pipe', () => {
           .toEqual('\'hello world!\'');
       expect(element.all(by.css('lowerupper-pipe pre')).get(1).getText())
           .toEqual('\'HELLO WORLD!\'');
+    });
+  });
+
+  describe('titlecase', () => {
+    it('should work properly', () => {
+      browser.get(URL);
+      waitForElement('titlecase-pipe');
+      expect(element.all(by.css('titlecase-pipe p')).get(0).getText()).toEqual('Some String');
+      expect(element.all(by.css('titlecase-pipe p')).get(1).getText())
+          .toEqual('This Is Mixed Case');
+      expect(element.all(by.css('titlecase-pipe p')).get(2).getText())
+          .toEqual('It\'s Non-trivial Question');
+      expect(element.all(by.css('titlecase-pipe p')).get(3).getText()).toEqual('One,two,three');
+      expect(element.all(by.css('titlecase-pipe p')).get(4).getText()).toEqual('True|false');
+      expect(element.all(by.css('titlecase-pipe p')).get(5).getText()).toEqual('Foo-vs-bar');
     });
   });
 });

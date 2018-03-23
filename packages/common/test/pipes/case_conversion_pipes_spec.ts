@@ -45,6 +45,27 @@ import {LowerCasePipe, TitleCasePipe, UpperCasePipe} from '@angular/common';
       expect(pipe.transform('foo')).toEqual('Foo');
     });
 
+    it('should not capitalize letter after the quotes',
+       () => { expect(pipe.transform('it\'s complicated')).toEqual('It\'s Complicated'); });
+
+    it('should not treat non-space character as a separator', () => {
+      expect(pipe.transform('one,two,three')).toEqual('One,two,three');
+      expect(pipe.transform('true|false')).toEqual('True|false');
+      expect(pipe.transform('foo-vs-bar')).toEqual('Foo-vs-bar');
+    });
+
+    it('should support support all whitespace characters', () => {
+      expect(pipe.transform('one\ttwo')).toEqual('One\tTwo');
+      expect(pipe.transform('three\rfour')).toEqual('Three\rFour');
+      expect(pipe.transform('five\nsix')).toEqual('Five\nSix');
+    });
+
+    it('should work properly for non-latin alphabet', () => {
+      expect(pipe.transform('føderation')).toEqual('Føderation');
+      expect(pipe.transform('poniedziałek')).toEqual('Poniedziałek');
+      expect(pipe.transform('éric')).toEqual('Éric');
+    });
+
     it('should not support other objects',
        () => { expect(() => pipe.transform(<any>{})).toThrowError(); });
   });
