@@ -6,7 +6,7 @@ import { filter, map } from 'rxjs/operators';
 
 const squareOdd = of(1, 2, 3, 4, 5)
   .pipe(
-    filter(n => n % 2),
+    filter(n => !!(n % 2)),
     map(n => n * n)
   );
 
