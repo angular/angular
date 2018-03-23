@@ -1,3 +1,4 @@
+arbitrary-npm-package-main.js
 arbitrary_bin.txt
 arbitrary_genfiles.txt
 bundles
@@ -68,6 +69,11 @@ secondary
 secondary.d.ts
 secondary.metadata.json
 some-file.txt
+--- arbitrary-npm-package-main.js ---
+
+const x = 1;
+
+
 --- arbitrary_bin.txt ---
 
 World
