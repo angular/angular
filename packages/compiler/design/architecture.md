@@ -189,6 +189,10 @@ As part of this conversion an exhaustive list of selector targets is also produc
 
 The TemplateCompiler can produce a template function from a string without additional information. However, correct interpretation of that string requires a selector scope discussed below.
 
+#### Type checking a template
+
+TODO(chuckj)
+
 #### The selector problem 
 
 To interpret the content of a template, the runtime needs to know what component and directives to apply to the element and what pipes are referenced by binding expressions. The list of candidate components, directives and pipes are determined by the `NgModule` in which the component is declared. Since the module and component are in separate source files, mapping which components, directives and pipes referenced is left to runtime. Unfortunately, this leads to a tree-shaking problem. Since there no direct link between the component and types the component references then all components, directives and pipes declared in the module, and any module imported from the module, must be available at runtime or risk the template failing to be interpreted correctly. Including everything leads to very large programs containing many components the application doesn't actually use.
@@ -220,25 +224,94 @@ A component's module can be found by using the TypeScript language service's `fi
 
 When processing the `@NgModule` class, the type references can be found using the program's `checker` `getSymbolAtLocation` (potentially calling `getAliasedSymbol` if it is an alias symbol, `SymbolFlags.Alias`) and then using `Symbol`'s `declarations` field to get the list of declarations nodes (there should only be one for a `class`, there can be several for an `interface`)
 
-#### Compilers
+### The compatibility compiler
 
-Describe the implementation of various compilers (especially view compiler) outside the context of TS.
+#### The compatibility problem
 
-### ngtsc
+Not all Angular code is compiled at the same time. Applications have dependencies on shared libraries, and those libraries are published on NPM in their compiled form and not as Typescript source code. Even if an application is built using `ngtsc`, its dependencies may not have been.
 
-#### Transform pipeline
+If a particular library was not compiled with `ngtsc`, it does not have reified decorator properties in its `.js` distribution as described above. Linking it against a dependency that was not compiled in the same way will fail at runtime.
 
-Describe the various transforms, their purpose, and their ordering.
+#### Converting pre-Ivy code
 
-#### Template Type Checking
+Since Ivy code can only be linked against other Ivy code, to build the application all pre-Ivy dependencies from NPM must be converted to Ivy dependencies. This transformation must happen as a precursor to running `ngtsc` on the application, and future compilation and linking operations need to be made against this transformed version of the dependencies.
 
-Describe how type checking works today and how this design will be integrated into ngtsc.
+It is possible to transpile non-Ivy code in the Angular Package Format (v6) into Ivy code, even though the `.js` files no longer contain the decorator information. This works because the Angular Package Format includes `.metadata.json` files for each `.js` file. These metadata files contain information that was present in the Typescript source but was removed during transpilation to Javascript, and this information is sufficient to generate patched `.js` files which add the Ivy static properties to decorated classes.
 
-### ngcc
+#### Metadata from APF
+
+The `.metadata.json` files currently being shipped to NPM includes, among other information, the arguments to the Angular decorators which `ngtsc` downlevels to static properties. For example, the `.metadata.json` file for `CommonModule` contains the information for its `NgModule` decorator which was originally present in the Typescript source:
+
+```json
+"CommonModule": {
+  "__symbolic": "class",
+  "decorators": [{
+    "__symbolic": "call",
+    "expression": {
+      "__symbolic": "reference",
+      "module": "@angular/core",
+      "name": "NgModule",
+      "line": 22,
+      "character": 1
+    },
+    "arguments": [{
+      "declarations": [...],
+      "exports": [...],
+      "providers": [...]
+    }]
+  }]
+}
+```
+
+#### ngcc operation
+
+`ngcc` will by default scan `node_modules` and produce Ivy-compatible versions of every package it discovers built using Angular Package Format (APF). It detects the APF by looking for the presence of a `.metadata.json` file alongside the package's `module` entrypoint.
+
+Alternatively, `ngcc` can be initiated by passing the name of a single NPM package. It will begin converting that package, and recurse into any dependencies of that package that it discovers which have not yet been converted.
+
+The output of `ngcc` is a directory called `ngcc_node_modules` by default, but can be renamed based on an option. Its structure mirrors that of `node_modules`, and the packages that are converted have the non-transpiled files copied verbatim - `package.json`, etc are all preserved in the output. Only the `.js` and `.d.ts` files are changed, and the `.metadata.json` files are removed.
+
+An example directory layout would be:
+
+```
+# input
+node_modules/
+  ng-dep/
+    package.json
+    index.js (pre-ivy)
+    index.d.ts (pre-ivy)
+    index.metadata.json
+    other.js
+
+# output
+ngcc_node_modules
+  ng-dep/
+    package.json
+    index.js (ivy compatible)
+    index.d.ts (ivy-compatible)
+    other.js (copied verbatim)
+```
+
+#### Operation as a loader
+
+`ngcc` can be called as a standalone entrypoint, but it can also be integrated into the dependency loading operation of a bundler such as Rollup or Webpack. In this mode, the `ngcc` API can be used to read a file originally in `node_modules`. If the file is from a package which has not yet been converted, `ngcc` will convert the package and its dependencies before returning the file's contents.
+
+In this mode, the on-disk `ngcc_node_modules` directory functions as a cache. If the file being requested has previously been converted, its contents will be read from `ngcc_node_modules`.
 
 #### Compilation Model
 
-Describe how ngcc will apply the same transformation on node_modules code to produce the equivalent Ivy code, and what this means for users.
+`ngtsc` operates using a pipeline of different transformations, each one processing a different Angular decorator and converting it into a static property on the type being decorated. `ngcc` is architected to reuse as much of that process as possible.
+
+Compiling a package in `ngcc` involves the following steps:
+
+1. Parse the JS files of the package with the Typescript parser.
+2. Invoke the `StaticReflector` system from the legacy `@angular/compiler` to parse the `.metadata.json` files.
+3. Run through each Angular decorator in the Ivy system and compile:
+    1. Use the JS AST plus the information from the `StaticReflector` to construct the input to the annotation's Compiler.
+    2. Run the annotation's Compiler which will produce a partial class and its type declaration.
+    3. Extract the static property definition from the partial class.
+4. Combine the compiler outputs with the JS AST to produce the resulting `.js` and `.d.ts` files, and write them to disk.
+5. Copy over all other files.
 
 #### Metadata Recombination
 
