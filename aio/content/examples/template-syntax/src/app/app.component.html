@@ -884,8 +884,12 @@ See console log:
   TypeError: Cannot read property 'name' of null in [null]
 -->
 
-<!-- #docregion safe-4 -->
+<!-- #docregion safe-4! -->
 <!--No hero, div not displayed, no error -->
+<div *ngIf="nullHero">The null hero's name is {{nullHero.name}}</div>
+<!-- #enddocregion safe-4! -->
+<!-- #docregion safe-4 -->
+<!-- 객체가 null이면 div 전체가 표시되지 않습니다. 에러도 발생하지 않습니다. -->
 <div *ngIf="nullHero">The null hero's name is {{nullHero.name}}</div>
 <!-- #enddocregion safe-4 -->
 
@@ -896,8 +900,12 @@ The null hero's name is {{nullHero && nullHero.name}}
 </div>
 
 <div>
-  <!-- #docregion safe-6 -->
+  <!-- #docregion safe-6! -->
   <!-- No hero, no problem! -->
+  The null hero's name is {{nullHero?.name}}
+  <!-- #enddocregion safe-6! -->
+  <!-- #docregion safe-6 -->
+  <!-- 객체가 null이어도 에러가 발생하지 않습니다! -->
   The null hero's name is {{nullHero?.name}}
   <!-- #enddocregion safe-6 -->
 </div>

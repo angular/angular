@@ -3431,73 +3431,126 @@ The generated output would look something like this
 <!--
 ### The safe navigation operator ( <span class="syntax">?.</span> ) and null property paths
 -->
-### 안전 참조 연산자( <span class="syntax">?.</span> )와 null 객체 참조
+### null 객체 참조를 방지하는 안전 참조 연산자( <span class="syntax">?.</span> )
 
+<!--
 The Angular **safe navigation operator (`?.`)** is a fluent and convenient way to
 guard against null and undefined values in property paths.
 Here it is, protecting against a view render failure if the `currentHero` is null.
+-->
+객체를 참조하면서 프로퍼티 값이 `null`이거나 `undefined`인지 확인하는 로직은
+**안전 참조 연산자 (`?.`)**를 사용하면 간단하게 구현할 수 있습니다.
+`currentHero`의 값이 `null`인지 확인하고, 객체가 유효할 때만 `name` 프로퍼티를 참조하는 로직은 다음과 같이 구현합니다.
 
 <code-example path="template-syntax/src/app/app.component.html" region="safe-2" title="src/app/app.component.html" linenums="false">
 </code-example>
 
+<!--
 What happens when the following data bound `title` property is null?
+-->
+이 문법이 왜 필요한지 생각해 봅시다. 프로퍼티 바인딩하는 `title`의 값이 null이라면 어떻게 될까요?
 
 <code-example path="template-syntax/src/app/app.component.html" region="safe-1" title="src/app/app.component.html" linenums="false">
 </code-example>
 
+<!--
 The view still renders but the displayed value is blank; you see only "The title is" with nothing after it.
 That is reasonable behavior. At least the app doesn't crash.
+-->
+이 경우에 `title`은 빈 값이지만 뷰는 그대로 표시됩니다. 그래서 "The title is" 라는 문자열 뒤에는 아무것도 붙지 않습니다.
+이 정도는 쉽게 이해할 수 없습니다. 오류가 발생하지 않으니 앱이 중단되지도 않습니다.
 
+<!--
 Suppose the template expression involves a property path, as in this next example
 that displays the `name` of a null hero.
+-->
+그런데 다음 예제처럼 `null` 값인 객체의 프로퍼티를 참조하는 템플릿 표현식이 있다고 합시다.
 
 <code-example language="html">
   The null hero's name is {{nullHero.name}}
 </code-example>
 
+<!--
 JavaScript throws a null reference error, and so does Angular:
+-->
+이 코드를 실행하면 JavaScript null 객체 참조 에러가 발생하기 때문에 Angular에서도 다음과 같은 에러가 발생함니다:
 
 <code-example format="nocode">
   TypeError: Cannot read property 'name' of null in [null].
 </code-example>
 
+<!--
 Worse, the *entire view disappears*.
+-->
+그리고 이 에러의 영향으로 *뷰 전체가 동작하지 않습니다*.
 
+<!--
 This would be reasonable behavior if the `hero` property could never be null.
 If it must never be null and yet it is null,
 that's a programming error that should be caught and fixed.
 Throwing an exception is the right thing to do.
+-->
+참조하는 객체가 null이 되는 경우가 전혀 없다면 이 로직만으로도 문제는 없습니다.
+하지만 객체가 null이 되지 않도록 계속 신경을 써야 하고, 개발자의 실수로 null이 되는 경우가 발생할 수도 있습니다.
+이런 경우라면 수동으로 에러를 발생시켜서 객체를 참조하지 못하도록 끊어줘야 합니다.
 
+<!--
 On the other hand, null values in the property path may be OK from time to time,
 especially when the data are null now and will arrive eventually.
+-->
+하지만 이런 로직은 객체가 null인 경우에만 필요한 로직이며, 올바른 객체를 참조할 때는 필요하지 않습니다.
 
+<!--
 While waiting for data, the view should render without complaint, and
 the null property path should display as blank just as the `title` property does.
+-->
+그리고 데이터에 문제가 있는 상황에서도 뷰가 렌더링되는 것이 멈춰서는 안됩니다.
+이전에 살펴봤던 것처럼 `title` 프로퍼티 값이 null이라면 빈칸으로 비워두는 것이 더 합리적입니다.
 
+<!--
 Unfortunately, the app crashes when the `currentHero` is null.
+-->
+하지만 지금 코드에서 `currentHero` 객체가 null 이면 앱 전체가 중단됩니다.
 
+<!--
 You could code around that problem with [*ngIf*](guide/template-syntax#ngIf).
+-->
+이 문제는 [*ngIf*](guide/template-syntax#ngIf)로 방지할 수도 있습니다.
 
 <code-example path="template-syntax/src/app/app.component.html" region="safe-4" title="src/app/app.component.html" linenums="false">
 </code-example>
 
+<!--
 You could try to chain parts of the property path with `&&`, knowing that the expression bails out
 when it encounters the first null.
+-->
+그리고 `&&` 연산자를 사용해서 null이 발생하는 경우를 순차적으로 검사할 수도 있습니다.
 
 <code-example path="template-syntax/src/app/app.component.html" region="safe-5" title="src/app/app.component.html" linenums="false">
 </code-example>
 
+<!--
 These approaches have merit but can be cumbersome, especially if the property path is long.
 Imagine guarding against a null somewhere in a long property path such as `a.b.c.d`.
+-->
+이런 방법을 사용해도 원하는 로직을 구현할 수 있지만, 매번 이런 로직을 작성하기는 번거롭습니다. 게다가 참조하는 깊이가 깊어질수록 더 번거로워 집니다.
+`a.b.c.d`와 같은 경우에 이런 로직을 구현해야 한다고 생각해 보세요.
 
+<!--
 The Angular safe navigation operator (`?.`) is a more fluent and convenient way to guard against nulls in property paths.
 The expression bails out when it hits the first null value.
 The display is blank, but the app keeps rolling without errors.
+-->
+이 때 Angular에서 제공하는 안전 참조 연산자 (`?.`)를 사용하면, 객체가 null인지 검사하는 로직을 아주 간단하게 구현할 수 있습니다.
+안전 참조 연산자로 참조하는 객체의 값이 null이면 더이상 객체를 참조하지 않고 종료하며, 뷰는 비어있겠지만 에러로 앱이 중단되는 상황은 막을 수 있습니다.
 
 <code-example path="template-syntax/src/app/app.component.html" region="safe-6" title="src/app/app.component.html" linenums="false">
 </code-example>
 
+<!--
 It works perfectly with long property paths such as `a?.b?.c?.d`.
+-->
+안전 참조 연산자는 `a?.b?.c?.d`와 같은 경우에도 완벽하게 동작합니다.
 
 
 <hr/>
