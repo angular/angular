@@ -112,29 +112,23 @@ export const expect: (actual: any) => NgMatchers = <any>_global.expect;
 };
 
 _global.beforeEach(function() {
-  jasmine.addMatchers({
-    // Custom handler for Map as Jasmine does not support it yet
-    toEqual: function(util) {
-      return {
-        compare: function(actual: any, expected: any) {
-          return {pass: util.equals(actual, expected, [compareMap])};
-        }
-      };
-
-      function compareMap(actual: any, expected: any): boolean {
-        if (actual instanceof Map) {
-          let pass = actual.size === expected.size;
-          if (pass) {
-            actual.forEach((v: any, k: any) => { pass = pass && util.equals(v, expected.get(k)); });
-          }
-          return pass;
-        } else {
-          // TODO(misko): we should change the return, but jasmine.d.ts is not null safe
-          return undefined !;
-        }
+  // Custom handler for Map as we use Jasmine 2.4, and support for maps is not
+  // added until Jasmine 2.6.
+  jasmine.addCustomEqualityTester(function compareMap(actual: any, expected: any): boolean {
+    if (actual instanceof Map) {
+      let pass = actual.size === expected.size;
+      if (pass) {
+        actual.forEach((v: any, k: any) => {
+          pass = pass && jasmine.matchersUtil.equals(v, expected.get(k));
+        });
       }
-    },
-
+      return pass;
+    } else {
+      // TODO(misko): we should change the return, but jasmine.d.ts is not null safe
+      return undefined !;
+    }
+  });
+  jasmine.addMatchers({
     toBePromise: function() {
       return {
         compare: function(actual: any) {
