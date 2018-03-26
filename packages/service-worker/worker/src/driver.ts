@@ -95,6 +95,12 @@ export class Driver implements Debuggable, UpdateSource {
   private scheduledNavUpdateCheck: boolean = false;
 
   /**
+   * Keep track of whether we have logged an invalid `only-if-cached` request.
+   * (See `.onFetch()` for details.)
+   */
+  private loggedInvalidOnlyIfCachedRequest: boolean = false;
+
+  /**
    * A scheduler which manages a queue of tasks that need to be executed when the SW is
    * not doing any other work (not processing any other requests).
    */
@@ -178,13 +184,21 @@ export class Driver implements Debuggable, UpdateSource {
       return;
     }
 
-    // Under some circumstances (possibly related to opening Chrome DevTools), requests are made
-    // with `cache: 'only-if-cached'` and `mode: 'no-cors'`. These request will eventually fail,
-    // because `only-if-cached` is only allowed to be used with `mode: 'same-origin'`.
+    // When opening DevTools in Chrome, a request is made for the current URL (and possibly related
+    // resources, e.g. scripts) with `cache: 'only-if-cached'` and `mode: 'no-cors'`. These request
+    // will eventually fail, because `only-if-cached` is only allowed to be used with
+    // `mode: 'same-origin'`.
     // This is likely a bug in Chrome DevTools. Avoid handling such requests.
     // (See also https://github.com/angular/angular/issues/22362.)
     // TODO(gkalpak): Remove once no longer necessary (i.e. fixed in Chrome DevTools).
     if ((req.cache as string) === 'only-if-cached' && req.mode !== 'same-origin') {
+      // Log the incident only the first time it happens, to avoid spamming the logs.
+      if (!this.loggedInvalidOnlyIfCachedRequest) {
+        this.loggedInvalidOnlyIfCachedRequest = true;
+        this.debugger.log(
+            `Ignoring invalid request: 'only-if-cached' can be set only with 'same-origin' mode`,
+            `Driver.fetch(${req.url}, cache: ${req.cache}, mode: ${req.mode})`);
+      }
       return;
     }
 
@@ -622,8 +636,8 @@ export class Driver implements Debuggable, UpdateSource {
    * offline (detected as response status 504).
    */
   private async fetchLatestManifest(ignoreOfflineError?: false): Promise<Manifest>;
-  private async fetchLatestManifest(ignoreOfflineError: true): Promise<Manifest | null>;
-  private async fetchLatestManifest(ignoreOfflineError = false): Promise<Manifest | null> {
+  private async fetchLatestManifest(ignoreOfflineError: true): Promise<Manifest|null>;
+  private async fetchLatestManifest(ignoreOfflineError = false): Promise<Manifest|null> {
     const res =
         await this.safeFetch(this.adapter.newRequest('ngsw.json?ngsw-cache-bust=' + Math.random()));
     if (!res.ok) {
