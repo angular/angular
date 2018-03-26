@@ -61,7 +61,7 @@ export function compileDirective(
   field('type', outputCtx.importExpr(directive.type.reference));
 
   // e.g. `selector: [[[null, 'someDir', ''], null]]`
-  field('selector', createDirectiveSelector(directive.selector!));
+  field('selector', createDirectiveSelector(directive.selector !));
 
   // e.g. `factory: () => new MyApp(injectElementRef())`
   field('factory', createFactory(directive.type, outputCtx, reflector, directive.queries));
@@ -122,7 +122,7 @@ export function compileComponent(
   field('type', outputCtx.importExpr(component.type.reference));
 
   // e.g. `selector: [[['my-app'], null]]`
-  field('selector', createDirectiveSelector(component.selector!));
+  field('selector', createDirectiveSelector(component.selector !));
 
   const selector = component.selector && CssSelector.parse(component.selector);
   const firstSelector = selector && selector[0];

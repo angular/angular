@@ -1130,23 +1130,8 @@ export function directiveCreate<T>(
   const tNode: TNode|null = previousOrParentNode.tNode !;
 
   const isComponent = (directiveDef as ComponentDef<any>).template;
-
   if (isComponent) {
-    const componentDef = directiveDef as ComponentDef<any>;
-    const tView = getOrCreateTView(componentDef.template, componentDef.directiveDefs);
-
-    const hostView = createLView(
-        -1, rendererFactory.createRenderer(
-                previousOrParentNode.native as RElement, componentDef.rendererType),
-        tView, null, null, componentDef !.onPush ? LViewFlags.Dirty : LViewFlags.CheckAlways);
-
-    (previousOrParentNode.data as any) = hostView;
-    (hostView.node as any) = previousOrParentNode;
-
-    // Only component views should be added to the view tree directly. Embedded views are
-    // accessed through their containers because they may be removed / re-added later.
-    addToViewTree(hostView);
-    initChangeDetectorIfExisting(previousOrParentNode.nodeInjector, instance, hostView);
+    addComponentLogic(index, elementIndex, directive, directiveDef as ComponentDef<any>);
   }
 
   if (firstTemplatePass) {
@@ -1155,8 +1140,6 @@ export function directiveCreate<T>(
     queueInitHooks(index, directiveDef.onInit, directiveDef.doCheck, currentView.tView);
 
     if (directiveDef.hostBindings) queueHostBindingForCheck(index, elementIndex);
-
-    if (isComponent) queueComponentIndexForCheck(index, elementIndex);
 
     if (localRefs) {
       const localNames =
@@ -1171,6 +1154,26 @@ export function directiveCreate<T>(
   }
 
   return instance;
+}
+
+function addComponentLogic<T>(
+    index: number, elementIndex: number, instance: T, def: ComponentDef<any>): void {
+  const tView = getOrCreateTView(def.template, def.directiveDefs);
+
+  // Only component views should be added to the view tree directly. Embedded views are
+  // accessed through their containers because they may be removed / re-added later.
+  const hostView = addToViewTree(createLView(
+      -1, rendererFactory.createRenderer(previousOrParentNode.native as RElement, def.rendererType),
+      tView, null, null, def.onPush ? LViewFlags.Dirty : LViewFlags.CheckAlways));
+
+  (previousOrParentNode.data as any) = hostView;
+  (hostView.node as any) = previousOrParentNode;
+
+  initChangeDetectorIfExisting(previousOrParentNode.nodeInjector, instance, hostView);
+
+  if (firstTemplatePass) {
+    queueComponentIndexForCheck(index, elementIndex);
+  }
 }
 
 /**
