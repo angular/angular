@@ -17,7 +17,6 @@ you can generate one by entering the following command in the terminal window:
 ```sh
 ng generate service User
 ```
-<<<<<<< HEAD
   
 This creates a service called `UserService`, which will look similar to the code snippet shown below: 
 
@@ -31,8 +30,6 @@ The service itself is just a class the CLI has generated, that's decorated with 
 ## Provider scope
 
 When you add a service provider to the root application injector, it’s available throughout the app. Additionally, these providers are also available to all the classes in the app as long they have the lookup token.
-=======
->>>>>>> parent of eb1bda6... fix(compiler): don't typecheck all inputs (#22899)
 
 This creates a service called `UserService`. You now need to make the service available in your
 app's injector. Update `app.module.ts` by importing it with your other import statements at the top
@@ -42,20 +39,13 @@ of the file and adding it to the `providers` array:
 </code-example>
 
 
-<<<<<<< HEAD
 <code-example path="providers/src/app/user.service.1.ts"  title="src/app/user.service.1.ts" linenums="false">
 </code-example>
-=======
-## Provider scope
->>>>>>> parent of eb1bda6... fix(compiler): don't typecheck all inputs (#22899)
 
 When you add a service provider to the `providers` array of the root module, it’s available throughout the app. Additionally, when you import a module that has providers, those providers are also available to all the classes in the app as long they have the lookup token. For example, if you import the `HttpClientModule` into your `AppModule`, its providers are then available to the entire app and you can make HTTP requests from anywhere in your app.
 
-<<<<<<< HEAD
 <code-example path="providers/src/app/user.module.ts"  title="src/app/user.module.ts" linenums="false">
 </code-example>
-=======
->>>>>>> parent of eb1bda6... fix(compiler): don't typecheck all inputs (#22899)
 
 ## Limiting provider scope by lazy loading modules
 

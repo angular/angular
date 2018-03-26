@@ -107,7 +107,6 @@ and must be registered with an injector.
 
 </div>
 
-<<<<<<< HEAD
 There are many ways to register a service provider with an injector. In this section we will show three different ways to register a service provider. 
 
 {@ injectable-providers}
@@ -121,26 +120,13 @@ Here we configure a provider for `HeroService` using the `@Injectable` decorator
 </code-example>
 
 `providedIn` here tells Angular that the root injector is responsible for creating an instance of `HeroService` (by invoking its constructor) and making it available across the application. The CLI will set up this kind of provider for you automatically when generating a new service.
-=======
-You can register a provider with any Angular decorator that supports the  **`providers` array property**.
->>>>>>> parent of eb1bda6... fix(compiler): don't typecheck all inputs (#22899)
 
 Many Angular decorators accept metadata with a `providers` property.
 The two most important examples are `@Component` and `@NgModule`.
 
-<<<<<<< HEAD
 In the following excerpt, the `@Injectable` decorator is used to configure a provider that will be available in any injector that includes the `HeroModule`.
 
 <code-example path="dependency-injection/src/app/heroes/hero.service.1.2.ts"  title="src/app/heroes/hero.service.ts" linenums="false">
-=======
-{@a register-providers-component}
-
-### _@Component_ providers
-
-Here's a revised `HeroesComponent` that registers the `HeroService` in its `providers` array.
-
-<code-example path="dependency-injection/src/app/heroes/heroes.component.1.ts" title="src/app/heroes/heroes.component.ts" linenums="false">
->>>>>>> parent of eb1bda6... fix(compiler): don't typecheck all inputs (#22899)
 </code-example>
 
 {@a register-providers-ngmodule}
@@ -594,7 +580,6 @@ Here you see the new and the old implementation side-by-side:
 
 </code-tabs>
 
-<<<<<<< HEAD
 
 {@a tree-shakable-provider}
 
@@ -781,8 +766,6 @@ it's provided in the root `AppModule`.
 </code-example>
 
 
-=======
->>>>>>> parent of eb1bda6... fix(compiler): don't typecheck all inputs (#22899)
 {@a token}
 
 ## Dependency injection tokens
