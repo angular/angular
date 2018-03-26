@@ -280,6 +280,7 @@ def _write_bundle_index(ctx):
   tsconfig = dict(tsc_wrapped_tsconfig(ctx, ctx.files.srcs, ctx.files.srcs), **{
     "angularCompilerOptions": {
       "flatModuleOutFile": flat_module_out_file,
+      "flatModulePrivateSymbolPrefix": "_".join([ctx.workspace_name] + ctx.label.package.split("/") + [ctx.label.name, ""]),
     },
   })
   if not ctx.attr.module_name:
