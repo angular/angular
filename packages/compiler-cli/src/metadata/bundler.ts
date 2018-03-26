@@ -83,11 +83,14 @@ export class MetadataBundler {
   private metadataCache = new Map<string, ModuleMetadata|undefined>();
   private exports = new Map<string, Symbol[]>();
   private rootModule: string;
+  private privateSymbolPrefix: string;
   private exported: Set<Symbol>;
 
   constructor(
-      private root: string, private importAs: string|undefined, private host: MetadataBundlerHost) {
+      private root: string, private importAs: string|undefined, private host: MetadataBundlerHost,
+      privateSymbolPrefix?: string) {
     this.rootModule = `./${path.basename(root)}`;
+    this.privateSymbolPrefix = (privateSymbolPrefix || '').replace(/\W/g, '_');
   }
 
   getMetadataBundle(): BundledModule {
@@ -244,7 +247,7 @@ export class MetadataBundler {
     const exportedNames = new Set(exportedSymbols.map(s => s.name));
     let privateName = 0;
 
-    function newPrivateName(): string {
+    function newPrivateName(prefix: string): string {
       while (true) {
         let digits: string[] = [];
         let index = privateName++;
@@ -253,8 +256,7 @@ export class MetadataBundler {
           digits.unshift(base[index % base.length]);
           index = Math.floor(index / base.length);
         }
-        digits.unshift('\u0275');
-        const result = digits.join('');
+        const result = `\u0275${prefix}${digits.join('')}`;
         if (!exportedNames.has(result)) return result;
       }
     }
@@ -267,7 +269,7 @@ export class MetadataBundler {
         let name = symbol.name;
         const identifier = `${symbol.declaration!.module}:${symbol.declaration !.name}`;
         if (symbol.isPrivate && !symbol.privateName) {
-          name = newPrivateName();
+          name = newPrivateName(this.privateSymbolPrefix);
           symbol.privateName = name;
         }
         if (symbolsMap.has(identifier)) {
