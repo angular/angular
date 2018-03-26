@@ -23,14 +23,14 @@ describe('@angular/common integration', () => {
         static ngComponentDef = defineComponent({
           type: MyApp,
           factory: () => new MyApp(),
-          tag: 'my-app',
+          selector: [[['my-app'], null]],
           // <ul>
           //   <li *ngFor="let item of items">{{item}}</li>
           // </ul>
           template: (myApp: MyApp, cm: boolean) => {
             if (cm) {
               elementStart(0, 'ul');
-              { container(1, [NgForOf], liTemplate); }
+              { container(1, liTemplate, undefined, ['ngForOf', '']); }
               elementEnd();
             }
             elementProperty(1, 'ngForOf', bind(myApp.items));
@@ -45,7 +45,8 @@ describe('@angular/common integration', () => {
               }
               textBinding(1, bind(row.$implicit));
             }
-          }
+          },
+          directiveDefs: () => [NgForOf.ngDirectiveDef]
         });
       }
 

@@ -196,8 +196,8 @@ function getIdxOfMatchingSelector(tNode: TNode, selector: string): number|null {
 function geIdxOfMatchingDirective(node: LNode, type: Type<any>): number|null {
   const defs = node.view.tView.directives !;
   const flags = node.tNode !.flags;
-  for (let i = flags >> TNodeFlags.INDX_SHIFT, ii = i + (flags & TNodeFlags.SIZE_MASK); i < ii;
-       i++) {
+  const size = (flags & TNodeFlags.SIZE_MASK) >> TNodeFlags.SIZE_SHIFT;
+  for (let i = flags >> TNodeFlags.INDX_SHIFT, ii = i + size; i < ii; i++) {
     const def = defs[i] as DirectiveDef<any>;
     if (def.diPublic && def.type === type) {
       return i;

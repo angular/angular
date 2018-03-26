@@ -17,19 +17,20 @@ import {LNodeType} from '../../src/render3/interfaces/node';
 import {LViewFlags} from '../../src/render3/interfaces/view';
 import {ViewRef} from '../../src/render3/view_ref';
 
-import {renderComponent, renderToHtml, toHtml} from './render_util';
+import {createComponent, createDirective, renderComponent, renderToHtml, toHtml} from './render_util';
 
 describe('di', () => {
   describe('no dependencies', () => {
     it('should create directive with no deps', () => {
       class Directive {
         value: string = 'Created';
-        static ngDirectiveDef = defineDirective({type: Directive, factory: () => new Directive});
+        static ngDirectiveDef = defineDirective(
+            {type: Directive, selector: [[['', 'dir', ''], null]], factory: () => new Directive});
       }
 
       function Template(ctx: any, cm: boolean) {
         if (cm) {
-          elementStart(0, 'div', null, [Directive]);
+          elementStart(0, 'div', ['dir', '']);
           { text(1); }
           elementEnd();
         }
@@ -37,7 +38,8 @@ describe('di', () => {
         textBinding(1, bind(loadDirective<Directive>(0).value));
       }
 
-      expect(renderToHtml(Template, {})).toEqual('<div>Created</div>');
+      expect(renderToHtml(Template, {}, [Directive.ngDirectiveDef]))
+          .toEqual('<div dir="">Created</div>');
     });
   });
 
@@ -45,14 +47,22 @@ describe('di', () => {
     it('should create directive with inter view dependencies', () => {
       class DirectiveA {
         value: string = 'A';
-        static ngDirectiveDef = defineDirective(
-            {type: DirectiveA, factory: () => new DirectiveA, features: [PublicFeature]});
+        static ngDirectiveDef = defineDirective({
+          type: DirectiveA,
+          selector: [[['', 'dirA', ''], null]],
+          factory: () => new DirectiveA,
+          features: [PublicFeature]
+        });
       }
 
       class DirectiveB {
         value: string = 'B';
-        static ngDirectiveDef = defineDirective(
-            {type: DirectiveB, factory: () => new DirectiveB, features: [PublicFeature]});
+        static ngDirectiveDef = defineDirective({
+          type: DirectiveB,
+          selector: [[['', 'dirB', ''], null]],
+          factory: () => new DirectiveB,
+          features: [PublicFeature]
+        });
       }
 
       class DirectiveC {
@@ -60,15 +70,16 @@ describe('di', () => {
         constructor(a: DirectiveA, b: DirectiveB) { this.value = a.value + b.value; }
         static ngDirectiveDef = defineDirective({
           type: DirectiveC,
+          selector: [[['', 'dirC', ''], null]],
           factory: () => new DirectiveC(directiveInject(DirectiveA), directiveInject(DirectiveB))
         });
       }
 
       function Template(ctx: any, cm: boolean) {
         if (cm) {
-          elementStart(0, 'div', null, [DirectiveA]);
+          elementStart(0, 'div', ['dirA', '']);
           {
-            elementStart(1, 'span', null, [DirectiveB, DirectiveC]);
+            elementStart(1, 'span', ['dirB', '', 'dirC', '']);
             { text(2); }
             elementEnd();
           }
@@ -78,7 +89,10 @@ describe('di', () => {
         textBinding(2, bind(loadDirective<DirectiveC>(2).value));
       }
 
-      expect(renderToHtml(Template, {})).toEqual('<div><span>AB</span></div>');
+      const defs =
+          [DirectiveA.ngDirectiveDef, DirectiveB.ngDirectiveDef, DirectiveC.ngDirectiveDef];
+      expect(renderToHtml(Template, {}, defs))
+          .toEqual('<div dira=""><span dirb="" dirc="">AB</span></div>');
     });
   });
 
@@ -91,6 +105,7 @@ describe('di', () => {
         }
         static ngDirectiveDef = defineDirective({
           type: Directive,
+          selector: [[['', 'dir', ''], null]],
           factory: () => new Directive(injectElementRef()),
           features: [PublicFeature]
         });
@@ -103,13 +118,14 @@ describe('di', () => {
         }
         static ngDirectiveDef = defineDirective({
           type: DirectiveSameInstance,
+          selector: [[['', 'dirSame', ''], null]],
           factory: () => new DirectiveSameInstance(injectElementRef(), directiveInject(Directive))
         });
       }
 
       function Template(ctx: any, cm: boolean) {
         if (cm) {
-          elementStart(0, 'div', null, [Directive, DirectiveSameInstance]);
+          elementStart(0, 'div', ['dir', '', 'dirSame', '']);
           { text(1); }
           elementEnd();
         }
@@ -120,7 +136,9 @@ describe('di', () => {
                    loadDirective<DirectiveSameInstance>(1).value, ''));
       }
 
-      expect(renderToHtml(Template, {})).toEqual('<div>ElementRef-true</div>');
+      const defs = [Directive.ngDirectiveDef, DirectiveSameInstance.ngDirectiveDef];
+      expect(renderToHtml(Template, {}, defs))
+          .toEqual('<div dir="" dirsame="">ElementRef-true</div>');
     });
   });
 
@@ -133,6 +151,7 @@ describe('di', () => {
         }
         static ngDirectiveDef = defineDirective({
           type: Directive,
+          selector: [[['', 'dir', ''], null]],
           factory: () => new Directive(injectTemplateRef()),
           features: [PublicFeature]
         });
@@ -145,6 +164,7 @@ describe('di', () => {
         }
         static ngDirectiveDef = defineDirective({
           type: DirectiveSameInstance,
+          selector: [[['', 'dirSame', ''], null]],
           factory: () => new DirectiveSameInstance(injectTemplateRef(), directiveInject(Directive))
         });
       }
@@ -152,7 +172,7 @@ describe('di', () => {
 
       function Template(ctx: any, cm: any) {
         if (cm) {
-          container(0, [Directive, DirectiveSameInstance], function() {});
+          container(0, function() {}, undefined, ['dir', '', 'dirSame', '']);
           text(1);
         }
         // TODO: remove loadDirective when removing directive references
@@ -162,7 +182,8 @@ describe('di', () => {
                    loadDirective<DirectiveSameInstance>(1).value, ''));
       }
 
-      expect(renderToHtml(Template, {})).toEqual('TemplateRef-true');
+      const defs = [Directive.ngDirectiveDef, DirectiveSameInstance.ngDirectiveDef];
+      expect(renderToHtml(Template, {}, defs)).toEqual('TemplateRef-true');
     });
   });
 
@@ -175,6 +196,7 @@ describe('di', () => {
         }
         static ngDirectiveDef = defineDirective({
           type: Directive,
+          selector: [[['', 'dir', ''], null]],
           factory: () => new Directive(injectViewContainerRef()),
           features: [PublicFeature]
         });
@@ -187,6 +209,7 @@ describe('di', () => {
         }
         static ngDirectiveDef = defineDirective({
           type: DirectiveSameInstance,
+          selector: [[['', 'dirSame', ''], null]],
           factory:
               () => new DirectiveSameInstance(injectViewContainerRef(), directiveInject(Directive))
         });
@@ -194,7 +217,7 @@ describe('di', () => {
 
       function Template(ctx: any, cm: boolean) {
         if (cm) {
-          elementStart(0, 'div', null, [Directive, DirectiveSameInstance]);
+          elementStart(0, 'div', ['dir', '', 'dirSame', '']);
           { text(1); }
           elementEnd();
         }
@@ -205,7 +228,9 @@ describe('di', () => {
                    loadDirective<DirectiveSameInstance>(1).value, ''));
       }
 
-      expect(renderToHtml(Template, {})).toEqual('<div>ViewContainerRef-true</div>');
+      const defs = [Directive.ngDirectiveDef, DirectiveSameInstance.ngDirectiveDef];
+      expect(renderToHtml(Template, {}, defs))
+          .toEqual('<div dir="" dirsame="">ViewContainerRef-true</div>');
     });
   });
 
@@ -219,7 +244,7 @@ describe('di', () => {
 
       static ngComponentDef = defineComponent({
         type: MyComp,
-        tag: 'my-comp',
+        selector: [[['my-comp'], null]],
         factory: () => comp = new MyComp(injectChangeDetectorRef()),
         template: function(ctx: MyComp, cm: boolean) {
           if (cm) {
@@ -235,6 +260,7 @@ describe('di', () => {
       constructor(public cdr: ChangeDetectorRef) { this.value = (cdr.constructor as any).name; }
       static ngDirectiveDef = defineDirective({
         type: Directive,
+        selector: [[['', 'dir', ''], null]],
         factory: () => dir = new Directive(injectChangeDetectorRef()),
         features: [PublicFeature],
         exportAs: 'dir'
@@ -246,34 +272,53 @@ describe('di', () => {
 
       static ngDirectiveDef = defineDirective({
         type: DirectiveSameInstance,
+        selector: [[['', 'dirSame', ''], null]],
         factory: () => dirSameInstance = new DirectiveSameInstance(injectChangeDetectorRef())
       });
     }
 
-    const $e0_attrs$ = ['dir', '', 'dirSameInstance', ''];
+    class IfDirective {
+      /* @Input */
+      myIf = true;
+
+      constructor(public template: TemplateRef<any>, public vcr: ViewContainerRef) {}
+
+      ngOnChanges() {
+        if (this.myIf) {
+          this.vcr.createEmbeddedView(this.template);
+        }
+      }
+
+      static ngDirectiveDef = defineDirective({
+        type: IfDirective,
+        selector: [[['', 'myIf', ''], null]],
+        factory: () => new IfDirective(injectTemplateRef(), injectViewContainerRef()),
+        inputs: {myIf: 'myIf'},
+        features: [PublicFeature, NgOnChangesFeature()]
+      });
+    }
+
+
+    const defs = [
+      MyComp.ngComponentDef, Directive.ngDirectiveDef, DirectiveSameInstance.ngDirectiveDef,
+      IfDirective.ngDirectiveDef
+    ];
 
     it('should inject current component ChangeDetectorRef into directives on components', () => {
-      class MyApp {
-        static ngComponentDef = defineComponent({
-          type: MyApp,
-          tag: 'my-app',
-          factory: () => new MyApp(),
-          /** <my-comp dir dirSameInstance #dir="dir"></my-comp> {{ dir.value }} */
-          template: function(ctx: any, cm: boolean) {
-            if (cm) {
-              elementStart(0, MyComp, $e0_attrs$, [Directive, DirectiveSameInstance]);
-              elementEnd();
-              text(1);
-            }
-            // TODO: remove loadDirective when removing directive references
-            textBinding(1, bind(loadDirective<Directive>(1).value));
-          }
-        });
-      }
+      /** <my-comp dir dirSameInstance #dir="dir"></my-comp> {{ dir.value }} */
+      const MyApp = createComponent('my-app', function(ctx: any, cm: boolean) {
+        if (cm) {
+          elementStart(0, 'my-comp', ['dir', '', 'dirSame', ''], ['dir', 'dir']);
+          elementEnd();
+          text(1);
+        }
+        // TODO: remove loadDirective when removing directive references
+        textBinding(1, bind(loadDirective<Directive>(1).value));
+      }, defs);
 
       const app = renderComponent(MyApp);
       // ChangeDetectorRef is the token, ViewRef has historically been the constructor
-      expect(toHtml(app)).toEqual('<my-comp dir="" dirsameinstance=""></my-comp>ViewRef');
+      expect(toHtml(app)).toEqual('<my-comp dir="" dirsame=""></my-comp>ViewRef');
       expect((comp !.cdr as ViewRef<MyComp>).context).toBe(comp);
 
       expect(dir !.cdr).toBe(comp !.cdr);
@@ -287,23 +332,24 @@ describe('di', () => {
 
         static ngComponentDef = defineComponent({
           type: MyApp,
-          tag: 'my-app',
+          selector: [[['my-app'], null]],
           factory: () => new MyApp(injectChangeDetectorRef()),
           /** <div dir dirSameInstance #dir="dir"> {{ dir.value }} </div> */
           template: function(ctx: any, cm: boolean) {
             if (cm) {
-              elementStart(0, 'div', $e0_attrs$, [Directive, DirectiveSameInstance]);
+              elementStart(0, 'div', ['dir', '', 'dirSame', ''], ['dir', 'dir']);
               { text(1); }
               elementEnd();
             }
             // TODO: remove loadDirective when removing directive references
             textBinding(1, bind(loadDirective<Directive>(0).value));
-          }
+          },
+          directiveDefs: defs
         });
       }
 
       const app = renderComponent(MyApp);
-      expect(toHtml(app)).toEqual('<div dir="" dirsameinstance="">ViewRef</div>');
+      expect(toHtml(app)).toEqual('<div dir="" dirsame="">ViewRef</div>');
       expect((app !.cdr as ViewRef<MyApp>).context).toBe(app);
 
       expect(dir !.cdr).toBe(app.cdr);
@@ -316,7 +362,7 @@ describe('di', () => {
 
         static ngComponentDef = defineComponent({
           type: MyApp,
-          tag: 'my-app',
+          selector: [[['my-app'], null]],
           factory: () => new MyApp(injectChangeDetectorRef()),
           /**
            * <my-comp>
@@ -326,9 +372,9 @@ describe('di', () => {
            */
           template: function(ctx: any, cm: boolean) {
             if (cm) {
-              elementStart(0, MyComp);
+              elementStart(0, 'my-comp');
               {
-                elementStart(1, 'div', $e0_attrs$, [Directive, DirectiveSameInstance]);
+                elementStart(1, 'div', ['dir', '', 'dirSame', ''], ['dir', 'dir']);
                 elementEnd();
               }
               elementEnd();
@@ -336,13 +382,13 @@ describe('di', () => {
             }
             // TODO: remove loadDirective when removing directive references
             textBinding(2, bind(loadDirective<Directive>(1).value));
-          }
+          },
+          directiveDefs: defs
         });
       }
 
       const app = renderComponent(MyApp);
-      expect(toHtml(app))
-          .toEqual('<my-comp><div dir="" dirsameinstance=""></div></my-comp>ViewRef');
+      expect(toHtml(app)).toEqual('<my-comp><div dir="" dirsame=""></div></my-comp>ViewRef');
       expect((app !.cdr as ViewRef<MyApp>).context).toBe(app);
 
       expect(dir !.cdr).toBe(app !.cdr);
@@ -358,7 +404,7 @@ describe('di', () => {
 
         static ngComponentDef = defineComponent({
           type: MyApp,
-          tag: 'my-app',
+          selector: [[['my-app'], null]],
           factory: () => new MyApp(injectChangeDetectorRef()),
           /**
            * % if (showing) {
@@ -373,7 +419,7 @@ describe('di', () => {
             {
               if (ctx.showing) {
                 if (embeddedViewStart(0)) {
-                  elementStart(0, 'div', $e0_attrs$, [Directive, DirectiveSameInstance]);
+                  elementStart(0, 'div', ['dir', '', 'dirSame', ''], ['dir', 'dir']);
                   { text(1); }
                   elementEnd();
                 }
@@ -383,12 +429,13 @@ describe('di', () => {
               embeddedViewEnd();
             }
             containerRefreshEnd();
-          }
+          },
+          directiveDefs: defs
         });
       }
 
       const app = renderComponent(MyApp);
-      expect(toHtml(app)).toEqual('<div dir="" dirsameinstance="">ViewRef</div>');
+      expect(toHtml(app)).toEqual('<div dir="" dirsame="">ViewRef</div>');
       expect((app !.cdr as ViewRef<MyApp>).context).toBe(app);
 
       expect(dir !.cdr).toBe(app.cdr);
@@ -396,26 +443,6 @@ describe('di', () => {
     });
 
     it('should inject host component ChangeDetectorRef into directives on containers', () => {
-      class IfDirective {
-        /* @Input */
-        myIf = true;
-
-        constructor(public template: TemplateRef<any>, public vcr: ViewContainerRef) {}
-
-        ngOnChanges() {
-          if (this.myIf) {
-            this.vcr.createEmbeddedView(this.template);
-          }
-        }
-
-        static ngDirectiveDef = defineDirective({
-          type: IfDirective,
-          factory: () => new IfDirective(injectTemplateRef(), injectViewContainerRef()),
-          inputs: {myIf: 'myIf'},
-          features: [PublicFeature, NgOnChangesFeature()]
-        });
-      }
-
       class MyApp {
         showing = true;
 
@@ -423,31 +450,32 @@ describe('di', () => {
 
         static ngComponentDef = defineComponent({
           type: MyApp,
-          tag: 'my-app',
+          selector: [[['my-app'], null]],
           factory: () => new MyApp(injectChangeDetectorRef()),
           /** <div *myIf="showing" dir dirSameInstance #dir="dir"> {{ dir.value }} </div> */
           template: function(ctx: MyApp, cm: boolean) {
             if (cm) {
-              container(0, [IfDirective], C1);
+              container(0, C1, undefined, ['myIf', 'showing']);
             }
             containerRefreshStart(0);
             containerRefreshEnd();
 
             function C1(ctx1: any, cm1: boolean) {
               if (cm1) {
-                elementStart(0, 'div', $e0_attrs$, [Directive, DirectiveSameInstance]);
+                elementStart(0, 'div', ['dir', '', 'dirSame', ''], ['dir', 'dir']);
                 { text(1); }
                 elementEnd();
               }
               // TODO: remove loadDirective when removing directive references
               textBinding(1, bind(loadDirective<Directive>(0).value));
             }
-          }
+          },
+          directiveDefs: defs
         });
       }
 
       const app = renderComponent(MyApp);
-      expect(toHtml(app)).toEqual('<div dir="" dirsameinstance="">ViewRef</div>');
+      expect(toHtml(app)).toEqual('<div dir="" dirsame="">ViewRef</div>');
       expect((app !.cdr as ViewRef<MyApp>).context).toBe(app);
 
       expect(dir !.cdr).toBe(app.cdr);
@@ -457,20 +485,14 @@ describe('di', () => {
     it('should injectAttribute', () => {
       let exist: string|undefined = 'wrong';
       let nonExist: string|undefined = 'wrong';
-      class MyApp {
-        static ngComponentDef = defineComponent({
-          type: MyApp,
-          tag: 'my-app',
-          factory: () => new MyApp(),
-          template: function(ctx: MyApp, cm: boolean) {
-            if (cm) {
-              elementStart(0, 'div', ['exist', 'existValue', 'other', 'ignore']);
-              exist = injectAttribute('exist');
-              nonExist = injectAttribute('nonExist');
-            }
-          }
-        });
-      }
+
+      const MyApp = createComponent('my-app', function(ctx: any, cm: boolean) {
+        if (cm) {
+          elementStart(0, 'div', ['exist', 'existValue', 'other', 'ignore']);
+          exist = injectAttribute('exist');
+          nonExist = injectAttribute('nonExist');
+        }
+      });
 
       const app = renderComponent(MyApp);
       expect(exist).toEqual('existValue');
@@ -557,7 +579,7 @@ describe('di', () => {
 
           static ngComponentDef = defineComponent({
             type: MyApp,
-            tag: 'my-app',
+            selector: [[['my-app'], null]],
             factory: () => new MyApp(
                          directiveInject(String as any, InjectFlags.Default, 'DefaultValue')),
             template: () => null
@@ -569,21 +591,14 @@ describe('di', () => {
     });
 
     it('should inject from parent view', () => {
-      class ParentDirective {
-        static ngDirectiveDef = defineDirective({
-          type: ParentDirective,
-          factory: () => new ParentDirective(),
-          features: [PublicFeature]
-        });
-      }
+      const ParentDirective = createDirective('parentDir');
 
       class ChildDirective {
         value: string;
-        constructor(public parent: ParentDirective) {
-          this.value = (parent.constructor as any).name;
-        }
+        constructor(public parent: any) { this.value = (parent.constructor as any).name; }
         static ngDirectiveDef = defineDirective({
           type: ChildDirective,
+          selector: [[['', 'childDir', ''], null]],
           factory: () => new ChildDirective(directiveInject(ParentDirective)),
           features: [PublicFeature]
         });
@@ -591,10 +606,9 @@ describe('di', () => {
 
       class Child2Directive {
         value: boolean;
-        constructor(parent: ParentDirective, child: ChildDirective) {
-          this.value = parent === child.parent;
-        }
+        constructor(parent: any, child: ChildDirective) { this.value = parent === child.parent; }
         static ngDirectiveDef = defineDirective({
+          selector: [[['', 'child2Dir', ''], null]],
           type: Child2Directive,
           factory: () => new Child2Directive(
                        directiveInject(ParentDirective), directiveInject(ChildDirective))
@@ -603,14 +617,14 @@ describe('di', () => {
 
       function Template(ctx: any, cm: boolean) {
         if (cm) {
-          elementStart(0, 'div', null, [ParentDirective]);
+          elementStart(0, 'div', ['parentDir', '']);
           { container(1); }
           elementEnd();
         }
         containerRefreshStart(1);
         {
           if (embeddedViewStart(0)) {
-            elementStart(0, 'span', null, [ChildDirective, Child2Directive]);
+            elementStart(0, 'span', ['childDir', '', 'child2Dir', '']);
             { text(1); }
             elementEnd();
           }
@@ -624,7 +638,12 @@ describe('di', () => {
         containerRefreshEnd();
       }
 
-      expect(renderToHtml(Template, {})).toEqual('<div><span>ParentDirective-true</span></div>');
+      const defs = [
+        ChildDirective.ngDirectiveDef, Child2Directive.ngDirectiveDef,
+        ParentDirective.ngDirectiveDef
+      ];
+      expect(renderToHtml(Template, {}, defs))
+          .toEqual('<div parentdir=""><span child2dir="" childdir="">Directive-true</span></div>');
     });
 
     it('should inject from module Injector', () => {
@@ -635,7 +654,7 @@ describe('di', () => {
   describe('getOrCreateNodeInjector', () => {
     it('should handle initial undefined state', () => {
       const contentView =
-          createLView(-1, null !, createTView(), null, null, LViewFlags.CheckAlways);
+          createLView(-1, null !, createTView(null), null, null, LViewFlags.CheckAlways);
       const oldView = enterView(contentView, null !);
       try {
         const parent = createLNode(0, LNodeType.Element, null, null);

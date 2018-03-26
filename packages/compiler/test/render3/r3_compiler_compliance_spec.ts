@@ -92,11 +92,12 @@ describe('compiler compliance', () => {
       const ChildComponentDefinition = `
         static ngComponentDef = $r3$.ɵdefineComponent({
           type: ChildComponent,
-          tag: 'child',
+          selector: [[['child'], null]],
           factory: function ChildComponent_Factory() { return new ChildComponent(); },
           template: function ChildComponent_Template(ctx: IDENT, cm: IDENT) {
             if (cm) {
               $r3$.ɵT(0, 'child-view');
+           
             }
           }
         });`;
@@ -105,6 +106,7 @@ describe('compiler compliance', () => {
       const SomeDirectiveDefinition = `
         static ngDirectiveDef = $r3$.ɵdefineDirective({
           type: SomeDirective,
+          selector: [[[null, 'some-directive', ''], null]],
           factory: function SomeDirective_Factory() {return new SomeDirective(); }
         });
       `;
@@ -116,7 +118,7 @@ describe('compiler compliance', () => {
         …
         static ngComponentDef = $r3$.ɵdefineComponent({
           type: MyComponent,
-          tag: 'my-component',
+          selector: [[['my-component'], null]],
           factory: function MyComponent_Factory() { return new MyComponent(); },
           template: function MyComponent_Template(ctx: IDENT, cm: IDENT) {
             if (cm) {
@@ -161,6 +163,7 @@ describe('compiler compliance', () => {
       const HostBindingDirDeclaration = `
         static ngDirectiveDef = $r3$.ɵdefineDirective({
           type: HostBindingDir,
+          selector: [[[null, 'hostBindingDir', ''], null]],
           factory: function HostBindingDir_Factory() { return new HostBindingDir(); },
           hostBindings: function HostBindingDir_HostBindings(
               dirIndex: $number$, elIndex: $number$) {
@@ -203,6 +206,7 @@ describe('compiler compliance', () => {
       const IfDirectiveDefinition = `
         static ngDirectiveDef = $r3$.ɵdefineDirective({
           type: IfDirective,
+          selector: [[[null, 'if', ''], null]],
           factory: function IfDirective_Factory() { return new IfDirective($r3$.ɵinjectTemplateRef()); }
         });`;
       const MyComponentDefinition = `
@@ -211,7 +215,7 @@ describe('compiler compliance', () => {
         …
         static ngComponentDef = $r3$.ɵdefineComponent({
           type: MyComponent,
-          tag: 'my-component',
+          selector: [[['my-component'], null]],
           factory: function MyComponent_Factory() { return new MyComponent(); },
           template: function MyComponent_Template(ctx: IDENT, cm: IDENT) {
             if (cm) {
@@ -283,7 +287,7 @@ describe('compiler compliance', () => {
           …
           static ngComponentDef = $r3$.ɵdefineComponent({
             type: MyApp,
-            tag: 'my-app',
+            selector: [[['my-app'], null]],
             factory: function MyApp_Factory() { return new MyApp(); },
             template: function MyApp_Template(ctx: $MyApp$, cm: $boolean$) {
               if (cm) {
@@ -361,7 +365,7 @@ describe('compiler compliance', () => {
           …
           static ngComponentDef = $r3$.ɵdefineComponent({
             type: MyApp,
-            tag: 'my-app',
+            selector: [[['my-app'], null]],
             factory: function MyApp_Factory() { return new MyApp(); },
             template: function MyApp_Template(ctx: $MyApp$, cm: $boolean$) {
               if (cm) {
@@ -421,7 +425,7 @@ describe('compiler compliance', () => {
           …
           static ngComponentDef = $r3$.ɵdefineComponent({
             type: MyApp,
-            tag: 'my-app',
+            selector: [[['my-app'], null]],
             factory: function MyApp_Factory() { return new MyApp(); },
             template: function MyApp_Template(ctx: $MyApp$, cm: $boolean$) {
               if (cm) {
@@ -485,7 +489,7 @@ describe('compiler compliance', () => {
           …
           static ngComponentDef = $r3$.ɵdefineComponent({
             type: MyApp,
-            tag: 'my-app',
+            selector: [[['my-app'], null]],
             factory: function MyApp_Factory() { return new MyApp(); },
             template: function MyApp_Template(ctx: $MyApp$, cm: $boolean$) {
               if (cm) {
@@ -542,7 +546,7 @@ describe('compiler compliance', () => {
       const SimpleComponentDefinition = `
         static ngComponentDef = $r3$.ɵdefineComponent({
           type: SimpleComponent,
-          tag: 'simple',
+          selector: [[['simple'], null]],
           factory: function SimpleComponent_Factory() { return new SimpleComponent(); },
           template: function SimpleComponent_Template(ctx: IDENT, cm: IDENT) {
             if (cm) {
@@ -561,7 +565,7 @@ describe('compiler compliance', () => {
         …
         static ngComponentDef = $r3$.ɵdefineComponent({
           type: ComplexComponent,
-          tag: 'complex',
+          selector: [[['complex'], null]],
           factory: function ComplexComponent_Factory() { return new ComplexComponent(); },
           template: function ComplexComponent_Template(ctx: IDENT, cm: IDENT) {
             if (cm) {
@@ -627,7 +631,7 @@ describe('compiler compliance', () => {
           …
           static ngComponentDef = $r3$.ɵdefineComponent({
             type: ViewQueryComponent,
-            tag: 'view-query-component',
+            selector: [[['view-query-component'], null]],
             factory: function ViewQueryComponent_Factory() { return new ViewQueryComponent(); },
             template: function ViewQueryComponent_Template(ctx: $ViewQueryComponent$, cm: $boolean$) {
               var $tmp$: $any$;
@@ -685,7 +689,7 @@ describe('compiler compliance', () => {
         const ContentQueryComponentDefinition = `
           static ngComponentDef = $r3$.ɵdefineComponent({
             type: ContentQueryComponent,
-            tag: 'content-query-component',
+            selector: [[['content-query-component'], null]],
             factory: function ContentQueryComponent_Factory() {
               return [new ContentQueryComponent(), $r3$.ɵQ(null, SomeDirective, true)];
             },
@@ -768,7 +772,7 @@ describe('compiler compliance', () => {
             …
             static ngComponentDef = $r3$.ɵdefineComponent({
               type: MyApp,
-              tag: 'my-app',
+              selector: [[['my-app'], null]],
               factory: function MyApp_Factory() { return new MyApp(); },
               template: function MyApp_Template(ctx: IDENT, cm: IDENT) {
                 if (cm) {
@@ -809,7 +813,7 @@ describe('compiler compliance', () => {
         …
         static ngComponentDef = $r3$.ɵdefineComponent({
           type: MyComponent,
-          tag: 'my-component',
+          selector: [[['my-component'], null]],
           factory: function MyComponent_Factory() { return new MyComponent(); },
           template: function MyComponent_Template(ctx: IDENT, cm: IDENT) {
             if (cm) {
@@ -877,7 +881,7 @@ describe('compiler compliance', () => {
         const LifecycleCompDefinition = `
           static ngComponentDef = $r3$.ɵdefineComponent({
             type: LifecycleComp,
-            tag: 'lifecycle-comp',
+            selector: [[['lifecycle-comp'], null]],
             factory: function LifecycleComp_Factory() { return new LifecycleComp(); },
             template: function LifecycleComp_Template(ctx: IDENT, cm: IDENT) {},
             inputs: {nameMin: 'name'},
@@ -889,7 +893,7 @@ describe('compiler compliance', () => {
           …
           static ngComponentDef = $r3$.ɵdefineComponent({
             type: SimpleLayout,
-            tag: 'simple-layout',
+            selector: [[['simple-layout'], null]],
             factory: function SimpleLayout_Factory() { return new SimpleLayout(); },
             template: function SimpleLayout_Template(ctx: IDENT, cm: IDENT) {
               if (cm) {
@@ -997,6 +1001,7 @@ describe('compiler compliance', () => {
         const ForDirectiveDefinition = `
           static ngDirectiveDef = $r3$.ɵdefineDirective({
             type: ForOfDirective,
+            selector: [[[null, 'forOf', ''], null]],
             factory: function ForOfDirective_Factory() {
               return new ForOfDirective($r3$.ɵinjectViewContainerRef(), $r3$.ɵinjectTemplateRef());
             },
@@ -1010,7 +1015,7 @@ describe('compiler compliance', () => {
           …
           static ngComponentDef = $r3$.ɵdefineComponent({
             type: MyComponent,
-            tag: 'my-component',
+            selector: [[['my-component'], null]],
             factory: function MyComponent_Factory() { return new MyComponent(); },
             template: function MyComponent_Template(ctx: IDENT, cm: IDENT) {
               if (cm) {
@@ -1088,7 +1093,7 @@ describe('compiler compliance', () => {
           …
           static ngComponentDef = $r3$.ɵdefineComponent({
             type: MyComponent,
-            tag: 'my-component',
+            selector: [[['my-component'], null]],
             factory: function MyComponent_Factory() { return new MyComponent(); },
             template: function MyComponent_Template(ctx: IDENT, cm: IDENT) {
               if (cm) {

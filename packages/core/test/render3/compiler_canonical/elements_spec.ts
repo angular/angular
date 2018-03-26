@@ -32,7 +32,7 @@ describe('elements', () => {
       // NORMATIVE
       static ngComponentDef = $r3$.ɵdefineComponent({
         type: MyComponent,
-        tag: 'my-component',
+        selector: [[['my-component'], null]],
         factory: () => new MyComponent(),
         template: function(ctx: $MyComponent$, cm: $boolean$) {
           if (cm) {
@@ -69,7 +69,7 @@ describe('elements', () => {
       // NORMATIVE
       static ngComponentDef = $r3$.ɵdefineComponent({
         type: ListenerComp,
-        tag: 'listener-comp',
+        selector: [[['listener-comp'], null]],
         factory: function ListenerComp_Factory() { return new ListenerComp(); },
         template: function ListenerComp_Template(ctx: $ListenerComp$, cm: $boolean$) {
           if (cm) {
@@ -101,7 +101,7 @@ describe('elements', () => {
         // NORMATIVE
         static ngComponentDef = $r3$.ɵdefineComponent({
           type: MyComponent,
-          tag: 'my-component',
+          selector: [[['my-component'], null]],
           factory: function MyComponent_Factory() { return new MyComponent(); },
           template: function MyComponent_Template(ctx: $MyComponent$, cm: $boolean$) {
             if (cm) {
@@ -131,7 +131,7 @@ describe('elements', () => {
         // NORMATIVE
         static ngComponentDef = $r3$.ɵdefineComponent({
           type: MyComponent,
-          tag: 'my-component',
+          selector: [[['my-component'], null]],
           factory: function MyComponent_Factory() { return new MyComponent(); },
           template: function MyComponent_Template(ctx: $MyComponent$, cm: $boolean$) {
             if (cm) {
@@ -161,7 +161,7 @@ describe('elements', () => {
         // NORMATIVE
         static ngComponentDef = $r3$.ɵdefineComponent({
           type: MyComponent,
-          tag: 'my-component',
+          selector: [[['my-component'], null]],
           factory: function MyComponent_Factory() { return new MyComponent(); },
           template: function MyComponent_Template(ctx: $MyComponent$, cm: $boolean$) {
             if (cm) {
@@ -195,7 +195,7 @@ describe('elements', () => {
         // NORMATIVE
         static ngComponentDef = $r3$.ɵdefineComponent({
           type: MyComponent,
-          tag: 'my-component',
+          selector: [[['my-component'], null]],
           factory: function MyComponent_Factory() { return new MyComponent(); },
           template: function MyComponent_Template(ctx: $MyComponent$, cm: $boolean$) {
             if (cm) {
@@ -243,7 +243,7 @@ describe('elements', () => {
         // NORMATIVE
         static ngComponentDef = $r3$.ɵdefineComponent({
           type: MyComponent,
-          tag: 'my-component',
+          selector: [[['my-component'], null]],
           factory: function MyComponent_Factory() { return new MyComponent(); },
           template: function MyComponent_Template(ctx: $MyComponent$, cm: $boolean$) {
             if (cm) {
@@ -277,7 +277,7 @@ describe('elements', () => {
         // NORMATIVE
         static ngComponentDef = $r3$.ɵdefineComponent({
           type: StyleComponent,
-          tag: 'style-comp',
+          selector: [[['style-comp'], null]],
           factory: function StyleComponent_Factory() { return new StyleComponent(); },
           template: function StyleComponent_Template(ctx: $StyleComponent$, cm: $boolean$) {
             if (cm) {

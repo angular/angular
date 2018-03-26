@@ -14,7 +14,7 @@ import {ComponentRef as viewEngine_ComponentRef} from '../linker/component_facto
 
 import {assertComponentType, assertNotNull} from './assert';
 import {queueInitHooks, queueLifecycleHooks} from './hooks';
-import {CLEAN_PROMISE, _getComponentHostLElementNode, baseDirectiveCreate, createLView, createTView, enterView, getRootView, hostElement, initChangeDetectorIfExisting, locateHostElement, renderComponentOrTemplate} from './instructions';
+import {CLEAN_PROMISE, ROOT_DIRECTIVE_INDICES, _getComponentHostLElementNode, baseDirectiveCreate, createLView, createTView, detectChangesInternal, enterView, executeInitAndContentHooks, getRootView, hostElement, initChangeDetectorIfExisting, leaveView, locateHostElement, setHostBindings} from './instructions';
 import {ComponentDef, ComponentType} from './interfaces/definition';
 import {LElementNode, TNodeFlags} from './interfaces/node';
 import {RElement, RendererFactory3, domRendererFactory3} from './interfaces/renderer';
@@ -123,7 +123,9 @@ export function renderComponent<T>(
   const componentDef = (componentType as ComponentType<T>).ngComponentDef as ComponentDef<T>;
   if (componentDef.type != componentType) componentDef.type = componentType;
   let component: T;
-  const hostNode = locateHostElement(rendererFactory, opts.host || componentDef.tag);
+  // TODO: Replace when flattening CssSelector type
+  const componentTag = componentDef.selector ![0] ![0] ![0];
+  const hostNode = locateHostElement(rendererFactory, opts.host || componentTag);
   const rootContext: RootContext = {
     // Incomplete initialization due to circular reference.
     component: null !,
@@ -131,28 +133,32 @@ export function renderComponent<T>(
     clean: CLEAN_PROMISE,
   };
   const rootView = createLView(
-      -1, rendererFactory.createRenderer(hostNode, componentDef.rendererType), createTView(), null,
-      rootContext, componentDef.onPush ? LViewFlags.Dirty : LViewFlags.CheckAlways);
+      -1, rendererFactory.createRenderer(hostNode, componentDef.rendererType), createTView(null),
+      null, rootContext, componentDef.onPush ? LViewFlags.Dirty : LViewFlags.CheckAlways);
 
   const oldView = enterView(rootView, null !);
-
   let elementNode: LElementNode;
   try {
+    if (rendererFactory.begin) rendererFactory.begin();
+
     // Create element node at index 0 in data array
-    elementNode = hostElement(hostNode, componentDef);
+    elementNode = hostElement(componentTag, hostNode, componentDef);
+
     // Create directive instance with factory() and store at index 0 in directives array
     component = rootContext.component =
         baseDirectiveCreate(0, componentDef.factory(), componentDef) as T;
-    initChangeDetectorIfExisting(elementNode.nodeInjector, component);
+    initChangeDetectorIfExisting(elementNode.nodeInjector, component, elementNode.data !);
+
+    opts.hostFeatures && opts.hostFeatures.forEach((feature) => feature(component, componentDef));
+
+    executeInitAndContentHooks();
+    setHostBindings(ROOT_DIRECTIVE_INDICES);
+    detectChangesInternal(elementNode.data as LView, elementNode, componentDef, component);
   } finally {
-    // We must not use leaveView here because it will set creationMode to false too early,
-    // causing init-only hooks not to run. The detectChanges call below will execute
-    // leaveView at the appropriate time in the lifecycle.
-    enterView(oldView, null);
+    leaveView(oldView);
+    if (rendererFactory.end) rendererFactory.end();
   }
 
-  opts.hostFeatures && opts.hostFeatures.forEach((feature) => feature(component, componentDef));
-  renderComponentOrTemplate(elementNode, rootView, component);
   return component;
 }
 
