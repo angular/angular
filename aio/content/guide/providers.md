@@ -18,15 +18,7 @@ ng generate service User
   
 This creates a service called `UserService`, which will look similar to the code snippet shown below: 
 
-<code-example>
-
-@Injectable({
- // we declare that this service should be provided
- // by the root application injector
- 
- providedIn: 'root',
-})
-export class UserService {}
+<code-example path="providers/src/app/user.service.0.ts"  title="src/app/user.service.ts" linenums="false">
 </code-example>
 
 That's all you have to do - you can now inject `UserService` anywhere in your application. But how does it work?
@@ -43,22 +35,13 @@ Unless there is a special case, you should always provide your service in the ro
 
 It's also possible to specify that a service should be provided in a particular `@NgModule`. For example, if you don't want the `UserService` to be available to applications unless they import a `UserModule` you've created, you can specify that the service should be provided in the module:
 
-<code-example>
-@Injectable({ 
 
-    providedIn: UserModule, 
-    }) 
-export class UserService {}
+<code-example path="providers/src/app/user.service.1.ts"  title="src/app/user.service.1.ts" linenums="false">
 </code-example>
 
 This is the preferred way to provide a service in a module, and enables tree-shaking of the service if nothing injects it. If it's not possible to specify in the service which module should provide it, you can also declare a provider for the service within the module:
 
-<code-example>
-@NgModule({ 
-    
-    providers: [UserService],
-     }) 
-export class UserModule {}
+<code-example path="providers/src/app/user.module.ts"  title="src/app/user.module.ts" linenums="false">
 </code-example>
 
 ## Limiting provider scope by lazy loading modules

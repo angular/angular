@@ -104,41 +104,23 @@ For now it is sufficient to know that they configure where and how services are 
 
 There are many ways to register a service provider with an injector. In this section we will show three different ways to register a service provider. 
 
-
+{@ injectable-providers}
 ### _@Injectable_ providers
 
 The **[@Injectable()](api/core/Injectable)** decorator identifies services and other classes that are intended to be injected.
 
 Here we configure a provider for `HeroService` using the `@Injectable` decorator of the class. 
 
-<code-example>
-import { Injectable } from '@angular/core';
-
-@Injectable({
-  // we declare that this service should be created
-  // by the root application injector
-
-  providedIn: 'root'
-})
-export class HeroService {}
+<code-example path="dependency-injection/src/app/heroes/hero.service.0.ts"  title="src/app/heroes/heroes.service.ts" linenums="false">
 </code-example>
 
 `providedIn` here tells Angular that the root injector is responsible for creating an instance of `HeroService` (by invoking its constructor) and making it available across the application. The CLI will set up this kind of provider for you automatically when generating a new service.
 
 Sometimes it's not desirable to have a service always be provided in the application root injector. Perhaps users should explicitly opt-in to use the service, or the service should be provided in a lazily-loaded context. In this case, the provider should be associated with a specific `@NgModule` class, and will be used by whichever injector includes that module.
 
-In the following excerpt, a HeroModule has been created, and the `@Injectable` decorator is used to configure a provider that will be available in any injector that includes the `HeroModule`.
+In the following excerpt, the `@Injectable` decorator is used to configure a provider that will be available in any injector that includes the `HeroModule`.
 
-<code-example>
-import { Injectable } from '@angular/core';
-
-@Injectable({
-  // we declare that this service should be created
-  // by any injector that includes HeroModule.
-
-  providedIn: HeroModule,
-})
-export class HeroService {}
+<code-example path="dependency-injection/src/app/heroes/hero.service.1.2.ts"  title="src/app/heroes/hero.service.ts" linenums="false">
 </code-example>
 
 {@a register-providers-ngmodule}
@@ -432,28 +414,12 @@ Let us consider an example of non-tree-shakable providers in Angular.
 
 In this example, to provide services in Angular, you include them in an @NgModule:
 
-<code-example language="typescript">
-@Injectable()
-export class Service {}
-
-@NgModule({
-  providers: [Service],
-})
-export class ServiceModule {}
+<code-example path="dependency-injection/src/app/tree-shaking/service-and-module.ts"  title="src/app/tree-shaking/service-and-modules.ts" linenums="false">
 </code-example>
 
 This module can then be imported into your application module, to make the service available for injection in your app:
 
-<code-example  hideCopy language="typescript">
-@NgModule({
-  imports: [
-    BrowserModule,
-    RouterModule.forRoot(...),
-    ServiceModule,
-  ], ...
-})
-export class AppModule {}
-
+<code-example path="dependency-injection/src/app/tree-shaking/app.module.ts"  title="src/app/tree-shaking/app.modules.ts" linenums="false">
 </code-example>
 
 When `ngc` runs, it compiles AppModule into a module factory, which contains definitions for all the providers declared in all the modules it includes. At runtime, this factory will become an Injector which will instantiate these services.
@@ -466,33 +432,16 @@ To create providers that are tree-shakable, the information that used to be spec
 
 Here is the tree-shakeable equivalent to the Service / ServiceModule example above:
 
-<code-example language="typescript">
-// Note that ServiceModule here is empty, it doesn't declare
-// any providers of its own.
-@NgModule({})
-export class ServiceModule {}
-
-@Injectable({
-
-  providedIn: 'root'
-})
-export class Service {}
+<code-example path="dependency-injection/src/app/tree-shaking/service.ts"  title="src/app/tree-shaking/service.ts" linenums="false">
 </code-example>
+
 
 Here, `providedIn` allows you to declare the injector which injects this service. Unless there is a special case the value should always be `root`.  This ensures that the service will be scoped to the root injector, without needing to name a particular module that will be present in that injector.
 
 The service can be instantiated by configuring a factory function as shown below:
 
-<code-example language="typescript">
-@Injectable({
-  providedIn: 'root'
-  //useExisting, useClass, and useValue are also supported
-  useFactory: (dep: string) => new Service(dep),
-  deps: [...],
-})
-export class Service {...}
+<code-example path="dependency-injection/src/app/tree-shaking/service.0.ts"  title="src/app/tree-shaking/service.ts" linenums="false">
 </code-example>
-
 
 {@a injector-config}
 {@a bootstrap}

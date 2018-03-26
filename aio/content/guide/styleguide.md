@@ -4714,21 +4714,8 @@ that instance of the service is shared and available in every class that needs t
 </div>
 
 
-
-<code-example>
-
-  @NgModule({})
-  export class ServiceModule {}
-
-  @Injectable({
-
-    providedIn: 'root'
-  })
-  export class Service {}
-
+<code-example path="dependency-injection/src/app/tree-shaking/service.ts"  title="src/app/treeshaking/service.ts" linenums="false">
 </code-example>
-
-
 
 <a href="#toc">Back to top</a>
 
