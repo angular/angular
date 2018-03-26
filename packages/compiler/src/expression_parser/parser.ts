@@ -670,7 +670,7 @@ export class _ParseAST {
   }
 
   /**
-   * An identifier, a keyword, a string with an optional `-` between.
+   * An identifier, a keyword, a string with an optional `-` in between.
    */
   expectTemplateBindingKey(): string {
     let result = '';
