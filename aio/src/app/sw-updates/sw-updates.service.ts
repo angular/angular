@@ -1,6 +1,6 @@
 import { ApplicationRef, Injectable, OnDestroy } from '@angular/core';
 import { NgServiceWorker } from '@angular/service-worker';
-import { concat, of, Subject } from 'rxjs';
+import { concat, Subject } from 'rxjs';
 import { debounceTime, defaultIfEmpty, filter, first, map, startWith, takeUntil, tap } from 'rxjs/operators';
 
 import { Logger } from 'app/shared/logger.service';
