@@ -172,7 +172,7 @@ Each of the class decorators' class transformer creates a corresponding static m
 
 #### Compiling a template
 
-A template is compiled using the `TemplateCompiler` performs the following:
+A template is compiled in `TemplateCompiler` by performing the following:
 
 1. Tokenizes the template 
 2. Parses the tokens into an HTML AST
@@ -185,9 +185,9 @@ The Angular Template AST transformed and annotated version of the HTML AST that 
 2. Collects references (`#` attribute) and variables (`let-` attributes).
 3. Parses and converts binding expressions in the binding expression AST using the variables and references collected
 
-As part of this conversion an exhaustive list of selector targets is also produced that describes the potential targets of the selectors of any component, directive or pipe. For the purpose of this document, the name of the pipe is treated as a pipe selector and the expression reference in a binding expression is a potential target of that selector. This list is used in reference inversion.
+As part of this conversion an exhaustive list of selector targets is also produced that describes the potential targets of the selectors of any component, directive or pipe. For the purpose of this document, the name of the pipe is treated as a pipe selector and the expression reference in a binding expression is a potential target of that selector. This list is used in reference inversion discussed below.
 
-The TemplateCompiler can produce a template function from a string without additional information. However, correct interpretation of that string requires a selector scope discussed below.
+The `TemplateCompiler` can produce a template function from a string without additional information. However, correct interpretation of that string requires a selector scope discussed below. The selector scope is built at runtime allowing the runtime to use a function built from just a string as long as it is given a selector scope (e.g. an NgModule) to use during instantiation.
 
 #### Type checking a template
 
@@ -195,11 +195,11 @@ TODO(chuckj)
 
 #### The selector problem 
 
-To interpret the content of a template, the runtime needs to know what component and directives to apply to the element and what pipes are referenced by binding expressions. The list of candidate components, directives and pipes are determined by the `NgModule` in which the component is declared. Since the module and component are in separate source files, mapping which components, directives and pipes referenced is left to runtime. Unfortunately, this leads to a tree-shaking problem. Since there no direct link between the component and types the component references then all components, directives and pipes declared in the module, and any module imported from the module, must be available at runtime or risk the template failing to be interpreted correctly. Including everything leads to very large programs containing many components the application doesn't actually use.
+To interpret the content of a template, the runtime needs to know what component and directives to apply to the element and what pipes are referenced by binding expressions. The list of candidate components, directives and pipes are determined by the `NgModule` in which the component is declared. Since the module and component are in separate source files, mapping which components, directives and pipes referenced is left to the runtime. Unfortunately, this leads to a tree-shaking problem. Since there no direct link between the component and types the component references then all components, directives and pipes declared in the module, and any module imported from the module, must be available at runtime or risk the template failing to be interpreted correctly. Including everything can lead to a very large program which contains many components the application doesn't actually use.
 
-The process of removing unused code is traditionally referred to as "tree-shaking". Determine what codes is necessary to include a tree-shakers produces the transitive closure of all the code referenced by the bootstrap function. If the bootstrap code references a module then the tree-shaker will include everything imported or declared into the module which might be quite large.
+The process of removing unused code is traditionally referred to as "tree-shaking". To determine what codes is necessary to include, a tree-shakers produces the transitive closure of all the code referenced by the bootstrap function. If the bootstrap code references a module then the tree-shaker will include everything imported or declared into the module.
 
-This problem can be avoided if the component would contain a list of the components, directives, and pipes on which it depends and then module could be ignored altogether. The program then need only contain the types the initial component rendered depends on and on any types those dependencies require.
+This problem can be avoided if the component would contain a list of the components, directives, and pipes on which it depends allowing the module to be ignored altogether. The program then need only contain the types the initial component rendered depends on and on any types those dependencies require.
 
 The process of determining this list is called reference inversion because it inverts the link from the module (which hold the dependencies) to component into a link from the component to its dependencies.
 
@@ -214,7 +214,7 @@ The process of reference inversion is to turn the list of selector targets produ
     - Add the exported components, directives, and pipes
     - Repeat these sub-steps for with each exported module
 
-For each type in the list parse the selector and convert them all into a selector matcher that, given a target, produces the type that matches the selector. This is referred to as the selector scope.
+For each type in the list produced above, parse the selector and convert them all into a selector matcher that, given a target, produces the type that matches the selector. This is referred to as the selector scope.
 
 Given a selector scope, a dependency list is formed by producing the set of types that are matched in selector scope from the selector target list produced by the template compiler.
 
