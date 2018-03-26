@@ -310,6 +310,7 @@ groups:
     users:
       - andrewseguin #primary
       - gkalpak
+      - robwormald
       - IgorMinar #fallback
       - mhevery #fallback
 
@@ -365,4 +366,5 @@ groups:
       - petebacondarwin
       - gkalpak
       - IgorMinar
+      - robwormald
       - mhevery #fallback
