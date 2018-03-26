@@ -113,23 +113,6 @@ describe('extract_i18n command line', () => {
     if (isInBazel()) {
       const support = setup();
       write = (fileName: string, content: string) => { support.write(fileName, content); };
-      write('tsconfig-base.json', `{
-        "compilerOptions": {
-          "experimentalDecorators": true,
-          "skipLibCheck": true,
-          "noImplicitAny": true,
-          "types": [],
-          "outDir": "built",
-          "rootDir": ".",
-          "baseUrl": ".",
-          "declaration": true,
-          "target": "es5",
-          "module": "es2015",
-          "moduleResolution": "node",
-          "lib": ["es6", "dom"],
-          "typeRoots": ["node_modules/@types"]
-        }
-      }`);
       basePath = support.basePath;
       outDir = path.join(basePath, 'built');
     } else {
@@ -142,23 +125,6 @@ describe('extract_i18n command line', () => {
         }
         fs.writeFileSync(path.join(basePath, fileName), content, {encoding: 'utf-8'});
       };
-      write('tsconfig-base.json', `{
-        "compilerOptions": {
-          "experimentalDecorators": true,
-          "skipLibCheck": true,
-          "noImplicitAny": true,
-          "types": [],
-          "outDir": "built",
-          "rootDir": ".",
-          "baseUrl": ".",
-          "declaration": true,
-          "target": "es5",
-          "module": "es2015",
-          "moduleResolution": "node",
-          "lib": ["es6", "dom"],
-          "typeRoots": ["node_modules/@types"]
-        }
-      }`);
       outDir = path.resolve(basePath, 'built');
       const ngRootDir = getNgRootDir();
       const nodeModulesPath = path.resolve(basePath, 'node_modules');
@@ -169,6 +135,23 @@ describe('extract_i18n command line', () => {
       fs.symlinkSync(
           path.resolve(ngRootDir, 'node_modules', 'rxjs'), path.resolve(nodeModulesPath, 'rxjs'));
     }
+    write('tsconfig-base.json', `{
+      "compilerOptions": {
+        "experimentalDecorators": true,
+        "skipLibCheck": true,
+        "noImplicitAny": true,
+        "types": [],
+        "outDir": "built",
+        "rootDir": ".",
+        "baseUrl": ".",
+        "declaration": true,
+        "target": "es5",
+        "module": "es2015",
+        "moduleResolution": "node",
+        "lib": ["es6", "dom"],
+        "typeRoots": ["node_modules/@types"]
+      }
+    }`);
   });
 
   function writeSources() {
