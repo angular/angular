@@ -31,7 +31,7 @@ describe('renderer factory lifecycle', () => {
   class SomeComponent {
     static ngComponentDef = defineComponent({
       type: SomeComponent,
-      tag: 'some-component',
+      selector: [[['some-component'], null]],
       template: function(ctx: SomeComponent, cm: boolean) {
         logs.push('component');
         if (cm) {
@@ -45,7 +45,7 @@ describe('renderer factory lifecycle', () => {
   class SomeComponentWhichThrows {
     static ngComponentDef = defineComponent({
       type: SomeComponentWhichThrows,
-      tag: 'some-component-with-Error',
+      selector: [[['some-component-with-Error'], null]],
       template: function(ctx: SomeComponentWhichThrows, cm: boolean) {
         throw(new Error('SomeComponentWhichThrows threw'));
       },
@@ -60,11 +60,13 @@ describe('renderer factory lifecycle', () => {
     }
   }
 
+  const defs = [SomeComponent.ngComponentDef, SomeComponentWhichThrows.ngComponentDef];
+
   function TemplateWithComponent(ctx: any, cm: boolean) {
     logs.push('function_with_component');
     if (cm) {
       text(0, 'bar');
-      elementStart(1, SomeComponent);
+      elementStart(1, 'some-component');
       elementEnd();
     }
   }
@@ -86,7 +88,7 @@ describe('renderer factory lifecycle', () => {
   });
 
   it('should work with a template', () => {
-    renderToHtml(Template, {}, rendererFactory);
+    renderToHtml(Template, {}, [], rendererFactory);
     expect(logs).toEqual(['create', 'begin', 'function', 'end']);
 
     logs = [];
@@ -95,12 +97,12 @@ describe('renderer factory lifecycle', () => {
   });
 
   it('should work with a template which contains a component', () => {
-    renderToHtml(TemplateWithComponent, {}, rendererFactory);
+    renderToHtml(TemplateWithComponent, {}, defs, rendererFactory);
     expect(logs).toEqual(
         ['create', 'begin', 'function_with_component', 'create', 'component', 'end']);
 
     logs = [];
-    renderToHtml(TemplateWithComponent, {});
+    renderToHtml(TemplateWithComponent, {}, defs);
     expect(logs).toEqual(['begin', 'function_with_component', 'component', 'end']);
   });
 
@@ -122,7 +124,7 @@ describe('animation renderer factory', () => {
   class SomeComponent {
     static ngComponentDef = defineComponent({
       type: SomeComponent,
-      tag: 'some-component',
+      selector: [[['some-component'], null]],
       template: function(ctx: SomeComponent, cm: boolean) {
         if (cm) {
           text(0, 'foo');
@@ -139,7 +141,7 @@ describe('animation renderer factory', () => {
     }
     static ngComponentDef = defineComponent({
       type: SomeComponentWithAnimation,
-      tag: 'some-component',
+      selector: [[['some-component'], null]],
       template: function(ctx: SomeComponentWithAnimation, cm: boolean) {
         if (cm) {
           elementStart(0, 'div');

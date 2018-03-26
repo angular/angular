@@ -6,9 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {defineComponent} from '../../src/render3/definition';
 import {bind, container, containerRefreshEnd, containerRefreshStart, elementEnd, elementStart, embeddedViewEnd, embeddedViewStart, text, textBinding} from '../../src/render3/instructions';
 
-import {renderToHtml} from './render_util';
+import {ComponentFixture, createComponent, renderToHtml} from './render_util';
 
 describe('JS control flow', () => {
   it('should work with if block', () => {
@@ -530,6 +531,136 @@ describe('JS control flow', () => {
 
     ctx.condition = true;
     expect(renderToHtml(Template, ctx)).toEqual('<div><span>Hello</span></div>');
+  });
+
+  it('should work with sibling if blocks with children', () => {
+    let log: string[] = [];
+
+    // Intentionally duplicating the templates in test below so we are
+    // testing the behavior on firstTemplatePass for each of these tests
+    class Comp {
+      static ngComponentDef = defineComponent({
+        type: Comp,
+        selector: [[['comp'], null]],
+        factory: () => {
+          log.push('comp!');
+          return new Comp();
+        },
+        template: function(ctx: Comp, cm: boolean) {}
+      });
+    }
+
+    class App {
+      condition = true;
+      condition2 = true;
+
+      static ngComponentDef = defineComponent({
+        type: App,
+        selector: [[['app'], null]],
+        factory: () => new App(),
+        template: function(ctx: any, cm: boolean) {
+          if (cm) {
+            elementStart(0, 'div');
+            elementEnd();
+            container(1);
+            container(2);
+          }
+          containerRefreshStart(1);
+          {
+            if (ctx.condition) {
+              if (embeddedViewStart(0)) {
+                elementStart(0, 'comp');
+                elementEnd();
+              }
+              embeddedViewEnd();
+            }
+          }
+          containerRefreshEnd();
+          containerRefreshStart(2);
+          {
+            if (ctx.condition2) {
+              if (embeddedViewStart(0)) {
+                elementStart(0, 'comp');
+                elementEnd();
+              }
+              embeddedViewEnd();
+            }
+          }
+          containerRefreshEnd();
+        },
+        directiveDefs: () => [Comp.ngComponentDef]
+      });
+    }
+
+    const fixture = new ComponentFixture(App);
+    expect(log).toEqual(['comp!', 'comp!']);
+  });
+
+  it('should work with a sibling if block that starts closed', () => {
+    let log: string[] = [];
+
+    // Intentionally duplicating the templates from above so we are
+    // testing the behavior on firstTemplatePass for each of these tests
+    class Comp {
+      static ngComponentDef = defineComponent({
+        type: Comp,
+        selector: [[['comp'], null]],
+        factory: () => {
+          log.push('comp!');
+          return new Comp();
+        },
+        template: function(ctx: Comp, cm: boolean) {}
+      });
+    }
+
+    class App {
+      condition = false;
+      condition2 = true;
+
+      static ngComponentDef = defineComponent({
+        type: App,
+        selector: [[['app'], null]],
+        factory: () => new App(),
+        template: function(ctx: any, cm: boolean) {
+          if (cm) {
+            elementStart(0, 'div');
+            elementEnd();
+            container(1);
+            container(2);
+          }
+          containerRefreshStart(1);
+          {
+            if (ctx.condition) {
+              if (embeddedViewStart(0)) {
+                elementStart(0, 'comp');
+                elementEnd();
+              }
+              embeddedViewEnd();
+            }
+          }
+          containerRefreshEnd();
+          containerRefreshStart(2);
+          {
+            if (ctx.condition2) {
+              if (embeddedViewStart(0)) {
+                elementStart(0, 'comp');
+                elementEnd();
+              }
+              embeddedViewEnd();
+            }
+          }
+          containerRefreshEnd();
+        },
+        directiveDefs: () => [Comp.ngComponentDef]
+      });
+    }
+
+    const fixture = new ComponentFixture(App);
+    expect(log).toEqual(['comp!']);
+
+    fixture.component.condition = true;
+    fixture.update();
+    expect(log).toEqual(['comp!', 'comp!']);
   });
 });
 

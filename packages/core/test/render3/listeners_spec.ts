@@ -24,7 +24,7 @@ describe('event listeners', () => {
 
     static ngComponentDef = defineComponent({
       type: MyComp,
-      tag: 'comp',
+      selector: [[['comp'], null]],
       /** <button (click)="onClick()"> Click me </button> */
       template: function CompTemplate(ctx: any, cm: boolean) {
         if (cm) {
@@ -61,7 +61,7 @@ describe('event listeners', () => {
 
     static ngComponentDef = defineComponent({
       type: PreventDefaultComp,
-      tag: 'prevent-default-comp',
+      selector: [[['prevent-default-comp'], null]],
       factory: () => new PreventDefaultComp(),
       /** <button (click)="onClick($event)">Click</button> */
       template: (ctx: PreventDefaultComp, cm: boolean) => {
@@ -235,6 +235,7 @@ describe('event listeners', () => {
 
       static ngDirectiveDef = defineDirective({
         type: HostListenerDir,
+        selector: [[['', 'hostListenerDir', ''], null]],
         factory: function HostListenerDir_Factory() {
           const $dir$ = new HostListenerDir();
           listener('click', function() { return $dir$.onClick(); });
@@ -245,13 +246,13 @@ describe('event listeners', () => {
 
     function Template(ctx: any, cm: boolean) {
       if (cm) {
-        elementStart(0, 'button', ['hostListenerDir', ''], [HostListenerDir]);
+        elementStart(0, 'button', ['hostListenerDir', '']);
         text(1, 'Click');
         elementEnd();
       }
     }
 
-    renderToHtml(Template, {});
+    renderToHtml(Template, {}, [HostListenerDir.ngDirectiveDef]);
     const button = containerEl.querySelector('button') !;
     button.click();
     expect(events).toEqual(['click!']);
@@ -337,9 +338,9 @@ describe('event listeners', () => {
         if (ctx.showing) {
           if (embeddedViewStart(0)) {
             text(0, 'Hello');
-            elementStart(1, MyComp);
+            elementStart(1, 'comp');
             elementEnd();
-            elementStart(2, MyComp);
+            elementStart(2, 'comp');
             elementEnd();
           }
           embeddedViewEnd();
@@ -349,7 +350,7 @@ describe('event listeners', () => {
     }
 
     const ctx = {showing: true};
-    renderToHtml(Template, ctx);
+    renderToHtml(Template, ctx, [MyComp.ngComponentDef]);
     const buttons = containerEl.querySelectorAll('button') !;
 
     buttons[0].click();
@@ -360,7 +361,7 @@ describe('event listeners', () => {
 
     // the child view listener should be removed when the parent view is removed
     ctx.showing = false;
-    renderToHtml(Template, ctx);
+    renderToHtml(Template, ctx, [MyComp.ngComponentDef]);
     buttons[0].click();
     buttons[1].click();
     expect(comps[0] !.counter).toEqual(1);

@@ -37,7 +37,7 @@ export class TreeComponent {
   /** @nocollapse */
   static ngComponentDef: ComponentDef<TreeComponent> = defineComponent({
     type: TreeComponent,
-    tag: 'tree',
+    selector: [[['tree'], null]],
     template: function(ctx: TreeComponent, cm: boolean) {
       if (cm) {
         E(0, 'span');
@@ -54,7 +54,7 @@ export class TreeComponent {
           let cm0 = V(0);
           {
             if (cm0) {
-              E(0, TreeComponent);
+              E(0, 'tree');
               e();
             }
             p(0, 'data', b(ctx.data.left));
@@ -69,7 +69,7 @@ export class TreeComponent {
           let cm0 = V(0);
           {
             if (cm0) {
-              E(0, TreeComponent);
+              E(0, 'tree');
               e();
             }
             p(0, 'data', b(ctx.data.right));
@@ -80,7 +80,8 @@ export class TreeComponent {
       cr();
     },
     factory: () => new TreeComponent,
-    inputs: {data: 'data'}
+    inputs: {data: 'data'},
+    directiveDefs: () => [TreeComponent.ngComponentDef]
   });
 }
 
@@ -90,7 +91,7 @@ export class TreeFunction {
   /** @nocollapse */
   static ngComponentDef: ComponentDef<TreeFunction> = defineComponent({
     type: TreeFunction,
-    tag: 'tree',
+    selector: [[['tree'], null]],
     template: function(ctx: TreeFunction, cm: boolean) {
       // bit of a hack
       TreeTpl(ctx.data, cm);

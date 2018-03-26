@@ -18,6 +18,7 @@ describe('ViewContainerRef', () => {
 
     static ngDirectiveDef = defineDirective({
       type: TestDirective,
+      selector: [[['', 'testDir', ''], null]],
       factory: () => new TestDirective(injectViewContainerRef(), injectTemplateRef(), ),
     });
   }
@@ -27,7 +28,7 @@ describe('ViewContainerRef', () => {
 
     static ngComponentDef = defineComponent({
       type: TestComponent,
-      tag: 'test-cmp',
+      selector: [[['test-cmp'], null]],
       factory: () => new TestComponent(),
       template: (cmp: TestComponent, cm: boolean) => {
         if (cm) {
@@ -37,12 +38,13 @@ describe('ViewContainerRef', () => {
             }
             textBinding(0, bind(ctx.$implicit));
           };
-          container(0, [TestDirective], subTemplate);
+          container(0, subTemplate, undefined, ['testDir', '']);
         }
         containerRefreshStart(0);
         cmp.testDir = loadDirective<TestDirective>(0);
         containerRefreshEnd();
       },
+      directiveDefs: [TestDirective.ngDirectiveDef]
     });
   }
 

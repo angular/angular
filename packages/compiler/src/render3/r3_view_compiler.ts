@@ -60,6 +60,9 @@ export function compileDirective(
   // e.g. 'type: MyDirective`
   field('type', outputCtx.importExpr(directive.type.reference));
 
+  // e.g. `selector: [[[null, 'someDir', ''], null]]`
+  field('selector', createDirectiveSelector(directive.selector !));
+
   // e.g. `factory: () => new MyApp(injectElementRef())`
   field('factory', createFactory(directive.type, outputCtx, reflector, directive.queries));
 
@@ -118,13 +121,11 @@ export function compileComponent(
   // e.g. `type: MyApp`
   field('type', outputCtx.importExpr(component.type.reference));
 
-  // e.g. `tag: 'my-app'`
-  // This is optional and only included if the first selector of a component has element.
+  // e.g. `selector: [[['my-app'], null]]`
+  field('selector', createDirectiveSelector(component.selector !));
+
   const selector = component.selector && CssSelector.parse(component.selector);
   const firstSelector = selector && selector[0];
-  if (firstSelector && firstSelector.hasElementSelector()) {
-    field('tag', o.literal(firstSelector.element));
-  }
 
   // e.g. `attr: ["class", ".my.app"]
   // This is optional an only included if the first selector of a component specifies attributes.
@@ -915,6 +916,11 @@ export function createFactory(
 type HostBindings = {
   [key: string]: string
 };
+
+// Turn a directive selector into an R3-compatible selector for directive def
+function createDirectiveSelector(selector: string): o.Expression {
+  return asLiteral(parseSelectorsToR3Selector(CssSelector.parse(selector)));
+}
 
 function createHostAttributesArray(
     directiveMetadata: CompileDirectiveMetadata, outputCtx: OutputContext): o.Expression|null {

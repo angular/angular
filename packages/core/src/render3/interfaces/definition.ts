@@ -12,7 +12,7 @@ import {Provider} from '../../core';
 import {RendererType2} from '../../render/api';
 import {Type} from '../../type';
 import {resolveRendererType2} from '../../view/util';
-
+import {CssSelector} from './projection';
 
 
 /**
@@ -60,6 +60,9 @@ export interface DirectiveDef<T> {
 
   /** Function that makes a directive public to the DI system. */
   diPublic: ((def: DirectiveDef<any>) => void)|null;
+
+  /** The selector that will be used to match nodes to this directive. */
+  selector: CssSelector;
 
   /**
    * A dictionary mapping the inputs' minified property names to their public API names, which
@@ -123,13 +126,6 @@ export interface DirectiveDef<T> {
  */
 export interface ComponentDef<T> extends DirectiveDef<T> {
   /**
-   * The tag name which should be used by the component.
-   *
-   * NOTE: only used with component directives.
-   */
-  readonly tag: string;
-
-  /**
    * The View template of the component.
    *
    * NOTE: only used with component directives.
@@ -157,6 +153,14 @@ export interface ComponentDef<T> extends DirectiveDef<T> {
    * children only.
    */
   readonly viewProviders?: Provider[];
+
+  /**
+   * Registry of directives and components that may be found in this view.
+   *
+   * The property is either an array of `DirectiveDef`s or a function which returns the array of
+   * `DirectiveDef`s. The function is necessary to be able to support forward declarations.
+   */
+  directiveDefs: DirectiveDefListOrFactory|null;
 }
 
 /**
@@ -194,6 +198,15 @@ export interface PipeDef<T> {
 
 export type DirectiveDefFeature = <T>(directiveDef: DirectiveDef<T>) => void;
 export type ComponentDefFeature = <T>(componentDef: ComponentDef<T>) => void;
+
+/**
+ * Type used for directiveDefs on component definition.
+ *
+ * The function is necessary to be able to support forward declarations.
+ */
+export type DirectiveDefListOrFactory = (() => DirectiveDefList) | DirectiveDefList;
+
+export type DirectiveDefList = (DirectiveDef<any>| ComponentDef<any>)[];
 
 // Note: This hack is necessary so we don't erroneously get a circular dependency
 // failure based on types.

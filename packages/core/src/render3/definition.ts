@@ -16,7 +16,8 @@ import {Type} from '../type';
 import {resolveRendererType2} from '../view/util';
 
 import {diPublic} from './di';
-import {ComponentDef, ComponentDefFeature, ComponentTemplate, DirectiveDef, DirectiveDefFeature, PipeDef} from './interfaces/definition';
+import {ComponentDef, ComponentDefFeature, ComponentTemplate, DirectiveDef, DirectiveDefFeature, DirectiveDefListOrFactory, PipeDef} from './interfaces/definition';
+import {CssSelector} from './interfaces/projection';
 
 
 
@@ -40,6 +41,9 @@ export function defineComponent<T>(componentDefinition: {
    * Directive type, needed to configure the injector.
    */
   type: Type<T>;
+
+  /** The selector that will be used to match nodes to this component. */
+  selector: CssSelector;
 
   /**
    * Factory method used to create an instance of directive.
@@ -89,11 +93,6 @@ export function defineComponent<T>(componentDefinition: {
    * See: {@link Directive.exportAs}
    */
   exportAs?: string;
-
-  /**
-   * HTML tag name to use in place where this component should be instantiated.
-   */
-  tag: string;
 
   /**
    * Template function use for rendering DOM.
@@ -147,13 +146,20 @@ export function defineComponent<T>(componentDefinition: {
    * Defines the set of injectable objects that are visible to its view DOM children.
    */
   viewProviders?: Provider[];
+
+  /**
+   * Registry of directives and components that may be found in this component's view.
+   *
+   * The property is either an array of `DirectiveDef`s or a function which returns the array of
+   * `DirectiveDef`s. The function is necessary to be able to support forward declarations.
+   */
+  directiveDefs?: DirectiveDefListOrFactory | null;
 }): ComponentDef<T> {
   const type = componentDefinition.type;
   const def = <ComponentDef<any>>{
     type: type,
     diPublic: null,
     factory: componentDefinition.factory,
-    tag: componentDefinition.tag || null !,
     template: componentDefinition.template || null !,
     hostBindings: componentDefinition.hostBindings || null,
     attributes: componentDefinition.attributes || null,
@@ -168,7 +174,9 @@ export function defineComponent<T>(componentDefinition: {
     afterViewInit: type.prototype.ngAfterViewInit || null,
     afterViewChecked: type.prototype.ngAfterViewChecked || null,
     onDestroy: type.prototype.ngOnDestroy || null,
-    onPush: componentDefinition.changeDetection === ChangeDetectionStrategy.OnPush
+    onPush: componentDefinition.changeDetection === ChangeDetectionStrategy.OnPush,
+    directiveDefs: componentDefinition.directiveDefs || null,
+    selector: componentDefinition.selector
   };
   const feature = componentDefinition.features;
   feature && feature.forEach((fn) => fn(def));
@@ -299,6 +307,9 @@ export const defineDirective = defineComponent as any as<T>(directiveDefinition:
    * Directive type, needed to configure the injector.
    */
   type: Type<T>;
+
+  /** The selector that will be used to match nodes to this directive. */
+  selector: CssSelector;
 
   /**
    * Factory method used to create an instance of directive.

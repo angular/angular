@@ -19,7 +19,7 @@ import {EmbeddedViewRef as viewEngine_EmbeddedViewRef, ViewRef as viewEngine_Vie
 import {Type} from '../type';
 
 import {assertLessThan, assertNotNull} from './assert';
-import {assertPreviousIsParent, getDirectiveInstance, getPreviousOrParentNode, getRenderer, renderEmbeddedTemplate} from './instructions';
+import {assertPreviousIsParent, enterView, getDirectiveInstance, getPreviousOrParentNode, getRenderer, isComponent, renderEmbeddedTemplate} from './instructions';
 import {ComponentTemplate, DirectiveDef} from './interfaces/definition';
 import {LInjector} from './interfaces/injector';
 import {LContainerNode, LElementNode, LNode, LNodeType, LViewNode, TNodeFlags} from './interfaces/node';
@@ -299,12 +299,10 @@ export function getOrCreateChangeDetectorRef(
   if (di.changeDetectorRef) return di.changeDetectorRef;
 
   const currentNode = di.node;
-  if (currentNode.data === null) {
-    // if data is null, this node is a regular element node (not a component)
-    return di.changeDetectorRef = getOrCreateHostChangeDetector(currentNode.view.node);
-  } else if (currentNode.type === LNodeType.Element) {
-    // if it's an element node with data, it's a component and context will be set later
+  if (isComponent(currentNode.tNode !)) {
     return di.changeDetectorRef = createViewRef(currentNode.data as LView, context);
+  } else if (currentNode.type === LNodeType.Element) {
+    return di.changeDetectorRef = getOrCreateHostChangeDetector(currentNode.view.node);
   }
   return null !;
 }
@@ -388,7 +386,7 @@ export function getOrCreateInjectable<T>(
       // The size of the node's directive's list is stored in certain bits of the node's flags,
       // so exact it with a mask and shift it back such that the bits reflect the real value.
       const flags = node.tNode !.flags;
-      const size = flags & TNodeFlags.SIZE_MASK;
+      const size = (flags & TNodeFlags.SIZE_MASK) >> TNodeFlags.SIZE_SHIFT;
 
       if (size !== 0) {
         // The start index of the directives list is also part of the node's flags, but there is
@@ -574,6 +572,9 @@ class ViewContainerRef implements viewEngine_ViewContainerRef {
   createEmbeddedView<C>(
       templateRef: viewEngine_TemplateRef<C>, context?: C|undefined,
       index?: number|undefined): viewEngine_EmbeddedViewRef<C> {
+    // set current view to container node's view
+    enterView(this._node.view, null);
+
     const viewRef = templateRef.createEmbeddedView(context !);
     this.insert(viewRef, index);
     return viewRef;
