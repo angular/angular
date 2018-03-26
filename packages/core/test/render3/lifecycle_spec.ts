@@ -14,10 +14,10 @@ import {containerEl, renderComponent, renderToHtml, requestAnimationFrame} from 
 
 describe('lifecycles', () => {
 
-  function getParentTemplate(type: any) {
+  function getParentTemplate(name: string) {
     return (ctx: any, cm: boolean) => {
       if (cm) {
-        elementStart(0, type);
+        elementStart(0, name);
         elementEnd();
       }
       elementProperty(0, 'val', bind(ctx.val));
@@ -37,23 +37,25 @@ describe('lifecycles', () => {
         elementEnd();
       }
     });
-    let Parent = createOnInitComponent('parent', getParentTemplate(Comp));
+    let Parent = createOnInitComponent('parent', getParentTemplate('comp'), [Comp.ngComponentDef]);
     let ProjectedComp = createOnInitComponent('projected', (ctx: any, cm: boolean) => {
       if (cm) {
         text(0, 'content');
       }
     });
 
-    function createOnInitComponent(name: string, template: ComponentTemplate<any>) {
+    function createOnInitComponent(
+        name: string, template: ComponentTemplate<any>, defs: any[] = []) {
       return class Component {
         val: string = '';
         ngOnInit() { events.push(`${name}${this.val}`); }
 
         static ngComponentDef = defineComponent({
           type: Component,
-          tag: name,
+          selector: [[[name], null]],
           factory: () => new Component(),
-          inputs: {val: 'val'}, template
+          inputs: {val: 'val'}, template,
+          directiveDefs: defs
         });
       };
     }
@@ -61,24 +63,30 @@ describe('lifecycles', () => {
     class Directive {
       ngOnInit() { events.push('dir'); }
 
-      static ngDirectiveDef = defineDirective({type: Directive, factory: () => new Directive()});
+      static ngDirectiveDef = defineDirective(
+          {type: Directive, selector: [[['', 'dir', ''], null]], factory: () => new Directive()});
     }
+
+    const defs = [
+      Comp.ngComponentDef, Parent.ngComponentDef, ProjectedComp.ngComponentDef,
+      Directive.ngDirectiveDef
+    ];
 
     it('should call onInit method after inputs are set in creation mode (and not in update mode)',
        () => {
          /** <comp [val]="val"></comp> */
          function Template(ctx: any, cm: boolean) {
            if (cm) {
-             elementStart(0, Comp);
+             elementStart(0, 'comp');
              elementEnd();
            }
            elementProperty(0, 'val', bind(ctx.val));
          }
 
-         renderToHtml(Template, {val: '1'});
+         renderToHtml(Template, {val: '1'}, defs);
          expect(events).toEqual(['comp1']);
 
-         renderToHtml(Template, {val: '2'});
+         renderToHtml(Template, {val: '2'}, defs);
          expect(events).toEqual(['comp1']);
        });
 
@@ -99,12 +107,12 @@ describe('lifecycles', () => {
 
       function Template(ctx: any, cm: boolean) {
         if (cm) {
-          elementStart(0, Parent);
+          elementStart(0, 'parent');
           elementEnd();
         }
       }
 
-      renderToHtml(Template, {});
+      renderToHtml(Template, {}, defs);
       expect(events).toEqual(['parent', 'comp']);
     });
 
@@ -118,16 +126,16 @@ describe('lifecycles', () => {
 
       function Template(ctx: any, cm: boolean) {
         if (cm) {
-          elementStart(0, Parent);
+          elementStart(0, 'parent');
           elementEnd();
-          elementStart(1, Parent);
+          elementStart(1, 'parent');
           elementEnd();
         }
         elementProperty(0, 'val', 1);
         elementProperty(1, 'val', 2);
       }
 
-      renderToHtml(Template, {});
+      renderToHtml(Template, {}, defs);
       expect(events).toEqual(['parent1', 'parent2', 'comp1', 'comp2']);
     });
 
@@ -147,7 +155,7 @@ describe('lifecycles', () => {
         {
           if (ctx.condition) {
             if (embeddedViewStart(0)) {
-              elementStart(0, Comp);
+              elementStart(0, 'comp');
               elementEnd();
             }
             embeddedViewEnd();
@@ -156,50 +164,50 @@ describe('lifecycles', () => {
         containerRefreshEnd();
       }
 
-      renderToHtml(Template, {condition: true});
+      renderToHtml(Template, {condition: true}, defs);
       expect(events).toEqual(['comp']);
 
-      renderToHtml(Template, {condition: false});
+      renderToHtml(Template, {condition: false}, defs);
       expect(events).toEqual(['comp']);
 
-      renderToHtml(Template, {condition: true});
+      renderToHtml(Template, {condition: true}, defs);
       expect(events).toEqual(['comp', 'comp']);
     });
 
     it('should call onInit in hosts before their content children', () => {
       /**
        * <comp>
-       *   <projected-comp></projected-comp>
+       *   <projected></projected>
        * </comp>
        */
       function Template(ctx: any, cm: boolean) {
         if (cm) {
-          elementStart(0, Comp);
-          { elementStart(1, ProjectedComp); }
+          elementStart(0, 'comp');
+          { elementStart(1, 'projected'); }
           elementEnd();
         }
       }
 
-      renderToHtml(Template, {});
+      renderToHtml(Template, {}, defs);
       expect(events).toEqual(['comp', 'projected']);
     });
 
     it('should call onInit in host and its content children before next host', () => {
       /**
        * <comp [val]="1">
-       *   <projected-comp [val]="1"></projected-comp>
+       *   <projected [val]="1"></projected>
        * </comp>
        * <comp [val]="2">
-       *   <projected-comp [val]="1"></projected-comp>
+       *   <projected [val]="1"></projected>
        * </comp>
        */
       function Template(ctx: any, cm: boolean) {
         if (cm) {
-          elementStart(0, Comp);
-          { elementStart(1, ProjectedComp); }
+          elementStart(0, 'comp');
+          { elementStart(1, 'projected'); }
           elementEnd();
-          elementStart(2, Comp);
-          { elementStart(3, ProjectedComp); }
+          elementStart(2, 'comp');
+          { elementStart(3, 'projected'); }
           elementEnd();
         }
         elementProperty(0, 'val', 1);
@@ -208,7 +216,7 @@ describe('lifecycles', () => {
         elementProperty(3, 'val', 2);
       }
 
-      renderToHtml(Template, {});
+      renderToHtml(Template, {}, defs);
       expect(events).toEqual(['comp1', 'projected1', 'comp2', 'projected2']);
     });
 
@@ -216,15 +224,15 @@ describe('lifecycles', () => {
       /** <comp directive></comp> */
       function Template(ctx: any, cm: boolean) {
         if (cm) {
-          elementStart(0, Comp, null, [Directive]);
+          elementStart(0, 'comp', ['dir', '']);
           elementEnd();
         }
       }
 
-      renderToHtml(Template, {});
+      renderToHtml(Template, {}, defs);
       expect(events).toEqual(['comp', 'dir']);
 
-      renderToHtml(Template, {});
+      renderToHtml(Template, {}, defs);
       expect(events).toEqual(['comp', 'dir']);
 
     });
@@ -233,15 +241,15 @@ describe('lifecycles', () => {
       /** <div directive></div> */
       function Template(ctx: any, cm: boolean) {
         if (cm) {
-          elementStart(0, 'div', null, [Directive]);
+          elementStart(0, 'div', ['dir', '']);
           elementEnd();
         }
       }
 
-      renderToHtml(Template, {});
+      renderToHtml(Template, {}, defs);
       expect(events).toEqual(['dir']);
 
-      renderToHtml(Template, {});
+      renderToHtml(Template, {}, defs);
       expect(events).toEqual(['dir']);
     });
 
@@ -256,10 +264,10 @@ describe('lifecycles', () => {
 
       function Template(ctx: any, cm: boolean) {
         if (cm) {
-          elementStart(0, Comp);
+          elementStart(0, 'comp');
           elementEnd();
           container(1);
-          elementStart(2, Comp);
+          elementStart(2, 'comp');
           elementEnd();
         }
         elementProperty(0, 'val', 1);
@@ -268,7 +276,7 @@ describe('lifecycles', () => {
         {
           for (let j = 2; j < 5; j++) {
             if (embeddedViewStart(0)) {
-              elementStart(0, Comp);
+              elementStart(0, 'comp');
               elementEnd();
             }
             elementProperty(0, 'val', j);
@@ -278,7 +286,7 @@ describe('lifecycles', () => {
         containerRefreshEnd();
       }
 
-      renderToHtml(Template, {});
+      renderToHtml(Template, {}, defs);
 
       // onInit is called top to bottom, so top level comps (1 and 5) are called
       // before the comps inside the for loop's embedded view (2, 3, and 4)
@@ -296,10 +304,10 @@ describe('lifecycles', () => {
 
       function Template(ctx: any, cm: boolean) {
         if (cm) {
-          elementStart(0, Parent);
+          elementStart(0, 'parent');
           elementEnd();
           container(1);
-          elementStart(2, Parent);
+          elementStart(2, 'parent');
           elementEnd();
         }
         elementProperty(0, 'val', 1);
@@ -308,7 +316,7 @@ describe('lifecycles', () => {
         {
           for (let j = 2; j < 5; j++) {
             if (embeddedViewStart(0)) {
-              elementStart(0, Parent);
+              elementStart(0, 'parent');
               elementEnd();
             }
             elementProperty(0, 'val', j);
@@ -318,7 +326,7 @@ describe('lifecycles', () => {
         containerRefreshEnd();
       }
 
-      renderToHtml(Template, {});
+      renderToHtml(Template, {}, defs);
 
       // onInit is called top to bottom, so top level comps (1 and 5) are called
       // before the comps inside the for loop's embedded view (2, 3, and 4)
@@ -340,9 +348,10 @@ describe('lifecycles', () => {
     });
 
     let Comp = createDoCheckComponent('comp', (ctx: any, cm: boolean) => {});
-    let Parent = createDoCheckComponent('parent', getParentTemplate(Comp));
+    let Parent = createDoCheckComponent('parent', getParentTemplate('comp'), [Comp.ngComponentDef]);
 
-    function createDoCheckComponent(name: string, template: ComponentTemplate<any>) {
+    function createDoCheckComponent(
+        name: string, template: ComponentTemplate<any>, defs: any[] = []) {
       return class Component {
         ngDoCheck() {
           events.push(name);
@@ -351,30 +360,37 @@ describe('lifecycles', () => {
 
         ngOnInit() { allEvents.push('init ' + name); }
 
-        static ngComponentDef =
-            defineComponent({type: Component, tag: name, factory: () => new Component(), template});
+        static ngComponentDef = defineComponent({
+          type: Component,
+          selector: [[[name], null]],
+          factory: () => new Component(), template,
+          directiveDefs: defs
+        });
       };
     }
 
     class Directive {
       ngDoCheck() { events.push('dir'); }
 
-      static ngDirectiveDef = defineDirective({type: Directive, factory: () => new Directive()});
+      static ngDirectiveDef = defineDirective(
+          {type: Directive, selector: [[['', 'dir', ''], null]], factory: () => new Directive()});
     }
+
+    const defs = [Comp.ngComponentDef, Parent.ngComponentDef, Directive.ngDirectiveDef];
 
     it('should call doCheck on every refresh', () => {
       /** <comp></comp> */
       function Template(ctx: any, cm: boolean) {
         if (cm) {
-          elementStart(0, Comp);
+          elementStart(0, 'comp');
           elementEnd();
         }
       }
 
-      renderToHtml(Template, {});
+      renderToHtml(Template, {}, defs);
       expect(events).toEqual(['comp']);
 
-      renderToHtml(Template, {});
+      renderToHtml(Template, {}, defs);
       expect(events).toEqual(['comp', 'comp']);
     });
 
@@ -395,12 +411,12 @@ describe('lifecycles', () => {
 
       function Template(ctx: any, cm: boolean) {
         if (cm) {
-          elementStart(0, Parent);
+          elementStart(0, 'parent');
           elementEnd();
         }
       }
 
-      renderToHtml(Template, {});
+      renderToHtml(Template, {}, defs);
       expect(events).toEqual(['parent', 'comp']);
     });
 
@@ -408,15 +424,15 @@ describe('lifecycles', () => {
       /** <comp></comp> */
       function Template(ctx: any, cm: boolean) {
         if (cm) {
-          elementStart(0, Comp);
+          elementStart(0, 'comp');
           elementEnd();
         }
       }
 
-      renderToHtml(Template, {});
+      renderToHtml(Template, {}, defs);
       expect(allEvents).toEqual(['init comp', 'check comp']);
 
-      renderToHtml(Template, {});
+      renderToHtml(Template, {}, defs);
       expect(allEvents).toEqual(['init comp', 'check comp', 'check comp']);
     });
 
@@ -424,15 +440,15 @@ describe('lifecycles', () => {
       /** <comp directive></comp> */
       function Template(ctx: any, cm: boolean) {
         if (cm) {
-          elementStart(0, Comp, null, [Directive]);
+          elementStart(0, 'comp', ['dir', '']);
           elementEnd();
         }
       }
 
-      renderToHtml(Template, {});
+      renderToHtml(Template, {}, defs);
       expect(events).toEqual(['comp', 'dir']);
 
-      renderToHtml(Template, {});
+      renderToHtml(Template, {}, defs);
       expect(events).toEqual(['comp', 'dir', 'comp', 'dir']);
 
     });
@@ -441,15 +457,15 @@ describe('lifecycles', () => {
       /** <div directive></div> */
       function Template(ctx: any, cm: boolean) {
         if (cm) {
-          elementStart(0, 'div', null, [Directive]);
+          elementStart(0, 'div', ['dir', '']);
           elementEnd();
         }
       }
 
-      renderToHtml(Template, {});
+      renderToHtml(Template, {}, defs);
       expect(events).toEqual(['dir']);
 
-      renderToHtml(Template, {});
+      renderToHtml(Template, {}, defs);
       expect(events).toEqual(['dir', 'dir']);
     });
 
@@ -474,12 +490,12 @@ describe('lifecycles', () => {
     let Parent = createAfterContentInitComp('parent', function(ctx: any, cm: boolean) {
       if (cm) {
         projectionDef(0);
-        elementStart(1, Comp);
+        elementStart(1, 'comp');
         { projection(2, 0); }
         elementEnd();
       }
       elementProperty(1, 'val', bind(ctx.val));
-    });
+    }, [Comp.ngComponentDef]);
 
     let ProjectedComp = createAfterContentInitComp('projected', (ctx: any, cm: boolean) => {
       if (cm) {
@@ -488,7 +504,8 @@ describe('lifecycles', () => {
       }
     });
 
-    function createAfterContentInitComp(name: string, template: ComponentTemplate<any>) {
+    function createAfterContentInitComp(
+        name: string, template: ComponentTemplate<any>, defs: any[] = []) {
       return class Component {
         val: string = '';
         ngAfterContentInit() {
@@ -499,28 +516,69 @@ describe('lifecycles', () => {
 
         static ngComponentDef = defineComponent({
           type: Component,
-          tag: name,
+          selector: [[[name], null]],
           factory: () => new Component(),
           inputs: {val: 'val'},
           template: template,
+          directiveDefs: defs
         });
       };
     }
+
+    class Directive {
+      ngAfterContentInit() { events.push('init'); }
+      ngAfterContentChecked() { events.push('check'); }
+
+      static ngDirectiveDef = defineDirective(
+          {type: Directive, selector: [[['', 'dir', ''], null]], factory: () => new Directive()});
+    }
+
+    function ForLoopWithChildrenTemplate(ctx: any, cm: boolean) {
+      if (cm) {
+        elementStart(0, 'parent');
+        { text(1, 'content'); }
+        elementEnd();
+        container(2);
+        elementStart(3, 'parent');
+        { text(4, 'content'); }
+        elementEnd();
+      }
+      elementProperty(0, 'val', 1);
+      elementProperty(3, 'val', 4);
+      containerRefreshStart(2);
+      {
+        for (let i = 2; i < 4; i++) {
+          if (embeddedViewStart(0)) {
+            elementStart(0, 'parent');
+            { text(1, 'content'); }
+            elementEnd();
+          }
+          elementProperty(0, 'val', i);
+          embeddedViewEnd();
+        }
+      }
+      containerRefreshEnd();
+    }
+
+    const defs = [
+      Comp.ngComponentDef, Parent.ngComponentDef, ProjectedComp.ngComponentDef,
+      Directive.ngDirectiveDef
+    ];
 
     it('should be called only in creation mode', () => {
       /** <comp>content</comp> */
       function Template(ctx: any, cm: boolean) {
         if (cm) {
-          elementStart(0, Comp);
+          elementStart(0, 'comp');
           { text(1, 'content'); }
           elementEnd();
         }
       }
 
-      renderToHtml(Template, {});
+      renderToHtml(Template, {}, defs);
       expect(events).toEqual(['comp']);
 
-      renderToHtml(Template, {});
+      renderToHtml(Template, {}, defs);
       expect(events).toEqual(['comp']);
     });
 
@@ -547,7 +605,7 @@ describe('lifecycles', () => {
         {
           if (ctx.condition) {
             if (embeddedViewStart(0)) {
-              elementStart(0, Comp);
+              elementStart(0, 'comp');
               { text(1, 'content'); }
               elementEnd();
             }
@@ -557,13 +615,13 @@ describe('lifecycles', () => {
         containerRefreshEnd();
       }
 
-      renderToHtml(Template, {condition: true});
+      renderToHtml(Template, {condition: true}, defs);
       expect(events).toEqual(['comp']);
 
-      renderToHtml(Template, {condition: false});
+      renderToHtml(Template, {condition: false}, defs);
       expect(events).toEqual(['comp']);
 
-      renderToHtml(Template, {condition: true});
+      renderToHtml(Template, {condition: true}, defs);
       expect(events).toEqual(['comp', 'comp']);
     });
 
@@ -575,13 +633,13 @@ describe('lifecycles', () => {
        */
       function Template(ctx: any, cm: boolean) {
         if (cm) {
-          elementStart(0, Parent);
+          elementStart(0, 'parent');
           { text(1, 'content'); }
           elementEnd();
         }
       }
 
-      renderToHtml(Template, {});
+      renderToHtml(Template, {}, defs);
       expect(events).toEqual(['parent', 'comp']);
     });
 
@@ -594,10 +652,10 @@ describe('lifecycles', () => {
        */
       function Template(ctx: any, cm: boolean) {
         if (cm) {
-          elementStart(0, Parent);
+          elementStart(0, 'parent');
           { text(1, 'content'); }
           elementEnd();
-          elementStart(2, Parent);
+          elementStart(2, 'parent');
           { text(3, 'content'); }
           elementEnd();
         }
@@ -605,14 +663,14 @@ describe('lifecycles', () => {
         elementProperty(2, 'val', 2);
       }
 
-      renderToHtml(Template, {});
+      renderToHtml(Template, {}, defs);
       expect(events).toEqual(['parent1', 'parent2', 'comp1', 'comp2']);
     });
 
     it('should be called in projected components before their hosts', () => {
       /**
        * <parent>
-       *   <projected-comp>content</projected-comp>
+       *   <projected>content</projected>
        * </parent>
        *
        * parent template:
@@ -622,9 +680,9 @@ describe('lifecycles', () => {
        */
       function Template(ctx: any, cm: boolean) {
         if (cm) {
-          elementStart(0, Parent);
+          elementStart(0, 'parent');
           {
-            elementStart(1, ProjectedComp);
+            elementStart(1, 'projected');
             { text(2, 'content'); }
             elementEnd();
           }
@@ -632,17 +690,17 @@ describe('lifecycles', () => {
         }
       }
 
-      renderToHtml(Template, {});
+      renderToHtml(Template, {}, defs);
       expect(events).toEqual(['projected', 'parent', 'comp']);
     });
 
     it('should be called in projected components and hosts before children', () => {
       /**
        * <parent [val]="1">
-       *   <projected-comp [val]="1">content</projected-comp>
+       *   <projected [val]="1">content</projected>
        * </parent>
        * * <parent [val]="2">
-       *   <projected-comp [val]="2">content</projected-comp>
+       *   <projected [val]="2">content</projected>
        * </parent>
        *
        * parent template:
@@ -652,16 +710,16 @@ describe('lifecycles', () => {
        */
       function Template(ctx: any, cm: boolean) {
         if (cm) {
-          elementStart(0, Parent);
+          elementStart(0, 'parent');
           {
-            elementStart(1, ProjectedComp);
+            elementStart(1, 'projected');
             { text(2, 'content'); }
             elementEnd();
           }
           elementEnd();
-          elementStart(3, Parent);
+          elementStart(3, 'parent');
           {
-            elementStart(4, ProjectedComp);
+            elementStart(4, 'projected');
             { text(5, 'content'); }
             elementEnd();
           }
@@ -673,7 +731,7 @@ describe('lifecycles', () => {
         elementProperty(4, 'val', 2);
       }
 
-      renderToHtml(Template, {});
+      renderToHtml(Template, {}, defs);
       expect(events).toEqual(['projected1', 'parent1', 'projected2', 'parent2', 'comp1', 'comp2']);
     });
 
@@ -687,11 +745,11 @@ describe('lifecycles', () => {
        */
       function Template(ctx: any, cm: boolean) {
         if (cm) {
-          elementStart(0, Comp);
+          elementStart(0, 'comp');
           { text(1, 'content'); }
           elementEnd();
           container(2);
-          elementStart(3, Comp);
+          elementStart(3, 'comp');
           { text(4, 'content'); }
           elementEnd();
         }
@@ -701,7 +759,7 @@ describe('lifecycles', () => {
         {
           for (let i = 2; i < 4; i++) {
             if (embeddedViewStart(0)) {
-              elementStart(0, Comp);
+              elementStart(0, 'comp');
               { text(1, 'content'); }
               elementEnd();
             }
@@ -712,36 +770,9 @@ describe('lifecycles', () => {
         containerRefreshEnd();
       }
 
-      renderToHtml(Template, {});
+      renderToHtml(Template, {}, defs);
       expect(events).toEqual(['comp2', 'comp3', 'comp1', 'comp4']);
     });
-
-    function ForLoopWithChildrenTemplate(ctx: any, cm: boolean) {
-      if (cm) {
-        elementStart(0, Parent);
-        { text(1, 'content'); }
-        elementEnd();
-        container(2);
-        elementStart(3, Parent);
-        { text(4, 'content'); }
-        elementEnd();
-      }
-      elementProperty(0, 'val', 1);
-      elementProperty(3, 'val', 4);
-      containerRefreshStart(2);
-      {
-        for (let i = 2; i < 4; i++) {
-          if (embeddedViewStart(0)) {
-            elementStart(0, Parent);
-            { text(1, 'content'); }
-            elementEnd();
-          }
-          elementProperty(0, 'val', i);
-          embeddedViewEnd();
-        }
-      }
-      containerRefreshEnd();
-    }
 
     it('should be called in correct order in a for loop with children', () => {
       /**
@@ -752,7 +783,7 @@ describe('lifecycles', () => {
        * <parent [val]="4">content</parent>
        */
 
-      renderToHtml(ForLoopWithChildrenTemplate, {});
+      renderToHtml(ForLoopWithChildrenTemplate, {}, defs);
       expect(events).toEqual(
           ['parent2', 'comp2', 'parent3', 'comp3', 'parent1', 'parent4', 'comp1', 'comp4']);
     });
@@ -763,16 +794,16 @@ describe('lifecycles', () => {
         /** <comp>content</comp> */
         function Template(ctx: any, cm: boolean) {
           if (cm) {
-            elementStart(0, Comp);
+            elementStart(0, 'comp');
             { text(1, 'content'); }
             elementEnd();
           }
         }
 
-        renderToHtml(Template, {});
+        renderToHtml(Template, {}, defs);
         expect(allEvents).toEqual(['comp init', 'comp check']);
 
-        renderToHtml(Template, {});
+        renderToHtml(Template, {}, defs);
         expect(allEvents).toEqual(['comp init', 'comp check', 'comp check']);
 
       });
@@ -789,23 +820,16 @@ describe('lifecycles', () => {
     });
 
     describe('directives', () => {
-      class Directive {
-        ngAfterContentInit() { events.push('init'); }
-        ngAfterContentChecked() { events.push('check'); }
-
-        static ngDirectiveDef = defineDirective({type: Directive, factory: () => new Directive()});
-      }
-
       it('should be called on directives after component', () => {
         /** <comp directive></comp> */
         function Template(ctx: any, cm: boolean) {
           if (cm) {
-            elementStart(0, Comp, null, [Directive]);
+            elementStart(0, 'comp', ['dir', '']);
             elementEnd();
           }
         }
 
-        renderToHtml(Template, {});
+        renderToHtml(Template, {}, defs);
         expect(events).toEqual(['comp', 'init', 'check']);
       });
 
@@ -813,12 +837,12 @@ describe('lifecycles', () => {
         /** <div directive></div> */
         function Template(ctx: any, cm: boolean) {
           if (cm) {
-            elementStart(0, 'div', null, [Directive]);
+            elementStart(0, 'div', ['dir', '']);
             elementEnd();
           }
         }
 
-        renderToHtml(Template, {});
+        renderToHtml(Template, {}, defs);
         expect(events).toEqual(['init', 'check']);
       });
     });
@@ -841,7 +865,8 @@ describe('lifecycles', () => {
         elementEnd();
       }
     });
-    let Parent = createAfterViewInitComponent('parent', getParentTemplate(Comp));
+    let Parent =
+        createAfterViewInitComponent('parent', getParentTemplate('comp'), [Comp.ngComponentDef]);
 
     let ProjectedComp = createAfterViewInitComponent('projected', (ctx: any, cm: boolean) => {
       if (cm) {
@@ -849,7 +874,8 @@ describe('lifecycles', () => {
       }
     });
 
-    function createAfterViewInitComponent(name: string, template: ComponentTemplate<any>) {
+    function createAfterViewInitComponent(
+        name: string, template: ComponentTemplate<any>, defs: any[] = []) {
       return class Component {
         val: string = '';
         ngAfterViewInit() {
@@ -860,27 +886,41 @@ describe('lifecycles', () => {
 
         static ngComponentDef = defineComponent({
           type: Component,
-          tag: name,
+          selector: [[[name], null]],
           factory: () => new Component(),
           inputs: {val: 'val'},
-          template: template
+          template: template,
+          directiveDefs: defs
         });
       };
     }
+
+    class Directive {
+      ngAfterViewInit() { events.push('init'); }
+      ngAfterViewChecked() { events.push('check'); }
+
+      static ngDirectiveDef = defineDirective(
+          {type: Directive, selector: [[['', 'dir', ''], null]], factory: () => new Directive()});
+    }
+
+    const defs = [
+      Comp.ngComponentDef, Parent.ngComponentDef, ProjectedComp.ngComponentDef,
+      Directive.ngDirectiveDef
+    ];
 
     it('should be called on init and not in update mode', () => {
       /** <comp></comp> */
       function Template(ctx: any, cm: boolean) {
         if (cm) {
-          elementStart(0, Comp);
+          elementStart(0, 'comp');
           elementEnd();
         }
       }
 
-      renderToHtml(Template, {});
+      renderToHtml(Template, {}, defs);
       expect(events).toEqual(['comp']);
 
-      renderToHtml(Template, {});
+      renderToHtml(Template, {}, defs);
       expect(events).toEqual(['comp']);
     });
 
@@ -907,7 +947,7 @@ describe('lifecycles', () => {
         {
           if (ctx.condition) {
             if (embeddedViewStart(0)) {
-              elementStart(0, Comp);
+              elementStart(0, 'comp');
               elementEnd();
             }
             embeddedViewEnd();
@@ -916,13 +956,13 @@ describe('lifecycles', () => {
         containerRefreshEnd();
       }
 
-      renderToHtml(Template, {condition: true});
+      renderToHtml(Template, {condition: true}, defs);
       expect(events).toEqual(['comp']);
 
-      renderToHtml(Template, {condition: false});
+      renderToHtml(Template, {condition: false}, defs);
       expect(events).toEqual(['comp']);
 
-      renderToHtml(Template, {condition: true});
+      renderToHtml(Template, {condition: true}, defs);
       expect(events).toEqual(['comp', 'comp']);
 
     });
@@ -935,12 +975,12 @@ describe('lifecycles', () => {
        */
       function Template(ctx: any, cm: boolean) {
         if (cm) {
-          elementStart(0, Parent);
+          elementStart(0, 'parent');
           elementEnd();
         }
       }
 
-      renderToHtml(Template, {});
+      renderToHtml(Template, {}, defs);
       expect(events).toEqual(['comp', 'parent']);
 
     });
@@ -954,15 +994,15 @@ describe('lifecycles', () => {
        */
       function Template(ctx: any, cm: boolean) {
         if (cm) {
-          elementStart(0, Parent);
+          elementStart(0, 'parent');
           elementEnd();
-          elementStart(1, Parent);
+          elementStart(1, 'parent');
           elementEnd();
         }
         elementProperty(0, 'val', 1);
         elementProperty(1, 'val', 2);
       }
-      renderToHtml(Template, {});
+      renderToHtml(Template, {}, defs);
       expect(events).toEqual(['comp1', 'comp2', 'parent1', 'parent2']);
 
     });
@@ -970,44 +1010,44 @@ describe('lifecycles', () => {
     it('should be called in projected components before their hosts', () => {
       /**
        * <comp>
-       *   <projected-comp></projected-comp>
+       *   <projected></projected>
        * </comp>
        */
       function Template(ctx: any, cm: boolean) {
         if (cm) {
-          elementStart(0, Comp);
+          elementStart(0, 'comp');
           {
-            elementStart(1, ProjectedComp);
+            elementStart(1, 'projected');
             elementEnd();
           }
           elementEnd();
         }
       }
 
-      renderToHtml(Template, {});
+      renderToHtml(Template, {}, defs);
       expect(events).toEqual(['projected', 'comp']);
     });
 
     it('should call afterViewInit in content children and host before next host', () => {
       /**
        * <comp [val]="1">
-       *   <projected-comp [val]="1"></projected-comp>
+       *   <projected [val]="1"></projected>
        * </comp>
        * <comp [val]="2">
-       *   <projected-comp [val]="2"></projected-comp>
+       *   <projected [val]="2"></projected>
        * </comp>
        */
       function Template(ctx: any, cm: boolean) {
         if (cm) {
-          elementStart(0, Comp);
+          elementStart(0, 'comp');
           {
-            elementStart(1, ProjectedComp);
+            elementStart(1, 'projected');
             elementEnd();
           }
           elementEnd();
-          elementStart(2, Comp);
+          elementStart(2, 'comp');
           {
-            elementStart(3, ProjectedComp);
+            elementStart(3, 'projected');
             elementEnd();
           }
           elementEnd();
@@ -1018,28 +1058,28 @@ describe('lifecycles', () => {
         elementProperty(3, 'val', 2);
       }
 
-      renderToHtml(Template, {});
+      renderToHtml(Template, {}, defs);
       expect(events).toEqual(['projected1', 'comp1', 'projected2', 'comp2']);
     });
 
     it('should call afterViewInit in content children and hosts before parents', () => {
       /*
        * <comp [val]="val">
-       *   <projected-comp [val]="val"></projected-comp>
+       *   <projected [val]="val"></projected>
        * </comp>
        */
       const ParentComp = createAfterViewInitComponent('parent', (ctx: any, cm: boolean) => {
         if (cm) {
-          elementStart(0, Comp);
+          elementStart(0, 'comp');
           {
-            elementStart(1, ProjectedComp);
+            elementStart(1, 'projected');
             elementEnd();
           }
           elementEnd();
         }
         elementProperty(0, 'val', bind(ctx.val));
         elementProperty(1, 'val', bind(ctx.val));
-      });
+      }, [Comp.ngComponentDef, ProjectedComp.ngComponentDef]);
 
       /**
        * <parent [val]="1"></parent>
@@ -1047,16 +1087,16 @@ describe('lifecycles', () => {
        */
       function Template(ctx: any, cm: boolean) {
         if (cm) {
-          elementStart(0, ParentComp);
+          elementStart(0, 'parent');
           elementEnd();
-          elementStart(1, ParentComp);
+          elementStart(1, 'parent');
           elementEnd();
         }
         elementProperty(0, 'val', 1);
         elementProperty(1, 'val', 2);
       }
 
-      renderToHtml(Template, {});
+      renderToHtml(Template, {}, [ParentComp.ngComponentDef]);
       expect(events).toEqual(['projected1', 'comp1', 'projected2', 'comp2', 'parent1', 'parent2']);
     });
 
@@ -1070,10 +1110,10 @@ describe('lifecycles', () => {
        */
       function Template(ctx: any, cm: boolean) {
         if (cm) {
-          elementStart(0, Comp);
+          elementStart(0, 'comp');
           elementEnd();
           container(1);
-          elementStart(2, Comp);
+          elementStart(2, 'comp');
           elementEnd();
         }
         elementProperty(0, 'val', 1);
@@ -1082,7 +1122,7 @@ describe('lifecycles', () => {
         {
           for (let i = 2; i < 4; i++) {
             if (embeddedViewStart(0)) {
-              elementStart(0, Comp);
+              elementStart(0, 'comp');
               elementEnd();
             }
             elementProperty(0, 'val', i);
@@ -1092,7 +1132,7 @@ describe('lifecycles', () => {
         containerRefreshEnd();
       }
 
-      renderToHtml(Template, {});
+      renderToHtml(Template, {}, defs);
       expect(events).toEqual(['comp2', 'comp3', 'comp1', 'comp4']);
 
     });
@@ -1107,10 +1147,10 @@ describe('lifecycles', () => {
        */
       function Template(ctx: any, cm: boolean) {
         if (cm) {
-          elementStart(0, Parent);
+          elementStart(0, 'parent');
           elementEnd();
           container(1);
-          elementStart(2, Parent);
+          elementStart(2, 'parent');
           elementEnd();
         }
         elementProperty(0, 'val', 1);
@@ -1119,7 +1159,7 @@ describe('lifecycles', () => {
         {
           for (let i = 2; i < 4; i++) {
             if (embeddedViewStart(0)) {
-              elementStart(0, Parent);
+              elementStart(0, 'parent');
               elementEnd();
             }
             elementProperty(0, 'val', i);
@@ -1129,7 +1169,7 @@ describe('lifecycles', () => {
         containerRefreshEnd();
       }
 
-      renderToHtml(Template, {});
+      renderToHtml(Template, {}, defs);
       expect(events).toEqual(
           ['comp2', 'parent2', 'comp3', 'parent3', 'comp1', 'comp4', 'parent1', 'parent4']);
 
@@ -1141,15 +1181,15 @@ describe('lifecycles', () => {
         /** <comp></comp> */
         function Template(ctx: any, cm: boolean) {
           if (cm) {
-            elementStart(0, Comp);
+            elementStart(0, 'comp');
             elementEnd();
           }
         }
 
-        renderToHtml(Template, {});
+        renderToHtml(Template, {}, defs);
         expect(allEvents).toEqual(['comp init', 'comp check']);
 
-        renderToHtml(Template, {});
+        renderToHtml(Template, {}, defs);
         expect(allEvents).toEqual(['comp init', 'comp check', 'comp check']);
       });
 
@@ -1166,16 +1206,16 @@ describe('lifecycles', () => {
         /** <comp [val]="myVal"></comp> */
         function Template(ctx: any, cm: boolean) {
           if (cm) {
-            elementStart(0, Comp);
+            elementStart(0, 'comp');
             elementEnd();
           }
           elementProperty(0, 'val', bind(ctx.myVal));
         }
 
-        renderToHtml(Template, {myVal: 5});
+        renderToHtml(Template, {myVal: 5}, defs);
         expect(allEvents).toEqual(['comp5 init', 'comp5 check']);
 
-        renderToHtml(Template, {myVal: 6});
+        renderToHtml(Template, {myVal: 6}, defs);
         expect(allEvents).toEqual(['comp5 init', 'comp5 check', 'comp6 check']);
       });
 
@@ -1189,10 +1229,10 @@ describe('lifecycles', () => {
          */
         function Template(ctx: any, cm: boolean) {
           if (cm) {
-            elementStart(0, Parent);
+            elementStart(0, 'parent');
             elementEnd();
             container(1);
-            elementStart(2, Parent);
+            elementStart(2, 'parent');
             elementEnd();
           }
           elementProperty(0, 'val', 1);
@@ -1201,7 +1241,7 @@ describe('lifecycles', () => {
           {
             for (let i = 2; i < 4; i++) {
               if (embeddedViewStart(0)) {
-                elementStart(0, Parent);
+                elementStart(0, 'parent');
                 elementEnd();
               }
               elementProperty(0, 'val', i);
@@ -1211,7 +1251,7 @@ describe('lifecycles', () => {
           containerRefreshEnd();
         }
 
-        renderToHtml(Template, {});
+        renderToHtml(Template, {}, defs);
         expect(allEvents).toEqual([
           'comp2 init', 'comp2 check', 'parent2 init', 'parent2 check', 'comp3 init', 'comp3 check',
           'parent3 init', 'parent3 check', 'comp1 init', 'comp1 check', 'comp4 init', 'comp4 check',
@@ -1223,23 +1263,16 @@ describe('lifecycles', () => {
     });
 
     describe('directives', () => {
-      class Directive {
-        ngAfterViewInit() { events.push('init'); }
-        ngAfterViewChecked() { events.push('check'); }
-
-        static ngDirectiveDef = defineDirective({type: Directive, factory: () => new Directive()});
-      }
-
       it('should be called on directives after component', () => {
         /** <comp directive></comp> */
         function Template(ctx: any, cm: boolean) {
           if (cm) {
-            elementStart(0, Comp, null, [Directive]);
+            elementStart(0, 'comp', ['dir', '']);
             elementEnd();
           }
         }
 
-        renderToHtml(Template, {});
+        renderToHtml(Template, {}, defs);
         expect(events).toEqual(['comp', 'init', 'check']);
       });
 
@@ -1247,12 +1280,12 @@ describe('lifecycles', () => {
         /** <div directive></div> */
         function Template(ctx: any, cm: boolean) {
           if (cm) {
-            elementStart(0, 'div', null, [Directive]);
+            elementStart(0, 'div', ['dir', '']);
             elementEnd();
           }
         }
 
-        renderToHtml(Template, {});
+        renderToHtml(Template, {}, defs);
         expect(events).toEqual(['init', 'check']);
       });
     });
@@ -1269,28 +1302,46 @@ describe('lifecycles', () => {
         projection(1, 0);
       }
     });
-    let Parent = createOnDestroyComponent('parent', getParentTemplate(Comp));
+    let Parent =
+        createOnDestroyComponent('parent', getParentTemplate('comp'), [Comp.ngComponentDef]);
 
-    function createOnDestroyComponent(name: string, template: ComponentTemplate<any>) {
+    function createOnDestroyComponent(
+        name: string, template: ComponentTemplate<any>, defs: any[] = []) {
       return class Component {
         val: string = '';
         ngOnDestroy() { events.push(`${name}${this.val}`); }
 
         static ngComponentDef = defineComponent({
           type: Component,
-          tag: name,
+          selector: [[[name], null]],
           factory: () => new Component(),
           inputs: {val: 'val'},
-          template: template
+          template: template,
+          directiveDefs: defs
         });
       };
     }
 
+    let Grandparent = createOnDestroyComponent('grandparent', function(ctx: any, cm: boolean) {
+      if (cm) {
+        elementStart(0, 'parent');
+        elementEnd();
+      }
+    }, [Parent.ngComponentDef]);
+
+    const ProjectedComp = createOnDestroyComponent('projected', (ctx: any, cm: boolean) => {});
+
     class Directive {
       ngOnDestroy() { events.push('dir'); }
 
-      static ngDirectiveDef = defineDirective({type: Directive, factory: () => new Directive()});
+      static ngDirectiveDef = defineDirective(
+          {type: Directive, selector: [[['', 'dir', ''], null]], factory: () => new Directive()});
     }
+
+    const defs = [
+      Comp.ngComponentDef, Parent.ngComponentDef, Grandparent.ngComponentDef,
+      ProjectedComp.ngComponentDef, Directive.ngDirectiveDef
+    ];
 
     it('should call destroy when view is removed', () => {
       /**
@@ -1307,7 +1358,7 @@ describe('lifecycles', () => {
         {
           if (ctx.condition) {
             if (embeddedViewStart(0)) {
-              elementStart(0, Comp);
+              elementStart(0, 'comp');
               elementEnd();
             }
             embeddedViewEnd();
@@ -1316,8 +1367,8 @@ describe('lifecycles', () => {
         containerRefreshEnd();
       }
 
-      renderToHtml(Template, {condition: true});
-      renderToHtml(Template, {condition: false});
+      renderToHtml(Template, {condition: true}, defs);
+      renderToHtml(Template, {condition: false}, defs);
       expect(events).toEqual(['comp']);
     });
 
@@ -1337,9 +1388,9 @@ describe('lifecycles', () => {
         {
           if (ctx.condition) {
             if (embeddedViewStart(0)) {
-              elementStart(0, Comp);
+              elementStart(0, 'comp');
               elementEnd();
-              elementStart(1, Comp);
+              elementStart(1, 'comp');
               elementEnd();
             }
             elementProperty(0, 'val', bind('1'));
@@ -1350,8 +1401,8 @@ describe('lifecycles', () => {
         containerRefreshEnd();
       }
 
-      renderToHtml(Template, {condition: true});
-      renderToHtml(Template, {condition: false});
+      renderToHtml(Template, {condition: true}, defs);
+      renderToHtml(Template, {condition: false}, defs);
       expect(events).toEqual(['comp1', 'comp2']);
     });
 
@@ -1372,7 +1423,7 @@ describe('lifecycles', () => {
         {
           if (ctx.condition) {
             if (embeddedViewStart(0)) {
-              elementStart(0, Parent);
+              elementStart(0, 'parent');
               elementEnd();
             }
             embeddedViewEnd();
@@ -1381,8 +1432,8 @@ describe('lifecycles', () => {
         containerRefreshEnd();
       }
 
-      renderToHtml(Template, {condition: true});
-      renderToHtml(Template, {condition: false});
+      renderToHtml(Template, {condition: true}, defs);
+      renderToHtml(Template, {condition: false}, defs);
       expect(events).toEqual(['comp', 'parent']);
     });
 
@@ -1396,13 +1447,6 @@ describe('lifecycles', () => {
        * parent template: <comp></comp>
        */
 
-      let Grandparent = createOnDestroyComponent('grandparent', function(ctx: any, cm: boolean) {
-        if (cm) {
-          elementStart(0, Parent);
-          elementEnd();
-        }
-      });
-
       function Template(ctx: any, cm: boolean) {
         if (cm) {
           container(0);
@@ -1411,7 +1455,7 @@ describe('lifecycles', () => {
         {
           if (ctx.condition) {
             if (embeddedViewStart(0)) {
-              elementStart(0, Grandparent);
+              elementStart(0, 'grandparent');
               elementEnd();
             }
             embeddedViewEnd();
@@ -1420,21 +1464,19 @@ describe('lifecycles', () => {
         containerRefreshEnd();
       }
 
-      renderToHtml(Template, {condition: true});
-      renderToHtml(Template, {condition: false});
+      renderToHtml(Template, {condition: true}, defs);
+      renderToHtml(Template, {condition: false}, defs);
       expect(events).toEqual(['comp', 'parent', 'grandparent']);
     });
 
     it('should be called in projected components before their hosts', () => {
-      const ProjectedComp = createOnDestroyComponent('projected', (ctx: any, cm: boolean) => {});
-
       /**
        * % if (showing) {
        *   <comp [val]="1">
-       *     <projected-comp [val]="1"></projected-comp>
+       *     <projected [val]="1"></projected>
        *   </comp>
        *   <comp [val]="2">
-       *     <projected-comp [val]="2"></projected-comp>
+       *     <projected [val]="2"></projected>
        *   </comp>
        * }
        */
@@ -1446,15 +1488,15 @@ describe('lifecycles', () => {
         {
           if (ctx.showing) {
             if (embeddedViewStart(0)) {
-              elementStart(0, Comp);
+              elementStart(0, 'comp');
               {
-                elementStart(1, ProjectedComp);
+                elementStart(1, 'projected');
                 elementEnd();
               }
               elementEnd();
-              elementStart(2, Comp);
+              elementStart(2, 'comp');
               {
-                elementStart(3, ProjectedComp);
+                elementStart(3, 'projected');
                 elementEnd();
               }
               elementEnd();
@@ -1469,8 +1511,8 @@ describe('lifecycles', () => {
         containerRefreshEnd();
       }
 
-      renderToHtml(Template, {showing: true});
-      renderToHtml(Template, {showing: false});
+      renderToHtml(Template, {showing: true}, defs);
+      renderToHtml(Template, {showing: false}, defs);
 
       expect(events).toEqual(['projected1', 'comp1', 'projected2', 'comp2']);
     });
@@ -1495,10 +1537,10 @@ describe('lifecycles', () => {
         {
           if (ctx.condition) {
             if (embeddedViewStart(0)) {
-              elementStart(0, Comp);
+              elementStart(0, 'comp');
               elementEnd();
               container(1);
-              elementStart(2, Comp);
+              elementStart(2, 'comp');
               elementEnd();
             }
             elementProperty(0, 'val', bind('1'));
@@ -1507,7 +1549,7 @@ describe('lifecycles', () => {
             {
               if (ctx.condition2) {
                 if (embeddedViewStart(0)) {
-                  elementStart(0, Comp);
+                  elementStart(0, 'comp');
                   elementEnd();
                 }
                 elementProperty(0, 'val', bind('2'));
@@ -1521,8 +1563,8 @@ describe('lifecycles', () => {
         containerRefreshEnd();
       }
 
-      renderToHtml(Template, {condition: true, condition2: true});
-      renderToHtml(Template, {condition: false});
+      renderToHtml(Template, {condition: true, condition2: true}, defs);
+      renderToHtml(Template, {condition: false}, defs);
 
       /**
        * Current angular will process in this same order (root is the top-level removed view):
@@ -1537,13 +1579,13 @@ describe('lifecycles', () => {
       expect(events).toEqual(['comp2', 'comp1', 'comp3']);
 
       events = [];
-      renderToHtml(Template, {condition: true, condition2: false});
-      renderToHtml(Template, {condition: false});
+      renderToHtml(Template, {condition: true, condition2: false}, defs);
+      renderToHtml(Template, {condition: false}, defs);
       expect(events).toEqual(['comp1', 'comp3']);
 
       events = [];
-      renderToHtml(Template, {condition: true, condition2: true});
-      renderToHtml(Template, {condition: false});
+      renderToHtml(Template, {condition: true, condition2: true}, defs);
+      renderToHtml(Template, {condition: false}, defs);
       expect(events).toEqual(['comp2', 'comp1', 'comp3']);
     });
 
@@ -1565,10 +1607,10 @@ describe('lifecycles', () => {
         {
           if (ctx.condition) {
             if (embeddedViewStart(0)) {
-              elementStart(0, Comp);
+              elementStart(0, 'comp');
               elementEnd();
               container(1);
-              elementStart(2, Comp);
+              elementStart(2, 'comp');
               elementEnd();
             }
             elementProperty(0, 'val', bind('1'));
@@ -1577,7 +1619,7 @@ describe('lifecycles', () => {
             {
               for (let j = 2; j < ctx.len; j++) {
                 if (embeddedViewStart(0)) {
-                  elementStart(0, Comp);
+                  elementStart(0, 'comp');
                   elementEnd();
                 }
                 elementProperty(0, 'val', bind(j));
@@ -1605,18 +1647,18 @@ describe('lifecycles', () => {
        * embeddedView.next.next -> container -> root
        * root onDestroy: [comp1, comp5]
        */
-      renderToHtml(Template, {condition: true, len: 5});
-      renderToHtml(Template, {condition: false});
+      renderToHtml(Template, {condition: true, len: 5}, defs);
+      renderToHtml(Template, {condition: false}, defs);
       expect(events).toEqual(['comp2', 'comp3', 'comp4', 'comp1', 'comp5']);
 
       events = [];
-      renderToHtml(Template, {condition: true, len: 4});
-      renderToHtml(Template, {condition: false});
+      renderToHtml(Template, {condition: true, len: 4}, defs);
+      renderToHtml(Template, {condition: false}, defs);
       expect(events).toEqual(['comp2', 'comp3', 'comp1', 'comp5']);
 
       events = [];
-      renderToHtml(Template, {condition: true, len: 5});
-      renderToHtml(Template, {condition: false});
+      renderToHtml(Template, {condition: true, len: 5}, defs);
+      renderToHtml(Template, {condition: false}, defs);
       expect(events).toEqual(['comp2', 'comp3', 'comp4', 'comp1', 'comp5']);
     });
 
@@ -1643,7 +1685,7 @@ describe('lifecycles', () => {
                 text(1, 'Click me');
               }
               elementEnd();
-              elementStart(2, Comp);
+              elementStart(2, 'comp');
               elementEnd();
               elementStart(3, 'button');
               {
@@ -1665,7 +1707,7 @@ describe('lifecycles', () => {
       }
 
       const ctx: {counter: number} = new App();
-      renderToHtml(Template, ctx);
+      renderToHtml(Template, ctx, defs);
 
       const buttons = containerEl.querySelectorAll('button') !;
       buttons[0].click();
@@ -1673,7 +1715,7 @@ describe('lifecycles', () => {
       buttons[1].click();
       expect(ctx.counter).toEqual(2);
 
-      renderToHtml(Template, {condition: false});
+      renderToHtml(Template, {condition: false}, defs);
 
       buttons[0].click();
       buttons[1].click();
@@ -1696,7 +1738,7 @@ describe('lifecycles', () => {
         {
           if (ctx.condition) {
             if (embeddedViewStart(0)) {
-              elementStart(0, Comp, null, [Directive]);
+              elementStart(0, 'comp', ['dir', '']);
               elementEnd();
             }
             embeddedViewEnd();
@@ -1705,10 +1747,10 @@ describe('lifecycles', () => {
         containerRefreshEnd();
       }
 
-      renderToHtml(Template, {condition: true});
+      renderToHtml(Template, {condition: true}, defs);
       expect(events).toEqual([]);
 
-      renderToHtml(Template, {condition: false});
+      renderToHtml(Template, {condition: false}, defs);
       expect(events).toEqual(['comp', 'dir']);
 
     });
@@ -1728,7 +1770,7 @@ describe('lifecycles', () => {
         {
           if (ctx.condition) {
             if (embeddedViewStart(0)) {
-              elementStart(0, 'div', null, [Directive]);
+              elementStart(0, 'div', ['dir', '']);
               elementEnd();
             }
             embeddedViewEnd();
@@ -1737,10 +1779,10 @@ describe('lifecycles', () => {
         containerRefreshEnd();
       }
 
-      renderToHtml(Template, {condition: true});
+      renderToHtml(Template, {condition: true}, defs);
       expect(events).toEqual([]);
 
-      renderToHtml(Template, {condition: false});
+      renderToHtml(Template, {condition: false}, defs);
       expect(events).toEqual(['dir']);
     });
 
@@ -1761,12 +1803,12 @@ describe('lifecycles', () => {
     });
     const Parent = createOnChangesComponent('parent', (ctx: any, cm: boolean) => {
       if (cm) {
-        elementStart(0, Comp);
+        elementStart(0, 'comp');
         elementEnd();
       }
       elementProperty(0, 'val1', bind(ctx.a));
       elementProperty(0, 'publicName', bind(ctx.b));
-    });
+    }, [Comp.ngComponentDef]);
     const ProjectedComp = createOnChangesComponent('projected', (ctx: any, cm: boolean) => {
       if (cm) {
         text(0, 'content');
@@ -1774,7 +1816,8 @@ describe('lifecycles', () => {
     });
 
 
-    function createOnChangesComponent(name: string, template: ComponentTemplate<any>) {
+    function createOnChangesComponent(
+        name: string, template: ComponentTemplate<any>, defs: any[] = []) {
       return class Component {
         // @Input() val1: string;
         // @Input('publicName') val2: string;
@@ -1787,10 +1830,11 @@ describe('lifecycles', () => {
 
         static ngComponentDef = defineComponent({
           type: Component,
-          tag: name,
+          selector: [[[name], null]],
           factory: () => new Component(),
           features: [NgOnChangesFeature({b: 'val2'})],
-          inputs: {a: 'val1', b: 'publicName'}, template
+          inputs: {a: 'val1', b: 'publicName'}, template,
+          directiveDefs: defs
         });
       };
     }
@@ -1807,27 +1851,33 @@ describe('lifecycles', () => {
 
       static ngDirectiveDef = defineDirective({
         type: Directive,
+        selector: [[['', 'dir', ''], null]],
         factory: () => new Directive(),
         features: [NgOnChangesFeature({b: 'val2'})],
         inputs: {a: 'val1', b: 'publicName'}
       });
     }
 
+    const defs = [
+      Comp.ngComponentDef, Parent.ngComponentDef, Directive.ngDirectiveDef,
+      ProjectedComp.ngComponentDef
+    ];
+
     it('should call onChanges method after inputs are set in creation and update mode', () => {
       /** <comp [val1]="val1" [publicName]="val2"></comp> */
       function Template(ctx: any, cm: boolean) {
         if (cm) {
-          elementStart(0, Comp);
+          elementStart(0, 'comp');
           elementEnd();
         }
         elementProperty(0, 'val1', bind(ctx.val1));
         elementProperty(0, 'publicName', bind(ctx.val2));
       }
 
-      renderToHtml(Template, {val1: '1', val2: 'a'});
+      renderToHtml(Template, {val1: '1', val2: 'a'}, defs);
       expect(events).toEqual(['comp=comp val1=1 val2=a - changed=[val1,val2]']);
 
-      renderToHtml(Template, {val1: '2', val2: 'b'});
+      renderToHtml(Template, {val1: '2', val2: 'b'}, defs);
       expect(events).toEqual([
         'comp=comp val1=1 val2=a - changed=[val1,val2]',
         'comp=comp val1=2 val2=b - changed=[val1,val2]'
@@ -1842,14 +1892,14 @@ describe('lifecycles', () => {
 
       function Template(ctx: any, cm: boolean) {
         if (cm) {
-          elementStart(0, Parent);
+          elementStart(0, 'parent');
           elementEnd();
         }
         elementProperty(0, 'val1', bind(ctx.val1));
         elementProperty(0, 'publicName', bind(ctx.val2));
       }
 
-      renderToHtml(Template, {val1: '1', val2: 'a'});
+      renderToHtml(Template, {val1: '1', val2: 'a'}, defs);
       expect(events).toEqual([
         'comp=parent val1=1 val2=a - changed=[val1,val2]',
         'comp=comp val1=1 val2=a - changed=[val1,val2]'
@@ -1866,9 +1916,9 @@ describe('lifecycles', () => {
 
       function Template(ctx: any, cm: boolean) {
         if (cm) {
-          elementStart(0, Parent);
+          elementStart(0, 'parent');
           elementEnd();
-          elementStart(1, Parent);
+          elementStart(1, 'parent');
           elementEnd();
         }
         elementProperty(0, 'val1', bind(1));
@@ -1877,7 +1927,7 @@ describe('lifecycles', () => {
         elementProperty(1, 'publicName', bind(2));
       }
 
-      renderToHtml(Template, {});
+      renderToHtml(Template, {}, defs);
       expect(events).toEqual([
         'comp=parent val1=1 val2=1 - changed=[val1,val2]',
         'comp=parent val1=2 val2=2 - changed=[val1,val2]',
@@ -1902,7 +1952,7 @@ describe('lifecycles', () => {
         {
           if (ctx.condition) {
             if (embeddedViewStart(0)) {
-              elementStart(0, Comp);
+              elementStart(0, 'comp');
               elementEnd();
             }
             elementProperty(0, 'val1', bind(1));
@@ -1913,13 +1963,13 @@ describe('lifecycles', () => {
         containerRefreshEnd();
       }
 
-      renderToHtml(Template, {condition: true});
+      renderToHtml(Template, {condition: true}, defs);
       expect(events).toEqual(['comp=comp val1=1 val2=1 - changed=[val1,val2]']);
 
-      renderToHtml(Template, {condition: false});
+      renderToHtml(Template, {condition: false}, defs);
       expect(events).toEqual(['comp=comp val1=1 val2=1 - changed=[val1,val2]']);
 
-      renderToHtml(Template, {condition: true});
+      renderToHtml(Template, {condition: true}, defs);
       expect(events).toEqual([
         'comp=comp val1=1 val2=1 - changed=[val1,val2]',
         'comp=comp val1=1 val2=1 - changed=[val1,val2]'
@@ -1929,13 +1979,13 @@ describe('lifecycles', () => {
     it('should call onChanges in hosts before their content children', () => {
       /**
        * <comp>
-       *   <projected-comp></projected-comp>
+       *   <projected></projected>
        * </comp>
        */
       function Template(ctx: any, cm: boolean) {
         if (cm) {
-          elementStart(0, Comp);
-          { elementStart(1, ProjectedComp); }
+          elementStart(0, 'comp');
+          { elementStart(1, 'projected'); }
           elementEnd();
         }
         elementProperty(0, 'val1', bind(1));
@@ -1944,7 +1994,7 @@ describe('lifecycles', () => {
         elementProperty(1, 'publicName', bind(2));
       }
 
-      renderToHtml(Template, {});
+      renderToHtml(Template, {}, defs);
       expect(events).toEqual([
         'comp=comp val1=1 val2=1 - changed=[val1,val2]',
         'comp=projected val1=2 val2=2 - changed=[val1,val2]'
@@ -1954,19 +2004,19 @@ describe('lifecycles', () => {
     it('should call onChanges in host and its content children before next host', () => {
       /**
        * <comp [val]="1">
-       *   <projected-comp [val]="1"></projected-comp>
+       *   <projected [val]="1"></projected>
        * </comp>
        * <comp [val]="2">
-       *   <projected-comp [val]="1"></projected-comp>
+       *   <projected [val]="1"></projected>
        * </comp>
        */
       function Template(ctx: any, cm: boolean) {
         if (cm) {
-          elementStart(0, Comp);
-          { elementStart(1, ProjectedComp); }
+          elementStart(0, 'comp');
+          { elementStart(1, 'projected'); }
           elementEnd();
-          elementStart(2, Comp);
-          { elementStart(3, ProjectedComp); }
+          elementStart(2, 'comp');
+          { elementStart(3, 'projected'); }
           elementEnd();
         }
         elementProperty(0, 'val1', bind(1));
@@ -1979,7 +2029,7 @@ describe('lifecycles', () => {
         elementProperty(3, 'publicName', bind(4));
       }
 
-      renderToHtml(Template, {});
+      renderToHtml(Template, {}, defs);
       expect(events).toEqual([
         'comp=comp val1=1 val2=1 - changed=[val1,val2]',
         'comp=projected val1=2 val2=2 - changed=[val1,val2]',
@@ -1992,19 +2042,19 @@ describe('lifecycles', () => {
       /** <comp directive></comp> */
       function Template(ctx: any, cm: boolean) {
         if (cm) {
-          elementStart(0, Comp, null, [Directive]);
+          elementStart(0, 'comp', ['dir', '']);
           elementEnd();
         }
         elementProperty(0, 'val1', bind(1));
         elementProperty(0, 'publicName', bind(1));
       }
 
-      renderToHtml(Template, {});
+      renderToHtml(Template, {}, defs);
       expect(events).toEqual([
         'comp=comp val1=1 val2=1 - changed=[val1,val2]', 'dir - val1=1 val2=1 - changed=[val1,val2]'
       ]);
 
-      renderToHtml(Template, {});
+      renderToHtml(Template, {}, defs);
       expect(events).toEqual([
         'comp=comp val1=1 val2=1 - changed=[val1,val2]', 'dir - val1=1 val2=1 - changed=[val1,val2]'
       ]);
@@ -2015,17 +2065,17 @@ describe('lifecycles', () => {
       /** <div directive></div> */
       function Template(ctx: any, cm: boolean) {
         if (cm) {
-          elementStart(0, 'div', null, [Directive]);
+          elementStart(0, 'div', ['dir', '']);
           elementEnd();
         }
         elementProperty(0, 'val1', bind(1));
         elementProperty(0, 'publicName', bind(1));
       }
 
-      renderToHtml(Template, {});
+      renderToHtml(Template, {}, defs);
       expect(events).toEqual(['dir - val1=1 val2=1 - changed=[val1,val2]']);
 
-      renderToHtml(Template, {});
+      renderToHtml(Template, {}, defs);
       expect(events).toEqual(['dir - val1=1 val2=1 - changed=[val1,val2]']);
     });
 
@@ -2040,10 +2090,10 @@ describe('lifecycles', () => {
 
       function Template(ctx: any, cm: boolean) {
         if (cm) {
-          elementStart(0, Comp);
+          elementStart(0, 'comp');
           elementEnd();
           container(1);
-          elementStart(2, Comp);
+          elementStart(2, 'comp');
           elementEnd();
         }
         elementProperty(0, 'val1', bind(1));
@@ -2054,7 +2104,7 @@ describe('lifecycles', () => {
         {
           for (let j = 2; j < 5; j++) {
             if (embeddedViewStart(0)) {
-              elementStart(0, Comp);
+              elementStart(0, 'comp');
               elementEnd();
             }
             elementProperty(0, 'val1', bind(j));
@@ -2065,7 +2115,7 @@ describe('lifecycles', () => {
         containerRefreshEnd();
       }
 
-      renderToHtml(Template, {});
+      renderToHtml(Template, {}, defs);
 
       // onChanges is called top to bottom, so top level comps (1 and 5) are called
       // before the comps inside the for loop's embedded view (2, 3, and 4)
@@ -2089,10 +2139,10 @@ describe('lifecycles', () => {
 
       function Template(ctx: any, cm: boolean) {
         if (cm) {
-          elementStart(0, Parent);
+          elementStart(0, 'parent');
           elementEnd();
           container(1);
-          elementStart(2, Parent);
+          elementStart(2, 'parent');
           elementEnd();
         }
         elementProperty(0, 'val1', bind(1));
@@ -2103,7 +2153,7 @@ describe('lifecycles', () => {
         {
           for (let j = 2; j < 5; j++) {
             if (embeddedViewStart(0)) {
-              elementStart(0, Parent);
+              elementStart(0, 'parent');
               elementEnd();
             }
             elementProperty(0, 'val1', bind(j));
@@ -2114,7 +2164,7 @@ describe('lifecycles', () => {
         containerRefreshEnd();
       }
 
-      renderToHtml(Template, {});
+      renderToHtml(Template, {}, defs);
 
       // onChanges is called top to bottom, so top level comps (1 and 5) are called
       // before the comps inside the for loop's embedded view (2, 3, and 4)
@@ -2139,7 +2189,8 @@ describe('lifecycles', () => {
 
     beforeEach(() => { events = []; });
 
-    function createAllHooksComponent(name: string, template: ComponentTemplate<any>) {
+    function createAllHooksComponent(
+        name: string, template: ComponentTemplate<any>, defs: any[] = []) {
       return class Component {
         val: string = '';
 
@@ -2156,10 +2207,11 @@ describe('lifecycles', () => {
 
         static ngComponentDef = defineComponent({
           type: Component,
-          tag: name,
+          selector: [[[name], null]],
           factory: () => new Component(),
           inputs: {val: 'val'}, template,
-          features: [NgOnChangesFeature()]
+          features: [NgOnChangesFeature()],
+          directiveDefs: defs
         });
       };
     }
@@ -2174,16 +2226,17 @@ describe('lifecycles', () => {
        */
       function Template(ctx: any, cm: boolean) {
         if (cm) {
-          elementStart(0, Comp);
+          elementStart(0, 'comp');
           elementEnd();
-          elementStart(1, Comp);
+          elementStart(1, 'comp');
           elementEnd();
         }
         elementProperty(0, 'val', 1);
         elementProperty(1, 'val', 2);
       }
 
-      renderToHtml(Template, {});
+      const defs = [Comp.ngComponentDef];
+      renderToHtml(Template, {}, defs);
       expect(events).toEqual([
         'changes comp1', 'init comp1', 'check comp1', 'changes comp2', 'init comp2', 'check comp2',
         'contentInit comp1', 'contentCheck comp1', 'contentInit comp2', 'contentCheck comp2',
@@ -2191,7 +2244,7 @@ describe('lifecycles', () => {
       ]);
 
       events = [];
-      renderToHtml(Template, {});
+      renderToHtml(Template, {}, defs);
       expect(events).toEqual([
         'changes comp1', 'check comp1', 'changes comp2', 'check comp2', 'contentCheck comp1',
         'contentCheck comp2', 'viewCheck comp1', 'viewCheck comp2'
@@ -2204,11 +2257,11 @@ describe('lifecycles', () => {
       /** <comp [val]="val"></comp> */
       const Parent = createAllHooksComponent('parent', (ctx: any, cm: boolean) => {
         if (cm) {
-          elementStart(0, Comp);
+          elementStart(0, 'comp');
           elementEnd();
         }
         elementProperty(0, 'val', bind(ctx.val));
-      });
+      }, [Comp.ngComponentDef]);
 
       /**
        * <parent [val]="1"></parent>
@@ -2216,16 +2269,17 @@ describe('lifecycles', () => {
        */
       function Template(ctx: any, cm: boolean) {
         if (cm) {
-          elementStart(0, Parent);
+          elementStart(0, 'parent');
           elementEnd();
-          elementStart(1, Parent);
+          elementStart(1, 'parent');
           elementEnd();
         }
         elementProperty(0, 'val', 1);
         elementProperty(1, 'val', 2);
       }
 
-      renderToHtml(Template, {});
+      const defs = [Parent.ngComponentDef];
+      renderToHtml(Template, {}, defs);
       expect(events).toEqual([
         'changes parent1',      'init parent1',         'check parent1',
         'changes parent2',      'init parent2',         'check parent2',
@@ -2240,7 +2294,7 @@ describe('lifecycles', () => {
       ]);
 
       events = [];
-      renderToHtml(Template, {});
+      renderToHtml(Template, {}, defs);
       expect(events).toEqual([
         'changes parent1', 'check parent1', 'changes parent2', 'check parent2',
         'contentCheck parent1', 'contentCheck parent2', 'check comp1', 'contentCheck comp1',

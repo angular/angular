@@ -21,7 +21,10 @@ export class ViewRef<T> implements viewEngine_EmbeddedViewRef<T> {
   constructor(private _view: LView, context: T|null, ) { this.context = context !; }
 
   /** @internal */
-  _setComponentContext(context: T) { this.context = context; }
+  _setComponentContext(view: LView, context: T) {
+    this._view = view;
+    this.context = context;
+  }
 
   destroy(): void { notImplemented(); }
   destroyed: boolean;
@@ -223,9 +226,9 @@ export class EmbeddedViewRef<T> extends ViewRef<T> {
  * @param context The context for this view
  * @returns The ViewRef
  */
-export function createViewRef<T>(view: LView, context: T): ViewRef<T> {
+export function createViewRef<T>(view: LView | null, context: T): ViewRef<T> {
   // TODO: add detectChanges back in when implementing ChangeDetectorRef.detectChanges
-  return addDestroyable(new ViewRef(view, context));
+  return addDestroyable(new ViewRef(view !, context));
 }
 
 /** Interface for destroy logic. Implemented by addDestroyable. */

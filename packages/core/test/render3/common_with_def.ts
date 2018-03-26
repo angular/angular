@@ -16,6 +16,7 @@ export const NgForOf: DirectiveType<NgForOfDef<any>> = NgForOfDef as any;
 
 NgForOf.ngDirectiveDef = defineDirective({
   type: NgForOfDef,
+  selector: [[['', 'ngForOf', ''], null]],
   factory: () => new NgForOfDef(
                injectViewContainerRef(), injectTemplateRef(),
                directiveInject(IterableDiffers, InjectFlags.Default, defaultIterableDiffers)),

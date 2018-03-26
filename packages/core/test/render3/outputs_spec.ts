@@ -15,6 +15,8 @@ import {containerEl, renderToHtml} from './render_util';
 
 describe('outputs', () => {
   let buttonToggle: ButtonToggle;
+  let destroyComp: DestroyComp;
+  let buttonDir: MyButton;
 
   class ButtonToggle {
     change = new EventEmitter();
@@ -22,7 +24,7 @@ describe('outputs', () => {
 
     static ngComponentDef = defineComponent({
       type: ButtonToggle,
-      tag: 'button-toggle',
+      selector: [[['button-toggle'], null]],
       template: function(ctx: any, cm: boolean) {},
       factory: () => buttonToggle = new ButtonToggle(),
       outputs: {change: 'change', resetStream: 'reset'}
@@ -36,16 +38,47 @@ describe('outputs', () => {
 
     static ngDirectiveDef = defineDirective({
       type: OtherDir,
+      selector: [[['', 'otherDir', ''], null]],
       factory: () => otherDir = new OtherDir,
       outputs: {changeStream: 'change'}
     });
   }
 
+  class DestroyComp {
+    events: string[] = [];
+    ngOnDestroy() { this.events.push('destroy'); }
+
+    static ngComponentDef = defineComponent({
+      type: DestroyComp,
+      selector: [[['destroy-comp'], null]],
+      template: function(ctx: any, cm: boolean) {},
+      factory: () => destroyComp = new DestroyComp()
+    });
+  }
+
+  /** <button myButton (click)="onClick()">Click me</button> */
+  class MyButton {
+    click = new EventEmitter();
+
+    static ngDirectiveDef = defineDirective({
+      type: MyButton,
+      selector: [[['', 'myButton', ''], null]],
+      factory: () => buttonDir = new MyButton,
+      outputs: {click: 'click'}
+    });
+  }
+
+
+  const deps = [
+    ButtonToggle.ngComponentDef, OtherDir.ngDirectiveDef, DestroyComp.ngComponentDef,
+    MyButton.ngDirectiveDef
+  ];
+
   it('should call component output function when event is emitted', () => {
     /** <button-toggle (change)="onChange()"></button-toggle> */
     function Template(ctx: any, cm: boolean) {
       if (cm) {
-        elementStart(0, ButtonToggle);
+        elementStart(0, 'button-toggle');
         {
           listener('change', function() { return ctx.onChange(); });
         }
@@ -55,7 +88,7 @@ describe('outputs', () => {
 
     let counter = 0;
     const ctx = {onChange: () => counter++};
-    renderToHtml(Template, ctx);
+    renderToHtml(Template, ctx, deps);
 
     buttonToggle !.change.next();
     expect(counter).toEqual(1);
@@ -68,7 +101,7 @@ describe('outputs', () => {
     /** <button-toggle (change)="onChange()" (reset)="onReset()"></button-toggle> */
     function Template(ctx: any, cm: boolean) {
       if (cm) {
-        elementStart(0, ButtonToggle);
+        elementStart(0, 'button-toggle');
         {
           listener('change', function() { return ctx.onChange(); });
           listener('reset', function() { return ctx.onReset(); });
@@ -80,7 +113,7 @@ describe('outputs', () => {
     let counter = 0;
     let resetCounter = 0;
     const ctx = {onChange: () => counter++, onReset: () => resetCounter++};
-    renderToHtml(Template, ctx);
+    renderToHtml(Template, ctx, deps);
 
     buttonToggle !.change.next();
     expect(counter).toEqual(1);
@@ -93,7 +126,7 @@ describe('outputs', () => {
     /** <button-toggle (change)="counter++"></button-toggle> */
     function Template(ctx: any, cm: boolean) {
       if (cm) {
-        elementStart(0, ButtonToggle);
+        elementStart(0, 'button-toggle');
         {
           listener('change', function() { return ctx.counter++; });
         }
@@ -102,7 +135,7 @@ describe('outputs', () => {
     }
 
     const ctx = {counter: 0};
-    renderToHtml(Template, ctx);
+    renderToHtml(Template, ctx, deps);
 
     buttonToggle !.change.next();
     expect(ctx.counter).toEqual(1);
@@ -127,7 +160,7 @@ describe('outputs', () => {
       {
         if (ctx.condition) {
           if (embeddedViewStart(0)) {
-            elementStart(0, ButtonToggle);
+            elementStart(0, 'button-toggle');
             {
               listener('change', function() { return ctx.onChange(); });
             }
@@ -141,13 +174,13 @@ describe('outputs', () => {
 
     let counter = 0;
     const ctx = {onChange: () => counter++, condition: true};
-    renderToHtml(Template, ctx);
+    renderToHtml(Template, ctx, deps);
 
     buttonToggle !.change.next();
     expect(counter).toEqual(1);
 
     ctx.condition = false;
-    renderToHtml(Template, ctx);
+    renderToHtml(Template, ctx, deps);
 
     buttonToggle !.change.next();
     expect(counter).toEqual(1);
@@ -177,7 +210,7 @@ describe('outputs', () => {
           {
             if (ctx.condition2) {
               if (embeddedViewStart(0)) {
-                elementStart(0, ButtonToggle);
+                elementStart(0, 'button-toggle');
                 {
                   listener('change', function() { return ctx.onChange(); });
                 }
@@ -195,33 +228,19 @@ describe('outputs', () => {
 
     let counter = 0;
     const ctx = {onChange: () => counter++, condition: true, condition2: true};
-    renderToHtml(Template, ctx);
+    renderToHtml(Template, ctx, deps);
 
     buttonToggle !.change.next();
     expect(counter).toEqual(1);
 
     ctx.condition = false;
-    renderToHtml(Template, ctx);
+    renderToHtml(Template, ctx, deps);
 
     buttonToggle !.change.next();
     expect(counter).toEqual(1);
   });
 
   it('should work properly when view also has listeners and destroys', () => {
-    let destroyComp: DestroyComp;
-
-    class DestroyComp {
-      events: string[] = [];
-      ngOnDestroy() { this.events.push('destroy'); }
-
-      static ngComponentDef = defineComponent({
-        type: DestroyComp,
-        tag: 'destroy-comp',
-        template: function(ctx: any, cm: boolean) {},
-        factory: () => destroyComp = new DestroyComp()
-      });
-    }
-
     /**
      * % if (condition) {
      *   <button (click)="onClick()">Click me</button>
@@ -243,12 +262,12 @@ describe('outputs', () => {
               text(1, 'Click me');
             }
             elementEnd();
-            elementStart(2, ButtonToggle);
+            elementStart(2, 'button-toggle');
             {
               listener('change', function() { return ctx.onChange(); });
             }
             elementEnd();
-            elementStart(3, DestroyComp);
+            elementStart(3, 'destroy-comp');
             elementEnd();
           }
           embeddedViewEnd();
@@ -260,7 +279,7 @@ describe('outputs', () => {
     let clickCounter = 0;
     let changeCounter = 0;
     const ctx = {condition: true, onChange: () => changeCounter++, onClick: () => clickCounter++};
-    renderToHtml(Template, ctx);
+    renderToHtml(Template, ctx, deps);
 
     buttonToggle !.change.next();
     expect(changeCounter).toEqual(1);
@@ -272,7 +291,7 @@ describe('outputs', () => {
     expect(clickCounter).toEqual(1);
 
     ctx.condition = false;
-    renderToHtml(Template, ctx);
+    renderToHtml(Template, ctx, deps);
 
     expect(destroyComp !.events).toEqual(['destroy']);
 
@@ -283,19 +302,9 @@ describe('outputs', () => {
   });
 
   it('should fire event listeners along with outputs if they match', () => {
-    let buttonDir: MyButton;
-
-    /** <button myButton (click)="onClick()">Click me</button> */
-    class MyButton {
-      click = new EventEmitter();
-
-      static ngDirectiveDef = defineDirective(
-          {type: MyButton, factory: () => buttonDir = new MyButton, outputs: {click: 'click'}});
-    }
-
     function Template(ctx: any, cm: boolean) {
       if (cm) {
-        elementStart(0, 'button', null, [MyButton]);
+        elementStart(0, 'button', ['myButton', '']);
         {
           listener('click', function() { return ctx.onClick(); });
         }
@@ -304,7 +313,7 @@ describe('outputs', () => {
     }
 
     let counter = 0;
-    renderToHtml(Template, {counter, onClick: () => counter++});
+    renderToHtml(Template, {counter, onClick: () => counter++}, deps);
 
     // To match current Angular behavior, the click listener is still
     // set up in addition to any matching outputs.
@@ -320,7 +329,7 @@ describe('outputs', () => {
     /** <button-toggle (change)="onChange()" otherDir></button-toggle> */
     function Template(ctx: any, cm: boolean) {
       if (cm) {
-        elementStart(0, ButtonToggle, null, [OtherDir]);
+        elementStart(0, 'button-toggle', ['otherDir', '']);
         {
           listener('change', function() { return ctx.onChange(); });
         }
@@ -329,7 +338,7 @@ describe('outputs', () => {
     }
 
     let counter = 0;
-    renderToHtml(Template, {counter, onChange: () => counter++});
+    renderToHtml(Template, {counter, onChange: () => counter++}, deps);
 
     buttonToggle !.change.next();
     expect(counter).toEqual(1);
@@ -339,19 +348,23 @@ describe('outputs', () => {
   });
 
   it('should work with an input and output of the same name', () => {
-    let otherDir: OtherDir;
+    let otherDir: OtherChangeDir;
 
-    class OtherDir {
+    class OtherChangeDir {
       change: boolean;
 
-      static ngDirectiveDef = defineDirective(
-          {type: OtherDir, factory: () => otherDir = new OtherDir, inputs: {change: 'change'}});
+      static ngDirectiveDef = defineDirective({
+        type: OtherChangeDir,
+        selector: [[['', 'otherChangeDir', ''], null]],
+        factory: () => otherDir = new OtherChangeDir,
+        inputs: {change: 'change'}
+      });
     }
 
-    /** <button-toggle (change)="onChange()" otherDir [change]="change"></button-toggle> */
+    /** <button-toggle (change)="onChange()" otherChangeDir [change]="change"></button-toggle> */
     function Template(ctx: any, cm: boolean) {
       if (cm) {
-        elementStart(0, ButtonToggle, null, [OtherDir]);
+        elementStart(0, 'button-toggle', ['otherChangeDir', '']);
         {
           listener('change', function() { return ctx.onChange(); });
         }
@@ -361,10 +374,11 @@ describe('outputs', () => {
     }
 
     let counter = 0;
-    renderToHtml(Template, {counter, onChange: () => counter++, change: true});
+    const deps = [ButtonToggle.ngComponentDef, OtherChangeDir.ngDirectiveDef];
+    renderToHtml(Template, {counter, onChange: () => counter++, change: true}, deps);
     expect(otherDir !.change).toEqual(true);
 
-    renderToHtml(Template, {counter, onChange: () => counter++, change: false});
+    renderToHtml(Template, {counter, onChange: () => counter++, change: false}, deps);
     expect(otherDir !.change).toEqual(false);
 
     buttonToggle !.change.next();
@@ -395,7 +409,7 @@ describe('outputs', () => {
       {
         if (ctx.condition) {
           if (embeddedViewStart(0)) {
-            elementStart(0, ButtonToggle);
+            elementStart(0, 'button-toggle');
             {
               listener('change', function() { return ctx.onChange(); });
             }
@@ -404,7 +418,7 @@ describe('outputs', () => {
           embeddedViewEnd();
         } else {
           if (embeddedViewStart(1)) {
-            elementStart(0, 'div', null, [OtherDir]);
+            elementStart(0, 'div', ['otherDir', '']);
             {
               listener('change', function() { return ctx.onChange(); });
             }
@@ -418,13 +432,13 @@ describe('outputs', () => {
 
     let counter = 0;
     const ctx = {condition: true, onChange: () => counter++, onClick: () => {}};
-    renderToHtml(Template, ctx);
+    renderToHtml(Template, ctx, deps);
 
     buttonToggle !.change.next();
     expect(counter).toEqual(1);
 
     ctx.condition = false;
-    renderToHtml(Template, ctx);
+    renderToHtml(Template, ctx, deps);
     expect(counter).toEqual(1);
 
     otherDir !.changeStream.next();

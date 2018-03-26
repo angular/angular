@@ -34,7 +34,7 @@ describe('iv perf test', () => {
         class Component {
           static ngComponentDef = defineComponent({
             type: Component,
-            tag: 'div',
+            selector: [[['div'], null]],
             template: function Template(ctx: any, cm: any) {
               if (cm) {
                 container(0);

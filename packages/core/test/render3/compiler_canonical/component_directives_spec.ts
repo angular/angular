@@ -28,7 +28,7 @@ describe('components & directives', () => {
       // NORMATIVE
       static ngComponentDef = $r3$.ɵdefineComponent({
         type: ChildComponent,
-        tag: `child`,
+        selector: [[['child'], null]],
         factory: () => new ChildComponent(),
         template: function(ctx: $ChildComponent$, cm: $boolean$) {
           if (cm) {
@@ -47,6 +47,7 @@ describe('components & directives', () => {
       // NORMATIVE
       static ngDirectiveDef = $r3$.ɵdefineDirective({
         type: SomeDirective,
+        selector: [[['', 'some-directive', ''], null]],
         factory: () => new SomeDirective(),
       });
       // /NORMATIVE
@@ -55,7 +56,6 @@ describe('components & directives', () => {
     // Important: keep arrays outside of function to not create new instances.
     // NORMATIVE
     const $e0_attrs$ = ['some-directive', ''];
-    const $e0_dirs$ = [SomeDirective];
     // /NORMATIVE
 
     @Component({selector: 'my-component', template: `<child some-directive></child>!`})
@@ -63,11 +63,11 @@ describe('components & directives', () => {
       // NORMATIVE
       static ngComponentDef = $r3$.ɵdefineComponent({
         type: MyComponent,
-        tag: 'my-component',
+        selector: [[['my-component'], null]],
         factory: () => new MyComponent(),
         template: function(ctx: $MyComponent$, cm: $boolean$) {
           if (cm) {
-            $r3$.ɵE(0, ChildComponent, $e0_attrs$, $e0_dirs$);
+            $r3$.ɵE(0, 'child', $e0_attrs$);
             $r3$.ɵe();
             $r3$.ɵT(1, '!');
           }
@@ -75,6 +75,11 @@ describe('components & directives', () => {
       });
       // /NORMATIVE
     }
+
+    // NON-NORMATIVE (done by defineNgModule)
+    MyComponent.ngComponentDef.directiveDefs =
+        [ChildComponent.ngComponentDef, SomeDirective.ngDirectiveDef];
+    // /NON-NORMATIVE
 
     expect(renderComp(MyComponent)).toEqual('<child some-directive="">child-view</child>!');
     expect(log).toEqual(['ChildComponent', 'SomeDirective']);
@@ -90,6 +95,7 @@ describe('components & directives', () => {
       // NORMATIVE
       static ngDirectiveDef = $r3$.ɵdefineDirective({
         type: HostBindingDir,
+        selector: [[['', 'hostBindingDir', ''], null]],
         factory: function HostBindingDir_Factory() { return new HostBindingDir(); },
         hostBindings: function HostBindingDir_HostBindings(dirIndex: $number$, elIndex: $number$) {
           $r3$.ɵp(elIndex, 'id', $r3$.ɵb($r3$.ɵd<HostBindingDir>(dirIndex).dirId));
@@ -99,7 +105,6 @@ describe('components & directives', () => {
     }
 
     const $e0_attrs$ = ['hostBindingDir', ''];
-    const $e0_dirs$ = [HostBindingDir];
 
     @Component({
       selector: 'my-app',
@@ -110,16 +115,20 @@ describe('components & directives', () => {
     class MyApp {
       static ngComponentDef = $r3$.ɵdefineComponent({
         type: MyApp,
-        tag: 'my-app',
+        selector: [[['my-app'], null]],
         factory: function MyApp_Factory() { return new MyApp(); },
         template: function MyApp_Template(ctx: $MyApp$, cm: $boolean$) {
           if (cm) {
-            $r3$.ɵE(0, 'div', $e0_attrs$, $e0_dirs$);
+            $r3$.ɵE(0, 'div', $e0_attrs$);
             $r3$.ɵe();
           }
         }
       });
     }
+
+    // NON-NORMATIVE (done by defineNgModule)
+    MyApp.ngComponentDef.directiveDefs = [HostBindingDir.ngDirectiveDef];
+    // /NON-NORMATIVE
 
     expect(renderComp(MyApp)).toEqual(`<div hostbindingdir="" id="some id"></div>`);
   });
@@ -134,6 +143,7 @@ describe('components & directives', () => {
 
       // NORMATIVE
       static ngDirectiveDef = $r3$.ɵdefineDirective({
+        selector: [[['', 'hostListenerDir', ''], null]],
         type: HostListenerDir,
         factory: function HostListenerDir_Factory() {
           const $dir$ = new HostListenerDir();
@@ -145,7 +155,6 @@ describe('components & directives', () => {
     }
 
     const $e0_attrs$ = ['hostListenerDir', ''];
-    const $e0_dirs$ = [HostListenerDir];
 
     @Component({
       selector: 'my-app',
@@ -156,17 +165,21 @@ describe('components & directives', () => {
     class MyApp {
       static ngComponentDef = $r3$.ɵdefineComponent({
         type: MyApp,
-        tag: 'my-app',
+        selector: [[['my-app'], null]],
         factory: function MyApp_Factory() { return new MyApp(); },
         template: function MyApp_Template(ctx: $MyApp$, cm: $boolean$) {
           if (cm) {
-            $r3$.ɵE(0, 'button', $e0_attrs$, $e0_dirs$);
+            $r3$.ɵE(0, 'button', $e0_attrs$);
             $r3$.ɵT(1, 'Click');
             $r3$.ɵe();
           }
         }
       });
     }
+
+    // NON-NORMATIVE (done by defineNgModule)
+    MyApp.ngComponentDef.directiveDefs = [HostListenerDir.ngDirectiveDef];
+    // /NON-NORMATIVE
 
     expect(renderComp(MyApp)).toEqual(`<button hostlistenerdir="">Click</button>`);
   });
@@ -179,6 +192,7 @@ describe('components & directives', () => {
     class HostAttributeDir {
       // NORMATIVE
       static ngDirectiveDef = $r3$.ɵdefineDirective({
+        selector: [[['', 'hostAttributeDir', ''], null]],
         type: HostAttributeDir,
         factory: function HostAttributeDir_Factory() { return new HostAttributeDir(); },
         attributes: ['role', 'listbox']
@@ -187,7 +201,6 @@ describe('components & directives', () => {
     }
 
     const $e0_attrs$ = ['hostAttributeDir', ''];
-    const $e0_dirs$ = [HostAttributeDir];
 
     @Component({
       selector: 'my-app',
@@ -198,16 +211,20 @@ describe('components & directives', () => {
     class MyApp {
       static ngComponentDef = $r3$.ɵdefineComponent({
         type: MyApp,
-        tag: 'my-app',
+        selector: [[['my-app'], null]],
         factory: function MyApp_Factory() { return new MyApp(); },
         template: function MyApp_Template(ctx: $MyApp$, cm: $boolean$) {
           if (cm) {
-            $r3$.ɵE(0, 'div', $e0_attrs$, $e0_dirs$);
+            $r3$.ɵE(0, 'div', $e0_attrs$);
             $r3$.ɵe();
           }
         }
       });
     }
+
+    // NON-NORMATIVE (done by defineNgModule)
+    MyApp.ngComponentDef.directiveDefs = [HostAttributeDir.ngDirectiveDef];
+    // /NON-NORMATIVE
 
     expect(renderComp(MyApp)).toEqual(`<div hostattributedir="" role="listbox"></div>`);
   });
@@ -222,6 +239,7 @@ describe('components & directives', () => {
       // NORMATIVE
       static ngDirectiveDef = $r3$.ɵdefineDirective({
         type: HostBindingDir,
+        selector: [[['', 'hostBindingDir', ''], null]],
         factory: function HostBindingDir_Factory() { return new HostBindingDir(); },
         hostBindings: function HostBindingDir_HostBindings(dirIndex: $number$, elIndex: $number$) {
           $r3$.ɵa(elIndex, 'aria-label', $r3$.ɵb($r3$.ɵd<HostBindingDir>(dirIndex).label));
@@ -231,7 +249,6 @@ describe('components & directives', () => {
     }
 
     const $e0_attrs$ = ['hostBindingDir', ''];
-    const $e0_dirs$ = [HostBindingDir];
 
     @Component({
       selector: 'my-app',
@@ -242,16 +259,20 @@ describe('components & directives', () => {
     class MyApp {
       static ngComponentDef = $r3$.ɵdefineComponent({
         type: MyApp,
-        tag: 'my-app',
+        selector: [[['my-app'], null]],
         factory: function MyApp_Factory() { return new MyApp(); },
         template: function MyApp_Template(ctx: $MyApp$, cm: $boolean$) {
           if (cm) {
-            $r3$.ɵE(0, 'div', $e0_attrs$, $e0_dirs$);
+            $r3$.ɵE(0, 'div', $e0_attrs$);
             $r3$.ɵe();
           }
         }
       });
     }
+
+    // NON-NORMATIVE (done by defineNgModule)
+    MyApp.ngComponentDef.directiveDefs = [HostBindingDir.ngDirectiveDef];
+    // /NON-NORMATIVE
 
     expect(renderComp(MyApp)).toEqual(`<div aria-label="some label" hostbindingdir=""></div>`);
   });
@@ -273,7 +294,7 @@ describe('components & directives', () => {
       // NORMATIVE
       static ngComponentDef = $r3$.ɵdefineComponent({
         type: MyComp,
-        tag: 'my-comp',
+        selector: [[['my-comp'], null]],
         factory: function MyComp_Factory() { return new MyComp(); },
         template: function MyComp_Template(ctx: $MyComp$, cm: $boolean$) {
           if (cm) {
@@ -298,17 +319,21 @@ describe('components & directives', () => {
 
       static ngComponentDef = $r3$.ɵdefineComponent({
         type: MyApp,
-        tag: 'my-app',
+        selector: [[['my-app'], null]],
         factory: function MyApp_Factory() { return new MyApp(); },
         template: function MyApp_Template(ctx: $MyApp$, cm: $boolean$) {
           if (cm) {
-            $r3$.ɵE(0, MyComp);
+            $r3$.ɵE(0, 'my-comp');
             $r3$.ɵe();
           }
           $r3$.ɵp(0, 'name', $r3$.ɵb(ctx.name));
         }
       });
     }
+
+    // NON-NORMATIVE (done by defineNgModule)
+    MyApp.ngComponentDef.directiveDefs = [MyComp.ngComponentDef];
+    // /NON-NORMATIVE
 
     expect(renderComp(MyApp)).toEqual(`<my-comp>some name</my-comp>`);
   });
@@ -325,6 +350,7 @@ describe('components & directives', () => {
       // NORMATIVE
       static ngDirectiveDef = $r3$.ɵdefineDirective({
         type: IfDirective,
+        selector: [[['', 'if', ''], null]],
         factory: () => new IfDirective($r3$.ɵinjectTemplateRef()),
       });
       // /NORMATIVE
@@ -333,7 +359,6 @@ describe('components & directives', () => {
     // Important: keep arrays outside of function to not create new instances.
     // NORMATIVE
     const $e0_locals$ = ['foo', ''];
-    const $c1_dirs$ = [IfDirective];
     // /NORMATIVE
 
     @Component(
@@ -343,12 +368,12 @@ describe('components & directives', () => {
       // NORMATIVE
       static ngComponentDef = $r3$.ɵdefineComponent({
         type: MyComponent,
-        tag: 'my-component',
+        selector: [[['my-component'], null]],
         factory: () => new MyComponent(),
         template: function(ctx: $MyComponent$, cm: $boolean$) {
           if (cm) {
-            $r3$.ɵE(0, 'ul', null, null, $e0_locals$);
-            $r3$.ɵC(2, $c1_dirs$, C1);
+            $r3$.ɵE(0, 'ul', null, $e0_locals$);
+            $r3$.ɵC(2, C1, '', ['if', '']);
             $r3$.ɵe();
           }
           let $foo$ = $r3$.ɵld<any>(1);
@@ -386,7 +411,7 @@ describe('components & directives', () => {
 
       static ngComponentDef = $r3$.ɵdefineComponent({
         type: MyArrayComp,
-        tag: 'my-array-comp',
+        selector: [[['my-array-comp'], null]],
         factory: function MyArrayComp_Factory() { return new MyArrayComp(); },
         template: function MyArrayComp_Template(ctx: $MyArrayComp$, cm: $boolean$) {
           if (cm) {
@@ -415,11 +440,11 @@ describe('components & directives', () => {
         // NORMATIVE
         static ngComponentDef = $r3$.ɵdefineComponent({
           type: MyApp,
-          tag: 'my-app',
+          selector: [[['my-app'], null]],
           factory: function MyApp_Factory() { return new MyApp(); },
           template: function MyApp_Template(ctx: $MyApp$, cm: $boolean$) {
             if (cm) {
-              $r3$.ɵE(0, MyArrayComp);
+              $r3$.ɵE(0, 'my-array-comp');
               $r3$.ɵe();
             }
             $r3$.ɵp(0, 'names', cm ? $e0_arr$ : $r3$.ɵNC);
@@ -427,6 +452,10 @@ describe('components & directives', () => {
         });
         // /NORMATIVE
       }
+
+      // NON-NORMATIVE (done by defineNgModule)
+      MyApp.ngComponentDef.directiveDefs = [MyArrayComp.ngComponentDef];
+      // /NON-NORMATIVE
 
       expect(renderComp(MyApp)).toEqual(`<my-array-comp>Nancy Bess</my-array-comp>`);
     });
@@ -453,11 +482,11 @@ describe('components & directives', () => {
         // NORMATIVE
         static ngComponentDef = $r3$.ɵdefineComponent({
           type: MyApp,
-          tag: 'my-app',
+          selector: [[['my-app'], null]],
           factory: function MyApp_Factory() { return new MyApp(); },
           template: function MyApp_Template(ctx: $MyApp$, cm: $boolean$) {
             if (cm) {
-              $r3$.ɵE(0, MyArrayComp);
+              $r3$.ɵE(0, 'my-array-comp');
               $r3$.ɵe();
             }
             $r3$.ɵp(0, 'names', $r3$.ɵb(ctx.someFn($r3$.ɵf0($e0_ff$))));
@@ -465,6 +494,10 @@ describe('components & directives', () => {
         });
         // /NORMATIVE
       }
+
+      // NON-NORMATIVE (done by defineNgModule)
+      MyApp.ngComponentDef.directiveDefs = [MyArrayComp.ngComponentDef];
+      // /NON-NORMATIVE
 
       expect(renderComp(MyApp)).toEqual(`<my-array-comp>NANCY Bess</my-array-comp>`);
     });
@@ -479,7 +512,7 @@ describe('components & directives', () => {
 
         static ngComponentDef = $r3$.ɵdefineComponent({
           type: MyComp,
-          tag: 'my-comp',
+          selector: [[['my-comp'], null]],
           factory: function MyComp_Factory() { return new MyComp(); },
           template: function MyComp_Template(ctx: $MyComp$, cm: $boolean$) {
             if (cm) {
@@ -505,11 +538,11 @@ describe('components & directives', () => {
         // NORMATIVE
         static ngComponentDef = $r3$.ɵdefineComponent({
           type: MyApp,
-          tag: 'my-app',
+          selector: [[['my-app'], null]],
           factory: function MyApp_Factory() { return new MyApp(); },
           template: function MyApp_Template(ctx: $MyApp$, cm: $boolean$) {
             if (cm) {
-              $r3$.ɵE(0, MyComp);
+              $r3$.ɵE(0, 'my-comp');
               $r3$.ɵe();
             }
             $r3$.ɵp(0, 'num', $r3$.ɵb($r3$.ɵf0($e0_ff$).length + 1));
@@ -517,6 +550,10 @@ describe('components & directives', () => {
         });
         // /NORMATIVE
       }
+
+      // NON-NORMATIVE (done by defineNgModule)
+      MyApp.ngComponentDef.directiveDefs = [MyComp.ngComponentDef];
+      // /NON-NORMATIVE
 
       expect(renderComp(MyApp)).toEqual(`<my-comp>3</my-comp>`);
     });
@@ -541,11 +578,11 @@ describe('components & directives', () => {
         // NORMATIVE
         static ngComponentDef = $r3$.ɵdefineComponent({
           type: MyApp,
-          tag: 'my-app',
+          selector: [[['my-app'], null]],
           factory: function MyApp_Factory() { return new MyApp(); },
           template: function MyApp_Template(ctx: $MyApp$, cm: $boolean$) {
             if (cm) {
-              $r3$.ɵE(0, MyArrayComp);
+              $r3$.ɵE(0, 'my-array-comp');
               $r3$.ɵe();
             }
             $r3$.ɵp(0, 'names', $r3$.ɵb($r3$.ɵf1($e0_ff$, ctx.customName)));
@@ -553,6 +590,10 @@ describe('components & directives', () => {
         });
         // /NORMATIVE
       }
+
+      // NON-NORMATIVE (done by defineNgModule)
+      MyApp.ngComponentDef.directiveDefs = [MyArrayComp.ngComponentDef];
+      // /NON-NORMATIVE
 
       expect(renderComp(MyApp)).toEqual(`<my-array-comp>Nancy Bess</my-array-comp>`);
     });
@@ -581,7 +622,7 @@ describe('components & directives', () => {
 
         static ngComponentDef = $r3$.ɵdefineComponent({
           type: MyComp,
-          tag: 'my-comp',
+          selector: [[['my-comp'], null]],
           factory: function MyComp_Factory() { return new MyComp(); },
           template: function MyComp_Template(ctx: $MyComp$, cm: $boolean$) {
             if (cm) {
@@ -642,11 +683,11 @@ describe('components & directives', () => {
         // NORMATIVE
         static ngComponentDef = $r3$.ɵdefineComponent({
           type: MyApp,
-          tag: 'my-app',
+          selector: [[['my-app'], null]],
           factory: function MyApp_Factory() { return new MyApp(); },
           template: function MyApp_Template(c: MyApp, cm: boolean) {
             if (cm) {
-              $r3$.ɵE(0, MyComp);
+              $r3$.ɵE(0, 'my-comp');
               $r3$.ɵe();
             }
             $r3$.ɵp(
@@ -656,6 +697,10 @@ describe('components & directives', () => {
         });
         // /NORMATIVE
       }
+
+      // NON-NORMATIVE (done by defineNgModule)
+      MyApp.ngComponentDef.directiveDefs = [MyComp.ngComponentDef];
+      // /NON-NORMATIVE
 
       expect(renderComp(MyApp)).toEqual(`<my-comp>start-abcde-middle-fghi-end</my-comp>`);
     });
@@ -676,7 +721,7 @@ describe('components & directives', () => {
 
         static ngComponentDef = $r3$.ɵdefineComponent({
           type: ObjectComp,
-          tag: 'object-comp',
+          selector: [[['object-comp'], null]],
           factory: function ObjectComp_Factory() { return new ObjectComp(); },
           template: function ObjectComp_Template(ctx: $ObjectComp$, cm: $boolean$) {
             if (cm) {
@@ -710,11 +755,11 @@ describe('components & directives', () => {
         // NORMATIVE
         static ngComponentDef = $r3$.ɵdefineComponent({
           type: MyApp,
-          tag: 'my-app',
+          selector: [[['my-app'], null]],
           factory: function MyApp_Factory() { return new MyApp(); },
           template: function MyApp_Template(ctx: $MyApp$, cm: $boolean$) {
             if (cm) {
-              $r3$.ɵE(0, ObjectComp);
+              $r3$.ɵE(0, 'object-comp');
               $r3$.ɵe();
             }
             $r3$.ɵp(0, 'config', $r3$.ɵb($r3$.ɵf1($e0_ff$, ctx.name)));
@@ -722,6 +767,10 @@ describe('components & directives', () => {
         });
         // /NORMATIVE
       }
+
+      // NON-NORMATIVE (done by defineNgModule)
+      MyApp.ngComponentDef.directiveDefs = [ObjectComp.ngComponentDef];
+      // /NON-NORMATIVE
 
       expect(renderComp(MyApp)).toEqual(`<object-comp><p>500</p><p>slide</p></object-comp>`);
     });
@@ -743,7 +792,7 @@ describe('components & directives', () => {
 
         static ngComponentDef = $r3$.ɵdefineComponent({
           type: NestedComp,
-          tag: 'nested-comp',
+          selector: [[['nested-comp'], null]],
           factory: function NestedComp_Factory() { return new NestedComp(); },
           template: function NestedComp_Template(ctx: $NestedComp$, cm: $boolean$) {
             if (cm) {
@@ -786,11 +835,11 @@ describe('components & directives', () => {
         // NORMATIVE
         static ngComponentDef = $r3$.ɵdefineComponent({
           type: MyApp,
-          tag: 'my-app',
+          selector: [[['my-app'], null]],
           factory: function MyApp_Factory() { return new MyApp(); },
           template: function MyApp_Template(ctx: $MyApp$, cm: $boolean$) {
             if (cm) {
-              $r3$.ɵE(0, NestedComp);
+              $r3$.ɵE(0, 'nested-comp');
               $r3$.ɵe();
             }
             $r3$.ɵp(
@@ -801,6 +850,10 @@ describe('components & directives', () => {
         });
         // /NORMATIVE
       }
+
+      // NON-NORMATIVE (done by defineNgModule)
+      MyApp.ngComponentDef.directiveDefs = [NestedComp.ngComponentDef];
+      // /NON-NORMATIVE
 
       expect(renderComp(MyApp))
           .toEqual(`<nested-comp><p>slide</p><p>0</p><p>100</p></nested-comp>`);

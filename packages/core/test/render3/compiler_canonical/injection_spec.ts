@@ -30,7 +30,7 @@ describe('injection', () => {
         // NORMATIVE
         static ngComponentDef = $r3$.ɵdefineComponent({
           type: MyComp,
-          tag: 'my-comp',
+          selector: [[['my-comp'], null]],
           factory: function MyComp_Factory() {
             return new MyComp($r3$.ɵinjectChangeDetectorRef());
           },
@@ -47,17 +47,19 @@ describe('injection', () => {
       class MyApp {
         static ngComponentDef = $r3$.ɵdefineComponent({
           type: MyApp,
-          tag: 'my-app',
+          selector: [[['my-app'], null]],
           factory: function MyApp_Factory() { return new MyApp(); },
           /** <my-comp></my-comp> */
           template: function MyApp_Template(ctx: $MyApp$, cm: $boolean$) {
             if (cm) {
-              $r3$.ɵE(0, MyComp);
+              $r3$.ɵE(0, 'my-comp');
               $r3$.ɵe();
             }
-          }
+          },
+          directiveDefs: () => [MyComp.ngComponentDef]
         });
       }
+
 
       const app = renderComponent(MyApp);
       // ChangeDetectorRef is the token, ViewRef is historically the constructor
@@ -75,7 +77,7 @@ describe('injection', () => {
         // NORMATIVE
         static ngComponentDef = $r3$.ɵdefineComponent({
           type: MyComp,
-          tag: 'my-comp',
+          selector: [[['my-comp'], null]],
           factory: function MyComp_Factory() { return new MyComp($r3$.ɵinjectAttribute('title')); },
           template: function MyComp_Template(ctx: $MyComp$, cm: $boolean$) {
             if (cm) {
@@ -90,15 +92,16 @@ describe('injection', () => {
       class MyApp {
         static ngComponentDef = $r3$.ɵdefineComponent({
           type: MyApp,
-          tag: 'my-app',
+          selector: [[['my-app'], null]],
           factory: function MyApp_Factory() { return new MyApp(); },
           /** <my-comp></my-comp> */
           template: function MyApp_Template(ctx: $MyApp$, cm: $boolean$) {
             if (cm) {
-              $r3$.ɵE(0, MyComp, e0_attrs);
+              $r3$.ɵE(0, 'my-comp', e0_attrs);
               $r3$.ɵe();
             }
-          }
+          },
+          directiveDefs: () => [MyComp.ngComponentDef]
         });
       }
       const e0_attrs = ['title', 'WORKS'];
@@ -139,7 +142,7 @@ describe('injection', () => {
 
         static ngComponentDef = $r3$.ɵdefineComponent({
           type: MyApp,
-          tag: 'my-app',
+          selector: [[['my-app'], null]],
           factory: function MyApp_Factory() {
             return new MyApp(
                 $r3$.ɵdirectiveInject(ServiceA), $r3$.ɵdirectiveInject(ServiceB), inject(INJECTOR));

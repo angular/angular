@@ -82,7 +82,7 @@ describe('pipes', () => {
       // NORMATIVE
       static ngComponentDef = $r3$.ɵdefineComponent({
         type: MyApp,
-        tag: 'my-app',
+        selector: [[['my-app'], null]],
         factory: function MyApp_Factory() { return new MyApp(); },
         template: function MyApp_Template(ctx: $MyApp$, cm: $boolean$) {
           if (cm) {
@@ -133,16 +133,12 @@ describe('pipes', () => {
       // NORMATIVE
       static ngDirectiveDef = $r3$.ɵdefineDirective({
         type: OneTimeIf,
+        selector: [[['', 'oneTimeIf', ''], null]],
         factory: () => new OneTimeIf($r3$.ɵinjectViewContainerRef(), $r3$.ɵinjectTemplateRef()),
         inputs: {oneTimeIf: 'oneTimeIf'}
       });
       // /NORMATIVE
     }
-
-    // Important: keep arrays outside of function to not create new instances.
-    // NORMATIVE
-    const $c1_dirs$ = [OneTimeIf];
-    // /NORMATIVE
 
     @Component({
       template: `{{name | myPurePipe:size}}{{name | myPurePipe:size}}
@@ -156,7 +152,7 @@ describe('pipes', () => {
       // NORMATIVE
       static ngComponentDef = $r3$.ɵdefineComponent({
         type: MyApp,
-        tag: 'my-app',
+        selector: [[['my-app'], null]],
         factory: function MyApp_Factory() { return new MyApp(); },
         template: function MyApp_Template(ctx: $MyApp$, cm: $boolean$) {
           let $pi$: $MyPurePipe$;
@@ -165,7 +161,7 @@ describe('pipes', () => {
             $pi$ = $r3$.ɵPp(1, $MyPurePipe_ngPipeDef$);
             $r3$.ɵT(2);
             $r3$.ɵPp(3, $MyPurePipe_ngPipeDef$, $pi$);
-            $r3$.ɵC(4, $c1_dirs$, C4);
+            $r3$.ɵC(4, C4, '', ['oneTimeIf', '']);
           }
           $r3$.ɵt(0, $r3$.ɵi1('', $r3$.ɵpb2(1, ctx.name, ctx.size), ''));
           $r3$.ɵt(2, $r3$.ɵi1('', $r3$.ɵpb2(3, ctx.name, ctx.size), ''));
@@ -186,6 +182,10 @@ describe('pipes', () => {
       });
       // /NORMATIVE
     }
+
+    // NON-NORMATIVE
+    MyApp.ngComponentDef.directiveDefs = [OneTimeIf.ngDirectiveDef];
+    // /NON-NORMATIVE
 
     let myApp: MyApp = renderComponent(MyApp);
     expect(toHtml(containerEl)).toEqual('WorldWorld<div>World</div>');
