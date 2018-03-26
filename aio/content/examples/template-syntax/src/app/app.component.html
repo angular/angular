@@ -931,8 +931,14 @@ The null hero's name is {{nullHero && nullHero.name}}
 <hr><h2 id="any-type-cast-function">$any type cast function <i>$any( )</i>.</h2>
 
 <div>
-  <!-- #docregion any-type-cast-function-1 -->
+  <!-- #docregion any-type-cast-function-1! -->
   <!-- Accessing an undeclared member -->
+  <div>
+    The hero's marker is {{$any(hero).marker}}
+  </div>
+  <!-- #enddocregion any-type-cast-function-1! -->
+  <!-- #docregion any-type-cast-function-1 -->
+  <!-- 타입이 정해지지 않은 객체에 접근하기 -->
   <div>
     The hero's marker is {{$any(hero).marker}}
   </div>
@@ -940,8 +946,14 @@ The null hero's name is {{nullHero && nullHero.name}}
 </div>
 
 <div>
-  <!-- #docregion any-type-cast-function-2 -->
+  <!-- #docregion any-type-cast-function-2! -->
   <!-- Accessing an undeclared member -->
+  <div>
+    Undeclared members is {{$any(this).member}}
+  </div>
+  <!-- #enddocregion any-type-cast-function-2! -->
+  <!-- #docregion any-type-cast-function-2 -->
+  <!-- this 키워드로 컴포넌트에 접근하기 -->
   <div>
     Undeclared members is {{$any(this).member}}
   </div>

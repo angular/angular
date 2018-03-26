@@ -3557,67 +3557,120 @@ It works perfectly with long property paths such as `a?.b?.c?.d`.
 
 {@a non-null-assertion-operator}
 
+{@a null-방지-연산자}
+
+<!--
 ### The non-null assertion operator ( <span class="syntax">!</span> )
+-->
+### null 방지 연산자 ( <span class="syntax">!</span> )
 
+<!--
 As of Typescript 2.0, you can enforce [strict null checking](http://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-0.html "Strict null checking in TypeScript") with the `--strictNullChecks` flag. TypeScript then ensures that no variable is _unintentionally_ null or undefined.
+-->
+TypeScript 2.0 버전부터  [null 검사를 더 엄격하게](http://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-0.html "Strict null checking in TypeScript")하는 옵션이 추가되었습니다. 옵션은 `--strictNullChecks`로 활성화하며, 이 옵션을 설정하면 객체의 값이 null이나 undefined이 되는 것을 방지합니다.
 
+<!--
 In this mode, typed variables disallow null and undefined by default. The type checker throws an error if you leave a variable unassigned or try to assign null or undefined to a variable whose type disallows null and undefined.
+-->
+이 모드를 활성화하면 타입을 지정한 변수에 null이나 undefined을 할당하는 것이 허용되지 않습니다. 그래서 변수의 값을 할당하지 않고 놔두거나, 변수에 null이나 undefined을 할당하는 코드가 있으면 타입을 체크할 때 오류가 발생합니다.
 
+<!--
 The type checker also throws an error if it can't determine whether a variable will be null or undefined at runtime.
 You may know that can't happen but the type checker doesn't know.
 You tell the type checker that it can't happen by applying the post-fix
 [_non-null assertion operator (!)_](http://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-0.html#non-null-assertion-operator "Non-null assertion operator").
+-->
+그런데 TypeScript 컴파일러는 앱이 실행되는 시점에 변수의 값이 null이나 undefined가 될 수 있는 코드에서도 에러를 발생합니다.
+개발자는 발생하지 않는 경우라고 할 수 있지만 TypeScript 컴파일러가 알수는 없기 때문이죠.
+그래서 실행시점에서도 이 객체가 null이 되지 않는다는 것을 [null 방지 연산자](http://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-0.html#non-null-assertion-operator "Non-null assertion operator")를 사용해서 TypeScript 컴파일러에게 알려줘야 합니다.
 
+<!--
 The _Angular_ **non-null assertion operator (`!`)** serves the same purpose in an Angular template.
+-->
+Angular 템플릿에서도 이 연산자를 사용할 수 있습니다.
 
+<!--
 For example, after you use [*ngIf*](guide/template-syntax#ngIf) to check that `hero` is defined, you can assert that
 `hero` properties are also defined.
+-->
+만약 `hero` 객체가 정의되어있는지 [*ngIf*](guide/template-syntax#ngIf)로 검사하고, 이 객체가 유효할 때만 동작하는 로직을 다음과 같이 구현했다고 합시다.
 
 <code-example path="template-syntax/src/app/app.component.html" region="non-null-assertion-1" title="src/app/app.component.html" linenums="false">
 </code-example>
 
+<!--
 When the Angular compiler turns your template into TypeScript code,
 it prevents TypeScript from reporting that `hero.name` might be null or undefined.
+-->
+이 템플릿은 Angular 컴파일러가 TypeScript 코드로 변환합니다. 그러면 null 방지 연산자를 사용했기 때문에 TypeScript 컴파일러가 `hero` 객체는 null이거나 undefined가 되지 않는다는 것을 인식합니다.
 
 <!--
 Unlike the [_safe navigation operator_](guide/template-syntax#safe-navigation-operator "Safe navigation operator (?.)"),
 the **non-null assertion operator** does not guard against null or undefined.
 Rather it tells the TypeScript type checker to suspend strict null checks for a specific property expression.
 -->
-Unlike the [_안전 참조 연산자_](guide/template-syntax#안전-참조-연산자 "Safe navigation operator (?.)"),
-the **non-null assertion operator** does not guard against null or undefined.
-Rather it tells the TypeScript type checker to suspend strict null checks for a specific property expression.
+하지만 [_안전 참조 연산자_](guide/template-syntax#안전-참조-연산자 "Safe navigation operator (?.)")와는 다르게,
+**null 방지 연산자** 는 객체의 값이 null이나 undefined일 때 발생하는 오류를 방지하지는 않습니다.
+이 연산자의 역할은 템플릿에서 객체를 참조할 때 엄격한 null 검사를 하지 않도록 지정하는 것 뿐입니다.
 
+<!--
 You'll need this template operator when you turn on strict null checks. It's optional otherwise.
+-->
+그리고 이 연산자는 TypeScript 옵션 중 엄격한 null 검사 옵션을 활성화 할 때만 의미가 있습니다. 모든 상황에서 필요한 코드는 아닙니다.
 
-
+<!--
 <a href="#top-of-page">back to top</a>
+-->
 
 <hr/>
 
 {@a any-type-cast-function}
+{@a any-타입-캐스트-함수}
 
+<!--
 ## The `$any` type cast function (`$any( <expression> )`) 
+-->
+## `$any` 타입 캐스트 함수 (`$any( <expression> )`) 
 
+<!--
 Sometimes a binding expression will be reported as a type error and it is not possible or difficult
 to fully specify the type. To silence the error, you can use the `$any` cast function to cast
 the expression to [the `any` type](http://www.typescriptlang.org/docs/handbook/basic-types.html#any).
+-->
+바인딩 표현식을 사용하다보면 변수 타입에 맞지 않다는 에러가 종종 발생합니다. 이 에러를 없애기 위해 타입을 정확히 맞춰도 되지만, 타입을 맞추기 까다로운 경우라면 `$any` 타입 캐스트 함수를 사용해서 바인딩 표현식의 결과값이 [`any` 타입](http://www.typescriptlang.org/docs/handbook/basic-types.html#any)이 되도록 지정할 수 있습니다.
 
 <code-example path="template-syntax/src/app/app.component.html" region="any-type-cast-function-1" title="src/app/app.component.html" linenums="false">
 </code-example>
 
+<!--
 In this example, when the Angular compiler turns your template into TypeScript code, 
 it prevents TypeScript from reporting that `marker` is not a member of the `Hero`
 interface.
+-->
+Angular가 이 코드를 TypeScript 코드로 변환하면 `Hero` 객체에 `marker` 멤버가 없어도 TypeScript가 컴파일 할 때 에러가 발생하지 않습니다.
 
+<!--
 The `$any` cast function can be used in conjunction with `this` to allow access to undeclared members of
 the component.
+-->
+그리고 템플릿에서 `this`를 사용해서 컴포넌트 클래스에 직접 접근할 때도 `$any` 캐스트 함수를 사용할 수 있습니다.
 
 <code-example path="template-syntax/src/app/app.component.html" region="any-type-cast-function-2" title="src/app/app.component.html" linenums="false">
 </code-example>
 
+<!--
 The `$any` cast function can be used anywhere in a binding expression where a method call is valid.
+-->
+`$any` 캐스트 함수는 함수를 실행할 수 있는 바인딩 표현식이라면 어디에나 자유롭게 사용할 수 있습니다.
 
+<!--
 ## Summary
+-->
+## 정리
+
+<!--
 You've completed this survey of template syntax.
 Now it's time to put that knowledge to work on your own components and directives.
+-->
+지금까지 템플릿 문법에 대해 아주 자세하게 알아봤습니다.
+이 문서에서 알아본 템플릿 문법을 컴포넌트와 디렉티브에 직접 적용해 보세요.
