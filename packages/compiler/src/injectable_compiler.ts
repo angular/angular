@@ -63,7 +63,7 @@ export class InjectableCompiler {
       let tokenExpr: o.Expression;
       if (typeof token === 'string') {
         tokenExpr = o.literal(token);
-      } else if (token === this.tokenInjector && this.alwaysGenerateDef) {
+      } else if (token === this.tokenInjector) {
         tokenExpr = o.importExpr(Identifiers.INJECTOR);
       } else {
         tokenExpr = ctx.importExpr(token);

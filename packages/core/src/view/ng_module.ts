@@ -19,6 +19,7 @@ import {splitDepsDsl, tokenKey} from './util';
 const UNDEFINED_VALUE = new Object();
 
 const InjectorRefTokenKey = tokenKey(Injector);
+const INJECTORRefTokenKey = tokenKey(INJECTOR);
 const NgModuleRefTokenKey = tokenKey(NgModuleRef);
 
 export function moduleProvideDef(
@@ -86,6 +87,7 @@ export function resolveNgModuleDep(
   const tokenKey = depDef.tokenKey;
   switch (tokenKey) {
     case InjectorRefTokenKey:
+    case INJECTORRefTokenKey:
     case NgModuleRefTokenKey:
       return data;
   }

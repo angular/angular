@@ -145,7 +145,7 @@ export class StaticInjector implements Injector {
     records.set(
         Injector, <Record>{token: Injector, fn: IDENT, deps: EMPTY, value: this, useNew: false});
     records.set(
-        INJECTOR, <Record>{token: Injector, fn: IDENT, deps: EMPTY, value: this, useNew: false});
+        INJECTOR, <Record>{token: INJECTOR, fn: IDENT, deps: EMPTY, value: this, useNew: false});
     recursivelyProcessProviders(records, providers);
   }
 
