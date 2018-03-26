@@ -189,10 +189,6 @@ As part of this conversion an exhaustive list of selector targets is also produc
 
 The `TemplateCompiler` can produce a template function from a string without additional information. However, correct interpretation of that string requires a selector scope discussed below. The selector scope is built at runtime allowing the runtime to use a function built from just a string as long as it is given a selector scope (e.g. an NgModule) to use during instantiation.
 
-#### Type checking a template
-
-TODO(chuckj)
-
 #### The selector problem 
 
 To interpret the content of a template, the runtime needs to know what component and directives to apply to the element and what pipes are referenced by binding expressions. The list of candidate components, directives and pipes are determined by the `NgModule` in which the component is declared. Since the module and component are in separate source files, mapping which components, directives and pipes referenced is left to the runtime. Unfortunately, this leads to a tree-shaking problem. Since there no direct link between the component and types the component references then all components, directives and pipes declared in the module, and any module imported from the module, must be available at runtime or risk the template failing to be interpreted correctly. Including everything can lead to a very large program which contains many components the application doesn't actually use.
@@ -223,6 +219,20 @@ Given a selector scope, a dependency list is formed by producing the set of type
 A component's module can be found by using the TypeScript language service's `findReferences`. If one of the references is to a class declaration with an `@NgModule` annotation, process the class as described above to produce the selector scope. If the class is the declaration list of the `@NgModule` then use the scope produce for that module.
 
 When processing the `@NgModule` class, the type references can be found using the program's `checker` `getSymbolAtLocation` (potentially calling `getAliasedSymbol` if it is an alias symbol, `SymbolFlags.Alias`) and then using `Symbol`'s `declarations` field to get the list of declarations nodes (there should only be one for a `class`, there can be several for an `interface`)
+
+#### Type checking a template
+
+A model very similar to the Renderer2 style of code generation can be used to generate type-check blocks for every template declared in a module. The module for type-checking can be similar to that used in `type_check_compiler.ts` for the Renderer2 AST. `type_check_compiler.ts` just emits all the binding expressions in a way that can be type-checked, calculating the correct implicit target and guarded by the correct type guards.
+
+Global type information is required for calculating type guards and for determining pipe calls.
+
+Type guards require determining which directives apply to an element to determine if any have a type guard.
+
+Correctly typing an expression that includes a pipe requires determining the result type of the `transform` method of the type.
+
+Additionally, more advanced type-checking as described in [Type Checking Templates](https://goo.gl/Q3tSgP) also requires determining the types of the directives that apply to an element as well as how the attributes map to the properties of the directives.
+
+The types of directives can be found using a selector scope as described for reference inversion. Once a selector scope is produced, the component and directives that apply to an element can be determined from the selector scope. The `.d.ts` changes described above also includes the attribute to property maps. The `TypeGuard`s are recorded as static fields that are included in the `.d.ts` file of the directive.
 
 ### The compatibility compiler
 
