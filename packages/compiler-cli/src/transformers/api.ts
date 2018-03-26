@@ -99,6 +99,10 @@ export interface CompilerOptions extends ts.CompilerOptions {
   // meaningful when `flatModuleOutFile` is also supplied. It is otherwise ignored.
   flatModuleId?: string;
 
+  // A prefix to insert in generated private symbols, e.g. for "my_prefix_" we
+  // would generate private symbols named like `ɵmy_prefix_a`.
+  flatModulePrivateSymbolPrefix?: string;
+
   // Whether to generate code for library code.
   // If true, produce .ngfactory.ts and .ngstyle.ts files for .d.ts inputs.
   // Default is true.
