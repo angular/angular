@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, Injectable, NgModule} from '@angular/core';
+import {Component, INJECTOR, Injectable, NgModule} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {renderModuleFactory} from '@angular/platform-server';
 import {BasicAppModuleNgFactory} from 'app_built/src/basic.ngfactory';
@@ -141,5 +141,29 @@ describe('ngInjectableDef Bazel Integration', () => {
 
     TestBed.configureTestingModule({});
     expect(TestBed.get(Service).value).toEqual(true);
+  });
+
+  it('NgModule injector understands requests for INJECTABLE', () => {
+    TestBed.configureTestingModule({
+      providers: [{provide: 'foo', useValue: 'bar'}],
+    });
+    expect(TestBed.get(INJECTOR).get('foo')).toEqual('bar');
+  });
+
+  it('Component injector understands requests for INJECTABLE', () => {
+    @Component({
+      selector: 'test-cmp',
+      template: 'test',
+      providers: [{provide: 'foo', useValue: 'bar'}],
+    })
+    class TestCmp {
+    }
+
+    TestBed.configureTestingModule({
+      declarations: [TestCmp],
+    });
+
+    const fixture = TestBed.createComponent(TestCmp);
+    expect(fixture.componentRef.injector.get(INJECTOR).get('foo')).toEqual('bar');
   });
 });
