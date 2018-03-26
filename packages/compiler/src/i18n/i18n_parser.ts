@@ -10,11 +10,14 @@ import {Lexer as ExpressionLexer} from '../expression_parser/lexer';
 import {Parser as ExpressionParser} from '../expression_parser/parser';
 import * as html from '../ml_parser/ast';
 import {getHtmlTagDefinition} from '../ml_parser/html_tags';
+import {PRESERVE_WS_ATTR_NAME, SKIP_WS_TRIM_TAGS, WS_CHARS, WS_REPLACE_REGEXP} from '../ml_parser/html_whitespaces';
 import {InterpolationConfig} from '../ml_parser/interpolation_config';
 import {ParseSourceSpan} from '../parse_util';
 
 import * as i18n from './i18n_ast';
 import {PlaceholderRegistry} from './serializers/placeholder';
+
+const WS_STARTEND_REPLACE_REGEXP = new RegExp(`^[${WS_CHARS}]+|[${WS_CHARS}]+$`, 'g');
 
 const _expParser = new ExpressionParser(new ExpressionLexer());
 
@@ -32,6 +35,7 @@ export function createI18nMessageFactory(interpolationConfig: InterpolationConfi
 class _I18nVisitor implements html.Visitor {
   private _isIcu: boolean;
   private _icuDepth: number;
+  private _preserveWs: boolean;
   private _placeholderRegistry: PlaceholderRegistry;
   private _placeholderToContent: {[phName: string]: string};
   private _placeholderToMessage: {[phName: string]: i18n.Message};
@@ -44,6 +48,7 @@ class _I18nVisitor implements html.Visitor {
       i18n.Message {
     this._isIcu = nodes.length == 1 && nodes[0] instanceof html.Expansion;
     this._icuDepth = 0;
+    this._preserveWs = false;
     this._placeholderRegistry = new PlaceholderRegistry();
     this._placeholderToContent = {};
     this._placeholderToMessage = {};
@@ -55,12 +60,18 @@ class _I18nVisitor implements html.Visitor {
   }
 
   visitElement(el: html.Element, context: any): i18n.Node {
-    const children = html.visitAll(this, el.children);
     const attrs: {[k: string]: string} = {};
     el.attrs.forEach(attr => {
       // Do not visit the attributes, translatable ones are top-level ASTs
       attrs[attr.name] = attr.value;
     });
+
+    const parentPreserveWs = this._preserveWs;
+    this._preserveWs = SKIP_WS_TRIM_TAGS.has(el.name) || PRESERVE_WS_ATTR_NAME in attrs;
+
+    const children = html.visitAll(this, el.children);
+
+    this._preserveWs = parentPreserveWs;
 
     const isVoid: boolean = getHtmlTagDefinition(el.name).isVoid;
     const startPhName =
@@ -125,6 +136,10 @@ class _I18nVisitor implements html.Visitor {
   }
 
   private _visitTextWithInterpolation(text: string, sourceSpan: ParseSourceSpan): i18n.Node {
+    if (text && !this._preserveWs) {
+      text = text.replace(WS_REPLACE_REGEXP, ' ');
+    }
+
     const splitInterpolation = this._expressionParser.splitInterpolation(
         text, sourceSpan.start.toString(), this._interpolationConfig);
 
@@ -139,7 +154,7 @@ class _I18nVisitor implements html.Visitor {
     const {start: sDelimiter, end: eDelimiter} = this._interpolationConfig;
 
     for (let i = 0; i < splitInterpolation.strings.length - 1; i++) {
-      const expression = splitInterpolation.expressions[i];
+      const expression = splitInterpolation.expressions[i].replace(WS_STARTEND_REPLACE_REGEXP, '');
       const baseName = _extractPlaceholderName(expression) || 'INTERPOLATION';
       const phName = this._placeholderRegistry.getPlaceholderName(baseName, expression);
 

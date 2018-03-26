@@ -66,7 +66,7 @@ import {_extractMessages} from './i18n_parser_spec';
 
     it('should use the original message or throw when a translation is not found', () => {
       const src =
-          `<some-tag>some text{{ some_expression }}</some-tag>{count, plural, =0 {no} few {a <b>few</b>}}`;
+          `<some-tag>some text{{some_expression}}</some-tag>{count, plural, =0 {no} few {a <b>few</b>}}`;
       const messages = _extractMessages(`<div i18n>${src}</div>`);
 
       const digest = (_: any) => `no matching id`;

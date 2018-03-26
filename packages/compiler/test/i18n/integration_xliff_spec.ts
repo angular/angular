@@ -22,7 +22,6 @@ import {FrLocalization, HTML, I18nComponent, validateHtml} from './integration_c
 
 {
   describe('i18n XLIFF integration spec', () => {
-
     beforeEach(async(() => {
       TestBed.configureCompiler({
         providers: [
@@ -93,35 +92,35 @@ const XLIFF_TOMERGE = `
         <source>{VAR_PLURAL, plural, =0 {zero} =1 {one} =2 {two} other {<x id="START_BOLD_TEXT" ctype="x-b" equiv-text="&lt;b&gt;"/>many<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>} }</source>
         <target>{VAR_PLURAL, plural, =0 {zero} =1 {un} =2 {deux} other {<x id="START_BOLD_TEXT" ctype="x-b"/>beaucoup<x id="CLOSE_BOLD_TEXT" ctype="x-b"/>} }</target>
       </trans-unit>
-      <trans-unit id="49feb201083cbd2c8bfc48a4ae11f105fb984876" datatype="html">
+      <trans-unit id="55fd0e44941fca8feb168d4a164525fec705cf1c" datatype="html">
         <source>
-        <x id="ICU" equiv-text="{sex, select, male {...} female {...}}"/>
-    </source>
+          <x id="ICU" equiv-text="{sex, select, male {...} female {...}}"/>
+        </source>
         <target><x id="ICU"/></target>
       </trans-unit>
       <trans-unit id="f3be30eb9a18f6e336cc3ca4dd66bbc3a35c5f97" datatype="html">
         <source>{VAR_SELECT, select, other {other} male {m} female {f} }</source>
         <target>{VAR_SELECT, select, other {autre} male {homme} female {femme}}</target>
       </trans-unit>
-      <trans-unit id="cc16e9745fa0b95b2ebc2f18b47ed8e64fe5f0f9" datatype="html">
+      <trans-unit id="ee3117017973f6494da6ce86fbd4c333240fd10b" datatype="html">
         <source>
-        <x id="ICU" equiv-text="{sexB, select, m {...} f {...}}"/>
-    </source>
+          <x id="ICU" equiv-text="{sexB, select, m {...} f {...}}"/>
+        </source>
         <target><x id="ICU"/></target>
       </trans-unit>
       <trans-unit id="4573f2edb0329d69afc2ab8c73c71e2f8b08f807" datatype="html">
         <source>{VAR_SELECT, select, male {m} female {f} }</source>
         <target>{VAR_SELECT, select, male {homme} female {femme} }</target>
       </trans-unit>
-      <trans-unit id="d9879678f727b244bc7c7e20f22b63d98cb14890" datatype="html">
+      <trans-unit id="ccc8b436b85f5f3b1a9c6cd188b6ac3f95579c08" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="{{ &quot;count = &quot; + count }}"/></source>
         <target><x id="INTERPOLATION"/></target>
       </trans-unit>
-      <trans-unit id="50dac33dc6fc0578884baac79d875785ed77c928" datatype="html">
+      <trans-unit id="4a3c65c0c3c8bc56ed97be68fd8232e65b80fa68" datatype="html">
         <source>sex = <x id="INTERPOLATION" equiv-text="{{ sex }}"/></source>
         <target>sexe = <x id="INTERPOLATION"/></target>
       </trans-unit>
-      <trans-unit id="a46f833b1fe6ca49e8b97c18f4b7ea0b930c9383" datatype="html">
+      <trans-unit id="9bf5621f783208070b6ae9f5fa08b056a4f9024b" datatype="html">
         <source><x id="CUSTOM_NAME" equiv-text="{{ &quot;custom name&quot; //i18n(ph=&quot;CUSTOM_NAME&quot;) }}"/></source>
         <target><x id="CUSTOM_NAME"/></target>
       </trans-unit>
@@ -129,17 +128,17 @@ const XLIFF_TOMERGE = `
         <source>in a translatable section</source>
         <target>dans une section traductible</target>
       </trans-unit>
-      <trans-unit id="7f6272480ea8e7ffab548da885ab8105ee2caa93" datatype="html">
+      <trans-unit id="c6b54d41f19ea3aa527fbbae97250d1bddb99a77" datatype="html">
         <source>
-    <x id="START_HEADING_LEVEL1" ctype="x-h1" equiv-text="&lt;h1&gt;"/>Markers in html comments<x id="CLOSE_HEADING_LEVEL1" ctype="x-h1" equiv-text="&lt;/h1&gt;"/>
-    <x id="START_TAG_DIV" ctype="x-div" equiv-text="&lt;div&gt;"/><x id="CLOSE_TAG_DIV" ctype="x-div" equiv-text="&lt;/div&gt;"/>
-    <x id="START_TAG_DIV_1" ctype="x-div" equiv-text="&lt;div&gt;"/><x id="ICU" equiv-text="{count, plural, =0 {...} =1 {...} =2 {...} other {...}}"/><x id="CLOSE_TAG_DIV" ctype="x-div" equiv-text="&lt;/div&gt;"/>
-</source>
+          <x id="START_HEADING_LEVEL1" ctype="x-h1" equiv-text="&lt;h1&gt;"/>Markers in html comments<x id="CLOSE_HEADING_LEVEL1" ctype="x-h1" equiv-text="&lt;/h1&gt;"/>
+          <x id="START_TAG_DIV" ctype="x-div" equiv-text="&lt;div&gt;"/><x id="CLOSE_TAG_DIV" ctype="x-div" equiv-text="&lt;/div&gt;"/>
+          <x id="START_TAG_DIV_1" ctype="x-div" equiv-text="&lt;div&gt;"/><x id="ICU" equiv-text="{count, plural, =0 {...} =1 {...} =2 {...} other {...}}"/><x id="CLOSE_TAG_DIV" ctype="x-div" equiv-text="&lt;/div&gt;"/>
+        </source>
         <target>
-    <x id="START_HEADING_LEVEL1" ctype="x-h1"/>Balises dans les commentaires html<x id="CLOSE_HEADING_LEVEL1" ctype="x-h1"/>
-    <x id="START_TAG_DIV" ctype="x-div"/><x id="CLOSE_TAG_DIV" ctype="x-div"/>
-    <x id="START_TAG_DIV_1" ctype="x-div"/><x id="ICU"/><x id="CLOSE_TAG_DIV" ctype="x-div"/>
-</target>
+          <x id="START_HEADING_LEVEL1" ctype="x-h1"/>Balises dans les commentaires html<x id="CLOSE_HEADING_LEVEL1" ctype="x-h1"/>
+          <x id="START_TAG_DIV" ctype="x-div"/><x id="CLOSE_TAG_DIV" ctype="x-div"/>
+          <x id="START_TAG_DIV_1" ctype="x-div"/><x id="ICU"/><x id="CLOSE_TAG_DIV" ctype="x-div"/>
+        </target>
       </trans-unit>
       <trans-unit id="93a30c67d4e6c9b37aecfe2ac0f2b5d366d7b520" datatype="html">
         <source>it <x id="START_BOLD_TEXT" ctype="x-b" equiv-text="&lt;b&gt;"/>should<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/> work</source>
@@ -162,7 +161,7 @@ const XLIFF_TOMERGE = `
         <source>foo<x id="START_LINK" ctype="x-a" equiv-text="&lt;a&gt;"/>bar<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/></source>
         <target>FOO<x id="START_LINK" ctype="x-a"/>BAR<x id="CLOSE_LINK" ctype="x-a"/></target>
       </trans-unit>
-      <trans-unit id="2e013b311caa0916478941a985887e091d8288b6" datatype="html">
+      <trans-unit id="e76dfc6c8cf923ddadca1f905d80ec1f4140ede5" datatype="html">
         <source><x id="MAP NAME" equiv-text="{{ &apos;test&apos; //i18n(ph=&quot;map name&quot;) }}"/></source>
         <target><x id="MAP NAME"/></target>
       </trans-unit>`;
@@ -202,7 +201,7 @@ const XLIFF_EXTRACTED = `
         </context-group>
       </trans-unit>
       <trans-unit id="651d7249d3a225037eb66f3433d98ad4a86f0a22" datatype="html">
-        <source><x id="START_TAG_DIV" ctype="x-div" equiv-text="&lt;div&gt;"/>with <x id="START_TAG_DIV" ctype="x-div" equiv-text="&lt;div&gt;"/>nested<x id="CLOSE_TAG_DIV" ctype="x-div" equiv-text="&lt;/div&gt;"/> placeholders<x id="CLOSE_TAG_DIV" ctype="x-div" equiv-text="&lt;/div&gt;"/></source>
+        <source><x id="START_TAG_DIV" ctype="x-div" equiv-text="&lt;div&gt;"/>with<x id="START_TAG_DIV" ctype="x-div" equiv-text="&lt;div&gt;"/>nested<x id="CLOSE_TAG_DIV" ctype="x-div" equiv-text="&lt;/div&gt;"/>placeholders<x id="CLOSE_TAG_DIV" ctype="x-div" equiv-text="&lt;/div&gt;"/></source>
         <context-group purpose="location">
           <context context-type="sourcefile">file.ts</context>
           <context context-type="linenumber">11</context>
@@ -233,10 +232,8 @@ const XLIFF_EXTRACTED = `
           <context context-type="linenumber">37</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="49feb201083cbd2c8bfc48a4ae11f105fb984876" datatype="html">
-        <source>
-        <x id="ICU" equiv-text="{sex, select, male {...} female {...} other {...}}"/>
-    </source>
+      <trans-unit id="55fd0e44941fca8feb168d4a164525fec705cf1c" datatype="html">
+        <source><x id="ICU" equiv-text="{sex, select, male {...} female {...} other {...}}"/></source>
         <context-group purpose="location">
           <context context-type="sourcefile">file.ts</context>
           <context context-type="linenumber">22</context>
@@ -249,10 +246,8 @@ const XLIFF_EXTRACTED = `
           <context context-type="linenumber">23</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="cc16e9745fa0b95b2ebc2f18b47ed8e64fe5f0f9" datatype="html">
-        <source>
-        <x id="ICU" equiv-text="{sexB, select, male {...} female {...}}"/>
-    </source>
+      <trans-unit id="ee3117017973f6494da6ce86fbd4c333240fd10b" datatype="html">
+        <source><x id="ICU" equiv-text="{sexB, select, male {...} female {...}}"/></source>
         <context-group purpose="location">
           <context context-type="sourcefile">file.ts</context>
           <context context-type="linenumber">25</context>
@@ -265,22 +260,22 @@ const XLIFF_EXTRACTED = `
           <context context-type="linenumber">26</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="d9879678f727b244bc7c7e20f22b63d98cb14890" datatype="html">
-        <source><x id="INTERPOLATION" equiv-text="{{ &quot;count = &quot; + count }}"/></source>
+      <trans-unit id="ccc8b436b85f5f3b1a9c6cd188b6ac3f95579c08" datatype="html">
+        <source><x id="INTERPOLATION" equiv-text="{{&quot;count = &quot; + count}}"/></source>
         <context-group purpose="location">
           <context context-type="sourcefile">file.ts</context>
           <context context-type="linenumber">29</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="50dac33dc6fc0578884baac79d875785ed77c928" datatype="html">
-        <source>sex = <x id="INTERPOLATION" equiv-text="{{ sex }}"/></source>
+      <trans-unit id="4a3c65c0c3c8bc56ed97be68fd8232e65b80fa68" datatype="html">
+        <source>sex =<x id="INTERPOLATION" equiv-text="{{sex}}"/></source>
         <context-group purpose="location">
           <context context-type="sourcefile">file.ts</context>
           <context context-type="linenumber">30</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="a46f833b1fe6ca49e8b97c18f4b7ea0b930c9383" datatype="html">
-        <source><x id="CUSTOM_NAME" equiv-text="{{ &quot;custom name&quot; //i18n(ph=&quot;CUSTOM_NAME&quot;) }}"/></source>
+      <trans-unit id="9bf5621f783208070b6ae9f5fa08b056a4f9024b" datatype="html">
+        <source><x id="CUSTOM_NAME" equiv-text="{{&quot;custom name&quot; //i18n(ph=&quot;CUSTOM_NAME&quot;)}}"/></source>
         <context-group purpose="location">
           <context context-type="sourcefile">file.ts</context>
           <context context-type="linenumber">31</context>
@@ -297,19 +292,15 @@ const XLIFF_EXTRACTED = `
           <context context-type="linenumber">54</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="7f6272480ea8e7ffab548da885ab8105ee2caa93" datatype="html">
-        <source>
-    <x id="START_HEADING_LEVEL1" ctype="x-h1" equiv-text="&lt;h1&gt;"/>Markers in html comments<x id="CLOSE_HEADING_LEVEL1" ctype="x-h1" equiv-text="&lt;/h1&gt;"/>
-    <x id="START_TAG_DIV" ctype="x-div" equiv-text="&lt;div&gt;"/><x id="CLOSE_TAG_DIV" ctype="x-div" equiv-text="&lt;/div&gt;"/>
-    <x id="START_TAG_DIV_1" ctype="x-div" equiv-text="&lt;div&gt;"/><x id="ICU" equiv-text="{count, plural, =0 {...} =1 {...} =2 {...} other {...}}"/><x id="CLOSE_TAG_DIV" ctype="x-div" equiv-text="&lt;/div&gt;"/>
-</source>
+      <trans-unit id="c6b54d41f19ea3aa527fbbae97250d1bddb99a77" datatype="html">
+        <source><x id="START_HEADING_LEVEL1" ctype="x-h1" equiv-text="&lt;h1&gt;"/>Markers in html comments<x id="CLOSE_HEADING_LEVEL1" ctype="x-h1" equiv-text="&lt;/h1&gt;"/><x id="START_TAG_DIV" ctype="x-div" equiv-text="&lt;div&gt;"/><x id="CLOSE_TAG_DIV" ctype="x-div" equiv-text="&lt;/div&gt;"/><x id="START_TAG_DIV_1" ctype="x-div" equiv-text="&lt;div&gt;"/><x id="ICU" equiv-text="{count, plural, =0 {...} =1 {...} =2 {...} other {...}}"/><x id="CLOSE_TAG_DIV" ctype="x-div" equiv-text="&lt;/div&gt;"/></source>
         <context-group purpose="location">
           <context context-type="sourcefile">file.ts</context>
           <context context-type="linenumber">34</context>
         </context-group>
       </trans-unit>
       <trans-unit id="93a30c67d4e6c9b37aecfe2ac0f2b5d366d7b520" datatype="html">
-        <source>it <x id="START_BOLD_TEXT" ctype="x-b" equiv-text="&lt;b&gt;"/>should<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/> work</source>
+        <source>it<x id="START_BOLD_TEXT" ctype="x-b" equiv-text="&lt;b&gt;"/>should<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>work</source>
         <context-group purpose="location">
           <context context-type="sourcefile">file.ts</context>
           <context context-type="linenumber">40</context>
@@ -330,7 +321,7 @@ const XLIFF_EXTRACTED = `
         </context-group>
       </trans-unit>
       <trans-unit id="2370d995bdcc1e7496baa32df20654aff65c2d10" datatype="html">
-        <source>{VAR_PLURAL, plural, =0 {Found no results} =1 {Found one result} other {Found <x id="INTERPOLATION" equiv-text="{{response.getItemsList().length}}"/> results} }</source>
+        <source>{VAR_PLURAL, plural, =0 {Found no results} =1 {Found one result} other {Found<x id="INTERPOLATION" equiv-text="{{response.getItemsList().length}}"/>results} }</source>
         <context-group purpose="location">
           <context context-type="sourcefile">file.ts</context>
           <context context-type="linenumber">46</context>
@@ -344,8 +335,8 @@ const XLIFF_EXTRACTED = `
           <context context-type="linenumber">54</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="2e013b311caa0916478941a985887e091d8288b6" datatype="html">
-        <source><x id="MAP NAME" equiv-text="{{ &apos;test&apos; //i18n(ph=&quot;map name&quot;) }}"/></source>
+      <trans-unit id="e76dfc6c8cf923ddadca1f905d80ec1f4140ede5" datatype="html">
+        <source><x id="MAP NAME" equiv-text="{{&apos;test&apos; //i18n(ph=&quot;map name&quot;)}}"/></source>
         <context-group purpose="location">
           <context context-type="sourcefile">file.ts</context>
           <context context-type="linenumber">56</context>

@@ -40,8 +40,8 @@ const WRITE_XLIFF = `<?xml version="1.0" encoding="UTF-8" ?>
           <context context-type="linenumber">2</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="ec1d033f2436133c14ab038286c4f5df4697484a" datatype="html">
-        <source>translatable element <x id="START_BOLD_TEXT" ctype="x-b" equiv-text="&lt;b&gt;"/>with placeholders<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/> <x id="INTERPOLATION" equiv-text="{{ interpolation}}"/></source>
+      <trans-unit id="ab1a62b8ca08c030617041d58b943ceb40cbc7f3" datatype="html">
+        <source>translatable element<x id="START_BOLD_TEXT" ctype="x-b" equiv-text="&lt;b&gt;"/>with placeholders<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/><x id="INTERPOLATION" equiv-text="{{interpolation}}"/></source>
         <context-group purpose="location">
           <context context-type="sourcefile">file.ts</context>
           <context context-type="linenumber">3</context>
@@ -92,29 +92,28 @@ const WRITE_XLIFF = `<?xml version="1.0" encoding="UTF-8" ?>
         <note priority="1" from="description">ph names</note>
       </trans-unit>
       <trans-unit id="baz" datatype="html">
-        <source>{VAR_PLURAL, plural, =0 {{VAR_SELECT, select, other {<x id="START_PARAGRAPH" ctype="x-p" equiv-text="&lt;p&gt;"/>deeply nested<x id="CLOSE_PARAGRAPH" ctype="x-p" equiv-text="&lt;/p&gt;"/>} } } }</source>
+        <source>{VAR_PLURAL, plural, =0 {{VAR_SELECT, select, other {<x id="START_PARAGRAPH" ctype="x-p" equiv-text="&lt;p&gt;"/>deeply nested<x id="CLOSE_PARAGRAPH" ctype="x-p" equiv-text="&lt;/p&gt;"/>} }} }</source>
         <context-group purpose="location">
           <context context-type="sourcefile">file.ts</context>
           <context context-type="linenumber">10</context>
         </context-group>
       </trans-unit>
       <trans-unit id="52ffa620dcd76247a56d5331f34e73f340a43cdb" datatype="html">
-        <source>Test: <x id="ICU" equiv-text="{ count, plural, =0 {...} =other {...}}"/></source>
+        <source>Test:<x id="ICU" equiv-text="{ count, plural, =0 {...} =other {...}}"/></source>
         <context-group purpose="location">
           <context context-type="sourcefile">file.ts</context>
           <context context-type="linenumber">11</context>
         </context-group>
       </trans-unit>
       <trans-unit id="1503afd0ccc20ff01d5e2266a9157b7b342ba494" datatype="html">
-        <source>{VAR_PLURAL, plural, =0 {{VAR_SELECT, select, other {<x id="START_PARAGRAPH" ctype="x-p" equiv-text="&lt;p&gt;"/>deeply nested<x id="CLOSE_PARAGRAPH" ctype="x-p" equiv-text="&lt;/p&gt;"/>} } } =other {a lot} }</source>
+        <source>{VAR_PLURAL, plural, =0 {{VAR_SELECT, select, other {<x id="START_PARAGRAPH" ctype="x-p" equiv-text="&lt;p&gt;"/>deeply nested<x id="CLOSE_PARAGRAPH" ctype="x-p" equiv-text="&lt;/p&gt;"/>} }} =other {a lot} }</source>
         <context-group purpose="location">
           <context context-type="sourcefile">file.ts</context>
           <context context-type="linenumber">11</context>
         </context-group>
       </trans-unit>
       <trans-unit id="fcfa109b0e152d4c217dbc02530be0bcb8123ad1" datatype="html">
-        <source>multi
-lines</source>
+        <source>multi lines</source>
         <context-group purpose="location">
           <context context-type="sourcefile">file.ts</context>
           <context context-type="linenumber">12</context>
