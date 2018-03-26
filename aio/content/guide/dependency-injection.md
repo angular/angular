@@ -112,13 +112,9 @@ You can register a provider with any Angular decorator that supports the  **`pro
 Many Angular decorators accept metadata with a `providers` property.
 The two most important examples are `@Component` and `@NgModule`.
 
-{@a register-providers-component}
+In the following excerpt, the `@Injectable` decorator is used to configure a provider that will be available in any injector that includes the `HeroModule`.
 
-### _@Component_ providers
-
-Here's a revised `HeroesComponent` that registers the `HeroService` in its `providers` array.
-
-<code-example path="dependency-injection/src/app/heroes/heroes.component.1.ts" title="src/app/heroes/heroes.component.ts" linenums="false">
+<code-example path="dependency-injection/src/app/heroes/hero.service.1.2.ts"  title="src/app/heroes/hero.service.ts" linenums="false">
 </code-example>
 
 {@a register-providers-ngmodule}

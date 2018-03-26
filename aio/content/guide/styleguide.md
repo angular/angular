@@ -4714,20 +4714,8 @@ that instance is shared and available to all child components of that top level 
 </div>
 
 
-
-<code-tabs>
-
-  <code-pane title="app/app.component.ts" path="styleguide/src/07-03/app/app.component.ts">
-
-  </code-pane>
-
-  <code-pane title="app/heroes/hero-list/hero-list.component.ts" path="styleguide/src/07-03/app/heroes/hero-list/hero-list.component.ts">
-
-  </code-pane>
-
-</code-tabs>
-
-
+<code-example path="dependency-injection/src/app/tree-shaking/service.ts"  title="src/app/treeshaking/service.ts" linenums="false">
+</code-example>
 
 <a href="#toc">Back to top</a>
 
