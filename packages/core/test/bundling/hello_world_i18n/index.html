@@ -8,11 +8,11 @@
     <!-- The Angular application will be bootstrapped into this element. -->
     <hello-world></hello-world>
 
-    <!-- 
+    <!--
       Script tag which bootstraps the application. Use `?debug` in URL to select
       the debug version of the script.
-      
-      There are two scripts sources: `bundle.min.js` and `bundle.min_debug.js` You can 
+
+      There are two scripts sources: `bundle.min.js` and `bundle.min_debug.js` You can
       switch between which bundle the browser loads to experiment with the application.
 
       - `bundle.min.js`: Is what the site would serve to their users. It has gone
@@ -23,9 +23,17 @@
         property renaming.
     -->
     <script>
-        document.write('<script src="' + 
-          (document.location.search.endsWith('debug') ? '/bundle.min_debug.js' : '/bundle.min.js') + 
-          '"></' + 'script>');
+      // `goog.getMsg()` will be provided by Closure
+      const translations = {
+        'Hello World!': 'Bonjour Monde!',
+        'Hello Title!': 'Bonjour Titre!',
+      };
+      window.goog = window.goog || {};
+      window.goog.getMsg = (key) => translations[key] || key;
+
+      document.write('<script src="' +
+        (document.location.search.endsWith('debug') ? '/bundle.min_debug.js' : '/bundle.min.js') +
+        '"></' + 'script>');
     </script>
   </body>
 </html>
