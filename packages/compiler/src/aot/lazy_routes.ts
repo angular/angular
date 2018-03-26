@@ -51,7 +51,7 @@ function _collectLoadChildren(routes: string | Route | Route[], target: string[]
 
 export function parseLazyRoute(
     route: string, reflector: StaticReflector, module?: StaticSymbol): LazyRoute {
-  const [routePath, routeName] = route.split('#');
+  const [, routePath, routeName] = route.split(/(.*)#(.*)/);
   const referencedModule = reflector.resolveExternalReference(
       {
         moduleName: routePath,

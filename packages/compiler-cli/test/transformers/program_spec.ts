@@ -710,6 +710,24 @@ describe('ng program', () => {
       ]);
     });
 
+    it('should list lazyRoutes given an route with hash', () => {
+      writeSomeRoutes();
+      const {program, options} = createProgram(['#src/main.ts']);
+      expectNoDiagnosticsInProgram(options, program);
+
+      expect(normalizeRoutes(program.listLazyRoutes('#src/child#ChildModule'))).toEqual([
+        {
+          module:
+              {name: 'ChildModule', filePath: path.resolve(testSupport.basePath, '#src/child.ts')},
+          referencedModule: {
+            name: 'ChildModule2',
+            filePath: path.resolve(testSupport.basePath, '#src/child2.ts')
+          },
+          route: './child2#ChildModule2'
+        },
+      ]);
+    });
+
     it('should list lazyRoutes pointing to a default export', () => {
       testSupport.writeFiles({
         'src/main.ts': `
