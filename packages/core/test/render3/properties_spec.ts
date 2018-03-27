@@ -9,9 +9,9 @@
 import {EventEmitter} from '@angular/core';
 
 import {defineComponent, defineDirective, tick} from '../../src/render3/index';
-import {NO_CHANGE, bind, container, containerRefreshEnd, containerRefreshStart, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, interpolation1, listener, loadDirective, text, textBinding} from '../../src/render3/instructions';
+import {NO_CHANGE, bind, container, containerRefreshEnd, containerRefreshStart, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, interpolation1, listener, load, loadDirective, text, textBinding} from '../../src/render3/instructions';
 
-import {ComponentFixture, TemplateFixture, createComponent, renderToHtml} from './render_util';
+import {ComponentFixture, renderToHtml} from './render_util';
 
 describe('elementProperty', () => {
 
@@ -533,10 +533,10 @@ describe('elementProperty', () => {
             if (cm) {
               elementStart(0, 'div', ['role', 'button', 'myDir', ''], ['dir', 'myDir']);
               elementEnd();
-              text(1);
+              text(2);
             }
-            // TODO: remove this loadDirective when removing MyDir
-            textBinding(1, bind(loadDirective<MyDir>(0).role));
+            const tmp = load(1) as any;
+            textBinding(2, bind(tmp.role));
           },
           factory: () => new Comp(),
           directiveDefs: () => [MyDir.ngDirectiveDef]
