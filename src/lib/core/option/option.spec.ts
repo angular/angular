@@ -13,6 +13,20 @@ describe('MatOption component', () => {
     }).compileComponents();
   }));
 
+  it('should complete the `stateChanges` stream on destroy', () => {
+    const fixture = TestBed.createComponent(OptionWithDisable);
+    fixture.detectChanges();
+
+    const optionInstance: MatOption =
+        fixture.debugElement.query(By.directive(MatOption)).componentInstance;
+    const completeSpy = jasmine.createSpy('complete spy');
+    const subscription = optionInstance._stateChanges.subscribe(undefined, undefined, completeSpy);
+
+    fixture.destroy();
+    expect(completeSpy).toHaveBeenCalled();
+    subscription.unsubscribe();
+  });
+
   describe('ripples', () => {
     let fixture: ComponentFixture<OptionWithDisable>;
     let optionDebugElement: DebugElement;

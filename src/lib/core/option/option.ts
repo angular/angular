@@ -23,6 +23,7 @@ import {
   InjectionToken,
   Inject,
   AfterViewChecked,
+  OnDestroy,
 } from '@angular/core';
 import {MatOptgroup} from './optgroup';
 
@@ -83,7 +84,7 @@ export const MAT_OPTION_PARENT_COMPONENT =
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MatOption implements AfterViewChecked {
+export class MatOption implements AfterViewChecked, OnDestroy {
   private _selected = false;
   private _active = false;
   private _disabled = false;
@@ -239,6 +240,10 @@ export class MatOption implements AfterViewChecked {
         this._stateChanges.next();
       }
     }
+  }
+
+  ngOnDestroy() {
+    this._stateChanges.complete();
   }
 
   /** Emits the selection change event. */
