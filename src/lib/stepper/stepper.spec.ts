@@ -354,6 +354,13 @@ describe('MatStepper', () => {
 
       expect(header.textContent).toContain('Custom done');
     });
+
+    it('should allow for the `number` icon to be overridden with context', () => {
+      const stepperDebugElement = fixture.debugElement.query(By.directive(MatStepper));
+      const headers = stepperDebugElement.nativeElement.querySelectorAll('mat-step-header');
+
+      expect(headers[2].textContent).toContain('III');
+    });
   });
 
   describe('RTL', () => {
@@ -1025,6 +1032,9 @@ class SimpleStepperWithStepControlAndCompletedBinding {
     <mat-horizontal-stepper>
       <ng-template matStepperIcon="edit">Custom edit</ng-template>
       <ng-template matStepperIcon="done">Custom done</ng-template>
+      <ng-template matStepperIcon="number" let-index="index">
+        {{getRomanNumeral(index + 1)}}
+      </ng-template>
 
       <mat-step>Content 1</mat-step>
       <mat-step>Content 2</mat-step>
@@ -1032,7 +1042,21 @@ class SimpleStepperWithStepControlAndCompletedBinding {
     </mat-horizontal-stepper>
 `
 })
-class IconOverridesStepper {}
+class IconOverridesStepper {
+  getRomanNumeral(value: number) {
+    return {
+      1: 'I',
+      2: 'II',
+      3: 'III',
+      4: 'IV',
+      5: 'V',
+      6: 'VI',
+      7: 'VII',
+      8: 'VIII',
+      9: 'IX'
+    }[value];
+  }
+}
 
 @Component({
   template: `

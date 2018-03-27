@@ -20,6 +20,7 @@ import {
 import {Subscription} from 'rxjs';
 import {MatStepLabel} from './step-label';
 import {MatStepperIntl} from './stepper-intl';
+import {MatStepperIconContext} from './stepper-icon';
 
 
 @Component({
@@ -44,7 +45,7 @@ export class MatStepHeader implements OnDestroy {
   @Input() label: MatStepLabel | string;
 
   /** Overrides for the header icons, passed in via the stepper. */
-  @Input() iconOverrides: {[key: string]: TemplateRef<any>};
+  @Input() iconOverrides: {[key: string]: TemplateRef<MatStepperIconContext>};
 
   /** Index of the given step. */
   @Input() index: number;
@@ -85,6 +86,15 @@ export class MatStepHeader implements OnDestroy {
   /** Returns the host HTML element. */
   _getHostElement() {
     return this._element.nativeElement;
+  }
+
+  /** Template context variables that are exposed to the `matStepperIcon` instances. */
+  _getIconContext(): MatStepperIconContext {
+    return {
+      index: this.index,
+      active: this.active,
+      optional: this.optional
+    };
   }
 
   focus() {

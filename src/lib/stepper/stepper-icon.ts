@@ -8,6 +8,16 @@
 
 import {Directive, Input, TemplateRef} from '@angular/core';
 
+/** Template context available to an attached `matStepperIcon`. */
+export interface MatStepperIconContext {
+  /** Index of the step. */
+  index: number;
+  /** Whether the step is currently active. */
+  active: boolean;
+  /** Whether the step is optional. */
+  optional: boolean;
+}
+
 /**
  * Template to be used to override the icons inside the step header.
  */
@@ -16,7 +26,7 @@ import {Directive, Input, TemplateRef} from '@angular/core';
 })
 export class MatStepperIcon {
   /** Name of the icon to be overridden. */
-  @Input('matStepperIcon') name: 'edit' | 'done';
+  @Input('matStepperIcon') name: 'edit' | 'done' | 'number';
 
-  constructor(public templateRef: TemplateRef<any>) { }
+  constructor(public templateRef: TemplateRef<MatStepperIconContext>) {}
 }
