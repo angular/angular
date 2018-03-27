@@ -28,7 +28,6 @@ import {
   MatTooltipModule,
   SCROLL_THROTTLE_MS,
   TOOLTIP_PANEL_CLASS,
-  TooltipPosition,
   MAT_TOOLTIP_DEFAULT_OPTIONS,
 } from './index';
 
@@ -306,24 +305,21 @@ describe('MatTooltip', () => {
       expect(tooltipDirective._isTooltipVisible()).toBe(true);
     }));
 
-    it('should remove the tooltip when changing position', () => {
-      const initialPosition: TooltipPosition = 'below';
-      const changedPosition: TooltipPosition = 'above';
-
-      assertTooltipInstance(tooltipDirective, false);
-
-      tooltipDirective.position = initialPosition;
+    it('should be able to update the tooltip position while open', fakeAsync(() => {
+      tooltipDirective.position = 'below';
       tooltipDirective.show();
-      expect(tooltipDirective._tooltipInstance).toBeTruthy();
+      tick();
 
-      // Same position value should not remove the tooltip
-      tooltipDirective.position = initialPosition;
-      expect(tooltipDirective._tooltipInstance).toBeTruthy();
+      assertTooltipInstance(tooltipDirective, true);
 
-      // Different position value should destroy the tooltip
-      tooltipDirective.position = changedPosition;
-      assertTooltipInstance(tooltipDirective, false);
-    });
+      tooltipDirective.position = 'above';
+      spyOn(tooltipDirective._overlayRef!, 'updatePosition').and.callThrough();
+      fixture.detectChanges();
+      tick();
+
+      assertTooltipInstance(tooltipDirective, true);
+      expect(tooltipDirective._overlayRef!.updatePosition).toHaveBeenCalled();
+    }));
 
     it('should be able to modify the tooltip message', fakeAsync(() => {
       assertTooltipInstance(tooltipDirective, false);
