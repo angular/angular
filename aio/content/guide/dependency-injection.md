@@ -58,16 +58,16 @@ The [**Angular CLI**](https://cli.angular.io/) can generate a new `HeroService` 
 ng generate service heroes/hero
 </code-example>
 
-That command creates the following `HeroService` skeleton.
+The command above creates the following `HeroService` skeleton.
 
 <code-example path="dependency-injection/src/app/heroes/hero.service.0.ts" title="src/app/heroes/hero.service.ts (CLI-generated)">
 </code-example>
 
-Assume for now that the [`@Injectable` decorator](#injectable) is an essential ingredient in every Angular service definition.
+The `@Injectable` decorator is an essential ingredient in every Angular service definition.
 The rest of the class has been rewritten to expose a `getHeroes` method 
 that returns the same mock data as before.
 
-<code-example path="dependency-injection/src/app/heroes/hero.service.1.ts" title="src/app/heroes/hero.service.ts">
+<code-example path="dependency-injection/src/app/heroes/hero.service.3.ts" title="src/app/heroes/hero.service.3.ts">
 </code-example>
 
 Of course, this isn't a real data service.
@@ -81,9 +81,9 @@ _injecting the service_ into the `HeroList` component.
 {@a injector-config}
 {@a bootstrap}
 
-## Register a service provider
+## Injectors
 
-A _service_ is just a class in Angular until you register it with an Angular dependency injector.
+A _service_ like `HeroService` is just a class in Angular until you register it with an Angular dependency injector.
 
 An Angular injector is responsible for creating service instances and injecting them into classes like the `HeroListComponent`.
 
@@ -91,8 +91,7 @@ You rarely create an Angular injector yourself.
 Angular creates injectors for you as it executes the app,
 starting with the _root injector_ that it creates during the [bootstrap process](guide/bootstrapping).
 
-You do have to register _providers_ with an injector 
-before the injector can create that service.
+Angular doesn't automatically know how you want to create instances of your services or the injector to create your service. You must configure it by specifying providers for every service.
 
 **Providers** tell the injector _how to create the service_.
 Without a provider, the injector would not know
@@ -102,24 +101,30 @@ nor be able to create the service.
 <div class="l-sub-section">
 
 You'll learn much more about _providers_ [below](#providers).
-For now it is sufficient to know that they create services
-and must be registered with an injector.
+For now, it is sufficient to know that they configure where and how services are created.
 
 </div>
 
-You can register a provider with any Angular decorator that supports the  **`providers` array property**.
+There are many ways to register a service provider with an injector. This section shows the most common ways 
+of configuring a provider for your services.
 
-Many Angular decorators accept metadata with a `providers` property.
-The two most important examples are `@Component` and `@NgModule`.
+{@a register-providers-injectable}
 
-{@a register-providers-component}
+## @Injectable providers
 
-### _@Component_ providers
+The `@Injectable` decorator identifies services and other classes that are intended to be injected. It can also be used to configure a provider for those services.
 
-Here's a revised `HeroesComponent` that registers the `HeroService` in its `providers` array.
+Here we configure a provider for `HeroService` using the `@Injectable` decorator on the class.
 
-<code-example path="dependency-injection/src/app/heroes/heroes.component.1.ts" title="src/app/heroes/heroes.component.ts" linenums="false">
-</code-example>
+<code-example path="dependency-injection/src/app/heroes/hero.service.0.ts"  title="src/app/heroes/heroes.service.ts" linenums="false"> </code-example> 
+
+`providedIn` tells Angular that the root injector is responsible for creating an instance of the `HeroService` (by invoking its constructor) and making it available across the application. The CLI sets up this kind of a provider automatically for you when generating a new service.
+
+Sometimes it's not desirable to have a service always be provided in the application root injector. Perhaps users should explicitly opt-in to using the service, or the service should be provided in a lazily-loaded context. In this case, the provider should be associated with a specific `@NgModule` class, and will be used by whichever injector includes that module.
+
+In the following excerpt, the `@Injectable` decorator is used to configure a provider that will be available in any injector that includes the HeroModule.
+
+<code-example path="dependency-injection/src/app/heroes/hero.service.4.ts"  title="src/app/heroes/hero.service.ts" linenums="false"> </code-example>
 
 {@a register-providers-ngmodule}
 
@@ -133,7 +138,7 @@ In the following excerpt, the root `AppModule` registers two providers in its `p
 The first entry registers the `UserService` class (_not shown_) under the `UserService` _injection token_.
 The second registers a value (`HERO_DI_CONFIG`) under the `APP_CONFIG` _injection token_.
 
-Thanks to these registrations, Angular can inject the `UserService` or the `HERO_DI_CONFIG` value
+With the above registrations, Angular can inject the `UserService` or the `HERO_DI_CONFIG` value
 into any class that it creates.
 
 <div class="l-sub-section">
@@ -141,13 +146,25 @@ into any class that it creates.
 You'll learn about _injection tokens_ and _provider_ syntax [below](#providers).
 </div>
 
+{@a register-providers-component}
+
+### _@Component_ providers
+
+In addition to providing the service application-wide or within a particular `@NgModule`, services can also be provided in specific components. Services provided in component-level is only available within that component injector or in any of its child components.
+
+The example below shows a revised `HeroesComponent` that registers the `HeroService` in its `providers` array.
+
+<code-example path="dependency-injection/src/app/heroes/heroes.component.1.ts" title="src/app/heroes/heroes.component.ts" linenums="false">
+</code-example>
 
 {@a ngmodule-vs-comp}
 
-### _@NgModule_ or _@Component_?
+### @Injectable, _@NgModule_ or _@Component_?
 
-Should you register a service with an Angular module or with a component?
-The two choices lead to differences in service _scope_ and service _lifetime_.
+Should you provide a service with an `@Injectable` decorator, in an `@NgModule`, or within an `@Component`?
+The choices lead to differences in the final bundle size, service _scope_, and service _lifetime_.
+
+When you register providers in the **@Injectable** decorator of the service itself, optimization tools such as those used by the CLI's production builds can perform tree shaking, which removes services that aren't used by your app. Tree shaking results in smaller bundle sizes.
 
 **Angular module providers** (`@NgModule.providers`) are registered with the application's root injector.
 Angular can inject the corresponding services in any class it creates.
@@ -155,7 +172,7 @@ Once created, a service instance lives for the life of the app and Angular injec
 
 You're likely to inject the `UserService` in many places throughout the app
 and will want to inject the same service instance every time.
-Providing the `UserService` with an Angular module is a good choice.
+Providing the `UserService` with an Angular module is a good choice if an `@Injectable` provider is not an option..
 
 <div class="l-sub-section">
 
@@ -188,189 +205,6 @@ The scope and lifetime of component-provided services is a consequence of [the w
 
 </div>
 
-## Inject a service
-
-The `HeroListComponent` should get heroes from the `HeroService`.
-
-The component shouldn't create the `HeroService` with `new`.
-It should ask for the `HeroService` to be injected.
-
-You can tell Angular to inject a dependency in the component's constructor by specifying a **constructor parameter with the dependency type**.
-Here's the `HeroListComponent` constructor, asking for the `HeroService` to be injected.
-
-<code-example title="src/app/heroes/hero-list.component (constructor signature)" path="dependency-injection/src/app/heroes/hero-list.component.ts"
-region="ctor-signature">
-</code-example>
-
-Of course, the `HeroListComponent` should do something with the injected `HeroService`.
-Here's the revised component, making use of the injected service, side-by-side with the previous version for comparison.
-
-<code-tabs>
-  <code-pane title="hero-list.component (with DI)" path="dependency-injection/src/app/heroes/hero-list.component.2.ts">
-  </code-pane>
-
-  <code-pane title="hero-list.component (without DI)" path="dependency-injection/src/app/heroes/hero-list.component.1.ts">
-  </code-pane>
-</code-tabs>
-
-Notice that the `HeroListComponent` doesn't know where the `HeroService` comes from.
-_You_ know that it comes from the parent `HeroesComponent`.
-But if you decided instead to provide the `HeroService` in the `AppModule`,
-the `HeroListComponent` wouldn't change at all.
-The _only thing that matters_ is that the `HeroService` is provided in some parent injector.
-
-{@a singleton-services}
-
-## Singleton services
-
-Services are singletons _within the scope of an injector_.
-There is at most one instance of a service in a given injector.
-
-There is only one root injector and the `UserService` is registered with that injector.
-Therefore, there can be just one `UserService` instance in the entire app
-and every class that injects `UserService` get this service instance.
-
-However, Angular DI is a 
-[hierarchical injection system](guide/hierarchical-dependency-injection), 
-which means that nested injectors can create their own service instances.
-Angular creates nested injectors all the time.
-
-{@a component-child-injectors}
-
-## Component child injectors
-
-For example, when Angular creates a new instance of a component that has `@Component.providers`,
-it also creates a new _child injector_ for that instance.
-
-Component injectors are independent of each other and
-each of them creates its own instances of the component-provided services.
-
-When Angular destroys one of these component instance, it also destroys the
-component's injector and that injector's service instances. 
-
-Thanks to [injector inheritance](guide/hierarchical-dependency-injection),
-you can still inject application-wide services into these components.
-A component's injector is a child of its parent component's injector,
-and a descendent of its parent's parent's injector, and so on all the way back to the application's _root_ injector.
-Angular can inject a service provided by any injector in that lineage.
-
-For example, Angular could inject a `HeroListComponent`
-with both the `HeroService` provided in `HeroComponent`
-and the `UserService` provided in `AppModule`.
-
-{@a testing-the-component}
-
-## Testing the component
-
-Earlier you saw that designing a class for dependency injection makes the class easier to test.
-Listing dependencies as constructor parameters may be all you need to test application parts effectively.
-
-For example, you can create a new `HeroListComponent` with a mock service that you can manipulate
-under test:
-
-<code-example path="dependency-injection/src/app/test.component.ts" region="spec" title="src/app/test.component.ts" linenums="false">
-</code-example>
-
-<div class="l-sub-section">
-
-Learn more in the [Testing](guide/testing) guide.
-
-</div>
-
-{@a service-needs-service}
-
-## When the service needs a service
-
-The `HeroService` is very simple. It doesn't have any dependencies of its own.
-
-What if it had a dependency? What if it reported its activities through a logging service?
-You'd apply the same *constructor injection* pattern,
-adding a constructor that takes a `Logger` parameter.
-
-Here is the revised `HeroService` that injects the `Logger`, side-by-side with the previous service for comparison.
-
-<code-tabs>
-
-  <code-pane title="src/app/heroes/hero.service (v2)" path="dependency-injection/src/app/heroes/hero.service.2.ts">
-  </code-pane>
-
-  <code-pane title="src/app/heroes/hero.service (v1)" path="dependency-injection/src/app/heroes/hero.service.1.ts">
-  </code-pane>
-
-</code-tabs>
-
-The constructor asks for an injected instance of a `Logger` and stores it in a private field called `logger`.
-The `getHeroes()` method logs a message when asked to fetch heroes.
-
-
-{@a logger-service}
-
-#### The dependent _Logger_ service
-
-The sample app's `Logger` service is quite simple:
-
-<code-example path="dependency-injection/src/app/logger.service.ts" title="src/app/logger.service.ts">
-</code-example>
-
-If the app didn't provide this `Logger`,
-Angular would throw an exception when it looked for a `Logger` to inject
-into the `HeroService`.
-
-<code-example language="sh" class="code-shell">
-  ERROR Error: No provider for Logger!
-</code-example>
-
-Because a singleton logger service is useful everywhere,
-it's provided in the root `AppModule`.
-
-<code-example path="dependency-injection/src/app/app.module.ts" linenums="false" title="src/app/app.module.ts (providers)" region="providers-2">
-</code-example>
-
-
-
-{@a injectable}
-
-## _@Injectable()_
-
-The **[@Injectable()](api/core/Injectable)** decorator identifies a service class 
-that _might_ require injected dependencies.
-
-The `HeroService` must be annotated with `@Injectable()` because it requires an injected `Logger`.
-
-<div class="alert is-important">
-
-Always write `@Injectable()` with parentheses, not just `@Injectable`.
-
-</div>
-
-When Angular creates a class whose constructor has parameters,
-it looks for type and injection metadata about those parameters
-so that it can inject the right service.
-
-If Angular can't find that parameter information, it throws an error.
-
-Angular can only find the parameter information _if the class has a decorator of some kind_.
-While _any_ decorator will do,
-the `@Injectable()` decorator is the standard decorator for service classes.
-
-<div class="l-sub-section">
-The decorator requirement is imposed by TypeScript.
-
-TypeScript normally discards parameter type information when it _transpiles_ the code to JavaScript.
-It preserves this information if the class has a decorator
-and the `emitDecoratorMetadata` compiler option is set `true` 
-in TypeScript's `tsconfig.json` configuration file, .
-
-The CLI configures `tsconfig.json` with `emitDecoratorMetadata: true`
-It's your job to put `@Injectable()` on your service classes.
-
-</div>
-
-The `Logger` service is annotated with `@Injectable()` decorator too, 
-although it has no constructor and no dependencies.
-
-In fact, _every_ Angular service class in this app is annotated with the `@Injectable()` decorator, whether or not it has a constructor and dependencies.
-`@Injectable()` is a required coding style for services.
 
 {@a providers}
 
@@ -383,8 +217,6 @@ that the injector injects into components, directives, pipes, and other services
 You must register a service *provider* with an injector, or it won't know how to create the service.
 
 The next few sections explain the many ways you can specify a provider.
-
-Almost all of the accompanying code snippets are extracts from the sample app's `providers.component.ts` file.
 
 ### The class as its own provider
 
@@ -572,6 +404,185 @@ Here you see the new and the old implementation side-by-side:
 
 </code-tabs>
 
+{@a tree-shakable-provider}
+
+### Tree-shakable providers
+
+Tree shaking is the ability to remove code that is not referenced in an application from the final bundle. Tree-shakable providers give Angular the ability to remove services that are not used in your application from the final output. This significantly reduces the size of your bundles.
+
+Ideally, if an application is not injecting a service, it should not be included in the final output. However, it turns out that the Angular compiler cannot identify at build time if the service will be required or not. Because it's always possible to inject a service directly using `injector.get(Service)`, Angular cannot identify all of the places in your code where this injection could happen, so it has no choice but to include the service in the injector regardless. Thus, services provided in modules are not tree-shakeable.
+
+Let us consider an example of non-tree-shakable providers in Angular.
+
+In this example, to provide services in Angular, you include them in an `@NgModule`:
+
+<code-example path="dependency-injection/src/app/tree-shaking/service-and-module.ts"  title="src/app/tree-shaking/service-and-modules.ts" linenums="false"> </code-example>
+
+This module can then be imported into your application module, to make the service available for injection in your app:
+
+<code-example path="dependency-injection/src/app/tree-shaking/app.module.ts"  title="src/app/tree-shaking/app.modules.ts" linenums="false"> </code-example>
+
+When `ngc` runs, it compiles AppModule into a module factory, which contains definitions for all the providers declared in all the modules it includes. At runtime, this factory becomes an injector that instantiates these services.
+
+Tree-shaking doesn't work in the method above because Angular cannot decide to exclude one chunk of code (the provider definition for the service within the module factory) based on whether another chunk of code (the service class) is used. To make services tree-shakeable, the information about how to construct an instance of the service (the provider definition) needs to be a part of the service class itself.
+
+#### Creating tree-shakable providers
+
+To create providers that are tree-shakable, the information that used to be specified in the module should be specified in the `@Injectable` decorator on the service itself.
+
+The following example shows the tree-shakeable equivalent to the `ServiceModule` example above:
+
+<code-example path="dependency-injection/src/app/tree-shaking/service.ts"  title="src/app/tree-shaking/service.ts" linenums="false"> </code-example>
+
+In the example above, `providedIn` allows you to declare the injector which injects this service. Unless there is a special case, the value should always be root. Setting the value to root ensures that the service is scoped to the root injector, without naming a particular module that is present in that injector.
+
+The service can be instantiated by configuring a factory function as shown below:
+
+<code-example path="dependency-injection/src/app/tree-shaking/service.0.ts"  title="src/app/tree-shaking/service.0.ts" linenums="false"> </code-example>
+
+{@a injector-config} 
+{@a bootstrap}
+
+## Inject a service
+
+The `HeroListComponent` should get heroes from the `HeroService`.
+
+The component shouldn't create the `HeroService` with `new`.
+It should ask for the `HeroService` to be injected.
+
+You can tell Angular to inject a dependency in the component's constructor by specifying a **constructor parameter with the dependency type**.
+Here's the `HeroListComponent` constructor, asking for the `HeroService` to be injected.
+
+<code-example title="src/app/heroes/hero-list.component (constructor signature)" path="dependency-injection/src/app/heroes/hero-list.component.ts"
+region="ctor-signature">
+</code-example>
+
+Of course, the `HeroListComponent` should do something with the injected `HeroService`.
+Here's the revised component, making use of the injected service, side-by-side with the previous version for comparison.
+
+<code-tabs>
+  <code-pane title="hero-list.component (with DI)" path="dependency-injection/src/app/heroes/hero-list.component.2.ts">
+  </code-pane>
+
+  <code-pane title="hero-list.component (without DI)" path="dependency-injection/src/app/heroes/hero-list.component.1.ts">
+  </code-pane>
+</code-tabs>
+
+Notice that the `HeroListComponent` doesn't know where the `HeroService` comes from.
+_You_ know that it comes from the parent `HeroesComponent`.
+If you decided instead to provide the `HeroService` in the `AppModule`,
+the `HeroListComponent` wouldn't change at all.
+The _only thing that matters_ is that the `HeroService` is provided in some parent injector.
+
+{@a singleton-services}
+
+## Singleton services
+
+Services are singletons _within the scope of an injector_.
+There is at most one instance of a service in a given injector.
+
+There is only one root injector, and the `UserService` is registered with that injector.
+Therefore, there can be just one `UserService` instance in the entire app,
+and every class that injects `UserService` get this service instance.
+
+However, Angular DI is a 
+[hierarchical injection system](guide/hierarchical-dependency-injection), 
+which means that nested injectors can create their own service instances.
+Angular creates nested injectors all the time.
+
+{@a component-child-injectors}
+
+## Component child injectors
+
+Component injectors are independent of each other and
+each of them creates its own instances of the component-provided services.
+
+For example, when Angular creates a new instance of a component that has `@Component.providers`,
+it also creates a new _child injector_ for that instance.
+
+When Angular destroys one of these component instances, it also destroys the
+component's injector and that injector's service instances. 
+
+Because of [injector inheritance](guide/hierarchical-dependency-injection),
+you can still inject application-wide services into these components.
+A component's injector is a child of its parent component's injector,
+and a descendent of its parent's parent's injector, and so on all the way back to the application's _root_ injector.
+Angular can inject a service provided by any injector in that lineage.
+
+For example, Angular could inject a `HeroListComponent`
+with both the `HeroService` provided in `HeroComponent`
+and the `UserService` provided in `AppModule`.
+
+{@a testing-the-component}
+
+## Testing the component
+
+Earlier you saw that designing a class for dependency injection makes the class easier to test.
+Listing dependencies as constructor parameters may be all you need to test application parts effectively.
+
+For example, you can create a new `HeroListComponent` with a mock service that you can manipulate
+under test:
+
+<code-example path="dependency-injection/src/app/test.component.ts" region="spec" title="src/app/test.component.ts" linenums="false">
+</code-example>
+
+<div class="l-sub-section">
+
+Learn more in the [Testing](guide/testing) guide.
+
+</div>
+
+{@a service-needs-service}
+
+## When the service needs a service
+
+The `HeroService` is very simple. It doesn't have any dependencies of its own.
+
+What if it had a dependency? What if it reported its activities through a logging service?
+You'd apply the same *constructor injection* pattern,
+adding a constructor that takes a `Logger` parameter.
+
+Here is the revised `HeroService` that injects the `Logger`, side-by-side with the previous service for comparison.
+
+<code-tabs>
+
+  <code-pane title="src/app/heroes/hero.service (v2)" path="dependency-injection/src/app/heroes/hero.service.2.ts">
+  </code-pane>
+
+  <code-pane title="src/app/heroes/hero.service (v1)" path="dependency-injection/src/app/heroes/hero.service.1.ts">
+  </code-pane>
+
+</code-tabs>
+
+The constructor asks for an injected instance of a `Logger` and stores it in a private field called `logger`.
+The `getHeroes()` method logs a message when asked to fetch heroes.
+
+
+{@a logger-service}
+
+#### The dependent _Logger_ service
+
+The sample app's `Logger` service is quite simple:
+
+<code-example path="dependency-injection/src/app/logger.service.ts" title="src/app/logger.service.ts">
+</code-example>
+
+If the app didn't provide this `Logger`,
+Angular would throw an exception when it looked for a `Logger` to inject
+into the `HeroService`.
+
+<code-example language="sh" class="code-shell">
+  ERROR Error: No provider for Logger!
+</code-example>
+
+Because a singleton logger service is useful everywhere,
+it's provided in the root `AppModule`.
+
+<code-example path="dependency-injection/src/app/app.module.ts" linenums="false" title="src/app/app.module.ts (providers)" region="providers-2">
+</code-example>
+
+
+
 {@a token}
 
 ## Dependency injection tokens
@@ -641,6 +652,7 @@ There is no interface type information left for Angular to find at runtime.
 
 </div>
 
+
 {@a injection-token}
 
 ### _InjectionToken_
@@ -649,52 +661,45 @@ One solution to choosing a provider token for non-class dependencies is
 to define and use an [*InjectionToken*](api/core/InjectionToken).
 The definition of such a token looks like this:
 
-<code-example path="dependency-injection/src/app/app.config.ts" region="token" title="src/app/app.config.ts" linenums="false">
+<code-example>
+import { InjectionToken } from '@angular/core';
+export const TOKEN = new InjectionToken('desc');
 </code-example>
 
-The type parameter, while optional, conveys the dependency's type to developers and tooling.
-The token description is another developer aid.
+You can directly configure a provider when creating an `InjectionToken`. The provider configuration determines which injector provides the token and how the value will be created.  This is similar to using `@Injectable`, except that you cannot define standard providers (such as `useClass` or `useFactory`) with `InjectionToken`. Instead, you specify a factory function which returns the value to be provided directly.
 
-Register the dependency provider using the `InjectionToken` object:
-
-<code-example path="dependency-injection/src/app/providers.component.ts" region="providers-9"  linenums="false">
+<code-example>
+export const TOKEN = 
+  new InjectionToken('desc', { providedIn: 'root', factory: () => new AppConfig(), })
 </code-example>
 
 Now you can inject the configuration object into any constructor that needs it, with
 the help of an `@Inject` decorator:
 
-<code-example path="dependency-injection/src/app/app.component.2.ts" region="ctor" title="src/app/app.component.ts" linenums="false">
+<code-example>
+constructor(@Inject(TOKEN));
 </code-example>
 
-<div class="l-sub-section">
+If the factory function needs access to other DI tokens, it can use the inject function from `@angular/core` to request dependencies.
 
-Although the `AppConfig` interface plays no role in dependency injection,
-it supports typing of the configuration object within the class.
-
-</div>
-
-Alternatively, you can provide and inject the configuration object in an ngModule like `AppModule`.
-
-<code-example path="dependency-injection/src/app/app.module.ts" region="providers" title="src/app/app.module.ts (providers)"></code-example>
+<code-example>
+const TOKEN = 
+  new InjectionToken('tree-shakeable token', 
+    { providedIn: 'root', factory: () => 
+        new AppConfig(inject(Parameter1), inject(Paremeter2)), });
+</code-example>
 
 {@a optional}
 
 ## Optional dependencies
 
-The `HeroService` *requires* a `Logger`, but what if it could get by without
-a `logger`?
-You can tell Angular that the dependency is optional by annotating the
-constructor argument with `@Optional()`:
+You can tell Angular that the dependency is optional by annotating the constructor argument with null:
 
-<code-example path="dependency-injection/src/app/providers.component.ts" region="import-optional">
+<code-example>
+constructor(@Inject(Token, null));
 </code-example>
 
-<code-example path="dependency-injection/src/app/providers.component.ts" region="provider-10-ctor" linenums="false">
-</code-example>
-
-When using `@Optional()`, your code must be prepared for a null value. If you
-don't register a `logger` somewhere up the line, the injector will set the
-value of `logger` to null.
+When using optional dependencies, your code must be prepared for a null value.
 
 ## Summary
 
