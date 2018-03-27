@@ -572,9 +572,6 @@ class ViewContainerRef implements viewEngine_ViewContainerRef {
   createEmbeddedView<C>(
       templateRef: viewEngine_TemplateRef<C>, context?: C|undefined,
       index?: number|undefined): viewEngine_EmbeddedViewRef<C> {
-    // set current view to container node's view
-    enterView(this._node.view, null);
-
     const viewRef = templateRef.createEmbeddedView(context !);
     this.insert(viewRef, index);
     return viewRef;
