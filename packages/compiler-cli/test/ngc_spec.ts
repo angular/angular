@@ -826,6 +826,23 @@ describe('ngc transformer command-line', () => {
         expect(mymoduleSource).not.toContain('ɵ0');
       });
 
+      it('should lower an NgModule id', () => {
+        write('mymodule.ts', `
+          import {NgModule} from '@angular/core';
+
+          @NgModule({
+            id: (() => 'test')(),
+          })
+          export class MyModule {}
+        `);
+        expect(compile()).toEqual(0);
+
+        const mymodulejs = path.resolve(outDir, 'mymodule.js');
+        const mymoduleSource = fs.readFileSync(mymodulejs, 'utf8');
+        expect(mymoduleSource).toContain('id: ɵ0');
+        expect(mymoduleSource).toMatch(/ɵ0 = .*'test'/);
+      });
+
       it('should be able to lower supported expressions', () => {
         writeConfig(`{
           "extends": "./tsconfig-base.json",
