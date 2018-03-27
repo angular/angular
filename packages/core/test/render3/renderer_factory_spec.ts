@@ -88,7 +88,7 @@ describe('renderer factory lifecycle', () => {
   });
 
   it('should work with a template', () => {
-    renderToHtml(Template, {}, [], rendererFactory);
+    renderToHtml(Template, {}, null, null, rendererFactory);
     expect(logs).toEqual(['create', 'begin', 'function', 'end']);
 
     logs = [];
@@ -97,7 +97,7 @@ describe('renderer factory lifecycle', () => {
   });
 
   it('should work with a template which contains a component', () => {
-    renderToHtml(TemplateWithComponent, {}, defs, rendererFactory);
+    renderToHtml(TemplateWithComponent, {}, defs, null, rendererFactory);
     expect(logs).toEqual(
         ['create', 'begin', 'function_with_component', 'create', 'component', 'end']);
 

@@ -19,7 +19,7 @@ import {LContainerNode, LElementNode, LNode, LNodeType, TNodeFlags, LProjectionN
 import {assertNodeType} from './node_assert';
 import {appendChild, insertChild, insertView, appendProjectedNode, removeView, canInsertNativeNode} from './node_manipulation';
 import {isNodeMatchingSelector, matchingSelectorIndex} from './node_selector_matcher';
-import {ComponentDef, ComponentTemplate, ComponentType, DirectiveDef, DirectiveDefList, DirectiveDefListOrFactory, DirectiveType} from './interfaces/definition';
+import {ComponentDef, ComponentTemplate, ComponentType, DirectiveDef, DirectiveDefList, DirectiveDefListOrFactory, DirectiveType, PipeDef, PipeDefListOrFactory} from './interfaces/definition';
 import {RElement, RText, Renderer3, RendererFactory3, ProceduralRenderer3, ObjectOrientedRenderer3, RendererStyleFlags3, isProceduralRenderer} from './interfaces/renderer';
 import {isDifferent, stringify} from './util';
 import {executeHooks, queueLifecycleHooks, queueInitHooks, executeInitHooks} from './hooks';
@@ -400,20 +400,22 @@ function resetApplicationState() {
  * @param context to pass into the template.
  * @param providedRendererFactory renderer factory to use
  * @param host The host element node to use
- * @param directiveRegistry Any directive defs that should be used to match nodes to directives
+ * @param defs Any directive or pipe defs that should be used for matching
  */
 export function renderTemplate<T>(
     hostNode: RElement, template: ComponentTemplate<T>, context: T,
     providedRendererFactory: RendererFactory3, host: LElementNode | null,
-    directiveRegistry: DirectiveDefListOrFactory | null = null): LElementNode {
+    directives?: DirectiveDefListOrFactory | null,
+    pipes?: PipeDefListOrFactory | null): LElementNode {
   if (host == null) {
     resetApplicationState();
     rendererFactory = providedRendererFactory;
+    const tView = getOrCreateTView(template, directives || null, pipes || null);
     host = createLNode(
         null, LNodeType.Element, hostNode,
         createLView(
-            -1, providedRendererFactory.createRenderer(null, null),
-            getOrCreateTView(template, directiveRegistry), null, {}, LViewFlags.CheckAlways));
+            -1, providedRendererFactory.createRenderer(null, null), tView, null, {},
+            LViewFlags.CheckAlways));
   }
   const hostView = host.data !;
   ngDevMode && assertNotNull(hostView, 'Host node should have an LView defined in host.data.');
@@ -432,9 +434,11 @@ export function renderEmbeddedTemplate<T>(
     let cm: boolean = false;
     if (viewNode == null) {
       // TODO: revisit setting currentView when re-writing view containers
+      const directives = currentView && currentView.tView.directiveRegistry;
+      const pipes = currentView && currentView.tView.pipeRegistry;
+
       const view = createLView(
-          -1, renderer, createTView(currentView && currentView.tView.directiveRegistry), template,
-          context, LViewFlags.CheckAlways);
+          -1, renderer, createTView(directives, pipes), template, context, LViewFlags.CheckAlways);
       viewNode = createLNode(null, LNodeType.View, null, view);
       cm = true;
     }
@@ -655,15 +659,20 @@ function saveResolvedLocalsInData(): void {
  * if it doesn't already exist.
  *
  * @param template The template from which to get static data
+ * @param directives Directive defs that should be saved on TView
+ * @param pipes Pipe defs that should be saved on TView
  * @returns TView
  */
 function getOrCreateTView(
-    template: ComponentTemplate<any>, defs: DirectiveDefListOrFactory | null): TView {
-  return template.ngPrivateData || (template.ngPrivateData = createTView(defs) as never);
+    template: ComponentTemplate<any>, directives: DirectiveDefListOrFactory | null,
+    pipes: PipeDefListOrFactory | null): TView {
+  return template.ngPrivateData ||
+      (template.ngPrivateData = createTView(directives, pipes) as never);
 }
 
 /** Creates a TView instance */
-export function createTView(defs: DirectiveDefListOrFactory | null): TView {
+export function createTView(
+    defs: DirectiveDefListOrFactory | null, pipes: PipeDefListOrFactory | null): TView {
   return {
     data: [],
     directives: null,
@@ -678,7 +687,8 @@ export function createTView(defs: DirectiveDefListOrFactory | null): TView {
     pipeDestroyHooks: null,
     hostBindings: null,
     components: null,
-    directiveRegistry: typeof defs === 'function' ? defs() : defs
+    directiveRegistry: typeof defs === 'function' ? defs() : defs,
+    pipeRegistry: typeof pipes === 'function' ? pipes() : pipes
   };
 }
 
@@ -740,7 +750,7 @@ export function hostElement(
   const node = createLNode(
       0, LNodeType.Element, rNode,
       createLView(
-          -1, renderer, getOrCreateTView(def.template, def.directiveDefs), null, null,
+          -1, renderer, getOrCreateTView(def.template, def.directiveDefs, def.pipeDefs), null, null,
           def.onPush ? LViewFlags.Dirty : LViewFlags.CheckAlways));
 
   if (firstTemplatePass) {
@@ -1170,7 +1180,7 @@ export function directiveCreate<T>(
 
 function addComponentLogic<T>(
     index: number, elementIndex: number, instance: T, def: ComponentDef<any>): void {
-  const tView = getOrCreateTView(def.template, def.directiveDefs);
+  const tView = getOrCreateTView(def.template, def.directiveDefs, def.pipeDefs);
 
   // Only component views should be added to the view tree directly. Embedded views are
   // accessed through their containers because they may be removed / re-added later.
@@ -1476,7 +1486,8 @@ function getOrCreateEmbeddedTView(viewIndex: number, parent: LContainerNode): TV
   ngDevMode && assertNodeType(parent, LNodeType.Container);
   const tContainer = (parent !.tNode as TContainerNode).data;
   if (viewIndex >= tContainer.length || tContainer[viewIndex] == null) {
-    tContainer[viewIndex] = createTView(currentView.tView.directiveRegistry);
+    const tView = currentView.tView;
+    tContainer[viewIndex] = createTView(tView.directiveRegistry, tView.pipeRegistry);
   }
   return tContainer[viewIndex];
 }
