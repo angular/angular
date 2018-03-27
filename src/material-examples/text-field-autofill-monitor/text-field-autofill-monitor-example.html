@@ -1,0 +1,13 @@
+<form>
+  <mat-form-field>
+    <mat-label>First name</mat-label>
+    <input matInput #first>
+    <mat-hint *ngIf="firstNameAutofilled">Autofilled!</mat-hint>
+  </mat-form-field>
+  <mat-form-field>
+    <mat-label>Last name</mat-label>
+    <input matInput #last>
+    <mat-hint *ngIf="lastNameAutofilled">Autofilled!</mat-hint>
+  </mat-form-field>
+  <button mat-raised-button>Submit</button>
+</form>

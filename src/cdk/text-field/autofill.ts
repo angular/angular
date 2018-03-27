@@ -12,10 +12,10 @@ import {
   ElementRef,
   EventEmitter,
   Injectable,
+  NgZone,
   OnDestroy,
   OnInit,
   Output,
-  NgZone,
 } from '@angular/core';
 import {Observable, Subject} from 'rxjs';
 import {empty as observableEmpty} from 'rxjs';
@@ -46,7 +46,7 @@ const listenerOptions: any = supportsPassiveEventListeners() ? {passive: true} :
  * Based on the following blog post:
  * https://medium.com/@brunn/detecting-autofilled-fields-in-javascript-aed598d25da7
  */
-@Injectable()
+@Injectable({providedIn: 'root'})
 export class AutofillMonitor implements OnDestroy {
   private _monitoredElements = new Map<Element, MonitoredElementInfo>();
 
