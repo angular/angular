@@ -56,7 +56,7 @@ Alternatively, the `subscribe()` method can accept callback function definitions
 
 In either case, a `next` handler is required. The `error` and `complete` handlers are optional.
 
-Note that a `next()` function could receive, for instance, message strings, or event objects, numeric values, or stuctures, depending on context. As a general term, we refer to data published by an observable as a *stream*. Any type of value can be represented with an observable, and the values are published as a stream.
+Note that a `next()` function could receive, for instance, message strings, or event objects, numeric values, or structures, depending on context. As a general term, we refer to data published by an observable as a *stream*. Any type of value can be represented with an observable, and the values are published as a stream.
 
 ## Creating observables
 

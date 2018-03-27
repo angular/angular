@@ -462,7 +462,7 @@ function updateProp(
 // expected nodeIndex which a ngOnInit should be called. When sending
 // ngAfterContentInit and ngAfterViewInit it is the expected count of
 // ngAfterContentInit or ngAfterViewInit methods that have been called. This
-// ensure that dispite being called recursively or after picking up after an
+// ensure that despite being called recursively or after picking up after an
 // exception, the ngAfterContentInit or ngAfterViewInit will be called on the
 // correct nodes. Consider for example, the following (where E is an element
 // and D is a directive)

@@ -60,7 +60,7 @@ interface TaskData {
 }
 
 // a global listener to handle all dom event,
-// so we do not need to create a closure everytime
+// so we do not need to create a closure every time
 const globalListener = function(event: Event) {
   const symbolName = symbolNames[event.type];
   if (!symbolName) {
@@ -125,7 +125,7 @@ export class DomEventsPlugin extends EventManagerPlugin {
       }
 
       // should call native delegate in case
-      // in some enviroment part of the application
+      // in some environment part of the application
       // will not use the patched Event
       delegate && delegate.apply(this, arguments);
     };
@@ -221,7 +221,7 @@ export class DomEventsPlugin extends EventManagerPlugin {
       }
     } else {
       // not found in taskDatas, the callback may be added inside of ngZone
-      // use native remove listener to remove the calback
+      // use native remove listener to remove the callback
       target[NATIVE_REMOVE_LISTENER].apply(target, [eventName, callback, false]);
     }
   }

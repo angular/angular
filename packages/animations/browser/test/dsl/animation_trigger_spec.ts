@@ -143,18 +143,22 @@ import {makeTrigger} from '../shared';
           expect(keyframes).toEqual([{height: '100px', offset: 0}, {height: '200px', offset: 1}]);
         });
 
-        it('should subtitute variable params provided directly within the transition match', () => {
-          const result = makeTrigger(
-              'name',
-              [transition(
-                  'a => b', [style({height: '{{ a }}'}), animate(1000, style({height: '{{ b }}'}))],
-                  buildParams({a: '100px', b: '200px'}))]);
+        it('should substitute variable params provided directly within the transition match',
+           () => {
+             const result = makeTrigger(
+                 'name',
+                 [transition(
+                     'a => b',
+                     [style({height: '{{ a }}'}), animate(1000, style({height: '{{ b }}'}))],
+                     buildParams({a: '100px', b: '200px'}))]);
 
-          const trans = buildTransition(result, element, 'a', 'b', {}, buildParams({a: '300px'})) !;
+             const trans =
+                 buildTransition(result, element, 'a', 'b', {}, buildParams({a: '300px'})) !;
 
-          const keyframes = trans.timelines[0].keyframes;
-          expect(keyframes).toEqual([{height: '300px', offset: 0}, {height: '200px', offset: 1}]);
-        });
+             const keyframes = trans.timelines[0].keyframes;
+             expect(keyframes).toEqual(
+                 [{height: '300px', offset: 0}, {height: '200px', offset: 1}]);
+           });
       });
 
       it('should match `true` and `false` given boolean values', () => {
