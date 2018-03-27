@@ -333,6 +333,32 @@ describe('Overlay directives', () => {
       expect(Math.floor(triggerRect.bottom)).toBe(Math.floor(overlayRect.top));
     });
 
+    it('should take the offset from the position', () => {
+      const trigger = fixture.nativeElement.querySelector('#trigger');
+
+      trigger.style.position = 'fixed';
+      trigger.style.top = '200px';
+      trigger.style.left = '200px';
+
+      fixture.componentInstance.positionOverrides = [{
+        originX: 'start',
+        originY: 'top',
+        overlayX: 'start',
+        overlayY: 'top',
+        offsetX: 20,
+        offsetY: 10
+      }];
+
+      fixture.componentInstance.isOpen = true;
+      fixture.detectChanges();
+
+      const triggerRect = trigger.getBoundingClientRect();
+      const overlayRect = getPaneElement().getBoundingClientRect();
+
+      expect(Math.floor(overlayRect.top)).toBe(Math.floor(triggerRect.top) + 10);
+      expect(Math.floor(overlayRect.left)).toBe(Math.floor(triggerRect.left) + 20);
+    });
+
   });
 
   describe('outputs', () => {
@@ -418,8 +444,8 @@ class ConnectedOverlayDirectiveTest {
   height: number | string;
   minWidth: number | string;
   minHeight: number | string;
-  offsetX = 0;
-  offsetY = 0;
+  offsetX: number;
+  offsetY: number;
   triggerOverride: CdkOverlayOrigin;
   hasBackdrop: boolean;
   backdropClickHandler = jasmine.createSpy('backdropClick handler');
