@@ -1,6 +1,6 @@
 import {CdkTextareaAutosize} from '@angular/cdk/text-field';
 import {Component, NgZone, ViewChild} from '@angular/core';
-import {take} from 'rxjs/operators/take';
+import {take} from 'rxjs/operators';
 
 /** @title Auto-resizing textarea */
 @Component({
