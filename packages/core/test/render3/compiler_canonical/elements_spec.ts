@@ -53,6 +53,60 @@ describe('elements', () => {
         .toEqual('<div class="my-app" title="Hello">Hello <b>World</b>!</div>');
   });
 
+  it('should support local refs', () => {
+    type $LocalRefComp$ = LocalRefComp;
+
+    class Dir {
+      value = 'one';
+
+      static ngDirectiveDef = $r3$.ɵdefineDirective({
+        type: Dir,
+        selector: [[['', 'dir', ''], null]],
+        factory: function DirA_Factory() { return new Dir(); },
+        exportAs: 'dir'
+      });
+    }
+
+    // NORMATIVE
+    const $e0_attrs$ = ['dir', ''];
+    const $e0_locals$ = ['dir', 'dir', 'foo', ''];
+    // /NORMATIVE
+
+    @Component({
+      selector: 'local-ref-comp',
+      template: `
+        <div dir #dir="dir" #foo></div>
+        {{ dir.value }} - {{ foo.tagName }}
+      `
+    })
+    class LocalRefComp {
+      // NORMATIVE
+      static ngComponentDef = $r3$.ɵdefineComponent({
+        type: LocalRefComp,
+        selector: [[['local-ref-comp'], null]],
+        factory: function LocalRefComp_Factory() { return new LocalRefComp(); },
+        template: function LocalRefComp_Template(ctx: $LocalRefComp$, cm: $boolean$) {
+          if (cm) {
+            $r3$.ɵE(0, 'div', $e0_attrs$, $e0_locals$);
+            $r3$.ɵe();
+            $r3$.ɵT(3);
+          }
+          const $tmp$ = $r3$.ɵld(1) as any;
+          const $tmp_2$ = $r3$.ɵld(2) as any;
+          $r3$.ɵt(3, $r3$.ɵi2(' ', $tmp$.value, ' - ', $tmp_2$.tagName, ''));
+        }
+      });
+      // /NORMATIVE
+    }
+
+    // NON-NORMATIVE
+    LocalRefComp.ngComponentDef.directiveDefs = () => [Dir.ngDirectiveDef];
+    // /NON-NORMATIVE
+
+    const fixture = new ComponentFixture(LocalRefComp);
+    expect(fixture.html).toEqual(`<div dir=""></div> one - DIV`);
+  });
+
   it('should support listeners', () => {
     type $ListenerComp$ = ListenerComp;
 

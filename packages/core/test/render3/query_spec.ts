@@ -179,7 +179,7 @@ describe('query', () => {
           query(0, ['foo'], false, QUERY_READ_FROM_NODE);
           elToQuery = elementStart(1, 'div', null, ['foo', '']);
           elementEnd();
-          elementStart(2, 'div');
+          elementStart(3, 'div');
           elementEnd();
         }
         queryRefresh(tmp = load<QueryList<any>>(0)) && (ctx.query = tmp as QueryList<any>);
@@ -209,7 +209,7 @@ describe('query', () => {
           query(1, ['bar'], false, QUERY_READ_FROM_NODE);
           elToQuery = elementStart(2, 'div', null, ['foo', '', 'bar', '']);
           elementEnd();
-          elementStart(3, 'div');
+          elementStart(5, 'div');
           elementEnd();
         }
         queryRefresh(tmp = load<QueryList<any>>(0)) && (ctx.fooQuery = tmp as QueryList<any>);
@@ -245,9 +245,9 @@ describe('query', () => {
           query(0, ['foo', 'bar'], undefined, QUERY_READ_FROM_NODE);
           el1ToQuery = elementStart(1, 'div', null, ['foo', '']);
           elementEnd();
-          elementStart(2, 'div');
+          elementStart(3, 'div');
           elementEnd();
-          el2ToQuery = elementStart(3, 'div', null, ['bar', '']);
+          el2ToQuery = elementStart(4, 'div', null, ['bar', '']);
           elementEnd();
         }
         queryRefresh(tmp = load<QueryList<any>>(0)) && (ctx.query = tmp as QueryList<any>);
@@ -276,7 +276,7 @@ describe('query', () => {
           query(0, ['foo'], false, QUERY_READ_ELEMENT_REF);
           elToQuery = elementStart(1, 'div', null, ['foo', '']);
           elementEnd();
-          elementStart(2, 'div');
+          elementStart(3, 'div');
           elementEnd();
         }
         queryRefresh(tmp = load<QueryList<any>>(0)) && (ctx.query = tmp as QueryList<any>);
@@ -708,11 +708,11 @@ describe('query', () => {
              query(0, ['foo'], true, QUERY_READ_FROM_NODE);
              firstEl = elementStart(1, 'span', null, ['foo', '']);
              elementEnd();
-             container(2);
-             lastEl = elementStart(3, 'span', null, ['foo', '']);
+             container(3);
+             lastEl = elementStart(4, 'span', null, ['foo', '']);
              elementEnd();
            }
-           containerRefreshStart(2);
+           containerRefreshStart(3);
            {
              if (ctx.exp) {
                let cm1 = embeddedViewStart(1);
@@ -838,9 +838,9 @@ describe('query', () => {
               if (cm1) {
                 firstEl = elementStart(0, 'div', null, ['foo', '']);
                 elementEnd();
-                container(1);
+                container(2);
               }
-              containerRefreshStart(1);
+              containerRefreshStart(2);
               {
                 if (ctx.exp2) {
                   let cm2 = embeddedViewStart(0);

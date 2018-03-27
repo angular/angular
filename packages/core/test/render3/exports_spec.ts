@@ -7,9 +7,9 @@
  */
 
 import {defineComponent, defineDirective} from '../../src/render3/index';
-import {bind, container, containerRefreshEnd, containerRefreshStart, elementAttribute, elementClassNamed, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, load, loadDirective, text, textBinding} from '../../src/render3/instructions';
+import {bind, container, containerRefreshEnd, containerRefreshStart, elementAttribute, elementClassNamed, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, load, text, textBinding} from '../../src/render3/instructions';
 
-import {renderToHtml} from './render_util';
+import {ComponentFixture, createComponent, renderToHtml} from './render_util';
 
 describe('exports', () => {
   it('should support export of DOM element', () => {
@@ -19,10 +19,10 @@ describe('exports', () => {
       if (cm) {
         elementStart(0, 'input', ['value', 'one'], ['myInput', '']);
         elementEnd();
-        text(1);
+        text(2);
       }
-      let myInput = elementStart(0);
-      textBinding(1, (myInput as any).value);
+      const tmp = load(1) as any;
+      textBinding(2, tmp.value);
     }
 
     expect(renderToHtml(Template, {})).toEqual('<input value="one">one');
@@ -35,10 +35,10 @@ describe('exports', () => {
       if (cm) {
         elementStart(0, 'comp', null, ['myComp', '']);
         elementEnd();
-        text(1);
+        text(2);
       }
-      // TODO: replace loadDirective when removing directive refs
-      textBinding(1, loadDirective<MyComponent>(0).name);
+      const tmp = load(1) as any;
+      textBinding(2, tmp.name);
     }
 
     class MyComponent {
@@ -87,11 +87,11 @@ describe('exports', () => {
       if (cm) {
         elementStart(0, 'comp', null, ['myComp', '']);
         elementEnd();
-        elementStart(1, 'div', ['myDir', '']);
+        elementStart(2, 'div', ['myDir', '']);
         elementEnd();
       }
-      // TODO: replace loadDirective when removing directive refs
-      elementProperty(1, 'myDir', bind(loadDirective<MyComponent>(0)));
+      const tmp = load(1) as any;
+      elementProperty(2, 'myDir', bind(tmp));
     }
 
     renderToHtml(Template, {}, defs);
@@ -105,10 +105,10 @@ describe('exports', () => {
       if (cm) {
         elementStart(0, 'div', ['someDir', ''], ['myDir', 'someDir']);
         elementEnd();
-        text(1);
+        text(2);
       }
-      // TODO: replace loadDirective when removing directive refs
-      textBinding(1, loadDirective<SomeDir>(0).name);
+      const tmp = load(1) as any;
+      textBinding(2, tmp.name);
     }
 
     class SomeDir {
@@ -125,6 +125,21 @@ describe('exports', () => {
         .toEqual('<div somedir=""></div>Drew');
   });
 
+  it('should throw if export name is not found', () => {
+
+    /** <div #myDir="someDir"></div> */
+    const App = createComponent('app', function(ctx: any, cm: boolean) {
+      if (cm) {
+        elementStart(0, 'div', null, ['myDir', 'someDir']);
+        elementEnd();
+      }
+    });
+
+    expect(() => {
+      const fixture = new ComponentFixture(App);
+    }).toThrowError(/Export of name 'someDir' not found!/);
+  });
+
   describe('forward refs', () => {
     it('should work with basic text bindings', () => {
       /** {{ myInput.value}} <input value="one" #myInput> */
@@ -134,8 +149,8 @@ describe('exports', () => {
           elementStart(1, 'input', ['value', 'one'], ['myInput', '']);
           elementEnd();
         }
-        let myInput = elementStart(1);
-        textBinding(0, bind((myInput as any).value));
+        const tmp = load(2) as any;
+        textBinding(0, bind(tmp.value));
       }
 
       expect(renderToHtml(Template, {})).toEqual('one<input value="one">');
@@ -151,8 +166,8 @@ describe('exports', () => {
           elementStart(1, 'input', ['value', 'one'], ['myInput', '']);
           elementEnd();
         }
-        let myInput = elementStart(1);
-        elementProperty(0, 'title', bind(myInput && (myInput as any).value));
+        const tmp = load(2) as any;
+        elementProperty(0, 'title', bind(tmp.value));
       }
 
       expect(renderToHtml(Template, {})).toEqual('<div title="one"></div><input value="one">');
@@ -167,8 +182,8 @@ describe('exports', () => {
           elementStart(1, 'input', ['value', 'one'], ['myInput', '']);
           elementEnd();
         }
-        let myInput = elementStart(1);
-        elementAttribute(0, 'aria-label', bind(myInput && (myInput as any).value));
+        const tmp = load(2) as any;
+        elementAttribute(0, 'aria-label', bind(tmp.value));
       }
 
       expect(renderToHtml(Template, {})).toEqual('<div aria-label="one"></div><input value="one">');
@@ -183,8 +198,8 @@ describe('exports', () => {
           elementStart(1, 'input', ['type', 'checkbox', 'checked', 'true'], ['myInput', '']);
           elementEnd();
         }
-        let myInput = elementStart(1);
-        elementClassNamed(0, 'red', bind(myInput && (myInput as any).checked));
+        const tmp = load(2) as any;
+        elementClassNamed(0, 'red', bind(tmp.checked));
       }
 
       expect(renderToHtml(Template, {}))
@@ -228,8 +243,8 @@ describe('exports', () => {
           elementStart(1, 'comp', null, ['myComp', '']);
           elementEnd();
         }
-        // TODO: replace loadDirective when removing directive refs
-        elementProperty(0, 'myDir', bind(loadDirective<MyComponent>(1)));
+        const tmp = load(2) as any;
+        elementProperty(0, 'myDir', bind(tmp));
       }
 
       renderToHtml(Template, {}, [MyComponent.ngComponentDef, MyDir.ngDirectiveDef]);
@@ -245,14 +260,13 @@ describe('exports', () => {
           text(1);
           elementStart(2, 'comp', null, ['myComp', '']);
           elementEnd();
-          elementStart(3, 'input', ['value', 'one'], ['myInput', '']);
+          elementStart(4, 'input', ['value', 'one'], ['myInput', '']);
           elementEnd();
         }
-        let myInput = elementStart(3);
-        // TODO: replace loadDirective when removing directive refs
-        let myComp = loadDirective<MyComponent>(0);
-        textBinding(0, bind(myInput && (myInput as any).value));
-        textBinding(1, bind(myComp && myComp.name));
+        const tmp1 = load(3) as any;
+        const tmp2 = load(5) as any;
+        textBinding(0, bind(tmp2.value));
+        textBinding(1, bind(tmp1.name));
       }
 
       let myComponent: MyComponent;
@@ -290,8 +304,8 @@ describe('exports', () => {
                 elementStart(1, 'input', ['value', 'one'], ['myInput', '']);
                 elementEnd();
               }
-              let myInput = elementStart(1);
-              textBinding(0, bind(myInput && (myInput as any).value));
+              const tmp = load(2) as any;
+              textBinding(0, bind(tmp.value));
             }
             embeddedViewEnd();
           }
