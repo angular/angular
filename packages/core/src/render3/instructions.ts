@@ -405,9 +405,8 @@ function resetApplicationState() {
 export function renderTemplate<T>(
     hostNode: RElement, template: ComponentTemplate<T>, context: T,
     providedRendererFactory: RendererFactory3, host: LElementNode | null,
-    {directives,
-     pipes}: {directives?: DirectiveDefListOrFactory | null,
-              pipes?: PipeDefListOrFactory | null} = {}): LElementNode {
+    directives?: DirectiveDefListOrFactory | null,
+    pipes?: PipeDefListOrFactory | null): LElementNode {
   if (host == null) {
     resetApplicationState();
     rendererFactory = providedRendererFactory;

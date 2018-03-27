@@ -156,7 +156,7 @@ export function renderToHtml(
     pipes?: PipeDefListOrFactory | null, providedRendererFactory?: RendererFactory3 | null) {
   host = renderTemplate(
       containerEl, template, ctx, providedRendererFactory || testRendererFactory, host,
-      {directives: directives || null, pipes: pipes || null});
+      directives || null, pipes || null);
   return toHtml(containerEl);
 }
 
