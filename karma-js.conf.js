@@ -133,7 +133,7 @@ module.exports = function(config) {
         'TRAVIS #' + process.env.TRAVIS_BUILD_NUMBER + ' (' + process.env.TRAVIS_BUILD_ID + ')';
     if (process.env.CI_MODE.startsWith('saucelabs')) {
       config.sauceLabs.build = buildId;
-      config.sauceLabs.tunnelIdentifier = process.env.TRAVIS_JOB_NUMBER;
+      config.sauceLabs.tunnelIdentifier = process.env.CIRCLE_BUILD_NUM;
 
       // TODO(mlaval): remove once SauceLabs supports websockets.
       // This speeds up the capturing a bit, as browsers don't even try to use websocket.
@@ -143,7 +143,7 @@ module.exports = function(config) {
 
     if (process.env.CI_MODE.startsWith('browserstack')) {
       config.browserStack.build = buildId;
-      config.browserStack.tunnelIdentifier = process.env.TRAVIS_JOB_NUMBER;
+      config.browserStack.tunnelIdentifier = process.env.CIRCLE_BUILD_NUM;
     }
   }
 };

@@ -65,7 +65,7 @@ function publishRepo {
 
   # Replace $$ANGULAR_VERSION$$ with the build version.
   BUILD_VER="${LATEST_TAG}+${SHORT_SHA}"
-  if [[ ${TRAVIS} ]]; then
+  if [[ ${CIRCLECI} ]]; then
     find $REPO_DIR/ -type f -name package.json -print0 | xargs -0 sed -i "s/\\\$\\\$ANGULAR_VERSION\\\$\\\$/${BUILD_VER}/g"
 
     # Find umd.js and umd.min.js
@@ -130,7 +130,7 @@ function publishPackages {
 }
 
 # See docs/DEVELOPER.md for help
-CUR_BRANCH=${TRAVIS_BRANCH:-$(git symbolic-ref --short HEAD)}
+CUR_BRANCH=${CIRCLE_BRANCH:-$(git symbolic-ref --short HEAD)}
 if [ $# -gt 0 ]; then
   ORG=$1
   publishPackages "ssh" dist/packages-dist $CUR_BRANCH
@@ -139,9 +139,10 @@ if [ $# -gt 0 ]; then
   fi
 
 elif [[ \
-    "$TRAVIS_REPO_SLUG" == "angular/angular" && \
-    "$TRAVIS_PULL_REQUEST" == "false" && \
-    "$CI_MODE" == "e2e" ]]; then
+    "$CIRCLE_PROJECT_USERNAME" == "angular" && \
+    "$CIRCLE_PROJECT_REPONAME" == "angular" && \
+    "$CI_MODE" == "e2e" ]] &&
+    [ -z ${CIRCLE_PULL_REQUEST+x} ]; then
   ORG="angular"
   publishPackages "http" dist/packages-dist $CUR_BRANCH
   if [[ -e dist/packages-dist-es2015 ]]; then
