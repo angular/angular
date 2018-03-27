@@ -23,8 +23,9 @@ export class Generator {
     const hashTable = {};
     return {
       configVersion: 1,
-      index: joinUrls(this.baseHref, config.index),
       appData: config.appData,
+      index: joinUrls(this.baseHref, config.index),
+      ignoredUrlPatterns: this.processIgnoredUrlPatterns(config),
       assetGroups: await this.processAssetGroups(config, hashTable),
       dataGroups: this.processDataGroups(config), hashTable,
     };
@@ -52,15 +53,6 @@ export class Generator {
         hashTable[joinUrls(this.baseHref, file)] = hash;
       }, Promise.resolve());
 
-
-      // Figure out the patterns.
-      const patterns = (group.resources.urls || [])
-                           .map(
-                               glob => glob.startsWith('/') || glob.indexOf('://') !== -1 ?
-                                   glob :
-                                   joinUrls(this.baseHref, glob))
-                           .map(glob => globToRegex(glob));
-
       return {
         name: group.name,
         installMode: group.installMode || 'prefetch',
@@ -69,22 +61,16 @@ export class Generator {
                   .concat(plainFiles)
                   .concat(versionedFiles)
                   .map(url => joinUrls(this.baseHref, url)),
-        patterns,
+        patterns: (group.resources.urls || []).map(url => this.urlToRegex(url)),
       };
     }));
   }
 
   private processDataGroups(config: Config): Object[] {
     return (config.dataGroups || []).map(group => {
-      const patterns = group.urls
-                           .map(
-                               glob => glob.startsWith('/') || glob.indexOf('://') !== -1 ?
-                                   glob :
-                                   joinUrls(this.baseHref, glob))
-                           .map(glob => globToRegex(glob));
       return {
         name: group.name,
-        patterns,
+        patterns: group.urls.map(url => this.urlToRegex(url)),
         strategy: group.cacheConfig.strategy || 'performance',
         maxSize: group.cacheConfig.maxSize,
         maxAge: parseDurationToMs(group.cacheConfig.maxAge),
@@ -92,6 +78,18 @@ export class Generator {
         version: group.version !== undefined ? group.version : 1,
       };
     });
+  }
+
+  private processIgnoredUrlPatterns(config: Config): string[] {
+    return (config.ignoredUrlPatterns || []).map(url => `^${this.urlToRegex(url)}$`);
+  }
+
+  private urlToRegex(url: string): string {
+    if (!url.startsWith('/') && url.indexOf('://') === -1) {
+      url = joinUrls(this.baseHref, url);
+    }
+
+    return globToRegex(url);
   }
 }
 

@@ -24,6 +24,8 @@ const dist =
         .addFile('/qux.txt', 'this is qux')
         .addFile('/quux.txt', 'this is quux')
         .addUnhashedFile('/unhashed/a.txt', 'this is unhashed', {'Cache-Control': 'max-age=10'})
+        .addUnhashedFile('/ignored/file', 'this is not handled by the SW')
+        .addUnhashedFile('/ignored/dir/file', 'this is not handled by the SW either')
         .build();
 
 const distUpdate =
@@ -60,6 +62,10 @@ const manifest: Manifest = {
     version: 'original',
   },
   index: '/foo.txt',
+  ignoredUrlPatterns: [
+    '^\\/ignored\\/file',
+    '^\\/ignored\\/dir\\/.*',
+  ],
   assetGroups: [
     {
       name: 'assets',
@@ -679,6 +685,41 @@ const manifestUpdateHash = sha1(JSON.stringify(manifestUpdate));
           mode: 'navigate',
         })).toBeNull();
         server.assertSawRequestFor('/baz');
+      });
+
+      async_it(
+          'does not redirect to index on a request that exctly matches `ignoredUrlPatterns`',
+          async() => {
+            const navInit = {
+              headers: {Accept: 'text/plain, text/html, text/css'},
+              mode: 'navigate',
+            };
+            const navRequest = (url: string) => makeRequest(scope, url, undefined, navInit);
+
+            expect(await navRequest('/ignored/file')).toBe('this is not handled by the SW');
+            server.assertSawRequestFor('/ignored/file');
+
+            expect(await navRequest('/ignored/dir/file'))
+                .toBe('this is not handled by the SW either');
+            server.assertSawRequestFor('/ignored/dir/file');
+
+            expect(await navRequest('/ignored/directory/file')).toBe('this is foo');
+            server.assertNoOtherRequests();
+          });
+
+      async_it('strips registration scope before checking `ignoredUrlPatterns`', async() => {
+        const navInit = {
+          headers: {Accept: 'text/plain, text/html, text/css'},
+          mode: 'navigate',
+        };
+        const navRequest = (url: string) => makeRequest(scope, url, undefined, navInit);
+
+        expect(await navRequest('http://localhost/ignored/file'))
+            .toBe('this is not handled by the SW');
+        server.assertSawRequestFor('/ignored/file');
+
+        expect(await navRequest('http://localhost.dev/ignored/file')).toBe('this is foo');
+        server.assertNoOtherRequests();
       });
     });
 

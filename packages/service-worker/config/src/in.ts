@@ -24,6 +24,7 @@ export type Duration = string;
 export interface Config {
   appData?: {};
   index: string;
+  ignoredUrlPatterns?: string[];
   assetGroups?: AssetGroup[];
   dataGroups?: DataGroup[];
 }
