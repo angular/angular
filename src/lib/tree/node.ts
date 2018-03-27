@@ -12,6 +12,7 @@ import {
   Directive,
   ElementRef,
   Input,
+  IterableDiffers,
   QueryList
 } from '@angular/core';
 import {
@@ -94,8 +95,9 @@ export class MatNestedTreeNode<T> extends _MatNestedTreeNodeMixinBase<T>
 
   constructor(protected _elementRef: ElementRef,
               protected _tree: CdkTree<T>,
+              protected _differs: IterableDiffers,
               @Attribute('tabindex') tabIndex: string) {
-    super(_elementRef, _tree);
+    super(_elementRef, _tree, _differs);
 
     this.tabIndex = Number(tabIndex) || 0;
   }
