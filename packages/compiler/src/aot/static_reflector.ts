@@ -28,7 +28,7 @@ const IGNORE = {
 
 const USE_VALUE = 'useValue';
 const PROVIDE = 'provide';
-const REFERENCE_SET = new Set([USE_VALUE, 'useFactory', 'data']);
+const REFERENCE_SET = new Set([USE_VALUE, 'useFactory', 'data', 'id']);
 const TYPEGUARD_POSTFIX = 'TypeGuard';
 const USE_IF = 'UseIf';
 
