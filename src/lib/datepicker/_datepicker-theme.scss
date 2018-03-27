@@ -33,8 +33,11 @@ $mat-calendar-weekday-table-font-size: 11px !default;
     border-top-color: mat-color($foreground, icon);
   }
 
-  .mat-calendar-next-button,
-  .mat-calendar-previous-button {
+  // The prev/next buttons need a bit more specificity to
+  // avoid being overwritten by the .mat-icon-button.
+  .mat-datepicker-toggle,
+  .mat-datepicker-popup .mat-calendar-next-button,
+  .mat-datepicker-popup .mat-calendar-previous-button {
     color: mat-color($foreground, icon);
   }
 
