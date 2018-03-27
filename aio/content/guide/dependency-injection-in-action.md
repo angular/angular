@@ -11,7 +11,11 @@ of the code in this cookbook.
 {@a app-wide-dependencies}
 
 ## Application-wide dependencies
-Register providers for dependencies used throughout the application in the root application component, `AppComponent`.
+
+From V6 onwards, providers for application-wide dependencues should be defined by specifying `providedIn: 'root'` on their `@Injectable()` decorator (in the case of services) or at `InjectionToken` construction (in the case of tokens being provided).
+
+For this example,
+register providers for dependencies used throughout the application in the root application component, `AppComponent`.
 
 The following example shows importing and registering
 the `LoggerService`, `UserContext`, and the `UserService`
