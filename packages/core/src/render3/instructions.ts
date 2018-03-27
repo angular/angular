@@ -431,9 +431,10 @@ export function renderEmbeddedTemplate<T>(
     previousOrParentNode = null !;
     let cm: boolean = false;
     if (viewNode == null) {
+      // TODO: revisit setting currentView when re-writing view containers
       const view = createLView(
-          -1, renderer, createTView(currentView.tView.directiveRegistry), template, context,
-          LViewFlags.CheckAlways);
+          -1, renderer, createTView(currentView && currentView.tView.directiveRegistry), template,
+          context, LViewFlags.CheckAlways);
       viewNode = createLNode(null, LNodeType.View, null, view);
       cm = true;
     }
@@ -443,7 +444,7 @@ export function renderEmbeddedTemplate<T>(
     refreshDynamicChildren();
     refreshDirectives();
   } finally {
-    leaveView(currentView !.parent !);
+    leaveView(currentView && currentView !.parent !);
     isParent = _isParent;
     previousOrParentNode = _previousOrParentNode;
   }
