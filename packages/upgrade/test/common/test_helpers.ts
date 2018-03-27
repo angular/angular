@@ -22,7 +22,13 @@ const ng1Versions = [
 export function createWithEachNg1VersionFn(setNg1: typeof setAngularJSGlobal) {
   return (specSuite: () => void) => ng1Versions.forEach(({label, files}) => {
     describe(`[AngularJS v${label}]`, () => {
+      let originalTimeout: typeof jasmine.DEFAULT_TIMEOUT_INTERVAL;
+
       beforeAll(done => {
+        // Increase the timeout, because these tests need to load the AngularJS files first.
+        originalTimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
+        jasmine.DEFAULT_TIMEOUT_INTERVAL =20000;
+
         // Load AngularJS before running tests.
         files
             .reduce(
@@ -42,6 +48,9 @@ export function createWithEachNg1VersionFn(setNg1: typeof setAngularJSGlobal) {
       });
 
       afterAll(() => {
+        // Restore the default timeout.
+        jasmine.DEFAULT_TIMEOUT_INTERVAL = originalTimeout;
+
         // In these tests we are loading different versions of AngularJS on the same window.
         // AngularJS leaves an "expandoId" property on `document`, which can trick subsequent
         // `window.angular` instances into believing an app is already bootstrapped.
