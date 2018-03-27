@@ -102,6 +102,8 @@ $mat-drawer-over-drawer-z-index: 4;
 }
 
 .mat-drawer {
+  $high-contrast-border: solid 1px currentColor;
+
   @include mat-drawer-stacking-context($mat-drawer-over-drawer-z-index);
 
   display: block;
@@ -113,6 +115,19 @@ $mat-drawer-over-drawer-z-index: 4;
   box-sizing: border-box;
   overflow-y: auto; // TODO(kara): revisit scrolling behavior for drawers
   transform: translate3d(-100%, 0, 0);
+
+  &, [dir='rtl'] &.mat-drawer-end {
+    @include cdk-high-contrast {
+      border-right: $high-contrast-border;
+    }
+  }
+
+  [dir='rtl'] &, &.mat-drawer-end {
+    @include cdk-high-contrast {
+      border-left: $high-contrast-border;
+      border-right: none;
+    }
+  }
 
   &.mat-drawer-side {
     z-index: $mat-drawer-side-drawer-z-index;
