@@ -133,8 +133,9 @@ export function renderComponent<T>(
     clean: CLEAN_PROMISE,
   };
   const rootView = createLView(
-      -1, rendererFactory.createRenderer(hostNode, componentDef.rendererType), createTView(null),
-      null, rootContext, componentDef.onPush ? LViewFlags.Dirty : LViewFlags.CheckAlways);
+      -1, rendererFactory.createRenderer(hostNode, componentDef.rendererType),
+      createTView(null, null), null, rootContext,
+      componentDef.onPush ? LViewFlags.Dirty : LViewFlags.CheckAlways);
 
   const oldView = enterView(rootView, null !);
   let elementNode: LElementNode;

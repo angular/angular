@@ -11,6 +11,7 @@ import {stringifyElement} from '@angular/platform-browser/testing/src/browser_ut
 import {CreateComponentOptions} from '../../src/render3/component';
 import {ComponentDef, ComponentTemplate, ComponentType, DirectiveDef, DirectiveType, PublicFeature, defineComponent, defineDirective, renderComponent as _renderComponent, tick} from '../../src/render3/index';
 import {NG_HOST_SYMBOL, renderTemplate} from '../../src/render3/instructions';
+import {DirectiveDefListOrFactory, PipeDefListOrFactory} from '../../src/render3/interfaces/definition';
 import {LElementNode} from '../../src/render3/interfaces/node';
 import {RElement, RText, Renderer3, RendererFactory3, domRendererFactory3} from '../../src/render3/interfaces/renderer';
 
@@ -151,10 +152,11 @@ export function resetDOM() {
  * @deprecated use `TemplateFixture` or `ComponentFixture`
  */
 export function renderToHtml(
-    template: ComponentTemplate<any>, ctx: any, defs?: any[],
-    providedRendererFactory?: RendererFactory3 | null) {
+    template: ComponentTemplate<any>, ctx: any, directives?: DirectiveDefListOrFactory | null,
+    pipes?: PipeDefListOrFactory | null, providedRendererFactory?: RendererFactory3 | null) {
   host = renderTemplate(
-      containerEl, template, ctx, providedRendererFactory || testRendererFactory, host, defs);
+      containerEl, template, ctx, providedRendererFactory || testRendererFactory, host,
+      directives || null, pipes || null);
   return toHtml(containerEl);
 }
 
@@ -189,8 +191,8 @@ export function toHtml<T>(componentOrElement: T | RElement): string {
 }
 
 export function createComponent(
-    name: string, template: ComponentTemplate<any>,
-    defs: (ComponentDef<any>| DirectiveDef<any>)[] = []): ComponentType<any> {
+    name: string, template: ComponentTemplate<any>, directives: DirectiveDefListOrFactory = [],
+    pipes: PipeDefListOrFactory = []): ComponentType<any> {
   return class Component {
     value: any;
     static ngComponentDef = defineComponent({
@@ -199,7 +201,8 @@ export function createComponent(
       factory: () => new Component,
       template: template,
       features: [PublicFeature],
-      directiveDefs: () => defs
+      directiveDefs: directives,
+      pipeDefs: pipes
     });
   };
 }
