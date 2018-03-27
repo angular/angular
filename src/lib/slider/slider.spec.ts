@@ -207,6 +207,18 @@ describe('MatSlider without forms', () => {
     it('should have aria-orientation horizontal', () => {
       expect(sliderNativeElement.getAttribute('aria-orientation')).toEqual('horizontal');
     });
+
+    it('should slide to the max value when the steps do not divide evenly into it', () => {
+      sliderInstance.min = 5;
+      sliderInstance.max = 100;
+      sliderInstance.step = 15;
+
+      dispatchSlideEventSequence(sliderNativeElement, 0, 1, gestureConfig);
+      fixture.detectChanges();
+
+      expect(sliderInstance.value).toBe(100);
+    });
+
   });
 
   describe('disabled slider', () => {
