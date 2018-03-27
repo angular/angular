@@ -6,15 +6,15 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, OnChanges, OnDestroy, Pipe, PipeTransform, SimpleChange, SimpleChanges, WrappedValue} from '@angular/core';
+import {Directive, OnChanges, OnDestroy, Pipe, PipeTransform} from '@angular/core';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
-import {NgOnChangesFeature, defineComponent, defineDirective, definePipe} from '../../src/render3/definition';
+import {defineDirective, definePipe} from '../../src/render3/definition';
 import {bind, container, containerRefreshEnd, containerRefreshStart, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, interpolation1, load, loadDirective, text, textBinding} from '../../src/render3/instructions';
 import {pipe, pipeBind1, pipeBind3, pipeBind4, pipeBindV} from '../../src/render3/pipe';
 
 import {RenderLog, getRendererFactory2, patchLoggingRenderer2} from './imported_renderer2';
-import {renderComponent, renderToHtml} from './render_util';
+import {renderToHtml} from './render_util';
 
 
 let log: string[] = [];
@@ -51,8 +51,12 @@ describe('pipe', () => {
 
       constructor() { this.dirProp = ''; }
 
-      static ngDirectiveDef =
-          defineDirective({type: MyDir, factory: () => new MyDir(), inputs: {dirProp: 'elprop'}});
+      static ngDirectiveDef = defineDirective({
+        type: MyDir,
+        selector: [[['', 'myDir', ''], null]],
+        factory: () => new MyDir(),
+        inputs: {dirProp: 'elprop'}
+      });
     }
 
     @Pipe({name: 'double'})
@@ -67,14 +71,14 @@ describe('pipe', () => {
 
     function Template(ctx: string, cm: boolean) {
       if (cm) {
-        elementStart(0, 'div', null, [MyDir]);
+        elementStart(0, 'div', ['myDir', '']);
         pipe(1, DoublePipe.ngPipeDef);
         elementEnd();
       }
       elementProperty(0, 'elprop', bind(pipeBind1(1, ctx)));
       directive = loadDirective(0);
     }
-    renderToHtml(Template, 'a');
+    renderToHtml(Template, 'a', [MyDir.ngDirectiveDef]);
     expect(directive !.dirProp).toEqual('aa');
   });
 
@@ -124,11 +128,11 @@ describe('pipe', () => {
       }
       elementProperty(0, 'someProp', bind(pipeBind1(1, 'Megatron')));
     }
-    renderToHtml(Template, person, rendererFactory2);
+    renderToHtml(Template, person, [], rendererFactory2);
     expect(renderLog.log).toEqual(['someProp=Megatron']);
 
     renderLog.clear();
-    renderToHtml(Template, person, rendererFactory2);
+    renderToHtml(Template, person, [], rendererFactory2);
     expect(renderLog.log).toEqual([]);
   });
 
@@ -192,7 +196,7 @@ describe('pipe', () => {
         containerRefreshEnd();
       }
       const pipeInstances: CountingPipe[] = [];
-      renderToHtml(Template, {}, rendererFactory2);
+      renderToHtml(Template, {}, [], rendererFactory2);
       expect(pipeInstances.length).toEqual(4);
       expect(pipeInstances[0]).toBeAnInstanceOf(CountingPipe);
       expect(pipeInstances[1]).toBe(pipeInstances[0]);
@@ -249,7 +253,7 @@ describe('pipe', () => {
         containerRefreshEnd();
       }
       const pipeInstances: CountingImpurePipe[] = [];
-      renderToHtml(Template, {}, rendererFactory2);
+      renderToHtml(Template, {}, [], rendererFactory2);
       expect(pipeInstances.length).toEqual(4);
       expect(pipeInstances[0]).toBeAnInstanceOf(CountingImpurePipe);
       expect(pipeInstances[1]).toBeAnInstanceOf(CountingImpurePipe);

@@ -13,7 +13,7 @@ import {getRenderedText, whenRendered} from '../../src/render3/component';
 import {LifecycleHooksFeature, defineComponent, defineDirective, injectChangeDetectorRef} from '../../src/render3/index';
 import {bind, container, containerRefreshEnd, containerRefreshStart, detectChanges, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, interpolation1, interpolation2, listener, markDirty, text, textBinding, tick} from '../../src/render3/instructions';
 
-import {containerEl, renderComponent, requestAnimationFrame} from './render_util';
+import {containerEl, createComponent, renderComponent, requestAnimationFrame} from './render_util';
 
 describe('change detection', () => {
 
@@ -25,7 +25,7 @@ describe('change detection', () => {
 
       static ngComponentDef = defineComponent({
         type: MyComponent,
-        tag: 'my-comp',
+        selector: [[['my-comp'], null]],
         factory: () => new MyComponent(),
         template: (ctx: MyComponent, cm: boolean) => {
           if (cm) {
@@ -96,7 +96,7 @@ describe('change detection', () => {
 
       static ngComponentDef = defineComponent({
         type: MyComponent,
-        tag: 'my-comp',
+        selector: [[['my-comp'], null]],
         factory: () => comp = new MyComponent(),
         /**
          * {{ doCheckCount }} - {{ name }}
@@ -123,16 +123,17 @@ describe('change detection', () => {
 
       static ngComponentDef = defineComponent({
         type: MyApp,
-        tag: 'my-app',
+        selector: [[['my-app'], null]],
         factory: () => new MyApp(),
         /** <my-comp [name]="name"></my-comp> */
         template: (ctx: MyApp, cm: boolean) => {
           if (cm) {
-            elementStart(0, MyComponent);
+            elementStart(0, 'my-comp');
             elementEnd();
           }
           elementProperty(0, 'name', bind(ctx.name));
-        }
+        },
+        directiveDefs: () => [MyComponent.ngComponentDef]
       });
     }
 
@@ -192,28 +193,18 @@ describe('change detection', () => {
     });
 
     it('should not check OnPush components in update mode when parent events occur', () => {
-      class ButtonParent {
-        noop() {}
+      function noop() {}
 
-        static ngComponentDef = defineComponent({
-          type: ButtonParent,
-          tag: 'button-parent',
-          factory: () => new ButtonParent(),
-          /**
-           * <my-comp></my-comp>
-           * <button id="parent" (click)="noop()"></button>
-           */
-          template: (ctx: ButtonParent, cm: boolean) => {
-            if (cm) {
-              elementStart(0, MyComponent);
-              elementEnd();
-              elementStart(1, 'button', ['id', 'parent']);
-              { listener('click', () => ctx.noop()); }
-              elementEnd();
-            }
-          }
-        });
-      }
+      const ButtonParent = createComponent('button-parent', function(ctx: any, cm: boolean) {
+        if (cm) {
+          elementStart(0, 'my-comp');
+          elementEnd();
+          elementStart(1, 'button', ['id', 'parent']);
+          { listener('click', () => noop()); }
+          elementEnd();
+        }
+      }, [MyComponent.ngComponentDef]);
+
       const buttonParent = renderComponent(ButtonParent);
       expect(getRenderedText(buttonParent)).toEqual('1 - Nancy');
 
@@ -232,35 +223,28 @@ describe('change detection', () => {
 
         static ngComponentDef = defineComponent({
           type: ButtonParent,
-          tag: 'button-parent',
+          selector: [[['button-parent'], null]],
           factory: () => parent = new ButtonParent(),
           /** {{ doCheckCount }} - <my-comp></my-comp> */
           template: (ctx: ButtonParent, cm: boolean) => {
             if (cm) {
               text(0);
-              elementStart(1, MyComponent);
+              elementStart(1, 'my-comp');
               elementEnd();
             }
             textBinding(0, interpolation1('', ctx.doCheckCount, ' - '));
           },
+          directiveDefs: () => [MyComponent.ngComponentDef],
           changeDetection: ChangeDetectionStrategy.OnPush
         });
       }
 
-      class MyButtonApp {
-        static ngComponentDef = defineComponent({
-          type: MyButtonApp,
-          tag: 'my-button-app',
-          factory: () => new MyButtonApp(),
-          /** <button-parent></button-parent> */
-          template: (ctx: MyButtonApp, cm: boolean) => {
-            if (cm) {
-              elementStart(0, ButtonParent);
-              elementEnd();
-            }
-          }
-        });
-      }
+      const MyButtonApp = createComponent('my-button-app', function(ctx: any, cm: boolean) {
+        if (cm) {
+          elementStart(0, 'button-parent');
+          elementEnd();
+        }
+      }, [ButtonParent.ngComponentDef]);
 
       const myButtonApp = renderComponent(MyButtonApp);
       expect(parent !.doCheckCount).toEqual(1);
@@ -298,7 +282,7 @@ describe('change detection', () => {
 
         static ngComponentDef = defineComponent({
           type: MyComp,
-          tag: 'my-comp',
+          selector: [[['my-comp'], null]],
           factory: () => myComp = new MyComp(injectChangeDetectorRef()),
           /** {{ name }} */
           template: (ctx: MyComp, cm: boolean) => {
@@ -320,7 +304,7 @@ describe('change detection', () => {
 
         static ngComponentDef = defineComponent({
           type: ParentComp,
-          tag: 'parent-comp',
+          selector: [[['parent-comp'], null]],
           factory: () => new ParentComp(injectChangeDetectorRef()),
           /**
            * {{ doCheckCount}} -
@@ -329,19 +313,23 @@ describe('change detection', () => {
           template: (ctx: ParentComp, cm: boolean) => {
             if (cm) {
               text(0);
-              elementStart(1, MyComp);
+              elementStart(1, 'my-comp');
               elementEnd();
             }
             textBinding(0, interpolation1('', ctx.doCheckCount, ' - '));
-          }
+          },
+          directiveDefs: () => [MyComp.ngComponentDef]
         });
       }
 
       class Dir {
         constructor(public cdr: ChangeDetectorRef) {}
 
-        static ngDirectiveDef =
-            defineDirective({type: Dir, factory: () => dir = new Dir(injectChangeDetectorRef())});
+        static ngDirectiveDef = defineDirective({
+          type: Dir,
+          selector: [[['', 'dir', ''], null]],
+          factory: () => dir = new Dir(injectChangeDetectorRef())
+        });
       }
 
 
@@ -399,20 +387,13 @@ describe('change detection', () => {
       });
 
       it('should check component view when called by directive on component node', () => {
-        class MyApp {
-          static ngComponentDef = defineComponent({
-            type: MyApp,
-            tag: 'my-app',
-            factory: () => new MyApp(),
-            /** <my-comp dir></my-comp> */
-            template: (ctx: MyApp, cm: boolean) => {
-              if (cm) {
-                elementStart(0, MyComp, ['dir', ''], [Dir]);
-                elementEnd();
-              }
-            }
-          });
-        }
+        /** <my-comp dir></my-comp> */
+        const MyApp = createComponent('my-app', function(ctx: any, cm: boolean) {
+          if (cm) {
+            elementStart(0, 'my-comp', ['dir', '']);
+            elementEnd();
+          }
+        }, [MyComp.ngComponentDef, Dir.ngDirectiveDef]);
 
         const app = renderComponent(MyApp);
         expect(getRenderedText(app)).toEqual('Nancy');
@@ -423,32 +404,25 @@ describe('change detection', () => {
       });
 
       it('should check host component when called by directive on element node', () => {
-        class MyApp {
-          name = 'Frank';
-
-          static ngComponentDef = defineComponent({
-            type: MyApp,
-            tag: 'my-app',
-            factory: () => new MyApp(),
-            /**
-             * {{ name }}
-             * <div dir></div>
-             */
-            template: (ctx: MyApp, cm: boolean) => {
-              if (cm) {
-                text(0);
-                elementStart(1, 'div', ['dir', ''], [Dir]);
-                elementEnd();
-              }
-              textBinding(1, bind(ctx.name));
-            }
-          });
-        }
+        /**
+         * {{ name }}
+         * <div dir></div>
+         */
+        const MyApp = createComponent('my-app', function(ctx: any, cm: boolean) {
+          if (cm) {
+            text(0);
+            elementStart(1, 'div', ['dir', '']);
+            elementEnd();
+          }
+          textBinding(1, bind(ctx.value));
+        }, [Dir.ngDirectiveDef]);
 
         const app = renderComponent(MyApp);
+        app.value = 'Frank';
+        tick(app);
         expect(getRenderedText(app)).toEqual('Frank');
 
-        app.name = 'Joe';
+        app.value = 'Joe';
         dir !.cdr.detectChanges();
         expect(getRenderedText(app)).toEqual('Joe');
       });
@@ -462,7 +436,7 @@ describe('change detection', () => {
 
           static ngComponentDef = defineComponent({
             type: MyApp,
-            tag: 'my-app',
+            selector: [[['my-app'], null]],
             factory: () => new MyApp(injectChangeDetectorRef()),
             /**
              * {{ name}}
@@ -480,14 +454,15 @@ describe('change detection', () => {
               {
                 if (ctx.showing) {
                   if (embeddedViewStart(0)) {
-                    elementStart(0, 'div', ['dir', ''], [Dir]);
+                    elementStart(0, 'div', ['dir', '']);
                     elementEnd();
                   }
                 }
                 embeddedViewEnd();
               }
               containerRefreshEnd();
-            }
+            },
+            directiveDefs: [Dir.ngDirectiveDef]
           });
         }
 
@@ -512,7 +487,7 @@ describe('change detection', () => {
 
           static ngComponentDef = defineComponent({
             type: DetectChangesComp,
-            tag: 'detect-changes-comp',
+            selector: [[['detect-changes-comp'], null]],
             factory: () => new DetectChangesComp(injectChangeDetectorRef()),
             /** {{ value }} */
             template: (ctx: DetectChangesComp, cm: boolean) => {
@@ -541,7 +516,7 @@ describe('change detection', () => {
 
           static ngComponentDef = defineComponent({
             type: DetectChangesComp,
-            tag: 'detect-changes-comp',
+            selector: [[['detect-changes-comp'], null]],
             factory: () => new DetectChangesComp(injectChangeDetectorRef()),
             /** {{ doCheckCount }} */
             template: (ctx: DetectChangesComp, cm: boolean) => {
@@ -567,15 +542,16 @@ describe('change detection', () => {
 
         static ngComponentDef = defineComponent({
           type: MyApp,
-          tag: 'my-app',
+          selector: [[['my-app'], null]],
           factory: () => new MyApp(injectChangeDetectorRef()),
           /** <detached-comp></detached-comp> */
           template: (ctx: MyApp, cm: boolean) => {
             if (cm) {
-              elementStart(0, DetachedComp);
+              elementStart(0, 'detached-comp');
               elementEnd();
             }
-          }
+          },
+          directiveDefs: () => [DetachedComp.ngComponentDef]
         });
       }
 
@@ -589,7 +565,7 @@ describe('change detection', () => {
 
         static ngComponentDef = defineComponent({
           type: DetachedComp,
-          tag: 'detached-comp',
+          selector: [[['detached-comp'], null]],
           factory: () => comp = new DetachedComp(injectChangeDetectorRef()),
           /** {{ value }} */
           template: (ctx: DetachedComp, cm: boolean) => {
@@ -685,7 +661,7 @@ describe('change detection', () => {
 
           static ngComponentDef = defineComponent({
             type: OnPushComp,
-            tag: 'on-push-comp',
+            selector: [[['on-push-comp'], null]],
             factory: () => onPushComp = new OnPushComp(injectChangeDetectorRef()),
             /** {{ value }} */
             template: (ctx: OnPushComp, cm: boolean) => {
@@ -699,25 +675,18 @@ describe('change detection', () => {
           });
         }
 
-        class OnPushApp {
-          value = 'one';
-
-          static ngComponentDef = defineComponent({
-            type: OnPushApp,
-            tag: 'on-push-app',
-            factory: () => new OnPushApp(),
-            /** <on-push-comp [value]="value"></on-push-comp> */
-            template: (ctx: OnPushApp, cm: boolean) => {
-              if (cm) {
-                elementStart(0, OnPushComp);
-                elementEnd();
-              }
-              elementProperty(0, 'value', bind(ctx.value));
-            }
-          });
-        }
+        /** <on-push-comp [value]="value"></on-push-comp> */
+        const OnPushApp = createComponent('on-push-app', function(ctx: any, cm: boolean) {
+          if (cm) {
+            elementStart(0, 'on-push-comp');
+            elementEnd();
+          }
+          elementProperty(0, 'value', bind(ctx.value));
+        }, [OnPushComp.ngComponentDef]);
 
         const app = renderComponent(OnPushApp);
+        app.value = 'one';
+        tick(app);
         expect(getRenderedText(app)).toEqual('one');
 
         onPushComp !.cdr.detach();
@@ -748,7 +717,7 @@ describe('change detection', () => {
 
         static ngComponentDef = defineComponent({
           type: OnPushComp,
-          tag: 'on-push-comp',
+          selector: [[['on-push-comp'], null]],
           factory: () => comp = new OnPushComp(injectChangeDetectorRef()),
           /** {{ value }} */
           template: (ctx: OnPushComp, cm: boolean) => {
@@ -766,7 +735,7 @@ describe('change detection', () => {
 
         static ngComponentDef = defineComponent({
           type: OnPushParent,
-          tag: 'on-push-parent',
+          selector: [[['on-push-parent'], null]],
           factory: () => new OnPushParent(),
           /**
            * {{ value }} -
@@ -775,11 +744,12 @@ describe('change detection', () => {
           template: (ctx: OnPushParent, cm: boolean) => {
             if (cm) {
               text(0);
-              elementStart(1, OnPushComp);
+              elementStart(1, 'on-push-comp');
               elementEnd();
             }
             textBinding(0, interpolation1('', ctx.value, ' - '));
           },
+          directiveDefs: () => [OnPushComp.ngComponentDef],
           changeDetection: ChangeDetectionStrategy.OnPush
         });
       }
@@ -832,7 +802,7 @@ describe('change detection', () => {
 
           static ngComponentDef = defineComponent({
             type: EmbeddedViewParent,
-            tag: 'embedded-view-parent',
+            selector: [[['embedded-view-parent'], null]],
             factory: () => new EmbeddedViewParent(),
             /**
              * {{ value }} -
@@ -850,7 +820,7 @@ describe('change detection', () => {
               {
                 if (ctx.showing) {
                   if (embeddedViewStart(0)) {
-                    elementStart(0, OnPushComp);
+                    elementStart(0, 'on-push-comp');
                     elementEnd();
                   }
                   embeddedViewEnd();
@@ -858,6 +828,7 @@ describe('change detection', () => {
               }
               containerRefreshEnd();
             },
+            directiveDefs: () => [OnPushComp.ngComponentDef],
             changeDetection: ChangeDetectionStrategy.OnPush
           });
         }
@@ -904,7 +875,7 @@ describe('change detection', () => {
 
         static ngComponentDef = defineComponent({
           type: NoChangesComp,
-          tag: 'no-changes-comp',
+          selector: [[['no-changes-comp'], null]],
           factory: () => comp = new NoChangesComp(injectChangeDetectorRef()),
           template: (ctx: NoChangesComp, cm: boolean) => {
             if (cm) {
@@ -922,7 +893,7 @@ describe('change detection', () => {
 
         static ngComponentDef = defineComponent({
           type: AppComp,
-          tag: 'app-comp',
+          selector: [[['app-comp'], null]],
           factory: () => new AppComp(injectChangeDetectorRef()),
           /**
            * {{ value }} -
@@ -931,11 +902,12 @@ describe('change detection', () => {
           template: (ctx: AppComp, cm: boolean) => {
             if (cm) {
               text(0);
-              elementStart(1, NoChangesComp);
+              elementStart(1, 'no-changes-comp');
               elementEnd();
             }
             textBinding(0, interpolation1('', ctx.value, ' - '));
-          }
+          },
+          directiveDefs: () => [NoChangesComp.ngComponentDef]
         });
       }
 
@@ -981,7 +953,7 @@ describe('change detection', () => {
 
           static ngComponentDef = defineComponent({
             type: EmbeddedViewApp,
-            tag: 'embedded-view-app',
+            selector: [[['embedded-view-app'], null]],
             factory: () => new EmbeddedViewApp(injectChangeDetectorRef()),
             /**
              * % if (showing) {

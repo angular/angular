@@ -45,7 +45,8 @@ export function queueLifecycleHooks(flags: number, currentView: LView): void {
   const tView = currentView.tView;
   if (tView.firstTemplatePass === true) {
     const start = flags >> TNodeFlags.INDX_SHIFT;
-    const end = start + (flags & TNodeFlags.SIZE_MASK);
+    const size = (flags & TNodeFlags.SIZE_MASK) >> TNodeFlags.SIZE_SHIFT;
+    const end = start + size;
 
     // It's necessary to loop through the directives at elementEnd() (rather than processing in
     // directiveCreate) so we can preserve the current hook order. Content, view, and destroy

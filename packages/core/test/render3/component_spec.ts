@@ -24,7 +24,7 @@ describe('component', () => {
 
     static ngComponentDef = defineComponent({
       type: CounterComponent,
-      tag: 'counter',
+      selector: [[['counter'], null]],
       template: function(ctx: CounterComponent, cm: boolean) {
         if (cm) {
           text(0);
@@ -87,7 +87,7 @@ describe('component with a container', () => {
     items: string[];
     static ngComponentDef = defineComponent({
       type: WrapperComponent,
-      tag: 'wrapper',
+      selector: [[['wrapper'], null]],
       template: function ChildComponentTemplate(ctx: {items: string[]}, cm: boolean) {
         if (cm) {
           container(0);
@@ -107,18 +107,20 @@ describe('component with a container', () => {
 
   function template(ctx: {items: string[]}, cm: boolean) {
     if (cm) {
-      elementStart(0, WrapperComponent);
+      elementStart(0, 'wrapper');
       elementEnd();
     }
     elementProperty(0, 'items', bind(ctx.items));
   }
 
+  const defs = [WrapperComponent.ngComponentDef];
+
   it('should re-render on input change', () => {
     const ctx: {items: string[]} = {items: ['a']};
-    expect(renderToHtml(template, ctx)).toEqual('<wrapper>a</wrapper>');
+    expect(renderToHtml(template, ctx, defs)).toEqual('<wrapper>a</wrapper>');
 
     ctx.items = [...ctx.items, 'b'];
-    expect(renderToHtml(template, ctx)).toEqual('<wrapper>ab</wrapper>');
+    expect(renderToHtml(template, ctx, defs)).toEqual('<wrapper>ab</wrapper>');
   });
 
 });
@@ -129,38 +131,40 @@ describe('encapsulation', () => {
   class WrapperComponent {
     static ngComponentDef = defineComponent({
       type: WrapperComponent,
-      tag: 'wrapper',
+      selector: [[['wrapper'], null]],
       template: function(ctx: WrapperComponent, cm: boolean) {
         if (cm) {
-          elementStart(0, EncapsulatedComponent);
+          elementStart(0, 'encapsulated');
           elementEnd();
         }
       },
       factory: () => new WrapperComponent,
+      directiveDefs: () => [EncapsulatedComponent.ngComponentDef]
     });
   }
 
   class EncapsulatedComponent {
     static ngComponentDef = defineComponent({
       type: EncapsulatedComponent,
-      tag: 'encapsulated',
+      selector: [[['encapsulated'], null]],
       template: function(ctx: EncapsulatedComponent, cm: boolean) {
         if (cm) {
           text(0, 'foo');
-          elementStart(1, LeafComponent);
+          elementStart(1, 'leaf');
           elementEnd();
         }
       },
       factory: () => new EncapsulatedComponent,
       rendererType:
           createRendererType2({encapsulation: ViewEncapsulation.Emulated, styles: [], data: {}}),
+      directiveDefs: () => [LeafComponent.ngComponentDef]
     });
   }
 
   class LeafComponent {
     static ngComponentDef = defineComponent({
       type: LeafComponent,
-      tag: 'leaf',
+      selector: [[['leaf'], null]],
       template: function(ctx: LeafComponent, cm: boolean) {
         if (cm) {
           elementStart(0, 'span');
@@ -190,23 +194,24 @@ describe('encapsulation', () => {
     class WrapperComponentWith {
       static ngComponentDef = defineComponent({
         type: WrapperComponentWith,
-        tag: 'wrapper',
+        selector: [[['wrapper'], null]],
         template: function(ctx: WrapperComponentWith, cm: boolean) {
           if (cm) {
-            elementStart(0, LeafComponentwith);
+            elementStart(0, 'leaf');
             elementEnd();
           }
         },
         factory: () => new WrapperComponentWith,
         rendererType:
             createRendererType2({encapsulation: ViewEncapsulation.Emulated, styles: [], data: {}}),
+        directiveDefs: () => [LeafComponentwith.ngComponentDef]
       });
     }
 
     class LeafComponentwith {
       static ngComponentDef = defineComponent({
         type: LeafComponentwith,
-        tag: 'leaf',
+        selector: [[['leaf'], null]],
         template: function(ctx: LeafComponentwith, cm: boolean) {
           if (cm) {
             elementStart(0, 'span');
@@ -245,7 +250,7 @@ describe('recursive components', () => {
 
     static ngComponentDef = defineComponent({
       type: TreeComponent,
-      tag: 'tree-comp',
+      selector: [[['tree-comp'], null]],
       factory: () => new TreeComponent(),
       template: (ctx: TreeComponent, cm: boolean) => {
         if (cm) {
@@ -258,7 +263,7 @@ describe('recursive components', () => {
         {
           if (ctx.data.left != null) {
             if (embeddedViewStart(0)) {
-              elementStart(0, TreeComponent);
+              elementStart(0, 'tree-comp');
               elementEnd();
             }
             elementProperty(0, 'data', bind(ctx.data.left));
@@ -270,7 +275,7 @@ describe('recursive components', () => {
         {
           if (ctx.data.right != null) {
             if (embeddedViewStart(0)) {
-              elementStart(0, TreeComponent);
+              elementStart(0, 'tree-comp');
               elementEnd();
             }
             elementProperty(0, 'data', bind(ctx.data.right));
@@ -283,6 +288,7 @@ describe('recursive components', () => {
     });
   }
 
+  TreeComponent.ngComponentDef.directiveDefs = () => [TreeComponent.ngComponentDef];
 
   function _buildTree(currDepth: number): TreeNode {
     const children = currDepth < 2 ? _buildTree(currDepth + 1) : null;

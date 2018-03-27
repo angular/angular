@@ -38,7 +38,7 @@ describe('compiler sanitization', () => {
       // NORMATIVE
       static ngComponentDef = $r3$.ɵdefineComponent({
         type: MyComponent,
-        tag: 'my-component',
+        selector: [[['my-component'], null]],
         factory: function MyComponent_Factory() { return new MyComponent(); },
         template: function MyComponent_Template(ctx: $MyComponent$, cm: $boolean$) {
           if (cm) {

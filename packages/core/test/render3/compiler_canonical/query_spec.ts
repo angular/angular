@@ -22,6 +22,7 @@ describe('queries', () => {
   class SomeDirective {
     static ngDirectiveDef = $r3$.ɵdefineDirective({
       type: SomeDirective,
+      selector: [[['', 'someDir', ''], null]],
       factory: function SomeDirective_Factory() { return someDir = new SomeDirective(); },
       features: [$r3$.ɵPublicFeature]
     });
@@ -32,7 +33,6 @@ describe('queries', () => {
 
     // NORMATIVE
     const $e1_attrs$ = ['someDir', ''];
-    const $e1_dirs$ = [SomeDirective];
     // /NORMATIVE
 
     @Component({
@@ -48,14 +48,14 @@ describe('queries', () => {
       // NORMATIVE
       static ngComponentDef = $r3$.ɵdefineComponent({
         type: ViewQueryComponent,
-        tag: 'view-query-component',
+        selector: [[['view-query-component'], null]],
         factory: function ViewQueryComponent_Factory() { return new ViewQueryComponent(); },
         template: function ViewQueryComponent_Template(ctx: $ViewQueryComponent$, cm: $boolean$) {
           let $tmp$: any;
           if (cm) {
             $r3$.ɵQ(0, SomeDirective, false);
             $r3$.ɵQ(1, SomeDirective, false);
-            $r3$.ɵE(2, 'div', $e1_attrs$, $e1_dirs$);
+            $r3$.ɵE(2, 'div', $e1_attrs$);
             $r3$.ɵe();
           }
 
@@ -67,6 +67,9 @@ describe('queries', () => {
       // /NORMATIVE
     }
 
+    // NON-NORMATIVE
+    ViewQueryComponent.ngComponentDef.directiveDefs = [SomeDirective.ngDirectiveDef];
+    // /NON-NORMATIVE
 
     const viewQueryComp = renderComponent(ViewQueryComponent);
     expect(viewQueryComp.someDir).toEqual(someDir);
@@ -92,7 +95,7 @@ describe('queries', () => {
       // NORMATIVE
       static ngComponentDef = $r3$.ɵdefineComponent({
         type: ContentQueryComponent,
-        tag: 'content-query-component',
+        selector: [[['content-query-component'], null]],
         factory: function ContentQueryComponent_Factory() {
           return [
             new ContentQueryComponent(), $r3$.ɵQ(null, SomeDirective, false),
@@ -120,7 +123,6 @@ describe('queries', () => {
     }
 
     const $e2_attrs$ = ['someDir', ''];
-    const $e2_dirs$ = [SomeDirective];
 
     @Component({
       selector: 'my-app',
@@ -134,13 +136,13 @@ describe('queries', () => {
       // NON-NORMATIVE
       static ngComponentDef = $r3$.ɵdefineComponent({
         type: MyApp,
-        tag: 'my-app',
+        selector: [[['my-app'], null]],
         factory: function MyApp_Factory() { return new MyApp(); },
         template: function MyApp_Template(ctx: $MyApp$, cm: $boolean$) {
           if (cm) {
-            $r3$.ɵE(0, ContentQueryComponent);
+            $r3$.ɵE(0, 'content-query-component');
             contentQueryComp = $r3$.ɵd<any[]>(0)[0];
-            $r3$.ɵE(1, 'div', $e2_attrs$, $e2_dirs$);
+            $r3$.ɵE(1, 'div', $e2_attrs$);
             $r3$.ɵe();
             $r3$.ɵe();
           }
@@ -149,6 +151,10 @@ describe('queries', () => {
       // /NON-NORMATIVE
     }
 
+    // NON-NORMATIVE
+    MyApp.ngComponentDef.directiveDefs =
+        [ContentQueryComponent.ngComponentDef, SomeDirective.ngDirectiveDef];
+    // /NON-NORMATIVE
 
     expect(toHtml(renderComponent(MyApp)))
         .toEqual(

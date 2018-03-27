@@ -9,7 +9,7 @@
 import {stringifyElement} from '@angular/platform-browser/testing/src/browser_util';
 
 import {CreateComponentOptions} from '../../src/render3/component';
-import {ComponentTemplate, ComponentType, DirectiveType, PublicFeature, defineComponent, defineDirective, renderComponent as _renderComponent, tick} from '../../src/render3/index';
+import {ComponentDef, ComponentTemplate, ComponentType, DirectiveDef, DirectiveType, PublicFeature, defineComponent, defineDirective, renderComponent as _renderComponent, tick} from '../../src/render3/index';
 import {NG_HOST_SYMBOL, renderTemplate} from '../../src/render3/instructions';
 import {LElementNode} from '../../src/render3/interfaces/node';
 import {RElement, RText, Renderer3, RendererFactory3, domRendererFactory3} from '../../src/render3/interfaces/renderer';
@@ -151,9 +151,10 @@ export function resetDOM() {
  * @deprecated use `TemplateFixture` or `ComponentFixture`
  */
 export function renderToHtml(
-    template: ComponentTemplate<any>, ctx: any, providedRendererFactory?: RendererFactory3) {
+    template: ComponentTemplate<any>, ctx: any, defs?: any[],
+    providedRendererFactory?: RendererFactory3 | null) {
   host = renderTemplate(
-      containerEl, template, ctx, providedRendererFactory || testRendererFactory, host);
+      containerEl, template, ctx, providedRendererFactory || testRendererFactory, host, defs);
   return toHtml(containerEl);
 }
 
@@ -188,23 +189,27 @@ export function toHtml<T>(componentOrElement: T | RElement): string {
 }
 
 export function createComponent(
-    name: string, template: ComponentTemplate<any>): ComponentType<any> {
+    name: string, template: ComponentTemplate<any>,
+    defs: (ComponentDef<any>| DirectiveDef<any>)[] = []): ComponentType<any> {
   return class Component {
     value: any;
     static ngComponentDef = defineComponent({
       type: Component,
-      tag: name,
+      selector: [[[name], null]],
       factory: () => new Component,
       template: template,
-      features: [PublicFeature]
+      features: [PublicFeature],
+      directiveDefs: () => defs
     });
   };
 }
 
-export function createDirective({exportAs}: {exportAs?: string} = {}): DirectiveType<any> {
+export function createDirective(
+    name: string, {exportAs}: {exportAs?: string} = {}): DirectiveType<any> {
   return class Directive {
     static ngDirectiveDef = defineDirective({
       type: Directive,
+      selector: [[['', name, ''], null]],
       factory: () => new Directive(),
       features: [PublicFeature],
       exportAs: exportAs,

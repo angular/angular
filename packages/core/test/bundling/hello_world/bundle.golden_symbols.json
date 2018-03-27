@@ -45,6 +45,9 @@
     "name": "QueueAction"
   },
   {
+    "name": "ROOT_DIRECTIVE_INDICES"
+  },
+  {
     "name": "SafeSubscriber"
   },
   {
@@ -106,6 +109,9 @@
   },
   {
     "name": "baseDirectiveCreate"
+  },
+  {
+    "name": "buildTNodeFlags"
   },
   {
     "name": "callHooks"
@@ -240,9 +246,6 @@
     "name": "renderComponent"
   },
   {
-    "name": "renderComponentOrTemplate"
-  },
-  {
     "name": "renderEmbeddedTemplate"
   },
   {
@@ -250,9 +253,6 @@
   },
   {
     "name": "resolveRendererType2"
-  },
-  {
-    "name": "rootDirectiveIndices"
   },
   {
     "name": "runIfPresent"

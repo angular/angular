@@ -17,7 +17,7 @@ describe('exports', () => {
     /** <input value="one" #myInput> {{ myInput.value }} */
     function Template(ctx: any, cm: boolean) {
       if (cm) {
-        elementStart(0, 'input', ['value', 'one'], null, ['myInput', '']);
+        elementStart(0, 'input', ['value', 'one'], ['myInput', '']);
         elementEnd();
         text(1);
       }
@@ -33,7 +33,7 @@ describe('exports', () => {
     /** <comp #myComp></comp> {{ myComp.name }} */
     function Template(ctx: any, cm: boolean) {
       if (cm) {
-        elementStart(0, MyComponent, null, null, ['myComp', '']);
+        elementStart(0, 'comp', null, ['myComp', '']);
         elementEnd();
         text(1);
       }
@@ -46,13 +46,13 @@ describe('exports', () => {
 
       static ngComponentDef = defineComponent({
         type: MyComponent,
-        tag: 'comp',
+        selector: [[['comp'], null]],
         template: function() {},
         factory: () => new MyComponent
       });
     }
 
-    expect(renderToHtml(Template, {})).toEqual('<comp></comp>Nancy');
+    expect(renderToHtml(Template, {}, [MyComponent.ngComponentDef])).toEqual('<comp></comp>Nancy');
   });
 
   it('should support component instance fed into directive', () => {
@@ -63,7 +63,7 @@ describe('exports', () => {
       constructor() { myComponent = this; }
       static ngComponentDef = defineComponent({
         type: MyComponent,
-        tag: 'comp',
+        selector: [[['comp'], null]],
         template: function() {},
         factory: () => new MyComponent
       });
@@ -72,23 +72,29 @@ describe('exports', () => {
     class MyDir {
       myDir: MyComponent;
       constructor() { myDir = this; }
-      static ngDirectiveDef =
-          defineDirective({type: MyDir, factory: () => new MyDir, inputs: {myDir: 'myDir'}});
+      static ngDirectiveDef = defineDirective({
+        type: MyDir,
+        selector: [[['', 'myDir', ''], null]],
+        factory: () => new MyDir,
+        inputs: {myDir: 'myDir'}
+      });
     }
+
+    const defs = [MyComponent.ngComponentDef, MyDir.ngDirectiveDef];
 
     /** <comp #myComp></comp> <div [myDir]="myComp"></div> */
     function Template(ctx: any, cm: boolean) {
       if (cm) {
-        elementStart(0, MyComponent, null, null, ['myComp', '']);
+        elementStart(0, 'comp', null, ['myComp', '']);
         elementEnd();
-        elementStart(1, 'div', null, [MyDir]);
+        elementStart(1, 'div', ['myDir', '']);
         elementEnd();
       }
       // TODO: replace loadDirective when removing directive refs
       elementProperty(1, 'myDir', bind(loadDirective<MyComponent>(0)));
     }
 
-    renderToHtml(Template, {});
+    renderToHtml(Template, {}, defs);
     expect(myDir !.myDir).toEqual(myComponent !);
   });
 
@@ -97,7 +103,7 @@ describe('exports', () => {
     /** <div someDir #myDir="someDir"></div> {{ myDir.name }} */
     function Template(ctx: any, cm: boolean) {
       if (cm) {
-        elementStart(0, 'div', null, [SomeDir], ['myDir', 'someDir']);
+        elementStart(0, 'div', ['someDir', ''], ['myDir', 'someDir']);
         elementEnd();
         text(1);
       }
@@ -107,11 +113,16 @@ describe('exports', () => {
 
     class SomeDir {
       name = 'Drew';
-      static ngDirectiveDef =
-          defineDirective({type: SomeDir, factory: () => new SomeDir, exportAs: 'someDir'});
+      static ngDirectiveDef = defineDirective({
+        type: SomeDir,
+        selector: [[['', 'someDir', ''], null]],
+        factory: () => new SomeDir,
+        exportAs: 'someDir'
+      });
     }
 
-    expect(renderToHtml(Template, {})).toEqual('<div></div>Drew');
+    expect(renderToHtml(Template, {}, [SomeDir.ngDirectiveDef]))
+        .toEqual('<div somedir=""></div>Drew');
   });
 
   describe('forward refs', () => {
@@ -120,7 +131,7 @@ describe('exports', () => {
       function Template(ctx: any, cm: boolean) {
         if (cm) {
           text(0);
-          elementStart(1, 'input', ['value', 'one'], null, ['myInput', '']);
+          elementStart(1, 'input', ['value', 'one'], ['myInput', '']);
           elementEnd();
         }
         let myInput = elementStart(1);
@@ -137,7 +148,7 @@ describe('exports', () => {
         if (cm) {
           elementStart(0, 'div');
           elementEnd();
-          elementStart(1, 'input', ['value', 'one'], null, ['myInput', '']);
+          elementStart(1, 'input', ['value', 'one'], ['myInput', '']);
           elementEnd();
         }
         let myInput = elementStart(1);
@@ -153,7 +164,7 @@ describe('exports', () => {
         if (cm) {
           elementStart(0, 'div');
           elementEnd();
-          elementStart(1, 'input', ['value', 'one'], null, ['myInput', '']);
+          elementStart(1, 'input', ['value', 'one'], ['myInput', '']);
           elementEnd();
         }
         let myInput = elementStart(1);
@@ -169,7 +180,7 @@ describe('exports', () => {
         if (cm) {
           elementStart(0, 'div');
           elementEnd();
-          elementStart(1, 'input', ['type', 'checkbox', 'checked', 'true'], null, ['myInput', '']);
+          elementStart(1, 'input', ['type', 'checkbox', 'checked', 'true'], ['myInput', '']);
           elementEnd();
         }
         let myInput = elementStart(1);
@@ -190,7 +201,7 @@ describe('exports', () => {
 
         static ngComponentDef = defineComponent({
           type: MyComponent,
-          tag: 'comp',
+          selector: [[['comp'], null]],
           template: function(ctx: MyComponent, cm: boolean) {},
           factory: () => new MyComponent
         });
@@ -201,23 +212,27 @@ describe('exports', () => {
 
         constructor() { myDir = this; }
 
-        static ngDirectiveDef =
-            defineDirective({type: MyDir, factory: () => new MyDir, inputs: {myDir: 'myDir'}});
+        static ngDirectiveDef = defineDirective({
+          type: MyDir,
+          selector: [[['', 'myDir', ''], null]],
+          factory: () => new MyDir,
+          inputs: {myDir: 'myDir'}
+        });
       }
 
       /** <div [myDir]="myComp"></div><comp #myComp></comp> */
       function Template(ctx: any, cm: boolean) {
         if (cm) {
-          elementStart(0, 'div', null, [MyDir]);
+          elementStart(0, 'div', ['myDir', '']);
           elementEnd();
-          elementStart(1, MyComponent, null, null, ['myComp', '']);
+          elementStart(1, 'comp', null, ['myComp', '']);
           elementEnd();
         }
         // TODO: replace loadDirective when removing directive refs
         elementProperty(0, 'myDir', bind(loadDirective<MyComponent>(1)));
       }
 
-      renderToHtml(Template, {});
+      renderToHtml(Template, {}, [MyComponent.ngComponentDef, MyDir.ngDirectiveDef]);
       expect(myDir !.myDir).toEqual(myComponent !);
     });
 
@@ -228,9 +243,9 @@ describe('exports', () => {
         if (cm) {
           text(0);
           text(1);
-          elementStart(2, MyComponent, null, null, ['myComp', '']);
+          elementStart(2, 'comp', null, ['myComp', '']);
           elementEnd();
-          elementStart(3, 'input', ['value', 'one'], null, ['myInput', '']);
+          elementStart(3, 'input', ['value', 'one'], ['myInput', '']);
           elementEnd();
         }
         let myInput = elementStart(3);
@@ -249,12 +264,13 @@ describe('exports', () => {
 
         static ngComponentDef = defineComponent({
           type: MyComponent,
-          tag: 'comp',
+          selector: [[['comp'], null]],
           template: function() {},
           factory: () => new MyComponent
         });
       }
-      expect(renderToHtml(Template, {})).toEqual('oneNancy<comp></comp><input value="one">');
+      expect(renderToHtml(Template, {}, [MyComponent.ngComponentDef]))
+          .toEqual('oneNancy<comp></comp><input value="one">');
     });
 
     it('should work inside a view container', () => {
@@ -271,7 +287,7 @@ describe('exports', () => {
             {
               if (cm1) {
                 text(0);
-                elementStart(1, 'input', ['value', 'one'], null, ['myInput', '']);
+                elementStart(1, 'input', ['value', 'one'], ['myInput', '']);
                 elementEnd();
               }
               let myInput = elementStart(1);

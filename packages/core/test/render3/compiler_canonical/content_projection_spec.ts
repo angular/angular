@@ -24,7 +24,7 @@ describe('content projection', () => {
       // NORMATIVE
       static ngComponentDef = $r3$.ɵdefineComponent({
         type: SimpleComponent,
-        tag: 'simple',
+        selector: [[['simple'], null]],
         factory: () => new SimpleComponent(),
         template: function(ctx: $SimpleComponent$, cm: $boolean$) {
           if (cm) {
@@ -54,7 +54,7 @@ describe('content projection', () => {
       // NORMATIVE
       static ngComponentDef = $r3$.ɵdefineComponent({
         type: ComplexComponent,
-        tag: 'complex',
+        selector: [[['complex'], null]],
         factory: () => new ComplexComponent(),
         template: function(ctx: $ComplexComponent$, cm: $boolean$) {
           if (cm) {
@@ -79,15 +79,16 @@ describe('content projection', () => {
     class MyApp {
       static ngComponentDef = $r3$.ɵdefineComponent({
         type: MyApp,
-        tag: 'my-app',
+        selector: [[['my-app'], null]],
         factory: () => new MyApp(),
         template: function(ctx: $MyApp$, cm: $boolean$) {
           if (cm) {
-            $r3$.ɵE(0, SimpleComponent);
+            $r3$.ɵE(0, 'simple');
             $r3$.ɵT(1, 'content');
             $r3$.ɵe();
           }
-        }
+        },
+        directiveDefs: () => [SimpleComponent.ngComponentDef]
       });
     }
   });
