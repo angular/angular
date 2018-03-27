@@ -328,15 +328,9 @@ export class MatInput extends _MatInputMixinBase implements MatFormFieldControl<
     return validity && validity.badInput;
   }
 
-  /** Determines if the component host is a textarea. If not recognizable it returns false. */
+  /** Determines if the component host is a textarea. */
   protected _isTextarea() {
-    let nativeElement = this._elementRef.nativeElement;
-
-    // In Universal, we don't have access to `nodeName`, but the same can be achieved with `name`.
-    // Note that this shouldn't be necessary once Angular switches to an API that resembles the
-    // DOM closer.
-    let nodeName = this._platform.isBrowser ? nativeElement.nodeName : nativeElement.name;
-    return nodeName ? nodeName.toLowerCase() === 'textarea' : false;
+    return this._elementRef.nativeElement.nodeName.toLowerCase() === 'textarea';
   }
 
   /**
