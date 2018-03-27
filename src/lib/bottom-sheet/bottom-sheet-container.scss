@@ -17,6 +17,8 @@ $mat-bottom-sheet-container-horizontal-padding: 16px !default;
   box-sizing: border-box;
   display: block;
   outline: 0;
+  max-height: 80vh;
+  overflow: auto;
 
   @include cdk-high-contrast {
     outline: 1px solid;
@@ -25,12 +27,15 @@ $mat-bottom-sheet-container-horizontal-padding: 16px !default;
 
 .mat-bottom-sheet-container-medium {
   min-width: $_mat-bottom-sheet-width-increment * 6;
+  max-width: calc(100vw - #{$_mat-bottom-sheet-width-increment * 2});
 }
 
 .mat-bottom-sheet-container-large {
   min-width: $_mat-bottom-sheet-width-increment * 8;
+  max-width: calc(100vw - #{$_mat-bottom-sheet-width-increment * 4});
 }
 
 .mat-bottom-sheet-container-xlarge {
   min-width: $_mat-bottom-sheet-width-increment * 9;
+  max-width: calc(100vw - #{$_mat-bottom-sheet-width-increment * 6});
 }
