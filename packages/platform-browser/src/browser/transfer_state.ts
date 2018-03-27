@@ -45,7 +45,10 @@ export function unescapeHtml(text: string): string {
  *
  * @publicApi
  */
-export type StateKey<T> = string&{__not_a_string: never};
+export type StateKey<T> = string&{
+  __not_a_string: never,
+  __value_type?: T,
+};
 
 /**
  * Create a `StateKey<T>` that can be used to store value of type T with `TransferState`.
