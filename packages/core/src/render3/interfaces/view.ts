@@ -7,7 +7,7 @@
  */
 
 import {LContainer} from './container';
-import {ComponentDef, ComponentTemplate, DirectiveDef, DirectiveDefList, PipeDef} from './definition';
+import {ComponentTemplate, DirectiveDefList, PipeDef, PipeDefList} from './definition';
 import {LElementNode, LViewNode, TNode} from './node';
 import {LQueries} from './query';
 import {Renderer3} from './renderer';
@@ -244,6 +244,17 @@ export interface TView {
    * to render template functions without a host component.
    */
   directiveRegistry: DirectiveDefList|null;
+
+  /**
+   * Full registry of pipes that may be found in this view.
+   *
+   * The property is either an array of `PipeDefs`s or a function which returns the array of
+   * `PipeDefs`s. The function is necessary to be able to support forward declarations.
+   *
+   * It's necessary to keep a copy of the full def list on the TView so it's possible
+   * to render template functions without a host component.
+   */
+  pipeRegistry: PipeDefList|null;
 
   /**
    * Array of ngOnInit and ngDoCheck hooks that should be executed for this view in

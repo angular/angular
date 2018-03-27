@@ -16,7 +16,7 @@ import {Type} from '../type';
 import {resolveRendererType2} from '../view/util';
 
 import {diPublic} from './di';
-import {ComponentDef, ComponentDefFeature, ComponentTemplate, DirectiveDef, DirectiveDefFeature, DirectiveDefListOrFactory, PipeDef} from './interfaces/definition';
+import {ComponentDef, ComponentDefFeature, ComponentTemplate, DirectiveDef, DirectiveDefFeature, DirectiveDefListOrFactory, PipeDef, PipeDefListOrFactory} from './interfaces/definition';
 import {CssSelector} from './interfaces/projection';
 
 
@@ -154,6 +154,14 @@ export function defineComponent<T>(componentDefinition: {
    * `DirectiveDef`s. The function is necessary to be able to support forward declarations.
    */
   directiveDefs?: DirectiveDefListOrFactory | null;
+
+  /**
+   * Registry of pipes that may be found in this component's view.
+   *
+   * The property is either an array of `PipeDefs`s or a function which returns the array of
+   * `PipeDefs`s. The function is necessary to be able to support forward declarations.
+   */
+  pipeDefs?: PipeDefListOrFactory | null;
 }): ComponentDef<T> {
   const type = componentDefinition.type;
   const def = <ComponentDef<any>>{
@@ -176,6 +184,7 @@ export function defineComponent<T>(componentDefinition: {
     onDestroy: type.prototype.ngOnDestroy || null,
     onPush: componentDefinition.changeDetection === ChangeDetectionStrategy.OnPush,
     directiveDefs: componentDefinition.directiveDefs || null,
+    pipeDefs: componentDefinition.pipeDefs || null,
     selector: componentDefinition.selector
   };
   const feature = componentDefinition.features;
@@ -380,13 +389,16 @@ export const defineDirective = defineComponent as any as<T>(directiveDefinition:
  *   });
  * }
  * ```
+ * @param name Name of the pipe. Used for matching pipes in template to pipe defs.
  * @param type Pipe class reference. Needed to extract pipe lifecycle hooks.
  * @param factory A factory for creating a pipe instance.
  * @param pure Whether the pipe is pure.
  */
 export function definePipe<T>(
-    {type, factory, pure}: {type: Type<T>, factory: () => T, pure?: boolean}): PipeDef<T> {
+    {name, type, factory, pure}: {name: string, type: Type<T>, factory: () => T, pure?: boolean}):
+    PipeDef<T> {
   return <PipeDef<T>>{
+    name: name,
     n: factory,
     pure: pure !== false,
     onDestroy: type.prototype.ngOnDestroy || null
