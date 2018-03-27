@@ -14,11 +14,23 @@ import { LoggerService }    from './logger.service';
 
 let nextId = 1;
 
+// #docregion ngOnInit!
+// export class PeekABoo implements OnInit {
+//   constructor(private logger: LoggerService) { }
+
+//   // implement OnInit's `ngOnInit` method
+//   ngOnInit() { this.logIt(`OnInit`); }
+
+//   logIt(msg: string) {
+//     this.logger.log(`#${nextId++} ${msg}`);
+//   }
+// }
+// #enddocregion ngOnInit!
 // #docregion ngOnInit
 export class PeekABoo implements OnInit {
   constructor(private logger: LoggerService) { }
 
-  // implement OnInit's `ngOnInit` method
+  // OnInit 인터페이스에 있는 `ngOnInit` 메소드를 구현합니다.
   ngOnInit() { this.logIt(`OnInit`); }
 
   logIt(msg: string) {
