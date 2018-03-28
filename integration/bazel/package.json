@@ -10,7 +10,8 @@
     "@angular/core": "file:../../dist/packages-dist/core",
     "@angular/platform-browser": "file:../../dist/packages-dist/platform-browser",
     "@angular/platform-browser-dynamic": "file:../../dist/packages-dist/platform-browser-dynamic",
-    "rxjs": "file:../../node_modules/rxjs",
+    "rxjs": "TODO(alexeagle): use file:../../node_modules/rxjs after rx 6.0 stable",
+    "rxjs": "6.0.0-beta.4",
     "zone.js": "file:../../node_modules/zone.js"
   },
   "devDependencies": {
@@ -22,6 +23,6 @@
   },
   "scripts": {
     "postinstall": "ngc -p angular.tsconfig.json",
-    "test": "bazel test //... --noshow_progress"
+    "test": "bazel test //... --announce_rc --noshow_progress --test_output=errors"
   }
 }
