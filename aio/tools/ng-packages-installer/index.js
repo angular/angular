@@ -8,10 +8,10 @@ const yargs = require('yargs');
 
 const PACKAGE_JSON = 'package.json';
 const LOCAL_MARKER_PATH = 'node_modules/_local_.json';
-const PACKAGE_JSON_REGEX = /^[^/]+\/package\.json$/;
 
 const ANGULAR_ROOT_DIR = path.resolve(__dirname, '../../..');
 const ANGULAR_DIST_PACKAGES = path.resolve(ANGULAR_ROOT_DIR, 'dist/packages-dist');
+const ANGULAR_BAZEL_PACKAGES = path.resolve(ANGULAR_ROOT_DIR, 'dist/packages-bazel');
 
 /**
  * A tool that can install Angular dependencies for a project from NPM or from the
@@ -36,9 +36,14 @@ class NgPackagesInstaller {
   constructor(projectDir, options = {}) {
     this.debug = options.debug;
     this.force = options.force;
+    this.bazel = options.bazel;
+    this.force = true;
     this.ignorePackages = options.ignorePackages || [];
     this.projectDir = path.resolve(projectDir);
     this.localMarkerPath = path.resolve(this.projectDir, LOCAL_MARKER_PATH);
+
+    // we need to force all the time now that we have --bazel flag since we don't distinguish between npm and bazel in the marker file
+    this.force = true;
 
     this._log('Project directory:', this.projectDir);
   }
@@ -181,23 +186,22 @@ class NgPackagesInstaller {
   _getDistPackages() {
     const packageConfigs = Object.create(null);
 
-    [ANGULAR_DIST_PACKAGES].forEach(distDir => {
+    const ANGULAR_PACKAGES = this.bazel ? ANGULAR_BAZEL_PACKAGES : ANGULAR_DIST_PACKAGES;
+    [ANGULAR_PACKAGES].forEach(distDir => {
       this._log(`Angular distributable directory: ${distDir}.`);
       shelljs
-        .find(distDir)
-        .map(filePath => filePath.slice(distDir.length + 1))
-        .filter(filePath => PACKAGE_JSON_REGEX.test(filePath))
-        .forEach(packagePath => {
-          const packageName = `@angular/${packagePath.slice(0, -PACKAGE_JSON.length -1)}`;
-          if (this.ignorePackages.indexOf(packageName) === -1) {
-            const packageConfig = require(path.resolve(distDir, packagePath));
-            packageConfigs[packageName] = {
+        .ls(distDir)
+        .forEach(packageName => {
+          const fullPackageName = `@angular/${packageName}`;
+          if (this.ignorePackages.indexOf(fullPackageName) === -1) {
+            const packageConfig = require(path.resolve(distDir, packageName, 'package.json'));
+            packageConfigs[fullPackageName] = {
               parentDir: distDir,
-              packageJsonPath: path.resolve(distDir, packagePath),
+              packageJsonPath: path.resolve(distDir, packageName, 'package.json'),
               config: packageConfig
             };
           } else {
-            this._log('Ignoring package', packageName);
+            this._log('Ignoring package', fullPackageName);
           }
         });
 
@@ -269,10 +273,11 @@ function main() {
     .usage('$0 <cmd> [args]')
 
     .option('debug', { describe: 'Print additional debug information.', default: false })
+    .option('bazel', { describe: 'Use Angular packages build by bazel.', default: false })
     .option('force', { describe: 'Force the command to execute even if not needed.', default: false })
     .option('ignore-packages', { describe: 'List of Angular packages that should not be used in local mode.', default: [], array: true })
 
-    .command('overwrite <projectDir> [--force] [--debug] [--ignore-packages package1 package2]', 'Install dependencies from the locally built Angular distributables.', () => {}, argv => {
+    .command('overwrite <projectDir> [--force] [--debug] [--bazel] [--ignore-packages package1 package2]', 'Install dependencies from the locally built Angular distributables.', () => {}, argv => {
       const installer = new NgPackagesInstaller(argv.projectDir, argv);
       installer.installLocalDependencies();
     })
