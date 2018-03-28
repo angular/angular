@@ -3,8 +3,6 @@
 -->
 # 라이프싸이클 후킹
 
-<img src="generated/images/guide/lifecycle-hooks/hooks-in-sequence.png" alt="Us" class="left">
-
 <!--
 A component has a lifecycle managed by Angular.
 -->
@@ -139,6 +137,7 @@ calls the lifecycle hook methods in the following sequence at specific moments:
       <code>ngAfterContentInit()</code>
     </td>
     <td>
+
       Respond after Angular projects external content into the component's view / the view that a directive is in.
 
       Called _once_ after the first `ngDoCheck()`.

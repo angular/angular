@@ -91,7 +91,11 @@ This example from the `HeroListComponent` template uses three of these forms:
 * The `{{hero.name}}` [*interpolation*](guide/displaying-data#interpolation)
 displays the component's `hero.name` property value within the `<li>` element.
 
+<!--
 * The `[hero]` [*property binding*](guide/template-syntax#property-binding) passes the value of `selectedHero` from
+the parent `HeroListComponent` to the `hero` property of the child `HeroDetailComponent`.
+-->
+* The `[hero]` [*property binding*](guide/template-syntax#프로퍼티-바인딩) passes the value of `selectedHero` from
 the parent `HeroListComponent` to the `hero` property of the child `HeroDetailComponent`.
 
 * The `(click)` [*event binding*](guide/user-input#binding-to-user-input-events) calls the component's `selectHero` method when the user clicks a hero's name.
