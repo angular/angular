@@ -63,8 +63,8 @@ const manifest: Manifest = {
   },
   index: '/foo.txt',
   ignoredUrlPatterns: [
-    '^\\/ignored\\/file',
-    '^\\/ignored\\/dir\\/.*',
+    '^\\/ignored\\/file$',
+    '^\\/ignored\\/dir\\/.*$',
   ],
   assetGroups: [
     {

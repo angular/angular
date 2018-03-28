@@ -68,10 +68,10 @@ import {MockFilesystem} from '../testing/mock';
              },
              index: '/test/index.html',
              ignoredUrlPatterns: [
-               '^\\/ignored\\/absolute\\/.*',
-               '^\\/ignored\\/some\\/url\\?with\\+escaped\\+chars',
-               '^\\/test\\/ignored\\/relative\\/[^\\/]+\\.txt',
-               '^http:\\/\\/example\\.com\\/ignored',
+               '^\\/ignored\\/absolute\\/.*$',
+               '^\\/ignored\\/some\\/url\\?with\\+escaped\\+chars$',
+               '^\\/test\\/ignored\\/relative\\/[^\\/]+\\.txt$',
+               '^http:\\/\\/example\\.com\\/ignored$',
              ],
              assetGroups: [{
                name: 'test',

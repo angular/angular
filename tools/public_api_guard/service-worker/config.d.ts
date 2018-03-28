@@ -15,6 +15,7 @@ export interface Config {
     appData?: {};
     assetGroups?: AssetGroup[];
     dataGroups?: DataGroup[];
+    ignoredUrlPatterns?: string[];
     index: string;
 }
 
