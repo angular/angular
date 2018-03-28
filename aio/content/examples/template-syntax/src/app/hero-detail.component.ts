@@ -34,8 +34,15 @@ export class HeroDetailComponent {
   lineThrough = '';
   @Input() prefix = '';
 
-  // #docregion deleteRequest
+  // #docregion deleteRequest!
   // This component makes a request but it can't actually delete a hero.
+  deleteRequest = new EventEmitter<Hero>();
+
+  delete() {
+    this.deleteRequest.emit(this.hero);
+    // #enddocregion deleteRequest!
+  // #docregion deleteRequest
+  // 이 컴포넌트에서 삭제 요청을 보내지만, 이 컴포넌트가 직접 삭제하는 것은 아닙니다.
   deleteRequest = new EventEmitter<Hero>();
 
   delete() {

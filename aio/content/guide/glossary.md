@@ -196,6 +196,7 @@ operations and supporting declaration syntax.
 
  Read about the following forms of binding in the [Template Syntax](guide/template-syntax) page:
 
+<!--
  * [Interpolation](guide/template-syntax#interpolation).
  * [Property binding](guide/template-syntax#property-binding).
  * [Event binding](guide/template-syntax#event-binding).
@@ -203,7 +204,14 @@ operations and supporting declaration syntax.
  * [Class binding](guide/template-syntax#class-binding).
  * [Style binding](guide/template-syntax#style-binding).
  * [Two-way data binding with ngModel](guide/template-syntax#ngModel).
-
+-->
+ * [문자열 바인딩](guide/template-syntax#문자열-바인딩).
+ * [프로퍼티 바인딩](guide/template-syntax#프로퍼티-바인딩).
+ * [이벤트 바인딩](guide/template-syntax#이벤트-바인딩).
+ * [어트리뷰트 바인딩](guide/template-syntax#어트리뷰트-바인딩).
+ * [클래스 바인딩](guide/template-syntax#클래스-바인딩).
+ * [스타일 바인딩](guide/template-syntax#스타일-바인딩).
+ * [ngModel을 사용하는 양방향 바인딩](guide/template-syntax#ngModel).
 
 {@a decorator}
 
@@ -388,8 +396,14 @@ with a registered [provider](guide/glossary#provider).
 
 ## Input
 
+<!--
 A directive property that can be the *target* of a
 [property binding](guide/template-syntax#property-binding) (explained in detail in the [Template Syntax](guide/template-syntax) page).
+Data values flow *into* this property from the data source identified
+in the template expression to the right of the equal sign.
+-->
+A directive property that can be the *target* of a
+[프로퍼티 바인딩](guide/template-syntax#프로퍼티-바인딩) (explained in detail in the [Template Syntax](guide/template-syntax) page).
 Data values flow *into* this property from the data source identified
 in the template expression to the right of the equal sign.
 
@@ -403,7 +417,6 @@ A form of [property data binding](guide/glossary#data-binding) in which a
 renders as text.  That text may be concatenated with neighboring text
 before it is assigned to an element property
 or displayed between element tags, as in this example.
-
 
 <code-example language="html" escape="html">
   <label>My current hero is {{hero.name}}</label>
@@ -542,8 +555,15 @@ Observables are a proposed feature for ES2016, the next version of JavaScript.
 
 ## Output
 
+<!--
 A directive property that can be the *target* of event binding
 (read more in the [event binding](guide/template-syntax#event-binding)
+section of the [Template Syntax](guide/template-syntax) page).
+Events stream *out* of this property to the receiver identified
+in the template expression to the right of the equal sign.
+-->
+A directive property that can be the *target* of event binding
+(read more in the [이벤트 바인딩](guide/template-syntax#이벤트-바인딩)
 section of the [Template Syntax](guide/template-syntax) page).
 Events stream *out* of this property to the receiver identified
 in the template expression to the right of the equal sign.
@@ -739,10 +759,14 @@ in the [Forms](guide/forms) page.
 A TypeScript-like syntax that Angular evaluates within
 a [data binding](guide/glossary#data-binding).
 
+<!--
 Read about how to write template expressions
 in the [Template expressions](guide/template-syntax#template-expressions) section
 of the [Template Syntax](guide/template-syntax) page.
-
+-->
+Read about how to write template expressions
+in the [Template expressions](guide/template-syntax#템플릿-표현식) section
+of the [Template Syntax](guide/template-syntax) page.
 
 ## Transpile
 

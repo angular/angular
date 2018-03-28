@@ -84,9 +84,15 @@ After formatting the hero's April 15th birthday, it renders as **<samp>04/15/88<
 </code-example>
 
 
-
+<!--
 The parameter value can be any valid template expression,
 (see the [Template expressions](guide/template-syntax#template-expressions) section of the
+[Template Syntax](guide/template-syntax) page)
+such as a string literal or a component property.
+In other words, you can control the format through a binding the same way you control the birthday value through a binding.
+-->
+The parameter value can be any valid template expression,
+(see the [템플릿 표현식](guide/template-syntax#템플릿-표현식) section of the
 [Template Syntax](guide/template-syntax) page)
 such as a string literal or a component property.
 In other words, you can control the format through a binding the same way you control the birthday value through a binding.

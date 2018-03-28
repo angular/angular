@@ -140,18 +140,28 @@
 <br><br>
 
 <div>
-  <!-- #docregion hero-detail-1 -->
+  <!-- #docregion hero-detail-1! -->
   <!-- Normal HTML -->
   <div class="special">Mental Model</div>
   <!-- Wow! A new element! -->
+  <app-hero-detail></app-hero-detail>
+  <!-- #enddocregion hero-detail-1! -->
+  <!-- #docregion hero-detail-1 -->
+  <!-- 일반 HTML -->
+  <div class="special">Mental Model</div>
+  <!-- 와우! 사용할 수 있는 엘리먼트가 늘어납니다! -->
   <app-hero-detail></app-hero-detail>
   <!-- #enddocregion hero-detail-1 -->
 </div>
 <br><br>
 
 <div>
-  <!-- #docregion disabled-button-1 -->
+  <!-- #docregion disabled-button-1! -->
   <!-- Bind button disabled state to `isUnchanged` property -->
+  <button [disabled]="isUnchanged">Save</button>
+  <!-- #enddocregion disabled-button-1! -->
+  <!-- #docregion disabled-button-1 -->
+  <!-- 버튼의 disabled 상태와 `isUnchanged` 프로퍼티를 바인딩합니다. -->
   <button [disabled]="isUnchanged">Save</button>
   <!-- #enddocregion disabled-button-1 -->
 </div>
@@ -248,9 +258,13 @@ button</button>
 <img bind-src="heroImageUrl">
 <!-- #enddocregion property-binding-5 -->
 
-<!-- #docregion property-binding-6 -->
+<!-- #docregion property-binding-6! -->
 <!-- ERROR: HeroDetailComponent.hero expects a
      Hero object, not the string "currentHero" -->
+<!-- #enddocregion property-binding-6! -->
+<!-- #docregion property-binding-6 -->
+<!-- 에러: HeroDetailComponent.hero 프로퍼티에는 Hero 객체를 사용해야 합니다.
+     대괄호가 없으면 "currentHero"는 단순한 문자열일 뿐입니다. -->
 <!-- #enddocregion property-binding-6 -->
 <div *ngIf="false">
 <!-- #docregion property-binding-6 -->
@@ -269,9 +283,17 @@ button</button>
 <p>"<span [innerHTML]="title"></span>" is the <i>property bound</i> title.</p>
 <!-- #enddocregion property-binding-vs-interpolation -->
 
-<!-- #docregion property-binding-vs-interpolation-sanitization -->
+<!-- #docregion property-binding-vs-interpolation-sanitization! -->
 <!--
   Angular generates warnings for these two lines as it sanitizes them
+  WARNING: sanitizing HTML stripped some content (see http://g.co/ng/security#xss).
+ -->
+<p><span>"{{evilTitle}}" is the <i>interpolated</i> evil title.</span></p>
+<p>"<span [innerHTML]="evilTitle"></span>" is the <i>property bound</i> evil title.</p>
+<!-- #enddocregion property-binding-vs-interpolation-sanitization! -->
+<!-- #docregion property-binding-vs-interpolation-sanitization -->
+<!--
+  다음 두 줄의 코드는 Angular가 안전성을 검사하면서 경고 메시지를 출력합니다.
   WARNING: sanitizing HTML stripped some content (see http://g.co/ng/security#xss).
  -->
 <p><span>"{{evilTitle}}" is the <i>interpolated</i> evil title.</span></p>
@@ -284,7 +306,7 @@ button</button>
 <hr><h2 id="attribute-binding">Attribute Binding</h2>
 
 <!--  create and set a colspan attribute -->
-<!-- #docregion attrib-binding-colspan -->
+<!-- #docregion attrib-binding-colspan! -->
 <table border=1>
   <!--  expression calculates colspan=2 -->
   <tr><td [attr.colspan]="1 + 1">One-Two</td></tr>
@@ -295,11 +317,27 @@ button</button>
 
   <tr><td>Five</td><td>Six</td></tr>
 </table>
+<!-- #enddocregion attrib-binding-colspan! -->
+<!-- #docregion attrib-binding-colspan -->
+<table border=1>
+  <!--  표현식의 결과값인 2가 colspan에 바인딩 됩니다. -->
+  <tr><td [attr.colspan]="1 + 1">One-Two</td></tr>
+
+  <!-- ERROR: `colspan` 프로퍼티는 없습니다!
+    <tr><td colspan="{{1 + 1}}">Three-Four</td></tr>
+  -->
+
+  <tr><td>Five</td><td>Six</td></tr>
+</table>
 <!-- #enddocregion attrib-binding-colspan -->
 
 <br>
-<!-- #docregion attrib-binding-aria -->
+<!-- #docregion attrib-binding-aria! -->
 <!-- create and set an aria attribute for assistive technology -->
+<button [attr.aria-label]="actionName">{{actionName}} with Aria</button>
+<!-- #enddocregion attrib-binding-aria! -->
+<!-- #docregion attrib-binding-aria -->
+<!-- 웹 접근성 향상을 위해 ARIA 어트리뷰트를 지정합니다. -->
 <button [attr.aria-label]="actionName">{{actionName}} with Aria</button>
 <!-- #enddocregion attrib-binding-aria -->
 <br><br>
@@ -320,24 +358,43 @@ button</button>
 <!-- class binding -->
 <hr><h2 id="class-binding">Class Binding</h2>
 
-<!-- #docregion class-binding-1 -->
+<!-- #docregion class-binding-1! -->
 <!-- standard class attribute setting  -->
+<div class="bad curly special">Bad curly special</div>
+<!-- #enddocregion class-binding-1! -->
+<!-- #docregion class-binding-1 -->
+<!-- 일반적으로 클래스 어트리뷰트를 지정하는 방법  -->
 <div class="bad curly special">Bad curly special</div>
 <!-- #enddocregion class-binding-1 -->
 
-<!-- #docregion class-binding-2 -->
+<!-- #docregion class-binding-2! -->
 <!-- reset/override all class names with a binding  -->
+<div class="bad curly special"
+     [class]="badCurly">Bad curly</div>
+<!-- #enddocregion class-binding-2! -->
+<!-- #docregion class-binding-2 -->
+<!-- 클래스 전체를 초기화하는 바인딩  -->
 <div class="bad curly special"
      [class]="badCurly">Bad curly</div>
 <!-- #enddocregion class-binding-2 -->
 
+<!-- #docregion class-binding-3! -->
+<!-- #docregion class-binding-3a! -->
+<!-- toggle the "special" class on/off with a property -->
+<div [class.special]="isSpecial">The class binding is special</div>
+<!-- #enddocregion class-binding-3a! -->
+
+<!-- binding to `class.special` trumps the class attribute -->
+<div class="special"
+     [class.special]="!isSpecial">This one is not so special</div>
+<!-- #enddocregion class-binding-3! -->
 <!-- #docregion class-binding-3 -->
 <!-- #docregion class-binding-3a -->
-<!-- toggle the "special" class on/off with a property -->
+<!-- `isSpecial` 프로퍼티 값으로 "special" 클래스를 지정하는 바인딩  -->
 <div [class.special]="isSpecial">The class binding is special</div>
 <!-- #enddocregion class-binding-3a -->
 
-<!-- binding to `class.special` trumps the class attribute -->
+<!-- 기본 클래스를 지정해두고 프로퍼티 값으로 덮어쓰는 바인딩 -->
 <div class="special"
      [class.special]="!isSpecial">This one is not so special</div>
 <!-- #enddocregion class-binding-3 -->
@@ -373,8 +430,14 @@ button</button>
 <!-- #enddocregion event-binding-2 -->
 
 <div>
-<!-- #docregion event-binding-3 -->
+<!-- #docregion event-binding-3! -->
 <!-- `myClick` is an event on the custom `ClickDirective` -->
+<!-- #docregion myClick -->
+<div (myClick)="clickMessage=$event" clickable>click with myClick</div>
+<!-- #enddocregion myClick -->
+<!-- #enddocregion event-binding-3! -->
+<!-- #docregion event-binding-3 -->
+<!-- `myClick` 이벤트는 커스텀 디렉티브 `ClickDirective` 에서 정의한 이벤트입니다. -->
 <!-- #docregion myClick -->
 <div (myClick)="clickMessage=$event" clickable>click with myClick</div>
 <!-- #enddocregion myClick -->
@@ -553,7 +616,7 @@ bindon-ngModel
   <app-hero-detail></app-hero-detail>
 </ng-template>
 
-<!-- #docregion NgIf-3 -->
+<!-- #docregion NgIf-3! -->
 <!-- isSpecial is true -->
 <div [class.hidden]="!isSpecial">Show with class</div>
 <div [class.hidden]="isSpecial">Hide with class</div>
@@ -563,6 +626,17 @@ bindon-ngModel
 
 <div [style.display]="isSpecial ? 'block' : 'none'">Show with style</div>
 <div [style.display]="isSpecial ? 'none'  : 'block'">Hide with style</div>
+<!-- #enddocregion NgIf-3! -->
+<!-- #docregion NgIf-3 -->
+<!-- isSpecial이 true일 때 -->
+<div [class.hidden]="!isSpecial">클래스를 사용해서 표시할 때</div>
+<div [class.hidden]="isSpecial">클리스를 사용해서 숨길 때</div>
+
+<!-- HeroDetail 컴포넌트는 DOM에 존재하지만 표시되지 않습니다. -->
+<app-hero-detail [class.hidden]="isSpecial"></app-hero-detail>
+
+<div [style.display]="isSpecial ? 'block' : 'none'">스타일을 사용해서 표시할 때</div>
+<div [style.display]="isSpecial ? 'none'  : 'block'">스타일을 사용해서 숨길 때</div>
 <!-- #enddocregion NgIf-3 -->
 
 <a class="to-toc" href="#toc">top</a>
@@ -682,14 +756,24 @@ bindon-ngModel
 <!-- template reference variable -->
 <hr><h2 id="ref-vars">Template reference variables</h2>
 
+<!-- #docregion ref-phone! -->
+<!-- #docregion ref-var! -->
+<input #phone placeholder="phone number">
+<!-- #enddocregion ref-var! -->
+
+<!-- lots of other elements -->
+
+<!-- phone refers to the input element; pass its `value` to an event handler -->
+<button (click)="callPhone(phone.value)">Call</button>
+<!-- #enddocregion ref-phone! -->
 <!-- #docregion ref-phone -->
 <!-- #docregion ref-var -->
 <input #phone placeholder="phone number">
 <!-- #enddocregion ref-var -->
 
-<!-- lots of other elements -->
+<!-- 다른 엘리먼트들 -->
 
-<!-- phone refers to the input element; pass its `value` to an event handler -->
+<!-- phone 변수는 input 엘리먼트를 가리키며, 엘리먼트의 `value`를 직접 참조해서 이벤트 핸들러에 전달할 수 있습니다. -->
 <button (click)="callPhone(phone.value)">Call</button>
 <!-- #enddocregion ref-phone -->
 
@@ -727,20 +811,34 @@ bindon-ngModel
 <!-- Pipes -->
 <hr><h2 id="pipes">Pipes</h2>
 
-<!-- #docregion pipes-1 -->
+<!-- #docregion pipes-1! -->
 <div>Title through uppercase pipe: {{title | uppercase}}</div>
+<!-- #enddocregion pipes-1! -->
+<!-- #docregion pipes-1 -->
+<div>제목을 대문자로 변환하는 파이프: {{title | uppercase}}</div>
 <!-- #enddocregion pipes-1 -->
 
-<!-- #docregion pipes-2 -->
+<!-- #docregion pipes-2! -->
 <!-- Pipe chaining: convert title to uppercase, then to lowercase -->
 <div>
   Title through a pipe chain:
   {{title | uppercase | lowercase}}
 </div>
+<!-- #enddocregion pipes-2! -->
+<!-- #docregion pipes-2 -->
+<!-- 파이프 체이닝: 제목을 대문자로 바꾼 후에 소문자로 바꿉니다. -->
+<div>
+  제목에 파이프 여러개 적용하기:
+  {{title | uppercase | lowercase}}
+</div>
 <!-- #enddocregion pipes-2 -->
 
-<!-- #docregion pipes-3 -->
+<!-- #docregion pipes-3! -->
 <!-- pipe with configuration argument => "February 25, 1970" -->
+<div>Birthdate: {{currentHero?.birthdate | date:'longDate'}}</div>
+<!-- #enddocregion pipes-3! -->
+<!-- #docregion pipes-3 -->
+<!-- 미리 지정된 형태로 변환하는 파이프 => "February 25, 1970" -->
 <div>Birthdate: {{currentHero?.birthdate | date:'longDate'}}</div>
 <!-- #enddocregion pipes-3 -->
 
@@ -786,8 +884,12 @@ See console log:
   TypeError: Cannot read property 'name' of null in [null]
 -->
 
-<!-- #docregion safe-4 -->
+<!-- #docregion safe-4! -->
 <!--No hero, div not displayed, no error -->
+<div *ngIf="nullHero">The null hero's name is {{nullHero.name}}</div>
+<!-- #enddocregion safe-4! -->
+<!-- #docregion safe-4 -->
+<!-- 객체가 null이면 div 전체가 표시되지 않습니다. 에러도 발생하지 않습니다. -->
 <div *ngIf="nullHero">The null hero's name is {{nullHero.name}}</div>
 <!-- #enddocregion safe-4 -->
 
@@ -798,8 +900,12 @@ The null hero's name is {{nullHero && nullHero.name}}
 </div>
 
 <div>
-  <!-- #docregion safe-6 -->
+  <!-- #docregion safe-6! -->
   <!-- No hero, no problem! -->
+  The null hero's name is {{nullHero?.name}}
+  <!-- #enddocregion safe-6! -->
+  <!-- #docregion safe-6 -->
+  <!-- 객체가 null이어도 에러가 발생하지 않습니다! -->
   The null hero's name is {{nullHero?.name}}
   <!-- #enddocregion safe-6 -->
 </div>
@@ -825,8 +931,14 @@ The null hero's name is {{nullHero && nullHero.name}}
 <hr><h2 id="any-type-cast-function">$any type cast function <i>$any( )</i>.</h2>
 
 <div>
-  <!-- #docregion any-type-cast-function-1 -->
+  <!-- #docregion any-type-cast-function-1! -->
   <!-- Accessing an undeclared member -->
+  <div>
+    The hero's marker is {{$any(hero).marker}}
+  </div>
+  <!-- #enddocregion any-type-cast-function-1! -->
+  <!-- #docregion any-type-cast-function-1 -->
+  <!-- 타입이 정해지지 않은 객체에 접근하기 -->
   <div>
     The hero's marker is {{$any(hero).marker}}
   </div>
@@ -834,8 +946,14 @@ The null hero's name is {{nullHero && nullHero.name}}
 </div>
 
 <div>
-  <!-- #docregion any-type-cast-function-2 -->
+  <!-- #docregion any-type-cast-function-2! -->
   <!-- Accessing an undeclared member -->
+  <div>
+    Undeclared members is {{$any(this).member}}
+  </div>
+  <!-- #enddocregion any-type-cast-function-2! -->
+  <!-- #docregion any-type-cast-function-2 -->
+  <!-- this 키워드로 컴포넌트에 접근하기 -->
   <div>
     Undeclared members is {{$any(this).member}}
   </div>

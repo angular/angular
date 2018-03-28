@@ -1,4 +1,4 @@
-# Attribute Directives
+# 어트리뷰트 디렉티브
 
 An **Attribute** directive changes the appearance or behavior of a DOM element.
 

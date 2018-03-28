@@ -965,7 +965,11 @@ Learn about the how you can also use the _link parameters array_ in the [appendi
 
 ### *RouterLinkActive* binding
 
+<!--
 On each anchor tag, you also see [property bindings](guide/template-syntax#property-binding) to
+the `RouterLinkActive` directive that look like `routerLinkActive="..."`.
+-->
+On each anchor tag, you also see [프로퍼티 바인딩](guide/template-syntax#프로퍼티-바인딩) to
 the `RouterLinkActive` directive that look like `routerLinkActive="..."`.
 
 The template expression to the right of the equals (=) contains a space-delimited string of CSS classes
@@ -2144,7 +2148,12 @@ The `ActivatedRoute.paramMap` property is an `Observable` map of route parameter
 when the user navigates to the component. In `ngOnInit` you subscribe to those values, set the `selectedId`, and get the heroes.
 
 
+<!--
 Update the template with a [class binding](guide/template-syntax#class-binding).
+The binding adds the `selected` CSS class when the comparison returns `true` and removes it when `false`.
+Look for it within the repeated `<li>` tag as shown here:
+-->
+Update the template with a [클래스 바인딩](guide/template-syntax#클래스-바인딩).
 The binding adds the `selected` CSS class when the comparison returns `true` and removes it when `false`.
 Look for it within the repeated `<li>` tag as shown here:
 
