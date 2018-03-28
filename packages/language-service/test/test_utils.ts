@@ -78,14 +78,14 @@ export class MockTypescriptHost implements ts.LanguageServiceHost {
     const moduleFilename = module.filename.replace(/\\/g, '/');
     if (isInBazel()) {
       const support = setup();
-      this.angularPath = path.join(support.basePath, 'node_modules/@angular');
       this.nodeModulesPath = path.join(support.basePath, 'node_modules');
+      this.angularPath = path.join(this.nodeModulesPath, '@angular');
     } else {
-      let angularIndex = moduleFilename.indexOf('@angular');
+      const angularIndex = moduleFilename.indexOf('@angular');
       if (angularIndex >= 0)
         this.angularPath =
             moduleFilename.substr(0, angularIndex).replace('/all/', '/all/@angular/');
-      let distIndex = moduleFilename.indexOf('/dist/all');
+      const distIndex = moduleFilename.indexOf('/dist/all');
       if (distIndex >= 0)
         this.nodeModulesPath = myPath.join(moduleFilename.substr(0, distIndex), 'node_modules');
     }

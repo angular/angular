@@ -513,7 +513,7 @@ class PipesTable implements SymbolTable {
 }
 
 // This matches .d.ts files that look like ".../<package-name>/<package-name>.d.ts",
-const INDEX_PATTERN = /[\\|/](\w+)[\\|/]\1\.d\.ts$/;
+const INDEX_PATTERN = /[\\/]([^\\/]+)[\\/]\1\.d\.ts$/;
 
 class PipeSymbol implements Symbol {
   private _tsType: ts.Type;
@@ -611,7 +611,7 @@ function findClassSymbolInContext(type: StaticSymbol, context: TypeContext): ts.
     const p = type.filePath as string;
     const m = p.match(INDEX_PATTERN);
     if (m) {
-      const indexVersion = path.join(p.substr(0, m.index ! + m[1].length + 1), 'index.d.ts');
+      const indexVersion = path.join(path.dirname(p), 'index.d.ts');
       sourceFile = context.program.getSourceFile(indexVersion);
     }
   }
