@@ -9,9 +9,8 @@
 import {PipeTransform} from '../change_detection/pipe_transform';
 
 import {getTView, load, store} from './instructions';
-import {PipeDef} from './interfaces/definition';
+import {PipeDef, PipeDefList} from './interfaces/definition';
 import {pureFunction1, pureFunction2, pureFunction3, pureFunction4, pureFunctionV} from './pure_function';
-
 
 /**
  * Create a pipe.
@@ -21,17 +20,43 @@ import {pureFunction1, pureFunction2, pureFunction3, pureFunction4, pureFunction
  * @param firstInstance (optional) The first instance of the pipe that can be reused for pure pipes.
  * @returns T the instance of the pipe.
  */
-export function pipe<T>(index: number, pipeDef: PipeDef<T>, firstInstance?: T): T {
+export function pipe(index: number, pipeName: string, firstInstance?: any): any {
   const tView = getTView();
+  let pipeDef: PipeDef<any>;
+
   if (tView.firstTemplatePass) {
+    pipeDef = getPipeDef(pipeName, tView.pipeRegistry);
     tView.data[index] = pipeDef;
     if (pipeDef.onDestroy) {
       (tView.pipeDestroyHooks || (tView.pipeDestroyHooks = [])).push(index, pipeDef.onDestroy);
     }
+  } else {
+    pipeDef = tView.data[index] as PipeDef<any>;
   }
+
   const pipeInstance = pipeDef.pure && firstInstance ? firstInstance : pipeDef.n();
   store(index, pipeInstance);
   return pipeInstance;
+}
+
+/**
+ * Searches the pipe registry for a pipe with the given name. If one is found,
+ * returns the pipe. Otherwise, an error is thrown because the pipe cannot be resolved.
+ *
+ * @param name Name of pipe to resolve
+ * @param registry Full list of available pipes
+ * @returns Matching PipeDef
+ */
+function getPipeDef(name: string, registry: PipeDefList | null): PipeDef<any> {
+  if (registry) {
+    for (let i = 0; i < registry.length; i++) {
+      const pipeDef = registry[i];
+      if (name === pipeDef.name) {
+        return pipeDef;
+      }
+    }
+  }
+  throw new Error(`Pipe with name '${name}' not found!`);
 }
 
 /**
