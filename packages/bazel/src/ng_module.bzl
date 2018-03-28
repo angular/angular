@@ -22,6 +22,11 @@ def _basename_of(ctx, file):
     ext_len = len(".html")
   return file.short_path[len(ctx.label.package) + 1:-ext_len]
 
+# Return true if run with bazel (the open-sourced version of blaze), false if
+# run with blaze.
+def _is_bazel():
+  return not hasattr(native, "genmpm")
+
 def _flat_module_out_file(ctx):
   """Provide a default for the flat_module_out_file attribute.
 
@@ -50,8 +55,7 @@ def _should_produce_flat_module_outs(ctx):
   Returns:
     true iff we should run the bundle_index_host to produce flat module metadata and bundle index
   """
-  is_bazel = not hasattr(native, "genmpm")
-  return is_bazel and ctx.attr.module_name
+  return _is_bazel() and ctx.attr.module_name
 
 # Calculate the expected output of the template compiler for every source in
 # in the library. Most of these will be produced as empty files but it is
@@ -81,9 +85,11 @@ def _expected_outs(ctx):
             ".js",
         ]
         summaries = [".ngsummary.json"]
+        metadata = [".metadata.json"]
       else:
         devmode_js = [".js"]
         summaries = []
+        metadata = []
     elif short_path.endswith(".css"):
       basename = short_path[len(package_prefix):-len(".css")]
       devmode_js = [
@@ -91,7 +97,7 @@ def _expected_outs(ctx):
           ".css.ngstyle.js",
       ]
       summaries = []
-
+      metadata = []
     else:
       continue
 
@@ -99,10 +105,12 @@ def _expected_outs(ctx):
     closure_js = [f.replace(".js", ".closure.js") for f in devmode_js if not filter_summaries or not f.endswith(".ngsummary.js")]
     declarations = [f.replace(".js", ".d.ts") for f in devmode_js]
 
-    devmode_js_files += [ctx.new_file(ctx.bin_dir, basename + ext) for ext in devmode_js]
-    closure_js_files += [ctx.new_file(ctx.bin_dir, basename + ext) for ext in closure_js]
-    declaration_files += [ctx.new_file(ctx.bin_dir, basename + ext) for ext in declarations]
-    summary_files += [ctx.new_file(ctx.bin_dir, basename + ext) for ext in summaries]
+    devmode_js_files  += [ctx.actions.declare_file(basename + ext) for ext in devmode_js]
+    closure_js_files  += [ctx.actions.declare_file(basename + ext) for ext in closure_js]
+    declaration_files += [ctx.actions.declare_file(basename + ext) for ext in declarations]
+    summary_files     += [ctx.actions.declare_file(basename + ext) for ext in summaries]
+    if not _is_bazel():
+      metadata_files  += [ctx.actions.declare_file(basename + ext) for ext in metadata]
 
   # We do this just when producing a flat module index for a publishable ng_module
   if _should_produce_flat_module_outs(ctx):
@@ -330,7 +338,8 @@ def ng_module_impl(ctx, ts_compile_actions, ivy = False):
 
   outs = _expected_outs(ctx)
   providers["angular"] = {
-    "summaries": outs.summaries
+    "summaries": outs.summaries,
+    "metadata": outs.metadata
   }
   providers["ngc_messages"] = outs.i18n_messages
 
