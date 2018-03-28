@@ -71,11 +71,11 @@ jasmine_node_test(
     ],
 )
 
-# symbol_query_spec
+# typescript_symbols_spec
 ts_library(
-    name = "symbol_query_lib",
+    name = "typescript_symbols_lib",
     testonly = 1,
-    srcs = ["symbol_query_spec.ts"],
+    srcs = ["typescript_symbols_spec.ts"],
     deps = [
         ":mocks",
         "//packages/compiler",
@@ -87,13 +87,35 @@ ts_library(
 )
 
 jasmine_node_test(
-    name = "symbol_query",
+    name = "typescript_symbols",
     bootstrap = ["angular/tools/testing/init_node_spec.js"],
     data = [
     ],
     deps = [
-        ":symbol_query_lib",
+        ":typescript_symbols_lib",
         "//packages/core",
+        "//tools/testing:node",
+    ],
+)
+
+# typescript_version_spec
+ts_library(
+    name = "typescript_version_lib",
+    testonly = 1,
+    srcs = ["typescript_version_spec.ts"],
+    deps = [
+        "//packages/compiler-cli",
+        "//packages/compiler-cli/test:test_utils",
+    ],
+)
+
+jasmine_node_test(
+    name = "typescript_version",
+    bootstrap = ["angular/tools/testing/init_node_spec.js"],
+    data = [
+    ],
+    deps = [
+        ":typescript_version_lib",
         "//tools/testing:node",
     ],
 )
