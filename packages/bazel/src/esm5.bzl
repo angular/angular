@@ -77,6 +77,7 @@ def _esm5_outputs_aspect(target, ctx):
       arguments = [tsconfig.path],
       executable = target.typescript.replay_params.compiler,
       execution_requirements = {
+          # TODO(alexeagle): enable worker mode for these compilations
           "supports-workers": "0",
       },
   )
@@ -113,7 +114,7 @@ esm5_outputs_aspect = aspect(
         # For some reason, having the compiler output as an input to the action above
         # is not sufficient.
         "_tsc_wrapped": attr.label(
-            default = Label("@build_bazel_rules_typescript//internal/tsc_wrapped:tsc_wrapped_bin"),
+            default = Label("@build_bazel_rules_typescript//internal:tsc_wrapped_bin"),
             executable = True,
             cfg = "host",
         ),

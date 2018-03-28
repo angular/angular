@@ -7,7 +7,7 @@
   */
 
 import {Inject, LOCALE_ID, Pipe, PipeTransform} from '@angular/core';
-import {ISO8601_DATE_REGEX, isoStringToDate} from '../date_pipe';
+import {ISO8601_DATE_REGEX, isoStringToDate} from '../../i18n/format_date';
 import {invalidPipeArgumentError} from '../invalid_pipe_argument_error';
 import {DateFormatter} from './intl';
 

@@ -12,7 +12,7 @@ table {
     table-layout: fixed;
   }
 
-  thead {
+  thead > {
     vertical-align: middle;
     border-color: inherit;
 
@@ -21,20 +21,20 @@ table {
       border-color: inherit;
     }
 
-    th {
+    tr > th {
       background: rgba($lightgray, 0.2);
       border-bottom: 1px solid $lightgray;
       color: $darkgray;
       font-size: 12px;
       font-weight: 500;
-      padding: 8px 32px;
+      padding: 8px 24px;
       text-align: left;
       text-transform: uppercase;
       line-height: 28px;
     }
   }
 
-  tbody {
+  tbody > tr > {
     th,
     td {
       border-bottom: 1px solid $lightgray;
@@ -70,7 +70,7 @@ table {
       max-width: 100px;
     }
 
-    tr:last-child td {
+    &:last-child td {
       border: none;
 
       @media (max-width: 480px) {

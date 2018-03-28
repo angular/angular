@@ -3,12 +3,15 @@
   "version": "0.0.0-PLACEHOLDER",
   "description": "Angular - language services",
   "main": "./bundles/language-service.umd.js",
-  "module": "./esm5/language-service.js",
+  "module": "./fesm5/language-service.js",
   "typings": "./language-service.d.ts",
   "author": "angular",
   "license": "MIT",
   "repository": {
     "type": "git",
     "url": "https://github.com/angular/angular.git"
+  },
+  "ng-update": {
+    "packageGroup": "NG_UPDATE_PACKAGE_GROUP"
   }
 }

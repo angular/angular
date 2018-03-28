@@ -13,12 +13,11 @@ const globals = {
   '@angular/core': 'ng.core',
   '@angular/core/testing': 'ng.core.testing',
   '@angular/compiler': 'ng.compiler',
-  'rxjs/Observable': 'Rx',
-  'rxjs/Subject': 'Rx'
+  'rxjs': 'rxjs',
 };
 
 module.exports = {
-  entry: '../../../dist/packages-dist/compiler/esm5/testing.js',
+  entry: '../../../dist/packages-dist/compiler/fesm5/testing.js',
   dest: '../../../dist/packages-dist/compiler/bundles/compiler-testing.umd.js',
   format: 'umd',
   exports: 'named',

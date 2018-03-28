@@ -128,6 +128,7 @@ export type IAugmentedJQuery = Node[] & {
   isolateScope?: () => IScope;
   injector?: () => IInjectorService;
   remove?: () => void;
+  removeData?: () => void;
 };
 export interface IProvider { $get: IInjectable; }
 export interface IProvideService {
@@ -229,7 +230,7 @@ let angular: {
   bootstrap: noNg,
   module: noNg,
   element: noNg,
-  version: noNg,
+  version: undefined,
   resumeBootstrap: noNg,
   getTestability: noNg
 };
@@ -265,6 +266,7 @@ export function getAngularLib(): any {
  */
 export function setAngularJSGlobal(ng: any): void {
   angular = ng;
+  version = ng && ng.version;
 }
 
 /**
@@ -289,4 +291,4 @@ export const resumeBootstrap = () => angular.resumeBootstrap();
 
 export const getTestability = (e: Element) => angular.getTestability(e);
 
-export const version = angular.version;
+export let version = angular.version;

@@ -121,7 +121,7 @@ function declareTests({useJit}: {useJit: boolean}) {
         expect(MyCountingComp.calls).toBe(1);
       });
 
-      it('should evalute a conditional in a statement binding', () => {
+      it('should evaluate a conditional in a statement binding', () => {
         @Component({selector: 'some-comp', template: '<p (click)="nullValue?.click()"></p>'})
         class SomeComponent {
           nullValue: SomeReferencedClass;

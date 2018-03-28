@@ -20,7 +20,7 @@ const hasClass = (node, cls) => {
 const link = options =>
   tree => visit(tree, node => {
     if (is(node, HEADINGS) && has(node, 'id') && !hasClass(node, NO_ANCHOR_CLASS)) {
-      node.children.unshift({
+      node.children.push({
         type: 'element',
         tagName: 'a',
         properties: Object.assign(clone(options.properties), {href: `#${node.properties.id}`}),

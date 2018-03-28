@@ -46,7 +46,9 @@ export function getClassMembers(
   if (declaration) {
     const type = checker.getTypeAtLocation(declaration);
     const node = program.getSourceFile(staticSymbol.filePath);
-    return new TypeWrapper(type, {node, program, checker}).members();
+    if (node) {
+      return new TypeWrapper(type, {node, program, checker}).members();
+    }
   }
 }
 

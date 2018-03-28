@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, EmbeddedViewRef, Input, TemplateRef, ViewContainerRef} from '@angular/core';
+import {Directive, EmbeddedViewRef, Input, TemplateRef, ViewContainerRef, ɵstringify as stringify} from '@angular/core';
 
 
 /**
@@ -117,14 +117,16 @@ export class NgIf {
   }
 
   @Input()
-  set ngIfThen(templateRef: TemplateRef<NgIfContext>) {
+  set ngIfThen(templateRef: TemplateRef<NgIfContext>|null) {
+    assertTemplate('ngIfThen', templateRef);
     this._thenTemplateRef = templateRef;
     this._thenViewRef = null;  // clear previous view if any.
     this._updateView();
   }
 
   @Input()
-  set ngIfElse(templateRef: TemplateRef<NgIfContext>) {
+  set ngIfElse(templateRef: TemplateRef<NgIfContext>|null) {
+    assertTemplate('ngIfElse', templateRef);
     this._elseTemplateRef = templateRef;
     this._elseViewRef = null;  // clear previous view if any.
     this._updateView();
@@ -162,4 +164,11 @@ export class NgIf {
 export class NgIfContext {
   public $implicit: any = null;
   public ngIf: any = null;
+}
+
+function assertTemplate(property: string, templateRef: TemplateRef<any>| null): void {
+  const isTemplateRefOrNull = !!(!templateRef || templateRef.createEmbeddedView);
+  if (!isTemplateRefOrNull) {
+    throw new Error(`${property} must be a TemplateRef, but received '${stringify(templateRef)}'.`);
+  }
 }

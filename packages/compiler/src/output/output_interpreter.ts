@@ -95,7 +95,8 @@ class StatementInterpreter implements o.StatementVisitor, o.ExpressionVisitor {
   debugAst(ast: o.Expression|o.Statement|o.Type): string { return debugOutputAstAsTypeScript(ast); }
 
   visitDeclareVarStmt(stmt: o.DeclareVarStmt, ctx: _ExecutionContext): any {
-    ctx.vars.set(stmt.name, stmt.value.visitExpression(this, ctx));
+    const initialValue = stmt.value ? stmt.value.visitExpression(this, ctx) : undefined;
+    ctx.vars.set(stmt.name, initialValue);
     if (stmt.hasModifier(o.StmtModifier.Exported)) {
       ctx.exports.push(stmt.name);
     }
@@ -225,6 +226,7 @@ class StatementInterpreter implements o.StatementVisitor, o.ExpressionVisitor {
     throw stmt.error.visitExpression(this, ctx);
   }
   visitCommentStmt(stmt: o.CommentStmt, context?: any): any { return null; }
+  visitJSDocCommentStmt(stmt: o.JSDocCommentStmt, context?: any): any { return null; }
   visitInstantiateExpr(ast: o.InstantiateExpr, ctx: _ExecutionContext): any {
     const args = this.visitAllExpressions(ast.args, ctx);
     const clazz = ast.classExpr.visitExpression(this, ctx);

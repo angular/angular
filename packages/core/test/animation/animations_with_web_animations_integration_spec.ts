@@ -60,7 +60,6 @@ import {TestBed} from '../../testing';
 
       cmp.exp = true;
       fixture.detectChanges();
-      engine.flush();
 
       expect(engine.players.length).toEqual(1);
       let webPlayer = engine.players[0].getRealPlayer() as ɵWebAnimationsPlayer;
@@ -68,6 +67,8 @@ import {TestBed} from '../../testing';
       expect(webPlayer.keyframes).toEqual([
         {height: '0px', offset: 0}, {height: '100px', offset: 1}
       ]);
+
+      webPlayer.finish();
 
       if (!browserDetection.isOldChrome) {
         cmp.exp = false;
@@ -378,9 +379,9 @@ import {TestBed} from '../../testing';
 
       player = engine.players[0] !;
       webPlayer = player.getRealPlayer() as ɵWebAnimationsPlayer;
-      expect(approximate(parseFloat(webPlayer.previousStyles['width'] as string), 150))
+      expect(approximate(parseFloat(webPlayer.keyframes[0]['width'] as string), 150))
           .toBeLessThan(0.05);
-      expect(approximate(parseFloat(webPlayer.previousStyles['height'] as string), 300))
+      expect(approximate(parseFloat(webPlayer.keyframes[0]['height'] as string), 300))
           .toBeLessThan(0.05);
     });
 
@@ -445,9 +446,9 @@ import {TestBed} from '../../testing';
          expect(players.length).toEqual(5);
          for (let i = 0; i < players.length; i++) {
            const p = players[i] as ɵWebAnimationsPlayer;
-           expect(approximate(parseFloat(p.previousStyles['width'] as string), 250))
+           expect(approximate(parseFloat(p.keyframes[0]['width'] as string), 250))
                .toBeLessThan(0.05);
-           expect(approximate(parseFloat(p.previousStyles['height'] as string), 500))
+           expect(approximate(parseFloat(p.keyframes[0]['height'] as string), 500))
                .toBeLessThan(0.05);
          }
        });

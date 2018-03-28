@@ -7,12 +7,12 @@ export class SitePage {
   links = element.all(by.css('md-toolbar a'));
   homeLink = element(by.css('a.home'));
   docsMenuLink = element(by.cssContainingText('aio-top-menu a', 'Docs'));
+  sidenav = element(by.css('mat-sidenav'));
   docViewer = element(by.css('aio-doc-viewer'));
   codeExample = element.all(by.css('aio-doc-viewer pre > code'));
-  ghLink = this.docViewer
+  ghLinks = this.docViewer
     .all(by.css('a'))
-    .filter((a: ElementFinder) => a.getAttribute('href').then(href => githubRegex.test(href)))
-    .first();
+    .filter((a: ElementFinder) => a.getAttribute('href').then(href => githubRegex.test(href)));
 
   static setWindowWidth(newWidth: number) {
     const win = browser.driver.manage().window();
@@ -24,7 +24,17 @@ export class SitePage {
                   .filter(element => element.getText().then(text => pattern.test(text)))
                   .first();
   }
+  getNavItemHeadings(parent: ElementFinder, level: number) {
+    const targetSelector = `aio-nav-item .vertical-menu-item.heading.level-${level}`;
+    return parent.all(by.css(targetSelector));
+  }
+  getNavItemHeadingChildren(heading: ElementFinder, level: number) {
+    const targetSelector = `.heading-children.level-${level}`;
+    const script = `return arguments[0].parentNode.querySelector('${targetSelector}');`;
+    return element(() => browser.executeScript(script, heading));
+  }
   getTopMenuLink(path) { return element(by.css(`aio-top-menu a[href="${path}"]`)); }
+
   ga() { return browser.executeScript('return window["ga"].q') as promise.Promise<any[][]>; }
   locationPath() { return browser.executeScript('return document.location.pathname') as promise.Promise<string>; }
 
@@ -51,6 +61,10 @@ export class SitePage {
 
   scrollToBottom() {
     return browser.executeScript('window.scrollTo(0, document.body.scrollHeight)');
+  }
+
+  click(element: ElementFinder) {
+    return element.click().then(() => browser.waitForAngular());
   }
 
   enterSearch(query: string) {

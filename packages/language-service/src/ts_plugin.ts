@@ -21,69 +21,10 @@ export function getExternalFiles(project: any): string[]|undefined {
   }
 }
 
-const angularOnlyResults = process.argv.indexOf('--angularOnlyResults') >= 0;
-
-function angularOnlyFilter(ls: ts.LanguageService): ts.LanguageService {
-  return {
-    cleanupSemanticCache: () => ls.cleanupSemanticCache(),
-    getSyntacticDiagnostics: fileName => <ts.Diagnostic[]>[],
-    getSemanticDiagnostics: fileName => <ts.Diagnostic[]>[],
-    getCompilerOptionsDiagnostics: () => <ts.Diagnostic[]>[],
-    getSyntacticClassifications: (fileName, span) => [],
-    getSemanticClassifications: (fileName, span) => [],
-    getEncodedSyntacticClassifications: (fileName, span) => <ts.Classifications><any>{undefined},
-    getEncodedSemanticClassifications: (fileName, span) => <ts.Classifications><any>undefined,
-    getCompletionsAtPosition: (fileName, position) => <ts.CompletionInfo><any>undefined,
-    getCompletionEntryDetails: (fileName, position, entryName) =>
-                                   <ts.CompletionEntryDetails><any>undefined,
-    getCompletionEntrySymbol: (fileName, position, entryName) => <ts.Symbol><any>undefined,
-    getQuickInfoAtPosition: (fileName, position) => <ts.QuickInfo><any>undefined,
-    getNameOrDottedNameSpan: (fileName, startPos, endPos) => <ts.TextSpan><any>undefined,
-    getBreakpointStatementAtPosition: (fileName, position) => <ts.TextSpan><any>undefined,
-    getSignatureHelpItems: (fileName, position) => <ts.SignatureHelpItems><any>undefined,
-    getRenameInfo: (fileName, position) => <ts.RenameInfo><any>undefined,
-    findRenameLocations: (fileName, position, findInStrings, findInComments) =>
-                             <ts.RenameLocation[]>[],
-    getDefinitionAtPosition: (fileName, position) => <ts.DefinitionInfo[]>[],
-    getTypeDefinitionAtPosition: (fileName, position) => <ts.DefinitionInfo[]>[],
-    getImplementationAtPosition: (fileName, position) => <ts.ImplementationLocation[]>[],
-    getReferencesAtPosition: (fileName: string, position: number) => <ts.ReferenceEntry[]>[],
-    findReferences: (fileName: string, position: number) => <ts.ReferencedSymbol[]>[],
-    getDocumentHighlights: (fileName, position, filesToSearch) => <ts.DocumentHighlights[]>[],
-    /** @deprecated */
-    getOccurrencesAtPosition: (fileName, position) => <ts.ReferenceEntry[]>[],
-    getNavigateToItems: searchValue => <ts.NavigateToItem[]>[],
-    getNavigationBarItems: fileName => <ts.NavigationBarItem[]>[],
-    getNavigationTree: fileName => <ts.NavigationTree><any>undefined,
-    getOutliningSpans: fileName => <ts.OutliningSpan[]>[],
-    getTodoComments: (fileName, descriptors) => <ts.TodoComment[]>[],
-    getBraceMatchingAtPosition: (fileName, position) => <ts.TextSpan[]>[],
-    getIndentationAtPosition: (fileName, position, options) => <number><any>undefined,
-    getFormattingEditsForRange: (fileName, start, end, options) => <ts.TextChange[]>[],
-    getFormattingEditsForDocument: (fileName, options) => <ts.TextChange[]>[],
-    getFormattingEditsAfterKeystroke: (fileName, position, key, options) => <ts.TextChange[]>[],
-    getDocCommentTemplateAtPosition: (fileName, position) => <ts.TextInsertion><any>undefined,
-    isValidBraceCompletionAtPosition: (fileName, position, openingBrace) => <boolean><any>undefined,
-    getSpanOfEnclosingComment: (fileName, position, onlyMultiLine) => <ts.TextSpan><any>undefined,
-    getCodeFixesAtPosition: (fileName, start, end, errorCodes) => <ts.CodeAction[]>[],
-    applyCodeActionCommand: (action: any) => <any>Promise.resolve(undefined),
-    getEmitOutput: fileName => <ts.EmitOutput><any>undefined,
-    getProgram: () => ls.getProgram(),
-    dispose: () => ls.dispose(),
-    getApplicableRefactors: (fileName, positionOrRaneg) => <ts.ApplicableRefactorInfo[]>[],
-    getEditsForRefactor: (fileName, formatOptions, positionOrRange, refactorName, actionName) =>
-                             undefined
-  };
-}
-
 export function create(info: any /* ts.server.PluginCreateInfo */): ts.LanguageService {
   // Create the proxy
   const proxy: ts.LanguageService = Object.create(null);
   let oldLS: ts.LanguageService = info.languageService;
-
-  if (angularOnlyResults) {
-    oldLS = angularOnlyFilter(oldLS);
-  }
 
   function tryCall<T>(fileName: string | undefined, callback: () => T): T {
     if (fileName && !oldLS.getProgram().getSourceFile(fileName)) {
@@ -172,7 +113,11 @@ export function create(info: any /* ts.server.PluginCreateInfo */): ts.LanguageS
       getProgram: () => ls.getProgram(),
       dispose: () => ls.dispose(),
       getApplicableRefactors: tryFilenameOneCall(ls.getApplicableRefactors),
-      getEditsForRefactor: tryFilenameFourCall(ls.getEditsForRefactor)
+      getEditsForRefactor: tryFilenameFourCall(ls.getEditsForRefactor),
+      getDefinitionAndBoundSpan: tryFilenameOneCall(ls.getDefinitionAndBoundSpan),
+      getCombinedCodeFix:
+          (scope: ts.CombinedCodeFixScope, fixId: {}, formatOptions: ts.FormatCodeSettings) =>
+              tryCall(undefined, () => ls.getCombinedCodeFix(scope, fixId, formatOptions))
     };
   }
 
@@ -300,7 +245,9 @@ export function create(info: any /* ts.server.PluginCreateInfo */): ts.LanguageS
       const ours = ls.getDiagnostics(fileName);
       if (ours && ours.length) {
         const file = oldLS.getProgram().getSourceFile(fileName);
-        base.push.apply(base, ours.map(d => diagnosticToDiagnostic(d, file)));
+        if (file) {
+          base.push.apply(base, ours.map(d => diagnosticToDiagnostic(d, file)));
+        }
       }
     });
 

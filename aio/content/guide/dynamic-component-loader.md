@@ -109,9 +109,9 @@ Take it step by step. First, it picks an ad.
 
 The `loadComponent()` method chooses an ad using some math.
 
-First, it sets the `currentAddIndex` by taking whatever it
+First, it sets the `currentAdIndex` by taking whatever it
 currently is plus one, dividing that by the length of the `AdItem` array, and
-using the _remainder_ as the new `currentAddIndex` value. Then, it uses that
+using the _remainder_ as the new `currentAdIndex` value. Then, it uses that
 value to select an `adItem` from the array.
 
 

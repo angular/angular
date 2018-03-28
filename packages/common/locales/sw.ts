@@ -48,5 +48,13 @@ export default [
     ,
   ],
   ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'], 'TSh', 'Shilingi ya Tanzania', plural
+  ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'], 'TSh', 'Shilingi ya Tanzania', {
+    'JPY': ['JP¥', '¥'],
+    'KES': ['Ksh'],
+    'THB': ['฿'],
+    'TWD': ['NT$'],
+    'TZS': ['TSh'],
+    'USD': ['US$', '$']
+  },
+  plural
 ];

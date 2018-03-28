@@ -140,6 +140,11 @@ is available to <code>declarations</code> of this module.</p>
 <td><p>Binds the presence of CSS classes on the element to the truthiness of the associated map values. The right-hand expression should return {class-name: true/false} map.</p>
 </td>
 </tr>
+<tr>
+<td><code>&lt;div <b>[ngStyle]</b>="{'property': 'value'}"&gt;</code><br><code>&lt;div <b>[ngStyle]</b>="dynamicStyles()"&gt;</code></td>
+<td><p>Allows you to assign styles to an HTML element using CSS. You can use CSS directly, as in the first example, or you can call a method from the component.</p>
+</td>
+</tr>
 </tbody></table>
 
 <table class="is-full-width is-fixed-layout">

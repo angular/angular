@@ -1,0 +1,22 @@
+package(default_visibility = ["//visibility:public"])
+
+load("//tools:defaults.bzl", "ng_module", "ts_library")
+load("@build_bazel_rules_nodejs//:defs.bzl", "jasmine_node_test")
+
+ng_module(
+    name = "app",
+    srcs = glob(
+        [
+            "src/**/*.ts",
+        ],
+    ),
+    module_name = "app_built",
+    deps = [
+        "//packages/compiler-cli/integrationtest/bazel/injectable_def/lib2",
+        "//packages/core",
+        "//packages/platform-browser",
+        "//packages/platform-server",
+        "//packages/router",
+        "@rxjs",
+    ],
+)

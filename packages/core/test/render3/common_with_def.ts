@@ -10,16 +10,17 @@ import {NgForOf as NgForOfDef} from '@angular/common';
 import {IterableDiffers} from '@angular/core';
 
 import {defaultIterableDiffers} from '../../src/change_detection/change_detection';
-import {DirectiveType, InjectFlags, NgOnChangesFeature, defineDirective, inject, injectTemplateRef, injectViewContainerRef, m} from '../../src/render3/index';
+import {DirectiveType, InjectFlags, NgOnChangesFeature, defineDirective, directiveInject, injectTemplateRef, injectViewContainerRef} from '../../src/render3/index';
 
 export const NgForOf: DirectiveType<NgForOfDef<any>> = NgForOfDef as any;
 
 NgForOf.ngDirectiveDef = defineDirective({
   type: NgForOfDef,
+  selector: [[['', 'ngForOf', ''], null]],
   factory: () => new NgForOfDef(
                injectViewContainerRef(), injectTemplateRef(),
-               inject(IterableDiffers, InjectFlags.Default, defaultIterableDiffers)),
-  features: [NgOnChangesFeature],
+               directiveInject(IterableDiffers, InjectFlags.Default, defaultIterableDiffers)),
+  features: [NgOnChangesFeature()],
   inputs: {
     ngForOf: 'ngForOf',
     ngForTrackBy: 'ngForTrackBy',

@@ -1,0 +1,15 @@
+package(default_visibility = ["//visibility:public"])
+
+exports_files(["package.json"])
+
+load("//tools:defaults.bzl", "ng_module")
+
+ng_module(
+    name = "config",
+    srcs = glob([
+        "*.ts",
+        "src/**/*.ts",
+    ]),
+    module_name = "@angular/service-worker/config",
+    deps = ["//packages/core"],
+)

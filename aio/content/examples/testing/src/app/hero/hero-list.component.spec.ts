@@ -4,15 +4,18 @@ import { async, ComponentFixture, fakeAsync, TestBed, tick
 import { By }           from '@angular/platform-browser';
 import { DebugElement } from '@angular/core';
 
-import { addMatchers, newEvent, Router, RouterStub
-} from '../../testing';
+import { Router }       from '@angular/router';
 
-import { HEROES, FakeHeroService } from '../model/testing';
+import { addMatchers, newEvent } from '../../testing';
+
+import { getTestHeroes, TestHeroService } from '../model/testing/test-hero.service';
 
 import { HeroModule }         from './hero.module';
 import { HeroListComponent }  from './hero-list.component';
 import { HighlightDirective } from '../shared/highlight.directive';
-import { HeroService }        from '../model';
+import { HeroService }        from '../model/hero.service';
+
+const HEROES = getTestHeroes();
 
 let comp: HeroListComponent;
 let fixture: ComponentFixture<HeroListComponent>;
@@ -22,13 +25,15 @@ let page: Page;
 
 describe('HeroListComponent', () => {
 
-  beforeEach( async(() => {
+  beforeEach(async(() => {
     addMatchers();
+    const routerSpy = jasmine.createSpyObj('Router', ['navigate']);
+
     TestBed.configureTestingModule({
       imports: [HeroModule],
       providers: [
-        { provide: HeroService, useClass: FakeHeroService },
-        { provide: Router,      useClass: RouterStub}
+        { provide: HeroService, useClass: TestHeroService },
+        { provide: Router,      useValue: routerSpy}
       ]
     })
     .compileComponents()
@@ -125,15 +130,14 @@ class Page {
   navSpy: jasmine.Spy;
 
   constructor() {
-    this.heroRows    = fixture.debugElement.queryAll(By.css('li')).map(de => de.nativeElement);
+    const heroRowNodes = fixture.nativeElement.querySelectorAll('li');
+    this.heroRows = Array.from(heroRowNodes);
 
     // Find the first element with an attached HighlightDirective
     this.highlightDe = fixture.debugElement.query(By.directive(HighlightDirective));
 
-    // Get the component's injected router and spy on it
-    const router = fixture.debugElement.injector.get(Router);
-    this.navSpy = spyOn(router, 'navigate');
+    // Get the component's injected router navigation spy
+    const routerSpy = fixture.debugElement.injector.get(Router);
+    this.navSpy = routerSpy.navigate as jasmine.Spy;
   };
 }
-
-

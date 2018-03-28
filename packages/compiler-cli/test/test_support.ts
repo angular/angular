@@ -85,6 +85,7 @@ export function setup(): TestSupport {
       'experimentalDecorators': true,
       'skipLibCheck': true,
       'strict': true,
+      'strictPropertyInitialization': false,
       'types': [],
       'outDir': path.resolve(basePath, 'built'),
       'rootDir': basePath,

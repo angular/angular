@@ -231,7 +231,12 @@ export class TsCompilerAotCompilerTypeCheckHostAdapter implements ts.CompilerHos
     }
     const filePathWithNgResource =
         this.moduleNameToFileName(addNgResourceSuffix(resourceName), containingFile);
-    return filePathWithNgResource ? stripNgResourceSuffix(filePathWithNgResource) : null;
+    const result = filePathWithNgResource ? stripNgResourceSuffix(filePathWithNgResource) : null;
+    // Used under Bazel to report more specific error with remediation advice
+    if (!result && (this.context as any).reportMissingResource) {
+      (this.context as any).reportMissingResource(resourceName);
+    }
+    return result;
   }
 
   toSummaryFileName(fileName: string, referringSrcFileName: string): string {

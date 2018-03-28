@@ -13,7 +13,7 @@ cd `dirname $0`
 
 DIST="../../dist/examples";
 rm -rf -- $DIST
-$(npm bin)/tsc -p ./tsconfig-build.json
+$(npm bin)/tsc -p ./tsconfig-build.json --importHelpers false
 
 mkdir $DIST/vendor/
 
@@ -22,6 +22,7 @@ ln -s ../../../dist/packages-dist/ $DIST/vendor/@angular
 for FILE in \
     ../../../node_modules/angular/angular.js \
     ../../../node_modules/zone.js/dist/zone.js \
+    ../../../node_modules/zone.js/dist/task-tracking.js \
     ../../../node_modules/systemjs/dist/system.js \
     ../../../node_modules/reflect-metadata/Reflect.js \
     ../../../node_modules/rxjs

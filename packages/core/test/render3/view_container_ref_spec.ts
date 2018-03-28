@@ -7,7 +7,8 @@
  */
 
 import {TemplateRef, ViewContainerRef} from '../../src/core';
-import {C, T, b, cR, cr, defineComponent, defineDirective, injectTemplateRef, injectViewContainerRef, m, r, t} from '../../src/render3/index';
+import {defineComponent, defineDirective, injectTemplateRef, injectViewContainerRef} from '../../src/render3/index';
+import {bind, container, containerRefreshEnd, containerRefreshStart, loadDirective, text, textBinding} from '../../src/render3/instructions';
 
 import {renderComponent, toHtml} from './render_util';
 
@@ -17,6 +18,7 @@ describe('ViewContainerRef', () => {
 
     static ngDirectiveDef = defineDirective({
       type: TestDirective,
+      selector: [[['', 'testDir', ''], null]],
       factory: () => new TestDirective(injectViewContainerRef(), injectTemplateRef(), ),
     });
   }
@@ -26,24 +28,23 @@ describe('ViewContainerRef', () => {
 
     static ngComponentDef = defineComponent({
       type: TestComponent,
-      tag: 'test-cmp',
+      selector: [[['test-cmp'], null]],
       factory: () => new TestComponent(),
       template: (cmp: TestComponent, cm: boolean) => {
         if (cm) {
           const subTemplate = (ctx: any, cm: boolean) => {
             if (cm) {
-              T(0);
+              text(0);
             }
-            t(0, b(ctx.$implicit));
+            textBinding(0, bind(ctx.$implicit));
           };
-          C(0, [TestDirective], subTemplate);
+          container(0, subTemplate, undefined, ['testDir', '']);
         }
-        cR(0);
-        cmp.testDir = m(1) as TestDirective;
-        TestDirective.ngDirectiveDef.h(1, 0);
-        r(1, 0);
-        cr();
+        containerRefreshStart(0);
+        cmp.testDir = loadDirective<TestDirective>(0);
+        containerRefreshEnd();
       },
+      directiveDefs: [TestDirective.ngDirectiveDef]
     });
   }
 

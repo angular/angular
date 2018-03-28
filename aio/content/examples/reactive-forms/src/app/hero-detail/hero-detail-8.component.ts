@@ -39,12 +39,18 @@ export class HeroDetailComponent8 implements OnChanges {
 
   // #docregion onchanges
   ngOnChanges() {
+    this.rebuildForm();
+  }
+  // #enddocregion onchanges
+
+  // #docregion rebuildform
+  rebuildForm() {
     this.heroForm.reset({
       name: this.hero.name
     });
     this.setAddresses(this.hero.addresses);
   }
-  // #enddocregion onchanges
+// #enddocregion rebuildform
 
   // #docregion get-secret-lairs
   get secretLairs(): FormArray {

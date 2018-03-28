@@ -10,13 +10,13 @@ import {Component, Directive, ElementRef, ErrorHandler, EventEmitter, Inject, In
 import {async, fakeAsync, tick} from '@angular/core/testing';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
-import * as angular from '@angular/upgrade/src/common/angular1';
-import {$SCOPE} from '@angular/upgrade/src/common/constants';
 import {UpgradeComponent, UpgradeModule, downgradeComponent} from '@angular/upgrade/static';
+import * as angular from '@angular/upgrade/static/src/common/angular1';
+import {$SCOPE} from '@angular/upgrade/static/src/common/constants';
 
-import {$digest, bootstrap, html, multiTrim} from '../test_helpers';
+import {$digest, bootstrap, html, multiTrim, withEachNg1Version} from '../test_helpers';
 
-{
+withEachNg1Version(() => {
   describe('upgrade ng1 component', () => {
 
     beforeEach(() => destroyPlatform());
@@ -3199,21 +3199,25 @@ import {$digest, bootstrap, html, multiTrim} from '../test_helpers';
            const element = html(`<ng2></ng2>`);
 
            bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then(adapter => {
-             // Initial change
+             // Get to a stable `$digest` state.
+             $digest(adapter);
+
+             // Initial change.
+             // (Do not use a specific number due to differences between AngularJS 1.5/1.6.)
+             expect(controllerDoCheckA.calls.count()).toBeGreaterThan(0);
+             expect(controllerDoCheckB.calls.count()).toBeGreaterThan(0);
+             controllerDoCheckA.calls.reset();
+             controllerDoCheckB.calls.reset();
+
+             // Run a `$digest`
+             $digest(adapter);
              expect(controllerDoCheckA.calls.count()).toBe(1);
              expect(controllerDoCheckB.calls.count()).toBe(1);
 
-             // Run a `$digest`
-             // (Since it's the first one since the `$doCheck` watcher was added,
-             //  the `watchFn` will be run twice.)
-             $digest(adapter);
-             expect(controllerDoCheckA.calls.count()).toBe(3);
-             expect(controllerDoCheckB.calls.count()).toBe(3);
-
              // Run another `$digest`
              $digest(adapter);
-             expect(controllerDoCheckA.calls.count()).toBe(4);
-             expect(controllerDoCheckB.calls.count()).toBe(4);
+             expect(controllerDoCheckA.calls.count()).toBe(2);
+             expect(controllerDoCheckB.calls.count()).toBe(2);
            });
          }));
 
@@ -3958,4 +3962,4 @@ import {$digest, bootstrap, html, multiTrim} from '../test_helpers';
          });
        }));
   });
-}
+});

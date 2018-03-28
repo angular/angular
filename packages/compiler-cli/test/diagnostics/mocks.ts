@@ -240,16 +240,18 @@ export function getDiagnosticTemplateInfo(
     const members = getClassMembers(context.program, context.checker, type);
     if (members) {
       const sourceFile = context.program.getSourceFile(type.filePath);
-      const query = getSymbolQuery(
-          context.program, context.checker, sourceFile,
-          () =>
-              getPipesTable(sourceFile, context.program, context.checker, compiledTemplate.pipes));
-      return {
-        fileName: templateFile,
-        offset: 0, query, members,
-        htmlAst: compiledTemplate.htmlAst,
-        templateAst: compiledTemplate.templateAst
-      };
+      if (sourceFile) {
+        const query = getSymbolQuery(
+            context.program, context.checker, sourceFile,
+            () => getPipesTable(
+                sourceFile, context.program, context.checker, compiledTemplate.pipes));
+        return {
+          fileName: templateFile,
+          offset: 0, query, members,
+          htmlAst: compiledTemplate.htmlAst,
+          templateAst: compiledTemplate.templateAst
+        };
+      }
     }
   }
 }

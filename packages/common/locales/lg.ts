@@ -44,5 +44,6 @@ export default [
     ,
   ],
   ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0%', '#,##0.00¤', '#E0'], 'USh', 'Silingi eya Yuganda', plural
+  ['#,##0.###', '#,##0%', '#,##0.00¤', '#E0'], 'USh', 'Silingi eya Yuganda',
+  {'JPY': ['JP¥', '¥'], 'UGX': ['USh'], 'USD': ['US$', '$']}, plural
 ];

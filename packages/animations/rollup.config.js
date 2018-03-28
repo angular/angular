@@ -12,12 +12,11 @@ const sourcemaps = require('rollup-plugin-sourcemaps');
 const globals = {
   '@angular/core': 'ng.core',
   '@angular/animations': 'ng.animations',
-  'rxjs/Observable': 'Rx',
-  'rxjs/Subject': 'Rx',
+  'rxjs': 'rxjs',
 };
 
 module.exports = {
-  entry: '../../dist/packages-dist/animations/esm5/animations.js',
+  entry: '../../dist/packages-dist/animations/fesm5/animations.js',
   dest: '../../dist/packages-dist/animations/bundles/animations.umd.js',
   format: 'umd',
   exports: 'named',

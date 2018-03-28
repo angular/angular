@@ -7,7 +7,7 @@
  */
 
 import {NgModuleFactory, NgModuleRef, Type} from '@angular/core';
-import {Observable} from 'rxjs/Observable';
+import {Observable} from 'rxjs';
 import {PRIMARY_OUTLET} from './shared';
 import {UrlSegment, UrlSegmentGroup} from './url_tree';
 
@@ -456,4 +456,10 @@ function getFullPath(parentPath: string, currentRoute: Route): string {
   } else {
     return `${parentPath}/${currentRoute.path}`;
   }
+}
+
+
+export function copyConfig(r: Route): Route {
+  const children = r.children && r.children.map(copyConfig);
+  return children ? {...r, children} : {...r};
 }

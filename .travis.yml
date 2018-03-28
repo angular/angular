@@ -56,7 +56,6 @@ env:
     - CI_MODE=aio
     - CI_MODE=aio_e2e AIO_SHARD=0
     - CI_MODE=aio_e2e AIO_SHARD=1
-    - CI_MODE=bazel
 
 matrix:
   fast_finish: true

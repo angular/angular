@@ -48,5 +48,6 @@ export default [
     ,
   ],
   [',', '.', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0 %', '#,##0.00¤', '#E0'], 'FBu', 'Ifaranga ry’Uburundi', plural
+  ['#,##0.###', '#,##0 %', '#,##0.00¤', '#E0'], 'FBu', 'Ifaranga ry’Uburundi',
+  {'BIF': ['FBu'], 'JPY': ['JP¥', '¥'], 'USD': ['US$', '$']}, plural
 ];

@@ -15,6 +15,7 @@ require('zone.js/dist/zone-node.js');
 var JasmineRunner = require('jasmine');
 var path = require('path');
 require('zone.js/dist/long-stack-trace-zone.js');
+require('zone.js/dist/task-tracking.js');
 require('zone.js/dist/proxy.js');
 require('zone.js/dist/sync-test.js');
 require('zone.js/dist/async-test.js');

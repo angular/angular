@@ -15,6 +15,9 @@
     "target": "es2017",
     "typeRoots": []
   },
+  "bazelOptions": {
+    "suppressTsconfigOverrideWarnings": true
+  },
   "files": [
     "main.ts",
     "src/service-worker.d.ts"

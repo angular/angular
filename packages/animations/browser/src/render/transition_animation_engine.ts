@@ -248,7 +248,8 @@ export class AnimationTransitionNamespace {
       }
     });
 
-    let transition = trigger.matchTransition(fromState.value, toState.value);
+    let transition =
+        trigger.matchTransition(fromState.value, toState.value, element, toState.params);
     let isFallbackTransition = false;
     if (!transition) {
       if (!defaultToFallback) return;
@@ -402,7 +403,7 @@ export class AnimationTransitionNamespace {
 
       // when this `if statement` does not continue forward it means that
       // a previous animation query has selected the current element and
-      // is animating it. In this situation want to continue fowards and
+      // is animating it. In this situation want to continue forwards and
       // allow the element to be queued up for animation later.
       if (currentPlayers && currentPlayers.length) {
         containsPotentialParentTransition = true;
@@ -665,7 +666,16 @@ export class TransitionAnimationEngine {
     // code does not contain any animation code in it, but it is
     // just being called so that the node is marked as being inserted
     if (namespaceId) {
-      this._fetchNamespace(namespaceId).insertNode(element, parent);
+      const ns = this._fetchNamespace(namespaceId);
+      // This if-statement is a workaround for router issue #21947.
+      // The router sometimes hits a race condition where while a route
+      // is being instantiated a new navigation arrives, triggering leave
+      // animation of DOM that has not been fully initialized, until this
+      // is resolved, we need to handle the scenario when DOM is not in a
+      // consistent state during the animation.
+      if (ns) {
+        ns.insertNode(element, parent);
+      }
     }
 
     // only *directives and host elements are inserted before
@@ -1081,6 +1091,8 @@ export class TransitionAnimationEngine {
       if (subTimelines.has(element)) {
         if (disabledElementsSet.has(element)) {
           player.onDestroy(() => setStyles(element, instruction.toStyles));
+          player.disabled = true;
+          player.overrideTotalTime(instruction.totalTime);
           skippedPlayers.push(player);
           return;
         }
@@ -1311,7 +1323,8 @@ export class TransitionAnimationEngine {
 
       // FIXME (matsko): make sure to-be-removed animations are removed properly
       const details = element[REMOVAL_FLAG];
-      if (details && details.removedBeforeQueried) return new NoopAnimationPlayer();
+      if (details && details.removedBeforeQueried)
+        return new NoopAnimationPlayer(timelineInstruction.duration, timelineInstruction.delay);
 
       const isQueriedElement = element !== rootElement;
       const previousPlayers =
@@ -1379,7 +1392,7 @@ export class TransitionAnimationEngine {
 
     // special case for when an empty transition|definition is provided
     // ... there is no point in rendering an empty animation
-    return new NoopAnimationPlayer();
+    return new NoopAnimationPlayer(instruction.duration, instruction.delay);
   }
 }
 
@@ -1392,8 +1405,10 @@ export class TransitionAnimationPlayer implements AnimationPlayer {
   public parentPlayer: AnimationPlayer;
 
   public markedForDestroy: boolean = false;
+  public disabled = false;
 
   readonly queued: boolean = true;
+  public readonly totalTime: number = 0;
 
   constructor(public namespaceId: string, public triggerName: string, public element: any) {}
 
@@ -1407,15 +1422,18 @@ export class TransitionAnimationPlayer implements AnimationPlayer {
     });
     this._queuedCallbacks = {};
     this._containsRealPlayer = true;
+    this.overrideTotalTime(player.totalTime);
     (this as{queued: boolean}).queued = false;
   }
 
   getRealPlayer() { return this._player; }
 
+  overrideTotalTime(totalTime: number) { (this as any).totalTime = totalTime; }
+
   syncPlayerEvents(player: AnimationPlayer) {
     const p = this._player as any;
     if (p.triggerCallback) {
-      player.onStart(() => p.triggerCallback('start'));
+      player.onStart(() => p.triggerCallback !('start'));
     }
     player.onDone(() => this.finish());
     player.onDestroy(() => this.destroy());
@@ -1472,8 +1490,6 @@ export class TransitionAnimationPlayer implements AnimationPlayer {
   }
 
   getPosition(): number { return this.queued ? 0 : this._player.getPosition(); }
-
-  get totalTime(): number { return this._player.totalTime; }
 
   /* @internal */
   triggerCallback(phaseName: string): void {

@@ -1244,6 +1244,51 @@ describe('ngc transformer command-line', () => {
         expect(main(['-p', path.join(basePath, 'app', 'tsconfig-app.json')], errorSpy)).toBe(0);
       }
     });
+
+    describe('enableResourceInlining', () => {
+      it('should inline templateUrl and styleUrl in JS and metadata', () => {
+        writeConfig(`{
+          "extends": "./tsconfig-base.json",
+          "files": ["mymodule.ts"],
+          "angularCompilerOptions": {
+            "enableResourceInlining": true
+          }
+        }`);
+        write('my.component.ts', `
+        import {Component} from '@angular/core';
+        @Component({
+          templateUrl: './my.component.html',
+          styleUrls: ['./my.component.css'],
+        })
+        export class MyComp {}
+      `);
+        write('my.component.html', `<h1>Some template content</h1>`);
+        write('my.component.css', `h1 {color: blue}`);
+        write('mymodule.ts', `
+        import {NgModule} from '@angular/core';
+        import {MyComp} from './my.component';
+
+        @NgModule({declarations: [MyComp]})
+        export class MyModule {}
+      `);
+
+        const exitCode = main(['-p', basePath]);
+        expect(exitCode).toEqual(0);
+        outDir = path.resolve(basePath, 'built');
+        const outputJs = fs.readFileSync(path.join(outDir, 'my.component.js'), {encoding: 'utf-8'});
+        expect(outputJs).not.toContain('templateUrl');
+        expect(outputJs).not.toContain('styleUrls');
+        expect(outputJs).toContain('Some template content');
+        expect(outputJs).toContain('color: blue');
+
+        const outputMetadata =
+            fs.readFileSync(path.join(outDir, 'my.component.metadata.json'), {encoding: 'utf-8'});
+        expect(outputMetadata).not.toContain('templateUrl');
+        expect(outputMetadata).not.toContain('styleUrls');
+        expect(outputMetadata).toContain('Some template content');
+        expect(outputMetadata).toContain('color: blue');
+      });
+    });
   });
 
   describe('expression lowering', () => {
@@ -1940,6 +1985,340 @@ describe('ngc transformer command-line', () => {
       const exitCode = main(['-p', path.join(basePath, 'tsconfig.json')], msg => errors.push(msg));
       expect(exitCode).toBe(0, `Compile failed:\n${errors.join('\n  ')}`);
       expect(emittedFile('hello-world.js')).toContain('ngComponentDef');
+    });
+  });
+
+  describe('tree shakeable services', () => {
+
+    function compileService(source: string): string {
+      write('service.ts', source);
+
+      const exitCode = main(['-p', path.join(basePath, 'tsconfig.json')], errorSpy);
+      expect(exitCode).toEqual(0);
+
+      const servicePath = path.resolve(outDir, 'service.js');
+      return fs.readFileSync(servicePath, 'utf8');
+    }
+
+    beforeEach(() => {
+      writeConfig(`{
+        "extends": "./tsconfig-base.json",
+        "files": ["service.ts"]
+      }`);
+      write('module.ts', `
+        import {NgModule} from '@angular/core';
+
+        @NgModule({})
+        export class Module {}
+      `);
+    });
+
+    describe(`doesn't break existing injectables`, () => {
+      it('on simple services', () => {
+        const source = compileService(`
+        import {Injectable, NgModule} from '@angular/core';
+
+        @Injectable()
+        export class Service {
+          constructor(public param: string) {}
+        }
+
+        @NgModule({
+          providers: [{provide: Service, useValue: new Service('test')}],
+        })
+        export class ServiceModule {}
+        `);
+        expect(source).not.toMatch(/ngInjectableDef/);
+      });
+      it('on a service with a base class service', () => {
+        const source = compileService(`
+        import {Injectable, NgModule} from '@angular/core';
+
+        @Injectable()
+        export class Dep {}
+
+        export class Base {
+          constructor(private dep: Dep) {}
+        }
+        @Injectable()
+        export class Service extends Base {}
+
+        @NgModule({
+          providers: [Service],
+        })
+        export class ServiceModule {}
+        `);
+        expect(source).not.toMatch(/ngInjectableDef/);
+      });
+    });
+
+    it('compiles a basic InjectableDef', () => {
+      const source = compileService(`
+        import {Injectable} from '@angular/core';
+        import {Module} from './module';
+
+        @Injectable({
+          providedIn: Module,
+        })
+        export class Service {}
+      `);
+      expect(source).toMatch(/ngInjectableDef = .+\.defineInjectable\(/);
+      expect(source).toMatch(/ngInjectableDef.*token: Service/);
+      expect(source).toMatch(/ngInjectableDef.*providedIn: .+\.Module/);
+    });
+
+    it('ngInjectableDef in es5 mode is annotated @nocollapse when closure options are enabled',
+       () => {
+         writeConfig(`{
+        "extends": "./tsconfig-base.json",
+        "angularCompilerOptions": {
+          "annotateForClosureCompiler": true
+        },
+        "files": ["service.ts"]
+      }`);
+         const source = compileService(`
+        import {Injectable} from '@angular/core';
+        import {Module} from './module';
+
+        @Injectable({
+          providedIn: Module,
+        })
+        export class Service {}
+      `);
+         expect(source).toMatch(/\/\*\* @nocollapse \*\/ Service\.ngInjectableDef =/);
+       });
+
+    it('compiles a useValue InjectableDef', () => {
+      const source = compileService(`
+        import {Injectable} from '@angular/core';
+        import {Module} from './module';
+
+        export const CONST_SERVICE: Service = null;
+
+        @Injectable({
+          providedIn: Module,
+          useValue: CONST_SERVICE
+        })
+        export class Service {}
+      `);
+      expect(source).toMatch(/ngInjectableDef.*return CONST_SERVICE/);
+    });
+
+    it('compiles a useExisting InjectableDef', () => {
+      const source = compileService(`
+        import {Injectable} from '@angular/core';
+        import {Module} from './module';
+
+        @Injectable()
+        export class Existing {}
+
+        @Injectable({
+          providedIn: Module,
+          useExisting: Existing,
+        })
+        export class Service {}
+      `);
+      expect(source).toMatch(/ngInjectableDef.*return ..\.inject\(Existing\)/);
+    });
+
+    it('compiles a useFactory InjectableDef with optional dep', () => {
+      const source = compileService(`
+        import {Injectable, Optional} from '@angular/core';
+        import {Module} from './module';
+
+        @Injectable()
+        export class Existing {}
+
+        @Injectable({
+          providedIn: Module,
+          useFactory: (existing: Existing|null) => new Service(existing),
+          deps: [[new Optional(), Existing]],
+        })
+        export class Service {
+          constructor(e: Existing|null) {}
+        }
+      `);
+      expect(source).toMatch(/ngInjectableDef.*return ..\(..\.inject\(Existing, null, 0\)/);
+    });
+
+    it('compiles a useFactory InjectableDef with skip-self dep', () => {
+      const source = compileService(`
+        import {Injectable, SkipSelf} from '@angular/core';
+        import {Module} from './module';
+
+        @Injectable()
+        export class Existing {}
+
+        @Injectable({
+          providedIn: Module,
+          useFactory: (existing: Existing) => new Service(existing),
+          deps: [[new SkipSelf(), Existing]],
+        })
+        export class Service {
+          constructor(e: Existing) {}
+        }
+      `);
+      expect(source).toMatch(/ngInjectableDef.*return ..\(..\.inject\(Existing, undefined, 1\)/);
+    });
+
+    it('compiles a service that depends on a token', () => {
+      const source = compileService(`
+        import {Inject, Injectable, InjectionToken} from '@angular/core';
+        import {Module} from './module';
+
+        export const TOKEN = new InjectionToken('desc', {providedIn: Module, factory: () => true});
+
+        @Injectable({
+          providedIn: Module,
+        })
+        export class Service {
+          constructor(@Inject(TOKEN) value: boolean) {}
+        }
+      `);
+      expect(source).toMatch(/ngInjectableDef = .+\.defineInjectable\(/);
+      expect(source).toMatch(/ngInjectableDef.*token: Service/);
+      expect(source).toMatch(/ngInjectableDef.*providedIn: .+\.Module/);
+    });
+
+    it('generates exports.* references when outputting commonjs', () => {
+      writeConfig(`{
+        "extends": "./tsconfig-base.json",
+        "compilerOptions": {
+          "module": "commonjs"
+        },
+        "files": ["service.ts"]
+      }`);
+      const source = compileService(`
+        import {Inject, Injectable, InjectionToken} from '@angular/core';
+        import {Module} from './module';
+
+        export const TOKEN = new InjectionToken<string>('test token', {
+          providedIn: 'root',
+          factory: () => 'this is a test',
+        });
+
+        @Injectable({providedIn: 'root'})
+        export class Service {
+          constructor(@Inject(TOKEN) token: any) {}
+        }
+      `);
+      expect(source).toMatch(/new Service\(i0\.inject\(exports\.TOKEN\)\);/);
+    });
+  });
+
+  describe('ngInjectorDef', () => {
+    it('is applied with lowered metadata', () => {
+      writeConfig(`{
+        "extends": "./tsconfig-base.json",
+        "files": ["module.ts"],
+        "angularCompilerOptions": {
+          "enableIvy": true,
+          "skipTemplateCodegen": true
+        }
+      }`);
+      write('module.ts', `
+        import {Injectable, NgModule} from '@angular/core';
+
+        @Injectable()
+        export class ServiceA {}
+
+        @Injectable()
+        export class ServiceB {}
+
+        @NgModule()
+        export class Exported {}
+
+        @NgModule({
+          providers: [ServiceA]
+        })
+        export class Imported {
+          static forRoot() {
+           console.log('not statically analyzable');
+            return {
+              ngModule: Imported,
+              providers: [] as any,
+            };
+          }
+        }
+
+        @NgModule({
+          providers: [ServiceA, ServiceB],
+          imports: [Imported.forRoot()],
+          exports: [Exported],
+        })
+        export class Module {}
+      `);
+
+      const exitCode = main(['-p', path.join(basePath, 'tsconfig.json')], errorSpy);
+      expect(exitCode).toEqual(0);
+
+      const modulePath = path.resolve(outDir, 'module.js');
+      const moduleSource = fs.readFileSync(modulePath, 'utf8');
+      expect(moduleSource)
+          .toContain('var ɵ1 = [ServiceA, ServiceB], ɵ2 = [Imported.forRoot()], ɵ3 = [Exported];');
+      expect(moduleSource)
+          .toContain(
+              'Imported.ngInjectorDef = i0.defineInjector({ factory: function Imported_Factory() { return new Imported(); }, providers: ɵ0, imports: [] });');
+      expect(moduleSource)
+          .toContain(
+              'Module.ngInjectorDef = i0.defineInjector({ factory: function Module_Factory() { return new Module(); }, providers: ɵ1, imports: [ɵ2, ɵ3] });');
+    });
+
+    it('strips decorator in ivy mode', () => {
+      writeConfig(`{
+        "extends": "./tsconfig-base.json",
+        "files": ["service.ts"],
+        "angularCompilerOptions": {
+          "enableIvy": true
+        }
+      }`);
+      write('service.ts', `
+        import {Injectable, Self} from '@angular/core';  
+
+        @Injectable()
+        export class ServiceA {}
+
+        @Injectable()
+        @Self()
+        export class ServiceB {}
+      `);
+
+      const exitCode = main(['-p', path.join(basePath, 'tsconfig.json')], errorSpy);
+      expect(exitCode).toEqual(0);
+
+      const modulePath = path.resolve(outDir, 'service.js');
+      const moduleSource = fs.readFileSync(modulePath, 'utf8');
+      expect(moduleSource).not.toMatch(/ServiceA\.decorators =/);
+      expect(moduleSource).toMatch(/ServiceB\.decorators =/);
+      expect(moduleSource).toMatch(/type: Self/);
+      expect(moduleSource).not.toMatch(/type: Injectable/);
+    });
+
+    it('rewrites Injector to INJECTOR in Ivy factory functions ', () => {
+      writeConfig(`{
+        "extends": "./tsconfig-base.json",
+        "files": ["service.ts"],
+        "angularCompilerOptions": {
+          "enableIvy": true
+        }
+      }`);
+
+      write('service.ts', `
+        import {Injectable, Injector} from '@angular/core';
+
+        @Injectable()
+        export class Service {
+          constructor(private injector: Injector) {}
+        }
+      `);
+
+      const exitCode = main(['-p', path.join(basePath, 'tsconfig.json')], errorSpy);
+      expect(exitCode).toEqual(0);
+
+      const modulePath = path.resolve(outDir, 'service.js');
+      const moduleSource = fs.readFileSync(modulePath, 'utf8');
+      expect(moduleSource).not.toMatch(/inject\(i0\.Injector/);
+      expect(moduleSource).toMatch(/inject\(i0\.INJECTOR/);
     });
   });
 });

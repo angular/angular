@@ -299,7 +299,8 @@ const DEFAULT_NAMESPACE_ID = 'id';
           phaseName: 'start',
           fromState: '123',
           toState: '456',
-          totalTime: 1234
+          totalTime: 1234,
+          disabled: false
         });
 
         capture = null !;
@@ -313,7 +314,8 @@ const DEFAULT_NAMESPACE_ID = 'id';
           phaseName: 'done',
           fromState: '123',
           toState: '456',
-          totalTime: 1234
+          totalTime: 1234,
+          disabled: false
         });
       });
     });

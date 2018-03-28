@@ -7,9 +7,8 @@
  */
 
 import {DOCUMENT} from '@angular/common';
-import {Inject, Injectable, InjectionToken} from '@angular/core';
-import {Observable} from 'rxjs/Observable';
-import {Observer} from 'rxjs/Observer';
+import {Inject, Injectable} from '@angular/core';
+import {Observable, Observer} from 'rxjs';
 
 import {HttpBackend, HttpHandler} from './backend';
 import {HttpRequest} from './request';
@@ -156,7 +155,7 @@ export class JsonpClientBackend implements HttpBackend {
           statusText: 'OK', url,
         }));
 
-        // Complete the stream, the resposne is over.
+        // Complete the stream, the response is over.
         observer.complete();
       };
 

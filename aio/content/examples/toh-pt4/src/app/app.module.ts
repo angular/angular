@@ -21,7 +21,14 @@ import { MessagesComponent } from './messages/messages.component';
     FormsModule
   ],
   // #docregion providers
-  providers: [ HeroService, MessageService ],
+  // #docregion providers-heroservice
+  providers: [
+    HeroService,
+    // #enddocregion providers-heroservice
+    MessageService
+    // #docregion providers-heroservice
+  ],
+  // #enddocregion providers-heroservice
   // #enddocregion providers
   bootstrap: [ AppComponent ]
 })

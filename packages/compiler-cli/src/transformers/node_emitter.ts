@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AssertNotNull, BinaryOperator, BinaryOperatorExpr, BuiltinMethod, BuiltinVar, CastExpr, ClassMethod, ClassStmt, CommaExpr, CommentStmt, CompileIdentifierMetadata, ConditionalExpr, DeclareFunctionStmt, DeclareVarStmt, ExpressionStatement, ExpressionVisitor, ExternalExpr, ExternalReference, FunctionExpr, IfStmt, InstantiateExpr, InvokeFunctionExpr, InvokeMethodExpr, LiteralArrayExpr, LiteralExpr, LiteralMapExpr, NotExpr, ParseSourceFile, ParseSourceSpan, PartialModule, ReadKeyExpr, ReadPropExpr, ReadVarExpr, ReturnStatement, Statement, StatementVisitor, StaticSymbol, StmtModifier, ThrowStmt, TryCatchStmt, WriteKeyExpr, WritePropExpr, WriteVarExpr} from '@angular/compiler';
+import {AssertNotNull, BinaryOperator, BinaryOperatorExpr, BuiltinMethod, BuiltinVar, CastExpr, ClassStmt, CommaExpr, CommentStmt, ConditionalExpr, DeclareFunctionStmt, DeclareVarStmt, ExpressionStatement, ExpressionVisitor, ExternalExpr, ExternalReference, FunctionExpr, IfStmt, InstantiateExpr, InvokeFunctionExpr, InvokeMethodExpr, JSDocCommentStmt, LiteralArrayExpr, LiteralExpr, LiteralMapExpr, NotExpr, ParseSourceFile, ParseSourceSpan, PartialModule, ReadKeyExpr, ReadPropExpr, ReadVarExpr, ReturnStatement, Statement, StatementVisitor, StmtModifier, ThrowStmt, TryCatchStmt, WriteKeyExpr, WritePropExpr, WriteVarExpr} from '@angular/compiler';
 import * as ts from 'typescript';
 import {error} from './util';
 
@@ -63,6 +63,8 @@ export function updateSourceFile(
     sourceFile: ts.SourceFile, module: PartialModule,
     context: ts.TransformationContext): [ts.SourceFile, Map<ts.Node, Node>] {
   const converter = new _NodeEmitterVisitor();
+  converter.loadExportedVariableIdentifiers(sourceFile);
+
   const prefixStatements = module.statements.filter(statement => !(statement instanceof ClassStmt));
   const classes =
       module.statements.filter(statement => statement instanceof ClassStmt) as ClassStmt[];
@@ -70,8 +72,8 @@ export function updateSourceFile(
       classes.map<[string, ClassStmt]>(classStatement => [classStatement.name, classStatement]));
   const classNames = new Set(classes.map(classStatement => classStatement.name));
 
-  const prefix =
-      <ts.Statement[]>prefixStatements.map(statement => statement.visitStatement(converter, null));
+  const prefix: ts.Statement[] =
+      prefixStatements.map(statement => statement.visitStatement(converter, sourceFile));
 
   // Add static methods to all the classes referenced in module.
   let newStatements = sourceFile.statements.map(node => {
@@ -148,14 +150,34 @@ function firstAfter<T>(a: T[], predicate: (value: T) => boolean) {
 // NodeEmitterVisitor
 type RecordedNode<T extends ts.Node = ts.Node> = (T & { __recorded: any; }) | null;
 
+function escapeLiteral(value: string): string {
+  return value.replace(/(\"|\\)/g, '\\$1').replace(/(\n)|(\r)/g, function(v, n, r) {
+    return n ? '\\n' : '\\r';
+  });
+}
+
 function createLiteral(value: any) {
   if (value === null) {
     return ts.createNull();
   } else if (value === undefined) {
     return ts.createIdentifier('undefined');
   } else {
-    return ts.createLiteral(value);
+    const result = ts.createLiteral(value);
+    if (ts.isStringLiteral(result) && result.text.indexOf('\\') >= 0) {
+      // Hack to avoid problems cause indirectly by:
+      //    https://github.com/Microsoft/TypeScript/issues/20192
+      // This avoids the string escaping normally performed for a string relying on that
+      // TypeScript just emits the text raw for a numeric literal.
+      (result as any).kind = ts.SyntaxKind.NumericLiteral;
+      result.text = `"${escapeLiteral(result.text)}"`;
+    }
+    return result;
   }
+}
+
+function isExportTypeStatement(statement: ts.Statement): boolean {
+  return !!statement.modifiers &&
+      statement.modifiers.some(mod => mod.kind === ts.SyntaxKind.ExportKeyword);
 }
 
 /**
@@ -166,6 +188,26 @@ class _NodeEmitterVisitor implements StatementVisitor, ExpressionVisitor {
   private _importsWithPrefixes = new Map<string, string>();
   private _reexports = new Map<string, {name: string, as: string}[]>();
   private _templateSources = new Map<ParseSourceFile, ts.SourceMapSource>();
+  private _exportedVariableIdentifiers = new Map<string, ts.Identifier>();
+
+  /**
+   * Process the source file and collect exported identifiers that refer to variables.
+   *
+   * Only variables are collected because exported classes still exist in the module scope in
+   * CommonJS, whereas variables have their declarations moved onto the `exports` object, and all
+   * references are updated accordingly.
+   */
+  loadExportedVariableIdentifiers(sourceFile: ts.SourceFile): void {
+    sourceFile.statements.forEach(statement => {
+      if (ts.isVariableStatement(statement) && isExportTypeStatement(statement)) {
+        statement.declarationList.declarations.forEach(declaration => {
+          if (ts.isIdentifier(declaration.name)) {
+            this._exportedVariableIdentifiers.set(declaration.name.text, declaration.name);
+          }
+        });
+      }
+    });
+  }
 
   getReexports(): ts.Statement[] {
     return Array.from(this._reexports.entries())
@@ -300,7 +342,7 @@ class _NodeEmitterVisitor implements StatementVisitor, ExpressionVisitor {
     return this.record(stmt, ts.createVariableStatement(this.getModifiers(stmt), varDeclList));
   }
 
-  visitDeclareFunctionStmt(stmt: DeclareFunctionStmt, context: any) {
+  visitDeclareFunctionStmt(stmt: DeclareFunctionStmt) {
     return this.record(
         stmt, ts.createFunctionDeclaration(
                   /* decorators */ undefined, this.getModifiers(stmt),
@@ -401,7 +443,23 @@ class _NodeEmitterVisitor implements StatementVisitor, ExpressionVisitor {
     return this.record(stmt, ts.createThrow(stmt.error.visitExpression(this, null)));
   }
 
-  visitCommentStmt(stmt: CommentStmt) { return null; }
+  visitCommentStmt(stmt: CommentStmt, sourceFile: ts.SourceFile) {
+    const text = stmt.multiline ? ` ${stmt.comment} ` : ` ${stmt.comment}`;
+    return this.createCommentStmt(text, stmt.multiline, sourceFile);
+  }
+
+  visitJSDocCommentStmt(stmt: JSDocCommentStmt, sourceFile: ts.SourceFile) {
+    return this.createCommentStmt(stmt.toString(), true, sourceFile);
+  }
+
+  private createCommentStmt(text: string, multiline: boolean, sourceFile: ts.SourceFile):
+      ts.NotEmittedStatement {
+    const commentStmt = ts.createNotEmittedStatement(sourceFile);
+    const kind =
+        multiline ? ts.SyntaxKind.MultiLineCommentTrivia : ts.SyntaxKind.SingleLineCommentTrivia;
+    ts.setSyntheticLeadingComments(commentStmt, [{kind, text, pos: -1, end: -1}]);
+    return commentStmt;
+  }
 
   // ExpressionVisitor
   visitReadVarExpr(expr: ReadVarExpr) {
@@ -612,7 +670,8 @@ class _NodeEmitterVisitor implements StatementVisitor, ExpressionVisitor {
   }
 
   private _visitIdentifier(value: ExternalReference): ts.Expression {
-    const {name, moduleName} = value;
+    // name can only be null during JIT which never executes this code.
+    const moduleName = value.moduleName, name = value.name !;
     let prefixIdent: ts.Identifier|null = null;
     if (moduleName) {
       let prefix = this._importsWithPrefixes.get(moduleName);
@@ -622,10 +681,17 @@ class _NodeEmitterVisitor implements StatementVisitor, ExpressionVisitor {
       }
       prefixIdent = ts.createIdentifier(prefix);
     }
-    // name can only be null during JIT which never executes this code.
-    let result: ts.Expression =
-        prefixIdent ? ts.createPropertyAccess(prefixIdent, name !) : ts.createIdentifier(name !);
-    return result;
+    if (prefixIdent) {
+      return ts.createPropertyAccess(prefixIdent, name);
+    } else {
+      const id = ts.createIdentifier(name);
+      if (this._exportedVariableIdentifiers.has(name)) {
+        // In order for this new identifier node to be properly rewritten in CommonJS output,
+        // it must have its original node set to a parsed instance of the same identifier.
+        ts.setOriginalNode(id, this._exportedVariableIdentifiers.get(name));
+      }
+      return id;
+    }
   }
 }
 

@@ -1,0 +1,25 @@
+load("//packages/bazel:index.bzl", "ng_module")
+
+ng_module(
+    name = "test_module",
+    srcs = glob(["*.ts"]),
+    entry_point = "index.ts",
+    flat_module_out_file = "flat_module_filename",
+    module_name = "some_npm_module",
+    deps = ["//packages/core"],
+)
+
+load(":extract_flat_module_index.bzl", "extract_flat_module_index")
+
+extract_flat_module_index(
+    name = "flat_module_index",
+    deps = [":test_module"],
+)
+
+load("@build_bazel_rules_nodejs//:defs.bzl", "jasmine_node_test")
+
+jasmine_node_test(
+    name = "test",
+    srcs = ["spec.js"],
+    data = [":flat_module_index"],
+)

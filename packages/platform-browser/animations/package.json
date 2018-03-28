@@ -2,6 +2,11 @@
   "name": "@angular/platform-browser/animations",
   "typings": "./animations.d.ts",
   "main": "../bundles/platform-browser-animations.umd.js",
-  "module": "../esm5/animations.js",
-  "es2015": "../esm2015/animations.js"
+  "module": "../fesm5/animations.js",
+  "es2015": "../fesm2015/animations.js",
+  "esm5": "../esm5/animations/animations.js",
+  "esm2015": "../esm2015/animations/animations.js",
+  "fesm5": "../fesm5/animations.js",
+  "fesm2015": "../fesm2015/animations.js",
+  "sideEffects": false
 }

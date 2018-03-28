@@ -191,9 +191,7 @@ class TestApp {
     it('should list all child nodes', () => {
       fixture = TestBed.createComponent(ParentComp);
       fixture.detectChanges();
-
-      // The root component has 3 elements and 2 text node children.
-      expect(fixture.debugElement.childNodes.length).toEqual(5);
+      expect(fixture.debugElement.childNodes.length).toEqual(3);
     });
 
     it('should list all component child elements', () => {

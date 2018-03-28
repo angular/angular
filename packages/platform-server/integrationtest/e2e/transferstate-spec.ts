@@ -12,7 +12,7 @@ import {verifyNoBrowserErrors} from './util';
 
 describe('TransferState', function() {
   it('should transfer component state', function() {
-    // Load the page without waiting for Angular since it is not boostrapped automatically.
+    // Load the page without waiting for Angular since it is not bootstrapped automatically.
     browser.driver.get(browser.baseUrl + 'transferstate');
 
     // Test the contents from the server.

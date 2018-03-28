@@ -14,14 +14,12 @@ const globals = {
   '@angular/compiler': 'ng.compiler',
   '@angular/platform-browser': 'ng.platformBrowser',
   '@angular/http': 'ng.http',
-  'rxjs/Observable': 'Rx',
-  'rxjs/ReplaySubject': 'Rx',
-  'rxjs/Subject': 'Rx',
-  'rxjs/operator/take': 'Rx.Observable.prototype'
+  'rxjs': 'rxjs',
+  'rxjs/operators': 'rxjs.operators',
 };
 
 module.exports = {
-  entry: '../../../dist/packages-dist/http/esm5/testing.js',
+  entry: '../../../dist/packages-dist/http/fesm5/testing.js',
   dest: '../../../dist/packages-dist/http/bundles/http-testing.umd.js',
   format: 'umd',
   exports: 'named',

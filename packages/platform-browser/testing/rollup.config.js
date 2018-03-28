@@ -16,7 +16,7 @@ const globals = {
 };
 
 module.exports = {
-  entry: '../../../dist/packages-dist/platform-browser/esm5/testing.js',
+  entry: '../../../dist/packages-dist/platform-browser/fesm5/testing.js',
   dest: '../../../dist/packages-dist/platform-browser/bundles/platform-browser-testing.umd.js',
   format: 'umd',
   exports: 'named',

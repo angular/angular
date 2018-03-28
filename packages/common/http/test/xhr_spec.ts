@@ -7,7 +7,8 @@
  */
 
 import {ddescribe, describe, iit, it} from '@angular/core/testing/src/testing_internal';
-import {Observable} from 'rxjs/Observable';
+import {Observable} from 'rxjs';
+import {toArray} from 'rxjs/operators';
 
 import {HttpRequest} from '../src/request';
 import {HttpDownloadProgressEvent, HttpErrorResponse, HttpEvent, HttpEventType, HttpHeaderResponse, HttpResponse, HttpResponseBase, HttpUploadProgressEvent} from '../src/response';
@@ -148,27 +149,29 @@ const XSSI_PREFIX = ')]}\'\n';
     });
     describe('progress events', () => {
       it('are emitted for download progress', (done: DoneFn) => {
-        backend.handle(TEST_POST.clone({reportProgress: true})).toArray().subscribe(events => {
-          expect(events.map(event => event.type)).toEqual([
-            HttpEventType.Sent,
-            HttpEventType.ResponseHeader,
-            HttpEventType.DownloadProgress,
-            HttpEventType.DownloadProgress,
-            HttpEventType.Response,
-          ]);
-          const [progress1, progress2, response] = [
-            events[2] as HttpDownloadProgressEvent, events[3] as HttpDownloadProgressEvent,
-            events[4] as HttpResponse<string>
-          ];
-          expect(progress1.partialText).toBe('down');
-          expect(progress1.loaded).toBe(100);
-          expect(progress1.total).toBe(300);
-          expect(progress2.partialText).toBe('download');
-          expect(progress2.loaded).toBe(200);
-          expect(progress2.total).toBe(300);
-          expect(response.body).toBe('downloaded');
-          done();
-        });
+        backend.handle(TEST_POST.clone({reportProgress: true}))
+            .pipe(toArray())
+            .subscribe(events => {
+              expect(events.map(event => event.type)).toEqual([
+                HttpEventType.Sent,
+                HttpEventType.ResponseHeader,
+                HttpEventType.DownloadProgress,
+                HttpEventType.DownloadProgress,
+                HttpEventType.Response,
+              ]);
+              const [progress1, progress2, response] = [
+                events[2] as HttpDownloadProgressEvent, events[3] as HttpDownloadProgressEvent,
+                events[4] as HttpResponse<string>
+              ];
+              expect(progress1.partialText).toBe('down');
+              expect(progress1.loaded).toBe(100);
+              expect(progress1.total).toBe(300);
+              expect(progress2.partialText).toBe('download');
+              expect(progress2.loaded).toBe(200);
+              expect(progress2.total).toBe(300);
+              expect(response.body).toBe('downloaded');
+              done();
+            });
         factory.mock.responseText = 'down';
         factory.mock.mockDownloadProgressEvent(100, 300);
         factory.mock.responseText = 'download';
@@ -176,70 +179,78 @@ const XSSI_PREFIX = ')]}\'\n';
         factory.mock.mockFlush(200, 'OK', 'downloaded');
       });
       it('are emitted for upload progress', (done: DoneFn) => {
-        backend.handle(TEST_POST.clone({reportProgress: true})).toArray().subscribe(events => {
-          expect(events.map(event => event.type)).toEqual([
-            HttpEventType.Sent,
-            HttpEventType.UploadProgress,
-            HttpEventType.UploadProgress,
-            HttpEventType.Response,
-          ]);
-          const [progress1, progress2] = [
-            events[1] as HttpUploadProgressEvent,
-            events[2] as HttpUploadProgressEvent,
-          ];
-          expect(progress1.loaded).toBe(100);
-          expect(progress1.total).toBe(300);
-          expect(progress2.loaded).toBe(200);
-          expect(progress2.total).toBe(300);
-          done();
-        });
+        backend.handle(TEST_POST.clone({reportProgress: true}))
+            .pipe(toArray())
+            .subscribe(events => {
+              expect(events.map(event => event.type)).toEqual([
+                HttpEventType.Sent,
+                HttpEventType.UploadProgress,
+                HttpEventType.UploadProgress,
+                HttpEventType.Response,
+              ]);
+              const [progress1, progress2] = [
+                events[1] as HttpUploadProgressEvent,
+                events[2] as HttpUploadProgressEvent,
+              ];
+              expect(progress1.loaded).toBe(100);
+              expect(progress1.total).toBe(300);
+              expect(progress2.loaded).toBe(200);
+              expect(progress2.total).toBe(300);
+              done();
+            });
         factory.mock.mockUploadProgressEvent(100, 300);
         factory.mock.mockUploadProgressEvent(200, 300);
         factory.mock.mockFlush(200, 'OK', 'Done');
       });
       it('are emitted when both upload and download progress are available', (done: DoneFn) => {
-        backend.handle(TEST_POST.clone({reportProgress: true})).toArray().subscribe(events => {
-          expect(events.map(event => event.type)).toEqual([
-            HttpEventType.Sent,
-            HttpEventType.UploadProgress,
-            HttpEventType.ResponseHeader,
-            HttpEventType.DownloadProgress,
-            HttpEventType.Response,
-          ]);
-          done();
-        });
+        backend.handle(TEST_POST.clone({reportProgress: true}))
+            .pipe(toArray())
+            .subscribe(events => {
+              expect(events.map(event => event.type)).toEqual([
+                HttpEventType.Sent,
+                HttpEventType.UploadProgress,
+                HttpEventType.ResponseHeader,
+                HttpEventType.DownloadProgress,
+                HttpEventType.Response,
+              ]);
+              done();
+            });
         factory.mock.mockUploadProgressEvent(100, 300);
         factory.mock.mockDownloadProgressEvent(200, 300);
         factory.mock.mockFlush(200, 'OK', 'Done');
       });
       it('are emitted even if length is not computable', (done: DoneFn) => {
-        backend.handle(TEST_POST.clone({reportProgress: true})).toArray().subscribe(events => {
-          expect(events.map(event => event.type)).toEqual([
-            HttpEventType.Sent,
-            HttpEventType.UploadProgress,
-            HttpEventType.ResponseHeader,
-            HttpEventType.DownloadProgress,
-            HttpEventType.Response,
-          ]);
-          done();
-        });
+        backend.handle(TEST_POST.clone({reportProgress: true}))
+            .pipe(toArray())
+            .subscribe(events => {
+              expect(events.map(event => event.type)).toEqual([
+                HttpEventType.Sent,
+                HttpEventType.UploadProgress,
+                HttpEventType.ResponseHeader,
+                HttpEventType.DownloadProgress,
+                HttpEventType.Response,
+              ]);
+              done();
+            });
         factory.mock.mockUploadProgressEvent(100);
         factory.mock.mockDownloadProgressEvent(200);
         factory.mock.mockFlush(200, 'OK', 'Done');
       });
       it('include ResponseHeader with headers and status', (done: DoneFn) => {
-        backend.handle(TEST_POST.clone({reportProgress: true})).toArray().subscribe(events => {
-          expect(events.map(event => event.type)).toEqual([
-            HttpEventType.Sent,
-            HttpEventType.ResponseHeader,
-            HttpEventType.DownloadProgress,
-            HttpEventType.Response,
-          ]);
-          const partial = events[1] as HttpHeaderResponse;
-          expect(partial.headers.get('Content-Type')).toEqual('text/plain');
-          expect(partial.headers.get('Test')).toEqual('Test header');
-          done();
-        });
+        backend.handle(TEST_POST.clone({reportProgress: true}))
+            .pipe(toArray())
+            .subscribe(events => {
+              expect(events.map(event => event.type)).toEqual([
+                HttpEventType.Sent,
+                HttpEventType.ResponseHeader,
+                HttpEventType.DownloadProgress,
+                HttpEventType.Response,
+              ]);
+              const partial = events[1] as HttpHeaderResponse;
+              expect(partial.headers.get('Content-Type')).toEqual('text/plain');
+              expect(partial.headers.get('Test')).toEqual('Test header');
+              done();
+            });
         factory.mock.mockResponseHeaders = 'Test: Test header\nContent-Type: text/plain\n';
         factory.mock.mockDownloadProgressEvent(200);
         factory.mock.mockFlush(200, 'OK', 'Done');
@@ -251,18 +262,20 @@ const XSSI_PREFIX = ')]}\'\n';
         expect(factory.mock.listeners.progress).toBeUndefined();
       });
       it('do not cause headers to be re-parsed on main response', (done: DoneFn) => {
-        backend.handle(TEST_POST.clone({reportProgress: true})).toArray().subscribe(events => {
-          events
-              .filter(
-                  event => event.type === HttpEventType.Response ||
-                      event.type === HttpEventType.ResponseHeader)
-              .map(event => event as HttpResponseBase)
-              .forEach(event => {
-                expect(event.status).toBe(203);
-                expect(event.headers.get('Test')).toEqual('This is a test');
-              });
-          done();
-        });
+        backend.handle(TEST_POST.clone({reportProgress: true}))
+            .pipe(toArray())
+            .subscribe(events => {
+              events
+                  .filter(
+                      event => event.type === HttpEventType.Response ||
+                          event.type === HttpEventType.ResponseHeader)
+                  .map(event => event as HttpResponseBase)
+                  .forEach(event => {
+                    expect(event.status).toBe(203);
+                    expect(event.headers.get('Test')).toEqual('This is a test');
+                  });
+              done();
+            });
         factory.mock.mockResponseHeaders = 'Test: This is a test\n';
         factory.mock.status = 203;
         factory.mock.mockDownloadProgressEvent(100, 300);
@@ -272,7 +285,7 @@ const XSSI_PREFIX = ')]}\'\n';
     });
     describe('gets response URL', () => {
       it('from XHR.responsesURL', (done: DoneFn) => {
-        backend.handle(TEST_POST).toArray().subscribe(events => {
+        backend.handle(TEST_POST).pipe(toArray()).subscribe(events => {
           expect(events.length).toBe(2);
           expect(events[1].type).toBe(HttpEventType.Response);
           const response = events[1] as HttpResponse<string>;
@@ -283,7 +296,7 @@ const XSSI_PREFIX = ')]}\'\n';
         factory.mock.mockFlush(200, 'OK', 'Test');
       });
       it('from X-Request-URL header if XHR.responseURL is not present', (done: DoneFn) => {
-        backend.handle(TEST_POST).toArray().subscribe(events => {
+        backend.handle(TEST_POST).pipe(toArray()).subscribe(events => {
           expect(events.length).toBe(2);
           expect(events[1].type).toBe(HttpEventType.Response);
           const response = events[1] as HttpResponse<string>;
@@ -294,7 +307,7 @@ const XSSI_PREFIX = ')]}\'\n';
         factory.mock.mockFlush(200, 'OK', 'Test');
       });
       it('falls back on Request.url if neither are available', (done: DoneFn) => {
-        backend.handle(TEST_POST).toArray().subscribe(events => {
+        backend.handle(TEST_POST).pipe(toArray()).subscribe(events => {
           expect(events.length).toBe(2);
           expect(events[1].type).toBe(HttpEventType.Response);
           const response = events[1] as HttpResponse<string>;
@@ -306,7 +319,7 @@ const XSSI_PREFIX = ')]}\'\n';
     });
     describe('corrects for quirks', () => {
       it('by normalizing 1223 status to 204', (done: DoneFn) => {
-        backend.handle(TEST_POST).toArray().subscribe(events => {
+        backend.handle(TEST_POST).pipe(toArray()).subscribe(events => {
           expect(events.length).toBe(2);
           expect(events[1].type).toBe(HttpEventType.Response);
           const response = events[1] as HttpResponse<string>;
@@ -316,7 +329,7 @@ const XSSI_PREFIX = ')]}\'\n';
         factory.mock.mockFlush(1223, 'IE Special Status', 'Test');
       });
       it('by normalizing 0 status to 200 if a body is present', (done: DoneFn) => {
-        backend.handle(TEST_POST).toArray().subscribe(events => {
+        backend.handle(TEST_POST).pipe(toArray()).subscribe(events => {
           expect(events.length).toBe(2);
           expect(events[1].type).toBe(HttpEventType.Response);
           const response = events[1] as HttpResponse<string>;
@@ -326,10 +339,11 @@ const XSSI_PREFIX = ')]}\'\n';
         factory.mock.mockFlush(0, 'CORS 0 status', 'Test');
       });
       it('by leaving 0 status as 0 if a body is not present', (done: DoneFn) => {
-        backend.handle(TEST_POST).toArray().subscribe(undefined, (error: HttpErrorResponse) => {
-          expect(error.status).toBe(0);
-          done();
-        });
+        backend.handle(TEST_POST).pipe(toArray()).subscribe(
+            undefined, (error: HttpErrorResponse) => {
+              expect(error.status).toBe(0);
+              done();
+            });
         factory.mock.mockFlush(0, 'CORS 0 status');
       });
     });

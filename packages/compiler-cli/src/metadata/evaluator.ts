@@ -381,9 +381,6 @@ export class Evaluator {
       case ts.SyntaxKind.NewExpression:
         const newExpression = <ts.NewExpression>node;
         const newArgs = arrayOrEmpty(newExpression.arguments).map(arg => this.evaluateNode(arg));
-        if (!this.options.verboseInvalidExpression && newArgs.some(isMetadataError)) {
-          return recordEntry(newArgs.find(isMetadataError), node);
-        }
         const newTarget = this.evaluateNode(newExpression.expression);
         if (isMetadataError(newTarget)) {
           return recordEntry(newTarget, node);
@@ -471,7 +468,7 @@ export class Evaluator {
         if (!isMetadataModuleReferenceExpression(typeReference) &&
             typeReferenceNode.typeArguments && typeReferenceNode.typeArguments.length) {
           const args = typeReferenceNode.typeArguments.map(element => this.evaluateNode(element));
-          // TODO: Remove typecast when upgraded to 2.0 as it will be corretly inferred.
+          // TODO: Remove typecast when upgraded to 2.0 as it will be correctly inferred.
           // Some versions of 1.9 do not infer this correctly.
           (<MetadataImportedSymbolReferenceExpression>typeReference).arguments = args;
         }

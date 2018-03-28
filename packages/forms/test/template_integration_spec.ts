@@ -6,13 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, Directive, Type, ViewChild, forwardRef} from '@angular/core';
+import {Component, Directive, Type, forwardRef} from '@angular/core';
 import {ComponentFixture, TestBed, async, fakeAsync, tick} from '@angular/core/testing';
 import {AbstractControl, AsyncValidator, COMPOSITION_BUFFER_MODE, FormControl, FormsModule, NG_ASYNC_VALIDATORS, NgForm, NgModel} from '@angular/forms';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util';
-import {merge} from 'rxjs/observable/merge';
+import {merge} from 'rxjs';
 
 import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integration_spec';
 
@@ -1265,6 +1265,13 @@ import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integrat
            tick();
 
            expect(input.nativeElement.value).toEqual('');
+           expect(control.hasError('email')).toBe(false);
+
+           input.nativeElement.value = '@';
+           dispatchEvent(input.nativeElement, 'input');
+           tick();
+
+           expect(input.nativeElement.value).toEqual('@');
            expect(control.hasError('email')).toBe(true);
 
            input.nativeElement.value = 'test@gmail.com';
@@ -1463,6 +1470,36 @@ import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integrat
            expect(required.nativeElement.getAttribute('minlength')).toEqual(null);
            expect(required.nativeElement.getAttribute('maxlength')).toEqual(null);
            expect(required.nativeElement.getAttribute('pattern')).toEqual(null);
+         }));
+
+      it('should update control status', fakeAsync(() => {
+           const fixture = initTest(NgModelChangeState);
+           const inputEl = fixture.debugElement.query(By.css('input'));
+           const inputNativeEl = inputEl.nativeElement;
+           const onNgModelChange = jasmine.createSpy('onNgModelChange');
+           fixture.componentInstance.onNgModelChange = onNgModelChange;
+           fixture.detectChanges();
+           tick();
+
+           expect(onNgModelChange).not.toHaveBeenCalled();
+
+           inputNativeEl.value = 'updated';
+           onNgModelChange.and.callFake((ngModel: NgModel) => {
+             expect(ngModel.invalid).toBe(true);
+             expect(ngModel.value).toBe('updated');
+           });
+           dispatchEvent(inputNativeEl, 'input');
+           expect(onNgModelChange).toHaveBeenCalled();
+           tick();
+
+           inputNativeEl.value = '333';
+           onNgModelChange.and.callFake((ngModel: NgModel) => {
+             expect(ngModel.invalid).toBe(false);
+             expect(ngModel.value).toBe('333');
+           });
+           dispatchEvent(inputNativeEl, 'input');
+           expect(onNgModelChange).toHaveBeenCalledTimes(2);
+           tick();
          }));
 
     });
@@ -1800,6 +1837,17 @@ class NgModelChangesForm {
   options: any;
 
   log() { this.events.push('fired'); }
+}
+
+@Component({
+  selector: 'ng-model-change-state',
+  template: `
+    <input #ngModel="ngModel" ngModel [maxlength]="4"
+           (ngModelChange)="onNgModelChange(ngModel)">
+  `
+})
+class NgModelChangeState {
+  onNgModelChange = () => {};
 }
 
 function sortedClassList(el: HTMLElement) {

@@ -3,13 +3,17 @@
   "version": "0.0.0-PLACEHOLDER",
   "description": "Angular - service worker tooling!",
   "main": "./bundles/service-worker.umd.js",
-  "module": "./esm5/service-worker.js",
-  "es2015": "./esm2015/service-worker.js",
+  "module": "./fesm5/service-worker.js",
+  "es2015": "./fesm2015/service-worker.js",
+  "esm5": "./esm5/service-worker.js",
+  "esm2015": "./esm2015/service-worker.js",
+  "fesm5": "./fesm5/service-worker.js",
+  "fesm2015": "./fesm2015/service-worker.js",
   "typings": "./service-worker.d.ts",
   "author": "angular",
   "license": "MIT",
   "dependencies": {
-    "tslib": "^1.7.1"
+    "tslib": "^1.9.0"
   },
   "peerDependencies": {
     "@angular/core": "0.0.0-PLACEHOLDER",
@@ -21,5 +25,9 @@
   },
   "bin": {
     "ngsw-config": "./ngsw-config.js"
-  }
+  },
+  "ng-update": {
+    "packageGroup": "NG_UPDATE_PACKAGE_GROUP"
+  },
+  "sideEffects": false
 }

@@ -17,7 +17,7 @@ const globals = {
 };
 
 module.exports = {
-  entry: '../../dist/packages-dist/platform-browser-dynamic/esm5/platform-browser-dynamic.js',
+  entry: '../../dist/packages-dist/platform-browser-dynamic/fesm5/platform-browser-dynamic.js',
   dest: '../../dist/packages-dist/platform-browser-dynamic/bundles/platform-browser-dynamic.umd.js',
   format: 'umd',
   exports: 'named',

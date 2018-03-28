@@ -10,19 +10,12 @@ const globals = {
   '@angular/core': 'ng.core',
   '@angular/platform-browser': 'ng.platformBrowser',
   '@angular/common': 'ng.common',
-  'rxjs/Observable': 'Rx',
-  'rxjs/Observer': 'Rx',
-  'rxjs/Subject': 'Rx',
-
-  'rxjs/observable/of': 'Rx.Observable.prototype',
-
-  'rxjs/operator/concatMap': 'Rx.Observable.prototype',
-  'rxjs/operator/filter': 'Rx.Observable.prototype',
-  'rxjs/operator/map': 'Rx.Observable.prototype',
+  'rxjs': 'rxjs',
+  'rxjs/operators': 'rxjs.operators',
 };
 
 module.exports = {
-  entry: '../../../dist/packages-dist/common/esm5/http.js',
+  entry: '../../../dist/packages-dist/common/fesm5/http.js',
   dest: '../../../dist/packages-dist/common/bundles/common-http.umd.js',
   format: 'umd',
   exports: 'named',

@@ -24,6 +24,7 @@ function main(args) {
   data['compilerOptions']['target'] = 'es5';
   data['bazelOptions']['es5Mode'] = true;
   data['bazelOptions']['tsickle'] = false;
+  data['bazelOptions']['tsickleExternsPath'] = '';
   data['compilerOptions']['outDir'] = path.join(data['compilerOptions']['outDir'], newRoot);
   if (data['angularCompilerOptions']) {
     data['angularCompilerOptions']['expectedOut'] =

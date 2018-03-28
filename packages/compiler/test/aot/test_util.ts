@@ -55,6 +55,7 @@ export const settings: ts.CompilerOptions = {
 export interface EmitterOptions {
   emitMetadata: boolean;
   mockData?: MockDirectory;
+  context?: Map<string, string>;
 }
 
 function calcPathsOnDisc() {
@@ -74,12 +75,16 @@ export class EmittingCompilerHost implements ts.CompilerHost {
   private scriptNames: string[];
   private root = '/';
   private collector = new MetadataCollector();
+  private cachedAddedDirectories: Set<string>|undefined;
 
   constructor(scriptNames: string[], private options: EmitterOptions) {
     // Rewrite references to scripts with '@angular' to its corresponding location in
     // the source tree.
     this.scriptNames = scriptNames.map(f => this.effectiveName(f));
-    this.root = rootPath;
+    this.root = rootPath || this.root;
+    if (options.context) {
+      this.addedFiles = mergeMaps(options.context);
+    }
   }
 
   public writtenAngularFiles(target = new Map<string, string>()): Map<string, string> {
@@ -93,12 +98,20 @@ export class EmittingCompilerHost implements ts.CompilerHost {
   public addScript(fileName: string, content: string) {
     const scriptName = this.effectiveName(fileName);
     this.addedFiles.set(scriptName, content);
+    this.cachedAddedDirectories = undefined;
     this.scriptNames.push(scriptName);
   }
 
   public override(fileName: string, content: string) {
     const scriptName = this.effectiveName(fileName);
     this.addedFiles.set(scriptName, content);
+    this.cachedAddedDirectories = undefined;
+  }
+
+  public addFiles(map: Map<string, string>) {
+    for (const [name, content] of Array.from(map.entries())) {
+      this.addedFiles.set(name, content);
+    }
   }
 
   public addWrittenFile(fileName: string, content: string) {
@@ -115,7 +128,7 @@ export class EmittingCompilerHost implements ts.CompilerHost {
 
   public effectiveName(fileName: string): string {
     const prefix = '@angular/';
-    return fileName.startsWith('@angular/') ?
+    return angularSourcePath && fileName.startsWith(prefix) ?
         path.join(angularSourcePath, fileName.substr(prefix.length)) :
         fileName;
   }
@@ -140,6 +153,7 @@ export class EmittingCompilerHost implements ts.CompilerHost {
 
   directoryExists(directoryName: string): boolean {
     return directoryExists(directoryName, this.options.mockData) ||
+        this.getAddedDirectories().has(directoryName) ||
         (fs.existsSync(directoryName) && fs.statSync(directoryName).isDirectory());
   }
 
@@ -188,6 +202,23 @@ export class EmittingCompilerHost implements ts.CompilerHost {
   }
   useCaseSensitiveFileNames(): boolean { return false; }
   getNewLine(): string { return '\n'; }
+
+  private getAddedDirectories(): Set<string> {
+    let result = this.cachedAddedDirectories;
+    if (!result) {
+      const newCache = new Set<string>();
+      const addFile = (fileName: string) => {
+        const directory = fileName.substr(0, fileName.lastIndexOf('/'));
+        if (!newCache.has(directory)) {
+          newCache.add(directory);
+          addFile(directory);
+        }
+      };
+      Array.from(this.addedFiles.keys()).forEach(addFile);
+      this.cachedAddedDirectories = result = newCache;
+    }
+    return result;
+  }
 }
 
 export class MockCompilerHost implements ts.CompilerHost {
@@ -531,12 +562,45 @@ const minCoreIndex = `
   export * from './src/change_detection';
   export * from './src/metadata';
   export * from './src/di/metadata';
+  export * from './src/di/injectable';
   export * from './src/di/injector';
   export * from './src/di/injection_token';
   export * from './src/linker';
   export * from './src/render';
   export * from './src/codegen_private_exports';
 `;
+
+function readBazelWrittenFilesFrom(
+    bazelPackageRoot: string, packageName: string, map: Map<string, string>,
+    skip: (name: string, fullName: string) => boolean = () => false) {
+  function processDirectory(dir: string, dest: string) {
+    const entries = fs.readdirSync(dir);
+    for (const name of entries) {
+      const fullName = path.join(dir, name);
+      const destName = path.join(dest, name);
+      const stat = fs.statSync(fullName);
+      if (!skip(name, fullName)) {
+        if (stat.isDirectory()) {
+          processDirectory(fullName, destName);
+        } else {
+          const content = fs.readFileSync(fullName, 'utf8');
+          map.set(destName, content);
+        }
+      }
+    }
+  }
+  try {
+    processDirectory(bazelPackageRoot, path.join('/node_modules/@angular', packageName));
+  } catch (e) {
+    console.error(
+        `Consider adding //packages/${packageName} as a data dependency in the BUILD.bazel rule for the failing test`);
+    throw e;
+  }
+}
+
+export function isInBazel(): boolean {
+  return process.env.TEST_SRCDIR != null;
+}
 
 export function setup(
     options: {compileAngular: boolean, compileAnimations: boolean, compileCommon?: boolean} = {
@@ -547,6 +611,36 @@ export function setup(
   let angularFiles = new Map<string, string>();
 
   beforeAll(() => {
+    const sources = process.env.TEST_SRCDIR;
+    if (sources) {
+      // If running under bazel then we get the compiled version of the files from the bazel package
+      // output.
+      const bundles = new Set([
+        'bundles', 'esm2015', 'esm5', 'testing', 'testing.d.ts', 'testing.metadata.json', 'browser',
+        'browser.d.ts'
+      ]);
+      const skipDirs = (name: string) => bundles.has(name);
+      if (options.compileAngular) {
+        // If this fails please add //packages/core:npm_package as a test data dependency.
+        readBazelWrittenFilesFrom(
+            path.join(sources, 'angular/packages/core/npm_package'), 'core', angularFiles,
+            skipDirs);
+      }
+      if (options.compileAnimations) {
+        // If this fails please add //packages/animations:npm_package as a test data dependency.
+        readBazelWrittenFilesFrom(
+            path.join(sources, 'angular/packages/animations/npm_package'), 'animations',
+            angularFiles, skipDirs);
+      }
+      if (options.compileCommon) {
+        // If this fails please add //packages/common:npm_package as a test data dependency.
+        readBazelWrittenFilesFrom(
+            path.join(sources, 'angular/packages/common/npm_package'), 'common', angularFiles,
+            skipDirs);
+      }
+      return;
+    }
+
     if (options.compileAngular) {
       const emittingHost = new EmittingCompilerHost([], {emitMetadata: true});
       emittingHost.addScript('@angular/core/index.ts', minCoreIndex);
@@ -618,7 +712,11 @@ export function expectNoDiagnostics(program: ts.Program) {
     if (diagnostics && diagnostics.length) {
       throw new Error(
           'Errors from TypeScript:\n' +
-          diagnostics.map(d => `${fileInfo(d)}${d.messageText}${lineInfo(d)}`).join(' \n'));
+          diagnostics
+              .map(
+                  d =>
+                      `${fileInfo(d)}${ts.flattenDiagnosticMessageText(d.messageText, '\n')}${lineInfo(d)}`)
+              .join(' \n'));
     }
   }
   expectNoDiagnostics(program.getOptionsDiagnostics());
@@ -697,4 +795,44 @@ function stripNgResourceSuffix(fileName: string): string {
 
 function addNgResourceSuffix(fileName: string): string {
   return `${fileName}.$ngresource$`;
+}
+
+function extractFileNames(directory: MockDirectory): string[] {
+  const result: string[] = [];
+  const scan = (directory: MockDirectory, prefix: string) => {
+    for (let name of Object.getOwnPropertyNames(directory)) {
+      const entry = directory[name];
+      const fileName = `${prefix}/${name}`;
+      if (typeof entry === 'string') {
+        result.push(fileName);
+      } else if (entry) {
+        scan(entry, fileName);
+      }
+    }
+  };
+  scan(directory, '');
+  return result;
+}
+
+export function emitLibrary(
+    context: Map<string, string>, mockData: MockDirectory,
+    scriptFiles?: string[]): Map<string, string> {
+  const emittingHost = new EmittingCompilerHost(
+      scriptFiles || extractFileNames(mockData), {emitMetadata: true, mockData, context});
+  const emittingProgram = ts.createProgram(emittingHost.scripts, settings, emittingHost);
+  expectNoDiagnostics(emittingProgram);
+  emittingProgram.emit();
+  return emittingHost.written;
+}
+
+export function mergeMaps<K, V>(...maps: Map<K, V>[]): Map<K, V> {
+  const result = new Map<K, V>();
+
+  for (const map of maps) {
+    for (const [key, value] of Array.from(map.entries())) {
+      result.set(key, value);
+    }
+  }
+
+  return result;
 }

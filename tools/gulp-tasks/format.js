@@ -26,6 +26,7 @@ const srcsToFmt = [
   `!${I18N_FOLDER}/currencies.ts`,
   `!${I18N_FOLDER}/locale_en.ts`,
   '!tools/gulp-tasks/cldr/extract.js',
+  '!tools/ts-api-guardian/test/fixtures/**',
 ];
 
 module.exports = {

@@ -47,8 +47,10 @@ export class AnimationTrigger {
 
   get containsQueries() { return this.ast.queryCount > 0; }
 
-  matchTransition(currentState: any, nextState: any): AnimationTransitionFactory|null {
-    const entry = this.transitionFactories.find(f => f.match(currentState, nextState));
+  matchTransition(currentState: any, nextState: any, element: any, params: {[key: string]: any}):
+      AnimationTransitionFactory|null {
+    const entry =
+        this.transitionFactories.find(f => f.match(currentState, nextState, element, params));
     return entry || null;
   }
 

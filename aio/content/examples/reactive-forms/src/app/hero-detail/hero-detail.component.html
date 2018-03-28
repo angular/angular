@@ -1,11 +1,11 @@
 <!-- #docplaster -->
 <!-- #docregion -->
   <!-- #docregion buttons -->
-<form [formGroup]="heroForm" (ngSubmit)="onSubmit()" novalidate>
+<form [formGroup]="heroForm" (ngSubmit)="onSubmit()">
   <div style="margin-bottom: 1em">
     <button type="submit"
             [disabled]="heroForm.pristine" class="btn btn-success">Save</button> &nbsp;
-    <button type="reset" (click)="revert()"
+    <button type="button" (click)="revert()"
             [disabled]="heroForm.pristine" class="btn btn-danger">Revert</button>
   </div>
 

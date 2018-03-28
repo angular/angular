@@ -19,9 +19,10 @@ class StackblitzBuilder {
     var packageJson = require(path.join(__dirname, '../examples/shared/boilerplate/cli/package.json'));
     this.examplePackageDependencies = packageJson.dependencies;
 
-    // Add jasmine-core (which is a devDependency) for unit test examples.
+    // Add unit test packages from devDependency for unit test examples
     var devDependencies = packageJson.devDependencies;
     this.examplePackageDependencies['jasmine-core'] = devDependencies['jasmine-core'];
+    this.examplePackageDependencies['jasmine-marbles'] = devDependencies['jasmine-marbles'];
 
     this.copyrights = {};
 

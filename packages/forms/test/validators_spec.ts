@@ -11,11 +11,8 @@ import {describe, expect, it} from '@angular/core/testing/src/testing_internal';
 import {AbstractControl, AsyncValidatorFn, FormArray, FormControl, Validators} from '@angular/forms';
 import {normalizeAsyncValidator} from '@angular/forms/src/directives/normalize_validator';
 import {AsyncValidator, ValidationErrors, ValidatorFn} from '@angular/forms/src/directives/validators';
-import {Observable} from 'rxjs/Observable';
-import {of } from 'rxjs/observable/of';
-import {timer} from 'rxjs/observable/timer';
-import {first} from 'rxjs/operator/first';
-import {map} from 'rxjs/operator/map';
+import {Observable, of , timer} from 'rxjs';
+import {first, map} from 'rxjs/operators';
 
 (function() {
   function validator(key: string, error: any): ValidatorFn {
@@ -159,6 +156,12 @@ import {map} from 'rxjs/operator/map';
     });
 
     describe('email', () => {
+      it('should not error on an empty string',
+         () => expect(Validators.email(new FormControl(''))).toBeNull());
+
+      it('should not error on null',
+         () => expect(Validators.email(new FormControl(null))).toBeNull());
+
       it('should error on invalid email',
          () => expect(Validators.email(new FormControl('some text'))).toEqual({'email': true}));
 
@@ -327,7 +330,8 @@ import {map} from 'rxjs/operator/map';
                  [promiseValidator({'one': true}), promiseValidator({'two': true})]) !;
 
              let errorMap: {[key: string]: any} = undefined !;
-             first.call(v(new FormControl('invalid')))
+             (v(new FormControl('invalid')) as Observable<ValidationErrors|null>)
+                 .pipe(first())
                  .subscribe((errors: {[key: string]: any}) => errorMap = errors);
              tick();
 
@@ -339,7 +343,8 @@ import {map} from 'rxjs/operator/map';
                  new AsyncValidatorDirective('expected', {'one': true}))]) !;
 
              let errorMap: {[key: string]: any} = undefined !;
-             first.call(v(new FormControl('invalid')))
+             (v(new FormControl('invalid')) as Observable<ValidationErrors|null>)
+                 .pipe(first())
                  .subscribe((errors: {[key: string]: any}) => errorMap = errors);
              tick();
 
@@ -350,7 +355,8 @@ import {map} from 'rxjs/operator/map';
              const v = Validators.composeAsync([promiseValidator({'one': true})]) !;
 
              let errorMap: {[key: string]: any} = undefined !;
-             first.call(v(new FormControl('expected')))
+             (v(new FormControl('expected')) as Observable<ValidationErrors|null>)
+                 .pipe(first())
                  .subscribe((errors: {[key: string]: any}) => errorMap = errors);
              tick();
 
@@ -361,7 +367,8 @@ import {map} from 'rxjs/operator/map';
              const v = Validators.composeAsync([promiseValidator({'one': true}), null !]) !;
 
              let errorMap: {[key: string]: any} = undefined !;
-             first.call(v(new FormControl('invalid')))
+             (v(new FormControl('invalid')) as Observable<ValidationErrors|null>)
+                 .pipe(first())
                  .subscribe((errors: {[key: string]: any}) => errorMap = errors);
              tick();
 
@@ -385,7 +392,8 @@ import {map} from 'rxjs/operator/map';
               [observableValidator({'one': true}), observableValidator({'two': true})]) !;
 
           let errorMap: {[key: string]: any} = undefined !;
-          first.call(v(new FormControl('invalid')))
+          (v(new FormControl('invalid')) as Observable<ValidationErrors|null>)
+              .pipe(first())
               .subscribe((errors: {[key: string]: any}) => errorMap = errors);
 
           expect(errorMap).toEqual({'one': true, 'two': true});
@@ -396,7 +404,8 @@ import {map} from 'rxjs/operator/map';
               [normalizeAsyncValidator(new AsyncValidatorDirective('expected', {'one': true}))]) !;
 
           let errorMap: {[key: string]: any} = undefined !;
-          first.call(v(new FormControl('invalid')))
+          (v(new FormControl('invalid')) as Observable<ValidationErrors|null>)
+              .pipe(first())
               .subscribe((errors: {[key: string]: any}) => errorMap = errors) !;
 
           expect(errorMap).toEqual({'one': true});
@@ -406,7 +415,8 @@ import {map} from 'rxjs/operator/map';
           const v = Validators.composeAsync([observableValidator({'one': true})]) !;
 
           let errorMap: {[key: string]: any} = undefined !;
-          first.call(v(new FormControl('expected')))
+          (v(new FormControl('expected')) as Observable<ValidationErrors|null>)
+              .pipe(first())
               .subscribe((errors: {[key: string]: any}) => errorMap = errors);
 
           expect(errorMap).toBeNull();
@@ -416,7 +426,8 @@ import {map} from 'rxjs/operator/map';
           const v = Validators.composeAsync([observableValidator({'one': true}), null !]) !;
 
           let errorMap: {[key: string]: any} = undefined !;
-          first.call(v(new FormControl('invalid')))
+          (v(new FormControl('invalid')) as Observable<ValidationErrors|null>)
+              .pipe(first())
               .subscribe((errors: {[key: string]: any}) => errorMap = errors);
 
           expect(errorMap).toEqual({'one': true});
@@ -424,14 +435,15 @@ import {map} from 'rxjs/operator/map';
 
         it('should wait for all validators before setting errors', fakeAsync(() => {
              function getTimerObs(time: number, errorMap: {[key: string]: any}): AsyncValidatorFn {
-               return (c: AbstractControl) => { return map.call(timer(time), () => errorMap); };
+               return (c: AbstractControl) => { return timer(time).pipe(map(() => errorMap)); };
              }
 
              const v = Validators.composeAsync(
                  [getTimerObs(100, {one: true}), getTimerObs(200, {two: true})]) !;
 
              let errorMap: {[key: string]: any} = undefined !;
-             first.call(v(new FormControl('invalid')))
+             (v(new FormControl('invalid')) as Observable<ValidationErrors|null>)
+                 .pipe(first())
                  .subscribe((errors: {[key: string]: any}) => errorMap = errors);
 
              tick(100);
@@ -442,7 +454,6 @@ import {map} from 'rxjs/operator/map';
              expect(errorMap).toEqual(
                  {one: true, two: true}, `Expected errors to merge once all validators resolved.`);
            }));
-
       });
 
     });
