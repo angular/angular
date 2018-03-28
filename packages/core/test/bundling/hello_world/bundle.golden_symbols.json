@@ -27,7 +27,7 @@
     "name": "HelloWorld"
   },
   {
-    "name": "INeedToExistEvenThoughtIAmNotNeeded"
+    "name": "INeedToExistEvenThoughIAmNotNeeded"
   },
   {
     "name": "Immediate"
@@ -43,6 +43,9 @@
   },
   {
     "name": "QueueAction"
+  },
+  {
+    "name": "ROOT_DIRECTIVE_INDICES"
   },
   {
     "name": "SafeSubscriber"
@@ -96,6 +99,9 @@
     "name": "__extends$20"
   },
   {
+    "name": "_enable_super_gross_mode_that_will_cause_bad_things"
+  },
+  {
     "name": "_renderCompCount"
   },
   {
@@ -103,6 +109,9 @@
   },
   {
     "name": "baseDirectiveCreate"
+  },
+  {
+    "name": "buildTNodeFlags"
   },
   {
     "name": "callHooks"
@@ -124,6 +133,9 @@
   },
   {
     "name": "createLView"
+  },
+  {
+    "name": "createTNode"
   },
   {
     "name": "createTView"
@@ -162,6 +174,9 @@
     "name": "executeInitHooks"
   },
   {
+    "name": "firstTemplatePass"
+  },
+  {
     "name": "flattenUnsubscriptionErrors"
   },
   {
@@ -178,6 +193,9 @@
   },
   {
     "name": "hostElement"
+  },
+  {
+    "name": "hostReportError"
   },
   {
     "name": "initChangeDetectorIfExisting"
@@ -228,9 +246,6 @@
     "name": "renderComponent"
   },
   {
-    "name": "renderComponentOrTemplate"
-  },
-  {
     "name": "renderEmbeddedTemplate"
   },
   {
@@ -238,9 +253,6 @@
   },
   {
     "name": "resolveRendererType2"
-  },
-  {
-    "name": "rootDirectiveIndices"
   },
   {
     "name": "runIfPresent"

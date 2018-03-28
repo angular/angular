@@ -6,9 +6,8 @@ import { HttpClient } from '@angular/common/http';
 import { MatProgressBar, MatSidenav } from '@angular/material';
 import { By } from '@angular/platform-browser';
 
-import { Observable } from 'rxjs/Observable';
-import { timer } from 'rxjs/observable/timer';
-import 'rxjs/add/operator/mapTo';
+import { Observable, timer } from 'rxjs';
+import { mapTo } from 'rxjs/operators';
 
 import { AppComponent } from './app.component';
 import { AppModule } from './app.module';
@@ -1372,6 +1371,6 @@ class TestHttpClient {
     }
 
     // Preserve async nature of `HttpClient`.
-    return timer(1).mapTo(data);
+    return timer(1).pipe(mapTo(data));
   }
 }

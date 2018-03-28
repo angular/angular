@@ -1,8 +1,7 @@
 import { Component, CUSTOM_ELEMENTS_SCHEMA, DebugElement } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
-import { BehaviorSubject } from 'rxjs/BehaviorSubject';
-import { asap } from 'rxjs/scheduler/asap';
+import { asapScheduler as asap, BehaviorSubject } from 'rxjs';
 
 import { ScrollService } from 'app/shared/scroll.service';
 import { TocComponent } from './toc.component';
@@ -246,12 +245,10 @@ describe('TocComponent', () => {
 
   describe('when in side panel (not embedded)', () => {
     let fixture: ComponentFixture<HostNotEmbeddedTocComponent>;
-    let scrollToTopSpy: jasmine.Spy;
 
     beforeEach(() => {
       fixture = TestBed.createComponent(HostNotEmbeddedTocComponent);
 
-      scrollToTopSpy = TestBed.get(ScrollService).scrollToTop;
       tocComponentDe = fixture.debugElement.children[0];
       tocComponent = tocComponentDe.componentInstance;
       tocService = TestBed.get(TocService);

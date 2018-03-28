@@ -12,7 +12,7 @@ import {Provider} from '../../core';
 import {RendererType2} from '../../render/api';
 import {Type} from '../../type';
 import {resolveRendererType2} from '../../view/util';
-
+import {CssSelector} from './projection';
 
 
 /**
@@ -60,6 +60,9 @@ export interface DirectiveDef<T> {
 
   /** Function that makes a directive public to the DI system. */
   diPublic: ((def: DirectiveDef<any>) => void)|null;
+
+  /** The selector that will be used to match nodes to this directive. */
+  selector: CssSelector;
 
   /**
    * A dictionary mapping the inputs' minified property names to their public API names, which
@@ -123,13 +126,6 @@ export interface DirectiveDef<T> {
  */
 export interface ComponentDef<T> extends DirectiveDef<T> {
   /**
-   * The tag name which should be used by the component.
-   *
-   * NOTE: only used with component directives.
-   */
-  readonly tag: string;
-
-  /**
    * The View template of the component.
    *
    * NOTE: only used with component directives.
@@ -157,6 +153,22 @@ export interface ComponentDef<T> extends DirectiveDef<T> {
    * children only.
    */
   readonly viewProviders?: Provider[];
+
+  /**
+   * Registry of directives and components that may be found in this view.
+   *
+   * The property is either an array of `DirectiveDef`s or a function which returns the array of
+   * `DirectiveDef`s. The function is necessary to be able to support forward declarations.
+   */
+  directiveDefs: DirectiveDefListOrFactory|null;
+
+  /**
+   * Registry of pipes that may be found in this view.
+   *
+   * The property is either an array of `PipeDefs`s or a function which returns the array of
+   * `PipeDefs`s. The function is necessary to be able to support forward declarations.
+   */
+  pipeDefs: PipeDefListOrFactory|null;
 }
 
 /**
@@ -172,6 +184,13 @@ export interface ComponentDef<T> extends DirectiveDef<T> {
  * See: {@link definePipe}
  */
 export interface PipeDef<T> {
+  /**
+   * Pipe name.
+   *
+   * Used to resolve pipe in templates.
+   */
+  name: string;
+
   /**
    * factory function used to create a new directive instance.
    *
@@ -192,137 +211,26 @@ export interface PipeDef<T> {
   onDestroy: (() => void)|null;
 }
 
-/**
- * Arguments for `defineDirective`
- */
-export interface DirectiveDefArgs<T> {
-  /**
-   * Directive type, needed to configure the injector.
-   */
-  type: Type<T>;
-
-  /**
-   * Factory method used to create an instance of directive.
-   */
-  factory: () => T | ({0: T} & any[]); /* trying to say T | [T, ...any] */
-
-  /**
-   * Static attributes to set on host element.
-   *
-   * Even indices: attribute name
-   * Odd indices: attribute value
-   */
-  attributes?: string[];
-
-  /**
-   * A map of input names.
-   *
-   * The format is in: `{[actualPropertyName: string]:string}`.
-   *
-   * Which the minifier may translate to: `{[minifiedPropertyName: string]:string}`.
-   *
-   * This allows the render to re-construct the minified and non-minified names
-   * of properties.
-   */
-  inputs?: {[P in keyof T]?: string};
-
-  /**
-   * A map of output names.
-   *
-   * The format is in: `{[actualPropertyName: string]:string}`.
-   *
-   * Which the minifier may translate to: `{[minifiedPropertyName: string]:string}`.
-   *
-   * This allows the render to re-construct the minified and non-minified names
-   * of properties.
-   */
-  outputs?: {[P in keyof T]?: string};
-
-  /**
-   * A list of optional features to apply.
-   *
-   * See: {@link NgOnChangesFeature}, {@link PublicFeature}
-   */
-  features?: DirectiveDefFeature[];
-
-  /**
-   * Function executed by the parent template to allow child directive to apply host bindings.
-   */
-  hostBindings?: (directiveIndex: number, elementIndex: number) => void;
-
-  /**
-   * Defines the name that can be used in the template to assign this directive to a variable.
-   *
-   * See: {@link Directive.exportAs}
-   */
-  exportAs?: string;
-}
-
-/**
- * Arguments for `defineComponent`.
- */
-export interface ComponentDefArgs<T> extends DirectiveDefArgs<T> {
-  /**
-   * HTML tag name to use in place where this component should be instantiated.
-   */
-  tag: string;
-
-  /**
-   * Template function use for rendering DOM.
-   *
-   * This function has following structure.
-   *
-   * ```
-   * function Template<T>(ctx:T, creationMode: boolean) {
-   *   if (creationMode) {
-   *     // Contains creation mode instructions.
-   *   }
-   *   // Contains binding update instructions
-   * }
-   * ```
-   *
-   * Common instructions are:
-   * Creation mode instructions:
-   *  - `elementStart`, `elementEnd`
-   *  - `text`
-   *  - `container`
-   *  - `listener`
-   *
-   * Binding update instructions:
-   * - `bind`
-   * - `elementAttribute`
-   * - `elementProperty`
-   * - `elementClass`
-   * - `elementStyle`
-   *
-   */
-  template: ComponentTemplate<T>;
-
-  /**
-   * A list of optional features to apply.
-   *
-   * See: {@link NgOnChancesFeature}, {@link PublicFeature}
-   */
-  features?: ComponentDefFeature[];
-
-  rendererType?: RendererType2;
-
-  changeDetection?: ChangeDetectionStrategy;
-
-  /**
-   * Defines the set of injectable objects that are visible to a Directive and its light DOM
-   * children.
-   */
-  providers?: Provider[];
-
-  /**
-   * Defines the set of injectable objects that are visible to its view DOM children.
-   */
-  viewProviders?: Provider[];
-}
-
 export type DirectiveDefFeature = <T>(directiveDef: DirectiveDef<T>) => void;
 export type ComponentDefFeature = <T>(componentDef: ComponentDef<T>) => void;
+
+/**
+ * Type used for directiveDefs on component definition.
+ *
+ * The function is necessary to be able to support forward declarations.
+ */
+export type DirectiveDefListOrFactory = (() => DirectiveDefList) | DirectiveDefList;
+
+export type DirectiveDefList = (DirectiveDef<any>| ComponentDef<any>)[];
+
+/**
+ * Type used for PipeDefs on component definition.
+ *
+ * The function is necessary to be able to support forward declarations.
+ */
+export type PipeDefListOrFactory = (() => PipeDefList) | PipeDefList;
+
+export type PipeDefList = PipeDef<any>[];
 
 // Note: This hack is necessary so we don't erroneously get a circular dependency
 // failure based on types.

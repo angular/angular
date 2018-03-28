@@ -19,10 +19,10 @@ import {EmbeddedViewRef as viewEngine_EmbeddedViewRef, ViewRef as viewEngine_Vie
 import {Type} from '../type';
 
 import {assertLessThan, assertNotNull} from './assert';
-import {assertPreviousIsParent, getDirectiveInstance, getPreviousOrParentNode, getRenderer, renderEmbeddedTemplate} from './instructions';
+import {assertPreviousIsParent, enterView, getDirectiveInstance, getPreviousOrParentNode, getRenderer, isComponent, renderEmbeddedTemplate} from './instructions';
 import {ComponentTemplate, DirectiveDef} from './interfaces/definition';
 import {LInjector} from './interfaces/injector';
-import {LContainerNode, LElementNode, LNode, LNodeFlags, LViewNode} from './interfaces/node';
+import {LContainerNode, LElementNode, LNode, LNodeType, LViewNode, TNodeFlags} from './interfaces/node';
 import {QueryReadType} from './interfaces/query';
 import {Renderer3} from './interfaces/renderer';
 import {LView} from './interfaces/view';
@@ -274,7 +274,7 @@ export function injectChangeDetectorRef(): viewEngine_ChangeDetectorRef {
 export function injectAttribute(attrName: string): string|undefined {
   ngDevMode && assertPreviousIsParent();
   const lElement = getPreviousOrParentNode() as LElementNode;
-  ngDevMode && assertNodeType(lElement, LNodeFlags.Element);
+  ngDevMode && assertNodeType(lElement, LNodeType.Element);
   const tElement = lElement.tNode !;
   ngDevMode && assertNotNull(tElement, 'expecting tNode');
   const attrs = tElement.attrs;
@@ -299,12 +299,10 @@ export function getOrCreateChangeDetectorRef(
   if (di.changeDetectorRef) return di.changeDetectorRef;
 
   const currentNode = di.node;
-  if (currentNode.data === null) {
-    // if data is null, this node is a regular element node (not a component)
-    return di.changeDetectorRef = getOrCreateHostChangeDetector(currentNode.view.node);
-  } else if ((currentNode.flags & LNodeFlags.TYPE_MASK) === LNodeFlags.Element) {
-    // if it's an element node with data, it's a component and context will be set later
+  if (isComponent(currentNode.tNode !)) {
     return di.changeDetectorRef = createViewRef(currentNode.data as LView, context);
+  } else if (currentNode.type === LNodeType.Element) {
+    return di.changeDetectorRef = getOrCreateHostChangeDetector(currentNode.view.node);
   }
   return null !;
 }
@@ -319,7 +317,8 @@ function getOrCreateHostChangeDetector(currentNode: LViewNode | LElementNode):
   return existingRef ?
       existingRef :
       createViewRef(
-          hostNode.data as LView, hostNode.view.data[hostNode.flags >> LNodeFlags.INDX_SHIFT]);
+          hostNode.data as LView,
+          hostNode.view.directives ![hostNode.tNode !.flags >> TNodeFlags.INDX_SHIFT]);
 }
 
 /**
@@ -328,7 +327,7 @@ function getOrCreateHostChangeDetector(currentNode: LViewNode | LElementNode):
  * returns itself.
  */
 function getClosestComponentAncestor(node: LViewNode | LElementNode): LElementNode {
-  while ((node.flags & LNodeFlags.TYPE_MASK) === LNodeFlags.View) {
+  while (node.type === LNodeType.View) {
     node = node.view.node;
   }
   return node as LElementNode;
@@ -386,21 +385,21 @@ export function getOrCreateInjectable<T>(
 
       // The size of the node's directive's list is stored in certain bits of the node's flags,
       // so exact it with a mask and shift it back such that the bits reflect the real value.
-      const flags = node.flags;
-      const size = (flags & LNodeFlags.SIZE_MASK) >> LNodeFlags.SIZE_SHIFT;
+      const flags = node.tNode !.flags;
+      const size = (flags & TNodeFlags.SIZE_MASK) >> TNodeFlags.SIZE_SHIFT;
 
       if (size !== 0) {
         // The start index of the directives list is also part of the node's flags, but there is
         // nothing to the "left" of it so it doesn't need a mask.
-        const start = flags >> LNodeFlags.INDX_SHIFT;
+        const start = flags >> TNodeFlags.INDX_SHIFT;
 
-        const tData = node.view.tView.data;
+        const defs = node.view.tView.directives !;
         for (let i = start, ii = start + size; i < ii; i++) {
           // Get the definition for the directive at this index and, if it is injectable (diPublic),
           // and matches the given token, return the directive instance.
-          const directiveDef = tData[i] as DirectiveDef<any>;
+          const directiveDef = defs[i] as DirectiveDef<any>;
           if (directiveDef.diPublic && directiveDef.type == token) {
-            return getDirectiveInstance(node.view.data[i]);
+            return getDirectiveInstance(node.view.directives ![i]);
           }
         }
       }
@@ -510,10 +509,8 @@ export class ReadFromInjectorFn<T> {
  * @returns The ElementRef instance to use
  */
 export function getOrCreateElementRef(di: LInjector): viewEngine_ElementRef {
-  return di.elementRef ||
-      (di.elementRef = new ElementRef(
-           ((di.node.flags & LNodeFlags.TYPE_MASK) === LNodeFlags.Container) ? null :
-                                                                               di.node.native));
+  return di.elementRef || (di.elementRef = new ElementRef(
+                               di.node.type === LNodeType.Container ? null : di.node.native));
 }
 
 export const QUERY_READ_TEMPLATE_REF = <QueryReadType<viewEngine_TemplateRef<any>>>(
@@ -530,12 +527,12 @@ export const QUERY_READ_ELEMENT_REF =
 
 export const QUERY_READ_FROM_NODE =
     (new ReadFromInjectorFn<any>((injector: LInjector, node: LNode, directiveIdx: number) => {
-      ngDevMode && assertNodeOfPossibleTypes(node, LNodeFlags.Container, LNodeFlags.Element);
+      ngDevMode && assertNodeOfPossibleTypes(node, LNodeType.Container, LNodeType.Element);
       if (directiveIdx > -1) {
-        return node.view.data[directiveIdx];
-      } else if ((node.flags & LNodeFlags.TYPE_MASK) === LNodeFlags.Element) {
+        return node.view.directives ![directiveIdx];
+      } else if (node.type === LNodeType.Element) {
         return getOrCreateElementRef(injector);
-      } else if ((node.flags & LNodeFlags.TYPE_MASK) === LNodeFlags.Container) {
+      } else if (node.type === LNodeType.Container) {
         return getOrCreateTemplateRef(injector);
       }
       throw new Error('fail');
@@ -613,7 +610,7 @@ class ViewContainerRef implements viewEngine_ViewContainerRef {
       // Look for the parent node and increment its dynamic view count.
       if (this._node.parent !== null && this._node.parent.data !== null) {
         ngDevMode &&
-            assertNodeOfPossibleTypes(this._node.parent, LNodeFlags.View, LNodeFlags.Element);
+            assertNodeOfPossibleTypes(this._node.parent, LNodeType.View, LNodeType.Element);
         this._node.parent.data.dynamicViewCount++;
       }
     }
@@ -635,7 +632,7 @@ class ViewContainerRef implements viewEngine_ViewContainerRef {
  * @returns The TemplateRef instance to use
  */
 export function getOrCreateTemplateRef<T>(di: LInjector): viewEngine_TemplateRef<T> {
-  ngDevMode && assertNodeType(di.node, LNodeFlags.Container);
+  ngDevMode && assertNodeType(di.node, LNodeType.Container);
   const data = (di.node as LContainerNode).data;
   return di.templateRef || (di.templateRef = new TemplateRef<any>(
                                 getOrCreateElementRef(di), data.template !, getRenderer()));

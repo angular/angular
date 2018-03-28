@@ -7,7 +7,7 @@
  */
 
 import {detectChanges} from '../../src/render3/index';
-import {container, containerRefreshEnd, containerRefreshStart, elementEnd, elementStart, embeddedViewEnd, embeddedViewStart, load, projection, projectionDef, text} from '../../src/render3/instructions';
+import {container, containerRefreshEnd, containerRefreshStart, elementEnd, elementStart, embeddedViewEnd, embeddedViewStart, load, loadDirective, projection, projectionDef, text} from '../../src/render3/instructions';
 
 import {createComponent, renderComponent, toHtml} from './render_util';
 
@@ -31,11 +31,12 @@ describe('content projection', () => {
      */
     const Parent = createComponent('parent', function(ctx: any, cm: boolean) {
       if (cm) {
-        elementStart(0, Child);
-        { text(2, 'content'); }
+        elementStart(0, 'child');
+        { text(1, 'content'); }
         elementEnd();
       }
-    });
+    }, [Child.ngComponentDef]);
+
     const parent = renderComponent(Parent);
     expect(toHtml(parent)).toEqual('<child><div>content</div></child>');
   });
@@ -49,11 +50,12 @@ describe('content projection', () => {
     });
     const Parent = createComponent('parent', function(ctx: any, cm: boolean) {
       if (cm) {
-        elementStart(0, Child);
-        { text(2, 'content'); }
+        elementStart(0, 'child');
+        { text(1, 'content'); }
         elementEnd();
       }
-    });
+    }, [Child.ngComponentDef]);
+
     const parent = renderComponent(Parent);
     expect(toHtml(parent)).toEqual('<child>content</child>');
   });
@@ -70,23 +72,24 @@ describe('content projection', () => {
     const Child = createComponent('child', function(ctx: any, cm: boolean) {
       if (cm) {
         projectionDef(0);
-        elementStart(1, GrandChild);
-        { projection(3, 0); }
+        elementStart(1, 'grand-child');
+        { projection(2, 0); }
         elementEnd();
       }
-    });
+    }, [GrandChild.ngComponentDef]);
     const Parent = createComponent('parent', function(ctx: any, cm: boolean) {
       if (cm) {
-        elementStart(0, Child);
+        elementStart(0, 'child');
         {
-          elementStart(2, 'b');
-          text(3, 'Hello');
+          elementStart(1, 'b');
+          text(2, 'Hello');
           elementEnd();
-          text(4, 'World!');
+          text(3, 'World!');
         }
         elementEnd();
       }
-    });
+    }, [Child.ngComponentDef]);
+
     const parent = renderComponent(Parent);
     expect(toHtml(parent))
         .toEqual('<child><grand-child><div><b>Hello</b>World!</div></grand-child></child>');
@@ -117,14 +120,15 @@ describe('content projection', () => {
      */
     const Parent = createComponent('parent', (ctx: any, cm: boolean) => {
       if (cm) {
-        elementStart(0, Child);
+        elementStart(0, 'child');
         {
-          elementStart(2, ProjectedComp);
+          elementStart(1, 'projected-comp');
           elementEnd();
         }
         elementEnd();
       }
-    });
+    }, [Child.ngComponentDef, ProjectedComp.ngComponentDef]);
+
     const parent = renderComponent(Parent);
     expect(toHtml(parent))
         .toEqual('<child><div><projected-comp>content</projected-comp></div></child>');
@@ -141,15 +145,15 @@ describe('content projection', () => {
     });
     const Parent = createComponent('parent', function(ctx: {value: any}, cm: boolean) {
       if (cm) {
-        elementStart(0, Child);
+        elementStart(0, 'child');
         {
-          text(2, '(');
-          container(3);
-          text(4, ')');
+          text(1, '(');
+          container(2);
+          text(3, ')');
         }
         elementEnd();
       }
-      containerRefreshStart(3);
+      containerRefreshStart(2);
       {
         if (ctx.value) {
           if (embeddedViewStart(0)) {
@@ -159,7 +163,8 @@ describe('content projection', () => {
         }
       }
       containerRefreshEnd();
-    });
+    }, [Child.ngComponentDef]);
+
     const parent = renderComponent(Parent);
     expect(toHtml(parent)).toEqual('<child><div>()</div></child>');
     parent.value = true;
@@ -179,11 +184,11 @@ describe('content projection', () => {
     });
     const Parent = createComponent('parent', function(ctx: {value: any}, cm: boolean) {
       if (cm) {
-        elementStart(0, Child);
-        { container(2); }
+        elementStart(0, 'child');
+        { container(1); }
         elementEnd();
       }
-      containerRefreshStart(2);
+      containerRefreshStart(1);
       {
         if (ctx.value) {
           if (embeddedViewStart(0)) {
@@ -193,7 +198,8 @@ describe('content projection', () => {
         }
       }
       containerRefreshEnd();
-    });
+    }, [Child.ngComponentDef]);
+
     const parent = renderComponent(Parent);
     expect(toHtml(parent)).toEqual('<child></child>');
 
@@ -217,15 +223,15 @@ describe('content projection', () => {
     });
     const Parent = createComponent('parent', function(ctx: {value: any}, cm: boolean) {
       if (cm) {
-        elementStart(0, Child);
+        elementStart(0, 'child');
         {
-          text(2, '(');
-          container(3);
-          text(4, ')');
+          text(1, '(');
+          container(2);
+          text(3, ')');
         }
         elementEnd();
       }
-      containerRefreshStart(3);
+      containerRefreshStart(2);
       {
         if (ctx.value) {
           if (embeddedViewStart(0)) {
@@ -240,7 +246,8 @@ describe('content projection', () => {
         }
       }
       containerRefreshEnd();
-    });
+    }, [Child.ngComponentDef]);
+
     const parent = renderComponent(Parent);
     expect(toHtml(parent)).toEqual('<child><div>(else)</div></child>');
     parent.value = true;
@@ -289,14 +296,15 @@ describe('content projection', () => {
      */
     const Parent = createComponent('parent', function(ctx: any, cm: boolean) {
       if (cm) {
-        elementStart(0, Child);
+        elementStart(0, 'child');
         {
-          childCmptInstance = load(1);
-          text(2, 'content');
+          childCmptInstance = loadDirective(0);
+          text(1, 'content');
         }
         elementEnd();
       }
-    });
+    }, [Child.ngComponentDef]);
+
     const parent = renderComponent(Parent);
     expect(toHtml(parent)).toEqual('<child><div><span>content</span></div></child>');
 
@@ -340,14 +348,15 @@ describe('content projection', () => {
         */
        const Parent = createComponent('parent', function(ctx: any, cm: boolean) {
          if (cm) {
-           elementStart(0, Child);
+           elementStart(0, 'child');
            {
-             childCmptInstance = load(1);
-             text(2, 'content');
+             childCmptInstance = loadDirective(0);
+             text(1, 'content');
            }
            elementEnd();
          }
-       });
+       }, [Child.ngComponentDef]);
+
        const parent = renderComponent(Parent);
        expect(toHtml(parent)).toEqual('<child><div>content</div></child>');
 
@@ -393,14 +402,15 @@ describe('content projection', () => {
         */
        const Parent = createComponent('parent', function(ctx: any, cm: boolean) {
          if (cm) {
-           elementStart(0, Child);
+           elementStart(0, 'child');
            {
-             childCmptInstance = load(1);
-             text(2, 'content');
+             childCmptInstance = loadDirective(0);
+             text(1, 'content');
            }
            elementEnd();
          }
-       });
+       }, [Child.ngComponentDef]);
+
        const parent = renderComponent(Parent);
        expect(toHtml(parent)).toEqual('<child><div>before-content-after</div></child>');
 
@@ -431,11 +441,12 @@ describe('content projection', () => {
      */
     const Parent = createComponent('parent', function(ctx: any, cm: boolean) {
       if (cm) {
-        elementStart(0, Child);
-        { text(2, 'content'); }
+        elementStart(0, 'child');
+        { text(1, 'content'); }
         elementEnd();
       }
-    });
+    }, [Child.ngComponentDef]);
+
     const parent = renderComponent(Parent);
     expect(toHtml(parent)).toEqual('<child><div></div><span>content</span></child>');
   });
@@ -484,14 +495,15 @@ describe('content projection', () => {
      */
     const Parent = createComponent('parent', function(ctx: any, cm: boolean) {
       if (cm) {
-        elementStart(0, Child);
+        elementStart(0, 'child');
         {
-          childCmptInstance = load(1);
-          text(2, 'content');
+          childCmptInstance = loadDirective(0);
+          text(1, 'content');
         }
         elementEnd();
       }
-    });
+    }, [Child.ngComponentDef]);
+
     const parent = renderComponent(Parent);
     expect(toHtml(parent)).toEqual('<child>content<div></div></child>');
 
@@ -529,18 +541,18 @@ describe('content projection', () => {
        */
       const Parent = createComponent('parent', function(ctx: any, cm: boolean) {
         if (cm) {
-          elementStart(0, Child);
+          elementStart(0, 'child');
           {
-            elementStart(2, 'span', ['title', 'toFirst']);
-            { text(3, '1'); }
+            elementStart(1, 'span', ['title', 'toFirst']);
+            { text(2, '1'); }
             elementEnd();
-            elementStart(4, 'span', ['title', 'toSecond']);
-            { text(5, '2'); }
+            elementStart(3, 'span', ['title', 'toSecond']);
+            { text(4, '2'); }
             elementEnd();
           }
           elementEnd();
         }
-      });
+      }, [Child.ngComponentDef]);
 
       const parent = renderComponent(Parent);
       expect(toHtml(parent))
@@ -575,18 +587,18 @@ describe('content projection', () => {
        */
       const Parent = createComponent('parent', function(ctx: any, cm: boolean) {
         if (cm) {
-          elementStart(0, Child);
+          elementStart(0, 'child');
           {
-            elementStart(2, 'span', ['class', 'toFirst']);
-            { text(3, '1'); }
+            elementStart(1, 'span', ['class', 'toFirst']);
+            { text(2, '1'); }
             elementEnd();
-            elementStart(4, 'span', ['class', 'toSecond']);
-            { text(5, '2'); }
+            elementStart(3, 'span', ['class', 'toSecond']);
+            { text(4, '2'); }
             elementEnd();
           }
           elementEnd();
         }
-      });
+      }, [Child.ngComponentDef]);
 
       const parent = renderComponent(Parent);
       expect(toHtml(parent))
@@ -621,18 +633,18 @@ describe('content projection', () => {
        */
       const Parent = createComponent('parent', function(ctx: any, cm: boolean) {
         if (cm) {
-          elementStart(0, Child);
+          elementStart(0, 'child');
           {
-            elementStart(2, 'span', ['class', 'other toFirst']);
-            { text(3, '1'); }
+            elementStart(1, 'span', ['class', 'other toFirst']);
+            { text(2, '1'); }
             elementEnd();
-            elementStart(4, 'span', ['class', 'toSecond noise']);
-            { text(5, '2'); }
+            elementStart(3, 'span', ['class', 'toSecond noise']);
+            { text(4, '2'); }
             elementEnd();
           }
           elementEnd();
         }
-      });
+      }, [Child.ngComponentDef]);
 
       const parent = renderComponent(Parent);
       expect(toHtml(parent))
@@ -667,18 +679,18 @@ describe('content projection', () => {
        */
       const Parent = createComponent('parent', function(ctx: any, cm: boolean) {
         if (cm) {
-          elementStart(0, Child);
+          elementStart(0, 'child');
           {
-            elementStart(2, 'span', ['class', 'toFirst']);
-            { text(3, '1'); }
+            elementStart(1, 'span', ['class', 'toFirst']);
+            { text(2, '1'); }
             elementEnd();
-            elementStart(4, 'span', ['class', 'toSecond']);
-            { text(5, '2'); }
+            elementStart(3, 'span', ['class', 'toSecond']);
+            { text(4, '2'); }
             elementEnd();
           }
           elementEnd();
         }
-      });
+      }, [Child.ngComponentDef]);
 
       const parent = renderComponent(Parent);
       expect(toHtml(parent))
@@ -711,19 +723,19 @@ describe('content projection', () => {
        */
       const Parent = createComponent('parent', function(ctx: any, cm: boolean) {
         if (cm) {
-          elementStart(0, Child);
+          elementStart(0, 'child');
           {
-            elementStart(2, 'span', ['class', 'toFirst']);
-            { text(3, '1'); }
+            elementStart(1, 'span', ['class', 'toFirst']);
+            { text(2, '1'); }
             elementEnd();
-            elementStart(4, 'span');
-            { text(5, 'remaining'); }
+            elementStart(3, 'span');
+            { text(4, 'remaining'); }
             elementEnd();
-            text(6, 'more remaining');
+            text(5, 'more remaining');
           }
           elementEnd();
         }
-      });
+      }, [Child.ngComponentDef]);
 
       const parent = renderComponent(Parent);
       expect(toHtml(parent))
@@ -757,19 +769,19 @@ describe('content projection', () => {
        */
       const Parent = createComponent('parent', function(ctx: any, cm: boolean) {
         if (cm) {
-          elementStart(0, Child);
+          elementStart(0, 'child');
           {
-            elementStart(2, 'span');
-            { text(3, '1'); }
+            elementStart(1, 'span');
+            { text(2, '1'); }
             elementEnd();
-            elementStart(4, 'span', ['class', 'toSecond']);
-            { text(5, '2'); }
+            elementStart(3, 'span', ['class', 'toSecond']);
+            { text(4, '2'); }
             elementEnd();
-            text(6, 'remaining');
+            text(5, 'remaining');
           }
           elementEnd();
         }
-      });
+      }, [Child.ngComponentDef]);
 
       const parent = renderComponent(Parent);
       expect(toHtml(parent))
@@ -807,16 +819,16 @@ describe('content projection', () => {
       const Child = createComponent('child', function(ctx: any, cm: boolean) {
         if (cm) {
           projectionDef(0);
-          elementStart(1, GrandChild);
+          elementStart(1, 'grand-child');
           {
-            projection(3, 0);
-            elementStart(4, 'span');
-            { text(5, 'in child template'); }
+            projection(2, 0);
+            elementStart(3, 'span');
+            { text(4, 'in child template'); }
             elementEnd();
           }
           elementEnd();
         }
-      });
+      }, [GrandChild.ngComponentDef]);
 
       /**
        * <child>
@@ -827,15 +839,15 @@ describe('content projection', () => {
        */
       const Parent = createComponent('parent', function(ctx: any, cm: boolean) {
         if (cm) {
-          elementStart(0, Child);
+          elementStart(0, 'child');
           {
-            elementStart(2, 'span');
-            { text(3, 'parent content'); }
+            elementStart(1, 'span');
+            { text(2, 'parent content'); }
             elementEnd();
           }
           elementEnd();
         }
-      });
+      }, [Child.ngComponentDef]);
 
       const parent = renderComponent(Parent);
       expect(toHtml(parent))
@@ -871,16 +883,16 @@ describe('content projection', () => {
       const CardWithTitle = createComponent('card-with-title', function(ctx: any, cm: boolean) {
         if (cm) {
           projectionDef(0);
-          elementStart(1, Card);
+          elementStart(1, 'card');
           {
-            elementStart(3, 'h1', ['card-title', '']);
-            { text(4, 'Title'); }
+            elementStart(2, 'h1', ['card-title', '']);
+            { text(3, 'Title'); }
             elementEnd();
-            projection(5, 0, 0, ['card-content', '']);
+            projection(4, 0, 0, ['card-content', '']);
           }
           elementEnd();
         }
-      });
+      }, [Card.ngComponentDef]);
 
       /**
        * <card-with-title>
@@ -889,11 +901,11 @@ describe('content projection', () => {
        */
       const App = createComponent('app', function(ctx: any, cm: boolean) {
         if (cm) {
-          elementStart(0, CardWithTitle);
-          { text(2, 'content'); }
+          elementStart(0, 'card-with-title');
+          { text(1, 'content'); }
           elementEnd();
         }
-      });
+      }, [CardWithTitle.ngComponentDef]);
 
       const app = renderComponent(App);
       expect(toHtml(app))
@@ -930,16 +942,16 @@ describe('content projection', () => {
       const CardWithTitle = createComponent('card-with-title', function(ctx: any, cm: boolean) {
         if (cm) {
           projectionDef(0);
-          elementStart(1, Card);
+          elementStart(1, 'card');
           {
-            elementStart(3, 'h1', ['ngProjectAs', '[card-title]']);
-            { text(4, 'Title'); }
+            elementStart(2, 'h1', ['ngProjectAs', '[card-title]']);
+            { text(3, 'Title'); }
             elementEnd();
-            projection(5, 0, 0, ['ngProjectAs', '[card-content]']);
+            projection(4, 0, 0, ['ngProjectAs', '[card-content]']);
           }
           elementEnd();
         }
-      });
+      }, [Card.ngComponentDef]);
 
       /**
        * <card-with-title>
@@ -948,11 +960,11 @@ describe('content projection', () => {
        */
       const App = createComponent('app', function(ctx: any, cm: boolean) {
         if (cm) {
-          elementStart(0, CardWithTitle);
-          { text(2, 'content'); }
+          elementStart(0, 'card-with-title');
+          { text(1, 'content'); }
           elementEnd();
         }
-      });
+      }, [CardWithTitle.ngComponentDef]);
 
       const app = renderComponent(App);
       expect(toHtml(app))
@@ -980,18 +992,18 @@ describe('content projection', () => {
        */
       const Parent = createComponent('parent', function(ctx: any, cm: boolean) {
         if (cm) {
-          elementStart(0, Child);
+          elementStart(0, 'child');
           {
-            elementStart(2, 'div', ['ngProjectAs', 'span']);
-            { text(3, 'should not project'); }
+            elementStart(1, 'div', ['ngProjectAs', 'span']);
+            { text(2, 'should not project'); }
             elementEnd();
-            elementStart(4, 'div');
-            { text(5, 'should project'); }
+            elementStart(3, 'div');
+            { text(4, 'should project'); }
             elementEnd();
           }
           elementEnd();
         }
-      });
+      }, [Child.ngComponentDef]);
 
       const parent = renderComponent(Parent);
       expect(toHtml(parent)).toEqual('<child><div>should project</div></child>');
@@ -1020,11 +1032,11 @@ describe('content projection', () => {
        */
       const Parent = createComponent('parent', function(ctx: {value: any}, cm: boolean) {
         if (cm) {
-          elementStart(0, Child);
-          { container(2, undefined, undefined, 'div'); }
+          elementStart(0, 'child');
+          { container(1, undefined, 'div'); }
           elementEnd();
         }
-        containerRefreshStart(2);
+        containerRefreshStart(1);
         {
           if (true) {
             if (embeddedViewStart(0)) {
@@ -1036,7 +1048,7 @@ describe('content projection', () => {
           }
         }
         containerRefreshEnd();
-      });
+      }, [Child.ngComponentDef]);
       const parent = renderComponent(Parent);
       expect(toHtml(parent)).toEqual('<child><span><div>content</div></span></child>');
     });

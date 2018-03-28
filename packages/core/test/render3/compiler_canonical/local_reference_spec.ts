@@ -23,11 +23,11 @@ describe('local references', () => {
       // NORMATIVE
       static ngComponentDef = $r3$.ɵdefineComponent({
         type: MyComponent,
-        tag: 'my-component',
+        selector: [[['my-component'], null]],
         factory: () => new MyComponent,
         template: function(ctx: $MyComponent$, cm: $boolean$) {
           if (cm) {
-            $r3$.ɵE(0, 'input', null, null, ['user', '']);
+            $r3$.ɵE(0, 'input', null, ['user', '']);
             $r3$.ɵe();
             $r3$.ɵT(2);
           }

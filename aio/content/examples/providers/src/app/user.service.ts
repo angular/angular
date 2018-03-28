@@ -5,7 +5,9 @@ export class User {
   name: string;
 }
 
-@Injectable()
+@Injectable({
+  providedIn: 'root',
+})
 export class UserService {
 
   constructor() { }

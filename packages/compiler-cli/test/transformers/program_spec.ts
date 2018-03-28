@@ -15,7 +15,7 @@ import {formatDiagnostics} from '../../src/perform_compile';
 import {CompilerHost, EmitFlags, LazyRoute} from '../../src/transformers/api';
 import {createSrcToOutPathMapper} from '../../src/transformers/program';
 import {GENERATED_FILES, StructureIsReused, tsStructureIsReused} from '../../src/transformers/util';
-import {TestSupport, expectNoDiagnosticsInProgram, setup} from '../test_support';
+import {TestSupport, expectNoDiagnosticsInProgram, isInBazel, setup} from '../test_support';
 
 describe('ng program', () => {
   let testSupport: TestSupport;
@@ -267,56 +267,59 @@ describe('ng program', () => {
           .toBe(false);
     });
 
-    it('should reuse the old ts program completely if nothing changed', () => {
-      testSupport.writeFiles({'src/index.ts': createModuleAndCompSource('main')});
-      // Note: the second compile drops factories for library files,
-      // and therefore changes the structure again
-      const p1 = compile().program;
-      const p2 = compile(p1).program;
-      compile(p2);
-      expect(tsStructureIsReused(p2.getTsProgram())).toBe(StructureIsReused.Completely);
-    });
+    if (!isInBazel()) {
+      it('should reuse the old ts program completely if nothing changed', () => {
+        testSupport.writeFiles({'src/index.ts': createModuleAndCompSource('main')});
+        // Note: the second compile drops factories for library files,
+        // and therefore changes the structure again
+        const p1 = compile().program;
+        const p2 = compile(p1).program;
+        compile(p2);
+        expect(tsStructureIsReused(p2.getTsProgram())).toBe(StructureIsReused.Completely);
+      });
 
-    it('should reuse the old ts program completely if a template or a ts file changed', () => {
-      testSupport.writeFiles({
-        'src/main.ts': createModuleAndCompSource('main', 'main.html'),
-        'src/main.html': `Some template`,
-        'src/util.ts': `export const x = 1`,
-        'src/index.ts': `
-          export * from './main';
-          export * from './util';
-        `
+      it('should reuse the old ts program completely if a template or a ts file changed', () => {
+        testSupport.writeFiles({
+          'src/main.ts': createModuleAndCompSource('main', 'main.html'),
+          'src/main.html': `Some template`,
+          'src/util.ts': `export const x = 1`,
+          'src/index.ts': `
+            export * from './main';
+            export * from './util';
+          `
+        });
+        // Note: the second compile drops factories for library files,
+        // and therefore changes the structure again
+        const p1 = compile().program;
+        const p2 = compile(p1).program;
+        testSupport.writeFiles({
+          'src/main.html': `Another template`,
+          'src/util.ts': `export const x = 2`,
+        });
+        compile(p2);
+        expect(tsStructureIsReused(p2.getTsProgram())).toBe(StructureIsReused.Completely);
       });
-      // Note: the second compile drops factories for library files,
-      // and therefore changes the structure again
-      const p1 = compile().program;
-      const p2 = compile(p1).program;
-      testSupport.writeFiles({
-        'src/main.html': `Another template`,
-        'src/util.ts': `export const x = 2`,
-      });
-      compile(p2);
-      expect(tsStructureIsReused(p2.getTsProgram())).toBe(StructureIsReused.Completely);
-    });
 
-    it('should not reuse the old ts program if an import changed', () => {
-      testSupport.writeFiles({
-        'src/main.ts': createModuleAndCompSource('main'),
-        'src/util.ts': `export const x = 1`,
-        'src/index.ts': `
-          export * from './main';
-          export * from './util';
-        `
+      it('should not reuse the old ts program if an import changed', () => {
+        testSupport.writeFiles({
+          'src/main.ts': createModuleAndCompSource('main'),
+          'src/util.ts': `export const x = 1`,
+          'src/index.ts': `
+            export * from './main';
+            export * from './util';
+          `
+        });
+        // Note: the second compile drops factories for library files,
+        // and therefore changes the structure again
+        const p1 = compile().program;
+        const p2 = compile(p1).program;
+        testSupport.writeFiles(
+            {'src/util.ts': `import {Injectable} from '@angular/core'; export const x = 1;`});
+        compile(p2);
+        expect(tsStructureIsReused(p2.getTsProgram())).toBe(StructureIsReused.SafeModules);
       });
-      // Note: the second compile drops factories for library files,
-      // and therefore changes the structure again
-      const p1 = compile().program;
-      const p2 = compile(p1).program;
-      testSupport.writeFiles(
-          {'src/util.ts': `import {Injectable} from '@angular/core'; export const x = 1;`});
-      compile(p2);
-      expect(tsStructureIsReused(p2.getTsProgram())).toBe(StructureIsReused.SafeModules);
-    });
+    }
+
   });
 
   it('should not typecheck templates if skipTemplateCodegen is set but fullTemplateTypeCheck is not',

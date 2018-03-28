@@ -7,7 +7,7 @@
  */
 
 import {defineDirective} from '../../src/render3/index';
-import {bind, elementEnd, elementProperty, elementStart, load} from '../../src/render3/instructions';
+import {bind, elementEnd, elementProperty, elementStart, loadDirective} from '../../src/render3/instructions';
 
 import {renderToHtml} from './render_util';
 
@@ -22,23 +22,26 @@ describe('directive', () => {
         klass = 'foo';
         static ngDirectiveDef = defineDirective({
           type: Directive,
+          selector: [[['', 'dir', ''], null]],
           factory: () => directiveInstance = new Directive,
           hostBindings: (directiveIndex: number, elementIndex: number) => {
-            elementProperty(elementIndex, 'className', bind(load<Directive>(directiveIndex).klass));
+            elementProperty(
+                elementIndex, 'className', bind(loadDirective<Directive>(directiveIndex).klass));
           }
         });
       }
 
       function Template(ctx: any, cm: boolean) {
         if (cm) {
-          elementStart(0, 'span', null, [Directive]);
+          elementStart(0, 'span', ['dir', '']);
           elementEnd();
         }
       }
 
-      expect(renderToHtml(Template, {})).toEqual('<span class="foo"></span>');
+      const defs = [Directive.ngDirectiveDef];
+      expect(renderToHtml(Template, {}, defs)).toEqual('<span class="foo" dir=""></span>');
       directiveInstance !.klass = 'bar';
-      expect(renderToHtml(Template, {})).toEqual('<span class="bar"></span>');
+      expect(renderToHtml(Template, {}, defs)).toEqual('<span class="bar" dir=""></span>');
     });
 
   });

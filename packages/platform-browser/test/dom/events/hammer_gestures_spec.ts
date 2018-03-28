@@ -25,7 +25,7 @@ import {HammerGestureConfig, HammerGesturesPlugin} from '@angular/platform-brows
       expect(() => plugin.addGlobalEventListener('document', 'swipe', () => {})).not.toThrowError();
     });
 
-    it('shoud warn user and do nothing when Hammer.js not loaeded', () => {
+    it('should warn user and do nothing when Hammer.js not loaeded', () => {
       spyOn(mockConsole, 'warn');
 
       expect(plugin.supports('swipe')).toBe(false);

@@ -91,7 +91,7 @@ export class DominoAdapter extends BrowserDomAdapter {
   getProperty(el: Element, name: string): any {
     if (name === 'href') {
       // Domino tries tp resolve href-s which we do not want. Just return the
-      // atribute value.
+      // attribute value.
       return this.getAttribute(el, 'href');
     } else if (name === 'innerText') {
       // Domino does not support innerText. Just map it to textContent.
@@ -102,8 +102,8 @@ export class DominoAdapter extends BrowserDomAdapter {
 
   setProperty(el: Element, name: string, value: any) {
     if (name === 'href') {
-      // Eventhough the server renderer reflects any properties to attributes
-      // map 'href' to atribute just to handle when setProperty is directly called.
+      // Even though the server renderer reflects any properties to attributes
+      // map 'href' to attribute just to handle when setProperty is directly called.
       this.setAttribute(el, 'href', value);
     } else if (name === 'innerText') {
       // Domino does not support innerText. Just map it to textContent.

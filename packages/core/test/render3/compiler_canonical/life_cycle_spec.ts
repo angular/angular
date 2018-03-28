@@ -41,7 +41,7 @@ describe('lifecycle hooks', () => {
     // NORMATIVE
     static ngComponentDef = $r3$.ɵdefineComponent({
       type: LifecycleComp,
-      tag: 'lifecycle-comp',
+      selector: [[['lifecycle-comp'], null]],
       factory: function LifecycleComp_Factory() { return new LifecycleComp(); },
       template: function LifecycleComp_Template(ctx: $LifecycleComp$, cm: $boolean$) {},
       inputs: {nameMin: 'name'},
@@ -64,21 +64,25 @@ describe('lifecycle hooks', () => {
     // NORMATIVE
     static ngComponentDef = $r3$.ɵdefineComponent({
       type: SimpleLayout,
-      tag: 'simple-layout',
+      selector: [[['simple-layout'], null]],
       factory: function SimpleLayout_Factory() { return simpleLayout = new SimpleLayout(); },
       template: function SimpleLayout_Template(ctx: $SimpleLayout$, cm: $boolean$) {
         if (cm) {
-          $r3$.ɵE(0, LifecycleComp);
+          $r3$.ɵE(0, 'lifecycle-comp');
           $r3$.ɵe();
-          $r3$.ɵE(2, LifecycleComp);
+          $r3$.ɵE(1, 'lifecycle-comp');
           $r3$.ɵe();
         }
         $r3$.ɵp(0, 'name', $r3$.ɵb(ctx.name1));
-        $r3$.ɵp(2, 'name', $r3$.ɵb(ctx.name2));
+        $r3$.ɵp(1, 'name', $r3$.ɵb(ctx.name2));
       }
     });
     // /NORMATIVE
   }
+
+  // NON-NORMATIVE
+  SimpleLayout.ngComponentDef.directiveDefs = [LifecycleComp.ngComponentDef];
+  // /NON-NORMATIVE
 
   it('should gen hooks with a few simple components', () => {
     expect(toHtml(renderComponent(SimpleLayout)))

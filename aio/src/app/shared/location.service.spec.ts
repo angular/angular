@@ -1,7 +1,7 @@
 import { ReflectiveInjector } from '@angular/core';
 import { Location, LocationStrategy, PlatformLocation } from '@angular/common';
 import { MockLocationStrategy } from '@angular/common/testing';
-import { Subject } from 'rxjs/Subject';
+import { Subject } from 'rxjs';
 
 import { GaService } from 'app/shared/ga.service';
 import { SwUpdatesService } from 'app/sw-updates/sw-updates.service';

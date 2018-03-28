@@ -97,7 +97,7 @@ using an example application.
 
 ### Serving with `http-server`
 
-Because `ng serve` does not work with service workers, you must use a seperate HTTP server to test your project locally. You can use any HTTP server. The example below uses the [http-server](https://www.npmjs.com/package/http-server) package from npm. To reduce the possibility of conflicts, test on a dedicated port.
+Because `ng serve` does not work with service workers, you must use a separate HTTP server to test your project locally. You can use any HTTP server. The example below uses the [http-server](https://www.npmjs.com/package/http-server) package from npm. To reduce the possibility of conflicts, test on a dedicated port.
 
 To serve with `http-server`, change to the directory containing your web files and start the web server: 
 

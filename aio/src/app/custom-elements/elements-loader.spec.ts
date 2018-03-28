@@ -33,7 +33,6 @@ const FAKE_COMPONENT_FACTORIES = new Map([
 
 describe('ElementsLoader', () => {
   let elementsLoader: ElementsLoader;
-  let injectedModuleRef: NgModuleRef<any>;
   let actualCustomElementsDefine;
   let fakeCustomElementsDefine;
 
@@ -61,7 +60,6 @@ describe('ElementsLoader', () => {
       ]
     });
 
-    injectedModuleRef = injector.get(NgModuleRef);
     elementsLoader = injector.get(ElementsLoader);
   });
 

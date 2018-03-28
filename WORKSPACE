@@ -2,18 +2,21 @@ workspace(name = "angular")
 
 http_archive(
     name = "build_bazel_rules_nodejs",
-    url = "https://github.com/bazelbuild/rules_nodejs/archive/25bb70fb67bddcc257b869f434ccc0fd130ec3bd.zip",
-    strip_prefix = "rules_nodejs-25bb70fb67bddcc257b869f434ccc0fd130ec3bd",
-    sha256 = "11c0d73bdcb4b2608abbe5967be5a910bdaebf848eb13e4e7f8413bbdeb940b8",
+    url = "https://github.com/bazelbuild/rules_nodejs/archive/0.6.0.zip",
+    strip_prefix = "rules_nodejs-0.6.0",
+    sha256 = "e8a2bb5ca51fbafb244bc507bcebcae33a63d969f47413b319a8dcce032845bf",
 )
 
-load("@build_bazel_rules_nodejs//:defs.bzl", "check_bazel_version", "node_repositories")
+load("@build_bazel_rules_nodejs//:defs.bzl", "check_bazel_version", "node_repositories", "yarn_install")
 
 check_bazel_version("0.9.0")
-node_repositories(package_json = [
-    "//:package.json",
-    "//tools/ts-api-guardian:package.json",
-])
+node_repositories(package_json = ["//:package.json"])
+
+yarn_install(
+    name = "ts-api-guardian_runtime_deps",
+    package_json = "//tools/ts-api-guardian:package.json",
+    yarn_lock = "//tools/ts-api-guardian:yarn.lock",
+)
 
 http_archive(
     name = "build_bazel_rules_typescript",
@@ -29,6 +32,13 @@ ts_setup_workspace()
 local_repository(
     name = "rxjs",
     path = "node_modules/rxjs/src",
+)
+
+# Point to the integration test workspace just so that Bazel doesn't descend into it
+# when expanding the //... pattern
+local_repository(
+    name = "bazel_integration_test",
+    path = "integration/bazel",
 )
 
 # This commit matches the version of buildifier in angular/ngcontainer

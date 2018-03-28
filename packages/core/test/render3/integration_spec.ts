@@ -7,7 +7,7 @@
  */
 
 import {defineComponent, defineDirective} from '../../src/render3/index';
-import {NO_CHANGE, bind, container, containerRefreshEnd, containerRefreshStart, elementAttribute, elementClassNamed, elementEnd, elementProperty, elementStart, elementStyleNamed, embeddedViewEnd, embeddedViewStart, interpolation1, interpolation2, interpolation3, interpolation4, interpolation5, interpolation6, interpolation7, interpolation8, interpolationV, load, projection, projectionDef, text, textBinding} from '../../src/render3/instructions';
+import {NO_CHANGE, bind, container, containerRefreshEnd, containerRefreshStart, elementAttribute, elementClassNamed, elementEnd, elementProperty, elementStart, elementStyleNamed, embeddedViewEnd, embeddedViewStart, interpolation1, interpolation2, interpolation3, interpolation4, interpolation5, interpolation6, interpolation7, interpolation8, interpolationV, load, loadDirective, projection, projectionDef, text, textBinding} from '../../src/render3/instructions';
 
 import {ComponentFixture, containerEl, renderToHtml} from './render_util';
 
@@ -178,7 +178,7 @@ describe('render3 integration test', () => {
 
       static ngComponentDef = defineComponent({
         type: TodoComponent,
-        tag: 'todo',
+        selector: [[['todo'], null]],
         template: function TodoTemplate(ctx: any, cm: boolean) {
           if (cm) {
             elementStart(0, 'p');
@@ -194,26 +194,28 @@ describe('render3 integration test', () => {
       });
     }
 
+    const defs = [TodoComponent.ngComponentDef];
+
     it('should support a basic component template', () => {
       function Template(ctx: any, cm: boolean) {
         if (cm) {
-          elementStart(0, TodoComponent);
+          elementStart(0, 'todo');
           elementEnd();
         }
       }
 
-      expect(renderToHtml(Template, null)).toEqual('<todo><p>Todo one</p></todo>');
+      expect(renderToHtml(Template, null, defs)).toEqual('<todo><p>Todo one</p></todo>');
     });
 
     it('should support a component template with sibling', () => {
       function Template(ctx: any, cm: boolean) {
         if (cm) {
-          elementStart(0, TodoComponent);
+          elementStart(0, 'todo');
           elementEnd();
-          text(2, 'two');
+          text(1, 'two');
         }
       }
-      expect(renderToHtml(Template, null)).toEqual('<todo><p>Todo one</p></todo>two');
+      expect(renderToHtml(Template, null, defs)).toEqual('<todo><p>Todo one</p></todo>two');
     });
 
     it('should support a component template with component sibling', () => {
@@ -223,13 +225,13 @@ describe('render3 integration test', () => {
        */
       function Template(ctx: any, cm: boolean) {
         if (cm) {
-          elementStart(0, TodoComponent);
+          elementStart(0, 'todo');
           elementEnd();
-          elementStart(2, TodoComponent);
+          elementStart(1, 'todo');
           elementEnd();
         }
       }
-      expect(renderToHtml(Template, null))
+      expect(renderToHtml(Template, null, defs))
           .toEqual('<todo><p>Todo one</p></todo><todo><p>Todo one</p></todo>');
     });
 
@@ -240,7 +242,7 @@ describe('render3 integration test', () => {
         title = 'one';
         static ngComponentDef = defineComponent({
           type: TodoComponentHostBinding,
-          tag: 'todo',
+          selector: [[['todo'], null]],
           template: function TodoComponentHostBindingTemplate(
               ctx: TodoComponentHostBinding, cm: boolean) {
             if (cm) {
@@ -252,28 +254,30 @@ describe('render3 integration test', () => {
           hostBindings: function(directiveIndex: number, elementIndex: number): void {
             // host bindings
             elementProperty(
-                elementIndex, 'title', bind(load<TodoComponentHostBinding>(directiveIndex).title));
+                elementIndex, 'title',
+                bind(loadDirective<TodoComponentHostBinding>(directiveIndex).title));
           }
         });
       }
 
       function Template(ctx: any, cm: boolean) {
         if (cm) {
-          elementStart(0, TodoComponentHostBinding);
+          elementStart(0, 'todo');
           elementEnd();
         }
       }
 
-      expect(renderToHtml(Template, {})).toEqual('<todo title="one">one</todo>');
+      const defs = [TodoComponentHostBinding.ngComponentDef];
+      expect(renderToHtml(Template, {}, defs)).toEqual('<todo title="one">one</todo>');
       cmptInstance !.title = 'two';
-      expect(renderToHtml(Template, {})).toEqual('<todo title="two">two</todo>');
+      expect(renderToHtml(Template, {}, defs)).toEqual('<todo title="two">two</todo>');
     });
 
     it('should support root component with host attribute', () => {
       class HostAttributeComp {
         static ngComponentDef = defineComponent({
           type: HostAttributeComp,
-          tag: 'host-attr-comp',
+          selector: [[['host-attr-comp'], null]],
           factory: () => new HostAttributeComp(),
           template: (ctx: HostAttributeComp, cm: boolean) => {},
           attributes: ['role', 'button']
@@ -290,7 +294,7 @@ describe('render3 integration test', () => {
         name = 'Bess';
         static ngComponentDef = defineComponent({
           type: MyComp,
-          tag: 'comp',
+          selector: [[['comp'], null]],
           template: function MyCompTemplate(ctx: any, cm: boolean) {
             if (cm) {
               elementStart(0, 'p');
@@ -305,12 +309,13 @@ describe('render3 integration test', () => {
 
       function Template(ctx: any, cm: boolean) {
         if (cm) {
-          elementStart(0, MyComp);
+          elementStart(0, 'comp');
           elementEnd();
         }
       }
 
-      expect(renderToHtml(Template, null)).toEqual('<comp><p>Bess</p></comp>');
+      expect(renderToHtml(Template, null, [MyComp.ngComponentDef]))
+          .toEqual('<comp><p>Bess</p></comp>');
     });
 
     it('should support a component with sub-views', () => {
@@ -323,7 +328,7 @@ describe('render3 integration test', () => {
         condition: boolean;
         static ngComponentDef = defineComponent({
           type: MyComp,
-          tag: 'comp',
+          selector: [[['comp'], null]],
           template: function MyCompTemplate(ctx: any, cm: boolean) {
             if (cm) {
               container(0);
@@ -349,14 +354,16 @@ describe('render3 integration test', () => {
       /** <comp [condition]="condition"></comp> */
       function Template(ctx: any, cm: boolean) {
         if (cm) {
-          elementStart(0, MyComp);
+          elementStart(0, 'comp');
           elementEnd();
         }
         elementProperty(0, 'condition', bind(ctx.condition));
       }
 
-      expect(renderToHtml(Template, {condition: true})).toEqual('<comp><div>text</div></comp>');
-      expect(renderToHtml(Template, {condition: false})).toEqual('<comp></comp>');
+      const defs = [MyComp.ngComponentDef];
+      expect(renderToHtml(Template, {condition: true}, defs))
+          .toEqual('<comp><div>text</div></comp>');
+      expect(renderToHtml(Template, {condition: false}, defs)).toEqual('<comp></comp>');
 
     });
 
@@ -427,7 +434,7 @@ describe('render3 integration test', () => {
       beforeTree: Tree;
       afterTree: Tree;
       static ngComponentDef = defineComponent({
-        tag: 'child',
+        selector: [[['child'], null]],
         type: ChildComponent,
         template: function ChildComponentTemplate(
             ctx: {beforeTree: Tree, afterTree: Tree}, cm: boolean) {
@@ -459,13 +466,13 @@ describe('render3 integration test', () => {
 
     function parentTemplate(ctx: ParentCtx, cm: boolean) {
       if (cm) {
-        elementStart(0, ChildComponent);
-        { container(2); }
+        elementStart(0, 'child');
+        { container(1); }
         elementEnd();
       }
       elementProperty(0, 'beforeTree', bind(ctx.beforeTree));
       elementProperty(0, 'afterTree', bind(ctx.afterTree));
-      containerRefreshStart(2);
+      containerRefreshStart(1);
       {
         const cm0 = embeddedViewStart(0);
         { showTree({tree: ctx.projectedTree}, cm0); }
@@ -481,14 +488,15 @@ describe('render3 integration test', () => {
         projectedTree: {beforeLabel: 'p'},
         afterTree: {afterLabel: 'z'}
       };
-      expect(renderToHtml(parentTemplate, ctx)).toEqual('<child>apz</child>');
+      const defs = [ChildComponent.ngComponentDef];
+      expect(renderToHtml(parentTemplate, ctx, defs)).toEqual('<child>apz</child>');
       ctx.projectedTree = {subTrees: [{}, {}, {subTrees: [{}, {}]}, {}]};
       ctx.beforeTree.subTrees !.push({afterLabel: 'b'});
-      expect(renderToHtml(parentTemplate, ctx)).toEqual('<child>abz</child>');
+      expect(renderToHtml(parentTemplate, ctx, defs)).toEqual('<child>abz</child>');
       ctx.projectedTree.subTrees ![1].afterLabel = 'h';
-      expect(renderToHtml(parentTemplate, ctx)).toEqual('<child>abhz</child>');
+      expect(renderToHtml(parentTemplate, ctx, defs)).toEqual('<child>abhz</child>');
       ctx.beforeTree.subTrees !.push({beforeLabel: 'c'});
-      expect(renderToHtml(parentTemplate, ctx)).toEqual('<child>abchz</child>');
+      expect(renderToHtml(parentTemplate, ctx, defs)).toEqual('<child>abchz</child>');
 
       // To check the context easily:
       // console.log(JSON.stringify(ctx));
@@ -632,27 +640,30 @@ describe('render3 integration test', () => {
 
           static ngDirectiveDef = defineDirective({
             type: HostBindingDir,
+            selector: [[['', 'hostBindingDir', ''], null]],
             factory: function HostBindingDir_Factory() {
               return hostBindingDir = new HostBindingDir();
             },
             hostBindings: function HostBindingDir_HostBindings(dirIndex: number, elIndex: number) {
-              elementAttribute(elIndex, 'aria-label', bind(load<HostBindingDir>(dirIndex).label));
+              elementAttribute(
+                  elIndex, 'aria-label', bind(loadDirective<HostBindingDir>(dirIndex).label));
             }
           });
         }
 
         function Template(ctx: any, cm: boolean) {
           if (cm) {
-            elementStart(0, 'div', ['hostBindingDir', ''], [HostBindingDir]);
+            elementStart(0, 'div', ['hostBindingDir', '']);
             elementEnd();
           }
         }
 
-        expect(renderToHtml(Template, {}))
+        const defs = [HostBindingDir.ngDirectiveDef];
+        expect(renderToHtml(Template, {}, defs))
             .toEqual(`<div aria-label="some label" hostbindingdir=""></div>`);
 
         hostBindingDir !.label = 'other label';
-        expect(renderToHtml(Template, {}))
+        expect(renderToHtml(Template, {}, defs))
             .toEqual(`<div aria-label="other label" hostbindingdir=""></div>`);
       });
     });

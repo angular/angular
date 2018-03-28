@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 # Generates the data used by the stamping feature in bazel.
-# A genrule with stamp=1 can read the resulting file from bazel-out/volatile-status.txt
 # See the section on stamping in docs/BAZEL.md
 
 set -u -e -E -o pipefail

@@ -6,7 +6,6 @@ import { UserService } from './user.service';
 
 @NgModule({
   imports:      [ BrowserModule ],
-  providers:    [ UserService ],
   declarations: [ AppComponent ],
   bootstrap:    [ AppComponent ]
 })

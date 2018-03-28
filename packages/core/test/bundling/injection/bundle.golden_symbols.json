@@ -138,6 +138,9 @@
     "name": "_currentInjector"
   },
   {
+    "name": "_enable_super_gross_mode_that_will_cause_bad_things"
+  },
+  {
     "name": "config"
   },
   {
@@ -184,6 +187,9 @@
   },
   {
     "name": "hasOnDestroy"
+  },
+  {
+    "name": "hostReportError"
   },
   {
     "name": "inject"

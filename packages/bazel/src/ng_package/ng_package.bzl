@@ -57,8 +57,8 @@ def _rollup(ctx, rollup_config, entry_point, inputs, js_output, format = "es"):
   other_inputs = [ctx.executable._rollup, rollup_config]
   if ctx.file.license_banner:
     other_inputs.append(ctx.file.license_banner)
-  if ctx.file.stamp_data:
-    other_inputs.append(ctx.file.stamp_data)
+  if ctx.version_file:
+    other_inputs.append(ctx.version_file)
   ctx.actions.run(
       progress_message = "Angular Packaging: rolling up %s" % ctx.label.name,
       mnemonic = "AngularPackageRollup",
@@ -103,6 +103,8 @@ def _ng_package_impl(ctx):
 
   # These accumulators match the directory names where the files live in the
   # Angular package format.
+  fesm2015 = []
+  fesm5 = []
   esm2015 = []
   esm5 = []
   bundles = []
@@ -116,7 +118,19 @@ def _ng_package_impl(ctx):
     if f.path.endswith(".js"):
       esm2015.append(struct(js = f, map = None))
 
-  for entry_point in [""] + ctx.attr.secondary_entry_points:
+  # We infer the entry points to be:
+  # - ng_module rules in the deps (they have an "angular" provider)
+  # - in this package or a subpackage
+  # - those that have a module_name attribute (they produce flat module metadata)
+  entry_points = []
+  flat_module_metadata = []
+  for dep in ctx.attr.deps:
+    if dep.label.package.startswith(ctx.label.package):
+      entry_points.append(dep.label.package[len(ctx.label.package) + 1:])
+      if hasattr(dep, "angular") and dep.angular.flat_module_metadata:
+        flat_module_metadata.append(dep.angular.flat_module_metadata)
+
+  for entry_point in entry_points:
     es2015_entry_point = "/".join([p for p in [
         ctx.bin_dir.path,
         ctx.label.package,
@@ -148,56 +162,76 @@ def _ng_package_impl(ctx):
 
     config = write_rollup_config(ctx, [], root_dirs)
 
-    # Currently we don't include these rollup "FESM" files in the package.
-    # They are only accessible as named outputs from the rule.
-    _rollup(ctx, config, es2015_entry_point, esm_2015_files, fesm2015_output)
-    _rollup(ctx, config, es5_entry_point, esm5_sources, fesm5_output)
+    fesm2015.append(_rollup(ctx, config, es2015_entry_point, esm_2015_files, fesm2015_output))
+    fesm5.append(_rollup(ctx, config, es5_entry_point, esm5_sources, fesm5_output))
 
     bundles.append(_rollup(ctx, config, es5_entry_point, esm5_sources, umd_output, format = "umd"))
     uglify_sourcemap = run_uglify(ctx, umd_output, min_output,
         config_name = entry_point.replace("/", "_"))
     bundles.append(struct(js = min_output, map = uglify_sourcemap))
 
-  metadata_files = depset(transitive = [getattr(dep, "angular").flat_module_metadata
-                                        for dep in ctx.attr.deps
-                                        if hasattr(dep, "angular")])
+  packager_inputs = (
+      ctx.files.srcs +
+      ctx.files.data +
+      esm5_sources.to_list() +
+      depset(transitive = [d.typescript.transitive_declarations
+                           for d in ctx.attr.deps
+                           if hasattr(d, "typescript")]).to_list() +
+      [f.js for f in fesm2015 + fesm5 + esm2015 + esm5 + bundles] +
+      [f.map for f in fesm2015 + fesm5 + esm2015 + esm5 + bundles if f.map])
 
-  args = ctx.actions.args()
-  args.use_param_file("%s", use_always = True)
+  packager_args = ctx.actions.args()
+  packager_args.use_param_file("%s", use_always = True)
 
   # The order of arguments matters here, as they are read in order in packager.ts.
-  args.add(npm_package_directory.path)
-  args.add(ctx.label.package)
-  args.add(primary_entry_point_name(ctx.attr.name, ctx.attr.entry_point))
-  args.add(ctx.attr.secondary_entry_points, join_with=",")
-  args.add([ctx.bin_dir.path, ctx.label.package], join_with="/")
-  args.add(ctx.file.readme_md.path if ctx.file.readme_md else "")
-  args.add(_flatten_paths(esm2015), join_with=",")
-  args.add(_flatten_paths(esm5), join_with=",")
-  args.add(_flatten_paths(bundles), join_with=",")
-  args.add([s.path for s in ctx.files.srcs], join_with=",")
-  args.add(ctx.file.license_banner.path if ctx.file.license_banner else "")
+  packager_args.add(npm_package_directory.path)
+  packager_args.add(ctx.label.package)
+  packager_args.add([ctx.bin_dir.path, ctx.label.package], join_with="/")
+  packager_args.add([ctx.genfiles_dir.path, ctx.label.package], join_with="/")
 
-  other_inputs = (metadata_files.to_list() +
-      [f.js for f in esm2015 + esm5 + bundles] +
-      [f.map for f in esm2015 + esm5 + bundles if f.map])
+  # Marshal the metadata into a JSON string so we can parse the data structure
+  # in the TypeScript program easily.
+  metadata_arg = {}
+  for m in depset(transitive = flat_module_metadata).to_list():
+    packager_inputs.extend([m.index_file, m.typings_file, m.metadata_file])
+    metadata_arg[m.module_name] = {
+        "index": m.index_file.path,
+        "typings": m.typings_file.path,
+        "metadata": m.metadata_file.path,
+    }
+  packager_args.add(str(metadata_arg))
+
   if ctx.file.readme_md:
-    other_inputs.append(ctx.file.readme_md)
+    packager_inputs.append(ctx.file.readme_md)
+    packager_args.add(ctx.file.readme_md.path)
+  else:
+    # placeholder
+    packager_args.add("")
+
+  packager_args.add(_flatten_paths(fesm2015), join_with=",")
+  packager_args.add(_flatten_paths(fesm5), join_with=",")
+  packager_args.add(_flatten_paths(esm2015), join_with=",")
+  packager_args.add(_flatten_paths(esm5), join_with=",")
+  packager_args.add(_flatten_paths(bundles), join_with=",")
+  packager_args.add([s.path for s in ctx.files.srcs], join_with=",")
+
+  # TODO: figure out a better way to gather runfiles providers from the transitive closure.
+  packager_args.add([d.path for d in ctx.files.data], join_with=",")
+
   if ctx.file.license_banner:
-    other_inputs.append(ctx.file.license_banner)
+    packager_inputs.append(ctx.file.license_banner)
+    packager_args.add(ctx.file.license_banner.path)
+  else:
+    # placeholder
+    packager_args.add("")
 
   ctx.actions.run(
       progress_message = "Angular Packaging: building npm package for %s" % ctx.label.name,
       mnemonic = "AngularPackage",
-      inputs = esm5_sources.to_list() +
-          depset(transitive = [d.typescript.transitive_declarations
-              for d in ctx.attr.deps
-              if hasattr(d, "typescript")]).to_list() +
-          ctx.files.srcs +
-          other_inputs,
+      inputs = packager_inputs,
       outputs = [npm_package_directory],
       executable = ctx.executable._ng_packager,
-      arguments = [args],
+      arguments = [packager_args],
   )
 
   devfiles = depset()
@@ -205,7 +239,11 @@ def _ng_package_impl(ctx):
     for d in ctx.attr.deps:
       devfiles = depset(transitive = [devfiles, d.files, d.node_sources])
 
-  package_dir = create_package(ctx, devfiles.to_list(), [npm_package_directory])
+  # Re-use the create_package function from the nodejs npm_package rule.
+  package_dir = create_package(
+      ctx,
+      devfiles.to_list(),
+      [npm_package_directory] + ctx.files.packages)
   return struct(
     files = depset([package_dir])
   )
@@ -217,10 +255,16 @@ NG_PACKAGE_ATTRS = dict(NPM_PACKAGE_ATTRS, **dict(ROLLUP_ATTRS, **{
         esm5_outputs_aspect,
         sources_aspect,
     ]),
+    "data": attr.label_list(
+        doc = "Additional, non-Angular files to be added to the package, e.g. global CSS assets.",
+        allow_files = True,
+    ),
     "include_devmode_srcs": attr.bool(default = False),
     "readme_md": attr.label(allow_single_file = FileType([".md"])),
     "globals": attr.string_dict(default={}),
-    "secondary_entry_points": attr.string_list(),
+    "entry_point_name": attr.string(
+      doc = "Name to use when generating bundle files for the primary entry-point.",
+    ),
     "_ng_packager": attr.label(
         default=Label("//packages/bazel/src/ng_package:packager"),
         executable=True, cfg="host"),
@@ -241,11 +285,20 @@ NG_PACKAGE_ATTRS = dict(NPM_PACKAGE_ATTRS, **dict(ROLLUP_ATTRS, **{
 # Currently we just borrow the entry point for this, if it looks like
 # some/path/to/my/package/index.js
 # we assume the files should be named "package.*.js"
-def primary_entry_point_name(name, entry_point):
-  return entry_point.split("/")[-2] if entry_point.find("/") >=0 else name
+def primary_entry_point_name(name, entry_point, entry_point_name):
+  if entry_point_name:
+      # If an explicit entry_point_name is given, use that.
+      return entry_point_name
+  elif entry_point.find("/") >= 0:
+      # If the entry_point has multiple path segments, use the second one.
+      # E.g., for "@angular/cdk/a11y", use "cdk".
+      return entry_point.split("/")[-2]
+  else:
+      # Fall back to the name of the ng_package rule.
+      return name
 
-def ng_package_outputs(name, entry_point):
-  basename = primary_entry_point_name(name, entry_point)
+def ng_package_outputs(name, entry_point, entry_point_name):
+  basename = primary_entry_point_name(name, entry_point, entry_point_name)
   outputs = {
       "fesm5": "fesm5/%s.js" % basename,
       "fesm2015": "fesm2015/%s.js" % basename,

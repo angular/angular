@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { catchError, map } from 'rxjs/operators';
 import { Logger } from 'app/shared/logger.service';
 import { CONTENT_URL_PREFIX } from 'app/documents/document.service';
 const announcementsPath = CONTENT_URL_PREFIX + 'announcements.json';
@@ -58,15 +59,17 @@ export class AnnouncementBarComponent implements OnInit {
 
   ngOnInit() {
     this.http.get<Announcement[]>(announcementsPath)
-      .catch(error => {
-        this.logger.error(new Error(`${announcementsPath} request failed: ${error.message}`));
-        return [];
-      })
-      .map(announcements => this.findCurrentAnnouncement(announcements))
-      .catch(error => {
-        this.logger.error(new Error(`${announcementsPath} contains invalid data: ${error.message}`));
-        return [];
-      })
+      .pipe(
+        catchError(error => {
+          this.logger.error(new Error(`${announcementsPath} request failed: ${error.message}`));
+          return [];
+        }),
+        map(announcements => this.findCurrentAnnouncement(announcements)),
+        catchError(error => {
+          this.logger.error(new Error(`${announcementsPath} contains invalid data: ${error.message}`));
+          return [];
+        }),
+      )
       .subscribe(announcement => this.announcement = announcement);
   }
 
