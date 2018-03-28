@@ -1,8 +1,8 @@
 # Angular Glossary
 
 Angular has its own vocabulary.
-Most Angular terms are common English words
-with a specific meaning within the Angular system.
+Most Angular terms are common English words or computing terms
+that have a specific meaning within the Angular system.
 
 This glossary lists the most prominent terms
 and a few less familiar ones that have unusual or
@@ -19,14 +19,19 @@ unexpected definitions.
 
 ## Ahead-of-time (AOT) compilation
 
-You can compile Angular applications at build time. 
-By compiling your application using the compiler-cli, `ngc`, you can bootstrap directly to a module factory, meaning you don't need to include the Angular compiler in your JavaScript bundle.
-Ahead-of-time compiled applications also benefit from decreased load time and increased performance.
+The Angular ahead-of-time (AOT) compiler converts your Angular HTML and TypeScript code 
+into efficient JavaScript code during the build phase before the browser downloads 
+and runs that code. 
+This is the best compilation mode for production environments, with decreased load time and increased performance.
+
+By compiling your application using the `ngc` command-line tool, you can bootstrap directly to a module factory, meaning you don't need to include the Angular compiler in your JavaScript bundle.
+
+Compare [just-in-time (JIT) compilation](guide/glossary#jit).
 
 
 ## Annotation
 
-In practice, a synonym for [Decoration](guide/glossary#decorator).
+A structure that provides metadata for a class. See [Decorator](guide/glossary#decorator).
 
 
 {@a attribute-directive}
@@ -41,126 +46,86 @@ A category of [directive](guide/glossary#directive) that can listen to and modif
 other HTML elements, attributes, properties, and components. They are usually represented
 as HTML attributes, hence the name.
 
-For example, you can use the `ngClass` directive to add and remove CSS class names.
-
-Learn about them in the [_Attribute Directives_](guide/attribute-directives) guide.
+Learn more in the [_Attribute Directives_](guide/attribute-directives) guide.
 
 
 {@a B}
 
-## Barrel
-
-A way to *roll up exports* from several ES2015 modules into a single convenient ES2015 module.
-The barrel itself is an ES2015 module file that re-exports selected exports of other ES2015 modules.
-
-For example, imagine three ES2015 modules in a `heroes` folder:
-
-<code-example>
-  // heroes/hero.component.ts
-  export class HeroComponent {}
-
-  // heroes/hero.model.ts
-  export class Hero {}
-
-  // heroes/hero.service.ts
-  export class HeroService {}
-</code-example>
-
-Without a barrel, a consumer needs three import statements:
-
-<code-example>
-  import { HeroComponent } from '../heroes/hero.component.ts';
-  import { Hero }          from '../heroes/hero.model.ts';
-  import { HeroService }   from '../heroes/hero.service.ts';
-</code-example>
-
-
-
-You can add a barrel to the `heroes` folder (called `index`, by convention) that exports all of these items:
-
-<code-example>
-  export * from './hero.model.ts';   // re-export all of its exports
-  export * from './hero.service.ts'; // re-export all of its exports
-  export { HeroComponent } from './hero.component.ts'; // re-export the named thing
-</code-example>
-
-
-
-Now a consumer can import what it needs from the barrel.
-
-<code-example>
-  import { Hero, HeroService } from '../heroes'; // index is implied
-</code-example>
-
-
-The Angular [scoped packages](guide/glossary#scoped-package) each have a barrel named `index`.
-
-<div class="alert is-important">
-
-You can often achieve the same result using [NgModules](guide/glossary#ngmodule) instead.
-
-</div>
 
 ## Binding
 
-Usually refers to [data binding](guide/glossary#data-binding) and the act of
-binding an HTML object property to a data object property.
+Generally, the practice of setting a variable or property to a data value. 
+Within Angular, typically refers to [data binding](guide/glossary#data-binding), 
+which coordinates DOM object properties with data object properties.
 
 Sometimes refers to a [dependency-injection](guide/glossary#dependency-injection) binding
-between a "token"&mdash;also referred to as a "key"&mdash;and a dependency [provider](guide/glossary#provider).
+between a [token](guide/glossary#token) and a dependency [provider](guide/glossary#provider).
 
 
 ## Bootstrap
 
-You launch an Angular application by "bootstrapping" it using the application root NgModule (`AppModule`).
+A way to initialize and launch an app or system.
 
-Bootstrapping identifies an application's top level "root" [component](guide/glossary#component),
-which is the first component that is loaded for the application.
+In Angular, an app's root NgModule (`AppModule`) has a `bootstrap` property that identifies the app's top-level [components](guide/glossary#component). 
+During the bootstrap process, Angular creates and inserts these components into the `index.html` host web page. 
+You can bootstrap multiple apps in the same `index.html`, each app with its own components.
 
-You can bootstrap multiple apps in the same `index.html`, each app with its own top-level root.
-
+Learn more in the [_Bootstrapping_](guide/bootstrapping) guide.
 
 {@a C}
 
-
+{@a case-conventions}
 {@a dash-case}
-
 {@a camelcase}
-
+{@a kebab-case}
 
 ## Case conventions
 
 Angular uses capitalization conventions to distinguish the names of various types, as described in the [Style Guide "Naming" section](guide/styleguide#02-01). 
 
-- camelCase : symbols, properties, methods, pipe names, interfaces, non-component directive selectors, constants 
-- UpperCamelCase (also called PascalCase): Class names 
-- dash-case (also called "kebab-case"): descriptive part of file names, component selectors
+- camelCase : symbols, properties, methods, pipe names, non-component directive selectors, constants 
+- UpperCamelCase (or PascalCase): Class names, including classes that define components, interfaces, NgModules, directives, pipes, and so on. 
+- dash-case (or "kebab-case"): descriptive part of file names, component selectors
 - underscore_case (or "snake_case"): not typically used in Angular 
-- UPPER_SNAKE_CASE : traditional for constants (acceptable, but prefer camelCase)
+- UPPER_UNDERSCORE_CASE (or UPPER_SNAKE_CASE): traditional for constants (acceptable, but prefer camelCase)
 
+{@a class-decorator}
+
+## Class decorator
+
+A [decorator](guide/glossary#decorator) statement immediately before a class definition that declares the class to be of the given type, and provides metadata suitable to the type.
+
+The following class types can be declared:
+- `@Component`
+- `@Directive`
+- `@Pipe`
+- `@Injectable`
+- `@NgModule`
+
+
+{@a class-field-decorator}
+
+## Class field decorator
+
+A [decorator](guide/glossary#decorator) statement immediately before a field in a class definition that declares the type of that field. Some examples are `@Input` and `@Output`. 
 
 ## CLI
 
-The Angular CLI is a `command line interface` tool that can create a project, add files, and perform a variety of ongoing development tasks such as testing, bundling, and deployment.
+The [Angular CLI](https://cli.angular.io/) is a command-line tool that can create a project, add files, and perform a variety of ongoing development tasks such as testing, bundling, and deployment.
 
-Learn more in the [Getting Started](guide/quickstart) guide.
+Learn more in the [Getting Started](guide/quickstart) guide. 
 
 {@a component}
 
 ## Component
 
-An Angular class responsible for exposing data to a [view](guide/glossary#view) and handling most of the view’s display and user-interaction logic.
+A class with the `@Component` [decorator](guide/glossary#decorator) that associates it with a companion [template](guide/glossary#template). 
 
-The *component* is one of the most important building blocks in the Angular system.
-It is, in fact, an Angular [directive](guide/glossary#directive) with a companion [template](guide/glossary#template).
+A component is a special type of [directive](guide/glossary#directive) that represents a [view](guide/glossary#view).The `@Component` decorator extends the `@Directive` decorator with template-oriented features. 
 
-Apply the `@Component` [decorator](guide/glossary#decorator) to
-the component class, thereby attaching to the class the essential component metadata
-that Angular needs to create a component instance and render the component with its template
-as a view.
+An Angular component class is responsible for exposing data and handling most of the view's display and user-interaction logic through [data binding](guide/glossary#data-binding).
 
-Those familiar with "MVC" and "MVVM" patterns will recognize
-the component in the role of "controller" or "view model".
+Read more about components, templates, and views in the [Architecture](guide/architecture) guide.
 
 {@a custom-element}
 
@@ -189,10 +154,7 @@ Data binding is an alternative to manually pushing application data values into 
 event listeners, pulling changed values from the screen, and
 updating application data values.
 
-Angular has a rich data-binding framework with a variety of data-binding
-operations and supporting declaration syntax.
-
- Read about the following forms of binding in the [Template Syntax](guide/template-syntax) page:
+Read about the following forms of binding in the [Template Syntax](guide/template-syntax) page:
 
  * [Interpolation](guide/template-syntax#interpolation).
  * [Property binding](guide/template-syntax#property-binding).
@@ -202,99 +164,54 @@ operations and supporting declaration syntax.
  * [Style binding](guide/template-syntax#style-binding).
  * [Two-way data binding with ngModel](guide/template-syntax#ngModel).
 
+{@a declarable}
+
+## Declarable
+
+A class type that you can add to the `declarations` list of an [NgModule](guide/glossary#ngmodule). 
+
+You can declare [components](guide/glossary#component), [directives](guide/glossary#directive), and [pipes](guide/glossary#pipe).
+
+Do not declare the following:
+- A class that's already declared in another NgModule.
+- An array of directives imported from another package. For example, don't declare `FORMS_DIRECTIVES` from `@angular/forms`.
+- NgModule classes.
+- Service classes.
+- Non-Angular classes and objects, such as strings, numbers, functions, entity models, configurations, business logic, and helper classes
+
 
 {@a decorator}
-
 
 {@a decoration}
 
 
 ## Decorator | decoration
 
-A *function* that adds metadata to a class, its members (properties, methods) and function arguments.
 
-Decorators (also called annotations) are an experimental (stage 2), JavaScript language [feature](https://github.com/wycats/javascript-decorators). TypeScript adds support for decorators.
+A function that modifies the immediately following class or property definition.  
+Decorators (also called annotations) are an experimental (stage 2), JavaScript language [feature](https://github.com/wycats/javascript-decorators). 
+TypeScript adds support for decorators.
 
-To apply a decorator, position it immediately above or to the left of the item it decorates.
+Angular defines decorators that attach metadata to classes or properties so that it knows what those classes or properties mean and how they should work. 
 
-Angular has its own set of decorators to help it interoperate with your application parts.
-The following example is a `@Component` decorator that identifies a
-class as an Angular [component](guide/glossary#component) and an `@Input` decorator applied to the `name` property
-of that component. The elided object argument to the `@Component` decorator would contain the pertinent component metadata.
+See [Class decorator](guide/glossary#class-decorator), [Class field decorator](guide/glossary#class-field-decorator). 
 
-```
-@Component({...})
-export class AppComponent {
-  constructor(@Inject('SpecialFoo') public foo:Foo) {}
-  @Input() name:string;
-}
-```
-
-The scope of a decorator is limited to the language feature
-that it decorates. None of the decorations shown here will "leak" to other
-classes that follow it in the file.
-
-
-<div class="alert is-important">
-
-
-
-Always include parentheses `()` when applying a decorator.
-
-
-</div>
+{@a di}
 
 
 ## Dependency injection
 
-A design pattern and mechanism
-for creating and delivering parts of an application to other
-parts of an application that request them.
+A design pattern and mechanism for creating and delivering parts of an application (dependencies) to other parts of an application that require them.
 
-Angular developers prefer to build applications by defining many simple parts
-that each do one thing well and then wiring them together at runtime.
+In Angular, dependencies are typically services, but can also be values, such as strings or functions. An [injector](guide/glossary#injector) for an app (created automatically during bootstrap) creates dependencies when needed, using a registered [provider](guide/glossary#provider) of the service or value. Different providers can provide different implementations of the same service. 
 
-These parts often rely on other parts. An Angular [component](guide/glossary#component)
-part might rely on a service part to get data or perform a calculation. When
-part "A" relies on another part "B," you say that "A" depends on "B" and
-that "B" is a dependency of "A."
+Learn more in the [Dependency Injection](guide/dependency-injection) guide.
 
-You can ask a "dependency injection system" to create "A"
-for us and handle all the dependencies.
-If "A" needs "B" and "B" needs "C," the system resolves that chain of dependencies
-and returns a fully prepared instance of "A."
+{@a di-token}
 
+## DI token
 
-Angular provides and relies upon its own sophisticated
-dependency-injection system
-to assemble and run applications by "injecting" application parts
-into other application parts where and when needed.
-
-At the core, an [`injector`](guide/glossary#injector) returns dependency values on request.
-The expression `injector.get(token)` returns the value associated with the given token.
-
-A token is an Angular type (`InjectionToken`). You rarely need to work with tokens directly; most
-methods accept a class name (`Foo`) or a string ("foo") and Angular converts it
-to a token. When you write `injector.get(Foo)`, the injector returns
-the value associated with the token for the `Foo` class, typically an instance of `Foo` itself.
-
-During many of its operations, Angular makes similar requests internally, such as when it creates a [`component`](guide/glossary#component) for display.
-
-The `Injector` maintains an internal map of tokens to dependency values.
-If the `Injector` can't find a value for a given token, it creates
-a new value using a `Provider` for that token.
-
-A [provider](guide/glossary#provider) is a recipe for
-creating new instances of a dependency value associated with a particular token.
-
-An injector can only create a value for a given token if it has
-a `provider` for that token in its internal provider registry.
-Registering providers is a critical preparatory step.
-
-Angular registers some of its own providers with every injector.
-You can register your own providers.
-
-Read more in the [Dependency Injection](guide/dependency-injection) page.
+A lookup token associated with a dependency [provider](guide/glossary#provider), for use with the [dependency injection](guide/glossary#di) system.
 
 
 {@a directive}
@@ -305,34 +222,25 @@ Read more in the [Dependency Injection](guide/dependency-injection) page.
 
 ## Directive
 
-An Angular class responsible for creating, reshaping, and interacting with HTML elements
-in the browser DOM. The directive is Angular's most fundamental feature.
+A class with the `@Directive` [decorator](guide/glossary#decorator) that can modify the structure of the DOM, or modify attributes in the DOM and component data model.
 
-A directive is usually associated with an HTML element or attribute.
-This element or attribute is often referred to as the directive itself.
+A directive class is usually associated with an HTML element or attribute, and that element or attribute is often referred to as the directive itself.  
+When Angular finds a directive in an HTML [template](guide/glossary#template), it creates the matching directive class instance and gives the instance control over that portion of the browser DOM.
 
-When Angular finds a directive in an HTML template,
-it creates the matching directive class instance
-and gives the instance control over that portion of the browser DOM.
+There are three categories of directive:
+- [Components](guide/glossary#component) use `@Component` (an extension of `@Directive`) to associate a template with a class.
+- [Attribute directives](guide/glossary#attribute-directive) modify behavior and appearance of page elements.
+- [Structural directives](guide/glossary#structural-directive) modify the structure of the DOM.
 
-You can invent custom HTML markup (for example, `<my-directive>`) to
-associate with your custom directives. You add this custom markup to HTML templates
-as if you were writing native HTML. In this way, directives become extensions of
-HTML itself.
+Angular supplies a number of built-in directives that begin with the `ng` prefix. You can also create new directives to implement your own functionality. 
+You associate a _selector_ (an HTML tag such as `<my-directive>`) with a custom directive, thereby extending the [template syntax](guide/template-syntax) that you can use in your apps.
 
-Directives fall into one of the following categories:
 
-* [Components](guide/glossary#component) combine application logic with an HTML template to
-render application [views](guide/glossary#view). Components are usually represented as HTML elements.
-They are the building blocks of an Angular application.
+## Domain-specific language (DSL)
 
-* [Attribute directives](guide/glossary#attribute-directive) can listen to and modify the behavior of
-other HTML elements, attributes, properties, and components. They are usually represented
-as HTML attributes, hence the name.
+A special-purpose library or API; see [Domain-specific language](https://en.wikipedia.org/wiki/Domain-specific_language).
 
-* [Structural directives](guide/glossary#structural-directive) are responsible for
-shaping or reshaping HTML layout, typically by adding, removing, or manipulating
-elements and their children.
+Angular extends TypeScript with domain-specific languages for a number of domains relevant to Angular apps, defined in ngModules such as [animations](guide/animations), [forms](guide/forms), and [routing and navigation](guide/router).
 
 {@a dynamic-components}
 
@@ -350,7 +258,9 @@ See also [Custom element](guide/glossary#custom-element), which provides an easi
 
 The [official JavaScript language specification](https://en.wikipedia.org/wiki/ECMAScript).
 
-Not all browsers support the latest ECMAScript standard, but you can use transpilers (like [TypeScript](guide/glossary#typescript)) to write code using the latest features, which will then be transpiled to code that runs on versions that are supported by browsers.
+Not all browsers support the latest ECMAScript standard, but you can use a [transpiler](guide/glossary#transpile) (like [TypeScript](guide/glossary#typescript)) to write code using the latest features, which will then be transpiled to code that runs on versions that are supported by browsers. 
+
+To learn more, see the [Browser Support](guide/browser-support) page.
 
 
 {@a element}
@@ -363,6 +273,13 @@ The documentation generally refers to either elements (`ElementRef` instances) o
 
 Compare [Custom element](guide/glossary#custom-element).
 
+## Entry point
+
+A JavaScript ID that makes parts of an NPM package available for import by other code. 
+The Angular [scoped packages](guide/glossary#scoped-package) each have an entry point named `index`.
+
+Within Angular, use [NgModules](guide/glossary#ngmodule) to achieve the same result.
+
 
 {@a F}
 
@@ -374,6 +291,16 @@ Compare [Custom element](guide/glossary#custom-element).
 
 {@a I}
 
+{@a injectable}
+
+## Injectable
+
+An Angular class or other definition that provides a dependency using the [dependency injection](guide/glossary#di) mechanism. An injectable class is marked by the `@Injectable` [decorator](guide/glossary#decorator).
+
+Both a [service](guide/glossary#service) and a [component](guide/glossary#component) that depends on that service must be marked as injectable. Other items, such as constant values, can be injectable.
+
+{@a injector}
+
 ## Injector
 
 An object in the Angular [dependency-injection system](guide/glossary#dependency-injection)
@@ -383,19 +310,19 @@ with a registered [provider](guide/glossary#provider). Injectors are created for
 
 ## Input
 
-A directive property that can be the *target* of a
-[property binding](guide/template-syntax#property-binding) (explained in detail in the [Template Syntax](guide/template-syntax) page).
-Data values flow *into* this property from the data source identified
-in the template expression to the right of the equal sign.
+When defining a [directive](guide/glossary#directive), the `@Input` decorator on a directive property makes that property available as a *target* of a
+[property binding](guide/template-syntax#property-binding).
+Data values flow into an input property from the data source identified
+in the [template expression](guide/glossary#template-expression) to the right of the equal sign.
 
-See the [Input and output properties](guide/template-syntax#inputs-outputs) section of the [Template Syntax](guide/template-syntax) page.
+To learn more, see [input and output properties](guide/template-syntax#inputs-outputs).
 
 
 ## Interpolation
 
 A form of [property data binding](guide/glossary#data-binding) in which a
 [template expression](guide/glossary#template-expression) between double-curly braces
-renders as text.  That text may be concatenated with neighboring text
+renders as text.  That text can be concatenated with neighboring text
 before it is assigned to an element property
 or displayed between element tags, as in this example.
 
@@ -422,9 +349,10 @@ See [ECMAScript](guide/glossary#ecma), [TypeScript](guide/glossary#typescript).
 
 ## Just-in-time (JIT) compilation
 
-A bootstrapping method of compiling components and modules in the browser
-and launching the application dynamically. Just-in-time mode is a good choice during development.
-Consider using the [ahead-of-time](guide/glossary#aot) mode for production apps.
+The Angular Just-in-Time (JIT) compiler converts your Angular HTML and TypeScript code into efficient JavaScript code at run time, as part of bootstrapping. 
+JIT compilation is the default when you run Angular's `ng build` and `ng serve` CLI commands, and is a good choice during development. JIT mode is strongly discouraged for production use because it results in large application payloads that hinder the bootstrap performance.
+
+Compare [ahead-of-time (AOT) compilation](guide/glossary#aot).
 
 
 {@a K}
@@ -432,13 +360,17 @@ Consider using the [ahead-of-time](guide/glossary#aot) mode for production apps.
 
 {@a L}
 
-## Lifecycle hooks
+{@a lazy-load}
 
-[Directives](guide/glossary#directive) and [components](guide/glossary#component) have a lifecycle
-managed by Angular as it creates, updates, and destroys them.
+## Lazy loading
 
-You can tap into key moments in that lifecycle by implementing
-one or more of the lifecycle hook interfaces.
+Lazy loading speeds up application load time by splitting the application into multiple bundles and loading them on demand. 
+For example, dependencies can be lazy-loaded as needed&emdash;as opposed to "eager-loaded" modules that are required by the root module, and are thus loaded on launch. 
+Similarly, the [router](guide/glossary#router) can load child views only when the parent view is activated, and you can build custom elements that can be loaded into an Angular app when needed.
+
+## Lifecycle hook
+
+An interface that allows you to tap into the lifecycle of [directives](guide/glossary#directive) and [components](guide/glossary#component) as they are created, updated, and destroyed.
 
 Each interface has a single hook method whose name is the interface name prefixed with `ng`.
 For example, the `OnInit` interface has a hook method named `ngOnInit`.
@@ -454,118 +386,95 @@ Angular calls these hook methods in the following order:
 * `ngAfterViewChecked`: after every check of a component's views.
 * `ngOnDestroy`: just before the directive is destroyed.
 
-Read more in the [Lifecycle Hooks](guide/lifecycle-hooks) page.
+To learn more, see the [Lifecycle Hooks](guide/lifecycle-hooks) page.
 
 
 {@a M}
 
 ## Module
 
-<div class="alert is-important">
+In general, a module collects a block of code dedicated to a single purpose. Angular uses standard JavaScript modules, and also defines an Angular module, `NgModule`. 
 
+In JavaScript (ECMAScript), each file is a module and all objects defined in the file belong to that module. Objects can exported, making them public, and public objects can be imported for use by other modules.
 
-Angular has the following types of modules:
+Angular ships as a collection of JavaScript modules, or libraries. Each Angular library name begins with the `@angular` prefix. Install them with the NPM package manager and import parts of them with JavaScript `import` declarations.
 
-* [NgModules](guide/glossary#ngmodule).
-For details and examples, see the [NgModules](guide/ngmodules) page. 
-* ES2015 modules, as described in this section.
-
-For a comparison, see [JavaScript Modules vs. NgModules](guide/ngmodule-vs-jsmodule).
-
-</div>
-
-A cohesive block of code dedicated to a single purpose.
-
-Angular apps are modular.
-
-In general, you assemble an application from many modules, both the ones you write and the ones you acquire from others.
-
-A module *exports* something of value in that code, typically one thing such as a class;
-a module that needs that class *imports* it.
-
-The structure of NgModules and the import/export syntax
-is based on the [ES2015 module standard](http://www.2ality.com/2014/09/es6-modules-final.html).
-
-An application that adheres to this standard requires a module loader to
-load modules on request and resolve inter-module dependencies.
-Angular doesn't include a module loader and doesn't have a preference
-for any particular third-party library.
-You can use any module library that conforms to the standard.
-
-Modules are typically named after the file in which the exported thing is defined.
-The Angular [DatePipe](https://github.com/angular/angular/blob/master/packages/common/src/pipes/date_pipe.ts)
-class belongs to a feature module named `date_pipe` in the file `date_pipe.ts`.
-
-You rarely access Angular feature modules directly. You usually import them from an Angular [scoped package](guide/glossary#scoped-package) such as `@angular/core`.
+Compare the Angular [NgModule](guide/glossary#ngmodule).
 
 
 {@a N}
 
+{@a ngmodule}
 
 ## NgModule
 
-Helps you organize an application into cohesive blocks of functionality.
-An NgModule identifies the components, directives, and pipes that the application uses along with the list of external NgModules that the application needs, such as `FormsModule`.
+A class definition with an `@NgModule` [decorator](guide/glossary#decorator), that declares and serves as a manifest for a block of code dedicated to an application domain, a workflow, or a closely related set of capabilities.
 
-Every Angular application has an application root-module class. By convention, the class is
-called `AppModule` and resides in a file named `app.module.ts`.
+Like a [JavaScript module](guide/glossary#module), an NgModule can export functionality for use by other NgModules, and import public functionality from other NgModules.
 
-For details and examples, see [NgModules](guide/ngmodules) and the 
-related files in that section.
+The metadata for an NgModule class collects components, directives, and pipes that the application uses along with the list of imports and exports. See also [Declarable](guide/glossary#declarable).
+
+NgModules are typically named after the file in which the exported thing is defined; for example, the Angular [DatePipe](api/common/DatePipe) class belongs to a feature module named `date_pipe` in the file `date_pipe.ts`. You import them from an Angular [scoped package](guide/glossary#scoped-package) such as `@angular/core`.
+
+Every Angular application has a root module. By convention, the class is called `AppModule` and resides in a file named `app.module.ts`.
+
+To learn more, see the [NgModules](guide/ngmodules) guide.
 
 
 {@a O}
 
+{@a observable}
+
+
 ## Observable
 
-An subscribable message publisher, which provides multiple items that arrive asynchronously over time.
-Observables help you manage asynchronous data, such as data coming from a backend service.
-Observables are used within Angular itself, including Angular's event system and its HTTP client service.
+A producer of multiple values, which it pushes to [subscribers](guide/glossary#subscriber). Used for asynchronous event handling throughout Angular. You execute an observable by subscribing to it with its `subscribe()` method, passing callbacks for notifications of new values, errors, or completion. 
 
-Observables are a proposed feature for ES2016, the next version of JavaScript.
-Currently, Angular depends on a third-party library called Reactive Extensions (RxJS) to provide observables.
+Observables can deliver single or multiple values of any type to subscribers, either synchronously (as a function delivers a value to its caller), or on a schedule. A subscriber receives notification of new values as they are produced, and of either error or normal completion. 
 
-For more information, see the [Observables guide](guide/observables).
+Angular uses a third-party library called [Reactive Extensions (RxJS)](http://reactivex.io/rxjs/). 
+
+To learn more, see the [Observables](guide/glossary#observable) guide.
 
 
+{@a observer}
+
+## Observer
+
+An object passed to the `subscribe()` method for an [observable](guide/glossary#observable) that defines the callbacks for the [subscriber](guide/glossary#subscriber).
 
 ## Output
 
-A directive property that can be the *target* of event binding
-(read more in the [event binding](guide/template-syntax#event-binding)
-section of the [Template Syntax](guide/template-syntax) page).
-Events stream *out* of this property to the receiver identified
-in the template expression to the right of the equal sign.
+When defining a [directive](guide/glossary#directive), the `@Output` decorator on a directive property makes that property available as a *target* of [event binding](guide/template-syntax#event-binding).
 
-See the [Input and output properties](guide/template-syntax#inputs-outputs) section of the [Template Syntax](guide/template-syntax) page.
+Events stream *out* of this property to the receiver identified
+in the [template expression](guide/glossary#template-expression) to the right of the equal sign.
+
+To learn more, see [input and output properties](guide/template-syntax#inputs-outputs).
 
 
 {@a P}
 
 ## Pipe
 
-An Angular pipe is a function that transforms input values to output values for
-display in a [view](guide/glossary#view).
-Here's an example that uses the built-in `currency` pipe to display
-a numeric value in the local currency.
+A class with the `@Pipe` decorator which defines a function that transforms input values to output values for display in a [view](guide/glossary#view).
 
+Angular defines various pipes, and you can define new pipes.
+ 
+To learn more, see the [pipes](guide/pipes) page.
 
-<code-example language="html" escape="html">
-  <label>Price: </label>{{product.price | currency}}
+## Polyfill
 
-</code-example>
-
-
-
-You can also write your own custom pipes.
-Read more in the page on [pipes](guide/pipes).
+An [NPM package](guide/npm-packages) that plugs gaps in a browser's JavaScript implementation. See the [Browser Support](guide/browser-support) guide for polyfills that support particular functionality for particular platforms. 
 
 
 ## Provider
 
-A _provider_ creates a new instance of a dependency for the
-[dependency injection](guide/glossary#dependency-injection) system.
-It relates a lookup token to code&mdash;sometimes called a "recipe"&mdash;that can create a dependency value.
+A provider of an injectable service&mdash;specifically, a code recipe associated with a [DI token](guide/glossary#token), which an [injector](guide/glossary#injector) uses to create a new instance of a dependency for a class that requires it.
+
+Angular registers its own providers with every injector, for services that Angular defines. You can register your own providers for services that your app needs.
+
+See also [Service](guide/glossary#service), [Dependency Injection](guide/glossary#di).
 
 
 {@a Q}
@@ -589,24 +498,13 @@ Reactive forms are powerful, flexible, and a good choice for more complex data-e
 
 ## Router
 
-Most applications consist of many screens or [views](guide/glossary#view).
-The user navigates among them by clicking links and buttons,
-and performing other similar actions that cause the application to
-replace one view with another.
+A tool that configures and implements navigation among states and [views](guide/glossary#view) within an Angular app.
 
-The Angular component router is a richly featured mechanism for configuring and managing the entire view navigation process, including the creation and destruction
-of views.
+The Router module is an [NgModule](guide/glossary#ngmodule) that provides the necessary service providers and directives for navigating through application views. A [routing component](guide/glossary#routing-component) is one that imports the Router module and whose template contains a `RouterOutlet` element where it can display views produced by the router.
+ 
+The Router defines navigation among views on a single page, as opposed to navigation among pages. It interprets URL-like links to determine which views to create or destroy, and which components to load or unload. It allows you to take advantage of [lazy-loading](guide/glossary#lazy-load) in your Angular apps.
 
-In most cases, components become attached to a router by means
-of a `RouterConfig` that defines routes to views.
-
-A [routing component's](guide/glossary#routing-component) template has a `RouterOutlet` element
-where it can display views produced by the router.
-
-Other views in the application likely have anchor tags or buttons with `RouterLink`
-directives that users can click to navigate.
-
-For more information, see the [Routing & Navigation](guide/router) page.
+To learn more, see the [Routing & Navigation](guide/router) guide.
 
 
 ## Router module
@@ -615,6 +513,9 @@ A separate [NgModule](guide/glossary#ngmodule) that provides the necessary servi
 
 For more information, see the [Routing & Navigation](guide/router) page.
 
+## Router outlet
+
+A directive that acts as a placeholder in a routing component's template, which Angular dynamically fills based on the current router state.
 
 ## Routing component
 
@@ -627,16 +528,10 @@ For more information, see the [Routing & Navigation](guide/router) page.
 
 ## Scoped package
 
-A way to group related *npm* packages.
-Read more at the [npm-scope](https://docs.npmjs.com/misc/scope) page.
+A way to group related NPM packages. 
+NgModules are delivered within *scoped packages* whose names begin with the Angular *scope name* `@angular`. For example, `@angular/core`, `@angular/common`, `@angular/http`, and `@angular/router`.
 
-NgModules are delivered within *scoped packages* such as `@angular/core`,
-`@angular/common`, `@angular/platform-browser-dynamic`, `@angular/http`, and `@angular/router`.
-
-Import a scoped package the same way that you import a normal package.
-The only difference, from a consumer perspective,
-is that the scoped package name begins with the Angular *scope name*, `@angular`.
-
+Import a scoped package in the same way that you import a normal package. 
 
 <code-example path="architecture/src/app/app.component.ts" linenums="false" title="architecture/src/app/app.component.ts (import)" region="import">
 
@@ -645,20 +540,12 @@ is that the scoped package name begins with the Angular *scope name*, `@angular`
 
 ## Service
 
-For data or logic that is not associated
-with a specific view or that you want to share across components, build services.
+In Angular, a service is a class with the [@Injectable](guide/glossary#injectable) decorator that encapsulates non-UI logic and code that can be re-used across an application. 
+Angular distinguishes components from services in order to increase modularity and reusability.
 
-Applications often require services such as a hero data service or a logging service.
+The `@Injectable` metadata allows the service class to be used with the [dependency injection](guide/glossary#di) mechanism. The injectable class is instantiated by a [provider](guide/glossary#provider), and a module maintains a list of providers that can provide a particular type of service as needed by components or other services that require it.
 
-A service is a class with a focused purpose.
-You often create a service to implement features that are
-independent from any specific view,
-provide shared data or logic across components, or encapsulate external interactions.
-
-Applications often require services such as a data service or a logging service.
-
-For more information, see the [Services](tutorial/toh-pt4) page of the [Tour of Heroes](tutorial) tutorial.
-
+To learn more, see [Introduction to Services](guide/architecture-services).
 
 {@a structural-directive}
 
@@ -668,21 +555,35 @@ For more information, see the [Services](tutorial/toh-pt4) page of the [Tour of 
 
 ## Structural directives
 
-A category of [directive](guide/glossary#directive) that can
-shape or reshape HTML layout, typically by adding and removing elements in the DOM.
-The `ngIf` "conditional element" directive and the `ngFor` "repeater" directive are well-known examples.
+A category of [directive](guide/glossary#directive) that is responsible for shaping or reshaping HTML layout by modifying the DOM (adding, removing, or manipulating elements and their children).
 
-Read more in the [Structural Directives](guide/structural-directives) page.
+To learn more, see the [Structural Directives](guide/structural-directives) page.
 
+{@a subscriber}
+
+## Subscriber
+
+A function that defines how to obtain or generate values or messages to be published. This function is executed when a consumer calls the `subscribe()` method of an [observable](guide/glossary#observable).
+
+The act of subscribing to an observable triggers its execution, associates callbacks with it, and creates a `Subscription` object that lets you unsubscribe.
+
+The `subscribe()` method takes a JavaScript object (called an "observer") with up to three callbacks, one for each type of notification that an observable can deliver:
+
+- The `next` notification: sends a value such as a Number, a String, an Object, etc.
+- The `error` notification sends a JavaScript Error or exception.
+- The `complete` notification does not send a value, but the handler is called when the call completes. Scheduled values can continue to be returned after the call completes.
 
 {@a T}
 
 ## Template
 
-A chunk of HTML that Angular uses to render a [view](guide/glossary#view) with
-the support and guidance of an Angular [directive](guide/glossary#directive),
-most notably a [component](guide/glossary#component).
+A template defines how to render a component's [view](guide/glossary#view) in HTML  
 
+A template combines straight HTML with Angular [data-binding](guide/glossary#data-binding) syntax, [directives](guide/glossary#directive),  and [template expressions](guide/glossary#template-expression) (logical constructs). The Angular elements insert or calculate values that modify the HTML elements before the page is displayed.
+ 
+A template is associated with a [component](guide/glossary#component) class through `@Component` [decorator](guide/glossary#decorator). The HTML can be provided inline, as the value of the `template` property, or in a separate HTML file linked through the `templateUrl` property. 
+
+Additional templates, represented by a `TemplateRef` object, can define alternative or _embedded_ views, which can be referenced from multiple components.
 
 ## Template-driven forms
 
@@ -701,6 +602,8 @@ Template-driven forms are convenient, quick, and simple. They are a good choice 
 Read about how to build template-driven forms
 in the [Forms](guide/forms) page.
 
+{@a template-expression}
+
 
 ## Template expression
 
@@ -711,24 +614,27 @@ Read about how to write template expressions
 in the [Template expressions](guide/template-syntax#template-expressions) section
 of the [Template Syntax](guide/template-syntax) page.
 
+{@a token}
+
+## Token
+
+An opaque identifier used for efficient table lookup. In Angular, a [DI token](guide/glossary#di-token) is used to find [providers](guide/glossary#provider) of dependencies in the [dependency injection](guide/glossary#di) system.
+
+{@a transpile}
 
 ## Transpile
 
-The process of transforming code written in one form of JavaScript
-(such as TypeScript) into another form of JavaScript. (See also [ECMAScript](guide/glossary#ecma)).
+The translation process that tranforms one version of JavaScript to another version; for example, down-leveling ES2015 to the older ES5 version.
+
 
 {@a typescript}
 
-
 ## TypeScript
 
-A version of JavaScript that supports most [ECMAScript 2015](guide/glossary#ecma)
-language features such as [decorators](guide/glossary#decorator).
-
-TypeScript is notable for its optional typing system, which provides
-compile-time type checking and strong tooling support (such as "intellisense,"
-code completion, refactoring, and intelligent search). Many code editors
-and IDEs support TypeScript either natively or with plugins.
+TypeScript is a programming language notable for its optional typing system, which provides
+compile-time type checking and strong tooling support (such as
+code completion, refactoring, inline documentation, and intelligent search). Many code editors
+and IDEs support TypeScript either natively or with plug-ins.
 
 TypeScript is the preferred language for Angular development. Read more about TypeScript at [typescriptlang.org](http://www.typescriptlang.org/).
 
@@ -739,18 +645,26 @@ TypeScript is the preferred language for Angular development. Read more about Ty
 
 ## View
 
-A portion of the screen that displays information and responds
-to user actions such as clicks, mouse moves, and keystrokes.
+A view is the smallest grouping of display elements that can be created and destroyed together. 
 
 Angular renders a view under the control of one or more [directives](guide/glossary#directive),
-especially  [component](guide/glossary#component) directives and their companion [templates](guide/glossary#template).
-The component plays such a prominent role that it's often
-convenient to refer to a component as a view.
+especially  [component](guide/glossary#component) directives and their companion [templates](guide/glossary#template). 
 
-Views often contain other views. Any view might be loaded and unloaded
-dynamically as the user navigates through the application, typically
-under the control of a [router](guide/glossary#router).
+A view is specifically represented by a `ViewRef` instance associated with the component. 
+A view that belongs to a component is called a  _host view_. 
+Views are typically collected into [view hierarchies](guide/glossary#view-tree). 
 
+Properties of elements in a view can change dynamically, in response to user actions; the structure (number and order) of elements in a view cannot. You can change the structure of elements by inserting, moving, or removing nested views within their view containers.
+
+View hierarchies can be loaded and unloaded dynamically as the user navigates through the application, typically under the control of a [router](guide/glossary#router).
+
+{@a view-tree}
+
+## View hierarchy
+
+A tree of related views that can be acted on as a unit. The root view is a component's _host view_.  A host view can be the root of a tree of _embedded views_, collected in a _view container_ (`ViewContainerRef`) attached to an anchor element in the hosting component. The view hierarchy is a key part of Angular change detection. 
+
+The view hierarchy does not imply a component hierarchy. Views that are embedded in the context of a particular hierarchy can be host views of other components. Those components can be in the same NgModule as the hosting component, or belong to other NgModules.
 
 {@a W}
 
@@ -769,21 +683,11 @@ See [Custom element](guide/glossary#custom-element)
 
 ## Zone
 
-A mechanism for encapsulating and intercepting
-a JavaScript application's asynchronous activity.
+An execution context for a set of asynchronous tasks. Useful for debugging, profiling, and testing apps that include asynchronous operations such as event processing, promises, and calls to remote servers.
 
-The browser DOM and JavaScript have a limited number
-of asynchronous activities, such as DOM events (for example, clicks),
-[promises](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise), and
-[XHR](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest)
-calls to remote servers.
+An Angular app runs in a zone where it can respond to asynchronous events by checking for data changes and updating the information it displays by resolving [data bindings](guide/glossary#data-binding).
 
-Zones intercept all of these activities and give a "zone client" the opportunity
-to take action before and after the async activity finishes.
-
-Angular runs your application in a zone where it can respond to
-asynchronous events by checking for data changes and updating
-the information it displays via [data bindings](guide/glossary#data-binding).
+A zone client can take action before and after an async operation completes. 
 
 Learn more about zones in this
 [Brian Ford video](https://www.youtube.com/watch?v=3IqtmUscE_U).
