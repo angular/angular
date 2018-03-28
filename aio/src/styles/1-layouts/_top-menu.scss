@@ -68,9 +68,12 @@ aio-shell.folder-tutorial mat-toolbar.mat-toolbar {
   height: 100%;
   margin: $hamburgerShownMargin;
   padding: 0;
-  transition-duration: .4s;
-  transition-property: color, margin;
-  transition-timing-function: cubic-bezier(.25, .8, .25, 1);
+
+  &:not(.starting) {
+    transition-duration: .4s;
+    transition-property: color, margin;
+    transition-timing-function: cubic-bezier(.25, .8, .25, 1);
+  }
 
   @media (min-width: 992px) {
     // Hamburger hidden by default on large screens.

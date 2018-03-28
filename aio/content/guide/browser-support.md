@@ -133,6 +133,8 @@ But if you need an optional polyfill, you'll have to install its npm package.
 For example, [if you need the web animations polyfill](http://caniuse.com/#feat=web-animation), you could install it with `npm`, using the following command (or the `yarn` equivalent):
 
 <code-example language="sh" class="code-shell">
+  # note that the web-animations-js polyfill is only here as an example
+  # it isn't a strict requirement of Angular anymore (more below)
   npm install --save web-animations-js
 </code-example>
 
@@ -226,7 +228,8 @@ These are the polyfills required to run an Angular application on each supported
 
 Some features of Angular may require additional polyfills.
 
-For example, the animations library relies on the standard web animation API, which is only available in Chrome and Firefox today. You'll need a polyfill to use animations in other browsers.
+For example, the animations library relies on the standard web animation API, which is only available in Chrome and Firefox today.
+(note that the dependency of web-animations-js in Angular is only necessary if `AnimationBuilder` is used.)
 
 Here are the features which may require additional polyfills:
 
@@ -276,6 +279,8 @@ Here are the features which may require additional polyfills:
     <td>
 
       [Animations](guide/animations)
+      <br>Only if `Animation Builder` is used within the application--standard
+      animation support in Angular doesn't require any polyfills (as of NG6).
 
     </td>
 
@@ -286,7 +291,8 @@ Here are the features which may require additional polyfills:
     </td>
 
     <td>
-      All but Chrome and Firefox<br>Not supported in IE9
+      <p>If AnimationBuilder is used then the polyfill will enable scrubbing
+      support for IE/Edge and Safari (Chrome and Firefox support this natively).</p>
     </td>
 
   </tr>

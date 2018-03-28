@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import 'rxjs/add/operator/toPromise';
 import {TestBed} from '@angular/core/testing';
 
 import {NgswCommChannel} from '../src/low_level';

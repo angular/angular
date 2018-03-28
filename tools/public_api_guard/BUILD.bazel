@@ -1,0 +1,26 @@
+load("//tools/ts-api-guardian:index.bzl", "ts_api_guardian_test")
+
+[ts_api_guardian_test(
+    name = "%s_%s_api" % (
+        bundle[0],
+        bundle[1].replace("/", "_"),
+    ),
+    actual = "packages/%s/npm_package/%s.d.ts" % (
+        bundle[0],
+        bundle[1],
+    ),
+    data = glob([
+        "%s/**/*.d.ts" % bundle[0],
+    ]) + [
+        "//packages/%s:npm_package" % bundle[0],
+    ],
+    golden = "tools/public_api_guard/%s/%s.d.ts" % (
+        bundle[0],
+        bundle[1],
+    ),
+) for bundle in [b[:-len(".d.ts")].split("/", 1) for b in glob(
+    ["**/*.d.ts"],
+    # The API surface of the compiler is currently unstable - all of the important APIs are exposed
+    # via @angular/core, @angular/platform-browser or @angular/platform-browser-dynamic instead.
+    exclude = ["compiler/*"],
+)]]

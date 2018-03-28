@@ -6,10 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {ChangeDetectionStrategy} from '../../change_detection/constants';
 import {PipeTransform} from '../../change_detection/pipe_transform';
+import {Provider} from '../../core';
 import {RendererType2} from '../../render/api';
 import {Type} from '../../type';
 import {resolveRendererType2} from '../../view/util';
+import {CssSelector} from './projection';
+
 
 /**
  * Definition of what a template rendering function should look like.
@@ -18,16 +22,37 @@ export type ComponentTemplate<T> = {
   (ctx: T, creationMode: boolean): void; ngPrivateData?: never;
 };
 
+/**
+ * A subclass of `Type` which has a static `ngComponentDef`:`ComponentDef` field making it
+ * consumable for rendering.
+ */
 export interface ComponentType<T> extends Type<T> { ngComponentDef: ComponentDef<T>; }
 
+/**
+ * A subclass of `Type` which has a static `ngDirectiveDef`:`DirectiveDef` field making it
+ * consumable for rendering.
+ */
 export interface DirectiveType<T> extends Type<T> { ngDirectiveDef: DirectiveDef<T>; }
 
 export const enum DirectiveDefFlags {ContentQuery = 0b10}
 
+/**
+ * A subclass of `Type` which has a static `ngPipeDef`:`PipeDef` field making it
+ * consumable for rendering.
+ */
 export interface PipeType<T> extends Type<T> { ngPipeDef: PipeDef<T>; }
 
 /**
- * `DirectiveDef` is a compiled version of the Directive used by the renderer instructions.
+ * Runtime link information for Directives.
+ *
+ * This is internal data structure used by the render to link
+ * directives into templates.
+ *
+ * NOTE: Always use `defineDirective` function to create this object,
+ * never create the object directly since the shape of this object
+ * can change between versions.
+ *
+ * See: {@link defineDirective}
  */
 export interface DirectiveDef<T> {
   /** Token representing the directive. Used by DI. */
@@ -36,26 +61,22 @@ export interface DirectiveDef<T> {
   /** Function that makes a directive public to the DI system. */
   diPublic: ((def: DirectiveDef<any>) => void)|null;
 
+  /** The selector that will be used to match nodes to this directive. */
+  selector: CssSelector;
+
   /**
-   * List of inputs which are part of the components public API.
-   *
-   * The key is minified property name whereas the value is the original unminified name.
+   * A dictionary mapping the inputs' minified property names to their public API names, which
+   * are their aliases if any, or their original unminified property names
+   * (as in `@Input('alias') propertyName: any;`).
    */
   readonly inputs: {[P in keyof T]: P};
 
   /**
-   * List of outputs which are part of the components public API.
-   *
-   * The key is minified property name whereas the value is the original unminified name.=
+   * A dictionary mapping the outputs' minified property names to their public API names, which
+   * are their aliases if any, or their original unminified property names
+   * (as in `@Output('alias') propertyName: any;`).
    */
   readonly outputs: {[P in keyof T]: P};
-
-  /**
-   * List of methods which are part of the components public API.
-   *
-   * The key is minified property name whereas the value is the original unminified name.
-   */
-  readonly methods: {[P in keyof T]: P};
 
   /**
    * Name under which the directive is exported (for use with local references in template)
@@ -67,17 +88,19 @@ export interface DirectiveDef<T> {
    *
    * Usually returns the directive instance, but if the directive has a content query,
    * it instead returns an array that contains the instance as well as content query data.
-   *
-   * NOTE: this property is short (1 char) because it is used in
-   * component templates which is sensitive to size.
    */
-  n(): T|[T];
+  factory(): T|[T];
+
+  /** Refreshes host bindings on the associated directive. */
+  hostBindings: ((directiveIndex: number, elementIndex: number) => void)|null;
 
   /**
-   * Refreshes host bindings on the associated directive. Also calls lifecycle hooks
-   * like ngOnInit and ngDoCheck, if they are defined on the directive.
+   * Static attributes to set on host element.
+   *
+   * Even indices: attribute name
+   * Odd indices: attribute value
    */
-  h(directiveIndex: number, elementIndex: number): void;
+  attributes: string[]|null;
 
   /* The following are lifecycle hooks for this component */
   onInit: (() => void)|null;
@@ -89,14 +112,19 @@ export interface DirectiveDef<T> {
   onDestroy: (() => void)|null;
 }
 
+/**
+ * Runtime link information for Components.
+ *
+ * This is internal data structure used by the render to link
+ * components into templates.
+ *
+ * NOTE: Always use `defineComponent` function to create this object,
+ * never create the object directly since the shape of this object
+ * can change between versions.
+ *
+ * See: {@link defineComponent}
+ */
 export interface ComponentDef<T> extends DirectiveDef<T> {
-  /**
-   * The tag name which should be used by the component.
-   *
-   * NOTE: only used with component directives.
-   */
-  readonly tag: string;
-
   /**
    * The View template of the component.
    *
@@ -110,10 +138,42 @@ export interface ComponentDef<T> extends DirectiveDef<T> {
    * NOTE: only used with component directives.
    */
   readonly rendererType: RendererType2|null;
+
+  /** Whether or not this component's ChangeDetectionStrategy is OnPush */
+  readonly onPush: boolean;
+
+  /**
+   * Defines the set of injectable providers that are visible to a Directive and its content DOM
+   * children.
+   */
+  readonly providers?: Provider[];
+
+  /**
+   * Defines the set of injectable providers that are visible to a Directive and its view DOM
+   * children only.
+   */
+  readonly viewProviders?: Provider[];
+
+  /**
+   * Registry of directives and components that may be found in this view.
+   *
+   * The property is either an array of `DirectiveDef`s or a function which returns the array of
+   * `DirectiveDef`s. The function is necessary to be able to support forward declarations.
+   */
+  directiveDefs: DirectiveDefListOrFactory|null;
 }
 
 /**
+ * Runtime link information for Pipes.
  *
+ * This is internal data structure used by the renderer to link
+ * pipes into templates.
+ *
+ * NOTE: Always use `definePipe` function to create this object,
+ * never create the object directly since the shape of this object
+ * can change between versions.
+ *
+ * See: {@link definePipe}
  */
 export interface PipeDef<T> {
   /**
@@ -122,7 +182,7 @@ export interface PipeDef<T> {
    * NOTE: this property is short (1 char) because it is used in
    * component templates which is sensitive to size.
    */
-  n: () => PipeTransform;
+  n: () => T;
 
   /**
    * Whether or not the pipe is pure.
@@ -136,27 +196,17 @@ export interface PipeDef<T> {
   onDestroy: (() => void)|null;
 }
 
-
-export interface DirectiveDefArgs<T> {
-  type: Type<T>;
-  factory: () => T | [T];
-  inputs?: {[P in keyof T]?: string};
-  outputs?: {[P in keyof T]?: string};
-  methods?: {[P in keyof T]?: string};
-  features?: DirectiveDefFeature[];
-  hostBindings?: (directiveIndex: number, elementIndex: number) => void;
-  exportAs?: string;
-}
-
-export interface ComponentDefArgs<T> extends DirectiveDefArgs<T> {
-  tag: string;
-  template: ComponentTemplate<T>;
-  features?: ComponentDefFeature[];
-  rendererType?: RendererType2;
-}
-
 export type DirectiveDefFeature = <T>(directiveDef: DirectiveDef<T>) => void;
-export type ComponentDefFeature = <T>(directiveDef: DirectiveDef<T>) => void;
+export type ComponentDefFeature = <T>(componentDef: ComponentDef<T>) => void;
+
+/**
+ * Type used for directiveDefs on component definition.
+ *
+ * The function is necessary to be able to support forward declarations.
+ */
+export type DirectiveDefListOrFactory = (() => DirectiveDefList) | DirectiveDefList;
+
+export type DirectiveDefList = (DirectiveDef<any>| ComponentDef<any>)[];
 
 // Note: This hack is necessary so we don't erroneously get a circular dependency
 // failure based on types.

@@ -20,7 +20,7 @@ export function forbiddenNameValidator(nameRe: RegExp): ValidatorFn {
   // #enddocregion directive-providers
 })
 export class ForbiddenValidatorDirective implements Validator {
-  @Input() forbiddenName: string;
+  @Input('appForbiddenName') forbiddenName: string;
 
   validate(control: AbstractControl): {[key: string]: any} {
     return this.forbiddenName ? forbiddenNameValidator(new RegExp(this.forbiddenName, 'i'))(control)

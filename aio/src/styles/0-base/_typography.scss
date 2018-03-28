@@ -12,16 +12,10 @@ h1 {
   font-size: 24px;
   font-weight: 500;
   margin: 8px 0px;
-}
 
-h1:after {
-  content: "";
-  display: block;
-  height: 1px;
-  width: 40%;
-  margin: 24px 0px 10px;
-  background: $lightgray;
-  clear: both;
+  @media screen and (max-width: 600px) {
+    margin-top: 0;
+  }
 }
 
 h2 {
@@ -60,13 +54,7 @@ h6 {
   clear: both;
 }
 
-h1 {
-  @media screen and (max-width: 600px) {
-    margin: 0;
-  }
-}
-
-h1:after, h2, h3, h4, h5, h6 {
+h2, h3, h4, h5, h6 {
   @media screen and (max-width: 600px) {
     margin: 8px 0;
   }
@@ -143,13 +131,13 @@ th {
   text-align: left;
 }
 
-p > code, li > code, table code {
+p > code, li > code, td > code, th > code {
   font-family: $code-font;
   font-size: 85%;
   color: $darkgray;
   letter-spacing: 0;
   line-height: 1;
-  padding: 2px 6px;
+  padding: 2px 0;
   background-color: $backgroundgray;
   border-radius: 4px;
 }

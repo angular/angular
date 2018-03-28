@@ -4,12 +4,16 @@ import { FormsModule }   from '@angular/forms';
 
 import { HighlightDirective } from './highlight.directive';
 import { TitleCasePipe }      from './title-case.pipe';
-import { TwainComponent }     from './twain.component';
 
 @NgModule({
-  imports:      [ CommonModule ],
-  exports:      [ CommonModule, FormsModule,
-                  HighlightDirective, TitleCasePipe, TwainComponent ],
-  declarations: [ HighlightDirective, TitleCasePipe, TwainComponent ]
+  imports: [ CommonModule ],
+  exports: [
+    CommonModule,
+    // SharedModule importers won't have to import FormsModule too
+    FormsModule,
+    HighlightDirective,
+    TitleCasePipe
+  ],
+  declarations: [ HighlightDirective, TitleCasePipe ]
 })
 export class SharedModule { }

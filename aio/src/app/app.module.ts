@@ -1,5 +1,5 @@
 import { BrowserModule } from '@angular/platform-browser';
-import { NgModule } from '@angular/core';
+import { ErrorHandler, NgModule } from '@angular/core';
 import { HttpClientModule } from '@angular/common/http';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
@@ -11,11 +11,7 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatToolbarModule } from '@angular/material/toolbar';
 
-import { ROUTES } from '@angular/router';
-
-
 import { AppComponent } from 'app/app.component';
-import { EMBEDDED_COMPONENTS, EmbeddedComponentsMap } from 'app/embed-components/embed-components.service';
 import { CustomIconRegistry, SVG_ICONS } from 'app/shared/custom-icon-registry';
 import { Deployment } from 'app/shared/deployment.service';
 import { DocViewerComponent } from 'app/layout/doc-viewer/doc-viewer.component';
@@ -31,6 +27,7 @@ import { TopMenuComponent } from 'app/layout/top-menu/top-menu.component';
 import { FooterComponent } from 'app/layout/footer/footer.component';
 import { NavMenuComponent } from 'app/layout/nav-menu/nav-menu.component';
 import { NavItemComponent } from 'app/layout/nav-item/nav-item.component';
+import { ReportingErrorHandler } from 'app/shared/reporting-error-handler';
 import { ScrollService } from 'app/shared/scroll.service';
 import { ScrollSpyService } from 'app/shared/scroll-spy.service';
 import { SearchBoxComponent } from 'app/search/search-box/search-box.component';
@@ -40,13 +37,9 @@ import { TocService } from 'app/shared/toc.service';
 import { CurrentDateToken, currentDateProvider } from 'app/shared/current-date';
 import { WindowToken, windowProvider } from 'app/shared/window';
 
-import { EmbedComponentsModule } from 'app/embed-components/embed-components.module';
+import { CustomElementsModule } from 'app/custom-elements/custom-elements.module';
 import { SharedModule } from 'app/shared/shared.module';
 import { SwUpdatesModule } from 'app/sw-updates/sw-updates.module';
-
-
-// The path to the `EmbeddedModule`.
-const embeddedModulePath = 'app/embedded/embedded.module#EmbeddedModule';
 
 // These are the hardcoded inline svg sources to be used by the `<mat-icon>` component
 export const svgIconProviders = [
@@ -98,7 +91,7 @@ export const svgIconProviders = [
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
-    EmbedComponentsModule,
+    CustomElementsModule,
     HttpClientModule,
     MatButtonModule,
     MatIconModule,
@@ -106,7 +99,7 @@ export const svgIconProviders = [
     MatSidenavModule,
     MatToolbarModule,
     SwUpdatesModule,
-    SharedModule
+    SharedModule,
   ],
   declarations: [
     AppComponent,
@@ -124,6 +117,7 @@ export const svgIconProviders = [
   providers: [
     Deployment,
     DocumentService,
+    { provide: ErrorHandler, useClass: ReportingErrorHandler },
     GaService,
     Logger,
     Location,
@@ -138,26 +132,8 @@ export const svgIconProviders = [
     TocService,
     { provide: CurrentDateToken, useFactory: currentDateProvider },
     { provide: WindowToken, useFactory: windowProvider },
-
-    {
-      provide: EMBEDDED_COMPONENTS,
-      useValue: {
-        /* tslint:disable: max-line-length */
-        'aio-toc': [TocComponent],
-        'aio-api-list, aio-contributor-list, aio-file-not-found-search, aio-resource-list, code-example, code-tabs, current-location, live-example': embeddedModulePath,
-        /* tslint:enable: max-line-length */
-      } as EmbeddedComponentsMap,
-    },
-    {
-      // This is currently the only way to get `@angular/cli`
-      // to split `EmbeddedModule` into a separate chunk :(
-      provide: ROUTES,
-      useValue: [{ path: '/embedded', loadChildren: embeddedModulePath }],
-      multi: true,
-    },
   ],
   entryComponents: [ TocComponent ],
   bootstrap: [ AppComponent ]
 })
-export class AppModule {
-}
+export class AppModule { }

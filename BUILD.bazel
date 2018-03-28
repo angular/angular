@@ -1,43 +1,37 @@
 package(default_visibility = ["//visibility:public"])
 
+load("@build_bazel_rules_nodejs//:defs.bzl", "node_modules_filegroup")
+
 exports_files([
     "tsconfig.json",
+    "LICENSE",
 ])
 
-# This rule belongs in node_modules/BUILD
-# It's here as a workaround for
-# https://github.com/bazelbuild/bazel/issues/374#issuecomment-296217940
-filegroup(
+# Developers should always run `bazel run :install`
+# This ensures that package.json in subdirectories get installed as well.
+alias(
+    name = "install",
+    actual = "@yarn//:yarn",
+)
+
+node_modules_filegroup(
     name = "node_modules",
-    # Performance workaround: list individual files
-    # Reduces the number of files as inputs to nodejs_binary:
-    # bazel query "deps(:node_modules)" | wc -l
-    # This won't scale in the general case.
-    # TODO(alexeagle): figure out what to do
-    srcs = glob(["/".join([
-        "node_modules",
-        pkg,
-        "**",
-        ext,
-    ]) for pkg in [
-        "jasmine",
-        "typescript",
-        "zone.js",
-        "tsutils",
-        "@types",
-        "tsickle",
-        "hammerjs",
-        "protobufjs",
+    packages = [
         "bytebuffer",
+        "hammerjs",
+        "jasmine",
+        "minimist",
+        "protobufjs",
         "reflect-metadata",
         "source-map-support",
-        "minimist",
+        "tsickle",
         "tslib",
-    ] for ext in [
-        "*.js",
-        "*.json",
-        "*.d.ts",
-    ]]),
+        "tsutils",
+        "typescript",
+        "zone.js",
+        "@types",
+        "@webcomponents/custom-elements",
+    ],
 )
 
 filegroup(
@@ -49,6 +43,7 @@ filegroup(
         "//:node_modules/zone.js/dist/async-test.js",
         "//:node_modules/zone.js/dist/sync-test.js",
         "//:node_modules/zone.js/dist/fake-async-test.js",
+        "//:node_modules/zone.js/dist/task-tracking.js",
         "//:node_modules/zone.js/dist/proxy.js",
         "//:node_modules/zone.js/dist/jasmine-patch.js",
     ],

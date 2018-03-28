@@ -45,9 +45,9 @@ describe('validate-commit-message.js', function() {
       expect(validateMessage('fixup! release(packaging): something')).toBe(VALID);
       expect(validateMessage('squash! release(packaging): something')).toBe(VALID);
       expect(validateMessage('Revert: "release(packaging): something"')).toBe(VALID);
+      expect(validateMessage('Revert "release(packaging): something"')).toBe(VALID);
       expect(errors).toEqual([]);
     });
-
 
     it('should fail when scope is invalid', function() {
       expect(validateMessage('fix(Compiler): something')).toBe(INVALID);

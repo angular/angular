@@ -46,7 +46,8 @@ export interface StateAst extends Ast<AnimationMetadataType.State> {
 }
 
 export interface TransitionAst extends Ast<AnimationMetadataType.Transition> {
-  matchers: ((fromState: string, toState: string) => boolean)[];
+  matchers: ((fromState: string, toState: string, element: any, params: {[key: string]:
+                                                                             any}) => boolean)[];
   animation: Ast<AnimationMetadataType>;
   queryCount: number;
   depCount: number;

@@ -33,8 +33,12 @@ export class JitReflector implements CompileReflector {
   parameters(typeOrFunc: /*Type*/ any): any[][] {
     return this.reflectionCapabilities.parameters(typeOrFunc);
   }
+  tryAnnotations(typeOrFunc: /*Type*/ any): any[] { return this.annotations(typeOrFunc); }
   annotations(typeOrFunc: /*Type*/ any): any[] {
     return this.reflectionCapabilities.annotations(typeOrFunc);
+  }
+  shallowAnnotations(typeOrFunc: /*Type*/ any): any[] {
+    throw new Error('Not supported in JIT mode');
   }
   propMetadata(typeOrFunc: /*Type*/ any): {[key: string]: any[]} {
     return this.reflectionCapabilities.propMetadata(typeOrFunc);

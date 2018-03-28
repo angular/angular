@@ -6,9 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Provider} from '../di';
+import {InjectorDef, InjectorType, defineInjector} from '../di/defs';
+import {convertInjectableProviderToFactory} from '../di/injectable';
+import {Provider} from '../di/provider';
 import {Type} from '../type';
 import {TypeDecorator, makeDecorator} from '../util/decorators';
+
 
 /**
  * A wrapper around a module that also includes the providers.
@@ -190,5 +193,17 @@ export interface NgModule {
  * @stable
  * @Annotation
  */
-export const NgModule: NgModuleDecorator =
-    makeDecorator('NgModule', (ngModule: NgModule) => ngModule);
+export const NgModule: NgModuleDecorator = makeDecorator(
+    'NgModule', (ngModule: NgModule) => ngModule, undefined, undefined,
+    (moduleType: InjectorType<any>, metadata: NgModule) => {
+      let imports = (metadata && metadata.imports) || [];
+      if (metadata && metadata.exports) {
+        imports = [...imports, metadata.exports];
+      }
+
+      moduleType.ngInjectorDef = defineInjector({
+        factory: convertInjectableProviderToFactory(moduleType, {useClass: moduleType}),
+        providers: metadata && metadata.providers,
+        imports: imports,
+      });
+    });

@@ -1139,6 +1139,58 @@ import {FormArray} from '@angular/forms/src/model';
           expect(fn).toThrowError(`Expected validator to return Promise or Observable.`);
         });
 
+        it('should not emit value change events when emitEvent = false', () => {
+          c.valueChanges.subscribe(() => logger.push('control'));
+          g.valueChanges.subscribe(() => logger.push('group'));
+
+          c.disable({emitEvent: false});
+          expect(logger).toEqual([]);
+          c.enable({emitEvent: false});
+          expect(logger).toEqual([]);
+        });
+
+        it('should not emit status change events when emitEvent = false', () => {
+          c.statusChanges.subscribe(() => logger.push('control'));
+          g.statusChanges.subscribe(() => logger.push('form'));
+
+          c.disable({emitEvent: false});
+          expect(logger).toEqual([]);
+          c.enable({emitEvent: false});
+          expect(logger).toEqual([]);
+        });
+
+      });
+    });
+    describe('pending', () => {
+      let c: FormControl;
+
+      beforeEach(() => { c = new FormControl('value'); });
+
+      it('should be false after creating a control', () => { expect(c.pending).toEqual(false); });
+
+      it('should be true after changing the value of the control', () => {
+        c.markAsPending();
+        expect(c.pending).toEqual(true);
+      });
+
+      describe('status change events', () => {
+        let logger: string[];
+
+        beforeEach(() => {
+          logger = [];
+          c.statusChanges.subscribe((status) => logger.push(status));
+        });
+
+        it('should emit event after marking control as pending', () => {
+          c.markAsPending();
+          expect(logger).toEqual(['PENDING']);
+        });
+
+        it('should not emit event when emitEvent = false', () => {
+          c.markAsPending({emitEvent: false});
+          expect(logger).toEqual([]);
+        });
+
       });
     });
   });

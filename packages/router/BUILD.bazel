@@ -1,8 +1,8 @@
 package(default_visibility = ["//visibility:public"])
 
-load("//tools:defaults.bzl", "ts_library")
+load("//tools:defaults.bzl", "ng_module", "ng_package")
 
-ts_library(
+ng_module(
     name = "router",
     srcs = glob(
         [
@@ -17,5 +17,20 @@ ts_library(
         "//packages/platform-browser",
         "//packages/upgrade/static",
         "@rxjs",
+    ],
+)
+
+ng_package(
+    name = "npm_package",
+    srcs = [
+        "package.json",
+        "//packages/router/testing:package.json",
+        "//packages/router/upgrade:package.json",
+    ],
+    entry_point = "packages/router/index.js",
+    deps = [
+        ":router",
+        "//packages/router/testing",
+        "//packages/router/upgrade",
     ],
 )

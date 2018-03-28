@@ -48,5 +48,14 @@ export default [
     ,
   ],
   ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'], 'USh', 'Shilingi ya Uganda', plural
+  ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'], 'USh', 'Shilingi ya Uganda', {
+    'JPY': ['JP¥', '¥'],
+    'KES': ['Ksh'],
+    'THB': ['฿'],
+    'TWD': ['NT$'],
+    'TZS': ['TSh'],
+    'UGX': ['USh'],
+    'USD': ['US$', '$']
+  },
+  plural
 ];

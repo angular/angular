@@ -11,6 +11,6 @@ import { Component } from '@angular/core';
 // #enddocregion metadata
 // #docregion title, class
 export class AppComponent {
-  title = 'My First Angular App';
+  title = 'My First Angular App!';
 }
 // #enddocregion title, class

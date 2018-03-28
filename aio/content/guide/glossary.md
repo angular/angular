@@ -418,6 +418,7 @@ renders as text.  That text may be concatenated with neighboring text
 before it is assigned to an element property
 or displayed between element tags, as in this example.
 
+
 <code-example language="html" escape="html">
   <label>My current hero is {{hero.name}}</label>
 
@@ -525,10 +526,6 @@ You rarely access Angular feature modules directly. You usually import them from
 
 ## NgModule
 
-<div class="l-sub-section">
-
-
-
 Helps you organize an application into cohesive blocks of functionality.
 An NgModule identifies the components, directives, and pipes that the application uses along with the list of external NgModules that the application needs, such as `FormsModule`.
 
@@ -539,7 +536,7 @@ For details and examples, see [NgModules](guide/ngmodules) and the
 related files in that section.
 
 
-</div>
+
 
 {@a O}
 
@@ -651,13 +648,10 @@ For more information, see the [Routing & Navigation](guide/router) page.
 
 ## Router module
 
-<div class="l-sub-section">
-
 A separate [NgModule](guide/glossary#ngmodule) that provides the necessary service providers and directives for navigating through application views.
 
 For more information, see the [Routing & Navigation](guide/router) page.
 
-</div>
 
 ## Routing component
 

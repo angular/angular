@@ -8,7 +8,7 @@
 
 import * as common from '@angular/common';
 import {CUSTOM_ELEMENTS_SCHEMA, Component, Directive, EventEmitter, Inject, InjectionToken, NgModule, Output, forwardRef} from '@angular/core';
-import {Observable} from 'rxjs/Observable';
+import {Observable} from 'rxjs';
 
 import {wrapInArray} from './funcs';
 

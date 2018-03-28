@@ -7,10 +7,11 @@
  */
 
 import {LContainer} from './container';
-import {ComponentTemplate, DirectiveDef} from './definition';
+import {ComponentDef, ComponentTemplate, DirectiveDef, DirectiveDefList, PipeDef} from './definition';
 import {LElementNode, LViewNode, TNode} from './node';
 import {LQueries} from './query';
 import {Renderer3} from './renderer';
+
 
 
 /**
@@ -24,15 +25,8 @@ import {Renderer3} from './renderer';
  * don't have to edit the data array based on which views are present.
  */
 export interface LView {
-  /**
-   * Whether or not the view is in creationMode.
-   *
-   * This must be stored in the view rather than using `data` as a marker so that
-   * we can properly support embedded views. Otherwise, when exiting a child view
-   * back into the parent view, `data` will be defined and `creationMode` will be
-   * improperly reported as false.
-   */
-  creationMode: boolean;
+  /** Flags for this view (see LViewFlags for definition of each bit). */
+  flags: LViewFlags;
 
   /**
    * The parent view is needed when we exit the view and must restore the previous
@@ -138,7 +132,7 @@ export interface LView {
    * This array stores all element/text/container nodes created inside this view
    * and their bindings. Stored as an array rather than a linked list so we can
    * look up nodes directly in the case of forward declaration or bindings
-   * (e.g. E(1))..
+   * (e.g. E(1)).
    *
    * All bindings for a given view are stored in the order in which they
    * appear in the template, starting with `bindingStartIndex`.
@@ -146,6 +140,14 @@ export interface LView {
    * is currently active.
    */
   readonly data: any[];
+
+  /**
+   * An array of directive instances in the current view.
+   *
+   * These must be stored separately from LNodes because their presence is
+   * unknown at compile-time and thus space cannot be reserved in data[].
+   */
+  directives: any[]|null;
 
   /**
    * The static data for this view. We need a reference to this so we can easily walk up the
@@ -160,9 +162,11 @@ export interface LView {
   template: ComponentTemplate<{}>|null;
 
   /**
-   * For embedded views, the context with which to render the template.
+   * - For embedded views, the context with which to render the template.
+   * - For root view of the root component the context contains change detection data.
+   * - `null` otherwise.
    */
-  context: {}|null;
+  context: {}|RootContext|null;
 
   /**
    * A count of dynamic views that are children of this view (indirectly via containers).
@@ -176,6 +180,28 @@ export interface LView {
    * Queries active for this view - nodes from a view are reported to those queries
    */
   queries: LQueries|null;
+}
+
+/** Flags associated with an LView (saved in LView.flags) */
+export const enum LViewFlags {
+  /**
+   * Whether or not the view is in creationMode.
+   *
+   * This must be stored in the view rather than using `data` as a marker so that
+   * we can properly support embedded views. Otherwise, when exiting a child view
+   * back into the parent view, `data` will be defined and `creationMode` will be
+   * improperly reported as false.
+   */
+  CreationMode = 0b0001,
+
+  /** Whether this view has default change detection strategy (checks always) or onPush */
+  CheckAlways = 0b0010,
+
+  /** Whether or not this view is currently dirty (needing check) */
+  Dirty = 0b0100,
+
+  /** Whether or not this view is currently attached to change detection tree. */
+  Attached = 0b1000,
 }
 
 /** Interface necessary to work with view tree traversal */
@@ -193,11 +219,31 @@ export interface LViewOrLContainer {
  * Stored on the template function as ngPrivateData.
  */
 export interface TView {
-  /** Static data equivalent of LView.data[]. Contains TNodes and directive defs. */
-  data: TData;
-
   /** Whether or not this template has been processed. */
   firstTemplatePass: boolean;
+
+  /** Static data equivalent of LView.data[]. Contains TNodes. */
+  data: TData;
+
+  /**
+   * Directive and component defs that have already been matched to nodes on
+   * this view.
+   *
+   * Defs are stored at the same index in TView.directives[] as their instances
+   * are stored in LView.directives[]. This simplifies lookup in DI.
+   */
+  directives: DirectiveDefList|null;
+
+  /**
+   * Full registry of directives and components that may be found in this view.
+   *
+   * The property is either an array of `DirectiveDef`s or a function which returns the array of
+   * `DirectiveDef`s. The function is necessary to be able to support forward declarations.
+   *
+   * It's necessary to keep a copy of the full def list on the TView so it's possible
+   * to render template functions without a host component.
+   */
+  directiveRegistry: DirectiveDefList|null;
 
   /**
    * Array of ngOnInit and ngDoCheck hooks that should be executed for this view in
@@ -260,8 +306,58 @@ export interface TView {
    */
   destroyHooks: HookData|null;
 
-  /** Contains copies of object literals that were passed as bindings in this view. */
-  objectLiterals: any[]|null;
+  /**
+   * Array of pipe ngOnDestroy hooks that should be executed when this view is destroyed.
+   *
+   * Even indices: Index of pipe in data
+   * Odd indices: Hook function
+   *
+   * These must be stored separately from directive destroy hooks because their contexts
+   * are stored in data.
+   */
+  pipeDestroyHooks: HookData|null;
+
+  /**
+   * A list of directive and element indices for child components that will need to be
+   * refreshed when the current view has finished its check.
+   *
+   * Even indices: Directive indices
+   * Odd indices: Element indices
+   */
+  components: number[]|null;
+
+  /**
+   * A list of indices for child directives that have host bindings.
+   *
+   * Even indices: Directive indices
+   * Odd indices: Element indices
+   */
+  hostBindings: number[]|null;
+}
+
+/**
+ * RootContext contains information which is shared for all components which
+ * were bootstrapped with {@link renderComponent}.
+ */
+export interface RootContext {
+  /**
+   * A function used for scheduling change detection in the future. Usually
+   * this is `requestAnimationFrame`.
+   */
+  scheduler: (workFn: () => void) => void;
+
+  /**
+   * A promise which is resolved when all components are considered clean (not dirty).
+   *
+   * This promise is overwritten every time a first call to {@link markDirty} is invoked.
+   */
+  clean: Promise<null>;
+
+  /**
+   * RootComponent - The component which was instantiated by the call to
+   * {@link renderComponent}.
+   */
+  component: {};
 }
 
 /**
@@ -273,26 +369,25 @@ export interface TView {
 export type HookData = (number | (() => void))[];
 
 /** Possible values of LView.lifecycleStage, used to determine which hooks to run.  */
+// TODO: Remove this enum when containerRefresh instructions are removed
 export const enum LifecycleStage {
+
   /* Init hooks need to be run, if any. */
   INIT = 1,
 
   /* Content hooks need to be run, if any. Init hooks have already run. */
-  CONTENT_INIT = 2,
-
-  /* View hooks need to be run, if any. Any init hooks/content hooks have ran. */
-  VIEW_INIT = 3
+  AFTER_INIT = 2,
 }
 
 /**
  * Static data that corresponds to the instance-specific data array on an LView.
  *
  * Each node's static data is stored in tData at the same index that it's stored
- * in the data array. Each directive's definition is stored here at the same index
- * as its directive instance in the data array. Any nodes that do not have static
+ * in the data array. Each pipe's definition is stored here at the same index
+ * as its pipe instance in the data array. Any nodes that do not have static
  * data store a null value in tData to avoid a sparse array.
  */
-export type TData = (TNode | DirectiveDef<any>| null)[];
+export type TData = (TNode | PipeDef<any>| null)[];
 
 // Note: This hack is necessary so we don't erroneously get a circular dependency
 // failure based on types.

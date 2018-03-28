@@ -8,10 +8,16 @@
   overflow-x: hidden;
 }
 
-aio-toc {
-  &.embedded {
-    @media (min-width: 801px) {
-      display: none;
+aio-toc.embedded {
+  @media (min-width: 801px) {
+    display: none;
+  }
+
+  .toc-inner {
+    padding: 12px 0 0 0;
+
+    .toc-heading {
+      margin: 0 0 8px;
     }
   }
 }

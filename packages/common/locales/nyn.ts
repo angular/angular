@@ -45,5 +45,6 @@ export default [
     ,
   ],
   ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'], 'USh', 'Eshiringi ya Uganda', plural
+  ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'], 'USh', 'Eshiringi ya Uganda',
+  {'JPY': ['JP¥', '¥'], 'UGX': ['USh'], 'USD': ['US$', '$']}, plural
 ];

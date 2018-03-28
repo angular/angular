@@ -9,12 +9,14 @@
 import {isDevMode} from '../application_ref';
 import {DebugElement, DebugNode, EventListener, getDebugNode, indexDebugNode, removeDebugNodeFromIndex} from '../debug/debug_node';
 import {Injector} from '../di';
+import {InjectableType} from '../di/injectable';
 import {ErrorHandler} from '../error_handler';
 import {ComponentFactory} from '../linker/component_factory';
 import {NgModuleRef} from '../linker/ng_module_factory';
 import {Renderer2, RendererFactory2, RendererStyleFlags2, RendererType2} from '../render/api';
-import {Sanitizer} from '../security';
+import {Sanitizer} from '../sanitization/security';
 import {Type} from '../type';
+import {tokenKey} from '../view/util';
 
 import {isViewDebugError, viewDestroyedError, viewWrappedDebugError} from './errors';
 import {resolveDep} from './provider';
@@ -162,10 +164,15 @@ function debugCreateNgModuleRef(
 }
 
 const providerOverrides = new Map<any, ProviderOverride>();
+const providerOverridesWithScope = new Map<InjectableType<any>, ProviderOverride>();
 const viewDefOverrides = new Map<any, ViewDefinition>();
 
 function debugOverrideProvider(override: ProviderOverride) {
   providerOverrides.set(override.token, override);
+  if (typeof override.token === 'function' && override.token.ngInjectableDef &&
+      typeof override.token.ngInjectableDef.providedIn === 'function') {
+    providerOverridesWithScope.set(override.token as InjectableType<any>, override);
+  }
 }
 
 function debugOverrideComponentView(comp: any, compFactory: ComponentFactory<any>) {
@@ -176,6 +183,7 @@ function debugOverrideComponentView(comp: any, compFactory: ComponentFactory<any
 
 function debugClearOverrides() {
   providerOverrides.clear();
+  providerOverridesWithScope.clear();
   viewDefOverrides.clear();
 }
 
@@ -266,6 +274,14 @@ function applyProviderOverridesToNgModule(def: NgModuleDefinition): NgModuleDefi
         hasDeprecatedOverrides = hasDeprecatedOverrides || override.deprecatedBehavior;
       }
     });
+    def.modules.forEach(module => {
+      providerOverridesWithScope.forEach((override, token) => {
+        if (token.ngInjectableDef.providedIn === module) {
+          hasOverrides = true;
+          hasDeprecatedOverrides = hasDeprecatedOverrides || override.deprecatedBehavior;
+        }
+      });
+    });
     return {hasOverrides, hasDeprecatedOverrides};
   }
 
@@ -284,6 +300,23 @@ function applyProviderOverridesToNgModule(def: NgModuleDefinition): NgModuleDefi
         provider.deps = splitDepsDsl(override.deps);
         provider.value = override.value;
       }
+    }
+    if (providerOverridesWithScope.size > 0) {
+      let moduleSet = new Set<any>(def.modules);
+      providerOverridesWithScope.forEach((override, token) => {
+        if (moduleSet.has(token.ngInjectableDef.providedIn)) {
+          let provider = {
+            token: token,
+            flags:
+                override.flags | (hasDeprecatedOverrides ? NodeFlags.LazyProvider : NodeFlags.None),
+            deps: splitDepsDsl(override.deps),
+            value: override.value,
+            index: def.providers.length,
+          };
+          def.providers.push(provider);
+          def.providersByKey[tokenKey(token)] = provider;
+        }
+      });
     }
   }
 }

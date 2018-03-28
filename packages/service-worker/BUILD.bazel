@@ -1,8 +1,8 @@
 package(default_visibility = ["//visibility:public"])
 
-load("//tools:defaults.bzl", "ts_library")
+load("//tools:defaults.bzl", "ng_module", "ng_package")
 
-ts_library(
+ng_module(
     name = "service-worker",
     srcs = glob(
         [
@@ -15,5 +15,18 @@ ts_library(
         "//packages/common",
         "//packages/core",
         "@rxjs",
+    ],
+)
+
+ng_package(
+    name = "npm_package",
+    srcs = [
+        "package.json",
+        "//packages/service-worker/config:package.json",
+    ],
+    entry_point = "packages/service-worker/index.js",
+    deps = [
+        ":service-worker",
+        "//packages/service-worker/config",
     ],
 )

@@ -10,7 +10,7 @@ import {AfterContentChecked, AfterContentInit, AfterViewChecked, AfterViewInit, 
 import {ComponentFixture, TestBed, async} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
-import {Subject} from 'rxjs/Subject';
+import {Subject} from 'rxjs';
 
 import {stringify} from '../../src/util';
 

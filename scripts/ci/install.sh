@@ -37,7 +37,7 @@ travisFoldEnd "install-yarn"
 
 # Install all npm dependencies according to yarn.lock
 travisFoldStart "yarn-install"
-  (node tools/npm/check-node-modules --purge && yarn update-webdriver) || yarn install --frozen-lockfile --non-interactive
+  (node tools/npm/check-node-modules --purge && yarn postinstall) || yarn install --frozen-lockfile --non-interactive
 travisFoldEnd "yarn-install"
 
 
@@ -55,6 +55,9 @@ if [[ ${TRAVIS} &&
   # angular.io: Install all yarn dependencies according to angular.io/yarn.lock
   travisFoldStart "yarn-install.aio"
     (
+      # HACK (don't submit with this): Build Angular
+      ./build.sh --packages=core,elements --examples=false
+
       cd ${PROJECT_ROOT}/aio
       yarn install --frozen-lockfile --non-interactive
     )
@@ -62,7 +65,7 @@ if [[ ${TRAVIS} &&
 fi
 
 # Install bazel
-if [[ ${TRAVIS} && (${CI_MODE} == "bazel" || ${CI_MODE} == "e2e_2") ]]; then
+if [[ ${TRAVIS} && ${CI_MODE} == "e2e_2" ]]; then
   travisFoldStart "bazel-install"
   (
     mkdir tmp

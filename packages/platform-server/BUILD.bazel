@@ -1,8 +1,8 @@
 package(default_visibility = ["//visibility:public"])
 
-load("//tools:defaults.bzl", "ts_library")
+load("//tools:defaults.bzl", "ng_module", "ng_package")
 
-ts_library(
+ng_module(
     name = "platform-server",
     srcs = glob(
         [
@@ -22,5 +22,18 @@ ts_library(
         "//packages/platform-browser-dynamic",
         "//packages/platform-browser/animations",
         "@rxjs",
+    ],
+)
+
+ng_package(
+    name = "npm_package",
+    srcs = [
+        "package.json",
+        "//packages/platform-server/testing:package.json",
+    ],
+    entry_point = "packages/platform-server/index.js",
+    deps = [
+        ":platform-server",
+        "//packages/platform-server/testing",
     ],
 )

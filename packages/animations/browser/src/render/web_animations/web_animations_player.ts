@@ -7,7 +7,7 @@
  */
 import {AnimationPlayer} from '@angular/animations';
 
-import {allowPreviousPlayerStylesMerge, copyStyles} from '../../util';
+import {allowPreviousPlayerStylesMerge, balancePreviousStylesIntoKeyframes, computeStyle, copyStyles} from '../../util';
 
 import {DOMAnimation} from './dom_animation';
 
@@ -27,23 +27,14 @@ export class WebAnimationsPlayer implements AnimationPlayer {
   public time = 0;
 
   public parentPlayer: AnimationPlayer|null = null;
-  public previousStyles: {[styleName: string]: string | number} = {};
   public currentSnapshot: {[styleName: string]: string | number} = {};
 
   constructor(
       public element: any, public keyframes: {[key: string]: string | number}[],
-      public options: {[key: string]: string | number},
-      private previousPlayers: WebAnimationsPlayer[] = []) {
+      public options: {[key: string]: string | number}) {
     this._duration = <number>options['duration'];
     this._delay = <number>options['delay'] || 0;
     this.time = this._duration + this._delay;
-
-    if (allowPreviousPlayerStylesMerge(this._duration, this._delay)) {
-      previousPlayers.forEach(player => {
-        let styles = player.currentSnapshot;
-        Object.keys(styles).forEach(prop => this.previousStyles[prop] = styles[prop]);
-      });
-    }
   }
 
   private _onFinish() {
@@ -63,30 +54,7 @@ export class WebAnimationsPlayer implements AnimationPlayer {
     if (this._initialized) return;
     this._initialized = true;
 
-    const keyframes = this.keyframes.map(styles => copyStyles(styles, false));
-    const previousStyleProps = Object.keys(this.previousStyles);
-    if (previousStyleProps.length && keyframes.length) {
-      let startingKeyframe = keyframes[0];
-      let missingStyleProps: string[] = [];
-      previousStyleProps.forEach(prop => {
-        if (!startingKeyframe.hasOwnProperty(prop)) {
-          missingStyleProps.push(prop);
-        }
-        startingKeyframe[prop] = this.previousStyles[prop];
-      });
-
-      if (missingStyleProps.length) {
-        const self = this;
-        // tslint:disable-next-line
-        for (var i = 1; i < keyframes.length; i++) {
-          let kf = keyframes[i];
-          missingStyleProps.forEach(function(prop) {
-            kf[prop] = _computeStyle(self.element, prop);
-          });
-        }
-      }
-    }
-
+    const keyframes = this.keyframes;
     (this as{domPlayer: DOMAnimation}).domPlayer =
         this._triggerWebAnimation(this.element, keyframes, this.options);
     this._finalKeyframe = keyframes.length ? keyframes[keyframes.length - 1] : {};
@@ -178,7 +146,7 @@ export class WebAnimationsPlayer implements AnimationPlayer {
       Object.keys(this._finalKeyframe).forEach(prop => {
         if (prop != 'offset') {
           styles[prop] =
-              this._finished ? this._finalKeyframe[prop] : _computeStyle(this.element, prop);
+              this._finished ? this._finalKeyframe[prop] : computeStyle(this.element, prop);
         }
       });
     }
@@ -191,8 +159,4 @@ export class WebAnimationsPlayer implements AnimationPlayer {
     methods.forEach(fn => fn());
     methods.length = 0;
   }
-}
-
-function _computeStyle(element: any, prop: string): string {
-  return (<any>window.getComputedStyle(element))[prop];
 }

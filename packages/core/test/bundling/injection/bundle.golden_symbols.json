@@ -1,0 +1,275 @@
+[
+  {
+    "name": "APP_ROOT"
+  },
+  {
+    "name": "Action"
+  },
+  {
+    "name": "AnimationFrameAction"
+  },
+  {
+    "name": "AsapAction"
+  },
+  {
+    "name": "AsyncAction"
+  },
+  {
+    "name": "AsyncScheduler"
+  },
+  {
+    "name": "CIRCULAR$1"
+  },
+  {
+    "name": "EMPTY_ARRAY$1"
+  },
+  {
+    "name": "GET_PROPERTY_NAME$1"
+  },
+  {
+    "name": "INJECTOR$1"
+  },
+  {
+    "name": "Immediate"
+  },
+  {
+    "name": "Inject"
+  },
+  {
+    "name": "InjectionToken"
+  },
+  {
+    "name": "NOT_YET"
+  },
+  {
+    "name": "NULL_INJECTOR$1"
+  },
+  {
+    "name": "NullInjector"
+  },
+  {
+    "name": "Observable"
+  },
+  {
+    "name": "Optional"
+  },
+  {
+    "name": "PARAMETERS"
+  },
+  {
+    "name": "QueueAction"
+  },
+  {
+    "name": "R3Injector"
+  },
+  {
+    "name": "SafeSubscriber"
+  },
+  {
+    "name": "Scheduler"
+  },
+  {
+    "name": "ScopedService"
+  },
+  {
+    "name": "Self"
+  },
+  {
+    "name": "SkipSelf"
+  },
+  {
+    "name": "Subscriber"
+  },
+  {
+    "name": "Subscription"
+  },
+  {
+    "name": "THROW_IF_NOT_FOUND"
+  },
+  {
+    "name": "USE_VALUE$1"
+  },
+  {
+    "name": "UnsubscriptionError"
+  },
+  {
+    "name": "_THROW_IF_NOT_FOUND"
+  },
+  {
+    "name": "__extends$1"
+  },
+  {
+    "name": "__extends$10"
+  },
+  {
+    "name": "__extends$11"
+  },
+  {
+    "name": "__extends$12"
+  },
+  {
+    "name": "__extends$13"
+  },
+  {
+    "name": "__extends$14"
+  },
+  {
+    "name": "__extends$17"
+  },
+  {
+    "name": "__extends$18"
+  },
+  {
+    "name": "__extends$19"
+  },
+  {
+    "name": "__extends$2"
+  },
+  {
+    "name": "__extends$20"
+  },
+  {
+    "name": "__read"
+  },
+  {
+    "name": "__spread"
+  },
+  {
+    "name": "_currentInjector"
+  },
+  {
+    "name": "_enable_super_gross_mode_that_will_cause_bad_things"
+  },
+  {
+    "name": "config"
+  },
+  {
+    "name": "couldBeInjectableType"
+  },
+  {
+    "name": "createInjector"
+  },
+  {
+    "name": "deepForEach"
+  },
+  {
+    "name": "defineInjectable"
+  },
+  {
+    "name": "defineInjector"
+  },
+  {
+    "name": "empty"
+  },
+  {
+    "name": "errorObject"
+  },
+  {
+    "name": "flattenUnsubscriptionErrors"
+  },
+  {
+    "name": "forwardRef"
+  },
+  {
+    "name": "getClosureSafeProperty$1"
+  },
+  {
+    "name": "getNullInjector"
+  },
+  {
+    "name": "getPromiseCtor"
+  },
+  {
+    "name": "getSymbolIterator$1"
+  },
+  {
+    "name": "hasDeps"
+  },
+  {
+    "name": "hasOnDestroy"
+  },
+  {
+    "name": "hostReportError"
+  },
+  {
+    "name": "inject"
+  },
+  {
+    "name": "injectArgs"
+  },
+  {
+    "name": "injectableDefRecord"
+  },
+  {
+    "name": "isArray"
+  },
+  {
+    "name": "isExistingProvider"
+  },
+  {
+    "name": "isFactoryProvider"
+  },
+  {
+    "name": "isFunction"
+  },
+  {
+    "name": "isObject"
+  },
+  {
+    "name": "isTypeProvider"
+  },
+  {
+    "name": "isValueProvider"
+  },
+  {
+    "name": "makeMetadataCtor"
+  },
+  {
+    "name": "makeParamDecorator"
+  },
+  {
+    "name": "makeRecord"
+  },
+  {
+    "name": "nextHandle"
+  },
+  {
+    "name": "noop"
+  },
+  {
+    "name": "observable"
+  },
+  {
+    "name": "pipeFromArray"
+  },
+  {
+    "name": "providerToRecord"
+  },
+  {
+    "name": "resolveForwardRef"
+  },
+  {
+    "name": "runIfPresent"
+  },
+  {
+    "name": "rxSubscriber"
+  },
+  {
+    "name": "setCurrentInjector"
+  },
+  {
+    "name": "stringify"
+  },
+  {
+    "name": "tasksByHandle"
+  },
+  {
+    "name": "toSubscriber"
+  },
+  {
+    "name": "tryCatch"
+  },
+  {
+    "name": "tryCatcher"
+  }
+]

@@ -61,7 +61,10 @@ export class Identifiers {
     moduleName: CORE,
 
   };
+  static inject: o.ExternalReference = {name: 'inject', moduleName: CORE};
+  static INJECTOR: o.ExternalReference = {name: 'INJECTOR', moduleName: CORE};
   static Injector: o.ExternalReference = {name: 'Injector', moduleName: CORE};
+  static defineInjectable: o.ExternalReference = {name: 'defineInjectable', moduleName: CORE};
   static ViewEncapsulation: o.ExternalReference = {
     name: 'ViewEncapsulation',
     moduleName: CORE,
@@ -86,7 +89,6 @@ export class Identifiers {
   static inlineInterpolate: o.ExternalReference = {
     name: 'ɵinlineInterpolate',
     moduleName: CORE,
-
   };
   static interpolate: o.ExternalReference = {name: 'ɵinterpolate', moduleName: CORE};
   static EMPTY_ARRAY: o.ExternalReference = {name: 'ɵEMPTY_ARRAY', moduleName: CORE};

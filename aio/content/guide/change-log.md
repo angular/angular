@@ -83,8 +83,8 @@ HTTP guide.
 
 ## Testing: added component test plunkers (2016-12-02)
 
-Added two plunkers that each test _one simple component_ so you can write a component test plunker of your own: <live-example name="setup" stackblitz="quickstart-specs">one</live-example> for the QuickStart seed's `AppComponent` and <live-example name="testing" stackblitz="banner-specs">another</live-example> for the Testing guide's `BannerComponent`.
-Linked to these plunkers in [Testing](guide/testing#live-examples) and [Setup anatomy](guide/setup-systemjs-anatomy) guides.
+Added two plunkers that each test _one simple component_ so you can write a component test plunker of your own: <live-example name="setup" plnkr="quickstart-specs">one</live-example> for the QuickStart seed's `AppComponent` and <live-example name="testing" plnkr="banner-specs">another</live-example> for the Testing guide's `BannerComponent`.
+Linked to these plunkers in "Testing" and "Setup anatomy" guides.
 
 ## Internationalization: pluralization and _select_ (2016-11-30)
 

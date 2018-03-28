@@ -58,7 +58,7 @@ The CLI generated three metadata properties:
 CLI는 아래 3가지 메타데이터 프로퍼티를 생성합니다.
 
 <!--
-1. `selector`&mdash; the components CSS element selector
+1. `selector`&mdash; the component's CSS element selector
 1. `templateUrl`&mdash; the location of the component's template file.
 1. `styleUrls`&mdash; the location of the component's private CSS styles.
 -->

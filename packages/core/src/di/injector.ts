@@ -8,6 +8,8 @@
 
 import {Type} from '../type';
 import {stringify} from '../util';
+
+import {InjectableDef, defineInjectable} from './defs';
 import {resolveForwardRef} from './forward_ref';
 import {InjectionToken} from './injection_token';
 import {Inject, Optional, Self, SkipSelf} from './metadata';
@@ -17,7 +19,17 @@ export const SOURCE = '__source';
 const _THROW_IF_NOT_FOUND = new Object();
 export const THROW_IF_NOT_FOUND = _THROW_IF_NOT_FOUND;
 
-class _NullInjector implements Injector {
+/**
+ * An InjectionToken that gets the current `Injector` for `createInjector()`-style injectors.
+ *
+ * Requesting this token instead of `Injector` allows `StaticInjector` to be tree-shaken from a
+ * project.
+ *
+ * @experimental
+ */
+export const INJECTOR = new InjectionToken<Injector>('INJECTOR');
+
+export class NullInjector implements Injector {
   get(token: any, notFoundValue: any = _THROW_IF_NOT_FOUND): any {
     if (notFoundValue === _THROW_IF_NOT_FOUND) {
       throw new Error(`NullInjectorError: No provider for ${stringify(token)}!`);
@@ -48,7 +60,7 @@ class _NullInjector implements Injector {
  */
 export abstract class Injector {
   static THROW_IF_NOT_FOUND = _THROW_IF_NOT_FOUND;
-  static NULL: Injector = new _NullInjector();
+  static NULL: Injector = new NullInjector();
 
   /**
    * Retrieves an instance from the injector based on the provided token.
@@ -57,7 +69,7 @@ export abstract class Injector {
    * Injector.THROW_IF_NOT_FOUND is given
    * - Returns the `notFoundValue` otherwise
    */
-  abstract get<T>(token: Type<T>|InjectionToken<T>, notFoundValue?: T): T;
+  abstract get<T>(token: Type<T>|InjectionToken<T>, notFoundValue?: T, flags?: InjectFlags): T;
   /**
    * @deprecated from v4.0.0 use Type<T> or InjectionToken<T>
    * @suppress {duplicate}
@@ -87,6 +99,11 @@ export abstract class Injector {
       return new StaticInjector(options.providers, options.parent, options.name || null);
     }
   }
+
+  static ngInjectableDef = defineInjectable({
+    providedIn: 'any' as any,
+    factory: () => inject(INJECTOR),
+  });
 }
 
 
@@ -100,7 +117,7 @@ const MULTI_PROVIDER_FN = function(): any[] {
   return Array.prototype.slice.call(arguments);
 };
 const GET_PROPERTY_NAME = {} as any;
-const USE_VALUE =
+export const USE_VALUE =
     getClosureSafeProperty<ValueProvider>({provide: String, useValue: GET_PROPERTY_NAME});
 const NG_TOKEN_PATH = 'ngTokenPath';
 const NG_TEMP_TOKEN_PATH = 'ngTempTokenPath';
@@ -127,15 +144,17 @@ export class StaticInjector implements Injector {
     const records = this._records = new Map<any, Record>();
     records.set(
         Injector, <Record>{token: Injector, fn: IDENT, deps: EMPTY, value: this, useNew: false});
+    records.set(
+        INJECTOR, <Record>{token: Injector, fn: IDENT, deps: EMPTY, value: this, useNew: false});
     recursivelyProcessProviders(records, providers);
   }
 
-  get<T>(token: Type<T>|InjectionToken<T>, notFoundValue?: T): T;
+  get<T>(token: Type<T>|InjectionToken<T>, notFoundValue?: T, flags?: InjectFlags): T;
   get(token: any, notFoundValue?: any): any;
-  get(token: any, notFoundValue?: any): any {
+  get(token: any, notFoundValue?: any, flags: InjectFlags = InjectFlags.Default): any {
     const record = this._records.get(token);
     try {
-      return tryResolveToken(token, record, this._records, this.parent, notFoundValue);
+      return tryResolveToken(token, record, this._records, this.parent, notFoundValue, flags);
     } catch (e) {
       const tokenPath: any[] = e[NG_TEMP_TOKEN_PATH];
       if (token[SOURCE]) {
@@ -253,9 +272,9 @@ function recursivelyProcessProviders(records: Map<any, Record>, provider: Static
 
 function tryResolveToken(
     token: any, record: Record | undefined, records: Map<any, Record>, parent: Injector,
-    notFoundValue: any): any {
+    notFoundValue: any, flags: InjectFlags): any {
   try {
-    return resolveToken(token, record, records, parent, notFoundValue);
+    return resolveToken(token, record, records, parent, notFoundValue, flags);
   } catch (e) {
     // ensure that 'e' is of type Error.
     if (!(e instanceof Error)) {
@@ -273,9 +292,9 @@ function tryResolveToken(
 
 function resolveToken(
     token: any, record: Record | undefined, records: Map<any, Record>, parent: Injector,
-    notFoundValue: any): any {
+    notFoundValue: any, flags: InjectFlags): any {
   let value;
-  if (record) {
+  if (record && !(flags & InjectFlags.SkipSelf)) {
     // If we don't have a record, this implies that we don't own the provider hence don't know how
     // to resolve it.
     value = record.value;
@@ -306,13 +325,14 @@ function resolveToken(
               // If we don't know how to resolve dependency and we should not check parent for it,
               // than pass in Null injector.
               !childRecord && !(options & OptionFlags.CheckParent) ? NULL_INJECTOR : parent,
-              options & OptionFlags.Optional ? null : Injector.THROW_IF_NOT_FOUND));
+              options & OptionFlags.Optional ? null : Injector.THROW_IF_NOT_FOUND,
+              InjectFlags.Default));
         }
       }
       record.value = value = useNew ? new (fn as any)(...deps) : fn.apply(obj, deps);
     }
-  } else {
-    value = parent.get(token, notFoundValue);
+  } else if (!(flags & InjectFlags.Self)) {
+    value = parent.get(token, notFoundValue, InjectFlags.Default);
   }
   return value;
 }
@@ -385,4 +405,88 @@ function getClosureSafeProperty<T>(objWithPropertyToExtract: T): string {
     }
   }
   throw Error('!prop');
+}
+
+/**
+ * Injection flags for DI.
+ *
+ * @stable
+ */
+export const enum InjectFlags {
+  Default = 0,
+
+  /** Skip the node that is requesting injection. */
+  SkipSelf = 1 << 0,
+  /** Don't descend into ancestors of the node requesting injection. */
+  Self = 1 << 1,
+}
+
+let _currentInjector: Injector|null = null;
+
+export function setCurrentInjector(injector: Injector | null): Injector|null {
+  const former = _currentInjector;
+  _currentInjector = injector;
+  return former;
+}
+
+/**
+ * Injects a token from the currently active injector.
+ *
+ * This function must be used in the context of a factory function such as one defined for an
+ * `InjectionToken`, and will throw an error if not called from such a context. For example:
+ *
+ * {@example core/di/ts/injector_spec.ts region='ShakeableInjectionToken'}
+ *
+ * Within such a factory function `inject` is utilized to request injection of a dependency, instead
+ * of providing an additional array of dependencies as was common to do with `useFactory` providers.
+ * `inject` is faster and more type-safe.
+ *
+ * @experimental
+ */
+export function inject<T>(
+    token: Type<T>| InjectionToken<T>, notFoundValue?: undefined, flags?: InjectFlags): T;
+export function inject<T>(
+    token: Type<T>| InjectionToken<T>, notFoundValue: T | null, flags?: InjectFlags): T|null;
+export function inject<T>(
+    token: Type<T>| InjectionToken<T>, notFoundValue?: T | null, flags = InjectFlags.Default): T|
+    null {
+  if (_currentInjector === null) {
+    throw new Error(`inject() must be called from an injection context`);
+  }
+  return _currentInjector.get(token, notFoundValue, flags);
+}
+
+export function injectArgs(types: (Type<any>| InjectionToken<any>| any[])[]): any[] {
+  const args: any[] = [];
+  for (let i = 0; i < types.length; i++) {
+    const arg = types[i];
+    if (Array.isArray(arg)) {
+      if (arg.length === 0) {
+        throw new Error('Arguments array must have arguments.');
+      }
+      let type: Type<any>|undefined = undefined;
+      let defaultValue: null|undefined = undefined;
+      let flags: InjectFlags = InjectFlags.Default;
+
+      for (let j = 0; j < arg.length; j++) {
+        const meta = arg[j];
+        if (meta instanceof Optional || meta.__proto__.ngMetadataName === 'Optional') {
+          defaultValue = null;
+        } else if (meta instanceof SkipSelf || meta.__proto__.ngMetadataName === 'SkipSelf') {
+          flags |= InjectFlags.SkipSelf;
+        } else if (meta instanceof Self || meta.__proto__.ngMetadataName === 'Self') {
+          flags |= InjectFlags.Self;
+        } else if (meta instanceof Inject) {
+          type = meta.token;
+        } else {
+          type = meta;
+        }
+      }
+
+      args.push(inject(type !, defaultValue, InjectFlags.Default));
+    } else {
+      args.push(inject(arg));
+    }
+  }
+  return args;
 }

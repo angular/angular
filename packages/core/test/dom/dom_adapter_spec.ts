@@ -74,6 +74,21 @@ import {el, stringifyElement} from '@angular/platform-browser/testing/src/browse
       expect(getDOM().getStyle(d, 'background-url')).toBe('url(http://test.com/bg.jpg)');
     });
 
+    // Test for regression caused by angular/angular#22536
+    it('should parse styles correctly following the spec', () => {
+      const d = getDOM().createElement('div');
+      getDOM().setStyle(d, 'background-image', 'url("paper.gif")');
+      expect(d.style.backgroundImage).toBe('url("paper.gif")');
+      expect(d.style.getPropertyValue('background-image')).toBe('url("paper.gif")');
+      expect(getDOM().getStyle(d, 'background-image')).toBe('url("paper.gif")');
+    });
+
+    it('should parse camel-case styles correctly', () => {
+      const d = getDOM().createElement('div');
+      getDOM().setStyle(d, 'marginRight', '10px');
+      expect(getDOM().getStyle(d, 'margin-right')).toBe('10px');
+    });
+
     if (getDOM().supportsDOMEvents()) {
       describe('getBaseHref', () => {
         beforeEach(() => getDOM().resetBaseElement());

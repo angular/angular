@@ -18,6 +18,7 @@ import {LowerUpperPipeComponent} from './lowerupper_pipe';
 import {DeprecatedNumberPipeComponent, NumberPipeComponent} from './number_pipe';
 import {DeprecatedPercentPipeComponent, PercentPipeComponent} from './percent_pipe';
 import {SlicePipeListComponent, SlicePipeStringComponent} from './slice_pipe';
+import {TitleCasePipeComponent} from './titlecase_pipe';
 
 @Component({
   selector: 'example-app',
@@ -36,6 +37,9 @@ import {SlicePipeListComponent, SlicePipeStringComponent} from './slice_pipe';
 
     <h2><code>lower</code>, <code>upper</code></h2>
     <lowerupper-pipe></lowerupper-pipe>
+
+    <h2><code>titlecase</code></h2>
+    <titlecase-pipe></titlecase-pipe>
 
     <h2><code>number</code></h2>
     <number-pipe></number-pipe>
@@ -57,10 +61,10 @@ export class ExampleAppComponent {
 @NgModule({
   declarations: [
     AsyncPromisePipeComponent, AsyncObservablePipeComponent, ExampleAppComponent, JsonPipeComponent,
-    DatePipeComponent, DeprecatedDatePipeComponent, LowerUpperPipeComponent, NumberPipeComponent,
-    PercentPipeComponent, DeprecatedPercentPipeComponent, CurrencyPipeComponent,
-    DeprecatedCurrencyPipeComponent, SlicePipeStringComponent, SlicePipeListComponent,
-    I18nPluralPipeComponent, I18nSelectPipeComponent
+    DatePipeComponent, DeprecatedDatePipeComponent, LowerUpperPipeComponent, TitleCasePipeComponent,
+    NumberPipeComponent, PercentPipeComponent, DeprecatedPercentPipeComponent,
+    CurrencyPipeComponent, DeprecatedCurrencyPipeComponent, SlicePipeStringComponent,
+    SlicePipeListComponent, I18nPluralPipeComponent, I18nSelectPipeComponent
   ],
   imports: [BrowserModule],
   bootstrap: [ExampleAppComponent]

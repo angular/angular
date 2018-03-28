@@ -3516,7 +3516,7 @@ Unfortunately, the app crashes when the `currentHero` is null.
 하지만 지금 코드에서 `currentHero` 객체가 null 이면 앱 전체가 중단됩니다.
 
 <!--
-You could code around that problem with [*ngIf*](guide/template-syntax#ngIf).
+You could code around that problem with [*ngIf](guide/template-syntax#ngIf).
 -->
 이 문제는 [*ngIf*](guide/template-syntax#ngIf)로 방지할 수도 있습니다.
 
@@ -3593,7 +3593,7 @@ The _Angular_ **non-null assertion operator (`!`)** serves the same purpose in a
 Angular 템플릿에서도 이 연산자를 사용할 수 있습니다.
 
 <!--
-For example, after you use [*ngIf*](guide/template-syntax#ngIf) to check that `hero` is defined, you can assert that
+For example, after you use [*ngIf](guide/template-syntax#ngIf) to check that `hero` is defined, you can assert that
 `hero` properties are also defined.
 -->
 만약 `hero` 객체가 정의되어있는지 [*ngIf*](guide/template-syntax#ngIf)로 검사하고, 이 객체가 유효할 때만 동작하는 로직을 다음과 같이 구현했다고 합시다.

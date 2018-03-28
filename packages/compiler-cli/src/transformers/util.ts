@@ -14,6 +14,7 @@ import {CompilerOptions, DEFAULT_ERROR_CODE, Diagnostic, SOURCE} from './api';
 
 export const GENERATED_FILES = /(.*?)\.(ngfactory|shim\.ngstyle|ngstyle|ngsummary)\.(js|d\.ts|ts)$/;
 export const DTS = /\.d\.ts$/;
+export const TS = /^(?!.*\.d\.ts$).*\.ts$/;
 
 export const enum StructureIsReused {Not = 0, SafeModules = 1, Completely = 2}
 

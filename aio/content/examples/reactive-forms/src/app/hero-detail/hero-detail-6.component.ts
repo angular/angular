@@ -44,7 +44,13 @@ export class HeroDetailComponent6 implements OnChanges {
   }
 
   // #docregion patch-value-on-changes
-  ngOnChanges() { // <-- wrap patchValue in ngOnChanges
+  ngOnChanges() { // <-- call rebuildForm in ngOnChanges
+    this.rebuildForm();
+  }
+  // #enddocregion patch-value-on-changes
+
+  // #docregion patch-value-rebuildform
+  rebuildForm() { // <-- wrap patchValue in rebuildForm
     this.heroForm.reset();
     // #docregion patch-value
     this.heroForm.patchValue({
@@ -52,7 +58,9 @@ export class HeroDetailComponent6 implements OnChanges {
     });
     // #enddocregion patch-value
   }
-  // #enddocregion patch-value-on-changes
+  // #enddocregion patch-value-rebuildform
 }
+
+
 
 // #enddocregion v6

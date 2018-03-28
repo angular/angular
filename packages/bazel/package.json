@@ -4,15 +4,22 @@
   "description": "Angular - bazel build rules",
   "author": "angular",
   "license": "MIT",
+  "dependencies": {
+    "@bazel/typescript": "^0.11.1",
+    "@types/node": "6.0.84",
+    "@types/shelljs": "0.7.7",
+    "shelljs": "0.7.8",
+    "protobufjs": "5.0.0"
+  },
   "peerDependencies": {
     "@angular/compiler-cli": "0.0.0-PLACEHOLDER",
-    "typescript": ">=2.4.2 <2.7"
-  },
-  "dependencies": {
-    "@types/node": "6.0.84"
+    "typescript": ">=2.7.2 <2.8"
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/angular/angular.git"
+  },
+  "ng-update": {
+    "packageGroup": "NG_UPDATE_PACKAGE_GROUP"
   }
 }

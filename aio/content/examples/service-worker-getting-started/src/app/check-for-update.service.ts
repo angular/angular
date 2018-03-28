@@ -3,7 +3,7 @@ import { SwUpdate } from '@angular/service-worker';
 
 
 // #docregion sw-check-update
-import { interval } from 'rxjs/observable/interval';
+import { interval } from 'rxjs';
 
 @Injectable()
 export class CheckForUpdateService {

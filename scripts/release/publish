@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+# Use for PATCH releases
+# Publish all packages in `dist/packages-dist` to npm
+
+(cd dist/packages-dist; for p in `ls .`; do npm publish --access public $p; done)

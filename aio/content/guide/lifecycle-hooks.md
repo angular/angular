@@ -3,8 +3,6 @@
 -->
 # 라이프싸이클 후킹
 
-<img src="generated/images/guide/lifecycle-hooks/hooks-in-sequence.png" alt="Us" class="left">
-
 <!--
 A component has a lifecycle managed by Angular.
 -->
@@ -23,9 +21,9 @@ that provide visibility into these key life moments and the ability to act when 
 컴포넌트가 만나는 각 라이프싸이클은 Angular에서 제공하는 **라이프싸이클 후킹 함수**를 사용해서 원하는 동작을 하도록 조정할 수 있습니다.
 
 <!--
-A directive has the same set of lifecycle hooks, minus the hooks that are specific to component content and views.
+A directive has the same set of lifecycle hooks.
 -->
-디렉티브는 컴포넌트와 비슷한 라이크싸이클을 갖지만, 템플릿이 없기 때문에 뷰와 관련된 라이프싸이클은 생략됩니다.
+디렉티브는 컴포넌트와 같은 라이크싸이클을 갖습니다.
 
 {@a hooks-overview}
 
@@ -54,7 +52,7 @@ that Angular calls shortly after creating the component:
 <code-example path="lifecycle-hooks/src/app/peek-a-boo.component.ts" region="ngOnInit" title="peek-a-boo.component.ts (excerpt)" linenums="false"></code-example>
 
 <!--
-No directive or component will implement all of the lifecycle hooks and some of the hooks only make sense for components.
+No directive or component will implement all of the lifecycle hooks.
 Angular only calls a directive/component hook method *if it is defined*.
 -->
 하지만 디렉티브나 컴포넌트에 모든 라이프싸이클 후킹 함수를 구현할 필요는 없습니다.
@@ -139,16 +137,15 @@ calls the lifecycle hook methods in the following sequence at specific moments:
       <code>ngAfterContentInit()</code>
     </td>
     <td>
-      <!--
-      Respond after Angular projects external content into the component's view.
+
+      Respond after Angular projects external content into the component's view / the view that a directive is in.
 
       Called _once_ after the first `ngDoCheck()`.
-
-      _A component-only hook_.
-      -->
+      <!--
       Angular가 화면에 렌더링 할 컴포넌트 템플릿을 준비하는 시점에 실행되며, `ngDoCheck()`가 처음 실행된 직후에 _한 번만_ 실행됩니다.
 
       _이 라이프싸이클 후킹 함수는 컴포넌트에만 사용할 수 있습니다._
+      -->
     </td>
   </tr>
   <tr style='vertical-align:top'>
@@ -156,18 +153,18 @@ calls the lifecycle hook methods in the following sequence at specific moments:
       <code>ngAfterContentChecked()</code>
     </td>
     <td>
-      <!--
-      Respond after Angular checks the content projected into the component.
+
+      Respond after Angular checks the content projected into the directive/component.
 
       Called after the `ngAfterContentInit()` and every subsequent `ngDoCheck()`.
 
-      _A component-only hook_.
-      -->
+      <!--
       Angular가 뷰에 렌더링 할 컴포넌트 템플릿이 준비된 이후에 실행됩니다.
 
       `ngAfterContentInit()`이 실행된 후에 실행되며, `ngDoCheck()` 함수가 실행된 뒤에도 실행됩니다.
 
       _이 라이프싸이클 후킹 함수는 컴포넌트에만 사용할 수 있습니다._
+      -->
     </td>
   </tr>
   <tr style='vertical-align:top'>
@@ -175,16 +172,16 @@ calls the lifecycle hook methods in the following sequence at specific moments:
       <code>ngAfterViewInit()</code>
     </td>
     <td>
-      <!--
-      Respond after Angular initializes the component's views and child views.
+
+      Respond after Angular initializes the component's views and child views / the view that a directive is in.
 
       Called _once_ after the first `ngAfterContentChecked()`.
 
-      _A component-only hook_.
-      -->
+      <!--
       Angular가 컴포넌트 뷰와 자식 컴포넌트 뷰를 모두 초기화한 후에 실행되며, `ngAfterContentChecked()`가 실행된 직후에 _한 번만_ 실행됩니다.
 
       _이 라이프싸이클 후킹 함수는 컴포넌트에만 사용할 수 있습니다._
+      -->
     </td>
   </tr>
   <tr style='vertical-align:top'>
@@ -192,18 +189,18 @@ calls the lifecycle hook methods in the following sequence at specific moments:
       <code>ngAfterViewChecked()</code>
     </td>
     <td>
-      <!--
-      Respond after Angular checks the component's views and child views.
+
+      Respond after Angular checks the component's views and child views / the view that a directive is in.
 
       Called after the `ngAfterViewInit` and every subsequent `ngAfterContentChecked()`.
 
-      _A component-only hook_.
-      -->
+      <!--
       Angular가 컴포넌트 뷰와 자식 컴포넌트 뷰를 템플릿에 렌더링할 준비를 끝낸 후에 실행됩니다.
 
       `ngAfterViewInit()`이 실행된 직후에 실행되며, `ngAfterContentChecked()`가 실행될 때마다 이어서 실행됩니다.
 
       _이 라이프싸이클 후킹 함수는 컴포넌트에만 사용할 수 있습니다._
+      -->
     </td>
   </tr>
   <tr style='vertical-align:top'>

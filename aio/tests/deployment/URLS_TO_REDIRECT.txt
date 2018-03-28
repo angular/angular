@@ -150,6 +150,7 @@
 /docs/js/latest/guide/ngmodule	/guide/ngmodules
 /docs/js/latest/resources	/resources
 /docs/latest/tutorial	/tutorial
+/styleguide	/guide/styleguide
 /docs/styleguide	/guide/styleguide
 /docs/styleguide.html	/guide/styleguide
 /docs/ts/latest/api/core/HostBinding-var.html	/api/core/HostBinding

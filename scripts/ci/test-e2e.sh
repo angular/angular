@@ -13,12 +13,6 @@ travisFoldStart "test.e2e.buildPackages"
   ./build.sh
 travisFoldEnd "test.e2e.buildPackages"
 
-
-travisFoldStart "test.e2e.publicApi"
-  $(npm bin)/gulp public-api:enforce
-travisFoldEnd "test.e2e.publicApi"
-
-
 travisFoldStart "test.e2e.check-cycle"
   $(npm bin)/gulp check-cycle
 travisFoldEnd "test.e2e.check-cycle"

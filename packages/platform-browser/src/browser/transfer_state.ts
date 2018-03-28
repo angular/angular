@@ -93,7 +93,9 @@ export class TransferState {
   /**
    * Get the value corresponding to a key. Return `defaultValue` if key is not found.
    */
-  get<T>(key: StateKey<T>, defaultValue: T): T { return this.store[key] as T || defaultValue; }
+  get<T>(key: StateKey<T>, defaultValue: T): T {
+    return this.store[key] !== undefined ? this.store[key] as T : defaultValue;
+  }
 
   /**
    * Set the value corresponding to a key.

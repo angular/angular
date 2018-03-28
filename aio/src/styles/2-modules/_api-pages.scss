@@ -1,23 +1,98 @@
-.api-info-bar {
-  max-width: 800px;
-  text-align: left;
-
-  span {
-    margin: 0 16px 0 0;
-
-    @media screen and (max-width: 600px) {
-      display: block;
+.page-actions {
+  float: right;
+  .material-icons {
+    border-radius: 4px;
+    padding: 4px;
+    font-size: 20px;
+    &:hover {
+      background-color: $mist;
     }
-
   }
 }
 
-.api-heading {
-  margin-top: 24px;
-  margin-bottom: 18px;
-  font-size: 16px;
+.api-header {
+  display: flex;
+  align-items: center;
+
+  @media screen and (max-width: 600px) {
+    flex-direction: column;
+    align-items: flex-start;
+  }
 }
 
-.overloads .detail-contents {
-  padding-top: 0;
+.api-body {
+
+  .class-overview {
+    position: relative;
+
+    code-example {
+        clear: left;
+    }
+  }
+
+  .method-table {
+    h3 {
+      margin: 6px 0;
+      font-weight: bold;
+    }
+
+    h4 {
+      font-size: 14px;
+      font-weight: bold;
+      margin-top: 12px;
+    }
+  }
+
+  .api-heading {
+    padding: 5px 0;
+    font-size: 16px;
+    font-weight: bold;
+  }
+
+  .short-description {
+    margin: 6px 0 0 10px;
+  }
+
+  .properties-table {
+    font-size: 14px;
+
+    thead th {
+      &:nth-child(1) {
+        width: 20%;
+      }
+      &:nth-child(2) {
+        width: 20%;
+      }
+    }
+  }
+
+  .parameters-table {
+    margin-top: 0;
+    font-size: 14px;
+    td:nth-child(1) {
+      width: 20%;
+    }
+  }
+
+  details.overloads {
+    margin-left: -8px;
+
+    summary {
+      height: inherit;
+      padding: 8px 12px;
+      h4 {
+        margin: 0;
+        clear: left;
+      }
+    }
+}
+
+  .api-section aio-code {
+    background-color: rgba(241, 241, 241, 0.2);
+  }
+
+  .from-constructor, .read-only-property {
+    font-style: italic;
+    color: $blue;
+  }
 }

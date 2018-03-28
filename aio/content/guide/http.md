@@ -358,7 +358,7 @@ subscribes without a callback.
 The bare `.subscribe()` _seems_ pointless.
 
 In fact, it is essential.
-Merely calling `HeroService.addHero()` **does not initiate the DELETE request.**
+Merely calling `HeroService.deleteHero()` **does not initiate the DELETE request.**
 
 <code-example 
   path="http/src/app/heroes/heroes.component.ts"

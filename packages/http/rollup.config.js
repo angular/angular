@@ -13,13 +13,11 @@ const globals = {
   '@angular/core': 'ng.core',
   '@angular/compiler': 'ng.compiler',
   '@angular/platform-browser': 'ng.platformBrowser',
-  'rxjs/Observable': 'Rx',
-  'rxjs/Observer': 'Rx',
-  'rxjs/Subject': 'Rx'
+  'rxjs': 'rxjs'
 };
 
 module.exports = {
-  entry: '../../dist/packages-dist/http/esm5/http.js',
+  entry: '../../dist/packages-dist/http/fesm5/http.js',
   dest: '../../dist/packages-dist/http/bundles/http.umd.js',
   format: 'umd',
   exports: 'named',

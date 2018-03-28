@@ -8,6 +8,7 @@
 
 // We are temporarily importing the existing viewEngine_from core so we can be sure we are
 // correctly implementing its interfaces for backwards compatibility.
+import {ChangeDetectorRef as viewEngine_ChangeDetectorRef} from '../change_detection/change_detector_ref';
 import {Injector} from '../di/injector';
 import {ComponentFactory as viewEngine_ComponentFactory, ComponentRef as viewEngine_ComponentRef} from '../linker/component_factory';
 import {ElementRef as viewEngine_ElementRef} from '../linker/element_ref';
@@ -17,17 +18,18 @@ import {ViewContainerRef as viewEngine_ViewContainerRef} from '../linker/view_co
 import {EmbeddedViewRef as viewEngine_EmbeddedViewRef, ViewRef as viewEngine_ViewRef} from '../linker/view_ref';
 import {Type} from '../type';
 
-import {assertLessThan} from './assert';
-import {assertPreviousIsParent, getDirectiveInstance, getPreviousOrParentNode, getRenderer, renderEmbeddedTemplate} from './instructions';
+import {assertLessThan, assertNotNull} from './assert';
+import {assertPreviousIsParent, enterView, getDirectiveInstance, getPreviousOrParentNode, getRenderer, isComponent, renderEmbeddedTemplate} from './instructions';
 import {ComponentTemplate, DirectiveDef} from './interfaces/definition';
 import {LInjector} from './interfaces/injector';
-import {LContainerNode, LElementNode, LNode, LNodeFlags, LViewNode} from './interfaces/node';
+import {LContainerNode, LElementNode, LNode, LNodeType, LViewNode, TNodeFlags} from './interfaces/node';
 import {QueryReadType} from './interfaces/query';
 import {Renderer3} from './interfaces/renderer';
 import {LView} from './interfaces/view';
 import {assertNodeOfPossibleTypes, assertNodeType} from './node_assert';
 import {insertView} from './node_manipulation';
 import {notImplemented, stringify} from './util';
+import {EmbeddedViewRef, ViewRef, addDestroyable, createViewRef} from './view_ref';
 
 
 
@@ -43,7 +45,7 @@ const NG_ELEMENT_ID = '__NG_ELEMENT_ID__';
  * directives that will share slots, and thus, the fewer false positives when checking for
  * the existence of a directive.
  */
-const BLOOM_SIZE = 128;
+const BLOOM_SIZE = 256;
 
 /** Counter used to generate unique IDs for directives. */
 let nextNgElementId = 0;
@@ -64,9 +66,9 @@ export function bloomAdd(injector: LInjector, type: Type<any>): void {
     id = (type as any)[NG_ELEMENT_ID] = nextNgElementId++;
   }
 
-  // We only have BLOOM_SIZE (128) slots in our bloom filter (4 buckets * 32 bits each),
-  // so all unique IDs must be modulo-ed into a number from 0 - 127 to fit into the filter.
-  // This means that after 128, some directives will share slots, leading to some false positives
+  // We only have BLOOM_SIZE (256) slots in our bloom filter (8 buckets * 32 bits each),
+  // so all unique IDs must be modulo-ed into a number from 0 - 255 to fit into the filter.
+  // This means that after 255, some directives will share slots, leading to some false positives
   // when checking for a directive's presence.
   const bloomBit = id % BLOOM_SIZE;
 
@@ -76,20 +78,14 @@ export function bloomAdd(injector: LInjector, type: Type<any>): void {
   const mask = 1 << bloomBit;
 
   // Use the raw bloomBit number to determine which bloom filter bucket we should check
-  // e.g: bf0 = [0 - 31], bf1 = [32 - 63], bf2 = [64 - 95], bf3 = [96 - 127]
-  if (bloomBit < 64) {
-    if (bloomBit < 32) {
-      // Then use the mask to flip on the bit (0-31) associated with the directive in that bucket
-      injector.bf0 |= mask;
-    } else {
-      injector.bf1 |= mask;
-    }
+  // e.g: bf0 = [0 - 31], bf1 = [32 - 63], bf2 = [64 - 95], bf3 = [96 - 127], etc
+  if (bloomBit < 128) {
+    // Then use the mask to flip on the bit (0-31) associated with the directive in that bucket
+    bloomBit < 64 ? (bloomBit < 32 ? (injector.bf0 |= mask) : (injector.bf1 |= mask)) :
+                    (bloomBit < 96 ? (injector.bf2 |= mask) : (injector.bf3 |= mask));
   } else {
-    if (bloomBit < 96) {
-      injector.bf2 |= mask;
-    } else {
-      injector.bf3 |= mask;
-    }
+    bloomBit < 192 ? (bloomBit < 160 ? (injector.bf4 |= mask) : (injector.bf5 |= mask)) :
+                     (bloomBit < 224 ? (injector.bf6 |= mask) : (injector.bf7 |= mask));
   }
 }
 
@@ -117,14 +113,23 @@ export function getOrCreateNodeInjectorForNode(node: LElementNode | LContainerNo
     bf1: 0,
     bf2: 0,
     bf3: 0,
+    bf4: 0,
+    bf5: 0,
+    bf6: 0,
+    bf7: 0,
     cbf0: parentInjector == null ? 0 : parentInjector.cbf0 | parentInjector.bf0,
     cbf1: parentInjector == null ? 0 : parentInjector.cbf1 | parentInjector.bf1,
     cbf2: parentInjector == null ? 0 : parentInjector.cbf2 | parentInjector.bf2,
     cbf3: parentInjector == null ? 0 : parentInjector.cbf3 | parentInjector.bf3,
+    cbf4: parentInjector == null ? 0 : parentInjector.cbf4 | parentInjector.bf4,
+    cbf5: parentInjector == null ? 0 : parentInjector.cbf5 | parentInjector.bf5,
+    cbf6: parentInjector == null ? 0 : parentInjector.cbf6 | parentInjector.bf6,
+    cbf7: parentInjector == null ? 0 : parentInjector.cbf7 | parentInjector.bf7,
     injector: null,
     templateRef: null,
     viewContainerRef: null,
-    elementRef: null
+    elementRef: null,
+    changeDetectorRef: null
   };
 }
 
@@ -172,7 +177,7 @@ export function diPublic(def: DirectiveDef<any>): void {
 }
 
 /**
- * Searches for an instance of the given directive type up the injector tree and returns
+ * Searches for an instance of the given type up the injector tree and returns
  * that instance if found.
  *
  * If not found, it will propagate up to the next parent injector until the token
@@ -185,15 +190,18 @@ export function diPublic(def: DirectiveDef<any>): void {
  *
  *   static ngDirectiveDef = defineDirective({
  *     type: SomeDirective,
- *     factory: () => new SomeDirective(inject(DirectiveA))
+ *     factory: () => new SomeDirective(directiveInject(DirectiveA))
  *   });
  * }
+ *
+ * NOTE: use `directiveInject` with `@Directive`, `@Component`, and `@Pipe`. For
+ * all other injection use `inject` which does not walk the DOM render tree.
  *
  * @param token The directive type to search for
  * @param flags Injection flags (e.g. CheckParent)
  * @returns The instance found
  */
-export function inject<T>(token: Type<T>, flags?: InjectFlags, defaultValue?: T): T {
+export function directiveInject<T>(token: Type<T>, flags?: InjectFlags, defaultValue?: T): T {
   return getOrCreateInjectable<T>(getOrCreateNodeInjector(), token, flags, defaultValue);
 }
 
@@ -225,6 +233,104 @@ export function injectTemplateRef<T>(): viewEngine_TemplateRef<T> {
  */
 export function injectViewContainerRef(): viewEngine_ViewContainerRef {
   return getOrCreateContainerRef(getOrCreateNodeInjector());
+}
+
+/** Returns a ChangeDetectorRef (a.k.a. a ViewRef) */
+export function injectChangeDetectorRef(): viewEngine_ChangeDetectorRef {
+  return getOrCreateChangeDetectorRef(getOrCreateNodeInjector(), null);
+}
+
+/**
+ * Inject static attribute value into directive constructor.
+ *
+ * This method is used with `factory` functions which are generated as part of
+ * `defineDirective` or `defineComponent`. The method retrieves the static value
+ * of an attribute. (Dynamic attributes are not supported since they are not resolved
+ *  at the time of injection and can change over time.)
+ *
+ * # Example
+ * Given:
+ * ```
+ * @Component(...)
+ * class MyComponent {
+ *   constructor(@Attribute('title') title: string) { ... }
+ * }
+ * ```
+ * When instantiated with
+ * ```
+ * <my-component title="Hello"></my-component>
+ * ```
+ *
+ * Then factory method generated is:
+ * ```
+ * MyComponent.ngComponentDef = defineComponent({
+ *   factory: () => new MyComponent(injectAttribute('title'))
+ *   ...
+ * })
+ * ```
+ *
+ * @experimental
+ */
+export function injectAttribute(attrName: string): string|undefined {
+  ngDevMode && assertPreviousIsParent();
+  const lElement = getPreviousOrParentNode() as LElementNode;
+  ngDevMode && assertNodeType(lElement, LNodeType.Element);
+  const tElement = lElement.tNode !;
+  ngDevMode && assertNotNull(tElement, 'expecting tNode');
+  const attrs = tElement.attrs;
+  if (attrs) {
+    for (let i = 0; i < attrs.length; i = i + 2) {
+      if (attrs[i] == attrName) {
+        return attrs[i + 1];
+      }
+    }
+  }
+  return undefined;
+}
+
+/**
+ * Creates a ViewRef and stores it on the injector as ChangeDetectorRef (public alias).
+ * Or, if it already exists, retrieves the existing instance.
+ *
+ * @returns The ChangeDetectorRef to use
+ */
+export function getOrCreateChangeDetectorRef(
+    di: LInjector, context: any): viewEngine_ChangeDetectorRef {
+  if (di.changeDetectorRef) return di.changeDetectorRef;
+
+  const currentNode = di.node;
+  if (isComponent(currentNode.tNode !)) {
+    return di.changeDetectorRef = createViewRef(currentNode.data as LView, context);
+  } else if (currentNode.type === LNodeType.Element) {
+    return di.changeDetectorRef = getOrCreateHostChangeDetector(currentNode.view.node);
+  }
+  return null !;
+}
+
+/** Gets or creates ChangeDetectorRef for the closest host component */
+function getOrCreateHostChangeDetector(currentNode: LViewNode | LElementNode):
+    viewEngine_ChangeDetectorRef {
+  const hostNode = getClosestComponentAncestor(currentNode);
+  const hostInjector = hostNode.nodeInjector;
+  const existingRef = hostInjector && hostInjector.changeDetectorRef;
+
+  return existingRef ?
+      existingRef :
+      createViewRef(
+          hostNode.data as LView,
+          hostNode.view.directives ![hostNode.tNode !.flags >> TNodeFlags.INDX_SHIFT]);
+}
+
+/**
+ * If the node is an embedded view, traverses up the view tree to return the closest
+ * ancestor view that is attached to a component. If it's already a component node,
+ * returns itself.
+ */
+function getClosestComponentAncestor(node: LViewNode | LElementNode): LElementNode {
+  while (node.type === LNodeType.View) {
+    node = node.view.node;
+  }
+  return node as LElementNode;
 }
 
 /**
@@ -279,21 +385,21 @@ export function getOrCreateInjectable<T>(
 
       // The size of the node's directive's list is stored in certain bits of the node's flags,
       // so exact it with a mask and shift it back such that the bits reflect the real value.
-      const flags = node.flags;
-      const size = (flags & LNodeFlags.SIZE_MASK) >> LNodeFlags.SIZE_SHIFT;
+      const flags = node.tNode !.flags;
+      const size = (flags & TNodeFlags.SIZE_MASK) >> TNodeFlags.SIZE_SHIFT;
 
       if (size !== 0) {
         // The start index of the directives list is also part of the node's flags, but there is
         // nothing to the "left" of it so it doesn't need a mask.
-        const start = flags >> LNodeFlags.INDX_SHIFT;
+        const start = flags >> TNodeFlags.INDX_SHIFT;
 
-        const tData = node.view.tView.data;
+        const defs = node.view.tView.directives !;
         for (let i = start, ii = start + size; i < ii; i++) {
           // Get the definition for the directive at this index and, if it is injectable (diPublic),
           // and matches the given token, return the directive instance.
-          const directiveDef = tData[i] as DirectiveDef<any>;
+          const directiveDef = defs[i] as DirectiveDef<any>;
           if (directiveDef.diPublic && directiveDef.type == token) {
-            return getDirectiveInstance(node.view.data[i]);
+            return getDirectiveInstance(node.view.directives ![i]);
           }
         }
       }
@@ -356,11 +462,17 @@ export function bloomFindPossibleInjector(startInjector: LInjector, bloomBit: nu
   // match.
   let injector: LInjector|null = startInjector;
   while (injector) {
-    // Our bloom filter size is 128 bits, which is four 32-bit bloom filter buckets:
-    // bf0 = [0 - 31], bf1 = [32 - 63], bf2 = [64 - 95], bf3 = [96 - 127]
+    // Our bloom filter size is 256 bits, which is eight 32-bit bloom filter buckets:
+    // bf0 = [0 - 31], bf1 = [32 - 63], bf2 = [64 - 95], bf3 = [96 - 127], etc.
     // Get the bloom filter value from the appropriate bucket based on the directive's bloomBit.
-    let value: number = bloomBit < 64 ? (bloomBit < 32 ? injector.bf0 : injector.bf1) :
-                                        (bloomBit < 96 ? injector.bf2 : injector.bf3);
+    let value: number;
+    if (bloomBit < 128) {
+      value = bloomBit < 64 ? (bloomBit < 32 ? injector.bf0 : injector.bf1) :
+                              (bloomBit < 96 ? injector.bf2 : injector.bf3);
+    } else {
+      value = bloomBit < 192 ? (bloomBit < 160 ? injector.bf4 : injector.bf5) :
+                               (bloomBit < 224 ? injector.bf6 : injector.bf7);
+    }
 
     // If the bloom filter value has the bit corresponding to the directive's bloomBit flipped on,
     // this injector is a potential match.
@@ -369,9 +481,14 @@ export function bloomFindPossibleInjector(startInjector: LInjector, bloomBit: nu
     }
 
     // If the current injector does not have the directive, check the bloom filters for the ancestor
-    // injectors (cbf0 - cbf3). These filters capture *all* ancestor injectors.
-    value = bloomBit < 64 ? (bloomBit < 32 ? injector.cbf0 : injector.cbf1) :
-                            (bloomBit < 96 ? injector.cbf2 : injector.cbf3);
+    // injectors (cbf0 - cbf7). These filters capture *all* ancestor injectors.
+    if (bloomBit < 128) {
+      value = bloomBit < 64 ? (bloomBit < 32 ? injector.cbf0 : injector.cbf1) :
+                              (bloomBit < 96 ? injector.cbf2 : injector.cbf3);
+    } else {
+      value = bloomBit < 192 ? (bloomBit < 160 ? injector.cbf4 : injector.cbf5) :
+                               (bloomBit < 224 ? injector.cbf6 : injector.cbf7);
+    }
 
     // If the ancestor bloom filter value has the bit corresponding to the directive, traverse up to
     // find the specific injector. If the ancestor bloom filter does not have the bit, we can abort.
@@ -392,10 +509,8 @@ export class ReadFromInjectorFn<T> {
  * @returns The ElementRef instance to use
  */
 export function getOrCreateElementRef(di: LInjector): viewEngine_ElementRef {
-  return di.elementRef ||
-      (di.elementRef = new ElementRef(
-           ((di.node.flags & LNodeFlags.TYPE_MASK) === LNodeFlags.Container) ? null :
-                                                                               di.node.native));
+  return di.elementRef || (di.elementRef = new ElementRef(
+                               di.node.type === LNodeType.Container ? null : di.node.native));
 }
 
 export const QUERY_READ_TEMPLATE_REF = <QueryReadType<viewEngine_TemplateRef<any>>>(
@@ -412,12 +527,12 @@ export const QUERY_READ_ELEMENT_REF =
 
 export const QUERY_READ_FROM_NODE =
     (new ReadFromInjectorFn<any>((injector: LInjector, node: LNode, directiveIdx: number) => {
-      ngDevMode && assertNodeOfPossibleTypes(node, LNodeFlags.Container, LNodeFlags.Element);
+      ngDevMode && assertNodeOfPossibleTypes(node, LNodeType.Container, LNodeType.Element);
       if (directiveIdx > -1) {
-        return node.view.data[directiveIdx];
-      } else if ((node.flags & LNodeFlags.TYPE_MASK) === LNodeFlags.Element) {
+        return node.view.directives ![directiveIdx];
+      } else if (node.type === LNodeType.Element) {
         return getOrCreateElementRef(injector);
-      } else if ((node.flags & LNodeFlags.TYPE_MASK) === LNodeFlags.Container) {
+      } else if (node.type === LNodeType.Container) {
         return getOrCreateTemplateRef(injector);
       }
       throw new Error('fail');
@@ -477,6 +592,15 @@ class ViewContainerRef implements viewEngine_ViewContainerRef {
     const lView = (viewRef as EmbeddedViewRef<any>)._lViewNode;
     insertView(this._node, lView, index);
 
+    // TODO(pk): this is a temporary index adjustment so imperativelly inserted (through
+    // ViewContainerRef) views
+    // are not removed in the containerRefreshEnd instruction.
+    // The final fix will consist of creating a dedicated container node for views inserted through
+    // ViewContainerRef.
+    // Such container should not be trimmed as it is the case in the containerRefreshEnd
+    // instruction.
+    this._node.data.nextIndex = this._node.data.views.length;
+
     // If the view is dynamic (has a template), it needs to be counted both at the container
     // level and at the node above the container.
     if (lView.data.template !== null) {
@@ -486,7 +610,7 @@ class ViewContainerRef implements viewEngine_ViewContainerRef {
       // Look for the parent node and increment its dynamic view count.
       if (this._node.parent !== null && this._node.parent.data !== null) {
         ngDevMode &&
-            assertNodeOfPossibleTypes(this._node.parent, LNodeFlags.View, LNodeFlags.Element);
+            assertNodeOfPossibleTypes(this._node.parent, LNodeType.View, LNodeType.Element);
         this._node.parent.data.dynamicViewCount++;
       }
     }
@@ -508,7 +632,7 @@ class ViewContainerRef implements viewEngine_ViewContainerRef {
  * @returns The TemplateRef instance to use
  */
 export function getOrCreateTemplateRef<T>(di: LInjector): viewEngine_TemplateRef<T> {
-  ngDevMode && assertNodeType(di.node, LNodeFlags.Container);
+  ngDevMode && assertNodeType(di.node, LNodeType.Container);
   const data = (di.node as LContainerNode).data;
   return di.templateRef || (di.templateRef = new TemplateRef<any>(
                                 getOrCreateElementRef(di), data.template !, getRenderer()));
@@ -527,29 +651,6 @@ class TemplateRef<T> implements viewEngine_TemplateRef<T> {
 
   createEmbeddedView(context: T): viewEngine_EmbeddedViewRef<T> {
     let viewNode: LViewNode = renderEmbeddedTemplate(null, this._template, context, this._renderer);
-    return new EmbeddedViewRef(viewNode, this._template, context);
+    return addDestroyable(new EmbeddedViewRef(viewNode, this._template, context));
   }
-}
-
-class EmbeddedViewRef<T> implements viewEngine_EmbeddedViewRef<T> {
-  context: T;
-  rootNodes: any[];
-  /**
-   * @internal
-   */
-  _lViewNode: LViewNode;
-
-  constructor(viewNode: LViewNode, template: ComponentTemplate<T>, context: T) {
-    this._lViewNode = viewNode;
-    this.context = context;
-  }
-
-  destroy(): void { notImplemented(); }
-  destroyed: boolean;
-  onDestroy(callback: Function) { notImplemented(); }
-  markForCheck(): void { notImplemented(); }
-  detach(): void { notImplemented(); }
-  detectChanges(): void { notImplemented(); }
-  checkNoChanges(): void { notImplemented(); }
-  reattach(): void { notImplemented(); }
 }

@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {C, E, T, V, a, b, cR, cr, defineComponent, defineDirective, e, k, m, p, t, v} from '../../src/render3/index';
+import {defineComponent, defineDirective} from '../../src/render3/index';
+import {bind, container, containerRefreshEnd, containerRefreshStart, elementAttribute, elementClassNamed, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, load, loadDirective, text, textBinding} from '../../src/render3/instructions';
 
 import {renderToHtml} from './render_util';
 
@@ -16,12 +17,12 @@ describe('exports', () => {
     /** <input value="one" #myInput> {{ myInput.value }} */
     function Template(ctx: any, cm: boolean) {
       if (cm) {
-        E(0, 'input', ['value', 'one']);
-        e();
-        T(1);
+        elementStart(0, 'input', ['value', 'one'], ['myInput', '']);
+        elementEnd();
+        text(1);
       }
-      let myInput = E(0);
-      t(1, (myInput as any).value);
+      let myInput = elementStart(0);
+      textBinding(1, (myInput as any).value);
     }
 
     expect(renderToHtml(Template, {})).toEqual('<input value="one">one');
@@ -32,11 +33,12 @@ describe('exports', () => {
     /** <comp #myComp></comp> {{ myComp.name }} */
     function Template(ctx: any, cm: boolean) {
       if (cm) {
-        E(0, MyComponent);
-        e();
-        T(2);
+        elementStart(0, 'comp', null, ['myComp', '']);
+        elementEnd();
+        text(1);
       }
-      t(2, m<MyComponent>(1).name);
+      // TODO: replace loadDirective when removing directive refs
+      textBinding(1, loadDirective<MyComponent>(0).name);
     }
 
     class MyComponent {
@@ -44,13 +46,13 @@ describe('exports', () => {
 
       static ngComponentDef = defineComponent({
         type: MyComponent,
-        tag: 'comp',
+        selector: [[['comp'], null]],
         template: function() {},
         factory: () => new MyComponent
       });
     }
 
-    expect(renderToHtml(Template, {})).toEqual('<comp></comp>Nancy');
+    expect(renderToHtml(Template, {}, [MyComponent.ngComponentDef])).toEqual('<comp></comp>Nancy');
   });
 
   it('should support component instance fed into directive', () => {
@@ -61,7 +63,7 @@ describe('exports', () => {
       constructor() { myComponent = this; }
       static ngComponentDef = defineComponent({
         type: MyComponent,
-        tag: 'comp',
+        selector: [[['comp'], null]],
         template: function() {},
         factory: () => new MyComponent
       });
@@ -70,22 +72,29 @@ describe('exports', () => {
     class MyDir {
       myDir: MyComponent;
       constructor() { myDir = this; }
-      static ngDirectiveDef =
-          defineDirective({type: MyDir, factory: () => new MyDir, inputs: {myDir: 'myDir'}});
+      static ngDirectiveDef = defineDirective({
+        type: MyDir,
+        selector: [[['', 'myDir', ''], null]],
+        factory: () => new MyDir,
+        inputs: {myDir: 'myDir'}
+      });
     }
+
+    const defs = [MyComponent.ngComponentDef, MyDir.ngDirectiveDef];
 
     /** <comp #myComp></comp> <div [myDir]="myComp"></div> */
     function Template(ctx: any, cm: boolean) {
       if (cm) {
-        E(0, MyComponent);
-        e();
-        E(2, 'div', null, [MyDir]);
-        e();
+        elementStart(0, 'comp', null, ['myComp', '']);
+        elementEnd();
+        elementStart(1, 'div', ['myDir', '']);
+        elementEnd();
       }
-      p(2, 'myDir', b(m<MyComponent>(1)));
+      // TODO: replace loadDirective when removing directive refs
+      elementProperty(1, 'myDir', bind(loadDirective<MyComponent>(0)));
     }
 
-    renderToHtml(Template, {});
+    renderToHtml(Template, {}, defs);
     expect(myDir !.myDir).toEqual(myComponent !);
   });
 
@@ -94,19 +103,26 @@ describe('exports', () => {
     /** <div someDir #myDir="someDir"></div> {{ myDir.name }} */
     function Template(ctx: any, cm: boolean) {
       if (cm) {
-        E(0, 'div', null, [SomeDir]);
-        e();
-        T(2);
+        elementStart(0, 'div', ['someDir', ''], ['myDir', 'someDir']);
+        elementEnd();
+        text(1);
       }
-      t(2, m<SomeDir>(1).name);
+      // TODO: replace loadDirective when removing directive refs
+      textBinding(1, loadDirective<SomeDir>(0).name);
     }
 
     class SomeDir {
       name = 'Drew';
-      static ngDirectiveDef = defineDirective({type: SomeDir, factory: () => new SomeDir});
+      static ngDirectiveDef = defineDirective({
+        type: SomeDir,
+        selector: [[['', 'someDir', ''], null]],
+        factory: () => new SomeDir,
+        exportAs: 'someDir'
+      });
     }
 
-    expect(renderToHtml(Template, {})).toEqual('<div></div>Drew');
+    expect(renderToHtml(Template, {}, [SomeDir.ngDirectiveDef]))
+        .toEqual('<div somedir=""></div>Drew');
   });
 
   describe('forward refs', () => {
@@ -114,12 +130,12 @@ describe('exports', () => {
       /** {{ myInput.value}} <input value="one" #myInput> */
       function Template(ctx: any, cm: boolean) {
         if (cm) {
-          T(0);
-          E(1, 'input', ['value', 'one']);
-          e();
+          text(0);
+          elementStart(1, 'input', ['value', 'one'], ['myInput', '']);
+          elementEnd();
         }
-        let myInput = E(1);
-        t(0, b((myInput as any).value));
+        let myInput = elementStart(1);
+        textBinding(0, bind((myInput as any).value));
       }
 
       expect(renderToHtml(Template, {})).toEqual('one<input value="one">');
@@ -130,13 +146,13 @@ describe('exports', () => {
       /** <div [title]="myInput.value"</div> <input value="one" #myInput> */
       function Template(ctx: any, cm: boolean) {
         if (cm) {
-          E(0, 'div');
-          e();
-          E(1, 'input', ['value', 'one']);
-          e();
+          elementStart(0, 'div');
+          elementEnd();
+          elementStart(1, 'input', ['value', 'one'], ['myInput', '']);
+          elementEnd();
         }
-        let myInput = E(1);
-        p(0, 'title', b(myInput && (myInput as any).value));
+        let myInput = elementStart(1);
+        elementProperty(0, 'title', bind(myInput && (myInput as any).value));
       }
 
       expect(renderToHtml(Template, {})).toEqual('<div title="one"></div><input value="one">');
@@ -146,13 +162,13 @@ describe('exports', () => {
       /** <div [attr.aria-label]="myInput.value"</div> <input value="one" #myInput> */
       function Template(ctx: any, cm: boolean) {
         if (cm) {
-          E(0, 'div');
-          e();
-          E(1, 'input', ['value', 'one']);
-          e();
+          elementStart(0, 'div');
+          elementEnd();
+          elementStart(1, 'input', ['value', 'one'], ['myInput', '']);
+          elementEnd();
         }
-        let myInput = E(1);
-        a(0, 'aria-label', b(myInput && (myInput as any).value));
+        let myInput = elementStart(1);
+        elementAttribute(0, 'aria-label', bind(myInput && (myInput as any).value));
       }
 
       expect(renderToHtml(Template, {})).toEqual('<div aria-label="one"></div><input value="one">');
@@ -162,13 +178,13 @@ describe('exports', () => {
       /** <div [class.red]="myInput.checked"</div> <input type="checkbox" checked #myInput> */
       function Template(ctx: any, cm: boolean) {
         if (cm) {
-          E(0, 'div');
-          e();
-          E(1, 'input', ['type', 'checkbox', 'checked', 'true']);
-          e();
+          elementStart(0, 'div');
+          elementEnd();
+          elementStart(1, 'input', ['type', 'checkbox', 'checked', 'true'], ['myInput', '']);
+          elementEnd();
         }
-        let myInput = E(1);
-        k(0, 'red', b(myInput && (myInput as any).checked));
+        let myInput = elementStart(1);
+        elementClassNamed(0, 'red', bind(myInput && (myInput as any).checked));
       }
 
       expect(renderToHtml(Template, {}))
@@ -185,7 +201,7 @@ describe('exports', () => {
 
         static ngComponentDef = defineComponent({
           type: MyComponent,
-          tag: 'comp',
+          selector: [[['comp'], null]],
           template: function(ctx: MyComponent, cm: boolean) {},
           factory: () => new MyComponent
         });
@@ -196,22 +212,27 @@ describe('exports', () => {
 
         constructor() { myDir = this; }
 
-        static ngDirectiveDef =
-            defineDirective({type: MyDir, factory: () => new MyDir, inputs: {myDir: 'myDir'}});
+        static ngDirectiveDef = defineDirective({
+          type: MyDir,
+          selector: [[['', 'myDir', ''], null]],
+          factory: () => new MyDir,
+          inputs: {myDir: 'myDir'}
+        });
       }
 
       /** <div [myDir]="myComp"></div><comp #myComp></comp> */
       function Template(ctx: any, cm: boolean) {
         if (cm) {
-          E(0, 'div', null, [MyDir]);
-          e();
-          E(2, MyComponent);
-          e();
+          elementStart(0, 'div', ['myDir', '']);
+          elementEnd();
+          elementStart(1, 'comp', null, ['myComp', '']);
+          elementEnd();
         }
-        p(0, 'myDir', b(m<MyComponent>(3)));
+        // TODO: replace loadDirective when removing directive refs
+        elementProperty(0, 'myDir', bind(loadDirective<MyComponent>(1)));
       }
 
-      renderToHtml(Template, {});
+      renderToHtml(Template, {}, [MyComponent.ngComponentDef, MyDir.ngDirectiveDef]);
       expect(myDir !.myDir).toEqual(myComponent !);
     });
 
@@ -220,17 +241,18 @@ describe('exports', () => {
        */
       function Template(ctx: any, cm: boolean) {
         if (cm) {
-          T(0);
-          T(1);
-          E(2, MyComponent);
-          e();
-          E(4, 'input', ['value', 'one']);
-          e();
+          text(0);
+          text(1);
+          elementStart(2, 'comp', null, ['myComp', '']);
+          elementEnd();
+          elementStart(3, 'input', ['value', 'one'], ['myInput', '']);
+          elementEnd();
         }
-        let myInput = E(4);
-        let myComp = m(3) as MyComponent;
-        t(0, b(myInput && (myInput as any).value));
-        t(1, b(myComp && myComp.name));
+        let myInput = elementStart(3);
+        // TODO: replace loadDirective when removing directive refs
+        let myComp = loadDirective<MyComponent>(0);
+        textBinding(0, bind(myInput && (myInput as any).value));
+        textBinding(1, bind(myComp && myComp.name));
       }
 
       let myComponent: MyComponent;
@@ -242,38 +264,39 @@ describe('exports', () => {
 
         static ngComponentDef = defineComponent({
           type: MyComponent,
-          tag: 'comp',
+          selector: [[['comp'], null]],
           template: function() {},
           factory: () => new MyComponent
         });
       }
-      expect(renderToHtml(Template, {})).toEqual('oneNancy<comp></comp><input value="one">');
+      expect(renderToHtml(Template, {}, [MyComponent.ngComponentDef]))
+          .toEqual('oneNancy<comp></comp><input value="one">');
     });
 
     it('should work inside a view container', () => {
       function Template(ctx: any, cm: boolean) {
         if (cm) {
-          E(0, 'div');
-          { C(1); }
-          e();
+          elementStart(0, 'div');
+          { container(1); }
+          elementEnd();
         }
-        cR(1);
+        containerRefreshStart(1);
         {
           if (ctx.condition) {
-            let cm1 = V(1);
+            let cm1 = embeddedViewStart(1);
             {
               if (cm1) {
-                T(0);
-                E(1, 'input', ['value', 'one']);
-                e();
+                text(0);
+                elementStart(1, 'input', ['value', 'one'], ['myInput', '']);
+                elementEnd();
               }
-              let myInput = E(1);
-              t(0, b(myInput && (myInput as any).value));
+              let myInput = elementStart(1);
+              textBinding(0, bind(myInput && (myInput as any).value));
             }
-            v();
+            embeddedViewEnd();
           }
         }
-        cr();
+        containerRefreshEnd();
       }
 
       expect(renderToHtml(Template, {

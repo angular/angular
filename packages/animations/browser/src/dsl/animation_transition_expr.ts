@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 export const ANY_STATE = '*';
-export declare type TransitionMatcherFn = (fromState: any, toState: any) => boolean;
+export declare type TransitionMatcherFn =
+    (fromState: any, toState: any, element: any, params: {[key: string]: any}) => boolean;
 
 export function parseTransitionExpr(
     transitionValue: string | TransitionMatcherFn, errors: string[]): TransitionMatcherFn[] {

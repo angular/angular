@@ -1,3 +1,6 @@
+// TODO(i): this no longer works. we need to review this example and if absolutely necessary rewrite it to use the
+// rxjs-compat package
+
 // #docregion
 // Angular
 import '@angular/platform-browser';

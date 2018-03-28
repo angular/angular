@@ -13,12 +13,11 @@ const globals = {
   '@angular/core': 'ng.core',
   '@angular/common': 'ng.common',
   '@angular/platform-browser': 'ng.platformBrowser',
-  'rxjs/Observable': 'Rx',
-  'rxjs/Subject': 'Rx'
+  'rxjs': 'rxjs',
 };
 
 module.exports = {
-  entry: '../../dist/packages-dist/platform-webworker/esm5/platform-webworker.js',
+  entry: '../../dist/packages-dist/platform-webworker/fesm5/platform-webworker.js',
   dest: '../../dist/packages-dist/platform-webworker/bundles/platform-webworker.umd.js',
   format: 'umd',
   exports: 'named',

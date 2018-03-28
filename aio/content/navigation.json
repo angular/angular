@@ -122,14 +122,39 @@
     },
 
     {
-      "url": "guide/architecture",
       "title": "기초",
       "tooltip": "Angular 기초",
       "children": [
         {
-          "url": "guide/architecture",
           "title": "아키텍처",
-          "tooltip": "Angular 애플리케이션을 구성하는 기본 요소"
+          "tooltip": "Angular 애플리케이션을 구성하는 기본 요소",
+          "children": [
+            {
+              "url": "guide/architecture",
+              "title": "개요",
+              "tooltip": "Angular 애플리케이션을 구성하는 기본 요소"
+            },
+            {
+              "url": "guide/architecture-modules",
+              "title": "Intro to Modules",
+              "tooltip": "About NgModules."
+            },
+            {
+              "url": "guide/architecture-components",
+              "title": "Intro to Components",
+              "tooltip": "About Components, Templates, and Views."
+            },
+            {
+              "url": "guide/architecture-services",
+              "title": "Intro to Services and DI",
+              "tooltip": "About services and dependency injection."
+            },
+            {
+              "url": "guide/architecture-next-steps",
+              "title": "Next Steps",
+              "tooltip": "Beyond the basics."
+            }
+          ]
         },
         {
           "title": "템플릿 & 데이터 바인딩",
@@ -169,6 +194,11 @@
               "url": "guide/attribute-directives",
               "title": "어트리뷰트 디렉티브",
               "tooltip": "어트리뷰트 디렉티브는 DOM 엘리먼트의 속성을 정의합니다."
+            },
+            {
+              "url": "guide/structural-directives",
+              "title": "Structural Directives",
+              "tooltip": "Structural directives manipulate the layout of the page."
             },
             {
               "url": "guide/pipes",
@@ -214,11 +244,44 @@
           ]
         },
         {
+          "title": "Observables & RxJS",
+          "tooltip": "Observables & RxJS",
+          "children": [
+            {
+              "url": "guide/observables",
+              "title": "Observables",
+              "tooltip": ""
+            },
+            {
+              "url": "guide/rx-library",
+              "title": "The RxJS Library",
+              "tooltip": ""
+            },
+            {
+              "url": "guide/observables-in-angular",
+              "title": "Observables in Angular",
+              "tooltip": ""
+            },
+            {
+              "url": "guide/practical-observable-usage",
+              "title": "Practical Usage",
+              "tooltip": ""
+            },
+            {
+              "url": "guide/comparing-observables",
+              "title": "Compare to Other Techniques",
+              "tooltip": ""
+            }
+          ]
+        },
+
+        {
           "url": "guide/bootstrapping",
           "title": "부트스트랩",
           "tooltip": "Angular가 \"AppModule\"을 어떻게 구성하고 실행하는지 알아봅니다."
         },
         {
+
           "title": "NgModule",
           "tooltip": "NgModule을 사용해서 앱을 모듈화 하세요.",
           "children": [
@@ -394,6 +457,11 @@
               "tooltip": "Angular 앱 배포하기"
             }
           ]
+        },
+        {
+          "url": "guide/custom-elements",
+          "title": "Custom Elements",
+          "tooltip": "Using Angular Components as Custom Elements."
         },
         {
           "title": "서비스 워커",

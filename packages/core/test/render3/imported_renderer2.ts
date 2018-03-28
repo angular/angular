@@ -8,34 +8,16 @@
 
 import {ɵAnimationEngine, ɵNoopAnimationStyleNormalizer} from '@angular/animations/browser';
 import {MockAnimationDriver} from '@angular/animations/browser/testing';
-import {EventEmitter, NgZone, RendererFactory2} from '@angular/core';
-import {EventManager, ɵDomEventsPlugin, ɵDomRendererFactory2, ɵDomSharedStylesHost} from '@angular/platform-browser';
+import {NgZone, RendererFactory2} from '@angular/core';
+import {EventManager, ɵDomRendererFactory2, ɵDomSharedStylesHost} from '@angular/platform-browser';
 import {ɵAnimationRendererFactory} from '@angular/platform-browser/animations';
+import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
+import {EventManagerPlugin} from '@angular/platform-browser/src/dom/events/event_manager';
 
+import {NoopNgZone} from '../../src/zone/ng_zone';
 
-// Adapted renderer: it creates a Renderer2 instance and adapts it to Renderer3
-// TODO: remove once this code is in angular/angular
-export class NoopNgZone implements NgZone {
-  readonly hasPendingMicrotasks: boolean = false;
-  readonly hasPendingMacrotasks: boolean = false;
-  readonly isStable: boolean = true;
-  readonly onUnstable: EventEmitter<any> = new EventEmitter();
-  readonly onMicrotaskEmpty: EventEmitter<any> = new EventEmitter();
-  readonly onStable: EventEmitter<any> = new EventEmitter();
-  readonly onError: EventEmitter<any> = new EventEmitter();
-
-  run(fn: () => any): any { return fn(); }
-
-  runGuarded(fn: () => any): any { return fn(); }
-
-  runOutsideAngular(fn: () => any): any { return fn(); }
-
-  runTask<T>(fn: () => any): T { return fn(); }
-}
-
-// TODO: remove once this code is in angular/angular
-export class SimpleDomEventsPlugin extends ɵDomEventsPlugin {
-  constructor(doc: any, ngZone: NgZone) { super(doc, ngZone); }
+export class SimpleDomEventsPlugin extends EventManagerPlugin {
+  constructor(doc: any) { super(doc); }
 
   supports(eventName: string): boolean { return true; }
 
@@ -52,8 +34,7 @@ export class SimpleDomEventsPlugin extends ɵDomEventsPlugin {
 
 export function getRendererFactory2(document: any): RendererFactory2 {
   const fakeNgZone: NgZone = new NoopNgZone();
-  const eventManager =
-      new EventManager([new SimpleDomEventsPlugin(document, fakeNgZone)], fakeNgZone);
+  const eventManager = new EventManager([new SimpleDomEventsPlugin(document)], fakeNgZone);
   return new ɵDomRendererFactory2(eventManager, new ɵDomSharedStylesHost(document));
 }
 
@@ -64,3 +45,58 @@ export function getAnimationRendererFactory2(document: any): RendererFactory2 {
       new ɵAnimationEngine(new MockAnimationDriver(), new ɵNoopAnimationStyleNormalizer()),
       fakeNgZone);
 }
+
+// TODO: code duplicated from ../linker/change_detection_integration_spec.ts, to be removed
+// START duplicated code
+export class RenderLog {
+  log: string[] = [];
+  loggedValues: any[] = [];
+
+  setElementProperty(el: any, propName: string, propValue: any) {
+    this.log.push(`${propName}=${propValue}`);
+    this.loggedValues.push(propValue);
+  }
+
+  setText(node: any, value: string) {
+    this.log.push(`{{${value}}}`);
+    this.loggedValues.push(value);
+  }
+
+  clear() {
+    this.log = [];
+    this.loggedValues = [];
+  }
+}
+
+/**
+ * This function patches the DomRendererFactory2 so that it returns a DefaultDomRenderer2
+ * which logs some of the DOM operations through a RenderLog instance.
+ */
+export function patchLoggingRenderer2(rendererFactory: RendererFactory2, log: RenderLog) {
+  if ((<any>rendererFactory).__patchedForLogging) {
+    return;
+  }
+  (<any>rendererFactory).__patchedForLogging = true;
+  const origCreateRenderer = rendererFactory.createRenderer;
+  rendererFactory.createRenderer = function() {
+    const renderer = origCreateRenderer.apply(this, arguments);
+    if ((<any>renderer).__patchedForLogging) {
+      return renderer;
+    }
+    (<any>renderer).__patchedForLogging = true;
+    const origSetProperty = renderer.setProperty;
+    const origSetValue = renderer.setValue;
+    renderer.setProperty = function(el: any, name: string, value: any): void {
+      log.setElementProperty(el, name, value);
+      origSetProperty.call(renderer, el, name, value);
+    };
+    renderer.setValue = function(node: any, value: string): void {
+      if (getDOM().isTextNode(node)) {
+        log.setText(node, value);
+      }
+      origSetValue.call(renderer, node, value);
+    };
+    return renderer;
+  };
+}
+// END duplicated code

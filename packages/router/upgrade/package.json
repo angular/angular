@@ -2,6 +2,11 @@
   "name": "@angular/router/upgrade",
   "typings": "./upgrade.d.ts",
   "main": "../bundles/router-upgrade.umd.js",
-  "module": "../esm5/upgrade.js",
-  "es2015": "../esm2015/upgrade.js"
+  "module": "../fesm5/upgrade.js",
+  "es2015": "../fesm2015/upgrade.js",
+  "esm5": "../esm5/upgrade/upgrade.js",
+  "esm2015": "../esm2015/upgrade/upgrade.js",
+  "fesm5": "../fesm5/upgrade.js",
+  "fesm2015": "../fesm2015/upgrade.js",
+  "sideEffects": false
 }

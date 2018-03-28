@@ -16,7 +16,7 @@ try {
   const lsf = require('@angular/language-service');
   const ls = lsf({typescript: ts});
 
-  // Assert that the only module that should have been required are '@angular/langauge-service', 'fs', and 'path'
+  // Assert that the only module that should have been required are '@angular/language-service', 'fs', and 'path'
 
   const allowedLoads = new Set(["@angular/language-service", "fs", "path"]);
 

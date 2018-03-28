@@ -104,6 +104,7 @@ export class MockIdentifier extends MockNode implements ts.Identifier {
   public text: string;
   public escapedText: ts.__String;
   // tslint:disable
+  public _declarationBrand: any;
   public _primaryExpressionBrand: any;
   public _memberExpressionBrand: any;
   public _leftHandSideExpressionBrand: any;

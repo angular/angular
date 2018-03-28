@@ -20,10 +20,6 @@
     transform: none;
   }
 
-  h1:after {
-   content: none;
-  }
-
   .hero-title {
     display: inline-block;
     font-size: 28px;
@@ -125,6 +121,7 @@ section#intro {
 .announcement-bar {
   display: flex;
   flex-direction: row;
+  flex-wrap: wrap;
   justify-content: space-around;
   align-items: center;
   max-width: 50vw;

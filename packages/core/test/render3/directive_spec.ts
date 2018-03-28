@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {E, b, defineDirective, e, m, p, r} from '../../src/render3/index';
+import {defineDirective} from '../../src/render3/index';
+import {bind, elementEnd, elementProperty, elementStart, loadDirective} from '../../src/render3/instructions';
 
 import {renderToHtml} from './render_util';
 
@@ -21,25 +22,26 @@ describe('directive', () => {
         klass = 'foo';
         static ngDirectiveDef = defineDirective({
           type: Directive,
+          selector: [[['', 'dir', ''], null]],
           factory: () => directiveInstance = new Directive,
           hostBindings: (directiveIndex: number, elementIndex: number) => {
-            p(elementIndex, 'className', b(m<Directive>(directiveIndex).klass));
+            elementProperty(
+                elementIndex, 'className', bind(loadDirective<Directive>(directiveIndex).klass));
           }
         });
       }
 
       function Template(ctx: any, cm: boolean) {
         if (cm) {
-          E(0, 'span', null, [Directive]);
-          e();
+          elementStart(0, 'span', ['dir', '']);
+          elementEnd();
         }
-        Directive.ngDirectiveDef.h(1, 0);
-        r(1, 0);
       }
 
-      expect(renderToHtml(Template, {})).toEqual('<span class="foo"></span>');
+      const defs = [Directive.ngDirectiveDef];
+      expect(renderToHtml(Template, {}, defs)).toEqual('<span class="foo" dir=""></span>');
       directiveInstance !.klass = 'bar';
-      expect(renderToHtml(Template, {})).toEqual('<span class="bar"></span>');
+      expect(renderToHtml(Template, {}, defs)).toEqual('<span class="bar" dir=""></span>');
     });
 
   });

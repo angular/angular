@@ -3,13 +3,17 @@
   "version": "0.0.0-PLACEHOLDER",
   "description": "Angular - library for using Angular in a web browser with web workers",
   "main": "./bundles/platform-webworker-dynamic.umd.js",
-  "module": "./esm5/platform-webworker-dynamic.js",
-  "es2015": "./esm2015/platform-webworker-dynamic.js",
+  "module": "./fesm5/platform-webworker-dynamic.js",
+  "es2015": "./fesm2015/platform-webworker-dynamic.js",
+  "esm5": "./esm5/platform-webworker-dynamic.js",
+  "esm2015": "./esm2015/platform-webworker-dynamic.js",
+  "fesm5": "./fesm5/platform-webworker-dynamic.js",
+  "fesm2015": "./fesm2015/platform-webworker-dynamic.js",
   "typings": "./platform-webworker-dynamic.d.ts",
   "author": "angular",
   "license": "MIT",
   "dependencies": {
-    "tslib": "^1.7.1"
+    "tslib": "^1.9.0"
   },
   "peerDependencies": {
     "@angular/common": "0.0.0-PLACEHOLDER",
@@ -21,5 +25,9 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/angular/angular.git"
-  }
+  },
+  "ng-update": {
+    "packageGroup": "NG_UPDATE_PACKAGE_GROUP"
+  },
+  "sideEffects": false
 }

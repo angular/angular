@@ -30,7 +30,6 @@
 /** HACK: force import of environment.ts/environment.prod.ts to load env specific polyfills */
 import './environments/environment';
 
-
 /** ALL Firefox browsers require the following to support `@angular/animation`. **/
 // import 'web-animations-js';  // Run `npm install --save web-animations-js`.
 

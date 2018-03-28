@@ -294,7 +294,7 @@ export class ProviderElementContext {
             this.viewContext.viewProviders.get(tokenReference(dep.token !)) != null) {
           result = dep;
         } else {
-          result = dep.isOptional ? result = {isValue: true, value: null} : null;
+          result = dep.isOptional ? {isValue: true, value: null} : null;
         }
       }
     }
@@ -321,11 +321,12 @@ export class NgModuleProviderAnalyzer {
       const ngModuleProvider = {token: {identifier: ngModuleType}, useClass: ngModuleType};
       _resolveProviders(
           [ngModuleProvider], ProviderAstType.PublicService, true, sourceSpan, this._errors,
-          this._allProviders);
+          this._allProviders, /* isModule */ true);
     });
     _resolveProviders(
         ngModule.transitiveModule.providers.map(entry => entry.provider).concat(extraProviders),
-        ProviderAstType.PublicService, false, sourceSpan, this._errors, this._allProviders);
+        ProviderAstType.PublicService, false, sourceSpan, this._errors, this._allProviders,
+        /* isModule */ false);
   }
 
   parse(): ProviderAst[] {
@@ -415,16 +416,7 @@ export class NgModuleProviderAnalyzer {
         foundLocal = true;
       }
     }
-    let result: CompileDiDependencyMetadata = dep;
-    if (dep.isSelf && !foundLocal) {
-      if (dep.isOptional) {
-        result = {isValue: true, value: null};
-      } else {
-        this._errors.push(
-            new ProviderError(`No provider for ${tokenName(dep.token!)}`, requestorSourceSpan));
-      }
-    }
-    return result;
+    return dep;
   }
 }
 
@@ -448,7 +440,7 @@ function _transformProviderAst(
     {eager, providers}: {eager: boolean, providers: CompileProviderMetadata[]}): ProviderAst {
   return new ProviderAst(
       provider.token, provider.multiProvider, provider.eager || eager, providers,
-      provider.providerType, provider.lifecycleHooks, provider.sourceSpan);
+      provider.providerType, provider.lifecycleHooks, provider.sourceSpan, provider.isModule);
 }
 
 function _resolveProvidersFromDirectives(
@@ -461,7 +453,7 @@ function _resolveProvidersFromDirectives(
     _resolveProviders(
         [dirProvider],
         directive.isComponent ? ProviderAstType.Component : ProviderAstType.Directive, true,
-        sourceSpan, targetErrors, providersByToken);
+        sourceSpan, targetErrors, providersByToken, /* isModule */ false);
   });
 
   // Note: directives need to be able to overwrite providers of a component!
@@ -470,10 +462,10 @@ function _resolveProvidersFromDirectives(
   directivesWithComponentFirst.forEach((directive) => {
     _resolveProviders(
         directive.providers, ProviderAstType.PublicService, false, sourceSpan, targetErrors,
-        providersByToken);
+        providersByToken, /* isModule */ false);
     _resolveProviders(
         directive.viewProviders, ProviderAstType.PrivateService, false, sourceSpan, targetErrors,
-        providersByToken);
+        providersByToken, /* isModule */ false);
   });
   return providersByToken;
 }
@@ -481,7 +473,7 @@ function _resolveProvidersFromDirectives(
 function _resolveProviders(
     providers: CompileProviderMetadata[], providerType: ProviderAstType, eager: boolean,
     sourceSpan: ParseSourceSpan, targetErrors: ParseError[],
-    targetProvidersByToken: Map<any, ProviderAst>) {
+    targetProvidersByToken: Map<any, ProviderAst>, isModule: boolean) {
   providers.forEach((provider) => {
     let resolvedProvider = targetProvidersByToken.get(tokenReference(provider.token));
     if (resolvedProvider != null && !!resolvedProvider.multiProvider !== !!provider.multi) {
@@ -497,7 +489,7 @@ function _resolveProviders(
       const isUseValue = !(provider.useClass || provider.useExisting || provider.useFactory);
       resolvedProvider = new ProviderAst(
           provider.token, !!provider.multi, eager || isUseValue, [provider], providerType,
-          lifecycleHooks, sourceSpan);
+          lifecycleHooks, sourceSpan, isModule);
       targetProvidersByToken.set(tokenReference(provider.token), resolvedProvider);
     } else {
       if (!provider.multi) {

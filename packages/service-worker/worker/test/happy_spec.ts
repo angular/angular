@@ -527,7 +527,7 @@ const manifestUpdateHash = sha1(JSON.stringify(manifestUpdate));
       expect(await driver.checkForUpdate()).toEqual(true);
       serverUpdate.assertSawRequestFor('/quux.txt');
       serverUpdate.clearRequests();
-      driver.updateClient(await scope.clients.get('default'));
+      await driver.updateClient(await scope.clients.get('default'));
       expect(await makeRequest(scope, '/quux.txt')).toEqual('this is quux v2');
       serverUpdate.assertNoOtherRequests();
     });

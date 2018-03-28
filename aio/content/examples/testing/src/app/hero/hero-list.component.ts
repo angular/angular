@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { Router }            from '@angular/router';
 
+import { Observable } from 'rxjs';
+
 import { Hero } from '../model/hero';
 import { HeroService } from '../model/hero.service';
 
@@ -10,7 +12,7 @@ import { HeroService } from '../model/hero.service';
   styleUrls: [ './hero-list.component.css' ]
 })
 export class HeroListComponent implements OnInit {
-  heroes: Promise<Hero[]>;
+  heroes: Observable<Hero[]>;
   selectedHero: Hero;
 
   constructor(

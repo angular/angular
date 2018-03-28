@@ -103,7 +103,7 @@ import {makeTrigger} from '../shared';
       it('should null when no results are found', () => {
         const result = makeTrigger('name', [transition('a => b', animate(1111))]);
 
-        const trigger = result.matchTransition('b', 'a');
+        const trigger = result.matchTransition('b', 'a', {}, {});
         expect(trigger).toBeFalsy();
       });
 
@@ -143,18 +143,22 @@ import {makeTrigger} from '../shared';
           expect(keyframes).toEqual([{height: '100px', offset: 0}, {height: '200px', offset: 1}]);
         });
 
-        it('should subtitute variable params provided directly within the transition match', () => {
-          const result = makeTrigger(
-              'name',
-              [transition(
-                  'a => b', [style({height: '{{ a }}'}), animate(1000, style({height: '{{ b }}'}))],
-                  buildParams({a: '100px', b: '200px'}))]);
+        it('should substitute variable params provided directly within the transition match',
+           () => {
+             const result = makeTrigger(
+                 'name',
+                 [transition(
+                     'a => b',
+                     [style({height: '{{ a }}'}), animate(1000, style({height: '{{ b }}'}))],
+                     buildParams({a: '100px', b: '200px'}))]);
 
-          const trans = buildTransition(result, element, 'a', 'b', {}, buildParams({a: '300px'})) !;
+             const trans =
+                 buildTransition(result, element, 'a', 'b', {}, buildParams({a: '300px'})) !;
 
-          const keyframes = trans.timelines[0].keyframes;
-          expect(keyframes).toEqual([{height: '300px', offset: 0}, {height: '200px', offset: 1}]);
-        });
+             const keyframes = trans.timelines[0].keyframes;
+             expect(keyframes).toEqual(
+                 [{height: '300px', offset: 0}, {height: '200px', offset: 1}]);
+           });
       });
 
       it('should match `true` and `false` given boolean values', () => {
@@ -203,6 +207,17 @@ import {makeTrigger} from '../shared';
            ]);
          });
 
+      it('should treat numeric values (disguised as strings) as proper state values', () => {
+        const result = makeTrigger('name', [
+          state(1 as any as string, style({opacity: 0})),
+          state(0 as any as string, style({opacity: 0})), transition('* => *', animate(1000))
+        ]);
+
+        expect(() => {
+          const trans = buildTransition(result, element, false, true) !;
+        }).not.toThrow();
+      });
+
       describe('aliases', () => {
         it('should alias the :enter transition as void => *', () => {
           const result = makeTrigger('name', [transition(':enter', animate(3333))]);
@@ -226,7 +241,8 @@ function buildTransition(
     trigger: AnimationTrigger, element: any, fromState: any, toState: any,
     fromOptions?: AnimationOptions, toOptions?: AnimationOptions): AnimationTransitionInstruction|
     null {
-  const trans = trigger.matchTransition(fromState, toState) !;
+  const params = toOptions && toOptions.params || {};
+  const trans = trigger.matchTransition(fromState, toState, element, params) !;
   if (trans) {
     const driver = new MockAnimationDriver();
     return trans.build(

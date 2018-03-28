@@ -11,19 +11,23 @@
  */
 export abstract class ChangeDetectorRef {
   /**
-   * Marks all {@link ChangeDetectionStrategy#OnPush OnPush} ancestors as to be checked.
+   * Marks a view and all of its ancestors dirty.
+   *
+   * This can be used to ensure an {@link ChangeDetectionStrategy#OnPush OnPush} component is
+   * checked when it needs to be re-rendered but the two normal triggers haven't marked it
+   * dirty (i.e. inputs haven't changed and events haven't fired in the view).
    *
    * <!-- TODO: Add a link to a chapter on OnPush components -->
    *
-   * ### Example ([live demo](http://plnkr.co/edit/GC512b?p=preview))
+   * ### Example ([live demo](https://stackblitz.com/edit/angular-kx7rrw))
    *
    * ```typescript
    * @Component({
-   *   selector: 'cmp',
-   *   changeDetection: ChangeDetectionStrategy.OnPush,
+   *   selector: 'my-app',
    *   template: `Number of ticks: {{numberOfTicks}}`
+   *   changeDetection: ChangeDetectionStrategy.OnPush,
    * })
-   * class Cmp {
+   * class AppComponent {
    *   numberOfTicks = 0;
    *
    *   constructor(private ref: ChangeDetectorRef) {
@@ -34,27 +38,17 @@ export abstract class ChangeDetectorRef {
    *     }, 1000);
    *   }
    * }
-   *
-   * @Component({
-   *   selector: 'app',
-   *   changeDetection: ChangeDetectionStrategy.OnPush,
-   *   template: `
-   *     <cmp><cmp>
-   *   `,
-   * })
-   * class App {
-   * }
    * ```
    */
   abstract markForCheck(): void;
 
   /**
-   * Detaches the change detector from the change detector tree.
+   * Detaches the view from the change detection tree.
    *
-   * The detached change detector will not be checked until it is reattached.
-   *
-   * This can also be used in combination with {@link ChangeDetectorRef#detectChanges detectChanges}
-   * to implement local change detection checks.
+   * Detached views will not be checked during change detection runs until they are
+   * re-attached, even if they are dirty. `detach` can be used in combination with
+   * {@link ChangeDetectorRef#detectChanges detectChanges} to implement local change
+   * detection checks.
    *
    * <!-- TODO: Add a link to a chapter on detach/reattach/local digest -->
    * <!-- TODO: Add a live demo once ref.detectChanges is merged into master -->
@@ -103,7 +97,7 @@ export abstract class ChangeDetectorRef {
   abstract detach(): void;
 
   /**
-   * Checks the change detector and its children.
+   * Checks the view and its children.
    *
    * This can also be used in combination with {@link ChangeDetectorRef#detach detach} to implement
    * local change detection checks.
@@ -118,8 +112,7 @@ export abstract class ChangeDetectorRef {
    * we want to check and update the list every five seconds.
    *
    * We can do that by detaching the component's change detector and doing a local change detection
-   * check
-   * every five seconds.
+   * check every five seconds.
    *
    * See {@link ChangeDetectorRef#detach detach} for more information.
    */
@@ -134,14 +127,14 @@ export abstract class ChangeDetectorRef {
   abstract checkNoChanges(): void;
 
   /**
-   * Reattach the change detector to the change detector tree.
+   * Re-attaches the view to the change detection tree.
    *
-   * This also marks OnPush ancestors as to be checked. This reattached change detector will be
-   * checked during the next change detection run.
+   * This can be used to re-attach views that were previously detached from the tree
+   * using {@link ChangeDetectorRef#detach detach}. Views are attached to the tree by default.
    *
    * <!-- TODO: Add a link to a chapter on detach/reattach/local digest -->
    *
-   * ### Example ([live demo](http://plnkr.co/edit/aUhZha?p=preview))
+   * ### Example ([live demo](https://stackblitz.com/edit/angular-ymgsxw))
    *
    * The following example creates a component displaying `live` data. The component will detach
    * its change detector from the main change detector tree when the component's live property
@@ -176,14 +169,14 @@ export abstract class ChangeDetectorRef {
    * }
    *
    * @Component({
-   *   selector: 'app',
+   *   selector: 'my-app',
    *   providers: [DataProvider],
    *   template: `
    *     Live Update: <input type="checkbox" [(ngModel)]="live">
    *     <live-data [live]="live"><live-data>
    *   `,
    * })
-   * class App {
+   * class AppComponent {
    *   live = true;
    * }
    * ```

@@ -15,12 +15,12 @@
     "typescript": "file:../../node_modules/typescript"
   },
   "devDependencies": {
+    "@angular-devkit/build-optimizer": "0.3.1",
     "@types/jasmine": "2.5.41",
     "concurrently": "3.5.1",
     "lite-server": "2.3.0",
     "protractor": "file:../../node_modules/protractor",
     "rollup": "0.55.3",
-    "rollup-plugin-angular-optimizer": "0.2.0",
     "rollup-plugin-node-resolve": "3.0.2",
     "rollup-plugin-paths": "0.0.3",
     "rollup-plugin-uglify": "2.0.1"

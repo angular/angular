@@ -27,4 +27,6 @@ if (typeof window == 'undefined') {
   // For animation tests, see
   // https://github.com/angular/angular/blob/master/packages/animations/browser/src/render/shared.ts#L140
   (global as any).Element = domino.impl.Element;
+  (global as any).isBrowser = false;
+  (global as any).isNode = true;
 }

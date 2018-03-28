@@ -13,7 +13,7 @@ import {extractSourceMap, originalPositionFor} from '@angular/compiler/testing/s
 import {NodeFlags} from '@angular/core/src/view/index';
 import * as ts from 'typescript';
 
-import {EmittingCompilerHost, MockAotCompilerHost, MockCompilerHost, MockDirectory, MockMetadataBundlerHost, arrayToMockDir, compile, expectNoDiagnostics, settings, setup, toMockFileArray} from './test_util';
+import {EmittingCompilerHost, MockAotCompilerHost, MockCompilerHost, MockDirectory, MockMetadataBundlerHost, arrayToMockDir, compile, expectNoDiagnostics, isInBazel, settings, setup, toMockFileArray} from './test_util';
 
 describe('compiler (unbundled Angular)', () => {
   let angularFiles = setup();
@@ -208,7 +208,7 @@ describe('compiler (unbundled Angular)', () => {
 
     });
 
-    it('should error if not all arguments of an @Injectable class can be resolved if strictInjectionParamters is true',
+    it('should error if not all arguments of an @Injectable class can be resolved if strictInjectionParameters is true',
        () => {
          const FILES: MockDirectory = {
            app: {
@@ -279,7 +279,7 @@ describe('compiler (unbundled Angular)', () => {
       };
       compile([FILES, angularFiles], {
         postCompile: program => {
-          const factorySource = program.getSourceFile('/app/app.ngfactory.ts');
+          const factorySource = program.getSourceFile('/app/app.ngfactory.ts') !;
           expect(factorySource.text).not.toContain('\'/app/app.ngfactory\'');
         }
       });
@@ -872,30 +872,31 @@ describe('compiler (unbundled Angular)', () => {
 });
 
 describe('compiler (bundled Angular)', () => {
-  setup({compileAngular: false, compileAnimations: false});
-
-  let angularFiles: Map<string, string>;
+  let angularFiles: Map<string, string> = setup();
 
   beforeAll(() => {
-    const emittingHost = new EmittingCompilerHost(['@angular/core/index'], {emitMetadata: false});
+    if (!isInBazel()) {
+      // If we are not using Bazel then we need to build these files explicitly
+      const emittingHost = new EmittingCompilerHost(['@angular/core/index'], {emitMetadata: false});
 
-    // Create the metadata bundled
-    const indexModule = emittingHost.effectiveName('@angular/core/index');
-    const bundler = new MetadataBundler(
-        indexModule, '@angular/core', new MockMetadataBundlerHost(emittingHost));
-    const bundle = bundler.getMetadataBundle();
-    const metadata = JSON.stringify(bundle.metadata, null, ' ');
-    const bundleIndexSource = privateEntriesToIndex('./index', bundle.privates);
-    emittingHost.override('@angular/core/bundle_index.ts', bundleIndexSource);
-    emittingHost.addWrittenFile(
-        '@angular/core/package.json', JSON.stringify({typings: 'bundle_index.d.ts'}));
-    emittingHost.addWrittenFile('@angular/core/bundle_index.metadata.json', metadata);
+      // Create the metadata bundled
+      const indexModule = emittingHost.effectiveName('@angular/core/index');
+      const bundler = new MetadataBundler(
+          indexModule, '@angular/core', new MockMetadataBundlerHost(emittingHost));
+      const bundle = bundler.getMetadataBundle();
+      const metadata = JSON.stringify(bundle.metadata, null, ' ');
+      const bundleIndexSource = privateEntriesToIndex('./index', bundle.privates);
+      emittingHost.override('@angular/core/bundle_index.ts', bundleIndexSource);
+      emittingHost.addWrittenFile(
+          '@angular/core/package.json', JSON.stringify({typings: 'bundle_index.d.ts'}));
+      emittingHost.addWrittenFile('@angular/core/bundle_index.metadata.json', metadata);
 
-    // Emit the sources
-    const bundleIndexName = emittingHost.effectiveName('@angular/core/bundle_index.ts');
-    const emittingProgram = ts.createProgram([bundleIndexName], settings, emittingHost);
-    emittingProgram.emit();
-    angularFiles = emittingHost.writtenAngularFiles();
+      // Emit the sources
+      const bundleIndexName = emittingHost.effectiveName('@angular/core/bundle_index.ts');
+      const emittingProgram = ts.createProgram([bundleIndexName], settings, emittingHost);
+      emittingProgram.emit();
+      angularFiles = emittingHost.writtenAngularFiles();
+    }
   });
 
   describe('Quickstart', () => {
@@ -921,6 +922,11 @@ describe('compiler (bundled Angular)', () => {
       // Emit the library bundle
       const emittingHost =
           new EmittingCompilerHost(['/bolder/index.ts'], {emitMetadata: false, mockData: LIBRARY});
+
+      if (isInBazel()) {
+        // In bazel we can just add the angular files from the ones read during setup.
+        emittingHost.addFiles(angularFiles);
+      }
 
       // Create the metadata bundled
       const indexModule = '/bolder/public-api';
