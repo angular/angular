@@ -45,7 +45,7 @@ def ng_module(name, tsconfig = None, entry_point = None, **kwargs):
     entry_point = "public_api.ts"
   _ng_module(name = name, flat_module_out_file = name, tsconfig = tsconfig, entry_point = entry_point, **kwargs)
 
-def ng_package(name, readme_md = None, license_banner = None, **kwargs):
+def ng_package(name, readme_md = None, license_banner = None, globals = {}, **kwargs):
   if not readme_md:
     readme_md = "//packages:README.md"
   if not license_banner:
@@ -55,6 +55,9 @@ def ng_package(name, readme_md = None, license_banner = None, **kwargs):
       name = name,
       readme_md = readme_md,
       license_banner = license_banner,
+      globals = dict(globals, **{
+        "tslib": "tslib"
+      }),
       replacements = PKG_GROUP_REPLACEMENTS,
       **kwargs)
 
