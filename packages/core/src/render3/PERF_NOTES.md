@@ -15,7 +15,7 @@ shown here: https://jsperf.com/small-arrays-vs-linked-objects
 
 Great read: [What's up with monomorphism?](http://mrale.ph/blog/2015/01/11/whats-up-with-monomorphism.html)
 
-1) Monomorphic prop access is 100 times faster then megamorphic.
+1) Monomorphic prop access is 100 times faster than megamorphic.
 2) Monomorphic call is 4 times faster the megamorphic call.
 
  See benchmark [here](https://jsperf.com/mono-vs-megamorphic-property-access).
