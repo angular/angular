@@ -9,8 +9,8 @@ def _extract_flat_module_index(ctx):
   files = []
   for dep in ctx.attr.deps:
     if hasattr(dep, "angular"):
-      for metadata in dep.angular.flat_module_metadata:
-        files.extend([metadata.metadata_file, metadata.typings_file])
+      metadata = dep.angular.flat_module_metadata
+      files.extend([metadata.metadata_file, metadata.typings_file])
   return [DefaultInfo(files = depset(files))]
 
 extract_flat_module_index = rule(
