@@ -60,8 +60,8 @@ export function compileDirective(
   // e.g. 'type: MyDirective`
   field('type', outputCtx.importExpr(directive.type.reference));
 
-  // e.g. `selector: [[[null, 'someDir', ''], null]]`
-  field('selector', createDirectiveSelector(directive.selector !));
+  // e.g. `selectors: [['', 'someDir', '']]`
+  field('selectors', createDirectiveSelector(directive.selector !));
 
   // e.g. `factory: () => new MyApp(injectElementRef())`
   field('factory', createFactory(directive.type, outputCtx, reflector, directive.queries));
@@ -121,8 +121,8 @@ export function compileComponent(
   // e.g. `type: MyApp`
   field('type', outputCtx.importExpr(component.type.reference));
 
-  // e.g. `selector: [[['my-app'], null]]`
-  field('selector', createDirectiveSelector(component.selector !));
+  // e.g. `selectors: [['my-app']]`
+  field('selectors', createDirectiveSelector(component.selector !));
 
   const selector = component.selector && CssSelector.parse(component.selector);
   const firstSelector = selector && selector[0];
@@ -387,7 +387,7 @@ class TemplateDefinitionBuilder implements TemplateAstVisitor, LocalResolver {
       const contentProjections = getContentProjection(asts, this.ngContentSelectors);
       this._contentProjections = contentProjections;
       if (contentProjections.size > 0) {
-        const infos: R3CssSelector[] = [];
+        const infos: R3CssSelectorList[] = [];
         Array.from(contentProjections.values()).forEach(info => {
           if (info.selector) {
             infos[info.index - 1] = info.selector;
@@ -1097,7 +1097,7 @@ function findComponent(directives: DirectiveAst[]): DirectiveAst|undefined {
 
 interface NgContentInfo {
   index: number;
-  selector?: R3CssSelector;
+  selector?: R3CssSelectorList;
 }
 
 class ContentProjectionVisitor extends RecursiveTemplateAstVisitor {
@@ -1128,28 +1128,67 @@ function getContentProjection(asts: TemplateAst[], ngContentSelectors: string[])
   return projectIndexMap;
 }
 
+
+/**
+ * Flags used to generate R3-style CSS Selectors. They are pasted from
+ * core/src/render3/projection.ts because they cannot be referenced directly.
+ */
+const enum SelectorFlags {
+  /** Indicates this is the beginning of a new negative selector */
+  NOT = 0b0001,
+
+  /** Mode for matching attributes */
+  ATTRIBUTE = 0b0010,
+
+  /** Mode for matching tag names */
+  ELEMENT = 0b0100,
+
+  /** Mode for matching class names */
+  CLASS = 0b1000,
+}
+
 // These are a copy the CSS types from core/src/render3/interfaces/projection.ts
 // They are duplicated here as they cannot be directly referenced from core.
-type R3SimpleCssSelector = (string | null)[];
-type R3CssSelectorWithNegations =
-    [R3SimpleCssSelector, null] | [R3SimpleCssSelector, R3SimpleCssSelector];
-type R3CssSelector = R3CssSelectorWithNegations[];
+type R3CssSelector = (string | SelectorFlags)[];
+type R3CssSelectorList = R3CssSelector[];
 
-function parserSelectorToSimpleSelector(selector: CssSelector): R3SimpleCssSelector {
-  const classes =
-      selector.classNames && selector.classNames.length ? ['class', ...selector.classNames] : [];
-  return [selector.element, ...selector.attrs, ...classes];
+function parserSelectorToSimpleSelector(selector: CssSelector): R3CssSelector {
+  const classes = selector.classNames && selector.classNames.length ?
+      [SelectorFlags.CLASS, ...selector.classNames] :
+      [];
+  const elementName = selector.element && selector.element !== '*' ? selector.element : '';
+  return [elementName, ...selector.attrs, ...classes];
 }
 
-function parserSelectorToR3Selector(selector: CssSelector): R3CssSelectorWithNegations {
+function parserSelectorToNegativeSelector(selector: CssSelector): R3CssSelector {
+  const classes = selector.classNames && selector.classNames.length ?
+      [SelectorFlags.CLASS, ...selector.classNames] :
+      [];
+
+  if (selector.element) {
+    return [
+      SelectorFlags.NOT | SelectorFlags.ELEMENT, selector.element, ...selector.attrs, ...classes
+    ];
+  } else if (selector.attrs.length) {
+    return [SelectorFlags.NOT | SelectorFlags.ATTRIBUTE, ...selector.attrs, ...classes];
+  } else {
+    return selector.classNames && selector.classNames.length ?
+        [SelectorFlags.NOT | SelectorFlags.CLASS, ...selector.classNames] :
+        [];
+  }
+}
+
+function parserSelectorToR3Selector(selector: CssSelector): R3CssSelector {
   const positive = parserSelectorToSimpleSelector(selector);
-  const negative = selector.notSelectors && selector.notSelectors.length &&
-      parserSelectorToSimpleSelector(selector.notSelectors[0]);
 
-  return negative ? [positive, negative] : [positive, null];
+  const negative: R3CssSelectorList = selector.notSelectors && selector.notSelectors.length ?
+      selector.notSelectors.map(notSelector => parserSelectorToNegativeSelector(notSelector)) :
+      [];
+
+  return positive.concat(...negative);
 }
 
-function parseSelectorsToR3Selector(selectors: CssSelector[]): R3CssSelector {
+function parseSelectorsToR3Selector(selectors: CssSelector[]): R3CssSelectorList {
   return selectors.map(parserSelectorToR3Selector);
 }
 
