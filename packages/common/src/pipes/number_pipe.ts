@@ -13,8 +13,9 @@ import {invalidPipeArgumentError} from './invalid_pipe_argument_error';
 
 /**
  * @ngModule CommonModule
- * @whatItDoes Uses the function {@link formatNumber} to format a number according to locale rules.
  * @description
+ *
+ * Uses the function {@link formatNumber} to format a number according to locale rules.
  *
  * Formats a number as text. Group sizing and separator and other locale-specific
  * configurations are based on the locale.
@@ -55,11 +56,10 @@ export class DecimalPipe implements PipeTransform {
 
 /**
  * @ngModule CommonModule
- * @whatItDoes Uses the function {@link formatPercent} to format a number as a percentage according
- * to locale rules.
  * @description
  *
- * Formats a number as percentage.
+ * Uses the function {@link formatPercent} to format a number as a percentage according
+ * to locale rules.
  *
  * Where:
  * - `value` is a number.
@@ -93,11 +93,10 @@ export class PercentPipe implements PipeTransform {
 
 /**
  * @ngModule CommonModule
- * @whatItDoes Uses the functions {@link getCurrencySymbol} and {@link formatCurrency} to format a
- * number as currency using locale rules.
  * @description
  *
- * Use `currency` to format a number as currency.
+ * Uses the functions {@link getCurrencySymbol} and {@link formatCurrency} to format a
+ * number as currency using locale rules.
  *
  * Where:
  * - `value` is a number.

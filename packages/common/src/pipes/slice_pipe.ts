@@ -11,8 +11,9 @@ import {invalidPipeArgumentError} from './invalid_pipe_argument_error';
 
 /**
  * @ngModule CommonModule
- * @whatItDoes Creates a new List or String containing a subset (slice) of the elements.
  * @description
+ *
+ * Creates a new List or String containing a subset (slice) of the elements.
  *
  * Where the input expression is a `List` or `String`, and:
  * - `start`: The starting index of the subset to return.
