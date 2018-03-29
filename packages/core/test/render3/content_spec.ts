@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {SelectorFlags} from '@angular/core/src/render3/interfaces/projection';
+
 import {detectChanges} from '../../src/render3/index';
 import {container, containerRefreshEnd, containerRefreshStart, elementEnd, elementStart, embeddedViewEnd, embeddedViewStart, load, loadDirective, projection, projectionDef, text} from '../../src/render3/instructions';
 
@@ -522,7 +524,7 @@ describe('content projection', () => {
       const Child = createComponent('child', function(ctx: any, cm: boolean) {
         if (cm) {
           projectionDef(
-              0, [[[['span', 'title', 'toFirst'], null]], [[['span', 'title', 'toSecond'], null]]],
+              0, [[['span', 'title', 'toFirst']], [['span', 'title', 'toSecond']]],
               ['span[title=toFirst]', 'span[title=toSecond]']);
           elementStart(1, 'div', ['id', 'first']);
           { projection(2, 0, 1); }
@@ -568,7 +570,11 @@ describe('content projection', () => {
       const Child = createComponent('child', function(ctx: any, cm: boolean) {
         if (cm) {
           projectionDef(
-              0, [[[['span', 'class', 'toFirst'], null]], [[['span', 'class', 'toSecond'], null]]],
+              0,
+              [
+                [['span', SelectorFlags.CLASS, 'toFirst']],
+                [['span', SelectorFlags.CLASS, 'toSecond']]
+              ],
               ['span.toFirst', 'span.toSecond']);
           elementStart(1, 'div', ['id', 'first']);
           { projection(2, 0, 1); }
@@ -614,7 +620,11 @@ describe('content projection', () => {
       const Child = createComponent('child', function(ctx: any, cm: boolean) {
         if (cm) {
           projectionDef(
-              0, [[[['span', 'class', 'toFirst'], null]], [[['span', 'class', 'toSecond'], null]]],
+              0,
+              [
+                [['span', SelectorFlags.CLASS, 'toFirst']],
+                [['span', SelectorFlags.CLASS, 'toSecond']]
+              ],
               ['span.toFirst', 'span.toSecond']);
           elementStart(1, 'div', ['id', 'first']);
           { projection(2, 0, 1); }
@@ -660,7 +670,7 @@ describe('content projection', () => {
       const Child = createComponent('child', function(ctx: any, cm: boolean) {
         if (cm) {
           projectionDef(
-              0, [[[['span'], null]], [[['span', 'class', 'toSecond'], null]]],
+              0, [[['span']], [['span', SelectorFlags.CLASS, 'toSecond']]],
               ['span', 'span.toSecond']);
           elementStart(1, 'div', ['id', 'first']);
           { projection(2, 0, 1); }
@@ -705,7 +715,7 @@ describe('content projection', () => {
        */
       const Child = createComponent('child', function(ctx: any, cm: boolean) {
         if (cm) {
-          projectionDef(0, [[[['span', 'class', 'toFirst'], null]]], ['span.toFirst']);
+          projectionDef(0, [[['span', SelectorFlags.CLASS, 'toFirst']]], ['span.toFirst']);
           elementStart(1, 'div', ['id', 'first']);
           { projection(2, 0, 1); }
           elementEnd();
@@ -750,7 +760,7 @@ describe('content projection', () => {
        */
       const Child = createComponent('child', function(ctx: any, cm: boolean) {
         if (cm) {
-          projectionDef(0, [[[['span', 'class', 'toSecond'], null]]], ['span.toSecond']);
+          projectionDef(0, [[['span', SelectorFlags.CLASS, 'toSecond']]], ['span.toSecond']);
           elementStart(1, 'div', ['id', 'first']);
           { projection(2, 0); }
           elementEnd();
@@ -802,7 +812,7 @@ describe('content projection', () => {
        */
       const GrandChild = createComponent('grand-child', function(ctx: any, cm: boolean) {
         if (cm) {
-          projectionDef(0, [[[['span'], null]]], ['span']);
+          projectionDef(0, [[['span']]], ['span']);
           projection(1, 0, 1);
           elementStart(2, 'hr');
           elementEnd();
@@ -865,7 +875,7 @@ describe('content projection', () => {
       const Card = createComponent('card', function(ctx: any, cm: boolean) {
         if (cm) {
           projectionDef(
-              0, [[[['', 'card-title', ''], null]], [[['', 'card-content', ''], null]]],
+              0, [[['', 'card-title', '']], [['', 'card-content', '']]],
               ['[card-title]', '[card-content]']);
           projection(1, 0, 1);
           elementStart(2, 'hr');
@@ -924,7 +934,7 @@ describe('content projection', () => {
       const Card = createComponent('card', function(ctx: any, cm: boolean) {
         if (cm) {
           projectionDef(
-              0, [[[['', 'card-title', ''], null]], [[['', 'card-content', ''], null]]],
+              0, [[['', 'card-title', '']], [['', 'card-content', '']]],
               ['[card-title]', '[card-content]']);
           projection(1, 0, 1);
           elementStart(2, 'hr');
@@ -979,7 +989,7 @@ describe('content projection', () => {
        */
       const Child = createComponent('child', function(ctx: any, cm: boolean) {
         if (cm) {
-          projectionDef(0, [[[['div'], null]]], ['div']);
+          projectionDef(0, [[['div']]], ['div']);
           projection(1, 0, 1);
         }
       });
@@ -1018,7 +1028,7 @@ describe('content projection', () => {
        */
       const Child = createComponent('child', function(ctx: any, cm: boolean) {
         if (cm) {
-          projectionDef(0, [[[['div'], null]]], ['div']);
+          projectionDef(0, [[['div']]], ['div']);
           elementStart(1, 'span');
           { projection(2, 0, 1); }
           elementEnd();

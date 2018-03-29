@@ -79,7 +79,7 @@ describe('pipes', () => {
       // NORMATIVE
       static ngComponentDef = $r3$.ɵdefineComponent({
         type: MyApp,
-        selector: [[['my-app'], null]],
+        selectors: [['my-app']],
         factory: function MyApp_Factory() { return new MyApp(); },
         template: function MyApp_Template(ctx: $MyApp$, cm: $boolean$) {
           if (cm) {
@@ -133,7 +133,7 @@ describe('pipes', () => {
       // NORMATIVE
       static ngDirectiveDef = $r3$.ɵdefineDirective({
         type: OneTimeIf,
-        selector: [[['', 'oneTimeIf', ''], null]],
+        selectors: [['', 'oneTimeIf', '']],
         factory: () => new OneTimeIf($r3$.ɵinjectViewContainerRef(), $r3$.ɵinjectTemplateRef()),
         inputs: {oneTimeIf: 'oneTimeIf'}
       });
@@ -152,7 +152,7 @@ describe('pipes', () => {
       // NORMATIVE
       static ngComponentDef = $r3$.ɵdefineComponent({
         type: MyApp,
-        selector: [[['my-app'], null]],
+        selectors: [['my-app']],
         factory: function MyApp_Factory() { return new MyApp(); },
         template: function MyApp_Template(ctx: $MyApp$, cm: $boolean$) {
           let $pi$: $any$;

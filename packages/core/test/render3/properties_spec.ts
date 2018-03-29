@@ -68,7 +68,7 @@ describe('elementProperty', () => {
 
       static ngComponentDef = defineComponent({
         type: HostBindingComp,
-        selector: [[['host-binding-comp'], null]],
+        selectors: [['host-binding-comp']],
         factory: () => new HostBindingComp(),
         hostBindings: (dirIndex: number, elIndex: number) => {
           const instance = loadDirective(dirIndex) as HostBindingComp;
@@ -97,7 +97,7 @@ describe('elementProperty', () => {
 
       static ngDirectiveDef = defineDirective({
         type: MyButton,
-        selector: [[['', 'myButton', ''], null]],
+        selectors: [['', 'myButton', '']],
         factory: () => button = new MyButton(),
         inputs: {disabled: 'disabled'}
       });
@@ -109,7 +109,7 @@ describe('elementProperty', () => {
 
       static ngDirectiveDef = defineDirective({
         type: OtherDir,
-        selector: [[['', 'otherDir', ''], null]],
+        selectors: [['', 'otherDir', '']],
         factory: () => otherDir = new OtherDir(),
         inputs: {id: 'id'},
         outputs: {clickStream: 'click'}
@@ -121,7 +121,7 @@ describe('elementProperty', () => {
 
       static ngDirectiveDef = defineDirective({
         type: OtherDisabledDir,
-        selector: [[['', 'otherDisabledDir', ''], null]],
+        selectors: [['', 'otherDisabledDir', '']],
         factory: () => otherDisabledDir = new OtherDisabledDir(),
         inputs: {disabled: 'disabled'}
       });
@@ -132,7 +132,7 @@ describe('elementProperty', () => {
 
       static ngDirectiveDef = defineDirective({
         type: IdDir,
-        selector: [[['', 'idDir', ''], null]],
+        selectors: [['', 'idDir', '']],
         factory: () => idDir = new IdDir(),
         inputs: {idNumber: 'id'}
       });
@@ -207,7 +207,7 @@ describe('elementProperty', () => {
 
         static ngComponentDef = defineComponent({
           type: Comp,
-          selector: [[['comp'], null]],
+          selectors: [['comp']],
           template: function(ctx: any, cm: boolean) {},
           factory: () => comp = new Comp(),
           inputs: {id: 'id'}
@@ -345,7 +345,7 @@ describe('elementProperty', () => {
 
       static ngDirectiveDef = defineDirective({
         type: MyDir,
-        selector: [[['', 'myDir', ''], null]],
+        selectors: [['', 'myDir', '']],
         factory: () => myDir = new MyDir(),
         inputs: {role: 'role', direction: 'dir'},
         outputs: {changeStream: 'change'},
@@ -359,7 +359,7 @@ describe('elementProperty', () => {
 
       static ngDirectiveDef = defineDirective({
         type: MyDirB,
-        selector: [[['', 'myDirB', ''], null]],
+        selectors: [['', 'myDirB', '']],
         factory: () => dirB = new MyDirB(),
         inputs: {roleB: 'role'}
       });
@@ -527,7 +527,7 @@ describe('elementProperty', () => {
       class Comp {
         static ngComponentDef = defineComponent({
           type: Comp,
-          selector: [[['comp'], null]],
+          selectors: [['comp']],
           /** <div role="button" dir #dir="myDir"></div> {{ dir.role }} */
           template: function(ctx: any, cm: boolean) {
             if (cm) {

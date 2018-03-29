@@ -41,7 +41,7 @@ describe('lifecycle hooks', () => {
     // NORMATIVE
     static ngComponentDef = $r3$.ɵdefineComponent({
       type: LifecycleComp,
-      selector: [[['lifecycle-comp'], null]],
+      selectors: [['lifecycle-comp']],
       factory: function LifecycleComp_Factory() { return new LifecycleComp(); },
       template: function LifecycleComp_Template(ctx: $LifecycleComp$, cm: $boolean$) {},
       inputs: {nameMin: 'name'},
@@ -64,7 +64,7 @@ describe('lifecycle hooks', () => {
     // NORMATIVE
     static ngComponentDef = $r3$.ɵdefineComponent({
       type: SimpleLayout,
-      selector: [[['simple-layout'], null]],
+      selectors: [['simple-layout']],
       factory: function SimpleLayout_Factory() { return simpleLayout = new SimpleLayout(); },
       template: function SimpleLayout_Template(ctx: $SimpleLayout$, cm: $boolean$) {
         if (cm) {

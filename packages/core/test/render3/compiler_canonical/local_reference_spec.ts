@@ -23,7 +23,7 @@ describe('local references', () => {
       // NORMATIVE
       static ngComponentDef = $r3$.ɵdefineComponent({
         type: MyComponent,
-        selector: [[['my-component'], null]],
+        selectors: [['my-component']],
         factory: () => new MyComponent,
         template: function(ctx: $MyComponent$, cm: $boolean$) {
           if (cm) {
