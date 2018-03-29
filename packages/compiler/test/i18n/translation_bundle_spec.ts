@@ -10,8 +10,10 @@ import {MissingTranslationStrategy} from '@angular/core';
 
 import * as i18n from '../../src/i18n/i18n_ast';
 import {TranslationBundle} from '../../src/i18n/translation_bundle';
+import * as html from '../../src/ml_parser/ast';
 import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../src/parse_util';
 import {serializeNodes} from '../ml_parser/ast_serializer_spec';
+
 import {_extractMessages} from './i18n_parser_spec';
 
 {
@@ -22,11 +24,22 @@ import {_extractMessages} from './i18n_parser_spec';
     const span = new ParseSourceSpan(startLocation, endLocation);
     const srcNode = new i18n.Text('src', span);
 
-    it('should translate a plain message', () => {
+    it('should translate a plain text', () => {
       const msgMap = {foo: [new i18n.Text('bar', null !)]};
       const tb = new TranslationBundle(msgMap, null, (_) => 'foo');
       const msg = new i18n.Message([srcNode], {}, {}, 'm', 'd', 'i');
       expect(serializeNodes(tb.get(msg))).toEqual(['bar']);
+    });
+
+    it('should translate html-like plain text', () => {
+      const msgMap = {foo: [new i18n.Text('<p>bar</p>', null !)]};
+      const tb = new TranslationBundle(msgMap, null, (_) => 'foo');
+      const msg = new i18n.Message([srcNode], {}, {}, 'm', 'd', 'i');
+      const nodes = tb.get(msg);
+      expect(nodes.length).toEqual(1);
+      const textNode: html.Text = nodes[0] as any;
+      expect(textNode instanceof html.Text).toEqual(true);
+      expect(textNode.value).toBe('<p>bar</p>');
     });
 
     it('should translate a message with placeholder', () => {

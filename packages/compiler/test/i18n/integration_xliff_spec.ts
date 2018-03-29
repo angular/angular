@@ -85,6 +85,10 @@ const XLIFF_TOMERGE = `
         <source>on not translatable node</source>
         <target>sur des balises non traductibles</target>
       </trans-unit>
+      <trans-unit id="480aaeeea1570bc1dde6b8404e380dee11ed0759" datatype="html">
+        <source>&lt;b&gt;bold&lt;/b&gt;</source>
+        <target>&lt;b&gt;gras&lt;/b&gt;</target>
+      </trans-unit>
       <trans-unit id="67162b5af5f15fd0eb6480c88688dafdf952b93a" datatype="html">
         <source>on translatable node</source>
         <target>sur des balises traductibles</target>
@@ -210,6 +214,13 @@ const XLIFF_EXTRACTED = `
       </trans-unit>
       <trans-unit id="1fe4616cce80a57c7707bac1c97054aa8e244a67" datatype="html">
         <source>on not translatable node</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">file.ts</context>
+          <context context-type="linenumber">14</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="480aaeeea1570bc1dde6b8404e380dee11ed0759" datatype="html">
+        <source>&lt;b&gt;bold&lt;/b&gt;</source>
         <context-group purpose="location">
           <context context-type="sourcefile">file.ts</context>
           <context context-type="linenumber">14</context>
