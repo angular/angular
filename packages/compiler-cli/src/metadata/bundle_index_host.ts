@@ -37,7 +37,11 @@ function createSyntheticIndexHost<H extends ts.CompilerHost>(
   newHost.getSourceFile =
       (fileName: string, languageVersion: ts.ScriptTarget, onError?: (message: string) => void) => {
         if (path.normalize(fileName) == normalSyntheticIndexName) {
-          return ts.createSourceFile(fileName, indexContent, languageVersion, true);
+          const sf = ts.createSourceFile(fileName, indexContent, languageVersion, true);
+          if ((delegate as any).fileNameToModuleName) {
+            sf.moduleName = (delegate as any).fileNameToModuleName(fileName);
+          }
+          return sf;
         }
         return delegate.getSourceFile(fileName, languageVersion, onError);
       };
@@ -48,10 +52,10 @@ function createSyntheticIndexHost<H extends ts.CompilerHost>(
        sourceFiles: Readonly<ts.SourceFile>[]) => {
         delegate.writeFile(fileName, data, writeByteOrderMark, onError, sourceFiles);
         if (fileName.match(DTS) && sourceFiles && sourceFiles.length == 1 &&
-            path.normalize(sourceFiles[0].fileName) == normalSyntheticIndexName) {
+            path.normalize(sourceFiles[0].fileName) === normalSyntheticIndexName) {
           // If we are writing the synthetic index, write the metadata along side.
           const metadataName = fileName.replace(DTS, '.metadata.json');
-          fs.writeFileSync(metadataName, indexMetadata, {encoding: 'utf8'});
+          delegate.writeFile(metadataName, indexMetadata, writeByteOrderMark, onError, []);
         }
       };
   return newHost;
@@ -61,7 +65,20 @@ export function createBundleIndexHost<H extends ts.CompilerHost>(
     ngOptions: CompilerOptions, rootFiles: ReadonlyArray<string>,
     host: H): {host: H, indexName?: string, errors?: ts.Diagnostic[]} {
   const files = rootFiles.filter(f => !DTS.test(f));
-  if (files.length != 1) {
+  let indexFile: string|undefined;
+  if (files.length === 1) {
+    indexFile = files[0];
+  } else {
+    for (const f of files) {
+      // Assume the shortest file path called index.ts is the entry point
+      if (f.endsWith(path.sep + 'index.ts')) {
+        if (!indexFile || indexFile.length > f.length) {
+          indexFile = f;
+        }
+      }
+    }
+  }
+  if (!indexFile) {
     return {
       host,
       errors: [{
@@ -75,8 +92,8 @@ export function createBundleIndexHost<H extends ts.CompilerHost>(
       }]
     };
   }
-  const file = files[0];
-  const indexModule = file.replace(/\.ts$/, '');
+
+  const indexModule = indexFile.replace(/\.ts$/, '');
   const bundler = new MetadataBundler(
       indexModule, ngOptions.flatModuleId, new CompilerHostAdapter(host),
       ngOptions.flatModulePrivateSymbolPrefix);

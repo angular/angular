@@ -180,8 +180,18 @@ export function compile({allowNonHermeticReads, allDepsCompiledWithBazel = true,
     return origBazelHostFileExist.call(bazelHost, fileName);
   };
   const origBazelHostShouldNameModule = bazelHost.shouldNameModule.bind(bazelHost);
-  bazelHost.shouldNameModule = (fileName: string) =>
-      origBazelHostShouldNameModule(fileName) || NGC_GEN_FILES.test(fileName);
+  bazelHost.shouldNameModule = (fileName: string) => {
+    // The bundle index file is synthesized in bundle_index_host so it's not in the
+    // compilationTargetSrc.
+    // However we still want to give it an AMD module name for devmode.
+    // We can't easily tell which file is the synthetic one, so we build up the path we expect
+    // it to have
+    // and compare against that.
+    if (fileName ===
+        path.join(compilerOpts.baseUrl, bazelOpts.package, compilerOpts.flatModuleOutFile + '.ts'))
+      return true;
+    return origBazelHostShouldNameModule(fileName) || NGC_GEN_FILES.test(fileName);
+  };
 
   const ngHost = ng.createCompilerHost({options: compilerOpts, tsHost: bazelHost});
 
