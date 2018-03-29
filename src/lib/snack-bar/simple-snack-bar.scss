@@ -2,24 +2,36 @@
 @import '../core/style/button-common';
 @import '../core/style/list-common';
 
-$mat-snack-bar-button-margin: 48px !default;
+$mat-snack-bar-button-horizontal-margin: 8px !default;
+$mat-snack-bar-button-height: 36px !default;
+$mat-snack-bar-line-height: 20px !default;
+// Button vertical margin is used to ensure that a button height of 36px, when the containing
+// space falls below 36px.
+$mat-snack-bar-button-vertical-margin:
+  -(($mat-snack-bar-button-height - $mat-snack-bar-line-height) / 2);
 
 .mat-simple-snackbar {
   display: flex;
   justify-content: space-between;
-  line-height: 20px;
+  line-height: $mat-snack-bar-line-height;
   opacity: 1;
 }
 
 .mat-simple-snackbar-action {
-  @include mat-button-reset;
-
-  background: none;
+  display: flex;
+  flex-direction: column;
   flex-shrink: 0;
-  margin-left: $mat-snack-bar-button-margin;
+  justify-content: space-around;
+  margin: $mat-snack-bar-button-vertical-margin 0
+          $mat-snack-bar-button-vertical-margin $mat-snack-bar-button-horizontal-margin;
+
+  button {
+    flex: 1;
+    max-height: $mat-snack-bar-button-height;
+  }
 
   [dir='rtl'] & {
-    margin-right: $mat-snack-bar-button-margin;
     margin-left: 0;
+    margin-right: $mat-snack-bar-button-horizontal-margin;
   }
 }

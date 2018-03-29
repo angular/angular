@@ -12,6 +12,7 @@ ng_module(
     "simple_snack_bar_css",
   ],
   deps = [
+    "//src/lib/button",
     "//src/lib/core",
     "//src/cdk/a11y",
     "//src/cdk/layout",

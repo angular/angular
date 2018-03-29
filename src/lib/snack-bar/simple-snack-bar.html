@@ -1,6 +1,5 @@
 {{data.message}}
 
-<button
-  class="mat-simple-snackbar-action"
-  *ngIf="hasAction"
-  (click)="action()">{{data.action}}</button>
+<div class="mat-simple-snackbar-action"  *ngIf="hasAction">
+  <button mat-button (click)="action()">{{data.action}}</button>
+</div>
