@@ -34,6 +34,9 @@ describe('@angular/common ng_package', () => {
     ]);
   });
 
+  it('should reference core using global symbol in umd',
+     () => { expect(shx.cat('bundles/common.umd.js')).toContain('global.ng.core'); });
+
   it('should have right fesm files', () => {
     const expected = [
       'common.js',
