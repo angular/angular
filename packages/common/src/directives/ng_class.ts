@@ -13,7 +13,7 @@ import {Directive, DoCheck, ElementRef, Input, IterableChanges, IterableDiffer, 
  *
  * @whatItDoes Adds and removes CSS classes on an HTML element.
  *
- * @howToUse
+ * @usageNotes
  * ```
  *     <some-element [ngClass]="'first second'">...</some-element>
  *

@@ -14,7 +14,6 @@ import {DateFormatter} from './intl';
 /**
  * @ngModule CommonModule
  * @whatItDoes Formats a date according to locale rules.
- * @howToUse `date_expression | date[:format]`
  * @description
  *
  * Where:

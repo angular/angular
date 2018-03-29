@@ -39,7 +39,7 @@ export class SwitchView {
  * @whatItDoes Adds / removes DOM sub-trees when the nest match expressions matches the switch
  *             expression.
  *
- * @howToUse
+ * @usageNotes
  * ```
  *     <container-element [ngSwitch]="switch_expression">
  *       <some-element *ngSwitchCase="match_expression_1">...</some-element>
@@ -133,7 +133,7 @@ export class NgSwitch {
  *             given expression evaluate to respectively the same/different value as the switch
  *             expression.
  *
- * @howToUse
+ * @usageNotes
  * ```
  * <container-element [ngSwitch]="switch_expression">
  *   <some-element *ngSwitchCase="match_expression_1">...</some-element>
@@ -173,7 +173,7 @@ export class NgSwitchCase implements DoCheck {
  * match the
  *             switch expression.
  *
- * @howToUse
+ * @usageNotes
  * ```
  * <container-element [ngSwitch]="switch_expression">
  *   <some-element *ngSwitchCase="match_expression_1">...</some-element>

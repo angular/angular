@@ -15,7 +15,6 @@ const _INTERPOLATION_REGEXP: RegExp = /#/g;
 /**
  * @ngModule CommonModule
  * @whatItDoes Maps a value to a string that pluralizes the value according to locale rules.
- * @howToUse `expression | i18nPlural:mapping[:locale]`
  * @description
  *
  *  Where:

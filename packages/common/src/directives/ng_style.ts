@@ -13,7 +13,7 @@ import {Directive, DoCheck, ElementRef, Input, KeyValueChanges, KeyValueDiffer, 
  *
  * @whatItDoes Update an HTML element styles.
  *
- * @howToUse
+ * @usageNotes
  * ```
  * <some-element [ngStyle]="{'font-style': styleExp}">...</some-element>
  *
