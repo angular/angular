@@ -1,7 +1,7 @@
 import {fakeAsync, tick, ComponentFixture, TestBed} from '@angular/core/testing';
 import {dispatchMouseEvent} from '@angular/cdk/testing';
 import {NgModel, FormsModule, ReactiveFormsModule, FormControl} from '@angular/forms';
-import {Component, DebugElement} from '@angular/core';
+import {Component, DebugElement, ViewChild, ViewChildren, QueryList} from '@angular/core';
 import {By} from '@angular/platform-browser';
 import {
   MatButtonToggleGroup,
@@ -209,6 +209,7 @@ describe('MatButtonToggle without forms', () => {
         StandaloneButtonToggle,
         ButtonToggleWithAriaLabel,
         ButtonToggleWithAriaLabelledby,
+        RepeatedButtonTogglesWithPreselectedValue,
       ],
     });
 
@@ -662,6 +663,14 @@ describe('MatButtonToggle without forms', () => {
       expect(inputElement.getAttribute('aria-labelledby')).toBe(null);
     });
   });
+
+  it('should not throw on init when toggles are repeated and there is an initial value', () => {
+    const fixture = TestBed.createComponent(RepeatedButtonTogglesWithPreselectedValue);
+
+    expect(() => fixture.detectChanges()).not.toThrow();
+    expect(fixture.componentInstance.toggleGroup.value).toBe('Two');
+    expect(fixture.componentInstance.toggles.toArray()[1].checked).toBe(true);
+  });
 });
 
 @Component({
@@ -759,3 +768,21 @@ class ButtonToggleWithAriaLabel { }
   template: `<mat-button-toggle aria-labelledby="some-id"></mat-button-toggle>`
 })
 class ButtonToggleWithAriaLabelledby {}
+
+
+@Component({
+  template: `
+    <mat-button-toggle-group [(value)]="value">
+      <mat-button-toggle *ngFor="let toggle of possibleValues" [value]="toggle">
+        {{toggle}}
+      </mat-button-toggle>
+    </mat-button-toggle-group>
+  `
+})
+class RepeatedButtonTogglesWithPreselectedValue {
+  @ViewChild(MatButtonToggleGroup) toggleGroup: MatButtonToggleGroup;
+  @ViewChildren(MatButtonToggle) toggles: QueryList<MatButtonToggle>;
+
+  possibleValues = ['One', 'Two', 'Three'];
+  value = 'Two';
+}
