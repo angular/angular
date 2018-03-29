@@ -32,7 +32,7 @@ describe('elements', () => {
       // NORMATIVE
       static ngComponentDef = $r3$.ɵdefineComponent({
         type: MyComponent,
-        selector: [[['my-component'], null]],
+        selectors: [['my-component']],
         factory: () => new MyComponent(),
         template: function(ctx: $MyComponent$, cm: $boolean$) {
           if (cm) {
@@ -61,7 +61,7 @@ describe('elements', () => {
 
       static ngDirectiveDef = $r3$.ɵdefineDirective({
         type: Dir,
-        selector: [[['', 'dir', ''], null]],
+        selectors: [['', 'dir', '']],
         factory: function DirA_Factory() { return new Dir(); },
         exportAs: 'dir'
       });
@@ -83,7 +83,7 @@ describe('elements', () => {
       // NORMATIVE
       static ngComponentDef = $r3$.ɵdefineComponent({
         type: LocalRefComp,
-        selector: [[['local-ref-comp'], null]],
+        selectors: [['local-ref-comp']],
         factory: function LocalRefComp_Factory() { return new LocalRefComp(); },
         template: function LocalRefComp_Template(ctx: $LocalRefComp$, cm: $boolean$) {
           if (cm) {
@@ -123,7 +123,7 @@ describe('elements', () => {
       // NORMATIVE
       static ngComponentDef = $r3$.ɵdefineComponent({
         type: ListenerComp,
-        selector: [[['listener-comp'], null]],
+        selectors: [['listener-comp']],
         factory: function ListenerComp_Factory() { return new ListenerComp(); },
         template: function ListenerComp_Template(ctx: $ListenerComp$, cm: $boolean$) {
           if (cm) {
@@ -155,7 +155,7 @@ describe('elements', () => {
         // NORMATIVE
         static ngComponentDef = $r3$.ɵdefineComponent({
           type: MyComponent,
-          selector: [[['my-component'], null]],
+          selectors: [['my-component']],
           factory: function MyComponent_Factory() { return new MyComponent(); },
           template: function MyComponent_Template(ctx: $MyComponent$, cm: $boolean$) {
             if (cm) {
@@ -185,7 +185,7 @@ describe('elements', () => {
         // NORMATIVE
         static ngComponentDef = $r3$.ɵdefineComponent({
           type: MyComponent,
-          selector: [[['my-component'], null]],
+          selectors: [['my-component']],
           factory: function MyComponent_Factory() { return new MyComponent(); },
           template: function MyComponent_Template(ctx: $MyComponent$, cm: $boolean$) {
             if (cm) {
@@ -215,7 +215,7 @@ describe('elements', () => {
         // NORMATIVE
         static ngComponentDef = $r3$.ɵdefineComponent({
           type: MyComponent,
-          selector: [[['my-component'], null]],
+          selectors: [['my-component']],
           factory: function MyComponent_Factory() { return new MyComponent(); },
           template: function MyComponent_Template(ctx: $MyComponent$, cm: $boolean$) {
             if (cm) {
@@ -249,7 +249,7 @@ describe('elements', () => {
         // NORMATIVE
         static ngComponentDef = $r3$.ɵdefineComponent({
           type: MyComponent,
-          selector: [[['my-component'], null]],
+          selectors: [['my-component']],
           factory: function MyComponent_Factory() { return new MyComponent(); },
           template: function MyComponent_Template(ctx: $MyComponent$, cm: $boolean$) {
             if (cm) {
@@ -297,7 +297,7 @@ describe('elements', () => {
         // NORMATIVE
         static ngComponentDef = $r3$.ɵdefineComponent({
           type: MyComponent,
-          selector: [[['my-component'], null]],
+          selectors: [['my-component']],
           factory: function MyComponent_Factory() { return new MyComponent(); },
           template: function MyComponent_Template(ctx: $MyComponent$, cm: $boolean$) {
             if (cm) {
@@ -331,7 +331,7 @@ describe('elements', () => {
         // NORMATIVE
         static ngComponentDef = $r3$.ɵdefineComponent({
           type: StyleComponent,
-          selector: [[['style-comp'], null]],
+          selectors: [['style-comp']],
           factory: function StyleComponent_Factory() { return new StyleComponent(); },
           template: function StyleComponent_Template(ctx: $StyleComponent$, cm: $boolean$) {
             if (cm) {

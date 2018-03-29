@@ -23,7 +23,7 @@ describe('@angular/common integration', () => {
         static ngComponentDef = defineComponent({
           type: MyApp,
           factory: () => new MyApp(),
-          selector: [[['my-app'], null]],
+          selectors: [['my-app']],
           // <ul>
           //   <li *ngFor="let item of items">{{item}}</li>
           // </ul>

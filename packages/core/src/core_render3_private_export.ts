@@ -22,7 +22,7 @@ export {
   InjectFlags as ɵInjectFlags,
   PublicFeature as ɵPublicFeature,
   NgOnChangesFeature as ɵNgOnChangesFeature,
-  CssSelector as ɵCssSelector,
+  CssSelectorList as ɵCssSelectorList,
   NC as ɵNC,
   C as ɵC,
   E as ɵE,

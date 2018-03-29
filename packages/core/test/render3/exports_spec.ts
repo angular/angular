@@ -46,7 +46,7 @@ describe('exports', () => {
 
       static ngComponentDef = defineComponent({
         type: MyComponent,
-        selector: [[['comp'], null]],
+        selectors: [['comp']],
         template: function() {},
         factory: () => new MyComponent
       });
@@ -63,7 +63,7 @@ describe('exports', () => {
       constructor() { myComponent = this; }
       static ngComponentDef = defineComponent({
         type: MyComponent,
-        selector: [[['comp'], null]],
+        selectors: [['comp']],
         template: function() {},
         factory: () => new MyComponent
       });
@@ -74,7 +74,7 @@ describe('exports', () => {
       constructor() { myDir = this; }
       static ngDirectiveDef = defineDirective({
         type: MyDir,
-        selector: [[['', 'myDir', ''], null]],
+        selectors: [['', 'myDir', '']],
         factory: () => new MyDir,
         inputs: {myDir: 'myDir'}
       });
@@ -115,7 +115,7 @@ describe('exports', () => {
       name = 'Drew';
       static ngDirectiveDef = defineDirective({
         type: SomeDir,
-        selector: [[['', 'someDir', ''], null]],
+        selectors: [['', 'someDir', '']],
         factory: () => new SomeDir,
         exportAs: 'someDir'
       });
@@ -216,7 +216,7 @@ describe('exports', () => {
 
         static ngComponentDef = defineComponent({
           type: MyComponent,
-          selector: [[['comp'], null]],
+          selectors: [['comp']],
           template: function(ctx: MyComponent, cm: boolean) {},
           factory: () => new MyComponent
         });
@@ -229,7 +229,7 @@ describe('exports', () => {
 
         static ngDirectiveDef = defineDirective({
           type: MyDir,
-          selector: [[['', 'myDir', ''], null]],
+          selectors: [['', 'myDir', '']],
           factory: () => new MyDir,
           inputs: {myDir: 'myDir'}
         });
@@ -278,7 +278,7 @@ describe('exports', () => {
 
         static ngComponentDef = defineComponent({
           type: MyComponent,
-          selector: [[['comp'], null]],
+          selectors: [['comp']],
           template: function() {},
           factory: () => new MyComponent
         });

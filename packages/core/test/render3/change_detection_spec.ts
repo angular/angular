@@ -25,7 +25,7 @@ describe('change detection', () => {
 
       static ngComponentDef = defineComponent({
         type: MyComponent,
-        selector: [[['my-comp'], null]],
+        selectors: [['my-comp']],
         factory: () => new MyComponent(),
         template: (ctx: MyComponent, cm: boolean) => {
           if (cm) {
@@ -96,7 +96,7 @@ describe('change detection', () => {
 
       static ngComponentDef = defineComponent({
         type: MyComponent,
-        selector: [[['my-comp'], null]],
+        selectors: [['my-comp']],
         factory: () => comp = new MyComponent(),
         /**
          * {{ doCheckCount }} - {{ name }}
@@ -123,7 +123,7 @@ describe('change detection', () => {
 
       static ngComponentDef = defineComponent({
         type: MyApp,
-        selector: [[['my-app'], null]],
+        selectors: [['my-app']],
         factory: () => new MyApp(),
         /** <my-comp [name]="name"></my-comp> */
         template: (ctx: MyApp, cm: boolean) => {
@@ -223,7 +223,7 @@ describe('change detection', () => {
 
         static ngComponentDef = defineComponent({
           type: ButtonParent,
-          selector: [[['button-parent'], null]],
+          selectors: [['button-parent']],
           factory: () => parent = new ButtonParent(),
           /** {{ doCheckCount }} - <my-comp></my-comp> */
           template: (ctx: ButtonParent, cm: boolean) => {
@@ -282,7 +282,7 @@ describe('change detection', () => {
 
         static ngComponentDef = defineComponent({
           type: MyComp,
-          selector: [[['my-comp'], null]],
+          selectors: [['my-comp']],
           factory: () => myComp = new MyComp(injectChangeDetectorRef()),
           /** {{ name }} */
           template: (ctx: MyComp, cm: boolean) => {
@@ -304,7 +304,7 @@ describe('change detection', () => {
 
         static ngComponentDef = defineComponent({
           type: ParentComp,
-          selector: [[['parent-comp'], null]],
+          selectors: [['parent-comp']],
           factory: () => new ParentComp(injectChangeDetectorRef()),
           /**
            * {{ doCheckCount}} -
@@ -327,7 +327,7 @@ describe('change detection', () => {
 
         static ngDirectiveDef = defineDirective({
           type: Dir,
-          selector: [[['', 'dir', ''], null]],
+          selectors: [['', 'dir', '']],
           factory: () => dir = new Dir(injectChangeDetectorRef())
         });
       }
@@ -436,7 +436,7 @@ describe('change detection', () => {
 
           static ngComponentDef = defineComponent({
             type: MyApp,
-            selector: [[['my-app'], null]],
+            selectors: [['my-app']],
             factory: () => new MyApp(injectChangeDetectorRef()),
             /**
              * {{ name}}
@@ -487,7 +487,7 @@ describe('change detection', () => {
 
           static ngComponentDef = defineComponent({
             type: DetectChangesComp,
-            selector: [[['detect-changes-comp'], null]],
+            selectors: [['detect-changes-comp']],
             factory: () => new DetectChangesComp(injectChangeDetectorRef()),
             /** {{ value }} */
             template: (ctx: DetectChangesComp, cm: boolean) => {
@@ -516,7 +516,7 @@ describe('change detection', () => {
 
           static ngComponentDef = defineComponent({
             type: DetectChangesComp,
-            selector: [[['detect-changes-comp'], null]],
+            selectors: [['detect-changes-comp']],
             factory: () => new DetectChangesComp(injectChangeDetectorRef()),
             /** {{ doCheckCount }} */
             template: (ctx: DetectChangesComp, cm: boolean) => {
@@ -542,7 +542,7 @@ describe('change detection', () => {
 
         static ngComponentDef = defineComponent({
           type: MyApp,
-          selector: [[['my-app'], null]],
+          selectors: [['my-app']],
           factory: () => new MyApp(injectChangeDetectorRef()),
           /** <detached-comp></detached-comp> */
           template: (ctx: MyApp, cm: boolean) => {
@@ -565,7 +565,7 @@ describe('change detection', () => {
 
         static ngComponentDef = defineComponent({
           type: DetachedComp,
-          selector: [[['detached-comp'], null]],
+          selectors: [['detached-comp']],
           factory: () => comp = new DetachedComp(injectChangeDetectorRef()),
           /** {{ value }} */
           template: (ctx: DetachedComp, cm: boolean) => {
@@ -661,7 +661,7 @@ describe('change detection', () => {
 
           static ngComponentDef = defineComponent({
             type: OnPushComp,
-            selector: [[['on-push-comp'], null]],
+            selectors: [['on-push-comp']],
             factory: () => onPushComp = new OnPushComp(injectChangeDetectorRef()),
             /** {{ value }} */
             template: (ctx: OnPushComp, cm: boolean) => {
@@ -717,7 +717,7 @@ describe('change detection', () => {
 
         static ngComponentDef = defineComponent({
           type: OnPushComp,
-          selector: [[['on-push-comp'], null]],
+          selectors: [['on-push-comp']],
           factory: () => comp = new OnPushComp(injectChangeDetectorRef()),
           /** {{ value }} */
           template: (ctx: OnPushComp, cm: boolean) => {
@@ -735,7 +735,7 @@ describe('change detection', () => {
 
         static ngComponentDef = defineComponent({
           type: OnPushParent,
-          selector: [[['on-push-parent'], null]],
+          selectors: [['on-push-parent']],
           factory: () => new OnPushParent(),
           /**
            * {{ value }} -
@@ -802,7 +802,7 @@ describe('change detection', () => {
 
           static ngComponentDef = defineComponent({
             type: EmbeddedViewParent,
-            selector: [[['embedded-view-parent'], null]],
+            selectors: [['embedded-view-parent']],
             factory: () => new EmbeddedViewParent(),
             /**
              * {{ value }} -
@@ -875,7 +875,7 @@ describe('change detection', () => {
 
         static ngComponentDef = defineComponent({
           type: NoChangesComp,
-          selector: [[['no-changes-comp'], null]],
+          selectors: [['no-changes-comp']],
           factory: () => comp = new NoChangesComp(injectChangeDetectorRef()),
           template: (ctx: NoChangesComp, cm: boolean) => {
             if (cm) {
@@ -893,7 +893,7 @@ describe('change detection', () => {
 
         static ngComponentDef = defineComponent({
           type: AppComp,
-          selector: [[['app-comp'], null]],
+          selectors: [['app-comp']],
           factory: () => new AppComp(injectChangeDetectorRef()),
           /**
            * {{ value }} -
@@ -953,7 +953,7 @@ describe('change detection', () => {
 
           static ngComponentDef = defineComponent({
             type: EmbeddedViewApp,
-            selector: [[['embedded-view-app'], null]],
+            selectors: [['embedded-view-app']],
             factory: () => new EmbeddedViewApp(injectChangeDetectorRef()),
             /**
              * % if (showing) {

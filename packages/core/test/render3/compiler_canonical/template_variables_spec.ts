@@ -63,7 +63,7 @@ describe('template variables', () => {
     // NORMATIVE
     static ngDirectiveDef = $r3$.ɵdefineDirective({
       type: ForOfDirective,
-      selector: [[['', 'forOf', ''], null]],
+      selectors: [['', 'forOf', '']],
       factory: function ForOfDirective_Factory() {
         return new ForOfDirective($r3$.ɵinjectViewContainerRef(), $r3$.ɵinjectTemplateRef());
       },
@@ -91,7 +91,7 @@ describe('template variables', () => {
       // NORMATIVE
       static ngComponentDef = $r3$.ɵdefineComponent({
         type: MyComponent,
-        selector: [[['my-component'], null]],
+        selectors: [['my-component']],
         factory: function MyComponent_Factory() { return new MyComponent(); },
         template: function MyComponent_Template(ctx: $MyComponent$, cm: $boolean$) {
           if (cm) {
@@ -159,7 +159,7 @@ describe('template variables', () => {
       // NORMATIVE
       static ngComponentDef = $r3$.ɵdefineComponent({
         type: MyComponent,
-        selector: [[['my-component'], null]],
+        selectors: [['my-component']],
         factory: function MyComponent_Factory() { return new MyComponent(); },
         template: function MyComponent_Template(ctx: $MyComponent$, cm: $boolean$) {
           if (cm) {

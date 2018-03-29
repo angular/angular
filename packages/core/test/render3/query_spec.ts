@@ -436,7 +436,7 @@ describe('query', () => {
       class Child {
         static ngComponentDef = defineComponent({
           type: Child,
-          selector: [[['child'], null]],
+          selectors: [['child']],
           factory: () => childInstance = new Child(),
           template: (ctx: Child, cm: boolean) => {},
           exportAs: 'child'

@@ -22,7 +22,7 @@ describe('queries', () => {
   class SomeDirective {
     static ngDirectiveDef = $r3$.ɵdefineDirective({
       type: SomeDirective,
-      selector: [[['', 'someDir', ''], null]],
+      selectors: [['', 'someDir', '']],
       factory: function SomeDirective_Factory() { return someDir = new SomeDirective(); },
       features: [$r3$.ɵPublicFeature]
     });
@@ -48,7 +48,7 @@ describe('queries', () => {
       // NORMATIVE
       static ngComponentDef = $r3$.ɵdefineComponent({
         type: ViewQueryComponent,
-        selector: [[['view-query-component'], null]],
+        selectors: [['view-query-component']],
         factory: function ViewQueryComponent_Factory() { return new ViewQueryComponent(); },
         template: function ViewQueryComponent_Template(ctx: $ViewQueryComponent$, cm: $boolean$) {
           let $tmp$: any;
@@ -95,7 +95,7 @@ describe('queries', () => {
       // NORMATIVE
       static ngComponentDef = $r3$.ɵdefineComponent({
         type: ContentQueryComponent,
-        selector: [[['content-query-component'], null]],
+        selectors: [['content-query-component']],
         factory: function ContentQueryComponent_Factory() {
           return [
             new ContentQueryComponent(), $r3$.ɵQ(null, SomeDirective, false),
@@ -136,7 +136,7 @@ describe('queries', () => {
       // NON-NORMATIVE
       static ngComponentDef = $r3$.ɵdefineComponent({
         type: MyApp,
-        selector: [[['my-app'], null]],
+        selectors: [['my-app']],
         factory: function MyApp_Factory() { return new MyApp(); },
         template: function MyApp_Template(ctx: $MyApp$, cm: $boolean$) {
           if (cm) {
