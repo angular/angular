@@ -12,37 +12,35 @@ import {BehaviorSubject} from 'rxjs';
  * Node for to-do item
  */
 export class TodoItemNode {
-  children: TodoItemNode[];
-  item: string;
-}
-
-/** Flat to-do item node with expandable and level information */
-export class TodoItemFlatNode {
-  item: string;
-  level: number;
-  expandable: boolean;
+  children: BehaviorSubject<TodoItemNode[]>;
+  constructor(public item: string, children?: TodoItemNode[], public parent?: TodoItemNode) {
+    this.children = new BehaviorSubject(children === undefined ? [] : children);
+  }
 }
 
 /**
  * The Json object for to-do list data.
  */
-const TREE_DATA = {
-  'Reminders': [
-    'Cook dinner',
-    'Read the Material Design spec',
-    'Upgrade Application to Angular'
-  ],
-  'Groceries': {
-    'Organic eggs': null,
-    'Protein Powder': null,
-    'Almond Meal flour': null,
-    'Fruits': {
-      'Apple': null,
-      'Orange': null,
-      'Berries': ['Blueberry', 'Raspberry']
-    }
-  }
-};
+const TREE_DATA = [
+  new TodoItemNode('Reminders', [
+    new TodoItemNode('Cook dinner'),
+    new TodoItemNode('Read the Material Design spec'),
+    new TodoItemNode('Upgrade Application to Angular')
+  ]),
+  new TodoItemNode('Groceries', [
+    new TodoItemNode('Organic eggs'),
+    new TodoItemNode('Protein Powder'),
+    new TodoItemNode('Almond Meal flour'),
+    new TodoItemNode('Fruits', [
+      new TodoItemNode('Apple'),
+      new TodoItemNode('Orange'),
+      new TodoItemNode('Berries', [
+        new TodoItemNode('Blueberry'),
+        new TodoItemNode('Raspberry')
+      ])
+    ])
+  ])
+];
 
 /**
  * Checklist database, it can build a tree structured Json object.
@@ -51,50 +49,28 @@ const TREE_DATA = {
  */
 @Injectable()
 export class ChecklistDatabase {
-  dataChange: BehaviorSubject<TodoItemNode[]> = new BehaviorSubject<TodoItemNode[]>([]);
+  dataChange: BehaviorSubject<TodoItemNode[]> = new BehaviorSubject<TodoItemNode[]>(TREE_DATA);
 
-  get data(): TodoItemNode[] { return this.dataChange.value; }
-
-  constructor() {
-    this.initialize();
-  }
-
-  initialize() {
-    // Build the tree nodes from Json object. The result is a list of `TodoItemNode` with nested
-    //     file node as children.
-    const data = this.buildFileTree(TREE_DATA, 0);
-
-    // Notify the change.
-    this.dataChange.next(data);
-  }
-
-  /**
-   * Build the file structure tree. The `value` is the Json object, or a sub-tree of a Json object.
-   * The return value is the list of `TodoItemNode`.
-   */
-  buildFileTree(value: any, level: number) {
-    let data: any[] = [];
-    for (let k in value) {
-      let v = value[k];
-      let node = new TodoItemNode();
-      node.item = `${k}`;
-      if (v === null || v === undefined) {
-        // no action
-      } else if (typeof v === 'object') {
-        node.children = this.buildFileTree(v, level + 1);
-      } else {
-        node.item = v;
-      }
-      data.push(node);
-    }
-    return data;
+  get data(): TodoItemNode[] {
+    return this.dataChange.value;
   }
 
   /** Add an item to to-do list */
   insertItem(parent: TodoItemNode, name: string) {
-    const child = <TodoItemNode>{item: name};
-    if (parent.children) {
-      parent.children.push(child);
+    const child = new TodoItemNode(name, [], parent);
+    let children = parent.children.value;
+    children.push(child);
+    parent.children.next(children);
+    this.dataChange.next(this.data);
+  }
+
+  updateItem(node: TodoItemNode, name: string) {
+    let newNode = new TodoItemNode(name, node.children.value, node.parent);
+    if (node.parent) {
+      let children = node.parent.children.value;
+      let index = children.indexOf(node);
+      children.splice(index, 1, newNode);
+      node.parent.children.next(children);
       this.dataChange.next(this.data);
     }
   }

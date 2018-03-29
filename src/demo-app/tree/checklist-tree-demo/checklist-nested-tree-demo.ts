@@ -7,60 +7,37 @@
  */
 import {ChangeDetectorRef, ChangeDetectionStrategy, Component} from '@angular/core';
 import {SelectionModel} from '@angular/cdk/collections';
-import {FlatTreeControl} from '@angular/cdk/tree';
-import {MatTreeFlattener, MatTreeFlatDataSource} from '@angular/material/tree';
-import {TodoItemNode, ChecklistDatabase} from './checklist-database';
+import {NestedTreeControl} from '@angular/cdk/tree';
+import {Observable} from 'rxjs';
+import {ChecklistDatabase, TodoItemNode} from './checklist-database';
 
 /**
- * Checklist demo with flat tree
+ * Checklist demo with nested tree
  */
 @Component({
   moduleId: module.id,
-  selector: 'checklist-tree-demo',
-  templateUrl: 'checklist-tree-demo.html',
+  selector: 'checklist-nested-tree-demo',
+  templateUrl: 'checklist-nested-tree-demo.html',
   styleUrls: ['checklist-tree-demo.css'],
   providers: [ChecklistDatabase],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ChecklistTreeDemo {
-  levels = new Map<TodoItemNode, number>();
-  treeControl: FlatTreeControl<TodoItemNode>;
+export class ChecklistNestedTreeDemo {
+  treeControl: NestedTreeControl<TodoItemNode>;
 
-  treeFlattener: MatTreeFlattener<TodoItemNode, TodoItemNode>;
-
-  dataSource: MatTreeFlatDataSource<TodoItemNode, TodoItemNode>;
+  dataSource: TodoItemNode[];
 
   /** The selection for checklist */
   checklistSelection = new SelectionModel<TodoItemNode>(true /* multiple */);
 
   constructor(private database: ChecklistDatabase, private changeDetectorRef: ChangeDetectorRef) {
-    this.treeFlattener = new MatTreeFlattener(this.transformer, this.getLevel,
-        this.isExpandable, this.getChildren);
-    this.treeControl = new FlatTreeControl<TodoItemNode>(
-        this.getLevel, this.isExpandable);
-    this.dataSource = new MatTreeFlatDataSource(this.treeControl, this.treeFlattener);
-    this.dataSource = new MatTreeFlatDataSource(this.treeControl, this.treeFlattener);
-    database.dataChange.subscribe(data => this.dataSource.data = data);
+    this.treeControl = new NestedTreeControl<TodoItemNode>(this.getChildren);
+    this.dataSource = database.data;
   }
 
-  getLevel = (node: TodoItemNode): number => {
-    return this.levels.get(node) || 0;
-  }
+  getChildren = (node: TodoItemNode): Observable<TodoItemNode[]> => node.children;
 
-  isExpandable = (node: TodoItemNode): boolean => {
-    return node.children.value.length > 0;
-  }
-
-  getChildren = (node: TodoItemNode) => {
-    return node.children;
-  }
-
-  transformer = (node: TodoItemNode, level: number) => {
-    this.levels.set(node, level);
-    return node;
-  }
-
-  hasNoContent(_nodeData: TodoItemNode) { return _nodeData.item === ''; }
+  hasNoContent = (_nodeData: TodoItemNode) => { return _nodeData.item === ''; };
 
   /** Whether all the descendants of the node are selected */
   descendantsAllSelected(node: TodoItemNode): boolean {

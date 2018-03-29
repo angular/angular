@@ -3,11 +3,6 @@
     display: block;
   }
 
-  .demo-tree-toggle {
-    font-size: 24px;
-    padding-right: 4px;
-  }
-
   .demo-tree-nested-node {
     padding-left: 20px;
   }
@@ -24,15 +19,5 @@
 
   .mat-card {
     margin: 16px;
-  }
-}
-
-.checklist-leaf-node {
-  padding-left: 40px;
-  padding-right: inherit;
-
-  [dir='rtl'] & {
-    padding-right: 60px;
-    padding-left: inherit;
   }
 }

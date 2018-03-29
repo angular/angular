@@ -20,6 +20,7 @@ import {
 } from '@angular/material';
 import {TreeDemo} from './tree-demo';
 import {ChecklistTreeDemo} from './checklist-tree-demo/checklist-tree-demo';
+import {ChecklistNestedTreeDemo} from './checklist-tree-demo/checklist-nested-tree-demo';
 import {DynamicTreeDemo} from './dynamic-tree-demo/dynamic-tree-demo';
 import {LoadmoreTreeDemo} from './loadmore-tree-demo/loadmore-tree-demo';
 
@@ -37,6 +38,7 @@ import {LoadmoreTreeDemo} from './loadmore-tree-demo/loadmore-tree-demo';
     MatTreeModule,
   ],
   declarations: [
+    ChecklistNestedTreeDemo,
     ChecklistTreeDemo,
     TreeDemo,
     DynamicTreeDemo,

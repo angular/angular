@@ -1,21 +1,14 @@
-/**
- * @license
- * Copyright Google LLC All Rights Reserved.
- *
- * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
- */
-import {Injectable} from '@angular/core';
+import {Component, Injectable} from '@angular/core';
 import {FlatTreeControl} from '@angular/cdk/tree';
 import {CollectionViewer, SelectionChange} from '@angular/cdk/collections';
-import {BehaviorSubject} from 'rxjs';
-import {Observable} from 'rxjs';
-import {merge} from 'rxjs';
+import {BehaviorSubject, Observable, merge} from 'rxjs';
 import {map} from 'rxjs/operators';
+
 
 /** Flat node with expandable and level information */
 export class DynamicFlatNode {
-  constructor(public item: string, public level: number = 1, public expandable: boolean = false) {}
+  constructor(public item: string, public level: number = 1, public expandable: boolean = false,
+              public isLoading: boolean = false) {}
 }
 
 
@@ -69,14 +62,14 @@ export class DynamicDataSource {
               private database: DynamicDatabase) {}
 
   connect(collectionViewer: CollectionViewer): Observable<DynamicFlatNode[]> {
-    return merge(collectionViewer.viewChange, this.treeControl.expansionModel.onChange!)
-        .pipe(map((change) => {
+    this.treeControl.expansionModel.onChange!.subscribe(change => {
       if ((change as SelectionChange<DynamicFlatNode>).added ||
-          (change as SelectionChange<DynamicFlatNode>).removed) {
+        (change as SelectionChange<DynamicFlatNode>).removed) {
         this.handleTreeControl(change as SelectionChange<DynamicFlatNode>);
       }
-      return this.data;
-    }));
+    });
+
+    return merge(collectionViewer.viewChange, this.dataChange).pipe(map(() => this.data));
   }
 
   /** Handle expand/collapse behaviors */
@@ -85,7 +78,6 @@ export class DynamicDataSource {
       change.added.forEach((node) => this.toggleNode(node, true));
     }
     if (change.removed) {
-      // Use reverse to remove from bottom to top
       change.removed.reverse().forEach((node) => this.toggleNode(node, false));
     }
   }
@@ -100,15 +92,49 @@ export class DynamicDataSource {
       return;
     }
 
-    if (expand) {
-      const nodes = children.map(name =>
-          new DynamicFlatNode(name, node.level + 1, this.database.isExpandable(name)));
-      this.data.splice(index + 1, 0, ...nodes);
-    } else {
-      this.data.splice(index + 1, children.length);
-    }
+    node.isLoading = true;
 
-    // notify the change
-    this.dataChange.next(this.data);
+    setTimeout(() => {
+      if (expand) {
+        const nodes = children.map(name =>
+          new DynamicFlatNode(name, node.level + 1, this.database.isExpandable(name)));
+        this.data.splice(index + 1, 0, ...nodes);
+      } else {
+        this.data.splice(index + 1, children.length);
+      }
+
+      // notify the change
+      this.dataChange.next(this.data);
+      node.isLoading = false;
+    }, 1000);
   }
+}
+
+/**
+ * @title Tree with dynamic data
+ */
+@Component({
+  selector: 'tree-dynamic-example',
+  templateUrl: 'tree-dynamic-example.html',
+  styleUrls: ['tree-dynamic-example.css'],
+  providers: [DynamicDatabase]
+})
+export class TreeDynamicExample {
+
+  constructor(database: DynamicDatabase) {
+    this.treeControl = new FlatTreeControl<DynamicFlatNode>(this.getLevel, this.isExpandable);
+    this.dataSource = new DynamicDataSource(this.treeControl, database);
+
+    this.dataSource.data = database.initialData();
+  }
+
+  treeControl: FlatTreeControl<DynamicFlatNode>;
+
+  dataSource: DynamicDataSource;
+
+  getLevel = (node: DynamicFlatNode) => { return node.level; };
+
+  isExpandable = (node: DynamicFlatNode) => { return node.expandable; };
+
+  hasChild = (_: number, _nodeData: DynamicFlatNode) => { return _nodeData.expandable; };
 }
