@@ -18,13 +18,6 @@ const _INTERPOLATION_REGEXP: RegExp = /#/g;
  *
  * Maps a value to a string that pluralizes the value according to locale rules.
  *
- *  Where:
- *  - `expression` is a number.
- *  - `mapping` is an object that mimics the ICU format, see
- *    http://userguide.icu-project.org/formatparse/messages
- *  - `locale` is a `string` defining the locale to use (uses the current {@link LOCALE_ID} by
- * default)
- *
  *  ## Example
  *
  * {@example common/pipes/ts/i18n_pipe.ts region='I18nPluralPipeComponent'}
@@ -35,6 +28,13 @@ const _INTERPOLATION_REGEXP: RegExp = /#/g;
 export class I18nPluralPipe implements PipeTransform {
   constructor(private _localization: NgLocalization) {}
 
+  /**
+   * @param value the number to be formatted
+   * @param pluralMap an object that mimics the ICU format, see
+   * http://userguide.icu-project.org/formatparse/messages.
+   * @param locale a `string` defining the locale to use (uses the current {@link LOCALE_ID} by
+   * default).
+   */
   transform(value: number, pluralMap: {[count: string]: string}, locale?: string): string {
     if (value == null) return '';
 
