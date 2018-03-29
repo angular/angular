@@ -50,9 +50,13 @@ def _rollup(ctx, rollup_config, entry_point, inputs, js_output, format = "es"):
   args.add("--sourcemap")
 
   globals = dict(WELL_KNOWN_GLOBALS, **ctx.attr.globals)
-  externals = globals.keys()
   args.add("--external")
-  args.add(externals, join_with=",")
+  args.add(globals.keys(), join_with=",")
+
+  args.add("--globals")
+  args.add(["%s:%s" % g for g in globals.items()], join_with=",")
+
+  args.add("--silent")
 
   other_inputs = [ctx.executable._rollup, rollup_config]
   if ctx.file.license_banner:
