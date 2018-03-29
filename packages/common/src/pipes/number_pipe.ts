@@ -35,8 +35,10 @@ export class DecimalPipe implements PipeTransform {
    * @param digitsInfo a `string` which has a following format: <br>
    * <code>{minIntegerDigits}.{minFractionDigits}-{maxFractionDigits}</code>.
    *   - `minIntegerDigits` is the minimum number of integer digits to use. Defaults to `1`.
-   *   - `minFractionDigits` is the minimum number of digits after the decimal point. Defaults to `0`.
-   *   - `maxFractionDigits` is the maximum number of digits after the decimal point. Defaults to `3`.
+   *   - `minFractionDigits` is the minimum number of digits after the decimal point. Defaults to
+   * `0`.
+   *   - `maxFractionDigits` is the maximum number of digits after the decimal point. Defaults to
+   * `3`.
    * @param locale a `string` defining the locale to use (uses the current {@link LOCALE_ID} by
    * default).
    */
@@ -112,8 +114,8 @@ export class CurrencyPipe implements PipeTransform {
   /**
    *
    * @param value a number to be formatted as currency.
-   * @param currencyCodeis the [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217) currency code, such
-   * as `USD` for the US dollar and `EUR` for the euro.
+   * @param currencyCodeis the [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217) currency code,
+   * such as `USD` for the US dollar and `EUR` for the euro.
    * @param display indicates whether to show the currency symbol, the code or a custom value:
    *   - `code`: use code (e.g. `USD`).
    *   - `symbol`(default): use symbol (e.g. `$`).

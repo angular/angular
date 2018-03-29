@@ -50,7 +50,8 @@ export class SlicePipe implements PipeTransform {
    *     in the list or string expression.
    *   - **a negative integer**: return the item at `start` index from the end and all items after
    *     in the list or string expression.
-   *   - **if positive and greater than the size of the expression**: return an empty list or string.
+   *   - **if positive and greater than the size of the expression**: return an empty list or
+   * string.
    *   - **if negative and greater than the size of the expression**: return entire list or string.
    * @param end the ending index of the subset to return:
    *   - **omitted**: return all items until the end.

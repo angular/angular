@@ -21,11 +21,12 @@
       {% if showType %}<td class="param-type"><code>{$ parameter.type $}</code></td>{% endif %}
       <td class="param-description">
       {% marked %}
-        {% if parameter.isOptional or parameter.defaultValue !== undefined %}Optional. Default is `{$ parameter.defaultValue === undefined and 'undefined' or parameter.defaultValue $}`.{% endif %}
+      {% if parameter.description | trim %}{$ parameter.description $}
 
-        {% if parameter.description | trim %}{$ parameter.description $}
-        {% elseif not showType and parameter.type %}<p>Type: <code>{$ parameter.type $}</code>.</p>
-        {% endif %}
+      {% elseif not showType and parameter.type %}<p>Type: <code>{$ parameter.type $}</code>.</p>
+      {% endif %}
+
+      {% if parameter.isOptional or parameter.defaultValue !== undefined %}Optional. Default is `{$ parameter.defaultValue === undefined and 'undefined' or parameter.defaultValue $}`.{% endif %}
       {% endmarked %}
       </td>
     </tr>{% endfor %}
