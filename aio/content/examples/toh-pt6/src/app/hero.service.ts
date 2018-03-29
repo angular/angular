@@ -19,7 +19,7 @@ const httpOptions = {
 };
 // #enddocregion http-options
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class HeroService {
 
   // #docregion heroesUrl
