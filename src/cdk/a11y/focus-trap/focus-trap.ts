@@ -146,12 +146,15 @@ export class FocusTrap {
                                                  `[cdk-focus-${bound}]`) as NodeListOf<HTMLElement>;
 
     for (let i = 0; i < markers.length; i++) {
+      // @deletion-target 7.0.0
       if (markers[i].hasAttribute(`cdk-focus-${bound}`)) {
-        console.warn(`Found use of deprecated attribute 'cdk-focus-${bound}',` +
-                     ` use 'cdkFocusRegion${bound}' instead.`, markers[i]);
+        console.warn(`Found use of deprecated attribute 'cdk-focus-${bound}', ` +
+                     `use 'cdkFocusRegion${bound}' instead. The deprecated ` +
+                     `attribute will be removed in 7.0.0.`, markers[i]);
       } else if (markers[i].hasAttribute(`cdk-focus-region-${bound}`)) {
-        console.warn(`Found use of deprecated attribute 'cdk-focus-region-${bound}',` +
-                     ` use 'cdkFocusRegion${bound}' instead.`, markers[i]);
+        console.warn(`Found use of deprecated attribute 'cdk-focus-region-${bound}', ` +
+                     `use 'cdkFocusRegion${bound}' instead. The deprecated attribute ` +
+                     `will be removed in 7.0.0.`, markers[i]);
       }
     }
 
@@ -171,12 +174,14 @@ export class FocusTrap {
     const redirectToElement = this._element.querySelector(`[cdk-focus-initial], ` +
                                                           `[cdkFocusInitial]`) as HTMLElement;
 
-    if (this._element.hasAttribute(`cdk-focus-initial`)) {
-      console.warn(`Found use of deprecated attribute 'cdk-focus-initial',` +
-                    ` use 'cdkFocusInitial' instead.`, this._element);
-    }
-
     if (redirectToElement) {
+      // @deletion-target 7.0.0
+      if (redirectToElement.hasAttribute(`cdk-focus-initial`)) {
+        console.warn(`Found use of deprecated attribute 'cdk-focus-initial', ` +
+                    `use 'cdkFocusInitial' instead. The deprecated attribute ` +
+                    `will be removed in 7.0.0`, redirectToElement);
+      }
+
       redirectToElement.focus();
       return true;
     }
