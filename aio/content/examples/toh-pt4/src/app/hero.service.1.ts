@@ -8,7 +8,7 @@ import { Hero } from './hero';
 import { HEROES } from './mock-heroes';
 
 // #docregion new
-@Injectable()
+@Injectable({providedIn: 'root'})
 export class HeroService {
 
   constructor() { }
