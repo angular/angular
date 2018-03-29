@@ -17,30 +17,7 @@ import {invalidPipeArgumentError} from './invalid_pipe_argument_error';
  *
  * Uses the function {@link formatDate} to format a date according to locale rules.
  *
- * Where:
- * - `value` is a date object or a number (milliseconds since UTC epoch) or an ISO string
- * (https://www.w3.org/TR/NOTE-datetime).
- * - `format` indicates which date/time components to include. The format can be predefined as
- *   shown below (all examples are given for `en-US`) or custom as shown in the table.
- *   - `'short'`: equivalent to `'M/d/yy, h:mm a'` (e.g. `6/15/15, 9:03 AM`).
- *   - `'medium'`: equivalent to `'MMM d, y, h:mm:ss a'` (e.g. `Jun 15, 2015, 9:03:01 AM`).
- *   - `'long'`: equivalent to `'MMMM d, y, h:mm:ss a z'` (e.g. `June 15, 2015 at 9:03:01 AM GMT+1`).
- *   - `'full'`: equivalent to `'EEEE, MMMM d, y, h:mm:ss a zzzz'` (e.g. `Monday, June 15, 2015 at
- * 9:03:01 AM GMT+01:00`).
- *   - `'shortDate'`: equivalent to `'M/d/yy'` (e.g. `6/15/15`).
- *   - `'mediumDate'`: equivalent to `'MMM d, y'` (e.g. `Jun 15, 2015`).
- *   - `'longDate'`: equivalent to `'MMMM d, y'` (e.g. `June 15, 2015`).
- *   - `'fullDate'`: equivalent to `'EEEE, MMMM d, y'` (e.g. `Monday, June 15, 2015`).
- *   - `'shortTime'`: equivalent to `'h:mm a'` (e.g. `9:03 AM`).
- *   - `'mediumTime'`: equivalent to `'h:mm:ss a'` (e.g. `9:03:01 AM`).
- *   - `'longTime'`: equivalent to `'h:mm:ss a z'` (e.g. `9:03:01 AM GMT+1`).
- *   - `'fullTime'`: equivalent to `'h:mm:ss a zzzz'` (e.g. `9:03:01 AM GMT+01:00`).
- * - `timezone` to be used for formatting. It understands UTC/GMT and the continental US time zone
- *  abbreviations, but for general use, use a time zone offset (e.g. `'+0430'`).
- *  If not specified, the local system timezone of the end-user's browser will be used.
- * - `locale` is a `string` defining the locale to use (uses the current {@link LOCALE_ID} by
- * default).
- *
+ * The following tabled describes the formatting options.
  *
  *  | Field Type         | Format      | Description                                                   | Example Value                                              |
  *  |--------------------|-------------|---------------------------------------------------------------|------------------------------------------------------------|
@@ -129,6 +106,29 @@ import {invalidPipeArgumentError} from './invalid_pipe_argument_error';
 export class DatePipe implements PipeTransform {
   constructor(@Inject(LOCALE_ID) private locale: string) {}
 
+  /**
+   * @param value a date object or a number (milliseconds since UTC epoch) or an ISO string
+   * (https://www.w3.org/TR/NOTE-datetime).
+   * @param format indicates which date/time components to include. The format can be predefined as
+   *   shown below (all examples are given for `en-US`) or custom as shown in the table.
+   *   - `'short'`: equivalent to `'M/d/yy, h:mm a'` (e.g. `6/15/15, 9:03 AM`).
+   *   - `'medium'`: equivalent to `'MMM d, y, h:mm:ss a'` (e.g. `Jun 15, 2015, 9:03:01 AM`).
+   *   - `'long'`: equivalent to `'MMMM d, y, h:mm:ss a z'` (e.g. `June 15, 2015 at 9:03:01 AM GMT+1`).
+   *   - `'full'`: equivalent to `'EEEE, MMMM d, y, h:mm:ss a zzzz'` (e.g. `Monday, June 15, 2015 at
+   * 9:03:01 AM GMT+01:00`).
+   *   - `'shortDate'`: equivalent to `'M/d/yy'` (e.g. `6/15/15`).
+   *   - `'mediumDate'`: equivalent to `'MMM d, y'` (e.g. `Jun 15, 2015`).
+   *   - `'longDate'`: equivalent to `'MMMM d, y'` (e.g. `June 15, 2015`).
+   *   - `'fullDate'`: equivalent to `'EEEE, MMMM d, y'` (e.g. `Monday, June 15, 2015`).
+   *   - `'shortTime'`: equivalent to `'h:mm a'` (e.g. `9:03 AM`).
+   *   - `'mediumTime'`: equivalent to `'h:mm:ss a'` (e.g. `9:03:01 AM`).
+   *   - `'longTime'`: equivalent to `'h:mm:ss a z'` (e.g. `9:03:01 AM GMT+1`).
+   *   - `'fullTime'`: equivalent to `'h:mm:ss a zzzz'` (e.g. `9:03:01 AM GMT+01:00`).
+   * @param timezone to be used for formatting the time. It understands UTC/GMT and the continental US time zone
+   *  abbreviations, but for general use, use a time zone offset (e.g. `'+0430'`).
+   * @param locale a `string` defining the locale to use (uses the current {@link LOCALE_ID} by
+   * default).
+   */
   transform(value: any, format = 'mediumDate', timezone?: string, locale?: string): string|null {
     if (value == null || value === '' || value !== value) return null;
 
