@@ -13,8 +13,9 @@ import {invalidPipeArgumentError} from './invalid_pipe_argument_error';
 // clang-format off
 /**
  * @ngModule CommonModule
- * @whatItDoes Uses the function {@link formatDate} to format a date according to locale rules.
  * @description
+ *
+ * Uses the function {@link formatDate} to format a date according to locale rules.
  *
  * Where:
  * - `value` is a date object or a number (milliseconds since UTC epoch) or an ISO string

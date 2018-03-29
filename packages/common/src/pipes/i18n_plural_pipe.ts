@@ -14,8 +14,9 @@ const _INTERPOLATION_REGEXP: RegExp = /#/g;
 
 /**
  * @ngModule CommonModule
- * @whatItDoes Maps a value to a string that pluralizes the value according to locale rules.
  * @description
+ *
+ * Maps a value to a string that pluralizes the value according to locale rules.
  *
  *  Where:
  *  - `expression` is a number.

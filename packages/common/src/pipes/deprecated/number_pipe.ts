@@ -61,7 +61,6 @@ function formatNumber(
 
 /**
  * @ngModule CommonModule
- * @whatItDoes Formats a number according to locale rules.
  *
  * Formats a number as text. Group sizing and separator and other locale-specific
  * configurations are based on the active locale.
@@ -97,11 +96,10 @@ export class DeprecatedDecimalPipe implements PipeTransform {
 
 /**
  * @ngModule CommonModule
- * @whatItDoes Formats a number as a percentage according to locale rules.
  *
  * @description
  *
- * Formats a number as percentage.
+ * Formats a number as percentage according to locale rules.
  *
  * - `digitInfo` See {@link DecimalPipe} for detailed description.
  *
@@ -126,8 +124,9 @@ export class DeprecatedPercentPipe implements PipeTransform {
 
 /**
  * @ngModule CommonModule
- * @whatItDoes Formats a number as currency using locale rules.
  * @description
+ *
+ * Formats a number as currency using locale rules.
  *
  * Use `currency` to format a number as currency.
  *
