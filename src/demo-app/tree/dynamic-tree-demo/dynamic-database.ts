@@ -15,6 +15,7 @@ import {map} from 'rxjs/operators';
 
 /** Flat node with expandable and level information */
 export class DynamicFlatNode {
+  isLoading: boolean = false;
   constructor(public item: string, public level: number = 1, public expandable: boolean = false) {}
 }
 
@@ -69,14 +70,14 @@ export class DynamicDataSource {
               private database: DynamicDatabase) {}
 
   connect(collectionViewer: CollectionViewer): Observable<DynamicFlatNode[]> {
-    return merge(collectionViewer.viewChange, this.treeControl.expansionModel.onChange!)
-        .pipe(map((change) => {
-      if ((change as SelectionChange<DynamicFlatNode>).added ||
+    this.treeControl.expansionModel.onChange!.subscribe(change => {
+        if ((change as SelectionChange<DynamicFlatNode>).added ||
           (change as SelectionChange<DynamicFlatNode>).removed) {
-        this.handleTreeControl(change as SelectionChange<DynamicFlatNode>);
-      }
-      return this.data;
-    }));
+          this.handleTreeControl(change as SelectionChange<DynamicFlatNode>);
+        }
+      });
+
+    return merge(collectionViewer.viewChange, this.dataChange).pipe(map(() => this.data));
   }
 
   /** Handle expand/collapse behaviors */
@@ -99,16 +100,21 @@ export class DynamicDataSource {
     if (!children || index < 0) { // If no children, or cannot find the node, no op
       return;
     }
+    node.isLoading = true;
 
-    if (expand) {
-      const nodes = children.map(name =>
+    setTimeout(() => {
+      if (expand) {
+        const nodes = children.map(name =>
           new DynamicFlatNode(name, node.level + 1, this.database.isExpandable(name)));
-      this.data.splice(index + 1, 0, ...nodes);
-    } else {
-      this.data.splice(index + 1, children.length);
-    }
+        this.data.splice(index + 1, 0, ...nodes);
+      } else {
+        this.data.splice(index + 1, children.length);
+      }
 
-    // notify the change
-    this.dataChange.next(this.data);
+      // notify the change
+      this.dataChange.next(this.data);
+      node.isLoading = false;
+    }, 1000);
   }
+
 }
