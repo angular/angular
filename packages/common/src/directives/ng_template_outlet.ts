@@ -13,7 +13,7 @@ import {Directive, EmbeddedViewRef, Input, OnChanges, SimpleChange, SimpleChange
  *
  * @whatItDoes Inserts an embedded view from a prepared `TemplateRef`
  *
- * @howToUse
+ * @usageNotes
  * ```
  * <ng-container *ngTemplateOutlet="templateRefExp; context: contextExp"></ng-container>
  * ```

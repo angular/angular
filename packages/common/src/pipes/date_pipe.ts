@@ -14,7 +14,6 @@ import {invalidPipeArgumentError} from './invalid_pipe_argument_error';
 /**
  * @ngModule CommonModule
  * @whatItDoes Uses the function {@link formatDate} to format a date according to locale rules.
- * @howToUse `date_expression | date[:format[:timezone[:locale]]]`
  * @description
  *
  * Where:
