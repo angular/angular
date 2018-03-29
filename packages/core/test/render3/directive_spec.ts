@@ -38,7 +38,7 @@ describe('directive', () => {
         }
       }
 
-      const defs = [Directive.ngDirectiveDef];
+      const defs = [Directive];
       expect(renderToHtml(Template, {}, defs)).toEqual('<span class="foo" dir=""></span>');
       directiveInstance !.klass = 'bar';
       expect(renderToHtml(Template, {}, defs)).toEqual('<span class="bar" dir=""></span>');

@@ -139,10 +139,7 @@ describe('elementProperty', () => {
     }
 
 
-    const deps = [
-      MyButton.ngDirectiveDef, OtherDir.ngDirectiveDef, OtherDisabledDir.ngDirectiveDef,
-      IdDir.ngDirectiveDef
-    ];
+    const deps = [MyButton, OtherDir, OtherDisabledDir, IdDir];
 
     it('should check input properties before setting (directives)', () => {
 
@@ -223,7 +220,7 @@ describe('elementProperty', () => {
         elementProperty(0, 'id', bind(ctx.id));
       }
 
-      const deps = [Comp.ngComponentDef];
+      const deps = [Comp];
       expect(renderToHtml(Template, {id: 1}, deps)).toEqual(`<comp></comp>`);
       expect(comp !.id).toEqual(1);
 
@@ -365,7 +362,7 @@ describe('elementProperty', () => {
       });
     }
 
-    const deps = [MyDir.ngDirectiveDef, MyDirB.ngDirectiveDef];
+    const deps = [MyDir, MyDirB];
 
     it('should set input property based on attribute if existing', () => {
 
@@ -539,7 +536,7 @@ describe('elementProperty', () => {
             textBinding(2, bind(tmp.role));
           },
           factory: () => new Comp(),
-          directiveDefs: () => [MyDir.ngDirectiveDef]
+          directives: () => [MyDir]
         });
       }
 
@@ -565,7 +562,7 @@ describe('elementProperty', () => {
         containerRefreshEnd();
       }
 
-      expect(renderToHtml(Template, {}, [Comp.ngComponentDef]))
+      expect(renderToHtml(Template, {}, [Comp]))
           .toEqual(
               `<comp><div mydir="" role="button"></div>button</comp><comp><div mydir="" role="button"></div>button</comp>`);
     });

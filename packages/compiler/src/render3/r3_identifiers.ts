@@ -33,10 +33,6 @@ export class Identifiers {
 
   static containerEnd: o.ExternalReference = {name: 'ɵc', moduleName: CORE};
 
-  static containerRefreshStart: o.ExternalReference = {name: 'ɵcR', moduleName: CORE};
-
-  static containerRefreshEnd: o.ExternalReference = {name: 'ɵcr', moduleName: CORE};
-
   static directiveCreate: o.ExternalReference = {name: 'ɵD', moduleName: CORE};
 
   static text: o.ExternalReference = {name: 'ɵT', moduleName: CORE};
