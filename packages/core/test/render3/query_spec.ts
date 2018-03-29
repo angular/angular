@@ -73,7 +73,7 @@ describe('query', () => {
       }
       queryRefresh(tmp = load<QueryList<any>>(0)) && (ctx.query0 = tmp as QueryList<any>);
       queryRefresh(tmp = load<QueryList<any>>(1)) && (ctx.query1 = tmp as QueryList<any>);
-    }, [Child.ngComponentDef]);
+    }, [Child]);
 
     const parent = renderComponent(Cmp);
     expect((parent.query0 as QueryList<any>).toArray()).toEqual([child1]);
@@ -99,7 +99,7 @@ describe('query', () => {
           elementEnd();
         }
         queryRefresh(tmp = load<QueryList<any>>(0)) && (ctx.query = tmp as QueryList<any>);
-      }, [Child.ngDirectiveDef]);
+      }, [Child]);
 
       const cmptInstance = renderComponent(Cmpt);
       const qList = (cmptInstance.query as QueryList<any>);
@@ -128,7 +128,7 @@ describe('query', () => {
           elementEnd();
         }
         queryRefresh(tmp = load<QueryList<any>>(0)) && (ctx.query = tmp as QueryList<any>);
-      }, [Child.ngDirectiveDef, OtherChild.ngDirectiveDef]);
+      }, [Child, OtherChild]);
 
       const cmptInstance = renderComponent(Cmpt);
       const qList = (cmptInstance.query as QueryList<any>);
@@ -153,7 +153,7 @@ describe('query', () => {
           elementEnd();
         }
         queryRefresh(tmp = load<QueryList<any>>(0)) && (ctx.query = tmp as QueryList<any>);
-      }, [Child.ngDirectiveDef, OtherChild.ngDirectiveDef]);
+      }, [Child, OtherChild]);
 
       const cmptInstance = renderComponent(Cmpt);
       const qList = (cmptInstance.query as QueryList<any>);
@@ -422,7 +422,7 @@ describe('query', () => {
           elementEnd();
         }
         queryRefresh(tmp = load<QueryList<any>>(0)) && (ctx.query = tmp as QueryList<any>);
-      }, [Child.ngComponentDef]);
+      }, [Child]);
 
       const cmptInstance = renderComponent(Cmpt);
       const qList = (cmptInstance.query as QueryList<any>);
@@ -457,7 +457,7 @@ describe('query', () => {
           elementEnd();
         }
         queryRefresh(tmp = load<QueryList<any>>(0)) && (ctx.query = tmp as QueryList<any>);
-      }, [Child.ngComponentDef]);
+      }, [Child]);
 
       const cmptInstance = renderComponent(Cmpt);
       const qList = (cmptInstance.query as QueryList<any>);
@@ -485,7 +485,7 @@ describe('query', () => {
              elementEnd();
            }
            queryRefresh(tmp = load<QueryList<any>>(0)) && (ctx.query = tmp as QueryList<any>);
-         }, [Child.ngDirectiveDef]);
+         }, [Child]);
 
          const cmptInstance = renderComponent(Cmpt);
          const qList = (cmptInstance.query as QueryList<any>);
@@ -516,7 +516,7 @@ describe('query', () => {
           elementEnd();
         }
         queryRefresh(tmp = load<QueryList<any>>(0)) && (ctx.query = tmp as QueryList<any>);
-      }, [Child1.ngDirectiveDef, Child2.ngDirectiveDef]);
+      }, [Child1, Child2]);
 
       const cmptInstance = renderComponent(Cmpt);
       const qList = (cmptInstance.query as QueryList<any>);
@@ -547,7 +547,7 @@ describe('query', () => {
         }
         queryRefresh(tmp = load<QueryList<any>>(0)) && (ctx.fooQuery = tmp as QueryList<any>);
         queryRefresh(tmp = load<QueryList<any>>(1)) && (ctx.barQuery = tmp as QueryList<any>);
-      }, [Child.ngDirectiveDef]);
+      }, [Child]);
 
       const cmptInstance = renderComponent(Cmpt);
 
@@ -578,7 +578,7 @@ describe('query', () => {
           elementEnd();
         }
         queryRefresh(tmp = load<QueryList<any>>(0)) && (ctx.query = tmp as QueryList<any>);
-      }, [Child.ngDirectiveDef]);
+      }, [Child]);
 
       const cmptInstance = renderComponent(Cmpt);
       const qList = (cmptInstance.query as QueryList<any>);
@@ -605,7 +605,7 @@ describe('query', () => {
           elementEnd();
         }
         queryRefresh(tmp = load<QueryList<any>>(0)) && (ctx.query = tmp as QueryList<any>);
-      }, [Child.ngDirectiveDef]);
+      }, [Child]);
 
       const cmptInstance = renderComponent(Cmpt);
       const qList = (cmptInstance.query as QueryList<any>);
@@ -631,7 +631,7 @@ describe('query', () => {
           elementEnd();
         }
         queryRefresh(tmp = load<QueryList<any>>(0)) && (ctx.query = tmp as QueryList<any>);
-      }, [Child.ngDirectiveDef]);
+      }, [Child]);
 
       const cmptInstance = renderComponent(Cmpt);
       const qList = (cmptInstance.query as QueryList<any>);

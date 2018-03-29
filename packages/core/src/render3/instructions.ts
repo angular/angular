@@ -400,7 +400,8 @@ function resetApplicationState() {
  * @param context to pass into the template.
  * @param providedRendererFactory renderer factory to use
  * @param host The host element node to use
- * @param defs Any directive or pipe defs that should be used for matching
+ * @param directives Directive defs that should be used for matching
+ * @param pipes Pipe defs that should be used for matching
  */
 export function renderTemplate<T>(
     hostNode: RElement, template: ComponentTemplate<T>, context: T,

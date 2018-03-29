@@ -56,7 +56,7 @@ describe('injection', () => {
               $r3$.ɵe();
             }
           },
-          directiveDefs: () => [MyComp.ngComponentDef]
+          directives: () => [MyComp]
         });
       }
 
@@ -101,7 +101,7 @@ describe('injection', () => {
               $r3$.ɵe();
             }
           },
-          directiveDefs: () => [MyComp.ngComponentDef]
+          directives: () => [MyComp]
         });
       }
       const e0_attrs = ['title', 'WORKS'];

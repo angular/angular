@@ -60,7 +60,7 @@ describe('renderer factory lifecycle', () => {
     }
   }
 
-  const defs = [SomeComponent.ngComponentDef, SomeComponentWhichThrows.ngComponentDef];
+  const directives = [SomeComponent, SomeComponentWhichThrows];
 
   function TemplateWithComponent(ctx: any, cm: boolean) {
     logs.push('function_with_component');
@@ -97,12 +97,12 @@ describe('renderer factory lifecycle', () => {
   });
 
   it('should work with a template which contains a component', () => {
-    renderToHtml(TemplateWithComponent, {}, defs, null, rendererFactory);
+    renderToHtml(TemplateWithComponent, {}, directives, null, rendererFactory);
     expect(logs).toEqual(
         ['create', 'begin', 'function_with_component', 'create', 'component', 'end']);
 
     logs = [];
-    renderToHtml(TemplateWithComponent, {}, defs);
+    renderToHtml(TemplateWithComponent, {}, directives);
     expect(logs).toEqual(['begin', 'function_with_component', 'component', 'end']);
   });
 
