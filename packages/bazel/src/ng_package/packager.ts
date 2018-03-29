@@ -165,16 +165,11 @@ function main(args: string[]): number {
   // of the index JS file, which we need to amend the package.json.
   Object.keys(modulesManifest).forEach(moduleName => {
     const moduleFiles = modulesManifest[moduleName];
-    const indexContent = fs.readFileSync(moduleFiles['index'], 'utf-8');
     const relative = path.relative(binDir, moduleFiles['index']);
 
     moduleFiles['esm5_index'] = path.join(binDir, 'esm5', relative);
     moduleFiles['esm2015_index'] = path.join(binDir, 'esm2015', relative);
 
-    writeFileFromInputPath(moduleFiles['esm5_index'], indexContent);
-    writeFileFromInputPath(moduleFiles['esm2015_index'], indexContent);
-
-    copyFileFromInputPath(moduleFiles['typings']);
     copyFileFromInputPath(moduleFiles['metadata']);
   });
 
