@@ -113,7 +113,8 @@ export class DatePipe implements PipeTransform {
    *   shown below (all examples are given for `en-US`) or custom as shown in the table.
    *   - `'short'`: equivalent to `'M/d/yy, h:mm a'` (e.g. `6/15/15, 9:03 AM`).
    *   - `'medium'`: equivalent to `'MMM d, y, h:mm:ss a'` (e.g. `Jun 15, 2015, 9:03:01 AM`).
-   *   - `'long'`: equivalent to `'MMMM d, y, h:mm:ss a z'` (e.g. `June 15, 2015 at 9:03:01 AM GMT+1`).
+   *   - `'long'`: equivalent to `'MMMM d, y, h:mm:ss a z'` (e.g. `June 15, 2015 at 9:03:01 AM
+   * GMT+1`).
    *   - `'full'`: equivalent to `'EEEE, MMMM d, y, h:mm:ss a zzzz'` (e.g. `Monday, June 15, 2015 at
    * 9:03:01 AM GMT+01:00`).
    *   - `'shortDate'`: equivalent to `'M/d/yy'` (e.g. `6/15/15`).
@@ -124,7 +125,8 @@ export class DatePipe implements PipeTransform {
    *   - `'mediumTime'`: equivalent to `'h:mm:ss a'` (e.g. `9:03:01 AM`).
    *   - `'longTime'`: equivalent to `'h:mm:ss a z'` (e.g. `9:03:01 AM GMT+1`).
    *   - `'fullTime'`: equivalent to `'h:mm:ss a zzzz'` (e.g. `9:03:01 AM GMT+01:00`).
-   * @param timezone to be used for formatting the time. It understands UTC/GMT and the continental US time zone
+   * @param timezone to be used for formatting the time. It understands UTC/GMT and the continental
+   * US time zone
    *  abbreviations, but for general use, use a time zone offset (e.g. `'+0430'`).
    * @param locale a `string` defining the locale to use (uses the current {@link LOCALE_ID} by
    * default).
