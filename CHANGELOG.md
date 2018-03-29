@@ -1,3 +1,36 @@
+<a name="6.0.0-rc.0"></a>
+# [6.0.0-rc.0](https://github.com/angular/material2/compare/6.0.0-beta-5...6.0.0-rc.0) (2018-03-29)
+
+### Known issues
+* MatButtonToggleGroup causes ExpressionChangedAfterItHasBeenCheckedError ([#10607](https://github.com/angular/material2/issues/10607))
+* focus-trap: wrong element being checked when logging deprecation warning ([#10578](https://github.com/angular/material2/pull/10578))
+
+
+### Bug Fixes
+
+* **bottom-sheet:** handle overflowing content ([#10533](https://github.com/angular/material2/issues/10533)) ([cb6d469](https://github.com/angular/material2/commit/cb6d469))
+* **datepicker:** add back MAT_DATE_LOCALE_PROVIDER ([#10602](https://github.com/angular/material2/issues/10602)) ([7fd7ad3](https://github.com/angular/material2/commit/7fd7ad3))
+* **datepicker:** incorrect icon color ([#10458](https://github.com/angular/material2/issues/10458)) ([4e298a6](https://github.com/angular/material2/commit/4e298a6))
+* **datepicker:** set canPush to false for position strategy ([#10609](https://github.com/angular/material2/issues/10609)) ([67c7348](https://github.com/angular/material2/commit/67c7348))
+* **drawer:** better handling of high contrast mode ([#10418](https://github.com/angular/material2/issues/10418)) ([ff2860f](https://github.com/angular/material2/commit/ff2860f))
+* **input:** inaccurate textarea check during server-side render ([#10467](https://github.com/angular/material2/issues/10467)) ([dda1d04](https://github.com/angular/material2/commit/dda1d04))
+* **overlay:** CdkConnectedOverlay ignoring offset from position config ([#10451](https://github.com/angular/material2/issues/10451)) ([1659004](https://github.com/angular/material2/commit/1659004))
+* **select:** MatOption state change stream not being completed ([#10540](https://github.com/angular/material2/issues/10540)) ([b8bb62f](https://github.com/angular/material2/commit/b8bb62f))
+* **slider:** unable to slide to max value under certain conditions ([#10364](https://github.com/angular/material2/issues/10364)) ([d50fd3d](https://github.com/angular/material2/commit/d50fd3d)), closes [#10148](https://github.com/angular/material2/issues/10148)
+* **sort:** add aria-sort to host when sorted ([#6891](https://github.com/angular/material2/issues/6891)) ([63f713f](https://github.com/angular/material2/commit/63f713f))
+* **tree:** fix the MatTreeNodeOutlet not exported issue ([#10581](https://github.com/angular/material2/issues/10581)) ([0b8240c](https://github.com/angular/material2/commit/0b8240c))
+* **tree:** improve nested tree node & fix nested tree control ([#10454](https://github.com/angular/material2/issues/10454)) ([2ddc257](https://github.com/angular/material2/commit/2ddc257))
+
+
+### Features
+
+* **cdk/keycodes:** add 0 and 9 numerical keypad codes ([#10562](https://github.com/angular/material2/issues/10562)) ([d5cd0d6](https://github.com/angular/material2/commit/d5cd0d6))
+* **stepper:** allow number icon to be customized and expose template context variables ([#10516](https://github.com/angular/material2/issues/10516)) ([946fd84](https://github.com/angular/material2/commit/946fd84)), closes [#10513](https://github.com/angular/material2/issues/10513)
+* **tabs:** Allow tab ink bar positioning to be determined with a provided method. ([#9972](https://github.com/angular/material2/issues/9972)) ([02f5256](https://github.com/angular/material2/commit/02f5256))
+* **tooltip:** allow for position to be updated while open ([#10362](https://github.com/angular/material2/issues/10362)) ([04045d2](https://github.com/angular/material2/commit/04045d2))
+
+
+
 <a name="6.0.0-beta.5"></a>
 # [6.0.0-beta.5](https://github.com/angular/material2/compare/5.2.4...6.0.0-beta.5) (2018-03-23)
 

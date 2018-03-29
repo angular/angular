@@ -20,7 +20,7 @@
     "docs": "gulp docs",
     "api": "gulp api-docs"
   },
-  "version": "6.0.0-beta.5",
+  "version": "6.0.0-rc.0",
   "license": "MIT",
   "engines": {
     "node": ">= 5.4.1"
@@ -35,7 +35,7 @@
     "core-js": "^2.4.1",
     "rxjs": "6.0.0-beta.1",
     "systemjs": "0.19.43",
-    "tsickle": "^0.24.x",
+    "tsickle": "^0.27.2",
     "tslib": "^1.9.0",
     "zone.js": "^0.8.4"
   },
