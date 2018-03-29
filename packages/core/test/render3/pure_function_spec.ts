@@ -18,7 +18,7 @@ describe('array literals', () => {
 
     static ngComponentDef = defineComponent({
       type: MyComp,
-      selector: [[['my-comp'], null]],
+      selectors: [['my-comp']],
       factory: function MyComp_Factory() { return myComp = new MyComp(); },
       template: function MyComp_Template(ctx: MyComp, cm: boolean) {},
       inputs: {names: 'names'}
@@ -69,7 +69,7 @@ describe('array literals', () => {
 
       static ngComponentDef = defineComponent({
         type: ManyPropComp,
-        selector: [[['many-prop-comp'], null]],
+        selectors: [['many-prop-comp']],
         factory: function ManyPropComp_Factory() { return manyPropComp = new ManyPropComp(); },
         template: function ManyPropComp_Template(ctx: ManyPropComp, cm: boolean) {},
         inputs: {names1: 'names1', names2: 'names2'}
@@ -118,7 +118,7 @@ describe('array literals', () => {
 
       static ngComponentDef = defineComponent({
         type: ParentComp,
-        selector: [[['parent-comp'], null]],
+        selectors: [['parent-comp']],
         factory: () => new ParentComp(),
         template: function(ctx: any, cm: boolean) {
           if (cm) {
@@ -313,7 +313,7 @@ describe('object literals', () => {
 
     static ngComponentDef = defineComponent({
       type: ObjectComp,
-      selector: [[['object-comp'], null]],
+      selectors: [['object-comp']],
       factory: function ObjectComp_Factory() { return objectComp = new ObjectComp(); },
       template: function ObjectComp_Template(ctx: ObjectComp, cm: boolean) {},
       inputs: {config: 'config'}

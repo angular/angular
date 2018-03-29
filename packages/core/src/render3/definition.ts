@@ -17,7 +17,7 @@ import {resolveRendererType2} from '../view/util';
 
 import {diPublic} from './di';
 import {ComponentDef, ComponentDefFeature, ComponentTemplate, DirectiveDef, DirectiveDefFeature, DirectiveDefListOrFactory, PipeDef, PipeDefListOrFactory} from './interfaces/definition';
-import {CssSelector} from './interfaces/projection';
+import {CssSelectorList, SelectorFlags} from './interfaces/projection';
 
 
 
@@ -42,8 +42,8 @@ export function defineComponent<T>(componentDefinition: {
    */
   type: Type<T>;
 
-  /** The selector that will be used to match nodes to this component. */
-  selector: CssSelector;
+  /** The selectors that will be used to match nodes to this component. */
+  selectors: CssSelectorList;
 
   /**
    * Factory method used to create an instance of directive.
@@ -185,7 +185,7 @@ export function defineComponent<T>(componentDefinition: {
     onPush: componentDefinition.changeDetection === ChangeDetectionStrategy.OnPush,
     directiveDefs: componentDefinition.directiveDefs || null,
     pipeDefs: componentDefinition.pipeDefs || null,
-    selector: componentDefinition.selector
+    selectors: componentDefinition.selectors
   };
   const feature = componentDefinition.features;
   feature && feature.forEach((fn) => fn(def));
@@ -317,8 +317,8 @@ export const defineDirective = defineComponent as any as<T>(directiveDefinition:
    */
   type: Type<T>;
 
-  /** The selector that will be used to match nodes to this directive. */
-  selector: CssSelector;
+  /** The selectors that will be used to match nodes to this directive. */
+  selectors: CssSelectorList;
 
   /**
    * Factory method used to create an instance of directive.

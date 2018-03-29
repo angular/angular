@@ -30,7 +30,7 @@ describe('injection', () => {
         // NORMATIVE
         static ngComponentDef = $r3$.ɵdefineComponent({
           type: MyComp,
-          selector: [[['my-comp'], null]],
+          selectors: [['my-comp']],
           factory: function MyComp_Factory() {
             return new MyComp($r3$.ɵinjectChangeDetectorRef());
           },
@@ -47,7 +47,7 @@ describe('injection', () => {
       class MyApp {
         static ngComponentDef = $r3$.ɵdefineComponent({
           type: MyApp,
-          selector: [[['my-app'], null]],
+          selectors: [['my-app']],
           factory: function MyApp_Factory() { return new MyApp(); },
           /** <my-comp></my-comp> */
           template: function MyApp_Template(ctx: $MyApp$, cm: $boolean$) {
@@ -77,7 +77,7 @@ describe('injection', () => {
         // NORMATIVE
         static ngComponentDef = $r3$.ɵdefineComponent({
           type: MyComp,
-          selector: [[['my-comp'], null]],
+          selectors: [['my-comp']],
           factory: function MyComp_Factory() { return new MyComp($r3$.ɵinjectAttribute('title')); },
           template: function MyComp_Template(ctx: $MyComp$, cm: $boolean$) {
             if (cm) {
@@ -92,7 +92,7 @@ describe('injection', () => {
       class MyApp {
         static ngComponentDef = $r3$.ɵdefineComponent({
           type: MyApp,
-          selector: [[['my-app'], null]],
+          selectors: [['my-app']],
           factory: function MyApp_Factory() { return new MyApp(); },
           /** <my-comp></my-comp> */
           template: function MyApp_Template(ctx: $MyApp$, cm: $boolean$) {
@@ -142,7 +142,7 @@ describe('injection', () => {
 
         static ngComponentDef = $r3$.ɵdefineComponent({
           type: MyApp,
-          selector: [[['my-app'], null]],
+          selectors: [['my-app']],
           factory: function MyApp_Factory() {
             return new MyApp(
                 $r3$.ɵdirectiveInject(ServiceA), $r3$.ɵdirectiveInject(ServiceB), inject(INJECTOR));

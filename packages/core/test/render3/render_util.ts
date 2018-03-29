@@ -197,7 +197,7 @@ export function createComponent(
     value: any;
     static ngComponentDef = defineComponent({
       type: Component,
-      selector: [[[name], null]],
+      selectors: [[name]],
       factory: () => new Component,
       template: template,
       features: [PublicFeature],
@@ -212,7 +212,7 @@ export function createDirective(
   return class Directive {
     static ngDirectiveDef = defineDirective({
       type: Directive,
-      selector: [[['', name, ''], null]],
+      selectors: [['', name, '']],
       factory: () => new Directive(),
       features: [PublicFeature],
       exportAs: exportAs,

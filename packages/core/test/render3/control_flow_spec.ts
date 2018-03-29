@@ -541,7 +541,7 @@ describe('JS control flow', () => {
     class Comp {
       static ngComponentDef = defineComponent({
         type: Comp,
-        selector: [[['comp'], null]],
+        selectors: [['comp']],
         factory: () => {
           log.push('comp!');
           return new Comp();
@@ -556,7 +556,7 @@ describe('JS control flow', () => {
 
       static ngComponentDef = defineComponent({
         type: App,
-        selector: [[['app'], null]],
+        selectors: [['app']],
         factory: () => new App(),
         template: function(ctx: any, cm: boolean) {
           if (cm) {
@@ -604,7 +604,7 @@ describe('JS control flow', () => {
     class Comp {
       static ngComponentDef = defineComponent({
         type: Comp,
-        selector: [[['comp'], null]],
+        selectors: [['comp']],
         factory: () => {
           log.push('comp!');
           return new Comp();
@@ -619,7 +619,7 @@ describe('JS control flow', () => {
 
       static ngComponentDef = defineComponent({
         type: App,
-        selector: [[['app'], null]],
+        selectors: [['app']],
         factory: () => new App(),
         template: function(ctx: any, cm: boolean) {
           if (cm) {

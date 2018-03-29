@@ -178,7 +178,7 @@ describe('render3 integration test', () => {
 
       static ngComponentDef = defineComponent({
         type: TodoComponent,
-        selector: [[['todo'], null]],
+        selectors: [['todo']],
         template: function TodoTemplate(ctx: any, cm: boolean) {
           if (cm) {
             elementStart(0, 'p');
@@ -242,7 +242,7 @@ describe('render3 integration test', () => {
         title = 'one';
         static ngComponentDef = defineComponent({
           type: TodoComponentHostBinding,
-          selector: [[['todo'], null]],
+          selectors: [['todo']],
           template: function TodoComponentHostBindingTemplate(
               ctx: TodoComponentHostBinding, cm: boolean) {
             if (cm) {
@@ -277,7 +277,7 @@ describe('render3 integration test', () => {
       class HostAttributeComp {
         static ngComponentDef = defineComponent({
           type: HostAttributeComp,
-          selector: [[['host-attr-comp'], null]],
+          selectors: [['host-attr-comp']],
           factory: () => new HostAttributeComp(),
           template: (ctx: HostAttributeComp, cm: boolean) => {},
           attributes: ['role', 'button']
@@ -294,7 +294,7 @@ describe('render3 integration test', () => {
         name = 'Bess';
         static ngComponentDef = defineComponent({
           type: MyComp,
-          selector: [[['comp'], null]],
+          selectors: [['comp']],
           template: function MyCompTemplate(ctx: any, cm: boolean) {
             if (cm) {
               elementStart(0, 'p');
@@ -328,7 +328,7 @@ describe('render3 integration test', () => {
         condition: boolean;
         static ngComponentDef = defineComponent({
           type: MyComp,
-          selector: [[['comp'], null]],
+          selectors: [['comp']],
           template: function MyCompTemplate(ctx: any, cm: boolean) {
             if (cm) {
               container(0);
@@ -434,7 +434,7 @@ describe('render3 integration test', () => {
       beforeTree: Tree;
       afterTree: Tree;
       static ngComponentDef = defineComponent({
-        selector: [[['child'], null]],
+        selectors: [['child']],
         type: ChildComponent,
         template: function ChildComponentTemplate(
             ctx: {beforeTree: Tree, afterTree: Tree}, cm: boolean) {
@@ -640,7 +640,7 @@ describe('render3 integration test', () => {
 
           static ngDirectiveDef = defineDirective({
             type: HostBindingDir,
-            selector: [[['', 'hostBindingDir', ''], null]],
+            selectors: [['', 'hostBindingDir', '']],
             factory: function HostBindingDir_Factory() {
               return hostBindingDir = new HostBindingDir();
             },

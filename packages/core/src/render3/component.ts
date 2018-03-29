@@ -123,8 +123,8 @@ export function renderComponent<T>(
   const componentDef = (componentType as ComponentType<T>).ngComponentDef as ComponentDef<T>;
   if (componentDef.type != componentType) componentDef.type = componentType;
   let component: T;
-  // TODO: Replace when flattening CssSelector type
-  const componentTag = componentDef.selector ![0] ![0] ![0];
+  // The first index of the first selector is the tag name.
+  const componentTag = componentDef.selectors ![0] ![0] as string;
   const hostNode = locateHostElement(rendererFactory, opts.host || componentTag);
   const rootContext: RootContext = {
     // Incomplete initialization due to circular reference.

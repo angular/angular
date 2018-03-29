@@ -12,7 +12,7 @@ import {Provider} from '../../core';
 import {RendererType2} from '../../render/api';
 import {Type} from '../../type';
 import {resolveRendererType2} from '../../view/util';
-import {CssSelector} from './projection';
+import {CssSelectorList} from './projection';
 
 
 /**
@@ -61,8 +61,8 @@ export interface DirectiveDef<T> {
   /** Function that makes a directive public to the DI system. */
   diPublic: ((def: DirectiveDef<any>) => void)|null;
 
-  /** The selector that will be used to match nodes to this directive. */
-  selector: CssSelector;
+  /** The selectors that will be used to match nodes to this directive. */
+  selectors: CssSelectorList;
 
   /**
    * A dictionary mapping the inputs' minified property names to their public API names, which
