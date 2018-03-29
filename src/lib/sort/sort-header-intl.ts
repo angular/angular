@@ -8,7 +8,6 @@
 
 import {Injectable, SkipSelf, Optional} from '@angular/core';
 import {Subject} from 'rxjs';
-import {SortDirection} from './sort-direction';
 
 /**
  * To modify the labels and text displayed, create a new instance of MatSortHeaderIntl and
@@ -25,11 +24,6 @@ export class MatSortHeaderIntl {
   /** ARIA label for the sorting button. */
   sortButtonLabel = (id: string) => {
     return `Change sorting for ${id}`;
-  }
-
-  /** A label to describe the current sort (visible only to screenreaders). */
-  sortDescriptionLabel = (id: string, direction: SortDirection) => {
-    return `Sorted by ${id} ${direction == 'asc' ? 'ascending' : 'descending'}`;
   }
 }
 /** @docs-private */

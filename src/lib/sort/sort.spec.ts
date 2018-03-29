@@ -347,6 +347,23 @@ describe('MatSort', () => {
     expect(header._showIndicatorHint).toBeFalsy();
   });
 
+  it('should apply the aria-sort label to the header when sorted', () => {
+    const sortHeaderElement = fixture.nativeElement.querySelector('#defaultA');
+    expect(sortHeaderElement.getAttribute('aria-sort')).toBe(null);
+
+    component.sort('defaultA');
+    fixture.detectChanges();
+    expect(sortHeaderElement.getAttribute('aria-sort')).toBe('ascending');
+
+    component.sort('defaultA');
+    fixture.detectChanges();
+    expect(sortHeaderElement.getAttribute('aria-sort')).toBe('descending');
+
+    component.sort('defaultA');
+    fixture.detectChanges();
+    expect(sortHeaderElement.getAttribute('aria-sort')).toBe(null);
+  });
+
   it('should re-render when the i18n labels have changed',
     inject([MatSortHeaderIntl], (intl: MatSortHeaderIntl) => {
       const header = fixture.debugElement.query(By.directive(MatSortHeader)).nativeElement;

@@ -70,6 +70,7 @@ export interface ArrowViewStateTransition {
     '(mouseenter)': '_setIndicatorHintVisible(true)',
     '(longpress)': '_setIndicatorHintVisible(true)',
     '(mouseleave)': '_setIndicatorHintVisible(false)',
+    '[attr.aria-sort]': '_getAriaSortAttribute()',
     '[class.mat-sort-header-disabled]': '_isDisabled()',
   },
   encapsulation: ViewEncapsulation.None,
@@ -262,5 +263,17 @@ export class MatSortHeader extends _MatSortHeaderMixinBase implements MatSortabl
 
   _isDisabled() {
     return this._sort.disabled || this.disabled;
+  }
+
+  /**
+   * Gets the aria-sort attribute that should be applied to this sort header. If this header
+   * is not sorted, returns null so that the attribute is removed from the host element. Aria spec
+   * says that the aria-sort property should only be present on one header at a time, so removing
+   * ensures this is true.
+   */
+  _getAriaSortAttribute() {
+    if (!this._isSorted()) { return null; }
+
+    return this._sort.direction == 'asc' ? 'ascending' : 'descending';
   }
 }

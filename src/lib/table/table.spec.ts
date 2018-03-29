@@ -161,7 +161,7 @@ describe('MatTable', () => {
       component.sort.sort(component.sortHeader);
       fixture.detectChanges();
       expectTableToMatchContent(tableElement, [
-        ['Column A\xa0Sorted by a ascending', 'Column B', 'Column C'],
+        ['Column A', 'Column B', 'Column C'],
         ['a_1', 'b_1', 'c_1'],
         ['a_2', 'b_2', 'c_2'],
         ['a_3', 'b_3', 'c_3'],
@@ -171,7 +171,7 @@ describe('MatTable', () => {
       component.sort.sort(component.sortHeader);
       fixture.detectChanges();
       expectTableToMatchContent(tableElement, [
-        ['Column A\xa0Sorted by a descending', 'Column B', 'Column C'],
+        ['Column A', 'Column B', 'Column C'],
         ['a_3', 'b_3', 'c_3'],
         ['a_2', 'b_2', 'c_2'],
         ['a_1', 'b_1', 'c_1'],
@@ -189,7 +189,7 @@ describe('MatTable', () => {
       component.sort.direction = '';
       component.sort.sort(component.sortHeader);
       expectTableToMatchContent(tableElement, [
-        ['Column A\xa0Sorted by a descending', 'Column B', 'Column C'],
+        ['Column A', 'Column B', 'Column C'],
         ['a_1', 'b_1', 'c_1'],
         ['a_3', 'b_3', 'c_3'],
         ['a_2', 'b_2', 'c_2'],
@@ -204,7 +204,7 @@ describe('MatTable', () => {
 
       // Expect that empty string row comes before the other values
       expectTableToMatchContent(tableElement, [
-        ['Column A\xa0Sorted by a ascending', 'Column B', 'Column C'],
+        ['Column A', 'Column B', 'Column C'],
         ['', 'b_1', 'c_1'],
         ['a_2', 'b_2', 'c_2'],
         ['a_3', 'b_3', 'c_3'],
@@ -214,7 +214,7 @@ describe('MatTable', () => {
       component.sort.sort(component.sortHeader);
       fixture.detectChanges();
       expectTableToMatchContent(tableElement, [
-        ['Column A\xa0Sorted by a descending', 'Column B', 'Column C'],
+        ['Column A', 'Column B', 'Column C'],
         ['a_3', 'b_3', 'c_3'],
         ['a_2', 'b_2', 'c_2'],
         ['', 'b_1', 'c_1'],
@@ -229,7 +229,7 @@ describe('MatTable', () => {
       component.sort.sort(component.sortHeader);
       fixture.detectChanges();
       expectTableToMatchContent(tableElement, [
-        ['Column A\xa0Sorted by a ascending', 'Column B', 'Column C'],
+        ['Column A', 'Column B', 'Column C'],
         ['', 'b_1', 'c_1'],
         ['a_2', 'b_2', 'c_2'],
         ['a_3', 'b_3', 'c_3'],
@@ -240,7 +240,7 @@ describe('MatTable', () => {
       component.sort.sort(component.sortHeader);
       fixture.detectChanges();
       expectTableToMatchContent(tableElement, [
-        ['Column A\xa0Sorted by a descending', 'Column B', 'Column C'],
+        ['Column A', 'Column B', 'Column C'],
         ['a_3', 'b_3', 'c_3'],
         ['a_2', 'b_2', 'c_2'],
         ['', 'b_1', 'c_1'],
