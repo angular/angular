@@ -18,7 +18,7 @@ import {SwitchView} from './ng_switch';
  *
  * @whatItDoes Adds / removes DOM sub-trees based on a numeric value. Tailored for pluralization.
  *
- * @howToUse
+ * @usageNotes
  * ```
  * <some-element [ngPlural]="value">
  *   <ng-template ngPluralCase="=0">there is nothing</ng-template>
@@ -86,7 +86,7 @@ export class NgPlural {
  * @whatItDoes Creates a view that will be added/removed from the parent {@link NgPlural} when the
  *             given expression matches the plural expression according to CLDR rules.
  *
- * @howToUse
+ * @usageNotes
  * ```
  * <some-element [ngPlural]="value">
  *   <ng-template ngPluralCase="=0">...</ng-template>
