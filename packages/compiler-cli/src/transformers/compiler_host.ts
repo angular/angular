@@ -188,7 +188,7 @@ export class TsCompilerAotCompilerTypeCheckHostAdapter implements ts.CompilerHos
    */
   fileNameToModuleName(importedFile: string, containingFile: string): string {
     const originalImportedFile = importedFile;
-    if (this.options.traceResolution) {
+    if (this.options.trace) {
       console.error(
           'fileNameToModuleName from containingFile', containingFile, 'to importedFile',
           importedFile);
