@@ -10,6 +10,7 @@ import {SelectionModel} from '@angular/cdk/collections';
 import {FlatTreeControl} from '@angular/cdk/tree';
 import {MatTreeFlattener, MatTreeFlatDataSource} from '@angular/material/tree';
 import {TodoItemNode, ChecklistDatabase} from './checklist-database';
+import {BehaviorSubject} from 'rxjs';
 
 /**
  * Checklist demo with flat tree
@@ -51,7 +52,7 @@ export class ChecklistTreeDemo {
     return node.children.value.length > 0;
   }
 
-  getChildren = (node: TodoItemNode) => {
+  getChildren = (node: TodoItemNode): BehaviorSubject<TodoItemNode[]> => {
     return node.children;
   }
 
