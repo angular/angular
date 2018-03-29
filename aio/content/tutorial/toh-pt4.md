@@ -446,7 +446,7 @@ Here are the code files discussed on this page and your app should look like thi
 * You used [Angular Dependency Injection](guide/dependency-injection) to inject it into a component.
 * You gave the `HeroService` _get data_ method an asynchronous signature.
 * You discovered `Observable` and the RxJS _Observable_ library.
-* You used RxJS `of()` to return an _Observable_ of mock heroes (`Observable<Hero[]>`).
+* You used RxJS `of()` to return an observable of mock heroes (`Observable<Hero[]>`).
 * The component's `ngOnInit` lifecycle hook calls the `HeroService` method, not the constructor.
 * You created a `MessageService` for loosely-coupled communication between classes.
 * The `HeroService` injected into a component is created with another injected service,

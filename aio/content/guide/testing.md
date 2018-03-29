@@ -262,13 +262,12 @@ test any service with a dependency.
 
 <div class="alert is-important">
 
-The `HeroService` methods return _Observables_.
-_Subscribe_ to the method observable to (a) cause it to execute and (b)
+The `HeroService` methods return `Observables`. You must
+_subscribe_ to an observable to (a) cause it to execute and (b)
 assert that the method succeeds or fails.
 
-The `subscribe()` method takes a success and fail callback.
-Make sure you provide _both_ callbacks so that you capture errors.
-
+The `subscribe()` method takes a success (`next`) and fail (`error`) callback.
+Make sure you provide _both_ callbacks so that you capture errors. 
 Neglecting to do so produces an asynchronous uncaught observable error that
 the test runner will likely attribute to a completely different test.
 
@@ -1024,9 +1023,9 @@ Focus on the spy.
   region="spy">
 </code-example>
 
-The spy is designed such that any call to `getQuote` receives an Observable with a test quote.
+The spy is designed such that any call to `getQuote` receives an observable with a test quote.
 Unlike the real `getQuote()` method, this spy bypasses the server
-and returns a synchronous Observable whose value is available immediately.
+and returns a synchronous observable whose value is available immediately.
 
 You can write many useful tests with this spy, even though its `Observable` is synchronous.
 
@@ -1114,14 +1113,14 @@ Or you can copy this one from the sample code.
 
 This helper's observable emits the `data` value in the next turn of the JavaScript engine. 
 
-[RxJS `defer()`](http://reactivex.io/documentation/operators/defer.html) returns an observable.
+The [RxJS `defer()` operator](http://reactivex.io/documentation/operators/defer.html) returns an observable.
 It takes a factory function that returns either a promise or an observable.
 When something subscribes to _defer_'s observable,
 it adds the subscriber to a new observable created with that factory. 
 
-RxJS `defer()` transform the `Promise.resolve()` into a new observable that, 
+The `defer()` operator transforms the `Promise.resolve()` into a new observable that, 
 like `HttpClient`, emits once and completes.
-Subscribers will be unsubscribed after they receive the data value.
+Subscribers are unsubscribed after they receive the data value.
 
 There's a similar helper for producing an async error.
 
@@ -1688,10 +1687,9 @@ Here's the `HeroDetailComponent` constructor:
 <code-example path="testing/src/app/hero/hero-detail.component.ts" region="ctor" title="app/hero/hero-detail.component.ts (constructor)" linenums="false"></code-example>
 
 The `HeroDetail` component needs the `id` parameter so it can fetch 
-the corresponding hero via the `HeroDetailService`.
-
+the corresponding hero via the `HeroDetailService`. 
 The component has to get the `id` from the `ActivatedRoute.paramMap` property
-which is an _Observable_.
+which is an `Observable`.
 
 It can't just reference the `id` property of the `ActivatedRoute.paramMap`.
 The component has to _subscribe_ to the `ActivatedRoute.paramMap` observable and be prepared
