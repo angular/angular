@@ -36,9 +36,6 @@ export class SwitchView {
 /**
  * @ngModule CommonModule
  *
- * @whatItDoes Adds / removes DOM sub-trees when the nest match expressions matches the switch
- *             expression.
- *
  * @usageNotes
  * ```
  *     <container-element [ngSwitch]="switch_expression">
@@ -54,6 +51,8 @@ export class SwitchView {
  *     </container-element>
  * ```
  * @description
+ *
+ * Adds / removes DOM sub-trees when the nest match expressions matches the switch expression.
  *
  * `NgSwitch` stamps out nested views when their match expression value matches the value of the
  * switch expression.
@@ -129,10 +128,6 @@ export class NgSwitch {
 /**
  * @ngModule CommonModule
  *
- * @whatItDoes Creates a view that will be added/removed from the parent {@link NgSwitch} when the
- *             given expression evaluate to respectively the same/different value as the switch
- *             expression.
- *
  * @usageNotes
  * ```
  * <container-element [ngSwitch]="switch_expression">
@@ -140,6 +135,10 @@ export class NgSwitch {
  * </container-element>
  *```
  * @description
+ *
+ * Creates a view that will be added/removed from the parent {@link NgSwitch} when the
+ * given expression evaluate to respectively the same/different value as the switch
+ * expression.
  *
  * Insert the sub-tree when the expression evaluates to the same value as the enclosing switch
  * expression.
@@ -169,10 +168,6 @@ export class NgSwitchCase implements DoCheck {
 
 /**
  * @ngModule CommonModule
- * @whatItDoes Creates a view that is added to the parent {@link NgSwitch} when no case expressions
- * match the
- *             switch expression.
- *
  * @usageNotes
  * ```
  * <container-element [ngSwitch]="switch_expression">
@@ -182,6 +177,9 @@ export class NgSwitchCase implements DoCheck {
  * ```
  *
  * @description
+ *
+ * Creates a view that is added to the parent {@link NgSwitch} when no case expressions
+ * match the switch expression.
  *
  * Insert the sub-tree when no case expressions evaluate to the same value as the enclosing switch
  * expression.

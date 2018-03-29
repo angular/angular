@@ -11,8 +11,6 @@ import {Directive, DoCheck, ElementRef, Input, IterableChanges, IterableDiffer, 
 /**
  * @ngModule CommonModule
  *
- * @whatItDoes Adds and removes CSS classes on an HTML element.
- *
  * @usageNotes
  * ```
  *     <some-element [ngClass]="'first second'">...</some-element>
@@ -27,6 +25,8 @@ import {Directive, DoCheck, ElementRef, Input, IterableChanges, IterableDiffer, 
  * ```
  *
  * @description
+ *
+ * Adds and removes CSS classes on an HTML element.
  *
  * The CSS classes are updated as follows, depending on the type of the expression evaluation:
  * - `string` - the CSS classes listed in the string (space delimited) are added,

@@ -11,8 +11,9 @@ import {invalidPipeArgumentError} from './invalid_pipe_argument_error';
 
 /**
  * @ngModule CommonModule
- * @whatItDoes Generic selector that displays the string that matches the current value.
  * @description
+ *
+ * Generic selector that displays the string that matches the current value.
  *
  *  Where `mapping` is an object that indicates the text that should be displayed
  *  for different values of the provided `expression`.
