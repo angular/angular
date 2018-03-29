@@ -81,7 +81,7 @@ export class TreeComponent {
     },
     factory: () => new TreeComponent,
     inputs: {data: 'data'},
-    directiveDefs: () => [TreeComponent.ngComponentDef]
+    directives: () => [TreeComponent]
   });
 }
 

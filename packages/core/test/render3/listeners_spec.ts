@@ -252,7 +252,7 @@ describe('event listeners', () => {
       }
     }
 
-    renderToHtml(Template, {}, [HostListenerDir.ngDirectiveDef]);
+    renderToHtml(Template, {}, [HostListenerDir]);
     const button = containerEl.querySelector('button') !;
     button.click();
     expect(events).toEqual(['click!']);
@@ -350,7 +350,7 @@ describe('event listeners', () => {
     }
 
     const ctx = {showing: true};
-    renderToHtml(Template, ctx, [MyComp.ngComponentDef]);
+    renderToHtml(Template, ctx, [MyComp]);
     const buttons = containerEl.querySelectorAll('button') !;
 
     buttons[0].click();
@@ -361,7 +361,7 @@ describe('event listeners', () => {
 
     // the child view listener should be removed when the parent view is removed
     ctx.showing = false;
-    renderToHtml(Template, ctx, [MyComp.ngComponentDef]);
+    renderToHtml(Template, ctx, [MyComp]);
     buttons[0].click();
     buttons[1].click();
     expect(comps[0] !.counter).toEqual(1);

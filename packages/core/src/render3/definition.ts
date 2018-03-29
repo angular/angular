@@ -16,7 +16,7 @@ import {Type} from '../type';
 import {resolveRendererType2} from '../view/util';
 
 import {diPublic} from './di';
-import {ComponentDef, ComponentDefFeature, ComponentTemplate, DirectiveDef, DirectiveDefFeature, DirectiveDefListOrFactory, PipeDef, PipeDefListOrFactory} from './interfaces/definition';
+import {ComponentDef, ComponentDefFeature, ComponentTemplate, ComponentType, DirectiveDef, DirectiveDefFeature, DirectiveDefListOrFactory, DirectiveType, DirectiveTypesOrFactory, PipeDef, PipeType, PipeTypesOrFactory} from './interfaces/definition';
 import {CssSelectorList, SelectorFlags} from './interfaces/projection';
 
 
@@ -153,7 +153,7 @@ export function defineComponent<T>(componentDefinition: {
    * The property is either an array of `DirectiveDef`s or a function which returns the array of
    * `DirectiveDef`s. The function is necessary to be able to support forward declarations.
    */
-  directiveDefs?: DirectiveDefListOrFactory | null;
+  directives?: DirectiveTypesOrFactory | null;
 
   /**
    * Registry of pipes that may be found in this component's view.
@@ -161,9 +161,11 @@ export function defineComponent<T>(componentDefinition: {
    * The property is either an array of `PipeDefs`s or a function which returns the array of
    * `PipeDefs`s. The function is necessary to be able to support forward declarations.
    */
-  pipeDefs?: PipeDefListOrFactory | null;
+  pipes?: PipeTypesOrFactory | null;
 }): ComponentDef<T> {
   const type = componentDefinition.type;
+  const pipeTypes = componentDefinition.pipes !;
+  const directiveTypes = componentDefinition.directives !;
   const def = <ComponentDef<any>>{
     type: type,
     diPublic: null,
@@ -183,14 +185,37 @@ export function defineComponent<T>(componentDefinition: {
     afterViewChecked: type.prototype.ngAfterViewChecked || null,
     onDestroy: type.prototype.ngOnDestroy || null,
     onPush: componentDefinition.changeDetection === ChangeDetectionStrategy.OnPush,
-    directiveDefs: componentDefinition.directiveDefs || null,
-    pipeDefs: componentDefinition.pipeDefs || null,
+    directiveDefs: directiveTypes ?
+        () => (typeof directiveTypes === 'function' ? directiveTypes() : directiveTypes)
+                  .map(extractDirectiveDef) :
+        null,
+    pipeDefs: pipeTypes ?
+        () => (typeof pipeTypes === 'function' ? pipeTypes() : pipeTypes).map(extractPipeDef) :
+        null,
     selectors: componentDefinition.selectors
   };
   const feature = componentDefinition.features;
   feature && feature.forEach((fn) => fn(def));
   return def;
 }
+
+export function extractDirectiveDef(type: DirectiveType<any>& ComponentType<any>):
+    DirectiveDef<any>|ComponentDef<any> {
+  const def = type.ngComponentDef || type.ngDirectiveDef;
+  if (ngDevMode && !def) {
+    throw new Error(`'${type.name}' is neither 'ComponentType' or 'DirectiveType'.`);
+  }
+  return def;
+}
+
+export function extractPipeDef(type: PipeType<any>): PipeDef<any> {
+  const def = type.ngPipeDef;
+  if (ngDevMode && !def) {
+    throw new Error(`'${type.name}' is not a 'PipeType'.`);
+  }
+  return def;
+}
+
 
 
 const PRIVATE_PREFIX = '__ngOnChanges_';

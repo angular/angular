@@ -588,7 +588,7 @@ describe('JS control flow', () => {
           }
           containerRefreshEnd();
         },
-        directiveDefs: () => [Comp.ngComponentDef]
+        directives: () => [Comp]
       });
     }
 
@@ -651,7 +651,7 @@ describe('JS control flow', () => {
           }
           containerRefreshEnd();
         },
-        directiveDefs: () => [Comp.ngComponentDef]
+        directives: () => [Comp]
       });
     }
 

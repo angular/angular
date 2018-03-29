@@ -113,7 +113,7 @@ describe('component with a container', () => {
     elementProperty(0, 'items', bind(ctx.items));
   }
 
-  const defs = [WrapperComponent.ngComponentDef];
+  const defs = [WrapperComponent];
 
   it('should re-render on input change', () => {
     const ctx: {items: string[]} = {items: ['a']};
@@ -139,7 +139,7 @@ describe('encapsulation', () => {
         }
       },
       factory: () => new WrapperComponent,
-      directiveDefs: () => [EncapsulatedComponent.ngComponentDef]
+      directives: () => [EncapsulatedComponent]
     });
   }
 
@@ -157,7 +157,7 @@ describe('encapsulation', () => {
       factory: () => new EncapsulatedComponent,
       rendererType:
           createRendererType2({encapsulation: ViewEncapsulation.Emulated, styles: [], data: {}}),
-      directiveDefs: () => [LeafComponent.ngComponentDef]
+      directives: () => [LeafComponent]
     });
   }
 
@@ -204,7 +204,7 @@ describe('encapsulation', () => {
         factory: () => new WrapperComponentWith,
         rendererType:
             createRendererType2({encapsulation: ViewEncapsulation.Emulated, styles: [], data: {}}),
-        directiveDefs: () => [LeafComponentwith.ngComponentDef]
+        directives: () => [LeafComponentwith]
       });
     }
 

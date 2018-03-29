@@ -37,7 +37,7 @@ describe('lifecycles', () => {
         elementEnd();
       }
     });
-    let Parent = createOnInitComponent('parent', getParentTemplate('comp'), [Comp.ngComponentDef]);
+    let Parent = createOnInitComponent('parent', getParentTemplate('comp'), [Comp]);
     let ProjectedComp = createOnInitComponent('projected', (ctx: any, cm: boolean) => {
       if (cm) {
         text(0, 'content');
@@ -45,7 +45,7 @@ describe('lifecycles', () => {
     });
 
     function createOnInitComponent(
-        name: string, template: ComponentTemplate<any>, defs: any[] = []) {
+        name: string, template: ComponentTemplate<any>, directives: any[] = []) {
       return class Component {
         val: string = '';
         ngOnInit() { events.push(`${name}${this.val}`); }
@@ -55,7 +55,7 @@ describe('lifecycles', () => {
           selectors: [[name]],
           factory: () => new Component(),
           inputs: {val: 'val'}, template,
-          directiveDefs: defs
+          directives: directives
         });
       };
     }
@@ -67,10 +67,7 @@ describe('lifecycles', () => {
           {type: Directive, selectors: [['', 'dir', '']], factory: () => new Directive()});
     }
 
-    const defs = [
-      Comp.ngComponentDef, Parent.ngComponentDef, ProjectedComp.ngComponentDef,
-      Directive.ngDirectiveDef
-    ];
+    const directives = [Comp, Parent, ProjectedComp, Directive];
 
     it('should call onInit method after inputs are set in creation mode (and not in update mode)',
        () => {
@@ -83,10 +80,10 @@ describe('lifecycles', () => {
            elementProperty(0, 'val', bind(ctx.val));
          }
 
-         renderToHtml(Template, {val: '1'}, defs);
+         renderToHtml(Template, {val: '1'}, directives);
          expect(events).toEqual(['comp1']);
 
-         renderToHtml(Template, {val: '2'}, defs);
+         renderToHtml(Template, {val: '2'}, directives);
          expect(events).toEqual(['comp1']);
        });
 
@@ -112,7 +109,7 @@ describe('lifecycles', () => {
         }
       }
 
-      renderToHtml(Template, {}, defs);
+      renderToHtml(Template, {}, directives);
       expect(events).toEqual(['parent', 'comp']);
     });
 
@@ -135,7 +132,7 @@ describe('lifecycles', () => {
         elementProperty(1, 'val', 2);
       }
 
-      renderToHtml(Template, {}, defs);
+      renderToHtml(Template, {}, directives);
       expect(events).toEqual(['parent1', 'parent2', 'comp1', 'comp2']);
     });
 
@@ -164,13 +161,13 @@ describe('lifecycles', () => {
         containerRefreshEnd();
       }
 
-      renderToHtml(Template, {condition: true}, defs);
+      renderToHtml(Template, {condition: true}, directives);
       expect(events).toEqual(['comp']);
 
-      renderToHtml(Template, {condition: false}, defs);
+      renderToHtml(Template, {condition: false}, directives);
       expect(events).toEqual(['comp']);
 
-      renderToHtml(Template, {condition: true}, defs);
+      renderToHtml(Template, {condition: true}, directives);
       expect(events).toEqual(['comp', 'comp']);
     });
 
@@ -188,7 +185,7 @@ describe('lifecycles', () => {
         }
       }
 
-      renderToHtml(Template, {}, defs);
+      renderToHtml(Template, {}, directives);
       expect(events).toEqual(['comp', 'projected']);
     });
 
@@ -216,7 +213,7 @@ describe('lifecycles', () => {
         elementProperty(3, 'val', 2);
       }
 
-      renderToHtml(Template, {}, defs);
+      renderToHtml(Template, {}, directives);
       expect(events).toEqual(['comp1', 'projected1', 'comp2', 'projected2']);
     });
 
@@ -229,10 +226,10 @@ describe('lifecycles', () => {
         }
       }
 
-      renderToHtml(Template, {}, defs);
+      renderToHtml(Template, {}, directives);
       expect(events).toEqual(['comp', 'dir']);
 
-      renderToHtml(Template, {}, defs);
+      renderToHtml(Template, {}, directives);
       expect(events).toEqual(['comp', 'dir']);
 
     });
@@ -246,10 +243,10 @@ describe('lifecycles', () => {
         }
       }
 
-      renderToHtml(Template, {}, defs);
+      renderToHtml(Template, {}, directives);
       expect(events).toEqual(['dir']);
 
-      renderToHtml(Template, {}, defs);
+      renderToHtml(Template, {}, directives);
       expect(events).toEqual(['dir']);
     });
 
@@ -286,7 +283,7 @@ describe('lifecycles', () => {
         containerRefreshEnd();
       }
 
-      renderToHtml(Template, {}, defs);
+      renderToHtml(Template, {}, directives);
 
       // onInit is called top to bottom, so top level comps (1 and 5) are called
       // before the comps inside the for loop's embedded view (2, 3, and 4)
@@ -326,7 +323,7 @@ describe('lifecycles', () => {
         containerRefreshEnd();
       }
 
-      renderToHtml(Template, {}, defs);
+      renderToHtml(Template, {}, directives);
 
       // onInit is called top to bottom, so top level comps (1 and 5) are called
       // before the comps inside the for loop's embedded view (2, 3, and 4)
@@ -348,10 +345,10 @@ describe('lifecycles', () => {
     });
 
     let Comp = createDoCheckComponent('comp', (ctx: any, cm: boolean) => {});
-    let Parent = createDoCheckComponent('parent', getParentTemplate('comp'), [Comp.ngComponentDef]);
+    let Parent = createDoCheckComponent('parent', getParentTemplate('comp'), [Comp]);
 
     function createDoCheckComponent(
-        name: string, template: ComponentTemplate<any>, defs: any[] = []) {
+        name: string, template: ComponentTemplate<any>, directives: any[] = []) {
       return class Component {
         ngDoCheck() {
           events.push(name);
@@ -364,7 +361,7 @@ describe('lifecycles', () => {
           type: Component,
           selectors: [[name]],
           factory: () => new Component(), template,
-          directiveDefs: defs
+          directives: directives
         });
       };
     }
@@ -376,7 +373,7 @@ describe('lifecycles', () => {
           {type: Directive, selectors: [['', 'dir', '']], factory: () => new Directive()});
     }
 
-    const defs = [Comp.ngComponentDef, Parent.ngComponentDef, Directive.ngDirectiveDef];
+    const directives = [Comp, Parent, Directive];
 
     it('should call doCheck on every refresh', () => {
       /** <comp></comp> */
@@ -387,10 +384,10 @@ describe('lifecycles', () => {
         }
       }
 
-      renderToHtml(Template, {}, defs);
+      renderToHtml(Template, {}, directives);
       expect(events).toEqual(['comp']);
 
-      renderToHtml(Template, {}, defs);
+      renderToHtml(Template, {}, directives);
       expect(events).toEqual(['comp', 'comp']);
     });
 
@@ -416,7 +413,7 @@ describe('lifecycles', () => {
         }
       }
 
-      renderToHtml(Template, {}, defs);
+      renderToHtml(Template, {}, directives);
       expect(events).toEqual(['parent', 'comp']);
     });
 
@@ -429,10 +426,10 @@ describe('lifecycles', () => {
         }
       }
 
-      renderToHtml(Template, {}, defs);
+      renderToHtml(Template, {}, directives);
       expect(allEvents).toEqual(['init comp', 'check comp']);
 
-      renderToHtml(Template, {}, defs);
+      renderToHtml(Template, {}, directives);
       expect(allEvents).toEqual(['init comp', 'check comp', 'check comp']);
     });
 
@@ -445,10 +442,10 @@ describe('lifecycles', () => {
         }
       }
 
-      renderToHtml(Template, {}, defs);
+      renderToHtml(Template, {}, directives);
       expect(events).toEqual(['comp', 'dir']);
 
-      renderToHtml(Template, {}, defs);
+      renderToHtml(Template, {}, directives);
       expect(events).toEqual(['comp', 'dir', 'comp', 'dir']);
 
     });
@@ -462,10 +459,10 @@ describe('lifecycles', () => {
         }
       }
 
-      renderToHtml(Template, {}, defs);
+      renderToHtml(Template, {}, directives);
       expect(events).toEqual(['dir']);
 
-      renderToHtml(Template, {}, defs);
+      renderToHtml(Template, {}, directives);
       expect(events).toEqual(['dir', 'dir']);
     });
 
@@ -495,7 +492,7 @@ describe('lifecycles', () => {
         elementEnd();
       }
       elementProperty(1, 'val', bind(ctx.val));
-    }, [Comp.ngComponentDef]);
+    }, [Comp]);
 
     let ProjectedComp = createAfterContentInitComp('projected', (ctx: any, cm: boolean) => {
       if (cm) {
@@ -505,7 +502,7 @@ describe('lifecycles', () => {
     });
 
     function createAfterContentInitComp(
-        name: string, template: ComponentTemplate<any>, defs: any[] = []) {
+        name: string, template: ComponentTemplate<any>, directives: any[] = []) {
       return class Component {
         val: string = '';
         ngAfterContentInit() {
@@ -520,7 +517,7 @@ describe('lifecycles', () => {
           factory: () => new Component(),
           inputs: {val: 'val'},
           template: template,
-          directiveDefs: defs
+          directives: directives
         });
       };
     }
@@ -560,10 +557,7 @@ describe('lifecycles', () => {
       containerRefreshEnd();
     }
 
-    const defs = [
-      Comp.ngComponentDef, Parent.ngComponentDef, ProjectedComp.ngComponentDef,
-      Directive.ngDirectiveDef
-    ];
+    const directives = [Comp, Parent, ProjectedComp, Directive];
 
     it('should be called only in creation mode', () => {
       /** <comp>content</comp> */
@@ -575,10 +569,10 @@ describe('lifecycles', () => {
         }
       }
 
-      renderToHtml(Template, {}, defs);
+      renderToHtml(Template, {}, directives);
       expect(events).toEqual(['comp']);
 
-      renderToHtml(Template, {}, defs);
+      renderToHtml(Template, {}, directives);
       expect(events).toEqual(['comp']);
     });
 
@@ -615,13 +609,13 @@ describe('lifecycles', () => {
         containerRefreshEnd();
       }
 
-      renderToHtml(Template, {condition: true}, defs);
+      renderToHtml(Template, {condition: true}, directives);
       expect(events).toEqual(['comp']);
 
-      renderToHtml(Template, {condition: false}, defs);
+      renderToHtml(Template, {condition: false}, directives);
       expect(events).toEqual(['comp']);
 
-      renderToHtml(Template, {condition: true}, defs);
+      renderToHtml(Template, {condition: true}, directives);
       expect(events).toEqual(['comp', 'comp']);
     });
 
@@ -639,7 +633,7 @@ describe('lifecycles', () => {
         }
       }
 
-      renderToHtml(Template, {}, defs);
+      renderToHtml(Template, {}, directives);
       expect(events).toEqual(['parent', 'comp']);
     });
 
@@ -663,7 +657,7 @@ describe('lifecycles', () => {
         elementProperty(2, 'val', 2);
       }
 
-      renderToHtml(Template, {}, defs);
+      renderToHtml(Template, {}, directives);
       expect(events).toEqual(['parent1', 'parent2', 'comp1', 'comp2']);
     });
 
@@ -690,7 +684,7 @@ describe('lifecycles', () => {
         }
       }
 
-      renderToHtml(Template, {}, defs);
+      renderToHtml(Template, {}, directives);
       expect(events).toEqual(['projected', 'parent', 'comp']);
     });
 
@@ -731,7 +725,7 @@ describe('lifecycles', () => {
         elementProperty(4, 'val', 2);
       }
 
-      renderToHtml(Template, {}, defs);
+      renderToHtml(Template, {}, directives);
       expect(events).toEqual(['projected1', 'parent1', 'projected2', 'parent2', 'comp1', 'comp2']);
     });
 
@@ -770,7 +764,7 @@ describe('lifecycles', () => {
         containerRefreshEnd();
       }
 
-      renderToHtml(Template, {}, defs);
+      renderToHtml(Template, {}, directives);
       expect(events).toEqual(['comp2', 'comp3', 'comp1', 'comp4']);
     });
 
@@ -783,7 +777,7 @@ describe('lifecycles', () => {
        * <parent [val]="4">content</parent>
        */
 
-      renderToHtml(ForLoopWithChildrenTemplate, {}, defs);
+      renderToHtml(ForLoopWithChildrenTemplate, {}, directives);
       expect(events).toEqual(
           ['parent2', 'comp2', 'parent3', 'comp3', 'parent1', 'parent4', 'comp1', 'comp4']);
     });
@@ -800,10 +794,10 @@ describe('lifecycles', () => {
           }
         }
 
-        renderToHtml(Template, {}, defs);
+        renderToHtml(Template, {}, directives);
         expect(allEvents).toEqual(['comp init', 'comp check']);
 
-        renderToHtml(Template, {}, defs);
+        renderToHtml(Template, {}, directives);
         expect(allEvents).toEqual(['comp init', 'comp check', 'comp check']);
 
       });
@@ -829,7 +823,7 @@ describe('lifecycles', () => {
           }
         }
 
-        renderToHtml(Template, {}, defs);
+        renderToHtml(Template, {}, directives);
         expect(events).toEqual(['comp', 'init', 'check']);
       });
 
@@ -842,7 +836,7 @@ describe('lifecycles', () => {
           }
         }
 
-        renderToHtml(Template, {}, defs);
+        renderToHtml(Template, {}, directives);
         expect(events).toEqual(['init', 'check']);
       });
     });
@@ -865,8 +859,7 @@ describe('lifecycles', () => {
         elementEnd();
       }
     });
-    let Parent =
-        createAfterViewInitComponent('parent', getParentTemplate('comp'), [Comp.ngComponentDef]);
+    let Parent = createAfterViewInitComponent('parent', getParentTemplate('comp'), [Comp]);
 
     let ProjectedComp = createAfterViewInitComponent('projected', (ctx: any, cm: boolean) => {
       if (cm) {
@@ -875,7 +868,7 @@ describe('lifecycles', () => {
     });
 
     function createAfterViewInitComponent(
-        name: string, template: ComponentTemplate<any>, defs: any[] = []) {
+        name: string, template: ComponentTemplate<any>, directives: any[] = []) {
       return class Component {
         val: string = '';
         ngAfterViewInit() {
@@ -890,7 +883,7 @@ describe('lifecycles', () => {
           factory: () => new Component(),
           inputs: {val: 'val'},
           template: template,
-          directiveDefs: defs
+          directives: directives
         });
       };
     }
@@ -903,10 +896,7 @@ describe('lifecycles', () => {
           {type: Directive, selectors: [['', 'dir', '']], factory: () => new Directive()});
     }
 
-    const defs = [
-      Comp.ngComponentDef, Parent.ngComponentDef, ProjectedComp.ngComponentDef,
-      Directive.ngDirectiveDef
-    ];
+    const defs = [Comp, Parent, ProjectedComp, Directive];
 
     it('should be called on init and not in update mode', () => {
       /** <comp></comp> */
@@ -1079,7 +1069,7 @@ describe('lifecycles', () => {
         }
         elementProperty(0, 'val', bind(ctx.val));
         elementProperty(1, 'val', bind(ctx.val));
-      }, [Comp.ngComponentDef, ProjectedComp.ngComponentDef]);
+      }, [Comp, ProjectedComp]);
 
       /**
        * <parent [val]="1"></parent>
@@ -1096,7 +1086,7 @@ describe('lifecycles', () => {
         elementProperty(1, 'val', 2);
       }
 
-      renderToHtml(Template, {}, [ParentComp.ngComponentDef]);
+      renderToHtml(Template, {}, [ParentComp]);
       expect(events).toEqual(['projected1', 'comp1', 'projected2', 'comp2', 'parent1', 'parent2']);
     });
 
@@ -1302,11 +1292,10 @@ describe('lifecycles', () => {
         projection(1, 0);
       }
     });
-    let Parent =
-        createOnDestroyComponent('parent', getParentTemplate('comp'), [Comp.ngComponentDef]);
+    let Parent = createOnDestroyComponent('parent', getParentTemplate('comp'), [Comp]);
 
     function createOnDestroyComponent(
-        name: string, template: ComponentTemplate<any>, defs: any[] = []) {
+        name: string, template: ComponentTemplate<any>, directives: any[] = []) {
       return class Component {
         val: string = '';
         ngOnDestroy() { events.push(`${name}${this.val}`); }
@@ -1317,7 +1306,7 @@ describe('lifecycles', () => {
           factory: () => new Component(),
           inputs: {val: 'val'},
           template: template,
-          directiveDefs: defs
+          directives: directives
         });
       };
     }
@@ -1327,7 +1316,7 @@ describe('lifecycles', () => {
         elementStart(0, 'parent');
         elementEnd();
       }
-    }, [Parent.ngComponentDef]);
+    }, [Parent]);
 
     const ProjectedComp = createOnDestroyComponent('projected', (ctx: any, cm: boolean) => {});
 
@@ -1338,10 +1327,7 @@ describe('lifecycles', () => {
           {type: Directive, selectors: [['', 'dir', '']], factory: () => new Directive()});
     }
 
-    const defs = [
-      Comp.ngComponentDef, Parent.ngComponentDef, Grandparent.ngComponentDef,
-      ProjectedComp.ngComponentDef, Directive.ngDirectiveDef
-    ];
+    const defs = [Comp, Parent, Grandparent, ProjectedComp, Directive];
 
     it('should call destroy when view is removed', () => {
       /**
@@ -1808,7 +1794,7 @@ describe('lifecycles', () => {
       }
       elementProperty(0, 'val1', bind(ctx.a));
       elementProperty(0, 'publicName', bind(ctx.b));
-    }, [Comp.ngComponentDef]);
+    }, [Comp]);
     const ProjectedComp = createOnChangesComponent('projected', (ctx: any, cm: boolean) => {
       if (cm) {
         text(0, 'content');
@@ -1817,7 +1803,7 @@ describe('lifecycles', () => {
 
 
     function createOnChangesComponent(
-        name: string, template: ComponentTemplate<any>, defs: any[] = []) {
+        name: string, template: ComponentTemplate<any>, directives: any[] = []) {
       return class Component {
         // @Input() val1: string;
         // @Input('publicName') val2: string;
@@ -1834,7 +1820,7 @@ describe('lifecycles', () => {
           factory: () => new Component(),
           features: [NgOnChangesFeature({b: 'val2'})],
           inputs: {a: 'val1', b: 'publicName'}, template,
-          directiveDefs: defs
+          directives: directives
         });
       };
     }
@@ -1858,10 +1844,7 @@ describe('lifecycles', () => {
       });
     }
 
-    const defs = [
-      Comp.ngComponentDef, Parent.ngComponentDef, Directive.ngDirectiveDef,
-      ProjectedComp.ngComponentDef
-    ];
+    const defs = [Comp, Parent, Directive, ProjectedComp];
 
     it('should call onChanges method after inputs are set in creation and update mode', () => {
       /** <comp [val1]="val1" [publicName]="val2"></comp> */
@@ -2190,7 +2173,7 @@ describe('lifecycles', () => {
     beforeEach(() => { events = []; });
 
     function createAllHooksComponent(
-        name: string, template: ComponentTemplate<any>, defs: any[] = []) {
+        name: string, template: ComponentTemplate<any>, directives: any[] = []) {
       return class Component {
         val: string = '';
 
@@ -2211,7 +2194,7 @@ describe('lifecycles', () => {
           factory: () => new Component(),
           inputs: {val: 'val'}, template,
           features: [NgOnChangesFeature()],
-          directiveDefs: defs
+          directives: directives
         });
       };
     }
@@ -2235,7 +2218,7 @@ describe('lifecycles', () => {
         elementProperty(1, 'val', 2);
       }
 
-      const defs = [Comp.ngComponentDef];
+      const defs = [Comp];
       renderToHtml(Template, {}, defs);
       expect(events).toEqual([
         'changes comp1', 'init comp1', 'check comp1', 'changes comp2', 'init comp2', 'check comp2',
@@ -2261,7 +2244,7 @@ describe('lifecycles', () => {
           elementEnd();
         }
         elementProperty(0, 'val', bind(ctx.val));
-      }, [Comp.ngComponentDef]);
+      }, [Comp]);
 
       /**
        * <parent [val]="1"></parent>
@@ -2278,7 +2261,7 @@ describe('lifecycles', () => {
         elementProperty(1, 'val', 2);
       }
 
-      const defs = [Parent.ngComponentDef];
+      const defs = [Parent];
       renderToHtml(Template, {}, defs);
       expect(events).toEqual([
         'changes parent1',      'init parent1',         'check parent1',

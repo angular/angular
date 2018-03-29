@@ -69,10 +69,7 @@ describe('outputs', () => {
   }
 
 
-  const deps = [
-    ButtonToggle.ngComponentDef, OtherDir.ngDirectiveDef, DestroyComp.ngComponentDef,
-    MyButton.ngDirectiveDef
-  ];
+  const deps = [ButtonToggle, OtherDir, DestroyComp, MyButton];
 
   it('should call component output function when event is emitted', () => {
     /** <button-toggle (change)="onChange()"></button-toggle> */
@@ -374,7 +371,7 @@ describe('outputs', () => {
     }
 
     let counter = 0;
-    const deps = [ButtonToggle.ngComponentDef, OtherChangeDir.ngDirectiveDef];
+    const deps = [ButtonToggle, OtherChangeDir];
     renderToHtml(Template, {counter, onChange: () => counter++, change: true}, deps);
     expect(otherDir !.change).toEqual(true);
 

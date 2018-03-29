@@ -46,7 +46,7 @@ describe('@angular/common integration', () => {
               textBinding(1, bind(row.$implicit));
             }
           },
-          directiveDefs: () => [NgForOf.ngDirectiveDef]
+          directives: () => [NgForOf]
         });
       }
 

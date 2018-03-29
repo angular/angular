@@ -133,7 +133,7 @@ describe('change detection', () => {
           }
           elementProperty(0, 'name', bind(ctx.name));
         },
-        directiveDefs: () => [MyComponent.ngComponentDef]
+        directives: () => [MyComponent]
       });
     }
 
@@ -203,7 +203,7 @@ describe('change detection', () => {
           { listener('click', () => noop()); }
           elementEnd();
         }
-      }, [MyComponent.ngComponentDef]);
+      }, [MyComponent]);
 
       const buttonParent = renderComponent(ButtonParent);
       expect(getRenderedText(buttonParent)).toEqual('1 - Nancy');
@@ -234,7 +234,7 @@ describe('change detection', () => {
             }
             textBinding(0, interpolation1('', ctx.doCheckCount, ' - '));
           },
-          directiveDefs: () => [MyComponent.ngComponentDef],
+          directives: () => [MyComponent],
           changeDetection: ChangeDetectionStrategy.OnPush
         });
       }
@@ -244,7 +244,7 @@ describe('change detection', () => {
           elementStart(0, 'button-parent');
           elementEnd();
         }
-      }, [ButtonParent.ngComponentDef]);
+      }, [ButtonParent]);
 
       const myButtonApp = renderComponent(MyButtonApp);
       expect(parent !.doCheckCount).toEqual(1);
@@ -318,7 +318,7 @@ describe('change detection', () => {
             }
             textBinding(0, interpolation1('', ctx.doCheckCount, ' - '));
           },
-          directiveDefs: () => [MyComp.ngComponentDef]
+          directives: () => [MyComp]
         });
       }
 
@@ -393,7 +393,7 @@ describe('change detection', () => {
             elementStart(0, 'my-comp', ['dir', '']);
             elementEnd();
           }
-        }, [MyComp.ngComponentDef, Dir.ngDirectiveDef]);
+        }, [MyComp, Dir]);
 
         const app = renderComponent(MyApp);
         expect(getRenderedText(app)).toEqual('Nancy');
@@ -415,7 +415,7 @@ describe('change detection', () => {
             elementEnd();
           }
           textBinding(1, bind(ctx.value));
-        }, [Dir.ngDirectiveDef]);
+        }, [Dir]);
 
         const app = renderComponent(MyApp);
         app.value = 'Frank';
@@ -462,7 +462,7 @@ describe('change detection', () => {
               }
               containerRefreshEnd();
             },
-            directiveDefs: [Dir.ngDirectiveDef]
+            directives: [Dir]
           });
         }
 
@@ -551,7 +551,7 @@ describe('change detection', () => {
               elementEnd();
             }
           },
-          directiveDefs: () => [DetachedComp.ngComponentDef]
+          directives: () => [DetachedComp]
         });
       }
 
@@ -682,7 +682,7 @@ describe('change detection', () => {
             elementEnd();
           }
           elementProperty(0, 'value', bind(ctx.value));
-        }, [OnPushComp.ngComponentDef]);
+        }, [OnPushComp]);
 
         const app = renderComponent(OnPushApp);
         app.value = 'one';
@@ -749,7 +749,7 @@ describe('change detection', () => {
             }
             textBinding(0, interpolation1('', ctx.value, ' - '));
           },
-          directiveDefs: () => [OnPushComp.ngComponentDef],
+          directives: () => [OnPushComp],
           changeDetection: ChangeDetectionStrategy.OnPush
         });
       }
@@ -828,7 +828,7 @@ describe('change detection', () => {
               }
               containerRefreshEnd();
             },
-            directiveDefs: () => [OnPushComp.ngComponentDef],
+            directives: () => [OnPushComp],
             changeDetection: ChangeDetectionStrategy.OnPush
           });
         }
@@ -907,7 +907,7 @@ describe('change detection', () => {
             }
             textBinding(0, interpolation1('', ctx.value, ' - '));
           },
-          directiveDefs: () => [NoChangesComp.ngComponentDef]
+          directives: () => [NoChangesComp]
         });
       }
 
