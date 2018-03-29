@@ -122,28 +122,31 @@ def _ng_package_impl(ctx):
   # - ng_module rules in the deps (they have an "angular" provider)
   # - in this package or a subpackage
   # - those that have a module_name attribute (they produce flat module metadata)
-  entry_points = []
   flat_module_metadata = []
-  for dep in ctx.attr.deps:
-    if dep.label.package.startswith(ctx.label.package):
-      entry_points.append(dep.label.package[len(ctx.label.package) + 1:])
-      if hasattr(dep, "angular") and dep.angular.flat_module_metadata:
-        flat_module_metadata.append(dep.angular.flat_module_metadata)
+  deps_in_package = [d for d in ctx.attr.deps if d.label.package.startswith(ctx.label.package)]
+  for dep in deps_in_package:
+    # Intentionally evaluates to empty string for the main entry point
+    entry_point = dep.label.package[len(ctx.label.package) + 1:]
+    if hasattr(dep, "angular") and hasattr(dep.angular, "flat_module_metadata"):
+      flat_module_metadata.append(dep.angular.flat_module_metadata)
+      flat_module_out_file = dep.angular.flat_module_metadata.flat_module_out_file + ".js"
+    else:
+      # fallback to a reasonable default
+      flat_module_out_file = "index.js"
 
-  for entry_point in entry_points:
     es2015_entry_point = "/".join([p for p in [
         ctx.bin_dir.path,
         ctx.label.package,
         ctx.label.name + ".es6",
         ctx.label.package,
         entry_point,
-        "index.js",
+        flat_module_out_file,
     ] if p])
 
     es5_entry_point = "/".join([p for p in [
         ctx.label.package,
         entry_point,
-        "index.js",
+        flat_module_out_file,
     ] if p])
 
     if entry_point:
@@ -192,10 +195,10 @@ def _ng_package_impl(ctx):
   # Marshal the metadata into a JSON string so we can parse the data structure
   # in the TypeScript program easily.
   metadata_arg = {}
-  for m in depset(transitive = flat_module_metadata).to_list():
-    packager_inputs.extend([m.index_file, m.typings_file, m.metadata_file])
+  for m in flat_module_metadata:
+    packager_inputs.extend([m.metadata_file])
     metadata_arg[m.module_name] = {
-        "index": m.index_file.path,
+        "index": m.typings_file.path.replace(".d.ts", ".js"),
         "typings": m.typings_file.path,
         "metadata": m.metadata_file.path,
     }
@@ -226,7 +229,7 @@ def _ng_package_impl(ctx):
     packager_args.add("")
 
   ctx.actions.run(
-      progress_message = "Angular Packaging: building npm package for %s" % ctx.label.name,
+      progress_message = "Angular Packaging: building npm package %s" % str(ctx.label),
       mnemonic = "AngularPackage",
       inputs = packager_inputs,
       outputs = [npm_package_directory],

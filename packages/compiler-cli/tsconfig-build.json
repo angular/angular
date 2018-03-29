@@ -27,7 +27,6 @@
     "index.ts",
     "ngtools2.ts",
     "src/main.ts",
-    "src/metadata/bundle_index_main.ts",
     "src/extract_i18n.ts",
     "src/language_services.ts",
     "../../node_modules/@types/node/index.d.ts",
