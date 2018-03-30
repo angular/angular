@@ -155,12 +155,11 @@ describe('pipes', () => {
         selectors: [['my-app']],
         factory: function MyApp_Factory() { return new MyApp(); },
         template: function MyApp_Template(ctx: $MyApp$, cm: $boolean$) {
-          let $pi$: $any$;
           if (cm) {
             $r3$.ɵT(0);
-            $pi$ = $r3$.ɵPp(1, 'myPurePipe');
+            $r3$.ɵPp(1, 'myPurePipe');
             $r3$.ɵT(2);
-            $r3$.ɵPp(3, 'myPurePipe', $pi$);
+            $r3$.ɵPp(3, 'myPurePipe');
             $r3$.ɵC(4, C4, '', ['oneTimeIf', '']);
           }
           $r3$.ɵt(0, $r3$.ɵi1('', $r3$.ɵpb2(1, ctx.name, ctx.size), ''));
@@ -173,7 +172,7 @@ describe('pipes', () => {
             if (cm) {
               $r3$.ɵE(0, 'div');
               $r3$.ɵT(1);
-              $r3$.ɵPp(2, 'myPurePipe', $pi$);
+              $r3$.ɵPp(2, 'myPurePipe');
               $r3$.ɵe();
             }
             $r3$.ɵt(1, $r3$.ɵi1('', $r3$.ɵpb2(2, ctx.name, ctx.size), ''));

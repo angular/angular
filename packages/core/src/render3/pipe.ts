@@ -16,11 +16,10 @@ import {pureFunction1, pureFunction2, pureFunction3, pureFunction4, pureFunction
  * Create a pipe.
  *
  * @param index Pipe index where the pipe will be stored.
- * @param pipeDef Pipe definition object for registering life cycle hooks.
- * @param firstInstance (optional) The first instance of the pipe that can be reused for pure pipes.
+ * @param pipeName The name of the pipe
  * @returns T the instance of the pipe.
  */
-export function pipe(index: number, pipeName: string, firstInstance?: any): any {
+export function pipe(index: number, pipeName: string): any {
   const tView = getTView();
   let pipeDef: PipeDef<any>;
 
@@ -34,7 +33,7 @@ export function pipe(index: number, pipeName: string, firstInstance?: any): any 
     pipeDef = tView.data[index] as PipeDef<any>;
   }
 
-  const pipeInstance = pipeDef.pure && firstInstance ? firstInstance : pipeDef.n();
+  const pipeInstance = pipeDef.n();
   store(index, pipeInstance);
   return pipeInstance;
 }

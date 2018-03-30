@@ -24,7 +24,10 @@ export function compilePipe(
     mode: OutputMode) {
   const definitionMapValues: {key: string, quoted: boolean, value: o.Expression}[] = [];
 
-  // e.g. 'type: MyPipe`
+  // e.g. `name: 'myPipe'`
+  definitionMapValues.push({key: 'name', value: o.literal(pipe.name), quoted: false});
+
+  // e.g. `type: MyPipe`
   definitionMapValues.push(
       {key: 'type', value: outputCtx.importExpr(pipe.type.reference), quoted: false});
 

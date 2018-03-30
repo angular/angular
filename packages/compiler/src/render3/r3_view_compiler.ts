@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CompileDirectiveMetadata, CompileDirectiveSummary, CompilePipeSummary, CompileQueryMetadata, CompileTokenMetadata, CompileTypeMetadata, flatten, identifierName, rendererTypeName, sanitizeIdentifier, tokenReference, viewClassName} from '../compile_metadata';
+import {CompileDirectiveMetadata, CompileDirectiveSummary, CompilePipeSummary, CompileQueryMetadata, CompileTokenMetadata, CompileTypeMetadata, CompileTypeSummary, flatten, identifierName, rendererTypeName, sanitizeIdentifier, tokenReference, viewClassName} from '../compile_metadata';
 import {CompileReflector} from '../compile_reflector';
 import {BindingForm, BuiltinConverter, BuiltinFunctionCall, ConvertPropertyBindingResult, EventHandlerVars, LocalResolver, convertActionBinding, convertPropertyBinding, convertPropertyBindingBuiltins} from '../compiler_util/expression_converter';
 import {ConstantPool, DefinitionKind} from '../constant_pool';
@@ -111,6 +111,14 @@ export function compileComponent(
     template: TemplateAst[], reflector: CompileReflector, bindingParser: BindingParser,
     mode: OutputMode) {
   const definitionMapValues: {key: string, quoted: boolean, value: o.Expression}[] = [];
+  // Set of pipe names for pipe exps that have already been stored in pipes[] (to avoid dupes)
+  const pipeSet = new Set<string>();
+  // Pipe expressions for pipes[] field in component def
+  const pipeExps: o.Expression[] = [];
+
+  function addPipeDependency(summary: CompilePipeSummary): void {
+    addDependencyToComponent(outputCtx, summary, pipeSet, pipeExps);
+  }
 
   const field = (key: string, value: o.Expression | null) => {
     if (value) {
@@ -154,10 +162,15 @@ export function compileComponent(
       new TemplateDefinitionBuilder(
           outputCtx, outputCtx.constantPool, reflector, CONTEXT_NAME, ROOT_SCOPE.nestedScope(), 0,
           component.template !.ngContentSelectors, templateTypeName, templateName, pipeMap,
-          component.viewQueries)
+          component.viewQueries, addPipeDependency)
           .buildTemplateFunction(template, []);
 
   field('template', templateFunctionExpression);
+
+  // e.g. `pipes: [MyPipe]`
+  if (pipeExps.length) {
+    field('pipes', o.literalArr(pipeExps));
+  }
 
   // e.g `inputs: {a: 'a'}`
   field('inputs', createInputsObject(component, outputCtx));
@@ -198,6 +211,19 @@ export function compileComponent(
     outputCtx.statements.push(
         new o.CommentStmt(BUILD_OPTIMIZER_COLOCATE),
         classReference.prop(definitionField).set(definitionFunction).toStmt());
+  }
+}
+
+// TODO: this should be used for addDirectiveDependency as well when Misko's PR goes in
+function addDependencyToComponent(
+    outputCtx: OutputContext, summary: CompileTypeSummary, set: Set<string>,
+    exps: o.Expression[]): void {
+  const importExpr = outputCtx.importExpr(summary.type.reference) as o.ExternalExpr;
+  const uniqueKey = importExpr.value.moduleName + ':' + importExpr.value.name;
+
+  if (!set.has(uniqueKey)) {
+    set.add(uniqueKey);
+    exps.push(importExpr);
   }
 }
 
@@ -347,20 +373,16 @@ class TemplateDefinitionBuilder implements TemplateAstVisitor, LocalResolver {
       private reflector: CompileReflector, private contextParameter: string,
       private bindingScope: BindingScope, private level = 0, private ngContentSelectors: string[],
       private contextName: string|null, private templateName: string|null,
-      private pipes: Map<string, CompilePipeSummary>, private viewQueries: CompileQueryMetadata[]) {
+      private pipes: Map<string, CompilePipeSummary>, private viewQueries: CompileQueryMetadata[],
+      private addPipeDependency: (summary: CompilePipeSummary) => void) {
     this._valueConverter = new ValueConverter(
         outputCtx, () => this.allocateDataSlot(), (name, localName, slot, value) => {
           bindingScope.set(localName, value);
           const pipe = pipes.get(name) !;
           pipe || error(`Could not find pipe ${name}`);
-          const pipeDefinition = constantPool.getDefinition(
-              pipe.type.reference, DefinitionKind.Pipe, outputCtx, /* forceShared */ true);
+          this.addPipeDependency(pipe);
           this._creationMode.push(
-              o.importExpr(R3.pipe)
-                  .callFn([
-                    o.literal(slot), pipeDefinition, pipeDefinition.callMethod(R3.NEW_METHOD, [])
-                  ])
-                  .toStmt());
+              o.importExpr(R3.pipe).callFn([o.literal(slot), o.literal(name)]).toStmt());
         });
   }
 
@@ -736,7 +758,7 @@ class TemplateDefinitionBuilder implements TemplateAstVisitor, LocalResolver {
     const templateVisitor = new TemplateDefinitionBuilder(
         this.outputCtx, this.constantPool, this.reflector, templateContext,
         this.bindingScope.nestedScope(), this.level + 1, this.ngContentSelectors, contextName,
-        templateName, this.pipes, []);
+        templateName, this.pipes, [], this.addPipeDependency);
     const templateFunctionExpr = templateVisitor.buildTemplateFunction(ast.children, ast.variables);
     this._postfix.push(templateFunctionExpr.toDeclStmt(templateName, null));
   }
@@ -1044,11 +1066,7 @@ class ValueConverter extends AstMemoryEfficientTransformer {
   // AstMemoryEfficientTransformer
   visitPipe(ast: BindingPipe, context: any): AST {
     // Allocate a slot to create the pipe
-    let slot = this.pipeSlots.get(ast.name);
-    if (slot == null) {
-      slot = this.allocateSlot();
-      this.pipeSlots.set(ast.name, slot);
-    }
+    const slot = this.allocateSlot();
     const slotPseudoLocal = `PIPE:${slot}`;
     const target = new PropertyRead(ast.span, new ImplicitReceiver(ast.span), slotPseudoLocal);
     const bindingId = pipeBinding(ast.args);
