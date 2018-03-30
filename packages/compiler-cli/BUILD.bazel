@@ -33,5 +33,6 @@ npm_package(
     srcs = [
         "package.json",
     ],
+    tags = ["release-with-framework"],
     deps = [":compiler-cli"],
 )

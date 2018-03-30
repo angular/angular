@@ -22,5 +22,9 @@ ts_library(
 npm_package(
     name = "npm_package",
     srcs = ["package.json"],
+    tags = [
+        # TODO(alexeagle): enable release after landing #23090
+        # "release-with-framework",
+    ],
     deps = [":language-service"],
 )
