@@ -437,6 +437,15 @@ export interface PopStateEvent {
 }
 
 /** @experimental */
+export declare class PushPipe implements OnDestroy, PipeTransform {
+    constructor(_ref: ChangeDetectorRef);
+    ngOnDestroy(): void;
+    transform<T>(obj: undefined): undefined;
+    transform<T>(obj: Observable<T> | null | undefined): T | null;
+    transform<T>(obj: null): null;
+}
+
+/** @experimental */
 export declare function registerLocaleData(data: any, localeId?: string | any, extraData?: any): void;
 
 /** @stable */
