@@ -10,7 +10,8 @@
     background: mat-color($background, 'card');
   }
 
-  .mat-row, .mat-header-row {
+
+  mat-row, mat-header-row, th.mat-header-cell, td.mat-cell {
     border-bottom-color: mat-color($foreground, divider);
   }
 

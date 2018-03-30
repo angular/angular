@@ -1,0 +1,18 @@
+<table class="mat-table">
+  <thead>
+    <tr class="mat-header-row">
+      <th class="mat-header-cell"> No. </th>
+      <th class="mat-header-cell"> Name </th>
+      <th class="mat-header-cell"> Weight </th>
+      <th class="mat-header-cell"> Symbol </th>
+    </tr>
+    </thead>
+  <tbody>
+    <tr class="mat-row" *ngFor="let element of elements">
+      <td class="mat-cell"> {{element.position}} </td>
+      <td class="mat-cell"> {{element.name}} </td>
+      <td class="mat-cell"> {{element.weight}} </td>
+      <td class="mat-cell"> {{element.symbol}} </td>
+    </tr>
+  </tbody>
+</table>

@@ -7,7 +7,7 @@
     </div>
   </div>
 
-  <mat-table #table [dataSource]="dataSource" class="example-table"
+  <table mat-table #table [dataSource]="dataSource" class="example-table"
              matSort matSortActive="created" matSortDisableClear matSortDirection="asc">
 
     <!--- Note that these columns can be defined in any order.
@@ -15,35 +15,35 @@
 
     <!-- Number Column -->
     <ng-container matColumnDef="number">
-      <mat-header-cell *matHeaderCellDef>#</mat-header-cell>
-      <mat-cell *matCellDef="let row">{{ row.number }}</mat-cell>
+      <th mat-header-cell *matHeaderCellDef>#</th>
+      <td mat-cell *matCellDef="let row">{{ row.number }}</td>
     </ng-container>
 
     <!-- Title Column -->
     <ng-container matColumnDef="title">
-      <mat-header-cell *matHeaderCellDef>Title</mat-header-cell>
-      <mat-cell *matCellDef="let row">{{ row.title }}</mat-cell>
+      <th mat-header-cell *matHeaderCellDef>Title</th>
+      <td mat-cell *matCellDef="let row">{{ row.title }}</td>
     </ng-container>
 
     <!-- State Column -->
     <ng-container matColumnDef="state">
-      <mat-header-cell *matHeaderCellDef>State</mat-header-cell>
-      <mat-cell *matCellDef="let row">{{ row.state }}</mat-cell>
+      <th mat-header-cell *matHeaderCellDef>State</th>
+      <td mat-cell *matCellDef="let row">{{ row.state }}</td>
     </ng-container>
 
     <!-- Created Column -->
     <ng-container matColumnDef="created">
-      <mat-header-cell *matHeaderCellDef
+      <th mat-header-cell *matHeaderCellDef
                        mat-sort-header
                        disableClear="true">
         Created
-      </mat-header-cell>
-      <mat-cell *matCellDef="let row">{{ row.created_at | date }}</mat-cell>
+      </th>
+      <td mat-cell *matCellDef="let row">{{ row.created_at | date }}</td>
     </ng-container>
 
-    <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-    <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
-  </mat-table>
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+  </table>
 
   <mat-paginator [length]="resultsLength" [pageSize]="30">
   </mat-paginator>

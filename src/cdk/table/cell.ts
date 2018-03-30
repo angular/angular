@@ -61,7 +61,7 @@ export class CdkColumnDef {
 
 /** Header cell template container that adds the right classes and role. */
 @Directive({
-  selector: 'cdk-header-cell',
+  selector: 'cdk-header-cell, th[cdk-header-cell]',
   host: {
     'class': 'cdk-header-cell',
     'role': 'columnheader',
@@ -75,7 +75,7 @@ export class CdkHeaderCell {
 
 /** Cell template container that adds the right classes and role. */
 @Directive({
-  selector: 'cdk-cell',
+  selector: 'cdk-cell, td[cdk-cell]',
   host: {
     'class': 'cdk-cell',
     'role': 'gridcell',

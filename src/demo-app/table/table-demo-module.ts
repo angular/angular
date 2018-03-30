@@ -30,6 +30,7 @@ import {RouterModule} from '@angular/router';
 import {WrapperTable} from './custom-table/wrapper-table';
 import {SimpleColumn} from './custom-table/simple-column';
 import {DataInputTableDemo} from './data-input-table/data-input-table';
+import {NativeTableDemo} from './native-table/native-table';
 
 @NgModule({
   imports: [
@@ -57,6 +58,7 @@ import {DataInputTableDemo} from './data-input-table/data-input-table';
     TableHeaderDemo,
     WrapperTable,
     SimpleColumn,
+    NativeTableDemo,
   ],
   providers: [
     PeopleDatabase

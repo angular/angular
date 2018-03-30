@@ -232,6 +232,19 @@ describe('CdkTable', () => {
     });
   });
 
+  it('should render correctly when using native HTML tags', () => {
+    const thisFixture = createComponent(NativeHtmlTableApp);
+    const thisTableElement = thisFixture.nativeElement.querySelector('table');
+    thisFixture.detectChanges();
+
+    expectTableToMatchContent(thisTableElement, [
+      ['Column A', 'Column B', 'Column C'],
+      ['a_1', 'b_1', 'c_1'],
+      ['a_2', 'b_2', 'c_2'],
+      ['a_3', 'b_3', 'c_3'],
+    ]);
+  });
+
   it('should render cells even if row data is falsy', () => {
     const booleanRowCdkTableAppFixture = createComponent(BooleanRowCdkTableApp);
     booleanRowCdkTableAppFixture.detectChanges();
@@ -1347,6 +1360,36 @@ class OuterTableApp {
       ['content_column_a', 'content_column_b', 'injected_column_a', 'injected_column_b'];
 
   firstRow = i => i === 0;
+}
+
+@Component({
+  template: `
+    <table cdk-table [dataSource]="dataSource">
+      <ng-container cdkColumnDef="column_a">
+        <th cdk-header-cell *cdkHeaderCellDef> Column A</th>
+        <td cdk-cell *cdkCellDef="let row"> {{row.a}}</td>
+      </ng-container>
+
+      <ng-container cdkColumnDef="column_b">
+        <th cdk-header-cell *cdkHeaderCellDef> Column B</th>
+        <td cdk-cell *cdkCellDef="let row"> {{row.b}}</td>
+      </ng-container>
+
+      <ng-container cdkColumnDef="column_c">
+        <th cdk-header-cell *cdkHeaderCellDef> Column C</th>
+        <td cdk-cell *cdkCellDef="let row"> {{row.c}}</td>
+      </ng-container>
+
+      <tr cdk-header-row *cdkHeaderRowDef="columnsToRender"></tr>
+      <tr cdk-row *cdkRowDef="let row; columns: columnsToRender" class="customRowClass"></tr>
+    </table>
+  `
+})
+class NativeHtmlTableApp {
+  dataSource: FakeDataSource | undefined = new FakeDataSource();
+  columnsToRender = ['column_a', 'column_b', 'column_c'];
+
+  @ViewChild(CdkTable) table: CdkTable<TestData>;
 }
 
 function getElements(element: Element, query: string): Element[] {

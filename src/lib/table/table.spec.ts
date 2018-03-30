@@ -14,7 +14,12 @@ describe('MatTable', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       imports: [MatTableModule, MatPaginatorModule, MatSortModule, NoopAnimationsModule],
-      declarations: [MatTableApp, MatTableWithWhenRowApp, ArrayDataSourceMatTableApp],
+      declarations: [
+        MatTableApp,
+        MatTableWithWhenRowApp,
+        ArrayDataSourceMatTableApp,
+        NativeHtmlTableApp
+      ],
     }).compileComponents();
   }));
 
@@ -47,6 +52,21 @@ describe('MatTable', () => {
         ['fourth_row']
       ]);
     });
+  });
+
+  it('should be able to render a table correctly with native elements', () => {
+    let fixture = TestBed.createComponent(NativeHtmlTableApp);
+    fixture.detectChanges();
+
+    const tableElement = fixture.nativeElement.querySelector('table');
+    const data = fixture.componentInstance.dataSource!.data;
+    expectTableToMatchContent(tableElement, [
+      ['Column A', 'Column B', 'Column C'],
+      [data[0].a, data[0].b, data[0].c],
+      [data[1].a, data[1].b, data[1].c],
+      [data[2].a, data[2].b, data[2].c],
+      [data[3].a, data[3].b, data[3].c],
+    ]);
   });
 
   describe('with MatTableDataSource', () => {
@@ -346,6 +366,36 @@ class MatTableApp {
   dataSource: FakeDataSource | null = new FakeDataSource();
   columnsToRender = ['column_a', 'column_b', 'column_c'];
   isFourthRow = (i: number, _rowData: TestData) => i == 3;
+
+  @ViewChild(MatTable) table: MatTable<TestData>;
+}
+
+@Component({
+  template: `
+    <table mat-table [dataSource]="dataSource">
+      <ng-container matColumnDef="column_a">
+        <th mat-header-cell *matHeaderCellDef> Column A</th>
+        <td mat-cell *matCellDef="let row"> {{row.a}}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="column_b">
+        <th mat-header-cell *matHeaderCellDef> Column B</th>
+        <td mat-cell *matCellDef="let row"> {{row.b}}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="column_c">
+        <th mat-header-cell *matHeaderCellDef> Column C</th>
+        <td mat-cell *matCellDef="let row"> {{row.c}}</td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="columnsToRender"></tr>
+      <tr mat-row *matRowDef="let row; columns: columnsToRender"></tr>
+    </table>
+  `
+})
+class NativeHtmlTableApp {
+  dataSource: FakeDataSource | null = new FakeDataSource();
+  columnsToRender = ['column_a', 'column_b', 'column_c'];
 
   @ViewChild(MatTable) table: MatTable<TestData>;
 }

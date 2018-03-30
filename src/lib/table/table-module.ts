@@ -14,31 +14,29 @@ import {MatHeaderRow, MatHeaderRowDef, MatRow, MatRowDef} from './row';
 import {CommonModule} from '@angular/common';
 import {MatCommonModule} from '@angular/material/core';
 
+const EXPORTED_DECLARATIONS = [
+  // Table
+  MatTable,
+
+  // Template defs
+  MatCellDef,
+  MatHeaderCellDef,
+  MatColumnDef,
+  MatHeaderRowDef,
+  MatRowDef,
+
+  // Cell directives
+  MatHeaderCell,
+  MatCell,
+
+  // Row directions
+  MatHeaderRow,
+  MatRow,
+];
+
 @NgModule({
   imports: [CdkTableModule, CommonModule, MatCommonModule],
-  exports: [
-    MatCell,
-    MatCellDef,
-    MatColumnDef,
-    MatHeaderCell,
-    MatHeaderCellDef,
-    MatHeaderRow,
-    MatHeaderRowDef,
-    MatRow,
-    MatRowDef,
-    MatTable,
-  ],
-  declarations: [
-    MatCell,
-    MatCellDef,
-    MatColumnDef,
-    MatHeaderCell,
-    MatHeaderCellDef,
-    MatHeaderRow,
-    MatHeaderRowDef,
-    MatRow,
-    MatRowDef,
-    MatTable,
-  ],
+  exports: EXPORTED_DECLARATIONS,
+  declarations: EXPORTED_DECLARATIONS,
 })
 export class MatTableModule {}

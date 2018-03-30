@@ -49,7 +49,7 @@ import {
  */
 @Directive({selector: '[rowPlaceholder]'})
 export class RowPlaceholder {
-  constructor(public viewContainer: ViewContainerRef) { }
+  constructor(public viewContainer: ViewContainerRef, public elementRef: ElementRef) { }
 }
 
 /**
@@ -58,7 +58,7 @@ export class RowPlaceholder {
  */
 @Directive({selector: '[headerRowPlaceholder]'})
 export class HeaderRowPlaceholder {
-  constructor(public viewContainer: ViewContainerRef) { }
+  constructor(public viewContainer: ViewContainerRef, public elementRef: ElementRef) { }
 }
 
 /**
@@ -83,7 +83,7 @@ abstract class RowViewRef<T> extends EmbeddedViewRef<CdkCellOutletRowContext<T>>
  */
 @Component({
   moduleId: module.id,
-  selector: 'cdk-table',
+  selector: 'cdk-table, table[cdk-table]',
   exportAs: 'cdkTable',
   template: CDK_TABLE_TEMPLATE,
   host: {
@@ -212,14 +212,18 @@ export class CdkTable<T> implements CollectionViewer, OnInit, AfterContentChecke
 
   constructor(private readonly _differs: IterableDiffers,
               private readonly _changeDetectorRef: ChangeDetectorRef,
-              elementRef: ElementRef,
+              private readonly _elementRef: ElementRef,
               @Attribute('role') role: string) {
     if (!role) {
-      elementRef.nativeElement.setAttribute('role', 'grid');
+      this._elementRef.nativeElement.setAttribute('role', 'grid');
     }
   }
 
   ngOnInit() {
+    if (this._elementRef.nativeElement.nodeName === 'TABLE') {
+      this._applyNativeTableSections();
+    }
+
     // TODO(andrewseguin): Setup a listener for scrolling, emit the calculated view to viewChange
     this._dataDiffer = this._differs.find([]).create(this._trackByFn);
 
@@ -557,5 +561,17 @@ export class CdkTable<T> implements CollectionViewer, OnInit, AfterContentChecke
 
       return column.cell;
     });
+  }
+
+  /** Adds native table sections (e.g. tbody) and moves the row placeholders into them. */
+  private _applyNativeTableSections() {
+    const thead = document.createElement('thead');
+    const tbody = document.createElement('tbody');
+
+    this._elementRef.nativeElement.appendChild(thead);
+    this._elementRef.nativeElement.appendChild(tbody);
+
+    thead.appendChild(this._headerRowPlaceholder.elementRef.nativeElement);
+    tbody.appendChild(this._rowPlaceholder.elementRef.nativeElement);
   }
 }

@@ -50,7 +50,7 @@ export class MatColumnDef extends CdkColumnDef {
 
 /** Header cell template container that adds the right classes and role. */
 @Directive({
-  selector: 'mat-header-cell',
+  selector: 'mat-header-cell, th[mat-header-cell]',
   host: {
     'class': 'mat-header-cell',
     'role': 'columnheader',
@@ -66,7 +66,7 @@ export class MatHeaderCell extends CdkHeaderCell {
 
 /** Cell template container that adds the right classes and role. */
 @Directive({
-  selector: 'mat-cell',
+  selector: 'mat-cell, td[mat-cell]',
   host: {
     'class': 'mat-cell',
     'role': 'gridcell',

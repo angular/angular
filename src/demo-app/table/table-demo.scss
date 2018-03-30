@@ -105,23 +105,24 @@
 
 /* Progress bar styling */
 .cdk-column-progress {
-  &.cdk-cell, &.mat-cell {
+  display: flex;
+  height: inherit;
+  align-items: center;
+
+  .demo-progress-stat {
+    width: 32px;
+    padding-right: 8px;
+  }
+
+  .demo-progress-indicator-container {
+    flex-grow: 1;
     display: flex;
+    align-items: center;
+  }
 
-    .demo-progress-stat {
-      width: 32px;
-      padding-right: 8px;
-    }
-
-    .demo-progress-indicator-container {
-      flex-grow: 1;
-      display: flex;
-      align-items: center;
-    }
-    .demo-progress-indicator {
-      border-radius: 8px;
-      height: 8px;
-    }
+  .demo-progress-indicator {
+    border-radius: 8px;
+    height: 8px;
   }
 }
 

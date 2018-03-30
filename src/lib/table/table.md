@@ -13,15 +13,15 @@ the table is implemented, see the
 
 #### 1. Write your mat-table and provide data
 
-Begin by creating a `<mat-table>` component in your template and passing in data.
+Begin by adding the `<table mat-table>` component to your template and passing in data.
   
-The simplest way to provide data to the table is by passing a data array to the table's `data` 
+The simplest way to provide data to the table is by passing a data array to the table's `dataSource` 
 input. The table will take the array and render a row for each object in the data array.
 
 ```html
-<mat-table [dataSource]=”myDataArray”>
+<table mat-table [dataSource]=”myDataArray”>
   ...
-</mat-table>
+</table>
 ```
 
 Since the table optimizes for performance, it will not automatically check for changes to the data
@@ -44,8 +44,8 @@ Here's a simple column definition with the name `'userName'`. The header cell co
 
 ```html
 <ng-container matColumnDef="userName">
-  <mat-header-cell *matHeaderCellDef> Name </mat-header-cell>
-  <mat-cell *matCellDef="let user"> {{user.name}} </mat-cell>
+  <th mat-header-cell *matHeaderCellDef> Name </th>
+  <td mat-cell *matCellDef="let user"> {{user.name}} </td>
 </ng-container>
 ```
 
@@ -65,8 +65,8 @@ Then add `mat-header-row` and `mat-row` to the content of your `mat-table` and p
 column list as inputs.
 
 ```html
-<mat-header-row *matHeaderRowDef="columnsToDisplay"></mat-header-row>
-<mat-row *matRowDef="let myRowData; columns: columnsToDisplay"></mat-row>
+<tr mat-header-row *matHeaderRowDef="columnsToDisplay"></tr>
+<tr mat-row *matRowDef="let myRowData; columns: columnsToDisplay"></tr>
 ```
 
 Note that this list of columns provided to the rows can be in any order, not necessary the order in
@@ -117,7 +117,7 @@ these feature to the table, check out their respective sections below.
 
 #### Pagination
 
-To paginate the table's data, add a `<mat-paginator>` after the `<mat-table>`. 
+To paginate the table's data, add a `<mat-paginator>` after the table. 
 
 If you are using the `MatTableDataSource` for your table's data source, simply provide the 
 `MatPaginator` to your data source. It will automatically listen for page changes made by the user 
@@ -137,14 +137,14 @@ and its interface is not tied to any one specific implementation.
 
 #### Sorting
 
-To add sorting behavior to the table, add the `matSort` directive to the `<mat-table>` and add 
+To add sorting behavior to the table, add the `matSort` directive to the table and add 
 `mat-sort-header` to each column header cell that should trigger sorting. 
 
 ```html
 <!-- Name Column -->
 <ng-container matColumnDef="position">
-  <mat-header-cell *matHeaderCellDef mat-sort-header> Name </mat-header-cell>
-  <mat-cell *matCellDef="let element"> {{element.position}} </mat-cell>
+  <th mat-header-cell *matHeaderCellDef mat-sort-header> Name </th>
+  <td mat-cell *matCellDef="let element"> {{element.position}} </td>
 </ng-container>
 ```
 
@@ -216,23 +216,23 @@ this.selection = new SelectionModel<MyDataType>(allowMultiSelect, initialSelecti
 ##### 2. Define a selection column
 
 Add a column definition for displaying the row checkboxes, including a master toggle checkbox for 
-the header. The column name should be added to the list of displayed columns provided to the 
-`<mat-header-row>` and `<mat-row>`.
+the header. The column name should be added to the list of displayed columns provided to the
+header and data row.
 
 ```html
 <ng-container matColumnDef="select">
-  <mat-header-cell *matHeaderCellDef>
+  <th mat-header-cell *matHeaderCellDef>
     <mat-checkbox (change)="$event ? masterToggle() : null"
                   [checked]="selection.hasValue() && isAllSelected()"
                   [indeterminate]="selection.hasValue() && !isAllSelected()">
     </mat-checkbox>
-  </mat-header-cell>
-  <mat-cell *matCellDef="let row">
+  </th>
+  <td mat-cell *matCellDef="let row">
     <mat-checkbox (click)="$event.stopPropagation()"
                   (change)="$event ? selection.toggle(row) : null"
                   [checked]="selection.isSelected(row)">
     </mat-checkbox>
-  </mat-cell>
+  </td>
 </ng-container>
 ```
 
@@ -278,3 +278,50 @@ Table's default role is `grid`, and it can be changed to `treegrid` through `rol
 
 `mat-table` does not manage any focus/keyboard interaction on its own. Users can add desired 
 focus/keyboard interactions in their application.
+
+### Tables with `display: flex`
+
+The `MatTable` does not require that you use a native HTML table. Instead, you can use an
+alternative approach that uses `display: flex` for the table's styles.
+
+This alternative approach replaces the native table element tags with the `MatTable` directive
+selectors. For example, `<table mat-table>` becomes `<mat-table>`; `<tr mat-row`> becomes 
+`<mat-row>`. The following shows a previous example using this alternative template:
+
+```html
+<mat-table [dataSource]="dataSource">
+  <!-- User name Definition -->
+  <ng-container cdkColumnDef="username">
+    <mat-header-cell *cdkHeaderCellDef> User name </mat-header-cell>
+    <mat-cell *cdkCellDef="let row"> {{row.username}} </mat-cell>
+  </ng-container>
+
+  <!-- Age Definition -->
+  <ng-container cdkColumnDef="age">
+    <mat-header-cell *cdkHeaderCellDef> Age </mat-header-cell>
+    <mat-cell *cdkCellDef="let row"> {{row.age}} </mat-cell>
+  </ng-container>
+
+  <!-- Title Definition -->
+  <ng-container cdkColumnDef="title">
+    <mat-header-cell *cdkHeaderCellDef> Title </mat-header-cell>
+    <mat-cell *cdkCellDef="let row"> {{row.title}} </mat-cell>
+  </ng-container>
+
+  <!-- Header and Row Declarations -->
+  <mat-header-row *cdkHeaderRowDef="['username', 'age', 'title']"></mat-header-row>
+  <mat-row *cdkRowDef="let row; columns: ['username', 'age', 'title']"></mat-row>
+</mat-table>
+```
+
+Note that this approach means you cannot include certain native-table features such colspan/rowspan
+or have columns that resize themselves based on their content.
+
+### Applying material styles to native table
+
+If you want to have a Material design styled `<table>` without using the `MatTable`, simply apply 
+the appropriate classes to the table elements. This may be useful if you have an existing table
+or if you do not need the additional benefits and features of the `MatTable`.
+
+<!--- example(table-native-only) -->
+ 

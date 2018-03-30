@@ -1,0 +1,60 @@
+.demo-table-card {
+  margin: 8px 0;
+  max-height: 400px;
+  overflow: auto;
+  padding: 0;
+}
+
+.demo-table {
+  width: 100%;
+}
+
+.demo-selection-header {
+  height: 64px;
+  background: white;
+  display: flex;
+  align-items: center;
+  padding-left: 24px;
+}
+
+.demo-selectable {
+  .mat-row:hover {
+    background: #eeeeee;
+  }
+  .mat-row.selected {
+    background: #f5f5f5;
+  }
+}
+
+table-header-demo {
+  background: white;
+}
+
+/* Progress bar styling */
+.cdk-column-progress {
+  &.cdk-cell, &.mat-cell {
+    display: flex;
+    align-items: center;
+    height: inherit;
+
+    .demo-progress-stat {
+      width: 32px;
+      padding-right: 8px;
+    }
+
+    .demo-progress-indicator-container {
+      flex-grow: 1;
+      display: flex;
+      align-items: center;
+    }
+    .demo-progress-indicator {
+      border-radius: 8px;
+      height: 8px;
+    }
+  }
+}
+
+.mat-column-select { width: 48px; }
+.mat-column-userId { width: 64px; }
+.mat-column-userName { width: 120px; }
+.mat-column-color { width: 120px; }
