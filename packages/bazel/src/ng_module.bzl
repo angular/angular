@@ -50,7 +50,8 @@ def _should_produce_flat_module_outs(ctx):
   Returns:
     true iff we should run the bundle_index_host to produce flat module metadata and bundle index
   """
-  return bool(ctx.attr.module_name)
+  is_bazel = not hasattr(native, "genmpm")
+  return is_bazel and ctx.attr.module_name
 
 # Calculate the expected output of the template compiler for every source in
 # in the library. Most of these will be produced as empty files but it is
