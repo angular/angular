@@ -183,49 +183,6 @@ describe('pipe', () => {
       expect(renderToHtml(Template, person, null, defs)).toEqual('bart state:2');
       expect(renderToHtml(Template, person, null, defs)).toEqual('bart state:2');
     });
-
-    it('should cache pure pipes', () => {
-      function Template(ctx: any, cm: boolean) {
-        let pipeInstance: any;
-        if (cm) {
-          elementStart(0, 'div');
-          pipeInstance = pipe(1, 'countingPipe');
-          elementEnd();
-          elementStart(2, 'div');
-          pipe(3, 'countingPipe', pipeInstance);
-          elementEnd();
-          container(4);
-        }
-        elementProperty(0, 'someProp', bind(pipeBind1(1, true)));
-        elementProperty(2, 'someProp', bind(pipeBind1(3, true)));
-        pipeInstances.push(load<CountingPipe>(1), load(3));
-        containerRefreshStart(4);
-        {
-          for (let i of [1, 2]) {
-            let cm1 = embeddedViewStart(1);
-            {
-              if (cm1) {
-                elementStart(0, 'div');
-                pipe(1, 'countingPipe', pipeInstance);
-                elementEnd();
-              }
-              elementProperty(0, 'someProp', bind(pipeBind1(1, true)));
-              pipeInstances.push(load<CountingPipe>(1));
-            }
-            embeddedViewEnd();
-          }
-        }
-        containerRefreshEnd();
-      }
-
-      const pipeInstances: CountingPipe[] = [];
-      renderToHtml(Template, {}, null, defs, rendererFactory2);
-      expect(pipeInstances.length).toEqual(4);
-      expect(pipeInstances[0]).toBeAnInstanceOf(CountingPipe);
-      expect(pipeInstances[1]).toBe(pipeInstances[0]);
-      expect(pipeInstances[2]).toBe(pipeInstances[0]);
-      expect(pipeInstances[3]).toBe(pipeInstances[0]);
-    });
   });
 
   describe('impure', () => {
