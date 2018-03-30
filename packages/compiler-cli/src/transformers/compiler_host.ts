@@ -212,7 +212,8 @@ export class TsCompilerAotCompilerTypeCheckHostAdapter implements ts.CompilerHos
       }
       moduleName = dotRelative(path.dirname(containingFile), importedFile);
     } else if (importedFilePackagName) {
-      moduleName = stripNodeModulesPrefix(importedFile);
+      // if filename is of form package/index then strip the '/index' portion
+      moduleName = stripNodeModulesPrefix(importedFile).replace(/\/index$/, '');
     } else {
       throw new Error(
           `Trying to import a source file from a node_modules package: import ${originalImportedFile} from ${containingFile}`);
