@@ -37,7 +37,7 @@ export class TreeComponent {
   /** @nocollapse */
   static ngComponentDef: ComponentDef<TreeComponent> = defineComponent({
     type: TreeComponent,
-    selector: [[['tree'], null]],
+    selectors: [['tree']],
     template: function(ctx: TreeComponent, cm: boolean) {
       if (cm) {
         E(0, 'span');
@@ -91,7 +91,7 @@ export class TreeFunction {
   /** @nocollapse */
   static ngComponentDef: ComponentDef<TreeFunction> = defineComponent({
     type: TreeFunction,
-    selector: [[['tree'], null]],
+    selectors: [['tree']],
     template: function(ctx: TreeFunction, cm: boolean) {
       // bit of a hack
       TreeTpl(ctx.data, cm);
