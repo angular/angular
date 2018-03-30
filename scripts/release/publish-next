@@ -6,7 +6,7 @@ set -u -e -o pipefail
 # Publish all packages in `dist/packages-dist` to npm (as next)
 
 # Query Bazel for npm_package and ng_package rules with tags=["release-with-framework"]
-for p in $(bazel query --output=label 'attr("tags", "\[.*release-with-framework.*\]", //...) intersect kind(".*_package", //...)'); do
+for p in $(bazel query --output=label 'attr("tags", "\[.*release-with-framework.*\]", //...) intersect kind(".*_package", //...) except //dist/...'); do
   bazel run -- $p.publish --access public --tag next
 done
 
