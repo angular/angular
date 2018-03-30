@@ -81,7 +81,7 @@ export function isDigit(code: number): boolean {
 }
 
 export function isAsciiLetter(code: number): boolean {
-  return code >= $a && code <= $z || code >= $A && code <= $Z;
+  return code >= $a && code <= $z || code >= $A && code <= $Z  || (code >= 0x4E00 && code <= 0x9FA5);
 }
 
 export function isAsciiHexDigit(code: number): boolean {
