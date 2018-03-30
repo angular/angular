@@ -3,17 +3,17 @@
 
 
 "@angular/animations@file:../../dist/packages-dist/animations":
-  version "6.0.0-beta.7-8203e0365a"
+  version "6.0.0-rc.0-b32e6343a3"
   dependencies:
     tslib "^1.9.0"
 
 "@angular/common@file:../../dist/packages-dist/common":
-  version "6.0.0-beta.7-8203e0365a"
+  version "6.0.0-rc.0-b32e6343a3"
   dependencies:
     tslib "^1.9.0"
 
 "@angular/compiler-cli@file:../../dist/packages-dist/compiler-cli":
-  version "6.0.0-beta.7-8203e0365a"
+  version "6.0.0-rc.0-b32e6343a3"
   dependencies:
     chokidar "^1.4.2"
     minimist "^1.2.0"
@@ -21,64 +21,64 @@
     tsickle "^0.27.2"
 
 "@angular/compiler@file:../../dist/packages-dist/compiler":
-  version "6.0.0-beta.7-8203e0365a"
+  version "6.0.0-rc.0-b32e6343a3"
   dependencies:
     tslib "^1.9.0"
 
 "@angular/core@file:../../dist/packages-dist/core":
-  version "6.0.0-beta.7-8203e0365a"
+  version "6.0.0-rc.0-b32e6343a3"
   dependencies:
     tslib "^1.9.0"
 
 "@angular/forms@file:../../dist/packages-dist/forms":
-  version "6.0.0-beta.7-8203e0365a"
+  version "6.0.0-rc.0-b32e6343a3"
   dependencies:
     tslib "^1.9.0"
 
 "@angular/http@file:../../dist/packages-dist/http":
-  version "6.0.0-beta.7-8203e0365a"
+  version "6.0.0-rc.0-b32e6343a3"
   dependencies:
     tslib "^1.9.0"
 
 "@angular/platform-browser-dynamic@file:../../dist/packages-dist/platform-browser-dynamic":
-  version "6.0.0-beta.7-8203e0365a"
+  version "6.0.0-rc.0-b32e6343a3"
   dependencies:
     tslib "^1.9.0"
 
 "@angular/platform-browser@file:../../dist/packages-dist/platform-browser":
-  version "6.0.0-beta.7-8203e0365a"
+  version "6.0.0-rc.0-b32e6343a3"
   dependencies:
     tslib "^1.9.0"
 
 "@angular/platform-server@file:../../dist/packages-dist/platform-server":
-  version "6.0.0-beta.7-8203e0365a"
+  version "6.0.0-rc.0-b32e6343a3"
   dependencies:
     domino "^2.0.1"
     tslib "^1.9.0"
     xhr2 "^0.1.4"
 
 "@angular/platform-webworker-dynamic@file:../../dist/packages-dist/platform-webworker-dynamic":
-  version "6.0.0-beta.7-8203e0365a"
+  version "6.0.0-rc.0-b32e6343a3"
   dependencies:
     tslib "^1.9.0"
 
 "@angular/platform-webworker@file:../../dist/packages-dist/platform-webworker":
-  version "6.0.0-beta.7-8203e0365a"
+  version "6.0.0-rc.0-b32e6343a3"
   dependencies:
     tslib "^1.9.0"
 
 "@angular/router@file:../../dist/packages-dist/router":
-  version "6.0.0-beta.7-8203e0365a"
+  version "6.0.0-rc.0-b32e6343a3"
   dependencies:
     tslib "^1.9.0"
 
 "@angular/service-worker@file:../../dist/packages-dist/service-worker":
-  version "6.0.0-beta.7-8203e0365a"
+  version "6.0.0-rc.0-b32e6343a3"
   dependencies:
     tslib "^1.9.0"
 
 "@angular/upgrade@file:../../dist/packages-dist/upgrade":
-  version "6.0.0-beta.7-8203e0365a"
+  version "6.0.0-rc.0-b32e6343a3"
   dependencies:
     tslib "^1.9.0"
 
@@ -864,7 +864,7 @@ rimraf@2, rimraf@^2.5.1, rimraf@^2.6.1:
     glob "^7.0.5"
 
 "rxjs@file:../../node_modules/rxjs":
-  version "6.0.0-alpha.4"
+  version "6.0.0-beta.4"
   dependencies:
     tslib "^1.9.0"
 
@@ -996,9 +996,9 @@ tweetnacl@^0.14.3, tweetnacl@~0.14.0:
   version "0.14.5"
   resolved "https://registry.yarnpkg.com/tweetnacl/-/tweetnacl-0.14.5.tgz#5ae68177f192d4456269d108afa93ff8743f4f64"
 
-typescript@2.5.x:
-  version "2.5.3"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-2.5.3.tgz#df3dcdc38f3beb800d4bc322646b04a3f6ca7f0d"
+typescript@2.7.x:
+  version "2.7.2"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-2.7.2.tgz#2d615a1ef4aee4f574425cdff7026edf81919836"
 
 uid-number@^0.0.6:
   version "0.0.6"
