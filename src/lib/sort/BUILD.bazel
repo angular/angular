@@ -7,14 +7,14 @@ ng_module(
   name = "sort",
   srcs = glob(["**/*.ts"], exclude=["**/*.spec.ts"]),
   module_name = "@angular/material/sort",
-  assets = [":sort_header_css"],
+  assets = [":sort_header_css"] + glob(["**/*.html"]),
   deps = [
     "//src/lib/core",
     "//src/cdk/coercion",
     "//src/cdk/table",
     "@rxjs",
   ],
-  tsconfig = ":tsconfig-build.json",
+  tsconfig = "//src/lib:tsconfig-build.json",
 )
 
 # TODO(jelbourn): replace this w/ sass_library when it supports acting like a filegroup
@@ -33,8 +33,12 @@ sass_binary(
 # Copy the output of the sass_binary such that the filename and path match what we expect.
 genrule(
   name = "sort_header_css",
-  srcs = [":sort_header_scss"],
+  srcs = [":sort_header_scss.css"],
   outs = ["sort-header.css"],
-  cmd = "cat $(locations :sort_header_scss) > $@",
+  cmd = "cp $< $@",
 )
 
+sass_library(
+  name = "theme",
+  srcs = glob(["**/*-theme.scss"]),
+)

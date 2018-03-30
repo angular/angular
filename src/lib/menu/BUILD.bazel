@@ -7,7 +7,7 @@ ng_module(
   name = "menu",
   srcs = glob(["**/*.ts"], exclude=["**/*.spec.ts"]),
   module_name = "@angular/material/menu",
-  assets = [":menu_css"],
+  assets = [":menu_css"] + glob(["**/*.html"]),
   deps = [
     "//src/lib/core",
     "//src/cdk/a11y",
@@ -17,7 +17,7 @@ ng_module(
     "//src/cdk/overlay",
     "//src/cdk/portal",
   ],
-  tsconfig = ":tsconfig-build.json",
+  tsconfig = "//src/lib:tsconfig-build.json",
 )
 
 # TODO(jelbourn): replace this w/ sass_library when it supports acting like a filegroup
@@ -36,7 +36,12 @@ sass_binary(
 # Copy the output of the sass_binary such that the filename and path match what we expect.
 genrule(
   name = "menu_css",
-  srcs = [":menu_scss"],
+  srcs = [":menu_scss.css"],
   outs = ["menu.css"],
-  cmd = "cat $(locations :menu_scss) > $@",
+  cmd = "cp $< $@",
+)
+
+sass_library(
+  name = "theme",
+  srcs = glob(["**/*-theme.scss"]),
 )

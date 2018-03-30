@@ -11,12 +11,17 @@ ng_module(
     "//src/lib/core",
     "//src/cdk/a11y",
     "//src/cdk/coercion",
-  ],
-  tsconfig = ":tsconfig-build.json",
+  ] + glob(["**/*.html"]),
+  tsconfig = "//src/lib:tsconfig-build.json",
 )
 
 # TODO(jelbourn): replace this w/ sass_library when it supports acting like a filegroup
 filegroup(
   name = "badge_scss_partials",
   srcs = glob(["**/_*.scss"]),
+)
+
+sass_library(
+  name = "theme",
+  srcs = glob(["**/*-theme.scss"]),
 )

@@ -7,12 +7,12 @@ ng_module(
   name = "toolbar",
   srcs = glob(["**/*.ts"], exclude=["**/*.spec.ts"]),
   module_name = "@angular/material/toolbar",
-  assets = [":toolbar_css"],
+  assets = [":toolbar_css"] + glob(["**/*.html"]),
   deps = [
     "//src/lib/core",
     "//src/cdk/platform",
   ],
-  tsconfig = ":tsconfig-build.json",
+  tsconfig = "//src/lib:tsconfig-build.json",
 )
 
 # TODO(jelbourn): replace this w/ sass_library when it supports acting like a filegroup
@@ -31,7 +31,12 @@ sass_binary(
 # Copy the output of the sass_binary such that the filename and path match what we expect.
 genrule(
   name = "toolbar_css",
-  srcs = [":toolbar_scss"],
+  srcs = [":toolbar_scss.css"],
   outs = ["toolbar.css"],
-  cmd = "cat $(locations :toolbar_scss) > $@",
+  cmd = "cp $< $@",
+)
+
+sass_library(
+  name = "theme",
+  srcs = glob(["**/*-theme.scss"]),
 )

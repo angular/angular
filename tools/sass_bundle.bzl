@@ -18,7 +18,7 @@ def _sass_bundle(ctx):
   # Define an "action" that will run the nodejs_binary executable. This is
   # the main thing that sass_bundle rule does.
   ctx.actions.run(
-    inputs = ctx.files.srcs,
+    inputs = ctx.files.srcs + ctx.files.entry_point,
     executable = ctx.executable._sass_bundle,
     outputs = [ctx.outputs.output_name],
     arguments = [args],

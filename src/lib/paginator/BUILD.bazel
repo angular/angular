@@ -7,7 +7,7 @@ ng_module(
   name = "paginator",
   srcs = glob(["**/*.ts"], exclude=["**/*.spec.ts"]),
   module_name = "@angular/material/paginator",
-  assets = [":paginator_css"],
+  assets = [":paginator_css"] + glob(["**/*.html"]),
   deps = [
     "//src/lib/core",
     "//src/lib/button",
@@ -15,7 +15,7 @@ ng_module(
     "//src/lib/tooltip",
     "@rxjs",
   ],
-  tsconfig = ":tsconfig-build.json",
+  tsconfig = "//src/lib:tsconfig-build.json",
 )
 
 
@@ -35,8 +35,13 @@ sass_binary(
 # Copy the output of the sass_binary such that the filename and path match what we expect.
 genrule(
   name = "paginator_css",
-  srcs = [":paginator_scss"],
+  srcs = [":paginator_scss.css"],
   outs = ["paginator.css"],
-  cmd = "cat $(locations :paginator_scss) > $@",
+  cmd = "cp $< $@",
 )
 
+
+sass_library(
+  name = "theme",
+  srcs = glob(["**/*-theme.scss"]),
+)

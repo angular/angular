@@ -7,11 +7,11 @@ ng_module(
   name = "icon",
   srcs = glob(["**/*.ts"], exclude=["**/*.spec.ts"]),
   module_name = "@angular/material/icon",
-  assets = [":icon_css"],
+  assets = [":icon_css"] + glob(["**/*.html"]),
   deps = [
     "//src/lib/core",
   ],
-  tsconfig = ":tsconfig-build.json",
+  tsconfig = "//src/lib:tsconfig-build.json",
 )
 
 # TODO(jelbourn): replace this w/ sass_library when it supports acting like a filegroup
@@ -30,8 +30,13 @@ sass_binary(
 # Copy the output of the sass_binary such that the filename and path match what we expect.
 genrule(
   name = "icon_css",
-  srcs = [":icon_scss"],
+  srcs = [":icon_scss.css"],
   outs = ["icon.css"],
-  cmd = "cat $(locations :icon_scss) > $@",
+  cmd = "cp $< $@",
 )
 
+
+sass_library(
+  name = "theme",
+  srcs = glob(["**/*-theme.scss"]),
+)

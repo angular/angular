@@ -14,12 +14,15 @@ filegroup(
   # TODO(alexeagle): figure out what to do
   srcs = glob(["/".join(["node_modules", pkg, "**", ext]) for pkg in [
     "@angular",
+    "@angular-devkit",
+    "@schematics",
     "@types",
     "bytebuffer",
     "hammerjs",
     "jasmine",
     "minimist",
     "moment",
+    "parse5",
     "protobufjs",
     "protractor",
     "reflect-metadata",

@@ -1,0 +1,43 @@
+package(default_visibility=["//visibility:public"])
+load("@angular//:index.bzl", "ng_module")
+load("@io_bazel_rules_sass//sass:sass.bzl", "sass_library", "sass_binary")
+
+
+ng_module(
+  name = "tree",
+  srcs = glob(["**/*.ts"], exclude=["**/*.spec.ts"]),
+  module_name = "@angular/material/tree",
+  assets = [":tree_css"] + glob(["**/*.html"]),
+  deps = [
+    "//src/cdk/tree",
+    "//src/lib/core",
+    "@rxjs",
+  ],
+  tsconfig = "//src/lib:tsconfig-build.json",
+)
+
+# TODO(jelbourn): replace this w/ sass_library when it supports acting like a filegroup
+filegroup(
+  name = "tree_scss_partials",
+  srcs = glob(["**/_*.scss"]),
+)
+
+sass_binary(
+  name = "tree_scss",
+  src = "tree.scss",
+  deps = ["//src/lib/core:core_scss_lib"],
+)
+
+# TODO(jelbourn): remove this when sass_binary supports specifying an output filename and dir.
+# Copy the output of the sass_binary such that the filename and path match what we expect.
+genrule(
+  name = "tree_css",
+  srcs = [":tree_scss.css"],
+  outs = ["tree.css"],
+  cmd = "cp $< $@",
+)
+
+sass_library(
+  name = "theme",
+  srcs = glob(["**/*-theme.scss"]),
+)

@@ -14,7 +14,6 @@ import {
   Tree,
   url,
 } from '@angular-devkit/schematics';
-import 'rxjs/add/operator/merge';
 import * as ts from 'typescript';
 import {addDeclarationToModule, addExportToModule} from './ast-utils';
 import {InsertChange} from './change';

@@ -7,7 +7,7 @@ ng_module(
   name = "select",
   srcs = glob(["**/*.ts"], exclude=["**/*.spec.ts"]),
   module_name = "@angular/material/select",
-  assets = [":select_css"],
+  assets = [":select_css"] + glob(["**/*.html"]),
   deps = [
     "//src/lib/core",
     "//src/lib/form-field",
@@ -19,7 +19,7 @@ ng_module(
     "//src/cdk/overlay",
     "@rxjs",
   ],
-  tsconfig = ":tsconfig-build.json",
+  tsconfig = "//src/lib:tsconfig-build.json",
 )
 
 # TODO(jelbourn): replace this w/ sass_library when it supports acting like a filegroup
@@ -38,8 +38,13 @@ sass_binary(
 # Copy the output of the sass_binary such that the filename and path match what we expect.
 genrule(
   name = "select_css",
-  srcs = [":select_scss"],
+  srcs = [":select_scss.css"],
   outs = ["select.css"],
-  cmd = "cat $(locations :select_scss) > $@",
+  cmd = "cp $< $@",
 )
 
+
+sass_library(
+  name = "theme",
+  srcs = glob(["**/*-theme.scss"]),
+)

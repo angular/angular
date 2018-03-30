@@ -7,17 +7,18 @@ ng_module(
   name = "sidenav",
   srcs = glob(["**/*.ts"], exclude=["**/*.spec.ts"]),
   module_name = "@angular/material/sidenav",
-  assets = [":drawer_css"],
+  assets = [":drawer_css"] + glob(["**/*.html"]),
   deps = [
     "//src/lib/core",
     "//src/cdk/a11y",
     "//src/cdk/bidi",
     "//src/cdk/coercion",
     "//src/cdk/keycodes",
+    "//src/cdk/platform",
     "//src/cdk/scrolling",
     "@rxjs",
   ],
-  tsconfig = ":tsconfig-build.json",
+  tsconfig = "//src/lib:tsconfig-build.json",
 )
 
 # TODO(jelbourn): replace this w/ sass_library when it supports acting like a filegroup
@@ -36,7 +37,12 @@ sass_binary(
 # Copy the output of the sass_binary such that the filename and path match what we expect.
 genrule(
   name = "drawer_css",
-  srcs = [":drawer_scss"],
+  srcs = [":drawer_scss.css"],
   outs = ["drawer.css"],
-  cmd = "cat $(locations :drawer_scss) > $@",
+  cmd = "cp $< $@",
+)
+
+sass_library(
+  name = "theme",
+  srcs = glob(["**/*-theme.scss"]),
 )

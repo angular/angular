@@ -1,6 +1,7 @@
 # Angular Material components
 /src/lib/*                                         @jelbourn
 /src/lib/autocomplete/**                           @kara @crisbeto
+/src/lib/badge/**                                  @amcdnl
 /src/lib/bottom-sheet/**                           @jelbourn @crisbeto
 /src/lib/button-toggle/**                          @tinayuangao
 /src/lib/button/**                                 @tinayuangao
@@ -18,9 +19,11 @@
 /src/lib/list/**                                   @jelbourn @crisbeto @devversion
 /src/lib/menu/**                                   @kara @crisbeto
 /src/lib/paginator/**                              @andrewseguin
+/src/lib/prebuilt-themes/**                        @jelbourn
 /src/lib/progress-bar/**                           @jelbourn @crisbeto @josephperrott
 /src/lib/progress-spinner/**                       @jelbourn @crisbeto @josephperrott
 /src/lib/radio/**                                  @tinayuangao @devversion
+/src/lib/schematics/**                             @amcdnl
 /src/lib/select/**                                 @kara @crisbeto
 /src/lib/sidenav/**                                @mmalerba
 /src/lib/slide-toggle/**                           @devversion
@@ -32,7 +35,6 @@
 /src/lib/tabs/**                                   @andrewseguin
 /src/lib/toolbar/**                                @devversion
 /src/lib/tooltip/**                                @andrewseguin
-/src/lib/badge/**                                  @amcdnl
 /src/lib/tree/**                                   @tinayuangao
 
 # Angular Material core
@@ -42,10 +44,10 @@
 /src/lib/core/datetime/**                          @mmalerba
 /src/lib/core/error/**                             @crisbeto @mmalerba
 /src/lib/core/gestures/**                          @jelbourn
+/src/lib/core/label/**                             @kara @mmalerba
 /src/lib/core/line/**                              @jelbourn
 /src/lib/core/option/**                            @kara @crisbeto
 /src/lib/core/placeholder/**                       @kara @mmalerba
-/src/lib/core/label/**                             @kara @mmalerba
 /src/lib/core/ripple/**                            @devversion
 /src/lib/core/selection/**                         @tinayuangao @jelbourn
 /src/lib/core/selection/pseudo*/**                 @crisbeto @jelbourn
@@ -93,8 +95,9 @@
 /src/demo-app/*                                    @jelbourn
 /src/demo-app/a11y/**                              @tinayuangao
 /src/demo-app/autocomplete/**                      @kara @crisbeto
-/src/demo-app/bottom-sheet/**                      @jelbourn @crisbeto
+/src/demo-app/badge/**                             @amcdnl
 /src/demo-app/baseline/**                          @mmalerba
+/src/demo-app/bottom-sheet/**                      @jelbourn @crisbeto
 /src/demo-app/button-toggle/**                     @tinayuangao
 /src/demo-app/button/**                            @tinayuangao
 /src/demo-app/card/**                              @jelbourn
@@ -135,7 +138,6 @@
 /src/demo-app/tooltip/**                           @andrewseguin
 /src/demo-app/tree/**                              @tinayuangao
 /src/demo-app/typography/**                        @crisbeto
-/src/demo-app/badge/**                             @amcdnl
 
 # E2E app
 /e2e/*                                             @jelbourn
@@ -178,9 +180,6 @@
 /src/e2e-app/sidenav/**                            @mmalerba
 /src/e2e-app/slide-toggle/**                       @devversion
 /src/e2e-app/tabs/**                               @andrewseguin
-
-# Schematics
-/schematics/**                                     @amcdnl
 
 # Universal app
 /src/universal-app/**                              @jelbourn

@@ -41,5 +41,5 @@ testem.log
 /.git
 
 # schematics
-/schematics/**/*.js
-/schematics/**/*.map
+/src/lib/schematics/**/*.js
+/src/lib/schematics/**/*.map

@@ -6,12 +6,12 @@ load("@io_bazel_rules_sass//sass:sass.bzl", "sass_library", "sass_binary")
 ng_module(
   name = "progress-bar",
   srcs = glob(["**/*.ts"], exclude=["**/*.spec.ts"]),
-  module_name = "@angular/material/progress_bar",
-  assets = [":progress_bar_css"],
+  module_name = "@angular/material/progress-bar",
+  assets = [":progress_bar_css"] + glob(["**/*.html"]),
   deps = [
     "//src/lib/core",
   ],
-  tsconfig = ":tsconfig-build.json",
+  tsconfig = "//src/lib:tsconfig-build.json",
 )
 
 
@@ -31,8 +31,13 @@ sass_binary(
 # Copy the output of the sass_binary such that the filename and path match what we expect.
 genrule(
   name = "progress_bar_css",
-  srcs = [":progress_bar_scss"],
+  srcs = [":progress_bar_scss.css"],
   outs = ["progress-bar.css"],
-  cmd = "cat $(locations :progress_bar_scss) > $@",
+  cmd = "cp $< $@",
 )
 
+
+sass_library(
+  name = "theme",
+  srcs = glob(["**/*-theme.scss"]),
+)

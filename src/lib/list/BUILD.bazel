@@ -7,7 +7,7 @@ ng_module(
   name = "list",
   srcs = glob(["**/*.ts"], exclude=["**/*.spec.ts"]),
   module_name = "@angular/material/list",
-  assets = [":list_css"],
+  assets = [":list_css"] + glob(["**/*.html"]),
   deps = [
     "//src/lib/core",
     "//src/lib/divider",
@@ -16,7 +16,7 @@ ng_module(
     "//src/cdk/collections",
     "//src/cdk/keycodes",
   ],
-  tsconfig = ":tsconfig-build.json",
+  tsconfig = "//src/lib:tsconfig-build.json",
 )
 
 
@@ -36,7 +36,12 @@ sass_binary(
 # Copy the output of the sass_binary such that the filename and path match what we expect.
 genrule(
   name = "list_css",
-  srcs = [":list_scss"],
+  srcs = [":list_scss.css"],
   outs = ["list.css"],
-  cmd = "cat $(locations :list_scss) > $@",
+  cmd = "cp $< $@",
+)
+
+sass_library(
+  name = "theme",
+  srcs = glob(["**/*-theme.scss"]),
 )

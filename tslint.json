@@ -119,5 +119,8 @@
     ],
     "deletion-target": true,
     "no-unescaped-html-tag": true
+  },
+  "linterOptions": {
+    "exclude": ["src/lib/schematics/**/*"]
   }
 }

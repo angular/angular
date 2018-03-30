@@ -1,0 +1,33 @@
+package(default_visibility=["//visibility:public"])
+
+# We use these genrules to put the prebuilt themes into the bazel-generated npm
+# package in the right spot. The *right* thing to do would be to move them, but
+# we would need to update references for Google apps.
+
+genrule(
+  name = "indigo-pink",
+  srcs = ["//src/lib/core:indigo_pink_prebuilt.css"],
+  outs = ["indigo-pink.css"],
+  cmd = "cp $< $@",
+)
+
+genrule(
+  name = "deeppurple-amber",
+  srcs = ["//src/lib/core:deeppurple-amber_prebuilt.css"],
+  outs = ["deeppurple-amber.css"],
+  cmd = "cp $< $@",
+)
+
+genrule(
+  name = "pink-bluegrey",
+  srcs = ["//src/lib/core:pink-bluegrey_prebuilt.css"],
+  outs = ["pink-bluegrey.css"],
+  cmd = "cp $< $@",
+)
+
+genrule(
+  name = "purple-green",
+  srcs = ["//src/lib/core:purple-green_prebuilt.css"],
+  outs = ["purple-green.css"],
+  cmd = "cp $< $@",
+)

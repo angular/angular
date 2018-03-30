@@ -6,8 +6,8 @@ load("@io_bazel_rules_sass//sass:sass.bzl", "sass_library", "sass_binary")
 ng_module(
   name = "slide-toggle",
   srcs = glob(["**/*.ts"], exclude=["**/*.spec.ts"]),
-  module_name = "@angular/material/slide_toggle",
-  assets = [":slide_toggle_css"],
+  module_name = "@angular/material/slide-toggle",
+  assets = [":slide_toggle_css"] + glob(["**/*.html"]),
   deps = [
     "//src/lib/core",
     "//src/cdk/a11y",
@@ -15,7 +15,7 @@ ng_module(
     "//src/cdk/observers",
     "//src/cdk/platform",
   ],
-  tsconfig = ":tsconfig-build.json",
+  tsconfig = "//src/lib:tsconfig-build.json",
 )
 
 # TODO(jelbourn): replace this w/ sass_library when it supports acting like a filegroup
@@ -34,8 +34,13 @@ sass_binary(
 # Copy the output of the sass_binary such that the filename and path match what we expect.
 genrule(
   name = "slide_toggle_css",
-  srcs = [":slide_toggle_scss"],
+  srcs = [":slide_toggle_scss.css"],
   outs = ["slide-toggle.css"],
-  cmd = "cat $(locations :slide_toggle_scss) > $@",
+  cmd = "cp $< $@",
 )
 
+
+sass_library(
+  name = "theme",
+  srcs = glob(["**/*-theme.scss"]),
+)

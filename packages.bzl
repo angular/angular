@@ -14,6 +14,7 @@ CDK_PACKAGES = [
   "portal",
   "layout",
   "stepper",
+  "text-field",
   "collections",
 ]
 
@@ -21,8 +22,8 @@ MATERIAL_PACKAGES = [
   "autocomplete",
   "badge",
   "bottom-sheet",
-  "button-toggle",
   "button",
+  "button-toggle",
   "card",
   "checkbox",
   "chips",
@@ -52,4 +53,5 @@ MATERIAL_PACKAGES = [
   "tabs",
   "toolbar",
   "tooltip",
+  "tree",
 ]

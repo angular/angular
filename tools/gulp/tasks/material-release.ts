@@ -11,8 +11,8 @@ import {tsBuildTask} from '../util/task_helpers';
 const gulpRename = require('gulp-rename');
 
 const distDir = buildConfig.outputDir;
-const schematicsDir = join(buildConfig.projectDir, 'schematics');
 const {sourceDir, outputDir} = materialPackage;
+const schematicsDir = join(sourceDir, 'schematics');
 
 /** Path to the directory where all releases are created. */
 const releasesDir = join(distDir, 'releases');

@@ -22,5 +22,8 @@
   "include": [
     "**/*.spec.ts",
     "index.ts"
-  ]
+  ],
+  "exclude": [
+    "**/schematics/**/*.ts",
+  ],
 }

@@ -7,12 +7,12 @@ ng_module(
   name = "divider",
   srcs = glob(["**/*.ts"], exclude=["**/*.spec.ts"]),
   module_name = "@angular/material/divider",
-  assets = [":divider_css"],
+  assets = [":divider_css"] + glob(["**/*.html"]),
   deps = [
     "//src/lib/core",
     "//src/cdk/coercion",
   ],
-  tsconfig = ":tsconfig-build.json",
+  tsconfig = "//src/lib:tsconfig-build.json",
 )
 
 
@@ -38,7 +38,12 @@ sass_binary(
 # Copy the output of the sass_binary such that the filename and path match what we expect.
 genrule(
   name = "divider_css",
-  srcs = [":divider_scss"],
+  srcs = [":divider_scss.css"],
   outs = ["divider.css"],
-  cmd = "cat $(locations :divider_scss) > $@",
+  cmd = "cp $< $@",
+)
+
+sass_library(
+  name = "theme",
+  srcs = glob(["**/*-theme.scss"]),
 )

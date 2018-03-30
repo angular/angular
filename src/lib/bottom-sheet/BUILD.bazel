@@ -6,10 +6,10 @@ load("@io_bazel_rules_sass//sass:sass.bzl", "sass_library", "sass_binary")
 ng_module(
   name = "bottom-sheet",
   srcs = glob(["**/*.ts"], exclude=["**/*.spec.ts"]),
-  module_name = "@angular/material/bottom_sheet",
+  module_name = "@angular/material/bottom-sheet",
   assets = [
     ":bottom_sheet_container_css",
-  ],
+  ] + glob(["**/*.html"]),
   deps = [
     "//src/lib/core",
     "//src/cdk/a11y",
@@ -19,7 +19,7 @@ ng_module(
     "//src/cdk/layout",
     "@rxjs",
   ],
-  tsconfig = ":tsconfig-build.json",
+  tsconfig = "//src/lib:tsconfig-build.json",
 )
 
 # TODO(jelbourn): replace this w/ sass_library when it supports acting like a filegroup
@@ -38,7 +38,12 @@ sass_binary(
 # Copy the output of the sass_binary such that the filename and path match what we expect.
 genrule(
   name = "bottom_sheet_container_css",
-  srcs = [":bottom_sheet_container_scss"],
+  srcs = [":bottom_sheet_container_scss.css"],
   outs = ["bottom-sheet-container.css"],
-  cmd = "cat $(locations :bottom_sheet_container_scss) > $@",
+  cmd = "cp $< $@",
+)
+
+sass_library(
+  name = "theme",
+  srcs = glob(["**/*-theme.scss"]),
 )

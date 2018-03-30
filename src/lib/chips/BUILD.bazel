@@ -7,17 +7,18 @@ ng_module(
   name = "chips",
   srcs = glob(["**/*.ts"], exclude=["**/*.spec.ts"]),
   module_name = "@angular/material/chips",
-  assets = [":chips_css"],
+  assets = [":chips_css"] + glob(["**/*.html"]),
   deps = [
-    "//src/lib/core",
-    "//src/lib/form-field",
     "//src/cdk/a11y",
     "//src/cdk/bidi",
     "//src/cdk/coercion",
     "//src/cdk/collections",
     "//src/cdk/keycodes",
+    "//src/cdk/platform",
+    "//src/lib/core",
+    "//src/lib/form-field",
   ],
-  tsconfig = ":tsconfig-build.json",
+  tsconfig = "//src/lib:tsconfig-build.json",
 )
 
 # TODO(jelbourn): replace this w/ sass_library when it supports acting like a filegroup
@@ -36,8 +37,13 @@ sass_binary(
 # Copy the output of the sass_binary such that the filename and path match what we expect.
 genrule(
   name = "chips_css",
-  srcs = [":chips_scss"],
+  srcs = [":chips_scss.css"],
   outs = ["chips.css"],
-  cmd = "cat $(locations :chips_scss) > $@",
+  cmd = "cp $< $@",
 )
 
+
+sass_library(
+  name = "theme",
+  srcs = glob(["**/*-theme.scss"]),
+)

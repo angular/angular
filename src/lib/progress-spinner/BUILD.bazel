@@ -6,12 +6,13 @@ load("@io_bazel_rules_sass//sass:sass.bzl", "sass_library", "sass_binary")
 ng_module(
   name = "progress-spinner",
   srcs = glob(["**/*.ts"], exclude=["**/*.spec.ts"]),
-  module_name = "@angular/material/progress_spinner",
-  assets = [":progress_spinner_css"],
+  module_name = "@angular/material/progress-spinner",
+  assets = [":progress_spinner_css"] + glob(["**/*.html"]),
   deps = [
+    "//src/cdk/platform",
     "//src/lib/core",
   ],
-  tsconfig = ":tsconfig-build.json",
+  tsconfig = "//src/lib:tsconfig-build.json",
 )
 
 # TODO(jelbourn): replace this w/ sass_library when it supports acting like a filegroup
@@ -30,8 +31,13 @@ sass_binary(
 # Copy the output of the sass_binary such that the filename and path match what we expect.
 genrule(
   name = "progress_spinner_css",
-  srcs = [":progress_spinner_scss"],
+  srcs = [":progress_spinner_scss.css"],
   outs = ["progress-spinner.css"],
-  cmd = "cat $(locations :progress_spinner_scss) > $@",
+  cmd = "cp $< $@",
 )
 
+
+sass_library(
+  name = "theme",
+  srcs = glob(["**/*-theme.scss"]),
+)

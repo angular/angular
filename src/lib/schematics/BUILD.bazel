@@ -1,0 +1,21 @@
+package(default_visibility = ["//visibility:public"])
+
+load("@build_bazel_rules_typescript//:defs.bzl", "ts_library")
+load("@build_bazel_rules_nodejs//:defs.bzl", "npm_package")
+
+
+ts_library(
+  name = "schematics",
+  module_name = "@angular/material/schematics",
+  srcs = glob(["**/*.ts"], exclude=["**/*.spec.ts", "**/files/**/*"]),
+  tsconfig = ":tsconfig.json",
+)
+
+# This package is intended to be combined into the main @angular/material package as a dep.
+npm_package(
+  name = "npm_package",
+  srcs = [
+    ":collection.json",
+  ] + glob(["**/files/**/*", "**/schema.json"]),
+  deps = [":schematics"],
+)

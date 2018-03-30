@@ -7,12 +7,12 @@ ng_module(
   name = "grid-list",
   srcs = glob(["**/*.ts"], exclude=["**/*.spec.ts"]),
   module_name = "@angular/material/grid-list",
-  assets = [":grid_list_css"],
+  assets = [":grid_list_css"] + glob(["**/*.html"]),
   deps = [
     "//src/lib/core",
     "//src/cdk/bidi",
   ],
-  tsconfig = ":tsconfig-build.json",
+  tsconfig = "//src/lib:tsconfig-build.json",
 )
 
 # TODO(jelbourn): replace this w/ sass_library when it supports acting like a filegroup
@@ -31,7 +31,12 @@ sass_binary(
 # Copy the output of the sass_binary such that the filename and path match what we expect.
 genrule(
   name = "grid_list_css",
-  srcs = [":grid_list_scss"],
+  srcs = [":grid_list_scss.css"],
   outs = ["grid-list.css"],
-  cmd = "cat $(locations :grid_list_scss) > $@",
+  cmd = "cp $< $@",
+)
+
+sass_library(
+  name = "theme",
+  srcs = glob(["**/*-theme.scss"]),
 )

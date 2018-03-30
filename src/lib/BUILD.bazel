@@ -1,16 +1,56 @@
+load("@build_bazel_rules_typescript//:defs.bzl", "ts_library")
+load("@angular//:index.bzl", "ng_package", "ng_module")
 load("//tools:sass_bundle.bzl", "sass_bundle")
 load("//:packages.bzl", "MATERIAL_PACKAGES")
-load("@angular//:index.bzl", "ng_package")
+load("//src/lib:rollup_globals.bzl", "MATERIAL_ROLLUP_GLOBALS")
 
+
+# Export the root material tsconfig so that subpackages can reference it directly.
+exports_files(["tsconfig-build.json"])
+
+# Root "@angular/material" entry-point.
+ng_module(
+  name = "material",
+  srcs = glob(["*.ts"], exclude=["**/*.spec.ts"]),
+  module_name = "@angular/material",
+  deps = ["//src/lib/%s" % p for p in MATERIAL_PACKAGES],
+  tsconfig = "//src/lib:tsconfig-build.json",
+)
 
 sass_bundle(
   name = "theming_bundle",
+  # Use the filegroup rules for these sass partials directly because sass_library doesn't
+  # act like a filegroup.
   srcs = [
     "//src/cdk/a11y:a11y_scss_partials",
     "//src/cdk/overlay:overlay_scss_partials",
+    "//src/cdk/text-field:text_field_scss_partials",
   ] + [
     "//src/lib/%s:%s_scss_partials" % (p, p.replace('-', '_')) for p in MATERIAL_PACKAGES
   ],
   entry_point = '//src/lib/core:theming/_all-theme.scss',
   output_name = "_theming.scss",
 )
+
+# TODO(jelbourn): uncomment when 6.0.0-rc.1 comes out
+# Creates the @angular/material package published to npm.
+#ng_package(
+#  name = "npm_package",
+#  srcs = [
+#    "package.json",
+#  ],
+#  entry_point = "src/lib/public_api.js",
+#  entry_point_name = "material",
+#  globals = MATERIAL_ROLLUP_GLOBALS,
+#  data = [
+#    ":theming_bundle",
+#    "//src/lib/prebuilt-themes:indigo-pink",
+#    "//src/lib/prebuilt-themes:deeppurple-amber",
+#    "//src/lib/prebuilt-themes:pink-bluegrey",
+#    "//src/lib/prebuilt-themes:purple-green",
+#  ],
+#  packages = ["//src/lib/schematics:npm_package"],
+#  deps = [
+#    ":material",
+#  ] + ["//src/lib/%s" % p for p in MATERIAL_PACKAGES],
+#)

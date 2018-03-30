@@ -14,13 +14,13 @@ ng_module(
     ":form_field_outline_css",
     ":form_field_standard_css",
     "//src/lib/input:input_css"
-  ],
+  ] + glob(["**/*.html"]),
   deps = [
     "//src/lib/core",
     "//src/cdk/coercion",
     "//src/cdk/platform",
   ],
-  tsconfig = ":tsconfig-build.json",
+  tsconfig = "//src/lib:tsconfig-build.json",
 )
 
 # TODO(jelbourn): replace this w/ sass_library when it supports acting like a filegroup
@@ -63,35 +63,40 @@ sass_binary(
 # Copy the output of the sass_binary such that the filename and path match what we expect.
 genrule(
   name = "form_field_css",
-  srcs = [":form_field_scss"],
+  srcs = [":form_field_scss.css"],
   outs = ["form-field.css"],
-  cmd = "cat $(locations :form_field_scss) > $@",
+  cmd = "cp $< $@",
 )
 
 genrule(
   name = "form_field_fill_css",
-  srcs = [":form_field_fill_scss"],
+  srcs = [":form_field_fill_scss.css"],
   outs = ["form-field-fill.css"],
-  cmd = "cat $(locations :form_field_fill_scss) > $@",
+  cmd = "cp $< $@",
 )
 
 genrule(
   name = "form_field_legacy_css",
-  srcs = [":form_field_legacy_scss"],
+  srcs = [":form_field_legacy_scss.css"],
   outs = ["form-field-legacy.css"],
-  cmd = "cat $(locations :form_field_legacy_scss) > $@",
+  cmd = "cp $< $@",
 )
 
 genrule(
   name = "form_field_outline_css",
-  srcs = [":form_field_outline_scss"],
+  srcs = [":form_field_outline_scss.css"],
   outs = ["form-field-outline.css"],
-  cmd = "cat $(locations :form_field_outline_scss) > $@",
+  cmd = "cp $< $@",
 )
 
 genrule(
   name = "form_field_standard_css",
-  srcs = [":form_field_standard_scss"],
+  srcs = [":form_field_standard_scss.css"],
   outs = ["form-field-standard.css"],
-  cmd = "cat $(locations :form_field_standard_scss) > $@",
+  cmd = "cp $< $@",
+)
+
+sass_library(
+  name = "theme",
+  srcs = glob(["**/*-theme.scss"]),
 )

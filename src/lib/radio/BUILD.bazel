@@ -7,14 +7,14 @@ ng_module(
   name = "radio",
   srcs = glob(["**/*.ts"], exclude=["**/*.spec.ts"]),
   module_name = "@angular/material/radio",
-  assets = [":radio_css"],
+  assets = [":radio_css"] + glob(["**/*.html"]),
   deps = [
     "//src/lib/core",
     "//src/cdk/a11y",
     "//src/cdk/coercion",
     "//src/cdk/collections",
   ],
-  tsconfig = ":tsconfig-build.json",
+  tsconfig = "//src/lib:tsconfig-build.json",
 )
 
 # TODO(jelbourn): replace this w/ sass_library when it supports acting like a filegroup
@@ -33,8 +33,13 @@ sass_binary(
 # Copy the output of the sass_binary such that the filename and path match what we expect.
 genrule(
   name = "radio_css",
-  srcs = [":radio_scss"],
+  srcs = [":radio_scss.css"],
   outs = ["radio.css"],
-  cmd = "cat $(locations :radio_scss) > $@",
+  cmd = "cp $< $@",
 )
 
+
+sass_library(
+  name = "theme",
+  srcs = glob(["**/*-theme.scss"]),
+)

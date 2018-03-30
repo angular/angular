@@ -7,13 +7,13 @@ ng_module(
   name = "button",
   srcs = glob(["**/*.ts"], exclude=["**/*.spec.ts"]),
   module_name = "@angular/material/button",
-  assets = [":button_css"],
+  assets = [":button_css"] + glob(["**/*.html"]),
   deps = [
     "//src/lib/core",
     "//src/cdk/a11y",
     "//src/cdk/platform",
   ],
-  tsconfig = ":tsconfig-build.json",
+  tsconfig = "//src/lib:tsconfig-build.json",
 )
 
 # TODO(jelbourn): remove this when sass_library acts like a filegroup
@@ -39,8 +39,13 @@ sass_binary(
 # Copy the output of the sass_binary such that the filename and path match what we expect.
 genrule(
   name = "button_css",
-  srcs = [":button_scss"],
+  srcs = [":button_scss.css"],
   outs = ["button.css"],
-  cmd = "cat $(locations :button_scss) > $@",
+  cmd = "cp $< $@",
 )
 
+
+sass_library(
+  name = "theme",
+  srcs = glob(["**/*-theme.scss"]),
+)

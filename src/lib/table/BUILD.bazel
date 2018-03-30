@@ -14,8 +14,8 @@ ng_module(
     "//src/lib/sort",
     "//src/cdk/table",
     "@rxjs",
-  ],
-  tsconfig = ":tsconfig-build.json",
+  ] + glob(["**/*.html"]),
+  tsconfig = "//src/lib:tsconfig-build.json",
 )
 
 # TODO(jelbourn): replace this w/ sass_library when it supports acting like a filegroup
@@ -34,7 +34,12 @@ sass_binary(
 # Copy the output of the sass_binary such that the filename and path match what we expect.
 genrule(
   name = "table_css",
-  srcs = [":table_scss"],
+  srcs = [":table_scss.css"],
   outs = ["table.css"],
-  cmd = "cat $(locations :table_scss) > $@",
+  cmd = "cp $< $@",
+)
+
+sass_library(
+  name = "theme",
+  srcs = glob(["**/*-theme.scss"]),
 )
