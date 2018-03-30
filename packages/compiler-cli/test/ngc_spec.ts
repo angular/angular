@@ -869,6 +869,40 @@ describe('ngc transformer command-line', () => {
         expect(mymoduleSource).toMatch(/ɵ0 = .*'test'/);
       });
 
+      it('should lower loadChildren', () => {
+        write('mymodule.ts', `
+          import {Component, NgModule} from '@angular/core';
+          import {RouterModule} from '@angular/router';
+          
+          export function foo(): string {
+            console.log('side-effect');
+            return 'test';
+          }
+
+          @Component({
+            selector: 'route',
+            template: 'route',
+          })
+          export class Route {}
+
+          @NgModule({
+            declarations: [Route],
+            imports: [
+              RouterModule.forRoot([
+                {path: '', pathMatch: 'full', component: Route, loadChildren: foo()}
+              ]),
+            ]
+          })
+          export class MyModule {}
+        `);
+        expect(compile()).toEqual(0);
+
+        const mymodulejs = path.resolve(outDir, 'mymodule.js');
+        const mymoduleSource = fs.readFileSync(mymodulejs, 'utf8');
+        expect(mymoduleSource).toContain('loadChildren: ɵ0');
+        expect(mymoduleSource).toMatch(/ɵ0 = .*foo\(\)/);
+      });
+
       it('should be able to lower supported expressions', () => {
         writeConfig(`{
           "extends": "./tsconfig-base.json",
