@@ -1,21 +1,27 @@
 [
   {
-    "name": "Action"
+    "name": "AnonymousSubject"
   },
   {
-    "name": "AnimationFrameAction"
-  },
-  {
-    "name": "AsapAction"
-  },
-  {
-    "name": "AsyncAction"
-  },
-  {
-    "name": "AsyncScheduler"
+    "name": "ArgumentOutOfRangeError"
   },
   {
     "name": "CLEAN_PROMISE"
+  },
+  {
+    "name": "ConnectableSubscriber"
+  },
+  {
+    "name": "Context"
+  },
+  {
+    "name": "CountedSubject"
+  },
+  {
+    "name": "DelayMessage"
+  },
+  {
+    "name": "EMPTY$1"
   },
   {
     "name": "EMPTY$2"
@@ -24,13 +30,25 @@
     "name": "EMPTY_RENDERER_TYPE_ID"
   },
   {
+    "name": "EmptyError"
+  },
+  {
+    "name": "GroupDurationSubscriber"
+  },
+  {
+    "name": "GroupedObservable"
+  },
+  {
     "name": "HelloWorld"
   },
   {
     "name": "INeedToExistEvenThoughIAmNotNeeded"
   },
   {
-    "name": "Immediate"
+    "name": "InnerRefCountSubscription"
+  },
+  {
+    "name": "InnerSubscriber"
   },
   {
     "name": "NG_HOST_SYMBOL"
@@ -39,7 +57,25 @@
     "name": "NG_PROJECT_AS_ATTR_NAME"
   },
   {
+    "name": "NONE"
+  },
+  {
+    "name": "Notification"
+  },
+  {
+    "name": "ObjectUnsubscribedError"
+  },
+  {
     "name": "Observable"
+  },
+  {
+    "name": "ObserveOnMessage"
+  },
+  {
+    "name": "ObserveOnSubscriber"
+  },
+  {
+    "name": "OuterSubscriber"
   },
   {
     "name": "QueueAction"
@@ -48,10 +84,34 @@
     "name": "ROOT_DIRECTIVE_INDICES"
   },
   {
+    "name": "RefCountOperator$1"
+  },
+  {
+    "name": "RefCountSubscriber$1"
+  },
+  {
+    "name": "ReplayEvent"
+  },
+  {
     "name": "SafeSubscriber"
   },
   {
-    "name": "Scheduler"
+    "name": "SequenceEqualCompareToSubscriber"
+  },
+  {
+    "name": "StaticArrayIterator"
+  },
+  {
+    "name": "StaticIterator"
+  },
+  {
+    "name": "Subject"
+  },
+  {
+    "name": "SubjectSubscriber"
+  },
+  {
+    "name": "SubjectSubscription"
   },
   {
     "name": "Subscriber"
@@ -60,43 +120,22 @@
     "name": "Subscription"
   },
   {
+    "name": "SubscriptionDelaySubscriber"
+  },
+  {
+    "name": "TimeInterval"
+  },
+  {
     "name": "UNDEFINED_RENDERER_TYPE_ID"
   },
   {
     "name": "UnsubscriptionError"
   },
   {
-    "name": "__extends$1"
+    "name": "ZipBufferIterator"
   },
   {
-    "name": "__extends$10"
-  },
-  {
-    "name": "__extends$11"
-  },
-  {
-    "name": "__extends$12"
-  },
-  {
-    "name": "__extends$13"
-  },
-  {
-    "name": "__extends$14"
-  },
-  {
-    "name": "__extends$17"
-  },
-  {
-    "name": "__extends$18"
-  },
-  {
-    "name": "__extends$19"
-  },
-  {
-    "name": "__extends$2"
-  },
-  {
-    "name": "__extends$20"
+    "name": "__extends"
   },
   {
     "name": "_enable_super_gross_mode_that_will_cause_bad_things"
@@ -153,10 +192,46 @@
     "name": "detectChangesInternal"
   },
   {
+    "name": "dispatch"
+  },
+  {
+    "name": "dispatchBufferClose"
+  },
+  {
+    "name": "dispatchBufferCreation"
+  },
+  {
+    "name": "dispatchBufferTimeSpanOnly"
+  },
+  {
+    "name": "dispatchNext$2"
+  },
+  {
+    "name": "dispatchNext$3"
+  },
+  {
+    "name": "dispatchNotification"
+  },
+  {
+    "name": "dispatchWindowClose"
+  },
+  {
+    "name": "dispatchWindowCreation"
+  },
+  {
+    "name": "dispatchWindowTimeSpanOnly"
+  },
+  {
     "name": "domRendererFactory3"
   },
   {
     "name": "empty"
+  },
+  {
+    "name": "empty$1"
+  },
+  {
+    "name": "emptyScheduled"
   },
   {
     "name": "enterView"
@@ -174,10 +249,16 @@
     "name": "executeInitHooks"
   },
   {
+    "name": "extendStatics"
+  },
+  {
     "name": "firstTemplatePass"
   },
   {
     "name": "flattenUnsubscriptionErrors"
+  },
+  {
+    "name": "fromArray"
   },
   {
     "name": "getDirectiveInstance"
@@ -207,6 +288,9 @@
     "name": "isArray"
   },
   {
+    "name": "isArrayLike"
+  },
+  {
     "name": "isFunction"
   },
   {
@@ -216,13 +300,22 @@
     "name": "isProceduralRenderer"
   },
   {
+    "name": "isPromise"
+  },
+  {
+    "name": "isScheduler"
+  },
+  {
+    "name": "isTrustedSubscriber"
+  },
+  {
+    "name": "iterator"
+  },
+  {
     "name": "leaveView"
   },
   {
     "name": "locateHostElement"
-  },
-  {
-    "name": "nextHandle"
   },
   {
     "name": "noop"
@@ -231,7 +324,16 @@
     "name": "observable"
   },
   {
+    "name": "of"
+  },
+  {
     "name": "pipeFromArray"
+  },
+  {
+    "name": "queue"
+  },
+  {
+    "name": "refCount"
   },
   {
     "name": "refreshChildComponents"
@@ -255,10 +357,10 @@
     "name": "resolveRendererType2"
   },
   {
-    "name": "runIfPresent"
+    "name": "rxSubscriber"
   },
   {
-    "name": "rxSubscriber"
+    "name": "scalar"
   },
   {
     "name": "setHostBindings"
@@ -270,10 +372,28 @@
     "name": "stringify$1"
   },
   {
-    "name": "tasksByHandle"
+    "name": "subscribeTo"
+  },
+  {
+    "name": "subscribeToArray"
+  },
+  {
+    "name": "subscribeToIterable"
+  },
+  {
+    "name": "subscribeToObservable"
+  },
+  {
+    "name": "subscribeToPromise"
+  },
+  {
+    "name": "subscribeToResult"
   },
   {
     "name": "text"
+  },
+  {
+    "name": "throwError"
   },
   {
     "name": "toSubscriber"
