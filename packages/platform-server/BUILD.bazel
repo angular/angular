@@ -1,6 +1,6 @@
 package(default_visibility = ["//visibility:public"])
 
-load("//tools:defaults.bzl", "ng_module", "ng_package")
+load("//tools:defaults.bzl", "ng_module", "npm_package")
 
 ng_module(
     name = "platform-server",
@@ -25,13 +25,11 @@ ng_module(
     ],
 )
 
-ng_package(
+npm_package(
     name = "npm_package",
     srcs = [
         "package.json",
-        "//packages/platform-server/testing:package.json",
     ],
-    entry_point = "packages/platform-server/index.js",
     deps = [
         ":platform-server",
         "//packages/platform-server/testing",
