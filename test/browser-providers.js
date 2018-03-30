@@ -22,7 +22,7 @@ const browserConfig = {
   'Android5':          { unitTest: {target: null, required: false }},
   'Safari7':           { unitTest: {target: null, required: false }},
   'Safari8':           { unitTest: {target: null, required: false }},
-  'Safari9':           { unitTest: {target: 'SL', required: true  }},
+  'Safari9':           { unitTest: {target: null, required: false }},
   'Safari10':          { unitTest: {target: 'BS', required: true  }},
   'iOS7':              { unitTest: {target: null, required: false }},
   'iOS8':              { unitTest: {target: null, required: false }},
