@@ -25,7 +25,7 @@ function normalize(fileName) {
 }
 
 function resolve(id, from) {
-  // console.log('Resolve id:', id, 'from', from)
+  console.log('Resolve id:', id, 'from', from)
   var match = m.exec(id);
   if (match) {
     var packageName = match[1];
@@ -60,8 +60,8 @@ module.exports = function(provided) {
 `;
 
 module.exports = {
-  entry: '../../dist/packages-dist/language-service/fesm5/language-service.js',
-  dest: '../../dist/packages-dist/language-service/bundles/language-service.umd.js',
+  //entry: '../../dist/packages-dist/language-service/fesm5/language-service.js',
+  //dest: '../../dist/packages-dist/language-service/bundles/language-service.umd.js',
   format: 'amd',
   amd: {
       // Don't name this module, causes
