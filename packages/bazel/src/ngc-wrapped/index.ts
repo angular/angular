@@ -172,6 +172,8 @@ export function compile({allowNonHermeticReads, allDepsCompiledWithBazel = true,
   const bazelHost = new CompilerHost(
       files, compilerOpts, bazelOpts, tsHost, fileLoader, allowNonHermeticReads,
       generatedFileModuleResolver);
+  // Prevent tsickle adding any types at all if we don't want closure compiler annotations.
+  bazelHost.transformTypesToClosure = compilerOpts.annotateForClosureCompiler;
   const origBazelHostFileExist = bazelHost.fileExists;
   bazelHost.fileExists = (fileName: string) => {
     if (NGC_ASSETS.test(fileName)) {
