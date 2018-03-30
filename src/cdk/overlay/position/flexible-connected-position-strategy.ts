@@ -69,7 +69,7 @@ export class FlexibleConnectedPositionStrategy implements PositionStrategy {
   private _viewportRect: ClientRect;
 
   /** Amount of space that must be maintained between the overlay and the edge of the viewport. */
-  private _viewportMargin: number = 0;
+  private _viewportMargin = 0;
 
   /** The Scrollable containers used to check scrollable view properties on position change. */
   private scrollables: CdkScrollable[] = [];
@@ -100,6 +100,12 @@ export class FlexibleConnectedPositionStrategy implements PositionStrategy {
 
   /** Subscription to viewport size changes. */
   private _resizeSubscription = Subscription.EMPTY;
+
+  /** Default offset for the overlay along the x axis. */
+  private _offsetX = 0;
+
+  /** Default offset for the overlay along the y axis. */
+  private _offsetY = 0;
 
   /** Observable sequence of position changes. */
   positionChanges: Observable<ConnectedOverlayPositionChange> =
@@ -367,6 +373,24 @@ export class FlexibleConnectedPositionStrategy implements PositionStrategy {
   }
 
   /**
+   * Sets the default offset for the overlay's connection point on the x-axis.
+   * @param offset New offset in the X axis.
+   */
+  withDefaultOffsetX(offset: number): this {
+    this._offsetX = offset;
+    return this;
+  }
+
+  /**
+   * Sets the default offset for the overlay's connection point on the y-axis.
+   * @param offset New offset in the Y axis.
+   */
+  withDefaultOffsetY(offset: number): this {
+    this._offsetY = offset;
+    return this;
+  }
+
+  /**
    * Gets the (x, y) coordinate of a connection point on the origin based on a relative position.
    */
   private _getOriginPoint(originRect: ClientRect, pos: ConnectedPosition): Point {
@@ -431,14 +455,16 @@ export class FlexibleConnectedPositionStrategy implements PositionStrategy {
     position: ConnectedPosition): OverlayFit {
 
     let {x, y} = point;
+    let offsetX = this._getOffset(position, 'x');
+    let offsetY = this._getOffset(position, 'y');
 
     // Account for the offsets since they could push the overlay out of the viewport.
-    if (position.offsetX) {
-      x += position.offsetX;
+    if (offsetX) {
+      x += offsetX;
     }
 
-    if (position.offsetY) {
-      y += position.offsetY;
+    if (offsetY) {
+      y += offsetY;
     }
 
     // How much the overlay would overflow at this position, on each side.
@@ -721,13 +747,15 @@ export class FlexibleConnectedPositionStrategy implements PositionStrategy {
     // cases where the element doesn't have anything to "push off of". Finally, this works
     // better both with flexible and non-flexible positioning.
     let transformString = ' ';
+    let offsetX = this._getOffset(position, 'x');
+    let offsetY = this._getOffset(position, 'y');
 
-    if (position.offsetX) {
-      transformString += `translateX(${position.offsetX}px)`;
+    if (offsetX) {
+      transformString += `translateX(${offsetX}px)`;
     }
 
-    if (position.offsetY) {
-      transformString += `translateY(${position.offsetY}px)`;
+    if (offsetY) {
+      transformString += `translateY(${offsetY}px)`;
     }
 
     styles.transform = transformString.trim();
@@ -868,6 +896,17 @@ export class FlexibleConnectedPositionStrategy implements PositionStrategy {
   /** Whether the we're dealing with an RTL context */
   private _isRtl() {
     return this._overlayRef.getConfig().direction === 'rtl';
+  }
+
+  /** Retrieves the offset of a position along the x or y axis. */
+  private _getOffset(position: ConnectedPosition, axis: 'x' | 'y') {
+    if (axis === 'x') {
+      // We don't do something like `position['offset' + axis]` in
+      // order to avoid breking minifiers that rename properties.
+      return position.offsetX == null ? this._offsetX : position.offsetX;
+    }
+
+    return position.offsetY == null ? this._offsetY : position.offsetY;
   }
 }
 

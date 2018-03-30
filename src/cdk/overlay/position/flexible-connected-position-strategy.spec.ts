@@ -385,10 +385,80 @@ describe('FlexibleConnectedPositionStrategy', () => {
         expect(Math.floor(overlayRect.left)).toBe(Math.floor(originRect.left + 10));
       });
 
+      it('should be able to set the default x offset', () => {
+        const originRect = originElement.getBoundingClientRect();
+
+        positionStrategy.withDefaultOffsetX(20).withPositions([{
+          originX: 'start',
+          originY: 'top',
+          overlayX: 'start',
+          overlayY: 'top',
+        }]);
+
+        attachOverlay({positionStrategy});
+
+        const overlayRect = overlayRef.overlayElement.getBoundingClientRect();
+        expect(Math.floor(overlayRect.top)).toBe(Math.floor(originRect.top));
+        expect(Math.floor(overlayRect.left)).toBe(Math.floor(originRect.left + 20));
+      });
+
+      it('should have the position offset x take precedence over the default offset x', () => {
+        const originRect = originElement.getBoundingClientRect();
+
+        positionStrategy.withDefaultOffsetX(20).withPositions([{
+          originX: 'start',
+          originY: 'top',
+          overlayX: 'start',
+          overlayY: 'top',
+          offsetX: 10
+        }]);
+
+        attachOverlay({positionStrategy});
+
+        const overlayRect = overlayRef.overlayElement.getBoundingClientRect();
+        expect(Math.floor(overlayRect.top)).toBe(Math.floor(originRect.top));
+        expect(Math.floor(overlayRect.left)).toBe(Math.floor(originRect.left + 10));
+      });
+
       it('should position a panel with the y offset provided', () => {
         const originRect = originElement.getBoundingClientRect();
 
         positionStrategy.withPositions([{
+          originX: 'start',
+          originY: 'top',
+          overlayX: 'start',
+          overlayY: 'top',
+          offsetY: 50
+        }]);
+
+        attachOverlay({positionStrategy});
+
+        const overlayRect = overlayRef.overlayElement.getBoundingClientRect();
+        expect(Math.floor(overlayRect.top)).toBe(Math.floor(originRect.top + 50));
+        expect(Math.floor(overlayRect.left)).toBe(Math.floor(originRect.left));
+      });
+
+      it('should be able to set the default y offset', () => {
+        const originRect = originElement.getBoundingClientRect();
+
+        positionStrategy.withDefaultOffsetY(60).withPositions([{
+          originX: 'start',
+          originY: 'top',
+          overlayX: 'start',
+          overlayY: 'top',
+        }]);
+
+        attachOverlay({positionStrategy});
+
+        const overlayRect = overlayRef.overlayElement.getBoundingClientRect();
+        expect(Math.floor(overlayRect.top)).toBe(Math.floor(originRect.top + 60));
+        expect(Math.floor(overlayRect.left)).toBe(Math.floor(originRect.left));
+      });
+
+      it('should have the position offset y take precedence over the default offset y', () => {
+        const originRect = originElement.getBoundingClientRect();
+
+        positionStrategy.withDefaultOffsetY(60).withPositions([{
           originX: 'start',
           originY: 'top',
           overlayX: 'start',

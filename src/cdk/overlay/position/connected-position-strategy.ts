@@ -174,12 +174,7 @@ export class ConnectedPositionStrategy implements PositionStrategy {
    * @param offset New offset in the X axis.
    */
   withOffsetX(offset: number): this {
-    this._preferredPositions.forEach(position => {
-      if (position.offsetX == null) {
-        position.offsetX = offset;
-      }
-    });
-
+    this._positionStrategy.withDefaultOffsetX(offset);
     return this;
   }
 
@@ -188,12 +183,7 @@ export class ConnectedPositionStrategy implements PositionStrategy {
    * @param  offset New offset in the Y axis.
    */
   withOffsetY(offset: number): this {
-    this._preferredPositions.forEach(position => {
-      if (position.offsetY == null) {
-        position.offsetY = offset;
-      }
-    });
-
+    this._positionStrategy.withDefaultOffsetY(offset);
     return this;
   }
 
