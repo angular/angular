@@ -19,16 +19,35 @@ ng_module(
     ],
 )
 
+genrule(
+    name = "ngsw_config_binary",
+    srcs = ["//packages/service-worker/cli:ngsw_config.js"],
+    outs = ["ngsw-config.js"],
+    cmd = "echo '#!/usr/bin/env node' > $@ && cat $< >> $@",
+)
+
+genrule(
+    name = "ngsw_worker_renamed",
+    srcs = ["//packages/service-worker/worker:ngsw_worker.es6.js"],
+    outs = ["ngsw-worker.js"],
+    cmd = "cp $< $@",
+)
+
 ng_package(
     name = "npm_package",
     srcs = [
         "package.json",
+        "safety-worker.js",
         "//packages/service-worker/config:package.json",
+    ],
+    data = [
+        ":ngsw_config_binary",
+        ":ngsw_worker_renamed",
+        "//packages/service-worker/config",
     ],
     entry_point = "packages/service-worker/index.js",
     tags = [
-        # TODO(alxhub): enable release after landing #23090
-        # "release-with-framework",
+        "release-with-framework",
     ],
     deps = [
         ":service-worker",
