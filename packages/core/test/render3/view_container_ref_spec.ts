@@ -18,7 +18,7 @@ describe('ViewContainerRef', () => {
 
     static ngDirectiveDef = defineDirective({
       type: TestDirective,
-      selector: [[['', 'testDir', ''], null]],
+      selectors: [['', 'testDir', '']],
       factory: () => new TestDirective(injectViewContainerRef(), injectTemplateRef(), ),
     });
   }
@@ -28,7 +28,7 @@ describe('ViewContainerRef', () => {
 
     static ngComponentDef = defineComponent({
       type: TestComponent,
-      selector: [[['test-cmp'], null]],
+      selectors: [['test-cmp']],
       factory: () => new TestComponent(),
       template: (cmp: TestComponent, cm: boolean) => {
         if (cm) {

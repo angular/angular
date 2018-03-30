@@ -70,7 +70,7 @@ describe('pipe', () => {
 
       static ngDirectiveDef = defineDirective({
         type: MyDir,
-        selector: [[['', 'myDir', ''], null]],
+        selectors: [['', 'myDir', '']],
         factory: () => new MyDir(),
         inputs: {dirProp: 'elprop'}
       });

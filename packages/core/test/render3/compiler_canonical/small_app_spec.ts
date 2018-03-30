@@ -58,7 +58,7 @@ class ToDoAppComponent {
   // NORMATIVE
   static ngComponentDef = r3.defineComponent({
     type: ToDoAppComponent,
-    selector: [[['todo-app'], null]],
+    selectors: [['todo-app']],
     factory: function ToDoAppComponent_Factory() {
       return new ToDoAppComponent(r3.directiveInject(AppState));
     },
@@ -123,7 +123,7 @@ class ToDoItemComponent {
   // NORMATIVE
   static ngComponentDef = r3.defineComponent({
     type: ToDoItemComponent,
-    selector: [[['todo'], null]],
+    selectors: [['todo']],
     factory: function ToDoItemComponent_Factory() { return new ToDoItemComponent(); },
     template: function ToDoItemComponent_Template(ctx: ToDoItemComponent, cm: boolean) {
       if (cm) {

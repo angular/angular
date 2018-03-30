@@ -52,7 +52,7 @@ describe('lifecycles', () => {
 
         static ngComponentDef = defineComponent({
           type: Component,
-          selector: [[[name], null]],
+          selectors: [[name]],
           factory: () => new Component(),
           inputs: {val: 'val'}, template,
           directiveDefs: defs
@@ -64,7 +64,7 @@ describe('lifecycles', () => {
       ngOnInit() { events.push('dir'); }
 
       static ngDirectiveDef = defineDirective(
-          {type: Directive, selector: [[['', 'dir', ''], null]], factory: () => new Directive()});
+          {type: Directive, selectors: [['', 'dir', '']], factory: () => new Directive()});
     }
 
     const defs = [
@@ -362,7 +362,7 @@ describe('lifecycles', () => {
 
         static ngComponentDef = defineComponent({
           type: Component,
-          selector: [[[name], null]],
+          selectors: [[name]],
           factory: () => new Component(), template,
           directiveDefs: defs
         });
@@ -373,7 +373,7 @@ describe('lifecycles', () => {
       ngDoCheck() { events.push('dir'); }
 
       static ngDirectiveDef = defineDirective(
-          {type: Directive, selector: [[['', 'dir', ''], null]], factory: () => new Directive()});
+          {type: Directive, selectors: [['', 'dir', '']], factory: () => new Directive()});
     }
 
     const defs = [Comp.ngComponentDef, Parent.ngComponentDef, Directive.ngDirectiveDef];
@@ -516,7 +516,7 @@ describe('lifecycles', () => {
 
         static ngComponentDef = defineComponent({
           type: Component,
-          selector: [[[name], null]],
+          selectors: [[name]],
           factory: () => new Component(),
           inputs: {val: 'val'},
           template: template,
@@ -530,7 +530,7 @@ describe('lifecycles', () => {
       ngAfterContentChecked() { events.push('check'); }
 
       static ngDirectiveDef = defineDirective(
-          {type: Directive, selector: [[['', 'dir', ''], null]], factory: () => new Directive()});
+          {type: Directive, selectors: [['', 'dir', '']], factory: () => new Directive()});
     }
 
     function ForLoopWithChildrenTemplate(ctx: any, cm: boolean) {
@@ -886,7 +886,7 @@ describe('lifecycles', () => {
 
         static ngComponentDef = defineComponent({
           type: Component,
-          selector: [[[name], null]],
+          selectors: [[name]],
           factory: () => new Component(),
           inputs: {val: 'val'},
           template: template,
@@ -900,7 +900,7 @@ describe('lifecycles', () => {
       ngAfterViewChecked() { events.push('check'); }
 
       static ngDirectiveDef = defineDirective(
-          {type: Directive, selector: [[['', 'dir', ''], null]], factory: () => new Directive()});
+          {type: Directive, selectors: [['', 'dir', '']], factory: () => new Directive()});
     }
 
     const defs = [
@@ -1313,7 +1313,7 @@ describe('lifecycles', () => {
 
         static ngComponentDef = defineComponent({
           type: Component,
-          selector: [[[name], null]],
+          selectors: [[name]],
           factory: () => new Component(),
           inputs: {val: 'val'},
           template: template,
@@ -1335,7 +1335,7 @@ describe('lifecycles', () => {
       ngOnDestroy() { events.push('dir'); }
 
       static ngDirectiveDef = defineDirective(
-          {type: Directive, selector: [[['', 'dir', ''], null]], factory: () => new Directive()});
+          {type: Directive, selectors: [['', 'dir', '']], factory: () => new Directive()});
     }
 
     const defs = [
@@ -1830,7 +1830,7 @@ describe('lifecycles', () => {
 
         static ngComponentDef = defineComponent({
           type: Component,
-          selector: [[[name], null]],
+          selectors: [[name]],
           factory: () => new Component(),
           features: [NgOnChangesFeature({b: 'val2'})],
           inputs: {a: 'val1', b: 'publicName'}, template,
@@ -1851,7 +1851,7 @@ describe('lifecycles', () => {
 
       static ngDirectiveDef = defineDirective({
         type: Directive,
-        selector: [[['', 'dir', ''], null]],
+        selectors: [['', 'dir', '']],
         factory: () => new Directive(),
         features: [NgOnChangesFeature({b: 'val2'})],
         inputs: {a: 'val1', b: 'publicName'}
@@ -2207,7 +2207,7 @@ describe('lifecycles', () => {
 
         static ngComponentDef = defineComponent({
           type: Component,
-          selector: [[[name], null]],
+          selectors: [[name]],
           factory: () => new Component(),
           inputs: {val: 'val'}, template,
           features: [NgOnChangesFeature()],

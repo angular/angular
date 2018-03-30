@@ -24,7 +24,7 @@ describe('outputs', () => {
 
     static ngComponentDef = defineComponent({
       type: ButtonToggle,
-      selector: [[['button-toggle'], null]],
+      selectors: [['button-toggle']],
       template: function(ctx: any, cm: boolean) {},
       factory: () => buttonToggle = new ButtonToggle(),
       outputs: {change: 'change', resetStream: 'reset'}
@@ -38,7 +38,7 @@ describe('outputs', () => {
 
     static ngDirectiveDef = defineDirective({
       type: OtherDir,
-      selector: [[['', 'otherDir', ''], null]],
+      selectors: [['', 'otherDir', '']],
       factory: () => otherDir = new OtherDir,
       outputs: {changeStream: 'change'}
     });
@@ -50,7 +50,7 @@ describe('outputs', () => {
 
     static ngComponentDef = defineComponent({
       type: DestroyComp,
-      selector: [[['destroy-comp'], null]],
+      selectors: [['destroy-comp']],
       template: function(ctx: any, cm: boolean) {},
       factory: () => destroyComp = new DestroyComp()
     });
@@ -62,7 +62,7 @@ describe('outputs', () => {
 
     static ngDirectiveDef = defineDirective({
       type: MyButton,
-      selector: [[['', 'myButton', ''], null]],
+      selectors: [['', 'myButton', '']],
       factory: () => buttonDir = new MyButton,
       outputs: {click: 'click'}
     });
@@ -355,7 +355,7 @@ describe('outputs', () => {
 
       static ngDirectiveDef = defineDirective({
         type: OtherChangeDir,
-        selector: [[['', 'otherChangeDir', ''], null]],
+        selectors: [['', 'otherChangeDir', '']],
         factory: () => otherDir = new OtherChangeDir,
         inputs: {change: 'change'}
       });

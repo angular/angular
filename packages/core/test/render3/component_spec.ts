@@ -24,7 +24,7 @@ describe('component', () => {
 
     static ngComponentDef = defineComponent({
       type: CounterComponent,
-      selector: [[['counter'], null]],
+      selectors: [['counter']],
       template: function(ctx: CounterComponent, cm: boolean) {
         if (cm) {
           text(0);
@@ -87,7 +87,7 @@ describe('component with a container', () => {
     items: string[];
     static ngComponentDef = defineComponent({
       type: WrapperComponent,
-      selector: [[['wrapper'], null]],
+      selectors: [['wrapper']],
       template: function ChildComponentTemplate(ctx: {items: string[]}, cm: boolean) {
         if (cm) {
           container(0);
@@ -131,7 +131,7 @@ describe('encapsulation', () => {
   class WrapperComponent {
     static ngComponentDef = defineComponent({
       type: WrapperComponent,
-      selector: [[['wrapper'], null]],
+      selectors: [['wrapper']],
       template: function(ctx: WrapperComponent, cm: boolean) {
         if (cm) {
           elementStart(0, 'encapsulated');
@@ -146,7 +146,7 @@ describe('encapsulation', () => {
   class EncapsulatedComponent {
     static ngComponentDef = defineComponent({
       type: EncapsulatedComponent,
-      selector: [[['encapsulated'], null]],
+      selectors: [['encapsulated']],
       template: function(ctx: EncapsulatedComponent, cm: boolean) {
         if (cm) {
           text(0, 'foo');
@@ -164,7 +164,7 @@ describe('encapsulation', () => {
   class LeafComponent {
     static ngComponentDef = defineComponent({
       type: LeafComponent,
-      selector: [[['leaf'], null]],
+      selectors: [['leaf']],
       template: function(ctx: LeafComponent, cm: boolean) {
         if (cm) {
           elementStart(0, 'span');
@@ -194,7 +194,7 @@ describe('encapsulation', () => {
     class WrapperComponentWith {
       static ngComponentDef = defineComponent({
         type: WrapperComponentWith,
-        selector: [[['wrapper'], null]],
+        selectors: [['wrapper']],
         template: function(ctx: WrapperComponentWith, cm: boolean) {
           if (cm) {
             elementStart(0, 'leaf');
@@ -211,7 +211,7 @@ describe('encapsulation', () => {
     class LeafComponentwith {
       static ngComponentDef = defineComponent({
         type: LeafComponentwith,
-        selector: [[['leaf'], null]],
+        selectors: [['leaf']],
         template: function(ctx: LeafComponentwith, cm: boolean) {
           if (cm) {
             elementStart(0, 'span');
@@ -250,7 +250,7 @@ describe('recursive components', () => {
 
     static ngComponentDef = defineComponent({
       type: TreeComponent,
-      selector: [[['tree-comp'], null]],
+      selectors: [['tree-comp']],
       factory: () => new TreeComponent(),
       template: (ctx: TreeComponent, cm: boolean) => {
         if (cm) {

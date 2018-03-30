@@ -26,7 +26,7 @@ describe('di', () => {
         value: string = 'Created';
         static ngDirectiveDef = defineDirective({
           type: Directive,
-          selector: [[['', 'dir', ''], null]],
+          selectors: [['', 'dir', '']],
           factory: () => new Directive,
           exportAs: 'dir'
         });
@@ -54,7 +54,7 @@ describe('di', () => {
         value: string = 'A';
         static ngDirectiveDef = defineDirective({
           type: DirectiveA,
-          selector: [[['', 'dirA', ''], null]],
+          selectors: [['', 'dirA', '']],
           factory: () => new DirectiveA,
           features: [PublicFeature]
         });
@@ -64,7 +64,7 @@ describe('di', () => {
         value: string = 'B';
         static ngDirectiveDef = defineDirective({
           type: DirectiveB,
-          selector: [[['', 'dirB', ''], null]],
+          selectors: [['', 'dirB', '']],
           factory: () => new DirectiveB,
           features: [PublicFeature]
         });
@@ -75,7 +75,7 @@ describe('di', () => {
         constructor(a: DirectiveA, b: DirectiveB) { this.value = a.value + b.value; }
         static ngDirectiveDef = defineDirective({
           type: DirectiveC,
-          selector: [[['', 'dirC', ''], null]],
+          selectors: [['', 'dirC', '']],
           factory: () => new DirectiveC(directiveInject(DirectiveA), directiveInject(DirectiveB)),
           exportAs: 'dirC'
         });
@@ -116,7 +116,7 @@ describe('di', () => {
         }
         static ngDirectiveDef = defineDirective({
           type: Directive,
-          selector: [[['', 'dir', ''], null]],
+          selectors: [['', 'dir', '']],
           factory: () => new Directive(injectElementRef()),
           features: [PublicFeature],
           exportAs: 'dir'
@@ -130,7 +130,7 @@ describe('di', () => {
         }
         static ngDirectiveDef = defineDirective({
           type: DirectiveSameInstance,
-          selector: [[['', 'dirSame', ''], null]],
+          selectors: [['', 'dirSame', '']],
           factory: () => new DirectiveSameInstance(injectElementRef(), directiveInject(Directive)),
           exportAs: 'dirSame'
         });
@@ -168,7 +168,7 @@ describe('di', () => {
         }
         static ngDirectiveDef = defineDirective({
           type: Directive,
-          selector: [[['', 'dir', ''], null]],
+          selectors: [['', 'dir', '']],
           factory: () => new Directive(injectTemplateRef()),
           features: [PublicFeature],
           exportAs: 'dir'
@@ -182,7 +182,7 @@ describe('di', () => {
         }
         static ngDirectiveDef = defineDirective({
           type: DirectiveSameInstance,
-          selector: [[['', 'dirSame', ''], null]],
+          selectors: [['', 'dirSame', '']],
           factory: () => new DirectiveSameInstance(injectTemplateRef(), directiveInject(Directive)),
           exportAs: 'dirSame'
         });
@@ -218,7 +218,7 @@ describe('di', () => {
         }
         static ngDirectiveDef = defineDirective({
           type: Directive,
-          selector: [[['', 'dir', ''], null]],
+          selectors: [['', 'dir', '']],
           factory: () => new Directive(injectViewContainerRef()),
           features: [PublicFeature],
           exportAs: 'dir'
@@ -232,7 +232,7 @@ describe('di', () => {
         }
         static ngDirectiveDef = defineDirective({
           type: DirectiveSameInstance,
-          selector: [[['', 'dirSame', ''], null]],
+          selectors: [['', 'dirSame', '']],
           factory:
               () => new DirectiveSameInstance(injectViewContainerRef(), directiveInject(Directive)),
           exportAs: 'dirSame'
@@ -272,7 +272,7 @@ describe('di', () => {
 
       static ngComponentDef = defineComponent({
         type: MyComp,
-        selector: [[['my-comp'], null]],
+        selectors: [['my-comp']],
         factory: () => comp = new MyComp(injectChangeDetectorRef()),
         template: function(ctx: MyComp, cm: boolean) {
           if (cm) {
@@ -288,7 +288,7 @@ describe('di', () => {
       constructor(public cdr: ChangeDetectorRef) { this.value = (cdr.constructor as any).name; }
       static ngDirectiveDef = defineDirective({
         type: Directive,
-        selector: [[['', 'dir', ''], null]],
+        selectors: [['', 'dir', '']],
         factory: () => dir = new Directive(injectChangeDetectorRef()),
         features: [PublicFeature],
         exportAs: 'dir'
@@ -300,7 +300,7 @@ describe('di', () => {
 
       static ngDirectiveDef = defineDirective({
         type: DirectiveSameInstance,
-        selector: [[['', 'dirSame', ''], null]],
+        selectors: [['', 'dirSame', '']],
         factory: () => dirSameInstance = new DirectiveSameInstance(injectChangeDetectorRef())
       });
     }
@@ -319,7 +319,7 @@ describe('di', () => {
 
       static ngDirectiveDef = defineDirective({
         type: IfDirective,
-        selector: [[['', 'myIf', ''], null]],
+        selectors: [['', 'myIf', '']],
         factory: () => new IfDirective(injectTemplateRef(), injectViewContainerRef()),
         inputs: {myIf: 'myIf'},
         features: [PublicFeature, NgOnChangesFeature()]
@@ -360,7 +360,7 @@ describe('di', () => {
 
         static ngComponentDef = defineComponent({
           type: MyApp,
-          selector: [[['my-app'], null]],
+          selectors: [['my-app']],
           factory: () => new MyApp(injectChangeDetectorRef()),
           /** <div dir dirSameInstance #dir="dir"> {{ dir.value }} </div> */
           template: function(ctx: any, cm: boolean) {
@@ -390,7 +390,7 @@ describe('di', () => {
 
         static ngComponentDef = defineComponent({
           type: MyApp,
-          selector: [[['my-app'], null]],
+          selectors: [['my-app']],
           factory: () => new MyApp(injectChangeDetectorRef()),
           /**
            * <my-comp>
@@ -432,7 +432,7 @@ describe('di', () => {
 
         static ngComponentDef = defineComponent({
           type: MyApp,
-          selector: [[['my-app'], null]],
+          selectors: [['my-app']],
           factory: () => new MyApp(injectChangeDetectorRef()),
           /**
            * % if (showing) {
@@ -478,7 +478,7 @@ describe('di', () => {
 
         static ngComponentDef = defineComponent({
           type: MyApp,
-          selector: [[['my-app'], null]],
+          selectors: [['my-app']],
           factory: () => new MyApp(injectChangeDetectorRef()),
           /** <div *myIf="showing" dir dirSameInstance #dir="dir"> {{ dir.value }} </div> */
           template: function(ctx: MyApp, cm: boolean) {
@@ -607,7 +607,7 @@ describe('di', () => {
 
           static ngComponentDef = defineComponent({
             type: MyApp,
-            selector: [[['my-app'], null]],
+            selectors: [['my-app']],
             factory: () => new MyApp(
                          directiveInject(String as any, InjectFlags.Default, 'DefaultValue')),
             template: () => null
@@ -626,7 +626,7 @@ describe('di', () => {
         constructor(public parent: any) { this.value = (parent.constructor as any).name; }
         static ngDirectiveDef = defineDirective({
           type: ChildDirective,
-          selector: [[['', 'childDir', ''], null]],
+          selectors: [['', 'childDir', '']],
           factory: () => new ChildDirective(directiveInject(ParentDirective)),
           features: [PublicFeature],
           exportAs: 'childDir'
@@ -637,7 +637,7 @@ describe('di', () => {
         value: boolean;
         constructor(parent: any, child: ChildDirective) { this.value = parent === child.parent; }
         static ngDirectiveDef = defineDirective({
-          selector: [[['', 'child2Dir', ''], null]],
+          selectors: [['', 'child2Dir', '']],
           type: Child2Directive,
           factory: () => new Child2Directive(
                        directiveInject(ParentDirective), directiveInject(ChildDirective)),

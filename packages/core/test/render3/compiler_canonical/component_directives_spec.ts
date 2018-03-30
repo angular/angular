@@ -28,7 +28,7 @@ describe('components & directives', () => {
       // NORMATIVE
       static ngComponentDef = $r3$.ɵdefineComponent({
         type: ChildComponent,
-        selector: [[['child'], null]],
+        selectors: [['child']],
         factory: () => new ChildComponent(),
         template: function(ctx: $ChildComponent$, cm: $boolean$) {
           if (cm) {
@@ -47,7 +47,7 @@ describe('components & directives', () => {
       // NORMATIVE
       static ngDirectiveDef = $r3$.ɵdefineDirective({
         type: SomeDirective,
-        selector: [[['', 'some-directive', ''], null]],
+        selectors: [['', 'some-directive', '']],
         factory: () => new SomeDirective(),
       });
       // /NORMATIVE
@@ -63,7 +63,7 @@ describe('components & directives', () => {
       // NORMATIVE
       static ngComponentDef = $r3$.ɵdefineComponent({
         type: MyComponent,
-        selector: [[['my-component'], null]],
+        selectors: [['my-component']],
         factory: () => new MyComponent(),
         template: function(ctx: $MyComponent$, cm: $boolean$) {
           if (cm) {
@@ -95,7 +95,7 @@ describe('components & directives', () => {
       // NORMATIVE
       static ngDirectiveDef = $r3$.ɵdefineDirective({
         type: HostBindingDir,
-        selector: [[['', 'hostBindingDir', ''], null]],
+        selectors: [['', 'hostBindingDir', '']],
         factory: function HostBindingDir_Factory() { return new HostBindingDir(); },
         hostBindings: function HostBindingDir_HostBindings(dirIndex: $number$, elIndex: $number$) {
           $r3$.ɵp(elIndex, 'id', $r3$.ɵb($r3$.ɵd<HostBindingDir>(dirIndex).dirId));
@@ -115,7 +115,7 @@ describe('components & directives', () => {
     class MyApp {
       static ngComponentDef = $r3$.ɵdefineComponent({
         type: MyApp,
-        selector: [[['my-app'], null]],
+        selectors: [['my-app']],
         factory: function MyApp_Factory() { return new MyApp(); },
         template: function MyApp_Template(ctx: $MyApp$, cm: $boolean$) {
           if (cm) {
@@ -143,7 +143,7 @@ describe('components & directives', () => {
 
       // NORMATIVE
       static ngDirectiveDef = $r3$.ɵdefineDirective({
-        selector: [[['', 'hostListenerDir', ''], null]],
+        selectors: [['', 'hostListenerDir', '']],
         type: HostListenerDir,
         factory: function HostListenerDir_Factory() {
           const $dir$ = new HostListenerDir();
@@ -165,7 +165,7 @@ describe('components & directives', () => {
     class MyApp {
       static ngComponentDef = $r3$.ɵdefineComponent({
         type: MyApp,
-        selector: [[['my-app'], null]],
+        selectors: [['my-app']],
         factory: function MyApp_Factory() { return new MyApp(); },
         template: function MyApp_Template(ctx: $MyApp$, cm: $boolean$) {
           if (cm) {
@@ -192,7 +192,7 @@ describe('components & directives', () => {
     class HostAttributeDir {
       // NORMATIVE
       static ngDirectiveDef = $r3$.ɵdefineDirective({
-        selector: [[['', 'hostAttributeDir', ''], null]],
+        selectors: [['', 'hostAttributeDir', '']],
         type: HostAttributeDir,
         factory: function HostAttributeDir_Factory() { return new HostAttributeDir(); },
         attributes: ['role', 'listbox']
@@ -211,7 +211,7 @@ describe('components & directives', () => {
     class MyApp {
       static ngComponentDef = $r3$.ɵdefineComponent({
         type: MyApp,
-        selector: [[['my-app'], null]],
+        selectors: [['my-app']],
         factory: function MyApp_Factory() { return new MyApp(); },
         template: function MyApp_Template(ctx: $MyApp$, cm: $boolean$) {
           if (cm) {
@@ -239,7 +239,7 @@ describe('components & directives', () => {
       // NORMATIVE
       static ngDirectiveDef = $r3$.ɵdefineDirective({
         type: HostBindingDir,
-        selector: [[['', 'hostBindingDir', ''], null]],
+        selectors: [['', 'hostBindingDir', '']],
         factory: function HostBindingDir_Factory() { return new HostBindingDir(); },
         hostBindings: function HostBindingDir_HostBindings(dirIndex: $number$, elIndex: $number$) {
           $r3$.ɵa(elIndex, 'aria-label', $r3$.ɵb($r3$.ɵd<HostBindingDir>(dirIndex).label));
@@ -259,7 +259,7 @@ describe('components & directives', () => {
     class MyApp {
       static ngComponentDef = $r3$.ɵdefineComponent({
         type: MyApp,
-        selector: [[['my-app'], null]],
+        selectors: [['my-app']],
         factory: function MyApp_Factory() { return new MyApp(); },
         template: function MyApp_Template(ctx: $MyApp$, cm: $boolean$) {
           if (cm) {
@@ -294,7 +294,7 @@ describe('components & directives', () => {
       // NORMATIVE
       static ngComponentDef = $r3$.ɵdefineComponent({
         type: MyComp,
-        selector: [[['my-comp'], null]],
+        selectors: [['my-comp']],
         factory: function MyComp_Factory() { return new MyComp(); },
         template: function MyComp_Template(ctx: $MyComp$, cm: $boolean$) {
           if (cm) {
@@ -319,7 +319,7 @@ describe('components & directives', () => {
 
       static ngComponentDef = $r3$.ɵdefineComponent({
         type: MyApp,
-        selector: [[['my-app'], null]],
+        selectors: [['my-app']],
         factory: function MyApp_Factory() { return new MyApp(); },
         template: function MyApp_Template(ctx: $MyApp$, cm: $boolean$) {
           if (cm) {
@@ -350,7 +350,7 @@ describe('components & directives', () => {
       // NORMATIVE
       static ngDirectiveDef = $r3$.ɵdefineDirective({
         type: IfDirective,
-        selector: [[['', 'if', ''], null]],
+        selectors: [['', 'if', '']],
         factory: () => new IfDirective($r3$.ɵinjectTemplateRef()),
       });
       // /NORMATIVE
@@ -368,7 +368,7 @@ describe('components & directives', () => {
       // NORMATIVE
       static ngComponentDef = $r3$.ɵdefineComponent({
         type: MyComponent,
-        selector: [[['my-component'], null]],
+        selectors: [['my-component']],
         factory: () => new MyComponent(),
         template: function(ctx: $MyComponent$, cm: $boolean$) {
           if (cm) {
@@ -411,7 +411,7 @@ describe('components & directives', () => {
 
       static ngComponentDef = $r3$.ɵdefineComponent({
         type: MyArrayComp,
-        selector: [[['my-array-comp'], null]],
+        selectors: [['my-array-comp']],
         factory: function MyArrayComp_Factory() { return new MyArrayComp(); },
         template: function MyArrayComp_Template(ctx: $MyArrayComp$, cm: $boolean$) {
           if (cm) {
@@ -440,7 +440,7 @@ describe('components & directives', () => {
         // NORMATIVE
         static ngComponentDef = $r3$.ɵdefineComponent({
           type: MyApp,
-          selector: [[['my-app'], null]],
+          selectors: [['my-app']],
           factory: function MyApp_Factory() { return new MyApp(); },
           template: function MyApp_Template(ctx: $MyApp$, cm: $boolean$) {
             if (cm) {
@@ -482,7 +482,7 @@ describe('components & directives', () => {
         // NORMATIVE
         static ngComponentDef = $r3$.ɵdefineComponent({
           type: MyApp,
-          selector: [[['my-app'], null]],
+          selectors: [['my-app']],
           factory: function MyApp_Factory() { return new MyApp(); },
           template: function MyApp_Template(ctx: $MyApp$, cm: $boolean$) {
             if (cm) {
@@ -512,7 +512,7 @@ describe('components & directives', () => {
 
         static ngComponentDef = $r3$.ɵdefineComponent({
           type: MyComp,
-          selector: [[['my-comp'], null]],
+          selectors: [['my-comp']],
           factory: function MyComp_Factory() { return new MyComp(); },
           template: function MyComp_Template(ctx: $MyComp$, cm: $boolean$) {
             if (cm) {
@@ -538,7 +538,7 @@ describe('components & directives', () => {
         // NORMATIVE
         static ngComponentDef = $r3$.ɵdefineComponent({
           type: MyApp,
-          selector: [[['my-app'], null]],
+          selectors: [['my-app']],
           factory: function MyApp_Factory() { return new MyApp(); },
           template: function MyApp_Template(ctx: $MyApp$, cm: $boolean$) {
             if (cm) {
@@ -578,7 +578,7 @@ describe('components & directives', () => {
         // NORMATIVE
         static ngComponentDef = $r3$.ɵdefineComponent({
           type: MyApp,
-          selector: [[['my-app'], null]],
+          selectors: [['my-app']],
           factory: function MyApp_Factory() { return new MyApp(); },
           template: function MyApp_Template(ctx: $MyApp$, cm: $boolean$) {
             if (cm) {
@@ -622,7 +622,7 @@ describe('components & directives', () => {
 
         static ngComponentDef = $r3$.ɵdefineComponent({
           type: MyComp,
-          selector: [[['my-comp'], null]],
+          selectors: [['my-comp']],
           factory: function MyComp_Factory() { return new MyComp(); },
           template: function MyComp_Template(ctx: $MyComp$, cm: $boolean$) {
             if (cm) {
@@ -683,7 +683,7 @@ describe('components & directives', () => {
         // NORMATIVE
         static ngComponentDef = $r3$.ɵdefineComponent({
           type: MyApp,
-          selector: [[['my-app'], null]],
+          selectors: [['my-app']],
           factory: function MyApp_Factory() { return new MyApp(); },
           template: function MyApp_Template(c: MyApp, cm: boolean) {
             if (cm) {
@@ -721,7 +721,7 @@ describe('components & directives', () => {
 
         static ngComponentDef = $r3$.ɵdefineComponent({
           type: ObjectComp,
-          selector: [[['object-comp'], null]],
+          selectors: [['object-comp']],
           factory: function ObjectComp_Factory() { return new ObjectComp(); },
           template: function ObjectComp_Template(ctx: $ObjectComp$, cm: $boolean$) {
             if (cm) {
@@ -755,7 +755,7 @@ describe('components & directives', () => {
         // NORMATIVE
         static ngComponentDef = $r3$.ɵdefineComponent({
           type: MyApp,
-          selector: [[['my-app'], null]],
+          selectors: [['my-app']],
           factory: function MyApp_Factory() { return new MyApp(); },
           template: function MyApp_Template(ctx: $MyApp$, cm: $boolean$) {
             if (cm) {
@@ -792,7 +792,7 @@ describe('components & directives', () => {
 
         static ngComponentDef = $r3$.ɵdefineComponent({
           type: NestedComp,
-          selector: [[['nested-comp'], null]],
+          selectors: [['nested-comp']],
           factory: function NestedComp_Factory() { return new NestedComp(); },
           template: function NestedComp_Template(ctx: $NestedComp$, cm: $boolean$) {
             if (cm) {
@@ -835,7 +835,7 @@ describe('components & directives', () => {
         // NORMATIVE
         static ngComponentDef = $r3$.ɵdefineComponent({
           type: MyApp,
-          selector: [[['my-app'], null]],
+          selectors: [['my-app']],
           factory: function MyApp_Factory() { return new MyApp(); },
           template: function MyApp_Template(ctx: $MyApp$, cm: $boolean$) {
             if (cm) {

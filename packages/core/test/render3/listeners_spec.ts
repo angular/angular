@@ -24,7 +24,7 @@ describe('event listeners', () => {
 
     static ngComponentDef = defineComponent({
       type: MyComp,
-      selector: [[['comp'], null]],
+      selectors: [['comp']],
       /** <button (click)="onClick()"> Click me </button> */
       template: function CompTemplate(ctx: any, cm: boolean) {
         if (cm) {
@@ -61,7 +61,7 @@ describe('event listeners', () => {
 
     static ngComponentDef = defineComponent({
       type: PreventDefaultComp,
-      selector: [[['prevent-default-comp'], null]],
+      selectors: [['prevent-default-comp']],
       factory: () => new PreventDefaultComp(),
       /** <button (click)="onClick($event)">Click</button> */
       template: (ctx: PreventDefaultComp, cm: boolean) => {
@@ -235,7 +235,7 @@ describe('event listeners', () => {
 
       static ngDirectiveDef = defineDirective({
         type: HostListenerDir,
-        selector: [[['', 'hostListenerDir', ''], null]],
+        selectors: [['', 'hostListenerDir', '']],
         factory: function HostListenerDir_Factory() {
           const $dir$ = new HostListenerDir();
           listener('click', function() { return $dir$.onClick(); });

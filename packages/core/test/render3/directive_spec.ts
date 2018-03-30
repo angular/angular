@@ -22,7 +22,7 @@ describe('directive', () => {
         klass = 'foo';
         static ngDirectiveDef = defineDirective({
           type: Directive,
-          selector: [[['', 'dir', ''], null]],
+          selectors: [['', 'dir', '']],
           factory: () => directiveInstance = new Directive,
           hostBindings: (directiveIndex: number, elementIndex: number) => {
             elementProperty(
