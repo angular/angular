@@ -3,11 +3,11 @@
 set -u -e -o pipefail
 
 # Use for BETA and RC releases
-# Publish all packages in `dist/packages-dist` to npm (as next)
-
 # Query Bazel for npm_package and ng_package rules with tags=["release-with-framework"]
+# Publish them to npm (tagged next)
 for p in $(bazel query --output=label 'attr("tags", "\[.*release-with-framework.*\]", //...) intersect kind(".*_package", //...) except //dist/...'); do
   bazel run -- $p.publish --access public --tag next
 done
 
-(cd dist/packages-dist; for p in language-service service-worker; do npm publish --access public --tag next $p; done)
+# TODO(alexeagle): publish everything from bazel and remove this
+(cd dist/packages-dist; for p in language-service; do npm publish --access public --tag next $p; done)
