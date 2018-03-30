@@ -1,6 +1,7 @@
 package(default_visibility = ["//visibility:public"])
 
 load("//tools:defaults.bzl", "ts_library", "npm_package")
+load(":language_service_rollup.bzl", "ls_rollup_bundle")
 
 ts_library(
     name = "language-service",
@@ -19,8 +20,15 @@ ts_library(
     ],
 )
 
+ls_rollup_bundle(
+    name = "bundle",
+    entry_point = "@angular/language-service",
+    rollup_config = ":rollup.config.js",
+    deps = [":language-service"],
+)
+
 npm_package(
     name = "npm_package",
     srcs = ["package.json"],
-    deps = [":language-service"],
+    deps = [":bundle"],
 )
