@@ -1,8 +1,8 @@
 <div style="height: 500px"></div>
 
-<div class="demo-options">
+<div class="demo-options mat-typography">
   <div>
-    <h4>Origin X</h4>
+    <h2>Origin X</h2>
     <mat-radio-group [(ngModel)]="originX">
       <mat-radio-button value="start">start</mat-radio-button>
       <mat-radio-button value="center">center</mat-radio-button>
@@ -11,7 +11,7 @@
   </div>
 
   <div>
-    <h4>Origin Y</h4>
+    <h2>Origin Y</h2>
     <mat-radio-group [(ngModel)]="originY">
       <mat-radio-button value="top">top</mat-radio-button>
       <mat-radio-button value="center">center</mat-radio-button>
@@ -20,7 +20,7 @@
   </div>
 
   <div>
-    <h4>Overlay X</h4>
+    <h2>Overlay X</h2>
     <mat-radio-group [(ngModel)]="overlayX">
       <mat-radio-button value="start">start</mat-radio-button>
       <mat-radio-button value="center">center</mat-radio-button>
@@ -29,7 +29,7 @@
   </div>
 
   <div>
-    <h4>Overlay Y</h4>
+    <h2>Overlay Y</h2>
     <mat-radio-group [(ngModel)]="overlayY">
       <mat-radio-button value="top">top</mat-radio-button>
       <mat-radio-button value="center">center</mat-radio-button>
@@ -38,28 +38,39 @@
   </div>
 
   <div>
-    <h4>Offsets</h4>
+    <h2>Offsets</h2>
 
-    <div>
+    <p>
       <label>
         offsetX
         <input type="number" [(ngModel)]="offsetX">
       </label>
-    </div>
+    </p>
 
-    <div>
+    <p>
       <label>
         offsetY
         <input type="number" [(ngModel)]="offsetY">
       </label>
-    </div>
+    </p>
   </div>
 
   <div>
-    <label>
-      Number of items in the overlay
-      <input #count type="number" value="25" (input)="updateCount(count.value)">
-    </label>
+    <h2>Options</h2>
+
+    <p>
+      <label>
+        Number of items in the overlay
+        <input type="number" [(ngModel)]="itemCount">
+      </label>
+    </p>
+
+    <p>
+      <label>
+        Item text
+        <input [(ngModel)]="itemText">
+      </label>
+    </p>
 
     <div>
       <mat-checkbox [(ngModel)]="isFlexible">Allow flexible dimensions</mat-checkbox>
@@ -84,7 +95,6 @@
 
 
 <div class="demo-trigger">
-  <div style="width: 50px;"></div>
   <button mat-raised-button
       cdkOverlayOrigin
       type="button"

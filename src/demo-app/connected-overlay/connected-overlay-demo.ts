@@ -18,8 +18,6 @@ import {
 } from '@angular/cdk/overlay';
 
 
-let itemCount = 25;
-
 @Component({
   moduleId: module.id,
   selector: 'overlay-demo',
@@ -39,6 +37,8 @@ export class ConnectedOverlayDemo {
   showBoundingBox = false;
   offsetX = 0;
   offsetY = 0;
+  itemCount = 25;
+  itemText = 'Item with a long name';
   overlayRef: OverlayRef | null;
 
   constructor(
@@ -84,7 +84,11 @@ export class ConnectedOverlayDemo {
       minHeight: 50
     });
 
-    this.overlayRef.attach(new ComponentPortal(DemoOverlay, this.viewContainerRef));
+    const portal = new ComponentPortal(DemoOverlay, this.viewContainerRef);
+    const componentRef = this.overlayRef.attach(portal);
+
+    componentRef.instance.items = Array(this.itemCount);
+    componentRef.instance.text = this.itemText;
   }
 
   close() {
@@ -93,10 +97,6 @@ export class ConnectedOverlayDemo {
       this.overlayRef = null;
       this.showBoundingBox = false;
     }
-  }
-
-  updateCount(value: number) {
-    itemCount = +value;
   }
 
   toggleShowBoundingBox() {
@@ -111,14 +111,15 @@ export class ConnectedOverlayDemo {
 
 
 @Component({
+  selector: 'demo-overlay',
   template: `
     <div style="overflow: auto;">
-      {{items.length}}
-      <ul><li *ngFor="let item of items; index as i">Item with a long name {{i}}</li></ul>
+      <ul><li *ngFor="let item of items; index as i">{{text}} {{i}}</li></ul>
     </div>`,
   encapsulation: ViewEncapsulation.None,
 })
 export class DemoOverlay {
-  items = Array(itemCount);
+  items: number[];
+  text: string;
 }
 
