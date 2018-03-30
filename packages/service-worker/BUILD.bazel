@@ -26,6 +26,10 @@ ng_package(
         "//packages/service-worker/config:package.json",
     ],
     entry_point = "packages/service-worker/index.js",
+    tags = [
+        # TODO(alxhub): enable release after landing #23090
+        # "release-with-framework",
+    ],
     deps = [
         ":service-worker",
         "//packages/service-worker/config",

@@ -25,6 +25,7 @@ ng_package(
         "**/package.json",
     ]),
     entry_point = "packages/elements/index.js",
+    tags = ["release-with-framework"],
     deps = [
         ":elements",
     ],
