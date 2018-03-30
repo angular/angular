@@ -18,6 +18,20 @@ Create a new project named `angular-tour-of-heroes` with this CLI command.
 
 The Angular CLI generated a new project with a default application and supporting files. 
 
+
+<div class="l-sub-section">
+
+
+
+You can generate a more complex app at project creation by specifying a package and schematics collection to the `ng new` command. You can add packages and schematics collections to an existing project by using the `ng add` command. 
+For more information, see the [Angular CLI documentation.](https://github.com/angular/angular-cli/wiki/ "Angular CLI documentation") 
+
+Angular Material provides schematics for typical app layouts. 
+See the [Angular Material documentation](https://material.angular.io/guides "Angular Material documentation") for details.
+
+</div>
+
+
 ## Serve the application
 
 Go to the project directory and launch the application.
