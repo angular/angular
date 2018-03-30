@@ -45,7 +45,7 @@ export interface LProjection {
  *
  * See more examples in node_selector_matcher_spec.ts
  */
-export type CssSelector = (string | number)[];
+export type CssSelector = (string | SelectorFlags)[];
 
 /**
  * A list of CssSelectors.

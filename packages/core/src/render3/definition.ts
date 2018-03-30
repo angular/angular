@@ -17,7 +17,7 @@ import {resolveRendererType2} from '../view/util';
 
 import {diPublic} from './di';
 import {ComponentDef, ComponentDefFeature, ComponentTemplate, DirectiveDef, DirectiveDefFeature, DirectiveDefListOrFactory, PipeDef, PipeDefListOrFactory} from './interfaces/definition';
-import {CssSelectorList} from './interfaces/projection';
+import {CssSelectorList, SelectorFlags} from './interfaces/projection';
 
 
 
