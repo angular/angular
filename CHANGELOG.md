@@ -1,3 +1,37 @@
+<a name="6.0.0-rc.1"></a>
+# [6.0.0-rc.1](https://github.com/angular/angular/compare/6.0.0-rc.0...6.0.0-rc.1) (2018-03-30)
+
+
+### Bug Fixes
+
+* **animations:** avoid animation insertions during router back/refresh ([#21977](https://github.com/angular/angular/issues/21977)) ([f88fba0](https://github.com/angular/angular/commit/f88fba0)), closes [#19712](https://github.com/angular/angular/issues/19712)
+* **animations:** treat numeric state name values as strings ([#22923](https://github.com/angular/angular/issues/22923)) ([e5e1b0d](https://github.com/angular/angular/commit/e5e1b0d))
+* **bazel:** complete the rollup globals list for all angular entrypoints ([#23080](https://github.com/angular/angular/issues/23080)) ([439030f](https://github.com/angular/angular/commit/439030f))
+* **bazel:** don't inline tslib into fesms ([#23044](https://github.com/angular/angular/issues/23044)) ([0049743](https://github.com/angular/angular/commit/0049743))
+* **bazel:** don't try to do flatmoduleindex under Blaze ([#23083](https://github.com/angular/angular/issues/23083)) ([be10bf5](https://github.com/angular/angular/commit/be10bf5))
+* **bazel:** downlevel decorators in fesm5 files ([#23078](https://github.com/angular/angular/issues/23078)) ([481b22e](https://github.com/angular/angular/commit/481b22e))
+* **bazel:** ng_package packages attr not forwarded to npm_package ([#22967](https://github.com/angular/angular/issues/22967)) ([2aabbc5](https://github.com/angular/angular/commit/2aabbc5))
+* **bazel:** ng_package should include private exports in fesms ([#23054](https://github.com/angular/angular/issues/23054)) ([0d9140c](https://github.com/angular/angular/commit/0d9140c))
+* **bazel:** pass --global option to rollup ([#23073](https://github.com/angular/angular/issues/23073)) ([45e090b](https://github.com/angular/angular/commit/45e090b))
+* **common:** titlecase pipe ([#22600](https://github.com/angular/angular/issues/22600)) ([7966744](https://github.com/angular/angular/commit/7966744))
+* **compiler:** don't typecheck all inputs ([#22899](https://github.com/angular/angular/issues/22899)) ([838a610](https://github.com/angular/angular/commit/838a610))
+* consistently rewrite Injector to INJECTOR ([#23008](https://github.com/angular/angular/issues/23008)) ([884bf0e](https://github.com/angular/angular/commit/884bf0e))
+* **compiler:** fix support for html-like text in translatable attributes ([#23053](https://github.com/angular/angular/issues/23053)) ([28058b7](https://github.com/angular/angular/commit/28058b7))
+* **compiler:** take quoting into account when determining if object literals can be shared ([#22942](https://github.com/angular/angular/issues/22942)) ([d98e9e7](https://github.com/angular/angular/commit/d98e9e7))
+* **compiler-cli:** use numeric comparison for TypeScript version ([#22705](https://github.com/angular/angular/issues/22705)) ([193737a](https://github.com/angular/angular/commit/193737a)), closes [#22593](https://github.com/angular/angular/issues/22593)
+* **core:** don't override ngInjectableDef in the decorator if present on the type ([#22943](https://github.com/angular/angular/issues/22943)) ([6f01917](https://github.com/angular/angular/commit/6f01917))
+* **service-worker:** do not enter degraded mode when offline ([#22883](https://github.com/angular/angular/issues/22883)) ([9e9b8dd](https://github.com/angular/angular/commit/9e9b8dd)), closes [#21636](https://github.com/angular/angular/issues/21636)
+* **service-worker:** fix LruList bugs ([#22769](https://github.com/angular/angular/issues/22769)) ([8c2a578](https://github.com/angular/angular/commit/8c2a578)), closes [#22218](https://github.com/angular/angular/issues/22218) [#22768](https://github.com/angular/angular/issues/22768)
+* **service-worker:** ignore invalid `only-if-cached` requests ([#22883](https://github.com/angular/angular/issues/22883)) ([d9dc46e](https://github.com/angular/angular/commit/d9dc46e)), closes [#22362](https://github.com/angular/angular/issues/22362)
+
+
+### Features
+
+* **bazel:** prefix private-export (barred-latin-o) symbols ([#23007](https://github.com/angular/angular/issues/23007)) ([27e14b2](https://github.com/angular/angular/commit/27e14b2))
+* **compiler:** lower @NgModule ids if needed ([#23031](https://github.com/angular/angular/issues/23031)) ([bd024c0](https://github.com/angular/angular/commit/bd024c0))
+
+
+
 <a name="6.0.0-rc.0"></a>
 # [6.0.0-rc.0](https://github.com/angular/angular/compare/6.0.0-beta.8...6.0.0-rc.0) (2018-03-21)
 
