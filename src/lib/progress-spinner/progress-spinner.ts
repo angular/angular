@@ -11,8 +11,6 @@ import {
   ChangeDetectionStrategy,
   Input,
   ElementRef,
-  SimpleChanges,
-  OnChanges,
   ViewEncapsulation,
   Optional,
   Inject,
@@ -82,8 +80,8 @@ const INDETERMINATE_ANIMATION_TEMPLATE = `
   host: {
     'role': 'progressbar',
     'class': 'mat-progress-spinner',
-    '[style.width.px]': '_elementSize',
-    '[style.height.px]': '_elementSize',
+    '[style.width.px]': 'diameter',
+    '[style.height.px]': 'diameter',
     '[attr.aria-valuemin]': 'mode === "determinate" ? 0 : null',
     '[attr.aria-valuemax]': 'mode === "determinate" ? 100 : null',
     '[attr.aria-valuenow]': 'value',
@@ -95,15 +93,11 @@ const INDETERMINATE_ANIMATION_TEMPLATE = `
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
 })
-export class MatProgressSpinner extends _MatProgressSpinnerMixinBase implements CanColor,
-  OnChanges {
+export class MatProgressSpinner extends _MatProgressSpinnerMixinBase implements CanColor {
 
   private _value = 0;
   private _strokeWidth: number;
   private _fallbackAnimation = false;
-
-  /** The width and height of the host element. Will grow with stroke width. */
-  _elementSize = BASE_SIZE;
 
   /** Tracks diameters of existing instances to de-dupe generated styles (default d = 100) */
   private static diameters = new Set<number>([BASE_SIZE]);
@@ -123,7 +117,6 @@ export class MatProgressSpinner extends _MatProgressSpinnerMixinBase implements 
     if (!this._fallbackAnimation && !MatProgressSpinner.diameters.has(this._diameter)) {
       this._attachStyleNode();
     }
-    this._updateElementSize();
   }
   private _diameter = BASE_SIZE;
 
@@ -164,12 +157,6 @@ export class MatProgressSpinner extends _MatProgressSpinnerMixinBase implements 
     _elementRef.nativeElement.classList.add(animationClass);
   }
 
-  ngOnChanges(changes: SimpleChanges) {
-    if (changes.strokeWidth || changes.diameter) {
-      this._updateElementSize();
-    }
-  }
-
   /** The radius of the spinner, adjusted for stroke width. */
   get _circleRadius() {
     return (this.diameter - BASE_STROKE_WIDTH) / 2;
@@ -202,7 +189,7 @@ export class MatProgressSpinner extends _MatProgressSpinnerMixinBase implements 
 
   /** Stroke width of the circle in percent. */
   get _circleStrokeWidth() {
-    return this.strokeWidth / this._elementSize * 100;
+    return this.strokeWidth / this.diameter * 100;
   }
 
   /** Dynamically generates a style tag containing the correct animation for this diameter. */
@@ -230,11 +217,6 @@ export class MatProgressSpinner extends _MatProgressSpinnerMixinBase implements 
         .replace(/END_VALUE/g, `${0.2 * this._strokeCircumference}`)
         .replace(/DIAMETER/g, `${this.diameter}`);
   }
-
-  /** Updates the spinner element size based on its diameter. */
-  private _updateElementSize() {
-    this._elementSize = this._diameter + Math.max(this.strokeWidth - BASE_STROKE_WIDTH, 0);
-  }
 }
 
 
@@ -251,8 +233,8 @@ export class MatProgressSpinner extends _MatProgressSpinnerMixinBase implements 
     'role': 'progressbar',
     'mode': 'indeterminate',
     'class': 'mat-spinner mat-progress-spinner',
-    '[style.width.px]': '_elementSize',
-    '[style.height.px]': '_elementSize',
+    '[style.width.px]': 'diameter',
+    '[style.height.px]': 'diameter',
   },
   inputs: ['color'],
   templateUrl: 'progress-spinner.html',

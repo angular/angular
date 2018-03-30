@@ -140,7 +140,7 @@ describe('MatProgressSpinner', () => {
     fixture.componentInstance.strokeWidth = 40;
     fixture.detectChanges();
 
-    expect(parseInt(circleElement.style.strokeWidth)).toBe(30, 'Expected the custom stroke ' +
+    expect(parseInt(circleElement.style.strokeWidth)).toBe(40, 'Expected the custom stroke ' +
       'width to be applied to the circle element as a percentage of the element size.');
     expect(svgElement.getAttribute('viewBox'))
       .toBe('0 0 130 130', 'Expected the viewBox to be adjusted based on the stroke width.');
@@ -153,8 +153,8 @@ describe('MatProgressSpinner', () => {
     fixture.componentInstance.strokeWidth = 40;
     fixture.detectChanges();
 
-    expect(element.style.width).toBe('130px');
-    expect(element.style.height).toBe('130px');
+    expect(element.style.width).toBe('100px');
+    expect(element.style.height).toBe('100px');
   });
 
   it('should not collapse the host element if the stroke width is less than the default', () => {
@@ -217,10 +217,10 @@ describe('MatProgressSpinner', () => {
     expect(spinner.componentInstance.strokeWidth).toBe(11);
     expect(spinner.componentInstance.value).toBe(25);
 
-    expect(spinner.nativeElement.style.width).toBe('38px');
-    expect(spinner.nativeElement.style.height).toBe('38px');
-    expect(svgElement.style.width).toBe('38px');
-    expect(svgElement.style.height).toBe('38px');
+    expect(spinner.nativeElement.style.width).toBe('37px');
+    expect(spinner.nativeElement.style.height).toBe('37px');
+    expect(svgElement.style.width).toBe('37px');
+    expect(svgElement.style.height).toBe('37px');
     expect(svgElement.getAttribute('viewBox')).toBe('0 0 38 38');
   });
 
