@@ -69,7 +69,7 @@ const MAX_FILE_COUNT_FOR_SINGLE_FILE_EMIT = 20;
 /**
  * Fields to lower within metadata in render2 mode.
  */
-const LOWER_FIELDS = ['useValue', 'useFactory', 'data', 'id'];
+const LOWER_FIELDS = ['useValue', 'useFactory', 'data', 'id', 'loadChildren'];
 
 /**
  * Fields to lower within metadata in render3 mode.
