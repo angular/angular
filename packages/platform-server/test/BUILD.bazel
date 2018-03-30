@@ -19,6 +19,7 @@ ts_library(
         "//packages/platform-browser",
         "//packages/platform-server",
         "@rxjs",
+        "@rxjs//operators",
     ],
 )
 
