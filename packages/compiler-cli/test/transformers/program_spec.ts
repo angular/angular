@@ -13,7 +13,7 @@ import * as ts from 'typescript';
 
 import {formatDiagnostics} from '../../src/perform_compile';
 import {CompilerHost, EmitFlags, LazyRoute} from '../../src/transformers/api';
-import {createSrcToOutPathMapper} from '../../src/transformers/program';
+import {checkVersion, createSrcToOutPathMapper} from '../../src/transformers/program';
 import {GENERATED_FILES, StructureIsReused, tsStructureIsReused} from '../../src/transformers/util';
 import {TestSupport, expectNoDiagnosticsInProgram, isInBazel, setup} from '../test_support';
 
@@ -1048,4 +1048,35 @@ describe('ng program', () => {
              .toContain('Function expressions are not supported');
        });
   });
+
+  describe('checkVersion', () => {
+    const MIN_TS_VERSION = '2.7.2';
+    const MAX_TS_VERSION = '2.8.0';
+
+    const versionError = (version: string) =>
+        `The Angular Compiler requires TypeScript >=${MIN_TS_VERSION} and <${MAX_TS_VERSION} but ${version} was found instead.`;
+
+    it('should not throw when a supported TypeScript version is used', () => {
+      expect(() => checkVersion('2.7.2', MIN_TS_VERSION, MAX_TS_VERSION, undefined)).not.toThrow();
+      expect(() => checkVersion('2.7.2', MIN_TS_VERSION, MAX_TS_VERSION, false)).not.toThrow();
+      expect(() => checkVersion('2.7.2', MIN_TS_VERSION, MAX_TS_VERSION, true)).not.toThrow();
+    });
+
+    it('should handle a TypeScript version < the minimum supported one', () => {
+      expect(() => checkVersion('2.4.1', MIN_TS_VERSION, MAX_TS_VERSION, undefined))
+          .toThrowError(versionError('2.4.1'));
+      expect(() => checkVersion('2.4.1', MIN_TS_VERSION, MAX_TS_VERSION, false))
+          .toThrowError(versionError('2.4.1'));
+      expect(() => checkVersion('2.4.1', MIN_TS_VERSION, MAX_TS_VERSION, true)).not.toThrow();
+    });
+
+    it('should handle a TypeScript version > the maximum supported one', () => {
+      expect(() => checkVersion('2.9.0', MIN_TS_VERSION, MAX_TS_VERSION, undefined))
+          .toThrowError(versionError('2.9.0'));
+      expect(() => checkVersion('2.9.0', MIN_TS_VERSION, MAX_TS_VERSION, false))
+          .toThrowError(versionError('2.9.0'));
+      expect(() => checkVersion('2.9.0', MIN_TS_VERSION, MAX_TS_VERSION, true)).not.toThrow();
+    });
+  });
+
 });
