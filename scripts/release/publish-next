@@ -1,6 +1,13 @@
 #!/usr/bin/env bash
 
+set -u -e -o pipefail
+
 # Use for BETA and RC releases
 # Publish all packages in `dist/packages-dist` to npm (as next)
 
-(cd dist/packages-dist; for p in `ls .`; do npm publish --access public --tag next $p; done)
+# Query Bazel for npm_package and ng_package rules with tags=["release-with-framework"]
+for p in $(bazel query --output=label 'attr("tags", "\[.*release-with-framework.*\]", //...) intersect kind(".*_package", //...)'); do
+  bazel run -- $p.publish --access public --tag next
+done
+
+(cd dist/packages-dist; for p in language-service service-worker; do npm publish --access public --tag next $p; done)
