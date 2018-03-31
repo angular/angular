@@ -286,13 +286,15 @@
             "url": "https://ninjaCodeGen.com"
           },
           "angular-playground": {
-            "desc": "UI development environment for building, testing, and documenting Angular applications.",
+            "//desc": "UI development environment for building, testing, and documenting Angular applications.",
+            "desc": "로컬 환경에서 간단하게 Angular 애플리케이션을 만들거나 테스트해보고, 문서를 작성할 수 있는 환경입니다.",
             "rev": true,
             "title": "Angular Playground",
             "url": "http://www.angularplayground.it/"
           },
           "nx": {
-            "desc": "Nx (Nrwl Extensions for Angular) is an open source toolkit built on top of Angular CLI to help enterprise teams develop Angular at scale.",
+            "//desc": "Nx (Nrwl Extensions for Angular) is an open source toolkit built on top of Angular CLI to help enterprise teams develop Angular at scale.",
+            "desc": "Nx(Nrwl Extensions for Angular)는 Angular CLI를 활용해서 기업용 솔루션을 만들 수 있는 오픈 소스 툴입니다.",
             "rev": true,
             "title": "Nx",
             "logo": "https://nrwl.io/assets/nx-logo.png",
@@ -425,7 +427,8 @@
             "logo": "http://www.amexio.org/amexio-logo.png"
           },
           "essentialjs2": {
-            "desc": "Essential JS 2 for Angular is a collection modern TypeScript based true Angular Components. It has support for Ahead Of Time (AOT) compilation and Tree-Shaking. All the components are developed from the ground up to be lightweight, responsive, modular and touch friendly.",
+            "//desc": "Essential JS 2 for Angular is a collection modern TypeScript based true Angular Components. It has support for Ahead Of Time (AOT) compilation and Tree-Shaking. All the components are developed from the ground up to be lightweight, responsive, modular and touch friendly.",
+            "desc": "Essential JS 2 for Angular는 최신 TypeScript 기술로 만든 Angular 컴포넌트 모음입니다. 제공하는 컴포넌트는 모두 AoT 컴파일되며, 트리 셰이킹도 지원합니다. 모듈화 되어있으며 빠르고, 반응형 화면과 터치에 최적화된 컴포넌트를 활용해 보세요.",
             "rev": true,
             "title": "Essential JS 2",
             "url": "https://www.syncfusion.com/products/angular-js2"
@@ -534,10 +537,12 @@
             "url": "https://gumroad.com/l/essential_angular"
           },
           "angular-buch": {
-            "desc": "The first German book about Angular. It gives you a detailed practical overview of the key concepts of the platform. In each chapter a sample application is built upon with a new Angular topic. All sources are available on GitHub.",
+            "//desc": "The first German book about Angular. It gives you a detailed practical overview of the key concepts of the platform. In each chapter a sample application is built upon with a new Angular topic. All sources are available on GitHub.",
+            "desc": "독일에서는 처음 발행된 Angular 서적입니다. Angular 프레임워크의 실전 활용 방법을 자세하게 설명하고 있습니다. 매 챕터마다 다루는 내용으로 애플리케이션을 만들어 가며, 모든 소스는 Github으로 공개됩니다.",
             "logo": "https://angular-buch.com/assets/img/brand.svg",
             "rev": true,
-            "title": "Angular-Buch (German)",
+            "//title": "Angular-Buch (German)",
+            "title": "Angular-Buch (독일)",
             "url": "https://angular-buch.com/"
           }
         }
@@ -592,7 +597,8 @@
             "url": "https://www.codeschool.com/courses/accelerating-through-angular-2"
           },
           "angular-playbook": {
-            "desc": "Learn advanced Angular best practices for enterprise teams, created by Nrwl.io.",
+            "//desc": "Learn advanced Angular best practices for enterprise teams, created by Nrwl.io.",
+            "desc": "실제 업무용 애플리케이션에 활용할 수 있는 Angular 고급 지식을 확인해 보세요. Nrwl.io 운영자가 직접 안내합니다.",
             "logo": "https://nrwl.io/assets/logo_footer_2x.png",
             "rev": true,
             "title": "Angular Enterprise Playbook",
@@ -808,10 +814,12 @@
             "url": "https://weareone.ch/courses/angular/"
           },
           "angular-schule": {
-            "desc": "Angular onsite training and public workshops in Germany from the authors of the German Angular book. We also regularly post articles and videos on our blog (in English and German language).",
+            "//desc": "Angular onsite training and public workshops in Germany from the authors of the German Angular book. We also regularly post articles and videos on our blog (in English and German language).",
+            "desc": "독일에서 Angular 책을 출판한 저자가 직접 강의하는 수업입니다. 블로그에는 관련 기술과 영상을 영어와 독일어로 제공합니다.",
             "logo": "https://angular.schule/assets/img/brand.svg",
             "rev": true,
-            "title": "Angular.Schule (German)",
+            "//title": "Angular.Schule (German)",
+            "title": "Angular.Schule (독일)",
             "url": "https://angular.schule/"
           }
         }
