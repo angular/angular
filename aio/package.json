@@ -29,7 +29,7 @@
     "setup": "yarn aio-use-npm && yarn example-use-npm",
     "postsetup": "yarn boilerplate:add && yarn build-ie-polyfills && yarn docs",
     "presetup-local": "yarn presetup",
-    "setup-local": "yarn aio-useq-local && yarn example-use-local",
+    "setup-local": "yarn aio-use-local && yarn example-use-local",
     "postsetup-local": "yarn postsetup",
     "bazel-build-angular": "bazel query --output=label 'kind(npm_package, //packages/...) union kind(ng_package, //packages/...)' | xargs bazel build && rm -rf ../dist/packages-bazel && mkdir -p ../dist/packages-bazel && cd ../dist/packages-bazel/ && for i in {animations,common,compiler,compiler-cli,core,elements,forms,http,platform-browser,platform-browser-dynamic,platform-server,router}; do echo $i; cp -r $(bazel info bazel-bin)/packages/$i/npm_package $i; done; chmod -R u+w ./",
     "presetup-bazel": "yarn presetup && yarn bazel-build-angular",
