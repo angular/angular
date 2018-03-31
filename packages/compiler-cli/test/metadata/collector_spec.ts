@@ -9,7 +9,7 @@
 import * as ts from 'typescript';
 
 import {MetadataCollector} from '../../src/metadata/collector';
-import {ClassMetadata, ConstructorMetadata, METADATA_VERSION, MetadataEntry, ModuleMetadata, isClassMetadata, isMetadataGlobalReferenceExpression} from '../../src/metadata/schema';
+import {ClassMetadata, ConstructorMetadata, MemberMetadata, METADATA_VERSION, MetadataEntry, ModuleMetadata, isClassMetadata, isMetadataGlobalReferenceExpression} from '../../src/metadata/schema';
 
 import {Directory, Host, expectValidSources} from './typescript.mocks';
 
@@ -269,7 +269,7 @@ describe('Collector', () => {
   it('should provide any reference for an any ctor parameter type', () => {
     const casesAny = <ClassMetadata>casesMetadata.metadata['CaseAny'];
     expect(casesAny).toBeTruthy();
-    const ctorData = casesAny.members !['__ctor__'];
+    const ctorData = <ConstructorMetadata[]>casesAny.members !['__ctor__'];
     expect(ctorData).toEqual(
         [{__symbolic: 'constructor', parameters: [{__symbolic: 'reference', name: 'any'}]}]);
   });
@@ -316,9 +316,9 @@ describe('Collector', () => {
             name: 'ClassReference',
             arguments: [{__symbolic: 'reference', name: 'NgForRow'}]
           }]
-        }]
+        }] as ConstructorMetadata[]
       }
-    });
+    } as ClassMetadata);
   });
 
   it('should report errors for destructured imports', () => {
@@ -763,7 +763,7 @@ describe('Collector', () => {
           arguments: ['a']
         }]],
         parameters: [{__symbolic: 'reference', name: 'any'}]
-      }]
+      }] as ConstructorMetadata[]
     });
   });
 
@@ -857,6 +857,7 @@ describe('Collector', () => {
         constructor (a: Foo, b: Foo | null, c: Foo | undefined, d: Foo | undefined | null, e: Foo | undefined | null | Foo) {}
       }
     `);
+
     expect((metadata.metadata['SomeClass'] as ClassMetadata).members).toEqual({
       __ctor__: [{
         __symbolic: 'constructor',
@@ -867,7 +868,7 @@ describe('Collector', () => {
           {__symbolic: 'reference', module: './foo', name: 'Foo', line: 3, character: 24},
           {__symbolic: 'reference', module: './foo', name: 'Foo', line: 3, character: 24}
         ]
-      }]
+      }] as ConstructorMetadata[]
     });
   });
 

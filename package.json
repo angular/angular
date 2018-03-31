@@ -45,7 +45,7 @@
     "@types/diff": "^3.2.2",
     "@types/fs-extra": "4.0.2",
     "@types/hammerjs": "2.0.35",
-    "@types/jasmine": "2.2.22-alpha",
+    "@types/jasmine": "2.8.6",
     "@types/minimist": "^1.2.0",
     "@types/node": "6.0.88",
     "@types/selenium-webdriver": "3.0.7",
