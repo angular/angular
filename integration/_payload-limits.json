@@ -12,8 +12,8 @@
   "hello_world__closure": {
     "master": {
       "uncompressed": {
-        "bundle": "TODO(i): temporarily increase the payload size limit to 226340git  from 105779 - we need CLI v6 to bring the size down",
-        "bundle": 226340
+        "bundle": "TODO(i): temporarily increase the payload size limit to 226340 from 105779 - we need CLI v6 to bring the size down",
+        "bundle": 223894
       }
     }
   },

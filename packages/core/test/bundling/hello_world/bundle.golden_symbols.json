@@ -3,9 +3,6 @@
     "name": "AnonymousSubject"
   },
   {
-    "name": "ArgumentOutOfRangeError"
-  },
-  {
     "name": "CLEAN_PROMISE"
   },
   {
@@ -121,9 +118,6 @@
   },
   {
     "name": "SubscriptionDelaySubscriber"
-  },
-  {
-    "name": "TimeInterval"
   },
   {
     "name": "UNDEFINED_RENDERER_TYPE_ID"
