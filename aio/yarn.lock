@@ -7528,13 +7528,13 @@ rx@2.3.24:
   version "2.3.24"
   resolved "https://registry.yarnpkg.com/rx/-/rx-2.3.24.tgz#14f950a4217d7e35daa71bbcbe58eff68ea4b2b7"
 
-rxjs-compat@6.0.0-beta.4:
-  version "6.0.0-beta.4"
-  resolved "https://registry.yarnpkg.com/rxjs-compat/-/rxjs-compat-6.0.0-beta.4.tgz#078654f3a38109cb354d1bf54f7d295194e59e28"
+rxjs-compat@6.0.0-rc.0:
+  version "6.0.0-rc.0"
+  resolved "https://registry.yarnpkg.com/rxjs-compat/-/rxjs-compat-6.0.0-rc.0.tgz#c9d5c3d8846fc2cb01ddd7ebc1bc2ece00d3655a"
 
-rxjs@6.0.0-beta.4:
-  version "6.0.0-beta.4"
-  resolved "https://registry.yarnpkg.com/rxjs/-/rxjs-6.0.0-beta.4.tgz#6506fde30f0f0ca1c94eb948629ac4aa73c0b0c8"
+rxjs@6.0.0-rc.0:
+  version "6.0.0-rc.0"
+  resolved "https://registry.yarnpkg.com/rxjs/-/rxjs-6.0.0-rc.0.tgz#3fed5454dfaf5a01005c973de857f860826d3eac"
   dependencies:
     tslib "^1.9.0"
 
