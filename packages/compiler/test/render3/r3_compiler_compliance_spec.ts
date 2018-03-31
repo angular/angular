@@ -97,7 +97,6 @@ describe('compiler compliance', () => {
           template: function ChildComponent_Template(ctx: IDENT, cm: IDENT) {
             if (cm) {
               $r3$.ɵT(0, 'child-view');
-           
             }
           }
         });`;
@@ -784,7 +783,10 @@ describe('compiler compliance', () => {
                 transform(value: any, ...args: any[]) { return value; }
               }
 
-              @Component({selector: 'my-app', template: '{{name | myPipe:size | myPurePipe:size }}'})
+              @Component({
+                selector: 'my-app', 
+                template: '{{name | myPipe:size | myPurePipe:size }}<p>{{ name | myPurePipe:size }}</p>'
+              })
               export class MyApp {
                 name = 'World';
                 size = 0;
@@ -799,19 +801,18 @@ describe('compiler compliance', () => {
       it('should render pipes', () => {
         const MyPipeDefinition = `
             static ngPipeDef = $r3$.ɵdefinePipe(
-                {type: MyPipe, factory: function MyPipe_Factory() { return new MyPipe(); }});
+                {name: 'myPipe', type: MyPipe, factory: function MyPipe_Factory() { return new MyPipe(); }});
         `;
 
         const MyPurePipeDefinition = `
             static ngPipeDef = $r3$.ɵdefinePipe({
+              name: 'myPurePipe', 
               type: MyPurePipe,
               factory: function MyPurePipe_Factory() { return new MyPurePipe(); },
               pure: true
             });`;
 
         const MyAppDefinition = `
-            const $MyPurePipe_ngPipeDef$ = MyPurePipe.ngPipeDef;
-            const $MyPipe_ngPipeDef$ = MyPipe.ngPipeDef;
             …
             static ngComponentDef = $r3$.ɵdefineComponent({
               type: MyApp,
@@ -820,11 +821,17 @@ describe('compiler compliance', () => {
               template: function MyApp_Template(ctx: IDENT, cm: IDENT) {
                 if (cm) {
                   $r3$.ɵT(0);
-                  $r3$.ɵPp(1, $MyPurePipe_ngPipeDef$, $MyPurePipe_ngPipeDef$.n());
-                  $r3$.ɵPp(2, $MyPipe_ngPipeDef$, $MyPipe_ngPipeDef$.n());
+                  $r3$.ɵPp(1, 'myPurePipe');
+                  $r3$.ɵPp(2, 'myPipe');
+                  $r3$.ɵE(3, 'p');
+                  $r3$.ɵT(4);
+                  $r3$.ɵPp(5, 'myPurePipe');
+                  $r3$.ɵe();
                 }
                 $r3$.ɵt(0, $r3$.ɵi1('', $r3$.ɵpb2(1, $r3$.ɵpb2(2,ctx.name, ctx.size), ctx.size), ''));
-              }
+                $r3$.ɵt(4, $r3$.ɵi1('', $r3$.ɵpb2(5, ctx.name, ctx.size), ''));
+              },
+              pipes: [MyPurePipe, MyPipe]
             });`;
 
         const result = compile(files, angularFiles);
