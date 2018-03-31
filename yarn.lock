@@ -50,9 +50,9 @@
   version "2.0.35"
   resolved "https://registry.yarnpkg.com/@types/hammerjs/-/hammerjs-2.0.35.tgz#7b7c950c7d54593e23bffc8d2b4feba9866a7277"
 
-"@types/jasmine@2.2.22-alpha":
-  version "2.2.22-alpha"
-  resolved "https://registry.yarnpkg.com/@types/jasmine/-/jasmine-2.2.22-alpha.tgz#eecaee43fe42ef6b5cfefad1bcc370c433f485bf"
+"@types/jasmine@2.8.6":
+  version "2.8.6"
+  resolved "https://registry.yarnpkg.com/@types/jasmine/-/jasmine-2.8.6.tgz#14445b6a1613cf4e05dd61c3c3256d0e95c0421e"
 
 "@types/minimatch@*":
   version "3.0.3"

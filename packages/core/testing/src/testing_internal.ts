@@ -23,7 +23,7 @@ export const proxy: ClassDecorator = (t: any) => t;
 const _global = <any>(typeof window === 'undefined' ? global : window);
 
 export const afterEach: Function = _global.afterEach;
-export const expect: (actual: any) => jasmine.Matchers = _global.expect;
+export const expect: (actual: any) => jasmine.Matchers<any> = _global.expect;
 
 const jsmBeforeEach = _global.beforeEach;
 const jsmDescribe = _global.describe;

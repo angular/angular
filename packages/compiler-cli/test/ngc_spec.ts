@@ -1698,7 +1698,7 @@ describe('ngc transformer command-line', () => {
       const exitCode =
           main(['-p', path.join(basePath, 'src/tsconfig.json')], message => messages.push(message));
       expect(exitCode).toBe(1, 'Compile was expected to fail');
-      expect(messages[0]).toContain(['Tagged template expressions are not supported in metadata']);
+      expect(messages[0]).toContain('Tagged template expressions are not supported in metadata');
     });
 
     // Regression: #20076
@@ -2323,7 +2323,7 @@ describe('ngc transformer command-line', () => {
         }
       }`);
       write('service.ts', `
-        import {Injectable, Self} from '@angular/core';  
+        import {Injectable, Self} from '@angular/core';
 
         @Injectable()
         export class ServiceA {}
