@@ -5,7 +5,7 @@
         "inline": 1508,
         "main": "TODO(i): temporarily increase the payload size limit to 257298 from 155112, we need CLI v6 to bring the size down",
         "main": 257298,
-        "polyfills": 59483
+        "polyfills": 60187
       }
     }
   },
