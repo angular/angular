@@ -9,9 +9,6 @@
     "name": "AppState"
   },
   {
-    "name": "ArgumentOutOfRangeError"
-  },
-  {
     "name": "CIRCULAR$1"
   },
   {
@@ -211,9 +208,6 @@
   },
   {
     "name": "TemplateRef$1"
-  },
-  {
-    "name": "TimeInterval"
   },
   {
     "name": "ToDoAppComponent"
