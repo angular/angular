@@ -1,35 +1,81 @@
+<!--
 # Architecture overview
+-->
+# 아키텍처 개요
 
+<!--
 Angular is a platform and framework for building client applications in HTML and TypeScript.
 Angular is itself written in TypeScript. It implements core and optional functionality as a set of TypeScript libraries that you import into your apps.
+-->
+Angular는 HTML과 TypeScript로 클라이언트 애플리케이션을 개발할 때 사용하는 플랫폼이자 프레임워크입니다.
+Angular 자체도 TypeScript로 개발되었으며, 프레임워크가 제공하는 기능은 TypeScript 라이브러리처럼 참조해서 애플리케이션에 활용할 수 있습니다.
 
+<!--
 The basic building blocks of an Angular application are _NgModules_, which provide a compilation context for _components_. NgModules collect related code into functional sets; an Angular app is defined by a set of NgModules. An app always has at least a _root module_ that enables bootstrapping, and typically has many more _feature modules_.
+-->
+Angular 애플리케이션의 구성 요소 중 가장 중요한 것은 _컴포넌트_의 묶음인 _NgModule_ 입니다.  NgModule은 비슷한 기능을 하나로 묶어서 관리하기 위한 모듈이며, Angular 애플리케이션은 부트스트랩을 하기 위해 _최상위 모듈_ 을 꼭 갖습니다. 보통 이 모듈 외에 _기능 모듈_ 을 더 정의해서 사용하게 됩니다.
 
+<!--
 * Components define *views*, which are sets of screen elements that Angular can choose among and modify according to your program logic and data. Every app has at least a root component.
+-->
+* 컴포넌트는 *뷰*를 정의합니다. 컴포넌트는 화면에 어떤 엘리먼트가 어떤 데이터를 가지고 표시할지 지정하며, 모든 앱은 기본적으로 최상위 컴포넌트를 갖습니다.
 
+<!--
 * Components use *services*, which provide specific functionality not directly related to views. Service providers can be *injected* into components as *dependencies*, making your code modular, reusable, and efficient.
+-->
+* 컴포넌트는 *서비스*를 활용합니다. 뷰와 직접 관련있지 않은 기능은 컴포넌트에 있을 필요가 없으며, 이런 로직은 서비스에 정의하고 컴포넌트에 *의존성*으로 *주입* 해서 사용하면 코드를 모듈 단위로 관리할 수 있기 때문에 재사용하기 편하고 훨씬 효율적입니다.
 
+<!--
 Both components and services are simply classes, with *decorators* that mark their type and provide metadata that tells Angular how to use them.
+-->
+컴폰넌트와 서비스는 단순한 클래스지만, *데코레이터*와 메타데이터를 사용해서 이 클래스가 Angular에서 어떤 역할을 할지 지정할 수 있습니다.
 
+<!--
 * The metadata for a component class associates it with a *template* that defines a view. A template combines ordinary HTML with Angular *directives* and *binding markup* that allow Angular to modify the HTML before rendering it for display.
+-->
+* 컴포넌트 클래스에 메타데이터를 지정하면 *템플릿*을 뷰로 지정할 수 있습니다. 템플릿은 일반적인 HTML 문법을 바탕으로 Angular가 제공하는 *디렉티브*와 *바인딩 마크업*을 사용합니다. 이 템플릿은 Angular에서 처리한 후에 화면에 렌더링됩니다.
 
+<!--
 * The metadata for a service class provides the information Angular needs to make it available to components through *Dependency Injection (DI)*.
+-->
+* 서비스 클래스에 메타데이터를 지정하면 Angular 컴포넌트에 *의존성으로 주입(DI)*할 수 있습니다.
 
+<!--
 An app's components typically define many views, arranged hierarchically. Angular provides the `Router` service to help you define navigation paths among views. The router provides sophisticated in-browser navigational capabilities.
+-->
+Angular 애플리케이션에서는 여러가지 뷰를 계층으로 구성합니다. 그리고 `Router` 서비스를 사용하면 이 뷰들을 전환하면서 페이지를 이동할 수 있습니다. 라우터 서비스는 브라우저의 페이지 전환 로직을 활용하면서 정교하게 동작합니다.
 
+<!--
 ## Modules
+-->
+## 모듈
 
+<!--
 Angular defines the `NgModule`, which differs from and complements the JavaScript (ES2015) module. An NgModule declares a compilation context for a set of components that is dedicated to an application domain, a workflow, or a closely related set of capabilities. An NgModule can associate its components with related code, such as services, to form functional units.
+-->
+Angular는 JavaScript (ES2015) 모듈과 다르면서 서로 보완적인 `NgModule` 체계를 마련해 두었습니다. NgModule은 기능적으로 관련되거나 작업 흐름이 연관된 컴포넌를 묶어서 선언합니다. 그리고 이 NgModule에는 컴포넌트 외에 서비스나 폼 그룹을 포함하기도 합니다.
 
+<!--
 Every Angular app has a _root module_, conventionally named `AppModule`, which provides the bootstrap mechanism that launches the application. An app typically contains many functional modules.
+-->
+모든 Angular 앱에는 보통 `AppModule`이라는 이름으로 선언하는 _최상위 모듈_ 이 존재합니다. 애플리케이션의 부트스트랩 방법은 이 모듈에서 지정하며, 이 모듈 아래로 여러 기능 모듈을 포함할 수 있습니다.
 
+<!--
 Like JavaScript modules, NgModules can import functionality from other NgModules, and allow their own functionality to be exported and used by other NgModules. For example, to use the router service in your app, you import the `Router` NgModule.
+-->
+JavaScript 모듈과 비슷하게 NgModule도 다른 NgModule을 불러오거나 다른 NgModule을 위해 모듈의 기능 일부를 외부로 공개할 수 있습니다. 예를 들면, 애플리케이션에서 라우터 서비스를 사용하려면 `Router` NgModule을 불러와야 합니다.
 
+<!--
 Organizing your code into distinct functional modules helps in managing development of complex applications, and in designing for reusability. In addition, this technique lets you take advantage of _lazy-loading_&mdash;that is, loading modules on demand&mdash;in order to minimize the amount of code that needs to be loaded at startup.
+-->
+비슷한 코드를 하나의 기능 모듈로 관리하면 코드를 더 효율적으로 관리할 수 있습니다. 이렇게 만든 모듈은 코드를 재사용하는 측면에서도 더 효율적이며, 복잡한 애플리케이션을 개발할수록 체감할 수 있는 효율이 증가할 것입니다. 그리고 코드를 모듈로 관리하면 애플리케이션이 실행될 때 모든 모듈을 한 번에 불러오지 않고, 필요할 때 불러오는 _지연 로딩_ 을 활용할 때도 유리합니다. 지연 로딩을 활용하면 애플리케이션의 초기 실행 속도를 최소화할 수 있습니다.
 
 <div class="l-sub-section">
 
+  <!--
   For a more detailed discussion, see [Introduction to modules](guide/architecture-modules).
+  -->
+  좀 더 자세한 내용을 알아보려면 [모듈 소개](guide/architecture-modules) 문서를 확인하세요.
 
 </div>
 
