@@ -75,58 +75,108 @@ Organizing your code into distinct functional modules helps in managing developm
   <!--
   For a more detailed discussion, see [Introduction to modules](guide/architecture-modules).
   -->
-  좀 더 자세한 내용을 알아보려면 [모듈 소개](guide/architecture-modules) 문서를 확인하세요.
+  모듈에 대해 좀 더 자세하게 알아보려면 [모듈 소개](guide/architecture-modules) 문서를 확인해 보세요.
 
 </div>
 
+<!--
 ## Components
+-->
+## 컴포넌트
 
+<!--
 Every Angular application has at least one component, the *root component* that connects a component hierarchy with the page DOM. Each component defines a class that contains application data and logic, and is associated with an HTML *template* that defines a view to be displayed in a target environment.
+-->
+Angular 애플리케이션에는 페이지 DOM의 최상위에 위치하는 컴포넌트가 존재하는데, 이 컴포넌트를 *최상위 컴포넌트* 라고 합니다. 그리고 모든 컴포넌트는 컴포넌트 클래스와 *템플릿*으로 구성하는데, 컴포넌트 클래스는 애플리케이션 데이터와 로직을 처리하고 템플릿은 화면에 보일 HTML을 정의합니다.
 
+<!--
 The `@Component` decorator identifies the class immediately below it as a component, and provides the template and related component-specific metadata.
+-->
+Angular 컴포넌트는 컴포넌트 클래스에 `@Component` 데코레이터를 사용해서 컴포넌트에 대한 메타데이터를 지정하면서 템플릿도 함께 지정합니다.
 
 <div class="l-sub-section">
 
+  <!--
    Decorators are functions that modify JavaScript classes. Angular defines a number of such decorators that attach specific kinds of metadata to classes, so that it knows what those classes mean and how they should work.
+  -->
+   데코레이터는 JavaScript 클래스를 변형하는 함수입니다. Angular에서 제공하는 데코레이터를 어떻게 사용하는지에 따라 클래스의 용도가 달라집니다.
 
+   <!--
    <a href="https://medium.com/google-developers/exploring-es7-decorators-76ecb65fb841#.x5c2ndtx0">Learn more about decorators on the web.</a>
+   -->
+   <a href="https://medium.com/google-developers/exploring-es7-decorators-76ecb65fb841#.x5c2ndtx0">데코레이터 더 알아보기</a>
 
 </div>
 
+<!--
 ### Templates, directives, and data binding
+-->
+### 템플릿, 디렉티브, 데이터 바인딩
 
+<!--
 A template combines HTML with Angular markup that can modify the HTML elements before they are displayed.
 Template *directives* provide program logic, and *binding markup* connects your application data and the document object model (DOM).
+-->
+템플릿은 HTML을 바탕으로, 여기에 HTML 엘리먼트를 변형할 수 있는 Angular 마크업을 사용해서 작성합니다.
+이 때 템플릿 *디렉티브*를 사용해서 간단한 로직을 추가할 수 있으며, *바인딩 마크업*으로 애플리케이션 데이터와 DOM을 연결할 수 있습니다.
 
+<!--
 * *Event binding* lets your app respond to user input in the target environment by updating your application data.
 * *Property binding* lets you interpolate values that are computed from your application data into the HTML.
+-->
+* *이벤트 바인딩*을 사용하면 사용자의 입력에 반응하면서 데이터를 처리할 수 있습니다.
+* *프로퍼티 바인딩*을 사용하면 애플리케이션 데이터를 HTML에 반영할 수 있습니다.
 
+<!--
 Before a view is displayed, Angular evaluates the directives and resolves the binding syntax in the template to modify the HTML elements and the DOM, according to your program data and logic. Angular supports *two-way data binding*, meaning that changes in the DOM, such as user choices, can also be reflected back into your program data.
+-->
+Angular는 뷰를 화면에 표시하기 전에 디렉티브를 평가하고 바인딩 문법을 처리해서 템플릿에 반영하거나 DOM을 조작합니다. 단방향 바인딩 외에 *양방향 데이터 바인딩* 을 사용할 수도 있는데, 이 바인딩은 컴포넌트 클래스에 있는 데이터를 뷰에 표시한 이후에 뷰에서 발생한 사용자의 동작을 다시 컴포넌트 클래스에 반영할 때 사용합니다.
 
+<!--
 Your templates can also use *pipes* to improve the user experience by transforming values for display. Use pipes to display, for example, dates and currency values in a way appropriate to the user's locale. Angular provides predefined pipes for common transformations, and you can also define your own.
+-->
+데이터를 화면에 표시될 때 특정 형식을 지정하려면 *파이프*를 사용할 수 있습니다. 예를 들면 날짜나 통화 데이터를 사용자의 국가 형식에 맞게 변형할 때 사용할 수 있습니다. 많이 사용하는 파이프는 Angular에서 제공하고 있으며, 필요한 기능이 더 있다면 직접 파이프를 정의해서 사용할 수도 있습니다.
 
 <div class="l-sub-section">
 
+  <!--
   For a more detailed discussion of these concepts, see [Introduction to components](guide/architecture-components).
+  -->
+  컴포넌트에 대해 좀 더 자세하게 알아보려면 [컴포넌트 소개](guide/architecture-components) 문서를 확인해 보세요.
 
 </div>
 
+<!--
 {@a dependency-injection}
+-->
+{@a 의존성-주입}
 
-
+<!--
 ## Services and dependency injection
+-->
+## 서비스, 의존성 주입
 
+<!--
 For data or logic that is not associated with a specific view, and that you want to share across components, you create a *service* class. A service class definition is immediately preceded by the `@Injectable` decorator. The decorator provides the metadata that allows your service to be *injected* into client components as a dependency.
+-->
+어떤 데이터나 함수가 하나의 뷰에만 적용되는 것이 아니라면 *서비스* 클래스를 만들어서 활용할 수 있습니다. 서비스 클래스는 `@Inejctable` 데코레이터를 사용해서 정의하며, 이 데코레이터를 사용하면 컴포넌트나 다른 서비스에 의존성으로 *주입*하기 위해 다른 구성요소보다 먼저 처리됩니다.
 
+<!--
  *Dependency injection* (or DI) lets you keep your component classes lean and efficient. They don't fetch data from the server, validate user input, or log directly to the console; they delegate such tasks to services.
+-->
+*의존성 주입(Dependency injection, DI)*을 사용하면 컴포넌트 클래스를 유연하면서도 효율적으로 구성할 수 있습니다. 서버에서 데이터를 받아오거나, 사용자의 입력을 검증한다던지, 콘솔에 로그를 출력하는 로직은 특정 뷰와 직접적인 관련이 없기 때문에 서비스에서 처리하는 것이 좋습니다.
 
 <div class="l-sub-section">
-
+  <!--
   For a more detailed discusssion, see [Introduction to services and DI](guide/architecture-services).
-
+  -->
+  서비스와 의존성 주입에 대해 좀 더 자세하게 알아보려면 [서비스와 DI 소개](guide/architecture-services) 문서를 확인해 보세요.
 </div>
 
+<!--
 ### Routing
+-->
+### 라우팅
 
 The Angular `Router` NgModule provides a service that lets you define a navigation path among the different application states and view hierarchies in your app. It is modeled on the familiar browser navigation conventions:
 
