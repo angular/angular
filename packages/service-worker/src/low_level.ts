@@ -11,27 +11,26 @@ import {filter, map, publish, switchMap, take, tap} from 'rxjs/operators';
 
 export const ERR_SW_NOT_SUPPORTED = 'Service workers are disabled or not supported by this browser';
 
-export interface Version {
-  hash: string;
-  appData?: Object;
-}
-
 /**
+ * An event emitted when a new version of the app is available.
+ *
  * @experimental
  */
 export interface UpdateAvailableEvent {
   type: 'UPDATE_AVAILABLE';
-  current: Version;
-  available: Version;
+  current: {hash: string, appData?: Object};
+  available: {hash: string, appData?: Object};
 }
 
 /**
+ * An event emitted when a new version of the app has been downloaded and activated.
+ *
  * @experimental
  */
 export interface UpdateActivatedEvent {
   type: 'UPDATE_ACTIVATED';
-  previous?: Version;
-  current: Version;
+  previous?: {hash: string, appData?: Object};
+  current: {hash: string, appData?: Object};
 }
 
 export type IncomingEvent = UpdateAvailableEvent | UpdateActivatedEvent;
@@ -52,7 +51,7 @@ function errorObservable(message: string): Observable<any> {
 
 /**
  * @experimental
-*/
+ */
 export class NgswCommChannel {
   /**
    * @internal
