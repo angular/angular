@@ -10,6 +10,7 @@ import * as ts from 'typescript';
 
 import {MetadataCollector} from '../metadata/collector';
 import {ClassMetadata, ConstructorMetadata, FunctionMetadata, METADATA_VERSION, MemberMetadata, MetadataEntry, MetadataError, MetadataImportedSymbolReferenceExpression, MetadataMap, MetadataObject, MetadataSymbolicExpression, MetadataSymbolicReferenceExpression, MetadataValue, MethodMetadata, ModuleExportMetadata, ModuleMetadata, isClassMetadata, isConstructorMetadata, isFunctionMetadata, isInterfaceMetadata, isMetadataError, isMetadataGlobalReferenceExpression, isMetadataImportedSymbolReferenceExpression, isMetadataModuleReferenceExpression, isMetadataSymbolicExpression, isMethodMetadata} from '../metadata/schema';
+import {MetadataCache} from '../transformers/metadata_cache';
 
 
 
@@ -596,12 +597,20 @@ export class MetadataBundler {
 export class CompilerHostAdapter implements MetadataBundlerHost {
   private collector = new MetadataCollector();
 
-  constructor(private host: ts.CompilerHost) {}
+  constructor(private host: ts.CompilerHost, private cache: MetadataCache|null) {}
 
   getMetadataFor(fileName: string): ModuleMetadata|undefined {
     if (!this.host.fileExists(fileName + '.ts')) return undefined;
     const sourceFile = this.host.getSourceFile(fileName + '.ts', ts.ScriptTarget.Latest);
-    return sourceFile && this.collector.getMetadata(sourceFile);
+    // If there is a metadata cache, use it to get the metadata for this source file. Otherwise,
+    // fall back on the locally created MetadataCollector.
+    if (!sourceFile) {
+      return undefined;
+    } else if (this.cache) {
+      return this.cache.getMetadata(sourceFile);
+    } else {
+      return this.collector.getMetadata(sourceFile);
+    }
   }
 }
 
