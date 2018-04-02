@@ -30,7 +30,6 @@ readonly relevantChangedFilesCount=$(git diff --name-only $TRAVIS_COMMIT_RANGE |
     yarn build
   fi
   tar --create --gzip --directory "$INPUT_DIR" --file "$OUTPUT_FILE" .
-  yarn payload-size
 
   # Deploy to staging
   readonly output=$(
@@ -53,4 +52,7 @@ readonly relevantChangedFilesCount=$(git diff --name-only $TRAVIS_COMMIT_RANGE |
   if [[ $httpCode -ne 202 ]] && [[ "$isHidden" != "true" ]]; then
     yarn test-pwa-score "$DEPLOYED_URL" "$MIN_PWA_SCORE"
   fi
+
+  # Check the bundle sizes.
+  yarn payload-size
 )
