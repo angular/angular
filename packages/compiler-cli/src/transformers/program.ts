@@ -149,7 +149,7 @@ class AngularCompilerProgram implements Program {
 
     if (options.flatModuleOutFile) {
       const {host: bundleHost, indexName, errors} =
-          createBundleIndexHost(options, this.rootNames, host);
+          createBundleIndexHost(options, this.rootNames, host, () => this.metadataCache);
       if (errors) {
         this._optionsDiagnostics.push(...errors.map(e => ({
                                                       category: e.category,
@@ -338,7 +338,6 @@ class AngularCompilerProgram implements Program {
       writeFile: writeTsFile, emitOnlyDtsFiles,
       customTransformers: tsCustomTransformers
     });
-
     return emitResult;
   }
 
@@ -518,6 +517,7 @@ class AngularCompilerProgram implements Program {
         `- ${genJsonFiles.length + metadataJsonCount} generated json files`,
       ].join('\n'))]);
     }
+
     return emitResult;
   }
 
