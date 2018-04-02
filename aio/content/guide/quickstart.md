@@ -40,7 +40,7 @@ Older versions produce errors, but newer versions are fine.
 
 
 
-Then **install the [Angular CLI](https://github.com/angular/angular-cli)** globally.
+Then install the [Angular CLI](https://github.com/angular/angular-cli) globally.
 
 
 <code-example language="sh" class="code-shell">
@@ -60,7 +60,7 @@ Then **install the [Angular CLI](https://github.com/angular/angular-cli)** globa
 Open a terminal window.
 
 
-Generate a new project and skeleton application by running the following commands:
+Generate a new project and default app by running the following command:
 
 
 <code-example language="sh" class="code-shell">
@@ -69,18 +69,22 @@ Generate a new project and skeleton application by running the following command
 </code-example>
 
 
+The Angular CLI installs the necessary npm packages, creates the project files, and populates the project with a simple default app. This can take some time.
+
+
 
 <div class="l-sub-section">
 
 
 
-Patience, please.
-It takes time to set up a new project; most of it is spent installing npm packages.
+You can add pre-packaged functionality to a new project by using the `ng add` command. The `ng add` command transforms a project by applying the schematics in the specified package. 
+For more information, see the [Angular CLI documentation.](https://github.com/angular/angular-cli/wiki/add "Angular CLI documentation") 
+
+Angular Material provides schematics for typical app layouts. 
+See the [Angular Material documentation](https://material.angular.io/guides "Angular Material documentation") for details.
 
 
 </div>
-
-
 
 
 <h2 id='serve'>
