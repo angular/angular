@@ -22,6 +22,7 @@ ng_package(
         ":extra-styles.css",
     ],
     entry_point = "packages/bazel/test/ng_package/example/index.js",
+    entry_point_name = "waffels",
     packages = [
         ":arbitrary_npm_package",
     ],
