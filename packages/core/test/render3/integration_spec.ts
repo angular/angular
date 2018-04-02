@@ -194,7 +194,7 @@ describe('render3 integration test', () => {
       });
     }
 
-    const defs = [TodoComponent.ngComponentDef];
+    const defs = [TodoComponent];
 
     it('should support a basic component template', () => {
       function Template(ctx: any, cm: boolean) {
@@ -267,7 +267,7 @@ describe('render3 integration test', () => {
         }
       }
 
-      const defs = [TodoComponentHostBinding.ngComponentDef];
+      const defs = [TodoComponentHostBinding];
       expect(renderToHtml(Template, {}, defs)).toEqual('<todo title="one">one</todo>');
       cmptInstance !.title = 'two';
       expect(renderToHtml(Template, {}, defs)).toEqual('<todo title="two">two</todo>');
@@ -314,8 +314,7 @@ describe('render3 integration test', () => {
         }
       }
 
-      expect(renderToHtml(Template, null, [MyComp.ngComponentDef]))
-          .toEqual('<comp><p>Bess</p></comp>');
+      expect(renderToHtml(Template, null, [MyComp])).toEqual('<comp><p>Bess</p></comp>');
     });
 
     it('should support a component with sub-views', () => {
@@ -360,7 +359,7 @@ describe('render3 integration test', () => {
         elementProperty(0, 'condition', bind(ctx.condition));
       }
 
-      const defs = [MyComp.ngComponentDef];
+      const defs = [MyComp];
       expect(renderToHtml(Template, {condition: true}, defs))
           .toEqual('<comp><div>text</div></comp>');
       expect(renderToHtml(Template, {condition: false}, defs)).toEqual('<comp></comp>');
@@ -488,7 +487,7 @@ describe('render3 integration test', () => {
         projectedTree: {beforeLabel: 'p'},
         afterTree: {afterLabel: 'z'}
       };
-      const defs = [ChildComponent.ngComponentDef];
+      const defs = [ChildComponent];
       expect(renderToHtml(parentTemplate, ctx, defs)).toEqual('<child>apz</child>');
       ctx.projectedTree = {subTrees: [{}, {}, {subTrees: [{}, {}]}, {}]};
       ctx.beforeTree.subTrees !.push({afterLabel: 'b'});
@@ -658,7 +657,7 @@ describe('render3 integration test', () => {
           }
         }
 
-        const defs = [HostBindingDir.ngDirectiveDef];
+        const defs = [HostBindingDir];
         expect(renderToHtml(Template, {}, defs))
             .toEqual(`<div aria-label="some label" hostbindingdir=""></div>`);
 

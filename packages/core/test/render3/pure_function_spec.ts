@@ -25,7 +25,7 @@ describe('array literals', () => {
     });
   }
 
-  const defs = [MyComp.ngComponentDef];
+  const directives = [MyComp];
 
   it('should support an array literal with a binding', () => {
     const e0_ff = (v: any) => ['Nancy', v, 'Bess'];
@@ -39,15 +39,15 @@ describe('array literals', () => {
       elementProperty(0, 'names', bind(pureFunction1(e0_ff, ctx.customName)));
     }
 
-    renderToHtml(Template, {customName: 'Carson'}, defs);
+    renderToHtml(Template, {customName: 'Carson'}, directives);
     const firstArray = myComp !.names;
     expect(firstArray).toEqual(['Nancy', 'Carson', 'Bess']);
 
-    renderToHtml(Template, {customName: 'Carson'}, defs);
+    renderToHtml(Template, {customName: 'Carson'}, directives);
     expect(myComp !.names).toEqual(['Nancy', 'Carson', 'Bess']);
     expect(firstArray).toBe(myComp !.names);
 
-    renderToHtml(Template, {customName: 'Hannah'}, defs);
+    renderToHtml(Template, {customName: 'Hannah'}, directives);
     expect(myComp !.names).toEqual(['Nancy', 'Hannah', 'Bess']);
 
     // Identity must change if binding changes
@@ -56,7 +56,7 @@ describe('array literals', () => {
     // The property should not be set if the exp value is the same, so artificially
     // setting the property to ensure it's not overwritten.
     myComp !.names = ['should not be overwritten'];
-    renderToHtml(Template, {customName: 'Hannah'}, defs);
+    renderToHtml(Template, {customName: 'Hannah'}, directives);
     expect(myComp !.names).toEqual(['should not be overwritten']);
   });
 
@@ -92,7 +92,7 @@ describe('array literals', () => {
       elementProperty(0, 'names2', bind(pureFunction1(e0_ff_1, ctx.customName2)));
     }
 
-    const defs = [ManyPropComp.ngComponentDef];
+    const defs = [ManyPropComp];
     renderToHtml(Template, {customName: 'Carson', customName2: 'George'}, defs);
     expect(manyPropComp !.names1).toEqual(['Nancy', 'Carson']);
     expect(manyPropComp !.names2).toEqual(['George']);
@@ -128,7 +128,7 @@ describe('array literals', () => {
           }
           elementProperty(0, 'names', bind(ctx.someFn(pureFunction1(e0_ff, ctx.customName))));
         },
-        directiveDefs: defs
+        directives: directives
       });
     }
 
@@ -141,14 +141,14 @@ describe('array literals', () => {
       }
     }
 
-    renderToHtml(Template, {}, [ParentComp.ngComponentDef]);
+    renderToHtml(Template, {}, [ParentComp]);
     const firstArray = myComps[0].names;
     const secondArray = myComps[1].names;
     expect(firstArray).toEqual(['NANCY', 'Bess']);
     expect(secondArray).toEqual(['NANCY', 'Bess']);
     expect(firstArray).not.toBe(secondArray);
 
-    renderToHtml(Template, {}, [ParentComp.ngComponentDef]);
+    renderToHtml(Template, {}, [ParentComp]);
     expect(firstArray).toEqual(['NANCY', 'Bess']);
     expect(secondArray).toEqual(['NANCY', 'Bess']);
     expect(firstArray).toBe(myComps[0].names);
@@ -167,25 +167,25 @@ describe('array literals', () => {
       elementProperty(0, 'names', bind(pureFunction2(e0_ff, ctx.customName, ctx.customName2)));
     }
 
-    renderToHtml(Template, {customName: 'Carson', customName2: 'Hannah'}, defs);
+    renderToHtml(Template, {customName: 'Carson', customName2: 'Hannah'}, directives);
     const firstArray = myComp !.names;
     expect(firstArray).toEqual(['Nancy', 'Carson', 'Bess', 'Hannah']);
 
-    renderToHtml(Template, {customName: 'Carson', customName2: 'Hannah'}, defs);
+    renderToHtml(Template, {customName: 'Carson', customName2: 'Hannah'}, directives);
     expect(myComp !.names).toEqual(['Nancy', 'Carson', 'Bess', 'Hannah']);
     expect(firstArray).toBe(myComp !.names);
 
-    renderToHtml(Template, {customName: 'George', customName2: 'Hannah'}, defs);
+    renderToHtml(Template, {customName: 'George', customName2: 'Hannah'}, directives);
     expect(myComp !.names).toEqual(['Nancy', 'George', 'Bess', 'Hannah']);
     expect(firstArray).not.toBe(myComp !.names);
 
-    renderToHtml(Template, {customName: 'Frank', customName2: 'Ned'}, defs);
+    renderToHtml(Template, {customName: 'Frank', customName2: 'Ned'}, directives);
     expect(myComp !.names).toEqual(['Nancy', 'Frank', 'Bess', 'Ned']);
 
     // The property should not be set if the exp value is the same, so artificially
     // setting the property to ensure it's not overwritten.
     myComp !.names = ['should not be overwritten'];
-    renderToHtml(Template, {customName: 'Frank', customName2: 'Ned'}, defs);
+    renderToHtml(Template, {customName: 'Frank', customName2: 'Ned'}, directives);
     expect(myComp !.names).toEqual(['should not be overwritten']);
   });
 
@@ -243,7 +243,7 @@ describe('array literals', () => {
           5, 'names', bind(pureFunction8(e10_ff, c[0], c[1], c[2], c[3], c[4], c[5], c[6], c[7])));
     }
 
-    renderToHtml(Template, ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i'], defs);
+    renderToHtml(Template, ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i'], directives);
     expect(f3Comp !.names).toEqual(['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']);
     expect(f4Comp !.names).toEqual(['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']);
     expect(f5Comp !.names).toEqual(['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']);
@@ -251,7 +251,7 @@ describe('array literals', () => {
     expect(f7Comp !.names).toEqual(['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']);
     expect(f8Comp !.names).toEqual(['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']);
 
-    renderToHtml(Template, ['a1', 'b1', 'c1', 'd1', 'e1', 'f1', 'g1', 'h1', 'i1'], defs);
+    renderToHtml(Template, ['a1', 'b1', 'c1', 'd1', 'e1', 'f1', 'g1', 'h1', 'i1'], directives);
     expect(f3Comp !.names).toEqual(['a', 'b', 'c', 'd', 'e', 'f1', 'g1', 'h1']);
     expect(f4Comp !.names).toEqual(['a', 'b', 'c', 'd', 'e1', 'f1', 'g1', 'h1']);
     expect(f5Comp !.names).toEqual(['a', 'b', 'c', 'd1', 'e1', 'f1', 'g1', 'h1']);
@@ -259,7 +259,7 @@ describe('array literals', () => {
     expect(f7Comp !.names).toEqual(['a', 'b1', 'c1', 'd1', 'e1', 'f1', 'g1', 'h1']);
     expect(f8Comp !.names).toEqual(['a1', 'b1', 'c1', 'd1', 'e1', 'f1', 'g1', 'h1']);
 
-    renderToHtml(Template, ['a1', 'b1', 'c1', 'd1', 'e1', 'f1', 'g1', 'h2', 'i1'], defs);
+    renderToHtml(Template, ['a1', 'b1', 'c1', 'd1', 'e1', 'f1', 'g1', 'h2', 'i1'], directives);
     expect(f3Comp !.names).toEqual(['a', 'b', 'c', 'd', 'e', 'f1', 'g1', 'h2']);
     expect(f4Comp !.names).toEqual(['a', 'b', 'c', 'd', 'e1', 'f1', 'g1', 'h2']);
     expect(f5Comp !.names).toEqual(['a', 'b', 'c', 'd1', 'e1', 'f1', 'g1', 'h2']);
@@ -274,7 +274,7 @@ describe('array literals', () => {
          v8: any) => ['start', v0, v1, v2, v3, v4, v5, v6, v7, v8, 'end'];
     const e0_ff_1 = (v: any) => { return {name: v}; };
 
-    renderToHtml(Template, ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i'], defs);
+    renderToHtml(Template, ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i'], directives);
     /**
      * <my-comp [names]="['start', v0, v1, v2, v3, {name: v4}, v5, v6, v7, v8, 'end']">
      * </my-comp>
@@ -293,12 +293,12 @@ describe('array literals', () => {
       'start', 'a', 'b', 'c', 'd', {name: 'e'}, 'f', 'g', 'h', 'i', 'end'
     ]);
 
-    renderToHtml(Template, ['a1', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i'], defs);
+    renderToHtml(Template, ['a1', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i'], directives);
     expect(myComp !.names).toEqual([
       'start', 'a1', 'b', 'c', 'd', {name: 'e'}, 'f', 'g', 'h', 'i', 'end'
     ]);
 
-    renderToHtml(Template, ['a1', 'b', 'c', 'd', 'e5', 'f', 'g', 'h', 'i'], defs);
+    renderToHtml(Template, ['a1', 'b', 'c', 'd', 'e5', 'f', 'g', 'h', 'i'], directives);
     expect(myComp !.names).toEqual([
       'start', 'a1', 'b', 'c', 'd', {name: 'e5'}, 'f', 'g', 'h', 'i', 'end'
     ]);
@@ -320,7 +320,7 @@ describe('object literals', () => {
     });
   }
 
-  const defs = [ObjectComp.ngComponentDef];
+  const defs = [ObjectComp];
 
   it('should support an object literal', () => {
     const e0_ff = (v: any) => { return {duration: 500, animation: v}; };

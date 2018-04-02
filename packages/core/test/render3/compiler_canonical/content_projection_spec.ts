@@ -88,7 +88,7 @@ describe('content projection', () => {
             $r3$.ɵe();
           }
         },
-        directiveDefs: () => [SimpleComponent.ngComponentDef]
+        directives: () => [SimpleComponent]
       });
     }
   });

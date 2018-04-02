@@ -252,6 +252,12 @@
     "name": "extendStatics"
   },
   {
+    "name": "extractDirectiveDef"
+  },
+  {
+    "name": "extractPipeDef"
+  },
+  {
     "name": "firstTemplatePass"
   },
   {

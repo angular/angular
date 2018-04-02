@@ -14,6 +14,7 @@ export {
   detectChanges as ɵdetectChanges,
   renderComponent as ɵrenderComponent,
   ComponentType as ɵComponentType,
+  DirectiveType as ɵDirectiveType,
   directiveInject as ɵdirectiveInject,
   injectTemplateRef as ɵinjectTemplateRef,
   injectViewContainerRef as ɵinjectViewContainerRef,
@@ -23,6 +24,7 @@ export {
   PublicFeature as ɵPublicFeature,
   NgOnChangesFeature as ɵNgOnChangesFeature,
   CssSelectorList as ɵCssSelectorList,
+  markDirty as ɵmarkDirty,
   NC as ɵNC,
   C as ɵC,
   E as ɵE,
@@ -73,6 +75,9 @@ export {
   st as ɵst,
   ld as ɵld,
   Pp as ɵPp,
+  ComponentDef as ɵComponentDef,
+  DirectiveDef as ɵDirectiveDef,
+  PipeDef as ɵPipeDef,
 } from './render3/index';
 export {
   bypassSanitizationTrustHtml as ɵbypassSanitizationTrustHtml,

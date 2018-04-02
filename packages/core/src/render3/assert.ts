@@ -62,5 +62,6 @@ export function assertComponentType(
 }
 
 function throwError(msg: string): never {
+  debugger;  // Left intentionally for better debugger experience.
   throw new Error(`ASSERTION ERROR: ${msg}`);
 }

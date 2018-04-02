@@ -7,9 +7,10 @@ load("@build_bazel_rules_nodejs//:defs.bzl", "jasmine_node_test")
 load("@build_bazel_rules_typescript//:defs.bzl", "ts_devserver")
 
 ivy_ng_module(
-    name = "hello_world",
+    name = "todo",
     srcs = ["index.ts"],
     deps = [
+        "//packages/common",
         "//packages/core",
     ],
 )
@@ -22,9 +23,9 @@ ng_rollup_bundle(
     # Here, the rule implementation is looking in an execroot where the layout
     # has an "external" directory for external dependencies.
     # This should probably start with "angular/" and let the rule deal with it.
-    entry_point = "packages/core/test/bundling/hello_world/index.js",
+    entry_point = "packages/core/test/bundling/todo/index.js",
     deps = [
-        ":hello_world",
+        ":todo",
         "//packages/core",
     ],
 )
@@ -56,12 +57,35 @@ js_expected_symbol_test(
     golden = ":bundle.golden_symbols.json",
 )
 
+genrule(
+    name = "tslib",
+    srcs = [
+        "//:node_modules/tslib/tslib.js",
+    ],
+    outs = [
+        "tslib.js",
+    ],
+    cmd = "cp $< $@",
+)
+
 ts_devserver(
     name = "devserver",
+    entry_module = "angular/packages/core/test/bundling/todo/index",
+    serving_path = "/bundle.min.js",
+    static_files = [
+        "index.html",
+        ":tslib",
+    ],
+    deps = [":todo"],
+)
+
+# Even though this is `ts_devserver` rule, we are using it as simple static server
+# This is mostly broken for `ibazel`, use `:devserver` instead.
+ts_devserver(
+    name = "prodserver",
     static_files = [
         ":bundle.min_debug.js",
         ":bundle.min.js",
         "index.html",
     ],
-    deps = [],
 )

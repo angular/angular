@@ -12,8 +12,7 @@ const CORE = '@angular/core';
 
 export class Identifiers {
   /* Methods */
-  static NEW_METHOD = 'n';
-  static HOST_BINDING_METHOD = 'h';
+  static NEW_METHOD = 'factory';
   static TRANSFORM_METHOD = 'transform';
   static PATCH_DEPS = 'patchedDeps';
 
@@ -33,10 +32,6 @@ export class Identifiers {
   static containerCreate: o.ExternalReference = {name: 'ɵC', moduleName: CORE};
 
   static containerEnd: o.ExternalReference = {name: 'ɵc', moduleName: CORE};
-
-  static containerRefreshStart: o.ExternalReference = {name: 'ɵcR', moduleName: CORE};
-
-  static containerRefreshEnd: o.ExternalReference = {name: 'ɵcr', moduleName: CORE};
 
   static directiveCreate: o.ExternalReference = {name: 'ɵD', moduleName: CORE};
 

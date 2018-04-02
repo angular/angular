@@ -1485,6 +1485,10 @@ export function literal(
   return new LiteralExpr(value, type, sourceSpan);
 }
 
+export function isNull(exp: Expression): boolean {
+  return exp instanceof LiteralExpr && exp.value === null;
+}
+
 // The list of JSDoc tags that we currently support. Extend it if needed.
 export const enum JSDocTagName {
   Desc = 'desc',

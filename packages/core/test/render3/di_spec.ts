@@ -43,8 +43,7 @@ describe('di', () => {
         textBinding(2, bind(tmp.value));
       }
 
-      expect(renderToHtml(Template, {}, [Directive.ngDirectiveDef]))
-          .toEqual('<div dir="">Created</div>');
+      expect(renderToHtml(Template, {}, [Directive])).toEqual('<div dir="">Created</div>');
     });
   });
 
@@ -100,8 +99,7 @@ describe('di', () => {
         textBinding(3, bind(tmp.value));
       }
 
-      const defs =
-          [DirectiveA.ngDirectiveDef, DirectiveB.ngDirectiveDef, DirectiveC.ngDirectiveDef];
+      const defs = [DirectiveA, DirectiveB, DirectiveC];
       expect(renderToHtml(Template, {}, defs))
           .toEqual('<div dira=""><span dirb="" dirc="">AB</span></div>');
     });
@@ -153,7 +151,7 @@ describe('di', () => {
         textBinding(3, interpolation2('', tmp2.value, '-', tmp1.value, ''));
       }
 
-      const defs = [Directive.ngDirectiveDef, DirectiveSameInstance.ngDirectiveDef];
+      const defs = [Directive, DirectiveSameInstance];
       expect(renderToHtml(Template, {}, defs))
           .toEqual('<div dir="" dirsame="">ElementRef-true</div>');
     });
@@ -204,7 +202,7 @@ describe('di', () => {
         textBinding(3, interpolation2('', tmp1.value, '-', tmp2.value, ''));
       }
 
-      const defs = [Directive.ngDirectiveDef, DirectiveSameInstance.ngDirectiveDef];
+      const defs = [Directive, DirectiveSameInstance];
       expect(renderToHtml(Template, {}, defs)).toEqual('TemplateRef-true');
     });
   });
@@ -256,7 +254,7 @@ describe('di', () => {
         textBinding(3, interpolation2('', tmp1.value, '-', tmp2.value, ''));
       }
 
-      const defs = [Directive.ngDirectiveDef, DirectiveSameInstance.ngDirectiveDef];
+      const defs = [Directive, DirectiveSameInstance];
       expect(renderToHtml(Template, {}, defs))
           .toEqual('<div dir="" dirsame="">ViewContainerRef-true</div>');
     });
@@ -327,10 +325,7 @@ describe('di', () => {
     }
 
 
-    const defs = [
-      MyComp.ngComponentDef, Directive.ngDirectiveDef, DirectiveSameInstance.ngDirectiveDef,
-      IfDirective.ngDirectiveDef
-    ];
+    const directives = [MyComp, Directive, DirectiveSameInstance, IfDirective];
 
     it('should inject current component ChangeDetectorRef into directives on components', () => {
       /** <my-comp dir dirSameInstance #dir="dir"></my-comp> {{ dir.value }} */
@@ -342,7 +337,7 @@ describe('di', () => {
         }
         const tmp = load(1) as any;
         textBinding(2, bind(tmp.value));
-      }, defs);
+      }, directives);
 
       const app = renderComponent(MyApp);
       // ChangeDetectorRef is the token, ViewRef has historically been the constructor
@@ -372,7 +367,7 @@ describe('di', () => {
             const tmp = load(1) as any;
             textBinding(2, bind(tmp.value));
           },
-          directiveDefs: defs
+          directives: directives
         });
       }
 
@@ -411,7 +406,7 @@ describe('di', () => {
             const tmp = load(2) as any;
             textBinding(3, bind(tmp.value));
           },
-          directiveDefs: defs
+          directives: directives
         });
       }
 
@@ -458,7 +453,7 @@ describe('di', () => {
             }
             containerRefreshEnd();
           },
-          directiveDefs: defs
+          directives: directives
         });
       }
 
@@ -498,7 +493,7 @@ describe('di', () => {
               textBinding(2, bind(tmp.value));
             }
           },
-          directiveDefs: defs
+          directives: directives
         });
       }
 
@@ -675,10 +670,7 @@ describe('di', () => {
         containerRefreshEnd();
       }
 
-      const defs = [
-        ChildDirective.ngDirectiveDef, Child2Directive.ngDirectiveDef,
-        ParentDirective.ngDirectiveDef
-      ];
+      const defs = [ChildDirective, Child2Directive, ParentDirective];
       expect(renderToHtml(Template, {}, defs))
           .toEqual('<div parentdir=""><span child2dir="" childdir="">Directive-true</span></div>');
     });

@@ -52,7 +52,7 @@ describe('exports', () => {
       });
     }
 
-    expect(renderToHtml(Template, {}, [MyComponent.ngComponentDef])).toEqual('<comp></comp>Nancy');
+    expect(renderToHtml(Template, {}, [MyComponent])).toEqual('<comp></comp>Nancy');
   });
 
   it('should support component instance fed into directive', () => {
@@ -80,7 +80,7 @@ describe('exports', () => {
       });
     }
 
-    const defs = [MyComponent.ngComponentDef, MyDir.ngDirectiveDef];
+    const defs = [MyComponent, MyDir];
 
     /** <comp #myComp></comp> <div [myDir]="myComp"></div> */
     function Template(ctx: any, cm: boolean) {
@@ -121,8 +121,7 @@ describe('exports', () => {
       });
     }
 
-    expect(renderToHtml(Template, {}, [SomeDir.ngDirectiveDef]))
-        .toEqual('<div somedir=""></div>Drew');
+    expect(renderToHtml(Template, {}, [SomeDir])).toEqual('<div somedir=""></div>Drew');
   });
 
   it('should throw if export name is not found', () => {
@@ -247,7 +246,7 @@ describe('exports', () => {
         elementProperty(0, 'myDir', bind(tmp));
       }
 
-      renderToHtml(Template, {}, [MyComponent.ngComponentDef, MyDir.ngDirectiveDef]);
+      renderToHtml(Template, {}, [MyComponent, MyDir]);
       expect(myDir !.myDir).toEqual(myComponent !);
     });
 
@@ -283,7 +282,7 @@ describe('exports', () => {
           factory: () => new MyComponent
         });
       }
-      expect(renderToHtml(Template, {}, [MyComponent.ngComponentDef]))
+      expect(renderToHtml(Template, {}, [MyComponent]))
           .toEqual('oneNancy<comp></comp><input value="one">');
     });
 
