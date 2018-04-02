@@ -27,3 +27,29 @@ export declare class SwUpdate {
     activateUpdate(): Promise<void>;
     checkForUpdate(): Promise<void>;
 }
+
+/** @experimental */
+export interface UpdateActivatedEvent {
+    current: {
+        hash: string;
+        appData?: Object;
+    };
+    previous?: {
+        hash: string;
+        appData?: Object;
+    };
+    type: 'UPDATE_ACTIVATED';
+}
+
+/** @experimental */
+export interface UpdateAvailableEvent {
+    available: {
+        hash: string;
+        appData?: Object;
+    };
+    current: {
+        hash: string;
+        appData?: Object;
+    };
+    type: 'UPDATE_AVAILABLE';
+}
