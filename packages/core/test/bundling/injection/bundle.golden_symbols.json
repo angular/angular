@@ -3,40 +3,13 @@
     "name": "APP_ROOT"
   },
   {
-    "name": "AnonymousSubject"
-  },
-  {
     "name": "CIRCULAR$1"
-  },
-  {
-    "name": "ConnectableSubscriber"
-  },
-  {
-    "name": "Context"
-  },
-  {
-    "name": "CountedSubject"
-  },
-  {
-    "name": "DelayMessage"
-  },
-  {
-    "name": "EMPTY$1"
   },
   {
     "name": "EMPTY_ARRAY$1"
   },
   {
-    "name": "EmptyError"
-  },
-  {
     "name": "GET_PROPERTY_NAME$1"
-  },
-  {
-    "name": "GroupDurationSubscriber"
-  },
-  {
-    "name": "GroupedObservable"
   },
   {
     "name": "INJECTOR$1"
@@ -48,64 +21,22 @@
     "name": "InjectionToken"
   },
   {
-    "name": "InnerRefCountSubscription"
-  },
-  {
-    "name": "InnerSubscriber"
-  },
-  {
-    "name": "NONE"
-  },
-  {
     "name": "NOT_YET"
   },
   {
     "name": "NULL_INJECTOR$1"
   },
   {
-    "name": "Notification"
-  },
-  {
     "name": "NullInjector"
-  },
-  {
-    "name": "ObjectUnsubscribedError"
-  },
-  {
-    "name": "Observable"
-  },
-  {
-    "name": "ObserveOnMessage"
-  },
-  {
-    "name": "ObserveOnSubscriber"
   },
   {
     "name": "Optional"
   },
   {
-    "name": "OuterSubscriber"
-  },
-  {
     "name": "PARAMETERS"
   },
   {
-    "name": "QueueAction"
-  },
-  {
     "name": "R3Injector"
-  },
-  {
-    "name": "RefCountOperator$1"
-  },
-  {
-    "name": "RefCountSubscriber$1"
-  },
-  {
-    "name": "ReplayEvent"
-  },
-  {
-    "name": "SafeSubscriber"
   },
   {
     "name": "ScopedService"
@@ -114,34 +45,7 @@
     "name": "Self"
   },
   {
-    "name": "SequenceEqualCompareToSubscriber"
-  },
-  {
     "name": "SkipSelf"
-  },
-  {
-    "name": "StaticArrayIterator"
-  },
-  {
-    "name": "StaticIterator"
-  },
-  {
-    "name": "Subject"
-  },
-  {
-    "name": "SubjectSubscriber"
-  },
-  {
-    "name": "SubjectSubscription"
-  },
-  {
-    "name": "Subscriber"
-  },
-  {
-    "name": "Subscription"
-  },
-  {
-    "name": "SubscriptionDelaySubscriber"
   },
   {
     "name": "THROW_IF_NOT_FOUND"
@@ -150,16 +54,7 @@
     "name": "USE_VALUE$1"
   },
   {
-    "name": "UnsubscriptionError"
-  },
-  {
-    "name": "ZipBufferIterator"
-  },
-  {
     "name": "_THROW_IF_NOT_FOUND"
-  },
-  {
-    "name": "__extends"
   },
   {
     "name": "__read"
@@ -169,12 +64,6 @@
   },
   {
     "name": "_currentInjector"
-  },
-  {
-    "name": "_enable_super_gross_mode_that_will_cause_bad_things"
-  },
-  {
-    "name": "config"
   },
   {
     "name": "couldBeInjectableType"
@@ -192,58 +81,7 @@
     "name": "defineInjector"
   },
   {
-    "name": "dispatch"
-  },
-  {
-    "name": "dispatchBufferClose"
-  },
-  {
-    "name": "dispatchBufferCreation"
-  },
-  {
-    "name": "dispatchBufferTimeSpanOnly"
-  },
-  {
-    "name": "dispatchNext$2"
-  },
-  {
-    "name": "dispatchNext$3"
-  },
-  {
-    "name": "dispatchNotification"
-  },
-  {
-    "name": "dispatchWindowClose"
-  },
-  {
-    "name": "dispatchWindowCreation"
-  },
-  {
-    "name": "dispatchWindowTimeSpanOnly"
-  },
-  {
-    "name": "empty"
-  },
-  {
-    "name": "empty$1"
-  },
-  {
-    "name": "emptyScheduled"
-  },
-  {
-    "name": "errorObject"
-  },
-  {
-    "name": "extendStatics"
-  },
-  {
-    "name": "flattenUnsubscriptionErrors"
-  },
-  {
     "name": "forwardRef"
-  },
-  {
-    "name": "fromArray"
   },
   {
     "name": "getClosureSafeProperty$1"
@@ -252,19 +90,10 @@
     "name": "getNullInjector"
   },
   {
-    "name": "getPromiseCtor"
-  },
-  {
-    "name": "getSymbolIterator$1"
-  },
-  {
     "name": "hasDeps"
   },
   {
     "name": "hasOnDestroy"
-  },
-  {
-    "name": "hostReportError"
   },
   {
     "name": "inject"
@@ -276,40 +105,16 @@
     "name": "injectableDefRecord"
   },
   {
-    "name": "isArray"
-  },
-  {
-    "name": "isArrayLike"
-  },
-  {
     "name": "isExistingProvider"
   },
   {
     "name": "isFactoryProvider"
   },
   {
-    "name": "isFunction"
-  },
-  {
-    "name": "isObject"
-  },
-  {
-    "name": "isPromise"
-  },
-  {
-    "name": "isScheduler"
-  },
-  {
-    "name": "isTrustedSubscriber"
-  },
-  {
     "name": "isTypeProvider"
   },
   {
     "name": "isValueProvider"
-  },
-  {
-    "name": "iterator"
   },
   {
     "name": "makeMetadataCtor"
@@ -321,69 +126,15 @@
     "name": "makeRecord"
   },
   {
-    "name": "noop"
-  },
-  {
-    "name": "observable"
-  },
-  {
-    "name": "of"
-  },
-  {
-    "name": "pipeFromArray"
-  },
-  {
     "name": "providerToRecord"
   },
   {
-    "name": "queue"
-  },
-  {
-    "name": "refCount"
-  },
-  {
     "name": "resolveForwardRef"
-  },
-  {
-    "name": "rxSubscriber"
-  },
-  {
-    "name": "scalar"
   },
   {
     "name": "setCurrentInjector"
   },
   {
     "name": "stringify"
-  },
-  {
-    "name": "subscribeTo"
-  },
-  {
-    "name": "subscribeToArray"
-  },
-  {
-    "name": "subscribeToIterable"
-  },
-  {
-    "name": "subscribeToObservable"
-  },
-  {
-    "name": "subscribeToPromise"
-  },
-  {
-    "name": "subscribeToResult"
-  },
-  {
-    "name": "throwError"
-  },
-  {
-    "name": "toSubscriber"
-  },
-  {
-    "name": "tryCatch"
-  },
-  {
-    "name": "tryCatcher"
   }
 ]
