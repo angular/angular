@@ -33,6 +33,14 @@ export interface UpdateActivatedEvent {
   current: {hash: string, appData?: Object};
 }
 
+/**
+ * An event emitted when a `PushEvent` is received by the service worker.
+ */
+export interface PushEvent {
+  type: 'PUSH';
+  data: any;
+}
+
 export type IncomingEvent = UpdateAvailableEvent | UpdateActivatedEvent;
 
 export interface TypedEvent { type: string; }
@@ -72,30 +80,23 @@ export class NgswCommChannel {
     if (!serviceWorker) {
       this.worker = this.events = this.registration = errorObservable(ERR_SW_NOT_SUPPORTED);
     } else {
-      const controllerChangeEvents =
-          <Observable<any>>(fromEvent(serviceWorker, 'controllerchange'));
-      const controllerChanges = <Observable<ServiceWorker|null>>(
-          controllerChangeEvents.pipe(map(() => serviceWorker.controller)));
+      const controllerChangeEvents = fromEvent(serviceWorker, 'controllerchange');
+      const controllerChanges = controllerChangeEvents.pipe(map(() => serviceWorker.controller));
+      const currentController = defer(() => of (serviceWorker.controller));
+      const controllerWithChanges = concat(currentController, controllerChanges);
 
-      const currentController =
-          <Observable<ServiceWorker|null>>(defer(() => of (serviceWorker.controller)));
-
-      const controllerWithChanges =
-          <Observable<ServiceWorker|null>>(concat(currentController, controllerChanges));
-      this.worker = <Observable<ServiceWorker>>(
-          controllerWithChanges.pipe(filter((c: ServiceWorker) => !!c)));
+      this.worker = controllerWithChanges.pipe(filter<ServiceWorker>(c => !!c));
 
       this.registration = <Observable<ServiceWorkerRegistration>>(
           this.worker.pipe(switchMap(() => serviceWorker.getRegistration())));
 
-      const rawEvents = fromEvent(serviceWorker, 'message');
-
-      const rawEventPayload = rawEvents.pipe(map((event: MessageEvent) => event.data));
-      const eventsUnconnected =
-          (rawEventPayload.pipe(filter((event: Object) => !!event && !!(event as any)['type'])));
+      const rawEvents = fromEvent<MessageEvent>(serviceWorker, 'message');
+      const rawEventPayload = rawEvents.pipe(map(event => event.data));
+      const eventsUnconnected = rawEventPayload.pipe(filter(event => event && event.type));
       const events = eventsUnconnected.pipe(publish()) as ConnectableObservable<IncomingEvent>;
-      this.events = events;
       events.connect();
+
+      this.events = events;
     }
   }
 
@@ -130,19 +131,16 @@ export class NgswCommChannel {
   /**
    * @internal
    */
-  // TODO(i): the typings and casts in this method are wonky, we should revisit it and make the
-  // types flow correctly
-  eventsOfType<T extends TypedEvent>(type: string): Observable<T> {
-    return <Observable<T>>this.events.pipe(filter((event) => { return event.type === type; }));
+  eventsOfType<T extends TypedEvent>(type: T['type']): Observable<T> {
+    const filterFn = (event: TypedEvent): event is T => event.type === type;
+    return this.events.pipe(filter(filterFn));
   }
 
   /**
    * @internal
    */
-  // TODO(i): the typings and casts in this method are wonky, we should revisit it and make the
-  // types flow correctly
-  nextEventOfType<T extends TypedEvent>(type: string): Observable<T> {
-    return <Observable<T>>(this.eventsOfType(type).pipe(take(1)));
+  nextEventOfType<T extends TypedEvent>(type: T['type']): Observable<T> {
+    return this.eventsOfType(type).pipe(take(1));
   }
 
   /**
@@ -150,14 +148,12 @@ export class NgswCommChannel {
    */
   waitForStatus(nonce: number): Promise<void> {
     return this.eventsOfType<StatusEvent>('STATUS')
-        .pipe(
-            filter((event: StatusEvent) => event.nonce === nonce), take(1),
-            map((event: StatusEvent) => {
-              if (event.status) {
-                return undefined;
-              }
-              throw new Error(event.error !);
-            }))
+        .pipe(filter(event => event.nonce === nonce), take(1), map(event => {
+                if (event.status) {
+                  return undefined;
+                }
+                throw new Error(event.error !);
+              }))
         .toPromise();
   }
 
