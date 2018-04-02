@@ -166,7 +166,8 @@ def _ng_package_impl(ctx):
 
     if entry_point:
       # TODO jasonaden says there is no particular reason these filenames differ
-      umd_output_filename = "-".join([ctx.label.package.split("/")[-1]] + entry_point.split("/"))
+      prefix = primary_entry_point_name(ctx.attr.name, ctx.attr.entry_point, ctx.attr.entry_point_name)
+      umd_output_filename = "-".join([prefix] + entry_point.split("/"))
       fesm_output_filename = entry_point.replace("/", "__")
       fesm2015_output = ctx.actions.declare_file("fesm2015/%s.js" % fesm_output_filename)
       fesm5_output = ctx.actions.declare_file("%s.js" % fesm_output_filename)
