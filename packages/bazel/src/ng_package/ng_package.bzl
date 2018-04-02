@@ -16,7 +16,7 @@ load("@build_bazel_rules_nodejs//:internal/npm_package/npm_package.bzl",
      "NPM_PACKAGE_OUTPUTS",
      "create_package")
 load("@build_bazel_rules_nodejs//:internal/node.bzl", "sources_aspect")
-load("//packages/bazel/src:esm5.bzl", "esm5_outputs_aspect", "ESM5Info")
+load("//packages/bazel/src:esm5.bzl", "esm5_outputs_aspect", "flatten_esm5", "esm5_root_dir")
 
 # TODO(alexeagle): this list is incomplete, add more as material ramps up
 WELL_KNOWN_GLOBALS = {
@@ -114,19 +114,7 @@ def _ng_package_impl(ctx):
   npm_package_directory = ctx.actions.declare_directory("%s.ng_pkg" % ctx.label.name)
 
   esm_2015_files = collect_es6_sources(ctx)
-
-  esm5_sources = depset()
-  root_dirs = []
-
-  for dep in ctx.attr.deps:
-    if ESM5Info in dep:
-      # TODO(alexeagle): we could make the module resolution in the rollup plugin
-      # faster if we kept the files grouped with their root dir. This approach just
-      # passes in both lists and requires multiple lookups (with expensive exception
-      # handling) to locate the files again.
-      transitive_output = dep[ESM5Info].transitive_output
-      root_dirs.extend(transitive_output.keys())
-      esm5_sources = depset(transitive=[esm5_sources] + transitive_output.values())
+  esm5_sources = depset(flatten_esm5(ctx))
 
   # These accumulators match the directory names where the files live in the
   # Angular package format.
@@ -190,7 +178,7 @@ def _ng_package_impl(ctx):
       umd_output = ctx.outputs.umd
       min_output = ctx.outputs.umd_min
 
-    config = write_rollup_config(ctx, [], root_dirs)
+    config = write_rollup_config(ctx, [], "/".join([ctx.bin_dir.path, ctx.label.package, esm5_root_dir(ctx)]))
 
     fesm2015.append(_rollup(ctx, config, es2015_entry_point, esm_2015_files, fesm2015_output))
     fesm5.append(_rollup(ctx, config, es5_entry_point, esm5_sources, fesm5_output))

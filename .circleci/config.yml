@@ -89,8 +89,14 @@ jobs:
           path: dist/bin/packages/core/test/bundling/hello_world/bundle.min.js
           destination: packages/core/test/bundling/hello_world/bundle.min.js
       - store_artifacts:
+          path: dist/bin/packages/core/test/bundling/todo/bundle.min.js
+          destination: packages/core/test/bundling/todo/bundle.min.js
+      - store_artifacts:
           path: dist/bin/packages/core/test/bundling/hello_world/bundle.min.js.brotli
           destination: packages/core/test/bundling/hello_world/bundle.min.js.brotli
+      - store_artifacts:
+          path: dist/bin/packages/core/test/bundling/todo/bundle.min.js.brotli
+          destination: packages/core/test/bundling/todo/bundle.min.js.brotli
 
       - save_cache:
           key: *cache_key
