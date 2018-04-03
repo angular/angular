@@ -8,9 +8,7 @@
     "build": "ng build --prod --sourcemaps",
     "test": "ng test --single-run",
     "lint": "ng lint",
-    "e2e": "ng e2e",
-    "postinstall": "patch for https://github.com/angular/devkit/pull/524",
-    "postinstall": "sed -i.bak  's/]esm5/]f?esm5/' node_modules/@angular-devkit/build-optimizer/src/build-optimizer/build-optimizer.js"
+    "e2e": "ng e2e"
   },
   "private": true,
   "dependencies": {
@@ -28,7 +26,7 @@
     "zone.js": "file:../../node_modules/zone.js"
   },
   "devDependencies": {
-    "@angular/cli": "1.6.6",
+    "@angular/cli": "1.7.3",
     "@angular/compiler-cli": "file:../../dist/packages-dist/compiler-cli",
     "@angular/language-service": "file:../../dist/packages-dist/language-service",
     "@types/jasmine": "~2.8.3",
