@@ -33,6 +33,8 @@ import {isUrlTree} from './utils/type_guards';
 
 
 
+export type OnSameUrlNavigation = 'reload'|'ignore';
+
 /**
  * @description
  *
@@ -158,6 +160,8 @@ export interface NavigationExtras {
    * the router adds the `navigationId` on each navigation.
    */
   state?: {[k: string]: any};
+
+  onSameUrlNavigation?: OnSameUrlNavigation;
 }
 
 /**
@@ -365,7 +369,7 @@ export class Router {
    * - `'ignore'` :  The router ignores the request.
    * - `'reload'` : The router reloads the URL. Use to implement a "refresh" feature.
    */
-  onSameUrlNavigation: 'reload'|'ignore' = 'ignore';
+  onSameUrlNavigation: OnSameUrlNavigation = 'ignore';
 
   /**
    * How to merge parameters, data, and resolved data from parent to child
@@ -475,7 +479,10 @@ export class Router {
                        const urlTransition = !this.navigated ||
                            t.extractedUrl.toString() !== this.browserUrlTree.toString();
                        const processCurrentUrl =
-                           (this.onSameUrlNavigation === 'reload' ? true : urlTransition) &&
+                           (this.onSameUrlNavigation === 'reload' ||
+                                    t.extras.onSameUrlNavigation === 'reload' ?
+                                true :
+                                urlTransition) &&
                            this.urlHandlingStrategy.shouldProcessUrl(t.rawUrl);
 
                        if (processCurrentUrl) {
