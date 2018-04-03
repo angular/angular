@@ -13,15 +13,15 @@ import * as shx from 'shelljs';
 shx.cd(path.join(process.env['TEST_SRCDIR'], 'angular', 'packages', 'common', 'npm_package'));
 
 describe('@angular/common ng_package', () => {
-  it('should have the locales files', () => {
+  describe('should have the locales files', () => {
     it('/locales', () => {
-      const files = shx.ls('-R', 'locales').stdout.split('\n');
+      const files = shx.ls('locales').stdout.split('\n');
       expect(files.some(n => n.endsWith('.d.ts'))).toBe(true, `.d.ts files don't exist`);
       expect(files.some(n => n.endsWith('.js'))).toBe(true, `.js files don't exist`);
       expect(files.some(n => n.endsWith('.js.map'))).toBe(true, `.js.map files don't exist`);
     });
     it('/locales/extra', () => {
-      const files = shx.ls('-R', 'locales/extra').stdout.split('\n');
+      const files = shx.ls('locales/extra').stdout.split('\n');
       expect(files.some(n => n.endsWith('.d.ts'))).toBe(true, `.d.ts files don't exist`);
       expect(files.some(n => n.endsWith('.js'))).toBe(true, `.js files don't exist`);
       expect(files.some(n => n.endsWith('.js.map'))).toBe(true, `.js.map files don't exist`);
