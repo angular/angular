@@ -68,5 +68,6 @@
     "build": {
       "namedChunks": true
     }
-  }
+  },
+  "packageManager": "yarn"
 }
