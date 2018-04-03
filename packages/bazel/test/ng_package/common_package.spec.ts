@@ -18,13 +18,11 @@ describe('@angular/common ng_package', () => {
       const files = shx.ls('locales').stdout.split('\n');
       expect(files.some(n => n.endsWith('.d.ts'))).toBe(true, `.d.ts files don't exist`);
       expect(files.some(n => n.endsWith('.js'))).toBe(true, `.js files don't exist`);
-      expect(files.some(n => n.endsWith('.js.map'))).toBe(true, `.js.map files don't exist`);
     });
     it('/locales/extra', () => {
       const files = shx.ls('locales/extra').stdout.split('\n');
       expect(files.some(n => n.endsWith('.d.ts'))).toBe(true, `.d.ts files don't exist`);
       expect(files.some(n => n.endsWith('.js'))).toBe(true, `.js files don't exist`);
-      expect(files.some(n => n.endsWith('.js.map'))).toBe(true, `.js.map files don't exist`);
     });
   });
 
