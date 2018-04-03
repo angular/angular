@@ -299,6 +299,30 @@ export function createLView(
 }
 
 /**
+ * Creation of LNode object is extracted to a separate function so we always create LNode object
+ * with the same shape
+ * (same properties assigned in the same order).
+ */
+export function createLNodeObject(
+    type: LNodeType, currentView: LView, parent: LNode, native: RText | RElement | null | undefined,
+    state: any,
+    queries: LQueries | null): LElementNode&LTextNode&LViewNode&LContainerNode&LProjectionNode {
+  return {
+    type: type,
+    native: native as any,
+    view: currentView,
+    parent: parent as any,
+    child: null,
+    next: null,
+    nodeInjector: parent ? parent.nodeInjector : null,
+    data: state,
+    queries: queries,
+    tNode: null,
+    pNextOrParent: null
+  };
+}
+
+/**
  * A common way of creating the LNode to make sure that all of them have same shape to
  * keep the execution code monomorphic and fast.
  */
@@ -323,19 +347,8 @@ export function createLNode(
       (isParent ? currentQueries : previousOrParentNode && previousOrParentNode.queries) ||
       parent && parent.queries && parent.queries.child();
   const isState = state != null;
-  const node: LElementNode&LTextNode&LViewNode&LContainerNode&LProjectionNode = {
-    type: type,
-    native: native as any,
-    view: currentView,
-    parent: parent as any,
-    child: null,
-    next: null,
-    nodeInjector: parent ? parent.nodeInjector : null,
-    data: isState ? state as any : null,
-    queries: queries,
-    tNode: null,
-    pNextOrParent: null
-  };
+  const node =
+      createLNodeObject(type, currentView, parent, native, isState ? state as any : null, queries);
 
   if ((type & LNodeType.ViewOrElement) === LNodeType.ViewOrElement && isState) {
     // Bit of a hack to bust through the readonly because there is a circular dep between
@@ -371,7 +384,7 @@ export function createLNode(
     } else if (previousOrParentNode) {
       ngDevMode && assertNull(
                        previousOrParentNode.next,
-                       `previousOrParentNode's next property should not have been set.`);
+                       `previousOrParentNode's next property should not have been set ${index}.`);
       previousOrParentNode.next = node;
     }
   }
@@ -446,8 +459,9 @@ export function renderEmbeddedTemplate<T>(
     enterView(viewNode.data, viewNode);
 
     template(context, cm);
-    refreshDynamicChildren();
     refreshDirectives();
+    refreshDynamicChildren();
+
   } finally {
     leaveView(currentView && currentView !.parent !);
     isParent = _isParent;
@@ -1185,9 +1199,11 @@ function addComponentLogic<T>(
 
   // Only component views should be added to the view tree directly. Embedded views are
   // accessed through their containers because they may be removed / re-added later.
-  const hostView = addToViewTree(createLView(
-      -1, rendererFactory.createRenderer(previousOrParentNode.native as RElement, def.rendererType),
-      tView, null, null, def.onPush ? LViewFlags.Dirty : LViewFlags.CheckAlways));
+  const hostView = addToViewTree(
+      currentView, createLView(
+                       -1, rendererFactory.createRenderer(
+                               previousOrParentNode.native as RElement, def.rendererType),
+                       tView, null, null, def.onPush ? LViewFlags.Dirty : LViewFlags.CheckAlways));
 
   (previousOrParentNode.data as any) = hostView;
   (hostView.node as any) = previousOrParentNode;
@@ -1291,6 +1307,26 @@ function generateInitialInputs(
 //// ViewContainer & View
 //////////////////////////
 
+
+export function createLContainer(
+    parentLNode: LNode, currentView: LView, template?: ComponentTemplate<any>,
+    host?: LContainerNode | LElementNode): LContainer {
+  ngDevMode && assertNotNull(parentLNode, 'containers should have a parent');
+  return <LContainer>{
+    views: [],
+    nextIndex: 0,
+    // If the direct parent of the container is a view, its views will need to be added
+    // through insertView() when its parent view is being inserted:
+    renderParent: canInsertNativeNode(parentLNode, currentView) ? parentLNode : null,
+    template: template == null ? null : template,
+    next: null,
+    parent: currentView,
+    dynamicViewCount: 0,
+    queries: null,
+    host: host == null ? null : host
+  };
+}
+
 /**
  * Creates an LContainerNode.
  *
@@ -1310,20 +1346,7 @@ export function container(
           currentView.bindingStartIndex, 'container nodes should be created before any bindings');
 
   const currentParent = isParent ? previousOrParentNode : previousOrParentNode.parent !;
-  ngDevMode && assertNotNull(currentParent, 'containers should have a parent');
-
-  const lContainer = <LContainer>{
-    views: [],
-    nextIndex: 0,
-    // If the direct parent of the container is a view, its views will need to be added
-    // through insertView() when its parent view is being inserted:
-    renderParent: canInsertNativeNode(currentParent, currentView) ? currentParent : null,
-    template: template == null ? null : template,
-    next: null,
-    parent: currentView,
-    dynamicViewCount: 0,
-    queries: null
-  };
+  const lContainer = createLContainer(currentParent, currentView, template);
 
   const node = createLNode(index, LNodeType.Container, undefined, lContainer);
 
@@ -1333,7 +1356,7 @@ export function container(
 
   // Containers are added to the current view tree instead of their embedded views
   // because views can be removed and re-inserted.
-  addToViewTree(node.data);
+  addToViewTree(currentView, node.data);
 
   if (firstTemplatePass) cacheMatchingDirectivesForNode(node.tNode);
 
@@ -1701,10 +1724,11 @@ function findComponentHost(lView: LView): LElementNode {
  * This structure will be used to traverse through nested views to remove listeners
  * and call onDestroy callbacks.
  *
+ * @param currentView The view where LView or LContainer should be added
  * @param state The LView or LContainer to add to the view tree
  * @returns The state passed in
  */
-export function addToViewTree<T extends LView|LContainer>(state: T): T {
+export function addToViewTree<T extends LView|LContainer>(currentView: LView, state: T): T {
   currentView.tail ? (currentView.tail.next = state) : (currentView.child = state);
   currentView.tail = state;
   return state;
@@ -1887,8 +1911,8 @@ export function detectChangesInternal<T>(
 
   try {
     template(component, creationMode);
-    refreshDynamicChildren();
     refreshDirectives();
+    refreshDynamicChildren();
   } finally {
     leaveView(oldView);
   }
