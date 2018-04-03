@@ -237,9 +237,6 @@ export interface TView {
   /**
    * Full registry of directives and components that may be found in this view.
    *
-   * The property is either an array of `DirectiveDef`s or a function which returns the array of
-   * `DirectiveDef`s. The function is necessary to be able to support forward declarations.
-   *
    * It's necessary to keep a copy of the full def list on the TView so it's possible
    * to render template functions without a host component.
    */
