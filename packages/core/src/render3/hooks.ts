@@ -126,6 +126,6 @@ export function executeHooks(
  */
 export function callHooks(data: any[], arr: HookData): void {
   for (let i = 0; i < arr.length; i += 2) {
-    (arr[i | 1] as() => void).call(data[arr[i] as number]);
+    (arr[i + 1] as() => void).call(data[arr[i] as number]);
   }
 }
