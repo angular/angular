@@ -193,7 +193,7 @@ const enum BindingDirection {
  * @returns the previous state;
  */
 export function enterView(newView: LView, host: LElementNode | LViewNode | null): LView {
-  const oldView = currentView;
+  const oldView: LView = currentView;
   data = newView && newView.data;
   directives = newView && newView.directives;
   bindingIndex = newView && newView.bindingStartIndex || 0;
@@ -212,7 +212,7 @@ export function enterView(newView: LView, host: LElementNode | LViewNode | null)
   currentView = newView;
   currentQueries = newView && newView.queries;
 
-  return oldView !;
+  return oldView;
 }
 
 /**
@@ -249,7 +249,7 @@ export function setHostBindings(bindings: number[] | null): void {
     for (let i = 0; i < bindings.length; i += 2) {
       const dirIndex = bindings[i];
       const def = defs[dirIndex] as DirectiveDef<any>;
-      def.hostBindings && def.hostBindings(dirIndex, bindings[i | 1]);
+      def.hostBindings && def.hostBindings(dirIndex, bindings[i + 1]);
     }
   }
 }
@@ -258,7 +258,7 @@ export function setHostBindings(bindings: number[] | null): void {
 function refreshChildComponents(components: number[] | null): void {
   if (components != null) {
     for (let i = 0; i < components.length; i += 2) {
-      componentRefresh(components[i], components[i | 1]);
+      componentRefresh(components[i], components[i + 1]);
     }
   }
 }
@@ -514,13 +514,11 @@ export function renderComponentOrTemplate<T>(
  */
 export function elementStart(
     index: number, name: string, attrs?: string[] | null, localRefs?: string[] | null): RElement {
-  let node: LElementNode;
-  let native: RElement;
   ngDevMode &&
       assertNull(currentView.bindingStartIndex, 'elements should be created before any bindings');
 
-  native = renderer.createElement(name);
-  node = createLNode(index, LNodeType.Element, native !, null);
+  const native: RElement = renderer.createElement(name);
+  const node: LElementNode = createLNode(index, LNodeType.Element, native !, null);
 
   if (attrs) setUpAttributes(native, attrs);
   appendChild(node.parent !, native, currentView);
@@ -538,8 +536,8 @@ export function elementStart(
 }
 
 function cacheMatchingDirectivesForNode(tNode: TNode): void {
-  const registry = currentView.tView.directiveRegistry;
-  const startIndex = directives ? directives.length : 0;
+  const tView = currentView.tView;
+  const registry = tView.directiveRegistry;
 
   if (registry) {
     let componentFlag = 0;
@@ -552,11 +550,14 @@ function cacheMatchingDirectivesForNode(tNode: TNode): void {
           if (componentFlag) throwMultipleComponentError(tNode);
           componentFlag |= TNodeFlags.Component;
         }
-        (currentView.tView.directives || (currentView.tView.directives = [])).push(def);
+        (tView.directives || (tView.directives = [])).push(def);
         size++;
       }
     }
-    if (size > 0) buildTNodeFlags(tNode, startIndex, size, componentFlag);
+    if (size > 0) {
+      const startIndex = directives ? directives.length : 0;
+      buildTNodeFlags(tNode, startIndex, size, componentFlag);
+    }
   }
 }
 
@@ -634,8 +635,8 @@ function cacheMatchingLocalNames(
     // in the template to ensure the data is loaded in the same slots as their refs
     // in the template (for template queries).
     for (let i = 0; i < localRefs.length; i += 2) {
-      const index = exportsMap[localRefs[i | 1]];
-      if (index == null) throw new Error(`Export of name '${localRefs[i | 1]}' not found!`);
+      const index = exportsMap[localRefs[i + 1]];
+      if (index == null) throw new Error(`Export of name '${localRefs[i + 1]}' not found!`);
       localNames.push(localRefs[i], index);
     }
   }
@@ -662,7 +663,7 @@ function saveResolvedLocalsInData(): void {
   const localNames = previousOrParentNode.tNode !.localNames;
   if (localNames) {
     for (let i = 0; i < localNames.length; i += 2) {
-      const index = localNames[i | 1] as number;
+      const index = localNames[i + 1] as number;
       const value = index === -1 ? previousOrParentNode.native : directives ![index];
       data.push(value);
     }
@@ -829,7 +830,7 @@ export function listener(
 function createOutput(outputs: PropertyAliasValue, listener: Function): void {
   for (let i = 0; i < outputs.length; i += 2) {
     ngDevMode && assertDataInRange(outputs[i] as number, directives !);
-    const subscription = directives ![outputs[i] as number][outputs[i | 1]].subscribe(listener);
+    const subscription = directives ![outputs[i] as number][outputs[i + 1]].subscribe(listener);
     cleanup !.push(subscription.unsubscribe, subscription);
   }
 }
@@ -944,7 +945,7 @@ function createTNode(
 function setInputsForProperty(inputs: PropertyAliasValue, value: any): void {
   for (let i = 0; i < inputs.length; i += 2) {
     ngDevMode && assertDataInRange(inputs[i] as number, directives !);
-    directives ![inputs[i] as number][inputs[i | 1]] = value;
+    directives ![inputs[i] as number][inputs[i + 1]] = value;
   }
 }
 
@@ -1264,7 +1265,7 @@ function setInputsFromAttrs<T>(
   const initialInputs: InitialInputs|null = initialInputData[directiveIndex];
   if (initialInputs) {
     for (let i = 0; i < initialInputs.length; i += 2) {
-      (instance as any)[initialInputs[i]] = initialInputs[i | 1];
+      (instance as any)[initialInputs[i]] = initialInputs[i + 1];
     }
   }
 }
@@ -1296,7 +1297,7 @@ function generateInitialInputs(
     if (minifiedInputName !== undefined) {
       const inputsToStore: InitialInputs =
           initialInputData[directiveIndex] || (initialInputData[directiveIndex] = []);
-      inputsToStore.push(minifiedInputName, attrs[i | 1]);
+      inputsToStore.push(minifiedInputName, attrs[i + 1]);
     }
   }
   return initialInputData;
