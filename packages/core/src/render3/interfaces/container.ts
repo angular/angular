@@ -80,13 +80,6 @@ export interface LContainer {
    * this container are reported to queries referenced here.
    */
   queries: LQueries|null;
-
-  /**
-   * If a LContainer is created dynamically (by a directive requesting ViewContainerRef) this fields
-   * keeps a reference to a node on which a ViewContainerRef was requested. We need to store this
-   * information to find a next render sibling node.
-   */
-  host: LContainerNode|LElementNode|null;
 }
 
 /**
