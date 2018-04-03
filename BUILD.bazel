@@ -29,6 +29,8 @@ node_modules_filegroup(
         "tsutils",
         "typescript",
         "zone.js",
+        "@angular-devkit/core",
+        "@angular-devkit/schematics",
         "@types",
         "@webcomponents/custom-elements",
     ],
