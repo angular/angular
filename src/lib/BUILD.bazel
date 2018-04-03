@@ -1,8 +1,8 @@
+package(default_visibility=["//visibility:public"])
 load("@build_bazel_rules_typescript//:defs.bzl", "ts_library")
 load("@angular//:index.bzl", "ng_package", "ng_module")
 load("//tools:sass_bundle.bzl", "sass_bundle")
-load("//:packages.bzl", "MATERIAL_PACKAGES")
-load("//src/lib:rollup_globals.bzl", "MATERIAL_ROLLUP_GLOBALS")
+load("//:packages.bzl", "MATERIAL_PACKAGES", "MATERIAL_TARGETS", "ROLLUP_GLOBALS")
 
 
 # Export the root material tsconfig so that subpackages can reference it directly.
@@ -41,7 +41,7 @@ sass_bundle(
 #  ],
 #  entry_point = "src/lib/public_api.js",
 #  entry_point_name = "material",
-#  globals = MATERIAL_ROLLUP_GLOBALS,
+#  globals = ROLLUP_GLOBALS,
 #  data = [
 #    ":theming_bundle",
 #    "//src/lib/prebuilt-themes:indigo-pink",
@@ -50,7 +50,5 @@ sass_bundle(
 #    "//src/lib/prebuilt-themes:purple-green",
 #  ],
 #  packages = ["//src/lib/schematics:npm_package"],
-#  deps = [
-#    ":material",
-#  ] + ["//src/lib/%s" % p for p in MATERIAL_PACKAGES],
+#  deps = MATERIAL_TARGETS
 #)

@@ -1,0 +1,22 @@
+package(default_visibility=["//visibility:public"])
+load("@angular//:index.bzl", "ng_module", "ng_package")
+load("//:packages.bzl", "CDK_TARGETS", "ROLLUP_GLOBALS")
+
+
+ng_module(
+  name = "material-experimental",
+  srcs = glob(["**/*.ts"], exclude=["**/*.spec.ts"]),
+  module_name = "@angular/material-experimental",
+  deps = [
+    "//src/lib:material",
+  ] + CDK_TARGETS,
+  tsconfig = "//src/lib:tsconfig-build.json",
+)
+
+ng_package(
+  name = "npm_package",
+  srcs = ["package.json"],
+  entry_point = "src/material-experimental/public_api.js",
+  globals = ROLLUP_GLOBALS,
+  deps = [":material-experimental"],
+)

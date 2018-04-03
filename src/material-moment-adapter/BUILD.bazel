@@ -1,0 +1,21 @@
+package(default_visibility=["//visibility:public"])
+load("@build_bazel_rules_typescript//:defs.bzl", "ts_library")
+load("@angular//:index.bzl", "ng_package")
+load("//:packages.bzl", "ROLLUP_GLOBALS")
+
+
+ts_library(
+  name = "material-moment-adapter",
+  srcs = glob(["**/*.ts"], exclude=["**/*.spec.ts"]),
+  module_name = "@angular/material-moment-adapter",
+  deps = ["//src/lib:material"],
+  tsconfig = "//src/material-moment-adapter:tsconfig-build.json",
+)
+
+ng_package(
+  name = "npm_package",
+  srcs = ["package.json"],
+  entry_point = "src/material-moment-adapter/public_api.js",
+  globals = ROLLUP_GLOBALS,
+  deps = [":material-moment-adapter"],
+)
