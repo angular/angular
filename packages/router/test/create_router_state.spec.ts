@@ -21,7 +21,7 @@ describe('create router state', () => {
   const emptyState = () => createEmptyState(
       new (UrlTree as any)(new UrlSegmentGroup([], {}), {}, null !), RootComponent);
 
-  it('should work create new state', () => {
+  it('should create new state', () => {
     const state = createRouterState(
         reuseStrategy, createState(
                            [
