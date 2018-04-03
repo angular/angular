@@ -73,7 +73,10 @@ export function compileDirective(
   field('attributes', createHostAttributesArray(directive, outputCtx));
 
   // e.g 'inputs: {a: 'a'}`
-  field('inputs', createInputsObject(directive, outputCtx));
+  field('inputs', createMapObjectLiteral(directive.inputs, outputCtx));
+
+  // e.g 'outputs: {a: 'a'}`
+  field('outputs', createMapObjectLiteral(directive.outputs, outputCtx));
 
   const className = identifierName(directive.type) !;
   className || error(`Cannot resolver the name of ${directive.type}`);
@@ -193,7 +196,10 @@ export function compileComponent(
   }
 
   // e.g `inputs: {a: 'a'}`
-  field('inputs', createInputsObject(component, outputCtx));
+  field('inputs', createMapObjectLiteral(component.inputs, outputCtx));
+
+  // e.g 'outputs: {a: 'a'}`
+  field('outputs', createMapObjectLiteral(component.outputs, outputCtx));
 
   // e.g. `features: [NgOnChangesFeature(MyComponent)]`
   const features: o.Expression[] = [];
@@ -1052,10 +1058,10 @@ function createHostBindingsFunction(
   return null;
 }
 
-function createInputsObject(
-    directive: CompileDirectiveMetadata, outputCtx: OutputContext): o.Expression|null {
-  if (Object.getOwnPropertyNames(directive.inputs).length > 0) {
-    return outputCtx.constantPool.getConstLiteral(mapToExpression(directive.inputs));
+function createMapObjectLiteral(
+    keys: {[key: string]: string}, outputCtx: OutputContext): o.Expression|null {
+  if (Object.getOwnPropertyNames(keys).length > 0) {
+    return mapToExpression(keys);
   }
   return null;
 }
