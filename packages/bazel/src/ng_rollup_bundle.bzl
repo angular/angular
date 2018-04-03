@@ -51,6 +51,9 @@ def _ng_rollup_bundle(ctx):
   run_uglify(ctx, ctx.outputs.build_es5, ctx.outputs.build_es5_min_debug,
       debug = True, comments = False)
 
+  umd_rollup_config = write_rollup_config(ctx, filename = "_%s_umd.rollup.conf.js", output_format = "umd")
+  run_rollup(ctx, collect_es2015_sources(ctx), umd_rollup_config, ctx.outputs.build_umd)
+
   run_brotli(ctx, ctx.outputs.build_es5_min, ctx.outputs.build_es5_min_compressed)
 
   return DefaultInfo(files=depset([ctx.outputs.build_es5_min]))
@@ -66,7 +69,7 @@ ng_rollup_bundle = rule(
             executable = True,
             cfg = "host",
             default = Label("@angular//packages/bazel/src:rollup_with_build_optimizer")),
-	"_brotli": attr.label(
+	    "_brotli": attr.label(
             executable = True,
             cfg = "host",
             default = Label("@org_brotli//:brotli")),
