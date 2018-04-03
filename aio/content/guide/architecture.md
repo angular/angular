@@ -178,43 +178,85 @@ For data or logic that is not associated with a specific view, and that you want
 -->
 ### 라우팅
 
+<!--
 The Angular `Router` NgModule provides a service that lets you define a navigation path among the different application states and view hierarchies in your app. It is modeled on the familiar browser navigation conventions:
+-->
+Angular에서 제공하는 `Router` NgModule을 사용하면 네비게이션 주소를 전환하면서 애플리케이션의 상태를 변경할 수 있습니다. 페이지를 전환하는 것도 애플리케이션의 상태를 변경하는 것이며, Angular의 페이지 전환 방식은 브라우저의 페이지 전환 방식을 바탕으로 구현되었습니다:
 
+<!--
 * Enter a URL in the address bar and the browser navigates to a corresponding page.
 * Click links on the page and the browser navigates to a new page.
 * Click the browser's back and forward buttons and the browser navigates backward and forward through the history of pages you've seen.
+-->
+* 주소표시줄에 URL을 입력하면 브라우저가 해당 페이지로 전환합니다.
+* 페이지에 있는 링크를 클릭하면 브라우저가 해당 페이지로 전환합니다.
+* 브라우저의 뒤로 가기/앞으로 가기 버튼을 클릭하면 브라우저 히스토리에 따라 뒤로/앞으로 페이지를 전환합니다.
 
+<!--
 The router maps URL-like paths to views instead of pages. When a user performs an action, such as clicking a link, that would load a new page in the browser, the router intercepts the browser's behavior, and shows or hides view hierarchies.
+-->
+Angular의 라우터는 페이지 대신 뷰를 URL과 맵핑합니다. 사용자가 링크를 클릭했다면 브라우저에서 새로운 페이지로 전환하려고 하겠지만, 라우터는 이 동작을 중지시키고 페이지 이동 없이 뷰만 전환합니다.
 
+<!--
 If the router determines that the current application state requires particular functionality, and the module that defines it has not been loaded, the router can _lazy-load_ the module on demand.
+-->
+그리고 아직 로드되지 않은 모듈에 있는 페이지로 전환하려고 하면, 라우터가 _지연 로딩_ 을 사용해서 모듈을 불러오고 난 후에 뷰를 전환합니다.
 
+<!--
 The router interprets a link URL according to your app's view navigation rules and data state. You can navigate to new views when the user clicks a button, selects from a drop box, or in response to some other stimulus from any source. The Router logs activity in the browser's history journal, so the back and forward buttons work as well.
+-->
+라우터는 미리 정의된 네비게이션 룰과 데이터 상태에 따라 해당되는 뷰로 전환합니다. 뷰 전환은 사용자가 버튼을 클릭했을 때 일어날 수도 있고, 드롭 박스를 선택했을 때, 다른 로직에서 발생한 결과에 의해서도 일어날 수 있습니다. 이 때마다 라우터는 브라우저의 히스토리에 로그를 저장하며, 이 로그를 활용해서 뒤로 가기/앞으로 가기 버튼에도 반응할 수 있습니다.
 
+<!--
 To define navigation rules, you associate *navigation paths* with your components. A path uses a URL-like syntax that integrates your program data, in much the same way that template syntax integrates your views with your program data. You can then apply program logic to choose which views to show or to hide, in response to user input and your own access rules.
+-->
+네비게이션 룰은 *네비게이션 경로*를 컴포넌트와 연결해서 정의합니다. 이 때 네비게이션 경로는 URL과 비슷한 형식으로 정의하며, 뷰에 있는 데이터를 활용할 수도 있습니다. 사용자의 입력이나 애플리케이션의 규칙에 따라 어떤 뷰로 전환할지 선택할 수 있고, 뷰를 추가로 표시하거나 숨길 수도 있습니다.
 
- <div class="l-sub-section">
+<div class="l-sub-section">
 
+<!--
    For a more detailed discussion, see [Routing and navigation](guide/router).
+ -->
+   더 자세한 내용을 확인하려면 [라우팅과 네비게이션](guide/router) 문서를 확인하세요.
 
  </div>
 
 <hr/>
 
+<!--
 ## What's next
+-->
+## 다음 단계
 
+<!--
 You've learned the basics about the main building blocks of an Angular application. The following diagram shows how these basic pieces are related.
+-->
+지금까지 Angular 애플리케이션을 구성하는 기본 요소에 대해 알아봤습니다. 아래 다이어그램을 보면서 지금까지 다뤘던 내용을 다시 한 번 확인해 보세요.
 
 <figure>
+  <!--
   <img src="generated/images/guide/architecture/overview2.png" alt="overview">
+  -->
+  <img src="generated/images/guide/architecture/overview2.png" alt="개요">
 </figure>
 
+<!--
 * Together, a component and template define an Angular view.
   * A decorator on a component class adds the metadata, including a pointer to the associated template.
   * Directives and binding markup in a component's template modify views based on program data and logic.
 * The dependency injector provides services to a component, such as the router service that lets you define navigation among views.
+-->
+* 컴포넌트와 템플릿은 Angular의 뷰를 정의합니다.
+  * 데코레이터는 컴포넌트 클래스에 메타데이터를 추가하며, 이 때 템플릿을 지정합니다.
+  * 컴포넌트 템플릿에 사용하는 디렉티브와 바인딩 마크업은 데이터와 프로그램 로직에 따라 템플릿을 조작합니다.
+* 서비스는 컴포넌트에 의존성으로 주입해서 사용합니다. 예를 들어 뷰에서 네비게이션 기능을 사용하려면 라우터 서비스를 주입받아 사용하면 됩니다.
 
+<!--
 Each of these subjects is introduced in more detail in the following pages.
+-->
+그리고 다음 주제들은 다른 문서에서 좀 더 자세하게 다룹니다.
 
+<!--
 * [Modules](guide/architecture-modules)
 * [Components](guide/architecture-components)
   * [Templates](guide/architecture-components#templates-and-views)
@@ -223,11 +265,24 @@ Each of these subjects is introduced in more detail in the following pages.
   * [Directives](guide/architecture-components#directives)
   * [Pipes](guide/architecture-components#pipes)
 * [Services and dependency injection](guide/architecture-services)
+-->
+* [모듈](guide/architecture-modules)
+* [컴포넌트](guide/architecture-components)
+  * [템플릿](guide/architecture-components#templates-and-views)
+  * [메타데이터](guide/architecture-components#component-metadata)
+  * [데이터 바인딩](guide/architecture-components#data-binding)
+  * [디렉티브](guide/architecture-components#directives)
+  * [파이프](guide/architecture-components#pipes)
+* [서비스와 의존성 주입](guide/architecture-services)
 
 <div class="l-sub-section">
-
+<!--
    Note that the code referenced on these pages is available as a <live-example></live-example>.
+ -->
+ 이 문서에서 다룬 코드는 <live-example></live-example>에서도 확인할 수 있습니다.
 </div>
 
+<!--
 When you are familiar with these fundamental building blocks, you can explore them in more detail in the documentation. To learn about more tools and techniques that are available to help you build and deploy Angular applications, see [Next steps](guide/architecture-next-steps).
-</div>
+-->
+Angular 애플리케이션의 기본 요소에 이미 익숙하다면 각각을 좀 더 깊이 있게 다루는 문서를 확인해 보는 것도 좋습니다. 그리고 애플리케이션 개발이나 배포에 사용하는 툴이나 테크닉을 먼저 알아보려면 [이 문서](guide/architecture-next-steps)를 확인해 보세요.
