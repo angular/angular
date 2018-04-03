@@ -1,24 +1,6 @@
 [
   {
-    "name": "AnonymousSubject"
-  },
-  {
     "name": "CLEAN_PROMISE"
-  },
-  {
-    "name": "ConnectableSubscriber"
-  },
-  {
-    "name": "Context"
-  },
-  {
-    "name": "CountedSubject"
-  },
-  {
-    "name": "DelayMessage"
-  },
-  {
-    "name": "EMPTY$1"
   },
   {
     "name": "EMPTY$2"
@@ -27,25 +9,10 @@
     "name": "EMPTY_RENDERER_TYPE_ID"
   },
   {
-    "name": "EmptyError"
-  },
-  {
-    "name": "GroupDurationSubscriber"
-  },
-  {
-    "name": "GroupedObservable"
-  },
-  {
     "name": "HelloWorld"
   },
   {
     "name": "INeedToExistEvenThoughIAmNotNeeded"
-  },
-  {
-    "name": "InnerRefCountSubscription"
-  },
-  {
-    "name": "InnerSubscriber"
   },
   {
     "name": "NG_HOST_SYMBOL"
@@ -54,85 +21,10 @@
     "name": "NG_PROJECT_AS_ATTR_NAME"
   },
   {
-    "name": "NONE"
-  },
-  {
-    "name": "Notification"
-  },
-  {
-    "name": "ObjectUnsubscribedError"
-  },
-  {
-    "name": "Observable"
-  },
-  {
-    "name": "ObserveOnMessage"
-  },
-  {
-    "name": "ObserveOnSubscriber"
-  },
-  {
-    "name": "OuterSubscriber"
-  },
-  {
-    "name": "QueueAction"
-  },
-  {
     "name": "ROOT_DIRECTIVE_INDICES"
   },
   {
-    "name": "RefCountOperator$1"
-  },
-  {
-    "name": "RefCountSubscriber$1"
-  },
-  {
-    "name": "ReplayEvent"
-  },
-  {
-    "name": "SafeSubscriber"
-  },
-  {
-    "name": "SequenceEqualCompareToSubscriber"
-  },
-  {
-    "name": "StaticArrayIterator"
-  },
-  {
-    "name": "StaticIterator"
-  },
-  {
-    "name": "Subject"
-  },
-  {
-    "name": "SubjectSubscriber"
-  },
-  {
-    "name": "SubjectSubscription"
-  },
-  {
-    "name": "Subscriber"
-  },
-  {
-    "name": "Subscription"
-  },
-  {
-    "name": "SubscriptionDelaySubscriber"
-  },
-  {
     "name": "UNDEFINED_RENDERER_TYPE_ID"
-  },
-  {
-    "name": "UnsubscriptionError"
-  },
-  {
-    "name": "ZipBufferIterator"
-  },
-  {
-    "name": "__extends"
-  },
-  {
-    "name": "_enable_super_gross_mode_that_will_cause_bad_things"
   },
   {
     "name": "_renderCompCount"
@@ -157,9 +49,6 @@
   },
   {
     "name": "componentRefresh"
-  },
-  {
-    "name": "config"
   },
   {
     "name": "createLNode"
@@ -189,52 +78,10 @@
     "name": "detectChangesInternal"
   },
   {
-    "name": "dispatch"
-  },
-  {
-    "name": "dispatchBufferClose"
-  },
-  {
-    "name": "dispatchBufferCreation"
-  },
-  {
-    "name": "dispatchBufferTimeSpanOnly"
-  },
-  {
-    "name": "dispatchNext$2"
-  },
-  {
-    "name": "dispatchNext$3"
-  },
-  {
-    "name": "dispatchNotification"
-  },
-  {
-    "name": "dispatchWindowClose"
-  },
-  {
-    "name": "dispatchWindowCreation"
-  },
-  {
-    "name": "dispatchWindowTimeSpanOnly"
-  },
-  {
     "name": "domRendererFactory3"
   },
   {
-    "name": "empty"
-  },
-  {
-    "name": "empty$1"
-  },
-  {
-    "name": "emptyScheduled"
-  },
-  {
     "name": "enterView"
-  },
-  {
-    "name": "errorObject"
   },
   {
     "name": "executeHooks"
@@ -246,9 +93,6 @@
     "name": "executeInitHooks"
   },
   {
-    "name": "extendStatics"
-  },
-  {
     "name": "extractDirectiveDef"
   },
   {
@@ -258,28 +102,13 @@
     "name": "firstTemplatePass"
   },
   {
-    "name": "flattenUnsubscriptionErrors"
-  },
-  {
-    "name": "fromArray"
-  },
-  {
     "name": "getDirectiveInstance"
   },
   {
     "name": "getOrCreateTView"
   },
   {
-    "name": "getPromiseCtor"
-  },
-  {
-    "name": "getSymbolIterator$1"
-  },
-  {
     "name": "hostElement"
-  },
-  {
-    "name": "hostReportError"
   },
   {
     "name": "initChangeDetectorIfExisting"
@@ -288,55 +117,13 @@
     "name": "invertObject"
   },
   {
-    "name": "isArray"
-  },
-  {
-    "name": "isArrayLike"
-  },
-  {
-    "name": "isFunction"
-  },
-  {
-    "name": "isObject"
-  },
-  {
     "name": "isProceduralRenderer"
-  },
-  {
-    "name": "isPromise"
-  },
-  {
-    "name": "isScheduler"
-  },
-  {
-    "name": "isTrustedSubscriber"
-  },
-  {
-    "name": "iterator"
   },
   {
     "name": "leaveView"
   },
   {
     "name": "locateHostElement"
-  },
-  {
-    "name": "noop"
-  },
-  {
-    "name": "observable"
-  },
-  {
-    "name": "of"
-  },
-  {
-    "name": "pipeFromArray"
-  },
-  {
-    "name": "queue"
-  },
-  {
-    "name": "refCount"
   },
   {
     "name": "refreshChildComponents"
@@ -360,12 +147,6 @@
     "name": "resolveRendererType2"
   },
   {
-    "name": "rxSubscriber"
-  },
-  {
-    "name": "scalar"
-  },
-  {
     "name": "setHostBindings"
   },
   {
@@ -375,37 +156,7 @@
     "name": "stringify$1"
   },
   {
-    "name": "subscribeTo"
-  },
-  {
-    "name": "subscribeToArray"
-  },
-  {
-    "name": "subscribeToIterable"
-  },
-  {
-    "name": "subscribeToObservable"
-  },
-  {
-    "name": "subscribeToPromise"
-  },
-  {
-    "name": "subscribeToResult"
-  },
-  {
     "name": "text"
-  },
-  {
-    "name": "throwError"
-  },
-  {
-    "name": "toSubscriber"
-  },
-  {
-    "name": "tryCatch"
-  },
-  {
-    "name": "tryCatcher"
   },
   {
     "name": "viewAttached"

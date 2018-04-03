@@ -2,9 +2,9 @@ workspace(name = "angular")
 
 http_archive(
     name = "build_bazel_rules_nodejs",
-    url = "https://github.com/bazelbuild/rules_nodejs/archive/0.6.0.zip",
-    strip_prefix = "rules_nodejs-0.6.0",
-    sha256 = "e8a2bb5ca51fbafb244bc507bcebcae33a63d969f47413b319a8dcce032845bf",
+    url = "https://github.com/bazelbuild/rules_nodejs/archive/cd368bd71a4b04fae0eafb5c5e2c906a93772584.zip",
+    strip_prefix = "rules_nodejs-cd368bd71a4b04fae0eafb5c5e2c906a93772584",
+    sha256 = "db74c61dd8bf73cc50aed56e78b7a8ad383f5869206901506cf8d3ee27f9277f",
 )
 
 load("@build_bazel_rules_nodejs//:defs.bzl", "check_bazel_version", "node_repositories", "yarn_install")
@@ -88,7 +88,7 @@ http_archive(
 
 http_archive(
     name = "org_brotli",
-    url = "https://github.com/google/brotli/archive/v1.0.2.zip",
-    strip_prefix = "brotli-1.0.2",
-    sha256 = "b43d5d6bc40f2fa6c785b738d86c6bbe022732fe25196ebbe43b9653a025920d",
+    url = "https://github.com/google/brotli/archive/c6333e1e79fb62ea088443f192293f964409b04e.zip",
+    strip_prefix = "brotli-c6333e1e79fb62ea088443f192293f964409b04e",
+    sha256 = "3f781988dee7dd3bcce2bf238294663cfaaf3b6433505bdb762e24d0a284d1dc",
 )

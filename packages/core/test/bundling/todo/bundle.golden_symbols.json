@@ -18,25 +18,10 @@
     "name": "CommonModule"
   },
   {
-    "name": "ConnectableSubscriber"
-  },
-  {
-    "name": "Context"
-  },
-  {
-    "name": "CountedSubject"
-  },
-  {
     "name": "DefaultIterableDiffer"
   },
   {
     "name": "DefaultIterableDifferFactory"
-  },
-  {
-    "name": "DelayMessage"
-  },
-  {
-    "name": "EMPTY$1"
   },
   {
     "name": "EMPTY$2"
@@ -54,19 +39,10 @@
     "name": "EmbeddedViewRef$1"
   },
   {
-    "name": "EmptyError"
-  },
-  {
     "name": "EventEmitter"
   },
   {
     "name": "GET_PROPERTY_NAME$1"
-  },
-  {
-    "name": "GroupDurationSubscriber"
-  },
-  {
-    "name": "GroupedObservable"
   },
   {
     "name": "INJECTOR"
@@ -78,12 +54,6 @@
     "name": "InjectionToken"
   },
   {
-    "name": "InnerRefCountSubscription"
-  },
-  {
-    "name": "InnerSubscriber"
-  },
-  {
     "name": "IterableChangeRecord_"
   },
   {
@@ -91,9 +61,6 @@
   },
   {
     "name": "NG_PROJECT_AS_ATTR_NAME"
-  },
-  {
-    "name": "NONE"
   },
   {
     "name": "NOT_YET"
@@ -114,9 +81,6 @@
     "name": "NgOnChangesFeature"
   },
   {
-    "name": "Notification"
-  },
-  {
     "name": "NullInjector"
   },
   {
@@ -126,25 +90,13 @@
     "name": "Observable"
   },
   {
-    "name": "ObserveOnMessage"
-  },
-  {
-    "name": "ObserveOnSubscriber"
-  },
-  {
     "name": "Optional"
-  },
-  {
-    "name": "OuterSubscriber"
   },
   {
     "name": "PARAMETERS"
   },
   {
     "name": "PRIVATE_PREFIX"
-  },
-  {
-    "name": "QueueAction"
   },
   {
     "name": "R3Injector"
@@ -156,34 +108,16 @@
     "name": "RecordViewTuple"
   },
   {
-    "name": "RefCountOperator$1"
-  },
-  {
-    "name": "RefCountSubscriber$1"
-  },
-  {
-    "name": "ReplayEvent"
-  },
-  {
     "name": "SafeSubscriber"
   },
   {
     "name": "Self"
   },
   {
-    "name": "SequenceEqualCompareToSubscriber"
-  },
-  {
     "name": "SimpleChange"
   },
   {
     "name": "SkipSelf"
-  },
-  {
-    "name": "StaticArrayIterator"
-  },
-  {
-    "name": "StaticIterator"
   },
   {
     "name": "Subject"
@@ -199,9 +133,6 @@
   },
   {
     "name": "Subscription"
-  },
-  {
-    "name": "SubscriptionDelaySubscriber"
   },
   {
     "name": "THROW_IF_NOT_FOUND"
@@ -231,9 +162,6 @@
     "name": "ViewContainerRef$1"
   },
   {
-    "name": "ZipBufferIterator"
-  },
-  {
     "name": "_CLEAN_PROMISE"
   },
   {
@@ -250,6 +178,21 @@
   },
   {
     "name": "__extends"
+  },
+  {
+    "name": "__extends$1"
+  },
+  {
+    "name": "__extends$2"
+  },
+  {
+    "name": "__extends$4"
+  },
+  {
+    "name": "__extends$5"
+  },
+  {
+    "name": "__extends$6"
   },
   {
     "name": "__global"
@@ -411,36 +354,6 @@
     "name": "directiveCreate"
   },
   {
-    "name": "dispatch"
-  },
-  {
-    "name": "dispatchBufferClose"
-  },
-  {
-    "name": "dispatchBufferCreation"
-  },
-  {
-    "name": "dispatchBufferTimeSpanOnly"
-  },
-  {
-    "name": "dispatchNext$2"
-  },
-  {
-    "name": "dispatchNext$3"
-  },
-  {
-    "name": "dispatchNotification"
-  },
-  {
-    "name": "dispatchWindowClose"
-  },
-  {
-    "name": "dispatchWindowCreation"
-  },
-  {
-    "name": "dispatchWindowTimeSpanOnly"
-  },
-  {
     "name": "domRendererFactory3"
   },
   {
@@ -457,12 +370,6 @@
   },
   {
     "name": "empty"
-  },
-  {
-    "name": "empty$1"
-  },
-  {
-    "name": "emptyScheduled"
   },
   {
     "name": "enterView"
@@ -511,9 +418,6 @@
   },
   {
     "name": "forwardRef"
-  },
-  {
-    "name": "fromArray"
   },
   {
     "name": "generateInitialInputs"
@@ -576,9 +480,6 @@
     "name": "getSymbolIterator"
   },
   {
-    "name": "getSymbolIterator$1"
-  },
-  {
     "name": "getTypeNameForDebugging"
   },
   {
@@ -636,9 +537,6 @@
     "name": "isArray"
   },
   {
-    "name": "isArrayLike"
-  },
-  {
     "name": "isCssClassMatching"
   },
   {
@@ -678,12 +576,6 @@
     "name": "isProceduralRenderer"
   },
   {
-    "name": "isPromise"
-  },
-  {
-    "name": "isScheduler"
-  },
-  {
     "name": "isTrustedSubscriber"
   },
   {
@@ -694,9 +586,6 @@
   },
   {
     "name": "iterateListLike"
-  },
-  {
-    "name": "iterator"
   },
   {
     "name": "leaveView"
@@ -738,16 +627,10 @@
     "name": "observable"
   },
   {
-    "name": "of"
-  },
-  {
     "name": "pipeFromArray"
   },
   {
     "name": "providerToRecord"
-  },
-  {
-    "name": "queue"
   },
   {
     "name": "queueComponentIndexForCheck"
@@ -769,9 +652,6 @@
   },
   {
     "name": "queueViewHooks"
-  },
-  {
-    "name": "refCount"
   },
   {
     "name": "refreshChildComponents"
@@ -816,9 +696,6 @@
     "name": "saveResolvedLocalsInData"
   },
   {
-    "name": "scalar"
-  },
-  {
     "name": "scheduleTick"
   },
   {
@@ -846,31 +723,10 @@
     "name": "stringify$1"
   },
   {
-    "name": "subscribeTo"
-  },
-  {
-    "name": "subscribeToArray"
-  },
-  {
-    "name": "subscribeToIterable"
-  },
-  {
-    "name": "subscribeToObservable"
-  },
-  {
-    "name": "subscribeToPromise"
-  },
-  {
-    "name": "subscribeToResult"
-  },
-  {
     "name": "text"
   },
   {
     "name": "textBinding"
-  },
-  {
-    "name": "throwError"
   },
   {
     "name": "throwErrorIfNoChangesMode"
