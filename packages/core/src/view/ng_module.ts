@@ -75,51 +75,51 @@ export function initNgModule(data: NgModuleData) {
 
 export function resolveNgModuleDep(
     data: NgModuleData, depDef: DepDef, notFoundValue: any = Injector.THROW_IF_NOT_FOUND): any {
-  if (depDef.flags & DepFlags.Value) {
-    return depDef.token;
-  }
-  if (depDef.flags & DepFlags.Optional) {
-    notFoundValue = null;
-  }
-  if (depDef.flags & DepFlags.SkipSelf) {
-    return data._parent.get(depDef.token, notFoundValue);
-  }
-  const tokenKey = depDef.tokenKey;
-  switch (tokenKey) {
-    case InjectorRefTokenKey:
-    case INJECTORRefTokenKey:
-    case NgModuleRefTokenKey:
-      return data;
-  }
-  const providerDef = data._def.providersByKey[tokenKey];
-  if (providerDef) {
-    let providerInstance = data._providers[providerDef.index];
-    if (providerInstance === undefined) {
-      providerInstance = data._providers[providerDef.index] =
-          _createProviderInstance(data, providerDef);
+  const former = setCurrentInjector(data);
+  try {
+    if (depDef.flags & DepFlags.Value) {
+      return depDef.token;
     }
-    return providerInstance === UNDEFINED_VALUE ? undefined : providerInstance;
-  } else if (depDef.token.ngInjectableDef && targetsModule(data, depDef.token.ngInjectableDef)) {
-    const injectableDef = depDef.token.ngInjectableDef as InjectableDef<any>;
-    const key = tokenKey;
-    const index = data._providers.length;
-    data._def.providersByKey[depDef.tokenKey] = {
-      flags: NodeFlags.TypeFactoryProvider | NodeFlags.LazyProvider,
-      value: injectableDef.factory,
-      deps: [], index,
-      token: depDef.token,
-    };
-    const former = setCurrentInjector(data);
-    try {
+    if (depDef.flags & DepFlags.Optional) {
+      notFoundValue = null;
+    }
+    if (depDef.flags & DepFlags.SkipSelf) {
+      return data._parent.get(depDef.token, notFoundValue);
+    }
+    const tokenKey = depDef.tokenKey;
+    switch (tokenKey) {
+      case InjectorRefTokenKey:
+      case INJECTORRefTokenKey:
+      case NgModuleRefTokenKey:
+        return data;
+    }
+    const providerDef = data._def.providersByKey[tokenKey];
+    if (providerDef) {
+      let providerInstance = data._providers[providerDef.index];
+      if (providerInstance === undefined) {
+        providerInstance = data._providers[providerDef.index] =
+            _createProviderInstance(data, providerDef);
+      }
+      return providerInstance === UNDEFINED_VALUE ? undefined : providerInstance;
+    } else if (depDef.token.ngInjectableDef && targetsModule(data, depDef.token.ngInjectableDef)) {
+      const injectableDef = depDef.token.ngInjectableDef as InjectableDef<any>;
+      const key = tokenKey;
+      const index = data._providers.length;
+      data._def.providersByKey[depDef.tokenKey] = {
+        flags: NodeFlags.TypeFactoryProvider | NodeFlags.LazyProvider,
+        value: injectableDef.factory,
+        deps: [], index,
+        token: depDef.token,
+      };
       data._providers[index] = UNDEFINED_VALUE;
       return (
           data._providers[index] =
               _createProviderInstance(data, data._def.providersByKey[depDef.tokenKey]));
-    } finally {
-      setCurrentInjector(former);
     }
+    return data._parent.get(depDef.token, notFoundValue);
+  } finally {
+    setCurrentInjector(former);
   }
-  return data._parent.get(depDef.token, notFoundValue);
 }
 
 function moduleTransitivelyPresent(ngModule: NgModuleData, scope: any): boolean {
