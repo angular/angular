@@ -26,6 +26,7 @@ filegroup(
     "protobufjs",
     "protractor",
     "reflect-metadata",
+    "rxjs",
     "tsickle",
     "tslib",
     "tsutils",

@@ -15,6 +15,7 @@
   ],
   "exclude": [
     "node_modules/@angular/bazel/**",
-    "node_modules/@angular/compiler-cli/**"
+    "node_modules/@angular/compiler-cli/**",
+    "node_modules/@angular/**/testing/**"
   ]
 }

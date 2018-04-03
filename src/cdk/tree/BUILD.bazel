@@ -25,6 +25,7 @@ ts_library(
     ":tree",
     "//src/cdk/collections",
     "@rxjs",
+    "@rxjs//operators",
   ],
   tsconfig = "//src/cdk:tsconfig-build.json",
 )

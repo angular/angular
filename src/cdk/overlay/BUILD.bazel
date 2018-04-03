@@ -43,6 +43,7 @@ ts_library(
     "//src/cdk/scrolling",
     "//src/cdk/testing",
     "@rxjs",
+    "@rxjs//operators",
   ],
   tsconfig = "//src/cdk:tsconfig-build.json",
 )
