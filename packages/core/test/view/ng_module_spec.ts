@@ -8,7 +8,7 @@
 
 import {NgModuleRef} from '@angular/core';
 import {InjectableDef, defineInjectable} from '@angular/core/src/di/defs';
-import {InjectFlags, Injector, inject} from '@angular/core/src/di/injector';
+import {INJECTOR, InjectFlags, Injector, inject} from '@angular/core/src/di/injector';
 import {makePropDecorator} from '@angular/core/src/util/decorators';
 import {NgModuleDefinition, NgModuleProviderDef, NodeFlags} from '@angular/core/src/view';
 import {moduleDef, moduleProvideDef, resolveNgModuleDep} from '@angular/core/src/view/ng_module';
@@ -88,6 +88,10 @@ class FromChildWithSkipSelfDep {
   });
 }
 
+class UsesInject {
+  constructor() { inject(INJECTOR); }
+}
+
 function makeProviders(classes: any[], modules: any[]): NgModuleDefinition {
   const providers =
       classes.map((token, index) => ({
@@ -105,8 +109,8 @@ describe('NgModuleRef_ injector', () => {
   let ref: NgModuleRef<any>;
   let childRef: NgModuleRef<any>;
   beforeEach(() => {
-    ref =
-        createNgModuleRef(MyModule, Injector.NULL, [], makeProviders([MyModule, Foo], [MyModule]));
+    ref = createNgModuleRef(
+        MyModule, Injector.NULL, [], makeProviders([MyModule, Foo, UsesInject], [MyModule]));
     childRef = createNgModuleRef(
         MyChildModule, ref.injector, [], makeProviders([MyChildModule], [MyChildModule]));
   });
@@ -147,4 +151,7 @@ describe('NgModuleRef_ injector', () => {
 
   it('does not inject something not scoped to the module',
      () => { expect(ref.injector.get(Baz, null)).toBeNull(); });
+
+  it('injects with the current injector always set',
+     () => { expect(() => ref.injector.get(UsesInject)).not.toThrow(); });
 });
