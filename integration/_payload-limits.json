@@ -2,10 +2,9 @@
   "cli-hello-world": {
     "master": {
       "uncompressed": {
-        "inline": 1508,
-        "main": "TODO(i): temporarily increase the payload size limit to 257298 from 155112, we need CLI v6 to bring the size down",
-        "main": 257298,
-        "polyfills": 60187
+        "runtime": 1110,
+        "main": 151765,
+        "polyfills": 59462
       }
     }
   },
