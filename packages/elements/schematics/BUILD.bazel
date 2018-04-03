@@ -1,0 +1,58 @@
+package(default_visibility = ["//visibility:public"])
+
+load("//tools:defaults.bzl", "ts_library")
+load("@build_bazel_rules_nodejs//:defs.bzl", "jasmine_node_test")
+
+exports_files([
+    "package.json",
+    "collection.json",
+])
+
+ts_library(
+    name = "schematics",
+    srcs = glob(
+        [
+            "ng-add/index.ts",
+            "ng-add/schema.d.ts",
+        ],
+    ),
+    module_name = "@angular/elements/schematics",
+    deps = [
+        "//packages/common",
+        "//packages/core",
+        "@rxjs",
+    ],
+)
+
+ts_library(
+    name = "test_lib",
+    testonly = 1,
+    srcs = glob(
+        [
+            "ng-add/index_spec.ts",
+        ],
+    ),
+    deps = [
+        ":schematics",
+        "//packages/common",
+        "//packages/core",
+        "@rxjs",
+        "@rxjs//operators",
+    ],
+)
+
+jasmine_node_test(
+    name = "test",
+    data = [":collection"],
+    deps = [
+        ":test_lib",
+    ],
+)
+
+genrule(
+    name = "collection",
+    srcs = ["collection.json"],
+    outs = ["test-collection.json"],
+    cmd = "cp $< $@",
+    output_to_bindir = 1,
+)
