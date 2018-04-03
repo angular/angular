@@ -1,5 +1,5 @@
 /** @stable */
-export declare function async(fn: Function): (done: any) => any;
+export declare function async(fn: Function, finishCallback?: (error?: any) => void): (done: any) => any;
 
 /** @experimental */
 export declare function cleanupDocument(): void;
