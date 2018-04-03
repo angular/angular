@@ -318,7 +318,8 @@ export function createLNodeObject(
     data: state,
     queries: queries,
     tNode: null,
-    pNextOrParent: null
+    pNextOrParent: null,
+    dynamicLContainerNode: null
   };
 }
 
@@ -386,6 +387,9 @@ export function createLNode(
                        previousOrParentNode.next,
                        `previousOrParentNode's next property should not have been set ${index}.`);
       previousOrParentNode.next = node;
+      if (previousOrParentNode.dynamicLContainerNode) {
+        previousOrParentNode.dynamicLContainerNode.next = node;
+      }
     }
   }
   previousOrParentNode = node;
@@ -452,9 +456,10 @@ export function renderEmbeddedTemplate<T>(
       const directives = currentView && currentView.tView.directiveRegistry;
       const pipes = currentView && currentView.tView.pipeRegistry;
 
-      const view = createLView(
-          -1, renderer, createTView(directives, pipes), template, context, LViewFlags.CheckAlways);
-      viewNode = createLNode(null, LNodeType.View, null, view);
+      const tView = getOrCreateTView(template, directives, pipes);
+      const lView = createLView(-1, renderer, tView, template, context, LViewFlags.CheckAlways);
+
+      viewNode = createLNode(null, LNodeType.View, null, lView);
       cm = true;
     }
     oldView = enterView(viewNode.data, viewNode);
@@ -1311,8 +1316,7 @@ function generateInitialInputs(
 
 
 export function createLContainer(
-    parentLNode: LNode, currentView: LView, template?: ComponentTemplate<any>,
-    host?: LContainerNode | LElementNode): LContainer {
+    parentLNode: LNode, currentView: LView, template?: ComponentTemplate<any>): LContainer {
   ngDevMode && assertNotNull(parentLNode, 'containers should have a parent');
   return <LContainer>{
     views: [],
@@ -1324,8 +1328,7 @@ export function createLContainer(
     next: null,
     parent: currentView,
     dynamicViewCount: 0,
-    queries: null,
-    host: host == null ? null : host
+    queries: null
   };
 }
 
