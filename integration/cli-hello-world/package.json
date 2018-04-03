@@ -5,8 +5,8 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": "ng build --prod --sourcemaps",
-    "test": "ng test --single-run",
+    "build": "ng build --prod --source-map",
+    "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e"
   },
@@ -26,7 +26,7 @@
     "zone.js": "file:../../node_modules/zone.js"
   },
   "devDependencies": {
-    "@angular/cli": "1.7.3",
+    "@angular/cli": "^6.0.0-rc.0",
     "@angular/compiler-cli": "file:../../dist/packages-dist/compiler-cli",
     "@angular/language-service": "file:../../dist/packages-dist/language-service",
     "@types/jasmine": "~2.8.3",
@@ -43,6 +43,7 @@
     "protractor": "~5.1.2",
     "ts-node": "~4.1.0",
     "tslint": "~5.9.1",
-    "typescript": "file:../../node_modules/typescript"
+    "typescript": "file:../../node_modules/typescript",
+    "@angular-devkit/build-angular": "~0.5.0"
   }
 }
