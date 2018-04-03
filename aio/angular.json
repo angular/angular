@@ -16,44 +16,44 @@
             "tsConfig": "src/tsconfig.app.json",
             "assets": [
               {
-                "glob": "assets",
-                "input": "/src",
-                "output": "/"
+                "glob": "**/*",
+                "input": "src/assets",
+                "output": "/assets"
               },
               {
-                "glob": "generated",
-                "input": "/src",
-                "output": "/"
+                "glob": "**/*",
+                "input": "src/generated",
+                "output": "/generated"
               },
               {
                 "glob": "app/search/search-worker.js",
-                "input": "/src",
+                "input": "src",
                 "output": "/"
               },
               {
                 "glob": "favicon.ico",
-                "input": "/src",
+                "input": "src",
                 "output": "/"
               },
               {
                 "glob": "pwa-manifest.json",
-                "input": "/src",
+                "input": "src",
                 "output": "/"
               },
               {
                 "glob": "google385281288605d160.html",
-                "input": "/src",
+                "input": "src",
                 "output": "/"
               },
               {
                 "glob": "custom-elements.min.js",
-                "input": "/node_modules/@webcomponents/custom-elements",
-                "output": "sets/js"
+                "input": "node_modules/@webcomponents/custom-elements",
+                "output": "/assets/js"
               },
               {
                 "glob": "native-shim.js",
-                "input": "/node_modules/@webcomponents/custom-elements/src",
-                "output": "sets/js"
+                "input": "node_modules/@webcomponents/custom-elements/src",
+                "output": "/assets/js"
               }
             ],
             "styles": [
@@ -77,14 +77,14 @@
               "fileReplacements": [
                 {
                   "src": "src/environments/environment.ts",
-                  "replaceWith": "dist/environments/environment.next.ts"
+                  "replaceWith": "src/environments/environment.next.ts"
                 }
               ]
             },
             "stable": {
               "optimization": true,
               "outputHashing": "all",
-              "sourceMap": false,
+              "sourceMap": true,
               "extractCss": true,
               "namedChunks": false,
               "aot": true,
@@ -94,7 +94,7 @@
               "fileReplacements": [
                 {
                   "src": "src/environments/environment.ts",
-                  "replaceWith": "dist/environments/environment.stable.ts"
+                  "replaceWith": "src/environments/environment.stable.ts"
                 }
               ]
             },
@@ -111,9 +111,20 @@
               "fileReplacements": [
                 {
                   "src": "src/environments/environment.ts",
-                  "replaceWith": "dist/environments/environment.archive.ts"
+                  "replaceWith": "src/environments/environment.archive.ts"
                 }
               ]
+            },
+            "production": {
+              "optimization": true,
+              "outputHashing": "all",
+              "sourceMap": false,
+              "extractCss": true,
+              "namedChunks": false,
+              "aot": true,
+              "extractLicenses": true,
+              "vendorChunk": false,
+              "buildOptimizer": true
             }
           }
         },
@@ -123,8 +134,8 @@
             "browserTarget": "site:build"
           },
           "configurations": {
-            "dev": {
-              "browserTarget": "site:build:dev"
+            "production": {
+              "browserTarget": "site:build:production"
             },
             "next": {
               "browserTarget": "site:build:next"
@@ -223,6 +234,11 @@
           "options": {
             "protractorConfig": "tests/e2e/protractor.conf.js",
             "devServerTarget": "site:serve"
+          },
+          "configurations": {
+            "production": {
+              "devServerTarget": "site:serve:production"
+            }
           }
         },
         "lint": {
