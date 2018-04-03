@@ -23,8 +23,10 @@ npm_package(
     name = "npm_package",
     srcs = ["package.json"],
     tags = [
-        # TODO(alexeagle): enable release after landing #23090
-        # "release-with-framework",
+        "release-with-framework",
     ],
-    deps = [":language-service"],
+    deps = [
+        ":language-service",
+        "//packages/language-service/bundles:language-service",
+    ],
 )
