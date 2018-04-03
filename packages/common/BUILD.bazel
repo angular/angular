@@ -25,6 +25,9 @@ ng_package(
         "//packages/common/http/testing:package.json",
         "//packages/common/testing:package.json",
     ],
+    data = [
+        "//packages/common/locales",
+    ],
     entry_point = "packages/common/index.js",
     tags = ["release-with-framework"],
     deps = [
