@@ -641,7 +641,7 @@ class TemplateDefinitionBuilder implements TemplateAstVisitor, LocalResolver {
     element.outputs.forEach((outputAst: BoundEventAst) => {
       const functionName = `${this.templateName}_${element.name}_${outputAst.name}_listener`;
       const bindingExpr = convertActionBinding(
-          this, implicit, outputAst.handler, 'b', () => error('Unexpected interpolation'));
+          this, o.variable('ctx'), outputAst.handler, 'b', () => error('Unexpected interpolation'));
       const handler = o.fn(
           [new o.FnParam('$event', o.DYNAMIC_TYPE)],
           [...bindingExpr.stmts, new o.ReturnStatement(bindingExpr.allowDefault)], o.INFERRED_TYPE,
