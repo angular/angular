@@ -11,8 +11,8 @@
   "hello_world__closure": {
     "master": {
       "uncompressed": {
-        "bundle": "TODO(i): temporarily increase the payload size limit to 226340 from 105779 - we need CLI v6 to bring the size down",
-        "bundle": 223894
+        "bundle": "TODO(i): temporarily increase the payload size limit from 105779 - this is due to a closure issue related to ESM reexports that still needs to be investigated",
+        "bundle": 178101
       }
     }
   },

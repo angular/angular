@@ -3,17 +3,17 @@
 
 
 "@angular/animations@file:../../dist/packages-dist/animations":
-  version "6.0.0-beta.7-8203e0365a"
+  version "6.0.0-rc.1-461a08bdc1"
   dependencies:
     tslib "^1.9.0"
 
 "@angular/common@file:../../dist/packages-dist/common":
-  version "6.0.0-beta.7-8203e0365a"
+  version "6.0.0-rc.1-461a08bdc1"
   dependencies:
     tslib "^1.9.0"
 
 "@angular/compiler-cli@file:../../dist/packages-dist/compiler-cli":
-  version "6.0.0-beta.7-8203e0365a"
+  version "6.0.0-rc.1-461a08bdc1"
   dependencies:
     chokidar "^1.4.2"
     minimist "^1.2.0"
@@ -21,22 +21,22 @@
     tsickle "^0.27.2"
 
 "@angular/compiler@file:../../dist/packages-dist/compiler":
-  version "6.0.0-beta.7-8203e0365a"
+  version "6.0.0-rc.1-461a08bdc1"
   dependencies:
     tslib "^1.9.0"
 
 "@angular/core@file:../../dist/packages-dist/core":
-  version "6.0.0-beta.7-8203e0365a"
+  version "6.0.0-rc.1-461a08bdc1"
   dependencies:
     tslib "^1.9.0"
 
 "@angular/platform-browser@file:../../dist/packages-dist/platform-browser":
-  version "6.0.0-beta.7-8203e0365a"
+  version "6.0.0-rc.1-461a08bdc1"
   dependencies:
     tslib "^1.9.0"
 
 "@angular/platform-server@file:../../dist/packages-dist/platform-server":
-  version "6.0.0-beta.7-8203e0365a"
+  version "6.0.0-rc.1-461a08bdc1"
   dependencies:
     domino "^2.0.1"
     tslib "^1.9.0"
@@ -912,9 +912,9 @@ globby@^5.0.0:
     pify "^2.0.0"
     pinkie-promise "^2.0.0"
 
-google-closure-compiler@20171023.0.1:
-  version "20171023.0.1"
-  resolved "https://registry.yarnpkg.com/google-closure-compiler/-/google-closure-compiler-20171023.0.1.tgz#8d0df115e7481902dac3019e55010b6004d29eb5"
+google-closure-compiler@20180319.0.0:
+  version "20180319.0.0"
+  resolved "https://registry.yarnpkg.com/google-closure-compiler/-/google-closure-compiler-20180319.0.0.tgz#8e281f5869079f94fa07c69b47b5f7ae9db7501a"
   dependencies:
     chalk "^1.0.0"
     vinyl "^2.0.1"
@@ -1835,7 +1835,7 @@ rx@4.1.0:
   resolved "https://registry.yarnpkg.com/rx/-/rx-4.1.0.tgz#a5f13ff79ef3b740fe30aa803fb09f98805d4782"
 
 "rxjs@file:../../node_modules/rxjs":
-  version "6.0.0-alpha.4"
+  version "6.0.0-rc.0"
   dependencies:
     tslib "^1.9.0"
 
