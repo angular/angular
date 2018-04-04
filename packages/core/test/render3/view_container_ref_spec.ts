@@ -119,6 +119,10 @@ describe('ViewContainerRef', () => {
     directiveInstance !.insertTpl();
     expect(fixture.html).toEqual('before<div testdir=""></div>From a template.after');
 
+    // run change-detection cycle with no template insertion / removal
+    fixture.update();
+    expect(fixture.html).toEqual('before<div testdir=""></div>From a template.after');
+
     directiveInstance !.insertTpl();
     expect(fixture.html)
         .toEqual('before<div testdir=""></div>From a template.From a template.after');
@@ -176,6 +180,10 @@ describe('ViewContainerRef', () => {
     expect(fixture.html).toEqual('before||after');
 
     directiveInstance !.insertTpl({name: 'World'});
+    expect(fixture.html).toEqual('before|Hello, World|after');
+
+    // run change-detection cycle with no template insertion / removal
+    fixture.update();
     expect(fixture.html).toEqual('before|Hello, World|after');
 
     directiveInstance !.remove(0);

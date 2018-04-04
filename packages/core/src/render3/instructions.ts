@@ -442,6 +442,7 @@ export function renderEmbeddedTemplate<T>(
     renderer: Renderer3): LViewNode {
   const _isParent = isParent;
   const _previousOrParentNode = previousOrParentNode;
+  let oldView: LView;
   try {
     isParent = true;
     previousOrParentNode = null !;
@@ -456,14 +457,14 @@ export function renderEmbeddedTemplate<T>(
       viewNode = createLNode(null, LNodeType.View, null, view);
       cm = true;
     }
-    enterView(viewNode.data, viewNode);
+    oldView = enterView(viewNode.data, viewNode);
 
     template(context, cm);
     refreshDirectives();
     refreshDynamicChildren();
 
   } finally {
-    leaveView(currentView && currentView !.parent !);
+    leaveView(oldView !);
     isParent = _isParent;
     previousOrParentNode = _previousOrParentNode;
   }
