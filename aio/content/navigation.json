@@ -463,11 +463,6 @@
           ]
         },
         {
-          "url": "guide/custom-elements",
-          "title": "Custom Elements",
-          "tooltip": "Using Angular Components as Custom Elements."
-        },
-        {
           "title": "Service Workers",
           "tooltip": "Angular service workers: Controlling caching of application resources.",
           "children": [
