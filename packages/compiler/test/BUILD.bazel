@@ -15,7 +15,10 @@ UTILS = [
 ts_library(
     name = "test_utils",
     srcs = UTILS,
-    visibility = ["//packages/compiler-cli/test:__subpackages__"],
+    visibility = [
+        "//packages/compiler-cli/test:__subpackages__",
+        "//packages/compiler/test:__subpackages__",
+    ],
     deps = [
         "//packages:types",
         "//packages/compiler",
@@ -68,7 +71,6 @@ jasmine_node_test(
         "//packages/common:npm_package",
         "//packages/core:npm_package",
     ],
-    # dissable since tests are running but not yet passing
     deps = [
         ":test_lib",
         ":test_node_only_lib",
@@ -79,7 +81,6 @@ jasmine_node_test(
 
 ts_web_test(
     name = "test_web",
-    # disable since tests are running but not yet passing
     deps = [
         ":test_lib",
     ],
