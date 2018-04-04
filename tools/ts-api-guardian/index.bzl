@@ -31,7 +31,6 @@ def ts_api_guardian_test(name, golden, actual, data = [], **kwargs):
       # From there, the relative imports would point to .ts files.
       "--node_options=--preserve-symlinks",
       "--stripExportPattern", "^\(__\|ɵ\)",
-      "--onStabilityMissing", "error",
   ]
   for i in COMMON_MODULE_IDENTIFIERS:
     args += ["--allowModuleIdentifiers", i]
