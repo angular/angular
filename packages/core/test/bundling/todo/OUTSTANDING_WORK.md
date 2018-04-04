@@ -1,7 +1,7 @@
 # Outstanding on the `Todo` app
 
 ## `Todo` app
-- [ ] Clicking archive removes todo item.
+- [X] Clicking archive removes todo item.
 - [ ] Update `Todo` app to match http://todomvc.com/
 
 ## Compiler
@@ -9,7 +9,7 @@
 - [ ] Allow compilation of `@angular/common` through ivy.
  
 ## Ivy Runtime
-- [ ] Work on `ViewContainerRef` needs to cause change detection so that `todo` app renders correctly on first render.
+- [X] Work on `ViewContainerRef` needs to cause change detection so that `todo` app renders correctly on first render.
 - [X] The todo input value box is not correctly rendering to checked for completed tasks.
 - [ ] `ViewContainerRef` must separate creation mode from update mode otherwise {{todo.done}} fails for `NgFor` because `todo` is not set during creation mode.
 - [ ] Injector should be optional
