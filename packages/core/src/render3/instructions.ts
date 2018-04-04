@@ -271,9 +271,9 @@ export function executeInitAndContentHooks(): void {
   }
 }
 
-export function createLView(
-    viewId: number, renderer: Renderer3, tView: TView, template: ComponentTemplate<any>| null,
-    context: any | null, flags: LViewFlags): LView {
+export function createLView<T>(
+    viewId: number, renderer: Renderer3, tView: TView, template: ComponentTemplate<T>| null,
+    context: T | null, flags: LViewFlags): LView {
   const newView = {
     parent: currentView,
     id: viewId,  // -1 for component views
@@ -1174,9 +1174,9 @@ export function directiveCreate<T>(
   ngDevMode && assertNotNull(previousOrParentNode.tNode, 'previousOrParentNode.tNode');
   const tNode: TNode|null = previousOrParentNode.tNode !;
 
-  const isComponent = (directiveDef as ComponentDef<any>).template;
+  const isComponent = (directiveDef as ComponentDef<T>).template;
   if (isComponent) {
-    addComponentLogic(index, elementIndex, directive, directiveDef as ComponentDef<any>);
+    addComponentLogic(index, elementIndex, directive, directiveDef as ComponentDef<T>);
   }
 
   if (firstTemplatePass) {
@@ -1188,14 +1188,14 @@ export function directiveCreate<T>(
   }
 
   if (tNode && tNode.attrs) {
-    setInputsFromAttrs<T>(index, instance, directiveDef.inputs, tNode);
+    setInputsFromAttrs(index, instance, directiveDef.inputs, tNode);
   }
 
   return instance;
 }
 
 function addComponentLogic<T>(
-    index: number, elementIndex: number, instance: T, def: ComponentDef<any>): void {
+    index: number, elementIndex: number, instance: T, def: ComponentDef<T>): void {
   const tView = getOrCreateTView(def.template, def.directiveDefs, def.pipeDefs);
 
   // Only component views should be added to the view tree directly. Embedded views are
@@ -1221,7 +1221,7 @@ function addComponentLogic<T>(
  * current Angular. Example: local refs and inputs on root component.
  */
 export function baseDirectiveCreate<T>(
-    index: number, directive: T, directiveDef: DirectiveDef<T>| ComponentDef<any>): T {
+    index: number, directive: T, directiveDef: DirectiveDef<T>| ComponentDef<T>): T {
   ngDevMode &&
       assertNull(currentView.bindingStartIndex, 'directives should be created before any bindings');
   ngDevMode && assertPreviousIsParent();
@@ -1558,10 +1558,10 @@ export function componentRefresh<T>(directiveIndex: number, elementIndex: number
   // Only attached CheckAlways components or attached, dirty OnPush components should be checked
   if (viewAttached(hostView) && hostView.flags & (LViewFlags.CheckAlways | LViewFlags.Dirty)) {
     ngDevMode && assertDataInRange(directiveIndex, directives !);
-    const def = currentView.tView.directives ![directiveIndex] as ComponentDef<any>;
+    const def = currentView.tView.directives ![directiveIndex] as ComponentDef<T>;
 
     detectChangesInternal(
-        hostView, element, def, getDirectiveInstance<T>(directives ![directiveIndex]));
+        hostView, element, def, getDirectiveInstance(directives ![directiveIndex]));
   }
 }
 
@@ -1906,7 +1906,7 @@ function throwErrorIfNoChangesMode(oldValue: any, currValue: any): never|void {
 
 /** Checks the view of the component provided. Does not gate on dirty checks or execute doCheck. */
 export function detectChangesInternal<T>(
-    hostView: LView, hostNode: LElementNode, def: ComponentDef<any>, component: T) {
+    hostView: LView, hostNode: LElementNode, def: ComponentDef<T>, component: T) {
   const oldView = enterView(hostView, hostNode);
   const template = def.template;
 
