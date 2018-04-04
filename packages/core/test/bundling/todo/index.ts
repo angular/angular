@@ -7,7 +7,7 @@
  */
 
 import {CommonModule, NgForOf} from '@angular/common';
-import {Component, EventEmitter, InjectFlags, Injectable, Input, IterableDiffers, NgModule, Output, createInjector, defineInjector, inject, ɵComponentDef as ComponentDef, ɵComponentType as ComponentType, ɵDirectiveDef as DirectiveDef, ɵDirectiveType as DirectiveType, ɵNgOnChangesFeature as NgOnChangesFeature, ɵdefaultIterableDiffers as defaultIterableDiffers, ɵdefineDirective as defineDirective, ɵinjectTemplateRef as injectTemplateRef, ɵinjectViewContainerRef as injectViewContainerRef, ɵmarkDirty as markDirty, ɵrenderComponent as renderComponent} from '@angular/core';
+import {ChangeDetectionStrategy, Component, EventEmitter, InjectFlags, Injectable, Input, IterableDiffers, NgModule, Output, createInjector, defineInjector, inject, ɵComponentDef as ComponentDef, ɵComponentType as ComponentType, ɵDirectiveDef as DirectiveDef, ɵDirectiveType as DirectiveType, ɵNgOnChangesFeature as NgOnChangesFeature, ɵdefaultIterableDiffers as defaultIterableDiffers, ɵdefineDirective as defineDirective, ɵinjectTemplateRef as injectTemplateRef, ɵinjectViewContainerRef as injectViewContainerRef, ɵmarkDirty as markDirty, ɵrenderComponent as renderComponent} from '@angular/core';
 
 export interface ToDo {
   text: string;
@@ -37,7 +37,8 @@ export class AppState {
       <span [class.done]="todo && todo.done">{{todo && todo.text}}</span>&ngsp;
       <button (click)="onArchiveClick()">archive</button>
     </div>
-  `
+  `,
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TodoComponent {
   @Input()
@@ -59,7 +60,8 @@ export class TodoComponent {
     <todo *ngFor="let todo of appState.todos" [todo]="todo" (archive)="onArchive($event)"></todo>
   </div>
   <span>count: {{appState.todos.length}}.</span>
-  `
+  `,
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ToDoAppComponent {
   public appState: AppState;
@@ -72,7 +74,6 @@ export class ToDoAppComponent {
   onArchive(item: ToDo) {
     const todos = this.appState.todos;
     todos.splice(todos.indexOf(item), 1);
-    markDirty(this);
   }
 }
 
@@ -105,7 +106,4 @@ export class ToDoAppComponent {
 export class ToDoAppModule {
 }
 
-renderComponent(ToDoAppComponent, {
-  // TODO(misko): This should run without injector.
-  injector: createInjector(ToDoAppModule)
-});
+renderComponent(ToDoAppComponent);

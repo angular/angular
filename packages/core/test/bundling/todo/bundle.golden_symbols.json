@@ -1,15 +1,9 @@
 [
   {
-    "name": "APP_ROOT"
-  },
-  {
     "name": "AnonymousSubject"
   },
   {
     "name": "AppState"
-  },
-  {
-    "name": "CIRCULAR$1"
   },
   {
     "name": "CIRCULAR$2"
@@ -30,9 +24,6 @@
     "name": "EMPTY$2"
   },
   {
-    "name": "EMPTY_ARRAY$1"
-  },
-  {
     "name": "EMPTY_RENDERER_TYPE_ID"
   },
   {
@@ -45,18 +36,6 @@
     "name": "EventEmitter"
   },
   {
-    "name": "GET_PROPERTY_NAME$1"
-  },
-  {
-    "name": "INJECTOR"
-  },
-  {
-    "name": "Inject"
-  },
-  {
-    "name": "InjectionToken"
-  },
-  {
     "name": "IterableChangeRecord_"
   },
   {
@@ -66,13 +45,7 @@
     "name": "NG_PROJECT_AS_ATTR_NAME"
   },
   {
-    "name": "NOT_YET"
-  },
-  {
     "name": "NO_CHANGE"
-  },
-  {
-    "name": "NULL_INJECTOR$1"
   },
   {
     "name": "NgForOf"
@@ -82,9 +55,6 @@
   },
   {
     "name": "NgOnChangesFeature"
-  },
-  {
-    "name": "NullInjector"
   },
   {
     "name": "ObjectUnsubscribedError"
@@ -102,9 +72,6 @@
     "name": "PRIVATE_PREFIX"
   },
   {
-    "name": "R3Injector"
-  },
-  {
     "name": "ROOT_DIRECTIVE_INDICES"
   },
   {
@@ -112,9 +79,6 @@
   },
   {
     "name": "SafeSubscriber"
-  },
-  {
-    "name": "Self"
   },
   {
     "name": "SimpleChange"
@@ -138,9 +102,6 @@
     "name": "Subscription"
   },
   {
-    "name": "THROW_IF_NOT_FOUND"
-  },
-  {
     "name": "TemplateRef$1"
   },
   {
@@ -154,9 +115,6 @@
   },
   {
     "name": "UNDEFINED_RENDERER_TYPE_ID"
-  },
-  {
-    "name": "USE_VALUE$1"
   },
   {
     "name": "UnsubscriptionError"
@@ -175,9 +133,6 @@
   },
   {
     "name": "_ROOT_DIRECTIVE_INDICES"
-  },
-  {
-    "name": "_THROW_IF_NOT_FOUND"
   },
   {
     "name": "__extends"
@@ -217,9 +172,6 @@
   },
   {
     "name": "_c1"
-  },
-  {
-    "name": "_currentInjector"
   },
   {
     "name": "_devMode"
@@ -294,13 +246,7 @@
     "name": "container"
   },
   {
-    "name": "couldBeInjectableType"
-  },
-  {
     "name": "createDirectivesAndLocals"
-  },
-  {
-    "name": "createInjector"
   },
   {
     "name": "createLContainer"
@@ -325,9 +271,6 @@
   },
   {
     "name": "currentView"
-  },
-  {
-    "name": "deepForEach"
   },
   {
     "name": "defaultIterableDiffers"
@@ -423,16 +366,10 @@
     "name": "flattenUnsubscriptionErrors"
   },
   {
-    "name": "forwardRef"
-  },
-  {
     "name": "generateInitialInputs"
   },
   {
     "name": "generatePropertyAliases"
-  },
-  {
-    "name": "getClosureSafeProperty$1"
   },
   {
     "name": "getDirectiveInstance"
@@ -442,9 +379,6 @@
   },
   {
     "name": "getNextOrParentSiblingNode"
-  },
-  {
-    "name": "getNullInjector"
   },
   {
     "name": "getOrCreateContainerRef"
@@ -492,12 +426,6 @@
     "name": "getTypeNameForDebugging$1"
   },
   {
-    "name": "hasDeps"
-  },
-  {
-    "name": "hasOnDestroy"
-  },
-  {
     "name": "hostElement"
   },
   {
@@ -510,19 +438,10 @@
     "name": "initChangeDetectorIfExisting"
   },
   {
-    "name": "inject"
-  },
-  {
-    "name": "injectArgs"
-  },
-  {
     "name": "injectTemplateRef"
   },
   {
     "name": "injectViewContainerRef"
-  },
-  {
-    "name": "injectableDefRecord"
   },
   {
     "name": "insertChild"
@@ -552,12 +471,6 @@
     "name": "isDifferent"
   },
   {
-    "name": "isExistingProvider"
-  },
-  {
-    "name": "isFactoryProvider"
-  },
-  {
     "name": "isFunction"
   },
   {
@@ -585,12 +498,6 @@
     "name": "isTrustedSubscriber"
   },
   {
-    "name": "isTypeProvider"
-  },
-  {
-    "name": "isValueProvider"
-  },
-  {
     "name": "iterateListLike"
   },
   {
@@ -612,12 +519,6 @@
     "name": "makeParamDecorator"
   },
   {
-    "name": "makeRecord"
-  },
-  {
-    "name": "markDirty"
-  },
-  {
     "name": "markDirtyIfOnPush"
   },
   {
@@ -634,9 +535,6 @@
   },
   {
     "name": "pipeFromArray"
-  },
-  {
-    "name": "providerToRecord"
   },
   {
     "name": "queueComponentIndexForCheck"
@@ -690,9 +588,6 @@
     "name": "resolveDirective"
   },
   {
-    "name": "resolveForwardRef"
-  },
-  {
     "name": "resolveRendererType2"
   },
   {
@@ -706,9 +601,6 @@
   },
   {
     "name": "scheduleTick"
-  },
-  {
-    "name": "setCurrentInjector"
   },
   {
     "name": "setHostBindings"
