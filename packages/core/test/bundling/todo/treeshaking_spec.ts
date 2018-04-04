@@ -14,29 +14,17 @@ const UTF8 = {
   encoding: 'utf-8'
 };
 const PACKAGE = 'angular/packages/core/test/bundling/todo';
+const BUNDLES = ['bundle.js', 'bundle.min_debug.js', 'bundle.min.js'];
 
 describe('functional test for todo', () => {
-  it('should render todo when not minified', withBody('<todo-app></todo-app>', () => {
-       require(path.join(PACKAGE, 'bundle.js'));
-       expect(document.body.textContent).toContain('ToDo Application');
-       expect(document.body.textContent).toContain('count: 5.');
-       // TODO(misko): disabled until `ViewContainerRef` is  fixed
-       // expect(document.body.textContent).toContain('Demonstrate Components');
-     }));
-
-  it('should render todo when debug minified', withBody('<todo-app></todo-app>', () => {
-       require(path.join(PACKAGE, 'bundle.min_debug.js'));
-       expect(document.body.textContent).toContain('ToDo Application');
-       expect(document.body.textContent).toContain('count: 5.');
-       // TODO(misko): disabled until `ViewContainerRef` is  fixed
-       // expect(document.body.textContent).toContain('Demonstrate Components');
-     }));
-
-  it('should render todo when fully minified', withBody('<todo-app></todo-app>', () => {
-       require(path.join(PACKAGE, 'bundle.min.js'));
-       expect(document.body.textContent).toContain('ToDo Application');
-       expect(document.body.textContent).toContain('count: 5.');
-       // TODO(misko): disabled until `ViewContainerRef` is  fixed
-       // expect(document.body.textContent).toContain('Demonstrate Components');
-     }));
+  BUNDLES.forEach(bundle => {
+    describe(bundle, () => {
+      it('should render todo', withBody('<todo-app></todo-app>', () => {
+           require(path.join(PACKAGE, bundle));
+           expect(document.body.textContent).toContain('ToDo Application');
+           expect(document.body.textContent).toContain('count: 5.');
+           expect(document.body.textContent).toContain('Demonstrate Components');
+         }));
+    });
+  });
 });
