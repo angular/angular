@@ -33,7 +33,7 @@ export class AppState {
   // but NgForOf expects creation and binding separate.
   template: `
     <div>
-      <input type="checkbox" [value]="todo && todo.done" (click)="onCheckboxClick()">&ngsp;
+      <input type="checkbox" [checked]="todo && todo.done" (change)="onCheckboxClick()">&ngsp;
       <span [class.done]="todo && todo.done">{{todo && todo.text}}</span>&ngsp;
       <button (click)="onArchiveClick()">archive</button>
     </div>
@@ -71,7 +71,7 @@ export class ToDoAppComponent {
 
   onArchive(item: ToDo) {
     const todos = this.appState.todos;
-    todos.splice(todos.indexOf(item));
+    todos.splice(todos.indexOf(item), 1);
     markDirty(this);
   }
 }
