@@ -18,11 +18,9 @@ import {UrlTree} from '../url_tree';
 
 
 /**
- * @whatItDoes Lets you link to specific parts of your app.
- *
  * @description
  *
- * The RouterLink directives let you link to specific parts of your app.
+ * Lets you link to specific routes in your app.
  *
  * Consider the following route configuration:
  * `[{ path: 'user/:name', component: UserCmp }]`.
@@ -154,7 +152,9 @@ export class RouterLink {
 }
 
 /**
- * @whatItDoes Lets you link to specific parts of your app.
+ * @description
+ *
+ * Lets you link to specific routes in your app.
  *
  * See {@link RouterLink} for more information.
  *
