@@ -13,9 +13,9 @@
  */
 
 /**
- * @whatItDoes Represents the version of angular/animations
+ * @description
  *
- *
+ * Represents the version of angular/animations
  */
 export class Version {
   public readonly major: string;
