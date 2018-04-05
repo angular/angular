@@ -29,14 +29,14 @@ export const formControlBinding: any = {
 };
 
 /**
- * @whatItDoes Syncs a standalone {@link FormControl} instance to a form control element.
+ * @description
  *
- * In other words, this directive ensures that any values written to the {@link FormControl}
+ * Syncs a standalone {@link FormControl} instance to a form control element.
+ *
+ * This directive ensures that any values written to the {@link FormControl}
  * instance programmatically will be written to the DOM element (model -> view). Conversely,
  * any values written to the DOM element through user input will be reflected in the
  * {@link FormControl} instance (view -> model).
- *
- * @description
  *
  * Use this directive if you'd like to create and manage a {@link FormControl} instance directly.
  * Simply create a {@link FormControl}, save it to your component class, and pass it into the
