@@ -141,13 +141,13 @@ export abstract class Query {}
  */
 export interface ContentChildrenDecorator {
   /**
-   * @whatItDoes Configures a content query.
    *
    * @usageNotes
    *
    * {@example core/di/ts/contentChildren/content_children_howto.ts region='HowTo'}
    *
    * @description
+   * Configures a content query.
    *
    * You can use ContentChildren to get the {@link QueryList} of elements or directives from the
    * content DOM. Any time a child element is added, removed, or moved, the query list will be
@@ -203,13 +203,13 @@ export const ContentChildren: ContentChildrenDecorator = makePropDecorator(
  */
 export interface ContentChildDecorator {
   /**
-   * @whatItDoes Configures a content query.
    *
    * @usageNotes
    *
    * {@example core/di/ts/contentChild/content_child_howto.ts region='HowTo'}
    *
    * @description
+   * Configures a content query.
    *
    * You can use ContentChild to get the first element or the directive matching the selector from
    * the content DOM. If the content DOM changes, and a new child matches the selector,
@@ -264,13 +264,13 @@ export const ContentChild: ContentChildDecorator = makePropDecorator(
  */
 export interface ViewChildrenDecorator {
   /**
-   * @whatItDoes Configures a view query.
    *
    * @usageNotes
    *
    * {@example core/di/ts/viewChildren/view_children_howto.ts region='HowTo'}
    *
    * @description
+   * Configures a view query.
    *
    * You can use ViewChildren to get the {@link QueryList} of elements or directives from the
    * view DOM. Any time a child element is added, removed, or moved, the query list will be updated,
@@ -323,13 +323,13 @@ export const ViewChildren: ViewChildrenDecorator = makePropDecorator(
  */
 export interface ViewChildDecorator {
   /**
-   * @whatItDoes Configures a view query.
    *
    * @usageNotes
    *
    * {@example core/di/ts/viewChild/view_child_howto.ts region='HowTo'}
    *
    * @description
+   * Configures a view query.
    *
    * You can use ViewChild to get the first element or the directive matching the selector from the
    * view DOM. If the view DOM changes, and a new child matches the selector,
