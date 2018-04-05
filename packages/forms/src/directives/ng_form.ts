@@ -26,10 +26,10 @@ export const formDirectiveProvider: any = {
 const resolvedPromise = Promise.resolve(null);
 
 /**
- * @whatItDoes Creates a top-level {@link FormGroup} instance and binds it to a form
- * to track aggregate form value and validation status.
- *
  * @description
+ *
+ * Creates a top-level {@link FormGroup} instance and binds it to a form
+ * to track aggregate form value and validation status.
  *
  * As soon as you import the `FormsModule`, this directive becomes active by default on
  * all `<form>` tags.  You don't need to add a special selector.

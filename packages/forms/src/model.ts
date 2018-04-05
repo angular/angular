@@ -81,7 +81,9 @@ function coerceToAsyncValidator(
 export type FormHooks = 'change' | 'blur' | 'submit';
 
 /**
- * @whatItDoes Interface for options provided to an {@link AbstractControl}.
+ * @description
+ *
+ * Interface for options provided to an {@link AbstractControl}.
  *
  * @experimental
  */
@@ -109,8 +111,9 @@ function isOptionsObj(
 
 
 /**
- * @whatItDoes This is the base class for {@link FormControl}, {@link FormGroup}, and
- * {@link FormArray}.
+ * @description
+ *
+ * This is the base class for {@link FormControl}, {@link FormGroup}, and {@link FormArray}.
  *
  * It provides some of the shared behavior that all controls and groups of controls have, like
  * running validators, calculating status, and resetting state. It also defines the properties
@@ -668,12 +671,12 @@ export abstract class AbstractControl {
 }
 
 /**
- * @whatItDoes Tracks the value and validation status of an individual form control.
- *
- * It is one of the three fundamental building blocks of Angular forms, along with
- * {@link FormGroup} and {@link FormArray}.
- *
  * @description
+ *
+ * Tracks the value and validation status of an individual form control.
+ *
+ * This is one of the three fundamental building blocks of Angular forms, along with
+ * {@link FormGroup} and {@link FormArray}.
  *
  * When instantiating a {@link FormControl}, you can pass in an initial value as the
  * first argument. Example:
@@ -906,8 +909,9 @@ export class FormControl extends AbstractControl {
 }
 
 /**
- * @whatItDoes Tracks the value and validity state of a group of {@link FormControl}
- * instances.
+ * @description
+ *
+ * Tracks the value and validity state of a group of {@link FormControl} instances.
  *
  * A `FormGroup` aggregates the values of each child {@link FormControl} into one object,
  * with each control name as the key.  It calculates its status by reducing the statuses
@@ -916,8 +920,6 @@ export class FormControl extends AbstractControl {
  *
  * `FormGroup` is one of the three fundamental building blocks used to define forms in Angular,
  * along with {@link FormControl} and {@link FormArray}.
- *
- * @description
  *
  * When instantiating a {@link FormGroup}, pass in a collection of child controls as the first
  * argument. The key for each child will be the name under which it is registered.
@@ -1250,7 +1252,9 @@ export class FormGroup extends AbstractControl {
 }
 
 /**
- * @whatItDoes Tracks the value and validity state of an array of {@link FormControl},
+ * @description
+ *
+ * Tracks the value and validity state of an array of {@link FormControl},
  * {@link FormGroup} or {@link FormArray} instances.
  *
  * A `FormArray` aggregates the values of each child {@link FormControl} into an array.
@@ -1259,8 +1263,6 @@ export class FormGroup extends AbstractControl {
  *
  * `FormArray` is one of the three fundamental building blocks used to define forms in Angular,
  * along with {@link FormControl} and {@link FormGroup}.
- *
- * @description
  *
  * When instantiating a {@link FormArray}, pass in an array of child controls as the first
  * argument.

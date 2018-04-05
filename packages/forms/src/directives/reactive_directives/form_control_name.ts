@@ -28,15 +28,15 @@ export const controlNameBinding: any = {
 };
 
 /**
- * @whatItDoes  Syncs a {@link FormControl} in an existing {@link FormGroup} to a form control
+ * @description
+ *
+ * Syncs a {@link FormControl} in an existing {@link FormGroup} to a form control
  * element by name.
  *
- * In other words, this directive ensures that any values written to the {@link FormControl}
+ * This directive ensures that any values written to the {@link FormControl}
  * instance programmatically will be written to the DOM element (model -> view). Conversely,
  * any values written to the DOM element through user input will be reflected in the
  * {@link FormControl} instance (view -> model).
- *
- * @description
  *
  * This directive is designed to be used with a parent {@link FormGroupDirective} (selector:
  * `[formGroup]`).
