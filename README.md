@@ -94,41 +94,41 @@ High level stuff planned for Q1 2018 (January - March):
 | bottom-nav       |            Not started, not planned |           -  |   [#408][0408] |
 
  [0]: https://github.com/angular/flex-layout/wiki
- [1]: https://material.angular.io/components/component/button
- [2]: https://material.angular.io/components/component/card
- [3]: https://material.angular.io/components/component/checkbox
- [4]: https://material.angular.io/components/component/radio
- [5]: https://material.angular.io/components/component/input
- [6]: https://material.angular.io/components/component/sidenav
- [7]: https://material.angular.io/components/component/toolbar
- [8]: https://material.angular.io/components/component/list
- [9]: https://material.angular.io/components/component/grid-list
-[10]: https://material.angular.io/components/component/icon
-[11]: https://material.angular.io/components/component/progress-spinner
-[12]: https://material.angular.io/components/component/progress-bar
-[13]: https://material.angular.io/components/component/tabs
-[14]: https://material.angular.io/components/component/slide-toggle
-[15]: https://material.angular.io/components/component/button-toggle
-[16]: https://material.angular.io/components/component/slider
-[17]: https://material.angular.io/components/component/menu
-[18]: https://material.angular.io/components/component/tooltip
+ [1]: https://material.angular.io/components/button/overview
+ [2]: https://material.angular.io/components/card/overview
+ [3]: https://material.angular.io/components/checkbox/overview
+ [4]: https://material.angular.io/components/radio/overview
+ [5]: https://material.angular.io/components/input/overview
+ [6]: https://material.angular.io/components/sidenav/overview
+ [7]: https://material.angular.io/components/toolbar/overview
+ [8]: https://material.angular.io/components/list/overview
+ [9]: https://material.angular.io/components/grid-list/overview
+[10]: https://material.angular.io/components/icon/overview
+[11]: https://material.angular.io/components/progress-spinner/overview
+[12]: https://material.angular.io/components/progress-bar/overview
+[13]: https://material.angular.io/components/tabs/overview
+[14]: https://material.angular.io/components/slide-toggle/overview
+[15]: https://material.angular.io/components/button-toggle/overview
+[16]: https://material.angular.io/components/slider/overview
+[17]: https://material.angular.io/components/menu/overview
+[18]: https://material.angular.io/components/tooltip/overview
 [19]: https://github.com/angular/material2/blob/master/src/lib/core/ripple/ripple.md
 [20]: https://material.angular.io/guide/theming
-[21]: https://material.angular.io/components/component/snack-bar
-[22]: https://material.angular.io/components/component/dialog
-[23]: https://material.angular.io/components/component/select
-[24]: https://material.angular.io/components/component/autocomplete
-[25]: https://material.angular.io/components/component/datepicker
-[26]: https://material.angular.io/components/component/chips
+[21]: https://material.angular.io/components/snack-bar/overview
+[22]: https://material.angular.io/components/dialog/overview
+[23]: https://material.angular.io/components/select/overview
+[24]: https://material.angular.io/components/autocomplete/overview
+[25]: https://material.angular.io/components/datepicker/overview
+[26]: https://material.angular.io/components/chips/overview
 [27]: https://material.angular.io/guide/typography
-[28]: https://material.angular.io/components/component/table
-[29]: https://material.angular.io/components/component/paginator
-[30]: https://material.angular.io/components/component/sort
+[28]: https://material.angular.io/components/table/overview
+[29]: https://material.angular.io/components/paginator/overview
+[30]: https://material.angular.io/components/sort/overview
 [31]: https://tina-material-tree.firebaseapp.com/simple-tree
 [32]: https://material.angular.io/components/expansion/overview
 [33]: https://material.angular.io/components/stepper/overview
 [34]: https://material.angular.io/cdk/categories
-[35]: https://material.angular.io/components/component/divider
+[35]: https://material.angular.io/components/divider/overview
 
 [0107]: https://github.com/angular/material2/issues/107
 [0119]: https://github.com/angular/material2/issues/119
