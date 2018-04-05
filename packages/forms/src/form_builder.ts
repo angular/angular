@@ -14,7 +14,7 @@ import {AbstractControl, FormArray, FormControl, FormGroup} from './model';
 /**
  * @description
  *
- * Creates an {@link AbstractControl} from a user-specified configuration.
+ * Creates an `AbstractControl` from a user-specified configuration.
  *
  * This is essentially syntactic sugar that shortens the `new FormGroup()`,
  * `new FormControl()`, and `new FormArray()` boilerplate that can build up in larger
@@ -27,17 +27,17 @@ import {AbstractControl, FormArray, FormControl, FormGroup} from './model';
  *
  *  * **npm package**: `@angular/forms`
  *
- *  * **NgModule**: {@link ReactiveFormsModule}
+ *  * **NgModule**: `ReactiveFormsModule`
  *
  * @stable
  */
 @Injectable()
 export class FormBuilder {
   /**
-   * Construct a new {@link FormGroup} with the given map of configuration.
+   * Construct a new `FormGroup` with the given map of configuration.
    * Valid keys for the `extra` parameter map are `validator` and `asyncValidator`.
    *
-   * See the {@link FormGroup} constructor for more details.
+   * See the `FormGroup` constructor for more details.
    */
   group(controlsConfig: {[key: string]: any}, extra: {[key: string]: any}|null = null): FormGroup {
     const controls = this._reduceControls(controlsConfig);
@@ -46,7 +46,7 @@ export class FormBuilder {
     return new FormGroup(controls, validator, asyncValidator);
   }
   /**
-   * Construct a new {@link FormControl} with the given `formState`,`validator`, and
+   * Construct a new `FormControl` with the given `formState`,`validator`, and
    * `asyncValidator`.
    *
    * `formState` can either be a standalone value for the form control or an object
@@ -60,7 +60,7 @@ export class FormBuilder {
   }
 
   /**
-   * Construct a {@link FormArray} from the given `controlsConfig` array of
+   * Construct a `FormArray` from the given `controlsConfig` array of
    * configuration, with the given optional `validator` and `asyncValidator`.
    */
   array(

@@ -59,10 +59,10 @@ export class RadioControlRegistry {
  *
  * Writes radio control values and listens to radio control changes.
  *
- * Used by {@link NgModel}, {@link FormControlDirective}, and {@link FormControlName}
- * to keep the view synced with the {@link FormControl} model.
+ * Used by `NgModel`, `FormControlDirective`, and `FormControlName`
+ * to keep the view synced with the `FormControl` model.
  *
- * If you have imported the {@link FormsModule} or the {@link ReactiveFormsModule}, this
+ * If you have imported the `FormsModule` or the `ReactiveFormsModule`, this
  * value accessor will be active on any radio control that has a form directive. You do
  * **not** need to add a special selector to activate it.
  *
