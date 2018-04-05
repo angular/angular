@@ -57,11 +57,12 @@
     "generate-zips": "node ./tools/example-zipper/generateZips",
     "sw-manifest": "ngu-sw-manifest --dist dist --in ngsw-manifest.json --out dist/ngsw-manifest.json",
     "sw-copy": "cp node_modules/@angular/service-worker/bundles/worker-basic.min.js dist/",
+    "build-404-page": "node scripts/build-404-page",
     "build-ie-polyfills": "yarn webpack-cli src/ie-polyfills.js -o src/generated/ie-polyfills.min.js --mode production",
     "update-webdriver": "webdriver-manager update --standalone false --gecko false $CHROMEDRIVER_VERSION_ARG",
     "~~check-env": "node scripts/check-environment",
     "~~build": "ng build",
-    "post~~build": "yarn sw-manifest && yarn sw-copy"
+    "post~~build": "yarn build-404-page && yarn sw-manifest && yarn sw-copy"
   },
   "engines": {
     "node": ">=8.9.1 <9.0.0",

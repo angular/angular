@@ -1,4 +1,4 @@
-import { browser } from 'protractor';
+import { browser, by, element } from 'protractor';
 import { SitePage } from './site.po';
 
 describe(browser.baseUrl, () => {
@@ -32,6 +32,42 @@ describe(browser.baseUrl, () => {
 
         expect(actualUrl).toBe(expectedUrl);
       });
+    });
+  });
+
+  describe('(with unknown URLs)', () => {
+    const unknownPageUrl = '/unknown/page';
+    const unknownResourceUrl = '/unknown/resource.ext';
+
+    it('should serve `index.html` for unknown pages', async () => {
+      const aioShell = element(by.css('aio-shell'));
+      const heading = aioShell.element(by.css('h1'));
+      await page.goTo(unknownPageUrl);
+
+      expect(aioShell.isPresent()).toBe(true);
+      expect(heading.getText()).toMatch(/page not found/i);
+    });
+
+    it('should serve a custom 404 page for unknown resources', async () => {
+      const aioShell = element(by.css('aio-shell'));
+      const heading = aioShell.element(by.css('h1'));
+      await page.goTo(unknownResourceUrl);
+
+      expect(aioShell.isPresent()).toBe(true);
+      expect(heading.getText()).toMatch(/resource not found/i);
+    });
+
+    it('should include a link to the home page in custom 404 page', async () => {
+      const homeNavLink = element(by.css('.nav-link.home'));
+      await page.goTo(unknownResourceUrl);
+
+      expect(homeNavLink.isPresent()).toBe(true);
+
+      await homeNavLink.click();
+      const expectedUrl = browser.baseUrl;
+      const actualUrl = await browser.getCurrentUrl();
+
+      expect(actualUrl).toBe(expectedUrl);
     });
   });
 });
