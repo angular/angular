@@ -186,8 +186,8 @@
             },
             {
               "url": "guide/elements",
-              "title": "Custom Elements",
-              "tooltip": "Convert components to custom elements."
+              "title": "Angular Elements",
+              "tooltip": "Convert components to Custom Elements."
             },
             {
               "url": "guide/dynamic-component-loader",
