@@ -38,7 +38,7 @@ import {invalidPipeArgumentError} from './invalid_pipe_argument_error';
  *
  * {@example common/pipes/ts/slice_pipe.ts region='SlicePipe_string'}
  *
- * @stable
+ *
  */
 
 @Pipe({name: 'slice', pure: false})

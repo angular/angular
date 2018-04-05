@@ -40,7 +40,7 @@ import {ChildrenOutletContexts, ExtraOptions, NoPreloading, PreloadingStrategy, 
  * router.navigateByUrl('/lazy/loaded');
  * ```
  *
- * @stable
+ *
  */
 @Injectable()
 export class SpyNgModuleFactoryLoader implements NgModuleFactoryLoader {
@@ -86,7 +86,7 @@ function isUrlHandlingStrategy(opts: ExtraOptions | UrlHandlingStrategy):
 /**
  * Router setup factory function used for testing.
  *
- * @stable
+ *
  */
 export function setupTestingRouter(
     urlSerializer: UrlSerializer, contexts: ChildrenOutletContexts, location: Location,
@@ -107,7 +107,7 @@ export function setupTestingRouter(
 /**
  * Router setup factory function used for testing.
  *
- * @stable
+ *
  */
 export function setupTestingRouter(
     urlSerializer: UrlSerializer, contexts: ChildrenOutletContexts, location: Location,
@@ -153,7 +153,7 @@ export function setupTestingRouter(
  * });
  * ```
  *
- * @stable
+ *
  */
 @NgModule({
   exports: [RouterModule],

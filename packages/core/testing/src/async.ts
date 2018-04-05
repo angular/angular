@@ -23,7 +23,7 @@ import {asyncFallback} from './async_fallback';
  * });
  * ```
  *
- * @stable
+ *
  */
 export function async(fn: Function): (done: any) => any {
   const _Zone: any = typeof Zone !== 'undefined' ? Zone : null;

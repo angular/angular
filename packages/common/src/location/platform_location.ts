@@ -27,7 +27,7 @@ import {InjectionToken} from '@angular/core';
  * {@link Location} / {@link LocationStrategy} and DOM apis flow through the `PlatformLocation`
  * class they are all platform independent.
  *
- * @stable
+ *
  */
 export abstract class PlatformLocation {
   abstract getBaseHrefFromDOM(): string;

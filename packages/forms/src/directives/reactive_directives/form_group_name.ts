@@ -65,7 +65,7 @@ export const formGroupNameProvider: any = {
  *
  * * **NgModule**: `ReactiveFormsModule`
  *
- * @stable
+ *
  */
 @Directive({selector: '[formGroupName]', providers: [formGroupNameProvider]})
 export class FormGroupName extends AbstractFormGroupDirective implements OnInit, OnDestroy {
@@ -139,7 +139,7 @@ export const formArrayNameProvider: any = {
  *
  * * **NgModule**: `ReactiveFormsModule`
  *
- * @stable
+ *
  */
 @Directive({selector: '[formArrayName]', providers: [formArrayNameProvider]})
 export class FormArrayName extends ControlContainer implements OnInit, OnDestroy {

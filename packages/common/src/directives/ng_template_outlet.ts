@@ -30,7 +30,7 @@ import {Directive, EmbeddedViewRef, Input, OnChanges, SimpleChange, SimpleChange
  *
  * {@example common/ngTemplateOutlet/ts/module.ts region='NgTemplateOutlet'}
  *
- * @stable
+ *
  */
 @Directive({selector: '[ngTemplateOutlet]'})
 export class NgTemplateOutlet implements OnChanges {

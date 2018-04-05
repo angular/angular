@@ -88,7 +88,7 @@ import {UrlTree} from '../url_tree';
  *
  * @ngModule RouterModule
  *
- * @stable
+ *
  */
 @Directive({selector: ':not(a)[routerLink]'})
 export class RouterLink {
@@ -160,7 +160,7 @@ export class RouterLink {
  *
  * @ngModule RouterModule
  *
- * @stable
+ *
  */
 @Directive({selector: 'a[routerLink]'})
 export class RouterLinkWithHref implements OnChanges, OnDestroy {

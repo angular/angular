@@ -187,7 +187,7 @@ export function invalidProviderError(provider: any) {
  *
  * expect(() => Injector.resolveAndCreate([A,B])).toThrowError();
  * ```
- * @stable
+ *
  */
 export function noAnnotationError(typeOrFunc: Type<any>| Function, params: any[][]): Error {
   const signature: string[] = [];
@@ -218,7 +218,7 @@ export function noAnnotationError(typeOrFunc: Type<any>| Function, params: any[]
  *
  * expect(() => injector.getAt(100)).toThrowError();
  * ```
- * @stable
+ *
  */
 export function outOfBoundsError(index: number) {
   return Error(`Index ${index} is out-of-bounds.`);

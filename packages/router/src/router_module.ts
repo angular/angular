@@ -33,7 +33,7 @@ import {flatten} from './utils/collection';
  *
  * Contains a list of directives
  *
- * @stable
+ *
  */
 const ROUTER_DIRECTIVES = [RouterOutlet, RouterLink, RouterLinkWithHref, RouterLinkActive];
 
@@ -42,7 +42,7 @@ const ROUTER_DIRECTIVES = [RouterOutlet, RouterLink, RouterLinkWithHref, RouterL
  *
  * Is used in DI to configure the router.
  *
- * @stable
+ *
  */
 export const ROUTER_CONFIGURATION = new InjectionToken<ExtraOptions>('ROUTER_CONFIGURATION');
 
@@ -125,7 +125,7 @@ export function routerNgProbeToken() {
  * [Read this developer guide](https://angular.io/docs/ts/latest/guide/router.html) to get an
  * overview of how the router should be used.
  *
- * @stable
+ *
  */
 @NgModule({declarations: ROUTER_DIRECTIVES, exports: ROUTER_DIRECTIVES})
 export class RouterModule {
@@ -213,7 +213,7 @@ export function provideForRootGuard(router: Router): any {
  * class MyNgModule {}
  * ```
  *
- * @stable
+ *
  */
 export function provideRoutes(routes: Routes): any {
   return [
@@ -255,7 +255,7 @@ export type InitialNavigation =
  *
  * Represents options to configure the router.
  *
- * @stable
+ *
  */
 export interface ExtraOptions {
   /**

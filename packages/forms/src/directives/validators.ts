@@ -35,7 +35,7 @@ export type ValidationErrors = {
  * }
  * ```
  *
- * @stable
+ *
  */
 export interface Validator {
   validate(c: AbstractControl): ValidationErrors|null;
@@ -70,7 +70,7 @@ export const CHECKBOX_REQUIRED_VALIDATOR: StaticProvider = {
  * <input name="fullName" ngModel required>
  * ```
  *
- * @stable
+ *
  */
 @Directive({
   selector:
@@ -167,12 +167,12 @@ export class EmailValidator implements Validator {
 }
 
 /**
- * @stable
+ *
  */
 export interface ValidatorFn { (c: AbstractControl): ValidationErrors|null; }
 
 /**
- * @stable
+ *
  */
 export interface AsyncValidatorFn {
   (c: AbstractControl): Promise<ValidationErrors|null>|Observable<ValidationErrors|null>;
@@ -195,7 +195,7 @@ export const MIN_LENGTH_VALIDATOR: any = {
  * A directive which installs the `MinLengthValidator` for any `formControlName`,
  * `formControl`, or control with `ngModel` that also has a `minlength` attribute.
  *
- * @stable
+ *
  */
 @Directive({
   selector: '[minlength][formControlName],[minlength][formControl],[minlength][ngModel]',
@@ -245,7 +245,7 @@ export const MAX_LENGTH_VALIDATOR: any = {
  * `formControl`,
  * or control with `ngModel` that also has a `maxlength` attribute.
  *
- * @stable
+ *
  */
 @Directive({
   selector: '[maxlength][formControlName],[maxlength][formControl],[maxlength][ngModel]',
@@ -296,7 +296,7 @@ export const PATTERN_VALIDATOR: any = {
  * ```
  * <input [name]="fullName" pattern="[a-zA-Z ]*" ngModel>
  * ```
- * @stable
+ *
  */
 @Directive({
   selector: '[pattern][formControlName],[pattern][formControl],[pattern][ngModel]',

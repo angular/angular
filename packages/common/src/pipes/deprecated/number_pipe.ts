@@ -82,7 +82,7 @@ function formatNumber(
  *
  * {@example common/pipes/ts/number_pipe.ts region='DeprecatedNumberPipe'}
  *
- * @stable
+ *
  */
 @Pipe({name: 'number'})
 export class DeprecatedDecimalPipe implements PipeTransform {
@@ -110,7 +110,7 @@ export class DeprecatedDecimalPipe implements PipeTransform {
  *
  * {@example common/pipes/ts/percent_pipe.ts region='DeprecatedPercentPipe'}
  *
- * @stable
+ *
  */
 @Pipe({name: 'percent'})
 export class DeprecatedPercentPipe implements PipeTransform {
@@ -144,7 +144,7 @@ export class DeprecatedPercentPipe implements PipeTransform {
  *
  * {@example common/pipes/ts/currency_pipe.ts region='DeprecatedCurrencyPipe'}
  *
- * @stable
+ *
  */
 @Pipe({name: 'currency'})
 export class DeprecatedCurrencyPipe implements PipeTransform {

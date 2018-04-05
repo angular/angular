@@ -24,7 +24,7 @@ export const RESOURCE_CACHE_PROVIDER: Provider[] =
     [{provide: ResourceLoader, useClass: CachedResourceLoader, deps: []}];
 
 /**
- * @stable
+ *
  */
 export const platformBrowserDynamic = createPlatformFactory(
     platformCoreDynamic, 'browserDynamic', INTERNAL_BROWSER_DYNAMIC_PLATFORM_PROVIDERS);

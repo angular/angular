@@ -45,7 +45,7 @@ export const BROWSER_SANITIZATION_PROVIDERS: StaticProvider[] = [
 ];
 
 /**
- * @stable
+ *
  */
 export const platformBrowser: (extraProviders?: StaticProvider[]) => PlatformRef =
     createPlatformFactory(platformCore, 'browser', INTERNAL_BROWSER_PLATFORM_PROVIDERS);
@@ -66,7 +66,7 @@ export function _document(): any {
 /**
  * The ng module for the browser.
  *
- * @stable
+ *
  */
 @NgModule({
   providers: [

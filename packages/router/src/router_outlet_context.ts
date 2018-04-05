@@ -15,7 +15,7 @@ import {ActivatedRoute} from './router_state';
 /**
  * Store contextual information about a `RouterOutlet`
  *
- * @stable
+ *
  */
 export class OutletContext {
   outlet: RouterOutlet|null = null;
@@ -28,7 +28,7 @@ export class OutletContext {
 /**
  * Store contextual information about the children (= nested) `RouterOutlet`
  *
- * @stable
+ *
  */
 export class ChildrenOutletContexts {
   // contexts for child outlets, by name.
