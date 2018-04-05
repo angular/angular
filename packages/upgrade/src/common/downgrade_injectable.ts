@@ -17,7 +17,17 @@ import {INJECTOR_KEY} from './constants';
  *
  * Allow an Angular service to be accessible from AngularJS.
  *
- * @howToUse
+ * @description
+ *
+ * Takes a `token` that identifies a service provided from Angular.
+ *
+ * Returns a [factory function](https://docs.angularjs.org/guide/di) that can be
+ * used to register the service on an AngularJS module.
+ *
+ * The factory function provides access to the Angular service that
+ * is identified by the `token` parameter.
+ *
+ * ### Examples
  *
  * First ensure that the service to be downgraded is provided in an {@link NgModule}
  * that will be part of the upgrade application. For example, let's assume we have
@@ -38,16 +48,6 @@ import {INJECTOR_KEY} from './constants';
  * downgraded service via the name we gave when downgrading.
  *
  * {@example upgrade/static/ts/module.ts region="example-app"}
- *
- * @description
- *
- * Takes a `token` that identifies a service provided from Angular.
- *
- * Returns a [factory function](https://docs.angularjs.org/guide/di) that can be
- * used to register the service on an AngularJS module.
- *
- * The factory function provides access to the Angular service that
- * is identified by the `token` parameter.
  *
  * @experimental
  */

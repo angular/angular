@@ -26,7 +26,16 @@ interface Thenable<T> {
  *
  * Allows an Angular component to be used from AngularJS.
  *
- * @howToUse
+ * @description
+ *
+ * A helper function that returns a factory function to be used for registering an
+ * AngularJS wrapper directive for "downgrading" an Angular component.
+ *
+ * The parameter contains information about the Component that is being downgraded:
+ *
+ * * `component: Type<any>`: The type of the Component that will be downgraded
+ *
+ * ### Examples
  *
  * Let's assume that you have an Angular component called `ng2Heroes` that needs
  * to be made available in AngularJS templates.
@@ -39,15 +48,6 @@ interface Thenable<T> {
  * can use to define the AngularJS directive that wraps the "downgraded" component.
  *
  * {@example upgrade/static/ts/module.ts region="ng2-heroes-wrapper"}
- *
- * @description
- *
- * A helper function that returns a factory function to be used for registering an
- * AngularJS wrapper directive for "downgrading" an Angular component.
- *
- * The parameter contains information about the Component that is being downgraded:
- *
- * * `component: Type<any>`: The type of the Component that will be downgraded
  *
  * @experimental
  */
