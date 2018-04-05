@@ -120,7 +120,11 @@ export class MatTooltip implements OnDestroy {
 
       if (this._overlayRef) {
         this._updatePosition();
-        this._tooltipInstance!.show(value, 0);
+
+        if (this._tooltipInstance) {
+          this._tooltipInstance!.show(value, 0);
+        }
+
         this._overlayRef.updatePosition();
       }
     }

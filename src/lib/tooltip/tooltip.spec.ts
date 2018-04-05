@@ -321,6 +321,33 @@ describe('MatTooltip', () => {
       expect(tooltipDirective._overlayRef!.updatePosition).toHaveBeenCalled();
     }));
 
+    it('should not throw when updating the position for a closed tooltip', fakeAsync(() => {
+      tooltipDirective.position = 'left';
+      tooltipDirective.show(0);
+      fixture.detectChanges();
+      tick();
+
+      tooltipDirective.hide(0);
+      fixture.detectChanges();
+      tick();
+
+      // At this point the animation should be able to complete itself and trigger the
+      // _animationDone function, but for unknown reasons in the test infrastructure,
+      // this does not occur. Manually call the hook so the animation subscriptions get invoked.
+      tooltipDirective._tooltipInstance!._animationDone({
+        fromState: 'visible',
+        toState: 'hidden',
+        totalTime: 150,
+        phaseName: 'done',
+      } as AnimationEvent);
+
+      expect(() => {
+        tooltipDirective.position = 'right';
+        fixture.detectChanges();
+        tick();
+      }).not.toThrow();
+    }));
+
     it('should be able to modify the tooltip message', fakeAsync(() => {
       assertTooltipInstance(tooltipDirective, false);
 
