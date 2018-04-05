@@ -23,9 +23,9 @@ export const modelGroupProvider: any = {
 /**
  * @description
  *
- * Creates and binds a {@link FormGroup} instance to a DOM element.
+ * Creates and binds a `FormGroup` instance to a DOM element.
  *
- * This directive can only be used as a child of {@link NgForm} (or in other words,
+ * This directive can only be used as a child of `NgForm` (or in other words,
  * within `<form>` tags).
  *
  * Use this directive if you'd like to create a sub-group within a form. This can

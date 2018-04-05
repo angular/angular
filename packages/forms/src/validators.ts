@@ -18,7 +18,7 @@ function isEmptyInputValue(value: any): boolean {
 }
 
 /**
- * Providers for validators to be used for {@link FormControl}s in a form.
+ * Providers for validators to be used for `FormControl`s in a form.
  *
  * Provide this using `multi: true` to add validators.
  *
@@ -41,12 +41,12 @@ function isEmptyInputValue(value: any): boolean {
 export const NG_VALIDATORS = new InjectionToken<Array<Validator|Function>>('NgValidators');
 
 /**
- * Providers for asynchronous validators to be used for {@link FormControl}s
+ * Providers for asynchronous validators to be used for `FormControl`s
  * in a form.
  *
  * Provide this using `multi: true` to add validators.
  *
- * See {@link NG_VALIDATORS} for more details.
+ * See `NG_VALIDATORS` for more details.
  *
  * @stable
  */
@@ -59,7 +59,7 @@ const EMAIL_REGEXP =
 /**
  * Provides a set of validators used by form controls.
  *
- * A validator is a function that processes a {@link FormControl} or collection of
+ * A validator is a function that processes a `FormControl` or collection of
  * controls and returns a map of errors. A null map means that validation has passed.
  *
  * ### Example

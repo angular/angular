@@ -18,7 +18,7 @@ export const NUMBER_VALUE_ACCESSOR: any = {
 
 /**
  * The accessor for writing a number value and listening to changes that is used by the
- * {@link NgModel}, {@link FormControlDirective}, and {@link FormControlName} directives.
+ * `NgModel`, `FormControlDirective`, and `FormControlName` directives.
  *
  *  ### Example
  *  ```
