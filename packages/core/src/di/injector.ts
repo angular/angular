@@ -40,7 +40,7 @@ export class NullInjector implements Injector {
 
 /**
  * @whatItDoes Injector interface
- * @howToUse
+ * @usageNotes
  * ```
  * const injector: Injector = ...;
  * injector.get(...);

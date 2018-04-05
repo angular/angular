@@ -143,7 +143,7 @@ export interface ContentChildrenDecorator {
   /**
    * @whatItDoes Configures a content query.
    *
-   * @howToUse
+   * @usageNotes
    *
    * {@example core/di/ts/contentChildren/content_children_howto.ts region='HowTo'}
    *
@@ -205,7 +205,7 @@ export interface ContentChildDecorator {
   /**
    * @whatItDoes Configures a content query.
    *
-   * @howToUse
+   * @usageNotes
    *
    * {@example core/di/ts/contentChild/content_child_howto.ts region='HowTo'}
    *
@@ -266,7 +266,7 @@ export interface ViewChildrenDecorator {
   /**
    * @whatItDoes Configures a view query.
    *
-   * @howToUse
+   * @usageNotes
    *
    * {@example core/di/ts/viewChildren/view_children_howto.ts region='HowTo'}
    *
@@ -325,7 +325,7 @@ export interface ViewChildDecorator {
   /**
    * @whatItDoes Configures a view query.
    *
-   * @howToUse
+   * @usageNotes
    *
    * {@example core/di/ts/viewChild/view_child_howto.ts region='HowTo'}
    *
