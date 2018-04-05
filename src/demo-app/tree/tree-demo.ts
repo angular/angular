@@ -6,17 +6,16 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component} from '@angular/core';
 import {FlatTreeControl, NestedTreeControl} from '@angular/cdk/tree';
+import {Component} from '@angular/core';
 import {
-  MatTreeFlattener,
   MatTreeFlatDataSource,
+  MatTreeFlattener,
   MatTreeNestedDataSource
 } from '@angular/material/tree';
-import {of as ofObservable} from 'rxjs';
-import {Observable} from 'rxjs';
+import {Observable, of as ofObservable} from 'rxjs';
+import {FileDatabase, FileFlatNode, FileNode} from './file-database';
 
-import {FileNode, FileFlatNode, FileDatabase} from './file-database';
 
 @Component({
   moduleId: module.id,

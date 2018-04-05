@@ -1,8 +1,7 @@
 import {Component} from '@angular/core';
 import {FormControl} from '@angular/forms';
 import {Observable} from 'rxjs';
-import {startWith} from 'rxjs/operators';
-import {map} from 'rxjs/operators';
+import {map, startWith} from 'rxjs/operators';
 
 export class User {
   constructor(public name: string) { }

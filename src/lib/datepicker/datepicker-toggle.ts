@@ -12,17 +12,15 @@ import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
+  ContentChild,
+  Directive,
   Input,
   OnChanges,
   OnDestroy,
   SimpleChanges,
   ViewEncapsulation,
-  Directive,
-  ContentChild,
 } from '@angular/core';
-import {merge} from 'rxjs';
-import {of as observableOf} from 'rxjs';
-import {Subscription} from 'rxjs';
+import {merge, of as observableOf, Subscription} from 'rxjs';
 import {MatDatepicker} from './datepicker';
 import {MatDatepickerIntl} from './datepicker-intl';
 

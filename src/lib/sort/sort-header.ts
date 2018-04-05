@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {coerceBooleanProperty} from '@angular/cdk/coercion';
+import {CdkColumnDef} from '@angular/cdk/table';
 import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
@@ -14,16 +16,14 @@ import {
   Optional,
   ViewEncapsulation
 } from '@angular/core';
-import {coerceBooleanProperty} from '@angular/cdk/coercion';
-import {CdkColumnDef} from '@angular/cdk/table';
-import {Subscription} from 'rxjs';
-import {merge} from 'rxjs';
-import {MatSort, MatSortable} from './sort';
-import {SortDirection} from './sort-direction';
-import {MatSortHeaderIntl} from './sort-header-intl';
-import {getSortHeaderNotContainedWithinSortError} from './sort-errors';
 import {CanDisable, mixinDisabled} from '@angular/material/core';
+import {merge, Subscription} from 'rxjs';
+import {MatSort, MatSortable} from './sort';
 import {matSortAnimations} from './sort-animations';
+import {SortDirection} from './sort-direction';
+import {getSortHeaderNotContainedWithinSortError} from './sort-errors';
+import {MatSortHeaderIntl} from './sort-header-intl';
+
 
 // Boilerplate for applying mixins to the sort header.
 /** @docs-private */

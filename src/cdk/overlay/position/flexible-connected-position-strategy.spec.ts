@@ -1,21 +1,21 @@
-import {ElementRef, NgModule, Component, NgZone} from '@angular/core';
-import {TestBed, inject} from '@angular/core/testing';
-import {CdkScrollable} from '@angular/cdk/scrolling';
-import {PortalModule, ComponentPortal} from '@angular/cdk/portal';
+import {ComponentPortal, PortalModule} from '@angular/cdk/portal';
+import {CdkScrollable, ScrollDispatchModule} from '@angular/cdk/scrolling';
+import {MockNgZone} from '@angular/cdk/testing';
+import {Component, ElementRef, NgModule, NgZone} from '@angular/core';
+import {inject, TestBed} from '@angular/core/testing';
 import {Subscription} from 'rxjs';
 import {map} from 'rxjs/operators';
-import {ScrollDispatchModule} from '@angular/cdk/scrolling';
-import {MockNgZone} from '@angular/cdk/testing';
 import {
-  OverlayModule,
+  ConnectedOverlayPositionChange,
+  FlexibleConnectedPositionStrategy,
   Overlay,
   OverlayConfig,
-  OverlayRef,
   OverlayContainer,
-  FlexibleConnectedPositionStrategy,
-  ConnectedOverlayPositionChange,
+  OverlayModule,
+  OverlayRef,
   ViewportRuler,
 } from '../index';
+
 
 // Default width and height of the overlay and origin panels throughout these tests.
 const DEFAULT_HEIGHT = 30;

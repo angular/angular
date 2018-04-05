@@ -1,6 +1,9 @@
+import {ViewportRuler} from '@angular/cdk/scrolling';
+import {
+  CdkTableModule,
+  DataSource
+} from '@angular/cdk/table';
 import {Component, NgModule} from '@angular/core';
-import {ServerModule} from '@angular/platform-server';
-import {BrowserModule} from '@angular/platform-browser';
 import {
   MatAutocompleteModule,
   MatBadgeModule,
@@ -10,8 +13,9 @@ import {
   MatCheckboxModule,
   MatChipsModule,
   MatDatepickerModule,
-  MatDividerModule,
+  MatDialog,
   MatDialogModule,
+  MatDividerModule,
   MatExpansionModule,
   MatFormFieldModule,
   MatGridListModule,
@@ -29,23 +33,18 @@ import {
   MatSidenavModule,
   MatSliderModule,
   MatSlideToggleModule,
+  MatSnackBar,
   MatSnackBarModule,
   MatSortModule,
+  MatStepperModule,
   MatTableModule,
   MatTabsModule,
   MatToolbarModule,
   MatTooltipModule,
-  MatStepperModule,
-  MatSnackBar,
-  MatDialog,
 } from '@angular/material';
-import {
-  CdkTableModule,
-  DataSource
-} from '@angular/cdk/table';
-import {ViewportRuler} from '@angular/cdk/scrolling';
-import {of as observableOf} from 'rxjs';
-import {Observable} from 'rxjs';
+import {BrowserModule} from '@angular/platform-browser';
+import {ServerModule} from '@angular/platform-server';
+import {Observable, of as observableOf} from 'rxjs';
 
 export class TableDataSource extends DataSource<any> {
   connect(): Observable<any> {

@@ -6,30 +6,30 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {
-  Component,
-  ComponentRef,
-  EmbeddedViewRef,
-  ViewChild,
-  NgZone,
-  OnDestroy,
-  ElementRef,
-  ChangeDetectionStrategy,
-  ViewEncapsulation,
-  ChangeDetectorRef,
-} from '@angular/core';
 import {AnimationEvent} from '@angular/animations';
 import {
   BasePortalOutlet,
-  ComponentPortal,
   CdkPortalOutlet,
+  ComponentPortal,
   TemplatePortal,
 } from '@angular/cdk/portal';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  ComponentRef,
+  ElementRef,
+  EmbeddedViewRef,
+  NgZone,
+  OnDestroy,
+  ViewChild,
+  ViewEncapsulation,
+} from '@angular/core';
+import {Observable, Subject} from 'rxjs';
 import {take} from 'rxjs/operators';
-import {Observable} from 'rxjs';
-import {Subject} from 'rxjs';
-import {MatSnackBarConfig} from './snack-bar-config';
 import {matSnackBarAnimations} from './snack-bar-animations';
+import {MatSnackBarConfig} from './snack-bar-config';
+
 
 /**
  * Internal component that wraps user-provided snack bar content.

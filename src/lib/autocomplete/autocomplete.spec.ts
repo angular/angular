@@ -1,53 +1,50 @@
 import {Directionality} from '@angular/cdk/bidi';
-import {DOWN_ARROW, ENTER, ESCAPE, SPACE, UP_ARROW, TAB} from '@angular/cdk/keycodes';
-import {OverlayContainer, Overlay} from '@angular/cdk/overlay';
-import {map} from 'rxjs/operators';
-import {startWith} from 'rxjs/operators';
+import {DOWN_ARROW, ENTER, ESCAPE, SPACE, TAB, UP_ARROW} from '@angular/cdk/keycodes';
+import {Overlay, OverlayContainer} from '@angular/cdk/overlay';
 import {ScrollDispatcher} from '@angular/cdk/scrolling';
 import {
   createKeyboardEvent,
-  dispatchKeyboardEvent,
   dispatchFakeEvent,
-  typeInElement,
+  dispatchKeyboardEvent,
   MockNgZone,
+  typeInElement,
 } from '@angular/cdk/testing';
 import {
   ChangeDetectionStrategy,
   Component,
+  NgZone,
   OnDestroy,
   OnInit,
+  Provider,
   QueryList,
   ViewChild,
   ViewChildren,
-  NgZone,
-  Provider,
 } from '@angular/core';
 import {
   async,
   ComponentFixture,
   fakeAsync,
+  flush,
   inject,
   TestBed,
   tick,
-  flush,
 } from '@angular/core/testing';
 import {FormControl, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {MatOption, MatOptionSelectionChange} from '@angular/material/core';
 import {MatFormField, MatFormFieldModule} from '@angular/material/form-field';
 import {By} from '@angular/platform-browser';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
-import {Observable} from 'rxjs';
-import {Subject} from 'rxjs';
-import {Subscription} from 'rxjs';
+import {Observable, Subject, Subscription} from 'rxjs';
+import {map, startWith} from 'rxjs/operators';
 import {MatInputModule} from '../input/index';
 import {
   getMatAutocompleteMissingPanelError,
+  MAT_AUTOCOMPLETE_DEFAULT_OPTIONS,
+  MAT_AUTOCOMPLETE_SCROLL_STRATEGY,
   MatAutocomplete,
   MatAutocompleteModule,
   MatAutocompleteSelectedEvent,
   MatAutocompleteTrigger,
-  MAT_AUTOCOMPLETE_SCROLL_STRATEGY,
-  MAT_AUTOCOMPLETE_DEFAULT_OPTIONS,
 } from './index';
 
 

@@ -34,8 +34,7 @@ import {
   mixinColor,
 } from '@angular/material/core';
 import {fromEvent} from 'rxjs';
-import {startWith} from 'rxjs/operators';
-import {take} from 'rxjs/operators';
+import {startWith, take} from 'rxjs/operators';
 import {MatError} from './error';
 import {matFormFieldAnimations} from './form-field-animations';
 import {MatFormFieldControl} from './form-field-control';

@@ -6,15 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {_isNumberValue} from '@angular/cdk/coercion';
 import {DataSource} from '@angular/cdk/table';
-import {BehaviorSubject, Observable} from 'rxjs';
 import {MatPaginator, PageEvent} from '@angular/material/paginator';
 import {MatSort, Sort} from '@angular/material/sort';
-import {Subscription, combineLatest} from 'rxjs';
-import {map} from 'rxjs/operators';
-import {startWith} from 'rxjs/operators';
-import {empty} from 'rxjs';
-import {_isNumberValue} from '@angular/cdk/coercion';
+import {BehaviorSubject, combineLatest, empty, Observable, Subscription} from 'rxjs';
+import {map, startWith} from 'rxjs/operators';
+
 
 /**
  * Data source that accepts a client-side data array and includes native support of filtering,

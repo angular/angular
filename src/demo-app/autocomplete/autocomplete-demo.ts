@@ -8,8 +8,8 @@
 
 import {Component, ViewChild, ViewEncapsulation} from '@angular/core';
 import {FormControl, NgModel} from '@angular/forms';
-import {startWith} from 'rxjs/operators';
-import {map} from 'rxjs/operators';
+import {map, startWith} from 'rxjs/operators';
+
 
 export interface State {
   code: string;

@@ -6,16 +6,16 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, ElementRef, ViewChild} from '@angular/core';
-import {PeopleDatabase, UserData} from './people-database';
-import {PersonDataSource} from './person-data-source';
-import {MatPaginator, MatSort, MatTableDataSource, PageEvent} from '@angular/material';
-import {DetailRow, PersonDetailDataSource} from './person-detail-data-source';
 import {animate, state, style, transition, trigger} from '@angular/animations';
 import {SelectionModel} from '@angular/cdk/collections';
-import {distinctUntilChanged} from 'rxjs/operators';
-import {debounceTime} from 'rxjs/operators';
+import {Component, ElementRef, ViewChild} from '@angular/core';
+import {MatPaginator, MatSort, MatTableDataSource, PageEvent} from '@angular/material';
 import {fromEvent} from 'rxjs';
+import {debounceTime, distinctUntilChanged} from 'rxjs/operators';
+import {PeopleDatabase, UserData} from './people-database';
+import {PersonDataSource} from './person-data-source';
+import {DetailRow, PersonDetailDataSource} from './person-detail-data-source';
+
 
 export type UserProperties = 'userId' | 'userName' | 'progress' | 'color' | undefined;
 

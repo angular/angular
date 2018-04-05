@@ -24,14 +24,13 @@ import {
 } from '@angular/forms';
 import {By} from '@angular/platform-browser';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
-import {Observable} from 'rxjs';
-import {map} from 'rxjs/operators';
-import {take} from 'rxjs/operators';
-import {Subject} from 'rxjs';
+import {Observable, Subject} from 'rxjs';
+import {map, take} from 'rxjs/operators';
 import {MatStepperModule} from './index';
 import {MatHorizontalStepper, MatStep, MatStepper, MatVerticalStepper} from './stepper';
 import {MatStepperNext, MatStepperPrevious} from './stepper-button';
 import {MatStepperIntl} from './stepper-intl';
+
 
 const VALID_REGEX = /valid/;
 

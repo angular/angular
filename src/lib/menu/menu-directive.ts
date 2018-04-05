@@ -6,12 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {FocusKeyManager} from '@angular/cdk/a11y';
+import {FocusKeyManager, FocusOrigin} from '@angular/cdk/a11y';
 import {Direction} from '@angular/cdk/bidi';
+import {coerceBooleanProperty} from '@angular/cdk/coercion';
 import {ESCAPE, LEFT_ARROW, RIGHT_ARROW} from '@angular/cdk/keycodes';
-import {startWith} from 'rxjs/operators';
-import {switchMap} from 'rxjs/operators';
-import {take} from 'rxjs/operators';
 import {
   AfterContentInit,
   ChangeDetectionStrategy,
@@ -23,27 +21,23 @@ import {
   Inject,
   InjectionToken,
   Input,
+  NgZone,
   OnDestroy,
+  OnInit,
   Output,
   QueryList,
   TemplateRef,
   ViewChild,
   ViewEncapsulation,
-  NgZone,
-  OnInit,
 } from '@angular/core';
-import {Observable} from 'rxjs';
-import {Subject} from 'rxjs';
-import {merge} from 'rxjs';
-import {Subscription} from 'rxjs';
+import {merge, Observable, Subject, Subscription} from 'rxjs';
+import {startWith, switchMap, take} from 'rxjs/operators';
 import {matMenuAnimations} from './menu-animations';
+import {MatMenuContent} from './menu-content';
 import {throwMatMenuInvalidPositionX, throwMatMenuInvalidPositionY} from './menu-errors';
 import {MatMenuItem} from './menu-item';
 import {MatMenuPanel} from './menu-panel';
-import {MatMenuContent} from './menu-content';
 import {MenuPositionX, MenuPositionY} from './menu-positions';
-import {coerceBooleanProperty} from '@angular/cdk/coercion';
-import {FocusOrigin} from '@angular/cdk/a11y';
 
 
 /** Default `mat-menu` options that can be overridden. */

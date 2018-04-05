@@ -7,9 +7,9 @@
  */
 
 import {OverlayRef} from '@angular/cdk/overlay';
-import {Observable} from 'rxjs';
-import {Subject} from 'rxjs';
+import {Observable, Subject} from 'rxjs';
 import {MatSnackBarContainer} from './snack-bar-container';
+
 
 /** Event that is emitted when a snack bar is dismissed. */
 export interface MatSnackBarDismiss {

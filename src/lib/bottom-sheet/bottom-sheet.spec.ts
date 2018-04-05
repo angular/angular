@@ -1,32 +1,31 @@
+import {Directionality} from '@angular/cdk/bidi';
+import {A, ESCAPE} from '@angular/cdk/keycodes';
+import {OverlayContainer, ViewportRuler} from '@angular/cdk/overlay';
+import {dispatchKeyboardEvent} from '@angular/cdk/testing';
 import {
-  Directive,
   Component,
-  NgModule,
-  ViewContainerRef,
-  ViewChild,
+  Directive,
   Inject,
   Injector,
+  NgModule,
   TemplateRef,
+  ViewChild,
+  ViewContainerRef,
 } from '@angular/core';
 import {
   ComponentFixture,
   fakeAsync,
+  flush,
   flushMicrotasks,
   inject,
   TestBed,
   tick,
-  flush,
 } from '@angular/core/testing';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
-import {Directionality} from '@angular/cdk/bidi';
-import {MatBottomSheetModule} from './bottom-sheet-module';
 import {MatBottomSheet} from './bottom-sheet';
+import {MAT_BOTTOM_SHEET_DATA, MatBottomSheetConfig} from './bottom-sheet-config';
+import {MatBottomSheetModule} from './bottom-sheet-module';
 import {MatBottomSheetRef} from './bottom-sheet-ref';
-import {MAT_BOTTOM_SHEET_DATA} from './bottom-sheet-config';
-import {MatBottomSheetConfig} from './bottom-sheet-config';
-import {OverlayContainer, ViewportRuler} from '@angular/cdk/overlay';
-import {A, ESCAPE} from '@angular/cdk/keycodes';
-import {dispatchKeyboardEvent} from '@angular/cdk/testing';
 
 
 describe('MatBottomSheet', () => {

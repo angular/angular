@@ -1,13 +1,8 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
+import {Component, OnInit, ViewChild} from '@angular/core';
 import {MatPaginator, MatSort, MatTableDataSource} from '@angular/material';
-import {Observable} from 'rxjs';
-import {merge} from 'rxjs';
-import {of as observableOf} from 'rxjs';
-import {catchError} from 'rxjs/operators';
-import {map} from 'rxjs/operators';
-import {startWith} from 'rxjs/operators';
-import {switchMap} from 'rxjs/operators';
+import {merge, Observable, of as observableOf} from 'rxjs';
+import {catchError, map, startWith, switchMap} from 'rxjs/operators';
 
 /**
  * @title Table retrieving data through HTTP

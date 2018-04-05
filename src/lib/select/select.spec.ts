@@ -4,11 +4,11 @@ import {
   END,
   ENTER,
   HOME,
+  LEFT_ARROW,
+  RIGHT_ARROW,
   SPACE,
   TAB,
   UP_ARROW,
-  LEFT_ARROW,
-  RIGHT_ARROW,
 } from '@angular/cdk/keycodes';
 import {OverlayContainer} from '@angular/cdk/overlay';
 import {Platform} from '@angular/cdk/platform';
@@ -58,9 +58,8 @@ import {
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {By} from '@angular/platform-browser';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
+import {Subject, Subscription} from 'rxjs';
 import {map} from 'rxjs/operators';
-import {Subject} from 'rxjs';
-import {Subscription} from 'rxjs';
 import {MatSelectModule} from './index';
 import {MatSelect} from './select';
 import {
@@ -68,6 +67,7 @@ import {
   getMatSelectNonArrayValueError,
   getMatSelectNonFunctionValueError,
 } from './select-errors';
+
 
 /** The debounce interval when typing letters to select an option. */
 const LETTER_KEY_DEBOUNCE_INTERVAL = 200;

@@ -83,6 +83,7 @@
     // Namespaces are no allowed, because of Closure compiler.
     "no-namespace": true,
     "jsdoc-format": [true, "check-multiline-start"],
+    "no-duplicate-imports": true,
 
     // Custom Rules
     "ts-loader": true,

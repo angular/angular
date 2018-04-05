@@ -1,14 +1,14 @@
-import {async, ComponentFixture, fakeAsync, flushMicrotasks, TestBed} from '@angular/core/testing';
-import {Component, ViewChild} from '@angular/core';
 import {DataSource} from '@angular/cdk/collections';
-import {BehaviorSubject} from 'rxjs';
-import {Observable} from 'rxjs';
-import {MatTableModule} from './index';
-import {MatTable} from './table';
+import {Component, ViewChild} from '@angular/core';
+import {async, ComponentFixture, fakeAsync, flushMicrotasks, TestBed} from '@angular/core/testing';
+import {NoopAnimationsModule} from '@angular/platform-browser/animations';
+import {BehaviorSubject, Observable} from 'rxjs';
 import {MatPaginator, MatPaginatorModule} from '../paginator/index';
 import {MatSort, MatSortHeader, MatSortModule} from '../sort/index';
+import {MatTableModule} from './index';
+import {MatTable} from './table';
 import {MatTableDataSource} from './table-data-source';
-import {NoopAnimationsModule} from '@angular/platform-browser/animations';
+
 
 describe('MatTable', () => {
   beforeEach(async(() => {

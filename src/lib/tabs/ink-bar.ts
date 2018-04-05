@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import { Directive, ElementRef, Inject, InjectionToken, NgZone } from '@angular/core';
+import {Directive, ElementRef, Inject, InjectionToken, NgZone} from '@angular/core';
+
 
 /**
  * Interface for a a MatInkBar positioner method, defining the positioning and width of the ink

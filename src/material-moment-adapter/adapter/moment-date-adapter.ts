@@ -14,6 +14,7 @@ import {DateAdapter, MAT_DATE_LOCALE} from '@angular/material';
 // the `default as` syntax.
 // TODO(mmalerba): See if we can clean this up at some point.
 import * as _moment from 'moment';
+// tslint:disable-next-line:no-duplicate-imports
 import {default as _rollupMoment, Moment} from 'moment';
 
 const moment = _rollupMoment || _moment;

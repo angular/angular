@@ -1,3 +1,4 @@
+import {Direction, Directionality} from '@angular/cdk/bidi';
 import {
   DOWN_ARROW,
   END,
@@ -9,15 +10,14 @@ import {
   RIGHT_ARROW,
   UP_ARROW,
 } from '@angular/cdk/keycodes';
-import {By} from '@angular/platform-browser';
+import {dispatchFakeEvent, dispatchKeyboardEvent} from '@angular/cdk/testing';
 import {Component} from '@angular/core';
-import {Direction, Directionality} from '@angular/cdk/bidi';
-import {JAN, MAR, NOV, FEB} from '@angular/material/core';
+import {async, ComponentFixture, TestBed} from '@angular/core/testing';
+import {DEC, FEB, JAN, MAR, MatNativeDateModule, NOV} from '@angular/material/core';
+import {By} from '@angular/platform-browser';
 import {MatCalendarBody} from './calendar-body';
 import {MatMonthView} from './month-view';
-import {MatNativeDateModule, DEC} from '@angular/material/core';
-import {async, ComponentFixture, TestBed} from '@angular/core/testing';
-import {dispatchKeyboardEvent, dispatchFakeEvent} from '@angular/cdk/testing';
+
 
 describe('MatMonthView', () => {
   let dir: {value: Direction};

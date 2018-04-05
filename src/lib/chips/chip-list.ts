@@ -32,12 +32,11 @@ import {
 import {ControlValueAccessor, FormGroupDirective, NgControl, NgForm} from '@angular/forms';
 import {CanUpdateErrorState, ErrorStateMatcher, mixinErrorState} from '@angular/material/core';
 import {MatFormFieldControl} from '@angular/material/form-field';
-import {Observable} from 'rxjs';
-import {merge} from 'rxjs';
+import {merge, Observable, Subscription} from 'rxjs';
 import {startWith} from 'rxjs/operators';
-import {Subscription} from 'rxjs';
 import {MatChip, MatChipEvent, MatChipSelectionChange} from './chip';
 import {MatChipInput} from './chip-input';
+
 
 // Boilerplate for applying mixins to MatChipList.
 /** @docs-private */

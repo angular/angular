@@ -43,10 +43,8 @@ import {
   RippleTarget,
   ThemePalette,
 } from '@angular/material/core';
-import {merge} from 'rxjs';
-import {of as observableOf} from 'rxjs';
+import {merge, of as observableOf, Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
-import {Subject} from 'rxjs';
 import {MatInkBar} from '../ink-bar';
 
 

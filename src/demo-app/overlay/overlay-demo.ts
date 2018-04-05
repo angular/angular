@@ -16,8 +16,7 @@ import {
   ViewContainerRef,
   ViewEncapsulation,
 } from '@angular/core';
-import {filter} from 'rxjs/operators';
-import {tap} from 'rxjs/operators';
+import {filter, tap} from 'rxjs/operators';
 
 
 @Component({

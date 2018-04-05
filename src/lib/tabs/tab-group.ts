@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {coerceBooleanProperty, coerceNumberProperty} from '@angular/cdk/coercion';
 import {
   AfterContentChecked,
   AfterContentInit,
@@ -22,11 +23,6 @@ import {
   ViewChild,
   ViewEncapsulation,
 } from '@angular/core';
-import {coerceBooleanProperty, coerceNumberProperty} from '@angular/cdk/coercion';
-import {Subscription} from 'rxjs';
-import {MatTab} from './tab';
-import {MatTabHeader} from './tab-header';
-import {merge} from 'rxjs';
 import {
   CanColor,
   CanDisableRipple,
@@ -34,6 +30,9 @@ import {
   mixinDisableRipple,
   ThemePalette
 } from '@angular/material/core';
+import {merge, Subscription} from 'rxjs';
+import {MatTab} from './tab';
+import {MatTabHeader} from './tab-header';
 
 
 /** Used to generate unique ID's for each tab component */

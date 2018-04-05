@@ -8,10 +8,9 @@
 
 import {ChangeDetectionStrategy, Component, Host} from '@angular/core';
 import {FormControl} from '@angular/forms';
-import {MatDatepickerInputEvent} from '@angular/material/datepicker';
-import {DateAdapter} from '@angular/material/core';
-import {MatCalendar} from '@angular/material';
-import {ThemePalette} from '@angular/material/core';
+import {DateAdapter, ThemePalette} from '@angular/material/core';
+import {MatCalendar, MatDatepickerInputEvent} from '@angular/material/datepicker';
+
 
 @Component({
   moduleId: module.id,

@@ -7,10 +7,16 @@
  */
 
 import {AnimationEvent} from '@angular/animations';
+import {CdkAccordionItem} from '@angular/cdk/accordion';
+import {coerceBooleanProperty} from '@angular/cdk/coercion';
+import {UniqueSelectionDispatcher} from '@angular/cdk/collections';
+import {TemplatePortal} from '@angular/cdk/portal';
 import {
+  AfterContentInit,
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
+  ContentChild,
   Directive,
   Host,
   Input,
@@ -18,22 +24,15 @@ import {
   OnDestroy,
   Optional,
   SimpleChanges,
-  ViewEncapsulation,
   ViewContainerRef,
-  AfterContentInit,
-  ContentChild,
+  ViewEncapsulation,
 } from '@angular/core';
-import {CdkAccordionItem} from '@angular/cdk/accordion';
-import {UniqueSelectionDispatcher} from '@angular/cdk/collections';
-import {TemplatePortal} from '@angular/cdk/portal';
 import {Subject} from 'rxjs';
-import {take} from 'rxjs/operators';
-import {filter} from 'rxjs/operators';
-import {startWith} from 'rxjs/operators';
+import {filter, startWith, take} from 'rxjs/operators';
 import {MatAccordion} from './accordion';
-import {coerceBooleanProperty} from '@angular/cdk/coercion';
-import {MatExpansionPanelContent} from './expansion-panel-content';
 import {matExpansionAnimations} from './expansion-animations';
+import {MatExpansionPanelContent} from './expansion-panel-content';
+
 
 /** MatExpansionPanel's states. */
 export type MatExpansionPanelState = 'expanded' | 'collapsed';

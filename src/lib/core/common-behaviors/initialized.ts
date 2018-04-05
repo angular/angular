@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {Observable, Subscriber} from 'rxjs';
 import {Constructor} from './constructor';
-import {Observable} from 'rxjs';
-import {Subscriber} from 'rxjs';
+
 
 /**
  * Mixin that adds an initialized property to a directive which, when subscribed to, will emit a

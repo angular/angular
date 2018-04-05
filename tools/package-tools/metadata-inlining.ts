@@ -1,7 +1,6 @@
 import {readFileSync, writeFileSync} from 'fs';
-import {basename} from 'path';
 import {sync as glob} from 'glob';
-import {join} from 'path';
+import {basename, join} from 'path';
 
 /**
  * Recurse through a parsed metadata.json file and inline all html and css.

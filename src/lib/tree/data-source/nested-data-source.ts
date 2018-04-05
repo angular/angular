@@ -7,10 +7,9 @@
  */
 
 import {CollectionViewer, DataSource} from '@angular/cdk/collections';
-import {Observable} from 'rxjs';
-import {merge} from 'rxjs';
+import {BehaviorSubject, merge, Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
-import {BehaviorSubject} from 'rxjs';
+
 
 /**
  * Data source for nested tree.

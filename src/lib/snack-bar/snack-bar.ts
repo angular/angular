@@ -9,20 +9,19 @@
 import {LiveAnnouncer} from '@angular/cdk/a11y';
 import {BreakpointObserver, Breakpoints} from '@angular/cdk/layout';
 import {Overlay, OverlayConfig, OverlayRef} from '@angular/cdk/overlay';
-import {ComponentPortal, TemplatePortal, ComponentType, PortalInjector} from '@angular/cdk/portal';
+import {ComponentPortal, ComponentType, PortalInjector, TemplatePortal} from '@angular/cdk/portal';
 import {
   ComponentRef,
   EmbeddedViewRef,
   Inject,
   Injectable,
-  Injector,
   InjectionToken,
+  Injector,
   Optional,
   SkipSelf,
   TemplateRef,
 } from '@angular/core';
-import {take} from 'rxjs/operators';
-import {takeUntil} from 'rxjs/operators';
+import {take, takeUntil} from 'rxjs/operators';
 import {SimpleSnackBar} from './simple-snack-bar';
 import {MAT_SNACK_BAR_DATA, MatSnackBarConfig} from './snack-bar-config';
 import {MatSnackBarContainer} from './snack-bar-container';

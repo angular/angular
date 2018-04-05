@@ -27,14 +27,12 @@ import {
   SkipSelf,
   TemplateRef,
 } from '@angular/core';
-import {Observable} from 'rxjs';
-import {defer} from 'rxjs';
-import {of as observableOf} from 'rxjs';
+import {defer, Observable, of as observableOf, Subject} from 'rxjs';
 import {startWith} from 'rxjs/operators';
-import {Subject} from 'rxjs';
 import {MatDialogConfig} from './dialog-config';
 import {MatDialogContainer} from './dialog-container';
 import {MatDialogRef} from './dialog-ref';
+
 
 /** Injection token that can be used to access the data that was passed in to a dialog. */
 export const MAT_DIALOG_DATA = new InjectionToken<any>('MatDialogData');

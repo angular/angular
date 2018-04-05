@@ -6,15 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {OverlayRef, GlobalPositionStrategy} from '@angular/cdk/overlay';
 import {ESCAPE} from '@angular/cdk/keycodes';
+import {GlobalPositionStrategy, OverlayRef} from '@angular/cdk/overlay';
 import {Location} from '@angular/common';
-import {filter} from 'rxjs/operators';
-import {take} from 'rxjs/operators';
+import {Observable, Subject, Subscription, SubscriptionLike} from 'rxjs';
+import {filter, take} from 'rxjs/operators';
 import {DialogPosition} from './dialog-config';
-import {Observable, SubscriptionLike} from 'rxjs';
-import {Subject} from 'rxjs';
-import {Subscription} from 'rxjs';
 import {MatDialogContainer} from './dialog-container';
 
 
