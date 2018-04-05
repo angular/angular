@@ -36,9 +36,6 @@
     "name": "baseDirectiveCreate"
   },
   {
-    "name": "buildTNodeFlags"
-  },
-  {
     "name": "callHooks"
   },
   {

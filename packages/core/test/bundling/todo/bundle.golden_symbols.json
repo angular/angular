@@ -12,6 +12,9 @@
     "name": "CIRCULAR$1"
   },
   {
+    "name": "CIRCULAR$2"
+  },
+  {
     "name": "CLEAN_PROMISE"
   },
   {
@@ -261,9 +264,6 @@
     "name": "bindingUpdated"
   },
   {
-    "name": "buildTNodeFlags"
-  },
-  {
     "name": "cacheMatchingDirectivesForNode"
   },
   {
@@ -295,6 +295,9 @@
   },
   {
     "name": "couldBeInjectableType"
+  },
+  {
+    "name": "createDirectivesAndLocals"
   },
   {
     "name": "createInjector"
@@ -405,6 +408,9 @@
     "name": "findAttrIndexInNode"
   },
   {
+    "name": "findDirectiveMatches"
+  },
+  {
     "name": "findFirstRNode"
   },
   {
@@ -486,9 +492,6 @@
     "name": "getTypeNameForDebugging$1"
   },
   {
-    "name": "hack_declareDirectives"
-  },
-  {
     "name": "hasDeps"
   },
   {
@@ -526,6 +529,9 @@
   },
   {
     "name": "insertView"
+  },
+  {
+    "name": "instantiateDirectivesDirectly"
   },
   {
     "name": "interpolation1"
@@ -681,6 +687,9 @@
     "name": "resetApplicationState"
   },
   {
+    "name": "resolveDirective"
+  },
+  {
     "name": "resolveForwardRef"
   },
   {
@@ -727,6 +736,9 @@
   },
   {
     "name": "textBinding"
+  },
+  {
+    "name": "throwCyclicDependencyError"
   },
   {
     "name": "throwErrorIfNoChangesMode"
