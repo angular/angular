@@ -191,7 +191,7 @@ function defaultRouterHook(snapshot: RouterStateSnapshot): Observable<void> {
  *
  * Provides the navigation and url manipulation capabilities.
  *
- * See {@link Routes} for more details and examples.
+ * See `Routes` for more details and examples.
  *
  * @ngModule RouterModule
  *
@@ -213,7 +213,7 @@ export class Router {
   /**
    * Error handler that is invoked when a navigation errors.
    *
-   * See {@link ErrorHandler} for more information.
+   * See `ErrorHandler` for more information.
    */
   errorHandler: ErrorHandler = defaultErrorHandler;
 
@@ -486,10 +486,10 @@ export class Router {
     return this.navigateByUrl(this.createUrlTree(commands, extras), extras);
   }
 
-  /** Serializes a {@link UrlTree} into a string */
+  /** Serializes a `UrlTree` into a string */
   serializeUrl(url: UrlTree): string { return this.urlSerializer.serialize(url); }
 
-  /** Parses a string into a {@link UrlTree} */
+  /** Parses a string into a `UrlTree` */
   parseUrl(url: string): UrlTree { return this.urlSerializer.parse(url); }
 
   /** Returns whether the url is activated */
