@@ -18,7 +18,7 @@ import {AbstractControl, FormArray, FormControl, FormGroup} from './model';
  * `new FormControl()`, and `new FormArray()` boilerplate that can build up in larger
  * forms.
  *
- * @howToUse
+ * @description
  *
  * To use, inject `FormBuilder` into your component class. You can then call its methods
  * directly.

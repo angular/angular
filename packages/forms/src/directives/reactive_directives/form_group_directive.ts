@@ -25,7 +25,7 @@ export const formDirectiveProvider: any = {
 /**
  * @whatItDoes Binds an existing {@link FormGroup} to a DOM element.
  *
- * @howToUse
+ * @description
  *
  * This directive accepts an existing {@link FormGroup} instance. It will then use this
  * {@link FormGroup} instance to match any child {@link FormControl}, {@link FormGroup},
