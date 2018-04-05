@@ -39,7 +39,6 @@ export class NullInjector implements Injector {
 }
 
 /**
- * @whatItDoes Injector interface
  * @usageNotes
  * ```
  * const injector: Injector = ...;
@@ -47,6 +46,9 @@ export class NullInjector implements Injector {
  * ```
  *
  * @description
+ *
+ * Concrete injectors implement this interface.
+ *
  * For more details, see the {@linkDocs guide/dependency-injection "Dependency Injection Guide"}.
  *
  * ### Example

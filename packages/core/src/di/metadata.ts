@@ -20,7 +20,6 @@ import {EMPTY_ARRAY} from '../view/util';
  */
 export interface InjectDecorator {
   /**
-   * @whatItDoes A parameter decorator that specifies a dependency.
    * @usageNotes
    * ```
    * @Injectable()
@@ -30,6 +29,8 @@ export interface InjectDecorator {
    * ```
    *
    * @description
+   * A parameter decorator that specifies a dependency.
+   *
    * For more details, see the {@linkDocs guide/dependency-injection "Dependency Injection Guide"}.
    *
    * ### Example
@@ -72,8 +73,6 @@ export const Inject: InjectDecorator = makeParamDecorator('Inject', (token: any)
  */
 export interface OptionalDecorator {
   /**
-   * @whatItDoes A parameter metadata that marks a dependency as optional.
-   * {@link Injector} provides `null` if the dependency is not found.
    * @usageNotes
    * ```
    * @Injectable()
@@ -83,6 +82,9 @@ export interface OptionalDecorator {
    * ```
    *
    * @description
+   * A parameter metadata that marks a dependency as optional.
+   * {@link Injector} provides `null` if the dependency is not found.
+   *
    * For more details, see the {@linkDocs guide/dependency-injection "Dependency Injection Guide"}.
    *
    * ### Example
@@ -117,7 +119,6 @@ export const Optional: OptionalDecorator = makeParamDecorator('Optional');
  */
 export interface SelfDecorator {
   /**
-   * @whatItDoes Specifies that an {@link Injector} should retrieve a dependency only from itself.
    * @usageNotes
    * ```
    * @Injectable()
@@ -127,6 +128,8 @@ export interface SelfDecorator {
    * ```
    *
    * @description
+   * Specifies that an {@link Injector} should retrieve a dependency only from itself.
+   *
    * For more details, see the {@linkDocs guide/dependency-injection "Dependency Injection Guide"}.
    *
    * ### Example
@@ -162,7 +165,6 @@ export const Self: SelfDecorator = makeParamDecorator('Self');
  */
 export interface SkipSelfDecorator {
   /**
-   * @whatItDoes Specifies that the dependency resolution should start from the parent injector.
    * @usageNotes
    * ```
    * @Injectable()
@@ -172,6 +174,8 @@ export interface SkipSelfDecorator {
    * ```
    *
    * @description
+   * Specifies that the dependency resolution should start from the parent injector.
+   *
    * For more details, see the {@linkDocs guide/dependency-injection "Dependency Injection Guide"}.
    *
    * ### Example
@@ -206,8 +210,6 @@ export const SkipSelf: SkipSelfDecorator = makeParamDecorator('SkipSelf');
  */
 export interface HostDecorator {
   /**
-   * @whatItDoes Specifies that an injector should retrieve a dependency from any injector until
-   * reaching the host element of the current component.
    * @usageNotes
    * ```
    * @Injectable()
@@ -217,6 +219,9 @@ export interface HostDecorator {
    * ```
    *
    * @description
+   * Specifies that an injector should retrieve a dependency from any injector until
+   * reaching the host element of the current component.
+   *
    * For more details, see the {@linkDocs guide/dependency-injection "Dependency Injection Guide"}.
    *
    * ### Example
