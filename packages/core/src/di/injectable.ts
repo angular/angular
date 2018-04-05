@@ -30,7 +30,7 @@ export type InjectableProvider = ValueSansProvider | ExistingSansProvider |
 /**
  * Type of the Injectable decorator / constructor function.
  *
- * @stable
+ *
  */
 export interface InjectableDecorator {
   /**
@@ -54,7 +54,7 @@ export interface InjectableDecorator {
    *
    * {@example core/di/ts/metadata_spec.ts region='InjectableThrows'}
    *
-   * @stable
+   *
    */
   (): any;
   (options?: {providedIn: Type<any>| 'root' | null}&InjectableProvider): any;
@@ -113,7 +113,7 @@ export function convertInjectableProviderToFactory(
 /**
 * Injectable decorator and metadata.
 *
-* @stable
+*
 * @Annotation
 */
 export const Injectable: InjectableDecorator = makeDecorator(

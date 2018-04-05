@@ -123,7 +123,7 @@ function isOptionsObj(
  * @see [Forms Guide](/guide/forms)
  * @see [Reactive Forms Guide](/guide/reactive-forms)
  * @see [Dynamic Forms Guide](/guide/dynamic-form)
- * @stable
+ *
  */
 export abstract class AbstractControl {
   /** @internal */
@@ -735,7 +735,7 @@ export abstract class AbstractControl {
  *
  * * **npm package**: `@angular/forms`
  *
- * @stable
+ *
  */
 export class FormControl extends AbstractControl {
   /** @internal */
@@ -978,7 +978,7 @@ export class FormControl extends AbstractControl {
  *
  * * **npm package**: `@angular/forms`
  *
- * @stable
+ *
  */
 export class FormGroup extends AbstractControl {
   constructor(
@@ -1314,7 +1314,7 @@ export class FormGroup extends AbstractControl {
  *
  * * **npm package**: `@angular/forms`
  *
- * @stable
+ *
  */
 export class FormArray extends AbstractControl {
   constructor(

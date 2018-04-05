@@ -56,7 +56,7 @@ export const formDirectiveProvider: any = {
  *
  * **NgModule**: `ReactiveFormsModule`
  *
- *  @stable
+ *
  */
 @Directive({
   selector: '[formGroup]',

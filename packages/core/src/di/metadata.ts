@@ -16,7 +16,7 @@ import {EMPTY_ARRAY} from '../view/util';
 /**
  * Type of the Inject decorator / constructor function.
  *
- * @stable
+ *
  */
 export interface InjectDecorator {
   /**
@@ -44,7 +44,7 @@ export interface InjectDecorator {
    *
    * {@example core/di/ts/metadata_spec.ts region='InjectWithoutDecorator'}
    *
-   * @stable
+   *
    */
   (token: any): any;
   new (token: any): Inject;
@@ -53,14 +53,14 @@ export interface InjectDecorator {
 /**
  * Type of the Inject metadata.
  *
- * @stable
+ *
  */
 export interface Inject { token: any; }
 
 /**
  * Inject decorator and metadata.
  *
- * @stable
+ *
  * @Annotation
  */
 export const Inject: InjectDecorator = makeParamDecorator('Inject', (token: any) => ({token}));
@@ -69,7 +69,7 @@ export const Inject: InjectDecorator = makeParamDecorator('Inject', (token: any)
 /**
  * Type of the Optional decorator / constructor function.
  *
- * @stable
+ *
  */
 export interface OptionalDecorator {
   /**
@@ -91,7 +91,7 @@ export interface OptionalDecorator {
    *
    * {@example core/di/ts/metadata_spec.ts region='Optional'}
    *
-   * @stable
+   *
    */
   (): any;
   new (): Optional;
@@ -100,14 +100,14 @@ export interface OptionalDecorator {
 /**
  * Type of the Optional metadata.
  *
- * @stable
+ *
  */
 export interface Optional {}
 
 /**
  * Optional decorator and metadata.
  *
- * @stable
+ *
  * @Annotation
  */
 export const Optional: OptionalDecorator = makeParamDecorator('Optional');
@@ -115,7 +115,7 @@ export const Optional: OptionalDecorator = makeParamDecorator('Optional');
 /**
  * Type of the Self decorator / constructor function.
  *
- * @stable
+ *
  */
 export interface SelfDecorator {
   /**
@@ -136,7 +136,7 @@ export interface SelfDecorator {
    *
    * {@example core/di/ts/metadata_spec.ts region='Self'}
    *
-   * @stable
+   *
    */
   (): any;
   new (): Self;
@@ -145,14 +145,14 @@ export interface SelfDecorator {
 /**
  * Type of the Self metadata.
  *
- * @stable
+ *
  */
 export interface Self {}
 
 /**
  * Self decorator and metadata.
  *
- * @stable
+ *
  * @Annotation
  */
 export const Self: SelfDecorator = makeParamDecorator('Self');
@@ -161,7 +161,7 @@ export const Self: SelfDecorator = makeParamDecorator('Self');
 /**
  * Type of the SkipSelf decorator / constructor function.
  *
- * @stable
+ *
  */
 export interface SkipSelfDecorator {
   /**
@@ -182,7 +182,7 @@ export interface SkipSelfDecorator {
    *
    * {@example core/di/ts/metadata_spec.ts region='SkipSelf'}
    *
-   * @stable
+   *
    */
   (): any;
   new (): SkipSelf;
@@ -191,14 +191,14 @@ export interface SkipSelfDecorator {
 /**
  * Type of the SkipSelf metadata.
  *
- * @stable
+ *
  */
 export interface SkipSelf {}
 
 /**
  * SkipSelf decorator and metadata.
  *
- * @stable
+ *
  * @Annotation
  */
 export const SkipSelf: SkipSelfDecorator = makeParamDecorator('SkipSelf');
@@ -206,7 +206,7 @@ export const SkipSelf: SkipSelfDecorator = makeParamDecorator('SkipSelf');
 /**
  * Type of the Host decorator / constructor function.
  *
- * @stable
+ *
  */
 export interface HostDecorator {
   /**
@@ -228,7 +228,7 @@ export interface HostDecorator {
    *
    * {@example core/di/ts/metadata_spec.ts region='Host'}
    *
-   * @stable
+   *
    */
   (): any;
   new (): Host;
@@ -237,14 +237,14 @@ export interface HostDecorator {
 /**
  * Type of the Host metadata.
  *
- * @stable
+ *
  */
 export interface Host {}
 
 /**
  * Host decorator and metadata.
  *
- * @stable
+ *
  * @Annotation
  */
 export const Host: HostDecorator = makeParamDecorator('Host');

@@ -34,7 +34,7 @@ import {TreeNode, nodeChildrenAsMap} from './utils/tree';
  *
  * Represents the extra options used during navigation.
  *
- * @stable
+ *
  */
 export interface NavigationExtras {
   /**
@@ -152,7 +152,7 @@ export interface NavigationExtras {
  * If the handler throws an exception, the navigation promise will be rejected with
  * the exception.
  *
- * @stable
+ *
  */
 export type ErrorHandler = (error: any) => any;
 
@@ -195,7 +195,7 @@ function defaultRouterHook(snapshot: RouterStateSnapshot): Observable<void> {
  *
  * @ngModule RouterModule
  *
- * @stable
+ *
  */
 export class Router {
   private currentUrlTree: UrlTree;

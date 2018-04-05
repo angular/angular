@@ -43,7 +43,7 @@ export const modelGroupProvider: any = {
  *
  * * **NgModule**: `FormsModule`
  *
- * @stable
+ *
  */
 @Directive({selector: '[ngModelGroup]', providers: [modelGroupProvider], exportAs: 'ngModelGroup'})
 export class NgModelGroup extends AbstractFormGroupDirective implements OnInit, OnDestroy {

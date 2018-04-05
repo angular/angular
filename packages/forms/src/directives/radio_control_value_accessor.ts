@@ -81,7 +81,7 @@ export class RadioControlRegistry {
  *
  *  * **npm package**: `@angular/forms`
  *
- *  @stable
+ *
  */
 @Directive({
   selector:

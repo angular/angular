@@ -34,7 +34,7 @@ import {ERROR_ORIGINAL_ERROR, getDebugContext, getErrorLogger, getOriginalError}
  * class MyModule {}
  * ```
  *
- * @stable
+ *
  */
 export class ErrorHandler {
   /**

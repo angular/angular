@@ -18,7 +18,7 @@ import {NgControl} from './ng_control';
  *
  * Only used by the forms module.
  *
- * @stable
+ *
  */
 export interface Form {
   /**

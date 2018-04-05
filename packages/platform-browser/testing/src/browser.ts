@@ -20,7 +20,7 @@ const _TEST_BROWSER_PLATFORM_PROVIDERS: StaticProvider[] =
 /**
  * Platform for testing
  *
- * @stable
+ *
  */
 export const platformBrowserTesting =
     createPlatformFactory(platformCore, 'browserTesting', _TEST_BROWSER_PLATFORM_PROVIDERS);
@@ -28,7 +28,7 @@ export const platformBrowserTesting =
 /**
  * NgModule for testing.
  *
- * @stable
+ *
  */
 @NgModule({
   exports: [BrowserModule],
