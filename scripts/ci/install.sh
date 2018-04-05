@@ -47,6 +47,34 @@ travisFoldStart "bower-install"
 travisFoldEnd "bower-install"
 
 
+# Install bazel
+if [[ ${TRAVIS} ]]; then
+  travisFoldStart "bazel-install"
+  (
+    mkdir tmp
+    cd tmp
+    curl --location --compressed https://github.com/bazelbuild/bazel/releases/download/${BAZEL_VERSION}/bazel-${BAZEL_VERSION}-installer-linux-x86_64.sh > bazel-${BAZEL_VERSION}-installer-linux-x86_64.sh
+    chmod +x bazel-${BAZEL_VERSION}-installer-linux-x86_64.sh
+    ./bazel-${BAZEL_VERSION}-installer-linux-x86_64.sh --user
+    cd ..
+    rm -rf tmp
+  )
+  # Workaround https://github.com/bazelbuild/bazel/issues/3645
+  # Bazel doesn't calculate the memory ceiling correctly when running under Docker.
+  # https://docs.travis-ci.com/user/common-build-problems/#My-build-script-is-killed-without-any-error
+  echo "build --local_resources=2816,2.0,1.0 --worker_max_instances=2" >> tools/bazel.rc
+  echo "build --announce_rc --noshow_progress" >> tools/bazel.rc
+
+  # For Bazel artifact stamping
+  if [[ ${TRAVIS_PULL_REQUEST} != "false" ]]; then
+    echo "build --workspace_status_command=" >> tools/bazel.rc
+  else
+    git fetch https://github.com/angular/angular.git --tags
+  fi
+  travisFoldEnd "bazel-install"
+fi
+
+
 if [[ ${TRAVIS} &&
   ${CI_MODE} == "aio" ||
   ${CI_MODE} == "aio_e2e" ||
@@ -63,22 +91,6 @@ if [[ ${TRAVIS} &&
     )
   travisFoldEnd "yarn-install.aio"
 fi
-
-# Install bazel
-if [[ ${TRAVIS} && ${CI_MODE} == "e2e_2" ]]; then
-  travisFoldStart "bazel-install"
-  (
-    mkdir tmp
-    cd tmp
-    curl --location --compressed https://github.com/bazelbuild/bazel/releases/download/${BAZEL_VERSION}/bazel-${BAZEL_VERSION}-installer-linux-x86_64.sh > bazel-${BAZEL_VERSION}-installer-linux-x86_64.sh
-    chmod +x bazel-${BAZEL_VERSION}-installer-linux-x86_64.sh
-    ./bazel-${BAZEL_VERSION}-installer-linux-x86_64.sh --user
-    cd ..
-    rm -rf tmp
-  )
-  travisFoldEnd "bazel-install"
-fi
-
 
 # Install Chromium
 if [[ ${TRAVIS} &&
