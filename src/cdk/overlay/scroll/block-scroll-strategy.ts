@@ -8,6 +8,7 @@
 
 import {ScrollStrategy} from './scroll-strategy';
 import {ViewportRuler} from '@angular/cdk/scrolling';
+import {coerceCssPixelValue} from '@angular/cdk/coercion';
 
 /**
  * Strategy that will prevent the user from scrolling while the overlay is visible.
@@ -38,8 +39,8 @@ export class BlockScrollStrategy implements ScrollStrategy {
 
       // Note: we're using the `html` node, instead of the `body`, because the `body` may
       // have the user agent margin, whereas the `html` is guaranteed not to have one.
-      root.style.left = `${-this._previousScrollPosition.left}px`;
-      root.style.top = `${-this._previousScrollPosition.top}px`;
+      root.style.left = coerceCssPixelValue(-this._previousScrollPosition.left);
+      root.style.top = coerceCssPixelValue(-this._previousScrollPosition.top);
       root.classList.add('cdk-global-scrollblock');
       this._isEnabled = true;
     }

@@ -17,6 +17,7 @@ import {
 import {Observable, Subscription, Subject} from 'rxjs';
 import {OverlayRef} from '../overlay-ref';
 import {isElementScrolledOutsideView, isElementClippedByScrolling} from './scroll-clip';
+import {coerceCssPixelValue} from '@angular/cdk/coercion';
 
 
 // TODO: refactor clipping detection into a separate thing (part of scrolling module)
@@ -665,9 +666,9 @@ export class FlexibleConnectedPositionStrategy implements PositionStrategy {
       styles.bottom = '';
       styles.height = '100%';
     } else {
-      styles.height = `${boundingBoxRect.height}px`;
-      styles.top = boundingBoxRect.top != null ? `${boundingBoxRect.top}px` : '';
-      styles.bottom = boundingBoxRect.bottom != null ? `${boundingBoxRect.bottom}px` : '';
+      styles.top = coerceCssPixelValue(boundingBoxRect.top);
+      styles.bottom = coerceCssPixelValue(boundingBoxRect.bottom);
+      styles.height = coerceCssPixelValue(boundingBoxRect.height);
     }
 
     if (!this._hasFlexibleWidth || this._isPushed) {
@@ -675,19 +676,19 @@ export class FlexibleConnectedPositionStrategy implements PositionStrategy {
       styles.right = '';
       styles.width = '100%';
     } else {
-      styles.width = `${boundingBoxRect.width}px`;
-      styles.left = boundingBoxRect.left != null ? `${boundingBoxRect.left}px` : '';
-      styles.right = boundingBoxRect.right != null ? `${boundingBoxRect.right}px` : '';
+      styles.left = coerceCssPixelValue(boundingBoxRect.left);
+      styles.right = coerceCssPixelValue(boundingBoxRect.right);
+      styles.width = coerceCssPixelValue(boundingBoxRect.width);
     }
 
     const maxHeight = this._overlayRef.getConfig().maxHeight;
     if (maxHeight && this._hasFlexibleHeight) {
-      styles.maxHeight = formatCssUnit(maxHeight);
+      styles.maxHeight = coerceCssPixelValue(maxHeight);
     }
 
     const maxWidth = this._overlayRef.getConfig().maxWidth;
     if (maxWidth && this._hasFlexibleWidth) {
-      styles.maxWidth = formatCssUnit(maxWidth);
+      styles.maxWidth = coerceCssPixelValue(maxWidth);
     }
 
     this._lastBoundingBoxSize = boundingBoxRect;
@@ -800,7 +801,7 @@ export class FlexibleConnectedPositionStrategy implements PositionStrategy {
       const documentHeight = this._document.documentElement.clientHeight;
       styles.bottom = `${documentHeight - (overlayPoint.y + this._overlayRect.height)}px`;
     } else {
-      styles.top = `${overlayPoint.y}px`;
+      styles.top = coerceCssPixelValue(overlayPoint.y);
     }
 
     return styles;
@@ -835,7 +836,7 @@ export class FlexibleConnectedPositionStrategy implements PositionStrategy {
       const documentWidth = this._document.documentElement.clientWidth;
       styles.right = `${documentWidth - (overlayPoint.x + this._overlayRect.width)}px`;
     } else {
-      styles.left = `${overlayPoint.x}px`;
+      styles.left = coerceCssPixelValue(overlayPoint.x);
     }
 
     return styles;
@@ -969,11 +970,6 @@ export interface ConnectedPosition {
   weight?: number;
   offsetX?: number;
   offsetY?: number;
-}
-
-// TODO: move to common place
-function formatCssUnit(value: number | string) {
-  return typeof value === 'string' ? value as string : `${value}px`;
 }
 
 /** Shallow-extends a stylesheet object with another stylesheet object. */
