@@ -29,6 +29,7 @@ import {TemplatePortal, CdkPortalOutlet, PortalHostDirective} from '@angular/cdk
 import {Directionality, Direction} from '@angular/cdk/bidi';
 import {Subscription} from 'rxjs';
 import {matTabsAnimations} from './tabs-animations';
+import {startWith} from 'rxjs/operators';
 
 /**
  * These position states are used internally as animation states for the tab body. Setting the
@@ -59,28 +60,29 @@ export type MatTabBodyOriginState = 'left' | 'right';
   selector: '[matTabBodyHost]'
 })
 export class MatTabBodyPortal extends CdkPortalOutlet implements OnInit, OnDestroy {
-  /** A subscription to events for when the tab body begins centering. */
-  private _centeringSub: Subscription;
-  /** A subscription to events for when the tab body finishes leaving from center position. */
-  private _leavingSub: Subscription;
+  /** Subscription to events for when the tab body begins centering. */
+  private _centeringSub = Subscription.EMPTY;
+  /** Subscription to events for when the tab body finishes leaving from center position. */
+  private _leavingSub = Subscription.EMPTY;
 
   constructor(
-    _componentFactoryResolver: ComponentFactoryResolver,
-    _viewContainerRef: ViewContainerRef,
+    componentFactoryResolver: ComponentFactoryResolver,
+    viewContainerRef: ViewContainerRef,
     @Inject(forwardRef(() => MatTabBody)) private _host: MatTabBody) {
-      super(_componentFactoryResolver, _viewContainerRef);
+      super(componentFactoryResolver, viewContainerRef);
   }
 
   /** Set initial visibility or set up subscription for changing visibility. */
   ngOnInit(): void {
-    if (this._host._isCenterPosition(this._host._position)) {
-      this.attach(this._host._content);
-    }
-    this._centeringSub = this._host._beforeCentering.subscribe((isCentering: boolean) => {
-      if (isCentering && !this.hasAttached()) {
-        this.attach(this._host._content);
-      }
-    });
+    super.ngOnInit();
+
+    this._centeringSub = this._host._beforeCentering
+      .pipe(startWith(this._host._isCenterPosition(this._host._position)))
+      .subscribe((isCentering: boolean) => {
+        if (isCentering && !this.hasAttached()) {
+          this.attach(this._host._content);
+        }
+      });
 
     this._leavingSub = this._host._afterLeavingCenter.subscribe(() => {
       this.detach();
@@ -89,13 +91,9 @@ export class MatTabBodyPortal extends CdkPortalOutlet implements OnInit, OnDestr
 
   /** Clean up centering subscription. */
   ngOnDestroy(): void {
-    if (this._centeringSub && !this._centeringSub.closed) {
-      this._centeringSub.unsubscribe();
-    }
-
-    if (this._leavingSub && !this._leavingSub.closed) {
-      this._leavingSub.unsubscribe();
-    }
+    super.ngOnDestroy();
+    this._centeringSub.unsubscribe();
+    this._leavingSub.unsubscribe();
   }
 }
 
