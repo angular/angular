@@ -28,7 +28,7 @@ export abstract class PreloadingStrategy {
 /**
  * @whatItDoes Provides a preloading strategy that preloads all modules as quickly as possible.
  *
- * @howToUse
+ * @description
  *
  * ```
  * RouteModule.forRoot(ROUTES, {preloadingStrategy: PreloadAllModules})

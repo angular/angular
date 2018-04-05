@@ -16,7 +16,7 @@ import {ChildrenOutletContexts, ExtraOptions, NoPreloading, PreloadingStrategy, 
 /**
  * @whatItDoes Allows to simulate the loading of ng modules in tests.
  *
- * @howToUse
+ * @description
  *
  * ```
  * const loader = TestBed.get(NgModuleFactoryLoader);
@@ -133,7 +133,13 @@ export function setupTestingRouter(
 /**
  * @whatItDoes Sets up the router to be used for testing.
  *
- * @howToUse
+ * @description
+ *
+ * The modules sets up the router to be used for testing.
+ * It provides spy implementations of {@link Location}, {@link LocationStrategy}, and {@link
+ * NgModuleFactoryLoader}.
+ *
+ * ### Example
  *
  * ```
  * beforeEach(() => {
@@ -146,12 +152,6 @@ export function setupTestingRouter(
  *   });
  * });
  * ```
- *
- * @description
- *
- * The modules sets up the router to be used for testing.
- * It provides spy implementations of {@link Location}, {@link LocationStrategy}, and {@link
- * NgModuleFactoryLoader}.
  *
  * @stable
  */
