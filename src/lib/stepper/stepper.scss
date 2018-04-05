@@ -63,12 +63,9 @@ $mat-stepper-line-gap: 8px !default;
   }
 }
 
-.mat-horizontal-stepper-content {
+.mat-horizontal-stepper-content[aria-expanded='false'] {
+  height: 0;
   overflow: hidden;
-
-  &[aria-expanded='false'] {
-    height: 0;
-  }
 }
 
 .mat-horizontal-content-container {
