@@ -44,6 +44,7 @@ import {MatYearView} from './year-view';
     MatMonthView,
     MatYearView,
     MatMultiYearView,
+    MatCalendarHeader,
   ],
   declarations: [
     MatCalendar,
@@ -56,7 +57,7 @@ import {MatYearView} from './year-view';
     MatMonthView,
     MatYearView,
     MatMultiYearView,
-    MatCalendarHeader
+    MatCalendarHeader,
   ],
   providers: [
     MatDatepickerIntl,
