@@ -35,7 +35,7 @@ export type InjectableProvider = ValueSansProvider | ExistingSansProvider |
 export interface InjectableDecorator {
   /**
    * @whatItDoes A marker metadata that marks a class as available to {@link Injector} for creation.
-   * @howToUse
+   * @usageNotes
    * ```
    * @Injectable()
    * class Car {}

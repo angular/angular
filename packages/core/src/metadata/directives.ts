@@ -24,7 +24,7 @@ export interface DirectiveDecorator {
    * @whatItDoes Marks a class as an Angular directive and collects directive configuration
    * metadata.
    *
-   * @howToUse
+   * @usageNotes
    *
    * ```
    * import {Directive} from '@angular/core';
@@ -413,7 +413,7 @@ export interface ComponentDecorator {
    * @whatItDoes Marks a class as an Angular component and collects component configuration
    * metadata.
    *
-   * @howToUse
+   * @usageNotes
    *
    * {@example core/ts/metadata/metadata.ts region='component'}
    *

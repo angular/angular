@@ -21,7 +21,7 @@ import {EMPTY_ARRAY} from '../view/util';
 export interface InjectDecorator {
   /**
    * @whatItDoes A parameter decorator that specifies a dependency.
-   * @howToUse
+   * @usageNotes
    * ```
    * @Injectable()
    * class Car {
@@ -74,7 +74,7 @@ export interface OptionalDecorator {
   /**
    * @whatItDoes A parameter metadata that marks a dependency as optional.
    * {@link Injector} provides `null` if the dependency is not found.
-   * @howToUse
+   * @usageNotes
    * ```
    * @Injectable()
    * class Car {
@@ -118,7 +118,7 @@ export const Optional: OptionalDecorator = makeParamDecorator('Optional');
 export interface SelfDecorator {
   /**
    * @whatItDoes Specifies that an {@link Injector} should retrieve a dependency only from itself.
-   * @howToUse
+   * @usageNotes
    * ```
    * @Injectable()
    * class Car {
@@ -163,7 +163,7 @@ export const Self: SelfDecorator = makeParamDecorator('Self');
 export interface SkipSelfDecorator {
   /**
    * @whatItDoes Specifies that the dependency resolution should start from the parent injector.
-   * @howToUse
+   * @usageNotes
    * ```
    * @Injectable()
    * class Car {
@@ -208,7 +208,7 @@ export interface HostDecorator {
   /**
    * @whatItDoes Specifies that an injector should retrieve a dependency from any injector until
    * reaching the host element of the current component.
-   * @howToUse
+   * @usageNotes
    * ```
    * @Injectable()
    * class Car {
