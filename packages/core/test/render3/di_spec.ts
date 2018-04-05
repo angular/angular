@@ -11,13 +11,13 @@ import {ChangeDetectorRef, ElementRef, TemplateRef, ViewContainerRef} from '@ang
 import {defineComponent} from '../../src/render3/definition';
 import {InjectFlags, bloomAdd, bloomFindPossibleInjector, getOrCreateNodeInjector, injectAttribute} from '../../src/render3/di';
 import {NgOnChangesFeature, PublicFeature, defineDirective, directiveInject, injectChangeDetectorRef, injectElementRef, injectTemplateRef, injectViewContainerRef} from '../../src/render3/index';
-import {bind, container, containerRefreshEnd, containerRefreshStart, createLNode, createLView, createTView, elementEnd, elementStart, embeddedViewEnd, embeddedViewStart, enterView, interpolation2, leaveView, load, projection, projectionDef, text, textBinding} from '../../src/render3/instructions';
+import {bind, container, containerRefreshEnd, containerRefreshStart, createLNode, createLView, createTView, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, enterView, interpolation2, leaveView, load, projection, projectionDef, text, textBinding} from '../../src/render3/instructions';
 import {LInjector} from '../../src/render3/interfaces/injector';
 import {LNodeType} from '../../src/render3/interfaces/node';
 import {LViewFlags} from '../../src/render3/interfaces/view';
 import {ViewRef} from '../../src/render3/view_ref';
 
-import {createComponent, createDirective, renderComponent, renderToHtml, toHtml} from './render_util';
+import {ComponentFixture, createComponent, createDirective, renderComponent, renderToHtml, toHtml} from './render_util';
 
 describe('di', () => {
   describe('no dependencies', () => {
@@ -47,35 +47,41 @@ describe('di', () => {
     });
   });
 
-  describe('view dependencies', () => {
-    it('should create directive with inter view dependencies', () => {
-      class DirectiveA {
-        value: string = 'A';
+  describe('directive injection', () => {
+    let log: string[] = [];
+
+    class DirB {
+      value = 'DirB';
+      constructor() { log.push(this.value); }
+
+      static ngDirectiveDef = defineDirective({
+        selectors: [['', 'dirB', '']],
+        type: DirB,
+        factory: () => new DirB(),
+        features: [PublicFeature]
+      });
+    }
+
+    beforeEach(() => log = []);
+
+    it('should create directive with intra view dependencies', () => {
+      class DirA {
+        value: string = 'DirA';
         static ngDirectiveDef = defineDirective({
-          type: DirectiveA,
+          type: DirA,
           selectors: [['', 'dirA', '']],
-          factory: () => new DirectiveA,
+          factory: () => new DirA,
           features: [PublicFeature]
         });
       }
 
-      class DirectiveB {
-        value: string = 'B';
-        static ngDirectiveDef = defineDirective({
-          type: DirectiveB,
-          selectors: [['', 'dirB', '']],
-          factory: () => new DirectiveB,
-          features: [PublicFeature]
-        });
-      }
-
-      class DirectiveC {
+      class DirC {
         value: string;
-        constructor(a: DirectiveA, b: DirectiveB) { this.value = a.value + b.value; }
+        constructor(a: DirA, b: DirB) { this.value = a.value + b.value; }
         static ngDirectiveDef = defineDirective({
-          type: DirectiveC,
+          type: DirC,
           selectors: [['', 'dirC', '']],
-          factory: () => new DirectiveC(directiveInject(DirectiveA), directiveInject(DirectiveB)),
+          factory: () => new DirC(directiveInject(DirA), directiveInject(DirB)),
           exportAs: 'dirC'
         });
       }
@@ -99,10 +105,381 @@ describe('di', () => {
         textBinding(3, bind(tmp.value));
       }
 
-      const defs = [DirectiveA, DirectiveB, DirectiveC];
+      const defs = [DirA, DirB, DirC];
       expect(renderToHtml(Template, {}, defs))
-          .toEqual('<div dira=""><span dirb="" dirc="">AB</span></div>');
+          .toEqual('<div dira=""><span dirb="" dirc="">DirADirB</span></div>');
     });
+
+    it('should instantiate injected directives first', () => {
+      class DirA {
+        constructor(dir: DirB) { log.push(`DirA (dep: ${dir.value})`); }
+
+        static ngDirectiveDef = defineDirective({
+          selectors: [['', 'dirA', '']],
+          type: DirA,
+          factory: () => new DirA(directiveInject(DirB)),
+        });
+      }
+
+      /** <div dirA dirB></div> */
+      const App = createComponent('app', function(ctx: any, cm: boolean) {
+        if (cm) {
+          elementStart(0, 'div', ['dirA', '', 'dirB', '']);
+          elementEnd();
+        }
+      }, [DirA, DirB]);
+
+      const fixture = new ComponentFixture(App);
+      expect(log).toEqual(['DirB', 'DirA (dep: DirB)']);
+    });
+
+    it('should instantiate injected directives before components', () => {
+      class Comp {
+        constructor(dir: DirB) { log.push(`Comp (dep: ${dir.value})`); }
+
+        static ngComponentDef = defineComponent({
+          selectors: [['comp']],
+          type: Comp,
+          factory: () => new Comp(directiveInject(DirB)),
+          template: (ctx: any, fm: boolean) => {}
+        });
+      }
+
+      /** <comp dirB></comp> */
+      const App = createComponent('app', function(ctx: any, cm: boolean) {
+        if (cm) {
+          elementStart(0, 'comp', ['dirB', '']);
+          elementEnd();
+        }
+      }, [Comp, DirB]);
+
+      const fixture = new ComponentFixture(App);
+      expect(log).toEqual(['DirB', 'Comp (dep: DirB)']);
+    });
+
+    it('should inject directives in the correct order in a for loop', () => {
+      class DirA {
+        constructor(dir: DirB) { log.push(`DirA (dep: ${dir.value})`); }
+
+        static ngDirectiveDef = defineDirective({
+          selectors: [['', 'dirA', '']],
+          type: DirA,
+          factory: () => new DirA(directiveInject(DirB))
+        });
+      }
+
+      /**
+       * % for(let i = 0; i < 3; i++) {
+       *   <div dirA dirB></div>
+       * % }
+       */
+      const App = createComponent('app', function(ctx: any, cm: boolean) {
+        if (cm) {
+          container(0);
+        }
+        containerRefreshStart(0);
+        {
+          for (let i = 0; i < 3; i++) {
+            if (embeddedViewStart(0)) {
+              elementStart(0, 'div', ['dirA', '', 'dirB', '']);
+              elementEnd();
+            }
+            embeddedViewEnd();
+          }
+        }
+        containerRefreshEnd();
+      }, [DirA, DirB]);
+
+      const fixture = new ComponentFixture(App);
+      expect(log).toEqual(
+          ['DirB', 'DirA (dep: DirB)', 'DirB', 'DirA (dep: DirB)', 'DirB', 'DirA (dep: DirB)']);
+    });
+
+    it('should instantiate directives with multiple out-of-order dependencies', () => {
+      class DirA {
+        value = 'DirA';
+        constructor() { log.push(this.value); }
+
+        static ngDirectiveDef = defineDirective({
+          selectors: [['', 'dirA', '']],
+          type: DirA,
+          factory: () => new DirA(),
+          features: [PublicFeature]
+        });
+      }
+
+      class DirB {
+        constructor(dirA: DirA, dirC: DirC) {
+          log.push(`DirB (deps: ${dirA.value} and ${dirC.value})`);
+        }
+
+        static ngDirectiveDef = defineDirective({
+          selectors: [['', 'dirB', '']],
+          type: DirB,
+          factory: () => new DirB(directiveInject(DirA), directiveInject(DirC))
+        });
+      }
+
+      class DirC {
+        value = 'DirC';
+        constructor() { log.push(this.value); }
+
+        static ngDirectiveDef = defineDirective({
+          selectors: [['', 'dirC', '']],
+          type: DirC,
+          factory: () => new DirC(),
+          features: [PublicFeature]
+        });
+      }
+
+      /** <div dirA dirB dirC></div> */
+      const App = createComponent('app', function(ctx: any, cm: boolean) {
+        if (cm) {
+          elementStart(0, 'div', ['dirA', '', 'dirB', '', 'dirC', '']);
+          elementEnd();
+        }
+      }, [DirA, DirB, DirC]);
+
+      const fixture = new ComponentFixture(App);
+      expect(log).toEqual(['DirA', 'DirC', 'DirB (deps: DirA and DirC)']);
+    });
+
+    it('should instantiate in the correct order for complex case', () => {
+      class Comp {
+        constructor(dir: DirD) { log.push(`Comp (dep: ${dir.value})`); }
+
+        static ngComponentDef = defineComponent({
+          selectors: [['comp']],
+          type: Comp,
+          factory: () => new Comp(directiveInject(DirD)),
+          template: (ctx: any, fm: boolean) => {}
+        });
+      }
+
+      class DirA {
+        value = 'DirA';
+        constructor(dir: DirC) { log.push(`DirA (dep: ${dir.value})`); }
+
+        static ngDirectiveDef = defineDirective({
+          selectors: [['', 'dirA', '']],
+          type: DirA,
+          factory: () => new DirA(directiveInject(DirC)),
+          features: [PublicFeature]
+        });
+      }
+
+      class DirC {
+        value = 'DirC';
+        constructor(dir: DirB) { log.push(`DirC (dep: ${dir.value})`); }
+
+        static ngDirectiveDef = defineDirective({
+          selectors: [['', 'dirC', '']],
+          type: DirC,
+          factory: () => new DirC(directiveInject(DirB)),
+          features: [PublicFeature]
+        });
+      }
+
+      class DirD {
+        value = 'DirD';
+        constructor(dir: DirA) { log.push(`DirD (dep: ${dir.value})`); }
+
+        static ngDirectiveDef = defineDirective({
+          selectors: [['', 'dirD', '']],
+          type: DirD,
+          factory: () => new DirD(directiveInject(DirA)),
+          features: [PublicFeature]
+        });
+      }
+
+      /** <comp dirA dirB dirC dirD></comp> */
+      const App = createComponent('app', function(ctx: any, cm: boolean) {
+        if (cm) {
+          elementStart(0, 'comp', ['dirA', '', 'dirB', '', 'dirC', '', 'dirD', '']);
+          elementEnd();
+        }
+      }, [Comp, DirA, DirB, DirC, DirD]);
+
+      const fixture = new ComponentFixture(App);
+      expect(log).toEqual(
+          ['DirB', 'DirC (dep: DirB)', 'DirA (dep: DirC)', 'DirD (dep: DirA)', 'Comp (dep: DirD)']);
+    });
+
+    it('should instantiate in correct order with mixed parent and peer dependencies', () => {
+      class DirA {
+        constructor(dirB: DirB, app: App) {
+          log.push(`DirA (deps: ${dirB.value} and ${app.value})`);
+        }
+
+        static ngDirectiveDef = defineDirective({
+          selectors: [['', 'dirA', '']],
+          type: DirA,
+          factory: () => new DirA(directiveInject(DirB), directiveInject(App)),
+        });
+      }
+
+      class App {
+        value = 'App';
+
+        static ngComponentDef = defineComponent({
+          selectors: [['app']],
+          type: App,
+          factory: () => new App(),
+          /** <div dirA dirB dirC></div> */
+          template: (ctx: any, cm: boolean) => {
+            if (cm) {
+              elementStart(0, 'div', ['dirA', '', 'dirB', '', 'dirC', 'dirC']);
+              elementEnd();
+            }
+          },
+          directives: [DirA, DirB],
+          features: [PublicFeature],
+        });
+      }
+
+      const fixture = new ComponentFixture(App);
+      expect(log).toEqual(['DirB', 'DirA (deps: DirB and App)']);
+    });
+
+    it('should not use a parent when peer dep is available', () => {
+      let count = 1;
+
+      class DirA {
+        constructor(dirB: DirB) { log.push(`DirA (dep: DirB - ${dirB.count})`); }
+
+        static ngDirectiveDef = defineDirective({
+          selectors: [['', 'dirA', '']],
+          type: DirA,
+          factory: () => new DirA(directiveInject(DirB)),
+        });
+      }
+
+      class DirB {
+        count: number;
+
+        constructor() {
+          log.push(`DirB`);
+          this.count = count++;
+        }
+
+        static ngDirectiveDef = defineDirective({
+          selectors: [['', 'dirB', '']],
+          type: DirB,
+          factory: () => new DirB(),
+          features: [PublicFeature],
+        });
+      }
+
+      /** <div dirA dirB></div> */
+      const Parent = createComponent('parent', function(ctx: any, cm: boolean) {
+        if (cm) {
+          elementStart(0, 'div', ['dirA', '', 'dirB', '']);
+          elementEnd();
+        }
+      }, [DirA, DirB]);
+
+      /** <parent dirB></parent> */
+      const App = createComponent('app', function(ctx: any, cm: boolean) {
+        if (cm) {
+          elementStart(0, 'parent', ['dirB', '']);
+          elementEnd();
+        }
+      }, [Parent, DirB]);
+
+      const fixture = new ComponentFixture(App);
+      expect(log).toEqual(['DirB', 'DirB', 'DirA (dep: DirB - 2)']);
+    });
+
+    it('should throw if directive is not found', () => {
+      class Dir {
+        constructor(siblingDir: OtherDir) {}
+
+        static ngDirectiveDef = defineDirective({
+          selectors: [['', 'dir', '']],
+          type: Dir,
+          factory: () => new Dir(directiveInject(OtherDir)),
+          features: [PublicFeature]
+        });
+      }
+
+      class OtherDir {
+        static ngDirectiveDef = defineDirective({
+          selectors: [['', 'other', '']],
+          type: OtherDir,
+          factory: () => new OtherDir(),
+          features: [PublicFeature]
+        });
+      }
+
+      /** <div dir></div> */
+      const App = createComponent('app', function(ctx: any, cm: boolean) {
+        if (cm) {
+          elementStart(0, 'div', ['dir', '']);
+          elementEnd();
+        }
+      }, [Dir, OtherDir]);
+
+      expect(() => new ComponentFixture(App))
+          .toThrowError(/ElementInjector: NotFound \[OtherDir\]/);
+    });
+
+    it('should throw if directives try to inject each other', () => {
+      class DirA {
+        constructor(dir: DirB) {}
+
+        static ngDirectiveDef = defineDirective({
+          selectors: [['', 'dirA', '']],
+          type: DirA,
+          factory: () => new DirA(directiveInject(DirB)),
+          features: [PublicFeature]
+        });
+      }
+
+      class DirB {
+        constructor(dir: DirA) {}
+
+        static ngDirectiveDef = defineDirective({
+          selectors: [['', 'dirB', '']],
+          type: DirB,
+          factory: () => new DirB(directiveInject(DirA)),
+          features: [PublicFeature]
+        });
+      }
+
+      /** <div dirA dirB></div> */
+      const App = createComponent('app', function(ctx: any, cm: boolean) {
+        if (cm) {
+          elementStart(0, 'div', ['dirA', '', 'dirB', '']);
+          elementEnd();
+        }
+      }, [DirA, DirB]);
+
+      expect(() => new ComponentFixture(App)).toThrowError(/Cannot instantiate cyclic dependency!/);
+    });
+
+    it('should throw if directive tries to inject itself', () => {
+      class Dir {
+        constructor(dir: Dir) {}
+
+        static ngDirectiveDef = defineDirective({
+          selectors: [['', 'dir', '']],
+          type: Dir,
+          factory: () => new Dir(directiveInject(Dir)),
+          features: [PublicFeature]
+        });
+      }
+
+      /** <div dir></div> */
+      const App = createComponent('app', function(ctx: any, cm: boolean) {
+        if (cm) {
+          elementStart(0, 'div', ['dir', '']);
+          elementEnd();
+        }
+      }, [Dir]);
+
+      expect(() => new ComponentFixture(App)).toThrowError(/Cannot instantiate cyclic dependency!/);
+    });
+
   });
 
   describe('ElementRef', () => {
@@ -283,7 +660,9 @@ describe('di', () => {
 
     class Directive {
       value: string;
+
       constructor(public cdr: ChangeDetectorRef) { this.value = (cdr.constructor as any).name; }
+
       static ngDirectiveDef = defineDirective({
         type: Directive,
         selectors: [['', 'dir', '']],
@@ -504,24 +883,23 @@ describe('di', () => {
       expect(dir !.cdr).toBe(app.cdr);
       expect(dir !.cdr).toBe(dirSameInstance !.cdr);
     });
+  });
 
-    it('should injectAttribute', () => {
-      let exist: string|undefined = 'wrong';
-      let nonExist: string|undefined = 'wrong';
+  it('should injectAttribute', () => {
+    let exist: string|undefined = 'wrong';
+    let nonExist: string|undefined = 'wrong';
 
-      const MyApp = createComponent('my-app', function(ctx: any, cm: boolean) {
-        if (cm) {
-          elementStart(0, 'div', ['exist', 'existValue', 'other', 'ignore']);
-          exist = injectAttribute('exist');
-          nonExist = injectAttribute('nonExist');
-        }
-      });
-
-      const app = renderComponent(MyApp);
-      expect(exist).toEqual('existValue');
-      expect(nonExist).toEqual(undefined);
+    const MyApp = createComponent('my-app', function(ctx: any, cm: boolean) {
+      if (cm) {
+        elementStart(0, 'div', ['exist', 'existValue', 'other', 'ignore']);
+        exist = injectAttribute('exist');
+        nonExist = injectAttribute('nonExist');
+      }
     });
 
+    const app = renderComponent(MyApp);
+    expect(exist).toEqual('existValue');
+    expect(nonExist).toEqual(undefined);
   });
 
   describe('inject', () => {

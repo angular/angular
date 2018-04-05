@@ -42,6 +42,9 @@ export const enum TNodeFlags {
   /** How far to shift the flags to get the number of directives on this node */
   SIZE_SHIFT = 1,
 
+  /** The amount to add to flags to increment size when each directive is added */
+  SIZE_SKIP = 2,
+
   /** Mask to get the number of directives on this node */
   SIZE_MASK = 0b00000000000000000001111111111110
 }
