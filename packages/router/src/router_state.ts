@@ -19,9 +19,9 @@ import {Tree, TreeNode} from './utils/tree';
 
 
 /**
- * @whatItDoes Represents the state of the router.
- *
  * @description
+ *
+ * Represents the state of the router.
  *
  * RouterState is a tree of activated routes. Every node in this tree knows about the "consumed" URL
  * segments, the extracted parameters, and the resolved data.
@@ -85,11 +85,10 @@ export function createEmptyStateSnapshot(
 }
 
 /**
- * @whatItDoes Contains the information about a route associated with a component loaded in an
- * outlet.
- * An `ActivatedRoute` can also be used to traverse the router state tree.
- *
  * @description
+ *
+ * Contains the information about a route associated with a component loaded in an
+ * outlet.  An `ActivatedRoute` can also be used to traverse the router state tree.
  *
  * ```
  * @Component({...})
@@ -229,12 +228,11 @@ function flattenInherited(pathFromRoot: ActivatedRouteSnapshot[]): Inherited {
 }
 
 /**
- * @whatItDoes Contains the information about a route associated with a component loaded in an
- * outlet
- * at a particular moment in time. ActivatedRouteSnapshot can also be used to traverse the router
- * state tree.
- *
  * @description
+ *
+ * Contains the information about a route associated with a component loaded in an
+ * outlet at a particular moment in time. ActivatedRouteSnapshot can also be used to
+ * traverse the router state tree.
  *
  * ```
  * @Component({templateUrl:'./my-component.html'})
@@ -327,11 +325,11 @@ export class ActivatedRouteSnapshot {
 }
 
 /**
- * @whatItDoes Represents the state of the router at a moment in time.
- *
  * @description
  *
- * RouterStateSnapshot is a tree of activated route snapshots. Every node in this tree knows about
+ * Represents the state of the router at a moment in time.
+ *
+ * This is a tree of activated route snapshots. Every node in this tree knows about
  * the "consumed" URL segments, the extracted parameters, and the resolved data.
  *
  * ### Example

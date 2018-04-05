@@ -13,10 +13,9 @@ import {ActivatedRoute} from '../router_state';
 import {PRIMARY_OUTLET} from '../shared';
 
 /**
- * @whatItDoes Acts as a placeholder that Angular dynamically fills based on the current router
- * state.
- *
  * @description
+ *
+ * Acts as a placeholder that Angular dynamically fills based on the current router state.
  *
  * ```
  * <router-outlet></router-outlet>

@@ -17,7 +17,9 @@ import {RouterConfigLoader} from './router_config_loader';
 
 
 /**
- * @whatItDoes Provides a preloading strategy.
+ * @description
+ *
+ * Provides a preloading strategy.
  *
  * @experimental
  */
@@ -26,9 +28,9 @@ export abstract class PreloadingStrategy {
 }
 
 /**
- * @whatItDoes Provides a preloading strategy that preloads all modules as quickly as possible.
- *
  * @description
+ *
+ * Provides a preloading strategy that preloads all modules as quickly as possible.
  *
  * ```
  * RouteModule.forRoot(ROUTES, {preloadingStrategy: PreloadAllModules})
@@ -43,9 +45,9 @@ export class PreloadAllModules implements PreloadingStrategy {
 }
 
 /**
- * @whatItDoes Provides a preloading strategy that does not preload any modules.
- *
  * @description
+ *
+ * Provides a preloading strategy that does not preload any modules.
  *
  * This strategy is enabled by default.
  *

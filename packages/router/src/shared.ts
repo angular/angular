@@ -11,7 +11,9 @@ import {UrlSegment, UrlSegmentGroup} from './url_tree';
 
 
 /**
- * @whatItDoes Name of the primary outlet.
+ * @description
+ *
+ * Name of the primary outlet.
  *
  * @stable
  */

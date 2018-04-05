@@ -12,9 +12,10 @@ import {PRIMARY_OUTLET} from './shared';
 import {UrlSegment, UrlSegmentGroup} from './url_tree';
 
 /**
- * @whatItDoes Represents router configuration.
- *
  * @description
+ *
+ * Represents router configuration.
+ *
  * `Routes` is an array of route configurations. Each one has the following properties:
  *
  * - `path` is a string that uses the route matcher DSL.
@@ -255,7 +256,7 @@ import {UrlSegment, UrlSegmentGroup} from './url_tree';
 export type Routes = Route[];
 
 /**
- * @whatItDoes Represents the results of the URL matching.
+ * @description Represents the results of the URL matching.
  *
  * * `consumed` is an array of the consumed URL segments.
  * * `posParams` is a map of positional parameters.
@@ -267,9 +268,9 @@ export type UrlMatchResult = {
 };
 
 /**
- * @whatItDoes A function matching URLs
- *
  * @description
+ *
+ * A function matching URLs
  *
  * A custom URL matcher can be provided when a combination of `path` and `pathMatch` isn't
  * expressive enough.
@@ -290,7 +291,10 @@ export type UrlMatcher = (segments: UrlSegment[], group: UrlSegmentGroup, route:
     UrlMatchResult;
 
 /**
- * @whatItDoes Represents the static data associated with a particular route.
+ * @description
+ *
+ * Represents the static data associated with a particular route.
+ *
  * See {@link Routes} for more details.
  * @stable
  */
@@ -299,7 +303,10 @@ export type Data = {
 };
 
 /**
- * @whatItDoes Represents the resolved data associated with a particular route.
+ * @description
+ *
+ * Represents the resolved data associated with a particular route.
+ *
  * See {@link Routes} for more details.
  * @stable
  */
@@ -308,7 +315,10 @@ export type ResolveData = {
 };
 
 /**
- * @whatItDoes The type of `loadChildren`.
+ * @description
+ *
+ * The type of `loadChildren`.
+ *
  * See {@link Routes} for more details.
  * @stable
  */
@@ -316,21 +326,30 @@ export type LoadChildrenCallback = () =>
     Type<any>| NgModuleFactory<any>| Promise<Type<any>>| Observable<Type<any>>;
 
 /**
- * @whatItDoes The type of `loadChildren`.
+ * @description
+ *
+ * The type of `loadChildren`.
+ *
  * See {@link Routes} for more details.
  * @stable
  */
 export type LoadChildren = string | LoadChildrenCallback;
 
 /**
- * @whatItDoes The type of `queryParamsHandling`.
+ * @description
+ *
+ * The type of `queryParamsHandling`.
+ *
  * See {@link RouterLink} for more details.
  * @stable
  */
 export type QueryParamsHandling = 'merge' | 'preserve' | '';
 
 /**
- * @whatItDoes The type of `runGuardsAndResolvers`.
+ * @description
+ *
+ * The type of `runGuardsAndResolvers`.
+ *
  * See {@link Routes} for more details.
  * @experimental
  */
