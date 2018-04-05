@@ -442,7 +442,7 @@ describe('CdkTree', () => {
         fixture.detectChanges();
       });
 
-      it('should expand/collapse the node', () => {
+      it('should expand/collapse the node multiple times', () => {
         component.toggleRecursively = false;
         let data = dataSource.data;
         const child = dataSource.addChild(data[1], false);
@@ -477,6 +477,17 @@ describe('CdkTree', () => {
           [`topping_3 - cheese_3 + base_3`]);
         expect(component.treeControl.expansionModel.selected.length)
           .toBe(0, `Expect node collapsed`);
+
+        (getNodes(treeElement)[1] as HTMLElement).click();
+        fixture.detectChanges();
+
+        expect(component.treeControl.expansionModel.selected.length)
+          .toBe(1, `Expect node expanded`);
+        expectNestedTreeToMatch(treeElement,
+          [`topping_1 - cheese_1 + base_1`],
+          [`topping_2 - cheese_2 + base_2`],
+          [_, `topping_4 - cheese_4 + base_4`],
+          [`topping_3 - cheese_3 + base_3`]);
       });
 
       it('should expand/collapse the node recursively', () => {

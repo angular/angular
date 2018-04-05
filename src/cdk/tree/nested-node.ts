@@ -93,6 +93,9 @@ export class CdkNestedTreeNode<T> extends CdkTreeNode<T> implements AfterContent
     if (this.nodeOutlet.length && this._children) {
       const viewContainer = this.nodeOutlet.first.viewContainer;
       this._tree.renderNodeChanges(this._children, this._dataDiffer, viewContainer);
+    } else {
+      // Reset the data differ if there's no children nodes displayed
+      this._dataDiffer.diff([]);
     }
   }
 
@@ -100,6 +103,7 @@ export class CdkNestedTreeNode<T> extends CdkTreeNode<T> implements AfterContent
   protected _clear(): void {
     if (this.nodeOutlet && this.nodeOutlet.first) {
       this.nodeOutlet.first.viewContainer.clear();
+      this._dataDiffer.diff([]);
     }
   }
 }
