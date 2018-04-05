@@ -125,8 +125,10 @@ function findFirstRNode(rootNode: LNode): RElement|RText|null {
       // A LElementNode has a matching RNode in LElementNode.native
       return (node as LElementNode).native;
     } else if (node.type === LNodeType.Container) {
-      // For container look at the first node of the view next
-      const childContainerData: LContainer = (node as LContainerNode).data;
+      const lContainerNode: LContainerNode = (node as LContainerNode);
+      const childContainerData: LContainer = lContainerNode.dynamicLContainerNode ?
+          lContainerNode.dynamicLContainerNode.data :
+          lContainerNode.data;
       nextNode = childContainerData.views.length ? childContainerData.views[0].child : null;
     } else if (node.type === LNodeType.Projection) {
       // For Projection look at the first projected node
@@ -281,10 +283,7 @@ export function insertView(
     if (!beforeNode) {
       let containerNextNativeNode = container.native;
       if (containerNextNativeNode === undefined) {
-        // TODO(pk): this is probably too simplistic, add more tests for various host placements
-        // (dynamic view, projection, ...)
-        containerNextNativeNode = container.native =
-            findNextRNodeSibling(container.data.host ? container.data.host : container, null);
+        containerNextNativeNode = container.native = findNextRNodeSibling(container, null);
       }
       beforeNode = containerNextNativeNode;
     }

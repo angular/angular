@@ -556,9 +556,11 @@ export function getOrCreateContainerRef(di: LInjector): viewEngine_ViewContainer
 
     ngDevMode && assertNodeOfPossibleTypes(vcRefHost, LNodeType.Container, LNodeType.Element);
 
-    const lContainer = createLContainer(vcRefHost.parent !, vcRefHost.view, undefined, vcRefHost);
+    const lContainer = createLContainer(vcRefHost.parent !, vcRefHost.view);
     const lContainerNode: LContainerNode = createLNodeObject(
         LNodeType.Container, vcRefHost.view, vcRefHost.parent !, undefined, lContainer, null);
+
+    vcRefHost.dynamicLContainerNode = lContainerNode;
 
     addToViewTree(vcRefHost.view, lContainer);
 
@@ -608,6 +610,10 @@ class ViewContainerRef implements viewEngine_ViewContainerRef {
     const adjustedIdx = this._adjustAndAssertIndex(index);
 
     insertView(this._lContainerNode, lViewNode, adjustedIdx);
+    // invalidate cache of next sibling RNode (we do similar operation in the containerRefreshEnd
+    // instruction)
+    this._lContainerNode.native = undefined;
+
     this._viewRefs.splice(adjustedIdx, 0, viewRef);
 
     (lViewNode as{parent: LNode}).parent = this._lContainerNode;
