@@ -53,7 +53,7 @@ describe('compiler compliance: listen()', () => {
 
     // The template should look like this (where IDENT is a wild card for an identifier):
     const template = `
-      static ngComponentDef = i0.ɵdefineComponent({
+      static ngComponentDef = IDENT.ɵdefineComponent({
           …
           inputs:{
             componentInput: 'componentInput',
@@ -65,7 +65,7 @@ describe('compiler compliance: listen()', () => {
           }
         });
         …
-        static ngDirectiveDef = i0.ɵdefineDirective({
+        static ngDirectiveDef = IDENT.ɵdefineDirective({
         …
         inputs:{
           directiveInput: 'directiveInput',

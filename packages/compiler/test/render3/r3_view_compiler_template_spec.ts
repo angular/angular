@@ -9,10 +9,7 @@
 import {MockDirectory, setup} from '../aot/test_util';
 import {compile, expectEmit} from './mock_compile';
 
-/* These tests are codified version of the tests in compiler_canonical_spec.ts. Every
-  * test in compiler_canonical_spec.ts should have a corresponding test here.
-  */
-describe('compiler compliance: listen()', () => {
+describe('compiler compliance: template', () => {
   const angularFiles = setup({
     compileAngular: true,
     compileAnimations: false,
@@ -31,13 +28,17 @@ describe('compiler compliance: listen()', () => {
                 template: \`
                   <ul *ngFor="let outer of items">
                     <li *ngFor="let middle of outer.items">
-                      <div *ngFor="let inner of middle.items" (click)="onClick(outer, middle, inner)">
-                        {{format(outer, middle, inner)}}
+                      <div *ngFor="let inner of items" 
+                           (click)="onClick(outer, middle, inner)"
+                           [title]="format(outer, middle, inner, component)"
+                           >
+                        {{format(outer, middle, inner, component)}}
                       </div>
                     </li>
                   </ul>\`
               })
               export class MyComponent {
+                component = this;
                 format(outer: any, middle: any, inner: any) { }
                 onClick(outer: any, middle: any, inner: any) { }
               }
@@ -50,39 +51,43 @@ describe('compiler compliance: listen()', () => {
 
     // The template should look like this (where IDENT is a wild card for an identifier):
     const template = `
-      template:function MyComponent_Template(ctx:any,cm:boolean){
+      template:function MyComponent_Template(ctx:any, cm:boolean){
         if (cm) { 
-          i0.ɵC(0,MyComponent_NgForOf_Template_0,null,_c0); 
+          $i0$.ɵC(0, MyComponent_NgForOf_Template_0, null, _c0); 
         }
-        i0.ɵp(0,'ngForOf',i0.ɵb(ctx.items));
-        function MyComponent_NgForOf_Template_0(ctx0:any,cm:boolean) {
+        $i0$.ɵp(0, 'ngForOf', $i0$.ɵb(ctx.items));
+        function MyComponent_NgForOf_Template_0(ctx0:any, cm:boolean) {
           if (cm) {
-            i0.ɵE(0,'ul');
-            i0.ɵC(1,MyComponent_NgForOf_NgForOf_Template_1,null,_c0);
-            i0.ɵe();
+            $i0$.ɵE(0, 'ul');
+            $i0$.ɵC(1, MyComponent_NgForOf_NgForOf_Template_1, null, _c0);
+            $i0$.ɵe();
           }
-          const $_r0$ = ctx0.$implicit;
-          i0.ɵp(1,'ngForOf',i0.ɵb($_r0$.items));
-          function MyComponent_NgForOf_NgForOf_Template_1(ctx1:any,cm:boolean) {
+          const $outer$ = ctx0.$implicit;
+          $i0$.ɵp(1, 'ngForOf', $i0$.ɵb($outer$.items));
+          function MyComponent_NgForOf_NgForOf_Template_1(ctx1:any, cm:boolean) {
             if (cm) {
-              i0.ɵE(0,'li');
-              i0.ɵC(1,MyComponent_NgForOf_NgForOf_NgForOf_Template_1,null,_c0);
-              i0.ɵe();
+              $i0$.ɵE(0, 'li');
+              $i0$.ɵC(1, MyComponent_NgForOf_NgForOf_NgForOf_Template_1, null, _c0);
+              $i0$.ɵe();
             }
-            const $_r1$ = ctx1.$implicit;
-            i0.ɵp(1,'ngForOf',i0.ɵb($_r1$.items));
-            function MyComponent_NgForOf_NgForOf_NgForOf_Template_1(ctx2:any,cm:boolean) {
+            $i0$.ɵp(1, 'ngForOf', $i0$.ɵb(ctx.items));
+            function MyComponent_NgForOf_NgForOf_NgForOf_Template_1(ctx2:any, cm:boolean) {
               if (cm) {
-                i0.ɵE(0,'div');
-                i0.ɵL('click',function MyComponent_NgForOf_NgForOf_NgForOf_Template_1_div_click_listener($event:any){
-                  const pd_b:any = ((<any>ctx.onClick($_r0$,$_r1$,$_r2$)) !== false);
-                  return pd_b;
+                $i0$.ɵE(0, 'div');
+                $i0$.ɵL('click', function MyComponent_NgForOf_NgForOf_NgForOf_Template_1_div_click_listener($event:any){
+                  const $outer$ = ctx0.$implicit;
+                  const $middle$ = ctx1.$implicit;
+                  const $inner$ = ctx2.$implicit;
+                  return ctx.onClick($outer$, $middle$, $inner$);
                 });
-                i0.ɵT(1);
-                i0.ɵe();
+                $i0$.ɵT(1);
+                $i0$.ɵe();
               }
-              const $_r2$ = ctx2.$implicit;
-              i0.ɵt(1,i0.ɵi1(' ',ctx.format($_r0$,$_r1$,$_r2$),' '));
+              const $outer$ = ctx0.$implicit;
+              const $middle$ = ctx1.$implicit;
+              const $inner$ = ctx2.$implicit;
+              $i0$.ɵp(0, 'title', ctx.format($outer$, $middle$, $inner$, ctx.component));
+              $i0$.ɵt(1, $i0$.ɵi1(' ', ctx.format($outer$, $middle$, $inner$, ctx.component), ' '));
             }
           }
         }
