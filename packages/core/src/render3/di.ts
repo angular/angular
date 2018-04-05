@@ -18,7 +18,7 @@ import {ViewContainerRef as viewEngine_ViewContainerRef} from '../linker/view_co
 import {EmbeddedViewRef as viewEngine_EmbeddedViewRef, ViewRef as viewEngine_ViewRef} from '../linker/view_ref';
 import {Type} from '../type';
 
-import {assertLessThan, assertNotNull} from './assert';
+import {assertGreaterThan, assertLessThan, assertNotNull} from './assert';
 import {addToViewTree, assertPreviousIsParent, createLContainer, createLNodeObject, getDirectiveInstance, getPreviousOrParentNode, getRenderer, isComponent, renderEmbeddedTemplate, resolveDirective} from './instructions';
 import {ComponentTemplate, DirectiveDef} from './interfaces/definition';
 import {LInjector} from './interfaces/injector';
@@ -608,26 +608,31 @@ class ViewContainerRef implements viewEngine_ViewContainerRef {
       this.remove(0);
     }
   }
+
   get(index: number): viewEngine_ViewRef|null { return this._viewRefs[index] || null; }
+
   get length(): number {
     const lContainer = this._lContainerNode.data;
     return lContainer.views.length;
   }
+
   createEmbeddedView<C>(templateRef: viewEngine_TemplateRef<C>, context?: C, index?: number):
       viewEngine_EmbeddedViewRef<C> {
     const viewRef = templateRef.createEmbeddedView(context || <any>{});
     this.insert(viewRef, index);
     return viewRef;
   }
+
   createComponent<C>(
       componentFactory: viewEngine_ComponentFactory<C>, index?: number|undefined,
       injector?: Injector|undefined, projectableNodes?: any[][]|undefined,
       ngModule?: viewEngine_NgModuleRef<any>|undefined): viewEngine_ComponentRef<C> {
     throw notImplemented();
   }
+
   insert(viewRef: viewEngine_ViewRef, index?: number): viewEngine_ViewRef {
     const lViewNode = (viewRef as EmbeddedViewRef<any>)._lViewNode;
-    const adjustedIdx = this._adjustAndAssertIndex(index);
+    const adjustedIdx = this._adjustIndex(index);
 
     insertView(this._lContainerNode, lViewNode, adjustedIdx);
     // invalidate cache of next sibling RNode (we do similar operation in the containerRefreshEnd
@@ -653,23 +658,37 @@ class ViewContainerRef implements viewEngine_ViewContainerRef {
     }
     return viewRef;
   }
-  move(viewRef: viewEngine_ViewRef, currentIndex: number): viewEngine_ViewRef {
-    throw notImplemented();
-  }
-  indexOf(viewRef: viewEngine_ViewRef): number { throw notImplemented(); }
-  remove(index?: number): void {
-    const adjustedIdx = this._adjustAndAssertIndex(index);
-    removeView(this._lContainerNode, adjustedIdx);
-    this._viewRefs.splice(adjustedIdx, 1);
-  }
-  detach(index?: number|undefined): viewEngine_ViewRef|null { throw notImplemented(); }
 
-  private _adjustAndAssertIndex(index?: number|undefined) {
+  move(viewRef: viewEngine_ViewRef, newIndex: number): viewEngine_ViewRef {
+    const index = this.indexOf(viewRef);
+    this.detach(index);
+    this.insert(viewRef, this._adjustIndex(newIndex));
+    return viewRef;
+  }
+
+  indexOf(viewRef: viewEngine_ViewRef): number { return this._viewRefs.indexOf(viewRef); }
+
+  remove(index?: number): void {
+    this.detach(index);
+    // TODO(ml): proper destroy of the ViewRef, i.e. recursively destroy the LviewNode and its
+    // children, delete DOM nodes and QueryList, trigger hooks (onDestroy), destroy the renderer,
+    // detach projected nodes
+  }
+
+  detach(index?: number): viewEngine_ViewRef|null {
+    const adjustedIdx = this._adjustIndex(index, -1);
+    removeView(this._lContainerNode, adjustedIdx);
+    return this._viewRefs.splice(adjustedIdx, 1)[0] || null;
+  }
+
+  private _adjustIndex(index?: number, shift: number = 0) {
     if (index == null) {
-      index = this._lContainerNode.data.views.length;
-    } else {
+      return this._lContainerNode.data.views.length + shift;
+    }
+    if (ngDevMode) {
+      assertGreaterThan(index, -1, 'index must be positive');
       // +1 because it's legal to insert at the end.
-      ngDevMode && assertLessThan(index, this._lContainerNode.data.views.length + 1, 'index');
+      assertLessThan(index, this._lContainerNode.data.views.length + 1 + shift, 'index');
     }
     return index;
   }
