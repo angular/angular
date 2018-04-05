@@ -30,7 +30,9 @@ import {TreeNode, nodeChildrenAsMap} from './utils/tree';
 
 
 /**
- * @whatItDoes Represents the extra options used during navigation.
+ * @description
+ *
+ * Represents the extra options used during navigation.
  *
  * @stable
  */
@@ -142,9 +144,10 @@ export interface NavigationExtras {
 }
 
 /**
- * @whatItDoes Error handler that is invoked when a navigation errors.
- *
  * @description
+ *
+ * Error handler that is invoked when a navigation errors.
+ *
  * If the handler returns a value, the navigation promise will be resolved with this value.
  * If the handler throws an exception, the navigation promise will be rejected with
  * the exception.
@@ -184,7 +187,9 @@ function defaultRouterHook(snapshot: RouterStateSnapshot): Observable<void> {
 }
 
 /**
- * @whatItDoes Provides the navigation and url manipulation capabilities.
+ * @description
+ *
+ * Provides the navigation and url manipulation capabilities.
  *
  * See {@link Routes} for more details and examples.
  *

@@ -74,9 +74,9 @@ function containsSegmentGroupHelper(
 }
 
 /**
- * @whatItDoes Represents the parsed URL.
- *
  * @description
+ *
+ * Represents the parsed URL.
  *
  * Since a router state is a tree, and the URL is nothing but a serialized state, the URL is a
  * serialized tree.
@@ -127,7 +127,9 @@ export class UrlTree {
 }
 
 /**
- * @whatItDoes Represents the parsed URL segment group.
+ * @description
+ *
+ * Represents the parsed URL segment group.
  *
  * See {@link UrlTree} for more information.
  *
@@ -161,9 +163,9 @@ export class UrlSegmentGroup {
 
 
 /**
- * @whatItDoes Represents a single URL segment.
- *
  * @description
+ *
+ * Represents a single URL segment.
  *
  * A UrlSegment is a part of a URL between the two slashes. It contains a path and the matrix
  * parameters associated with the segment.
@@ -234,9 +236,11 @@ export function mapChildrenIntoArray<T>(
 
 
 /**
- * @whatItDoes Serializes and deserializes a URL string into a URL tree.
+ * @description
  *
- * @description The url serialization strategy is customizable. You can
+ * Serializes and deserializes a URL string into a URL tree.
+ *
+ * The url serialization strategy is customizable. You can
  * make all URLs case insensitive by providing a custom UrlSerializer.
  *
  * See {@link DefaultUrlSerializer} for an example of a URL serializer.
@@ -252,9 +256,9 @@ export abstract class UrlSerializer {
 }
 
 /**
- * @whatItDoes A default implementation of the {@link UrlSerializer}.
- *
  * @description
+ *
+ * A default implementation of the {@link UrlSerializer}.
  *
  * Example URLs:
  *
