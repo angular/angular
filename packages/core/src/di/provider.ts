@@ -10,7 +10,7 @@ import {Type} from '../type';
 
 /**
  * @whatItDoes Configures the {@link Injector} to return a value for a token.
- * @howToUse
+ * @usageNotes
  * ```
  * @Injectable(SomeModule, {useValue: 'someValue'})
  * class SomeClass {}
@@ -34,7 +34,7 @@ export interface ValueSansProvider {
 
 /**
  * @whatItDoes Configures the {@link Injector} to return a value for a token.
- * @howToUse
+ * @usageNotes
  * ```
  * const provider: ValueProvider = {provide: 'someToken', useValue: 'someValue'};
  * ```
@@ -67,7 +67,7 @@ export interface ValueProvider extends ValueSansProvider {
 
 /**
  * @whatItDoes Configures the {@link Injector} to return an instance of `useClass` for a token.
- * @howToUse
+ * @usageNotes
  * ```
  * @Injectable(SomeModule, {useClass: MyService, deps: []})
  * class MyService {}
@@ -98,7 +98,7 @@ export interface StaticClassSansProvider {
 
 /**
  * @whatItDoes Configures the {@link Injector} to return an instance of `useClass` for a token.
- * @howToUse
+ * @usageNotes
  * ```
  * @Injectable()
  * class MyService {}
@@ -137,7 +137,7 @@ export interface StaticClassProvider extends StaticClassSansProvider {
 
 /**
  * @whatItDoes Configures the {@link Injector} to return an instance of a token.
- * @howToUse
+ * @usageNotes
  * ```
  * @Injectable(SomeModule, {deps: []})
  * class MyService {}
@@ -162,7 +162,7 @@ export interface ConstructorSansProvider {
 
 /**
  * @whatItDoes Configures the {@link Injector} to return an instance of a token.
- * @howToUse
+ * @usageNotes
  * ```
  * @Injectable()
  * class MyService {}
@@ -198,7 +198,7 @@ export interface ConstructorProvider extends ConstructorSansProvider {
 
 /**
  * @whatItDoes Configures the {@link Injector} to return a value of another `useExisting` token.
- * @howToUse
+ * @usageNotes
  * ```
  * @Injectable(SomeModule, {useExisting: 'someOtherToken'})
  * class SomeClass {}
@@ -222,7 +222,7 @@ export interface ExistingSansProvider {
 
 /**
  * @whatItDoes Configures the {@link Injector} to return a value of another `useExisting` token.
- * @howToUse
+ * @usageNotes
  * ```
  * const provider: ExistingProvider = {provide: 'someToken', useExisting: 'someOtherToken'};
  * ```
@@ -256,7 +256,7 @@ export interface ExistingProvider extends ExistingSansProvider {
 /**
  * @whatItDoes Configures the {@link Injector} to return a value by invoking a `useFactory`
  * function.
- * @howToUse
+ * @usageNotes
  * ```
  * function serviceFactory() { ... }
  *
@@ -290,7 +290,7 @@ export interface FactorySansProvider {
 /**
  * @whatItDoes Configures the {@link Injector} to return a value by invoking a `useFactory`
  * function.
- * @howToUse
+ * @usageNotes
  * ```
  * function serviceFactory() { ... }
  *
@@ -329,7 +329,7 @@ export interface FactoryProvider extends FactorySansProvider {
 /**
  * @whatItDoes Describes how the {@link Injector} should be configured in a static way (Without
  * reflection).
- * @howToUse
+ * @usageNotes
  * See {@link ValueProvider}, {@link ExistingProvider}, {@link FactoryProvider}.
  *
  * @description
@@ -344,7 +344,7 @@ export type StaticProvider = ValueProvider | ExistingProvider | StaticClassProvi
 /**
  * @whatItDoes Configures the {@link Injector} to return an instance of `Type` when `Type' is used
  * as token.
- * @howToUse
+ * @usageNotes
  * ```
  * @Injectable()
  * class MyService {}
@@ -370,7 +370,7 @@ export interface TypeProvider extends Type<any> {}
 /**
  * @whatItDoes Configures the {@link Injector} to return a value by invoking a `useClass`
  * function.
- * @howToUse
+ * @usageNotes
  * ```
  *
  * class SomeClassImpl {}
@@ -397,7 +397,7 @@ export interface ClassSansProvider {
 
 /**
  * @whatItDoes Configures the {@link Injector} to return an instance of `useClass` for a token.
- * @howToUse
+ * @usageNotes
  * ```
  * @Injectable()
  * class MyService {}
@@ -436,7 +436,7 @@ export interface ClassProvider extends ClassSansProvider {
 
 /**
  * @whatItDoes Describes how the {@link Injector} should be configured.
- * @howToUse
+ * @usageNotes
  * See {@link TypeProvider}, {@link ClassProvider}, {@link StaticProvider}.
  *
  * @description
