@@ -15,7 +15,46 @@ export class EventHandlerVars { static event = o.variable('$event'); }
 export interface LocalResolver { getLocal(name: string): o.Expression|null; }
 
 export class ConvertActionBindingResult {
-  constructor(public stmts: o.Statement[], public allowDefault: o.ReadVarExpr) {}
+  /**
+   * Store statements which are render3 compatible.
+   */
+  render3Stmts: o.Statement[];
+  constructor(
+      /**
+       * Render2 compatible statements,
+       */
+      public stmts: o.Statement[],
+      /**
+       * Variable name used with render2 compatible statements.
+       */
+      public allowDefault: o.ReadVarExpr) {
+    /**
+     * This is bit of a hack. It converts statements which render2 expects to statements which are
+     * expected by render3.
+     *
+     * Example: `<div click="doSomething($event)">` will generate:
+     *
+     * Render3:
+     * ```
+     * const pd_b:any = ((<any>ctx.doSomething($event)) !== false);
+     * return pd_b;
+     * ```
+     *
+     * but render2 expects:
+     * ```
+     * return ctx.doSomething($event);
+     * ```
+     */
+    // TODO(misko): remove this hack once we no longer support ViewEngine.
+    this.render3Stmts = stmts.map((statement: o.Statement) => {
+      if (statement instanceof o.DeclareVarStmt && statement.name == allowDefault.name &&
+          statement.value instanceof o.BinaryOperatorExpr) {
+        const lhs = statement.value.lhs as o.CastExpr;
+        return new o.ReturnStatement(lhs.value);
+      }
+      return statement;
+    });
+  }
 }
 
 export type InterpolationFunction = (args: o.Expression[]) => o.Expression;

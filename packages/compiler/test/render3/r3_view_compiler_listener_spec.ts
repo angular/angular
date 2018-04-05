@@ -27,7 +27,7 @@ describe('compiler compliance: listen()', () => {
 
               @Component({
                 selector: 'my-component',
-                template: \`<div (click)="onClick($event)"></div>\`
+                template: \`<div (click)="onClick($event); 1 == 2"></div>\`
               })
               export class MyComponent {
                 onClick(event: any) {}
@@ -45,8 +45,8 @@ describe('compiler compliance: listen()', () => {
           if (cm) {
             $r3$.ɵE(0, 'div');
             $r3$.ɵL('click', function MyComponent_Template_div_click_listener($event: $any$) { 
-              const $return_value$:$any$ = … ctx.onClick($event) …;
-              return $return_value$;
+              ctx.onClick($event);
+              return (1 == 2);
             });
             $r3$.ɵe();
           }
