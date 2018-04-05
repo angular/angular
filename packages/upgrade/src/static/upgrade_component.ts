@@ -34,7 +34,12 @@ class Bindings {
  *
  * Allows an AngularJS component to be used from Angular.
  *
- * @howToUse
+ * @description
+ *
+ * A helper class that should be used as a base class for creating Angular directives
+ * that wrap AngularJS components that need to be "upgraded".
+ *
+ * ### Examples
  *
  * Let's assume that you have an AngularJS component called `ng1Hero` that needs
  * to be made available in Angular templates.
@@ -58,11 +63,6 @@ class Bindings {
  * * call the base class from the constructor, passing
  *   * the AngularJS name of the component (`ng1Hero`)
  *   * the {@link ElementRef} and {@link Injector} for the component wrapper
- *
- * @description
- *
- * A helper class that should be used as a base class for creating Angular directives
- * that wrap AngularJS components that need to be "upgraded".
  *
  * @experimental
  */
