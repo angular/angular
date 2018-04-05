@@ -22,7 +22,8 @@ import {
   OnDestroy,
   Output,
   ViewChild,
-  ViewEncapsulation
+  ViewEncapsulation,
+  NgZone,
 } from '@angular/core';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
 import {
@@ -144,7 +145,8 @@ export class MatSlideToggle extends _MatSlideToggleMixinBase implements OnDestro
               private _platform: Platform,
               private _focusMonitor: FocusMonitor,
               private _changeDetectorRef: ChangeDetectorRef,
-              @Attribute('tabindex') tabIndex: string) {
+              @Attribute('tabindex') tabIndex: string,
+              private _ngZone: NgZone) {
 
     super(elementRef);
     this.tabIndex = parseInt(tabIndex) || 0;
@@ -274,9 +276,11 @@ export class MatSlideToggle extends _MatSlideToggleMixinBase implements OnDestro
         this._emitChangeEvent();
       }
 
-      // The drag should be stopped outside of the current event handler, because otherwise the
-      // click event will be fired before and will revert the drag change.
-      setTimeout(() => this._slideRenderer.stopThumbDrag());
+      // The drag should be stopped outside of the current event handler, otherwise the
+      // click event will be fired before it and will revert the drag change.
+      this._ngZone.runOutsideAngular(() => {
+        setTimeout(() => this._slideRenderer.stopThumbDrag());
+      });
     }
   }
 
