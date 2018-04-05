@@ -661,6 +661,12 @@
       "Workshops & Onsite Training": {
         "order": 2,
         "resources": {
+          "-acceleb": {
+            "desc": "Customized, Instructor-Led Angular Training",
+            "rev": true,
+            "title": "Accelebrate",
+            "url": "https://www.accelebrate.com/angular-training"
+          },
           "-KLIBoFWStce29UCwkvY": {
             "desc": "Private Angular Training and Mentoring",
             "rev": true,
