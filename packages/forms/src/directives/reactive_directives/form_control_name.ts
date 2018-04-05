@@ -30,30 +30,30 @@ export const controlNameBinding: any = {
 /**
  * @description
  *
- * Syncs a {@link FormControl} in an existing {@link FormGroup} to a form control
+ * Syncs a `FormControl` in an existing `FormGroup` to a form control
  * element by name.
  *
- * This directive ensures that any values written to the {@link FormControl}
+ * This directive ensures that any values written to the `FormControl`
  * instance programmatically will be written to the DOM element (model -> view). Conversely,
  * any values written to the DOM element through user input will be reflected in the
- * {@link FormControl} instance (view -> model).
+ * `FormControl` instance (view -> model).
  *
- * This directive is designed to be used with a parent {@link FormGroupDirective} (selector:
+ * This directive is designed to be used with a parent `FormGroupDirective` (selector:
  * `[formGroup]`).
  *
- * It accepts the string name of the {@link FormControl} instance you want to
- * link, and will look for a {@link FormControl} registered with that name in the
- * closest {@link FormGroup} or {@link FormArray} above it.
+ * It accepts the string name of the `FormControl` instance you want to
+ * link, and will look for a `FormControl` registered with that name in the
+ * closest `FormGroup` or `FormArray` above it.
  *
- * **Access the control**: You can access the {@link FormControl} associated with
+ * **Access the control**: You can access the `FormControl` associated with
  * this directive by using the {@link AbstractControl#get get} method.
  * Ex: `this.form.get('first');`
  *
- * **Get value**: the `value` property is always synced and available on the {@link FormControl}.
- * See a full list of available properties in {@link AbstractControl}.
+ * **Get value**: the `value` property is always synced and available on the `FormControl`.
+ * See a full list of available properties in `AbstractControl`.
  *
  *  **Set value**: You can set an initial value for the control when instantiating the
- *  {@link FormControl}, or you can set it programmatically later using
+ *  `FormControl`, or you can set it programmatically later using
  *  {@link AbstractControl#setValue setValue} or {@link AbstractControl#patchValue patchValue}.
  *
  * **Listen to value**: If you want to listen to changes in the value of the control, you can
@@ -69,12 +69,12 @@ export const controlNameBinding: any = {
  *
  * To see `formControlName` examples with different form control types, see:
  *
- * * Radio buttons: {@link RadioControlValueAccessor}
- * * Selects: {@link SelectControlValueAccessor}
+ * * Radio buttons: `RadioControlValueAccessor`
+ * * Selects: `SelectControlValueAccessor`
  *
  * **npm package**: `@angular/forms`
  *
- * **NgModule**: {@link ReactiveFormsModule}
+ * **NgModule**: `ReactiveFormsModule`
  *
  * ### Use with ngModel
  *

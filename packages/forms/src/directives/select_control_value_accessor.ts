@@ -31,10 +31,10 @@ function _extractId(valueString: string): string {
  *
  * Writes values and listens to changes on a select element.
  *
- * Used by {@link NgModel}, {@link FormControlDirective}, and {@link FormControlName}
- * to keep the view synced with the {@link FormControl} model.
+ * Used by `NgModel`, `FormControlDirective`, and `FormControlName`
+ * to keep the view synced with the `FormControl` model.
  *
- * If you have imported the {@link FormsModule} or the {@link ReactiveFormsModule}, this
+ * If you have imported the `FormsModule` or the `ReactiveFormsModule`, this
  * value accessor will be active on any select control that has a form directive. You do
  * **not** need to add a special selector to activate it.
  *
@@ -162,7 +162,7 @@ export class SelectControlValueAccessor implements ControlValueAccessor {
  *
  * Marks `<option>` as dynamic, so Angular can be notified when options change.
  *
- * See docs for {@link SelectControlValueAccessor} for usage examples.
+ * See docs for `SelectControlValueAccessor` for usage examples.
  *
  * @stable
  */

@@ -31,27 +31,27 @@ export const formControlBinding: any = {
 /**
  * @description
  *
- * Syncs a standalone {@link FormControl} instance to a form control element.
+ * Syncs a standalone `FormControl` instance to a form control element.
  *
- * This directive ensures that any values written to the {@link FormControl}
+ * This directive ensures that any values written to the `FormControl`
  * instance programmatically will be written to the DOM element (model -> view). Conversely,
  * any values written to the DOM element through user input will be reflected in the
- * {@link FormControl} instance (view -> model).
+ * `FormControl` instance (view -> model).
  *
- * Use this directive if you'd like to create and manage a {@link FormControl} instance directly.
- * Simply create a {@link FormControl}, save it to your component class, and pass it into the
- * {@link FormControlDirective}.
+ * Use this directive if you'd like to create and manage a `FormControl` instance directly.
+ * Simply create a `FormControl`, save it to your component class, and pass it into the
+ * `FormControlDirective`.
  *
- * This directive is designed to be used as a standalone control.  Unlike {@link FormControlName},
- * it does not require that your {@link FormControl} instance be part of any parent
- * {@link FormGroup}, and it won't be registered to any {@link FormGroupDirective} that
+ * This directive is designed to be used as a standalone control.  Unlike `FormControlName`,
+ * it does not require that your `FormControl` instance be part of any parent
+ * `FormGroup`, and it won't be registered to any `FormGroupDirective` that
  * exists above it.
  *
  * **Get the value**: the `value` property is always synced and available on the
- * {@link FormControl} instance. See a full list of available properties in
- * {@link AbstractControl}.
+ * `FormControl` instance. See a full list of available properties in
+ * `AbstractControl`.
  *
- * **Set the value**: You can pass in an initial value when instantiating the {@link FormControl},
+ * **Set the value**: You can pass in an initial value when instantiating the `FormControl`,
  * or you can set it programmatically later using {@link AbstractControl#setValue setValue} or
  * {@link AbstractControl#patchValue patchValue}.
  *
