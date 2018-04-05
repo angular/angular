@@ -109,12 +109,22 @@ def _flatten_paths(directory):
       result.append(f.map.path)
   return result
 
+
+# takes an depset of files and returns an array that doesn't contain any generated files by ngc
+def _filter_out_generated_files(files):
+  result = []
+  for file in files:
+    if (not(file.path.endswith(".ngfactory.js") or file.path.endswith(".ngsummary.js") or file.path.endswith(".ngstyle.js"))):
+      result.append(file)
+  return depset(result)
+
+
 # ng_package produces package that is npm-ready.
 def _ng_package_impl(ctx):
   npm_package_directory = ctx.actions.declare_directory("%s.ng_pkg" % ctx.label.name)
 
-  esm_2015_files = collect_es6_sources(ctx)
-  esm5_sources = depset(flatten_esm5(ctx))
+  esm_2015_files = _filter_out_generated_files(collect_es6_sources(ctx))
+  esm5_sources = _filter_out_generated_files(flatten_esm5(ctx))
 
   # These accumulators match the directory names where the files live in the
   # Angular package format.

@@ -65,6 +65,7 @@ describe('@angular/common ng_package', () => {
     expect(shx.ls('-R', 'fesm5').stdout.split('\n').filter(n => !!n).sort()).toEqual(expected);
     expect(shx.ls('-R', 'fesm2015').stdout.split('\n').filter(n => !!n).sort()).toEqual(expected);
   });
+
   describe('should have module resolution properties in the package.json file for', () => {
     // https://github.com/angular/common-builds/blob/master/package.json
     it('/', () => {

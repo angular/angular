@@ -115,7 +115,7 @@ describe('@angular/core ng_package', () => {
 
     describe('fesm5', () => {
 
-      it('should have a fesm5 file in the /esm5 directory',
+      it('should have a fesm5 file in the /fesm5 directory',
          () => { expect(shx.cat('fesm5/core.js')).toContain(`export {`); });
 
       it('should have a source map', () => {
@@ -136,6 +136,26 @@ describe('@angular/core ng_package', () => {
 
       it('should have been built from the generated bundle index',
          () => { expect(shx.cat('fesm5/core.js')).toMatch('export {.*makeParamDecorator'); });
+    });
+
+
+    describe('esm2015', () => {
+      it('should not contain any *.ngfactory.js files', () => {
+        expect(shx.find('esm2015').filter(f => f.endsWith('.ngfactory.js'))).toEqual([]);
+      });
+
+      it('should not contain any *.ngsummary.js files', () => {
+        expect(shx.find('esm2015').filter(f => f.endsWith('.ngsummary.js'))).toEqual([]);
+      });
+    });
+
+
+    describe('esm5', () => {
+      it('should not contain any *.ngfactory.js files',
+         () => { expect(shx.find('esm5').filter(f => f.endsWith('.ngfactory.js'))).toEqual([]); });
+
+      it('should not contain any *.ngsummary.js files',
+         () => { expect(shx.find('esm5').filter(f => f.endsWith('.ngsummary.js'))).toEqual([]); });
     });
 
 
