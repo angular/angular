@@ -79,11 +79,15 @@ def _expected_outs(ctx):
     if short_path.endswith(".ts") and not short_path.endswith(".d.ts"):
       basename = short_path[len(package_prefix):-len(".ts")]
       if len(factory_basename_set) == 0 or basename in factory_basename_set:
-        devmode_js = [
-            ".ngfactory.js",
-            ".ngsummary.js",
-            ".js",
-        ]
+        # do not generate factory files when producing flat module because we are building an npm package
+        if _should_produce_flat_module_outs(ctx):
+          devmode_js = [".js"]
+        else:
+          devmode_js = [
+              ".ngfactory.js",
+              ".ngsummary.js",
+              ".js",
+          ]
         summaries = [".ngsummary.json"]
         metadata = [".metadata.json"]
       else:
@@ -164,6 +168,11 @@ def _ngc_tsconfig_helper(ctx, files, srcs, enable_ivy, **kwargs):
     angular_compiler_options["flatModuleOutFile"] = _flat_module_out_file(ctx)
     angular_compiler_options["flatModulePrivateSymbolPrefix"] = "_".join(
         [ctx.workspace_name] + ctx.label.package.split("/") + [ctx.label.name, ""])
+    angular_compiler_options["skipTemplateCodegen"] = True
+    # FIXME: add support for these two compiler options
+    #        turn them on by default and let users opt out
+    #angular_compiler_options["strictInjectionParameters"] = True
+    #angular_compiler_options["strictMetadataEmit"] = True
 
   return dict(tsc_wrapped_tsconfig(ctx, files, srcs, **kwargs), **{
       "angularCompilerOptions": angular_compiler_options
