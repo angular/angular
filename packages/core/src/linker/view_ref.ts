@@ -11,7 +11,7 @@ import {ChangeDetectorRef} from '../change_detection/change_detector_ref';
 
 
 /**
- * @stable
+ *
  */
 export abstract class ViewRef extends ChangeDetectorRef {
   /**

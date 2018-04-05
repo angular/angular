@@ -11,7 +11,7 @@
  *
  * Used by `HttpParams`.
  *
- * @stable
+ *
  **/
 export interface HttpParameterCodec {
   encodeKey(key: string): string;
@@ -25,7 +25,7 @@ export interface HttpParameterCodec {
  * A `HttpParameterCodec` that uses `encodeURIComponent` and `decodeURIComponent` to
  * serialize and parse URL parameter keys and values.
  *
- * @stable
+ *
  */
 export class HttpUrlEncodingCodec implements HttpParameterCodec {
   encodeKey(k: string): string { return standardEncoding(k); }
@@ -94,7 +94,7 @@ export interface HttpParamsOptions {
  *
  * This class is immutable - all mutation operations return a new instance.
  *
- * @stable
+ *
  */
 export class HttpParams {
   private map: Map<string, string[]>|null;

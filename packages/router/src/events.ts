@@ -55,7 +55,7 @@ export class RouterEvent {
  *
  * Represents an event triggered when a navigation starts.
  *
- * @stable
+ *
  */
 export class NavigationStart extends RouterEvent {
   /**
@@ -104,7 +104,7 @@ export class NavigationStart extends RouterEvent {
  *
  * Represents an event triggered when a navigation ends successfully.
  *
- * @stable
+ *
  */
 export class NavigationEnd extends RouterEvent {
   constructor(
@@ -128,7 +128,7 @@ export class NavigationEnd extends RouterEvent {
  *
  * Represents an event triggered when a navigation is canceled.
  *
- * @stable
+ *
  */
 export class NavigationCancel extends RouterEvent {
   constructor(
@@ -150,7 +150,7 @@ export class NavigationCancel extends RouterEvent {
  *
  * Represents an event triggered when a navigation fails due to an unexpected error.
  *
- * @stable
+ *
  */
 export class NavigationError extends RouterEvent {
   constructor(
@@ -174,7 +174,7 @@ export class NavigationError extends RouterEvent {
  *
  * Represents an event triggered when routes are recognized.
  *
- * @stable
+ *
  */
 export class RoutesRecognized extends RouterEvent {
   constructor(
@@ -424,7 +424,7 @@ export class ActivationEnd {
  * - `NavigationCancel`,
  * - `NavigationError`
  *
- * @stable
+ *
  */
 export type Event = RouterEvent | RouteConfigLoadStart | RouteConfigLoadEnd | ChildActivationStart |
     ChildActivationEnd | ActivationStart | ActivationEnd;

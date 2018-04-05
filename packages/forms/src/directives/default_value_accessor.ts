@@ -40,7 +40,7 @@ export const COMPOSITION_BUFFER_MODE = new InjectionToken<boolean>('CompositionE
  *  <input type="text" name="searchQuery" ngModel>
  *  ```
  *
- *  @stable
+ *
  */
 @Directive({
   selector:

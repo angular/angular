@@ -15,7 +15,7 @@ import {ValidationErrors} from './validators';
  *
  * Only used internally in the forms module.
  *
- * @stable
+ *
  */
 export abstract class AbstractControlDirective {
   /**

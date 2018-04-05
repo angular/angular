@@ -17,7 +17,7 @@ import {Pipe, PipeTransform} from '@angular/core';
  * ### Example
  * {@example common/pipes/ts/json_pipe.ts region='JsonPipe'}
  *
- * @stable
+ *
  */
 @Pipe({name: 'json', pure: false})
 export class JsonPipe implements PipeTransform {

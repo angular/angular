@@ -146,7 +146,7 @@ export const controlNameBinding: any = {
  * pattern with a config value of `"always"`. This may help to track down where in the code
  * the pattern is being used as the code is being updated.
  *
- *  @stable
+ *
  */
 @Directive({selector: '[formControlName]', providers: [controlNameBinding]})
 export class FormControlName extends NgControl implements OnChanges, OnDestroy {

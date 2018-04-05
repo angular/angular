@@ -61,7 +61,7 @@ const resolvedPromise = Promise.resolve(null);
  *
  * * **NgModule**: `FormsModule`
  *
- *  @stable
+ *
  */
 @Directive({
   selector: 'form:not([ngNoForm]):not([formGroup]),ngForm,[ngForm]',

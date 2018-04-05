@@ -71,7 +71,7 @@ export class SwitchView {
  * When no matching expression is found on a `ngSwitchCase` view, the `ngSwitchDefault` view is
  * stamped out.
  *
- * @stable
+ *
  */
 @Directive({selector: '[ngSwitch]'})
 export class NgSwitch {
@@ -147,7 +147,7 @@ export class NgSwitch {
  *
  * See {@link NgSwitch} for more details and example.
  *
- * @stable
+ *
  */
 @Directive({selector: '[ngSwitchCase]'})
 export class NgSwitchCase implements DoCheck {
@@ -186,7 +186,7 @@ export class NgSwitchCase implements DoCheck {
  *
  * See {@link NgSwitch} for more details and example.
  *
- * @stable
+ *
  */
 @Directive({selector: '[ngSwitchDefault]'})
 export class NgSwitchDefault {
