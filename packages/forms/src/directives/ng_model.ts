@@ -46,15 +46,15 @@ export const formControlBinding: any = {
 const resolvedPromise = Promise.resolve(null);
 
 /**
- * @whatItDoes Creates a {@link FormControl} instance from a domain model and binds it
+ * @description
+ *
+ * Creates a {@link FormControl} instance from a domain model and binds it
  * to a form control element.
  *
  * The {@link FormControl} instance will track the value, user interaction, and
  * validation status of the control and keep the view synced with the model. If used
  * within a parent form, the directive will also register itself with the form as a child
  * control.
- *
- * @description
  *
  * This directive can be used by itself or as part of a larger form. All you need is the
  * `ngModel` selector to activate it.

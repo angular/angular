@@ -12,13 +12,13 @@ import {AsyncValidatorFn, ValidatorFn} from './directives/validators';
 import {AbstractControl, FormArray, FormControl, FormGroup} from './model';
 
 /**
- * @whatItDoes Creates an {@link AbstractControl} from a user-specified configuration.
+ * @description
  *
- * It is essentially syntactic sugar that shortens the `new FormGroup()`,
+ * Creates an {@link AbstractControl} from a user-specified configuration.
+ *
+ * This is essentially syntactic sugar that shortens the `new FormGroup()`,
  * `new FormControl()`, and `new FormArray()` boilerplate that can build up in larger
  * forms.
- *
- * @description
  *
  * To use, inject `FormBuilder` into your component class. You can then call its methods
  * directly.

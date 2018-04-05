@@ -24,9 +24,9 @@ export const formGroupNameProvider: any = {
 };
 
 /**
- * @whatItDoes Syncs a nested {@link FormGroup} to a DOM element.
- *
  * @description
+ *
+ * Syncs a nested {@link FormGroup} to a DOM element.
  *
  * This directive can only be used with a parent {@link FormGroupDirective} (selector:
  * `[formGroup]`).
@@ -95,9 +95,9 @@ export const formArrayNameProvider: any = {
 };
 
 /**
- * @whatItDoes Syncs a nested {@link FormArray} to a DOM element.
- *
  * @description
+ *
+ * Syncs a nested {@link FormArray} to a DOM element.
  *
  * This directive is designed to be used with a parent {@link FormGroupDirective} (selector:
  * `[formGroup]`).
