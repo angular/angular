@@ -1361,6 +1361,33 @@ describe('FlexibleConnectedPositionStrategy', () => {
       expect(boundingBox.style.right).toBe('0px');
     });
 
+    it('should calculate the bottom offset correctly with a viewport margin', () => {
+      const viewportMargin = 5;
+
+      originElement.style.top = `${OVERLAY_HEIGHT / 2}px`;
+      originElement.style.right = '200px';
+
+      positionStrategy
+        .withFlexibleHeight()
+        .withViewportMargin(viewportMargin)
+        .withPositions([
+          {
+            originX: 'start',
+            originY: 'top',
+            overlayX: 'start',
+            overlayY: 'bottom'
+          }
+        ]);
+
+      attachOverlay({positionStrategy});
+
+      const originRect = originElement.getBoundingClientRect();
+      const overlayRect = overlayRef.overlayElement.getBoundingClientRect();
+
+      expect(Math.floor(overlayRect.bottom)).toBe(Math.floor(originRect.top));
+      expect(Math.floor(overlayRect.top)).toBe(viewportMargin);
+    });
+
   });
 
   describe('onPositionChange with scrollable view properties', () => {

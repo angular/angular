@@ -581,6 +581,7 @@ export class FlexibleConnectedPositionStrategy implements PositionStrategy {
    */
   private _calculateBoundingBoxRect(origin: Point, position: ConnectedPosition): BoundingBoxRect {
     const viewport = this._viewportRect;
+    const isRtl = this._isRtl();
     let height, top, bottom;
 
     if (position.overlayY === 'top') {
@@ -588,9 +589,11 @@ export class FlexibleConnectedPositionStrategy implements PositionStrategy {
       top = origin.y;
       height = viewport.bottom - origin.y;
     } else if (position.overlayY === 'bottom') {
-      // Overlay is opening "upward" and thus is bound by the top viewport edge.
-      bottom = viewport.height - origin.y + this._viewportMargin;
-      height = viewport.height - bottom;
+      // Overlay is opening "upward" and thus is bound by the top viewport edge. We need to add
+      // the viewport margin back in, because the viewport rect is narrowed down to remove the
+      // margin, whereas the `origin` position is calculated based on its `ClientRect`.
+      bottom = viewport.height - origin.y + this._viewportMargin * 2;
+      height = viewport.height - bottom + this._viewportMargin;
     } else {
       // If neither top nor bottom, it means that the overlay
       // is vertically centered on the origin point.
@@ -608,13 +611,13 @@ export class FlexibleConnectedPositionStrategy implements PositionStrategy {
 
     // The overlay is opening 'right-ward' (the content flows to the right).
     const isBoundedByRightViewportEdge =
-        (position.overlayX === 'start' && !this._isRtl()) ||
-        (position.overlayX === 'end' && this._isRtl());
+        (position.overlayX === 'start' && !isRtl) ||
+        (position.overlayX === 'end' && isRtl);
 
     // The overlay is opening 'left-ward' (the content flows to the left).
     const isBoundedByLeftViewportEdge =
-        (position.overlayX === 'end' && !this._isRtl()) ||
-        (position.overlayX === 'start' && this._isRtl());
+        (position.overlayX === 'end' && !isRtl) ||
+        (position.overlayX === 'start' && isRtl);
 
     let width, left, right;
 
@@ -887,7 +890,7 @@ export class FlexibleConnectedPositionStrategy implements PositionStrategy {
     return {
       top:    scrollPosition.top + this._viewportMargin,
       left:   scrollPosition.left + this._viewportMargin,
-      right:  scrollPosition.left + width  - this._viewportMargin,
+      right:  scrollPosition.left + width - this._viewportMargin,
       bottom: scrollPosition.top + height - this._viewportMargin,
       width:  width  - (2 * this._viewportMargin),
       height: height - (2 * this._viewportMargin),
