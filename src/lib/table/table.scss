@@ -36,10 +36,20 @@ mat-row, mat-header-row {
 
 mat-cell:first-child, mat-header-cell:first-child {
   padding-left: $mat-row-horizontal-padding;
+
+  [dir='rtl'] & {
+    padding-left: 0;
+    padding-right: $mat-row-horizontal-padding;
+  }
 }
 
 mat-cell:last-child, mat-header-cell:last-child {
   padding-right: $mat-row-horizontal-padding;
+
+  [dir='rtl'] & {
+    padding-right: 0;
+    padding-left: $mat-row-horizontal-padding;
+  }
 }
 
 mat-cell, mat-header-cell {

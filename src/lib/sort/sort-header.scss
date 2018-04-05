@@ -34,11 +34,16 @@ $mat-sort-header-arrow-hint-opacity: 0.38;
   height: $mat-sort-header-arrow-container-size;
   width: $mat-sort-header-arrow-container-size;
   min-width: $mat-sort-header-arrow-container-size;
-  margin: 0 0 0 $mat-sort-header-arrow-margin;
   position: relative;
   display: flex;
 
-  .mat-sort-header-position-before & {
+  &,
+  [dir='rtl'] .mat-sort-header-position-before & {
+    margin: 0 0 0 $mat-sort-header-arrow-margin;
+  }
+
+  .mat-sort-header-position-before &,
+  [dir='rtl'] & {
     margin: 0 $mat-sort-header-arrow-margin 0 0;
   }
 }

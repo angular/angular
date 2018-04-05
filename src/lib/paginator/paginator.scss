@@ -45,6 +45,11 @@ $mat-paginator-button-last-increment-icon-margin: 9px;
   display: flex;
   align-items: baseline;
   margin-right: $mat-paginator-page-size-margin-right;
+
+  [dir='rtl'] & {
+    margin-right: 0;
+    margin-left: $mat-paginator-page-size-margin-right;
+  }
 }
 
 .mat-paginator-page-size-label {
