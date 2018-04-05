@@ -14,6 +14,7 @@ import {
   OverlayRef,
   PositionStrategy,
   ScrollStrategy,
+  ViewportRuler,
 } from '@angular/cdk/overlay';
 import {TemplatePortal} from '@angular/cdk/portal';
 import {DOCUMENT} from '@angular/common';
@@ -122,6 +123,9 @@ export class MatAutocompleteTrigger implements ControlValueAccessor, OnDestroy {
   /** The subscription for closing actions (some are bound to document). */
   private _closingActionsSubscription: Subscription;
 
+  /** Subscription to viewport size changes. */
+  private _viewportSubscription = Subscription.EMPTY;
+
   /** Stream of keyboard events that can close the panel. */
   private readonly _closeKeyEventStream = new Subject<void>();
 
@@ -141,9 +145,12 @@ export class MatAutocompleteTrigger implements ControlValueAccessor, OnDestroy {
               @Inject(MAT_AUTOCOMPLETE_SCROLL_STRATEGY) private _scrollStrategy,
               @Optional() private _dir: Directionality,
               @Optional() @Host() private _formField: MatFormField,
-              @Optional() @Inject(DOCUMENT) private _document: any) {}
+              @Optional() @Inject(DOCUMENT) private _document: any,
+              // @deletion-target 7.0.0 Make `_viewportRuler` required.
+              private _viewportRuler?: ViewportRuler) {}
 
   ngOnDestroy() {
+    this._viewportSubscription.unsubscribe();
     this._componentDestroyed = true;
     this._destroyPanel();
     this._closeKeyEventStream.complete();
@@ -482,6 +489,14 @@ export class MatAutocompleteTrigger implements ControlValueAccessor, OnDestroy {
     if (!this._overlayRef) {
       this._portal = new TemplatePortal(this.autocomplete.template, this._viewContainerRef);
       this._overlayRef = this._overlay.create(this._getOverlayConfig());
+
+      if (this._viewportRuler) {
+        this._viewportSubscription = this._viewportRuler.change().subscribe(() => {
+          if (this.panelOpen && this._overlayRef) {
+            this._overlayRef.updateSize({width: this._getHostWidth()});
+          }
+        });
+      }
     } else {
       /** Update the panel width, in case the host width has changed */
       this._overlayRef.updateSize({width: this._getHostWidth()});
