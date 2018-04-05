@@ -99,7 +99,7 @@ function mergeOptions(
  * http.get('request-from-mock-backend.json').subscribe((res:Response) => doSomething(res));
  * ```
  *
- * @deprecated use @angular/common/http instead
+ * @deprecated use \@angular/common/http instead
  */
 @Injectable()
 export class Http {
@@ -187,7 +187,7 @@ export class Http {
 
 
 /**
- * @deprecated use @angular/common/http instead
+ * @deprecated use \@angular/common/http instead
  */
 @Injectable()
 export class Jsonp extends Http {

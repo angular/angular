@@ -32,7 +32,7 @@
  * console.log(thirdHeaders.get('X-My-Custom-Header')); //'Angular'
  * ```
  *
- * @deprecated use @angular/common/http instead
+ * @deprecated use \@angular/common/http instead
  */
 export class Headers {
   /** @internal header names are lower case */
