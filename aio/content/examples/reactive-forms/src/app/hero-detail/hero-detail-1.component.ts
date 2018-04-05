@@ -10,6 +10,6 @@ import { FormControl } from '@angular/forms';
   templateUrl: './hero-detail-1.component.html'
 })
 // #docregion v1
-export class HeroDetailComponent1 {
+export class HeroDetailComponent {
   name = new FormControl();
 }
