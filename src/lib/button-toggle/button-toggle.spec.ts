@@ -622,16 +622,22 @@ describe('MatButtonToggle without forms', () => {
 
   });
 
-  describe('with provided aria-label ', () => {
-    let checkboxDebugElement: DebugElement;
-    let checkboxNativeElement: HTMLElement;
-    let inputElement: HTMLInputElement;
+  describe('aria-label handling ', () => {
+    it('should not set the aria-label attribute if none is provided', () => {
+      let fixture = TestBed.createComponent(StandaloneButtonToggle);
+      let checkboxDebugElement = fixture.debugElement.query(By.directive(MatButtonToggle));
+      let checkboxNativeElement = checkboxDebugElement.nativeElement;
+      let inputElement = checkboxNativeElement.querySelector('input') as HTMLInputElement;
+
+      fixture.detectChanges();
+      expect(inputElement.hasAttribute('aria-label')).toBe(false);
+    });
 
     it('should use the provided aria-label', () => {
       let fixture = TestBed.createComponent(ButtonToggleWithAriaLabel);
-      checkboxDebugElement = fixture.debugElement.query(By.directive(MatButtonToggle));
-      checkboxNativeElement = checkboxDebugElement.nativeElement;
-      inputElement = checkboxNativeElement.querySelector('input') as HTMLInputElement;
+      let checkboxDebugElement = fixture.debugElement.query(By.directive(MatButtonToggle));
+      let checkboxNativeElement = checkboxDebugElement.nativeElement;
+      let inputElement = checkboxNativeElement.querySelector('input') as HTMLInputElement;
 
       fixture.detectChanges();
       expect(inputElement.getAttribute('aria-label')).toBe('Super effective');

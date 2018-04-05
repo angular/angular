@@ -340,7 +340,7 @@ export class MatButtonToggle extends _MatButtonToggleMixinBase implements OnInit
    * Attached to the aria-label attribute of the host element. In most cases, arial-labelledby will
    * take precedence so this may be omitted.
    */
-  @Input('aria-label') ariaLabel: string = '';
+  @Input('aria-label') ariaLabel: string;
 
   /**
    * Users can specify the `aria-labelledby` attribute which will be forwarded to the input element
