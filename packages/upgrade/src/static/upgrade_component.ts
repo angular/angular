@@ -27,16 +27,14 @@ class Bindings {
 }
 
 /**
- * @whatItDoes
+ * @description
+ *
+ * A helper class that allows an AngularJS component to be used from Angular.
  *
  * *Part of the [upgrade/static](api?query=upgrade%2Fstatic)
  * library for hybrid upgrade apps that support AoT compilation*
  *
- * Allows an AngularJS component to be used from Angular.
- *
- * @description
- *
- * A helper class that should be used as a base class for creating Angular directives
+ * This helper class should be used as a base class for creating Angular directives
  * that wrap AngularJS components that need to be "upgraded".
  *
  * ### Examples

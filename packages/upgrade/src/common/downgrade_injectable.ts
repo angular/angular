@@ -10,22 +10,15 @@ import {Injector} from '@angular/core';
 import {INJECTOR_KEY} from './constants';
 
 /**
- * @whatItDoes
+ * @description
+ *
+ * A helper function to allow an Angular service to be accessible from AngularJS.
  *
  * *Part of the [upgrade/static](api?query=upgrade%2Fstatic)
  * library for hybrid upgrade apps that support AoT compilation*
  *
- * Allow an Angular service to be accessible from AngularJS.
- *
- * @description
- *
- * Takes a `token` that identifies a service provided from Angular.
- *
- * Returns a [factory function](https://docs.angularjs.org/guide/di) that can be
- * used to register the service on an AngularJS module.
- *
- * The factory function provides access to the Angular service that
- * is identified by the `token` parameter.
+ * This helper function returns a factory function that provides access to the Angular
+ * service identified by the `token` parameter.
  *
  * ### Examples
  *
@@ -48,6 +41,11 @@ import {INJECTOR_KEY} from './constants';
  * downgraded service via the name we gave when downgrading.
  *
  * {@example upgrade/static/ts/module.ts region="example-app"}
+ *
+ * @param token an `InjectionToken` that identifies a service provided from Angular.
+ *
+ * @returns a [factory function](https://docs.angularjs.org/guide/di) that can be
+ * used to register the service on an AngularJS module.
  *
  * @experimental
  */

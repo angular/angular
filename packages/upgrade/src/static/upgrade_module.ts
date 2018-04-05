@@ -17,13 +17,16 @@ import {NgAdapterInjector} from './util';
 
 
 /**
- * @whatItDoes
+ * @description
+ *
+ * An `NgModule`, which you import to provide AngularJS core services,
+ * and has an instance method used to bootstrap the hybrid upgrade application.
  *
  * *Part of the [upgrade/static](api?query=upgrade%2Fstatic)
  * library for hybrid upgrade apps that support AoT compilation*
  *
- * Allows AngularJS and Angular components to be used together inside a hybrid upgrade
- * application, which supports AoT compilation.
+ * The `upgrade/static` package contains helpers that allow AngularJS and Angular components
+ * to be used together inside a hybrid upgrade application, which supports AoT compilation.
  *
  * Specifically, the classes and functions in the `upgrade/static` module allow the following:
  * 1. Creation of an Angular directive that wraps and exposes an AngularJS component so
@@ -37,9 +40,9 @@ import {NgAdapterInjector} from './util';
  *    so that it can be injected into an AngularJS context. See {@link downgradeInjectable}.
  * 3. Bootstrapping of a hybrid Angular application which contains both of the frameworks
  *    coexisting in a single application. See the
- *    {@link UpgradeModule#example example} below.
+ *    {@link UpgradeModule#examples example} below.
  *
- * ## Mental Model
+ * ### Mental Model
  *
  * When reasoning about how a hybrid application works it is useful to have a mental model which
  * describes what is happening and explains what is happening at the lowest level.
@@ -65,25 +68,19 @@ import {NgAdapterInjector} from './util';
  *    a. This implies that the component bindings will always follow the semantics of the
  *       instantiation framework.
  *    b. The DOM attributes are parsed by the framework that owns the current template. So
- * attributes
- *       in AngularJS templates must use kebab-case, while AngularJS templates must use camelCase.
+ *       attributes in AngularJS templates must use kebab-case, while AngularJS templates must
+ *       use camelCase.
  *    c. However the template binding syntax will always use the Angular style, e.g. square
  *       brackets (`[...]`) for property binding.
  * 8. AngularJS is always bootstrapped first and owns the root component.
  * 9. The new application is running in an Angular zone, and therefore it no longer needs calls
- * to
- *    `$apply()`.
+ *    to `$apply()`.
  *
- * @description
- *
- * This class is an `NgModule`, which you import to provide AngularJS core services,
- * and has an instance method used to bootstrap the hybrid upgrade application.
- *
- * ## Core AngularJS services
+ * ### Core AngularJS services
  * Importing this {@link NgModule} will add providers for the core
  * [AngularJS services](https://docs.angularjs.org/api/ng/service) to the root injector.
  *
- * ## Bootstrap
+ * ### Bootstrap
  * The runtime instance of this class contains a {@link UpgradeModule#bootstrap `bootstrap()`}
  * method, which you use to bootstrap the top level AngularJS module onto an element in the
  * DOM for the hybrid upgrade app.
@@ -94,9 +91,6 @@ import {NgAdapterInjector} from './util';
  *
  * ### Examples
  *
- * `import {UpgradeModule} from '@angular/upgrade/static';`
- *
- * ## Example
  * Import the {@link UpgradeModule} into your top level {@link NgModule Angular `NgModule`}.
  *
  * {@example upgrade/static/ts/module.ts region='ng2-module'}
@@ -109,7 +103,7 @@ import {NgAdapterInjector} from './util';
  *
  * {@a upgrading-an-angular-1-service}
  *
- * ## Upgrading an AngularJS service
+ * ### Upgrading an AngularJS service
  *
  * There is no specific API for upgrading an AngularJS service. Instead you should just follow the
  * following recipe:
