@@ -135,6 +135,7 @@ export function serverTask(packagePath: string, livereload = true) {
       root: projectDir,
       livereload: livereload,
       port: 4200,
+      host: '0.0.0.0',
       middleware: () => {
         return [httpRewrite.getMiddleware([
           // Rewrite the node_modules/ and dist/ folder to the real paths. This is a trick to
