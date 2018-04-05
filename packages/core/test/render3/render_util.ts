@@ -48,6 +48,8 @@ function noop() {}
  */
 export class TemplateFixture extends BaseFixture {
   hostNode: LElementNode;
+  private _directiveDefs: DirectiveDefList|null;
+  private _pipeDefs: PipeDefList|null;
   /**
    *
    * @param createBlock Instructions which go into the creation block:
@@ -55,15 +57,18 @@ export class TemplateFixture extends BaseFixture {
    * @param updateBlock Optional instructions which go after the creation block:
    *          `if (creationMode) { ... } __here__`.
    */
-  constructor(private createBlock: () => void, private updateBlock: () => void = noop) {
+  constructor(
+      private createBlock: () => void, private updateBlock: () => void = noop,
+      directives?: DirectiveTypesOrFactory|null, pipes?: PipeTypesOrFactory|null) {
     super();
-    this.updateBlock = updateBlock || function() {};
+    this._directiveDefs = toDefs(directives, extractDirectiveDef);
+    this._pipeDefs = toDefs(pipes, extractPipeDef);
     this.hostNode = renderTemplate(this.hostElement, (ctx: any, cm: boolean) => {
       if (cm) {
         this.createBlock();
       }
       this.updateBlock();
-    }, null !, domRendererFactory3, null);
+    }, null !, domRendererFactory3, null, this._directiveDefs, this._pipeDefs);
   }
 
   /**
@@ -74,7 +79,7 @@ export class TemplateFixture extends BaseFixture {
   update(updateBlock?: () => void): void {
     renderTemplate(
         this.hostNode.native, updateBlock || this.updateBlock, null !, domRendererFactory3,
-        this.hostNode);
+        this.hostNode, this._directiveDefs, this._pipeDefs);
   }
 }
 
