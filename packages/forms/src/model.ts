@@ -673,7 +673,7 @@ export abstract class AbstractControl {
  * It is one of the three fundamental building blocks of Angular forms, along with
  * {@link FormGroup} and {@link FormArray}.
  *
- * @howToUse
+ * @description
  *
  * When instantiating a {@link FormControl}, you can pass in an initial value as the
  * first argument. Example:
@@ -917,7 +917,7 @@ export class FormControl extends AbstractControl {
  * `FormGroup` is one of the three fundamental building blocks used to define forms in Angular,
  * along with {@link FormControl} and {@link FormArray}.
  *
- * @howToUse
+ * @description
  *
  * When instantiating a {@link FormGroup}, pass in a collection of child controls as the first
  * argument. The key for each child will be the name under which it is registered.
@@ -1260,7 +1260,7 @@ export class FormGroup extends AbstractControl {
  * `FormArray` is one of the three fundamental building blocks used to define forms in Angular,
  * along with {@link FormControl} and {@link FormGroup}.
  *
- * @howToUse
+ * @description
  *
  * When instantiating a {@link FormArray}, pass in an array of child controls as the first
  * argument.

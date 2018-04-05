@@ -36,7 +36,7 @@ export const controlNameBinding: any = {
  * any values written to the DOM element through user input will be reflected in the
  * {@link FormControl} instance (view -> model).
  *
- * @howToUse
+ * @description
  *
  * This directive is designed to be used with a parent {@link FormGroupDirective} (selector:
  * `[formGroup]`).
