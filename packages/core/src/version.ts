@@ -7,7 +7,7 @@
  */
 
 /**
- * @whatItDoes Represents the version of Angular
+ * @description Represents the version of Angular
  *
  * @stable
  */
