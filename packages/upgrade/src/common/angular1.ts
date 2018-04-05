@@ -244,14 +244,14 @@ try {
 }
 
 /**
- * @deprecated Use {@link setAngularJSGlobal} instead.
+ * @deprecated Use `setAngularJSGlobal` instead.
  */
 export function setAngularLib(ng: any): void {
   setAngularJSGlobal(ng);
 }
 
 /**
- * @deprecated Use {@link getAngularJSGlobal} instead.
+ * @deprecated Use `getAngularJSGlobal` instead.
  */
 export function getAngularLib(): any {
   return getAngularJSGlobal();

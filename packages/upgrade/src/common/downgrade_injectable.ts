@@ -22,13 +22,13 @@ import {INJECTOR_KEY} from './constants';
  *
  * ### Examples
  *
- * First ensure that the service to be downgraded is provided in an {@link NgModule}
+ * First ensure that the service to be downgraded is provided in an `NgModule`
  * that will be part of the upgrade application. For example, let's assume we have
  * defined `HeroesService`
  *
  * {@example upgrade/static/ts/module.ts region="ng2-heroes-service"}
  *
- * and that we have included this in our upgrade app {@link NgModule}
+ * and that we have included this in our upgrade app `NgModule`
  *
  * {@example upgrade/static/ts/module.ts region="ng2-module"}
  *
