@@ -33,7 +33,7 @@ import {
   MAT_LABEL_GLOBAL_OPTIONS,
   mixinColor,
 } from '@angular/material/core';
-import {fromEvent} from 'rxjs';
+import {EMPTY, fromEvent, merge} from 'rxjs';
 import {startWith, take} from 'rxjs/operators';
 import {MatError} from './error';
 import {matFormFieldAnimations} from './form-field-animations';
@@ -246,12 +246,10 @@ export class MatFormField extends _MatFormFieldMixinBase
       this._changeDetectorRef.markForCheck();
     });
 
-    let ngControl = this._control.ngControl;
-    if (ngControl && ngControl.valueChanges) {
-      ngControl.valueChanges.subscribe(() => {
-        this._changeDetectorRef.markForCheck();
-      });
-    }
+    // Run change detection if the value, prefix, or suffix changes.
+    const valueChanges = this._control.ngControl && this._control.ngControl.valueChanges || EMPTY;
+    merge(valueChanges, this._prefixChildren.changes, this._suffixChildren.changes)
+        .subscribe(() => this._changeDetectorRef.markForCheck());
 
     // Re-validate when the number of hints changes.
     this._hintChildren.changes.pipe(startWith(null)).subscribe(() => {
