@@ -89,7 +89,7 @@ class ParamsAsMap implements ParamMap {
 }
 
 /**
- * Convert a {@link Params} instance to a {@link ParamMap}.
+ * Convert a `Params` instance to a `ParamMap`.
  *
  * @stable
  */

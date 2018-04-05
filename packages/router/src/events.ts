@@ -279,7 +279,7 @@ export class ResolveStart extends RouterEvent {
  * @description
  *
  * Represents the end of the Resolve phase of routing. See note on
- * {@link ResolveStart} for use of this experimental API.
+ * `ResolveStart` for use of this experimental API.
  *
  * @experimental
  */
@@ -333,7 +333,7 @@ export class RouteConfigLoadEnd {
  * @description
  *
  * Represents the start of end of the Resolve phase of routing. See note on
- * {@link ChildActivationEnd} for use of this experimental API.
+ * `ChildActivationEnd` for use of this experimental API.
  *
  * @experimental
  */
@@ -351,7 +351,7 @@ export class ChildActivationStart {
  * @description
  *
  * Represents the start of end of the Resolve phase of routing. See note on
- * {@link ChildActivationStart} for use of this experimental API.
+ * `ChildActivationStart` for use of this experimental API.
  *
  * @experimental
  */
@@ -369,7 +369,7 @@ export class ChildActivationEnd {
  * @description
  *
  * Represents the start of end of the Resolve phase of routing. See note on
- * {@link ActivationEnd} for use of this experimental API.
+ * `ActivationEnd` for use of this experimental API.
  *
  * @experimental
  */
@@ -387,7 +387,7 @@ export class ActivationStart {
  * @description
  *
  * Represents the start of end of the Resolve phase of routing. See note on
- * {@link ActivationStart} for use of this experimental API.
+ * `ActivationStart` for use of this experimental API.
  *
  * @experimental
  */
@@ -408,21 +408,21 @@ export class ActivationEnd {
  *
  * The sequence of router events is:
  *
- * - {@link NavigationStart},
- * - {@link RouteConfigLoadStart},
- * - {@link RouteConfigLoadEnd},
- * - {@link RoutesRecognized},
- * - {@link GuardsCheckStart},
- * - {@link ChildActivationStart},
- * - {@link ActivationStart},
- * - {@link GuardsCheckEnd},
- * - {@link ResolveStart},
- * - {@link ResolveEnd},
- * - {@link ActivationEnd}
- * - {@link ChildActivationEnd}
- * - {@link NavigationEnd},
- * - {@link NavigationCancel},
- * - {@link NavigationError}
+ * - `NavigationStart`,
+ * - `RouteConfigLoadStart`,
+ * - `RouteConfigLoadEnd`,
+ * - `RoutesRecognized`,
+ * - `GuardsCheckStart`,
+ * - `ChildActivationStart`,
+ * - `ActivationStart`,
+ * - `GuardsCheckEnd`,
+ * - `ResolveStart`,
+ * - `ResolveEnd`,
+ * - `ActivationEnd`
+ * - `ChildActivationEnd`
+ * - `NavigationEnd`,
+ * - `NavigationCancel`,
+ * - `NavigationError`
  *
  * @stable
  */

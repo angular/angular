@@ -41,7 +41,7 @@ import {Tree, TreeNode} from './utils/tree';
  * }
  * ```
  *
- * See {@link ActivatedRoute} for more information.
+ * See `ActivatedRoute` for more information.
  *
  * @stable
  */

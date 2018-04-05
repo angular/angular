@@ -156,7 +156,7 @@ export class RouterLink {
  *
  * Lets you link to specific routes in your app.
  *
- * See {@link RouterLink} for more information.
+ * See `RouterLink` for more information.
  *
  * @ngModule RouterModule
  *
