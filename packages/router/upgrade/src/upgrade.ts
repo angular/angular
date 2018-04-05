@@ -16,7 +16,7 @@ import {UpgradeModule} from '@angular/upgrade/static';
  * @whatItDoes Creates an initializer that in addition to setting up the Angular
  * router sets up the ngRoute integration.
  *
- * @howToUse
+ * @description
  *
  * ```
  * @NgModule({

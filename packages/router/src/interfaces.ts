@@ -16,7 +16,7 @@ import {ActivatedRouteSnapshot, RouterStateSnapshot} from './router_state';
  * @whatItDoes Interface that a class can implement to be a guard deciding if a route can be
  * activated.
  *
- * @howToUse
+ * @description
  *
  * ```
  * class UserToken {}
@@ -87,7 +87,7 @@ export interface CanActivate {
  * @whatItDoes Interface that a class can implement to be a guard deciding if a child route can be
  * activated.
  *
- * @howToUse
+ * @description
  *
  * ```
  * class UserToken {}
@@ -168,7 +168,7 @@ export interface CanActivateChild {
  * @whatItDoes Interface that a class can implement to be a guard deciding if a route can be
  * deactivated.
  *
- * @howToUse
+ * @description
  *
  * ```
  * class UserToken {}
@@ -242,7 +242,7 @@ export interface CanDeactivate<T> {
 /**
  * @whatItDoes Interface that class can implement to be a data provider.
  *
- * @howToUse
+ * @description
  *
  * ```
  * class Backend {
@@ -315,7 +315,7 @@ export interface Resolve<T> {
  * @whatItDoes Interface that a class can implement to be a guard deciding if a children can be
  * loaded.
  *
- * @howToUse
+ * @description
  *
  * ```
  * class UserToken {}

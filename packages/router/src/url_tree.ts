@@ -76,7 +76,13 @@ function containsSegmentGroupHelper(
 /**
  * @whatItDoes Represents the parsed URL.
  *
- * @howToUse
+ * @description
+ *
+ * Since a router state is a tree, and the URL is nothing but a serialized state, the URL is a
+ * serialized tree.
+ * UrlTree is a data structure that provides a lot of affordances in dealing with URLs
+ *
+ * ### Example
  *
  * ```
  * @Component({templateUrl:'template.html'})
@@ -93,12 +99,6 @@ function containsSegmentGroupHelper(
  *   }
  * }
  * ```
- *
- * @description
- *
- * Since a router state is a tree, and the URL is nothing but a serialized state, the URL is a
- * serialized tree.
- * UrlTree is a data structure that provides a lot of affordances in dealing with URLs
  *
  * @stable
  */
@@ -163,7 +163,12 @@ export class UrlSegmentGroup {
 /**
  * @whatItDoes Represents a single URL segment.
  *
- * @howToUse
+ * @description
+ *
+ * A UrlSegment is a part of a URL between the two slashes. It contains a path and the matrix
+ * parameters associated with the segment.
+ *
+ * ## Example
  *
  * ```
  * @Component({templateUrl:'template.html'})
@@ -177,11 +182,6 @@ export class UrlSegmentGroup {
  *   }
  * }
  * ```
- *
- * @description
- *
- * A UrlSegment is a part of a URL between the two slashes. It contains a path and the matrix
- * parameters associated with the segment.
  *
  * @stable
  */

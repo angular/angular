@@ -18,12 +18,6 @@ import {RouterLink, RouterLinkWithHref} from './router_link';
 /**
  * @whatItDoes Lets you add a CSS class to an element when the link's route becomes active.
  *
- * @howToUse
- *
- * ```
- * <a routerLink="/user/bob" routerLinkActive="active-link">Bob</a>
- * ```
- *
  * @description
  *
  * The RouterLinkActive directive lets you add a CSS class to an element when the link's route

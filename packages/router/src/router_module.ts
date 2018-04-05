@@ -73,7 +73,7 @@ export function routerNgProbeToken() {
 /**
  * @whatItDoes Adds router directives and providers.
  *
- * @howToUse
+ * @usageNotes
  *
  * RouterModule can be imported multiple times: once per lazily-loaded bundle.
  * Since the router deals with a global shared resource--location, we cannot have
@@ -195,7 +195,9 @@ export function provideForRootGuard(router: Router): any {
 /**
  * @whatItDoes Registers routes.
  *
- * @howToUse
+ * @description
+ *
+ * ### Example
  *
  * ```
  * @NgModule({
