@@ -54,7 +54,7 @@ const resolvedPromise = Promise.resolve(null);
  * within a parent form, the directive will also register itself with the form as a child
  * control.
  *
- * @howToUse
+ * @description
  *
  * This directive can be used by itself or as part of a larger form. All you need is the
  * `ngModel` selector to activate it.

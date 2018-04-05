@@ -60,7 +60,7 @@ export class RadioControlRegistry {
  * Used by {@link NgModel}, {@link FormControlDirective}, and {@link FormControlName}
  * to keep the view synced with the {@link FormControl} model.
  *
- * @howToUse
+ * @description
  *
  * If you have imported the {@link FormsModule} or the {@link ReactiveFormsModule}, this
  * value accessor will be active on any radio control that has a form directive. You do
