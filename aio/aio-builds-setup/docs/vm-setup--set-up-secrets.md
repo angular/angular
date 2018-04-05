@@ -9,7 +9,7 @@ Necessary secrets:
    - Used for:
      - Retrieving open PRs without rate-limiting.
      - Retrieving PR author.
-     - Retrieving members of the `angular-core` team.
+     - Retrieving members of the trusted GitHub teams.
      - Posting comments with preview links on PRs.
 
 2. `PREVIEW_DEPLOYMENT_TOKEN`
