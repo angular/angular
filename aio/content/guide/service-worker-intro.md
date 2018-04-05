@@ -40,11 +40,11 @@ Your application must run in a web browser that supports service workers. Curren
 
  <div class="l-sub-section">
 
-  If service workers are unsupported in the current browser:
+  If the browser does not support service workers, then the Angular service worker will not function correctly:
 
-* The service worker script and `ngsw.json` will never be downloaded.
-* Active attempts to interact with the service worker, such as calling `SwUpdate.checkForUpdate()` will return rejected promises.
-* The service worker `Observable` properties such as `SwUpdate.available` will not be trigered.
+* The service worker script and `ngsw.json` are not downloaded.
+* Active attempts to interact with the service worker, such as calling `SwUpdate.checkForUpdate()`, return rejected promises.
+* The service worker observable properties such as `SwUpdate.available` are not triggered.
  </div>
 
  To learn more about other browsers that are service worker ready, see the [Can I Use](https://caniuse.com/#feat=serviceworkers) page and [MDN docs](https://developer.mozilla.org/en-US/docs/Web/API/Service_Worker_API).
