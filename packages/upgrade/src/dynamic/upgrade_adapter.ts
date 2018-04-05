@@ -313,7 +313,7 @@ export class UpgradeAdapter {
    * ```
    *
    * @param modules any AngularJS modules that the upgrade module should depend upon
-   * @returns an {@link UpgradeAdapterRef}, which lets you register a `ready()` callback to
+   * @returns an `UpgradeAdapterRef`, which lets you register a `ready()` callback to
    * run assertions once the Angular components are ready to test through AngularJS.
    */
   registerForNg1Tests(modules?: string[]): UpgradeAdapterRef {

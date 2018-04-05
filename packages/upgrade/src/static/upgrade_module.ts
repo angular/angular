@@ -30,14 +30,14 @@ import {NgAdapterInjector} from './util';
  *
  * Specifically, the classes and functions in the `upgrade/static` module allow the following:
  * 1. Creation of an Angular directive that wraps and exposes an AngularJS component so
- *    that it can be used in an Angular template. See {@link UpgradeComponent}.
+ *    that it can be used in an Angular template. See `UpgradeComponent`.
  * 2. Creation of an AngularJS directive that wraps and exposes an Angular component so
- *    that it can be used in an AngularJS template. See {@link downgradeComponent}.
+ *    that it can be used in an AngularJS template. See `downgradeComponent`.
  * 3. Creation of an Angular root injector provider that wraps and exposes an AngularJS
  *    service so that it can be injected into an Angular context. See
  *    {@link UpgradeModule#upgrading-an-angular-1-service Upgrading an AngularJS service} below.
  * 4. Creation of an AngularJS service that wraps and exposes an Angular injectable
- *    so that it can be injected into an AngularJS context. See {@link downgradeInjectable}.
+ *    so that it can be injected into an AngularJS context. See `downgradeInjectable`.
  * 3. Bootstrapping of a hybrid Angular application which contains both of the frameworks
  *    coexisting in a single application. See the
  *    {@link UpgradeModule#examples example} below.
@@ -58,10 +58,10 @@ import {NgAdapterInjector} from './util';
  *    where they are instantiated.
  * 5. An AngularJS component can be "upgraded"" to an Angular component. This is achieved by
  *    defining an Angular directive, which bootstraps the AngularJS component at its location
- *    in the DOM. See {@link UpgradeComponent}.
+ *    in the DOM. See `UpgradeComponent`.
  * 6. An Angular component can be "downgraded"" to an AngularJS component. This is achieved by
  *    defining an AngularJS directive, which bootstraps the Angular component at its location
- *    in the DOM. See {@link downgradeComponent}.
+ *    in the DOM. See `downgradeComponent`.
  * 7. Whenever an "upgraded"/"downgraded" component is instantiated the host element is owned by
  *    the framework doing the instantiation. The other framework then instantiates and owns the
  *    view for that component.
@@ -77,7 +77,7 @@ import {NgAdapterInjector} from './util';
  *    to `$apply()`.
  *
  * ### Core AngularJS services
- * Importing this {@link NgModule} will add providers for the core
+ * Importing this `NgModule` will add providers for the core
  * [AngularJS services](https://docs.angularjs.org/api/ng/service) to the root injector.
  *
  * ### Bootstrap
@@ -86,16 +86,16 @@ import {NgAdapterInjector} from './util';
  * DOM for the hybrid upgrade app.
  *
  * It also contains properties to access the {@link UpgradeModule#injector root injector}, the
- * bootstrap {@link NgZone} and the
+ * bootstrap `NgZone` and the
  * [AngularJS $injector](https://docs.angularjs.org/api/auto/service/$injector).
  *
  * ### Examples
  *
- * Import the {@link UpgradeModule} into your top level {@link NgModule Angular `NgModule`}.
+ * Import the `UpgradeModule` into your top level {@link NgModule Angular `NgModule`}.
  *
  * {@example upgrade/static/ts/module.ts region='ng2-module'}
  *
- * Then bootstrap the hybrid upgrade app's module, get hold of the {@link UpgradeModule} instance
+ * Then bootstrap the hybrid upgrade app's module, get hold of the `UpgradeModule` instance
  * and use it to bootstrap the top level [AngularJS
  * module](https://docs.angularjs.org/api/ng/type/angular.Module).
  *
@@ -112,7 +112,7 @@ import {NgAdapterInjector} from './util';
  *
  * {@example upgrade/static/ts/module.ts region="ng1-title-case-service"}
  *
- * Then you should define an Angular provider to be included in your {@link NgModule} `providers`
+ * Then you should define an Angular provider to be included in your `NgModule` `providers`
  * property.
  *
  * {@example upgrade/static/ts/module.ts region="upgrade-ng1-service"}
@@ -134,7 +134,7 @@ export class UpgradeModule {
   public injector: Injector;
 
   constructor(
-      /** The root {@link Injector} for the upgrade application. */
+      /** The root `Injector` for the upgrade application. */
       injector: Injector,
       /** The bootstrap zone for the upgrade application */
       public ngZone: NgZone) {

@@ -44,12 +44,12 @@ class Bindings {
  *
  * {@example upgrade/static/ts/module.ts region="ng1-hero"}
  *
- * We must create a {@link Directive} that will make this AngularJS component
+ * We must create a `Directive` that will make this AngularJS component
  * available inside Angular templates.
  *
  * {@example upgrade/static/ts/module.ts region="ng1-hero-wrapper"}
  *
- * In this example you can see that we must derive from the {@link UpgradeComponent}
+ * In this example you can see that we must derive from the `UpgradeComponent`
  * base class but also provide an {@link Directive `@Directive`} decorator. This is
  * because the AoT compiler requires that this information is statically available at
  * compile time.
@@ -60,7 +60,7 @@ class Bindings {
  * * derive from `UpgradeComponent`
  * * call the base class from the constructor, passing
  *   * the AngularJS name of the component (`ng1Hero`)
- *   * the {@link ElementRef} and {@link Injector} for the component wrapper
+ *   * the `ElementRef` and `Injector` for the component wrapper
  *
  * @experimental
  */
