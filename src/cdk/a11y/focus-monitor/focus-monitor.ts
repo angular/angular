@@ -240,8 +240,10 @@ export class FocusMonitor implements OnDestroy {
    * @param origin The origin to set.
    */
   private _setOriginForCurrentEventQueue(origin: FocusOrigin): void {
-    this._origin = origin;
-    this._originTimeoutId = setTimeout(() => this._origin = null, 0);
+    this._ngZone.runOutsideAngular(() => {
+      this._origin = origin;
+      this._originTimeoutId = setTimeout(() => this._origin = null, 0);
+    });
   }
 
   /**
