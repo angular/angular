@@ -1,3 +1,24 @@
+<a name="6.0.0-rc.2"></a>
+# [6.0.0-rc.2](https://github.com/angular/angular/compare/6.0.0-rc.1...6.0.0-rc.2) (2018-04-05)
+
+
+### Bug Fixes
+
+* **common:** `locales` are not being shipped ([#23136](https://github.com/angular/angular/issues/23136)) ([7ca7720](https://github.com/angular/angular/commit/7ca7720))
+* **common:** properly take className changes into account ([#21937](https://github.com/angular/angular/issues/21937)) ([4a42669](https://github.com/angular/angular/commit/4a42669)), closes [#21932](https://github.com/angular/angular/issues/21932)
+* **compiler-cli:** flat module index metadata should be transformed ([#23129](https://github.com/angular/angular/issues/23129)) ([f99cb5c](https://github.com/angular/angular/commit/f99cb5c))
+* **core:** inject() should always work in an NgModule injection scope ([#23148](https://github.com/angular/angular/issues/23148)) ([fab6b39](https://github.com/angular/angular/commit/fab6b39)), closes [angular/material2#10586](https://github.com/angular/material2/issues/10586)
+* **forms:** improve error message for invalid value accessors ([#22731](https://github.com/angular/angular/issues/22731)) ([23cc3ef](https://github.com/angular/angular/commit/23cc3ef))
+* **upgrade:** correctly handle downgraded `OnPush` components ([#22209](https://github.com/angular/angular/issues/22209)) ([ad9ce5c](https://github.com/angular/angular/commit/ad9ce5c)), closes [#14286](https://github.com/angular/angular/issues/14286)
+* **upgrade:** propagate return value of resumeBootstrap ([#22754](https://github.com/angular/angular/issues/22754)) ([a2330ff](https://github.com/angular/angular/commit/a2330ff)), closes [#22723](https://github.com/angular/angular/issues/22723)
+
+
+### Features
+
+* **compiler-cli:** lower loadChildren fields to allow dynamic module paths ([#23088](https://github.com/angular/angular/issues/23088)) ([550433a](https://github.com/angular/angular/commit/550433a))
+
+
+
 <a name="6.0.0-rc.1"></a>
 # [6.0.0-rc.1](https://github.com/angular/angular/compare/6.0.0-rc.0...6.0.0-rc.1) (2018-03-30)
 
