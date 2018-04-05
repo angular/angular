@@ -235,7 +235,7 @@ describe('di', () => {
       /** <div dirA dirB dirC></div> */
       const App = createComponent('app', function(ctx: any, cm: boolean) {
         if (cm) {
-          elementStart(0, 'div', ['dirA', '', 'dirB', '', 'dirC', 'dirC']);
+          elementStart(0, 'div', ['dirA', '', 'dirB', '', 'dirC', '']);
           elementEnd();
         }
       }, [DirA, DirB, DirC]);
