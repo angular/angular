@@ -16,7 +16,7 @@ import {PRIMARY_OUTLET} from '../shared';
  * @whatItDoes Acts as a placeholder that Angular dynamically fills based on the current router
  * state.
  *
- * @howToUse
+ * @description
  *
  * ```
  * <router-outlet></router-outlet>
