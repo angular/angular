@@ -61,7 +61,6 @@ export class TodoComponent {
   </div>
   <span>count: {{appState.todos.length}}.</span>
   `,
-  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ToDoAppComponent {
   public appState: AppState;

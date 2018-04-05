@@ -1153,6 +1153,7 @@ describe('compiler compliance', () => {
                     $r3$.ɵT(1);
                     $r3$.ɵe();
                   }
+                  const $item$ = ctx0.$implicit;
                   const $info$ = ctx1.$implicit;
                   $r3$.ɵt(1, $r3$.ɵi2(' ', $item$.name, ': ', $info$.description, ' '));
                 }
