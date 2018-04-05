@@ -495,7 +495,13 @@
         },
 
         {
-          "title": "Upgrading",
+          "url": "guide/update-angular",
+          "title": "Updating Angular",
+          "tooltip": "Updating Angular applications and libraries to the latest version."
+        },  
+
+        {
+          "title": "Upgrading from AngularJS",
           "tooltip": "Incrementally upgrade an AngularJS application to Angular.",
           "children": [
             {
@@ -505,7 +511,7 @@
             },
             {
               "url": "guide/ajs-quick-reference",
-              "title": "Upgrade Cheatsheet",
+              "title": "AngularJS to Angular Reference",
               "tooltip": "Learn how AngularJS concepts and techniques map to Angular."
             }
           ]
