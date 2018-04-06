@@ -61,7 +61,7 @@ option's first letter. We already have access to the built-in `valueChanges` Obs
 them through this filter. The resulting Observable, `filteredOptions`, can be added to the
 template in place of the `options` property using the `async` pipe.
 
-Below we are also priming our value change stream with `null` so that the options are filtered by
+Below we are also priming our value change stream with an empty string so that the options are filtered by
 that value on init (before there are any value changes).
 
 \*For optimal accessibility, you may want to consider adding text guidance on the page to explain
