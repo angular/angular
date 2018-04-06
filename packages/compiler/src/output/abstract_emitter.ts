@@ -312,6 +312,9 @@ export abstract class AbstractEmitterVisitor implements o.StatementVisitor, o.Ex
     ctx.print(expr, `)`);
     return null;
   }
+  visitWrappedNodeExpr(ast: o.WrappedNodeExpr<any>, ctx: EmitterVisitorContext): never {
+    throw new Error('Abstract emitter cannot visit WrappedNodeExpr.');
+  }
   visitReadVarExpr(ast: o.ReadVarExpr, ctx: EmitterVisitorContext): any {
     let varName = ast.name !;
     if (ast.builtin != null) {
