@@ -19,6 +19,7 @@ import {
   OnInit,
   Optional,
   Self,
+  NgZone,
 } from '@angular/core';
 import {FormGroupDirective, NgControl, NgForm} from '@angular/forms';
 import {CanUpdateErrorState, ErrorStateMatcher, mixinErrorState} from '@angular/material/core';
@@ -218,7 +219,8 @@ export class MatInput extends _MatInputMixinBase implements MatFormFieldControl<
               @Optional() _parentFormGroup: FormGroupDirective,
               _defaultErrorStateMatcher: ErrorStateMatcher,
               @Optional() @Self() @Inject(MAT_INPUT_VALUE_ACCESSOR) inputValueAccessor: any,
-              private _autofillMonitor: AutofillMonitor) {
+              private _autofillMonitor: AutofillMonitor,
+              ngZone: NgZone) {
     super(_defaultErrorStateMatcher, _parentForm, _parentFormGroup, ngControl);
     // If no input value accessor was explicitly specified, use the element as the input value
     // accessor.
@@ -233,15 +235,18 @@ export class MatInput extends _MatInputMixinBase implements MatFormFieldControl<
     // key. In order to get around this we need to "jiggle" the caret loose. Since this bug only
     // exists on iOS, we only bother to install the listener on iOS.
     if (_platform.IOS) {
-      _elementRef.nativeElement.addEventListener('keyup', (event: Event) => {
-        let el = event.target as HTMLInputElement;
-        if (!el.value && !el.selectionStart && !el.selectionEnd) {
-          // Note: Just setting `0, 0` doesn't fix the issue. Setting `1, 1` fixes it for the first
-          // time that you type text and then hold delete. Toggling to `1, 1` and then back to
-          // `0, 0` seems to completely fix it.
-          el.setSelectionRange(1, 1);
-          el.setSelectionRange(0, 0);
-        }
+      ngZone.runOutsideAngular(() => {
+        _elementRef.nativeElement.addEventListener('keyup', (event: Event) => {
+          let el = event.target as HTMLInputElement;
+          if (!el.value && !el.selectionStart && !el.selectionEnd) {
+            // Note: Just setting `0, 0` doesn't fix the issue. Setting
+            // `1, 1` fixes it for the first time that you type text and
+            // then hold delete. Toggling to `1, 1` and then back to
+            // `0, 0` seems to completely fix it.
+            el.setSelectionRange(1, 1);
+            el.setSelectionRange(0, 0);
+          }
+        });
       });
     }
 
