@@ -1040,7 +1040,6 @@ describe('ngc transformer command-line', () => {
           exports: [
             FlatComponent,
           ],
-          providers: [{provide: 'test', useFactory: () => true}],
         })
         export class FlatModule {
         }`);
@@ -1055,7 +1054,7 @@ describe('ngc transformer command-line', () => {
       shouldExist('index.metadata.json');
     });
 
-    it('should downlevel flat module metadata', () => {
+    it('should downlevel templates in flat module metadata', () => {
       writeFlatModule('index.js');
 
       const exitCode = main(['-p', path.join(basePath, 'tsconfig.json')], errorSpy);
@@ -1066,7 +1065,7 @@ describe('ngc transformer command-line', () => {
       const metadataPath = path.resolve(outDir, 'index.metadata.json');
       const metadataSource = fs.readFileSync(metadataPath, 'utf8');
       expect(metadataSource).not.toContain('templateUrl');
-      expect(metadataSource).toContain('"useFactory":{"__symbolic":"reference","name":"ɵ0"}');
+      expect(metadataSource).toContain('<div>flat module component</div>');
     });
 
     describe('with tree example', () => {
