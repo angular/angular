@@ -112,9 +112,14 @@ are completed.
 If completion of a step in linear stepper is not required, then the `optional` attribute can be set
 on `mat-step`.
 
+<!-- example(stepper-optional) -->
+
+
 #### Editable step
 By default, steps are editable, which means users can return to previously completed steps and
 edit their responses. `editable="true"` can be set on `mat-step` to change the default.
+
+<!-- example(stepper-editable) -->
 
 #### Completed step
 By default, the `completed` attribute of a step returns `true` if the step is valid (in case of
