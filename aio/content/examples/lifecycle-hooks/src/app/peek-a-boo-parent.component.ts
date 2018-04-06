@@ -40,8 +40,7 @@ export class PeekABooParentComponent {
   toggleChild() {
     this.hasChild = !this.hasChild;
     if (this.hasChild) {
-      this.heroName = 'Windstorm';
-      this.hookLog.length = 0; // clear log on create
+      this.heroName = 'Windstorm'; this.hookLog.length = 0; // clear log on create
     }
     this.logger.tick();
   }
