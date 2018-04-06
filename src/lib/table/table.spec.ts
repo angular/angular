@@ -267,6 +267,35 @@ describe('MatTable', () => {
       ]);
     });
 
+    it('should sort zero correctly', () => {
+      // Activate column A sort
+      dataSource.data[0].a = 1;
+      dataSource.data[1].a = 0;
+      dataSource.data[2].a = -1;
+
+      // Expect that zero comes after the negative numbers and before the positive ones.
+      component.sort.sort(component.sortHeader);
+      fixture.detectChanges();
+      expectTableToMatchContent(tableElement, [
+        ['Column A\xa0Sorted by a ascending', 'Column B', 'Column C'],
+        ['-1', 'b_3', 'c_3'],
+        ['0', 'b_2', 'c_2'],
+        ['1', 'b_1', 'c_1'],
+      ]);
+
+
+      // Expect that zero comes after the negative numbers and before
+      // the positive ones when switching the sorting direction.
+      component.sort.sort(component.sortHeader);
+      fixture.detectChanges();
+      expectTableToMatchContent(tableElement, [
+        ['Column A\xa0Sorted by a descending', 'Column B', 'Column C'],
+        ['1', 'b_1', 'c_1'],
+        ['0', 'b_2', 'c_2'],
+        ['-1', 'b_3', 'c_3'],
+      ]);
+    });
+
     it('should be able to page the table contents', fakeAsync(() => {
       // Add 100 rows, should only display first 5 since page length is 5
       for (let i = 0; i < 100; i++) {
@@ -299,9 +328,9 @@ describe('MatTable', () => {
 });
 
 interface TestData {
-  a: string|undefined;
-  b: string|undefined;
-  c: string|undefined;
+  a: string|number|undefined;
+  b: string|number|undefined;
+  c: string|number|undefined;
 }
 
 class FakeDataSource extends DataSource<TestData> {
