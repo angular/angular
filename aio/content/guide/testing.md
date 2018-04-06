@@ -3378,11 +3378,11 @@ next to their corresponding helper files.
 {@a q-e2e}
 #### Why not rely on E2E tests of DOM integration?
 
-The component DOM tests describe in this guide often require extensive setup and 
-advanced techniques where as the [class-only test](#component-class-testing)
-were comparatively simple.
+The component DOM tests described in this guide often require extensive setup and 
+advanced techniques whereas the [unit tests](#component-class-testing)
+are comparatively simple.
 
-Why not defer DOM integration tests to end-to-end (E2E) testing?
+#### Why not defer DOM integration tests to end-to-end (E2E) testing?
 
 E2E tests are great for high-level validation of the entire system.
 But they can't give you the comprehensive test coverage that you'd expect from unit tests.
