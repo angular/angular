@@ -1,0 +1,21 @@
+<div class="example-focus-monitor">
+  <button #monitored>1. Focus Monitored Element ({{origin}})</button>
+  <button #unmonitored>2. Not Monitored</button>
+</div>
+
+<mat-form-field>
+  <mat-label>Simulated focus origin</mat-label>
+  <mat-select #simulatedOrigin value="mouse">
+    <mat-option value="mouse">Mouse</mat-option>
+    <mat-option value="keyboard">Keyboard</mat-option>
+    <mat-option value="touch">Touch</mat-option>
+    <mat-option value="program">Programmatic</mat-option>
+  </mat-select>
+</mat-form-field>
+
+<button (click)="focusMonitor.focusVia(monitored, simulatedOrigin.value)">
+  Focus button #1
+</button>
+<button (click)="focusMonitor.focusVia(unmonitored, simulatedOrigin.value)">
+  Focus button #2
+</button>

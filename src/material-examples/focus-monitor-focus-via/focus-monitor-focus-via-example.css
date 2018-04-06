@@ -1,0 +1,23 @@
+.example-focus-monitor {
+  padding: 20px;
+}
+
+.example-focus-monitor .cdk-mouse-focused {
+  background: rgba(255, 0, 0, 0.5);
+}
+
+.example-focus-monitor .cdk-keyboard-focused {
+  background: rgba(0, 255, 0, 0.5);
+}
+
+.example-focus-monitor .cdk-touch-focused {
+  background: rgba(0, 0, 255, 0.5);
+}
+
+.example-focus-monitor .cdk-program-focused {
+  background: rgba(255, 0, 255, 0.5);
+}
+
+.example-focus-monitor button:focus {
+  box-shadow: 0 0 30px cyan;
+}
