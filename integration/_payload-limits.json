@@ -35,8 +35,9 @@
       "uncompressed": {
         "inline": 1447,
         "main": 40513,
-        "polyfills": 61085
+        "polyfills": 60105
       }
     }
   }
 }
+
