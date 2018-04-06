@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {ɵwhenRendered as whenRendered} from '@angular/core';
 import {withBody} from '@angular/core/testing';
 import * as fs from 'fs';
 import * as path from 'path';
@@ -19,11 +20,16 @@ const BUNDLES = ['bundle.js', 'bundle.min_debug.js', 'bundle.min.js'];
 describe('functional test for todo', () => {
   BUNDLES.forEach(bundle => {
     describe(bundle, () => {
-      it('should render todo', withBody('<todo-app></todo-app>', () => {
+      it('should render todo', withBody('<todo-app></todo-app>', async() => {
            require(path.join(PACKAGE, bundle));
-           expect(document.body.textContent).toContain('ToDo Application');
-           expect(document.body.textContent).toContain('count: 5.');
+           // TODO(misko): have cleaner way to do this for tests.
+           const toDoAppComponent = (window as any).toDoAppComponent;
+           expect(document.body.textContent).toContain('todos');
            expect(document.body.textContent).toContain('Demonstrate Components');
+           expect(document.body.textContent).toContain('4 items left');
+           document.querySelector('button') !.click();
+           await whenRendered(toDoAppComponent);
+           expect(document.body.textContent).toContain('3 items left');
          }));
     });
   });
