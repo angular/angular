@@ -77,6 +77,8 @@ The goal is for the `@Component` (and friends) to be the compiler of template. S
   - ❌ `@Component`
 - ❌ `ResourceLoader.resolved: Promise<>` Returns true if all `templateUrl`s and `styleUrl` have been resolved and application is ready to be bootstrapped. 
 
+# Testing / Debugging
+- ❌ in debug mode publish components into DOM nodes for easier debugging.
 
 # Crosscutting
 
@@ -150,6 +152,10 @@ The goal is for the `@Component` (and friends) to be the compiler of template. S
 | `{{ exp \| pipe: arg }}`                |  ✅     |  ✅      |  ✅      |
 | `<svg:g svg:p>`                         |  ❌     |  ❌      |  ❌      |
 | `<img src=[userData]>` sanitization     |  ❌     |  ❌      |  ❌      |
+| `<div (nocd.click)>`                    |  ❌     |  ❌      |  ❌      |
+| `<div (bubble.click)>`                  |  ❌     |  ❌      |  ❌      |
+| `<div (keyup.enter)>`                   |  ❌     |  ❌      |  ❌      |
+| `<div (hammer.js)>`                     |  ❌     |  ❌      |  ❌      |
 
 ### Life Cycle Hooks
 | Feature                   | Runtime | Spec     | Compiler |
