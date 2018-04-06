@@ -182,9 +182,12 @@ export interface CompilerOptions extends ts.CompilerOptions {
    * Not all features are supported with this option enabled. It is only supported
    * for experimentation and testing of Render3 style code generation.
    *
+   * There are two options for running the Render3 compiler. Setting `enableIvy` to `true` enables
+   * the ngc-based code path, and setting it to `ngtsc` enables the new experimental compiler.
+   *
    * @experimental
    */
-  enableIvy?: boolean;
+  enableIvy?: boolean|'ngtsc';
 
   /** @internal */
   collectAllErrors?: boolean;
