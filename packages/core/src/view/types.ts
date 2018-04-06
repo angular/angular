@@ -297,11 +297,6 @@ export const enum DepFlags {
   Value = 1 << 3,
 }
 
-export interface InjectableDef {
-  scope: any;
-  factory: () => any;
-}
-
 export interface TextDef { prefix: string; }
 
 export interface QueryDef {

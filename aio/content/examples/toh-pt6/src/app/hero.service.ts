@@ -5,8 +5,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 // #enddocregion import-httpclient
 
-import { Observable } from 'rxjs/Observable';
-import { of } from 'rxjs/observable/of';
+import { Observable, of } from 'rxjs';
 // #docregion import-rxjs-operators
 import { catchError, map, tap } from 'rxjs/operators';
 // #enddocregion import-rxjs-operators
@@ -20,7 +19,7 @@ const httpOptions = {
 };
 // #enddocregion http-options
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class HeroService {
 
   // #docregion heroesUrl

@@ -24,7 +24,7 @@ describe('content projection', () => {
       // NORMATIVE
       static ngComponentDef = $r3$.ɵdefineComponent({
         type: SimpleComponent,
-        tag: 'simple',
+        selectors: [['simple']],
         factory: () => new SimpleComponent(),
         template: function(ctx: $SimpleComponent$, cm: $boolean$) {
           if (cm) {
@@ -39,8 +39,8 @@ describe('content projection', () => {
     }
 
     // NORMATIVE
-    const $pD_0P$: $r3$.ɵCssSelector[] =
-        [[[['span', 'title', 'toFirst'], null]], [[['span', 'title', 'toSecond'], null]]];
+    const $pD_0P$: $r3$.ɵCssSelectorList[] =
+        [[['span', 'title', 'toFirst']], [['span', 'title', 'toSecond']]];
     const $pD_0R$: string[] = ['span[title=toFirst]', 'span[title=toSecond]'];
     // /NORMATIVE
 
@@ -54,7 +54,7 @@ describe('content projection', () => {
       // NORMATIVE
       static ngComponentDef = $r3$.ɵdefineComponent({
         type: ComplexComponent,
-        tag: 'complex',
+        selectors: [['complex']],
         factory: () => new ComplexComponent(),
         template: function(ctx: $ComplexComponent$, cm: $boolean$) {
           if (cm) {
@@ -79,15 +79,16 @@ describe('content projection', () => {
     class MyApp {
       static ngComponentDef = $r3$.ɵdefineComponent({
         type: MyApp,
-        tag: 'my-app',
+        selectors: [['my-app']],
         factory: () => new MyApp(),
         template: function(ctx: $MyApp$, cm: $boolean$) {
           if (cm) {
-            $r3$.ɵE(0, SimpleComponent);
-            $r3$.ɵT(2, 'content');
+            $r3$.ɵE(0, 'simple');
+            $r3$.ɵT(1, 'content');
             $r3$.ɵe();
           }
-        }
+        },
+        directives: () => [SimpleComponent]
       });
     }
   });

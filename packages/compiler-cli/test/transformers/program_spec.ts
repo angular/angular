@@ -13,9 +13,9 @@ import * as ts from 'typescript';
 
 import {formatDiagnostics} from '../../src/perform_compile';
 import {CompilerHost, EmitFlags, LazyRoute} from '../../src/transformers/api';
-import {createSrcToOutPathMapper} from '../../src/transformers/program';
+import {checkVersion, createSrcToOutPathMapper} from '../../src/transformers/program';
 import {GENERATED_FILES, StructureIsReused, tsStructureIsReused} from '../../src/transformers/util';
-import {TestSupport, expectNoDiagnosticsInProgram, setup} from '../test_support';
+import {TestSupport, expectNoDiagnosticsInProgram, isInBazel, setup} from '../test_support';
 
 describe('ng program', () => {
   let testSupport: TestSupport;
@@ -267,56 +267,59 @@ describe('ng program', () => {
           .toBe(false);
     });
 
-    it('should reuse the old ts program completely if nothing changed', () => {
-      testSupport.writeFiles({'src/index.ts': createModuleAndCompSource('main')});
-      // Note: the second compile drops factories for library files,
-      // and therefore changes the structure again
-      const p1 = compile().program;
-      const p2 = compile(p1).program;
-      compile(p2);
-      expect(tsStructureIsReused(p2.getTsProgram())).toBe(StructureIsReused.Completely);
-    });
+    if (!isInBazel()) {
+      it('should reuse the old ts program completely if nothing changed', () => {
+        testSupport.writeFiles({'src/index.ts': createModuleAndCompSource('main')});
+        // Note: the second compile drops factories for library files,
+        // and therefore changes the structure again
+        const p1 = compile().program;
+        const p2 = compile(p1).program;
+        compile(p2);
+        expect(tsStructureIsReused(p2.getTsProgram())).toBe(StructureIsReused.Completely);
+      });
 
-    it('should reuse the old ts program completely if a template or a ts file changed', () => {
-      testSupport.writeFiles({
-        'src/main.ts': createModuleAndCompSource('main', 'main.html'),
-        'src/main.html': `Some template`,
-        'src/util.ts': `export const x = 1`,
-        'src/index.ts': `
-          export * from './main';
-          export * from './util';
-        `
+      it('should reuse the old ts program completely if a template or a ts file changed', () => {
+        testSupport.writeFiles({
+          'src/main.ts': createModuleAndCompSource('main', 'main.html'),
+          'src/main.html': `Some template`,
+          'src/util.ts': `export const x = 1`,
+          'src/index.ts': `
+            export * from './main';
+            export * from './util';
+          `
+        });
+        // Note: the second compile drops factories for library files,
+        // and therefore changes the structure again
+        const p1 = compile().program;
+        const p2 = compile(p1).program;
+        testSupport.writeFiles({
+          'src/main.html': `Another template`,
+          'src/util.ts': `export const x = 2`,
+        });
+        compile(p2);
+        expect(tsStructureIsReused(p2.getTsProgram())).toBe(StructureIsReused.Completely);
       });
-      // Note: the second compile drops factories for library files,
-      // and therefore changes the structure again
-      const p1 = compile().program;
-      const p2 = compile(p1).program;
-      testSupport.writeFiles({
-        'src/main.html': `Another template`,
-        'src/util.ts': `export const x = 2`,
-      });
-      compile(p2);
-      expect(tsStructureIsReused(p2.getTsProgram())).toBe(StructureIsReused.Completely);
-    });
 
-    it('should not reuse the old ts program if an import changed', () => {
-      testSupport.writeFiles({
-        'src/main.ts': createModuleAndCompSource('main'),
-        'src/util.ts': `export const x = 1`,
-        'src/index.ts': `
-          export * from './main';
-          export * from './util';
-        `
+      it('should not reuse the old ts program if an import changed', () => {
+        testSupport.writeFiles({
+          'src/main.ts': createModuleAndCompSource('main'),
+          'src/util.ts': `export const x = 1`,
+          'src/index.ts': `
+            export * from './main';
+            export * from './util';
+          `
+        });
+        // Note: the second compile drops factories for library files,
+        // and therefore changes the structure again
+        const p1 = compile().program;
+        const p2 = compile(p1).program;
+        testSupport.writeFiles(
+            {'src/util.ts': `import {Injectable} from '@angular/core'; export const x = 1;`});
+        compile(p2);
+        expect(tsStructureIsReused(p2.getTsProgram())).toBe(StructureIsReused.SafeModules);
       });
-      // Note: the second compile drops factories for library files,
-      // and therefore changes the structure again
-      const p1 = compile().program;
-      const p2 = compile(p1).program;
-      testSupport.writeFiles(
-          {'src/util.ts': `import {Injectable} from '@angular/core'; export const x = 1;`});
-      compile(p2);
-      expect(tsStructureIsReused(p2.getTsProgram())).toBe(StructureIsReused.SafeModules);
-    });
+    }
+
   });
 
   it('should not typecheck templates if skipTemplateCodegen is set but fullTemplateTypeCheck is not',
@@ -446,45 +449,57 @@ describe('ng program', () => {
         {rootNames: [path.resolve(testSupport.basePath, 'src/index.ts')], options, host});
     program.emit();
 
+    const enum ShouldBe { Empty, EmptyExport, NoneEmpty }
     function assertGenFile(
-        fileName: string, checks: {originalFileName: string, shouldBeEmpty: boolean}) {
+        fileName: string, checks: {originalFileName: string, shouldBe: ShouldBe}) {
       const writeData = written.get(path.join(testSupport.basePath, fileName));
       expect(writeData).toBeTruthy();
       expect(writeData !.original !.some(
                  sf => sf.fileName === path.join(testSupport.basePath, checks.originalFileName)))
           .toBe(true);
-      if (checks.shouldBeEmpty) {
-        // The file should only contain comments (the preamble comment added by ngc).
-        expect(writeData !.data).toMatch(/^(\s*\/\*([^*]|\*[^/])*\*\/\s*)?$/);
-      } else {
-        expect(writeData !.data).not.toBe('');
+      switch (checks.shouldBe) {
+        case ShouldBe.Empty:
+          expect(writeData !.data).toMatch(/^(\s*\/\*([^*]|\*[^/])*\*\/\s*)?$/);
+          break;
+        case ShouldBe.EmptyExport:
+          expect(writeData !.data)
+              .toMatch(/^((\s*\/\*([^*]|\*[^/])*\*\/\s*)|(\s*export\s*{\s*}\s*;\s*)|())$/);
+          break;
+        case ShouldBe.NoneEmpty:
+          expect(writeData !.data).not.toBe('');
+          break;
       }
     }
 
     assertGenFile(
-        'built/src/util.ngfactory.js', {originalFileName: 'src/util.ts', shouldBeEmpty: true});
+        'built/src/util.ngfactory.js', {originalFileName: 'src/util.ts', shouldBe: ShouldBe.Empty});
     assertGenFile(
-        'built/src/util.ngfactory.d.ts', {originalFileName: 'src/util.ts', shouldBeEmpty: true});
+        'built/src/util.ngfactory.d.ts',
+        {originalFileName: 'src/util.ts', shouldBe: ShouldBe.EmptyExport});
     assertGenFile(
-        'built/src/util.ngsummary.js', {originalFileName: 'src/util.ts', shouldBeEmpty: true});
+        'built/src/util.ngsummary.js', {originalFileName: 'src/util.ts', shouldBe: ShouldBe.Empty});
     assertGenFile(
-        'built/src/util.ngsummary.d.ts', {originalFileName: 'src/util.ts', shouldBeEmpty: true});
+        'built/src/util.ngsummary.d.ts',
+        {originalFileName: 'src/util.ts', shouldBe: ShouldBe.EmptyExport});
     assertGenFile(
-        'built/src/util.ngsummary.json', {originalFileName: 'src/util.ts', shouldBeEmpty: false});
+        'built/src/util.ngsummary.json',
+        {originalFileName: 'src/util.ts', shouldBe: ShouldBe.NoneEmpty});
 
     // Note: we always fill non shim and shim style files as they might
     // be shared by component with and without ViewEncapsulation.
     assertGenFile(
-        'built/src/main.css.ngstyle.js', {originalFileName: 'src/main.ts', shouldBeEmpty: false});
+        'built/src/main.css.ngstyle.js',
+        {originalFileName: 'src/main.ts', shouldBe: ShouldBe.NoneEmpty});
     assertGenFile(
-        'built/src/main.css.ngstyle.d.ts', {originalFileName: 'src/main.ts', shouldBeEmpty: true});
+        'built/src/main.css.ngstyle.d.ts',
+        {originalFileName: 'src/main.ts', shouldBe: ShouldBe.EmptyExport});
     // Note: this file is not empty as we actually generated code for it
     assertGenFile(
         'built/src/main.css.shim.ngstyle.js',
-        {originalFileName: 'src/main.ts', shouldBeEmpty: false});
+        {originalFileName: 'src/main.ts', shouldBe: ShouldBe.NoneEmpty});
     assertGenFile(
         'built/src/main.css.shim.ngstyle.d.ts',
-        {originalFileName: 'src/main.ts', shouldBeEmpty: true});
+        {originalFileName: 'src/main.ts', shouldBe: ShouldBe.EmptyExport});
   });
 
   it('should not emit /// references in .d.ts files', () => {
@@ -1033,4 +1048,35 @@ describe('ng program', () => {
              .toContain('Function expressions are not supported');
        });
   });
+
+  describe('checkVersion', () => {
+    const MIN_TS_VERSION = '2.7.2';
+    const MAX_TS_VERSION = '2.8.0';
+
+    const versionError = (version: string) =>
+        `The Angular Compiler requires TypeScript >=${MIN_TS_VERSION} and <${MAX_TS_VERSION} but ${version} was found instead.`;
+
+    it('should not throw when a supported TypeScript version is used', () => {
+      expect(() => checkVersion('2.7.2', MIN_TS_VERSION, MAX_TS_VERSION, undefined)).not.toThrow();
+      expect(() => checkVersion('2.7.2', MIN_TS_VERSION, MAX_TS_VERSION, false)).not.toThrow();
+      expect(() => checkVersion('2.7.2', MIN_TS_VERSION, MAX_TS_VERSION, true)).not.toThrow();
+    });
+
+    it('should handle a TypeScript version < the minimum supported one', () => {
+      expect(() => checkVersion('2.4.1', MIN_TS_VERSION, MAX_TS_VERSION, undefined))
+          .toThrowError(versionError('2.4.1'));
+      expect(() => checkVersion('2.4.1', MIN_TS_VERSION, MAX_TS_VERSION, false))
+          .toThrowError(versionError('2.4.1'));
+      expect(() => checkVersion('2.4.1', MIN_TS_VERSION, MAX_TS_VERSION, true)).not.toThrow();
+    });
+
+    it('should handle a TypeScript version > the maximum supported one', () => {
+      expect(() => checkVersion('2.9.0', MIN_TS_VERSION, MAX_TS_VERSION, undefined))
+          .toThrowError(versionError('2.9.0'));
+      expect(() => checkVersion('2.9.0', MIN_TS_VERSION, MAX_TS_VERSION, false))
+          .toThrowError(versionError('2.9.0'));
+      expect(() => checkVersion('2.9.0', MIN_TS_VERSION, MAX_TS_VERSION, true)).not.toThrow();
+    });
+  });
+
 });

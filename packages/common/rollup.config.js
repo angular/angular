@@ -11,14 +11,11 @@ const sourcemaps = require('rollup-plugin-sourcemaps');
 
 const globals = {
   '@angular/core': 'ng.core',
-  'rxjs/Observable': 'Rx',
-  'rxjs/Observer': 'Rx',
-  'rxjs/Subject': 'Rx',
-  'rxjs/Subscription': 'Rx',
+  'rxjs': 'rxjs',
 };
 
 module.exports = {
-  entry: '../../dist/packages-dist/common/esm5/common.js',
+  entry: '../../dist/packages-dist/common/fesm5/common.js',
   dest: '../../dist/packages-dist/common/bundles/common.umd.js',
   format: 'umd',
   exports: 'named',

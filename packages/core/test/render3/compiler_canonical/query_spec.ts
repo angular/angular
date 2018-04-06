@@ -22,6 +22,7 @@ describe('queries', () => {
   class SomeDirective {
     static ngDirectiveDef = $r3$.ɵdefineDirective({
       type: SomeDirective,
+      selectors: [['', 'someDir', '']],
       factory: function SomeDirective_Factory() { return someDir = new SomeDirective(); },
       features: [$r3$.ɵPublicFeature]
     });
@@ -32,7 +33,6 @@ describe('queries', () => {
 
     // NORMATIVE
     const $e1_attrs$ = ['someDir', ''];
-    const $e1_dirs$ = [SomeDirective];
     // /NORMATIVE
 
     @Component({
@@ -48,27 +48,28 @@ describe('queries', () => {
       // NORMATIVE
       static ngComponentDef = $r3$.ɵdefineComponent({
         type: ViewQueryComponent,
-        tag: 'view-query-component',
+        selectors: [['view-query-component']],
         factory: function ViewQueryComponent_Factory() { return new ViewQueryComponent(); },
         template: function ViewQueryComponent_Template(ctx: $ViewQueryComponent$, cm: $boolean$) {
           let $tmp$: any;
           if (cm) {
             $r3$.ɵQ(0, SomeDirective, false);
             $r3$.ɵQ(1, SomeDirective, false);
-            $r3$.ɵE(2, 'div', $e1_attrs$, $e1_dirs$);
+            $r3$.ɵE(2, 'div', $e1_attrs$);
             $r3$.ɵe();
           }
 
           $r3$.ɵqR($tmp$ = $r3$.ɵld<QueryList<any>>(0)) && (ctx.someDir = $tmp$.first);
           $r3$.ɵqR($tmp$ = $r3$.ɵld<QueryList<any>>(1)) &&
               (ctx.someDirList = $tmp$ as QueryList<any>);
-          SomeDirective.ngDirectiveDef.h(3, 2);
-          $r3$.ɵr(3, 2);
         }
       });
       // /NORMATIVE
     }
 
+    // NON-NORMATIVE
+    ViewQueryComponent.ngComponentDef.directiveDefs = [SomeDirective.ngDirectiveDef];
+    // /NON-NORMATIVE
 
     const viewQueryComp = renderComponent(ViewQueryComponent);
     expect(viewQueryComp.someDir).toEqual(someDir);
@@ -94,7 +95,7 @@ describe('queries', () => {
       // NORMATIVE
       static ngComponentDef = $r3$.ɵdefineComponent({
         type: ContentQueryComponent,
-        tag: 'content-query-component',
+        selectors: [['content-query-component']],
         factory: function ContentQueryComponent_Factory() {
           return [
             new ContentQueryComponent(), $r3$.ɵQ(null, SomeDirective, false),
@@ -104,9 +105,9 @@ describe('queries', () => {
         hostBindings: function ContentQueryComponent_HostBindings(
             dirIndex: $number$, elIndex: $number$) {
           let $tmp$: any;
-          const $instance$ = $r3$.ɵld<any[]>(dirIndex)[0];
-          $r3$.ɵqR($tmp$ = $r3$.ɵld<any[]>(dirIndex)[1]) && ($instance$.someDir = $tmp$.first);
-          $r3$.ɵqR($tmp$ = $r3$.ɵld<any[]>(dirIndex)[2]) && ($instance$.someDirList = $tmp$);
+          const $instance$ = $r3$.ɵd<any[]>(dirIndex)[0];
+          $r3$.ɵqR($tmp$ = $r3$.ɵd<any[]>(dirIndex)[1]) && ($instance$.someDir = $tmp$.first);
+          $r3$.ɵqR($tmp$ = $r3$.ɵd<any[]>(dirIndex)[2]) && ($instance$.someDirList = $tmp$);
         },
         template: function ContentQueryComponent_Template(
             ctx: $ContentQueryComponent$, cm: $boolean$) {
@@ -122,7 +123,6 @@ describe('queries', () => {
     }
 
     const $e2_attrs$ = ['someDir', ''];
-    const $e2_dirs$ = [SomeDirective];
 
     @Component({
       selector: 'my-app',
@@ -136,25 +136,25 @@ describe('queries', () => {
       // NON-NORMATIVE
       static ngComponentDef = $r3$.ɵdefineComponent({
         type: MyApp,
-        tag: 'my-app',
+        selectors: [['my-app']],
         factory: function MyApp_Factory() { return new MyApp(); },
         template: function MyApp_Template(ctx: $MyApp$, cm: $boolean$) {
           if (cm) {
-            $r3$.ɵE(0, ContentQueryComponent);
-            contentQueryComp = $r3$.ɵld<any[]>(1)[0];
-            $r3$.ɵE(2, 'div', $e2_attrs$, $e2_dirs$);
+            $r3$.ɵE(0, 'content-query-component');
+            contentQueryComp = $r3$.ɵd<any[]>(0)[0];
+            $r3$.ɵE(1, 'div', $e2_attrs$);
             $r3$.ɵe();
             $r3$.ɵe();
           }
-          ContentQueryComponent.ngComponentDef.h(1, 0);
-          SomeDirective.ngDirectiveDef.h(3, 2);
-          $r3$.ɵr(1, 0);
-          $r3$.ɵr(3, 2);
         }
       });
       // /NON-NORMATIVE
     }
 
+    // NON-NORMATIVE
+    MyApp.ngComponentDef.directiveDefs =
+        [ContentQueryComponent.ngComponentDef, SomeDirective.ngDirectiveDef];
+    // /NON-NORMATIVE
 
     expect(toHtml(renderComponent(MyApp)))
         .toEqual(

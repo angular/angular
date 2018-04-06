@@ -11,6 +11,7 @@ import {Type} from '../type';
 import {makeDecorator, makeParamDecorator} from '../util/decorators';
 import {getClosureSafeProperty} from '../util/property';
 
+import {InjectableDef, InjectableType, defineInjectable} from './defs';
 import {inject, injectArgs} from './injector';
 import {ClassSansProvider, ConstructorProvider, ConstructorSansProvider, ExistingProvider, ExistingSansProvider, FactoryProvider, FactorySansProvider, StaticClassProvider, StaticClassSansProvider, ValueProvider, ValueSansProvider} from './provider';
 
@@ -33,14 +34,15 @@ export type InjectableProvider = ValueSansProvider | ExistingSansProvider |
  */
 export interface InjectableDecorator {
   /**
-   * @whatItDoes A marker metadata that marks a class as available to {@link Injector} for creation.
-   * @howToUse
+   * @usageNotes
    * ```
    * @Injectable()
    * class Car {}
    * ```
    *
    * @description
+   * A marker metadata that marks a class as available to {@link Injector} for creation.
+   *
    * For more details, see the {@linkDocs guide/dependency-injection "Dependency Injection Guide"}.
    *
    * ### Example
@@ -55,9 +57,9 @@ export interface InjectableDecorator {
    * @stable
    */
   (): any;
-  (options?: {scope: Type<any>}&InjectableProvider): any;
+  (options?: {providedIn: Type<any>| 'root' | null}&InjectableProvider): any;
   new (): Injectable;
-  new (options?: {scope: Type<any>}&InjectableProvider): Injectable;
+  new (options?: {providedIn: Type<any>| 'root' | null}&InjectableProvider): Injectable;
 }
 
 /**
@@ -66,7 +68,7 @@ export interface InjectableDecorator {
  * @experimental
  */
 export interface Injectable {
-  scope?: Type<any>;
+  providedIn?: Type<any>|'root'|null;
   factory: () => any;
 }
 
@@ -109,15 +111,6 @@ export function convertInjectableProviderToFactory(
 }
 
 /**
-* Define injectable
-*
-* @experimental
-*/
-export function defineInjectable(opts: Injectable): Injectable {
-  return opts;
-}
-
-/**
 * Injectable decorator and metadata.
 *
 * @stable
@@ -125,19 +118,20 @@ export function defineInjectable(opts: Injectable): Injectable {
 */
 export const Injectable: InjectableDecorator = makeDecorator(
     'Injectable', undefined, undefined, undefined,
-    (injectableType: Type<any>, options: {scope: Type<any>} & InjectableProvider) => {
-      if (options && options.scope) {
-        (injectableType as InjectableType<any>).ngInjectableDef = defineInjectable({
-          scope: options.scope,
+    (injectableType: InjectableType<any>,
+     options: {providedIn?: Type<any>| 'root' | null} & InjectableProvider) => {
+      if (options && options.providedIn !== undefined &&
+          injectableType.ngInjectableDef === undefined) {
+        injectableType.ngInjectableDef = defineInjectable({
+          providedIn: options.providedIn,
           factory: convertInjectableProviderToFactory(injectableType, options)
         });
       }
     });
-
 
 /**
  * Type representing injectable service.
  *
  * @experimental
  */
-export interface InjectableType<T> extends Type<T> { ngInjectableDef?: Injectable; }
+export interface InjectableType<T> extends Type<T> { ngInjectableDef: InjectableDef<T>; }

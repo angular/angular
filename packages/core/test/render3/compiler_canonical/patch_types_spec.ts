@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, ContentChild, Directive, Injectable, Input, NgModule, OnDestroy, Optional, Pipe, PipeTransform, QueryList, SimpleChanges, TemplateRef, Type, ViewChild, ViewContainerRef} from '../../../src/core';
+import {Component, ContentChild, Directive, Injectable, InjectableDef, InjectorDef, Input, NgModule, OnDestroy, Optional, Pipe, PipeTransform, QueryList, SimpleChanges, TemplateRef, Type, ViewChild, ViewContainerRef, defineInjectable, defineInjector} from '../../../src/core';
 import * as r3 from '../../../src/render3/index';
-import {$pending_pr_22458$} from './pending_api_spec';
+
 
 /**
  * GOALS:
@@ -29,7 +29,7 @@ class ThirdPartyClass {
 @Injectable()
 class CompiledWithIvy {
   // NORMATIVE
-  static ngInjectableDef = $pending_pr_22458$.defineInjectable(
+  static ngInjectableDef = defineInjectable(
       {factory: function CompileWithIvy_Factory() { return new CompiledWithIvy(); }});
   // /NORMATIVE
 }
@@ -38,7 +38,7 @@ class CompiledWithIvy {
 @NgModule({providers: [ThirdPartyClass, CompiledWithIvy]})
 class CompiledWithIvyModule {
   // NORMATIVE
-  static ngInjectorDef = $pending_pr_22458$.defineInjector({
+  static ngInjectorDef = defineInjector({
     providers: [ThirdPartyClass, CompiledWithIvy],
     factory: function CompiledWithIvyModule_Factory() { return new CompiledWithIvyModule(); }
   });
@@ -72,7 +72,7 @@ function ngPatch_depsOf_CompiledWithIvyModule() {
 }
 function ngPatch_node_modules_some_library_path_public_CompileWithIvy() {
   /** @__BUILD_OPTIMIZER_COLOCATE__ */
-  (ThirdPartyClass as any).ngInjectableDef = $pending_pr_22458$.defineInjectable(
+  (ThirdPartyClass as any).ngInjectableDef = defineInjectable(
       {factory: function CompileWithIvy_Factory() { return new ThirdPartyClass(); }});
 }
 // /NORMATIVE

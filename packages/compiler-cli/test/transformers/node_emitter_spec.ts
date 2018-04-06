@@ -36,7 +36,8 @@ describe('TypeScriptNodeEmitter', () => {
     someVar = o.variable('someVar', null, null);
   });
 
-  function emitStmt(stmt: o.Statement | o.Statement[], preamble?: string): string {
+  function emitStmt(
+      stmt: o.Statement | o.Statement[], format: Format = Format.Flat, preamble?: string): string {
     const stmts = Array.isArray(stmt) ? stmt : [stmt];
 
     const program = ts.createProgram(
@@ -57,7 +58,7 @@ describe('TypeScriptNodeEmitter', () => {
             result = data;
           }
         }, undefined, undefined, transformers);
-    return normalizeResult(result);
+    return normalizeResult(result, format);
   }
 
   it('should declare variables', () => {
@@ -176,6 +177,14 @@ describe('TypeScriptNodeEmitter', () => {
                      ]).toStmt())
                .replace(/\s+/gm, ''))
         .toEqual(`({someKey:1,a:"a","b":"b","*":"star"});`);
+
+    // Regressions #22774
+    expect(emitStmt(o.literal('\\0025BC').toStmt())).toEqual('"\\\\0025BC";');
+    expect(emitStmt(o.literal('"some value"').toStmt())).toEqual('"\\"some value\\"";');
+    expect(emitStmt(o.literal('"some \\0025BC value"').toStmt()))
+        .toEqual('"\\"some \\\\0025BC value\\"";');
+    expect(emitStmt(o.literal('\n \\0025BC \n ').toStmt())).toEqual('"\\n \\\\0025BC \\n ";');
+    expect(emitStmt(o.literal('\r \\0025BC \r ').toStmt())).toEqual('"\\r \\\\0025BC \\r ";');
   });
 
   it('should support blank literals', () => {
@@ -240,7 +249,52 @@ describe('TypeScriptNodeEmitter', () => {
     ]))).toEqual(`function someFn(param1) { }`);
   });
 
-  it('should support comments', () => { expect(emitStmt(new o.CommentStmt('a\nb'))).toEqual(''); });
+  describe('comments', () => {
+    it('should support a preamble', () => {
+      expect(emitStmt(o.variable('a').toStmt(), Format.Flat, '/* SomePreamble */'))
+          .toBe('/* SomePreamble */ a;');
+    });
+
+    it('should support singleline comments',
+       () => { expect(emitStmt(new o.CommentStmt('Simple comment'))).toBe('// Simple comment'); });
+
+    it('should support multiline comments', () => {
+      expect(emitStmt(new o.CommentStmt('Multiline comment', true)))
+          .toBe('/* Multiline comment */');
+      expect(emitStmt(new o.CommentStmt(`Multiline\ncomment`, true), Format.Raw))
+          .toBe(`/* Multiline\ncomment */`);
+    });
+
+    describe('JSDoc comments', () => {
+      it('should be supported', () => {
+        expect(emitStmt(new o.JSDocCommentStmt([{text: 'Intro comment'}]), Format.Raw))
+            .toBe(`/**\n * Intro comment\n */`);
+        expect(emitStmt(
+                   new o.JSDocCommentStmt([{tagName: o.JSDocTagName.Desc, text: 'description'}]),
+                   Format.Raw))
+            .toBe(`/**\n * @desc description\n */`);
+        expect(emitStmt(
+                   new o.JSDocCommentStmt([
+                     {text: 'Intro comment'},
+                     {tagName: o.JSDocTagName.Desc, text: 'description'},
+                     {tagName: o.JSDocTagName.Id, text: '{number} identifier 123'},
+                   ]),
+                   Format.Raw))
+            .toBe(
+                `/**\n * Intro comment\n * @desc description\n * @id {number} identifier 123\n */`);
+      });
+
+      it('should escape @ in the text', () => {
+        expect(emitStmt(new o.JSDocCommentStmt([{text: 'email@google.com'}]), Format.Raw))
+            .toBe(`/**\n * email\\@google.com\n */`);
+      });
+
+      it('should not allow /* and */ in the text', () => {
+        expect(() => emitStmt(new o.JSDocCommentStmt([{text: 'some text /* */'}]), Format.Raw))
+            .toThrowError(`JSDoc text cannot contain "/*" and "*/"`);
+      });
+    });
+  });
 
   it('should support if stmt', () => {
     const trueCase = o.variable('trueCase').callFn([]).toStmt();
@@ -383,10 +437,6 @@ describe('TypeScriptNodeEmitter', () => {
     expect(emitStmt(writeVarExpr.toDeclStmt(new o.MapType(o.INT_TYPE)))).toEqual('var a = null;');
   });
 
-  it('should support a preamble', () => {
-    expect(emitStmt(o.variable('a').toStmt(), '/* SomePreamble */')).toBe('/* SomePreamble */ a;');
-  });
-
   describe('source maps', () => {
     function emitStmt(stmt: o.Statement | o.Statement[], preamble?: string): string {
       const stmts = Array.isArray(stmt) ? stmt : [stmt];
@@ -507,16 +557,20 @@ const FILES: Directory = {
   somePackage: {'someGenFile.ts': `export var a: number;`}
 };
 
-function normalizeResult(result: string): string {
+const enum Format { Raw, Flat }
+
+function normalizeResult(result: string, format: Format): string {
   // Remove TypeScript prefixes
+  let res = result.replace('"use strict";', ' ')
+                .replace('exports.__esModule = true;', ' ')
+                .replace('Object.defineProperty(exports, "__esModule", { value: true });', ' ');
+
   // Remove new lines
   // Squish adjacent spaces
+  if (format === Format.Flat) {
+    return res.replace(/\n/g, ' ').replace(/ +/g, ' ').replace(/^ /g, '').replace(/ $/g, '');
+  }
+
   // Remove prefix and postfix spaces
-  return result.replace('"use strict";', ' ')
-      .replace('exports.__esModule = true;', ' ')
-      .replace('Object.defineProperty(exports, "__esModule", { value: true });', ' ')
-      .replace(/\n/g, ' ')
-      .replace(/ +/g, ' ')
-      .replace(/^ /g, '')
-      .replace(/ $/g, '');
+  return res.trim();
 }

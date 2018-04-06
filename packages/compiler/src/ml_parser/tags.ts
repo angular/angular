@@ -71,7 +71,6 @@ export function mergeNsAndName(prefix: string, localName: string): string {
 // This list is not exhaustive to keep the compiler footprint low.
 // The `&#123;` / `&#x1ab;` syntax should be used when the named character reference does not
 // exist.
-
 export const NAMED_ENTITIES: {[k: string]: string} = {
   'Aacute': '\u00C1',
   'aacute': '\u00E1',

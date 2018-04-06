@@ -27,8 +27,10 @@ def ts_api_guardian_test(name, golden, actual, data = [], **kwargs):
   ]
 
   args = [
+      # Needed so that node doesn't walk back to the source directory.
+      # From there, the relative imports would point to .ts files.
+      "--node_options=--preserve-symlinks",
       "--stripExportPattern", "^\(__\|ɵ\)",
-      "--onStabilityMissing", "error",
   ]
   for i in COMMON_MODULE_IDENTIFIERS:
     args += ["--allowModuleIdentifiers", i]
@@ -36,7 +38,7 @@ def ts_api_guardian_test(name, golden, actual, data = [], **kwargs):
   nodejs_test(
       name = name,
       data = data,
-      node_modules = "//tools/ts-api-guardian:runtime_deps",
+      node_modules = "@ts-api-guardian_runtime_deps//:node_modules",
       entry_point = "angular/tools/ts-api-guardian/bin/ts-api-guardian",
       templated_args = args + ["--verify", golden, actual],
       testonly = 1,
@@ -46,7 +48,7 @@ def ts_api_guardian_test(name, golden, actual, data = [], **kwargs):
   nodejs_binary(
       name = name + ".accept",
       data = data,
-      node_modules = "//tools/ts-api-guardian:runtime_deps",
+      node_modules = "@ts-api-guardian_runtime_deps//:node_modules",
       entry_point = "angular/tools/ts-api-guardian/bin/ts-api-guardian",
       templated_args = args + ["--out", golden, actual],
       **kwargs

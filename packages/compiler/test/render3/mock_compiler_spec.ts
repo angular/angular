@@ -36,7 +36,7 @@ describe('mock_compiler', () => {
           'hello.module.ts': `
             import {NgModule} from '@angular/core';
             import {HelloComponent} from './hello.component';
-            
+
             @NgModule({declarations: [HelloComponent]})
             export class HelloModule {}
           `
@@ -68,7 +68,7 @@ describe('mock_compiler', () => {
           'hello.module.ts': `
             import {NgModule} from '@angular/core';
             import {HelloComponent} from './hello.component';
-            
+
             @NgModule({declarations: [HelloComponent]})
             export class HelloModule {}
           `
@@ -101,7 +101,7 @@ describe('mock_compiler', () => {
         'hello.module.ts': `
           import {NgModule} from '@angular/core';
           import {HelloComponent} from './hello.component';
-          
+
           @NgModule({declarations: [HelloComponent]})
           export class HelloModule {}
         `
@@ -131,7 +131,7 @@ describe('mock_compiler', () => {
         'hello.module.ts': `
           import {NgModule} from '@angular/core';
           import {HelloComponent} from './hello.component';
-          
+
           @NgModule({declarations: [HelloComponent]})
           export class HelloModule {}
         `
@@ -151,4 +151,38 @@ describe('mock_compiler', () => {
         result.source, '$ctx$.$name$ … $ctx$.$name$.length',
         'could not find correct length access');
   });
+
+  it('should be able to enforce that identifiers match a regexp', () => {
+    const files = {
+      app: {
+        'hello.component.ts': `
+          import {Component, Input} from '@angular/core';
+
+          @Component({template: 'Hello {{name}}! Your name as {{name.length}} characters'})
+          export class HelloComponent {
+            @Input() name: string = 'world';
+          }
+        `,
+        'hello.module.ts': `
+          import {NgModule} from '@angular/core';
+          import {HelloComponent} from './hello.component';
+
+          @NgModule({declarations: [HelloComponent]})
+          export class HelloModule {}
+        `
+      }
+    };
+
+    const result = compile(files, angularFiles);
+
+    // Pass: `$n$` ends with `ME` in the generated code
+    expectEmit(result.source, '$ctx$.$n$ … $ctx$.$n$.length', 'Match names', {'$n$': /ME$/i});
+
+    // Fail: `$n$` does not match `/(not)_(\1)/` in the generated code
+    expect(() => {
+      expectEmit(
+          result.source, '$ctx$.$n$ … $ctx$.$n$.length', 'Match names', {'$n$': /(not)_(\1)/});
+    }).toThrowError(/"\$n\$" is "name" which doesn't match \/\(not\)_\(\\1\)\//);
+  });
+
 });

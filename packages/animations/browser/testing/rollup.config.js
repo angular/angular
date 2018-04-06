@@ -13,12 +13,11 @@ const globals = {
   '@angular/core': 'ng.core',
   '@angular/animations': 'ng.animations',
   '@angular/animations/browser': 'ng.animations.browser',
-  'rxjs/Observable': 'Rx',
-  'rxjs/Subject': 'Rx',
+  'rxjs': 'rxjs',
 };
 
 module.exports = {
-  entry: '../../../../dist/packages-dist/animations/esm5/browser/testing.js',
+  entry: '../../../../dist/packages-dist/animations/fesm5/browser/testing.js',
   dest: '../../../../dist/packages-dist/animations/bundles/animations-browser-testing.umd.js',
   format: 'umd',
   exports: 'named',

@@ -97,9 +97,10 @@ To run tests:
 $ ./test.sh node             # Run all angular tests on node
 
 $ ./test.sh browser          # Run all angular tests in browser
+
 $ ./test.sh browserNoRouter  # Optionally run all angular tests without router in browser
 
-$ ./test.sh tools            # Run angular tooling (not framework) tests
+$ ./test.sh router           # Optionally run only the router tests in browser
 ```
 
 You should execute the 3 test suites before submitting a PR to github.
@@ -110,17 +111,6 @@ All the tests are executed on our Continuous Integration infrastructure and a PR
 
 - CircleCI fails if your code is not formatted properly,
 - Travis CI fails if any of the test suites described above fails.
-
-## Update the public API tests
-
-If you happen to modify the public API of Angular, API golden files must be updated using:
-
-``` shell
-$ gulp public-api:update
-```
-
-Note: The command `gulp public-api:enforce` fails when the API doesn't match the golden files. Make sure to rebuild
-the project before trying to verify after an API change.
 
 ## <a name="clang-format"></a> Formatting your source code
 

@@ -1,10 +1,11 @@
-import { BehaviorSubject } from 'rxjs/BehaviorSubject';
+import { BehaviorSubject } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 export class MockLocationService {
   urlSubject = new BehaviorSubject<string>(this.initialUrl);
-  currentUrl = this.urlSubject.asObservable().map(url => this.stripSlashes(url));
+  currentUrl = this.urlSubject.asObservable().pipe(map(url => this.stripSlashes(url)));
   // strip off query and hash
-  currentPath = this.currentUrl.map(url => url.match(/[^?#]*/)![0]);
+  currentPath = this.currentUrl.pipe(map(url => url.match(/[^?#]*/)![0]));
   search = jasmine.createSpy('search').and.returnValue({});
   setSearch = jasmine.createSpy('setSearch');
   go = jasmine.createSpy('Location.go').and

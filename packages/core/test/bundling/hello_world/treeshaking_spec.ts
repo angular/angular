@@ -15,9 +15,8 @@ const UTF8 = {
 };
 const PACKAGE = 'angular/packages/core/test/bundling/hello_world';
 
-import * as domino from 'domino';
-
 describe('treeshaking with uglify', () => {
+
   let content: string;
   const contentPath = require.resolve(path.join(PACKAGE, 'bundle.min_debug.js'));
   beforeAll(() => { content = fs.readFileSync(contentPath, UTF8); });

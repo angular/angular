@@ -8,17 +8,20 @@
 
 // We are temporarily importing the existing viewEngine from core so we can be sure we are
 // correctly implementing its interfaces for backwards compatibility.
+import {Type} from '../core';
 import {Injector} from '../di/injector';
 import {ComponentRef as viewEngine_ComponentRef} from '../linker/component_factory';
 
-import {assertNotNull} from './assert';
-import {queueLifecycleHooks} from './hooks';
-import {CLEAN_PROMISE, _getComponentHostLElementNode, createLView, createTView, directiveCreate, enterView, getDirectiveInstance, getRootView, hostElement, initChangeDetectorIfExisting, leaveView, locateHostElement, scheduleTick, tick} from './instructions';
+import {assertComponentType, assertNotNull} from './assert';
+import {queueInitHooks, queueLifecycleHooks} from './hooks';
+import {CLEAN_PROMISE, ROOT_DIRECTIVE_INDICES, _getComponentHostLElementNode, baseDirectiveCreate, createLView, createTView, detectChangesInternal, enterView, executeInitAndContentHooks, getRootView, hostElement, initChangeDetectorIfExisting, leaveView, locateHostElement, setHostBindings} from './instructions';
 import {ComponentDef, ComponentType} from './interfaces/definition';
+import {LElementNode, TNodeFlags} from './interfaces/node';
 import {RElement, RendererFactory3, domRendererFactory3} from './interfaces/renderer';
 import {LView, LViewFlags, RootContext} from './interfaces/view';
 import {stringify} from './util';
 import {createViewRef} from './view_ref';
+
 
 
 /** Options that control how the component should be bootstrapped. */
@@ -111,39 +114,52 @@ export const NULL_INJECTOR: Injector = {
  * @param options Optional parameters which control bootstrapping
  */
 export function renderComponent<T>(
-    componentType: ComponentType<T>, opts: CreateComponentOptions = {}): T {
+    componentType: ComponentType<T>|
+        Type<T>/* Type as workaround for: Microsoft/TypeScript/issues/4881 */
+    ,
+    opts: CreateComponentOptions = {}): T {
+  ngDevMode && assertComponentType(componentType);
   const rendererFactory = opts.rendererFactory || domRendererFactory3;
-  const componentDef = componentType.ngComponentDef as ComponentDef<T>;
+  const componentDef = (componentType as ComponentType<T>).ngComponentDef as ComponentDef<T>;
   if (componentDef.type != componentType) componentDef.type = componentType;
   let component: T;
-  const hostNode = locateHostElement(rendererFactory, opts.host || componentDef.tag);
+  // The first index of the first selector is the tag name.
+  const componentTag = componentDef.selectors ![0] ![0] as string;
+  const hostNode = locateHostElement(rendererFactory, opts.host || componentTag);
   const rootContext: RootContext = {
     // Incomplete initialization due to circular reference.
     component: null !,
-    scheduler: opts.scheduler || requestAnimationFrame,
+    scheduler: opts.scheduler || requestAnimationFrame.bind(window),
     clean: CLEAN_PROMISE,
   };
-  const oldView = enterView(
-      createLView(
-          -1, rendererFactory.createRenderer(hostNode, componentDef.rendererType), createTView(),
-          null, rootContext, componentDef.onPush ? LViewFlags.Dirty : LViewFlags.CheckAlways),
-      null !);
+  const rootView = createLView(
+      -1, rendererFactory.createRenderer(hostNode, componentDef.rendererType),
+      createTView(null, null), null, rootContext,
+      componentDef.onPush ? LViewFlags.Dirty : LViewFlags.CheckAlways);
+
+  const oldView = enterView(rootView, null !);
+  let elementNode: LElementNode;
   try {
+    if (rendererFactory.begin) rendererFactory.begin();
+
     // Create element node at index 0 in data array
-    const elementNode = hostElement(hostNode, componentDef);
-    // Create directive instance with n() and store at index 1 in data array (el is 0)
+    elementNode = hostElement(componentTag, hostNode, componentDef);
+
+    // Create directive instance with factory() and store at index 0 in directives array
     component = rootContext.component =
-        getDirectiveInstance(directiveCreate(1, componentDef.n(), componentDef));
-    initChangeDetectorIfExisting(elementNode.nodeInjector, component);
+        baseDirectiveCreate(0, componentDef.factory(), componentDef) as T;
+    initChangeDetectorIfExisting(elementNode.nodeInjector, component, elementNode.data !);
+
+    opts.hostFeatures && opts.hostFeatures.forEach((feature) => feature(component, componentDef));
+
+    executeInitAndContentHooks();
+    setHostBindings(ROOT_DIRECTIVE_INDICES);
+    detectChangesInternal(elementNode.data as LView, elementNode, componentDef, component);
   } finally {
-    // We must not use leaveView here because it will set creationMode to false too early,
-    // causing init-only hooks not to run. The detectChanges call below will execute
-    // leaveView at the appropriate time in the lifecycle.
-    enterView(oldView, null);
+    leaveView(oldView);
+    if (rendererFactory.end) rendererFactory.end();
   }
 
-  opts.hostFeatures && opts.hostFeatures.forEach((feature) => feature(component, componentDef));
-  tick(component);
   return component;
 }
 
@@ -162,7 +178,10 @@ export function renderComponent<T>(
  */
 export function LifecycleHooksFeature(component: any, def: ComponentDef<any>): void {
   const elementNode = _getComponentHostLElementNode(component);
-  queueLifecycleHooks(elementNode.flags, elementNode.view);
+
+  // Root component is always created at dir index 0
+  queueInitHooks(0, def.onInit, def.doCheck, elementNode.view.tView);
+  queueLifecycleHooks(elementNode.tNode !.flags, elementNode.view);
 }
 
 /**

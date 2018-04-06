@@ -141,7 +141,7 @@ describe('NgCompilerHost', () => {
           .toBe('/tmp/src/a/child.d.ts');
     });
 
-    it('should allow to skip the containg file for package imports', () => {
+    it('should allow to skip the containing file for package imports', () => {
       const host =
           createHost({files: {'tmp': {'node_modules': {'@core': {'index.d.ts': dummyModule}}}}});
       expect(host.moduleNameToFileName('@core/index')).toBe('/tmp/node_modules/@core/index.d.ts');

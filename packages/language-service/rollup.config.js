@@ -32,12 +32,11 @@ function resolve(id, from) {
     var esm_suffix = esm_suffixes[packageName] || '';
     var loc = locations[packageName] || location;
     var r = loc !== location && (loc + esm_suffix + packageName + (match[3] || '/index') + '.js') ||
-        loc + packageName + '/esm5/' + packageName + '.js';
+        loc + packageName + '/fesm5/' + packageName + '.js';
     return r;
   }
-  if (id && id.startsWith('rxjs/')) {
-    const resolved = `${rxjsLocation}${id.replace('rxjs', '')}.js`;
-    return resolved;
+  if (id && (id == 'rxjs' || id.startsWith('rxjs/'))) {
+    return `${rxjsLocation}${id.replace('rxjs', '')}/index.js`;
   }
   if (id == 'tslib') {
     return tslibLocation + '/tslib.es6.js';
@@ -61,7 +60,7 @@ module.exports = function(provided) {
 `;
 
 module.exports = {
-  entry: '../../dist/packages-dist/language-service/esm5/language-service.js',
+  entry: '../../dist/packages-dist/language-service/fesm5/language-service.js',
   dest: '../../dist/packages-dist/language-service/bundles/language-service.umd.js',
   format: 'amd',
   amd: {

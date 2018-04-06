@@ -6,11 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Attribute, ChangeDetectionStrategy, ChangeDetectorRef, Component, ContentChild, ContentChildren, Directive, HostBinding, HostListener, Inject, InjectFlags, Injectable, Injector, Input, NgModule, OnDestroy, Optional, Pipe, PipeTransform, QueryList, SimpleChanges, SkipSelf, TemplateRef, ViewChild, ViewChildren, ViewContainerRef} from '../../../src/core';
+import {Attribute, ChangeDetectionStrategy, ChangeDetectorRef, Component, ContentChild, ContentChildren, Directive, HostBinding, HostListener, INJECTOR, Inject, InjectFlags, Injectable, InjectableDef, Injector, InjectorDef, Input, NgModule, OnDestroy, Optional, Pipe, PipeTransform, QueryList, SimpleChanges, SkipSelf, TemplateRef, ViewChild, ViewChildren, ViewContainerRef, defineInjectable, defineInjector, inject} from '../../../src/core';
 import * as $r3$ from '../../../src/core_render3_private_export';
 import {renderComponent, toHtml} from '../render_util';
-
-import {$pending_pr_22458$} from './pending_api_spec';
 
 
 
@@ -32,7 +30,7 @@ describe('injection', () => {
         // NORMATIVE
         static ngComponentDef = $r3$.ɵdefineComponent({
           type: MyComp,
-          tag: 'my-comp',
+          selectors: [['my-comp']],
           factory: function MyComp_Factory() {
             return new MyComp($r3$.ɵinjectChangeDetectorRef());
           },
@@ -49,19 +47,19 @@ describe('injection', () => {
       class MyApp {
         static ngComponentDef = $r3$.ɵdefineComponent({
           type: MyApp,
-          tag: 'my-app',
+          selectors: [['my-app']],
           factory: function MyApp_Factory() { return new MyApp(); },
           /** <my-comp></my-comp> */
           template: function MyApp_Template(ctx: $MyApp$, cm: $boolean$) {
             if (cm) {
-              $r3$.ɵE(0, MyComp);
+              $r3$.ɵE(0, 'my-comp');
               $r3$.ɵe();
             }
-            MyComp.ngComponentDef.h(1, 0);
-            $r3$.ɵr(1, 0);
-          }
+          },
+          directives: () => [MyComp]
         });
       }
+
 
       const app = renderComponent(MyApp);
       // ChangeDetectorRef is the token, ViewRef is historically the constructor
@@ -79,7 +77,7 @@ describe('injection', () => {
         // NORMATIVE
         static ngComponentDef = $r3$.ɵdefineComponent({
           type: MyComp,
-          tag: 'my-comp',
+          selectors: [['my-comp']],
           factory: function MyComp_Factory() { return new MyComp($r3$.ɵinjectAttribute('title')); },
           template: function MyComp_Template(ctx: $MyComp$, cm: $boolean$) {
             if (cm) {
@@ -94,17 +92,16 @@ describe('injection', () => {
       class MyApp {
         static ngComponentDef = $r3$.ɵdefineComponent({
           type: MyApp,
-          tag: 'my-app',
+          selectors: [['my-app']],
           factory: function MyApp_Factory() { return new MyApp(); },
           /** <my-comp></my-comp> */
           template: function MyApp_Template(ctx: $MyApp$, cm: $boolean$) {
             if (cm) {
-              $r3$.ɵE(0, MyComp, e0_attrs);
+              $r3$.ɵE(0, 'my-comp', e0_attrs);
               $r3$.ɵe();
             }
-            MyComp.ngComponentDef.h(1, 0);
-            $r3$.ɵr(1, 0);
-          }
+          },
+          directives: () => [MyComp]
         });
       }
       const e0_attrs = ['title', 'WORKS'];
@@ -120,7 +117,7 @@ describe('injection', () => {
       @Injectable()
       class ServiceA {
         // NORMATIVE
-        static ngInjectableDef = $pending_pr_22458$.defineInjectable({
+        static ngInjectableDef = defineInjectable({
           factory: function ServiceA_Factory() { return new ServiceA(); },
         });
         // /NORMATIVE
@@ -129,7 +126,7 @@ describe('injection', () => {
       @Injectable()
       class ServiceB {
         // NORMATIVE
-        static ngInjectableDef = $pending_pr_22458$.defineInjectable({
+        static ngInjectableDef = defineInjectable({
           factory: function ServiceA_Factory() { return new ServiceB(); },
         });
         // /NORMATIVE
@@ -145,11 +142,10 @@ describe('injection', () => {
 
         static ngComponentDef = $r3$.ɵdefineComponent({
           type: MyApp,
-          tag: 'my-app',
+          selectors: [['my-app']],
           factory: function MyApp_Factory() {
             return new MyApp(
-                $r3$.ɵdirectiveInject(ServiceA), $r3$.ɵdirectiveInject(ServiceB),
-                $pending_pr_22458$.injectInjector());
+                $r3$.ɵdirectiveInject(ServiceA), $r3$.ɵdirectiveInject(ServiceB), inject(INJECTOR));
           },
           /**  */
           template: function MyApp_Template(ctx: $MyApp$, cm: $boolean$) {},
@@ -171,10 +167,9 @@ describe('injection', () => {
       constructor(@Inject(String) name: String, injector: Injector) {}
 
       // NORMATIVE
-      static ngInjectableDef = $pending_pr_22458$.defineInjectable({
+      static ngInjectableDef = defineInjectable({
         factory: function ServiceA_Factory() {
-          return new ServiceA(
-              $pending_pr_22458$.inject(String), $pending_pr_22458$.injectInjector());
+          return new ServiceA(inject(String), inject(INJECTOR));
         },
       });
       // /NORMATIVE
@@ -184,11 +179,9 @@ describe('injection', () => {
     class ServiceB {
       constructor(serviceA: ServiceA, @SkipSelf() injector: Injector) {}
       // NORMATIVE
-      static ngInjectableDef = $pending_pr_22458$.defineInjectable({
+      static ngInjectableDef = defineInjectable({
         factory: function ServiceA_Factory() {
-          return new ServiceB(
-              $pending_pr_22458$.inject(ServiceA),
-              $pending_pr_22458$.injectInjector(InjectFlags.SkipSelf));
+          return new ServiceB(inject(ServiceA), inject(INJECTOR, undefined, InjectFlags.SkipSelf));
         },
       });
       // /NORMATIVE

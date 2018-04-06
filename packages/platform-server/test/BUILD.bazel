@@ -1,5 +1,4 @@
 load("//tools:defaults.bzl", "ts_library")
-load("@build_bazel_rules_typescript//:defs.bzl", "ts_web_test")
 load("@build_bazel_rules_nodejs//:defs.bzl", "jasmine_node_test")
 
 ts_library(
@@ -20,6 +19,7 @@ ts_library(
         "//packages/platform-browser",
         "//packages/platform-server",
         "@rxjs",
+        "@rxjs//operators",
     ],
 )
 

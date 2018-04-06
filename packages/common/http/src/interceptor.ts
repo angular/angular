@@ -7,7 +7,7 @@
  */
 
 import {Injectable, InjectionToken} from '@angular/core';
-import {Observable} from 'rxjs/Observable';
+import {Observable} from 'rxjs';
 
 import {HttpHandler} from './backend';
 import {HttpRequest} from './request';

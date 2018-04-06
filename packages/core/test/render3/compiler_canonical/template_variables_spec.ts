@@ -63,6 +63,7 @@ describe('template variables', () => {
     // NORMATIVE
     static ngDirectiveDef = $r3$.ɵdefineDirective({
       type: ForOfDirective,
+      selectors: [['', 'forOf', '']],
       factory: function ForOfDirective_Factory() {
         return new ForOfDirective($r3$.ɵinjectViewContainerRef(), $r3$.ɵinjectTemplateRef());
       },
@@ -80,10 +81,6 @@ describe('template variables', () => {
       name: string;
     }
 
-    // NORMATIVE
-    const $c1_dirs$ = [ForOfDirective];
-    // /NORMATIVE
-
     @Component({
       selector: 'my-component',
       template: `<ul><li *for="let item of items">{{item.name}}</li></ul>`
@@ -94,17 +91,16 @@ describe('template variables', () => {
       // NORMATIVE
       static ngComponentDef = $r3$.ɵdefineComponent({
         type: MyComponent,
-        tag: 'my-component',
+        selectors: [['my-component']],
         factory: function MyComponent_Factory() { return new MyComponent(); },
         template: function MyComponent_Template(ctx: $MyComponent$, cm: $boolean$) {
           if (cm) {
             $r3$.ɵE(0, 'ul');
-            $r3$.ɵC(1, $c1_dirs$, MyComponent_ForOfDirective_Template_1);
+            $r3$.ɵC(1, MyComponent_ForOfDirective_Template_1, '', ['forOf', '']);
             $r3$.ɵe();
           }
           $r3$.ɵp(1, 'forOf', $r3$.ɵb(ctx.items));
           $r3$.ɵcR(1);
-          $r3$.ɵr(2, 1);
           $r3$.ɵcr();
 
           function MyComponent_ForOfDirective_Template_1(ctx1: $any$, cm: $boolean$) {
@@ -121,6 +117,10 @@ describe('template variables', () => {
       // /NORMATIVE
     }
 
+    // NON-NORMATIVE
+    MyComponent.ngComponentDef.directiveDefs = [ForOfDirective.ngDirectiveDef];
+    // /NON-NORMATIVE
+
     // TODO(chuckj): update when the changes to enable ngForOf lands.
     expect(toHtml(renderComponent(MyComponent))).toEqual('<ul></ul>');
   });
@@ -135,10 +135,6 @@ describe('template variables', () => {
       name: string;
       infos: Info[];
     }
-
-    // NORMATIVE
-    const $c1_dirs$ = [ForOfDirective];
-    // /NORMATIVE
 
     @Component({
       selector: 'my-component',
@@ -163,17 +159,16 @@ describe('template variables', () => {
       // NORMATIVE
       static ngComponentDef = $r3$.ɵdefineComponent({
         type: MyComponent,
-        tag: 'my-component',
+        selectors: [['my-component']],
         factory: function MyComponent_Factory() { return new MyComponent(); },
         template: function MyComponent_Template(ctx: $MyComponent$, cm: $boolean$) {
           if (cm) {
             $r3$.ɵE(0, 'ul');
-            $r3$.ɵC(1, $c1_dirs$, MyComponent_ForOfDirective_Template_1);
+            $r3$.ɵC(1, MyComponent_ForOfDirective_Template_1, '', ['forOf', '']);
             $r3$.ɵe();
           }
           $r3$.ɵp(1, 'forOf', $r3$.ɵb(ctx.items));
           $r3$.ɵcR(1);
-          $r3$.ɵr(2, 1);
           $r3$.ɵcr();
 
           function MyComponent_ForOfDirective_Template_1(ctx1: $any$, cm: $boolean$) {
@@ -183,7 +178,7 @@ describe('template variables', () => {
               $r3$.ɵT(2);
               $r3$.ɵe();
               $r3$.ɵE(3, 'ul');
-              $r3$.ɵC(4, $c1_dirs$, MyComponent_ForOfDirective_ForOfDirective_Template_3);
+              $r3$.ɵC(4, MyComponent_ForOfDirective_ForOfDirective_Template_3, '', ['forOf', '']);
               $r3$.ɵe();
               $r3$.ɵe();
             }
@@ -191,7 +186,6 @@ describe('template variables', () => {
             $r3$.ɵp(4, 'forOf', $r3$.ɵb($l0_item$.infos));
             $r3$.ɵt(2, $r3$.ɵi1('', $l0_item$.name, ''));
             $r3$.ɵcR(4);
-            $r3$.ɵr(5, 4);
             $r3$.ɵcr();
 
             function MyComponent_ForOfDirective_ForOfDirective_Template_3(

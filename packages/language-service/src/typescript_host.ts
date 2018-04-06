@@ -53,7 +53,7 @@ export class DummyResourceLoader extends ResourceLoader {
 }
 
 /**
- * An implemntation of a `LanguageServiceHost` for a TypeScript project.
+ * An implementation of a `LanguageServiceHost` for a TypeScript project.
  *
  * The `TypeScriptServiceHost` implements the Angular `LanguageServiceHost` using
  * the TypeScript language services.
@@ -212,7 +212,7 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
     return result;
   }
 
-  getSourceFile(fileName: string): ts.SourceFile {
+  getSourceFile(fileName: string): ts.SourceFile|undefined {
     return this.tsService.getProgram().getSourceFile(fileName);
   }
 
@@ -339,10 +339,12 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
         let [declaration, decorator] = this.getTemplateClassDeclFromNode(node);
         if (declaration && declaration.name) {
           const sourceFile = this.getSourceFile(fileName);
-          return this.getSourceFromDeclaration(
-              fileName, version, this.stringOf(node) || '', shrink(spanOf(node)),
-              this.reflector.getStaticSymbol(sourceFile.fileName, declaration.name.text),
-              declaration, node, sourceFile);
+          if (sourceFile) {
+            return this.getSourceFromDeclaration(
+                fileName, version, this.stringOf(node) || '', shrink(spanOf(node)),
+                this.reflector.getStaticSymbol(sourceFile.fileName, declaration.name.text),
+                declaration, node, sourceFile);
+          }
         }
         break;
     }

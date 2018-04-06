@@ -248,7 +248,8 @@ export class AnimationTransitionNamespace {
       }
     });
 
-    let transition = trigger.matchTransition(fromState.value, toState.value);
+    let transition =
+        trigger.matchTransition(fromState.value, toState.value, element, toState.params);
     let isFallbackTransition = false;
     if (!transition) {
       if (!defaultToFallback) return;
@@ -402,7 +403,7 @@ export class AnimationTransitionNamespace {
 
       // when this `if statement` does not continue forward it means that
       // a previous animation query has selected the current element and
-      // is animating it. In this situation want to continue fowards and
+      // is animating it. In this situation want to continue forwards and
       // allow the element to be queued up for animation later.
       if (currentPlayers && currentPlayers.length) {
         containsPotentialParentTransition = true;
@@ -665,7 +666,16 @@ export class TransitionAnimationEngine {
     // code does not contain any animation code in it, but it is
     // just being called so that the node is marked as being inserted
     if (namespaceId) {
-      this._fetchNamespace(namespaceId).insertNode(element, parent);
+      const ns = this._fetchNamespace(namespaceId);
+      // This if-statement is a workaround for router issue #21947.
+      // The router sometimes hits a race condition where while a route
+      // is being instantiated a new navigation arrives, triggering leave
+      // animation of DOM that has not been fully initialized, until this
+      // is resolved, we need to handle the scenario when DOM is not in a
+      // consistent state during the animation.
+      if (ns) {
+        ns.insertNode(element, parent);
+      }
     }
 
     // only *directives and host elements are inserted before

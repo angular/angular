@@ -17,7 +17,7 @@ export class TokenModule {
 }
 
 export const TOKEN = new InjectionToken('test', {
-  scope: TokenModule,
+  providedIn: TokenModule,
   factory: () => new Service(inject(Dep)),
 });
 

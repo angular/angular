@@ -5,8 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AUTO_STYLE, AnimationMetadata, AnimationMetadataType, animate, animation, group, keyframes, query, sequence, state, style, transition, trigger, useAnimation, ɵStyleData} from '@angular/animations';
-import {AnimationOptions} from '@angular/core/src/animation/dsl';
+import {AUTO_STYLE, AnimationMetadata, AnimationMetadataType, AnimationOptions, animate, animation, group, keyframes, query, sequence, state, style, transition, trigger, useAnimation, ɵStyleData} from '@angular/animations';
 
 import {Animation} from '../../src/dsl/animation';
 import {buildAnimationAst} from '../../src/dsl/animation_ast_builder';
@@ -382,8 +381,8 @@ function createDiv() {
         });
       });
 
-      describe('subtitutions', () => {
-        it('should allow params to be subtituted even if they are not defaulted in a reusable animation',
+      describe('substitutions', () => {
+        it('should allow params to be substituted even if they are not defaulted in a reusable animation',
            () => {
              const myAnimation = animation([
                style({left: '{{ start }}'}),

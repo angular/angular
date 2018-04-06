@@ -43,6 +43,7 @@ export class PeekABooParentComponent {
       this.heroName = 'Windstorm';
       this.hookLog.length = 0 // clear log on create
     }
+    this.hookLog = this.logger.logs;
     this.logger.tick();
   }
 

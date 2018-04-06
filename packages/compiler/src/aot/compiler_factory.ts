@@ -65,12 +65,17 @@ export function createAotCompiler(
   const symbolResolver = new StaticSymbolResolver(compilerHost, symbolCache, summaryResolver);
   const staticReflector =
       new StaticReflector(summaryResolver, symbolResolver, [], [], errorCollector);
-  const htmlParser = new I18NHtmlParser(
-      new HtmlParser(), translations, options.i18nFormat, options.missingTranslation, console);
+  let htmlParser: I18NHtmlParser;
+  if (!!options.enableIvy) {
+    // Ivy handles i18n at the compiler level so we must use a regular parser
+    htmlParser = new HtmlParser() as I18NHtmlParser;
+  } else {
+    htmlParser = new I18NHtmlParser(
+        new HtmlParser(), translations, options.i18nFormat, options.missingTranslation, console);
+  }
   const config = new CompilerConfig({
     defaultEncapsulation: ViewEncapsulation.Emulated,
     useJit: false,
-    enableLegacyTemplate: options.enableLegacyTemplate === true,
     missingTranslation: options.missingTranslation,
     preserveWhitespaces: options.preserveWhitespaces,
     strictInjectionParameters: options.strictInjectionParameters,
@@ -91,7 +96,8 @@ export function createAotCompiler(
   const compiler = new AotCompiler(
       config, options, compilerHost, staticReflector, resolver, tmplParser,
       new StyleCompiler(urlResolver), viewCompiler, typeCheckCompiler,
-      new NgModuleCompiler(staticReflector), new InjectableCompiler(staticReflector),
-      new TypeScriptEmitter(), summaryResolver, symbolResolver);
+      new NgModuleCompiler(staticReflector),
+      new InjectableCompiler(staticReflector, !!options.enableIvy), new TypeScriptEmitter(),
+      summaryResolver, symbolResolver);
   return {compiler, reflector: staticReflector};
 }

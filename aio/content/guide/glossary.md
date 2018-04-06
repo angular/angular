@@ -19,10 +19,9 @@ unexpected definitions.
 
 ## Ahead-of-time (AOT) compilation
 
-You can compile Angular applications at build time.
+You can compile Angular applications at build time. 
 By compiling your application using the compiler-cli, `ngc`, you can bootstrap directly to a module factory, meaning you don't need to include the Angular compiler in your JavaScript bundle.
 Ahead-of-time compiled applications also benefit from decreased load time and increased performance.
-
 
 
 ## Annotation
@@ -52,7 +51,7 @@ Learn about them in the [_Attribute Directives_](guide/attribute-directives) gui
 ## Barrel
 
 A way to *roll up exports* from several ES2015 modules into a single convenient ES2015 module.
-The barrel itself is an ES2015 module file that re-exports *selected* exports of other ES2015 modules.
+The barrel itself is an ES2015 module file that re-exports selected exports of other ES2015 modules.
 
 For example, imagine three ES2015 modules in a `heroes` folder:
 
@@ -66,8 +65,6 @@ For example, imagine three ES2015 modules in a `heroes` folder:
   // heroes/hero.service.ts
   export class HeroService {}
 </code-example>
-
-
 
 Without a barrel, a consumer needs three import statements:
 
@@ -96,19 +93,13 @@ Now a consumer can import what it needs from the barrel.
 </code-example>
 
 
-
 The Angular [scoped packages](guide/glossary#scoped-package) each have a barrel named `index`.
-
 
 <div class="alert is-important">
 
-
-
 You can often achieve the same result using [NgModules](guide/glossary#ngmodule) instead.
 
-
 </div>
-
 
 ## Binding
 
@@ -121,7 +112,6 @@ between a "token"&mdash;also referred to as a "key"&mdash;and a dependency [prov
 
 ## Bootstrap
 
-
 You launch an Angular application by "bootstrapping" it using the application root NgModule (`AppModule`).
 
 Bootstrapping identifies an application's top level "root" [component](guide/glossary#component),
@@ -132,15 +122,21 @@ You can bootstrap multiple apps in the same `index.html`, each app with its own 
 
 {@a C}
 
-## camelCase
 
-The practice of writing compound words or phrases such that each word or abbreviation begins with a capital letter
-_except the first letter, which is lowercase_.
+{@a dash-case}
 
-Function, property, and method names are typically spelled in camelCase. For example, `square`, `firstName`, and `getHeroes`. Notice that `square` is an example of how you write a single word in camelCase.
+{@a camelcase}
 
-camelCase is also known as *lower camel case* to distinguish it from *upper camel case*, or [PascalCase](guide/glossary#pascalcase).
-In Angular documentation, "camelCase" always means *lower camel case*.
+
+## Case conventions
+
+Angular uses capitalization conventions to distinguish the names of various types, as described in the [Style Guide "Naming" section](guide/styleguide#02-01). 
+
+- camelCase : symbols, properties, methods, pipe names, interfaces, non-component directive selectors, constants 
+- UpperCamelCase (also called PascalCase): Class names 
+- dash-case (also called "kebab-case"): descriptive part of file names, component selectors
+- underscore_case (or "snake_case"): not typically used in Angular 
+- UPPER_SNAKE_CASE : traditional for constants (acceptable, but prefer camelCase)
 
 
 ## CLI
@@ -150,7 +146,6 @@ The Angular CLI is a `command line interface` tool that can create a project, ad
 Learn more in the [Getting Started](guide/quickstart) guide.
 
 {@a component}
-
 
 ## Component
 
@@ -167,22 +162,25 @@ as a view.
 Those familiar with "MVC" and "MVVM" patterns will recognize
 the component in the role of "controller" or "view model".
 
+{@a custom-element}
+
+## Custom element
+
+A Web Platform feature, currently supported by most browsers, and available in other browsers through polyfills (see [Browser Support](guide/browser-support)). 
+
+The custom element feature extends HTML by allowing you to define a tag whose content is created and controlled by JavaScript code. A custom element (also called a *web component*) is recognized by a browser when it is added to the [CustomElementRegistry](https://developer.mozilla.org/en-US/docs/Web/API/CustomElementRegistry).
+
+You can use the API to transform an Angular component so that it can be registered with the browser and used in any HTML that you add directly to the DOM within an Angular app. The custom element tag inserts the component's view, with change-detection and data-binding functionality, into content that would otherwise be displayed without Angular processing.
+
+See also [Dynamic components](guide/glossary#dynamic-components).
+
 
 {@a D}
-
-## dash-case
-
-The practice of writing compound words or phrases such that each word is separated by a dash or hyphen (`-`).
-This form is also known as kebab-case.
-
-[Directive](guide/glossary#directive) selectors (like `my-app`) and
-the root of filenames (such as `hero-list.component.ts`) are often
-spelled in dash-case.
 
 
 ## Data binding
 
-Applications display data values to a user and respond to user
+Data binding allow apps to display data values to a user and respond to user
 actions (such as clicks, touches, and keystrokes).
 
 In data binding, you declare the relationship between an HTML widget and data source
@@ -215,7 +213,7 @@ operations and supporting declaration syntax.
 
 A *function* that adds metadata to a class, its members (properties, methods) and function arguments.
 
-Decorators are an experimental (stage 2), JavaScript language [feature](https://github.com/wycats/javascript-decorators). TypeScript adds support for decorators.
+Decorators (also called annotations) are an experimental (stage 2), JavaScript language [feature](https://github.com/wycats/javascript-decorators). TypeScript adds support for decorators.
 
 To apply a decorator, position it immediately above or to the left of the item it decorates.
 
@@ -223,6 +221,7 @@ Angular has its own set of decorators to help it interoperate with your applicat
 The following example is a `@Component` decorator that identifies a
 class as an Angular [component](guide/glossary#component) and an `@Input` decorator applied to the `name` property
 of that component. The elided object argument to the `@Component` decorator would contain the pertinent component metadata.
+
 ```
 @Component({...})
 export class AppComponent {
@@ -230,6 +229,7 @@ export class AppComponent {
   @Input() name:string;
 }
 ```
+
 The scope of a decorator is limited to the language feature
 that it decorates. None of the decorations shown here will "leak" to other
 classes that follow it in the file.
@@ -334,39 +334,34 @@ as HTML attributes, hence the name.
 shaping or reshaping HTML layout, typically by adding, removing, or manipulating
 elements and their children.
 
+{@a dynamic-components}
+
+## Dynamic component loading
+
+A technique for adding a component to the DOM at run time, which requires that you exclude the component from compilation, then connect it to Angular's change-detection and event handling framework when you add it to the DOM.
+
+See also [Custom element](guide/glossary#custom-element), which provides an easier path with the same result.
 
 {@a E}
+
+{@a ecma}
 
 ## ECMAScript
 
 The [official JavaScript language specification](https://en.wikipedia.org/wiki/ECMAScript).
 
-The latest approved version of JavaScript is
-[ECMAScript 2017](http://www.ecma-international.org/ecma-262/8.0/)
-(also known as "ES2017" or "ES8"). Many Angular developers write their applications
-in ES8 or a dialect that strives to be
-compatible with it, such as [TypeScript](guide/glossary#typescript).
-
-Most modern browsers only support the much older "ECMAScript 5" (also known as "ES5") standard.
-Applications written in ES2017, ES2016, ES2015, or one of their dialects must be [transpiled](guide/glossary#transpile)
-to ES5 JavaScript.
-
-Angular developers can write in ES5 directly.
+Not all browsers support the latest ECMAScript standard, but you can use transpilers (like [TypeScript](guide/glossary#typescript)) to write code using the latest features, which will then be transpiled to code that runs on versions that are supported by browsers.
 
 
-## ES2015
+{@a element}
 
-Short hand for [ECMAScript](guide/glossary#ecmascript) 2015.
+## Element
 
+Angular defines an `ElementRef` class to wrap render-specific native UI elements. This allows you use Angular templates and  data-binding to access DOM elements without reference to the native element in most cases.
 
-## ES5
+The documentation generally refers to either elements (`ElementRef` instances) or  DOM elements (which could be accessed directly if necessary).
 
-Short hand for [ECMAScript](guide/glossary#ecmascript) 5, the version of JavaScript run by most modern browsers.
-
-
-## ES6
-
-Short hand for [ECMAScript](guide/glossary#ecmascript) 2015.
+Compare [Custom element](guide/glossary#custom-element).
 
 
 {@a F}
@@ -383,7 +378,7 @@ Short hand for [ECMAScript](guide/glossary#ecmascript) 2015.
 
 An object in the Angular [dependency-injection system](guide/glossary#dependency-injection)
 that can find a named dependency in its cache or create a dependency
-with a registered [provider](guide/glossary#provider).
+with a registered [provider](guide/glossary#provider). Injectors are created for NgModules automatically as part of the bootstrap process, and inherited through the component hierarchy.
 
 
 ## Input
@@ -411,12 +406,16 @@ or displayed between element tags, as in this example.
 </code-example>
 
 
-
 Read more about [interpolation](guide/template-syntax#interpolation) in the
 [Template Syntax](guide/template-syntax) page.
 
 
 {@a J}
+
+## JavaScript
+
+See [ECMAScript](guide/glossary#ecma), [TypeScript](guide/glossary#typescript).
+
 
 {@a jit}
 
@@ -429,10 +428,6 @@ Consider using the [ahead-of-time](guide/glossary#aot) mode for production apps.
 
 
 {@a K}
-
-## kebab-case
-
-See [dash-case](guide/glossary#dash-case).
 
 
 {@a L}
@@ -477,10 +472,7 @@ For details and examples, see the [NgModules](guide/ngmodules) page.
 
 For a comparison, see [JavaScript Modules vs. NgModules](guide/ngmodule-vs-jsmodule).
 
-
 </div>
-
-
 
 A cohesive block of code dedicated to a single purpose.
 
@@ -522,18 +514,19 @@ For details and examples, see [NgModules](guide/ngmodules) and the
 related files in that section.
 
 
-
-
 {@a O}
 
 ## Observable
 
-An array whose items arrive asynchronously over time.
+An subscribable message publisher, which provides multiple items that arrive asynchronously over time.
 Observables help you manage asynchronous data, such as data coming from a backend service.
 Observables are used within Angular itself, including Angular's event system and its HTTP client service.
 
-To use observables, Angular uses a third-party library called Reactive Extensions (RxJS).
 Observables are a proposed feature for ES2016, the next version of JavaScript.
+Currently, Angular depends on a third-party library called Reactive Extensions (RxJS) to provide observables.
+
+For more information, see the [Observables guide](guide/observables).
+
 
 
 ## Output
@@ -548,15 +541,6 @@ See the [Input and output properties](guide/template-syntax#inputs-outputs) sect
 
 
 {@a P}
-
-## PascalCase
-
-The practice of writing individual words, compound words, or phrases such that each word or abbreviation begins with a capital letter.
-Class names are typically spelled in PascalCase. For example, `Person` and `HeroDetailComponent`.
-
-This form is also known as *upper camel case* to distinguish it from *lower camel case* or simply [camelCase](guide/glossary#camelcase).
-In this documentation, "PascalCase" means *upper camel case* and  "camelCase" means *lower camel case*.
-
 
 ## Pipe
 
@@ -676,15 +660,6 @@ Applications often require services such as a data service or a logging service.
 For more information, see the [Services](tutorial/toh-pt4) page of the [Tour of Heroes](tutorial) tutorial.
 
 
-{@a snake-case}
-
-
-## snake_case
-
-The practice of writing compound words or phrases such that an
-underscore (`_`) separates one word from the next. This form is also known as *underscore case*.
-
-
 {@a structural-directive}
 
 
@@ -740,23 +715,22 @@ of the [Template Syntax](guide/template-syntax) page.
 ## Transpile
 
 The process of transforming code written in one form of JavaScript
-(such as TypeScript) into another form of JavaScript  (such as [ES5](guide/glossary#es5)).
+(such as TypeScript) into another form of JavaScript. (See also [ECMAScript](guide/glossary#ecma)).
+
+{@a typescript}
 
 
 ## TypeScript
 
-A version of JavaScript that supports most [ECMAScript 2015](guide/glossary#es2015)
+A version of JavaScript that supports most [ECMAScript 2015](guide/glossary#ecma)
 language features such as [decorators](guide/glossary#decorator).
 
-TypeScript is also notable for its optional typing system, which provides
+TypeScript is notable for its optional typing system, which provides
 compile-time type checking and strong tooling support (such as "intellisense,"
 code completion, refactoring, and intelligent search). Many code editors
 and IDEs support TypeScript either natively or with plugins.
 
-TypeScript is the preferred language for Angular development, although
-you can use other JavaScript dialects such as [ES5](guide/glossary#es5).
-
-Read more about TypeScript at [typescriptlang.org](http://www.typescriptlang.org/).
+TypeScript is the preferred language for Angular development. Read more about TypeScript at [typescriptlang.org](http://www.typescriptlang.org/).
 
 
 {@a U}
@@ -779,6 +753,10 @@ under the control of a [router](guide/glossary#router).
 
 
 {@a W}
+
+## Web component
+
+See [Custom element](guide/glossary#custom-element)
 
 
 {@a X}

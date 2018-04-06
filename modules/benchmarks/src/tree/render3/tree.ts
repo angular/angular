@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ɵC as C, ɵE as E, ɵT as T, ɵV as V, ɵb as b, ɵcR as cR, ɵcr as cr, ɵdefineComponent as defineComponent, ɵdetectChanges as _detectChanges, ɵe as e, ɵi1 as i1, ɵp as p, ɵr as r, ɵs as s, ɵt as t, ɵv as v} from '@angular/core';
+import {ɵC as C, ɵE as E, ɵT as T, ɵV as V, ɵb as b, ɵcR as cR, ɵcr as cr, ɵdefineComponent as defineComponent, ɵdetectChanges as _detectChanges, ɵe as e, ɵi1 as i1, ɵp as p, ɵsn as sn, ɵt as t, ɵv as v} from '@angular/core';
 import {ComponentDef} from '@angular/core/src/render3/interfaces/definition';
 
 import {TreeNode, buildTree, emptyTree} from '../util';
@@ -37,7 +37,7 @@ export class TreeComponent {
   /** @nocollapse */
   static ngComponentDef: ComponentDef<TreeComponent> = defineComponent({
     type: TreeComponent,
-    tag: 'tree',
+    selectors: [['tree']],
     template: function(ctx: TreeComponent, cm: boolean) {
       if (cm) {
         E(0, 'span');
@@ -46,7 +46,7 @@ export class TreeComponent {
         C(2);
         C(3);
       }
-      s(0, 'background-color', b(ctx.data.depth % 2 ? '' : 'grey'));
+      sn(0, 'background-color', b(ctx.data.depth % 2 ? '' : 'grey'));
       t(1, i1(' ', ctx.data.value, ' '));
       cR(2);
       {
@@ -54,12 +54,10 @@ export class TreeComponent {
           let cm0 = V(0);
           {
             if (cm0) {
-              E(0, TreeComponent);
+              E(0, 'tree');
               e();
             }
             p(0, 'data', b(ctx.data.left));
-            TreeComponent.ngComponentDef.h(1, 0);
-            r(1, 0);
           }
           v();
         }
@@ -71,12 +69,10 @@ export class TreeComponent {
           let cm0 = V(0);
           {
             if (cm0) {
-              E(0, TreeComponent);
+              E(0, 'tree');
               e();
             }
             p(0, 'data', b(ctx.data.right));
-            TreeComponent.ngComponentDef.h(1, 0);
-            r(1, 0);
           }
           v();
         }
@@ -84,7 +80,8 @@ export class TreeComponent {
       cr();
     },
     factory: () => new TreeComponent,
-    inputs: {data: 'data'}
+    inputs: {data: 'data'},
+    directives: () => [TreeComponent]
   });
 }
 
@@ -94,7 +91,7 @@ export class TreeFunction {
   /** @nocollapse */
   static ngComponentDef: ComponentDef<TreeFunction> = defineComponent({
     type: TreeFunction,
-    tag: 'tree',
+    selectors: [['tree']],
     template: function(ctx: TreeFunction, cm: boolean) {
       // bit of a hack
       TreeTpl(ctx.data, cm);
@@ -116,7 +113,7 @@ export function TreeTpl(ctx: TreeNode, cm: boolean) {
     }
     e();
   }
-  s(1, 'background-color', b(ctx.depth % 2 ? '' : 'grey'));
+  sn(1, 'background-color', b(ctx.depth % 2 ? '' : 'grey'));
   t(2, i1(' ', ctx.value, ' '));
   cR(3);
   {

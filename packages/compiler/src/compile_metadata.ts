@@ -140,7 +140,7 @@ export interface CompileInjectableMetadata {
   symbol: StaticSymbol;
   type: CompileTypeMetadata;
 
-  module?: StaticSymbol;
+  providedIn?: StaticSymbol;
 
   useValue?: any;
   useClass?: StaticSymbol;
@@ -525,6 +525,14 @@ export interface CompileNgModuleSummary extends CompileTypeSummary {
   providers: {provider: CompileProviderMetadata, module: CompileIdentifierMetadata}[];
   // Note: This is transitive.
   modules: CompileTypeMetadata[];
+}
+
+export class CompileShallowModuleMetadata {
+  type: CompileTypeMetadata;
+
+  rawExports: any;
+  rawImports: any;
+  rawProviders: any;
 }
 
 /**

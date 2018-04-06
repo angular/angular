@@ -7,9 +7,10 @@
  */
 
 import {NgModuleRef} from '@angular/core';
-import {InjectFlags, Injector, inject} from '@angular/core/src/di/injector';
+import {InjectableDef, defineInjectable} from '@angular/core/src/di/defs';
+import {INJECTOR, InjectFlags, Injector, inject} from '@angular/core/src/di/injector';
 import {makePropDecorator} from '@angular/core/src/util/decorators';
-import {InjectableDef, NgModuleDefinition, NgModuleProviderDef, NodeFlags} from '@angular/core/src/view';
+import {NgModuleDefinition, NgModuleProviderDef, NodeFlags} from '@angular/core/src/view';
 import {moduleDef, moduleProvideDef, resolveNgModuleDep} from '@angular/core/src/view/ng_module';
 import {createNgModuleRef} from '@angular/core/src/view/refs';
 import {tokenKey} from '@angular/core/src/view/util';
@@ -23,68 +24,72 @@ class MyChildModule {}
 class NotMyModule {}
 
 class Bar {
-  static ngInjectableDef: InjectableDef = {
+  static ngInjectableDef: InjectableDef<Bar> = defineInjectable({
     factory: () => new Bar(),
-    scope: MyModule,
-  };
+    providedIn: MyModule,
+  });
 }
 
 class Baz {
-  static ngInjectableDef: InjectableDef = {
+  static ngInjectableDef: InjectableDef<Baz> = defineInjectable({
     factory: () => new Baz(),
-    scope: NotMyModule,
-  };
+    providedIn: NotMyModule,
+  });
 }
 
 class HasNormalDep {
   constructor(public foo: Foo) {}
 
-  static ngInjectableDef: InjectableDef = {
+  static ngInjectableDef: InjectableDef<HasNormalDep> = defineInjectable({
     factory: () => new HasNormalDep(inject(Foo)),
-    scope: MyModule,
-  };
+    providedIn: MyModule,
+  });
 }
 
 class HasDefinedDep {
   constructor(public bar: Bar) {}
 
-  static ngInjectableDef: InjectableDef = {
+  static ngInjectableDef: InjectableDef<HasDefinedDep> = defineInjectable({
     factory: () => new HasDefinedDep(inject(Bar)),
-    scope: MyModule,
-  };
+    providedIn: MyModule,
+  });
 }
 
 class HasOptionalDep {
   constructor(public baz: Baz|null) {}
 
-  static ngInjectableDef: InjectableDef = {
+  static ngInjectableDef: InjectableDef<HasOptionalDep> = defineInjectable({
     factory: () => new HasOptionalDep(inject(Baz, null)),
-    scope: MyModule,
-  };
+    providedIn: MyModule,
+  });
 }
 
 class ChildDep {
-  static ngInjectableDef: InjectableDef = {
+  static ngInjectableDef: InjectableDef<ChildDep> = defineInjectable({
     factory: () => new ChildDep(),
-    scope: MyChildModule,
-  };
+    providedIn: MyChildModule,
+  });
 }
 
 class FromChildWithOptionalDep {
   constructor(public baz: Baz|null) {}
-  static ngInjectableDef: InjectableDef = {
+  static ngInjectableDef: InjectableDef<FromChildWithOptionalDep> = defineInjectable({
     factory: () => new FromChildWithOptionalDep(inject(Baz, null, InjectFlags.Default)),
-    scope: MyChildModule,
-  };
+    providedIn: MyChildModule,
+  });
 }
 
 class FromChildWithSkipSelfDep {
   constructor(public depFromParent: ChildDep|null, public depFromChild: Bar|null) {}
-  static ngInjectableDef: InjectableDef = {
+  static ngInjectableDef: InjectableDef<FromChildWithSkipSelfDep> = defineInjectable({
     factory: () => new FromChildWithSkipSelfDep(
                  inject(ChildDep, null, InjectFlags.SkipSelf), inject(Bar, null, InjectFlags.Self)),
-    scope: MyChildModule,
-  };
+    providedIn: MyChildModule,
+  });
+}
+
+class UsesInject {
+  constructor() { inject(INJECTOR); }
 }
 
 function makeProviders(classes: any[], modules: any[]): NgModuleDefinition {
@@ -104,8 +109,8 @@ describe('NgModuleRef_ injector', () => {
   let ref: NgModuleRef<any>;
   let childRef: NgModuleRef<any>;
   beforeEach(() => {
-    ref =
-        createNgModuleRef(MyModule, Injector.NULL, [], makeProviders([MyModule, Foo], [MyModule]));
+    ref = createNgModuleRef(
+        MyModule, Injector.NULL, [], makeProviders([MyModule, Foo, UsesInject], [MyModule]));
     childRef = createNgModuleRef(
         MyChildModule, ref.injector, [], makeProviders([MyChildModule], [MyChildModule]));
   });
@@ -146,4 +151,7 @@ describe('NgModuleRef_ injector', () => {
 
   it('does not inject something not scoped to the module',
      () => { expect(ref.injector.get(Baz, null)).toBeNull(); });
+
+  it('injects with the current injector always set',
+     () => { expect(() => ref.injector.get(UsesInject)).not.toThrow(); });
 });

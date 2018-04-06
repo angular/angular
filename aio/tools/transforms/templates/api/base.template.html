@@ -25,6 +25,7 @@
     {% if doc.deprecated !== undefined %}<label class="api-status-label deprecated">deprecated</label>{% endif %}
     {% if doc.experimental !== undefined %}<label class="api-status-label experimental">experimental</label>{% endif %}
     {% if doc.stable !== undefined %}<label class="api-status-label stable">stable</label>{% endif %}
+    {% if doc.pipeOptions.pure === 'false' %}<label class="api-status-label impure-pipe">impure</label>{% endif %}
   </header>
   <aio-toc class="embedded"></aio-toc>
 

@@ -10,14 +10,9 @@ import * as fs from 'fs';
 import * as path from 'path';
 import {SymbolExtractor} from './symbol_extractor';
 
-// These keys are arbitrary and local to this test.
-const update_var = 'UPDATE_GOLDEN';
-const update_val = 1;
-
 if (require.main === module) {
-  const doUpdate = process.env[update_var] == update_val;
   const args = process.argv.slice(2) as[string, string];
-  process.exitCode = main(args, doUpdate) ? 0 : 1;
+  process.exitCode = main(args) ? 0 : 1;
 }
 
 /**
@@ -27,9 +22,10 @@ if (require.main === module) {
  *   cli javascriptFilePath.js goldenFilePath.json
  * ```
  */
-function main(argv: [string, string], doUpdate: boolean): boolean {
+function main(argv: [string, string, string] | [string, string]): boolean {
   const javascriptFilePath = require.resolve(argv[0]);
   const goldenFilePath = require.resolve(argv[1]);
+  const doUpdate = argv[2] == '--accept';
 
   const javascriptContent = fs.readFileSync(javascriptFilePath).toString();
   const goldenContent = fs.readFileSync(goldenFilePath).toString();
@@ -46,8 +42,7 @@ function main(argv: [string, string], doUpdate: boolean): boolean {
     if (!passed) {
       console.error(`TEST FAILED!`);
       console.error(`  To update the golden file run: `);
-      console.error(
-          `    bazel run --define ${update_var}=${update_val} ${process.env['BAZEL_TARGET']}`);
+      console.error(`    bazel run ${process.env['BAZEL_TARGET']}.accept`);
     }
   }
   return passed;

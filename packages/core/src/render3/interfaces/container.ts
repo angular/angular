@@ -7,7 +7,7 @@
  */
 
 import {ComponentTemplate} from './definition';
-import {LElementNode, LViewNode} from './node';
+import {LContainerNode, LElementNode, LViewNode} from './node';
 import {LQueries} from './query';
 import {LView, TView} from './view';
 

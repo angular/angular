@@ -6,8 +6,8 @@ if [ $# -eq 0 ]
   then
     echo "Angular test runner. (No platform specified)"
     echo
-    echo "./test.sh [node|browser|browserNoRouter|router|tools] [--debug]"
-    echo "(--debug flag only relevant to 'node' and 'tools' testing - see https://github.com/angular/angular/blob/master/docs/DEBUG.md)"
+    echo "./test.sh [node|browser|browserNoRouter|router] [--debug]"
+    echo "(--debug flag only relevant to 'node' testing - see https://github.com/angular/angular/blob/master/docs/DEBUG.md)"
     echo
 else
   cd `dirname $0`

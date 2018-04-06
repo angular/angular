@@ -22,11 +22,12 @@ ng_module(
 
 ng_package(
     name = "npm_package",
-    srcs = ["package.json"],
-    entry_point = "packages/platform-browser-dynamic/index.js",
-    secondary_entry_points = [
-        "testing",
+    srcs = [
+        "package.json",
+        "//packages/platform-browser-dynamic/testing:package.json",
     ],
+    entry_point = "packages/platform-browser-dynamic/index.js",
+    tags = ["release-with-framework"],
     deps = [
         ":platform-browser-dynamic",
         "//packages/platform-browser-dynamic/testing",

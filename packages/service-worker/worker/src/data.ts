@@ -99,25 +99,7 @@ class LruList {
     }
 
     const url = this.state.tail;
-
-    // Special case if this is the last node.
-    if (this.state.head === this.state.tail) {
-      // When removing the last node, both head and tail pointers become null.
-      this.state.head = null;
-      this.state.tail = null;
-    } else {
-      // Normal node removal. All that needs to be done is to clear the next pointer
-      // of the previous node and make it the new tail.
-      const block = this.state.map[url] !;
-      const previous = this.state.map[block.previous !] !;
-      this.state.tail = previous.url;
-      previous.next = block.next;
-    }
-
-    // In any case, this URL is no longer tracked, so remove it from the count and the
-    // map of tracked URLs.
-    delete this.state.map[url];
-    this.state.count--;
+    this.remove(url);
 
     // This URL has been successfully evicted.
     return url;
@@ -145,6 +127,8 @@ class LruList {
       const next = this.state.map[node.next !] !;
       next.previous = null;
       this.state.head = next.url;
+      node.next = null;
+      delete this.state.map[url];
       this.state.count--;
       return true;
     }
@@ -167,6 +151,9 @@ class LruList {
       this.state.tail = node.previous !;
     }
 
+    node.next = null;
+    node.previous = null;
+    delete this.state.map[url];
     // Count the removal.
     this.state.count--;
 

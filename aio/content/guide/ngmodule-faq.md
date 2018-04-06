@@ -198,9 +198,8 @@ Its only purpose is to add http service providers to the application as a whole.
 
 ## What is the `forRoot()` method?
 
-The `forRoot()` static method is a convention that makes it easy for developers to configure the module's providers.
+The `forRoot()` static method is a convention that makes it easy for developers to configure services and providers that are intended to be singletons. A good example of `forRoot()` is the `RouterModule.forRoot()` method.
 
-The `RouterModule.forRoot()` method is a good example.
 Apps pass a `Routes` object to `RouterModule.forRoot()` in order to configure the app-wide `Router` service with routes.
 `RouterModule.forRoot()` returns a [ModuleWithProviders](api/core/ModuleWithProviders).
 You add that result to the `imports` list of the root `AppModule`.
@@ -209,6 +208,9 @@ Only call and import a `.forRoot()` result in the root application module, `AppM
 Importing it in any other module, particularly in a lazy-loaded module,
 is contrary to the intent and will likely produce a runtime error.
 For more information, see [Singleton Services](guide/singleton-services).
+
+For a service, instead of using `forRoot()`,  specify `providedIn: 'root'` on the service's `@Injectable()` decorator, which 
+makes the service automatically available to the whole application and thus singleton by default.
 
 `RouterModule` also offers a `forChild` static method for configuring the routes of lazy-loaded modules.
 
@@ -340,7 +342,9 @@ Define child routes and let the router load module components into that outlet.
 
 ## Should I add application-wide providers to the root `AppModule` or the root `AppComponent`?
 
-Register application-wide providers in the root `AppModule`, not in the `AppComponent`.
+ Define application-wide providers by specifying `providedIn: 'root'` on its `@Injectable()` decorator (in the case of services) or at `InjectionToken` construction (in the case where tokens are provided). Providers that are created this way automatically are made available to the entire application and don't need to be listed in any module.
+
+If a provider cannot be configured in this way (perhaps because it has no sensible default value), then register application-wide providers in the root `AppModule`, not in the `AppComponent`.
 
 Lazy-loaded modules and their components can inject `AppModule` services;
 they can't inject `AppComponent` services.
@@ -374,8 +378,10 @@ This means that lazy-loaded modules can't reach them.
 
 ## Should I add other providers to a module or a component?
 
-In general, prefer registering feature-specific providers in modules (`@NgModule.providers`)
-to registering in components (`@Component.providers`).
+Providers should be configured using `@Injectable` syntax. If possible, they should be provided in the application root (`providedIn: 'root'`). Services that are configured this way are lazily loaded if they are only used from a lazily loaded context.
+
+If it's the consumer's decision whether a provider is available application-wide or not, 
+then register providers in modules (`@NgModule.providers`) instead of registering in components (`@Component.providers`).
 
 Register a provider with a component when you _must_ limit the scope of a service instance
 to that component and its component tree.

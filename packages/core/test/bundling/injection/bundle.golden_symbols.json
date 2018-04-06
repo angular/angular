@@ -1,0 +1,140 @@
+[
+  {
+    "name": "APP_ROOT"
+  },
+  {
+    "name": "CIRCULAR$1"
+  },
+  {
+    "name": "EMPTY_ARRAY$1"
+  },
+  {
+    "name": "GET_PROPERTY_NAME$1"
+  },
+  {
+    "name": "INJECTOR$1"
+  },
+  {
+    "name": "Inject"
+  },
+  {
+    "name": "InjectionToken"
+  },
+  {
+    "name": "NOT_YET"
+  },
+  {
+    "name": "NULL_INJECTOR$1"
+  },
+  {
+    "name": "NullInjector"
+  },
+  {
+    "name": "Optional"
+  },
+  {
+    "name": "PARAMETERS"
+  },
+  {
+    "name": "R3Injector"
+  },
+  {
+    "name": "ScopedService"
+  },
+  {
+    "name": "Self"
+  },
+  {
+    "name": "SkipSelf"
+  },
+  {
+    "name": "THROW_IF_NOT_FOUND"
+  },
+  {
+    "name": "USE_VALUE$1"
+  },
+  {
+    "name": "_THROW_IF_NOT_FOUND"
+  },
+  {
+    "name": "__read"
+  },
+  {
+    "name": "__spread"
+  },
+  {
+    "name": "_currentInjector"
+  },
+  {
+    "name": "couldBeInjectableType"
+  },
+  {
+    "name": "createInjector"
+  },
+  {
+    "name": "deepForEach"
+  },
+  {
+    "name": "defineInjectable"
+  },
+  {
+    "name": "defineInjector"
+  },
+  {
+    "name": "forwardRef"
+  },
+  {
+    "name": "getClosureSafeProperty$1"
+  },
+  {
+    "name": "getNullInjector"
+  },
+  {
+    "name": "hasDeps"
+  },
+  {
+    "name": "hasOnDestroy"
+  },
+  {
+    "name": "inject"
+  },
+  {
+    "name": "injectArgs"
+  },
+  {
+    "name": "injectableDefRecord"
+  },
+  {
+    "name": "isExistingProvider"
+  },
+  {
+    "name": "isFactoryProvider"
+  },
+  {
+    "name": "isTypeProvider"
+  },
+  {
+    "name": "isValueProvider"
+  },
+  {
+    "name": "makeMetadataCtor"
+  },
+  {
+    "name": "makeParamDecorator"
+  },
+  {
+    "name": "makeRecord"
+  },
+  {
+    "name": "providerToRecord"
+  },
+  {
+    "name": "resolveForwardRef"
+  },
+  {
+    "name": "setCurrentInjector"
+  },
+  {
+    "name": "stringify"
+  }
+]

@@ -32,7 +32,7 @@ export class AppComponent {
 export class StringAppModule {
 }
 
-@Injectable({scope: StringAppModule})
+@Injectable({providedIn: StringAppModule})
 export class Service {
   constructor(@Inject('someStringToken') readonly data: string) {}
 }

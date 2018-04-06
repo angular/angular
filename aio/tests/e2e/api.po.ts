@@ -35,4 +35,8 @@ export class ApiPage extends SitePage {
   getSection(cls) {
     return element(by.css(`section.${cls}`));
   }
+
+  getBadge(cls) {
+    return element(by.css('.api-status-label.' +  cls));
+  }
 }

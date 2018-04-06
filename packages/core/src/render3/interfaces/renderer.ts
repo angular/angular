@@ -41,7 +41,7 @@ export interface ObjectOrientedRenderer3 {
   querySelector(selectors: string): RElement|null;
 }
 
-/** Returns wether the `renderer` is a `ProceduralRenderer3` */
+/** Returns whether the `renderer` is a `ProceduralRenderer3` */
 export function isProceduralRenderer(renderer: ProceduralRenderer3 | ObjectOrientedRenderer3):
     renderer is ProceduralRenderer3 {
   return !!((renderer as any).listen);
@@ -121,6 +121,7 @@ export interface RNode {
 export interface RElement extends RNode {
   style: RCssStyleDeclaration;
   classList: RDomTokenList;
+  className: string;
   setAttribute(name: string, value: string): void;
   removeAttribute(name: string): void;
   setAttributeNS(namespaceURI: string, qualifiedName: string, value: string): void;

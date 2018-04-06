@@ -7,7 +7,7 @@
  */
 
 import {EventEmitter, Injectable} from '@angular/core';
-import {ISubscription} from 'rxjs/Subscription';
+import {SubscriptionLike} from 'rxjs';
 
 import {LocationStrategy} from './location_strategy';
 
@@ -20,8 +20,10 @@ export interface PopStateEvent {
 }
 
 /**
- * @whatItDoes `Location` is a service that applications can use to interact with a browser's URL.
  * @description
+ *
+ * A service that applications can use to interact with a browser's URL.
+ *
  * Depending on which {@link LocationStrategy} is used, `Location` will either persist
  * to the URL's path or the URL's hash segment.
  *
@@ -132,7 +134,7 @@ export class Location {
    */
   subscribe(
       onNext: (value: PopStateEvent) => void, onThrow?: ((exception: any) => void)|null,
-      onReturn?: (() => void)|null): ISubscription {
+      onReturn?: (() => void)|null): SubscriptionLike {
     return this._subject.subscribe({next: onNext, error: onThrow, complete: onReturn});
   }
 
@@ -172,7 +174,7 @@ export class Location {
 
   /**
    * If url has a trailing slash, remove it, otherwise return url as is. This
-   * method looks for the first occurence of either #, ?, or the end of the
+   * method looks for the first occurrence of either #, ?, or the end of the
    * line as `/` characters after any of these should not be replaced.
    */
   public static stripTrailingSlash(url: string): string {

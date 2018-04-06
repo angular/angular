@@ -92,10 +92,12 @@ export class MockRequest extends MockBody implements Request {
   readonly referrer: string = '';
   readonly referrerPolicy: ReferrerPolicy = 'no-referrer';
   readonly type: RequestType = '';
+  readonly signal: AbortSignal = null as any;
+
   url: string;
 
   constructor(input: string|Request, init: RequestInit = {}) {
-    super(init !== undefined ? init.body || null : null);
+    super(init !== undefined ? (init.body as(string | null)) || null : null);
     if (typeof input !== 'string') {
       throw 'Not implemented';
     }
@@ -107,6 +109,9 @@ export class MockRequest extends MockBody implements Request {
       } else {
         Object.keys(headers).forEach(header => { this.headers.set(header, headers[header]); });
       }
+    }
+    if (init.cache !== undefined) {
+      this.cache = init.cache;
     }
     if (init.mode !== undefined) {
       this.mode = init.mode;

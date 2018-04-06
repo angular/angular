@@ -29,13 +29,14 @@ describe('define', () => {
 
           static ngDirectiveDef = defineDirective({
             type: MyDirective,
+            selectors: [['', 'myDir', '']],
             factory: () => new MyDirective(),
-            features: [NgOnChangesFeature],
+            features: [NgOnChangesFeature()],
             inputs: {valA: 'valA', valB: 'valB'}
           });
         }
 
-        const myDir = MyDirective.ngDirectiveDef.n() as MyDirective;
+        const myDir = MyDirective.ngDirectiveDef.factory() as MyDirective;
         myDir.valA = 'first';
         expect(myDir.valA).toEqual('first');
         myDir.valB = 'second';

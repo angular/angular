@@ -14,16 +14,12 @@ const globals = {
   '@angular/platform-browser': 'ng.platformBrowser',
   '@angular/common': 'ng.common',
   '@angular/common/http': 'ng.common.http',
-  'rxjs/Observable': 'Rx',
-  'rxjs/Observer': 'Rx',
-  'rxjs/ReplaySubject': 'Rx',
-  'rxjs/Subject': 'Rx',
-
-  'rxjs/operator/startWith': 'Rx.Observable.prototype',
+  'rxjs': 'rxjs',
+  'rxjs/operators': 'rxjs.operators',
 };
 
 module.exports = {
-  entry: '../../../../dist/packages-dist/common/esm5/http/testing.js',
+  entry: '../../../../dist/packages-dist/common/fesm5/http/testing.js',
   dest: '../../../../dist/packages-dist/common/bundles/common-http-testing.umd.js',
   format: 'umd',
   exports: 'named',

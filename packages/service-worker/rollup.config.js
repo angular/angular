@@ -12,32 +12,12 @@ const sourcemaps = require('rollup-plugin-sourcemaps');
 const globals = {
   '@angular/core': 'ng.core',
   '@angular/common': 'ng.common',
-
-  'rxjs/BehaviorSubject': 'Rx',
-  'rxjs/ConnectableObservable': 'Rx',
-  'rxjs/Observable': 'Rx',
-  'rxjs/Subject': 'Rx',
-
-  'rxjs/observable/concat': 'Rx.Observable',
-  'rxjs/observable/defer': 'Rx.Observable',
-  'rxjs/observable/fromEvent': 'Rx.Observable',
-  'rxjs/observable/merge': 'Rx.Observable',
-  'rxjs/observable/never': 'Rx.Observable',
-  'rxjs/observable/of': 'Rx.Observable',
-  'rxjs/observable/throw': 'Rx.Observable',
-
-  'rxjs/operator/do': 'Rx.Observable.prototype',
-  'rxjs/operator/filter': 'Rx.Observable.prototype',
-  'rxjs/operator/map': 'Rx.Observable.prototype',
-  'rxjs/operator/publish': 'Rx.Observable.prototype',
-  'rxjs/operator/startWith': 'Rx.Observable.prototype',
-  'rxjs/operator/switchMap': 'Rx.Observable.prototype',
-  'rxjs/operator/take': 'Rx.Observable.prototype',
-  'rxjs/operator/toPromise': 'Rx.Observable.prototype',
+  'rxjs': 'rxjs',
+  'rxjs/operators': 'rxjs.operators',
 };
 
 module.exports = {
-  entry: '../../dist/packages-dist/service-worker/esm5/service-worker.js',
+  entry: '../../dist/packages-dist/service-worker/fesm5/service-worker.js',
   dest: '../../dist/packages-dist/service-worker/bundles/service-worker.umd.js',
   format: 'umd',
   exports: 'named',

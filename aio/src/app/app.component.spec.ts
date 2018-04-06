@@ -6,17 +6,14 @@ import { HttpClient } from '@angular/common/http';
 import { MatProgressBar, MatSidenav } from '@angular/material';
 import { By } from '@angular/platform-browser';
 
-import { Observable } from 'rxjs/Observable';
-import { of } from 'rxjs/observable/of';
-import { timer } from 'rxjs/observable/timer';
-import 'rxjs/add/operator/mapTo';
+import { Observable, timer } from 'rxjs';
+import { mapTo } from 'rxjs/operators';
 
 import { AppComponent } from './app.component';
 import { AppModule } from './app.module';
 import { DocumentService } from 'app/documents/document.service';
 import { DocViewerComponent } from 'app/layout/doc-viewer/doc-viewer.component';
 import { Deployment } from 'app/shared/deployment.service';
-import { EmbedComponentsService } from 'app/embed-components/embed-components.service';
 import { GaService } from 'app/shared/ga.service';
 import { LocationService } from 'app/shared/location.service';
 import { Logger } from 'app/shared/logger.service';
@@ -1280,7 +1277,6 @@ function createTestingModule(initialUrl: string, mode: string = 'stable') {
     imports: [ AppModule ],
     providers: [
       { provide: APP_BASE_HREF, useValue: '/' },
-      { provide: EmbedComponentsService, useClass: TestEmbedComponentsService },
       { provide: GaService, useClass: TestGaService },
       { provide: HttpClient, useClass: TestHttpClient },
       { provide: LocationService, useFactory: () => mockLocationService },
@@ -1293,10 +1289,6 @@ function createTestingModule(initialUrl: string, mode: string = 'stable') {
       }},
     ]
   });
-}
-
-class TestEmbedComponentsService {
-  embedInto = jasmine.createSpy('embedInto').and.returnValue(of([]));
 }
 
 class TestGaService {
@@ -1379,6 +1371,6 @@ class TestHttpClient {
     }
 
     // Preserve async nature of `HttpClient`.
-    return timer(1).mapTo(data);
+    return timer(1).pipe(mapTo(data));
   }
 }

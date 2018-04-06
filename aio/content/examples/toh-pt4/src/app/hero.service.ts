@@ -3,8 +3,7 @@
 import { Injectable } from '@angular/core';
 
 // #docregion import-observable
-import { Observable } from 'rxjs/Observable';
-import { of } from 'rxjs/observable/of';
+import { Observable, of } from 'rxjs';
 // #enddocregion import-observable
 
 // #docregion import-heroes
@@ -15,7 +14,7 @@ import { HEROES } from './mock-heroes';
 import { MessageService } from './message.service';
 // #enddocregion import-message-service
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class HeroService {
 
   // #docregion ctor

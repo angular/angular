@@ -21,10 +21,7 @@ import {ViewEncapsulation} from './view';
  */
 export interface DirectiveDecorator {
   /**
-   * @whatItDoes Marks a class as an Angular directive and collects directive configuration
-   * metadata.
-   *
-   * @howToUse
+   * @usageNotes
    *
    * ```
    * import {Directive} from '@angular/core';
@@ -37,6 +34,9 @@ export interface DirectiveDecorator {
    * ```
    *
    * @description
+   *
+   * Marks a class as an Angular directive and collects directive configuration
+   * metadata.
    *
    * Directive decorator allows you to mark a class as an Angular directive and provide additional
    * metadata that determines how the directive should be processed, instantiated and used at
@@ -410,14 +410,14 @@ export const Directive: DirectiveDecorator =
  */
 export interface ComponentDecorator {
   /**
-   * @whatItDoes Marks a class as an Angular component and collects component configuration
-   * metadata.
-   *
-   * @howToUse
+   * @usageNotes
    *
    * {@example core/ts/metadata/metadata.ts region='component'}
    *
    * @description
+   * Marks a class as an Angular component and collects component configuration
+   * metadata.
+   *
    * Component decorator allows you to mark a class as an Angular component and provide additional
    * metadata that determines how the component should be processed, instantiated and used at
    * runtime.
@@ -797,7 +797,7 @@ export interface Pipe {
    *
    * Normally pipe's `transform` method is only invoked when the inputs to pipe`s
    * `transform` method change. If the pipe has internal state (it's result are
-   * dependant on state other than its arguments) than set `pure` to `false` so
+   * dependent on state other than its arguments) than set `pure` to `false` so
    * that the pipe is invoked on each change-detection even if the arguments to the
    * pipe do not change.
    */

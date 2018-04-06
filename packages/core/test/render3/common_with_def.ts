@@ -16,10 +16,11 @@ export const NgForOf: DirectiveType<NgForOfDef<any>> = NgForOfDef as any;
 
 NgForOf.ngDirectiveDef = defineDirective({
   type: NgForOfDef,
+  selectors: [['', 'ngForOf', '']],
   factory: () => new NgForOfDef(
                injectViewContainerRef(), injectTemplateRef(),
                directiveInject(IterableDiffers, InjectFlags.Default, defaultIterableDiffers)),
-  features: [NgOnChangesFeature],
+  features: [NgOnChangesFeature()],
   inputs: {
     ngForOf: 'ngForOf',
     ngForTrackBy: 'ngForTrackBy',

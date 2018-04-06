@@ -19,12 +19,12 @@ ng_module(
 
 ng_package(
     name = "npm_package",
-    srcs = glob([
-        "**/*.externs.js",
-        "**/package.json",
-    ]) + ["//packages/core/testing:npm_package_assets"],
+    srcs = glob(["**/*.externs.js"]) + [
+        "package.json",
+        "//packages/core/testing:package.json",
+    ],
     entry_point = "packages/core/index.js",
-    secondary_entry_points = ["testing"],
+    tags = ["release-with-framework"],
     deps = [
         ":core",
         "//packages/core/testing",

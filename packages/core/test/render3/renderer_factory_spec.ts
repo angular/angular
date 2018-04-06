@@ -11,7 +11,7 @@ import {MockAnimationDriver, MockAnimationPlayer} from '@angular/animations/brow
 
 import {RendererType2, ViewEncapsulation} from '../../src/core';
 import {defineComponent, detectChanges} from '../../src/render3/index';
-import {bind, directiveRefresh, elementEnd, elementProperty, elementStart, listener, text, tick} from '../../src/render3/instructions';
+import {bind, elementEnd, elementProperty, elementStart, listener, text, tick} from '../../src/render3/instructions';
 import {createRendererType2} from '../../src/view/index';
 
 import {getAnimationRendererFactory2, getRendererFactory2} from './imported_renderer2';
@@ -31,7 +31,7 @@ describe('renderer factory lifecycle', () => {
   class SomeComponent {
     static ngComponentDef = defineComponent({
       type: SomeComponent,
-      tag: 'some-component',
+      selectors: [['some-component']],
       template: function(ctx: SomeComponent, cm: boolean) {
         logs.push('component');
         if (cm) {
@@ -45,7 +45,7 @@ describe('renderer factory lifecycle', () => {
   class SomeComponentWhichThrows {
     static ngComponentDef = defineComponent({
       type: SomeComponentWhichThrows,
-      tag: 'some-component-with-Error',
+      selectors: [['some-component-with-Error']],
       template: function(ctx: SomeComponentWhichThrows, cm: boolean) {
         throw(new Error('SomeComponentWhichThrows threw'));
       },
@@ -60,15 +60,15 @@ describe('renderer factory lifecycle', () => {
     }
   }
 
+  const directives = [SomeComponent, SomeComponentWhichThrows];
+
   function TemplateWithComponent(ctx: any, cm: boolean) {
     logs.push('function_with_component');
     if (cm) {
       text(0, 'bar');
-      elementStart(1, SomeComponent);
+      elementStart(1, 'some-component');
       elementEnd();
     }
-    SomeComponent.ngComponentDef.h(2, 1);
-    directiveRefresh(2, 1);
   }
 
   beforeEach(() => { logs = []; });
@@ -88,7 +88,7 @@ describe('renderer factory lifecycle', () => {
   });
 
   it('should work with a template', () => {
-    renderToHtml(Template, {}, rendererFactory);
+    renderToHtml(Template, {}, null, null, rendererFactory);
     expect(logs).toEqual(['create', 'begin', 'function', 'end']);
 
     logs = [];
@@ -97,12 +97,12 @@ describe('renderer factory lifecycle', () => {
   });
 
   it('should work with a template which contains a component', () => {
-    renderToHtml(TemplateWithComponent, {}, rendererFactory);
+    renderToHtml(TemplateWithComponent, {}, directives, null, rendererFactory);
     expect(logs).toEqual(
         ['create', 'begin', 'function_with_component', 'create', 'component', 'end']);
 
     logs = [];
-    renderToHtml(TemplateWithComponent, {});
+    renderToHtml(TemplateWithComponent, {}, directives);
     expect(logs).toEqual(['begin', 'function_with_component', 'component', 'end']);
   });
 
@@ -124,7 +124,7 @@ describe('animation renderer factory', () => {
   class SomeComponent {
     static ngComponentDef = defineComponent({
       type: SomeComponent,
-      tag: 'some-component',
+      selectors: [['some-component']],
       template: function(ctx: SomeComponent, cm: boolean) {
         if (cm) {
           text(0, 'foo');
@@ -141,7 +141,7 @@ describe('animation renderer factory', () => {
     }
     static ngComponentDef = defineComponent({
       type: SomeComponentWithAnimation,
-      tag: 'some-component',
+      selectors: [['some-component']],
       template: function(ctx: SomeComponentWithAnimation, cm: boolean) {
         if (cm) {
           elementStart(0, 'div');

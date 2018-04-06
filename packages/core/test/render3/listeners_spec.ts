@@ -7,7 +7,7 @@
  */
 
 import {defineComponent, defineDirective} from '../../src/render3/index';
-import {container, containerRefreshEnd, containerRefreshStart, directiveRefresh, elementEnd, elementStart, embeddedViewEnd, embeddedViewStart, listener, text} from '../../src/render3/instructions';
+import {container, containerRefreshEnd, containerRefreshStart, elementEnd, elementStart, embeddedViewEnd, embeddedViewStart, listener, text} from '../../src/render3/instructions';
 
 import {getRendererFactory2} from './imported_renderer2';
 import {containerEl, renderComponent, renderToHtml} from './render_util';
@@ -24,7 +24,7 @@ describe('event listeners', () => {
 
     static ngComponentDef = defineComponent({
       type: MyComp,
-      tag: 'comp',
+      selectors: [['comp']],
       /** <button (click)="onClick()"> Click me </button> */
       template: function CompTemplate(ctx: any, cm: boolean) {
         if (cm) {
@@ -61,7 +61,7 @@ describe('event listeners', () => {
 
     static ngComponentDef = defineComponent({
       type: PreventDefaultComp,
-      tag: 'prevent-default-comp',
+      selectors: [['prevent-default-comp']],
       factory: () => new PreventDefaultComp(),
       /** <button (click)="onClick($event)">Click</button> */
       template: (ctx: PreventDefaultComp, cm: boolean) => {
@@ -235,6 +235,7 @@ describe('event listeners', () => {
 
       static ngDirectiveDef = defineDirective({
         type: HostListenerDir,
+        selectors: [['', 'hostListenerDir', '']],
         factory: function HostListenerDir_Factory() {
           const $dir$ = new HostListenerDir();
           listener('click', function() { return $dir$.onClick(); });
@@ -245,15 +246,13 @@ describe('event listeners', () => {
 
     function Template(ctx: any, cm: boolean) {
       if (cm) {
-        elementStart(0, 'button', ['hostListenerDir', ''], [HostListenerDir]);
-        text(2, 'Click');
+        elementStart(0, 'button', ['hostListenerDir', '']);
+        text(1, 'Click');
         elementEnd();
       }
-      HostListenerDir.ngDirectiveDef.h(1, 0);
-      directiveRefresh(1, 0);
     }
 
-    renderToHtml(Template, {});
+    renderToHtml(Template, {}, [HostListenerDir]);
     const button = containerEl.querySelector('button') !;
     button.click();
     expect(events).toEqual(['click!']);
@@ -339,15 +338,11 @@ describe('event listeners', () => {
         if (ctx.showing) {
           if (embeddedViewStart(0)) {
             text(0, 'Hello');
-            elementStart(1, MyComp);
+            elementStart(1, 'comp');
             elementEnd();
-            elementStart(3, MyComp);
+            elementStart(2, 'comp');
             elementEnd();
           }
-          MyComp.ngComponentDef.h(2, 1);
-          MyComp.ngComponentDef.h(4, 3);
-          directiveRefresh(2, 1);
-          directiveRefresh(4, 3);
           embeddedViewEnd();
         }
       }
@@ -355,7 +350,7 @@ describe('event listeners', () => {
     }
 
     const ctx = {showing: true};
-    renderToHtml(Template, ctx);
+    renderToHtml(Template, ctx, [MyComp]);
     const buttons = containerEl.querySelectorAll('button') !;
 
     buttons[0].click();
@@ -366,7 +361,7 @@ describe('event listeners', () => {
 
     // the child view listener should be removed when the parent view is removed
     ctx.showing = false;
-    renderToHtml(Template, ctx);
+    renderToHtml(Template, ctx, [MyComp]);
     buttons[0].click();
     buttons[1].click();
     expect(comps[0] !.counter).toEqual(1);

@@ -45,7 +45,7 @@ decorator is sufficient to generate the definition. However, in the case of
 interpreting the template, the compiler needs to know the selector defined for
 each component, directive and pipe that are in scope of the template. The
 purpose of this document is to define the information is needed by the
-compiler and how that information is is serialized to be discovered and
+compiler and how that information is serialized to be discovered and
 used by subsequent calls to `ngc`.
 
 This document refers to this style of code generation as ivy after the code
@@ -317,7 +317,7 @@ where the `type` values are generated as references.
 ```ts
 @NgModule({
   imports: [CommonModule, UtilityModule],
-  declarations: [MyComponent, MyDirective, MyComponent],
+  declarations: [MyComponent, MyDirective, MyPipe],
   exports: [MyComponent, MyDirective, MyPipe, UtilityModule],
   providers: [{
     provide: Service, useClass: ServiceImpl
@@ -490,9 +490,9 @@ need to be back-patch onto the component, directive, module, pipe, and
 injectable classes.
 
 If the Angular compiler option `"renderer2BackPatching"` is enabled, the
-compiler will generate an `angular.back-patch` module in the to root output
+compiler will generate an `angular.back-patch` module into the root output
 directory of the project. If `"generateRenderer2Factories"` is set to `true`
-then the default value for `"renderer2BackPatching"` is `true` and it is and
+then the default value for `"renderer2BackPatching"` is `true` and it is an
 error for it to be `false`. `"renderer2BackPatching"` is ignored if `"enableIvy"`
 is `false`.
 
@@ -536,7 +536,6 @@ The recommended options for producing a ivy application are
 | `"renderer2BackPatching"`      | `true`   | implied     |
 | `"generateCodeForLibraries"`   | `true`   | default     |
 | `"annotationsAs"`              | `remove` | implied     |
-| `"enableLegacyTemplate"`       | `false`  | default     |
 | `"preserveWhitespaces"`        | `false`  | default     |
 | `"skipMetadataEmit"`           | `true`   | default     |
 | `"strictMetadataEmit"`         | `false`  | implied     |
@@ -574,7 +573,6 @@ The recommended options for producing a ivy library are:
 | `"renderer2BackPatching"`      | `false`  | default     |
 | `"generateCodeForLibraries"`   | `false`  |             |
 | `"annotationsAs"`              | `remove` | implied     |
-| `"enableLegacyTemplate"`       | `false`  | default     |
 | `"preserveWhitespaces"`        | `false`  | default     |
 | `"skipMetadataEmit"`           | `false`  |             |
 | `"strictMetadataEmit"`         | `true `  |             |
@@ -598,25 +596,21 @@ depending on the target:
 |                   | `"renderer2BackPatching"`      | `true`       | enforced    |
 |                   | `"generateCodeForLibraries"`   | `true`       |             |
 |                   | `"annotationsAs"`              | `remove`     |             |
-|                   | `"enableLegacyTemplate"`       | `false`      |             |
 |                   | `"preserveWhitespaces"`        | `false`      |             |
 |                   | `"skipMetadataEmit"`           | `false`      |             |
 |                   | `"strictMetadataEmit"`         | `true`       |             |
 |                   | `"skipTemplateCodegen"`        | `false`      |             |
 |                   | `"fullTemplateTypeCheck"`      | `true`       |             |
-|                   | `"enableLegacyTemplate"`       | `false`      |             |
 |                   |                                |              |             |
 | `"library"`       | `"generateRenderer2Factories"` | `false`      | enforced    |
 |                   | `"renderer2BackPatching"`      | `false`      | enforced    |
 |                   | `"generateCodeForLibraries"`   | `false`      | enforced    |
 |                   | `"annotationsAs"`              | `decorators` |             |
-|                   | `"enableLegacyTemplate"`       | `false`      |             |
 |                   | `"preserveWhitespaces"`        | `false`      |             |
 |                   | `"skipMetadataEmit"`           | `false`      | enforced    |
 |                   | `"strictMetadataEmit"`         | `true`       |             |
 |                   | `"skipTemplateCodegen"`        | `false`      | enforced    |
 |                   | `"fullTemplateTypeCheck"`      | `true`       |             |
-|                   | `"enableLegacyTemplate"`       | `false`      |             |
 |                   |                                |              |             |
 | `"package"`       | `"flatModuleOutFile"`          |              | required    |
 |                   | `"flatModuleId"`               |              | required    |
@@ -625,13 +619,11 @@ depending on the target:
 |                   | `"renderer2BackPatching"`      | `false`      | enforced    |
 |                   | `"generateCodeForLibraries"`   | `false`      | enforced    |
 |                   | `"annotationsAs"`              | `remove`     |             |
-|                   | `"enableLegacyTemplate"`       | `false`      |             |
 |                   | `"preserveWhitespaces"`        | `false`      |             |
 |                   | `"skipMetadataEmit"`           | `false`      | enforced    |
 |                   | `"strictMetadataEmit"`         | `true`       |             |
 |                   | `"skipTemplateCodegen"`        | `false`      | enforced    |
 |                   | `"fullTemplateTypeCheck"`      | `true`       |             |
-|                   | `"enableLegacyTemplate"`       | `false`      |             |
 
 Options that are marked "enforced" are reported as an error if they are
 explicitly set to a value different from what is specified here. The options

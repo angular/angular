@@ -7,11 +7,10 @@
  */
 
 import {NgForOf, NgForOfContext} from '@angular/common';
-import {Component, ContentChild, Directive, EventEmitter, Injectable, Input, NgModule, OnDestroy, Optional, Output, Pipe, PipeTransform, QueryList, SimpleChanges, TemplateRef, Type, ViewChild, ViewContainerRef} from '@angular/core';
+import {Component, ContentChild, Directive, EventEmitter, Injectable, InjectableDef, InjectorDef, Input, NgModule, OnDestroy, Optional, Output, Pipe, PipeTransform, QueryList, SimpleChanges, TemplateRef, Type, ViewChild, ViewContainerRef, defineInjectable, defineInjector} from '@angular/core';
 import {withBody} from '@angular/core/testing';
 
 import * as r3 from '../../../src/render3/index';
-import {$pending_pr_22458$} from './pending_api_spec';
 
 /// See: `normative.md`
 
@@ -33,7 +32,7 @@ class AppState {
   ];
 
   // NORMATIVE
-  static ngInjectableDef = $pending_pr_22458$.defineInjectable({factory: () => new AppState()});
+  static ngInjectableDef = defineInjectable({factory: () => new AppState()});
   // /NORMATIVE
 }
 
@@ -59,7 +58,7 @@ class ToDoAppComponent {
   // NORMATIVE
   static ngComponentDef = r3.defineComponent({
     type: ToDoAppComponent,
-    tag: 'todo-app',
+    selectors: [['todo-app']],
     factory: function ToDoAppComponent_Factory() {
       return new ToDoAppComponent(r3.directiveInject(AppState));
     },
@@ -68,7 +67,7 @@ class ToDoAppComponent {
         const ToDoAppComponent_NgForOf_Template = function ToDoAppComponent_NgForOf_Template(
             ctx1: NgForOfContext<ToDo>, cm: boolean) {
           if (cm) {
-            r3.E(0, ToDoItemComponent);
+            r3.E(0, 'todo');
             r3.L('archive', ctx.onArchive.bind(ctx));
             r3.e();
           }
@@ -78,7 +77,7 @@ class ToDoAppComponent {
         r3.T(1, 'ToDo Application');
         r3.e();
         r3.E(2, 'div');
-        r3.C(3, c3_directives, ToDoAppComponent_NgForOf_Template);
+        r3.C(3, ToDoAppComponent_NgForOf_Template, '', ['ngForOf', '']);
         r3.e();
         r3.E(4, 'span');
         r3.T(5);
@@ -90,9 +89,10 @@ class ToDoAppComponent {
   // /NORMATIVE
 }
 
-// NORMATIVE
-const c3_directives = [NgForOf as r3.DirectiveType<NgForOf<ToDo>>];
-// /NORMATIVE
+// NON-NORMATIVE
+ToDoAppComponent.ngComponentDef.directiveDefs = () =>
+    [ToDoItemComponent.ngComponentDef, (NgForOf as r3.DirectiveType<NgForOf<any>>).ngDirectiveDef];
+// /NON-NORMATIVE
 
 @Component({
   selector: 'todo',
@@ -123,7 +123,7 @@ class ToDoItemComponent {
   // NORMATIVE
   static ngComponentDef = r3.defineComponent({
     type: ToDoItemComponent,
-    tag: 'todo',
+    selectors: [['todo']],
     factory: function ToDoItemComponent_Factory() { return new ToDoItemComponent(); },
     template: function ToDoItemComponent_Template(ctx: ToDoItemComponent, cm: boolean) {
       if (cm) {
@@ -158,7 +158,7 @@ const e1_attrs = ['type', 'checkbox'];
 })
 class ToDoAppModule {
   // NORMATIVE
-  static ngInjectorDef = $pending_pr_22458$.defineInjector({
+  static ngInjectorDef = defineInjector({
     factory: () => new ToDoAppModule(),
     providers: [AppState],
   });

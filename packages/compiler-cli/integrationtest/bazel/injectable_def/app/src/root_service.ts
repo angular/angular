@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {APP_ROOT_SCOPE, Injectable} from '@angular/core';
+import {Injectable} from '@angular/core';
 
 @Injectable({
-  scope: APP_ROOT_SCOPE,
+  providedIn: 'root',
 })
 export class Service {
 }

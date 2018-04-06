@@ -10,7 +10,7 @@ const method1 = { parameters: [] };
 const method2 = { parameters: [] };
 const method3 = { parameters: [] };
 
-describe('angular-api-packge: processClassLikeMembers processor', () => {
+describe('angular-api-package: processClassLikeMembers processor', () => {
 
   it('should be available on the injector', () => {
     const dgeni = new Dgeni([testPackage('angular-api-package')]);

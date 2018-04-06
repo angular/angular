@@ -11,7 +11,7 @@ import {PostMessageBus, PostMessageBusSink, PostMessageBusSource} from '@angular
 
 
 /*
- * Returns a PostMessageBus thats sink is connected to its own source.
+ * Returns a PostMessageBus that's sink is connected to its own source.
  * Useful for testing the sink and source.
  */
 export function createConnectedMessageBus(): MessageBus {

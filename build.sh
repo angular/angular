@@ -24,7 +24,8 @@ PACKAGES=(core
   compiler-cli
   language-service
   benchpress
-  service-worker)
+  service-worker
+  elements)
 
 TSC_PACKAGES=(compiler-cli
   language-service
@@ -34,7 +35,7 @@ NODE_PACKAGES=(compiler-cli
   benchpress)
 
 SCOPED_PACKAGES=$(
-  for P in ${PACKAGES[@]}; do echo @angular/${P}; done
+  for P in ${PACKAGES[@]}; do echo \\@angular/${P}; done
 )
 NG_UPDATE_PACKAGE_GROUP=$(
   # The first sed creates an array of strings
@@ -219,7 +220,8 @@ minify() {
     base_file=$( basename "${file}" )
     if [[ "${base_file}" =~ $regex && "${base_file##*.}" != "map" ]]; then
       local out_file=$(dirname "${file}")/${BASH_REMATCH[1]}.min.js
-      $UGLIFYJS -c --screw-ie8 --comments -o ${out_file} --source-map ${out_file}.map --prefix relative --source-map-include-sources ${file}
+      echo "======          $UGLIFY -c --comments -o ${out_file} --source-map "includeSources=true,content='${file}.map',filename='${out_file}.map'" ${file}"
+      $UGLIFY -c --comments -o ${out_file} --source-map "includeSources=true,content='${file}.map',filename='${out_file}.map'" ${file}
     fi
   done
 }
@@ -344,7 +346,7 @@ N="
 "
 TSC=`pwd`/node_modules/.bin/tsc
 NGC="node --max-old-space-size=3000 `pwd`/dist/tools/@angular/compiler-cli/src/main"
-UGLIFYJS=`pwd`/node_modules/.bin/uglifyjs
+UGLIFY=`pwd`/node_modules/.bin/uglifyjs
 TSCONFIG=./tools/tsconfig.json
 ROLLUP=`pwd`/node_modules/.bin/rollup
 
@@ -450,7 +452,9 @@ do
   OUT_DIR_ESM5=${ROOT_OUT_DIR}/${PACKAGE}/esm5
   NPM_DIR=${PWD}/dist/packages-dist/${PACKAGE}
   ESM2015_DIR=${NPM_DIR}/esm2015
+  FESM2015_DIR=${NPM_DIR}/fesm2015
   ESM5_DIR=${NPM_DIR}/esm5
+  FESM5_DIR=${NPM_DIR}/fesm5
   BUNDLES_DIR=${NPM_DIR}/bundles
 
   LICENSE_BANNER=${ROOT_DIR}/license-banner.txt
@@ -472,12 +476,16 @@ do
 
       (
         cd  ${SRC_DIR}
+        echo "======         Copy ESM2015 for ${PACKAGE}"
+        rsync -a --exclude="locale/**" --exclude="**/*.d.ts" --exclude="**/*.metadata.json" ${OUT_DIR}/ ${ESM2015_DIR}
+
         echo "======         Rollup ${PACKAGE}"
-        rollupIndex ${OUT_DIR} ${ESM2015_DIR} ${PACKAGE}
+        rollupIndex ${OUT_DIR} ${FESM2015_DIR} ${PACKAGE}
 
         echo "======         Produce ESM5 version"
         compilePackageES5 ${SRC_DIR} ${OUT_DIR_ESM5} ${PACKAGE}
-        rollupIndex ${OUT_DIR_ESM5} ${ESM5_DIR} ${PACKAGE}
+        rsync -a --exclude="locale/**" --exclude="**/*.d.ts" --exclude="**/*.metadata.json" ${OUT_DIR_ESM5}/ ${ESM5_DIR}
+        rollupIndex ${OUT_DIR_ESM5} ${FESM5_DIR} ${PACKAGE}
 
         echo "======         Run rollup conversions on ${PACKAGE}"
         runRollup ${SRC_DIR}

@@ -145,8 +145,8 @@ All `HttpClient` methods return an RxJS `Observable` of something.
 HTTP is a request/response protocol. 
 You make a request, it returns a single response.
 
-In general, an `Observable` _can_ return multiple values over time.
-An `Observable` from `HttpClient` always emits a single value and then completes, never to emit again.
+In general, an observable _can_ return multiple values over time.
+An observable from `HttpClient` always emits a single value and then completes, never to emit again.
 
 This particular `HttpClient.get` call returns an `Observable<Hero[]>`, literally "_an observable of hero arrays_". In practice, it will only return a single hero array.
 
@@ -513,8 +513,8 @@ The `searchTerms` becomes an `Observable` emitting a steady stream of search ter
 Passing a new search term directly to the `searchHeroes()` after every user keystroke would create an excessive amount of HTTP requests,
 taxing server resources and burning through the cellular network data plan.
 
-Instead, the `ngOnInit()` method pipes the `searchTerms` _observable_  through a sequence of RxJS operators that reduce the number of calls to the `searchHeroes()`,
-ultimately returning an _observable_ of timely hero search results (each a `Hero[]`).
+Instead, the `ngOnInit()` method pipes the `searchTerms` observable through a sequence of RxJS operators that reduce the number of calls to the `searchHeroes()`,
+ultimately returning an observable of timely hero search results (each a `Hero[]`).
 
 Here's the code.
 
@@ -529,7 +529,7 @@ Here's the code.
 before passing along the latest string. You'll never make requests more frequently than 300ms.
 
 
-* `distinctUntilChanged` ensures that a request is sent only if the filter text changed.
+* `distinctUntilChanged()` ensures that a request is sent only if the filter text changed.
 
 
 * `switchMap()` calls the search service for each search term that makes it through `debounce` and `distinctUntilChanged`.
@@ -648,7 +648,7 @@ You're at the end of your journey, and you've accomplished a lot.
 * You extended `HeroService` to support `post()`, `put()`, and `delete()` methods.
 * You updated the components to allow adding, editing, and deleting of heroes.
 * You configured an in-memory web API.
-* You learned how to use Observables.
+* You learned how to use observables.
 
 This concludes the "Tour of Heroes" tutorial.
 You're ready to learn more about Angular development in the fundamentals section,

@@ -9,7 +9,7 @@
 import {browserDetection} from '@angular/platform-browser/testing/src/browser_util';
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, ContentChild, ContentChildren, Directive, HostBinding, HostListener, Injectable, Input, NgModule, OnDestroy, Optional, Pipe, PipeTransform, QueryList, SimpleChanges, TemplateRef, ViewChild, ViewChildren, ViewContainerRef} from '../../../src/core';
 import * as $r3$ from '../../../src/core_render3_private_export';
-import {renderComponent, toHtml} from '../render_util';
+import {ComponentFixture, renderComponent, toHtml} from '../render_util';
 
 /// See: `normative.md`
 describe('elements', () => {
@@ -32,7 +32,7 @@ describe('elements', () => {
       // NORMATIVE
       static ngComponentDef = $r3$.ɵdefineComponent({
         type: MyComponent,
-        tag: 'my-component',
+        selectors: [['my-component']],
         factory: () => new MyComponent(),
         template: function(ctx: $MyComponent$, cm: $boolean$) {
           if (cm) {
@@ -53,6 +53,60 @@ describe('elements', () => {
         .toEqual('<div class="my-app" title="Hello">Hello <b>World</b>!</div>');
   });
 
+  it('should support local refs', () => {
+    type $LocalRefComp$ = LocalRefComp;
+
+    class Dir {
+      value = 'one';
+
+      static ngDirectiveDef = $r3$.ɵdefineDirective({
+        type: Dir,
+        selectors: [['', 'dir', '']],
+        factory: function DirA_Factory() { return new Dir(); },
+        exportAs: 'dir'
+      });
+    }
+
+    // NORMATIVE
+    const $e0_attrs$ = ['dir', ''];
+    const $e0_locals$ = ['dir', 'dir', 'foo', ''];
+    // /NORMATIVE
+
+    @Component({
+      selector: 'local-ref-comp',
+      template: `
+        <div dir #dir="dir" #foo></div>
+        {{ dir.value }} - {{ foo.tagName }}
+      `
+    })
+    class LocalRefComp {
+      // NORMATIVE
+      static ngComponentDef = $r3$.ɵdefineComponent({
+        type: LocalRefComp,
+        selectors: [['local-ref-comp']],
+        factory: function LocalRefComp_Factory() { return new LocalRefComp(); },
+        template: function LocalRefComp_Template(ctx: $LocalRefComp$, cm: $boolean$) {
+          if (cm) {
+            $r3$.ɵE(0, 'div', $e0_attrs$, $e0_locals$);
+            $r3$.ɵe();
+            $r3$.ɵT(3);
+          }
+          const $tmp$ = $r3$.ɵld(1) as any;
+          const $tmp_2$ = $r3$.ɵld(2) as any;
+          $r3$.ɵt(3, $r3$.ɵi2(' ', $tmp$.value, ' - ', $tmp_2$.tagName, ''));
+        }
+      });
+      // /NORMATIVE
+    }
+
+    // NON-NORMATIVE
+    LocalRefComp.ngComponentDef.directiveDefs = () => [Dir.ngDirectiveDef];
+    // /NON-NORMATIVE
+
+    const fixture = new ComponentFixture(LocalRefComp);
+    expect(fixture.html).toEqual(`<div dir=""></div> one - DIV`);
+  });
+
   it('should support listeners', () => {
     type $ListenerComp$ = ListenerComp;
 
@@ -69,7 +123,7 @@ describe('elements', () => {
       // NORMATIVE
       static ngComponentDef = $r3$.ɵdefineComponent({
         type: ListenerComp,
-        tag: 'listener-comp',
+        selectors: [['listener-comp']],
         factory: function ListenerComp_Factory() { return new ListenerComp(); },
         template: function ListenerComp_Template(ctx: $ListenerComp$, cm: $boolean$) {
           if (cm) {
@@ -101,7 +155,7 @@ describe('elements', () => {
         // NORMATIVE
         static ngComponentDef = $r3$.ɵdefineComponent({
           type: MyComponent,
-          tag: 'my-component',
+          selectors: [['my-component']],
           factory: function MyComponent_Factory() { return new MyComponent(); },
           template: function MyComponent_Template(ctx: $MyComponent$, cm: $boolean$) {
             if (cm) {
@@ -131,7 +185,7 @@ describe('elements', () => {
         // NORMATIVE
         static ngComponentDef = $r3$.ɵdefineComponent({
           type: MyComponent,
-          tag: 'my-component',
+          selectors: [['my-component']],
           factory: function MyComponent_Factory() { return new MyComponent(); },
           template: function MyComponent_Template(ctx: $MyComponent$, cm: $boolean$) {
             if (cm) {
@@ -161,14 +215,14 @@ describe('elements', () => {
         // NORMATIVE
         static ngComponentDef = $r3$.ɵdefineComponent({
           type: MyComponent,
-          tag: 'my-component',
+          selectors: [['my-component']],
           factory: function MyComponent_Factory() { return new MyComponent(); },
           template: function MyComponent_Template(ctx: $MyComponent$, cm: $boolean$) {
             if (cm) {
               $r3$.ɵE(0, 'div');
               $r3$.ɵe();
             }
-            $r3$.ɵk(0, 'foo', $r3$.ɵb(ctx.someFlag));
+            $r3$.ɵkn(0, 'foo', $r3$.ɵb(ctx.someFlag));
           }
         });
         // /NORMATIVE
@@ -195,15 +249,15 @@ describe('elements', () => {
         // NORMATIVE
         static ngComponentDef = $r3$.ɵdefineComponent({
           type: MyComponent,
-          tag: 'my-component',
+          selectors: [['my-component']],
           factory: function MyComponent_Factory() { return new MyComponent(); },
           template: function MyComponent_Template(ctx: $MyComponent$, cm: $boolean$) {
             if (cm) {
               $r3$.ɵE(0, 'div');
               $r3$.ɵe();
             }
-            $r3$.ɵs(0, 'color', $r3$.ɵb(ctx.someColor));
-            $r3$.ɵs(0, 'width', $r3$.ɵb(ctx.someWidth), 'px');
+            $r3$.ɵsn(0, 'color', $r3$.ɵb(ctx.someColor));
+            $r3$.ɵsn(0, 'width', $r3$.ɵb(ctx.someWidth), 'px');
           }
         });
         // /NORMATIVE
@@ -243,7 +297,7 @@ describe('elements', () => {
         // NORMATIVE
         static ngComponentDef = $r3$.ɵdefineComponent({
           type: MyComponent,
-          tag: 'my-component',
+          selectors: [['my-component']],
           factory: function MyComponent_Factory() { return new MyComponent(); },
           template: function MyComponent_Template(ctx: $MyComponent$, cm: $boolean$) {
             if (cm) {
@@ -251,7 +305,7 @@ describe('elements', () => {
               $r3$.ɵe();
             }
             $r3$.ɵp(0, 'id', $r3$.ɵb(ctx.someString + 1));
-            $r3$.ɵk(0, 'foo', $r3$.ɵb(ctx.someString == 'initial'));
+            $r3$.ɵkn(0, 'foo', $r3$.ɵb(ctx.someString == 'initial'));
           }
         });
         // /NORMATIVE
@@ -263,6 +317,37 @@ describe('elements', () => {
       comp.someString = 'changed';
       $r3$.ɵdetectChanges(comp);
       expect(toHtml(comp)).toEqual('<div class="" id="changed1" style="color: red;"></div>');
+    });
+
+    it('should bind [class] and [style] to the element', () => {
+      type $StyleComponent$ = StyleComponent;
+
+      @Component(
+          {selector: 'style-comp', template: `<div [class]="classExp" [style]="styleExp"></div>`})
+      class StyleComponent {
+        classExp: string[]|string = 'some-name';
+        styleExp: {[name: string]: string} = {'background-color': 'red'};
+
+        // NORMATIVE
+        static ngComponentDef = $r3$.ɵdefineComponent({
+          type: StyleComponent,
+          selectors: [['style-comp']],
+          factory: function StyleComponent_Factory() { return new StyleComponent(); },
+          template: function StyleComponent_Template(ctx: $StyleComponent$, cm: $boolean$) {
+            if (cm) {
+              $r3$.ɵE(0, 'div');
+              $r3$.ɵe();
+            }
+            $r3$.ɵk(0, $r3$.ɵb(ctx.classExp));
+            $r3$.ɵs(0, $r3$.ɵb(ctx.styleExp));
+          }
+        });
+        // /NORMATIVE
+      }
+
+      const styleFixture = new ComponentFixture(StyleComponent);
+      expect(styleFixture.html)
+          .toEqual(`<div class="some-name" style="background-color: red;"></div>`);
     });
   });
 });

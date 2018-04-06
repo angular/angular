@@ -74,7 +74,7 @@ sudo docker run \
 ## Example
 The following command would start a docker container based on the previously created `foobar-builds`
 docker image, alias it as 'foobar-builds-1' and map predefined directories on the host VM to be used
-by the container for accesing secrets and SSL certificates and keeping the build artifacts and logs.
+by the container for accessing secrets and SSL certificates and keeping the build artifacts and logs.
 
 ```
 sudo docker run \

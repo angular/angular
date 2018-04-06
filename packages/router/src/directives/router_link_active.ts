@@ -7,23 +7,21 @@
  */
 
 import {AfterContentInit, ChangeDetectorRef, ContentChildren, Directive, ElementRef, Input, OnChanges, OnDestroy, QueryList, Renderer2, SimpleChanges} from '@angular/core';
-import {Subscription} from 'rxjs/Subscription';
-import {NavigationEnd} from '../events';
+import {Subscription} from 'rxjs';
+
+import {NavigationEnd, RouterEvent} from '../events';
 import {Router} from '../router';
+
 import {RouterLink, RouterLinkWithHref} from './router_link';
 
+
 /**
- * @whatItDoes Lets you add a CSS class to an element when the link's route becomes active.
- *
- * @howToUse
- *
- * ```
- * <a routerLink="/user/bob" routerLinkActive="active-link">Bob</a>
- * ```
  *
  * @description
  *
- * The RouterLinkActive directive lets you add a CSS class to an element when the link's route
+ * Lets you add a CSS class to an element when the link's route becomes active.
+ *
+ * This directive lets you add a CSS class to an element when the link's route
  * becomes active.
  *
  * Consider the following example:
@@ -93,7 +91,7 @@ export class RouterLinkActive implements OnChanges,
   constructor(
       private router: Router, private element: ElementRef, private renderer: Renderer2,
       private cdr: ChangeDetectorRef) {
-    this.subscription = router.events.subscribe(s => {
+    this.subscription = router.events.subscribe((s: RouterEvent) => {
       if (s instanceof NavigationEnd) {
         this.update();
       }

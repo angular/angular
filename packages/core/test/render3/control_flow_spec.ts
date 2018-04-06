@@ -6,9 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {defineComponent} from '../../src/render3/definition';
 import {bind, container, containerRefreshEnd, containerRefreshStart, elementEnd, elementStart, embeddedViewEnd, embeddedViewStart, text, textBinding} from '../../src/render3/instructions';
 
-import {renderToHtml} from './render_util';
+import {ComponentFixture, createComponent, renderToHtml} from './render_util';
 
 describe('JS control flow', () => {
   it('should work with if block', () => {
@@ -123,6 +124,54 @@ describe('JS control flow', () => {
 
     ctx.condition2 = true;
     expect(renderToHtml(Template, ctx)).toEqual('<div><span>Hello</span></div>');
+  });
+
+  it('should work with adjacent if blocks managing views in the same container', () => {
+
+    const ctx = {condition1: true, condition2: true, condition3: true};
+
+    /**
+    *   % if(ctx.condition1) {
+    *     1
+    *   % }; if(ctx.condition2) {
+    *     2
+    *   % }; if(ctx.condition3) {
+    *     3
+    *   % }
+    */
+    function Template(ctx: any, cm: boolean) {
+      if (cm) {
+        container(0);
+      }
+      containerRefreshStart(0);
+      if (ctx.condition1) {
+        const cm1 = embeddedViewStart(1);
+        if (cm1) {
+          text(0, '1');
+        }
+        embeddedViewEnd();
+      }  // can't have ; here due linting rules
+      if (ctx.condition2) {
+        const cm2 = embeddedViewStart(2);
+        if (cm2) {
+          text(0, '2');
+        }
+        embeddedViewEnd();
+      }  // can't have ; here due linting rules
+      if (ctx.condition3) {
+        const cm3 = embeddedViewStart(3);
+        if (cm3) {
+          text(0, '3');
+        }
+        embeddedViewEnd();
+      }
+      containerRefreshEnd();
+    }
+
+    expect(renderToHtml(Template, ctx)).toEqual('123');
+
+    ctx.condition2 = false;
+    expect(renderToHtml(Template, ctx)).toEqual('13');
   });
 
   it('should work with containers with views as parents', () => {
@@ -483,6 +532,136 @@ describe('JS control flow', () => {
     ctx.condition = true;
     expect(renderToHtml(Template, ctx)).toEqual('<div><span>Hello</span></div>');
   });
+
+  it('should work with sibling if blocks with children', () => {
+    let log: string[] = [];
+
+    // Intentionally duplicating the templates in test below so we are
+    // testing the behavior on firstTemplatePass for each of these tests
+    class Comp {
+      static ngComponentDef = defineComponent({
+        type: Comp,
+        selectors: [['comp']],
+        factory: () => {
+          log.push('comp!');
+          return new Comp();
+        },
+        template: function(ctx: Comp, cm: boolean) {}
+      });
+    }
+
+    class App {
+      condition = true;
+      condition2 = true;
+
+      static ngComponentDef = defineComponent({
+        type: App,
+        selectors: [['app']],
+        factory: () => new App(),
+        template: function(ctx: any, cm: boolean) {
+          if (cm) {
+            elementStart(0, 'div');
+            elementEnd();
+            container(1);
+            container(2);
+          }
+          containerRefreshStart(1);
+          {
+            if (ctx.condition) {
+              if (embeddedViewStart(0)) {
+                elementStart(0, 'comp');
+                elementEnd();
+              }
+              embeddedViewEnd();
+            }
+          }
+          containerRefreshEnd();
+          containerRefreshStart(2);
+          {
+            if (ctx.condition2) {
+              if (embeddedViewStart(0)) {
+                elementStart(0, 'comp');
+                elementEnd();
+              }
+              embeddedViewEnd();
+            }
+          }
+          containerRefreshEnd();
+        },
+        directives: () => [Comp]
+      });
+    }
+
+    const fixture = new ComponentFixture(App);
+    expect(log).toEqual(['comp!', 'comp!']);
+  });
+
+  it('should work with a sibling if block that starts closed', () => {
+    let log: string[] = [];
+
+    // Intentionally duplicating the templates from above so we are
+    // testing the behavior on firstTemplatePass for each of these tests
+    class Comp {
+      static ngComponentDef = defineComponent({
+        type: Comp,
+        selectors: [['comp']],
+        factory: () => {
+          log.push('comp!');
+          return new Comp();
+        },
+        template: function(ctx: Comp, cm: boolean) {}
+      });
+    }
+
+    class App {
+      condition = false;
+      condition2 = true;
+
+      static ngComponentDef = defineComponent({
+        type: App,
+        selectors: [['app']],
+        factory: () => new App(),
+        template: function(ctx: any, cm: boolean) {
+          if (cm) {
+            elementStart(0, 'div');
+            elementEnd();
+            container(1);
+            container(2);
+          }
+          containerRefreshStart(1);
+          {
+            if (ctx.condition) {
+              if (embeddedViewStart(0)) {
+                elementStart(0, 'comp');
+                elementEnd();
+              }
+              embeddedViewEnd();
+            }
+          }
+          containerRefreshEnd();
+          containerRefreshStart(2);
+          {
+            if (ctx.condition2) {
+              if (embeddedViewStart(0)) {
+                elementStart(0, 'comp');
+                elementEnd();
+              }
+              embeddedViewEnd();
+            }
+          }
+          containerRefreshEnd();
+        },
+        directives: () => [Comp]
+      });
+    }
+
+    const fixture = new ComponentFixture(App);
+    expect(log).toEqual(['comp!']);
+
+    fixture.component.condition = true;
+    fixture.update();
+    expect(log).toEqual(['comp!', 'comp!']);
+  });
 });
 
 describe('JS for loop', () => {
@@ -490,6 +669,15 @@ describe('JS for loop', () => {
     const ctx: {data1: string[] | null,
                 data2: number[] | null} = {data1: ['a', 'b', 'c'], data2: [1, 2]};
 
+    /**
+     * <div>
+     *    % for (let i = 0; i < ctx.data1.length; i++) {
+     *        {{data1[i]}}
+     *    % } for (let j = 0; j < ctx.data2.length; j++) {
+     *        {{data1[j]}}
+     *    % }
+     * </div>
+     */
     function Template(ctx: any, cm: boolean) {
       if (cm) {
         elementStart(0, 'div');

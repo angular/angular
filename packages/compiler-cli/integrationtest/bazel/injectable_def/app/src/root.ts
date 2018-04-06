@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {APP_ROOT_SCOPE, Component, Injectable, NgModule, Optional, Self} from '@angular/core';
+import {Component, Injectable, NgModule, Optional, Self} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 import {ServerModule} from '@angular/platform-server';
 import {RouterModule} from '@angular/router';

@@ -21,21 +21,22 @@ describe('logger service', () => {
   describe('log', () => {
     it('should delegate to console.log', () => {
       logger.log('param1', 'param2', 'param3');
-      expect(console.log).toHaveBeenCalledWith('param1', 'param2', 'param3');
+      expect(logSpy).toHaveBeenCalledWith('param1', 'param2', 'param3');
     });
   });
 
   describe('warn', () => {
     it('should delegate to console.warn', () => {
       logger.warn('param1', 'param2', 'param3');
-      expect(console.warn).toHaveBeenCalledWith('param1', 'param2', 'param3');
+      expect(warnSpy).toHaveBeenCalledWith('param1', 'param2', 'param3');
     });
   });
 
   describe('error', () => {
     it('should delegate to ErrorHandler', () => {
-      logger.error('param1', 'param2', 'param3');
-      expect(errorHandler.handleError).toHaveBeenCalledWith('param1 param2 param3');
+      const err = new Error('some error message');
+      logger.error(err);
+      expect(errorHandler.handleError).toHaveBeenCalledWith(err);
     });
   });
 });

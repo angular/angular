@@ -16,25 +16,6 @@ import * as path from 'path';
 
 import {SerializationOptions, generateGoldenFile, verifyAgainstGoldenFile} from './main';
 
-// Examples:
-//
-// ```sh
-// # Generate one declaration file
-// ts-api-guardian --out api_guard.d.ts index.d.ts
-//
-// # Generate multiple declaration files // # (output location like typescript)
-// ts-api-guardian --outDir api_guard [--rootDir .] core/index.d.ts core/testing.d.ts
-//
-// # Print usage
-// ts-api-guardian --help
-//
-// # Check against one declaration file
-// ts-api-guardian --verify api_guard.d.ts index.d.ts
-//
-// # Check against multiple declaration files
-// ts-api-guardian --verifyDir api_guard [--rootDir .] core/index.d.ts core/testing.d.ts
-// ```
-
 const CMD = 'ts-api-guardian';
 
 export function startCli() {
@@ -43,13 +24,7 @@ export function startCli() {
   const options: SerializationOptions = {
     stripExportPattern: argv['stripExportPattern'],
     allowModuleIdentifiers: [].concat(argv['allowModuleIdentifiers']),
-    onStabilityMissing: argv['onStabilityMissing'] || 'none'
   };
-
-  if (['warn', 'error', 'none'].indexOf(options.onStabilityMissing as string) < 0) {
-    throw new Error(
-        'Argument for "--onStabilityMissing" option must be one of: "warn", "error", "none"');
-  }
 
   for (const error of errors) {
     console.warn(error);
@@ -104,7 +79,7 @@ export function parseArguments(input: string[]):
   const argv = minimist(input, {
     string: [
       'out', 'outDir', 'verify', 'verifyDir', 'rootDir', 'stripExportPattern',
-      'allowModuleIdentifiers', 'onStabilityMissing'
+      'allowModuleIdentifiers'
     ],
     boolean: [
       'help',
@@ -180,10 +155,7 @@ Options:
 
         --stripExportPattern <regexp>   Do not output exports matching the pattern
         --allowModuleIdentifiers <identifier>
-                                        Whitelist identifier for "* as foo" imports
-        --onStabilityMissing <warn|error|none>
-                                        Warn or error if an export has no stability
-                                        annotation`);
+                                        Whitelist identifier for "* as foo" imports`);
   process.exit(error ? 1 : 0);
 }
 

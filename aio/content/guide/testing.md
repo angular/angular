@@ -262,13 +262,12 @@ test any service with a dependency.
 
 <div class="alert is-important">
 
-The `HeroService` methods return _Observables_.
-_Subscribe_ to the method observable to (a) cause it to execute and (b)
+The `HeroService` methods return `Observables`. You must
+_subscribe_ to an observable to (a) cause it to execute and (b)
 assert that the method succeeds or fails.
 
-The `subscribe()` method takes a success and fail callback.
-Make sure you provide _both_ callbacks so that you capture errors.
-
+The `subscribe()` method takes a success (`next`) and fail (`error`) callback.
+Make sure you provide _both_ callbacks so that you capture errors. 
 Neglecting to do so produces an asynchronous uncaught observable error that
 the test runner will likely attribute to a completely different test.
 
@@ -785,6 +784,25 @@ There is no harm in calling `detectChanges()` more often than is strictly necess
 
 <hr>
 
+{@a dispatch-event}
+
+#### Change an input value with _dispatchEvent()_
+
+To simulate user input, you can find the input element and set its `value` property.
+
+You will call `fixture.detectChanges()` to trigger Angular's change detection.
+But there is an essential, intermediate step.
+
+Angular doesn't know that you set the input element's `value` property.
+It won't read that property until you raise the element's `input` event by calling `dispatchEvent()`. 
+_Then_ you call `detectChanges()`.
+
+The following example demonstrates the proper sequence.
+
+<code-example path="testing/src/app/hero/hero-detail.component.spec.ts" region="title-case-pipe" title="app/hero/hero-detail.component.spec.ts (pipe test)"></code-example>
+
+<hr>
+
 ### Component with external files
 
 The `BannerComponent` above is defined with an _inline template_ and _inline css_, specified in the `@Component.template` and `@Component.styles` properties respectively.
@@ -1005,9 +1023,9 @@ Focus on the spy.
   region="spy">
 </code-example>
 
-The spy is designed such that any call to `getQuote` receives an Observable with a test quote.
+The spy is designed such that any call to `getQuote` receives an observable with a test quote.
 Unlike the real `getQuote()` method, this spy bypasses the server
-and returns a synchronous Observable whose value is available immediately.
+and returns a synchronous observable whose value is available immediately.
 
 You can write many useful tests with this spy, even though its `Observable` is synchronous.
 
@@ -1095,14 +1113,14 @@ Or you can copy this one from the sample code.
 
 This helper's observable emits the `data` value in the next turn of the JavaScript engine. 
 
-[RxJS `defer()`](http://reactivex.io/documentation/operators/defer.html) returns an observable.
+The [RxJS `defer()` operator](http://reactivex.io/documentation/operators/defer.html) returns an observable.
 It takes a factory function that returns either a promise or an observable.
 When something subscribes to _defer_'s observable,
 it adds the subscriber to a new observable created with that factory. 
 
-RxJS `defer()` transform the `Promise.resolve()` into a new observable that, 
+The `defer()` operator transforms the `Promise.resolve()` into a new observable that, 
 like `HttpClient`, emits once and completes.
-Subscribers will be unsubscribed after they receive the data value.
+Subscribers are unsubscribed after they receive the data value.
 
 There's a similar helper for producing an async error.
 
@@ -1669,10 +1687,9 @@ Here's the `HeroDetailComponent` constructor:
 <code-example path="testing/src/app/hero/hero-detail.component.ts" region="ctor" title="app/hero/hero-detail.component.ts (constructor)" linenums="false"></code-example>
 
 The `HeroDetail` component needs the `id` parameter so it can fetch 
-the corresponding hero via the `HeroDetailService`.
-
+the corresponding hero via the `HeroDetailService`. 
 The component has to get the `id` from the `ActivatedRoute.paramMap` property
-which is an _Observable_.
+which is an `Observable`.
 
 It can't just reference the `id` property of the `ActivatedRoute.paramMap`.
 The component has to _subscribe_ to the `ActivatedRoute.paramMap` observable and be prepared
@@ -2346,7 +2363,7 @@ Focus on the `overrideComponent` method.
 <code-example path="testing/src/app/hero/hero-detail.component.spec.ts" region="override-component-method" title="app/hero/hero-detail.component.spec.ts (overrideComponent)" linenums="false"></code-example>
 
 It takes two arguments: the component type to override (`HeroDetailComponent`) and an override metadata object.
-The [overide metadata object](#metadata-override-object) is a generic defined as follows:
+The [override metadata object](#metadata-override-object) is a generic defined as follows:
 
 <code-example format="." language="javascript">
   type MetadataOverride<T> = {

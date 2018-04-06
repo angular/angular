@@ -3,8 +3,12 @@
   "version": "0.0.0-PLACEHOLDER",
   "description": "Angular - the core framework",
   "main": "./bundles/core.umd.js",
-  "module": "./esm5/core.js",
-  "es2015": "./esm2015/core.js",
+  "module": "./fesm5/core.js",
+  "es2015": "./fesm2015/core.js",
+  "esm5": "./esm5/core.js",
+  "esm2015": "./esm2015/core.js",
+  "fesm5": "./fesm5/core.js",
+  "fesm2015": "./fesm2015/core.js",
   "typings": "./core.d.ts",
   "author": "angular",
   "license": "MIT",
@@ -12,8 +16,8 @@
     "tslib": "^1.9.0"
   },
   "peerDependencies": {
-    "rxjs": "^5.5.0",
-    "zone.js": "^0.8.4"
+    "rxjs": "^6.0.0-rc.0",
+    "zone.js": "~0.8.20"
   },
   "repository": {
     "type": "git",
@@ -21,5 +25,6 @@
   },
   "ng-update": {
     "packageGroup": "NG_UPDATE_PACKAGE_GROUP"
-  }
+  },
+  "sideEffects": false
 }

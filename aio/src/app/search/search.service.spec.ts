@@ -1,7 +1,6 @@
 import { ReflectiveInjector, NgZone } from '@angular/core';
 import { fakeAsync, tick } from '@angular/core/testing';
-import { Observable } from 'rxjs/Observable';
-import 'rxjs/add/observable/of';
+import { of } from 'rxjs';
 import { SearchService } from './search.service';
 import { WebWorkerClient } from 'app/shared/web-worker';
 
@@ -13,7 +12,7 @@ describe('SearchService', () => {
   let mockWorker: WebWorkerClient;
 
   beforeEach(() => {
-    sendMessageSpy = jasmine.createSpy('sendMessage').and.returnValue(Observable.of({}));
+    sendMessageSpy = jasmine.createSpy('sendMessage').and.returnValue(of({}));
     mockWorker = { sendMessage: sendMessageSpy } as any;
     spyOn(WebWorkerClient, 'create').and.returnValue(mockWorker);
 
@@ -40,7 +39,7 @@ describe('SearchService', () => {
       // We must initialize the service before calling connectSearches
       service.initWorker('some/url', 1000);
       // Simulate the index being ready so that searches get sent to the worker
-      (service as any).ready = Observable.of(true);
+      (service as any).ready = of(true);
     });
 
     it('should trigger a `loadIndex` synchronously (not waiting for the delay)', () => {
@@ -57,7 +56,7 @@ describe('SearchService', () => {
     it('should push the response to the returned observable', () => {
       const mockSearchResults = { results: ['a', 'b'] };
       let actualSearchResults: any;
-      (mockWorker.sendMessage as jasmine.Spy).and.returnValue(Observable.of(mockSearchResults));
+      (mockWorker.sendMessage as jasmine.Spy).and.returnValue(of(mockSearchResults));
       service.search('some query').subscribe(results => actualSearchResults = results);
       expect(actualSearchResults).toEqual(mockSearchResults);
     });

@@ -41,7 +41,10 @@ export function withBody<T>(html: string, blockFn: T): T {
     let returnValue: any = undefined;
     if (typeof blockFn === 'function') {
       document.body.innerHTML = html;
-      let blockReturn = blockFn();
+      // TODO(i): I'm not sure why a cast is required here but otherwise I get
+      //   TS2349: Cannot invoke an expression whose type lacks a call signature. Type 'never' has
+      //   no compatible call signatures.
+      let blockReturn = (blockFn as any)();
       if (blockReturn instanceof Promise) {
         blockReturn = blockReturn.then(done, done.fail);
       } else {
@@ -82,6 +85,7 @@ export function ensureDocument(): void {
     // we are in node.js.
     const window = domino.createWindow('', 'http://localhost');
     savedDocument = (global as any).document;
+    (global as any).window = window;
     (global as any).document = window.document;
     // Trick to avoid Event patching from
     // https://github.com/angular/angular/blob/7cf5e95ac9f0f2648beebf0d5bd9056b79946970/packages/platform-browser/src/dom/events/dom_events.ts#L112-L132
@@ -106,6 +110,7 @@ export function ensureDocument(): void {
 export function cleanupDocument(): void {
   if (savedDocument) {
     (global as any).document = savedDocument;
+    (global as any).window = undefined;
     savedDocument = undefined;
   }
   if (savedNode) {

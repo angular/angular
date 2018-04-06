@@ -1,14 +1,14 @@
-import { Component, ComponentRef, NgModule, ViewChild } from '@angular/core';
+import { Component, NgModule, ViewChild } from '@angular/core';
 import { Title, Meta } from '@angular/platform-browser';
 
-import { Observable } from 'rxjs/Observable';
+import { Observable } from 'rxjs';
 
 import { DocumentContents } from 'app/documents/document.service';
-import { EmbedComponentsService } from 'app/embed-components/embed-components.service';
 import { DocViewerComponent } from 'app/layout/doc-viewer/doc-viewer.component';
 import { Logger } from 'app/shared/logger.service';
 import { TocService } from 'app/shared/toc.service';
 import { MockLogger } from 'testing/logger.service';
+import { ElementsLoader } from 'app/custom-elements/elements-loader';
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -17,11 +17,9 @@ import { MockLogger } from 'testing/logger.service';
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 export class TestDocViewerComponent extends DocViewerComponent {
-  embeddedComponentRefs: ComponentRef<any>[];
   currViewContainer: HTMLElement;
   nextViewContainer: HTMLElement;
 
-  destroyEmbeddedComponents(): void { return null as any; }
   prepareTitleAndToc(targetElem: HTMLElement, docId: string): () => void { return null as any; }
   render(doc: DocumentContents): Observable<void> { return null as any; }
   swapViews(onInsertedCb?: () => void): Observable<void> { return null as any; }
@@ -43,10 +41,6 @@ export class TestParentComponent {
 }
 
 // Mock services.
-export class MockEmbedComponentsService {
-  embedInto = jasmine.createSpy('EmbedComponentsService#embedInto');
-}
-
 export class MockTitle {
   setTitle = jasmine.createSpy('Title#reset');
 }
@@ -61,6 +55,11 @@ export class MockTocService {
   reset = jasmine.createSpy('TocService#reset');
 }
 
+export class MockElementsLoader {
+  loadContainingCustomElements =
+      jasmine.createSpy('MockElementsLoader#loadContainingCustomElements');
+}
+
 @NgModule({
   declarations: [
     DocViewerComponent,
@@ -68,10 +67,10 @@ export class MockTocService {
   ],
   providers: [
     { provide: Logger, useClass: MockLogger },
-    { provide: EmbedComponentsService, useClass: MockEmbedComponentsService },
     { provide: Title, useClass: MockTitle },
     { provide: Meta, useClass: MockMeta },
     { provide: TocService, useClass: MockTocService },
+    { provide: ElementsLoader, useClass: MockElementsLoader },
   ],
 })
 export class TestModule { }

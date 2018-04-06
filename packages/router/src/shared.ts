@@ -11,7 +11,9 @@ import {UrlSegment, UrlSegmentGroup} from './url_tree';
 
 
 /**
- * @whatItDoes Name of the primary outlet.
+ * @description
+ *
+ * Name of the primary outlet.
  *
  * @stable
  */
@@ -87,7 +89,7 @@ class ParamsAsMap implements ParamMap {
 }
 
 /**
- * Convert a {@link Params} instance to a {@link ParamMap}.
+ * Convert a `Params` instance to a `ParamMap`.
  *
  * @stable
  */

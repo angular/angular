@@ -16,6 +16,7 @@ var JasmineRunner = require('jasmine');
 var path = require('path');
 require('source-map-support').install();
 require('zone.js/dist/long-stack-trace-zone.js');
+require('zone.js/dist/task-tracking.js');
 require('zone.js/dist/proxy.js');
 require('zone.js/dist/sync-test.js');
 require('zone.js/dist/async-test.js');
@@ -68,6 +69,7 @@ var specFiles: any =
                        '@angular/router/test/integration/bootstrap_spec.*',
                        '@angular/integration_test/symbol_inspector/**',
                        '@angular/upgrade/**',
+                       '@angular/elements/**',
                        '@angular/**/e2e_test/**',
                        'angular1_router/**',
                        'payload_tests/**',

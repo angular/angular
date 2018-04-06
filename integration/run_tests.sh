@@ -2,12 +2,20 @@
 
 set -e -o pipefail
 
-cd `dirname $0`
+currentDir=$(cd $(dirname $0); pwd)
+cd ${currentDir}
+
 
 readonly thisDir=$(cd $(dirname $0); pwd)
 
 # Track payload size functions
-source ../scripts/ci/payload-size.sh
+# TODO(alexeagle): finish migrating these to buildsize.org
+if [[ -v TRAVIS ]]; then
+  # We don't install this by default because it contains some broken Bazel setup
+  # and also it's a very big dependency that we never use except on Travis.
+  yarn add -D firebase-tools@3.12.0
+  source ../scripts/ci/payload-size.sh
+fi
 
 # Workaround https://github.com/yarnpkg/yarn/issues/2165
 # Yarn will cache file://dist URIs and not update Angular code
@@ -19,7 +27,7 @@ rm_cache
 mkdir $cache
 trap rm_cache EXIT
 
-for testDir in $(ls | grep -Ev 'node_modules|render3') ; do
+for testDir in $(ls | grep -v node_modules) ; do
   [[ -d "$testDir" ]] || continue
   echo "#################################"
   echo "Running integration test $testDir"

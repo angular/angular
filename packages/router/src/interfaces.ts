@@ -6,17 +6,16 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Observable} from 'rxjs/Observable';
+import {Observable} from 'rxjs';
 
 import {Route} from './config';
 import {ActivatedRouteSnapshot, RouterStateSnapshot} from './router_state';
 
 
 /**
- * @whatItDoes Interface that a class can implement to be a guard deciding if a route can be
- * activated.
+ * @description
  *
- * @howToUse
+ * Interface that a class can implement to be a guard deciding if a route can be activated.
  *
  * ```
  * class UserToken {}
@@ -84,10 +83,9 @@ export interface CanActivate {
 }
 
 /**
- * @whatItDoes Interface that a class can implement to be a guard deciding if a child route can be
- * activated.
+ * @description
  *
- * @howToUse
+ * Interface that a class can implement to be a guard deciding if a child route can be activated.
  *
  * ```
  * class UserToken {}
@@ -165,10 +163,9 @@ export interface CanActivateChild {
 }
 
 /**
- * @whatItDoes Interface that a class can implement to be a guard deciding if a route can be
- * deactivated.
+ * @description
  *
- * @howToUse
+ * Interface that a class can implement to be a guard deciding if a route can be deactivated.
  *
  * ```
  * class UserToken {}
@@ -240,9 +237,9 @@ export interface CanDeactivate<T> {
 }
 
 /**
- * @whatItDoes Interface that class can implement to be a data provider.
+ * @description
  *
- * @howToUse
+ * Interface that class can implement to be a data provider.
  *
  * ```
  * class Backend {
@@ -312,10 +309,9 @@ export interface Resolve<T> {
 
 
 /**
- * @whatItDoes Interface that a class can implement to be a guard deciding if a children can be
- * loaded.
+ * @description
  *
- * @howToUse
+ * Interface that a class can implement to be a guard deciding if a children can be loaded.
  *
  * ```
  * class UserToken {}
