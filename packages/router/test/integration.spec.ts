@@ -3366,6 +3366,72 @@ describe('Integration', () => {
              expect(location.path()).toEqual('/lazy2/loaded');
            })));
 
+    it('should allow lazy loaded module in named outlet',
+       fakeAsync(inject(
+           [Router, NgModuleFactoryLoader], (router: Router, loader: SpyNgModuleFactoryLoader) => {
+
+             @Component({selector: 'lazy', template: 'lazy-loaded'})
+             class LazyComponent {
+             }
+
+             @NgModule({
+               declarations: [LazyComponent],
+               imports: [RouterModule.forChild([{path: '', component: LazyComponent}])]
+             })
+             class LazyLoadedModule {
+             }
+
+             loader.stubbedModules = {lazyModule: LazyLoadedModule};
+
+             const fixture = createRoot(router, RootCmp);
+
+             router.resetConfig([{
+               path: 'team/:id',
+               component: TeamCmp,
+               children: [
+                 {path: 'user/:name', component: UserCmp},
+                 {path: 'lazy', loadChildren: 'lazyModule', outlet: 'right'},
+               ]
+             }]);
+
+
+             router.navigateByUrl('/team/22/user/john');
+             advance(fixture);
+
+             expect(fixture.nativeElement).toHaveText('team 22 [ user john, right:  ]');
+
+             router.navigateByUrl('/team/22/(user/john//right:lazy)');
+             advance(fixture);
+
+             expect(fixture.nativeElement).toHaveText('team 22 [ user john, right: lazy-loaded ]');
+           })));
+
+    it('should allow componentless named outlet to render children',
+       fakeAsync(inject(
+           [Router, NgModuleFactoryLoader], (router: Router, loader: SpyNgModuleFactoryLoader) => {
+
+             const fixture = createRoot(router, RootCmp);
+
+             router.resetConfig([{
+               path: 'team/:id',
+               component: TeamCmp,
+               children: [
+                 {path: 'user/:name', component: UserCmp},
+                 {path: 'simple', outlet: 'right', children: [{path: '', component: SimpleCmp}]},
+               ]
+             }]);
+
+
+             router.navigateByUrl('/team/22/user/john');
+             advance(fixture);
+
+             expect(fixture.nativeElement).toHaveText('team 22 [ user john, right:  ]');
+
+             router.navigateByUrl('/team/22/(user/john//right:simple)');
+             advance(fixture);
+
+             expect(fixture.nativeElement).toHaveText('team 22 [ user john, right: simple ]');
+           })));
 
     describe('should use the injector of the lazily-loaded configuration', () => {
       class LazyLoadedServiceDefinedInModule {}
@@ -4100,6 +4166,10 @@ function createRoot(router: Router, type: any): ComponentFixture<any> {
   router.initialNavigation();
   advance(f);
   return f;
+}
+
+@Component({selector: 'lazy', template: 'lazy-loaded'})
+class LazyComponent {
 }
 
 
