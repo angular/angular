@@ -1,62 +1,133 @@
+<!--
 # Introduction to components
+-->
+# 컴포넌트 소개
 
+<!--
 <img src="generated/images/guide/architecture/hero-component.png" alt="Component" class="left">
+-->
+<img src="generated/images/guide/architecture/hero-component.png" alt="컴포넌트" class="left">
 
+<!--
 A _component_ controls a patch of screen called a *view*. For example, individual components define and control each of the following views from the [Tutorial](tutorial/index):
+-->
+_컴포넌트_ 는 *뷰*라고 하는 화면의 일부를 조작합니다. 간단하게 예를 들면, [튜토리얼](tutorial/index) 문서에서 다루는 컴포넌트들은 다음과 같은 뷰를 각각 정의하고 있습니다:
 
+<!--
 * The app root with the navigation links.
 * The list of heroes.
 * The hero editor.
+-->
+* 네비게이션 링크가 표시되는 앱 최상위 메뉴
+* 히어로 목록
+* 히어로 에디터
 
+<!--
 You define a component's application logic&mdash;what it does to support the view&mdash;inside a class. The class interacts with the view through an API of properties and methods.
+-->
+뷰에서 사용할 애플리케이션 로직은 컴포넌트에 정의하며, 뷰는 클래스의 프로퍼티와 메소드를 활용해서 클래스와 상호작용 합니다.
 
+<!--
 For example, the `HeroListComponent` has a `heroes` property that returns an array of heroes that it acquires from a service. `HeroListComponent` also has a `selectHero()` method that sets a `selectedHero` property when the user clicks to choose a hero from that list.
+-->
+예를 들어 `HeroListComponent`에 있는 `heroes` 프로퍼티는 서비스에서 히어로 목록을 받아서 저장해두는 프로퍼티입니다. 그리고 `selectHero()` 메소드는 사용자가 히어로 목록에서 한 명을 선택했을 때 이 히어로를 `selectedHero` 프로퍼티에 저장하는 메소드입니다.
 
 <code-example path="architecture/src/app/hero-list.component.ts" linenums="false" title="src/app/hero-list.component.ts (class)" region="class"></code-example>
 
+<!--
 Angular creates, updates, and destroys components as the user moves through the application. Your app can take action at each moment in this lifecycle through optional [lifecycle hooks](guide/lifecycle-hooks), like `ngOnInit()`.
+-->
+Angular는 사용자의 동작에 따라 컴포넌트를 생성하고 갱신하며 종료시킵니다. 그리고 컴포넌트가 동작하는 각 라이프싸이클은 [라이프싸이클 후킹 함수](guide/lifecycle-hooks)로 가로채서 각 시점에 필요한 동작을 실행할 수 있습니다. 예를 들어 컴포넌트가 생성되는 시점을 활용하려면 `ngOnInit()` 함수를 정의하면 됩니다.
 
 <hr/>
 
+<!--
 ## Component metadata
+-->
+## 컴포넌트 메타데이터
 
+<!--
 <img src="generated/images/guide/architecture/metadata.png" alt="Metadata" class="left">
+-->
+<img src="generated/images/guide/architecture/metadata.png" alt="메타데이터" class="left">
 
+<!--
 The `@Component` decorator identifies the class immediately below it as a component class, and specifies its metadata. In the example code below, you can see that `HeroListComponent` is just a class, with no special Angular notation or syntax at all. It's not a component until mark it as one with the `@Component` decorator.
+-->
+Angular 컴포넌트는 컴포넌트 클래스에 `@Component` 데코레이터를 붙여서 정의하며, 이 때 데코레이터 함수에 컴포넌트의 특성을 정의하는 메타데이터를 함께 전달합니다. 아래 코드를 보면, `HeroListComponent`는 단순한 클래스이며 Angular에만 사용하는 문법은 아무것도 없는 것을 확인할 수 있습니다. `@Component` 데코레이터를 붙이기 전까지 이 클래스는 컴포넌트로 등록되지도 않습니다.
 
+<!--
 The metadata for a component tells Angular where to get the major building blocks it needs to create and present the component and its view. In particular, it associates a _template_ with the component, either directly with inline code, or by reference. Together, the component and its template describe a _view_.
+-->
+컴포넌트 메타데이터는 이 컴포넌트가 Angular의 구성요소로써 어떻게 생성되고 어떤 뷰를 정의하며 동작할지 정의합니다. 좀 더 자세하게 이야기하면, _뷰_ 는 컴포넌트 메타데이터에서 지정하는 외부 _템플릿_ 파일이나 인라인 템플릿이 컴포넌트 코드와 연결되면서 정의됩니다.
 
+<!--
 In addition to containing or pointing to the template, the `@Component` metadata configures, for example, how the component can be referenced in HTML and what services it requires.
+-->
+템플릿을 외부 파일에서 불러올지 컴포넌트 안에 포함시킬지는 `@Component` 메타데이터 설정에 의해 결정됩니다. 그리고 의존성으로 주입받아야 하는 서비스가 있다면 이 내용도 메타데이터에 지정할 수 있습니다.
 
+<!--
  Here's an example of basic metadata for `HeroListComponent`:
+-->
+`HeroListComponent`에 사용된 메타데이터를 간단하게 살펴보겠습니다:
 
 <code-example path="architecture/src/app/hero-list.component.ts" linenums="false" title="src/app/hero-list.component.ts (metadata)" region="metadata"></code-example>
 
+<!--
  This example shows some of the most useful `@Component` configuration options:
+-->
+이 예제에 사용된 `@Component` 데코레이터의 메타데이터는 다른 컴포넌트에서도 많이 사용합니다:
 
+<!--
 * `selector`: A CSS selector that tells Angular to create and insert an instance of this component wherever it finds the corresponding tag in template HTML. For example, if an app's  HTML contains `<app-hero-list></app-hero-list>`, then
 Angular inserts an instance of the `HeroListComponent` view between those tags.
+-->
+* `selector`: 컴포넌트 인스턴스가 DOM 트리의 어떤 자리에 위치할지 CSS 셀렉터로 지정합니다. 위 코드에서는 HTML 문서의 `<app-hero-list></app-hero-list>`라고 작성한 위치에 `HeroListComponent`의 인스턴스가 생성되며, 이 엘리먼트가 `HeroListComponent`의 뷰로 대체됩니다.
 
+<!--
 * `templateUrl`: The module-relative address of this component's HTML template. Alternatively, you can provide the HTML template inline, as the value of the `template` property. This template defines the component's _host view_.
+-->
+* `templateUrl`: 컴포넌트의 HTML 템플릿을 외부 파일에 정의할 때, 이 템플릿 파일의 위치를 지정합니다. 템플릿을 인라인으로 구성하려면 이 프로퍼티 대신 `template` 프로퍼티를 사용하면 됩니다. 템플릿은 컴포넌트의 _호스트 뷰_ 를 정의합니다.
 
+<!--
 * `providers`: An array of **dependency injection providers** for services that the component requires. In the example, this tells Angular that the component's constructor requires a `HeroService` instance
 in order to get the list of heroes to display.
+-->
+* `providers`: 컴포넌트가 생성될 때 의존성으로 주입되는 서비스의 **프로바이더**를 지정합니다. 위 코드에서는 화면에 표시할 히어로의 목록을 가져오기 위해 `HeroService`를 의존성으로 주입받습니다.
 
 <hr/>
 
+<!--
 ## Templates and views
+-->
+## 템플릿과 뷰
 
+<!--
 <img src="generated/images/guide/architecture/template.png" alt="Template" class="left">
+-->
+<img src="generated/images/guide/architecture/template.png" alt="템플릿" class="left">
 
+<!--
 You define a component's view with its companion template. A template is a form of HTML that tells Angular how to render the component.
+-->
+컴포넌트의 뷰는 템플릿으로 정의하며, 템플릿이 화면에 렌더링되는 모양은 HTML 형식으로 정의합니다.
 
+<!--
 Views are typically arranged hierarchically, allowing you to modify or show and hide entire UI sections or pages as a unit. The template immediately associated with a component defines that component's _host view_. The component can also define a _view hierarchy_, which contains _embedded views_, hosted by other components.
+-->
+뷰는 보통 계층적으로 구성하며, 개발자가 원하는 대로 일부 영역만 조작하거나 화면에서 숨기거나 보이게 할 수 있습니다. 그리고 템플릿은 컴포넌트의 최상위 뷰인 _호스트 뷰_ 에서 시작하기 때문에, 이 뷰 안에서 _또다른 뷰 계층_ 을 구성하거나 다른 컴포넌트의 뷰를 포함시킬 수도 있습니다.
 
 <figure>
+<!--
 <img src="generated/images/guide/architecture/component-tree.png" alt="Component tree" class="left">
+-->
+<img src="generated/images/guide/architecture/component-tree.png" alt="컴포넌트 트리" class="left">
 </figure>
 
+<!--
 A view hierarchy can include views from components in the same NgModule, but it also can (and often does) include views from components that are defined in different NgModules.
+-->
+뷰는 보통 같은 NgModule에 있는 컴포넌트를 활용해서 뷰 계층으로 구성합니다. 그리고 자주 있는 경우는 아니지만 다른 NgModule에 있는 컴포넌트를 뷰에 불러올 수도 있습니다.
 
 ## Template syntax
 

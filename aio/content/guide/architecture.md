@@ -268,8 +268,8 @@ Each of these subjects is introduced in more detail in the following pages.
 -->
 * [모듈](guide/architecture-modules)
 * [컴포넌트](guide/architecture-components)
-  * [템플릿](guide/architecture-components#templates-and-views)
-  * [메타데이터](guide/architecture-components#component-metadata)
+  * [템플릿](guide/architecture-components#템플릿과-뷰)
+  * [메타데이터](guide/architecture-components#컴포넌트-메타데이터)
   * [데이터 바인딩](guide/architecture-components#data-binding)
   * [디렉티브](guide/architecture-components#directives)
   * [파이프](guide/architecture-components#pipes)
