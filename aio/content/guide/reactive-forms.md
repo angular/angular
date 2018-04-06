@@ -1068,7 +1068,7 @@ Replace the address `FormGroup` definition with a `secretLairs`  `FormArray` def
 
 </code-example>
 
-In `hero-detail.component.html` change `formArrayName="address"` to `formArrayName="secretLairs"`.
+In `hero-detail.component.html` change `formGroupName="address"` to `formArrayName="secretLairs"`.
 
 <code-example path="reactive-forms/src/app/hero-detail/hero-detail-8.component.html" region="form-array-name" title="src/app/hero-detail/hero-detail.component.ts" linenums="false">
 
