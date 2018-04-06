@@ -1,19 +1,27 @@
 import {Component} from '@angular/core';
 import {By, HAMMER_GESTURE_CONFIG} from '@angular/platform-browser';
 import {
-  async, ComponentFixture, TestBed, fakeAsync, tick,
-  flushMicrotasks
+  ComponentFixture,
+  TestBed,
+  fakeAsync,
+  tick,
+  flushMicrotasks,
 } from '@angular/core/testing';
 import {NgModel, FormsModule, ReactiveFormsModule, FormControl} from '@angular/forms';
 import {MatSlideToggle, MatSlideToggleChange, MatSlideToggleModule} from './index';
 import {TestGestureConfig} from '../slider/test-gesture-config';
 import {dispatchFakeEvent} from '@angular/cdk/testing';
 import {defaultRippleAnimationConfig} from '@angular/material/core';
+import {MutationObserverFactory} from '@angular/cdk/observers';
 
 describe('MatSlideToggle without forms', () => {
   let gestureConfig: TestGestureConfig;
+  let mutationObserverCallbacks: Function[];
+  let flushMutationObserver = () => mutationObserverCallbacks.forEach(callback => callback());
 
-  beforeEach(async(() => {
+  beforeEach(fakeAsync(() => {
+    mutationObserverCallbacks = [];
+
     TestBed.configureTestingModule({
       imports: [MatSlideToggleModule],
       declarations: [
@@ -22,7 +30,16 @@ describe('MatSlideToggle without forms', () => {
         SlideToggleWithoutLabel
       ],
       providers: [
-        {provide: HAMMER_GESTURE_CONFIG, useFactory: () => gestureConfig = new TestGestureConfig()}
+        {provide: HAMMER_GESTURE_CONFIG, useFactory: () => gestureConfig = new TestGestureConfig()},
+        {
+          provide: MutationObserverFactory,
+          useValue: {
+            create: (callback: Function) => {
+              mutationObserverCallbacks.push(callback);
+              return {observe: () => {}, disconnect: () => {}};
+            }
+          }
+        }
       ]
     });
 
@@ -39,7 +56,7 @@ describe('MatSlideToggle without forms', () => {
     let inputElement: HTMLInputElement;
 
     // This initialization is async() because it needs to wait for ngModel to set the initial value.
-    beforeEach(async(() => {
+    beforeEach(fakeAsync(() => {
       fixture = TestBed.createComponent(SlideToggleBasic);
 
       // Enable jasmine spies on event functions, which may trigger at initialization
@@ -129,7 +146,7 @@ describe('MatSlideToggle without forms', () => {
       expect(testComponent.onSlideChange).toHaveBeenCalledTimes(1);
     });
 
-    it('should not trigger the change event by changing the native value', async(() => {
+    it('should not trigger the change event by changing the native value', fakeAsync(() => {
       expect(inputElement.checked).toBe(false);
       expect(slideToggleElement.classList).not.toContain('mat-checked');
 
@@ -138,15 +155,12 @@ describe('MatSlideToggle without forms', () => {
 
       expect(inputElement.checked).toBe(true);
       expect(slideToggleElement.classList).toContain('mat-checked');
+      tick();
 
-      // The change event shouldn't fire because the value change was not caused
-      // by any interaction. Use whenStable to ensure an event isn't fired asynchronously.
-      fixture.whenStable().then(() => {
-        expect(testComponent.onSlideChange).not.toHaveBeenCalled();
-      });
+      expect(testComponent.onSlideChange).not.toHaveBeenCalled();
     }));
 
-    it('should not trigger the change event on initialization', async(() => {
+    it('should not trigger the change event on initialization', fakeAsync(() => {
       expect(inputElement.checked).toBe(false);
       expect(slideToggleElement.classList).not.toContain('mat-checked');
 
@@ -155,12 +169,9 @@ describe('MatSlideToggle without forms', () => {
 
       expect(inputElement.checked).toBe(true);
       expect(slideToggleElement.classList).toContain('mat-checked');
+      tick();
 
-      // The change event shouldn't fire, because the native input element is not focused.
-      // Use whenStable to ensure an event isn't fired asynchronously.
-      fixture.whenStable().then(() => {
-        expect(testComponent.onSlideChange).not.toHaveBeenCalled();
-      });
+      expect(testComponent.onSlideChange).not.toHaveBeenCalled();
     }));
 
     it('should add a suffix to the inputs id', () => {
@@ -235,16 +246,15 @@ describe('MatSlideToggle without forms', () => {
       expect(inputElement.hasAttribute('aria-labelledby')).toBeFalsy();
     });
 
-    it('should emit the new values properly', async(() => {
+    it('should emit the new values properly', fakeAsync(() => {
       labelElement.click();
       fixture.detectChanges();
+      tick();
 
-      fixture.whenStable().then(() => {
-        // We're checking the arguments type / emitted value to be a boolean, because sometimes the
-        // emitted value can be a DOM Event, which is not valid.
-        // See angular/angular#4059
-        expect(testComponent.lastEvent.checked).toBe(true);
-      });
+      // We're checking the arguments type / emitted value to be a boolean, because sometimes the
+      // emitted value can be a DOM Event, which is not valid.
+      // See angular/angular#4059
+      expect(testComponent.lastEvent.checked).toBe(true);
     }));
 
     it('should support subscription on the change observable', () => {
@@ -329,7 +339,7 @@ describe('MatSlideToggle without forms', () => {
   });
 
   describe('custom template', () => {
-    it('should not trigger the change event on initialization', async(() => {
+    it('should not trigger the change event on initialization', fakeAsync(() => {
       const fixture = TestBed.createComponent(SlideToggleBasic);
 
       fixture.componentInstance.slideChecked = true;
@@ -338,7 +348,7 @@ describe('MatSlideToggle without forms', () => {
       expect(fixture.componentInstance.lastEvent).toBeFalsy();
     }));
 
-    it('should be able to set the tabindex via the native attribute', async(() => {
+    it('should be able to set the tabindex via the native attribute', fakeAsync(() => {
       const fixture = TestBed.createComponent(SlideToggleWithTabindexAttr);
 
       fixture.detectChanges();
@@ -360,7 +370,7 @@ describe('MatSlideToggle without forms', () => {
     let slideThumbContainer: HTMLElement;
     let inputElement: HTMLInputElement;
 
-    beforeEach(async(() => {
+    beforeEach(fakeAsync(() => {
       fixture = TestBed.createComponent(SlideToggleBasic);
       fixture.detectChanges();
 
@@ -545,7 +555,7 @@ describe('MatSlideToggle without forms', () => {
         .toContain('mat-slide-toggle-bar-no-side-margin');
     });
 
-    it('should not remove margin if initial label is set through binding', async(() => {
+    it('should not remove margin if initial label is set through binding', fakeAsync(() => {
       testComponent.label = 'Some content';
       fixture.detectChanges();
 
@@ -553,7 +563,7 @@ describe('MatSlideToggle without forms', () => {
         .not.toContain('mat-slide-toggle-bar-no-side-margin');
     }));
 
-    it('should re-add margin if label is added asynchronously', async(() => {
+    it('should re-add margin if label is added asynchronously', fakeAsync(() => {
       fixture.detectChanges();
 
       expect(slideToggleBarElement.classList)
@@ -561,26 +571,18 @@ describe('MatSlideToggle without forms', () => {
 
       testComponent.label = 'Some content';
       fixture.detectChanges();
+      flushMutationObserver();
+      fixture.detectChanges();
 
-      // Wait for the MutationObserver to detect the content change and for the cdkObserveContent
-      // to emit the change event to the slide-toggle.
-      setTimeout(() => {
-        // The MutationObserver from the cdkObserveContent directive detected the content change
-        // and notified the slide-toggle component. The slide-toggle then marks the component as
-        // dirty by calling `markForCheck()`. This needs to be reflected by the component template
-        // then.
-        fixture.detectChanges();
-
-        expect(slideToggleElement.classList)
-          .not.toContain('mat-slide-toggle-bar-no-side-margin');
-      }, 1);
+      expect(slideToggleElement.classList)
+        .not.toContain('mat-slide-toggle-bar-no-side-margin');
     }));
   });
 });
 
 describe('MatSlideToggle with forms', () => {
 
-  beforeEach(async(() => {
+  beforeEach(fakeAsync(() => {
     TestBed.configureTestingModule({
       imports: [MatSlideToggleModule, FormsModule, ReactiveFormsModule],
       declarations: [
@@ -605,7 +607,7 @@ describe('MatSlideToggle with forms', () => {
     let labelElement: HTMLLabelElement;
 
     // This initialization is async() because it needs to wait for ngModel to set the initial value.
-    beforeEach(async(() => {
+    beforeEach(fakeAsync(() => {
       fixture = TestBed.createComponent(SlideToggleWithModel);
       fixture.detectChanges();
 
@@ -723,6 +725,7 @@ describe('MatSlideToggle with forms', () => {
 
       labelElement.click();
       fixture.detectChanges();
+      tick();
 
       expect(slideToggle.checked)
         .toBe(false, 'Expected slide-toggle to be no longer checked after label click.');
@@ -785,7 +788,7 @@ describe('MatSlideToggle with forms', () => {
     let inputElement: HTMLInputElement;
 
     // This initialization is async() because it needs to wait for ngModel to set the initial value.
-    beforeEach(async(() => {
+    beforeEach(fakeAsync(() => {
       fixture = TestBed.createComponent(SlideToggleWithForm);
       fixture.detectChanges();
 
