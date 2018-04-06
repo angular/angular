@@ -2,7 +2,9 @@
 
 ## `Todo` app
 - [X] Clicking archive removes todo item.
-- [ ] Update `Todo` app to match http://todomvc.com/
+- [X] Update `Todo` app to match http://todomvc.com/.
+- [ ] Make it work with `[(ngModel)]`.
+- [ ] Make it work with `(keyup.Enter)`.
 
 ## Compiler
 - [ ] Remove ` tslib_1.__decorate([core_1.Input(), tslib_1.__metadata("design:type", Object)], TodoComponent.prototype, "todo", void 0);` from generated output.
@@ -14,10 +16,13 @@
 - [ ] `ViewContainerRef` must separate creation mode from update mode otherwise {{todo.done}} fails for `NgFor` because `todo` is not set during creation mode.
 - [ ] Injector should be optional
 
+## Testing
+- [ ] Create a debug mode which would publish components into DOM for easier writing of tests.
+
 
 ## Bazel
 
-- [ ] Have action verb on the `ng_rollup_bundle` to display sourcemaps.
+- [ ] Have action verb on the `ng_rollup_bundle` to display source maps.
 
 # NOTES
 

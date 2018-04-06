@@ -78,6 +78,7 @@ export {
   ComponentDef as ɵComponentDef,
   DirectiveDef as ɵDirectiveDef,
   PipeDef as ɵPipeDef,
+  whenRendered as ɵwhenRendered,
 } from './render3/index';
 export {
   bypassSanitizationTrustHtml as ɵbypassSanitizationTrustHtml,

@@ -36,6 +36,7 @@ ts_library(
     srcs = glob(["*_spec.ts"]),
     deps = [
         "//packages:types",
+        "//packages/core",
         "//packages/core/testing",
     ],
 )
@@ -75,6 +76,8 @@ ts_devserver(
     static_files = [
         "index.html",
         ":tslib",
+        "todo.css",
+        "base.css",
     ],
     deps = [":todo"],
 )
@@ -87,5 +90,7 @@ ts_devserver(
         ":bundle.min_debug.js",
         ":bundle.min.js",
         "index.html",
+        "todo.css",
+        "base.css",
     ],
 )

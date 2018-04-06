@@ -1,11 +1,5 @@
 [
   {
-    "name": "AnonymousSubject"
-  },
-  {
-    "name": "AppState"
-  },
-  {
     "name": "CIRCULAR$2"
   },
   {
@@ -33,9 +27,6 @@
     "name": "EmbeddedViewRef$1"
   },
   {
-    "name": "EventEmitter"
-  },
-  {
     "name": "IterableChangeRecord_"
   },
   {
@@ -54,13 +45,13 @@
     "name": "NgForOfContext"
   },
   {
+    "name": "NgIf"
+  },
+  {
+    "name": "NgIfContext"
+  },
+  {
     "name": "NgOnChangesFeature"
-  },
-  {
-    "name": "ObjectUnsubscribedError"
-  },
-  {
-    "name": "Observable"
   },
   {
     "name": "Optional"
@@ -78,28 +69,10 @@
     "name": "RecordViewTuple"
   },
   {
-    "name": "SafeSubscriber"
-  },
-  {
     "name": "SimpleChange"
   },
   {
     "name": "SkipSelf"
-  },
-  {
-    "name": "Subject"
-  },
-  {
-    "name": "SubjectSubscriber"
-  },
-  {
-    "name": "SubjectSubscription"
-  },
-  {
-    "name": "Subscriber"
-  },
-  {
-    "name": "Subscription"
   },
   {
     "name": "TemplateRef$1"
@@ -111,13 +84,13 @@
     "name": "ToDoAppModule"
   },
   {
-    "name": "TodoComponent"
+    "name": "Todo"
+  },
+  {
+    "name": "TodoStore"
   },
   {
     "name": "UNDEFINED_RENDERER_TYPE_ID"
-  },
-  {
-    "name": "UnsubscriptionError"
   },
   {
     "name": "ViewContainerRef$1"
@@ -136,21 +109,6 @@
   },
   {
     "name": "__extends"
-  },
-  {
-    "name": "__extends$1"
-  },
-  {
-    "name": "__extends$2"
-  },
-  {
-    "name": "__extends$4"
-  },
-  {
-    "name": "__extends$5"
-  },
-  {
-    "name": "__extends$6"
   },
   {
     "name": "__global"
@@ -174,10 +132,52 @@
     "name": "_c1"
   },
   {
-    "name": "_devMode"
+    "name": "_c10"
   },
   {
-    "name": "_enable_super_gross_mode_that_will_cause_bad_things"
+    "name": "_c11"
+  },
+  {
+    "name": "_c12"
+  },
+  {
+    "name": "_c13"
+  },
+  {
+    "name": "_c14"
+  },
+  {
+    "name": "_c15"
+  },
+  {
+    "name": "_c16"
+  },
+  {
+    "name": "_c2"
+  },
+  {
+    "name": "_c3"
+  },
+  {
+    "name": "_c4"
+  },
+  {
+    "name": "_c5"
+  },
+  {
+    "name": "_c6"
+  },
+  {
+    "name": "_c7"
+  },
+  {
+    "name": "_c8"
+  },
+  {
+    "name": "_c9"
+  },
+  {
+    "name": "_devMode"
   },
   {
     "name": "_getComponentHostLElementNode"
@@ -205,6 +205,9 @@
   },
   {
     "name": "appendChild"
+  },
+  {
+    "name": "assertTemplate"
   },
   {
     "name": "baseDirectiveCreate"
@@ -238,9 +241,6 @@
   },
   {
     "name": "componentRefresh"
-  },
-  {
-    "name": "config"
   },
   {
     "name": "container"
@@ -315,13 +315,7 @@
     "name": "elementStart"
   },
   {
-    "name": "empty"
-  },
-  {
     "name": "enterView"
-  },
-  {
-    "name": "errorObject"
   },
   {
     "name": "executeHooks"
@@ -361,9 +355,6 @@
   },
   {
     "name": "firstTemplatePass"
-  },
-  {
-    "name": "flattenUnsubscriptionErrors"
   },
   {
     "name": "generateInitialInputs"
@@ -408,9 +399,6 @@
     "name": "getPreviousOrParentNode"
   },
   {
-    "name": "getPromiseCtor"
-  },
-  {
     "name": "getRenderer"
   },
   {
@@ -427,9 +415,6 @@
   },
   {
     "name": "hostElement"
-  },
-  {
-    "name": "hostReportError"
   },
   {
     "name": "initBindings"
@@ -459,9 +444,6 @@
     "name": "invertObject"
   },
   {
-    "name": "isArray"
-  },
-  {
     "name": "isCssClassMatching"
   },
   {
@@ -469,9 +451,6 @@
   },
   {
     "name": "isDifferent"
-  },
-  {
-    "name": "isFunction"
   },
   {
     "name": "isJsObject"
@@ -486,16 +465,10 @@
     "name": "isNodeMatchingSelectorList"
   },
   {
-    "name": "isObject"
-  },
-  {
     "name": "isPositive"
   },
   {
     "name": "isProceduralRenderer"
-  },
-  {
-    "name": "isTrustedSubscriber"
   },
   {
     "name": "iterateListLike"
@@ -505,6 +478,9 @@
   },
   {
     "name": "listener"
+  },
+  {
+    "name": "load"
   },
   {
     "name": "locateHostElement"
@@ -525,16 +501,7 @@
     "name": "markViewDirty"
   },
   {
-    "name": "noop"
-  },
-  {
     "name": "notImplemented"
-  },
-  {
-    "name": "observable"
-  },
-  {
-    "name": "pipeFromArray"
   },
   {
     "name": "queueComponentIndexForCheck"
@@ -591,9 +558,6 @@
     "name": "resolveRendererType2"
   },
   {
-    "name": "rxSubscriber"
-  },
-  {
     "name": "saveNameToExportMap"
   },
   {
@@ -642,16 +606,7 @@
     "name": "tick"
   },
   {
-    "name": "toSubscriber"
-  },
-  {
     "name": "trackByIdentity"
-  },
-  {
-    "name": "tryCatch"
-  },
-  {
-    "name": "tryCatcher"
   },
   {
     "name": "viewAttached"
