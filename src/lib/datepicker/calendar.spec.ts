@@ -113,9 +113,12 @@ describe('MatCalendar', () => {
         fixture.detectChanges();
 
         expect(button.getAttribute('aria-label')).toBe('Go to multi-year view?');
-      })
-    );
+      }));
 
+    it('should set all buttons to be `type="button"`', () => {
+      const invalidButtons = calendarElement.querySelectorAll('button:not([type="button"])');
+      expect(invalidButtons.length).toBe(0);
+    });
 
     describe('a11y', () => {
       describe('calendar body', () => {
