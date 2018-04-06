@@ -112,6 +112,8 @@ const MAX_TS_VERSION = '2.8.0';
 class AngularCompilerProgram implements Program {
   private rootNames: string[];
   private metadataCache: MetadataCache;
+  // Metadata cache used exclusively for the flat module index
+  private flatModuleMetadataCache: MetadataCache;
   private loweringMetadataTransform: LowerMetadataTransform;
   private oldProgramLibrarySummaries: Map<string, LibrarySummary>|undefined;
   private oldProgramEmittedGeneratedFiles: Map<string, GeneratedFile>|undefined;
@@ -149,7 +151,7 @@ class AngularCompilerProgram implements Program {
 
     if (options.flatModuleOutFile) {
       const {host: bundleHost, indexName, errors} =
-          createBundleIndexHost(options, this.rootNames, host, () => this.metadataCache);
+          createBundleIndexHost(options, this.rootNames, host, () => this.flatModuleMetadataCache);
       if (errors) {
         this._optionsDiagnostics.push(...errors.map(e => ({
                                                       category: e.category,
@@ -574,9 +576,12 @@ class AngularCompilerProgram implements Program {
       customTransformers?: CustomTransformers): ts.CustomTransformers {
     const beforeTs: Array<ts.TransformerFactory<ts.SourceFile>> = [];
     const metadataTransforms: MetadataTransformer[] = [];
+    const flatModuleMetadataTransforms: MetadataTransformer[] = [];
     if (this.options.enableResourceInlining) {
       beforeTs.push(getInlineResourcesTransformFactory(this.tsProgram, this.hostAdapter));
-      metadataTransforms.push(new InlineResourcesMetadataTransformer(this.hostAdapter));
+      const transformer = new InlineResourcesMetadataTransformer(this.hostAdapter);
+      metadataTransforms.push(transformer);
+      flatModuleMetadataTransforms.push(transformer);
     }
 
     if (!this.options.disableExpressionLowering) {
@@ -592,14 +597,18 @@ class AngularCompilerProgram implements Program {
 
       // If we have partial modules, the cached metadata might be incorrect as it doesn't reflect
       // the partial module transforms.
-      metadataTransforms.push(new PartialModuleMetadataTransformer(partialModules));
+      const transformer = new PartialModuleMetadataTransformer(partialModules);
+      metadataTransforms.push(transformer);
+      flatModuleMetadataTransforms.push(transformer);
     }
 
     if (stripDecorators) {
       beforeTs.push(getDecoratorStripTransformerFactory(
           stripDecorators, this.compiler.reflector, this.getTsProgram().getTypeChecker()));
-      metadataTransforms.push(
-          new StripDecoratorsMetadataTransformer(stripDecorators, this.compiler.reflector));
+      const transformer =
+          new StripDecoratorsMetadataTransformer(stripDecorators, this.compiler.reflector);
+      metadataTransforms.push(transformer);
+      flatModuleMetadataTransforms.push(transformer);
     }
 
     if (customTransformers && customTransformers.beforeTs) {
@@ -607,6 +616,9 @@ class AngularCompilerProgram implements Program {
     }
     if (metadataTransforms.length > 0) {
       this.metadataCache = this.createMetadataCache(metadataTransforms);
+    }
+    if (flatModuleMetadataTransforms.length > 0) {
+      this.flatModuleMetadataCache = this.createMetadataCache(flatModuleMetadataTransforms);
     }
     const afterTs = customTransformers ? customTransformers.afterTs : undefined;
     return {before: beforeTs, after: afterTs};
