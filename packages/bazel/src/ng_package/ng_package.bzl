@@ -114,9 +114,7 @@ def _flatten_paths(directory):
 def _filter_out_generated_files(files):
   result = []
   for file in files:
-    if (file.path.endswith(".ngfactory.js") or file.path.endswith(".ngsummary.js") or file.path.endswith(".ngstyle.js")):
-      continue
-    else:
+    if (not(file.path.endswith(".ngfactory.js") or file.path.endswith(".ngsummary.js") or file.path.endswith(".ngstyle.js"))):
       result.append(file)
   return depset(result)
 
