@@ -295,6 +295,7 @@ class KeyVisitor implements o.ExpressionVisitor {
                                   `EX:${ast.value.runtime.name}`;
   }
 
+  visitWrappedNodeExpr = invalid;
   visitReadVarExpr = invalid;
   visitWriteVarExpr = invalid;
   visitWriteKeyExpr = invalid;
