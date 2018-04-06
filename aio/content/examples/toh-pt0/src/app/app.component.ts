@@ -5,8 +5,8 @@ import { Component } from '@angular/core';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
-export class AppComponent {
 // #docregion set-title
+export class AppComponent {
   title = 'Tour of Heroes';
-// #enddocregion set-title
 }
+// #enddocregion set-title

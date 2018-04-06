@@ -36,23 +36,25 @@ When you're done, the `HeroDetailComponent` template should look like this:
 
 ### Add the `@Input()` hero property
 
-The `HeroDetailComponent` template binds to the component's `hero` property
-which is of type `Hero`.
-
-Open the `HeroDetailComponent` class file and import the `Hero` symbol.
-
-<code-example path="toh-pt3/src/app/hero-detail/hero-detail.component.ts" 
-region="import-hero" title="src/app/hero-detail/hero-detail.component.ts (import Hero)">
-</code-example>
+The `@Input()` decorator allows you to pass part of a model from parent to 
+child components and tells Angular to update this view when the parent 
+variable changes.
 
 The `hero` property 
 [must be an _Input_ property](guide/template-syntax#inputs-outputs "Input and Output properties"),
-annotated with the `@Input()` decorator,
-because the _external_ `HeroesComponent` [will bind to it](#heroes-component-template) like this.
+annotated with the `@Input()` decorator, because the _parent_ `HeroesComponent` 
+[will bind to it](#heroes-component-template) like this.
 
 <code-example path="toh-pt3/src/app/heroes/heroes.component.html" region="hero-detail-binding">
 </code-example>
 
+
+The `HeroDetailComponent` template binds to the component's `hero` property
+which is of type `Hero`. Open the `HeroDetailComponent` class file and import the `Hero` symbol.
+
+<code-example path="toh-pt3/src/app/hero-detail/hero-detail.component.ts" 
+region="import-hero" title="src/app/hero-detail/hero-detail.component.ts (import Hero)">
+</code-example>
 Amend the `@angular/core` import statement to include the `Input` symbol.
 
 <code-example path="toh-pt3/src/app/hero-detail/hero-detail.component.ts" region="import-input" title="src/app/hero-detail/hero-detail.component.ts (import Input)" linenums="false">
