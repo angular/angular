@@ -110,6 +110,9 @@ export class AotCompiler {
   findGeneratedFileNames(fileName: string): string[] {
     const genFileNames: string[] = [];
     const file = this._analyzeFile(fileName);
+    if (this._options.enableIvy) {
+      return [];
+    }
     // Make sure we create a .ngfactory if we have a injectable/directive/pipe/NgModule
     // or a reference to a non source file.
     // Note: This is overestimating the required .ngfactory files as the real calculation is harder.
