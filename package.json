@@ -31,7 +31,7 @@
     "reflect-metadata": "^0.1.3",
     "rxjs": "6.0.0-rc.0",
     "tslib": "^1.7.1",
-    "zone.js": "^0.8.25"
+    "zone.js": "^0.8.26"
   },
   "optionalDependencies": {
     "fsevents": "1.1.2"
