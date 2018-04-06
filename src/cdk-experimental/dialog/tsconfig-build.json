@@ -8,7 +8,7 @@
     "annotateForClosureCompiler": true,
     "strictMetadataEmit": false, // Workaround for Angular #22210
     "flatModuleOutFile": "index.js",
-    "flatModuleId": "@angular/material-experimental/dialog",
+    "flatModuleId": "@angular/cdk-experimental/dialog",
     "skipTemplateCodegen": true,
     "fullTemplateTypeCheck": true
   }
