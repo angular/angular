@@ -140,20 +140,22 @@ describe('@angular/core ng_package', () => {
 
 
     describe('esm2015', () => {
-      it('should not contain any *.ngfactory.js files',
-        () => { expect(shx.find('esm2015').filter(f => f.endsWith('.ngfactory.js'))).toEqual([]); });
+      it('should not contain any *.ngfactory.js files', () => {
+        expect(shx.find('esm2015').filter(f => f.endsWith('.ngfactory.js'))).toEqual([]);
+      });
 
-      it('should not contain any *.ngsummary.js files',
-        () => { expect(shx.find('esm2015').filter(f => f.endsWith('.ngsummary.js'))).toEqual([]); });
+      it('should not contain any *.ngsummary.js files', () => {
+        expect(shx.find('esm2015').filter(f => f.endsWith('.ngsummary.js'))).toEqual([]);
+      });
     });
 
 
     describe('esm5', () => {
       it('should not contain any *.ngfactory.js files',
-        () => { expect(shx.find('esm5').filter(f => f.endsWith('.ngfactory.js'))).toEqual([]); });
+         () => { expect(shx.find('esm5').filter(f => f.endsWith('.ngfactory.js'))).toEqual([]); });
 
       it('should not contain any *.ngsummary.js files',
-        () => { expect(shx.find('esm5').filter(f => f.endsWith('.ngsummary.js'))).toEqual([]); });
+         () => { expect(shx.find('esm5').filter(f => f.endsWith('.ngsummary.js'))).toEqual([]); });
     });
 
 
