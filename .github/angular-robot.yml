@@ -73,9 +73,9 @@ merge:
       - "ci/circleci: build"
       - "ci/circleci: lint"
 
-    # the comment that will be added when the merge label is added despite failing checks, leave empty or set to false to disable
-    # {{MERGE_LABEL}} will be replaced by the value of the mergeLabel option
-    # {{PLACEHOLDER}} will be replaced by the list of failing checks
+  # the comment that will be added when the merge label is added despite failing checks, leave empty or set to false to disable
+  # {{MERGE_LABEL}} will be replaced by the value of the mergeLabel option
+  # {{PLACEHOLDER}} will be replaced by the list of failing checks
   mergeRemovedComment: "I see that you just added the `{{MERGE_LABEL}}` label, but the following checks are still failing:
 \n{{PLACEHOLDER}}
 \n
@@ -89,8 +89,12 @@ triage:
   needsTriageMilestone: 83,
   # number of the milestone to apply when the issue is triaged
   defaultMilestone: 82,
-  # arrays of labels that determine if an issue is triaged
-  triagedLabels:
+  # arrays of labels that determine if an issue has been triaged by the caretaker
+  l1TriageLabels:
+    -
+      - "comp: *"
+  # arrays of labels that determine if an issue has been fully triaged
+  l2TriageLabels:
     -
       - "type: bug/fix"
       - "severity*"
