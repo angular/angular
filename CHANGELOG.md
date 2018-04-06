@@ -1,3 +1,14 @@
+<a name="6.0.0-rc.3"></a>
+# [6.0.0-rc.3](https://github.com/angular/angular/compare/6.0.0-rc.2...6.0.0-rc.3) (2018-04-06)
+
+
+### Bug Fixes
+
+* **bazel:** don't produce ngfactory files for ng_packages ([#23237](https://github.com/angular/angular/issues/23237)) ([da58a55](https://github.com/angular/angular/commit/da58a55))
+* **compiler-cli:** don't lower expressions in flat module metadata ([#23226](https://github.com/angular/angular/issues/23226)) ([11ea3a3](https://github.com/angular/angular/commit/11ea3a3))
+
+
+
 <a name="6.0.0-rc.2"></a>
 # [6.0.0-rc.2](https://github.com/angular/angular/compare/6.0.0-rc.1...6.0.0-rc.2) (2018-04-05)
 
