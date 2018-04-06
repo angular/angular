@@ -2,7 +2,7 @@
   <mat-nested-tree-node *matTreeNodeDef="let node">
     <div class="mat-tree-node">
       <button mat-icon-button matTreeNodeToggle
-              [attr.aria-label]="'toggle ' + node.filename"
+              [attr.aria-label]="'toggle ' + node.item"
               [disabled]="!node.children.value.length">
         <mat-icon *ngIf="node.children.value.length">
           {{treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
