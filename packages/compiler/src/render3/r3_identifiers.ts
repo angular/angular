@@ -71,6 +71,12 @@ export class Identifiers {
   static projection: o.ExternalReference = {name: 'ɵP', moduleName: CORE};
   static projectionDef: o.ExternalReference = {name: 'ɵpD', moduleName: CORE};
 
+  static refreshComponent: o.ExternalReference = {name: 'ɵr', moduleName: CORE};
+
+  static directiveLifeCycle: o.ExternalReference = {name: 'ɵl', moduleName: CORE};
+
+  static inject: o.ExternalReference = {name: 'inject', moduleName: CORE};
+
   static injectAttribute: o.ExternalReference = {name: 'ɵinjectAttribute', moduleName: CORE};
 
   static injectElementRef: o.ExternalReference = {name: 'ɵinjectElementRef', moduleName: CORE};
