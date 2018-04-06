@@ -279,6 +279,21 @@ export class ReadVarExpr extends Expression {
   }
 }
 
+export class WrappedNodeExpr<T> extends Expression {
+  constructor(public node: T, type?: Type|null, sourceSpan?: ParseSourceSpan|null) {
+    super(type, sourceSpan);
+  }
+
+  isEquivalent(e: Expression): boolean {
+    return e instanceof WrappedNodeExpr && this.node === e.node;
+  }
+
+  isConstant() { return false; }
+
+  visitExpression(visitor: ExpressionVisitor, context: any): any {
+    return visitor.visitWrappedNodeExpr(this, context);
+  }
+}
 
 export class WriteVarExpr extends Expression {
   public value: Expression;
@@ -722,6 +737,7 @@ export interface ExpressionVisitor {
   visitLiteralArrayExpr(ast: LiteralArrayExpr, context: any): any;
   visitLiteralMapExpr(ast: LiteralMapExpr, context: any): any;
   visitCommaExpr(ast: CommaExpr, context: any): any;
+  visitWrappedNodeExpr(ast: WrappedNodeExpr<any>, context: any): any;
 }
 
 export const THIS_EXPR = new ReadVarExpr(BuiltinVar.This, null, null);
@@ -973,6 +989,10 @@ export class AstTransformer implements StatementVisitor, ExpressionVisitor {
 
   visitReadVarExpr(ast: ReadVarExpr, context: any): any { return this.transformExpr(ast, context); }
 
+  visitWrappedNodeExpr(ast: WrappedNodeExpr<any>, context: any): any {
+    return this.transformExpr(ast, context);
+  }
+
   visitWriteVarExpr(expr: WriteVarExpr, context: any): any {
     return this.transformExpr(
         new WriteVarExpr(
@@ -1199,6 +1219,7 @@ export class RecursiveAstVisitor implements StatementVisitor, ExpressionVisitor 
   }
   visitArrayType(type: ArrayType, context: any): any { return this.visitType(type, context); }
   visitMapType(type: MapType, context: any): any { return this.visitType(type, context); }
+  visitWrappedNodeExpr(ast: WrappedNodeExpr<any>, context: any): any { return ast; }
   visitReadVarExpr(ast: ReadVarExpr, context: any): any {
     return this.visitExpression(ast, context);
   }
