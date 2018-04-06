@@ -142,11 +142,11 @@ The goal is for the `@Component` (and friends) to be the compiler of template. S
 | `<div title="Hello {{name}}!">`             |  ✅     |  ✅      |  ✅      |
 | `<div [attr.value]="exp">`                  |  ✅     |  ✅      |  ❌      |
 | `<div class="literal">`                     |  ✅     |  ✅      |  ✅      |
-| `<div [class]="exp">`                       |  ❌     |  ❌      |  ❌      |
-| `<div [class.foo]="exp">`                   |  ✅     |  ✅      |  ❌      |
+| `<div [class]="exp">`                       |  ✅     |  ✅      |  ✅      |
+| `<div [class.foo]="exp">`                   |  ✅     |  ✅      |  ✅      |
 | `<div style="literal">`                     |  ✅     |  ✅      |  ✅      |
-| `<div [style]="exp">`                       |  ❌     |  ❌      |  ❌      |
-| `<div [style.foo]="exp">`                   |  ✅     |  ✅      |  ❌      |
+| `<div [style]="exp">`                       |  ✅     |  ✅      |  ✅      |
+| `<div [style.foo]="exp">`                   |  ✅     |  ✅      |  ✅      |
 | `{{ ['literal', exp ] }}`                   |  ✅     |  ✅      |  ✅      |
 | `{{ { a: 'literal', b: exp } }}`            |  ✅     |  ✅      |  ✅      |
 | `{{ exp \| pipe: arg }}`                    |  ✅     |  ✅      |  ✅      |
