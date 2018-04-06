@@ -12,7 +12,7 @@ import {BehaviorSubject, Observable, Subject, Subscription, of } from 'rxjs';
 import {concatMap, map, mergeMap} from 'rxjs/operators';
 
 import {applyRedirects} from './apply_redirects';
-import {LoadedRouterConfig, QueryParamsHandling, Route, Routes, copyConfig, validateConfig} from './config';
+import {LoadedRouterConfig, QueryParamsHandling, Route, Routes, standardizeConfig, validateConfig} from './config';
 import {createRouterState} from './create_router_state';
 import {createUrlTree} from './create_url_tree';
 import {ActivationEnd, ChildActivationEnd, Event, GuardsCheckEnd, GuardsCheckStart, NavigationCancel, NavigationEnd, NavigationError, NavigationStart, NavigationTrigger, ResolveEnd, ResolveStart, RouteConfigLoadEnd, RouteConfigLoadStart, RoutesRecognized} from './events';
@@ -357,7 +357,7 @@ export class Router {
    */
   resetConfig(config: Routes): void {
     validateConfig(config);
-    this.config = config.map(copyConfig);
+    this.config = config.map(standardizeConfig);
     this.navigated = false;
     this.lastSuccessfulId = -1;
   }
