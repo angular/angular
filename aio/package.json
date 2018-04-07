@@ -61,7 +61,7 @@
     "build-ie-polyfills": "node node_modules/webpack/bin/webpack.js -p src/ie-polyfills.js src/generated/ie-polyfills.min.js",
     "update-webdriver": "webdriver-manager update --standalone false --gecko false $CHROMEDRIVER_VERSION_ARG",
     "~~check-env": "node scripts/check-environment",
-    "~~build": "ng build --prod --configuration=stable --source-map",
+    "~~build": "ng build --prod --configuration=stable",
     "post~~build": "yarn sw-manifest && yarn sw-copy"
   },
   "engines": {
@@ -71,14 +71,14 @@
   "private": true,
   "dependencies": {
     "@angular/animations": "^6.0.0-rc.3",
-    "@angular/cdk": "^5.0.0-rc.1",
+    "@angular/cdk": "^5.2.4",
     "@angular/common": "^6.0.0-rc.3",
     "@angular/compiler": "^6.0.0-rc.3",
     "@angular/core": "^6.0.0-rc.3",
     "@angular/elements": "^6.0.0-rc.3",
     "@angular/forms": "^6.0.0-rc.3",
     "@angular/http": "^6.0.0-rc.3",
-    "@angular/material": "^5.0.0-rc.1",
+    "@angular/material": "^5.2.4",
     "@angular/platform-browser": "^6.0.0-rc.3",
     "@angular/platform-browser-dynamic": "^6.0.0-rc.3",
     "@angular/platform-server": "^6.0.0-rc.3",
