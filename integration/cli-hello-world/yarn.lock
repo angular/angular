@@ -5606,14 +5606,8 @@ run-queue@^1.0.0, run-queue@^1.0.3:
   dependencies:
     aproba "^1.1.1"
 
-rxjs@^6.0.0-beta.3, rxjs@^6.0.0-rc.0:
+rxjs@^6.0.0-beta.3, rxjs@^6.0.0-rc.0, "rxjs@file:../../node_modules/rxjs":
   version "6.0.0-tactical-rc.1"
-  resolved "https://registry.yarnpkg.com/rxjs/-/rxjs-6.0.0-tactical-rc.1.tgz#1fe1f1204132d1c71c72f249a487f8e76a5ec1d5"
-  dependencies:
-    tslib "^1.9.0"
-
-"rxjs@file:../../node_modules/rxjs":
-  version "6.0.0-rc.0"
   dependencies:
     tslib "^1.9.0"
 
@@ -6620,12 +6614,16 @@ typedarray@^0.0.6, typedarray@~0.0.5:
   version "0.0.6"
   resolved "https://registry.yarnpkg.com/typedarray/-/typedarray-0.0.6.tgz#867ac74e3864187b1d3d47d996a78ec5c8830777"
 
-"typescript@file:../../node_modules/typescript", typescript@~2.7.2:
+"typescript@file:../../node_modules/typescript":
   version "2.7.2"
 
 typescript@~2.6.2:
   version "2.6.2"
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-2.6.2.tgz#3c5b6fd7f6de0914269027f03c0946758f7673a4"
+
+typescript@~2.7.2:
+  version "2.7.2"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-2.7.2.tgz#2d615a1ef4aee4f574425cdff7026edf81919836"
 
 uglify-es@^3.3.4:
   version "3.3.9"
