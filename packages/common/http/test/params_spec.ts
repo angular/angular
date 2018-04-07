@@ -6,10 +6,26 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {HttpParams} from '../src/params';
+import {HttpParams, HttpUrlEncodingCodec} from '../src/params';
 
 {
   describe('HttpUrlEncodedParams', () => {
+    describe('change default encoder', () => {
+      it('should replace default parameter encoder', () => {
+        HttpParams.defaultEncoderClass = class CustomEncoder extends HttpUrlEncodingCodec {
+          encodeKey(key: string): string { return key + 'a'; }
+          encodeValue(value: string): string { return value + 'b'; }
+          decodeKey(key: string): string { return key + 'a'; }
+          decodeValue(value: string): string { return value + 'b'; }
+        };
+
+        const body = new HttpParams({fromString: 'a=b'});
+        expect(body.has('aa')).toBe(true);
+        expect(body.getAll('aa')).toEqual(['bb']);
+      });
+
+      afterEach(() => { HttpParams.defaultEncoderClass = HttpUrlEncodingCodec; });
+    });
     describe('initialization', () => {
       it('should be empty at construction', () => {
         const body = new HttpParams();

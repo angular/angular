@@ -97,13 +97,18 @@ export interface HttpParamsOptions {
  * @stable
  */
 export class HttpParams {
+  /**
+   * Can override default encoder.
+   */
+  static defaultEncoderClass = HttpUrlEncodingCodec;
+
   private map: Map<string, string[]>|null;
   private encoder: HttpParameterCodec;
   private updates: Update[]|null = null;
   private cloneFrom: HttpParams|null = null;
 
   constructor(options: HttpParamsOptions = {} as HttpParamsOptions) {
-    this.encoder = options.encoder || new HttpUrlEncodingCodec();
+    this.encoder = options.encoder || new HttpParams.defaultEncoderClass();
     if (!!options.fromString) {
       if (!!options.fromObject) {
         throw new Error(`Cannot specify both fromString and fromObject.`);
