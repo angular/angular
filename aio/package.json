@@ -73,7 +73,6 @@
     "@angular/animations": "^6.0.0-rc.3",
     "@angular/cdk": "^6.0.0-rc.1",
     "@angular/common": "^6.0.0-rc.3",
-    "@angular/compiler": "^6.0.0-rc.3",
     "@angular/core": "^6.0.0-rc.3",
     "@angular/elements": "^6.0.0-rc.3",
     "@angular/forms": "^6.0.0-rc.3",
@@ -97,7 +96,9 @@
   },
   "devDependencies": {
     "@angular/cli": "^6.0.0-rc.2",
+    "@angular/compiler": "^6.0.0-rc.3",
     "@angular/compiler-cli": "^6.0.0-rc.3",
+    "@angular-devkit/build-angular": "~0.5.0",
     "@types/jasmine": "^2.5.52",
     "@types/jasminewd2": "^2.0.3",
     "@types/node": "~6.0.60",
@@ -156,7 +157,6 @@
     "vrsource-tslint-rules": "^4.0.1",
     "watchr": "^3.0.1",
     "xregexp": "^4.0.0",
-    "yargs": "^7.0.2",
-    "@angular-devkit/build-angular": "~0.5.0"
+    "yargs": "^7.0.2"
   }
 }
