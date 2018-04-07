@@ -26,6 +26,7 @@
     "zone.js": "file:../../node_modules/zone.js"
   },
   "devDependencies": {
+    "@angular-devkit/build-angular": "~0.5.0",
     "@angular/cli": "^6.0.0-rc.0",
     "@angular/compiler-cli": "file:../../dist/packages-dist/compiler-cli",
     "@angular/language-service": "file:../../dist/packages-dist/language-service",
@@ -43,7 +44,6 @@
     "protractor": "~5.1.2",
     "ts-node": "~4.1.0",
     "tslint": "~5.9.1",
-    "typescript": "file:../../node_modules/typescript",
-    "@angular-devkit/build-angular": "~0.5.0"
+    "typescript": "file:../../node_modules/typescript"
   }
 }
