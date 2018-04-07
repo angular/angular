@@ -61,7 +61,7 @@
     "build-ie-polyfills": "node node_modules/webpack/bin/webpack.js -p src/ie-polyfills.js src/generated/ie-polyfills.min.js",
     "update-webdriver": "webdriver-manager update --standalone false --gecko false $CHROMEDRIVER_VERSION_ARG",
     "~~check-env": "node scripts/check-environment",
-    "~~build": "ng build --target=production --environment=stable -sm",
+    "~~build": "ng build --prod --configuration=stable --source-map",
     "post~~build": "yarn sw-manifest && yarn sw-copy"
   },
   "engines": {
@@ -96,7 +96,7 @@
     "zone.js": "^0.8.26"
   },
   "devDependencies": {
-    "@angular/cli": "^1.7.3",
+    "@angular/cli": "^6.0.0-rc.2",
     "@angular/compiler-cli": "^6.0.0-rc.3",
     "@types/jasmine": "^2.5.52",
     "@types/jasminewd2": "^2.0.3",
@@ -156,6 +156,7 @@
     "vrsource-tslint-rules": "^4.0.1",
     "watchr": "^3.0.1",
     "xregexp": "^4.0.0",
-    "yargs": "^7.0.2"
+    "yargs": "^7.0.2",
+    "@angular-devkit/build-angular": "~0.5.0"
   }
 }
