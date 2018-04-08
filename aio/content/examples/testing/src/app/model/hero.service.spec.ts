@@ -15,7 +15,7 @@ describe ('HeroesService (with spies)', () => {
   let heroService: HeroService;
 
   beforeEach(() => {
-    // Todo: spy on other methods too
+    // TODO: spy on other methods too
     httpClientSpy = jasmine.createSpyObj('HttpClient', ['get']);
     heroService = new HeroService(<any> httpClientSpy);
   });

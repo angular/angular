@@ -15,7 +15,7 @@ export class BackendService {
 
   getAll(type: Type<any>): PromiseLike<any[]> {
     if (type === Hero) {
-      // TODO get from the database
+      // TODO: get from the database
       return Promise.resolve<Hero[]>(HEROES);
     }
     let err = new Error('Cannot get object of this type');

@@ -37,7 +37,7 @@ export class LocationService {
     swUpdates.updateActivated.subscribe(() => this.swUpdateActivated = true);
   }
 
-  // TODO?: ignore if url-without-hash-or-search matches current location?
+  // TODO: ignore if url-without-hash-or-search matches current location?
   go(url: string|null|undefined) {
     if (!url) { return; }
     url = this.stripSlashes(url);
