@@ -129,11 +129,20 @@ A view hierarchy can include views from components in the same NgModule, but it 
 -->
 뷰는 보통 같은 NgModule에 있는 컴포넌트를 활용해서 뷰 계층으로 구성합니다. 그리고 자주 있는 경우는 아니지만 다른 NgModule에 있는 컴포넌트를 뷰에 불러올 수도 있습니다.
 
+<!--
 ## Template syntax
+-->
+## 템플릿 문법
 
+<!--
 A template looks like regular HTML, except that it also contains Angular [template syntax](guide/template-syntax), which alters the HTML based on your app's logic and the state of app and DOM data. Your template can use _data binding_ to coordinate the app and DOM data, _pipes_ to transform data before it is displayed, and _directives_ to apply app logic to what gets displayed.
+-->
+템플릿은 자주 사용하는 HTML 문법과 비슷하며, 여기에 Angular가 제공하는 [템플릿 문법](guide/template-syntax)을 사용할 수 있습니다. 템플릿 문법은 애플리케이션이나 DOM 데이터에 따라 HTML을 조작하면서 뷰를 원하는대로 표시합니다. 그리고 템플릿은 애플리케이션 데이터나 DOM 데이터를 _데이터 바인딩_ 해서 표시할 수 있고, 이 떄 _파이프_ 를 사용해서 원하는 형식으로 표현할 수도 있으며, _디렉티브_ 를 활용해서 간단한 로직을 더할수도 있습니다.
 
+<!--
 For example, here is a template for the Tutorial's `HeroListComponent`:
+-->
+예를 들어 튜토리얼에서 살펴봤던 `HeroListComponent`의 템플릿은 다음과 같이 정의되어 있습니다:
 
 <code-example path="architecture/src/app/hero-list.component.html" title="src/app/hero-list.component.html"></code-example>
 
