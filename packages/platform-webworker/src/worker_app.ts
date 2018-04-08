@@ -33,7 +33,7 @@ export function errorHandler(): ErrorHandler {
 }
 
 
-// TODO(jteplitz602) remove this and compile with lib.webworker.d.ts (#3492)
+// TODO(jteplitz602): remove this and compile with lib.webworker.d.ts (#3492)
 const _postMessage = {
   postMessage: (message: any, transferrables?: [ArrayBuffer]) => {
     (<any>postMessage)(message, transferrables);
