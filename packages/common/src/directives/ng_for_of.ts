@@ -117,14 +117,11 @@ export class NgForOf<T> implements DoCheck, OnChanges {
   private _trackByFn: TrackByFunction<T>;
 
   constructor(
-      private _viewContainer: ViewContainerRef, private _template: TemplateRef<NgForOfContext<T>>,
+      private _viewContainer: ViewContainerRef, private _template: TemplateRef<Partial<NgForOfContext<T>>>,
       private _differs: IterableDiffers) {}
 
   @Input()
-  set ngForTemplate(value: TemplateRef<NgForOfContext<T>>) {
-    // TODO(TS2.1): make TemplateRef<Partial<NgForRowOf<T>>> once we move to TS v2.1
-    // The current type is too restrictive; a template that just uses index, for example,
-    // should be acceptable.
+  set ngForTemplate(value: TemplateRef<Partial<NgForOfContext<T>>>) {
     if (value) {
       this._template = value;
     }
@@ -189,13 +186,13 @@ export class NgForOf<T> implements DoCheck, OnChanges {
   }
 
   private _perViewChange(
-      view: EmbeddedViewRef<NgForOfContext<T>>, record: IterableChangeRecord<any>) {
+      view: EmbeddedViewRef<Partial<NgForOfContext<T>>>, record: IterableChangeRecord<any>) {
     view.context.$implicit = record.item;
   }
 }
 
 class RecordViewTuple<T> {
-  constructor(public record: any, public view: EmbeddedViewRef<NgForOfContext<T>>) {}
+  constructor(public record: any, public view: EmbeddedViewRef<Partial<NgForOfContext<T>>>) {}
 }
 
 export function getTypeNameForDebugging(type: any): string {

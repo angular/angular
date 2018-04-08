@@ -409,7 +409,7 @@ class AngularCompilerProgram implements Program {
     const emitOnlyDtsFiles = (emitFlags & (EmitFlags.DTS | EmitFlags.JS)) == EmitFlags.DTS;
     // Restore the original references before we emit so TypeScript doesn't emit
     // a reference to the .d.ts file.
-    const augmentedReferences = new Map<ts.SourceFile, ReadonlyArray<ts.FileReference>>();
+    const augmentedReferences = new Map<ts.SourceFile, ts.FileReference[]>();
     for (const sourceFile of this.tsProgram.getSourceFiles()) {
       const originalReferences = getOriginalReferences(sourceFile);
       if (originalReferences) {
@@ -459,8 +459,7 @@ class AngularCompilerProgram implements Program {
       // Restore the references back to the augmented value to ensure that the
       // checks that TypeScript makes for project structure reuse will succeed.
       for (const [sourceFile, references] of Array.from(augmentedReferences)) {
-        // TODO(chuckj): Remove any cast after updating build to 2.6
-        (sourceFile as any).referencedFiles = references;
+        sourceFile.referencedFiles = references;
       }
     }
     this.emittedSourceFiles = emittedSourceFiles;
@@ -865,8 +864,7 @@ class AngularCompilerProgram implements Program {
     if (baseFile) {
       sourceFiles = sourceFiles ? [...sourceFiles, baseFile] : [baseFile];
     }
-    // TODO: remove any when TS 2.4 support is removed.
-    this.host.writeFile(outFileName, outData, writeByteOrderMark, onError, sourceFiles as any);
+    this.host.writeFile(outFileName, outData, writeByteOrderMark, onError, sourceFiles);
   }
 }
 
