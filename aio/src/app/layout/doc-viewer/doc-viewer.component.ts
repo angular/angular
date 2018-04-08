@@ -155,10 +155,8 @@ export class DocViewerComponent implements OnDestroy {
    */
   private setNoIndex(val: boolean) {
     if (val) {
-      this.metaService.addTag({ name: 'googlebot', content: 'noindex' });
       this.metaService.addTag({ name: 'robots', content: 'noindex' });
     } else {
-      this.metaService.removeTag('name="googlebot"');
       this.metaService.removeTag('name="robots"');
     }
   }
