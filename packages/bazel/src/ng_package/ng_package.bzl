@@ -18,7 +18,6 @@ load("@build_bazel_rules_nodejs//:internal/npm_package/npm_package.bzl",
 load("@build_bazel_rules_nodejs//:internal/node.bzl", "sources_aspect")
 load("//packages/bazel/src:esm5.bzl", "esm5_outputs_aspect", "flatten_esm5", "esm5_root_dir")
 
-# TODO(alexeagle): this list is incomplete, add more as material ramps up
 WELL_KNOWN_GLOBALS = {
     "@angular/upgrade": "ng.upgrade",
     "@angular/upgrade/static": "ng.upgrade.static",
@@ -55,8 +54,29 @@ WELL_KNOWN_GLOBALS = {
     "rxjs/operators": "rxjs.operators",
 }
 
+# Convert from some-dash-case to someCamelCase
+def _convert_dash_case_to_camel_case(s):
+  parts = s.split("-")
+  # First letter in the result is always unchanged
+  return s[0] + "".join([p.title() for p in parts])[1:]
 
-def _rollup(ctx, rollup_config, entry_point, inputs, js_output, format = "es"):
+# Convert from a package name on npm to an identifier that's a legal global symbol
+#  @angular/core -> ng.core
+#  @angular/platform-browser-dynamic/testing -> ng.platformBrowserDynamic.testing
+def _global_name(package_name):
+  # strip npm scoped package qualifier
+  start = 1 if package_name.startswith("@") else 0
+  parts = package_name[start:].split("/")
+  result_parts = []
+  for p in parts:
+    # Special case for angular's short name
+    if p == "angular":
+      result_parts.append("ng")
+    else:
+      result_parts.append(_convert_dash_case_to_camel_case(p))
+  return ".".join(result_parts)
+
+def _rollup(ctx, rollup_config, entry_point, inputs, js_output, format = "es", package_name = ""):
   map_output = ctx.actions.declare_file(js_output.basename + ".map", sibling = js_output)
 
   args = ctx.actions.args()
@@ -65,7 +85,9 @@ def _rollup(ctx, rollup_config, entry_point, inputs, js_output, format = "es"):
   args.add(["--input", entry_point])
   args.add(["--output.file", js_output.path])
   args.add(["--output.format", format])
-  args.add(["--name", ctx.label.name])
+  if package_name:
+    args.add(["--output.name", _global_name(package_name)])
+    args.add(["--amd.id", package_name])
 
   # Note: if the input has external source maps then we need to also install and use
   #   `rollup-plugin-sourcemaps`, which will require us to use rollup.config.js file instead
@@ -148,12 +170,15 @@ def _ng_package_impl(ctx):
   # - in this package or a subpackage
   # - those that have a module_name attribute (they produce flat module metadata)
   flat_module_metadata = []
+  # Name given in the package.json name field, eg. @angular/core/testing
+  package_name = ""
   deps_in_package = [d for d in ctx.attr.deps if d.label.package.startswith(ctx.label.package)]
   for dep in deps_in_package:
     # Intentionally evaluates to empty string for the main entry point
     entry_point = dep.label.package[len(ctx.label.package) + 1:]
     if hasattr(dep, "angular") and hasattr(dep.angular, "flat_module_metadata"):
       flat_module_metadata.append(dep.angular.flat_module_metadata)
+      package_name = dep.angular.flat_module_metadata.module_name
       flat_module_out_file = dep.angular.flat_module_metadata.flat_module_out_file + ".js"
     else:
       # fallback to a reasonable default
@@ -194,7 +219,7 @@ def _ng_package_impl(ctx):
     fesm2015.append(_rollup(ctx, config, es2015_entry_point, esm_2015_files, fesm2015_output))
     fesm5.append(_rollup(ctx, config, es5_entry_point, esm5_sources, fesm5_output))
 
-    bundles.append(_rollup(ctx, config, es5_entry_point, esm5_sources, umd_output, format = "umd"))
+    bundles.append(_rollup(ctx, config, es5_entry_point, esm5_sources, umd_output, format = "umd", package_name = package_name))
     uglify_sourcemap = run_uglify(ctx, umd_output, min_output,
         config_name = entry_point.replace("/", "_"))
     bundles.append(struct(js = min_output, map = uglify_sourcemap))
