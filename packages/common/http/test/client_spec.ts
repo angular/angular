@@ -10,9 +10,9 @@ import {ddescribe, describe, iit, it} from '@angular/core/testing/src/testing_in
 import {toArray} from 'rxjs/operators';
 
 import {HttpClient} from '../src/client';
+import {HttpParameterCodec} from '../src/params';
 import {HttpErrorResponse, HttpEventType, HttpResponse} from '../src/response';
 import {HttpClientTestingBackend} from '../testing/src/backend';
-import {HttpParameterCodec} from '../src/params';
 
 {
   describe('HttpClient', () => {
@@ -171,9 +171,7 @@ import {HttpParameterCodec} from '../src/params';
         decodeValue(value: string): string { return value + 'b'; }
       }
 
-      beforeEach(() => {
-        client = new HttpClient(backend, new TestHttpParameterEncoder());
-      });
+      beforeEach(() => { client = new HttpClient(backend, new TestHttpParameterEncoder()); });
       afterEach(() => { backend.verify(); });
 
       it('should test', (done: DoneFn) => {

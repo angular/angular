@@ -12,9 +12,10 @@ import {concatMap, filter, map} from 'rxjs/operators';
 
 import {HttpHandler} from './backend';
 import {HttpHeaders} from './headers';
-import {HttpParams, HttpParamsOptions, HttpParameterCodec} from './params';
+import {HttpParameterCodec, HttpParams, HttpParamsOptions} from './params';
 import {HttpRequest} from './request';
 import {HttpEvent, HttpResponse} from './response';
+
 
 
 /**
@@ -56,12 +57,11 @@ export type HttpObserve = 'body' | 'events' | 'response';
 @Injectable()
 export class HttpClient {
   constructor(
-    private handler: HttpHandler,
-    /**
-     * You can also provide custom `HttpParameterCodec`.
-     */
-    @Optional() private httpParameterCodec?: HttpParameterCodec,
-  ) {}
+      private handler: HttpHandler,
+      /**
+       * You can also provide custom `HttpParameterCodec`.
+       */
+      @Optional() private httpParameterCodec?: HttpParameterCodec, ) {}
 
   /**
    * Send the given `HttpRequest` and return a stream of `HttpEvents`.
@@ -365,8 +365,7 @@ export class HttpClient {
           params = options.params;
         } else {
           params = new HttpParams({
-            fromObject: options.params,
-            encoder: this.httpParameterCodec,
+            fromObject: options.params, encoder: this.httpParameterCodec,
           } as HttpParamsOptions);
         }
       }

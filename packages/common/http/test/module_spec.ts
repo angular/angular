@@ -14,12 +14,12 @@ import {map} from 'rxjs/operators';
 import {HttpHandler} from '../src/backend';
 import {HttpClient} from '../src/client';
 import {HTTP_INTERCEPTORS, HttpInterceptor} from '../src/interceptor';
+import {HttpParameterCodec} from '../src/params';
 import {HttpRequest} from '../src/request';
 import {HttpEvent, HttpResponse} from '../src/response';
 import {HttpTestingController} from '../testing/src/api';
 import {HttpClientTestingModule} from '../testing/src/module';
 import {TestRequest} from '../testing/src/request';
-import {HttpParameterCodec} from '../src/params';
 
 class TestInterceptor implements HttpInterceptor {
   constructor(private value: string) {}
@@ -116,9 +116,7 @@ class ReentrantInterceptor implements HttpInterceptor {
       TestBed.resetTestingModule();
       injector = TestBed.configureTestingModule({
         imports: [HttpClientTestingModule],
-        providers: [
-          {provide: HttpParameterCodec, useClass: TestHttpParameterEncoder}
-        ]
+        providers: [{provide: HttpParameterCodec, useClass: TestHttpParameterEncoder}]
       });
 
       expect(injector.get(HttpParameterCodec).encodeKey('a')).toBe('aa');
