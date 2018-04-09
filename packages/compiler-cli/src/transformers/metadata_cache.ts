@@ -11,6 +11,7 @@ import * as ts from 'typescript';
 import {MetadataCollector, MetadataValue, ModuleMetadata} from '../metadata/index';
 
 import {MetadataProvider} from './compiler_host';
+import {TS} from './util';
 
 export type ValueTransform = (value: MetadataValue, node: ts.Node) => MetadataValue;
 
@@ -26,7 +27,7 @@ export class MetadataCache implements MetadataProvider {
   private metadataCache = new Map<string, ModuleMetadata|undefined>();
 
   constructor(
-      private collector: MetadataCollector, private strict: boolean,
+      private collector: MetadataCollector, private readonly strict: boolean,
       private transformers: MetadataTransformer[]) {
     for (let transformer of transformers) {
       if (transformer.connect) {
@@ -59,7 +60,8 @@ export class MetadataCache implements MetadataProvider {
       }
     }
 
-    const result = this.collector.getMetadata(sourceFile, this.strict, substitute);
+    const isTsFile = TS.test(sourceFile.fileName);
+    const result = this.collector.getMetadata(sourceFile, this.strict && isTsFile, substitute);
     this.metadataCache.set(sourceFile.fileName, result);
     return result;
   }
