@@ -25,11 +25,7 @@ export const EVENT_MANAGER_PLUGINS =
 export class EventManager {
   private _plugins: EventManagerPlugin[];
   private _eventNameToPlugin = new Map<string, EventManagerPlugin>();
-  /**
-   * Initializes an instance of the event-manager service.
-   * @param plugins The event-management plug-ins to provide.
-   * @param _zone The compilation zone.
-   */
+
   constructor(@Inject(EVENT_MANAGER_PLUGINS) plugins: EventManagerPlugin[], private _zone: NgZone) {
     plugins.forEach(p => p.manager = this);
     this._plugins = plugins.slice().reverse();
