@@ -24,6 +24,10 @@ describe('@angular/common ng_package', () => {
       expect(files.some(n => n.endsWith('.d.ts'))).toBe(true, `.d.ts files don't exist`);
       expect(files.some(n => n.endsWith('.js'))).toBe(true, `.js files don't exist`);
     });
+    // regression test for https://github.com/angular/angular/issues/23217
+    // Note, we don't have an e2e test that covers this
+    it('doesn\'t pass require in a way that breaks webpack static analysis',
+       () => { expect(shx.cat('locales/fr.js')).not.toContain('factory(require, exports)'); });
   });
 
   it('should have right bundle files', () => {

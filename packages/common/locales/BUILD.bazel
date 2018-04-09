@@ -13,5 +13,14 @@ ts_library(
 
 npm_package(
     name = "package",
+    replacements = {
+        # Workaround for https://github.com/angular/angular/issues/23217
+        # Webpack will detect that the UMD outputs from TypeScript pass the
+        # `require` function into the module, and cannot accurately track
+        # dependencies in case require was called.
+        # We don't actually import anything in the locale code so we can
+        # null out the require reference passed into the module.
+        "factory\(require, exports\)": "factory(null, exports)",
+    },
     deps = [":locales"],
 )
