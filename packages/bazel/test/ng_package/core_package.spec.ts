@@ -180,6 +180,10 @@ describe('@angular/core ng_package', () => {
 
       it('should have tslib helpers',
          () => { expect(shx.cat('bundles/core.umd.js')).not.toContain('undefined.__extends'); });
+      it('should have an AMD name',
+         () => { expect(shx.cat('bundles/core.umd.js')).toContain('define(\'@angular/core\''); });
+      it('should define ng global symbols',
+         () => { expect(shx.cat('bundles/core.umd.js')).toContain('global.ng.core = {}'); });
     });
   });
 
@@ -272,6 +276,16 @@ describe('@angular/core ng_package', () => {
       it('should have a source map next to the minified umd file', () => {
         expect(shx.ls('bundles/core-testing.umd.min.js.map').length).toBe(1, 'File not found');
       });
+
+      it('should have an AMD name', () => {
+        expect(shx.cat('bundles/core-testing.umd.js'))
+            .toContain('define(\'@angular/core/testing\'');
+      });
+
+      it('should define ng global symbols', () => {
+        expect(shx.cat('bundles/core-testing.umd.js')).toContain('global.ng.core.testing = {}');
+      });
+
     });
   });
 });
