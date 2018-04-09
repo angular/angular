@@ -490,4 +490,7 @@ export function appendProjectedNode(
       addRemoveViewFromContainer(node as LContainerNode, views[i], true, null);
     }
   }
+  if (node.dynamicLContainerNode) {
+    node.dynamicLContainerNode.data.renderParent = currentParent as LElementNode;
+  }
 }
