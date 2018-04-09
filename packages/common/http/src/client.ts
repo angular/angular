@@ -57,6 +57,9 @@ export type HttpObserve = 'body' | 'events' | 'response';
 export class HttpClient {
   constructor(
     private handler: HttpHandler,
+    /**
+     * You can also provide custom `HttpParameterCodec`.
+     */
     @Optional() private httpParameterCodec?: HttpParameterCodec,
   ) {}
 
