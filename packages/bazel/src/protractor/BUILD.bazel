@@ -1,0 +1,4 @@
+exports_files([
+    "conf.js.tmpl",
+    "protractor_runner.js",
+])

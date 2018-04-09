@@ -12,6 +12,12 @@ http_archive(
 )
 
 http_archive(
+    name = "bazel_gazelle",
+    sha256 = "d03625db67e9fb0905bbd206fa97e32ae9da894fe234a493e7517fd25faec914",
+    url = "https://github.com/bazelbuild/bazel-gazelle/releases/download/0.10.1/bazel-gazelle-0.10.1.tar.gz",
+)
+
+http_archive(
     name = "io_bazel_rules_webtesting",
     url = "https://github.com/bazelbuild/rules_webtesting/archive/v0.2.0.zip",
     strip_prefix = "rules_webtesting-0.2.0",
@@ -84,6 +90,10 @@ load("@io_bazel_rules_go//go:def.bzl", "go_rules_dependencies", "go_register_too
 
 go_rules_dependencies()
 go_register_toolchains()
+
+load("@bazel_gazelle//:deps.bzl", "gazelle_dependencies")
+
+gazelle_dependencies()
 
 load("@io_bazel_rules_webtesting//web:repositories.bzl", "browser_repositories", "web_test_repositories")
 
