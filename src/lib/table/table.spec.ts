@@ -277,7 +277,7 @@ describe('MatTable', () => {
       component.sort.sort(component.sortHeader);
       fixture.detectChanges();
       expectTableToMatchContent(tableElement, [
-        ['Column A\xa0Sorted by a ascending', 'Column B', 'Column C'],
+        ['Column A', 'Column B', 'Column C'],
         ['-1', 'b_3', 'c_3'],
         ['0', 'b_2', 'c_2'],
         ['1', 'b_1', 'c_1'],
@@ -289,7 +289,7 @@ describe('MatTable', () => {
       component.sort.sort(component.sortHeader);
       fixture.detectChanges();
       expectTableToMatchContent(tableElement, [
-        ['Column A\xa0Sorted by a descending', 'Column B', 'Column C'],
+        ['Column A', 'Column B', 'Column C'],
         ['1', 'b_1', 'c_1'],
         ['0', 'b_2', 'c_2'],
         ['-1', 'b_3', 'c_3'],
