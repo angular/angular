@@ -9,6 +9,8 @@
 // THIS CODE IS GENERATED - DO NOT MODIFY
 // See angular/tools/gulp-tasks/cldr/extract.js
 
+const u = undefined;
+
 function plural(n: number): number {
   let i = Math.floor(Math.abs(n));
   if (i === 0 || n === 1) return 1;
@@ -16,12 +18,7 @@ function plural(n: number): number {
 }
 
 export default [
-  'bn-IN',
-  [
-    ['AM', 'PM'],
-    ,
-  ],
-  ,
+  'bn-IN', [['AM', 'PM'], u, u], u,
   [
     ['র', 'সো', 'ম', 'বু', 'বৃ', 'শু', 'শ'],
     [
@@ -74,18 +71,14 @@ export default [
       'সেপ্টেম্বর', 'অক্টোবর', 'নভেম্বর',
       'ডিসেম্বর'
     ],
+    u
   ],
   [
-    ['খ্রিস্টপূর্ব', 'খৃষ্টাব্দ'], ,
+    ['খ্রিস্টপূর্ব', 'খৃষ্টাব্দ'], u,
     ['খ্রিস্টপূর্ব', 'খ্রীষ্টাব্দ']
   ],
   0, [0, 0], ['d/M/yy', 'd MMM, y', 'd MMMM, y', 'EEEE, d MMMM, y'],
-  ['h:mm a', 'h:mm:ss a', 'h:mm:ss a z', 'h:mm:ss a zzzz'],
-  [
-    '{1} {0}',
-    ,
-    ,
-  ],
+  ['h:mm a', 'h:mm:ss a', 'h:mm:ss a z', 'h:mm:ss a zzzz'], ['{1} {0}', u, u, u],
   ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
   ['#,##,##0.###', '#,##,##0%', '#,##,##0.00¤', '#E0'], '₹',
   'ভারতীয় রুপি',

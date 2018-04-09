@@ -9,23 +9,20 @@
 // THIS CODE IS GENERATED - DO NOT MODIFY
 // See angular/tools/gulp-tasks/cldr/extract.js
 
+const u = undefined;
+
 function plural(n: number): number {
   return 5;
 }
 
 export default [
-  'ms-BN',
-  [
-    ['a', 'p'],
-    ['PG', 'PTG'],
-  ],
-  ,
+  'ms-BN', [['a', 'p'], ['PG', 'PTG'], u], u,
   [
     ['A', 'I', 'S', 'R', 'K', 'J', 'S'], ['Ahd', 'Isn', 'Sel', 'Rab', 'Kha', 'Jum', 'Sab'],
     ['Ahad', 'Isnin', 'Selasa', 'Rabu', 'Khamis', 'Jumaat', 'Sabtu'],
     ['Ah', 'Is', 'Se', 'Ra', 'Kh', 'Ju', 'Sa']
   ],
-  ,
+  u,
   [
     ['J', 'F', 'M', 'A', 'M', 'J', 'J', 'O', 'S', 'O', 'N', 'D'],
     ['Jan', 'Feb', 'Mac', 'Apr', 'Mei', 'Jun', 'Jul', 'Ogo', 'Sep', 'Okt', 'Nov', 'Dis'],
@@ -34,27 +31,17 @@ export default [
       'November', 'Disember'
     ]
   ],
-  ,
-  [
-    ['S.M.', 'TM'],
-    ,
-  ],
-  1, [6, 0], ['d/MM/yy', 'd MMM y', 'd MMMM y', 'dd MMMM y'],
-  ['h:mm a', 'h:mm:ss a', 'h:mm:ss a z', 'h:mm:ss a zzzz'],
-  [
-    '{1}, {0}',
-    ,
-    '{1} {0}',
-  ],
+  u, [['S.M.', 'TM'], u, u], 1, [6, 0], ['d/MM/yy', 'd MMM y', 'd MMMM y', 'dd MMMM y'],
+  ['h:mm a', 'h:mm:ss a', 'h:mm:ss a z', 'h:mm:ss a zzzz'], ['{1}, {0}', u, '{1} {0}', u],
   [',', '.', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
   ['#,##0.###', '#,##0%', '¤ #,##0.00', '#E0'], '$', 'Dolar Brunei', {
     'BND': ['$'],
-    'CAD': [, '$'],
+    'CAD': [u, '$'],
     'JPY': ['JP¥', '¥'],
-    'MXN': [, '$'],
+    'MXN': [u, '$'],
     'MYR': ['RM'],
     'TWD': ['NT$'],
-    'USD': [, '$']
+    'USD': [u, '$']
   },
   plural
 ];

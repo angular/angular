@@ -9,6 +9,8 @@
 // THIS CODE IS GENERATED - DO NOT MODIFY
 // See angular/tools/gulp-tasks/cldr/extract.js
 
+const u = undefined;
+
 function plural(n: number): number {
   let i = Math.floor(Math.abs(n));
   if (i === 0 || n === 1) return 1;
@@ -16,12 +18,7 @@ function plural(n: number): number {
 }
 
 export default [
-  'as',
-  [
-    ['পূৰ্বাহ্ণ', 'অপৰাহ্ণ'],
-    ,
-  ],
-  ,
+  'as', [['পূৰ্বাহ্ণ', 'অপৰাহ্ণ'], u, u], u,
   [
     ['দ', 'স', 'ম', 'ব', 'ব', 'শ', 'শ'],
     [
@@ -37,7 +34,7 @@ export default [
       'শনি'
     ]
   ],
-  ,
+  u,
   [
     ['জ', 'ফ', 'ম', 'এ', 'ম', 'জ', 'জ', 'আ', 'ছ', 'অ', 'ন', 'ড'],
     [
@@ -67,16 +64,11 @@ export default [
     ]
   ],
   [
-    ['খ্ৰী.পূ.', 'খ্ৰী.দ.'], ,
+    ['খ্ৰী.পূ.', 'খ্ৰী.দ.'], u,
     ['খ্ৰীষ্টপূৰ্ব', 'খ্ৰীষ্টাব্দ']
   ],
   0, [0, 0], ['d-M-y', 'dd-MM-y', 'd MMMM, y', 'EEEE, d MMMM, y'],
-  ['h.mm. a', 'h.mm.ss a', 'h.mm.ss a z', 'h.mm.ss a zzzz'],
-  [
-    '{1} {0}',
-    ,
-    ,
-  ],
+  ['h.mm. a', 'h.mm.ss a', 'h.mm.ss a z', 'h.mm.ss a zzzz'], ['{1} {0}', u, u, u],
   ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
   ['#,##,##0.###', '#,##,##0%', '¤ #,##,##0.00', '#E0'], '₹', 'INR',
   {'JPY': ['JP¥', '¥'], 'USD': ['US$', '$']}, plural

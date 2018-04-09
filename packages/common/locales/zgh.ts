@@ -9,17 +9,14 @@
 // THIS CODE IS GENERATED - DO NOT MODIFY
 // See angular/tools/gulp-tasks/cldr/extract.js
 
+const u = undefined;
+
 function plural(n: number): number {
   return 5;
 }
 
 export default [
-  'zgh',
-  [
-    ['ⵜⵉⴼⴰⵡⵜ', 'ⵜⴰⴷⴳⴳⵯⴰⵜ'],
-    ,
-  ],
-  ,
+  'zgh', [['ⵜⵉⴼⴰⵡⵜ', 'ⵜⴰⴷⴳⴳⵯⴰⵜ'], u, u], u,
   [
     ['S', 'M', 'T', 'W', 'T', 'F', 'S'],
     [
@@ -35,7 +32,7 @@ export default [
       'ⴰⵙⵉⴹ'
     ]
   ],
-  ,
+  u,
   [
     ['ⵉ', 'ⴱ', 'ⵎ', 'ⵉ', 'ⵎ', 'ⵢ', 'ⵢ', 'ⵖ', 'ⵛ', 'ⴽ', 'ⵏ', 'ⴷ'],
     [
@@ -48,18 +45,13 @@ export default [
       'ⴽⵜⵓⴱⵔ', 'ⵏⵓⵡⴰⵏⴱⵉⵔ', 'ⴷⵓⵊⴰⵏⴱⵉⵔ'
     ]
   ],
-  ,
+  u,
   [
-    ['ⴷⴰⵄ', 'ⴷⴼⵄ'], ,
+    ['ⴷⴰⵄ', 'ⴷⴼⵄ'], u,
     ['ⴷⴰⵜ ⵏ ⵄⵉⵙⴰ', 'ⴷⴼⴼⵉⵔ ⵏ ⵄⵉⵙⴰ']
   ],
   6, [5, 6], ['d/M/y', 'd MMM, y', 'd MMMM y', 'EEEE d MMMM y'],
-  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'],
-  [
-    '{1} {0}',
-    ,
-    ,
-  ],
+  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'], ['{1} {0}', u, u, u],
   [',', ' ', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
   ['#,##0.###', '#,##0 %', '#,##0.00¤', '#E0'], 'MAD', 'ⴰⴷⵔⵉⵎ ⵏ ⵍⵎⵖⵔⵉⴱ',
   {'JPY': ['JP¥', '¥'], 'USD': ['US$', '$']}, plural

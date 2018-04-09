@@ -9,6 +9,8 @@
 // THIS CODE IS GENERATED - DO NOT MODIFY
 // See angular/tools/gulp-tasks/cldr/extract.js
 
+const u = undefined;
+
 export default [
   [
     [
@@ -19,12 +21,13 @@ export default [
       'түн жарымы', 'түскі', 'таңғы', 'түстен кейінгі',
       'кешкі', 'түнгі'
     ],
+    u
   ],
   [
     [
       'түн жарымы', 'талтүс', 'таң', 'түстен кейін', 'кеш', 'түн'
     ],
-    ,
+    u, u
   ],
   [
     '00:00', '12:00', ['06:00', '12:00'], ['12:00', '18:00'], ['18:00', '21:00'],

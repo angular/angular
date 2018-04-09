@@ -9,6 +9,8 @@
 // THIS CODE IS GENERATED - DO NOT MODIFY
 // See angular/tools/gulp-tasks/cldr/extract.js
 
+const u = undefined;
+
 function plural(n: number): number {
   let i = Math.floor(Math.abs(n)), v = n.toString().replace(/^[^.]*\.?/, '').length;
   if (v === 0 && i % 10 === 1 && !(i % 100 === 11)) return 1;
@@ -23,14 +25,9 @@ function plural(n: number): number {
 }
 
 export default [
-  'ru-KG',
+  'ru-KG', [['AM', 'PM'], u, u], u,
   [
-    ['AM', 'PM'],
-    ,
-  ],
-  ,
-  [
-    ['вс', 'пн', 'вт', 'ср', 'чт', 'пт', 'сб'], ,
+    ['вс', 'пн', 'вт', 'ср', 'чт', 'пт', 'сб'], u,
     [
       'воскресенье', 'понедельник', 'вторник', 'среда',
       'четверг', 'пятница', 'суббота'
@@ -75,17 +72,12 @@ export default [
     ['до Рождества Христова', 'от Рождества Христова']
   ],
   1, [6, 0], ['dd.MM.y', 'd MMM y \'г\'.', 'd MMMM y \'г\'.', 'EEEE, d MMMM y \'г\'.'],
-  ['H:mm', 'H:mm:ss', 'H:mm:ss z', 'H:mm:ss zzzz'],
-  [
-    '{1}, {0}',
-    ,
-    ,
-  ],
+  ['H:mm', 'H:mm:ss', 'H:mm:ss z', 'H:mm:ss zzzz'], ['{1}, {0}', u, u, u],
   [',', ' ', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'не число', ':'],
   ['#,##0.###', '#,##0 %', '#,##0.00 ¤', '#E0'], 'сом', 'киргизский сом', {
-    'GEL': [, 'ლ'],
+    'GEL': [u, 'ლ'],
     'KGS': ['сом'],
-    'RON': [, 'L'],
+    'RON': [u, 'L'],
     'RUB': ['₽'],
     'RUR': ['р.'],
     'THB': ['฿'],

@@ -9,18 +9,15 @@
 // THIS CODE IS GENERATED - DO NOT MODIFY
 // See angular/tools/gulp-tasks/cldr/extract.js
 
+const u = undefined;
+
 function plural(n: number): number {
   if (n === 1) return 1;
   return 5;
 }
 
 export default [
-  'ml',
-  [
-    ['AM', 'PM'],
-    ,
-  ],
-  ,
+  'ml', [['AM', 'PM'], u, u], u,
   [
     ['ഞ', 'തി', 'ചൊ', 'ബു', 'വ്യാ', 'വെ', 'ശ'],
     [
@@ -66,21 +63,16 @@ export default [
       'ഡിസംബർ'
     ]
   ],
-  ,
+  u,
   [
-    ['ക്രി.മു.', 'എഡി'], ,
+    ['ക്രി.മു.', 'എഡി'], u,
     [
       'ക്രിസ്\u200cതുവിന് മുമ്പ്',
       'ആന്നോ ഡൊമിനി'
     ]
   ],
   0, [0, 0], ['d/M/yy', 'y, MMM d', 'y, MMMM d', 'y, MMMM d, EEEE'],
-  ['h:mm a', 'h:mm:ss a', 'h:mm:ss a z', 'h:mm:ss a zzzz'],
-  [
-    '{1} {0}',
-    ,
-    ,
-  ],
+  ['h:mm a', 'h:mm:ss a', 'h:mm:ss a z', 'h:mm:ss a zzzz'], ['{1} {0}', u, u, u],
   ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
   ['#,##,##0.###', '#,##0%', '¤#,##0.00', '#E0'], '₹', 'ഇന്ത്യൻ രൂപ',
   {'THB': ['฿'], 'TWD': ['NT$']}, plural
