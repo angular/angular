@@ -146,11 +146,19 @@ For example, here is a template for the Tutorial's `HeroListComponent`:
 
 <code-example path="architecture/src/app/hero-list.component.html" title="src/app/hero-list.component.html"></code-example>
 
+<!--
 This template uses typical HTML elements like `<h2>` and  `<p>`, and also includes Angular template-syntax elements,  `*ngFor`, `{{hero.name}}`, `(click)`, `[hero]`, and `<app-hero-detail>`. The template-syntax elements tell Angular how to render the HTML to the screen, using program logic and data.
+-->
+이 템플릿에는 일반적으로 HTML 문서에 사용되는 `<h2>`나 `<p>` 엘리먼트가 사용되었으며, `*ngFor`나 `{{hero.name}}`, `(click)`, `[hero]`, `<app-hero-detail>`와 같은 문법은 Angular의 템플릿 문법을 활용한 것입니다. 템플릿 문법을 사용하면 HTML를 화면에 렌더링할 때 애플리케이션의 로직이나 데이터를 활용할 수 있습니다.
 
+<!--
 * The  `*ngFor` directive tells Angular to iterate over a list.
 * The `{{hero.name}}`, `(click)`, and `[hero]` bind program data to and from the DOM, responding to user input. See more about [data binding](#data-binding) below.
 * The `<app-hero-detail>` tag in the example is an element that represents a new component, `HeroDetailComponent`.  The `HeroDetailComponent`  (code not shown) is a child component of the `HeroListComponent` that defines the Hero-detail view. Notice how custom components like this mix seamlessly with native HTML in the same layouts.
+-->
+* `*ngFor` 디렉티브를 활용하면 템플릿에서 배열을 순회할 수 있습니다.
+* `{{hero.name}}`, `(click)`, `[hero]`와 같은 문법은 애플리케이션 데이터나 사용자의 동작을 DOM과 연결하는 문법입니다. 이 내용은 아래 [데이터 바인딩](#data-binding)에서 자세하게 알아봅니다.
+* `<app-hero-detail>` 태그는 Angular로 만든 `HeroDetailComponent`를 표현하는 엘리먼트입니다. 이 코드에는 표시되지 않았지만 `HeroDetailComponent`는 `HeroListComponent`의 자식 컴포넌트이며, 선택된 히어로의 상세 정보를 화면에 표시합니다. 이렇듯, Angular로 만든 커스텀 컴포넌트는 네이티브 HTML와 자연스럽게 어울립니다.
 
 ### Data binding
 
