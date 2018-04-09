@@ -9,6 +9,8 @@
 // THIS CODE IS GENERATED - DO NOT MODIFY
 // See angular/tools/gulp-tasks/cldr/extract.js
 
+const u = undefined;
+
 function plural(n: number): number {
   let v = n.toString().replace(/^[^.]*\.?/, '').length,
       f = parseInt(n.toString().replace(/^[^.]*\.?/, ''), 10) || 0;
@@ -22,8 +24,8 @@ function plural(n: number): number {
 }
 
 export default [
-  'lv', [['priekšp.', 'pēcp.'], , ['priekšpusdienā', 'pēcpusdienā']],
-  [['priekšp.', 'pēcpusd.'], , ['priekšpusdiena', 'pēcpusdiena']],
+  'lv', [['priekšp.', 'pēcp.'], u, ['priekšpusdienā', 'pēcpusdienā']],
+  [['priekšp.', 'pēcpusd.'], u, ['priekšpusdiena', 'pēcpusdiena']],
   [
     ['S', 'P', 'O', 'T', 'C', 'P', 'S'],
     ['svētd.', 'pirmd.', 'otrd.', 'trešd.', 'ceturtd.', 'piektd.', 'sestd.'],
@@ -47,14 +49,9 @@ export default [
       'septembris', 'oktobris', 'novembris', 'decembris'
     ]
   ],
-  , [['p.m.ē.', 'm.ē.'], , ['pirms mūsu ēras', 'mūsu ērā']], 1, [6, 0],
+  u, [['p.m.ē.', 'm.ē.'], u, ['pirms mūsu ēras', 'mūsu ērā']], 1, [6, 0],
   ['dd.MM.yy', 'y. \'gada\' d. MMM', 'y. \'gada\' d. MMMM', 'EEEE, y. \'gada\' d. MMMM'],
-  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'],
-  [
-    '{1} {0}',
-    ,
-    ,
-  ],
+  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'], ['{1} {0}', u, u, u],
   [',', ' ', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NS', ':'],
   ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'], '€', 'eiro',
   {'AUD': ['AU$', '$'], 'LVL': ['Ls'], 'THB': ['฿'], 'TWD': ['NT$']}, plural

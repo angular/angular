@@ -9,6 +9,8 @@
 // THIS CODE IS GENERATED - DO NOT MODIFY
 // See angular/tools/gulp-tasks/cldr/extract.js
 
+const u = undefined;
+
 function plural(n: number): number {
   if (n === 1) return 1;
   return 5;
@@ -43,15 +45,10 @@ export default [
       'Oktýabr', 'Noýabr', 'Dekabr'
     ]
   ],
-  [['B.e.öň', 'B.e.'], , ['Isadan öň', 'Isadan soň']], 1, [6, 0],
+  [['B.e.öň', 'B.e.'], u, ['Isadan öň', 'Isadan soň']], 1, [6, 0],
   ['dd.MM.y', 'd MMM y', 'd MMMM y', 'd MMMM y EEEE'],
-  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'],
-  [
-    '{1} {0}',
-    ,
-    ,
-  ],
+  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'], ['{1} {0}', u, u, u],
   [',', ' ', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'san däl', ':'],
   ['#,##0.###', '#,##0 %', '#,##0.00 ¤', '#E0'], 'TMT', 'Türkmen manady',
-  {'EUR': [, '€'], 'GBP': [, '£'], 'JPY': ['JP¥', '¥'], 'USD': ['US$', '$']}, plural
+  {'EUR': [u, '€'], 'GBP': [u, '£'], 'JPY': ['JP¥', '¥'], 'USD': ['US$', '$']}, plural
 ];

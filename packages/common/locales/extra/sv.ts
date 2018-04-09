@@ -9,6 +9,8 @@
 // THIS CODE IS GENERATED - DO NOT MODIFY
 // See angular/tools/gulp-tasks/cldr/extract.js
 
+const u = undefined;
+
 export default [
   [
     ['midn.', 'på morg.', 'på förm.', 'på efterm.', 'på kvällen', 'på natten'],

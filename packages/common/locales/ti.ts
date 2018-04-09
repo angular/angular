@@ -9,18 +9,15 @@
 // THIS CODE IS GENERATED - DO NOT MODIFY
 // See angular/tools/gulp-tasks/cldr/extract.js
 
+const u = undefined;
+
 function plural(n: number): number {
   if (n === Math.floor(n) && n >= 0 && n <= 1) return 1;
   return 5;
 }
 
 export default [
-  'ti',
-  [
-    ['ንጉሆ ሰዓተ', 'ድሕር ሰዓት'],
-    ,
-  ],
-  ,
+  'ti', [['ንጉሆ ሰዓተ', 'ድሕር ሰዓት'], u, u], u,
   [
     ['ሰ', 'ሰ', 'ሰ', 'ረ', 'ሓ', 'ዓ', 'ቀ'],
     ['ሰን', 'ሰኑ', 'ሰሉ', 'ረቡ', 'ሓሙ', 'ዓር', 'ቀዳ'],
@@ -44,14 +41,9 @@ export default [
       'ሓምለ', 'ነሓሰ', 'መስከረም', 'ጥቅምቲ', 'ሕዳር', 'ታሕሳስ'
     ]
   ],
-  , [['ዓ/ዓ', 'ዓ/ም'], , ['ዓ/ዓ', 'ዓመተ ምህረት']], 0, [6, 0],
+  u, [['ዓ/ዓ', 'ዓ/ም'], u, ['ዓ/ዓ', 'ዓመተ ምህረት']], 0, [6, 0],
   ['dd/MM/yy', 'dd-MMM-y', 'dd MMMM y', 'EEEE፣ dd MMMM መዓልቲ y G'],
-  ['h:mm a', 'h:mm:ss a', 'h:mm:ss a z', 'h:mm:ss a zzzz'],
-  [
-    '{1} {0}',
-    ,
-    ,
-  ],
+  ['h:mm a', 'h:mm:ss a', 'h:mm:ss a z', 'h:mm:ss a zzzz'], ['{1} {0}', u, u, u],
   ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
   ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'], 'Br', 'የኢትዮጵያ ብር',
   {'ETB': ['Br'], 'JPY': ['JP¥', '¥'], 'USD': ['US$', '$']}, plural

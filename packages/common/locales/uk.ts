@@ -9,6 +9,8 @@
 // THIS CODE IS GENERATED - DO NOT MODIFY
 // See angular/tools/gulp-tasks/cldr/extract.js
 
+const u = undefined;
+
 function plural(n: number): number {
   let i = Math.floor(Math.abs(n)), v = n.toString().replace(/^[^.]*\.?/, '').length;
   if (v === 0 && i % 10 === 1 && !(i % 100 === 11)) return 1;
@@ -23,12 +25,7 @@ function plural(n: number): number {
 }
 
 export default [
-  'uk',
-  [
-    ['дп', 'пп'],
-    ,
-  ],
-  ,
+  'uk', [['дп', 'пп'], u, u], u,
   [
     ['Н', 'П', 'В', 'С', 'Ч', 'П', 'С'],
     ['нд', 'пн', 'вт', 'ср', 'чт', 'пт', 'сб'],
@@ -38,7 +35,7 @@ export default [
     ],
     ['нд', 'пн', 'вт', 'ср', 'чт', 'пт', 'сб']
   ],
-  ,
+  u,
   [
     ['с', 'л', 'б', 'к', 'т', 'ч', 'л', 'с', 'в', 'ж', 'л', 'г'],
     [
@@ -68,32 +65,27 @@ export default [
     ['до нашої ери', 'нашої ери']
   ],
   1, [6, 0], ['dd.MM.yy', 'd MMM y \'р\'.', 'd MMMM y \'р\'.', 'EEEE, d MMMM y \'р\'.'],
-  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'],
-  [
-    '{1}, {0}',
-    ,
-    '{1} \'о\' {0}',
-  ],
+  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'], ['{1}, {0}', u, '{1} \'о\' {0}', u],
   [',', ' ', ';', '%', '+', '-', 'Е', '×', '‰', '∞', 'NaN', ':'],
   ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'], '₴', 'українська гривня', {
-    'AUD': [, '$'],
-    'BRL': [, 'R$'],
-    'CAD': [, '$'],
-    'CNY': [, '¥'],
-    'EUR': [, '€'],
-    'GBP': [, '£'],
-    'HKD': [, '$'],
-    'ILS': [, '₪'],
-    'INR': [, '₹'],
-    'KRW': [, '₩'],
-    'MXN': [, '$'],
-    'NZD': [, '$'],
-    'TWD': [, 'NT$'],
+    'AUD': [u, '$'],
+    'BRL': [u, 'R$'],
+    'CAD': [u, '$'],
+    'CNY': [u, '¥'],
+    'EUR': [u, '€'],
+    'GBP': [u, '£'],
+    'HKD': [u, '$'],
+    'ILS': [u, '₪'],
+    'INR': [u, '₹'],
+    'KRW': [u, '₩'],
+    'MXN': [u, '$'],
+    'NZD': [u, '$'],
+    'TWD': [u, 'NT$'],
     'UAH': ['₴'],
     'UAK': ['крб.'],
-    'USD': [, '$'],
-    'VND': [, '₫'],
-    'XCD': [, '$']
+    'USD': [u, '$'],
+    'VND': [u, '₫'],
+    'XCD': [u, '$']
   },
   plural
 ];

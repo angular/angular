@@ -9,13 +9,12 @@
 // THIS CODE IS GENERATED - DO NOT MODIFY
 // See angular/tools/gulp-tasks/cldr/extract.js
 
+const u = undefined;
+
 export default [
+  [['Mitternacht', 'am Morge', 'zmittag', 'am Namittag', 'zaabig', 'znacht'], u, u],
   [
-    ['Mitternacht', 'am Morge', 'zmittag', 'am Namittag', 'zaabig', 'znacht'],
-    ,
-  ],
-  [
-    ['Mitternacht', 'am Morge', 'zmittag', 'am Namittag', 'zaabig', 'znacht'], ,
+    ['Mitternacht', 'am Morge', 'zmittag', 'am Namittag', 'zaabig', 'znacht'], u,
     ['Mitternacht', 'Morge', 'Mittag', 'Namittag', 'Aabig', 'Nacht']
   ],
   [

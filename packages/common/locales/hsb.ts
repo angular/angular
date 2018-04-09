@@ -9,6 +9,8 @@
 // THIS CODE IS GENERATED - DO NOT MODIFY
 // See angular/tools/gulp-tasks/cldr/extract.js
 
+const u = undefined;
+
 function plural(n: number): number {
   let i = Math.floor(Math.abs(n)), v = n.toString().replace(/^[^.]*\.?/, '').length,
       f = parseInt(n.toString().replace(/^[^.]*\.?/, ''), 10) || 0;
@@ -21,21 +23,13 @@ function plural(n: number): number {
 }
 
 export default [
-  'hsb',
-  [
-    ['dop.', 'pop.'],
-    ['dopołdnja', 'popołdnju'],
-  ],
-  [
-    ['dopołdnja', 'popołdnju'],
-    ,
-  ],
+  'hsb', [['dop.', 'pop.'], ['dopołdnja', 'popołdnju'], u], [['dopołdnja', 'popołdnju'], u, u],
   [
     ['n', 'p', 'w', 's', 'š', 'p', 's'], ['nje', 'pón', 'wut', 'srj', 'štw', 'pja', 'sob'],
     ['njedźela', 'póndźela', 'wutora', 'srjeda', 'štwórtk', 'pjatk', 'sobota'],
     ['nj', 'pó', 'wu', 'sr', 'št', 'pj', 'so']
   ],
-  ,
+  u,
   [
     ['j', 'f', 'm', 'a', 'm', 'j', 'j', 'a', 's', 'o', 'n', 'd'],
     [
@@ -55,15 +49,10 @@ export default [
       'oktober', 'nowember', 'december'
     ]
   ],
-  [['př.Chr.n.', 'po Chr.n.'], , ['před Chrystowym narodźenjom', 'po Chrystowym narodźenju']],
+  [['př.Chr.n.', 'po Chr.n.'], u, ['před Chrystowym narodźenjom', 'po Chrystowym narodźenju']],
   1, [6, 0], ['d.M.yy', 'd.M.y', 'd. MMMM y', 'EEEE, d. MMMM y'],
-  ['H:mm \'hodź\'.', 'H:mm:ss', 'H:mm:ss z', 'H:mm:ss zzzz'],
-  [
-    '{1} {0}',
-    ,
-    ,
-  ],
+  ['H:mm \'hodź\'.', 'H:mm:ss', 'H:mm:ss z', 'H:mm:ss zzzz'], ['{1} {0}', u, u, u],
   [',', '.', ';', '%', '+', '-', 'E', '·', '‰', '∞', 'NaN', ':'],
   ['#,##0.###', '#,##0 %', '#,##0.00 ¤', '#E0'], '€', 'euro',
-  {'AUD': [, '$'], 'PLN': ['zł'], 'THB': ['฿']}, plural
+  {'AUD': [u, '$'], 'PLN': ['zł'], 'THB': ['฿']}, plural
 ];

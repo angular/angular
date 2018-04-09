@@ -102,12 +102,14 @@ function generateLocale(locale, localeData, baseCurrencies) {
     generateLocaleCurrencies(localeData, baseCurrencies)
   ], true)
   // We remove "undefined" added by spreading arrays when there is no value
-    .replace(/undefined/g, '');
+    .replace(/undefined/g, 'u');
 
   // adding plural function after, because we don't want it as a string
   data = data.substring(0, data.lastIndexOf(']')) + `, plural]`;
 
   return `${HEADER}
+const u = undefined;
+
 ${getPluralFunction(locale)}
 
 export default ${data};
@@ -148,7 +150,9 @@ function generateLocaleExtra(locale, localeData) {
   }
 
   return `${HEADER}
-export default ${stringify(dayPeriodsSupplemental).replace(/undefined/g, '')};
+const u = undefined;
+
+export default ${stringify(dayPeriodsSupplemental).replace(/undefined/g, 'u')};
 `;
 }
 
@@ -171,7 +175,7 @@ function generateBaseCurrencies(localeData, addDigits) {
       if (symbolsArray.length > 0) {
         symbolsArray.push(symbolNarrow);
       } else {
-        symbolsArray = [, symbolNarrow];
+        symbolsArray = [undefined, symbolNarrow];
       }
     }
     if (addDigits && fractions[key] && fractions[key]['_digits']) {
@@ -179,9 +183,9 @@ function generateBaseCurrencies(localeData, addDigits) {
       if (symbolsArray.length === 2) {
         symbolsArray.push(digits);
       } else if (symbolsArray.length === 1) {
-        symbolsArray = [...symbolsArray, , digits];
+        symbolsArray = [...symbolsArray, undefined, digits];
       } else {
-        symbolsArray = [, , digits];
+        symbolsArray = [undefined, undefined, digits];
       }
     }
     if (symbolsArray.length > 0) {
@@ -208,7 +212,7 @@ function generateLocaleCurrencies(localeData, baseCurrencies) {
       if (symbolsArray.length > 0) {
         symbolsArray.push(symbolNarrow);
       } else {
-        symbolsArray = [, symbolNarrow];
+        symbolsArray = [undefined, symbolNarrow];
       }
     }
 
@@ -482,7 +486,7 @@ function getCurrencySettings(locale, localeData) {
     }
   }
 
-  let currencySettings = [,];
+  let currencySettings = [undefined, undefined];
 
   if (currentCurrency) {
     currencySettings = [currencyInfo[currentCurrency].symbol, currencyInfo[currentCurrency].displayName];
@@ -549,10 +553,9 @@ function objectValues(obj) {
  * similar data in arrays to mark the delimitation between values that have different meanings
  * (e.g. months and days).
  *
- * For further size improvements, "undefined" values will be replaced by empty values in the arrays
+ * For further size improvements, "undefined" values will be replaced by a constant in the arrays
  * as the last step of the file generation (in generateLocale and generateLocaleExtra).
- * e.g.: [x, y, undefined, z, undefined, undefined] will be [x, y, , z, , ]
- * This is possible because empty values are considered undefined in arrays.
+ * e.g.: [x, y, undefined, z, undefined, undefined] will be [x, y, u, z, u, u]
  */
 function removeDuplicates(data) {
   const dedup = [data[0]];

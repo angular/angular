@@ -9,6 +9,8 @@
 // THIS CODE IS GENERATED - DO NOT MODIFY
 // See angular/tools/gulp-tasks/cldr/extract.js
 
+const u = undefined;
+
 export default [
   [
     ['minuit', 'midi', 'mat.', 'ap.m.', 'soir', 'nuit'],
@@ -16,7 +18,7 @@ export default [
     ['minuit', 'midi', 'du matin', 'de l’après-midi', 'du soir', 'du matin']
   ],
   [
-    ['min.', 'midi', 'mat.', 'ap.m.', 'soir', 'nuit'], ,
+    ['min.', 'midi', 'mat.', 'ap.m.', 'soir', 'nuit'], u,
     ['minuit', 'midi', 'matin', 'après-midi', 'soir', 'nuit']
   ],
   [
