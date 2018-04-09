@@ -6,13 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injectable} from '@angular/core';
+import {Injectable, Optional} from '@angular/core';
 import {Observable, of } from 'rxjs';
 import {concatMap, filter, map} from 'rxjs/operators';
 
 import {HttpHandler} from './backend';
 import {HttpHeaders} from './headers';
-import {HttpParams, HttpParamsOptions} from './params';
+import {HttpParams, HttpParamsOptions, HttpParameterCodec} from './params';
 import {HttpRequest} from './request';
 import {HttpEvent, HttpResponse} from './response';
 
@@ -55,7 +55,10 @@ export type HttpObserve = 'body' | 'events' | 'response';
  */
 @Injectable()
 export class HttpClient {
-  constructor(private handler: HttpHandler) {}
+  constructor(
+    private handler: HttpHandler,
+    @Optional() private httpParameterCodec?: HttpParameterCodec,
+  ) {}
 
   /**
    * Send the given `HttpRequest` and return a stream of `HttpEvents`.
@@ -358,7 +361,10 @@ export class HttpClient {
         if (options.params instanceof HttpParams) {
           params = options.params;
         } else {
-          params = new HttpParams({ fromObject: options.params } as HttpParamsOptions);
+          params = new HttpParams({
+            fromObject: options.params,
+            encoder: this.httpParameterCodec,
+          } as HttpParamsOptions);
         }
       }
 

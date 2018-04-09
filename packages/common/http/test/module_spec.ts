@@ -19,6 +19,7 @@ import {HttpEvent, HttpResponse} from '../src/response';
 import {HttpTestingController} from '../testing/src/api';
 import {HttpClientTestingModule} from '../testing/src/module';
 import {TestRequest} from '../testing/src/request';
+import {HttpParameterCodec} from '../src/params';
 
 class TestInterceptor implements HttpInterceptor {
   constructor(private value: string) {}
@@ -102,6 +103,25 @@ class ReentrantInterceptor implements HttpInterceptor {
       });
       injector.get(HttpClient).get('/test').subscribe(() => { done(); });
       injector.get(HttpTestingController).expectOne('/test').flush('ok!');
+    });
+
+    it('should injected custom http parameter encoder', () => {
+      class TestHttpParameterEncoder extends HttpParameterCodec {
+        encodeKey(key: string): string { return key + 'a'; }
+        encodeValue(value: string): string { return value + 'b'; }
+        decodeKey(key: string): string { return key + 'a'; }
+        decodeValue(value: string): string { return value + 'b'; }
+      }
+
+      TestBed.resetTestingModule();
+      injector = TestBed.configureTestingModule({
+        imports: [HttpClientTestingModule],
+        providers: [
+          {provide: HttpParameterCodec, useClass: TestHttpParameterEncoder}
+        ]
+      });
+
+      expect(injector.get(HttpParameterCodec).encodeKey('a')).toBe('aa');
     });
   });
 }

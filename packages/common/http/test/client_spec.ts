@@ -12,6 +12,7 @@ import {toArray} from 'rxjs/operators';
 import {HttpClient} from '../src/client';
 import {HttpErrorResponse, HttpEventType, HttpResponse} from '../src/response';
 import {HttpClientTestingBackend} from '../testing/src/backend';
+import {HttpParameterCodec} from '../src/params';
 
 {
   describe('HttpClient', () => {
@@ -160,6 +161,27 @@ import {HttpClientTestingBackend} from '../testing/src/backend';
         });
         backend.expectOne('/test').flush(
             {'data': 'hello world'}, {status: 500, statusText: 'Server error'});
+      });
+    });
+    describe('should change default http parameter encoder', () => {
+      class TestHttpParameterEncoder extends HttpParameterCodec {
+        encodeKey(key: string): string { return key + 'a'; }
+        encodeValue(value: string): string { return value + 'b'; }
+        decodeKey(key: string): string { return key + 'a'; }
+        decodeValue(value: string): string { return value + 'b'; }
+      }
+
+      beforeEach(() => {
+        client = new HttpClient(backend, new TestHttpParameterEncoder());
+      });
+      afterEach(() => { backend.verify(); });
+
+      it('should test', (done: DoneFn) => {
+        client.get('/test', {observe: 'response', params: {a: 'b'}}).subscribe(res => {
+          expect(res.ok).toBeTruthy();
+          done();
+        });
+        backend.expectOne('/test?aa=bb').flush('hello world');
       });
     });
   });
