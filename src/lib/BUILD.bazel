@@ -32,23 +32,20 @@ sass_bundle(
   output_name = "_theming.scss",
 )
 
-# TODO(jelbourn): uncomment when 6.0.0-rc.1 comes out
 # Creates the @angular/material package published to npm.
-#ng_package(
-#  name = "npm_package",
-#  srcs = [
-#    "package.json",
-#  ],
-#  entry_point = "src/lib/public_api.js",
-#  entry_point_name = "material",
-#  globals = ROLLUP_GLOBALS,
-#  data = [
-#    ":theming_bundle",
-#    "//src/lib/prebuilt-themes:indigo-pink",
-#    "//src/lib/prebuilt-themes:deeppurple-amber",
-#    "//src/lib/prebuilt-themes:pink-bluegrey",
-#    "//src/lib/prebuilt-themes:purple-green",
-#  ],
-#  packages = ["//src/lib/schematics:npm_package"],
-#  deps = MATERIAL_TARGETS
-#)
+ng_package(
+  name = "npm_package",
+  srcs = ["package.json"],
+  entry_point = "src/lib/public_api.js",
+  entry_point_name = "material",
+  globals = ROLLUP_GLOBALS,
+  data = [
+    ":theming_bundle",
+    "//src/lib/prebuilt-themes:indigo-pink",
+    "//src/lib/prebuilt-themes:deeppurple-amber",
+    "//src/lib/prebuilt-themes:pink-bluegrey",
+    "//src/lib/prebuilt-themes:purple-green",
+  ],
+  packages = ["//src/lib/schematics:npm_package"],
+  deps = MATERIAL_TARGETS,
+)

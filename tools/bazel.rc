@@ -36,8 +36,9 @@ test --test_output=errors
 build --experimental_ui
 test --experimental_ui
 
-# Output to a more coventional location
-build --symlink_prefix=dist/bazel/
+# Configures script to do version stamping.
+# See https://docs.bazel.build/versions/master/user-manual.html#flag--workspace_status_command
+build --workspace_status_command=./tools/bazel-stamp-vars.sh
 
 ###############################
 # Typescript / Angular / Sass #
