@@ -6,37 +6,37 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, TemplateRef, ViewContainerRef} from '../../src/core';
+import {Component, Directive, TemplateRef, ViewContainerRef} from '../../src/core';
 import {getOrCreateNodeInjectorForNode, getOrCreateTemplateRef} from '../../src/render3/di';
 import {defineComponent, defineDirective, injectTemplateRef, injectViewContainerRef} from '../../src/render3/index';
-import {bind, container, containerRefreshEnd, containerRefreshStart, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, interpolation1, load, loadDirective, text, textBinding} from '../../src/render3/instructions';
+import {bind, container, containerRefreshEnd, containerRefreshStart, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, interpolation1, load, loadDirective, projection, projectionDef, text, textBinding} from '../../src/render3/instructions';
 
 import {ComponentFixture, TemplateFixture} from './render_util';
 
 describe('ViewContainerRef', () => {
+  let directiveInstance: DirectiveWithVCRef|null;
+
+  beforeEach(() => { directiveInstance = null; });
+
+  class DirectiveWithVCRef {
+    static ngDirectiveDef = defineDirective({
+      type: DirectiveWithVCRef,
+      selectors: [['', 'vcref', '']],
+      factory: () => directiveInstance = new DirectiveWithVCRef(injectViewContainerRef()),
+      inputs: {tplRef: 'tplRef'}
+    });
+
+    tplRef: TemplateRef<{}>;
+
+    constructor(public vcref: ViewContainerRef) {}
+  }
+
   describe('API', () => {
-    let directiveInstance: DirectiveWithVCRef|null;
-
-    beforeEach(() => { directiveInstance = null; });
-
     function embeddedTemplate(ctx: any, cm: boolean) {
       if (cm) {
         text(0);
       }
       textBinding(0, ctx.name);
-    }
-
-    class DirectiveWithVCRef {
-      static ngDirectiveDef = defineDirective({
-        type: DirectiveWithVCRef,
-        selectors: [['', 'vcref', '']],
-        factory: () => directiveInstance = new DirectiveWithVCRef(injectViewContainerRef()),
-        inputs: {tplRef: 'tplRef'}
-      });
-
-      tplRef: TemplateRef<{}>;
-
-      constructor(public vcref: ViewContainerRef) {}
     }
 
     function createView(s: string, index?: number) {
@@ -450,6 +450,190 @@ describe('ViewContainerRef', () => {
         expect(() => { directiveInstance !.vcref.move(viewRef !, -1); }).toThrow();
         expect(() => { directiveInstance !.vcref.move(viewRef !, 42); }).toThrow();
       });
+    });
+  });
+
+  describe('projection', () => {
+    function embeddedTemplate(ctx: any, cm: boolean) {
+      if (cm) {
+        elementStart(0, 'span');
+        text(1);
+        elementEnd();
+      }
+      textBinding(1, ctx.name);
+    }
+
+    it('should project the ViewContainerRef content along its host', () => {
+      @Component({selector: 'child', template: '<div><ng-content></ng-content></div>'})
+      class Child {
+        static ngComponentDef = defineComponent({
+          type: Child,
+          selectors: [['child']],
+          factory: () => new Child(),
+          template: (cmp: Child, cm: boolean) => {
+            if (cm) {
+              projectionDef(0);
+              elementStart(1, 'div');
+              { projection(2, 0); }
+              elementEnd();
+            }
+          }
+        });
+      }
+
+      @Component({
+        selector: 'parent',
+        template: `
+          <ng-template #foo>
+              <span>{{name}}</span>
+          </ng-template>
+          <child><header vcref [tplRef]="foo" [name]="name">blah</header></child>`
+      })
+      class Parent {
+        name: string = 'bar';
+        static ngComponentDef = defineComponent({
+          type: Parent,
+          selectors: [['parent']],
+          factory: () => new Parent(),
+          template: (cmp: Parent, cm: boolean) => {
+            if (cm) {
+              container(0, embeddedTemplate);
+              elementStart(1, 'child');
+              elementStart(2, 'header', ['vcref', '']);
+              text(3, 'blah');
+              elementEnd();
+              elementEnd();
+            }
+            const tplRef = getOrCreateTemplateRef(getOrCreateNodeInjectorForNode(load(0)));
+            elementProperty(2, 'tplRef', bind(tplRef));
+            elementProperty(2, 'name', bind(cmp.name));
+          },
+          directives: [Child, DirectiveWithVCRef]
+        });
+      }
+
+      const fixture = new ComponentFixture(Parent);
+      expect(fixture.html).toEqual('<child><div><header vcref="">blah</header></div></child>');
+
+      directiveInstance !.vcref.createEmbeddedView(directiveInstance !.tplRef, fixture.component);
+      fixture.update();
+      expect(fixture.html)
+          .toEqual('<child><div><header vcref="">blah</header><span>bar</span></div></child>');
+    });
+
+    @Component({
+      selector: 'child-with-selector',
+      template: `
+        <first><ng-content select="header"></ng-content></first>
+        <second><ng-content></ng-content></second>`
+    })
+    class ChildWithSelector {
+      static ngComponentDef = defineComponent({
+        type: ChildWithSelector,
+        selectors: [['child-with-selector']],
+        factory: () => new ChildWithSelector(),
+        template: (cmp: ChildWithSelector, cm: boolean) => {
+          if (cm) {
+            projectionDef(0, [[['header']]], ['header']);
+            elementStart(1, 'first');
+            { projection(2, 0, 1); }
+            elementEnd();
+            elementStart(3, 'second');
+            { projection(4, 0); }
+            elementEnd();
+          }
+        }
+      });
+    }
+
+    it('should project the ViewContainerRef content along its host, when the host matches a selector',
+       () => {
+         @Component({
+           selector: 'parent',
+           template: `
+          <ng-template #foo>
+              <span>{{name}}</span>
+            </ng-template>
+          <child-with-selector><header vcref [tplRef]="foo" [name]="name">blah</header></child-with-selector>`
+         })
+         class Parent {
+           name: string = 'bar';
+           static ngComponentDef = defineComponent({
+             type: Parent,
+             selectors: [['parent']],
+             factory: () => new Parent(),
+             template: (cmp: Parent, cm: boolean) => {
+               if (cm) {
+                 container(0, embeddedTemplate);
+                 elementStart(1, 'child-with-selector');
+                 elementStart(2, 'header', ['vcref', '']);
+                 text(3, 'blah');
+                 elementEnd();
+                 elementEnd();
+               }
+               const tplRef = getOrCreateTemplateRef(getOrCreateNodeInjectorForNode(load(0)));
+               elementProperty(2, 'tplRef', bind(tplRef));
+               elementProperty(2, 'name', bind(cmp.name));
+             },
+             directives: [ChildWithSelector, DirectiveWithVCRef]
+           });
+         }
+
+         const fixture = new ComponentFixture(Parent);
+         expect(fixture.html)
+             .toEqual(
+                 '<child-with-selector><first><header vcref="">blah</header></first><second></second></child-with-selector>');
+
+         directiveInstance !.vcref.createEmbeddedView(
+             directiveInstance !.tplRef, fixture.component);
+         fixture.update();
+         expect(fixture.html)
+             .toEqual(
+                 '<child-with-selector><first><header vcref="">blah</header><span>bar</span></first><second></second></child-with-selector>');
+       });
+
+    it('should not project the ViewContainerRef content, when the host does not match a selector', () => {
+      @Component({
+        selector: 'parent',
+        template: `
+          <ng-template #foo>
+              <span>{{name}}</span>
+            </ng-template>
+          <child-with-selector><footer vcref [tplRef]="foo" [name]="name">blah</footer></child-with-selector>`
+      })
+      class Parent {
+        name: string = 'bar';
+        static ngComponentDef = defineComponent({
+          type: Parent,
+          selectors: [['parent']],
+          factory: () => new Parent(),
+          template: (cmp: Parent, cm: boolean) => {
+            if (cm) {
+              container(0, embeddedTemplate);
+              elementStart(1, 'child-with-selector');
+              elementStart(2, 'footer', ['vcref', '']);
+              text(3, 'blah');
+              elementEnd();
+              elementEnd();
+            }
+            const tplRef = getOrCreateTemplateRef(getOrCreateNodeInjectorForNode(load(0)));
+            elementProperty(2, 'tplRef', bind(tplRef));
+            elementProperty(2, 'name', bind(cmp.name));
+          },
+          directives: [ChildWithSelector, DirectiveWithVCRef]
+        });
+      }
+
+      const fixture = new ComponentFixture(Parent);
+      expect(fixture.html)
+          .toEqual(
+              '<child-with-selector><first></first><second><footer vcref="">blah</footer></second></child-with-selector>');
+
+      directiveInstance !.vcref.createEmbeddedView(directiveInstance !.tplRef, fixture.component);
+      fixture.update();
+      expect(fixture.html)
+          .toEqual(
+              '<child-with-selector><first></first><second><footer vcref="">blah</footer><span>bar</span></second></child-with-selector>');
     });
   });
 });
