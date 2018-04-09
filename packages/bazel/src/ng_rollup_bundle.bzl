@@ -16,7 +16,8 @@ load("@build_bazel_rules_nodejs//internal/rollup:rollup_bundle.bzl",
     "ROLLUP_OUTPUTS",
     "write_rollup_config",
     "run_rollup",
-    "run_uglify")
+    "run_uglify",
+    "run_sourcemapexplorer")
 load("@build_bazel_rules_nodejs//internal:collect_es6_sources.bzl", collect_es2015_sources = "collect_es6_sources")
 load(":esm5.bzl", "esm5_outputs_aspect", "flatten_esm5", "esm5_root_dir")
 
@@ -44,11 +45,16 @@ def _ng_rollup_bundle(ctx):
   esm5_sources = flatten_esm5(ctx)
 
   rollup_config = write_rollup_config(ctx, [BO_PLUGIN], "/".join([ctx.bin_dir.path, ctx.label.package, esm5_root_dir(ctx)]))
-  run_rollup(ctx, esm5_sources, rollup_config, ctx.outputs.build_es5)
+  rollup_sourcemap = run_rollup(ctx, esm5_sources, rollup_config, ctx.outputs.build_es5)
 
-  run_uglify(ctx, ctx.outputs.build_es5, ctx.outputs.build_es5_min,
-      comments = False)
-  run_uglify(ctx, ctx.outputs.build_es5, ctx.outputs.build_es5_min_debug,
+  sourcemap = run_uglify(ctx,
+      ctx.outputs.build_es5,
+      ctx.outputs.build_es5_min,
+      comments = False,
+      in_source_map = rollup_sourcemap)
+  run_uglify(ctx,
+      ctx.outputs.build_es5,
+      ctx.outputs.build_es5_min_debug,
       debug = True, comments = False)
 
   umd_rollup_config = write_rollup_config(ctx, filename = "_%s_umd.rollup.conf.js", output_format = "umd")
@@ -56,7 +62,9 @@ def _ng_rollup_bundle(ctx):
 
   run_brotli(ctx, ctx.outputs.build_es5_min, ctx.outputs.build_es5_min_compressed)
 
-  return DefaultInfo(files=depset([ctx.outputs.build_es5_min]))
+  run_sourcemapexplorer(ctx, ctx.outputs.build_es5_min, sourcemap, ctx.outputs.explore_html)
+
+  return DefaultInfo(files=depset([ctx.outputs.build_es5_min, sourcemap]))
 
 ng_rollup_bundle = rule(
     implementation = _ng_rollup_bundle,
