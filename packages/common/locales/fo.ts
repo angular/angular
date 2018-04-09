@@ -9,18 +9,15 @@
 // THIS CODE IS GENERATED - DO NOT MODIFY
 // See angular/tools/gulp-tasks/cldr/extract.js
 
+const u = undefined;
+
 function plural(n: number): number {
   if (n === 1) return 1;
   return 5;
 }
 
 export default [
-  'fo',
-  [
-    ['AM', 'PM'],
-    ,
-  ],
-  ,
+  'fo', [['AM', 'PM'], u, u], u,
   [
     ['S', 'M', 'T', 'M', 'H', 'F', 'L'],
     ['sun.', 'mán.', 'týs.', 'mik.', 'hós.', 'frí.', 'ley.'],
@@ -56,12 +53,7 @@ export default [
   ],
   [['fKr', 'eKr'], ['f.Kr.', 'e.Kr.'], ['fyri Krist', 'eftir Krist']], 1, [6, 0],
   ['dd.MM.yy', 'dd.MM.y', 'd. MMMM y', 'EEEE, d. MMMM y'],
-  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'],
-  [
-    '{1}, {0}',
-    ,
-    '{1} \'kl\'. {0}',
-  ],
+  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'], ['{1}, {0}', u, '{1} \'kl\'. {0}', u],
   [',', '.', ';', '%', '+', '−', 'E', '×', '‰', '∞', 'NaN', ':'],
   ['#,##0.###', '#,##0 %', '#,##0.00 ¤', '#E0'], 'kr', 'donsk króna',
   {'DKK': ['kr'], 'JPY': ['JP¥', '¥'], 'USD': ['US$', '$']}, plural

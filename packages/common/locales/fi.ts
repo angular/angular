@@ -9,6 +9,8 @@
 // THIS CODE IS GENERATED - DO NOT MODIFY
 // See angular/tools/gulp-tasks/cldr/extract.js
 
+const u = undefined;
+
 function plural(n: number): number {
   let i = Math.floor(Math.abs(n)), v = n.toString().replace(/^[^.]*\.?/, '').length;
   if (i === 1 && v === 0) return 1;
@@ -16,12 +18,7 @@ function plural(n: number): number {
 }
 
 export default [
-  'fi',
-  [
-    ['ap.', 'ip.'],
-    ,
-  ],
-  ,
+  'fi', [['ap.', 'ip.'], u, u], u,
   [
     ['S', 'M', 'T', 'K', 'T', 'P', 'L'], ['su', 'ma', 'ti', 'ke', 'to', 'pe', 'la'],
     [
@@ -61,13 +58,8 @@ export default [
     ['eKr', 'jKr'], ['eKr.', 'jKr.'],
     ['ennen Kristuksen syntymää', 'jälkeen Kristuksen syntymän']
   ],
-  1, [6, 0], ['d.M.y', , 'd. MMMM y', 'cccc d. MMMM y'],
-  ['H.mm', 'H.mm.ss', 'H.mm.ss z', 'H.mm.ss zzzz'],
-  [
-    '{1} {0}',
-    '{1} \'klo\' {0}',
-    ,
-  ],
+  1, [6, 0], ['d.M.y', u, 'd. MMMM y', 'cccc d. MMMM y'],
+  ['H.mm', 'H.mm.ss', 'H.mm.ss z', 'H.mm.ss zzzz'], ['{1} {0}', '{1} \'klo\' {0}', u, u],
   [',', ' ', ';', '%', '+', '−', 'E', '×', '‰', '∞', 'epäluku', '.'],
   ['#,##0.###', '#,##0 %', '#,##0.00 ¤', '#E0'], '€', 'euro', {
     'AOA': [],

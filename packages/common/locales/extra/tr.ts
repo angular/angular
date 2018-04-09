@@ -9,6 +9,8 @@
 // THIS CODE IS GENERATED - DO NOT MODIFY
 // See angular/tools/gulp-tasks/cldr/extract.js
 
+const u = undefined;
+
 export default [
   [
     ['gece', 'ö', 'sabah', 'öğleden önce', 'öğleden sonra', 'akşamüstü', 'akşam', 'gece'],
@@ -16,13 +18,14 @@ export default [
       'gece yarısı', 'öğle', 'sabah', 'öğleden önce', 'öğleden sonra', 'akşamüstü',
       'akşam', 'gece'
     ],
+    u
   ],
   [
     [
       'gece yarısı', 'öğle', 'sabah', 'öğleden önce', 'öğleden sonra', 'akşamüstü',
       'akşam', 'gece'
     ],
-    ,
+    u, u
   ],
   [
     '00:00', '12:00', ['06:00', '11:00'], ['11:00', '12:00'], ['12:00', '18:00'],

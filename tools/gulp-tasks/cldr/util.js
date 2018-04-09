@@ -128,9 +128,9 @@ module.exports.stringify = function(obj, quoteKeys) {
             res = internalStringify(obj_part, i);
             if (res === null) {
               buffer += 'null';
-            } else if (typeof res === 'undefined') {  // modified to support empty array values
+            }/* else if (typeof res === 'undefined') {  // modified to support empty array values
               buffer += '';
-            } else {
+            }*/ else {
               buffer += res;
             }
             if (i < obj_part.length - 1) {

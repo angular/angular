@@ -9,6 +9,8 @@
 // THIS CODE IS GENERATED - DO NOT MODIFY
 // See angular/tools/gulp-tasks/cldr/extract.js
 
+const u = undefined;
+
 function plural(n: number): number {
   let i = Math.floor(Math.abs(n)), v = n.toString().replace(/^[^.]*\.?/, '').length,
       f = parseInt(n.toString().replace(/^[^.]*\.?/, ''), 10) || 0;
@@ -22,12 +24,7 @@ function plural(n: number): number {
 }
 
 export default [
-  'bs-Latn',
-  [
-    ['prijepodne', 'popodne'],
-    ,
-  ],
-  ,
+  'bs-Latn', [['prijepodne', 'popodne'], u, u], u,
   [
     ['N', 'P', 'U', 'S', 'Č', 'P', 'S'], ['ned', 'pon', 'uto', 'sri', 'čet', 'pet', 'sub'],
     ['nedjelja', 'ponedjeljak', 'utorak', 'srijeda', 'četvrtak', 'petak', 'subota'],
@@ -46,33 +43,28 @@ export default [
       'novembar', 'decembar'
     ]
   ],
-  , [['p. n. e.', 'n. e.'], , ['prije nove ere', 'nove ere']], 1, [6, 0],
+  u, [['p. n. e.', 'n. e.'], u, ['prije nove ere', 'nove ere']], 1, [6, 0],
   ['d.M.yy.', 'd. MMM y.', 'd. MMMM y.', 'EEEE, d. MMMM y.'],
-  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'],
-  [
-    '{1} {0}',
-    ,
-    '{1} \'u\' {0}',
-  ],
+  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'], ['{1} {0}', u, '{1} \'u\' {0}', u],
   [',', '.', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
   ['#,##0.###', '#,##0 %', '#,##0.00 ¤', '#E0'], 'KM',
   'Bosanskohercegovačka konvertibilna marka', {
-    'AUD': [, '$'],
+    'AUD': [u, '$'],
     'BAM': ['KM'],
-    'BRL': [, 'R$'],
-    'CAD': [, '$'],
-    'CNY': [, '¥'],
-    'GBP': [, '£'],
-    'HKD': [, '$'],
+    'BRL': [u, 'R$'],
+    'CAD': [u, '$'],
+    'CNY': [u, '¥'],
+    'GBP': [u, '£'],
+    'HKD': [u, '$'],
     'HRK': ['kn'],
-    'ILS': [, '₪'],
-    'MXN': [, '$'],
-    'NZD': [, '$'],
+    'ILS': [u, '₪'],
+    'MXN': [u, '$'],
+    'NZD': [u, '$'],
     'RSD': ['din.'],
     'THB': ['฿'],
     'TWD': ['NT$'],
-    'USD': [, '$'],
-    'XCD': [, '$'],
+    'USD': [u, '$'],
+    'XCD': [u, '$'],
     'XPF': []
   },
   plural

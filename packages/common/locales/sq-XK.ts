@@ -9,21 +9,15 @@
 // THIS CODE IS GENERATED - DO NOT MODIFY
 // See angular/tools/gulp-tasks/cldr/extract.js
 
+const u = undefined;
+
 function plural(n: number): number {
   if (n === 1) return 1;
   return 5;
 }
 
 export default [
-  'sq-XK',
-  [
-    ['e paradites', 'e pasdites'],
-    ,
-  ],
-  [
-    ['paradite', 'pasdite'],
-    ,
-  ],
+  'sq-XK', [['e paradites', 'e pasdites'], u, u], [['paradite', 'pasdite'], u, u],
   [
     ['D', 'H', 'M', 'M', 'E', 'P', 'Sh'], ['Die', 'Hën', 'Mar', 'Mër', 'Enj', 'Pre', 'Sht'],
     ['e diel', 'e hënë', 'e martë', 'e mërkurë', 'e enjte', 'e premte', 'e shtunë'],
@@ -50,14 +44,9 @@ export default [
       'Nëntor', 'Dhjetor'
     ]
   ],
-  [['p.K.', 'mb.K.'], , ['para Krishtit', 'mbas Krishtit']], 1, [6, 0],
+  [['p.K.', 'mb.K.'], u, ['para Krishtit', 'mbas Krishtit']], 1, [6, 0],
   ['d.M.yy', 'd MMM y', 'd MMMM y', 'EEEE, d MMMM y'],
-  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'],
-  [
-    '{1}, {0}',
-    ,
-    '{1} \'në\' {0}',
-  ],
+  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'], ['{1}, {0}', u, '{1} \'në\' {0}', u],
   [',', ' ', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
   ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'], '€', 'Euroja',
   {'ALL': ['Lekë'], 'JPY': ['JP¥', '¥'], 'THB': ['฿'], 'USD': ['US$', '$']}, plural

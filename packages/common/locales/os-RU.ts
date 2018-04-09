@@ -9,17 +9,16 @@
 // THIS CODE IS GENERATED - DO NOT MODIFY
 // See angular/tools/gulp-tasks/cldr/extract.js
 
+const u = undefined;
+
 function plural(n: number): number {
   if (n === 1) return 1;
   return 5;
 }
 
 export default [
-  'os-RU', [['AM', 'PM'], , ['ӕмбисбоны размӕ', 'ӕмбисбоны фӕстӕ']],
-  [
-    ['AM', 'PM'],
-    ,
-  ],
+  'os-RU', [['AM', 'PM'], u, ['ӕмбисбоны размӕ', 'ӕмбисбоны фӕстӕ']],
+  [['AM', 'PM'], u, u],
   [
     ['Х', 'К', 'Д', 'Ӕ', 'Ц', 'М', 'С'],
     ['хцб', 'крс', 'дцг', 'ӕрт', 'цпр', 'мрб', 'сбт'],
@@ -62,17 +61,9 @@ export default [
       'Декабрь'
     ]
   ],
-  [
-    ['н.д.а.', 'н.д.'],
-    ,
-  ],
-  1, [6, 0], ['dd.MM.yy', 'dd MMM y \'аз\'', 'd MMMM, y \'аз\'', 'EEEE, d MMMM, y \'аз\''],
-  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'],
-  [
-    '{1}, {0}',
-    ,
-    ,
-  ],
+  [['н.д.а.', 'н.д.'], u, u], 1, [6, 0],
+  ['dd.MM.yy', 'dd MMM y \'аз\'', 'd MMMM, y \'аз\'', 'EEEE, d MMMM, y \'аз\''],
+  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'], ['{1}, {0}', u, u, u],
   [',', ' ', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'НН', ':'],
   ['#,##0.###', '#,##0%', '¤ #,##0.00', '#E0'], '₽', 'Сом',
   {'JPY': ['JP¥', '¥'], 'RUB': ['₽']}, plural

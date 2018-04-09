@@ -9,6 +9,8 @@
 // THIS CODE IS GENERATED - DO NOT MODIFY
 // See angular/tools/gulp-tasks/cldr/extract.js
 
+const u = undefined;
+
 function plural(n: number): number {
   let i = Math.floor(Math.abs(n)), v = n.toString().replace(/^[^.]*\.?/, '').length;
   if (i === 1 && v === 0) return 1;
@@ -18,18 +20,13 @@ function plural(n: number): number {
 }
 
 export default [
-  'sk',
-  [
-    ['AM', 'PM'],
-    ,
-  ],
-  ,
+  'sk', [['AM', 'PM'], u, u], u,
   [
     ['n', 'p', 'u', 's', 'š', 'p', 's'], ['ne', 'po', 'ut', 'st', 'št', 'pi', 'so'],
     ['nedeľa', 'pondelok', 'utorok', 'streda', 'štvrtok', 'piatok', 'sobota'],
     ['ne', 'po', 'ut', 'st', 'št', 'pi', 'so']
   ],
-  ,
+  u,
   [
     ['j', 'f', 'm', 'a', 'm', 'j', 'j', 'a', 's', 'o', 'n', 'd'],
     ['jan', 'feb', 'mar', 'apr', 'máj', 'jún', 'júl', 'aug', 'sep', 'okt', 'nov', 'dec'],
@@ -46,29 +43,25 @@ export default [
       'október', 'november', 'december'
     ]
   ],
-  [['pred Kr.', 'po Kr.'], , ['pred Kristom', 'po Kristovi']], 1, [6, 0],
-  ['d. M. y', , 'd. MMMM y', 'EEEE d. MMMM y'], ['H:mm', 'H:mm:ss', 'H:mm:ss z', 'H:mm:ss zzzz'],
-  [
-    '{1} {0}',
-    '{1}, {0}',
-    ,
-  ],
+  [['pred Kr.', 'po Kr.'], u, ['pred Kristom', 'po Kristovi']], 1, [6, 0],
+  ['d. M. y', u, 'd. MMMM y', 'EEEE d. MMMM y'], ['H:mm', 'H:mm:ss', 'H:mm:ss z', 'H:mm:ss zzzz'],
+  ['{1} {0}', '{1}, {0}', u, u],
   [',', ' ', ';', '%', '+', '-', 'e', '×', '‰', '∞', 'NaN', ':'],
   ['#,##0.###', '#,##0 %', '#,##0.00 ¤', '#E0'], '€', 'euro', {
-    'AUD': [, '$'],
-    'BRL': [, 'R$'],
-    'CAD': [, '$'],
-    'CNY': [, '¥'],
-    'GBP': [, '£'],
-    'HKD': [, '$'],
+    'AUD': [u, '$'],
+    'BRL': [u, 'R$'],
+    'CAD': [u, '$'],
+    'CNY': [u, '¥'],
+    'GBP': [u, '£'],
+    'HKD': [u, '$'],
     'ILS': ['NIS', '₪'],
-    'INR': [, '₹'],
-    'JPY': [, '¥'],
-    'KRW': [, '₩'],
-    'NZD': [, '$'],
-    'TWD': [, 'NT$'],
-    'USD': [, '$'],
-    'VND': [, '₫']
+    'INR': [u, '₹'],
+    'JPY': [u, '¥'],
+    'KRW': [u, '₩'],
+    'NZD': [u, '$'],
+    'TWD': [u, 'NT$'],
+    'USD': [u, '$'],
+    'VND': [u, '₫']
   },
   plural
 ];

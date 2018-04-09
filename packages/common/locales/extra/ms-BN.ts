@@ -9,14 +9,16 @@
 // THIS CODE IS GENERATED - DO NOT MODIFY
 // See angular/tools/gulp-tasks/cldr/extract.js
 
+const u = undefined;
+
 export default [
   [
-    ['pagi', 'pagi', 'tengah hari', 'petang', 'malam'], ,
+    ['pagi', 'pagi', 'tengah hari', 'petang', 'malam'], u,
     ['tengah malam', 'pagi', 'tengah hari', 'petang', 'malam']
   ],
   [
     ['pagi', 'pagi', 'tengah hari', 'petang', 'malam'],
-    ['tengah malam', 'pagi', 'tengah hari', 'petang', 'malam'],
+    ['tengah malam', 'pagi', 'tengah hari', 'petang', 'malam'], u
   ],
   [
     ['00:00', '01:00'], ['01:00', '12:00'], ['12:00', '14:00'], ['14:00', '19:00'],

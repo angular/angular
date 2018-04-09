@@ -9,17 +9,14 @@
 // THIS CODE IS GENERATED - DO NOT MODIFY
 // See angular/tools/gulp-tasks/cldr/extract.js
 
+const u = undefined;
+
 function plural(n: number): number {
   return 5;
 }
 
 export default [
-  'kam',
-  [
-    ['Ĩyakwakya', 'Ĩyawĩoo'],
-    ,
-  ],
-  ,
+  'kam', [['Ĩyakwakya', 'Ĩyawĩoo'], u, u], u,
   [
     ['Y', 'W', 'E', 'A', 'A', 'A', 'A'], ['Wky', 'Wkw', 'Wkl', 'Wtũ', 'Wkn', 'Wtn', 'Wth'],
     [
@@ -28,7 +25,7 @@ export default [
     ],
     ['Wky', 'Wkw', 'Wkl', 'Wtũ', 'Wkn', 'Wtn', 'Wth']
   ],
-  ,
+  u,
   [
     ['M', 'K', 'K', 'K', 'K', 'T', 'M', 'N', 'K', 'Ĩ', 'Ĩ', 'Ĩ'],
     ['Mbe', 'Kel', 'Ktũ', 'Kan', 'Ktn', 'Tha', 'Moo', 'Nya', 'Knd', 'Ĩku', 'Ĩkm', 'Ĩkl'],
@@ -38,14 +35,9 @@ export default [
       'Mwai wa ĩkumi na ĩmwe', 'Mwai wa ĩkumi na ilĩ'
     ]
   ],
-  , [['MY', 'IY'], , ['Mbee wa Yesũ', 'Ĩtina wa Yesũ']], 0, [6, 0],
+  u, [['MY', 'IY'], u, ['Mbee wa Yesũ', 'Ĩtina wa Yesũ']], 0, [6, 0],
   ['dd/MM/y', 'd MMM y', 'd MMMM y', 'EEEE, d MMMM y'],
-  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'],
-  [
-    '{1} {0}',
-    ,
-    ,
-  ],
+  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'], ['{1} {0}', u, u, u],
   ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
   ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'], 'Ksh', 'Silingi ya Kenya',
   {'JPY': ['JP¥', '¥'], 'KES': ['Ksh'], 'USD': ['US$', '$']}, plural

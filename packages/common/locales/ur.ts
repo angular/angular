@@ -9,6 +9,8 @@
 // THIS CODE IS GENERATED - DO NOT MODIFY
 // See angular/tools/gulp-tasks/cldr/extract.js
 
+const u = undefined;
+
 function plural(n: number): number {
   let i = Math.floor(Math.abs(n)), v = n.toString().replace(/^[^.]*\.?/, '').length;
   if (i === 1 && v === 0) return 1;
@@ -16,40 +18,23 @@ function plural(n: number): number {
 }
 
 export default [
-  'ur',
-  [
-    ['a', 'p'],
-    ['AM', 'PM'],
-  ],
-  [
-    ['AM', 'PM'],
-    ,
-  ],
+  'ur', [['a', 'p'], ['AM', 'PM'], u], [['AM', 'PM'], u, u],
   [
     ['S', 'M', 'T', 'W', 'T', 'F', 'S'],
-    ['اتوار', 'پیر', 'منگل', 'بدھ', 'جمعرات', 'جمعہ', 'ہفتہ'],
-    ,
+    ['اتوار', 'پیر', 'منگل', 'بدھ', 'جمعرات', 'جمعہ', 'ہفتہ'], u, u
   ],
-  ,
+  u,
   [
     ['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'],
     [
       'جنوری', 'فروری', 'مارچ', 'اپریل', 'مئی', 'جون', 'جولائی',
       'اگست', 'ستمبر', 'اکتوبر', 'نومبر', 'دسمبر'
     ],
+    u
   ],
-  ,
-  [
-    ['قبل مسیح', 'عیسوی'],
-    ,
-  ],
-  0, [6, 0], ['d/M/yy', 'MMM d, y', 'MMMM d, y', 'EEEE, MMMM d, y'],
-  ['h:mm a', 'h:mm:ss a', 'h:mm:ss a z', 'h:mm:ss a zzzz'],
-  [
-    '{1} {0}',
-    ,
-    ,
-  ],
+  u, [['قبل مسیح', 'عیسوی'], u, u], 0, [6, 0],
+  ['d/M/yy', 'MMM d, y', 'MMMM d, y', 'EEEE, MMMM d, y'],
+  ['h:mm a', 'h:mm:ss a', 'h:mm:ss a z', 'h:mm:ss a zzzz'], ['{1} {0}', u, u, u],
   ['.', ',', ';', '%', '\u200e+', '\u200e-', 'E', '×', '‰', '∞', 'NaN', ':'],
   ['#,##0.###', '#,##0%', '¤ #,##0.00', '#E0'], 'Rs', 'پاکستانی روپیہ',
   {'JPY': ['JP¥', '¥'], 'PKR': ['Rs'], 'THB': ['฿'], 'TWD': ['NT$']}, plural

@@ -9,6 +9,8 @@
 // THIS CODE IS GENERATED - DO NOT MODIFY
 // See angular/tools/gulp-tasks/cldr/extract.js
 
+const u = undefined;
+
 function plural(n: number): number {
   let i = Math.floor(Math.abs(n)), v = n.toString().replace(/^[^.]*\.?/, '').length;
   if (i === 1 && v === 0) return 1;
@@ -23,12 +25,7 @@ function plural(n: number): number {
 }
 
 export default [
-  'pl',
-  [
-    ['a', 'p'],
-    ['AM', 'PM'],
-  ],
-  ,
+  'pl', [['a', 'p'], ['AM', 'PM'], u], u,
   [
     ['n', 'p', 'w', 'ś', 'c', 'p', 's'], ['niedz.', 'pon.', 'wt.', 'śr.', 'czw.', 'pt.', 'sob.'],
     ['niedziela', 'poniedziałek', 'wtorek', 'środa', 'czwartek', 'piątek', 'sobota'],
@@ -55,32 +52,27 @@ export default [
       'wrzesień', 'październik', 'listopad', 'grudzień'
     ]
   ],
-  [['p.n.e.', 'n.e.'], , ['przed naszą erą', 'naszej ery']], 1, [6, 0],
+  [['p.n.e.', 'n.e.'], u, ['przed naszą erą', 'naszej ery']], 1, [6, 0],
   ['dd.MM.y', 'd MMM y', 'd MMMM y', 'EEEE, d MMMM y'],
-  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'],
-  [
-    '{1}, {0}',
-    ,
-    '{1} {0}',
-  ],
+  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'], ['{1}, {0}', u, '{1} {0}', u],
   [',', ' ', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
   ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'], 'zł', 'złoty polski', {
-    'AUD': [, '$'],
-    'CAD': [, '$'],
-    'CNY': [, '¥'],
-    'GBP': [, '£'],
-    'HKD': [, '$'],
-    'ILS': [, '₪'],
-    'INR': [, '₹'],
-    'JPY': [, '¥'],
-    'KRW': [, '₩'],
-    'MXN': [, '$'],
-    'NZD': [, '$'],
+    'AUD': [u, '$'],
+    'CAD': [u, '$'],
+    'CNY': [u, '¥'],
+    'GBP': [u, '£'],
+    'HKD': [u, '$'],
+    'ILS': [u, '₪'],
+    'INR': [u, '₹'],
+    'JPY': [u, '¥'],
+    'KRW': [u, '₩'],
+    'MXN': [u, '$'],
+    'NZD': [u, '$'],
     'PLN': ['zł'],
-    'RON': [, 'lej'],
-    'TWD': [, 'NT$'],
-    'USD': [, '$'],
-    'VND': [, '₫']
+    'RON': [u, 'lej'],
+    'TWD': [u, 'NT$'],
+    'USD': [u, '$'],
+    'VND': [u, '₫']
   },
   plural
 ];
