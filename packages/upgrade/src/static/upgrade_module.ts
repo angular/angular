@@ -72,7 +72,8 @@ import {NgAdapterInjector} from './util';
  *       use camelCase.
  *    c. However the template binding syntax will always use the Angular style, e.g. square
  *       brackets (`[...]`) for property binding.
- * 8. AngularJS is always bootstrapped first and owns the root component.
+ * 8. Angular is bootstrapped first; AngularJS is bootstrapped second. AngularJS always owns the
+ *    root component of the application.
  * 9. The new application is running in an Angular zone, and therefore it no longer needs calls
  *    to `$apply()`.
  *
