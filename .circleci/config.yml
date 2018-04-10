@@ -12,8 +12,8 @@
 ## IMPORTANT
 # If you change the `docker_image` version, also change the `cache_key` suffix and the version of
 # `com_github_bazelbuild_buildtools` in the `/WORKSPACE` file.
-var_1: &docker_image angular/ngcontainer:0.1.0
-var_2: &cache_key v2-angular-{{ .Branch }}-{{ checksum "yarn.lock" }}-0.1.0
+var_1: &docker_image angular/ngcontainer:0.2.0
+var_2: &cache_key v2-angular-{{ .Branch }}-{{ checksum "yarn.lock" }}-0.2.0
 
 # See remote cache documentation in /docs/BAZEL.md
 var_3: &setup-bazel-remote-cache
@@ -47,8 +47,10 @@ jobs:
       - run: 'buildifier -mode=check $(find . -type f \( -name BUILD.bazel -or -name BUILD \)) ||
               (echo "BUILD files not formatted. Please run ''yarn buildifier''" ; exit 1)'
       # Run the skylark linter to check our Bazel rules
+      # deprecated-api is disabled because we use actions.new_file(genfiles_dir)
+      # which has no replacement, see https://github.com/bazelbuild/bazel/issues/4858
       - run: 'find . -type f -name "*.bzl" |
-              xargs java -jar /usr/local/bin/Skylint_deploy.jar ||
+              xargs java -jar /usr/local/bin/Skylint_deploy.jar --disable-checks=deprecated-api ||
               (echo -e "\n.bzl files have lint errors. Please run ''yarn skylint''"; exit 1)'
 
       - restore_cache:

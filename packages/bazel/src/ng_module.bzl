@@ -239,7 +239,7 @@ def ngc_compile_action(ctx, label, inputs, outputs, messages_out, tsconfig_file,
 
   arguments += i18n_args
 
-  ctx.action(
+  ctx.actions.run(
       progress_message = progress_message,
       mnemonic = mnemonic,
       inputs = inputs,
@@ -252,17 +252,18 @@ def ngc_compile_action(ctx, label, inputs, outputs, messages_out, tsconfig_file,
   )
 
   if messages_out != None:
-    ctx.action(inputs = list(inputs),
-               outputs = messages_out,
-               executable = ctx.executable._ng_xi18n,
-               arguments = (_EXTRA_NODE_OPTIONS_FLAGS +
-                            [tsconfig_file.path] +
-                            # The base path is bin_dir because of the way the ngc
-                            # compiler host is configured. So we need to explicitly
-                            # point to genfiles/ to redirect the output.
-                            ["../genfiles/" + messages_out[0].short_path]),
-               progress_message = "Extracting Angular 2 messages (ng_xi18n)",
-               mnemonic = "Angular2MessageExtractor")
+    ctx.actions.run(
+        inputs = list(inputs),
+        outputs = messages_out,
+        executable = ctx.executable._ng_xi18n,
+        arguments = (_EXTRA_NODE_OPTIONS_FLAGS +
+                     [tsconfig_file.path] +
+                     # The base path is bin_dir because of the way the ngc
+                     # compiler host is configured. So we need to explicitly
+                     # point to genfiles/ to redirect the output.
+                     ["../genfiles/" + messages_out[0].short_path]),
+        progress_message = "Extracting Angular 2 messages (ng_xi18n)",
+        mnemonic = "Angular2MessageExtractor")
 
   if not locale and not ctx.attr.no_i18n:
     return struct(

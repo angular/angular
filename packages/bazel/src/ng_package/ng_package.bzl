@@ -298,9 +298,9 @@ def _ng_package_impl(ctx):
       ctx,
       devfiles.to_list(),
       [npm_package_directory] + ctx.files.packages)
-  return struct(
+  return [DefaultInfo(
     files = depset([package_dir])
-  )
+  )]
 
 NG_PACKAGE_ATTRS = dict(NPM_PACKAGE_ATTRS, **dict(ROLLUP_ATTRS, **{
     "srcs": attr.label_list(allow_files = True),

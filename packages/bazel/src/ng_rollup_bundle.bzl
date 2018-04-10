@@ -28,7 +28,7 @@ BO_ROLLUP="angular_devkit/packages/angular_devkit/build_optimizer/src/build-opti
 BO_PLUGIN="require('%s').default(%s)" % (BO_ROLLUP, PLUGIN_CONFIG)
 
 def run_brotli(ctx, input, output):
-  ctx.action(
+  ctx.actions.run(
       executable = ctx.executable._brotli,
       inputs = [input],
       outputs = [output],
@@ -77,7 +77,7 @@ ng_rollup_bundle = rule(
             executable = True,
             cfg = "host",
             default = Label("@angular//packages/bazel/src:rollup_with_build_optimizer")),
-	    "_brotli": attr.label(
+        "_brotli": attr.label(
             executable = True,
             cfg = "host",
             default = Label("@org_brotli//:brotli")),
