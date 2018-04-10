@@ -51,8 +51,9 @@ $backdrop-animation-timing-function: cubic-bezier(0.25, 0.8, 0.25, 1) !default;
 
   // A single overlay pane.
   .cdk-overlay-pane {
+    // Note: it's important for this one to start off `absolute`,
+    // in order for us to be able to measure it correctly.
     position: absolute;
-
     pointer-events: auto;
     box-sizing: border-box;
     z-index: $cdk-z-index-overlay;
@@ -113,8 +114,10 @@ $backdrop-animation-timing-function: cubic-bezier(0.25, 0.8, 0.25, 1) !default;
     // When *not* centering, a top/left/bottom/right will be set which overrides the normal
     // flex layout.
     display: flex;
-    justify-content: center;
-    align-items: center;
+
+    // We use the `column` direction here to avoid some flexbox issues in Edge
+    // when using the "grow after open" options.
+    flex-direction: column;
 
     // Add some dimensions so the element has an `innerText` which some people depend on in tests.
     min-width: 1px;

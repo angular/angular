@@ -289,8 +289,7 @@ export class CdkConnectedOverlay implements OnDestroy, OnChanges {
       // the same way as the old ConnectedPositionStrategy and to avoid breaking changes.
       // TODO(crisbeto): make these on by default and add inputs for them
       // next time we do breaking changes.
-      .withFlexibleHeight(false)
-      .withFlexibleWidth(false)
+      .withFlexibleDimensions(false)
       .withPush(false)
       .withGrowAfterOpen(false)
       .withLockedPosition(this.lockPosition);

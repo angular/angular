@@ -482,7 +482,7 @@ describe('MatMenu', () => {
       // Push trigger to the right side of viewport, so it doesn't have space to open
       // in its default "after" position on the right side.
       trigger.style.position = 'fixed';
-      trigger.style.right = '-50px';
+      trigger.style.right = '0';
       trigger.style.top = '200px';
 
       fixture.componentInstance.trigger.openMenu();
@@ -541,8 +541,8 @@ describe('MatMenu', () => {
       // push trigger to the bottom, right part of viewport, so it doesn't have space to open
       // in its default "after below" position.
       trigger.style.position = 'fixed';
-      trigger.style.right = '-50px';
-      trigger.style.bottom = '65px';
+      trigger.style.right = '0';
+      trigger.style.bottom = '0';
 
       fixture.componentInstance.trigger.openMenu();
       fixture.detectChanges();

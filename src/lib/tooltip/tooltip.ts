@@ -309,8 +309,7 @@ export class MatTooltip implements OnDestroy {
     // Create connected position strategy that listens for scroll events to reposition.
     const strategy = this._overlay.position()
       .flexibleConnectedTo(this._elementRef)
-      .withFlexibleHeight(false)
-      .withFlexibleWidth(false)
+      .withFlexibleDimensions(false)
       .withViewportMargin(8)
       .withPositions([
         {...origin.main, ...overlay.main},

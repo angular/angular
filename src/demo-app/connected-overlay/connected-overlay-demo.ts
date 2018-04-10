@@ -49,8 +49,7 @@ export class ConnectedOverlayDemo {
   openWithConfig() {
     const positionStrategy = this.overlay.position()
         .flexibleConnectedTo(this._overlayOrigin.elementRef)
-        .withFlexibleHeight(this.isFlexible)
-        .withFlexibleWidth(this.isFlexible)
+        .withFlexibleDimensions(this.isFlexible)
         .withPush(this.canPush)
         .withViewportMargin(10)
         .withGrowAfterOpen(true)

@@ -70,8 +70,7 @@ export class ConnectedPositionStrategy implements PositionStrategy {
     // proxy all of the API calls.
     this._positionStrategy =
       new FlexibleConnectedPositionStrategy(connectedTo, viewportRuler, document)
-        .withFlexibleHeight(false)
-        .withFlexibleWidth(false)
+        .withFlexibleDimensions(false)
         .withPush(false)
         .withViewportMargin(0);
 

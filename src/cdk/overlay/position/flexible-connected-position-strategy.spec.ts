@@ -120,8 +120,7 @@ describe('FlexibleConnectedPositionStrategy', () => {
       document.body.appendChild(originElement);
       positionStrategy = overlay.position()
           .flexibleConnectedTo(new ElementRef(originElement))
-          .withFlexibleHeight(false)
-          .withFlexibleWidth(false)
+          .withFlexibleDimensions(false)
           .withPush(false);
     });
 
@@ -865,8 +864,7 @@ describe('FlexibleConnectedPositionStrategy', () => {
       document.body.appendChild(originElement);
       positionStrategy = overlay.position()
           .flexibleConnectedTo(new ElementRef(originElement))
-          .withFlexibleHeight(false)
-          .withFlexibleWidth(false)
+          .withFlexibleDimensions(false)
           .withPush();
     });
 
@@ -1003,8 +1001,8 @@ describe('FlexibleConnectedPositionStrategy', () => {
 
     it('should align the overlay to `flex-start` when the content is flowing to the right', () => {
       positionStrategy
-        .withFlexibleWidth()
-        .withFlexibleHeight()
+        .withFlexibleDimensions()
+        .withPush(false)
         .withPositions([{
           overlayY: 'top',
           overlayX: 'start',
@@ -1014,13 +1012,13 @@ describe('FlexibleConnectedPositionStrategy', () => {
 
       attachOverlay({positionStrategy});
 
-      expect(overlayRef.overlayElement.style.justifyContent).toBe('flex-start');
+      expect(overlayRef.hostElement.style.alignItems).toBe('flex-start');
     });
 
     it('should align the overlay to `flex-end` when the content is flowing to the left', () => {
       positionStrategy
-        .withFlexibleWidth()
-        .withFlexibleHeight()
+        .withFlexibleDimensions()
+        .withPush(false)
         .withPositions([{
           overlayY: 'top',
           overlayX: 'end',
@@ -1030,13 +1028,13 @@ describe('FlexibleConnectedPositionStrategy', () => {
 
       attachOverlay({positionStrategy});
 
-      expect(overlayRef.overlayElement.style.justifyContent).toBe('flex-end');
+      expect(overlayRef.hostElement.style.alignItems).toBe('flex-end');
     });
 
     it('should align the overlay to `center` when the content is centered', () => {
       positionStrategy
-        .withFlexibleWidth()
-        .withFlexibleHeight()
+        .withFlexibleDimensions()
+        .withPush(false)
         .withPositions([{
           overlayY: 'top',
           overlayX: 'center',
@@ -1046,48 +1044,48 @@ describe('FlexibleConnectedPositionStrategy', () => {
 
       attachOverlay({positionStrategy});
 
-      expect(overlayRef.overlayElement.style.justifyContent).toBe('center');
+      expect(overlayRef.hostElement.style.alignItems).toBe('center');
     });
 
-    // TODO(crisbeto): investigate failure in older Safari
-    // it('should support offsets when centering', () => {
-    //   originElement.style.top = '200px';
-    //   originElement.style.left = '200px';
+    it('should support offsets when centering', () => {
+      originElement.style.top = '200px';
+      originElement.style.left = '200px';
 
-    //   positionStrategy
-    //     .withFlexibleWidth()
-    //     .withFlexibleHeight()
-    //     .withPositions([{
-    //       overlayY: 'center',
-    //       overlayX: 'center',
-    //       originY: 'center',
-    //       originX: 'center',
-    //       offsetY: 20,
-    //       offsetX: -15
-    //     }]);
+      positionStrategy
+        .withFlexibleDimensions()
+        .withPush(false)
+        .withPositions([{
+          overlayY: 'center',
+          overlayX: 'center',
+          originY: 'center',
+          originX: 'center',
+          offsetY: 20,
+          offsetX: -15
+        }]);
 
-    //   attachOverlay({positionStrategy});
+      attachOverlay({positionStrategy});
 
-    //   const originRect = originElement.getBoundingClientRect();
-    //   const originCenterY = originRect.top + (ORIGIN_HEIGHT / 2);
-    //   const originCenterX = originRect.left + (ORIGIN_WIDTH / 2);
+      const originRect = originElement.getBoundingClientRect();
+      const originCenterX = originRect.left + (DEFAULT_WIDTH / 2);
+      const originCenterY = originRect.top + (DEFAULT_HEIGHT / 2);
 
-    //   const overlayRect = overlayRef.overlayElement.getBoundingClientRect();
-    //   const overlayCenterY = overlayRect.top + (OVERLAY_HEIGHT / 2);
-    //   const overlayCenterX = overlayRect.left + (OVERLAY_WIDTH / 2);
+      const overlayRect = overlayRef.overlayElement.getBoundingClientRect();
+      const overlayCenterY = overlayRect.top + (OVERLAY_HEIGHT / 2);
+      const overlayCenterX = overlayRect.left + (OVERLAY_WIDTH / 2);
 
-    //   expect(overlayRef.overlayElement.style.transform)
-              // .toBe('translateX(-15px) translateY(20px)');
-    //   expect(Math.floor(overlayCenterY)).toBe(Math.floor(originCenterY) + 20);
-    //   expect(Math.floor(overlayCenterX)).toBe(Math.floor(originCenterX) - 15);
-    // });
+      expect(overlayRef.overlayElement.style.transform)
+              .toBe('translateX(-15px) translateY(20px)');
+      expect(Math.floor(overlayCenterY)).toBe(Math.floor(originCenterY) + 20);
+      expect(Math.floor(overlayCenterX)).toBe(Math.floor(originCenterX) - 15);
+    });
 
     it('should become scrollable when it hits the viewport edge with a flexible height', () => {
       originElement.style.left = '200px';
       originElement.style.bottom = `${OVERLAY_HEIGHT - 10}px`;
 
       positionStrategy
-        .withFlexibleHeight()
+        .withFlexibleDimensions()
+        .withPush(false)
         .withPositions([{
           overlayY: 'top',
           overlayX: 'start',
@@ -1107,7 +1105,8 @@ describe('FlexibleConnectedPositionStrategy', () => {
       originElement.style.right = '-20px';
 
       positionStrategy
-        .withFlexibleWidth()
+        .withFlexibleDimensions()
+        .withPush(false)
         .withPositions([{
           overlayY: 'top',
           overlayX: 'start',
@@ -1127,7 +1126,7 @@ describe('FlexibleConnectedPositionStrategy', () => {
       originElement.style.bottom = `${OVERLAY_HEIGHT - 10}px`;
 
       positionStrategy
-        .withFlexibleHeight()
+        .withFlexibleDimensions()
         .withPositions([{
           overlayY: 'top',
           overlayX: 'start',
@@ -1149,7 +1148,7 @@ describe('FlexibleConnectedPositionStrategy', () => {
       originElement.style.right = '-20px';
 
       positionStrategy
-        .withFlexibleWidth()
+        .withFlexibleDimensions()
         .withPositions([{
           overlayY: 'top',
           overlayX: 'start',
@@ -1171,7 +1170,8 @@ describe('FlexibleConnectedPositionStrategy', () => {
       originElement.style.right = '25px';
 
       positionStrategy
-        .withFlexibleWidth()
+        .withFlexibleDimensions()
+        .withPush(false)
         .withPositions([
           {
             originX: 'end',
@@ -1202,7 +1202,8 @@ describe('FlexibleConnectedPositionStrategy', () => {
       originElement.style.bottom = `${OVERLAY_HEIGHT - 10}px`;
 
       positionStrategy
-        .withFlexibleHeight()
+        .withFlexibleDimensions()
+        .withPush(false)
         .withGrowAfterOpen()
         .withPositions([{
           overlayY: 'top',
@@ -1239,7 +1240,8 @@ describe('FlexibleConnectedPositionStrategy', () => {
         window.scroll(0, 50);
 
         positionStrategy
-          .withFlexibleHeight()
+          .withFlexibleDimensions()
+          .withPush(false)
           .withPositions([{
             overlayY: 'bottom',
             overlayX: 'start',
@@ -1257,14 +1259,15 @@ describe('FlexibleConnectedPositionStrategy', () => {
         window.scroll(0, 0);
         document.body.removeChild(veryLargeElement);
       });
+
     it('should set the proper styles when the `bottom` value is exactly zero', () => {
       originElement.style.position = 'fixed';
       originElement.style.bottom = '0';
       originElement.style.left = '200px';
 
       positionStrategy
-        .withFlexibleWidth()
-        .withFlexibleHeight()
+        .withFlexibleDimensions()
+        .withPush(false)
         .withPositions([{
           overlayY: 'bottom',
           overlayX: 'start',
@@ -1289,8 +1292,8 @@ describe('FlexibleConnectedPositionStrategy', () => {
       originElement.style.left = '200px';
 
       positionStrategy
-        .withFlexibleWidth()
-        .withFlexibleHeight()
+        .withFlexibleDimensions()
+        .withPush(false)
         .withPositions([{
           overlayY: 'top',
           overlayX: 'start',
@@ -1315,8 +1318,8 @@ describe('FlexibleConnectedPositionStrategy', () => {
       originElement.style.top = '200px';
 
       positionStrategy
-        .withFlexibleWidth()
-        .withFlexibleHeight()
+        .withFlexibleDimensions()
+        .withPush(false)
         .withPositions([{
           overlayY: 'top',
           overlayX: 'start',
@@ -1341,8 +1344,8 @@ describe('FlexibleConnectedPositionStrategy', () => {
       originElement.style.top = '200px';
 
       positionStrategy
-        .withFlexibleWidth()
-        .withFlexibleHeight()
+        .withFlexibleDimensions()
+        .withPush(false)
         .withPositions([{
           overlayY: 'top',
           overlayX: 'end',
@@ -1368,7 +1371,8 @@ describe('FlexibleConnectedPositionStrategy', () => {
       originElement.style.right = '200px';
 
       positionStrategy
-        .withFlexibleHeight()
+        .withFlexibleDimensions()
+        .withPush(false)
         .withViewportMargin(viewportMargin)
         .withPositions([
           {
@@ -1408,6 +1412,7 @@ describe('FlexibleConnectedPositionStrategy', () => {
       // Create a strategy with knowledge of the scrollable container
       const strategy = overlay.position()
         .flexibleConnectedTo(new ElementRef(originElement))
+        .withPush(false)
         .withPositions([{
           originX: 'start',
           originY: 'bottom',
@@ -1503,8 +1508,8 @@ describe('FlexibleConnectedPositionStrategy', () => {
 
         attachOverlay({positionStrategy});
 
-        expect(overlayRef.overlayElement.style.left).toBeTruthy();
-        expect(overlayRef.overlayElement.style.right).toBeFalsy();
+        expect(overlayRef.hostElement.style.left).toBeTruthy();
+        expect(overlayRef.hostElement.style.right).toBeFalsy();
       });
 
       it('should use `right` when positioning an element at the end', () => {
@@ -1517,8 +1522,8 @@ describe('FlexibleConnectedPositionStrategy', () => {
 
         attachOverlay({positionStrategy});
 
-        expect(overlayRef.overlayElement.style.right).toBeTruthy();
-        expect(overlayRef.overlayElement.style.left).toBeFalsy();
+        expect(overlayRef.hostElement.style.right).toBeTruthy();
+        expect(overlayRef.hostElement.style.left).toBeFalsy();
       });
 
     });
@@ -1537,8 +1542,8 @@ describe('FlexibleConnectedPositionStrategy', () => {
           direction: 'rtl'
         });
 
-        expect(overlayRef.overlayElement.style.right).toBeTruthy();
-        expect(overlayRef.overlayElement.style.left).toBeFalsy();
+        expect(overlayRef.hostElement.style.right).toBeTruthy();
+        expect(overlayRef.hostElement.style.left).toBeFalsy();
       });
 
       it('should use `left` when positioning an element at the end', () => {
@@ -1551,8 +1556,8 @@ describe('FlexibleConnectedPositionStrategy', () => {
 
         attachOverlay({positionStrategy, direction: 'rtl'});
 
-        expect(overlayRef.overlayElement.style.left).toBeTruthy();
-        expect(overlayRef.overlayElement.style.right).toBeFalsy();
+        expect(overlayRef.hostElement.style.left).toBeTruthy();
+        expect(overlayRef.hostElement.style.right).toBeFalsy();
       });
     });
 
@@ -1567,8 +1572,8 @@ describe('FlexibleConnectedPositionStrategy', () => {
 
         attachOverlay({positionStrategy});
 
-        expect(overlayRef.overlayElement.style.top).toBeTruthy();
-        expect(overlayRef.overlayElement.style.bottom).toBeFalsy();
+        expect(overlayRef.hostElement.style.top).toBeTruthy();
+        expect(overlayRef.hostElement.style.bottom).toBeFalsy();
       });
 
       it('should use `bottom` when positioning at element along the bottom', () => {
@@ -1581,8 +1586,8 @@ describe('FlexibleConnectedPositionStrategy', () => {
 
         attachOverlay({positionStrategy});
 
-        expect(overlayRef.overlayElement.style.bottom).toBeTruthy();
-        expect(overlayRef.overlayElement.style.top).toBeFalsy();
+        expect(overlayRef.hostElement.style.bottom).toBeTruthy();
+        expect(overlayRef.hostElement.style.top).toBeFalsy();
       });
     });
 

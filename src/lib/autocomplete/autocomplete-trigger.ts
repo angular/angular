@@ -531,8 +531,7 @@ export class MatAutocompleteTrigger implements ControlValueAccessor, OnDestroy {
   private _getOverlayPosition(): PositionStrategy {
     this._positionStrategy = this._overlay.position()
       .flexibleConnectedTo(this._getConnectedElement())
-      .withFlexibleHeight(false)
-      .withFlexibleWidth(false)
+      .withFlexibleDimensions(false)
       .withPush(false)
       .withPositions([
         {originX: 'start', originY: 'bottom', overlayX: 'start', overlayY: 'top'},
