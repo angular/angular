@@ -160,6 +160,22 @@ function defaultErrorHandler(error: any): any {
   throw error;
 }
 
+/**
+ * @description
+ *
+ * Malformed uri error handler is invoked when `Router.parseUrl(url)` throws an
+ * error due to containing an invalid character. The most common case would be a `%` sign
+ * that's not encoded and is not part of a percent encoded sequence.
+ *
+ */
+export type MalformedUriErrorHandler =
+    (error: URIError, urlSerializer: UrlSerializer, url: string) => UrlTree;
+
+function defaultMalformedUriErrorHandler(
+    error: URIError, urlSerializer: UrlSerializer, url: string): UrlTree {
+  return urlSerializer.parse('/');
+}
+
 type NavStreamValue =
     boolean | {appliedUrl: UrlTree, snapshot: RouterStateSnapshot, shouldActivate?: boolean};
 
@@ -217,7 +233,15 @@ export class Router {
    */
   errorHandler: ErrorHandler = defaultErrorHandler;
 
-
+  /**
+   * Error handler is invoked when an error occurs attempting to decode a URI. For example, having
+   * a `%` sign that's not encoded.
+   *
+   * See `MalformedUriErrorHandler` for more information.
+   *
+   * @internal
+   */
+  malformedUriErrorHandler: MalformedUriErrorHandler = defaultMalformedUriErrorHandler;
 
   /**
    * Indicates if at least one navigation happened.
@@ -312,7 +336,7 @@ export class Router {
     // run into ngZone
     if (!this.locationSubscription) {
       this.locationSubscription = <any>this.location.subscribe((change: any) => {
-        const rawUrlTree = this.urlSerializer.parse(change['url']);
+        let rawUrlTree = this.parseUrl(change['url']);
         const source: NavigationTrigger = change['type'] === 'popstate' ? 'popstate' : 'hashchange';
         const state = change.state && change.state.navigationId ?
             {navigationId: change.state.navigationId} :
@@ -490,7 +514,15 @@ export class Router {
   serializeUrl(url: UrlTree): string { return this.urlSerializer.serialize(url); }
 
   /** Parses a string into a `UrlTree` */
-  parseUrl(url: string): UrlTree { return this.urlSerializer.parse(url); }
+  parseUrl(url: string): UrlTree {
+    let urlTree: UrlTree;
+    try {
+      urlTree = this.urlSerializer.parse(url);
+    } catch (e) {
+      urlTree = this.malformedUriErrorHandler(e, this.urlSerializer, url);
+    }
+    return urlTree;
+  }
 
   /** Returns whether the url is activated */
   isActive(url: string|UrlTree, exact: boolean): boolean {
@@ -498,7 +530,7 @@ export class Router {
       return containsTree(this.currentUrlTree, url, exact);
     }
 
-    const urlTree = this.urlSerializer.parse(url);
+    const urlTree = this.parseUrl(url);
     return containsTree(this.currentUrlTree, urlTree, exact);
   }
 

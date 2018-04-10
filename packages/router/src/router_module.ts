@@ -17,13 +17,13 @@ import {RouterLinkActive} from './directives/router_link_active';
 import {RouterOutlet} from './directives/router_outlet';
 import {RouterEvent} from './events';
 import {RouteReuseStrategy} from './route_reuse_strategy';
-import {ErrorHandler, Router} from './router';
+import {ErrorHandler, MalformedUriErrorHandler, Router} from './router';
 import {ROUTES} from './router_config_loader';
 import {ChildrenOutletContexts} from './router_outlet_context';
 import {NoPreloading, PreloadAllModules, PreloadingStrategy, RouterPreloader} from './router_preloader';
 import {ActivatedRoute} from './router_state';
 import {UrlHandlingStrategy} from './url_handling_strategy';
-import {DefaultUrlSerializer, UrlSerializer} from './url_tree';
+import {DefaultUrlSerializer, UrlSerializer, UrlTree} from './url_tree';
 import {flatten} from './utils/collection';
 
 
@@ -300,6 +300,18 @@ export interface ExtraOptions {
    * - `'always'`, enables unconditional inheritance of parent params.
    */
   paramsInheritanceStrategy?: 'emptyOnly'|'always';
+
+  /**
+   * A custom malformed uri error handler function. This handler is invoked when encodedURI contains
+   * invalid character sequences. The default implementation is to redirect to the root url dropping
+   * any path or param info. This function passes three parameters:
+   *
+   * - `'URIError'` - Error thrown when parsing a bad URL
+   * - `'UrlSerializer'` - UrlSerializer that’s configured with the router.
+   * - `'url'` -  The malformed URL that caused the URIError
+   * */
+  malformedUriErrorHandler?:
+      (error: URIError, urlSerializer: UrlSerializer, url: string) => UrlTree;
 }
 
 export function setupRouter(
@@ -320,6 +332,10 @@ export function setupRouter(
 
   if (opts.errorHandler) {
     router.errorHandler = opts.errorHandler;
+  }
+
+  if (opts.malformedUriErrorHandler) {
+    router.malformedUriErrorHandler = opts.malformedUriErrorHandler;
   }
 
   if (opts.enableTracing) {
