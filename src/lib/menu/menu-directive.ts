@@ -191,7 +191,7 @@ export class MatMenu implements OnInit, AfterContentInit, MatMenuPanel, OnDestro
    * menu template that displays in the overlay container.  Otherwise, it's difficult
    * to style the containing menu from outside the component.
    * @deprecated Use `panelClass` instead.
-   * @deletion-target 6.0.0
+   * @deletion-target 7.0.0
    */
   @Input()
   get classList(): string { return this.panelClass; }
@@ -204,7 +204,7 @@ export class MatMenu implements OnInit, AfterContentInit, MatMenuPanel, OnDestro
   /**
    * Event emitted when the menu is closed.
    * @deprecated Switch to `closed` instead
-   * @deletion-target 6.0.0
+   * @deletion-target 7.0.0
    */
   @Output() close = this.closed;
 
@@ -318,13 +318,13 @@ export class MatMenu implements OnInit, AfterContentInit, MatMenuPanel, OnDestro
 
   /** Starts the enter animation. */
   _startAnimation() {
-    // @deletion-target 6.0.0 Combine with _resetAnimation.
+    // @deletion-target 7.0.0 Combine with _resetAnimation.
     this._panelAnimationState = 'enter';
   }
 
   /** Resets the panel animation to its initial state. */
   _resetAnimation() {
-    // @deletion-target 6.0.0 Combine with _startAnimation.
+    // @deletion-target 7.0.0 Combine with _startAnimation.
     this._panelAnimationState = 'void';
   }
 

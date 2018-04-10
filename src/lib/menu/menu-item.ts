@@ -72,7 +72,7 @@ export class MatMenuItem extends _MatMenuItemMixinBase
     @Inject(DOCUMENT) document?: any,
     private _focusMonitor?: FocusMonitor) {
 
-    // @deletion-target 6.0.0 make `_focusMonitor` and `document` required params.
+    // @deletion-target 7.0.0 make `_focusMonitor` and `document` required params.
     super();
 
     if (_focusMonitor) {
