@@ -49,7 +49,7 @@ Install the *In-memory Web API* package from _npm_
   npm install angular-in-memory-web-api --save
 </code-example>
 
-Import the `InMemoryWebApiModule` and the `InMemoryDataService` class, 
+Import the `HttpClientInMemoryWebApiModule` and the `InMemoryDataService` class, 
 which you will create in a moment.
 
 <code-example 
@@ -58,7 +58,7 @@ which you will create in a moment.
   title="src/app/app.module.ts (In-memory Web API imports)">
 </code-example>
 
-Add the `InMemoryWebApiModule` to the `@NgModule.imports` array&mdash;
+Add the `HttpClientInMemoryWebApiModule` to the `@NgModule.imports` array&mdash;
 _after importing the `HttpClient`_,
 &mdash;while configuring it with the `InMemoryDataService`.
 
