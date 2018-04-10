@@ -1,7 +1,17 @@
-<div class="custom-header">
-  <button mat-icon-button (click)="previousClicked('year')">&lt;&lt;</button>
-  <button mat-icon-button (click)="previousClicked('month')">&lt;</button>
-  <span class="custom-header-label">{{periodLabel}}</span>
-  <button mat-icon-button (click)="nextClicked('month')">&gt;</button>
-  <button mat-icon-button (click)="nextClicked('year')">&gt;&gt;</button>
+<div class="demo-calendar-header">
+  <button mat-icon-button class="demo-double-arrow" (click)="previousClicked('year')">
+    <mat-icon>keyboard_arrow_left</mat-icon>
+    <mat-icon>keyboard_arrow_left</mat-icon>
+  </button>
+  <button mat-icon-button (click)="previousClicked('month')">
+    <mat-icon>keyboard_arrow_left</mat-icon>
+  </button>
+  <span class="demo-calendar-header-label">{{periodLabel}}</span>
+  <button mat-icon-button (click)="nextClicked('month')">
+    <mat-icon>keyboard_arrow_right</mat-icon>
+  </button>
+  <button mat-icon-button class="demo-double-arrow" (click)="nextClicked('year')">
+    <mat-icon>keyboard_arrow_right</mat-icon>
+    <mat-icon>keyboard_arrow_right</mat-icon>
+  </button>
 </div>

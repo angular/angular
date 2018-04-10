@@ -6,11 +6,20 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ChangeDetectionStrategy, Component, Host} from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  Host,
+  Inject,
+  OnDestroy
+} from '@angular/core';
 import {FormControl} from '@angular/forms';
-import {DateAdapter, ThemePalette} from '@angular/material/core';
-import {MatCalendar, MatDatepickerInputEvent} from '@angular/material/datepicker';
-
+import {MatCalendar} from '@angular/material';
+import {DateAdapter, MAT_DATE_FORMATS, MatDateFormats, ThemePalette} from '@angular/material/core';
+import {MatDatepickerInputEvent} from '@angular/material/datepicker';
+import {Subject} from 'rxjs';
+import {takeUntil} from 'rxjs/operators';
 
 @Component({
   moduleId: module.id,
@@ -53,25 +62,38 @@ export class DatepickerDemo {
   styleUrls: ['custom-header.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class CustomHeader<D> {
+export class CustomHeader<D> implements OnDestroy {
+  private _destroyed = new Subject<void>();
+
   constructor(@Host() private _calendar: MatCalendar<D>,
-              private _dateAdapter: DateAdapter<D>) {}
+              private _dateAdapter: DateAdapter<D>,
+              @Inject(MAT_DATE_FORMATS) private _dateFormats: MatDateFormats,
+              cdr: ChangeDetectorRef) {
+    _calendar.stateChanges
+        .pipe(takeUntil(this._destroyed))
+        .subscribe(() => cdr.markForCheck());
+  }
+
+  ngOnDestroy() {
+    this._destroyed.next();
+    this._destroyed.complete();
+  }
 
   get periodLabel() {
-    const year = this._dateAdapter.getYearName(this._calendar.activeDate);
-    const month = (this._dateAdapter.getMonth(this._calendar.activeDate) + 1);
-    return `${month}/${year}`;
+    return this._dateAdapter
+        .format(this._calendar.activeDate, this._dateFormats.display.monthYearLabel)
+        .toLocaleUpperCase();
   }
 
   previousClicked(mode: 'month' | 'year') {
     this._calendar.activeDate = mode == 'month' ?
         this._dateAdapter.addCalendarMonths(this._calendar.activeDate, -1) :
-            this._dateAdapter.addCalendarYears(this._calendar.activeDate, -1);
+        this._dateAdapter.addCalendarYears(this._calendar.activeDate, -1);
   }
 
   nextClicked(mode: 'month' | 'year') {
     this._calendar.activeDate = mode == 'month' ?
         this._dateAdapter.addCalendarMonths(this._calendar.activeDate, 1) :
-            this._dateAdapter.addCalendarYears(this._calendar.activeDate, 1);
+        this._dateAdapter.addCalendarYears(this._calendar.activeDate, 1);
   }
 }

@@ -287,6 +287,20 @@ export class MyApp {}
 
 <!-- example(datepicker-formats) -->
 
+#### Customizing the calendar header
+
+The header section of the calendar (the part containing the view switcher and previous and next
+buttons) can be replaced with a custom component if desired. This is accomplished using the
+`calendarHeaderComponent` property of `<mat-datepicker>`. It takes a component class and constructs
+an instance of the component to use as the header.
+
+In order to interact with the calendar in your custom header component, you can inject the parent
+`MatCalendar` in the constructor. To make sure your header stays in sync with the calendar,
+subscribe to the `stateChanges` observable of the calendar and mark your header component for change
+detection.
+
+<!-- example(datepicker-custom-header) -->
+
 #### Localizing labels and messages
 
 The various text strings used by the datepicker are provided through `MatDatepickerIntl`.

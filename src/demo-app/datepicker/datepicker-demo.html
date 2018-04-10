@@ -149,9 +149,8 @@
 <p>
   <mat-form-field>
     <mat-label>Custom calendar header</mat-label>
-    <input matInput [matDatepicker]="customCalendarHeaderPicker"
-           [disabled]="inputDisabled">
-    <mat-datepicker-toggle matSuffix [for]="customCalendarHeaderPicker"></mat-datepicker-toggle>
-    <mat-datepicker #customCalendarHeaderPicker [touchUi]="touch" [disabled]="datepickerDisabled" [calendarHeaderComponent]="customHeader"></mat-datepicker>
+    <input matInput [matDatepicker]="customHeaderPicker">
+    <mat-datepicker-toggle matSuffix [for]="customHeaderPicker"></mat-datepicker-toggle>
+    <mat-datepicker #customHeaderPicker [calendarHeaderComponent]="customHeader"></mat-datepicker>
   </mat-form-field>
 </p>

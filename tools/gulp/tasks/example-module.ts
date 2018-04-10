@@ -226,7 +226,9 @@ task('build-examples-module', () => {
 
         for (const meta of secondaryComponents) {
           example.additionalComponents.push(meta.component);
-          example.additionalFiles.push(meta.templateUrl);
+          if (meta.templateUrl) {
+            example.additionalFiles.push(meta.templateUrl);
+          }
           example.selectorName.push(meta.component);
         }
       }
