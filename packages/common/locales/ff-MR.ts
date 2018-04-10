@@ -38,5 +38,5 @@ export default [
   ['h:mm a', 'h:mm:ss a', 'h:mm:ss a z', 'h:mm:ss a zzzz'], ['{1} {0}', u, u, u],
   [',', ' ', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
   ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'], 'UM', 'Ugiyya Muritani',
-  {'JPY': ['JP¥', '¥'], 'MRO': ['UM'], 'USD': ['US$', '$']}, plural
+  {'JPY': ['JP¥', '¥'], 'MRU': ['UM'], 'USD': ['US$', '$']}, plural
 ];
