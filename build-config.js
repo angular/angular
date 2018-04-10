@@ -4,10 +4,10 @@
  */
 const {join} = require('path');
 
-const package = require('./package.json');
+const packageJson = require('./package.json');
 
 /** Current version of the project*/
-const buildVersion = package.version;
+const buildVersion = packageJson.version;
 
 /**
  * Required Angular version for all Angular Material packages. This version will be used

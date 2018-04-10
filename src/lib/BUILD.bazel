@@ -2,7 +2,8 @@ package(default_visibility=["//visibility:public"])
 load("@build_bazel_rules_typescript//:defs.bzl", "ts_library")
 load("@angular//:index.bzl", "ng_package", "ng_module")
 load("//tools:sass_bundle.bzl", "sass_bundle")
-load("//:packages.bzl", "MATERIAL_PACKAGES", "MATERIAL_TARGETS", "ROLLUP_GLOBALS")
+load("//:packages.bzl", "MATERIAL_PACKAGES", "MATERIAL_TARGETS", "ROLLUP_GLOBALS",
+    "VERSION_PLACEHOLDER_REPLACEMENTS")
 
 
 # Export the root material tsconfig so that subpackages can reference it directly.
@@ -47,5 +48,7 @@ ng_package(
     "//src/lib/prebuilt-themes:purple-green",
   ],
   packages = ["//src/lib/schematics:npm_package"],
+  replacements = VERSION_PLACEHOLDER_REPLACEMENTS,
   deps = MATERIAL_TARGETS,
+  tags = ["publish"],
 )

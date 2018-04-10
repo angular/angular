@@ -61,6 +61,14 @@ MATERIAL_PACKAGES = [
 
 MATERIAL_TARGETS = ["//src/lib:material"] + ["//src/lib/%s" % p for p in MATERIAL_PACKAGES]
 
+# Each individual package uses a placeholder for the version of Angular to ensure they're
+# all in-sync. This map is passed to each ng_package rule to stamp out the appropriate
+# version for the placeholders.
+ANGULAR_PACKAGE_VERSION = ">=6.0.0-beta.0 <7.0.0"
+VERSION_PLACEHOLDER_REPLACEMENTS = {
+  "0.0.0-NG": ANGULAR_PACKAGE_VERSION,
+}
+
 # Base rollup globals for everything in the repo.
 ROLLUP_GLOBALS = {
   'tslib': 'tslib',
