@@ -50,7 +50,8 @@ export function getAnimationRendererFactory2(document: any): RendererFactory2 {
   const fakeNgZone: NgZone = new NoopNgZone();
   return new ɵAnimationRendererFactory(
       getRendererFactory2(document),
-      new ɵAnimationEngine(new MockAnimationDriver(), new ɵNoopAnimationStyleNormalizer()),
+      new ɵAnimationEngine(
+          document.body, new MockAnimationDriver(), new ɵNoopAnimationStyleNormalizer()),
       fakeNgZone);
 }
 
