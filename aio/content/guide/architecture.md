@@ -272,7 +272,7 @@ Each of these subjects is introduced in more detail in the following pages.
   * [메타데이터](guide/architecture-components#컴포넌트-메타데이터)
   * [데이터 바인딩](guide/architecture-components#데이터-바인딩)
   * [디렉티브](guide/architecture-components#directives)
-  * [파이프](guide/architecture-components#pipes)
+  * [파이프](guide/architecture-components#파이프)
 * [서비스와 의존성 주입](guide/architecture-services)
 
 <div class="l-sub-section">

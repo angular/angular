@@ -254,17 +254,35 @@ Data binding plays an important role in communication between a template and its
   <img src="generated/images/guide/architecture/parent-child-binding.png" alt="부모/자식 바인딩" class="left">
 </figure>
 
+<!--
 ### Pipes
+-->
+### 파이프
 
+<!--
  Angular pipes let you declare display-value transformations in your template HTML. A class with the `@Pipe` decorator defines a function that transforms input values to output values for display in a view.
+-->
+Angular에서 제공하는 파이프를 사용하면 애플리케이션 데이터가 템플릿 HTML에 표시될 때 원하는 형식을 지정할 수 있습니다. 파이프는 원래값을 입력받고 새로운 형식의 값을 반환하는 함수에 `@Pipe` 데코레이터를 사용해서 Angular에 등록합니다.
 
+<!--
  Angular defines various pipes, such as the [date](https://angular.io/api/common/DatePipe) pipe and [currency](https://angular.io/api/common/CurrencyPipe) pipe; for a complete list, see the [Pipes API list](https://angular.io/api?type=pipe). You can also define new pipes.
+-->
+Angular는 여러가지 파이프를 기본으로 제공하는데, 이 중 [날짜](https://angular.io/api/common/DatePipe) 파이프와 [통화](https://angular.io/api/common/CurrencyPipe) 파이프는 자주 사용하게 될 것입니다. Angular에서 제공하는 파이프 목록을 확인하려면 [파이프 API 목록](https://angular.io/api?type=pipe) 문서를 참고하세요. 필요하다면 파이프를 새로 정의해서 사용할 수도 있습니다.
 
+<!--
  To specify a value transformation in an HTML template, use the [pipe operator (|)](https://angular.io/guide/template-syntax#pipe):
+-->
+HTML 템플릿에 파이프를 적용할 때는 [파이프 연산자 (|)](https://angular.io/guide/template-syntax#pipe)를 다음과 같이 사용합니다:
 
+<!--
  `{{interpolated_value | pipe_name}}`
+-->
+`{{변환되는 값 | 파이프 이름}}`
 
+<!--
  You can chain pipes, sending the output of one pipe function to be transformed by another pipe function. A pipe can also take arguments that control how it performs its transformation. For example, you can pass the desired format to the `date` pipe:
+-->
+한 파이프의 결과는 다른 파이프로 전달하면서 체이닝할 수도 있습니다. 그리고 파이프의 동작을 구체적으로 지정하기 위해 인자를 전달할 수도 있는데, 예를 들어 `date` 파이프는 다음과 같이 다양한 방식으로 활용할 수 있습니다.
 
  ```
   <!-- Default format: output 'Jun 15, 2015'-->
