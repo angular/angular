@@ -2,9 +2,10 @@
 .example-container {
   display: flex;
   flex-direction: column;
-  max-height: 500px;
   min-width: 300px;
   position: relative;
+  max-height: 500px;
+  overflow: auto;
 }
 
 .example-header {
@@ -13,11 +14,6 @@
   align-items: center;
   padding-left: 24px;
   font-size: 20px;
-}
-
-.example-table {
-  overflow: auto;
-  min-height: 300px;
 }
 
 .example-loading-shade {

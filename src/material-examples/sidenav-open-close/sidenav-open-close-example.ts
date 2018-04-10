@@ -7,7 +7,8 @@ import {Component} from '@angular/core';
   styleUrls: ['sidenav-open-close-example.css'],
 })
 export class SidenavOpenCloseExample {
-  events = [];
+  events: string[] = [];
+  opened: boolean;
 
   shouldRun = [/(^|\.)plnkr\.co$/, /(^|\.)stackblitz\.io$/].some(h => h.test(window.location.host));
 }

@@ -2,6 +2,8 @@
   display: flex;
   flex-direction: column;
   min-width: 300px;
+  max-height: 500px;
+  overflow: auto;
 }
 
 .example-header {
@@ -14,7 +16,3 @@
   width: 100%;
 }
 
-.mat-table {
-  overflow: auto;
-  max-height: 500px;
-}
