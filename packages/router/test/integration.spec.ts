@@ -12,7 +12,7 @@ import {ChangeDetectionStrategy, Component, Injectable, NgModule, NgModuleFactor
 import {ComponentFixture, TestBed, fakeAsync, inject, tick} from '@angular/core/testing';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
-import {ActivatedRoute, ActivatedRouteSnapshot, ActivationEnd, ActivationStart, CanActivate, CanDeactivate, ChildActivationEnd, ChildActivationStart, DetachedRouteHandle, Event, GuardsCheckEnd, GuardsCheckStart, NavigationCancel, NavigationEnd, NavigationError, NavigationStart, PRIMARY_OUTLET, ParamMap, Params, PreloadAllModules, PreloadingStrategy, Resolve, ResolveEnd, ResolveStart, RouteConfigLoadEnd, RouteConfigLoadStart, RouteReuseStrategy, Router, RouterEvent, RouterModule, RouterPreloader, RouterStateSnapshot, RoutesRecognized, RunGuardsAndResolvers, UrlHandlingStrategy, UrlSegmentGroup, UrlTree} from '@angular/router';
+import {ActivatedRoute, ActivatedRouteSnapshot, ActivationEnd, ActivationStart, CanActivate, CanDeactivate, ChildActivationEnd, ChildActivationStart, DetachedRouteHandle, Event, GuardsCheckEnd, GuardsCheckStart, NavigationCancel, NavigationEnd, NavigationError, NavigationStart, PRIMARY_OUTLET, ParamMap, Params, PreloadAllModules, PreloadingStrategy, Resolve, ResolveEnd, ResolveStart, RouteConfigLoadEnd, RouteConfigLoadStart, RouteReuseStrategy, Router, RouterEvent, RouterModule, RouterPreloader, RouterStateSnapshot, RoutesRecognized, RunGuardsAndResolvers, UrlHandlingStrategy, UrlSegmentGroup, UrlSerializer, UrlTree} from '@angular/router';
 import {Observable, Observer, of } from 'rxjs';
 import {map} from 'rxjs/operators';
 
@@ -1004,6 +1004,30 @@ describe('Integration', () => {
        expect(e).toEqual('resolvedValue');
 
        expectEvents(recordedEvents, [[NavigationStart, '/invalid'], [NavigationError, '/invalid']]);
+     })));
+
+  it('should recover from malformed uri errors',
+     fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
+       router.resetConfig([{path: 'simple', component: SimpleCmp}]);
+       const fixture = createRoot(router, RootCmp);
+       router.navigateByUrl('/invalid/url%with%percent');
+       advance(fixture);
+       expect(location.path()).toEqual('/');
+     })));
+
+  it('should support custom malformed uri error handler',
+     fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
+       const customMalformedUriErrorHandler =
+           (e: URIError, urlSerializer: UrlSerializer, url: string):
+               UrlTree => { return urlSerializer.parse('/?error=The-URL-you-went-to-is-invalid'); };
+       router.malformedUriErrorHandler = customMalformedUriErrorHandler;
+
+       router.resetConfig([{path: 'simple', component: SimpleCmp}]);
+
+       const fixture = createRoot(router, RootCmp);
+       router.navigateByUrl('/invalid/url%with%percent');
+       advance(fixture);
+       expect(location.path()).toEqual('/?error=The-URL-you-went-to-is-invalid');
      })));
 
   it('should not swallow errors', fakeAsync(inject([Router], (router: Router) => {
@@ -3932,6 +3956,22 @@ describe('Testing router options', () => {
 
     it('should configure the router', fakeAsync(inject([Router], (router: Router) => {
          expect(router.paramsInheritanceStrategy).toEqual('always');
+       })));
+  });
+
+  describe('malformedUriErrorHandler', () => {
+
+    function malformedUriErrorHandler(e: URIError, urlSerializer: UrlSerializer, url: string) {
+      return urlSerializer.parse('/error');
+    }
+
+    beforeEach(() => {
+      TestBed.configureTestingModule(
+          {imports: [RouterTestingModule.withRoutes([], {malformedUriErrorHandler})]});
+    });
+
+    it('should configure the router', fakeAsync(inject([Router], (router: Router) => {
+         expect(router.malformedUriErrorHandler).toBe(malformedUriErrorHandler);
        })));
   });
 });
