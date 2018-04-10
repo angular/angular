@@ -42,12 +42,12 @@ export default [
   ['dd/MM/yy', 'dd/MM/y', 'd \'de\' MMMM \'de\' y', 'EEEE, d \'de\' MMMM \'de\' y'],
   ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'], ['{1}, {0}', u, '{1} \'às\' {0}', u],
   [',', ' ', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'], 'STN', 'STN', {
+  ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'], 'Db', 'São Tomé & Príncipe Dobra (2018)', {
     'AUD': ['AU$', '$'],
     'JPY': ['JP¥', '¥'],
     'PTE': ['​'],
     'RON': [u, 'L'],
-    'STD': ['Db'],
+    'STN': ['Db'],
     'THB': ['฿'],
     'TWD': ['NT$'],
     'USD': ['US$', '$']
