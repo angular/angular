@@ -126,21 +126,6 @@ class ConfigBuilder {
 }
 ```
 
-#### RxJS
-When dealing with RxJS operators, import the pipeable operator (e.g.
-`import {map} from 'rxjs/operators/map'`), as opposed to using the "patch" imports which pollute the
-user's global Observable object (e.g. `import 'rxjs/add/operator/map'`):
-
-```ts
-// NO
-import 'rxjs/add/operator/map';
-someObservable.map(...).subscribe(...);
-
-// YES
-import {map} from 'rxjs/operators/map';
-someObservable.pipe(map(...)).subscribe(...);
-```
-
 #### Access modifiers
 * Omit the `public` keyword as it is the default behavior.
 * Use `private` when appropriate and possible, prefixing the name with an underscore.
