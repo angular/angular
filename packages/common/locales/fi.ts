@@ -142,7 +142,7 @@ export default [
     'SHP': [],
     'SRD': [],
     'SSP': [],
-    'STD': [],
+    'STN': [u, 'STD'],
     'SYP': [],
     'THB': [],
     'TOP': [],

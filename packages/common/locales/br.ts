@@ -41,20 +41,10 @@ export default [
       'Here', 'Du', 'Kerzu'
     ]
   ],
-  [
-    ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12'],
-    [
-      'Gen.', 'Cʼhwe.', 'Meur.', 'Ebr.', 'Mae', 'Mezh.', 'Goue.', 'Eost', 'Gwen.', 'Here', 'Du',
-      'Ker.'
-    ],
-    [
-      'Genver', 'Cʼhwevrer', 'Meurzh', 'Ebrel', 'Mae', 'Mezheven', 'Gouere', 'Eost', 'Gwengolo',
-      'Here', 'Du', 'Kerzu'
-    ]
-  ],
-  [['a-raok J.K.', 'goude J.K.'], u, ['a-raok Jezuz-Krist', 'goude Jezuz-Krist']], 1, [6, 0],
-  ['y-MM-dd', 'y MMM d', 'y MMMM d', 'y MMMM d, EEEE'],
-  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'], ['{1} {0}', u, '{1} \'da\' {0}', u],
+  u, [['a-raok J.K.', 'goude J.K.'], u, ['a-raok Jezuz-Krist', 'goude Jezuz-Krist']], 1, [6, 0],
+  ['dd/MM/y', 'd MMM y', 'd MMMM y', 'EEEE d MMMM y'],
+  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'],
+  ['{1} {0}', '{1}, {0}', '{1} \'da\' {0}', u],
   [',', ' ', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
   ['#,##0.###', '#,##0 %', '#,##0.00 ¤', '#E0'], '€', 'euro', {
     'AUD': ['$A', '$'],

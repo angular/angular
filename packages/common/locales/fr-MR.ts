@@ -66,7 +66,7 @@ export default [
     'JPY': [u, '¥'],
     'KMF': [u, 'FC'],
     'LBP': ['£LB', '£L'],
-    'MRO': ['UM'],
+    'MRU': ['UM'],
     'MTP': ['£MT'],
     'MXN': ['$MX', '$'],
     'NAD': ['$NA', '$'],

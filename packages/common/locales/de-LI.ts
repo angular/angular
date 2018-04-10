@@ -18,7 +18,7 @@ function plural(n: number): number {
 }
 
 export default [
-  'de-LI', [['vm.', 'nm.'], ['AM', 'PM'], u], [['vm.', 'nm.'], ['vorm.', 'nachm.'], u],
+  'de-LI', [['vm.', 'nm.'], ['vorm.', 'nachm.'], u], u,
   [
     ['S', 'M', 'D', 'M', 'D', 'F', 'S'], ['So.', 'Mo.', 'Di.', 'Mi.', 'Do.', 'Fr.', 'Sa.'],
     ['Sonntag', 'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag'],
