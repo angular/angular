@@ -17,11 +17,8 @@ export class BlockScrollStrategy implements ScrollStrategy {
   private _previousHTMLStyles = { top: '', left: '' };
   private _previousScrollPosition: { top: number, left: number };
   private _isEnabled = false;
-  private _document: Document;
 
-  constructor(private _viewportRuler: ViewportRuler, document: any) {
-    this._document = document;
-  }
+  constructor(private _viewportRuler: ViewportRuler, private _document: Document) {}
 
   /** Attaches this scroll strategy to an overlay. */
   attach() { }

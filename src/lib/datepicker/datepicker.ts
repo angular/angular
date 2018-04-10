@@ -313,7 +313,7 @@ export class MatDatepicker<D> implements OnDestroy, CanColor {
               @Inject(MAT_DATEPICKER_SCROLL_STRATEGY) private _scrollStrategy,
               @Optional() private _dateAdapter: DateAdapter<D>,
               @Optional() private _dir: Directionality,
-              @Optional() @Inject(DOCUMENT) private _document: any) {
+              @Optional() @Inject(DOCUMENT) private _document: Document) {
     if (!this._dateAdapter) {
       throw createMissingDateImplError('DateAdapter');
     }
@@ -371,7 +371,7 @@ export class MatDatepicker<D> implements OnDestroy, CanColor {
       throw Error('Attempted to open an MatDatepicker with no associated input.');
     }
     if (this._document) {
-      this._focusedElementBeforeOpen = this._document.activeElement;
+      this._focusedElementBeforeOpen = this._document.activeElement as HTMLElement;
     }
 
     this.touchUi ? this._openAsDialog() : this._openAsPopup();

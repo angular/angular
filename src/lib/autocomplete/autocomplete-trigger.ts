@@ -145,7 +145,7 @@ export class MatAutocompleteTrigger implements ControlValueAccessor, OnDestroy {
               @Inject(MAT_AUTOCOMPLETE_SCROLL_STRATEGY) private _scrollStrategy,
               @Optional() private _dir: Directionality,
               @Optional() @Host() private _formField: MatFormField,
-              @Optional() @Inject(DOCUMENT) private _document: any,
+              @Optional() @Inject(DOCUMENT) private _document: Document,
               // @deletion-target 7.0.0 Make `_viewportRuler` required.
               private _viewportRuler?: ViewportRuler) {}
 

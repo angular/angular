@@ -29,12 +29,9 @@ export class OverlayKeyboardDispatcher implements OnDestroy {
   /** Currently attached overlays in the order they were attached. */
   _attachedOverlays: OverlayRef[] = [];
 
-  private _document: Document;
   private _isAttached: boolean;
 
-  constructor(@Inject(DOCUMENT) document: any) {
-    this._document = document;
-  }
+  constructor(@Inject(DOCUMENT) private _document: Document) {}
 
   ngOnDestroy() {
     this._detach();
@@ -97,7 +94,7 @@ export class OverlayKeyboardDispatcher implements OnDestroy {
 
 /** @docs-private @deprecated @deletion-target 7.0.0 */
 export function OVERLAY_KEYBOARD_DISPATCHER_PROVIDER_FACTORY(
-    dispatcher: OverlayKeyboardDispatcher, _document: any) {
+    dispatcher: OverlayKeyboardDispatcher, _document: Document) {
   return dispatcher || new OverlayKeyboardDispatcher(_document);
 }
 
@@ -111,7 +108,7 @@ export const OVERLAY_KEYBOARD_DISPATCHER_PROVIDER = {
 
     // Coerce to `InjectionToken` so that the `deps` match the "shape"
     // of the type expected by Angular
-    DOCUMENT as InjectionToken<any>
+    DOCUMENT as InjectionToken<Document>
   ],
   useFactory: OVERLAY_KEYBOARD_DISPATCHER_PROVIDER_FACTORY
 };

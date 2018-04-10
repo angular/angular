@@ -144,7 +144,7 @@ export class MatProgressSpinner extends _MatProgressSpinnerMixinBase implements 
 
   constructor(public _elementRef: ElementRef,
               platform: Platform,
-              @Optional() @Inject(DOCUMENT) private _document: any) {
+              @Optional() @Inject(DOCUMENT) private _document: Document) {
 
     super(_elementRef);
     this._fallbackAnimation = platform.EDGE || platform.TRIDENT;
@@ -244,7 +244,7 @@ export class MatProgressSpinner extends _MatProgressSpinnerMixinBase implements 
 })
 export class MatSpinner extends MatProgressSpinner {
   constructor(elementRef: ElementRef, platform: Platform,
-              @Optional() @Inject(DOCUMENT) document: any) {
+              @Optional() @Inject(DOCUMENT) document: Document) {
     super(elementRef, platform, document);
     this.mode = 'indeterminate';
   }
