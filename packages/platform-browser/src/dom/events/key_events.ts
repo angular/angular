@@ -13,7 +13,16 @@ import {DOCUMENT} from '../dom_tokens';
 
 import {EventManagerPlugin} from './event_manager';
 
+/**
+ * Defines supported modifiers for key events.
+ * @experimental
+ */
 const MODIFIER_KEYS = ['alt', 'control', 'meta', 'shift'];
+
+/**
+ * Retrieves modifiers from key-event objects.
+ * @experimental
+ */
 const MODIFIER_KEY_GETTERS: {[key: string]: (event: KeyboardEvent) => boolean} = {
   'alt': (event: KeyboardEvent) => event.altKey,
   'control': (event: KeyboardEvent) => event.ctrlKey,
@@ -23,13 +32,31 @@ const MODIFIER_KEY_GETTERS: {[key: string]: (event: KeyboardEvent) => boolean} =
 
 /**
  * @experimental
+ * @description An injectable service that provides support for handling of key events in Angular.
  */
 @Injectable()
 export class KeyEventsPlugin extends EventManagerPlugin {
+  /**
+   * Initializes an instance of the key-event management service.
+   * @param doc The document in which key events will be detected.
+   */
   constructor(@Inject(DOCUMENT) doc: any) { super(doc); }
 
+  /**
+   * Reports whether a named key event is supported.
+   * @param eventName The event name to query.
+   * @return True if the named key event is supported.
+   */
   supports(eventName: string): boolean { return KeyEventsPlugin.parseEventName(eventName) != null; }
 
+  /**
+   * Registers a handler for a specific element and key event.
+   * @param element The HTML element to receive event notifications.
+   * @param eventName The name of the key event to listen for.
+   * @param handler A function to call when the notification occurs. Receives the
+   * event object as an argument.
+   * @returns The key event that was registered.
+   */
   addEventListener(element: HTMLElement, eventName: string, handler: Function): Function {
     const parsedEvent = KeyEventsPlugin.parseEventName(eventName) !;
 
@@ -41,6 +68,11 @@ export class KeyEventsPlugin extends EventManagerPlugin {
     });
   }
 
+  /**
+   * Parses an event-name string to find key combinations.
+   * @param eventName The event name.
+   * @returns A dictionary that contains the key combination.
+   */
   static parseEventName(eventName: string): {[key: string]: string}|null {
     const parts: string[] = eventName.toLowerCase().split('.');
 
@@ -72,6 +104,10 @@ export class KeyEventsPlugin extends EventManagerPlugin {
     return result;
   }
 
+  /**
+   * Constructs an event name string from events that combine multiple key actions.
+   * @param event The keyboard-event object.
+   */
   static getEventFullKey(event: KeyboardEvent): string {
     let fullKey = '';
     let key = getDOM().getEventKey(event);
@@ -93,6 +129,12 @@ export class KeyEventsPlugin extends EventManagerPlugin {
     return fullKey;
   }
 
+  /**
+   * Passes a processed key-event to a handler.
+   * @param fullKey The processed key event.
+   * @param handler The event handler function.
+   * @param zone The compilation zone in which the event occurred.
+   */
   static eventCallback(fullKey: any, handler: Function, zone: NgZone): Function {
     return (event: any /** TODO #9100 */) => {
       if (KeyEventsPlugin.getEventFullKey(event) === fullKey) {
