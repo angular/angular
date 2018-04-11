@@ -284,52 +284,105 @@ HTML 템플릿에 파이프를 적용할 때는 [파이프 연산자 (|)](https:
 -->
 한 파이프의 결과는 다른 파이프로 전달하면서 체이닝할 수도 있습니다. 그리고 파이프의 동작을 구체적으로 지정하기 위해 인자를 전달할 수도 있는데, 예를 들어 `date` 파이프는 다음과 같이 다양한 방식으로 활용할 수 있습니다.
 
- ```
-  <!-- Default format: output 'Jun 15, 2015'-->
-  <p>Today is {{today | date}}</p>
+<!--
+```
+<!- Default format: output 'Jun 15, 2015'->
+<p>Today is {{today | date}}</p>
 
- <!-- fullDate format: output 'Monday, June 15, 2015'-->
- <p>The date is {{today | date:'fullDate'}}</p>
+<!- fullDate format: output 'Monday, June 15, 2015'->
+<p>The date is {{today | date:'fullDate'}}</p>
 
-  <!-- shortTime format: output '9:43 AM'-->
-  <p>The time is {{today | date:'shortTime'}}</p>
+<!- shortTime format: output '9:43 AM'->
+<p>The time is {{today | date:'shortTime'}}</p>
+```
+-->
+```
+<!-- 기본 형식: 'Jun 15, 2015'-->
+<p>Today is {{today | date}}</p>
+
+<!-- fullDate 형식: 'Monday, June 15, 2015'-->
+<p>The date is {{today | date:'fullDate'}}</p>
+
+<!-- shortTime 형식: '9:43 AM'-->
+<p>The time is {{today | date:'shortTime'}}</p>
 ```
 
 <hr/>
 
+<!--
 ### Directives
+-->
+### 디렉티브
 
+<!--
 <img src="generated/images/guide/architecture/directive.png" alt="Directives" class="left">
+-->
+<img src="generated/images/guide/architecture/directive.png" alt="디렉티브" class="left">
 
+<!--
 Angular templates are *dynamic*. When Angular renders them, it transforms the DOM according to the instructions given by *directives*. A directive is a class with a `@Directive` decorator.
+-->
+Angular의 템플릿은 *동적*입니다. 템플릿이 렌더링 될 때 *디렉티브*가 있으면 DOM의 모양을 디렉티브의 로직에 따라 변형시키며, 디렉티브는 클래스에 `@Directive` 데코레이터를 사용해서 정의합니다.
 
+<!--
 A component is technically a directive - but components are so distinctive and central to Angular applications that Angular defines the `@Component` decorator, which extends the `@Directive` decorator with template-oriented features.
+-->
+컴포넌트도 문법적으로는 디렉티브의 한 종류입니다. 하지만 컴포넌트는 Angular 애플리케이션의 구성요소로써 중요한 역할을 하기 때문에, `@Directive` 데코레이터에 템플릿 관련 기능을 추가한 `@Component` 데코레이터를 대신 사용합니다.
 
+<!--
 There are two kinds of directives besides components:  _structural_ and _attribute_ directives. Just as for components, the metadata for a directive associates the class with a `selector` that you use to insert it into HTML. In templates, directives typically appear within an element tag as attributes, either by name or as the target of an assignment or a binding.
+-->
+디렉티브는 _구조_ 디렉티브와 _어트리뷰트_ 디렉티브로 구분됩니다. 그리고 컴포넌트와 비슷하게, 디렉티브 메타데이터에 지정하는 `selector`를 HTML 문서에서 찾아 이 부분에 디렉티브가 생성됩니다. 디렉티브는 템플릿에서 일반적으로 엘리먼트 태그 안에 어트리뷰트처럼 사용되거나, 바인딩 문법의 일부로 사용됩니다.
 
+<!--
 #### Structural directives
+-->
+#### 구조 디렉티브
 
+<!--
 Structural directives alter layout by adding, removing, and replacing elements in DOM. The example template uses two built-in structural directives to add application logic to how the view is rendered:
+-->
+구조 디렉티브는 DOM 엘리먼트를 추가하거나 제거, 치환하는 용도로 사용합니다. Angular에서 제공하는 구조 디렉티브를 템플릿에 사용하는 예제 코드를 확인해 보세요:
 
 <code-example path="architecture/src/app/hero-list.component.1.html" linenums="false" title="src/app/hero-list.component.html (structural)" region="structural"></code-example>
 
+<!--
   * [`*ngFor`](guide/displaying-data#ngFor) is an iterative; it tells Angular to stamp out one `<li>` per hero in the `heroes` list.
   * [`*ngIf`](guide/displaying-data#ngIf) is a conditional; it includes the `HeroDetail` component only if a selected hero exists.
+-->
+* [`*ngFor`](guide/displaying-data#ngFor)는 배열을 순회합니다. 위 예제 코드에서는 `heroes` 배열에 있는 히어로마다 `<li>` 엘리먼트를 생성합니다.
+* [`*ngIf`](guide/displaying-data#ngIf)는 조건을 판단합니다. `HeroDetail` 컴포넌트는 히어로가 선택되었을 때만 표시됩니다.
 
+<!--
 #### Attribute directives
+-->
+#### 어트리뷰트 디렉티브
 
+<!--
 Attribute directives alter the appearance or behavior of an existing element.
 In templates they look like regular HTML attributes, hence the name.
+-->
+어트리뷰트 디렉티브는 이미 존재하는 엘리먼트의 모양이나 동작을 변형합니다.
+이때 템플릿에서 보통 HTML 어트리뷰트처럼 보이기 때문에 자연스럽게 어트리뷰트 디렉티브라는 이름으로 사용합니다.
 
+<!--
 The `ngModel` directive, which implements two-way data binding, is an example of an attribute directive. `ngModel` modifies the behavior of an existing element (typically an `<input>`) by setting its display value property and responding to change events.
+-->
+`ngModel` 디렉티브는 양방향 바인딩에 사용되며, 어트리뷰트 디렉티브의 한 종류입니다. `ngModel` 디렉티브는 일반적으로 `<input>`과 같은 입력 필드의 동작을 변형시켜 컴포넌트 프로퍼티의 값을 화면에 표시하거나 값이 변경되는 이벤트에 반응합니다.
 
 <code-example path="architecture/src/app/hero-detail.component.html" linenums="false" title="src/app/hero-detail.component.html (ngModel)" region="ngModel"></code-example>
 
+<!--
 Angular has more pre-defined directives that either alter the layout structure
 (for example, [ngSwitch](guide/template-syntax#ngSwitch))
 or modify aspects of DOM elements and components
 (for example, [ngStyle](guide/template-syntax#ngStyle) and [ngClass](guide/template-syntax#ngClass)).
+-->
+이 외에도 Angular가 제공하는 기본 디렉티브 중에는 조건에 따라 레이아웃을 선택해서 표시하는 [ngSwitch](guide/template-syntax#ngSwitch)나, 컴포넌트에 스타일이나 지정하는 [ngStyle](guide/template-syntax#ngStyle), 컴포넌트에 CSS 스타일을 지정하는 [ngClass](guide/template-syntax#ngClass)도 있습니다.
 
+<!--
 You can also write your own directives. Components such as `HeroListComponent` are one kind of custom directive. You can also create custom structural and attribute directives.
+-->
+원하는 디렉티브가 없다면 디렉티브를 새로 정의할 수도 있으며, `HeroListComponent`와 같은 모든 컴포넌트도 커스텀 디렉티브라고 할 수 있습니다.
 
 <!-- PENDING: link to where to learn more about other kinds! -->
