@@ -1,3 +1,51 @@
+<a name="6.0.0-rc.2"></a>
+# [6.0.0-rc.2](https://github.com/angular/material2/compare/6.0.0-rc.0...6.0.0-rc.2) (2018-04-11)
+
+
+### Features
+
+* **coercion:** add utility for coercing CSS values ([#10654](https://github.com/angular/material2/issues/10654)) ([e30824c](https://github.com/angular/material2/commit/e30824c))
+* **icon:** allow SVG icons to be registered from strings ([#10757](https://github.com/angular/material2/issues/10757)) ([57efa13](https://github.com/angular/material2/commit/57efa13)), closes [#3132](https://github.com/angular/material2/issues/3132)
+* **overlay:** add the ability to set the default offsets on FlexibleConnectedPositionStrategy ([#10555](https://github.com/angular/material2/issues/10555)) ([bcff93e](https://github.com/angular/material2/commit/bcff93e))
+* **table:** support native table selectors ([#10594](https://github.com/angular/material2/issues/10594)) ([7774da2](https://github.com/angular/material2/commit/7774da2))
+
+
+### Bug Fixes
+
+* **autocomplete:** panel width not being updated on window resize ([#10629](https://github.com/angular/material2/issues/10629)) ([2dc4e70](https://github.com/angular/material2/commit/2dc4e70))
+* **badge:** incorrectly handling rtl ([#10630](https://github.com/angular/material2/issues/10630)) ([9c1f8a9](https://github.com/angular/material2/commit/9c1f8a9))
+* **button-toggle:** changed after checked error for repeated toggles with a preselected value ([#10612](https://github.com/angular/material2/issues/10612)) ([9a3d3e8](https://github.com/angular/material2/commit/9a3d3e8))
+* **button-toggle:** setting blank aria-label attribute by default ([#10605](https://github.com/angular/material2/issues/10605)) ([95dba59](https://github.com/angular/material2/commit/95dba59))
+* **datepicker:** avoid accidental form submissions through calendar buttons ([#10515](https://github.com/angular/material2/issues/10515)) ([edb57f9](https://github.com/angular/material2/commit/edb57f9)), closes [#10514](https://github.com/angular/material2/issues/10514)
+* **datepicker:** close datepicker popup on alt + up arrow ([#10662](https://github.com/angular/material2/issues/10662)) ([446ef66](https://github.com/angular/material2/commit/446ef66))
+* **datepicker:** export `MatCalendarHeader` ([#10633](https://github.com/angular/material2/issues/10633)) ([5df1af6](https://github.com/angular/material2/commit/5df1af6))
+* **datepicker:** nested animation not working ([#10355](https://github.com/angular/material2/issues/10355)) ([9fff92f](https://github.com/angular/material2/commit/9fff92f)), closes [#9134](https://github.com/angular/material2/issues/9134)
+* **datepicker:** overly broad selector in theme ([#10372](https://github.com/angular/material2/issues/10372)) ([5b7a6a3](https://github.com/angular/material2/commit/5b7a6a3))
+* **datepicker:** reformat valid values on blur ([#10777](https://github.com/angular/material2/issues/10777)) ([603dfa4](https://github.com/angular/material2/commit/603dfa4)), closes [#10645](https://github.com/angular/material2/issues/10645)
+* **focus-monitor:** hitting ngzone when using focusVia ([#10608](https://github.com/angular/material2/issues/10608)) ([b38b966](https://github.com/angular/material2/commit/b38b966))
+* **focus-trap:** wrong element being checked when logging deprecation warning ([#10578](https://github.com/angular/material2/issues/10578)) ([52493d1](https://github.com/angular/material2/commit/52493d1))
+* **form-field:** run change detection when prefix or suffix changes ([#10670](https://github.com/angular/material2/issues/10670)) ([515cc06](https://github.com/angular/material2/commit/515cc06))
+* **form-field:** server-side rendering error with outline appearance ([#10719](https://github.com/angular/material2/issues/10719)) ([39887da](https://github.com/angular/material2/commit/39887da))
+* **overlay:** centered flexible positioning not working in some browsers ([#10701](https://github.com/angular/material2/issues/10701)) ([dfc3b02](https://github.com/angular/material2/commit/dfc3b02))
+* **overlay:** incorrect bottom offset using upward-flowing flexible position with a viewport margin ([#10650](https://github.com/angular/material2/issues/10650)) ([306b704](https://github.com/angular/material2/commit/306b704))
+* **platform:** change isBrowser check to use Angular PLATFORM_ID ([#10659](https://github.com/angular/material2/issues/10659)) ([f023579](https://github.com/angular/material2/commit/f023579))
+* **progress-spinner:** set spinner width to match diameter. ([#10314](https://github.com/angular/material2/issues/10314)) ([c64cb7e](https://github.com/angular/material2/commit/c64cb7e))
+* **sidenav:** remove dependency on OverlayModule ([#10357](https://github.com/angular/material2/issues/10357)) ([27ef2dc](https://github.com/angular/material2/commit/27ef2dc))
+* **slide-toggle:** run timeout outside the NgZone ([#10655](https://github.com/angular/material2/issues/10655)) ([6f7765e](https://github.com/angular/material2/commit/6f7765e))
+* **stepper:** header icon collapsing with very long labels ([#10341](https://github.com/angular/material2/issues/10341)) ([5b5f2ee](https://github.com/angular/material2/commit/5b5f2ee)), closes [#10332](https://github.com/angular/material2/issues/10332)
+* **stepper:** horizontal stepper cutting off bottom part of content ([#10644](https://github.com/angular/material2/issues/10644)) ([4fbde10](https://github.com/angular/material2/commit/4fbde10)), closes [#10634](https://github.com/angular/material2/issues/10634)
+* **table:** MatTableDataSource incorrectly sorting zero ([#10561](https://github.com/angular/material2/issues/10561)) ([bcb5697](https://github.com/angular/material2/commit/bcb5697)), closes [#10556](https://github.com/angular/material2/issues/10556)
+* **table,sort,paginator:** incorrect spacing in rtl ([#10617](https://github.com/angular/material2/issues/10617)) ([46ca6ce](https://github.com/angular/material2/commit/46ca6ce))
+* **tabs:** hide mat-tab-nav-bar ink bar when no link is active ([#9701](https://github.com/angular/material2/issues/9701)) ([51206ee](https://github.com/angular/material2/commit/51206ee)), closes [#9671](https://github.com/angular/material2/issues/9671)
+* **tabs:** tab content portal not being cleaned up on destroy ([#10661](https://github.com/angular/material2/issues/10661)) ([2e3393a](https://github.com/angular/material2/commit/2e3393a))
+* **theme:** apply base theme classes at location the theme is included ([#10737](https://github.com/angular/material2/issues/10737)) ([2aba8ab](https://github.com/angular/material2/commit/2aba8ab))
+* **tooltip:** error when updating position while closed ([#10704](https://github.com/angular/material2/issues/10704)) ([6449ae1](https://github.com/angular/material2/commit/6449ae1))
+* **tree:** fix exported symbol cannot be named error. ([#10626](https://github.com/angular/material2/issues/10626)) ([6729b6d](https://github.com/angular/material2/commit/6729b6d))
+* **tree:** fix nested node cannot expand/collapse multiple times ([#10671](https://github.com/angular/material2/issues/10671)) ([5570beb](https://github.com/angular/material2/commit/5570beb))
+* **tree:** fix nested node is not working ([#10635](https://github.com/angular/material2/issues/10635)) ([7857b92](https://github.com/angular/material2/commit/7857b92))
+
+
+
 <a name="6.0.0-rc.1"></a>
 # [6.0.0-rc.1](https://github.com/angular/material2/compare/6.0.0-rc.0...6.0.0-rc.1) (2018-04-05)
 
