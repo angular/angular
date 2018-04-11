@@ -8,7 +8,7 @@
 
 import {defineComponent, defineDirective} from '../../src/render3/index';
 import {container, containerRefreshEnd, containerRefreshStart, elementEnd, elementStart, embeddedViewEnd, embeddedViewStart, listener, text} from '../../src/render3/instructions';
-
+import {RenderFlags} from '../../src/render3/interfaces/definition';
 import {getRendererFactory2} from './imported_renderer2';
 import {containerEl, renderComponent, renderToHtml} from './render_util';
 
@@ -26,8 +26,8 @@ describe('event listeners', () => {
       type: MyComp,
       selectors: [['comp']],
       /** <button (click)="onClick()"> Click me </button> */
-      template: function CompTemplate(ctx: any, cm: boolean) {
-        if (cm) {
+      template: function CompTemplate(rf: RenderFlags, ctx: any) {
+        if (rf & RenderFlags.Create) {
           elementStart(0, 'button');
           {
             listener('click', function() { return ctx.onClick(); });
@@ -64,8 +64,8 @@ describe('event listeners', () => {
       selectors: [['prevent-default-comp']],
       factory: () => new PreventDefaultComp(),
       /** <button (click)="onClick($event)">Click</button> */
-      template: (ctx: PreventDefaultComp, cm: boolean) => {
-        if (cm) {
+      template: (rf: RenderFlags, ctx: PreventDefaultComp) => {
+        if (rf & RenderFlags.Create) {
           elementStart(0, 'button');
           {
             listener('click', function($event: any) { return ctx.onClick($event); });
@@ -124,8 +124,8 @@ describe('event listeners', () => {
 
   it('should call function chain on event emit', () => {
     /** <button (click)="onClick(); onClick2(); "> Click me </button> */
-    function Template(ctx: any, cm: boolean) {
-      if (cm) {
+    function Template(rf: RenderFlags, ctx: any) {
+      if (rf & RenderFlags.Create) {
         elementStart(0, 'button');
         {
           listener('click', function() {
@@ -159,8 +159,8 @@ describe('event listeners', () => {
   it('should evaluate expression on event emit', () => {
 
     /** <button (click)="showing=!showing"> Click me </button> */
-    function Template(ctx: any, cm: boolean) {
-      if (cm) {
+    function Template(rf: RenderFlags, ctx: any) {
+      if (rf & RenderFlags.Create) {
         elementStart(0, 'button');
         {
           listener('click', function() { return ctx.showing = !ctx.showing; });
@@ -188,25 +188,27 @@ describe('event listeners', () => {
        *  <button (click)="onClick()"> Click me </button>
        * % }
      */
-    function Template(ctx: any, cm: boolean) {
-      if (cm) {
+    function Template(rf: RenderFlags, ctx: any) {
+      if (rf & RenderFlags.Create) {
         container(0);
       }
-      containerRefreshStart(0);
-      {
-        if (ctx.showing) {
-          if (embeddedViewStart(1)) {
-            elementStart(0, 'button');
-            {
-              listener('click', function() { return ctx.onClick(); });
-              text(1, 'Click me');
+      if (rf & RenderFlags.Update) {
+        containerRefreshStart(0);
+        {
+          if (ctx.showing) {
+            if (embeddedViewStart(1)) {
+              elementStart(0, 'button');
+              {
+                listener('click', function() { return ctx.onClick(); });
+                text(1, 'Click me');
+              }
+              elementEnd();
             }
-            elementEnd();
+            embeddedViewEnd();
           }
-          embeddedViewEnd();
         }
+        containerRefreshEnd();
       }
-      containerRefreshEnd();
     }
 
     let comp = new MyComp();
@@ -244,8 +246,8 @@ describe('event listeners', () => {
       });
     }
 
-    function Template(ctx: any, cm: boolean) {
-      if (cm) {
+    function Template(rf: RenderFlags, ctx: any) {
+      if (rf & RenderFlags.Create) {
         elementStart(0, 'button', ['hostListenerDir', '']);
         text(1, 'Click');
         elementEnd();
@@ -271,36 +273,42 @@ describe('event listeners', () => {
        *    % }
        * % }
      */
-    function Template(ctx: any, cm: boolean) {
-      if (cm) {
+    function Template(rf: RenderFlags, ctx: any) {
+      if (rf & RenderFlags.Create) {
         container(0);
       }
-      containerRefreshStart(0);
-      {
-        if (ctx.showing) {
-          if (embeddedViewStart(0)) {
-            text(0, 'Hello');
-            container(1);
-          }
-          containerRefreshStart(1);
-          {
-            if (ctx.button) {
-              if (embeddedViewStart(0)) {
-                elementStart(0, 'button');
-                {
-                  listener('click', function() { return ctx.onClick(); });
-                  text(1, 'Click');
-                }
-                elementEnd();
-              }
-              embeddedViewEnd();
+      if (rf & RenderFlags.Update) {
+        containerRefreshStart(0);
+        {
+          if (ctx.showing) {
+            let rf1 = embeddedViewStart(0);
+            if (rf1 & RenderFlags.Create) {
+              text(0, 'Hello');
+              container(1);
             }
+            if (rf1 & RenderFlags.Update) {
+              containerRefreshStart(1);
+              {
+                if (ctx.button) {
+                  let rf1 = embeddedViewStart(0);
+                  if (rf1 & RenderFlags.Create) {
+                    elementStart(0, 'button');
+                    {
+                      listener('click', function() { return ctx.onClick(); });
+                      text(1, 'Click');
+                    }
+                    elementEnd();
+                  }
+                  embeddedViewEnd();
+                }
+              }
+              containerRefreshEnd();
+            }
+            embeddedViewEnd();
           }
-          containerRefreshEnd();
-          embeddedViewEnd();
         }
+        containerRefreshEnd();
       }
-      containerRefreshEnd();
     }
 
     const comp = {showing: true, counter: 0, button: true, onClick: function() { this.counter++; }};
@@ -329,24 +337,27 @@ describe('event listeners', () => {
      * comp:
      * <button (click)="onClick()"> Click </button>
      */
-    function Template(ctx: any, cm: boolean) {
-      if (cm) {
+    function Template(rf: RenderFlags, ctx: any) {
+      if (rf & RenderFlags.Create) {
         container(0);
       }
-      containerRefreshStart(0);
-      {
-        if (ctx.showing) {
-          if (embeddedViewStart(0)) {
-            text(0, 'Hello');
-            elementStart(1, 'comp');
-            elementEnd();
-            elementStart(2, 'comp');
-            elementEnd();
+      if (rf & RenderFlags.Update) {
+        containerRefreshStart(0);
+        {
+          if (ctx.showing) {
+            let rf1 = embeddedViewStart(0);
+            if (rf1 & RenderFlags.Create) {
+              text(0, 'Hello');
+              elementStart(1, 'comp');
+              elementEnd();
+              elementStart(2, 'comp');
+              elementEnd();
+            }
+            embeddedViewEnd();
           }
-          embeddedViewEnd();
         }
+        containerRefreshEnd();
       }
-      containerRefreshEnd();
     }
 
     const ctx = {showing: true};
@@ -381,52 +392,59 @@ describe('event listeners', () => {
      *   % }
      * % }
      */
-    function Template(ctx: any, cm: boolean) {
-      if (cm) {
+    function Template(rf: RenderFlags, ctx: any) {
+      if (rf & RenderFlags.Create) {
         container(0);
       }
-      containerRefreshStart(0);
-      {
-        if (ctx.condition) {
-          if (embeddedViewStart(0)) {
-            text(0, 'Hello');
-            container(1);
-            container(2);
-          }
-          containerRefreshStart(1);
-          {
-            if (ctx.sub1) {
-              if (embeddedViewStart(0)) {
-                elementStart(0, 'button');
-                {
-                  listener('click', function() { return ctx.counter1++; });
-                  text(1, 'Click');
-                }
-                elementEnd();
-              }
-              embeddedViewEnd();
+      if (rf & RenderFlags.Update) {
+        containerRefreshStart(0);
+        {
+          if (ctx.condition) {
+            let rf1 = embeddedViewStart(0);
+            if (rf1 & RenderFlags.Create) {
+              text(0, 'Hello');
+              container(1);
+              container(2);
             }
-          }
-          containerRefreshEnd();
-          containerRefreshStart(2);
-          {
-            if (ctx.sub2) {
-              if (embeddedViewStart(0)) {
-                elementStart(0, 'button');
-                {
-                  listener('click', function() { return ctx.counter2++; });
-                  text(1, 'Click');
+            if (rf1 & RenderFlags.Update) {
+              containerRefreshStart(1);
+              {
+                if (ctx.sub1) {
+                  let rf1 = embeddedViewStart(0);
+                  if (rf1 & RenderFlags.Create) {
+                    elementStart(0, 'button');
+                    {
+                      listener('click', function() { return ctx.counter1++; });
+                      text(1, 'Click');
+                    }
+                    elementEnd();
+                  }
+                  embeddedViewEnd();
                 }
-                elementEnd();
               }
-              embeddedViewEnd();
+              containerRefreshEnd();
+              containerRefreshStart(2);
+              {
+                if (ctx.sub2) {
+                  let rf1 = embeddedViewStart(0);
+                  if (rf1 & RenderFlags.Create) {
+                    elementStart(0, 'button');
+                    {
+                      listener('click', function() { return ctx.counter2++; });
+                      text(1, 'Click');
+                    }
+                    elementEnd();
+                  }
+                  embeddedViewEnd();
+                }
+              }
+              containerRefreshEnd();
             }
+            embeddedViewEnd();
           }
-          containerRefreshEnd();
-          embeddedViewEnd();
         }
+        containerRefreshEnd();
       }
-      containerRefreshEnd();
     }
 
     const ctx = {condition: true, counter1: 0, counter2: 0, sub1: true, sub2: true};

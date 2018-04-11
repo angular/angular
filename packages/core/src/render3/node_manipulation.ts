@@ -11,9 +11,10 @@ import {callHooks} from './hooks';
 import {LContainer, unusedValueExportToPlacateAjd as unused1} from './interfaces/container';
 import {LContainerNode, LElementNode, LNode, LNodeType, LProjectionNode, LTextNode, LViewNode, unusedValueExportToPlacateAjd as unused2} from './interfaces/node';
 import {unusedValueExportToPlacateAjd as unused3} from './interfaces/projection';
-import {ProceduralRenderer3, RElement, RNode, RText, isProceduralRenderer, unusedValueExportToPlacateAjd as unused4} from './interfaces/renderer';
+import {ProceduralRenderer3, RElement, RNode, RText, Renderer3, isProceduralRenderer, unusedValueExportToPlacateAjd as unused4} from './interfaces/renderer';
 import {HookData, LView, LViewOrLContainer, TView, unusedValueExportToPlacateAjd as unused5} from './interfaces/view';
 import {assertNodeType} from './node_assert';
+import {stringify} from './util';
 
 const unusedValueToPlacateAjd = unused1 + unused2 + unused3 + unused4 + unused5;
 
@@ -143,6 +144,11 @@ function findFirstRNode(rootNode: LNode): RElement|RText|null {
   return null;
 }
 
+export function createTextNode(value: any, renderer: Renderer3): RText {
+  return isProceduralRenderer(renderer) ? renderer.createText(stringify(value)) :
+                                          renderer.createTextNode(stringify(value));
+}
+
 /**
  * Adds or removes all DOM elements associated with a view.
  *
@@ -174,6 +180,12 @@ export function addRemoveViewFromContainer(
       const renderer = container.view.renderer;
       if (node.type === LNodeType.Element) {
         if (insertMode) {
+          if (!node.native) {
+            // If the native element doesn't exist, this is a bound text node that hasn't yet been
+            // created because update mode has not run (occurs when a bound text node is a root
+            // node of a dynamically created view). See textBinding() in instructions for ctx.
+            (node as LTextNode).native = createTextNode('', renderer);
+          }
           isProceduralRenderer(renderer) ?
               renderer.insertBefore(parent, node.native !, beforeNode as RNode | null) :
               parent.insertBefore(node.native !, beforeNode as RNode | null, true);

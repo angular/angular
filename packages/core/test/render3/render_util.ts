@@ -10,7 +10,7 @@ import {stringifyElement} from '@angular/platform-browser/testing/src/browser_ut
 
 import {CreateComponentOptions} from '../../src/render3/component';
 import {extractDirectiveDef, extractPipeDef} from '../../src/render3/definition';
-import {ComponentDef, ComponentTemplate, ComponentType, DirectiveDef, DirectiveType, PublicFeature, defineComponent, defineDirective, renderComponent as _renderComponent, tick} from '../../src/render3/index';
+import {ComponentDef, ComponentTemplate, ComponentType, DirectiveDef, DirectiveType, PublicFeature, RenderFlags, defineComponent, defineDirective, renderComponent as _renderComponent, tick} from '../../src/render3/index';
 import {NG_HOST_SYMBOL, renderTemplate} from '../../src/render3/instructions';
 import {DirectiveDefList, DirectiveDefListOrFactory, DirectiveTypesOrFactory, PipeDef, PipeDefList, PipeDefListOrFactory, PipeTypesOrFactory} from '../../src/render3/interfaces/definition';
 import {LElementNode} from '../../src/render3/interfaces/node';
@@ -63,11 +63,13 @@ export class TemplateFixture extends BaseFixture {
     super();
     this._directiveDefs = toDefs(directives, extractDirectiveDef);
     this._pipeDefs = toDefs(pipes, extractPipeDef);
-    this.hostNode = renderTemplate(this.hostElement, (ctx: any, cm: boolean) => {
-      if (cm) {
+    this.hostNode = renderTemplate(this.hostElement, (rf: RenderFlags, ctx: any) => {
+      if (rf & RenderFlags.Create) {
         this.createBlock();
       }
-      this.updateBlock();
+      if (rf & RenderFlags.Update) {
+        this.updateBlock();
+      }
     }, null !, domRendererFactory3, null, this._directiveDefs, this._pipeDefs);
   }
 

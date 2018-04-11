@@ -12,7 +12,7 @@ import {renderComponent, toHtml} from '../render_util';
 
 /// See: `normative.md`
 describe('queries', () => {
-  type $boolean$ = boolean;
+  type $RenderFlags$ = $r3$.ɵRenderFlags;
   type $number$ = number;
   let someDir: SomeDirective;
 
@@ -50,18 +50,20 @@ describe('queries', () => {
         type: ViewQueryComponent,
         selectors: [['view-query-component']],
         factory: function ViewQueryComponent_Factory() { return new ViewQueryComponent(); },
-        template: function ViewQueryComponent_Template(ctx: $ViewQueryComponent$, cm: $boolean$) {
+        template: function ViewQueryComponent_Template(
+            rf: $RenderFlags$, ctx: $ViewQueryComponent$) {
           let $tmp$: any;
-          if (cm) {
+          if (rf & 1) {
             $r3$.ɵQ(0, SomeDirective, false);
             $r3$.ɵQ(1, SomeDirective, false);
             $r3$.ɵE(2, 'div', $e1_attrs$);
             $r3$.ɵe();
           }
-
-          $r3$.ɵqR($tmp$ = $r3$.ɵld<QueryList<any>>(0)) && (ctx.someDir = $tmp$.first);
-          $r3$.ɵqR($tmp$ = $r3$.ɵld<QueryList<any>>(1)) &&
-              (ctx.someDirList = $tmp$ as QueryList<any>);
+          if (rf & 2) {
+            $r3$.ɵqR($tmp$ = $r3$.ɵld<QueryList<any>>(0)) && (ctx.someDir = $tmp$.first);
+            $r3$.ɵqR($tmp$ = $r3$.ɵld<QueryList<any>>(1)) &&
+                (ctx.someDirList = $tmp$ as QueryList<any>);
+          }
         }
       });
       // /NORMATIVE
@@ -110,8 +112,8 @@ describe('queries', () => {
           $r3$.ɵqR($tmp$ = $r3$.ɵd<any[]>(dirIndex)[2]) && ($instance$.someDirList = $tmp$);
         },
         template: function ContentQueryComponent_Template(
-            ctx: $ContentQueryComponent$, cm: $boolean$) {
-          if (cm) {
+            rf: $number$, ctx: $ContentQueryComponent$) {
+          if (rf & 1) {
             $r3$.ɵpD(0);
             $r3$.ɵE(1, 'div');
             $r3$.ɵP(2, 0);
@@ -138,8 +140,8 @@ describe('queries', () => {
         type: MyApp,
         selectors: [['my-app']],
         factory: function MyApp_Factory() { return new MyApp(); },
-        template: function MyApp_Template(ctx: $MyApp$, cm: $boolean$) {
-          if (cm) {
+        template: function MyApp_Template(rf: $RenderFlags$, ctx: $MyApp$) {
+          if (rf & 1) {
             $r3$.ɵE(0, 'content-query-component');
             contentQueryComp = $r3$.ɵd<any[]>(0)[0];
             $r3$.ɵE(1, 'div', $e2_attrs$);

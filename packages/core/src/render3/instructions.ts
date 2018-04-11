@@ -17,9 +17,9 @@ import {CurrentMatchesList, LView, LViewFlags, LifecycleStage, RootContext, TDat
 
 import {LContainerNode, LElementNode, LNode, LNodeType, TNodeFlags, LProjectionNode, LTextNode, LViewNode, TNode, TContainerNode, InitialInputData, InitialInputs, PropertyAliases, PropertyAliasValue,} from './interfaces/node';
 import {assertNodeType} from './node_assert';
-import {appendChild, insertChild, insertView, appendProjectedNode, removeView, canInsertNativeNode} from './node_manipulation';
+import {appendChild, insertChild, insertView, appendProjectedNode, removeView, canInsertNativeNode, createTextNode} from './node_manipulation';
 import {isNodeMatchingSelectorList, matchingSelectorIndex} from './node_selector_matcher';
-import {ComponentDef, ComponentTemplate, ComponentType, DirectiveDef, DirectiveDefList, DirectiveDefListOrFactory, DirectiveType, PipeDef, PipeDefListOrFactory} from './interfaces/definition';
+import {ComponentDef, ComponentTemplate, ComponentType, DirectiveDef, DirectiveDefList, DirectiveDefListOrFactory, DirectiveType, PipeDef, PipeDefListOrFactory, RenderFlags} from './interfaces/definition';
 import {RElement, RText, Renderer3, RendererFactory3, ProceduralRenderer3, ObjectOrientedRenderer3, RendererStyleFlags3, isProceduralRenderer} from './interfaces/renderer';
 import {isDifferent, stringify} from './util';
 import {executeHooks, queueLifecycleHooks, queueInitHooks, executeInitHooks} from './hooks';
@@ -458,7 +458,7 @@ export function renderEmbeddedTemplate<T>(
   try {
     isParent = true;
     previousOrParentNode = null !;
-    let cm: boolean = false;
+    let rf: RenderFlags = RenderFlags.Update;
     if (viewNode == null) {
       // TODO: revisit setting currentView when re-writing view containers
       const directives = currentView && currentView.tView.directiveRegistry;
@@ -468,11 +468,11 @@ export function renderEmbeddedTemplate<T>(
       const lView = createLView(-1, renderer, tView, template, context, LViewFlags.CheckAlways);
 
       viewNode = createLNode(null, LNodeType.View, null, lView);
-      cm = true;
+      rf = RenderFlags.Create;
     }
     oldView = enterView(viewNode.data, viewNode);
 
-    template(context, cm);
+    template(rf, context);
     refreshDirectives();
     refreshDynamicChildren();
 
@@ -492,7 +492,8 @@ export function renderComponentOrTemplate<T>(
       rendererFactory.begin();
     }
     if (template) {
-      template(componentOrContext !, creationMode);
+      template(getRenderFlags(hostView), componentOrContext !);
+      refreshDynamicChildren();
       refreshDirectives();
     } else {
       executeInitAndContentHooks();
@@ -508,6 +509,20 @@ export function renderComponentOrTemplate<T>(
     }
     leaveView(oldView);
   }
+}
+
+/**
+ * This function returns the default configuration of rendering flags depending on when the
+ * template is in creation mode or update mode. By default, the update block is run with the
+ * creation block when the view is in creation mode. Otherwise, the update block is run
+ * alone.
+ *
+ * Dynamically created views do NOT use this configuration (update block and create block are
+ * always run separately).
+ */
+function getRenderFlags(view: LView): RenderFlags {
+  return view.flags & LViewFlags.CreationMode ? RenderFlags.Create | RenderFlags.Update :
+                                                RenderFlags.Update;
 }
 
 //////////////////////////
@@ -1146,10 +1161,7 @@ export function elementStyle<T>(
 export function text(index: number, value?: any): void {
   ngDevMode &&
       assertNull(currentView.bindingStartIndex, 'text nodes should be created before bindings');
-  const textNode = value != null ?
-      (isProceduralRenderer(renderer) ? renderer.createText(stringify(value)) :
-                                        renderer.createTextNode(stringify(value))) :
-      null;
+  const textNode = value != null ? createTextNode(value, renderer) : null;
   const node = createLNode(index, LNodeType.Element, textNode);
   // Text nodes are self closing.
   isParent = false;
@@ -1174,13 +1186,10 @@ export function textBinding<T>(index: number, value: T | NO_CHANGE): void {
                                           existingNode.native.textContent = stringify(value));
   } else {
     // Node was created but DOM node creation was delayed. Create and append now.
-    existingNode.native = isProceduralRenderer(renderer) ?
-        renderer.createText(stringify(value)) :
-        renderer.createTextNode(stringify(value));
+    existingNode.native = createTextNode(value, renderer);
     insertChild(existingNode, currentView);
   }
 }
-
 
 //////////////////////////
 //// Directive
@@ -1491,18 +1500,18 @@ function scanForView(
  * @param viewBlockId The ID of this view
  * @return boolean Whether or not this view is in creation mode
  */
-export function embeddedViewStart(viewBlockId: number): boolean {
+export function embeddedViewStart(viewBlockId: number): RenderFlags {
   const container =
       (isParent ? previousOrParentNode : previousOrParentNode.parent !) as LContainerNode;
   ngDevMode && assertNodeType(container, LNodeType.Container);
   const lContainer = container.data;
-  const existingViewNode = scanForView(container, lContainer.nextIndex, viewBlockId);
+  let viewNode: LViewNode|null = scanForView(container, lContainer.nextIndex, viewBlockId);
 
-  if (existingViewNode) {
-    previousOrParentNode = existingViewNode;
+  if (viewNode) {
+    previousOrParentNode = viewNode;
     ngDevMode && assertNodeType(previousOrParentNode, LNodeType.View);
     isParent = true;
-    enterView((existingViewNode as LViewNode).data, existingViewNode as LViewNode);
+    enterView(viewNode.data, viewNode);
   } else {
     // When we create a new LView, we always reset the state of the instructions.
     const newView = createLView(
@@ -1512,9 +1521,9 @@ export function embeddedViewStart(viewBlockId: number): boolean {
       newView.queries = lContainer.queries.enterView(lContainer.nextIndex);
     }
 
-    enterView(newView, createLNode(null, LNodeType.View, null, newView));
+    enterView(newView, viewNode = createLNode(null, LNodeType.View, null, newView));
   }
-  return !existingViewNode;
+  return getRenderFlags(viewNode.data);
 }
 
 /**
@@ -1919,7 +1928,7 @@ export function detectChangesInternal<T>(
   const template = def.template;
 
   try {
-    template(component, creationMode);
+    template(getRenderFlags(hostView), component);
     refreshDirectives();
     refreshDynamicChildren();
   } finally {
@@ -1967,13 +1976,7 @@ export const NO_CHANGE = {} as NO_CHANGE;
  *  (ie `bind()`, `interpolationX()`, `pureFunctionX()`)
  */
 function initBindings() {
-  // `bindingIndex` is initialized when the view is first entered when not in creation mode
-  ngDevMode &&
-      assertEqual(
-          creationMode, true, 'should only be called in creationMode for performance reasons');
-  if (currentView.bindingStartIndex == null) {
-    bindingIndex = currentView.bindingStartIndex = data.length;
-  }
+  bindingIndex = currentView.bindingStartIndex = data.length;
 }
 
 /**
@@ -1982,7 +1985,7 @@ function initBindings() {
  * @param value Value to diff
  */
 export function bind<T>(value: T | NO_CHANGE): T|NO_CHANGE {
-  if (creationMode) {
+  if (currentView.bindingStartIndex == null) {
     initBindings();
     return data[bindingIndex++] = value;
   }
@@ -2166,7 +2169,7 @@ export function consumeBinding(): any {
 export function bindingUpdated(value: any): boolean {
   ngDevMode && assertNotEqual(value, NO_CHANGE, 'Incoming value should never be NO_CHANGE.');
 
-  if (creationMode) {
+  if (currentView.bindingStartIndex == null) {
     initBindings();
   } else if (isDifferent(data[bindingIndex], value)) {
     throwErrorIfNoChangesMode(creationMode, checkNoChangesMode, data[bindingIndex], value);
