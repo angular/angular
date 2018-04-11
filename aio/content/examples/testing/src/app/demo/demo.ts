@@ -37,8 +37,8 @@ export class ValueService {
 // #docregion MasterService
 @Injectable()
 export class MasterService {
-  constructor(private masterService: ValueService) { }
-  getValue() { return this.masterService.getValue(); }
+  constructor(private valueService: ValueService) { }
+  getValue() { return this.valueService.getValue(); }
 }
 // #enddocregion MasterService
 
