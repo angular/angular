@@ -206,7 +206,7 @@ export function enterView(newView: LView, host: LElementNode | LViewNode | null)
   cleanup = newView && newView.cleanup;
   renderer = newView && newView.renderer;
 
-  if (newView && newView.bindingIndex == null) {
+  if (newView && newView.bindingIndex < 0) {
     newView.bindingIndex = newView.bindingStartIndex || 0;
   }
 
@@ -233,7 +233,7 @@ export function leaveView(newView: LView): void {
   // Views should be clean and in update mode after being checked, so these bits are cleared
   currentView.flags &= ~(LViewFlags.CreationMode | LViewFlags.Dirty);
   currentView.lifecycleStage = LifecycleStage.INIT;
-  currentView.bindingIndex = null !;
+  currentView.bindingIndex = -1;
   enterView(newView, null);
 }
 
@@ -295,7 +295,7 @@ export function createLView<T>(
     tail: null,
     next: null,
     bindingStartIndex: null,
-    bindingIndex: null !,
+    bindingIndex: -1,
     template: template,
     context: context,
     dynamicViewCount: 0,
@@ -1976,6 +1976,9 @@ export const NO_CHANGE = {} as NO_CHANGE;
  *  (ie `bind()`, `interpolationX()`, `pureFunctionX()`)
  */
 function initBindings() {
+  ngDevMode &&
+      assertNull(
+          currentView.bindingStartIndex, 'Binding start index should only be set once, when null');
   currentView.bindingIndex = currentView.bindingStartIndex = data.length;
 }
 
