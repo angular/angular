@@ -178,7 +178,7 @@ export class CdkTable<T> implements CollectionViewer, OnInit, AfterContentChecke
       this._switchDataSource(dataSource);
     }
   }
-  private _dataSource: DataSource<T> | Observable<T[]> | T[] | T[];
+  private _dataSource: DataSource<T> | Observable<T[]> | T[];
 
   // TODO(andrewseguin): Remove max value as the end index
   //   and instead calculate the view on init and scroll.

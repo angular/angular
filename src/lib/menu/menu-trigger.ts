@@ -52,10 +52,10 @@ export const MAT_MENU_SCROLL_STRATEGY =
       }
     });
 
-// TODO(andrewseguin): Remove the kebab versions in favor of camelCased attribute selectors
-
 /** Default top padding of the menu panel. */
 export const MENU_PANEL_TOP_PADDING = 8;
+
+// TODO(andrewseguin): Remove the kebab versions in favor of camelCased attribute selectors
 
 /**
  * This directive is intended to be used in conjunction with an mat-menu tag.  It is
