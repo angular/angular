@@ -17,6 +17,10 @@ if $CI; then
   # payload sizes on CI.
   yarn add --silent -D firebase-tools@3.12.0
   source ${basedir}/scripts/ci/payload-size.sh
+  # $KEY is set only on non-PR builds. See /.circleci/README.md
+  if [[ -v KEY ]]; then
+    export ANGULAR_PAYLOAD_FIREBASE_TOKEN=$(openssl aes-256-cbc -d -in ${basedir}/.circleci/firebase_token -k "$KEY")
+  fi
 
   # NB: we don't run build-packages-dist.sh because we expect that it was done
   # by an earlier job in the CircleCI workflow.
@@ -52,15 +56,15 @@ for testDir in $(ls | grep -v node_modules) ; do
       if [[ $testDir == cli-hello-world ]] || [[ $testDir == hello_world__render3__cli ]]; then
         yarn build
       fi
-      #if $CI; then
-      #  trackPayloadSize "$testDir" "dist/*.js" true false "${basedir}/integration/_payload-limits.json"
-      #fi
+      if $CI; then
+        trackPayloadSize "$testDir" "dist/*.js" true false "${basedir}/integration/_payload-limits.json"
+      fi
     fi
     # remove the temporary node modules directory to keep the source folder clean.
     rm -rf node_modules
   )
 done
 
-#if $CI; then
-#  trackPayloadSize "umd" "../dist/packages-dist/*/bundles/*.umd.min.js" false false
-#fi
+if $CI; then
+  trackPayloadSize "umd" "../dist/packages-dist/*/bundles/*.umd.min.js" false false
+fi
