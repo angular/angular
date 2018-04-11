@@ -207,7 +207,7 @@ export function enterView(newView: LView, host: LElementNode | LViewNode | null)
   renderer = newView && newView.renderer;
 
   if (newView && newView.bindingIndex < 0) {
-    newView.bindingIndex = newView.bindingStartIndex || 0;
+    newView.bindingIndex = newView.bindingStartIndex || -1;
   }
 
   if (host != null) {
@@ -1979,6 +1979,9 @@ function initBindings() {
   ngDevMode &&
       assertNull(
           currentView.bindingStartIndex, 'Binding start index should only be set once, when null');
+  ngDevMode && assertEqual(
+                   currentView.bindingIndex, -1,
+                   'Binding index should not yet be set ' + currentView.bindingIndex);
   currentView.bindingIndex = currentView.bindingStartIndex = data.length;
 }
 
