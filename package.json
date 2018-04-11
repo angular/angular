@@ -29,7 +29,7 @@
   "dependencies": {
     "core-js": "^2.4.1",
     "reflect-metadata": "^0.1.3",
-    "rxjs": "6.0.0-rc.0",
+    "rxjs": "^6.0.0-terrific-rc.3",
     "tslib": "^1.7.1",
     "zone.js": "^0.8.26"
   },
