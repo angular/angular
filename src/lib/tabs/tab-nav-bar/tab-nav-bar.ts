@@ -76,8 +76,8 @@ export class MatTabNav extends _MatTabNavMixinBase implements AfterContentInit, 
   /** Subject that emits when the component has been destroyed. */
   private readonly _onDestroy = new Subject<void>();
 
-  _activeLinkChanged: boolean;
-  _activeLinkElement: ElementRef;
+  private _activeLinkChanged: boolean;
+  private _activeLinkElement: ElementRef | null;
 
   @ViewChild(MatInkBar) _inkBar: MatInkBar;
 
@@ -118,21 +118,22 @@ export class MatTabNav extends _MatTabNavMixinBase implements AfterContentInit, 
     super(elementRef);
   }
 
-  /** Notifies the component that the active link has been changed. */
+  /**
+   * Notifies the component that the active link has been changed.
+   * @deletion-target 7.0.0 `element` parameter to be removed.
+   */
   updateActiveLink(element: ElementRef) {
-    this._activeLinkChanged = this._activeLinkElement != element;
-    this._activeLinkElement = element;
-
-    if (this._activeLinkChanged) {
-      this._changeDetectorRef.markForCheck();
-    }
+    // Note: keeping the `element` for backwards-compat, but isn't being used for anything.
+    this._activeLinkChanged = !!element;
+    this._changeDetectorRef.markForCheck();
   }
 
   ngAfterContentInit(): void {
     this._ngZone.runOutsideAngular(() => {
       const dirChange = this._dir ? this._dir.change : observableOf(null);
 
-      return merge(dirChange, this._viewportRuler.change(10)).pipe(takeUntil(this._onDestroy))
+      return merge(dirChange, this._viewportRuler.change(10))
+          .pipe(takeUntil(this._onDestroy))
           .subscribe(() => this._alignInkBar());
     });
 
@@ -142,6 +143,9 @@ export class MatTabNav extends _MatTabNavMixinBase implements AfterContentInit, 
   /** Checks if the active link has been changed and, if so, will update the ink bar. */
   ngAfterContentChecked(): void {
     if (this._activeLinkChanged) {
+      const activeTab = this._tabLinks.find(tab => tab.active);
+
+      this._activeLinkElement = activeTab ? activeTab._elementRef : null;
       this._alignInkBar();
       this._activeLinkChanged = false;
     }
@@ -155,7 +159,10 @@ export class MatTabNav extends _MatTabNavMixinBase implements AfterContentInit, 
   /** Aligns the ink bar to the active link. */
   _alignInkBar(): void {
     if (this._activeLinkElement) {
+      this._inkBar.show();
       this._inkBar.alignToElement(this._activeLinkElement.nativeElement);
+    } else {
+      this._inkBar.hide();
     }
   }
 
@@ -202,8 +209,8 @@ export class MatTabLink extends _MatTabLinkMixinBase
   @Input()
   get active(): boolean { return this._isActive; }
   set active(value: boolean) {
-    this._isActive = value;
-    if (value) {
+    if (value !== this._isActive) {
+      this._isActive = value;
       this._tabNavBar.updateActiveLink(this._elementRef);
     }
   }
@@ -223,7 +230,7 @@ export class MatTabLink extends _MatTabLinkMixinBase
   }
 
   constructor(private _tabNavBar: MatTabNav,
-              private _elementRef: ElementRef,
+              public _elementRef: ElementRef,
               ngZone: NgZone,
               platform: Platform,
               @Optional() @Inject(MAT_RIPPLE_GLOBAL_OPTIONS) globalOptions: RippleGlobalOptions,

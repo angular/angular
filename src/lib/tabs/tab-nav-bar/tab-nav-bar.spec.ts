@@ -1,5 +1,5 @@
 import {async, ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
-import {Component, ViewChild} from '@angular/core';
+import {Component, ViewChild, ViewChildren, QueryList} from '@angular/core';
 import {By} from '@angular/platform-browser';
 import {dispatchFakeEvent, dispatchMouseEvent, createMouseEvent} from '@angular/cdk/testing';
 import {Direction, Directionality} from '@angular/cdk/bidi';
@@ -213,6 +213,17 @@ describe('MatTabNavBar', () => {
 
       expect(inkBar.alignToElement).toHaveBeenCalled();
     }));
+
+    it('should hide the ink bar when all the links are inactive', () => {
+      const inkBar = fixture.componentInstance.tabNavBar._inkBar;
+
+      spyOn(inkBar, 'hide');
+
+      fixture.componentInstance.links.forEach(link => link.active = false);
+      fixture.detectChanges();
+
+      expect(inkBar.hide).toHaveBeenCalled();
+    });
   });
 
   it('should clean up the ripple event handlers on destroy', () => {
@@ -271,6 +282,7 @@ describe('MatTabNavBar', () => {
 })
 class SimpleTabNavBarTestApp {
   @ViewChild(MatTabNav) tabNavBar: MatTabNav;
+  @ViewChildren(MatTabLink) links: QueryList<MatTabLink>;
 
   label = '';
   disabled: boolean = false;
