@@ -150,11 +150,6 @@ let data: any[];
 let directives: any[]|null;
 
 /**
- * Points to the next binding index to read or write to.
- */
-let bindingIndex: number;
-
-/**
  * When a view is destroyed, listeners need to be released and outputs need to be
  * unsubscribed. This cleanup array stores both listener data (in chunks of 4)
  * and output data (in chunks of 2) for a particular view. Combining the arrays
@@ -204,13 +199,16 @@ export function enterView(newView: LView, host: LElementNode | LViewNode | null)
   const oldView: LView = currentView;
   data = newView && newView.data;
   directives = newView && newView.directives;
-  bindingIndex = newView && newView.bindingStartIndex || 0;
   tData = newView && newView.tView.data;
   creationMode = newView && (newView.flags & LViewFlags.CreationMode) === LViewFlags.CreationMode;
   firstTemplatePass = newView && newView.tView.firstTemplatePass;
 
   cleanup = newView && newView.cleanup;
   renderer = newView && newView.renderer;
+
+  if (newView && newView.bindingIndex == null) {
+    newView.bindingIndex = newView.bindingStartIndex || 0;
+  }
 
   if (host != null) {
     previousOrParentNode = host;
@@ -235,6 +233,7 @@ export function leaveView(newView: LView): void {
   // Views should be clean and in update mode after being checked, so these bits are cleared
   currentView.flags &= ~(LViewFlags.CreationMode | LViewFlags.Dirty);
   currentView.lifecycleStage = LifecycleStage.INIT;
+  currentView.bindingIndex = null !;
   enterView(newView, null);
 }
 
@@ -296,6 +295,7 @@ export function createLView<T>(
     tail: null,
     next: null,
     bindingStartIndex: null,
+    bindingIndex: null !,
     template: template,
     context: context,
     dynamicViewCount: 0,
@@ -1976,7 +1976,7 @@ export const NO_CHANGE = {} as NO_CHANGE;
  *  (ie `bind()`, `interpolationX()`, `pureFunctionX()`)
  */
 function initBindings() {
-  bindingIndex = currentView.bindingStartIndex = data.length;
+  currentView.bindingIndex = currentView.bindingStartIndex = data.length;
 }
 
 /**
@@ -1987,15 +1987,17 @@ function initBindings() {
 export function bind<T>(value: T | NO_CHANGE): T|NO_CHANGE {
   if (currentView.bindingStartIndex == null) {
     initBindings();
-    return data[bindingIndex++] = value;
+    return data[currentView.bindingIndex++] = value;
   }
 
-  const changed: boolean = value !== NO_CHANGE && isDifferent(data[bindingIndex], value);
+  const changed: boolean =
+      value !== NO_CHANGE && isDifferent(data[currentView.bindingIndex], value);
   if (changed) {
-    throwErrorIfNoChangesMode(creationMode, checkNoChangesMode, data[bindingIndex], value);
-    data[bindingIndex] = value;
+    throwErrorIfNoChangesMode(
+        creationMode, checkNoChangesMode, data[currentView.bindingIndex], value);
+    data[currentView.bindingIndex] = value;
   }
-  bindingIndex++;
+  currentView.bindingIndex++;
   return changed ? value : NO_CHANGE;
 }
 
@@ -2159,10 +2161,11 @@ export function loadDirective<T>(index: number): T {
 
 /** Gets the current binding value and increments the binding index. */
 export function consumeBinding(): any {
-  ngDevMode && assertDataInRange(bindingIndex);
+  ngDevMode && assertDataInRange(currentView.bindingIndex);
   ngDevMode &&
-      assertNotEqual(data[bindingIndex], NO_CHANGE, 'Stored value should never be NO_CHANGE.');
-  return data[bindingIndex++];
+      assertNotEqual(
+          data[currentView.bindingIndex], NO_CHANGE, 'Stored value should never be NO_CHANGE.');
+  return data[currentView.bindingIndex++];
 }
 
 /** Updates binding if changed, then returns whether it was updated. */
@@ -2171,14 +2174,15 @@ export function bindingUpdated(value: any): boolean {
 
   if (currentView.bindingStartIndex == null) {
     initBindings();
-  } else if (isDifferent(data[bindingIndex], value)) {
-    throwErrorIfNoChangesMode(creationMode, checkNoChangesMode, data[bindingIndex], value);
+  } else if (isDifferent(data[currentView.bindingIndex], value)) {
+    throwErrorIfNoChangesMode(
+        creationMode, checkNoChangesMode, data[currentView.bindingIndex], value);
   } else {
-    bindingIndex++;
+    currentView.bindingIndex++;
     return false;
   }
 
-  data[bindingIndex++] = value;
+  data[currentView.bindingIndex++] = value;
   return true;
 }
 
