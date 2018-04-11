@@ -28,6 +28,7 @@ $mat-step-header-icon-size: 16px !default;
   align-items: center;
   justify-content: center;
   display: flex;
+  flex-shrink: 0;
 }
 
 .mat-step-icon .mat-icon {
