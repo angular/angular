@@ -150,11 +150,6 @@ let data: any[];
 let directives: any[]|null;
 
 /**
- * Points to the next binding index to read or write to.
- */
-let bindingIndex: number;
-
-/**
  * When a view is destroyed, listeners need to be released and outputs need to be
  * unsubscribed. This cleanup array stores both listener data (in chunks of 4)
  * and output data (in chunks of 2) for a particular view. Combining the arrays
@@ -204,13 +199,16 @@ export function enterView(newView: LView, host: LElementNode | LViewNode | null)
   const oldView: LView = currentView;
   data = newView && newView.data;
   directives = newView && newView.directives;
-  bindingIndex = newView && newView.bindingStartIndex || 0;
   tData = newView && newView.tView.data;
   creationMode = newView && (newView.flags & LViewFlags.CreationMode) === LViewFlags.CreationMode;
   firstTemplatePass = newView && newView.tView.firstTemplatePass;
 
   cleanup = newView && newView.cleanup;
   renderer = newView && newView.renderer;
+
+  if (newView && newView.bindingIndex < 0) {
+    newView.bindingIndex = newView.bindingStartIndex;
+  }
 
   if (host != null) {
     previousOrParentNode = host;
@@ -235,6 +233,7 @@ export function leaveView(newView: LView): void {
   // Views should be clean and in update mode after being checked, so these bits are cleared
   currentView.flags &= ~(LViewFlags.CreationMode | LViewFlags.Dirty);
   currentView.lifecycleStage = LifecycleStage.INIT;
+  currentView.bindingIndex = -1;
   enterView(newView, null);
 }
 
@@ -295,7 +294,8 @@ export function createLView<T>(
     child: null,
     tail: null,
     next: null,
-    bindingStartIndex: null,
+    bindingStartIndex: -1,
+    bindingIndex: -1,
     template: template,
     context: context,
     dynamicViewCount: 0,
@@ -544,7 +544,8 @@ function getRenderFlags(view: LView): RenderFlags {
 export function elementStart(
     index: number, name: string, attrs?: string[] | null, localRefs?: string[] | null): RElement {
   ngDevMode &&
-      assertNull(currentView.bindingStartIndex, 'elements should be created before any bindings');
+      assertEqual(
+          currentView.bindingStartIndex, -1, 'elements should be created before any bindings');
 
   const native: RElement = renderer.createElement(name);
   const node: LElementNode = createLNode(index, LNodeType.Element, native !, null);
@@ -1160,7 +1161,8 @@ export function elementStyle<T>(
  */
 export function text(index: number, value?: any): void {
   ngDevMode &&
-      assertNull(currentView.bindingStartIndex, 'text nodes should be created before bindings');
+      assertEqual(
+          currentView.bindingStartIndex, -1, 'text nodes should be created before bindings');
   const textNode = value != null ? createTextNode(value, renderer) : null;
   const node = createLNode(index, LNodeType.Element, textNode);
   // Text nodes are self closing.
@@ -1259,7 +1261,8 @@ function addComponentLogic<T>(index: number, instance: T, def: ComponentDef<T>):
 export function baseDirectiveCreate<T>(
     index: number, directive: T, directiveDef: DirectiveDef<T>| ComponentDef<T>): T {
   ngDevMode &&
-      assertNull(currentView.bindingStartIndex, 'directives should be created before any bindings');
+      assertEqual(
+          currentView.bindingStartIndex, -1, 'directives should be created before any bindings');
   ngDevMode && assertPreviousIsParent();
 
   Object.defineProperty(
@@ -1381,9 +1384,9 @@ export function createLContainer(
 export function container(
     index: number, template?: ComponentTemplate<any>, tagName?: string, attrs?: string[],
     localRefs?: string[] | null): void {
-  ngDevMode &&
-      assertNull(
-          currentView.bindingStartIndex, 'container nodes should be created before any bindings');
+  ngDevMode && assertEqual(
+                   currentView.bindingStartIndex, -1,
+                   'container nodes should be created before any bindings');
 
   const currentParent = isParent ? previousOrParentNode : previousOrParentNode.parent !;
   const lContainer = createLContainer(currentParent, currentView, template);
@@ -1976,7 +1979,13 @@ export const NO_CHANGE = {} as NO_CHANGE;
  *  (ie `bind()`, `interpolationX()`, `pureFunctionX()`)
  */
 function initBindings() {
-  bindingIndex = currentView.bindingStartIndex = data.length;
+  ngDevMode && assertEqual(
+                   currentView.bindingStartIndex, -1,
+                   'Binding start index should only be set once, when null');
+  ngDevMode && assertEqual(
+                   currentView.bindingIndex, -1,
+                   'Binding index should not yet be set ' + currentView.bindingIndex);
+  currentView.bindingIndex = currentView.bindingStartIndex = data.length;
 }
 
 /**
@@ -1985,17 +1994,19 @@ function initBindings() {
  * @param value Value to diff
  */
 export function bind<T>(value: T | NO_CHANGE): T|NO_CHANGE {
-  if (currentView.bindingStartIndex == null) {
+  if (currentView.bindingStartIndex < 0) {
     initBindings();
-    return data[bindingIndex++] = value;
+    return data[currentView.bindingIndex++] = value;
   }
 
-  const changed: boolean = value !== NO_CHANGE && isDifferent(data[bindingIndex], value);
+  const changed: boolean =
+      value !== NO_CHANGE && isDifferent(data[currentView.bindingIndex], value);
   if (changed) {
-    throwErrorIfNoChangesMode(creationMode, checkNoChangesMode, data[bindingIndex], value);
-    data[bindingIndex] = value;
+    throwErrorIfNoChangesMode(
+        creationMode, checkNoChangesMode, data[currentView.bindingIndex], value);
+    data[currentView.bindingIndex] = value;
   }
-  bindingIndex++;
+  currentView.bindingIndex++;
   return changed ? value : NO_CHANGE;
 }
 
@@ -2159,26 +2170,28 @@ export function loadDirective<T>(index: number): T {
 
 /** Gets the current binding value and increments the binding index. */
 export function consumeBinding(): any {
-  ngDevMode && assertDataInRange(bindingIndex);
+  ngDevMode && assertDataInRange(currentView.bindingIndex);
   ngDevMode &&
-      assertNotEqual(data[bindingIndex], NO_CHANGE, 'Stored value should never be NO_CHANGE.');
-  return data[bindingIndex++];
+      assertNotEqual(
+          data[currentView.bindingIndex], NO_CHANGE, 'Stored value should never be NO_CHANGE.');
+  return data[currentView.bindingIndex++];
 }
 
 /** Updates binding if changed, then returns whether it was updated. */
 export function bindingUpdated(value: any): boolean {
   ngDevMode && assertNotEqual(value, NO_CHANGE, 'Incoming value should never be NO_CHANGE.');
 
-  if (currentView.bindingStartIndex == null) {
+  if (currentView.bindingStartIndex < 0) {
     initBindings();
-  } else if (isDifferent(data[bindingIndex], value)) {
-    throwErrorIfNoChangesMode(creationMode, checkNoChangesMode, data[bindingIndex], value);
+  } else if (isDifferent(data[currentView.bindingIndex], value)) {
+    throwErrorIfNoChangesMode(
+        creationMode, checkNoChangesMode, data[currentView.bindingIndex], value);
   } else {
-    bindingIndex++;
+    currentView.bindingIndex++;
     return false;
   }
 
-  data[bindingIndex++] = value;
+  data[currentView.bindingIndex++] = value;
   return true;
 }
 

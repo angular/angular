@@ -566,11 +566,15 @@ class _NodeEmitterVisitor implements StatementVisitor, ExpressionVisitor {
                   /* type */ undefined, this._visitStatements(expr.statements)));
   }
 
-  visitBinaryOperatorExpr(expr: BinaryOperatorExpr): RecordedNode<ts.ParenthesizedExpression> {
+  visitBinaryOperatorExpr(expr: BinaryOperatorExpr):
+      RecordedNode<ts.BinaryExpression|ts.ParenthesizedExpression> {
     let binaryOperator: ts.BinaryOperator;
     switch (expr.operator) {
       case BinaryOperator.And:
         binaryOperator = ts.SyntaxKind.AmpersandAmpersandToken;
+        break;
+      case BinaryOperator.BitwiseAnd:
+        binaryOperator = ts.SyntaxKind.AmpersandToken;
         break;
       case BinaryOperator.Bigger:
         binaryOperator = ts.SyntaxKind.GreaterThanToken;
@@ -617,10 +621,9 @@ class _NodeEmitterVisitor implements StatementVisitor, ExpressionVisitor {
       default:
         throw new Error(`Unknown operator: ${expr.operator}`);
     }
-    return this.record(
-        expr, ts.createParen(ts.createBinary(
-                  expr.lhs.visitExpression(this, null), binaryOperator,
-                  expr.rhs.visitExpression(this, null))));
+    const binary = ts.createBinary(
+        expr.lhs.visitExpression(this, null), binaryOperator, expr.rhs.visitExpression(this, null));
+    return this.record(expr, expr.parens ? ts.createParen(binary) : binary);
   }
 
   visitReadPropExpr(expr: ReadPropExpr): RecordedNode<ts.PropertyAccessExpression> {
