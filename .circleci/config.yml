@@ -14,6 +14,7 @@
 # `com_github_bazelbuild_buildtools` in the `/WORKSPACE` file.
 var_1: &docker_image angular/ngcontainer:0.3.0
 var_2: &cache_key v2-angular-{{ .Branch }}-{{ checksum "yarn.lock" }}-0.3.0
+var_3: &cache_key_aio v2-angular-{{ .Branch }}-{{ checksum "yarn.lock" }}-0.2.0-aio
 
 # Define common ENV vars
 var_3: &define_env_vars
@@ -62,6 +63,14 @@ jobs:
 
       - run: yarn install --frozen-lockfile --non-interactive
       - run: ./node_modules/.bin/gulp lint
+      - restore_cache:
+          key: *cache_key_aio
+      - run:
+          name: Install aio
+          command: cd aio && yarn install --frozen-lockfile --non-interactive
+      - run:
+          name: Lint aio
+          command: cd aio && yarn lint
 
   test:
     <<: *job_defaults
@@ -181,6 +190,42 @@ jobs:
           command: 'openssl aes-256-cbc -d -in .circleci/github_token -k "${KEY}" -out ~/.git_credentials'
       - run: ./scripts/ci/publish-build-artifacts.sh
 
+  aio_build:
+    <<: *job_defaults
+    steps:
+      - checkout:
+          <<: *post_checkout
+      - restore_cache:
+          key: *cache_key_aio
+      - run:
+          name: Install aio
+          command: cd aio && yarn install --frozen-lockfile --non-interactive
+      - run:
+          name: Build aio
+          command: cd aio && yarn build
+      - save_cache:
+          key: *cache_key_aio
+          paths:
+            - "aio/node_modules"
+            - "aio/dist"
+
+  aio_unit_test:
+    <<: *job_defaults
+    steps:
+      - checkout:
+          <<: *post_checkout
+      - restore_cache:
+          key: *cache_key
+      - restore_cache:
+          key: *cache_key_aio
+      # TODO: Move pwa score test to yarn test if Travis is stopped.
+      - run:
+          name: Test PWA score
+          command: cd aio && xvfb-run -a yarn test-pwa-score-localhost
+      - run:
+          name: Unit test
+          command: cd aio && xvfb-run -a yarn test --single-run
+
   aio_monitoring:
     <<: *job_defaults
     steps:
@@ -213,6 +258,12 @@ workflows:
             # since the publishing script expects the legacy outputs layout.
             - build-packages-dist
 
+  aio_workflow:
+    jobs:
+      - aio_build
+      - aio_unit_test:
+          requires:
+            - aio_build
   aio_monitoring:
     jobs:
       - aio_monitoring
