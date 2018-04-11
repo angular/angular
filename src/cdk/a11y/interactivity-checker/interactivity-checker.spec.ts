@@ -5,6 +5,9 @@ import {InteractivityChecker} from './interactivity-checker';
 describe('InteractivityChecker', () => {
   let testContainerElement: HTMLElement;
   let checker: InteractivityChecker;
+  // TODO: refactor this to be injected with the platformId
+  // Needs to be done carefully due to the runIf checks below executing
+  // before injection
   let platform: Platform = new Platform();
 
   beforeEach(() => {

@@ -1,5 +1,5 @@
 import {Platform} from '@angular/cdk/platform';
-import {Component, ViewChild} from '@angular/core';
+import {Component, PLATFORM_ID, ViewChild} from '@angular/core';
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 import {A11yModule, FocusTrap, CdkTrapFocus} from '../index';
 
@@ -47,8 +47,9 @@ describe('FocusTrap', () => {
       // focus event handler directly.
       const result = focusTrapInstance.focusLastTabbableElement();
 
+      const platformId = TestBed.get(PLATFORM_ID);
       // In iOS button elements are never tabbable, so the last element will be the input.
-      const lastElement = new Platform().IOS ? 'input' : 'button';
+      const lastElement = new Platform(platformId).IOS ? 'input' : 'button';
 
       expect(document.activeElement.nodeName.toLowerCase())
           .toBe(lastElement, `Expected ${lastElement} element to be focused`);

@@ -8,7 +8,7 @@ const SUPPORTS_INTL = typeof Intl != 'undefined';
 
 
 describe('NativeDateAdapter', () => {
-  const platform = new Platform();
+  let platform: Platform;
   let adapter: NativeDateAdapter;
   let assertValidDate: (d: Date | null, valid: boolean) => void;
 
@@ -18,8 +18,10 @@ describe('NativeDateAdapter', () => {
     }).compileComponents();
   }));
 
-  beforeEach(inject([DateAdapter], (dateAdapter: NativeDateAdapter) => {
+  beforeEach(inject([DateAdapter, Platform],
+    (dateAdapter: NativeDateAdapter, _platform: Platform) => {
     adapter = dateAdapter;
+    platform = _platform;
 
     assertValidDate = (d: Date | null, valid: boolean) => {
       expect(adapter.isDateInstance(d)).not.toBeNull(`Expected ${d} to be a date instance`);

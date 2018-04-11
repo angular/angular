@@ -7,7 +7,7 @@ import {Overlay, OverlayContainer, OverlayModule, OverlayRef, OverlayConfig} fro
 
 
 describe('BlockScrollStrategy', () => {
-  let platform = new Platform();
+  let platform: Platform;
   let viewport: ViewportRuler;
   let overlayRef: OverlayRef;
   let componentPortal: ComponentPortal<FocacciaMsg>;
@@ -22,7 +22,8 @@ describe('BlockScrollStrategy', () => {
     }).compileComponents();
   }));
 
-  beforeEach(inject([Overlay, ViewportRuler], (overlay: Overlay, viewportRuler: ViewportRuler) => {
+  beforeEach(inject([Overlay, ViewportRuler, Platform],
+    (overlay: Overlay, viewportRuler: ViewportRuler, _platform: Platform) => {
     let overlayConfig = new OverlayConfig({scrollStrategy: overlay.scrollStrategies.block()});
 
     overlayRef = overlay.create(overlayConfig);
@@ -34,6 +35,7 @@ describe('BlockScrollStrategy', () => {
     forceScrollElement.style.width = '100px';
     forceScrollElement.style.height = '3000px';
     forceScrollElement.style.background = 'rebeccapurple';
+    platform = _platform;
   }));
 
   afterEach(inject([OverlayContainer], (container: OverlayContainer) => {
