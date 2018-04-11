@@ -29,6 +29,7 @@ filegroup(
     "rxjs",
     "tsickle",
     "tslib",
+    "tslint",
     "tsutils",
     "typescript",
     "zone.js",

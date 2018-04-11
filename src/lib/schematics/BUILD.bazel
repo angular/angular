@@ -16,6 +16,6 @@ npm_package(
   name = "npm_package",
   srcs = [
     ":collection.json",
-  ] + glob(["**/files/**/*", "**/schema.json"]),
+  ] + glob(["**/files/**/*", "**/data/**/*", "**/schema.json"]),
   deps = [":schematics"],
 )
