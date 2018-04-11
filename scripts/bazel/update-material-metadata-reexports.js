@@ -33,4 +33,5 @@ const rootMetadataPath = path.join(materialPackageDir, 'material_public_index.me
 const rootMetadata = JSON.parse(fs.readFileSync(rootMetadataPath, 'utf-8'));
 
 rootMetadata.exports = secondaryEntryPointExports;
+rootMetadata.flatModuleIndexRedirect = true;
 fs.writeFileSync(rootMetadataPath, JSON.stringify(rootMetadata), 'utf-8');
