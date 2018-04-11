@@ -55,8 +55,8 @@ http_archive(
 
 http_archive(
     name = "io_bazel_rules_go",
-    url = "https://github.com/bazelbuild/rules_go/releases/download/0.7.1/rules_go-0.7.1.tar.gz",
-    sha256 = "341d5eacef704415386974bc82a1783a8b7ffbff2ab6ba02375e1ca20d9b031c",
+    url = "https://github.com/bazelbuild/rules_go/releases/download/0.10.0/rules_go-0.10.0.tar.gz",
+    sha256 = "53c8222c6eab05dd49c40184c361493705d4234e60c42c4cd13ab4898da4c6be",
 )
 
 load("@io_bazel_rules_go//go:def.bzl", "go_rules_dependencies", "go_register_toolchains")
@@ -91,4 +91,40 @@ http_archive(
     url = "https://github.com/google/brotli/archive/c6333e1e79fb62ea088443f192293f964409b04e.zip",
     strip_prefix = "brotli-c6333e1e79fb62ea088443f192293f964409b04e",
     sha256 = "3f781988dee7dd3bcce2bf238294663cfaaf3b6433505bdb762e24d0a284d1dc",
+)
+
+skylib_version = "0.3.1" 
+
+http_archive(
+    name = "bazel_skylib",
+    sha256 = "d7cffbed034d1203858ca19ff2e88d241781f45652a4c719ed48eedc74bc82a9",
+    strip_prefix = "bazel-skylib-{v}".format(v = skylib_version),
+    urls = [
+        "https://github.com/bazelbuild/bazel-skylib/archive/{v}.tar.gz".format(v = skylib_version),
+    ],
+)
+
+rules_webtesting_version = "7b652b40dc0c80b93026811858676b4c49184859"
+
+# The latest release rules_webtesting (0.1.2) uses the deprecated function set rather than depset so we
+# use a specific commit version instead so bazel can be run without using a flag.
+http_archive(
+    name = "io_bazel_rules_webtesting",
+    sha256 = "db09dfd1472d7689eaa4b96ec98fac7ab59e7b212f0d83b0fab62963b6cfa8de",
+    strip_prefix = "rules_webtesting-{v}".format(v = rules_webtesting_version),
+    urls = [
+        "https://github.com/bazelbuild/rules_webtesting/archive/{v}.tar.gz".format(v = rules_webtesting_version),
+    ],
+)
+
+load(
+    "@io_bazel_rules_webtesting//web:repositories.bzl",
+    "browser_repositories",
+    "web_test_repositories",
+)
+
+web_test_repositories()
+
+browser_repositories(
+    chromium = True,
 )
