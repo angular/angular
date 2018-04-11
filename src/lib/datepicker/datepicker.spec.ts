@@ -663,6 +663,38 @@ describe('MatDatepicker', () => {
         expect(inputEl.classList).toContain('ng-touched');
       });
 
+      it('should reformat the input value on blur', () => {
+        if (SUPPORTS_INTL) {
+          // Skip this test if the internationalization API is not supported in the current
+          // browser. Browsers like Safari 9 do not support the "Intl" API.
+          return;
+        }
+
+        const inputEl = fixture.debugElement.query(By.css('input')).nativeElement;
+
+        inputEl.value = '2001-01-01';
+        dispatchFakeEvent(inputEl, 'input');
+        fixture.detectChanges();
+
+        dispatchFakeEvent(inputEl, 'blur');
+        fixture.detectChanges();
+
+        expect(inputEl.value).toBe('1/1/2001');
+      });
+
+      it('should not reformat invalid dates on blur', () => {
+        const inputEl = fixture.debugElement.query(By.css('input')).nativeElement;
+
+        inputEl.value = 'very-valid-date';
+        dispatchFakeEvent(inputEl, 'input');
+        fixture.detectChanges();
+
+        dispatchFakeEvent(inputEl, 'blur');
+        fixture.detectChanges();
+
+        expect(inputEl.value).toBe('very-valid-date');
+      });
+
       it('should mark input touched on calendar selection', fakeAsync(() => {
         let inputEl = fixture.debugElement.query(By.css('input')).nativeElement;
 

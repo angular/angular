@@ -87,7 +87,7 @@ export class MatDatepickerInputEvent<D> {
     '[disabled]': 'disabled',
     '(input)': '_onInput($event.target.value)',
     '(change)': '_onChange()',
-    '(blur)': '_onTouched()',
+    '(blur)': '_onBlur()',
     '(keydown)': '_onKeydown($event)',
   },
   exportAs: 'matDatepickerInput',
@@ -123,10 +123,10 @@ export class MatDatepickerInput<D> implements AfterContentInit, ControlValueAcce
     value = this._dateAdapter.deserialize(value);
     this._lastValueValid = !value || this._dateAdapter.isValid(value);
     value = this._getValidDateOrNull(value);
-    let oldDate = this.value;
+    const oldDate = this.value;
     this._value = value;
-    this._elementRef.nativeElement.value =
-        value ? this._dateAdapter.format(value, this._dateFormats.display.dateInput) : '';
+    this._formatValue(value);
+
     if (!this._dateAdapter.sameDate(oldDate, value)) {
       this._valueChange.emit(value);
     }
@@ -341,6 +341,22 @@ export class MatDatepickerInput<D> implements AfterContentInit, ControlValueAcce
   /** Returns the palette used by the input's form field, if any. */
   _getThemePalette() {
     return this._formField ? this._formField.color : undefined;
+  }
+
+  /** Handles blur events on the input. */
+  _onBlur() {
+    // Reformat the input only if we have a valid value.
+    if (this.value) {
+      this._formatValue(this.value);
+    }
+
+    this._onTouched();
+  }
+
+  /** Formats a value and sets it on the input element. */
+  private _formatValue(value: D | null) {
+    this._elementRef.nativeElement.value =
+        value ? this._dateAdapter.format(value, this._dateFormats.display.dateInput) : '';
   }
 
   /**
