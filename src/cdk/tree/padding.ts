@@ -26,21 +26,21 @@ export class CdkTreeNodePadding<T> implements OnDestroy {
 
   /** The level of depth of the tree node. The padding will be `level * indent` pixels. */
   @Input('cdkTreeNodePadding')
+  get level(): number { return this._level; }
   set level(value: number) {
     this._level = coerceNumberProperty(value);
     this._setPadding();
   }
-  get level(): number { return this._level; }
   _level: number;
 
   /** The indent for each level. Default number 40px from material design menu sub-menu spec. */
   // TODO(tinayuangao): Make indent working with a string with unit, e.g. 10em
   @Input('cdkTreeNodePaddingIndent')
+  get indent(): number { return this._indent; }
   set indent(value: number) {
     this._indent = coerceNumberProperty(value);
     this._setPadding();
   }
-  get indent(): number { return this._indent; }
   _indent: number = 40;
 
   constructor(private _treeNode: CdkTreeNode<T>,
