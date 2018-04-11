@@ -103,6 +103,15 @@ jobs:
             - "node_modules"
             - "~/bazel_repository_cache"
 
+  validate_commit_message:
+    <<: *job_defaults
+    steps:
+      - checkout:
+          <<: *post_checkout
+      - restore_cache:
+          key: *cache_key
+      - run: cd tools/validate-commit-message && $(npm bin)/jasmine
+
   aio_monitoring:
     <<: *job_defaults
     steps:
@@ -118,6 +127,9 @@ workflows:
     jobs:
       - lint
       - build
+      - validate_commit_message:
+          requires:
+            - build
   aio_monitoring:
     jobs:
       - aio_monitoring
