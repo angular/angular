@@ -5083,9 +5083,9 @@ rollup@0.47.4:
   version "0.47.4"
   resolved "https://registry.yarnpkg.com/rollup/-/rollup-0.47.4.tgz#e3a55de83a78221d232ce29619a8d68189ae845e"
 
-rxjs@6.0.0-rc.0:
-  version "6.0.0-rc.0"
-  resolved "https://registry.yarnpkg.com/rxjs/-/rxjs-6.0.0-rc.0.tgz#3fed5454dfaf5a01005c973de857f860826d3eac"
+rxjs@^6.0.0-terrific-rc.3:
+  version "6.0.0-terrific-rc.3"
+  resolved "https://registry.yarnpkg.com/rxjs/-/rxjs-6.0.0-terrific-rc.3.tgz#3acee937c1789ee4addf3cc3f7cc843d7cc2887c"
   dependencies:
     tslib "^1.9.0"
 
