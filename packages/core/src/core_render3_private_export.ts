@@ -15,6 +15,7 @@ export {
   renderComponent as ɵrenderComponent,
   ComponentType as ɵComponentType,
   DirectiveType as ɵDirectiveType,
+  RenderFlags as ɵRenderFlags,
   directiveInject as ɵdirectiveInject,
   injectTemplateRef as ɵinjectTemplateRef,
   injectViewContainerRef as ɵinjectViewContainerRef,

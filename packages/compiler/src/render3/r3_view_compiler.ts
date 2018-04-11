@@ -26,8 +26,8 @@ import {BUILD_OPTIMIZER_COLOCATE, OutputMode} from './r3_types';
 /** Name of the context parameter passed into a template function */
 const CONTEXT_NAME = 'ctx';
 
-/** Name of the creation mode flag passed into a template function */
-const CREATION_MODE_FLAG = 'cm';
+/** Name of the RenderFlag passed into a template function */
+const RENDER_FLAGS = 'rf';
 
 /** Name of the temporary to use during data binding */
 const TEMPORARY_NAME = '_t';
@@ -421,15 +421,31 @@ class BindingScope implements LocalResolver {
   }
 }
 
+// Pasted from render3/interfaces/definition since it cannot be referenced directly
+/**
+ * Flags passed into template functions to determine which blocks (i.e. creation, update)
+ * should be executed.
+ *
+ * Typically, a template runs both the creation block and the update block on initialization and
+ * subsequent runs only execute the update block. However, dynamically created views require that
+ * the creation block be executed separately from the update block (for backwards compat).
+ */
+export const enum RenderFlags {
+  /* Whether to run the creation block (e.g. create elements and directives) */
+  Create = 0b01,
+
+  /* Whether to run the update block (e.g. refresh bindings) */
+  Update = 0b10
+}
+
 class TemplateDefinitionBuilder implements TemplateAstVisitor, LocalResolver {
   private _dataIndex = 0;
   private _bindingContext = 0;
-  private _referenceIndex = 0;
   private _temporaryAllocated = false;
   private _prefix: o.Statement[] = [];
   private _creationMode: o.Statement[] = [];
+  private _variableMode: o.Statement[] = [];
   private _bindingMode: o.Statement[] = [];
-  private _refreshMode: o.Statement[] = [];
   private _postfix: o.Statement[] = [];
   private _contentProjections: Map<NgContentAst, NgContentInfo>;
   private _projectionDefinitionIndex = 0;
@@ -530,7 +546,15 @@ class TemplateDefinitionBuilder implements TemplateAstVisitor, LocalResolver {
     templateVisitAll(this, asts);
 
     const creationMode = this._creationMode.length > 0 ?
-        [o.ifStmt(o.variable(CREATION_MODE_FLAG), this._creationMode)] :
+        [o.ifStmt(
+            o.variable(RENDER_FLAGS).bitwiseAnd(o.literal(RenderFlags.Create), null, false),
+            this._creationMode)] :
+        [];
+
+    const updateMode = this._bindingMode.length > 0 ?
+        [o.ifStmt(
+            o.variable(RENDER_FLAGS).bitwiseAnd(o.literal(RenderFlags.Update), null, false),
+            this._bindingMode)] :
         [];
 
     // Generate maps of placeholder name to node indexes
@@ -547,18 +571,16 @@ class TemplateDefinitionBuilder implements TemplateAstVisitor, LocalResolver {
     }
 
     return o.fn(
+        [new o.FnParam(RENDER_FLAGS, o.NUMBER_TYPE), new o.FnParam(this.contextParameter, null)],
         [
-          new o.FnParam(this.contextParameter, null), new o.FnParam(CREATION_MODE_FLAG, o.BOOL_TYPE)
-        ],
-        [
-          // Temporary variable declarations (i.e. let _t: any;)
+          // Temporary variable declarations for query refresh (i.e. let _t: any;)
           ...this._prefix,
-          // Creating mode (i.e. if (cm) { ... })
+          // Creating mode (i.e. if (rf & RenderFlags.Create) { ... })
           ...creationMode,
-          // Binding mode (i.e. ɵp(...))
-          ...this._bindingMode,
-          // Refresh mode (i.e. Comp.r(...))
-          ...this._refreshMode,
+          // Temporary variable declarations for local refs (i.e. const tmp = ld(1) as any)
+          ...this._variableMode,
+          // Binding and refresh mode (i.e. if (rf & RenderFlags.Update) {...})
+          ...updateMode,
           // Nested templates (i.e. function CompTemplate() {})
           ...this._postfix
         ],
@@ -665,9 +687,9 @@ class TemplateDefinitionBuilder implements TemplateAstVisitor, LocalResolver {
             referenceDataSlots.set(reference.name, slot);
             // Generate the update temporary.
             const variableName = this.bindingScope.freshReferenceName();
-            this._bindingMode.push(o.variable(variableName, o.INFERRED_TYPE)
-                                       .set(o.importExpr(R3.load).callFn([o.literal(slot)]))
-                                       .toDeclStmt(o.INFERRED_TYPE, [o.StmtModifier.Final]));
+            this._variableMode.push(o.variable(variableName, o.INFERRED_TYPE)
+                                        .set(o.importExpr(R3.load).callFn([o.literal(slot)]))
+                                        .toDeclStmt(o.INFERRED_TYPE, [o.StmtModifier.Final]));
             this.bindingScope.set(reference.name, o.variable(variableName));
             return [reference.name, reference.originalValue];
           })).map(value => o.literal(value));
@@ -836,9 +858,8 @@ class TemplateDefinitionBuilder implements TemplateAstVisitor, LocalResolver {
     // Creation mode
     this.instruction(this._creationMode, ast.sourceSpan, R3.text, o.literal(nodeIndex));
 
-    // Refresh mode
     this.instruction(
-        this._refreshMode, ast.sourceSpan, R3.textCreateBound, o.literal(nodeIndex),
+        this._bindingMode, ast.sourceSpan, R3.textCreateBound, o.literal(nodeIndex),
         this.convertPropertyBinding(o.variable(CONTEXT_NAME), ast.value));
   }
 
@@ -899,7 +920,7 @@ class TemplateDefinitionBuilder implements TemplateAstVisitor, LocalResolver {
     const convertedPropertyBinding = convertPropertyBinding(
         this, implicit, pipesConvertedValue, this.bindingContext(), BindingForm.TrySimple,
         interpolate);
-    this._refreshMode.push(...convertedPropertyBinding.stmts);
+    this._bindingMode.push(...convertedPropertyBinding.stmts);
     return convertedPropertyBinding.currValExpr;
   }
 }

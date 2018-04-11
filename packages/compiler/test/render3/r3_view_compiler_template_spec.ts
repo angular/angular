@@ -51,28 +51,35 @@ describe('compiler compliance: template', () => {
 
     // The template should look like this (where IDENT is a wild card for an identifier):
     const template = `
-      template:function MyComponent_Template(ctx:any, cm:boolean){
-        if (cm) { 
+      template:function MyComponent_Template(rf: IDENT, ctx: IDENT){
+        if (rf & 1) { 
           $i0$.ɵC(0, MyComponent_NgForOf_Template_0, null, _c0); 
         }
-        $i0$.ɵp(0, 'ngForOf', $i0$.ɵb(ctx.items));
-        function MyComponent_NgForOf_Template_0(ctx0:any, cm:boolean) {
-          if (cm) {
+        if (rf & 2) {
+          $i0$.ɵp(0, 'ngForOf', $i0$.ɵb(ctx.items));
+        }
+        
+        function MyComponent_NgForOf_Template_0(rf: IDENT, ctx0: IDENT) {
+          if (rf & 1) {
             $i0$.ɵE(0, 'ul');
             $i0$.ɵC(1, MyComponent_NgForOf_NgForOf_Template_1, null, _c0);
             $i0$.ɵe();
           }
-          const $outer$ = ctx0.$implicit;
-          $i0$.ɵp(1, 'ngForOf', $i0$.ɵb($outer$.items));
-          function MyComponent_NgForOf_NgForOf_Template_1(ctx1:any, cm:boolean) {
-            if (cm) {
+          if (rf & 2) {
+            const $outer$ = ctx0.$implicit;
+            $i0$.ɵp(1, 'ngForOf', $i0$.ɵb($outer$.items));
+          }
+          function MyComponent_NgForOf_NgForOf_Template_1(rf: IDENT, ctx1: IDENT) {
+            if (rf & 1) {
               $i0$.ɵE(0, 'li');
               $i0$.ɵC(1, MyComponent_NgForOf_NgForOf_NgForOf_Template_1, null, _c0);
               $i0$.ɵe();
             }
-            $i0$.ɵp(1, 'ngForOf', $i0$.ɵb(ctx.items));
-            function MyComponent_NgForOf_NgForOf_NgForOf_Template_1(ctx2:any, cm:boolean) {
-              if (cm) {
+            if (rf & 2) {
+              $i0$.ɵp(1, 'ngForOf', $i0$.ɵb(ctx.items));
+            }
+            function MyComponent_NgForOf_NgForOf_NgForOf_Template_1(rf: IDENT, ctx2: IDENT) {
+              if (rf & 1) {
                 $i0$.ɵE(0, 'div');
                 $i0$.ɵL('click', function MyComponent_NgForOf_NgForOf_NgForOf_Template_1_div_click_listener($event:any){
                   const $outer$ = ctx0.$implicit;
@@ -83,11 +90,13 @@ describe('compiler compliance: template', () => {
                 $i0$.ɵT(1);
                 $i0$.ɵe();
               }
-              const $outer$ = ctx0.$implicit;
-              const $middle$ = ctx1.$implicit;
-              const $inner$ = ctx2.$implicit;
-              $i0$.ɵp(0, 'title', ctx.format($outer$, $middle$, $inner$, ctx.component));
-              $i0$.ɵt(1, $i0$.ɵi1(' ', ctx.format($outer$, $middle$, $inner$, ctx.component), ' '));
+              if (rf & 2) {
+                const $outer$ = ctx0.$implicit;
+                const $middle$ = ctx1.$implicit;
+                const $inner$ = ctx2.$implicit;
+                $i0$.ɵp(0, 'title', ctx.format($outer$, $middle$, $inner$, ctx.component));
+                $i0$.ɵt(1, $i0$.ɵi1(' ', ctx.format($outer$, $middle$, $inner$, ctx.component), ' '));
+              }
             }
           }
         }

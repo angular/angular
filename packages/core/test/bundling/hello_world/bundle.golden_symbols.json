@@ -63,6 +63,9 @@
     "name": "createTView"
   },
   {
+    "name": "createTextNode"
+  },
+  {
     "name": "currentView"
   },
   {
@@ -103,6 +106,9 @@
   },
   {
     "name": "getOrCreateTView"
+  },
+  {
+    "name": "getRenderFlags"
   },
   {
     "name": "hostElement"

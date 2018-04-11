@@ -12,7 +12,7 @@ import {renderComponent, toHtml} from '../render_util';
 
 /// See: `normative.md`
 describe('local references', () => {
-  type $boolean$ = boolean;
+  type $RenderFlags$ = $r3$.ɵRenderFlags;
 
   // TODO(misko): currently disabled until local refs are working
   xit('should translate DOM structure', () => {
@@ -25,14 +25,17 @@ describe('local references', () => {
         type: MyComponent,
         selectors: [['my-component']],
         factory: () => new MyComponent,
-        template: function(ctx: $MyComponent$, cm: $boolean$) {
-          if (cm) {
+        template: function(rf: $RenderFlags$, ctx: $MyComponent$) {
+          let l1_user: any;
+          if (rf & 1) {
             $r3$.ɵE(0, 'input', null, ['user', '']);
             $r3$.ɵe();
             $r3$.ɵT(2);
           }
-          const l1_user = $r3$.ɵld<any>(1);
-          $r3$.ɵt(2, $r3$.ɵi1('Hello ', l1_user.value, '!'));
+          if (rf & 2) {
+            l1_user = $r3$.ɵld<any>(1);
+            $r3$.ɵt(2, $r3$.ɵi1('Hello ', l1_user.value, '!'));
+          }
         }
       });
       // NORMATIVE

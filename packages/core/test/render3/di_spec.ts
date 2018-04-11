@@ -7,6 +7,7 @@
  */
 
 import {ChangeDetectorRef, ElementRef, TemplateRef, ViewContainerRef} from '@angular/core';
+import {RenderFlags} from '@angular/core/src/render3/interfaces/definition';
 
 import {defineComponent} from '../../src/render3/definition';
 import {InjectFlags, bloomAdd, bloomFindPossibleInjector, getOrCreateNodeInjector, injectAttribute} from '../../src/render3/di';
@@ -33,14 +34,17 @@ describe('di', () => {
       }
 
       /** <div dir #dir="dir"> {{ dir.value }}  </div> */
-      function Template(ctx: any, cm: boolean) {
-        if (cm) {
+      function Template(rf: RenderFlags, ctx: any) {
+        if (rf & RenderFlags.Create) {
           elementStart(0, 'div', ['dir', ''], ['dir', 'dir']);
           { text(2); }
           elementEnd();
         }
-        const tmp = load(1) as any;
-        textBinding(2, bind(tmp.value));
+        let tmp: any;
+        if (rf & RenderFlags.Update) {
+          tmp = load(1);
+          textBinding(2, bind(tmp.value));
+        }
       }
 
       expect(renderToHtml(Template, {}, [Directive])).toEqual('<div dir="">Created</div>');
@@ -91,8 +95,8 @@ describe('di', () => {
        *  <span dirB dirC #dir="dirC"> {{ dir.value }} </span>
        * </div>
        */
-      function Template(ctx: any, cm: boolean) {
-        if (cm) {
+      function Template(rf: RenderFlags, ctx: any) {
+        if (rf & RenderFlags.Create) {
           elementStart(0, 'div', ['dirA', '']);
           {
             elementStart(1, 'span', ['dirB', '', 'dirC', ''], ['dir', 'dirC']);
@@ -101,8 +105,11 @@ describe('di', () => {
           }
           elementEnd();
         }
-        const tmp = load(2) as any;
-        textBinding(3, bind(tmp.value));
+        let tmp: any;
+        if (rf & RenderFlags.Update) {
+          tmp = load(2);
+          textBinding(3, bind(tmp.value));
+        }
       }
 
       const defs = [DirA, DirB, DirC];
@@ -326,8 +333,8 @@ describe('di', () => {
           type: App,
           factory: () => new App(),
           /** <div dirA dirB dirC></div> */
-          template: (ctx: any, cm: boolean) => {
-            if (cm) {
+          template: (rf: RenderFlags, ctx: any) => {
+            if (rf & RenderFlags.Create) {
               elementStart(0, 'div', ['dirA', '', 'dirB', '', 'dirC', 'dirC']);
               elementEnd();
             }
@@ -516,16 +523,20 @@ describe('di', () => {
        *   {{ dir.value }} - {{ dirSame.value }}
        * </div>
        */
-      function Template(ctx: any, cm: boolean) {
-        if (cm) {
+      function Template(rf: RenderFlags, ctx: any) {
+        if (rf & RenderFlags.Create) {
           elementStart(0, 'div', ['dir', '', 'dirSame', ''], ['dirSame', 'dirSame', 'dir', 'dir']);
           { text(3); }
           elementEnd();
         }
 
-        const tmp1 = load(1) as any;
-        const tmp2 = load(2) as any;
-        textBinding(3, interpolation2('', tmp2.value, '-', tmp1.value, ''));
+        let tmp1: any;
+        let tmp2: any;
+        if (rf & RenderFlags.Update) {
+          tmp1 = load(1);
+          tmp2 = load(2);
+          textBinding(3, interpolation2('', tmp2.value, '-', tmp1.value, ''));
+        }
       }
 
       const defs = [Directive, DirectiveSameInstance];
@@ -568,15 +579,19 @@ describe('di', () => {
        *   {{ dir.value }} - {{ dirSame.value }}
        * </ng-template>
        */
-      function Template(ctx: any, cm: any) {
-        if (cm) {
+      function Template(rf: RenderFlags, ctx: any) {
+        if (rf & RenderFlags.Create) {
           container(0, function() {
           }, undefined, ['dir', '', 'dirSame', ''], ['dir', 'dir', 'dirSame', 'dirSame']);
           text(3);
         }
-        const tmp1 = load(1) as any;
-        const tmp2 = load(2) as any;
-        textBinding(3, interpolation2('', tmp1.value, '-', tmp2.value, ''));
+        let tmp1: any;
+        let tmp2: any;
+        if (rf & RenderFlags.Update) {
+          tmp1 = load(1);
+          tmp2 = load(2);
+          textBinding(3, interpolation2('', tmp1.value, '-', tmp2.value, ''));
+        }
       }
 
       const defs = [Directive, DirectiveSameInstance];
@@ -619,16 +634,19 @@ describe('di', () => {
        *   {{ dir.value }} - {{ dirSame.value }}
        * </div>
        */
-      function Template(ctx: any, cm: boolean) {
-        if (cm) {
+      function Template(rf: RenderFlags, ctx: any) {
+        if (rf & RenderFlags.Create) {
           elementStart(0, 'div', ['dir', '', 'dirSame', ''], ['dir', 'dir', 'dirSame', 'dirSame']);
           { text(3); }
           elementEnd();
         }
-
-        const tmp1 = load(1) as any;
-        const tmp2 = load(2) as any;
-        textBinding(3, interpolation2('', tmp1.value, '-', tmp2.value, ''));
+        let tmp1: any;
+        let tmp2: any;
+        if (rf & RenderFlags.Update) {
+          tmp1 = load(1);
+          tmp2 = load(2);
+          textBinding(3, interpolation2('', tmp1.value, '-', tmp2.value, ''));
+        }
       }
 
       const defs = [Directive, DirectiveSameInstance];
@@ -649,8 +667,8 @@ describe('di', () => {
         type: MyComp,
         selectors: [['my-comp']],
         factory: () => comp = new MyComp(injectChangeDetectorRef()),
-        template: function(ctx: MyComp, cm: boolean) {
-          if (cm) {
+        template: function(rf: RenderFlags, ctx: MyComp) {
+          if (rf & RenderFlags.Create) {
             projectionDef(0);
             projection(1, 0);
           }
@@ -708,14 +726,17 @@ describe('di', () => {
 
     it('should inject current component ChangeDetectorRef into directives on components', () => {
       /** <my-comp dir dirSameInstance #dir="dir"></my-comp> {{ dir.value }} */
-      const MyApp = createComponent('my-app', function(ctx: any, cm: boolean) {
-        if (cm) {
+      const MyApp = createComponent('my-app', function(rf: RenderFlags, ctx: any) {
+        if (rf & RenderFlags.Create) {
           elementStart(0, 'my-comp', ['dir', '', 'dirSame', ''], ['dir', 'dir']);
           elementEnd();
           text(2);
         }
-        const tmp = load(1) as any;
-        textBinding(2, bind(tmp.value));
+        let tmp: any;
+        if (rf & RenderFlags.Update) {
+          tmp = load(1);
+          textBinding(2, bind(tmp.value));
+        }
       }, directives);
 
       const app = renderComponent(MyApp);
@@ -737,14 +758,17 @@ describe('di', () => {
           selectors: [['my-app']],
           factory: () => new MyApp(injectChangeDetectorRef()),
           /** <div dir dirSameInstance #dir="dir"> {{ dir.value }} </div> */
-          template: function(ctx: any, cm: boolean) {
-            if (cm) {
+          template: function(rf: RenderFlags, ctx: any) {
+            if (rf & RenderFlags.Create) {
               elementStart(0, 'div', ['dir', '', 'dirSame', ''], ['dir', 'dir']);
               { text(2); }
               elementEnd();
             }
-            const tmp = load(1) as any;
-            textBinding(2, bind(tmp.value));
+            let tmp: any;
+            if (rf & RenderFlags.Update) {
+              tmp = load(1);
+              textBinding(2, bind(tmp.value));
+            }
           },
           directives: directives
         });
@@ -772,8 +796,8 @@ describe('di', () => {
            * </my-comp>
            * {{ dir.value }}
            */
-          template: function(ctx: any, cm: boolean) {
-            if (cm) {
+          template: function(rf: RenderFlags, ctx: any) {
+            if (rf & RenderFlags.Create) {
               elementStart(0, 'my-comp');
               {
                 elementStart(1, 'div', ['dir', '', 'dirSame', ''], ['dir', 'dir']);
@@ -783,7 +807,9 @@ describe('di', () => {
               text(3);
             }
             const tmp = load(2) as any;
-            textBinding(3, bind(tmp.value));
+            if (rf & RenderFlags.Update) {
+              textBinding(3, bind(tmp.value));
+            }
           },
           directives: directives
         });
@@ -813,24 +839,30 @@ describe('di', () => {
            *   <div dir dirSameInstance #dir="dir"> {{ dir.value }} </div>
            * % }
            */
-          template: function(ctx: MyApp, cm: boolean) {
-            if (cm) {
+          template: function(rf: RenderFlags, ctx: MyApp) {
+            if (rf & RenderFlags.Create) {
               container(0);
             }
-            containerRefreshStart(0);
-            {
-              if (ctx.showing) {
-                if (embeddedViewStart(0)) {
-                  elementStart(0, 'div', ['dir', '', 'dirSame', ''], ['dir', 'dir']);
-                  { text(2); }
-                  elementEnd();
+            if (rf & RenderFlags.Update) {
+              containerRefreshStart(0);
+              {
+                if (ctx.showing) {
+                  let rf1 = embeddedViewStart(0);
+                  if (rf1 & RenderFlags.Create) {
+                    elementStart(0, 'div', ['dir', '', 'dirSame', ''], ['dir', 'dir']);
+                    { text(2); }
+                    elementEnd();
+                  }
+                  let tmp: any;
+                  if (rf1 & RenderFlags.Update) {
+                    tmp = load(1);
+                    textBinding(2, bind(tmp.value));
+                  }
                 }
-                const tmp = load(1) as any;
-                textBinding(2, bind(tmp.value));
+                embeddedViewEnd();
               }
-              embeddedViewEnd();
+              containerRefreshEnd();
             }
-            containerRefreshEnd();
           },
           directives: directives
         });
@@ -855,21 +887,26 @@ describe('di', () => {
           selectors: [['my-app']],
           factory: () => new MyApp(injectChangeDetectorRef()),
           /** <div *myIf="showing" dir dirSameInstance #dir="dir"> {{ dir.value }} </div> */
-          template: function(ctx: MyApp, cm: boolean) {
-            if (cm) {
+          template: function(rf: RenderFlags, ctx: MyApp) {
+            if (rf & RenderFlags.Create) {
               container(0, C1, undefined, ['myIf', 'showing']);
             }
-            containerRefreshStart(0);
-            containerRefreshEnd();
+            if (rf & RenderFlags.Update) {
+              containerRefreshStart(0);
+              containerRefreshEnd();
+            }
 
-            function C1(ctx1: any, cm1: boolean) {
-              if (cm1) {
+            function C1(rf1: RenderFlags, ctx1: any) {
+              if (rf1 & RenderFlags.Create) {
                 elementStart(0, 'div', ['dir', '', 'dirSame', ''], ['dir', 'dir']);
                 { text(2); }
                 elementEnd();
               }
-              const tmp = load(1) as any;
-              textBinding(2, bind(tmp.value));
+              let tmp: any;
+              if (rf1 & RenderFlags.Update) {
+                tmp = load(1);
+                textBinding(2, bind(tmp.value));
+              }
             }
           },
           directives: directives
@@ -889,8 +926,8 @@ describe('di', () => {
     let exist: string|undefined = 'wrong';
     let nonExist: string|undefined = 'wrong';
 
-    const MyApp = createComponent('my-app', function(ctx: any, cm: boolean) {
-      if (cm) {
+    const MyApp = createComponent('my-app', function(rf: RenderFlags, ctx: any) {
+      if (rf & RenderFlags.Create) {
         elementStart(0, 'div', ['exist', 'existValue', 'other', 'ignore']);
         exist = injectAttribute('exist');
         nonExist = injectAttribute('nonExist');
@@ -1025,27 +1062,34 @@ describe('di', () => {
        *    </span>
        * </div>
        */
-      function Template(ctx: any, cm: boolean) {
-        if (cm) {
+      function Template(rf: RenderFlags, ctx: any) {
+        if (rf & RenderFlags.Create) {
           elementStart(0, 'div', ['parentDir', '']);
           { container(1); }
           elementEnd();
         }
-        containerRefreshStart(1);
-        {
-          if (embeddedViewStart(0)) {
-            elementStart(
-                0, 'span', ['childDir', '', 'child2Dir', ''],
-                ['child1', 'childDir', 'child2', 'child2Dir']);
-            { text(3); }
-            elementEnd();
+        if (rf & RenderFlags.Update) {
+          containerRefreshStart(1);
+          {
+            let rf1 = embeddedViewStart(0);
+            if (rf1 & RenderFlags.Create) {
+              elementStart(
+                  0, 'span', ['childDir', '', 'child2Dir', ''],
+                  ['child1', 'childDir', 'child2', 'child2Dir']);
+              { text(3); }
+              elementEnd();
+            }
+            let tmp1: any;
+            let tmp2: any;
+            if (rf & RenderFlags.Update) {
+              tmp1 = load(1);
+              tmp2 = load(2);
+              textBinding(3, interpolation2('', tmp1.value, '-', tmp2.value, ''));
+            }
+            embeddedViewEnd();
           }
-          const tmp1 = load(1) as any;
-          const tmp2 = load(2) as any;
-          textBinding(3, interpolation2('', tmp1.value, '-', tmp2.value, ''));
-          embeddedViewEnd();
+          containerRefreshEnd();
         }
-        containerRefreshEnd();
       }
 
       const defs = [ChildDirective, Child2Directive, ParentDirective];

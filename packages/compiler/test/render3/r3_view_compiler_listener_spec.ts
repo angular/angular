@@ -41,8 +41,8 @@ describe('compiler compliance: listen()', () => {
 
     // The template should look like this (where IDENT is a wild card for an identifier):
     const template = `
-        template: function MyComponent_Template(ctx: $MyComponent$, cm: $boolean$) {
-          if (cm) {
+        template: function MyComponent_Template(rf: $RenderFlags$, ctx: $MyComponent$) {
+          if (rf & 1) {
             $r3$.ɵE(0, 'div');
             $r3$.ɵL('click', function MyComponent_Template_div_click_listener($event: $any$) { 
               ctx.onClick($event);

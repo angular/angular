@@ -61,7 +61,16 @@ export interface LView {
    * will begin reading bindings at the correct point in the array when
    * we are in update mode.
    */
-  bindingStartIndex: number|null;
+  bindingStartIndex: number;
+
+  /**
+   * The binding index we should access next.
+   *
+   * This is stored so that bindings can continue where they left off
+   * if a view is left midway through processing bindings (e.g. if there is
+   * a setter that creates an embedded view, like in ngIf).
+   */
+  bindingIndex: number;
 
   /**
    * When a view is destroyed, listeners need to be released and outputs need to be

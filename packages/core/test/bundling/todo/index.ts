@@ -56,8 +56,6 @@ export class TodoStore {
 
 @Component({
   selector: 'todo-app',
-  // TODO(misko) remove all `foo && foo.something` once `ViewContainerRef` can separate creation and
-  // update block.
   // TODO(misko): make this work with `[(ngModel)]`
   template: `
   <section class="todoapp">
@@ -74,18 +72,18 @@ export class TodoStore {
              (click)="todoStore.setAllTo(toggleall.checked)">
       <ul class="todo-list">
         <li *ngFor="let todo of todoStore.todos" 
-            [class.completed]="todo && todo.completed" 
-            [class.editing]="todo && todo.editing">
+            [class.completed]="todo.completed" 
+            [class.editing]="todo.editing">
           <div class="view">
             <input class="toggle" type="checkbox" 
                    (click)="toggleCompletion(todo)" 
-                   [checked]="todo && todo.completed">
-            <label (dblclick)="editTodo(todo)">{{todo && todo.title}}</label>
+                   [checked]="todo.completed">
+            <label (dblclick)="editTodo(todo)">{{todo.title}}</label>
             <button class="destroy" (click)="remove(todo)"></button>
           </div>
-          <input *ngIf="todo && todo.editing" 
+          <input *ngIf="todo.editing" 
                  class="edit" #editedtodo
-                 [value]="todo && todo.title" 
+                 [value]="todo.title" 
                  (blur)="stopEditing(todo, editedtodo.value)"
                  (keyup)="todo.title = $event.target.value" 
                  (keyup)="$event.code == 'Enter' && updateEditingTodo(todo, editedtodo.value)" 
@@ -106,7 +104,7 @@ export class TodoStore {
     </footer>
   </section>
   `,
-  // TODO(misko): switch oven to OnPush
+  // TODO(misko): switch over to OnPush
   // changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ToDoAppComponent {

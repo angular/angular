@@ -8,6 +8,7 @@
 import {QUERY_READ_CONTAINER_REF, QUERY_READ_ELEMENT_REF, QUERY_READ_FROM_NODE, QUERY_READ_TEMPLATE_REF} from '../../src/render3/di';
 import {QueryList, defineComponent, detectChanges} from '../../src/render3/index';
 import {container, containerRefreshEnd, containerRefreshStart, elementEnd, elementStart, embeddedViewEnd, embeddedViewStart, load, loadDirective} from '../../src/render3/instructions';
+import {RenderFlags} from '../../src/render3/interfaces/definition';
 import {query, queryRefresh} from '../../src/render3/query';
 
 import {createComponent, createDirective, renderComponent} from './render_util';
@@ -43,11 +44,11 @@ function isViewContainerRef(candidate: any): boolean {
 
 describe('query', () => {
   it('should project query children', () => {
-    const Child = createComponent('child', function(ctx: any, cm: boolean) {});
+    const Child = createComponent('child', function(rf: RenderFlags, ctx: any) {});
 
     let child1 = null;
     let child2 = null;
-    const Cmp = createComponent('cmp', function(ctx: any, cm: boolean) {
+    const Cmp = createComponent('cmp', function(rf: RenderFlags, ctx: any) {
       /**
        * <child>
        *   <child>
@@ -59,7 +60,7 @@ describe('query', () => {
        * }
        */
       let tmp: any;
-      if (cm) {
+      if (rf & RenderFlags.Create) {
         query(0, Child, false);
         query(1, Child, true);
         elementStart(2, 'child');
@@ -71,8 +72,10 @@ describe('query', () => {
         }
         elementEnd();
       }
-      queryRefresh(tmp = load<QueryList<any>>(0)) && (ctx.query0 = tmp as QueryList<any>);
-      queryRefresh(tmp = load<QueryList<any>>(1)) && (ctx.query1 = tmp as QueryList<any>);
+      if (rf & RenderFlags.Update) {
+        queryRefresh(tmp = load<QueryList<any>>(0)) && (ctx.query0 = tmp as QueryList<any>);
+        queryRefresh(tmp = load<QueryList<any>>(1)) && (ctx.query1 = tmp as QueryList<any>);
+      }
     }, [Child]);
 
     const parent = renderComponent(Cmp);
@@ -91,14 +94,16 @@ describe('query', () => {
        *  @ViewChildren(Child, {read: ElementRef}) query;
        * }
        */
-      const Cmpt = createComponent('cmpt', function(ctx: any, cm: boolean) {
+      const Cmpt = createComponent('cmpt', function(rf: RenderFlags, ctx: any) {
         let tmp: any;
-        if (cm) {
+        if (rf & RenderFlags.Create) {
           query(0, Child, false, QUERY_READ_ELEMENT_REF);
           elToQuery = elementStart(1, 'div', ['child', '']);
           elementEnd();
         }
-        queryRefresh(tmp = load<QueryList<any>>(0)) && (ctx.query = tmp as QueryList<any>);
+        if (rf & RenderFlags.Update) {
+          queryRefresh(tmp = load<QueryList<any>>(0)) && (ctx.query = tmp as QueryList<any>);
+        }
       }, [Child]);
 
       const cmptInstance = renderComponent(Cmpt);
@@ -119,15 +124,17 @@ describe('query', () => {
        *  @ViewChildren(Child, {read: OtherChild}) query;
        * }
        */
-      const Cmpt = createComponent('cmpt', function(ctx: any, cm: boolean) {
+      const Cmpt = createComponent('cmpt', function(rf: RenderFlags, ctx: any) {
         let tmp: any;
-        if (cm) {
+        if (rf & RenderFlags.Create) {
           query(0, Child, false, OtherChild);
           elementStart(1, 'div', ['child', '', 'otherChild', '']);
           { otherChildInstance = loadDirective(1); }
           elementEnd();
         }
-        queryRefresh(tmp = load<QueryList<any>>(0)) && (ctx.query = tmp as QueryList<any>);
+        if (rf & RenderFlags.Update) {
+          queryRefresh(tmp = load<QueryList<any>>(0)) && (ctx.query = tmp as QueryList<any>);
+        }
       }, [Child, OtherChild]);
 
       const cmptInstance = renderComponent(Cmpt);
@@ -145,14 +152,16 @@ describe('query', () => {
        *  @ViewChildren(Child, {read: OtherChild}) query;
        * }
        */
-      const Cmpt = createComponent('cmpt', function(ctx: any, cm: boolean) {
+      const Cmpt = createComponent('cmpt', function(rf: RenderFlags, ctx: any) {
         let tmp: any;
-        if (cm) {
+        if (rf & RenderFlags.Create) {
           query(0, Child, false, OtherChild);
           elementStart(1, 'div', ['child', '']);
           elementEnd();
         }
-        queryRefresh(tmp = load<QueryList<any>>(0)) && (ctx.query = tmp as QueryList<any>);
+        if (rf & RenderFlags.Update) {
+          queryRefresh(tmp = load<QueryList<any>>(0)) && (ctx.query = tmp as QueryList<any>);
+        }
       }, [Child, OtherChild]);
 
       const cmptInstance = renderComponent(Cmpt);
@@ -173,16 +182,18 @@ describe('query', () => {
        *  @ViewChildren('foo') query;
        * }
        */
-      const Cmpt = createComponent('cmpt', function(ctx: any, cm: boolean) {
+      const Cmpt = createComponent('cmpt', function(rf: RenderFlags, ctx: any) {
         let tmp: any;
-        if (cm) {
+        if (rf & RenderFlags.Create) {
           query(0, ['foo'], false, QUERY_READ_FROM_NODE);
           elToQuery = elementStart(1, 'div', null, ['foo', '']);
           elementEnd();
           elementStart(3, 'div');
           elementEnd();
         }
-        queryRefresh(tmp = load<QueryList<any>>(0)) && (ctx.query = tmp as QueryList<any>);
+        if (rf & RenderFlags.Update) {
+          queryRefresh(tmp = load<QueryList<any>>(0)) && (ctx.query = tmp as QueryList<any>);
+        }
       });
 
       const cmptInstance = renderComponent(Cmpt);
@@ -202,9 +213,9 @@ describe('query', () => {
        *  @ViewChildren('bar') barQuery;
        * }
        */
-      const Cmpt = createComponent('cmpt', function(ctx: any, cm: boolean) {
+      const Cmpt = createComponent('cmpt', function(rf: RenderFlags, ctx: any) {
         let tmp: any;
-        if (cm) {
+        if (rf & RenderFlags.Create) {
           query(0, ['foo'], false, QUERY_READ_FROM_NODE);
           query(1, ['bar'], false, QUERY_READ_FROM_NODE);
           elToQuery = elementStart(2, 'div', null, ['foo', '', 'bar', '']);
@@ -212,8 +223,10 @@ describe('query', () => {
           elementStart(5, 'div');
           elementEnd();
         }
-        queryRefresh(tmp = load<QueryList<any>>(0)) && (ctx.fooQuery = tmp as QueryList<any>);
-        queryRefresh(tmp = load<QueryList<any>>(1)) && (ctx.barQuery = tmp as QueryList<any>);
+        if (rf & RenderFlags.Update) {
+          queryRefresh(tmp = load<QueryList<any>>(0)) && (ctx.fooQuery = tmp as QueryList<any>);
+          queryRefresh(tmp = load<QueryList<any>>(1)) && (ctx.barQuery = tmp as QueryList<any>);
+        }
       });
 
       const cmptInstance = renderComponent(Cmpt);
@@ -239,9 +252,9 @@ describe('query', () => {
        *  @ViewChildren('foo,bar') query;
        * }
        */
-      const Cmpt = createComponent('cmpt', function(ctx: any, cm: boolean) {
+      const Cmpt = createComponent('cmpt', function(rf: RenderFlags, ctx: any) {
         let tmp: any;
-        if (cm) {
+        if (rf & RenderFlags.Create) {
           query(0, ['foo', 'bar'], undefined, QUERY_READ_FROM_NODE);
           el1ToQuery = elementStart(1, 'div', null, ['foo', '']);
           elementEnd();
@@ -250,7 +263,9 @@ describe('query', () => {
           el2ToQuery = elementStart(4, 'div', null, ['bar', '']);
           elementEnd();
         }
-        queryRefresh(tmp = load<QueryList<any>>(0)) && (ctx.query = tmp as QueryList<any>);
+        if (rf & RenderFlags.Update) {
+          queryRefresh(tmp = load<QueryList<any>>(0)) && (ctx.query = tmp as QueryList<any>);
+        }
       });
 
       const cmptInstance = renderComponent(Cmpt);
@@ -270,16 +285,18 @@ describe('query', () => {
        *  @ViewChildren('foo', {read: ElementRef}) query;
        * }
        */
-      const Cmpt = createComponent('cmpt', function(ctx: any, cm: boolean) {
+      const Cmpt = createComponent('cmpt', function(rf: RenderFlags, ctx: any) {
         let tmp: any;
-        if (cm) {
+        if (rf & RenderFlags.Create) {
           query(0, ['foo'], false, QUERY_READ_ELEMENT_REF);
           elToQuery = elementStart(1, 'div', null, ['foo', '']);
           elementEnd();
           elementStart(3, 'div');
           elementEnd();
         }
-        queryRefresh(tmp = load<QueryList<any>>(0)) && (ctx.query = tmp as QueryList<any>);
+        if (rf & RenderFlags.Update) {
+          queryRefresh(tmp = load<QueryList<any>>(0)) && (ctx.query = tmp as QueryList<any>);
+        }
       });
 
       const cmptInstance = renderComponent(Cmpt);
@@ -296,14 +313,16 @@ describe('query', () => {
        *  @ViewChildren('foo', {read: ViewContainerRef}) query;
        * }
        */
-      const Cmpt = createComponent('cmpt', function(ctx: any, cm: boolean) {
+      const Cmpt = createComponent('cmpt', function(rf: RenderFlags, ctx: any) {
         let tmp: any;
-        if (cm) {
+        if (rf & RenderFlags.Create) {
           query(0, ['foo'], false, QUERY_READ_CONTAINER_REF);
           elementStart(1, 'div', null, ['foo', '']);
           elementEnd();
         }
-        queryRefresh(tmp = load<QueryList<any>>(0)) && (ctx.query = tmp as QueryList<any>);
+        if (rf & RenderFlags.Update) {
+          queryRefresh(tmp = load<QueryList<any>>(0)) && (ctx.query = tmp as QueryList<any>);
+        }
       });
 
       const cmptInstance = renderComponent(Cmpt);
@@ -319,13 +338,15 @@ describe('query', () => {
        *  @ViewChildren('foo', {read: ViewContainerRef}) query;
        * }
        */
-      const Cmpt = createComponent('cmpt', function(ctx: any, cm: boolean) {
+      const Cmpt = createComponent('cmpt', function(rf: RenderFlags, ctx: any) {
         let tmp: any;
-        if (cm) {
+        if (rf & RenderFlags.Create) {
           query(0, ['foo'], false, QUERY_READ_CONTAINER_REF);
           container(1, undefined, undefined, undefined, ['foo', '']);
         }
-        queryRefresh(tmp = load<QueryList<any>>(0)) && (ctx.query = tmp as QueryList<any>);
+        if (rf & RenderFlags.Update) {
+          queryRefresh(tmp = load<QueryList<any>>(0)) && (ctx.query = tmp as QueryList<any>);
+        }
       });
 
       const cmptInstance = renderComponent(Cmpt);
@@ -342,13 +363,15 @@ describe('query', () => {
           *  @ViewChildren('foo', {read: ElementRef}) query;
           * }
           */
-         const Cmpt = createComponent('cmpt', function(ctx: any, cm: boolean) {
+         const Cmpt = createComponent('cmpt', function(rf: RenderFlags, ctx: any) {
            let tmp: any;
-           if (cm) {
+           if (rf & RenderFlags.Create) {
              query(0, ['foo'], false, QUERY_READ_ELEMENT_REF);
              container(1, undefined, undefined, undefined, ['foo', '']);
            }
-           queryRefresh(tmp = load<QueryList<any>>(0)) && (ctx.query = tmp as QueryList<any>);
+           if (rf & RenderFlags.Update) {
+             queryRefresh(tmp = load<QueryList<any>>(0)) && (ctx.query = tmp as QueryList<any>);
+           }
          });
 
          const cmptInstance = renderComponent(Cmpt);
@@ -365,13 +388,15 @@ describe('query', () => {
        *  @ViewChildren('foo') query;
        * }
        */
-      const Cmpt = createComponent('cmpt', function(ctx: any, cm: boolean) {
+      const Cmpt = createComponent('cmpt', function(rf: RenderFlags, ctx: any) {
         let tmp: any;
-        if (cm) {
+        if (rf & RenderFlags.Create) {
           query(0, ['foo'], undefined, QUERY_READ_FROM_NODE);
           container(1, undefined, undefined, undefined, ['foo', '']);
         }
-        queryRefresh(tmp = load<QueryList<any>>(0)) && (ctx.query = tmp as QueryList<any>);
+        if (rf & RenderFlags.Update) {
+          queryRefresh(tmp = load<QueryList<any>>(0)) && (ctx.query = tmp as QueryList<any>);
+        }
       });
 
       const cmptInstance = renderComponent(Cmpt);
@@ -388,13 +413,15 @@ describe('query', () => {
        *  @ViewChildren('foo', {read: TemplateRef}) query;
        * }
        */
-      const Cmpt = createComponent('cmpt', function(ctx: any, cm: boolean) {
+      const Cmpt = createComponent('cmpt', function(rf: RenderFlags, ctx: any) {
         let tmp: any;
-        if (cm) {
+        if (rf & RenderFlags.Create) {
           query(0, ['foo'], false, QUERY_READ_TEMPLATE_REF);
           container(1, undefined, undefined, undefined, ['foo', '']);
         }
-        queryRefresh(tmp = load<QueryList<any>>(0)) && (ctx.query = tmp as QueryList<any>);
+        if (rf & RenderFlags.Update) {
+          queryRefresh(tmp = load<QueryList<any>>(0)) && (ctx.query = tmp as QueryList<any>);
+        }
       });
 
       const cmptInstance = renderComponent(Cmpt);
@@ -404,7 +431,7 @@ describe('query', () => {
     });
 
     it('should read component instance if element queried for is a component host', () => {
-      const Child = createComponent('child', function(ctx: any, cm: boolean) {});
+      const Child = createComponent('child', function(rf: RenderFlags, ctx: any) {});
 
       let childInstance;
       /**
@@ -413,15 +440,17 @@ describe('query', () => {
        *  @ViewChildren('foo') query;
        * }
        */
-      const Cmpt = createComponent('cmpt', function(ctx: any, cm: boolean) {
+      const Cmpt = createComponent('cmpt', function(rf: RenderFlags, ctx: any) {
         let tmp: any;
-        if (cm) {
+        if (rf & RenderFlags.Create) {
           query(0, ['foo'], true, QUERY_READ_FROM_NODE);
           elementStart(1, 'child', null, ['foo', '']);
           { childInstance = loadDirective(0); }
           elementEnd();
         }
-        queryRefresh(tmp = load<QueryList<any>>(0)) && (ctx.query = tmp as QueryList<any>);
+        if (rf & RenderFlags.Update) {
+          queryRefresh(tmp = load<QueryList<any>>(0)) && (ctx.query = tmp as QueryList<any>);
+        }
       }, [Child]);
 
       const cmptInstance = renderComponent(Cmpt);
@@ -438,7 +467,7 @@ describe('query', () => {
           type: Child,
           selectors: [['child']],
           factory: () => childInstance = new Child(),
-          template: (ctx: Child, cm: boolean) => {},
+          template: (rf: RenderFlags, ctx: Child) => {},
           exportAs: 'child'
         });
       }
@@ -449,14 +478,16 @@ describe('query', () => {
        *  @ViewChildren('foo') query;
        * }
        */
-      const Cmpt = createComponent('cmpt', function(ctx: any, cm: boolean) {
+      const Cmpt = createComponent('cmpt', function(rf: RenderFlags, ctx: any) {
         let tmp: any;
-        if (cm) {
+        if (rf & RenderFlags.Create) {
           query(0, ['foo'], true, QUERY_READ_FROM_NODE);
           elementStart(1, 'child', null, ['foo', 'child']);
           elementEnd();
         }
-        queryRefresh(tmp = load<QueryList<any>>(0)) && (ctx.query = tmp as QueryList<any>);
+        if (rf & RenderFlags.Update) {
+          queryRefresh(tmp = load<QueryList<any>>(0)) && (ctx.query = tmp as QueryList<any>);
+        }
       }, [Child]);
 
       const cmptInstance = renderComponent(Cmpt);
@@ -476,15 +507,17 @@ describe('query', () => {
           *  @ViewChildren('foo') query;
           * }
           */
-         const Cmpt = createComponent('cmpt', function(ctx: any, cm: boolean) {
+         const Cmpt = createComponent('cmpt', function(rf: RenderFlags, ctx: any) {
            let tmp: any;
-           if (cm) {
+           if (rf & RenderFlags.Create) {
              query(0, ['foo'], true, QUERY_READ_FROM_NODE);
              elementStart(1, 'div', ['child', ''], ['foo', 'child']);
              childInstance = loadDirective(0);
              elementEnd();
            }
-           queryRefresh(tmp = load<QueryList<any>>(0)) && (ctx.query = tmp as QueryList<any>);
+           if (rf & RenderFlags.Update) {
+             queryRefresh(tmp = load<QueryList<any>>(0)) && (ctx.query = tmp as QueryList<any>);
+           }
          }, [Child]);
 
          const cmptInstance = renderComponent(Cmpt);
@@ -504,9 +537,9 @@ describe('query', () => {
        *  @ViewChildren('foo, bar') query;
        * }
        */
-      const Cmpt = createComponent('cmpt', function(ctx: any, cm: boolean) {
+      const Cmpt = createComponent('cmpt', function(rf: RenderFlags, ctx: any) {
         let tmp: any;
-        if (cm) {
+        if (rf & RenderFlags.Create) {
           query(0, ['foo', 'bar'], true, QUERY_READ_FROM_NODE);
           elementStart(1, 'div', ['child1', '', 'child2', ''], ['foo', 'child1', 'bar', 'child2']);
           {
@@ -515,7 +548,9 @@ describe('query', () => {
           }
           elementEnd();
         }
-        queryRefresh(tmp = load<QueryList<any>>(0)) && (ctx.query = tmp as QueryList<any>);
+        if (rf & RenderFlags.Update) {
+          queryRefresh(tmp = load<QueryList<any>>(0)) && (ctx.query = tmp as QueryList<any>);
+        }
       }, [Child1, Child2]);
 
       const cmptInstance = renderComponent(Cmpt);
@@ -536,17 +571,19 @@ describe('query', () => {
        *  @ViewChildren('bar') barQuery;
        * }
        */
-      const Cmpt = createComponent('cmpt', function(ctx: any, cm: boolean) {
+      const Cmpt = createComponent('cmpt', function(rf: RenderFlags, ctx: any) {
         let tmp: any;
-        if (cm) {
+        if (rf & RenderFlags.Create) {
           query(0, ['foo'], true, QUERY_READ_FROM_NODE);
           query(1, ['bar'], true, QUERY_READ_FROM_NODE);
           elementStart(2, 'div', ['child', ''], ['foo', 'child', 'bar', 'child']);
           { childInstance = loadDirective(0); }
           elementEnd();
         }
-        queryRefresh(tmp = load<QueryList<any>>(0)) && (ctx.fooQuery = tmp as QueryList<any>);
-        queryRefresh(tmp = load<QueryList<any>>(1)) && (ctx.barQuery = tmp as QueryList<any>);
+        if (rf & RenderFlags.Update) {
+          queryRefresh(tmp = load<QueryList<any>>(0)) && (ctx.fooQuery = tmp as QueryList<any>);
+          queryRefresh(tmp = load<QueryList<any>>(1)) && (ctx.barQuery = tmp as QueryList<any>);
+        }
       }, [Child]);
 
       const cmptInstance = renderComponent(Cmpt);
@@ -570,14 +607,16 @@ describe('query', () => {
        *  @ViewChildren('foo', {read: ElementRef}) query;
        * }
        */
-      const Cmpt = createComponent('cmpt', function(ctx: any, cm: boolean) {
+      const Cmpt = createComponent('cmpt', function(rf: RenderFlags, ctx: any) {
         let tmp: any;
-        if (cm) {
+        if (rf & RenderFlags.Create) {
           query(0, ['foo'], undefined, QUERY_READ_ELEMENT_REF);
           div = elementStart(1, 'div', ['child', ''], ['foo', 'child']);
           elementEnd();
         }
-        queryRefresh(tmp = load<QueryList<any>>(0)) && (ctx.query = tmp as QueryList<any>);
+        if (rf & RenderFlags.Update) {
+          queryRefresh(tmp = load<QueryList<any>>(0)) && (ctx.query = tmp as QueryList<any>);
+        }
       }, [Child]);
 
       const cmptInstance = renderComponent(Cmpt);
@@ -596,15 +635,17 @@ describe('query', () => {
        *  @ViewChildren('foo, bar') query;
        * }
        */
-      const Cmpt = createComponent('cmpt', function(ctx: any, cm: boolean) {
+      const Cmpt = createComponent('cmpt', function(rf: RenderFlags, ctx: any) {
         let tmp: any;
-        if (cm) {
+        if (rf & RenderFlags.Create) {
           query(0, ['foo', 'bar'], undefined, QUERY_READ_FROM_NODE);
           div = elementStart(1, 'div', ['child', ''], ['foo', '', 'bar', 'child']);
           { childInstance = loadDirective(0); }
           elementEnd();
         }
-        queryRefresh(tmp = load<QueryList<any>>(0)) && (ctx.query = tmp as QueryList<any>);
+        if (rf & RenderFlags.Update) {
+          queryRefresh(tmp = load<QueryList<any>>(0)) && (ctx.query = tmp as QueryList<any>);
+        }
       }, [Child]);
 
       const cmptInstance = renderComponent(Cmpt);
@@ -623,14 +664,16 @@ describe('query', () => {
        *  @ViewChildren('foo', {read: Child}) query;
        * }
        */
-      const Cmpt = createComponent('cmpt', function(ctx: any, cm: boolean) {
+      const Cmpt = createComponent('cmpt', function(rf: RenderFlags, ctx: any) {
         let tmp: any;
-        if (cm) {
+        if (rf & RenderFlags.Create) {
           query(0, ['foo'], false, Child);
           elementStart(1, 'div', ['foo', '']);
           elementEnd();
         }
-        queryRefresh(tmp = load<QueryList<any>>(0)) && (ctx.query = tmp as QueryList<any>);
+        if (rf & RenderFlags.Update) {
+          queryRefresh(tmp = load<QueryList<any>>(0)) && (ctx.query = tmp as QueryList<any>);
+        }
       }, [Child]);
 
       const cmptInstance = renderComponent(Cmpt);
@@ -652,27 +695,29 @@ describe('query', () => {
        *  @ViewChildren('foo') query;
        * }
        */
-      const Cmpt = createComponent('cmpt', function(ctx: any, cm: boolean) {
+      const Cmpt = createComponent('cmpt', function(rf: RenderFlags, ctx: any) {
         let tmp: any;
-        if (cm) {
+        if (rf & RenderFlags.Create) {
           query(0, ['foo'], true, QUERY_READ_FROM_NODE);
           container(1);
         }
-        containerRefreshStart(1);
-        {
-          if (ctx.exp) {
-            let cm1 = embeddedViewStart(1);
-            {
-              if (cm1) {
-                firstEl = elementStart(0, 'div', null, ['foo', '']);
-                elementEnd();
+        if (rf & RenderFlags.Update) {
+          containerRefreshStart(1);
+          {
+            if (ctx.exp) {
+              let rf1 = embeddedViewStart(1);
+              {
+                if (rf1 & RenderFlags.Create) {
+                  firstEl = elementStart(0, 'div', null, ['foo', '']);
+                  elementEnd();
+                }
               }
+              embeddedViewEnd();
             }
-            embeddedViewEnd();
           }
+          containerRefreshEnd();
+          queryRefresh(tmp = load<QueryList<any>>(0)) && (ctx.query = tmp as QueryList<any>);
         }
-        containerRefreshEnd();
-        queryRefresh(tmp = load<QueryList<any>>(0)) && (ctx.query = tmp as QueryList<any>);
       });
 
       const cmptInstance = renderComponent(Cmpt);
@@ -702,9 +747,9 @@ describe('query', () => {
           *  @ViewChildren('foo') query;
           * }
           */
-         const Cmpt = createComponent('cmpt', function(ctx: any, cm: boolean) {
+         const Cmpt = createComponent('cmpt', function(rf: RenderFlags, ctx: any) {
            let tmp: any;
-           if (cm) {
+           if (rf & RenderFlags.Create) {
              query(0, ['foo'], true, QUERY_READ_FROM_NODE);
              firstEl = elementStart(1, 'span', null, ['foo', '']);
              elementEnd();
@@ -712,21 +757,23 @@ describe('query', () => {
              lastEl = elementStart(4, 'span', null, ['foo', '']);
              elementEnd();
            }
-           containerRefreshStart(3);
-           {
-             if (ctx.exp) {
-               let cm1 = embeddedViewStart(1);
-               {
-                 if (cm1) {
-                   viewEl = elementStart(0, 'div', null, ['foo', '']);
-                   elementEnd();
+           if (rf & RenderFlags.Update) {
+             containerRefreshStart(3);
+             {
+               if (ctx.exp) {
+                 let rf1 = embeddedViewStart(1);
+                 {
+                   if (rf1 & RenderFlags.Create) {
+                     viewEl = elementStart(0, 'div', null, ['foo', '']);
+                     elementEnd();
+                   }
                  }
+                 embeddedViewEnd();
                }
-               embeddedViewEnd();
              }
+             containerRefreshEnd();
+             queryRefresh(tmp = load<QueryList<any>>(0)) && (ctx.query = tmp as QueryList<any>);
            }
-           containerRefreshEnd();
-           queryRefresh(tmp = load<QueryList<any>>(0)) && (ctx.query = tmp as QueryList<any>);
          });
 
          const cmptInstance = renderComponent(Cmpt);
@@ -762,37 +809,39 @@ describe('query', () => {
        *  @ViewChildren('foo') query;
        * }
        */
-      const Cmpt = createComponent('cmpt', function(ctx: any, cm: boolean) {
+      const Cmpt = createComponent('cmpt', function(rf: RenderFlags, ctx: any) {
         let tmp: any;
-        if (cm) {
+        if (rf & RenderFlags.Create) {
           query(0, ['foo'], true, QUERY_READ_FROM_NODE);
           container(1);
         }
-        containerRefreshStart(1);
-        {
-          if (ctx.exp1) {
-            let cm1 = embeddedViewStart(0);
-            {
-              if (cm1) {
-                firstEl = elementStart(0, 'div', null, ['foo', '']);
-                elementEnd();
+        if (rf & RenderFlags.Update) {
+          containerRefreshStart(1);
+          {
+            if (ctx.exp1) {
+              let rf0 = embeddedViewStart(0);
+              {
+                if (rf0 & RenderFlags.Create) {
+                  firstEl = elementStart(0, 'div', null, ['foo', '']);
+                  elementEnd();
+                }
               }
+              embeddedViewEnd();
             }
-            embeddedViewEnd();
-          }
-          if (ctx.exp2) {
-            let cm1 = embeddedViewStart(1);
-            {
-              if (cm1) {
-                lastEl = elementStart(0, 'span', null, ['foo', '']);
-                elementEnd();
+            if (ctx.exp2) {
+              let rf1 = embeddedViewStart(1);
+              {
+                if (rf1 & RenderFlags.Create) {
+                  lastEl = elementStart(0, 'span', null, ['foo', '']);
+                  elementEnd();
+                }
               }
+              embeddedViewEnd();
             }
-            embeddedViewEnd();
           }
+          containerRefreshEnd();
+          queryRefresh(tmp = load<QueryList<any>>(0)) && (ctx.query = tmp as QueryList<any>);
         }
-        containerRefreshEnd();
-        queryRefresh(tmp = load<QueryList<any>>(0)) && (ctx.query = tmp as QueryList<any>);
       });
 
       const cmptInstance = renderComponent(Cmpt);
@@ -824,42 +873,46 @@ describe('query', () => {
        *  @ViewChildren('foo') query;
        * }
        */
-      const Cmpt = createComponent('cmpt', function(ctx: any, cm: boolean) {
+      const Cmpt = createComponent('cmpt', function(rf: RenderFlags, ctx: any) {
         let tmp: any;
-        if (cm) {
+        if (rf & RenderFlags.Create) {
           query(0, ['foo'], true, QUERY_READ_FROM_NODE);
           container(1);
         }
-        containerRefreshStart(1);
-        {
-          if (ctx.exp1) {
-            let cm1 = embeddedViewStart(0);
-            {
-              if (cm1) {
-                firstEl = elementStart(0, 'div', null, ['foo', '']);
-                elementEnd();
-                container(2);
-              }
-              containerRefreshStart(2);
+        if (rf & RenderFlags.Update) {
+          containerRefreshStart(1);
+          {
+            if (ctx.exp1) {
+              let rf0 = embeddedViewStart(0);
               {
-                if (ctx.exp2) {
-                  let cm2 = embeddedViewStart(0);
+                if (rf0 & RenderFlags.Create) {
+                  firstEl = elementStart(0, 'div', null, ['foo', '']);
+                  elementEnd();
+                  container(2);
+                }
+                if (rf0 & RenderFlags.Update) {
+                  containerRefreshStart(2);
                   {
-                    if (cm2) {
-                      lastEl = elementStart(0, 'span', null, ['foo', '']);
-                      elementEnd();
+                    if (ctx.exp2) {
+                      let rf2 = embeddedViewStart(0);
+                      {
+                        if (rf2) {
+                          lastEl = elementStart(0, 'span', null, ['foo', '']);
+                          elementEnd();
+                        }
+                      }
+                      embeddedViewEnd();
                     }
                   }
-                  embeddedViewEnd();
+                  containerRefreshEnd();
                 }
               }
-              containerRefreshEnd();
+              embeddedViewEnd();
             }
-            embeddedViewEnd();
           }
+          containerRefreshEnd();
+          queryRefresh(tmp = load<QueryList<any>>(0)) && (ctx.query = tmp as QueryList<any>);
         }
-        containerRefreshEnd();
-        queryRefresh(tmp = load<QueryList<any>>(0)) && (ctx.query = tmp as QueryList<any>);
       });
 
       const cmptInstance = renderComponent(Cmpt);
@@ -888,31 +941,33 @@ describe('query', () => {
        *  @ViewChildren('foo') query;
        * }
        */
-      const Cmpt = createComponent('cmpt', function(ctx: any, cm: boolean) {
+      const Cmpt = createComponent('cmpt', function(rf: RenderFlags, ctx: any) {
         let tmp: any;
-        if (cm) {
+        if (rf & RenderFlags.Create) {
           query(0, ['foo'], true, QUERY_READ_FROM_NODE);
           query(1, ['foo'], false, QUERY_READ_FROM_NODE);
           container(2);
           elementStart(3, 'span', null, ['foo', '']);
           elementEnd();
         }
-        containerRefreshStart(2);
-        {
-          if (ctx.exp) {
-            let cm1 = embeddedViewStart(0);
-            {
-              if (cm1) {
-                elementStart(0, 'div', null, ['foo', '']);
-                elementEnd();
+        if (rf & RenderFlags.Update) {
+          containerRefreshStart(2);
+          {
+            if (ctx.exp) {
+              let rf0 = embeddedViewStart(0);
+              {
+                if (rf0 & RenderFlags.Create) {
+                  elementStart(0, 'div', null, ['foo', '']);
+                  elementEnd();
+                }
               }
+              embeddedViewEnd();
             }
-            embeddedViewEnd();
           }
+          containerRefreshEnd();
+          queryRefresh(tmp = load<QueryList<any>>(0)) && (ctx.deep = tmp as QueryList<any>);
+          queryRefresh(tmp = load<QueryList<any>>(1)) && (ctx.shallow = tmp as QueryList<any>);
         }
-        containerRefreshEnd();
-        queryRefresh(tmp = load<QueryList<any>>(0)) && (ctx.deep = tmp as QueryList<any>);
-        queryRefresh(tmp = load<QueryList<any>>(1)) && (ctx.shallow = tmp as QueryList<any>);
       });
 
       const cmptInstance = renderComponent(Cmpt);

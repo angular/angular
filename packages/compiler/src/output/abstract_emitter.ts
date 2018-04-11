@@ -396,6 +396,9 @@ export abstract class AbstractEmitterVisitor implements o.StatementVisitor, o.Ex
       case o.BinaryOperator.And:
         opStr = '&&';
         break;
+      case o.BinaryOperator.BitwiseAnd:
+        opStr = '&';
+        break;
       case o.BinaryOperator.Or:
         opStr = '||';
         break;
@@ -429,11 +432,11 @@ export abstract class AbstractEmitterVisitor implements o.StatementVisitor, o.Ex
       default:
         throw new Error(`Unknown operator ${ast.operator}`);
     }
-    ctx.print(ast, `(`);
+    if (ast.parens) ctx.print(ast, `(`);
     ast.lhs.visitExpression(this, ctx);
     ctx.print(ast, ` ${opStr} `);
     ast.rhs.visitExpression(this, ctx);
-    ctx.print(ast, `)`);
+    if (ast.parens) ctx.print(ast, `)`);
     return null;
   }
 

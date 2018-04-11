@@ -99,6 +99,7 @@ export enum BinaryOperator {
   Modulo,
   And,
   Or,
+  BitwiseAnd,
   Lower,
   LowerEquals,
   Bigger,
@@ -206,6 +207,10 @@ export abstract class Expression {
   }
   and(rhs: Expression, sourceSpan?: ParseSourceSpan|null): BinaryOperatorExpr {
     return new BinaryOperatorExpr(BinaryOperator.And, this, rhs, null, sourceSpan);
+  }
+  bitwiseAnd(rhs: Expression, sourceSpan?: ParseSourceSpan|null, parens: boolean = true):
+      BinaryOperatorExpr {
+    return new BinaryOperatorExpr(BinaryOperator.BitwiseAnd, this, rhs, null, sourceSpan, parens);
   }
   or(rhs: Expression, sourceSpan?: ParseSourceSpan|null): BinaryOperatorExpr {
     return new BinaryOperatorExpr(BinaryOperator.Or, this, rhs, null, sourceSpan);
@@ -569,7 +574,7 @@ export class BinaryOperatorExpr extends Expression {
   public lhs: Expression;
   constructor(
       public operator: BinaryOperator, lhs: Expression, public rhs: Expression, type?: Type|null,
-      sourceSpan?: ParseSourceSpan|null) {
+      sourceSpan?: ParseSourceSpan|null, public parens: boolean = true) {
     super(type || lhs.type, sourceSpan);
     this.lhs = lhs;
   }

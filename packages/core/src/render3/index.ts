@@ -12,6 +12,7 @@ import {InjectFlags} from './di';
 import {ComponentDef, ComponentTemplate, ComponentType, DirectiveDef, DirectiveDefFlags, DirectiveType, PipeDef} from './interfaces/definition';
 
 export {InjectFlags, QUERY_READ_CONTAINER_REF, QUERY_READ_ELEMENT_REF, QUERY_READ_FROM_NODE, QUERY_READ_TEMPLATE_REF, directiveInject, injectAttribute, injectChangeDetectorRef, injectElementRef, injectTemplateRef, injectViewContainerRef} from './di';
+export {RenderFlags} from './interfaces/definition';
 export {CssSelectorList} from './interfaces/projection';
 
 
