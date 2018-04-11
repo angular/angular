@@ -270,6 +270,9 @@
     "name": "createTView"
   },
   {
+    "name": "createTextNode"
+  },
+  {
     "name": "currentView"
   },
   {
@@ -397,6 +400,9 @@
   },
   {
     "name": "getPreviousOrParentNode"
+  },
+  {
+    "name": "getRenderFlags"
   },
   {
     "name": "getRenderer"

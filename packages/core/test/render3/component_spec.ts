@@ -11,6 +11,7 @@ import {DoCheck, ViewEncapsulation} from '../../src/core';
 import {getRenderedText} from '../../src/render3/component';
 import {LifecycleHooksFeature, defineComponent, markDirty} from '../../src/render3/index';
 import {bind, container, containerRefreshEnd, containerRefreshStart, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, text, textBinding, tick} from '../../src/render3/instructions';
+import {RenderFlags} from '../../src/render3/interfaces/definition';
 import {createRendererType2} from '../../src/view/index';
 
 import {getRendererFactory2} from './imported_renderer2';
@@ -25,11 +26,13 @@ describe('component', () => {
     static ngComponentDef = defineComponent({
       type: CounterComponent,
       selectors: [['counter']],
-      template: function(ctx: CounterComponent, cm: boolean) {
-        if (cm) {
+      template: function(rf: RenderFlags, ctx: CounterComponent) {
+        if (rf & RenderFlags.Create) {
           text(0);
         }
-        textBinding(0, bind(ctx.count));
+        if (rf & RenderFlags.Update) {
+          textBinding(0, bind(ctx.count));
+        }
       },
       factory: () => new CounterComponent,
       inputs: {count: 'count'},
@@ -63,24 +66,28 @@ describe('component', () => {
 
 describe('component with a container', () => {
 
-  function showItems(ctx: {items: string[]}, cm: boolean) {
-    if (cm) {
+  function showItems(rf: RenderFlags, ctx: {items: string[]}) {
+    if (rf & RenderFlags.Create) {
       container(0);
     }
-    containerRefreshStart(0);
-    {
-      for (const item of ctx.items) {
-        const cm0 = embeddedViewStart(0);
-        {
-          if (cm0) {
-            text(0);
+    if (rf & RenderFlags.Update) {
+      containerRefreshStart(0);
+      {
+        for (const item of ctx.items) {
+          const rf0 = embeddedViewStart(0);
+          {
+            if (rf0 & RenderFlags.Create) {
+              text(0);
+            }
+            if (rf0 & RenderFlags.Update) {
+              textBinding(0, bind(item));
+            }
           }
-          textBinding(0, bind(item));
+          embeddedViewEnd();
         }
-        embeddedViewEnd();
       }
+      containerRefreshEnd();
     }
-    containerRefreshEnd();
   }
 
   class WrapperComponent {
@@ -88,29 +95,33 @@ describe('component with a container', () => {
     static ngComponentDef = defineComponent({
       type: WrapperComponent,
       selectors: [['wrapper']],
-      template: function ChildComponentTemplate(ctx: {items: string[]}, cm: boolean) {
-        if (cm) {
+      template: function ChildComponentTemplate(rf: RenderFlags, ctx: {items: string[]}) {
+        if (rf & RenderFlags.Create) {
           container(0);
         }
-        containerRefreshStart(0);
-        {
-          const cm0 = embeddedViewStart(0);
-          { showItems({items: ctx.items}, cm0); }
-          embeddedViewEnd();
+        if (rf & RenderFlags.Update) {
+          containerRefreshStart(0);
+          {
+            const rf0 = embeddedViewStart(0);
+            { showItems(rf0, {items: ctx.items}); }
+            embeddedViewEnd();
+          }
+          containerRefreshEnd();
         }
-        containerRefreshEnd();
       },
       factory: () => new WrapperComponent,
       inputs: {items: 'items'}
     });
   }
 
-  function template(ctx: {items: string[]}, cm: boolean) {
-    if (cm) {
+  function template(rf: RenderFlags, ctx: {items: string[]}) {
+    if (rf & RenderFlags.Create) {
       elementStart(0, 'wrapper');
       elementEnd();
     }
-    elementProperty(0, 'items', bind(ctx.items));
+    if (rf & RenderFlags.Update) {
+      elementProperty(0, 'items', bind(ctx.items));
+    }
   }
 
   const defs = [WrapperComponent];
@@ -132,8 +143,8 @@ describe('encapsulation', () => {
     static ngComponentDef = defineComponent({
       type: WrapperComponent,
       selectors: [['wrapper']],
-      template: function(ctx: WrapperComponent, cm: boolean) {
-        if (cm) {
+      template: function(rf: RenderFlags, ctx: WrapperComponent) {
+        if (rf & RenderFlags.Create) {
           elementStart(0, 'encapsulated');
           elementEnd();
         }
@@ -147,8 +158,8 @@ describe('encapsulation', () => {
     static ngComponentDef = defineComponent({
       type: EncapsulatedComponent,
       selectors: [['encapsulated']],
-      template: function(ctx: EncapsulatedComponent, cm: boolean) {
-        if (cm) {
+      template: function(rf: RenderFlags, ctx: EncapsulatedComponent) {
+        if (rf & RenderFlags.Create) {
           text(0, 'foo');
           elementStart(1, 'leaf');
           elementEnd();
@@ -165,8 +176,8 @@ describe('encapsulation', () => {
     static ngComponentDef = defineComponent({
       type: LeafComponent,
       selectors: [['leaf']],
-      template: function(ctx: LeafComponent, cm: boolean) {
-        if (cm) {
+      template: function(rf: RenderFlags, ctx: LeafComponent) {
+        if (rf & RenderFlags.Create) {
           elementStart(0, 'span');
           { text(1, 'bar'); }
           elementEnd();
@@ -195,8 +206,8 @@ describe('encapsulation', () => {
       static ngComponentDef = defineComponent({
         type: WrapperComponentWith,
         selectors: [['wrapper']],
-        template: function(ctx: WrapperComponentWith, cm: boolean) {
-          if (cm) {
+        template: function(rf: RenderFlags, ctx: WrapperComponentWith) {
+          if (rf & RenderFlags.Create) {
             elementStart(0, 'leaf');
             elementEnd();
           }
@@ -212,8 +223,8 @@ describe('encapsulation', () => {
       static ngComponentDef = defineComponent({
         type: LeafComponentwith,
         selectors: [['leaf']],
-        template: function(ctx: LeafComponentwith, cm: boolean) {
-          if (cm) {
+        template: function(rf: RenderFlags, ctx: LeafComponentwith) {
+          if (rf & RenderFlags.Create) {
             elementStart(0, 'span');
             { text(1, 'bar'); }
             elementEnd();
@@ -252,37 +263,45 @@ describe('recursive components', () => {
       type: TreeComponent,
       selectors: [['tree-comp']],
       factory: () => new TreeComponent(),
-      template: (ctx: TreeComponent, cm: boolean) => {
-        if (cm) {
+      template: (rf: RenderFlags, ctx: TreeComponent) => {
+        if (rf & RenderFlags.Create) {
           text(0);
           container(1);
           container(2);
         }
-        textBinding(0, bind(ctx.data.value));
-        containerRefreshStart(1);
-        {
-          if (ctx.data.left != null) {
-            if (embeddedViewStart(0)) {
-              elementStart(0, 'tree-comp');
-              elementEnd();
+        if (rf & RenderFlags.Update) {
+          textBinding(0, bind(ctx.data.value));
+          containerRefreshStart(1);
+          {
+            if (ctx.data.left != null) {
+              let rf0 = embeddedViewStart(0);
+              if (rf0 & RenderFlags.Create) {
+                elementStart(0, 'tree-comp');
+                elementEnd();
+              }
+              if (rf0 & RenderFlags.Update) {
+                elementProperty(0, 'data', bind(ctx.data.left));
+              }
+              embeddedViewEnd();
             }
-            elementProperty(0, 'data', bind(ctx.data.left));
-            embeddedViewEnd();
           }
-        }
-        containerRefreshEnd();
-        containerRefreshStart(2);
-        {
-          if (ctx.data.right != null) {
-            if (embeddedViewStart(0)) {
-              elementStart(0, 'tree-comp');
-              elementEnd();
+          containerRefreshEnd();
+          containerRefreshStart(2);
+          {
+            if (ctx.data.right != null) {
+              let rf0 = embeddedViewStart(0);
+              if (rf0 & RenderFlags.Create) {
+                elementStart(0, 'tree-comp');
+                elementEnd();
+              }
+              if (rf0 & RenderFlags.Update) {
+                elementProperty(0, 'data', bind(ctx.data.right));
+              }
+              embeddedViewEnd();
             }
-            elementProperty(0, 'data', bind(ctx.data.right));
-            embeddedViewEnd();
           }
+          containerRefreshEnd();
         }
-        containerRefreshEnd();
       },
       inputs: {data: 'data'}
     });

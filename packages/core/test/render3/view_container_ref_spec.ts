@@ -10,6 +10,7 @@ import {Component, Directive, TemplateRef, ViewContainerRef} from '../../src/cor
 import {getOrCreateNodeInjectorForNode, getOrCreateTemplateRef} from '../../src/render3/di';
 import {defineComponent, defineDirective, injectTemplateRef, injectViewContainerRef} from '../../src/render3/index';
 import {bind, container, containerRefreshEnd, containerRefreshStart, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, interpolation1, load, loadDirective, projection, projectionDef, text, textBinding} from '../../src/render3/instructions';
+import {RenderFlags} from '../../src/render3/interfaces/definition';
 
 import {ComponentFixture, TemplateFixture} from './render_util';
 
@@ -34,11 +35,13 @@ describe('ViewContainerRef', () => {
   }
 
   describe('API', () => {
-    function embeddedTemplate(ctx: any, cm: boolean) {
-      if (cm) {
+    function embeddedTemplate(rf: RenderFlags, ctx: any) {
+      if (rf & RenderFlags.Create) {
         text(0);
       }
-      textBinding(0, ctx.name);
+      if (rf & RenderFlags.Update) {
+        textBinding(0, bind(ctx.name));
+      }
     }
 
     function createView(s: string, index?: number) {
@@ -99,7 +102,7 @@ describe('ViewContainerRef', () => {
             type: HeaderComponent,
             selectors: [['header-cmp']],
             factory: () => new HeaderComponent(),
-            template: (cmp: HeaderComponent, cm: boolean) => {}
+            template: (rf: RenderFlags, cmp: HeaderComponent) => {}
           });
         }
 
@@ -143,7 +146,8 @@ describe('ViewContainerRef', () => {
           const tplRef = getOrCreateTemplateRef(getOrCreateNodeInjectorForNode(load(0)));
           elementProperty(0, 'tplRef', bind(tplRef));
           containerRefreshStart(0);
-          if (embeddedViewStart(1)) {
+          let rf1 = embeddedViewStart(1);
+          if (rf1 & RenderFlags.Create) {
             elementStart(0, 'header');
             elementEnd();
           }
@@ -195,14 +199,14 @@ describe('ViewContainerRef', () => {
              remove(index?: number) { this._vcRef.remove(index); }
            }
 
-           function EmbeddedTemplateA(ctx: any, cm: boolean) {
-             if (cm) {
+           function EmbeddedTemplateA(rf: RenderFlags, ctx: any) {
+             if (rf & RenderFlags.Create) {
                text(0, 'A');
              }
            }
 
-           function EmbeddedTemplateB(ctx: any, cm: boolean) {
-             if (cm) {
+           function EmbeddedTemplateB(rf: RenderFlags, ctx: any) {
+             if (rf & RenderFlags.Create) {
                text(0, 'B');
              }
            }
@@ -219,8 +223,8 @@ describe('ViewContainerRef', () => {
                type: TestComponent,
                selectors: [['test-cmp']],
                factory: () => new TestComponent(),
-               template: (cmp: TestComponent, cm: boolean) => {
-                 if (cm) {
+               template: (rf: RenderFlags, cmp: TestComponent) => {
+                 if (rf & RenderFlags.Create) {
                    text(0, 'before|');
                    container(1, EmbeddedTemplateA, undefined, ['testdir', '']);
                    container(2, EmbeddedTemplateB, undefined, ['testdir', '']);
@@ -261,8 +265,8 @@ describe('ViewContainerRef', () => {
              remove(index?: number) { this._vcRef.remove(index); }
            }
 
-           function EmbeddedTemplateA(ctx: any, cm: boolean) {
-             if (cm) {
+           function EmbeddedTemplateA(rf: RenderFlags, ctx: any) {
+             if (rf & RenderFlags.Create) {
                text(0, 'A');
              }
            }
@@ -282,26 +286,28 @@ describe('ViewContainerRef', () => {
                type: TestComponent,
                selectors: [['test-cmp']],
                factory: () => new TestComponent(),
-               template: (cmp: TestComponent, cm: boolean) => {
-                 if (cm) {
+               template: (rf: RenderFlags, cmp: TestComponent) => {
+                 if (rf & RenderFlags.Create) {
                    text(0, 'before|');
                    container(1, EmbeddedTemplateA, undefined, ['testdir', '']);
                    container(2);
                    text(3, '|after');
                  }
-                 containerRefreshStart(2);
-                 {
-                   if (cmp.condition) {
-                     let cm1 = embeddedViewStart(0);
-                     {
-                       if (cm1) {
-                         text(0, 'B');
+                 if (rf & RenderFlags.Update) {
+                   containerRefreshStart(2);
+                   {
+                     if (cmp.condition) {
+                       let rf1 = embeddedViewStart(0);
+                       {
+                         if (rf1 & RenderFlags.Create) {
+                           text(0, 'B');
+                         }
                        }
+                       embeddedViewEnd();
                      }
-                     embeddedViewEnd();
                    }
+                   containerRefreshEnd();
                  }
-                 containerRefreshEnd();
                },
                directives: [TestDirective]
              });
@@ -456,8 +462,8 @@ describe('ViewContainerRef', () => {
   });
 
   describe('projection', () => {
-    function embeddedTemplate(ctx: any, cm: boolean) {
-      if (cm) {
+    function embeddedTemplate(rf: RenderFlags, ctx: any) {
+      if (rf & RenderFlags.Create) {
         elementStart(0, 'span');
         text(1);
         elementEnd();
@@ -472,8 +478,8 @@ describe('ViewContainerRef', () => {
           type: Child,
           selectors: [['child']],
           factory: () => new Child(),
-          template: (cmp: Child, cm: boolean) => {
-            if (cm) {
+          template: (rf: RenderFlags, cmp: Child) => {
+            if (rf & RenderFlags.Create) {
               projectionDef(0);
               elementStart(1, 'div');
               { projection(2, 0); }
@@ -497,8 +503,8 @@ describe('ViewContainerRef', () => {
           type: Parent,
           selectors: [['parent']],
           factory: () => new Parent(),
-          template: (cmp: Parent, cm: boolean) => {
-            if (cm) {
+          template: (rf: RenderFlags, cmp: Parent) => {
+            if (rf & RenderFlags.Create) {
               container(0, embeddedTemplate);
               elementStart(1, 'child');
               elementStart(2, 'header', ['vcref', '']);
@@ -506,9 +512,12 @@ describe('ViewContainerRef', () => {
               elementEnd();
               elementEnd();
             }
-            const tplRef = getOrCreateTemplateRef(getOrCreateNodeInjectorForNode(load(0)));
-            elementProperty(2, 'tplRef', bind(tplRef));
-            elementProperty(2, 'name', bind(cmp.name));
+            let tplRef: any;
+            if (rf & RenderFlags.Update) {
+              tplRef = getOrCreateTemplateRef(getOrCreateNodeInjectorForNode(load(0)));
+              elementProperty(2, 'tplRef', bind(tplRef));
+              elementProperty(2, 'name', bind(cmp.name));
+            }
           },
           directives: [Child, DirectiveWithVCRef]
         });
@@ -535,8 +544,8 @@ describe('ViewContainerRef', () => {
           type: ChildWithSelector,
           selectors: [['child-with-selector']],
           factory: () => new ChildWithSelector(),
-          template: (cmp: ChildWithSelector, cm: boolean) => {
-            if (cm) {
+          template: (rf: RenderFlags, cmp: ChildWithSelector) => {
+            if (rf & RenderFlags.Create) {
               projectionDef(0, [[['header']]], ['header']);
               elementStart(1, 'first');
               { projection(2, 0, 1); }
@@ -545,7 +554,8 @@ describe('ViewContainerRef', () => {
               { projection(4, 0); }
               elementEnd();
             }
-          }
+          },
+          directives: [ChildWithSelector, DirectiveWithVCRef]
         });
       }
 
@@ -565,8 +575,9 @@ describe('ViewContainerRef', () => {
                type: Parent,
                selectors: [['parent']],
                factory: () => new Parent(),
-               template: (cmp: Parent, cm: boolean) => {
-                 if (cm) {
+               template: (rf: RenderFlags, cmp: Parent) => {
+                 let tplRef: any;
+                 if (rf & RenderFlags.Create) {
                    container(0, embeddedTemplate);
                    elementStart(1, 'child-with-selector');
                    elementStart(2, 'header', ['vcref', '']);
@@ -574,9 +585,11 @@ describe('ViewContainerRef', () => {
                    elementEnd();
                    elementEnd();
                  }
-                 const tplRef = getOrCreateTemplateRef(getOrCreateNodeInjectorForNode(load(0)));
-                 elementProperty(2, 'tplRef', bind(tplRef));
-                 elementProperty(2, 'name', bind(cmp.name));
+                 if (rf & RenderFlags.Update) {
+                   tplRef = getOrCreateTemplateRef(getOrCreateNodeInjectorForNode(load(0)));
+                   elementProperty(2, 'tplRef', bind(tplRef));
+                   elementProperty(2, 'name', bind(cmp.name));
+                 }
                },
                directives: [ChildWithSelector, DirectiveWithVCRef]
              });
@@ -611,8 +624,9 @@ describe('ViewContainerRef', () => {
                type: Parent,
                selectors: [['parent']],
                factory: () => new Parent(),
-               template: (cmp: Parent, cm: boolean) => {
-                 if (cm) {
+               template: (rf: RenderFlags, cmp: Parent) => {
+                 let tplRef: any;
+                 if (rf & RenderFlags.Create) {
                    container(0, embeddedTemplate);
                    elementStart(1, 'child-with-selector');
                    elementStart(2, 'footer', ['vcref', '']);
@@ -620,9 +634,11 @@ describe('ViewContainerRef', () => {
                    elementEnd();
                    elementEnd();
                  }
-                 const tplRef = getOrCreateTemplateRef(getOrCreateNodeInjectorForNode(load(0)));
-                 elementProperty(2, 'tplRef', bind(tplRef));
-                 elementProperty(2, 'name', bind(cmp.name));
+                 if (rf & RenderFlags.Update) {
+                   tplRef = getOrCreateTemplateRef(getOrCreateNodeInjectorForNode(load(0)));
+                   elementProperty(2, 'tplRef', bind(tplRef));
+                   elementProperty(2, 'name', bind(cmp.name));
+                 }
                },
                directives: [ChildWithSelector, DirectiveWithVCRef]
              });

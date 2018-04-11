@@ -8,7 +8,7 @@
 
 import {defineComponent} from '../../src/render3/index';
 import {container, containerRefreshEnd, containerRefreshStart, elementEnd, elementStart, embeddedViewEnd, embeddedViewStart, text} from '../../src/render3/instructions';
-
+import {RenderFlags} from '../../src/render3/interfaces/definition';
 import {document, renderComponent} from './render_util';
 
 describe('iv perf test', () => {
@@ -35,25 +35,27 @@ describe('iv perf test', () => {
           static ngComponentDef = defineComponent({
             type: Component,
             selectors: [['div']],
-            template: function Template(ctx: any, cm: any) {
-              if (cm) {
+            template: function Template(rf: RenderFlags, ctx: any) {
+              if (rf & RenderFlags.Create) {
                 container(0);
               }
-              containerRefreshStart(0);
-              {
-                for (let i = 0; i < count; i++) {
-                  let cm0 = embeddedViewStart(0);
-                  {
-                    if (cm0) {
-                      elementStart(0, 'div');
-                      text(1, '-');
-                      elementEnd();
+              if (rf & RenderFlags.Update) {
+                containerRefreshStart(0);
+                {
+                  for (let i = 0; i < count; i++) {
+                    let rf0 = embeddedViewStart(0);
+                    {
+                      if (rf0 & RenderFlags.Create) {
+                        elementStart(0, 'div');
+                        text(1, '-');
+                        elementEnd();
+                      }
                     }
+                    embeddedViewEnd();
                   }
-                  embeddedViewEnd();
                 }
+                containerRefreshEnd();
               }
-              containerRefreshEnd();
             },
             factory: () => new Component
           });

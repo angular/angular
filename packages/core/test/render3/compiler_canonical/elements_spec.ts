@@ -13,10 +13,9 @@ import {ComponentFixture, renderComponent, toHtml} from '../render_util';
 
 /// See: `normative.md`
 describe('elements', () => {
-  // Saving type as $boolean$, etc to simplify testing for compiler, as types aren't saved
-  type $boolean$ = boolean;
+  // Saving type as $any$, etc to simplify testing for compiler, as types aren't saved
   type $any$ = any;
-  type $number$ = number;
+  type $RenderFlags$ = $r3$.ɵRenderFlags;
 
   it('should translate DOM structure', () => {
     type $MyComponent$ = MyComponent;
@@ -34,8 +33,8 @@ describe('elements', () => {
         type: MyComponent,
         selectors: [['my-component']],
         factory: () => new MyComponent(),
-        template: function(ctx: $MyComponent$, cm: $boolean$) {
-          if (cm) {
+        template: function(rf: $RenderFlags$, ctx: $MyComponent$) {
+          if (rf & 1) {
             $r3$.ɵE(0, 'div', $e0_attrs$);
             $r3$.ɵT(1, 'Hello ');
             $r3$.ɵE(2, 'b');
@@ -85,15 +84,19 @@ describe('elements', () => {
         type: LocalRefComp,
         selectors: [['local-ref-comp']],
         factory: function LocalRefComp_Factory() { return new LocalRefComp(); },
-        template: function LocalRefComp_Template(ctx: $LocalRefComp$, cm: $boolean$) {
-          if (cm) {
+        template: function LocalRefComp_Template(rf: $RenderFlags$, ctx: $LocalRefComp$) {
+          let $tmp$: any;
+          let $tmp_2$: any;
+          if (rf & 1) {
             $r3$.ɵE(0, 'div', $e0_attrs$, $e0_locals$);
             $r3$.ɵe();
             $r3$.ɵT(3);
           }
-          const $tmp$ = $r3$.ɵld(1) as any;
-          const $tmp_2$ = $r3$.ɵld(2) as any;
-          $r3$.ɵt(3, $r3$.ɵi2(' ', $tmp$.value, ' - ', $tmp_2$.tagName, ''));
+          if (rf & 2) {
+            $tmp$ = $r3$.ɵld(1);
+            $tmp_2$ = $r3$.ɵld(2);
+            $r3$.ɵt(3, $r3$.ɵi2(' ', $tmp$.value, ' - ', $tmp_2$.tagName, ''));
+          }
         }
       });
       // /NORMATIVE
@@ -125,8 +128,8 @@ describe('elements', () => {
         type: ListenerComp,
         selectors: [['listener-comp']],
         factory: function ListenerComp_Factory() { return new ListenerComp(); },
-        template: function ListenerComp_Template(ctx: $ListenerComp$, cm: $boolean$) {
-          if (cm) {
+        template: function ListenerComp_Template(rf: $RenderFlags$, ctx: $ListenerComp$) {
+          if (rf & 1) {
             $r3$.ɵE(0, 'button');
             $r3$.ɵL('click', function ListenerComp_click_Handler() { return ctx.onClick(); });
             $r3$.ɵL('keypress', function ListenerComp_keypress_Handler($event: $any$) {
@@ -157,12 +160,14 @@ describe('elements', () => {
           type: MyComponent,
           selectors: [['my-component']],
           factory: function MyComponent_Factory() { return new MyComponent(); },
-          template: function MyComponent_Template(ctx: $MyComponent$, cm: $boolean$) {
-            if (cm) {
+          template: function MyComponent_Template(rf: $RenderFlags$, ctx: $MyComponent$) {
+            if (rf & 1) {
               $r3$.ɵE(0, 'div');
               $r3$.ɵe();
             }
-            $r3$.ɵp(0, 'id', $r3$.ɵb(ctx.someProperty));
+            if (rf & 2) {
+              $r3$.ɵp(0, 'id', $r3$.ɵb(ctx.someProperty));
+            }
           }
         });
         // /NORMATIVE
@@ -187,12 +192,14 @@ describe('elements', () => {
           type: MyComponent,
           selectors: [['my-component']],
           factory: function MyComponent_Factory() { return new MyComponent(); },
-          template: function MyComponent_Template(ctx: $MyComponent$, cm: $boolean$) {
-            if (cm) {
+          template: function MyComponent_Template(rf: $RenderFlags$, ctx: $MyComponent$) {
+            if (rf & 1) {
               $r3$.ɵE(0, 'div');
               $r3$.ɵe();
             }
-            $r3$.ɵa(0, 'title', $r3$.ɵb(ctx.someAttribute));
+            if (rf & 2) {
+              $r3$.ɵa(0, 'title', $r3$.ɵb(ctx.someAttribute));
+            }
           }
         });
         // /NORMATIVE
@@ -217,12 +224,14 @@ describe('elements', () => {
           type: MyComponent,
           selectors: [['my-component']],
           factory: function MyComponent_Factory() { return new MyComponent(); },
-          template: function MyComponent_Template(ctx: $MyComponent$, cm: $boolean$) {
-            if (cm) {
+          template: function MyComponent_Template(rf: $RenderFlags$, ctx: $MyComponent$) {
+            if (rf & 1) {
               $r3$.ɵE(0, 'div');
               $r3$.ɵe();
             }
-            $r3$.ɵkn(0, 'foo', $r3$.ɵb(ctx.someFlag));
+            if (rf & 2) {
+              $r3$.ɵkn(0, 'foo', $r3$.ɵb(ctx.someFlag));
+            }
           }
         });
         // /NORMATIVE
@@ -251,13 +260,15 @@ describe('elements', () => {
           type: MyComponent,
           selectors: [['my-component']],
           factory: function MyComponent_Factory() { return new MyComponent(); },
-          template: function MyComponent_Template(ctx: $MyComponent$, cm: $boolean$) {
-            if (cm) {
+          template: function MyComponent_Template(rf: $RenderFlags$, ctx: $MyComponent$) {
+            if (rf & 1) {
               $r3$.ɵE(0, 'div');
               $r3$.ɵe();
             }
-            $r3$.ɵsn(0, 'color', $r3$.ɵb(ctx.someColor));
-            $r3$.ɵsn(0, 'width', $r3$.ɵb(ctx.someWidth), 'px');
+            if (rf & 2) {
+              $r3$.ɵsn(0, 'color', $r3$.ɵb(ctx.someColor));
+              $r3$.ɵsn(0, 'width', $r3$.ɵb(ctx.someWidth), 'px');
+            }
           }
         });
         // /NORMATIVE
@@ -299,13 +310,15 @@ describe('elements', () => {
           type: MyComponent,
           selectors: [['my-component']],
           factory: function MyComponent_Factory() { return new MyComponent(); },
-          template: function MyComponent_Template(ctx: $MyComponent$, cm: $boolean$) {
-            if (cm) {
+          template: function MyComponent_Template(rf: $RenderFlags$, ctx: $MyComponent$) {
+            if (rf & 1) {
               $r3$.ɵE(0, 'div', $e0_attrs$);
               $r3$.ɵe();
             }
-            $r3$.ɵp(0, 'id', $r3$.ɵb(ctx.someString + 1));
-            $r3$.ɵkn(0, 'foo', $r3$.ɵb(ctx.someString == 'initial'));
+            if (rf & 2) {
+              $r3$.ɵp(0, 'id', $r3$.ɵb(ctx.someString + 1));
+              $r3$.ɵkn(0, 'foo', $r3$.ɵb(ctx.someString == 'initial'));
+            }
           }
         });
         // /NORMATIVE
@@ -333,13 +346,15 @@ describe('elements', () => {
           type: StyleComponent,
           selectors: [['style-comp']],
           factory: function StyleComponent_Factory() { return new StyleComponent(); },
-          template: function StyleComponent_Template(ctx: $StyleComponent$, cm: $boolean$) {
-            if (cm) {
+          template: function StyleComponent_Template(rf: $RenderFlags$, ctx: $StyleComponent$) {
+            if (rf & 1) {
               $r3$.ɵE(0, 'div');
               $r3$.ɵe();
             }
-            $r3$.ɵk(0, $r3$.ɵb(ctx.classExp));
-            $r3$.ɵs(0, $r3$.ɵb(ctx.styleExp));
+            if (rf & 2) {
+              $r3$.ɵk(0, $r3$.ɵb(ctx.classExp));
+              $r3$.ɵs(0, $r3$.ɵb(ctx.styleExp));
+            }
           }
         });
         // /NORMATIVE
