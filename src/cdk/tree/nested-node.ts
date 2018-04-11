@@ -79,13 +79,12 @@ export class CdkNestedTreeNode<T> extends CdkTreeNode<T> implements AfterContent
           this.updateChildrenNodes();
         });
     this.nodeOutlet.changes.pipe(takeUntil(this._destroyed))
-        .subscribe((_) => this.updateChildrenNodes());
+        .subscribe(() => this.updateChildrenNodes());
   }
 
   ngOnDestroy() {
     this._clear();
-    this._destroyed.next();
-    this._destroyed.complete();
+    super.ngOnDestroy();
   }
 
   /** Add children dataNodes to the NodeOutlet */
