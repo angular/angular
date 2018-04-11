@@ -70,7 +70,7 @@ export abstract class Body {
     }
 
     if (typeof this._body === 'object') {
-      return JSON.stringify(this._body, null, 2);
+      return JSON.stringify(this._body);
     }
 
     return this._body.toString();
