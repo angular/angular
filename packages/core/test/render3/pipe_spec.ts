@@ -11,6 +11,7 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
 
 import {defineDirective, definePipe} from '../../src/render3/definition';
 import {bind, container, containerRefreshEnd, containerRefreshStart, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, interpolation1, load, loadDirective, text, textBinding} from '../../src/render3/instructions';
+import {RenderFlags} from '../../src/render3/interfaces/definition';
 import {pipe, pipeBind1, pipeBind3, pipeBind4, pipeBindV} from '../../src/render3/pipe';
 
 import {RenderLog, getRendererFactory2, patchLoggingRenderer2} from './imported_renderer2';
@@ -33,12 +34,14 @@ describe('pipe', () => {
   const pipes = () => [CountingPipe, MultiArgPipe, CountingImpurePipe];
 
   it('should support interpolation', () => {
-    function Template(person: Person, cm: boolean) {
-      if (cm) {
+    function Template(rf: RenderFlags, person: Person) {
+      if (rf & RenderFlags.Create) {
         text(0);
         pipe(1, 'countingPipe');
       }
-      textBinding(0, interpolation1('', pipeBind1(1, person.name), ''));
+      if (rf & RenderFlags.Update) {
+        textBinding(0, interpolation1('', pipeBind1(1, person.name), ''));
+      }
     }
 
     person.init('bob', null);
@@ -46,12 +49,14 @@ describe('pipe', () => {
   });
 
   it('should throw if pipe is not found', () => {
-    const App = createComponent('app', function(ctx: any, cm: boolean) {
-      if (cm) {
+    const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
+      if (rf & RenderFlags.Create) {
         text(0);
         pipe(1, 'randomPipeName');
       }
-      textBinding(0, interpolation1('', pipeBind1(1, ctx.value), ''));
+      if (rf & RenderFlags.Update) {
+        textBinding(0, interpolation1('', pipeBind1(1, ctx.value), ''));
+      }
     }, [], pipes);
 
     expect(() => {
@@ -87,27 +92,31 @@ describe('pipe', () => {
       });
     }
 
-    function Template(ctx: string, cm: boolean) {
-      if (cm) {
+    function Template(rf: RenderFlags, ctx: string) {
+      if (rf & RenderFlags.Create) {
         elementStart(0, 'div', ['myDir', '']);
         pipe(1, 'double');
         elementEnd();
       }
-      elementProperty(0, 'elprop', bind(pipeBind1(1, ctx)));
-      directive = loadDirective(0);
+      if (rf & RenderFlags.Update) {
+        elementProperty(0, 'elprop', bind(pipeBind1(1, ctx)));
+        directive = loadDirective(0);
+      }
     }
     renderToHtml(Template, 'a', [MyDir], [DoublePipe]);
     expect(directive !.dirProp).toEqual('aa');
   });
 
   it('should support arguments in pipes', () => {
-    function Template(person: Person, cm: boolean) {
-      if (cm) {
+    function Template(rf: RenderFlags, person: Person) {
+      if (rf & RenderFlags.Create) {
         text(0);
         pipe(1, 'multiArgPipe');
       }
-      textBinding(
-          0, interpolation1('', pipeBind3(1, person.name, 'one', person.address !.city), ''));
+      if (rf & RenderFlags.Update) {
+        textBinding(
+            0, interpolation1('', pipeBind3(1, person.name, 'one', person.address !.city), ''));
+      }
     }
 
     person.init('value', new Address('two'));
@@ -115,14 +124,17 @@ describe('pipe', () => {
   });
 
   it('should support calling pipes with different number of arguments', () => {
-    function Template(person: Person, cm: boolean) {
-      if (cm) {
+    function Template(rf: RenderFlags, person: Person) {
+      if (rf & RenderFlags.Create) {
         text(0);
         pipe(1, 'multiArgPipe');
         pipe(2, 'multiArgPipe');
       }
-      textBinding(
-          0, interpolation1('', pipeBind4(2, pipeBindV(1, [person.name, 'a', 'b']), 0, 1, 2), ''));
+      if (rf & RenderFlags.Update) {
+        textBinding(
+            0,
+            interpolation1('', pipeBind4(2, pipeBindV(1, [person.name, 'a', 'b']), 0, 1, 2), ''));
+      }
     }
 
     person.init('value', null);
@@ -141,13 +153,15 @@ describe('pipe', () => {
       });
     }
 
-    function Template(person: Person, cm: boolean) {
-      if (cm) {
+    function Template(rf: RenderFlags, person: Person) {
+      if (rf & RenderFlags.Create) {
         elementStart(0, 'div');
         pipe(1, 'identityPipe');
         elementEnd();
       }
-      elementProperty(0, 'someProp', bind(pipeBind1(1, 'Megatron')));
+      if (rf & RenderFlags.Update) {
+        elementProperty(0, 'someProp', bind(pipeBind1(1, 'Megatron')));
+      }
     }
 
     renderToHtml(Template, person, null, [IdentityPipe], rendererFactory2);
@@ -160,12 +174,14 @@ describe('pipe', () => {
 
   describe('pure', () => {
     it('should call pure pipes only if the arguments change', () => {
-      function Template(person: Person, cm: boolean) {
-        if (cm) {
+      function Template(rf: RenderFlags, person: Person) {
+        if (rf & RenderFlags.Create) {
           text(0);
           pipe(1, 'countingPipe');
         }
-        textBinding(0, interpolation1('', pipeBind1(1, person.name), ''));
+        if (rf & RenderFlags.Update) {
+          textBinding(0, interpolation1('', pipeBind1(1, person.name), ''));
+        }
       }
 
       // change from undefined -> null
@@ -187,12 +203,14 @@ describe('pipe', () => {
 
   describe('impure', () => {
     it('should call impure pipes on each change detection run', () => {
-      function Template(person: Person, cm: boolean) {
-        if (cm) {
+      function Template(rf: RenderFlags, person: Person) {
+        if (rf & RenderFlags.Create) {
           text(0);
           pipe(1, 'countingImpurePipe');
         }
-        textBinding(0, interpolation1('', pipeBind1(1, person.name), ''));
+        if (rf & RenderFlags.Update) {
+          textBinding(0, interpolation1('', pipeBind1(1, person.name), ''));
+        }
       }
 
       person.name = 'bob';
@@ -201,8 +219,8 @@ describe('pipe', () => {
     });
 
     it('should not cache impure pipes', () => {
-      function Template(ctx: any, cm: boolean) {
-        if (cm) {
+      function Template(rf: RenderFlags, ctx: any) {
+        if (rf & RenderFlags.Create) {
           elementStart(0, 'div');
           pipe(1, 'countingImpurePipe');
           elementEnd();
@@ -211,26 +229,30 @@ describe('pipe', () => {
           elementEnd();
           container(4);
         }
-        elementProperty(0, 'someProp', bind(pipeBind1(1, true)));
-        elementProperty(2, 'someProp', bind(pipeBind1(3, true)));
-        pipeInstances.push(load<CountingImpurePipe>(1), load(3));
-        containerRefreshStart(4);
-        {
-          for (let i of [1, 2]) {
-            let cm1 = embeddedViewStart(1);
-            {
-              if (cm1) {
-                elementStart(0, 'div');
-                pipe(1, 'countingImpurePipe');
-                elementEnd();
+        if (rf & RenderFlags.Update) {
+          elementProperty(0, 'someProp', bind(pipeBind1(1, true)));
+          elementProperty(2, 'someProp', bind(pipeBind1(3, true)));
+          pipeInstances.push(load<CountingImpurePipe>(1), load(3));
+          containerRefreshStart(4);
+          {
+            for (let i of [1, 2]) {
+              let rf1 = embeddedViewStart(1);
+              {
+                if (rf1 & RenderFlags.Create) {
+                  elementStart(0, 'div');
+                  pipe(1, 'countingImpurePipe');
+                  elementEnd();
+                }
+                if (rf1 & RenderFlags.Update) {
+                  elementProperty(0, 'someProp', bind(pipeBind1(1, true)));
+                  pipeInstances.push(load<CountingImpurePipe>(1));
+                }
               }
-              elementProperty(0, 'someProp', bind(pipeBind1(1, true)));
-              pipeInstances.push(load<CountingImpurePipe>(1));
+              embeddedViewEnd();
             }
-            embeddedViewEnd();
           }
+          containerRefreshEnd();
         }
-        containerRefreshEnd();
       }
 
       const pipeInstances: CountingImpurePipe[] = [];
@@ -261,25 +283,29 @@ describe('pipe', () => {
     }
 
     it('should call ngOnDestroy on pipes', () => {
-      function Template(person: Person, cm: boolean) {
-        if (cm) {
+      function Template(rf: RenderFlags, person: Person) {
+        if (rf & RenderFlags.Create) {
           container(0);
         }
-        containerRefreshStart(0);
-        {
-          if (person.age > 20) {
-            let cm1 = embeddedViewStart(1);
-            {
-              if (cm1) {
-                text(0);
-                pipe(1, 'pipeWithOnDestroy');
+        if (rf & RenderFlags.Update) {
+          containerRefreshStart(0);
+          {
+            if (person.age > 20) {
+              let rf1 = embeddedViewStart(1);
+              {
+                if (rf1 & RenderFlags.Create) {
+                  text(0);
+                  pipe(1, 'pipeWithOnDestroy');
+                }
+                if (rf & RenderFlags.Update) {
+                  textBinding(0, interpolation1('', pipeBind1(1, person.age), ''));
+                }
               }
-              textBinding(0, interpolation1('', pipeBind1(1, person.age), ''));
+              embeddedViewEnd();
             }
-            embeddedViewEnd();
           }
+          containerRefreshEnd();
         }
-        containerRefreshEnd();
       }
       const pipes = [PipeWithOnDestroy];
 

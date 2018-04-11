@@ -14,7 +14,7 @@ import {renderComponent, toHtml} from '../render_util';
 
 /// See: `normative.md`
 describe('injection', () => {
-  type $boolean$ = boolean;
+  type $RenderFlags$ = $r3$.ɵRenderFlags;
 
   describe('directives', () => {
     // Directives (and Components) should use `directiveInject`
@@ -34,11 +34,13 @@ describe('injection', () => {
           factory: function MyComp_Factory() {
             return new MyComp($r3$.ɵinjectChangeDetectorRef());
           },
-          template: function MyComp_Template(ctx: $MyComp$, cm: $boolean$) {
-            if (cm) {
+          template: function MyComp_Template(rf: $RenderFlags$, ctx: $MyComp$) {
+            if (rf & 1) {
               $r3$.ɵT(0);
             }
-            $r3$.ɵt(0, $r3$.ɵb(ctx.value));
+            if (rf & 2) {
+              $r3$.ɵt(0, $r3$.ɵb(ctx.value));
+            }
           }
         });
         // /NORMATIVE
@@ -50,8 +52,8 @@ describe('injection', () => {
           selectors: [['my-app']],
           factory: function MyApp_Factory() { return new MyApp(); },
           /** <my-comp></my-comp> */
-          template: function MyApp_Template(ctx: $MyApp$, cm: $boolean$) {
-            if (cm) {
+          template: function MyApp_Template(rf: $RenderFlags$, ctx: $MyApp$) {
+            if (rf & 1) {
               $r3$.ɵE(0, 'my-comp');
               $r3$.ɵe();
             }
@@ -79,11 +81,13 @@ describe('injection', () => {
           type: MyComp,
           selectors: [['my-comp']],
           factory: function MyComp_Factory() { return new MyComp($r3$.ɵinjectAttribute('title')); },
-          template: function MyComp_Template(ctx: $MyComp$, cm: $boolean$) {
-            if (cm) {
+          template: function MyComp_Template(rf: $RenderFlags$, ctx: $MyComp$) {
+            if (rf & 1) {
               $r3$.ɵT(0);
             }
-            $r3$.ɵt(0, $r3$.ɵb(ctx.title));
+            if (rf & 2) {
+              $r3$.ɵt(0, $r3$.ɵb(ctx.title));
+            }
           }
         });
         // /NORMATIVE
@@ -95,8 +99,8 @@ describe('injection', () => {
           selectors: [['my-app']],
           factory: function MyApp_Factory() { return new MyApp(); },
           /** <my-comp></my-comp> */
-          template: function MyApp_Template(ctx: $MyApp$, cm: $boolean$) {
-            if (cm) {
+          template: function MyApp_Template(rf: $RenderFlags$, ctx: $MyApp$) {
+            if (rf & 1) {
               $r3$.ɵE(0, 'my-comp', e0_attrs);
               $r3$.ɵe();
             }
@@ -148,7 +152,7 @@ describe('injection', () => {
                 $r3$.ɵdirectiveInject(ServiceA), $r3$.ɵdirectiveInject(ServiceB), inject(INJECTOR));
           },
           /**  */
-          template: function MyApp_Template(ctx: $MyApp$, cm: $boolean$) {},
+          template: function MyApp_Template(rf: $RenderFlags$, ctx: $MyApp$) {},
           providers: [ServiceA],
           viewProviders: [ServiceB],
         });

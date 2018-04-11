@@ -12,10 +12,9 @@ import {renderComponent, toHtml} from '../render_util';
 
 /// See: `normative.md`
 describe('components & directives', () => {
-  type $boolean$ = boolean;
+  type $RenderFlags$ = $r3$.ɵRenderFlags;
   type $any$ = any;
   type $number$ = number;
-
 
   it('should instantiate directives', () => {
     type $ChildComponent$ = ChildComponent;
@@ -29,9 +28,9 @@ describe('components & directives', () => {
       static ngComponentDef = $r3$.ɵdefineComponent({
         type: ChildComponent,
         selectors: [['child']],
-        factory: () => new ChildComponent(),
-        template: function(ctx: $ChildComponent$, cm: $boolean$) {
-          if (cm) {
+        factory: function ChildComponent_Factory() { return new ChildComponent(); },
+        template: function ChildComponent_Template(rf: $RenderFlags$, ctx: $ChildComponent$) {
+          if (rf & 1) {
             $r3$.ɵT(0, 'child-view');
           }
         }
@@ -65,8 +64,8 @@ describe('components & directives', () => {
         type: MyComponent,
         selectors: [['my-component']],
         factory: () => new MyComponent(),
-        template: function(ctx: $MyComponent$, cm: $boolean$) {
-          if (cm) {
+        template: function(rf: $RenderFlags$, ctx: $MyComponent$) {
+          if (rf & 1) {
             $r3$.ɵE(0, 'child', $e0_attrs$);
             $r3$.ɵe();
             $r3$.ɵT(1, '!');
@@ -117,8 +116,8 @@ describe('components & directives', () => {
         type: MyApp,
         selectors: [['my-app']],
         factory: function MyApp_Factory() { return new MyApp(); },
-        template: function MyApp_Template(ctx: $MyApp$, cm: $boolean$) {
-          if (cm) {
+        template: function MyApp_Template(rf: $RenderFlags$, ctx: $MyApp$) {
+          if (rf & 1) {
             $r3$.ɵE(0, 'div', $e0_attrs$);
             $r3$.ɵe();
           }
@@ -167,8 +166,8 @@ describe('components & directives', () => {
         type: MyApp,
         selectors: [['my-app']],
         factory: function MyApp_Factory() { return new MyApp(); },
-        template: function MyApp_Template(ctx: $MyApp$, cm: $boolean$) {
-          if (cm) {
+        template: function MyApp_Template(rf: $RenderFlags$, ctx: $MyApp$) {
+          if (rf & 1) {
             $r3$.ɵE(0, 'button', $e0_attrs$);
             $r3$.ɵT(1, 'Click');
             $r3$.ɵe();
@@ -213,8 +212,8 @@ describe('components & directives', () => {
         type: MyApp,
         selectors: [['my-app']],
         factory: function MyApp_Factory() { return new MyApp(); },
-        template: function MyApp_Template(ctx: $MyApp$, cm: $boolean$) {
-          if (cm) {
+        template: function MyApp_Template(rf: $RenderFlags$, ctx: $MyApp$) {
+          if (rf & 1) {
             $r3$.ɵE(0, 'div', $e0_attrs$);
             $r3$.ɵe();
           }
@@ -261,8 +260,8 @@ describe('components & directives', () => {
         type: MyApp,
         selectors: [['my-app']],
         factory: function MyApp_Factory() { return new MyApp(); },
-        template: function MyApp_Template(ctx: $MyApp$, cm: $boolean$) {
-          if (cm) {
+        template: function MyApp_Template(rf: $RenderFlags$, ctx: $MyApp$) {
+          if (rf & 1) {
             $r3$.ɵE(0, 'div', $e0_attrs$);
             $r3$.ɵe();
           }
@@ -296,8 +295,8 @@ describe('components & directives', () => {
         type: MyComp,
         selectors: [['my-comp']],
         factory: function MyComp_Factory() { return new MyComp(); },
-        template: function MyComp_Template(ctx: $MyComp$, cm: $boolean$) {
-          if (cm) {
+        template: function MyComp_Template(rf: $RenderFlags$, ctx: $MyComp$) {
+          if (rf & 1) {
             $r3$.ɵT(0);
           }
           $r3$.ɵt(0, $r3$.ɵb(ctx.name));
@@ -321,12 +320,14 @@ describe('components & directives', () => {
         type: MyApp,
         selectors: [['my-app']],
         factory: function MyApp_Factory() { return new MyApp(); },
-        template: function MyApp_Template(ctx: $MyApp$, cm: $boolean$) {
-          if (cm) {
+        template: function MyApp_Template(rf: $RenderFlags$, ctx: $MyApp$) {
+          if (rf & 1) {
             $r3$.ɵE(0, 'my-comp');
             $r3$.ɵe();
           }
-          $r3$.ɵp(0, 'name', $r3$.ɵb(ctx.name));
+          if (rf & 2) {
+            $r3$.ɵp(0, 'name', $r3$.ɵb(ctx.name));
+          }
         }
       });
     }
@@ -370,23 +371,27 @@ describe('components & directives', () => {
         type: MyComponent,
         selectors: [['my-component']],
         factory: () => new MyComponent(),
-        template: function(ctx: $MyComponent$, cm: $boolean$) {
-          if (cm) {
+        template: function(rf: $RenderFlags$, ctx: $MyComponent$) {
+          if (rf & 1) {
             $r3$.ɵE(0, 'ul', null, $e0_locals$);
             $r3$.ɵC(2, C1, '', ['if', '']);
             $r3$.ɵe();
           }
           let $foo$ = $r3$.ɵld<any>(1);
-          $r3$.ɵcR(2);
-          $r3$.ɵcr();
+          if (rf & 2) {
+            $r3$.ɵcR(2);
+            $r3$.ɵcr();
+          }
 
-          function C1(ctx1: $any$, cm: $boolean$) {
-            if (cm) {
+          function C1(rf1: $RenderFlags$, ctx1: $any$) {
+            if (rf1 & 1) {
               $r3$.ɵE(0, 'li');
               $r3$.ɵT(1);
               $r3$.ɵe();
             }
-            $r3$.ɵt(1, $r3$.ɵi2('', ctx.salutation, ' ', $foo$, ''));
+            if (rf1 & 2) {
+              $r3$.ɵt(1, $r3$.ɵi2('', ctx.salutation, ' ', $foo$, ''));
+            }
           }
         }
       });
@@ -413,11 +418,13 @@ describe('components & directives', () => {
         type: MyArrayComp,
         selectors: [['my-array-comp']],
         factory: function MyArrayComp_Factory() { return new MyArrayComp(); },
-        template: function MyArrayComp_Template(ctx: $MyArrayComp$, cm: $boolean$) {
-          if (cm) {
+        template: function MyArrayComp_Template(rf: $RenderFlags$, ctx: $MyArrayComp$) {
+          if (rf & 1) {
             $r3$.ɵT(0);
           }
-          $r3$.ɵt(0, $r3$.ɵi2('', ctx.names[0], ' ', ctx.names[1], ''));
+          if (rf & 2) {
+            $r3$.ɵt(0, $r3$.ɵi2('', ctx.names[0], ' ', ctx.names[1], ''));
+          }
         },
         inputs: {names: 'names'}
       });
@@ -442,12 +449,14 @@ describe('components & directives', () => {
           type: MyApp,
           selectors: [['my-app']],
           factory: function MyApp_Factory() { return new MyApp(); },
-          template: function MyApp_Template(ctx: $MyApp$, cm: $boolean$) {
-            if (cm) {
+          template: function MyApp_Template(rf: $RenderFlags$, ctx: $MyApp$) {
+            if (rf & 1) {
               $r3$.ɵE(0, 'my-array-comp');
               $r3$.ɵe();
             }
-            $r3$.ɵp(0, 'names', cm ? $e0_arr$ : $r3$.ɵNC);
+            if (rf & 2) {
+              $r3$.ɵp(0, 'names', rf & 1 ? $e0_arr$ : $r3$.ɵNC);
+            }
           }
         });
         // /NORMATIVE
@@ -484,12 +493,14 @@ describe('components & directives', () => {
           type: MyApp,
           selectors: [['my-app']],
           factory: function MyApp_Factory() { return new MyApp(); },
-          template: function MyApp_Template(ctx: $MyApp$, cm: $boolean$) {
-            if (cm) {
+          template: function MyApp_Template(rf: $RenderFlags$, ctx: $MyApp$) {
+            if (rf & 1) {
               $r3$.ɵE(0, 'my-array-comp');
               $r3$.ɵe();
             }
-            $r3$.ɵp(0, 'names', $r3$.ɵb(ctx.someFn($r3$.ɵf0($e0_ff$))));
+            if (rf & 2) {
+              $r3$.ɵp(0, 'names', $r3$.ɵb(ctx.someFn($r3$.ɵf0($e0_ff$))));
+            }
           }
         });
         // /NORMATIVE
@@ -514,11 +525,13 @@ describe('components & directives', () => {
           type: MyComp,
           selectors: [['my-comp']],
           factory: function MyComp_Factory() { return new MyComp(); },
-          template: function MyComp_Template(ctx: $MyComp$, cm: $boolean$) {
-            if (cm) {
+          template: function MyComp_Template(rf: $RenderFlags$, ctx: $MyComp$) {
+            if (rf & 1) {
               $r3$.ɵT(0);
             }
-            $r3$.ɵt(0, $r3$.ɵb(ctx.num));
+            if (rf & 2) {
+              $r3$.ɵt(0, $r3$.ɵb(ctx.num));
+            }
           },
           inputs: {num: 'num'}
         });
@@ -540,12 +553,14 @@ describe('components & directives', () => {
           type: MyApp,
           selectors: [['my-app']],
           factory: function MyApp_Factory() { return new MyApp(); },
-          template: function MyApp_Template(ctx: $MyApp$, cm: $boolean$) {
-            if (cm) {
+          template: function MyApp_Template(rf: $RenderFlags$, ctx: $MyApp$) {
+            if (rf & 1) {
               $r3$.ɵE(0, 'my-comp');
               $r3$.ɵe();
             }
-            $r3$.ɵp(0, 'num', $r3$.ɵb($r3$.ɵf0($e0_ff$).length + 1));
+            if (rf & 2) {
+              $r3$.ɵp(0, 'num', $r3$.ɵb($r3$.ɵf0($e0_ff$).length + 1));
+            }
           }
         });
         // /NORMATIVE
@@ -580,12 +595,14 @@ describe('components & directives', () => {
           type: MyApp,
           selectors: [['my-app']],
           factory: function MyApp_Factory() { return new MyApp(); },
-          template: function MyApp_Template(ctx: $MyApp$, cm: $boolean$) {
-            if (cm) {
+          template: function MyApp_Template(rf: $RenderFlags$, ctx: $MyApp$) {
+            if (rf & 1) {
               $r3$.ɵE(0, 'my-array-comp');
               $r3$.ɵe();
             }
-            $r3$.ɵp(0, 'names', $r3$.ɵb($r3$.ɵf1($e0_ff$, ctx.customName)));
+            if (rf & 2) {
+              $r3$.ɵp(0, 'names', $r3$.ɵb($r3$.ɵf1($e0_ff$, ctx.customName)));
+            }
           }
         });
         // /NORMATIVE
@@ -624,8 +641,8 @@ describe('components & directives', () => {
           type: MyComp,
           selectors: [['my-comp']],
           factory: function MyComp_Factory() { return new MyComp(); },
-          template: function MyComp_Template(ctx: $MyComp$, cm: $boolean$) {
-            if (cm) {
+          template: function MyComp_Template(rf: $RenderFlags$, ctx: $MyComp$) {
+            if (rf & 1) {
               $r3$.ɵT(0);
               $r3$.ɵT(1);
               $r3$.ɵT(2);
@@ -639,18 +656,20 @@ describe('components & directives', () => {
               $r3$.ɵT(10);
               $r3$.ɵT(11);
             }
-            $r3$.ɵt(0, $r3$.ɵb(ctx.names[0]));
-            $r3$.ɵt(1, $r3$.ɵb(ctx.names[1]));
-            $r3$.ɵt(2, $r3$.ɵb(ctx.names[2]));
-            $r3$.ɵt(3, $r3$.ɵb(ctx.names[3]));
-            $r3$.ɵt(4, $r3$.ɵb(ctx.names[4]));
-            $r3$.ɵt(5, $r3$.ɵb(ctx.names[5]));
-            $r3$.ɵt(6, $r3$.ɵb(ctx.names[6]));
-            $r3$.ɵt(7, $r3$.ɵb(ctx.names[7]));
-            $r3$.ɵt(8, $r3$.ɵb(ctx.names[8]));
-            $r3$.ɵt(9, $r3$.ɵb(ctx.names[9]));
-            $r3$.ɵt(10, $r3$.ɵb(ctx.names[10]));
-            $r3$.ɵt(11, $r3$.ɵb(ctx.names[11]));
+            if (rf & 2) {
+              $r3$.ɵt(0, $r3$.ɵb(ctx.names[0]));
+              $r3$.ɵt(1, $r3$.ɵb(ctx.names[1]));
+              $r3$.ɵt(2, $r3$.ɵb(ctx.names[2]));
+              $r3$.ɵt(3, $r3$.ɵb(ctx.names[3]));
+              $r3$.ɵt(4, $r3$.ɵb(ctx.names[4]));
+              $r3$.ɵt(5, $r3$.ɵb(ctx.names[5]));
+              $r3$.ɵt(6, $r3$.ɵb(ctx.names[6]));
+              $r3$.ɵt(7, $r3$.ɵb(ctx.names[7]));
+              $r3$.ɵt(8, $r3$.ɵb(ctx.names[8]));
+              $r3$.ɵt(9, $r3$.ɵb(ctx.names[9]));
+              $r3$.ɵt(10, $r3$.ɵb(ctx.names[10]));
+              $r3$.ɵt(11, $r3$.ɵb(ctx.names[11]));
+            }
           },
           inputs: {names: 'names'}
         });
@@ -685,14 +704,17 @@ describe('components & directives', () => {
           type: MyApp,
           selectors: [['my-app']],
           factory: function MyApp_Factory() { return new MyApp(); },
-          template: function MyApp_Template(c: MyApp, cm: boolean) {
-            if (cm) {
+          template: function MyApp_Template(rf: $RenderFlags$, c: $any$) {
+            if (rf & 1) {
               $r3$.ɵE(0, 'my-comp');
               $r3$.ɵe();
             }
-            $r3$.ɵp(
-                0, 'names',
-                $r3$.ɵb($r3$.ɵfV($e0_ff$, [c.n0, c.n1, c.n2, c.n3, c.n4, c.n5, c.n6, c.n7, c.n8])));
+            if (rf & 2) {
+              $r3$.ɵp(
+                  0, 'names',
+                  $r3$.ɵb(
+                      $r3$.ɵfV($e0_ff$, [c.n0, c.n1, c.n2, c.n3, c.n4, c.n5, c.n6, c.n7, c.n8])));
+            }
           }
         });
         // /NORMATIVE
@@ -723,8 +745,8 @@ describe('components & directives', () => {
           type: ObjectComp,
           selectors: [['object-comp']],
           factory: function ObjectComp_Factory() { return new ObjectComp(); },
-          template: function ObjectComp_Template(ctx: $ObjectComp$, cm: $boolean$) {
-            if (cm) {
+          template: function ObjectComp_Template(rf: $RenderFlags$, ctx: $ObjectComp$) {
+            if (rf & 1) {
               $r3$.ɵE(0, 'p');
               $r3$.ɵT(1);
               $r3$.ɵe();
@@ -732,8 +754,10 @@ describe('components & directives', () => {
               $r3$.ɵT(3);
               $r3$.ɵe();
             }
-            $r3$.ɵt(1, $r3$.ɵb(ctx.config['duration']));
-            $r3$.ɵt(3, $r3$.ɵb(ctx.config.animation));
+            if (rf & 2) {
+              $r3$.ɵt(1, $r3$.ɵb(ctx.config['duration']));
+              $r3$.ɵt(3, $r3$.ɵb(ctx.config.animation));
+            }
           },
           inputs: {config: 'config'}
         });
@@ -757,12 +781,14 @@ describe('components & directives', () => {
           type: MyApp,
           selectors: [['my-app']],
           factory: function MyApp_Factory() { return new MyApp(); },
-          template: function MyApp_Template(ctx: $MyApp$, cm: $boolean$) {
-            if (cm) {
+          template: function MyApp_Template(rf: $RenderFlags$, ctx: $MyApp$) {
+            if (rf & 1) {
               $r3$.ɵE(0, 'object-comp');
               $r3$.ɵe();
             }
-            $r3$.ɵp(0, 'config', $r3$.ɵb($r3$.ɵf1($e0_ff$, ctx.name)));
+            if (rf & 2) {
+              $r3$.ɵp(0, 'config', $r3$.ɵb($r3$.ɵf1($e0_ff$, ctx.name)));
+            }
           }
         });
         // /NORMATIVE
@@ -794,8 +820,8 @@ describe('components & directives', () => {
           type: NestedComp,
           selectors: [['nested-comp']],
           factory: function NestedComp_Factory() { return new NestedComp(); },
-          template: function NestedComp_Template(ctx: $NestedComp$, cm: $boolean$) {
-            if (cm) {
+          template: function NestedComp_Template(rf: $RenderFlags$, ctx: $NestedComp$) {
+            if (rf & 1) {
               $r3$.ɵE(0, 'p');
               $r3$.ɵT(1);
               $r3$.ɵe();
@@ -806,9 +832,11 @@ describe('components & directives', () => {
               $r3$.ɵT(5);
               $r3$.ɵe();
             }
-            $r3$.ɵt(1, $r3$.ɵb(ctx.config.animation));
-            $r3$.ɵt(3, $r3$.ɵb(ctx.config.actions[0].opacity));
-            $r3$.ɵt(5, $r3$.ɵb(ctx.config.actions[1].duration));
+            if (rf & 2) {
+              $r3$.ɵt(1, $r3$.ɵb(ctx.config.animation));
+              $r3$.ɵt(3, $r3$.ɵb(ctx.config.actions[0].opacity));
+              $r3$.ɵt(5, $r3$.ɵb(ctx.config.actions[1].duration));
+            }
           },
           inputs: {config: 'config'}
         });
@@ -837,15 +865,17 @@ describe('components & directives', () => {
           type: MyApp,
           selectors: [['my-app']],
           factory: function MyApp_Factory() { return new MyApp(); },
-          template: function MyApp_Template(ctx: $MyApp$, cm: $boolean$) {
-            if (cm) {
+          template: function MyApp_Template(rf: $RenderFlags$, ctx: $MyApp$) {
+            if (rf & 1) {
               $r3$.ɵE(0, 'nested-comp');
               $r3$.ɵe();
             }
-            $r3$.ɵp(
-                0, 'config', $r3$.ɵf2(
-                                 $e0_ff_2$, ctx.name,
-                                 $r3$.ɵb($r3$.ɵf1($e0_ff_1$, $r3$.ɵf1($e0_ff$, ctx.duration)))));
+            if (rf & 2) {
+              $r3$.ɵp(
+                  0, 'config', $r3$.ɵf2(
+                                   $e0_ff_2$, ctx.name,
+                                   $r3$.ɵb($r3$.ɵf1($e0_ff_1$, $r3$.ɵf1($e0_ff$, ctx.duration)))));
+            }
           }
         });
         // /NORMATIVE

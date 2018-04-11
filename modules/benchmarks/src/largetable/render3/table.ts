@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ɵC as C, ɵE as E, ɵT as T, ɵV as V, ɵb as b, ɵcR as cR, ɵcr as cr, ɵdefineComponent as defineComponent, ɵdetectChanges as detectChanges, ɵe as e, ɵsn as sn, ɵt as t, ɵv as v} from '@angular/core';
+import {ɵC as C, ɵE as E, ɵRenderFlags as RenderFlags, ɵT as T, ɵV as V, ɵb as b, ɵcR as cR, ɵcr as cr, ɵdefineComponent as defineComponent, ɵdetectChanges as detectChanges, ɵe as e, ɵsn as sn, ɵt as t, ɵv as v} from '@angular/core';
 import {ComponentDef} from '@angular/core/src/render3/interfaces/definition';
 
 import {TableCell, buildTable, emptyTable} from '../util';
@@ -18,8 +18,8 @@ export class LargeTableComponent {
   static ngComponentDef: ComponentDef<LargeTableComponent> = defineComponent({
     type: LargeTableComponent,
     selectors: [['largetable']],
-    template: function(ctx: LargeTableComponent, cm: boolean) {
-      if (cm) {
+    template: function(rf: RenderFlags, ctx: LargeTableComponent) {
+      if (rf & RenderFlags.Create) {
         E(0, 'table');
         {
           E(1, 'tbody');
@@ -28,38 +28,44 @@ export class LargeTableComponent {
         }
         e();
       }
-      cR(2);
-      {
-        for (let row of ctx.data) {
-          let cm1 = V(1);
-          {
-            if (cm1) {
-              E(0, 'tr');
-              C(1);
-              e();
-            }
-            cR(1);
+      if (rf & RenderFlags.Update) {
+        cR(2);
+        {
+          for (let row of ctx.data) {
+            let rf1 = V(1);
             {
-              for (let cell of row) {
-                let cm2 = V(2);
+              if (rf1 & RenderFlags.Create) {
+                E(0, 'tr');
+                C(1);
+                e();
+              }
+              if (rf1 & RenderFlags.Update) {
+                cR(1);
                 {
-                  if (cm2) {
-                    E(0, 'td');
-                    { T(1); }
-                    e();
+                  for (let cell of row) {
+                    let rf2 = V(2);
+                    {
+                      if (rf2 & RenderFlags.Create) {
+                        E(0, 'td');
+                        { T(1); }
+                        e();
+                      }
+                      if (rf2 & RenderFlags.Update) {
+                        sn(0, 'background-color', b(cell.row % 2 ? '' : 'grey'));
+                        t(1, b(cell.value));
+                      }
+                    }
+                    v();
                   }
-                  sn(0, 'background-color', b(cell.row % 2 ? '' : 'grey'));
-                  t(1, b(cell.value));
                 }
-                v();
+                cr();
               }
             }
-            cr();
+            v();
           }
-          v();
         }
+        cr();
       }
-      cr();
     },
     factory: () => new LargeTableComponent(),
     inputs: {data: 'data'}

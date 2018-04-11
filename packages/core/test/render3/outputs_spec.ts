@@ -10,7 +10,7 @@ import {EventEmitter} from '@angular/core';
 
 import {defineComponent, defineDirective} from '../../src/render3/index';
 import {bind, container, containerRefreshEnd, containerRefreshStart, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, listener, text} from '../../src/render3/instructions';
-
+import {RenderFlags} from '../../src/render3/interfaces/definition';
 import {containerEl, renderToHtml} from './render_util';
 
 describe('outputs', () => {
@@ -25,7 +25,7 @@ describe('outputs', () => {
     static ngComponentDef = defineComponent({
       type: ButtonToggle,
       selectors: [['button-toggle']],
-      template: function(ctx: any, cm: boolean) {},
+      template: function(rf: RenderFlags, ctx: any) {},
       factory: () => buttonToggle = new ButtonToggle(),
       outputs: {change: 'change', resetStream: 'reset'}
     });
@@ -51,7 +51,7 @@ describe('outputs', () => {
     static ngComponentDef = defineComponent({
       type: DestroyComp,
       selectors: [['destroy-comp']],
-      template: function(ctx: any, cm: boolean) {},
+      template: function(rf: RenderFlags, ctx: any) {},
       factory: () => destroyComp = new DestroyComp()
     });
   }
@@ -73,8 +73,8 @@ describe('outputs', () => {
 
   it('should call component output function when event is emitted', () => {
     /** <button-toggle (change)="onChange()"></button-toggle> */
-    function Template(ctx: any, cm: boolean) {
-      if (cm) {
+    function Template(rf: RenderFlags, ctx: any) {
+      if (rf & RenderFlags.Create) {
         elementStart(0, 'button-toggle');
         {
           listener('change', function() { return ctx.onChange(); });
@@ -96,8 +96,8 @@ describe('outputs', () => {
 
   it('should support more than 1 output function on the same node', () => {
     /** <button-toggle (change)="onChange()" (reset)="onReset()"></button-toggle> */
-    function Template(ctx: any, cm: boolean) {
-      if (cm) {
+    function Template(rf: RenderFlags, ctx: any) {
+      if (rf & RenderFlags.Create) {
         elementStart(0, 'button-toggle');
         {
           listener('change', function() { return ctx.onChange(); });
@@ -121,8 +121,8 @@ describe('outputs', () => {
 
   it('should eval component output expression when event is emitted', () => {
     /** <button-toggle (change)="counter++"></button-toggle> */
-    function Template(ctx: any, cm: boolean) {
-      if (cm) {
+    function Template(rf: RenderFlags, ctx: any) {
+      if (rf & RenderFlags.Create) {
         elementStart(0, 'button-toggle');
         {
           listener('change', function() { return ctx.counter++; });
@@ -149,24 +149,27 @@ describe('outputs', () => {
      * % }
      */
 
-    function Template(ctx: any, cm: boolean) {
-      if (cm) {
+    function Template(rf: RenderFlags, ctx: any) {
+      if (rf & RenderFlags.Create) {
         container(0);
       }
-      containerRefreshStart(0);
-      {
-        if (ctx.condition) {
-          if (embeddedViewStart(0)) {
-            elementStart(0, 'button-toggle');
-            {
-              listener('change', function() { return ctx.onChange(); });
+      if (rf & RenderFlags.Update) {
+        containerRefreshStart(0);
+        {
+          if (ctx.condition) {
+            let rf1 = embeddedViewStart(0);
+            if (rf1 & RenderFlags.Create) {
+              elementStart(0, 'button-toggle');
+              {
+                listener('change', function() { return ctx.onChange(); });
+              }
+              elementEnd();
             }
-            elementEnd();
+            embeddedViewEnd();
           }
-          embeddedViewEnd();
         }
+        containerRefreshEnd();
       }
-      containerRefreshEnd();
     }
 
     let counter = 0;
@@ -193,34 +196,38 @@ describe('outputs', () => {
      * % }
      */
 
-    function Template(ctx: any, cm: boolean) {
-      if (cm) {
+    function Template(rf: RenderFlags, ctx: any) {
+      if (rf & RenderFlags.Create) {
         container(0);
       }
-      containerRefreshStart(0);
-      {
-        if (ctx.condition) {
-          if (embeddedViewStart(0)) {
-            container(0);
-          }
-          containerRefreshStart(0);
-          {
-            if (ctx.condition2) {
-              if (embeddedViewStart(0)) {
-                elementStart(0, 'button-toggle');
-                {
-                  listener('change', function() { return ctx.onChange(); });
-                }
-                elementEnd();
-              }
-              embeddedViewEnd();
+      if (rf & RenderFlags.Update) {
+        containerRefreshStart(0);
+        {
+          if (ctx.condition) {
+            let rf1 = embeddedViewStart(0);
+            if (rf1 & RenderFlags.Create) {
+              container(0);
             }
+            containerRefreshStart(0);
+            {
+              if (ctx.condition2) {
+                let rf1 = embeddedViewStart(0);
+                if (rf1 & RenderFlags.Create) {
+                  elementStart(0, 'button-toggle');
+                  {
+                    listener('change', function() { return ctx.onChange(); });
+                  }
+                  elementEnd();
+                }
+                embeddedViewEnd();
+              }
+            }
+            containerRefreshEnd();
+            embeddedViewEnd();
           }
-          containerRefreshEnd();
-          embeddedViewEnd();
         }
+        containerRefreshEnd();
       }
-      containerRefreshEnd();
     }
 
     let counter = 0;
@@ -245,32 +252,35 @@ describe('outputs', () => {
      *   <destroy-comp></destroy-comp>
      * % }
      */
-    function Template(ctx: any, cm: boolean) {
-      if (cm) {
+    function Template(rf: RenderFlags, ctx: any) {
+      if (rf & RenderFlags.Create) {
         container(0);
       }
-      containerRefreshStart(0);
-      {
-        if (ctx.condition) {
-          if (embeddedViewStart(0)) {
-            elementStart(0, 'button');
-            {
-              listener('click', function() { return ctx.onClick(); });
-              text(1, 'Click me');
+      if (rf & RenderFlags.Update) {
+        containerRefreshStart(0);
+        {
+          if (ctx.condition) {
+            let rf1 = embeddedViewStart(0);
+            if (rf1 & RenderFlags.Create) {
+              elementStart(0, 'button');
+              {
+                listener('click', function() { return ctx.onClick(); });
+                text(1, 'Click me');
+              }
+              elementEnd();
+              elementStart(2, 'button-toggle');
+              {
+                listener('change', function() { return ctx.onChange(); });
+              }
+              elementEnd();
+              elementStart(3, 'destroy-comp');
+              elementEnd();
             }
-            elementEnd();
-            elementStart(2, 'button-toggle');
-            {
-              listener('change', function() { return ctx.onChange(); });
-            }
-            elementEnd();
-            elementStart(3, 'destroy-comp');
-            elementEnd();
+            embeddedViewEnd();
           }
-          embeddedViewEnd();
         }
+        containerRefreshEnd();
       }
-      containerRefreshEnd();
     }
 
     let clickCounter = 0;
@@ -299,8 +309,8 @@ describe('outputs', () => {
   });
 
   it('should fire event listeners along with outputs if they match', () => {
-    function Template(ctx: any, cm: boolean) {
-      if (cm) {
+    function Template(rf: RenderFlags, ctx: any) {
+      if (rf & RenderFlags.Create) {
         elementStart(0, 'button', ['myButton', '']);
         {
           listener('click', function() { return ctx.onClick(); });
@@ -324,8 +334,8 @@ describe('outputs', () => {
 
   it('should work with two outputs of the same name', () => {
     /** <button-toggle (change)="onChange()" otherDir></button-toggle> */
-    function Template(ctx: any, cm: boolean) {
-      if (cm) {
+    function Template(rf: RenderFlags, ctx: any) {
+      if (rf & RenderFlags.Create) {
         elementStart(0, 'button-toggle', ['otherDir', '']);
         {
           listener('change', function() { return ctx.onChange(); });
@@ -359,15 +369,17 @@ describe('outputs', () => {
     }
 
     /** <button-toggle (change)="onChange()" otherChangeDir [change]="change"></button-toggle> */
-    function Template(ctx: any, cm: boolean) {
-      if (cm) {
+    function Template(rf: RenderFlags, ctx: any) {
+      if (rf & RenderFlags.Create) {
         elementStart(0, 'button-toggle', ['otherChangeDir', '']);
         {
           listener('change', function() { return ctx.onChange(); });
         }
         elementEnd();
       }
-      elementProperty(0, 'change', bind(ctx.change));
+      if (rf & RenderFlags.Update) {
+        elementProperty(0, 'change', bind(ctx.change));
+      }
     }
 
     let counter = 0;
@@ -392,8 +404,8 @@ describe('outputs', () => {
      * 'changeStream']}
      * % }
      */
-    function Template(ctx: any, cm: boolean) {
-      if (cm) {
+    function Template(rf: RenderFlags, ctx: any) {
+      if (rf & RenderFlags.Create) {
         elementStart(0, 'button');
         {
           listener('click', function() { return ctx.onClick(); });
@@ -402,29 +414,32 @@ describe('outputs', () => {
         elementEnd();
         container(2);
       }
-      containerRefreshStart(2);
-      {
-        if (ctx.condition) {
-          if (embeddedViewStart(0)) {
-            elementStart(0, 'button-toggle');
-            {
-              listener('change', function() { return ctx.onChange(); });
+      if (rf & RenderFlags.Update) {
+        containerRefreshStart(2);
+        {
+          if (ctx.condition) {
+            let rf1 = embeddedViewStart(0);
+            if (rf1 & RenderFlags.Create) {
+              elementStart(0, 'button-toggle');
+              {
+                listener('change', function() { return ctx.onChange(); });
+              }
+              elementEnd();
             }
-            elementEnd();
-          }
-          embeddedViewEnd();
-        } else {
-          if (embeddedViewStart(1)) {
-            elementStart(0, 'div', ['otherDir', '']);
-            {
-              listener('change', function() { return ctx.onChange(); });
+            embeddedViewEnd();
+          } else {
+            if (embeddedViewStart(1)) {
+              elementStart(0, 'div', ['otherDir', '']);
+              {
+                listener('change', function() { return ctx.onChange(); });
+              }
+              elementEnd();
             }
-            elementEnd();
+            embeddedViewEnd();
           }
-          embeddedViewEnd();
         }
+        containerRefreshEnd();
       }
-      containerRefreshEnd();
     }
 
     let counter = 0;
