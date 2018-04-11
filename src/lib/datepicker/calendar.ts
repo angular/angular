@@ -40,7 +40,6 @@ import {MatYearView} from './year-view';
   selector: 'mat-calendar-header',
   templateUrl: 'calendar-header.html',
   encapsulation: ViewEncapsulation.None,
-  preserveWhitespaces: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MatCalendarHeader<D> implements OnDestroy {

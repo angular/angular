@@ -95,11 +95,12 @@
     ],
     "validate-decorators": [true, {
       "Component": {
-        "encapsulation": "\\.None$",
-        "moduleId": "^module\\.id$",
-        "changeDetection": "\\.OnPush$",
+        "!host": "\\[class\\]",
+        "!preserveWhitespaces": ".*",
         "!styles": ".*",
-        "!host": "\\[class\\]"
+        "changeDetection": "\\.OnPush$",
+        "encapsulation": "\\.None$",
+        "moduleId": "^module\\.id$"
       },
       "Directive": {
         "!host": "\\[class\\]"
