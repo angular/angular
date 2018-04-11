@@ -9,9 +9,11 @@ ISSUES MISSING IMPORTANT INFORMATION MAY BE CLOSED WITHOUT INVESTIGATION.
 <pre><code>
 [ ] Regression (a behavior that used to work and stopped working in a new release)
 [ ] Bug report  <!-- Please search GitHub for a similar issue or PR before submitting -->
+[ ] Performance issue
 [ ] Feature request
 [ ] Documentation issue or request
 [ ] Support request => Please do not submit support request here, instead see https://github.com/angular/angular/blob/master/CONTRIBUTING.md#question
+[ ] Other... Please describe:
 </code></pre>
 
 ## Current behavior
