@@ -6,11 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, Directive, TemplateRef, ViewContainerRef} from '../../src/core';
+import {Component, Directive, Pipe, PipeTransform, TemplateRef, ViewContainerRef} from '../../src/core';
 import {getOrCreateNodeInjectorForNode, getOrCreateTemplateRef} from '../../src/render3/di';
-import {defineComponent, defineDirective, injectTemplateRef, injectViewContainerRef} from '../../src/render3/index';
+import {defineComponent, defineDirective, definePipe, injectTemplateRef, injectViewContainerRef} from '../../src/render3/index';
 import {bind, container, containerRefreshEnd, containerRefreshStart, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, interpolation1, load, loadDirective, projection, projectionDef, text, textBinding} from '../../src/render3/instructions';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
+import {pipe, pipeBind1} from '../../src/render3/pipe';
 
 import {ComponentFixture, TemplateFixture} from './render_util';
 
@@ -334,6 +335,89 @@ describe('ViewContainerRef', () => {
            fixture.update();
            expect(fixture.html).toEqual('before|AAB|after');
          });
+
+      it('should apply directives and pipes of the host view to the TemplateRef', () => {
+        @Component({selector: 'child', template: `{{name}}`})
+        class Child {
+          name: string;
+
+          static ngComponentDef = defineComponent({
+            type: Child,
+            selectors: [['child']],
+            factory: () => new Child(),
+            template: (rf: RenderFlags, cmp: Child) => {
+              if (rf & RenderFlags.Create) {
+                text(0);
+              }
+              if (rf & RenderFlags.Update) {
+                textBinding(0, interpolation1('', cmp.name, ''));
+              }
+            },
+            inputs: {name: 'name'}
+          });
+        }
+
+        @Pipe({name: 'starPipe'})
+        class StarPipe implements PipeTransform {
+          transform(value: any) { return `**${value}**`; }
+
+          static ngPipeDef = definePipe({
+            name: 'starPipe',
+            type: StarPipe,
+            factory: function StarPipe_Factory() { return new StarPipe(); },
+          });
+        }
+
+        @Component({
+          template: `
+            <ng-template #foo>
+              <child [name]="'C' | starPipe"></child>
+            </ng-template>
+            <child vcref [tplRef]="foo" [name]="'A' | starPipe"></child>
+            <child [name]="'B' | starPipe"></child>
+          `
+        })
+        class SomeComponent {
+          static ngComponentDef = defineComponent({
+            type: SomeComponent,
+            selectors: [['some-comp']],
+            factory: () => new SomeComponent(),
+            template: (rf: RenderFlags, cmp: SomeComponent) => {
+              if (rf & RenderFlags.Create) {
+                container(0, (rf: RenderFlags, ctx: any) => {
+                  if (rf & RenderFlags.Create) {
+                    elementStart(0, 'child');
+                    elementEnd();
+                    pipe(1, 'starPipe');
+                  }
+                  if (rf & RenderFlags.Create) {
+                    elementProperty(0, 'name', bind(pipeBind1(1, 'C')));
+                  }
+                });
+                pipe(1, 'starPipe');
+                elementStart(2, 'child', ['vcref', '']);
+                elementEnd();
+                elementStart(3, 'child');
+                elementEnd();
+              }
+              if (rf & RenderFlags.Update) {
+                const tplRef = getOrCreateTemplateRef(getOrCreateNodeInjectorForNode(load(0)));
+                elementProperty(2, 'tplRef', bind(tplRef));
+                elementProperty(2, 'name', bind(pipeBind1(1, 'A')));
+                elementProperty(3, 'name', bind(pipeBind1(1, 'B')));
+              }
+            },
+            directives: [Child, DirectiveWithVCRef],
+            pipes: [StarPipe]
+          });
+        }
+
+        const fixture = new ComponentFixture(SomeComponent);
+        directiveInstance !.vcref.createEmbeddedView(directiveInstance !.tplRef, fixture.component);
+        fixture.update();
+        expect(fixture.html)
+            .toEqual('<child vcref="">**A**</child><child>**C**</child><child>**B**</child>');
+      });
     });
 
     describe('detach', () => {
