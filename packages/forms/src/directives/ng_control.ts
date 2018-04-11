@@ -22,7 +22,7 @@ function unimplemented(): any {
  *
  * Used internally by Angular forms.
  *
- * @stable
+ *
  */
 export abstract class NgControl extends AbstractControlDirective {
   /** @internal */

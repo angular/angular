@@ -43,7 +43,7 @@ import {Tree, TreeNode} from './utils/tree';
  *
  * See `ActivatedRoute` for more information.
  *
- * @stable
+ *
  */
 export class RouterState extends Tree<ActivatedRoute> {
   /** @internal */
@@ -102,7 +102,7 @@ export function createEmptyStateSnapshot(
  * }
  * ```
  *
- * @stable
+ *
  */
 export class ActivatedRoute {
   /** The current snapshot of this route */
@@ -245,7 +245,7 @@ function flattenInherited(pathFromRoot: ActivatedRouteSnapshot[]): Inherited {
  * }
  * ```
  *
- * @stable
+ *
  */
 export class ActivatedRouteSnapshot {
   /** The configuration used to match this route **/
@@ -348,7 +348,7 @@ export class ActivatedRouteSnapshot {
  * }
  * ```
  *
- * @stable
+ *
  */
 export class RouterStateSnapshot extends Tree<ActivatedRouteSnapshot> {
   /** @internal */

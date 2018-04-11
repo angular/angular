@@ -17,7 +17,7 @@ import {ViewEncapsulation} from './view';
 /**
  * Type of the Directive decorator / constructor function.
  *
- * @stable
+ *
  */
 export interface DirectiveDecorator {
   /**
@@ -65,7 +65,7 @@ export interface DirectiveDecorator {
    * * **queries** -  configure queries that can be injected into the component
    * * **selector** - css selector that identifies this component in a template
    *
-   * @stable
+   *
    * @Annotation
    */
   (obj: Directive): TypeDecorator;
@@ -397,7 +397,7 @@ export interface Directive {
 /**
  * Directive decorator and metadata.
  *
- * @stable
+ *
  * @Annotation
  */
 export const Directive: DirectiveDecorator =
@@ -406,7 +406,7 @@ export const Directive: DirectiveDecorator =
 /**
  * Type of the Component decorator / constructor function.
  *
- * @stable
+ *
  */
 export interface ComponentDecorator {
   /**
@@ -462,7 +462,7 @@ export interface ComponentDecorator {
    *
    * {@example core/ts/metadata/metadata.ts region='component'}
    *
-   * @stable
+   *
    * @Annotation
    */
   (obj: Component): TypeDecorator;
@@ -475,7 +475,7 @@ export interface ComponentDecorator {
 /**
  * Type of the Component metadata.
  *
- * @stable
+ *
  */
 export interface Component extends Directive {
   /**
@@ -749,7 +749,7 @@ export interface Component extends Directive {
 /**
  * Component decorator and metadata.
  *
- * @stable
+ *
  * @Annotation
  */
 export const Component: ComponentDecorator = makeDecorator(
@@ -759,7 +759,7 @@ export const Component: ComponentDecorator = makeDecorator(
 /**
  * Type of the Pipe decorator / constructor function.
  *
- * @stable
+ *
  */
 export interface PipeDecorator {
   /**
@@ -780,7 +780,7 @@ export interface PipeDecorator {
 /**
  * Type of the Pipe metadata.
  *
- * @stable
+ *
  */
 export interface Pipe {
   /**
@@ -813,7 +813,7 @@ export interface Pipe {
  * To use the pipe include a reference to the pipe class in
  * {@link NgModule#declarations}.
  *
- * @stable
+ *
  * @Annotation
  */
 export const Pipe: PipeDecorator = makeDecorator('Pipe', (p: Pipe) => ({pure: true, ...p}));
@@ -822,7 +822,7 @@ export const Pipe: PipeDecorator = makeDecorator('Pipe', (p: Pipe) => ({pure: tr
 /**
  * Type of the Input decorator / constructor function.
  *
- * @stable
+ *
  */
 export interface InputDecorator {
   /**
@@ -863,7 +863,7 @@ export interface InputDecorator {
    *
    * class App {}
    * ```
-   * @stable
+   *
    */
   (bindingPropertyName?: string): any;
   new (bindingPropertyName?: string): any;
@@ -872,7 +872,7 @@ export interface InputDecorator {
 /**
  * Type of the Input metadata.
  *
- * @stable
+ *
  */
 export interface Input {
   /**
@@ -884,7 +884,7 @@ export interface Input {
 /**
  * Input decorator and metadata.
  *
- * @stable
+ *
  * @Annotation
  */
 export const Input: InputDecorator =
@@ -893,7 +893,7 @@ export const Input: InputDecorator =
 /**
  * Type of the Output decorator / constructor function.
  *
- * @stable
+ *
  */
 export interface OutputDecorator {
   /**
@@ -934,7 +934,7 @@ export interface OutputDecorator {
    *   everyFiveSeconds() { console.log('five seconds'); }
    * }
    * ```
-   * @stable
+   *
    */
   (bindingPropertyName?: string): any;
   new (bindingPropertyName?: string): any;
@@ -943,14 +943,14 @@ export interface OutputDecorator {
 /**
  * Type of the Output metadata.
  *
- * @stable
+ *
  */
 export interface Output { bindingPropertyName?: string; }
 
 /**
  * Output decorator and metadata.
  *
- * @stable
+ *
  * @Annotation
  */
 export const Output: OutputDecorator =
@@ -960,7 +960,7 @@ export const Output: OutputDecorator =
 /**
  * Type of the HostBinding decorator / constructor function.
  *
- * @stable
+ *
  */
 export interface HostBindingDecorator {
   /**
@@ -994,7 +994,7 @@ export interface HostBindingDecorator {
    *   prop;
    * }
    * ```
-   * @stable
+   *
    */
   (hostPropertyName?: string): any;
   new (hostPropertyName?: string): any;
@@ -1003,14 +1003,14 @@ export interface HostBindingDecorator {
 /**
  * Type of the HostBinding metadata.
  *
- * @stable
+ *
  */
 export interface HostBinding { hostPropertyName?: string; }
 
 /**
  * HostBinding decorator and metadata.
  *
- * @stable
+ *
  * @Annotation
  */
 export const HostBinding: HostBindingDecorator =
@@ -1020,7 +1020,7 @@ export const HostBinding: HostBindingDecorator =
 /**
  * Type of the HostListener decorator / constructor function.
  *
- * @stable
+ *
  */
 export interface HostListenerDecorator {
   /**
@@ -1052,7 +1052,7 @@ export interface HostListenerDecorator {
    * })
    * class App {}
    * ```
-   * @stable
+   *
    * @Annotation
    */
   (eventName: string, args?: string[]): any;
@@ -1062,7 +1062,7 @@ export interface HostListenerDecorator {
 /**
  * Type of the HostListener metadata.
  *
- * @stable
+ *
  */
 export interface HostListener {
   eventName?: string;
@@ -1072,7 +1072,7 @@ export interface HostListener {
 /**
  * HostListener decorator and metadata.
  *
- * @stable
+ *
  * @Annotation
  */
 export const HostListener: HostListenerDecorator =

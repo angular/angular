@@ -1,4 +1,3 @@
-/** @stable */
 export declare class MockLocationStrategy extends LocationStrategy {
     internalBaseHref: string;
     internalPath: string;

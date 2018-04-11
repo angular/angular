@@ -38,7 +38,7 @@ import {LocationChangeListener, PlatformLocation} from './platform_location';
  *
  * {@example common/location/ts/path_location_component.ts region='LocationComponent'}
  *
- * @stable
+ *
  */
 @Injectable()
 export class PathLocationStrategy extends LocationStrategy {

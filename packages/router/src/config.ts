@@ -251,7 +251,7 @@ import {UrlSegment, UrlSegmentGroup} from './url_tree';
  * Then it will extract the set of routes defined in that NgModule, and will transparently add
  * those routes to the main configuration.
  *
- * @stable use Routes
+ *  use Routes
  */
 export type Routes = Route[];
 
@@ -296,7 +296,7 @@ export type UrlMatcher = (segments: UrlSegment[], group: UrlSegmentGroup, route:
  * Represents the static data associated with a particular route.
  *
  * See `Routes` for more details.
- * @stable
+ *
  */
 export type Data = {
   [name: string]: any
@@ -308,7 +308,7 @@ export type Data = {
  * Represents the resolved data associated with a particular route.
  *
  * See `Routes` for more details.
- * @stable
+ *
  */
 export type ResolveData = {
   [name: string]: any
@@ -320,7 +320,7 @@ export type ResolveData = {
  * The type of `loadChildren`.
  *
  * See `Routes` for more details.
- * @stable
+ *
  */
 export type LoadChildrenCallback = () =>
     Type<any>| NgModuleFactory<any>| Promise<Type<any>>| Observable<Type<any>>;
@@ -331,7 +331,7 @@ export type LoadChildrenCallback = () =>
  * The type of `loadChildren`.
  *
  * See `Routes` for more details.
- * @stable
+ *
  */
 export type LoadChildren = string | LoadChildrenCallback;
 
@@ -341,7 +341,7 @@ export type LoadChildren = string | LoadChildrenCallback;
  * The type of `queryParamsHandling`.
  *
  * See `RouterLink` for more details.
- * @stable
+ *
  */
 export type QueryParamsHandling = 'merge' | 'preserve' | '';
 
@@ -357,7 +357,7 @@ export type RunGuardsAndResolvers = 'paramsChange' | 'paramsOrQueryParamsChange'
 
 /**
  * See `Routes` for more details.
- * @stable
+ *
  */
 export interface Route {
   path?: string;

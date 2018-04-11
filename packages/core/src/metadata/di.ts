@@ -49,7 +49,7 @@ export const ANALYZE_FOR_ENTRY_COMPONENTS = new InjectionToken<any>('AnalyzeForE
 /**
  * Type of the Attribute decorator / constructor function.
  *
- * @stable
+ *
  */
 export interface AttributeDecorator {
   /**
@@ -88,7 +88,7 @@ export interface AttributeDecorator {
    * ]
    * ```
    *
-   * @stable
+   *
    */
   (name: string): any;
   new (name: string): Attribute;
@@ -103,7 +103,7 @@ export interface Attribute { attributeName?: string; }
 /**
  * Attribute decorator and metadata.
  *
- * @stable
+ *
  * @Annotation
  */
 export const Attribute: AttributeDecorator =
@@ -112,7 +112,7 @@ export const Attribute: AttributeDecorator =
 /**
  * Type of the Query metadata.
  *
- * @stable
+ *
  */
 export interface Query {
   descendants: boolean;
@@ -128,7 +128,7 @@ export interface Query {
  * See {@link ContentChildren}, {@link ContentChild}, {@link ViewChildren}, {@link ViewChild} for
  * more information.
  *
- * @stable
+ *
  */
 export abstract class Query {}
 
@@ -137,7 +137,7 @@ export abstract class Query {}
  *
  * See {@link ContentChildren}.
  *
- * @stable
+ *
  */
 export interface ContentChildrenDecorator {
   /**
@@ -168,7 +168,7 @@ export interface ContentChildrenDecorator {
    *
    * **npm package**: `@angular/core`
    *
-   * @stable
+   *
    * @Annotation
    */
   (selector: Type<any>|Function|string, opts?: {descendants?: boolean, read?: any}): any;
@@ -178,7 +178,7 @@ export interface ContentChildrenDecorator {
 /**
  * Type of the ContentChildren metadata.
  *
- * @stable
+ *
  * @Annotation
  */
 export type ContentChildren = Query;
@@ -186,7 +186,7 @@ export type ContentChildren = Query;
 /**
  * ContentChildren decorator and metadata.
  *
- *  @stable
+ *
  *  @Annotation
  */
 export const ContentChildren: ContentChildrenDecorator = makePropDecorator(
@@ -199,7 +199,7 @@ export const ContentChildren: ContentChildrenDecorator = makePropDecorator(
  * Type of the ContentChild decorator / constructor function.
  *
  *
- * @stable
+ *
  */
 export interface ContentChildDecorator {
   /**
@@ -228,7 +228,7 @@ export interface ContentChildDecorator {
    *
    * **npm package**: `@angular/core`
    *
-   * @stable
+   *
    * @Annotation
    */
   (selector: Type<any>|Function|string, opts?: {read?: any}): any;
@@ -240,14 +240,14 @@ export interface ContentChildDecorator {
  *
  * See {@link ContentChild}.
  *
- * @stable
+ *
  */
 export type ContentChild = Query;
 
 /**
  * ContentChild decorator and metadata.
  *
- * @stable
+ *
  * @Annotation
  */
 export const ContentChild: ContentChildDecorator = makePropDecorator(
@@ -260,7 +260,7 @@ export const ContentChild: ContentChildDecorator = makePropDecorator(
  *
  * See {@link ViewChildren}.
  *
- * @stable
+ *
  */
 export interface ViewChildrenDecorator {
   /**
@@ -289,7 +289,7 @@ export interface ViewChildrenDecorator {
    *
    * **npm package**: `@angular/core`
    *
-   * @stable
+   *
    * @Annotation
    */
   (selector: Type<any>|Function|string, opts?: {read?: any}): any;
@@ -299,14 +299,14 @@ export interface ViewChildrenDecorator {
 /**
  * Type of the ViewChildren metadata.
  *
- * @stable
+ *
  */
 export type ViewChildren = Query;
 
 /**
  * ViewChildren decorator and metadata.
  *
- * @stable
+ *
  * @Annotation
  */
 export const ViewChildren: ViewChildrenDecorator = makePropDecorator(
@@ -319,7 +319,7 @@ export const ViewChildren: ViewChildrenDecorator = makePropDecorator(
  *
  * See {@link ViewChild}
  *
- * @stable
+ *
  */
 export interface ViewChildDecorator {
   /**
@@ -346,7 +346,7 @@ export interface ViewChildDecorator {
    *
    * **npm package**: `@angular/core`
    *
-   * @stable
+   *
    * @Annotation
    */
   (selector: Type<any>|Function|string, opts?: {read?: any}): any;
@@ -356,14 +356,14 @@ export interface ViewChildDecorator {
 /**
  * Type of the ViewChild metadata.
  *
- * @stable
+ *
  */
 export type ViewChild = Query;
 
 /**
  * ViewChild decorator and metadata.
  *
- * @stable
+ *
  * @Annotation
  */
 export const ViewChild: ViewChildDecorator = makePropDecorator(

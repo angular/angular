@@ -34,7 +34,7 @@ export const JSONP_ERR_WRONG_RESPONSE_TYPE = 'JSONP requests must use Json respo
  *
  * In the browser, this should always be the `window` object.
  *
- * @stable
+ *
  */
 export abstract class JsonpCallbackContext { [key: string]: (data: any) => void; }
 
@@ -42,7 +42,7 @@ export abstract class JsonpCallbackContext { [key: string]: (data: any) => void;
  * `HttpBackend` that only processes `HttpRequest` with the JSONP method,
  * by performing JSONP style requests.
  *
- * @stable
+ *
  */
 @Injectable()
 export class JsonpClientBackend implements HttpBackend {
@@ -206,7 +206,7 @@ export class JsonpClientBackend implements HttpBackend {
  * An `HttpInterceptor` which identifies requests with the method JSONP and
  * shifts them to the `JsonpClientBackend`.
  *
- * @stable
+ *
  */
 @Injectable()
 export class JsonpInterceptor {

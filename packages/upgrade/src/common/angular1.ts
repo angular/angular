@@ -262,7 +262,7 @@ export function getAngularLib(): any {
  *
  * Used when AngularJS is loaded lazily, and not available on `window`.
  *
- * @stable
+ *
  */
 export function setAngularJSGlobal(ng: any): void {
   angular = ng;
@@ -272,7 +272,7 @@ export function setAngularJSGlobal(ng: any): void {
 /**
  * Returns the current AngularJS global.
  *
- * @stable
+ *
  */
 export function getAngularJSGlobal(): any {
   return angular;

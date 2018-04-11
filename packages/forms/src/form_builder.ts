@@ -29,7 +29,7 @@ import {AbstractControl, FormArray, FormControl, FormGroup} from './model';
  *
  *  * **NgModule**: `ReactiveFormsModule`
  *
- * @stable
+ *
  */
 @Injectable()
 export class FormBuilder {

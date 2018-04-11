@@ -7,7 +7,7 @@
  */
 
 /**
- * @stable
+ *
  */
 export abstract class ChangeDetectorRef {
   /**

@@ -53,7 +53,7 @@ import {Subject, Subscription} from 'rxjs';
  * https://github.com/jhusain/observable-spec
  *
  * Once a reference implementation of the spec is available, switch to it.
- * @stable
+ *
  */
 export class EventEmitter<T> extends Subject<T> {
   // TODO: mark this as internal once all the facades are gone
