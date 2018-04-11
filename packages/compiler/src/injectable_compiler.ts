@@ -66,7 +66,16 @@ export class InjectableCompiler {
       } else if (token === this.tokenInjector) {
         tokenExpr = o.importExpr(Identifiers.INJECTOR);
       } else {
-        tokenExpr = ctx.importExpr(token);
+        // The InjectableCompiler never runs against an NgFactory file, so it should never use
+        // summary imports. The implication of this is that if an @Injectable attempts to useClass
+        // a class that's not in the same compilation unit, the Bazel/Blaze rule that builds the
+        // @Injectable must have a direct dependency on all of the dependencies of the useClass.
+        //
+        // In Ivy, every @Injectable will have ngInjectableDef, so useClass won't result in:
+        //    factory: () => new UseClass(inject(Dep1), inject(Dep2))
+        // but in:
+        //    factory: () => UseClass.ngInjectableDef.factory()
+        tokenExpr = ctx.importExpr(token, undefined, false);
       }
 
       if (flags !== InjectFlags.Default || defaultValue !== undefined) {
