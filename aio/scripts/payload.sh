@@ -8,5 +8,8 @@ readonly parentDir=$(dirname $thisDir)
 # Track payload size functions
 source ../scripts/ci/payload-size.sh
 
+# Provide node_modules from aio
+NODE_MODULES_BIN=$PROJECT_ROOT/aio/node_modules/.bin/
+
 trackPayloadSize "aio" "dist/*.js" true true "${thisDir}/_payload-limits.json"
 
