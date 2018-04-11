@@ -5,8 +5,9 @@ icon fonts and SVG icons, but not bitmap-based formats (png, jpg, etc.).
 
 ### Registering icons
 
-`MatIconRegistry` is an injectable service that allows you to associate icon names with SVG URLs and
-define aliases for CSS font classes. Its methods are discussed below and listed in the API summary.
+`MatIconRegistry` is an injectable service that allows you to associate icon names with SVG URLs,
+HTML strings and to define aliases for CSS font classes. Its methods are discussed below and listed
+in the API summary.
 
 ### Font icons with ligatures
 
@@ -44,19 +45,20 @@ SVG content is the CSS
 value. This makes SVG icons by default have the same color as surrounding text, and allows you to
 change the color by setting the "color" style on the `mat-icon` element.
 
-In order to prevent XSS vulnerabilities, any SVG URLs passed to the `MatIconRegistry` must be
-marked as trusted resource URLs by using Angular's `DomSanitizer` service.
+In order to prevent XSS vulnerabilities, any SVG URLs and HTML strings passed to the
+`MatIconRegistry` must be marked as trusted by using Angular's `DomSanitizer` service.
 
-Also note that all SVG icons are fetched via XmlHttpRequest, and due to the same-origin policy,
-their URLs must be on the same domain as the containing page, or their servers must be configured
-to allow cross-domain access.
+Also note that all SVG icons, registered by URL, are fetched via XmlHttpRequest, and due to the
+same-origin policy, their URLs must be on the same domain as the containing page, or their servers
+must be configured to allow cross-domain access.
 
 #### Named icons
 
-To associate a name with an icon URL, use the `addSvgIcon` or `addSvgIconInNamespace` methods of
-`MatIconRegistry`. After registering an icon, it can be displayed by setting the `svgIcon` input.
-For an icon in the default namespace, use the name directly. For a non-default namespace, use the
-format `[namespace]:[name]`.
+To associate a name with an icon URL, use the `addSvgIcon`, `addSvgIconInNamespace`,
+`addSvgIconLiteral` or `addSvgIconLiteralInNamespace` methods of `MatIconRegistry`. After
+registering an icon, it can be displayed by setting the `svgIcon` input. For an icon in the
+default namespace, use the name directly. For a non-default namespace, use the format
+`[namespace]:[name]`.
 
 #### Icon sets
 
@@ -64,9 +66,10 @@ Icon sets allow grouping multiple icons into a single SVG file. This is done by 
 root `<svg>` tag that contains multiple nested `<svg>` tags in its `<defs>` section. Each of these
 nested tags is identified with an `id` attribute. This `id` is used as the name of the icon.
 
-Icon sets are registered using the `addSvgIconSet` or `addSvgIconSetInNamespace` methods of
-`MatIconRegistry`. After an icon set is registered, each of its embedded icons can be accessed by
-their `id` attributes. To display an icon from an icon set, use the `svgIcon` input in the same way
+Icon sets are registered using the `addSvgIconSet`, `addSvgIconSetInNamespace`,
+`addSvgIconSetLiteral` or `addSvgIconSetLiteralInNamespace` methods of `MatIconRegistry`.
+After an icon set is registered, each of its embedded icons can be accessed by their `id`
+attributes. To display an icon from an icon set, use the `svgIcon` input in the same way
 as for individually registered icons.
 
 Multiple icon sets can be registered in the same namespace. Requesting an icon whose id appears in
