@@ -8,8 +8,8 @@ DEFAULT_TSCONFIG = "//packages:tsconfig-build.json"
 
 # Packages which are versioned together on npm
 ANGULAR_SCOPED_PACKAGES = ["@angular/%s" % p for p in [
-  "bazel",
   "core",
+  "bazel",
   "common",
   "compiler",
   "compiler-cli",
