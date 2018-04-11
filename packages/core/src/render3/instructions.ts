@@ -19,7 +19,7 @@ import {LContainerNode, LElementNode, LNode, LNodeType, TNodeFlags, LProjectionN
 import {assertNodeType} from './node_assert';
 import {appendChild, insertChild, insertView, appendProjectedNode, removeView, canInsertNativeNode, createTextNode} from './node_manipulation';
 import {isNodeMatchingSelectorList, matchingSelectorIndex} from './node_selector_matcher';
-import {ComponentDef, ComponentTemplate, ComponentType, DirectiveDef, DirectiveDefList, DirectiveDefListOrFactory, DirectiveType, PipeDef, PipeDefListOrFactory, RenderFlags} from './interfaces/definition';
+import {ComponentDef, ComponentTemplate, ComponentType, DirectiveDef, DirectiveDefList, DirectiveDefListOrFactory, DirectiveType, PipeDef, PipeDefList, PipeDefListOrFactory, RenderFlags} from './interfaces/definition';
 import {RElement, RText, Renderer3, RendererFactory3, ProceduralRenderer3, ObjectOrientedRenderer3, RendererStyleFlags3, isProceduralRenderer} from './interfaces/renderer';
 import {isDifferent, stringify} from './util';
 import {executeHooks, queueLifecycleHooks, queueInitHooks, executeInitHooks} from './hooks';
@@ -450,8 +450,8 @@ export function renderTemplate<T>(
 }
 
 export function renderEmbeddedTemplate<T>(
-    viewNode: LViewNode | null, template: ComponentTemplate<T>, context: T,
-    renderer: Renderer3): LViewNode {
+    viewNode: LViewNode | null, template: ComponentTemplate<T>, context: T, renderer: Renderer3,
+    directives?: DirectiveDefList | null, pipes?: PipeDefList | null): LViewNode {
   const _isParent = isParent;
   const _previousOrParentNode = previousOrParentNode;
   let oldView: LView;
@@ -460,11 +460,7 @@ export function renderEmbeddedTemplate<T>(
     previousOrParentNode = null !;
     let rf: RenderFlags = RenderFlags.Update;
     if (viewNode == null) {
-      // TODO: revisit setting currentView when re-writing view containers
-      const directives = currentView && currentView.tView.directiveRegistry;
-      const pipes = currentView && currentView.tView.pipeRegistry;
-
-      const tView = getOrCreateTView(template, directives, pipes);
+      const tView = getOrCreateTView(template, directives || null, pipes || null);
       const lView = createLView(-1, renderer, tView, template, context, LViewFlags.CheckAlways);
 
       viewNode = createLNode(null, LNodeType.View, null, lView);
@@ -1474,6 +1470,7 @@ function refreshDynamicChildren() {
       const container = current as LContainer;
       for (let i = 0; i < container.views.length; i++) {
         const view = container.views[i];
+        // The directives and pipes are not needed here as an existing view is only being refreshed.
         renderEmbeddedTemplate(view, view.data.template !, view.data.context !, renderer);
       }
     }
