@@ -13,6 +13,7 @@ import {compile, expectEmit} from './mock_compile';
   * test in compiler_canonical_spec.ts should have a corresponding test here.
   */
 describe('compiler compliance', () => {
+
   const angularFiles = setup({
     compileAngular: true,
     compileAnimations: false,
@@ -45,8 +46,8 @@ describe('compiler compliance', () => {
       const template = `
         const $c1$ = ['class', 'my-app', 'title', 'Hello'];
         …
-        template: function MyComponent_Template(ctx: IDENT, cm: IDENT) {
-          if (cm) {
+        template: function MyComponent_Template(rf: IDENT, ctx: IDENT) {
+          if (rf & 1) {
             $r3$.ɵE(0, 'div', $c1$);
             $r3$.ɵT(1, 'Hello ');
             $r3$.ɵE(2, 'b');
@@ -94,8 +95,8 @@ describe('compiler compliance', () => {
           type: ChildComponent,
           selectors: [['child']],
           factory: function ChildComponent_Factory() { return new ChildComponent(); },
-          template: function ChildComponent_Template(ctx: IDENT, cm: IDENT) {
-            if (cm) {
+          template: function ChildComponent_Template(rf: IDENT, ctx: IDENT) {
+            if (rf & 1) {
               $r3$.ɵT(0, 'child-view');
             }
           }
@@ -118,8 +119,8 @@ describe('compiler compliance', () => {
           type: MyComponent,
           selectors: [['my-component']],
           factory: function MyComponent_Factory() { return new MyComponent(); },
-          template: function MyComponent_Template(ctx: IDENT, cm: IDENT) {
-            if (cm) {
+          template: function MyComponent_Template(rf: IDENT, ctx: IDENT) {
+            if (rf & 1) {
               $r3$.ɵE(0, 'child', $c1$);
               $r3$.ɵe();
               $r3$.ɵT(1, '!');
@@ -255,21 +256,22 @@ describe('compiler compliance', () => {
           type: MyComponent,
           selectors: [['my-component']],
           factory: function MyComponent_Factory() { return new MyComponent(); },
-          template: function MyComponent_Template(ctx: IDENT, cm: IDENT) {
-            if (cm) {
+          template: function MyComponent_Template(rf: IDENT, ctx: IDENT) {
+            if (rf & 1) {
               $r3$.ɵE(0, 'ul', null, $c1$);
               $r3$.ɵC(2, MyComponent_IfDirective_Template_2, null, $c2$);
               $r3$.ɵe();
             }
             const $foo$ = $r3$.ɵld(1);
-
-            function MyComponent_IfDirective_Template_2(ctx0: IDENT, cm: IDENT) {
-              if (cm) {
+            function MyComponent_IfDirective_Template_2(rf: IDENT, ctx0: IDENT) {
+              if (rf & 1) {
                 $r3$.ɵE(0, 'li');
                 $r3$.ɵT(1);
                 $r3$.ɵe();
               }
-              $r3$.ɵt(1, $r3$.ɵi2('', ctx.salutation, ' ', $foo$, ''));
+              if (rf & 2) {
+                $r3$.ɵt(1, $r3$.ɵi2('', ctx.salutation, ' ', $foo$, ''));
+              }
             }
           },
           directives: [IfDirective]
@@ -324,12 +326,14 @@ describe('compiler compliance', () => {
             type: MyApp,
             selectors: [['my-app']],
             factory: function MyApp_Factory() { return new MyApp(); },
-            template: function MyApp_Template(ctx: $MyApp$, cm: $boolean$) {
-              if (cm) {
+            template: function MyApp_Template(rf: $RenderFlags$, ctx: $MyApp$) {
+              if (rf & 1) {
                 $r3$.ɵE(0, 'my-comp');
                 $r3$.ɵe();
               }
-              $r3$.ɵp(0, 'names', $r3$.ɵb($r3$.ɵf1($e0_ff$, ctx.customName)));
+              if (rf & 2) {
+                $r3$.ɵp(0, 'names', $r3$.ɵb($r3$.ɵf1($e0_ff$, ctx.customName)));
+              }
             },
             directives: [MyComp]
           });
@@ -401,14 +405,16 @@ describe('compiler compliance', () => {
             type: MyApp,
             selectors: [['my-app']],
             factory: function MyApp_Factory() { return new MyApp(); },
-            template: function MyApp_Template(ctx: $MyApp$, cm: $boolean$) {
-              if (cm) {
+            template: function MyApp_Template(rf: $RenderFlags$, ctx: $MyApp$) {
+              if (rf & 1) {
                 $r3$.ɵE(0, 'my-comp');
                 $r3$.ɵe();
               }
-              $r3$.ɵp(
-                  0, 'names',
-                  $r3$.ɵb($r3$.ɵfV($e0_ff$, ctx.n0, ctx.n1, ctx.n2, ctx.n3, ctx.n4, ctx.n5, ctx.n6, ctx.n7, ctx.n8)));
+              if (rf & 2) {
+                $r3$.ɵp(
+                    0, 'names',
+                    $r3$.ɵb($r3$.ɵfV($e0_ff$, ctx.n0, ctx.n1, ctx.n2, ctx.n3, ctx.n4, ctx.n5, ctx.n6, ctx.n7, ctx.n8)));
+              }
             },
             directives: [MyComp]
           });
@@ -460,12 +466,14 @@ describe('compiler compliance', () => {
             type: MyApp,
             selectors: [['my-app']],
             factory: function MyApp_Factory() { return new MyApp(); },
-            template: function MyApp_Template(ctx: $MyApp$, cm: $boolean$) {
-              if (cm) {
+            template: function MyApp_Template(rf: $RenderFlags$, ctx: $MyApp$) {
+              if (rf & 1) {
                 $r3$.ɵE(0, 'object-comp');
                 $r3$.ɵe();
               }
-              $r3$.ɵp(0, 'config', $r3$.ɵb($r3$.ɵf1($e0_ff$, ctx.name)));
+              if (rf & 2) {
+                $r3$.ɵp(0, 'config', $r3$.ɵb($r3$.ɵf1($e0_ff$, ctx.name)));
+              }
             },
             directives: [ObjectComp]
           });
@@ -523,15 +531,17 @@ describe('compiler compliance', () => {
             type: MyApp,
             selectors: [['my-app']],
             factory: function MyApp_Factory() { return new MyApp(); },
-            template: function MyApp_Template(ctx: $MyApp$, cm: $boolean$) {
-              if (cm) {
+            template: function MyApp_Template(rf: $RenderFlags$, ctx: $MyApp$) {
+              if (rf & 1) {
                 $r3$.ɵE(0, 'nested-comp');
                 $r3$.ɵe();
               }
-              $r3$.ɵp(
-                  0, 'config',
-                  $r3$.ɵb($r3$.ɵf2(
-                      $e0_ff_2$, ctx.name, $r3$.ɵf1($e0_ff_1$, $r3$.ɵf1($e0_ff$, ctx.duration)))));
+              if (rf & 2) {
+                $r3$.ɵp(
+                    0, 'config',
+                    $r3$.ɵb($r3$.ɵf2(
+                        $e0_ff_2$, ctx.name, $r3$.ɵf1($e0_ff_1$, $r3$.ɵf1($e0_ff$, ctx.duration)))));
+              }
             },
             directives: [NestedComp]
           });
@@ -579,8 +589,8 @@ describe('compiler compliance', () => {
           type: SimpleComponent,
           selectors: [['simple']],
           factory: function SimpleComponent_Factory() { return new SimpleComponent(); },
-          template: function SimpleComponent_Template(ctx: IDENT, cm: IDENT) {
-            if (cm) {
+          template: function SimpleComponent_Template(rf: IDENT, ctx: IDENT) {
+            if (rf & 1) {
               $r3$.ɵpD(0);
               $r3$.ɵE(1, 'div');
               $r3$.ɵP(2, 0);
@@ -598,8 +608,8 @@ describe('compiler compliance', () => {
           type: ComplexComponent,
           selectors: [['complex']],
           factory: function ComplexComponent_Factory() { return new ComplexComponent(); },
-          template: function ComplexComponent_Template(ctx: IDENT, cm: IDENT) {
-            if (cm) {
+          template: function ComplexComponent_Template(rf: IDENT, ctx: IDENT) {
+            if (rf & 1) {
               $r3$.ɵpD(0, $c1$);
               $r3$.ɵE(1, 'div', $c2$);
               $r3$.ɵP(2, 0, 1);
@@ -663,14 +673,16 @@ describe('compiler compliance', () => {
             type: ViewQueryComponent,
             selectors: [['view-query-component']],
             factory: function ViewQueryComponent_Factory() { return new ViewQueryComponent(); },
-            template: function ViewQueryComponent_Template(ctx: $ViewQueryComponent$, cm: $boolean$) {
+            template: function ViewQueryComponent_Template(rf: $RenderFlags$, ctx: $ViewQueryComponent$) {
               var $tmp$: $any$;
-              if (cm) {
+              if (rf & 1) {
                 $r3$.ɵQ(0, SomeDirective, true);
                 $r3$.ɵE(1, 'div', $e0_attrs$);
                 $r3$.ɵe();
               }
-              ($r3$.ɵqR(($tmp$ = $r3$.ɵld(0))) && (ctx.someDir = $tmp$.first));
+              if (rf & 2) {
+                ($r3$.ɵqR(($tmp$ = $r3$.ɵld(0))) && (ctx.someDir = $tmp$.first));
+              }
             },
             directives:[SomeDirective]
           });`;
@@ -728,8 +740,8 @@ describe('compiler compliance', () => {
               ($r3$.ɵqR(($tmp$ = $r3$.ɵld(dirIndex)[1])) && ($r3$.ɵld(dirIndex)[0].someDir = $tmp$.first));
             },
             template: function ContentQueryComponent_Template(
-                ctx: $ContentQueryComponent$, cm: $boolean$) {
-              if (cm) {
+                rf: $RenderFlags$, ctx: $ContentQueryComponent$) {
+              if (rf & 1) {
                 $r3$.ɵpD(0);
                 $r3$.ɵE(1, 'div');
                 $r3$.ɵP(2, 0);
@@ -805,8 +817,8 @@ describe('compiler compliance', () => {
               type: MyApp,
               selectors: [['my-app']],
               factory: function MyApp_Factory() { return new MyApp(); },
-              template: function MyApp_Template(ctx: IDENT, cm: IDENT) {
-                if (cm) {
+              template: function MyApp_Template(rf: IDENT, ctx: IDENT) {
+                if (rf & 1) {
                   $r3$.ɵT(0);
                   $r3$.ɵPp(1, 'myPurePipe');
                   $r3$.ɵPp(2, 'myPipe');
@@ -815,8 +827,10 @@ describe('compiler compliance', () => {
                   $r3$.ɵPp(5, 'myPurePipe');
                   $r3$.ɵe();
                 }
-                $r3$.ɵt(0, $r3$.ɵi1('', $r3$.ɵpb2(1, $r3$.ɵpb2(2,ctx.name, ctx.size), ctx.size), ''));
-                $r3$.ɵt(4, $r3$.ɵi1('', $r3$.ɵpb2(5, ctx.name, ctx.size), ''));
+                if (rf & 2) {
+                  $r3$.ɵt(0, $r3$.ɵi1('', $r3$.ɵpb2(1, $r3$.ɵpb2(2,ctx.name, ctx.size), ctx.size), ''));
+                  $r3$.ɵt(4, $r3$.ɵi1('', $r3$.ɵpb2(5, ctx.name, ctx.size), ''));
+                }
               },
               pipes: [MyPurePipe, MyPipe]
             });`;
@@ -852,14 +866,16 @@ describe('compiler compliance', () => {
           type: MyComponent,
           selectors: [['my-component']],
           factory: function MyComponent_Factory() { return new MyComponent(); },
-          template: function MyComponent_Template(ctx: IDENT, cm: IDENT) {
-            if (cm) {
+          template: function MyComponent_Template(rf: IDENT, ctx: IDENT) {
+            if (rf & 1) {
               $r3$.ɵE(0, 'input', null, $c1$);
               $r3$.ɵe();
               $r3$.ɵT(2);
             }
             const $user$ = $r3$.ɵld(1);
-            $r3$.ɵt(2, $r3$.ɵi1('Hello ', $user$.value, '!'));
+            if (rf & 2) {
+              $r3$.ɵt(2, $r3$.ɵi1('Hello ', $user$.value, '!'));
+            }
           }
         });
       `;
@@ -920,7 +936,7 @@ describe('compiler compliance', () => {
             type: LifecycleComp,
             selectors: [['lifecycle-comp']],
             factory: function LifecycleComp_Factory() { return new LifecycleComp(); },
-            template: function LifecycleComp_Template(ctx: IDENT, cm: IDENT) {},
+            template: function LifecycleComp_Template(rf: IDENT, ctx: IDENT) {},
             inputs: {nameMin: 'name'},
             features: [$r3$.ɵNgOnChangesFeature(LifecycleComp)]
           });`;
@@ -930,15 +946,17 @@ describe('compiler compliance', () => {
             type: SimpleLayout,
             selectors: [['simple-layout']],
             factory: function SimpleLayout_Factory() { return new SimpleLayout(); },
-            template: function SimpleLayout_Template(ctx: IDENT, cm: IDENT) {
-              if (cm) {
+            template: function SimpleLayout_Template(rf: IDENT, ctx: IDENT) {
+              if (rf & 1) {
                 $r3$.ɵE(0, 'lifecycle-comp');
                 $r3$.ɵe();
                 $r3$.ɵE(1, 'lifecycle-comp');
                 $r3$.ɵe();
               }
-              $r3$.ɵp(0, 'name', $r3$.ɵb(ctx.name1));
-              $r3$.ɵp(1, 'name', $r3$.ɵb(ctx.name2));
+              if (rf & 2) {
+                $r3$.ɵp(0, 'name', $r3$.ɵb(ctx.name1));
+                $r3$.ɵp(1, 'name', $r3$.ɵb(ctx.name2));
+              }
             },
             directives: [LifecycleComp]
           });`;
@@ -1049,22 +1067,26 @@ describe('compiler compliance', () => {
             type: MyComponent,
             selectors: [['my-component']],
             factory: function MyComponent_Factory() { return new MyComponent(); },
-            template: function MyComponent_Template(ctx: IDENT, cm: IDENT) {
-              if (cm) {
+            template: function MyComponent_Template(rf: IDENT, ctx: IDENT) {
+              if (rf & 1) {
                 $r3$.ɵE(0, 'ul');
                 $r3$.ɵC(1, MyComponent_ForOfDirective_Template_1, null, $_c0$);
                 $r3$.ɵe();
               }
-              $r3$.ɵp(1, 'forOf', $r3$.ɵb(ctx.items));
+              if (rf & 2) {
+                $r3$.ɵp(1, 'forOf', $r3$.ɵb(ctx.items));
+              }
 
-              function MyComponent_ForOfDirective_Template_1(ctx0: IDENT, cm: IDENT) {
-                if (cm) {
+              function MyComponent_ForOfDirective_Template_1(rf: IDENT, ctx0: IDENT) {
+                if (rf & 1) {
                   $r3$.ɵE(0, 'li');
                   $r3$.ɵT(1);
                   $r3$.ɵe();
                 }
-                const $item$ = ctx0.$implicit;
-                $r3$.ɵt(1, $r3$.ɵi1('', $item$.name, ''));
+                if (rf & 2) {
+                  const $item$ = ctx0.$implicit;
+                  $r3$.ɵt(1, $r3$.ɵi1('', $item$.name, ''));
+                }
               }
             },
             directives: [ForOfDirective]
@@ -1123,16 +1145,18 @@ describe('compiler compliance', () => {
             type: MyComponent,
             selectors: [['my-component']],
             factory: function MyComponent_Factory() { return new MyComponent(); },
-            template: function MyComponent_Template(ctx: IDENT, cm: IDENT) {
-              if (cm) {
+            template: function MyComponent_Template(rf: IDENT, ctx: IDENT) {
+              if (rf & 1) {
                 $r3$.ɵE(0, 'ul');
                 $r3$.ɵC(1, MyComponent_ForOfDirective_Template_1, null, $c1$);
                 $r3$.ɵe();
               }
-              $r3$.ɵp(1, 'forOf', $r3$.ɵb(ctx.items));
+              if (rf & 2) {
+                $r3$.ɵp(1, 'forOf', $r3$.ɵb(ctx.items));
+              }
 
-              function MyComponent_ForOfDirective_Template_1(ctx0: IDENT, cm: IDENT) {
-                if (cm) {
+              function MyComponent_ForOfDirective_Template_1(rf: IDENT, ctx0: IDENT) {
+                if (rf & 1) {
                   $r3$.ɵE(0, 'li');
                   $r3$.ɵE(1, 'div');
                   $r3$.ɵT(2);
@@ -1142,20 +1166,24 @@ describe('compiler compliance', () => {
                   $r3$.ɵe();
                   $r3$.ɵe();
                 }
-                const $item$ = ctx0.$implicit;
-                $r3$.ɵp(4, 'forOf', $r3$.ɵb(IDENT.infos));
-                $r3$.ɵt(2, $r3$.ɵi1('', IDENT.name, ''));
+                if (rf & 2) {
+                  const $item$ = ctx0.$implicit;
+                  $r3$.ɵt(2, $r3$.ɵi1('', IDENT.name, ''));
+                  $r3$.ɵp(4, 'forOf', $r3$.ɵb(IDENT.infos));
+                }
 
                 function MyComponent_ForOfDirective_ForOfDirective_Template_4(
-                    ctx1: IDENT, cm: IDENT) {
-                  if (cm) {
+                    rf: IDENT, ctx1: IDENT) {
+                  if (rf & 1) {
                     $r3$.ɵE(0, 'li');
                     $r3$.ɵT(1);
                     $r3$.ɵe();
                   }
-                  const $item$ = ctx0.$implicit;
-                  const $info$ = ctx1.$implicit;
-                  $r3$.ɵt(1, $r3$.ɵi2(' ', $item$.name, ': ', $info$.description, ' '));
+                  if (rf & 2) {
+                    const $item$ = ctx0.$implicit;
+                    const $info$ = ctx1.$implicit;
+                    $r3$.ɵt(1, $r3$.ɵi2(' ', $item$.name, ': ', $info$.description, ' '));
+                  }
                 }
               }
             },
