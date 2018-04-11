@@ -207,7 +207,7 @@ export function enterView(newView: LView, host: LElementNode | LViewNode | null)
   renderer = newView && newView.renderer;
 
   if (newView && newView.bindingIndex < 0) {
-    newView.bindingIndex = newView.bindingStartIndex || -1;
+    newView.bindingIndex = newView.bindingStartIndex;
   }
 
   if (host != null) {
@@ -294,7 +294,7 @@ export function createLView<T>(
     child: null,
     tail: null,
     next: null,
-    bindingStartIndex: null,
+    bindingStartIndex: -1,
     bindingIndex: -1,
     template: template,
     context: context,
@@ -544,7 +544,8 @@ function getRenderFlags(view: LView): RenderFlags {
 export function elementStart(
     index: number, name: string, attrs?: string[] | null, localRefs?: string[] | null): RElement {
   ngDevMode &&
-      assertNull(currentView.bindingStartIndex, 'elements should be created before any bindings');
+      assertEqual(
+          currentView.bindingStartIndex, -1, 'elements should be created before any bindings');
 
   const native: RElement = renderer.createElement(name);
   const node: LElementNode = createLNode(index, LNodeType.Element, native !, null);
@@ -1160,7 +1161,8 @@ export function elementStyle<T>(
  */
 export function text(index: number, value?: any): void {
   ngDevMode &&
-      assertNull(currentView.bindingStartIndex, 'text nodes should be created before bindings');
+      assertEqual(
+          currentView.bindingStartIndex, -1, 'text nodes should be created before bindings');
   const textNode = value != null ? createTextNode(value, renderer) : null;
   const node = createLNode(index, LNodeType.Element, textNode);
   // Text nodes are self closing.
@@ -1259,7 +1261,8 @@ function addComponentLogic<T>(index: number, instance: T, def: ComponentDef<T>):
 export function baseDirectiveCreate<T>(
     index: number, directive: T, directiveDef: DirectiveDef<T>| ComponentDef<T>): T {
   ngDevMode &&
-      assertNull(currentView.bindingStartIndex, 'directives should be created before any bindings');
+      assertEqual(
+          currentView.bindingStartIndex, -1, 'directives should be created before any bindings');
   ngDevMode && assertPreviousIsParent();
 
   Object.defineProperty(
@@ -1381,9 +1384,9 @@ export function createLContainer(
 export function container(
     index: number, template?: ComponentTemplate<any>, tagName?: string, attrs?: string[],
     localRefs?: string[] | null): void {
-  ngDevMode &&
-      assertNull(
-          currentView.bindingStartIndex, 'container nodes should be created before any bindings');
+  ngDevMode && assertEqual(
+                   currentView.bindingStartIndex, -1,
+                   'container nodes should be created before any bindings');
 
   const currentParent = isParent ? previousOrParentNode : previousOrParentNode.parent !;
   const lContainer = createLContainer(currentParent, currentView, template);
@@ -1976,9 +1979,9 @@ export const NO_CHANGE = {} as NO_CHANGE;
  *  (ie `bind()`, `interpolationX()`, `pureFunctionX()`)
  */
 function initBindings() {
-  ngDevMode &&
-      assertNull(
-          currentView.bindingStartIndex, 'Binding start index should only be set once, when null');
+  ngDevMode && assertEqual(
+                   currentView.bindingStartIndex, -1,
+                   'Binding start index should only be set once, when null');
   ngDevMode && assertEqual(
                    currentView.bindingIndex, -1,
                    'Binding index should not yet be set ' + currentView.bindingIndex);
@@ -1991,7 +1994,7 @@ function initBindings() {
  * @param value Value to diff
  */
 export function bind<T>(value: T | NO_CHANGE): T|NO_CHANGE {
-  if (currentView.bindingStartIndex == null) {
+  if (currentView.bindingStartIndex < 0) {
     initBindings();
     return data[currentView.bindingIndex++] = value;
   }
@@ -2178,7 +2181,7 @@ export function consumeBinding(): any {
 export function bindingUpdated(value: any): boolean {
   ngDevMode && assertNotEqual(value, NO_CHANGE, 'Incoming value should never be NO_CHANGE.');
 
-  if (currentView.bindingStartIndex == null) {
+  if (currentView.bindingStartIndex < 0) {
     initBindings();
   } else if (isDifferent(data[currentView.bindingIndex], value)) {
     throwErrorIfNoChangesMode(

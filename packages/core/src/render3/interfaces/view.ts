@@ -61,7 +61,7 @@ export interface LView {
    * will begin reading bindings at the correct point in the array when
    * we are in update mode.
    */
-  bindingStartIndex: number|null;
+  bindingStartIndex: number;
 
   /**
    * The binding index we should access next.
