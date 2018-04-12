@@ -81,7 +81,7 @@ import {MockFilesystem} from '../testing/mock';
                patterns: [
                  '\\/absolute\\/.*',
                  '\\/some\\/url\\?with\\+escaped\\+chars',
-                 '\\/test\\/relative\\/[^\\/]+\\.txt',
+                 '\\/test\\/relative\\/[^\\/]*\\.txt',
                ]
              }],
              dataGroups: [{
@@ -97,7 +97,7 @@ import {MockFilesystem} from '../testing/mock';
                {positive: true, regex: '^\\/included\\/absolute\\/.*$'},
                {positive: false, regex: '^\\/excluded\\/absolute\\/.*$'},
                {positive: true, regex: '^\\/included\\/some\\/url\\?with\\+escaped\\+chars$'},
-               {positive: false, regex: '^\\/test\\/excluded\\/relative\\/[^\\/]+\\.txt$'},
+               {positive: false, regex: '^\\/test\\/excluded\\/relative\\/[^\\/]*\\.txt$'},
                {positive: true, regex: '^http:\\/\\/example\\.com\\/included$'},
                {positive: false, regex: '^http:\\/\\/example\\.com\\/excluded$'},
              ],
@@ -129,8 +129,9 @@ import {MockFilesystem} from '../testing/mock';
              dataGroups: [],
              navigationUrls: [
                {positive: true, regex: '^\\/.*$'},
-               {positive: false, regex: '^\\/(?:.+\\/)?[^\\/]+\\.[^\\/]+$'},
-               {positive: false, regex: '^\\/(?:.+\\/)?[^\\/]+__[^\\/]+\\/.*$'},
+               {positive: false, regex: '^\\/(?:.+\\/)?[^\\/]*\\.[^\\/]*$'},
+               {positive: false, regex: '^\\/(?:.+\\/)?[^\\/]*__[^\\/]*$'},
+               {positive: false, regex: '^\\/(?:.+\\/)?[^\\/]*__[^\\/]*\\/.*$'},
              ],
              hashTable: {}
            });
