@@ -7,7 +7,6 @@
  */
 
 import {Attribute, ChangeDetectorRef, ComponentFactoryResolver, ComponentRef, Directive, EventEmitter, Injector, OnDestroy, OnInit, Output, ViewContainerRef} from '@angular/core';
-
 import {ChildrenOutletContexts} from '../router_outlet_context';
 import {ActivatedRoute} from '../router_state';
 import {PRIMARY_OUTLET} from '../shared';
@@ -129,7 +128,12 @@ export class RouterOutlet implements OnDestroy, OnInit {
     const snapshot = activatedRoute._futureSnapshot;
     const component = <any>snapshot.routeConfig !.component;
     resolver = resolver || this.resolver;
-    const factory = resolver.resolveComponentFactory(component);
+    let factory;
+    if (component.hasOwnProperty('__annotations__')) {
+      factory = resolver.resolveComponentFactory(component);
+    } else {
+      factory = resolver.resolveComponentFactory(component(snapshot));
+    }
     const childContexts = this.parentContexts.getOrCreateContext(this.name).children;
     const injector = new OutletInjector(activatedRoute, childContexts, this.location.injector);
     this.activated = this.location.createComponent(factory, this.location.length, injector);

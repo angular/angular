@@ -8,10 +8,10 @@
 
 import {Type} from '@angular/core';
 
-import {Data, ResolveData, Route} from '../src/config';
+import {ComponentStrategy, Data, ResolveData, Route} from '../src/config';
 import {ActivatedRouteSnapshot} from '../src/router_state';
-import {PRIMARY_OUTLET, ParamMap, Params, convertToParamMap} from '../src/shared';
-import {UrlSegment, UrlSegmentGroup, UrlTree, equalSegments} from '../src/url_tree';
+import {Params} from '../src/shared';
+import {UrlSegment, UrlSegmentGroup} from '../src/url_tree';
 
 export class Logger {
   logs: string[] = [];
@@ -34,7 +34,7 @@ export declare type ARSArgs = {
   fragment?: string,
   data?: Data,
   outlet?: string,
-  component: Type<any>| string | null,
+  component: Type<any>| ComponentStrategy | string | null,
   routeConfig?: Route | null,
   urlSegment?: UrlSegmentGroup,
   lastPathIndex?: number,

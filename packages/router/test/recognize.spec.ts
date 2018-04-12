@@ -8,15 +8,26 @@
 
 import {Routes} from '../src/config';
 import {recognize} from '../src/recognize';
-import {ActivatedRouteSnapshot, RouterStateSnapshot} from '../src/router_state';
+import {ActivatedRoute, ActivatedRouteSnapshot, RouterStateSnapshot} from '../src/router_state';
 import {PRIMARY_OUTLET, Params} from '../src/shared';
 import {DefaultUrlSerializer, UrlTree} from '../src/url_tree';
 
 describe('recognize', () => {
-  it('should work', () => {
+  it('should work with component', () => {
     checkRecognize([{path: 'a', component: ComponentA}], 'a', (s: any) => {
       checkActivatedRoute(s.root, '', {}, RootComponent);
       checkActivatedRoute(s.firstChild(s.root) !, 'a', {}, ComponentA);
+    });
+  });
+
+  it('should work with componentStrategy', () => {
+
+    const componentStrategy =
+        (activatedRouteSnapshot: ActivatedRouteSnapshot) => { return ComponentA; };
+
+    checkRecognize([{path: 'a', component: componentStrategy}], 'a', (s: any) => {
+      checkActivatedRoute(s.root, '', {}, RootComponent);
+      checkActivatedRoute(s.firstChild(s.root) !, 'a', {}, componentStrategy);
     });
   });
 

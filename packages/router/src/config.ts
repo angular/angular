@@ -8,8 +8,11 @@
 
 import {NgModuleFactory, NgModuleRef, Type} from '@angular/core';
 import {Observable} from 'rxjs';
+
+import {ActivatedRouteSnapshot} from './router_state';
 import {PRIMARY_OUTLET} from './shared';
 import {UrlSegment, UrlSegmentGroup} from './url_tree';
+
 
 /**
  * @description
@@ -21,7 +24,7 @@ import {UrlSegment, UrlSegmentGroup} from './url_tree';
  * - `path` is a string that uses the route matcher DSL.
  * - `pathMatch` is a string that specifies the matching strategy.
  * - `matcher` defines a custom strategy for path matching and supersedes `path` and `pathMatch`.
- * - `component` is a component type.
+ * - `component` is a component type or a `ComponentStrategy` that return a component type.
  * - `redirectTo` is the url fragment which will replace the current matched segment.
  * - `outlet` is the name of the outlet the component should be placed into.
  * - `canActivate` is an array of DI tokens used to look up CanActivate handlers. See
@@ -51,6 +54,24 @@ import {UrlSegment, UrlSegmentGroup} from './url_tree';
  *   children: [{
  *     path: 'user/:name',
  *     component: User
+ *   }]
+ * }]
+ * ```
+ *
+ * or using `ComponentStrategy`
+ *
+ * ``
+ *
+ * const componentStrategy = (activatedRouteSnapshot: ActivatedRouteSnapshot) => {
+ *     return SimpleCmp;
+ * };
+ *
+ * [{
+ *   path: 'team/:id',
+ *  component: Team,
+ *   children: [{
+ *     path: 'user/:name',
+ *     component: componentStrategy
  *   }]
  * }]
  * ```
@@ -356,6 +377,16 @@ export type QueryParamsHandling = 'merge' | 'preserve' | '';
 export type RunGuardsAndResolvers = 'paramsChange' | 'paramsOrQueryParamsChange' | 'always';
 
 /**
+ * @description
+ *
+ * The type of `componentStrategy`.
+ *
+ * See `Routes` for more details.
+ * @experimental
+ */
+export type ComponentStrategy = (activatedRouteSnapshot: ActivatedRouteSnapshot) => Type<any>;
+
+/**
  * See `Routes` for more details.
  *
  */
@@ -363,7 +394,7 @@ export interface Route {
   path?: string;
   pathMatch?: string;
   matcher?: UrlMatcher;
-  component?: Type<any>;
+  component?: Type<any>|ComponentStrategy;
   redirectTo?: string;
   outlet?: string;
   canActivate?: any[];

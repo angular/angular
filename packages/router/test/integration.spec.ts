@@ -49,6 +49,154 @@ describe('Integration', () => {
        expect(fixture.nativeElement).toHaveText('route');
      })));
 
+  describe('navigation with a componentStrategy', function() {
+
+    let log: string[] = [];
+
+    @Component({template: '<router-outlet></router-outlet>'})
+    class Parent {
+      constructor(route: ActivatedRoute) {
+        route.params.subscribe((s: any) => { log.push(s); });
+      }
+    }
+
+    @Component({template: 'child1'})
+    class Child1 {
+      ngOnDestroy() { log.push('child1 destroy'); }
+    }
+
+    @Component({template: 'child2'})
+    class Child2 {
+      constructor() { log.push('child2 constructor'); }
+    }
+
+    @NgModule({
+      declarations: [Parent, Child1, Child2],
+      entryComponents: [Parent, Child1, Child2],
+      imports: [RouterModule]
+    })
+    class TestModule {
+    }
+
+    beforeEach(() => {
+      log = [];
+      TestBed.configureTestingModule({imports: [TestModule]});
+    });
+
+
+    it('should navigate ',
+       fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
+         const componentStrategy =
+             (activatedRouteSnapshot: ActivatedRouteSnapshot) => { return RouteCmp; };
+
+         router.resetConfig([
+           {path: '', component: SimpleCmp},
+           {path: 'one', component: componentStrategy},
+         ]);
+
+         const fixture = createRoot(router, RootCmp);
+         router.navigateByUrl('/one');
+         advance(fixture);
+         expect(location.path()).toEqual('/one');
+         expect(fixture.nativeElement).toHaveText('route');
+       })));
+
+    it('should navigate when we if ',
+       fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
+
+         const componentStrategy = (activatedRouteSnapshot: ActivatedRouteSnapshot) => {
+           if (activatedRouteSnapshot.pathFromRoot[1].params['id'] === '2') {
+             return Child2;
+           } else {
+             return Child1;
+           }
+         };
+
+         router.resetConfig([{
+           path: 'parent/:id',
+           component: Parent,
+           children: [
+             {path: 'child1', component: Child1},
+             {path: 'child2', component: componentStrategy},
+           ]
+         }]);
+
+         const fixture = createRoot(router, RootCmp);
+
+         router.navigateByUrl('/parent/1/child1');
+         advance(fixture);
+
+         router.navigateByUrl('/parent/2/child2');
+         advance(fixture);
+
+         expect(location.path()).toEqual('/parent/2/child2');
+         expect(fixture.nativeElement).toHaveText('child2');
+         expect(log).toEqual([
+           {id: '1'},
+           'child1 destroy',
+           {id: '2'},
+           'child2 constructor',
+         ]);
+       })));
+  });
+
+  describe('Use componentStrategy', () => {
+    let log: string[];
+    let observer: Observer<any>;
+
+    beforeEach(() => {
+      log = [];
+      TestBed.configureTestingModule({
+        providers: [
+          {
+            provide: 'resolver1',
+            useValue: () => {
+              const obs$ = new Observable((obs: Observer<any>) => {
+                observer = obs;
+                return () => {};
+              });
+              return obs$.pipe(map(() => log.push('resolver1')));
+            }
+          },
+          {
+            provide: 'resolver2',
+            useValue: () => {
+              return of (null).pipe(map(() => {
+                log.push('resolver2');
+                observer.next(null);
+                observer.complete();
+              }));
+            }
+          },
+        ]
+      });
+    });
+
+    it('should works with resolver', fakeAsync(inject([Router], (router: Router) => {
+         const fixture = createRoot(router, RootCmp);
+
+         const componentStrategy =
+             (activatedRouteSnapshot: ActivatedRouteSnapshot) => { return SimpleCmp; };
+
+         router.resetConfig([{
+           path: 'a',
+           resolve: {
+             one: 'resolver1',
+             two: 'resolver2',
+           },
+           component: componentStrategy
+         }]);
+
+         router.navigateByUrl('/a');
+         advance(fixture);
+
+         expect(log).toEqual(['resolver2', 'resolver1']);
+       })));
+
+  });
+
+
+
   describe('navigation', function() {
     it('should navigate to the current URL', fakeAsync(inject([Router], (router: Router) => {
          router.onSameUrlNavigation = 'reload';

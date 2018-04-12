@@ -1,6 +1,6 @@
 export declare class ActivatedRoute {
     readonly children: ActivatedRoute[];
-    component: Type<any> | string | null;
+    component: Type<any> | ComponentStrategy | string | null;
     data: Observable<Data>;
     readonly firstChild: ActivatedRoute | null;
     fragment: Observable<string>;
@@ -20,7 +20,7 @@ export declare class ActivatedRoute {
 
 export declare class ActivatedRouteSnapshot {
     readonly children: ActivatedRouteSnapshot[];
-    component: Type<any> | string | null;
+    component: Type<any> | ComponentStrategy | string | null;
     data: Data;
     readonly firstChild: ActivatedRouteSnapshot | null;
     fragment: string;
@@ -279,7 +279,7 @@ export interface Route {
     canDeactivate?: any[];
     canLoad?: any[];
     children?: Routes;
-    component?: Type<any>;
+    component?: Type<any> | ComponentStrategy;
     data?: Data;
     loadChildren?: LoadChildren;
     matcher?: UrlMatcher;

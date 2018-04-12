@@ -10,7 +10,7 @@ import {Type} from '@angular/core';
 import {BehaviorSubject, Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 
-import {Data, ResolveData, Route} from './config';
+import {ComponentStrategy, Data, ResolveData, Route} from './config';
 import {PRIMARY_OUTLET, ParamMap, Params, convertToParamMap} from './shared';
 import {UrlSegment, UrlSegmentGroup, UrlTree, equalSegments} from './url_tree';
 import {shallowEqual, shallowEqualArrays} from './utils/collection';
@@ -132,7 +132,8 @@ export class ActivatedRoute {
       public outlet: string,
       /** The component of the route. It's a constant */
       // TODO(vsavkin): remove |string
-      public component: Type<any>|string|null, futureSnapshot: ActivatedRouteSnapshot) {
+      public component: Type<any>|ComponentStrategy|string|null,
+      futureSnapshot: ActivatedRouteSnapshot) {
     this._futureSnapshot = futureSnapshot;
   }
 
@@ -280,8 +281,8 @@ export class ActivatedRouteSnapshot {
       /** The outlet name of the route */
       public outlet: string,
       /** The component of the route */
-      public component: Type<any>|string|null, routeConfig: Route|null, urlSegment: UrlSegmentGroup,
-      lastPathIndex: number, resolve: ResolveData) {
+      public component: Type<any>|ComponentStrategy|string|null, routeConfig: Route|null,
+      urlSegment: UrlSegmentGroup, lastPathIndex: number, resolve: ResolveData) {
     this.routeConfig = routeConfig;
     this._urlSegment = urlSegment;
     this._lastPathIndex = lastPathIndex;
