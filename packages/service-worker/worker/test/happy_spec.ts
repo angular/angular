@@ -688,6 +688,12 @@ const manifestUpdateHash = sha1(JSON.stringify(manifestUpdate));
 
         expect(await navRequest('/baz/x__x/qux')).toBeNull();
         server.assertSawRequestFor('/baz/x__x/qux');
+
+        expect(await navRequest('/baz/__')).toBeNull();
+        server.assertSawRequestFor('/baz/__');
+
+        expect(await navRequest('/baz/__/qux')).toBeNull();
+        server.assertSawRequestFor('/baz/__/qux');
       });
 
       describe('(with custom `navigationUrls`)', () => {
