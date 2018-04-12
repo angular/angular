@@ -74,7 +74,7 @@ describe('di', () => {
         static ngDirectiveDef = defineDirective({
           type: DirA,
           selectors: [['', 'dirA', '']],
-          factory: () => new DirA,
+          factory: () => new DirA(),
           features: [PublicFeature]
         });
       }

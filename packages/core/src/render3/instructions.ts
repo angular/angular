@@ -232,7 +232,7 @@ export function leaveView(newView: LView): void {
   }
   // Views should be clean and in update mode after being checked, so these bits are cleared
   currentView.flags &= ~(LViewFlags.CreationMode | LViewFlags.Dirty);
-  currentView.lifecycleStage = LifecycleStage.INIT;
+  currentView.lifecycleStage = LifecycleStage.Init;
   currentView.bindingIndex = -1;
   enterView(newView, null);
 }
@@ -299,7 +299,7 @@ export function createLView<T>(
     template: template,
     context: context,
     dynamicViewCount: 0,
-    lifecycleStage: LifecycleStage.INIT,
+    lifecycleStage: LifecycleStage.Init,
     queries: null,
   };
 
@@ -599,8 +599,8 @@ function findDirectiveMatches(tNode: TNode): CurrentMatchesList|null {
       const def = registry[i];
       if (isNodeMatchingSelectorList(tNode, def.selectors !)) {
         if ((def as ComponentDef<any>).template) {
-          if (tNode.flags & TNodeFlags.Component) throwMultipleComponentError(tNode);
-          tNode.flags = TNodeFlags.Component;
+          if (tNode.flags & TNodeFlags.isComponent) throwMultipleComponentError(tNode);
+          tNode.flags = TNodeFlags.isComponent;
         }
         if (def.diPublic) def.diPublic(def);
         (matches || (matches = [])).push(def, null);
@@ -650,7 +650,7 @@ export function initChangeDetectorIfExisting(
 }
 
 export function isComponent(tNode: TNode): boolean {
-  return (tNode.flags & TNodeFlags.Component) === TNodeFlags.Component;
+  return (tNode.flags & TNodeFlags.isComponent) === TNodeFlags.isComponent;
 }
 
 /**
@@ -658,14 +658,15 @@ export function isComponent(tNode: TNode): boolean {
  */
 function instantiateDirectivesDirectly() {
   const tNode = previousOrParentNode.tNode !;
-  const size = (tNode.flags & TNodeFlags.SIZE_MASK) >> TNodeFlags.SIZE_SHIFT;
+  const count = tNode.flags & TNodeFlags.DirectiveCountMask;
 
-  if (size > 0) {
-    const startIndex = tNode.flags >> TNodeFlags.INDX_SHIFT;
+  if (count > 0) {
+    const start = tNode.flags >> TNodeFlags.DirectiveStartingIndexShift;
+    const end = start + count;
     const tDirectives = currentView.tView.directives !;
 
-    for (let i = startIndex; i < startIndex + size; i++) {
-      const def = tDirectives[i] as DirectiveDef<any>;
+    for (let i = start; i < end; i++) {
+      const def: DirectiveDef<any> = tDirectives[i];
       directiveCreate(i, def.factory(), def);
     }
   }
@@ -818,7 +819,7 @@ export function hostElement(
 
   if (firstTemplatePass) {
     node.tNode = createTNode(tag as string, null, null);
-    node.tNode.flags = TNodeFlags.Component;
+    node.tNode.flags = TNodeFlags.isComponent;
     if (def.diPublic) def.diPublic(def);
     currentView.tView.directives = [def];
   }
@@ -1005,15 +1006,16 @@ function setInputsForProperty(inputs: PropertyAliasValue, value: any): void {
  */
 function generatePropertyAliases(
     tNodeFlags: TNodeFlags, direction: BindingDirection): PropertyAliases|null {
-  const size = (tNodeFlags & TNodeFlags.SIZE_MASK) >> TNodeFlags.SIZE_SHIFT;
+  const count = tNodeFlags & TNodeFlags.DirectiveCountMask;
   let propStore: PropertyAliases|null = null;
 
-  if (size > 0) {
-    const start = tNodeFlags >> TNodeFlags.INDX_SHIFT;
+  if (count > 0) {
+    const start = tNodeFlags >> TNodeFlags.DirectiveStartingIndexShift;
+    const end = start + count;
     const isInput = direction === BindingDirection.Input;
     const defs = currentView.tView.directives !;
 
-    for (let i = start, ii = start + size; i < ii; i++) {
+    for (let i = start; i < end; i++) {
       const directiveDef = defs[i] as DirectiveDef<any>;
       const propertyAliasMap: {[publicName: string]: string} =
           isInput ? directiveDef.inputs : directiveDef.outputs;
@@ -1211,7 +1213,7 @@ export function directiveCreate<T>(
   const instance = baseDirectiveCreate(index, directive, directiveDef);
 
   ngDevMode && assertNotNull(previousOrParentNode.tNode, 'previousOrParentNode.tNode');
-  const tNode: TNode|null = previousOrParentNode.tNode !;
+  const tNode = previousOrParentNode.tNode;
 
   const isComponent = (directiveDef as ComponentDef<T>).template;
   if (isComponent) {
@@ -1275,9 +1277,19 @@ export function baseDirectiveCreate<T>(
 
   if (firstTemplatePass) {
     const flags = previousOrParentNode.tNode !.flags;
-    previousOrParentNode.tNode !.flags = (flags & TNodeFlags.SIZE_MASK) === 0 ?
-        (index << TNodeFlags.INDX_SHIFT) | TNodeFlags.SIZE_SKIP | flags & TNodeFlags.Component :
-        flags + TNodeFlags.SIZE_SKIP;
+    if ((flags & TNodeFlags.DirectiveCountMask) === 0) {
+      // When the first directive is created:
+      // - save the index,
+      // - set the number of directives to 1
+      previousOrParentNode.tNode !.flags =
+          index << TNodeFlags.DirectiveStartingIndexShift | flags & TNodeFlags.isComponent | 1;
+    } else {
+      // Only need to bump the size when subsequent directives are created
+      ngDevMode && assertNotEqual(
+                       flags & TNodeFlags.DirectiveCountMask, TNodeFlags.DirectiveCountMask,
+                       'Reached the max number of directives');
+      previousOrParentNode.tNode !.flags++;
+    }
   } else {
     const diPublic = directiveDef !.diPublic;
     if (diPublic) diPublic(directiveDef !);
@@ -1932,7 +1944,7 @@ export function getRootView(component: any): LView {
 export function detectChanges<T>(component: T): void {
   const hostNode = _getComponentHostLElementNode(component);
   ngDevMode && assertNotNull(hostNode.data, 'Component host node should be attached to an LView');
-  const componentIndex = hostNode.tNode !.flags >> TNodeFlags.INDX_SHIFT;
+  const componentIndex = hostNode.tNode !.flags >> TNodeFlags.DirectiveStartingIndexShift;
   const def = hostNode.view.tView.directives ![componentIndex] as ComponentDef<T>;
   detectChangesInternal(hostNode.data as LView, hostNode, def, component);
 }
