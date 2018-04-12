@@ -9,7 +9,7 @@
 // We are temporarily importing the existing viewEngine_from core so we can be sure we are
 // correctly implementing its interfaces for backwards compatibility.
 import {ChangeDetectorRef as viewEngine_ChangeDetectorRef} from '../change_detection/change_detector_ref';
-import {Injector} from '../di/injector';
+import {InjectFlags, Injector} from '../di/injector';
 import {ComponentFactory as viewEngine_ComponentFactory, ComponentRef as viewEngine_ComponentRef} from '../linker/component_factory';
 import {ElementRef as viewEngine_ElementRef} from '../linker/element_ref';
 import {NgModuleRef as viewEngine_NgModuleRef} from '../linker/ng_module_factory';
@@ -133,19 +133,6 @@ export function getOrCreateNodeInjectorForNode(node: LElementNode | LContainerNo
   };
 }
 
-/** Injection flags for DI. */
-export const enum InjectFlags {
-  /** Dependency is not required. Null will be injected if there is no provider for the dependency.
-     */
-  Optional = 1 << 0,
-  /** When resolving a dependency, include the node that is requesting injection. */
-  CheckSelf = 1 << 1,
-  /** When resolving a dependency, include ancestors of the node requesting injection. */
-  CheckParent = 1 << 2,
-  /** Default injection options: required, checks both self and ancestors. */
-  Default = CheckSelf | CheckParent,
-}
-
 /**
  * Constructs an injection error with the given text and token.
  *
@@ -201,8 +188,14 @@ export function diPublic(def: DirectiveDef<any>): void {
  * @param flags Injection flags (e.g. CheckParent)
  * @returns The instance found
  */
-export function directiveInject<T>(token: Type<T>, flags?: InjectFlags, defaultValue?: T): T {
-  return getOrCreateInjectable<T>(getOrCreateNodeInjector(), token, flags, defaultValue);
+export function directiveInject<T>(
+    token: Type<T>, notFoundValue?: undefined, flags?: InjectFlags): T;
+export function directiveInject<T>(token: Type<T>, notFoundValue: T, flags?: InjectFlags): T;
+export function directiveInject<T>(token: Type<T>, notFoundValue: null, flags?: InjectFlags): T|
+    null;
+export function directiveInject<T>(
+    token: Type<T>, notFoundValue?: T | null, flags = InjectFlags.Default): T|null {
+  return getOrCreateInjectable<T>(getOrCreateNodeInjector(), token, flags, notFoundValue);
 }
 
 /**
@@ -352,7 +345,7 @@ function getClosestComponentAncestor(node: LViewNode | LElementNode): LElementNo
  * @returns The instance found
  */
 export function getOrCreateInjectable<T>(
-    di: LInjector, token: Type<T>, flags?: InjectFlags, defaultValue?: T): T {
+    di: LInjector, token: Type<T>, flags?: InjectFlags, defaultValue?: T | null): T|null {
   const bloomHash = bloomHashBit(token);
 
   // If the token has a bloom hash, then it is a directive that is public to the injection system

@@ -2257,7 +2257,7 @@ describe('ngc transformer command-line', () => {
           constructor(e: Existing) {}
         }
       `);
-      expect(source).toMatch(/ngInjectableDef.*return ..\(..\.inject\(Existing, undefined, 1\)/);
+      expect(source).toMatch(/ngInjectableDef.*return ..\(..\.inject\(Existing, undefined, 4\)/);
     });
 
     it('compiles a service that depends on a token', () => {

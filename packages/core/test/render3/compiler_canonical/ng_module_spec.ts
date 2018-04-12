@@ -6,9 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import * as $core$ from '../../../index';
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, ContentChild, ContentChildren, Directive, HostBinding, HostListener, Injectable, Input, NgModule, OnDestroy, Optional, Pipe, PipeTransform, QueryList, SimpleChanges, TemplateRef, ViewChild, ViewChildren, ViewContainerRef} from '../../../src/core';
 import * as $r3$ from '../../../src/core_render3_private_export';
 import {renderComponent, toHtml} from '../render_util';
+
 
 /// See: `normative.md`
 xdescribe('NgModule', () => {
@@ -69,7 +71,7 @@ xdescribe('NgModule', () => {
       static ngInjectableDef = defineInjectable({
         providedIn: MyModule,
         factory: () => new BurntToast(
-                     $r3$.ɵdirectiveInject(Toast, $r3$.ɵInjectFlags.Optional),
+                     $r3$.ɵdirectiveInject(Toast, undefined, $core$.InjectFlags.Optional),
                      $r3$.ɵdirectiveInject(String)),
       });
       // /NORMATIVE
