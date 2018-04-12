@@ -1,3 +1,16 @@
+<a name="6.0.0-rc.3"></a>
+# [6.0.0-rc.3](https://github.com/angular/material2/compare/6.0.0-rc.2...6.0.0-rc.3) (2018-04-12)
+
+
+### Bug Fixes
+
+* **button-toggle:** selected value not being maintained when changing value while toggles are being swapped out ([#10707](https://github.com/angular/material2/issues/10707)) ([dec91ce](https://github.com/angular/material2/commit/dec91ce)), closes [#10690](https://github.com/angular/material2/issues/10690)
+* **focus-monitor:** server-side rendering error when using focusVia ([#10729](https://github.com/angular/material2/issues/10729)) ([44a0a4f](https://github.com/angular/material2/commit/44a0a4f))
+* **radio:** checked radio button indistinguishable in high contrast mode ([#10753](https://github.com/angular/material2/issues/10753)) ([a74099f](https://github.com/angular/material2/commit/a74099f))
+* **schematics:** schematics now functioning with Angular CLI v6 ([#10703](https://github.com/angular/material2/issues/10703)) ([023e8f4](https://github.com/angular/material2/commit/023e8f4))
+
+
+
 <a name="6.0.0-rc.2"></a>
 # [6.0.0-rc.2](https://github.com/angular/material2/compare/6.0.0-rc.0...6.0.0-rc.2) (2018-04-11)
 
