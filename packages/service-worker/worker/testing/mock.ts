@@ -196,7 +196,7 @@ export function tmpManifestSingleAssetGroup(fs: MockFileSystem): Manifest {
         patterns: [],
       },
     ],
-    hashTable,
+    navigationUrls: [], hashTable,
   };
 }
 

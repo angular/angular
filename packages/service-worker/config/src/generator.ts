@@ -11,6 +11,13 @@ import {Filesystem} from './filesystem';
 import {globToRegex} from './glob';
 import {Config} from './in';
 
+const DEFAULT_NAVIGATION_URLS = [
+  '/**',           // Include all URLs.
+  '!/**/*.*',      // Exclude URLs to files (containing a file extension in the last segment).
+  '!/**/*__*',     // Exclude URLs containing `__` in the last segment.
+  '!/**/*__*/**',  // Exclude URLs containing `__` in any other segment.
+];
+
 /**
  * Consumes service worker configuration files and processes them into control files.
  *
@@ -23,10 +30,11 @@ export class Generator {
     const hashTable = {};
     return {
       configVersion: 1,
-      index: joinUrls(this.baseHref, config.index),
       appData: config.appData,
+      index: joinUrls(this.baseHref, config.index),
       assetGroups: await this.processAssetGroups(config, hashTable),
       dataGroups: this.processDataGroups(config), hashTable,
+      navigationUrls: processNavigationUrls(this.baseHref, config.navigationUrls),
     };
   }
 
@@ -78,6 +86,15 @@ export class Generator {
       };
     });
   }
+}
+
+export function processNavigationUrls(
+    baseHref: string, urls = DEFAULT_NAVIGATION_URLS): {positive: boolean, regex: string}[] {
+  return urls.map(url => {
+    const positive = !url.startsWith('!');
+    url = positive ? url : url.substr(1);
+    return {positive, regex: `^${urlToRegex(url, baseHref)}$`};
+  });
 }
 
 function globListToMatcher(globs: string[]): (file: string) => boolean {

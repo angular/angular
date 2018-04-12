@@ -18,10 +18,11 @@ ngsw-config dist src/ngsw-config.json /base/href
 
 The configuration file uses the JSON format. All file paths must begin with `/`, which is the deployment directory&mdash;usually `dist` in CLI projects.
 
-Patterns use a limited glob format:
+{@a glob-patterns}
+Unless otherwise noted, patterns use a limited glob format:
 
 * `**` matches 0 or more path segments.
-* `*` matches exactly one path segment or filename segment.
+* `*` matches 0 or more characters excluding `/`.
 * The `!` prefix marks the pattern as being negative, meaning that only files that don't match the pattern will be included.
 
 Example patterns:
@@ -37,6 +38,7 @@ Each section of the configuration file is described below.
 This section enables you to pass any data you want that describes this particular version of the app.
 The `SwUpdate` service includes that data in the update notifications. Many apps use this section to provide additional information for the display of UI popups, notifying users of the available update.
 
+{@a index-file}
 ## `index`
 
 Specifies the file that serves as the index page to satisfy navigation requests. Usually this is `/index.html`.
@@ -102,7 +104,8 @@ This section describes the resources to cache, broken up into three groups.
 
 * `versionedFiles` is like `files` but should be used for build artifacts that already include a hash in the filename, which is used for cache busting. The Angular service worker can optimize some aspects of its operation if it can assume file contents are immutable.
 
-* `urls` includes both URLs and URL patterns that will be matched at runtime. These resources are not fetched directly and do not have content hashes, but they will be cached according to their HTTP headers. This is most useful for CDNs such as the Google Fonts service.
+* `urls` includes both URLs and URL patterns that will be matched at runtime. These resources are not fetched directly and do not have content hashes, but they will be cached according to their HTTP headers. This is most useful for CDNs such as the Google Fonts service.<br>
+  _(Negative glob patterns are not supported.)_
 
 ## `dataGroups`
 
@@ -128,7 +131,8 @@ export interface DataGroup {
 Similar to `assetGroups`, every data group has a `name` which uniquely identifies it.
 
 ### `urls`
-A list of URL patterns. URLs that match these patterns will be cached according to this data group's policy.
+A list of URL patterns. URLs that match these patterns will be cached according to this data group's policy.<br>
+  _(Negative glob patterns are not supported.)_
 
 ### `version`
 Occasionally APIs change formats in a way that is not backward-compatible. A new version of the app may not be compatible with the old API format and thus may not be compatible with existing cached resources from that API.
@@ -164,3 +168,39 @@ The Angular service worker can use either of two caching strategies for data res
 * `performance`, the default, optimizes for responses that are as fast as possible. If a resource exists in the cache, the cached version is used. This allows for some staleness, depending on the `maxAge`, in exchange for better performance. This is suitable for resources that don't change often; for example, user avatar images.
 
 * `freshness` optimizes for currency of data, preferentially fetching requested data from the network. Only if the network times out, according to `timeout`, does the request fall back to the cache. This is useful for resources that change frequently; for example, account balances.
+
+## `navigationUrls`
+
+This optional section enables you to specify a custom list of URLs that will be redirected to the index file.
+
+### Handling navigation requests
+
+The ServiceWorker will redirect navigation requests that don't match any `asset` or `data` group to the specified [index file](#index-file). A request is considered to be a navigation request if:
+
+1. Its [mode](https://developer.mozilla.org/en-US/docs/Web/API/Request/mode) is `navigation`.
+2. It accepts a `text/html` response (as determined by the value of the `Accept` header).
+3. Its URL matches certain criteria (see below).
+
+By default, these criteria are:
+
+1. The URL must not contain a file extension (i.e. a `.`) in the last path segment.
+2. The URL must not contain `__`.
+
+### Matching navigation request URLs
+
+While these default criteria are fine in most cases, it is sometimes desirable to configure different rules. For example, you may want to ignore specific routes (that are not part of the Angular app) and pass them through to the server.
+
+This field contains an array of URLs and [glob-like](#glob-patterns) URL patterns that will be matched at runtime. It can contain both negative patterns (i.e. patterns starting with `!`) and non-negative patterns and URLs.
+
+Only requests whose URLs match _any_ of the non-negative URLs/patterns and _none_ of the negative ones will be considered navigation requests. The URL query will be ignored when matching.
+
+If the field is omitted, it defaults to:
+
+```ts
+[
+  '/**',           // Include all URLs.
+  '!/**/*.*',      // Exclude URLs to files.
+  '!/**/*__*',     // Exclude URLs containing `__` in the last segment.
+  '!/**/*__*/**',  // Exclude URLs containing `__` in any other segment.
+]
+```

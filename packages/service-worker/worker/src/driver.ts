@@ -15,7 +15,6 @@ import {SwCriticalError} from './error';
 import {IdleScheduler} from './idle';
 import {Manifest, ManifestHash, hashManifest} from './manifest';
 import {MsgAny, isMsgActivateUpdate, isMsgCheckForUpdates} from './msg';
-import {isNavigationRequest} from './util';
 
 type ClientId = string;
 
@@ -551,13 +550,14 @@ export class Driver implements Debuggable, UpdateSource {
       // Check if there is an assigned client id.
       if (this.clientVersionMap.has(clientId)) {
         // There is an assignment for this client already.
-        let hash = this.clientVersionMap.get(clientId) !;
+        const hash = this.clientVersionMap.get(clientId) !;
+        let appVersion = this.lookupVersionByHash(hash, 'assignVersion');
 
         // Ordinarily, this client would be served from its assigned version. But, if this
         // request is a navigation request, this client can be updated to the latest
         // version immediately.
         if (this.state === DriverReadyState.NORMAL && hash !== this.latestHash &&
-            isNavigationRequest(event.request, this.scope.registration.scope, this.adapter)) {
+            appVersion.isNavigationRequest(event.request)) {
           // Update this client to the latest version immediately.
           if (this.latestHash === null) {
             throw new Error(`Invariant violated (assignVersion): latestHash was null`);
@@ -566,11 +566,11 @@ export class Driver implements Debuggable, UpdateSource {
           const client = await this.scope.clients.get(clientId);
 
           await this.updateClient(client);
-          hash = this.latestHash;
+          appVersion = this.lookupVersionByHash(this.latestHash, 'assignVersion');
         }
 
         // TODO: make sure the version is valid.
-        return this.lookupVersionByHash(hash, 'assignVersion');
+        return appVersion;
       } else {
         // This is the first time this client ID has been seen. Whether the SW is in a
         // state to handle new clients depends on the current readiness state, so check
