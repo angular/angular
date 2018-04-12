@@ -318,7 +318,8 @@ function getOrCreateHostChangeDetector(currentNode: LViewNode | LElementNode):
       existingRef :
       createViewRef(
           hostNode.data as LView,
-          hostNode.view.directives ![hostNode.tNode !.flags >> TNodeFlags.INDX_SHIFT]);
+          hostNode.view
+              .directives ![hostNode.tNode !.flags >> TNodeFlags.DirectiveStartingIndexShift]);
 }
 
 /**
@@ -382,23 +383,19 @@ export function getOrCreateInjectable<T>(
       // At this point, we have an injector which *may* contain the token, so we step through the
       // directives associated with the injector's corresponding node to get the directive instance.
       const node = injector.node;
-
-      // The size of the node's directive's list is stored in certain bits of the node's flags,
-      // so exact it with a mask and shift it back such that the bits reflect the real value.
       const flags = node.tNode !.flags;
-      const size = (flags & TNodeFlags.SIZE_MASK) >> TNodeFlags.SIZE_SHIFT;
+      const count = flags & TNodeFlags.DirectiveCountMask;
 
-      if (size !== 0) {
-        // The start index of the directives list is also part of the node's flags, but there is
-        // nothing to the "left" of it so it doesn't need a mask.
-        const start = flags >> TNodeFlags.INDX_SHIFT;
-
+      if (count !== 0) {
+        const start = flags >> TNodeFlags.DirectiveStartingIndexShift;
+        const end = start + count;
         const defs = node.view.tView.directives !;
-        for (let i = start, ii = start + size; i < ii; i++) {
+
+        for (let i = start; i < end; i++) {
           // Get the definition for the directive at this index and, if it is injectable (diPublic),
           // and matches the given token, return the directive instance.
           const directiveDef = defs[i] as DirectiveDef<any>;
-          if (directiveDef.diPublic && directiveDef.type == token) {
+          if (directiveDef.type === token && directiveDef.diPublic) {
             return getDirectiveInstance(node.view.directives ![i]);
           }
         }
