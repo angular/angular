@@ -52,15 +52,6 @@ export class Generator {
         hashTable[joinUrls(this.baseHref, file)] = hash;
       }, Promise.resolve());
 
-
-      // Figure out the patterns.
-      const patterns = (group.resources.urls || [])
-                           .map(
-                               glob => glob.startsWith('/') || glob.indexOf('://') !== -1 ?
-                                   glob :
-                                   joinUrls(this.baseHref, glob))
-                           .map(glob => globToRegex(glob));
-
       return {
         name: group.name,
         installMode: group.installMode || 'prefetch',
@@ -69,22 +60,16 @@ export class Generator {
                   .concat(plainFiles)
                   .concat(versionedFiles)
                   .map(url => joinUrls(this.baseHref, url)),
-        patterns,
+        patterns: (group.resources.urls || []).map(url => urlToRegex(url, this.baseHref)),
       };
     }));
   }
 
   private processDataGroups(config: Config): Object[] {
     return (config.dataGroups || []).map(group => {
-      const patterns = group.urls
-                           .map(
-                               glob => glob.startsWith('/') || glob.indexOf('://') !== -1 ?
-                                   glob :
-                                   joinUrls(this.baseHref, glob))
-                           .map(glob => globToRegex(glob));
       return {
         name: group.name,
-        patterns,
+        patterns: group.urls.map(url => urlToRegex(url, this.baseHref)),
         strategy: group.cacheConfig.strategy || 'performance',
         maxSize: group.cacheConfig.maxSize,
         maxAge: parseDurationToMs(group.cacheConfig.maxAge),
@@ -121,6 +106,14 @@ function matches(file: string, patterns: {positive: boolean, regex: RegExp}[]): 
     }
   }, false);
   return res;
+}
+
+function urlToRegex(url: string, baseHref: string): string {
+  if (!url.startsWith('/') && url.indexOf('://') === -1) {
+    url = joinUrls(baseHref, url);
+  }
+
+  return globToRegex(url);
 }
 
 function joinUrls(a: string, b: string): string {
