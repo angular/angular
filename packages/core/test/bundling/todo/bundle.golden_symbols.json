@@ -1,5 +1,8 @@
 [
   {
+    "name": "BLOOM_SIZE"
+  },
+  {
     "name": "CIRCULAR$2"
   },
   {
@@ -28,6 +31,12 @@
   },
   {
     "name": "IterableChangeRecord_"
+  },
+  {
+    "name": "IterableDiffers"
+  },
+  {
+    "name": "NG_ELEMENT_ID"
   },
   {
     "name": "NG_HOST_SYMBOL"
@@ -177,6 +186,9 @@
     "name": "_c9"
   },
   {
+    "name": "_currentInjector"
+  },
+  {
     "name": "_devMode"
   },
   {
@@ -217,6 +229,12 @@
   },
   {
     "name": "bindingUpdated"
+  },
+  {
+    "name": "bloomFindPossibleInjector"
+  },
+  {
+    "name": "bloomHashBit"
   },
   {
     "name": "cacheMatchingDirectivesForNode"
@@ -276,9 +294,6 @@
     "name": "currentView"
   },
   {
-    "name": "defaultIterableDiffers"
-  },
-  {
     "name": "defineComponent"
   },
   {
@@ -301,6 +316,9 @@
   },
   {
     "name": "directiveCreate"
+  },
+  {
+    "name": "directiveInject"
   },
   {
     "name": "domRendererFactory3"
@@ -381,6 +399,9 @@
     "name": "getOrCreateElementRef"
   },
   {
+    "name": "getOrCreateInjectable"
+  },
+  {
     "name": "getOrCreateNodeInjector"
   },
   {
@@ -427,6 +448,9 @@
   },
   {
     "name": "initChangeDetectorIfExisting"
+  },
+  {
+    "name": "inject"
   },
   {
     "name": "injectTemplateRef"
@@ -571,6 +595,12 @@
   },
   {
     "name": "scheduleTick"
+  },
+  {
+    "name": "searchMatchesQueuedForCreation"
+  },
+  {
+    "name": "setCurrentInjector"
   },
   {
     "name": "setHostBindings"
