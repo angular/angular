@@ -95,10 +95,12 @@ export class MatButtonToggleGroup extends _MatButtonToggleGroupMixinBase impleme
   private _selectionModel: SelectionModel<MatButtonToggle>;
 
   /**
-   * Used for storing a value temporarily, if it is assigned
-   * before the button toggles are initialized.
+   * Reference to the raw value that the consumer tried to assign. The real
+   * value will exaclude any values from this one that don't correspond to a
+   * toggle. Useful for the cases where the value is assigned before the toggles
+   * have been initialized or at the same that they're being swapped out.
    */
-  private _tempValue: any;
+  private _rawValue: any;
 
   /**
    * The method to be called in order to update ngModel.
@@ -181,7 +183,6 @@ export class MatButtonToggleGroup extends _MatButtonToggleGroupMixinBase impleme
 
   ngAfterContentInit() {
     this._selectionModel.select(...this._buttonToggles.filter(toggle => toggle.checked));
-    this._tempValue = undefined;
   }
 
   /**
@@ -257,22 +258,22 @@ export class MatButtonToggleGroup extends _MatButtonToggleGroupMixinBase impleme
 
   /** Determines whether a button toggle should be checked on init. */
   _isPrechecked(toggle: MatButtonToggle) {
-    if (typeof this._tempValue === 'undefined') {
+    if (typeof this._rawValue === 'undefined') {
       return false;
     }
 
-    if (this.multiple && Array.isArray(this._tempValue)) {
-      return !!this._tempValue.find(value => toggle.value != null && value === toggle.value);
+    if (this.multiple && Array.isArray(this._rawValue)) {
+      return !!this._rawValue.find(value => toggle.value != null && value === toggle.value);
     }
 
-    return toggle.value === this._tempValue;
+    return toggle.value === this._rawValue;
   }
 
   /** Updates the selection state of the toggles in the group based on a value. */
   private _setSelectionByValue(value: any|any[]) {
-    // If the toggles haven't been initialized yet, save the value for later.
+    this._rawValue = value;
+
     if (!this._buttonToggles) {
-      this._tempValue = value;
       return;
     }
 

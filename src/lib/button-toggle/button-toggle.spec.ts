@@ -677,6 +677,22 @@ describe('MatButtonToggle without forms', () => {
     expect(fixture.componentInstance.toggleGroup.value).toBe('Two');
     expect(fixture.componentInstance.toggles.toArray()[1].checked).toBe(true);
   });
+
+  it('should maintain the selected state when the value and toggles are swapped out at ' +
+    'the same time', () => {
+      const fixture = TestBed.createComponent(RepeatedButtonTogglesWithPreselectedValue);
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance.toggleGroup.value).toBe('Two');
+      expect(fixture.componentInstance.toggles.toArray()[1].checked).toBe(true);
+
+      fixture.componentInstance.possibleValues = ['Five', 'Six', 'Seven'];
+      fixture.componentInstance.value = 'Seven';
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance.toggleGroup.value).toBe('Seven');
+      expect(fixture.componentInstance.toggles.toArray()[2].checked).toBe(true);
+    });
 });
 
 @Component({
