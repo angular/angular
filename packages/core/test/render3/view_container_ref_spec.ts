@@ -8,7 +8,7 @@
 
 import {Component, Directive, Pipe, PipeTransform, TemplateRef, ViewContainerRef} from '../../src/core';
 import {getOrCreateNodeInjectorForNode, getOrCreateTemplateRef} from '../../src/render3/di';
-import {defineComponent, defineDirective, definePipe, injectTemplateRef, injectViewContainerRef} from '../../src/render3/index';
+import {NgOnChangesFeature, defineComponent, defineDirective, definePipe, injectTemplateRef, injectViewContainerRef} from '../../src/render3/index';
 import {bind, container, containerRefreshEnd, containerRefreshStart, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, interpolation1, load, loadDirective, projection, projectionDef, text, textBinding} from '../../src/render3/instructions';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
 import {pipe, pipeBind1} from '../../src/render3/pipe';
@@ -414,9 +414,11 @@ describe('ViewContainerRef', () => {
 
         const fixture = new ComponentFixture(SomeComponent);
         directiveInstance !.vcref.createEmbeddedView(directiveInstance !.tplRef, fixture.component);
+        directiveInstance !.vcref.createEmbeddedView(directiveInstance !.tplRef, fixture.component);
         fixture.update();
         expect(fixture.html)
-            .toEqual('<child vcref="">**A**</child><child>**C**</child><child>**B**</child>');
+            .toEqual(
+                '<child vcref="">**A**</child><child>**C**</child><child>**C**</child><child>**B**</child>');
       });
     });
 
@@ -820,6 +822,123 @@ describe('ViewContainerRef', () => {
                .toEqual(
                    '<child-with-selector><first></first><second><footer vcref="">blah</footer><span>bar</span></second></child-with-selector>');
          });
+    });
+  });
+
+  describe('life cycle hooks', () => {
+
+    // Angular 5 reference: https://stackblitz.com/edit/lifecycle-hooks-vcref
+    const log: string[] = [];
+    it('should call all hooks in correct order', () => {
+      @Component({selector: 'hooks', template: `{{name}}`})
+      class ComponentWithHooks {
+        name: string;
+
+        private log(msg: string) { log.push(msg); }
+
+        ngOnChanges() { this.log('onChanges-' + this.name); }
+        ngOnInit() { this.log('onInit-' + this.name); }
+        ngDoCheck() { this.log('doCheck-' + this.name); }
+
+        ngAfterContentInit() { this.log('afterContentInit-' + this.name); }
+        ngAfterContentChecked() { this.log('afterContentChecked-' + this.name); }
+
+        ngAfterViewInit() { this.log('afterViewInit-' + this.name); }
+        ngAfterViewChecked() { this.log('afterViewChecked-' + this.name); }
+
+        static ngComponentDef = defineComponent({
+          type: ComponentWithHooks,
+          selectors: [['hooks']],
+          factory: () => new ComponentWithHooks(),
+          template: (rf: RenderFlags, cmp: ComponentWithHooks) => {
+            if (rf & RenderFlags.Create) {
+              text(0);
+            }
+            if (rf & RenderFlags.Update) {
+              textBinding(0, interpolation1('', cmp.name, ''));
+            }
+          },
+          features: [NgOnChangesFeature()],
+          inputs: {name: 'name'}
+        });
+      }
+
+      @Component({
+        template: `
+          <ng-template #foo>
+            <hooks [name]="'C'"></hooks>
+          </ng-template>
+          <hooks vcref [tplRef]="foo" [name]="'A'"></hooks>
+          <hooks [name]="'B'"></hooks>
+        `
+      })
+      class SomeComponent {
+        static ngComponentDef = defineComponent({
+          type: SomeComponent,
+          selectors: [['some-comp']],
+          factory: () => new SomeComponent(),
+          template: (rf: RenderFlags, cmp: SomeComponent) => {
+            if (rf & RenderFlags.Create) {
+              container(0, (rf: RenderFlags, ctx: any) => {
+                if (rf & RenderFlags.Create) {
+                  elementStart(0, 'hooks');
+                  elementEnd();
+                }
+                if (rf & RenderFlags.Update) {
+                  elementProperty(0, 'name', bind('C'));
+                }
+              });
+              elementStart(1, 'hooks', ['vcref', '']);
+              elementEnd();
+              elementStart(2, 'hooks');
+              elementEnd();
+            }
+            if (rf & RenderFlags.Update) {
+              const tplRef = getOrCreateTemplateRef(getOrCreateNodeInjectorForNode(load(0)));
+              elementProperty(1, 'tplRef', bind(tplRef));
+              elementProperty(1, 'name', bind('A'));
+              elementProperty(2, 'name', bind('B'));
+            }
+          },
+          directives: [ComponentWithHooks, DirectiveWithVCRef]
+        });
+      }
+
+      const fixture = new ComponentFixture(SomeComponent);
+      expect(log).toEqual([
+        'onChanges-A', 'onInit-A', 'doCheck-A', 'onChanges-B', 'onInit-B', 'doCheck-B',
+        'afterContentInit-A', 'afterContentChecked-A', 'afterContentInit-B',
+        'afterContentChecked-B', 'afterViewInit-A', 'afterViewChecked-A', 'afterViewInit-B',
+        'afterViewChecked-B'
+      ]);
+
+      log.length = 0;
+      fixture.update();
+      expect(log).toEqual([
+        'doCheck-A', 'doCheck-B', 'afterContentChecked-A', 'afterContentChecked-B',
+        'afterViewChecked-A', 'afterViewChecked-B'
+      ]);
+
+      log.length = 0;
+      directiveInstance !.vcref.createEmbeddedView(directiveInstance !.tplRef, fixture.component);
+      expect(fixture.html).toEqual('<hooks vcref="">A</hooks><hooks></hooks><hooks>B</hooks>');
+      expect(log).toEqual([]);
+
+      log.length = 0;
+      fixture.update();
+      expect(fixture.html).toEqual('<hooks vcref="">A</hooks><hooks>C</hooks><hooks>B</hooks>');
+      expect(log).toEqual([
+        'doCheck-A', 'doCheck-B', 'onChanges-C', 'onInit-C', 'doCheck-C', 'afterContentInit-C',
+        'afterContentChecked-C', 'afterViewInit-C', 'afterViewChecked-C', 'afterContentChecked-A',
+        'afterContentChecked-B', 'afterViewChecked-A', 'afterViewChecked-B'
+      ]);
+
+      log.length = 0;
+      fixture.update();
+      expect(log).toEqual([
+        'doCheck-A', 'doCheck-B', 'doCheck-C', 'afterContentChecked-C', 'afterViewChecked-C',
+        'afterContentChecked-A', 'afterContentChecked-B', 'afterViewChecked-A', 'afterViewChecked-B'
+      ]);
     });
   });
 });
