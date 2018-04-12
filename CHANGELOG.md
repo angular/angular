@@ -1,3 +1,24 @@
+<a name="6.0.0-rc.4"></a>
+# [6.0.0-rc.4](https://github.com/angular/angular/compare/6.0.0-rc.3...6.0.0-rc.4) (2018-04-12)
+
+
+### Bug Fixes
+
+* **bazel:** set rollup output.name and amd.id ([#23274](https://github.com/angular/angular/issues/23274)) ([3e8eef6](https://github.com/angular/angular/commit/3e8eef6)), closes [#23238](https://github.com/angular/angular/issues/23238)
+* **common:** replace i18n locale undefined values by a const ([#23265](https://github.com/angular/angular/issues/23265)) ([5706810](https://github.com/angular/angular/commit/5706810)), closes [#22988](https://github.com/angular/angular/issues/22988)
+* **common:** workaround UMD/webpack limitation ([#23271](https://github.com/angular/angular/issues/23271)) ([5a298b1](https://github.com/angular/angular/commit/5a298b1)), closes [#23217](https://github.com/angular/angular/issues/23217)
+* **compiler:** Pretty print object instead of [Object object] ([#22689](https://github.com/angular/angular/issues/22689)) ([8555a3a](https://github.com/angular/angular/commit/8555a3a))
+* **compiler-cli:** strictMetadataEmit should not break on non-compliant libraries ([#23275](https://github.com/angular/angular/issues/23275)) ([5814355](https://github.com/angular/angular/commit/5814355)), closes [#22210](https://github.com/angular/angular/issues/22210)
+* **elements:** avoid exception when window is undefined ([#23324](https://github.com/angular/angular/issues/23324)) ([af46d09](https://github.com/angular/angular/commit/af46d09))
+* **platform-server:** require node v8+ ([#23331](https://github.com/angular/angular/issues/23331)) ([bbfa1d3](https://github.com/angular/angular/commit/bbfa1d3))
+
+
+### Features
+
+* **elements:** add schematics ([#23298](https://github.com/angular/angular/issues/23298)) ([37d2cb4](https://github.com/angular/angular/commit/37d2cb4))
+
+
+
 <a name="6.0.0-rc.3"></a>
 # [6.0.0-rc.3](https://github.com/angular/angular/compare/6.0.0-rc.2...6.0.0-rc.3) (2018-04-06)
 
