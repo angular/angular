@@ -7,9 +7,9 @@
  */
 import { normalize } from '@angular-devkit/core';
 import { SchematicsException, Tree } from '@angular-devkit/schematics';
+import { dirname } from 'path';
 import * as ts from 'typescript';
 import { findNode, getSourceNodes } from './ast-utils';
-import { AppConfig } from './config';
 
 export function findBootstrapModuleCall(host: Tree, mainPath: string): ts.CallExpression | null {
   const mainBuffer = host.read(mainPath);
@@ -75,10 +75,10 @@ export function findBootstrapModulePath(host: Tree, mainPath: string): string {
   return bootstrapModuleRelativePath;
 }
 
-export function getAppModulePath(host: Tree, app: AppConfig) {
-  const mainPath = normalize(`/${app.root}/${app.main}`);
+export function getAppModulePath(host: Tree, mainPath: string): string {
   const moduleRelativePath = findBootstrapModulePath(host, mainPath);
-  const modulePath = normalize(`/${app.root}/${moduleRelativePath}.ts`);
+  const mainDir = dirname(mainPath);
+  const modulePath = normalize(`/${mainDir}/${moduleRelativePath}.ts`);
 
   return modulePath;
 }

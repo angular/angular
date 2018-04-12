@@ -89,7 +89,7 @@ export function findNode(node: ts.Node, kind: ts.SyntaxKind, text: string): ts.N
  * @return function to sort nodes in increasing order of position in sourceFile
  */
 function nodesByPosition(first: ts.Node, second: ts.Node): number {
-  return first.pos - second.pos;
+  return first.getStart() - second.getStart();
 }
 
 
@@ -121,7 +121,7 @@ export function insertAfterLastOccurrence(nodes: ts.Node[],
   if (!lastItem && fallbackPos == undefined) {
     throw new Error(`tried to insert ${toInsert} as first occurence with no fallback position`);
   }
-  const lastItemPosition: number = lastItem ? lastItem.end : fallbackPos;
+  const lastItemPosition: number = lastItem ? lastItem.getEnd() : fallbackPos;
 
   return new InsertChange(file, lastItemPosition, toInsert);
 }
@@ -231,6 +231,38 @@ export function getDecoratorMetadata(source: ts.SourceFile, identifier: string,
     .filter(expr => expr.arguments[0]
                  && expr.arguments[0].kind == ts.SyntaxKind.ObjectLiteralExpression)
     .map(expr => expr.arguments[0] as ts.ObjectLiteralExpression);
+}
+
+function findClassDeclarationParent(node: ts.Node): ts.ClassDeclaration|undefined {
+  if (ts.isClassDeclaration(node)) {
+    return node;
+  }
+
+  return node.parent && findClassDeclarationParent(node.parent);
+}
+
+/**
+ * Given a source file with @NgModule class(es), find the name of the first @NgModule class.
+ *
+ * @param source source file containing one or more @NgModule
+ * @returns the name of the first @NgModule, or `undefined` if none is found
+ */
+export function getFirstNgModuleName(source: ts.SourceFile): string|undefined {
+  // First, find the @NgModule decorators.
+  const ngModulesMetadata = getDecoratorMetadata(source, 'NgModule', '@angular/core');
+  if (ngModulesMetadata.length === 0) {
+    return undefined;
+  }
+
+  // Then walk parent pointers up the AST, looking for the ClassDeclaration parent of the NgModule
+  // metadata.
+  const moduleClass = findClassDeclarationParent(ngModulesMetadata[0]);
+  if (!moduleClass || !moduleClass.name) {
+    return undefined;
+  }
+
+  // Get the class name of the module ClassDeclaration.
+  return moduleClass.name.text;
 }
 
 export function addSymbolToNgModuleMetadata(

@@ -1,7 +1,6 @@
 import {chain, Rule, noop, Tree, SchematicContext} from '@angular-devkit/schematics';
 import {Schema} from './schema';
-import {addModuleImportToModule} from '../utils/ast';
-import {findModuleFromOptions} from '../utils/devkit-utils/find-module';
+import {addModuleImportToModule, findModuleFromOptions} from '../utils/ast';
 import {buildComponent} from '../utils/devkit-utils/component';
 
 /**

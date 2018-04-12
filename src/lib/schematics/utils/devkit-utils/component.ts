@@ -18,7 +18,9 @@ import * as ts from 'typescript';
 import {addDeclarationToModule, addExportToModule} from './ast-utils';
 import {InsertChange} from './change';
 import {buildRelativePath, findModuleFromOptions} from './find-module';
-
+import {getWorkspace} from './config';
+import {parseName} from './parse-name';
+import {validateName} from './validation';
 
 function addDeclarationToNgModule(options: any): Rule {
   return (host: Tree) => {
@@ -34,7 +36,7 @@ function addDeclarationToNgModule(options: any): Rule {
     const sourceText = text.toString('utf-8');
     const source = ts.createSourceFile(modulePath, sourceText, ts.ScriptTarget.Latest, true);
 
-    const componentPath = `/${options.sourceDir}/${options.path}/`
+    const componentPath = `/${options.path}/`
                           + (options.flat ? '' : strings.dasherize(options.name) + '/')
                           + strings.dasherize(options.name)
                           + '.component';
@@ -92,15 +94,25 @@ function buildSelector(options: any) {
 
 
 export function buildComponent(options: any): Rule {
-  const sourceDir = options.sourceDir;
-  if (!sourceDir) {
-    throw new SchematicsException(`sourceDir option is required.`);
-  }
-
   return (host: Tree, context: SchematicContext) => {
+    const workspace = getWorkspace(host);
+    if (!options.project) {
+      options.project = Object.keys(workspace.projects)[0];
+    }
+    const project = workspace.projects[options.project];
+
+    if (options.path === undefined) {
+      options.path = `/${project.root}/src/app`;
+    }
+
     options.selector = options.selector || buildSelector(options);
-    options.path = options.path ? normalize(options.path) : options.path;
     options.module = findModuleFromOptions(host, options);
+
+    const parsedPath = parseName(options.path, options.name);
+    options.name = parsedPath.name;
+    options.path = parsedPath.path;
+
+    validateName(options.name);
 
     const templateSource = apply(url('./files'), [
       options.spec ? noop() : filter(path => !path.endsWith('.spec.ts')),
@@ -111,7 +123,7 @@ export function buildComponent(options: any): Rule {
         'if-flat': (s: string) => options.flat ? '' : s,
         ...options,
       }),
-      move(sourceDir),
+      move(null, parsedPath.path),
     ]);
 
     return chain([

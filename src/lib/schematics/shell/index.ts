@@ -1,20 +1,13 @@
-import {
-  Rule,
-  SchematicContext,
-  Tree,
-  chain,
-  noop,
-  SchematicsException
-} from '@angular-devkit/schematics';
-import {Schema} from './schema';
-import {materialVersion, cdkVersion, angularVersion} from '../utils/lib-versions';
-import {getConfig, getAppFromConfig, AppConfig, CliConfig} from '../utils/devkit-utils/config';
+import {chain, noop, Rule, Tree} from '@angular-devkit/schematics';
 import {addModuleImportToRootModule, getStylesPath} from '../utils/ast';
-import {addHeadLink} from '../utils/html';
-import {addPackageToPackageJson} from '../utils/package';
-import {createCustomTheme} from './custom-theme';
-import {normalize} from '@angular-devkit/core';
 import {InsertChange} from '../utils/devkit-utils/change';
+import {getProjectFromWorkspace, getWorkspace} from '../utils/devkit-utils/config';
+import {addHeadLink} from '../utils/html';
+import {angularVersion, cdkVersion, materialVersion} from '../utils/lib-versions';
+import {addPackageToPackageJson} from '../utils/package';
+import {Schema} from './schema';
+import {addThemeToAppStyles} from './theming';
+
 
 /**
  * Scaffolds the basics of a Angular Material application, this includes:
@@ -24,18 +17,16 @@ import {InsertChange} from '../utils/devkit-utils/change';
  */
 export default function(options: Schema): Rule {
   return chain([
-    options && options.skipPackageJson ? noop() : addMaterialToPackageJson(options),
+    options && options.skipPackageJson ? noop() : addMaterialToPackageJson(),
     addThemeToAppStyles(options),
-    addAnimationRootConfig(),
-    addFontsToIndex(),
-    addBodyMarginToStyles()
+    addAnimationRootConfig(options),
+    addFontsToIndex(options),
+    addBodyMarginToStyles(options),
   ]);
 }
 
-/**
- * Add material, cdk, annimations to package.json
- */
-function addMaterialToPackageJson(options: Schema) {
+/** Add material, cdk, annimations to package.json if not already present. */
+function addMaterialToPackageJson() {
   return (host: Tree) => {
     addPackageToPackageJson(host, 'dependencies', '@angular/cdk', cdkVersion);
     addPackageToPackageJson(host, 'dependencies', '@angular/material', materialVersion);
@@ -44,95 +35,45 @@ function addMaterialToPackageJson(options: Schema) {
   };
 }
 
-/**
- * Add pre-built styles to style.ext file
- */
-function addThemeToAppStyles(options: Schema) {
+/** Add browser animation module to app.module */
+function addAnimationRootConfig(options: Schema) {
   return (host: Tree) => {
-    const config = getConfig(host);
-    const themeName = options && options.theme ? options.theme : 'indigo-pink';
-    const app = getAppFromConfig(config, '0');
+    const workspace = getWorkspace(host);
+    const project = getProjectFromWorkspace(workspace, options.project);
 
-    if (themeName === 'custom') {
-      insertCustomTheme(app, host);
-    } else {
-      insertPrebuiltTheme(app, host, themeName, config);
-    }
+    addModuleImportToRootModule(
+        host,
+        'BrowserAnimationsModule',
+        '@angular/platform-browser/animations',
+        project);
 
     return host;
   };
 }
 
-/**
- * Insert a custom theme to styles.scss file.
- */
-function insertCustomTheme(app: AppConfig, host: Tree) {
-  const stylesPath = normalize(`/${app.root}/styles.scss`);
-
-  const buffer = host.read(stylesPath);
-  if (buffer) {
-    const src = buffer.toString();
-    const insertion = new InsertChange(stylesPath, 0, createCustomTheme(app));
-    const recorder = host.beginUpdate(stylesPath);
-    recorder.insertLeft(insertion.pos, insertion.toAdd);
-    host.commitUpdate(recorder);
-  } else {
-    console.warn(`Skipped custom theme; could not find file: ${stylesPath}`);
-  }
-}
-
-/**
- * Insert a pre-built theme to .angular-cli.json file.
- */
-function insertPrebuiltTheme(app: AppConfig, host: Tree, themeName: string, config: CliConfig) {
-  const themeSrc = `../node_modules/@angular/material/prebuilt-themes/${themeName}.css`;
-  const hasCurrentTheme = app.styles.find((s: string) => s.indexOf(themeSrc) > -1);
-  const hasOtherTheme =
-    app.styles.find((s: string) => s.indexOf('@angular/material/prebuilt-themes') > -1);
-
-  if (!hasCurrentTheme && !hasOtherTheme) {
-    app.styles.splice(0, 0, themeSrc);
-  }
-
-  if (hasOtherTheme) {
-    console.warn(`Skipped theme insertion; another theme is already defined.`);
-  } else {
-    host.overwrite('.angular-cli.json', JSON.stringify(config, null, 2));
-  }
-}
-
-/**
- * Add browser animation module to app.module
- */
-function addAnimationRootConfig() {
+/** Adds fonts to the index.ext file */
+function addFontsToIndex(options: Schema) {
   return (host: Tree) => {
-    addModuleImportToRootModule(host,
-      'BrowserAnimationsModule', '@angular/platform-browser/animations');
+    const workspace = getWorkspace(host);
+    const project = getProjectFromWorkspace(workspace, options.project);
+
+    const fonts = [
+      'https://fonts.googleapis.com/css?family=Roboto:300,400,500',
+      'https://fonts.googleapis.com/icon?family=Material+Icons',
+    ];
+
+    fonts.forEach(f => addHeadLink(host, project, `\n<link href="${f}" rel="stylesheet">`));
     return host;
   };
 }
 
-/**
- * Adds fonts to the index.ext file
- */
-function addFontsToIndex() {
+/** Add 0 margin to body in styles.ext */
+function addBodyMarginToStyles(options: Schema) {
   return (host: Tree) => {
-    addHeadLink(host,
-      // tslint:disable-next-line
-      `\n<link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500" rel="stylesheet">`);
-    addHeadLink(host,
-      // tslint:disable-next-line
-      `\n<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">`);
-    return host;
-  };
-}
+    const workspace = getWorkspace(host);
+    const project = getProjectFromWorkspace(workspace, options.project);
 
-/**
- * Add 0 margin to body in styles.ext
- */
-function addBodyMarginToStyles() {
-  return (host: Tree) => {
-    const stylesPath = getStylesPath(host);
+    const stylesPath = getStylesPath(host, project);
 
     const buffer = host.read(stylesPath);
     if (buffer) {

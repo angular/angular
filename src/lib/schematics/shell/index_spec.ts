@@ -6,6 +6,7 @@ import {createTestApp} from '../utils/testing';
 import {getConfig, getAppFromConfig} from '@schematics/angular/utility/config';
 import {getIndexHtmlPath} from '../utils/ast';
 import {normalize} from '@angular-devkit/core';
+import { getWorkspace, getProjectFromWorkspace } from '../utils/devkit-utils/config';
 
 const collectionPath = join(__dirname, '../collection.json');
 
@@ -28,7 +29,7 @@ describe('material-shell-schematic', () => {
 
   it('should add default theme', () => {
     const tree = runner.runSchematic('materialShell', {}, appTree);
-    const config = getConfig(tree);
+    const config: any = getConfig(tree);
     config.apps.forEach(app => {
       expect(app.styles).toContain(
         '../node_modules/@angular/material/prebuilt-themes/indigo-pink.css');
@@ -41,10 +42,10 @@ describe('material-shell-schematic', () => {
     }, appTree);
 
     const config = getConfig(tree);
-    const app = getAppFromConfig(config, '0');
+    const app: any = getAppFromConfig(config, '0');
     const stylesPath = normalize(`/${app.root}/styles.scss`);
 
-    const buffer = tree.read(stylesPath);
+    const buffer: any = tree.read(stylesPath);
     const src = buffer.toString();
 
     expect(src.indexOf(`@import '~@angular/material/theming';`)).toBeGreaterThan(-1);
@@ -53,8 +54,12 @@ describe('material-shell-schematic', () => {
 
   it('should add font links', () => {
     const tree = runner.runSchematic('materialShell', {}, appTree);
-    const indexPath = getIndexHtmlPath(tree);
-    const buffer = tree.read(indexPath);
+    const config: any = getConfig(tree);
+    const workspace = getWorkspace(tree);
+    const project = getProjectFromWorkspace(workspace, config.project.name);
+  
+    const indexPath = getIndexHtmlPath(tree, project);
+    const buffer: any = tree.read(indexPath);
     const indexSrc = buffer.toString();
     expect(indexSrc.indexOf('fonts.googleapis.com')).toBeGreaterThan(-1);
   });

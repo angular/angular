@@ -13,10 +13,8 @@ export interface ModuleOptions {
   module?: string;
   name: string;
   flat?: boolean;
-  sourceDir?: string;
   path?: string;
   skipImport?: boolean;
-  appRoot?: string;
 }
 
 
@@ -29,13 +27,13 @@ export function findModuleFromOptions(host: Tree, options: ModuleOptions): Path 
   }
 
   if (!options.module) {
-    const pathToCheck = (options.sourceDir || '') + '/' + (options.path || '')
+    const pathToCheck = (options.path || '')
                       + (options.flat ? '' : '/' + strings.dasherize(options.name));
 
     return normalize(findModule(host, pathToCheck));
   } else {
     const modulePath = normalize(
-      '/' + options.sourceDir + '/' + (options.appRoot || options.path) + '/' + options.module);
+      '/' + (options.path) + '/' + options.module);
     const moduleBaseName = normalize(modulePath).split('/').pop();
 
     if (host.exists(modulePath)) {
@@ -74,8 +72,8 @@ export function findModule(host: Tree, generateDir: string): Path {
     dir = dir.parent;
   }
 
-  throw new Error('Could not find an NgModule for the new component. Use the skip-import '
-    + 'option to skip importing components in NgModule.');
+  throw new Error('Could not find an NgModule. Use the skip-import '
+    + 'option to skip importing in NgModule.');
 }
 
 /**

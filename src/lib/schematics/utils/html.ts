@@ -2,6 +2,7 @@ import {Tree, SchematicsException} from '@angular-devkit/schematics';
 import * as parse5 from 'parse5';
 import {getIndexHtmlPath} from './ast';
 import {InsertChange} from './devkit-utils/change';
+import {Project} from './devkit-utils/config';
 
 /**
  * Parses the index.html file to get the HEAD tag position.
@@ -40,11 +41,12 @@ export function getHeadTag(host: Tree, src: string) {
 /**
  * Adds a link to the index.html head tag Example:
  * `<link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500" rel="stylesheet">`
- * @param host the tree we are updating
+ * @param host The tree we are updating
+ * @param project The project we're targeting.
  * @param link html element string we are inserting.
  */
-export function addHeadLink(host: Tree, link: string) {
-  const indexPath = getIndexHtmlPath(host);
+export function addHeadLink(host: Tree, project: Project, link: string) {
+  const indexPath = getIndexHtmlPath(host, project);
   const buffer = host.read(indexPath);
   if (!buffer) {
     throw new SchematicsException(`Could not find file for path: ${indexPath}`);

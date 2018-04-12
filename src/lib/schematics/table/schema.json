@@ -6,55 +6,52 @@
   "properties": {
     "path": {
       "type": "string",
+      "format": "path",
       "description": "The path to create the component.",
-      "default": "app",
       "visible": false
     },
-    "sourceDir": {
+    "project": {
       "type": "string",
-      "description": "The path of the source directory.",
-      "default": "src",
-      "alias": "sd",
-      "visible": false
-    },
-    "appRoot": {
-      "type": "string",
-      "description": "The root of the application.",
+      "description": "The name of the project.",
       "visible": false
     },
     "name": {
       "type": "string",
-      "description": "The name of the component."
+      "description": "The name of the component.",
+      "$default": {
+        "$source": "argv",
+        "index": 0
+      }
     },
     "inlineStyle": {
       "description": "Specifies if the style will be in the ts file.",
       "type": "boolean",
       "default": false,
-      "alias": "is"
+      "alias": "s"
     },
     "inlineTemplate": {
       "description": "Specifies if the template will be in the ts file.",
       "type": "boolean",
       "default": false,
-      "alias": "it"
+      "alias": "t"
     },
     "viewEncapsulation": {
       "description": "Specifies the view encapsulation strategy.",
       "enum": ["Emulated", "Native", "None"],
       "type": "string",
-      "alias": "ve"
+      "alias": "v"
     },
     "changeDetection": {
       "description": "Specifies the change detection strategy.",
       "enum": ["Default", "OnPush"],
       "type": "string",
       "default": "Default",
-      "alias": "cd"
+      "alias": "c"
     },
     "prefix": {
       "type": "string",
+      "format": "html-selector",
       "description": "The prefix to apply to generated selectors.",
-      "default": "app",
       "alias": "p"
     },
     "styleext": {
@@ -79,6 +76,7 @@
     },
     "selector": {
       "type": "string",
+      "format": "html-selector",
       "description": "The selector to use for the component."
     },
     "module":  {

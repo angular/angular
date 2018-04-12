@@ -1,10 +1,8 @@
-import {AppConfig} from '../utils/devkit-utils/config';
+import {Project} from '../utils/devkit-utils/config';
 
-/**
- * Create custom theme for the given application configuration.
- */
-export function createCustomTheme(app: AppConfig) {
-  const name = app.name || 'app';
+/** Create custom theme for the given application configuration. */
+export function createCustomTheme(project: Project) {
+  const name = project.name || 'app';
 return `
 // Custom Theming for Angular Material
 // For more information: https://material.angular.io/guide/theming
