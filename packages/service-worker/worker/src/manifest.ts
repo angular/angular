@@ -16,6 +16,7 @@ export interface Manifest {
   index: string;
   assetGroups?: AssetGroupConfig[];
   dataGroups?: DataGroupConfig[];
+  navigationUrls: {positive: boolean, regex: string}[];
   hashTable: {[url: string]: string};
 }
 
