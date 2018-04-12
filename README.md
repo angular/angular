@@ -26,15 +26,13 @@ and which pieces are blocked) and make a comment.
 Also see our [`help wanted`](https://github.com/angular/material2/issues?q=is%3Aissue+is%3Aopen+label%3A%22help+wanted%22)
 label.
 
-High level stuff planned for Q1 2018 (January - March):
-* Research and prototyping for virtual-scroll
-* Research and exploration for data visualization
-* cdkTree and matTree
-* cdk/dialog
-* Switch build to bazel
-* Overlay positioning improvements
-* Research and prototyping for future Material Design updates
-* Research and prototyping drag/drop features for the CDK
+High level stuff planned for Q2 2018 (April - June):
+* Implementing cdk virtual-scroll
+* Implementing cdk drag-and-drop
+* Ongoing migration to bazel
+* Table feature improvements
+* Improve docs for cdk
+* Accessibility improvements for select, autocomplete, button-toggle, and chips.
 
 
 #### Available features
@@ -84,13 +82,13 @@ High level stuff planned for Q1 2018 (January - March):
 
 | Feature          | Status                              | Docs         | Issue          |
 |------------------|-------------------------------------|--------------|----------------|
-| tree             |      In-progress ([sneak peek][31]) |           -  |  [#3175][3175] |
+| tree             |                Releasing with 6.0.0 |           -  |  [#3175][3175] |
 | sticky-header    |        In-progress, planned Q2 2018 |           -  |   [#474][0474] |
-| virtual-repeat   |        Prototyping, planned Q1 2018 |           -  |   [#823][0823] |
-| badge            |        In-progress, planned Q1 2018 |           -  |  [#3085][3058] |
+| virtual-repeat   |        Prototyping, planned Q2 2018 |           -  |   [#823][0823] |
+| badge            |                Releasing with 6.0.0 |           -  |  [#3085][3058] |
 | fab speed-dial   |            Not started, not planned |           -  |   [#860][0860] |
 | fab toolbar      |            Not started, not planned |           -  |              - |
-| bottom-sheet     |            Not started, not planned |           -  |  [#8113][8113] |
+| bottom-sheet     |                Releasing with 6.0.0 |           -  |  [#8113][8113] |
 | bottom-nav       |            Not started, not planned |           -  |   [#408][0408] |
 
  [0]: https://github.com/angular/flex-layout/wiki
