@@ -1563,6 +1563,9 @@ export function embeddedViewEnd(): void {
     const lContainer = containerNode.data;
 
     if (creationMode) {
+      // When projected nodes are going to be inserted, the renderParent of the dynamic container
+      // used by the ViewContainerRef must be set.
+      setRenderParentInProjectedNodes(lContainer.renderParent, viewNode);
       // it is a new view, insert it into collection of views for a given container
       insertView(containerNode, viewNode, lContainer.nextIndex);
     }
@@ -1572,6 +1575,32 @@ export function embeddedViewEnd(): void {
   leaveView(currentView !.parent !);
   ngDevMode && assertEqual(isParent, false, 'isParent');
   ngDevMode && assertNodeType(previousOrParentNode, LNodeType.View);
+}
+
+/**
+ * For nodes which are projected inside an embedded view, this function sets the renderParent
+ * of their dynamic LContainerNode.
+ * @param renderParent the renderParent of the LContainer which contains the embedded view.
+ * @param viewNode the embedded view.
+ */
+function setRenderParentInProjectedNodes(
+    renderParent: LElementNode | null, viewNode: LViewNode): void {
+  if (renderParent != null) {
+    let node = viewNode.child;
+    while (node) {
+      if (node.type === LNodeType.Projection) {
+        let nodeToProject: LNode|null = (node as LProjectionNode).data.head;
+        const lastNodeToProject = (node as LProjectionNode).data.tail;
+        while (nodeToProject) {
+          if (nodeToProject.dynamicLContainerNode) {
+            nodeToProject.dynamicLContainerNode.data.renderParent = renderParent;
+          }
+          nodeToProject = nodeToProject === lastNodeToProject ? null : nodeToProject.pNextOrParent;
+        }
+      }
+      node = node.next;
+    }
+  }
 }
 
 /////////////
