@@ -29,5 +29,6 @@
   "dependencies": {
     "tslib": "^1.7.1"
   },
-  "schematics": "./schematics/collection.json"
+  "schematics": "./schematics/collection.json",
+  "sideEffects": false
 }

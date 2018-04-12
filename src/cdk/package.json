@@ -28,5 +28,6 @@
   },
   "dependencies": {
     "tslib": "^1.7.1"
-  }
+  },
+  "sideEffects": false
 }
