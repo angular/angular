@@ -185,7 +185,7 @@ describe('injection', () => {
       // NORMATIVE
       static ngInjectableDef = defineInjectable({
         factory: function ServiceA_Factory() {
-          return new ServiceB(inject(ServiceA), inject(INJECTOR, undefined, InjectFlags.SkipSelf));
+          return new ServiceB(inject(ServiceA), inject(INJECTOR, InjectFlags.SkipSelf) !);
         },
       });
       // /NORMATIVE

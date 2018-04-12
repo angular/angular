@@ -38,7 +38,6 @@ export class InjectableCompiler {
   private depsArray(deps: any[], ctx: OutputContext): o.Expression[] {
     return deps.map(dep => {
       let token = dep;
-      let defaultValue = undefined;
       let args = [token];
       let flags: InjectFlags = InjectFlags.Default;
       if (Array.isArray(dep)) {
@@ -46,7 +45,7 @@ export class InjectableCompiler {
           const v = dep[i];
           if (v) {
             if (v.ngMetadataName === 'Optional') {
-              defaultValue = null;
+              flags |= InjectFlags.Optional;
             } else if (v.ngMetadataName === 'SkipSelf') {
               flags |= InjectFlags.SkipSelf;
             } else if (v.ngMetadataName === 'Self') {
@@ -69,8 +68,8 @@ export class InjectableCompiler {
         tokenExpr = ctx.importExpr(token);
       }
 
-      if (flags !== InjectFlags.Default || defaultValue !== undefined) {
-        args = [tokenExpr, o.literal(defaultValue), o.literal(flags)];
+      if (flags !== InjectFlags.Default) {
+        args = [tokenExpr, o.literal(flags)];
       } else {
         args = [tokenExpr];
       }

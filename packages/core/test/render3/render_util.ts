@@ -8,6 +8,7 @@
 
 import {stringifyElement} from '@angular/platform-browser/testing/src/browser_util';
 
+import {Injector} from '../../src/di/injector';
 import {CreateComponentOptions} from '../../src/render3/component';
 import {extractDirectiveDef, extractPipeDef} from '../../src/render3/definition';
 import {ComponentDef, ComponentTemplate, ComponentType, DirectiveDef, DirectiveType, PublicFeature, RenderFlags, defineComponent, defineDirective, renderComponent as _renderComponent, tick} from '../../src/render3/index';
@@ -93,7 +94,7 @@ export class ComponentFixture<T> extends BaseFixture {
   component: T;
   requestAnimationFrame: {(fn: () => void): void; flush(): void; queue: (() => void)[];};
 
-  constructor(private componentType: ComponentType<T>) {
+  constructor(private componentType: ComponentType<T>, opts: {injector?: Injector} = {}) {
     super();
     this.requestAnimationFrame = function(fn: () => void) {
       requestAnimationFrame.queue.push(fn);
@@ -105,10 +106,9 @@ export class ComponentFixture<T> extends BaseFixture {
       }
     };
 
-    this.component = _renderComponent(componentType, {
-      host: this.hostElement,
-      scheduler: this.requestAnimationFrame,
-    });
+    this.component = _renderComponent(
+        componentType,
+        {host: this.hostElement, scheduler: this.requestAnimationFrame, injector: opts.injector});
   }
 
   update(): void {

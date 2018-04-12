@@ -53,11 +53,11 @@ describe('compiler compliance: dependency injection', () => {
         return new MyComponent(
           $r3$.ɵinjectAttribute('name'),
           $r3$.ɵdirectiveInject(MyService), 
-          $r3$.ɵdirectiveInject(MyService, (undefined as any), 1),
-          $r3$.ɵdirectiveInject(MyService, (undefined as any), 2),
-          $r3$.ɵdirectiveInject(MyService, (undefined as any), 4),
-          $r3$.ɵdirectiveInject(MyService, (undefined as any), 8),
-          $r3$.ɵdirectiveInject(MyService, (undefined as any), 10)
+          $r3$.ɵdirectiveInject(MyService, 1),
+          $r3$.ɵdirectiveInject(MyService, 2),
+          $r3$.ɵdirectiveInject(MyService, 4),
+          $r3$.ɵdirectiveInject(MyService, 8),
+          $r3$.ɵdirectiveInject(MyService, 10)
         );
       }`;
 

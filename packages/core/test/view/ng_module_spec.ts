@@ -59,7 +59,7 @@ class HasOptionalDep {
   constructor(public baz: Baz|null) {}
 
   static ngInjectableDef: InjectableDef<HasOptionalDep> = defineInjectable({
-    factory: () => new HasOptionalDep(inject(Baz, null)),
+    factory: () => new HasOptionalDep(inject(Baz, InjectFlags.Optional)),
     providedIn: MyModule,
   });
 }
@@ -74,7 +74,7 @@ class ChildDep {
 class FromChildWithOptionalDep {
   constructor(public baz: Baz|null) {}
   static ngInjectableDef: InjectableDef<FromChildWithOptionalDep> = defineInjectable({
-    factory: () => new FromChildWithOptionalDep(inject(Baz, null, InjectFlags.Default)),
+    factory: () => new FromChildWithOptionalDep(inject(Baz, InjectFlags.Default)),
     providedIn: MyChildModule,
   });
 }
@@ -83,7 +83,8 @@ class FromChildWithSkipSelfDep {
   constructor(public depFromParent: ChildDep|null, public depFromChild: Bar|null) {}
   static ngInjectableDef: InjectableDef<FromChildWithSkipSelfDep> = defineInjectable({
     factory: () => new FromChildWithSkipSelfDep(
-                 inject(ChildDep, null, InjectFlags.SkipSelf), inject(Bar, null, InjectFlags.Self)),
+                 inject(ChildDep, InjectFlags.SkipSelf|InjectFlags.Optional),
+                 inject(Bar, InjectFlags.Self|InjectFlags.Optional)),
     providedIn: MyChildModule,
   });
 }

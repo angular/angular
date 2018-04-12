@@ -13,7 +13,7 @@ export {devModeEqual as ɵdevModeEqual} from './change_detection/change_detectio
 export {isListLikeIterable as ɵisListLikeIterable} from './change_detection/change_detection_util';
 export {ChangeDetectorStatus as ɵChangeDetectorStatus, isDefaultChangeDetectionStrategy as ɵisDefaultChangeDetectionStrategy} from './change_detection/constants';
 export {Console as ɵConsole} from './console';
-export {setCurrentInjector as ɵsetCurrentInjector} from './di/injector';
+export {inject as ɵinject, setCurrentInjector as ɵsetCurrentInjector} from './di/injector';
 export {APP_ROOT as ɵAPP_ROOT} from './di/scope';
 export {ComponentFactory as ɵComponentFactory} from './linker/component_factory';
 export {CodegenComponentFactoryResolver as ɵCodegenComponentFactoryResolver} from './linker/component_factory_resolver';

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ChangeDetectorRef, ElementRef, InjectFlags, TemplateRef, ViewContainerRef} from '@angular/core';
+import {ChangeDetectorRef, ElementRef, InjectFlags, TemplateRef, ViewContainerRef, defineInjectable} from '@angular/core';
 import {RenderFlags} from '@angular/core/src/render3/interfaces/definition';
 
 import {defineComponent} from '../../src/render3/definition';
@@ -397,6 +397,35 @@ describe('di', () => {
       expect(log).toEqual(['DirB', 'DirB', 'DirA (dep: DirB - 2)']);
     });
 
+    it('should create instance even when no injector present', () => {
+      class MyService {
+        value = 'MyService';
+        static ngInjectableDef =
+            defineInjectable({providedIn: 'root', factory: () => new MyService()});
+      }
+
+      class MyComponent {
+        constructor(public myService: MyService) {}
+        static ngComponentDef = defineComponent({
+          type: MyComponent,
+          selectors: [['my-component']],
+          factory: () => new MyComponent(directiveInject(MyService)),
+          template: function(rf: RenderFlags, ctx: MyComponent) {
+            if (rf & RenderFlags.Create) {
+              text(0);
+            }
+            if (rf & RenderFlags.Update) {
+              textBinding(0, bind(ctx.myService.value));
+            }
+          }
+        });
+      }
+
+      const fixture = new ComponentFixture(MyComponent);
+      fixture.update();
+      expect(fixture.html).toEqual('MyService');
+    });
+
     it('should throw if directive is not found', () => {
       class Dir {
         constructor(siblingDir: OtherDir) {}
@@ -426,8 +455,7 @@ describe('di', () => {
         }
       }, [Dir, OtherDir]);
 
-      expect(() => new ComponentFixture(App))
-          .toThrowError(/ElementInjector: NotFound \[OtherDir\]/);
+      expect(() => new ComponentFixture(App)).toThrowError(/Injector: NOT_FOUND \[OtherDir\]/);
     });
 
     it('should throw if directives try to inject each other', () => {
@@ -1007,24 +1035,6 @@ describe('di', () => {
         expect(bloomFindPossibleInjector(di, 188)).toEqual(di);
         expect(bloomFindPossibleInjector(di, 223)).toEqual(di);
         expect(bloomFindPossibleInjector(di, 255)).toEqual(di);
-      });
-    });
-
-    describe('flags', () => {
-      it('should return defaultValue not found', () => {
-        class MyApp {
-          constructor(public value: string) {}
-
-          static ngComponentDef = defineComponent({
-            type: MyApp,
-            selectors: [['my-app']],
-            factory: () => new MyApp(
-                         directiveInject(String as any, 'DefaultValue', InjectFlags.Default)),
-            template: () => null
-          });
-        }
-        const myApp = renderComponent(MyApp);
-        expect(myApp.value).toEqual('DefaultValue');
       });
     });
 

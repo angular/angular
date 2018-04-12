@@ -71,7 +71,7 @@ xdescribe('NgModule', () => {
       static ngInjectableDef = defineInjectable({
         providedIn: MyModule,
         factory: () => new BurntToast(
-                     $r3$.ɵdirectiveInject(Toast, undefined, $core$.InjectFlags.Optional),
+                     $r3$.ɵdirectiveInject(Toast, $core$.InjectFlags.Optional),
                      $r3$.ɵdirectiveInject(String)),
       });
       // /NORMATIVE
