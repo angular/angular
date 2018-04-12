@@ -140,7 +140,11 @@ export class FocusMonitor implements OnDestroy {
    */
   focusVia(element: HTMLElement, origin: FocusOrigin): void {
     this._setOriginForCurrentEventQueue(origin);
-    element.focus();
+
+    // `focus` isn't available on the server
+    if (typeof element.focus === 'function') {
+      element.focus();
+    }
   }
 
   ngOnDestroy() {
