@@ -26,11 +26,15 @@ import {
  */
 @Injectable({providedIn: 'root'})
 export class ScrollStrategyOptions {
+  private _document: Document;
+
   constructor(
     private _scrollDispatcher: ScrollDispatcher,
     private _viewportRuler: ViewportRuler,
     private _ngZone: NgZone,
-    @Inject(DOCUMENT) private _document: Document) {}
+    @Inject(DOCUMENT) document: any) {
+      this._document = document;
+    }
 
   /** Do nothing on scroll. */
   noop = () => new NoopScrollStrategy();

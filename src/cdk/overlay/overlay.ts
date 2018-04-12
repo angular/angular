@@ -51,7 +51,7 @@ export class Overlay {
               private _appRef: ApplicationRef,
               private _injector: Injector,
               private _ngZone: NgZone,
-              @Inject(DOCUMENT) private _document: Document,
+              @Inject(DOCUMENT) private _document: any,
               private _directionality: Directionality) { }
 
   /**

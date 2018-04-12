@@ -285,10 +285,15 @@ export class FocusTrap {
 /** Factory that allows easy instantiation of focus traps. */
 @Injectable({providedIn: 'root'})
 export class FocusTrapFactory {
+  private _document: Document;
+
   constructor(
       private _checker: InteractivityChecker,
       private _ngZone: NgZone,
-      @Inject(DOCUMENT) private _document: Document) {}
+      @Inject(DOCUMENT) _document: any) {
+
+    this._document = _document;
+  }
 
   /**
    * Creates a focus-trapped region around the given element.
@@ -309,6 +314,8 @@ export class FocusTrapFactory {
   exportAs: 'cdkTrapFocus',
 })
 export class CdkTrapFocus implements OnDestroy, AfterContentInit {
+  private _document: Document;
+
   /** Underlying FocusTrap instance. */
   focusTrap: FocusTrap;
 
@@ -332,7 +339,7 @@ export class CdkTrapFocus implements OnDestroy, AfterContentInit {
   constructor(
       private _elementRef: ElementRef,
       private _focusTrapFactory: FocusTrapFactory,
-      @Inject(DOCUMENT) private _document: Document) {
+      @Inject(DOCUMENT) _document: any) {
 
     this._document = _document;
     this.focusTrap = this._focusTrapFactory.create(this._elementRef.nativeElement, true);

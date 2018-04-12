@@ -35,7 +35,7 @@ export class MatMenuContent implements OnDestroy {
     private _appRef: ApplicationRef,
     private _injector: Injector,
     private _viewContainerRef: ViewContainerRef,
-    @Inject(DOCUMENT) private _document: Document) {}
+    @Inject(DOCUMENT) private _document: any) {}
 
   /**
    * Attaches the content with a particular context.

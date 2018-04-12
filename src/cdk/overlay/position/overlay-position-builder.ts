@@ -20,7 +20,7 @@ import {GlobalPositionStrategy} from './global-position-strategy';
 export class OverlayPositionBuilder {
   constructor(
     private _viewportRuler: ViewportRuler,
-    @Inject(DOCUMENT) private _document: Document) { }
+    @Inject(DOCUMENT) private _document: any) { }
 
   /**
    * Creates a global position strategy.

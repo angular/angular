@@ -79,6 +79,9 @@ export class MatBottomSheetContainer extends BasePortalOutlet implements OnDestr
   /** Element that was focused before the bottom sheet was opened. */
   private _elementFocusedBeforeOpened: HTMLElement | null = null;
 
+  /** Server-side rendering-compatible reference to the global document object. */
+  private _document: Document;
+
   /** Whether the component has been destroyed. */
   private _destroyed: boolean;
 
@@ -87,9 +90,10 @@ export class MatBottomSheetContainer extends BasePortalOutlet implements OnDestr
     private _changeDetectorRef: ChangeDetectorRef,
     private _focusTrapFactory: FocusTrapFactory,
     breakpointObserver: BreakpointObserver,
-    @Optional() @Inject(DOCUMENT) private _document: Document) {
+    @Optional() @Inject(DOCUMENT) document: any) {
     super();
 
+    this._document = document;
     this._breakpointSubscription = breakpointObserver
       .observe([Breakpoints.Medium, Breakpoints.Large, Breakpoints.XLarge])
       .subscribe(() => {

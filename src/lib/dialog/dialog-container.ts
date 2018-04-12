@@ -98,7 +98,7 @@ export class MatDialogContainer extends BasePortalOutlet {
     private _elementRef: ElementRef,
     private _focusTrapFactory: FocusTrapFactory,
     private _changeDetectorRef: ChangeDetectorRef,
-    @Optional() @Inject(DOCUMENT) private _document: Document) {
+    @Optional() @Inject(DOCUMENT) private _document: any) {
 
     super();
   }

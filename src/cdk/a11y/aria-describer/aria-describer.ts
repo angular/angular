@@ -55,7 +55,11 @@ let messagesContainer: HTMLElement | null = null;
  */
 @Injectable({providedIn: 'root'})
 export class AriaDescriber {
-  constructor(@Inject(DOCUMENT) private _document: Document) {}
+  private _document: Document;
+
+  constructor(@Inject(DOCUMENT) _document: any) {
+    this._document = _document;
+  }
 
   /**
    * Adds to the host element an aria-describedby reference to a hidden element that contains
@@ -209,8 +213,7 @@ export class AriaDescriber {
 
 
 /** @docs-private @deprecated @deletion-target 7.0.0 */
-export function ARIA_DESCRIBER_PROVIDER_FACTORY(parentDispatcher: AriaDescriber,
-  _document: Document) {
+export function ARIA_DESCRIBER_PROVIDER_FACTORY(parentDispatcher: AriaDescriber, _document: any) {
   return parentDispatcher || new AriaDescriber(_document);
 }
 
@@ -220,7 +223,7 @@ export const ARIA_DESCRIBER_PROVIDER = {
   provide: AriaDescriber,
   deps: [
     [new Optional(), new SkipSelf(), AriaDescriber],
-    DOCUMENT as InjectionToken<Document>
+    DOCUMENT as InjectionToken<any>
   ],
   useFactory: ARIA_DESCRIBER_PROVIDER_FACTORY
 };

@@ -27,7 +27,7 @@ export class LiveAnnouncer implements OnDestroy {
 
   constructor(
       @Optional() @Inject(LIVE_ANNOUNCER_ELEMENT_TOKEN) elementToken: any,
-      @Inject(DOCUMENT) private _document: Document) {
+      @Inject(DOCUMENT) private _document: any) {
 
     // We inject the live element as `any` because the constructor signature cannot reference
     // browser globals (HTMLElement) on non-browser environments, since having a class decorator
@@ -83,7 +83,7 @@ export class LiveAnnouncer implements OnDestroy {
 
 /** @docs-private @deprecated @deletion-target 7.0.0 */
 export function LIVE_ANNOUNCER_PROVIDER_FACTORY(
-    parentDispatcher: LiveAnnouncer, liveElement: any, _document: Document) {
+    parentDispatcher: LiveAnnouncer, liveElement: any, _document: any) {
   return parentDispatcher || new LiveAnnouncer(liveElement, _document);
 }
 

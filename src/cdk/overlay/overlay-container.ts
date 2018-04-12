@@ -22,7 +22,7 @@ import {
 export class OverlayContainer implements OnDestroy {
   protected _containerElement: HTMLElement;
 
-  constructor(@Inject(DOCUMENT) private _document: Document) {}
+  constructor(@Inject(DOCUMENT) private _document: any) {}
 
   ngOnDestroy() {
     if (this._containerElement && this._containerElement.parentNode) {
@@ -57,7 +57,7 @@ export class OverlayContainer implements OnDestroy {
 
 /** @docs-private @deprecated @deletion-target 7.0.0 */
 export function OVERLAY_CONTAINER_PROVIDER_FACTORY(parentContainer: OverlayContainer,
-  _document: Document) {
+  _document: any) {
   return parentContainer || new OverlayContainer(_document);
 }
 
@@ -67,8 +67,7 @@ export const OVERLAY_CONTAINER_PROVIDER = {
   provide: OverlayContainer,
   deps: [
     [new Optional(), new SkipSelf(), OverlayContainer],
-    // We need to use the InjectionToken somewhere to keep TS happy
-    DOCUMENT as InjectionToken<Document>
+    DOCUMENT as InjectionToken<any> // We need to use the InjectionToken somewhere to keep TS happy
   ],
   useFactory: OVERLAY_CONTAINER_PROVIDER_FACTORY
 };

@@ -94,6 +94,8 @@ class SvgIconConfig {
  */
 @Injectable({providedIn: 'root'})
 export class MatIconRegistry {
+  private _document: Document;
+
   /**
    * URLs and cached SVG elements for individual icons. Keys are of the format "[namespace]:[icon]".
    */
@@ -124,7 +126,9 @@ export class MatIconRegistry {
   constructor(
     @Optional() private _httpClient: HttpClient,
     private _sanitizer: DomSanitizer,
-    @Optional() @Inject(DOCUMENT) private _document: Document) {}
+    @Optional() @Inject(DOCUMENT) document: any) {
+      this._document = document;
+    }
 
   /**
    * Registers an icon by URL in the default namespace.
