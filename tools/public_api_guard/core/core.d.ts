@@ -376,8 +376,10 @@ export interface InjectDecorator {
 
 export declare const enum InjectFlags {
     Default = 0,
-    SkipSelf = 1,
+    Host = 1,
     Self = 2,
+    SkipSelf = 4,
+    Optional = 8,
 }
 
 export declare class InjectionToken<T> {
