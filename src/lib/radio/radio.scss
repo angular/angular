@@ -1,5 +1,6 @@
 @import '../core/style/variables';
 @import '../core/ripple/ripple';
+@import '../../cdk/a11y/a11y';
 
 
 $mat-radio-size: $mat-toggle-size !default;
@@ -65,6 +66,12 @@ $mat-radio-ripple-radius: 25px;
 
   .mat-radio-checked & {
     transform: scale(0.5);
+
+    @include cdk-high-contrast {
+      // Since we use a background color to render the circle, it won't be
+      // displayed in high contrast mode. Use a border as a fallback.
+      border: solid $mat-radio-size / 2;
+    }
   }
 }
 
