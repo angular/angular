@@ -14,7 +14,7 @@
 # `com_github_bazelbuild_buildtools` in the `/WORKSPACE` file.
 var_1: &docker_image angular/ngcontainer:0.3.0
 var_2: &cache_key v2-angular-{{ .Branch }}-{{ checksum "yarn.lock" }}-0.3.0
-var_3: &cache_key_aio v2-angular-{{ .Branch }}-{{ checksum "yarn.lock" }}-0.2.0-aio
+var_3: &cache_key_aio v2-angular-{{ .Branch }}-{{ checksum "yarn.lock" }}-0.3.0-aio
 
 # Define common ENV vars
 var_3: &define_env_vars
