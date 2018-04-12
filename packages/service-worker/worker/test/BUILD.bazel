@@ -9,6 +9,7 @@ ts_library(
     ),
     deps = [
         "//packages:types",
+        "//packages/service-worker/config",
         "//packages/service-worker/worker",
         "//packages/service-worker/worker/testing",
     ],

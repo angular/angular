@@ -287,7 +287,8 @@ export class ConfigBuilder {
     const hashTable = {};
     return {
       configVersion: 1,
-      index: '/index.html', assetGroups, hashTable,
+      index: '/index.html', assetGroups,
+      navigationUrls: [], hashTable,
     };
   }
 }
