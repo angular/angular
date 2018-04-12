@@ -132,10 +132,10 @@
     "name": "refreshChildComponents"
   },
   {
-    "name": "refreshDirectives"
+    "name": "refreshDynamicChildren"
   },
   {
-    "name": "refreshDynamicChildren"
+    "name": "refreshView"
   },
   {
     "name": "renderComponent"
