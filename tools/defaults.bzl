@@ -8,8 +8,11 @@ DEFAULT_TSCONFIG = "//packages:tsconfig-build.json"
 
 # Packages which are versioned together on npm
 ANGULAR_SCOPED_PACKAGES = ["@angular/%s" % p for p in [
-  "bazel",
+  # core should be the first package because it's the main package in the group
+  # this is significant for Angular CLI and "ng update" specifically, @angular/core
+  # is considered the identifier of the group by these tools.
   "core",
+  "bazel",
   "common",
   "compiler",
   "compiler-cli",
