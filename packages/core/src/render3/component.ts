@@ -132,10 +132,11 @@ export function renderComponent<T>(
     scheduler: opts.scheduler || requestAnimationFrame.bind(window),
     clean: CLEAN_PROMISE,
   };
-  const rootView = createLView(
+  const rootView: LView = createLView(
       -1, rendererFactory.createRenderer(hostNode, componentDef.rendererType),
       createTView(null, null), null, rootContext,
       componentDef.onPush ? LViewFlags.Dirty : LViewFlags.CheckAlways);
+  rootView.injector = opts.injector || null;
 
   const oldView = enterView(rootView, null !);
   let elementNode: LElementNode;

@@ -2237,7 +2237,7 @@ describe('ngc transformer command-line', () => {
           constructor(e: Existing|null) {}
         }
       `);
-      expect(source).toMatch(/ngInjectableDef.*return ..\(..\.inject\(Existing, null, 0\)/);
+      expect(source).toMatch(/ngInjectableDef.*return ..\(..\.inject\(Existing, 8\)/);
     });
 
     it('compiles a useFactory InjectableDef with skip-self dep', () => {
@@ -2257,7 +2257,7 @@ describe('ngc transformer command-line', () => {
           constructor(e: Existing) {}
         }
       `);
-      expect(source).toMatch(/ngInjectableDef.*return ..\(..\.inject\(Existing, undefined, 4\)/);
+      expect(source).toMatch(/ngInjectableDef.*return ..\(..\.inject\(Existing, 4\)/);
     });
 
     it('compiles a service that depends on a token', () => {

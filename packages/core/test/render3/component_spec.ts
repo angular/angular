@@ -7,15 +7,15 @@
  */
 
 
-import {DoCheck, ViewEncapsulation} from '../../src/core';
+import {ComponentFactory, DoCheck, ViewEncapsulation, createInjector, defineInjectable, defineInjector} from '../../src/core';
 import {getRenderedText} from '../../src/render3/component';
-import {LifecycleHooksFeature, defineComponent, markDirty} from '../../src/render3/index';
+import {LifecycleHooksFeature, defineComponent, directiveInject, markDirty} from '../../src/render3/index';
 import {bind, container, containerRefreshEnd, containerRefreshStart, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, text, textBinding, tick} from '../../src/render3/instructions';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
 import {createRendererType2} from '../../src/view/index';
 
 import {getRendererFactory2} from './imported_renderer2';
-import {containerEl, renderComponent, renderToHtml, requestAnimationFrame, toHtml} from './render_util';
+import {ComponentFixture, containerEl, renderComponent, renderToHtml, requestAnimationFrame, toHtml} from './render_util';
 
 describe('component', () => {
   class CounterComponent {
@@ -58,6 +58,45 @@ describe('component', () => {
       expect(toHtml(containerEl)).toEqual('123');
       requestAnimationFrame.flush();
       expect(toHtml(containerEl)).toEqual('124');
+    });
+
+    class MyService {
+      constructor(public value: string) {}
+      static ngInjectableDef =
+          defineInjectable({providedIn: 'root', factory: () => new MyService('no-injector')});
+    }
+    class MyComponent {
+      constructor(public myService: MyService) {}
+      static ngComponentDef = defineComponent({
+        type: MyComponent,
+        selectors: [['my-component']],
+        factory: () => new MyComponent(directiveInject(MyService)),
+        template: function(fs: RenderFlags, ctx: MyComponent) {
+          if (fs & RenderFlags.Create) {
+            text(0);
+          }
+          if (fs & RenderFlags.Update) {
+            textBinding(0, bind(ctx.myService.value));
+          }
+        }
+      });
+    }
+
+    class MyModule {
+      static ngInjectorDef = defineInjector({
+        factory: () => new MyModule(),
+        providers: [{provide: MyService, useValue: new MyService('injector')}]
+      });
+    }
+
+    it('should support bootstrapping without injector', () => {
+      const fixture = new ComponentFixture(MyComponent);
+      expect(fixture.html).toEqual('no-injector');
+    });
+
+    it('should support bootstrapping with injector', () => {
+      const fixture = new ComponentFixture(MyComponent, {injector: createInjector(MyModule)});
+      expect(fixture.html).toEqual('injector');
     });
 
   });

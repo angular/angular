@@ -242,7 +242,7 @@ export declare class DefaultIterableDiffer<V> implements IterableDiffer<V>, Iter
 
 /** @experimental */
 export declare function defineInjectable<T>(opts: {
-    providedIn?: Type<any> | 'root' | null;
+    providedIn?: Type<any> | 'root' | 'any' | null;
     factory: () => T;
 }): InjectableDef<T>;
 
@@ -336,9 +336,8 @@ export interface HostDecorator {
 export declare const HostListener: HostListenerDecorator;
 
 /** @experimental */
-export declare function inject<T>(token: Type<T> | InjectionToken<T>, notFoundValue?: undefined, flags?: InjectFlags): T;
-export declare function inject<T>(token: Type<T> | InjectionToken<T>, notFoundValue: T, flags?: InjectFlags): T;
-export declare function inject<T>(token: Type<T> | InjectionToken<T>, notFoundValue: null, flags?: InjectFlags): T | null;
+export declare function inject<T>(token: Type<T> | InjectionToken<T>): T;
+export declare function inject<T>(token: Type<T> | InjectionToken<T>, flags?: InjectFlags): T | null;
 
 export declare const Inject: InjectDecorator;
 
@@ -359,6 +358,7 @@ export interface InjectableDecorator {
 export interface InjectableDef<T> {
     factory: () => T;
     providedIn: InjectorType<any> | 'root' | 'any' | null;
+    value: T | undefined;
 }
 
 /** @experimental */
@@ -462,6 +462,7 @@ export declare class IterableDiffers {
     /** @deprecated */ factories: IterableDifferFactory[];
     constructor(factories: IterableDifferFactory[]);
     find(iterable: any): IterableDifferFactory;
+    static ngInjectableDef: InjectableDef<IterableDiffers>;
     static create(factories: IterableDifferFactory[], parent?: IterableDiffers): IterableDiffers;
     static extend(factories: IterableDifferFactory[]): StaticProvider;
 }

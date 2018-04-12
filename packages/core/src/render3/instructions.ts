@@ -301,6 +301,7 @@ export function createLView<T>(
     dynamicViewCount: 0,
     lifecycleStage: LifecycleStage.Init,
     queries: null,
+    injector: currentView && currentView.injector,
   };
 
   return newView;
