@@ -6,10 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CompileDirectiveMetadata, CompileDirectiveSummary, CompilePipeSummary, CompileQueryMetadata, CompileTokenMetadata, CompileTypeMetadata, CompileTypeSummary, flatten, identifierName, rendererTypeName, sanitizeIdentifier, tokenReference, viewClassName} from '../compile_metadata';
+import {CompileDiDependencyMetadata, CompileDirectiveMetadata, CompileDirectiveSummary, CompilePipeSummary, CompileQueryMetadata, CompileTokenMetadata, CompileTypeMetadata, CompileTypeSummary, flatten, identifierName, rendererTypeName, sanitizeIdentifier, tokenReference, viewClassName} from '../compile_metadata';
 import {CompileReflector} from '../compile_reflector';
 import {BindingForm, BuiltinConverter, BuiltinFunctionCall, ConvertPropertyBindingResult, EventHandlerVars, LocalResolver, convertActionBinding, convertPropertyBinding, convertPropertyBindingBuiltins} from '../compiler_util/expression_converter';
 import {ConstantPool, DefinitionKind} from '../constant_pool';
+import {InjectFlags} from '../core';
 import {AST, AstMemoryEfficientTransformer, AstTransformer, BindingPipe, FunctionCall, ImplicitReceiver, LiteralArray, LiteralMap, LiteralPrimitive, MethodCall, ParseSpan, PropertyRead} from '../expression_parser/ast';
 import {Identifiers} from '../identifiers';
 import {LifecycleHooks} from '../lifecycle_reflector';
@@ -19,8 +20,10 @@ import {CssSelector} from '../selector';
 import {BindingParser} from '../template_parser/binding_parser';
 import {AttrAst, BoundDirectivePropertyAst, BoundElementPropertyAst, BoundEventAst, BoundTextAst, DirectiveAst, ElementAst, EmbeddedTemplateAst, NgContentAst, PropertyBindingType, ProviderAst, QueryMatch, RecursiveTemplateAstVisitor, ReferenceAst, TemplateAst, TemplateAstVisitor, TextAst, VariableAst, templateVisitAll} from '../template_parser/template_ast';
 import {OutputContext, error} from '../util';
+
 import {Identifiers as R3} from './r3_identifiers';
 import {BUILD_OPTIMIZER_COLOCATE, OutputMode} from './r3_types';
+
 
 /** Name of the context parameter passed into a template function */
 const CONTEXT_NAME = 'ctx';
@@ -927,12 +930,6 @@ export function createFactory(
   const viewContainerRef = reflector.resolveExternalReference(Identifiers.ViewContainerRef);
 
   for (let dependency of type.diDeps) {
-    if (dependency.isValue) {
-      unsupported('value dependencies');
-    }
-    if (dependency.isHost) {
-      unsupported('host dependencies');
-    }
     const token = dependency.token;
     if (token) {
       const tokenRef = tokenReference(token);
@@ -942,10 +939,18 @@ export function createFactory(
         args.push(o.importExpr(R3.injectTemplateRef).callFn([]));
       } else if (tokenRef === viewContainerRef) {
         args.push(o.importExpr(R3.injectViewContainerRef).callFn([]));
+      } else if (dependency.isAttribute) {
+        args.push(o.importExpr(R3.injectAttribute).callFn([o.literal(dependency.token !.value)]));
       } else {
-        const value =
+        const tokenValue =
             token.identifier != null ? outputCtx.importExpr(tokenRef) : o.literal(tokenRef);
-        args.push(o.importExpr(R3.inject).callFn([value]));
+        const directiveInjectArgs = [tokenValue];
+        const flags = extractFlags(dependency);
+        if (flags != InjectFlags.Default) {
+          // Append flag information if other than default.
+          directiveInjectArgs.push(o.literal(undefined), o.literal(flags));
+        }
+        args.push(o.importExpr(R3.directiveInject).callFn(directiveInjectArgs));
       }
     } else {
       unsupported('dependency without a token');
@@ -977,6 +982,26 @@ export function createFactory(
   return o.fn(
       [], [new o.ReturnStatement(result)], o.INFERRED_TYPE, null,
       type.reference.name ? `${type.reference.name}_Factory` : null);
+}
+
+function extractFlags(dependency: CompileDiDependencyMetadata): InjectFlags {
+  let flags = InjectFlags.Default;
+  if (dependency.isHost) {
+    flags |= InjectFlags.Host;
+  }
+  if (dependency.isOptional) {
+    flags |= InjectFlags.Optional;
+  }
+  if (dependency.isSelf) {
+    flags |= InjectFlags.Self;
+  }
+  if (dependency.isSkipSelf) {
+    flags |= InjectFlags.SkipSelf;
+  }
+  if (dependency.isValue) {
+    unsupported('value dependencies');
+  }
+  return flags;
 }
 
 /**

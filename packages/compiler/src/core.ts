@@ -217,14 +217,23 @@ export const enum DepFlags {
   Value = 1 << 3,
 }
 
-/** Injection flags for DI. */
+/**
+ * Injection flags for DI.
+ */
 export const enum InjectFlags {
   Default = 0,
 
-  /** Skip the node that is requesting injection. */
-  SkipSelf = 1 << 0,
+  /**
+   * Specifies that an injector should retrieve a dependency from any injector until reaching the
+   * host element of the current component. (Only used with Element Injector)
+   */
+  Host = 1 << 0,
   /** Don't descend into ancestors of the node requesting injection. */
   Self = 1 << 1,
+  /** Skip the node that is requesting injection. */
+  SkipSelf = 1 << 2,
+  /** Inject `defaultValue` instead if token not found. */
+  Optional = 1 << 3,
 }
 
 export const enum ArgumentType {Inline = 0, Dynamic = 1}

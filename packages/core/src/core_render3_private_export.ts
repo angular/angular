@@ -21,7 +21,6 @@ export {
   injectViewContainerRef as ɵinjectViewContainerRef,
   injectChangeDetectorRef as ɵinjectChangeDetectorRef,
   injectAttribute as ɵinjectAttribute,
-  InjectFlags as ɵInjectFlags,
   PublicFeature as ɵPublicFeature,
   NgOnChangesFeature as ɵNgOnChangesFeature,
   CssSelectorList as ɵCssSelectorList,

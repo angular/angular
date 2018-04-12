@@ -81,6 +81,8 @@ export class Identifiers {
 
   static directiveLifeCycle: o.ExternalReference = {name: 'ɵl', moduleName: CORE};
 
+  static injectAttribute: o.ExternalReference = {name: 'ɵinjectAttribute', moduleName: CORE};
+
   static injectElementRef: o.ExternalReference = {name: 'ɵinjectElementRef', moduleName: CORE};
 
   static injectTemplateRef: o.ExternalReference = {name: 'ɵinjectTemplateRef', moduleName: CORE};
@@ -88,7 +90,7 @@ export class Identifiers {
   static injectViewContainerRef:
       o.ExternalReference = {name: 'ɵinjectViewContainerRef', moduleName: CORE};
 
-  static inject: o.ExternalReference = {name: 'ɵinject', moduleName: CORE};
+  static directiveInject: o.ExternalReference = {name: 'ɵdirectiveInject', moduleName: CORE};
 
   static defineComponent: o.ExternalReference = {name: 'ɵdefineComponent', moduleName: CORE};
 
