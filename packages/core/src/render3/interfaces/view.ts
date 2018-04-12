@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {Injector} from '../../di/injector';
 import {LContainer} from './container';
 import {ComponentTemplate, DirectiveDef, DirectiveDefList, PipeDef, PipeDefList} from './definition';
 import {LElementNode, LViewNode, TNode} from './node';
@@ -189,6 +190,11 @@ export interface LView {
    * Queries active for this view - nodes from a view are reported to those queries
    */
   queries: LQueries|null;
+
+  /**
+   * An optional Module Injector to be used as fall back after Element Injectors are consulted.
+   */
+  injector: Injector|null;
 }
 
 /** Flags associated with an LView (saved in LView.flags) */

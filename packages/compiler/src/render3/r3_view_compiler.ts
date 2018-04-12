@@ -948,7 +948,7 @@ export function createFactory(
         const flags = extractFlags(dependency);
         if (flags != InjectFlags.Default) {
           // Append flag information if other than default.
-          directiveInjectArgs.push(o.literal(undefined), o.literal(flags));
+          directiveInjectArgs.push(o.literal(flags));
         }
         args.push(o.importExpr(R3.directiveInject).callFn(directiveInjectArgs));
       }

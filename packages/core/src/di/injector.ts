@@ -428,9 +428,15 @@ export const enum InjectFlags {
   Optional = 1 << 3,
 }
 
-let _currentInjector: Injector|null = null;
+/**
+ * Current injector value used by `inject`.
+ * - `undefined`: it is an error to call `inject`
+ * - `null`: `inject` can be called but there is no injector (limp-mode).
+ * - Injector instance: Use the injector for resolution.
+ */
+let _currentInjector: Injector|undefined|null = undefined;
 
-export function setCurrentInjector(injector: Injector | null): Injector|null {
+export function setCurrentInjector(injector: Injector | null | undefined): Injector|undefined|null {
   const former = _currentInjector;
   _currentInjector = injector;
   return former;
@@ -450,19 +456,21 @@ export function setCurrentInjector(injector: Injector | null): Injector|null {
  *
  * @experimental
  */
-export function inject<T>(
-    token: Type<T>| InjectionToken<T>, notFoundValue?: undefined, flags?: InjectFlags): T;
-export function inject<T>(
-    token: Type<T>| InjectionToken<T>, notFoundValue: T, flags?: InjectFlags): T;
-export function inject<T>(
-    token: Type<T>| InjectionToken<T>, notFoundValue: null, flags?: InjectFlags): T|null;
-export function inject<T>(
-    token: Type<T>| InjectionToken<T>, notFoundValue?: T | null, flags = InjectFlags.Default): T|
-    null {
-  if (_currentInjector === null) {
+export function inject<T>(token: Type<T>| InjectionToken<T>): T;
+export function inject<T>(token: Type<T>| InjectionToken<T>, flags?: InjectFlags): T|null;
+export function inject<T>(token: Type<T>| InjectionToken<T>, flags = InjectFlags.Default): T|null {
+  if (_currentInjector === undefined) {
     throw new Error(`inject() must be called from an injection context`);
+  } else if (_currentInjector === null) {
+    const injectableDef: InjectableDef<T> = (token as any).ngInjectableDef;
+    if (injectableDef && injectableDef.providedIn == 'root') {
+      return injectableDef.value === undefined ? injectableDef.value = injectableDef.factory() :
+                                                 injectableDef.value;
+    }
+    throw new Error(`Injector: NOT_FOUND [${stringify(token)}]`);
+  } else {
+    return _currentInjector.get(token, flags & InjectFlags.Optional ? null : undefined, flags);
   }
-  return _currentInjector.get(token, notFoundValue, flags);
 }
 
 export function injectArgs(types: (Type<any>| InjectionToken<any>| any[])[]): any[] {
@@ -474,13 +482,12 @@ export function injectArgs(types: (Type<any>| InjectionToken<any>| any[])[]): an
         throw new Error('Arguments array must have arguments.');
       }
       let type: Type<any>|undefined = undefined;
-      let defaultValue: null|undefined = undefined;
       let flags: InjectFlags = InjectFlags.Default;
 
       for (let j = 0; j < arg.length; j++) {
         const meta = arg[j];
         if (meta instanceof Optional || meta.__proto__.ngMetadataName === 'Optional') {
-          defaultValue = null;
+          flags |= InjectFlags.Optional;
         } else if (meta instanceof SkipSelf || meta.__proto__.ngMetadataName === 'SkipSelf') {
           flags |= InjectFlags.SkipSelf;
         } else if (meta instanceof Self || meta.__proto__.ngMetadataName === 'Self') {
@@ -492,7 +499,7 @@ export function injectArgs(types: (Type<any>| InjectionToken<any>| any[])[]): an
         }
       }
 
-      args.push(inject(type !, defaultValue, InjectFlags.Default));
+      args.push(inject(type !, flags));
     } else {
       args.push(inject(arg));
     }

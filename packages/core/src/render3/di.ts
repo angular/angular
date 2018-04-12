@@ -9,7 +9,7 @@
 // We are temporarily importing the existing viewEngine_from core so we can be sure we are
 // correctly implementing its interfaces for backwards compatibility.
 import {ChangeDetectorRef as viewEngine_ChangeDetectorRef} from '../change_detection/change_detector_ref';
-import {InjectFlags, Injector} from '../di/injector';
+import {InjectFlags, Injector, inject, setCurrentInjector} from '../di/injector';
 import {ComponentFactory as viewEngine_ComponentFactory, ComponentRef as viewEngine_ComponentRef} from '../linker/component_factory';
 import {ElementRef as viewEngine_ElementRef} from '../linker/element_ref';
 import {NgModuleRef as viewEngine_NgModuleRef} from '../linker/ng_module_factory';
@@ -125,7 +125,6 @@ export function getOrCreateNodeInjectorForNode(node: LElementNode | LContainerNo
     cbf5: parentInjector == null ? 0 : parentInjector.cbf5 | parentInjector.bf5,
     cbf6: parentInjector == null ? 0 : parentInjector.cbf6 | parentInjector.bf6,
     cbf7: parentInjector == null ? 0 : parentInjector.cbf7 | parentInjector.bf7,
-    injector: null,
     templateRef: null,
     viewContainerRef: null,
     elementRef: null,
@@ -133,16 +132,6 @@ export function getOrCreateNodeInjectorForNode(node: LElementNode | LContainerNo
   };
 }
 
-/**
- * Constructs an injection error with the given text and token.
- *
- * @param text The text of the error
- * @param token The token associated with the error
- * @returns The error that was created
- */
-function createInjectionError(text: string, token: any) {
-  return new Error(`ElementInjector: ${text} [${stringify(token)}]`);
-}
 
 /**
  * Makes a directive public to the DI system by adding it to an injector's bloom filter.
@@ -188,14 +177,10 @@ export function diPublic(def: DirectiveDef<any>): void {
  * @param flags Injection flags (e.g. CheckParent)
  * @returns The instance found
  */
-export function directiveInject<T>(
-    token: Type<T>, notFoundValue?: undefined, flags?: InjectFlags): T;
-export function directiveInject<T>(token: Type<T>, notFoundValue: T, flags?: InjectFlags): T;
-export function directiveInject<T>(token: Type<T>, notFoundValue: null, flags?: InjectFlags): T|
-    null;
-export function directiveInject<T>(
-    token: Type<T>, notFoundValue?: T | null, flags = InjectFlags.Default): T|null {
-  return getOrCreateInjectable<T>(getOrCreateNodeInjector(), token, flags, notFoundValue);
+export function directiveInject<T>(token: Type<T>): T;
+export function directiveInject<T>(token: Type<T>, flags?: InjectFlags): T|null;
+export function directiveInject<T>(token: Type<T>, flags = InjectFlags.Default): T|null {
+  return getOrCreateInjectable<T>(getOrCreateNodeInjector(), token, flags);
 }
 
 /**
@@ -344,21 +329,20 @@ function getClosestComponentAncestor(node: LViewNode | LElementNode): LElementNo
  * @param flags Injection flags (e.g. CheckParent)
  * @returns The instance found
  */
-export function getOrCreateInjectable<T>(
-    di: LInjector, token: Type<T>, flags?: InjectFlags, defaultValue?: T | null): T|null {
+export function getOrCreateInjectable<T>(di: LInjector, token: Type<T>, flags?: InjectFlags): T|
+    null {
   const bloomHash = bloomHashBit(token);
 
   // If the token has a bloom hash, then it is a directive that is public to the injection system
   // (diPublic). If there is no hash, fall back to the module injector.
   if (bloomHash === null) {
-    const moduleInjector = di.injector;
-    if (!moduleInjector) {
-      if (defaultValue != null) {
-        return defaultValue;
-      }
-      throw createInjectionError('NotFound', token);
+    const moduleInjector = getPreviousOrParentNode().view.injector;
+    const formerInjector = setCurrentInjector(moduleInjector);
+    try {
+      return inject(token, flags);
+    } finally {
+      setCurrentInjector(formerInjector);
     }
-    moduleInjector.get(token);
   } else {
     let injector: LInjector|null = di;
 
@@ -409,7 +393,7 @@ export function getOrCreateInjectable<T>(
 
   // No directive was found for the given token.
   // TODO: implement optional, check-self, and check-parent.
-  throw createInjectionError('Not found', token);
+  throw new Error('Implement');
 }
 
 function searchMatchesQueuedForCreation<T>(node: LNode, token: any): T|null {
