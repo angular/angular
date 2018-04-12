@@ -18,42 +18,6 @@ load("@build_bazel_rules_nodejs//:internal/npm_package/npm_package.bzl",
 load("@build_bazel_rules_nodejs//:internal/node.bzl", "sources_aspect")
 load("//packages/bazel/src:esm5.bzl", "esm5_outputs_aspect", "flatten_esm5", "esm5_root_dir")
 
-WELL_KNOWN_GLOBALS = {
-    "@angular/upgrade": "ng.upgrade",
-    "@angular/upgrade/static": "ng.upgrade.static",
-    "@angular/forms": "ng.forms",
-    "@angular/core/testing": "ng.core.testing",
-    "@angular/core": "ng.core",
-    "@angular/platform-server/testing": "ng.platformServer.testing",
-    "@angular/platform-server": "ng.platformServer",
-    "@angular/platform-webworker-dynamic": "ng.platformWebworkerDynamic",
-    "@angular/platform-webworker": "ng.platformWebworker",
-    "@angular/common/testing": "ng.common.testing",
-    "@angular/common": "ng.common",
-    "@angular/common/http/testing": "ng.common.http.testing",
-    "@angular/common/http": "ng.common.http",
-    "@angular/elements": "ng.elements",
-    "@angular/http/testing": "ng.http.testing",
-    "@angular/http": "ng.http",
-    "@angular/platform-browser-dynamic/testing": "ng.platformBrowserDynamic.testing",
-    "@angular/platform-browser-dynamic": "ng.platformBrowserDynamic",
-    "@angular/compiler/testing": "ng.compiler.testing",
-    "@angular/compiler": "ng.compiler",
-    "@angular/animations": "ng.animations",
-    "@angular/animations/browser/testing": "ng.animations.browser.testing",
-    "@angular/animations/browser": "ng.animations.browser",
-    "@angular/service-worker/config": "ng.serviceWorker.config",
-    "@angular/service-worker": "ng.serviceWorker",
-    "@angular/platform-browser/testing": "ng.platformBrowser.testing",
-    "@angular/platform-browser": "ng.platformBrowser",
-    "@angular/platform-browser/animations": "ng.platformBrowser.animations",
-    "@angular/router/upgrade": "ng.router.upgrade",
-    "@angular/router/testing": "ng.router.testing",
-    "@angular/router": "ng.router",
-    "rxjs": "rxjs",
-    "rxjs/operators": "rxjs.operators",
-}
-
 # Convert from some-dash-case to someCamelCase
 def _convert_dash_case_to_camel_case(s):
   parts = s.split("-")
@@ -75,6 +39,42 @@ def _global_name(package_name):
     else:
       result_parts.append(_convert_dash_case_to_camel_case(p))
   return ".".join(result_parts)
+
+WELL_KNOWN_GLOBALS = { p: _global_name(p) for p in [
+    "@angular/upgrade",
+    "@angular/upgrade/static",
+    "@angular/forms",
+    "@angular/core/testing",
+    "@angular/core",
+    "@angular/platform-server/testing",
+    "@angular/platform-server",
+    "@angular/platform-webworker-dynamic",
+    "@angular/platform-webworker",
+    "@angular/common/testing",
+    "@angular/common",
+    "@angular/common/http/testing",
+    "@angular/common/http",
+    "@angular/elements",
+    "@angular/http/testing",
+    "@angular/http",
+    "@angular/platform-browser-dynamic/testing",
+    "@angular/platform-browser-dynamic",
+    "@angular/compiler/testing",
+    "@angular/compiler",
+    "@angular/animations",
+    "@angular/animations/browser/testing",
+    "@angular/animations/browser",
+    "@angular/service-worker/config",
+    "@angular/service-worker",
+    "@angular/platform-browser/testing",
+    "@angular/platform-browser",
+    "@angular/platform-browser/animations",
+    "@angular/router/upgrade",
+    "@angular/router/testing",
+    "@angular/router",
+    "rxjs",
+    "rxjs/operators",
+]}
 
 def _rollup(ctx, rollup_config, entry_point, inputs, js_output, format = "es", package_name = ""):
   map_output = ctx.actions.declare_file(js_output.basename + ".map", sibling = js_output)
@@ -176,9 +176,10 @@ def _ng_package_impl(ctx):
   for dep in deps_in_package:
     # Intentionally evaluates to empty string for the main entry point
     entry_point = dep.label.package[len(ctx.label.package) + 1:]
+    if hasattr(dep, "module_name"):
+      package_name = dep.module_name
     if hasattr(dep, "angular") and hasattr(dep.angular, "flat_module_metadata"):
       flat_module_metadata.append(dep.angular.flat_module_metadata)
-      package_name = dep.angular.flat_module_metadata.module_name
       flat_module_out_file = dep.angular.flat_module_metadata.flat_module_out_file + ".js"
     else:
       # fallback to a reasonable default
