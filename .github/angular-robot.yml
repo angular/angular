@@ -108,4 +108,3 @@ triage:
       - "comp: *"
     -
       - "type: RFC / Discussion / question"
-      - "comp: *"
