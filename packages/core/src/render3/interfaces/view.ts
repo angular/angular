@@ -408,10 +408,10 @@ export type HookData = (number | (() => void))[];
 export const enum LifecycleStage {
 
   /* Init hooks need to be run, if any. */
-  INIT = 1,
+  Init = 1,
 
   /* Content hooks need to be run, if any. Init hooks have already run. */
-  AFTER_INIT = 2,
+  AfterInit = 2,
 }
 
 /**
