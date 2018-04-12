@@ -83,6 +83,8 @@ export class MatTabGroup extends _MatTabGroupMixinBase implements AfterContentIn
 
   @ViewChild('tabBodyWrapper') _tabBodyWrapper: ElementRef;
 
+  @ViewChild('tabHeader') _tabHeader: MatTabHeader;
+
   /** The tab index that should be selected after the content has been checked. */
   private _indexToSelect: number | null = 0;
 
@@ -206,6 +208,13 @@ export class MatTabGroup extends _MatTabGroupMixinBase implements AfterContentIn
   ngOnDestroy() {
     this._tabsSubscription.unsubscribe();
     this._tabLabelSubscription.unsubscribe();
+  }
+
+  /** Re-aligns the ink bar to the selected tab element. */
+  realignInkBar() {
+    if (this._tabHeader) {
+      this._tabHeader._alignInkBarToSelectedTab();
+    }
   }
 
   _focusChanged(index: number) {

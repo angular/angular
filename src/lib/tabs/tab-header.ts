@@ -448,7 +448,7 @@ export class MatTabHeader extends _MatTabHeaderMixinBase
   }
 
   /** Tells the ink-bar to align itself to the current label wrapper */
-  private _alignInkBarToSelectedTab(): void {
+  _alignInkBarToSelectedTab(): void {
     const selectedLabelWrapper = this._labelWrappers && this._labelWrappers.length ?
         this._labelWrappers.toArray()[this.selectedIndex].elementRef.nativeElement :
         null;
