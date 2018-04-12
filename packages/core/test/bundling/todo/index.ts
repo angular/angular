@@ -7,7 +7,7 @@
  */
 
 import {CommonModule, NgForOf, NgIf} from '@angular/common';
-import {ChangeDetectionStrategy, Component, EventEmitter, InjectFlags, Injectable, Input, IterableDiffers, NgModule, Output, createInjector, defineInjector, inject, ɵComponentDef as ComponentDef, ɵComponentType as ComponentType, ɵDirectiveDef as DirectiveDef, ɵDirectiveType as DirectiveType, ɵNgOnChangesFeature as NgOnChangesFeature, ɵdefaultIterableDiffers as defaultIterableDiffers, ɵdefineDirective as defineDirective, ɵinjectTemplateRef as injectTemplateRef, ɵinjectViewContainerRef as injectViewContainerRef, ɵmarkDirty as markDirty, ɵrenderComponent as renderComponent} from '@angular/core';
+import {ChangeDetectionStrategy, Component, EventEmitter, InjectFlags, Injectable, Input, IterableDiffers, NgModule, Output, createInjector, defineInjector, inject, ɵComponentDef as ComponentDef, ɵComponentType as ComponentType, ɵDirectiveDef as DirectiveDef, ɵDirectiveType as DirectiveType, ɵNgOnChangesFeature as NgOnChangesFeature, ɵdefaultIterableDiffers as defaultIterableDiffers, ɵdefineDirective as defineDirective, ɵdirectiveInject as directiveInject, ɵinjectTemplateRef as injectTemplateRef, ɵinjectViewContainerRef as injectViewContainerRef, ɵmarkDirty as markDirty, ɵrenderComponent as renderComponent} from '@angular/core';
 
 
 export class Todo {
@@ -23,7 +23,7 @@ export class Todo {
   }
 }
 
-@Injectable()
+@Injectable({providedIn: 'root'})
 export class TodoStore {
   todos: Array<Todo> = [
     new Todo('Demonstrate Components'),
@@ -108,12 +108,9 @@ export class TodoStore {
   // changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ToDoAppComponent {
-  todoStore: TodoStore;
   newTodoText = '';
 
-  // TODO(misko) Fix injection
-  // constructor(todoStore: TodoStore) { this.todoStore = todoStore; }
-  constructor() { this.todoStore = new TodoStore(); }
+  constructor(public todoStore: TodoStore) {}
 
   stopEditing(todo: Todo, editedTitle: string) {
     todo.title = editedTitle;
@@ -157,10 +154,7 @@ export class ToDoAppComponent {
   type: NgForOf,
   selectors: [['', 'ngFor', '', 'ngForOf', '']],
   factory: () => new NgForOf(
-               injectViewContainerRef(), injectTemplateRef(),
-               // TODO(misko): inject does not work since it needs to be directiveInject
-               // inject(IterableDiffers, defaultIterableDiffers)
-               defaultIterableDiffers),
+               injectViewContainerRef(), injectTemplateRef(), directiveInject(IterableDiffers)),
   features: [NgOnChangesFeature({
     ngForOf: 'ngForOf',
     ngForTrackBy: 'ngForTrackBy',
