@@ -22,7 +22,6 @@ import {OutputContext, error} from '../util';
 import {Identifiers as R3} from './r3_identifiers';
 import {BUILD_OPTIMIZER_COLOCATE, OutputMode} from './r3_types';
 
-
 /** Name of the context parameter passed into a template function */
 const CONTEXT_NAME = 'ctx';
 
@@ -110,35 +109,14 @@ export function compileDirective(
 }
 
 export function compileComponent(
-    outputCtx: OutputContext, component: CompileDirectiveMetadata, pipes: CompilePipeSummary[],
-    template: TemplateAst[], reflector: CompileReflector, bindingParser: BindingParser,
-    mode: OutputMode) {
+    outputCtx: OutputContext, component: CompileDirectiveMetadata,
+    pipeSummaries: CompilePipeSummary[], template: TemplateAst[], reflector: CompileReflector,
+    bindingParser: BindingParser, mode: OutputMode) {
   const definitionMapValues: {key: string, quoted: boolean, value: o.Expression}[] = [];
-  // Set of pipe names for pipe exps that have already been stored in pipes[] (to avoid dupes)
-  const pipeSet = new Set<string>();
-  // Pipe expressions for pipes[] field in component def
-  const pipeExps: o.Expression[] = [];
 
-  function addPipeDependency(summary: CompilePipeSummary): void {
-    addDependencyToComponent(outputCtx, summary, pipeSet, pipeExps);
-  }
-
-  const directiveExps: o.Expression[] = [];
-  const directiveMap = new Set<string>();
-  /**
-   * This function gets called every time a directive dependency needs to be added to the template.
-   * Its job is to remove duplicates from the list. (Only have single dependency no matter how many
-   * times the dependency is used.)
-   */
-  function addDirectiveDependency(ast: DirectiveAst) {
-    const importExpr = outputCtx.importExpr(ast.directive.type.reference) as o.ExternalExpr;
-    const uniqueKey = importExpr.value.moduleName + ':' + importExpr.value.name;
-
-    if (!directiveMap.has(uniqueKey)) {
-      directiveMap.add(uniqueKey);
-      directiveExps.push(importExpr);
-    }
-  }
+  // Pipes and Directives found in the template
+  const pipes = new Set<any>();
+  const directives = new Set<any>();
 
   const field = (key: string, value: o.Expression | null) => {
     if (value) {
@@ -177,22 +155,27 @@ export function compileComponent(
   // e.g. `template: function MyComponent_Template(_ctx, _cm) {...}`
   const templateTypeName = component.type.reference.name;
   const templateName = templateTypeName ? `${templateTypeName}_Template` : null;
-  const pipeMap = new Map(pipes.map<[string, CompilePipeSummary]>(pipe => [pipe.name, pipe]));
+  const pipeMap =
+      new Map(pipeSummaries.map<[string, CompilePipeSummary]>(pipe => [pipe.name, pipe]));
   const templateFunctionExpression =
       new TemplateDefinitionBuilder(
           outputCtx, outputCtx.constantPool, reflector, CONTEXT_NAME, BindingScope.ROOT_SCOPE, 0,
           component.template !.ngContentSelectors, templateTypeName, templateName, pipeMap,
-          component.viewQueries, addDirectiveDependency, addPipeDependency)
+          component.viewQueries, directives, pipes)
           .buildTemplateFunction(template, []);
 
   field('template', templateFunctionExpression);
-  if (directiveExps.length) {
-    field('directives', o.literalArr(directiveExps));
+
+  // e.g. `directives: [MyDirective]`
+  if (directives.size) {
+    const expressions = Array.from(directives).map(d => outputCtx.importExpr(d));
+    field('directives', o.literalArr(expressions));
   }
 
   // e.g. `pipes: [MyPipe]`
-  if (pipeExps.length) {
-    field('pipes', o.literalArr(pipeExps));
+  if (pipes.size) {
+    const expressions = Array.from(pipes).map(p => outputCtx.importExpr(p));
+    field('pipes', o.literalArr(expressions));
   }
 
   // e.g `inputs: {a: 'a'}`
@@ -237,19 +220,6 @@ export function compileComponent(
     outputCtx.statements.push(
         new o.CommentStmt(BUILD_OPTIMIZER_COLOCATE),
         classReference.prop(definitionField).set(definitionFunction).toStmt());
-  }
-}
-
-// TODO: this should be used for addDirectiveDependency as well when Misko's PR goes in
-function addDependencyToComponent(
-    outputCtx: OutputContext, summary: CompileTypeSummary, set: Set<string>,
-    exps: o.Expression[]): void {
-  const importExpr = outputCtx.importExpr(summary.type.reference) as o.ExternalExpr;
-  const uniqueKey = importExpr.value.moduleName + ':' + importExpr.value.name;
-
-  if (!set.has(uniqueKey)) {
-    set.add(uniqueKey);
-    exps.push(importExpr);
   }
 }
 
@@ -465,9 +435,8 @@ class TemplateDefinitionBuilder implements TemplateAstVisitor, LocalResolver {
       private reflector: CompileReflector, private contextParameter: string,
       parentBindingScope: BindingScope, private level = 0, private ngContentSelectors: string[],
       private contextName: string|null, private templateName: string|null,
-      private pipes: Map<string, CompilePipeSummary>, private viewQueries: CompileQueryMetadata[],
-      private addDirectiveDependency: (ast: DirectiveAst) => void,
-      private addPipeDependency: (summary: CompilePipeSummary) => void) {
+      private pipeMap: Map<string, CompilePipeSummary>, private viewQueries: CompileQueryMetadata[],
+      private directives: Set<any>, private pipes: Set<any>) {
     this.bindingScope =
         parentBindingScope.nestedScope((lhsVar: o.ReadVarExpr, expression: o.Expression) => {
           this._bindingMode.push(
@@ -476,9 +445,9 @@ class TemplateDefinitionBuilder implements TemplateAstVisitor, LocalResolver {
     this._valueConverter = new ValueConverter(
         outputCtx, () => this.allocateDataSlot(), (name, localName, slot, value: o.ReadVarExpr) => {
           this.bindingScope.set(localName, value);
-          const pipe = pipes.get(name) !;
+          const pipe = pipeMap.get(name) !;
           pipe || error(`Could not find pipe ${name}`);
-          this.addPipeDependency(pipe);
+          this.pipes.add(pipe.type.reference);
           this._creationMode.push(
               o.importExpr(R3.pipe).callFn([o.literal(slot), o.literal(name)]).toStmt());
         });
@@ -648,9 +617,10 @@ class TemplateDefinitionBuilder implements TemplateAstVisitor, LocalResolver {
     const parameters: o.Expression[] = [o.literal(elementIndex)];
 
     if (component) {
-      this.addDirectiveDependency(component);
+      this.directives.add(component.directive.type.reference);
     }
-    element.directives.forEach(this.addDirectiveDependency);
+    element.directives.forEach(
+        directive => this.directives.add(directive.directive.type.reference));
     parameters.push(o.literal(element.name));
 
     // Add the attributes
@@ -808,7 +778,7 @@ class TemplateDefinitionBuilder implements TemplateAstVisitor, LocalResolver {
     const parameters: o.Expression[] = [o.variable(templateName), o.literal(null, o.INFERRED_TYPE)];
     const attributeNames: o.Expression[] = [];
     ast.directives.forEach((directiveAst: DirectiveAst) => {
-      this.addDirectiveDependency(directiveAst);
+      this.directives.add(directiveAst.directive.type.reference);
       CssSelector.parse(directiveAst.directive.selector !).forEach(selector => {
         selector.attrs.forEach((value) => {
           // Convert '' (falsy) strings into `null`. This is needed because we want
@@ -838,8 +808,8 @@ class TemplateDefinitionBuilder implements TemplateAstVisitor, LocalResolver {
     // Create the template function
     const templateVisitor = new TemplateDefinitionBuilder(
         this.outputCtx, this.constantPool, this.reflector, templateContext, this.bindingScope,
-        this.level + 1, this.ngContentSelectors, contextName, templateName, this.pipes, [],
-        this.addDirectiveDependency, this.addPipeDependency);
+        this.level + 1, this.ngContentSelectors, contextName, templateName, this.pipeMap, [],
+        this.directives, this.pipes);
     const templateFunctionExpr = templateVisitor.buildTemplateFunction(ast.children, ast.variables);
     this._postfix.push(templateFunctionExpr.toDeclStmt(templateName, null));
   }
