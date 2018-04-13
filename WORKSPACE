@@ -3,9 +3,9 @@ workspace(name = "angular_material")
 # Add nodejs rules
 http_archive(
   name = "build_bazel_rules_nodejs",
-  url = "https://github.com/bazelbuild/rules_nodejs/archive/99166f8eb7fc628ca561acf9f9a51a1c26edadad.zip",
-  strip_prefix = "rules_nodejs-99166f8eb7fc628ca561acf9f9a51a1c26edadad",
-  sha256 = "338e8495e5d1fa16de7190106c5675372ff4a347f6004e203e84a168db96281e",
+  url = "https://github.com/bazelbuild/rules_nodejs/archive/1931156c232a08356dfda02e9c8b0275c2e63c00.zip",
+  strip_prefix = "rules_nodejs-1931156c232a08356dfda02e9c8b0275c2e63c00",
+  sha256 = "9cfe33276a6ac0076ee9ee159c4a2576f9851c0f437435b5ac19b2e592493078",
 )
 
 # NOTE: this rule installs nodejs, npm, and yarn, but does NOT install
@@ -28,9 +28,9 @@ sass_repositories()
 # Add TypeScript rules
 http_archive(
   name = "build_bazel_rules_typescript",
-  url = "https://github.com/bazelbuild/rules_typescript/archive/0.11.1.zip",
-  strip_prefix = "rules_typescript-0.11.1",
-  sha256 = "7406bea7954e1c906f075115dfa176551a881119f6820b126ea1eacb09f34a1a",
+  url = "https://github.com/bazelbuild/rules_typescript/archive/0.12.1.zip",
+  strip_prefix = "rules_typescript-0.12.1",
+  sha256 = "24e2c36f60508c6d270ae4265b89b381e3f66d550e70c367ed3755ad8d7ce3b0",
 )
 
 # Setup TypeScript Bazel workspace

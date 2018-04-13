@@ -30,5 +30,15 @@
     "tslib": "^1.7.1"
   },
   "schematics": "./schematics/collection.json",
+  "ng-update": {
+    "requirements": {
+      "@angular/material": "^5",
+      "migrations": "./schematics/migration.json",
+      "packageGroup": [
+        "@angular/cdk",
+        "@angular/material-moment-adapter"
+      ]
+    }
+  },
   "sideEffects": false
 }

@@ -1,0 +1,10 @@
+{
+  "$schema": "./node_modules/@angular-devkit/schematics/collection-schema.json",
+  "schematics": {
+    // Update from v5 to v6
+    "migration-01": {
+      "version": "6",
+      "factory": "./update/update"
+    }
+  }
+}
