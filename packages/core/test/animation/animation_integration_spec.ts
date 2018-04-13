@@ -8,9 +8,9 @@
 import {AUTO_STYLE, AnimationEvent, AnimationOptions, AnimationPlayer, NoopAnimationPlayer, animate, animateChild, group, keyframes, query, state, style, transition, trigger, ɵPRE_STYLE as PRE_STYLE} from '@angular/animations';
 import {AnimationDriver, ɵAnimationEngine, ɵNoopAnimationDriver as NoopAnimationDriver} from '@angular/animations/browser';
 import {MockAnimationDriver, MockAnimationPlayer} from '@angular/animations/browser/testing';
-import {ChangeDetectorRef, Component, HostBinding, HostListener, RendererFactory2, ViewChild} from '@angular/core';
+import {ChangeDetectorRef, Component, HostBinding, HostListener, Inject, RendererFactory2, ViewChild} from '@angular/core';
 import {ɵDomRendererFactory2} from '@angular/platform-browser';
-import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
+import {ANIMATION_MODULE_TYPE, BrowserAnimationsModule, NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 
 import {TestBed, fakeAsync, flushMicrotasks} from '../../testing';
@@ -36,6 +36,34 @@ const DEFAULT_COMPONENT_ID = '1';
         imports: [BrowserAnimationsModule]
       });
     });
+
+    describe('animation modules', function() {
+      it('should hint at BrowserAnimationsModule being used', () => {
+        TestBed.resetTestingModule();
+        TestBed.configureTestingModule(
+            {declarations: [SharedAnimationCmp], imports: [BrowserAnimationsModule]});
+
+        const fixture = TestBed.createComponent(SharedAnimationCmp);
+        const cmp = fixture.componentInstance;
+        expect(cmp.animationType).toEqual('BrowserAnimations');
+      });
+
+      it('should hint at NoopAnimationsModule being used', () => {
+        TestBed.resetTestingModule();
+        TestBed.configureTestingModule(
+            {declarations: [SharedAnimationCmp], imports: [NoopAnimationsModule]});
+
+        const fixture = TestBed.createComponent(SharedAnimationCmp);
+        const cmp = fixture.componentInstance;
+        expect(cmp.animationType).toEqual('NoopAnimations');
+      });
+    });
+
+    @Component({template: '<p>template text</p>'})
+    class SharedAnimationCmp {
+      constructor(@Inject(ANIMATION_MODULE_TYPE) public animationType: 'NoopAnimations'|
+                  'BrowserAnimations') {}
+    }
 
     describe('fakeAsync testing', () => {
       it('should only require one flushMicrotasks call to kick off animation callbacks',
