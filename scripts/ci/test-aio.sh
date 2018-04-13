@@ -27,14 +27,13 @@ source ${thisDir}/_travis-fold.sh
 
   # Run unit tests
   travisFoldStart "test.aio.unit"
-    yarn test --single-run
+    yarn test
   travisFoldEnd "test.aio.unit"
 
 
   # Run e2e tests
   travisFoldStart "test.aio.e2e"
-    # Use `production` mode to catch issues introduced by build optimizations.
-    yarn e2e-prod
+    yarn e2e
   travisFoldEnd "test.aio.e2e"
 
   # Run unit tests for Firebase redirects
