@@ -7676,19 +7676,19 @@ rx@2.3.24:
   version "2.3.24"
   resolved "https://registry.yarnpkg.com/rx/-/rx-2.3.24.tgz#14f950a4217d7e35daa71bbcbe58eff68ea4b2b7"
 
-rxjs-compat@6.0.0-rc.0:
-  version "6.0.0-rc.0"
-  resolved "https://registry.yarnpkg.com/rxjs-compat/-/rxjs-compat-6.0.0-rc.0.tgz#c9d5c3d8846fc2cb01ddd7ebc1bc2ece00d3655a"
-
-rxjs@6.0.0-rc.0:
-  version "6.0.0-rc.0"
-  resolved "https://registry.yarnpkg.com/rxjs/-/rxjs-6.0.0-rc.0.tgz#3fed5454dfaf5a01005c973de857f860826d3eac"
-  dependencies:
-    tslib "^1.9.0"
+rxjs-compat@^6.0.0-turbo-rc.4:
+  version "6.0.0-turbo-rc.4"
+  resolved "https://registry.yarnpkg.com/rxjs-compat/-/rxjs-compat-6.0.0-turbo-rc.4.tgz#58efc9e50d5dbd027c75cecb23671ccc3ce6ce4c"
 
 rxjs@^6.0.0-beta.3, rxjs@^6.0.0-rc.0:
   version "6.0.0-smoosh.2"
   resolved "https://registry.yarnpkg.com/rxjs/-/rxjs-6.0.0-smoosh.2.tgz#2fbec8bce211ac6cdb21e630f17df2358562b6cc"
+  dependencies:
+    tslib "^1.9.0"
+
+rxjs@^6.0.0-turbo-rc.4:
+  version "6.0.0-turbo-rc.4"
+  resolved "https://registry.yarnpkg.com/rxjs/-/rxjs-6.0.0-turbo-rc.4.tgz#5995dab91914f03ee4a68d923678333ae626d2ec"
   dependencies:
     tslib "^1.9.0"
 
