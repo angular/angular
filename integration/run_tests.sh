@@ -28,10 +28,18 @@ bazel query --output=label 'kind(.*_package, //packages/...)' \
 # Each package is a subdirectory of bazel-bin/packages/
 for pkg in $(ls ${bin}/packages); do
   # Skip any that don't have an "npm_package" target
+  readonly src="${bin}/packages/${pkg}/npm_package"
+  readonly dest="${basedir}/dist/packages-dist/${pkg}"
   if [ -d "${bin}/packages/${pkg}/npm_package" ]; then
-    echo "# Copy artifacts to dist/packages-dist/${pkg}"
-    rm -rf ${basedir}/dist/packages-dist/${pkg}
-    cp -R ${bin}/packages/${pkg}/npm_package ${basedir}/dist/packages-dist/${pkg}
+    echo "# Copy artifacts to ${dest}"
+    rm -rf $dest
+    if $CI; then
+      # --no-preserve=mode is required to make the resulting directories writable
+      # but on MacOS, the cp command doesn't have this option, so we do it only on CI
+      cp --no-preserve=mode -R $src $dest
+    else
+      cp -R $src $dest
+    fi
   fi
 done
 
@@ -63,7 +71,7 @@ for testDir in $(ls | grep -v node_modules) ; do
   (
     cd $testDir
     rm -rf dist
-    pwd
+
     yarn install --cache-folder ../$cache
     yarn test || exit 1
     # Track payload size for cli-hello-world and hello_world__closure and the render3 tests
@@ -71,15 +79,15 @@ for testDir in $(ls | grep -v node_modules) ; do
       if [[ $testDir == cli-hello-world ]] || [[ $testDir == hello_world__render3__cli ]]; then
         yarn build
       fi
-      #if $CI; then
-      #  trackPayloadSize "$testDir" "dist/*.js" true false "${basedir}/integration/_payload-limits.json"
-      #fi
+      if $CI; then
+        trackPayloadSize "$testDir" "dist/*.js" true false "${basedir}/integration/_payload-limits.json"
+      fi
     fi
     # remove the temporary node modules directory to keep the source folder clean.
     rm -rf node_modules
   )
 done
 
-#if $CI; then
-#  trackPayloadSize "umd" "../dist/packages-dist/*/bundles/*.umd.min.js" false false
-#fi
+if $CI; then
+  trackPayloadSize "umd" "../dist/packages-dist/*/bundles/*.umd.min.js" false false
+fi
