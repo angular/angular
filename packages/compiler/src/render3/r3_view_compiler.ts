@@ -471,20 +471,31 @@ class TemplateDefinitionBuilder implements TemplateAstVisitor, LocalResolver {
     if (this.ngContentSelectors && this.ngContentSelectors.length > 0) {
       const contentProjections = getContentProjection(nodes, this.ngContentSelectors);
       this._contentProjections = contentProjections;
+
       if (contentProjections.size > 0) {
-        const infos: R3CssSelectorList[] = [];
+        const selectors: string[] = [];
+
         Array.from(contentProjections.values()).forEach(info => {
           if (info.selector) {
-            infos[info.index - 1] = info.selector;
+            selectors[info.index - 1] = info.selector;
           }
         });
+
         const projectionIndex = this._projectionDefinitionIndex = this.allocateDataSlot();
         const parameters: o.Expression[] = [o.literal(projectionIndex)];
-        !infos.some(value => !value) || error(`content project information skipped an index`);
-        if (infos.length > 1) {
-          parameters.push(this.outputCtx.constantPool.getConstLiteral(
-              asLiteral(infos), /* forceShared */ true));
+
+        if (selectors.some(value => !value)) {
+          error(`content project information skipped an index`);
         }
+
+        if (selectors.length > 1) {
+          const r3Selectors = selectors.map(s => parseSelectorToR3Selector(s));
+          // `projectionDef` needs both the parsed and raw value of the selectors
+          const parsed = this.outputCtx.constantPool.getConstLiteral(asLiteral(r3Selectors), true);
+          const unParsed = this.outputCtx.constantPool.getConstLiteral(asLiteral(selectors), true);
+          parameters.push(parsed, unParsed);
+        }
+
         this.instruction(this._creationMode, null, R3.projectionDef, ...parameters);
       }
     }
@@ -1016,7 +1027,7 @@ type HostBindings = {
 
 // Turn a directive selector into an R3-compatible selector for directive def
 function createDirectiveSelector(selector: string): o.Expression {
-  return asLiteral(parseSelectorsToR3Selector(CssSelector.parse(selector)));
+  return asLiteral(parseSelectorToR3Selector(selector));
 }
 
 function createHostAttributesArray(
@@ -1186,7 +1197,7 @@ function invalid<T>(arg: o.Expression | o.Statement | TemplateAst): never {
 
 interface NgContentInfo {
   index: number;
-  selector?: R3CssSelectorList;
+  selector?: string;
 }
 
 class ContentProjectionVisitor extends RecursiveTemplateAstVisitor {
@@ -1198,15 +1209,15 @@ class ContentProjectionVisitor extends RecursiveTemplateAstVisitor {
   }
 
   visitNgContent(ngContent: NgContentAst) {
-    const selectorText = this.ngContentSelectors[ngContent.index];
-    selectorText != null ||
-        error(`could not find selector for index ${ngContent.index} in ${ngContent}`);
-    if (!selectorText || selectorText === '*') {
+    const selector = this.ngContentSelectors[ngContent.index];
+    if (selector == null) {
+      error(`could not find selector for index ${ngContent.index} in ${ngContent}`);
+    }
+
+    if (!selector || selector === '*') {
       this.projectionMap.set(ngContent, {index: 0});
     } else {
-      const cssSelectors = CssSelector.parse(selectorText);
-      this.projectionMap.set(
-          ngContent, {index: this.index++, selector: parseSelectorsToR3Selector(cssSelectors)});
+      this.projectionMap.set(ngContent, {index: this.index++, selector});
     }
   }
 }
@@ -1278,7 +1289,8 @@ function parserSelectorToR3Selector(selector: CssSelector): R3CssSelector {
   return positive.concat(...negative);
 }
 
-function parseSelectorsToR3Selector(selectors: CssSelector[]): R3CssSelectorList {
+function parseSelectorToR3Selector(selector: string): R3CssSelectorList {
+  const selectors = CssSelector.parse(selector);
   return selectors.map(parserSelectorToR3Selector);
 }
 

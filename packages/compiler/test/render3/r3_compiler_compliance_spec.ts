@@ -147,7 +147,7 @@ describe('compiler compliance', () => {
 
             @Directive({selector: 'div.foo[some-directive]:not([title]):not(.baz)'})
             export class SomeDirective {}
-            
+
             @Directive({selector: ':not(span[title]):not(.baz)'})
             export class OtherDirective {}
 
@@ -601,8 +601,9 @@ describe('compiler compliance', () => {
 
       const ComplexComponentDefinition = `
         const $c1$ = [[['span', 'title', 'tofirst']], [['span', 'title', 'tosecond']]];
-        const $c2$ = ['id','first'];
-        const $c3$ = ['id','second'];
+        const $c2$ = ['span[title=toFirst]', 'span[title=toSecond]'];
+        const $c3$ = ['id','first'];
+        const $c4$ = ['id','second'];
         …
         static ngComponentDef = $r3$.ɵdefineComponent({
           type: ComplexComponent,
@@ -610,11 +611,11 @@ describe('compiler compliance', () => {
           factory: function ComplexComponent_Factory() { return new ComplexComponent(); },
           template: function ComplexComponent_Template(rf: IDENT, ctx: IDENT) {
             if (rf & 1) {
-              $r3$.ɵpD(0, $c1$);
-              $r3$.ɵE(1, 'div', $c2$);
+              $r3$.ɵpD(0, $c1$, $c2$);
+              $r3$.ɵE(1, 'div', $c3$);
               $r3$.ɵP(2, 0, 1);
               $r3$.ɵe();
-              $r3$.ɵE(3, 'div', $c3$);
+              $r3$.ɵE(3, 'div', $c4$);
               $r3$.ɵP(4, 0, 2);
               $r3$.ɵe();
             }
@@ -783,7 +784,7 @@ describe('compiler compliance', () => {
               }
 
               @Component({
-                selector: 'my-app', 
+                selector: 'my-app',
                 template: '{{name | myPipe:size | myPurePipe:size }}<p>{{ name | myPurePipe:size }}</p>'
               })
               export class MyApp {
@@ -805,7 +806,7 @@ describe('compiler compliance', () => {
 
         const MyPurePipeDefinition = `
             static ngPipeDef = $r3$.ɵdefinePipe({
-              name: 'myPurePipe', 
+              name: 'myPurePipe',
               type: MyPurePipe,
               factory: function MyPurePipe_Factory() { return new MyPurePipe(); },
               pure: true
