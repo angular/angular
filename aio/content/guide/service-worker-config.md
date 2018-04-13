@@ -1,5 +1,3 @@
-{@a glob}
-
 # Service worker configuration
 
 #### Prerequisites
@@ -9,9 +7,9 @@ A basic understanding of the following:
 
 <hr />
 
-The `src/ngsw-config.json` configuration file specifies which files and data URLs the Angular 
-service worker should cache and how it should update the cached files and data. The 
-CLI processes the configuration file during `ng build --prod`. Manually, you can process 
+The `src/ngsw-config.json` configuration file specifies which files and data URLs the Angular
+service worker should cache and how it should update the cached files and data. The
+CLI processes the configuration file during `ng build --prod`. Manually, you can process
 it with the `ngsw-config` tool:
 
 ```sh
@@ -32,7 +30,7 @@ Example patterns:
 * `/*.html` specifies only HTML files in the root.
 * `!/**/*.map` exclude all sourcemaps.
 
-Each section of the configuration file is described below. 
+Each section of the configuration file is described below.
 
 ## `appData`
 
@@ -42,6 +40,17 @@ The `SwUpdate` service includes that data in the update notifications. Many apps
 ## `index`
 
 Specifies the file that serves as the index page to satisfy navigation requests. Usually this is `/index.html`.
+
+## `ignoredUrlPatterns`
+
+This section enables you to specify URLs that will not be handled by the service worker. The service
+worker will forward matching requests to the server and neither try to retrieve responses from the
+cache nor serve the index page (even for navigation requests). This is useful for routes that are
+not part of the Angular app, but should always be handled by the server.
+
+This field contains an array of URLs and glob-like URL patterns that will be matched at runtime.
+
+**Note**: Currently, negative patterns (i.e. patterns beginning with `!`) are _not_ supported.
 
 ## `assetGroups`
 
@@ -92,7 +101,7 @@ The `installMode` determines how these resources are initially cached. The `inst
 
 For resources already in the cache, the `updateMode` determines the caching behavior when a new version of the app is discovered. Any resources in the group that have changed since the previous version are updated in accordance with `updateMode`.
 
-* `prefetch` tells the service worker to download and cache the changed resources immediately. 
+* `prefetch` tells the service worker to download and cache the changed resources immediately.
 
 * `lazy` tells the service worker to not cache those resources. Instead, it treats them as unrequested and waits until they're requested again before updating them. An `updateMode` of `lazy` is only valid if the `installMode` is also `lazy`.
 
@@ -135,7 +144,7 @@ A list of URL patterns. URLs that match these patterns will be cached according 
 ### `version`
 Occasionally APIs change formats in a way that is not backward-compatible. A new version of the app may not be compatible with the old API format and thus may not be compatible with existing cached resources from that API.
 
-`version` provides a mechanism to indicate that the resources being cached have been updated in a backwards-incompatible way, and that the old cache entries&mdash;those from previous versions&mdash;should be discarded. 
+`version` provides a mechanism to indicate that the resources being cached have been updated in a backwards-incompatible way, and that the old cache entries&mdash;those from previous versions&mdash;should be discarded.
 
 `version` is an integer field and defaults to `0`.
 
@@ -166,4 +175,3 @@ The Angular service worker can use either of two caching strategies for data res
 * `performance`, the default, optimizes for responses that are as fast as possible. If a resource exists in the cache, the cached version is used. This allows for some staleness, depending on the `maxAge`, in exchange for better performance. This is suitable for resources that don't change often; for example, user avatar images.
 
 * `freshness` optimizes for currency of data, preferentially fetching requested data from the network. Only if the network times out, according to `timeout`, does the request fall back to the cache. This is useful for resources that change frequently; for example, account balances.
-

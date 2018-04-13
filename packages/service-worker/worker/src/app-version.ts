@@ -41,6 +41,11 @@ export class AppVersion implements UpdateSource {
   private dataGroups: DataGroup[];
 
   /**
+   * Requests to URLs that match any RegExp in this list will not be handled.
+   */
+  private ignoredUrlPatterns: RegExp[];
+
+  /**
    * Tracks whether the manifest has encountered any inconsistencies.
    */
   private _okay = true;
@@ -79,6 +84,10 @@ export class AppVersion implements UpdateSource {
                               config => new DataGroup(
                                   this.scope, this.adapter, config, this.database,
                                   `ngsw:${config.version}:data`));
+
+    // Create a RegExp for each `ignoredUrlPattern` declared in the manifest.
+    this.ignoredUrlPatterns =
+        (manifest.ignoredUrlPatterns || []).map(pattern => new RegExp(pattern));
   }
 
   /**
@@ -107,6 +116,13 @@ export class AppVersion implements UpdateSource {
   }
 
   async handleFetch(req: Request, context: Context): Promise<Response|null> {
+    // If the request URL matches any of the `ignoredUrlPatterns`, return `null`.
+    const urlPrefix = this.scope.registration.scope.replace(/\/$/, '');
+    const relativeUrl = req.url.startsWith(urlPrefix) ? req.url.substr(urlPrefix.length) : req.url;
+    if (this.ignoredUrlPatterns.some(pattern => pattern.test(relativeUrl))) {
+      return null;
+    }
+
     // Check the request against each `AssetGroup` in sequence. If an `AssetGroup` can't handle the
     // request,
     // it will return `null`. Thus, the first non-null response is the SW's answer to the request.
