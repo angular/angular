@@ -76,7 +76,7 @@ WELL_KNOWN_GLOBALS = { p: _global_name(p) for p in [
     "rxjs/operators",
 ]}
 
-def _rollup(ctx, rollup_config, entry_point, inputs, js_output, format = "es", package_name = ""):
+def _rollup(ctx, rollup_config, entry_point, inputs, js_output, format = "es", package_name = "", include_tslib = False):
   map_output = ctx.actions.declare_file(js_output.basename + ".map", sibling = js_output)
 
   args = ctx.actions.args()
@@ -96,7 +96,10 @@ def _rollup(ctx, rollup_config, entry_point, inputs, js_output, format = "es", p
 
   globals = dict(WELL_KNOWN_GLOBALS, **ctx.attr.globals)
   args.add("--external")
-  args.add(globals.keys(), join_with=",")
+  external = globals.keys()
+  if not include_tslib:
+    external.append("tslib")
+  args.add(external, join_with=",")
 
   args.add("--globals")
   args.add(["%s:%s" % g for g in globals.items()], join_with=",")
@@ -220,7 +223,9 @@ def _ng_package_impl(ctx):
     fesm2015.append(_rollup(ctx, config, es2015_entry_point, esm_2015_files, fesm2015_output))
     fesm5.append(_rollup(ctx, config, es5_entry_point, esm5_sources, fesm5_output))
 
-    bundles.append(_rollup(ctx, config, es5_entry_point, esm5_sources, umd_output, format = "umd", package_name = package_name))
+    bundles.append(
+        _rollup(ctx, config, es5_entry_point, esm5_sources, umd_output,
+                format = "umd", package_name = package_name, include_tslib = True))
     uglify_sourcemap = run_uglify(ctx, umd_output, min_output,
         config_name = entry_point.replace("/", "_"))
     bundles.append(struct(js = min_output, map = uglify_sourcemap))
