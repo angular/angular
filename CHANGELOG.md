@@ -1,3 +1,13 @@
+<a name="6.0.0-rc.5"></a>
+# [6.0.0-rc.5](https://github.com/angular/material2/compare/6.0.0-rc.4...6.0.0-rc.5) (2018-04-13)
+
+
+### Bug Fixes
+
+* **schematics:** move ng-update under correct location ([d98fb35](https://github.com/angular/material2/commit/d98fb35))
+
+
+
 <a name="6.0.0-rc.4"></a>
 # [6.0.0-rc.4](https://github.com/angular/material2/compare/6.0.0-rc.3...6.0.0-rc.4) (2018-04-13)
 
