@@ -178,8 +178,10 @@ describe('@angular/core ng_package', () => {
             .toMatch(/@license Angular v\d+\.\d+\.\d+(?!-PLACEHOLDER)/);
       });
 
-      it('should have tslib helpers',
-         () => { expect(shx.cat('bundles/core.umd.js')).not.toContain('undefined.__extends'); });
+      it('should have tslib helpers', () => {
+        expect(shx.cat('bundles/core.umd.js')).toContain('function __extends');
+        expect(shx.cat('bundles/core.umd.js')).not.toContain('undefined.__extends');
+      });
       it('should have an AMD name',
          () => { expect(shx.cat('bundles/core.umd.js')).toContain('define(\'@angular/core\''); });
       it('should define ng global symbols',
