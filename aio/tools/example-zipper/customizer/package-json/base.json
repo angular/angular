@@ -18,6 +18,7 @@
     "angular-in-memory-web-api",
     "core-js",
     "rxjs",
+    "web-animations-js",
     "zone.js"
   ],
   "devDependencies": [
