@@ -27,7 +27,7 @@ module.exports = (gulp) => () => {
   // We need to fetch origin explicitly because it might be stale.
   // I couldn't find a reliable way to do this without fetch.
   result = shelljs.exec(
-      `git fetch origin ${baseBranch} && git log --reverse --format=%s HEAD ^origin/${baseBranch}`);
+      `git fetch https://github.com/angular/angular.git ${baseBranch} && git log --reverse --format=%s HEAD ^FETCH_HEAD`);
 
   if (result.code) {
     console.log(result.stderr);
