@@ -20,7 +20,7 @@ fi
 if [[ $TRAVIS_BRANCH == master ]]; then
   readonly deployEnv=next
 elif [[ $TRAVIS_BRANCH == $STABLE_BRANCH ]]; then
-    readonly deployEnv=stable
+  readonly deployEnv=stable
 else
   # Extract the major versions from the branches, e.g. the 4 from 4.3.x
   readonly majorVersion=${TRAVIS_BRANCH%%.*}
@@ -87,7 +87,7 @@ fi
   cd "`dirname $0`/.."
 
   # Build the app
-  yarn build --env=$deployEnv
+  yarn build --configuration=$deployEnv
 
   # Include any mode-specific files
   cp -rf src/extra-files/$deployEnv/. dist/
