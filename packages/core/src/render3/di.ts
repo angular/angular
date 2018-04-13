@@ -20,7 +20,7 @@ import {Type} from '../type';
 
 import {assertGreaterThan, assertLessThan, assertNotNull} from './assert';
 import {addToViewTree, assertPreviousIsParent, createLContainer, createLNodeObject, getDirectiveInstance, getPreviousOrParentNode, getRenderer, isComponent, renderEmbeddedTemplate, resolveDirective} from './instructions';
-import {ComponentTemplate, DirectiveDef} from './interfaces/definition';
+import {ComponentTemplate, DirectiveDef, DirectiveDefList, PipeDefList} from './interfaces/definition';
 import {LInjector} from './interfaces/injector';
 import {LContainerNode, LElementNode, LNode, LNodeType, LViewNode, TNodeFlags} from './interfaces/node';
 import {QueryReadType} from './interfaces/query';
@@ -701,8 +701,10 @@ class ViewContainerRef implements viewEngine_ViewContainerRef {
 export function getOrCreateTemplateRef<T>(di: LInjector): viewEngine_TemplateRef<T> {
   ngDevMode && assertNodeType(di.node, LNodeType.Container);
   const data = (di.node as LContainerNode).data;
+  const tView = di.node.view.tView;
   return di.templateRef || (di.templateRef = new TemplateRef<any>(
-                                getOrCreateElementRef(di), data.template !, getRenderer()));
+                                getOrCreateElementRef(di), data.template !, getRenderer(),
+                                tView.directiveRegistry, tView.pipeRegistry));
 }
 
 class TemplateRef<T> implements viewEngine_TemplateRef<T> {
@@ -711,13 +713,15 @@ class TemplateRef<T> implements viewEngine_TemplateRef<T> {
 
   constructor(
       elementRef: viewEngine_ElementRef, template: ComponentTemplate<T>,
-      private _renderer: Renderer3) {
+      private _renderer: Renderer3, private _directives: DirectiveDefList|null,
+      private _pipes: PipeDefList|null) {
     this.elementRef = elementRef;
     this._template = template;
   }
 
   createEmbeddedView(context: T): viewEngine_EmbeddedViewRef<T> {
-    const viewNode = renderEmbeddedTemplate(null, this._template, context, this._renderer);
+    const viewNode = renderEmbeddedTemplate(
+        null, this._template, context, this._renderer, this._directives, this._pipes);
     return addDestroyable(new EmbeddedViewRef(viewNode, this._template, context));
   }
 }
