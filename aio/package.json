@@ -12,7 +12,7 @@
     "aio-use-npm": "node tools/ng-packages-installer restore .",
     "aio-check-local": "node tools/ng-packages-installer check .",
     "ng": "yarn check-env && ng",
-    "start": "yarn check-env && ng serve --aot",
+    "start": "yarn check-env && ng serve",
     "prebuild": "yarn setup",
     "build": "yarn ~~build",
     "prebuild-local": "yarn setup-local",
@@ -21,7 +21,6 @@
     "test": "yarn check-env && ng test",
     "pree2e": "yarn check-env && yarn update-webdriver",
     "e2e": "ng e2e --no-webdriver-update",
-    "e2e-prod": "yarn e2e --environment=dev --target=production",
     "presetup": "yarn install --frozen-lockfile && yarn ~~check-env && yarn boilerplate:remove",
     "setup": "yarn aio-use-npm && yarn example-use-npm",
     "postsetup": "yarn boilerplate:add && yarn build-ie-polyfills && yarn docs",
@@ -61,7 +60,7 @@
     "build-ie-polyfills": "yarn webpack-cli src/ie-polyfills.js -o src/generated/ie-polyfills.min.js --mode production",
     "update-webdriver": "webdriver-manager update --standalone false --gecko false $CHROMEDRIVER_VERSION_ARG",
     "~~check-env": "node scripts/check-environment",
-    "~~build": "ng build --prod --configuration=stable",
+    "~~build": "ng build --configuration=stable",
     "post~~build": "yarn sw-manifest && yarn sw-copy"
   },
   "engines": {
