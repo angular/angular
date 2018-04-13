@@ -16,7 +16,7 @@ import {Type} from '../type';
 import {resolveRendererType2} from '../view/util';
 
 import {diPublic} from './di';
-import {ComponentDef, ComponentDefFeature, ComponentTemplate, ComponentType, DirectiveDef, DirectiveDefFeature, DirectiveDefListOrFactory, DirectiveType, DirectiveTypesOrFactory, PipeDef, PipeType, PipeTypesOrFactory} from './interfaces/definition';
+import {ComponentDefFeature, ComponentTemplate, ComponentType, DirectiveDefFeature, DirectiveDefListOrFactory, DirectiveType, DirectiveTypesOrFactory, PipeType, PipeTypesOrFactory, ɵComponentDef, ɵDirectiveDef, ɵPipeDef} from './interfaces/definition';
 import {CssSelectorList, SelectorFlags} from './interfaces/projection';
 
 
@@ -150,8 +150,8 @@ export function defineComponent<T>(componentDefinition: {
   /**
    * Registry of directives and components that may be found in this component's view.
    *
-   * The property is either an array of `DirectiveDef`s or a function which returns the array of
-   * `DirectiveDef`s. The function is necessary to be able to support forward declarations.
+   * The property is either an array of `ɵDirectiveDef`s or a function which returns the array of
+   * `ɵDirectiveDef`s. The function is necessary to be able to support forward declarations.
    */
   directives?: DirectiveTypesOrFactory | null;
 
@@ -162,11 +162,11 @@ export function defineComponent<T>(componentDefinition: {
    * `PipeDefs`s. The function is necessary to be able to support forward declarations.
    */
   pipes?: PipeTypesOrFactory | null;
-}): ComponentDef<T> {
+}): ɵComponentDef<T> {
   const type = componentDefinition.type;
   const pipeTypes = componentDefinition.pipes !;
   const directiveTypes = componentDefinition.directives !;
-  const def = <ComponentDef<any>>{
+  const def = <ɵComponentDef<any>>{
     type: type,
     diPublic: null,
     factory: componentDefinition.factory,
@@ -200,7 +200,7 @@ export function defineComponent<T>(componentDefinition: {
 }
 
 export function extractDirectiveDef(type: DirectiveType<any>& ComponentType<any>):
-    DirectiveDef<any>|ComponentDef<any> {
+    ɵDirectiveDef<any>|ɵComponentDef<any> {
   const def = type.ngComponentDef || type.ngDirectiveDef;
   if (ngDevMode && !def) {
     throw new Error(`'${type.name}' is neither 'ComponentType' or 'DirectiveType'.`);
@@ -208,7 +208,7 @@ export function extractDirectiveDef(type: DirectiveType<any>& ComponentType<any>
   return def;
 }
 
-export function extractPipeDef(type: PipeType<any>): PipeDef<any> {
+export function extractPipeDef(type: PipeType<any>): ɵPipeDef<any> {
   const def = type.ngPipeDef;
   if (ngDevMode && !def) {
     throw new Error(`'${type.name}' is not a 'PipeType'.`);
@@ -250,7 +250,7 @@ type OnChangesExpando = OnChanges & {
  */
 export function NgOnChangesFeature(inputPropertyNames?: {[key: string]: string}):
     DirectiveDefFeature {
-  return function(definition: DirectiveDef<any>): void {
+  return function(definition: ɵDirectiveDef<any>): void {
     const inputs = definition.inputs;
     const proto = definition.type.prototype;
     // Place where we will store SimpleChanges if there is a change
@@ -306,7 +306,7 @@ export function NgOnChangesFeature(inputPropertyNames?: {[key: string]: string})
 }
 
 
-export function PublicFeature<T>(definition: DirectiveDef<T>) {
+export function PublicFeature<T>(definition: ɵDirectiveDef<T>) {
   definition.diPublic = diPublic;
 }
 
@@ -400,7 +400,7 @@ export const defineDirective = defineComponent as any as<T>(directiveDefinition:
    * See: {@link Directive.exportAs}
    */
   exportAs?: string;
-}) => DirectiveDef<T>;
+}) => ɵDirectiveDef<T>;
 
 /**
  * Create a pipe definition object.
@@ -428,8 +428,8 @@ export function definePipe<T>(pipeDef: {
 
   /** Whether the pipe is pure. */
   pure?: boolean
-}): PipeDef<T> {
-  return <PipeDef<T>>{
+}): ɵPipeDef<T> {
+  return <ɵPipeDef<T>>{
     name: pipeDef.name,
     n: pipeDef.factory,
     pure: pipeDef.pure !== false,
