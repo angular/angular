@@ -58,7 +58,7 @@
     "generate-zips": "node ./tools/example-zipper/generateZips",
     "sw-manifest": "ngu-sw-manifest --dist dist --in ngsw-manifest.json --out dist/ngsw-manifest.json",
     "sw-copy": "cp node_modules/@angular/service-worker/bundles/worker-basic.min.js dist/",
-    "build-ie-polyfills": "node node_modules/webpack/bin/webpack.js -p src/ie-polyfills.js src/generated/ie-polyfills.min.js",
+    "build-ie-polyfills": "yarn webpack-cli src/ie-polyfills.js -o src/generated/ie-polyfills.min.js --mode production",
     "update-webdriver": "webdriver-manager update --standalone false --gecko false $CHROMEDRIVER_VERSION_ARG",
     "~~check-env": "node scripts/check-environment",
     "~~build": "ng build --prod --configuration=stable",
@@ -156,6 +156,7 @@
     "unist-util-visit-parents": "^1.1.1",
     "vrsource-tslint-rules": "^4.0.1",
     "watchr": "^3.0.1",
+    "webpack-cli": "^2.0.14",
     "xregexp": "^4.0.0",
     "yargs": "^7.0.2"
   }
