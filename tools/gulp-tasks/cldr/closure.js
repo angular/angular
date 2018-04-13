@@ -116,7 +116,8 @@ function generateAllLocalesFile(LOCALES, ALIASES) {
                 .replace(`${HEADER}\n`, '')
                 .replace('export default ', `export const locale_${localeName} = `)
                 .replace('function plural', `function plural_${localeName}`)
-                .replace(/,(\n  | )plural/, `, plural_${localeName}`);
+                .replace(/,(\n  | )plural/, `, plural_${localeName}`)
+                .replace('const u = undefined;\n\n', '');
       }
     }
 
@@ -139,6 +140,8 @@ function generateAllLocalesFile(LOCALES, ALIASES) {
   // clang-format off
   return `${HEADER}
 import {registerLocaleData} from '../src/i18n/locale_data';
+
+const u = undefined;
 
 ${LOCALES.map(locale => `${existingLocalesData[locale]}`).join('\n')}
 
