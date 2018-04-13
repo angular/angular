@@ -108,29 +108,56 @@ Angular는 컴포넌트 클래스의 인스턴스를 생성할 때 이 컴포넌
 
 <code-example path="architecture/src/app/hero-list.component.ts" linenums="false" title="src/app/hero-list.component.ts (constructor)" region="ctor"></code-example>
 
+<!--
 When Angular discovers that a component depends on a service, it first checks if the injector already has any existing instances of that service. If a requested service instance does not yet exist, the injector makes one using the registered provider, and adds it to the injector before returning the service to Angular.
+-->
+컴포넌트에 서비스가 주입되어야 한다는 것을 Angular가 확인하면, 이 서비스의 인스턴스가 인젝터에 이미 있는지 먼저 확인합니다. 이 때 인스턴스가 아직 생성되지 않았으면 프로바이더에 등록된 방법으로 객체의 인스턴스를 생성하고, 인젝터에 이 인스턴스를 추가한 후에 Angular로 전달합니다.
 
+<!--
 When all requested services have been resolved and returned, Angular can call the component's constructor with those services as arguments.
+-->
+그리고 의존성 객체의 인스턴스가 모두 준비되면 Angular가 컴포넌트의 생성자를 실행하면서 의존성 객체를 인자로 전달합니다.
 
+<!--
 The process of `HeroService` injection looks something like this:
+-->
+`HeroService`가 의존성으로 주입되는 과정은 다음 그림을 보면서 확인해 보세요:
 
 <figure>
+<!--
   <img src="generated/images/guide/architecture/injector-injects.png" alt="Service" class="left">
+-->
+  <img src="generated/images/guide/architecture/injector-injects.png" alt="서비스" class="left">
 </figure>
 
+<!--
 ### Providing services
+-->
+### 서비스 프로바이더 등록하기
 
+<!--
 You must register at least one *provider* of any service you are going to use. You can register providers in modules or in components.
+-->
+서비스를 사용하려면 반드시 *프로바이더*를 지정해야 합니다. 이 때 프로바이더는 모듈이나 컴포넌트 계층에 지정할 수 있습니다.
 
+<!--
 * When you add providers to the [root module](guide/architecture-modules), the same instance of a service is available to all components in your app.
+-->
+* [최상위 모듈](guide/architecture-modules)에 프로바이더를 등록하면 애플리케이션에 있는 모든 컴포넌트가 같은 인스턴스를 사용합니다.
 
 <code-example path="architecture/src/app/app.module.ts" linenums="false" title="src/app/app.module.ts (module providers)" region="providers"></code-example>
 
+<!--
 * When you register a provider at the component level, you get a new instance of the
 service with each new instance of that component. At the component level, register a service provider in the `providers` property of the `@Component` metadata:
+-->
+* 컴포넌트 계층에 프로바이더를 지정하면 해당 컴포넌트의 인스턴스가 생성될 때마다 의존성 객체에 대해 새로운 인스턴스를 생성합니다. 이 때 서비스 프로바이더는 `@Component` 메타데이터의 `providers` 프로퍼티로 지정합니다:
 
 <code-example path="architecture/src/app/hero-list.component.ts" linenums="false" title="src/app/hero-list.component.ts (component providers)" region="providers"></code-example>
 
+<!--
 For more detailed information, see the [Dependency Injection](guide/dependency-injection) section.
+-->
+좀 더 자세한 내용을 확인하려면 [의존성 주입](guide/dependency-injection) 문서를 확인하세요.
 
 <hr/>
