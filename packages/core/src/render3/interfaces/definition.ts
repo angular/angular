@@ -35,24 +35,24 @@ export const enum RenderFlags {
 }
 
 /**
- * A subclass of `Type` which has a static `ngComponentDef`:`ComponentDef` field making it
+ * A subclass of `Type` which has a static `ngComponentDef`:`ɵComponentDef` field making it
  * consumable for rendering.
  */
-export interface ComponentType<T> extends Type<T> { ngComponentDef: ComponentDef<T>; }
+export interface ComponentType<T> extends Type<T> { ngComponentDef: ɵComponentDef<T>; }
 
 /**
- * A subclass of `Type` which has a static `ngDirectiveDef`:`DirectiveDef` field making it
+ * A subclass of `Type` which has a static `ngDirectiveDef`:`ɵDirectiveDef` field making it
  * consumable for rendering.
  */
-export interface DirectiveType<T> extends Type<T> { ngDirectiveDef: DirectiveDef<T>; }
+export interface DirectiveType<T> extends Type<T> { ngDirectiveDef: ɵDirectiveDef<T>; }
 
 export const enum DirectiveDefFlags {ContentQuery = 0b10}
 
 /**
- * A subclass of `Type` which has a static `ngPipeDef`:`PipeDef` field making it
+ * A subclass of `Type` which has a static `ngPipeDef`:`ɵPipeDef` field making it
  * consumable for rendering.
  */
-export interface PipeType<T> extends Type<T> { ngPipeDef: PipeDef<T>; }
+export interface PipeType<T> extends Type<T> { ngPipeDef: ɵPipeDef<T>; }
 
 /**
  * Runtime link information for Directives.
@@ -65,13 +65,18 @@ export interface PipeType<T> extends Type<T> { ngPipeDef: PipeDef<T>; }
  * can change between versions.
  *
  * See: {@link defineDirective}
+ *
+ * NOTE: This is a semi public API, and there are no guaranties that the shape of this API will
+ * remain consistent between version. Use with caution.
+ *
+ * @experimental
  */
-export interface DirectiveDef<T> {
+export interface ɵDirectiveDef<T> {
   /** Token representing the directive. Used by DI. */
   type: Type<T>;
 
   /** Function that makes a directive public to the DI system. */
-  diPublic: ((def: DirectiveDef<any>) => void)|null;
+  diPublic: ((def: ɵDirectiveDef<any>) => void)|null;
 
   /** The selectors that will be used to match nodes to this directive. */
   selectors: CssSelectorList;
@@ -135,8 +140,13 @@ export interface DirectiveDef<T> {
  * can change between versions.
  *
  * See: {@link defineComponent}
+ *
+ * NOTE: This is a semi public API, and there are no guaranties that the shape of this API will
+ * remain consistent between version. Use with caution.
+ *
+ * @experimental
  */
-export interface ComponentDef<T> extends DirectiveDef<T> {
+export interface ɵComponentDef<T> extends ɵDirectiveDef<T> {
   /**
    * The View template of the component.
    *
@@ -169,8 +179,8 @@ export interface ComponentDef<T> extends DirectiveDef<T> {
   /**
    * Registry of directives and components that may be found in this view.
    *
-   * The property is either an array of `DirectiveDef`s or a function which returns the array of
-   * `DirectiveDef`s. The function is necessary to be able to support forward declarations.
+   * The property is either an array of `ɵDirectiveDef`s or a function which returns the array of
+   * `ɵDirectiveDef`s. The function is necessary to be able to support forward declarations.
    */
   directiveDefs: DirectiveDefListOrFactory|null;
 
@@ -194,8 +204,13 @@ export interface ComponentDef<T> extends DirectiveDef<T> {
  * can change between versions.
  *
  * See: {@link definePipe}
+ *
+ * NOTE: This is a semi public API, and there are no guaranties that the shape of this API will
+ * remain consistent between version. Use with caution.
+ *
+ * @experimental
  */
-export interface PipeDef<T> {
+export interface ɵPipeDef<T> {
   /**
    * Pipe name.
    *
@@ -223,8 +238,8 @@ export interface PipeDef<T> {
   onDestroy: (() => void)|null;
 }
 
-export type DirectiveDefFeature = <T>(directiveDef: DirectiveDef<T>) => void;
-export type ComponentDefFeature = <T>(componentDef: ComponentDef<T>) => void;
+export type DirectiveDefFeature = <T>(directiveDef: ɵDirectiveDef<T>) => void;
+export type ComponentDefFeature = <T>(componentDef: ɵComponentDef<T>) => void;
 
 /**
  * Type used for directiveDefs on component definition.
@@ -233,12 +248,12 @@ export type ComponentDefFeature = <T>(componentDef: ComponentDef<T>) => void;
  */
 export type DirectiveDefListOrFactory = (() => DirectiveDefList) | DirectiveDefList;
 
-export type DirectiveDefList = (DirectiveDef<any>| ComponentDef<any>)[];
+export type DirectiveDefList = (ɵDirectiveDef<any>| ɵComponentDef<any>)[];
 
 export type DirectiveTypesOrFactory = (() => DirectiveTypeList) | DirectiveTypeList;
 
 export type DirectiveTypeList =
-    (DirectiveDef<any>| ComponentDef<any>|
+    (ɵDirectiveDef<any>| ɵComponentDef<any>|
      Type<any>/* Type as workaround for: Microsoft/TypeScript/issues/4881 */)[];
 
 /**
@@ -248,12 +263,12 @@ export type DirectiveTypeList =
  */
 export type PipeDefListOrFactory = (() => PipeDefList) | PipeDefList;
 
-export type PipeDefList = PipeDef<any>[];
+export type PipeDefList = ɵPipeDef<any>[];
 
 export type PipeTypesOrFactory = (() => DirectiveTypeList) | DirectiveTypeList;
 
 export type PipeTypeList =
-    (PipeDef<any>| Type<any>/* Type as workaround for: Microsoft/TypeScript/issues/4881 */)[];
+    (ɵPipeDef<any>| Type<any>/* Type as workaround for: Microsoft/TypeScript/issues/4881 */)[];
 
 
 // Note: This hack is necessary so we don't erroneously get a circular dependency

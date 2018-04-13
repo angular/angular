@@ -6,11 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {InjectorDef, InjectorType, defineInjector} from '../di/defs';
+import {InjectorType, defineInjector, ɵInjectorDef} from '../di/defs';
 import {convertInjectableProviderToFactory} from '../di/injectable';
 import {Provider} from '../di/provider';
 import {Type} from '../type';
 import {TypeDecorator, makeDecorator} from '../util/decorators';
+
 
 
 /**

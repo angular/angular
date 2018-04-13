@@ -75,9 +75,9 @@ export {
   st as ɵst,
   ld as ɵld,
   Pp as ɵPp,
-  ComponentDef as ɵComponentDef,
-  DirectiveDef as ɵDirectiveDef,
-  PipeDef as ɵPipeDef,
+  ɵComponentDef,
+  ɵDirectiveDef,
+  ɵPipeDef,
   whenRendered as ɵwhenRendered,
 } from './render3/index';
 export {

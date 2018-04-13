@@ -7,7 +7,7 @@
  */
 
 import {NgModuleRef} from '@angular/core';
-import {InjectableDef, defineInjectable} from '@angular/core/src/di/defs';
+import {defineInjectable, ɵInjectableDef} from '@angular/core/src/di/defs';
 import {INJECTOR, InjectFlags, Injector, inject} from '@angular/core/src/di/injector';
 import {makePropDecorator} from '@angular/core/src/util/decorators';
 import {NgModuleDefinition, NgModuleProviderDef, NodeFlags} from '@angular/core/src/view';
@@ -24,14 +24,14 @@ class MyChildModule {}
 class NotMyModule {}
 
 class Bar {
-  static ngInjectableDef: InjectableDef<Bar> = defineInjectable({
+  static ngInjectableDef: ɵInjectableDef<Bar> = defineInjectable({
     factory: () => new Bar(),
     providedIn: MyModule,
   });
 }
 
 class Baz {
-  static ngInjectableDef: InjectableDef<Baz> = defineInjectable({
+  static ngInjectableDef: ɵInjectableDef<Baz> = defineInjectable({
     factory: () => new Baz(),
     providedIn: NotMyModule,
   });
@@ -40,7 +40,7 @@ class Baz {
 class HasNormalDep {
   constructor(public foo: Foo) {}
 
-  static ngInjectableDef: InjectableDef<HasNormalDep> = defineInjectable({
+  static ngInjectableDef: ɵInjectableDef<HasNormalDep> = defineInjectable({
     factory: () => new HasNormalDep(inject(Foo)),
     providedIn: MyModule,
   });
@@ -49,7 +49,7 @@ class HasNormalDep {
 class HasDefinedDep {
   constructor(public bar: Bar) {}
 
-  static ngInjectableDef: InjectableDef<HasDefinedDep> = defineInjectable({
+  static ngInjectableDef: ɵInjectableDef<HasDefinedDep> = defineInjectable({
     factory: () => new HasDefinedDep(inject(Bar)),
     providedIn: MyModule,
   });
@@ -58,14 +58,14 @@ class HasDefinedDep {
 class HasOptionalDep {
   constructor(public baz: Baz|null) {}
 
-  static ngInjectableDef: InjectableDef<HasOptionalDep> = defineInjectable({
+  static ngInjectableDef: ɵInjectableDef<HasOptionalDep> = defineInjectable({
     factory: () => new HasOptionalDep(inject(Baz, InjectFlags.Optional)),
     providedIn: MyModule,
   });
 }
 
 class ChildDep {
-  static ngInjectableDef: InjectableDef<ChildDep> = defineInjectable({
+  static ngInjectableDef: ɵInjectableDef<ChildDep> = defineInjectable({
     factory: () => new ChildDep(),
     providedIn: MyChildModule,
   });
@@ -73,7 +73,7 @@ class ChildDep {
 
 class FromChildWithOptionalDep {
   constructor(public baz: Baz|null) {}
-  static ngInjectableDef: InjectableDef<FromChildWithOptionalDep> = defineInjectable({
+  static ngInjectableDef: ɵInjectableDef<FromChildWithOptionalDep> = defineInjectable({
     factory: () => new FromChildWithOptionalDep(inject(Baz, InjectFlags.Default)),
     providedIn: MyChildModule,
   });
@@ -81,7 +81,7 @@ class FromChildWithOptionalDep {
 
 class FromChildWithSkipSelfDep {
   constructor(public depFromParent: ChildDep|null, public depFromChild: Bar|null) {}
-  static ngInjectableDef: InjectableDef<FromChildWithSkipSelfDep> = defineInjectable({
+  static ngInjectableDef: ɵInjectableDef<FromChildWithSkipSelfDep> = defineInjectable({
     factory: () => new FromChildWithSkipSelfDep(
                  inject(ChildDep, InjectFlags.SkipSelf|InjectFlags.Optional),
                  inject(Bar, InjectFlags.Self|InjectFlags.Optional)),
@@ -119,10 +119,10 @@ describe('NgModuleRef_ injector', () => {
   it('injects a provided value',
      () => { expect(ref.injector.get(Foo) instanceof Foo).toBeTruthy(); });
 
-  it('injects an InjectableDef value',
+  it('injects an ɵInjectableDef value',
      () => { expect(ref.injector.get(Bar) instanceof Bar).toBeTruthy(); });
 
-  it('caches InjectableDef values',
+  it('caches ɵInjectableDef values',
      () => { expect(ref.injector.get(Bar)).toBe(ref.injector.get(Bar)); });
 
   it('injects provided deps properly', () => {
