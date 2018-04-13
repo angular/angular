@@ -15,8 +15,12 @@
 var_1: &docker_image angular/ngcontainer:0.2.0
 var_2: &cache_key v2-angular-{{ .Branch }}-{{ checksum "yarn.lock" }}-0.2.0
 
+# Define common ENV vars
+var_3: &define_env_vars
+  run: echo "export PROJECT_ROOT=$(pwd)" >> $BASH_ENV
+
 # See remote cache documentation in /docs/BAZEL.md
-var_3: &setup-bazel-remote-cache
+var_4: &setup-bazel-remote-cache
   run:
     name: Start up bazel remote cache proxy
     command: ~/bazel-remote-proxy -backend circleci://
@@ -63,6 +67,7 @@ jobs:
     <<: *job_defaults
     resource_class: xlarge
     steps:
+      - *define_env_vars
       - checkout:
           <<: *post_checkout
       # See remote cache documentation in /docs/BAZEL.md
