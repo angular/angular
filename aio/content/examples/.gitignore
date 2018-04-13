@@ -13,18 +13,20 @@
 **/src/tsconfig.app.json
 **/src/tsconfig.spec.json
 **/src/typings.d.ts
-**/e2e/app.po.ts
+**/e2e/src/app.po.ts
 **/e2e/tsconfig.e2e.json
+**/src/karma.conf.js
 **/.angular-cli.json
 **/.editorconfig
+**/angular.json
 **/tsconfig.json
 **/bs-config.e2e.json
 **/bs-config.json
 **/package.json
 **/tslint.json
-**/karma.conf.js
 **/karma-test-shim.js
 **/browser-test-shim.js
+**/browserslist
 **/node_modules
 
 # built files
