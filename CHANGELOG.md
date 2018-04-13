@@ -1,3 +1,13 @@
+<a name="6.0.0-rc.4"></a>
+# [6.0.0-rc.4](https://github.com/angular/material2/compare/6.0.0-rc.3...6.0.0-rc.4) (2018-04-13)
+
+
+### Bug Fixes
+
+* **schematics:** add ng-update config to package.json ([#10844](https://github.com/angular/material2/issues/10844)) ([0a3cfa7](https://github.com/angular/material2/commit/0a3cfa7))
+
+
+
 <a name="6.0.0-rc.3"></a>
 # [6.0.0-rc.3](https://github.com/angular/material2/compare/6.0.0-rc.2...6.0.0-rc.3) (2018-04-12)
 
