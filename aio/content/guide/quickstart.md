@@ -206,14 +206,17 @@ Any files outside of this folder are meant to support building your app.
       <div class="file">environment.prod.ts</div>
       <div class="file">environment.ts</div>
     </div>
+    <div class="file">browserslist</div>
     <div class="file">favicon.ico</div>
     <div class="file">index.html</div>
+    <div class="file">karma.conf.js</div>
     <div class="file">main.ts</div>
     <div class="file">polyfills.ts</div>
     <div class="file">styles.css</div>
     <div class="file">test.ts</div>
     <div class="file">tsconfig.app.json</div>
     <div class="file">tsconfig.spec.json</div>
+    <div class="file">tslint.json</div>
   </div>
 </div>
 
@@ -300,6 +303,18 @@ Any files outside of this folder are meant to support building your app.
   <tr>
     <td>
 
+      `browserslist`
+
+    </td>
+    <td>
+
+      A configuration file to share [target browsers](https://github.com/browserslist/browserslist) between different front-end tools.
+
+    </td>
+  </tr>  
+  <tr>
+    <td>
+
       `favicon.ico`
 
     </td>
@@ -325,6 +340,19 @@ Any files outside of this folder are meant to support building your app.
 
     </td>
   </tr>
+  <tr>
+    <td>
+
+      `karma.conf.js`
+
+    </td>
+    <td>
+
+      Unit test configuration for the [Karma test runner](https://karma-runner.github.io),
+      used when running `ng test`.
+
+    </td>
+  </tr>  
   <tr>
     <td>
 
@@ -395,6 +423,20 @@ Any files outside of this folder are meant to support building your app.
 
     </td>
   </tr>
+  <tr>
+    <td>
+
+      `tslint.json`
+
+    </td>
+    <td>
+
+      Additional Linting configuration for [TSLint](https://palantir.github.io/tslint/) together with
+      [Codelyzer](http://codelyzer.com/), used when running `ng lint`.
+      Linting helps keep your code style consistent.
+
+    </td>
+  </tr>  
 </table>
 
 ### The root folder
@@ -409,18 +451,23 @@ These files go in the root folder next to `src/`.
   <div class='children'>
     <div class="file">e2e</div>
     <div class='children'>
-      <div class="file">app.e2e-spec.ts</div>
-      <div class="file">app.po.ts</div>
+      <div class="file">src</div>
+      <div class='children'>
+        <div class="file">app.e2e-spec.ts</div>
+        <div class="file">app.po.ts</div>
+      </div>      
       <div class="file">tsconfig.e2e.json</div>
+      <div class="file">protractor.conf.js</div>
     </div>
     <div class="file">node_modules/...</div>
     <div class="file">src/...</div>
-    <div class="file">.angular-cli.json</div>
+    <div class='children'>
+      <div class="file">karma.conf.js</div>
+    </div>    
     <div class="file">.editorconfig</div>
     <div class="file">.gitignore</div>
-    <div class="file">karma.conf.js</div>
+    <div class="file">angular.json</div>
     <div class="file">package.json</div>
-    <div class="file">protractor.conf.js</div>
     <div class="file">README.md</div>
     <div class="file">tsconfig.json</div>
     <div class="file">tslint.json</div>
@@ -476,21 +523,6 @@ These files go in the root folder next to `src/`.
   <tr>
     <td>
 
-      `.angular-cli.json`
-
-    </td>
-    <td>
-
-      Configuration for Angular CLI.
-      In this file you can set several defaults and also configure what files are included
-      when your project is built.
-      Check out the official documentation if you want to know more.
-
-    </td>
-  </tr>
-  <tr>
-    <td>
-
       `.editorconfig`
 
     </td>
@@ -518,13 +550,15 @@ These files go in the root folder next to `src/`.
   <tr>
     <td>
 
-      `karma.conf.js`
+      `angular.json`
 
     </td>
     <td>
 
-      Unit test configuration for the [Karma test runner](https://karma-runner.github.io),
-      used when running `ng test`.
+      Configuration for Angular CLI.
+      In this file you can set several defaults and also configure what files are included
+      when your project is built.
+      Check out the official documentation if you want to know more.
 
     </td>
   </tr>
