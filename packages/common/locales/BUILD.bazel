@@ -13,6 +13,7 @@ ts_library(
 
 npm_package(
     name = "package",
+    srcs = ["package.json"],
     replacements = {
         # Workaround for https://github.com/angular/angular/issues/23217
         # Webpack will detect that the UMD outputs from TypeScript pass the
