@@ -6,10 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {InjectableDef, defineInjectable} from '../../di/defs';
+import {defineInjectable, ɵInjectableDef} from '../../di/defs';
 import {Optional, SkipSelf} from '../../di/metadata';
 import {StaticProvider} from '../../di/provider';
 import {DefaultIterableDifferFactory} from '../differs/default_iterable_differ';
+
 
 
 /**
@@ -137,7 +138,7 @@ export interface IterableDifferFactory {
  *
  */
 export class IterableDiffers {
-  static ngInjectableDef: InjectableDef<IterableDiffers> = defineInjectable({
+  static ngInjectableDef: ɵInjectableDef<IterableDiffers> = defineInjectable({
     providedIn: 'root',
     factory: () => new IterableDiffers([new DefaultIterableDifferFactory()])
   });

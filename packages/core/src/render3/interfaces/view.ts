@@ -8,7 +8,7 @@
 
 import {Injector} from '../../di/injector';
 import {LContainer} from './container';
-import {ComponentTemplate, DirectiveDef, DirectiveDefList, PipeDef, PipeDefList} from './definition';
+import {ComponentTemplate, DirectiveDefList, PipeDefList, ɵDirectiveDef, ɵPipeDef} from './definition';
 import {LElementNode, LViewNode, TNode} from './node';
 import {LQueries} from './query';
 import {Renderer3} from './renderer';
@@ -428,10 +428,10 @@ export const enum LifecycleStage {
  * as its pipe instance in the data array. Any nodes that do not have static
  * data store a null value in tData to avoid a sparse array.
  */
-export type TData = (TNode | PipeDef<any>| null)[];
+export type TData = (TNode | ɵPipeDef<any>| null)[];
 
 /** Type for TView.currentMatches */
-export type CurrentMatchesList = [DirectiveDef<any>, (string | number | null)];
+export type CurrentMatchesList = [ɵDirectiveDef<any>, (string | number | null)];
 
 // Note: This hack is necessary so we don't erroneously get a circular dependency
 // failure based on types.

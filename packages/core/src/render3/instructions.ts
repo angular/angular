@@ -19,7 +19,7 @@ import {LContainerNode, LElementNode, LNode, LNodeType, TNodeFlags, LProjectionN
 import {assertNodeType} from './node_assert';
 import {appendChild, insertChild, insertView, appendProjectedNode, removeView, canInsertNativeNode, createTextNode} from './node_manipulation';
 import {isNodeMatchingSelectorList, matchingSelectorIndex} from './node_selector_matcher';
-import {ComponentDef, ComponentTemplate, ComponentType, DirectiveDef, DirectiveDefList, DirectiveDefListOrFactory, DirectiveType, PipeDef, PipeDefList, PipeDefListOrFactory, RenderFlags} from './interfaces/definition';
+import {ɵComponentDef, ComponentTemplate, ComponentType, ɵDirectiveDef, DirectiveDefList, DirectiveDefListOrFactory, DirectiveType, ɵPipeDef, PipeDefList, PipeDefListOrFactory, RenderFlags} from './interfaces/definition';
 import {RElement, RText, Renderer3, RendererFactory3, ProceduralRenderer3, ObjectOrientedRenderer3, RendererStyleFlags3, isProceduralRenderer} from './interfaces/renderer';
 import {isDifferent, stringify} from './util';
 import {executeHooks, queueLifecycleHooks, queueInitHooks, executeInitHooks} from './hooks';
@@ -255,7 +255,7 @@ export function setHostBindings(bindings: number[] | null): void {
     const defs = currentView.tView.directives !;
     for (let i = 0; i < bindings.length; i += 2) {
       const dirIndex = bindings[i];
-      const def = defs[dirIndex] as DirectiveDef<any>;
+      const def = defs[dirIndex] as ɵDirectiveDef<any>;
       def.hostBindings && def.hostBindings(dirIndex, bindings[i + 1]);
     }
   }
@@ -578,7 +578,7 @@ function cacheMatchingDirectivesForNode(
   const matches = tView.currentMatches = findDirectiveMatches(tNode);
   if (matches) {
     for (let i = 0; i < matches.length; i += 2) {
-      const def = matches[i] as DirectiveDef<any>;
+      const def = matches[i] as ɵDirectiveDef<any>;
       const valueIndex = i + 1;
       resolveDirective(def, valueIndex, matches, tView);
       saveNameToExportMap(matches[valueIndex] as number, def, exportsMap);
@@ -595,7 +595,7 @@ function findDirectiveMatches(tNode: TNode): CurrentMatchesList|null {
     for (let i = 0; i < registry.length; i++) {
       const def = registry[i];
       if (isNodeMatchingSelectorList(tNode, def.selectors !)) {
-        if ((def as ComponentDef<any>).template) {
+        if ((def as ɵComponentDef<any>).template) {
           if (tNode.flags & TNodeFlags.isComponent) throwMultipleComponentError(tNode);
           tNode.flags = TNodeFlags.isComponent;
         }
@@ -608,7 +608,7 @@ function findDirectiveMatches(tNode: TNode): CurrentMatchesList|null {
 }
 
 export function resolveDirective(
-    def: DirectiveDef<any>, valueIndex: number, matches: CurrentMatchesList, tView: TView): any {
+    def: ɵDirectiveDef<any>, valueIndex: number, matches: CurrentMatchesList, tView: TView): any {
   if (matches[valueIndex] === null) {
     matches[valueIndex] = CIRCULAR;
     const instance = def.factory();
@@ -663,7 +663,7 @@ function instantiateDirectivesDirectly() {
     const tDirectives = currentView.tView.directives !;
 
     for (let i = start; i < end; i++) {
-      const def: DirectiveDef<any> = tDirectives[i];
+      const def: ɵDirectiveDef<any> = tDirectives[i];
       directiveCreate(i, def.factory(), def);
     }
   }
@@ -691,11 +691,11 @@ function cacheMatchingLocalNames(
  * to their directive instances.
  */
 function saveNameToExportMap(
-    index: number, def: DirectiveDef<any>| ComponentDef<any>,
+    index: number, def: ɵDirectiveDef<any>| ɵComponentDef<any>,
     exportsMap: {[key: string]: number} | null) {
   if (exportsMap) {
     if (def.exportAs) exportsMap[def.exportAs] = index;
-    if ((def as ComponentDef<any>).template) exportsMap[''] = index;
+    if ((def as ɵComponentDef<any>).template) exportsMap[''] = index;
   }
 }
 
@@ -801,12 +801,12 @@ export function locateHostElement(
  * Creates the host LNode.
  *
  * @param rNode Render host element.
- * @param def ComponentDef
+ * @param def ɵComponentDef
  *
  * @returns LElementNode created
  */
 export function hostElement(
-    tag: string, rNode: RElement | null, def: ComponentDef<any>): LElementNode {
+    tag: string, rNode: RElement | null, def: ɵComponentDef<any>): LElementNode {
   resetApplicationState();
   const node = createLNode(
       0, LNodeType.Element, rNode,
@@ -1013,7 +1013,7 @@ function generatePropertyAliases(
     const defs = currentView.tView.directives !;
 
     for (let i = start; i < end; i++) {
-      const directiveDef = defs[i] as DirectiveDef<any>;
+      const directiveDef = defs[i] as ɵDirectiveDef<any>;
       const propertyAliasMap: {[publicName: string]: string} =
           isInput ? directiveDef.inputs : directiveDef.outputs;
       for (let publicName in propertyAliasMap) {
@@ -1203,18 +1203,18 @@ export function textBinding<T>(index: number, value: T | NO_CHANGE): void {
  *       be retrieved before they are created in which case the value will be null.
  *
  * @param directive The directive instance.
- * @param directiveDef DirectiveDef object which contains information about the template.
+ * @param directiveDef ɵDirectiveDef object which contains information about the template.
  */
 export function directiveCreate<T>(
-    index: number, directive: T, directiveDef: DirectiveDef<T>| ComponentDef<T>): T {
+    index: number, directive: T, directiveDef: ɵDirectiveDef<T>| ɵComponentDef<T>): T {
   const instance = baseDirectiveCreate(index, directive, directiveDef);
 
   ngDevMode && assertNotNull(previousOrParentNode.tNode, 'previousOrParentNode.tNode');
   const tNode = previousOrParentNode.tNode;
 
-  const isComponent = (directiveDef as ComponentDef<T>).template;
+  const isComponent = (directiveDef as ɵComponentDef<T>).template;
   if (isComponent) {
-    addComponentLogic(index, directive, directiveDef as ComponentDef<T>);
+    addComponentLogic(index, directive, directiveDef as ɵComponentDef<T>);
   }
 
   if (firstTemplatePass) {
@@ -1232,7 +1232,7 @@ export function directiveCreate<T>(
   return instance;
 }
 
-function addComponentLogic<T>(index: number, instance: T, def: ComponentDef<T>): void {
+function addComponentLogic<T>(index: number, instance: T, def: ɵComponentDef<T>): void {
   const tView = getOrCreateTView(def.template, def.directiveDefs, def.pipeDefs);
 
   // Only component views should be added to the view tree directly. Embedded views are
@@ -1258,7 +1258,7 @@ function addComponentLogic<T>(index: number, instance: T, def: ComponentDef<T>):
  * current Angular. Example: local refs and inputs on root component.
  */
 export function baseDirectiveCreate<T>(
-    index: number, directive: T, directiveDef: DirectiveDef<T>| ComponentDef<T>): T {
+    index: number, directive: T, directiveDef: ɵDirectiveDef<T>| ɵComponentDef<T>): T {
   ngDevMode &&
       assertEqual(
           currentView.bindingStartIndex, -1, 'directives should be created before any bindings');
@@ -1631,7 +1631,7 @@ export function componentRefresh<T>(directiveIndex: number, elementIndex: number
   // Only attached CheckAlways components or attached, dirty OnPush components should be checked
   if (viewAttached(hostView) && hostView.flags & (LViewFlags.CheckAlways | LViewFlags.Dirty)) {
     ngDevMode && assertDataInRange(directiveIndex, directives !);
-    const def = currentView.tView.directives ![directiveIndex] as ComponentDef<T>;
+    const def = currentView.tView.directives ![directiveIndex] as ɵComponentDef<T>;
 
     detectChangesInternal(
         hostView, element, def, getDirectiveInstance(directives ![directiveIndex]));
@@ -1943,7 +1943,7 @@ export function detectChanges<T>(component: T): void {
   const hostNode = _getComponentHostLElementNode(component);
   ngDevMode && assertNotNull(hostNode.data, 'Component host node should be attached to an LView');
   const componentIndex = hostNode.tNode !.flags >> TNodeFlags.DirectiveStartingIndexShift;
-  const def = hostNode.view.tView.directives ![componentIndex] as ComponentDef<T>;
+  const def = hostNode.view.tView.directives ![componentIndex] as ɵComponentDef<T>;
   detectChangesInternal(hostNode.data as LView, hostNode, def, component);
 }
 
@@ -1965,7 +1965,7 @@ export function checkNoChanges<T>(component: T): void {
 
 /** Checks the view of the component provided. Does not gate on dirty checks or execute doCheck. */
 export function detectChangesInternal<T>(
-    hostView: LView, hostNode: LElementNode, def: ComponentDef<T>, component: T) {
+    hostView: LView, hostNode: LElementNode, def: ɵComponentDef<T>, component: T) {
   const oldView = enterView(hostView, hostNode);
   const template = def.template;
 
