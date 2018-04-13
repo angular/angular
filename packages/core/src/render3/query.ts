@@ -193,13 +193,15 @@ function getIdxOfMatchingSelector(tNode: TNode, selector: string): number|null {
  * @param type Type of a directive to look for.
  * @returns Index of a found directive or null when none found.
  */
-function geIdxOfMatchingDirective(node: LNode, type: Type<any>): number|null {
+function getIdxOfMatchingDirective(node: LNode, type: Type<any>): number|null {
   const defs = node.view.tView.directives !;
   const flags = node.tNode !.flags;
-  const size = (flags & TNodeFlags.SIZE_MASK) >> TNodeFlags.SIZE_SHIFT;
-  for (let i = flags >> TNodeFlags.INDX_SHIFT, ii = i + size; i < ii; i++) {
+  const count = flags & TNodeFlags.DirectiveCountMask;
+  const start = flags >> TNodeFlags.DirectiveStartingIndexShift;
+  const end = start + count;
+  for (let i = start; i < end; i++) {
     const def = defs[i] as DirectiveDef<any>;
-    if (def.diPublic && def.type === type) {
+    if (def.type === type && def.diPublic) {
       return i;
     }
   }
@@ -212,7 +214,7 @@ function readFromNodeInjector(
   if (read instanceof ReadFromInjectorFn) {
     return read.read(nodeInjector, node, directiveIdx);
   } else {
-    const matchingIdx = geIdxOfMatchingDirective(node, read as Type<any>);
+    const matchingIdx = getIdxOfMatchingDirective(node, read as Type<any>);
     if (matchingIdx !== null) {
       return node.view.directives ![matchingIdx];
     }
@@ -226,7 +228,7 @@ function add(query: LQuery<any>| null, node: LNode) {
     const predicate = query.predicate;
     const type = predicate.type;
     if (type) {
-      const directiveIdx = geIdxOfMatchingDirective(node, type);
+      const directiveIdx = getIdxOfMatchingDirective(node, type);
       if (directiveIdx !== null) {
         // a node is matching a predicate - determine what to read
         // if read token and / or strategy is not specified, use type as read token

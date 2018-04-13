@@ -28,25 +28,17 @@ export const enum LNodeType {
 }
 
 /**
- * TNodeFlags corresponds to the TNode.flags property. It contains information
- * on how to map a particular set of bits to the node's first directive index
- * (with INDX_SHIFT) or the node's directive count (with SIZE_MASK)
+ * Corresponds to the TNode.flags property.
  */
 export const enum TNodeFlags {
-  /** Whether or not this node is a component */
-  Component = 0b001,
+  /** The number of directives on this node is encoded on the least significant bits */
+  DirectiveCountMask = 0b00000000000000000000111111111111,
 
-  /** How far to shift the flags to get the first directive index on this node */
-  INDX_SHIFT = 13,
+  /** Then this bit is set when the node is a component */
+  isComponent = 0b1000000000000,
 
-  /** How far to shift the flags to get the number of directives on this node */
-  SIZE_SHIFT = 1,
-
-  /** The amount to add to flags to increment size when each directive is added */
-  SIZE_SKIP = 2,
-
-  /** Mask to get the number of directives on this node */
-  SIZE_MASK = 0b00000000000000000001111111111110
+  /** The index of the first directive on this node is encoded on the most significant bits  */
+  DirectiveStartingIndexShift = 13,
 }
 
 /**
