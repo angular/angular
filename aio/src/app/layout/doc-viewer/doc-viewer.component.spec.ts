@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { Title, Meta } from '@angular/platform-browser';
+import { Meta, Title } from '@angular/platform-browser';
 
 import { Observable, of } from 'rxjs';
 
@@ -367,21 +367,18 @@ describe('DocViewerComponent', () => {
         expect(addTitleAndTocSpy).toHaveBeenCalledTimes(4);
       });
 
-      it('should remove "noindex" meta tags if the document is valid', async () => {
+      it('should remove the "noindex" meta tag if the document is valid', async () => {
         await doRender('foo', 'bar');
-        expect(TestBed.get(Meta).removeTag).toHaveBeenCalledWith('name="googlebot"');
         expect(TestBed.get(Meta).removeTag).toHaveBeenCalledWith('name="robots"');
       });
 
-      it('should add "noindex" meta tags if the document is 404', async () => {
+      it('should add the "noindex" meta tag if the document is 404', async () => {
         await doRender('missing', FILE_NOT_FOUND_ID);
-        expect(TestBed.get(Meta).addTag).toHaveBeenCalledWith({ name: 'googlebot', content: 'noindex' });
         expect(TestBed.get(Meta).addTag).toHaveBeenCalledWith({ name: 'robots', content: 'noindex' });
       });
 
-      it('should add "noindex" meta tags if the document fetching fails', async () => {
+      it('should add a "noindex" meta tag if the document fetching fails', async () => {
         await doRender('error', FETCHING_ERROR_ID);
-        expect(TestBed.get(Meta).addTag).toHaveBeenCalledWith({ name: 'googlebot', content: 'noindex' });
         expect(TestBed.get(Meta).addTag).toHaveBeenCalledWith({ name: 'robots', content: 'noindex' });
       });
     });
@@ -475,7 +472,6 @@ describe('DocViewerComponent', () => {
           [jasmine.any(Error)]
         ]);
         expect(logger.output.error[0][0].message).toEqual(`[DocViewer] Error preparing document 'foo': ${error.stack}`);
-        expect(TestBed.get(Meta).addTag).toHaveBeenCalledWith({ name: 'googlebot', content: 'noindex' });
         expect(TestBed.get(Meta).addTag).toHaveBeenCalledWith({ name: 'robots', content: 'noindex' });
       });
 
@@ -495,7 +491,6 @@ describe('DocViewerComponent', () => {
         expect(logger.output.error).toEqual([
           [jasmine.any(Error)]
         ]);
-        expect(TestBed.get(Meta).addTag).toHaveBeenCalledWith({ name: 'googlebot', content: 'noindex' });
         expect(TestBed.get(Meta).addTag).toHaveBeenCalledWith({ name: 'robots', content: 'noindex' });
       });
 
@@ -515,7 +510,6 @@ describe('DocViewerComponent', () => {
           [jasmine.any(Error)]
         ]);
         expect(logger.output.error[0][0].message).toEqual(`[DocViewer] Error preparing document 'qux': ${error.stack}`);
-        expect(TestBed.get(Meta).addTag).toHaveBeenCalledWith({ name: 'googlebot', content: 'noindex' });
         expect(TestBed.get(Meta).addTag).toHaveBeenCalledWith({ name: 'robots', content: 'noindex' });
       });
 
@@ -534,7 +528,6 @@ describe('DocViewerComponent', () => {
           [jasmine.any(Error)]
         ]);
         expect(logger.output.error[0][0].message).toEqual(`[DocViewer] Error preparing document 'qux': ${error}`);
-        expect(TestBed.get(Meta).addTag).toHaveBeenCalledWith({ name: 'googlebot', content: 'noindex' });
         expect(TestBed.get(Meta).addTag).toHaveBeenCalledWith({ name: 'robots', content: 'noindex' });
       });
     });

@@ -162,15 +162,12 @@ describe('site App', function() {
   describe('404 page', () => {
     it('should add or remove the "noindex" meta tag depending upon the validity of the page', () => {
       page.navigateTo('');
-      expect(element(by.css('meta[name="googlebot"]')).isPresent()).toBeFalsy();
       expect(element(by.css('meta[name="robots"]')).isPresent()).toBeFalsy();
 
       page.navigateTo('does/not/exist');
-      expect(element(by.css('meta[name="googlebot"][content="noindex"]')).isPresent()).toBeTruthy();
       expect(element(by.css('meta[name="robots"][content="noindex"]')).isPresent()).toBeTruthy();
 
       page.click(page.getTopMenuLink('features'));
-      expect(element(by.css('meta[name="googlebot"]')).isPresent()).toBeFalsy();
       expect(element(by.css('meta[name="robots"]')).isPresent()).toBeFalsy();
     });
 
