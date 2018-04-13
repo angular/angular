@@ -19,6 +19,7 @@ import {
   EventEmitter,
   forwardRef,
   Input,
+  OnDestroy,
   OnInit,
   Optional,
   Output,
@@ -332,7 +333,8 @@ export const _MatButtonToggleMixinBase = mixinDisableRipple(MatButtonToggleBase)
     '[attr.id]': 'id',
   }
 })
-export class MatButtonToggle extends _MatButtonToggleMixinBase implements OnInit, CanDisableRipple {
+export class MatButtonToggle extends _MatButtonToggleMixinBase implements OnInit,
+  CanDisableRipple, OnDestroy {
 
   private _isSingleSelector = false;
   private _checked = false;
@@ -351,7 +353,7 @@ export class MatButtonToggle extends _MatButtonToggleMixinBase implements OnInit
   /** Type of the button toggle. Either 'radio' or 'checkbox'. */
   _type: ToggleType;
 
-  @ViewChild('input') _inputElement: ElementRef;
+  @ViewChild('input') _inputElement: ElementRef<HTMLInputElement>;
 
   /** The parent button toggle group (exclusive selection). Optional. */
   buttonToggleGroup: MatButtonToggleGroup;
@@ -401,7 +403,7 @@ export class MatButtonToggle extends _MatButtonToggleMixinBase implements OnInit
 
   constructor(@Optional() toggleGroup: MatButtonToggleGroup,
               private _changeDetectorRef: ChangeDetectorRef,
-              private _elementRef: ElementRef,
+              private _elementRef: ElementRef<HTMLElement>,
               private _focusMonitor: FocusMonitor) {
     super();
 
@@ -422,6 +424,10 @@ export class MatButtonToggle extends _MatButtonToggleMixinBase implements OnInit
     }
 
     this._focusMonitor.monitor(this._elementRef.nativeElement, true);
+  }
+
+  ngOnDestroy() {
+    this._focusMonitor.stopMonitoring(this._elementRef.nativeElement);
   }
 
   /** Focuses the button. */
