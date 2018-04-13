@@ -6,7 +6,7 @@ import { HttpClient } from '@angular/common/http';
 import { MatProgressBar, MatSidenav } from '@angular/material';
 import { By } from '@angular/platform-browser';
 
-import { Observable, timer } from 'rxjs';
+import { timer } from 'rxjs';
 import { mapTo } from 'rxjs/operators';
 
 import { AppComponent } from './app.component';
@@ -1113,22 +1113,13 @@ describe('AppComponent', () => {
         navigateTo('guide/pipes');
         checkHostClass('sidenav', 'open');
 
-        sidenav.close();
-        await waitForEmit(sidenav.onClose);
+        await sidenav.close();
         fixture.detectChanges();
         checkHostClass('sidenav', 'closed');
 
-        sidenav.open();
-        await waitForEmit(sidenav.onOpen);
+        await sidenav.open();
         fixture.detectChanges();
         checkHostClass('sidenav', 'open');
-
-        function waitForEmit(emitter: Observable<void>): Promise<void> {
-          return new Promise(resolve => {
-            emitter.subscribe(resolve);
-            fixture.detectChanges();
-          });
-        }
       });
 
       it('should set the css class of the host container based on the initial deployment mode', () => {
