@@ -38,13 +38,13 @@ export const enum RenderFlags {
  * A subclass of `Type` which has a static `ngComponentDef`:`ComponentDef` field making it
  * consumable for rendering.
  */
-export interface ComponentType<T> extends Type<T> { ngComponentDef: ComponentDef<T>; }
+export interface ComponentType<T> extends Type<T> { ngComponentDef: never; }
 
 /**
  * A subclass of `Type` which has a static `ngDirectiveDef`:`DirectiveDef` field making it
  * consumable for rendering.
  */
-export interface DirectiveType<T> extends Type<T> { ngDirectiveDef: DirectiveDef<T>; }
+export interface DirectiveType<T> extends Type<T> { ngDirectiveDef: never; }
 
 export const enum DirectiveDefFlags {ContentQuery = 0b10}
 
@@ -52,7 +52,7 @@ export const enum DirectiveDefFlags {ContentQuery = 0b10}
  * A subclass of `Type` which has a static `ngPipeDef`:`PipeDef` field making it
  * consumable for rendering.
  */
-export interface PipeType<T> extends Type<T> { ngPipeDef: PipeDef<T>; }
+export interface PipeType<T> extends Type<T> { ngPipeDef: never; }
 
 /**
  * Runtime link information for Directives.
