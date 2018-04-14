@@ -7,9 +7,12 @@
  */
 
 import {browserDetection} from '@angular/platform-browser/testing/src/browser_util';
+
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, ContentChild, ContentChildren, Directive, HostBinding, HostListener, Injectable, Input, NgModule, OnDestroy, Optional, Pipe, PipeTransform, QueryList, SimpleChanges, TemplateRef, ViewChild, ViewChildren, ViewContainerRef} from '../../../src/core';
 import * as $r3$ from '../../../src/core_render3_private_export';
+import {ComponentDef} from '../../../src/render3/interfaces/definition';
 import {ComponentFixture, renderComponent, toHtml} from '../render_util';
+
 
 /// See: `normative.md`
 describe('elements', () => {
@@ -103,7 +106,7 @@ describe('elements', () => {
     }
 
     // NON-NORMATIVE
-    LocalRefComp.ngComponentDef.directiveDefs = () => [Dir.ngDirectiveDef];
+    (LocalRefComp.ngComponentDef as ComponentDef<any>).directiveDefs = () => [Dir.ngDirectiveDef];
     // /NON-NORMATIVE
 
     const fixture = new ComponentFixture(LocalRefComp);

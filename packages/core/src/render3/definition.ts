@@ -162,7 +162,7 @@ export function defineComponent<T>(componentDefinition: {
    * `PipeDefs`s. The function is necessary to be able to support forward declarations.
    */
   pipes?: PipeTypesOrFactory | null;
-}): ComponentDef<T> {
+}): never {
   const type = componentDefinition.type;
   const pipeTypes = componentDefinition.pipes !;
   const directiveTypes = componentDefinition.directives !;
@@ -196,7 +196,7 @@ export function defineComponent<T>(componentDefinition: {
   };
   const feature = componentDefinition.features;
   feature && feature.forEach((fn) => fn(def));
-  return def;
+  return def as never;
 }
 
 export function extractDirectiveDef(type: DirectiveType<any>& ComponentType<any>):
@@ -400,7 +400,7 @@ export const defineDirective = defineComponent as any as<T>(directiveDefinition:
    * See: {@link Directive.exportAs}
    */
   exportAs?: string;
-}) => DirectiveDef<T>;
+}) => never;
 
 /**
  * Create a pipe definition object.
@@ -428,11 +428,11 @@ export function definePipe<T>(pipeDef: {
 
   /** Whether the pipe is pure. */
   pure?: boolean
-}): PipeDef<T> {
-  return <PipeDef<T>>{
+}): never {
+  return (<PipeDef<T>>{
     name: pipeDef.name,
     n: pipeDef.factory,
     pure: pipeDef.pure !== false,
     onDestroy: pipeDef.type.prototype.ngOnDestroy || null
-  };
+  }) as never;
 }
