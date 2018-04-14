@@ -5148,9 +5148,9 @@ rxjs@^6.0.0-beta.3:
   dependencies:
     tslib "^1.9.0"
 
-rxjs@^6.0.0-terrific-rc.3:
-  version "6.0.0-terrific-rc.3"
-  resolved "https://registry.yarnpkg.com/rxjs/-/rxjs-6.0.0-terrific-rc.3.tgz#3acee937c1789ee4addf3cc3f7cc843d7cc2887c"
+rxjs@^6.0.0-uncanny-rc.7:
+  version "6.0.0-uncanny-rc.7"
+  resolved "https://registry.yarnpkg.com/rxjs/-/rxjs-6.0.0-uncanny-rc.7.tgz#e5d6ebe2c538c583bf4b3600b60112d64a7a6991"
   dependencies:
     tslib "^1.9.0"
 
