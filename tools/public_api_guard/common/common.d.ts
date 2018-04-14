@@ -240,13 +240,12 @@ export declare class NgComponentOutlet implements OnChanges, OnDestroy {
     ngOnDestroy(): void;
 }
 
-export declare class NgForOf<T> implements DoCheck, OnChanges {
+export declare class NgForOf<T> implements DoCheck {
     ngForOf: NgIterable<T>;
     ngForTemplate: TemplateRef<NgForOfContext<T>>;
     ngForTrackBy: TrackByFunction<T>;
     constructor(_viewContainer: ViewContainerRef, _template: TemplateRef<NgForOfContext<T>>, _differs: IterableDiffers);
     ngDoCheck(): void;
-    ngOnChanges(changes: SimpleChanges): void;
 }
 
 export declare class NgForOfContext<T> {
