@@ -28,6 +28,12 @@ describe('render3 integration test', () => {
           elementEnd();
         }
       }
+      expect(ngDevMode).toHaveProperties({
+        firstTemplatePass: 1,
+        tNode: 1,
+        tView: 1,
+        rendererCreateElement: 1,
+      });
     });
 
     it('should render and update basic "Hello, World" template', () => {
