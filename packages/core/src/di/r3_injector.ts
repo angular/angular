@@ -10,7 +10,7 @@ import {OnDestroy} from '../metadata/lifecycle_hooks';
 import {Type} from '../type';
 import {stringify} from '../util';
 
-import {InjectableType, InjectorType, InjectorTypeWithProviders, ɵInjectableDef, ɵInjectorDef} from './defs';
+import {InjectableDef, InjectableType, InjectorDef, InjectorType, InjectorTypeWithProviders} from './defs';
 import {resolveForwardRef} from './forward_ref';
 import {InjectableDefToken, InjectionToken} from './injection_token';
 import {INJECTOR, InjectFlags, Injector, NullInjector, THROW_IF_NOT_FOUND, USE_VALUE, inject, injectArgs, setCurrentInjector} from './injector';
@@ -200,7 +200,7 @@ export class R3Injector {
     // read, so care is taken to only do the read once.
 
     // First attempt to read the ngInjectorDef.
-    let def = (defOrWrappedDef as InjectorType<any>).ngInjectorDef as(ɵInjectorDef<any>| undefined);
+    let def = (defOrWrappedDef as InjectorType<any>).ngInjectorDef as(InjectorDef<any>| undefined);
 
     // If that's not present, then attempt to read ngModule from the InjectorDefTypeWithProviders.
     const ngModule =
@@ -219,7 +219,7 @@ export class R3Injector {
         EMPTY_ARRAY;
 
     // Finally, if defOrWrappedType was an `InjectorDefTypeWithProviders`, then the actual
-    // `ɵInjectorDef` is on its `ngModule`.
+    // `InjectorDef` is on its `ngModule`.
     if (ngModule !== undefined) {
       def = ngModule.ngInjectorDef;
     }
@@ -314,7 +314,7 @@ export class R3Injector {
     return record.value as T;
   }
 
-  private injectableDefInScope(def: ɵInjectableDef<any>): boolean {
+  private injectableDefInScope(def: InjectableDef<any>): boolean {
     if (!def.providedIn) {
       return false;
     } else if (typeof def.providedIn === 'string') {

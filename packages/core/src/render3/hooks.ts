@@ -7,7 +7,7 @@
  */
 
 import {assertEqual} from './assert';
-import {ɵDirectiveDef} from './interfaces/definition';
+import {DirectiveDef} from './interfaces/definition';
 import {TNodeFlags} from './interfaces/node';
 import {HookData, LView, LifecycleStage, TView} from './interfaces/view';
 
@@ -52,7 +52,7 @@ export function queueLifecycleHooks(flags: number, currentView: LView): void {
     // directiveCreate) so we can preserve the current hook order. Content, view, and destroy
     // hooks for projected components and directives must be called *before* their hosts.
     for (let i = start; i < end; i++) {
-      const def: ɵDirectiveDef<any> = tView.directives ![i];
+      const def: DirectiveDef<any> = tView.directives ![i];
       queueContentHooks(def, tView, i);
       queueViewHooks(def, tView, i);
       queueDestroyHooks(def, tView, i);
@@ -61,7 +61,7 @@ export function queueLifecycleHooks(flags: number, currentView: LView): void {
 }
 
 /** Queues afterContentInit and afterContentChecked hooks on TView */
-function queueContentHooks(def: ɵDirectiveDef<any>, tView: TView, i: number): void {
+function queueContentHooks(def: DirectiveDef<any>, tView: TView, i: number): void {
   if (def.afterContentInit) {
     (tView.contentHooks || (tView.contentHooks = [])).push(i, def.afterContentInit);
   }
@@ -73,7 +73,7 @@ function queueContentHooks(def: ɵDirectiveDef<any>, tView: TView, i: number): v
 }
 
 /** Queues afterViewInit and afterViewChecked hooks on TView */
-function queueViewHooks(def: ɵDirectiveDef<any>, tView: TView, i: number): void {
+function queueViewHooks(def: DirectiveDef<any>, tView: TView, i: number): void {
   if (def.afterViewInit) {
     (tView.viewHooks || (tView.viewHooks = [])).push(i, def.afterViewInit);
   }
@@ -85,7 +85,7 @@ function queueViewHooks(def: ɵDirectiveDef<any>, tView: TView, i: number): void
 }
 
 /** Queues onDestroy hooks on TView */
-function queueDestroyHooks(def: ɵDirectiveDef<any>, tView: TView, i: number): void {
+function queueDestroyHooks(def: DirectiveDef<any>, tView: TView, i: number): void {
   if (def.onDestroy != null) {
     (tView.destroyHooks || (tView.destroyHooks = [])).push(i, def.onDestroy);
   }
