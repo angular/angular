@@ -39,14 +39,14 @@ describe('site App', function() {
     navItemHeadings.each(heading => testNavItemHeading(heading!, 1));
 
     // Helpers
-    function expectToBeCollapsed(element: ElementFinder) {
-      expect(element.getAttribute('class')).toMatch(/\bcollapsed\b/);
-      expect(element.getAttribute('class')).not.toMatch(/\bexpanded\b/);
+    function expectToBeCollapsed(elementFinder: ElementFinder) {
+      expect(elementFinder.getAttribute('class')).toMatch(/\bcollapsed\b/);
+      expect(elementFinder.getAttribute('class')).not.toMatch(/\bexpanded\b/);
     }
 
-    function expectToBeExpanded(element: ElementFinder) {
-      expect(element.getAttribute('class')).not.toMatch(/\bcollapsed\b/);
-      expect(element.getAttribute('class')).toMatch(/\bexpanded\b/);
+    function expectToBeExpanded(elementFinder: ElementFinder) {
+      expect(elementFinder.getAttribute('class')).not.toMatch(/\bcollapsed\b/);
+      expect(elementFinder.getAttribute('class')).toMatch(/\bexpanded\b/);
     }
 
     function testNavItemHeading(heading: ElementFinder, level: number) {

@@ -16,9 +16,9 @@ import { ApiSection, ApiService } from './api.service';
 import { Option } from 'app/shared/select/select.component';
 
 class SearchCriteria {
-  query? = '';
-  status? = 'all';
-  type? = 'all';
+  query ? = '';
+  status ? = 'all';
+  type ? = 'all';
 }
 
 @Component({
