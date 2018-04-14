@@ -17,6 +17,7 @@ ANGULAR_SCOPED_PACKAGES = ["@angular/%s" % p for p in [
   "compiler",
   "compiler-cli",
   "animations",
+  "elements",
   "platform-browser",
   "platform-browser-dynamic",
   "forms",
