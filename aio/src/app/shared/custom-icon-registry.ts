@@ -36,7 +36,8 @@ interface SvgIconMap {
 export class CustomIconRegistry extends MatIconRegistry {
   private preloadedSvgElements: SvgIconMap = {};
 
-  constructor(http: HttpClient, sanitizer: DomSanitizer, @Optional() @Inject(DOCUMENT) document, @Inject(SVG_ICONS) svgIcons: SvgIconInfo[]) {
+  constructor(http: HttpClient, sanitizer: DomSanitizer, @Optional() @Inject(DOCUMENT) document,
+              @Inject(SVG_ICONS) svgIcons: SvgIconInfo[]) {
     super(http, sanitizer, document);
     this.loadSvgElements(svgIcons);
   }

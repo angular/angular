@@ -64,13 +64,13 @@ describe('AppComponent', () => {
     const de = fixture.debugElement;
     const docViewerDe = de.query(By.css('aio-doc-viewer'));
 
-    documentService = de.injector.get(DocumentService) as DocumentService;
+    documentService = de.injector.get<DocumentService>(DocumentService);
     docViewer = docViewerDe.nativeElement;
     docViewerComponent = docViewerDe.componentInstance;
     hamburger = de.query(By.css('.hamburger')).nativeElement;
-    locationService = de.injector.get(LocationService) as any;
+    locationService = de.injector.get<any>(LocationService);
     sidenav = de.query(By.directive(MatSidenav)).componentInstance;
-    tocService = de.injector.get(TocService);
+    tocService = de.injector.get<TocService>(TocService);
 
     return waitForDoc && awaitDocRendered();
   };
@@ -463,7 +463,7 @@ describe('AppComponent', () => {
       let scrollToTopSpy: jasmine.Spy;
 
       beforeEach(() => {
-        scrollService = fixture.debugElement.injector.get(ScrollService);
+        scrollService = fixture.debugElement.injector.get<ScrollService>(ScrollService);
         scrollSpy = spyOn(scrollService, 'scroll');
         scrollToTopSpy = spyOn(scrollService, 'scrollToTop');
       });
