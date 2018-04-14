@@ -1,3 +1,22 @@
+<a name="6.0.0-rc.5"></a>
+# [6.0.0-rc.5](https://github.com/angular/angular/compare/6.0.0-rc.4...6.0.0-rc.5) (2018-04-14)
+
+
+### Bug Fixes
+
+* **compiler:** use correct global name in compiler.umd.js ([#23354](https://github.com/angular/angular/issues/23354)) ([b76dd3b](https://github.com/angular/angular/commit/b76dd3b)), closes [#23343](https://github.com/angular/angular/issues/23343)
+* **compiler-cli:** shorten resolved module name in fileNameToModuleName to npm package name for typings ([#23231](https://github.com/angular/angular/issues/23231)) ([6199ea5](https://github.com/angular/angular/commit/6199ea5))
+* **elements:** include schematics in npm distro ([#23350](https://github.com/angular/angular/issues/23350)) ([9fabe2f](https://github.com/angular/angular/commit/9fabe2f))
+* **service-worker:** let `*` match 0 characters in globs ([#23339](https://github.com/angular/angular/issues/23339)) ([6c2c958](https://github.com/angular/angular/commit/6c2c958))
+
+
+### Features
+
+* **platform-browser:** add token marking which the type of animation module nearest in the injector tree ([#23075](https://github.com/angular/angular/issues/23075)) ([b551f84](https://github.com/angular/angular/commit/b551f84))
+* **service-worker:** add support for configuring navigations URLs ([#23339](https://github.com/angular/angular/issues/23339)) ([08325aa](https://github.com/angular/angular/commit/08325aa)), closes [#20404](https://github.com/angular/angular/issues/20404)
+
+
+
 <a name="6.0.0-rc.4"></a>
 # [6.0.0-rc.4](https://github.com/angular/angular/compare/6.0.0-rc.3...6.0.0-rc.4) (2018-04-12)
 
