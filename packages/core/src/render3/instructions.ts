@@ -574,7 +574,8 @@ function createDirectivesAndLocals(
  */
 function cacheMatchingDirectivesForNode(
     tNode: TNode, tView: TView, localRefs: string[] | null): void {
-  const exportsMap = localRefs ? {'': -1} : null;
+  // Please make sure to have explicit type for `exportsMap`. Inferred type triggers bug in tsickle.
+  const exportsMap: ({[key: string]: number} | null) = localRefs ? {'': -1} : null;
   const matches = tView.currentMatches = findDirectiveMatches(tNode);
   if (matches) {
     for (let i = 0; i < matches.length; i += 2) {
