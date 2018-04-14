@@ -60,25 +60,16 @@
     "name": "NgIfContext"
   },
   {
-    "name": "NgOnChangesFeature"
-  },
-  {
     "name": "Optional"
   },
   {
     "name": "PARAMETERS"
   },
   {
-    "name": "PRIVATE_PREFIX"
-  },
-  {
     "name": "ROOT_DIRECTIVE_INDICES"
   },
   {
     "name": "RecordViewTuple"
-  },
-  {
-    "name": "SimpleChange"
   },
   {
     "name": "SkipSelf"
