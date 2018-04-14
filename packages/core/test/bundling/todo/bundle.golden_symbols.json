@@ -459,9 +459,6 @@
     "name": "injectViewContainerRef"
   },
   {
-    "name": "insertChild"
-  },
-  {
     "name": "insertView"
   },
   {

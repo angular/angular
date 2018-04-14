@@ -1157,13 +1157,12 @@ export function elementStyle<T>(
  *
  * @param index Index of the node in the data array.
  * @param value Value to write. This value will be stringified.
- *   If value is not provided than the actual creation of the text node is delayed.
  */
 export function text(index: number, value?: any): void {
   ngDevMode &&
       assertEqual(
           currentView.bindingStartIndex, -1, 'text nodes should be created before bindings');
-  const textNode = value != null ? createTextNode(value, renderer) : null;
+  const textNode = createTextNode(value, renderer);
   const node = createLNode(index, LNodeType.Element, textNode);
   // Text nodes are self closing.
   isParent = false;
@@ -1180,17 +1179,11 @@ export function text(index: number, value?: any): void {
 export function textBinding<T>(index: number, value: T | NO_CHANGE): void {
   ngDevMode && assertDataInRange(index);
   let existingNode = data[index] as LTextNode;
-  ngDevMode && assertNotNull(existingNode, 'existing node');
-  if (existingNode.native) {
-    // If DOM node exists and value changed, update textContent
-    value !== NO_CHANGE &&
-        (isProceduralRenderer(renderer) ? renderer.setValue(existingNode.native, stringify(value)) :
-                                          existingNode.native.textContent = stringify(value));
-  } else {
-    // Node was created but DOM node creation was delayed. Create and append now.
-    existingNode.native = createTextNode(value, renderer);
-    insertChild(existingNode, currentView);
-  }
+  ngDevMode && assertNotNull(existingNode, 'LNode should exist');
+  ngDevMode && assertNotNull(existingNode.native, 'native element should exist');
+  value !== NO_CHANGE &&
+      (isProceduralRenderer(renderer) ? renderer.setValue(existingNode.native, stringify(value)) :
+                                        existingNode.native.textContent = stringify(value));
 }
 
 //////////////////////////
