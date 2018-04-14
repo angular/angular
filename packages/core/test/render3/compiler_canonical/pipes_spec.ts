@@ -8,7 +8,9 @@
 
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, ContentChild, ContentChildren, Directive, HostBinding, HostListener, Injectable, Input, NgModule, OnDestroy, Optional, Pipe, PipeTransform, QueryList, SimpleChanges, TemplateRef, ViewChild, ViewChildren, ViewContainerRef} from '../../../src/core';
 import * as $r3$ from '../../../src/core_render3_private_export';
+import {ComponentDef} from '../../../src/render3/interfaces/definition';
 import {containerEl, renderComponent, toHtml} from '../render_util';
+
 
 /// See: `normative.md`
 describe('pipes', () => {
@@ -96,7 +98,8 @@ describe('pipes', () => {
     }
 
     // NON-NORMATIVE
-    MyApp.ngComponentDef.pipeDefs = () => [MyPurePipe.ngPipeDef, MyPipe.ngPipeDef];
+    (MyApp.ngComponentDef as ComponentDef<any>).pipeDefs =
+        () => [MyPurePipe.ngPipeDef, MyPipe.ngPipeDef];
     // /NON-NORMATIVE
 
     let myApp: MyApp = renderComponent(MyApp);
@@ -189,8 +192,8 @@ describe('pipes', () => {
     }
 
     // NON-NORMATIVE
-    MyApp.ngComponentDef.directiveDefs = [OneTimeIf.ngDirectiveDef];
-    MyApp.ngComponentDef.pipeDefs = [MyPurePipe.ngPipeDef];
+    (MyApp.ngComponentDef as ComponentDef<any>).directiveDefs = [OneTimeIf.ngDirectiveDef];
+    (MyApp.ngComponentDef as ComponentDef<any>).pipeDefs = [MyPurePipe.ngPipeDef];
     // /NON-NORMATIVE
 
     let myApp: MyApp = renderComponent(MyApp);

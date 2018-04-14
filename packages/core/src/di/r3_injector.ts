@@ -326,7 +326,7 @@ export class R3Injector {
 }
 
 function injectableDefRecord(token: Type<any>| InjectionToken<any>): Record<any> {
-  const def = (token as InjectableType<any>).ngInjectableDef;
+  const def = (token as InjectableType<any>).ngInjectableDef as InjectableDef<any>;
   if (def === undefined) {
     throw new Error(`Type ${stringify(token)} is missing an ngInjectableDef definition.`);
   }

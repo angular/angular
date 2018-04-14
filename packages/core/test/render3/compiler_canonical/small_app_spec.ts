@@ -7,7 +7,7 @@
  */
 
 import {NgForOf, NgForOfContext} from '@angular/common';
-import {Component, ContentChild, Directive, EventEmitter, Injectable, InjectableDef, InjectorDef, Input, NgModule, OnDestroy, Optional, Output, Pipe, PipeTransform, QueryList, SimpleChanges, TemplateRef, Type, ViewChild, ViewContainerRef, defineInjectable, defineInjector} from '@angular/core';
+import {Component, ContentChild, Directive, EventEmitter, Injectable, Input, NgModule, OnDestroy, Optional, Output, Pipe, PipeTransform, QueryList, SimpleChanges, TemplateRef, Type, ViewChild, ViewContainerRef, defineInjectable, defineInjector} from '@angular/core';
 import {withBody} from '@angular/core/testing';
 
 import * as r3 from '../../../src/render3/index';
@@ -96,7 +96,7 @@ class ToDoAppComponent {
 }
 
 // NON-NORMATIVE
-ToDoAppComponent.ngComponentDef.directiveDefs = () =>
+(ToDoAppComponent.ngComponentDef as r3.ComponentDef<any>).directiveDefs = () =>
     [ToDoItemComponent.ngComponentDef, (NgForOf as r3.DirectiveType<NgForOf<any>>).ngDirectiveDef];
 // /NON-NORMATIVE
 

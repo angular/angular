@@ -52,7 +52,7 @@ export class InjectionToken<T> {
   /** @internal */
   readonly ngMetadataName = 'InjectionToken';
 
-  readonly ngInjectableDef: InjectableDef<T>|undefined;
+  readonly ngInjectableDef: never|undefined;
 
   constructor(protected _desc: string, options?: {
     providedIn?: Type<any>| 'root' | null,
@@ -71,6 +71,4 @@ export class InjectionToken<T> {
   toString(): string { return `InjectionToken ${this._desc}`; }
 }
 
-export interface InjectableDefToken<T> extends InjectionToken<T> {
-  ngInjectableDef: InjectableDef<T>;
-}
+export interface InjectableDefToken<T> extends InjectionToken<T> { ngInjectableDef: never; }
