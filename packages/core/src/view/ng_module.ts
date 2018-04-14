@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ɵInjectableDef} from '../di/defs';
+import {InjectableDef} from '../di/defs';
 import {resolveForwardRef} from '../di/forward_ref';
 import {INJECTOR, InjectFlags, Injector, setCurrentInjector} from '../di/injector';
 import {APP_ROOT} from '../di/scope';
@@ -102,7 +102,7 @@ export function resolveNgModuleDep(
       }
       return providerInstance === UNDEFINED_VALUE ? undefined : providerInstance;
     } else if (depDef.token.ngInjectableDef && targetsModule(data, depDef.token.ngInjectableDef)) {
-      const injectableDef = depDef.token.ngInjectableDef as ɵInjectableDef<any>;
+      const injectableDef = depDef.token.ngInjectableDef as InjectableDef<any>;
       const key = tokenKey;
       const index = data._providers.length;
       data._def.providersByKey[depDef.tokenKey] = {
@@ -126,7 +126,7 @@ function moduleTransitivelyPresent(ngModule: NgModuleData, scope: any): boolean 
   return ngModule._def.modules.indexOf(scope) > -1;
 }
 
-function targetsModule(ngModule: NgModuleData, def: ɵInjectableDef<any>): boolean {
+function targetsModule(ngModule: NgModuleData, def: InjectableDef<any>): boolean {
   return def.providedIn != null && (moduleTransitivelyPresent(ngModule, def.providedIn) ||
                                     def.providedIn === 'root' && ngModule._def.isRoot);
 }

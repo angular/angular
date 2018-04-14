@@ -11,7 +11,7 @@ import {Type} from '../type';
 import {makeDecorator, makeParamDecorator} from '../util/decorators';
 import {getClosureSafeProperty} from '../util/property';
 
-import {InjectableType, defineInjectable, ɵInjectableDef} from './defs';
+import {InjectableDef, InjectableType, defineInjectable} from './defs';
 import {inject, injectArgs} from './injector';
 import {ClassSansProvider, ConstructorProvider, ConstructorSansProvider, ExistingProvider, ExistingSansProvider, FactoryProvider, FactorySansProvider, StaticClassProvider, StaticClassSansProvider, ValueProvider, ValueSansProvider} from './provider';
 
@@ -134,4 +134,4 @@ export const Injectable: InjectableDecorator = makeDecorator(
  *
  * @experimental
  */
-export interface InjectableType<T> extends Type<T> { ngInjectableDef: ɵInjectableDef<T>; }
+export interface InjectableType<T> extends Type<T> { ngInjectableDef: InjectableDef<T>; }

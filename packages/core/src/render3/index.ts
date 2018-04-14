@@ -8,7 +8,7 @@
 
 import {LifecycleHooksFeature, createComponentRef, getHostElement, getRenderedText, renderComponent, whenRendered} from './component';
 import {NgOnChangesFeature, PublicFeature, defineComponent, defineDirective, definePipe} from './definition';
-import {ComponentTemplate, ComponentType, DirectiveDefFlags, DirectiveType, ɵComponentDef, ɵDirectiveDef, ɵPipeDef} from './interfaces/definition';
+import {ComponentDef, ComponentTemplate, ComponentType, DirectiveDef, DirectiveDefFlags, DirectiveType, PipeDef} from './interfaces/definition';
 
 export {QUERY_READ_CONTAINER_REF, QUERY_READ_ELEMENT_REF, QUERY_READ_FROM_NODE, QUERY_READ_TEMPLATE_REF, directiveInject, injectAttribute, injectChangeDetectorRef, injectElementRef, injectTemplateRef, injectViewContainerRef} from './di';
 export {RenderFlags} from './interfaces/definition';
@@ -103,15 +103,15 @@ export {
 // clang-format on
 
 export {
-  ɵComponentDef,
+  ComponentDef,
   ComponentTemplate,
   ComponentType,
-  ɵDirectiveDef,
+  DirectiveDef,
   DirectiveDefFlags,
   DirectiveType,
   NgOnChangesFeature,
   PublicFeature,
-  ɵPipeDef,
+  PipeDef,
   LifecycleHooksFeature,
   defineComponent,
   defineDirective,

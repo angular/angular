@@ -6,13 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, ContentChild, Directive, Injectable, Injector, Input, NgModule, NgModuleFactory, NgModuleRef, OnDestroy, Optional, Pipe, PipeTransform, QueryList, SimpleChanges, TemplateRef, Type, ViewChild, ViewContainerRef, defineInjector, ɵInjectorDef} from '../../../src/core';
+import {Component, ContentChild, Directive, Injectable, Injector, InjectorDef, Input, NgModule, NgModuleFactory, NgModuleRef, OnDestroy, Optional, Pipe, PipeTransform, QueryList, SimpleChanges, TemplateRef, Type, ViewChild, ViewContainerRef, defineInjector} from '../../../src/core';
 import * as r3 from '../../../src/render3/index';
 
 const details_elided = {
   type: Object,
 } as any;
-export type $ɵComponentDef$ = any;
+export type $ComponentDef$ = any;
 
 ///////////
 // Lib A - Compiled pre-Ivy
@@ -52,7 +52,7 @@ const node_modules_libA_module_metadata = {
 @Component({})
 export class LibBComponent {
   // COMPILER GENERATED
-  static ngComponentDef: $ɵComponentDef$ = r3.defineComponent(details_elided);
+  static ngComponentDef: $ComponentDef$ = r3.defineComponent(details_elided);
 }
 
 @NgModule({declarations: [LibAComponent], imports: []})
@@ -84,7 +84,7 @@ const node_modules_libB_module_metadata = {
 @Component({})
 export class AppComponent {
   // COMPILER GENERATED
-  static ngComponentDef: $ɵComponentDef$ = r3.defineComponent(details_elided);
+  static ngComponentDef: $ComponentDef$ = r3.defineComponent(details_elided);
 }
 
 @NgModule({declarations: [LibAComponent], imports: []})

@@ -244,14 +244,14 @@ export declare class DefaultIterableDiffer<V> implements IterableDiffer<V>, Iter
 export declare function defineInjectable<T>(opts: {
     providedIn?: Type<any> | 'root' | 'any' | null;
     factory: () => T;
-}): ɵInjectableDef<T>;
+}): InjectableDef<T>;
 
 /** @experimental */
 export declare function defineInjector(options: {
     factory: () => any;
     providers?: any[];
     imports?: any[];
-}): ɵInjectorDef<any>;
+}): InjectorDef<any>;
 
 /** @experimental */
 export declare function destroyPlatform(): void;
@@ -355,11 +355,18 @@ export interface InjectableDecorator {
 }
 
 /** @experimental */
+export interface InjectableDef<T> {
+    factory: () => T;
+    providedIn: InjectorType<any> | 'root' | 'any' | null;
+    value: T | undefined;
+}
+
+/** @experimental */
 export declare type InjectableProvider = ValueSansProvider | ExistingSansProvider | StaticClassSansProvider | ConstructorSansProvider | FactorySansProvider | ClassSansProvider;
 
 /** @experimental */
 export interface InjectableType<T> extends Type<T> {
-    ngInjectableDef: ɵInjectableDef<T>;
+    ngInjectableDef: InjectableDef<T>;
 }
 
 export interface InjectDecorator {
@@ -377,7 +384,7 @@ export declare const enum InjectFlags {
 
 export declare class InjectionToken<T> {
     protected _desc: string;
-    readonly ngInjectableDef: ɵInjectableDef<T> | undefined;
+    readonly ngInjectableDef: InjectableDef<T> | undefined;
     constructor(_desc: string, options?: {
         providedIn?: Type<any> | 'root' | null;
         factory: () => T;
@@ -390,7 +397,7 @@ export declare abstract class Injector {
     /** @deprecated */ abstract get(token: any, notFoundValue?: any): any;
     static NULL: Injector;
     static THROW_IF_NOT_FOUND: Object;
-    static ngInjectableDef: ɵInjectableDef<Injector>;
+    static ngInjectableDef: InjectableDef<Injector>;
     /** @deprecated */ static create(providers: StaticProvider[], parent?: Injector): Injector;
     static create(options: {
         providers: StaticProvider[];
@@ -403,8 +410,15 @@ export declare abstract class Injector {
 export declare const INJECTOR: InjectionToken<Injector>;
 
 /** @experimental */
+export interface InjectorDef<T> {
+    factory: () => T;
+    imports: (InjectorType<any> | InjectorTypeWithProviders<any>)[];
+    providers: (Type<any> | ValueProvider | ExistingProvider | FactoryProvider | ConstructorProvider | StaticClassProvider | ClassProvider | any[])[];
+}
+
+/** @experimental */
 export interface InjectorType<T> extends Type<T> {
-    ngInjectorDef: ɵInjectorDef<T>;
+    ngInjectorDef: InjectorDef<T>;
 }
 
 /** @experimental */
@@ -448,7 +462,7 @@ export declare class IterableDiffers {
     /** @deprecated */ factories: IterableDifferFactory[];
     constructor(factories: IterableDifferFactory[]);
     find(iterable: any): IterableDifferFactory;
-    static ngInjectableDef: ɵInjectableDef<IterableDiffers>;
+    static ngInjectableDef: InjectableDef<IterableDiffers>;
     static create(factories: IterableDifferFactory[], parent?: IterableDiffers): IterableDiffers;
     static extend(factories: IterableDifferFactory[]): StaticProvider;
 }

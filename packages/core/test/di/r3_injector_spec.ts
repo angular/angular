@@ -11,7 +11,7 @@ import {InjectionToken} from '../../src/di/injection_token';
 import {INJECTOR, Injector, inject} from '../../src/di/injector';
 import {R3Injector, createInjector} from '../../src/di/r3_injector';
 
-describe('ɵInjectorDef-based createInjector()', () => {
+describe('InjectorDef-based createInjector()', () => {
   class CircularA {
     static ngInjectableDef = defineInjectable({
       providedIn: null,

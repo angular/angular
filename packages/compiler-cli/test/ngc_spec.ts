@@ -2151,7 +2151,7 @@ describe('ngc transformer command-line', () => {
       });
     });
 
-    it('compiles a basic ɵInjectableDef', () => {
+    it('compiles a basic InjectableDef', () => {
       const source = compileService(`
         import {Injectable} from '@angular/core';
         import {Module} from './module';
@@ -2187,7 +2187,7 @@ describe('ngc transformer command-line', () => {
          expect(source).toMatch(/\/\*\* @nocollapse \*\/ Service\.ngInjectableDef =/);
        });
 
-    it('compiles a useValue ɵInjectableDef', () => {
+    it('compiles a useValue InjectableDef', () => {
       const source = compileService(`
         import {Injectable} from '@angular/core';
         import {Module} from './module';
@@ -2203,7 +2203,7 @@ describe('ngc transformer command-line', () => {
       expect(source).toMatch(/ngInjectableDef.*return CONST_SERVICE/);
     });
 
-    it('compiles a useExisting ɵInjectableDef', () => {
+    it('compiles a useExisting InjectableDef', () => {
       const source = compileService(`
         import {Injectable} from '@angular/core';
         import {Module} from './module';
@@ -2220,7 +2220,7 @@ describe('ngc transformer command-line', () => {
       expect(source).toMatch(/ngInjectableDef.*return ..\.inject\(Existing\)/);
     });
 
-    it('compiles a useFactory ɵInjectableDef with optional dep', () => {
+    it('compiles a useFactory InjectableDef with optional dep', () => {
       const source = compileService(`
         import {Injectable, Optional} from '@angular/core';
         import {Module} from './module';
@@ -2240,7 +2240,7 @@ describe('ngc transformer command-line', () => {
       expect(source).toMatch(/ngInjectableDef.*return ..\(..\.inject\(Existing, 8\)/);
     });
 
-    it('compiles a useFactory ɵInjectableDef with skip-self dep', () => {
+    it('compiles a useFactory InjectableDef with skip-self dep', () => {
       const source = compileService(`
         import {Injectable, SkipSelf} from '@angular/core';
         import {Module} from './module';

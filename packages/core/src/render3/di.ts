@@ -20,7 +20,7 @@ import {Type} from '../type';
 
 import {assertGreaterThan, assertLessThan, assertNotNull} from './assert';
 import {addToViewTree, assertPreviousIsParent, createLContainer, createLNodeObject, getDirectiveInstance, getPreviousOrParentNode, getRenderer, isComponent, renderEmbeddedTemplate, resolveDirective} from './instructions';
-import {ComponentTemplate, DirectiveDefList, PipeDefList, ɵDirectiveDef} from './interfaces/definition';
+import {ComponentTemplate, DirectiveDef, DirectiveDefList, PipeDefList} from './interfaces/definition';
 import {LInjector} from './interfaces/injector';
 import {LContainerNode, LElementNode, LNode, LNodeType, LViewNode, TNodeFlags} from './interfaces/node';
 import {QueryReadType} from './interfaces/query';
@@ -139,7 +139,7 @@ export function getOrCreateNodeInjectorForNode(node: LElementNode | LContainerNo
  * @param di The node injector in which a directive will be added
  * @param def The definition of the directive to be made public
  */
-export function diPublicInInjector(di: LInjector, def: ɵDirectiveDef<any>): void {
+export function diPublicInInjector(di: LInjector, def: DirectiveDef<any>): void {
   bloomAdd(di, def.type);
 }
 
@@ -148,7 +148,7 @@ export function diPublicInInjector(di: LInjector, def: ɵDirectiveDef<any>): voi
  *
  * @param def The definition of the directive to be made public
  */
-export function diPublic(def: ɵDirectiveDef<any>): void {
+export function diPublic(def: DirectiveDef<any>): void {
   diPublicInInjector(getOrCreateNodeInjector(), def);
 }
 
@@ -371,7 +371,7 @@ export function getOrCreateInjectable<T>(di: LInjector, token: Type<T>, flags?: 
         for (let i = start; i < end; i++) {
           // Get the definition for the directive at this index and, if it is injectable (diPublic),
           // and matches the given token, return the directive instance.
-          const directiveDef = defs[i] as ɵDirectiveDef<any>;
+          const directiveDef = defs[i] as DirectiveDef<any>;
           if (directiveDef.type === token && directiveDef.diPublic) {
             return getDirectiveInstance(node.view.directives ![i]);
           }
@@ -400,7 +400,7 @@ function searchMatchesQueuedForCreation<T>(node: LNode, token: any): T|null {
   const matches = node.view.tView.currentMatches;
   if (matches) {
     for (let i = 0; i < matches.length; i += 2) {
-      const def = matches[i] as ɵDirectiveDef<any>;
+      const def = matches[i] as DirectiveDef<any>;
       if (def.type === token) {
         return resolveDirective(def, i + 1, matches, node.view.tView);
       }

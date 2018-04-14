@@ -9,7 +9,7 @@
 import {Type} from '../type';
 import {stringify} from '../util';
 
-import {defineInjectable, ɵInjectableDef} from './defs';
+import {InjectableDef, defineInjectable} from './defs';
 import {resolveForwardRef} from './forward_ref';
 import {InjectionToken} from './injection_token';
 import {Inject, Optional, Self, SkipSelf} from './metadata';
@@ -462,7 +462,7 @@ export function inject<T>(token: Type<T>| InjectionToken<T>, flags = InjectFlags
   if (_currentInjector === undefined) {
     throw new Error(`inject() must be called from an injection context`);
   } else if (_currentInjector === null) {
-    const injectableDef: ɵInjectableDef<T> = (token as any).ngInjectableDef;
+    const injectableDef: InjectableDef<T> = (token as any).ngInjectableDef;
     if (injectableDef && injectableDef.providedIn == 'root') {
       return injectableDef.value === undefined ? injectableDef.value = injectableDef.factory() :
                                                  injectableDef.value;

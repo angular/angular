@@ -9,9 +9,8 @@
 import {PipeTransform} from '../change_detection/pipe_transform';
 
 import {getTView, load, store} from './instructions';
-import {PipeDefList, ɵPipeDef} from './interfaces/definition';
+import {PipeDef, PipeDefList} from './interfaces/definition';
 import {pureFunction1, pureFunction2, pureFunction3, pureFunction4, pureFunctionV} from './pure_function';
-
 
 /**
  * Create a pipe.
@@ -22,7 +21,7 @@ import {pureFunction1, pureFunction2, pureFunction3, pureFunction4, pureFunction
  */
 export function pipe(index: number, pipeName: string): any {
   const tView = getTView();
-  let pipeDef: ɵPipeDef<any>;
+  let pipeDef: PipeDef<any>;
 
   if (tView.firstTemplatePass) {
     pipeDef = getPipeDef(pipeName, tView.pipeRegistry);
@@ -31,7 +30,7 @@ export function pipe(index: number, pipeName: string): any {
       (tView.pipeDestroyHooks || (tView.pipeDestroyHooks = [])).push(index, pipeDef.onDestroy);
     }
   } else {
-    pipeDef = tView.data[index] as ɵPipeDef<any>;
+    pipeDef = tView.data[index] as PipeDef<any>;
   }
 
   const pipeInstance = pipeDef.n();
@@ -45,9 +44,9 @@ export function pipe(index: number, pipeName: string): any {
  *
  * @param name Name of pipe to resolve
  * @param registry Full list of available pipes
- * @returns Matching ɵPipeDef
+ * @returns Matching PipeDef
  */
-function getPipeDef(name: string, registry: PipeDefList | null): ɵPipeDef<any> {
+function getPipeDef(name: string, registry: PipeDefList | null): PipeDef<any> {
   if (registry) {
     for (let i = 0; i < registry.length; i++) {
       const pipeDef = registry[i];
@@ -141,5 +140,5 @@ export function pipeBindV(index: number, values: any[]): any {
 }
 
 function isPure(index: number): boolean {
-  return (<ɵPipeDef<any>>getTView().data[index]).pure;
+  return (<PipeDef<any>>getTView().data[index]).pure;
 }
