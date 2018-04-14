@@ -34,6 +34,7 @@ for pkg in $(ls ${bin}/packages); do
     cp -R ${bin}/packages/${pkg}/npm_package ${basedir}/dist/packages-dist/${pkg}
   fi
 done
+chmod -R u+w ${basedir}/dist/packages-dist/
 
 # Track payload size functions
 # TODO(alexeagle): finish migrating these to buildsize.org
