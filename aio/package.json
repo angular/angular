@@ -81,7 +81,7 @@
     "@angular/platform-browser-dynamic": "6.0.0-rc.5",
     "@angular/platform-server": "6.0.0-rc.5",
     "@angular/router": "6.0.0-rc.5",
-    "@angular/service-worker": "6.0.0-rc.5",
+    "@angular/service-worker": "^1.0.0-beta.16",
     "@webcomponents/custom-elements": "^1.0.8",
     "classlist.js": "^1.1.20150312",
     "core-js": "^2.4.1",
