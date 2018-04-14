@@ -180,12 +180,6 @@ export function addRemoveViewFromContainer(
       const renderer = container.view.renderer;
       if (node.type === LNodeType.Element) {
         if (insertMode) {
-          if (!node.native) {
-            // If the native element doesn't exist, this is a bound text node that hasn't yet been
-            // created because update mode has not run (occurs when a bound text node is a root
-            // node of a dynamically created view). See textBinding() in instructions for ctx.
-            (node as LTextNode).native = createTextNode('', renderer);
-          }
           isProceduralRenderer(renderer) ?
               renderer.insertBefore(parent, node.native !, beforeNode as RNode | null) :
               parent.insertBefore(node.native !, beforeNode as RNode | null, true);

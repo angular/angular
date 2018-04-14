@@ -1163,7 +1163,7 @@ export function text(index: number, value?: any): void {
   ngDevMode &&
       assertEqual(
           currentView.bindingStartIndex, -1, 'text nodes should be created before bindings');
-  const textNode = value != null ? createTextNode(value, renderer) : null;
+  const textNode = createTextNode(value, renderer);
   const node = createLNode(index, LNodeType.Element, textNode);
   // Text nodes are self closing.
   isParent = false;
@@ -1186,10 +1186,6 @@ export function textBinding<T>(index: number, value: T | NO_CHANGE): void {
     value !== NO_CHANGE &&
         (isProceduralRenderer(renderer) ? renderer.setValue(existingNode.native, stringify(value)) :
                                           existingNode.native.textContent = stringify(value));
-  } else {
-    // Node was created but DOM node creation was delayed. Create and append now.
-    existingNode.native = createTextNode(value, renderer);
-    insertChild(existingNode, currentView);
   }
 }
 
