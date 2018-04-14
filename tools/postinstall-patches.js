@@ -26,10 +26,5 @@ log('\n# patch: reactivex/rxjs#3302 make node_modules/rxjs compilable with Types
 sed('-i', '(\'response\' in xhr)', '(\'response\' in (xhr as any))',
     'node_modules/rxjs/src/observable/dom/AjaxObservable.ts');
 */
-log('\n# patch: ReactiveX/rxjs#3534 make node_modules/rxjs compilable without rxjs-compat');
-sed('-i', /\["\*\*\/\*\.ts"],/, '["internal/**/*.ts"],',
-  'node_modules/rxjs/src/BUILD.bazel');
-sed('-i', /glob\(\["\*\.ts"]\)/, 'glob(["index.ts"])',
-   'node_modules/rxjs/src/operators/BUILD.bazel');
 
 log('===== finished running the postinstall-patches.js script =====');
