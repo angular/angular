@@ -21,7 +21,7 @@ describe('Dynamic Form', function () {
       element(by.css('select option[value="solid"]')).click();
 
       let saveButton = element.all(by.css('button')).get(0);
-      saveButton.click().then(function(){
+      saveButton.click().then(function() {
         expect(element(by.xpath("//strong[contains(text(),'Saved the following values')]")).isPresent()).toBe(true);
       });
   });
