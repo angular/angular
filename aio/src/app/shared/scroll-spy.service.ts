@@ -1,5 +1,5 @@
 import { Inject, Injectable } from '@angular/core';
-import { DOCUMENT } from '@angular/platform-browser';
+import { DOCUMENT } from '@angular/common';
 import { fromEvent, Observable, ReplaySubject, Subject } from 'rxjs';
 import { auditTime, distinctUntilChanged, takeUntil } from 'rxjs/operators';
 
