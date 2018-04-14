@@ -1,6 +1,6 @@
 {
   "name": "angular-srcs",
-  "version": "6.0.0-rc.4",
+  "version": "6.0.0-rc.5",
   "private": true,
   "branchPattern": "2.0.*",
   "description": "Angular - a web framework for modern web apps",
