@@ -366,13 +366,18 @@ describe('TocComponent', () => {
         let parentScrollTop: number;
 
         beforeEach(() => {
+          const hostElem = fixture.nativeElement;
           const firstItem = page.listItems[0].nativeElement;
-          const offsetParent = firstItem.offsetParent;
 
-          offsetParent.style.maxHeight = `${offsetParent.clientHeight - firstItem.clientHeight}px`;
-          Object.defineProperty(offsetParent, 'scrollTop', {
+          Object.assign(hostElem.style, {
+            display: 'block',
+            maxHeight: `${hostElem.clientHeight - firstItem.clientHeight}px`,
+            overflow: 'auto',
+            position: 'relative',
+          });
+          Object.defineProperty(hostElem, 'scrollTop', {
             get: () => parentScrollTop,
-            set: v => parentScrollTop = v
+            set: v => parentScrollTop = v,
           });
 
           parentScrollTop = 0;
@@ -461,7 +466,7 @@ class TestTocService {
   activeItemIndex = new BehaviorSubject<number | null>(null);
   setActiveIndex(index: number|null) {
     this.activeItemIndex.next(index);
-    if (asap.scheduled) {
+    if (asap.scheduled !== undefined) {
       asap.flush();
     }
   }

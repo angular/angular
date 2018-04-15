@@ -88,7 +88,7 @@
     "jasmine": "^2.6.0",
     "ng-pwa-tools": "^0.0.10",
     "rxjs": "6.0.0-uncanny-rc.7",
-    "rxjs-compat": "^6.0.0-turbo-rc.4",
+    "rxjs-compat": "6.0.0-uncanny-rc.7",
     "tslib": "^1.9.0",
     "web-animations-js": "^2.2.5",
     "zone.js": "^0.8.26"
