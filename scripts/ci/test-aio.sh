@@ -37,10 +37,10 @@ source ${thisDir}/_travis-fold.sh
     yarn e2e-prod
   travisFoldEnd "test.aio.e2e"
 
-  # Test Firebase redirects
-  travisFoldStart "test.aio.deployment-config"
-    yarn deployment-config-test
-  travisFoldEnd "test.aio.deployment-config"
+  # Run unit tests for Firebase redirects
+  travisFoldStart "test.aio.redirects"
+    yarn redirects-test
+  travisFoldEnd "test.aio.redirects"
 
   # Run unit tests for aio/aio-builds-setup
   travisFoldStart "test.aio.aio-builds-setup"
