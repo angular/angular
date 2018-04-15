@@ -5,8 +5,7 @@ set +x -eu -o pipefail
   readonly thisDir="$(cd $(dirname ${BASH_SOURCE[0]}); pwd)"
   readonly aioDir="$(realpath $thisDir/..)"
 
-  readonly appPtorConf="$aioDir/tests/e2e/protractor.conf.js"
-  readonly cfgPtorConf="$aioDir/tests/deployment/e2e/protractor.conf.js"
+  readonly protractorConf="$aioDir/tests/deployment/e2e/protractor.conf.js"
   readonly minPwaScore="95"
   readonly urls=(
     "https://angular.io/"
@@ -24,11 +23,8 @@ set +x -eu -o pipefail
   for url in "${urls[@]}"; do
     echo -e "\nChecking '$url'...\n-----"
 
-    # Run e2e tests.
-    yarn protractor "$appPtorConf" --baseUrl "$url"
-
-    # Run deployment config tests.
-    yarn protractor "$cfgPtorConf" --baseUrl "$url"
+    # Run basic e2e and deployment config tests.
+    yarn protractor "$protractorConf" --baseUrl "$url"
 
     # Run PWA-score tests.
     yarn test-pwa-score "$url" "$minPwaScore"
