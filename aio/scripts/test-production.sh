@@ -6,11 +6,11 @@ set +x -eu -o pipefail
   readonly aioDir="$(realpath $thisDir/..)"
 
   readonly appPtorConf="$aioDir/tests/e2e/protractor.conf.js"
-  readonly cfgPtorConf="$aioDir/tests/deployment-config/e2e/protractor.conf.js"
+  readonly cfgPtorConf="$aioDir/tests/deployment/e2e/protractor.conf.js"
   readonly minPwaScore="95"
   readonly urls=(
     "https://angular.io/"
-    "https://next.angular.io"
+    "https://next.angular.io/"
   )
 
   cd "$aioDir"

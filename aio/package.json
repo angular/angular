@@ -45,7 +45,7 @@
     "docs-watch": "node tools/transforms/authors-package/watchr.js",
     "docs-lint": "eslint --ignore-path=\"tools/transforms/.eslintignore\" tools/transforms",
     "docs-test": "node tools/transforms/test.js",
-    "redirects-test": "jasmine-ts tests/deployment-config/unit/**/*.spec.ts",
+    "redirects-test": "jasmine-ts tests/deployment/unit/**/*.spec.ts",
     "firebase-utils-test": "jasmine-ts tools/firebase-test-utils/*.spec.ts",
     "tools-lint": "tslint -c \"tools/tslint.json\" \"tools/firebase-test-utils/**/*.ts\"",
     "tools-test": "./scripts/deploy-to-firebase.test.sh && yarn docs-test && yarn boilerplate:test && jasmine tools/ng-packages-installer/index.spec.js && yarn firebase-utils-test",
