@@ -98,6 +98,7 @@
     "@angular/cli": "^6.0.0-rc.4",
     "@angular/compiler": "6.0.0-rc.5",
     "@angular/compiler-cli": "6.0.0-rc.5",
+    "@angular/language-service": "6.0.0-rc.5",
     "@types/jasmine": "^2.5.52",
     "@types/jasminewd2": "^2.0.3",
     "@types/node": "~6.0.60",
