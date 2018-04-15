@@ -6,8 +6,8 @@
 
 // Reflect.metadata polyfill is only needed in the JIT, which use use only for tests
 // to make the unit tests work we load these polyfills in tests.ts instead
-//import 'core-js/es6/reflect';
-//import 'core-js/es7/reflect';
+// import 'core-js/es6/reflect';
+// import 'core-js/es7/reflect';
 
 
 export const environment = {
