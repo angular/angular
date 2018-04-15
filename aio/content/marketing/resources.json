@@ -516,6 +516,13 @@
             "rev": true,
             "title": "The Angular Guide by Wishtack (Français)",
             "url": "https://guide-angular.wishtack.io/"
+          },
+          "ab5": {
+            "desc": "How to build Angular applications using NGRX",
+            "logo": "",
+            "rev": true,
+            "title": "Architecting Angular Applications with NGRX",
+            "url": "https://www.packtpub.com/web-development/architecting-angular-applications-redux"
           }
         }
       },
