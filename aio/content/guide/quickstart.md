@@ -1,46 +1,75 @@
+<!--
 # QuickStart
+-->
+# 시작하기
 
+<!--
 Good tools make application development quicker and easier to maintain than
 if you did everything by hand.
+-->
+애플리케이션을 개발할 때 좋은 도구를 사용하면 모든 것을 수동으로 할 때보다 개발 속도를 향상시킬 수 있으며 유지보수하기도 편합니다.
 
+<!--
 The [**Angular CLI**](https://cli.angular.io/) is a **_command line interface_** tool
 that can create a project, add files, and perform a variety of ongoing development tasks such
 as testing, bundling, and deployment.
+-->
+[**Angular CLI**](https://cli.angular.io/)는 **_커맨드라인 인터페이스_**  툴이며, Angular 프로젝트를 생성하거나, 구성요소 추가 등 개발 단계에서 필요 수많은 작업을 지원합니다. 테스트나 번들링, 배포도 Angular CLI를 활용할 수 있습니다.
 
+<!--
 The goal in this guide is to build and run a simple Angular
 application in TypeScript, using the Angular CLI
 while adhering to the [Style Guide](guide/styleguide) recommendations that
 benefit _every_ Angular project.
+-->
+이 문서의 목표는 Angular CLI를 사용해서 간단한 Angular 애플리케이션을 실행하는 것입니다.
+이 때 [코딩 스타일 가이드](guide/styleguide)를 참고할 것이며, 이 스타일 가이드 문서는 _모든_ Angular 프로젝트에 활용할만 합니다.
 
+<!--
 By the end of the chapter, you'll have a basic understanding of development with the CLI
 and a foundation for both these documentation samples and for real world applications.
+-->
+그래서 이 문서를 다 읽을때 쯤이면 CLI를 활용하는 개발 방법에 대해 이해하게 될 것이며, 이 문서에서 만드는 예제 프로젝트 뿐 아니라 실제 솔루션을 어떻게 구성해야 할지도 알게 될 것입니다.
 
+<!--
 And you can also <a href="generated/zips/cli-quickstart/cli-quickstart.zip" target="_blank">download the example.</a>
+-->
+이 문서에서 다루는 예제는 <a href="generated/zips/cli-quickstart/cli-quickstart.zip" target="_blank">이곳</a>에서 다운받아 확인할 수도 있습니다.
 
 <h2 id='devenv'>
+<!--
   Step 1. Set up the Development Environment
+-->
+  1단계. 개발환경 설정하기
 </h2>
 
-
-
+<!--
 You need to set up your development environment before you can do anything.
+-->
+먼저, 개발환경을 준비해야 합니다.
 
+<!--
 Install **[Node.js® and npm](https://nodejs.org/en/download/)**
 if they are not already on your machine.
+-->
+**[Node.js® 와 npm](https://nodejs.org/en/download/)**이 설치되어 있지 않다면 이 프로그램들을 설치합니다.
 
 <div class="l-sub-section">
 
-
-
+<!--
 **Verify that you are running at least node `6.9.x` and npm `3.x.x`**
 by running `node -v` and `npm -v` in a terminal/console window.
 Older versions produce errors, but newer versions are fine.
+-->
+터미널이나 콘솔창에서 `node -v` 명령과 `npm -v` 명령을 실행하면 버전을 확인할 수 있습니다. 이 때 **node.js 버전은 `6.9.x` 이상, npm 버전은 `3.x.x` 이상**을 권장합니다.
+이전 버전에서는 일부 동작에서 에러가 발생할 수 있습니다.
 
 </div>
 
-
-
+<!--
 Then **install the [Angular CLI](https://github.com/angular/angular-cli)** globally.
+-->
+그리고 **[Angular CLI](https://github.com/angular/angular-cli)**를 전역으로 설치합니다.
 
 
 <code-example language="sh" class="code-shell">
@@ -52,16 +81,22 @@ Then **install the [Angular CLI](https://github.com/angular/angular-cli)** globa
 
 
 <h2 id='create-proj'>
+<!--
   Step 2. Create a new project
+-->
+  2단계. 프로젝트 생성하기
 </h2>
 
 
-
+<!--
 Open a terminal window.
+-->
+터미널 창을 엽니다.
 
-
+<!--
 Generate a new project and skeleton application by running the following commands:
-
+-->
+그리고 다음 명령을 실행하면 애플리케이션의 기본 틀을 구성하면서 프로젝트를 생성합니다:
 
 <code-example language="sh" class="code-shell">
   ng new my-app
@@ -72,11 +107,11 @@ Generate a new project and skeleton application by running the following command
 
 <div class="l-sub-section">
 
-
-
+<!--
 Patience, please.
 It takes time to set up a new project; most of it is spent installing npm packages.
-
+-->
+새 프로젝트를 생성하는 과정은 시간이 오래 걸립니다. 이 중 대부분은 npm 패키지를 설치하는 시간입니다.
 
 </div>
 
@@ -84,12 +119,17 @@ It takes time to set up a new project; most of it is spent installing npm packag
 
 
 <h2 id='serve'>
+<!--
   Step 3: Serve the application
+-->
+  3단계: 애플리케이션 시작하기
 </h2>
 
 
-
+<!--
 Go to the project directory and launch the server.
+-->
+프로젝트 폴더로 이동해서 서버를 실행합니다.
 
 
 <code-example language="sh" class="code-shell">
@@ -98,15 +138,22 @@ Go to the project directory and launch the server.
 </code-example>
 
 
-
+<!--
 The `ng serve` command launches the server, watches your files,
 and rebuilds the app as you make changes to those files.
+-->
+`ng serve` 명령을 실행하면 서버를 실행하면서 파일이 변경되는 것을 감지하고, 파일이 변경되면 애플리케이션을 다시 빌드해서 서버에 자동으로 반영합니다.
 
+<!--
 Using the `--open` (or just `-o`) option will automatically open your browser
 on `http://localhost:4200/`.
+-->
+서버를 시작하면서 브라우저를 자동으로 실행하려면 `--open` 이나 `-o` 옵션을 사용하면 됩니다.
 
+<!--
 Your app greets you with a message:
-
+-->
+그리고 브라우저로 접속하면 다음과 같은 화면을 확인할 수 있습니다:
 
 <figure>
   <img src='generated/images/guide/cli-quickstart/app-works.png' alt="The app works!">
@@ -116,27 +163,36 @@ Your app greets you with a message:
 
 
 <h2 id='first-component'>
+<!--
   Step 4: Edit your first Angular component
+-->
+  4단계. 컴포넌트 수정하기
 </h2>
 
-
-
+<!--
 The CLI created the first Angular component for you.
 This is the _root component_ and it is named `app-root`.
 You can find it in `./src/app/app.component.ts`.
+-->
+CLI로 Angular 프로젝트를 생성하면 `app-root`라는 이름으로 _최상위 컴포넌트_ 를 생성합니다. 이 컴포넌트는 `./src/app/app.component.ts`에 정의되어 있습니다.
 
-
+<!--
 Open the component file and change the `title` property from `'app'` to `'My First Angular App!'`.
-
+-->
+이 파일을 열고 `title` 프로퍼티의 값을 `'app'`에서 `'My First Angular App!'`로 바꿔 보세요.
 
 <code-example path="cli-quickstart/src/app/app.component.ts" region="title" title="src/app/app.component.ts" linenums="false"></code-example>
 
 
-
+<!--
 The browser reloads automatically with the revised title. That's nice, but it could look better.
+-->
+그러면 브라우저가 페이지를 자동으로 갱신하면서 변경된 값을 화면에 표시합니다. 이것만으로도 좋지만 좀 더 보기 좋게 꾸며봅시다.
 
+<!--
 Open `src/app/app.component.css` and give the component some style.
-
+-->
+`src/app/app.component.css` 파일을 열어서 컴포넌트에 스타일을 지정해 봅시다.
 
 <code-example path="cli-quickstart/src/app/app.component.css" title="src/app/app.component.css" linenums="false"></code-example>
 
@@ -147,9 +203,10 @@ Open `src/app/app.component.css` and give the component some style.
 </figure>
 
 
-
+<!--
 Looking good!
-
+-->
+좀 더 보기 좋네요!
 
 
 ## What's next?
