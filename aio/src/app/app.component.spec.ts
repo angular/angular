@@ -7,7 +7,7 @@ import { MatProgressBar, MatSidenav } from '@angular/material';
 import { By } from '@angular/platform-browser';
 
 import { timer } from 'rxjs';
-import { mapTo } from 'rxjs/operators';
+import { first, mapTo } from 'rxjs/operators';
 
 import { AppComponent } from './app.component';
 import { AppModule } from './app.module';
@@ -1113,13 +1113,25 @@ describe('AppComponent', () => {
         navigateTo('guide/pipes');
         checkHostClass('sidenav', 'open');
 
-        await sidenav.close();
+        sidenav.close();
+        await waitForSidenavOpenedChange();
         fixture.detectChanges();
         checkHostClass('sidenav', 'closed');
 
-        await sidenav.open();
+        sidenav.open();
+        await waitForSidenavOpenedChange();
         fixture.detectChanges();
         checkHostClass('sidenav', 'open');
+
+        async function waitForSidenavOpenedChange() {
+          const promise = new Promise(resolve => sidenav.openedChange.pipe(first()).subscribe(resolve));
+
+          await Promise.resolve();  // Wait for `MatSidenav.openedChange.emit()` to be called.
+          jasmine.clock().tick(0);  // Notify `MatSidenav.openedChange` observers.
+                                    // (It is an async `EventEmitter`, thus uses `setTimeout()`.)
+
+          await promise;
+        }
       });
 
       it('should set the css class of the host container based on the initial deployment mode', () => {
