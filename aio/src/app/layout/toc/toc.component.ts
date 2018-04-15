@@ -18,7 +18,7 @@ export class TocComponent implements OnInit, AfterViewInit, OnDestroy {
   type: TocType = 'None';
   isCollapsed = true;
   isEmbedded = false;
-  @ViewChildren('createTocItem') private items: QueryList<ElementRef>;
+  @ViewChildren('tocItem') private items: QueryList<ElementRef>;
   private onDestroy = new Subject();
   private primaryMax = 4;
   tocList: TocItem[];
