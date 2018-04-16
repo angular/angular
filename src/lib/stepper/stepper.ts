@@ -33,9 +33,6 @@ import {takeUntil} from 'rxjs/operators';
 import {matStepperAnimations} from './stepper-animations';
 import {MatStepperIcon, MatStepperIconContext} from './stepper-icon';
 
-/** Workaround for https://github.com/angular/angular/issues/17849 */
-export const _MatStep = CdkStep;
-export const _MatStepper = CdkStepper;
 
 @Component({
   moduleId: module.id,
