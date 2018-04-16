@@ -65,6 +65,91 @@ describe('compiler compliance', () => {
       expectEmit(result.source, factory, 'Incorrect factory');
       expectEmit(result.source, template, 'Incorrect template');
     });
+
+    it('should bind to element properties', () => {
+      const files = {
+        app: {
+          'spec.ts': `
+              import {Component, NgModule} from '@angular/core';
+
+              @Component({
+                selector: 'my-component',
+                template: \`<div [id]="id"></div>\`
+              })
+              export class MyComponent {
+                id = 'one';
+              }
+
+              @NgModule({declarations: [MyComponent]})
+              export class MyModule {}
+          `
+        }
+      };
+
+      const factory = 'factory: function MyComponent_Factory() { return new MyComponent(); }';
+      const template = `
+        …
+        template: function MyComponent_Template(rf: IDENT, ctx: IDENT) {
+          if (rf & 1) {
+            $r3$.ɵE(0, 'div');
+            $r3$.ɵe();
+          }
+          if (rf & 2) {
+            $r3$.ɵp(0, 'id', $r3$.ɵb(ctx.id));
+          }
+        }
+      `;
+
+
+      const result = compile(files, angularFiles);
+
+      expectEmit(result.source, factory, 'Incorrect factory');
+      expectEmit(result.source, template, 'Incorrect template');
+    });
+
+    it('should bind to class and style names', () => {
+      const files = {
+        app: {
+          'spec.ts': `
+              import {Component, NgModule} from '@angular/core';
+
+              @Component({
+                selector: 'my-component',
+                template: \`<div [class.error]="error" [style.background-color]="color"></div>\`
+              })
+              export class MyComponent {
+                error = true;
+                color = 'red';
+              }
+
+              @NgModule({declarations: [MyComponent]})
+              export class MyModule {}
+          `
+        }
+      };
+
+      const factory = 'factory: function MyComponent_Factory() { return new MyComponent(); }';
+      const template = `
+        …
+        template: function MyComponent_Template(rf: IDENT, ctx: IDENT) {
+          if (rf & 1) {
+            $r3$.ɵE(0, 'div');
+            $r3$.ɵe();
+          }
+          if (rf & 2) {
+            $r3$.ɵkn(0, 'error', $r3$.ɵb(ctx.error));
+            $r3$.ɵsn(0, 'background-color', $r3$.ɵb(ctx.color));
+          }
+        }
+      `;
+
+
+      const result = compile(files, angularFiles);
+
+      expectEmit(result.source, factory, 'Incorrect factory');
+      expectEmit(result.source, template, 'Incorrect template');
+    });
+
   });
 
   describe('components & directives', () => {
