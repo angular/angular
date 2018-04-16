@@ -1722,32 +1722,28 @@ function appendToProjectionNode(
  * @param nodeIndex
  * @param localIndex - index under which distribution of projected nodes was memorized
  * @param selectorIndex - 0 means <ng-content> without any selector
- * @param attrs - attributes attached to the ng-content node, if present
  */
-export function projection(
-    nodeIndex: number, localIndex: number, selectorIndex: number = 0, attrs?: string[]): void {
+export function projection(nodeIndex: number, localIndex: number, selectorIndex: number = 0): void {
   const node = createLNode(nodeIndex, LNodeType.Projection, null, {head: null, tail: null});
 
-  if (node.tNode == null) {
-    node.tNode = createTNode(null, attrs || null, null);
-  }
-
-  isParent = false;  // self closing
+  // `<ng-content>` has no content
+  isParent = false;
   const currentParent = node.parent;
 
   // re-distribution of projectable nodes is memorized on a component's view level
   const componentNode = findComponentHost(currentView);
-
-  // make sure that nodes to project were memorized
-  const nodesForSelector = componentNode.data !.data ![localIndex][selectorIndex];
+  const componentLView = componentNode.data !;
+  const nodesForSelector = componentLView.data ![localIndex][selectorIndex];
 
   // build the linked list of projected nodes:
   for (let i = 0; i < nodesForSelector.length; i++) {
     const nodeToProject = nodesForSelector[i];
     if (nodeToProject.type === LNodeType.Projection) {
+      // Reprojecting a projection -> append the list of previously projected nodes
       const previouslyProjected = (nodeToProject as LProjectionNode).data;
       appendToProjectionNode(node, previouslyProjected.head, previouslyProjected.tail);
     } else {
+      // Projecting a single node
       appendToProjectionNode(
           node, nodeToProject as LTextNode | LElementNode | LContainerNode,
           nodeToProject as LTextNode | LElementNode | LContainerNode);
