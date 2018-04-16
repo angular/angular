@@ -722,7 +722,7 @@ class TemplateDefinitionBuilder implements TemplateAstVisitor, LocalResolver {
         // TODO(chuckj): runtime: security context?
         this.instruction(
             this._bindingMode, input.sourceSpan, instruction, o.literal(elementIndex),
-            o.literal(input.name), convertedBinding);
+            o.literal(input.name), o.importExpr(R3.bind).callFn([convertedBinding]));
       } else {
         this.unsupported(`binding ${PropertyBindingType[input.type]}`);
       }
