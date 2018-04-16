@@ -83,6 +83,6 @@ ng_rollup_bundle = rule(
             default = Label("@org_brotli//:brotli")),
     }),
     outputs = dict(ROLLUP_OUTPUTS, **{
-        "build_es5_min_compressed": "%{name}.min.js.brotli",
+        "build_es5_min_compressed": "%{name}.min.js.br",
     }),
 )
