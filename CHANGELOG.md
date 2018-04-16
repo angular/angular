@@ -1,5 +1,26 @@
+<a name="5.2.10"></a>
+## [5.2.10](https://github.com/angular/angular/compare/5.2.9...5.2.10) (2018-04-16)
+
+
+### Bug Fixes
+
+* **animations:** avoid animation insertions during router back/refresh ([#21977](https://github.com/angular/angular/issues/21977)) ([641cc49](https://github.com/angular/angular/commit/641cc49)), closes [#19712](https://github.com/angular/angular/issues/19712)
+* **common:** properly take className changes into account ([#21937](https://github.com/angular/angular/issues/21937)) ([54e9108](https://github.com/angular/angular/commit/54e9108)), closes [#21932](https://github.com/angular/angular/issues/21932)
+* **compiler:** fix support for html-like text in translatable attributes ([#23053](https://github.com/angular/angular/issues/23053)) ([4f7c369](https://github.com/angular/angular/commit/4f7c369))
+* **compiler-cli:** emit correct css string escape sequences ([#22776](https://github.com/angular/angular/issues/22776)) ([db0afa9](https://github.com/angular/angular/commit/db0afa9))
+* **forms:** improve error message for invalid value accessors ([#22731](https://github.com/angular/angular/issues/22731)) ([dd61595](https://github.com/angular/angular/commit/dd61595))
+* **service-worker:** add badge to NOTIFICATION_OPTION_NAMES ([#23241](https://github.com/angular/angular/issues/23241)) ([7b23983](https://github.com/angular/angular/commit/7b23983)), closes [#23196](https://github.com/angular/angular/issues/23196)
+* **service-worker:** do not enter degraded mode when offline ([#22883](https://github.com/angular/angular/issues/22883)) ([ae9c25f](https://github.com/angular/angular/commit/ae9c25f)), closes [#21636](https://github.com/angular/angular/issues/21636)
+* **service-worker:** fix LruList bugs ([#22769](https://github.com/angular/angular/issues/22769)) ([65f8943](https://github.com/angular/angular/commit/65f8943)), closes [#22218](https://github.com/angular/angular/issues/22218) [#22768](https://github.com/angular/angular/issues/22768)
+* **service-worker:** ignore invalid `only-if-cached` requests ([#22883](https://github.com/angular/angular/issues/22883)) ([0d4fe38](https://github.com/angular/angular/commit/0d4fe38)), closes [#22362](https://github.com/angular/angular/issues/22362)
+* **upgrade:** correctly handle downgraded `OnPush` components ([#22209](https://github.com/angular/angular/issues/22209)) ([f43fba6](https://github.com/angular/angular/commit/f43fba6)), closes [#14286](https://github.com/angular/angular/issues/14286)
+* **upgrade:** propagate return value of resumeBootstrap ([#22754](https://github.com/angular/angular/issues/22754)) ([ae76eec](https://github.com/angular/angular/commit/ae76eec)), closes [#22723](https://github.com/angular/angular/issues/22723)
+* **upgrade:** two-way binding and listening for event ([#22772](https://github.com/angular/angular/issues/22772)) ([5391f96](https://github.com/angular/angular/commit/5391f96)), closes [#22734](https://github.com/angular/angular/issues/22734)
+
+
+
 <a name="6.0.0-rc.5"></a>
-# [6.0.0-rc.5](https://github.com/angular/angular/compare/6.0.0-rc.4...6.0.0-rc.5) (2018-04-14)
+## [6.0.0-rc.5](https://github.com/angular/angular/compare/6.0.0-rc.4...6.0.0-rc.5) (2018-04-14)
 
 
 ### Bug Fixes
@@ -18,7 +39,7 @@
 
 
 <a name="6.0.0-rc.4"></a>
-# [6.0.0-rc.4](https://github.com/angular/angular/compare/6.0.0-rc.3...6.0.0-rc.4) (2018-04-12)
+## [6.0.0-rc.4](https://github.com/angular/angular/compare/6.0.0-rc.3...6.0.0-rc.4) (2018-04-12)
 
 
 ### Bug Fixes
@@ -39,7 +60,7 @@
 
 
 <a name="6.0.0-rc.3"></a>
-# [6.0.0-rc.3](https://github.com/angular/angular/compare/6.0.0-rc.2...6.0.0-rc.3) (2018-04-06)
+## [6.0.0-rc.3](https://github.com/angular/angular/compare/6.0.0-rc.2...6.0.0-rc.3) (2018-04-06)
 
 
 ### Bug Fixes
@@ -50,7 +71,7 @@
 
 
 <a name="6.0.0-rc.2"></a>
-# [6.0.0-rc.2](https://github.com/angular/angular/compare/6.0.0-rc.1...6.0.0-rc.2) (2018-04-05)
+## [6.0.0-rc.2](https://github.com/angular/angular/compare/6.0.0-rc.1...6.0.0-rc.2) (2018-04-05)
 
 
 ### Bug Fixes
@@ -71,7 +92,7 @@
 
 
 <a name="6.0.0-rc.1"></a>
-# [6.0.0-rc.1](https://github.com/angular/angular/compare/6.0.0-rc.0...6.0.0-rc.1) (2018-03-30)
+## [6.0.0-rc.1](https://github.com/angular/angular/compare/6.0.0-rc.0...6.0.0-rc.1) (2018-03-30)
 
 
 ### Bug Fixes
@@ -131,7 +152,7 @@ possible, and ideally also a include a good reproduction of the problem.
 
 
 <a name="6.0.0-beta.8"></a>
-# [6.0.0-beta.8](https://github.com/angular/angular/compare/6.0.0-beta.7...6.0.0-beta.8) (2018-03-16)
+## [6.0.0-beta.8](https://github.com/angular/angular/compare/6.0.0-beta.7...6.0.0-beta.8) (2018-03-16)
 
 
 ### Bug Fixes
