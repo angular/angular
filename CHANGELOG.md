@@ -19,6 +19,16 @@
 
 
 
+<a name="4.4.7"></a>
+## [4.4.7](https://github.com/angular/angular/compare/4.4.6...4.4.7) (2018-04-16)
+
+
+### Bug Fixes
+
+* **core:** use appropriate inert document strategy for Firefox & Safari ([#22077](https://github.com/angular/angular/issues/22077)) ([2c5cf19](https://github.com/angular/angular/commit/2c5cf19))
+
+
+
 <a name="6.0.0-rc.5"></a>
 ## [6.0.0-rc.5](https://github.com/angular/angular/compare/6.0.0-rc.4...6.0.0-rc.5) (2018-04-14)
 
