@@ -12,7 +12,7 @@ import {
 import {StepperOrientation} from '@angular/cdk/stepper';
 import {dispatchKeyboardEvent} from '@angular/cdk/testing';
 import {Component, DebugElement} from '@angular/core';
-import {async, ComponentFixture, inject, TestBed} from '@angular/core/testing';
+import {async, ComponentFixture, inject, TestBed, fakeAsync, flush} from '@angular/core/testing';
 import {
   AbstractControl,
   AsyncValidatorFn,
@@ -317,6 +317,28 @@ describe('MatStepper', () => {
         i18nFixture.detectChanges();
 
         expect(optionalLabel.textContent).toBe('Valgfri');
+      }));
+
+      it('should emit an event when the enter animation is done', fakeAsync(() => {
+        let stepper = fixture.debugElement.query(By.directive(MatStepper)).componentInstance;
+        let selectionChangeSpy = jasmine.createSpy('selectionChange spy');
+        let animationDoneSpy = jasmine.createSpy('animationDone spy');
+        let selectionChangeSubscription = stepper.selectionChange.subscribe(selectionChangeSpy);
+        let animationDoneSubscription = stepper.animationDone.subscribe(animationDoneSpy);
+
+        stepper.selectedIndex = 1;
+        fixture.detectChanges();
+
+        expect(selectionChangeSpy).toHaveBeenCalledTimes(1);
+        expect(animationDoneSpy).not.toHaveBeenCalled();
+
+        flush();
+
+        expect(selectionChangeSpy).toHaveBeenCalledTimes(1);
+        expect(animationDoneSpy).toHaveBeenCalledTimes(1);
+
+        selectionChangeSubscription.unsubscribe();
+        animationDoneSubscription.unsubscribe();
       }));
   });
 

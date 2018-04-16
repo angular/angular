@@ -7,7 +7,8 @@
  */
 
 import {Directionality} from '@angular/cdk/bidi';
-import {CdkStep, CdkStepper} from '@angular/cdk/stepper';
+import {CdkStep, CdkStepper, StepContentPositionState} from '@angular/cdk/stepper';
+import {AnimationEvent} from '@angular/animations';
 import {
   AfterContentInit,
   ChangeDetectionStrategy,
@@ -16,9 +17,11 @@ import {
   ContentChild,
   ContentChildren,
   Directive,
+  EventEmitter,
   forwardRef,
   Inject,
   Optional,
+  Output,
   QueryList,
   SkipSelf,
   TemplateRef,
@@ -79,6 +82,9 @@ export class MatStepper extends CdkStepper implements AfterContentInit {
   /** Custom icon overrides passed in by the consumer. */
   @ContentChildren(MatStepperIcon) _icons: QueryList<MatStepperIcon>;
 
+  /** Event emitted when the current step is done transitioning in. */
+  @Output() readonly animationDone: EventEmitter<void> = new EventEmitter<void>();
+
   /** Consumer-specified template-refs to be used to override the header icons. */
   _iconOverrides: {[key: string]: TemplateRef<MatStepperIconContext>} = {};
 
@@ -95,6 +101,12 @@ export class MatStepper extends CdkStepper implements AfterContentInit {
 
     // Mark the component for change detection whenever the content children query changes
     this._steps.changes.pipe(takeUntil(this._destroyed)).subscribe(() => this._stateChanged());
+  }
+
+  _animationDone(event: AnimationEvent) {
+    if ((event.toState as StepContentPositionState) === 'current') {
+      this.animationDone.emit();
+    }
   }
 }
 
