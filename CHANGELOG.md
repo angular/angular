@@ -1,3 +1,13 @@
+<a name="6.0.0-rc.11"></a>
+# [6.0.0-rc.11](https://github.com/angular/material2/compare/6.0.0-rc.5...6.0.0-rc.11) (2018-04-13)
+
+
+### Bug Fixes
+
+* **schematics:** Fix a number of issues with ng-update schematic for v5 -> v6 migration
+
+
+
 <a name="6.0.0-rc.5"></a>
 # [6.0.0-rc.5](https://github.com/angular/material2/compare/6.0.0-rc.4...6.0.0-rc.5) (2018-04-13)
 

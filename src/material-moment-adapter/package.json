@@ -22,5 +22,12 @@
   },
   "dependencies": {
     "tslib": "^1.7.1"
+  },
+  "ng-update": {
+    "packageGroup": [
+      "@angular/material",
+      "@angular/cdk",
+      "@angular/material-moment-adapter"
+    ]
   }
 }

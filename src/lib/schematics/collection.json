@@ -10,22 +10,6 @@
       "aliases": ["material-shell"]
     },
 
-    // Group of schematics used to update Angular CDK and Angular Material.
-    "ng-update": {
-      "description": "Updates API usage for the most recent major version of Angular CDK and Angular Material",
-      "factory": "./update/update"
-    },
-    "ng-post-update": {
-      "description": "Performs cleanup after ng-update.",
-      "factory": "./update/update#postUpdate",
-      "private": true
-    },
-    "ng-post-post-update": {
-      "description": "Logs completion message for ng-update after ng-post-update.",
-      "factory": "./update/update#postPostUpdate",
-      "private": true
-    },
-
     // Create a dashboard component
     "materialDashboard": {
       "description": "Create a card-based dashboard component",

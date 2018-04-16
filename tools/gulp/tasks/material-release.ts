@@ -32,7 +32,7 @@ const allScssGlob = join(buildConfig.packagesDir, '**/*.scss');
 const schematicsGlobs = [
   // File templates and schemas are copied as-is from source.
   join(schematicsDir, '**/+(data|files)/**/*'),
-  join(schematicsDir, '**/+(schema|collection).json'),
+  join(schematicsDir, '**/+(schema|collection|migration).json'),
 
   // JavaScript files compiled from the TypeScript sources.
   join(distDir, 'schematics', '**/*.js?(.map)'),

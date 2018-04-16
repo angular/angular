@@ -59,7 +59,7 @@ export default function(): Rule {
     }, {
       silent: false,
       ignoreErrors: true,
-      tsConfigPath: './tsconfig.json',
+      tsConfigPath: './src/tsconfig.json',
     }), [downgradeTask]);
 
     // Upgrade @angular/material back to 6.x.
