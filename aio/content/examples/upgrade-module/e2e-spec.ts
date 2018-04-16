@@ -2,8 +2,7 @@
 
 import { browser, element, by } from 'protractor';
 
-// TODO: Fix failing tests
-xdescribe('Upgrade Tests', function () {
+describe('Upgrade Tests', function () {
 
   beforeAll(function () {
     // Set protractor to hybrid mode.
