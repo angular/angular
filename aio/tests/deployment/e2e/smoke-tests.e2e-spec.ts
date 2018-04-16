@@ -52,6 +52,27 @@ describe(browser.baseUrl, () => {
       });
     });
 
+    describe('(api docs pages)', () => {
+      const textPerUrl = {
+        /* Class */ 'api/core/Injector': 'class injector',
+        /* Const */ 'api/forms/NG_VALIDATORS': 'const ng_validators',
+        /* Decorator */ 'api/core/Component': '@component',
+        /* Directive */ 'api/common/NgIf': 'class ngif',
+        /* Enum */ 'api/core/ChangeDetectionStrategy': 'enum changedetectionstrategy',
+        /* Function */ 'api/animations/animate': 'animate(',
+        /* Interface */ 'api/core/OnDestroy': 'interface ondestroy',
+        /* Pipe */ 'api/common/JsonPipe': '| json',
+        /* Type-Alias */ 'api/common/http/HttpEvent': 'type httpevent',
+      };
+
+      Object.keys(textPerUrl).forEach(url => {
+        it(`should show the page at '${url}'`, () => {
+          page.goTo(url);
+          expect(page.getDocViewerText()).toContain(textPerUrl[url]);
+        });
+      });
+    });
+
     describe('(search results)', () => {
       beforeEach(() => page.goTo(''));
 
