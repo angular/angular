@@ -76,7 +76,7 @@ You can also find the move current version of Angular by using the CLI command `
 
 To update your app, use the [CLI command `ng update`](https://github.com/angular/angular-cli/wiki/update "Angular CLI update documentation"). Without additional arguments, `ng update` lists the updates that are available to you and provides you with recommended steps to update your application to the most current version. For simple updates, `ng update` is all you need. 
 
-If you are updating to a new major version or want to make sure you understand any optional update steps, see the interactive [Angular Update Guide](https://update.angular.io "Angular Update Guide"). 
+If you are updating to a new major version or want to make sure you understand any optional update steps, see the interactive [Angular Update Guide](https://angular-update-guide.firebaseapp.com/ "Angular Update Guide"). 
 
 The Angular Update Guide provides customized update instructions, based on the current and target versions that you specify. It includes basic and advanced update paths, to match the complexity of your applications. It includes troubleshooting information and any recommended manual changes to help you get the most out of the new release. 
 
