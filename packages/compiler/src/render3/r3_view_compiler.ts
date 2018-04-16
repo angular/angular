@@ -575,15 +575,20 @@ class TemplateDefinitionBuilder implements TemplateAstVisitor, LocalResolver {
 
   // TemplateAstVisitor
   visitNgContent(ngContent: NgContentAst) {
-    const info = this._contentProjections.get(ngContent) !;
-    info ||
-        error(`Expected ${ngContent.sourceSpan} to be included in content projection collection`);
-    const slot = this.allocateDataSlot();
-    const parameters = [o.literal(slot), o.literal(this._projectionDefinitionIndex)];
-    if (info.index !== 0) {
-      parameters.push(o.literal(info.index));
+    const info = this._contentProjections.get(ngContent);
+    if (!info) {
+      error(`Expected ${ngContent.sourceSpan} to be included in content projection collection`);
+    } else {
+      const slot = this.allocateDataSlot();
+      const parameters = [
+        o.literal(slot),
+        o.literal(this._projectionDefinitionIndex),
+      ];
+      if (info.index !== 0) {
+        parameters.push(o.literal(info.index));
+      }
+      this.instruction(this._creationMode, ngContent.sourceSpan, R3.projection, ...parameters);
     }
-    this.instruction(this._creationMode, ngContent.sourceSpan, R3.projection, ...parameters);
   }
 
   // TemplateAstVisitor
