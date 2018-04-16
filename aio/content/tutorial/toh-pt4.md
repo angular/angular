@@ -348,7 +348,7 @@ Open `MessagesComponent` and import the `MessageService`.
 
 Modify the constructor with a parameter that declares a **public** `messageService` property.
 Angular will inject the singleton `MessageService` into that property 
-when it creates the `HeroService`.
+when it creates the `MessagesComponent`.
 
 <code-example
   path="toh-pt4/src/app/messages/messages.component.ts" region="ctor">
