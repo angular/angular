@@ -102,7 +102,9 @@ export function getProjectFromWorkspace(config: Workspace, projectName?: string)
       return project;
     }
 
-    const allProjectNames = Object.keys(config.projects);
+    // If there is exactly one non-e2e project, use that. Otherwise, require that a specific
+    // project be specified.
+    const allProjectNames = Object.keys(config.projects).filter(p => !p.includes('e2e'));
     if (allProjectNames.length === 1) {
       const project = config.projects[allProjectNames[0]];
       // Set a non-enumerable project name to the project. We need the name for schematics
