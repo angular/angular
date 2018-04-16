@@ -1,6 +1,6 @@
 # Updating to the latest version of Angular
 
-Angular is continually improving. Keeping your Angular app up-to-date enables you to take advantage of the most recent bug fixes, changes, and new features. 
+Just like Web and the entire web ecosystem, Angular is continuously improving. Angular balances continuous improvement with a strong focus on stability and making updates easy. Keeping your Angular app up-to-date enables you to take advantage of leading-edge new features, as well as optimizations and bug fixes. 
 
 This document contains general information and resources to help you keep your Angular apps and libraries up-to-date. 
 
@@ -15,26 +15,35 @@ If you are currently using AngularJS, see [Upgrading from AngularJS](guide/upgra
 {@a angular-versioning-releases}
 ## Angular versioning and releases
 
-Angular version numbers indicate the level of changes that are introduced by the release. This use of [semantic versioning](https://semver.org/ "Semantic Versioning 2.0.0") helps you understand the potential impact of updating to a new version. 
+Angular version numbers indicate the level of changes that are introduced by the release. This use of [semantic versioning](https://semver.org/ "Semantic Versioning Specification") helps you understand the potential impact of updating to a new version. 
 
 Angular version numbers have three parts: `major.minor.patch`. For example, version 5.2.9 indicates major version 5, minor version 2, and patch version 9. 
 
 The version number is incremented based on the level of change included in the release. 
 
-* Major releases contain significant changes to Angular. A major release may contain breaking changes. A breaking change happens whenever you as a developer and consumer of a library may need to adjust your code after a version update. A major release will be backwards compatible with the previous major release for most developers, but might remove APIs that have been deprecated two major versions ago. 
+* Major releases contain significant new features, some but minimal developer assistance expected during the update. When updating to a new major release you may need to run update scripts, refactor code, run additional tests, learn new APIs. 
 
-* Minor releases contain new features, changes, and bug fixes that are  backward-compatible. 
+* Minor releases contain new smaller features. Minor releases are fully backward-compatible; no developer assistance during update is expected. 
 
-* Patch releases contain bug fixes. They do not change the functionality. They are backward-compatible and non-breaking. 
 
-Angular supports updating within a major version, such as from 5.1.0 to 5.2.9. Angular also supports updating from one major version to the next, such as from any 4.x version to the most current 5.x version. If you are updating from a version prior to the previous major version (such as from Angular 2.x to 5.x), we recommend updating incrementally. 
+* Patch releases are low risk, bug fix releases. No developer assistance is expected during update. 
+
+
+If you are updating within the same major version, then you can skip any intermediate versions and update directly to the targeted version. For example, if you want to update from 5.0.0 to 5.2.9, then you can update directly; you do not need to update from 5.0.0 to 5.1.0 before updating to 5.2.9. 
+
+If you are updating from one major version to another, then we recommend that you don't skip major versions. For example, if you want to update from version 4.x.x to version 6.x.x, we recommend that you update to the latest 5.x.x release first. Follow the instructions to incrementally update to the next major version, testing and validating at each step. After successfully updating to 5.x.x, you can then update to 6.x.x. 
+
+{@a planning}
+## Update planning
+
+
 
 The [Angular release schedule](https://github.com/angular/angular/blob/master/docs/RELEASE_SCHEDULE.md "Angular release schedule") contains a record of past Angular releases and the future release schedule.
 
 {@a announce}
 ## Getting notified about new releases
 
-The best way get notified about new releases is to subscribe to the [Angular blog](https://blog.angular.io "Angular blog"). 
+To get notified when new releases are available, follow [@angular](https://twitter.com/angular "@angular on Twitter") on Twitter or  subscribe to the [Angular blog](https://blog.angular.io "Angular blog"). 
 
 {@a learn}
 ## Learning about new releases
@@ -57,19 +66,19 @@ To check your app's version of Angular: From within your project directory, use 
 {@a checking-version-angular}
 ## Finding the current version of Angular
 
-<!-- 
-The most recent version and its dependencies are listed in [`package.json`](https://github.com/angular/angular/blob/master/package.json "package.json"). 
--->
-
 The most recent stable released version of Angular appears in the [Angular documentation](https://angular.io/docs "Angular documentation") at the bottom of the left side navigation. For example, `stable (v5.2.9)`.
 
-By default, the CLI command `ng update` updates your project to the most recent version of Angular. You don't need to specify a version.
+You can also find the move current version of Angular by using the CLI command `ng update`. By default, the CLI command `ng update` (without additional arguments) lists the updates that are available to you.  
 
 
 {@a updating}
 ## Updating your app
 
-To update your app or library, follow the instructions in the interactive [Angular Update Guide](https://angular-update-guide.firebaseapp.com/ "Angular Update Guide"). The Angular Update Guide provides customized update instructions, based on the current and target versions that you specify.
+To update your app, use the [CLI command `ng update`](https://github.com/angular/angular-cli/wiki/update "Angular CLI update documentation"). Without additional arguments, `ng update` lists the updates that are available to you and provides you with recommended steps to update your application to the most current version. For simple updates, `ng update` is all you need. 
+
+If you are updating to a new major version or want to make sure you understand any optional update steps, see the interactive [Angular Update Guide](https://update.angular.io "Angular Update Guide"). 
+
+The Angular Update Guide provides customized update instructions, based on the current and target versions that you specify. It includes basic and advanced update paths, to match the complexity of your applications. It includes troubleshooting information and any recommended manual changes to help you get the most out of the new release. 
 
 
 {@a resources}
