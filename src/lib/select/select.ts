@@ -508,7 +508,7 @@ export class MatSelect extends _MatSelectMixinBase implements AfterContentInit, 
 
   /** Opens the overlay panel. */
   open(): void {
-    if (this.disabled || !this.options || !this.options.length) {
+    if (this.disabled || !this.options || !this.options.length || this._panelOpen) {
       return;
     }
 
