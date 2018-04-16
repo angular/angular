@@ -1,0 +1,9 @@
+{
+  "name": "http_server",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "devDependencies": {
+    "http-server": "github:alexeagle/http-server#97205e945b69091606ed83aa0c8489e9ce65d282"
+  }
+}

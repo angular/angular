@@ -18,6 +18,12 @@ yarn_install(
     yarn_lock = "//tools/ts-api-guardian:yarn.lock",
 )
 
+yarn_install(
+    name = "http-server_runtime_deps",
+    package_json = "//tools/http-server:package.json",
+    yarn_lock = "//tools/http-server:yarn.lock",
+)
+
 http_archive(
     name = "build_bazel_rules_typescript",
     url = "https://github.com/bazelbuild/rules_typescript/archive/0.12.1.zip",
