@@ -588,6 +588,25 @@ describe('MatStepper', () => {
       expect(testComponent.twoGroup.get('twoCtrl')!.valid).toBe(false);
     });
 
+    it('should reset back to the first step when some of the steps are not editable', () => {
+      const steps = stepperComponent._steps.toArray();
+
+      steps[0].editable = false;
+
+      testComponent.oneGroup.get('oneCtrl')!.setValue('value');
+      fixture.detectChanges();
+
+      stepperComponent.next();
+      fixture.detectChanges();
+
+      expect(stepperComponent.selectedIndex).toBe(1);
+
+      stepperComponent.reset();
+      fixture.detectChanges();
+
+      expect(stepperComponent.selectedIndex).toBe(0);
+    });
+
     it('should not clobber the `complete` binding when resetting', () => {
       const steps: MatStep[] = stepperComponent._steps.toArray();
       const fillOutStepper = () => {
