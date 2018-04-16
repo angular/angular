@@ -20,8 +20,8 @@ describe('Directionality', () => {
     it('should read dir from the html element if not specified on the body', () => {
       fakeDocument.documentElement.dir = 'rtl';
 
-      let fixture = TestBed.createComponent(InjectsDirectionality);
-      let testComponent = fixture.debugElement.componentInstance;
+      const fixture = TestBed.createComponent(InjectsDirectionality);
+      const testComponent = fixture.debugElement.componentInstance;
 
       expect(testComponent.dir.value).toBe('rtl');
     });
@@ -30,23 +30,36 @@ describe('Directionality', () => {
       fakeDocument.documentElement.dir = 'ltr';
       fakeDocument.body.dir = 'rtl';
 
-      let fixture = TestBed.createComponent(InjectsDirectionality);
-      let testComponent = fixture.debugElement.componentInstance;
+      const fixture = TestBed.createComponent(InjectsDirectionality);
+      const testComponent = fixture.debugElement.componentInstance;
 
       expect(testComponent.dir.value).toBe('rtl');
     });
 
     it('should default to ltr if nothing is specified on either body or the html element', () => {
-      let fixture = TestBed.createComponent(InjectsDirectionality);
-      let testComponent = fixture.debugElement.componentInstance;
+      const fixture = TestBed.createComponent(InjectsDirectionality);
+      const testComponent = fixture.debugElement.componentInstance;
 
       expect(testComponent.dir.value).toBe('ltr');
     });
+
+    it('should complete the `change` stream on destroy', () => {
+      const fixture = TestBed.createComponent(InjectsDirectionality);
+      const spy = jasmine.createSpy('complete spy');
+      const subscription =
+          fixture.componentInstance.dir.change.subscribe(undefined, undefined, spy);
+
+      fixture.componentInstance.dir.ngOnDestroy();
+      expect(spy).toHaveBeenCalled();
+
+      subscription.unsubscribe();
+    });
+
   });
 
   describe('Dir directive', () => {
     it('should provide itself as Directionality', () => {
-      let fixture = TestBed.createComponent(ElementWithDir);
+      const fixture = TestBed.createComponent(ElementWithDir);
       const injectedDirectionality =
         fixture.debugElement.query(By.directive(InjectsDirectionality)).componentInstance.dir;
 
@@ -56,7 +69,7 @@ describe('Directionality', () => {
     });
 
     it('should emit a change event when the value changes', fakeAsync(() => {
-      let fixture = TestBed.createComponent(ElementWithDir);
+      const fixture = TestBed.createComponent(ElementWithDir);
       const injectedDirectionality =
         fixture.debugElement.query(By.directive(InjectsDirectionality)).componentInstance.dir;
 

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {EventEmitter, Inject, Injectable, Optional} from '@angular/core';
+import {EventEmitter, Inject, Injectable, Optional, OnDestroy} from '@angular/core';
 import {DIR_DOCUMENT} from './dir-document-token';
 
 
@@ -18,7 +18,7 @@ export type Direction = 'ltr' | 'rtl';
  * Exposes the current direction and a stream of direction changes.
  */
 @Injectable({providedIn: 'root'})
-export class Directionality {
+export class Directionality implements OnDestroy {
   /** The current 'ltr' or 'rtl' value. */
   readonly value: Direction = 'ltr';
 
@@ -35,5 +35,9 @@ export class Directionality {
       const htmlDir = _document.documentElement ? _document.documentElement.dir : null;
       this.value = (bodyDir || htmlDir || 'ltr') as Direction;
     }
+  }
+
+  ngOnDestroy() {
+    this.change.complete();
   }
 }
