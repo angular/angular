@@ -90,6 +90,17 @@ describe('Scroll Dispatcher', () => {
 
       expect(spy).toHaveBeenCalledTimes(1);
     });
+
+    it('should complete the `scrolled` stream on destroy', () => {
+      const completeSpy = jasmine.createSpy('complete spy');
+      const subscription = scroll.scrolled(0).subscribe(undefined, undefined, completeSpy);
+
+      scroll.ngOnDestroy();
+
+      expect(completeSpy).toHaveBeenCalled();
+
+      subscription.unsubscribe();
+    });
   });
 
   describe('Nested scrollables', () => {

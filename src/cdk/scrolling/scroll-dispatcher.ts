@@ -109,6 +109,7 @@ export class ScrollDispatcher implements OnDestroy {
   ngOnDestroy() {
     this._removeGlobalListener();
     this.scrollContainers.forEach((_, container) => this.deregister(container));
+    this._scrolled.complete();
   }
 
   /**
