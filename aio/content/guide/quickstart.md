@@ -208,36 +208,64 @@ Looking good!
 -->
 좀 더 보기 좋네요!
 
-
+<!--
 ## What's next?
+-->
+## 다음 단계
+<!--
 That's about all you'd expect to do in a "Hello, World" app.
+-->
+Angular로 만드는 "Hello, World" 앱은 이렇게 간단하게 만들어 볼 수 있습니다.
 
+<!--
 You're ready to take the [Tour of Heroes Tutorial](tutorial) and build
 a small application that demonstrates the great things you can build with Angular.
+-->
+그리고 조금 더 복잡한 애플리케이션을 만들어 보려면 [튜토리얼 : 히어로들의 여정](tutorial)을 확인해 보는 것도 좋습니다.
 
+<!--
 Or you can stick around a bit longer to learn about the files in your brand new project.
+-->
+완전히 새로운 프로젝트를 만들어서 시작하는 것도 물론 좋습니다.
 
-
-
+<!--
 ## Project file review
+-->
+## 프로젝트 파일 구성
 
+<!--
 An Angular CLI project is the foundation for both quick experiments and enterprise solutions.
+-->
+Angular CLI로 만든 프로젝트는 테스트용 프로젝트부터 기업용 솔루션까지 모두 활용할 수 있습니다.
 
+<!--
 The first file you should check out is `README.md`.
 It has some basic information on how to use CLI commands.
 Whenever you want to know more about how Angular CLI works make sure to visit
 [the Angular CLI repository](https://github.com/angular/angular-cli) and
 [Wiki](https://github.com/angular/angular-cli/wiki).
+-->
+먼저 확인해볼 파일은 `README.md` 파일입니다.
+이 파일에서는 Angular CLI의 기본 사용법을 확인할 수 있습니다.
+Angular CLI를 어떻게 활용할 수 있는지 좀 더 자세하게 알아보려면 [Angular CLI 코드저장소](https://github.com/angular/angular-cli)나 [Wiki](https://github.com/angular/angular-cli/wiki)를 확인해 보세요.
 
+<!--
 Some of the generated files might be unfamiliar to you.
+-->
+Angular CLI는 자주 보지 못하던 파일을 만들기도 합니다. 자세하게 알아봅시다.
 
-
-
+<!--
 ### The `src` folder
+-->
+### `src` 폴더
+<!--
 Your app lives in the `src` folder.
 All Angular components, templates, styles, images, and anything else your app needs go here.
 Any files outside of this folder are meant to support building your app.
-
+-->
+애플리케이션은 `src` 폴더에 정의합니다.
+그래서 모든 Angular 컴포넌트와 템플릿, 스타일, 이미지 파일 등 앱에서 사용하는 모든 자원은 이 폴더에 두는 것이 좋습니다.
+이런 기준으로 보면 `src` 폴더 밖에 있는 파일들은 애플리케이션에 사용하는 것이 아니라 애플리케이션을 빌드할 때 사용하는 파일이라고 봐도 좋습니다.
 
 <div class='filetree'>
   <div class='file'>src</div>
@@ -285,10 +313,16 @@ Any files outside of this folder are meant to support building your app.
   </col>
   <tr>
     <th>
+      <!--
       File
+      -->
+      파일
     </th>
     <th>
+      <!--
       Purpose
+      -->
+      용도
     </th>
   </tr>
   <tr>
@@ -298,10 +332,12 @@ Any files outside of this folder are meant to support building your app.
 
     </td>
     <td>
-
+      <!--
       Defines the `AppComponent` along with an HTML template, CSS stylesheet, and a unit test.
       It is the **root** component of what will become a tree of nested components
       as the application evolves.
+      -->
+      HTML 템플릿, CSS 스타일, 유닛 테스트 파일을 함께 사용해서 `AppComponent`를 정의합니다. 이 컴포넌트는 애플리케이션의 **최상위** 컴포넌트이며 모든 컴포넌트는 이 컴포넌트의 하위 계층으로 구성됩니다.
 
     </td>
   </tr>
@@ -313,9 +349,13 @@ Any files outside of this folder are meant to support building your app.
     </td>
     <td>
 
+      <!--
       Defines `AppModule`, the [root module](guide/bootstrapping "AppModule: the root module") that tells Angular how to assemble the application.
       Right now it declares only the `AppComponent`.
       Soon there will be more components to declare.
+      -->
+      애플리케이션이 시작되는 [최상위 모듈](guide/bootstrapping "AppModule: the root module")인 `AppModule`을 정의합니다.
+      Angular CLI로 만든 프로젝트에는 컴포넌트가 `AppComponent` 하나밖에 없지만 프로젝트가 커지면서 더 많은 컴포넌트가 추가될 것입니다.
 
     </td>
   </tr>
@@ -326,9 +366,12 @@ Any files outside of this folder are meant to support building your app.
 
     </td>
     <td>
-
+      
+      <!--
       A folder where you can put images and anything else to be copied wholesale
       when you build your application.
+      -->
+      이미지 파일이나 폰트 파일같이 애플리케이션을 빌드할 때 빌드과정 없이 바로 복사되는 파일을 모아두는 폴더입니다.
 
     </td>
   </tr>
@@ -339,7 +382,8 @@ Any files outside of this folder are meant to support building your app.
 
     </td>
     <td>
-
+      
+      <!--
       This folder contains one file for each of your destination environments,
       each exporting simple configuration variables to use in your application.
       The files are replaced on-the-fly when you build your app.
@@ -347,6 +391,9 @@ Any files outside of this folder are meant to support building your app.
       or maybe different analytics tokens.
       You might even use some mock services.
       Either way, the CLI has you covered.
+      -->
+      애플리케이션이 동작하는 환경마다 이 환경에 대한 설정을 파일 하나씩 정의할 수 있습니다. 각 파일은 변수값을 할당하는 방법으로 환경을 정의하며, 이 설정은 애플리케이션이 동작할 때 반영됩니다.
+      그리고 개발용과 빌드용 서버를 구분해서 사용하거나, 접속 통계를 환경마다 다른 토큰으로 사용하는 경우, 목업 서비스를 활용하는 경우에도 이 파일을 활용할 수 있습니다.
 
     </td>
   </tr>
@@ -357,9 +404,12 @@ Any files outside of this folder are meant to support building your app.
 
     </td>
     <td>
-
+      
+      <!--
       Every site wants to look good on the bookmark bar.
       Get started with your very own Angular icon.
+      -->
+      사이트가 즐겨찾기에 등록될 때 표시될 아이콘입니다. 기본값은 Angular 아이콘입니다.
 
     </td>
   </tr>
@@ -371,10 +421,13 @@ Any files outside of this folder are meant to support building your app.
     </td>
     <td>
 
+      <!--
       The main HTML page that is served when someone visits your site.
       Most of the time you'll never need to edit it.
       The CLI automatically adds all `js` and `css` files when building your app so you
       never need to add any `<script>` or `<link>` tags here manually.
+      -->
+      사용자가 사이트에 접속할 때 표시되는 메인 HTML 페이지입니다. 이 파일은 Angular 애플리케이션을 개발하는 동안 거의 건드릴 일이 없습니다. Angular CLI는 애플리케이션에서 사용하는 `js` 파일과 `css` 파일을 자동으로 모아 애플리케이션을 구성하기 때문에 `<script>` 태그나 `<link>` 태그를 수동으로 구성해야 할 필요도 없습니다.
 
     </td>
   </tr>
