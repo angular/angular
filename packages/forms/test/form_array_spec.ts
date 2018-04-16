@@ -69,6 +69,148 @@ import {of } from 'rxjs';
       });
     });
 
+    describe('adding/removing events', () => {
+      let form: FormGroup;
+      let a: FormArray;
+      let c1: FormControl, c2: FormControl, c3: FormControl;
+      let logger: any[];
+
+      beforeEach(() => {
+        a = new FormArray([]);
+        c1 = new FormControl(1);
+        c2 = new FormControl(2);
+        c3 = new FormControl(3);
+        form = new FormGroup({'parent': a});
+        logger = [];
+      });
+
+      it('should emit valueChange for pushing', () => {
+        form.valueChanges.subscribe(() => logger.push('form'));
+        a.valueChanges.subscribe(() => logger.push('array'));
+
+        a.push(c1);
+
+        expect(logger).toEqual(['array', 'form']);
+      });
+
+      it('should emit valueChange for removing', () => {
+        a.push(c1);
+        a.push(c2);
+        a.push(c3);
+        form.valueChanges.subscribe(() => logger.push('form'));
+        a.valueChanges.subscribe(() => logger.push('array'));
+
+        a.removeAt(1);
+
+        expect(logger).toEqual(['array', 'form']);
+      });
+
+      it('should emit valueChange for inserting', () => {
+        a.push(c1);
+        a.push(c3);
+        form.valueChanges.subscribe(() => logger.push('form'));
+        a.valueChanges.subscribe(() => logger.push('array'));
+
+        a.insert(1, c2);
+
+        expect(logger).toEqual(['array', 'form']);
+      });
+
+      it('should not fire event when explicitly specified for pushing', fakeAsync(() => {
+           form.valueChanges.subscribe(() => { throw 'Should not happen'; });
+           a.valueChanges.subscribe(() => { throw 'Should not happen'; });
+
+           a.push(c1, {emitEvent: false});
+
+           tick();
+         }));
+
+      it('should not fire event when explicitly specified for removing', fakeAsync(() => {
+           a.push(c1);
+           a.push(c2);
+           a.push(c3);
+           form.valueChanges.subscribe(() => { throw 'Should not happen'; });
+           a.valueChanges.subscribe(() => { throw 'Should not happen'; });
+
+           a.removeAt(1, {emitEvent: false});
+
+           tick();
+         }));
+
+      it('should not fire event when explicitly specified for inserting', fakeAsync(() => {
+           a.push(c1);
+           a.push(c3);
+           form.valueChanges.subscribe(() => { throw 'Should not happen'; });
+           a.valueChanges.subscribe(() => { throw 'Should not happen'; });
+
+           a.insert(1, c2, {emitEvent: false});
+
+           tick();
+         }));
+
+      it('should emit statusChanges for pushing', () => {
+        form.statusChanges.subscribe(() => logger.push('form'));
+        a.statusChanges.subscribe(() => logger.push('array'));
+
+        a.push(c1);
+
+        expect(logger).toEqual(['array', 'form']);
+      });
+
+      it('should emit statusChanges for removing', () => {
+        a.push(c1);
+        a.push(c2);
+        a.push(c3);
+        form.statusChanges.subscribe(() => logger.push('form'));
+        a.statusChanges.subscribe(() => logger.push('array'));
+
+        a.removeAt(1);
+
+        expect(logger).toEqual(['array', 'form']);
+      });
+
+      it('should emit statusChanges for inserting', () => {
+        a.push(c1);
+        a.push(c3);
+        form.statusChanges.subscribe(() => logger.push('form'));
+        a.statusChanges.subscribe(() => logger.push('array'));
+
+        a.insert(1, c2);
+
+        expect(logger).toEqual(['array', 'form']);
+      });
+
+      it('should not update the parent explicitly specified for pushing', () => {
+        const form = new FormGroup({'parent': a});
+
+        a.push(c1, {onlySelf: true});
+
+        expect(form.value).toEqual({parent: []});
+      });
+
+      it('should not update the parent explicitly specified for removing', () => {
+        a.push(c1);
+        a.push(c2);
+        a.push(c3);
+        const form = new FormGroup({'parent': a});
+
+        a.removeAt(1, {onlySelf: true});
+
+        expect(form.value).toEqual({parent: [1, 2, 3]});
+      });
+
+      it('should not update the parent when explicitly specified for removing', () => {
+        a.push(c1);
+        a.push(c3);
+        const form = new FormGroup({'parent': a});
+
+        a.insert(1, c2, {onlySelf: true});
+
+        expect(form.value).toEqual({parent: [1, 3]});
+      });
+
+    });
+
     describe('value', () => {
       it('should be the reduced value of the child controls', () => {
         const a = new FormArray([new FormControl(1), new FormControl(2)]);
@@ -1139,13 +1281,41 @@ import {of } from 'rxjs';
           expect(a.controls[0]).not.toBeDefined();
           expect(a.value).toEqual([]);
         });
+      });
+
+      describe('setControl() events', () => {
+        let form: FormGroup;
+        let c: FormControl;
+        let a: FormArray;
+        let logger: string[];
+
+        beforeEach(() => {
+          c = new FormControl('one');
+          a = new FormArray([c]);
+          form = new FormGroup({'parent': a});
+          logger = [];
+        });
 
         it('should only emit value change event once', () => {
-          const logger: string[] = [];
           const c2 = new FormControl('new!');
           a.valueChanges.subscribe(() => logger.push('change!'));
           a.setControl(0, c2);
           expect(logger).toEqual(['change!']);
+        });
+
+        it('should not fire event when explicitly specified', fakeAsync(() => {
+             const c2 = new FormControl('new!');
+             form.valueChanges.subscribe(() => { throw 'Should not happen'; });
+             a.valueChanges.subscribe(() => { throw 'Should not happen'; });
+
+             a.setControl(0, c2, {emitEvent: false});
+
+             tick();
+           }));
+
+        it('should not update the parent when explicitly specified', () => {
+          a.setControl(0, c2, {onlySelf: true});
+          expect(form.value).toEqual({parent: ['one']});
         });
 
       });
