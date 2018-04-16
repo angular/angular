@@ -69,6 +69,10 @@ function tokenize(text: string): Piece[] {
 export function expectEmit(
     source: string, expected: string, description: string,
     assertIdentifiers?: {[name: string]: RegExp}) {
+  // turns `// ...` into `…`
+  // remove `// TODO` comment lines
+  expected = expected.replace(/\/\/\s*\.\.\./g, ELLIPSIS).replace(/\/\/\s*TODO.*?\n/g, '');
+
   const pieces = tokenize(expected);
   const {regexp, groups} = buildMatcher(pieces);
   const matches = source.match(regexp);
