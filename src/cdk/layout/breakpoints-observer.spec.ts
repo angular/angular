@@ -50,6 +50,16 @@ describe('BreakpointObserver', () => {
     expect(mediaMatcher.queryCount).toBe(2);
   });
 
+  it('splits combined query strings into individual matchMedia listeners', () => {
+    expect(mediaMatcher.queryCount).toBe(0);
+    breakpointManager.observe('query1, query2');
+    expect(mediaMatcher.queryCount).toBe(2);
+    breakpointManager.observe('query1');
+    expect(mediaMatcher.queryCount).toBe(2);
+    breakpointManager.observe('query2, query3');
+    expect(mediaMatcher.queryCount).toBe(3);
+  });
+
   it('accepts an array of queries', () => {
     let queries = ['1 query', '2 query', 'red query', 'blue query'];
     breakpointManager.observe(queries);
