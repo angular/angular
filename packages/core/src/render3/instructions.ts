@@ -1157,7 +1157,6 @@ export function elementStyle<T>(
  *
  * @param index Index of the node in the data array.
  * @param value Value to write. This value will be stringified.
- *   If value is not provided than the actual creation of the text node is delayed.
  */
 export function text(index: number, value?: any): void {
   ngDevMode &&
@@ -1180,13 +1179,11 @@ export function text(index: number, value?: any): void {
 export function textBinding<T>(index: number, value: T | NO_CHANGE): void {
   ngDevMode && assertDataInRange(index);
   let existingNode = data[index] as LTextNode;
-  ngDevMode && assertNotNull(existingNode, 'existing node');
-  if (existingNode.native) {
-    // If DOM node exists and value changed, update textContent
-    value !== NO_CHANGE &&
-        (isProceduralRenderer(renderer) ? renderer.setValue(existingNode.native, stringify(value)) :
-                                          existingNode.native.textContent = stringify(value));
-  }
+  ngDevMode && assertNotNull(existingNode, 'LNode should exist');
+  ngDevMode && assertNotNull(existingNode.native, 'native element should exist');
+  value !== NO_CHANGE &&
+      (isProceduralRenderer(renderer) ? renderer.setValue(existingNode.native, stringify(value)) :
+                                        existingNode.native.textContent = stringify(value));
 }
 
 //////////////////////////
