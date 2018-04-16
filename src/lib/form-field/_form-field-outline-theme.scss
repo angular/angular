@@ -75,7 +75,7 @@ $mat-form-field-outline-dedupe: 0;
   scale($font-scale);
   width: 100% / $font-scale + $mat-form-field-outline-dedupe;
 
-  $mat-form-field-fill-dedupe: $mat-form-field-outline-dedupe + 0.00001 !global;
+  $mat-form-field-outline-dedupe: $mat-form-field-outline-dedupe + 0.00001 !global;
 }
 
 @mixin mat-form-field-outline-typography($config) {
