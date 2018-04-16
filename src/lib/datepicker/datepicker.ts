@@ -422,14 +422,13 @@ export class MatDatepicker<D> implements OnDestroy, CanColor {
   /** Open the calendar as a dialog. */
   private _openAsDialog(): void {
     this._dialogRef = this._dialog.open<MatDatepickerContent<D>>(MatDatepickerContent, {
-      direction: this._dir ? this._dir.value : 'ltr',
+      direction: this._getDirection(),
       viewContainerRef: this._viewContainerRef,
       panelClass: 'mat-datepicker-dialog',
     });
-    if (this._dialogRef) {
-      this._dialogRef.afterClosed().subscribe(() => this.close());
-      this._dialogRef.componentInstance.datepicker = this;
-    }
+
+    this._dialogRef.afterClosed().subscribe(() => this.close());
+    this._dialogRef.componentInstance.datepicker = this;
     this._setColor();
   }
 
@@ -445,6 +444,7 @@ export class MatDatepicker<D> implements OnDestroy, CanColor {
     }
 
     if (!this._popupRef.hasAttached()) {
+      this._popupRef.setDirection(this._getDirection());
       this._popupComponentRef = this._popupRef.attach(this._calendarPortal);
       this._popupComponentRef.instance.datepicker = this;
       this._setColor();
@@ -462,7 +462,7 @@ export class MatDatepicker<D> implements OnDestroy, CanColor {
       positionStrategy: this._createPopupPositionStrategy(),
       hasBackdrop: true,
       backdropClass: 'mat-overlay-transparent-backdrop',
-      direction: this._dir ? this._dir.value : 'ltr',
+      direction: this._getDirection(),
       scrollStrategy: this._scrollStrategy(),
       panelClass: 'mat-datepicker-popup',
     });
@@ -532,5 +532,10 @@ export class MatDatepicker<D> implements OnDestroy, CanColor {
     if (this._dialogRef) {
       this._dialogRef.componentInstance.color = color;
     }
+  }
+
+  /** Returns the layout direction of the datepicker. */
+  private _getDirection() {
+    return this._dir ? this._dir.value : 'ltr';
   }
 }

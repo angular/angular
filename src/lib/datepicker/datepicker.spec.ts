@@ -29,6 +29,7 @@ import {MatDatepickerInput} from './datepicker-input';
 import {MatDatepickerToggle} from './datepicker-toggle';
 import {MAT_DATEPICKER_SCROLL_STRATEGY, MatDatepickerIntl, MatDatepickerModule} from './index';
 import {Subject} from 'rxjs';
+import {Directionality} from '@angular/cdk/bidi';
 
 describe('MatDatepicker', () => {
   const SUPPORTS_INTL = typeof Intl != 'undefined';
@@ -1266,6 +1267,68 @@ describe('MatDatepicker', () => {
 
         expect(testComponent.datepicker.opened).toBe(false, 'Expected datepicker to be closed.');
       }));
+    });
+
+    describe('datepicker directionality', () => {
+      it('should pass along the directionality to the popup', () => {
+        const fixture = createComponent(StandardDatepicker, [MatNativeDateModule], [{
+          provide: Directionality,
+          useValue: ({value: 'rtl'})
+        }]);
+
+        fixture.detectChanges();
+        fixture.componentInstance.datepicker.open();
+        fixture.detectChanges();
+
+        const overlay = document.querySelector('.cdk-overlay-pane')!;
+
+        expect(overlay.getAttribute('dir')).toBe('rtl');
+      });
+
+      it('should update the popup direction if the directionality value changes', fakeAsync(() => {
+        const dirProvider = {value: 'ltr'};
+        const fixture = createComponent(StandardDatepicker, [MatNativeDateModule], [{
+          provide: Directionality,
+          useFactory: () => dirProvider
+        }]);
+
+        fixture.detectChanges();
+        fixture.componentInstance.datepicker.open();
+        fixture.detectChanges();
+
+        let overlay = document.querySelector('.cdk-overlay-pane')!;
+
+        expect(overlay.getAttribute('dir')).toBe('ltr');
+
+        fixture.componentInstance.datepicker.close();
+        fixture.detectChanges();
+        flush();
+
+        dirProvider.value = 'rtl';
+        fixture.componentInstance.datepicker.open();
+        fixture.detectChanges();
+
+        overlay = document.querySelector('.cdk-overlay-pane')!;
+
+        expect(overlay.getAttribute('dir')).toBe('rtl');
+      }));
+
+      it('should pass along the directionality to the dialog in touch mode', () => {
+        const fixture = createComponent(StandardDatepicker, [MatNativeDateModule], [{
+          provide: Directionality,
+          useValue: ({value: 'rtl'})
+        }]);
+
+        fixture.componentInstance.touch = true;
+        fixture.detectChanges();
+        fixture.componentInstance.datepicker.open();
+        fixture.detectChanges();
+
+        const overlay = document.querySelector('.cdk-overlay-pane')!;
+
+        expect(overlay.getAttribute('dir')).toBe('rtl');
+      });
+
     });
 
   });
