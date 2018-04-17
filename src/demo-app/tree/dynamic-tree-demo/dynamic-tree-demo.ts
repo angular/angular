@@ -10,6 +10,7 @@ import {Component} from '@angular/core';
 import {FlatTreeControl} from '@angular/cdk/tree';
 import {DynamicDataSource, DynamicFlatNode, DynamicDatabase} from './dynamic-database';
 
+
 @Component({
   moduleId: module.id,
   selector: 'dynamic-tree-demo',

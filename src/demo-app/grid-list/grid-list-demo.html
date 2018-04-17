@@ -30,7 +30,7 @@
 
   <mat-card>
     <mat-card-title>Ratio-height grid list</mat-card-title>
-    <mat-card-content class="demo-ratio-list">
+    <mat-card-content>
       <mat-grid-list cols="2" [rowHeight]="ratio" gutterSize="4px">
         <mat-grid-tile *ngFor="let tile of tiles" [style.background]="'lightblue'">
           {{tile.text}}
@@ -44,7 +44,7 @@
 
   <mat-card>
     <mat-card-title>Fit-height grid list</mat-card-title>
-    <mat-card-content class="demo-fit-list">
+    <mat-card-content>
       <mat-grid-list cols="2" rowHeight="fit" [gutterSize]="ratioGutter"
                     [style.height]="fitListHeight">
         <mat-grid-tile *ngFor="let tile of tiles" [style.background]="'#F1EBBA'">

@@ -13,12 +13,12 @@ import {MatSnackBar} from '@angular/material';
 @Component({
   moduleId: module.id,
   selector: 'slide-toggle-a11y',
-  templateUrl: 'slide-toggle-a11y.html'
+  templateUrl: 'slide-toggle-a11y.html',
 })
 export class SlideToggleAccessibilityDemo {
-  emailToggle: boolean = true;
-  termsToggle: boolean = false;
-  musicToggle: boolean = false;
+  emailToggle = true;
+  termsToggle = false;
+  musicToggle = false;
 
   constructor(private snackBar: MatSnackBar) {}
 

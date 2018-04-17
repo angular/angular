@@ -6,13 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, ElementRef, ViewChild} from '@angular/core';
-import {ELEMENT_DATA, Element} from '../element-data';
-import {MatPaginator, MatSort, MatTableDataSource} from '@angular/material';
-import {PeopleDatabase, UserData} from '../people-database';
 import {SelectionModel} from '@angular/cdk/collections';
-import {debounceTime, distinctUntilChanged} from 'rxjs/operators';
+import {Component, ElementRef, ViewChild} from '@angular/core';
+import {MatPaginator, MatSort, MatTableDataSource} from '@angular/material';
 import {fromEvent} from 'rxjs';
+import {debounceTime, distinctUntilChanged} from 'rxjs/operators';
+import {Element, ELEMENT_DATA} from '../element-data';
+import {PeopleDatabase, UserData} from '../people-database';
+
 
 @Component({
   moduleId: module.id,
@@ -106,7 +107,7 @@ export class NativeTableDemo {
   }
 
   getOpacity(progress: number) {
-    let distanceFromMiddle = Math.abs(50 - progress);
+    const distanceFromMiddle = Math.abs(50 - progress);
     return distanceFromMiddle / 50 + .3;
   }
 }

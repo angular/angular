@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, ViewEncapsulation} from '@angular/core';
+import {Component} from '@angular/core';
 
 
 @Component({
@@ -14,7 +14,6 @@ import {Component, ViewEncapsulation} from '@angular/core';
   selector: 'drawer-demo',
   templateUrl: 'drawer-demo.html',
   styleUrls: ['drawer-demo.css'],
-  encapsulation: ViewEncapsulation.None,
 })
 export class DrawerDemo {
   invert = false;

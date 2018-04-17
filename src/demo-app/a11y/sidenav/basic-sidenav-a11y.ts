@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, ViewEncapsulation} from '@angular/core';
+import {Component} from '@angular/core';
 
 
 @Component({
@@ -14,7 +14,6 @@ import {Component, ViewEncapsulation} from '@angular/core';
   selector: 'basic-sidenav-a11y',
   templateUrl: 'basic-sidenav-a11y.html',
   styleUrls: ['shared.css'],
-  host: {'class': 'a11y-demo-sidenav-app'},
-  encapsulation: ViewEncapsulation.None,
+  host: {'class': 'demo-a11y-sidenav-app'},
 })
 export class SidenavBasicAccessibilityDemo {}

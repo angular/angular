@@ -70,11 +70,10 @@ export class DynamicDataSource {
 
   connect(collectionViewer: CollectionViewer): Observable<DynamicFlatNode[]> {
     this.treeControl.expansionModel.onChange!.subscribe(change => {
-        if ((change as SelectionChange<DynamicFlatNode>).added ||
-          (change as SelectionChange<DynamicFlatNode>).removed) {
-          this.handleTreeControl(change as SelectionChange<DynamicFlatNode>);
-        }
-      });
+      if (change.added || change.removed) {
+        this.handleTreeControl(change);
+      }
+    });
 
     return merge(collectionViewer.viewChange, this.dataChange).pipe(map(() => this.data));
   }

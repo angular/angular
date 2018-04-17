@@ -6,16 +6,16 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, ViewChild, ViewContainerRef, ViewEncapsulation} from '@angular/core';
-import {ComponentPortal} from '@angular/cdk/portal';
 import {Directionality} from '@angular/cdk/bidi';
 import {
+  CdkOverlayOrigin,
   HorizontalConnectionPos,
   Overlay,
-  CdkOverlayOrigin,
   OverlayRef,
   VerticalConnectionPos
 } from '@angular/cdk/overlay';
+import {ComponentPortal} from '@angular/cdk/portal';
+import {Component, ViewChild, ViewContainerRef} from '@angular/core';
 
 
 @Component({
@@ -23,7 +23,6 @@ import {
   selector: 'overlay-demo',
   templateUrl: 'connected-overlay-demo.html',
   styleUrls: ['connected-overlay-demo.css'],
-  encapsulation: ViewEncapsulation.None,
 })
 export class ConnectedOverlayDemo {
   @ViewChild(CdkOverlayOrigin) _overlayOrigin: CdkOverlayOrigin;
@@ -115,7 +114,7 @@ export class ConnectedOverlayDemo {
     <div style="overflow: auto;">
       <ul><li *ngFor="let item of items; index as i">{{text}} {{i}}</li></ul>
     </div>`,
-  encapsulation: ViewEncapsulation.None,
+
 })
 export class DemoOverlay {
   items: number[];

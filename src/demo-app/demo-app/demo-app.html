@@ -1,4 +1,4 @@
-<mat-sidenav-container class="demo-root" fullscreen>
+<mat-sidenav-container fullscreen>
   <mat-sidenav #start>
     <mat-nav-list>
       <a *ngFor="let navItem of navItems"
@@ -34,7 +34,7 @@
             <mat-icon>fullscreen</mat-icon>
           </button>
           <button mat-button (click)="toggleTheme()">{{dark ? 'Light' : 'Dark'}} theme</button>
-          <button mat-button (click)="root.dir = (root.dir == 'rtl' ? 'ltr' : 'rtl')" title="Toggle between RTL and LTR">
+          <button mat-button (click)="root.dir = (root.dir === 'rtl' ? 'ltr' : 'rtl')" title="Toggle between RTL and LTR">
             {{root.dir.toUpperCase()}}
           </button>
         </div>

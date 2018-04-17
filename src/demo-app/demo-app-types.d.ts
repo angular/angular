@@ -6,4 +6,4 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-declare var module: { id: string };
+declare var module: {id: string};

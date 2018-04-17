@@ -1,11 +1,11 @@
 <button *ngFor="let tooltip of tooltips" matTooltip="Tooltip message">Tooltip Button</button>
 <button (click)="tooltips.push('')">Add tooltip</button>
-<button (click)="tooltips.shift()" [disabled]="tooltips.length == 0">Remove tooltip</button>
+<button (click)="tooltips.shift()" [disabled]="tooltips.length === 0">Remove tooltip</button>
 
 <div class="demo-tooltip">
   <h1>Tooltip Demo</h1>
 
-  <div class="centered" cdk-scrollable>
+  <div class="demo-tooltip-centered" cdk-scrollable>
     <button #tooltip="matTooltip"
             mat-raised-button
             color="primary"
@@ -14,7 +14,7 @@
             [matTooltipDisabled]="disabled"
             [matTooltipShowDelay]="showDelay"
             [matTooltipHideDelay]="hideDelay"
-            [matTooltipClass]="{'red-tooltip': showExtraClass}">
+            [matTooltipClass]="{'demo-red-tooltip': showExtraClass}">
       Mouse over to see the tooltip
     </button>
     <div>Scroll down while tooltip is open to see it hide automatically</div>

@@ -8,6 +8,7 @@
 
 import {Component} from '@angular/core';
 
+
 const USD_TO_JPY = 110.29;
 
 @Component({

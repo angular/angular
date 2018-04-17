@@ -152,7 +152,7 @@ Space above cards: <input type="number" [formControl]="topHeightCtrl">
         <mat-form-field>
           <mat-label>Food I would like to eat</mat-label>
           <mat-select [formControl]="foodControl">
-            <mat-option *ngFor="let food of foods" [value]="food.value"> {{ food.viewValue }}</mat-option>
+            <mat-option *ngFor="let food of foods" [value]="food.value">{{ food.viewValue }}</mat-option>
           </mat-select>
         </mat-form-field>
         <p> Value: {{ foodControl.value }} </p>

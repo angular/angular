@@ -31,32 +31,26 @@ export class MatCheckboxDemoNestedChecklist {
       name: 'Reminders',
       completed: false,
       subtasks: [
-        { name: 'Cook Dinner', completed: false },
-        { name: 'Read the Material Design Spec', completed: false },
-        { name: 'Upgrade Application to Angular', completed: false }
+        {name: 'Cook Dinner', completed: false},
+        {name: 'Read the Material Design Spec', completed: false},
+        {name: 'Upgrade Application to Angular', completed: false}
       ]
     },
     {
       name: 'Groceries',
       completed: false,
       subtasks: [
-        { name: 'Organic Eggs', completed: false },
-        { name: 'Protein Powder', completed: false },
-        { name: 'Almond Meal Flour', completed: false }
+        {name: 'Organic Eggs', completed: false},
+        {name: 'Protein Powder', completed: false},
+        {name: 'Almond Meal Flour', completed: false}
       ]
     }
   ];
 
   allComplete(task: Task): boolean {
-    let subtasks = task.subtasks;
+    const subtasks = task.subtasks;
 
-    if (!subtasks) {
-      return false;
-    }
-
-    return subtasks.every(t => t.completed) ? true
-        : subtasks.every(t => !t.completed) ? false
-        : task.completed;
+    return task.completed || (subtasks != null && subtasks.every(t => t.completed));
   }
 
   someComplete(tasks: Task[]): boolean {

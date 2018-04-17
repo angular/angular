@@ -7,9 +7,10 @@
  */
 
 import {Injectable} from '@angular/core';
-import {NAMES} from '../dataset/names';
-import {COLORS} from '../dataset/colors';
 import {BehaviorSubject} from 'rxjs';
+import {COLORS} from '../dataset/colors';
+import {NAMES} from '../dataset/names';
+
 
 export let LATEST_ID: number = 0;
 
@@ -39,7 +40,7 @@ export class PeopleDatabase {
   shuffle(changeReferences: boolean) {
     let copiedData = this.data.slice();
     for (let i = copiedData.length; i; i--) {
-      let j = Math.floor(Math.random() * i);
+      const j = Math.floor(Math.random() * i);
       [copiedData[i - 1], copiedData[j]] = [copiedData[j], copiedData[i - 1]];
     }
 

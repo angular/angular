@@ -1,4 +1,4 @@
-<div class="chips-demo">
+<div class="demo-chips">
   <mat-card>
     <mat-toolbar color="primary">Static Chips</mat-toolbar>
 
@@ -98,7 +98,7 @@
       <button mat-button (click)="tabIndex = (tabIndex === 0 ? -1 : 0)">
         Set tabIndex to {{tabIndex === 0 ? -1 : 0}}
       </button>
-      <mat-form-field class="has-chip-list">
+      <mat-form-field class="demo-has-chip-list">
         <mat-chip-list [tabIndex]="tabIndex" #chipList1 [(ngModel)]="selectedPeople" required>
           <mat-chip  *ngFor="let person of people" [color]="color" [selectable]="selectable"
                    [removable]="removable" (removed)="remove(person)">
@@ -140,7 +140,7 @@
       </p>
 
 
-      <mat-form-field class="has-chip-list">
+      <mat-form-field class="demo-has-chip-list">
         <mat-chip-list #chipList3>
           <mat-chip *ngFor="let person of people" [color]="color" [selectable]="selectable"
                    [removable]="removable" (removed)="remove(person)">
@@ -172,25 +172,25 @@
 
       <mat-chip-list class="mat-chip-list-stacked" aria-orientation="vertical" [tabIndex]="-1">
         <mat-chip *ngFor="let aColor of availableColors"
-                 (focus)="color = aColor.color" color="{{aColor.color}}" selected="true">
+                 (focus)="color = aColor.color" [color]="aColor.color" selected="true">
           {{aColor.name}}
         </mat-chip>
       </mat-chip-list>
 
       <h4>NgModel with chip list</h4>
       <mat-chip-list [multiple]="true" [(ngModel)]="selectedColors">
-        <mat-chip *ngFor="let aColor of availableColors" color="{{aColor.color}}"
+        <mat-chip *ngFor="let aColor of availableColors" [color]="aColor.color"
                  [value]="aColor.name" (removed)="removeColor(aColor)">
           {{aColor.name}}
           <mat-icon matChipRemove>cancel</mat-icon>
         </mat-chip>
       </mat-chip-list>
 
-      The selected colors are <span *ngFor="let color of selectedColors"> {{color}}</span>.
+      The selected colors are <span *ngFor="let color of selectedColors">{{color}}</span>.
 
       <h4>NgModel with single selection chip list</h4>
       <mat-chip-list [(ngModel)]="selectedColor">
-        <mat-chip *ngFor="let aColor of availableColors" color="{{aColor.color}}"
+        <mat-chip *ngFor="let aColor of availableColors" [color]="aColor.color"
                  [value]="aColor.name" (removed)="removeColor(aColor)">
           {{aColor.name}}
           <mat-icon matChipRemove>cancel</mat-icon>

@@ -13,8 +13,7 @@ import {
   QueryList,
   ViewChild,
   ViewChildren,
-  ViewContainerRef,
-  ViewEncapsulation,
+  ViewContainerRef
 } from '@angular/core';
 import {filter, tap} from 'rxjs/operators';
 
@@ -24,7 +23,6 @@ import {filter, tap} from 'rxjs/operators';
   selector: 'overlay-demo',
   templateUrl: 'overlay-demo.html',
   styleUrls: ['overlay-demo.css'],
-  encapsulation: ViewEncapsulation.None,
 })
 export class OverlayDemo {
   nextPosition: number = 0;
@@ -39,7 +37,7 @@ export class OverlayDemo {
   constructor(public overlay: Overlay, public viewContainerRef: ViewContainerRef) { }
 
   openRotiniPanel() {
-    let config = new OverlayConfig();
+    const config = new OverlayConfig();
 
     config.positionStrategy = this.overlay.position()
         .global()
@@ -48,12 +46,12 @@ export class OverlayDemo {
 
     this.nextPosition += 30;
 
-    let overlayRef = this.overlay.create(config);
+    const overlayRef = this.overlay.create(config);
     overlayRef.attach(new ComponentPortal(RotiniPanel, this.viewContainerRef));
   }
 
   openFusilliPanel() {
-    let config = new OverlayConfig();
+    const config = new OverlayConfig();
 
     config.positionStrategy = this.overlay.position()
         .global()
@@ -62,51 +60,51 @@ export class OverlayDemo {
 
     this.nextPosition += 30;
 
-    let overlayRef = this.overlay.create(config);
+    const overlayRef = this.overlay.create(config);
     overlayRef.attach(this.templatePortals.first);
   }
 
   openSpaghettiPanel() {
     // TODO(jelbourn): separate overlay demo for connected positioning.
-    let strategy = this.overlay.position()
+    const strategy = this.overlay.position()
         .connectedTo(
             this._overlayOrigin.elementRef,
             {originX: 'start', originY: 'bottom'},
             {overlayX: 'start', overlayY: 'top'} );
 
-    let config = new OverlayConfig({positionStrategy: strategy});
-    let overlayRef = this.overlay.create(config);
+    const config = new OverlayConfig({positionStrategy: strategy});
+    const overlayRef = this.overlay.create(config);
 
-    overlayRef.attach(new ComponentPortal(SpagettiPanel, this.viewContainerRef));
+    overlayRef.attach(new ComponentPortal(SpaghettiPanel, this.viewContainerRef));
   }
 
   openTortelliniPanel() {
-    let strategy = this.overlay.position()
+    const strategy = this.overlay.position()
         .connectedTo(
             this.tortelliniOrigin.elementRef,
             {originX: 'start', originY: 'bottom'},
             {overlayX: 'end', overlayY: 'top'} );
 
-    let config = new OverlayConfig({positionStrategy: strategy});
-    let overlayRef = this.overlay.create(config);
+    const config = new OverlayConfig({positionStrategy: strategy});
+    const overlayRef = this.overlay.create(config);
 
     overlayRef.attach(this.tortelliniTemplate);
   }
 
   openPanelWithBackdrop() {
-    let config = new OverlayConfig({
+    const config = new OverlayConfig({
       hasBackdrop: true,
       backdropClass: 'cdk-overlay-transparent-backdrop',
       positionStrategy: this.overlay.position().global().centerHorizontally()
     });
 
-    let overlayRef = this.overlay.create(config);
+    const overlayRef = this.overlay.create(config);
     overlayRef.attach(this.templatePortals.first);
     overlayRef.backdropClick().subscribe(() => overlayRef.detach());
   }
 
   openKeyboardTracking() {
-    let config = new OverlayConfig();
+    const config = new OverlayConfig();
 
     config.positionStrategy = this.overlay.position()
       .global()
@@ -115,7 +113,7 @@ export class OverlayDemo {
 
     this.nextPosition += 30;
 
-    let overlayRef = this.overlay.create(config);
+    const overlayRef = this.overlay.create(config);
     const componentRef = overlayRef
         .attach(new ComponentPortal(KeyboardTrackingPanel, this.viewContainerRef));
 
@@ -125,14 +123,13 @@ export class OverlayDemo {
         filter(e => e.key === 'Escape')
       ).subscribe(() => overlayRef.detach());
   }
-
 }
 
 /** Simple component to load into an overlay */
 @Component({
   moduleId: module.id,
   selector: 'rotini-panel',
-  template: '<p class="demo-rotini">Rotini {{value}}</p>'
+  template: '<p class="demo-rotini">Rotini {{value}}</p>',
 })
 export class RotiniPanel {
   value: number = 9000;
@@ -140,17 +137,17 @@ export class RotiniPanel {
 
 /** Simple component to load into an overlay */
 @Component({
-  selector: 'spagetti-panel',
-  template: '<div class="demo-spagetti">Spagetti {{value}}</div>'
+  selector: 'spaghetti-panel',
+  template: '<div class="demo-spaghetti">Spagetti {{value}}</div>',
 })
-export class SpagettiPanel {
+export class SpaghettiPanel {
   value: string = 'Omega';
 }
 
 /** Simple component to load into an overlay */
 @Component({
   selector: 'keyboard-panel',
-  template: '<div class="demo-keyboard">Last Keydown: {{ lastKeydown }}</div>'
+  template: '<div class="demo-keyboard">Last Keydown: {{ lastKeydown }}</div>',
 })
 export class KeyboardTrackingPanel {
   lastKeydown = '';

@@ -6,9 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, ElementRef, OnDestroy, ViewChild, ViewEncapsulation} from '@angular/core';
+import {Component, ElementRef, OnDestroy, ViewChild} from '@angular/core';
 import {NavigationEnd, Router} from '@angular/router';
 import {Subscription} from 'rxjs';
+
 
 @Component({
   moduleId: module.id,
@@ -22,10 +23,9 @@ export class AccessibilityHome {}
   selector: 'accessibility-demo',
   templateUrl: 'a11y.html',
   styleUrls: ['a11y.css'],
-  encapsulation: ViewEncapsulation.None,
 })
 export class AccessibilityDemo implements OnDestroy {
-  currentComponent: string = '';
+  currentComponent = '';
 
   fullscreen = false;
 
@@ -67,8 +67,8 @@ export class AccessibilityDemo implements OnDestroy {
   constructor(router: Router) {
     this._routerSubscription = router.events.subscribe((e) => {
       if (e instanceof NavigationEnd) {
-        let fragments = e.url.split('/');
-        let nav = this.navItems.find(navItem => {
+        const fragments = e.url.split('/');
+        const nav = this.navItems.find(navItem => {
           return fragments[fragments.length - 1] === navItem.route;
         });
         this.currentComponent = nav ? nav.name : '';

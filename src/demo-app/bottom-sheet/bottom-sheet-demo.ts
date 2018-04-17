@@ -6,12 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, ViewEncapsulation, TemplateRef, ViewChild} from '@angular/core';
+import {Component, TemplateRef, ViewChild} from '@angular/core';
 import {
   MatBottomSheet,
-  MatBottomSheetRef,
   MatBottomSheetConfig,
+  MatBottomSheetRef,
 } from '@angular/material/bottom-sheet';
+
 
 const defaultConfig = new MatBottomSheetConfig();
 
@@ -20,7 +21,6 @@ const defaultConfig = new MatBottomSheetConfig();
   selector: 'bottom-sheet-demo',
   styleUrls: ['bottom-sheet-demo.css'],
   templateUrl: 'bottom-sheet-demo.html',
-  encapsulation: ViewEncapsulation.None,
 })
 export class BottomSheetDemo {
   config: MatBottomSheetConfig = {

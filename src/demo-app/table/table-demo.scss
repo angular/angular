@@ -34,7 +34,7 @@
   }
 }
 
-.user-row {
+.demo-user-row {
   cursor: pointer;
   position: relative; // For matRipple
 
@@ -67,7 +67,7 @@
   }
 }
 
-.demo-mat-table-example {
+.demo-table-header {
   table-header-demo {
     background: white;
   }
@@ -126,7 +126,7 @@
   }
 }
 
-.example-selection-header {
+.demo-selection-header {
   height: 64px;
   background: white;
   display: flex;
@@ -143,6 +143,6 @@
   }
 }
 
-.paginator-output {
+.demo-paginator-output {
   margin-left: 20px;
 }

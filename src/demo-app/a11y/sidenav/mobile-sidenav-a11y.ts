@@ -7,7 +7,7 @@
  */
 
 import {MediaMatcher} from '@angular/cdk/layout';
-import {ChangeDetectorRef, Component, OnDestroy, ViewEncapsulation} from '@angular/core';
+import {ChangeDetectorRef, Component, OnDestroy} from '@angular/core';
 
 
 @Component({
@@ -15,8 +15,7 @@ import {ChangeDetectorRef, Component, OnDestroy, ViewEncapsulation} from '@angul
   selector: 'mobile-sidenav-a11y',
   templateUrl: 'mobile-sidenav-a11y.html',
   styleUrls: ['shared.css', 'mobile-sidenav-a11y.css'],
-  host: {'class': 'a11y-demo-sidenav-app'},
-  encapsulation: ViewEncapsulation.None,
+  host: {'class': 'demo-a11y-sidenav-app'},
 })
 export class SidenavMobileAccessibilityDemo implements OnDestroy {
   mobileQuery: MediaQueryList;

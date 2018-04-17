@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, ViewEncapsulation} from '@angular/core';
+import {Component} from '@angular/core';
 
 
 @Component({
@@ -14,7 +14,7 @@ import {Component, ViewEncapsulation} from '@angular/core';
   selector: 'sidenav-demo',
   templateUrl: 'sidenav-demo.html',
   styleUrls: ['sidenav-demo.css'],
-  encapsulation: ViewEncapsulation.None,
+
 })
 export class SidenavDemo {
   isLaunched = false;

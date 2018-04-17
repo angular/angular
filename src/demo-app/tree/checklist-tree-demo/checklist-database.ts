@@ -8,6 +8,7 @@
 import {Injectable} from '@angular/core';
 import {BehaviorSubject} from 'rxjs';
 
+
 /**
  * Node for to-do item
  */
@@ -58,17 +59,17 @@ export class ChecklistDatabase {
   /** Add an item to to-do list */
   insertItem(parent: TodoItemNode, name: string) {
     const child = new TodoItemNode(name, [], parent);
-    let children = parent.children.value;
+    const children = parent.children.value;
     children.push(child);
     parent.children.next(children);
     this.dataChange.next(this.data);
   }
 
   updateItem(node: TodoItemNode, name: string) {
-    let newNode = new TodoItemNode(name, node.children.value, node.parent);
+    const newNode = new TodoItemNode(name, node.children.value, node.parent);
     if (node.parent) {
-      let children = node.parent.children.value;
-      let index = children.indexOf(node);
+      const children = node.parent.children.value;
+      const index = children.indexOf(node);
       children.splice(index, 1, newNode);
       node.parent.children.next(children);
       this.dataChange.next(this.data);

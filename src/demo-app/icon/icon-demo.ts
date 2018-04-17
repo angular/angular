@@ -6,16 +6,16 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, ViewEncapsulation} from '@angular/core';
-import {DomSanitizer} from '@angular/platform-browser';
+import {Component} from '@angular/core';
 import {MatIconRegistry} from '@angular/material';
+import {DomSanitizer} from '@angular/platform-browser';
+
 
 @Component({
   moduleId: module.id,
   selector: 'mat-icon-demo',
   templateUrl: 'icon-demo.html',
   styleUrls: ['icon-demo.css'],
-  encapsulation: ViewEncapsulation.None,
 })
 export class IconDemo {
   constructor(iconRegistry: MatIconRegistry, sanitizer: DomSanitizer) {

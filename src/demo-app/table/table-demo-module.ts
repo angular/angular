@@ -32,6 +32,7 @@ import {SimpleColumn} from './custom-table/simple-column';
 import {DataInputTableDemo} from './data-input-table/data-input-table';
 import {NativeTableDemo} from './native-table/native-table';
 
+
 @NgModule({
   imports: [
     CdkTableModule,

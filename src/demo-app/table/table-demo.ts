@@ -52,7 +52,7 @@ export class TableDemo {
 
   @ViewChild('filter') filter: ElementRef;
 
-  dynamicColumnDefs: any[] = [];
+  dynamicColumnDefs: {id: string, property: string, headerText: string}[] = [];
   dynamicColumnIds: string[] = [];
 
   expandedPerson: UserData;
@@ -161,7 +161,7 @@ export class TableDemo {
   }
 
   getOpacity(progress: number) {
-    let distanceFromMiddle = Math.abs(50 - progress);
+    const distanceFromMiddle = Math.abs(50 - progress);
     return distanceFromMiddle / 50 + .3;
   }
 
@@ -174,8 +174,8 @@ export class TableDemo {
   }
 
   toggleColorColumn() {
-    let colorColumnIndex = this.displayedColumns.indexOf('color');
-    if (colorColumnIndex == -1) {
+    const colorColumnIndex = this.displayedColumns.indexOf('color');
+    if (colorColumnIndex === -1) {
       this.displayedColumns.push('color');
     } else {
       this.displayedColumns.splice(colorColumnIndex, 1);

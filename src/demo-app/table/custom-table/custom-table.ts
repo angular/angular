@@ -10,6 +10,7 @@ import {Component, ViewChild} from '@angular/core';
 import {MatSort, MatTableDataSource} from '@angular/material';
 import {Element, ELEMENT_DATA} from '../element-data';
 
+
 @Component({
   moduleId: module.id,
   templateUrl: 'custom-table.html',

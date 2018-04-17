@@ -8,7 +8,7 @@
 
 <h1>Exclusive Selection</h1>
 
-<section class="demo-section">
+<section>
   <mat-button-toggle-group name="alignment" [vertical]="isVertical">
     <mat-button-toggle value="left"[disabled]="isDisabled">
       <mat-icon>format_align_left</mat-icon>
@@ -27,7 +27,7 @@
 
 <h1>Disabled Group</h1>
 
-<section class="demo-section">
+<section>
   <mat-button-toggle-group name="checkbox" [vertical]="isVertical" [disabled]="isDisabled">
     <mat-button-toggle value="bold">
       <mat-icon>format_bold</mat-icon>
@@ -42,7 +42,7 @@
 </section>
 
 <h1>Multiple Selection</h1>
-<section class="demo-section">
+<section>
   <mat-button-toggle-group multiple [vertical]="isVertical">
     <mat-button-toggle>Flour</mat-button-toggle>
     <mat-button-toggle>Eggs</mat-button-toggle>
@@ -55,7 +55,7 @@
 <mat-button-toggle>Yes</mat-button-toggle>
 
 <h1>Dynamic Exclusive Selection</h1>
-<section class="demo-section">
+<section>
   <mat-button-toggle-group name="pies" [(ngModel)]="favoritePie" [vertical]="isVertical">
     <mat-button-toggle *ngFor="let pie of pieOptions" [value]="pie">
       {{pie}}

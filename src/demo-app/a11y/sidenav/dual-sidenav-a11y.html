@@ -2,14 +2,14 @@
   <button mat-icon-button aria-label="Navigation menu" (click)="startSnav.toggle()">
     <mat-icon aria-hidden="true">menu</mat-icon>
   </button>
-  <h1 class="a11y-demo-sidenav-app-name">Dual Sidenav App</h1>
-  <span class="a11y-demo-sidenav-spacer" aria-hidden="true"></span>
+  <h1 class="demo-a11y-sidenav-app-name">Dual Sidenav App</h1>
+  <span class="demo-a11y-sidenav-spacer" aria-hidden="true"></span>
   <button mat-icon-button aria-label="Playlist menu" (click)="endSnav.toggle()">
     <mat-icon aria-hidden="true">playlist_play</mat-icon>
   </button>
 </mat-toolbar>
 
-<mat-sidenav-container class="a11y-demo-sidenav-container">
+<mat-sidenav-container class="demo-a11y-sidenav-container">
   <mat-sidenav #startSnav mode="side" role="navigation">
     <mat-nav-list>
       <a mat-list-item routerLink="..">Home</a>
@@ -21,14 +21,14 @@
 
   <mat-sidenav-content role="region">
     <button mat-raised-button aria-label="Close dual sidenav example" color="primary"
-            class="a11y-demo-sidenav-close" routerLink="..">
+            class="demo-a11y-sidenav-close" routerLink="..">
       Close example
     </button>
   </mat-sidenav-content>
 
-  <mat-sidenav #endSnav mode="side" position="end" class="a11y-demo-sidenav-playlist" role="region"
+  <mat-sidenav #endSnav mode="side" position="end" class="demo-a11y-sidenav-playlist" role="region"
                (open)="playlist1.focus()">
-    <h2 class="a11y-demo-sidenav-playlist-header">Playlists</h2>
+    <h2 class="demo-a11y-sidenav-playlist-header">Playlists</h2>
     <button #playlist1 mat-button aria-label="Thumbs up playlist" (click)="play('Thumbs up')">
       Thumbs up
     </button>

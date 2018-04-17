@@ -24,7 +24,7 @@
                    (change)="setAllCompleted(task.subtasks, $event.checked)">
         {{task.name}}
       </mat-checkbox>
-      <div class="sub-list">
+      <div class="demo-sub-list">
         <div *ngFor="let subtask of task.subtasks">
           <mat-checkbox [(ngModel)]="subtask.completed">
             {{subtask.name}}

@@ -12,6 +12,7 @@ import {UserData} from './people-database';
 import {map} from 'rxjs/operators';
 import {PersonDataSource} from './person-data-source';
 
+
 export interface DetailRow {
   detailRow: boolean;
   data: UserData;

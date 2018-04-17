@@ -11,6 +11,7 @@ import {coerceBooleanProperty} from '@angular/cdk/coercion';
 import {MatSortHeader} from '@angular/material/sort';
 import {MatColumnDef, MatTable} from '@angular/material';
 
+
 /**
  * Column that shows simply shows text content for the header and row
  * cells. By default, the name of this column will be assumed to be both the header
@@ -93,6 +94,6 @@ export class SimpleColumn<T> {
   }
 
   getData(data: T): any {
-    return this.dataAccessor ? this.dataAccessor(data, this.name) : (<any>data)[this.name];
+    return this.dataAccessor ? this.dataAccessor(data, this.name) : (data as any)[this.name];
   }
 }

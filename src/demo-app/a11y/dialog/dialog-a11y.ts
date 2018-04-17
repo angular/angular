@@ -17,12 +17,12 @@ import {MatDialog} from '@angular/material';
   styleUrls: ['dialog-a11y.css'],
 })
 export class DialogAccessibilityDemo {
-  fruitSelectedOption: string = '';
+  fruitSelectedOption = '';
 
   constructor(public dialog: MatDialog) {}
 
   openFruitDialog() {
-    let dialogRef = this.dialog.open(DialogFruitExampleDialog);
+    const dialogRef = this.dialog.open(DialogFruitExampleDialog);
     dialogRef.afterClosed().subscribe(result => {
       this.fruitSelectedOption = result;
     });
@@ -44,21 +44,21 @@ export class DialogAccessibilityDemo {
 @Component({
   moduleId: module.id,
   selector: 'dialog-fruit-a11y',
-  templateUrl: 'dialog-fruit-a11y.html'
+  templateUrl: 'dialog-fruit-a11y.html',
 })
 export class DialogFruitExampleDialog {}
 
 @Component({
   moduleId: module.id,
   selector: 'dialog-welcome-a11y',
-  templateUrl: 'dialog-welcome-a11y.html'
+  templateUrl: 'dialog-welcome-a11y.html',
 })
 export class DialogWelcomeExampleDialog {}
 
 @Component({
   moduleId: module.id,
   selector: 'dialog-neptune-a11y-dialog',
-  templateUrl: './dialog-neptune-a11y.html'
+  templateUrl: './dialog-neptune-a11y.html',
 })
 export class DialogNeptuneExampleDialog {
   constructor(public dialog: MatDialog) { }
@@ -71,18 +71,23 @@ export class DialogNeptuneExampleDialog {
 @Component({
   moduleId: module.id,
   selector: 'dialog-neptune-iframe-dialog',
-  styles: [
-    `iframe {
+  styles: [`
+    iframe {
       width: 800px;
-    }`
-  ],
-  templateUrl: './dialog-neptune-iframe-a11y.html'
+    }
+  `],
+  templateUrl: './dialog-neptune-iframe-a11y.html',
 })
 export class DialogNeptuneIFrameDialog {}
 
 @Component({
   moduleId: module.id,
   selector: 'dialog-address-form-a11y',
-  templateUrl: 'dialog-address-form-a11y.html'
+  styles: [`
+    .demo-full-width {
+      width: 100%;
+    }
+  `],
+  templateUrl: 'dialog-address-form-a11y.html',
 })
 export class DialogAddressFormDialog {}

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, ViewEncapsulation} from '@angular/core';
+import {Component} from '@angular/core';
 import {TooltipPosition} from '@angular/material';
 
 
@@ -15,11 +15,10 @@ import {TooltipPosition} from '@angular/material';
   selector: 'tooltip-demo',
   templateUrl: 'tooltip-demo.html',
   styleUrls: ['tooltip-demo.css'],
-  encapsulation: ViewEncapsulation.None,
 })
 export class TooltipDemo {
   position: TooltipPosition = 'after';
-  message: string = 'Here is the tooltip';
+  message = 'Here is the tooltip';
   tooltips: string[] = [];
   disabled = false;
   showDelay = 0;

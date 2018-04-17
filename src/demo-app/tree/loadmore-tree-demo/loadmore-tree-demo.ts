@@ -6,11 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component} from '@angular/core';
 import {FlatTreeControl} from '@angular/cdk/tree';
+import {Component} from '@angular/core';
 import {MatTreeFlatDataSource, MatTreeFlattener} from '@angular/material/tree';
 import {Observable} from 'rxjs';
-import {LoadmoreNode, LoadmoreFlatNode, LoadmoreDatabase} from './loadmore-database';
+import {LoadmoreDatabase, LoadmoreFlatNode, LoadmoreNode} from './loadmore-database';
+
 
 const LOAD_MORE = 'LOAD_MORE';
 
@@ -57,7 +58,8 @@ export class LoadmoreTreeDemo {
     if (this.nodeMap.has(node.item)) {
       return this.nodeMap.get(node.item)!;
     }
-    let newNode = new LoadmoreFlatNode(node.item, level, node.hasChildren, node.loadMoreParentItem);
+    const newNode =
+        new LoadmoreFlatNode(node.item, level, node.hasChildren, node.loadMoreParentItem);
     this.nodeMap.set(node.item, newNode);
     return newNode;
   }

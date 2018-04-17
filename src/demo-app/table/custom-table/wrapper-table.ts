@@ -11,6 +11,7 @@ import {DataSource} from '@angular/cdk/collections';
 import {MatColumnDef, MatHeaderRowDef, MatRowDef, MatTable} from '@angular/material';
 import {SimpleColumn} from './simple-column';
 
+
 @Component({
   moduleId: module.id,
   selector: 'wrapper-table',

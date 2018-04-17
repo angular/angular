@@ -1,5 +1,5 @@
 <div class="demo-menu">
-  <div class="menu-section">
+  <div class="demo-menu-section">
     <p>You clicked on: {{ selected }}</p>
 
     <mat-toolbar>
@@ -14,7 +14,7 @@
       </button>
     </mat-menu>
   </div>
-  <div class="menu-section">
+  <div class="demo-menu-section">
     <p>Menu with divider</p>
 
     <mat-toolbar>
@@ -32,7 +32,7 @@
       </ng-container>
     </mat-menu>
   </div>
-  <div class="menu-section">
+  <div class="demo-menu-section">
     <p>Nested menu</p>
 
     <mat-toolbar>
@@ -86,7 +86,7 @@
       <button mat-menu-item>Blue Spiny Lizard</button>
     </mat-menu>
   </div>
-  <div class="menu-section">
+  <div class="demo-menu-section">
     <p>Clicking these will navigate:</p>
     <mat-toolbar>
       <button mat-icon-button [matMenuTriggerFor]="anchorMenu" aria-label="Open anchor menu">
@@ -100,24 +100,24 @@
       </a>
     </mat-menu>
   </div>
-  <div class="menu-section">
+  <div class="demo-menu-section">
     <p>
       Position x: before
     </p>
-    <mat-toolbar class="end-icon">
+    <mat-toolbar class="demo-end-icon">
       <button mat-icon-button [matMenuTriggerFor]="posXMenu" aria-label="Open x-positioned menu">
         <mat-icon>more_vert</mat-icon>
       </button>
     </mat-toolbar>
 
-    <mat-menu xPosition="before" #posXMenu="matMenu" class="before">
+    <mat-menu xPosition="before" #posXMenu="matMenu">
       <button mat-menu-item *ngFor="let item of iconItems" [disabled]="item.disabled">
         <mat-icon>{{ item.icon }}</mat-icon>
         {{ item.text }}
       </button>
     </mat-menu>
   </div>
-  <div class="menu-section">
+  <div class="demo-menu-section">
     <p>
       Position y: above
     </p>
@@ -136,7 +136,7 @@
 </div>
 
 <div class="demo-menu">
-  <div class="menu-section">
+  <div class="demo-menu-section">
     <p>overlapTrigger: false</p>
 
     <mat-toolbar>
@@ -151,24 +151,24 @@
       </button>
     </mat-menu>
   </div>
-  <div class="menu-section">
+  <div class="demo-menu-section">
     <p>
       Position x: before, overlapTrigger: false
     </p>
-    <mat-toolbar class="end-icon">
+    <mat-toolbar class="demo-end-icon">
       <button mat-icon-button [mat-menu-trigger-for]="posXMenuOverlay">
         <mat-icon>more_vert</mat-icon>
       </button>
     </mat-toolbar>
 
-    <mat-menu xPosition="before" [overlapTrigger]="false" #posXMenuOverlay="matMenu" class="before">
+    <mat-menu xPosition="before" [overlapTrigger]="false" #posXMenuOverlay="matMenu">
       <button mat-menu-item *ngFor="let item of iconItems" [disabled]="item.disabled">
         <mat-icon>{{ item.icon }}</mat-icon>
         {{ item.text }}
       </button>
     </mat-menu>
   </div>
-  <div class="menu-section">
+  <div class="demo-menu-section">
     <p>
       Position y: above, overlapTrigger: false
     </p>

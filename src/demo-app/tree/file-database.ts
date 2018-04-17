@@ -8,6 +8,7 @@
 import {Injectable} from '@angular/core';
 import {BehaviorSubject} from 'rxjs';
 
+
 /**
  * File node data with nested structure.
  * Each node has a filename, and a type or a list of children.
@@ -100,10 +101,10 @@ export class FileDatabase {
    * The return value is the list of `FileNode`.
    */
   buildFileTree(value: any, level: number) {
-    let data: any[] = [];
+    const data: FileNode[] = [];
     for (let k in value) {
-      let v = value[k];
-      let node = new FileNode();
+      const v = value[k];
+      const node = new FileNode();
       node.filename = `${k}`;
       if (v === null || v === undefined) {
         // no action

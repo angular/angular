@@ -22,13 +22,13 @@ export class ListDemo {
     'Paprika'
   ];
 
-  contacts: any[] = [
+  contacts: {name: string, headline: string}[] = [
     {name: 'Nancy', headline: 'Software engineer'},
     {name: 'Mary', headline: 'TPM'},
     {name: 'Bobby', headline: 'UX designer'}
   ];
 
-  messages: any[] = [
+  messages: {from: string, subject: string, message: string, image: string}[] = [
     {
       from: 'Nancy',
       subject: 'Brunch?',
@@ -49,7 +49,7 @@ export class ListDemo {
     }
   ];
 
-  links: any[] = [
+  links: {name: string}[] = [
     {name: 'Inbox'},
     {name: 'Outbox'},
     {name: 'Spam'},
@@ -57,13 +57,13 @@ export class ListDemo {
 
   ];
 
-  thirdLine: boolean = false;
-  infoClicked: boolean = false;
-  selectionListDisabled: boolean = false;
+  thirdLine = false;
+  infoClicked = false;
+  selectionListDisabled = false;
 
   selectedOptions: string[] = ['apples'];
-  changeEventCount: number = 0;
-  modelChangeEventCount: number = 0;
+  changeEventCount = 0;
+  modelChangeEventCount = 0;
 
   onSelectedOptionsChange(values: string[]) {
     this.selectedOptions = values;

@@ -1,5 +1,5 @@
 .demo-tooltip {
-  .centered {
+  .demo-tooltip-centered {
     text-align: center;
     height: 200px;
     overflow: auto;
@@ -8,12 +8,13 @@
       margin: 75px 16px 16px;
     }
   }
+
   .mat-radio-button {
     display: block;
   }
 }
 
-.red-tooltip {
+.demo-red-tooltip {
   background-color: rgb(255, 128, 128);
   color: black;
 }

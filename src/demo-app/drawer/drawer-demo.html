@@ -9,7 +9,7 @@
     <button mat-button (click)="end.open()">Open End Side</button>
     <br>
     <button mat-button
-            (click)="start.mode = (start.mode == 'push' ? 'over' : (start.mode == 'over' ? 'side' : 'push'))">Toggle Mode</button>
+            (click)="start.mode = (start.mode === 'push' ? 'over' : (start.mode === 'over' ? 'side' : 'push'))">Toggle Mode</button>
     <div>Mode: {{start.mode}}</div>
     <br>
     <input #myinput>

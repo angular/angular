@@ -6,8 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, ViewChild, ViewEncapsulation} from '@angular/core';
+import {Component, ViewChild} from '@angular/core';
 import {FormControl, NgModel} from '@angular/forms';
+import {Observable} from 'rxjs';
 import {map, startWith} from 'rxjs/operators';
 
 
@@ -26,7 +27,6 @@ export interface StateGroup {
   selector: 'autocomplete-demo',
   templateUrl: 'autocomplete-demo.html',
   styleUrls: ['autocomplete-demo.css'],
-  encapsulation: ViewEncapsulation.None,
 })
 export class AutocompleteDemo {
   stateCtrl: FormControl;
@@ -34,8 +34,8 @@ export class AutocompleteDemo {
   currentGroupedState = '';
   topHeightCtrl = new FormControl(0);
 
-  reactiveStates: any;
-  tdStates: any[];
+  reactiveStates: Observable<State[]>;
+  tdStates: State[];
 
   tdDisabled = false;
 
@@ -106,18 +106,19 @@ export class AutocompleteDemo {
         map(name => this.filterStates(name))
       );
 
-    this.filteredGroupedStates = this.groupedStates = this.states.reduce((groups, state) => {
-      let group = groups.find(g => g.letter === state.name[0]);
+    this.filteredGroupedStates = this.groupedStates =
+        this.states.reduce<StateGroup[]>((groups, state) => {
+          let group = groups.find(g => g.letter === state.name[0]);
 
-      if (!group) {
-        group = { letter: state.name[0], states: [] };
-        groups.push(group);
-      }
+          if (!group) {
+            group = { letter: state.name[0], states: [] };
+            groups.push(group);
+          }
 
-      group.states.push({ code: state.code, name: state.name });
+          group.states.push({ code: state.code, name: state.name });
 
-      return groups;
-    }, [] as StateGroup[]);
+          return groups;
+        }, []);
   }
 
   displayFn(value: any): string {

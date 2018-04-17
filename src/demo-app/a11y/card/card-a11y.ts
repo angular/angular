@@ -9,6 +9,7 @@
 import {Component} from '@angular/core';
 import {MatSnackBar} from '@angular/material';
 
+
 @Component({
   moduleId: module.id,
   selector: 'card-a11y',

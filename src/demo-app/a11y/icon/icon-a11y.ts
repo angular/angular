@@ -6,14 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, ViewEncapsulation} from '@angular/core';
+import {Component} from '@angular/core';
 import {MatSnackBar} from '@angular/material';
+
 
 @Component({
   moduleId: module.id,
   selector: 'icon-a11y',
   templateUrl: 'icon-a11y.html',
-  encapsulation: ViewEncapsulation.None,
 })
 export class IconAccessibilityDemo {
   constructor(private snackBar: MatSnackBar) {}

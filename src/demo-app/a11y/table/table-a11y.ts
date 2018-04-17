@@ -12,6 +12,7 @@ import {merge, Observable, BehaviorSubject} from 'rxjs';
 import {MatSort, MatPaginator} from '@angular/material';
 import {map} from 'rxjs/operators';
 
+
 export interface UserData {
   name: string;
   color: string;
@@ -85,12 +86,12 @@ export class SortDataSource extends DataSource<UserData> {
 
   getSortedData(): UserData[] {
     const data = [...exampleData];
-    if (!this._sort.active || this._sort.direction == '') {
+    if (!this._sort.active || this._sort.direction === '') {
       return data;
     }
 
     return data.sort((a: UserData, b: UserData) => {
-      return (a.age < b.age ? -1 : 1) * (this._sort.direction == 'asc' ? 1 : -1);
+      return (a.age < b.age ? -1 : 1) * (this._sort.direction === 'asc' ? 1 : -1);
     });
   }
 }

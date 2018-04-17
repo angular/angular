@@ -1,6 +1,6 @@
 <h1>Single Expansion Panel</h1>
 
-<mat-expansion-panel class="mat-expansion-demo-width" #myPanel>
+<mat-expansion-panel class="demo-expansion-width" #myPanel>
   <mat-expansion-panel-header [expandedHeight]="expandedHeight" [collapsedHeight]="collapsedHeight">
     <mat-panel-description>This is a panel description.</mat-panel-description>
     <mat-panel-title>Panel Title</mat-panel-title>
@@ -56,7 +56,7 @@
 </div>
 <br>
 <mat-accordion [displayMode]="displayMode" [multi]="multi"
-              class="mat-expansion-demo-width">
+              class="demo-expansion-width">
   <mat-expansion-panel #panel1  [hideToggle]="hideToggle">
     <mat-expansion-panel-header>Section 1</mat-expansion-panel-header>
     <p>This is the content text that makes sense here.</p>
@@ -82,7 +82,7 @@
     <mat-slide-toggle [(ngModel)]="accordion1.multi">Allow Multi Expansion</mat-slide-toggle>
   </div>
 </div>
-<cdk-accordion class="mat-expansion-demo-width" #accordion1="cdkAccordion">
+<cdk-accordion class="demo-expansion-width" #accordion1="cdkAccordion">
   <cdk-accordion-item #item1="cdkAccordionItem">
     <p>
       Item 1:

@@ -1,6 +1,6 @@
-<div class="badge-demo">
+<div>
 
-  <div class="badge-examples">
+  <div class="demo-badge">
     <h3>Text</h3>
     <span [matBadge]="badgeContent" matBadgeOverlap="false" *ngIf="visible">
       Hello
@@ -34,7 +34,7 @@
     <button (click)="visible = !visible">Toggle</button>
   </div>
 
-  <div class="badge-examples">
+  <div class="demo-badge">
     <h3>Buttons</h3>
     <button mat-raised-button [matBadge]="badgeContent">
       <mat-icon color="primary">home</mat-icon>
@@ -57,7 +57,7 @@
     </button>
   </div>
 
-  <div class="badge-examples">
+  <div class="demo-badge">
     <h3>Icons</h3>
     <mat-icon [matBadge]="badgeContent">
       home
@@ -76,7 +76,7 @@
     </mat-icon>
   </div>
 
-   <div class="badge-examples">
+   <div class="demo-badge">
     <h3>Size</h3>
     <mat-icon [matBadge]="badgeContent" matBadgeSize="small">
       home

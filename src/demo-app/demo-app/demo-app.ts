@@ -9,6 +9,7 @@
 import {OverlayContainer} from '@angular/cdk/overlay';
 import {Component, ElementRef, ViewEncapsulation} from '@angular/core';
 
+
 /**
  * The entry app for demo site. Routes under `accessibility` will use AccessibilityDemo component,
  * while other demos will use `DemoApp` component. Since DemoApp and AccessibilityDemo use
@@ -19,7 +20,6 @@ import {Component, ElementRef, ViewEncapsulation} from '@angular/core';
   moduleId: module.id,
   selector: 'entry-app',
   template: '<router-outlet></router-outlet>',
-  encapsulation: ViewEncapsulation.None,
 })
 export class EntryApp {}
 
@@ -31,7 +31,7 @@ export class EntryApp {}
   template: `
     <p>Welcome to the development demos for Angular Material!</p>
     <p>Open the sidenav to select a demo.</p>
-  `
+  `,
 })
 export class Home {}
 
@@ -97,7 +97,7 @@ export class DemoApp {
     private _overlayContainer: OverlayContainer) {}
 
   toggleFullscreen() {
-    let elem = this._element.nativeElement.querySelector('.demo-content');
+    const elem = this._element.nativeElement.querySelector('.demo-content');
     if (elem.requestFullscreen) {
       elem.requestFullscreen();
     } else if (elem.webkitRequestFullScreen) {

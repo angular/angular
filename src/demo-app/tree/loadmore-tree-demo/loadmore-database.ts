@@ -8,6 +8,7 @@
 import {Injectable} from '@angular/core';
 import {BehaviorSubject} from 'rxjs';
 
+
 const LOAD_MORE = 'LOAD_MORE';
 
 /** Nested node */
@@ -66,7 +67,7 @@ export class LoadmoreDatabase {
       return;
     }
     const newChildrenNumber = parent.children!.length + this.batchNumber;
-    let nodes = children.slice(0, newChildrenNumber)
+    const nodes = children.slice(0, newChildrenNumber)
         .map(name => this._generateNode(name));
     if (newChildrenNumber < children.length) {
       // Need a new load more node

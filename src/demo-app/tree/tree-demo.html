@@ -1,5 +1,3 @@
-
-
 <mat-accordion class="demo-tree-container">
 
   <mat-expansion-panel>
@@ -41,7 +39,7 @@
             </button>
             {{node.filename}}
           </div>
-          <ul [class.tree-demo-invisible]="!nestedTreeControl.isExpanded(node)">
+          <ul [class.demo-tree-invisible]="!nestedTreeControl.isExpanded(node)">
             <ng-container matTreeNodeOutlet></ng-container>
           </ul>
         </li>
@@ -59,7 +57,7 @@
       <cdk-tree-node *cdkTreeNodeDef="let node; when: hasChild" cdkTreeNodePadding
                      class="demo-tree-node">
         <button mat-icon-button [attr.aria-label]="'toggle ' + node.filename"
-                cdkTreeNodeToggle class="demo-tree-toggle">
+                cdkTreeNodeToggle>
           <mat-icon>
             {{treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
           </mat-icon>
@@ -78,13 +76,13 @@
       </cdk-nested-tree-node>
       <cdk-nested-tree-node *cdkTreeNodeDef="let node; when: hasNestedChild" class="demo-tree-node">
         <button mat-icon-button [attr.aria-label]="'toggle ' + node.filename"
-                cdkTreeNodeToggle class="demo-tree-toggle">
+                cdkTreeNodeToggle>
           <mat-icon>
             {{nestedTreeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
           </mat-icon>
         </button>
         {{node.filename}}:  {{node.type}}
-        <div [class.tree-demo-invisible]="!nestedTreeControl.isExpanded(node)"
+        <div [class.demo-tree-invisible]="!nestedTreeControl.isExpanded(node)"
              class="demo-tree-nested-node">
           <ng-container cdkTreeNodeOutlet></ng-container>
         </div>

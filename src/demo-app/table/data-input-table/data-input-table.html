@@ -20,12 +20,12 @@
   <button mat-raised-button (click)="this.removeDataSource()">Remove Data Source</button>
 </div>
 
-<mat-card class="demo-table-card">
-  <h3> CdkTable  </h3>
+<mat-card>
+  <h3> CdkTable </h3>
 
   <cdk-table #cdkTable [dataSource]="dataSourceInput">
     <!-- Name (normal column) -->
-    <ng-container cdkColumnDef="{{column}}" *ngFor="let column of columnsToDisplay">
+    <ng-container [cdkColumnDef]="column" *ngFor="let column of columnsToDisplay">
       <cdk-header-cell *cdkHeaderCellDef> {{column}} </cdk-header-cell>
       <cdk-cell *cdkCellDef="let element"> {{element[column]}} </cdk-cell>
     </ng-container>
@@ -35,12 +35,12 @@
   </cdk-table>
 </mat-card>
 
-<mat-card class="demo-table-card">
+<mat-card>
   <h3> MatTable </h3>
 
   <mat-table #matTable [dataSource]="dataSourceInput">
     <!-- Name (normal column) -->
-    <ng-container matColumnDef="{{column}}" *ngFor="let column of columnsToDisplay">
+    <ng-container [matColumnDef]="column" *ngFor="let column of columnsToDisplay">
       <mat-header-cell *matHeaderCellDef> {{column}} </mat-header-cell>
       <mat-cell *matCellDef="let element"> {{element[column]}} </mat-cell>
     </ng-container>

@@ -21,6 +21,7 @@ import {MatDatepickerInputEvent} from '@angular/material/datepicker';
 import {Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
 
+
 @Component({
   moduleId: module.id,
   selector: 'datepicker-demo',
@@ -86,13 +87,13 @@ export class CustomHeader<D> implements OnDestroy {
   }
 
   previousClicked(mode: 'month' | 'year') {
-    this._calendar.activeDate = mode == 'month' ?
+    this._calendar.activeDate = mode === 'month' ?
         this._dateAdapter.addCalendarMonths(this._calendar.activeDate, -1) :
         this._dateAdapter.addCalendarYears(this._calendar.activeDate, -1);
   }
 
   nextClicked(mode: 'month' | 'year') {
-    this._calendar.activeDate = mode == 'month' ?
+    this._calendar.activeDate = mode === 'month' ?
         this._dateAdapter.addCalendarMonths(this._calendar.activeDate, 1) :
         this._dateAdapter.addCalendarYears(this._calendar.activeDate, 1);
   }
