@@ -124,6 +124,7 @@ export class BindingParser {
     }
   }
 
+  // Parse an inline template binding. ie `<tag *prefixToken="<value>">`
   parseInlineTemplateBinding(
       prefixToken: string, value: string, sourceSpan: ParseSourceSpan,
       targetMatchableAttrs: string[][], targetProps: BoundProperty[], targetVars: VariableAst[]) {
@@ -387,7 +388,8 @@ export class BindingParser {
     }
   }
 
-  private _checkPipes(ast: ASTWithSource, sourceSpan: ParseSourceSpan) {
+  // Make sure all the used pipes are known in `this.pipesByName`
+  private _checkPipes(ast: ASTWithSource, sourceSpan: ParseSourceSpan): void {
     if (ast) {
       const collector = new PipeCollector();
       ast.visit(collector);
