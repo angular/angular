@@ -1,0 +1,35 @@
+<mat-card class="demo-section">
+  <h2>No inputs</h2>
+  <mat-paginator></mat-paginator>
+</mat-card>
+
+<mat-card class="demo-section">
+  <div class="demo-options">
+    <mat-form-field>
+      <input matInput placeholder="Length" type="number" [(ngModel)]="length">
+    </mat-form-field>
+
+    <mat-form-field>
+      <input matInput placeholder="Page Size" type="number" [(ngModel)]="pageSize">
+    </mat-form-field>
+
+    <mat-form-field>
+      <input matInput placeholder="Page Index" type="number" [(ngModel)]="pageIndex">
+    </mat-form-field>
+
+    <mat-slide-toggle [(ngModel)]="hidePageSize">Hide page size</mat-slide-toggle>
+    <mat-slide-toggle [(ngModel)]="showPageSizeOptions">Show multiple page size options</mat-slide-toggle>
+    <mat-slide-toggle [(ngModel)]="showFirstLastButtons">Show first/last buttons</mat-slide-toggle>
+  </div>
+
+  <mat-paginator (page)="handlePageEvent($event)"
+                 [length]="length"
+                 [pageSize]="pageSize"
+                 [showFirstLastButtons]="showFirstLastButtons"
+                 [pageSizeOptions]="showPageSizeOptions ? pageSizeOptions : []"
+                 [hidePageSize]="hidePageSize"
+                 [pageIndex]="pageIndex">
+  </mat-paginator>
+
+  <div> Output event: {{pageEvent | json}} </div>
+</mat-card>

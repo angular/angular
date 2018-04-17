@@ -119,6 +119,7 @@
 /src/demo-app/live-announcer/**                    @jelbourn
 /src/demo-app/menu/**                              @kara @crisbeto
 /src/demo-app/overlay/**                           @jelbourn @crisbeto
+/src/demo-app/paginator/**                         @andrewseguin
 /src/demo-app/platform/**                          @jelbourn @devversion
 /src/demo-app/portal/**                            @jelbourn
 /src/demo-app/progress-bar/**                      @jelbourn @crisbeto @josephperrott

@@ -1,0 +1,15 @@
+.demo-section {
+  max-width: 500px;
+  margin-bottom: 24px;
+  background: #efefef !important;
+
+  & > * {
+    margin: 32px 0;
+  }
+}
+
+.demo-options {
+  display: flex;
+  flex-direction: column;
+  max-width: 300px;
+}
