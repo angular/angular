@@ -23,7 +23,4 @@ export class Version {
   }
 }
 
-/**
- *
- */
 export const VERSION = new Version('0.0.0-PLACEHOLDER');
