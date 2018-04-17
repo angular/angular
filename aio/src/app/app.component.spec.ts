@@ -6,8 +6,8 @@ import { HttpClient } from '@angular/common/http';
 import { MatProgressBar, MatSidenav } from '@angular/material';
 import { By } from '@angular/platform-browser';
 
-import { Observable, timer } from 'rxjs';
-import { mapTo } from 'rxjs/operators';
+import { timer } from 'rxjs';
+import { first, mapTo } from 'rxjs/operators';
 
 import { AppComponent } from './app.component';
 import { AppModule } from './app.module';
@@ -64,13 +64,13 @@ describe('AppComponent', () => {
     const de = fixture.debugElement;
     const docViewerDe = de.query(By.css('aio-doc-viewer'));
 
-    documentService = de.injector.get(DocumentService) as DocumentService;
+    documentService = de.injector.get<DocumentService>(DocumentService);
     docViewer = docViewerDe.nativeElement;
     docViewerComponent = docViewerDe.componentInstance;
     hamburger = de.query(By.css('.hamburger')).nativeElement;
-    locationService = de.injector.get(LocationService) as any;
+    locationService = de.injector.get<any>(LocationService);
     sidenav = de.query(By.directive(MatSidenav)).componentInstance;
-    tocService = de.injector.get(TocService);
+    tocService = de.injector.get<TocService>(TocService);
 
     return waitForDoc && awaitDocRendered();
   };
@@ -463,7 +463,7 @@ describe('AppComponent', () => {
       let scrollToTopSpy: jasmine.Spy;
 
       beforeEach(() => {
-        scrollService = fixture.debugElement.injector.get(ScrollService);
+        scrollService = fixture.debugElement.injector.get<ScrollService>(ScrollService);
         scrollSpy = spyOn(scrollService, 'scroll');
         scrollToTopSpy = spyOn(scrollService, 'scrollToTop');
       });
@@ -1114,20 +1114,23 @@ describe('AppComponent', () => {
         checkHostClass('sidenav', 'open');
 
         sidenav.close();
-        await waitForEmit(sidenav.onClose);
+        await waitForSidenavOpenedChange();
         fixture.detectChanges();
         checkHostClass('sidenav', 'closed');
 
         sidenav.open();
-        await waitForEmit(sidenav.onOpen);
+        await waitForSidenavOpenedChange();
         fixture.detectChanges();
         checkHostClass('sidenav', 'open');
 
-        function waitForEmit(emitter: Observable<void>): Promise<void> {
-          return new Promise(resolve => {
-            emitter.subscribe(resolve);
-            fixture.detectChanges();
-          });
+        async function waitForSidenavOpenedChange() {
+          const promise = new Promise(resolve => sidenav.openedChange.pipe(first()).subscribe(resolve));
+
+          await Promise.resolve();  // Wait for `MatSidenav.openedChange.emit()` to be called.
+          jasmine.clock().tick(0);  // Notify `MatSidenav.openedChange` observers.
+                                    // (It is an async `EventEmitter`, thus uses `setTimeout()`.)
+
+          await promise;
         }
       });
 

@@ -187,7 +187,7 @@ describe('Dependency Injection Tests', function () {
         let heroes = element.all(by.css('#authorized app-hero-list div'));
         expect(heroes.count()).toBeGreaterThan(0);
 
-        let filteredHeroes = heroes.filter(function(elem: ElementFinder, index: number){
+        let filteredHeroes = heroes.filter(function(elem: ElementFinder, index: number) {
          return elem.getText().then(function(text: string) {
             return /secret/.test(text);
           });
