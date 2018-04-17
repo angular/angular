@@ -254,7 +254,7 @@ class TemplateParseVisitor implements html.Visitor {
 
   visitElement(element: html.Element, parent: ElementContext): any {
     const queryStartIndex = this.contentQueryStartId;
-    const nodeName = element.name;
+    const elName = element.name;
     const preparsedElement = preparseElement(element);
     if (preparsedElement.type === PreparsedElementType.SCRIPT ||
         preparsedElement.type === PreparsedElementType.STYLE) {
@@ -318,7 +318,7 @@ class TemplateParseVisitor implements html.Visitor {
       }
     });
 
-    const elementCssSelector = createElementCssSelector(nodeName, matchableAttrs);
+    const elementCssSelector = createElementCssSelector(elName, matchableAttrs);
     const {directives: directiveMetas, matchElement} =
         this._parseDirectives(this.selectorMatcher, elementCssSelector);
     const references: ReferenceAst[] = [];
@@ -341,13 +341,14 @@ class TemplateParseVisitor implements html.Visitor {
             isTemplateElement ? parent.providerContext ! : providerContext));
     providerContext.afterElement();
     // Override the actual selector when the `ngProjectAs` attribute is provided
-    const projectionSelector = preparsedElement.projectAs != null ?
+    const projectionSelector = preparsedElement.projectAs != '' ?
         CssSelector.parse(preparsedElement.projectAs)[0] :
         elementCssSelector;
     const ngContentIndex = parent.findNgContentIndex(projectionSelector) !;
     let parsedElement: TemplateAst;
 
     if (preparsedElement.type === PreparsedElementType.NG_CONTENT) {
+      // `<ng-content>` element
       if (element.children && !element.children.every(_isEmptyTextNode)) {
         this._reportError(`<ng-content> element cannot have content.`, element.sourceSpan !);
       }
@@ -356,6 +357,7 @@ class TemplateParseVisitor implements html.Visitor {
           this.ngContentCount++, hasInlineTemplates ? null ! : ngContentIndex,
           element.sourceSpan !);
     } else if (isTemplateElement) {
+      // `<ng-template>` element
       this._assertAllEventsPublishedByDirectives(directiveAsts, events);
       this._assertNoComponentsNorElementBindingsOnTemplate(
           directiveAsts, elementProps, element.sourceSpan !);
@@ -366,30 +368,30 @@ class TemplateParseVisitor implements html.Visitor {
           providerContext.queryMatches, children, hasInlineTemplates ? null ! : ngContentIndex,
           element.sourceSpan !);
     } else {
+      // element other than `<ng-content>` and `<ng-template>`
       this._assertElementExists(matchElement, element);
       this._assertOnlyOneComponent(directiveAsts, element.sourceSpan !);
 
       const ngContentIndex =
           hasInlineTemplates ? null : parent.findNgContentIndex(projectionSelector);
       parsedElement = new ElementAst(
-          nodeName, attrs, elementProps, events, references,
-          providerContext.transformedDirectiveAsts, providerContext.transformProviders,
-          providerContext.transformedHasViewContainer, providerContext.queryMatches, children,
-          hasInlineTemplates ? null : ngContentIndex, element.sourceSpan,
-          element.endSourceSpan || null);
+          elName, attrs, elementProps, events, references, providerContext.transformedDirectiveAsts,
+          providerContext.transformProviders, providerContext.transformedHasViewContainer,
+          providerContext.queryMatches, children, hasInlineTemplates ? null : ngContentIndex,
+          element.sourceSpan, element.endSourceSpan || null);
     }
 
     if (hasInlineTemplates) {
+      // The element as a *-attribute
       const templateQueryStartIndex = this.contentQueryStartId;
       const templateSelector = createElementCssSelector('ng-template', templateMatchableAttrs);
-      const {directives: templateDirectiveMetas} =
-          this._parseDirectives(this.selectorMatcher, templateSelector);
+      const {directives} = this._parseDirectives(this.selectorMatcher, templateSelector);
       const templateBoundDirectivePropNames = new Set<string>();
       const templateDirectiveAsts = this._createDirectiveAsts(
-          true, element.name, templateDirectiveMetas, templateElementOrDirectiveProps, [],
-          element.sourceSpan !, [], templateBoundDirectivePropNames);
+          true, elName, directives, templateElementOrDirectiveProps, [], element.sourceSpan !, [],
+          templateBoundDirectivePropNames);
       const templateElementProps: BoundElementPropertyAst[] = this._createElementPropertyAsts(
-          element.name, templateElementOrDirectiveProps, templateBoundDirectivePropNames);
+          elName, templateElementOrDirectiveProps, templateBoundDirectivePropNames);
       this._assertNoComponentsNorElementBindingsOnTemplate(
           templateDirectiveAsts, templateElementProps, element.sourceSpan !);
       const templateProviderContext = new ProviderElementContext(
