@@ -346,10 +346,6 @@
   dependencies:
     "@types/node" "*"
 
-"@webcomponents/custom-elements@^1.0.8":
-  version "1.0.8"
-  resolved "https://registry.yarnpkg.com/@webcomponents/custom-elements/-/custom-elements-1.0.8.tgz#b7b8ef7248f7681d1ad4286a0ada5fe3c2bc7228"
-
 JSONStream@^1.2.1:
   version "1.3.1"
   resolved "https://registry.yarnpkg.com/JSONStream/-/JSONStream-1.3.1.tgz#707f761e01dae9e16f1bcf93703b78c70966579a"
@@ -2510,6 +2506,12 @@ doctrine@^2.0.0:
   dependencies:
     esutils "^2.0.2"
     isarray "^1.0.0"
+
+document-register-element@^1.8.0:
+  version "1.8.0"
+  resolved "https://registry.yarnpkg.com/document-register-element/-/document-register-element-1.8.0.tgz#434566ea4ff508e1633b8770616d1ad3d49f4300"
+  dependencies:
+    lightercollective "^0.0.0"
 
 dom-converter@~0.1:
   version "0.1.4"
@@ -5339,6 +5341,10 @@ lie@~3.1.0:
   resolved "https://registry.yarnpkg.com/lie/-/lie-3.1.1.tgz#9a436b2cc7746ca59de7a41fa469b3efb76bd87e"
   dependencies:
     immediate "~3.0.5"
+
+lightercollective@^0.0.0:
+  version "0.0.0"
+  resolved "https://registry.yarnpkg.com/lightercollective/-/lightercollective-0.0.0.tgz#5b85f6755b78c1f94db590e479f954cbfeeb0409"
 
 lighthouse-logger@^1.0.0:
   version "1.0.1"
