@@ -427,7 +427,7 @@ Any files outside of this folder are meant to support building your app.
       The CLI automatically adds all `js` and `css` files when building your app so you
       never need to add any `<script>` or `<link>` tags here manually.
       -->
-      사용자가 사이트에 접속할 때 표시되는 메인 HTML 페이지입니다. 이 파일은 Angular 애플리케이션을 개발하는 동안 거의 건드릴 일이 없습니다. Angular CLI는 애플리케이션에서 사용하는 `js` 파일과 `css` 파일을 자동으로 모아 애플리케이션을 구성하기 때문에 `<script>` 태그나 `<link>` 태그를 수동으로 구성해야 할 필요도 없습니다.
+      사용자가 사이트에 접속할 때 표시되는 메인 HTML 페이지입니다. 이 파일은 Angular 애플리케이션을 개발하는 동안 거의 건드릴 일이 없습니다. Angular CLI는 애플리케이션에서 사용하는 `js` 파일과 `css` 파일을 자동으로 모아 애플리케이션을 구성하기 때문에 `<script>` 태그나 `<link>` 태그를 수동으로 구성할 필요도 없습니다.
 
     </td>
   </tr>
@@ -439,11 +439,15 @@ Any files outside of this folder are meant to support building your app.
     </td>
     <td>
 
+      <!--
       The main entry point for your app.
       Compiles the application with the [JIT compiler](guide/glossary#jit)
       and bootstraps the application's root module (`AppModule`) to run in the browser.
       You can also use the [AOT compiler](guide/aot-compiler)
       without changing any code by appending the`--aot` flag to the `ng build` and `ng serve` commands.
+      -->
+      애플리케이션이 시작되는 파일이며, 애플리케이션이 브라우저에서 [JIT 컴파일러](guide/glossary#jit)로 컴파일될 때 애플리케이션이 부트스트랩되는 최상위 모듈(`AppModule`)을 이 파일에서 정의합니다.
+      이 파일은 [AOT 컴파일러](guide/aot-compiler)를 사용할 때도 마찬가지로 진입점이 되며, `ng build`나 `ng serve` 명령을 실행할 때 `--aot` 옵션을 함께 사용하면 AoT 컴파일을 사용할 수 있습니다.
 
     </td>
   </tr>
@@ -455,10 +459,14 @@ Any files outside of this folder are meant to support building your app.
     </td>
     <td>
 
+      <!--
       Different browsers have different levels of support of the web standards.
       Polyfills help normalize those differences.
       You should be pretty safe with `core-js` and `zone.js`, but be sure to check out
       the [Browser Support guide](guide/browser-support) for more information.
+      -->
+      모든 브라우저가 웹 표준을 그대로 지원하는 것은 아닙니다. 이 때 브라우저간 차이를 보완하기 위해 폴리필을 사용합니다.
+      Angular는 `core-js`와 `zone.js`를 사용해서 브라우저 호환성을 보장하며, 더 자세한 내용은 [브라우저 지원 가이드](guide/browser-support)를 확인해 보세요.
 
     </td>
   </tr>
@@ -470,9 +478,13 @@ Any files outside of this folder are meant to support building your app.
     </td>
     <td>
 
+      <!--
       Your global styles go here.
       Most of the time you'll want to have local styles in your components for easier maintenance,
       but styles that affect all of your app need to be in a central place.
+      -->
+      애플리케이션 전역에서 사용하는 스타일은 이 파일에 정의합니다.
+      컴포넌트를 간결하게 유지하려면 해당 컴포넌트에 적용되는 스타일은 컴포넌트 계층에서 정의하는 것이 좋지만, 모든 컴포넌트에 적용되는 스타일이라면 전역으로 선언하는 것도 고려해볼만 합니다.
 
     </td>
   </tr>
@@ -484,9 +496,14 @@ Any files outside of this folder are meant to support building your app.
     </td>
     <td>
 
+      <!--
       This is the main entry point for your unit tests.
       It has some custom configuration that might be unfamiliar, but it's not something you'll
       need to edit.
+      -->
+      애플리케이션에 유닛 테스트를 적용할 때 시작점이 되는 파일입니다.
+      이 파일에 있는 설정은 개발자에게 익숙하지 않을 수 있지만, 이 파일은 거의 수정할 필요이 사용하기만 하면 됩니다.
+
     </td>
   </tr>
   <tr>
@@ -496,8 +513,11 @@ Any files outside of this folder are meant to support building your app.
     </td>
     <td>
 
+      <!--
       TypeScript compiler configuration for the Angular app (`tsconfig.app.json`)
       and for the unit tests (`tsconfig.spec.json`).
+      -->
+      Angular 애플리케이션에 적용되는 TypeScript 컴파일 설정(`tsconfig.app.json`)과 유닛 테스트에 적용될 컴파일 설정(`tsconfig.spec.json`)을 정의합니다.
 
     </td>
   </tr>
