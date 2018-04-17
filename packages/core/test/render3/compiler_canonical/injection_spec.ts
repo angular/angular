@@ -151,7 +151,6 @@ describe('injection', () => {
             return new MyApp(
                 $r3$.ɵdirectiveInject(ServiceA), $r3$.ɵdirectiveInject(ServiceB), inject(INJECTOR));
           },
-          /**  */
           template: function MyApp_Template(rf: $RenderFlags$, ctx: $MyApp$) {},
           providers: [ServiceA],
           viewProviders: [ServiceB],
