@@ -16,7 +16,7 @@ describe('compiler compliance: template', () => {
     compileCommon: true,
   });
 
-  it('should create correctly bind to context in nested template', () => {
+  it('should correctly bind to context in nested template', () => {
     const files = {
       app: {
         'spec.ts': `
@@ -94,7 +94,7 @@ describe('compiler compliance: template', () => {
                 const $outer$ = ctx0.$implicit;
                 const $middle$ = ctx1.$implicit;
                 const $inner$ = ctx2.$implicit;
-                $i0$.ɵp(0, 'title', ctx.format($outer$, $middle$, $inner$, ctx.component));
+                $i0$.ɵp(0, 'title', $i0$.ɵb(ctx.format($outer$, $middle$, $inner$, ctx.component)));
                 $i0$.ɵt(1, $i0$.ɵi1(' ', ctx.format($outer$, $middle$, $inner$, ctx.component), ' '));
               }
             }
