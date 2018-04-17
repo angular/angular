@@ -535,7 +535,7 @@ export class CdkTable<T> implements CollectionViewer, OnInit, AfterContentChecke
    */
   private _getHeaderCellTemplatesForRow(headerDef: CdkHeaderRowDef): CdkHeaderCellDef[] {
     if (!headerDef || !headerDef.columns) { return []; }
-    return headerDef.columns.map(columnId => {
+    return Array.from(headerDef.columns, columnId => {
       const column = this._columnDefsByName.get(columnId);
 
       if (!column) {
@@ -546,13 +546,14 @@ export class CdkTable<T> implements CollectionViewer, OnInit, AfterContentChecke
     });
   }
 
+
   /**
    * Returns the cell template definitions to insert in the provided row
    * as defined by its list of columns to display.
    */
   private _getCellTemplatesForRow(rowDef: CdkRowDef<T>): CdkCellDef[] {
     if (!rowDef.columns) { return []; }
-    return rowDef.columns.map(columnId => {
+    return Array.from(rowDef.columns, columnId => {
       const column = this._columnDefsByName.get(columnId);
 
       if (!column) {

@@ -32,7 +32,7 @@ export const CDK_ROW_TEMPLATE = `<ng-container cdkCellOutlet></ng-container>`;
  */
 export abstract class BaseRowDef {
   /** The columns to be displayed on this row. */
-  columns: string[];
+  columns: Iterable<string>;
 
   /** Differ used to check if any changes were made to the columns. */
   protected _columnsDiffer: IterableDiffer<any>;
