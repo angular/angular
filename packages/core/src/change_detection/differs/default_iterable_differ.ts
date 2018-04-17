@@ -557,9 +557,6 @@ export class DefaultIterableDiffer<V> implements IterableDiffer<V>, IterableChan
   }
 }
 
-/**
- *
- */
 export class IterableChangeRecord_<V> implements IterableChangeRecord<V> {
   currentIndex: number|null = null;
   previousIndex: number|null = null;
