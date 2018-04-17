@@ -260,7 +260,7 @@ describe('MatIcon', () => {
       // The <svg> child should be the <g id="pig"> element.
       expect(svgChild.tagName.toLowerCase()).toBe('g');
       expect(svgChild.getAttribute('name')).toBe('pig');
-      expect(svgChild.getAttribute('id')).toBe('');
+      expect(svgChild.getAttribute('id')).toBeFalsy();
       expect(svgChild.childNodes.length).toBe(1);
       verifyPathChildElement(svgChild, 'oink');
 
@@ -276,6 +276,21 @@ describe('MatIcon', () => {
       expect(svgChild.getAttribute('name')).toBe('cow');
       expect(svgChild.childNodes.length).toBe(1);
       verifyPathChildElement(svgChild, 'moo moo');
+    });
+
+    it('should clear the id attribute from the svg node', () => {
+      iconRegistry.addSvgIconSetInNamespace('farm', trustUrl('farm-set-1.svg'));
+
+      const fixture = TestBed.createComponent(IconFromSvgName);
+
+      fixture.componentInstance.iconName = 'farm:pig';
+      fixture.detectChanges();
+      http.expectOne('farm-set-1.svg').flush(FAKE_SVGS.farmSet1);
+
+      const matIconElement = fixture.debugElement.nativeElement.querySelector('mat-icon');
+      const svgElement = verifyAndGetSingleSvgChild(matIconElement);
+
+      expect(svgElement.hasAttribute('id')).toBe(false);
     });
 
     it('should unwrap <symbol> nodes', () => {
@@ -476,7 +491,7 @@ describe('MatIcon', () => {
       // The <svg> child should be the <g id="pig"> element.
       expect(svgChild.tagName.toLowerCase()).toBe('g');
       expect(svgChild.getAttribute('name')).toBe('pig');
-      expect(svgChild.getAttribute('id')).toBe('');
+      expect(svgChild.getAttribute('id')).toBeFalsy();
       expect(svgChild.childNodes.length).toBe(1);
       verifyPathChildElement(svgChild, 'oink');
 
