@@ -27,7 +27,7 @@ export class CdkTreeNodeToggle<T> {
   @Input('cdkTreeNodeToggleRecursive')
   get recursive(): boolean { return this._recursive; }
   set recursive(value: boolean) { this._recursive = coerceBooleanProperty(value); }
-  protected _recursive = true;
+  protected _recursive = false;
 
   constructor(protected _tree: CdkTree<T>,
               protected _treeNode: CdkTreeNode<T>) {}

@@ -20,5 +20,5 @@ import {CdkTreeNodeToggle} from '@angular/cdk/tree';
   providers: [{provide: CdkTreeNodeToggle, useExisting: MatTreeNodeToggle}]
 })
 export class MatTreeNodeToggle<T> extends CdkTreeNodeToggle<T> {
-  @Input('matTreeNodeToggleRecursive') recursive: boolean = true;
+  @Input('matTreeNodeToggleRecursive') recursive: boolean = false;
 }
