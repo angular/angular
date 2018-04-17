@@ -42,9 +42,6 @@ function addBody<T>(
   };
 }
 
-/**
- *
- */
 export type HttpObserve = 'body' | 'events' | 'response';
 
 /**

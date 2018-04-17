@@ -166,14 +166,8 @@ export class EmailValidator implements Validator {
   registerOnValidatorChange(fn: () => void): void { this._onChange = fn; }
 }
 
-/**
- *
- */
 export interface ValidatorFn { (c: AbstractControl): ValidationErrors|null; }
 
-/**
- *
- */
 export interface AsyncValidatorFn {
   (c: AbstractControl): Promise<ValidationErrors|null>|Observable<ValidationErrors|null>;
 }
