@@ -249,7 +249,7 @@ An observable produces values over time. An array is created as a static set of 
       <pre>➞5</pre>
     </td>
     <td>
-      <pre>arr.find((v) => v>10)</pre>
+      <pre>arr.find((v) => v>3)</pre>
       <pre>5</pre>
     </td>
   </tr>
@@ -273,8 +273,8 @@ An observable produces values over time. An array is created as a static set of 
 1
 2
 3
-4
-5</pre>
+5
+7</pre>
     </td>
     <td>
       <pre>arr.forEach((v) => {
@@ -283,8 +283,8 @@ An observable produces values over time. An array is created as a static set of 
 1
 2
 3
-4
-5</pre>
+5
+7</pre>
     </td>
   </tr>
   <tr>
