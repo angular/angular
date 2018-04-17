@@ -1,3 +1,28 @@
+<a name="6.0.0-rc.12"></a>
+# [6.0.0-rc.12](https://github.com/angular/material2/compare/6.0.0-rc.11...6.0.0-rc.12) (2018-04-17)
+
+
+### Bug Fixes
+
+* **breakpoint-observer:** split comma separated queries into separte queries ([#10789](https://github.com/angular/material2/issues/10789)) ([7c1549a](https://github.com/angular/material2/commit/7c1549a))
+* **datepicker:** high contrast accessibility improvements ([#10363](https://github.com/angular/material2/issues/10363)) ([4d23b08](https://github.com/angular/material2/commit/4d23b08))
+* **datepicker:** update popup direction if datepicker direction changes ([#10871](https://github.com/angular/material2/issues/10871)) ([4cc72b8](https://github.com/angular/material2/commit/4cc72b8))
+* **directionality:** complete change event on destroy ([#10826](https://github.com/angular/material2/issues/10826)) ([b057391](https://github.com/angular/material2/commit/b057391))
+* **form-field:** incorrect label position for outline style in prod mode ([#10803](https://github.com/angular/material2/issues/10803)) ([7484321](https://github.com/angular/material2/commit/7484321))
+* **menu:** svg icons not aligned inside menu item ([#10837](https://github.com/angular/material2/issues/10837)) ([2af9c35](https://github.com/angular/material2/commit/2af9c35)), closes [#10832](https://github.com/angular/material2/issues/10832)
+* **schematics:** correct path to ng-update entry-point ([#10850](https://github.com/angular/material2/issues/10850)) ([6a82c65](https://github.com/angular/material2/commit/6a82c65))
+* **schematics:** ignore e2e projects w/ `ng add` ([#10883](https://github.com/angular/material2/issues/10883)) ([5554506](https://github.com/angular/material2/commit/5554506))
+* **schematics:** make v6 migration work ([#10853](https://github.com/angular/material2/issues/10853)) ([c9f5be6](https://github.com/angular/material2/commit/c9f5be6))
+* **scrolling:** complete ScrollDispatcher.scrolled on destroy ([#10794](https://github.com/angular/material2/issues/10794)) ([41be069](https://github.com/angular/material2/commit/41be069))
+* **select:** open method triggered twice on click ([#7619](https://github.com/angular/material2/issues/7619)) ([991daac](https://github.com/angular/material2/commit/991daac))
+* **selection-list:** toggle newly-focused item when pressing arrow key + shift ([#10828](https://github.com/angular/material2/issues/10828)) ([975fe7e](https://github.com/angular/material2/commit/975fe7e))
+* **stepper:** not resetting to first step when some of the steps aren't editable ([#10804](https://github.com/angular/material2/issues/10804)) ([5df8d01](https://github.com/angular/material2/commit/5df8d01)), closes [#10801](https://github.com/angular/material2/issues/10801)
+* **table:** Allow any iterable to be used as for `columns` in headerrow and row defs ([#10822](https://github.com/angular/material2/issues/10822)) ([92e5f55](https://github.com/angular/material2/commit/92e5f55))
+* **tree:** make toggle non-recursive by default ([#10879](https://github.com/angular/material2/issues/10879)) ([5920bc3](https://github.com/angular/material2/commit/5920bc3))
+* **stepper:** add animationDone event ([#10752](https://github.com/angular/material2/issues/10752)) ([358a12d](https://github.com/angular/material2/commit/358a12d)), closes [#9087](https://github.com/angular/material2/issues/9087)
+
+
+
 <a name="6.0.0-rc.11"></a>
 # [6.0.0-rc.11](https://github.com/angular/material2/compare/6.0.0-rc.5...6.0.0-rc.11) (2018-04-13)
 
@@ -421,6 +446,16 @@ We expect to have the tool ready when we release version 6.0.0.
 * **form-field, chip:** merge new form-field and chip features to master ([#9762](https://github.com/angular/material2/issues/9762)) ([4a5287c](https://github.com/angular/material2/commit/4a5287c)), closes [#9743](https://github.com/angular/material2/issues/9743) [#9759](https://github.com/angular/material2/issues/9759) [#9767](https://github.com/angular/material2/issues/9767)
 * **schematics:** add initial schematics utils ([#9451](https://github.com/angular/material2/issues/9451)) ([673d56e](https://github.com/angular/material2/commit/673d56e))
 * **tabs:** add ability to lazy load tab content ([#8921](https://github.com/angular/material2/issues/8921)) ([6feaf62](https://github.com/angular/material2/commit/6feaf62))
+
+
+
+<a name="5.2.5"></a>
+## [5.2.5 cardboard-kangaroo](https://github.com/angular/material2/compare/5.2.4...5.2.5) (2018-04-17)
+ 
+ 
+### Highlights
+* Tweak peer deps to avoid warnings when updating Angular to 6.0
+
 
 
 <a name="5.2.4"></a>
