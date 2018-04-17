@@ -9,7 +9,7 @@
 import {FocusableOption, FocusKeyManager} from '@angular/cdk/a11y';
 import {coerceBooleanProperty} from '@angular/cdk/coercion';
 import {SelectionModel} from '@angular/cdk/collections';
-import {SPACE, ENTER, HOME, END} from '@angular/cdk/keycodes';
+import {SPACE, ENTER, HOME, END, UP_ARROW, DOWN_ARROW} from '@angular/cdk/keycodes';
 import {
   AfterContentInit,
   Attribute,
@@ -370,7 +370,11 @@ export class MatSelectionList extends _MatSelectionListMixinBase implements Focu
 
   /** Passes relevant key presses to our key manager. */
   _keydown(event: KeyboardEvent) {
-    switch (event.keyCode) {
+    const keyCode = event.keyCode;
+    const manager = this._keyManager;
+    const previousFocusIndex = manager.activeItemIndex;
+
+    switch (keyCode) {
       case SPACE:
       case ENTER:
         if (!this.disabled) {
@@ -382,12 +386,16 @@ export class MatSelectionList extends _MatSelectionListMixinBase implements Focu
         break;
       case HOME:
       case END:
-        event.keyCode === HOME ? this._keyManager.setFirstItemActive() :
-                                 this._keyManager.setLastItemActive();
+        keyCode === HOME ? manager.setFirstItemActive() : manager.setLastItemActive();
         event.preventDefault();
         break;
       default:
-        this._keyManager.onKeydown(event);
+        manager.onKeydown(event);
+    }
+
+    if ((keyCode === UP_ARROW || keyCode === DOWN_ARROW) && event.shiftKey &&
+        manager.activeItemIndex !== previousFocusIndex) {
+      this._toggleSelectOnFocusedOption();
     }
   }
 
