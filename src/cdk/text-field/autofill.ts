@@ -17,7 +17,7 @@ import {
   OnInit,
   Output,
 } from '@angular/core';
-import {empty, Observable, Subject} from 'rxjs';
+import {EMPTY, Observable, Subject} from 'rxjs';
 
 
 /** An event that is emitted when the autofill state of an input changes. */
@@ -58,7 +58,7 @@ export class AutofillMonitor implements OnDestroy {
    */
   monitor(element: Element): Observable<AutofillEvent> {
     if (!this._platform.isBrowser) {
-      return empty();
+      return EMPTY;
     }
 
     const info = this._monitoredElements.get(element);

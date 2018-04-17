@@ -9,7 +9,7 @@
 import {supportsPassiveEventListeners} from '@angular/cdk/platform';
 import {Component, ElementRef, ViewChild} from '@angular/core';
 import {ComponentFixture, inject, TestBed} from '@angular/core/testing';
-import {empty as observableEmpty} from 'rxjs';
+import {EMPTY} from 'rxjs';
 import {AutofillEvent, AutofillMonitor} from './autofill';
 import {TextFieldModule} from './text-field-module';
 
@@ -166,7 +166,7 @@ describe('cdkAutofill', () => {
 
   beforeEach(inject([AutofillMonitor], (afm: AutofillMonitor) => {
     autofillMonitor = afm;
-    spyOn(autofillMonitor, 'monitor').and.returnValue(observableEmpty());
+    spyOn(autofillMonitor, 'monitor').and.returnValue(EMPTY);
     spyOn(autofillMonitor, 'stopMonitoring');
     fixture = TestBed.createComponent(InputWithCdkAutofilled);
     testComponent = fixture.componentInstance;

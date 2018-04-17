@@ -11,6 +11,7 @@ import {ComponentFixture, TestBed, fakeAsync, flush} from '@angular/core/testing
 import {CdkTable} from './table';
 import {CollectionViewer, DataSource} from '@angular/cdk/collections';
 import {combineLatest, BehaviorSubject, Observable} from 'rxjs';
+import {map} from 'rxjs/operators';
 import {CdkTableModule} from './index';
 import {
   getTableDuplicateColumnNameError,
@@ -832,7 +833,7 @@ class FakeDataSource extends DataSource<TestData> {
   connect(collectionViewer: CollectionViewer) {
     this.isConnected = true;
     const streams = [this._dataChange, collectionViewer.viewChange];
-    return combineLatest(streams, (data, _) => data);
+    return combineLatest<TestData[]>(streams).pipe(map(data => data[0]));
   }
 
   disconnect() {

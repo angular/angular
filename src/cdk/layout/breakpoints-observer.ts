@@ -59,11 +59,11 @@ export class BreakpointObserver implements OnDestroy {
     const queries = splitQueries(coerceArray(value));
     const observables = queries.map(query => this._registerQuery(query).observable);
 
-    return combineLatest(observables, (a: BreakpointState, b: BreakpointState) => {
+    return combineLatest(observables).pipe(map((breakpointStates: BreakpointState[]) => {
       return {
-        matches: !!((a && a.matches) || (b && b.matches)),
+        matches: breakpointStates.some(state => state && state.matches)
       };
-    });
+    }));
   }
 
   /** Registers a specific query to be listened for. */

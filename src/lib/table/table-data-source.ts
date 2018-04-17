@@ -10,7 +10,7 @@ import {_isNumberValue} from '@angular/cdk/coercion';
 import {DataSource} from '@angular/cdk/table';
 import {MatPaginator, PageEvent} from '@angular/material/paginator';
 import {MatSort, Sort} from '@angular/material/sort';
-import {BehaviorSubject, combineLatest, empty, Observable, Subscription} from 'rxjs';
+import {BehaviorSubject, combineLatest, EMPTY, Observable, Subscription} from 'rxjs';
 import {map, startWith} from 'rxjs/operators';
 
 
@@ -175,8 +175,8 @@ export class MatTableDataSource<T> extends DataSource<T> {
   _updateChangeSubscription() {
     // Sorting and/or pagination should be watched if MatSort and/or MatPaginator are provided.
     // Otherwise, use an empty observable stream to take their place.
-    const sortChange: Observable<Sort> = this._sort ? this._sort.sortChange : empty();
-    const pageChange: Observable<PageEvent> = this._paginator ? this._paginator.page : empty();
+    const sortChange: Observable<Sort> = this._sort ? this._sort.sortChange : EMPTY;
+    const pageChange: Observable<PageEvent> = this._paginator ? this._paginator.page : EMPTY;
 
     if (this._renderChangesSubscription) {
       this._renderChangesSubscription.unsubscribe();
