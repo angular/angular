@@ -8,6 +8,7 @@
 # alexeagle - Alex Eagle
 # alxhub - Alex Rickabaugh
 # andrewseguin - Andrew Seguin
+# brandonroberts - Brandon Roberts
 # brocco - Mike Brocchi
 # chuckjaz - Chuck Jazdzewski
 # filipesilva - Filipe Silva
@@ -352,6 +353,7 @@ groups:
       - petebacondarwin
       - gkalpak
       - IgorMinar
+      - brandonroberts
       - mhevery #fallback
 
   angular.io-marketing:
