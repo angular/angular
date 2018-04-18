@@ -1335,9 +1335,6 @@
     "name": "RecursiveAstVisitor$1"
   },
   {
-    "name": "RecursiveTemplateAstVisitor"
-  },
-  {
     "name": "RefCountOperator$1"
   },
   {
@@ -3592,6 +3589,9 @@
   },
   {
     "name": "pipeBinding"
+  },
+  {
+    "name": "pipeBindingIdentifiers"
   },
   {
     "name": "pipeDef"

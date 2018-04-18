@@ -51,14 +51,20 @@ export class BoundProperty {
  * Parses bindings in templates and in the directive host area.
  */
 export class BindingParser {
-  pipesByName: Map<string, CompilePipeSummary> = new Map();
+  pipesByName: Map<string, CompilePipeSummary>|null = null;
   private _usedPipes: Map<string, CompilePipeSummary> = new Map();
 
   constructor(
       private _exprParser: Parser, private _interpolationConfig: InterpolationConfig,
-      private _schemaRegistry: ElementSchemaRegistry, pipes: CompilePipeSummary[],
+      private _schemaRegistry: ElementSchemaRegistry, pipes: CompilePipeSummary[]|null,
       private _targetErrors: ParseError[]) {
-    pipes.forEach(pipe => this.pipesByName.set(pipe.name, pipe));
+    // When the `pipes` parameter is `null`, do not check for used pipes
+    // This is used in IVY when we might not know the available pipes at compile time
+    if (pipes) {
+      const pipesByName: Map<string, CompilePipeSummary> = new Map();
+      pipes.forEach(pipe => pipesByName.set(pipe.name, pipe));
+      this.pipesByName = pipesByName;
+    }
   }
 
   getUsedPipes(): CompilePipeSummary[] { return Array.from(this._usedPipes.values()); }
@@ -390,11 +396,11 @@ export class BindingParser {
 
   // Make sure all the used pipes are known in `this.pipesByName`
   private _checkPipes(ast: ASTWithSource, sourceSpan: ParseSourceSpan): void {
-    if (ast) {
+    if (ast && this.pipesByName) {
       const collector = new PipeCollector();
       ast.visit(collector);
       collector.pipes.forEach((ast, pipeName) => {
-        const pipeMeta = this.pipesByName.get(pipeName);
+        const pipeMeta = this.pipesByName !.get(pipeName);
         if (!pipeMeta) {
           this._reportError(
               `The pipe '${pipeName}' could not be found`,

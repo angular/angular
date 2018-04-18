@@ -22,6 +22,7 @@ import {BindingParser} from '../../src/template_parser/binding_parser';
 import {OutputContext, escapeRegExp} from '../../src/util';
 import {MockAotCompilerHost, MockCompilerHost, MockData, MockDirectory, arrayToMockDir, expectNoDiagnostics, settings, toMockFileArray} from '../aot/test_util';
 
+
 const IDENTIFIER = /[A-Za-z_$ɵ][A-Za-z0-9_$]*/;
 const OPERATOR =
     /!|%|\*|\/|\^|&&?|\|\|?|\(|\)|\{|\}|\[|\]|:|;|<=?|>=?|={1,3}|!==?|=>|\+\+?|--?|@|,|\.|\.\.\./;
@@ -235,7 +236,7 @@ function doCompile(
   const errors: ParseError[] = [];
 
   const hostBindingParser = new BindingParser(
-      expressionParser, DEFAULT_INTERPOLATION_CONFIG, elementSchemaRegistry, [], errors);
+      expressionParser, DEFAULT_INTERPOLATION_CONFIG, elementSchemaRegistry, null, errors);
 
   // Load all directives and pipes
   for (const pipeOrDirective of pipesOrDirectives) {
@@ -278,22 +279,45 @@ export function compile(
             continue;
           }
           if (resolver.isDirective(pipeOrDirective)) {
-            const metadata = resolver.getDirectiveMetadata(pipeOrDirective);
-            if (metadata.isComponent) {
+            const directive = resolver.getDirectiveMetadata(pipeOrDirective);
+            if (directive.isComponent) {
               const fakeUrl = 'ng://fake-template-url.html';
-              const htmlAst = htmlParser.parse(metadata.template !.template !, fakeUrl);
+              let htmlAst = htmlParser.parse(directive.template !.template !, fakeUrl);
+
+              // Map of StaticType by directive selectors
+              const directiveTypeBySel = new Map<string, any>();
 
               const directives = module.transitiveModule.directives.map(
                   dir => resolver.getDirectiveSummary(dir.reference));
+
+              directives.forEach(directive => {
+                if (directive.selector) {
+                  directiveTypeBySel.set(directive.selector, directive.type.reference);
+                }
+              });
+
+              // Map of StaticType by pipe names
+              const pipeTypeByName = new Map<string, any>();
+
               const pipes = module.transitiveModule.pipes.map(
                   pipe => resolver.getPipeSummary(pipe.reference));
-              const parsedTemplate = templateParser.parse(
-                  metadata, htmlAst, directives, pipes, module.schemas, fakeUrl, false);
+
+              pipes.forEach(pipe => { pipeTypeByName.set(pipe.name, pipe.type.reference); });
+
+              const preserveWhitespaces = directive.template !.preserveWhitespaces;
+              if (!preserveWhitespaces) {
+                htmlAst = removeWhitespaces(htmlAst);
+              }
+              const transform = new HtmlToTemplateTransform(hostBindingParser);
+              const nodes = html.visitAll(transform, htmlAst.rootNodes, null);
+              const hasNgContent = transform.hasNgContent;
+              const ngContentSelectors = transform.ngContentSelectors;
+
               compileComponent(
-                  outputCtx, metadata, pipes, parsedTemplate.template, reflector, hostBindingParser);
+                  outputCtx, directive, nodes, hasNgContent, ngContentSelectors, reflector,
+                  hostBindingParser, directiveTypeBySel, pipeTypeByName);
             } else {
-              compileDirective(
-                  outputCtx, metadata, reflector, hostBindingParser);
+              compileDirective(outputCtx, directive, reflector, hostBindingParser);
             }
           } else if (resolver.isPipe(pipeOrDirective)) {
             const metadata = resolver.getPipeMetadata(pipeOrDirective);
