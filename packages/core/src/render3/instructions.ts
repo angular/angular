@@ -481,6 +481,8 @@ export function renderEmbeddedTemplate<T>(
     template(rf, context);
     if (rf & RenderFlags.Update) {
       refreshView();
+    } else {
+      viewNode.data.tView.firstTemplatePass = firstTemplatePass = false;
     }
   } finally {
     leaveView(oldView !, (rf & RenderFlags.Create) === RenderFlags.Create);

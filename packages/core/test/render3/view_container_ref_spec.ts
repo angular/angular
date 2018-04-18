@@ -414,9 +414,11 @@ describe('ViewContainerRef', () => {
 
         const fixture = new ComponentFixture(SomeComponent);
         directiveInstance !.vcref.createEmbeddedView(directiveInstance !.tplRef, fixture.component);
+        directiveInstance !.vcref.createEmbeddedView(directiveInstance !.tplRef, fixture.component);
         fixture.update();
         expect(fixture.html)
-            .toEqual('<child vcref="">**A**</child><child>**C**</child><child>**B**</child>');
+            .toEqual(
+                '<child vcref="">**A**</child><child>**C**</child><child>**C**</child><child>**B**</child>');
       });
     });
 
