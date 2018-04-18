@@ -160,17 +160,6 @@ function defaultErrorHandler(error: any): any {
   throw error;
 }
 
-/**
- * @description
- *
- * Malformed uri error handler is invoked when `Router.parseUrl(url)` throws an
- * error due to containing an invalid character. The most common case would be a `%` sign
- * that's not encoded and is not part of a percent encoded sequence.
- *
- */
-export type MalformedUriErrorHandler =
-    (error: URIError, urlSerializer: UrlSerializer, url: string) => UrlTree;
-
 function defaultMalformedUriErrorHandler(
     error: URIError, urlSerializer: UrlSerializer, url: string): UrlTree {
   return urlSerializer.parse('/');
@@ -234,14 +223,13 @@ export class Router {
   errorHandler: ErrorHandler = defaultErrorHandler;
 
   /**
-   * Error handler is invoked when an error occurs attempting to decode a URI. For example, having
-   * a `%` sign that's not encoded.
-   *
-   * See `MalformedUriErrorHandler` for more information.
-   *
-   * @internal
+   * Malformed uri error handler is invoked when `Router.parseUrl(url)` throws an
+   * error due to containing an invalid character. The most common case would be a `%` sign
+   * that's not encoded and is not part of a percent encoded sequence.
    */
-  malformedUriErrorHandler: MalformedUriErrorHandler = defaultMalformedUriErrorHandler;
+  malformedUriErrorHandler:
+      (error: URIError, urlSerializer: UrlSerializer,
+       url: string) => UrlTree = defaultMalformedUriErrorHandler;
 
   /**
    * Indicates if at least one navigation happened.

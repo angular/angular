@@ -17,7 +17,7 @@ import {RouterLinkActive} from './directives/router_link_active';
 import {RouterOutlet} from './directives/router_outlet';
 import {RouterEvent} from './events';
 import {RouteReuseStrategy} from './route_reuse_strategy';
-import {ErrorHandler, MalformedUriErrorHandler, Router} from './router';
+import {ErrorHandler, Router} from './router';
 import {ROUTES} from './router_config_loader';
 import {ChildrenOutletContexts} from './router_outlet_context';
 import {NoPreloading, PreloadAllModules, PreloadingStrategy, RouterPreloader} from './router_preloader';

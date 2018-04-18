@@ -1024,7 +1024,7 @@ describe('Integration', () => {
        const customMalformedUriErrorHandler =
            (e: URIError, urlSerializer: UrlSerializer, url: string):
                UrlTree => { return urlSerializer.parse('/?error=The-URL-you-went-to-is-invalid'); };
-       (router as any).malformedUriErrorHandler = customMalformedUriErrorHandler;
+       router.malformedUriErrorHandler = customMalformedUriErrorHandler;
 
        router.resetConfig([{path: 'simple', component: SimpleCmp}]);
 
@@ -3909,7 +3909,7 @@ describe('Testing router options', () => {
     });
 
     it('should configure the router', fakeAsync(inject([Router], (router: Router) => {
-         expect((router as any).malformedUriErrorHandler).toBe(malformedUriErrorHandler);
+         expect(router.malformedUriErrorHandler).toBe(malformedUriErrorHandler);
        })));
   });
 });
