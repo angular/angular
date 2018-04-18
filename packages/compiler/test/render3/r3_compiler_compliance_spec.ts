@@ -344,11 +344,11 @@ describe('compiler compliance', () => {
           template: function MyComponent_Template(rf: IDENT, ctx: IDENT) {
             if (rf & 1) {
               $r3$.ɵE(0, 'ul', null, $c1$);
-              $r3$.ɵC(2, MyComponent_IfDirective_Template_2, null, $c2$);
+              $r3$.ɵC(2, MyComponent_li_Template_2, null, $c2$);
               $r3$.ɵe();
             }
             const $foo$ = $r3$.ɵld(1);
-            function MyComponent_IfDirective_Template_2(rf: IDENT, ctx0: IDENT) {
+            function MyComponent_li_Template_2(rf: IDENT, ctx0: IDENT) {
               if (rf & 1) {
                 $r3$.ɵE(0, 'li');
                 $r3$.ɵT(1);
@@ -359,7 +359,7 @@ describe('compiler compliance', () => {
               }
             }
           },
-          directives: [IfDirective]
+          directives:[IfDirective]
         });`;
 
       const result = compile(files, angularFiles);
@@ -420,7 +420,7 @@ describe('compiler compliance', () => {
                 $r3$.ɵp(0, 'names', $r3$.ɵb($r3$.ɵf1($e0_ff$, ctx.customName)));
               }
             },
-            directives: [MyComp]
+           directives: [MyComp]
           });
         `;
 
@@ -1147,7 +1147,7 @@ describe('compiler compliance', () => {
         `;
 
         const MyComponentDefinition = `
-          const $_c0$ = ['forOf',''];
+          const $_c0$ = ['for','','forOf',''];
           …
           static ngComponentDef = $r3$.ɵdefineComponent({
             type: MyComponent,
@@ -1156,14 +1156,14 @@ describe('compiler compliance', () => {
             template: function MyComponent_Template(rf: IDENT, ctx: IDENT) {
               if (rf & 1) {
                 $r3$.ɵE(0, 'ul');
-                $r3$.ɵC(1, MyComponent_ForOfDirective_Template_1, null, $_c0$);
+                $r3$.ɵC(1, MyComponent_li_Template_1, null, $_c0$);
                 $r3$.ɵe();
               }
               if (rf & 2) {
                 $r3$.ɵp(1, 'forOf', $r3$.ɵb(ctx.items));
               }
 
-              function MyComponent_ForOfDirective_Template_1(rf: IDENT, ctx0: IDENT) {
+              function MyComponent_li_Template_1(rf: IDENT, ctx0: IDENT) {
                 if (rf & 1) {
                   $r3$.ɵE(0, 'li');
                   $r3$.ɵT(1);
@@ -1225,7 +1225,7 @@ describe('compiler compliance', () => {
         };
 
         const MyComponentDefinition = `
-          const $c1$ = ['forOf', ''];
+          const $c1$ = ['for', '', 'forOf', ''];
           …
           static ngComponentDef = $r3$.ɵdefineComponent({
             type: MyComponent,
@@ -1234,21 +1234,21 @@ describe('compiler compliance', () => {
             template: function MyComponent_Template(rf: IDENT, ctx: IDENT) {
               if (rf & 1) {
                 $r3$.ɵE(0, 'ul');
-                $r3$.ɵC(1, MyComponent_ForOfDirective_Template_1, null, $c1$);
+                $r3$.ɵC(1, MyComponent_li_Template_1, null, $c1$);
                 $r3$.ɵe();
               }
               if (rf & 2) {
                 $r3$.ɵp(1, 'forOf', $r3$.ɵb(ctx.items));
               }
 
-              function MyComponent_ForOfDirective_Template_1(rf: IDENT, ctx0: IDENT) {
+              function MyComponent_li_Template_1(rf: IDENT, ctx0: IDENT) {
                 if (rf & 1) {
                   $r3$.ɵE(0, 'li');
                   $r3$.ɵE(1, 'div');
                   $r3$.ɵT(2);
                   $r3$.ɵe();
                   $r3$.ɵE(3, 'ul');
-                  $r3$.ɵC(4, MyComponent_ForOfDirective_ForOfDirective_Template_4, null, $c1$);
+                  $r3$.ɵC(4, MyComponent_li_li_Template_4, null, $c1$);
                   $r3$.ɵe();
                   $r3$.ɵe();
                 }
@@ -1258,8 +1258,7 @@ describe('compiler compliance', () => {
                   $r3$.ɵp(4, 'forOf', $r3$.ɵb(IDENT.infos));
                 }
 
-                function MyComponent_ForOfDirective_ForOfDirective_Template_4(
-                    rf: IDENT, ctx1: IDENT) {
+                function MyComponent_li_li_Template_4(rf: IDENT, ctx1: IDENT) {
                   if (rf & 1) {
                     $r3$.ɵE(0, 'li');
                     $r3$.ɵT(1);

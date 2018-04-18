@@ -6,15 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CompileDirectiveMetadata, CompilePipeMetadata, identifierName} from '../compile_metadata';
+import {CompilePipeMetadata, identifierName} from '../compile_metadata';
 import {CompileReflector} from '../compile_reflector';
 import {DefinitionKind} from '../constant_pool';
 import * as o from '../output/output_ast';
 import {OutputContext, error} from '../util';
 
 import {Identifiers as R3} from './r3_identifiers';
-import {BUILD_OPTIMIZER_COLOCATE} from './r3_types';
-import {createFactory} from './r3_view_compiler';
+import {createFactory} from './r3_view_compiler_local';
 
 /**
  * Write a pipe definition to the output context.
@@ -30,11 +29,11 @@ export function compilePipe(
   definitionMapValues.push(
       {key: 'type', value: outputCtx.importExpr(pipe.type.reference), quoted: false});
 
-  // e.g. factory: function MyPipe_Factory() { return new MyPipe(); },
+  // e.g. `factory: function MyPipe_Factory() { return new MyPipe(); }`
   const templateFactory = createFactory(pipe.type, outputCtx, reflector, []);
   definitionMapValues.push({key: 'factory', value: templateFactory, quoted: false});
 
-  // e.g. pure: true
+  // e.g. `pure: true`
   if (pipe.pure) {
     definitionMapValues.push({key: 'pure', value: o.literal(true), quoted: false});
   }

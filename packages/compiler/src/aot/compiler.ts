@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CompileDirectiveMetadata, CompileDirectiveSummary, CompileIdentifierMetadata, CompileInjectableMetadata, CompileNgModuleMetadata, CompileNgModuleSummary, CompilePipeMetadata, CompilePipeSummary, CompileProviderMetadata, CompileShallowModuleMetadata, CompileStylesheetMetadata, CompileSummaryKind, CompileTypeMetadata, CompileTypeSummary, componentFactoryName, flatten, identifierName, templateSourceUrl, tokenReference} from '../compile_metadata';
+import {CompileDirectiveMetadata, CompileIdentifierMetadata, CompileInjectableMetadata, CompileNgModuleMetadata, CompilePipeMetadata, CompilePipeSummary, CompileProviderMetadata, CompileShallowModuleMetadata, CompileStylesheetMetadata, CompileTypeMetadata, CompileTypeSummary, componentFactoryName, flatten, identifierName, templateSourceUrl} from '../compile_metadata';
 import {CompilerConfig} from '../config';
 import {ConstantPool} from '../constant_pool';
 import {ViewEncapsulation} from '../core';
@@ -14,7 +14,9 @@ import {MessageBundle} from '../i18n/message_bundle';
 import {Identifiers, createTokenForExternalReference} from '../identifiers';
 import {InjectableCompiler} from '../injectable_compiler';
 import {CompileMetadataResolver} from '../metadata_resolver';
+import * as html from '../ml_parser/ast';
 import {HtmlParser} from '../ml_parser/html_parser';
+import {removeWhitespaces} from '../ml_parser/html_whitespaces';
 import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from '../ml_parser/interpolation_config';
 import {NgModuleCompiler} from '../ng_module_compiler';
 import {OutputEmitter} from '../output/abstract_emitter';
@@ -22,7 +24,9 @@ import * as o from '../output/output_ast';
 import {ParseError} from '../parse_util';
 import {compileNgModule as compileIvyModule} from '../render3/r3_module_compiler';
 import {compilePipe as compileIvyPipe} from '../render3/r3_pipe_compiler';
-import {compileComponent as compileIvyComponent, compileDirective as compileIvyDirective} from '../render3/r3_view_compiler';
+import {HtmlToTemplateTransform} from '../render3/r3_template_transform';
+import {compileComponent as compileIvyComponent, compileDirective as compileIvyDirective} from '../render3/r3_view_compiler_local';
+import {DomElementSchemaRegistry} from '../schema/dom_element_schema_registry';
 import {CompiledStylesheet, StyleCompiler} from '../style_compiler';
 import {SummaryResolver} from '../summary_resolver';
 import {BindingParser} from '../template_parser/binding_parser';
@@ -39,15 +43,11 @@ import {LazyRoute, listLazyRoutes, parseLazyRoute} from './lazy_routes';
 import {PartialModule} from './partial_module';
 import {StaticReflector} from './static_reflector';
 import {StaticSymbol} from './static_symbol';
-import {ResolvedStaticSymbol, StaticSymbolResolver} from './static_symbol_resolver';
+import {StaticSymbolResolver} from './static_symbol_resolver';
 import {createForJitStub, serializeSummaries} from './summary_serializer';
-import {ngfactoryFilePath, normalizeGenFileSuffix, splitTypescriptSuffix, summaryFileName, summaryForJitFileName, summaryForJitName} from './util';
+import {ngfactoryFilePath, normalizeGenFileSuffix, splitTypescriptSuffix, summaryFileName, summaryForJitFileName} from './util';
 
-enum StubEmitFlags {
-  Basic = 1 << 0,
-  TypeCheck = 1 << 1,
-  All = TypeCheck | Basic
-}
+const enum StubEmitFlags { Basic = 1 << 0, TypeCheck = 1 << 1, All = TypeCheck | Basic }
 
 export class AotCompiler {
   private _templateAstCache =
@@ -369,11 +369,12 @@ export class AotCompiler {
       fileName: string, ngModuleByPipeOrDirective: Map<StaticSymbol, CompileNgModuleMetadata>,
       directives: StaticSymbol[], pipes: StaticSymbol[], ngModules: CompileNgModuleMetadata[],
       injectables: CompileInjectableMetadata[], context: OutputContext): void {
-    const classes: o.ClassStmt[] = [];
     const errors: ParseError[] = [];
 
+    const schemaRegistry = new DomElementSchemaRegistry();
     const hostBindingParser = new BindingParser(
-        this._templateParser.expressionParser, DEFAULT_INTERPOLATION_CONFIG, null !, [], errors);
+        this._templateParser.expressionParser, DEFAULT_INTERPOLATION_CONFIG, schemaRegistry, [],
+        errors);
 
     // Process all components and directives
     directives.forEach(directiveType => {
@@ -384,11 +385,40 @@ export class AotCompiler {
             error(
                 `Cannot determine the module for component '${identifierName(directiveMetadata.type)}'`);
 
-        const {template: parsedTemplate, pipes: parsedPipes} =
-            this._parseTemplate(directiveMetadata, module, module.transitiveModule.directives);
+        let htmlAst = directiveMetadata.template !.htmlAst !;
+        const preserveWhitespaces = directiveMetadata !.template !.preserveWhitespaces;
+
+        if (!preserveWhitespaces) {
+          htmlAst = removeWhitespaces(htmlAst);
+        }
+        const transform = new HtmlToTemplateTransform(hostBindingParser);
+        const nodes = html.visitAll(transform, htmlAst.rootNodes, null);
+        const hasNgContent = transform.hasNgContent;
+        const ngContentSelectors = transform.ngContentSelectors;
+
+        // Map of StaticType by directive selectors
+        const directiveTypeBySel = new Map<string, any>();
+
+        const directives = module.transitiveModule.directives.map(
+            dir => this._metadataResolver.getDirectiveSummary(dir.reference));
+
+        directives.forEach(directive => {
+          if (directive.selector) {
+            directiveTypeBySel.set(directive.selector, directive.type.reference);
+          }
+        });
+
+        // Map of StaticType by pipe names
+        const pipeTypeByName = new Map<string, any>();
+
+        const pipes = module.transitiveModule.pipes.map(
+            pipe => this._metadataResolver.getPipeSummary(pipe.reference));
+
+        pipes.forEach(pipe => { pipeTypeByName.set(pipe.name, pipe.type.reference); });
+
         compileIvyComponent(
-            context, directiveMetadata, parsedPipes, parsedTemplate, this.reflector,
-            hostBindingParser);
+            context, directiveMetadata, nodes, hasNgContent, ngContentSelectors, this.reflector,
+            hostBindingParser, directiveTypeBySel, pipeTypeByName);
       } else {
         compileIvyDirective(context, directiveMetadata, this.reflector, hostBindingParser);
       }
@@ -891,16 +921,13 @@ export function analyzeFileForInjectables(
       if (!symbolMeta || symbolMeta.__symbolic === 'error') {
         return;
       }
-      let isNgSymbol = false;
       if (symbolMeta.__symbolic === 'class') {
         if (metadataResolver.isInjectable(symbol)) {
-          isNgSymbol = true;
           const injectable = metadataResolver.getInjectableMetadata(symbol, null, false);
           if (injectable) {
             injectables.push(injectable);
           }
         } else if (metadataResolver.isNgModule(symbol)) {
-          isNgSymbol = true;
           const module = metadataResolver.getShallowModuleMetadata(symbol);
           if (module) {
             shallowModules.push(module);
