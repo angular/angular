@@ -6,19 +6,18 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AotCompilerHost, AotCompilerOptions, AotSummaryResolver, CompileDirectiveMetadata, CompileIdentifierMetadata, CompileMetadataResolver, CompileNgModuleMetadata, CompilePipeSummary, CompileTypeMetadata, CompilerConfig, DEFAULT_INTERPOLATION_CONFIG, DirectiveNormalizer, DirectiveResolver, DomElementSchemaRegistry, HtmlParser, Lexer, NgModuleResolver, ParseError, Parser, PipeResolver, StaticReflector, StaticSymbol, StaticSymbolCache, StaticSymbolResolver, TemplateParser, TypeScriptEmitter, analyzeNgModules, createAotUrlResolver, templateSourceUrl} from '@angular/compiler';
+import {AotCompilerOptions, AotSummaryResolver, CompileMetadataResolver, CompilerConfig, DEFAULT_INTERPOLATION_CONFIG, DirectiveNormalizer, DirectiveResolver, DomElementSchemaRegistry, HtmlParser, Lexer, NgModuleResolver, ParseError, Parser, PipeResolver, StaticReflector, StaticSymbol, StaticSymbolCache, StaticSymbolResolver, TemplateParser, TypeScriptEmitter, analyzeNgModules, createAotUrlResolver} from '@angular/compiler';
 import {ViewEncapsulation} from '@angular/core';
 import * as ts from 'typescript';
 
 import {NgAnalyzedModules} from '../../src/aot/compiler';
 import {ConstantPool} from '../../src/constant_pool';
-import {ParserError} from '../../src/expression_parser/ast';
+import * as html from '../../src/ml_parser/ast';
+import {removeWhitespaces} from '../../src/ml_parser/html_whitespaces';
 import * as o from '../../src/output/output_ast';
-import {ModuleKind, compileModuleBackPatch} from '../../src/render3/r3_back_patch_compiler';
-import {compileModuleFactory} from '../../src/render3/r3_module_factory_compiler';
 import {compilePipe} from '../../src/render3/r3_pipe_compiler';
-import {OutputMode} from '../../src/render3/r3_types';
-import {compileComponent, compileDirective} from '../../src/render3/r3_view_compiler';
+import {HtmlToTemplateTransform} from '../../src/render3/r3_template_transform';
+import {compileComponent, compileDirective} from '../../src/render3/r3_view_compiler_local';
 import {BindingParser} from '../../src/template_parser/binding_parser';
 import {OutputContext, escapeRegExp} from '../../src/util';
 import {MockAotCompilerHost, MockCompilerHost, MockData, MockDirectory, arrayToMockDir, expectNoDiagnostics, settings, toMockFileArray} from '../aot/test_util';
@@ -252,9 +251,6 @@ function doCompile(
 
   const emitter = new TypeScriptEmitter();
 
-  const moduleName = compilerHost.fileNameToModuleName(
-      fakeOutputContext.genFilePath, fakeOutputContext.genFilePath);
-
   const result = emitter.emitStatementsAndContext(
       fakeOutputContext.genFilePath, fakeOutputContext.statements, '', false,
       /* referenceFilter */ undefined,
@@ -294,81 +290,18 @@ export function compile(
               const parsedTemplate = templateParser.parse(
                   metadata, htmlAst, directives, pipes, module.schemas, fakeUrl, false);
               compileComponent(
-                  outputCtx, metadata, pipes, parsedTemplate.template, reflector, hostBindingParser,
-                  OutputMode.PartialClass);
+                  outputCtx, metadata, pipes, parsedTemplate.template, reflector, hostBindingParser);
             } else {
               compileDirective(
-                  outputCtx, metadata, reflector, hostBindingParser, OutputMode.PartialClass);
+                  outputCtx, metadata, reflector, hostBindingParser);
             }
           } else if (resolver.isPipe(pipeOrDirective)) {
             const metadata = resolver.getPipeMetadata(pipeOrDirective);
             if (metadata) {
-              compilePipe(outputCtx, metadata, reflector, OutputMode.PartialClass);
+              compilePipe(outputCtx, metadata, reflector);
             }
           }
         }
 
-      });
-}
-
-const DTS = /\.d\.ts$/;
-const EXT = /(\.\w+)+$/;
-const NONE_WORD = /\W/g;
-const NODE_MODULES = /^.*\/node_modules\//;
-
-function getBackPatchFunctionName(type: CompileTypeMetadata) {
-  const filePath = (type.reference.filePath as string)
-                       .replace(EXT, '')
-                       .replace(NODE_MODULES, '')
-                       .replace(NONE_WORD, '_');
-  return `ngBackPatch_${filePath.split('/').filter(s => !!s).join('_')}_${type.reference.name}`;
-}
-
-function getBackPatchReference(type: CompileTypeMetadata): o.Expression {
-  return o.variable(getBackPatchFunctionName(type));
-}
-
-export function backPatch(
-    data: MockDirectory, angularFiles: MockData, options: AotCompilerOptions = {},
-    errorCollector: (error: any, fileName?: string) => void = error => { throw error;}) {
-  return doCompile(
-      data, angularFiles, options, errorCollector,
-      (outputCtx: OutputContext, analyzedModules: NgAnalyzedModules,
-       resolver: CompileMetadataResolver, htmlParser: HtmlParser, templateParser: TemplateParser,
-       hostBindingParser: BindingParser, reflector: StaticReflector) => {
-
-        const parseTemplate =
-            (compMeta: CompileDirectiveMetadata, ngModule: CompileNgModuleMetadata,
-             directiveIdentifiers: CompileIdentifierMetadata[]) => {
-              const directives =
-                  directiveIdentifiers.map(dir => resolver.getDirectiveSummary(dir.reference));
-              const pipes = ngModule.transitiveModule.pipes.map(
-                  pipe => resolver.getPipeSummary(pipe.reference));
-              return templateParser.parse(
-                  compMeta, compMeta.template !.htmlAst !, directives, pipes, ngModule.schemas,
-                  templateSourceUrl(ngModule.type, compMeta, compMeta.template !), true);
-            };
-
-        for (const module of analyzedModules.ngModules) {
-          compileModuleBackPatch(
-              outputCtx, getBackPatchFunctionName(module.type), module,
-              DTS.test(module.type.reference.filePath) ? ModuleKind.Renderer2 :
-                                                         ModuleKind.Renderer3,
-              getBackPatchReference, parseTemplate, reflector, resolver);
-        }
-      });
-}
-
-export function createFactories(
-    data: MockDirectory, context: MockData, options: AotCompilerOptions = {},
-    errorCollector: (error: any, fileName?: string) => void = error => { throw error;}) {
-  return doCompile(
-      data, context, options, errorCollector,
-      (outputCtx: OutputContext, analyzedModules: NgAnalyzedModules,
-       resolver: CompileMetadataResolver, htmlParser: HtmlParser, templateParser: TemplateParser,
-       hostBindingParser: BindingParser, reflector: StaticReflector) => {
-        for (const module of analyzedModules.ngModules) {
-          compileModuleFactory(outputCtx, module, getBackPatchReference, resolver);
-        }
       });
 }

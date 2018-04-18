@@ -22,7 +22,7 @@ import {AttrAst, BoundDirectivePropertyAst, BoundElementPropertyAst, BoundEventA
 import {OutputContext, error} from '../util';
 
 import {Identifiers as R3} from './r3_identifiers';
-import {BUILD_OPTIMIZER_COLOCATE, OutputMode} from './r3_types';
+import {BUILD_OPTIMIZER_COLOCATE} from './r3_types';
 
 
 /** Name of the context parameter passed into a template function */
@@ -50,7 +50,7 @@ const ID_SEPARATOR = '@@';
 
 export function compileDirective(
     outputCtx: OutputContext, directive: CompileDirectiveMetadata, reflector: CompileReflector,
-    bindingParser: BindingParser, mode: OutputMode) {
+    bindingParser: BindingParser) {
   const definitionMapValues: {key: string, quoted: boolean, value: o.Expression}[] = [];
 
   const field = (key: string, value: o.Expression | null) => {
@@ -87,34 +87,24 @@ export function compileDirective(
   const definitionFunction =
       o.importExpr(R3.defineDirective).callFn([o.literalMap(definitionMapValues)]);
 
-  if (mode === OutputMode.PartialClass) {
-    // Create the partial class to be merged with the actual class.
-    outputCtx.statements.push(new o.ClassStmt(
-        /* name */ className,
-        /* parent */ null,
-        /* fields */[new o.ClassField(
-            /* name */ definitionField,
-            /* type */ o.INFERRED_TYPE,
-            /* modifiers */[o.StmtModifier.Static],
-            /* initializer */ definitionFunction)],
-        /* getters */[],
-        /* constructorMethod */ new o.ClassMethod(null, [], []),
-        /* methods */[]));
-  } else {
-    // Create back-patch definition.
-    const classReference = outputCtx.importExpr(directive.type.reference);
-
-    // Create the back-patch statement
-    outputCtx.statements.push(new o.CommentStmt(BUILD_OPTIMIZER_COLOCATE));
-    outputCtx.statements.push(
-        classReference.prop(definitionField).set(definitionFunction).toStmt());
-  }
+  // Create the partial class to be merged with the actual class.
+  outputCtx.statements.push(new o.ClassStmt(
+      /* name */ className,
+      /* parent */ null,
+      /* fields */[new o.ClassField(
+          /* name */ definitionField,
+          /* type */ o.INFERRED_TYPE,
+          /* modifiers */[o.StmtModifier.Static],
+          /* initializer */ definitionFunction)],
+      /* getters */[],
+      /* constructorMethod */ new o.ClassMethod(null, [], []),
+      /* methods */[]));
 }
 
 export function compileComponent(
     outputCtx: OutputContext, component: CompileDirectiveMetadata,
     pipeSummaries: CompilePipeSummary[], template: TemplateAst[], reflector: CompileReflector,
-    bindingParser: BindingParser, mode: OutputMode) {
+    bindingParser: BindingParser) {
   const definitionMapValues: {key: string, quoted: boolean, value: o.Expression}[] = [];
 
   // Pipes and Directives found in the template
@@ -200,30 +190,21 @@ export function compileComponent(
   const definitionField = outputCtx.constantPool.propertyNameOf(DefinitionKind.Component);
   const definitionFunction =
       o.importExpr(R3.defineComponent).callFn([o.literalMap(definitionMapValues)]);
-  if (mode === OutputMode.PartialClass) {
-    const className = identifierName(component.type) !;
-    className || error(`Cannot resolver the name of ${component.type}`);
+  const className = identifierName(component.type) !;
+  className || error(`Cannot resolver the name of ${component.type}`);
 
-    // Create the partial class to be merged with the actual class.
-    outputCtx.statements.push(new o.ClassStmt(
-        /* name */ className,
-        /* parent */ null,
-        /* fields */[new o.ClassField(
-            /* name */ definitionField,
-            /* type */ o.INFERRED_TYPE,
-            /* modifiers */[o.StmtModifier.Static],
-            /* initializer */ definitionFunction)],
-        /* getters */[],
-        /* constructorMethod */ new o.ClassMethod(null, [], []),
-        /* methods */[]));
-  } else {
-    const classReference = outputCtx.importExpr(component.type.reference);
-
-    // Create the back-patch statement
-    outputCtx.statements.push(
-        new o.CommentStmt(BUILD_OPTIMIZER_COLOCATE),
-        classReference.prop(definitionField).set(definitionFunction).toStmt());
-  }
+  // Create the partial class to be merged with the actual class.
+  outputCtx.statements.push(new o.ClassStmt(
+      /* name */ className,
+      /* parent */ null,
+      /* fields */[new o.ClassField(
+          /* name */ definitionField,
+          /* type */ o.INFERRED_TYPE,
+          /* modifiers */[o.StmtModifier.Static],
+          /* initializer */ definitionFunction)],
+      /* getters */[],
+      /* constructorMethod */ new o.ClassMethod(null, [], []),
+      /* methods */[]));
 }
 
 // TODO: Remove these when the things are fully supported

@@ -22,7 +22,6 @@ import * as o from '../output/output_ast';
 import {ParseError} from '../parse_util';
 import {compileNgModule as compileIvyModule} from '../render3/r3_module_compiler';
 import {compilePipe as compileIvyPipe} from '../render3/r3_pipe_compiler';
-import {OutputMode} from '../render3/r3_types';
 import {compileComponent as compileIvyComponent, compileDirective as compileIvyDirective} from '../render3/r3_view_compiler';
 import {CompiledStylesheet, StyleCompiler} from '../style_compiler';
 import {SummaryResolver} from '../summary_resolver';
@@ -389,17 +388,16 @@ export class AotCompiler {
             this._parseTemplate(directiveMetadata, module, module.transitiveModule.directives);
         compileIvyComponent(
             context, directiveMetadata, parsedPipes, parsedTemplate, this.reflector,
-            hostBindingParser, OutputMode.PartialClass);
+            hostBindingParser);
       } else {
-        compileIvyDirective(
-            context, directiveMetadata, this.reflector, hostBindingParser, OutputMode.PartialClass);
+        compileIvyDirective(context, directiveMetadata, this.reflector, hostBindingParser);
       }
     });
 
     pipes.forEach(pipeType => {
       const pipeMetadata = this._metadataResolver.getPipeMetadata(pipeType);
       if (pipeMetadata) {
-        compileIvyPipe(context, pipeMetadata, this.reflector, OutputMode.PartialClass);
+        compileIvyPipe(context, pipeMetadata, this.reflector);
       }
     });
 
