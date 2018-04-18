@@ -98,6 +98,8 @@ injection token.
 
 ### Option groups
 `mat-option` can be collected into groups using the `mat-optgroup` element:
+<!-- example(autocomplete-optgroup) -->
+
 
 ```html
 <mat-autocomplete #auto="matAutocomplete">
