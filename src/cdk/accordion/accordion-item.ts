@@ -109,7 +109,10 @@ export class CdkAccordionItem implements OnDestroy {
 
   /** Emits an event for the accordion item being destroyed. */
   ngOnDestroy() {
+    this.opened.complete();
+    this.closed.complete();
     this.destroyed.emit();
+    this.destroyed.complete();
     this._removeUniqueSelectionListener();
     this._openCloseAllSubscription.unsubscribe();
   }

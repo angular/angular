@@ -132,6 +132,45 @@ describe('CdkAccordionItem', () => {
         expect(item.destroyed.emit).toHaveBeenCalled();
       });
     });
+
+    it('should emit to and complete the `destroyed` stream on destroy', () => {
+      const emitSpy = jasmine.createSpy('emit spy');
+      const completeSpy = jasmine.createSpy('complete spy');
+      const subscription = item.destroyed.subscribe(emitSpy, undefined, completeSpy);
+
+      fixture.detectChanges();
+      fixture.destroy();
+
+      expect(emitSpy).toHaveBeenCalled();
+      expect(completeSpy).toHaveBeenCalled();
+
+      subscription.unsubscribe();
+    });
+
+    it('should complete the `opened` stream on destroy', () => {
+      const completeSpy = jasmine.createSpy('complete spy');
+      const subscription = item.opened.subscribe(() => {}, undefined, completeSpy);
+
+      fixture.detectChanges();
+      fixture.destroy();
+
+      expect(completeSpy).toHaveBeenCalled();
+
+      subscription.unsubscribe();
+    });
+
+    it('should complete the `closed` stream on destroy', () => {
+      const completeSpy = jasmine.createSpy('complete spy');
+      const subscription = item.closed.subscribe(() => {}, undefined, completeSpy);
+
+      fixture.detectChanges();
+      fixture.destroy();
+
+      expect(completeSpy).toHaveBeenCalled();
+
+      subscription.unsubscribe();
+    });
+
   });
 
   describe('items without accordion', () => {
