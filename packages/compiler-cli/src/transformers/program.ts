@@ -15,6 +15,7 @@ import * as ts from 'typescript';
 import {TypeCheckHost, translateDiagnostics} from '../diagnostics/translate_diagnostics';
 import {compareVersions} from '../diagnostics/typescript_version';
 import {MetadataCollector, ModuleMetadata, createBundleIndexHost} from '../metadata/index';
+import {NgtscProgram} from '../ngtsc/program';
 
 import {CompilerHost, CompilerOptions, CustomTransformers, DEFAULT_ERROR_CODE, Diagnostic, DiagnosticMessageChain, EmitFlags, LazyRoute, LibrarySummary, Program, SOURCE, TsEmitArguments, TsEmitCallback, TsMergeEmitResultsCallback} from './api';
 import {CodeGenerator, TsCompilerAotCompilerTypeCheckHostAdapter, getOriginalReferences} from './compiler_host';
@@ -286,6 +287,9 @@ class AngularCompilerProgram implements Program {
     emitCallback?: TsEmitCallback,
     mergeEmitResultsCallback?: TsMergeEmitResultsCallback,
   } = {}): ts.EmitResult {
+    if (this.options.enableIvy === 'ngtsc') {
+      throw new Error('Cannot run legacy compiler in ngtsc mode');
+    }
     return this.options.enableIvy === true ? this._emitRender3(parameters) :
                                              this._emitRender2(parameters);
   }
@@ -903,6 +907,9 @@ export function createProgram({rootNames, options, host, oldProgram}: {
   options: CompilerOptions,
   host: CompilerHost, oldProgram?: Program
 }): Program {
+  if (options.enableIvy === 'ngtsc') {
+    return new NgtscProgram(rootNames, options, host, oldProgram);
+  }
   return new AngularCompilerProgram(rootNames, options, host, oldProgram);
 }
 
