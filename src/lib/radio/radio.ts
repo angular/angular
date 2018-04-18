@@ -155,7 +155,7 @@ export class MatRadioGroup extends _MatRadioGroupMixinBase
   @Input()
   get value(): any { return this._value; }
   set value(newValue: any) {
-    if (this._value != newValue) {
+    if (this._value !== newValue) {
       // Set this before proceeding to ensure no circular loop occurs with selection.
       this._value = newValue;
 
@@ -231,12 +231,12 @@ export class MatRadioGroup extends _MatRadioGroupMixinBase
   /** Updates the `selected` radio button from the internal _value state. */
   private _updateSelectedRadioFromValue(): void {
     // If the value already matches the selected radio, do nothing.
-    const isAlreadySelected = this._selected != null && this._selected.value == this._value;
+    const isAlreadySelected = this._selected !== null && this._selected.value === this._value;
 
-    if (this._radios != null && !isAlreadySelected) {
+    if (this._radios && !isAlreadySelected) {
       this._selected = null;
       this._radios.forEach(radio => {
-        radio.checked = this.value == radio.value;
+        radio.checked = this.value === radio.value;
         if (radio.checked) {
           this._selected = radio;
         }
@@ -357,13 +357,12 @@ export class MatRadioButton extends _MatRadioButtonMixinBase
   get checked(): boolean { return this._checked; }
   set checked(value: boolean) {
     const newCheckedState = coerceBooleanProperty(value);
-
-    if (this._checked != newCheckedState) {
+    if (this._checked !== newCheckedState) {
       this._checked = newCheckedState;
-
-      if (newCheckedState && this.radioGroup && this.radioGroup.value != this.value) {
+      if (newCheckedState && this.radioGroup && this.radioGroup.value !== this.value) {
         this.radioGroup.selected = this;
-      } else if (!newCheckedState && this.radioGroup && this.radioGroup.value == this.value) {
+      } else if (!newCheckedState && this.radioGroup && this.radioGroup.value === this.value) {
+
         // When unchecking the selected radio button, update the selected radio
         // property on the group.
         this.radioGroup.selected = null;
@@ -381,12 +380,12 @@ export class MatRadioButton extends _MatRadioButtonMixinBase
   @Input()
   get value(): any { return this._value; }
   set value(value: any) {
-    if (this._value != value) {
+    if (this._value !== value) {
       this._value = value;
-      if (this.radioGroup != null) {
+      if (this.radioGroup !== null) {
         if (!this.checked) {
           // Update checked when the value changed to match the radio group's value
-          this.checked = this.radioGroup.value == value;
+          this.checked = this.radioGroup.value === value;
         }
         if (this.checked) {
           this.radioGroup.selected = this;
@@ -408,7 +407,7 @@ export class MatRadioButton extends _MatRadioButtonMixinBase
   /** Whether the radio button is disabled. */
   @Input()
   get disabled(): boolean {
-    return this._disabled || (this.radioGroup != null && this.radioGroup.disabled);
+    return this._disabled || (this.radioGroup !== null && this.radioGroup.disabled);
   }
   set disabled(value: boolean) {
     this._disabled = coerceBooleanProperty(value);
@@ -473,7 +472,7 @@ export class MatRadioButton extends _MatRadioButtonMixinBase
 
     this._removeUniqueSelectionListener =
       _radioDispatcher.listen((id: string, name: string) => {
-        if (id != this.id && name == this.name) {
+        if (id !== this.id && name === this.name) {
           this.checked = false;
         }
       });
@@ -545,7 +544,7 @@ export class MatRadioButton extends _MatRadioButtonMixinBase
     // emit its event object to the `change` output.
     event.stopPropagation();
 
-    const groupValueChanged = this.radioGroup && this.value != this.radioGroup.value;
+    const groupValueChanged = this.radioGroup && this.value !== this.radioGroup.value;
     this.checked = true;
     this._emitChangeEvent();
 
