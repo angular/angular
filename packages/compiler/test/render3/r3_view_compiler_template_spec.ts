@@ -28,7 +28,7 @@ describe('compiler compliance: template', () => {
                 template: \`
                   <ul *ngFor="let outer of items">
                     <li *ngFor="let middle of outer.items">
-                      <div *ngFor="let inner of items" 
+                      <div *ngFor="let inner of items"
                            (click)="onClick(outer, middle, inner)"
                            [title]="format(outer, middle, inner, component)"
                            >
@@ -51,57 +51,58 @@ describe('compiler compliance: template', () => {
 
     // The template should look like this (where IDENT is a wild card for an identifier):
     const template = `
-      template:function MyComponent_Template(rf: IDENT, ctx: IDENT){
-        if (rf & 1) { 
-          $i0$.ɵC(0, MyComponent_NgForOf_Template_0, null, _c0); 
+      const $c0$ = ['ngFor','','ngForOf',''];
+      // ...
+      template:function MyComponent_Template(rf: IDENT, $ctx$: IDENT){
+        if (rf & 1) {
+          $i0$.ɵC(0, MyComponent_ul_Template_0, null, _c0);
         }
         if (rf & 2) {
-          $i0$.ɵp(0, 'ngForOf', $i0$.ɵb(ctx.items));
+          $i0$.ɵp(0, 'ngForOf', $i0$.ɵb($ctx$.items));
         }
-        
-        function MyComponent_NgForOf_Template_0(rf: IDENT, ctx0: IDENT) {
+
+        function MyComponent_ul_Template_0(rf: IDENT, $ctx0$: IDENT) {
           if (rf & 1) {
             $i0$.ɵE(0, 'ul');
-            $i0$.ɵC(1, MyComponent_NgForOf_NgForOf_Template_1, null, _c0);
+            $i0$.ɵC(1, MyComponent_ul_li_Template_1, null, _c0);
             $i0$.ɵe();
           }
           if (rf & 2) {
-            const $outer$ = ctx0.$implicit;
+            const $outer$ = $ctx0$.$implicit;
             $i0$.ɵp(1, 'ngForOf', $i0$.ɵb($outer$.items));
           }
-          function MyComponent_NgForOf_NgForOf_Template_1(rf: IDENT, ctx1: IDENT) {
+          function MyComponent_ul_li_Template_1(rf: IDENT, $ctx1$: IDENT) {
             if (rf & 1) {
               $i0$.ɵE(0, 'li');
-              $i0$.ɵC(1, MyComponent_NgForOf_NgForOf_NgForOf_Template_1, null, _c0);
+              $i0$.ɵC(1, MyComponent_ul_li_div_Template_1, null, _c0);
               $i0$.ɵe();
             }
             if (rf & 2) {
-              $i0$.ɵp(1, 'ngForOf', $i0$.ɵb(ctx.items));
+              $i0$.ɵp(1, 'ngForOf', $i0$.ɵb($ctx$.items));
             }
-            function MyComponent_NgForOf_NgForOf_NgForOf_Template_1(rf: IDENT, ctx2: IDENT) {
+            function MyComponent_ul_li_div_Template_1(rf: IDENT, $ctx2$: IDENT) {
               if (rf & 1) {
                 $i0$.ɵE(0, 'div');
-                $i0$.ɵL('click', function MyComponent_NgForOf_NgForOf_NgForOf_Template_1_div_click_listener($event:any){
-                  const $outer$ = ctx0.$implicit;
-                  const $middle$ = ctx1.$implicit;
-                  const $inner$ = ctx2.$implicit;
+                $i0$.ɵL('click', function MyComponent_ul_li_div_Template_1_div_click_listener($event:any){
+                  const $outer$ = $ctx0$.$implicit;
+                  const $middle$ = $ctx1$.$implicit;
+                  const $inner$ = $ctx2$.$implicit;
                   return ctx.onClick($outer$, $middle$, $inner$);
                 });
                 $i0$.ɵT(1);
                 $i0$.ɵe();
               }
               if (rf & 2) {
-                const $outer$ = ctx0.$implicit;
-                const $middle$ = ctx1.$implicit;
-                const $inner$ = ctx2.$implicit;
-                $i0$.ɵp(0, 'title', $i0$.ɵb(ctx.format($outer$, $middle$, $inner$, ctx.component)));
-                $i0$.ɵt(1, $i0$.ɵi1(' ', ctx.format($outer$, $middle$, $inner$, ctx.component), ' '));
+                const $outer$ = $ctx0$.$implicit;
+                const $middle$ = $ctx1$.$implicit;
+                const $inner$ = $ctx2$.$implicit;
+                $i0$.ɵp(0, 'title', $i0$.ɵb(ctx.format($outer$, $middle$, $inner$, $ctx$.component)));
+                $i0$.ɵt(1, $i0$.ɵi1(' ', ctx.format($outer$, $middle$, $inner$, $ctx$.component), ' '));
               }
             }
           }
         }
       }`;
-
 
     const result = compile(files, angularFiles);
 

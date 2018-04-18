@@ -17,10 +17,10 @@ import {CurrentMatchesList, LView, LViewFlags, LifecycleStage, RootContext, TDat
 
 import {LContainerNode, LElementNode, LNode, LNodeType, TNodeFlags, LProjectionNode, LTextNode, LViewNode, TNode, TContainerNode, InitialInputData, InitialInputs, PropertyAliases, PropertyAliasValue,} from './interfaces/node';
 import {assertNodeType} from './node_assert';
-import {appendChild, insertChild, insertView, appendProjectedNode, removeView, canInsertNativeNode, createTextNode} from './node_manipulation';
+import {appendChild, insertView, appendProjectedNode, removeView, canInsertNativeNode, createTextNode} from './node_manipulation';
 import {isNodeMatchingSelectorList, matchingSelectorIndex} from './node_selector_matcher';
-import {ComponentDef, ComponentTemplate, ComponentType, DirectiveDef, DirectiveDefList, DirectiveDefListOrFactory, DirectiveType, PipeDef, PipeDefList, PipeDefListOrFactory, RenderFlags} from './interfaces/definition';
-import {RElement, RText, Renderer3, RendererFactory3, ProceduralRenderer3, ObjectOrientedRenderer3, RendererStyleFlags3, isProceduralRenderer} from './interfaces/renderer';
+import {ComponentDef, ComponentTemplate, DirectiveDef, DirectiveDefList, DirectiveDefListOrFactory, PipeDefList, PipeDefListOrFactory, RenderFlags} from './interfaces/definition';
+import {RElement, RText, Renderer3, RendererFactory3, ProceduralRenderer3, RendererStyleFlags3, isProceduralRenderer} from './interfaces/renderer';
 import {isDifferent, stringify} from './util';
 import {executeHooks, queueLifecycleHooks, queueInitHooks, executeInitHooks} from './hooks';
 import {ViewRef} from './view_ref';
@@ -1721,10 +1721,17 @@ function appendToProjectionNode(
  *
  * @param nodeIndex
  * @param localIndex - index under which distribution of projected nodes was memorized
- * @param selectorIndex - 0 means <ng-content> without any selector
+ * @param selectorIndex:
+ *        - 0 when the selector is `*` (or unspecified as this is the default value),
+ *        - 1 based index of the selector from the {@link projectionDef}
  */
-export function projection(nodeIndex: number, localIndex: number, selectorIndex: number = 0): void {
+export function projection(
+    nodeIndex: number, localIndex: number, selectorIndex: number = 0, attrs?: string[]): void {
   const node = createLNode(nodeIndex, LNodeType.Projection, null, {head: null, tail: null});
+
+  if (node.tNode == null) {
+    node.tNode = createTNode(null, attrs || null, null);
+  }
 
   // `<ng-content>` has no content
   isParent = false;
