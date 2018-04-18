@@ -61,7 +61,8 @@
                   "src": "src/environments/environment.ts",
                   "replaceWith": "src/environments/environment.next.ts"
                 }
-              ]
+              ],
+              "serviceWorker": true
             },
             "stable": {
               "fileReplacements": [
@@ -69,7 +70,8 @@
                   "src": "src/environments/environment.ts",
                   "replaceWith": "src/environments/environment.stable.ts"
                 }
-              ]
+              ],
+              "serviceWorker": true
             },
             "archive": {
               "fileReplacements": [
@@ -77,7 +79,8 @@
                   "src": "src/environments/environment.ts",
                   "replaceWith": "src/environments/environment.archive.ts"
                 }
-              ]
+              ],
+              "serviceWorker": true
             }
           }
         },
