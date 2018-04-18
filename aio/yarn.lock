@@ -158,12 +158,6 @@
   dependencies:
     tslib "^1.9.0"
 
-"@angular/http@6.0.0":
-  version "6.0.0"
-  resolved "https://registry.yarnpkg.com/@angular/http/-/http-6.0.0.tgz#f409e35cd2f4990b43a37beab915ffdcd9c7c992"
-  dependencies:
-    tslib "^1.9.0"
-
 "@angular/language-service@6.0.0":
   version "6.0.0"
   resolved "https://registry.yarnpkg.com/@angular/language-service/-/language-service-6.0.0.tgz#85bf577fd7f45eff13128d4f5f0125078d610aec"
@@ -185,14 +179,6 @@
   resolved "https://registry.yarnpkg.com/@angular/platform-browser/-/platform-browser-6.0.0.tgz#848b687ea46786483fddcdbbbd17b29c7adcc768"
   dependencies:
     tslib "^1.9.0"
-
-"@angular/platform-server@6.0.0":
-  version "6.0.0"
-  resolved "https://registry.yarnpkg.com/@angular/platform-server/-/platform-server-6.0.0.tgz#482878cc538a80caa3962e9376e4225b20c2a4bd"
-  dependencies:
-    domino "^2.0.1"
-    tslib "^1.9.0"
-    xhr2 "^0.1.4"
 
 "@angular/router@6.0.0":
   version "6.0.0"
@@ -330,10 +316,6 @@
   version "0.3.29"
   resolved "https://registry.yarnpkg.com/@types/mkdirp/-/mkdirp-0.3.29.tgz#7f2ad7ec55f914482fc9b1ec4bb1ae6028d46066"
 
-"@types/node@*":
-  version "8.0.46"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-8.0.46.tgz#6e1766b2d0ed06631d5b5f87bb8e72c8dbb6888e"
-
 "@types/node@6.0.66":
   version "6.0.66"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-6.0.66.tgz#5680b74a6135d33d4c00447e7c3dc691a4601625"
@@ -353,12 +335,6 @@
 "@types/selenium-webdriver@^2.53.35", "@types/selenium-webdriver@~2.53.39":
   version "2.53.42"
   resolved "https://registry.yarnpkg.com/@types/selenium-webdriver/-/selenium-webdriver-2.53.42.tgz#74cb77fb6052edaff2a8984ddafd88d419f25cac"
-
-"@types/sha1@^1.1.0":
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/@types/sha1/-/sha1-1.1.0.tgz#461eb18906d25e8d07c4678a0ed4f9ca07e46dd9"
-  dependencies:
-    "@types/node" "*"
 
 "@webcomponents/custom-elements@^1.0.8":
   version "1.0.8"
@@ -2082,10 +2058,6 @@ chardet@^0.4.0:
   version "0.4.2"
   resolved "https://registry.yarnpkg.com/chardet/-/chardet-0.4.2.tgz#b5473b33dc97c424e5d98dc87d55d4d8a29c8bf2"
 
-"charenc@>= 0.0.1":
-  version "0.0.2"
-  resolved "https://registry.yarnpkg.com/charenc/-/charenc-0.0.2.tgz#c0a1d2f3a7092e03774bfa83f14c0fc5790a8667"
-
 chokidar@^1.4.1, chokidar@^1.4.2, chokidar@^1.6.0:
   version "1.7.0"
   resolved "https://registry.yarnpkg.com/chokidar/-/chokidar-1.7.0.tgz#798e689778151c8076b4b360e5edd28cda2bb468"
@@ -2755,10 +2727,6 @@ cross-spawn@^6.0.5:
     shebang-command "^1.2.0"
     which "^1.2.9"
 
-"crypt@>= 0.0.1":
-  version "0.0.2"
-  resolved "https://registry.yarnpkg.com/crypt/-/crypt-0.0.2.tgz#88d7ff7ec0dfb86f713dc87bbb42d044d3e6c41b"
-
 cryptiles@2.x.x:
   version "2.0.5"
   resolved "https://registry.yarnpkg.com/cryptiles/-/cryptiles-2.0.5.tgz#3bdfecdc608147c1c67202fa291e7dca59eaa3b8"
@@ -3226,10 +3194,6 @@ domhandler@^2.3.0:
   resolved "https://registry.yarnpkg.com/domhandler/-/domhandler-2.4.1.tgz#892e47000a99be55bbf3774ffea0561d8879c259"
   dependencies:
     domelementtype "1"
-
-domino@^2.0.1:
-  version "2.0.1"
-  resolved "https://registry.yarnpkg.com/domino/-/domino-2.0.1.tgz#9e1d63215d0fe8dcb8202bff07effa1a216db504"
 
 domutils@1.1:
   version "1.1.6"
@@ -7071,15 +7035,6 @@ nested-error-stacks@^1.0.0:
   dependencies:
     inherits "~2.0.1"
 
-ng-pwa-tools@^0.0.10:
-  version "0.0.10"
-  resolved "https://registry.yarnpkg.com/ng-pwa-tools/-/ng-pwa-tools-0.0.10.tgz#ffc13db22555ffb5f77356a8ae5e855c6f40eb1d"
-  dependencies:
-    "@types/sha1" "^1.1.0"
-    minimist "^1.2.0"
-    sha1 "^1.1.1"
-    ts-node "^3.0.2"
-
 nice-try@^1.0.4:
   version "1.0.4"
   resolved "https://registry.yarnpkg.com/nice-try/-/nice-try-1.0.4.tgz#d93962f6c52f2c1558c0fbda6d512819f1efe1c4"
@@ -9213,13 +9168,6 @@ sha.js@^2.4.0, sha.js@^2.4.8:
     inherits "^2.0.1"
     safe-buffer "^5.0.1"
 
-sha1@^1.1.1:
-  version "1.1.1"
-  resolved "https://registry.yarnpkg.com/sha1/-/sha1-1.1.1.tgz#addaa7a93168f393f19eb2b15091618e2700f848"
-  dependencies:
-    charenc ">= 0.0.1"
-    crypt ">= 0.0.1"
-
 shallow-clone@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/shallow-clone/-/shallow-clone-1.0.0.tgz#4480cd06e882ef68b2ad88a3ea54832e2c48b571"
@@ -10141,7 +10089,7 @@ tryit@^1.0.1:
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/tryit/-/tryit-1.0.3.tgz#393be730a9446fd1ead6da59a014308f36c289cb"
 
-ts-node@^3.0.2, ts-node@^3.2.0, ts-node@^3.3.0:
+ts-node@^3.2.0, ts-node@^3.3.0:
   version "3.3.0"
   resolved "https://registry.yarnpkg.com/ts-node/-/ts-node-3.3.0.tgz#c13c6a3024e30be1180dd53038fc209289d4bf69"
   dependencies:
@@ -11209,10 +11157,6 @@ xdg-basedir@^2.0.0:
 xdg-basedir@^3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/xdg-basedir/-/xdg-basedir-3.0.0.tgz#496b2cc109eca8dbacfe2dc72b603c17c5870ad4"
-
-xhr2@^0.1.4:
-  version "0.1.4"
-  resolved "https://registry.yarnpkg.com/xhr2/-/xhr2-0.1.4.tgz#7f87658847716db5026323812f818cadab387a5f"
 
 xml-name-validator@^2.0.1:
   version "2.0.1"
