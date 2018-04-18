@@ -6,8 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injectable} from '@angular/core';
+import {Injectable, Inject, OnDestroy} from '@angular/core';
 import {OverlayContainer} from './overlay-container';
+import {DOCUMENT} from '@angular/common';
+
 
 /**
  * Alternative to OverlayContainer that supports correct displaying of overlay elements in
@@ -17,7 +19,22 @@ import {OverlayContainer} from './overlay-container';
  * Should be provided in the root component.
  */
 @Injectable()
-export class FullscreenOverlayContainer extends OverlayContainer {
+export class FullscreenOverlayContainer extends OverlayContainer implements OnDestroy {
+  private _fullScreenEventName: string | undefined;
+  private _fullScreenListener: () => void;
+
+  constructor(@Inject(DOCUMENT) _document: any) {
+    super(_document);
+  }
+
+  ngOnDestroy() {
+    super.ngOnDestroy();
+
+    if (this._fullScreenEventName && this._fullScreenListener) {
+      this._document.removeEventListener(this._fullScreenEventName, this._fullScreenListener);
+    }
+  }
+
   protected _createContainer(): void {
     super._createContainer();
     this._adjustParentForFullscreenChange();
@@ -28,21 +45,39 @@ export class FullscreenOverlayContainer extends OverlayContainer {
     if (!this._containerElement) {
       return;
     }
-    let fullscreenElement = this.getFullscreenElement();
-    let parent = fullscreenElement || document.body;
+
+    const fullscreenElement = this.getFullscreenElement();
+    const parent = fullscreenElement || this._document.body;
     parent.appendChild(this._containerElement);
   }
 
   private _addFullscreenChangeListener(fn: () => void) {
-    if (document.fullscreenEnabled) {
-      document.addEventListener('fullscreenchange', fn);
-    } else if (document.webkitFullscreenEnabled) {
-      document.addEventListener('webkitfullscreenchange', fn);
-    } else if ((document as any).mozFullScreenEnabled) {
-      document.addEventListener('mozfullscreenchange', fn);
-    } else if ((document as any).msFullscreenEnabled) {
-      document.addEventListener('MSFullscreenChange', fn);
+    const eventName = this._getEventName();
+
+    if (eventName) {
+      if (this._fullScreenListener) {
+        this._document.removeEventListener(eventName, this._fullScreenListener);
+      }
+
+      this._document.addEventListener(eventName, fn);
+      this._fullScreenListener = fn;
     }
+  }
+
+  private _getEventName(): string | undefined {
+    if (!this._fullScreenEventName) {
+      if (this._document.fullscreenEnabled) {
+        this._fullScreenEventName = 'fullscreenchange';
+      } else if (this._document.webkitFullscreenEnabled) {
+        this._fullScreenEventName = 'webkitfullscreenchange';
+      } else if ((this._document as any).mozFullScreenEnabled) {
+        this._fullScreenEventName = 'mozfullscreenchange';
+      } else if ((this._document as any).msFullscreenEnabled) {
+        this._fullScreenEventName = 'MSFullscreenChange';
+      }
+    }
+
+    return this._fullScreenEventName;
   }
 
   /**
@@ -50,10 +85,10 @@ export class FullscreenOverlayContainer extends OverlayContainer {
    * Only that element and its children are visible when in fullscreen mode.
    */
   getFullscreenElement(): Element {
-    return document.fullscreenElement ||
-        document.webkitFullscreenElement ||
-        (document as any).mozFullScreenElement ||
-        (document as any).msFullscreenElement ||
-        null;
+    return this._document.fullscreenElement ||
+           this._document.webkitFullscreenElement ||
+           (this._document as any).mozFullScreenElement ||
+           (this._document as any).msFullscreenElement ||
+           null;
   }
 }

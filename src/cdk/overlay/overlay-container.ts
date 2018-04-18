@@ -22,7 +22,7 @@ import {
 export class OverlayContainer implements OnDestroy {
   protected _containerElement: HTMLElement;
 
-  constructor(@Inject(DOCUMENT) private _document: any) {}
+  constructor(@Inject(DOCUMENT) protected _document: any) {}
 
   ngOnDestroy() {
     if (this._containerElement && this._containerElement.parentNode) {
