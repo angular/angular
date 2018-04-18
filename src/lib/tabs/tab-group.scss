@@ -48,6 +48,9 @@
   display: block;
   overflow: hidden;
 
+  // Fix for auto content wrapping in IE11
+  flex-basis: 100%;
+
   &.mat-tab-body-active {
     position: relative;
     overflow-x: hidden;
