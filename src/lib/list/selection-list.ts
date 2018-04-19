@@ -279,6 +279,13 @@ export class MatSelectionList extends _MatSelectionListMixinBase implements Focu
   /** Tabindex of the selection list. */
   @Input() tabIndex: number = 0;
 
+  /**
+   * Function used for comparing an option against the selected value when determining which
+   * options should appear as selected. The first argument is the value of an options. The second
+   * one is a value from the selected value. A boolean must be returned.
+   */
+  @Input() compareWith: (o1: any, o2: any) => boolean;
+
   /** The currently selected options. */
   selectedOptions: SelectionModel<MatListOption> = new SelectionModel<MatListOption>(true);
 
@@ -437,17 +444,15 @@ export class MatSelectionList extends _MatSelectionListMixinBase implements Focu
     this._onTouched = fn;
   }
 
-  /** Returns the option with the specified value. */
-  private _getOptionByValue(value: string): MatListOption | undefined {
-    return this.options.find(option => option.value === value);
-  }
-
   /** Sets the selected options based on the specified values. */
   private _setOptionsFromValues(values: string[]) {
     this.options.forEach(option => option._setSelected(false));
 
     values
-      .map(value => this._getOptionByValue(value))
+      .map(value => {
+        return this.options.find(option =>
+            this.compareWith ? this.compareWith(option.value, value) : option.value === value);
+      })
       .filter(Boolean)
       .forEach(option => option!._setSelected(true));
   }
