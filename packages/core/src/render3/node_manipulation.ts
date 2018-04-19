@@ -209,7 +209,7 @@ export function addRemoveViewFromContainer(
 }
 
 /**
- * Traverses the tree of component views and containers to remove listeners and
+ * Traverses down and up the tree of views and containers to remove listeners and
  * call onDestroy callbacks.
  *
  * Notes:
@@ -222,7 +222,11 @@ export function addRemoveViewFromContainer(
  *  @param rootView The view to destroy
  */
 export function destroyViewTree(rootView: LView): void {
-  let viewOrContainer: LViewOrLContainer|null = rootView;
+  // A view to cleanup doesn't have children so we should not try to descend down the view tree.
+  if (!rootView.child) {
+    return cleanUpView(rootView);
+  }
+  let viewOrContainer: LViewOrLContainer|null = rootView.child;
 
   while (viewOrContainer) {
     let next: LViewOrLContainer|null = null;
@@ -232,13 +236,16 @@ export function destroyViewTree(rootView: LView): void {
     } else if (viewOrContainer.child) {
       next = viewOrContainer.child;
     } else if (viewOrContainer.next) {
+      // Only move to the side and clean if operating below rootView -
+      // otherwise we would start cleaning up sibling views of the rootView.
       cleanUpView(viewOrContainer as LView);
       next = viewOrContainer.next;
     }
 
     if (next == null) {
-      // If the viewOrContainer is the rootView, then the cleanup is done twice.
-      // Without this check, ngOnDestroy would be called twice for a directive on an element.
+      // If the viewOrContainer is the rootView and next is null it means that we are dealing
+      // with a root view that doesn't have children. We didn't descend into child views
+      // so no need to go back up the views tree.
       while (viewOrContainer && !viewOrContainer !.next && viewOrContainer !== rootView) {
         cleanUpView(viewOrContainer as LView);
         viewOrContainer = getParentState(viewOrContainer, rootView);
