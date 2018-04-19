@@ -16,7 +16,9 @@
     color: mat-color($foreground, 'text');
 
     &[disabled] {
-      color: mat-color($foreground, 'disabled');
+      &, &::after {
+        color: mat-color($foreground, 'disabled');
+      }
     }
   }
 

@@ -910,6 +910,57 @@ describe('MatMenu', () => {
             .toBe(1, 'Expected one open menu');
       }));
 
+      it('should close submenu when hovering over disabled sibling item', fakeAsync(() => {
+        compileTestComponent();
+        instance.rootTriggerEl.nativeElement.click();
+        fixture.detectChanges();
+        tick(500);
+
+        const items = fixture.debugElement.queryAll(By.directive(MatMenuItem));
+
+        dispatchFakeEvent(items[0].nativeElement, 'mouseenter');
+        fixture.detectChanges();
+        tick(500);
+
+        expect(overlay.querySelectorAll('.mat-menu-panel').length)
+            .toBe(2, 'Expected two open menus');
+
+        items[1].componentInstance.disabled = true;
+        fixture.detectChanges();
+
+        // Invoke the handler directly since the fake events are flaky on disabled elements.
+        items[1].componentInstance._handleMouseEnter();
+        fixture.detectChanges();
+        tick(500);
+
+        expect(overlay.querySelectorAll('.mat-menu-panel').length)
+            .toBe(1, 'Expected one open menu');
+      }));
+
+    it('should not open submenu when hovering over disabled trigger', fakeAsync(() => {
+      compileTestComponent();
+      instance.rootTriggerEl.nativeElement.click();
+      fixture.detectChanges();
+      tick(500);
+
+      expect(overlay.querySelectorAll('.mat-menu-panel').length)
+          .toBe(1, 'Expected one open menu');
+
+      const item = fixture.debugElement.query(By.directive(MatMenuItem));
+
+      item.componentInstance.disabled = true;
+      fixture.detectChanges();
+
+      // Invoke the handler directly since the fake events are flaky on disabled elements.
+      item.componentInstance._handleMouseEnter();
+      fixture.detectChanges();
+      tick(500);
+
+      expect(overlay.querySelectorAll('.mat-menu-panel').length)
+          .toBe(1, 'Expected to remain at one open menu');
+    }));
+
+
     it('should open a nested menu when its trigger is clicked', () => {
       compileTestComponent();
       instance.rootTriggerEl.nativeElement.click();

@@ -47,7 +47,7 @@ export const _MatMenuItemMixinBase = mixinDisableRipple(mixinDisabled(MatMenuIte
     '[attr.aria-disabled]': 'disabled.toString()',
     '[attr.disabled]': 'disabled || null',
     '(click)': '_checkDisabled($event)',
-    '(mouseenter)': '_emitHoverEvent()',
+    '(mouseenter)': '_handleMouseEnter()',
   },
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
@@ -121,10 +121,8 @@ export class MatMenuItem extends _MatMenuItemMixinBase
   }
 
   /** Emits to the hover stream. */
-  _emitHoverEvent() {
-    if (!this.disabled) {
-      this._hovered.next(this);
-    }
+  _handleMouseEnter() {
+    this._hovered.next(this);
   }
 
   /** Gets the label to be used when determining whether the option should be focused. */

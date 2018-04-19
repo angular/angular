@@ -152,7 +152,7 @@ export class MatMenuTrigger implements AfterContentInit, OnDestroy {
     if (this.triggersSubmenu()) {
       // Subscribe to changes in the hovered item in order to toggle the panel.
       this._hoverSubscription = this._parentMenu._hovered()
-          .pipe(filter(active => active === this._menuItemInstance))
+          .pipe(filter(active => active === this._menuItemInstance && !active.disabled))
           .subscribe(() => {
             this._openedByMouse = true;
             this.openMenu();
