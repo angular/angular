@@ -1,4 +1,5 @@
 @import '../core/style/variables';
+@import '../../cdk/a11y/a11y';
 
 $mat-toolbar-height-desktop: 64px !default;
 $mat-toolbar-height-mobile-portrait: 56px !default;
@@ -13,6 +14,12 @@ $mat-toolbar-row-padding: 16px !default;
   }
   .mat-toolbar-row, .mat-toolbar-single-row {
     height: $height;
+  }
+}
+
+.mat-toolbar {
+  @include cdk-high-contrast {
+    outline: solid 1px;
   }
 }
 
