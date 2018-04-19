@@ -14,7 +14,6 @@ import {
   Component,
   EventEmitter,
   forwardRef,
-  Host,
   Inject,
   Input,
   OnChanges,
@@ -39,6 +38,7 @@ import {MatYearView} from './year-view';
   moduleId: module.id,
   selector: 'mat-calendar-header',
   templateUrl: 'calendar-header.html',
+  exportAs: 'matCalendarHeader',
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -47,7 +47,7 @@ export class MatCalendarHeader<D> implements OnDestroy {
   private _destroyed = new Subject<void>();
 
   constructor(private _intl: MatDatepickerIntl,
-              @Host() @Inject(forwardRef(() => MatCalendar)) public calendar: MatCalendar<D>,
+              @Inject(forwardRef(() => MatCalendar)) public calendar: MatCalendar<D>,
               @Optional() private _dateAdapter: DateAdapter<D>,
               @Optional() @Inject(MAT_DATE_FORMATS) private _dateFormats: MatDateFormats,
               changeDetectorRef: ChangeDetectorRef) {

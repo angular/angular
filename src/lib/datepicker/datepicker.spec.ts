@@ -7,7 +7,7 @@ import {
   createKeyboardEvent,
   dispatchEvent,
 } from '@angular/cdk/testing';
-import {Component, ViewChild} from '@angular/core';
+import {Component, FactoryProvider, Type, ValueProvider, ViewChild} from '@angular/core';
 import {ComponentFixture, fakeAsync, flush, inject, TestBed} from '@angular/core/testing';
 import {FormControl, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {
@@ -30,13 +30,17 @@ import {MatDatepickerToggle} from './datepicker-toggle';
 import {MAT_DATEPICKER_SCROLL_STRATEGY, MatDatepickerIntl, MatDatepickerModule} from './index';
 import {Subject} from 'rxjs';
 import {Directionality} from '@angular/cdk/bidi';
+import {BrowserDynamicTestingModule} from '@angular/platform-browser-dynamic/testing';
 
 describe('MatDatepicker', () => {
   const SUPPORTS_INTL = typeof Intl != 'undefined';
 
   // Creates a test component fixture.
-  function createComponent(component: any, imports: any[] = [], providers: any[] = []):
-    ComponentFixture<any> {
+  function createComponent(
+    component: Type<any>,
+    imports: Type<any>[] = [],
+    providers: (FactoryProvider | ValueProvider)[] = [],
+    entryComponents: Type<any>[] = []): ComponentFixture<any> {
 
     TestBed.configureTestingModule({
       imports: [
@@ -49,7 +53,13 @@ describe('MatDatepicker', () => {
         ...imports
       ],
       providers,
-      declarations: [component],
+      declarations: [component, ...entryComponents],
+    });
+
+    TestBed.overrideModule(BrowserDynamicTestingModule, {
+      set: {
+        entryComponents: [entryComponents]
+      }
     }).compileComponents();
 
     return TestBed.createComponent(component);
@@ -1489,6 +1499,35 @@ describe('MatDatepicker', () => {
     }));
 
   });
+
+  describe('datepicker with custom header', () => {
+    let fixture: ComponentFixture<DatepickerWithCustomHeader>;
+    let testComponent: DatepickerWithCustomHeader;
+
+    beforeEach(fakeAsync(() => {
+      fixture = createComponent(
+        DatepickerWithCustomHeader,
+        [MatNativeDateModule],
+        [],
+        [CustomHeaderForDatepicker]
+      );
+      fixture.detectChanges();
+      testComponent = fixture.componentInstance;
+    }));
+
+    it('should instantiate a datepicker with a custom header', fakeAsync(() => {
+      expect(testComponent).toBeTruthy();
+    }));
+
+    it('should find the standard header element', fakeAsync(() => {
+      testComponent.datepicker.open();
+      fixture.detectChanges();
+      flush();
+      fixture.detectChanges();
+
+      expect(document.querySelector('mat-calendar-header')).toBeTruthy();
+    }));
+  });
 });
 
 
@@ -1736,3 +1775,22 @@ class DatepickerWithEvents {
 class DatepickerOpeningOnFocus {
   @ViewChild(MatDatepicker) datepicker: MatDatepicker<Date>;
 }
+
+
+@Component({
+  template: `
+    <input [matDatepicker]="ch">
+    <mat-datepicker #ch [calendarHeaderComponent]="CustomHeaderForDatepicker"></mat-datepicker>
+  `,
+})
+class DatepickerWithCustomHeader {
+  @ViewChild('ch') datepicker: MatDatepicker<Date>;
+}
+
+@Component({
+  template: `
+    <div>Custom element</div>
+    <mat-calendar-header></mat-calendar-header>
+  `,
+})
+class CustomHeaderForDatepicker {}
