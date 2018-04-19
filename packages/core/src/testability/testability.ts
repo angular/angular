@@ -66,7 +66,9 @@ export class Testability implements PublicTestability {
 
   constructor(private _ngZone: NgZone) {
     this._watchAngularEvents();
-    _ngZone.run(() => { this.taskTrackingZone = Zone.current.get('TaskTrackingZone'); });
+    if (typeof Zone !== 'undefined') {
+      _ngZone.run(() => { this.taskTrackingZone = Zone.current.get('TaskTrackingZone'); });
+    }
   }
 
   private _watchAngularEvents(): void {
