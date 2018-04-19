@@ -7,6 +7,7 @@ import {Component, ElementRef, NgModule} from '@angular/core';
 import {
   MatAutocompleteModule,
   MatBadgeModule,
+  MatBottomSheetModule,
   MatButtonModule,
   MatButtonToggleModule,
   MatCardModule,
@@ -41,6 +42,7 @@ import {
   MatTabsModule,
   MatToolbarModule,
   MatTooltipModule,
+  MatBottomSheet,
 } from '@angular/material';
 import {BrowserModule} from '@angular/platform-browser';
 import {ServerModule} from '@angular/platform-server';
@@ -59,7 +61,7 @@ export class TableDataSource extends DataSource<any> {
 @Component({
   template: `<button>Do the thing</button>`
 })
-export class TestDialog {}
+export class TestEntryComponent {}
 
 
 @Component({
@@ -80,10 +82,12 @@ export class KitchenSink {
     dialog: MatDialog,
     viewportRuler: ViewportRuler,
     focusMonitor: FocusMonitor,
-    elementRef: ElementRef<HTMLElement>) {
+    elementRef: ElementRef<HTMLElement>,
+    bottomSheet: MatBottomSheet) {
     focusMonitor.focusVia(elementRef.nativeElement, 'program');
     snackBar.open('Hello there');
-    dialog.open(TestDialog);
+    dialog.open(TestEntryComponent);
+    bottomSheet.open(TestEntryComponent);
 
     // Do a sanity check on the viewport ruler.
     viewportRuler.getViewportRect();
@@ -98,6 +102,7 @@ export class KitchenSink {
     BrowserModule.withServerTransition({appId: 'kitchen-sink'}),
     MatAutocompleteModule,
     MatBadgeModule,
+    MatBottomSheetModule,
     MatButtonModule,
     MatButtonToggleModule,
     MatCardModule,
@@ -135,8 +140,8 @@ export class KitchenSink {
     CdkTableModule
   ],
   bootstrap: [KitchenSink],
-  declarations: [KitchenSink, TestDialog],
-  entryComponents: [TestDialog],
+  declarations: [KitchenSink, TestEntryComponent],
+  entryComponents: [TestEntryComponent],
 })
 export class KitchenSinkClientModule { }
 

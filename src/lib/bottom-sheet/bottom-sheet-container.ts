@@ -207,6 +207,10 @@ export class MatBottomSheetContainer extends BasePortalOutlet implements OnDestr
   /** Saves a reference to the element that was focused before the bottom sheet was opened. */
   private _savePreviouslyFocusedElement() {
     this._elementFocusedBeforeOpened = this._document.activeElement as HTMLElement;
-    Promise.resolve().then(() => this._elementRef.nativeElement.focus());
+
+    // The `focus` method isn't available during server-side rendering.
+    if (this._elementRef.nativeElement.focus) {
+      Promise.resolve().then(() => this._elementRef.nativeElement.focus());
+    }
   }
 }
