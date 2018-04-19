@@ -7,7 +7,7 @@ import {
   wrappedErrorMessage
 } from '@angular/cdk/testing';
 import {Component, ElementRef, ViewChild} from '@angular/core';
-import {async, ComponentFixture, inject, TestBed} from '@angular/core/testing';
+import {async, ComponentFixture, fakeAsync, inject, TestBed, tick} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {Observable} from 'rxjs';
@@ -64,6 +64,14 @@ describe('MatSort', () => {
     fixture.destroy();
     expect(sortables.size).toBe(0);
   });
+
+  it('should mark itself as initialized', fakeAsync(() => {
+    let isMarkedInitialized = false;
+    component.matSort.initialized.subscribe(() => isMarkedInitialized = true);
+
+    tick();
+    expect(isMarkedInitialized).toBeTruthy();
+  }));
 
   it('should use the column definition if used within a cdk table', () => {
     let cdkTableMatSortAppFixture = TestBed.createComponent(CdkTableMatSortApp);

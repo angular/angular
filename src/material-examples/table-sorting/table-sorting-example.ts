@@ -15,11 +15,7 @@ export class TableSortingExample {
 
   @ViewChild(MatSort) sort: MatSort;
 
-  /**
-   * Set the sort after the view init since this component will
-   * be able to query its view for the initialized sort.
-   */
-  ngAfterViewInit() {
+  ngOnInit() {
     this.dataSource.sort = this.sort;
   }
 }

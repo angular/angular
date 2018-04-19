@@ -18,7 +18,9 @@ describe('MatTable', () => {
         MatTableApp,
         MatTableWithWhenRowApp,
         ArrayDataSourceMatTableApp,
-        NativeHtmlTableApp
+        NativeHtmlTableApp,
+        MatTableWithSortApp,
+        MatTableWithPaginatorApp,
       ],
     }).compileComponents();
   }));
@@ -69,7 +71,35 @@ describe('MatTable', () => {
     ]);
   });
 
-  describe('with MatTableDataSource', () => {
+  it('should render with MatTableDataSource and sort', () => {
+    let fixture = TestBed.createComponent(MatTableWithSortApp);
+    fixture.detectChanges();
+
+    const tableElement = fixture.nativeElement.querySelector('.mat-table')!;
+    const data = fixture.componentInstance.dataSource!.data;
+    expectTableToMatchContent(tableElement, [
+      ['Column A', 'Column B', 'Column C'],
+      [data[0].a, data[0].b, data[0].c],
+      [data[1].a, data[1].b, data[1].c],
+      [data[2].a, data[2].b, data[2].c],
+    ]);
+  });
+
+  it('should render with MatTableDataSource and pagination', () => {
+    let fixture = TestBed.createComponent(MatTableWithPaginatorApp);
+    fixture.detectChanges();
+
+    const tableElement = fixture.nativeElement.querySelector('.mat-table')!;
+    const data = fixture.componentInstance.dataSource!.data;
+    expectTableToMatchContent(tableElement, [
+      ['Column A', 'Column B', 'Column C'],
+      [data[0].a, data[0].b, data[0].c],
+      [data[1].a, data[1].b, data[1].c],
+      [data[2].a, data[2].b, data[2].c],
+    ]);
+  });
+
+  describe('with MatTableDataSource and sort/pagination/filter', () => {
     let tableElement: HTMLElement;
     let fixture: ComponentFixture<ArrayDataSourceMatTableApp>;
     let dataSource: MatTableDataSource<TestData>;
@@ -504,10 +534,109 @@ class ArrayDataSourceMatTableApp {
     });
   }
 
-  ngAfterViewInit() {
-    // Needs to be set up after the view is initialized since the data source will look at the sort
-    // and paginator's initial values to know what data should be rendered.
+  ngOnInit() {
     this.dataSource!.sort = this.sort;
+    this.dataSource!.paginator = this.paginator;
+  }
+}
+
+
+@Component({
+  template: `
+    <mat-table [dataSource]="dataSource" matSort>
+      <ng-container matColumnDef="column_a">
+        <mat-header-cell *matHeaderCellDef mat-sort-header="a"> Column A</mat-header-cell>
+        <mat-cell *matCellDef="let row"> {{row.a}}</mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="column_b">
+        <mat-header-cell *matHeaderCellDef> Column B</mat-header-cell>
+        <mat-cell *matCellDef="let row"> {{row.b}}</mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="column_c">
+        <mat-header-cell *matHeaderCellDef> Column C</mat-header-cell>
+        <mat-cell *matCellDef="let row"> {{row.c}}</mat-cell>
+      </ng-container>
+
+      <mat-header-row *matHeaderRowDef="columnsToRender"></mat-header-row>
+      <mat-row *matRowDef="let row; columns: columnsToRender"></mat-row>
+    </mat-table>
+  `
+})
+class MatTableWithSortApp {
+  underlyingDataSource = new FakeDataSource();
+  dataSource = new MatTableDataSource<TestData>();
+  columnsToRender = ['column_a', 'column_b', 'column_c'];
+
+  @ViewChild(MatTable) table: MatTable<TestData>;
+  @ViewChild(MatSort) sort: MatSort;
+
+  constructor() {
+    this.underlyingDataSource.data = [];
+
+    // Add three rows of data
+    this.underlyingDataSource.addData();
+    this.underlyingDataSource.addData();
+    this.underlyingDataSource.addData();
+
+    this.underlyingDataSource.connect().subscribe(data => {
+      this.dataSource.data = data;
+    });
+  }
+
+  ngOnInit() {
+    this.dataSource!.sort = this.sort;
+  }
+}
+
+@Component({
+  template: `
+    <mat-table [dataSource]="dataSource">
+      <ng-container matColumnDef="column_a">
+        <mat-header-cell *matHeaderCellDef> Column A</mat-header-cell>
+        <mat-cell *matCellDef="let row"> {{row.a}}</mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="column_b">
+        <mat-header-cell *matHeaderCellDef> Column B</mat-header-cell>
+        <mat-cell *matCellDef="let row"> {{row.b}}</mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="column_c">
+        <mat-header-cell *matHeaderCellDef> Column C</mat-header-cell>
+        <mat-cell *matCellDef="let row"> {{row.c}}</mat-cell>
+      </ng-container>
+
+      <mat-header-row *matHeaderRowDef="columnsToRender"></mat-header-row>
+      <mat-row *matRowDef="let row; columns: columnsToRender"></mat-row>
+    </mat-table>
+
+    <mat-paginator [pageSize]="5"></mat-paginator>
+  `
+})
+class MatTableWithPaginatorApp {
+  underlyingDataSource = new FakeDataSource();
+  dataSource = new MatTableDataSource<TestData>();
+  columnsToRender = ['column_a', 'column_b', 'column_c'];
+
+  @ViewChild(MatTable) table: MatTable<TestData>;
+  @ViewChild(MatPaginator) paginator: MatPaginator;
+
+  constructor() {
+    this.underlyingDataSource.data = [];
+
+    // Add three rows of data
+    this.underlyingDataSource.addData();
+    this.underlyingDataSource.addData();
+    this.underlyingDataSource.addData();
+
+    this.underlyingDataSource.connect().subscribe(data => {
+      this.dataSource.data = data;
+    });
+  }
+
+  ngOnInit() {
     this.dataSource!.paginator = this.paginator;
   }
 }

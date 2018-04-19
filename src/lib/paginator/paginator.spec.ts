@@ -1,4 +1,4 @@
-import {async, ComponentFixture, TestBed, inject} from '@angular/core/testing';
+import {async, ComponentFixture, TestBed, inject, tick, fakeAsync} from '@angular/core/testing';
 import {MatPaginatorModule} from './index';
 import {MatPaginator, PageEvent} from './paginator';
 import {Component, ViewChild} from '@angular/core';
@@ -124,26 +124,32 @@ describe('MatPaginator', () => {
       expect(paginator.pageIndex).toBe(0);
       expect(component.latestPageEvent ? component.latestPageEvent.pageIndex : null).toBe(0);
     });
-
   });
 
   it('should be able to show the first/last buttons', () => {
     expect(getFirstButton(fixture))
-      .toBeNull('Expected first button to not exist.');
+        .toBeNull('Expected first button to not exist.');
 
     expect(getLastButton(fixture))
-      .toBeNull('Expected last button to not exist.');
+        .toBeNull('Expected last button to not exist.');
 
     fixture.componentInstance.showFirstLastButtons = true;
     fixture.detectChanges();
 
     expect(getFirstButton(fixture))
-      .toBeTruthy('Expected first button to be rendered.');
+        .toBeTruthy('Expected first button to be rendered.');
 
     expect(getLastButton(fixture))
-      .toBeTruthy('Expected last button to be rendered.');
-
+        .toBeTruthy('Expected last button to be rendered.');
   });
+
+  it('should mark itself as initialized', fakeAsync(() => {
+    let isMarkedInitialized = false;
+    paginator.initialized.subscribe(() => isMarkedInitialized = true);
+
+    tick();
+    expect(isMarkedInitialized).toBeTruthy();
+  }));
 
   describe('when showing the first and last button', () => {
 

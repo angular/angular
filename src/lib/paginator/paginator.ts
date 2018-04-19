@@ -20,6 +20,7 @@ import {
 } from '@angular/core';
 import {Subscription} from 'rxjs';
 import {MatPaginatorIntl} from './paginator-intl';
+import {HasInitialized, mixinInitialized} from '@angular/material/core';
 
 /** The default page size if there is no page size and there are no provided page size options. */
 const DEFAULT_PAGE_SIZE = 50;
@@ -39,6 +40,11 @@ export class PageEvent {
   length: number;
 }
 
+// Boilerplate for applying mixins to MatPaginator.
+/** @docs-private */
+export class MatPaginatorBase {}
+export const _MatPaginatorBase = mixinInitialized(MatPaginatorBase);
+
 /**
  * Component to provide navigation between paged information. Displays the size of the current
  * page, user-selectable options to change that size, what items are being shown, and
@@ -56,7 +62,7 @@ export class PageEvent {
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
 })
-export class MatPaginator implements OnInit, OnDestroy {
+export class MatPaginator extends _MatPaginatorBase implements OnInit, OnDestroy, HasInitialized {
   private _initialized: boolean;
   private _intlChanges: Subscription;
 
@@ -121,12 +127,14 @@ export class MatPaginator implements OnInit, OnDestroy {
 
   constructor(public _intl: MatPaginatorIntl,
               private _changeDetectorRef: ChangeDetectorRef) {
+    super();
     this._intlChanges = _intl.changes.subscribe(() => this._changeDetectorRef.markForCheck());
   }
 
   ngOnInit() {
     this._initialized = true;
     this._updateDisplayedPageSizeOptions();
+    this._markInitialized();
   }
 
   ngOnDestroy() {

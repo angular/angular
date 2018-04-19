@@ -8,10 +8,17 @@
 
 import {_isNumberValue} from '@angular/cdk/coercion';
 import {DataSource} from '@angular/cdk/table';
+import {
+  BehaviorSubject,
+  combineLatest,
+  merge,
+  Observable,
+  of as observableOf,
+  Subscription
+} from 'rxjs';
 import {MatPaginator, PageEvent} from '@angular/material/paginator';
 import {MatSort, Sort} from '@angular/material/sort';
-import {BehaviorSubject, combineLatest, EMPTY, Observable, Subscription} from 'rxjs';
-import {map, startWith} from 'rxjs/operators';
+import {map} from 'rxjs/operators';
 
 
 /**
@@ -174,9 +181,17 @@ export class MatTableDataSource<T> extends DataSource<T> {
    */
   _updateChangeSubscription() {
     // Sorting and/or pagination should be watched if MatSort and/or MatPaginator are provided.
-    // Otherwise, use an empty observable stream to take their place.
-    const sortChange: Observable<Sort> = this._sort ? this._sort.sortChange : EMPTY;
-    const pageChange: Observable<PageEvent> = this._paginator ? this._paginator.page : EMPTY;
+    // The events should emit whenever the component emits a change or initializes, or if no
+    // component is provided, a stream with just a null event should be provided.
+    // The `sortChange` and `pageChange` acts as a signal to the combineLatests below so that the
+    // pipeline can progress to the next step. Note that the value from these streams are not used,
+    // they purely act as a signal to progress in the pipeline.
+    const sortChange: Observable<Sort|null> = this._sort ?
+        merge<Sort>(this._sort.sortChange, this._sort.initialized) :
+        observableOf(null);
+    const pageChange: Observable<PageEvent|null> = this._paginator ?
+        merge<PageEvent>(this._paginator.page, this._paginator.initialized) :
+        observableOf(null);
 
     if (this._renderChangesSubscription) {
       this._renderChangesSubscription.unsubscribe();
@@ -187,10 +202,10 @@ export class MatTableDataSource<T> extends DataSource<T> {
     const filteredData = combineLatest(dataStream, this._filter)
       .pipe(map(([data]) => this._filterData(data)));
     // Watch for filtered data or sort changes to provide an ordered set of data.
-    const orderedData = combineLatest(filteredData, sortChange.pipe(startWith(null!)))
+    const orderedData = combineLatest(filteredData, sortChange)
       .pipe(map(([data]) => this._orderData(data)));
     // Watch for ordered data or page changes to provide a paged set of data.
-    const paginatedData = combineLatest(orderedData, pageChange.pipe(startWith(null!)))
+    const paginatedData = combineLatest(orderedData, pageChange)
       .pipe(map(([data]) => this._pageData(data)));
     // Watched for paged data changes and send the result to the table to render.
     paginatedData.subscribe(data => this._renderData.next(data));

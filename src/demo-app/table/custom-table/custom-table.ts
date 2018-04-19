@@ -25,7 +25,7 @@ export class CustomTableDemo {
   @ViewChild('simpleTableSort') simpleTableSort: MatSort;
   @ViewChild('wrapperTableSort') wrapperTableSort: MatSort;
 
-  ngAfterViewInit() {
+  ngOnInit() {
     this.simpleTableDataSource.sort = this.simpleTableSort;
     this.wrapperTableDataSource.sort = this.wrapperTableSort;
   }

@@ -81,14 +81,10 @@ export class TableDemo {
         (data: UserData, filter: string) => data.name.indexOf(filter) != -1;
   }
 
-  ngAfterViewInit() {
-    // Needs to be set up after the view is initialized since the data source will look at the sort
-    // and paginator's initial values to know what data should be rendered.
-    this.matTableDataSource!.paginator = this.paginatorForDataSource;
-    this.matTableDataSource!.sort = this.sortForDataSource;
-  }
-
   ngOnInit() {
+    this.matTableDataSource!.sort = this.sortForDataSource;
+    this.matTableDataSource!.paginator = this.paginatorForDataSource;
+
     this.connect();
     fromEvent(this.filter.nativeElement, 'keyup')
       .pipe(
