@@ -27,13 +27,8 @@ import {MatColumnDef, MatTable} from '@angular/material';
   selector: 'simple-column',
   template: `
     <ng-container matColumnDef>
-      <mat-header-cell *matHeaderCellDef mat-sort-header>
-        {{label || name}}
-      </mat-header-cell>
-
-      <mat-cell *matCellDef="let data">
-        {{getData(data)}}
-      </mat-cell>
+      <th mat-header-cell *matHeaderCellDef mat-sort-header> {{label || name}} </th>
+      <td mat-cell *matCellDef="let data"> {{getData(data)}}</td>
     </ng-container>
   `,
   host: {

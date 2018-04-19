@@ -2,19 +2,11 @@
   margin-top: 24px;
 }
 
-mat-card {
-  margin: 8px 0;
-}
+.demo-track-by-select {
+  display: flex;
+  align-items: center;
 
-cdk-table {
-  display: table;
-  width: 100%;
-
-  cdk-header-row, cdk-row {
-    display: table-row;
-  }
-
-  cdk-header-cell, cdk-cell {
-    display: table-cell;
+  .demo-track-by-label {
+    margin-right: 8px;
   }
 }

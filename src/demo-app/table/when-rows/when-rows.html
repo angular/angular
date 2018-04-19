@@ -1,0 +1,13 @@
+<mat-card>
+  <table cdk-table [dataSource]="dataSource">
+    <ng-container cdkColumnDef="{{column}}" *ngFor="let column of columns">
+      <th cdk-header-cell *cdkHeaderCellDef> {{column}} </th>
+      <td cdk-cell *cdkCellDef="let element"> {{element[column]}} </td>
+    </ng-container>
+
+    <tr cdk-header-row *cdkHeaderRowDef="columns"></tr>
+
+    <tr cdk-row *cdkRowDef="let row; let odd = odd; columns: ['position']; when: isOdd"></tr>
+    <tr cdk-row *cdkRowDef="let row; columns: columns;"></tr>
+  </table>
+</mat-card>

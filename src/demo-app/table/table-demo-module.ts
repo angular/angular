@@ -8,7 +8,6 @@
 
 import {NgModule} from '@angular/core';
 import {TableDemo} from './table-demo';
-import {TableHeaderDemo} from './table-header-demo';
 import {PeopleDatabase} from './people-database';
 import {TableDemoPage} from './table-demo-page';
 import {CustomTableDemo} from './custom-table/custom-table';
@@ -30,7 +29,10 @@ import {RouterModule} from '@angular/router';
 import {WrapperTable} from './custom-table/wrapper-table';
 import {SimpleColumn} from './custom-table/simple-column';
 import {DataInputTableDemo} from './data-input-table/data-input-table';
-import {NativeTableDemo} from './native-table/native-table';
+import {MatTableDataSourceDemo} from './mat-table-data-source/mat-table-data-source';
+import {DynamicColumnsDemo} from './dynamic-columns/dynamic-columns';
+import {RowContextDemo} from './row-context/row-context';
+import {WhenRowsDemo} from './when-rows/when-rows';
 
 
 @NgModule({
@@ -56,10 +58,12 @@ import {NativeTableDemo} from './native-table/native-table';
     DataInputTableDemo,
     TableDemo,
     TableDemoPage,
-    TableHeaderDemo,
     WrapperTable,
     SimpleColumn,
-    NativeTableDemo,
+    MatTableDataSourceDemo,
+    DynamicColumnsDemo,
+    RowContextDemo,
+    WhenRowsDemo,
   ],
   providers: [
     PeopleDatabase

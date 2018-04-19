@@ -17,9 +17,13 @@ import {SimpleColumn} from './simple-column';
   selector: 'wrapper-table',
   templateUrl: 'wrapper-table.html',
   styles: [`
+    :host {
+      display: block;
+      width: 100%;
+    }
+
     .mat-table {
-      height: 300px;
-      overflow: auto;
+      width: 100%;
     }
   `]
 })

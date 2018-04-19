@@ -13,6 +13,8 @@ import {MatRadioChange, MatTable, MatTableDataSource} from '@angular/material';
 import {Observable} from 'rxjs';
 import {DataSource} from '@angular/cdk/collections';
 
+export type TrackByStrategy = 'position' | 'reference' | 'index';
+
 @Component({
   moduleId: module.id,
   templateUrl: 'data-input-table.html',
@@ -23,9 +25,18 @@ export class DataInputTableDemo {
 
   inputType: 'source' | 'stream' | 'array' | null = 'array';
   data = ELEMENT_DATA.slice();
-  tableDataSource = new MatTableDataSource(this.data);
+  matTableDataSource = new MatTableDataSource(this.data);
 
-  dataSourceInput: DataSource<Element> | Observable<Element[]> | Element[] | null = this.data;
+  trackByStrategy: TrackByStrategy = 'reference';
+  trackBy = (index: number, item: Element) => {
+    switch (this.trackByStrategy) {
+      case 'position': return item.position;
+      case 'reference': return item;
+      case 'index': return index;
+    }
+  }
+
+  dataSource: DataSource<Element> | Observable<Element[]> | Element[] | null = this.data;
 
   @ViewChild(CdkTable) cdkTable: CdkTable<Element>;
   @ViewChild(MatTable) matTable: MatTable<Element>;
@@ -33,29 +44,52 @@ export class DataInputTableDemo {
   changeInput(e: MatRadioChange) {
     this.inputType = e.value;
     switch (this.inputType) {
-      case 'array': this.dataSourceInput = this.data; break;
-      case 'stream': this.dataSourceInput = this.tableDataSource.connect(); break;
-      case 'source': this.dataSourceInput = this.tableDataSource; break;
+      case 'array': this.dataSource = this.data; break;
+      case 'stream': this.dataSource = this.matTableDataSource.connect(); break;
+      case 'source': this.dataSource = this.matTableDataSource; break;
     }
   }
 
   addRow() {
-    this.data.push({name: 'new', weight: 0, symbol: 'New', position: 0});
-    this.tableDataSource.data = this.data;
+    this.data.push({
+      name: 'new',
+      weight: Math.floor(Math.random() * 25),
+      symbol: 'New',
+      position: Math.floor(Math.random() * 25)
+    });
+
+    this.matTableDataSource.data = this.data;
+  }
+
+  shuffle() {
+    let dataToShuffle = this.data.slice();
+    let currentIndex = dataToShuffle.length;
+    while (0 !== currentIndex) {
+      let randomIndex = Math.floor(Math.random() * currentIndex);
+      currentIndex -= 1;
+
+      // Swap
+      let temp = dataToShuffle[currentIndex];
+      dataToShuffle[currentIndex] = dataToShuffle[randomIndex];
+      dataToShuffle[randomIndex] = temp;
+    }
+
+    this.data = dataToShuffle;
+    this.matTableDataSource.data = dataToShuffle;
   }
 
   removeRow() {
     this.data.pop();
-    this.tableDataSource.data = this.data;
+    this.matTableDataSource.data = this.data;
   }
 
   reassignDataClone() {
     this.data = this.data.slice();
 
-    if (this.dataSourceInput instanceof Array) {
-      this.dataSourceInput = this.data;
+    if (this.dataSource instanceof Array) {
+      this.dataSource = this.data;
     }
-    this.tableDataSource.data = this.data;
+    this.matTableDataSource.data = this.data;
   }
 
   renderRows() {
@@ -64,7 +98,11 @@ export class DataInputTableDemo {
   }
 
   removeDataSource() {
-    this.dataSourceInput = null;
+    this.dataSource = null;
     this.inputType = null;
+  }
+
+  highlightFirstRow() {
+    document.querySelector('table tbody tr')!.setAttribute('style', 'background: red');
   }
 }

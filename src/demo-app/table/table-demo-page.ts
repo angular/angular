@@ -18,6 +18,9 @@ export class TableDemoPage {
     {name: 'Main Page', link: 'main-demo'},
     {name: 'Custom Table', link: 'custom-table'},
     {name: 'Direct Data', link: 'data-input-table'},
-    {name: 'Native Table', link: 'native-table'},
+    {name: 'MatTableDataSource', link: 'mat-table-data-source'},
+    {name: 'Dynamic Columns', link: 'dynamic-columns'},
+    {name: 'Row Context', link: 'row-context'},
+    {name: 'When Rows', link: 'when-rows'}
   ];
 }
