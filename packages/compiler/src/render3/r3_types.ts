@@ -7,14 +7,6 @@
  */
 
 /**
- * The statement mode for the render, either as a class back-patch or as a partial class
- */
-export const enum OutputMode {
-  PartialClass,
-  BackPatch,
-}
-
-/**
  * Comment to insert above back-patch
  */
 export const BUILD_OPTIMIZER_COLOCATE = '@__BUILD_OPTIMIZER_COLOCATE__';

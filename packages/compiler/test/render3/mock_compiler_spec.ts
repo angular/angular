@@ -87,7 +87,7 @@ describe('mock_compiler', () => {
     });
   });
 
-  it('should be able to skip untested regions', () => {
+  it('should be able to skip untested regions (… and // ...)', () => {
     const files = {
       app: {
         'hello.component.ts': `
@@ -113,9 +113,42 @@ describe('mock_compiler', () => {
     // The special character … means anything can be generated between the two sections allowing
     // skipping sections of the output that are not under test. The ellipsis unicode char (…) is
     // used instead of '...' because '...' is legal JavaScript (the spread operator) and might
-    // need to be tested.
+    // need to be tested. `// ...` could also be used in place of `…`.
     expectEmit(result.source, 'ctx.name … ctx.name.length', 'could not find correct length access');
+    expectEmit(
+        result.source, 'ctx.name // ... ctx.name.length', 'could not find correct length access');
   });
+
+  it('should be able to skip TODO comments (// TODO)', () => {
+    const files = {
+      app: {
+        'hello.component.ts': `
+          import {Component, Input} from '@angular/core';
+
+          @Component({template: 'Hello!'})
+          export class HelloComponent { }
+        `,
+        'hello.module.ts': `
+          import {NgModule} from '@angular/core';
+          import {HelloComponent} from './hello.component';
+
+          @NgModule({declarations: [HelloComponent]})
+          export class HelloModule {}
+        `
+      }
+    };
+
+    const result = compile(files, angularFiles);
+
+    expectEmit(
+        result.source, `
+    // TODO: this comment should not be taken into account
+    $r3$.ɵT(0, 'Hello!');
+    // TODO: this comment should not be taken into account
+    `,
+        'todo comments should be ignored');
+  });
+
 
   it('should be able to enforce consistent identifiers', () => {
     const files = {
@@ -184,5 +217,4 @@ describe('mock_compiler', () => {
           result.source, '$ctx$.$n$ … $ctx$.$n$.length', 'Match names', {'$n$': /(not)_(\1)/});
     }).toThrowError(/"\$n\$" is "name" which doesn't match \/\(not\)_\(\\1\)\//);
   });
-
 });

@@ -31,13 +31,7 @@ export class Identifiers {
 
   static containerCreate: o.ExternalReference = {name: 'ɵC', moduleName: CORE};
 
-  static containerEnd: o.ExternalReference = {name: 'ɵc', moduleName: CORE};
-
-  static directiveCreate: o.ExternalReference = {name: 'ɵD', moduleName: CORE};
-
   static text: o.ExternalReference = {name: 'ɵT', moduleName: CORE};
-
-  static directiveInput: o.ExternalReference = {name: 'ɵi', moduleName: CORE};
 
   static textCreateBound: o.ExternalReference = {name: 'ɵt', moduleName: CORE};
 
@@ -76,10 +70,6 @@ export class Identifiers {
 
   static projection: o.ExternalReference = {name: 'ɵP', moduleName: CORE};
   static projectionDef: o.ExternalReference = {name: 'ɵpD', moduleName: CORE};
-
-  static refreshComponent: o.ExternalReference = {name: 'ɵr', moduleName: CORE};
-
-  static directiveLifeCycle: o.ExternalReference = {name: 'ɵl', moduleName: CORE};
 
   static injectAttribute: o.ExternalReference = {name: 'ɵinjectAttribute', moduleName: CORE};
 

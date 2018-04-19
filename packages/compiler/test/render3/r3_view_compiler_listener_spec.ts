@@ -44,7 +44,7 @@ describe('compiler compliance: listen()', () => {
         template: function MyComponent_Template(rf: $RenderFlags$, ctx: $MyComponent$) {
           if (rf & 1) {
             $r3$.ɵE(0, 'div');
-            $r3$.ɵL('click', function MyComponent_Template_div_click_listener($event: $any$) { 
+            $r3$.ɵL('click', function MyComponent_Template_div_click_listener($event: $any$) {
               ctx.onClick($event);
               return (1 == 2);
             });
@@ -52,7 +52,6 @@ describe('compiler compliance: listen()', () => {
           }
         }
         `;
-
 
     const result = compile(files, angularFiles);
 

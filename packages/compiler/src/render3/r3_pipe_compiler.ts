@@ -6,22 +6,20 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CompileDirectiveMetadata, CompilePipeMetadata, identifierName} from '../compile_metadata';
+import {CompilePipeMetadata, identifierName} from '../compile_metadata';
 import {CompileReflector} from '../compile_reflector';
 import {DefinitionKind} from '../constant_pool';
 import * as o from '../output/output_ast';
 import {OutputContext, error} from '../util';
 
 import {Identifiers as R3} from './r3_identifiers';
-import {BUILD_OPTIMIZER_COLOCATE, OutputMode} from './r3_types';
-import {createFactory} from './r3_view_compiler';
+import {createFactory} from './r3_view_compiler_local';
 
 /**
  * Write a pipe definition to the output context.
  */
 export function compilePipe(
-    outputCtx: OutputContext, pipe: CompilePipeMetadata, reflector: CompileReflector,
-    mode: OutputMode) {
+    outputCtx: OutputContext, pipe: CompilePipeMetadata, reflector: CompileReflector) {
   const definitionMapValues: {key: string, quoted: boolean, value: o.Expression}[] = [];
 
   // e.g. `name: 'myPipe'`
@@ -31,11 +29,11 @@ export function compilePipe(
   definitionMapValues.push(
       {key: 'type', value: outputCtx.importExpr(pipe.type.reference), quoted: false});
 
-  // e.g. factory: function MyPipe_Factory() { return new MyPipe(); },
+  // e.g. `factory: function MyPipe_Factory() { return new MyPipe(); }`
   const templateFactory = createFactory(pipe.type, outputCtx, reflector, []);
   definitionMapValues.push({key: 'factory', value: templateFactory, quoted: false});
 
-  // e.g. pure: true
+  // e.g. `pure: true`
   if (pipe.pure) {
     definitionMapValues.push({key: 'pure', value: o.literal(true), quoted: false});
   }
@@ -47,25 +45,15 @@ export function compilePipe(
   const definitionFunction =
       o.importExpr(R3.definePipe).callFn([o.literalMap(definitionMapValues)]);
 
-  if (mode === OutputMode.PartialClass) {
-    outputCtx.statements.push(new o.ClassStmt(
-        /* name */ className,
-        /* parent */ null,
-        /* fields */[new o.ClassField(
-            /* name */ definitionField,
-            /* type */ o.INFERRED_TYPE,
-            /* modifiers */[o.StmtModifier.Static],
-            /* initializer */ definitionFunction)],
-        /* getters */[],
-        /* constructorMethod */ new o.ClassMethod(null, [], []),
-        /* methods */[]));
-  } else {
-    // Create back-patch definition.
-    const classReference = outputCtx.importExpr(pipe.type.reference);
-
-    // Create the back-patch statement
-    outputCtx.statements.push(
-        new o.CommentStmt(BUILD_OPTIMIZER_COLOCATE),
-        classReference.prop(definitionField).set(definitionFunction).toStmt());
-  }
+  outputCtx.statements.push(new o.ClassStmt(
+      /* name */ className,
+      /* parent */ null,
+      /* fields */[new o.ClassField(
+          /* name */ definitionField,
+          /* type */ o.INFERRED_TYPE,
+          /* modifiers */[o.StmtModifier.Static],
+          /* initializer */ definitionFunction)],
+      /* getters */[],
+      /* constructorMethod */ new o.ClassMethod(null, [], []),
+      /* methods */[]));
 }
