@@ -1005,9 +1005,6 @@
     "name": "LiteralPrimitive"
   },
   {
-    "name": "MAX_LENGTH_STRINGIFY"
-  },
-  {
     "name": "MEANING_SEPARATOR"
   },
   {
