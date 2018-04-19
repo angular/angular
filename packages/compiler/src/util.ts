@@ -163,8 +163,6 @@ export interface OutputContext {
   importExpr(reference: any, typeParams?: o.Type[]|null, useSummaries?: boolean): o.Expression;
 }
 
-const MAX_LENGTH_STRINGIFY = 100;
-
 export function stringify(token: any): string {
   if (typeof token === 'string') {
     return token;
@@ -186,27 +184,16 @@ export function stringify(token: any): string {
     return `${token.name}`;
   }
 
-  let res;
-  try {
-    res = JSON.stringify(token);
-  } catch {
-    res = token.toString();
-  }
+  // WARNING: do not try to `JSON.stringify(token)` here
+  // see https://github.com/angular/angular/issues/23440
+  const res = token.toString();
 
   if (res == null) {
     return '' + res;
   }
 
   const newLineIndex = res.indexOf('\n');
-  if (0 < newLineIndex) {
-    res = res.substring(0, newLineIndex);
-  }
-
-  if (MAX_LENGTH_STRINGIFY < res.length) {
-    res = res.substring(0, MAX_LENGTH_STRINGIFY) + '...';
-  }
-
-  return res;
+  return newLineIndex === -1 ? res : res.substring(0, newLineIndex);
 }
 
 /**
