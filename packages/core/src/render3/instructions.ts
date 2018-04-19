@@ -224,6 +224,11 @@ export function enterView(newView: LView, host: LElementNode | LViewNode | null)
 /**
  * Used in lieu of enterView to make it clear when we are exiting a child view. This makes
  * the direction of traversal (up or down the view tree) a bit clearer.
+ *
+ * @param newView New state to become active
+ * @param creationOnly An optional boolean to indicate that the view was processed in creation mode
+ * only, i.e. the first update will be done later
+ * @returns the previous state
  */
 export function leaveView(newView: LView, creationOnly?: boolean): void {
   if (!creationOnly) {
@@ -232,7 +237,7 @@ export function leaveView(newView: LView, creationOnly?: boolean): void {
           directives !, currentView.tView.viewHooks, currentView.tView.viewCheckHooks,
           creationMode);
     }
-    // Views should be clean and in update mode after being checked, so these bits are cleared
+    // Views are clean and in update mode after being checked, so these bits are cleared
     currentView.flags &= ~(LViewFlags.CreationMode | LViewFlags.Dirty);
   }
   currentView.lifecycleStage = LifecycleStage.Init;
@@ -240,7 +245,12 @@ export function leaveView(newView: LView, creationOnly?: boolean): void {
   enterView(newView, null);
 }
 
-/**  Refreshes the view: dynamic children and directives, triggering any init/content hooks.  */
+/**
+ * Refreshes the view, executing the following steps in that order:
+ * triggers init hooks, refreshes dynamic children, triggers content hooks, sets host bindings,
+ * refreshes child components.
+ * Note: view hooks are triggered later when leaving the view.
+ * */
 function refreshView() {
   const tView = currentView.tView;
   if (!checkNoChangesMode) {
@@ -485,7 +495,10 @@ export function renderEmbeddedTemplate<T>(
       viewNode.data.tView.firstTemplatePass = firstTemplatePass = false;
     }
   } finally {
-    leaveView(oldView !, (rf & RenderFlags.Create) === RenderFlags.Create);
+    // renderEmbeddedTemplate() is called twice in fact, once for creation only and then once for
+    // update. When for creation only, leaveView() must not trigger view hooks, nor clean flags.
+    const isCreationOnly = (rf & RenderFlags.Create) === RenderFlags.Create;
+    leaveView(oldView !, isCreationOnly);
     isParent = _isParent;
     previousOrParentNode = _previousOrParentNode;
   }
