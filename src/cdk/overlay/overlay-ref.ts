@@ -13,7 +13,7 @@ import {Observable, Subject} from 'rxjs';
 import {take} from 'rxjs/operators';
 import {OverlayKeyboardDispatcher} from './keyboard/overlay-keyboard-dispatcher';
 import {OverlayConfig} from './overlay-config';
-import {coerceCssPixelValue} from '@angular/cdk/coercion';
+import {coerceCssPixelValue, coerceArray} from '@angular/cdk/coercion';
 
 
 /** An object where all of its properties cannot be written. */
@@ -115,12 +115,7 @@ export class OverlayRef implements PortalOutlet {
     }
 
     if (this._config.panelClass) {
-      // We can't do a spread here, because IE doesn't support setting multiple classes.
-      if (Array.isArray(this._config.panelClass)) {
-        this._config.panelClass.forEach(cssClass => this._pane.classList.add(cssClass));
-      } else {
-        this._pane.classList.add(this._config.panelClass);
-      }
+      this._toggleClasses(this._pane, this._config.panelClass, true);
     }
 
     // Only emit the `attachments` event once all other setup is done.
@@ -292,7 +287,7 @@ export class OverlayRef implements PortalOutlet {
     this._backdropElement.classList.add('cdk-overlay-backdrop');
 
     if (this._config.backdropClass) {
-      this._backdropElement.classList.add(this._config.backdropClass);
+      this._toggleClasses(this._backdropElement, this._config.backdropClass, true);
     }
 
     // Insert the backdrop before the pane in the DOM order,
@@ -353,7 +348,7 @@ export class OverlayRef implements PortalOutlet {
       backdropToDetach.classList.remove('cdk-overlay-backdrop-showing');
 
       if (this._config.backdropClass) {
-        backdropToDetach.classList.remove(this._config.backdropClass);
+        this._toggleClasses(backdropToDetach, this._config.backdropClass, false);
       }
 
       backdropToDetach.addEventListener('transitionend', finishDetach);
@@ -367,6 +362,16 @@ export class OverlayRef implements PortalOutlet {
       // either async or fakeAsync.
       this._ngZone.runOutsideAngular(() => setTimeout(finishDetach, 500));
     }
+  }
+
+  /** Toggles a single CSS class or an array of classes on an element. */
+  private _toggleClasses(element: HTMLElement, cssClasses: string | string[], isAdd: boolean) {
+    const classList = element.classList;
+
+    coerceArray(cssClasses).forEach(cssClass => {
+      // We can't do a spread here, because IE doesn't support setting multiple classes.
+      isAdd ? classList.add(cssClass) : classList.remove(cssClass);
+    });
   }
 }
 

@@ -442,7 +442,7 @@ describe('Overlay', () => {
       expect(backdrop.classList).toContain('cdk-overlay-dark-backdrop');
     });
 
-    it('should apply a custom overlay backdrop class', () => {
+    it('should apply a custom class to the backdrop', () => {
       config.backdropClass = 'cdk-overlay-transparent-backdrop';
 
       let overlayRef = overlay.create(config);
@@ -451,6 +451,18 @@ describe('Overlay', () => {
 
       let backdrop = overlayContainerElement.querySelector('.cdk-overlay-backdrop') as HTMLElement;
       expect(backdrop.classList).toContain('cdk-overlay-transparent-backdrop');
+    });
+
+    it('should apply multiple custom classes to the overlay', () => {
+      config.backdropClass = ['custom-class-1', 'custom-class-2'];
+
+      let overlayRef = overlay.create(config);
+      overlayRef.attach(componentPortal);
+      viewContainerFixture.detectChanges();
+
+      let backdrop = overlayContainerElement.querySelector('.cdk-overlay-backdrop') as HTMLElement;
+      expect(backdrop.classList).toContain('custom-class-1');
+      expect(backdrop.classList).toContain('custom-class-2');
     });
 
     it('should disable the pointer events of a backdrop that is being removed', () => {
