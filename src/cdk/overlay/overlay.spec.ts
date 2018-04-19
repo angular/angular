@@ -259,7 +259,7 @@ describe('Overlay', () => {
   });
 
   it('should default to the ltr direction', () => {
-    const overlayRef = overlay.create({hasBackdrop: true});
+    const overlayRef = overlay.create();
     expect(overlayRef.getConfig().direction).toBe('ltr');
   });
 
@@ -267,6 +267,22 @@ describe('Overlay', () => {
     const overlayRef = overlay.create({direction: undefined});
     expect(overlayRef.getConfig().direction).toBe('ltr');
   });
+
+  it('should clear out all DOM element references on dispose', fakeAsync(() => {
+    const overlayRef = overlay.create({hasBackdrop: true});
+    overlayRef.attach(componentPortal);
+
+    expect(overlayRef.hostElement).toBeTruthy('Expected overlay host to be defined.');
+    expect(overlayRef.overlayElement).toBeTruthy('Expected overlay element to be defined.');
+    expect(overlayRef.backdropElement).toBeTruthy('Expected backdrop element to be defined.');
+
+    overlayRef.dispose();
+    tick(500);
+
+    expect(overlayRef.hostElement).toBeFalsy('Expected overlay host not to be referenced.');
+    expect(overlayRef.overlayElement).toBeFalsy('Expected overlay element not to be referenced.');
+    expect(overlayRef.backdropElement).toBeFalsy('Expected backdrop element not to be referenced.');
+  }));
 
   describe('positioning', () => {
     let config: OverlayConfig;

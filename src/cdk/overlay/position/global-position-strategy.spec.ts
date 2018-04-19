@@ -166,11 +166,13 @@ describe('GlobalPositonStrategy', () => {
       positionStrategy: overlay.position().global()
     });
 
-    expect(document.body.contains(overlayRef.overlayElement.parentNode!)).toBe(true);
+    const parent = overlayRef.overlayElement.parentNode!;
+
+    expect(document.body.contains(parent)).toBe(true);
 
     overlayRef.dispose();
 
-    expect(document.body.contains(overlayRef.overlayElement.parentNode!)).toBe(false);
+    expect(document.body.contains(parent)).toBe(false);
   });
 
   it('should set the element width', () => {

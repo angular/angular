@@ -344,9 +344,6 @@ describe('FlexibleConnectedPositionStrategy', () => {
       });
 
       it('should position a panel properly when rtl', () => {
-        // must make the overlay longer than the origin to properly test attachment
-        overlayRef.overlayElement.style.width = `500px`;
-
         const originRect = originElement.getBoundingClientRect();
 
         positionStrategy.withPositions([{
@@ -360,6 +357,9 @@ describe('FlexibleConnectedPositionStrategy', () => {
           positionStrategy,
           direction: 'rtl'
         });
+
+        // must make the overlay longer than the origin to properly test attachment
+        overlayRef.overlayElement.style.width = `500px`;
 
         const overlayRect = overlayRef.overlayElement.getBoundingClientRect();
         expect(Math.floor(overlayRect.top)).toBe(Math.floor(originRect.bottom));

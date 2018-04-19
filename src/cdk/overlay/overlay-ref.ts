@@ -186,6 +186,8 @@ export class OverlayRef implements PortalOutlet {
       this._host = null!;
     }
 
+    this._pane = null!;
+
     if (isAttached) {
       this._detachments.next();
     }
