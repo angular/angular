@@ -88,6 +88,7 @@ calls the lifecycle hook methods in the following sequence at specific moments:
       <code>ngOnChanges()</code>
     </td>
     <td>
+      
       <!--
       Respond when Angular (re)sets data-bound input properties.
       The method receives a `SimpleChanges` object of current and previous property values.
@@ -98,6 +99,7 @@ calls the lifecycle hook methods in the following sequence at specific moments:
       이 메소드는 `SimpleChanges` 타입의 객체를 인자로 받으며, 이 객체에서 이전 값과 현재 값을 확인할 수 있습니다.
 
       `ngOnInit()` 함수가 실행되기 전에 먼저 실행되고, 입력 프로퍼티의 값이 바뀔때마다 실행됩니다.
+
     </td>
   </tr>
   <tr style='vertical-align:top'>
@@ -105,16 +107,18 @@ calls the lifecycle hook methods in the following sequence at specific moments:
       <code>ngOnInit()</code>
     </td>
     <td>
+      
       <!--
       Initialize the directive/component after Angular first displays the data-bound properties
       and sets the directive/component's input properties.
 
       Called _once_, after the _first_ `ngOnChanges()`.
       -->
-      디렉티브나 컴포넌트의 인스턴스가 생성되고 입력 프로퍼티를 통해 초기값이 지정된 이후에 화면에 표시되는데,
+      디렉티브나 컴포넌트는 인스턴스가 생성되고 입력 프로퍼티를 통해 초기값이 지정된 이후에 화면에 표시되는데,
       디렉티브나 컴포넌트를 초기화하는 로직이 더 있을 때 사용합니다.
 
       `ngOnChanges()`가 _처음_ 실행된 이후에 _한 번만_ 실행됩니다.
+
     </td>
   </tr>
   <tr style='vertical-align:top'>
@@ -122,6 +126,7 @@ calls the lifecycle hook methods in the following sequence at specific moments:
       <code>ngDoCheck()</code>
     </td>
     <td>
+      
       <!--
       Detect and act upon changes that Angular can't or won't detect on its own.
 
@@ -130,6 +135,7 @@ calls the lifecycle hook methods in the following sequence at specific moments:
       변화 감지 싸이클을 수동으로 실행할 때 사용합니다.
 
       변화 감지 싸이클이 실행될 때마다 실행되며, `ngOnChanges()`와 `ngOnInit()` 메소드가 실행된 직후에도 한 번 실행됩니다.
+
     </td>
   </tr>
   <tr style='vertical-align:top'>
@@ -138,14 +144,15 @@ calls the lifecycle hook methods in the following sequence at specific moments:
     </td>
     <td>
 
+      <!--
       Respond after Angular projects external content into the component's view / the view that a directive is in.
 
       Called _once_ after the first `ngDoCheck()`.
-      <!--
-      Angular가 화면에 렌더링 할 컴포넌트 템플릿을 준비하는 시점에 실행되며, `ngDoCheck()`가 처음 실행된 직후에 _한 번만_ 실행됩니다.
-
-      _이 라이프싸이클 후킹 함수는 컴포넌트에만 사용할 수 있습니다._
       -->
+      Angular가 컴포넌트의 템플릿을 컴포넌트 뷰로 준비하거나 뷰 안에 있는 디렉티브를 준비한 이후에 실행됩니다.
+
+      `ngDoCheck()`가 처음 실행된 직후에 _한 번만_ 실행됩니다.
+      
     </td>
   </tr>
   <tr style='vertical-align:top'>
@@ -154,17 +161,15 @@ calls the lifecycle hook methods in the following sequence at specific moments:
     </td>
     <td>
 
+      <!--
       Respond after Angular checks the content projected into the directive/component.
 
       Called after the `ngAfterContentInit()` and every subsequent `ngDoCheck()`.
-
-      <!--
-      Angular가 뷰에 렌더링 할 컴포넌트 템플릿이 준비된 이후에 실행됩니다.
+      -->
+      Angular가 디렉티브나 컴포넌트의 뷰를 검사한 이후에 실행됩니다.
 
       `ngAfterContentInit()`이 실행된 후에 실행되며, `ngDoCheck()` 함수가 실행된 뒤에도 실행됩니다.
-
-      _이 라이프싸이클 후킹 함수는 컴포넌트에만 사용할 수 있습니다._
-      -->
+      
     </td>
   </tr>
   <tr style='vertical-align:top'>
@@ -173,15 +178,15 @@ calls the lifecycle hook methods in the following sequence at specific moments:
     </td>
     <td>
 
+      <!--
       Respond after Angular initializes the component's views and child views / the view that a directive is in.
 
       Called _once_ after the first `ngAfterContentChecked()`.
-
-      <!--
-      Angular가 컴포넌트 뷰와 자식 컴포넌트 뷰를 모두 초기화한 후에 실행되며, `ngAfterContentChecked()`가 실행된 직후에 _한 번만_ 실행됩니다.
-
-      _이 라이프싸이클 후킹 함수는 컴포넌트에만 사용할 수 있습니다._
       -->
+      Angular가 컴포넌트 뷰와 자식 컴포넌트 뷰, 뷰 안에 있는 디렉티브를 모두 초기화한 후에 실행됩니다.
+
+      `ngAfterContentChecked()`가 처음 실행된 직후에 _한 번만_ 실행됩니다.
+      
     </td>
   </tr>
   <tr style='vertical-align:top'>
@@ -190,17 +195,15 @@ calls the lifecycle hook methods in the following sequence at specific moments:
     </td>
     <td>
 
+      <!--
       Respond after Angular checks the component's views and child views / the view that a directive is in.
 
       Called after the `ngAfterViewInit` and every subsequent `ngAfterContentChecked()`.
-
-      <!--
-      Angular가 컴포넌트 뷰와 자식 컴포넌트 뷰를 템플릿에 렌더링할 준비를 끝낸 후에 실행됩니다.
-
-      `ngAfterViewInit()`이 실행된 직후에 실행되며, `ngAfterContentChecked()`가 실행될 때마다 이어서 실행됩니다.
-
-      _이 라이프싸이클 후킹 함수는 컴포넌트에만 사용할 수 있습니다._
       -->
+      Angular가 컴포넌트 뷰와 자식 컴포넌트 뷰, 뷰 안에 있는 디렉티브가 준비되었는지 검사한 후에 실행됩니다.
+
+      `ngAfterViewInit()`이 실행된 직후에 실행되며, `ngAfterContentChecked()`가 실행될 때마다 실행됩니다.
+
     </td>
   </tr>
   <tr style='vertical-align:top'>
@@ -208,6 +211,7 @@ calls the lifecycle hook methods in the following sequence at specific moments:
       <code>ngOnDestroy()</code>
     </td>
     <td>
+      
       <!--
       Cleanup just before Angular destroys the directive/component.
       Unsubscribe Observables and detach event handlers to avoid memory leaks.
@@ -218,35 +222,69 @@ calls the lifecycle hook methods in the following sequence at specific moments:
       이 함수에서 옵저버블 구독을 해제하거나 이벤트 핸들러를 제거해서 메모리 누수를 방지할 때 사용합니다.
 
       Angular가 디렉티브나 컴포넌트를 _종료하기 직전에_ 실행됩니다.
+
     </td>
   </tr>
 </table>
 
+<!--
 {@a interface-optional}
+-->
+{@a 인터페이스는-옵션}
 
+<!--
 ## Interfaces are optional (technically)
+-->
+## 인터페이스 구현은 옵션입니다.
 
+<!--
 The interfaces are optional for JavaScript and Typescript developers from a purely technical perspective.
 The JavaScript language doesn't have interfaces.
 Angular can't see TypeScript interfaces at runtime because they disappear from the transpiled JavaScript.
+-->
+문법적인 측면에서 JavaScript나 TypeScript를 개발할 때 인터페이스를 꼭 사용해야 하는 것은 아닙니다.
+심지어 JavaScript는 인터페이스를 제공하고 있지도 않습니다.
+그래서 Angular 애플리케이션이 JavaScript 코드로 변환된 이후에는 Angular가 TypeScript 인터페이스가 있는지 알 수 없습니다.
 
+<!--
 Fortunately, they aren't necessary.
 You don't have to add the lifecycle hook interfaces to directives and components to benefit from the hooks themselves.
+-->
+하지만 다행히, Angular의 라이프싸이클 후킹을 활용하기 위해 인터페이스를 항상 구현해야 하는 것은 아닙니다.
 
+<!--
 Angular instead inspects directive and component classes and calls the hook methods *if they are defined*.
 Angular finds and calls methods like `ngOnInit()`, with or without the interfaces.
+-->
+Angular는 디렉티브나 컴포넌트 클래스에 라이프사이클 후킹 함수가 *메소드로 정의되어 있으면* 라이프싸이클 후킹 함수를 실행합니다.
+그래서 인터페이스를 사용하는 여부와 관계없이, 클래스에 `ngOnInit()` 메소드가 정의되어 있으면 이 함수를 실행합니다.
 
+<!--
 Nonetheless, it's good practice to add interfaces to TypeScript directive classes
 in order to benefit from strong typing and editor tooling.
+-->
+그럼에도 불구하고, TypeScript의 강력한 타입 검사와 에디터가 지원하는 타입 지원 기능을 제대로 활용하려면 Angular가 제안하는 방법처럼 인터페이스를 제대로 구현하는 것이 좋습니다.
 
+<!--
 {@a other-lifecycle-hooks}
+-->
+{@a 기타-라이프싸이클-후킹-함수}
 
+<!--
 ## Other Angular lifecycle hooks
+-->
+## 기타 라이프싸이클 후킹 함수
 
+<!--
 Other Angular sub-systems may have their own lifecycle hooks apart from these component hooks.
+-->
+Angular 서드파티 라이브러리 중에는 라이프싸이클 후킹 함수를 따로 정의해서 사용하는 경우도 있습니다.
 
+<!--
 3rd party libraries might implement their hooks as well in order to give developers more
 control over how these libraries are used.
+-->
+이런 라이프싸이클 후킹 함수는 Angular가 정의하는 라이프싸이클 외에 좀 더 다양한 시점을 활용하기 위해 마련된 것이며, 컴포넌트를 좀 더 효율적으로 활용할 수 있는 방법입니다.
 
 {@a the-sample}
 

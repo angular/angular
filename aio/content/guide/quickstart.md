@@ -572,10 +572,16 @@ These files go in the root folder next to `src/`.
   </col>
   <tr>
     <th>
+      <!--
       File
+      -->
+      파일
     </th>
     <th>
+      <!--
       Purpose
+      -->
+      용도
     </th>
   </tr>
   <tr>
