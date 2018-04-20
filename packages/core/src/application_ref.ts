@@ -16,7 +16,8 @@ import {isPromise} from '../src/util/lang';
 import {ApplicationInitStatus} from './application_init';
 import {APP_BOOTSTRAP_LISTENER, PLATFORM_INITIALIZER} from './application_tokens';
 import {Console} from './console';
-import {Injectable, InjectionToken, Injector, StaticProvider} from './di';
+import {Injectable, InjectionToken, Injector, StaticProvider, inject} from './di';
+import {defineInjectable} from './di/defs';
 import {CompilerFactory, CompilerOptions} from './linker/compiler';
 import {ComponentFactory, ComponentRef} from './linker/component_factory';
 import {ComponentFactoryBoundToModule, ComponentFactoryResolver} from './linker/component_factory_resolver';
@@ -361,8 +362,14 @@ function optionsReducer<T extends Object>(dst: any, objs: T | T[]): T {
  *
  *
  */
-@Injectable()
 export class ApplicationRef {
+  static ngInjectableDef = defineInjectable({
+    providedIn: 'root',
+    factory: () => new ApplicationRef(
+                 inject(NgZone), inject(Console), inject(Injector as any), inject(ErrorHandler),
+                 inject(ComponentFactoryResolver as any), inject(ApplicationInitStatus))
+  });
+
   /** @internal */
   static _tickScope: WtfScopeFn = wtfCreateScope('ApplicationRef#tick()');
   private _bootstrapListeners: ((compRef: ComponentRef<any>) => void)[] = [];

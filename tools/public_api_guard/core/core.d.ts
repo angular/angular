@@ -31,11 +31,11 @@ export declare class ApplicationInitStatus {
     readonly done: boolean;
     readonly donePromise: Promise<any>;
     constructor(appInits: (() => any)[]);
+    static ngInjectableDef: never;
 }
 
 /** @experimental */
 export declare class ApplicationModule {
-    constructor(appRef: ApplicationRef);
 }
 
 export declare class ApplicationRef {
@@ -47,6 +47,7 @@ export declare class ApplicationRef {
     bootstrap<C>(componentOrFactory: ComponentFactory<C> | Type<C>, rootSelectorOrNode?: string | any): ComponentRef<C>;
     detachView(viewRef: ViewRef): void;
     tick(): void;
+    static ngInjectableDef: never;
 }
 
 /** @experimental */
@@ -86,6 +87,7 @@ export declare class Compiler {
     compileModuleAndAllComponentsSync<T>(moduleType: Type<T>): ModuleWithComponentFactories<T>;
     compileModuleAsync<T>(moduleType: Type<T>): Promise<NgModuleFactory<T>>;
     compileModuleSync<T>(moduleType: Type<T>): NgModuleFactory<T>;
+    static ngInjectableDef: never;
 }
 
 /** @experimental */

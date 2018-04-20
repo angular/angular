@@ -8,7 +8,9 @@
 
 import {isPromise} from '../src/util/lang';
 
-import {Inject, Injectable, InjectionToken, Optional} from './di';
+import {Inject, Injectable, InjectionToken, Optional, inject} from './di';
+import {defineInjectable} from './di/defs';
+
 
 
 /**
@@ -24,6 +26,13 @@ export const APP_INITIALIZER = new InjectionToken<Array<() => void>>('Applicatio
  */
 @Injectable()
 export class ApplicationInitStatus {
+  static ngInjectableDef = defineInjectable({
+    providedIn: 'root',
+    factory: function ApplicationInitStatus_Factory() {
+      return new ApplicationInitStatus(inject(APP_INITIALIZER));
+    }
+  });
+
   private resolve: Function;
   private reject: Function;
   private initialized = false;
