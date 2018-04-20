@@ -288,23 +288,40 @@ control over how these libraries are used.
 
 {@a the-sample}
 
+<!--
 ## Lifecycle examples
+-->
+## 라이프싸이클 활용 예제
 
+<!--
 The <live-example></live-example>
 demonstrates the lifecycle hooks in action through a series of exercises
 presented as components under the control of the root `AppComponent`.
+-->
+이 섹션에서 다루는 라이프싸이클 후킹 함수 활용 예제는 <live-example></live-example>에서 바로 확인할 수 있습니다.
+각 예제는 `AppComponent`의 자식 컴포넌트로 구성됩니다.
 
+<!--
 They follow a common pattern: a *parent* component serves as a test rig for
 a *child* component that illustrates one or more of the lifecycle hook methods.
+-->
+이 예제들은 모두 같은 패턴으로 구성되어 있습니다. 라이프싸이클 후킹 함수는 *자식* 컴포넌트에 각각 정의되어 있으며, *부모* 컴포넌트가 이 컴포넌트를 동작시킵니다.
 
+<!--
 Here's a brief description of each exercise:
+-->
+각 예제를 간단하게 설명하면 다음과 같습니다:
 
 <table width="100%">
   <col width="20%"></col>
   <col width="80%"></col>
   <tr>
+    <!--
     <th>Component</th>
     <th>Description</th>
+    -->
+    <th>컴포넌트</th>
+    <th>설명</th>
   </tr>
   <tr style='vertical-align:top'>
     <td>
@@ -312,8 +329,12 @@ Here's a brief description of each exercise:
     </td>
     <td>
 
+      <!--
       Demonstrates every lifecycle hook.
       Each hook method writes to the on-screen log.
+      -->
+      모든 라이프싸이클 후킹 함수를 다룹니다.
+      각 함수가 실행될때마다 화면에서 로그를 확인할 수 있습니다.
 
     </td>
   </tr>
@@ -323,12 +344,18 @@ Here's a brief description of each exercise:
     </td>
     <td>
 
+      <!--
       Directives have lifecycle hooks too.
       A `SpyDirective` can log when the element it spies upon is
       created or destroyed using the `ngOnInit` and `ngOnDestroy` hooks.
 
       This example applies the `SpyDirective` to a `<div>` in an `ngFor` *hero* repeater
       managed by the parent `SpyComponent`.
+      -->
+      디렉티브도 라이프싸이클 후킹 함수를 활용할 수 있습니다.
+      `SpyDirective`가 생성되거나 종료될 때 각각 `ngOnInit`과 `ngOnDestroy` 후킹 함수가 실행되는 것을 확인할 수 있습니다.
+      
+      이 예제에서는 `<div>`에 `ngFor`를 사용해서 *hero* 객체를 반복할 때 `SpyDirective`가 사용됩니다.
 
     </td>
   </tr>
@@ -338,9 +365,13 @@ Here's a brief description of each exercise:
     </td>
     <td>
 
+      <!--
       See how Angular calls the `ngOnChanges()` hook with a `changes` object
       every time one of the component input properties changes.
       Shows how to interpret the `changes` object.
+      -->
+      컴포넌트의 입력 프로퍼티가 변경될 때 `ngOnChanges()` 함수가 어떻게 실행되는지 확인할 수 있습니다.
+      이 때 인자로 `changes` 객체가 전달되며, 이 객체를 어떻게 활용하는지 알아봅니다.
 
     </td>
   </tr>
@@ -350,8 +381,12 @@ Here's a brief description of each exercise:
     </td>
     <td>
 
+      <!--
       Implements an `ngDoCheck()` method with custom change detection.
       See how often Angular calls this hook and watch it post changes to a log.
+      -->
+      변화감지 싸이클이 수동으로 실행되었을 때 `ngDoCheck()`가 어떻게 실행되는지 알아봅니다.
+      이 함수가 어떤 경우를 감지하고 실행되는지 로그로 확인해 보세요.
 
     </td>
   </tr>
@@ -361,8 +396,12 @@ Here's a brief description of each exercise:
     </td>
     <td>
 
+      <!--
       Shows what Angular means by a *view*.
       Demonstrates the `ngAfterViewInit` and `ngAfterViewChecked` hooks.
+      -->
+      Angular에서 화면을 담당하는 것은 *뷰* 입니다.
+      `ngAfterViewInit`과 `ngAfterViewChecked`가 어떻게 실행되는지 확인해 보세요.
 
     </td>
   </tr>
@@ -372,9 +411,13 @@ Here's a brief description of each exercise:
     </td>
     <td>
 
+      <!--
       Shows how to project external content into a component and
       how to distinguish projected content from a component's view children.
       Demonstrates the `ngAfterContentInit` and `ngAfterContentChecked` hooks.
+      -->
+      외부 컨텐츠가 컴포넌트에 어떻게 반영되는지, 이 컨텐츠가 컴포넌트의 자식 뷰와는 어떻게 구별되는지 확인해 보세요.
+      이 예제는 `ngAfterContentInit`과 `ngAfterContentChecked` 함수에 대해 알아봅니다.
 
     </td>
   </tr>
@@ -384,52 +427,89 @@ Here's a brief description of each exercise:
     </td>
     <td>
 
+      <!--
       Demonstrates a combination of a component and a directive
       each with its own hooks.
+      -->
+      컴포넌트와 디렉티브를 함께 사용하면서 라이프싸이클 후킹 함수를 각각 활용하는 경우를 살펴봅니다.
 
+      <!--
       In this example, a `CounterComponent` logs a change (via `ngOnChanges`)
       every time the parent component increments its input counter property.
       Meanwhile, the `SpyDirective` from the previous example is applied
       to the `CounterComponent` log where it watches log entries being created and destroyed.
+      -->
+      이 예제에서 `CounterComponent`는 부모 컴포넌트가 전달하는 입력 프로퍼티가 변경될 때마다 `ngOnChanges` 함수를 통해 로그를 출력합니다. 그리고 이전 예제에서 사용되었던 `SpyDirective`가 `CounterComponent`에도 적용되어, 디렉티브가 생성되거나 종료되는 시점을 로그로 출력합니다.
 
     </td>
   </tr>
 </table>
 
+<!--
 The remainder of this page discusses selected exercises in further detail.
+-->
+이제부터는 각각의 예제를 좀 더 자세하게 알아봅시다.
 
 {@a peek-a-boo}
 
+<!--
 ## Peek-a-boo: all hooks
+-->
+## Peek-a-boo: 모든 라이프싸이클 후킹 함수
 
+<!--
 The `PeekABooComponent` demonstrates all of the hooks in one component.
+-->
+`PeekABooComponent`는 컴포넌트에서 발생하는 라이프싸이클 후킹 함수를 모두 다룹니다.
 
+<!--
 You would rarely, if ever, implement all of the interfaces like this.
 The peek-a-boo exists to show how Angular calls the hooks in the expected order.
+-->
+라이프싸이클 후킹 함수를 모두 구현하는 경우는 많지 않지만, 혹시 필요하다면 이 컴포넌트를 참고하면 됩니다.
+그리고 이 컴포넌트를 보면 Angular 라이프싸이클 후킹 함수가 어떤 순서로 실행되는지도 확인할 수 있습니다.
 
+<!--
 This snapshot reflects the state of the log after the user clicked the *Create...* button and then the *Destroy...* button.
+-->
+사용자가 *Create...* 버튼을 클릭한 시점부터 *Destroy...* 버튼을 클릭하는 시점까지 출력하는 로그는 아래 그림으로 확인할 수 있습니다.
 
 <figure>
   <img src="generated/images/guide/lifecycle-hooks/peek-a-boo.png" alt="Peek-a-boo">
 </figure>
 
+<!--
 The sequence of log messages follows the prescribed hook calling order:
 `OnChanges`, `OnInit`, `DoCheck`&nbsp;(3x), `AfterContentInit`, `AfterContentChecked`&nbsp;(3x),
 `AfterViewInit`, `AfterViewChecked`&nbsp;(3x), and `OnDestroy`.
+-->
+이전에 설명했듯이, 라이프싸이클 후킹 함수는 다음과 같은 순서로 실행됩니다:
+`OnChanges`, `OnInit`, `DoCheck`&nbsp;(3번), `AfterContentInit`, `AfterContentChecked`&nbsp;(3번),
+`AfterViewInit`, `AfterViewChecked`&nbsp;(3번), `OnDestroy`.
 
 <div class="l-sub-section">
 
+  <!--
   The constructor isn't an Angular hook *per se*.
   The log confirms that input properties (the `name` property in this case) have no assigned values at construction.
+  -->
+  생성자 함수 자체는 Angular의 라이프싸이클이 아닙니다.
+  그래서 생성자에서 확인하는 `name` 프로퍼티의 값은 아직 할당되지 않았습니다.
 
 </div>
 
+<!--
 Had the user clicked the *Update Hero* button, the log would show another `OnChanges` and two more triplets of
 `DoCheck`, `AfterContentChecked` and `AfterViewChecked`.
 Clearly these three hooks fire *often*. Keep the logic in these hooks as lean as possible!
+-->
+사용자가 *Update Hero* 버튼을 클릭하면 `OnChanges` 함수와 `DoCheck`, `AfterContentChecked`, `AfterViewChecked` 함수가 연달아 실행되면서 로그를 출력합니다.
+이 함수들은 컴포넌트가 변화할 때마다 *계속* 실행됩니다. 그래서 각각의 함수에는 간결한 로직만 작성하는 것이 좋습니다!
 
+<!--
 The next examples focus on hook details.
-
+-->
+그리고 다음 예제부터는 각각의 라이프싸이클 후킹 함수를 자세하게 다룹니다.
 
 {@a spy}
 
