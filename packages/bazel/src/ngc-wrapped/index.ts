@@ -267,6 +267,10 @@ export function compile({allowNonHermeticReads, allDepsCompiledWithBazel = true,
       fs.writeFileSync(bazelOpts.manifest, manifest);
     }
   }
+  
+  // If compilation fails unexpectedly, performCompilation returns no program.
+  // Make sure not to crash but report the diagnostics.
+  if (!program) return {program, diagnostics};
 
   if (!bazelOpts.nodeModulesPrefix) {
     // If there is no node modules, then metadata.json should be emitted since
