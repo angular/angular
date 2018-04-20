@@ -215,7 +215,7 @@ export class ASTWithSource extends AST {
 export class TemplateBinding {
   constructor(
       public span: ParseSpan, public key: string, public keyIsVar: boolean, public name: string,
-      public expression: ASTWithSource) {}
+      public expression: ASTWithSource|null) {}
 }
 
 export interface AstVisitor {

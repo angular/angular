@@ -130,11 +130,12 @@ export class BindingParser {
     }
   }
 
-  // Parse an inline template binding. ie `<tag *prefixToken="<value>">`
+  // Parse an inline template binding. ie `<tag *tplKey="<tplValue>">`
   parseInlineTemplateBinding(
-      prefixToken: string, value: string, sourceSpan: ParseSourceSpan,
+      tplKey: string, tplValue: string, sourceSpan: ParseSourceSpan,
       targetMatchableAttrs: string[][], targetProps: BoundProperty[], targetVars: VariableAst[]) {
-    const bindings = this._parseTemplateBindings(prefixToken, value, sourceSpan);
+    const bindings = this._parseTemplateBindings(tplKey, tplValue, sourceSpan);
+
     for (let i = 0; i < bindings.length; i++) {
       const binding = bindings[i];
       if (binding.keyIsVar) {
@@ -149,12 +150,12 @@ export class BindingParser {
     }
   }
 
-  private _parseTemplateBindings(prefixToken: string, value: string, sourceSpan: ParseSourceSpan):
+  private _parseTemplateBindings(tplKey: string, tplValue: string, sourceSpan: ParseSourceSpan):
       TemplateBinding[] {
     const sourceInfo = sourceSpan.start.toString();
 
     try {
-      const bindingsResult = this._exprParser.parseTemplateBindings(prefixToken, value, sourceInfo);
+      const bindingsResult = this._exprParser.parseTemplateBindings(tplKey, tplValue, sourceInfo);
       this._reportExpressionParserErrors(bindingsResult.errors, sourceSpan);
       bindingsResult.templateBindings.forEach((binding) => {
         if (binding.expression) {
