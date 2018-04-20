@@ -98,19 +98,11 @@ export class Parser {
     return new Quote(new ParseSpan(0, input.length), prefix, uninterpretedExpression, location);
   }
 
-  parseTemplateBindings(prefixToken: string|null, input: string, location: any):
+  parseTemplateBindings(tplKey: string, tplValue: string, location: any):
       TemplateBindingParseResult {
-    const tokens = this._lexer.tokenize(input);
-    if (prefixToken) {
-      // Prefix the tokens with the tokens from prefixToken but have them take no space (0 index).
-      const prefixTokens = this._lexer.tokenize(prefixToken).map(t => {
-        t.index = 0;
-        return t;
-      });
-      tokens.unshift(...prefixTokens);
-    }
-    return new _ParseAST(input, location, tokens, input.length, false, this.errors, 0)
-        .parseTemplateBindings();
+    const tokens = this._lexer.tokenize(tplValue);
+    return new _ParseAST(tplValue, location, tokens, tplValue.length, false, this.errors, 0)
+        .parseTemplateBindings(tplKey);
   }
 
   parseInterpolation(
@@ -686,48 +678,49 @@ export class _ParseAST {
     return result.toString();
   }
 
-  parseTemplateBindings(): TemplateBindingParseResult {
+  // Parses the AST for `<some-tag *tplKey=AST>`
+  parseTemplateBindings(tplKey: string): TemplateBindingParseResult {
+    let firstBinding = true;
     const bindings: TemplateBinding[] = [];
-    let prefix: string = null !;
     const warnings: string[] = [];
-    while (this.index < this.tokens.length) {
+    do {
       const start = this.inputIndex;
-      let keyIsVar: boolean = this.peekKeywordLet();
-      if (keyIsVar) {
-        this.advance();
+      let rawKey: string;
+      let key: string;
+      let isVar: boolean = false;
+      if (firstBinding) {
+        rawKey = key = tplKey;
+        firstBinding = false;
+      } else {
+        isVar = this.peekKeywordLet();
+        if (isVar) this.advance()
+          rawKey = this.expectTemplateBindingKey();
+        key = isVar ? rawKey : tplKey + rawKey[0].toUpperCase() + rawKey.substring(1);
+        this.optionalCharacter(chars.$COLON);
       }
-      let rawKey = this.expectTemplateBindingKey();
-      let key = rawKey;
-      if (!keyIsVar) {
-        if (prefix == null) {
-          prefix = key;
-        } else {
-          key = prefix + key[0].toUpperCase() + key.substring(1);
-        }
-      }
-      this.optionalCharacter(chars.$COLON);
+
       let name: string = null !;
-      let expression: ASTWithSource = null !;
-      if (keyIsVar) {
+      let expression: ASTWithSource|null = null;
+      if (isVar) {
         if (this.optionalOperator('=')) {
           name = this.expectTemplateBindingKey();
         } else {
           name = '\$implicit';
         }
       } else if (this.peekKeywordAs()) {
-        const letStart = this.inputIndex;
         this.advance();  // consume `as`
         name = rawKey;
         key = this.expectTemplateBindingKey();  // read local var name
-        keyIsVar = true;
+        isVar = true;
       } else if (this.next !== EOF && !this.peekKeywordLet()) {
         const start = this.inputIndex;
         const ast = this.parsePipe();
         const source = this.input.substring(start - this.offset, this.inputIndex - this.offset);
         expression = new ASTWithSource(ast, source, this.location, this.errors);
       }
-      bindings.push(new TemplateBinding(this.span(start), key, keyIsVar, name, expression));
-      if (this.peekKeywordAs() && !keyIsVar) {
+
+      bindings.push(new TemplateBinding(this.span(start), key, isVar, name, expression));
+      if (this.peekKeywordAs() && !isVar) {
         const letStart = this.inputIndex;
         this.advance();                                   // consume `as`
         const letName = this.expectTemplateBindingKey();  // read local var name
@@ -736,8 +729,9 @@ export class _ParseAST {
       if (!this.optionalCharacter(chars.$SEMICOLON)) {
         this.optionalCharacter(chars.$COMMA);
       }
-    }
-    return new TemplateBindingParseResult(bindings, warnings, this.errors);
+    } while (this.index < this.tokens.length)
+
+        return new TemplateBindingParseResult(bindings, warnings, this.errors);
   }
 
   error(message: string, index: number|null = null) {

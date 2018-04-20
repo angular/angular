@@ -107,16 +107,16 @@ export class HtmlToTemplateTransform implements html.Visitor {
         }
         isTemplateBinding = true;
         elementHasInlineTemplate = true;
-        const templateBindingsSource = attribute.value;
-        const prefixToken = normalizedName.substring(TEMPLATE_ATTR_PREFIX.length) + ':';
+        const templateValue = attribute.value;
+        const templateKey = normalizedName.substring(TEMPLATE_ATTR_PREFIX.length);
 
         const oldVariables: VariableAst[] = [];
 
         inlineTemplateSourceSpan = attribute.valueSpan || attribute.sourceSpan;
 
         this.bindingParser.parseInlineTemplateBinding(
-            prefixToken !, templateBindingsSource !, attribute.sourceSpan,
-            templateMatchableAttributes, templateBoundProperties, oldVariables);
+            templateKey, templateValue, attribute.sourceSpan, templateMatchableAttributes,
+            templateBoundProperties, oldVariables);
 
         templateVariables.push(
             ...oldVariables.map(v => new t.Variable(v.name, v.value, v.sourceSpan)));
