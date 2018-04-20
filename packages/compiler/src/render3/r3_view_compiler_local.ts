@@ -10,8 +10,9 @@ import {CompileDiDependencyMetadata, CompileDirectiveMetadata, CompileQueryMetad
 import {CompileReflector} from '../compile_reflector';
 import {BindingForm, BuiltinFunctionCall, LocalResolver, convertActionBinding, convertPropertyBinding} from '../compiler_util/expression_converter';
 import {ConstantPool, DefinitionKind} from '../constant_pool';
-import {InjectFlags} from '../core';
+import * as core from '../core';
 import {AST, AstMemoryEfficientTransformer, BindingPipe, FunctionCall, ImplicitReceiver, LiteralArray, LiteralMap, LiteralPrimitive, PropertyRead} from '../expression_parser/ast';
+import {BoundElementBindingType} from '../expression_parser/ast';
 import {Identifiers} from '../identifiers';
 import {LifecycleHooks} from '../lifecycle_reflector';
 import * as o from '../output/output_ast';
@@ -22,6 +23,7 @@ import {OutputContext, error} from '../util';
 
 import * as t from './r3_ast';
 import {Identifiers as R3} from './r3_identifiers';
+
 
 
 /** Name of the context parameter passed into a template function */
@@ -213,10 +215,10 @@ function unsupported(feature: string): never {
 }
 
 const BINDING_INSTRUCTION_MAP: {[type: number]: o.ExternalReference} = {
-  [t.PropertyBindingType.Property]: R3.elementProperty,
-  [t.PropertyBindingType.Attribute]: R3.elementAttribute,
-  [t.PropertyBindingType.Class]: R3.elementClassNamed,
-  [t.PropertyBindingType.Style]: R3.elementStyleNamed,
+  [BoundElementBindingType.Property]: R3.elementProperty,
+  [BoundElementBindingType.Attribute]: R3.elementAttribute,
+  [BoundElementBindingType.Class]: R3.elementClassNamed,
+  [BoundElementBindingType.Style]: R3.elementStyleNamed,
 };
 
 function interpolate(args: o.Expression[]): o.Expression {
@@ -440,7 +442,7 @@ class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver {
 
       // Only selectors with a non-default value are generated
       if (ngContentSelectors.length > 1) {
-        const r3Selectors = ngContentSelectors.map(s => parseSelectorToR3Selector(s));
+        const r3Selectors = ngContentSelectors.map(s => core.parseSelectorToR3Selector(s));
         // `projectionDef` needs both the parsed and raw value of the selectors
         const parsed = this.outputCtx.constantPool.getConstLiteral(asLiteral(r3Selectors), true);
         const unParsed =
@@ -679,7 +681,7 @@ class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver {
 
     // Generate element input bindings
     element.inputs.forEach((input: t.BoundAttribute) => {
-      if (input.type === t.PropertyBindingType.Animation) {
+      if (input.type === BoundElementBindingType.Animation) {
         this._unsupported('animations');
       }
       const convertedBinding = this.convertPropertyBinding(implicit, input.value);
@@ -691,7 +693,7 @@ class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver {
             this._bindingCode, input.sourceSpan, instruction, o.literal(elementIndex),
             o.literal(input.name), value);
       } else {
-        this._unsupported(`binding ${t.PropertyBindingType[input.type]}`);
+        this._unsupported(`binding type ${input.type}`);
       }
     });
 
@@ -883,7 +885,7 @@ export function createFactory(
             token.identifier != null ? outputCtx.importExpr(tokenRef) : o.literal(tokenRef);
         const directiveInjectArgs = [tokenValue];
         const flags = extractFlags(dependency);
-        if (flags != InjectFlags.Default) {
+        if (flags != core.InjectFlags.Default) {
           // Append flag information if other than default.
           directiveInjectArgs.push(o.literal(flags));
         }
@@ -921,19 +923,19 @@ export function createFactory(
       type.reference.name ? `${type.reference.name}_Factory` : null);
 }
 
-function extractFlags(dependency: CompileDiDependencyMetadata): InjectFlags {
-  let flags = InjectFlags.Default;
+function extractFlags(dependency: CompileDiDependencyMetadata): core.InjectFlags {
+  let flags = core.InjectFlags.Default;
   if (dependency.isHost) {
-    flags |= InjectFlags.Host;
+    flags |= core.InjectFlags.Host;
   }
   if (dependency.isOptional) {
-    flags |= InjectFlags.Optional;
+    flags |= core.InjectFlags.Optional;
   }
   if (dependency.isSelf) {
-    flags |= InjectFlags.Self;
+    flags |= core.InjectFlags.Self;
   }
   if (dependency.isSkipSelf) {
-    flags |= InjectFlags.SkipSelf;
+    flags |= core.InjectFlags.SkipSelf;
   }
   if (dependency.isValue) {
     unsupported('value dependencies');
@@ -953,7 +955,7 @@ function trimTrailingNulls(parameters: o.Expression[]): o.Expression[] {
 
 // Turn a directive selector into an R3-compatible selector for directive def
 function createDirectiveSelector(selector: string): o.Expression {
-  return asLiteral(parseSelectorToR3Selector(selector));
+  return asLiteral(core.parseSelectorToR3Selector(selector));
 }
 
 function createHostAttributesArray(
@@ -1104,72 +1106,6 @@ class ValueConverter extends AstMemoryEfficientTransformer {
 function invalid<T>(arg: o.Expression | o.Statement | t.Node): never {
   throw new Error(
       `Invalid state: Visitor ${this.constructor.name} doesn't handle ${o.constructor.name}`);
-}
-
-/**
- * Flags used to generate R3-style CSS Selectors. They are pasted from
- * core/src/render3/projection.ts because they cannot be referenced directly.
- */
-// TODO(vicb): move to ../core
-const enum SelectorFlags {
-  /** Indicates this is the beginning of a new negative selector */
-  NOT = 0b0001,
-
-  /** Mode for matching attributes */
-  ATTRIBUTE = 0b0010,
-
-  /** Mode for matching tag names */
-  ELEMENT = 0b0100,
-
-  /** Mode for matching class names */
-  CLASS = 0b1000,
-}
-
-// These are a copy the CSS types from core/src/render3/interfaces/projection.ts
-// They are duplicated here as they cannot be directly referenced from core.
-// TODO(vicb): move to ../core
-type R3CssSelector = (string | SelectorFlags)[];
-type R3CssSelectorList = R3CssSelector[];
-
-function parserSelectorToSimpleSelector(selector: CssSelector): R3CssSelector {
-  const classes = selector.classNames && selector.classNames.length ?
-      [SelectorFlags.CLASS, ...selector.classNames] :
-      [];
-  const elementName = selector.element && selector.element !== '*' ? selector.element : '';
-  return [elementName, ...selector.attrs, ...classes];
-}
-
-function parserSelectorToNegativeSelector(selector: CssSelector): R3CssSelector {
-  const classes = selector.classNames && selector.classNames.length ?
-      [SelectorFlags.CLASS, ...selector.classNames] :
-      [];
-
-  if (selector.element) {
-    return [
-      SelectorFlags.NOT | SelectorFlags.ELEMENT, selector.element, ...selector.attrs, ...classes
-    ];
-  } else if (selector.attrs.length) {
-    return [SelectorFlags.NOT | SelectorFlags.ATTRIBUTE, ...selector.attrs, ...classes];
-  } else {
-    return selector.classNames && selector.classNames.length ?
-        [SelectorFlags.NOT | SelectorFlags.CLASS, ...selector.classNames] :
-        [];
-  }
-}
-
-function parserSelectorToR3Selector(selector: CssSelector): R3CssSelector {
-  const positive = parserSelectorToSimpleSelector(selector);
-
-  const negative: R3CssSelectorList = selector.notSelectors && selector.notSelectors.length ?
-      selector.notSelectors.map(notSelector => parserSelectorToNegativeSelector(notSelector)) :
-      [];
-
-  return positive.concat(...negative);
-}
-
-function parseSelectorToR3Selector(selector: string): R3CssSelectorList {
-  const selectors = CssSelector.parse(selector);
-  return selectors.map(parserSelectorToR3Selector);
 }
 
 function asLiteral(value: any): o.Expression {

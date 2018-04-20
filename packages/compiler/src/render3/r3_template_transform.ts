@@ -6,14 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {ParsedEvent, ParsedProperty, ParsedVariable} from '../expression_parser/ast';
 import * as html from '../ml_parser/ast';
 import {replaceNgsp} from '../ml_parser/html_whitespaces';
 import {isNgTemplate} from '../ml_parser/tags';
 import {ParseError, ParseErrorLevel, ParseSourceSpan} from '../parse_util';
 import {isStyleUrlResolvable} from '../style_url_resolver';
-import {BindingParser, BoundProperty} from '../template_parser/binding_parser';
-// TODO(chuckj): Refactor binding parser to not have a dependency on template_ast.
-import {BoundEventAst, VariableAst} from '../template_parser/template_ast';
+import {BindingParser} from '../template_parser/binding_parser';
 import {PreparsedElementType, preparseElement} from '../template_parser/template_preparser';
 
 import * as t from './r3_ast';
@@ -78,7 +77,7 @@ export class HtmlToTemplateTransform implements html.Visitor {
     const isTemplateElement = isNgTemplate(element.name);
 
     const matchableAttributes: [string, string][] = [];
-    const boundProperties: BoundProperty[] = [];
+    const parsedProperties: ParsedProperty[] = [];
     const boundEvents: t.BoundEvent[] = [];
     const variables: t.Variable[] = [];
     const references: t.Reference[] = [];
@@ -86,7 +85,7 @@ export class HtmlToTemplateTransform implements html.Visitor {
 
     const templateMatchableAttributes: [string, string][] = [];
     let inlineTemplateSourceSpan: ParseSourceSpan;
-    const templateBoundProperties: BoundProperty[] = [];
+    const templateParsedProperties: ParsedProperty[] = [];
     const templateVariables: t.Variable[] = [];
 
     // Whether the element has any *-attribute
@@ -110,20 +109,15 @@ export class HtmlToTemplateTransform implements html.Visitor {
         const templateValue = attribute.value;
         const templateKey = normalizedName.substring(TEMPLATE_ATTR_PREFIX.length);
 
-        const oldVariables: VariableAst[] = [];
-
         inlineTemplateSourceSpan = attribute.valueSpan || attribute.sourceSpan;
 
         this.bindingParser.parseInlineTemplateBinding(
             templateKey, templateValue, attribute.sourceSpan, templateMatchableAttributes,
-            templateBoundProperties, oldVariables);
-
-        templateVariables.push(
-            ...oldVariables.map(v => new t.Variable(v.name, v.value, v.sourceSpan)));
+            templateParsedProperties, templateVariables);
       } else {
         // Check for variables, events, property bindings, interpolation
         hasBinding = this.parseAttribute(
-            isTemplateElement, attribute, matchableAttributes, boundProperties, boundEvents,
+            isTemplateElement, attribute, matchableAttributes, parsedProperties, boundEvents,
             variables, references);
       }
 
@@ -158,12 +152,12 @@ export class HtmlToTemplateTransform implements html.Visitor {
       parsedElement = new t.Content(selectorIndex, attributes, element.sourceSpan);
     } else if (isTemplateElement) {
       // `<ng-template>`
-      const boundAttributes = this.createBoundAttributes(element.name, boundProperties);
+      const boundAttributes = this.createBoundAttributes(element.name, parsedProperties);
       parsedElement = new t.Template(
           attributes, boundAttributes, children, references, variables, element.sourceSpan,
           element.startSourceSpan, element.endSourceSpan);
     } else {
-      const boundAttributes = this.createBoundAttributes(element.name, boundProperties);
+      const boundAttributes = this.createBoundAttributes(element.name, parsedProperties);
 
       parsedElement = new t.Element(
           element.name, attributes, boundAttributes, boundEvents, children, references,
@@ -177,7 +171,7 @@ export class HtmlToTemplateTransform implements html.Visitor {
           ([name, value]) =>
               attributes.push(new t.TextAttribute(name, value, inlineTemplateSourceSpan)));
 
-      const boundAttributes = this.createBoundAttributes('ng-template', templateBoundProperties);
+      const boundAttributes = this.createBoundAttributes('ng-template', templateParsedProperties);
       parsedElement = new t.Template(
           attributes, boundAttributes, [parsedElement], [], templateVariables, element.sourceSpan,
           element.startSourceSpan, element.endSourceSpan);
@@ -202,22 +196,16 @@ export class HtmlToTemplateTransform implements html.Visitor {
 
   visitExpansionCase(expansionCase: html.ExpansionCase): null { return null; }
 
-  private createBoundAttributes(elementName: string, boundProperties: BoundProperty[]):
+  private createBoundAttributes(elementName: string, properties: ParsedProperty[]):
       t.BoundAttribute[] {
-    const literalProperties = boundProperties.filter(prop => !prop.isLiteral);
-
-    return literalProperties.map(property => {
-      // TODO(vicb): get ride of the boundProperty (from TemplateAst)
-      const boundProp = this.bindingParser.createElementPropertyAst(elementName, property);
-      return new t.BoundAttribute(
-          boundProp.name, boundProp.type as any as t.PropertyBindingType, boundProp.securityContext,
-          boundProp.value, boundProp.unit, boundProp.sourceSpan);
-    });
+    return properties.filter(prop => !prop.isLiteral)
+        .map(prop => this.bindingParser.createBoundElementProperty(elementName, prop))
+        .map(prop => t.BoundAttribute.fromBoundElementProperty(prop));
   }
 
   private parseAttribute(
       isTemplateElement: boolean, attribute: html.Attribute, matchableAttributes: string[][],
-      boundProperties: BoundProperty[], boundEvents: t.BoundEvent[], variables: t.Variable[],
+      parsedProperties: ParsedProperty[], boundEvents: t.BoundEvent[], variables: t.Variable[],
       references: t.Reference[]) {
     const name = normalizeAttributeName(attribute.name);
     const value = attribute.value;
@@ -230,7 +218,7 @@ export class HtmlToTemplateTransform implements html.Visitor {
       hasBinding = true;
       if (bindParts[KW_BIND_IDX] != null) {
         this.bindingParser.parsePropertyBinding(
-            bindParts[IDENT_KW_IDX], value, false, srcSpan, matchableAttributes, boundProperties);
+            bindParts[IDENT_KW_IDX], value, false, srcSpan, matchableAttributes, parsedProperties);
 
       } else if (bindParts[KW_LET_IDX]) {
         if (isTemplateElement) {
@@ -245,40 +233,40 @@ export class HtmlToTemplateTransform implements html.Visitor {
         this.parseReference(identifier, value, srcSpan, references);
 
       } else if (bindParts[KW_ON_IDX]) {
-        const events: BoundEventAst[] = [];
+        const events: ParsedEvent[] = [];
         this.bindingParser.parseEvent(
             bindParts[IDENT_KW_IDX], value, srcSpan, matchableAttributes, events);
         addEvents(events, boundEvents);
       } else if (bindParts[KW_BINDON_IDX]) {
         this.bindingParser.parsePropertyBinding(
-            bindParts[IDENT_KW_IDX], value, false, srcSpan, matchableAttributes, boundProperties);
+            bindParts[IDENT_KW_IDX], value, false, srcSpan, matchableAttributes, parsedProperties);
         this.parseAssignmentEvent(
             bindParts[IDENT_KW_IDX], value, srcSpan, matchableAttributes, boundEvents);
       } else if (bindParts[KW_AT_IDX]) {
         this.bindingParser.parseLiteralAttr(
-            name, value, srcSpan, matchableAttributes, boundProperties);
+            name, value, srcSpan, matchableAttributes, parsedProperties);
 
       } else if (bindParts[IDENT_BANANA_BOX_IDX]) {
         this.bindingParser.parsePropertyBinding(
             bindParts[IDENT_BANANA_BOX_IDX], value, false, srcSpan, matchableAttributes,
-            boundProperties);
+            parsedProperties);
         this.parseAssignmentEvent(
             bindParts[IDENT_BANANA_BOX_IDX], value, srcSpan, matchableAttributes, boundEvents);
 
       } else if (bindParts[IDENT_PROPERTY_IDX]) {
         this.bindingParser.parsePropertyBinding(
             bindParts[IDENT_PROPERTY_IDX], value, false, srcSpan, matchableAttributes,
-            boundProperties);
+            parsedProperties);
 
       } else if (bindParts[IDENT_EVENT_IDX]) {
-        const events: BoundEventAst[] = [];
+        const events: ParsedEvent[] = [];
         this.bindingParser.parseEvent(
             bindParts[IDENT_EVENT_IDX], value, srcSpan, matchableAttributes, events);
         addEvents(events, boundEvents);
       }
     } else {
       hasBinding = this.bindingParser.parsePropertyInterpolation(
-          name, value, srcSpan, matchableAttributes, boundProperties);
+          name, value, srcSpan, matchableAttributes, parsedProperties);
     }
 
     return hasBinding;
@@ -305,7 +293,7 @@ export class HtmlToTemplateTransform implements html.Visitor {
   private parseAssignmentEvent(
       name: string, expression: string, sourceSpan: ParseSourceSpan,
       targetMatchableAttrs: string[][], boundEvents: t.BoundEvent[]) {
-    const events: BoundEventAst[] = [];
+    const events: ParsedEvent[] = [];
     this.bindingParser.parseEvent(
         `${name}Change`, `${expression}=$event`, sourceSpan, targetMatchableAttrs, events);
     addEvents(events, boundEvents);
@@ -356,9 +344,8 @@ function normalizeAttributeName(attrName: string): string {
   return /^data-/i.test(attrName) ? attrName.substring(5) : attrName;
 }
 
-function addEvents(events: BoundEventAst[], boundEvents: t.BoundEvent[]) {
-  boundEvents.push(
-      ...events.map(e => new t.BoundEvent(e.name, e.handler, e.target, e.phase, e.sourceSpan)));
+function addEvents(events: ParsedEvent[], boundEvents: t.BoundEvent[]) {
+  boundEvents.push(...events.map(e => t.BoundEvent.fromParsedEvent(e)));
 }
 
 function isEmptyTextNode(node: html.Node): boolean {
