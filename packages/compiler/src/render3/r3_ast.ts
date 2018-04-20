@@ -7,7 +7,7 @@
  */
 
 import {SecurityContext} from '../core';
-import {AST} from '../expression_parser/ast';
+import {AST, BoundElementBindingType, BoundElementProperty, ParsedEvent, ParsedEventType} from '../expression_parser/ast';
 import {ParseSourceSpan} from '../parse_util';
 
 export interface Node {
@@ -32,42 +32,17 @@ export class TextAttribute implements Node {
   visit<Result>(visitor: Visitor<Result>): Result { return visitor.visitAttribute(this); }
 }
 
-/**
- * Enumeration of types of property bindings.
- */
-export enum PropertyBindingType {
-
-  /**
-   * A normal binding to a property (e.g. `[property]="expression"`).
-   */
-  Property,
-
-  /**
-   * A binding to an element attribute (e.g. `[attr.name]="expression"`).
-   */
-  Attribute,
-
-  /**
-   * A binding to a CSS class (e.g. `[class.name]="condition"`).
-   */
-  Class,
-
-  /**
-   * A binding to a style rule (e.g. `[style.rule]="expression"`).
-   */
-  Style,
-
-  /**
-   * A binding to an animation reference (e.g. `[animate.key]="expression"`).
-   */
-  Animation
-}
-
 export class BoundAttribute implements Node {
   constructor(
-      public name: string, public type: PropertyBindingType,
+      public name: string, public type: BoundElementBindingType,
       public securityContext: SecurityContext, public value: AST, public unit: string|null,
       public sourceSpan: ParseSourceSpan) {}
+
+  static fromBoundElementProperty(prop: BoundElementProperty) {
+    return new BoundAttribute(
+        prop.name, prop.type, prop.securityContext, prop.value, prop.unit, prop.sourceSpan);
+  }
+
   visit<Result>(visitor: Visitor<Result>): Result { return visitor.visitBoundAttribute(this); }
 }
 
@@ -75,6 +50,14 @@ export class BoundEvent implements Node {
   constructor(
       public name: string, public handler: AST, public target: string|null,
       public phase: string|null, public sourceSpan: ParseSourceSpan) {}
+
+  static fromParsedEvent(event: ParsedEvent) {
+    const target: string|null = event.type === ParsedEventType.Regular ? event.targetOrPhase : null;
+    const phase: string|null =
+        event.type === ParsedEventType.Animation ? event.targetOrPhase : null;
+    return new BoundEvent(event.name, event.handler, target, phase, event.sourceSpan);
+  }
+
   visit<Result>(visitor: Visitor<Result>): Result { return visitor.visitBoundEvent(this); }
 }
 

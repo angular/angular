@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-
+import {SecurityContext} from '../core';
+import {ParseSourceSpan} from '../parse_util';
 
 export class ParserError {
   public message: string;
@@ -662,4 +663,64 @@ export function visitAstChildren(ast: AST, visitor: AstVisitor, context?: any) {
     },
     visitSafePropertyRead(ast) { visit(ast.receiver); },
   });
+}
+
+
+// Bindings
+
+export class ParsedProperty {
+  public readonly isLiteral: boolean;
+  public readonly isAnimation: boolean;
+
+  constructor(
+      public name: string, public expression: ASTWithSource, public type: ParsedPropertyType,
+      public sourceSpan: ParseSourceSpan) {
+    this.isLiteral = this.type === ParsedPropertyType.LITERAL_ATTR;
+    this.isAnimation = this.type === ParsedPropertyType.ANIMATION;
+  }
+}
+
+export enum ParsedPropertyType {
+  DEFAULT,
+  LITERAL_ATTR,
+  ANIMATION
+}
+
+export const enum ParsedEventType {
+  // DOM or Directive event
+  Regular,
+  // Animation specific event
+  Animation,
+}
+
+export class ParsedEvent {
+  // Regular events have a target
+  // Animation events have a phase
+  constructor(
+      public name: string, public targetOrPhase: string, public type: ParsedEventType,
+      public handler: AST, public sourceSpan: ParseSourceSpan) {}
+}
+
+export class ParsedVariable {
+  constructor(public name: string, public value: string, public sourceSpan: ParseSourceSpan) {}
+}
+
+export const enum BoundElementBindingType {
+  // A regular binding to a property (e.g. `[property]="expression"`).
+  Property,
+  // A binding to an element attribute (e.g. `[attr.name]="expression"`).
+  Attribute,
+  // A binding to a CSS class (e.g. `[class.name]="condition"`).
+  Class,
+  // A binding to a style rule (e.g. `[style.rule]="expression"`).
+  Style,
+  // A binding to an animation reference (e.g. `[animate.key]="expression"`).
+  Animation,
+}
+
+export class BoundElementProperty {
+  constructor(
+      public name: string, public type: BoundElementBindingType,
+      public securityContext: SecurityContext, public value: AST, public unit: string|null,
+      public sourceSpan: ParseSourceSpan) {}
 }
