@@ -289,16 +289,16 @@ class TemplateParseVisitor implements html.Visitor {
           isTemplateElement, attr, matchableAttrs, elementOrDirectiveProps, events,
           elementOrDirectiveRefs, elementVars);
 
-      let templateBindingsSource: string|undefined;
-      let prefixToken: string|undefined;
+      let templateValue: string|undefined;
+      let templateKey: string|undefined;
       const normalizedName = this._normalizeAttributeName(attr.name);
 
       if (normalizedName.startsWith(TEMPLATE_ATTR_PREFIX)) {
-        templateBindingsSource = attr.value;
-        prefixToken = normalizedName.substring(TEMPLATE_ATTR_PREFIX.length) + ':';
+        templateValue = attr.value;
+        templateKey = normalizedName.substring(TEMPLATE_ATTR_PREFIX.length);
       }
 
-      const hasTemplateBinding = templateBindingsSource != null;
+      const hasTemplateBinding = templateValue != null;
       if (hasTemplateBinding) {
         if (hasInlineTemplates) {
           this._reportError(
@@ -307,7 +307,7 @@ class TemplateParseVisitor implements html.Visitor {
         }
         hasInlineTemplates = true;
         this._bindingParser.parseInlineTemplateBinding(
-            prefixToken !, templateBindingsSource !, attr.sourceSpan, templateMatchableAttrs,
+            templateKey !, templateValue !, attr.sourceSpan, templateMatchableAttrs,
             templateElementOrDirectiveProps, templateElementVars);
       }
 
