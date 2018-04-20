@@ -12,6 +12,7 @@ import {BindingForm, BuiltinFunctionCall, LocalResolver, convertActionBinding, c
 import {ConstantPool, DefinitionKind} from '../constant_pool';
 import * as core from '../core';
 import {AST, AstMemoryEfficientTransformer, BindingPipe, FunctionCall, ImplicitReceiver, LiteralArray, LiteralMap, LiteralPrimitive, PropertyRead} from '../expression_parser/ast';
+import {BoundElementBindingType} from '../expression_parser/ast';
 import {Identifiers} from '../identifiers';
 import {LifecycleHooks} from '../lifecycle_reflector';
 import * as o from '../output/output_ast';
@@ -22,6 +23,7 @@ import {OutputContext, error} from '../util';
 
 import * as t from './r3_ast';
 import {Identifiers as R3} from './r3_identifiers';
+
 
 
 /** Name of the context parameter passed into a template function */
@@ -213,10 +215,10 @@ function unsupported(feature: string): never {
 }
 
 const BINDING_INSTRUCTION_MAP: {[type: number]: o.ExternalReference} = {
-  [t.PropertyBindingType.Property]: R3.elementProperty,
-  [t.PropertyBindingType.Attribute]: R3.elementAttribute,
-  [t.PropertyBindingType.Class]: R3.elementClassNamed,
-  [t.PropertyBindingType.Style]: R3.elementStyleNamed,
+  [BoundElementBindingType.Property]: R3.elementProperty,
+  [BoundElementBindingType.Attribute]: R3.elementAttribute,
+  [BoundElementBindingType.Class]: R3.elementClassNamed,
+  [BoundElementBindingType.Style]: R3.elementStyleNamed,
 };
 
 function interpolate(args: o.Expression[]): o.Expression {
@@ -679,7 +681,7 @@ class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver {
 
     // Generate element input bindings
     element.inputs.forEach((input: t.BoundAttribute) => {
-      if (input.type === t.PropertyBindingType.Animation) {
+      if (input.type === BoundElementBindingType.Animation) {
         this._unsupported('animations');
       }
       const convertedBinding = this.convertPropertyBinding(implicit, input.value);
@@ -691,7 +693,7 @@ class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver {
             this._bindingCode, input.sourceSpan, instruction, o.literal(elementIndex),
             o.literal(input.name), value);
       } else {
-        this._unsupported(`binding ${t.PropertyBindingType[input.type]}`);
+        this._unsupported(`binding type ${input.type}`);
       }
     });
 
