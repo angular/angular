@@ -1630,8 +1630,7 @@ import {MyInput, MyInputForm} from './value_accessor_integration_spec';
         let warnSpy: any;
 
         beforeEach(() => {
-          warnSpy = jasmine.createSpy('warn');
-          console.warn = warnSpy;
+          warnSpy = spyOn(console, 'warn').and.stub();
         });
 
         it('should warn once by default when using ngModel with formControlName', fakeAsync(() => {
