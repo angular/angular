@@ -12,6 +12,7 @@ import {BindingForm, BuiltinConverter, BuiltinFunctionCall, ConvertPropertyBindi
 import {ConstantPool, DefinitionKind} from '../constant_pool';
 import {InjectFlags} from '../core';
 import {AST, AstMemoryEfficientTransformer, AstTransformer, BindingPipe, FunctionCall, ImplicitReceiver, LiteralArray, LiteralMap, LiteralPrimitive, MethodCall, ParseSpan, PropertyRead} from '../expression_parser/ast';
+compiler/src/render3/r3_view_compiler_local.ts
 import {Identifiers} from '../identifiers';
 import {LifecycleHooks} from '../lifecycle_reflector';
 import * as o from '../output/output_ast';
