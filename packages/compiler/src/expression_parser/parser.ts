@@ -693,8 +693,8 @@ export class _ParseAST {
         firstBinding = false;
       } else {
         isVar = this.peekKeywordLet();
-        if (isVar) this.advance()
-          rawKey = this.expectTemplateBindingKey();
+        if (isVar) this.advance();
+        rawKey = this.expectTemplateBindingKey();
         key = isVar ? rawKey : tplKey + rawKey[0].toUpperCase() + rawKey.substring(1);
         this.optionalCharacter(chars.$COLON);
       }
@@ -729,9 +729,9 @@ export class _ParseAST {
       if (!this.optionalCharacter(chars.$SEMICOLON)) {
         this.optionalCharacter(chars.$COMMA);
       }
-    } while (this.index < this.tokens.length)
+    } while (this.index < this.tokens.length);
 
-        return new TemplateBindingParseResult(bindings, warnings, this.errors);
+    return new TemplateBindingParseResult(bindings, warnings, this.errors);
   }
 
   error(message: string, index: number|null = null) {
