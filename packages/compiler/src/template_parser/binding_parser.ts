@@ -8,8 +8,7 @@
 
 import {CompileDirectiveSummary, CompilePipeSummary} from '../compile_metadata';
 import {SecurityContext} from '../core';
-import {ASTWithSource, BindingPipe, EmptyExpr, ParserError, RecursiveAstVisitor, TemplateBinding} from '../expression_parser/ast';
-import {BoundElementBindingType, BoundElementProperty, ParsedEvent, ParsedEventType, ParsedProperty, ParsedPropertyType, ParsedVariable} from '../expression_parser/ast';
+import {ASTWithSource, BindingPipe, BoundElementBindingType, BoundElementProperty, EmptyExpr, ParsedEvent, ParsedEventType, ParsedProperty, ParsedPropertyType, ParsedVariable, ParserError, RecursiveAstVisitor, TemplateBinding} from '../expression_parser/ast';
 import {Parser} from '../expression_parser/parser';
 import {InterpolationConfig} from '../ml_parser/interpolation_config';
 import {mergeNsAndName} from '../ml_parser/tags';
