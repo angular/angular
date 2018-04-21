@@ -131,7 +131,7 @@ index.html:
 <script>
   function measure() {
     console.time('createElement*10000');
-    for (var i=0; i<100000; i++) {
+    for (var i=0; i<10000; i++) {
       document.createElement('div');
     }
     console.timeEnd('createElement*10000');
