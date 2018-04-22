@@ -31,8 +31,8 @@ Angular comes with its own API for loading components dynamically.
 Before you can add components you have to define an anchor point
 to tell Angular where to insert components.
 
-In our example you use a custom helper directive called `AdDirective`
-to mark valid insertion points in the template.
+The ad banner uses a helper directive called `AdDirective` to
+mark valid insertion points in the template.
 
 
 <code-example path="dynamic-component-loader/src/app/ad.directive.ts" title="src/app/ad.directive.ts" linenums="false">
@@ -103,42 +103,35 @@ Take it step by step. First, it picks an ad.
 
 <div class="l-sub-section">
 
-  **How _loadComponent()_ chooses an ad**
 
-  The `loadComponent()` method chooses an ad using some math.
 
-  First, it sets the `currentAdIndex` by taking whatever it
-  currently is plus one, dividing that by the length of the `AdItem` array, and
-  using the _remainder_ as the new `currentAdIndex` value. Then, it uses that
-  value to select an `adItem` from the array.
+**How _loadComponent()_ chooses an ad**
+
+The `loadComponent()` method chooses an ad using some math.
+
+First, it sets the `currentAdIndex` by taking whatever it
+currently is plus one, dividing that by the length of the `AdItem` array, and
+using the _remainder_ as the new `currentAdIndex` value. Then, it uses that
+value to select an `adItem` from the array.
+
 
 </div>
+
 
 
 After `loadComponent()` selects an ad, it uses `ComponentFactoryResolver`
-to obtain a `ComponentFactory` for the specific component referred to by
-`adItem`. The `ComponentFactory` then creates an instance of that component.
+to resolve a `ComponentFactory` for each specific component.
+The `ComponentFactory` then creates an instance of each component.
 
-As you may recall, `AdDirective` has `ViewContainerRef` injected
-into its constructor. This is how the directive accesses the component that
-you want to use to host the dynamic components.
+Next, you're targeting the `viewContainerRef` that
+exists on this specific instance of the component. How do you know it's
+this specific instance? Because it's referring to `adHost` and `adHost` is the
+directive you set up earlier to tell Angular where to insert dynamic components.
 
+As you may recall, `AdDirective` injects `ViewContainerRef` into its constructor.
+This is how the directive accesses the element that you want to use to host the dynamic component.
 
-<div class="l-sub-section">
-
-  `AdDirective` features `ViewContainerRef` as a public member, so parent
-  components can have immediate access to the directive's `ViewContainerRef`.
-
-</div>
-
-
-Next, you're targeting the host component using the directive's `viewContainerRef`.
-Remember, `viewContainerRef` is featured by `adHost`, which is the `AdDirective`
-directive you set up earlier.
-
-To add the selected ad component to the template, you first remove all
-existing child components by calling `clear()` and then call
-`createComponent()` on `ViewContainerRef` to add the new component.
+To add the component to the template, you call `createComponent()` on `ViewContainerRef`.
 
 The `createComponent()` method returns a reference to the loaded component.
 Use that reference to interact with the component by assigning to its properties or calling its methods.
