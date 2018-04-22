@@ -6,9 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+// Determine if we run under bazel and set the base path accordingly.
+const BASE = process.env.RUNFILES ? 'angular/modules' : 'dist/all';
+
 // Make sure that the command line is read as the first thing
 // as this could exit node if the help script should be printed.
-require('./dist/all/e2e_util/perf_util').readCommandLine();
+require(`./${BASE}/e2e_util/perf_util`).readCommandLine();
 
 var CHROME_OPTIONS = {
   'args': ['--js-flags=--expose-gc', '--no-sandbox'],
@@ -37,12 +40,14 @@ var BROWSER_CAPS = {
     }
   }
 };
-
 exports.config = {
   onPrepare: function() { beforeEach(function() { browser.ignoreSynchronization = false; }); },
   restartBrowserBetweenTests: true,
   allScriptsTimeout: 11000,
-  specs: ['dist/all/**/e2e_test/**/*_perf.js'],
+  // Bazel has different strategy for where the perf tests.
+  specs:
+      [process.env.RUNFILES ? `modules/benchmarks/src/**/*_perf.js` :
+                              'dist/all/**/e2e_test/**/*_perf.js'],
   capabilities: process.env.TRAVIS ? BROWSER_CAPS.ChromeOnTravis : BROWSER_CAPS.LocalChrome,
   directConnect: true,
   baseUrl: 'http://localhost:8000/',

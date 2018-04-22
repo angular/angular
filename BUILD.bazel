@@ -19,9 +19,11 @@ node_modules_filegroup(
     packages = [
         "bytebuffer",
         "hammerjs",
+        "http-server",
         "jasmine",
         "minimist",
         "protobufjs",
+        "protractor",
         "reflect-metadata",
         "source-map-support",
         "tsickle",
@@ -54,4 +56,14 @@ filegroup(
         "//:node_modules/angular/angular.js",
         "//:node_modules/angular-mocks/angular-mocks.js",
     ],
+)
+
+# We have to copy protractor-perf.conf.js otherwise node will follow symlinks
+# and incorrectly resolve require statements.
+# https://github.com/bazelbuild/rules_typescript/issues/154
+genrule(
+    name = "copy-protractor-perf.conf",
+    srcs = ["protractor-perf.conf.js"],
+    outs = ["copy-protractor-perf.conf.js"],
+    cmd = "cp $< $@",
 )
