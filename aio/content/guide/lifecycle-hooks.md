@@ -513,12 +513,20 @@ The next examples focus on hook details.
 
 {@a spy}
 
+<!--
 ## Spying *OnInit* and *OnDestroy*
+-->
+## *OnInit*과 *OnDestroy* 후킹하기
 
+<!--
 Go undercover with these two spy hooks to discover when an element is initialized or destroyed.
+-->
+엘리먼트가 생성되거나 종료되는 시점은 이 두 인터페이스를 후킹해서 확인할 수 있습니다.
 
+<!--
 This is the perfect infiltration job for a directive.
 The heroes will never know they're being watched.
+-->
 
 <div class="l-sub-section">
 
