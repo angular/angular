@@ -63,7 +63,7 @@ jobs:
       - run: yarn install --frozen-lockfile --non-interactive
       - run: ./node_modules/.bin/gulp lint
 
-  build:
+  test:
     <<: *job_defaults
     resource_class: xlarge
     steps:
@@ -87,10 +87,6 @@ jobs:
       # NOTE: Angular developers should typically just bazel build //packages/... or bazel test //packages/...
       - run: bazel query --output=label //... | xargs bazel test
 
-      # We run the integration tests outside of Bazel for now.
-      # See comments inside this script.
-      - run: xvfb-run --auto-servernum ./integration/run_tests.sh
-
       # CircleCI will allow us to go back and view/download these artifacts from past builds.
       # Also we can use a service like https://buildsize.org/ to automatically track binary size of these artifacts.
       - store_artifacts:
@@ -112,6 +108,66 @@ jobs:
             - "node_modules"
             - "~/bazel_repository_cache"
 
+  # This job exists only for backwards-compatibility with old scripts and tests
+  # that rely on the pre-Bazel dist/packages-dist layout.
+  # It duplicates some work with the job above: we build the bazel packages
+  # twice. Even though we have a remote cache, these jobs will typically run in
+  # parallel so up-to-date outputs will not be available at the time the build
+  # starts.
+  # No new jobs should depend on this one.
+  build-packages-dist:
+    <<: *job_defaults
+    resource_class: xlarge
+    steps:
+      - *define_env_vars
+      - checkout:
+          <<: *post_checkout
+      # See remote cache documentation in /docs/BAZEL.md
+      - run: .circleci/setup_cache.sh
+      - run: sudo cp .circleci/bazel.rc /etc/bazel.bazelrc
+      - *setup-bazel-remote-cache
+
+      - run: bazel run @yarn//:yarn
+      - run: scripts/build-packages-dist.sh
+
+      # Save the npm packages from //packages/... for other workflow jobs to read
+      # https://circleci.com/docs/2.0/workflows/#using-workspaces-to-share-data-among-jobs
+      - persist_to_workspace:
+          root: dist
+          paths:
+            - packages-dist
+
+  # We run the integration tests outside of Bazel for now.
+  # They are a separate workflow job so that they can be easily re-run.
+  # When the tests are ported to bazel test targets, they should move to the "test"
+  # job above, as part of the bazel test command. That has flaky_test_attempts so the
+  # need to re-run manually should be alleviated.
+  # See comments inside the integration/run_tests.sh script.
+  integration_test:
+    <<: *job_defaults
+    steps:
+      - *define_env_vars
+      - checkout:
+          <<: *post_checkout
+      - attach_workspace:
+          at: dist
+      - run: xvfb-run --auto-servernum ./integration/run_tests.sh
+
+  # This job updates the content of repos like github.com/angular/core-builds
+  # for every green build on angular/angular.
+  publish_snapshot:
+    <<: *job_defaults
+    steps:
+      - checkout:
+          <<: *post_checkout
+      - attach_workspace:
+          at: dist
+      # CircleCI has a config setting to force SSH for all github connections
+      # This is not compatible with our mechanism of using a Personal Access Token
+      # Clear the global setting
+      - run: git config --global --unset "url.ssh://git@github.com.insteadof"
+      - run: ./scripts/ci/publish-build-artifacts.sh
+
   aio_monitoring:
     <<: *job_defaults
     steps:
@@ -126,7 +182,20 @@ workflows:
   default_workflow:
     jobs:
       - lint
-      - build
+      - test
+      - build-packages-dist
+      - integration_test:
+          requires:
+            - build-packages-dist
+      - publish_snapshot:
+          # Note: no filters on this job because we want it to run for all upstream branches
+          # We'd really like to filter out pull requests here, but not yet available:
+          # https://discuss.circleci.com/t/workflows-pull-request-filter/14396/4
+          # Instead, the publish-build-artifacts.sh script just terminates when
+          # CIRCLE_PULL_REQUEST is set.
+          requires:
+            - build-packages-dist
+
   aio_monitoring:
     jobs:
       - aio_monitoring
