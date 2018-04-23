@@ -2466,12 +2466,16 @@ describe('lifecycles', () => {
       function Template(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
           elementStart(0, 'parent');
-          elementStart(1, 'content');
-          elementEnd();
+          {
+            elementStart(1, 'content');
+            elementEnd();
+          }
           elementEnd();
           elementStart(2, 'parent');
-          elementStart(3, 'content');
-          elementEnd();
+          {
+            elementStart(3, 'content');
+            elementEnd();
+          }
           elementEnd();
         }
         if (rf & RenderFlags.Update) {

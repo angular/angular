@@ -227,8 +227,7 @@ export function enterView(newView: LView, host: LElementNode | LViewNode | null)
  *
  * @param newView New state to become active
  * @param creationOnly An optional boolean to indicate that the view was processed in creation mode
- * only, i.e. the first update will be done later
- * @returns the previous state
+ * only, i.e. the first update will be done later. Only possible for dynamically created views.
  */
 export function leaveView(newView: LView, creationOnly?: boolean): void {
   if (!creationOnly) {
