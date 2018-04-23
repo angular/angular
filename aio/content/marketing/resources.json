@@ -574,6 +574,12 @@
             "title": "Learn Angular (francais)",
             "url": "http://www.learn-angular.fr/"
           },
+          "upgrading-ajs": {
+            "desc": "The world's most comprehensive, step-by-step course on using best practices and avoiding pitfalls while migrating from AngularJS to Angular.",
+            "rev": true,
+            "title": "Upgrading AngularJS",
+            "url": "https://www.upgradingangularjs.com"
+          },
           "toddmotto-ultimateangular": {
             "desc": "Online courses providing in-depth coverage of the Angular ecosystem, AngularJS, Angular and TypeScript, with functional code samples and a full-featured seed environment. Get a deep understanding of Angular and TypeScript from foundation to functional application, then move on to advanced topics with Todd Motto and collaborators.",
             "rev": true,
