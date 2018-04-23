@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -e -o pipefail
+set -u -e -o pipefail
 
 # see https://circleci.com/docs/2.0/env-vars/#circleci-built-in-environment-variables
 CI=${CI:-false}
@@ -9,41 +9,21 @@ cd "$(dirname "$0")"
 
 # basedir is the workspace root
 readonly basedir=$(pwd)/..
-readonly bin=$(bazel info bazel-bin)
-
-echo "#################################"
-echo "Building @angular/* npm packages "
-echo "#################################"
-
-# Ideally these integration tests should run under bazel, and just list the npm
-# packages in their deps[].
-# Until then, we have to manually run bazel first to create the npm packages we
-# want to test.
-bazel query --output=label 'kind(.*_package, //packages/...)' \
-  | xargs bazel build
-
-# Allow this test to run even if dist/ doesn't exist yet.
-# Under Bazel we don't need to create the dist folder to run the integration tests
-[ -d "${basedir}/dist/packages-dist" ] || mkdir -p $basedir/dist/packages-dist
-# Each package is a subdirectory of bazel-bin/packages/
-for pkg in $(ls ${bin}/packages); do
-  # Skip any that don't have an "npm_package" target
-  if [ -d "${bin}/packages/${pkg}/npm_package" ]; then
-    echo "# Copy artifacts to dist/packages-dist/${pkg}"
-    rm -rf ${basedir}/dist/packages-dist/${pkg}
-    cp -R ${bin}/packages/${pkg}/npm_package ${basedir}/dist/packages-dist/${pkg}
-  fi
-done
-chmod -R u+w ${basedir}/dist/packages-dist/
 
 # Track payload size functions
-# TODO(alexeagle): finish migrating these to buildsize.org
 if $CI; then
   # We don't install this by default because it contains some broken Bazel setup
   # and also it's a very big dependency that we never use except when publishing
   # payload sizes on CI.
-  yarn add -D firebase-tools@3.12.0
+  yarn add --silent -D firebase-tools@3.12.0
   source ${basedir}/scripts/ci/payload-size.sh
+
+  # NB: we don't run build-packages-dist.sh because we expect that it was done
+  # by an earlier job in the CircleCI workflow.
+else
+  # Not on CircleCI so let's build the packages-dist directory.
+  # This should be fast on incremental re-build.
+  ${basedir}/scripts/build-packages-dist.sh
 fi
 
 # Workaround https://github.com/yarnpkg/yarn/issues/2165
@@ -64,7 +44,7 @@ for testDir in $(ls | grep -v node_modules) ; do
   (
     cd $testDir
     rm -rf dist
-    pwd
+
     yarn install --cache-folder ../$cache
     yarn test || exit 1
     # Track payload size for cli-hello-world and hello_world__closure and the render3 tests
