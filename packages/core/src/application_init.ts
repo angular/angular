@@ -8,7 +8,9 @@
 
 import {isPromise} from '../src/util/lang';
 
-import {Inject, Injectable, InjectionToken, Optional} from './di';
+import {Inject, Injectable, InjectionToken, Optional, inject} from './di';
+import {defineInjectable} from './di/defs';
+
 
 
 /**
@@ -22,8 +24,22 @@ export const APP_INITIALIZER = new InjectionToken<Array<() => void>>('Applicatio
  *
  * @experimental
  */
-@Injectable()
 export class ApplicationInitStatus {
+  // `ngInjectableDef` is required in core-level code because it sits behind
+  // the injector and any code the loads it inside may run into a dependency
+  // loop (because Injectable is also in core. Do not use the code below
+  // (use @Injectable({ providedIn, factory }))  instead...
+  /**
+   * @internal
+   * @nocollapse
+   */
+  static ngInjectableDef = defineInjectable({
+    providedIn: 'root',
+    factory: function ApplicationInitStatus_Factory() {
+      return new ApplicationInitStatus(inject(APP_INITIALIZER));
+    }
+  });
+
   private resolve: Function;
   private reject: Function;
   private initialized = false;
