@@ -10,7 +10,7 @@ import {Directive, ElementRef, Input} from '@angular/core';
 import {
   CdkCell,
   CdkCellDef,
-  CdkColumnDef,
+  CdkColumnDef, CdkFooterCell, CdkFooterCellDef,
   CdkHeaderCell,
   CdkHeaderCellDef,
 } from '@angular/cdk/table';
@@ -36,6 +36,16 @@ export class MatCellDef extends CdkCellDef { }
 export class MatHeaderCellDef extends CdkHeaderCellDef { }
 
 /**
+ * Footer cell definition for the mat-table.
+ * Captures the template of a column's footer cell and as well as cell-specific properties.
+ */
+@Directive({
+  selector: '[matFooterCellDef]',
+  providers: [{provide: CdkFooterCellDef, useExisting: MatFooterCellDef}]
+})
+export class MatFooterCellDef extends CdkFooterCellDef { }
+
+/**
  * Column definition for the mat-table.
  * Defines a set of cells available for a table column.
  */
@@ -57,6 +67,22 @@ export class MatColumnDef extends CdkColumnDef {
   },
 })
 export class MatHeaderCell extends CdkHeaderCell {
+  constructor(columnDef: CdkColumnDef,
+              elementRef: ElementRef) {
+    super(columnDef, elementRef);
+    elementRef.nativeElement.classList.add(`mat-column-${columnDef.cssClassFriendlyName}`);
+  }
+}
+
+/** Footer cell template container that adds the right classes and role. */
+@Directive({
+  selector: 'mat-footer-cell, td[mat-footer-cell]',
+  host: {
+    'class': 'mat-footer-cell',
+    'role': 'gridcell',
+  },
+})
+export class MatFooterCell extends CdkFooterCell {
   constructor(columnDef: CdkColumnDef,
               elementRef: ElementRef) {
     super(columnDef, elementRef);

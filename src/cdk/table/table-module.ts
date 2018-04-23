@@ -8,9 +8,15 @@
 
 import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
-import {CdkTable, HeaderRowPlaceholder, RowPlaceholder} from './table';
-import {CdkCellOutlet, CdkHeaderRow, CdkHeaderRowDef, CdkRow, CdkRowDef} from './row';
-import {CdkCell, CdkCellDef, CdkColumnDef, CdkHeaderCell, CdkHeaderCellDef} from './cell';
+import {HeaderRowOutlet, DataRowOutlet, CdkTable, FooterRowOutlet} from './table';
+import {
+  CdkCellOutlet, CdkFooterRow, CdkFooterRowDef, CdkHeaderRow, CdkHeaderRowDef, CdkRow,
+  CdkRowDef
+} from './row';
+import {
+  CdkColumnDef, CdkHeaderCellDef, CdkHeaderCell, CdkCell, CdkCellDef,
+  CdkFooterCellDef, CdkFooterCell
+} from './cell';
 
 const EXPORTED_DECLARATIONS = [
   CdkTable,
@@ -18,14 +24,19 @@ const EXPORTED_DECLARATIONS = [
   CdkCellDef,
   CdkCellOutlet,
   CdkHeaderCellDef,
+  CdkFooterCellDef,
   CdkColumnDef,
   CdkCell,
   CdkRow,
   CdkHeaderCell,
+  CdkFooterCell,
   CdkHeaderRow,
   CdkHeaderRowDef,
-  RowPlaceholder,
-  HeaderRowPlaceholder,
+  CdkFooterRow,
+  CdkFooterRowDef,
+  DataRowOutlet,
+  HeaderRowOutlet,
+  FooterRowOutlet,
 ];
 
 @NgModule({

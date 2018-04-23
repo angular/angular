@@ -18,7 +18,7 @@ import {
   ViewContainerRef,
   ViewEncapsulation,
 } from '@angular/core';
-import {CdkCellDef} from './cell';
+import {CdkCellDef, CdkColumnDef} from './cell';
 
 /**
  * The row template that can be used by the mat-table. Should not be used outside of the
@@ -57,6 +57,9 @@ export abstract class BaseRowDef {
   getColumnsDiff(): IterableChanges<any> | null {
     return this._columnsDiffer.diff(this.columns);
   }
+
+  /** Gets this row def's relevant cell template from the provided column def. */
+  abstract extractCellTemplate(column: CdkColumnDef): TemplateRef<any>;
 }
 
 /**
@@ -70,6 +73,30 @@ export abstract class BaseRowDef {
 export class CdkHeaderRowDef extends BaseRowDef {
   constructor(template: TemplateRef<any>, _differs: IterableDiffers) {
     super(template, _differs);
+  }
+
+  /** Gets this row def's relevant cell template from the provided column def. */
+  extractCellTemplate(column: CdkColumnDef): TemplateRef<any> {
+    return column.headerCell.template;
+  }
+}
+
+/**
+ * Footer row definition for the CDK table.
+ * Captures the footer row's template and other footer properties such as the columns to display.
+ */
+@Directive({
+  selector: '[cdkFooterRowDef]',
+  inputs: ['columns: cdkFooterRowDef'],
+})
+export class CdkFooterRowDef extends BaseRowDef {
+  constructor(template: TemplateRef<any>, _differs: IterableDiffers) {
+    super(template, _differs);
+  }
+
+  /** Gets this row def's relevant cell template from the provided column def. */
+  extractCellTemplate(column: CdkColumnDef): TemplateRef<any> {
+    return column.footerCell.template;
   }
 }
 
@@ -96,12 +123,17 @@ export class CdkRowDef<T> extends BaseRowDef {
   constructor(template: TemplateRef<any>, _differs: IterableDiffers) {
     super(template, _differs);
   }
+
+  /** Gets this row def's relevant cell template from the provided column def. */
+  extractCellTemplate(column: CdkColumnDef): TemplateRef<any> {
+    return column.cell.template;
+  }
 }
 
 /** Context provided to the row cells */
 export interface CdkCellOutletRowContext<T> {
   /** Data for the row that this cell is located within. */
-  $implicit: T;
+  $implicit?: T;
 
   /** Index location of the row that this cell is located within. */
   index?: number;
@@ -161,6 +193,21 @@ export class CdkCellOutlet {
   encapsulation: ViewEncapsulation.None,
 })
 export class CdkHeaderRow { }
+
+
+/** Footer template container that contains the cell outlet. Adds the right class and role. */
+@Component({
+  moduleId: module.id,
+  selector: 'cdk-footer-row, tr[cdk-footer-row]',
+  template: CDK_ROW_TEMPLATE,
+  host: {
+    'class': 'cdk-footer-row',
+    'role': 'row',
+  },
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  encapsulation: ViewEncapsulation.None,
+})
+export class CdkFooterRow { }
 
 /** Data row template container that contains the cell outlet. Adds the right class and role. */
 @Component({

@@ -8,12 +8,17 @@
 
 import {ContentChild, Directive, ElementRef, Input, TemplateRef} from '@angular/core';
 
+/** Base interface for a cell definition. Captures a column's cell template definition. */
+export interface CellDef {
+  template: TemplateRef<any>;
+}
+
 /**
  * Cell definition for a CDK table.
  * Captures the template of a column's data row cell as well as cell-specific properties.
  */
 @Directive({selector: '[cdkCellDef]'})
-export class CdkCellDef {
+export class CdkCellDef implements CellDef {
   constructor(/** @docs-private */ public template: TemplateRef<any>) { }
 }
 
@@ -22,7 +27,16 @@ export class CdkCellDef {
  * Captures the template of a column's header cell and as well as cell-specific properties.
  */
 @Directive({selector: '[cdkHeaderCellDef]'})
-export class CdkHeaderCellDef {
+export class CdkHeaderCellDef implements CellDef {
+  constructor(/** @docs-private */ public template: TemplateRef<any>) { }
+}
+
+/**
+ * Footer cell definition for a CDK table.
+ * Captures the template of a column's footer cell and as well as cell-specific properties.
+ */
+@Directive({selector: '[cdkFooterCellDef]'})
+export class CdkFooterCellDef implements CellDef {
   constructor(/** @docs-private */ public template: TemplateRef<any>) { }
 }
 
@@ -51,12 +65,23 @@ export class CdkColumnDef {
   /** @docs-private */
   @ContentChild(CdkHeaderCellDef) headerCell: CdkHeaderCellDef;
 
+  /** @docs-private */
+  @ContentChild(CdkFooterCellDef) footerCell: CdkFooterCellDef;
+
   /**
    * Transformed version of the column name that can be used as part of a CSS classname. Excludes
    * all non-alphanumeric characters and the special characters '-' and '_'. Any characters that
    * do not match are replaced by the '-' character.
    */
   cssClassFriendlyName: string;
+}
+
+/** Base class for the cells. Adds a CSS classname that identifies the column it renders in. */
+export class BaseCdkCell {
+  constructor(columnDef: CdkColumnDef, elementRef: ElementRef) {
+    const columnClassName = `cdk-column-${columnDef.cssClassFriendlyName}`;
+    elementRef.nativeElement.classList.add(columnClassName);
+  }
 }
 
 /** Header cell template container that adds the right classes and role. */
@@ -67,9 +92,23 @@ export class CdkColumnDef {
     'role': 'columnheader',
   },
 })
-export class CdkHeaderCell {
+export class CdkHeaderCell extends BaseCdkCell {
   constructor(columnDef: CdkColumnDef, elementRef: ElementRef) {
-    elementRef.nativeElement.classList.add(`cdk-column-${columnDef.cssClassFriendlyName}`);
+    super(columnDef, elementRef);
+  }
+}
+
+/** Footer cell template container that adds the right classes and role. */
+@Directive({
+  selector: 'cdk-footer-cell, td[cdk-footer-cell]',
+  host: {
+    'class': 'cdk-footer-cell',
+    'role': 'gridcell',
+  },
+})
+export class CdkFooterCell extends BaseCdkCell {
+  constructor(columnDef: CdkColumnDef, elementRef: ElementRef) {
+    super(columnDef, elementRef);
   }
 }
 
@@ -81,8 +120,8 @@ export class CdkHeaderCell {
     'role': 'gridcell',
   },
 })
-export class CdkCell {
+export class CdkCell extends BaseCdkCell {
   constructor(columnDef: CdkColumnDef, elementRef: ElementRef) {
-    elementRef.nativeElement.classList.add(`cdk-column-${columnDef.cssClassFriendlyName}`);
+    super(columnDef, elementRef);
   }
 }

@@ -23,17 +23,24 @@ import {
   IterableDiffer,
   IterableDiffers,
   OnInit,
-  QueryList,
+  QueryList, TemplateRef,
   TrackByFunction,
   ViewChild,
   ViewContainerRef,
   ViewEncapsulation,
 } from '@angular/core';
 import {CollectionViewer, DataSource} from '@angular/cdk/collections';
-import {CdkCellOutlet, CdkCellOutletRowContext, CdkHeaderRowDef, CdkRowDef} from './row';
+import {
+  BaseRowDef,
+  CdkCellOutlet,
+  CdkCellOutletRowContext,
+  CdkFooterRowDef,
+  CdkHeaderRowDef,
+  CdkRowDef
+} from './row';
 import {takeUntil} from 'rxjs/operators';
 import {of as observableOf, BehaviorSubject, Observable, Subscription, Subject} from 'rxjs';
-import {CdkCellDef, CdkColumnDef, CdkHeaderCellDef} from './cell';
+import {CdkColumnDef} from './cell';
 import {
   getTableDuplicateColumnNameError,
   getTableMissingMatchingRowDefError,
@@ -43,12 +50,17 @@ import {
   getTableUnknownDataSourceError
 } from './table-errors';
 
+/** Interface used to provide an outlet for rows to be inserted into. */
+export interface RowOutlet {
+  viewContainer: ViewContainerRef;
+}
+
 /**
  * Provides a handle for the table to grab the view container's ng-container to insert data rows.
  * @docs-private
  */
-@Directive({selector: '[rowPlaceholder]'})
-export class RowPlaceholder {
+@Directive({selector: '[rowOutlet]'})
+export class DataRowOutlet implements RowOutlet {
   constructor(public viewContainer: ViewContainerRef, public elementRef: ElementRef) { }
 }
 
@@ -56,18 +68,29 @@ export class RowPlaceholder {
  * Provides a handle for the table to grab the view container's ng-container to insert the header.
  * @docs-private
  */
-@Directive({selector: '[headerRowPlaceholder]'})
-export class HeaderRowPlaceholder {
+@Directive({selector: '[headerRowOutlet]'})
+export class HeaderRowOutlet implements RowOutlet {
+  constructor(public viewContainer: ViewContainerRef, public elementRef: ElementRef) { }
+}
+
+/**
+ * Provides a handle for the table to grab the view container's ng-container to insert the footer.
+ * @docs-private
+ */
+@Directive({selector: '[footerRowOutlet]'})
+export class FooterRowOutlet implements RowOutlet {
   constructor(public viewContainer: ViewContainerRef, public elementRef: ElementRef) { }
 }
 
 /**
  * The table template that can be used by the mat-table. Should not be used outside of the
  * material library.
+ * @docs-private
  */
 export const CDK_TABLE_TEMPLATE = `
-  <ng-container headerRowPlaceholder></ng-container>
-  <ng-container rowPlaceholder></ng-container>`;
+  <ng-container headerRowOutlet></ng-container>
+  <ng-container rowOutlet></ng-container>
+  <ng-container footerRowOutlet></ng-container>`;
 
 /**
  * Class used to conveniently type the embedded view ref for rows with a context.
@@ -76,10 +99,10 @@ export const CDK_TABLE_TEMPLATE = `
 abstract class RowViewRef<T> extends EmbeddedViewRef<CdkCellOutletRowContext<T>> { }
 
 /**
- * A data table that renders a header row and data rows. Uses the dataSource input to determine
- * the data to be rendered. The data can be provided either as a data array, an Observable stream
- * that emits the data array to render, or a DataSource with a connect function that will
- * return an Observable stream that emits the data array to render.
+ * A data table that can render a header row, data rows, and a footer row.
+ * Uses the dataSource input to determine the data to be rendered. The data can be provided either
+ * as a data array, an Observable stream that emits the data array to render, or a DataSource with a
+ * connect function that will return an Observable stream that emits the data array to render.
  */
 @Component({
   moduleId: module.id,
@@ -103,9 +126,9 @@ export class CdkTable<T> implements CollectionViewer, OnInit, AfterContentChecke
   private _renderChangeSubscription: Subscription | null;
 
   /**
-   * Map of all the user's defined columns (header and data cell template) identified by name.
-   * Collection populated by the column definitions gathered by `ContentChildren` as well as any
-   * custom column definitions added to `_customColumnDefs`.
+   * Map of all the user's defined columns (header, data, and footer cell template) identified by
+   * name. Collection populated by the column definitions gathered by `ContentChildren` as well as
+   * any custom column definitions added to `_customColumnDefs`.
    */
   private _columnDefsByName = new Map<string,  CdkColumnDef>();
 
@@ -132,6 +155,12 @@ export class CdkTable<T> implements CollectionViewer, OnInit, AfterContentChecke
    * content is checked.
    */
   private _headerRowDefChanged = false;
+
+  /**
+   * Whether the footer row definition has been changed. Triggers an update to the footer row after
+   * content is checked.
+   */
+  private _footerRowDefChanged = false;
 
   /**
    * Tracking function that will be used to check the differences in data changes. Used similarly
@@ -178,7 +207,7 @@ export class CdkTable<T> implements CollectionViewer, OnInit, AfterContentChecke
       this._switchDataSource(dataSource);
     }
   }
-  private _dataSource: DataSource<T> | Observable<T[]> | T[];
+  private _dataSource: DataSource<T> | Observable<T[]> | T[] | T[];
 
   // TODO(andrewseguin): Remove max value as the end index
   //   and instead calculate the view on init and scroll.
@@ -189,13 +218,14 @@ export class CdkTable<T> implements CollectionViewer, OnInit, AfterContentChecke
   viewChange: BehaviorSubject<{start: number, end: number}> =
       new BehaviorSubject<{start: number, end: number}>({start: 0, end: Number.MAX_VALUE});
 
-  // Placeholders within the table's template where the header and data rows will be inserted.
-  @ViewChild(RowPlaceholder) _rowPlaceholder: RowPlaceholder;
-  @ViewChild(HeaderRowPlaceholder) _headerRowPlaceholder: HeaderRowPlaceholder;
+  // Outlets in the table's template where the header, data rows, and footer will be inserted.
+  @ViewChild(DataRowOutlet) _rowOutlet: DataRowOutlet;
+  @ViewChild(HeaderRowOutlet) _headerRowOutlet: HeaderRowOutlet;
+  @ViewChild(FooterRowOutlet) _footerRowOutlet: FooterRowOutlet;
 
   /**
-   * The column definitions provided by the user that contain what the header and cells should
-   * render for each column.
+   * The column definitions provided by the user that contain what the header, data, and footer
+   * cells should render for each column.
    */
   @ContentChildren(CdkColumnDef) _contentColumnDefs: QueryList<CdkColumnDef>;
 
@@ -209,6 +239,14 @@ export class CdkTable<T> implements CollectionViewer, OnInit, AfterContentChecke
    * content.
    */
   @ContentChild(CdkHeaderRowDef) _headerRowDef: CdkHeaderRowDef;
+
+  /**
+   * Template definition used as the footer container. By default it stores the footer row
+   * definition found as a direct content child. Override this value through `setFooterRowDef` if
+   * the footer row definition should be changed or was not defined as a part of the table's
+   * content.
+   */
+  @ContentChild(CdkFooterRowDef) _footerRowDef: CdkFooterRowDef;
 
   constructor(private readonly _differs: IterableDiffers,
               private readonly _changeDetectorRef: ChangeDetectorRef,
@@ -227,11 +265,10 @@ export class CdkTable<T> implements CollectionViewer, OnInit, AfterContentChecke
     // TODO(andrewseguin): Setup a listener for scrolling, emit the calculated view to viewChange
     this._dataDiffer = this._differs.find([]).create(this._trackByFn);
 
-    // If the table has a header row definition defined as part of its content, flag this as a
-    // header row def change so that the content check will render the header row.
-    if (this._headerRowDef) {
-      this._headerRowDefChanged = true;
-    }
+    // If the table has header or footer row definitions defined as part of its content, mark that
+    // there is a change so that the content check will render the row.
+    this._headerRowDefChanged = !!this._headerRowDef;
+    this._footerRowDefChanged = !!this._footerRowDef;
   }
 
   ngAfterContentChecked() {
@@ -239,18 +276,24 @@ export class CdkTable<T> implements CollectionViewer, OnInit, AfterContentChecke
     this._cacheRowDefs();
     this._cacheColumnDefs();
 
-    // Make sure that the user has at least added a header row or row def.
-    if (!this._headerRowDef && !this._rowDefs.length) {
+    // Make sure that the user has at least added header, footer, or data row def.
+    if (!this._headerRowDef && !this._footerRowDef && !this._rowDefs.length) {
       throw getTableMissingRowDefsError();
     }
 
-    // Render updates if the list of columns have been changed for the header or row definitions.
+    // Render updates if the list of columns have been changed for the header, row, or footer defs.
     this._renderUpdatedColumns();
 
     // If the header row definition has been changed, trigger a render to the header row.
     if (this._headerRowDefChanged) {
       this._renderHeaderRow();
       this._headerRowDefChanged = false;
+    }
+
+    // If the footer row definition has been changed, trigger a render to the footer row.
+    if (this._footerRowDefChanged) {
+      this._renderFooterRow();
+      this._footerRowDefChanged = false;
     }
 
     // If there is a data source and row definitions, connect to the data source unless a
@@ -261,8 +304,9 @@ export class CdkTable<T> implements CollectionViewer, OnInit, AfterContentChecke
   }
 
   ngOnDestroy() {
-    this._rowPlaceholder.viewContainer.clear();
-    this._headerRowPlaceholder.viewContainer.clear();
+    this._rowOutlet.viewContainer.clear();
+    this._headerRowOutlet.viewContainer.clear();
+    this._footerRowOutlet.viewContainer.clear();
     this._onDestroy.next();
     this._onDestroy.complete();
 
@@ -285,7 +329,7 @@ export class CdkTable<T> implements CollectionViewer, OnInit, AfterContentChecke
     const changes = this._dataDiffer.diff(this._data);
     if (!changes) { return; }
 
-    const viewContainer = this._rowPlaceholder.viewContainer;
+    const viewContainer = this._rowOutlet.viewContainer;
     changes.forEachOperation(
         (record: IterableChangeRecord<T>, adjustedPreviousIndex: number, currentIndex: number) => {
           if (record.previousIndex == null) {
@@ -317,6 +361,16 @@ export class CdkTable<T> implements CollectionViewer, OnInit, AfterContentChecke
   setHeaderRowDef(headerRowDef: CdkHeaderRowDef) {
     this._headerRowDef = headerRowDef;
     this._headerRowDefChanged = true;
+  }
+
+  /**
+   * Sets the footer row definition to be used. Overrides the footer row definition gathered by
+   * using `ContentChild`, if one exists. Sets a flag that will re-render the footer row after the
+   * table's content is checked.
+   */
+  setFooterRowDef(footerRowDef: CdkFooterRowDef) {
+    this._footerRowDef = footerRowDef;
+    this._footerRowDefChanged = true;
   }
 
   /** Adds a column definition that was not included as part of the direct content children. */
@@ -365,8 +419,8 @@ export class CdkTable<T> implements CollectionViewer, OnInit, AfterContentChecke
   }
 
   /**
-   * Check if the header or rows have changed what columns they want to display. If there is a diff,
-   * then re-render that section.
+   * Check if the header, data, or footer rows have changed what columns they want to display.
+   * If there is a diff, then re-render that section.
    */
   private _renderUpdatedColumns() {
     // Re-render the rows when the row definition columns change.
@@ -375,7 +429,7 @@ export class CdkTable<T> implements CollectionViewer, OnInit, AfterContentChecke
         // Reset the data to an empty array so that renderRowChanges will re-render all new rows.
         this._dataDiffer.diff([]);
 
-        this._rowPlaceholder.viewContainer.clear();
+        this._rowOutlet.viewContainer.clear();
         this.renderRows();
       }
     });
@@ -384,12 +438,17 @@ export class CdkTable<T> implements CollectionViewer, OnInit, AfterContentChecke
     if (this._headerRowDef && this._headerRowDef.getColumnsDiff()) {
       this._renderHeaderRow();
     }
+
+    // Re-render the footer row if there is a difference in its columns.
+    if (this._footerRowDef && this._footerRowDef.getColumnsDiff()) {
+      this._renderFooterRow();
+    }
   }
 
   /**
    * Switch to the provided data source by resetting the data and unsubscribing from the current
    * render change subscription if one exists. If the data source is null, interpret this by
-   * clearing the row placeholder. Otherwise start listening for new data.
+   * clearing the row outlet. Otherwise start listening for new data.
    */
   private _switchDataSource(dataSource: DataSource<T> | Observable<T[]> | T[]) {
     this._data = [];
@@ -408,7 +467,7 @@ export class CdkTable<T> implements CollectionViewer, OnInit, AfterContentChecke
       if (this._dataDiffer) {
         this._dataDiffer.diff([]);
       }
-      this._rowPlaceholder.viewContainer.clear();
+      this._rowOutlet.viewContainer.clear();
     }
 
     this._dataSource = dataSource;
@@ -446,31 +505,29 @@ export class CdkTable<T> implements CollectionViewer, OnInit, AfterContentChecke
   }
 
   /**
-   * Clears any existing content in the header row placeholder and creates a new embedded view
-   * in the placeholder using the header row definition.
+   * Clears any existing content in the header row outlet and creates a new embedded view
+   * in the outlet using the header row definition.
    */
   private _renderHeaderRow() {
-    // Clear the header row placeholder if any content exists.
-    if (this._headerRowPlaceholder.viewContainer.length > 0) {
-      this._headerRowPlaceholder.viewContainer.clear();
+    // Clear the footer row outlet if any content exists.
+    if (this._headerRowOutlet.viewContainer.length > 0) {
+      this._headerRowOutlet.viewContainer.clear();
     }
 
-    const cells = this._getHeaderCellTemplatesForRow(this._headerRowDef);
-    if (!cells.length) { return; }
+    this._renderRow(this._headerRowOutlet, this._headerRowDef);
+  }
 
-    // TODO(andrewseguin): add some code to enforce that exactly
-    //   one CdkCellOutlet was instantiated as a result
-    //   of `createEmbeddedView`.
-    this._headerRowPlaceholder.viewContainer
-        .createEmbeddedView(this._headerRowDef.template, {cells});
+  /**
+   * Clears any existing content in the footer row outlet and creates a new embedded view
+   * in the outlet using the footer row definition.
+   */
+  private _renderFooterRow() {
+    // Clear the footer row outlet if any content exists.
+    if (this._footerRowOutlet.viewContainer.length > 0) {
+      this._footerRowOutlet.viewContainer.clear();
+    }
 
-    cells.forEach(cell => {
-      if (CdkCellOutlet.mostRecentCellOutlet) {
-        CdkCellOutlet.mostRecentCellOutlet._viewContainer.createEmbeddedView(cell.template, {});
-      }
-    });
-
-    this._changeDetectorRef.markForCheck();
+    this._renderRow(this._footerRowOutlet, this._footerRowDef);
   }
 
   /**
@@ -493,21 +550,26 @@ export class CdkTable<T> implements CollectionViewer, OnInit, AfterContentChecke
    * within the data row view container.
    */
   private _insertRow(rowData: T, index: number) {
-    const row = this._getRowDef(rowData, index);
-
-    // Row context that will be provided to both the created embedded row view and its cells.
+    const rowDef = this._getRowDef(rowData, index);
     const context: CdkCellOutletRowContext<T> = {$implicit: rowData};
+    this._renderRow(this._rowOutlet, rowDef, context, index);
+  }
 
-    // TODO(andrewseguin): add some code to enforce that exactly one
-    //   CdkCellOutlet was instantiated as a result  of `createEmbeddedView`.
-    this._rowPlaceholder.viewContainer.createEmbeddedView(row.template, context, index);
+  /**
+   * Creates a new row template in the outlet and fills it with the set of cell templates.
+   * Optionally takes a context to provide to the row and cells, as well as an optional index
+   * of where to place the new row template in the outlet.
+   */
+  private _renderRow(
+      outlet: RowOutlet, rowDef: BaseRowDef, context: CdkCellOutletRowContext<T> = {}, index = 0) {
+    // TODO(andrewseguin): enforce that one outlet was instantiated from createEmbeddedView
+    outlet.viewContainer.createEmbeddedView(rowDef.template, context, index);
 
-    this._getCellTemplatesForRow(row).forEach(cell => {
+    for (let cellTemplate of this._getCellTemplates(rowDef)) {
       if (CdkCellOutlet.mostRecentCellOutlet) {
-        CdkCellOutlet.mostRecentCellOutlet._viewContainer
-            .createEmbeddedView(cell.template, context);
+        CdkCellOutlet.mostRecentCellOutlet._viewContainer.createEmbeddedView(cellTemplate, context);
       }
-    });
+    }
 
     this._changeDetectorRef.markForCheck();
   }
@@ -517,7 +579,7 @@ export class CdkTable<T> implements CollectionViewer, OnInit, AfterContentChecke
    * e.g. first/last/even/odd.
    */
   private _updateRowIndexContext() {
-    const viewContainer = this._rowPlaceholder.viewContainer;
+    const viewContainer = this._rowOutlet.viewContainer;
     for (let index = 0, count = viewContainer.length; index < count; index++) {
       const viewRef = viewContainer.get(index) as RowViewRef<T>;
       viewRef.context.index = index;
@@ -529,30 +591,9 @@ export class CdkTable<T> implements CollectionViewer, OnInit, AfterContentChecke
     }
   }
 
-  /**
-   * Returns the cell template definitions to insert into the header
-   * as defined by its list of columns to display.
-   */
-  private _getHeaderCellTemplatesForRow(headerDef: CdkHeaderRowDef): CdkHeaderCellDef[] {
-    if (!headerDef || !headerDef.columns) { return []; }
-    return Array.from(headerDef.columns, columnId => {
-      const column = this._columnDefsByName.get(columnId);
-
-      if (!column) {
-        throw getTableUnknownColumnError(columnId);
-      }
-
-      return column.headerCell;
-    });
-  }
-
-
-  /**
-   * Returns the cell template definitions to insert in the provided row
-   * as defined by its list of columns to display.
-   */
-  private _getCellTemplatesForRow(rowDef: CdkRowDef<T>): CdkCellDef[] {
-    if (!rowDef.columns) { return []; }
+  /** Gets the column definitions for the provided row def. */
+  private _getCellTemplates(rowDef: BaseRowDef): TemplateRef<any>[] {
+    if (!rowDef || !rowDef.columns) { return []; }
     return Array.from(rowDef.columns, columnId => {
       const column = this._columnDefsByName.get(columnId);
 
@@ -560,19 +601,22 @@ export class CdkTable<T> implements CollectionViewer, OnInit, AfterContentChecke
         throw getTableUnknownColumnError(columnId);
       }
 
-      return column.cell;
+      return rowDef.extractCellTemplate(column);
     });
   }
 
-  /** Adds native table sections (e.g. tbody) and moves the row placeholders into them. */
+  /** Adds native table sections (e.g. tbody) and moves the row outlets into them. */
   private _applyNativeTableSections() {
-    const thead = document.createElement('thead');
-    const tbody = document.createElement('tbody');
+    const sections = [
+      {tag: 'thead', outlet: this._headerRowOutlet},
+      {tag: 'tbody', outlet: this._rowOutlet},
+      {tag: 'tfoot', outlet: this._footerRowOutlet},
+    ];
 
-    this._elementRef.nativeElement.appendChild(thead);
-    this._elementRef.nativeElement.appendChild(tbody);
-
-    thead.appendChild(this._headerRowPlaceholder.elementRef.nativeElement);
-    tbody.appendChild(this._rowPlaceholder.elementRef.nativeElement);
+    for (const section of sections) {
+      const element = document.createElement(section.tag);
+      element.appendChild(section.outlet.elementRef.nativeElement);
+      this._elementRef.nativeElement.appendChild(element);
+    }
   }
 }

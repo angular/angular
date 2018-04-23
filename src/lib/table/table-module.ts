@@ -9,8 +9,23 @@
 import {NgModule} from '@angular/core';
 import {MatTable} from './table';
 import {CdkTableModule} from '@angular/cdk/table';
-import {MatCell, MatCellDef, MatColumnDef, MatHeaderCell, MatHeaderCellDef} from './cell';
-import {MatHeaderRow, MatHeaderRowDef, MatRow, MatRowDef} from './row';
+import {
+  MatCell,
+  MatCellDef,
+  MatColumnDef,
+  MatFooterCell,
+  MatFooterCellDef,
+  MatHeaderCell,
+  MatHeaderCellDef
+} from './cell';
+import {
+  MatFooterRow,
+  MatFooterRowDef,
+  MatHeaderRow,
+  MatHeaderRowDef,
+  MatRow,
+  MatRowDef
+} from './row';
 import {CommonModule} from '@angular/common';
 import {MatCommonModule} from '@angular/material/core';
 
@@ -19,19 +34,23 @@ const EXPORTED_DECLARATIONS = [
   MatTable,
 
   // Template defs
-  MatCellDef,
   MatHeaderCellDef,
-  MatColumnDef,
   MatHeaderRowDef,
+  MatColumnDef,
+  MatCellDef,
   MatRowDef,
+  MatFooterCellDef,
+  MatFooterRowDef,
 
   // Cell directives
   MatHeaderCell,
   MatCell,
+  MatFooterCell,
 
   // Row directions
   MatHeaderRow,
   MatRow,
+  MatFooterRow,
 ];
 
 @NgModule({
