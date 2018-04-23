@@ -9,7 +9,6 @@
 import {HtmlParser} from '../ml_parser/html_parser';
 import {InterpolationConfig} from '../ml_parser/interpolation_config';
 import {ParseError} from '../parse_util';
-
 import {extractMessages} from './extractor_merger';
 import * as i18n from './i18n_ast';
 import {PlaceholderMapper, Serializer} from './serializers/serializer';
@@ -27,26 +26,29 @@ export class MessageBundle {
 
   updateFromTemplate(html: string, url: string, interpolationConfig: InterpolationConfig):
       ParseError[] {
-    const htmlParserResult = this._htmlParser.parse(html, url, true, interpolationConfig);
+    const {errors: parseErrors, rootNodes} =
+        this._htmlParser.parse(html, url, true, interpolationConfig);
 
-    if (htmlParserResult.errors.length) {
-      return htmlParserResult.errors;
+    if (parseErrors.length) {
+      return parseErrors;
     }
 
-    const i18nParserResult = extractMessages(
-        htmlParserResult.rootNodes, interpolationConfig, this._implicitTags, this._implicitAttrs);
+    const {errors, messages} =
+        extractMessages(rootNodes, interpolationConfig, this._implicitTags, this._implicitAttrs);
 
-    if (i18nParserResult.errors.length) {
-      return i18nParserResult.errors;
+    if (errors.length) {
+      return errors;
     }
 
-    this._messages.push(...i18nParserResult.messages);
+    this._messages.push(...messages);
     return [];
   }
 
   // Return the message in the internal format
   // The public (serialized) format might be different, see the `write` method.
   getMessages(): i18n.Message[] { return this._messages; }
+
+  addMessages(messages: i18n.Message[]) { this._messages.push(...messages); }
 
   write(serializer: Serializer, filterSources?: (path: string) => string): string {
     const messages: {[id: string]: i18n.Message} = {};

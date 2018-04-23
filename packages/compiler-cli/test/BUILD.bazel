@@ -21,33 +21,6 @@ ts_library(
     ],
 )
 
-# extract_18n_spec
-ts_library(
-    name = "extract_i18n_lib",
-    testonly = 1,
-    srcs = [
-        "extract_i18n_spec.ts",
-    ],
-    deps = [
-        ":test_utils",
-        "//packages/compiler",
-        "//packages/compiler-cli",
-    ],
-)
-
-jasmine_node_test(
-    name = "extract_i18n",
-    bootstrap = ["angular/tools/testing/init_node_spec.js"],
-    data = [
-        "//packages/core:npm_package",
-    ],
-    deps = [
-        ":extract_i18n_lib",
-        "//packages/core",
-        "//tools/testing:node",
-    ],
-)
-
 # ngc_spec
 ts_library(
     name = "ngc_lib",

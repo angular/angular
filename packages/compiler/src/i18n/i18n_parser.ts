@@ -18,11 +18,14 @@ import {PlaceholderRegistry} from './serializers/placeholder';
 
 const _expParser = new ExpressionParser(new ExpressionLexer());
 
+export type I18nMessageFactory =
+    (msg: html.Node[], meaning: string, description: string, id: string) => i18n.Message;
+
 /**
  * Returns a function converting html nodes to an i18n Message given an interpolationConfig
  */
-export function createI18nMessageFactory(interpolationConfig: InterpolationConfig): (
-    nodes: html.Node[], meaning: string, description: string, id: string) => i18n.Message {
+export function createI18nMessageFactory(interpolationConfig: InterpolationConfig):
+    I18nMessageFactory {
   const visitor = new _I18nVisitor(_expParser, interpolationConfig);
 
   return (nodes: html.Node[], meaning: string, description: string, id: string) =>

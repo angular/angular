@@ -301,32 +301,36 @@ export class AotCompiler {
         componentId, compMeta, parsedTemplate, usedPipes, externalReferenceVars, ctx));
   }
 
-  emitMessageBundle(analyzeResult: NgAnalyzedModules, locale: string|null): MessageBundle {
-    const errors: ParseError[] = [];
+  emitMessageBundle(
+      analyzeResult: NgAnalyzedModules, locale: string|null,
+      r3Files?: NgAnalyzedFileWithInjectables[]): MessageBundle {
     const htmlParser = new HtmlParser();
-
-    // TODO(vicb): implicit tags & attributes
     const messageBundle = new MessageBundle(htmlParser, [], {}, locale);
 
-    analyzeResult.files.forEach(file => {
-      const compMetas: CompileDirectiveMetadata[] = [];
-      file.directives.forEach(directiveType => {
-        const dirMeta = this._metadataResolver.getDirectiveMetadata(directiveType);
-        if (dirMeta && dirMeta.isComponent) {
-          compMetas.push(dirMeta);
-        }
+    if (r3Files) {
+      this.emitAllPartialModules(analyzeResult, r3Files, messageBundle);
+    } else {
+      const errors: ParseError[] = [];
+      analyzeResult.files.forEach(file => {
+        const compMetas: CompileDirectiveMetadata[] = [];
+        file.directives.forEach(directiveType => {
+          const dirMeta = this._metadataResolver.getDirectiveMetadata(directiveType);
+          if (dirMeta && dirMeta.isComponent) {
+            compMetas.push(dirMeta);
+          }
+        });
+        compMetas.forEach(compMeta => {
+          const html = compMeta.template !.template !;
+          const interpolationConfig =
+              InterpolationConfig.fromArray(compMeta.template !.interpolation);
+          errors.push(
+              ...messageBundle.updateFromTemplate(html, file.fileName, interpolationConfig) !);
+        });
       });
-      compMetas.forEach(compMeta => {
-        const html = compMeta.template !.template !;
-        const interpolationConfig =
-            InterpolationConfig.fromArray(compMeta.template !.interpolation);
-        errors.push(
-            ...messageBundle.updateFromTemplate(html, file.fileName, interpolationConfig) !);
-      });
-    });
 
-    if (errors.length) {
-      throw new Error(errors.map(e => e.toString()).join('\n'));
+      if (errors.length) {
+        throw new Error(errors.map(e => e.toString()).join('\n'));
+      }
     }
 
     return messageBundle;
@@ -334,7 +338,7 @@ export class AotCompiler {
 
   emitAllPartialModules(
       {ngModuleByPipeOrDirective, files}: NgAnalyzedModules,
-      r3Files: NgAnalyzedFileWithInjectables[]): PartialModule[] {
+      r3Files: NgAnalyzedFileWithInjectables[], messageBundle?: MessageBundle): PartialModule[] {
     const contextMap = new Map<string, OutputContext>();
 
     const getContext = (fileName: string): OutputContext => {
@@ -347,7 +351,7 @@ export class AotCompiler {
     files.forEach(
         file => this._compilePartialModule(
             file.fileName, ngModuleByPipeOrDirective, file.directives, file.pipes, file.ngModules,
-            file.injectables, getContext(file.fileName)));
+            file.injectables, getContext(file.fileName), messageBundle));
     r3Files.forEach(
         file => this._compileShallowModules(
             file.fileName, file.shallowModules, getContext(file.fileName)));
@@ -368,7 +372,8 @@ export class AotCompiler {
   private _compilePartialModule(
       fileName: string, ngModuleByPipeOrDirective: Map<StaticSymbol, CompileNgModuleMetadata>,
       directives: StaticSymbol[], pipes: StaticSymbol[], ngModules: CompileNgModuleMetadata[],
-      injectables: CompileInjectableMetadata[], context: OutputContext): void {
+      injectables: CompileInjectableMetadata[], context: OutputContext,
+      messageBundle?: MessageBundle): void {
     const errors: ParseError[] = [];
 
     const schemaRegistry = new DomElementSchemaRegistry();
@@ -418,7 +423,7 @@ export class AotCompiler {
 
         compileIvyComponent(
             context, directiveMetadata, nodes, hasNgContent, ngContentSelectors, this.reflector,
-            hostBindingParser, directiveTypeBySel, pipeTypeByName);
+            hostBindingParser, directiveTypeBySel, pipeTypeByName, messageBundle);
       } else {
         compileIvyDirective(context, directiveMetadata, this.reflector, hostBindingParser);
       }

@@ -12,8 +12,12 @@ import {BindingForm, BuiltinFunctionCall, LocalResolver, convertActionBinding, c
 import {ConstantPool, DefinitionKind} from '../constant_pool';
 import * as core from '../core';
 import {AST, AstMemoryEfficientTransformer, BindingPipe, BoundElementBindingType, FunctionCall, ImplicitReceiver, LiteralArray, LiteralMap, LiteralPrimitive, PropertyRead} from '../expression_parser/ast';
+import {I18nMessageFactory, createI18nMessageFactory} from '../i18n/i18n_parser';
+import {MessageBundle} from '../i18n/message_bundle';
 import {Identifiers} from '../identifiers';
 import {LifecycleHooks} from '../lifecycle_reflector';
+import {Attribute, Node, Text} from '../ml_parser/ast';
+import {DEFAULT_INTERPOLATION_CONFIG} from '../ml_parser/interpolation_config';
 import * as o from '../output/output_ast';
 import {ParseSourceSpan, typeSourceSpan} from '../parse_util';
 import {CssSelector, SelectorMatcher} from '../selector';
@@ -99,7 +103,7 @@ export function compileComponent(
     outputCtx: OutputContext, component: CompileDirectiveMetadata, nodes: t.Node[],
     hasNgContent: boolean, ngContentSelectors: string[], reflector: CompileReflector,
     bindingParser: BindingParser, directiveTypeBySel: Map<string, any>,
-    pipeTypeByName: Map<string, any>) {
+    pipeTypeByName: Map<string, any>, messageBundle?: MessageBundle) {
   const definitionMapValues: {key: string, quoted: boolean, value: o.Expression}[] = [];
 
   const field = (key: string, value: o.Expression | null) => {
@@ -159,7 +163,7 @@ export function compileComponent(
       new TemplateDefinitionBuilder(
           outputCtx, outputCtx.constantPool, reflector, CONTEXT_NAME, BindingScope.ROOT_SCOPE, 0,
           templateTypeName, templateName, component.viewQueries, directiveMatcher, directives,
-          pipeTypeByName, pipes)
+          pipeTypeByName, pipes, messageBundle)
           .buildTemplateFunction(nodes, [], hasNgContent, ngContentSelectors);
 
   field('template', templateFunctionExpression);
@@ -390,6 +394,7 @@ class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver {
   private _valueConverter: ValueConverter;
   private _unsupported = unsupported;
   private _bindingScope: BindingScope;
+  private _createI18nMessage: I18nMessageFactory;
 
   // Whether we are inside a translatable element (`<p i18n>... somewhere here ... </p>)
   private _inI18nSection: boolean = false;
@@ -403,7 +408,8 @@ class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver {
       parentBindingScope: BindingScope, private level = 0, private contextName: string|null,
       private templateName: string|null, private viewQueries: CompileQueryMetadata[],
       private directiveMatcher: SelectorMatcher|null, private directives: Set<any>,
-      private pipeTypeByName: Map<string, any>, private pipes: Set<any>) {
+      private pipeTypeByName: Map<string, any>, private pipes: Set<any>,
+      private _messageBundle?: MessageBundle) {
     this._bindingScope =
         parentBindingScope.nestedScope((lhsVar: o.ReadVarExpr, expression: o.Expression) => {
           this._bindingCode.push(
@@ -419,6 +425,9 @@ class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver {
           this._creationCode.push(
               o.importExpr(R3.pipe).callFn([o.literal(slot), o.literal(name)]).toStmt());
         });
+    if (this._messageBundle) {
+      this._createI18nMessage = createI18nMessageFactory(DEFAULT_INTERPOLATION_CONFIG);
+    }
   }
 
   buildTemplateFunction(
@@ -556,7 +565,7 @@ class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver {
     const referenceDataSlots = new Map<string, number>();
     const wasInI18nSection = this._inI18nSection;
 
-    const outputAttrs: {[name: string]: string} = {};
+    const outputAttrs: {[name: string]: t.TextAttribute} = {};
     const attrI18nMetas: {[name: string]: string} = {};
     let i18nMeta: string = '';
 
@@ -586,7 +595,7 @@ class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver {
       } else if (name.startsWith(I18N_ATTR_PREFIX)) {
         attrI18nMetas[name.slice(I18N_ATTR_PREFIX.length)] = value;
       } else {
-        outputAttrs[name] = value;
+        outputAttrs[name] = attr;
       }
     }
 
@@ -609,15 +618,19 @@ class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver {
     let hasI18nAttr = false;
 
     Object.getOwnPropertyNames(outputAttrs).forEach(name => {
-      const value = outputAttrs[name];
+      const attr = outputAttrs[name];
       attributes.push(o.literal(name));
       if (attrI18nMetas.hasOwnProperty(name)) {
         hasI18nAttr = true;
         const meta = parseI18nMeta(attrI18nMetas[name]);
-        const variable = this.constantPool.getTranslation(value, meta);
+        const variable = this.constantPool.getTranslation(attr.value, meta);
         attributes.push(variable);
+        if (this._messageBundle) {
+          const node = new Attribute(name, attr.value, attr.sourceSpan);
+          this._addMessage([node], meta);
+        }
       } else {
-        attributes.push(o.literal(value));
+        attributes.push(o.literal(attr.value));
       }
     });
 
@@ -736,11 +749,11 @@ class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver {
     ];
 
     const attributeNames: o.Expression[] = [];
-    const attributeMap: {[name: string]: string} = {};
+    const attributeMap: {[name: string]: t.TextAttribute} = {};
 
     template.attributes.forEach(a => {
       attributeNames.push(asLiteral(a.name), asLiteral(''));
-      attributeMap[a.name] = a.value;
+      attributeMap[a.name] = a;
     });
 
     // Match directives on template attributes
@@ -772,7 +785,7 @@ class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver {
     const templateVisitor = new TemplateDefinitionBuilder(
         this.outputCtx, this.constantPool, this.reflector, templateContext, this._bindingScope,
         this.level + 1, contextName, templateName, [], this.directiveMatcher, this.directives,
-        this.pipeTypeByName, this.pipes);
+        this.pipeTypeByName, this.pipes, this._messageBundle);
     const templateFunctionExpr =
         templateVisitor.buildTemplateFunction(template.children, template.variables);
     this._postfixCode.push(templateFunctionExpr.toDeclStmt(templateName, null));
@@ -818,6 +831,22 @@ class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver {
     const variable = this.constantPool.getTranslation(text.value, meta);
     this.instruction(
         this._creationCode, text.sourceSpan, R3.text, o.literal(this.allocateDataSlot()), variable);
+    if (this._messageBundle) {
+      const node = new Text(text.value, text.sourceSpan);
+      this._addMessage([node], meta);
+    }
+  }
+
+  // add a translatable message
+  private _addMessage(ast: Node[], msgMeta: {meaning: string, description: string, id: string}) {
+    if (ast.length == 0 ||
+        ast.length == 1 && ast[0] instanceof Attribute && !(<Attribute>ast[0]).value) {
+      // Do not create empty messages
+      return null;
+    }
+
+    const message = this._createI18nMessage(ast, msgMeta.meaning, msgMeta.description, msgMeta.id);
+    this._messageBundle !.addMessages([message]);
   }
 
   private allocateDataSlot() { return this._dataIndex++; }
@@ -1146,10 +1175,10 @@ function temporaryAllocator(statements: o.Statement[], name: string): () => o.Re
 // - "@@id",
 // - "description[@@id]",
 // - "meaning|description[@@id]"
-function parseI18nMeta(i18n?: string): {description?: string, id?: string, meaning?: string} {
-  let meaning: string|undefined;
-  let description: string|undefined;
-  let id: string|undefined;
+function parseI18nMeta(i18n?: string): {description: string, id: string, meaning: string} {
+  let meaning = '';
+  let description = '';
+  let id = '';
 
   if (i18n) {
     // TODO(vicb): figure out how to force a message ID with closure ?
@@ -1170,17 +1199,18 @@ function parseI18nMeta(i18n?: string): {description?: string, id?: string, meani
 /**
  * Creates a `CssSelector` given a tag name and a map of attributes
  */
-function createCssSelector(tag: string, attributes: {[name: string]: string}): CssSelector {
+function createCssSelector(
+    tag: string, attributes: {[name: string]: t.TextAttribute}): CssSelector {
   const cssSelector = new CssSelector();
 
   cssSelector.setElement(tag);
 
-  Object.getOwnPropertyNames(attributes).forEach((name) => {
-    const value = attributes[name];
+  Object.getOwnPropertyNames(attributes).forEach(name => {
+    const attr = attributes[name];
 
-    cssSelector.addAttribute(name, value);
+    cssSelector.addAttribute(name, attr.value);
     if (name.toLowerCase() === 'class') {
-      const classes = value.trim().split(/\s+/g);
+      const classes = attr.value.trim().split(/\s+/g);
       classes.forEach(className => cssSelector.addClassName(className));
     }
   });

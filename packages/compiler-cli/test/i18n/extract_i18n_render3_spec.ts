@@ -6,13 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {isInBazel, setup} from '@angular/compiler-cli/test/test_support';
 import * as fs from 'fs';
 import * as path from 'path';
-import * as ts from 'typescript';
-
-import {mainXi18n} from '../src/extract_i18n';
-
-import {isInBazel, makeTempDir, setup} from './test_support';
+import {mainXi18n} from '../../src/extract_i18n';
+import {makeTempDir} from '../test_support';
 
 function getNgRootDir() {
   const moduleFilename = module.filename.replace(/\\/g, '/');
@@ -20,7 +18,8 @@ function getNgRootDir() {
   return moduleFilename.substr(0, distIndex);
 }
 
-const EXPECTED_XMB = `<?xml version="1.0" encoding="UTF-8" ?>
+describe('extract_i18n command line', () => {
+  const EXPECTED_XMB = `<?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE messagebundle [
 <!ELEMENT messagebundle (msg)*>
 <!ATTLIST messagebundle class CDATA #IMPLIED>
@@ -43,19 +42,19 @@ const EXPECTED_XMB = `<?xml version="1.0" encoding="UTF-8" ?>
 <!ELEMENT ex (#PCDATA)>
 ]>
 <messagebundle>
-  <msg id="8136548302122759730" desc="desc" meaning="meaning"><source>src/module.ts:1</source>translate me</msg>
-  <msg id="3492007542396725315"><source>src/module.ts:2</source>Welcome</msg>
+  <msg id="8136548302122759730" desc="desc" meaning="meaning"><source>src/basic.html:1</source>translate me</msg>
+  <msg id="3492007542396725315"><source>src/basic.html:1</source>Welcome</msg>
 </messagebundle>
 `;
 
-const EXPECTED_XLIFF = `<?xml version="1.0" encoding="UTF-8" ?>
+  const EXPECTED_XLIFF = `<?xml version="1.0" encoding="UTF-8" ?>
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
   <file source-language="fr" datatype="plaintext" original="ng2.template">
     <body>
       <trans-unit id="76e1eccb1b772fa9f294ef9c146ea6d0efa8a2d4" datatype="html">
         <source>translate me</source>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/module.ts</context>
+          <context context-type="sourcefile">src/basic.html</context>
           <context context-type="linenumber">1</context>
         </context-group>
         <note priority="1" from="description">desc</note>
@@ -64,8 +63,8 @@ const EXPECTED_XLIFF = `<?xml version="1.0" encoding="UTF-8" ?>
       <trans-unit id="65cc4ab3b4c438e07c89be2b677d08369fb62da2" datatype="html">
         <source>Welcome</source>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/module.ts</context>
-          <context context-type="linenumber">2</context>
+          <context context-type="sourcefile">src/basic.html</context>
+          <context context-type="linenumber">1</context>
         </context-group>
       </trans-unit>
     </body>
@@ -73,14 +72,14 @@ const EXPECTED_XLIFF = `<?xml version="1.0" encoding="UTF-8" ?>
 </xliff>
 `;
 
-const EXPECTED_XLIFF2 = `<?xml version="1.0" encoding="UTF-8" ?>
+  const EXPECTED_XLIFF2 = `<?xml version="1.0" encoding="UTF-8" ?>
 <xliff version="2.0" xmlns="urn:oasis:names:tc:xliff:document:2.0" srcLang="en">
   <file original="ng.template" id="ngi18n">
     <unit id="8136548302122759730">
       <notes>
         <note category="description">desc</note>
         <note category="meaning">meaning</note>
-        <note category="location">src/module.ts:1</note>
+        <note category="location">src/basic.html:1</note>
       </notes>
       <segment>
         <source>translate me</source>
@@ -88,7 +87,7 @@ const EXPECTED_XLIFF2 = `<?xml version="1.0" encoding="UTF-8" ?>
     </unit>
     <unit id="3492007542396725315">
       <notes>
-        <note category="location">src/module.ts:2</note>
+        <note category="location">src/basic.html:1</note>
       </notes>
       <segment>
         <source>Welcome</source>
@@ -98,15 +97,10 @@ const EXPECTED_XLIFF2 = `<?xml version="1.0" encoding="UTF-8" ?>
 </xliff>
 `;
 
-describe('extract_i18n command line', () => {
   let basePath: string;
   let outDir: string;
   let write: (fileName: string, content: string) => void;
   let errorSpy: jasmine.Spy&((s: string) => void);
-
-  function writeConfig(tsconfig: string = '{"extends": "./tsconfig-base.json"}') {
-    write('tsconfig.json', tsconfig);
-  }
 
   beforeEach(() => {
     errorSpy = jasmine.createSpy('consoleError').and.callFake(console.error);
@@ -152,12 +146,16 @@ describe('extract_i18n command line', () => {
         "typeRoots": ["node_modules/@types"]
       }
     }`);
-  });
 
-  function writeSources() {
+    write('tsconfig.json', `{
+      "extends": "./tsconfig-base.json",
+      "angularCompilerOptions": {
+        "enableIvy": true
+      }
+    }`);
+
     write('src/basic.html', [
-      `<div title="translate me" i18n-title="meaning|desc"></div>`,
-      `<p id="welcomeMessage"><!--i18n-->Welcome<!--/i18n--></p>`,
+      `<div i18n title="translate me" i18n-title="meaning|desc">Welcome</div>`,
     ].join('\n'));
     write('src/module.ts', `
     import {Component, NgModule} from '@angular/core';
@@ -173,12 +171,9 @@ describe('extract_i18n command line', () => {
     })
     export class I18nModule {}
     `);
-  }
+  });
 
   it('should extract xmb', () => {
-    writeConfig();
-    writeSources();
-
     const exitCode =
         mainXi18n(['-p', basePath, '--i18nFormat=xmb', '--outFile=custom_file.xmb'], errorSpy);
     expect(errorSpy).not.toHaveBeenCalled();
@@ -191,9 +186,6 @@ describe('extract_i18n command line', () => {
   });
 
   it('should extract xlf', () => {
-    writeConfig();
-    writeSources();
-
     const exitCode = mainXi18n(['-p', basePath, '--i18nFormat=xlf', '--locale=fr'], errorSpy);
     expect(errorSpy).not.toHaveBeenCalled();
     expect(exitCode).toBe(0);
@@ -205,9 +197,6 @@ describe('extract_i18n command line', () => {
   });
 
   it('should extract xlf2', () => {
-    writeConfig();
-    writeSources();
-
     const exitCode =
         mainXi18n(['-p', basePath, '--i18nFormat=xlf2', '--outFile=messages.xliff2.xlf'], errorSpy);
     expect(errorSpy).not.toHaveBeenCalled();
@@ -220,9 +209,6 @@ describe('extract_i18n command line', () => {
   });
 
   it('should not emit js', () => {
-    writeConfig();
-    writeSources();
-
     const exitCode =
         mainXi18n(['-p', basePath, '--i18nFormat=xlf2', '--outFile=messages.xliff2.xlf'], errorSpy);
     expect(errorSpy).not.toHaveBeenCalled();

@@ -121,7 +121,7 @@ export class ConstantPool {
   //  */
   // const MSG_XYZ = goog.getMsg('message');
   // ```
-  getTranslation(message: string, meta: {description?: string, meaning?: string}): o.Expression {
+  getTranslation(message: string, meta: {description: string, meaning: string}): o.Expression {
     // The identity of an i18n message depends on the message and its meaning
     const key = meta.meaning ? `${message}\u0000\u0000${meta.meaning}` : message;
 
