@@ -194,8 +194,9 @@ workflows:
           # Instead, the publish-build-artifacts.sh script just terminates when
           # CIRCLE_PR_NUMBER is set.
           requires:
-            # Only publish if tests pass
+            # Only publish if tests and integration tests pass
             - test
+            - integration_test
             # Get the artifacts to publish from the build-packages-dist job
             # since the publishing script expects the legacy outputs layout.
             - build-packages-dist
