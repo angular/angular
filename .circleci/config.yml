@@ -192,8 +192,12 @@ workflows:
           # We'd really like to filter out pull requests here, but not yet available:
           # https://discuss.circleci.com/t/workflows-pull-request-filter/14396/4
           # Instead, the publish-build-artifacts.sh script just terminates when
-          # CIRCLE_PULL_REQUEST is set.
+          # CIRCLE_PR_NUMBER is set.
           requires:
+            # Only publish if tests pass
+            - test
+            # Get the artifacts to publish from the build-packages-dist job
+            # since the publishing script expects the legacy outputs layout.
             - build-packages-dist
 
   aio_monitoring:
