@@ -26,7 +26,6 @@ const DEFAULT_WIDTH = 60;
 describe('ConnectedPositionStrategy', () => {
   let overlay: Overlay;
   let overlayContainer: OverlayContainer;
-  let overlayContainerElement: HTMLElement;
   let zone: MockNgZone;
   let overlayRef: OverlayRef;
 
@@ -39,7 +38,6 @@ describe('ConnectedPositionStrategy', () => {
     inject([Overlay, OverlayContainer], (o: Overlay, oc: OverlayContainer) => {
       overlay = o;
       overlayContainer = oc;
-      overlayContainerElement = oc.getContainerElement();
     })();
   });
 
@@ -773,61 +771,6 @@ describe('ConnectedPositionStrategy', () => {
       });
     });
 
-  });
-
-  describe('validations', () => {
-    let overlayElement: HTMLElement;
-    let originElement: HTMLElement;
-    let positionStrategy: ConnectedPositionStrategy;
-
-    beforeEach(() => {
-      overlayElement = createPositionedBlockElement();
-      overlayContainerElement.appendChild(overlayElement);
-      originElement = createBlockElement();
-
-      positionStrategy = overlay.position().connectedTo(
-          new ElementRef(originElement),
-          {originX: 'start', originY: 'bottom'},
-          {overlayX: 'start', overlayY: 'top'});
-
-      attachOverlay(positionStrategy);
-    });
-
-    afterEach(() => {
-      positionStrategy.dispose();
-    });
-
-    it('should throw when attaching without any positions', () => {
-      positionStrategy.withPositions([]);
-      expect(() => positionStrategy.apply()).toThrow();
-    });
-
-    it('should throw when passing in something that is missing a connection point', () => {
-      positionStrategy.withPositions([{originY: 'top', overlayX: 'start', overlayY: 'top'} as any]);
-      expect(() => positionStrategy.apply()).toThrow();
-    });
-
-    it('should throw when passing in something that has an invalid X position', () => {
-      positionStrategy.withPositions([{
-        originX: 'left',
-        originY: 'top',
-        overlayX: 'left',
-        overlayY: 'top'
-      } as any]);
-
-      expect(() => positionStrategy.apply()).toThrow();
-    });
-
-    it('should throw when passing in something that has an invalid Y position', () => {
-      positionStrategy.withPositions([{
-        originX: 'start',
-        originY: 'middle',
-        overlayX: 'start',
-        overlayY: 'middle'
-      } as any]);
-
-      expect(() => positionStrategy.apply()).toThrow();
-    });
   });
 
 });

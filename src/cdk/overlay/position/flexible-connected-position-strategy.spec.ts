@@ -1593,6 +1593,57 @@ describe('FlexibleConnectedPositionStrategy', () => {
 
   });
 
+  describe('validations', () => {
+    let originElement: HTMLElement;
+    let positionStrategy: FlexibleConnectedPositionStrategy;
+
+    beforeEach(() => {
+      originElement = createPositionedBlockElement();
+      document.body.appendChild(originElement);
+      positionStrategy = overlay.position().flexibleConnectedTo(new ElementRef(originElement));
+    });
+
+    afterEach(() => {
+      positionStrategy.dispose();
+    });
+
+    it('should throw when attaching without any positions', () => {
+      expect(() => positionStrategy.withPositions([])).toThrow();
+    });
+
+    it('should throw when passing in something that is missing a connection point', () => {
+      expect(() => {
+        positionStrategy.withPositions([{
+          originY: 'top',
+          overlayX: 'start',
+          overlayY: 'top'
+        } as any]);
+      }).toThrow();
+    });
+
+    it('should throw when passing in something that has an invalid X position', () => {
+      expect(() => {
+        positionStrategy.withPositions([{
+          originX: 'left',
+          originY: 'top',
+          overlayX: 'left',
+          overlayY: 'top'
+        } as any]);
+      }).toThrow();
+    });
+
+    it('should throw when passing in something that has an invalid Y position', () => {
+      expect(() => {
+        positionStrategy.withPositions([{
+          originX: 'start',
+          originY: 'middle',
+          overlayX: 'start',
+          overlayY: 'middle'
+        } as any]);
+      }).toThrow();
+    });
+  });
+
 });
 
 /** Creates an absolutely positioned, display: block element with a default size. */
