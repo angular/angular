@@ -682,50 +682,89 @@ That's where the heavy initialization logic belongs.
 
 ### _OnDestroy()_
 
+<!--
 Put cleanup logic in `ngOnDestroy()`, the logic that *must* run before Angular destroys the directive.
+-->
+Angular가 디렉티브를 종료하기 전에 *꼭 실행되어야 하는* 로직은 `ngOnDestroy()`에 작성합니다.
 
+<!--
 This is the time to notify another part of the application that the component is going away.
+-->
+그리고 이 시점은 컴포넌트가 종료되는 것을 애플리케이션의 다른 부분에 전파할 수 있는 시점이기도 합니다.
 
+<!--
 This is the place to free resources that won't be garbage collected automatically.
 Unsubscribe from Observables and DOM events. Stop interval timers.
 Unregister all callbacks that this directive registered with global or application services.
 You risk memory leaks if you neglect to do so.
+-->
+JavaScript 환경은 필요없는 자원을 자동으로 정리하지만, 정리해야 하는 자원이 그 외에 추가로 있다면 이 함수에 작성하는 것이 좋습니다. 
+옵저버블이나 DOM 이벤트를 구독한 것을 해제하거나, 타이머를 종료하는 로직, 서비스나 디렉티브에 등록된 콜백 함수를 해제하는 것도 이 함수에서 하는 것이 좋습니다.
+수동으로 정리해야 하는 항목을 정리하지 않으면 메모리 누수의 위험이 있습니다.
 
 {@a onchanges}
 
 ## _OnChanges()_
 
+<!--
 Angular calls its `ngOnChanges()` method whenever it detects changes to ***input properties*** of the component (or directive).
 This example monitors the `OnChanges` hook.
+-->
+컴포넌트나 디렉티브의 ***입력 프로퍼티*** 값이 변경될 때마다 Angular는 `ngOnChanges()` 메소드를 실행합니다.
+`OnChagnes` 후킹 함수를 활용하는 간단한 방법은 다음과 같습니다.
 
 <code-example path="lifecycle-hooks/src/app/on-changes.component.ts" region="ng-on-changes" title="on-changes.component.ts (excerpt)" linenums="false"></code-example>
 
+<!--
 The `ngOnChanges()` method takes an object that maps each changed property name to a
 [SimpleChange](api/core/SimpleChange) object holding the current and previous property values.
 This hook iterates over the changed properties and logs them.
+-->
+`ngOnChanges()` 메소드는 [SimpleChange](api/core/SimpleChange) 타입의 객체를 인자로 받으며, 이 객체 안에는 입력 프로퍼티의 이전 값과 현재 값이 포함되어 있습니다.
+위 예제는 이 값들을 로그로 출력하는 간단한 예제입니다.
 
+<!--
 The example component, `OnChangesComponent`, has two input properties: `hero` and `power`.
+-->
+이번에 예제로 만드는 `OnChangesComponent`에는 `hero`와 `power`라는 입력 프로퍼티가 2개 있습니다.
 
 <code-example path="lifecycle-hooks/src/app/on-changes.component.ts" region="inputs" title="src/app/on-changes.component.ts" linenums="false"></code-example>
 
+<!--
 The host `OnChangesParentComponent` binds to them like this:
+-->
+그리고 부모 컴포넌트인 `OnChangesParentComponent`는 이 컴포넌트를 이렇게 바인딩합니다:
 
 <code-example path="lifecycle-hooks/src/app/on-changes-parent.component.html" region="on-changes" title="src/app/on-changes-parent.component.html"></code-example>
 
+<!--
 Here's the sample in action as the user makes changes.
+-->
+그리고 사용자가 문자열을 입력하면 다음과 같은 로그를 확인할 수 있습니다.
 
 <figure>
   <img src='generated/images/guide/lifecycle-hooks/on-changes-anim.gif' alt="OnChanges">
 </figure>
 
+<!--
 The log entries appear as the string value of the *power* property changes.
 But the `ngOnChanges` does not catch changes to `hero.name`
 That's surprising at first.
+-->
+이 로그를 보면 *power* 프로퍼티의 값이 변경될 때마다 `ngOnChanges()` 함수가 실행되는 것을 확인할 수 있습니다.
+하지만 `hero.name` 값은 변경되어도 `ngOnChanges()` 함수가 실행되지 않습니다.
+이 결과를 처음 보면 당황스러울 수 있습니다.
 
+<!--
 Angular only calls the hook when the value of the input property changes.
 The value of the `hero` property is the *reference to the hero object*.
 Angular doesn't care that the hero's own `name` property changed.
 The hero object *reference* didn't change so, from Angular's perspective, there is no change to report!
+-->
+Angular는 입력 프로퍼티 값이 변경되었을 때만 `ngOnChangaes()` 함수를 실행합니다.
+하지만 `hero` 프로퍼티는 객체가 전달되기 때문에 프로퍼티 값은 *객체의 참조*값으로 할당됩니다.
+그래서 `hero` 객체 안에 있는 `name` 값이 변경되는 것은 Angular가 신경쓰지 않습니다.
+객체가 인자로 전달될 때는 *참조하는 주소 자체가* 변경되지 않는 이상 값이 변경된 것으로 처리하지 않습니다.
 
 {@a docheck}
 
