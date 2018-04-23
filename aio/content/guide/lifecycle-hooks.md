@@ -521,94 +521,162 @@ The next examples focus on hook details.
 <!--
 Go undercover with these two spy hooks to discover when an element is initialized or destroyed.
 -->
-엘리먼트가 생성되거나 종료되는 시점은 이 두 인터페이스를 후킹해서 확인할 수 있습니다.
+엘리먼트가 생성되거나 종료되는 시점은 이 두 인터페이스를 활용해서 확인할 수 있습니다.
 
 <!--
 This is the perfect infiltration job for a directive.
 The heroes will never know they're being watched.
 -->
+이 예제에서는 디렉티브의 생성과 종료를 확인할 수 있는 스파이 디렉티브를 만들어 봅니다.
 
 <div class="l-sub-section">
 
+  <!--
   Kidding aside, pay attention to two key points:
+  -->
+  다음 두 가지 내용을 기억해 두세요:
 
+  <!--
   1. Angular calls hook methods for *directives* as well as components.<br><br>
+  -->
+  1. Angular에서 *디렉티브*에 적용되는 라이프싸이클 후킹 메소드는 컴포넌트에도 똑같이 적용됩니다.<br><br>
 
+  <!--
   2. A spy directive can provide insight into a DOM object that you cannot change directly.
   Obviously you can't touch the implementation of a native `<div>`.
   You can't modify a third party component either.
   But you can watch both with a directive.
+  -->
+  2. 라이프싸이클 후킹 함수를 활용하면 컴포넌트에서 사용하는 DOM 객체에 직접 접근할 수 있습니다.
+  하지만 네이티브 `<div>`와 같은 엘리먼트가 어떻게 생성되는지 변경하는 것은 불가능하며, 서드파티 컴포넌트도 직접 수정할 수는 없습니다.
+  이 때 DOM 접근에 접근할 수 있다는 것은 수정 없이 DOM 객체를 확인하는 것만 가능합니다.
 
 </div>
 
+<!--
 The sneaky spy directive is simple, consisting almost entirely of `ngOnInit()` and `ngOnDestroy()` hooks
 that log messages to the parent via an injected `LoggerService`.
+-->
+스파이 디렉티브는 간단합니다. 이 디렉티브는 `ngOnInit()` 함수와 `ngOnDestroy()` 후킹 함수를 구현하고 의존성으로 주입되는 `LoggerService`를 활용해서 브라우저에 로그를 출력합니다.
 
 <code-example path="lifecycle-hooks/src/app/spy.directive.ts" region="spy-directive" title="src/app/spy.directive.ts" linenums="false"></code-example>
 
+<!--
 You can apply the spy to any native or component element and it'll be initialized and destroyed
 at the same time as that element.
 Here it is attached to the repeated hero `<div>`:
+-->
+이 디렉티브는 네이티브 엘리먼트나 커스텀 컴포넌트 어느곳에라도 적용할 수 있으며, 이 디렉티브가 적용된 엘리먼트가 생성될 때 함께 생성되고 엘리먼트가 종료될 때 이 디렉티브도 함께 종료됩니다.
+`*ngFor`로 반복되는 `<div>`에는 다음과 같이 적용할 수 있습니다:
 
 <code-example path="lifecycle-hooks/src/app/spy.component.html" region="template" title="src/app/spy.component.html" linenums="false"></code-example>
 
+<!--
 Each spy's birth and death marks the birth and death of the attached hero `<div>`
 with an entry in the *Hook Log* as seen here:
+-->
+각 스파이 디렉티브가 생성되고 종료되는 시점은 이 디렉티브가 적용된 `<div>` 엘리먼트가 생성되고 종료되는 시점과 같습니다.
+이 내용을 로그로 확인해 보세요:
 
 <figure>
   <img src='generated/images/guide/lifecycle-hooks/spy-directive.gif' alt="Spy Directive">
 </figure>
 
+<!--
 Adding a hero results in a new hero `<div>`. The spy's `ngOnInit()` logs that event.
+-->
+히어로를 목록에 추가하면 새로운 히어로에 해당되는 `<div>`가 생성됩니다. 그러면 스파이 디렉티브의 `ngOnInit()`에서 로그를 출력합니다.
 
+<!--
 The *Reset* button clears the `heroes` list.
 Angular removes all hero `<div>` elements from the DOM and destroys their spy directives at the same time.
 The spy's `ngOnDestroy()` method reports its last moments.
+-->
+*Reset* 버튼은 `heroes` 리스트를 초기화합니다.
+그러면 Angular가 히어로에 해당하는 `<div>` 엘리먼트를 DOM에서 제거하며, 이 때 스파이 디렉티브도 함께 종료됩니다.
+스파이 디렉티브가 종료될 때 `ngOnDestroy()` 메소드가 실행됩니다.
 
+<!--
 The `ngOnInit()` and `ngOnDestroy()` methods have more vital roles to play in real applications.
+-->
+`ngOnInit()` 함수와 `ngOnDestroy()` 함수는 실제 업무용 애플리케이션에도 중요하게 사용됩니다.
 
 {@a oninit}
 
 ### _OnInit()_
 
+<!--
 Use `ngOnInit()` for two main reasons:
+-->
+`ngOnInit()` 함수는 다음 두 용도로 사용합니다:
 
+<!--
 1. To perform complex initializations shortly after construction.
 1. To set up the component after Angular sets the input properties.
+-->
+1. 생성자가 이후에 실행되어야 하는 초기화 로직이 복잡할 때
+1. Angular가 입력 프로퍼티 값을 설정한 이후 컴포넌트에 추가 로직이 필요할 때
 
+<!--
 Experienced developers agree that components should be cheap and safe to construct.
+-->
+숙련된 개발자라면 컴포넌트의 생성자는 최대한 간결하게 작성해야 한다는 것에 동의할 것입니다.
 
 <div class="l-sub-section">
 
+  <!--
   Misko Hevery, Angular team lead,
   [explains why](http://misko.hevery.com/code-reviewers-guide/flaw-constructor-does-real-work/)
   you should avoid complex constructor logic.
+  -->
+  Angular 팀 리더인 Misko Hevery가 [생성자를 왜 간단하게 작성해야 하는지](http://misko.hevery.com/code-reviewers-guide/flaw-constructor-does-real-work/) 언급한 내용을 확인해 보세요.
 
 </div>
 
+<!--
 Don't fetch data in a component constructor.
 You shouldn't worry that a new component will try to contact a remote server when
 created under test or before you decide to display it.
 Constructors should do no more than set the initial local variables to simple values.
+-->
+서버에서 데이터를 받아오는 로직은 컴포넌트 생성자에 작성하지 마세요.
+컴포넌트가 생성될 때 서버에서 데이터를 받아온다면 생성자를 활용하는 것이 좋은 방법이라고 생각하기 쉽습니다.
+하지만 생성자에는 지역 변수를 간단하게 초기화하는 로직만 두는 것이 좋습니다.
 
+<!--
 An `ngOnInit()` is a good place for a component to fetch its initial data. The
 [Tour of Heroes Tutorial](tutorial/toh-pt4#oninit) guide shows how.
+-->
+서버에서 받아오는 데이터로 컴포넌트를 초기화해야 한다면, 이 로직은 `ngOnInit()`에 작성하는 것이 좋습니다.
+[히어로들의 여정 튜토리얼](tutorial/toh-pt4#oninit)도 확인해 보세요.
 
-
+<!--
 Remember also that a directive's data-bound input properties are not set until _after construction_.
 That's a problem if you need to initialize the directive based on those properties.
 They'll have been set when `ngOnInit()` runs.
+-->
+디렉티브에 입력 프로퍼티가 있을 때 이 입력 프로퍼티의 값은 _생성자가 실행된 후_ 에 반영된다는 것도 잊지 마세요.
+입력 프로퍼티의 값이 반영되는 것은 Angular의 라이프싸이클을 따르기 때문에 JavaScript에서 제공하는 생성자에서 이 입력 프로퍼티 값을 사용할 수 없습니다.
+`ngOnInit()`이 실행되는 시점이라면 입력 프로퍼티 값이 모두 반영된 이후입니다.
 
 <div class="l-sub-section">
 
+  <!--
   The `ngOnChanges()` method is your first opportunity to access those properties.
   Angular calls `ngOnChanges()` before `ngOnInit()` and many times after that.
   It only calls `ngOnInit()` once.
+  -->
+  입력 프로퍼티 값을 확인할 수 있는 가장 빠른 시점은 `ngOnChanges()` 메소드입니다.
+  Angular의 라이프싸이클 후킹 함수 순서에 따르면 `ngOnInit()` 함수가 실행되기 전에 `ngOnChanges()` 함수가 먼저 실행되기 때문입니다.
+  그리고 `ngOnChanges()` 함수는 입력 프로퍼티 값이 변경될 때마다 계속 실행되지만 `ngOnInit()` 함수는 한 번만 실행됩니다.
 
 </div>
 
+<!--
 You can count on Angular to call the `ngOnInit()` method _soon_ after creating the component.
 That's where the heavy initialization logic belongs.
+-->
+`ngOnInit()` 메소드는 컴포넌트가 생성된 _직후에_ 실행되기 때문에 생성자가 실행되는 시점과 많이 차이나지 않습니다.
 
 {@a ondestroy}
 
