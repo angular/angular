@@ -126,7 +126,7 @@ if [ $# -gt 0 ]; then
 elif [[ \
     "$CIRCLE_PROJECT_USERNAME" == "angular" && \
     "$CIRCLE_PROJECT_REPONAME" == "angular" && \
-    ! -v CIRCLE_PULL_REQUEST ]]; then
+    ! -v CIRCLE_PR_NUMBER ]]; then
   ORG="angular"
   # $KEY is set on CI only for non-PR builds. See /.circleci/README.md
   openssl aes-256-cbc -d -in .circleci/github_token -k "${KEY}" -out "${HOME}/.git_credentials"
