@@ -6,13 +6,15 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injectable, InjectionToken, StaticProvider} from '../di';
+import {Injectable, InjectionToken, StaticProvider, inject} from '../di';
+import {defineInjectable} from '../di/defs';
 import {MissingTranslationStrategy} from '../i18n/tokens';
 import {ViewEncapsulation} from '../metadata';
 import {Type} from '../type';
 
 import {ComponentFactory} from './component_factory';
 import {NgModuleFactory} from './ng_module_factory';
+
 
 
 /**
@@ -41,8 +43,17 @@ function _throwError() {
  * of components.
  *
  */
-@Injectable()
 export class Compiler {
+  // `ngInjectableDef` is required in core-level code because it sits behind
+  // the injector and any code the loads it inside may run into a dependency
+  // loop (because Injectable is also in core. Do not use the code below
+  // (use @Injectable({ providedIn, factory }))  instead...
+  /**
+   * @internal
+   * @nocollapse
+   */
+  static ngInjectableDef = defineInjectable({providedIn: 'root', factory: () => new Compiler()});
+
   /**
    * Compiles the given NgModule and all of its components. All templates of the components listed
    * in `entryComponents` have to be inlined.
