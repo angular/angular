@@ -11,4 +11,9 @@ describe('cli-hello-world App', () => {
     page.navigateTo();
     expect(page.getParagraphText()).toEqual('Welcome to app!');
   });
+
+  it('the percent pipe should work', () => {
+    page.navigateTo();
+    expect(page.getPipeContent()).toEqual('100 % awesome');
+  })
 });

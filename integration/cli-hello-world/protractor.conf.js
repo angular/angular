@@ -9,14 +9,16 @@ exports.config = {
     './e2e/**/*.e2e-spec.ts'
   ],
   capabilities: {
-    'browserName': 'chrome',
+    browserName: 'chrome',
     chromeOptions: {
+      binary: process.env.CHROME_BIN,
       args: ['--no-sandbox']
     }
   },
   directConnect: true,
-  baseUrl: 'http://localhost:4200/',
+  baseUrl: 'http://localhost:8080/',
   framework: 'jasmine',
+  useAllAngular2AppRoots: true,
   jasmineNodeOpts: {
     showColors: true,
     defaultTimeoutInterval: 30000,

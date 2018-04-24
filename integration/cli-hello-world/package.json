@@ -3,12 +3,16 @@
   "version": "0.0.0",
   "license": "MIT",
   "scripts": {
-    "ng": "ng",
-    "start": "ng serve",
     "build": "ng build --prod --progress false",
-    "test": "ng test",
+    "e2e": "ng e2e",
     "lint": "ng lint",
-    "e2e": "ng e2e"
+    "ng": "ng",
+    "postbuild": "concurrently \"yarn run serve\" \"yarn run protractor\" --kill-others --success first",
+    "postinstall": "webdriver-manager update --gecko false --standalone false $CHROMEDRIVER_VERSION_ARG",
+    "protractor": "protractor protractor.conf.js",
+    "serve": "lite-server -c e2e/browser.config.json",
+    "start": "ng serve",
+    "test": "ng test"
   },
   "private": true,
   "dependencies": {
@@ -21,19 +25,21 @@
     "@angular/platform-browser": "file:../../dist/packages-dist/platform-browser",
     "@angular/platform-browser-dynamic": "file:../../dist/packages-dist/platform-browser-dynamic",
     "@angular/router": "file:../../dist/packages-dist/router",
+    "concurrently": "3.4.0",
     "core-js": "file:../../node_modules/core-js",
+    "lite-server": "2.2.2",
     "rxjs": "file:../../node_modules/rxjs",
     "zone.js": "file:../../node_modules/zone.js"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "~0.5.0",
-    "@angular/cli": "^6.0.0-rc.0",
+    "@angular/cli": "^6.0.0-rc.5",
     "@angular/compiler-cli": "file:../../dist/packages-dist/compiler-cli",
     "@angular/language-service": "file:../../dist/packages-dist/language-service",
     "@types/jasmine": "~2.8.3",
     "@types/jasminewd2": "~2.0.2",
     "@types/node": "~6.0.60",
-    "codelyzer": "^4.0.1",
+    "codelyzer": "^4.3.0",
     "jasmine-core": "~2.8.0",
     "jasmine-spec-reporter": "~4.2.1",
     "karma": "~2.0.0",
@@ -41,7 +47,7 @@
     "karma-coverage-istanbul-reporter": "^1.2.1",
     "karma-jasmine": "~1.1.0",
     "karma-jasmine-html-reporter": "^0.2.2",
-    "protractor": "~5.1.2",
+    "protractor": "file:../../node_modules/protractor",
     "ts-node": "~4.1.0",
     "tslint": "~5.9.1",
     "typescript": "file:../../node_modules/typescript"
