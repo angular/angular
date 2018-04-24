@@ -17,8 +17,6 @@ import {ElementSchemaRegistry} from '../schema/element_schema_registry';
 import {CssSelector} from '../selector';
 import {splitAtColon, splitAtPeriod} from '../util';
 
-import {BoundElementPropertyAst, PropertyBindingType} from './template_ast';
-
 const PROPERTY_PARTS_SEPARATOR = '.';
 const ATTRIBUTE_PREFIX = 'attr';
 const CLASS_PREFIX = 'class';

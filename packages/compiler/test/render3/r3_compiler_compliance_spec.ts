@@ -1022,8 +1022,8 @@ describe('compiler compliance', () => {
             type: LifecycleComp,
             selectors: [['lifecycle-comp']],
             factory: function LifecycleComp_Factory() { return new LifecycleComp(); },
-            template: function LifecycleComp_Template(rf: IDENT, ctx: IDENT) {},
             inputs: {nameMin: 'name'},
+            template: function LifecycleComp_Template(rf: IDENT, ctx: IDENT) {},
             features: [$r3$.ɵNgOnChangesFeature(LifecycleComp)]
           });`;
 
