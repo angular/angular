@@ -2,6 +2,29 @@
 
 set -u -e -o pipefail
 
+# Run the bazel build but copy artifacts to the dist/packages-dist layout.
+./scripts/build-packages-dist.sh
+exit 0
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#####
+# Legacy build.sh content follows:
+######
+
 readonly currentDir=$(cd $(dirname $0); pwd)
 source ${currentDir}/scripts/ci/_travis-fold.sh
 
