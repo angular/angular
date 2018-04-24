@@ -21,7 +21,7 @@ import {Identifiers, createTokenForExternalReference, createTokenForReference} f
 import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from '../../src/ml_parser/interpolation_config';
 import {noUndefined} from '../../src/util';
 import {MockSchemaRegistry} from '../../testing';
-import {unparse} from '../expression_parser/unparser';
+import {unparse} from '../expression_parser/utils/unparser';
 import {TEST_COMPILER_PROVIDERS} from '../test_bindings';
 
 const someModuleUrl = 'package:someModule';
@@ -139,12 +139,12 @@ class TemplateHumanizer implements TemplateAstVisitor {
 
   visitNgContent(ast: NgContentAst, context: any): any {
     const res = [NgContentAst];
-    this.result.push(this._appendContext(ast, res));
+    this.result.push(this._appendSourceSpan(ast, res));
     return null;
   }
   visitEmbeddedTemplate(ast: EmbeddedTemplateAst, context: any): any {
     const res = [EmbeddedTemplateAst];
-    this.result.push(this._appendContext(ast, res));
+    this.result.push(this._appendSourceSpan(ast, res));
     templateVisitAll(this, ast.attrs);
     templateVisitAll(this, ast.outputs);
     templateVisitAll(this, ast.references);
@@ -155,7 +155,7 @@ class TemplateHumanizer implements TemplateAstVisitor {
   }
   visitElement(ast: ElementAst, context: any): any {
     const res = [ElementAst, ast.name];
-    this.result.push(this._appendContext(ast, res));
+    this.result.push(this._appendSourceSpan(ast, res));
     templateVisitAll(this, ast.attrs);
     templateVisitAll(this, ast.inputs);
     templateVisitAll(this, ast.outputs);
@@ -166,18 +166,18 @@ class TemplateHumanizer implements TemplateAstVisitor {
   }
   visitReference(ast: ReferenceAst, context: any): any {
     const res = [ReferenceAst, ast.name, ast.value];
-    this.result.push(this._appendContext(ast, res));
+    this.result.push(this._appendSourceSpan(ast, res));
     return null;
   }
   visitVariable(ast: VariableAst, context: any): any {
     const res = [VariableAst, ast.name, ast.value];
-    this.result.push(this._appendContext(ast, res));
+    this.result.push(this._appendSourceSpan(ast, res));
     return null;
   }
   visitEvent(ast: BoundEventAst, context: any): any {
     const res =
         [BoundEventAst, ast.name, ast.target, unparse(ast.handler, this.interpolationConfig)];
-    this.result.push(this._appendContext(ast, res));
+    this.result.push(this._appendSourceSpan(ast, res));
     return null;
   }
   visitElementProperty(ast: BoundElementPropertyAst, context: any): any {
@@ -185,27 +185,27 @@ class TemplateHumanizer implements TemplateAstVisitor {
       BoundElementPropertyAst, ast.type, ast.name, unparse(ast.value, this.interpolationConfig),
       ast.unit
     ];
-    this.result.push(this._appendContext(ast, res));
+    this.result.push(this._appendSourceSpan(ast, res));
     return null;
   }
   visitAttr(ast: AttrAst, context: any): any {
     const res = [AttrAst, ast.name, ast.value];
-    this.result.push(this._appendContext(ast, res));
+    this.result.push(this._appendSourceSpan(ast, res));
     return null;
   }
   visitBoundText(ast: BoundTextAst, context: any): any {
     const res = [BoundTextAst, unparse(ast.value, this.interpolationConfig)];
-    this.result.push(this._appendContext(ast, res));
+    this.result.push(this._appendSourceSpan(ast, res));
     return null;
   }
   visitText(ast: TextAst, context: any): any {
     const res = [TextAst, ast.value];
-    this.result.push(this._appendContext(ast, res));
+    this.result.push(this._appendSourceSpan(ast, res));
     return null;
   }
   visitDirective(ast: DirectiveAst, context: any): any {
     const res = [DirectiveAst, ast.directive];
-    this.result.push(this._appendContext(ast, res));
+    this.result.push(this._appendSourceSpan(ast, res));
     templateVisitAll(this, ast.inputs);
     templateVisitAll(this, ast.hostProperties);
     templateVisitAll(this, ast.hostEvents);
@@ -215,11 +215,11 @@ class TemplateHumanizer implements TemplateAstVisitor {
     const res = [
       BoundDirectivePropertyAst, ast.directiveName, unparse(ast.value, this.interpolationConfig)
     ];
-    this.result.push(this._appendContext(ast, res));
+    this.result.push(this._appendSourceSpan(ast, res));
     return null;
   }
 
-  private _appendContext(ast: TemplateAst, input: any[]): any[] {
+  private _appendSourceSpan(ast: TemplateAst, input: any[]): any[] {
     if (!this.includeSourceSpan) return input;
     input.push(ast.sourceSpan !.toString());
     return input;
@@ -1965,14 +1965,13 @@ Property binding a not used by any directive on an embedded template. Make sure 
 
       describe('<link rel="stylesheet">', () => {
 
-        it('should keep <link rel="stylesheet"> elements if they have an absolute non package: url',
-           () => {
-             expect(humanizeTplAst(parse('<link rel="stylesheet" href="http://someurl">a', [])))
-                 .toEqual([
-                   [ElementAst, 'link'], [AttrAst, 'rel', 'stylesheet'],
-                   [AttrAst, 'href', 'http://someurl'], [TextAst, 'a']
-                 ]);
-           });
+        it('should keep <link rel="stylesheet"> elements if they have an absolute url', () => {
+          expect(humanizeTplAst(parse('<link rel="stylesheet" href="http://someurl">a', [])))
+              .toEqual([
+                [ElementAst, 'link'], [AttrAst, 'rel', 'stylesheet'],
+                [AttrAst, 'href', 'http://someurl'], [TextAst, 'a']
+              ]);
+        });
 
         it('should keep <link rel="stylesheet"> elements if they have no uri', () => {
           expect(humanizeTplAst(parse('<link rel="stylesheet">a', [
