@@ -11,7 +11,7 @@ import {CompileReflector} from '../../compile_reflector';
 import {BindingForm, BuiltinFunctionCall, LocalResolver, convertActionBinding, convertPropertyBinding} from '../../compiler_util/expression_converter';
 import {ConstantPool} from '../../constant_pool';
 import * as core from '../../core';
-import {AST, AstMemoryEfficientTransformer, BindingPipe, BoundElementBindingType, FunctionCall, ImplicitReceiver, LiteralArray, LiteralMap, LiteralPrimitive, PropertyRead} from '../../expression_parser/ast';
+import {AST, AstMemoryEfficientTransformer, BindingPipe, BindingType, FunctionCall, ImplicitReceiver, LiteralArray, LiteralMap, LiteralPrimitive, PropertyRead} from '../../expression_parser/ast';
 import * as o from '../../output/output_ast';
 import {ParseSourceSpan} from '../../parse_util';
 import {CssSelector, SelectorMatcher} from '../../selector';
@@ -23,10 +23,10 @@ import {R3QueryMetadata} from './api';
 import {CONTEXT_NAME, I18N_ATTR, I18N_ATTR_PREFIX, ID_SEPARATOR, IMPLICIT_REFERENCE, MEANING_SEPARATOR, REFERENCE_PREFIX, RENDER_FLAGS, TEMPORARY_NAME, asLiteral, getQueryPredicate, invalid, mapToExpression, noop, temporaryAllocator, trimTrailingNulls, unsupported} from './util';
 
 const BINDING_INSTRUCTION_MAP: {[type: number]: o.ExternalReference} = {
-  [BoundElementBindingType.Property]: R3.elementProperty,
-  [BoundElementBindingType.Attribute]: R3.elementAttribute,
-  [BoundElementBindingType.Class]: R3.elementClassNamed,
-  [BoundElementBindingType.Style]: R3.elementStyleNamed,
+  [BindingType.Property]: R3.elementProperty,
+  [BindingType.Attribute]: R3.elementAttribute,
+  [BindingType.Class]: R3.elementClassNamed,
+  [BindingType.Style]: R3.elementStyleNamed,
 };
 
 export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver {
@@ -331,7 +331,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
 
     // Generate element input bindings
     element.inputs.forEach((input: t.BoundAttribute) => {
-      if (input.type === BoundElementBindingType.Animation) {
+      if (input.type === BindingType.Animation) {
         this._unsupported('animations');
       }
       const convertedBinding = this.convertPropertyBinding(implicit, input.value);
@@ -431,7 +431,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
   // These should be handled in the template or element directly.
   readonly visitReference = invalid;
   readonly visitVariable = invalid;
-  readonly visitAttribute = invalid;
+  readonly visitTextAttribute = invalid;
   readonly visitBoundAttribute = invalid;
   readonly visitBoundEvent = invalid;
 
