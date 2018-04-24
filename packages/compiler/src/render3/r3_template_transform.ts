@@ -111,9 +111,12 @@ export class HtmlToTemplateTransform implements html.Visitor {
 
         inlineTemplateSourceSpan = attribute.valueSpan || attribute.sourceSpan;
 
+        const parsedVariables: ParsedVariable[] = [];
         this.bindingParser.parseInlineTemplateBinding(
             templateKey, templateValue, attribute.sourceSpan, templateMatchableAttributes,
-            templateParsedProperties, templateVariables);
+            templateParsedProperties, parsedVariables);
+        templateVariables.push(
+            ...parsedVariables.map(v => new t.Variable(v.name, v.value, v.sourceSpan)));
       } else {
         // Check for variables, events, property bindings, interpolation
         hasBinding = this.parseAttribute(
@@ -271,7 +274,6 @@ export class HtmlToTemplateTransform implements html.Visitor {
 
     return hasBinding;
   }
-
 
   private parseVariable(
       identifier: string, value: string, sourceSpan: ParseSourceSpan, variables: t.Variable[]) {
