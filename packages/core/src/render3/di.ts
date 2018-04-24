@@ -178,7 +178,8 @@ export function diPublic(def: DirectiveDef<any>): void {
  * @returns The instance found
  */
 export function directiveInject<T>(token: Type<T>): T;
-export function directiveInject<T>(token: Type<T>, flags?: InjectFlags): T|null;
+export function directiveInject<T>(token: Type<T>, flags: InjectFlags.Optional): T|null;
+export function directiveInject<T>(token: Type<T>, flags: InjectFlags): T;
 export function directiveInject<T>(token: Type<T>, flags = InjectFlags.Default): T|null {
   return getOrCreateInjectable<T>(getOrCreateNodeInjector(), token, flags);
 }
@@ -329,8 +330,8 @@ function getClosestComponentAncestor(node: LViewNode | LElementNode): LElementNo
  * @param flags Injection flags (e.g. CheckParent)
  * @returns The instance found
  */
-export function getOrCreateInjectable<T>(di: LInjector, token: Type<T>, flags?: InjectFlags): T|
-    null {
+export function getOrCreateInjectable<T>(
+    di: LInjector, token: Type<T>, flags: InjectFlags = InjectFlags.Default): T|null {
   const bloomHash = bloomHashBit(token);
 
   // If the token has a bloom hash, then it is a directive that is public to the injection system
@@ -349,7 +350,7 @@ export function getOrCreateInjectable<T>(di: LInjector, token: Type<T>, flags?: 
     while (injector) {
       // Get the closest potential matching injector (upwards in the injector tree) that
       // *potentially* has the token.
-      injector = bloomFindPossibleInjector(injector, bloomHash);
+      injector = bloomFindPossibleInjector(injector, bloomHash, flags);
 
       // If no injector is found, we *know* that there is no ancestor injector that contains the
       // token, so we abort.
@@ -360,11 +361,11 @@ export function getOrCreateInjectable<T>(di: LInjector, token: Type<T>, flags?: 
       // At this point, we have an injector which *may* contain the token, so we step through the
       // directives associated with the injector's corresponding node to get the directive instance.
       const node = injector.node;
-      const flags = node.tNode !.flags;
-      const count = flags & TNodeFlags.DirectiveCountMask;
+      const nodeFlags = node.tNode !.flags;
+      const count = nodeFlags & TNodeFlags.DirectiveCountMask;
 
       if (count !== 0) {
-        const start = flags >> TNodeFlags.DirectiveStartingIndexShift;
+        const start = nodeFlags >> TNodeFlags.DirectiveStartingIndexShift;
         const end = start + count;
         const defs = node.view.tView.directives !;
 
@@ -385,15 +386,19 @@ export function getOrCreateInjectable<T>(di: LInjector, token: Type<T>, flags?: 
         return instance;
       }
 
-      // The def wasn't found anywhere on this node, so it might be a false positive.
-      // Traverse up the tree and continue searching.
-      injector = injector.parent;
+      // The def wasn't found anywhere on this node, so it was a false positive.
+      // If flags permit, traverse up the tree and continue searching.
+      if (flags & InjectFlags.Self || flags & InjectFlags.Host && !sameHostView(injector)) {
+        injector = null;
+      } else {
+        injector = injector.parent;
+      }
     }
   }
 
   // No directive was found for the given token.
-  // TODO: implement optional, check-self, and check-parent.
-  throw new Error('Implement');
+  if (flags & InjectFlags.Optional) return null;
+  throw new Error(`Injector: NOT_FOUND [${stringify(token)}]`);
 }
 
 function searchMatchesQueuedForCreation<T>(node: LNode, token: any): T|null {
@@ -443,10 +448,11 @@ function bloomHashBit(type: Type<any>): number|null {
  *
  * @param injector The starting node injector to check
  * @param  bloomBit The bit to check in each injector's bloom filter
+ * @param  flags The injection flags for this injection site (e.g. Optional or SkipSelf)
  * @returns An injector that might have the directive
  */
-export function bloomFindPossibleInjector(startInjector: LInjector, bloomBit: number): LInjector|
-    null {
+export function bloomFindPossibleInjector(
+    startInjector: LInjector, bloomBit: number, flags: InjectFlags): LInjector|null {
   // Create a mask that targets the specific bit associated with the directive we're looking for.
   // JS bit operations are 32 bits, so this will be a number between 2^0 and 2^31, corresponding
   // to bit positions 0 - 31 in a 32 bit integer.
@@ -454,7 +460,8 @@ export function bloomFindPossibleInjector(startInjector: LInjector, bloomBit: nu
 
   // Traverse up the injector tree until we find a potential match or until we know there *isn't* a
   // match.
-  let injector: LInjector|null = startInjector;
+  let injector: LInjector|null =
+      flags & InjectFlags.SkipSelf ? startInjector.parent ! : startInjector;
   while (injector) {
     // Our bloom filter size is 256 bits, which is eight 32-bit bloom filter buckets:
     // bf0 = [0 - 31], bf1 = [32 - 63], bf2 = [64 - 95], bf3 = [96 - 127], etc.
@@ -472,6 +479,8 @@ export function bloomFindPossibleInjector(startInjector: LInjector, bloomBit: nu
     // this injector is a potential match.
     if ((value & mask) === mask) {
       return injector;
+    } else if (flags & InjectFlags.Self || flags & InjectFlags.Host && !sameHostView(injector)) {
+      return null;
     }
 
     // If the current injector does not have the directive, check the bloom filters for the ancestor
@@ -489,6 +498,16 @@ export function bloomFindPossibleInjector(startInjector: LInjector, bloomBit: nu
     injector = (value & mask) ? injector.parent : null;
   }
   return null;
+}
+
+/**
+ * Checks whether the current injector and its parent are in the same host view.
+ *
+ * This is necessary to support @Host() decorators. If @Host() is set, we should stop searching once
+ * the injector and its parent view don't match because it means we'd cross the view boundary.
+ */
+function sameHostView(injector: LInjector): boolean {
+  return !!injector.parent && injector.parent.node.view === injector.node.view;
 }
 
 export class ReadFromInjectorFn<T> {
