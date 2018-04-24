@@ -1274,16 +1274,16 @@ describe('di', () => {
         bloomAdd(di, { __NG_ELEMENT_ID__: 223 } as any);
         bloomAdd(di, { __NG_ELEMENT_ID__: 255 } as any);
 
-        expect(bloomFindPossibleInjector(di, 0, 0)).toEqual(di);
-        expect(bloomFindPossibleInjector(di, 1, 0)).toEqual(null);
-        expect(bloomFindPossibleInjector(di, 32, 0)).toEqual(di);
-        expect(bloomFindPossibleInjector(di, 64, 0)).toEqual(di);
-        expect(bloomFindPossibleInjector(di, 96, 0)).toEqual(di);
-        expect(bloomFindPossibleInjector(di, 127, 0)).toEqual(di);
-        expect(bloomFindPossibleInjector(di, 161, 0)).toEqual(di);
-        expect(bloomFindPossibleInjector(di, 188, 0)).toEqual(di);
-        expect(bloomFindPossibleInjector(di, 223, 0)).toEqual(di);
-        expect(bloomFindPossibleInjector(di, 255, 0)).toEqual(di);
+        expect(bloomFindPossibleInjector(di, 0, InjectFlags.Default)).toEqual(di);
+        expect(bloomFindPossibleInjector(di, 1, InjectFlags.Default)).toEqual(null);
+        expect(bloomFindPossibleInjector(di, 32, InjectFlags.Default)).toEqual(di);
+        expect(bloomFindPossibleInjector(di, 64, InjectFlags.Default)).toEqual(di);
+        expect(bloomFindPossibleInjector(di, 96, InjectFlags.Default)).toEqual(di);
+        expect(bloomFindPossibleInjector(di, 127, InjectFlags.Default)).toEqual(di);
+        expect(bloomFindPossibleInjector(di, 161, InjectFlags.Default)).toEqual(di);
+        expect(bloomFindPossibleInjector(di, 188, InjectFlags.Default)).toEqual(di);
+        expect(bloomFindPossibleInjector(di, 223, InjectFlags.Default)).toEqual(di);
+        expect(bloomFindPossibleInjector(di, 255, InjectFlags.Default)).toEqual(di);
       });
     });
 

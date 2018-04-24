@@ -178,8 +178,8 @@ export function diPublic(def: DirectiveDef<any>): void {
  * @returns The instance found
  */
 export function directiveInject<T>(token: Type<T>): T;
-export function directiveInject<T>(token: Type<T>, flags: InjectFlags): T;
 export function directiveInject<T>(token: Type<T>, flags: InjectFlags.Optional): T|null;
+export function directiveInject<T>(token: Type<T>, flags: InjectFlags): T;
 export function directiveInject<T>(token: Type<T>, flags = InjectFlags.Default): T|null {
   return getOrCreateInjectable<T>(getOrCreateNodeInjector(), token, flags);
 }
