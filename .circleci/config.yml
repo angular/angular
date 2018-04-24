@@ -36,7 +36,7 @@ anchor_1: &job_defaults
 # Similar to travis behavior, but not quite the same.
 # See https://discuss.circleci.com/t/1662
 anchor_2: &post_checkout
-  post: git pull --ff-only origin "refs/pull/${CIRCLE_PULL_REQUEST//*pull\//}/merge"
+  post: git log --oneline -10 && git pull --ff-only origin "refs/pull/${CIRCLE_PULL_REQUEST//*pull\//}/merge"
 
 version: 2
 jobs:
@@ -45,6 +45,7 @@ jobs:
     steps:
       - checkout:
           <<: *post_checkout
+      - run: echo "CIRCLE_COMPARE_URL = $CIRCLE_COMPARE_URL"
 
       # Check BUILD.bazel formatting before we have a node_modules directory
       # Then we don't need any exclude pattern to avoid checking those files
