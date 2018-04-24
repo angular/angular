@@ -131,7 +131,7 @@ function getUseType(clazz: ts.ClassDeclaration, checker: ts.TypeChecker): IvyInj
       }
     });
     const token = new WrappedNodeExpr(tokenExpr);
-    useType.push({token, optional, self, skipSelf});
+    useType.push({token, optional, self, skipSelf, attribute: false});
   });
   return useType;
 }
@@ -142,6 +142,7 @@ function getDep(dep: ts.Expression, checker: ts.TypeChecker): IvyInjectableDep {
     optional: false,
     self: false,
     skipSelf: false,
+    attribute: false,
   };
 
   function maybeUpdateDecorator(dec: ts.Identifier, token?: ts.Expression): void {

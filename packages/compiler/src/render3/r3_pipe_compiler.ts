@@ -12,8 +12,9 @@ import {DefinitionKind} from '../constant_pool';
 import * as o from '../output/output_ast';
 import {OutputContext, error} from '../util';
 
+import {compileFactoryFunction, dependenciesFromGlobalMetadata} from './r3_factory';
 import {Identifiers as R3} from './r3_identifiers';
-import {createFactory} from './r3_view_compiler_local';
+
 
 /**
  * Write a pipe definition to the output context.
@@ -30,7 +31,14 @@ export function compilePipe(
       {key: 'type', value: outputCtx.importExpr(pipe.type.reference), quoted: false});
 
   // e.g. `factory: function MyPipe_Factory() { return new MyPipe(); }`
-  const templateFactory = createFactory(pipe.type, outputCtx, reflector, []);
+  const deps = dependenciesFromGlobalMetadata(pipe.type, outputCtx, reflector);
+  const templateFactory = compileFactoryFunction({
+    name: identifierName(pipe.type) !,
+    fnOrClass: outputCtx.importExpr(pipe.type.reference), deps,
+    useNew: true,
+    injectFn: R3.directiveInject,
+    useOptionalParam: false,
+  });
   definitionMapValues.push({key: 'factory', value: templateFactory, quoted: false});
 
   // e.g. `pure: true`

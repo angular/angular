@@ -90,8 +90,18 @@ export class Identifiers {
 
   static defineComponent: o.ExternalReference = {name: 'ɵdefineComponent', moduleName: CORE};
 
+  static ComponentDef: o.ExternalReference = {
+    name: 'ComponentDef',
+    moduleName: CORE,
+  };
+
   static defineDirective: o.ExternalReference = {
     name: 'ɵdefineDirective',
+    moduleName: CORE,
+  };
+
+  static DirectiveDef: o.ExternalReference = {
+    name: 'DirectiveDef',
     moduleName: CORE,
   };
 
