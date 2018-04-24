@@ -79,6 +79,5 @@ node_js:
 #   # all the scripts under this line will not quickly abort in case ${TRAVIS_TEST_RESULT} is 1 (job failure)
 #   - ./scripts/ci/cleanup.sh
 #   - ./scripts/ci/print-logs.sh
-script:
-  # Some comment.
-  - echo "TRAVIS_COMMIT_RANGE: $TRAVIS_COMMIT_RANGE"
+# Some comment
+script: echo TRAVIS_COMMIT_RANGE is $TRAVIS_COMMIT_RANGE
