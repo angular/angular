@@ -467,6 +467,7 @@ export function inject<T>(token: Type<T>| InjectionToken<T>, flags = InjectFlags
       return injectableDef.value === undefined ? injectableDef.value = injectableDef.factory() :
                                                  injectableDef.value;
     }
+    if (flags & InjectFlags.Optional) return null;
     throw new Error(`Injector: NOT_FOUND [${stringify(token)}]`);
   } else {
     return _currentInjector.get(token, flags & InjectFlags.Optional ? null : undefined, flags);
