@@ -2021,6 +2021,7 @@ describe('ngc transformer command-line', () => {
       const exitCode = main(['-p', path.join(basePath, 'tsconfig.json')]);
       expect(exitCode).toBe(0, 'Compile failed');
       expect(emittedFile('hello-world.js')).toContain('ngComponentDef');
+      expect(emittedFile('hello-world.js')).toContain('HelloWorldComponent_Factory');
     });
 
     it('should emit an injection of a string token', () => {
