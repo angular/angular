@@ -28,13 +28,15 @@ const STAR_SELECTOR = '.ng-star-inserted';
 const EMPTY_PLAYER_ARRAY: TransitionAnimationPlayer[] = [];
 const NULL_REMOVAL_STATE: ElementAnimationState = {
   namespaceId: '',
-  setForRemoval: null,
+  setForRemoval: false,
+  setForMove: false,
   hasAnimation: false,
   removedBeforeQueried: false
 };
 const NULL_REMOVED_QUERIED_STATE: ElementAnimationState = {
   namespaceId: '',
-  setForRemoval: null,
+  setForMove: false,
+  setForRemoval: false,
   hasAnimation: false,
   removedBeforeQueried: true
 };
@@ -58,7 +60,8 @@ export interface QueueInstruction {
 export const REMOVAL_FLAG = '__ng_removed';
 
 export interface ElementAnimationState {
-  setForRemoval: any;
+  setForRemoval: boolean;
+  setForMove: boolean;
   hasAnimation: boolean;
   namespaceId: string;
   removedBeforeQueried: boolean;
@@ -660,6 +663,11 @@ export class TransitionAnimationEngine {
     const details = element[REMOVAL_FLAG] as ElementAnimationState;
     if (details && details.setForRemoval) {
       details.setForRemoval = false;
+      details.setForMove = true;
+      const index = this.collectedLeaveElements.indexOf(element);
+      if (index >= 0) {
+        this.collectedLeaveElements.splice(index, 1);
+      }
     }
 
     // in the event that the namespaceId is blank then the caller
@@ -946,9 +954,18 @@ export class TransitionAnimationEngine {
       const ns = this._namespaceList[i];
       ns.drainQueuedTransitions(microtaskId).forEach(entry => {
         const player = entry.player;
+        const element = entry.element;
         allPlayers.push(player);
 
-        const element = entry.element;
+        if (this.collectedEnterElements.length) {
+          const details = element[REMOVAL_FLAG] as ElementAnimationState;
+          // move animations are currently not supported...
+          if (details && details.setForMove) {
+            player.destroy();
+            return;
+          }
+        }
+
         if (!bodyNode || !this.driver.containsElement(bodyNode, element)) {
           player.destroy();
           return;

@@ -1453,6 +1453,117 @@ const DEFAULT_COMPONENT_ID = '1';
             .toBeTruthy();
       });
 
+      it('should retain state styles when the underlying DOM structure changes even if there are no insert/remove animations',
+         () => {
+           @Component({
+             selector: 'ani-cmp',
+             template: `
+            <div class="item" *ngFor="let item of items" [@color]="colorExp">
+              {{ item }}
+            </div>
+          `,
+             animations: [trigger('color', [state('green', style({backgroundColor: 'green'}))])]
+           })
+           class Cmp {
+             public colorExp = 'green';
+             public items = [0, 1, 2, 3];
+
+             reorder() {
+               const temp = this.items[0];
+               this.items[0] = this.items[1];
+               this.items[1] = temp;
+             }
+           }
+
+           TestBed.configureTestingModule({declarations: [Cmp]});
+
+           const fixture = TestBed.createComponent(Cmp);
+           const cmp = fixture.componentInstance;
+           fixture.detectChanges();
+
+           let elements: HTMLElement[] = fixture.nativeElement.querySelectorAll('.item');
+           assertBackgroundColor(elements[0], 'green');
+           assertBackgroundColor(elements[1], 'green');
+           assertBackgroundColor(elements[2], 'green');
+           assertBackgroundColor(elements[3], 'green');
+
+           elements[0].title = '0a';
+           elements[1].title = '1a';
+
+           cmp.reorder();
+           fixture.detectChanges();
+
+           elements = fixture.nativeElement.querySelectorAll('.item');
+           assertBackgroundColor(elements[0], 'green');
+           assertBackgroundColor(elements[1], 'green');
+           assertBackgroundColor(elements[2], 'green');
+           assertBackgroundColor(elements[3], 'green');
+
+           function assertBackgroundColor(element: HTMLElement, color: string) {
+             expect(element.style.getPropertyValue('background-color')).toEqual(color);
+           }
+         });
+
+      it('should retain state styles when the underlying DOM structure changes even if there are insert/remove animations',
+         () => {
+           @Component({
+             selector: 'ani-cmp',
+             template: `
+            <div class="item" *ngFor="let item of items" [@color]="colorExp">
+              {{ item }}
+            </div>
+          `,
+             animations: [trigger(
+                 'color',
+                 [
+                   transition('* => *', animate(500)),
+                   state('green', style({backgroundColor: 'green'}))
+                 ])]
+           })
+           class Cmp {
+             public colorExp = 'green';
+             public items = [0, 1, 2, 3];
+
+             reorder() {
+               const temp = this.items[0];
+               this.items[0] = this.items[1];
+               this.items[1] = temp;
+             }
+           }
+
+           TestBed.configureTestingModule({declarations: [Cmp]});
+
+           const fixture = TestBed.createComponent(Cmp);
+           const cmp = fixture.componentInstance;
+           fixture.detectChanges();
+
+           getLog().forEach(p => p.finish());
+
+           let elements: HTMLElement[] = fixture.nativeElement.querySelectorAll('.item');
+           assertBackgroundColor(elements[0], 'green');
+           assertBackgroundColor(elements[1], 'green');
+           assertBackgroundColor(elements[2], 'green');
+           assertBackgroundColor(elements[3], 'green');
+
+           elements[0].title = '0a';
+           elements[1].title = '1a';
+
+           cmp.reorder();
+           fixture.detectChanges();
+
+           getLog().forEach(p => p.finish());
+
+           elements = fixture.nativeElement.querySelectorAll('.item');
+           assertBackgroundColor(elements[0], 'green');
+           assertBackgroundColor(elements[1], 'green');
+           assertBackgroundColor(elements[2], 'green');
+           assertBackgroundColor(elements[3], 'green');
+
+           function assertBackgroundColor(element: HTMLElement, color: string) {
+             expect(element.style.getPropertyValue('background-color')).toEqual(color);
+           }
+         });
+
       it('should animate removals of nodes to the `void` state for each animation trigger, but treat all auto styles as pre styles',
          () => {
            @Component({
