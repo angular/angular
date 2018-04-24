@@ -80,4 +80,5 @@ node_js:
 #   - ./scripts/ci/cleanup.sh
 #   - ./scripts/ci/print-logs.sh
 script:
+  # Some comment.
   - echo "TRAVIS_COMMIT_RANGE: $TRAVIS_COMMIT_RANGE"
