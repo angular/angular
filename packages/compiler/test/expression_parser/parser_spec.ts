@@ -12,8 +12,8 @@ import {Parser, SplitInterpolation, TemplateBindingParseResult} from '@angular/c
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
 
-import {unparse} from './unparser';
-import {validate} from './validator';
+import {unparse} from './utils/unparser';
+import {validate} from './utils/validator';
 
 describe('parser', () => {
   describe('parseAction', () => {
