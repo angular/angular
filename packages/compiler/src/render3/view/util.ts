@@ -12,11 +12,8 @@ import * as t from '../r3_ast';
 
 import {R3QueryMetadata} from './api';
 
-
 /** Name of the temporary to use during data binding */
 export const TEMPORARY_NAME = '_t';
-
-
 
 /** Name of the context parameter passed into a template function */
 export const CONTEXT_NAME = 'ctx';

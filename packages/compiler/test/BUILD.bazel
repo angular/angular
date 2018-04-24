@@ -5,7 +5,6 @@ load("@build_bazel_rules_nodejs//:defs.bzl", "jasmine_node_test")
 NODE_ONLY = [
     "**/*_node_only_spec.ts",
     "aot/**/*.ts",
-    "render3/**/*.ts",
 ]
 
 UTILS = [
@@ -37,6 +36,7 @@ ts_library(
         "//packages:types",
         "//packages/common",
         "//packages/compiler",
+        "//packages/compiler/test/expression_parser/utils",
         "//packages/compiler/testing",
         "//packages/core",
         "//packages/core/testing",
@@ -58,6 +58,7 @@ ts_library(
         ":test_utils",
         "//packages/compiler",
         "//packages/compiler-cli",
+        "//packages/compiler/test/expression_parser/utils",
         "//packages/compiler/testing",
         "//packages/core",
     ],
