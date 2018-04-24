@@ -419,13 +419,13 @@ export const enum InjectFlags {
    * Specifies that an injector should retrieve a dependency from any injector until reaching the
    * host element of the current component. (Only used with Element Injector)
    */
-  Host = 1 << 0,
+  Host = 1,
   /** Don't descend into ancestors of the node requesting injection. */
-  Self = 1 << 1,
+  Self = 2,
   /** Skip the node that is requesting injection. */
-  SkipSelf = 1 << 2,
+  SkipSelf = 4,
   /** Inject `defaultValue` instead if token not found. */
-  Optional = 1 << 3,
+  Optional = 8,
 }
 
 /**

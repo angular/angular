@@ -178,7 +178,8 @@ export function diPublic(def: DirectiveDef<any>): void {
  * @returns The instance found
  */
 export function directiveInject<T>(token: Type<T>): T;
-export function directiveInject<T>(token: Type<T>, flags?: InjectFlags): T;
+export function directiveInject<T>(token: Type<T>, flags: InjectFlags): T;
+export function directiveInject<T>(token: Type<T>, flags: InjectFlags.Optional): T|null;
 export function directiveInject<T>(token: Type<T>, flags = InjectFlags.Default): T|null {
   return getOrCreateInjectable<T>(getOrCreateNodeInjector(), token, flags);
 }
@@ -387,9 +388,11 @@ export function getOrCreateInjectable<T>(
 
       // The def wasn't found anywhere on this node, so it was a false positive.
       // If flags permit, traverse up the tree and continue searching.
-      injector = flags & InjectFlags.Self || flags & InjectFlags.Host && !sameHostView(injector) ?
-          null :
-          injector.parent;
+      if (flags & InjectFlags.Self || flags & InjectFlags.Host && !sameHostView(injector)) {
+        injector = null;
+      } else {
+        injector = injector.parent;
+      }
     }
   }
 
@@ -445,6 +448,7 @@ function bloomHashBit(type: Type<any>): number|null {
  *
  * @param injector The starting node injector to check
  * @param  bloomBit The bit to check in each injector's bloom filter
+ * @param  flags The injection flags for this injection site (e.g. Optional or SkipSelf)
  * @returns An injector that might have the directive
  */
 export function bloomFindPossibleInjector(
