@@ -585,6 +585,9 @@
     "name": "resolveRendererType2"
   },
   {
+    "name": "sameHostView"
+  },
+  {
     "name": "saveNameToExportMap"
   },
   {

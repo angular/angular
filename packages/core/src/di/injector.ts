@@ -413,19 +413,19 @@ function getClosureSafeProperty<T>(objWithPropertyToExtract: T): string {
  * Injection flags for DI.
  */
 export const enum InjectFlags {
-  Default = 0,
+  Default = 0b0000,
 
   /**
    * Specifies that an injector should retrieve a dependency from any injector until reaching the
    * host element of the current component. (Only used with Element Injector)
    */
-  Host = 1 << 0,
+  Host = 0b0001,
   /** Don't descend into ancestors of the node requesting injection. */
-  Self = 1 << 1,
+  Self = 0b0010,
   /** Skip the node that is requesting injection. */
-  SkipSelf = 1 << 2,
+  SkipSelf = 0b0100,
   /** Inject `defaultValue` instead if token not found. */
-  Optional = 1 << 3,
+  Optional = 0b1000,
 }
 
 /**
@@ -467,6 +467,7 @@ export function inject<T>(token: Type<T>| InjectionToken<T>, flags = InjectFlags
       return injectableDef.value === undefined ? injectableDef.value = injectableDef.factory() :
                                                  injectableDef.value;
     }
+    if (flags & InjectFlags.Optional) return null;
     throw new Error(`Injector: NOT_FOUND [${stringify(token)}]`);
   } else {
     return _currentInjector.get(token, flags & InjectFlags.Optional ? null : undefined, flags);
