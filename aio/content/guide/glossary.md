@@ -366,6 +366,10 @@ Compare [Custom element](guide/glossary#custom-element).
 
 {@a F}
 
+## Factory Provider
+A provider that creates a new instance of a service based on dynamically generated depandent value.
+
+Read more about [Factory providers](guide/dependency-injection#factory-providers) in the [Angular Dependency Injection](guide/dependency-injection) page.
 
 {@a G}
 
@@ -380,6 +384,14 @@ An object in the Angular [dependency-injection system](guide/glossary#dependency
 that can find a named dependency in its cache or create a dependency
 with a registered [provider](guide/glossary#provider). Injectors are created for NgModules automatically as part of the bootstrap process, and inherited through the component hierarchy.
 
+## Injection token
+
+A lookup token that is associated with a dependency provider, for use with the dependency injection system. 
+These tokens can be anything - such as objects, classes, strings, etc. 
+
+When you register a provider with an injector, you associate that provider with a dependency injection token. The injector maintains an internal token-provider map that it references when asked for a dependency. The token is the key to the map.
+
+When a component requests a dependency, the injector starts to look at the component's token-provider map for providers associated with the token. If the component's injector lacks a provider, then the request is passed to the parent injector. If a provider is not found, then the request continues until Angular finds an injector that can handle the request or runs out of ancestor injectors. If it runs out of ancestors, Angular throws an error.
 
 ## Input
 
@@ -711,6 +723,8 @@ Read about how to write template expressions
 in the [Template expressions](guide/template-syntax#template-expressions) section
 of the [Template Syntax](guide/template-syntax) page.
 
+## Token
+A unique key used for efficient table lookup.  One example of using tokens in Angular is the [Injection token](guide/glossary#injection-token) used with the Dependency Injection system. 
 
 ## Transpile
 
@@ -719,6 +733,15 @@ The process of transforming code written in one form of JavaScript
 
 {@a typescript}
 
+## Tree-shaking
+
+A compilation technique that optimizes an app by finding unused code and removing it from the final bundle.
+
+## Tree-shakable provider
+
+A [provider](guide/glossary#provider) registered in the `@Injectable` decorator of the provided service. Tree-shakable provider enables the Angular compiler to execute [tree-shaking](guide/glossary#tree-shaking) on that service if the service is not actually used in the app.
+
+Read more about [Tree-shakable providers](guide/dependency-injection#providers) in the Dependency Injection page.
 
 ## TypeScript
 
