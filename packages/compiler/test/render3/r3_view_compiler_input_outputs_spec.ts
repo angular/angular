@@ -62,6 +62,7 @@ describe('compiler compliance: listen()', () => {
             componentOutput: 'componentOutput',
             originalComponentOutput: 'renamedComponentOutput'
           }
+          …
         });`;
 
     const directiveDef = `
@@ -75,6 +76,7 @@ describe('compiler compliance: listen()', () => {
           directiveOutput: 'directiveOutput',
           originalDirectiveOutput: 'renamedDirectiveOutput'
         }
+        …
       });`;
 
 

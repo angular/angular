@@ -17,7 +17,7 @@ import {removeWhitespaces} from '../../src/ml_parser/html_whitespaces';
 import * as o from '../../src/output/output_ast';
 import {compilePipe} from '../../src/render3/r3_pipe_compiler';
 import {HtmlToTemplateTransform} from '../../src/render3/r3_template_transform';
-import {compileComponent, compileDirective} from '../../src/render3/r3_view_compiler_local';
+import {compileComponentFromRender2, compileDirectiveFromRender2} from '../../src/render3/view/compiler';
 import {BindingParser} from '../../src/template_parser/binding_parser';
 import {OutputContext, escapeRegExp} from '../../src/util';
 import {MockAotCompilerHost, MockCompilerHost, MockData, MockDirectory, arrayToMockDir, expectNoDiagnostics, settings, toMockFileArray} from '../aot/test_util';
@@ -313,11 +313,11 @@ export function compile(
               const hasNgContent = transform.hasNgContent;
               const ngContentSelectors = transform.ngContentSelectors;
 
-              compileComponent(
+              compileComponentFromRender2(
                   outputCtx, directive, nodes, hasNgContent, ngContentSelectors, reflector,
                   hostBindingParser, directiveTypeBySel, pipeTypeByName);
             } else {
-              compileDirective(outputCtx, directive, reflector, hostBindingParser);
+              compileDirectiveFromRender2(outputCtx, directive, reflector, hostBindingParser);
             }
           } else if (resolver.isPipe(pipeOrDirective)) {
             const metadata = resolver.getPipeMetadata(pipeOrDirective);
