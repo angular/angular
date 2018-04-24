@@ -137,6 +137,11 @@
           "options": {
             "protractorConfig": "./protractor.conf.js",
             "devServerTarget": "cli-hello-world:serve"
+          },
+          "configurations": {
+            "production": {
+              "devServerTarget": "cli-hello-world:serve:production"
+            }
           }
         },
         "lint": {
