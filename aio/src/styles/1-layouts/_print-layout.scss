@@ -66,6 +66,11 @@
     }
 
     code-example {
+
+        .code-shell {
+            background-color: gainsboro !important;
+        }
+
         pre.lang-bash code span {
             color: $mediumgray !important;
         }
