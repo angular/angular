@@ -9,18 +9,22 @@ import {AnimationMetadata, AnimationOptions} from './animation_metadata';
 import {AnimationPlayer} from './players/animation_player';
 
 /**
- * AnimationBuilder is an injectable service that is available when the {@link
- * BrowserAnimationsModule BrowserAnimationsModule} or {@link NoopAnimationsModule
- * NoopAnimationsModule} modules are used within an application.
+ * @description An injectable service that produces an animation sequence 
+ * programmatically within an Angular component or directive.
  *
- * The purpose if this service is to produce an animation sequence programmatically within an
- * angular component or directive.
+ * @usageNotes
+ * This service is available to apps that use the {@link BrowserAnimationsModule BrowserAnimationsModule} or 
+ * {@link NoopAnimationsModule NoopAnimationsModule} modules.
  *
- * Programmatic animations are first built and then a player is created when the build animation is
- * attached to an element.
+ * - Use the 'build()` method to define an animation, using animation functions.  
+ *  -- The `build()` method returns an {@link AnimationFactory AnimationFactory}. 
+ * - When you attach the defined animation to an element, use the factory's `create()` method 
+ *   to create an {@link AnimationPlayer AnimationPlayer} instance. 
+ * - Use {@link AnimationPlayer AnimationPlayer} methods to control the animation. 
+ * 
+ * Here's an example; remember to include the {@link BrowserAnimationsModule BrowserAnimationsModule} for this to work.
  *
  * ```ts
- * // remember to include the BrowserAnimationsModule module for this to work...
  * import {AnimationBuilder} from '@angular/animations';
  *
  * class MyCmp {
@@ -40,23 +44,35 @@ import {AnimationPlayer} from './players/animation_player';
  *   }
  * }
  * ```
- *
- * When an animation is built an instance of {@link AnimationFactory AnimationFactory} will be
- * returned. Using that an {@link AnimationPlayer AnimationPlayer} can be created which can then be
- * used to start the animation.
- *
- * @experimental Animation support is experimental.
  */
 export abstract class AnimationBuilder {
+
+  /**
+   * Creates a factory instance with which to run a given animation. 
+   * 
+   * @param animation One or more animation definitions of any type,
+   *   created with animation functions.
+   * @see {@link AnimationMetadataType AnimationMetadataType}
+   */
   abstract build(animation: AnimationMetadata|AnimationMetadata[]): AnimationFactory;
 }
 
 /**
- * An instance of `AnimationFactory` is returned from {@link AnimationBuilder#build
- * AnimationBuilder.build}.
+ * Creates an {@link AnimationPlayer AnimationPlayer} that can then be
+ * used to attach an associated animation to an element and start it.
+ * 
+ * Created and returned by {@link AnimationBuilder#build AnimationBuilder.build}.
  *
- * @experimental Animation support is experimental.
  */
 export abstract class AnimationFactory {
+  /**
+   * Creates an animation player for a given element. 
+   * Use the player's methods to control the animation. 
+   * 
+   * @param element The element to be animated.
+   * @param options  Optional. An options object that can contain a delay and 
+   *    override values for developer-defined parameters.
+   * @returns An {@link AnimationPlayer AnimationPlayer} instance. 
+   */
   abstract create(element: any, options?: AnimationOptions): AnimationPlayer;
 }
