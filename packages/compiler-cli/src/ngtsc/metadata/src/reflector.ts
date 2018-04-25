@@ -172,7 +172,7 @@ function entityNameToValue(node: ts.EntityName): ts.Expression|null {
     const left = entityNameToValue(node.left);
     return left !== null ? ts.createPropertyAccess(left, node.right) : null;
   } else if (ts.isIdentifier(node)) {
-    return ts.updateIdentifier(node);
+    return ts.getMutableClone(node);
   } else {
     return null;
   }
