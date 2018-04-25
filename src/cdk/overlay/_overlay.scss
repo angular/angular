@@ -1,5 +1,3 @@
-@import '../a11y/a11y';
-
 // We want overlays to always appear over user content, so set a baseline
 // very high z-index for the overlay container, which is where we create the new
 // stacking context for all overlays.
@@ -82,9 +80,11 @@ $backdrop-animation-timing-function: cubic-bezier(0.25, 0.8, 0.25, 1) !default;
     &.cdk-overlay-backdrop-showing {
       opacity: 1;
 
-      // In high contrast mode the rgba background will become solid
-      // so we need to fall back to making it opaque using `opacity`.
-      @include cdk-high-contrast {
+      // In high contrast mode the rgba background will become solid so we need to fall back
+      // to making it opaque using `opacity`. Note that we can't use the `cdk-high-contrast`
+      // mixin, because we can't normalize the import path to the _a11y.scss both for the
+      // source and when this file is distributed. See #10908.
+      @media screen and (-ms-high-contrast: active) {
         opacity: 0.6;
       }
     }
