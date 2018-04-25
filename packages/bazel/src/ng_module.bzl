@@ -2,7 +2,7 @@
 #
 # Use of this source code is governed by an MIT-style license that can be
 # found in the LICENSE file at https://angular.io/license
-"""Implementation of the ng_module rule.
+"""Run Angular's AOT template compiler
 """
 
 load(
@@ -474,12 +474,21 @@ def _ng_module_impl(ctx):
 
 NG_MODULE_ATTRIBUTES = {
     "srcs": attr.label_list(allow_files = [".ts"]),
-    "deps": attr.label_list(aspects = DEPS_ASPECTS + [_collect_summaries_aspect]),
-    "assets": attr.label_list(allow_files = [
-        ".css",
-        # TODO(alexeagle): change this to ".ng.html" when usages updated
-        ".html",
-    ]),
+
+    # Note: DEPS_ASPECTS is already a list, we add the cast to workaround
+    # https://github.com/bazelbuild/skydoc/issues/21
+    "deps": attr.label_list(
+        doc = "Targets that are imported by this target",
+        aspects = list(DEPS_ASPECTS) + [_collect_summaries_aspect],
+    ),
+    "assets": attr.label_list(
+        doc = ".html and .css files needed by the Angular compiler",
+        allow_files = [
+            ".css",
+            # TODO(alexeagle): change this to ".ng.html" when usages updated
+            ".html",
+        ],
+    ),
     "factories": attr.label_list(
         allow_files = [".ts", ".html"],
         mandatory = False,
@@ -527,6 +536,13 @@ ng_module = rule(
     attrs = NG_MODULE_RULE_ATTRS,
     outputs = COMMON_OUTPUTS,
 )
+"""
+Run the Angular AOT template compiler.
+
+This rule extends the [ts_library] rule.
+
+[ts_library]: http://tsetse.info/api/build_defs.html#ts_library
+"""
 
 # TODO(alxhub): this rule causes legacy ngc to produce Ivy outputs from global analysis information.
 # It exists to facilitate testing of the Ivy runtime until ngtsc is mature enough to be used

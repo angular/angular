@@ -49,6 +49,14 @@ http_archive(
     sha256 = "ace8cced3b21e64a8fdad68508e9b0644201ec848ad583651719841d567fc66d",
 )
 
+http_archive(
+    name = "io_bazel_skydoc",
+    # TODO: switch to upstream when https://github.com/bazelbuild/skydoc/pull/103 is merged
+    url = "https://github.com/alexeagle/skydoc/archive/fe2e9f888d28e567fef62ec9d4a93c425526d701.zip",
+    strip_prefix = "skydoc-fe2e9f888d28e567fef62ec9d4a93c425526d701",
+    sha256 = "7bfb5545f59792a2745f2523b9eef363f9c3e7274791c030885e7069f8116016",
+)
+
 # We have a source dependency on the Devkit repository, because it's built with
 # Bazel.
 # This allows us to edit sources and have the effect appear immediately without
@@ -141,3 +149,12 @@ yarn_install(
     package_json = "//tools/http-server:package.json",
     yarn_lock = "//tools/http-server:yarn.lock",
 )
+
+##################################
+# Skylark documentation generation
+
+load("@io_bazel_rules_sass//sass:sass_repositories.bzl", "sass_repositories")
+sass_repositories()
+
+load("@io_bazel_skydoc//skylark:skylark.bzl", "skydoc_repositories")
+skydoc_repositories()
