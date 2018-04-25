@@ -71,7 +71,7 @@ function addStyleToTarget(target: any, host: Tree, asset: string, workspace: Wor
   } else if (!target.options.styles) {
     target.options.styles = [styleEntry];
   } else {
-    const existingStyles = target.options.styles.map(s => s.input);
+    const existingStyles = target.options.styles.map(s => typeof s === 'string' ? s : s.input);
     const hasGivenTheme = existingStyles.find(s => s.includes(asset));
     const hasOtherTheme = existingStyles.find(s => s.includes('material/prebuilt'));
 
