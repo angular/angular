@@ -67,12 +67,15 @@
 
     code-example {
         &.code-shell, &[language=sh], &[language=bash] {
+            background: none;
+
             .pnk, .blk, .pln, .otl, .kwd, .typ, .tag, .str, .atv, .atn, .com, .lit, .pun, .dec {
                 color: $darkgray;
             }
         }
 
         header {
+            background: none;
             border: 0.5px solid $lightgray;
             color: $darkgray;
         }
