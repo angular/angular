@@ -66,12 +66,10 @@
     }
 
     code-example {
-        pre.lang-bash code span {
-            color: $mediumgray !important;
-        }
-
-        pre.lang-sh code span {
-            color: $darkgray !important;
+        &.code-shell, &[language=sh], &[language=bash] {
+            .pnk, .blk, .pln, .otl, .kwd, .typ, .tag, .str, .atv, .atn, .com, .lit, .pun, .dec {
+                color: $darkgray;
+            }
         }
 
         header {
