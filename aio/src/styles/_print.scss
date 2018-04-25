@@ -5,6 +5,10 @@
         box-shadow: none !important;
     }
 
+    body, mat-sidenav-container {
+        background: none !important;
+    }
+
     h1 {
         height: 40px !important;
         color: $darkgray !important;
