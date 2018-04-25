@@ -179,7 +179,7 @@ ol.linenums {
 /* SHELL / TERMINAL CODE BLOCKS */
 
 code-example.code-shell, code-example[language=sh], code-example[language=bash] {
-  & .pnk, .blk,.pln, .otl, .kwd, .typ, .tag, .str, .atv, .atn, .com, .lit, .pun, .dec {
+  .pnk, .blk, .pln, .otl, .kwd, .typ, .tag, .str, .atv, .atn, .com, .lit, .pun, .dec {
     color: $codegreen;
   }
 }
