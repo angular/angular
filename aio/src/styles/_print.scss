@@ -16,7 +16,7 @@
 
     ul, ol, img, code-example, table, tr, .alert, .l-subsection, .feature {
         page-break-inside: avoid;
-    }   
+    }
 
     table tbody tr:last-child td {
         border-bottom: 1px solid $lightgray !important;
@@ -80,7 +80,7 @@
         }
     }
 
-    .content code { 
+    .content code {
         border: 0.5px solid $lightgray;
     }
 
@@ -96,7 +96,7 @@
         }
     }
 
-    .api-header label { 
+    .api-header label {
         color: $darkgray !important;
         font-weight: bold !important;
         margin: 2px !important;
