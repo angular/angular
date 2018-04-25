@@ -6,7 +6,15 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ChangeDetectionStrategy, Component, ViewEncapsulation} from '@angular/core';
+import {
+  Attribute,
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  ElementRef,
+  IterableDiffers,
+  ViewEncapsulation
+} from '@angular/core';
 import {CDK_TABLE_TEMPLATE, CdkTable} from '@angular/cdk/table';
 
 /**
@@ -24,4 +32,16 @@ import {CDK_TABLE_TEMPLATE, CdkTable} from '@angular/cdk/table';
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MatTable<T> extends CdkTable<T> { }
+export class MatTable<T> extends CdkTable<T> {
+  // TODO(andrewseguin): Remove this explicitly set constructor when the compiler knows how to
+  // properly build the es6 version of the class. Currently sets ctorParameters to empty due to a
+  // fixed bug.
+  // https://github.com/angular/tsickle/pull/760 - tsickle PR that fixed this
+  // https://github.com/angular/angular/pull/23531 - updates compiler-cli to fixed version
+  constructor(protected _differs: IterableDiffers,
+              protected _changeDetectorRef: ChangeDetectorRef,
+              protected _elementRef: ElementRef,
+              @Attribute('role') role: string) {
+    super(_differs, _changeDetectorRef, _elementRef, role);
+  }
+}

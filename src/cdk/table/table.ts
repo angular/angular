@@ -23,7 +23,8 @@ import {
   IterableDiffer,
   IterableDiffers,
   OnInit,
-  QueryList, TemplateRef,
+  QueryList,
+  TemplateRef,
   TrackByFunction,
   ViewChild,
   ViewContainerRef,
@@ -39,7 +40,7 @@ import {
   CdkRowDef
 } from './row';
 import {takeUntil} from 'rxjs/operators';
-import {of as observableOf, BehaviorSubject, Observable, Subscription, Subject} from 'rxjs';
+import {BehaviorSubject, Observable, of as observableOf, Subject, Subscription} from 'rxjs';
 import {CdkColumnDef} from './cell';
 import {
   getTableDuplicateColumnNameError,
@@ -248,9 +249,9 @@ export class CdkTable<T> implements CollectionViewer, OnInit, AfterContentChecke
    */
   @ContentChild(CdkFooterRowDef) _footerRowDef: CdkFooterRowDef;
 
-  constructor(private readonly _differs: IterableDiffers,
-              private readonly _changeDetectorRef: ChangeDetectorRef,
-              private readonly _elementRef: ElementRef,
+  constructor(protected readonly _differs: IterableDiffers,
+              protected readonly _changeDetectorRef: ChangeDetectorRef,
+              protected readonly _elementRef: ElementRef,
               @Attribute('role') role: string) {
     if (!role) {
       this._elementRef.nativeElement.setAttribute('role', 'grid');
