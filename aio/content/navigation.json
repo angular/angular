@@ -495,9 +495,20 @@
         },
 
         {
-          "url": "guide/updating",
           "title": "Updating Angular",
-          "tooltip": "Updating Angular applications and libraries to the latest version."
+          "tooltip": "Angular release practices and update resources.",
+          "children": [
+            { 
+              "url": "guide/update-planning",
+              "title": "Update Planning",
+              "tooltip": "Angular release, support, and deprecation practices."
+            },
+            { 
+              "url": "guide/updating",
+              "title": "Updating Angular",
+              "tooltip": "Updating Angular applications and libraries to the latest version."
+            }
+          ]
         },  
 
         {
