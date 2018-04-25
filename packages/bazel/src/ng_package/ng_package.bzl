@@ -2,7 +2,15 @@
 #
 # Use of this source code is governed by an MIT-style license that can be
 # found in the LICENSE file at https://angular.io/license
-"""Implementation of the ng_package rule.
+"""Package Angular libraries for npm distribution
+
+If all users of an Angular library use Bazel (e.g. internal usage in your company)
+then you should simply add your library to the `deps` of the consuming application.
+
+These rules exist for compatibility with non-Bazel consumers of your library.
+
+It packages your library following the Angular Package Format, see the
+specification of this format at https://goo.gl/jB3GVv
 """
 
 load("@build_bazel_rules_nodejs//:internal/collect_es6_sources.bzl", "collect_es6_sources")
@@ -352,6 +360,18 @@ NG_PACKAGE_ATTRS = dict(NPM_PACKAGE_ATTRS, **dict(ROLLUP_ATTRS, **{
 # some/path/to/my/package/index.js
 # we assume the files should be named "package.*.js"
 def primary_entry_point_name(name, entry_point, entry_point_name):
+  """This is not a public API.
+
+  Compute the name of the primary entry point in the library.
+
+  Args:
+    name: the name of the `ng_package` rule, as a fallback.
+    entry_point: The starting point of the application, see rollup_bundle.
+    entry_point_name: if set, this is the returned value.
+
+  Returns:
+    name of the entry point, which will appear in the name of generated bundles
+  """
   if entry_point_name:
       # If an explicit entry_point_name is given, use that.
       return entry_point_name
@@ -364,6 +384,19 @@ def primary_entry_point_name(name, entry_point, entry_point_name):
       return name
 
 def ng_package_outputs(name, entry_point, entry_point_name):
+  """This is not a public API.
+
+  This function computes the named outputs for an ng_package rule.
+
+  Args:
+    name: value of the name attribute
+    entry_point: value of the entry_point attribute
+    entry_point_name: value of the entry_point_name attribute
+
+  Returns:
+    dict of named outputs of the rule
+  """
+
   basename = primary_entry_point_name(name, entry_point, entry_point_name)
   outputs = {
       "fesm5": "fesm5/%s.js" % basename,
@@ -384,3 +417,6 @@ ng_package = rule(
     attrs = NG_PACKAGE_ATTRS,
     outputs = ng_package_outputs,
 )
+"""
+ng_package produces an npm-ready package from an Angular library.
+"""

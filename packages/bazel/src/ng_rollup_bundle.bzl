@@ -3,11 +3,15 @@
 # Use of this source code is governed by an MIT-style license that can be
 # found in the LICENSE file at https://angular.io/license
 
-"""This provides a variant of rollup_bundle that works better for Angular apps.
+"""Rollup with Build Optimizer
 
-   It registers @angular-devkit/build-optimizer as a rollup plugin, to get
+   This provides a variant of the [rollup_bundle] rule that works better for Angular apps.
+
+   It registers `@angular-devkit/build-optimizer` as a rollup plugin, to get
    better optimization. It also uses ESM5 format inputs, as this is what
    build-optimizer is hard-coded to look for and transform.
+
+   [rollup_bundle]: https://bazelbuild.github.io/rules_nodejs/rollup/rollup_bundle.html
 """
 
 load("@build_bazel_rules_nodejs//internal/rollup:rollup_bundle.bzl",
@@ -51,6 +55,13 @@ def _use_plain_rollup(ctx):
 
 
 def run_brotli(ctx, input, output):
+  """Execute the Brotli compression utility.
+
+  Args:
+    ctx: Bazel's rule execution context
+    input: any file
+    output: the compressed file
+  """
   ctx.actions.run(
       executable = ctx.executable._brotli,
       inputs = [input],
@@ -126,10 +137,14 @@ def _ng_rollup_bundle(ctx):
 ng_rollup_bundle = rule(
     implementation = _ng_rollup_bundle,
     attrs = dict(ROLLUP_ATTRS, **{
-        "deps": attr.label_list(aspects = [
-            rollup_module_mappings_aspect,
-            esm5_outputs_aspect,
-        ]),
+        "deps": attr.label_list(
+            doc = """Other targets that provide JavaScript files.
+            Typically this will be `ts_library` or `ng_module` targets.""",
+            aspects = [
+                rollup_module_mappings_aspect,
+                esm5_outputs_aspect,
+            ]
+        ),
         "_rollup": attr.label(
             executable = True,
             cfg = "host",
@@ -143,3 +158,13 @@ ng_rollup_bundle = rule(
         "build_es5_min_compressed": "%{name}.min.js.br",
     }),
 )
+"""
+Run [Rollup] with the [Build Optimizer] plugin.
+
+This rule extends from the [rollup_bundle] rule, so attributes and outputs of
+that rule are used here too.
+
+[Rollup]: https://rollupjs.org/
+[Build Optimizer]: https://www.npmjs.com/package/@angular-devkit/build-optimizer
+[rollup_bundle]: https://bazelbuild.github.io/rules_nodejs/rollup/rollup_bundle.html
+"""

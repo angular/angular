@@ -2,8 +2,7 @@
 #
 # Use of this source code is governed by an MIT-style license that can be
 # found in the LICENSE file at https://angular.io/license
-"""Implementation of the protractor_web_test and protractor_web_test_suite rules.
-"""
+"Run end-to-end tests with Protractor"
 
 load("@build_bazel_rules_nodejs//internal:node.bzl",
     "sources_aspect",
