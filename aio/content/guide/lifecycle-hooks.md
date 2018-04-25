@@ -603,7 +603,10 @@ The `ngOnInit()` and `ngOnDestroy()` methods have more vital roles to play in re
 
 {@a oninit}
 
+<!--
 ### _OnInit()_
+-->
+### _OnInit_
 
 <!--
 Use `ngOnInit()` for two main reasons:
@@ -680,7 +683,10 @@ That's where the heavy initialization logic belongs.
 
 {@a ondestroy}
 
+<!--
 ### _OnDestroy()_
+-->
+### _OnDestroy_
 
 <!--
 Put cleanup logic in `ngOnDestroy()`, the logic that *must* run before Angular destroys the directive.
@@ -704,7 +710,10 @@ JavaScript 환경은 필요없는 자원을 자동으로 정리하지만, 정리
 
 {@a onchanges}
 
+<!--
 ## _OnChanges()_
+-->
+## _OnChanges_
 
 <!--
 Angular calls its `ngOnChanges()` method whenever it detects changes to ***input properties*** of the component (or directive).
@@ -768,37 +777,63 @@ Angular는 입력 프로퍼티 값이 변경되었을 때만 `ngOnChangaes()` �
 
 {@a docheck}
 
+<!--
 ## _DoCheck()_
+-->
+## _DoCheck_
 
+<!--
 Use the `DoCheck` hook to detect and act upon changes that Angular doesn't catch on its own.
+-->
+Angular의 변화 감지 싸이클을 수동으로 실행하는 경우라면 `DoCheck` 함수를 사용할 수 있습니다.
 
 <div class="l-sub-section">
 
+  <!--
   Use this method to detect a change that Angular overlooked.
+  -->
+  이 함수는 Angular가 감지하지 못하는 변화를 감지하는 용도로 사용합니다.
 
 </div>
 
+<!--
 The *DoCheck* sample extends the *OnChanges* sample with the following `ngDoCheck()` hook:
+-->
+이번에 살펴볼 *DoCheck* 예제는 *OnChanges* 예제에서 살펴봤던 `ngDoCheck()` 후킹 함수를 확장한 것입니다:
 
 <code-example path="lifecycle-hooks/src/app/do-check.component.ts" region="ng-do-check" title="DoCheckComponent (ngDoCheck)" linenums="false"></code-example>
 
+<!--
 This code inspects certain _values of interest_, capturing and comparing their current state against previous values.
 It writes a special message to the log when there are no substantive changes to the `hero` or the `power`
 so you can see how often `DoCheck` is called. The results are illuminating:
+-->
+예제 코드가 조금 복잡해 보이지만, 이 예제는 이전값과 현재값을 비교해서 값이 변경되었는지 검사하는 코드입니다.
+이 코드는 `DoCheck` 인터페이스에 의해 `ngDoCheck()` 함수가 실행될 때마다 `hero`와 `power`의 값을 비교하고, 값이 변경된 것으로 확인되면 로그를 출력합니다. 그림으로 결과를 확인해 보세요:
 
 <figure>
   <img src='generated/images/guide/lifecycle-hooks/do-check-anim.gif' alt="DoCheck">
 </figure>
 
+<!--
 While the `ngDoCheck()` hook can detect when the hero's `name` has changed, it has a frightful cost.
 This hook is called with enormous frequency&mdash;after _every_
 change detection cycle no matter where the change occurred.
 It's called over twenty times in this example before the user can do anything.
+-->
+하지만 `ngDoCheck()` 함수에서 히어로의 `name` 프로퍼티가 변경되는 것을 확인하는 것은 비효율적입니다.
+왜냐하면 이 함수는 프로퍼티 값이 변하지 않더라도 Angular의변화 감지 싸이클이 _실행될 때마다_ 계속 실행되기 때문입니다.
+위 예제에서도 보면 사용자가 의미있는 동작을 하지 않더라도 20번 이상 실행되는 것을 확인할 수 있습니다.
 
+<!--
 Most of these initial checks are triggered by Angular's first rendering of *unrelated data elsewhere on the page*.
 Mere mousing into another `<input>` triggers a call.
 Relatively few calls reveal actual changes to pertinent data.
 Clearly our implementation must be very lightweight or the user experience suffers.
+-->
+이 예제에서 첫 렌더링될 때 이렇게 많은 함수가 실행된 것은 *페이지와 관계없는 데이터* 에 의한 것일 수도 있습니다.
+예를 들면, `<input>` 엘리먼트에 마우스 동작이 있을 때도 이 함수가 실행됩니다.
+따라서 컴포넌트 프로퍼티값이 변한 것을 수동으로 감지할 때는 꼭 필요한 곳에만, 최대한 간단한 로직으로 작성해야 사용자가 불편함을 느끼지 않습니다.
 
 {@a afterview}
 
