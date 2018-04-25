@@ -12,7 +12,7 @@ import {DefinitionKind} from '../constant_pool';
 import * as o from '../output/output_ast';
 import {OutputContext, error} from '../util';
 
-import {compileFactoryFunction, depsFromGlobalMetadata} from './r3_factory';
+import {compileFactoryFunction, dependenciesFromGlobalMetadata} from './r3_factory';
 import {Identifiers as R3} from './r3_identifiers';
 
 
@@ -31,7 +31,7 @@ export function compilePipe(
       {key: 'type', value: outputCtx.importExpr(pipe.type.reference), quoted: false});
 
   // e.g. `factory: function MyPipe_Factory() { return new MyPipe(); }`
-  const deps = depsFromGlobalMetadata(pipe.type, outputCtx, reflector);
+  const deps = dependenciesFromGlobalMetadata(pipe.type, outputCtx, reflector);
   const templateFactory = compileFactoryFunction({
     name: identifierName(pipe.type) !,
     fnOrClass: outputCtx.importExpr(pipe.type.reference), deps,

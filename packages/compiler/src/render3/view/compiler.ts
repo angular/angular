@@ -22,87 +22,81 @@ import {BindingParser} from '../../template_parser/binding_parser';
 import {OutputContext, error} from '../../util';
 
 import * as t from './../r3_ast';
-import {R3DependencyMetadata, R3ResolvedDependency, compileFactoryFunction, depsFromGlobalMetadata} from './../r3_factory';
+import {R3DependencyMetadata, R3ResolvedDependency, compileFactoryFunction, dependenciesFromGlobalMetadata} from './../r3_factory';
 import {Identifiers as R3} from './../r3_identifiers';
 import {R3ComponentDef, R3ComponentMetadata, R3DirectiveDef, R3DirectiveMetadata, R3QueryMetadata} from './api';
 import {BindingScope, TemplateDefinitionBuilder} from './template';
-import {CONTEXT_NAME, ID_SEPARATOR, MEANING_SEPARATOR, TEMPORARY_NAME, asLiteral, conditionallyCreateMapObjectLiteral, getQueryPredicate, temporaryAllocator, unsupported} from './util';
+import {CONTEXT_NAME, DefinitionMap, ID_SEPARATOR, MEANING_SEPARATOR, TEMPORARY_NAME, asLiteral, conditionallyCreateMapObjectLiteral, getQueryPredicate, temporaryAllocator, unsupported} from './util';
 
+function baseDirectiveFields(
+    meta: R3DirectiveMetadata, constantPool: ConstantPool,
+    bindingParser: BindingParser): DefinitionMap {
+  const definitionMap = new DefinitionMap();
+
+  // e.g. `type: MyDirective`
+  definitionMap.set('type', meta.type);
+
+  // e.g. `selectors: [['', 'someDir', '']]`
+  definitionMap.set('selectors', createDirectiveSelector(meta.selector !));
+
+  const queryDefinitions = createQueryDefinitions(meta.queries, constantPool);
+
+  // e.g. `factory: () => new MyApp(injectElementRef())`
+  definitionMap.set('factory', compileFactoryFunction({
+                      name: meta.name,
+                      fnOrClass: meta.type,
+                      deps: meta.deps,
+                      useNew: true,
+                      injectFn: R3.directiveInject,
+                      useOptionalParam: false,
+                      extraResults: queryDefinitions,
+                    }));
+
+  // e.g. `hostBindings: (dirIndex, elIndex) => { ... }
+  definitionMap.set('hostBindings', createHostBindingsFunction(meta, bindingParser));
+
+  // e.g. `attributes: ['role', 'listbox']`
+  definitionMap.set('attributes', createHostAttributesArray(meta));
+
+  // e.g 'inputs: {a: 'a'}`
+  definitionMap.set('inputs', conditionallyCreateMapObjectLiteral(meta.inputs));
+
+  // e.g 'outputs: {a: 'a'}`
+  definitionMap.set('outputs', conditionallyCreateMapObjectLiteral(meta.outputs));
+
+  return definitionMap;
+}
+
+/**
+ * Compile a directive for the render3 runtime as defined by the `R3DirectiveMetadata`.
+ */
 export function compileDirective(
     meta: R3DirectiveMetadata, constantPool: ConstantPool,
     bindingParser: BindingParser): R3DirectiveDef {
-  const definitionMapValues: {key: string, quoted: boolean, value: o.Expression}[] = [];
-
-  const field = (key: string, value: o.Expression | null) => {
-    if (value) {
-      definitionMapValues.push({key, value, quoted: false});
-    }
-  };
-
-  // e.g. `type: MyDirective`
-  field('type', meta.type);
-
-  // e.g. `selectors: [['', 'someDir', '']]`
-  field('selectors', createDirectiveSelector(meta.selector !));
-
-  const queryDefinitions = createQueryDefinitions(meta, constantPool);
-
-  // e.g. `factory: () => new MyApp(injectElementRef())`
-  field('factory', compileFactoryFunction({
-          name: meta.name,
-          fnOrClass: meta.type,
-          deps: meta.deps,
-          useNew: true,
-          injectFn: R3.directiveInject,
-          useOptionalParam: false,
-          extraResults: queryDefinitions,
-        }));
-
-  // e.g. `hostBindings: (dirIndex, elIndex) => { ... }
-  field('hostBindings', createHostBindingsFunction(meta, bindingParser));
-
-  // e.g. `attributes: ['role', 'listbox']`
-  field('attributes', createHostAttributesArray(meta));
-
-  // e.g 'inputs: {a: 'a'}`
-  field('inputs', conditionallyCreateMapObjectLiteral(meta.inputs));
-
-  // e.g 'outputs: {a: 'a'}`
-  field('outputs', conditionallyCreateMapObjectLiteral(meta.outputs));
-
-  const expression = o.importExpr(R3.defineDirective).callFn([o.literalMap(definitionMapValues)]);
+  const definitionMap = baseDirectiveFields(meta, constantPool, bindingParser);
+  const expression = o.importExpr(R3.defineDirective).callFn([definitionMap.toLiteralMap()]);
   const type =
       new o.ExpressionType(o.importExpr(R3.DirectiveDef, [new o.ExpressionType(meta.type)]));
   return {expression, type};
 }
 
+/**
+ * Compile a component for the render3 runtime as defined by the `R3ComponentMetadata`.
+ */
 export function compileComponent(
     meta: R3ComponentMetadata, constantPool: ConstantPool,
     bindingParser: BindingParser): R3ComponentDef {
-  const definitionMapValues: {key: string, quoted: boolean, value: o.Expression}[] = [];
-
-  const field = (key: string, value: o.Expression | null) => {
-    if (value) {
-      definitionMapValues.push({key, value, quoted: false});
-    }
-  };
-
-  // e.g. `type: MyApp`
-  field('type', meta.type);
-
-  // e.g. `selectors: [['my-app']]`
-  field('selectors', createDirectiveSelector(meta.selector !));
+  const definitionMap = baseDirectiveFields(meta, constantPool, bindingParser);
 
   const selector = meta.selector && CssSelector.parse(meta.selector);
   const firstSelector = selector && selector[0];
-
 
   // e.g. `attr: ["class", ".my.app"]`
   // This is optional an only included if the first selector of a component specifies attributes.
   if (firstSelector) {
     const selectorAttributes = firstSelector.getAttrs();
     if (selectorAttributes.length) {
-      field(
+      definitionMap.set(
           'attrs', constantPool.getConstLiteral(
                        o.literalArr(selectorAttributes.map(
                            value => value != null ? o.literal(value) : o.literal(undefined))),
@@ -121,22 +115,6 @@ export function compileComponent(
     directiveMatcher = matcher;
   }
 
-  const queryDefinitions = createQueryDefinitions(meta, constantPool);
-
-  // e.g. `factory: () => new MyApp(injectElementRef())`
-  field('factory', compileFactoryFunction({
-          name: meta.name,
-          fnOrClass: meta.type,
-          deps: meta.deps,
-          useNew: true,
-          injectFn: R3.directiveInject,
-          useOptionalParam: false,
-          extraResults: queryDefinitions,
-        }));
-
-  // e.g `hostBindings: function MyApp_HostBindings { ... }
-  field('hostBindings', createHostBindingsFunction(meta, bindingParser));
-
   // e.g. `template: function MyComponent_Template(_ctx, _cm) {...}`
   const templateTypeName = meta.name;
   const templateName = templateTypeName ? `${templateTypeName}_Template` : null;
@@ -152,40 +130,41 @@ export function compileComponent(
           .buildTemplateFunction(
               template.nodes, [], template.hasNgContent, template.ngContentSelectors);
 
-  field('template', templateFunctionExpression);
+  definitionMap.set('template', templateFunctionExpression);
 
   // e.g. `directives: [MyDirective]`
   if (directivesUsed.size) {
-    field('directives', o.literalArr(Array.from(directivesUsed)));
+    definitionMap.set('directives', o.literalArr(Array.from(directivesUsed)));
   }
 
   // e.g. `pipes: [MyPipe]`
   if (pipesUsed.size) {
-    field('pipes', o.literalArr(Array.from(pipesUsed)));
+    definitionMap.set('pipes', o.literalArr(Array.from(pipesUsed)));
   }
-
-  // e.g `inputs: {a: 'a'}`
-  field('inputs', conditionallyCreateMapObjectLiteral(meta.inputs));
-
-  // e.g 'outputs: {a: 'a'}`
-  field('outputs', conditionallyCreateMapObjectLiteral(meta.outputs));
 
   // e.g. `features: [NgOnChangesFeature(MyComponent)]`
   const features: o.Expression[] = [];
-  if (meta.lifecycle.onChanges) {
+  if (meta.lifecycle.usesOnChanges) {
     features.push(o.importExpr(R3.NgOnChangesFeature, null, null).callFn([meta.type]));
   }
   if (features.length) {
-    field('features', o.literalArr(features));
+    definitionMap.set('features', o.literalArr(features));
   }
 
-  const expression = o.importExpr(R3.defineComponent).callFn([o.literalMap(definitionMapValues)]);
+  const expression = o.importExpr(R3.defineComponent).callFn([definitionMap.toLiteralMap()]);
   const type =
       new o.ExpressionType(o.importExpr(R3.ComponentDef, [new o.ExpressionType(meta.type)]));
 
   return {expression, type};
 }
 
+/**
+ * A wrapper around `compileDirective` which depends on render2 global analysis data as its input
+ * instead of the `R3DirectiveMetadata`.
+ *
+ * `R3DirectiveMetadata` is computed from `CompileDirectiveMetadata` and other statically reflected
+ * information.
+ */
 export function compileDirectiveGlobal(
     outputCtx: OutputContext, directive: CompileDirectiveMetadata, reflector: CompileReflector,
     bindingParser: BindingParser) {
@@ -194,24 +173,8 @@ export function compileDirectiveGlobal(
 
   const definitionField = outputCtx.constantPool.propertyNameOf(DefinitionKind.Directive);
 
-  const summary = directive.toSummary();
-  const res = compileDirective(
-      {
-        name,
-        type: outputCtx.importExpr(directive.type.reference),
-        typeSourceSpan: typeSourceSpan('Directive', directive.type),
-        selector: directive.selector,
-        deps: depsFromGlobalMetadata(directive.type, outputCtx, reflector),
-        queries: queriesFromGlobalMetadata(directive.queries, outputCtx),
-        host: {
-          attributes: directive.hostAttributes,
-          listeners: summary.hostListeners,
-          properties: summary.hostProperties,
-        },
-        inputs: directive.inputs,
-        outputs: directive.outputs,
-      },
-      outputCtx.constantPool, bindingParser);
+  const meta = directiveMetadataFromGlobalMetadata(directive, outputCtx, reflector);
+  const res = compileDirective(meta, outputCtx.constantPool, bindingParser);
 
   // Create the partial class to be merged with the actual class.
   outputCtx.statements.push(new o.ClassStmt(
@@ -220,6 +183,13 @@ export function compileDirectiveGlobal(
       [], new o.ClassMethod(null, [], []), []));
 }
 
+/**
+ * A wrapper around `compileComponent` which depends on render2 global analysis data as its input
+ * instead of the `R3DirectiveMetadata`.
+ *
+ * `R3ComponentMetadata` is computed from `CompileDirectiveMetadata` and other statically reflected
+ * information.
+ */
 export function compileComponentGlobal(
     outputCtx: OutputContext, component: CompileDirectiveMetadata, nodes: t.Node[],
     hasNgContent: boolean, ngContentSelectors: string[], reflector: CompileReflector,
@@ -231,41 +201,23 @@ export function compileComponentGlobal(
   const definitionField = outputCtx.constantPool.propertyNameOf(DefinitionKind.Component);
 
   const summary = component.toSummary();
-  const res = compileComponent(
-      {
-        name,
-        type: outputCtx.importExpr(component.type.reference),
-        typeSourceSpan: typeSourceSpan('Component', component.type),
-        selector: component.selector,
-        deps: depsFromGlobalMetadata(component.type, outputCtx, reflector),
-        queries: queriesFromGlobalMetadata(component.queries, outputCtx),
-        viewQueries: queriesFromGlobalMetadata(component.viewQueries, outputCtx),
-        template: {
-          nodes: nodes,
-          hasNgContent,
-          ngContentSelectors,
-        },
-        lifecycle: {
-          onChanges: component.type.lifecycleHooks.some(
-              lifecycle => lifecycle == LifecycleHooks.OnChanges),
-        },
-        host: {
-          attributes: component.hostAttributes,
-          listeners: summary.hostListeners,
-          properties: summary.hostProperties,
-        },
-        inputs: component.inputs,
-        outputs: component.outputs,
-        pipes: new Map<string, o.Expression>(
-            Array.from(pipeTypeByName.entries())
-                .map(
-                    ([name, type]) => [name, outputCtx.importExpr(type)] as[string, o.Expression])),
-        directives: new Map<string, o.Expression>(
-            Array.from(directiveTypeBySel.entries())
-                .map(([selector,
-                       type]) => [selector, outputCtx.importExpr(type)] as[string, o.Expression])),
-      },
-      outputCtx.constantPool, bindingParser);
+
+  // Compute the R3ComponentMetadata from the CompileDirectiveMetadata
+  const meta: R3ComponentMetadata = {
+    ...directiveMetadataFromGlobalMetadata(component, outputCtx, reflector),
+    selector: component.selector,
+    template: {
+        nodes, hasNgContent, ngContentSelectors,
+    },
+    lifecycle: {
+      usesOnChanges:
+          component.type.lifecycleHooks.some(lifecycle => lifecycle == LifecycleHooks.OnChanges),
+    },
+    directives: typeMapToExpressionMap(directiveTypeBySel, outputCtx),
+    pipes: typeMapToExpressionMap(pipeTypeByName, outputCtx),
+    viewQueries: queriesFromGlobalMetadata(component.viewQueries, outputCtx),
+  };
+  const res = compileComponent(meta, outputCtx.constantPool, bindingParser);
 
   // Create the partial class to be merged with the actual class.
   outputCtx.statements.push(new o.ClassStmt(
@@ -274,6 +226,37 @@ export function compileComponentGlobal(
       [], new o.ClassMethod(null, [], []), []));
 }
 
+/**
+ * Compute `R3DirectiveMetadata` given `CompileDirectiveMetadata` and a `CompileReflector`.
+ */
+function directiveMetadataFromGlobalMetadata(
+    directive: CompileDirectiveMetadata, outputCtx: OutputContext,
+    reflector: CompileReflector): R3DirectiveMetadata {
+  const summary = directive.toSummary();
+  const name = identifierName(directive.type) !;
+  name || error(`Cannot resolver the name of ${directive.type}`);
+
+  return {
+    name,
+    type: outputCtx.importExpr(directive.type.reference),
+    typeSourceSpan:
+        typeSourceSpan(directive.isComponent ? 'Component' : 'Directive', directive.type),
+    selector: directive.selector,
+    deps: dependenciesFromGlobalMetadata(directive.type, outputCtx, reflector),
+    queries: queriesFromGlobalMetadata(directive.queries, outputCtx),
+    host: {
+      attributes: directive.hostAttributes,
+      listeners: summary.hostListeners,
+      properties: summary.hostProperties,
+    },
+    inputs: directive.inputs,
+    outputs: directive.outputs,
+  };
+}
+
+/**
+ * Convert `CompileQueryMetadata` into `R3QueryMetadata`.
+ */
 function queriesFromGlobalMetadata(
     queries: CompileQueryMetadata[], outputCtx: OutputContext): R3QueryMetadata[] {
   return queries.map(query => {
@@ -284,12 +267,16 @@ function queriesFromGlobalMetadata(
     return {
       propertyName: query.propertyName,
       first: query.first,
-      selectors: selectorsFromGlobalMetadata(query.selectors, outputCtx),
+      predicate: selectorsFromGlobalMetadata(query.selectors, outputCtx),
       descendants: query.descendants, read,
     };
   });
 }
 
+/**
+ * Convert `CompileTokenMetadata` for query selectors into either an expression for a predicate
+ * type, or a list of string predicates.
+ */
 function selectorsFromGlobalMetadata(
     selectors: CompileTokenMetadata[], outputCtx: OutputContext): o.Expression|string[] {
   if (selectors.length > 1 || (selectors.length == 1 && selectors[0].value)) {
@@ -311,11 +298,16 @@ function selectorsFromGlobalMetadata(
   return o.NULL_EXPR;
 }
 
+/**
+ *
+ * @param meta
+ * @param constantPool
+ */
 function createQueryDefinitions(
-    meta: R3DirectiveMetadata, constantPool: ConstantPool): o.Expression[]|undefined {
+    queries: R3QueryMetadata[], constantPool: ConstantPool): o.Expression[]|undefined {
   const queryDefinitions: o.Expression[] = [];
-  for (let i = 0; i < meta.queries.length; i++) {
-    const query = meta.queries[i];
+  for (let i = 0; i < queries.length; i++) {
+    const query = queries[i];
     const predicate = getQueryPredicate(query, constantPool);
 
     // e.g. r3.Q(null, somePredicate, false) or r3.Q(null, ['div'], false)
@@ -440,4 +432,13 @@ function metadataAsSummary(meta: R3DirectiveMetadata): CompileDirectiveSummary {
     hostProperties: meta.host.properties,
   } as CompileDirectiveSummary;
   // clang-format on
+}
+
+
+function typeMapToExpressionMap(
+    map: Map<string, StaticSymbol>, outputCtx: OutputContext): Map<string, o.Expression> {
+  // Convert each map entry into another entry where the value is an expression importing the type.
+  const entries = Array.from(map).map(
+      ([key, type]): [string, o.Expression] => [key, outputCtx.importExpr(type)]);
+  return new Map(entries);
 }

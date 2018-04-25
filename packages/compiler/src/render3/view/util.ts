@@ -99,30 +99,24 @@ export function trimTrailingNulls(parameters: o.Expression[]): o.Expression[] {
 
 export function getQueryPredicate(
     query: R3QueryMetadata, constantPool: ConstantPool): o.Expression {
-  if (Array.isArray(query.selectors)) {
+  if (Array.isArray(query.predicate)) {
     return constantPool.getConstLiteral(
-        o.literalArr(query.selectors.map(selector => o.literal(selector) as o.Expression)));
+        o.literalArr(query.predicate.map(selector => o.literal(selector) as o.Expression)));
   } else {
-    return query.selectors;
+    return query.predicate;
   }
 }
 
-// Pasted from render3/interfaces/definition since it cannot be referenced directly
-/**
- * Flags passed into template functions to determine which blocks (i.e. creation, update)
- * should be executed.
- *
- * Typically, a template runs both the creation block and the update block on initialization and
- * subsequent runs only execute the update block. However, dynamically created views require that
- * the creation block be executed separately from the update block (for backwards compat).
- */
-// TODO(vicb): move to ../core
-export const enum RenderFlags {
-  /* Whether to run the creation block (e.g. create elements and directives) */
-  Create = 0b01,
-
-  /* Whether to run the update block (e.g. refresh bindings) */
-  Update = 0b10
-}
-
 export function noop() {}
+
+export class DefinitionMap {
+  values: {key: string, quoted: boolean, value: o.Expression}[] = [];
+
+  set(key: string, value: o.Expression|null): void {
+    if (value) {
+      this.values.push({key, value, quoted: false});
+    }
+  }
+
+  toLiteralMap(): o.LiteralMapExpr { return o.literalMap(this.values); }
+}

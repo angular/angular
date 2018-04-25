@@ -63,21 +63,29 @@ function injectDep(
   switch (dep.resolved) {
     case R3ResolvedDependency.Token:
     case R3ResolvedDependency.Injector: {
-      const flags = o.literal(
-          InjectFlags.Default | (dep.self && InjectFlags.Self || 0) |
-          (dep.skipSelf && InjectFlags.SkipSelf || 0) | (dep.host && InjectFlags.Host || 0) |
-          (dep.optional && InjectFlags.Optional || 0));
+      const flags = InjectFlags.Default | (dep.self ? InjectFlags.Self : 0) |
+          (dep.skipSelf ? InjectFlags.SkipSelf : 0) | (dep.host ? InjectFlags.Host : 0) |
+          (dep.optional ? InjectFlags.Optional : 0);
       let token: o.Expression = dep.token;
       if (dep.resolved === R3ResolvedDependency.Injector) {
         token = o.importExpr(Identifiers.INJECTOR);
       }
       const injectArgs = [dep.token];
-      if (flags.value !== InjectFlags.Default || dep.optional) {
+      // If this dependency is optional or otherwise has non-default flags, then additional
+      // parameters describing how to inject the dependency must be passed to the inject function
+      // that's being used.
+      if (flags !== InjectFlags.Default || dep.optional) {
+        // Either the dependency is optional, or non-default flags are in use. Either of these cases
+        // necessitates adding an argument for the default value if such an argument is required
+        // by the inject function (useOptionalParam === true).
         if (useOptionalParam) {
+          // The inject function requires a default value parameter.
           injectArgs.push(dep.optional ? o.NULL_EXPR : o.literal(undefined));
         }
-        if (flags.value !== InjectFlags.Default) {
-          injectArgs.push(flags);
+        // The last parameter is always the InjectFlags, which only need to be specified if they're
+        // non-default.
+        if (flags !== InjectFlags.Default) {
+          injectArgs.push(o.literal(flags));
         }
       }
       return o.importExpr(inject).callFn(injectArgs);
@@ -95,7 +103,7 @@ function injectDep(
   }
 }
 
-export function depsFromGlobalMetadata(
+export function dependenciesFromGlobalMetadata(
     type: CompileTypeMetadata, outputCtx: OutputContext,
     reflector: CompileReflector): R3DependencyMetadata[] {
   const deps: R3DependencyMetadata[] = [];
