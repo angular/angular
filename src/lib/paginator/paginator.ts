@@ -33,6 +33,12 @@ export class PageEvent {
   /** The current page index. */
   pageIndex: number;
 
+  /**
+   * Index of the page that was selected previously.
+   * @deletion-target 7.0.0 To be made into a required property.
+   */
+  previousPageIndex?: number;
+
   /** The current page size */
   pageSize: number;
 
@@ -144,31 +150,39 @@ export class MatPaginator extends _MatPaginatorBase implements OnInit, OnDestroy
   /** Advances to the next page if it exists. */
   nextPage(): void {
     if (!this.hasNextPage()) { return; }
+
+    const previousPageIndex = this.pageIndex;
     this.pageIndex++;
-    this._emitPageEvent();
+    this._emitPageEvent(previousPageIndex);
   }
 
   /** Move back to the previous page if it exists. */
   previousPage(): void {
     if (!this.hasPreviousPage()) { return; }
+
+    const previousPageIndex = this.pageIndex;
     this.pageIndex--;
-    this._emitPageEvent();
+    this._emitPageEvent(previousPageIndex);
   }
 
   /** Move to the first page if not already there. */
   firstPage(): void {
     // hasPreviousPage being false implies at the start
     if (!this.hasPreviousPage()) { return; }
+
+    const previousPageIndex = this.pageIndex;
     this.pageIndex = 0;
-    this._emitPageEvent();
+    this._emitPageEvent(previousPageIndex);
   }
 
   /** Move to the last page if not already there. */
   lastPage(): void {
     // hasNextPage being false implies at the end
     if (!this.hasNextPage()) { return; }
+
+    const previousPageIndex = this.pageIndex;
     this.pageIndex = this.getNumberOfPages();
-    this._emitPageEvent();
+    this._emitPageEvent(previousPageIndex);
   }
 
   /** Whether there is a previous page. */
@@ -200,10 +214,11 @@ export class MatPaginator extends _MatPaginatorBase implements OnInit, OnDestroy
     // Current page needs to be updated to reflect the new page size. Navigate to the page
     // containing the previous page's first item.
     const startIndex = this.pageIndex * this.pageSize;
-    this.pageIndex = Math.floor(startIndex / pageSize) || 0;
+    const previousPageIndex = this.pageIndex;
 
+    this.pageIndex = Math.floor(startIndex / pageSize) || 0;
     this.pageSize = pageSize;
-    this._emitPageEvent();
+    this._emitPageEvent(previousPageIndex);
   }
 
   /**
@@ -221,19 +236,20 @@ export class MatPaginator extends _MatPaginatorBase implements OnInit, OnDestroy
     }
 
     this._displayedPageSizeOptions = this.pageSizeOptions.slice();
-    if (this._displayedPageSizeOptions.indexOf(this.pageSize) == -1) {
+
+    if (this._displayedPageSizeOptions.indexOf(this.pageSize) === -1) {
       this._displayedPageSizeOptions.push(this.pageSize);
     }
 
     // Sort the numbers using a number-specific sort function.
     this._displayedPageSizeOptions.sort((a, b) => a - b);
-
     this._changeDetectorRef.markForCheck();
   }
 
   /** Emits an event notifying that a change of the paginator's properties has been triggered. */
-  private _emitPageEvent() {
+  private _emitPageEvent(previousPageIndex: number) {
     this.page.emit({
+      previousPageIndex,
       pageIndex: this.pageIndex,
       pageSize: this.pageSize,
       length: this.length
