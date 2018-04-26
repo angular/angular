@@ -224,24 +224,42 @@ export function enterView(newView: LView, host: LElementNode | LViewNode | null)
 /**
  * Used in lieu of enterView to make it clear when we are exiting a child view. This makes
  * the direction of traversal (up or down the view tree) a bit clearer.
+ *
+ * @param newView New state to become active
+ * @param creationOnly An optional boolean to indicate that the view was processed in creation mode
+ * only, i.e. the first update will be done later. Only possible for dynamically created views.
  */
-export function leaveView(newView: LView): void {
-  if (!checkNoChangesMode) {
-    executeHooks(
-        directives !, currentView.tView.viewHooks, currentView.tView.viewCheckHooks, creationMode);
+export function leaveView(newView: LView, creationOnly?: boolean): void {
+  if (!creationOnly) {
+    if (!checkNoChangesMode) {
+      executeHooks(
+          directives !, currentView.tView.viewHooks, currentView.tView.viewCheckHooks,
+          creationMode);
+    }
+    // Views are clean and in update mode after being checked, so these bits are cleared
+    currentView.flags &= ~(LViewFlags.CreationMode | LViewFlags.Dirty);
   }
-  // Views should be clean and in update mode after being checked, so these bits are cleared
-  currentView.flags &= ~(LViewFlags.CreationMode | LViewFlags.Dirty);
   currentView.lifecycleStage = LifecycleStage.Init;
   currentView.bindingIndex = -1;
   enterView(newView, null);
 }
 
-/**  Refreshes directives in this view and triggers any init/content hooks.  */
-function refreshDirectives() {
-  executeInitAndContentHooks();
-
+/**
+ * Refreshes the view, executing the following steps in that order:
+ * triggers init hooks, refreshes dynamic children, triggers content hooks, sets host bindings,
+ * refreshes child components.
+ * Note: view hooks are triggered later when leaving the view.
+ * */
+function refreshView() {
   const tView = currentView.tView;
+  if (!checkNoChangesMode) {
+    executeInitHooks(currentView, tView, creationMode);
+  }
+  refreshDynamicChildren();
+  if (!checkNoChangesMode) {
+    executeHooks(directives !, tView.contentHooks, tView.contentCheckHooks, creationMode);
+  }
+
   // This needs to be set before children are processed to support recursive components
   tView.firstTemplatePass = firstTemplatePass = false;
 
@@ -456,10 +474,11 @@ export function renderEmbeddedTemplate<T>(
   const _isParent = isParent;
   const _previousOrParentNode = previousOrParentNode;
   let oldView: LView;
+  let rf: RenderFlags = RenderFlags.Update;
   try {
     isParent = true;
     previousOrParentNode = null !;
-    let rf: RenderFlags = RenderFlags.Update;
+
     if (viewNode == null) {
       const tView = getOrCreateTView(template, directives || null, pipes || null);
       const lView = createLView(-1, renderer, tView, template, context, LViewFlags.CheckAlways);
@@ -468,13 +487,17 @@ export function renderEmbeddedTemplate<T>(
       rf = RenderFlags.Create;
     }
     oldView = enterView(viewNode.data, viewNode);
-
     template(rf, context);
-    refreshDirectives();
-    refreshDynamicChildren();
-
+    if (rf & RenderFlags.Update) {
+      refreshView();
+    } else {
+      viewNode.data.tView.firstTemplatePass = firstTemplatePass = false;
+    }
   } finally {
-    leaveView(oldView !);
+    // renderEmbeddedTemplate() is called twice in fact, once for creation only and then once for
+    // update. When for creation only, leaveView() must not trigger view hooks, nor clean flags.
+    const isCreationOnly = (rf & RenderFlags.Create) === RenderFlags.Create;
+    leaveView(oldView !, isCreationOnly);
     isParent = _isParent;
     previousOrParentNode = _previousOrParentNode;
   }
@@ -490,8 +513,7 @@ export function renderComponentOrTemplate<T>(
     }
     if (template) {
       template(getRenderFlags(hostView), componentOrContext !);
-      refreshDynamicChildren();
-      refreshDirectives();
+      refreshView();
     } else {
       executeInitAndContentHooks();
 
@@ -1557,7 +1579,7 @@ function getOrCreateEmbeddedTView(viewIndex: number, parent: LContainerNode): TV
 
 /** Marks the end of an embedded view. */
 export function embeddedViewEnd(): void {
-  refreshDirectives();
+  refreshView();
   isParent = false;
   const viewNode = previousOrParentNode = currentView.node as LViewNode;
   const containerNode = previousOrParentNode.parent as LContainerNode;
@@ -1968,8 +1990,7 @@ export function detectChangesInternal<T>(
 
   try {
     template(getRenderFlags(hostView), component);
-    refreshDirectives();
-    refreshDynamicChildren();
+    refreshView();
   } finally {
     leaveView(oldView);
   }
