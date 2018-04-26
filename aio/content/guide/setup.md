@@ -10,7 +10,7 @@ Setting up a new project on your machine is quick and easy with the **QuickStart
 maintained [on github](https://github.com/angular/quickstart "Install the github QuickStart repo").
 
 
-Make sure you have [node and npm installed](guide/setup#install-prerequisites "What if you don't have node and npm?").
+Make sure you have [Node.js® and npm installed](guide/setup#install-prerequisites "What if you don't have Node.js and npm?").
 
 {@a clone}
 
@@ -301,23 +301,22 @@ If you're new to Angular, we recommend you follow the [tutorial](tutorial "Tour 
 
 
 
-## Appendix: node and npm
+## Appendix: NodeJS and NPM
 
 
-Node.js and npm are essential to modern web development with Angular and other platforms.
-Node powers client development and build tools.
-The _npm_ package manager, itself a _node_ application, installs JavaScript libraries.
+[Node.js](https://nodejs.org/en/) and the [npm](https://www.npmjs.com/) package manager are essential to modern web development with Angular and other platforms.
+NodeJS powers client development and build tools.
+The _npm_ package manager, which is itself a _NodeJS_ application, installs JavaScript libraries.
 
 <a href="https://docs.npmjs.com/getting-started/installing-node" target="_blank" title="Installing Node.js and updating npm">
 Get them now</a> if they're not already installed on your machine.
 
-**Verify that you are running node `v4.x.x` or higher and npm `3.x.x` or higher**
+**Verify that you are running Node.js `v8.x` or higher and npm `5.x` or higher**
 by running the commands `node -v` and `npm -v` in a terminal/console window.
 Older versions produce errors.
 
-We recommend [nvm](https://github.com/creationix/nvm) for managing multiple versions of node and npm.
-You may need [nvm](https://github.com/creationix/nvm) if you already have projects running on your machine that
-use other versions of node and npm.
+We recommend [nvm](https://github.com/creationix/nvm) for managing multiple versions of Node.js and npm.
+You may need [nvm](https://github.com/creationix/nvm) if you already have projects running on your machine that use other versions of Node.js and npm.
 
 
 {@a why-locally}
