@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {Directionality} from '@angular/cdk/bidi';
-import {coerceBooleanProperty} from '@angular/cdk/coercion';
 import {Platform} from '@angular/cdk/platform';
 import {ViewportRuler} from '@angular/cdk/scrolling';
 import {
@@ -53,7 +52,7 @@ import {MatInkBar} from '../ink-bar';
 export class MatTabNavBase {
   constructor(public _elementRef: ElementRef) {}
 }
-export const _MatTabNavMixinBase = mixinColor(MatTabNavBase, 'primary');
+export const _MatTabNavMixinBase = mixinDisableRipple(mixinColor(MatTabNavBase, 'primary'));
 
 /**
  * Navigation component matching the styles of the tab group header.
@@ -63,7 +62,7 @@ export const _MatTabNavMixinBase = mixinColor(MatTabNavBase, 'primary');
   moduleId: module.id,
   selector: '[mat-tab-nav-bar]',
   exportAs: 'matTabNavBar, matTabNav',
-  inputs: ['color'],
+  inputs: ['color', 'disableRipple'],
   templateUrl: 'tab-nav-bar.html',
   styleUrls: ['tab-nav-bar.css'],
   host: {'class': 'mat-tab-nav-bar'},
@@ -71,7 +70,7 @@ export const _MatTabNavMixinBase = mixinColor(MatTabNavBase, 'primary');
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MatTabNav extends _MatTabNavMixinBase implements AfterContentInit, CanColor,
-    OnDestroy {
+    CanDisableRipple, OnDestroy {
 
   /** Subject that emits when the component has been destroyed. */
   private readonly _onDestroy = new Subject<void>();
@@ -101,15 +100,6 @@ export class MatTabNav extends _MatTabNavMixinBase implements AfterContentInit, 
   }
   private _backgroundColor: ThemePalette;
 
-  /** Whether ripples should be disabled for all links or not. */
-  @Input()
-  get disableRipple() { return this._disableRipple; }
-  set disableRipple(value: boolean) {
-    this._disableRipple = coerceBooleanProperty(value);
-    this._setLinkDisableRipple();
-  }
-  private _disableRipple: boolean = false;
-
   constructor(elementRef: ElementRef,
               @Optional() private _dir: Directionality,
               private _ngZone: NgZone,
@@ -137,8 +127,6 @@ export class MatTabNav extends _MatTabNavMixinBase implements AfterContentInit, 
           .pipe(takeUntil(this._onDestroy))
           .subscribe(() => this._alignInkBar());
     });
-
-    this._setLinkDisableRipple();
   }
 
   /** Checks if the active link has been changed and, if so, will update the ink bar. */
@@ -164,13 +152,6 @@ export class MatTabNav extends _MatTabNavMixinBase implements AfterContentInit, 
       this._inkBar.alignToElement(this._activeLinkElement.nativeElement);
     } else {
       this._inkBar.hide();
-    }
-  }
-
-  /** Sets the `disableRipple` property on each link of the navigation bar. */
-  private _setLinkDisableRipple() {
-    if (this._tabLinks) {
-      this._tabLinks.forEach(link => link.disableRipple = this.disableRipple);
     }
   }
 }
@@ -227,7 +208,7 @@ export class MatTabLink extends _MatTabLinkMixinBase
    * @docs-private
    */
   get rippleDisabled(): boolean {
-    return this.disabled || this.disableRipple;
+    return this.disabled || this.disableRipple || this._tabNavBar.disableRipple;
   }
 
   constructor(private _tabNavBar: MatTabNav,
