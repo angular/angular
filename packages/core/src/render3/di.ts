@@ -699,16 +699,14 @@ export function getOrCreateTemplateRef<T>(di: LInjector): viewEngine_TemplateRef
   const hostNode = di.node as LContainerNode;
   const hostTNode = hostNode.tNode !;
   const hostTView = hostNode.view.tView;
-  let templateTView: TView = hostTNode.tViews as TView;
-  if (templateTView == null) {
-    templateTView = hostTNode.tViews =
-        createTView(hostTView.directiveRegistry, hostTView.pipeRegistry);
+  if (!hostTNode.tViews) {
+    hostTNode.tViews = createTView(hostTView.directiveRegistry, hostTView.pipeRegistry);
   }
-  ngDevMode && assertNotNull(templateTView, 'TView must be allocated');
+  ngDevMode && assertNotNull(hostTNode.tViews, 'TView must be allocated');
   return di.templateRef ||
       (di.templateRef = new TemplateRef<any>(
-           getOrCreateElementRef(di), templateTView, hostNode.data.template !, getRenderer(),
-           hostTView.directiveRegistry, hostTView.pipeRegistry));
+           getOrCreateElementRef(di), hostTNode.tViews as TView, hostNode.data.template !,
+           getRenderer(), hostTView.directiveRegistry, hostTView.pipeRegistry));
 }
 
 class TemplateRef<T> implements viewEngine_TemplateRef<T> {
