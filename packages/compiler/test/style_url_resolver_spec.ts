@@ -97,22 +97,11 @@ import {UrlResolver} from '@angular/compiler/src/url_resolver';
       expect(styleWithImports.style.trim()).toEqual(`@import url('http://server.com/some.css');`);
       expect(styleWithImports.styleUrls).toEqual([]);
     });
-
-    it('should resolve package @import urls', () => {
-      const css = `@import url('package:a/b/some.css');`;
-      const styleWithImports = extractStyleUrls(new FakeUrlResolver(), 'http://ng.io', css);
-      expect(styleWithImports.style.trim()).toEqual(``);
-      expect(styleWithImports.styleUrls).toEqual(['fake_resolved_url']);
-    });
-
   });
 
   describe('isStyleUrlResolvable', () => {
     it('should resolve relative urls',
        () => { expect(isStyleUrlResolvable('someUrl.css')).toBe(true); });
-
-    it('should resolve package: urls',
-       () => { expect(isStyleUrlResolvable('package:someUrl.css')).toBe(true); });
 
     it('should not resolve empty urls', () => {
       expect(isStyleUrlResolvable(null !)).toBe(false);

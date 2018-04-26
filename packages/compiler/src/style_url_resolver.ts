@@ -18,12 +18,11 @@ export class StyleWithImports {
 export function isStyleUrlResolvable(url: string): boolean {
   if (url == null || url.length === 0 || url[0] == '/') return false;
   const schemeMatch = url.match(URL_WITH_SCHEMA_REGEXP);
-  return schemeMatch === null || schemeMatch[1] == 'package' || schemeMatch[1] == 'asset';
+  return schemeMatch === null;
 }
 
 /**
- * Rewrites stylesheets by resolving and removing the @import urls that
- * are either relative or don't have a `package:` scheme
+ * Rewrites stylesheets by resolving and removing the @import relative urls
  */
 export function extractStyleUrls(
     resolver: UrlResolver, baseUrl: string, cssText: string): StyleWithImports {

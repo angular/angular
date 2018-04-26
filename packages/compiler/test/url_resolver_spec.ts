@@ -79,30 +79,8 @@ import {beforeEach, describe, expect, inject, it} from '@angular/core/testing/sr
       });
 
       it('should not resolve urls against the baseUrl when the url contains a scheme', () => {
-        resolver = new UrlResolver('my_packages_dir');
-        expect(resolver.resolve('base/', 'package:file')).toEqual('my_packages_dir/file');
         expect(resolver.resolve('base/', 'http:super_file')).toEqual('http:super_file');
         expect(resolver.resolve('base/', './mega_file')).toEqual('base/mega_file');
-      });
-    });
-
-    describe('packages', () => {
-      it('should resolve a url based on the application package', () => {
-        resolver = new UrlResolver('my_packages_dir');
-        expect(resolver.resolve(null !, 'package:some/dir/file.txt'))
-            .toEqual('my_packages_dir/some/dir/file.txt');
-        expect(resolver.resolve(null !, 'some/dir/file.txt')).toEqual('some/dir/file.txt');
-      });
-
-      it('should contain a default value of "/" when nothing is provided',
-         inject([UrlResolver], (resolver: UrlResolver) => {
-           expect(resolver.resolve(null !, 'package:file')).toEqual('/file');
-         }));
-
-      it('should resolve a package value when present within the baseurl', () => {
-        resolver = new UrlResolver('/my_special_dir');
-        expect(resolver.resolve('package:some_dir/', 'matias.html'))
-            .toEqual('/my_special_dir/some_dir/matias.html');
       });
     });
 

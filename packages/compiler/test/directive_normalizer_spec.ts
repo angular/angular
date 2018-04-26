@@ -16,7 +16,7 @@ import {noUndefined} from '../src/util';
 
 import {TEST_COMPILER_PROVIDERS} from './test_bindings';
 
-const SOME_MODULE_URL = 'package:some/module/a.js';
+const SOME_MODULE_URL = 'some/module/a.js';
 const SOME_HTTP_MODULE_URL = 'http://some/module/a.js';
 
 function normalizeTemplate(normalizer: DirectiveNormalizer, o: {
@@ -100,7 +100,7 @@ function normalizeTemplate(normalizer: DirectiveNormalizer, o: {
              template: 'a',
            });
            expect(template.template).toEqual('a');
-           expect(template.templateUrl).toEqual('package:some/module/a.js');
+           expect(template.templateUrl).toEqual('some/module/a.js');
            expect(template.isInline).toBe(true);
          }));
 
@@ -108,7 +108,7 @@ function normalizeTemplate(normalizer: DirectiveNormalizer, o: {
          inject([DirectiveNormalizer], (normalizer: DirectiveNormalizer) => {
            const template = <CompileTemplateMetadata>normalizeTemplate(
                normalizer, {template: '', styleUrls: ['test.css']});
-           expect(template.styleUrls).toEqual(['package:some/module/test.css']);
+           expect(template.styleUrls).toEqual(['some/module/test.css']);
          }));
 
       it('should resolve styles in the template against the moduleUrl and add them to the styles',
@@ -118,7 +118,7 @@ function normalizeTemplate(normalizer: DirectiveNormalizer, o: {
              styles: ['direct'],
            });
            expect(template.styles).toEqual([
-             'direct', 'template ', 'resource(package:some/module/test.css)'
+             'direct', 'template ', 'resource(some/module/test.css)'
            ]);
          }));
 
@@ -144,8 +144,8 @@ function normalizeTemplate(normalizer: DirectiveNormalizer, o: {
        inject([DirectiveNormalizer], (normalizer: DirectiveNormalizer) => {
          const template = <CompileTemplateMetadata>normalizeTemplate(
              normalizer, {templateUrl: 'sometplurl.html', styleUrls: ['test.css']});
-         expect(template.template).toEqual('resource(package:some/module/sometplurl.html)');
-         expect(template.templateUrl).toEqual('package:some/module/sometplurl.html');
+         expect(template.template).toEqual('resource(some/module/sometplurl.html)');
+         expect(template.templateUrl).toEqual('some/module/sometplurl.html');
          expect(template.isInline).toBe(false);
        }));
 
@@ -153,14 +153,14 @@ function normalizeTemplate(normalizer: DirectiveNormalizer, o: {
        inject([DirectiveNormalizer], (normalizer: DirectiveNormalizer) => {
          const template = <CompileTemplateMetadata>normalizeTemplate(
              normalizer, {templateUrl: 'tpl/sometplurl.html', styleUrls: ['test.css']});
-         expect(template.styleUrls).toEqual(['package:some/module/test.css']);
+         expect(template.styleUrls).toEqual(['some/module/test.css']);
        }));
 
     it('should resolve styles in the template against the templateUrl and add them to the styles',
        inject([DirectiveNormalizer], (normalizer: DirectiveNormalizer) => {
          resourceLoaderSpy.and.callFake((url: string) => {
            switch (url) {
-             case 'package:some/module/tpl/sometplurl.html':
+             case 'some/module/tpl/sometplurl.html':
                return '<style>template @import test.css</style>';
              default:
                return `resource(${url})`;
@@ -169,7 +169,7 @@ function normalizeTemplate(normalizer: DirectiveNormalizer, o: {
          const template = <CompileTemplateMetadata>normalizeTemplate(
              normalizer, {templateUrl: 'tpl/sometplurl.html', styles: ['direct']});
          expect(template.styles).toEqual([
-           'direct', 'template ', 'resource(package:some/module/tpl/test.css)'
+           'direct', 'template ', 'resource(some/module/tpl/test.css)'
          ]);
        }));
 
@@ -178,11 +178,11 @@ function normalizeTemplate(normalizer: DirectiveNormalizer, o: {
       it('should load an external stylesheet',
          inject([DirectiveNormalizer], (normalizer: DirectiveNormalizer) => {
            const template = <CompileTemplateMetadata>normalizeTemplate(
-               normalizer, {template: '', styleUrls: ['package:some/module/test.css']});
+               normalizer, {template: '', styleUrls: ['test.css']});
            expect(template.externalStylesheets.length).toBe(1);
            expect(template.externalStylesheets[0]).toEqual(new CompileStylesheetMetadata({
-             moduleUrl: 'package:some/module/test.css',
-             styles: ['resource(package:some/module/test.css)'],
+             moduleUrl: 'some/module/test.css',
+             styles: ['resource(some/module/test.css)'],
            }));
          }));
 
@@ -190,9 +190,9 @@ function normalizeTemplate(normalizer: DirectiveNormalizer, o: {
          inject([DirectiveNormalizer], (normalizer: DirectiveNormalizer) => {
            resourceLoaderSpy.and.callFake((url: string) => {
              switch (url) {
-               case 'package:some/module/test.css':
+               case 'some/module/test.css':
                  return 'a@import "test2.css"';
-               case 'package:some/module/test2.css':
+               case 'some/module/test2.css':
                  return 'b';
                default:
                  throw new Error(`Unexpected url ${url}`);
@@ -200,12 +200,14 @@ function normalizeTemplate(normalizer: DirectiveNormalizer, o: {
            });
            const template = <CompileTemplateMetadata>normalizeTemplate(normalizer, {
              template: '',
-             styleUrls: ['package:some/module/test.css'],
+             styleUrls: ['test.css'],
            });
+
            expect(template.externalStylesheets.length).toBe(1);
+
            expect(template.externalStylesheets[0])
                .toEqual(new CompileStylesheetMetadata(
-                   {moduleUrl: 'package:some/module/test.css', styles: ['a', 'b'], styleUrls: []}));
+                   {moduleUrl: 'some/module/test.css', styles: ['a', 'b'], styleUrls: []}));
          }));
     });
 
@@ -217,8 +219,8 @@ function normalizeTemplate(normalizer: DirectiveNormalizer, o: {
            };
            const template1 = <CompileTemplateMetadata>normalizeTemplate(normalizer, prenormMeta);
            const template2 = <CompileTemplateMetadata>normalizeTemplate(normalizer, prenormMeta);
-           expect(template1.template).toEqual('resource(package:some/module/cmp.html)');
-           expect(template2.template).toEqual('resource(package:some/module/cmp.html)');
+           expect(template1.template).toEqual('resource(some/module/cmp.html)');
+           expect(template2.template).toEqual('resource(some/module/cmp.html)');
 
            expect(resourceLoaderSpy).toHaveBeenCalledTimes(1);
          }));
@@ -305,7 +307,7 @@ function normalizeTemplate(normalizer: DirectiveNormalizer, o: {
            const template = <CompileTemplateMetadata>normalizeTemplate(normalizer, {
              template: '<link rel="stylesheet" href="aUrl">',
            });
-           expect(template.styles).toEqual(['resource(package:some/module/aUrl)']);
+           expect(template.styles).toEqual(['resource(some/module/aUrl)']);
            expect(template.styleUrls).toEqual([]);
          }));
 
@@ -314,7 +316,7 @@ function normalizeTemplate(normalizer: DirectiveNormalizer, o: {
            const template = <CompileTemplateMetadata>normalizeTemplate(normalizer, {
              template: '<div><link rel="stylesheet" href="aUrl"></div>',
            });
-           expect(template.styles).toEqual(['resource(package:some/module/aUrl)']);
+           expect(template.styles).toEqual(['resource(some/module/aUrl)']);
            expect(template.styleUrls).toEqual([]);
          }));
 
@@ -326,7 +328,7 @@ function normalizeTemplate(normalizer: DirectiveNormalizer, o: {
            expect(template.styleUrls).toEqual([]);
          }));
 
-      it('should ignore link elements with absolute urls but non package: scheme',
+      it('should ignore link elements with absolute urls',
          inject([DirectiveNormalizer], (normalizer: DirectiveNormalizer) => {
            const template = <CompileTemplateMetadata>normalizeTemplate(normalizer, {
              template: '<link href="http://some/external.css" rel="stylesheet">',
@@ -340,7 +342,7 @@ function normalizeTemplate(normalizer: DirectiveNormalizer, o: {
              styles: ['@import "test.css";'],
              template: '',
            });
-           expect(template.styles).toEqual(['', 'resource(package:some/module/test.css)']);
+           expect(template.styles).toEqual(['', 'resource(some/module/test.css)']);
            expect(template.styleUrls).toEqual([]);
          }));
 
@@ -360,7 +362,7 @@ function normalizeTemplate(normalizer: DirectiveNormalizer, o: {
              template: '',
            });
            expect(template.styles).toEqual([]);
-           expect(template.styleUrls).toEqual(['package:some/module/test.css']);
+           expect(template.styleUrls).toEqual(['some/module/test.css']);
          }));
 
       it('should resolve relative style urls in styleUrls with http directive url',
