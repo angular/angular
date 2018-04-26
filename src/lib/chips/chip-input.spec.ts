@@ -16,7 +16,6 @@ describe('MatChipInput', () => {
   let inputDebugElement: DebugElement;
   let inputNativeElement: HTMLElement;
   let chipInputDirective: MatChipInput;
-
   let dir = 'ltr';
 
   beforeEach(async(() => {
@@ -55,6 +54,15 @@ describe('MatChipInput', () => {
 
     it('should have a default id', () => {
       expect(inputNativeElement.getAttribute('id')).toBeTruthy();
+    });
+
+    it('should allow binding to the `placeholder` input', () => {
+      expect(inputNativeElement.hasAttribute('placeholder')).toBe(false);
+
+      testChipInput.placeholder = 'bound placeholder';
+      fixture.detectChanges();
+
+      expect(inputNativeElement.getAttribute('placeholder')).toBe('bound placeholder');
     });
   });
 
@@ -142,11 +150,13 @@ describe('MatChipInput', () => {
     </mat-chip-list>
     <input matInput [matChipInputFor]="chipList"
               [matChipInputAddOnBlur]="addOnBlur"
-              (matChipInputTokenEnd)="add($event)" />
+              (matChipInputTokenEnd)="add($event)"
+              [placeholder]="placeholder" />
   `
 })
 class TestChipInput {
   addOnBlur: boolean = false;
+  placeholder = '';
 
   add(_: MatChipInputEvent) {
   }

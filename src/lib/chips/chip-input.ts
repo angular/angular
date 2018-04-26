@@ -38,6 +38,7 @@ let nextUniqueId = 0;
     '(focus)': '_focus()',
     '(input)': '_onInput()',
     '[id]': 'id',
+    '[attr.placeholder]': 'placeholder || null',
   }
 })
 export class MatChipInput {
@@ -75,7 +76,11 @@ export class MatChipInput {
   @Output('matChipInputTokenEnd')
   chipEnd: EventEmitter<MatChipInputEvent> = new EventEmitter<MatChipInputEvent>();
 
-  /** The input's placeholder text. */
+  /**
+   * The input's placeholder text.
+   * @deprecated Bind to the `placeholder` attribute directly.
+   * @deletion-target 7.0.0
+   */
   @Input() placeholder: string = '';
 
   /** Unique id for the input. */
