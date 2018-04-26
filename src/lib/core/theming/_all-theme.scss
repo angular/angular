@@ -30,6 +30,7 @@
 @import '../../tabs/tabs-theme';
 @import '../../toolbar/toolbar-theme';
 @import '../../tooltip/tooltip-theme';
+@import '../../tree/tree-theme';
 @import '../../snack-bar/snack-bar-theme';
 @import '../../form-field/form-field-theme';
 
@@ -68,5 +69,6 @@
   @include mat-tabs-theme($theme);
   @include mat-toolbar-theme($theme);
   @include mat-tooltip-theme($theme);
+  @include mat-tree-theme($theme);
   @include mat-snack-bar-theme($theme);
 }

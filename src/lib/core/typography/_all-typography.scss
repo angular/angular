@@ -32,6 +32,7 @@
 @import '../option/option-theme';
 @import '../option/optgroup-theme';
 @import '../../form-field/form-field-theme';
+@import '../../tree/tree-theme';
 
 
 // Includes all of the typographic styles.
@@ -74,4 +75,5 @@
   @include mat-option-typography($config);
   @include mat-optgroup-typography($config);
   @include mat-snack-bar-typography($config);
+  @include mat-tree-typography($config);
 }
