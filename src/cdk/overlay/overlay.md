@@ -37,6 +37,14 @@ element on the page. This is commonly used for menus, pickers, and tooltips. Whe
 connected strategy, a set of preferred positions is provided; the "best" position will be selected
 based on how well the overlay would fit within the viewport.
 
+`FlexibleConnectedPositionStrategy` expands upon the functionality from the
+`ConnectedPositionStrategy` by adding more advanced features on top of being able to position an
+overlay relative to another element on the page. These features include the ability to have an
+overlay become scrollable once its content reaches the viewport edge, being able to configure a
+margin between the overlay and the viewport edge, having an overlay be pushed into the viewport if
+it doesn't fit into any of its preferred positions, as well as configuring whether the overlay's
+size can grow while the overlay is open.
+
 A custom position strategy can be created by implementing the `PositionStrategy` interface.
 Each `PositionStrategy` defines an `apply` method that is called whenever the overlay's position
 should be updated. A custom position strategy can additionally expose any other APIs necessary as
