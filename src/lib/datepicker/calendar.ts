@@ -25,8 +25,7 @@ import {
   ViewEncapsulation,
 } from '@angular/core';
 import {DateAdapter, MAT_DATE_FORMATS, MatDateFormats} from '@angular/material/core';
-import {takeUntil} from 'rxjs/operators';
-import {Observable, Subject, Subscription} from 'rxjs';
+import {Subject, Subscription} from 'rxjs';
 import {createMissingDateImplError} from './datepicker-errors';
 import {MatDatepickerIntl} from './datepicker-intl';
 import {MatMonthView} from './month-view';
@@ -42,17 +41,14 @@ import {MatYearView} from './year-view';
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MatCalendarHeader<D> implements OnDestroy {
-  /** Subject that emits when the component has been destroyed. */
-  private _destroyed = new Subject<void>();
-
+export class MatCalendarHeader<D> {
   constructor(private _intl: MatDatepickerIntl,
               @Inject(forwardRef(() => MatCalendar)) public calendar: MatCalendar<D>,
               @Optional() private _dateAdapter: DateAdapter<D>,
               @Optional() @Inject(MAT_DATE_FORMATS) private _dateFormats: MatDateFormats,
               changeDetectorRef: ChangeDetectorRef) {
-    this.calendar.stateChanges.pipe(takeUntil(this._destroyed))
-        .subscribe(() => changeDetectorRef.markForCheck());
+
+    this.calendar.stateChanges.subscribe(() => changeDetectorRef.markForCheck());
   }
 
   /** The label for the current calendar view. */
@@ -147,11 +143,6 @@ export class MatCalendarHeader<D> implements OnDestroy {
     // Otherwise we are in 'multi-year' view.
     return Math.floor(this._dateAdapter.getYear(date1) / yearsPerPage) ==
         Math.floor(this._dateAdapter.getYear(date2) / yearsPerPage);
-  }
-
-  ngOnDestroy() {
-    this._destroyed.next();
-    this._destroyed.complete();
   }
 }
 
@@ -252,7 +243,7 @@ export class MatCalendar<D> implements AfterContentInit, OnDestroy, OnChanges {
   get activeDate(): D { return this._clampedActiveDate; }
   set activeDate(value: D) {
     this._clampedActiveDate = this._dateAdapter.clampDate(value, this.minDate, this.maxDate);
-    this._stateChanges.next();
+    this.stateChanges.next();
   }
   private _clampedActiveDate: D;
 
@@ -260,13 +251,9 @@ export class MatCalendar<D> implements AfterContentInit, OnDestroy, OnChanges {
   currentView: 'month' | 'year' | 'multi-year';
 
   /**
-   * An observable that emits whenever there is a state change that the header may need to respond
-   * to.
+   * Emits whenever there is a state change that the header may need to respond to.
    */
-  get stateChanges(): Observable<void> {
-    return this._stateChanges.asObservable();
-  }
-  private _stateChanges = new Subject<void>();
+  stateChanges = new Subject<void>();
 
   constructor(_intl: MatDatepickerIntl,
               @Optional() private _dateAdapter: DateAdapter<D>,
@@ -283,7 +270,7 @@ export class MatCalendar<D> implements AfterContentInit, OnDestroy, OnChanges {
 
     this._intlChanges = _intl.changes.subscribe(() => {
       changeDetectorRef.markForCheck();
-      this._stateChanges.next();
+      this.stateChanges.next();
     });
   }
 
@@ -296,6 +283,7 @@ export class MatCalendar<D> implements AfterContentInit, OnDestroy, OnChanges {
 
   ngOnDestroy() {
     this._intlChanges.unsubscribe();
+    this.stateChanges.complete();
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -309,7 +297,7 @@ export class MatCalendar<D> implements AfterContentInit, OnDestroy, OnChanges {
       }
     }
 
-    this._stateChanges.next();
+    this.stateChanges.next();
   }
 
   /** Handles date selection in the month view. */

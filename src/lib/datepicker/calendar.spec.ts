@@ -120,6 +120,16 @@ describe('MatCalendar', () => {
       expect(invalidButtons.length).toBe(0);
     });
 
+    it('should complete the stateChanges stream', () => {
+      const spy = jasmine.createSpy('complete spy');
+      const subscription = calendarInstance.stateChanges.subscribe(undefined, undefined, spy);
+
+      fixture.destroy();
+
+      expect(spy).toHaveBeenCalled();
+      subscription.unsubscribe();
+    });
+
     describe('a11y', () => {
       describe('calendar body', () => {
         let calendarBodyEl: HTMLElement;
