@@ -124,6 +124,7 @@ export class MatTabNav extends _MatTabNavMixinBase implements AfterContentInit, 
    */
   updateActiveLink(element: ElementRef) {
     // Note: keeping the `element` for backwards-compat, but isn't being used for anything.
+    // @deletion-target 7.0.0
     this._activeLinkChanged = !!element;
     this._changeDetectorRef.markForCheck();
   }
@@ -200,10 +201,10 @@ export class MatTabLink extends _MatTabLinkMixinBase
     implements OnDestroy, CanDisable, CanDisableRipple, HasTabIndex, RippleTarget {
 
   /** Whether the tab link is active or not. */
-  private _isActive: boolean = false;
+  protected _isActive: boolean = false;
 
   /** Reference to the RippleRenderer for the tab-link. */
-  private _tabLinkRipple: RippleRenderer;
+  protected _tabLinkRipple: RippleRenderer;
 
   /** Whether the link is active. */
   @Input()
