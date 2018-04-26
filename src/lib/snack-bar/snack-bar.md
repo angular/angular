@@ -86,7 +86,20 @@ If you want to override the default snack bar options, you can do so using the
 ```
 
 ### Accessibility
-Snack-bar messages are announced via an `aria-live` region. Focus is not moved to
-the snack-bar element, as this would be disruptive to a user in the middle of a
-workflow. For any action offered in the snack-bar, the application should offer the
-user an alternative way to perform the action (typically via keyboard shortcut).
+Snack-bar messages are announced via an `aria-live` region. By default, the `polite` setting is
+used. While `polite` is recommended, this can be customized by setting the `politeness` property of
+the `MatSnackBarConfig`.
+
+Focus is not, and should not be, moved to the snack-bar element. Moving the focus would be
+disruptive to a user in the middle of a workflow. It is recommended that, for any action offered
+in the snack-bar, the application offer the user an alternative way to perform the action.
+Alternative interactions are typically keyboard shortcuts or menu options. When the action is
+performed in this way, the snack-bar should be dismissed.
+
+Snack-bars that have an action available should not be given a `duration`, as to accomodate
+screen-reader users that want to navigate to the snack-bar element to activate the action. If the
+user has manually moved their focus within the snackbar, focus should be placed somewhere sensible
+based on the application context when the snack-bar is dismissed.
+
+Don't use "Dismiss" as a snack-bar-action, instead preferring to use a `duration` when there is
+no additional action associated with the notification. 
