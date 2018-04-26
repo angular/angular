@@ -213,6 +213,7 @@ export class Router {
   private navigationId: number = 0;
   private configLoader: RouterConfigLoader;
   private ngModule: NgModuleRef<any>;
+  private lastSuccessfulNavigationPath: string;
 
   /**
    * Error handler that is invoked when a navigation errors.
@@ -521,7 +522,7 @@ export class Router {
     // If the user triggers a navigation imperatively (e.g., by using navigateByUrl),
     // and that navigation results in 'replaceState' that leads to the same URL,
     // we should skip those.
-    if (lastNavigation && source !== 'imperative' && lastNavigation.source === 'imperative' &&
+    if (lastNavigation && source !== 'imperative' && lastNavigation.source === 'imperative' && lastNavigation.isSuccessful &&
         lastNavigation.rawUrl.toString() === rawUrl.toString()) {
       return Promise.resolve(true);  // return value is not used
     }
@@ -550,7 +551,7 @@ export class Router {
     return promise.catch((e: any) => Promise.reject(e));
   }
 
-  private executeScheduledNavigation({id, rawUrl, extras, resolve, reject}: NavigationParams):
+  private executeScheduledNavigation({id, rawUrl, extras, source, reject}: NavigationParams):
       void {
     const url = this.urlHandlingStrategy.extract(rawUrl);
     const urlTransition = !this.navigated || url.toString() !== this.currentUrlTree.toString();
@@ -560,7 +561,7 @@ export class Router {
       Promise.resolve()
           .then(
               (_) => this.runNavigate(
-                  url, rawUrl, !!extras.skipLocationChange, !!extras.replaceUrl, id, null))
+				  source, url, rawUrl, !!extras.skipLocationChange, !!extras.replaceUrl, id, null))
           .then(resolve, reject);
 
       // we cannot process the current URL, but we could process the previous one =>
@@ -572,7 +573,7 @@ export class Router {
       Promise.resolve()
           .then(
               (_) => this.runNavigate(
-                  url, rawUrl, false, false, id,
+				  source, url, rawUrl, false, false, id,
                   createEmptyState(url, this.rootComponentType).snapshot))
           .then(resolve, reject);
 
@@ -580,9 +581,17 @@ export class Router {
       this.rawUrlTree = rawUrl;
       resolve(null);
     }
+
+    function resolve (isSuccessfulNavigation: any) {
+      if (isSuccessfulNavigation) {
+        this.lastSuccessfulNavigationPath = this.location.path(true);
+        this.isSuccessful = true;
+      }
+        this.resolve(isSuccessfulNavigation);
+    }
   }
 
-  private runNavigate(
+  private runNavigate( source: string,
       url: UrlTree, rawUrl: UrlTree, shouldPreventPushState: boolean, shouldReplaceUrl: boolean,
       id: number, precreatedState: RouterStateSnapshot|null): Promise<boolean> {
     if (id !== this.navigationId) {
@@ -728,14 +737,14 @@ export class Router {
                       id, this.serializeUrl(url), this.serializeUrl(this.currentUrlTree)));
                   resolvePromise(true);
                 } else {
-                  this.resetUrlToCurrentUrlTree();
+                  this.resetUrlToCurrentUrlTree(source);
                   this.routerEvents.next(new NavigationCancel(id, this.serializeUrl(url), ''));
                   resolvePromise(false);
                 }
               },
               (e: any) => {
                 if (isNavigationCancelingError(e)) {
-                  this.resetUrlToCurrentUrlTree();
+                  this.resetUrlToCurrentUrlTree(source);
                   this.navigated = true;
                   this.routerEvents.next(
                       new NavigationCancel(id, this.serializeUrl(url), e.message));
@@ -757,9 +766,10 @@ export class Router {
     });
   }
 
-  private resetUrlToCurrentUrlTree(): void {
-    const path = this.urlSerializer.serialize(this.rawUrlTree);
-    this.location.replaceState(path);
+  private resetUrlToCurrentUrlTree(source: string): void {
+	  if (source === 'popstate') {
+	    this.location.go(this.lastSuccessfulNavigationPath || this.urlSerializer.serialize(this.rawUrlTree));
+      }
   }
 }
 
