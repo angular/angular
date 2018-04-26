@@ -14,6 +14,9 @@ export class CdkTreeNodeOutletContext<T> {
   /** Data for the node. */
   $implicit: T;
 
+  /** Depth of the node. */
+  level: number;
+
   /** Index location of the node. */
   index?: number;
 

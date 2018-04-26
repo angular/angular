@@ -623,6 +623,39 @@ describe('CdkTree', () => {
       }).toThrowError(getTreeControlFunctionsMissingError().message);
     }));
   });
+
+  describe('with depth', () => {
+    let fixture: ComponentFixture<DepthNestedCdkTreeApp>;
+    let component: DepthNestedCdkTreeApp;
+
+    beforeEach(() => {
+      configureCdkTreeTestingModule([DepthNestedCdkTreeApp]);
+      fixture = TestBed.createComponent(DepthNestedCdkTreeApp);
+
+      component = fixture.componentInstance;
+      dataSource = component.dataSource as FakeDataSource;
+      tree = component.tree;
+      treeElement = fixture.nativeElement.querySelector('cdk-tree');
+
+      fixture.detectChanges();
+    });
+
+    it('should have correct depth for nested tree', () => {
+      let data = dataSource.data;
+      const child = dataSource.addChild(data[1], false);
+      dataSource.addChild(child, false);
+
+      fixture.detectChanges();
+
+      const depthElements = Array.from(treeElement.querySelectorAll('.tree-test-level')!);
+      const expectedLevels = ['0', '0', '1', '2', '0'];
+      depthElements.forEach((element, index) => {
+        const actualLevel = element.textContent!.trim();
+        expect(actualLevel).toBe(expectedLevels[index]);
+      });
+      expect(depthElements.length).toBe(5);
+    });
+  });
 });
 
 export class TestData {
@@ -1079,6 +1112,33 @@ class FlatCdkErrorTreeApp {
   treeControl: TreeControl<TestData> = new FakeTreeControl();
 
   dataSource: FakeDataSource | null = new FakeDataSource(this.treeControl);
+
+  @ViewChild(CdkTree) tree: CdkTree<TestData>;
+}
+
+
+@Component({
+  template: `
+    <cdk-tree [dataSource]="dataArray" [treeControl]="treeControl">
+      <cdk-nested-tree-node *cdkTreeNodeDef="let node; let level = level">
+          <span class="tree-test-level">{{level}}</span>
+           [{{node.pizzaTopping}}] - [{{node.pizzaCheese}}] + [{{node.pizzaBase}}]
+         <ng-template cdkTreeNodeOutlet></ng-template>
+      </cdk-nested-tree-node>
+    </cdk-tree>
+  `
+})
+class DepthNestedCdkTreeApp {
+
+  getChildren = (node: TestData) => node.observableChildren;
+
+  treeControl: TreeControl<TestData> = new NestedTreeControl(this.getChildren);
+
+  dataSource: FakeDataSource = new FakeDataSource(this.treeControl);
+
+  get dataArray() {
+    return this.dataSource.data;
+  }
 
   @ViewChild(CdkTree) tree: CdkTree<TestData>;
 }

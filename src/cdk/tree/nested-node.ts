@@ -91,7 +91,7 @@ export class CdkNestedTreeNode<T> extends CdkTreeNode<T> implements AfterContent
   protected updateChildrenNodes(): void {
     if (this.nodeOutlet.length && this._children) {
       const viewContainer = this.nodeOutlet.first.viewContainer;
-      this._tree.renderNodeChanges(this._children, this._dataDiffer, viewContainer);
+      this._tree.renderNodeChanges(this._children, this._dataDiffer, viewContainer, this._data);
     } else {
       // Reset the data differ if there's no children nodes displayed
       this._dataDiffer.diff([]);
