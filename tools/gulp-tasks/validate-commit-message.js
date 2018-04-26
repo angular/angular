@@ -12,12 +12,17 @@
 
 // tslint:disable:no-console
 module.exports = (gulp) => () => {
+  if (!process.env.COMMIT_RANGE) {
+    console.error(
+        'Required environment variable `COMMIT_RANGE` is missing or empty.\n' +
+        'On CircleCI, you can get the commit range by executing `.circleci/commit-range.js`.');
+    process.exit(1);
+  }
+
   const validateCommitMessage = require('../validate-commit-message');
   const shelljs = require('shelljs');
   const [baseSha, headSha] = process.env.COMMIT_RANGE.split('...');
 
-  // We need to fetch origin explicitly because it might be stale.
-  // I couldn't find a reliable way to do this without fetch.
   const result = shelljs.exec(`git log --reverse --format=%s ${baseSha}..${headSha}`);
 
   if (result.code) {
