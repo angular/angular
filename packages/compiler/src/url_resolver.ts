@@ -6,15 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-/**
- * Create a {@link UrlResolver} with no package prefix.
- */
-export function createUrlResolverWithoutPackagePrefix(): UrlResolver {
-  return new UrlResolver();
-}
-
 export function createOfflineCompileUrlResolver(): UrlResolver {
-  return new UrlResolver('.');
+  return new UrlResolver();
 }
 
 /**
@@ -35,11 +28,9 @@ export function createOfflineCompileUrlResolver(): UrlResolver {
  */
 export interface UrlResolver { resolve(baseUrl: string, url: string): string; }
 
-export interface UrlResolverCtor { new (packagePrefix?: string|null): UrlResolver; }
+export interface UrlResolverCtor { new (): UrlResolver; }
 
 export const UrlResolver: UrlResolverCtor = class UrlResolverImpl {
-  constructor(private _packagePrefix: string|null = null) {}
-
   /**
    * Resolves the `url` given the `baseUrl`:
    * - when the `url` is null, the `baseUrl` is returned,
@@ -49,20 +40,10 @@ export const UrlResolver: UrlResolverCtor = class UrlResolverImpl {
    * returned as is (ignoring the `baseUrl`)
    */
   resolve(baseUrl: string, url: string): string {
-    let resolvedUrl = url;
     if (baseUrl != null && baseUrl.length > 0) {
-      resolvedUrl = _resolveUrl(baseUrl, resolvedUrl);
+      return _resolveUrl(baseUrl, url);
     }
-    const resolvedParts = _split(resolvedUrl);
-    let prefix = this._packagePrefix;
-    if (prefix != null && resolvedParts != null &&
-        resolvedParts[_ComponentIndex.Scheme] == 'package') {
-      let path = resolvedParts[_ComponentIndex.Path];
-      prefix = prefix.replace(/\/+$/, '');
-      path = path.replace(/^\/+/, '');
-      return `${prefix}/${path}`;
-    }
-    return resolvedUrl;
+    return url;
   }
 };
 

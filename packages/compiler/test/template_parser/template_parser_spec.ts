@@ -24,7 +24,7 @@ import {MockSchemaRegistry} from '../../testing';
 import {unparse} from '../expression_parser/unparser';
 import {TEST_COMPILER_PROVIDERS} from '../test_bindings';
 
-const someModuleUrl = 'package:someModule';
+const someModuleUrl = '/path/to/someModule';
 
 const MOCK_SCHEMA_REGISTRY = [{
   provide: ElementSchemaRegistry,
@@ -1965,14 +1965,13 @@ Property binding a not used by any directive on an embedded template. Make sure 
 
       describe('<link rel="stylesheet">', () => {
 
-        it('should keep <link rel="stylesheet"> elements if they have an absolute non package: url',
-           () => {
-             expect(humanizeTplAst(parse('<link rel="stylesheet" href="http://someurl">a', [])))
-                 .toEqual([
-                   [ElementAst, 'link'], [AttrAst, 'rel', 'stylesheet'],
-                   [AttrAst, 'href', 'http://someurl'], [TextAst, 'a']
-                 ]);
-           });
+        it('should keep <link rel="stylesheet"> elements if they have an absolute url', () => {
+          expect(humanizeTplAst(parse('<link rel="stylesheet" href="http://someurl">a', [])))
+              .toEqual([
+                [ElementAst, 'link'], [AttrAst, 'rel', 'stylesheet'],
+                [AttrAst, 'href', 'http://someurl'], [TextAst, 'a']
+              ]);
+        });
 
         it('should keep <link rel="stylesheet"> elements if they have no uri', () => {
           expect(humanizeTplAst(parse('<link rel="stylesheet">a', [
@@ -1987,12 +1986,6 @@ Property binding a not used by any directive on an embedded template. Make sure 
           expect(humanizeTplAst(parse('<link rel="stylesheet" HREF="./other.css">a', [
           ]))).toEqual([[TextAst, 'a']]);
         });
-
-        it('should ignore <link rel="stylesheet"> elements if they have a package: uri', () => {
-          expect(humanizeTplAst(parse('<link rel="stylesheet" href="package:somePackage">a', [
-          ]))).toEqual([[TextAst, 'a']]);
-        });
-
       });
 
       it('should ignore bindings on children of elements with ngNonBindable', () => {

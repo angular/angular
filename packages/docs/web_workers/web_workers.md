@@ -87,64 +87,6 @@ will be compiled with a `System.define` call at the top.
 support was to allow as much of Angular to live in the worker as possible.
 As such, *most* Angular components can be bootstrapped in a WebWorker with minimal to no changes required.
 
-For reference, here's the same HelloWorld example in Dart.
-```HTML
-<html>
-  <body>
-    <script type="application/dart" src="index.dart"></script>
-    <script src="packages/browser.dart.js"></script>
-  </body>
-</html>
-```
-```Dart
-// index.dart
-import "angular2/core.dart";
-import "angular2/platform/worker_render.dart";
-
-main() {
-  platform([WORKER_RENDER_PLATFORM])
-  .asyncApplication(initIsolate("my_worker.dart"));
-}
-```
-```Dart
-// background_index.dart
-import "angular2/core.dart";
-import "angular2/platform/worker_app.dart";
-import "package:angular2/src/core/reflection/reflection.dart";
-import "package:angular2/src/core/reflection/reflection_capabilities.dart";
-
-@Component(
-  selector: "hello-world"
-)
-@View(
-  template: "<h1>Hello {{name}}</h1>"
-)
-class HelloWorld {
-  String name = "Jane";
-}
-
-main(List<String> args, SendPort replyTo) {
-  reflector.reflectionCapabilities = new ReflectionCapabilities();
-  platform([WORKER_APP_PLATFORM, {provide: RENDER_SEND_PORT, useValue: replyTo}])
-  .application([WORKER_APP_APPLICATION])
-  .bootstrap(RootComponent);
-}
-
-```
-This code is nearly the same as the TypeScript version with just a couple key differences:
-* We don't have a `loader.js` file. Dart applications don't need this file because you don't need a module loader.
-* We provide a `SendPort` through DI using the token `RENDER_SEND_PORT`.  Dart applications use the Isolate API, which communicates via
-Dart's Port abstraction. When you call `setupIsolate` from the UI thread, angular starts a new Isolate to run
-your application logic. When Dart starts a new Isolate it passes a `SendPort` to that Isolate so that it
-can communicate with the Isolate that spawned it. You need to provide this `SendPort` through DI 
-so that Angular can communicate with the UI.
-* You need to set up `ReflectionCapabilities` on both the UI and Worker. Just like writing non-concurrent
-Angular2 Dart applications you need to set up the reflector. You should not use Reflection in production,
-but should use the Angular transformer to remove it in your final JS code. Note there's currently a bug
-with running the transformer on your UI code (#3971). You can (and should) pass the file where you call
-`bootstrap` as an entry point to the transformer, but you should not pass your UI index file
-to the transformer until that bug is fixed.
-
 ## Writing WebWorker Compatible Components
 You can do almost everything in a WebWorker component that you can do in a typical Angular Component.
 The main exception is that there is **no** DOM access from a WebWorker component. In Dart this means you can't
@@ -264,41 +206,6 @@ export class MyComponent {
 }
 ```
 
-This example is nearly identical in Dart, and is included below for reference:
-```Dart
-// index.dart, which is running on the UI.
-import 'package:angular2/web_workers/ui.dart';
-
-main() {
-  import "angular2/core.dart";
-  import "angular2/platform/worker_render.dart";
-
-  platform([WORKER_RENDER_PLATFORM])
-  .asyncApplication(initIsolate("my_worker.dart")).then((ref) {
-    var bus = ref.injector.get(MessageBus);
-    bus.initChannel("My Custom Channel");
-    bus.to("My Custom Channel").add("hello from the UI");
-  });
-}
-
-```
-```Dart
-// background_index.dart, which is running on the WebWorker
-import 'package:angular2/platform/worker_app.dart';
-@Component(...)
-@View(...)
-class MyComponent {
-  MyComponent (MessageBus bus) {
-    bus.initChannel("My Custom Channel");
-    bus.from("My Custom Channel").listen((message) {
-      print(message); // will print "hello from the UI"
-    });
-  }
-}
-```
-The only substantial difference between these APIs in Dart and TypeScript is the different APIs for the
-`EventEmitter`.
-
 **Note:** Because the messages passed through the MessageBus cross a WebWorker boundary, they must be serializable.
 If you use the MessageBus directly, you are responsible for serializing your messages.
 In JavaScript / TypeScript this means they must be serializable via JavaScript's
@@ -329,7 +236,7 @@ if you do this, you don't need to implement zone or channel support yourself. Yo
 `GenericMessageBusSource`. The `MessageBusSink` must override the `sendMessages` method. This method is
 given a list of serialized messages that it is required to send through the sink.
 
-Once you've implemented your custom MessageBus in either TypeScript, you must provide it through DI 
+Once you've implemented your custom MessageBus in either TypeScript, you must provide it through DI
 during bootstrap like so:
 
 In TypeScript:
@@ -346,7 +253,7 @@ import {
 var bus = new MyAwesomeMessageBus();
 platform([WORKER_RENDER_PLATFORM])
 .application([WORKER_RENDER_APPLICATION_COMMON, {provide: MessageBus, useValue: bus},
-  { provide: APP_INITIALIZER, 
+  { provide: APP_INITIALIZER,
     useFactory: (injector) => () => initializeGenericWorkerRenderer(injector),
     deps: [Injector],
     multi: true
@@ -432,50 +339,3 @@ export class MyComponent {
   }
 }
 ```
-#### Using the MessageBroker in Dart
-```Dart
-// index.dart, which is running on the UI with a method that we want to expose to a WebWorker
-import "angular2/core.dart";
-import "angular2/platform/worker_render.dart";
-
-main() {
-  platform([WORKER_RENDER_PLATFORM])
-  .asyncApplication(initIsolate("my_worker.dart")).then((ref) {
-    var broker = ref.injector.get(ServiceMessageBrokerFactory).createMessageBroker("My Broker Channel");
-
-    // assume we have some function doCoolThings that takes a String argument and returns a Future<String>
-    broker.registerMethod("awesomeMethod", [PRIMITIVE], (String arg1) => doCoolThing(arg1), PRIMITIVE);
-  });
-}
-
-```
-```Dart
-// background.dart, which is running on a WebWorker and wants to execute a method on the UI
-import 'package:angular2/core.dart';
-import 'package:angular2/platform/worker_app.dart';
-
-@Component(...)
-@View(...)
-class MyComponent {
-  MyComponent(ClientMessageBrokerFactory brokerFactory) {
-    var broker = brokerFactory.createMessageBroker("My Broker Channel");
-
-    var arguments = [new FnArg(value, PRIMITIVE)];
-    var methodInfo = new UiArguments("awesomeMethod", arguments);
-    broker.runOnService(methodInfo, PRIMTIVE).then((String result) {
-      // result will be equal to the return value of doCoolThing(value) that ran on the UI.
-    });
-  }
-}
-```
-Both the client and the service create new MessageBrokers and attach them to the same channel.
-The service then calls `registerMethod` to register the method that it wants to listen to. Register method takes
-four arguments. The first is the name of the method, the second is the Types of that method's parameters, the
-third is the method itself, and the fourth (which is optional) is the return Type of that method.
-The MessageBroker handles serializing / deserializing your parameters and return types using angular's serializer.
-However, at the moment the serializer only knows how to serialize angular classes like those used by the Renderer.
-If you're passing anything other than those types around in your application you can handle serialization yourself
-and then use the `PRIMITIVE` type to tell the MessageBroker to avoid serializing your data.
-
-The last thing that happens is that the client calls `runOnService` with the name of the method it wants to run,
-a list of that method's arguments and their types, and (optionally) the expected return type.
