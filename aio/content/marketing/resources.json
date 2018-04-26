@@ -202,7 +202,7 @@
             "url": "https://github.com/angular/universal"
           },
           "c1": {
-            "desc": "Lightweight development only node server",
+            "desc": "Lightweight development only Node.js® server",
             "logo": "",
             "rev": true,
             "title": "Lite-server",
