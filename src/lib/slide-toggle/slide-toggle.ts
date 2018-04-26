@@ -92,12 +92,29 @@ export class MatSlideToggle extends _MatSlideToggleMixinBase implements OnDestro
   private onTouched = () => {};
 
   private _uniqueId: string = `mat-slide-toggle-${++nextUniqueId}`;
-  private _slideRenderer: SlideToggleRenderer;
   private _required: boolean = false;
   private _checked: boolean = false;
 
   /** Reference to the focus state ripple. */
   private _focusRipple: RippleRef | null;
+
+  /** Whether the thumb is currently being dragged. */
+  private _dragging = false;
+
+  /** Previous checked state before drag started. */
+  private _previousChecked: boolean;
+
+  /** Width of the thumb bar of the slide-toggle. */
+  private _thumbBarWidth: number;
+
+  /** Percentage of the thumb while dragging. Percentage as fraction of 100. */
+  private _dragPercentage: number;
+
+  /** Reference to the thumb HTMLElement. */
+  @ViewChild('thumbContainer') _thumbEl: ElementRef<HTMLElement>;
+
+  /** Reference to the thumb bar HTMLElement. */
+  @ViewChild('toggleBar') _thumbBarEl: ElementRef<HTMLElement>;
 
   /** Name value will be applied to the input element if present */
   @Input() name: string | null = null;
@@ -142,7 +159,11 @@ export class MatSlideToggle extends _MatSlideToggleMixinBase implements OnDestro
   @ViewChild(MatRipple) _ripple: MatRipple;
 
   constructor(elementRef: ElementRef,
-              private _platform: Platform,
+              /**
+               * @deprecated The `_platform` parameter to be removed.
+               * @deletion-target 7.0.0
+               */
+              _platform: Platform,
               private _focusMonitor: FocusMonitor,
               private _changeDetectorRef: ChangeDetectorRef,
               @Attribute('tabindex') tabIndex: string,
@@ -153,8 +174,6 @@ export class MatSlideToggle extends _MatSlideToggleMixinBase implements OnDestro
   }
 
   ngAfterContentInit() {
-    this._slideRenderer = new SlideToggleRenderer(this._elementRef, this._platform);
-
     this._focusMonitor
       .monitor(this._inputElement.nativeElement)
       .subscribe(focusOrigin => this._onInputFocusChange(focusOrigin));
@@ -174,7 +193,7 @@ export class MatSlideToggle extends _MatSlideToggleMixinBase implements OnDestro
     // Releasing the pointer over the `<label>` element while dragging triggers another
     // click event on the `<label>` element. This means that the checked state of the underlying
     // input changed unintentionally and needs to be changed back.
-    if (this._slideRenderer.dragging) {
+    if (this._dragging) {
       this._inputElement.nativeElement.checked = this.checked;
       return;
     }
@@ -255,108 +274,6 @@ export class MatSlideToggle extends _MatSlideToggleMixinBase implements OnDestro
     this.change.emit(new MatSlideToggleChange(this, this.checked));
   }
 
-  _onDragStart() {
-    if (!this.disabled) {
-      this._slideRenderer.startThumbDrag(this.checked);
-    }
-  }
-
-  _onDrag(event: HammerInput) {
-    if (this._slideRenderer.dragging) {
-      this._slideRenderer.updateThumbPosition(event.deltaX);
-    }
-  }
-
-  _onDragEnd() {
-    if (this._slideRenderer.dragging) {
-      const newCheckedValue = this._slideRenderer.dragPercentage > 50;
-
-      if (newCheckedValue !== this.checked) {
-        this.checked = newCheckedValue;
-        this._emitChangeEvent();
-      }
-
-      // The drag should be stopped outside of the current event handler, otherwise the
-      // click event will be fired before it and will revert the drag change.
-      this._ngZone.runOutsideAngular(() => {
-        setTimeout(() => this._slideRenderer.stopThumbDrag());
-      });
-    }
-  }
-
-  /** Method being called whenever the label text changes. */
-  _onLabelTextChange() {
-    // This method is getting called whenever the label of the slide-toggle changes.
-    // Since the slide-toggle uses the OnPush strategy we need to notify it about the change
-    // that has been recognized by the cdkObserveContent directive.
-    this._changeDetectorRef.markForCheck();
-  }
-}
-
-/**
- * Renderer for the Slide Toggle component, which separates DOM modification in its own class
- */
-class SlideToggleRenderer {
-
-  /** Reference to the thumb HTMLElement. */
-  private _thumbEl: HTMLElement;
-
-  /** Reference to the thumb bar HTMLElement. */
-  private _thumbBarEl: HTMLElement;
-
-  /** Width of the thumb bar of the slide-toggle. */
-  private _thumbBarWidth: number;
-
-  /** Previous checked state before drag started. */
-  private _previousChecked: boolean;
-
-  /** Percentage of the thumb while dragging. Percentage as fraction of 100. */
-  dragPercentage: number;
-
-  /** Whether the thumb is currently being dragged. */
-  dragging: boolean = false;
-
-  constructor(elementRef: ElementRef, platform: Platform) {
-    // We only need to interact with these elements when we're on the browser, so only grab
-    // the reference in that case.
-    if (platform.isBrowser) {
-      this._thumbEl = elementRef.nativeElement.querySelector('.mat-slide-toggle-thumb-container');
-      this._thumbBarEl = elementRef.nativeElement.querySelector('.mat-slide-toggle-bar');
-    }
-  }
-
-  /** Initializes the drag of the slide-toggle. */
-  startThumbDrag(checked: boolean): void {
-    if (this.dragging) { return; }
-
-    this._thumbBarWidth = this._thumbBarEl.clientWidth - this._thumbEl.clientWidth;
-    this._thumbEl.classList.add('mat-dragging');
-
-    this._previousChecked = checked;
-    this.dragging = true;
-  }
-
-  /** Resets the current drag and returns the new checked value. */
-  stopThumbDrag(): boolean {
-    if (!this.dragging) { return false; }
-
-    this.dragging = false;
-    this._thumbEl.classList.remove('mat-dragging');
-
-    // Reset the transform because the component will take care of the thumb position after drag.
-    this._thumbEl.style.transform = '';
-
-    return this.dragPercentage > 50;
-  }
-
-  /** Updates the thumb containers position from the specified distance. */
-  updateThumbPosition(distance: number): void {
-    this.dragPercentage = this._getDragPercentage(distance);
-    // Calculate the moved distance based on the thumb bar width.
-    const dragX = (this.dragPercentage / 100) * this._thumbBarWidth;
-    this._thumbEl.style.transform = `translate3d(${dragX}px, 0, 0)`;
-  }
-
   /** Retrieves the percentage of thumb from the moved distance. Percentage as fraction of 100. */
   private _getDragPercentage(distance: number) {
     let percentage = (distance / this._thumbBarWidth) * 100;
@@ -369,4 +286,55 @@ class SlideToggleRenderer {
     return Math.max(0, Math.min(percentage, 100));
   }
 
+  _onDragStart() {
+    if (!this.disabled && !this._dragging) {
+      const thumbEl = this._thumbEl.nativeElement;
+      this._thumbBarWidth = this._thumbBarEl.nativeElement.clientWidth - thumbEl.clientWidth;
+      thumbEl.classList.add('mat-dragging');
+
+      this._previousChecked = this.checked;
+      this._dragging = true;
+    }
+  }
+
+  _onDrag(event: HammerInput) {
+    if (this._dragging) {
+      this._dragPercentage = this._getDragPercentage(event.deltaX);
+      // Calculate the moved distance based on the thumb bar width.
+      const dragX = (this._dragPercentage / 100) * this._thumbBarWidth;
+      this._thumbEl.nativeElement.style.transform = `translate3d(${dragX}px, 0, 0)`;
+    }
+  }
+
+  _onDragEnd() {
+    if (this._dragging) {
+      const newCheckedValue = this._dragPercentage > 50;
+
+      if (newCheckedValue !== this.checked) {
+        this.checked = newCheckedValue;
+        this._emitChangeEvent();
+      }
+
+      // The drag should be stopped outside of the current event handler, otherwise the
+      // click event will be fired before it and will revert the drag change.
+      this._ngZone.runOutsideAngular(() => setTimeout(() => {
+        if (this._dragging) {
+          this._dragging = false;
+          this._thumbEl.nativeElement.classList.remove('mat-dragging');
+
+          // Reset the transform because the component will take care
+          // of the thumb position after drag.
+          this._thumbEl.nativeElement.style.transform = '';
+        }
+      }));
+    }
+  }
+
+  /** Method being called whenever the label text changes. */
+  _onLabelTextChange() {
+    // This method is getting called whenever the label of the slide-toggle changes.
+    // Since the slide-toggle uses the OnPush strategy we need to notify it about the change
+    // that has been recognized by the cdkObserveContent directive.
+    this._changeDetectorRef.markForCheck();
+  }
 }

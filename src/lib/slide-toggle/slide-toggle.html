@@ -1,6 +1,6 @@
 <label class="mat-slide-toggle-label" #label>
 
-  <div class="mat-slide-toggle-bar"
+  <div #toggleBar class="mat-slide-toggle-bar"
        [class.mat-slide-toggle-bar-no-side-margin]="!labelContent.textContent || !labelContent.textContent.trim()">
 
     <input #input class="mat-slide-toggle-input cdk-visually-hidden" type="checkbox"
@@ -16,6 +16,7 @@
            (click)="_onInputClick($event)">
 
     <div class="mat-slide-toggle-thumb-container"
+         #thumbContainer
          (slidestart)="_onDragStart()"
          (slide)="_onDrag($event)"
          (slideend)="_onDragEnd()">
