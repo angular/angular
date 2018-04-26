@@ -495,17 +495,34 @@
         },
 
         {
-          "title": "Upgrading",
+          "title": "Keeping Up-to-Date",
+          "tooltip": "Angular release practices, planning for updates, and update resources.",
+          "children": [
+            { 
+              "url": "guide/updating",
+              "title": "Updating Your Projects",
+              "tooltip": "Information about updating Angular applications and libraries to the latest version."
+            },
+            { 
+              "url": "guide/releases",
+              "title": "Angular Releases",
+              "tooltip": "Angular versioning, release, support, and deprecation policies and practices."
+            }
+          ]
+        },  
+
+        {
+          "title": "Upgrading from AngularJS",
           "tooltip": "Incrementally upgrade an AngularJS application to Angular.",
           "children": [
             {
               "url": "guide/upgrade",
-              "title": "Upgrading from AngularJS",
+              "title": "Upgrading Instructions",
               "tooltip": "Incrementally upgrade an AngularJS application to Angular."
             },
             {
               "url": "guide/ajs-quick-reference",
-              "title": "Upgrade Cheatsheet",
+              "title": "AngularJS-Angular Concepts",
               "tooltip": "Learn how AngularJS concepts and techniques map to Angular."
             }
           ]

@@ -1,4 +1,4 @@
-# AngularJS to Angular Quick Reference
+# AngularJS to Angular Concepts: Quick Reference
 
 
 {@a top}
