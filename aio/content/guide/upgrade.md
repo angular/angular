@@ -1,4 +1,4 @@
-# Upgrading from AngularJS
+# Upgrading from AngularJS to Angular
 
 _Angular_ is the name for the Angular of today and tomorrow.
 _AngularJS_ is the name for all v1.x versions of Angular.
