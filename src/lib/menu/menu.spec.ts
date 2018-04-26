@@ -17,7 +17,7 @@ import {
 } from '@angular/core';
 import {Direction, Directionality} from '@angular/cdk/bidi';
 import {OverlayContainer, Overlay} from '@angular/cdk/overlay';
-import {ESCAPE, LEFT_ARROW, RIGHT_ARROW, TAB} from '@angular/cdk/keycodes';
+import {ESCAPE, LEFT_ARROW, RIGHT_ARROW, DOWN_ARROW, TAB} from '@angular/cdk/keycodes';
 import {
   MAT_MENU_DEFAULT_OPTIONS,
   MatMenu,
@@ -331,6 +331,34 @@ describe('MatMenu', () => {
 
     expect(trigger.menuOpen).toBe(false);
   }));
+
+  it('should switch to keyboard focus when using the keyboard after opening using the mouse',
+    fakeAsync(() => {
+      const fixture = createComponent(SimpleMenu, [], [FakeIcon]);
+
+      fixture.detectChanges();
+      fixture.componentInstance.triggerEl.nativeElement.click();
+      fixture.detectChanges();
+
+      const panel = document.querySelector('.mat-menu-panel')! as HTMLElement;
+      const items: HTMLElement[] =
+          Array.from(panel.querySelectorAll('.mat-menu-panel [mat-menu-item]'));
+
+      items.forEach(item => patchElementFocus(item));
+
+      tick(500);
+      tick();
+      fixture.detectChanges();
+      expect(items.some(item => item.classList.contains('cdk-keyboard-focused'))).toBe(false);
+
+      dispatchKeyboardEvent(panel, 'keydown', DOWN_ARROW);
+      fixture.detectChanges();
+      tick();
+
+      // We skip to the third item, because the second one is disabled.
+      expect(items[2].classList).toContain('cdk-focused');
+      expect(items[2].classList).toContain('cdk-keyboard-focused');
+    }));
 
   describe('lazy rendering', () => {
     it('should be able to render the menu content lazily', fakeAsync(() => {

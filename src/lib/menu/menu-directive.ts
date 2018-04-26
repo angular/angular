@@ -9,7 +9,7 @@
 import {FocusKeyManager, FocusOrigin} from '@angular/cdk/a11y';
 import {Direction} from '@angular/cdk/bidi';
 import {coerceBooleanProperty} from '@angular/cdk/coercion';
-import {ESCAPE, LEFT_ARROW, RIGHT_ARROW} from '@angular/cdk/keycodes';
+import {ESCAPE, LEFT_ARROW, RIGHT_ARROW, DOWN_ARROW, UP_ARROW} from '@angular/cdk/keycodes';
 import {
   AfterContentInit,
   ChangeDetectionStrategy,
@@ -243,7 +243,9 @@ export class MatMenu implements OnInit, AfterContentInit, MatMenuPanel, OnDestro
 
   /** Handle a keyboard event from the menu, delegating to the appropriate action. */
   _handleKeydown(event: KeyboardEvent) {
-    switch (event.keyCode) {
+    const keyCode = event.keyCode;
+
+    switch (keyCode) {
       case ESCAPE:
         this.closed.emit('keydown');
         event.stopPropagation();
@@ -259,6 +261,10 @@ export class MatMenu implements OnInit, AfterContentInit, MatMenuPanel, OnDestro
         }
       break;
       default:
+        if (keyCode === UP_ARROW || keyCode === DOWN_ARROW) {
+          this._keyManager.setFocusOrigin('keyboard');
+        }
+
         this._keyManager.onKeydown(event);
     }
   }
