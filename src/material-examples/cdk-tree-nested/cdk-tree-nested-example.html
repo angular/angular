@@ -5,7 +5,9 @@
   </cdk-nested-tree-node>
   <cdk-nested-tree-node *cdkTreeNodeDef="let node; when: hasNestedChild" class="example-tree-node">
     <button mat-icon-button [attr.aria-label]="'toggle ' + node.filename" cdkTreeNodeToggle>
-      <mat-icon>{{nestedTreeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'}}</mat-icon>
+      <mat-icon class="mat-icon-rtl-mirror">
+        {{nestedTreeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
+      </mat-icon>
     </button>
     {{node.filename}}:  {{node.type}}
     <div [class.example-tree-invisible]="!nestedTreeControl.isExpanded(node)">

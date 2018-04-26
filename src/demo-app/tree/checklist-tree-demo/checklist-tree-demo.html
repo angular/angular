@@ -4,7 +4,7 @@
       <button mat-icon-button matTreeNodeToggle
               [attr.aria-label]="'toggle ' + node.filename"
               [disabled]="!node.children.value.length">
-        <mat-icon *ngIf="node.children.value.length">
+        <mat-icon class="mat-icon-rtl-mirror" *ngIf="node.children.value.length">
           {{treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
         </mat-icon>
       </button>

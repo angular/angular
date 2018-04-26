@@ -10,7 +10,7 @@
       <mat-tree-node *matTreeNodeDef="let node;when: hasChild" matTreeNodePadding>
         <button mat-icon-button matTreeNodeToggle
                 [attr.aria-label]="'toggle ' + node.filename">
-          <mat-icon>
+          <mat-icon class="mat-icon-rtl-mirror">
             {{treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
           </mat-icon>
         </button>
@@ -33,7 +33,7 @@
           <div class="mat-tree-node">
             <button mat-icon-button matTreeNodeToggle
                     [attr.aria-label]="'toggle ' + node.filename">
-              <mat-icon>
+              <mat-icon class="mat-icon-rtl-mirror">
                 {{nestedTreeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
               </mat-icon>
             </button>
@@ -58,7 +58,7 @@
                      class="demo-tree-node">
         <button mat-icon-button [attr.aria-label]="'toggle ' + node.filename"
                 cdkTreeNodeToggle>
-          <mat-icon>
+          <mat-icon class="mat-icon-rtl-mirror">
             {{treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
           </mat-icon>
         </button>
@@ -77,7 +77,7 @@
       <cdk-nested-tree-node *cdkTreeNodeDef="let node; when: hasNestedChild" class="demo-tree-node">
         <button mat-icon-button [attr.aria-label]="'toggle ' + node.filename"
                 cdkTreeNodeToggle>
-          <mat-icon>
+          <mat-icon class="mat-icon-rtl-mirror">
             {{nestedTreeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
           </mat-icon>
         </button>

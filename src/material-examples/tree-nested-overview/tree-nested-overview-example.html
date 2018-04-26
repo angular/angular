@@ -11,7 +11,7 @@
       <div class="mat-tree-node">
         <button mat-icon-button matTreeNodeToggle
                 [attr.aria-label]="'toggle ' + node.filename">
-          <mat-icon>
+          <mat-icon class="mat-icon-rtl-mirror">
             {{nestedTreeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
           </mat-icon>
         </button>
