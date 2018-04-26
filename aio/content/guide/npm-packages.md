@@ -26,7 +26,7 @@ you already have projects running on your machine that use other versions of Nod
 
 ## _package.json_
 
-Both `node` and `yarn` install packages are identified in a [**package.json**](https://docs.npmjs.com/files/package.json) file.
+Both `npm` and `yarn` install packages that are identified in a [**package.json**](https://docs.npmjs.com/files/package.json) file.
 
 The CLI `ng new` command creates a default `package.json` file for your project.
 This `package.json` specifies _a starter set of packages_ that work well together and 
