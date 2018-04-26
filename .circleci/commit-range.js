@@ -1,10 +1,19 @@
-#!/bin/env node
+#!/usr/bin/env node
 
 /**
- * Relies on `curl` being available on the PATH.
- * Relies on one of the following environment variable sets being available:
- * - CIRCLE_COMPARE_URL
- * - CIRCLE_PR_NUMBER, CIRCLE_PROJECT_USERNAME, CIRCLE_PROJECT_REPONAME
+ * CircleCI does not provide the range of commits that were included in the push or pull request as
+ * an environment variable. We need this range for tasks such as verifying the commit messages.
+ * Related issue: https://discuss.circleci.com/t/commit-range-environment-variable/10410
+ *
+ * We deterine the commit range based on other environment variables:
+ * - For push requests, `CIRCLE_COMPARE_URL` is defined and includes the range.
+ * - For pull requests, we request the PR info using the GitHub API.
+ *
+ * NOTES:
+ * 1. This script relies on `curl` being available on the PATH.
+ * 2. Relies on one of the following environment variable sets being available:
+ *    - CIRCLE_COMPARE_URL
+ *    - CIRCLE_PR_NUMBER, CIRCLE_PROJECT_USERNAME, CIRCLE_PROJECT_REPONAME
  */
 
 'use strict';
@@ -43,7 +52,7 @@ function getCommitRangeFromPr(repoSlug, prNumber) {
   const opts = {encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore']};
   const data = JSON.parse(execSync(`curl "${url}"`, opts));
 
-  return `${data.base.sha.slice(0, 9)}...${data.head.sha.slice(0, 9)}`;
+  return `${data.base.sha}...${data.head.sha}`;
 }
 
 function getCommitRangeFromUrl(url) {

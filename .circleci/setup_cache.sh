@@ -1,4 +1,5 @@
-#!/bin/sh
+#!/usr/bin/env bash
+
 # Install bazel remote cache proxy
 # This is temporary until the feature is no longer experimental on CircleCI.
 # See remote cache documentation in /docs/BAZEL.md

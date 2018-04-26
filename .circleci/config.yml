@@ -24,7 +24,7 @@ var_3: &post_checkout
     command: |
       git pull --ff-only origin "refs/pull/${CIRCLE_PULL_REQUEST//*pull\//}/merge"
       echo "export PROJECT_ROOT=$(pwd)" | tee --append $BASH_ENV
-      echo "export COMMIT_RANGE=$(node scripts/ci/commit-range)" | tee --append $BASH_ENV
+      echo "export COMMIT_RANGE=$(node .circleci/commit-range)" | tee --append $BASH_ENV
 
 # See remote cache documentation in /docs/BAZEL.md
 var_4: &setup-bazel-remote-cache
