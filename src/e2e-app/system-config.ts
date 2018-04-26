@@ -85,6 +85,7 @@ System.config({
     '@angular/material/tabs': 'dist/bundles/material-tabs.umd.js',
     '@angular/material/toolbar': 'dist/bundles/material-toolbar.umd.js',
     '@angular/material/tooltip': 'dist/bundles/material-tooltip.umd.js',
+    '@angular/material/badge': 'dist/bundles/material-badge.umd.js',
     '@angular/material/tree': 'dist/bundles/material-tree.umd.js',
   },
   packages: {
