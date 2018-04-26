@@ -41,6 +41,8 @@ let nextUniqueId = 0;
  */
 @Injectable()
 export class Overlay {
+  private _appRef: ApplicationRef;
+
   constructor(
               /** Scrolling strategies that can be used when creating an overlay. */
               public scrollStrategies: ScrollStrategyOptions,
@@ -48,7 +50,6 @@ export class Overlay {
               private _componentFactoryResolver: ComponentFactoryResolver,
               private _positionBuilder: OverlayPositionBuilder,
               private _keyboardDispatcher: OverlayKeyboardDispatcher,
-              private _appRef: ApplicationRef,
               private _injector: Injector,
               private _ngZone: NgZone,
               @Inject(DOCUMENT) private _document: any,
@@ -111,7 +112,12 @@ export class Overlay {
    * @returns A portal outlet for the given DOM element.
    */
   private _createPortalOutlet(pane: HTMLElement): DomPortalOutlet {
+    // We have to resolve the ApplicationRef later in order to allow people
+    // to use overlay-based providers during app initialization.
+    if (!this._appRef) {
+      this._appRef = this._injector.get<ApplicationRef>(ApplicationRef);
+    }
+
     return new DomPortalOutlet(pane, this._componentFactoryResolver, this._appRef, this._injector);
   }
-
 }

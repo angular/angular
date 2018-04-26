@@ -1,5 +1,12 @@
 import {async, fakeAsync, tick, ComponentFixture, inject, TestBed} from '@angular/core/testing';
-import {Component, NgModule, ViewChild, ViewContainerRef} from '@angular/core';
+import {
+  Component,
+  NgModule,
+  ViewChild,
+  ViewContainerRef,
+  ErrorHandler,
+  Injectable,
+} from '@angular/core';
 import {Direction, Directionality} from '@angular/cdk/bidi';
 import {
   ComponentPortal,
@@ -283,6 +290,33 @@ describe('Overlay', () => {
     expect(overlayRef.overlayElement).toBeFalsy('Expected overlay element not to be referenced.');
     expect(overlayRef.backdropElement).toBeFalsy('Expected backdrop element not to be referenced.');
   }));
+
+  it('should be able to use the `Overlay` provider during app initialization', () => {
+    /** Dummy provider that depends on `Overlay`. */
+    @Injectable()
+    class CustomErrorHandler extends ErrorHandler {
+      constructor(private _overlay: Overlay) { super(); }
+
+      handleError(error: any) {
+        const overlayRef = this._overlay.create({hasBackdrop: !!error});
+        overlayRef.dispose();
+      }
+    }
+
+    overlayContainer.ngOnDestroy();
+
+    TestBed
+      .resetTestingModule()
+      .configureTestingModule({
+        imports: [OverlayModule],
+        providers: [
+          CustomErrorHandler,
+          {provide: ErrorHandler, useExisting: CustomErrorHandler}
+        ]
+      });
+
+    expect(() => TestBed.compileComponents()).not.toThrow();
+  });
 
   describe('positioning', () => {
     let config: OverlayConfig;
