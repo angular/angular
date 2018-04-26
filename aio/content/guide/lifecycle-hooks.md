@@ -839,48 +839,84 @@ Clearly our implementation must be very lightweight or the user experience suffe
 
 ## AfterView
 
+<!--
 The *AfterView* sample explores the `AfterViewInit()` and `AfterViewChecked()` hooks that Angular calls
 *after* it creates a component's child views.
+-->
+*AfterView* 예제는 Angular가 자식 컴포넌트의 뷰를 생성한 *이후*인 `AfterViewInit`과 `AfterViewChecked` 에 대해 다룹니다.
 
+<!--
 Here's a child view that displays a hero's name in an `<input>`:
+-->
+자식 컴포넌트에서 `<input>` 엘리먼트에 히어로의 이름을 받는다고 합시다:
 
 <code-example path="lifecycle-hooks/src/app/after-view.component.ts" region="child-view" title="ChildComponent" linenums="false"></code-example>
 
+<!--
 The `AfterViewComponent` displays this child view *within its template*:
+-->
+그리고 `AfterViewComponent`는 *이 컴포넌트의 템플릿에* 자식 컴포넌트 뷰를 표시합니다:
 
 <code-example path="lifecycle-hooks/src/app/after-view.component.ts" region="template" title="AfterViewComponent (template)" linenums="false"></code-example>
 
+<!--
 The following hooks take action based on changing values *within the child view*,
 which can only be reached by querying for the child view via the property decorated with
 [@ViewChild](api/core/ViewChild).
-
+-->
+마지막으로 다음 코드는 *자식 컴포넌트 뷰*가 변경될 때마다 [@ViewChild](api/core/ViewChild)로 지정된 프로퍼티를 통해 자식 컴포넌트에 있는 `hero` 객체를 가져와서 동작을 수행할 수 있는 예제 코드입니다.
 
 <code-example path="lifecycle-hooks/src/app/after-view.component.ts" region="hooks" title="AfterViewComponent (class excerpts)" linenums="false"></code-example>
 
 {@a wait-a-tick}
 
+<!--
 ### Abide by the unidirectional data flow rule
+-->
+### 단방향 데이터 흐름 유지
+
+<!--
 The `doSomething()` method updates the screen when the hero name exceeds 10 characters.
+-->
+`doSomething()` 메소드는 히어로의 이름이 10글자를 넘어가면 화면에 에러 메시지를 표시합니다.
 
 <code-example path="lifecycle-hooks/src/app/after-view.component.ts" region="do-something" title="AfterViewComponent (doSomething)" linenums="false"></code-example>
 
+<!--
 Why does the `doSomething()` method wait a tick before updating `comment`?
+-->
+그런데 `doSomething()` 메소드는 `comment` 프로퍼티에 값을 할당하기 전에 왜 한 타이밍을 기다릴까요?
 
+<!--
 Angular's unidirectional data flow rule forbids updates to the view *after* it has been composed.
 Both of these hooks fire _after_ the component's view has been composed.
+-->
+Angular는 단방향 데이터 흐름을 권장하기 때문에 뷰가 구성된 *직후에* 뷰를 다시 갱신하는 것은 권장하지 않습니다.
+그리고 `AfterViewInit`과 `AfterViewChecked` 함수는 컴포넌트의 뷰가 구성된 _직후에_ 실행됩니다.
 
+<!--
 Angular throws an error if the hook updates the component's data-bound `comment` property immediately (try it!).
 The `LoggerService.tick_then()` postpones the log update
 for one turn of the browser's JavaScript cycle and that's just long enough.
+-->
+그래서 컴포넌트 뷰가 구성된 직후에 바로 `comment` 프로퍼티 값을 수정하면 Angular가 에러를 발생시킵니다. (한 번 해보세요!)
+이 문제를 해결하기 위해 `LoggerService.tick_then()`에 있는 함수를 사용했고, 이 함수를 사용해서 다음 브라우저의 JavaScript 싸이클에 `comment` 프로퍼티 값을 갱신하도록 했습니다.
 
+<!--
 Here's *AfterView* in action:
+-->
+*AfterView* 후킹 인터페이스가 어떻게 동작하는지 확인해 보세요:
 
 <figure>
   <img src='generated/images/guide/lifecycle-hooks/after-view-anim.gif' alt="AfterView">
 </figure>
 
+<!--
 Notice that Angular frequently calls `AfterViewChecked()`, often when there are no changes of interest.
 Write lean hook methods to avoid performance problems.
+-->
+이 결과를 보면 별다른 변화가 없을 때도 `AfterViewChecked` 후킹 함수가 여러번 실행되는 것을 확인할 수 있습니다.
+성능 문제를 피하려면 후킹 함수에는 간단한 로직만 작성하세요.
 
 {@a aftercontent}
 
