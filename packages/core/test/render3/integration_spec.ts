@@ -830,7 +830,7 @@ describe('render3 integration test', () => {
 
       const oldTemplateData = (Template as any).ngPrivateData;
       const oldContainerData = (oldTemplateData as any).data[0];
-      const oldElementData = oldContainerData.data[0][0];
+      const oldElementData = oldContainerData.tViews[0][0];
       expect(oldContainerData).not.toBeNull();
       expect(oldElementData).not.toBeNull();
 
@@ -839,7 +839,7 @@ describe('render3 integration test', () => {
 
       const newTemplateData = (Template as any).ngPrivateData;
       const newContainerData = (oldTemplateData as any).data[0];
-      const newElementData = oldContainerData.data[0][0];
+      const newElementData = oldContainerData.tViews[0][0];
       expect(newTemplateData === oldTemplateData).toBe(true);
       expect(newContainerData === oldContainerData).toBe(true);
       expect(newElementData === oldElementData).toBe(true);

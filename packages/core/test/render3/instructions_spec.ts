@@ -102,18 +102,18 @@ describe('instructions', () => {
       elementStart(0, 'div', ['style', 'height: 10px']);
       elementEnd();
     }
-    const fixture = new TemplateFixture(createDivWithStyle);
 
     it('should add style', () => {
+      const fixture = new TemplateFixture(createDivWithStyle);
       fixture.update(() => elementStyle(0, {'background-color': 'red'}));
       expect(fixture.html).toEqual('<div style="height: 10px; background-color: red;"></div>');
     });
   });
 
   describe('elementClass', () => {
-    const fixture = new TemplateFixture(createDiv);
 
     it('should add class', () => {
+      const fixture = new TemplateFixture(createDiv);
       fixture.update(() => elementClass(0, 'multiple classes'));
       expect(fixture.html).toEqual('<div class="multiple classes"></div>');
     });
@@ -132,34 +132,34 @@ describe('instructions', () => {
 
         static ngComponentDef = defineComponent({
           type: NestedLoops,
-          selectors: [['todo-app']],
+          selectors: [['nested-loops']],
           factory: function ToDoAppComponent_Factory() { return new NestedLoops(); },
           template: function ToDoAppComponent_Template(rf: RenderFlags, ctx: NestedLoops) {
-            if (rf & 1) {
+            if (rf & RenderFlags.Create) {
               container(0, ToDoAppComponent_NgForOf_Template_0, null, _c0);
             }
-            if (rf & 2) {
+            if (rf & RenderFlags.Update) {
               elementProperty(0, 'ngForOf', bind(ctx.rows));
             }
             function ToDoAppComponent_NgForOf_Template_0(
                 rf: RenderFlags, ctx0: NgForOfContext<any>) {
-              if (rf & 1) {
+              if (rf & RenderFlags.Create) {
                 elementStart(0, 'ul');
                 container(1, ToDoAppComponent_NgForOf_NgForOf_Template_1, null, _c0);
                 elementEnd();
               }
-              if (rf & 2) {
+              if (rf & RenderFlags.Update) {
                 const row_r2 = ctx0.$implicit;
                 elementProperty(1, 'ngForOf', bind(row_r2));
               }
               function ToDoAppComponent_NgForOf_NgForOf_Template_1(
                   rf: RenderFlags, ctx1: NgForOfContext<any>) {
-                if (rf & 1) {
+                if (rf & RenderFlags.Create) {
                   elementStart(0, 'li');
                   text(1);
                   elementEnd();
                 }
-                if (rf & 2) {
+                if (rf & RenderFlags.Update) {
                   const col_r3 = ctx1.$implicit;
                   textBinding(1, interpolation1('', col_r3, ''));
                 }
@@ -171,8 +171,8 @@ describe('instructions', () => {
       }
       const fixture = new ComponentFixture(NestedLoops);
       expect(ngDevMode).toHaveProperties({
-        // Expect: host view + component + *ngForRow + *ngForCol
-        tView: 7,  // should be: 4,
+        // Expect: fixture view/Host view + component + ngForRow + ngForCol
+        tView: 4,  // should be: 4,
       });
 
     });
