@@ -7,6 +7,7 @@
  */
 
 import * as o from './output/output_ast';
+import {I18nMeta} from './render3/r3_ast';
 import {OutputContext, error} from './util';
 
 const CONSTANT_PREFIX = '_c';
@@ -121,7 +122,7 @@ export class ConstantPool {
   //  */
   // const MSG_XYZ = goog.getMsg('message');
   // ```
-  getTranslation(message: string, meta: {description: string, meaning: string}): o.Expression {
+  getTranslation(message: string, meta: I18nMeta): o.Expression {
     // The identity of an i18n message depends on the message and its meaning
     const key = meta.meaning ? `${message}\u0000\u0000${meta.meaning}` : message;
 

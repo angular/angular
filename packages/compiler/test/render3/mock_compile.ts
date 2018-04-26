@@ -309,12 +309,12 @@ export function compile(
                 htmlAst = removeWhitespaces(htmlAst);
               }
               const transform = new HtmlToTemplateTransform(hostBindingParser);
-              const nodes = html.visitAll(transform, htmlAst.rootNodes, null);
+              const astNodes = html.visitAll(transform, htmlAst.rootNodes, null);
               const hasNgContent = transform.hasNgContent;
               const ngContentSelectors = transform.ngContentSelectors;
 
               compileComponent(
-                  outputCtx, directive, nodes, hasNgContent, ngContentSelectors, reflector,
+                  outputCtx, directive, astNodes, hasNgContent, ngContentSelectors, reflector,
                   hostBindingParser, directiveTypeBySel, pipeTypeByName);
             } else {
               compileDirective(outputCtx, directive, reflector, hostBindingParser);

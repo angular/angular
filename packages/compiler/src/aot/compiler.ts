@@ -396,8 +396,8 @@ export class AotCompiler {
         if (!preserveWhitespaces) {
           htmlAst = removeWhitespaces(htmlAst);
         }
-        const transform = new HtmlToTemplateTransform(hostBindingParser);
-        const nodes = html.visitAll(transform, htmlAst.rootNodes, null);
+        const transform = new HtmlToTemplateTransform(hostBindingParser, messageBundle);
+        const astNodes = html.visitAll(transform, htmlAst.rootNodes, null);
         const hasNgContent = transform.hasNgContent;
         const ngContentSelectors = transform.ngContentSelectors;
 
@@ -422,8 +422,8 @@ export class AotCompiler {
         pipes.forEach(pipe => { pipeTypeByName.set(pipe.name, pipe.type.reference); });
 
         compileIvyComponent(
-            context, directiveMetadata, nodes, hasNgContent, ngContentSelectors, this.reflector,
-            hostBindingParser, directiveTypeBySel, pipeTypeByName, messageBundle);
+            context, directiveMetadata, astNodes, hasNgContent, ngContentSelectors, this.reflector,
+            hostBindingParser, directiveTypeBySel, pipeTypeByName);
       } else {
         compileIvyDirective(context, directiveMetadata, this.reflector, hostBindingParser);
       }

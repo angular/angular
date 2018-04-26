@@ -161,6 +161,7 @@ describe('i18n support in the view compiler', () => {
     `;
 
       const result = compile(files, angularFiles);
+      // console.log(result.source);
       expectEmit(result.source, template, 'Incorrect template', {
         '$msg_1$': TRANSLATION_NAME_REGEXP,
       });
