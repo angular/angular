@@ -32,13 +32,14 @@ $mat-card-header-size: 40px !default;
     }
   }
 
+  // Needs extra specificity to be able to override the elevation selectors.
+  &.mat-card-flat {
+    box-shadow: none;
+  }
+
   @include cdk-high-contrast {
     outline: solid 1px;
   }
-}
-
-.mat-card-flat {
-  box-shadow: none;
 }
 
 // base styles for each card section preset (mat-card-content, etc)
