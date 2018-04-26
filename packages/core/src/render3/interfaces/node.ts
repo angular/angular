@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {LContainer, TContainer} from './container';
+import {LContainer} from './container';
 import {LInjector} from './injector';
 import {LProjection} from './projection';
 import {LQueries} from './query';
@@ -283,21 +283,33 @@ export interface TNode {
   outputs: PropertyAliases|null|undefined;
 
   /**
-   * The static data equivalent of LNode.data.
+   * The TView or TViews attached to this node.
    *
-   * If this TNode corresponds to an LContainerNode, the container will
-   * need to store separate static data for each of its views (TContainer).
+   * If this TNode corresponds to an LContainerNode with inline views, the container will
+   * need to store separate static data for each of its view blocks (TView[]). Otherwise,
+   * nodes in inline views with the same index as nodes in their parent views will overwrite
+   * each other, as they are in the same template.
    *
-   * If this TNode corresponds to an LElementNode, data will be null.
+   * Each index in this array corresponds to the static data for a certain
+   * view. So if you had V(0) and V(1) in a container, you might have:
+   *
+   * [
+   *   [{tagName: 'div', attrs: ...}, null],     // V(0) TView
+   *   [{tagName: 'button', attrs ...}, null]    // V(1) TView
+   *
+   * If this TNode corresponds to an LContainerNode with a template (e.g. structural
+   * directive), the template's TView will be stored here.
+   *
+   * If this TNode corresponds to an LElementNode, tViews will be null .
    */
-  data: TContainer|null;
+  tViews: TView|TView[]|null;
 }
 
 /** Static data for an LElementNode  */
-export interface TElementNode extends TNode { data: null; }
+export interface TElementNode extends TNode { tViews: null; }
 
 /** Static data for an LContainerNode */
-export interface TContainerNode extends TNode { data: TContainer; }
+export interface TContainerNode extends TNode { tViews: TView|TView[]|null; }
 
 /**
  * This mapping is necessary so we can set input properties and output listeners

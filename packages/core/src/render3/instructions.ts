@@ -9,7 +9,7 @@
 import './ng_dev_mode';
 
 import {assertEqual, assertLessThan, assertNotEqual, assertNotNull, assertNull, assertSame} from './assert';
-import {LContainer, TContainer} from './interfaces/container';
+import {LContainer} from './interfaces/container';
 import {LInjector} from './interfaces/injector';
 import {CssSelectorList, LProjection, NG_PROJECT_AS_ATTR_NAME} from './interfaces/projection';
 import {LQueries} from './interfaces/query';
@@ -468,9 +468,20 @@ export function renderTemplate<T>(
   return host;
 }
 
+/**
+ * Used for rendering embedded views (e.g. dynamically created views)
+ *
+ * Dynamically created views must store/retrieve their TViews differently from component views
+ * because their template functions are nested in the template functions of their hosts, creating
+ * closures. If their host template happens to be an embedded template in a loop (e.g. ngFor inside
+ * an ngFor), the nesting would mean we'd have multiple instances of the template function, so we
+ * can't store TViews in the template function itself (as we do for comps). Instead, we store the
+ * TView for dynamically created views on their host TNode, which only has one instance.
+ */
 export function renderEmbeddedTemplate<T>(
-    viewNode: LViewNode | null, template: ComponentTemplate<T>, context: T, renderer: Renderer3,
-    directives?: DirectiveDefList | null, pipes?: PipeDefList | null): LViewNode {
+    viewNode: LViewNode | null, tView: TView, template: ComponentTemplate<T>, context: T,
+    renderer: Renderer3, directives?: DirectiveDefList | null,
+    pipes?: PipeDefList | null): LViewNode {
   const _isParent = isParent;
   const _previousOrParentNode = previousOrParentNode;
   let oldView: LView;
@@ -480,7 +491,6 @@ export function renderEmbeddedTemplate<T>(
     previousOrParentNode = null !;
 
     if (viewNode == null) {
-      const tView = getOrCreateTView(template, directives || null, pipes || null);
       const lView = createLView(-1, renderer, tView, template, context, LViewFlags.CheckAlways);
 
       viewNode = createLNode(null, LNodeType.View, null, lView);
@@ -572,18 +582,27 @@ export function elementStart(
 
   if (attrs) setUpAttributes(native, attrs);
   appendChild(node.parent !, native, currentView);
-  createDirectivesAndLocals(index, name, attrs, localRefs, null);
+  createDirectivesAndLocals(index, name, attrs, localRefs, false);
   return native;
 }
 
+/**
+ * Creates directive instances and populates local refs.
+ *
+ * @param index Index of the current node (to create TNode)
+ * @param name Tag name of the current node
+ * @param attrs Attrs of the current node
+ * @param localRefs Local refs of the current node
+ * @param inlineViews Whether or not this node will create inline views
+ */
 function createDirectivesAndLocals(
     index: number, name: string | null, attrs: string[] | null | undefined,
-    localRefs: string[] | null | undefined, containerData: TView[] | null) {
+    localRefs: string[] | null | undefined, inlineViews: boolean) {
   const node = previousOrParentNode;
   if (firstTemplatePass) {
     ngDevMode && ngDevMode.firstTemplatePass++;
     ngDevMode && assertDataInRange(index - 1);
-    node.tNode = tData[index] = createTNode(name, attrs || null, containerData);
+    node.tNode = tData[index] = createTNode(name, attrs || null, inlineViews ? [] : null);
     cacheMatchingDirectivesForNode(node.tNode, currentView.tView, localRefs || null);
   } else {
     instantiateDirectivesDirectly();
@@ -751,6 +770,13 @@ function saveResolvedLocalsInData(): void {
 function getOrCreateTView(
     template: ComponentTemplate<any>, directives: DirectiveDefListOrFactory | null,
     pipes: PipeDefListOrFactory | null): TView {
+  // TODO(misko): reading `ngPrivateData` here is problematic for two reasons
+  // 1. It is a megamorphic call on each invocation.
+  // 2. For nested embedded views (ngFor inside ngFor) the template instance is per
+  //    outer template invocation, which means that no such property will exist
+  // Correct solution is to only put `ngPrivateData` on the Component template
+  // and not on embedded templates.
+
   return template.ngPrivateData ||
       (template.ngPrivateData = createTView(directives, pipes) as never);
 }
@@ -994,14 +1020,14 @@ export function elementProperty<T>(
 /**
  * Constructs a TNode object from the arguments.
  *
- * @param tagName
- * @param attrs
- * @param data
+ * @param tagName The tag name of the node
+ * @param attrs The attributes defined on this ndoe
+ * @param tViews Any TViews attached to this node
  * @param localNames A list of local names and their matching indices
  * @returns the TNode object
  */
 function createTNode(
-    tagName: string | null, attrs: string[] | null, data: TContainer | null): TNode {
+    tagName: string | null, attrs: string[] | null, tViews: TView[] | null): TNode {
   ngDevMode && ngDevMode.tNode++;
   return {
     flags: 0,
@@ -1011,7 +1037,7 @@ function createTNode(
     initialInputs: undefined,
     inputs: undefined,
     outputs: undefined,
-    data: data
+    tViews: tViews
   };
 }
 
@@ -1224,18 +1250,10 @@ export function textBinding<T>(index: number, value: T | NO_CHANGE): void {
   let existingNode = data[index] as LTextNode;
   ngDevMode && assertNotNull(existingNode, 'LNode should exist');
   ngDevMode && assertNotNull(existingNode.native, 'native element should exist');
-  if (existingNode.native) {
-    // If DOM node exists and value changed, update textContent
-    ngDevMode && ngDevMode.rendererSetText++;
-    value !== NO_CHANGE &&
-        (isProceduralRenderer(renderer) ? renderer.setValue(existingNode.native, stringify(value)) :
-                                          existingNode.native.textContent = stringify(value));
-  } else {
-    // Node was created but DOM node creation was delayed. Create and append now.
-    ngDevMode && ngDevMode.rendererCreateTextNode++;
-    existingNode.native = createTextNode(value, renderer);
-    insertChild(existingNode, currentView);
-  }
+  ngDevMode && ngDevMode.rendererSetText++;
+  value !== NO_CHANGE &&
+      (isProceduralRenderer(renderer) ? renderer.setValue(existingNode.native, stringify(value)) :
+                                        existingNode.native.textContent = stringify(value));
 }
 
 //////////////////////////
@@ -1451,7 +1469,7 @@ export function container(
   // Containers are added to the current view tree instead of their embedded views
   // because views can be removed and re-inserted.
   addToViewTree(currentView, node.data);
-  createDirectivesAndLocals(index, tagName || null, attrs, localRefs, []);
+  createDirectivesAndLocals(index, tagName || null, attrs, localRefs, template == null);
 
   isParent = false;
   ngDevMode && assertNodeType(previousOrParentNode, LNodeType.Container);
@@ -1516,9 +1534,12 @@ function refreshDynamicChildren() {
     if (current.dynamicViewCount !== 0 && (current as LContainer).views) {
       const container = current as LContainer;
       for (let i = 0; i < container.views.length; i++) {
-        const view = container.views[i];
+        const lViewNode = container.views[i];
         // The directives and pipes are not needed here as an existing view is only being refreshed.
-        renderEmbeddedTemplate(view, view.data.template !, view.data.context !, renderer);
+        const dynamicView = lViewNode.data;
+        ngDevMode && assertNotNull(dynamicView.tView, 'TView must be allocated');
+        renderEmbeddedTemplate(
+            lViewNode, dynamicView.tView, dynamicView.template !, dynamicView.context !, renderer);
       }
     }
   }
@@ -1588,23 +1609,24 @@ export function embeddedViewStart(viewBlockId: number): RenderFlags {
 /**
  * Initialize the TView (e.g. static data) for the active embedded view.
  *
- * Each embedded view needs to set the global tData variable to the static data for
- * that view. Otherwise, the view's static data for a particular node would overwrite
- * the static data for a node in the view above it with the same index (since it's in the
- * same template).
+ * Each embedded view block must create or retrieve its own TView. Otherwise, the embedded view's
+ * static data for a particular node would overwrite the static data for a node in the view above
+ * it with the same index (since it's in the same template).
  *
- * @param viewIndex The index of the TView in TContainer
+ * @param viewIndex The index of the TView in TNode.tViews
  * @param parent The parent container in which to look for the view's static data
  * @returns TView
  */
 function getOrCreateEmbeddedTView(viewIndex: number, parent: LContainerNode): TView {
   ngDevMode && assertNodeType(parent, LNodeType.Container);
-  const tContainer = (parent !.tNode as TContainerNode).data;
-  if (viewIndex >= tContainer.length || tContainer[viewIndex] == null) {
+  const containerTViews = (parent !.tNode as TContainerNode).tViews as TView[];
+  ngDevMode && assertNotNull(containerTViews, 'TView expected');
+  ngDevMode && assertEqual(Array.isArray(containerTViews), true, 'TViews should be in an array');
+  if (viewIndex >= containerTViews.length || containerTViews[viewIndex] == null) {
     const tView = currentView.tView;
-    tContainer[viewIndex] = createTView(tView.directiveRegistry, tView.pipeRegistry);
+    containerTViews[viewIndex] = createTView(tView.directiveRegistry, tView.pipeRegistry);
   }
-  return tContainer[viewIndex];
+  return containerTViews[viewIndex];
 }
 
 /** Marks the end of an embedded view. */
