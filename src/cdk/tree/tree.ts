@@ -46,7 +46,7 @@ import {
   exportAs: 'cdkTreeNode',
   host: {
     '[attr.aria-expanded]': 'isExpanded',
-    '[attr.aria-level]': 'level',
+    '[attr.aria-level]': 'role === "treeitem" ? level : null',
     '[attr.role]': 'role',
     'class': 'cdk-tree-node',
   },
