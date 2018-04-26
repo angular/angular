@@ -109,8 +109,6 @@
 /src/demo-app/demo-app/**                          @jelbourn
 /src/demo-app/dialog/**                            @jelbourn @crisbeto
 /src/demo-app/drawer/**                            @mmalerba
-/src/demo-app/example/**                           @andrewseguin
-/src/demo-app/examples-page/**                     @andrewseguin
 /src/demo-app/expansion/**                         @josephperrott
 /src/demo-app/focus-origin/**                      @mmalerba
 /src/demo-app/gestures/**                          @jelbourn
