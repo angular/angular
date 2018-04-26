@@ -92,7 +92,8 @@ element.
 In thinking about accessibility, it is useful to place icon use into one of three categories:
 1. **Decorative**: the icon conveys no real semantic meaning and is purely cosmetic.
 2. **Interactive**: a user will click or otherwise interact with the icon to perform some action.
-3. **Indicator**: the icon is not interactive, but it conveys some information, such as a status.
+3. **Indicator**: the icon is not interactive, but it conveys some information, such as a status. This
+includes using the icon in place of text inside of a larger message.
 
 ### Bidirectionality
 
@@ -105,22 +106,21 @@ you want to mirror an icon only in an RTL layout, you can use the `mat-icon-rtl-
 ```
 
 #### Decorative icons
-When the icon is puely cosmetic and conveys no real semantic meaning, the `<mat-icon>` element
-should be marked with `aria-hidden="true"`.
+When the icon is purely cosmetic and conveys no real semantic meaning, the `<mat-icon>` element
+is marked with `aria-hidden="true"`.
 
 #### Interactive icons
 Icons alone are not interactive elements for screen-reader users; when the user would interact with
 some icon on the page, a more appropriate  element should "own" the interaction:
 * The `<mat-icon>` element should be a child of a `<button>` or `<a>` element.
-* The `<mat-icon>` element should be marked with `aria-hidden="true"`.
 * The parent `<button>` or `<a>` should either have a meaningful label provided either through
 direct text content, `aria-label`, or `aria-labelledby`.
 
 #### Indicator icons
-When the presence of an icon communicates some information to the user, that information must also
-be made available to screen-readers. The most straightforward way to do this is to
-1. Mark the `<mat-icon>` as `aria-hidden="true"`
-2. Add a `<span>` as an adjacent sibling to the `<mat-icon>` element with text that conveys the same
+When the presence of an icon communicates some information to the user whether as an indicator or 
+by being inlined into a block of text, that information must also be made available to 
+screen-readers. The most straightforward way to do this is to
+1. Add a `<span>` as an adjacent sibling to the `<mat-icon>` element with text that conveys the same
 information as the icon.
-3. Add the `cdk-visually-hidden` class to the `<span>`. This will make the message invisible
+2. Add the `cdk-visually-hidden` class to the `<span>`. This will make the message invisible
 on-screen but still available to screen-reader users.
