@@ -32,7 +32,7 @@ if they are not already on your machine.
 
 
 
-**Verify that you are running at least Node.js version `8.x`or greater and npm version `5.x` or greater**
+**Verify that you are running at least Node.js version `8.x` or greater and npm version `5.x` or greater**
 by running `node -v` and `npm -v` in a terminal/console window.
 Older versions produce errors, but newer versions are fine.
 
