@@ -25,11 +25,13 @@
 .mat-expansion-panel-spacing {
   margin: 16px 0;
 
-  .mat-accordion &:first-child {
+  .mat-accordion > &:first-child,
+  .mat-accordion > *:first-child & {
     margin-top: 0;
   }
 
-  .mat-accordion &:last-child {
+  .mat-accordion > &:last-child,
+  .mat-accordion > *:last-child & {
     margin-bottom: 0;
   }
 }
