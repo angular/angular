@@ -301,7 +301,7 @@ If you're new to Angular, we recommend you follow the [tutorial](tutorial "Tour 
 
 
 
-## Appendix: NodeJS and NPM
+## Appendix: Node.js and npm
 
 
 [Node.js](https://nodejs.org/en/) and the [npm](https://www.npmjs.com/) package manager are essential to modern web development with Angular and other platforms.
