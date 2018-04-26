@@ -37,7 +37,7 @@ to the corresponding `definePipe`, `defineComponent`, `defineDirective` and `def
 - ❌ support `extends` for `@Pipe`, `@Component`, `@Directive` and `@NgModule`.
 - ❌ Documentation
 
-### `ngcc` Angular `node_module` compatibility compiler 
+### `ngcc` Angular `node_module` compatibility compiler
 
 A tool which "upgrades" `node_module` compiled with non-ivy `ngc` into ivy compliant format.
 
@@ -75,7 +75,7 @@ The goal is for the `@Component` (and friends) to be the compiler of template. S
   - ❌ `@Pipe`
   - ❌ `@Directive`
   - ❌ `@Component`
-- ❌ `ResourceLoader.resolved: Promise<>` Returns true if all `templateUrl`s and `styleUrl` have been resolved and application is ready to be bootstrapped. 
+- ❌ `ResourceLoader.resolved: Promise<>` Returns true if all `templateUrl`s and `styleUrl` have been resolved and application is ready to be bootstrapped.
 
 # Testing / Debugging
 - ❌ in debug mode publish components into DOM nodes for easier debugging.
@@ -106,56 +106,61 @@ The goal is for the `@Component` (and friends) to be the compiler of template. S
 
 
 ## Change Detection
-| Feature                             | Runtime | 
-| ----------------------------------- | ------- | 
-| `markDirty()`                       |  ✅     | 
-| `detectChanges()`                   |  ✅     | 
-| `tick()`                            |  ✅     | 
-| `attach()`                          |  ✅     | 
-| `detach()`                          |  ✅     | 
-| `ON_PUSH`                           |  ✅     | 
-| `ALWAYS`                            |  ✅     | 
-| `DIRTY`                             |  ✅     | 
-| `ATTACHED`                          |  ✅     | 
+| Feature                             | Runtime |
+| ----------------------------------- | ------- |
+| `markDirty()`                       |  ✅     |
+| `detectChanges()`                   |  ✅     |
+| `tick()`                            |  ✅     |
+| `attach()`                          |  ✅     |
+| `detach()`                          |  ✅     |
+| `ON_PUSH`                           |  ✅     |
+| `ALWAYS`                            |  ✅     |
+| `DIRTY`                             |  ✅     |
+| `ATTACHED`                          |  ✅     |
 
 
 
 ## Bootstrap API
-| Feature                             | Runtime | 
-| ----------------------------------- | ------- | 
-| `renderComponent()`                 |  ✅     | 
-| `getHostElement()`                  |  ✅     | 
-| `createInjector()`                  |  ✅     | 
+| Feature                             | Runtime |
+| ----------------------------------- | ------- |
+| `renderComponent()`                 |  ✅     |
+| `getHostElement()`                  |  ✅     |
+| `createInjector()`                  |  ✅     |
 
 ## Template Compiler
 
 ### Template Syntax
-| Feature                                 | Runtime | Spec     | Compiler |
-| --------------------------------------- | ------- | -------- | -------- |
-| `<div>`                                 |  ✅     |  ✅      |  ✅      |
-| `<div>{{exp}}</div>`                    |  ✅     |  ✅      |  ✅      |
-| `<div attr=value>`                      |  ✅     |  ✅      |  ✅      |
-| `<div (click)="stmt">`                  |  ✅     |  ✅      |  ✅      |
-| `<div #foo>`                            |  ✅     |  ✅      |  ✅      |
-| `<div #foo="bar">`                      |  ✅     |  ✅      |  ✅      |
-| `<div [value]="exp">`                   |  ✅     |  ✅      |  ✅      |
-| `<div title="Hello {{name}}!">`         |  ✅     |  ✅      |  ✅      |
-| `<div [attr.value]="exp">`              |  ✅     |  ✅      |  ❌      |
-| `<div class="literal">`                 |  ✅     |  ✅      |  ✅      |
-| `<div [class]="exp">`                   |  ❌     |  ❌      |  ❌      |
-| `<div [class.foo]="exp">`               |  ✅     |  ✅      |  ❌      |
-| `<div style="literal">`                 |  ✅     |  ✅      |  ✅      |
-| `<div [style]="exp">`                   |  ❌     |  ❌      |  ❌      |
-| `<div [style.foo]="exp">`               |  ✅     |  ✅      |  ❌      |
-| `{{ ['literal', exp ] }}`               |  ✅     |  ✅      |  ✅      |
-| `{{ { a: 'literal', b: exp } }}`        |  ✅     |  ✅      |  ✅      |
-| `{{ exp \| pipe: arg }}`                |  ✅     |  ✅      |  ✅      |
-| `<svg:g svg:p>`                         |  ❌     |  ❌      |  ❌      |
-| `<img src=[userData]>` sanitization     |  ❌     |  ❌      |  ❌      |
-| `<div (nocd.click)>`                    |  ❌     |  ❌      |  ❌      |
-| `<div (bubble.click)>`                  |  ❌     |  ❌      |  ❌      |
-| `<div (keyup.enter)>`                   |  ❌     |  ❌      |  ❌      |
-| `<div (hammer.js)>`                     |  ❌     |  ❌      |  ❌      |
+| Feature                                     | Runtime | Spec     | Compiler |
+| ------------------------------------------- | ------- | -------- | -------- |
+| `<div>`                                     |  ✅     |  ✅      |  ✅      |
+| `<div>{{exp}}</div>`                        |  ✅     |  ✅      |  ✅      |
+| `<div attr=value>`                          |  ✅     |  ✅      |  ✅      |
+| `<div (click)="stmt">`                      |  ✅     |  ✅      |  ✅      |
+| `<div #foo>`                                |  ✅     |  ✅      |  ✅      |
+| `<div #foo="bar">`                          |  ✅     |  ✅      |  ✅      |
+| `<div [value]="exp">`                       |  ✅     |  ✅      |  ✅      |
+| `<div title="Hello {{name}}!">`             |  ✅     |  ✅      |  ✅      |
+| `<div [attr.value]="exp">`                  |  ✅     |  ✅      |  ❌      |
+| `<div class="literal">`                     |  ✅     |  ✅      |  ✅      |
+| `<div [class]="exp">`                       |  ❌     |  ❌      |  ❌      |
+| `<div [class.foo]="exp">`                   |  ✅     |  ✅      |  ❌      |
+| `<div style="literal">`                     |  ✅     |  ✅      |  ✅      |
+| `<div [style]="exp">`                       |  ❌     |  ❌      |  ❌      |
+| `<div [style.foo]="exp">`                   |  ✅     |  ✅      |  ❌      |
+| `{{ ['literal', exp ] }}`                   |  ✅     |  ✅      |  ✅      |
+| `{{ { a: 'literal', b: exp } }}`            |  ✅     |  ✅      |  ✅      |
+| `{{ exp \| pipe: arg }}`                    |  ✅     |  ✅      |  ✅      |
+| `<svg:g svg:p>`                             |  ❌     |  ❌      |  ❌      |
+| `<img src=[userData]>` sanitization         |  ❌     |  ❌      |  ❌      |
+| `<div (nocd.click)>`                        |  ❌     |  ❌      |  ❌      |
+| `<div (bubble.click)>`                      |  ❌     |  ❌      |  ❌      |
+| `<div (keyup.enter)>`                       |  ❌     |  ❌      |  ❌      |
+| `<div (hammer.js)>`                         |  ❌     |  ❌      |  ❌      |
+| [`<div (directiveOut)>`][gh23560]           |  ❌     |  ❌      |  ❌      |
+| [`<ng-template (directiveOut)>`][gh23561]   |  ❌     |  ❌      |  ❌      |
+
+[gh23560]: https://github.com/angular/angular/issues/23560
+[gh23561]: https://github.com/angular/angular/issues/23561
 
 ### Life Cycle Hooks
 | Feature                   | Runtime | Spec     | Compiler |
@@ -215,7 +220,7 @@ The goal is for the `@Component` (and friends) to be the compiler of template. S
 ### I18N
 | Feature                             | Runtime | Spec     | Compiler |
 | ----------------------------------- | ------- | -------- | -------- |
-| translate text literals             |  ❌     |  ❌      |  ❌      |
+| translate text literals             |  ✅     |  ✅      |  ✅      |
 | rearrange text nodes                |  ❌     |  ❌      |  ❌      |
 | ICU                                 |  ❌     |  ❌      |  ❌      |
 
