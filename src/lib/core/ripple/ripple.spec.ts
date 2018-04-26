@@ -231,6 +231,18 @@ describe('MatRipple', () => {
       subscription.unsubscribe();
     });
 
+    it('should only persist the latest ripple on pointer down', fakeAsync(() => {
+      dispatchMouseEvent(rippleTarget, 'mousedown');
+      expect(rippleTarget.querySelectorAll('.mat-ripple-element').length).toBe(1);
+
+      dispatchMouseEvent(rippleTarget, 'mousedown');
+      expect(rippleTarget.querySelectorAll('.mat-ripple-element').length).toBe(2);
+
+      tick(enterDuration + exitDuration);
+
+      expect(rippleTarget.querySelectorAll('.mat-ripple-element').length).toBe(1);
+    }));
+
     describe('when page is scrolled', () => {
       let veryLargeElement: HTMLDivElement = document.createElement('div');
       let pageScrollTop = 500;

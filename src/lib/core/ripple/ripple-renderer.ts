@@ -84,6 +84,9 @@ export class RippleRenderer {
   /** Set of currently active ripple references. */
   private _activeRipples = new Set<RippleRef>();
 
+  /** Latest non-persistent ripple that was triggered. */
+  private _mostRecentTransientRipple: RippleRef | null;
+
   /** Time in milliseconds when the last touchstart event happened. */
   private _lastTouchStartEvent: number;
 
@@ -164,12 +167,22 @@ export class RippleRenderer {
     // Add the ripple reference to the list of all active ripples.
     this._activeRipples.add(rippleRef);
 
+    if (!config.persistent) {
+      this._mostRecentTransientRipple = rippleRef;
+    }
+
     // Wait for the ripple element to be completely faded in.
     // Once it's faded in, the ripple can be hidden immediately if the mouse is released.
     this.runTimeoutOutsideZone(() => {
+      const isMostRecentTransientRipple = rippleRef === this._mostRecentTransientRipple;
+
       rippleRef.state = RippleState.VISIBLE;
 
-      if (!config.persistent && !this._isPointerDown) {
+      // When the timer runs out while the user has kept their pointer down, we want to
+      // keep only the persistent ripples and the latest transient ripple. We do this,
+      // because we don't want stacked transient ripples to appear after their enter
+      // animation has finished.
+      if (!config.persistent && (!isMostRecentTransientRipple || !this._isPointerDown)) {
         rippleRef.fadeOut();
       }
     }, duration);
@@ -180,6 +193,10 @@ export class RippleRenderer {
   /** Fades out a ripple reference. */
   fadeOutRipple(rippleRef: RippleRef) {
     const wasActive = this._activeRipples.delete(rippleRef);
+
+    if (rippleRef === this._mostRecentTransientRipple) {
+      this._mostRecentTransientRipple = null;
+    }
 
     // Clear out the cached bounding rect if we have no more ripples.
     if (!this._activeRipples.size) {
