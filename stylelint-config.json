@@ -1,7 +1,7 @@
 {
   "plugins": [
     "./tools/stylelint/no-prefixes/no-prefixes.js",
-    "./tools/stylelint/selector-nested-pattern-scoped/index.js",
+    "./tools/stylelint/no-ampersand-beyond-selector-start/index.js",
     "./tools/stylelint/selector-no-deep/index.js",
     "./tools/stylelint/no-nested-mixin/index.js",
     "./tools/stylelint/no-concrete-rules/index.js",
@@ -11,8 +11,7 @@
     "material/no-prefixes": [["last 2 versions", "not ie <= 10", "not ie_mob <= 10"]],
     "material/selector-no-deep": true,
     "material/no-nested-mixin": true,
-    "material/selector-nested-pattern-scoped": [".*[^&]$", {
-      "message": "The & operator is not allowed at the end of theme selectors.",
+    "material/no-ampersand-beyond-selector-start": [true, {
       "filePattern": "-theme\\.scss$"
     }],
     "material/no-concrete-rules": [true, {
