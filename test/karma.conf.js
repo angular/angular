@@ -50,7 +50,7 @@ module.exports = (config) => {
       'dist/packages/**/*.js': ['sourcemap']
     },
 
-    reporters: ['spec'],
+    reporters: ['dots'],
     autoWatch: false,
 
     coverageReporter: {
@@ -59,6 +59,7 @@ module.exports = (config) => {
       subdir: '.'
     },
 
+    // TODO(josephperrott): Determine how to properly disable extra output on ci.
     specReporter: {
       maxLogLines: Infinity, // Log out the entire stack trace on errors and failures.
       suppressSkipped: true,
