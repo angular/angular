@@ -2,7 +2,7 @@
 
  The [**Angular CLI**](https://cli.angular.io/), Angular applications, and Angular itself depend upon features and functionality provided by libraries that are available as [**npm**](https://docs.npmjs.com/) packages.
 
-You can download and install these npm packages with the [**npm client**](https://docs.npmjs.com/cli/install), which runs as a node.js application.
+You can download and install these npm packages with the [**npm client**](https://docs.npmjs.com/cli/install), which runs as a Node.js® application.
 
 The [**yarn client**](https://yarnpkg.com/en/) is a popular alternative for downloading and installing npm packages.
 The Angular CLI uses `yarn` by default to install npm packages when you create a new project.
@@ -14,19 +14,19 @@ Node.js and npm are essential to Angular development.
 [Get them now](https://docs.npmjs.com/getting-started/installing-node "Installing Node.js and updating npm")
 if they're not already installed on your machine.
 
-**Verify that you are running node `v4.x.x` or higher and npm `3.x.x` or higher**
+**Verify that you are running Node.js `v8.x` or higher and npm `5.x` or higher**
 by running the commands `node -v` and `npm -v` in a terminal/console window.
 Older versions produce errors.
 
 Consider using [nvm](https://github.com/creationix/nvm) for managing multiple
-versions of node and npm. You may need [nvm](https://github.com/creationix/nvm) if
-you already have projects running on your machine that use other versions of node and npm.
+versions of Node.js and npm. You may need [nvm](https://github.com/creationix/nvm) if
+you already have projects running on your machine that use other versions of Node.js and npm.
 
 </div>
 
 ## _package.json_
 
-Both `npm` and `yarn` install packages identified in a [**package.json**](https://docs.npmjs.com/files/package.json) file.
+Both `node` and `yarn` install packages are identified in a [**package.json**](https://docs.npmjs.com/files/package.json) file.
 
 The CLI `ng new` command creates a default `package.json` file for your project.
 This `package.json` specifies _a starter set of packages_ that work well together and 
@@ -129,7 +129,7 @@ You don't deploy them with the production application although there is no harm 
 For example, see the [Angular language service extension for VS Code](https://marketplace.visualstudio.com/items?itemName=Angular.ng-template)
 
 
-**@types/... **: TypeScript definition files for 3rd party libraries such as Jasmine and node.
+**@types/... **: TypeScript definition files for 3rd party libraries such as Jasmine and Node.js.
 
 
 **[codelyzer](https://www.npmjs.com/package/codelyzer)**: A linter for Angular apps whose rules conform to the Angular [style guide](guide/styleguide).
@@ -145,7 +145,7 @@ For example, see the [Angular language service extension for VS Code](https://ma
 Built on top of [WebDriverJS](https://github.com/SeleniumHQ/selenium/wiki/WebDriverJs).
 
 
-**[ts-node](https://www.npmjs.com/package/ts-node)**: TypeScript execution environment and REPL for node.
+**[ts-node](https://www.npmjs.com/package/ts-node)**: TypeScript execution environment and REPL for Node.js.
 
 
 **[tslint](https://www.npmjs.com/package/tslint)**: a static analysis tool that checks TypeScript code for readability, maintainability, and functionality errors.
