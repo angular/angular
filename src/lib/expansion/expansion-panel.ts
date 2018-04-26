@@ -18,7 +18,6 @@ import {
   Component,
   ContentChild,
   Directive,
-  Host,
   Input,
   OnChanges,
   OnDestroy,
@@ -88,7 +87,7 @@ export class MatExpansionPanel extends CdkAccordionItem
   /** ID for the associated header element. Used for a11y labelling. */
   _headerId = `mat-expansion-panel-header-${uniqueId++}`;
 
-  constructor(@Optional() @Host() accordion: MatAccordion,
+  constructor(@Optional() accordion: MatAccordion,
               _changeDetectorRef: ChangeDetectorRef,
               _uniqueSelectionDispatcher: UniqueSelectionDispatcher,
               private _viewContainerRef: ViewContainerRef) {
