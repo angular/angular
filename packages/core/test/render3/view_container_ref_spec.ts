@@ -147,30 +147,24 @@ describe('ViewContainerRef', () => {
           const tplRef = getOrCreateTemplateRef(getOrCreateNodeInjectorForNode(load(0)));
           elementProperty(0, 'tplRef', bind(tplRef));
           containerRefreshStart(0);
-          let rf1 = embeddedViewStart(1);
-          if (rf1 & RenderFlags.Create) {
-            elementStart(0, 'header');
-            elementEnd();
-          }
-          embeddedViewEnd();
           containerRefreshEnd();
         }
 
         const fixture = new TemplateFixture(createTemplate, updateTemplate, [DirectiveWithVCRef]);
-        expect(fixture.html).toEqual('<header></header><footer></footer>');
+        expect(fixture.html).toEqual('<footer></footer>');
 
         createView('A');
         fixture.update();
-        expect(fixture.html).toEqual('<header></header>A<footer></footer>');
+        expect(fixture.html).toEqual('A<footer></footer>');
 
         createView('B');
         createView('C');
         fixture.update();
-        expect(fixture.html).toEqual('<header></header>ABC<footer></footer>');
+        expect(fixture.html).toEqual('ABC<footer></footer>');
 
         createView('Y', 0);
         fixture.update();
-        expect(fixture.html).toEqual('<header></header>YABC<footer></footer>');
+        expect(fixture.html).toEqual('YABC<footer></footer>');
 
         expect(() => { createView('Z', -1); }).toThrow();
         expect(() => { createView('Z', 5); }).toThrow();
