@@ -6,23 +6,23 @@ import { <%= classify(name) %>DataSource } from './<%= dasherize(name) %>-dataso
   selector: '<%= selector %>',<% if(inlineTemplate) { %>
   template: `
     <div class="mat-elevation-z8">
-      <mat-table #table [dataSource]="dataSource" matSort aria-label="Elements">
+      <table mat-table #table [dataSource]="dataSource" matSort aria-label="Elements">
 
         <!-- Id Column -->
         <ng-container matColumnDef="id">
-          <mat-header-cell *matHeaderCellDef mat-sort-header>Id</mat-header-cell>
-          <mat-cell *matCellDef="let row">{{row.id}}</mat-cell>
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Id</th>
+          <td mat-cell *matCellDef="let row">{{row.id}}</td>
         </ng-container>
 
         <!-- Name Column -->
         <ng-container matColumnDef="name">
-          <mat-header-cell *matHeaderCellDef mat-sort-header>Name</mat-header-cell>
-          <mat-cell *matCellDef="let row">{{row.name}}</mat-cell>
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Name</th>
+          <td mat-cell *matCellDef="let row">{{row.name}}</td>
         </ng-container>
 
-        <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-        <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
-      </mat-table>
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      </table>
 
       <mat-paginator #paginator
         [length]="dataSource.data.length"
