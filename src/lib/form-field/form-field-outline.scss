@@ -79,21 +79,18 @@ $mat-form-field-outline-subscript-padding:
   }
 
   .mat-form-field-outline-gap {
-    border-bottom: $mat-form-field-outline-width solid currentColor;
+    // hack for Chrome's treatment of borders with non-integer (scaled) widths
+    // refer to https://github.com/angular/material2/issues/10710
+    border-radius: 0.000001px;
 
-    &::before {
-      content: '';
-      display: block;
-      width: 100%;
-      border-top: $mat-form-field-outline-width solid currentColor;
-      opacity: 1;
-      transition: opacity 300ms $swift-ease-out-timing-function;
-    }
+    border: $mat-form-field-outline-width solid currentColor;
+    border-left-style: none;
+    border-right-style: none;
   }
 
   &.mat-form-field-can-float.mat-form-field-should-float {
-    .mat-form-field-outline-gap::before {
-      opacity: 0;
+    .mat-form-field-outline-gap {
+      border-top-color: transparent;
     }
   }
 
@@ -102,11 +99,9 @@ $mat-form-field-outline-subscript-padding:
 
     .mat-form-field-outline-start,
     .mat-form-field-outline-end,
-    .mat-form-field-outline-gap,
-    .mat-form-field-outline-gap::before {
+    .mat-form-field-outline-gap {
       border-width: $mat-form-field-outline-thick-width;
-      transition: border-color 300ms $swift-ease-out-timing-function,
-                  opacity 300ms $swift-ease-out-timing-function;
+      transition: border-color 300ms $swift-ease-out-timing-function;
     }
   }
 
