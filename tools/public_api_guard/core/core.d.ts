@@ -35,6 +35,7 @@ export declare class ApplicationInitStatus {
 
 /** @experimental */
 export declare class ApplicationModule {
+    constructor(appRef: ApplicationRef);
 }
 
 export declare class ApplicationRef {

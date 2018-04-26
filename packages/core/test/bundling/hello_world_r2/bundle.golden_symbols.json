@@ -189,9 +189,6 @@
     "name": "APP_BOOTSTRAP_LISTENER"
   },
   {
-    "name": "APP_INITIALIZER"
-  },
-  {
     "name": "APP_ROOT"
   },
   {
