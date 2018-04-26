@@ -31,7 +31,7 @@ merge:
     noConflict: true
     # list of labels that a PR needs to have, checked with a regexp (e.g. "PR target:" will work for the label "PR target: master")
     requiredLabels:
-      - "release: *"
+      - "target: *"
       - "cla: yes"
 
     # list of labels that a PR shouldn't have, checked after the required labels with a regexp
@@ -44,7 +44,8 @@ merge:
 
     # list of PR statuses that need to be successful
     requiredStatuses:
-      - "continuous-integration/travis-ci/pr"
+      # TODO(josephperrott): reenable once CI flakiness is addressed
+      # - "continuous-integration/travis-ci/pr"
       - "ci/circleci: build"
 
   # the comment that will be added when the merge label is added despite failing checks, leave empty or set to false to disable
