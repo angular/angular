@@ -32,7 +32,8 @@
       "@angular/material-experimental": ["../../dist/packages/material-experimental"],
       "@angular/cdk-experimental/*": ["../../dist/packages/cdk-experimental/*"],
       "@angular/cdk-experimental": ["../../dist/packages/cdk-experimental"],
-      "@angular/material-moment-adapter": ["../../dist/packages/material-moment-adapter"]
+      "@angular/material-moment-adapter": ["../../dist/packages/material-moment-adapter"],
+      "@angular/material-examples": ["../../dist/packages/material-examples"]
     }
   },
   "files": [
