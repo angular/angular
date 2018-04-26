@@ -7,12 +7,9 @@
     "e2e": "ng e2e",
     "lint": "ng lint",
     "ng": "ng",
-    "postbuild": "concurrently \"yarn run serve\" \"yarn run protractor\" --kill-others --success first",
     "postinstall": "webdriver-manager update --gecko false --standalone false $CHROMEDRIVER_VERSION_ARG",
-    "protractor": "protractor protractor.conf.js",
-    "serve": "lite-server -c e2e/browser.config.json",
     "start": "ng serve",
-    "test": "ng test"
+    "test": "ng test && ng e2e --webdriver-update=false && ng e2e --prod --webdriver-update=false"
   },
   "private": true,
   "dependencies": {
@@ -25,9 +22,7 @@
     "@angular/platform-browser": "file:../../dist/packages-dist/platform-browser",
     "@angular/platform-browser-dynamic": "file:../../dist/packages-dist/platform-browser-dynamic",
     "@angular/router": "file:../../dist/packages-dist/router",
-    "concurrently": "3.4.0",
     "core-js": "file:../../node_modules/core-js",
-    "lite-server": "2.2.2",
     "rxjs": "file:../../node_modules/rxjs",
     "zone.js": "file:../../node_modules/zone.js"
   },

@@ -6,15 +6,12 @@ to work, so they allow high-fidelity reproductions of real-world issues.
 For this to work, we first build the Angular distribution just like we would
 publish it to npm, then install the distribution into each app.
 
-To test Angular CLI applications, we generate integration tests such as `cli-hello-world`.
-This was generated with a current version of the CLI, and the only modification was replacement of `@angular/*` packages with their counterparts coming from `file:../../dist/packages-dist/*`.
-When a significant change is released in the CLI, the application should be re-generated from scratch:
+To test Angular CLI applications, we use the integration test `cli-hello-world`.
+When a significant change is released in the CLI, the application should be updated with `ng update`:
 
 ```bash
 $ cd integration
-$ rm -rf cli-hello-world
-$ ng new cli-hello-world
-# Edit cli-hello-world/package.json to point the @angular packages to dist/packages-dist, and preserve local mods to
+$ ng update
 # ng build
 # ng test
 # typescript version
