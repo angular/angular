@@ -75,10 +75,12 @@
                 "input": "src/styles.scss"
               }
             ],
-            "scripts": [],
-
+            "scripts": []
           },
           "configurations": {
+            "fast": {
+              "optimization": false
+            },
             "next": {
               "fileReplacements": [
                 {
@@ -111,6 +113,9 @@
             "browserTarget": "site:build"
           },
           "configurations": {
+            "fast": {
+              "browserTarget": "site:build:fast"
+            },
             "next": {
               "browserTarget": "site:build:next"
             },
