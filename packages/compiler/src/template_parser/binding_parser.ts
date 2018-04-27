@@ -29,12 +29,13 @@ const ANIMATE_PROP_PREFIX = 'animate-';
  */
 export class BindingParser {
   pipesByName: Map<string, CompilePipeSummary>|null = null;
+
   private _usedPipes: Map<string, CompilePipeSummary> = new Map();
 
   constructor(
       private _exprParser: Parser, private _interpolationConfig: InterpolationConfig,
       private _schemaRegistry: ElementSchemaRegistry, pipes: CompilePipeSummary[]|null,
-      private _targetErrors: ParseError[]) {
+      public errors: ParseError[]) {
     // When the `pipes` parameter is `null`, do not check for used pipes
     // This is used in IVY when we might not know the available pipes at compile time
     if (pipes) {
@@ -364,7 +365,7 @@ export class BindingParser {
   private _reportError(
       message: string, sourceSpan: ParseSourceSpan,
       level: ParseErrorLevel = ParseErrorLevel.ERROR) {
-    this._targetErrors.push(new ParseError(sourceSpan, message, level));
+    this.errors.push(new ParseError(sourceSpan, message, level));
   }
 
   private _reportExpressionParserErrors(errors: ParserError[], sourceSpan: ParseSourceSpan) {
