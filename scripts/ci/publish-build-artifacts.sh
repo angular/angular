@@ -64,7 +64,7 @@ function publishRepo {
   BUILD_VER="${LATEST_TAG}+${SHORT_SHA}"
   if [[ ${CI} ]]; then
     (
-      # The file ~/.git_credentials is created below
+      # The file ~/.git_credentials is created in /.circleci/config.yml
       cd $REPO_DIR && \
       git config credential.helper "store --file=$HOME/.git_credentials"
     )
@@ -122,19 +122,7 @@ CUR_BRANCH=${CIRCLE_BRANCH:-$(git symbolic-ref --short HEAD)}
 if [ $# -gt 0 ]; then
   ORG=$1
   publishPackages "ssh" dist/packages-dist $CUR_BRANCH
-
-elif [[ \
-    "$CIRCLE_PROJECT_USERNAME" == "angular" && \
-    "$CIRCLE_PROJECT_REPONAME" == "angular" && \
-    ! -v CIRCLE_PR_NUMBER ]]; then
-  ORG="angular"
-  # $KEY is set on CI only for non-PR builds. See /.circleci/README.md
-  openssl aes-256-cbc -d -in .circleci/github_token -k "${KEY}" -out "${HOME}/.git_credentials"
-
-  publishPackages "http" dist/packages-dist $CUR_BRANCH
-  # Clean up the credentials file out of caution
-  rm "${HOME}/.git_credentials"
-
 else
-  echo "Not building the upstream/${CUR_BRANCH} branch, build artifacts won't be published."
+  ORG="angular"
+  publishPackages "http" dist/packages-dist $CUR_BRANCH
 fi

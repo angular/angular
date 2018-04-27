@@ -158,6 +158,16 @@ jobs:
   publish_snapshot:
     <<: *job_defaults
     steps:
+      # See below - ideally this job should not trigger for non-upstream builds.
+      # But since it does, we have to check this condition.
+      - run:
+          name: Skip this job for Pull Requests and Fork builds
+          # Note, `|| true` on the end makes this step always exit 0
+          command: '[[
+              -v CIRCLE_PR_NUMBER
+              || "$CIRCLE_PROJECT_USERNAME" != "angular"
+              || "$CIRCLE_PROJECT_REPONAME" != "angular"
+          ]] && circleci step halt || true'
       - checkout:
           <<: *post_checkout
       - attach_workspace:
@@ -166,6 +176,9 @@ jobs:
       # This is not compatible with our mechanism of using a Personal Access Token
       # Clear the global setting
       - run: git config --global --unset "url.ssh://git@github.com.insteadof"
+      - run:
+          name: Decrypt github credentials
+          command: 'openssl aes-256-cbc -d -in .circleci/github_token -k "${KEY}" -out ~/.git_credentials'
       - run: ./scripts/ci/publish-build-artifacts.sh
 
   aio_monitoring:
@@ -191,8 +204,7 @@ workflows:
           # Note: no filters on this job because we want it to run for all upstream branches
           # We'd really like to filter out pull requests here, but not yet available:
           # https://discuss.circleci.com/t/workflows-pull-request-filter/14396/4
-          # Instead, the publish-build-artifacts.sh script just terminates when
-          # CIRCLE_PR_NUMBER is set.
+          # Instead, the job just exits immediately at the first step.
           requires:
             # Only publish if tests and integration tests pass
             - test
