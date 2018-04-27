@@ -38,7 +38,12 @@ export interface AssetGroup {
   name: string;
   installMode?: 'prefetch'|'lazy';
   updateMode?: 'prefetch'|'lazy';
-  resources: {files?: Glob[]; versionedFiles?: Glob[]; urls?: Glob[];};
+  resources: {
+    files?: Glob[];
+    /** @deprecated */
+    versionedFiles?: Glob[];
+    urls?: Glob[];
+  };
 }
 
 /**
