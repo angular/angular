@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ParsedEvent, ParsedProperty, ParsedVariable} from '../expression_parser/ast';
+import {ParsedEvent, ParsedProperty, ParsedVariable, ParserError} from '../expression_parser/ast';
 import * as html from '../ml_parser/ast';
 import {replaceNgsp} from '../ml_parser/html_whitespaces';
 import {isNgTemplate} from '../ml_parser/tags';
@@ -14,8 +14,9 @@ import {ParseError, ParseErrorLevel, ParseSourceSpan} from '../parse_util';
 import {isStyleUrlResolvable} from '../style_url_resolver';
 import {BindingParser} from '../template_parser/binding_parser';
 import {PreparsedElementType, preparseElement} from '../template_parser/template_preparser';
-
+import {syntaxError} from '../util';
 import * as t from './r3_ast';
+
 
 const BIND_NAME_REGEXP =
     /^(?:(?:(?:(bind-)|(let-)|(ref-|#)|(on-)|(bindon-)|(@))(.+))|\[\(([^\)]+)\)\]|\[([^\]]+)\]|\(([^\)]+)\))$/;
@@ -46,9 +47,39 @@ const CLASS_ATTR = 'class';
 // Default selector used by `<ng-content>` if none specified
 const DEFAULT_CONTENT_SELECTOR = '*';
 
-export class HtmlToTemplateTransform implements html.Visitor {
-  errors: ParseError[];
+// Result of the html AST to Ivy AST transformation
+export type Render3ParseResult = {
+  nodes: t.Node[]; errors: ParseError[];
+  // Any non default (empty or '*') selector found in the template
+  ngContentSelectors: string[];
+  // Wether the template contains any `<ng-content>`
+  hasNgContent: boolean;
+};
 
+export function htmlAstToRender3Ast(
+    htmlNodes: html.Node[], bindingParser: BindingParser): Render3ParseResult {
+  const transformer = new HtmlAstToIvyAst(bindingParser);
+  const ivyNodes = html.visitAll(transformer, htmlNodes);
+
+  // Errors might originate in either the binding parser or the html to ivy transformer
+  const allErrors = bindingParser.errors.concat(transformer.errors);
+  const errors: ParseError[] = allErrors.filter(e => e.level === ParseErrorLevel.ERROR);
+
+  if (errors.length > 0) {
+    const errorString = errors.join('\n');
+    throw syntaxError(`Template parse errors:\n${errorString}`, errors);
+  }
+
+  return {
+    nodes: ivyNodes,
+    errors: allErrors,
+    ngContentSelectors: transformer.ngContentSelectors,
+    hasNgContent: transformer.hasNgContent,
+  };
+}
+
+class HtmlAstToIvyAst implements html.Visitor {
+  errors: ParseError[] = [];
   // Selectors for the `ng-content` tags. Only non `*` selectors are recorded here
   ngContentSelectors: string[] = [];
   // Any `<ng-content>` in the template ?
