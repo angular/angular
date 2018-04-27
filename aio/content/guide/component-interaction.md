@@ -1,9 +1,16 @@
+<!--
 # Component Interaction
+-->
+# 컴포넌트 통신
 
 {@a top}
 
+<!--
 This cookbook contains recipes for common component communication scenarios
 in which two or more components share information.
+-->
+이 가이드 문서는 둘 이상의 컴포넌트가 서로 데이터를 공유하는 방법을 다룹니다.
+
 {@a toc}
 
 <!--
@@ -18,36 +25,52 @@ in which two or more components share information.
 
 -->
 
+<!--
 **See the <live-example name="component-interaction"></live-example>**.
+-->
+**이 장에서 다루는 예제는 <live-example name="component-interaction"></live-example>에서 확인할 수 있습니다.**
 
 {@a parent-to-child}
 
+<!--
 ## Pass data from parent to child with input binding
+-->
+## 부모 컴포넌트에서 자식 컴포넌트로 데이터 전달하기 : 입력 바인딩
 
+<!--
 `HeroChildComponent` has two ***input properties***,
 typically adorned with [@Input decorations](guide/template-syntax#inputs-outputs).
-
+-->
+`HeroChildComponent`에는 ***입력 프로퍼티***가 두 개 있습니다. 이 프로퍼티들은 [@Input 데코레이터](guide/template-syntax#inputs-outputs)를 사용해서 선언합니다.
 
 <code-example path="component-interaction/src/app/hero-child.component.ts" title="component-interaction/src/app/hero-child.component.ts">
 
 </code-example>
 
 
-
+<!--
 The second `@Input` aliases the child component property name `masterName` as `'master'`.
+-->
+이 코드에 사용된 두 번째 `@Input`은 `masterName` 프로퍼티를 외부에서 바인딩 할 때 `'master'`라는 이름으로 사용하기 위한 선언이 추가되어 있습니다.
 
+<!--
 The `HeroParentComponent` nests the child `HeroChildComponent` inside an `*ngFor` repeater,
 binding its `master` string property to the child's `master` alias,
 and each iteration's `hero` instance to the child's `hero` property.
-
+-->
+`HeroParentComponent`는 `*ngFor`를 사용해서 배열에 있는 항목마다 `HeroChildComponent`를 만드는데,
+각 컴포넌트를 만들때마다 `master` 문자열 프로퍼티를 자식 컴포넌트의 `master`로 연결하고,
+반복되는 `hero` 인스턴스를 자식 컴포넌트의 `hero` 프로퍼티로 바인딩 합니다.
 
 <code-example path="component-interaction/src/app/hero-parent.component.ts" title="component-interaction/src/app/hero-parent.component.ts">
 
 </code-example>
 
 
-
+<!--
 The running application displays three heroes:
+-->
+그리고 이 애플리케이션을 실행하면 다음과 같이 세 명의 히어로가 표시됩니다:
 
 
 <figure>
@@ -55,37 +78,53 @@ The running application displays three heroes:
 </figure>
 
 
-
+<!--
 <h3 class="no-toc">Test it</h3>
+-->
+<h3 class="no-toc">동작 확인</h3>
 
+<!--
 E2E test that all children were instantiated and displayed as expected:
-
+-->
+반복문을 순회하며 각각의 히어로마다 결과를 제대로 표시하는지 확인하기 위해 E2E 테스트 환경을 다음과 같이 설정합니다:
 
 <code-example path="component-interaction/e2e/app.e2e-spec.ts" region="parent-to-child" title="component-interaction/e2e/app.e2e-spec.ts">
 
 </code-example>
 
 
-
+<!--
 [Back to top](guide/component-interaction#top)
+-->
+[맨 위로](guide/component-interaction#top)
 
 {@a parent-to-child-setter}
 
+<!--
 ## Intercept input property changes with a setter
+-->
+## 입력 프로퍼티를 세터(setter)로 가로채기
 
+<!--
 Use an input property setter to intercept and act upon a value from the parent.
+-->
+부모 컴포넌트에서 값이 전달될 때 추가 로직을 실행하기 위해 입력 프로퍼티에 세터를 사용해 봅시다.
 
+<!--
 The setter of the `name` input property in the child `NameChildComponent`
 trims the whitespace from a name and replaces an empty value with default text.
-
+-->
+자식 컴포넌트인 `NameChildComponent`의 입력 프로퍼티인 `name`에 세터를 연결해서 전달되는 문자열의 여백 문자를 다른 문자로 변경해 봅시다.
 
 <code-example path="component-interaction/src/app/name-child.component.ts" title="component-interaction/src/app/name-child.component.ts">
 
 </code-example>
 
 
-
+<!--
 Here's the `NameParentComponent` demonstrating name variations including a name with all spaces:
+-->
+그리고 부모 컴포넌트인 `NameParentComponent`는 자식 컴포넌트에 다음과 같이 몇 가지 경우를 적용해 봅니다:
 
 
 <code-example path="component-interaction/src/app/name-parent.component.ts" title="component-interaction/src/app/name-parent.component.ts">
@@ -99,78 +138,102 @@ Here's the `NameParentComponent` demonstrating name variations including a name 
 </figure>
 
 
-
+<!--
 <h3 class="no-toc">Test it</h3>
+-->
+<h3 class="no-toc">동작 확인</h3>
 
+<!--
 E2E tests of input property setter with empty and non-empty names:
-
+-->
+입력 프로퍼티 세터를 테스트하는 E2E 환경은 다음과 같이 설정합니다:
 
 <code-example path="component-interaction/e2e/app.e2e-spec.ts" region="parent-to-child-setter" title="component-interaction/e2e/app.e2e-spec.ts">
 
 </code-example>
 
 
-
+<!--
 [Back to top](guide/component-interaction#top)
+-->
+[맨 위로](guide/component-interaction#top)
 
 {@a parent-to-child-on-changes}
 
+<!--
 ## Intercept input property changes with *ngOnChanges()*
+-->
+## *ngOnChanges()*로 입력 프로퍼티 가로채기
 
+<!--
 Detect and act upon changes to input property values with the `ngOnChanges()` method of the `OnChanges` lifecycle hook interface.
+-->
+입력 프로퍼티는 `OnChanges` 라이프싸이클 후킹 인터페이스를 사용하는 `ngOnChanges()` 메소드로도 가로챌 수 있습니다.
 
 <div class="l-sub-section">
 
 
-
+<!--
 You may prefer this approach to the property setter when watching multiple, interacting input properties.
 
 Learn about `ngOnChanges()` in the [LifeCycle Hooks](guide/lifecycle-hooks) chapter.
+-->
+입력 프로퍼티 여러개를 가로채야 한다면 세터를 사용하는 것보다 이 방식이 더 편할 수 있습니다.
+
+`ngOnChanges()` 함수에 대한 자세한 설명은 [라이프싸이클 후킹](guide/lifecycle-hooks) 문서를 참고하세요.
 
 </div>
 
 
-
+<!--
 This `VersionChildComponent` detects changes to the `major` and `minor` input properties and composes a log message reporting these changes:
-
+-->
+`VersionChildComponent`는 `major`와 `minor` 두 입력 프로퍼티 값이 변경되는 것을 감지하고 이 내용을 로그로 출력합니다:
 
 <code-example path="component-interaction/src/app/version-child.component.ts" title="component-interaction/src/app/version-child.component.ts">
 
 </code-example>
 
 
-
+<!--
 The `VersionParentComponent` supplies the `minor` and `major` values and binds buttons to methods that change them.
-
+-->
+그리고 부모 컴포넌트인 `VersionParentComponent`는 자식 컴포넌트에 바인딩되는 `minor`, `major` 두 값을 버튼으로 조정합니다.
 
 <code-example path="component-interaction/src/app/version-parent.component.ts" title="component-interaction/src/app/version-parent.component.ts">
 
 </code-example>
 
 
-
+<!--
 Here's the output of a button-pushing sequence:
-
+-->
+버튼을 눌렀을 때 화면은 다음과 같습니다:
 
 <figure>
   <img src="generated/images/guide/component-interaction/parent-to-child-on-changes.gif" alt="Parent-to-child-onchanges">
 </figure>
 
 
-
+<!--
 <h3 class="no-toc">Test it</h3>
+-->
+<h3 class="no-toc">동작 확인</h3>
 
+<!--
 Test that ***both*** input properties are set initially and that button clicks trigger
 the expected `ngOnChanges` calls and values:
-
+-->
+***두*** 입력 프로퍼티는 초기값이 설정된 이후에 버튼을 누를 때마다 변경되면서 `ngOnChanges()`를 실행하는데, 이 동작을 테스트하는 E2E 환경을 다음과 같이 정의합니다:
 
 <code-example path="component-interaction/e2e/app.e2e-spec.ts" region="parent-to-child-onchanges" title="component-interaction/e2e/app.e2e-spec.ts">
 
 </code-example>
 
-
-
+<!--
 [Back to top](guide/component-interaction#top)
+-->
+[맨 위로](guide/component-interaction#top)
 
 {@a child-to-parent}
 
