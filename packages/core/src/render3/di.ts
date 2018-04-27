@@ -695,18 +695,20 @@ class ViewContainerRef implements viewEngine_ViewContainerRef {
  * @returns The TemplateRef instance to use
  */
 export function getOrCreateTemplateRef<T>(di: LInjector): viewEngine_TemplateRef<T> {
-  ngDevMode && assertNodeType(di.node, LNodeType.Container);
-  const hostNode = di.node as LContainerNode;
-  const hostTNode = hostNode.tNode !;
-  const hostTView = hostNode.view.tView;
-  if (!hostTNode.tViews) {
-    hostTNode.tViews = createTView(hostTView.directiveRegistry, hostTView.pipeRegistry);
+  if (!di.templateRef) {
+    ngDevMode && assertNodeType(di.node, LNodeType.Container);
+    const hostNode = di.node as LContainerNode;
+    const hostTNode = hostNode.tNode !;
+    const hostTView = hostNode.view.tView;
+    if (!hostTNode.tViews) {
+      hostTNode.tViews = createTView(hostTView.directiveRegistry, hostTView.pipeRegistry);
+    }
+    ngDevMode && assertNotNull(hostTNode.tViews, 'TView must be allocated');
+    di.templateRef = new TemplateRef<any>(
+        getOrCreateElementRef(di), hostTNode.tViews as TView, hostNode.data.template !,
+        getRenderer(), hostTView.directiveRegistry, hostTView.pipeRegistry);
   }
-  ngDevMode && assertNotNull(hostTNode.tViews, 'TView must be allocated');
-  return di.templateRef ||
-      (di.templateRef = new TemplateRef<any>(
-           getOrCreateElementRef(di), hostTNode.tViews as TView, hostNode.data.template !,
-           getRenderer(), hostTView.directiveRegistry, hostTView.pipeRegistry));
+  return di.templateRef;
 }
 
 class TemplateRef<T> implements viewEngine_TemplateRef<T> {
