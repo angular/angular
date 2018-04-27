@@ -75,6 +75,7 @@ function publishRepo {
     done
 
     (
+      # The file ~/.git_credentials is created in /.circleci/config.yml
       cd $REPO_DIR && \
       git config credential.helper "store --file=.git/credentials" && \
       # SECURITY CRITICAL: DO NOT use shell to expand vars since it could be logged and leaked.
@@ -134,20 +135,7 @@ CUR_BRANCH=${TRAVIS_BRANCH:-$(git symbolic-ref --short HEAD)}
 if [ $# -gt 0 ]; then
   ORG=$1
   publishPackages "ssh" dist/packages-dist $CUR_BRANCH
-  if [[ -e dist/packages-dist-es2015 ]]; then
-    publishPackages "ssh" dist/packages-dist-es2015 ${CUR_BRANCH}-es2015
-  fi
-
-elif [[ \
-    "$TRAVIS_REPO_SLUG" == "angular/angular" && \
-    "$TRAVIS_PULL_REQUEST" == "false" && \
-    "$CI_MODE" == "e2e" ]]; then
+else
   ORG="angular"
   publishPackages "http" dist/packages-dist $CUR_BRANCH
-  if [[ -e dist/packages-dist-es2015 ]]; then
-    publishPackages "http" dist/packages-dist-es2015 ${CUR_BRANCH}-es2015
-  fi
-
-else
-  echo "Not building the upstream/${CUR_BRANCH} branch, build artifacts won't be published."
 fi
