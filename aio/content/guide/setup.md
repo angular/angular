@@ -305,8 +305,8 @@ If you're new to Angular, we recommend you follow the [tutorial](tutorial "Tour 
 
 
 [Node.js](https://nodejs.org/en/) and the [npm](https://www.npmjs.com/) package manager are essential to modern web development with Angular and other platforms.
-NodeJS powers client development and build tools.
-The _npm_ package manager, which is itself a _NodeJS_ application, installs JavaScript libraries.
+Node.js powers client development and build tools.
+The _npm_ package manager, which is itself a _Node.js_ application, installs JavaScript libraries.
 
 <a href="https://docs.npmjs.com/getting-started/installing-node" target="_blank" title="Installing Node.js and updating npm">
 Get them now</a> if they're not already installed on your machine.
