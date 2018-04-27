@@ -104,6 +104,7 @@
     "karma-firefox-launcher": "^1.0.1",
     "karma-jasmine": "^1.1.0",
     "karma-sauce-launcher": "^1.2.0",
+    "karma-sharding": "^4.4.0",
     "karma-sourcemap-loader": "^0.3.7",
     "karma-spec-reporter": "^0.0.32",
     "madge": "^2.2.0",
