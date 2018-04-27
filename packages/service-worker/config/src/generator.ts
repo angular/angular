@@ -27,13 +27,15 @@ export class Generator {
   constructor(readonly fs: Filesystem, private baseHref: string) {}
 
   async process(config: Config): Promise<Object> {
-    const hashTable = {};
+    const unorderedHashTable = {};
+    const assetGroups = await this.processAssetGroups(config, unorderedHashTable);
+
     return {
       configVersion: 1,
       appData: config.appData,
-      index: joinUrls(this.baseHref, config.index),
-      assetGroups: await this.processAssetGroups(config, hashTable),
-      dataGroups: this.processDataGroups(config), hashTable,
+      index: joinUrls(this.baseHref, config.index), assetGroups,
+      dataGroups: this.processDataGroups(config),
+      hashTable: withOrderedKeys(unorderedHashTable),
       navigationUrls: processNavigationUrls(this.baseHref, config.navigationUrls),
     };
   }
@@ -45,16 +47,17 @@ export class Generator {
       const fileMatcher = globListToMatcher(group.resources.files || []);
       const versionedMatcher = globListToMatcher(group.resources.versionedFiles || []);
 
-      const allFiles = (await this.fs.list('/'));
-
-      const versionedFiles = allFiles.filter(versionedMatcher).filter(file => !seenMap.has(file));
-      versionedFiles.forEach(file => seenMap.add(file));
+      const allFiles = await this.fs.list('/');
 
       const plainFiles = allFiles.filter(fileMatcher).filter(file => !seenMap.has(file));
       plainFiles.forEach(file => seenMap.add(file));
 
+      const versionedFiles = allFiles.filter(versionedMatcher).filter(file => !seenMap.has(file));
+      versionedFiles.forEach(file => seenMap.add(file));
+
       // Add the hashes.
-      await[...versionedFiles, ...plainFiles].reduce(async(previous, file) => {
+      const matchedFiles = [...plainFiles, ...versionedFiles].sort();
+      await matchedFiles.reduce(async(previous, file) => {
         await previous;
         const hash = await this.fs.hash(file);
         hashTable[joinUrls(this.baseHref, file)] = hash;
@@ -64,10 +67,7 @@ export class Generator {
         name: group.name,
         installMode: group.installMode || 'prefetch',
         updateMode: group.updateMode || group.installMode || 'prefetch',
-        urls: ([] as string[])
-                  .concat(plainFiles)
-                  .concat(versionedFiles)
-                  .map(url => joinUrls(this.baseHref, url)),
+        urls: matchedFiles.map(url => joinUrls(this.baseHref, url)),
         patterns: (group.resources.urls || []).map(url => urlToRegex(url, this.baseHref)),
       };
     }));
@@ -140,4 +140,10 @@ function joinUrls(a: string, b: string): string {
     return a + '/' + b;
   }
   return a + b;
+}
+
+function withOrderedKeys<T extends{[key: string]: any}>(unorderedObj: T): T {
+  const orderedObj = {} as T;
+  Object.keys(unorderedObj).sort().forEach(key => orderedObj[key] = unorderedObj[key]);
+  return orderedObj;
 }
