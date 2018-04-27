@@ -922,39 +922,67 @@ Write lean hook methods to avoid performance problems.
 
 ## AfterContent
 
+<!--
 The *AfterContent* sample explores the `AfterContentInit()` and `AfterContentChecked()` hooks that Angular calls
 *after* Angular projects external content into the component.
+-->
+*AfterContent* 예제는 Angular가 컴포넌트 안에 외부 컨텐츠를 넣은 이후에 실행되는 `AfterContentInit`과 `AfterContentChecked` 후킹 인터페이스를 다룹니다.
 
 {@a content-projection}
 
+<!--
 ### Content projection
+-->
+### 컨텐츠 프로젝션
 
+<!--
 *Content projection* is a way to import HTML content from outside the component and insert that content
 into the component's template in a designated spot.
+-->
+*컨텐츠 프로젝션*은 컴포넌트의 템플릿을 정의하는 외부 HTML 파일을 컴포넌트 안에 가져와서 컴포넌트 템플릿에 반영하는 것을 의미합니다.
 
 <div class="l-sub-section">
 
+  <!--
   AngularJS developers know this technique as *transclusion*.
+  -->
+  이 개념은 AngularJS에서 *트랜스클루전(transclusion)*이라는 개념으로 사용했습니다.
 
 </div>
 
+<!--
 Consider this variation on the [previous _AfterView_](guide/lifecycle-hooks#afterview) example.
 This time, instead of including the child view within the template, it imports the content from
 the `AfterContentComponent`'s parent. Here's the parent's template:
+-->
+이 예제는 이전에 다뤘던 [_AfterView_](guide/lifecycle-hooks#afterview) 예제를 변형한 것입니다.
+이전 예제에서 템플릿에 자식 컴포넌트의 뷰를 직접 표시했던 대신, 이번 예제는 `AfterContentComponent`의 부모 컴포넌트에서 컨텐츠를 받아옵니다.
+부모 컴포넌트의 템플릿은 이렇습니다:
 
 <code-example path="lifecycle-hooks/src/app/after-content.component.ts" region="parent-template" title="AfterContentParentComponent (template excerpt)" linenums="false"></code-example>
 
+<!--
 Notice that the `<my-child>` tag is tucked between the `<after-content>` tags.
 Never put content between a component's element tags *unless you intend to project that content
 into the component*.
+-->
+`<after-content>` 태그 안에 있는 `<my-child>` 태그를 주의해서 보세요.
+*컴포넌트 외부에서 전달하는 컨텐츠를 컴포넌트 안에 표시하려고 하지만* 컴포넌트를 의미하는 엘리먼트 태그 안에는 아무 내용도 넣지 않았습니다.
 
+<!--
 Now look at the component's template:
+-->
+그리고 `AfterContentComponent` 컴포넌트의 템플릿은 다음과 같이 구성했습니다:
 
 <code-example path="lifecycle-hooks/src/app/after-content.component.ts" region="template" title="AfterContentComponent (template)" linenums="false"></code-example>
 
+<!--
 The `<ng-content>` tag is a *placeholder* for the external content.
 It tells Angular where to insert that content.
 In this case, the projected content is the `<my-child>` from the parent.
+-->
+`<ng-content>` 태그는 외부 컨텐츠가 *들어갈 위치*를 지정하는 태그입니다.
+Angular가 이 태그를 확인하면 컴포넌트 외부에서 전달되는 컨텐츠를 이 위치에 표시하며, 이 예제에서 부모 컴포넌트가 자식 컴포넌트로 전달하는 컨텐츠는 `<my-child>` 엘리먼트입니다.
 
 <figure>
   <img src='generated/images/guide/lifecycle-hooks/projected-child-view.png' alt="Projected Content">
@@ -962,39 +990,73 @@ In this case, the projected content is the `<my-child>` from the parent.
 
 <div class="l-sub-section">
 
+  <!--
   The telltale signs of *content projection* are twofold:
 
   * HTML between component element tags.
   * The presence of `<ng-content>` tags in the component's template.
+  -->
+  *컨텐츠 프로젝션*이 사용된 것은 다음 두 가지로 확인할 수 있습니다:
+
+  * 컴포넌트 엘리먼트 태그 안에 HTML이 있는 경우
+  * 컴포넌트 템플릿 안에 `<ng-content>` 태그가 있는 경우
 
 </div>
 
 {@a aftercontent-hooks}
 
+<!--
 ### AfterContent hooks
+-->
+### AfterContent 후킹
 
+<!--
 *AfterContent* hooks are similar to the *AfterView* hooks.
 The key difference is in the child component.
+-->
+*AfterContent* 후킹은 *AfterView* 후킹과 비슷합니다.
+자식 컴포넌트에서 발생한다는 것만 다릅니다.
 
+<!--
 * The *AfterView* hooks concern `ViewChildren`, the child components whose element tags
 appear *within* the component's template.
+-->
+* *AfterView* 후킹은 `ViewChildren` 데코레이터를 활용합니다. 이 데코레이터는 컴포넌트 템플릿 *안에 있는* 자식 컴포넌트를 가리킵니다.
 
+<!--
 * The *AfterContent* hooks concern `ContentChildren`, the child components that Angular
 projected into the component.
+-->
+* *AfterContent* 후킹은 `ContentChildren` 데코레이터를 활용합니다. 이 데코레이터는 컴포넌트 안에 프로젝트된 자식 컴포넌트를 가리킵니다.
 
+<!--
 The following *AfterContent* hooks take action based on changing values in a *content child*,
 which can only be reached by querying for them via the property decorated with
 [@ContentChild](api/core/ContentChild).
+-->
+*AfterContent* 후킹은 *자식 컴포넌트에 반영된 컨텐츠가* 변경되는 것과 관계가 있으며, 이 컨텐츠 내용을 직접 할용하려면 [@ContentChild](api/core/ContentChild) 데코레이터를 사용해야 합니다.
 
 <code-example path="lifecycle-hooks/src/app/after-content.component.ts" region="hooks" title="AfterContentComponent (class excerpts)" linenums="false"></code-example>
 
 {@a no-unidirectional-flow-worries}
 
+<!--
 ### No unidirectional flow worries with _AfterContent_
+-->
+### _AfterContent_ 도 단방향 데이터 흐름을 따릅니다.
 
+<!--
 This component's `doSomething()` method update's the component's data-bound `comment` property immediately.
 There's no [need to wait](guide/lifecycle-hooks#wait-a-tick).
+-->
+이 컴포넌트의 `doSomething()` 메소드는 컴포넌트 프로퍼티인 `comment`의 값을 변경합니다.
+하지만 [다음 실행 싸이클을 기다릴 필요](guide/lifecycle-hooks#wait-a-tick)는 없습니다.
 
+<!--
 Recall that Angular calls both *AfterContent* hooks before calling either of the *AfterView* hooks.
 Angular completes composition of the projected content *before* finishing the composition of this component's view.
 There is a small window between the `AfterContent...` and `AfterView...` hooks to modify the host view.
+-->
+Angular는 *AfterView* 후킹을 실행하기 전에 *AfterContent* 후킹을 실행합니다.
+그래서 자식 컴포넌트의 컴포넌트 뷰 구성이 끝나는 시점은 프로젝션될 컨텐츠가 준비된 이후입니다.
+이 과정에서 컴포넌트의 호스트 뷰가 프로젝션될 컨텐츠에 의해 갱신되기 때문에 `AfterContent`와 `AfterView` 후킹 사이에는 약간의 차이가 있고, 이 때문에 이전에 사용했던 JavaScript 실행 싸이클을 조정하는 로직은 이 경우에 필요하지 않습니다.
