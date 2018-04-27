@@ -22,6 +22,6 @@ declare let isBrowser: boolean;
 
 declare namespace jasmine {
   interface Matchers {
-    toHaveProperties(perfCounts: Partial<NgDevModePerfCounters>): boolean;
+    toHaveProperties(obj: any): boolean;
   }
 }
