@@ -16,8 +16,7 @@ import {isPromise} from '../src/util/lang';
 import {ApplicationInitStatus} from './application_init';
 import {APP_BOOTSTRAP_LISTENER, PLATFORM_INITIALIZER} from './application_tokens';
 import {Console} from './console';
-import {Injectable, InjectionToken, Injector, StaticProvider, inject} from './di';
-import {defineInjectable} from './di/defs';
+import {Injectable, InjectionToken, Injector, StaticProvider} from './di';
 import {CompilerFactory, CompilerOptions} from './linker/compiler';
 import {ComponentFactory, ComponentRef} from './linker/component_factory';
 import {ComponentFactoryBoundToModule, ComponentFactoryResolver} from './linker/component_factory_resolver';
@@ -362,26 +361,8 @@ function optionsReducer<T extends Object>(dst: any, objs: T | T[]): T {
  *
  *
  */
+@Injectable()
 export class ApplicationRef {
-  // `ngInjectableDef` is required in core-level code because it sits behind
-  // the injector and any code the loads it inside may run into a dependency
-  // loop (because Injectable is also in core. Do not use the code below
-  // (use @Injectable({ providedIn, factory }))  instead...
-  /**
-   * @internal
-   * @nocollapse
-   */
-  static ngInjectableDef = defineInjectable({
-    providedIn: 'root',
-    factory: function ApplicationRef_Factory() {
-      // Type as any is used here due to a type-related bug in injector with abstract classes
-      // (#23528)
-      return new ApplicationRef(
-          inject(NgZone), inject(Console), inject(Injector as any), inject(ErrorHandler),
-          inject(ComponentFactoryResolver as any), inject(ApplicationInitStatus));
-    }
-  });
-
   /** @internal */
   static _tickScope: WtfScopeFn = wtfCreateScope('ApplicationRef#tick()');
   private _bootstrapListeners: ((compRef: ComponentRef<any>) => void)[] = [];
