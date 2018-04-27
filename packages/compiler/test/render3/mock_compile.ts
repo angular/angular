@@ -16,7 +16,7 @@ import * as html from '../../src/ml_parser/ast';
 import {removeWhitespaces} from '../../src/ml_parser/html_whitespaces';
 import * as o from '../../src/output/output_ast';
 import {compilePipe} from '../../src/render3/r3_pipe_compiler';
-import {HtmlToTemplateTransform} from '../../src/render3/r3_template_transform';
+import {htmlAstToRender3Ast} from '../../src/render3/r3_template_transform';
 import {compileComponentFromRender2, compileDirectiveFromRender2} from '../../src/render3/view/compiler';
 import {BindingParser} from '../../src/template_parser/binding_parser';
 import {OutputContext, escapeRegExp} from '../../src/util';
@@ -308,14 +308,12 @@ export function compile(
               if (!preserveWhitespaces) {
                 htmlAst = removeWhitespaces(htmlAst);
               }
-              const transform = new HtmlToTemplateTransform(hostBindingParser);
-              const nodes = html.visitAll(transform, htmlAst.rootNodes, null);
-              const hasNgContent = transform.hasNgContent;
-              const ngContentSelectors = transform.ngContentSelectors;
+
+              const render3Ast = htmlAstToRender3Ast(htmlAst.rootNodes, hostBindingParser);
 
               compileComponentFromRender2(
-                  outputCtx, directive, nodes, hasNgContent, ngContentSelectors, reflector,
-                  hostBindingParser, directiveTypeBySel, pipeTypeByName);
+                  outputCtx, directive, render3Ast, reflector, hostBindingParser,
+                  directiveTypeBySel, pipeTypeByName);
             } else {
               compileDirectiveFromRender2(outputCtx, directive, reflector, hostBindingParser);
             }

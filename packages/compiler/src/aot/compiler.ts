@@ -24,7 +24,7 @@ import * as o from '../output/output_ast';
 import {ParseError} from '../parse_util';
 import {compileNgModule as compileIvyModule} from '../render3/r3_module_compiler';
 import {compilePipe as compileIvyPipe} from '../render3/r3_pipe_compiler';
-import {HtmlToTemplateTransform} from '../render3/r3_template_transform';
+import {htmlAstToRender3Ast} from '../render3/r3_template_transform';
 import {compileComponentFromRender2 as compileIvyComponent, compileDirectiveFromRender2 as compileIvyDirective} from '../render3/view/compiler';
 import {DomElementSchemaRegistry} from '../schema/dom_element_schema_registry';
 import {CompiledStylesheet, StyleCompiler} from '../style_compiler';
@@ -391,10 +391,7 @@ export class AotCompiler {
         if (!preserveWhitespaces) {
           htmlAst = removeWhitespaces(htmlAst);
         }
-        const transform = new HtmlToTemplateTransform(hostBindingParser);
-        const nodes = html.visitAll(transform, htmlAst.rootNodes, null);
-        const hasNgContent = transform.hasNgContent;
-        const ngContentSelectors = transform.ngContentSelectors;
+        const render3Ast = htmlAstToRender3Ast(htmlAst.rootNodes, hostBindingParser);
 
         // Map of StaticType by directive selectors
         const directiveTypeBySel = new Map<string, any>();
@@ -417,8 +414,8 @@ export class AotCompiler {
         pipes.forEach(pipe => { pipeTypeByName.set(pipe.name, pipe.type.reference); });
 
         compileIvyComponent(
-            context, directiveMetadata, nodes, hasNgContent, ngContentSelectors, this.reflector,
-            hostBindingParser, directiveTypeBySel, pipeTypeByName);
+            context, directiveMetadata, render3Ast, this.reflector, hostBindingParser,
+            directiveTypeBySel, pipeTypeByName);
       } else {
         compileIvyDirective(context, directiveMetadata, this.reflector, hostBindingParser);
       }
