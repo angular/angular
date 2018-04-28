@@ -43,5 +43,8 @@
     "flatModuleId": "@angular/material-experimental",
     "skipTemplateCodegen": true,
     "fullTemplateTypeCheck": true
+  },
+  "bazelOptions": {
+    "suppressTsconfigOverrideWarnings": true
   }
 }

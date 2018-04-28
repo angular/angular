@@ -36,5 +36,8 @@
     "flatModuleOutFile": "index.js",
     "flatModuleId": "@angular/cdk-experimental",
     "skipTemplateCodegen": true
+  },
+  "bazelOptions": {
+    "suppressTsconfigOverrideWarnings": true
   }
 }
