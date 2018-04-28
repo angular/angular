@@ -38,7 +38,7 @@ template. The directive also exports the same properties as `ngFor` (index, even
 last).
 
 The next step is to define the table's header-row (`cdkHeaderRowDef`), data-row (`cdkRowDef`),
-and fitler-row (`cdkFooterRowDef`). Note that each of these are optional to include, depending on
+and footer-row (`cdkFooterRowDef`). Note that each of these are optional to include, depending on
 what type of rows you want rendered (e.g. if you do not need a footer row, simply do not add
 its definition).
 
