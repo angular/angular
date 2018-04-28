@@ -18,7 +18,10 @@ task('aot:deps', sequenceTask(
     'material:build-release',
     'cdk-experimental:build-release',
     'material-experimental:build-release',
-    'material-moment-adapter:build-release'
+    'material-moment-adapter:build-release',
+    // The examples module needs to be built before building examples package
+    'build-examples-module',
+    'material-examples:build-release',
   ],
   // Build the assets after the releases have been built, because the demo-app assets import
   // SCSS files from the release packages.

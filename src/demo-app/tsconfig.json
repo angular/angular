@@ -14,7 +14,8 @@
       "@angular/material-experimental": ["../material-experimental"],
       "@angular/cdk-experimental/*": ["../cdk-experimental/*"],
       "@angular/cdk-experimental": ["../cdk-experimental"],
-      "@angular/material-moment-adapter": ["../material-moment-adapter/public-api.ts"]
+      "@angular/material-moment-adapter": ["../material-moment-adapter/public-api.ts"],
+      "@angular/material-examples": ["../../dist/packages/material-examples"]
     }
   },
   "include": ["./**/*.ts"]

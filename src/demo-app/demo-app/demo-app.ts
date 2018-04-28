@@ -48,6 +48,7 @@ export class Home {}
 export class DemoApp {
   dark = false;
   navItems = [
+    {name: 'Examples', route: '/examples'},
     {name: 'Autocomplete', route: '/autocomplete'},
     {name: 'Badge', route: '/badge'},
     {name: 'Bottom sheet', route: '/bottom-sheet'},

@@ -27,6 +27,7 @@ System.config({
     '@angular/compiler': 'node:@angular/compiler/bundles/compiler.umd.js',
     '@angular/forms': 'node:@angular/forms/bundles/forms.umd.js',
     '@angular/animations': 'node:@angular/animations/bundles/animations.umd.js',
+    '@angular/elements': 'node:@angular/elements/bundles/elements.umd.js',
     '@angular/router': 'node:@angular/router/bundles/router.umd.js',
     '@angular/animations/browser': 'node:@angular/animations/bundles/animations-browser.umd.js',
     '@angular/platform-browser/animations':
@@ -39,6 +40,7 @@ System.config({
     // TODO(devversion): replace once the index.ts file for the Material package has been added.
     '@angular/material': 'dist/packages/material/public-api.js',
     '@angular/material-experimental': 'dist/packages/material-experimental/index.js',
+    '@angular/material-examples': 'dist/packages/material-examples/index.js',
     '@angular/material-moment-adapter': 'dist/packages/material-moment-adapter/index.js',
     '@angular/cdk': 'dist/packages/cdk/index.js',
     '@angular/cdk-experimental': 'dist/packages/cdk-experimental/index.js',

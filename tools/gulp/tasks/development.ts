@@ -9,7 +9,8 @@ import {
   materialExperimentalPackage,
   cdkExperimentalPackage,
   materialPackage,
-  momentAdapterPackage
+  momentAdapterPackage,
+  examplesPackage,
 } from '../packages';
 
 // These imports don't have any typings provided.
@@ -34,6 +35,7 @@ const appVendors = [
   'web-animations-js',
   'moment',
   'tslib',
+  '@webcomponents',
 ];
 
 /** Glob that matches all required vendors for the demo-app. */
@@ -58,6 +60,7 @@ task(':watch:devapp', () => {
       ['material-experimental:build-no-bundles']);
   watchFiles(join(cdkExperimentalPackage.sourceDir, '**/*'),
       ['cdk-experimental:build-no-bundles']);
+  watchFiles(join(examplesPackage.sourceDir, '**/*'), ['material-examples:build-no-bundles']);
 });
 
 /** Path to the demo-app tsconfig file. */
@@ -81,6 +84,8 @@ task('build:devapp', sequenceTask(
   'cdk-experimental:build-no-bundles',
   'material-experimental:build-no-bundles',
   'material-moment-adapter:build-no-bundles',
+  'build-examples-module', // The examples module needs to be built before building examples package
+  'material-examples:build-no-bundles',
   [':build:devapp:assets', ':build:devapp:scss', ':build:devapp:ts']
 ));
 
@@ -98,6 +103,10 @@ task('stage-deploy:devapp', ['build:devapp'], () => {
       join(outDir, 'dist/packages/cdk-experimental'));
   copyFiles(materialPackage.outputDir, '**/prebuilt/*.+(css|map)',
       join(outDir, 'dist/packages/material'));
+  copyFiles(examplesPackage.outputDir, '**/*.+(js|map)',
+      join(outDir, 'dist/packages/material-examples'));
+  copyFiles(momentAdapterPackage.outputDir, '**/*.+(js|map)',
+      join(outDir, 'dist/packages/material-moment-adapter'));
 });
 
 /**
