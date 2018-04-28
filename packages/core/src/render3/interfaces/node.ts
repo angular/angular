@@ -283,11 +283,11 @@ export interface TNode {
   outputs: PropertyAliases|null|undefined;
 
   /**
-   * The static data equivalent of LNode.data.
+   * The TView or TViews attached to this node.
    *
    * If this TNode corresponds to an LContainerNode with inline views, the container will
    * need to store separate static data for each of its view blocks (TView[]). Otherwise,
-   * nodes in embedded views with the same index as nodes in their parent views will overwrite
+   * nodes in inline views with the same index as nodes in their parent views will overwrite
    * each other, as they are in the same template.
    *
    * Each index in this array corresponds to the static data for a certain
@@ -300,7 +300,7 @@ export interface TNode {
    * If this TNode corresponds to an LContainerNode with a template (e.g. structural
    * directive), the template's TView will be stored here.
    *
-   * If this TNode corresponds to an LElementNode, data will be null .
+   * If this TNode corresponds to an LElementNode, tViews will be null .
    */
   tViews: TView|TView[]|null;
 }
@@ -309,7 +309,7 @@ export interface TNode {
 export interface TElementNode extends TNode { tViews: null; }
 
 /** Static data for an LContainerNode */
-export interface TContainerNode extends TNode { tViews: TView|TView[]; }
+export interface TContainerNode extends TNode { tViews: TView|TView[]|null; }
 
 /**
  * This mapping is necessary so we can set input properties and output listeners

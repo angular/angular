@@ -469,11 +469,14 @@ export function renderTemplate<T>(
 }
 
 /**
- * Used for rendering embedded views (Not top level component views).
+ * Used for rendering embedded views (e.g. dynamically created views)
  *
- * Embedded views are different because they are closures and we can't
- * store `tView` on them since they could be in a loop and we would have
- * many instances of template closure for each template.
+ * Dynamically created views must store/retrieve their TViews differently from component views
+ * because their template functions are nested in the template functions of their hosts, creating
+ * closures. If their host template happens to be an embedded template in a loop (e.g. ngFor inside
+ * an ngFor), the nesting would mean we'd have multiple instances of the template function, so we
+ * can't store TViews in the template function itself (as we do for comps). Instead, we store the
+ * TView for dynamically created views on their host TNode, which only has one instance.
  */
 export function renderEmbeddedTemplate<T>(
     viewNode: LViewNode | null, tView: TView, template: ComponentTemplate<T>, context: T,
@@ -583,6 +586,15 @@ export function elementStart(
   return native;
 }
 
+/**
+ * Creates directive instances and populates local refs.
+ *
+ * @param index Index of the current node (to create TNode)
+ * @param name Tag name of the current node
+ * @param attrs Attrs of the current node
+ * @param localRefs Local refs of the current node
+ * @param inlineViews Whether or not this node will create inline views
+ */
 function createDirectivesAndLocals(
     index: number, name: string | null, attrs: string[] | null | undefined,
     localRefs: string[] | null | undefined, inlineViews: boolean) {
@@ -1015,7 +1027,7 @@ export function elementProperty<T>(
  * @returns the TNode object
  */
 function createTNode(
-    tagName: string | null, attrs: string[] | null, tViews: TView | TView[] | null): TNode {
+    tagName: string | null, attrs: string[] | null, tViews: TView[] | null): TNode {
   ngDevMode && ngDevMode.tNode++;
   return {
     flags: 0,
@@ -1597,10 +1609,9 @@ export function embeddedViewStart(viewBlockId: number): RenderFlags {
 /**
  * Initialize the TView (e.g. static data) for the active embedded view.
  *
- * Each embedded view needs to set the global tData variable to the static data for
- * that view. Otherwise, the view's static data for a particular node would overwrite
- * the static data for a node in the view above it with the same index (since it's in the
- * same template).
+ * Each embedded view block must create or retrieve its own TView. Otherwise, the embedded view's
+ * static data for a particular node would overwrite the static data for a node in the view above
+ * it with the same index (since it's in the same template).
  *
  * @param viewIndex The index of the TView in TNode.tViews
  * @param parent The parent container in which to look for the view's static data
@@ -1610,6 +1621,7 @@ function getOrCreateEmbeddedTView(viewIndex: number, parent: LContainerNode): TV
   ngDevMode && assertNodeType(parent, LNodeType.Container);
   const containerTViews = (parent !.tNode as TContainerNode).tViews as TView[];
   ngDevMode && assertNotNull(containerTViews, 'TView expected');
+  ngDevMode && assertEqual(Array.isArray(containerTViews), true, 'TViews should be in an array');
   if (viewIndex >= containerTViews.length || containerTViews[viewIndex] == null) {
     const tView = currentView.tView;
     containerTViews[viewIndex] = createTView(tView.directiveRegistry, tView.pipeRegistry);
