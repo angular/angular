@@ -9,9 +9,8 @@ All of the attributes that can be used with normal `<input>` and `<textarea>` el
 on elements inside `<mat-form-field>` as well. This includes Angular directives such as `ngModel`
 and `formControl`.
 
-The only limitations are that the `type` attribute can only be one of the values supported by
-`matInput` and the native element cannot specify a `placeholder` attribute if the `<mat-form-field>`
-also contains an `<mat-placeholder>` element.
+The only limitation is that the `type` attribute can only be one of the values supported by
+`matInput`.
 
 ### Supported `<input>` types
 
@@ -40,12 +39,11 @@ additional information about these features, see the
 
 ### Placeholder
 
-A placeholder is a text label displayed in the input area when the input does not contain text.
-When text is present, the placeholder will float above the input area. The placeholder can be
-specified either via a `placeholder` attribute on the input or a `<mat-placeholder>` element in the
-same form field as the `matInput`. The `<mat-form-field>` also has additional options for changing
-the behavior of the placeholder. For more information see the
-[form field placeholder documentation](https://material.angular.io/components/form-field/overview#floating-placeholder).
+The placeholder is text shown when the `<mat-form-field>` label is floating but the input is empty.
+It is used to give the user an additional hint about what they should type in the input. The
+placeholder can be specified by setting the `placeholder` attribute on the `<input>` or `<textarea>`
+element. In some cases that `<mat-form-field>` may use the placeholder as the label (see the
+[form field label documentation](https://material.angular.io/components/form-field/overview#floating-label)).
 
 ### Changing when error messages are shown
 
@@ -90,10 +88,9 @@ for detecting when an input becomes autofilled and changing the appearance of th
 
 The `matInput` directive works with native `<input>` to provide an accessible experience.
 
-If a placeholder attribute is added to the input, or a `mat-placeholder` element is added
-in the form field, the placeholder text will automatically be used as the label for the input.
-If there's no placeholder specified, `aria-label`, `aria-labelledby` or `<label for=...>` should be
-added.
+If the containing `<mat-form-field>` has a label it will automatically be used as the `aria-label`
+for the `<input>`. However, if there's no label specified in the form field, `aria-label`,
+`aria-labelledby` or `<label for=...>` should be added.
 
 Any `mat-error` and `mat-hint` are automatically added to the input's `aria-describedby` list, and
 `aria-invalid` is automatically updated based on the input's validity state.

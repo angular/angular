@@ -42,15 +42,22 @@ want a floating label, add a `<mat-label>` to the `mat-form-filed`.
 
 The floating label is a text label displayed on top of the form field control when
 the control does not contain any text. By default, when text is present the floating label
-floats above the form field control. The label for a form field can be defined either through a
-`mat-label` element, by setting the `placeholder` attribute on the form control or using the
-`mat-placeholder` element. If there are multiple clashing values (e.g. a `placeholder` and a
-label) the `mat-label` will take precedence and the `placeholder` will be shown only when there is
-no value.
+floats above the form field control. The label for a form field can be specified by adding a
+`mat-label` element.
+ 
+In the legacy version of the `<mat-form-field>` (one that has no `appearance` attribute or has
+`appearance="legacy"`) if a label is not specified, the `placeholder` attribute on the form control
+is promoted to a label. If a label is specified, the `placeholder` will be displayed as a normal
+placeholder. The `placeholder` will never be promoted to a label for `standard`, `fill`, and
+`outline` form fields. If you want to create a legacy form field with a placeholder but no label,
+you will need to specify an empty label to prevent the `placeholder` from being promoted.
 
-Placeholder text can be specified using the `placeholder` property on the form field control, or
-by adding a `<mat-placeholder>` element inside the form field. Only one of these options should be
-used, specifying both will raise an error.
+```html
+<mat-form-field>
+  <mat-label></mat-label>
+  <input placeholder="Just a placeholder">
+</mat-form-field>
+```
 
 If the form field control is marked with a `required` attribute, an asterisk will be appended to the
 label to indicate the fact that it is a required field. If unwanted, this can be disabled by
@@ -154,7 +161,8 @@ Any errors and hints added to the form field are automatically added to the form
 
 This error occurs when you have specified two conflicting placeholders. Make sure that you haven't
 included both a `placeholder` property on your form field control and a `<mat-placeholder>`
-element.
+element. The `<mat-placeholder>` element is deprecated, you should use `placeholder` for
+placeholders and `<mat-label>` for labels.
 
 #### Error: A hint was already declared for align="..."
 

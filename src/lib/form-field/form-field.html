@@ -22,6 +22,7 @@
                *ngIf="_hasFloatingLabel()"
                [ngSwitch]="_hasLabel()">
 
+          <!-- @deletion-target 8.0.0 remove in favor of mat-label element an placeholder attr. -->
           <ng-container *ngSwitchCase="false">
             <ng-content select="mat-placeholder"></ng-content>
             {{_control.placeholder}}
@@ -29,6 +30,7 @@
 
           <ng-content select="mat-label" *ngSwitchCase="true"></ng-content>
 
+          <!-- @deletion-target 8.0.0 remove `mat-placeholder-required` class -->
           <span
             class="mat-placeholder-required mat-form-field-required-marker"
             aria-hidden="true"
