@@ -237,14 +237,24 @@ the expected `ngOnChanges` calls and values:
 
 {@a child-to-parent}
 
+<!--
 ## Parent listens for child event
+-->
+## 자식 컴포넌트에서 보내는 이벤트 받기
 
+<!--
 The child component exposes an `EventEmitter` property with which it `emits` events when something happens.
 The parent binds to that event property and reacts to those events.
+-->
+자식 컴포넌트에서 어떤 이벤트가 발생하면 이 이벤트는 `EventEmitter` 타입으로 짖어한 프로퍼티를 통해 부모 컴포넌트에게 보낼 수 있습니다.
+그러면 부모 컴포넌트는 이 이벤트를 바인딩해서 원ㄴ하는 로직을 실행할 수 있습니다.
 
+<!--
 The child's `EventEmitter` property is an ***output property***,
   typically adorned with an [@Output decoration](guide/template-syntax#inputs-outputs)
   as seen in this `VoterComponent`:
+-->
+자식 컴포넌트에서 외부로 이벤트를 보내려면 `EventEmitter` 타입으로 선언한 프로퍼티에 [@Output 데코레이터](guide/template-syntax#inputs-outputs)를 사용해서 ***출력 프로퍼티***로 지정합니다. `VoterComponent`에서는 다음과 같이 선언했습니다:
 
 
 <code-example path="component-interaction/src/app/voter.component.ts" title="component-interaction/src/app/voter.component.ts">
@@ -252,84 +262,116 @@ The child's `EventEmitter` property is an ***output property***,
 </code-example>
 
 
-
+<!--
 Clicking a button triggers emission of a `true` or `false`, the boolean *payload*.
+-->
+이 예제에서 버튼을 클릭하면 자식 컴포넌트로 불리언 타입의 데이터를 전달합니다.
 
+<!--
 The parent `VoteTakerComponent` binds an event handler called `onVoted()` that responds to the child event
 payload `$event` and updates a counter.
-
+-->
+그러면 `VoteTakerComponent`의 `onVoted()` 함수가 이벤트 객체를 인자로 받아서 `agree`와 `disagree` 카운터를 갱신합니다.
 
 <code-example path="component-interaction/src/app/votetaker.component.ts" title="component-interaction/src/app/votetaker.component.ts">
 
 </code-example>
 
 
-
+<!--
 The framework passes the event argument&mdash;represented by `$event`&mdash;to the handler method,
 and the method processes it:
-
+-->
+이 때 전달되는 이벤트 객체는 템플릿에서 `$event`라는 이름으로 접근할 수 있으며, 템플릿에서 이벤트 핸들러 함수에 인자로 전달하기 때문에 컴포넌트 클래스 코드에서 이 이벤트 객체를 활용할 수 있습니다:
 
 <figure>
   <img src="generated/images/guide/component-interaction/child-to-parent.gif" alt="Child-to-parent">
 </figure>
 
 
-
+<!--
 <h3 class="no-toc">Test it</h3>
+-->
+<h3 class="no-toc">동작 확인</h3>
 
+<!--
 Test that clicking the *Agree* and *Disagree* buttons update the appropriate counters:
-
+-->
+*Agree* 버튼이나 *Disagree* 버튼을 클릭하면 해당 카운터 값이 증가합니다.
 
 <code-example path="component-interaction/e2e/app.e2e-spec.ts" region="child-to-parent" title="component-interaction/e2e/app.e2e-spec.ts">
 
 </code-example>
 
-
-
+<!--
 [Back to top](guide/component-interaction#top)
+-->
+[맨 위로](guide/component-interaction#top)
 
-
-
+<!--
 ## Parent interacts with child via *local variable*
+-->
+## *템플릿 지역 변수*로 자식 컴포넌트에 접근하기
 
+<!--
 A parent component cannot use data binding to read child properties
 or invoke child methods. You can do both
 by creating a template reference variable for the child element
 and then reference that variable *within the parent template*
 as seen in the following example.
+-->
+부모 컴포넌트는 자식 컴포넌트의 프로퍼티나 메소드에 직접 접근할 수 없습니다.
+하지만 *부모 템플릿*에 템플릿 참조 변수를 선언하면 자식 컴포넌트의 프로퍼티나 메소드에 접근할 수 있습니다.
 
 {@a countdown-timer-example}
+
+<!--
 The following is a child `CountdownTimerComponent` that repeatedly counts down to zero and launches a rocket.
 It has `start` and `stop` methods that control the clock and it displays a
 countdown status message in its own template.
+-->
+다음 예제에서 `CountdownTimerComponent`는 타이머를 동작시켜서 카운트가 0이 되면 로켓을 발사한다고 합시다.
+그리고 이 컴포넌트에 있는 `start` 메소드와 `stop` 메소드는 각각 타이머를 시작하거나 정지합니다.
 
 <code-example path="component-interaction/src/app/countdown-timer.component.ts" title="component-interaction/src/app/countdown-timer.component.ts">
 
 </code-example>
 
 
-
+<!--
 The `CountdownLocalVarParentComponent` that hosts the timer component is as follows:
-
+-->
+부모 컴포넌트인 `CountdownLocalVarParentComponent`는 자식 컴포넌트를 다음과 같이 활용합니다:
 
 <code-example path="component-interaction/src/app/countdown-parent.component.ts" region="lv" title="component-interaction/src/app/countdown-parent.component.ts">
 
 </code-example>
 
 
-
+<!--
 The parent component cannot data bind to the child's
 `start` and `stop` methods nor to its `seconds` property.
+-->
+원래 부모 컴포넌트는 자식 컴포넌트의 `seconds` 프로퍼티나 `start`, `stop` 메소드에 직접 접근할 수 없습니다.
 
+<!--
 You can place a local variable, `#timer`, on the tag `<countdown-timer>` representing the child component.
 That gives you a reference to the child component and the ability to access
 *any of its properties or methods* from within the parent template.
+-->
+하지만 `<countdown-timer>`를 템플릿 지역 변수 `#timer`로 선언하면 이 변수를 사용해서 자식 컴포넌트에 접근할 수 있습니다.
+이 템플릿 지역 변수는 자식 컴포넌트 자체를 가리키며, 템플릿 지역 변수를 선언한 후에는 부모 컴포넌트의 템플릿에서 *자식 컴포넌트의 프로퍼티나 메소드*에 자유롭게 접근할 수 있습니다.
 
+<!--
 This example wires parent buttons to the child's `start` and `stop` and
 uses interpolation to display the child's `seconds` property.
+-->
+이 예제에서는 부모 컴포넌트에 있는 버튼을 각각 자식 컴포넌트의 `start` 함수와 `stop` 함수와 연결하며, `seconds` 프로퍼티를 직접 가져와서 부모 컴포넌트에서 활용합니다.
 
+<!--
 Here we see the parent and child working together.
-
+-->
+부모 컴포넌트와 자식 컴포넌트가 어떻게 연동되는지 확인해 보세요.
 
 <figure>
   <img src="generated/images/guide/component-interaction/countdown-timer-anim.gif" alt="countdown timer">
@@ -339,21 +381,29 @@ Here we see the parent and child working together.
 
 {@a countdown-tests}
 
-
+<!--
 <h3 class="no-toc">Test it</h3>
+-->
+<h3 class="no-toc">동작 확인</h3>
 
+<!--
 Test that the seconds displayed in the parent template
 match the seconds displayed in the child's status message.
 Test also that clicking the *Stop* button pauses the countdown timer:
-
+-->
+부모 컴포넌트의 템플릿에 표시되는 타이머는 자식 컴포넌트에 있는 프로퍼티를 참조하기 때문에 자식 컴포넌트에서 표시하는 메시지와 같은 값을 표시합니다.
+그리고 다음 테스트 코드는 *Stop* 버튼을 클릭했을 때 카운트다운 타이머가 멈추는지도 확인합니다:
 
 <code-example path="component-interaction/e2e/app.e2e-spec.ts" region="countdown-timer-tests" title="component-interaction/e2e/app.e2e-spec.ts">
 
 </code-example>
 
 
-
+<!--
 [Back to top](guide/component-interaction#top)
+-->
+[맨 위로](guide/component-interaction#top)
+
 
 {@a parent-to-view-child}
 
