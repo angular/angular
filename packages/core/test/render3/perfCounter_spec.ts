@@ -16,7 +16,7 @@ beforeEach(() => {
     }
   });
 });
-function toHavePropertiesCompare(actual: {[k: string]: number}, expected: {[k: string]: number}) {
+function toHavePropertiesCompare(actual: any, expected: any) {
   let pass = true;
   let errors = [];
   for (let key of Object.keys(actual)) {

@@ -34,7 +34,7 @@ declare let global: any;
 export const ngDevModeResetPerfCounters: () => void =
     (typeof ngDevMode == 'undefined' && (function(global: {ngDevMode: NgDevModePerfCounters}) {
        function ngDevModeResetPerfCounters() {
-         global.ngDevMode = {
+         global['ngDevMode'] = {
            firstTemplatePass: 0,
            tNode: 0,
            tView: 0,
