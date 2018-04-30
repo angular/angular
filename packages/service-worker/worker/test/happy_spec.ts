@@ -788,7 +788,8 @@ const manifestUpdateHash = sha1(JSON.stringify(manifestUpdate));
 })();
 
 async function makeRequest(
-    scope: SwTestHarness, url: string, clientId = 'default', init?: Object): Promise<string|null> {
+    scope: SwTestHarness, url: string, clientId: string | null = 'default',
+    init?: Object): Promise<string|null> {
   const [resPromise, done] = scope.handleFetch(new MockRequest(url, init), clientId);
   await done;
   const res = await resPromise;
