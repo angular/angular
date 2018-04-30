@@ -187,11 +187,12 @@ export class SwTestHarness implements ServiceWorkerGlobalScope, Adapter, Context
 
   waitUntil(promise: Promise<void>): void {}
 
-  handleFetch(req: Request, clientId?: string): [Promise<Response|undefined>, Promise<void>] {
+  handleFetch(req: Request, clientId: string|null = null):
+      [Promise<Response|undefined>, Promise<void>] {
     if (!this.eventHandlers.has('fetch')) {
       throw new Error('No fetch handler registered');
     }
-    const event = new MockFetchEvent(req, clientId || null);
+    const event = new MockFetchEvent(req, clientId);
     this.eventHandlers.get('fetch') !.call(this, event);
 
     if (clientId) {
@@ -210,7 +211,7 @@ export class SwTestHarness implements ServiceWorkerGlobalScope, Adapter, Context
       event = new MockMessageEvent(data, null);
     } else {
       this.clients.add(clientId);
-      event = new MockMessageEvent(data, this.clients.getMock(clientId) as any);
+      event = new MockMessageEvent(data, this.clients.getMock(clientId) || null);
     }
     this.eventHandlers.get('message') !.call(this, event);
     return event.ready;
