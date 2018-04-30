@@ -63,7 +63,6 @@ export class MockClients implements Clients {
   remove(clientId: string): void { this.clients.delete(clientId); }
 
   async get(id: string): Promise<Client> {
-    this.add(id);
     return this.clients.get(id) !as any as Client;
   }
 
@@ -196,6 +195,10 @@ export class SwTestHarness implements ServiceWorkerGlobalScope, Adapter, Context
     }
     const event = new MockFetchEvent(req, clientId || null);
     this.eventHandlers.get('fetch') !.call(this, event);
+
+    if (clientId) {
+      this.clients.add(clientId);
+    }
 
     return [event.response, event.ready];
   }
