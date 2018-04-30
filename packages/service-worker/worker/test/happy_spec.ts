@@ -483,7 +483,6 @@ const manifestUpdateHash = sha1(JSON.stringify(manifestUpdate));
     async_it('shows notifications for push notifications', async() => {
       expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
       await driver.initialized;
-      scope.clients.add('default');
       await scope.handlePush({
         notification: {
           title: 'This is a test',
@@ -665,7 +664,7 @@ const manifestUpdateHash = sha1(JSON.stringify(manifestUpdate));
         server.assertSawRequestFor('/baz');
       });
 
-      async_it('does not redirect to index on a request that does not expect HTML', async() => {
+      async_it('does not redirect to index on a request that does not accept HTML', async() => {
         expect(await navRequest('/baz', {headers: {}})).toBeNull();
         server.assertSawRequestFor('/baz');
 
@@ -793,7 +792,6 @@ async function makeRequest(
   const [resPromise, done] = scope.handleFetch(new MockRequest(url, init), clientId);
   await done;
   const res = await resPromise;
-  scope.clients.add(clientId);
   if (res !== undefined && res.ok) {
     return res.text();
   }
