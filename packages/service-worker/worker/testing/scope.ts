@@ -62,9 +62,7 @@ export class MockClients implements Clients {
 
   remove(clientId: string): void { this.clients.delete(clientId); }
 
-  async get(id: string): Promise<Client> {
-    return this.clients.get(id) !as any as Client;
-  }
+  async get(id: string): Promise<Client> { return this.clients.get(id) !as any as Client; }
 
   getMock(id: string): MockClient|undefined { return this.clients.get(id); }
 
