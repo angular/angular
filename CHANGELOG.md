@@ -1,3 +1,16 @@
+<a name="6.0.0-rc.14"></a>
+# [6.0.0-rc.14](https://github.com/angular/material2/compare/6.0.0-rc.12...6.0.0-rc.14) (2018-04-30)
+
+
+### Bug Fixes
+
+* **card:** flat card selector not working ([#11028](https://github.com/angular/material2/issues/11028)) ([b67813e](https://github.com/angular/material2/commit/b67813e)), closes [#11014](https://github.com/angular/material2/issues/11014)
+* **ci:** Shard tests on CI across 3 browsers ([#11048](https://github.com/angular/material2/issues/11048)) ([a647579](https://github.com/angular/material2/commit/a647579))
+* **overlay:** always dispatch keyboard events to top overlay in OverlayKeyboardDispatcher ([#10807](https://github.com/angular/material2/issues/10807)) ([d96fa07](https://github.com/angular/material2/commit/d96fa07)), closes [#10799](https://github.com/angular/material2/issues/10799)
+* **schematics:** allow more tsconfig locations for ng update ([#11058](https://github.com/angular/material2/issues/11058)) ([7bbc040](https://github.com/angular/material2/commit/7bbc040))
+
+
+
 <a name="6.0.0-rc.13"></a>
 # [6.0.0-rc.13](https://github.com/angular/material2/compare/6.0.0-rc.12...6.0.0-rc.13) (2018-04-26)
 
