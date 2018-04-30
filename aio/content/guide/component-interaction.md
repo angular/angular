@@ -407,105 +407,178 @@ Test also that clicking the *Stop* button pauses the countdown timer:
 
 {@a parent-to-view-child}
 
+<!--
 ## Parent calls an _@ViewChild()_
+-->
+## _@ViewChild()_ 로 자식 컴포넌트 접근하기
 
+<!--
 The *local variable* approach is simple and easy. But it is limited because
 the parent-child wiring must be done entirely within the parent template.
 The parent component *itself* has no access to the child.
+-->
+*템플릿 지역 변수*로 자식 컴포넌트에 접근하는 것은 문법도 간단하고 이해하기 쉽습니다. 하지만 이 방식은 부모 컴포넌트의 템플릿에서만 자식 컴포넌트에 접근할 수 있기 때문에 자유롭게 활용하기에는 제한이 있습니다.
+부모 컴포넌트의 *클래스*에서는 자식 컴포넌트에 접근할 수 없기 때문입니다.
 
+<!--
 You can't use the *local variable* technique if an instance of the parent component *class*
 must read or write child component values or must call child component methods.
+-->
+*템플릿 지역 변수*를 사용하는 방법은 부모 컴포넌트 *클래스*에서는 유효하지 않습니다. 그래서 부모 컴포넌트의 클래스에서는 자식 컴포넌트의 프로퍼티를 읽거나 메소드를 실행할 수 없습니다.
 
+<!--
 When the parent component *class* requires that kind of access,
 ***inject*** the child component into the parent as a *ViewChild*.
+-->
+부모 컴포넌트의 *클래스*에서 자식 컴포넌트에 접근하려면 자식 컴포넌트에 *ViewChild*를 사용해서 부모 컴포넌트로 ***주입*** 해야 합니다.
 
+<!--
 The following example illustrates this technique with the same
 [Countdown Timer](guide/component-interaction#countdown-timer-example) example.
 Neither its appearance nor its behavior will change.
 The child [CountdownTimerComponent](guide/component-interaction#countdown-timer-example) is the same as well.
+-->
+이 내용은 다음 예제로 알아봅시다. 이 예제는 위에서 살펴본 [카운트다운 타이머](guide/component-interaction#countdown-timer-example)와 같은 동작을 하지만, 구현 방식은 조금 다릅니다.
+먼저, 자식 컴포넌트인 [CountdownTimerComponent](guide/component-interaction#countdown-timer-example) 코드는 동일합니다.
+
 
 <div class="l-sub-section">
 
 
-
+<!--
 The switch from the *local variable* to the *ViewChild* technique
 is solely for the purpose of demonstration.
+-->
+*템플릿 지역 변수*를 사용하는 방식에서 *ViewChild*를 사용하는 방식으로 변경하는 것은 단순히 설명을 위한 것입니다.
+목적에 따라 구현 방식을 선택하면 됩니다.
 
 </div>
 
 
-
+<!--
 Here is the parent, `CountdownViewChildParentComponent`:
+-->
+그리고 부모 컴포넌트인 `CountdownViewChildParentComponent`는 다음과 같이 구현합니다:
 
 <code-example path="component-interaction/src/app/countdown-parent.component.ts" region="vc" title="component-interaction/src/app/countdown-parent.component.ts">
 
 </code-example>
 
 
-
+<!--
 It takes a bit more work to get the child view into the parent component *class*.
+-->
+이 코드를 보면 부모 컴포넌트 *클래스*에서 자식 컴포넌트에 이전보다 좀 더 많이 개입하는 것을 확인할 수 있습니다.
 
+<!--
 First, you have to import references to the `ViewChild` decorator and the `AfterViewInit` lifecycle hook.
+-->
+먼저, `ViewChild` 데코레이터와 `AfterViewInit` 라이프싸이클 후킹 인터페이스를 로드합니다.
 
+<!--
 Next, inject the child `CountdownTimerComponent` into the private `timerComponent` property
 via the `@ViewChild` property decoration.
+-->
+그리고 `CountdownTimerComponent`를 `timerComponent` 프로퍼티로 선언하면서 `@ViewChild` 데코레이터를 사용했습니다.
 
+<!--
 The `#timer` local variable is gone from the component metadata.
 Instead, bind the buttons to the parent component's own `start` and `stop` methods and
 present the ticking seconds in an interpolation around the parent component's `seconds` method.
+-->
+이전에 사용했던 부모 컴포넌트의 템플릿은 템플릿 지역 변수 `#timer`를 활용해서 자식 컴포넌트의 메소드를 직접 실행했습니다.
+하지만 이번 예제는 자식 컴포넌트를 직접 호출하지 않고 부모 컴포넌트에 있는 `start`, `stop` 메소드를 사옹하며, 현재 남아있는 초를 확인할 때도 부모 컴포넌트의 `seconds` 메소드를 활용합니다.
 
+<!--
 These methods access the injected timer component directly.
+-->
+각각의 메소드에서 자식 컴포넌트에 접근하는 식으로 구현하는 것입니다.
 
+<!--
 The `ngAfterViewInit()` lifecycle hook is an important wrinkle.
 The timer component isn't available until *after* Angular displays the parent view.
 So it displays `0` seconds initially.
+-->
+이 때 `ngAfterViewInit()` 라이프싸이클 후킹 함수가 중요합니다.
+자식 컴포넌트인 타이머 컴포넌트는 Angular가 부모 컴포넌트의 뷰를 화면에 표시한 *이후에야* 사용할 수 있습니다.
+그래서 뷰가 완전히 준비되기 전까지는 `0`을 표시합니다.
 
+<!--
 Then Angular calls the `ngAfterViewInit` lifecycle hook at which time it is *too late*
 to update the parent view's display of the countdown seconds.
 Angular's unidirectional data flow rule prevents updating the parent view's
 in the same cycle. The app has to *wait one turn* before it can display the seconds.
+-->
+부모 컴포넌트의 뷰가 준비되면 자식 컴포넌트에서 시간을 가져오기 위해 `ngAfterViewInit` 라이프싸이클 후킹 함수를 실행하는데,
+Angular는 단방향 데이터 흐름을 권장하기 때문에 부모 컴포넌트의 뷰를 같은 JavaScript 실행 싸이클에 업데이트하는 것을 금지합니다.
 
+<!--
 Use `setTimeout()` to wait one tick and then revise the `seconds()` method so
 that it takes future values from the timer component.
+-->
+그래서 `ngAfterViewInit()`에서 자식 컴포넌트의 시간을 가져와서 부모 컴포넌트 프로퍼티에 할당하는 것은 `setTimeout()` 으로 *한 싸이클* 늦췄습니다.
 
+<!--
 <h3 class="no-toc">Test it</h3>
+-->
+<h3 class="no-toc">동작 확인</h3>
 
+<!--
 Use [the same countdown timer tests](guide/component-interaction#countdown-tests) as before.
+-->
+이전에 살펴봤던 [카운트다운 타이머 테스트](guide/component-interaction#countdown-tests)와 같습니다.
 
+<!--
 [Back to top](guide/component-interaction#top)
+-->
+[맨 위로](guide/component-interaction#top)
 
 {@a bidirectional-service}
 
+<!--
 ## Parent and children communicate via a service
+-->
+## 서비스를 사용해서 통신하기
 
+<!--
 A parent component and its children share a service whose interface enables bi-directional communication
 *within the family*.
+-->
+부모 컴포넌트와 자식 컴포넌트가 같은 서비스를 주입받는다면 이 서비스를 활용해서 양방향으로 데이터를 주고받을 수 있습니다.
 
+<!--
 The scope of the service instance is the parent component and its children.
 Components outside this component subtree have no access to the service or their communications.
+-->
+컴포넌트에 주입되는 서비스는 그 컴포넌트에서 자유롭게 사용할 수 있습니다.
+이 때 주입되는 서비스의 인스턴스가 동일해야 하기 때문에 서비스 프로바이더를 별도로 지정하면 컴포넌트 통신에 활용할 수 없습니다.
 
+<!--
 This `MissionService` connects the `MissionControlComponent` to multiple `AstronautComponent` children.
-
+-->
+`MissionControlComponent`가 여러 개의 `AstronautComponent`와 통신하기 위해 `MissionService`를 만들어 봅시다.
 
 <code-example path="component-interaction/src/app/mission.service.ts" title="component-interaction/src/app/mission.service.ts">
 
 </code-example>
 
 
-
+<!--
 The `MissionControlComponent` both provides the instance of the service that it shares with its children
 (through the `providers` metadata array) and injects that instance into itself through its constructor:
-
+-->
+`MissionControlComponent`는 생성자를 통해 `MissionService`의 인스턴스를 주입받으며, `providers` 메타데이터를 사용해서 서비스 인스턴스를 자식 컴포넌트에서도 사용할 수 있도록 공유합니다:
 
 <code-example path="component-interaction/src/app/missioncontrol.component.ts" title="component-interaction/src/app/missioncontrol.component.ts">
 
 </code-example>
 
 
-
+<!--
 The `AstronautComponent` also injects the service in its constructor.
 Each `AstronautComponent` is a child of the `MissionControlComponent` and therefore receives its parent's service instance:
-
+-->
+그리고 자식 컴포넌트 `AstronautComponent`도 생성자를 통해 서비스 인스턴스를 주입 받습니다:
 
 <code-example path="component-interaction/src/app/astronaut.component.ts" title="component-interaction/src/app/astronaut.component.ts">
 
@@ -516,35 +589,47 @@ Each `AstronautComponent` is a child of the `MissionControlComponent` and theref
 <div class="l-sub-section">
 
 
-
+<!--
 Notice that this example captures the `subscription` and `unsubscribe()` when the `AstronautComponent` is destroyed.
 This is a memory-leak guard step. There is no actual risk in this app because the
 lifetime of a `AstronautComponent` is the same as the lifetime of the app itself.
 That *would not* always be true in a more complex application.
+-->
+이 예제는 옵저버블을 활용하기 때문에 `AstronautComponent`가 종료될 때 옵저버블을 해제하기 위해 `unsubscribe()`를 실행합니다.
+이 함수는 메모리 누수를 막기 위해 필요하며, `AstronautComponent`가 종료되는 시점이 앱이 종료되는 시점과 같다면 이 로직을 작성하지 않아도 문제는 없습니다.
+하지만 애플리케이션이 복잡해진다면 *그렇지 않을* 가능성이 더 크기 때문에 빠뜨리지 않고 작성하는 것이 좋습니다.
 
+<!--
 You don't add this guard to the `MissionControlComponent` because, as the parent,
 it controls the lifetime of the `MissionService`.
+-->
+그리고 이 로직은 부모 컴포넌트 `MissionControlComponent`에는 필요 없습니다. 부모 컴포넌트와 `MissionService`가 종료되는 시점은 같습니다.
 
 </div>
 
 
-
+<!--
 The *History* log demonstrates that messages travel in both directions between
 the parent `MissionControlComponent` and the `AstronautComponent` children,
 facilitated by the service:
-
+-->
+부모 컴포넌트 `MissionControlComponent`와 자식 컴포넌트 `AstronautComponent`가 서비스를 통해 데이터를 주고받는 과정은 *History* 영역에 다음과 같이 표시됩니다: 
 
 <figure>
   <img src="generated/images/guide/component-interaction/bidirectional-service.gif" alt="bidirectional-service">
 </figure>
 
 
-
+<!--
 <h3 class="no-toc">Test it</h3>
+-->
+<h3 class="no-toc">동작 확인</h3>
 
+<!--
 Tests click buttons of both the parent `MissionControlComponent` and the `AstronautComponent` children
 and verify that the history meets expectations:
-
+-->
+부모 컴포넌트 `MissionControlComponent`와 자식 컴포넌트 `AstronautComponent`의 버튼을 클릭했을 때 로그를 제대로 출력하는지 확인하기 위해 테스트 코드를 다음과 같이 작성합니다:
 
 <code-example path="component-interaction/e2e/app.e2e-spec.ts" region="bidirectional-service" title="component-interaction/e2e/app.e2e-spec.ts">
 
@@ -552,4 +637,9 @@ and verify that the history meets expectations:
 
 
 
+<!--
 [Back to top](guide/component-interaction#top)
+-->
+[맨 위로](guide/component-interaction#top)
+
+{@a bidirectional-service}
