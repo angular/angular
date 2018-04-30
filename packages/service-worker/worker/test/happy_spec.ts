@@ -320,6 +320,27 @@ const manifestUpdateHash = sha1(JSON.stringify(manifestUpdate));
       expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo v2');
     });
 
+    async_it('handles empty client ID', async() => {
+      const navRequest = (url: string, clientId: string | null) =>
+          makeRequest(scope, url, clientId, {
+            headers: {Accept: 'text/plain, text/html, text/css'},
+            mode: 'navigate',
+          });
+
+      // Initialize the SW.
+      expect(await navRequest('/foo/file1', '')).toEqual('this is foo');
+      expect(await navRequest('/bar/file2', null)).toEqual('this is foo');
+      await driver.initialized;
+
+      // Update to a new version.
+      scope.updateServerState(serverUpdate);
+      expect(await driver.checkForUpdate()).toEqual(true);
+
+      // Correctly handle navigation requests, even if `clientId` is null/empty.
+      expect(await navRequest('/foo/file1', '')).toEqual('this is foo v2');
+      expect(await navRequest('/bar/file2', null)).toEqual('this is foo v2');
+    });
+
     async_it('checks for updates on restart', async() => {
       expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
       await driver.initialized;
