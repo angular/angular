@@ -542,20 +542,16 @@ class TemplateDefinitionBuilder implements t.Visitor, t.I18nVisitor, LocalResolv
     this.instruction(this._creationCode, ngContent.sourceSpan, R3.projection, ...parameters);
   }
 
-  visitElement(element: t.Element, elementIndex?: number) {
-    if (typeof elementIndex === 'undefined') {
-      elementIndex = this.allocateDataSlot();
-    }
-    const referenceDataSlots = new Map<string, number>();
-    const hasI18nAttr = element instanceof t.I18nElement;
-
+  private addElementSelectors(element: t.Element) {
     // Match directives on non i18n attributes
     if (this.directiveMatcher) {
       const selector = createCssSelector(element.name, element.attributes);
       this.directiveMatcher.match(
           selector, (sel: CssSelector, staticType: any) => { this.directives.add(staticType); });
     }
+  }
 
+  private createElementParameters(element: t.Element, elementIndex: number, hasI18nAttr: boolean) {
     // Element creation mode
     const parameters: o.Expression[] = [
       o.literal(elementIndex),
@@ -575,7 +571,6 @@ class TemplateDefinitionBuilder implements t.Visitor, t.I18nVisitor, LocalResolv
     if (element.references && element.references.length > 0) {
       const references = flatten(element.references.map(reference => {
         const slot = this.allocateDataSlot();
-        referenceDataSlots.set(reference.name, slot);
         // Generate the update temporary.
         const variableName = this._bindingScope.freshReferenceName();
         this._variableCode.push(o.variable(variableName, o.INFERRED_TYPE)
@@ -591,7 +586,9 @@ class TemplateDefinitionBuilder implements t.Visitor, t.I18nVisitor, LocalResolv
 
     this.instruction(
         this._creationCode, element.sourceSpan, R3.createElement, ...trimTrailingNulls(parameters));
+  }
 
+  private createElementInputsOutputs(element: t.Element, elementIndex: number) {
     const implicit = o.variable(CONTEXT_NAME);
 
     // Generate Listeners (outputs)
@@ -633,12 +630,13 @@ class TemplateDefinitionBuilder implements t.Visitor, t.I18nVisitor, LocalResolv
         this._unsupported(`binding type ${input.type}`);
       }
     });
+  }
 
-    if (hasI18nAttr) {
-      this._inI18nSection = true;
-      this._i18nSectionIndex++;
-      this._phToNodeIdxes[this._i18nSectionIndex] = {};
-    }
+  visitElement(element: t.Element) {
+    const elementIndex = this.allocateDataSlot();
+    this.addElementSelectors(element);
+    this.createElementParameters(element, elementIndex, false);
+    this.createElementInputsOutputs(element, elementIndex);
 
     // Traverse element child nodes
     t.visitAll(this, element.children);
@@ -646,9 +644,6 @@ class TemplateDefinitionBuilder implements t.Visitor, t.I18nVisitor, LocalResolv
     // Finish element construction mode.
     this.instruction(
         this._creationCode, element.endSourceSpan || element.sourceSpan, R3.elementEnd);
-
-    // Restore the state before exiting this node
-    this._inI18nSection = false;
   }
 
   visitI18nElement(element: t.I18nElement) {
@@ -663,7 +658,24 @@ class TemplateDefinitionBuilder implements t.Visitor, t.I18nVisitor, LocalResolv
       }
       this._phToNodeIdxes[this._i18nSectionIndex][phName].push(elementIndex);
     }
-    this.visitElement(element);
+
+    this.addElementSelectors(element);
+    this.createElementParameters(element, elementIndex, true);
+    this.createElementInputsOutputs(element, elementIndex);
+
+    this._inI18nSection = true;
+    this._i18nSectionIndex++;
+    this._phToNodeIdxes[this._i18nSectionIndex] = {};
+
+    // Traverse element child nodes
+    t.visitAll(this, element.children);
+
+    // Finish element construction mode.
+    this.instruction(
+        this._creationCode, element.endSourceSpan || element.sourceSpan, R3.elementEnd);
+
+    // Restore the state before exiting this node
+    this._inI18nSection = false;
   }
 
   visitTemplate(template: t.Template) {

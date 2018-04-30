@@ -87,12 +87,7 @@ export class Element implements Node {
   visit<Result>(visitor: Visitor<Result>): Result { return visitor.visitElement(this); }
 }
 
-export class I18nElement implements Node {
-  constructor(
-      public name: string, public attributes: TextAttribute[], public inputs: BoundAttribute[],
-      public outputs: BoundEvent[], public children: Node[], public references: Reference[],
-      public sourceSpan: ParseSourceSpan, public startSourceSpan: ParseSourceSpan|null,
-      public endSourceSpan: ParseSourceSpan|null) {}
+export class I18nElement extends Element {
   visit<Result>(visitor: I18nVisitor<Result>): Result { return visitor.visitI18nElement(this); }
 }
 
