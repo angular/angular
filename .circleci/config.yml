@@ -203,6 +203,7 @@ jobs:
       - persist_to_workspace:
           root: aio
           paths:
+            - "dist"
             - "node_modules"
 
   aio_unit_test:
@@ -212,13 +213,20 @@ jobs:
           <<: *post_checkout
       - attach_workspace:
           at: aio
-      # TODO: Move pwa score test to yarn test if Travis is stopped.
+      - run:
+          name: Unit test
+          command: cd aio && xvfb-run -a yarn test --single-
+  # TODO: Move pwa score test to yarn test if Travis is stopped. Afterwards this job can be removed.
+  aio_pwa_test:
+    <<: *job_defaults
+    steps:
+      - checkout:
+          <<: *post_checkout
+      - attach_workspace:
+          at: aio
       - run:
           name: Test PWA score
           command: cd aio && xvfb-run -a yarn test-pwa-score-localhost
-      - run:
-          name: Unit test
-          command: cd aio && xvfb-run -a yarn test --single-run
 
   aio_monitoring:
     <<: *job_defaults
@@ -255,6 +263,9 @@ workflows:
     jobs:
       - aio_build
       - aio_unit_test:
+          requires:
+            - aio_build
+      - aio_pwa_test:
           requires:
             - aio_build
   aio_monitoring:
