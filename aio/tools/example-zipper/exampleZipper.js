@@ -86,7 +86,7 @@ class ExampleZipper {
     let alwaysIncludes = [
       'bs-config.json',
       'e2e/protractor.conf.js',
-      '.angular-cli.json',
+      'angular.json',
       '.editorconfig',
       '.gitignore',
       'tslint.json',

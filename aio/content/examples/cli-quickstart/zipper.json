@@ -3,7 +3,7 @@
     "!**/*.d.ts",
     "!**/*.js",
     "!**/*.[0-9].*",
-    ".angular-cli.json",
+    "angular.json",
     "protractor.conf.js"
   ]
 }
