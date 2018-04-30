@@ -198,26 +198,20 @@ jobs:
       - restore_cache:
           key: *cache_key_aio
       - run:
-          name: Install aio
-          command: cd aio && yarn install --frozen-lockfile --non-interactive
-      - run:
           name: Build aio
           command: cd aio && yarn build
-      - save_cache:
-          key: *cache_key_aio
+      - persist_to_workspace:
+          root: aio
           paths:
-            - "aio/node_modules"
-            - "aio/dist"
+            - "node_modules"
 
   aio_unit_test:
     <<: *job_defaults
     steps:
       - checkout:
           <<: *post_checkout
-      - restore_cache:
-          key: *cache_key
-      - restore_cache:
-          key: *cache_key_aio
+      - attach_workspace:
+          at: aio
       # TODO: Move pwa score test to yarn test if Travis is stopped.
       - run:
           name: Test PWA score
@@ -257,7 +251,6 @@ workflows:
             # Get the artifacts to publish from the build-packages-dist job
             # since the publishing script expects the legacy outputs layout.
             - build-packages-dist
-
   aio_workflow:
     jobs:
       - aio_build
