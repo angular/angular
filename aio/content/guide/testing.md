@@ -57,11 +57,11 @@ The tests run again, the browser refreshes, and the new test results appear.
 
 The CLI takes care of Jasmine and karma configuration for you.
 
-You can fine-tune many options by editing the `karma.conf.js` file in the project root folder and
-the `test.ts` file in the `src/` folder.
+You can fine-tune many options by editing the `karma.conf.js` and
+the `test.ts` files in the `src/` folder.
 
 The `karma.conf.js` file is a partial karma configuration file.
-The CLI constructs the full runtime configuration in memory,based on application structure specified in the `.angular-cli.json` file, supplemented by `karma.conf.js`.
+The CLI constructs the full runtime configuration in memory,based on application structure specified in the `angular.json` file, supplemented by `karma.conf.js`.
 
 Search the web for more details about Jasmine and karma configuration.
 
