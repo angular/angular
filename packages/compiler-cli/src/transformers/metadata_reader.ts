@@ -83,7 +83,7 @@ function readMetadataFile(host: MetadataReaderHost, dtsFilePath: string): Module
     return metadatas;
   } catch (e) {
     console.error(`Failed to read JSON file ${metadataPath}`);
-    throw e;
+    return undefined;
   }
 }
 
