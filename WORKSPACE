@@ -9,7 +9,7 @@ http_archive(
 
 load("@build_bazel_rules_nodejs//:defs.bzl", "check_bazel_version", "node_repositories", "yarn_install")
 
-check_bazel_version("0.11.1")
+check_bazel_version("0.13.0")
 node_repositories(package_json = ["//:package.json"])
 
 yarn_install(
@@ -50,13 +50,13 @@ local_repository(
 # This commit matches the version of buildifier in angular/ngcontainer
 # If you change this, also check if it matches the version in the angular/ngcontainer
 # version in /.circleci/config.yml
-BAZEL_BUILDTOOLS_VERSION = "70bc7843bb9950fece2bc014ed16de03419e36e2"
+BAZEL_BUILDTOOLS_VERSION = "fd9878fd5de921e0bbab3dcdcb932c2627812ee1"
 
 http_archive(
     name = "com_github_bazelbuild_buildtools",
     url = "https://github.com/bazelbuild/buildtools/archive/%s.zip" % BAZEL_BUILDTOOLS_VERSION,
     strip_prefix = "buildtools-%s" % BAZEL_BUILDTOOLS_VERSION,
-    sha256 = "367c23a5fe7fc2a7cb57863d3718b4149f0e57426c48c8ad54c45348a0b53cc1",
+    sha256 = "27bb461ade23fd44ba98723ad98f84ee9c83cd3540b773b186a1bc5037f3d862",
 )
 
 http_archive(
@@ -74,9 +74,9 @@ go_register_toolchains()
 # Fetching the Bazel source code allows us to compile the Skylark linter
 http_archive(
     name = "io_bazel",
-    url = "https://github.com/bazelbuild/bazel/archive/5a35e72f9e97c06540c479f8c31512fb4656202f.zip",
-    strip_prefix = "bazel-5a35e72f9e97c06540c479f8c31512fb4656202f",
-    sha256 = "ed33a52874c14e3b487fb50f390c541fab9c81a33d986d38fb01766a66dbcd21",
+    url = "https://github.com/bazelbuild/bazel/archive/968f87900dce45a7af749a965b72dbac51b176b3.zip",
+    strip_prefix = "bazel-968f87900dce45a7af749a965b72dbac51b176b3",
+    sha256 = "e373d2ae24955c1254c495c9c421c009d88966565c35e4e8444c082cb1f0f48f",
 )
 
 # We have a source dependency on the Devkit repository, because it's built with
