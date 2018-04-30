@@ -26,9 +26,9 @@ yarn_install(
 
 http_archive(
     name = "build_bazel_rules_typescript",
-    url = "https://github.com/bazelbuild/rules_typescript/archive/0.12.1.zip",
-    strip_prefix = "rules_typescript-0.12.1",
-    sha256 = "24e2c36f60508c6d270ae4265b89b381e3f66d550e70c367ed3755ad8d7ce3b0",
+    url = "https://github.com/bazelbuild/rules_typescript/archive/0.12.3.zip",
+    strip_prefix = "rules_typescript-0.12.3",
+    sha256 = "967068c3540f59407716fbeb49949c1600dbf387faeeab3089085784dd21f60c",
 )
 
 load("@build_bazel_rules_typescript//:defs.bzl", "ts_setup_workspace")
