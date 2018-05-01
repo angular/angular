@@ -751,6 +751,30 @@ describe('MatSelectionList with forms', () => {
       expect(fixture.componentInstance.selectedOptions).toEqual(['opt1']);
     }));
 
+    it('should not dispatch the model change event if nothing changed using selectAll', () => {
+      expect(fixture.componentInstance.modelChangeSpy).not.toHaveBeenCalled();
+
+      selectionListDebug.componentInstance.selectAll();
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance.modelChangeSpy).toHaveBeenCalledTimes(1);
+
+      selectionListDebug.componentInstance.selectAll();
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance.modelChangeSpy).toHaveBeenCalledTimes(1);
+    });
+
+    it('should not dispatch the model change event if nothing changed using selectAll', () => {
+      expect(fixture.componentInstance.modelChangeSpy).not.toHaveBeenCalled();
+
+      selectionListDebug.componentInstance.deselectAll();
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance.modelChangeSpy).not.toHaveBeenCalled();
+    });
+
+
   });
 
   describe('and formControl', () => {
@@ -968,13 +992,14 @@ class SelectionListWithTabindexBinding {
 
 @Component({
   template: `
-    <mat-selection-list [(ngModel)]="selectedOptions">
+    <mat-selection-list [(ngModel)]="selectedOptions" (ngModelChange)="modelChangeSpy()">
       <mat-list-option value="opt1">Option 1</mat-list-option>
       <mat-list-option value="opt2">Option 2</mat-list-option>
       <mat-list-option value="opt3" *ngIf="renderLastOption">Option 3</mat-list-option>
     </mat-selection-list>`
 })
 class SelectionListWithModel {
+  modelChangeSpy = jasmine.createSpy('model change spy');
   selectedOptions: string[] = [];
   renderLastOption = true;
 }
