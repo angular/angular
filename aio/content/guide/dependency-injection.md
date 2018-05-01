@@ -440,6 +440,12 @@ The service can be instantiated by configuring a factory function as shown below
 
 <code-example path="dependency-injection/src/app/tree-shaking/service.0.ts"  title="src/app/tree-shaking/service.0.ts" linenums="false"> </code-example>
 
+<div class="l-sub-section">
+
+To override tree-shakable providers, register the provider using the `providers: []` array syntax of any Angular decorator that supports it.
+
+</div>
+
 {@a injector-config} 
 {@a bootstrap}
 
