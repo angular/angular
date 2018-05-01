@@ -76,7 +76,7 @@ export class MatPaginator extends _MatPaginatorBase implements OnInit, OnDestroy
   @Input()
   get pageIndex(): number { return this._pageIndex; }
   set pageIndex(value: number) {
-    this._pageIndex = coerceNumberProperty(value);
+    this._pageIndex = Math.max(coerceNumberProperty(value), 0);
     this._changeDetectorRef.markForCheck();
   }
   _pageIndex: number = 0;
@@ -94,7 +94,7 @@ export class MatPaginator extends _MatPaginatorBase implements OnInit, OnDestroy
   @Input()
   get pageSize(): number { return this._pageSize; }
   set pageSize(value: number) {
-    this._pageSize = coerceNumberProperty(value);
+    this._pageSize = Math.max(coerceNumberProperty(value), 0);
     this._updateDisplayedPageSizeOptions();
   }
   private _pageSize: number;

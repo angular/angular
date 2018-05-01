@@ -157,6 +157,16 @@ describe('MatPaginator', () => {
     expect(isMarkedInitialized).toBeTruthy();
   }));
 
+  it('should not allow a negative pageSize', () => {
+    paginator.pageSize = -1337;
+    expect(paginator.pageSize).toBeGreaterThanOrEqual(0);
+  });
+
+  it('should not allow a negative pageIndex', () => {
+    paginator.pageSize = -42;
+    expect(paginator.pageIndex).toBeGreaterThanOrEqual(0);
+  });
+
   describe('when showing the first and last button', () => {
 
     beforeEach(() => {
