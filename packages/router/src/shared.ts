@@ -80,7 +80,7 @@ class ParamsAsMap implements ParamMap {
   get(name: string): string|null {
     if (this.has(name)) {
       const v = this.params[name];
-      return Array.isArray(v) ? v[0] : v;
+      return Array.isArray(v) ? v[0].toString() : v.toString();
     }
 
     return null;
