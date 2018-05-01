@@ -20,6 +20,7 @@ import {Observable, Subscription, Subject} from 'rxjs';
 import {OverlayRef} from '../overlay-ref';
 import {isElementScrolledOutsideView, isElementClippedByScrolling} from './scroll-clip';
 import {coerceCssPixelValue} from '@angular/cdk/coercion';
+import {Platform} from '@angular/cdk/platform';
 
 
 // TODO: refactor clipping detection into a separate thing (part of scrolling module)
@@ -119,7 +120,9 @@ export class FlexibleConnectedPositionStrategy implements PositionStrategy {
   constructor(
     private _connectedTo: ElementRef,
     private _viewportRuler: ViewportRuler,
-    private _document: Document) {
+    private _document: Document,
+    // @deletion-target 7.0.0 `_platform` parameter to be made required.
+    private _platform?: Platform) {
     this._origin = this._connectedTo.nativeElement;
   }
 
@@ -155,8 +158,8 @@ export class FlexibleConnectedPositionStrategy implements PositionStrategy {
    * @docs-private
    */
   apply(): void {
-    // We shouldn't do anything if the strategy was disposed.
-    if (this._isDisposed) {
+    // We shouldn't do anything if the strategy was disposed or we're on the server.
+    if (this._isDisposed || (this._platform && !this._platform.isBrowser)) {
       return;
     }
 
@@ -285,7 +288,7 @@ export class FlexibleConnectedPositionStrategy implements PositionStrategy {
    * allows one to re-align the panel without changing the orientation of the panel.
    */
   reapplyLastPosition(): void {
-    if (!this._isDisposed) {
+    if (!this._isDisposed && (!this._platform || this._platform.isBrowser)) {
       this._originRect = this._origin.getBoundingClientRect();
       this._overlayRect = this._pane.getBoundingClientRect();
       this._viewportRect = this._getNarrowedViewportRect();

@@ -19,6 +19,7 @@ import {
 } from './connected-position';
 import {FlexibleConnectedPositionStrategy} from './flexible-connected-position-strategy';
 import {PositionStrategy} from './position-strategy';
+import {Platform} from '@angular/cdk/platform';
 
 
 /**
@@ -60,14 +61,16 @@ export class ConnectedPositionStrategy implements PositionStrategy {
       overlayPos: OverlayConnectionPosition,
       connectedTo: ElementRef,
       viewportRuler: ViewportRuler,
-      document: Document) {
+      document: Document,
+      // @deletion-target 7.0.0 `platform` parameter to be made required.
+      platform?: Platform) {
 
     // Since the `ConnectedPositionStrategy` is deprecated and we don't want to maintain
     // the extra logic, we create an instance of the positioning strategy that has some
     // defaults that make it behave as the old position strategy and to which we'll
     // proxy all of the API calls.
     this._positionStrategy =
-      new FlexibleConnectedPositionStrategy(connectedTo, viewportRuler, document)
+      new FlexibleConnectedPositionStrategy(connectedTo, viewportRuler, document, platform)
         .withFlexibleDimensions(false)
         .withPush(false)
         .withViewportMargin(0);

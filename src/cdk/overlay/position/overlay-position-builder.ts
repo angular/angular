@@ -8,11 +8,12 @@
 
 import {ViewportRuler} from '@angular/cdk/scrolling';
 import {DOCUMENT} from '@angular/common';
-import {ElementRef, Inject, Injectable} from '@angular/core';
+import {ElementRef, Inject, Injectable, Optional} from '@angular/core';
 import {OriginConnectionPosition, OverlayConnectionPosition} from './connected-position';
 import {ConnectedPositionStrategy} from './connected-position-strategy';
 import {FlexibleConnectedPositionStrategy} from './flexible-connected-position-strategy';
 import {GlobalPositionStrategy} from './global-position-strategy';
+import {Platform} from '@angular/cdk/platform';
 
 
 /** Builder for overlay position strategy. */
@@ -20,7 +21,9 @@ import {GlobalPositionStrategy} from './global-position-strategy';
 export class OverlayPositionBuilder {
   constructor(
     private _viewportRuler: ViewportRuler,
-    @Inject(DOCUMENT) private _document: any) { }
+    @Inject(DOCUMENT) private _document: any,
+    // @deletion-target 7.0.0 `_platform` parameter to be made required.
+    @Optional() private _platform?: Platform) { }
 
   /**
    * Creates a global position strategy.
@@ -51,7 +54,8 @@ export class OverlayPositionBuilder {
    * @param elementRef
    */
   flexibleConnectedTo(elementRef: ElementRef): FlexibleConnectedPositionStrategy {
-    return new FlexibleConnectedPositionStrategy(elementRef, this._viewportRuler, this._document);
+    return new FlexibleConnectedPositionStrategy(elementRef, this._viewportRuler, this._document,
+        this._platform);
   }
 
 }
