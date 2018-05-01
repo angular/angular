@@ -28,16 +28,24 @@ describe('MediaMatcher', () => {
     expect(mediaMatcher.matchMedia('(max-width: 1px)').matches).toBeFalsy();
   });
 
-  it('adds css rules for provided queries when the platform is webkit, otherwise adds nothing.',
+  it('should add CSS rules for provided queries when the platform is webkit',
     inject([Platform], (platform: Platform) => {
-      let randomWidth = Math.random();
-      expect(document.head.textContent).not.toContain(randomWidth);
+      const randomWidth = `${Math.random()}px`;
+
+      expect(getStyleTagByString(randomWidth)).toBeFalsy();
       mediaMatcher.matchMedia(`(width: ${randomWidth})`);
 
       if (platform.WEBKIT) {
-        expect(document.head.textContent).toContain(randomWidth);
+        expect(getStyleTagByString(randomWidth)).toBeTruthy();
       } else {
-        expect(document.head.textContent).not.toContain(randomWidth);
+        expect(getStyleTagByString(randomWidth)).toBeFalsy();
+      }
+
+      function getStyleTagByString(str: string): HTMLStyleElement | undefined {
+        return Array.from(document.head.querySelectorAll('style')).find(tag => {
+          const rules = tag.sheet ? Array.from((tag.sheet as CSSStyleSheet).cssRules) : [];
+          return !!rules.find(rule => rule.cssText.includes(str));
+        });
       }
   }));
 });
