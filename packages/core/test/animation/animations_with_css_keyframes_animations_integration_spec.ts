@@ -248,6 +248,61 @@ import {TestBed} from '../../testing';
       assertStyle(element, 'width', '200px');
       assertStyle(element, 'height', '50px');
     });
+
+    it('should clean up 0 second animation styles (queried styles) that contain camel casing when complete',
+       () => {
+         @Component({
+           selector: 'ani-cmp',
+           template: `
+          <div #elm [@myAnimation]="myAnimationExp">
+            <div class="foo"></div>
+            <div class="bar"></div>
+          </div>
+        `,
+           animations: [
+             trigger(
+                 'myAnimation',
+                 [
+                   state('go', style({width: '200px'})),
+                   transition(
+                       '* => go',
+                       [
+                         query('.foo', [style({maxHeight: '0px'})]),
+                         query(
+                             '.bar',
+                             [
+                               style({width: '0px'}),
+                               animate('1s', style({width: '100px'})),
+                             ]),
+                       ]),
+                 ]),
+           ]
+         })
+         class Cmp {
+           @ViewChild('elm') public element: any;
+
+           public myAnimationExp = '';
+         }
+
+         TestBed.configureTestingModule({declarations: [Cmp]});
+
+         const engine = TestBed.get(AnimationEngine);
+         const fixture = TestBed.createComponent(Cmp);
+         const cmp = fixture.componentInstance;
+
+         const elm = cmp.element.nativeElement;
+         const foo = elm.querySelector('.foo') as HTMLElement;
+
+         cmp.myAnimationExp = 'go';
+         fixture.detectChanges();
+
+         expect(foo.style.getPropertyValue('max-height')).toEqual('0px');
+
+         const player = engine.players.pop();
+         player.finish();
+
+         expect(foo.style.getPropertyValue('max-height')).toBeFalsy();
+       });
   });
 })();
 
