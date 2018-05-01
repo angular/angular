@@ -19,8 +19,14 @@ describe('service-worker routes', () => {
 
   it('should ignore stackblitz URLs', () => {
     const routes = loadSWRoutes();
+
+    // Normal StackBlitz URLs.
     expect(routes.some(test => test('/generated/live-examples/toh-pt6/stackblitz.html'))).toBeFalsy();
     expect(routes.some(test => test('/generated/live-examples/toh-pt6/stackblitz'))).toBeFalsy();
+
+    // Embedded StackBlitz URLs.
+    expect(routes.some(test => test('/generated/live-examples/toh-pt6/stackblitz.html?ctl=1'))).toBeFalsy();
+    expect(routes.some(test => test('/generated/live-examples/toh-pt6/stackblitz?ctl=1'))).toBeFalsy();
   });
 
   it('should ignore URLs to files with extensions', () => {
