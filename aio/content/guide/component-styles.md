@@ -1,64 +1,122 @@
+<!--
 # Component Styles
+-->
+# 컴포넌트 스타일
 
+<!--
 Angular applications are styled with standard CSS. That means you can apply
 everything you know about CSS stylesheets, selectors, rules, and media queries
 directly to Angular applications.
+-->
+Angular 애플리케이션의 스타일은 표준 CSS를 사용해서 지정합니다. 따라서 기존에 사용하고 있는 CSS 스타일시트, 셀렉터, 룰, 미디어 쿼리도 Angular 애플리케이션에 그대로 사용할 수 있습니다.
 
+<!--
 Additionally, Angular can bundle *component styles*
 with components, enabling a more modular design than regular stylesheets.
+-->
+Angular는 여기에 추가로 개별 컴포넌트에 *컴포넌트 스타일*을 적용할 수 있으며, CSS 스타일 외에 다른 스타일 도구도 활용할 수 있습니다.
 
+<!--
 This page describes how to load and apply these component styles.
+-->
+이 문서는 컴포넌트 스타일을 어떻게 불러오거나 지정할 수 있는지 안내합니다.
 
+<!--
 You can run the <live-example></live-example> in Stackblitz and download the code from there.
+-->
+이 문서에서 다루는 예제는 <live-example></live-example>에서 확인하거나 다운받을 수 있습니다.
 
+<!--
 ## Using component styles
+-->
+## 컴포넌트 스타일 사용하기
 
+<!--
 For every Angular component you write, you may define not only an HTML template,
 but also the CSS styles that go with that template,
 specifying any selectors, rules, and media queries that you need.
+-->
+개발자가 만드는 모든 Angular 컴포넌트는 HTML 템플릿 외에 CSS 스타일도 지정할 수 있습니다.
+이 스타일 설정에는 기존에 사용하던 셀렉터, 룰, 미디어 쿼리도 그대로 사용할 수 있습니다.
 
+<!--
 One way to do this is to set the `styles` property in the component metadata.
 The `styles` property takes an array of strings that contain CSS code.
 Usually you give it one string, as in the following example:
+-->
+가장 간단한 방법은 컴포넌트 메타데이터에 `styles` 프로퍼티를 사용하는 것입니다.
+`styles` 프로퍼티에는 CSS 코드를 문자열 배열 형태로 지정하며, 다음과 같이 문자열 하나로도 간단하게 지정할 수 있습니다:
 
 <code-example path="component-styles/src/app/hero-app.component.ts" title="src/app/hero-app.component.ts" linenums="false">
 </code-example>
 
+<!--
 ## Style scope
+-->
+## 스타일 적용 범위
 
 <div class="alert is-critical">
 
+<!--
 The styles specified in `@Component` metadata _apply only within the template of that component_.
+-->
+`@Component` 메타데이터에 적용된 스타일은 _그 컴포넌트의 템플릿에만_ 적용됩니다.
 
 </div>
 
+<!--
 They are _not inherited_ by any components nested within the template nor by any content projected into the component.
+-->
+컴포넌트 스타일은 템플릿 안에 있는 자식 컴포넌트의 템플릿이나 이 컴포넌트에 프로젝트되는 컴포넌트에는 _적용되지 않습니다_.
 
+<!--
 In this example, the `h1` style applies only to the `HeroAppComponent`,
 not to the nested `HeroMainComponent` nor to `<h1>` tags anywhere else in the application.
+-->
+이 예제로 보면 `h1` 엘리먼트 스타일은 `HeroAppComponent`에만 적용되며, 자식 컴포넌트 `HeroMainComponent`나 컴포넌트 외부에 있는 `<h1>` 태그에는 적용되지 않습니다.
 
+<!--
 This scoping restriction is a ***styling modularity feature***.
+-->
+그래서 컴포넌트에 적용되는 스타일은 다음과 같은 ***스타일 모듈 규칙***을 따릅니다.
 
+<!--
 * You can use the CSS class names and selectors that make the most sense in the context of each component.
+-->
+* 컴포넌트를 구분하기 위해 적절한 CSS 클래스 이름과 셀렉터를 사용할 수 있습니다.
 
-
+<!--
 * Class names and selectors are local to the component and don't collide with
   classes and selectors used elsewhere in the application.
+-->
+* 클래스 이름과 셀렉터는 컴포넌트 안에서만 유효하며, 컴포넌트 밖에 있는 클래스와 셀렉터에는 적용되지 않습니다.
 
-
+<!--
 * Changes to styles elsewhere in the application don't affect the component's styles.
+-->
+* 컴포넌트 밖에서 스타일이 동적으로 변경되어도 컴포넌트에는 적용되지 않습니다.
 
-
+<!--
 * You can co-locate the CSS code of each component with the TypeScript and HTML code of the component,
   which leads to a neat and tidy project structure.
+-->
+* 프로젝트 규모가 작거나 간단하게 테스트 하려면 CSS 코드를 TypeScript 코드나 HTML에 작성할 수도 있습니다.
 
-
+<!--
 * You can change or remove component CSS code without searching through the
   whole application to find where else the code is used.
+-->
+* 컴포넌트에 적용되는 CSS 코드는 컴포넌트 외부에 적용되지 않기 때문에 걱정없이 변경하거나 제거할 수 있습니다.
 
+<!--
 {@a special-selectors}
+-->
+{@a angular-전용-셀렉터}
 
+<!--
 ## Special selectors
+-->
+## Angular 전용 셀렉터
 
 Component styles have a few special *selectors* from the world of shadow DOM style scoping
 (described in the [CSS Scoping Module Level 1](https://www.w3.org/TR/css-scoping-1) page on the
