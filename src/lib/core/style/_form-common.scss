@@ -5,7 +5,7 @@
 // to match the Material Design spec.
 @mixin mat-control-disabled-underline($color) {
   background-image: linear-gradient(to right, $color 0%, $color 33%, transparent 0%);
-  background-size: 4px 1px;
+  background-size: 4px 100%;
   background-repeat: repeat-x;
 }
 

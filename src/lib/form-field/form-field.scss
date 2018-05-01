@@ -144,6 +144,13 @@ $mat-form-field-default-infix-width: 180px !default;
   width: 100%;
   // Need this so that the underline doesn't block the hover effect.
   pointer-events: none;
+  // We transform the height slightly higher to fix inconsistent underline height for some DPIs.
+  // Without this we observed that at zoom levels between 50% and 100% some form-field underlines
+  // would disappear. The issue appears to be related to fractional pixels since (e.g. underlines
+  // with their top at x.6 would disappear, but ones with there top at x.7 were fine). The exact
+  // fractions that caused problems seemed to depend on the screen resolution and zoom level. We
+  // experimentally discovered that adding a very slight scale factor fixes the issue.
+  transform: scaleY(1.0001);
 }
 
 .mat-form-field-ripple {
