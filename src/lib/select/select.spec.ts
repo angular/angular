@@ -912,6 +912,25 @@ describe('MatSelect', () => {
         expect(fixture.componentInstance.select.panelOpen).toBe(false);
       }));
 
+      it('should restore focus to the host before tabbing away', fakeAsync(() => {
+        const select = fixture.nativeElement.querySelector('.mat-select');
+
+        trigger.click();
+        fixture.detectChanges();
+        flush();
+
+        expect(fixture.componentInstance.select.panelOpen).toBe(true);
+
+        // Use a spy since focus can be flaky in unit tests.
+        spyOn(select, 'focus').and.callThrough();
+
+        dispatchKeyboardEvent(trigger, 'keydown', TAB);
+        fixture.detectChanges();
+        flush();
+
+        expect(select.focus).toHaveBeenCalled();
+      }));
+
       it('should close when tabbing out from inside the panel', fakeAsync(() => {
         trigger.click();
         fixture.detectChanges();

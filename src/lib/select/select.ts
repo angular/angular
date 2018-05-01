@@ -826,7 +826,13 @@ export class MatSelect extends _MatSelectMixinBase implements AfterContentInit, 
       .withVerticalOrientation()
       .withHorizontalOrientation(this._isRtl() ? 'rtl' : 'ltr');
 
-    this._keyManager.tabOut.pipe(takeUntil(this._destroy)).subscribe(() => this.close());
+    this._keyManager.tabOut.pipe(takeUntil(this._destroy)).subscribe(() => {
+      // Restore focus to the trigger before closing. Ensures that the focus
+      // position won't be lost if the user got focus into the overlay.
+      this.focus();
+      this.close();
+    });
+
     this._keyManager.change.pipe(takeUntil(this._destroy)).subscribe(() => {
       if (this._panelOpen && this.panel) {
         this._scrollActiveOptionIntoView();
