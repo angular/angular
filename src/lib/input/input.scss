@@ -92,3 +92,10 @@ textarea.mat-input-element {
     resize: none;
   }
 }
+
+textarea.mat-input-element {
+  // The 2px padding prevents scrollbars from appearing on Chrome even when they aren't needed.
+  // We also add a negative margin to negate the effect of the padding on the layout.
+  padding: 2px 0;
+  margin: -2px 0;
+}

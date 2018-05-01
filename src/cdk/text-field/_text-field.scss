@@ -19,6 +19,18 @@
   textarea.cdk-textarea-autosize {
     resize: none;
   }
+
+  // This class is temporarily applied to the textarea when it is being measured. It is immediately
+  // removed when measuring is complete. We use `!important` rules here to make sure user-specified
+  // rules do not interfere with the measurement.
+  textarea.cdk-textarea-autosize-measuring {
+    height: auto !important;
+    overflow: hidden !important;
+    // Having 2px top and bottom padding seems to fix a bug where Chrome gets an incorrect
+    // measurement. We just have to account for it later and subtract it off the final result.
+    padding: 2px 0 !important;
+    box-sizing: content-box !important;
+  }
 }
 
 // Used to generate UIDs for keyframes used to change the text field autofill styles.
