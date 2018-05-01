@@ -495,7 +495,7 @@ return {type: AnimationMetadataType.Trigger, name, definitions, options: {}};
  * that returns a collection of CSS style entries to be applied to the parent animation.
  * When null, uses the styles from the destination state.
  * This is useful when describing an animation step that will complete an animation;
- * see {@link transition#the-final-animate-call animating to the final state}).
+ * see "Animating to the final state" below.
  * @returns An object that encapsulates the animation step.
  * 
  * @usageNotes Call within an animation {@link sequence sequence()}, {@link group group()}, or
@@ -568,6 +568,32 @@ return {type: AnimationMetadataType.Trigger, name, definitions, options: {}};
  *        <td>Calls keyframes() to set a CSS style to different values for successive keyframes.</td>
  *      </tr>
  *    </table>
+ * ### Animating to the final state
+ * If the final step in a transition is a call to `animate()` that uses a timing value
+ * with no style data, that step is automatically considered the final animation arc,
+ * for the element to reach the final state. Angular automatically adds or removes
+ * CSS styles to ensure that the element is in the correct final state.
+ *
+ * The following example defines a transition that starts by hiding the element,
+ * then makes sure that it animates properly to whatever state is currently active for trigger:
+ * ```
+ * transition("void => *", [
+ *   style({ opacity: 0 }),
+ *   animate(500)
+ *  ])
+ * ```
+ * ### Boolean value matching
+ * If a trigger binding value is a Boolean, it can be matched using a transition expression
+ * that compares true and false or 1 and 0. For example:
+ * ```
+ * // in the template
+ * <div [@openClose]="open ? true : false">...</div>
+ * // in the component metadata
+ * trigger('openClose', [
+ *   state('true', style({ height: '*' })),
+ *   state('false', style({ height: '0px' })),
+ *   transition('false <=> true', animate(500))
+ * ])
  *
  */
 export function animate(
