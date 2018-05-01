@@ -203,3 +203,12 @@ export function getBodyNode(): any|null {
 export const matchesElement = _matches;
 export const containsElement = _contains;
 export const invokeQuery = _query;
+
+export function hypenatePropsObject(object: {[key: string]: any}): {[key: string]: any} {
+  const newObj: {[key: string]: any} = {};
+  Object.keys(object).forEach(prop => {
+    const newProp = prop.replace(/([a-z])([A-Z])/g, '$1-$2');
+    newObj[newProp] = object[prop];
+  });
+  return newObj;
+}
