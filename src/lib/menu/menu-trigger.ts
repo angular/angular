@@ -195,7 +195,9 @@ export class MatMenuTrigger implements AfterContentInit, OnDestroy {
       return;
     }
 
-    this._createOverlay().attach(this._portal);
+    const overlayRef = this._createOverlay();
+    overlayRef.setDirection(this.dir);
+    overlayRef.attach(this._portal);
 
     if (this.menu.lazyContent) {
       this.menu.lazyContent.attach(this.menuData);
@@ -344,7 +346,6 @@ export class MatMenuTrigger implements AfterContentInit, OnDestroy {
       positionStrategy: this._getPosition(),
       hasBackdrop: this.menu.hasBackdrop == null ? !this.triggersSubmenu() : this.menu.hasBackdrop,
       backdropClass: this.menu.backdropClass || 'cdk-overlay-transparent-backdrop',
-      direction: this.dir,
       scrollStrategy: this._scrollStrategy()
     });
   }

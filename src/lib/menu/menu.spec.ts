@@ -245,6 +245,30 @@ describe('MatMenu', () => {
     expect(overlayPane.getAttribute('dir')).toEqual('rtl');
   });
 
+  it('should update the panel direction if the trigger direction changes', () => {
+    const dirProvider = {value: 'rtl'};
+    const fixture = createComponent(SimpleMenu, [{
+      provide: Directionality, useFactory: () => dirProvider}
+    ], [FakeIcon]);
+
+    fixture.detectChanges();
+    fixture.componentInstance.trigger.openMenu();
+    fixture.detectChanges();
+
+    let overlayPane = overlayContainerElement.querySelector('.cdk-overlay-pane')!;
+    expect(overlayPane.getAttribute('dir')).toEqual('rtl');
+
+    fixture.componentInstance.trigger.closeMenu();
+    fixture.detectChanges();
+
+    dirProvider.value = 'ltr';
+    fixture.componentInstance.trigger.openMenu();
+    fixture.detectChanges();
+
+    overlayPane = overlayContainerElement.querySelector('.cdk-overlay-pane')!;
+    expect(overlayPane.getAttribute('dir')).toEqual('ltr');
+  });
+
   it('should transfer any custom classes from the host to the overlay', () => {
     const fixture = createComponent(SimpleMenu, [], [FakeIcon]);
 
