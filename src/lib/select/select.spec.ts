@@ -702,6 +702,29 @@ describe('MatSelect', () => {
             expect(host.getAttribute('aria-activedescendant')).toBe(options[0].id);
           }));
 
+        it('should restore focus to the trigger after selecting an option in multi-select mode',
+          fakeAsync(() => {
+            fixture.destroy();
+
+            const multiFixture = TestBed.createComponent(MultiSelect);
+            const instance = multiFixture.componentInstance;
+
+            multiFixture.detectChanges();
+            select = multiFixture.debugElement.query(By.css('mat-select')).nativeElement;
+            instance.select.open();
+            multiFixture.detectChanges();
+
+            // Ensure that the select isn't focused to begin with.
+            select.blur();
+            expect(document.activeElement).not.toBe(select, 'Expected trigger not to be focused.');
+
+            const option = overlayContainerElement.querySelector('mat-option')! as HTMLElement;
+            option.click();
+            multiFixture.detectChanges();
+
+            expect(document.activeElement).toBe(select, 'Expected trigger to be focused.');
+          }));
+
       });
 
       describe('for options', () => {
