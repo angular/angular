@@ -21,11 +21,13 @@ export const matDrawerAnimations: {
   /** Animation that slides a drawer in and out. */
   transformDrawer: trigger('transform', [
     state('open, open-instant', style({
-      transform: 'translate3d(0, 0, 0)',
-      visibility: 'visible',
+      'transform': 'translate3d(0, 0, 0)',
+      'visibility': 'visible',
     })),
     state('void', style({
-      visibility: 'hidden',
+      // Avoids the shadow showing up when closed in SSR.
+      'box-shadow': 'none',
+      'visibility': 'hidden',
     })),
     transition('void => open-instant', animate('0ms')),
     transition('void <=> open, open-instant => void',
