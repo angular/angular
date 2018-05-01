@@ -470,6 +470,30 @@ describe('MatAutocomplete', () => {
     expect(overlayPane.getAttribute('dir')).toEqual('rtl');
   });
 
+  it('should update the panel direction if it changes for the trigger', () => {
+    const dirProvider = {value: 'rtl'};
+    const rtlFixture = createComponent(SimpleAutocomplete, [
+      {provide: Directionality, useFactory: () => dirProvider},
+    ]);
+
+    rtlFixture.detectChanges();
+    rtlFixture.componentInstance.trigger.openPanel();
+    rtlFixture.detectChanges();
+
+    let overlayPane = overlayContainerElement.querySelector('.cdk-overlay-pane')!;
+    expect(overlayPane.getAttribute('dir')).toEqual('rtl');
+
+    rtlFixture.componentInstance.trigger.closePanel();
+    rtlFixture.detectChanges();
+
+    dirProvider.value = 'ltr';
+    rtlFixture.componentInstance.trigger.openPanel();
+    rtlFixture.detectChanges();
+
+    overlayPane = overlayContainerElement.querySelector('.cdk-overlay-pane')!;
+    expect(overlayPane.getAttribute('dir')).toEqual('ltr');
+  });
+
   describe('forms integration', () => {
     let fixture: ComponentFixture<SimpleAutocomplete>;
     let input: HTMLInputElement;

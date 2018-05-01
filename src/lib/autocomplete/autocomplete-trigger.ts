@@ -498,8 +498,9 @@ export class MatAutocompleteTrigger implements ControlValueAccessor, OnDestroy {
         });
       }
     } else {
-      /** Update the panel width, in case the host width has changed */
+      // Update the panel width and direction, in case anything has changed.
       this._overlayRef.updateSize({width: this._getHostWidth()});
+      this._overlayRef.setDirection(this._getDirection());
     }
 
     if (this._overlayRef && !this._overlayRef.hasAttached()) {
@@ -524,7 +525,7 @@ export class MatAutocompleteTrigger implements ControlValueAccessor, OnDestroy {
       positionStrategy: this._getOverlayPosition(),
       scrollStrategy: this._scrollStrategy(),
       width: this._getHostWidth(),
-      direction: this._dir ? this._dir.value : 'ltr'
+      direction: this._getDirection()
     });
   }
 
@@ -539,6 +540,10 @@ export class MatAutocompleteTrigger implements ControlValueAccessor, OnDestroy {
       ]);
 
     return this._positionStrategy;
+  }
+
+  private _getDirection() {
+    return this._dir ? this._dir.value : 'ltr';
   }
 
   private _getConnectedElement(): ElementRef {
