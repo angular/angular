@@ -8,6 +8,26 @@
   color: mat-color($palette, default-contrast);
 }
 
+@mixin _mat-toolbar-form-field-overrides {
+  .mat-form-field-underline,
+  .mat-form-field-ripple,
+  .mat-focused .mat-form-field-ripple {
+    background-color: currentColor;
+  }
+
+  .mat-form-field-label,
+  .mat-focused .mat-form-field-label,
+  .mat-select-value,
+  .mat-select-arrow,
+  .mat-form-field.mat-focused .mat-select-arrow {
+    color: inherit;
+  }
+
+  .mat-input-element {
+    caret-color: currentColor;
+  }
+}
+
 @mixin mat-toolbar-theme($theme) {
   $primary: map-get($theme, primary);
   $accent: map-get($theme, accent);
@@ -30,6 +50,8 @@
     &.mat-warn {
       @include _mat-toolbar-color($warn);
     }
+
+    @include _mat-toolbar-form-field-overrides;
   }
 }
 
