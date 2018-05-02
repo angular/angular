@@ -30,12 +30,12 @@ const MODIFIER_KEY_GETTERS: {[key: string]: (event: KeyboardEvent) => boolean} =
 
 /**
  * @experimental
- * @description An injectable service that provides support for handling of key events in Angular.
+ * A browser plug-in that provides support for handling of key events in Angular.
  */
 @Injectable()
 export class KeyEventsPlugin extends EventManagerPlugin {
   /**
-   * Initializes an instance of the key-event management service.
+   * Initializes an instance of the browser plug-in.
    * @param doc The document in which key events will be detected.
    */
   constructor(@Inject(DOCUMENT) doc: any) { super(doc); }
@@ -119,10 +119,11 @@ export class KeyEventsPlugin extends EventManagerPlugin {
   }
 
   /**
-   * Event-handling callback for a key event.
+   * Configures a handler callback for a key event.
    * @param fullKey The event name that combines all simultaneous keystrokes.
    * @param handler The function that responds to the key event.
    * @param zone The zone in which the event occurred.
+   * @returns A callback function.
    */
   static eventCallback(fullKey: any, handler: Function, zone: NgZone): Function {
     return (event: any /** TODO #9100 */) => {

@@ -16,18 +16,15 @@ import {getDOM} from '../dom_adapter';
  export const EVENT_MANAGER_PLUGINS =
     new InjectionToken<EventManagerPlugin[]>('EventManagerPlugins');
 
-@Injectable()
 /**
- * @description An injectable service that provides event management in the browser.
+ * An injectable service that provides event management for Angular
+ * through a browser plug-in.
  */
+@Injectable()
  export class EventManager {
   private _plugins: EventManagerPlugin[];
   private _eventNameToPlugin = new Map<string, EventManagerPlugin>();
- /**
-  * 
-  * 
-  * 
-  */
+ 
   /**
    * Initializes an instance of the event-manager service.
    */
