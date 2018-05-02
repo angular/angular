@@ -218,7 +218,7 @@ It serves build artifacts from memory instead for a faster development experienc
 <div class="l-sub-section">
 
 The output folder is  `dist/` by default.
-To output to a different folder, change the `outDir` in `.angular-cli.json`.
+To output to a different folder, change the `outputPath` in `angular.json`.
 
 </div>
 

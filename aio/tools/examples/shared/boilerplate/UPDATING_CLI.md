@@ -22,31 +22,34 @@ Now you have a fresh application to get our new boilerplate files.
 
 From `dummy` you can replace the following files into `aio/tools/examples/shared/boilerplate/cli`:
 
-* tslint.json
-* tsconfig.json
-* package.json
-* protractor.conf.js
-* karma.conf.js
 * .editorconfig
-* angular-cli.json
-* src/tsconfig.spec.json
-* src/test.ts
-* src/polyfills.js
-* src/typings.d.ts
+* angular.json
+* package.json
+* tsconfig.json
+* tslint.json
+* e2e/src/app.po.ts
+* e2e/protractor.conf.js
+* e2e/tsconfig.e2e.json
 * src/environments/environment.prod.ts
 * src/environments/environment.ts
+* src/browserslist
+* src/favicon.ico
+* src/karma.conf.js
+* src/polyfills.js
+* src/styles.css
+* src/test.ts
+* src/tsconfig.app.json
+* src/tsconfig.spec.json
+* src/tslint.json
+* src/typings.d.ts
 
-### .angular-cli.json
+### angular.json
 
 Update the `project > name` to `angular.io-example`.
 
 ### package.json
 
 Update the `name` to `angular.io-example`.
-
-### src/polyfills.ts
-
-Uncomment the `import 'web-animations-js';` line to enable `web-animations-js` package.
 
 ### src/tsconfig.app.json
 
