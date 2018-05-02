@@ -55,8 +55,8 @@ class ExampleZipper {
   }
 
   // rename a custom main.ts or index.html file
-  _renameFile(file) {
-    if (/src\/main[-.]\w+\.ts$/.test(file)) {
+  _renameFile(file, exampleType) {
+    if (/src\/main[-.]\w+\.ts$/.test(file) && exampleType !== 'universal') {
       return 'src/main.ts';
     }
 
@@ -158,7 +158,7 @@ class ExampleZipper {
     let zip = this._createZipArchive(outputFileName);
     fileNames.forEach((fileName) => {
       let relativePath = path.relative(exampleDirName, fileName);
-      relativePath = this._renameFile(relativePath);
+      relativePath = this._renameFile(relativePath, exampleType);
       let content = fs.readFileSync(fileName, 'utf8');
       let extn = path.extname(fileName).substr(1);
       // if we don't need to clean up the file then we can do the following.
