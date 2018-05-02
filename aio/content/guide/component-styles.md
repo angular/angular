@@ -60,7 +60,7 @@ Usually you give it one string, as in the following example:
 <!--
 The styles specified in `@Component` metadata _apply only within the template of that component_.
 -->
-`@Component` 메타데이터에 적용된 스타일은 _그 컴포넌트의 템플릿에만_ 적용됩니다.
+`@Component` 메타데이터에 지정한 스타일은 _그 컴포넌트의 템플릿에만_ 적용됩니다.
 
 </div>
 
@@ -100,7 +100,7 @@ This scoping restriction is a ***styling modularity feature***.
 * You can co-locate the CSS code of each component with the TypeScript and HTML code of the component,
   which leads to a neat and tidy project structure.
 -->
-* 프로젝트 규모가 작거나 간단하게 테스트 하려면 CSS 코드를 TypeScript 코드나 HTML에 작성할 수도 있습니다.
+* 프로젝트 규모가 작거나 간단하게 테스트 하려면 CSS 코드를 TypeScript 코드나 HTML에 작성할 수 있습니다.
 
 <!--
 * You can change or remove component CSS code without searching through the
@@ -118,95 +118,163 @@ This scoping restriction is a ***styling modularity feature***.
 -->
 ## Angular 전용 셀렉터
 
+<!--
 Component styles have a few special *selectors* from the world of shadow DOM style scoping
 (described in the [CSS Scoping Module Level 1](https://www.w3.org/TR/css-scoping-1) page on the
 [W3C](https://www.w3.org) site).
 The following sections describe these selectors.
+-->
+컴포넌트에 스타일 문법에는 섀도우 DOM에 적용할 수 있는 특별한 *셀렉터* 를 몇가지 사용할 수 있습니다. 이 셀렉터들은 [W3C](https://www.w3.org) 사이트의 [CSS Scoping Module Level 1](https://www.w3.org/TR/css-scoping-1)에서 정의하는 표준 셀렉터입니다.
 
 ### :host
 
+<!--
 Use the `:host` pseudo-class selector to target styles in the element that *hosts* the component (as opposed to
 targeting elements *inside* the component's template).
-
+-->
+컴포넌트가 *위치하는* 엘리먼트(호스트 엘리먼트)에 스타일을 지정하려면  가상 클래스 셀렉터 `:host`를 사용합니다. 이 때 컴포넌트가 위치하는 엘리먼트라는 것은 컴포넌트 템플릿 *안쪽*이 아닌 컴포넌트를 나타내는 엘리먼트 자체를 가리킵니다.
 
 <code-example path="component-styles/src/app/hero-details.component.css" region="host" title="src/app/hero-details.component.css" linenums="false">
 </code-example>
 
+<!--
 The `:host` selector is the only way to target the host element. You can't reach
 the host element from inside the component with other selectors because it's not part of the
 component's own template. The host element is in a parent component's template.
+-->
+컴포넌트에 스타일을 지정할 때 컴포넌트가 위치한 엘리먼트 자체를 가리키는 방법은 `:host` 셀렉터를 사용하는 것뿐입니다. 컴포넌트가 위치하는 엘리먼트는 컴포넌트 템플릿 외부에 있기 때문에 이 방법을 제외하면 컴포넌트 안쪽에서 접근할 수 없습니다. 호스트 엘리먼트는 부모 컴포넌트의 템플릿에 정의되기 때문입니다.
 
+<!--
 Use the *function form* to apply host styles conditionally by
 including another selector inside parentheses after `:host`.
+-->
+그리고 `:host` 셀렉터에 괄호(`(`, `)`)를 함께 사용하면 특정 조건에 맞는 스타일만 지정할 수도 있습니다.
 
+<!--
 The next example targets the host element again, but only when it also has the `active` CSS class.
+-->
+그래서 아래 예제는 `active` CSS 클래스가 지정된 호스트 엘리먼트만 가리킵니다.
 
 <code-example path="component-styles/src/app/hero-details.component.css" region="hostfunction" title="src/app/hero-details.component.css" linenums="false">
 </code-example>
 
 ### :host-context
 
+<!--
 Sometimes it's useful to apply styles based on some condition *outside* of a component's view.
 For example, a CSS theme class could be applied to the document `<body>` element, and
 you want to change how your component looks based on that.
+-->
+어떤 경우에는 컴포넌트 뷰 *밖*에 있는 스타일을 조건으로 활용해서 컴포넌트 스타일을 적용해야 하는 경우도 있습니다.
+예를 들면 HTML 문서의 `<body>` 엘리먼트에 적용된 CSS 테마 클래스에 따라 컴포넌트의 뷰가 어떻게 표시되는지 확인하고 싶다고 합니다.
 
+<!--
 Use the `:host-context()` pseudo-class selector, which works just like the function
 form of `:host()`. The `:host-context()` selector looks for a CSS class in any ancestor of the component host element,
 up to the document root. The `:host-context()` selector is useful when combined with another selector.
 
+-->
+이 때 `:host-context` 가상 클래스 셀렉터를 사용하면 `:host()` 를 사용할 때와 비슷하게 컴포넌트 밖에 있는 엘리먼트를 가리킬 수 있습니다. `:host-context()` 셀렉터는 컴포넌트가 위치하는 호스트 엘리먼트의 부모 엘리먼트부터 HTML 문서의 루트 노트까지 적용됩니다.
+그리고 이 셀렉터는 다른 셀렉터와 마찬가지로 조합해서 사용할 수도 있습니다.
+
+<!--
 The following example applies a `background-color` style to all `<h2>` elements *inside* the component, only
 if some ancestor element has the CSS class `theme-light`.
+-->
+아래 예제는 CSS 클래스 `theme-light`가 지정된 부모 엘리먼트의 자식 엘리먼트 중 이 컴포넌트 *안*에 있는 `<h2>` 엘리먼트에 `background-color` 스타일을 지정하는 예제 코드입니다.
 
 <code-example path="component-styles/src/app/hero-details.component.css" region="hostcontext" title="src/app/hero-details.component.css" linenums="false">
 </code-example>
 
+<!--
 ### (deprecated) `/deep/`, `>>>`, and `::ng-deep`
+-->
+### (지원 중단) `/deep/`, `>>>`, `::ng-deep`
 
+<!--
 Component styles normally apply only to the HTML in the component's own template.
+-->
+컴포넌트 스타일은 보통 해당 컴포넌트의 템플릿에만 적용합니다.
 
+<!--
 Use the `/deep/` shadow-piercing descendant combinator to force a style down through the child
 component tree into all the child component views.
 The `/deep/` combinator works to any depth of nested components, and it applies to both the view
 children and content children of the component.
+-->
+그런데 `/deep/` 셀렉터를 사용하면 컴포넌트 뷰 안에 있는 컴포넌트 트리 안에 잇는 모든 자식 컴포넌트에 스타일을 적용할 수 있습니다.
 
+<!--
 The following example targets all `<h3>` elements, from the host element down
 through this component to all of its child elements in the DOM.
+-->
+아래 예제는 컴포넌트 뷰 안에 있는 모든 자식 컴포넌트의 `<h3>` 엘리먼트에 이탤릭 속성을 지정하는 예제 코드입니다.
 
 <code-example path="component-styles/src/app/hero-details.component.css" region="deep" title="src/app/hero-details.component.css" linenums="false">
 
 </code-example>
 
+<!--
 The `/deep/` combinator also has the aliases `>>>`, and `::ng-deep`.
+-->
+`/deep/` 셀렉터는 `>>>`나 `::ng-deep` 문법으로도 사용할 수 있습니다.
 
 <div class="alert is-important">
 
+<!--
 Use `/deep/`, `>>>` and `::ng-deep` only with *emulated* view encapsulation.
 Emulated is the default and most commonly used view encapsulation. For more information, see the
 [Controlling view encapsulation](guide/component-styles#view-encapsulation) section.
+-->
+`/deep/`, `>>>`, `::ng-deep` 셀렉터는 *에뮬레이티드* 뷰 캡슐화 정책을 사용할 때만 사용하세요.
+이 정책은 뷰 캡슐화 정책의 기본값입니다. 좀 더 자세한 설명은 [뷰 캡슐화 정책 지정하기](guide/component-styles#view-encapsulation) 문서를 참고하세요.
 
 </div>
 
 <div class="alert is-important">
 
+<!--
 The shadow-piercing descendant combinator is deprecated and [support is being removed from major browsers](https://www.chromestatus.com/features/6750456638341120) and tools.
 As such we plan to drop support in Angular (for all 3 of `/deep/`, `>>>` and `::ng-deep`).
 Until then `::ng-deep` should be preferred for a broader compatibility with the tools.
+-->
+`/deep/` 셀렉터는 Angular에서 공식적으로 지원이 중단되었으며 [대부분의 브라우저에서도 지원이 중단](https://www.chromestatus.com/features/6750456638341120)되었습니다.
+따라서 `::ng-deep`의 호환성 문제에 대한 해결방안이 마련되는 대로 앞으로 배포될 Angular에는 `/deep/`과 `>>>`, `::ng-deep`이 모두 제거될 예정입니다.
 
 </div>
 
+<!--
 {@a loading-styles}
+-->
+{@a 외부-스타일-불러오기}
 
+<!--
 ## Loading component styles
+-->
+## 컴포넌트 스타일 지정하기
 
+<!--
 There are several ways to add styles to a component:
+-->
+컴포넌트에 스타일을 지정하려면 다음과 같은 방법을 활용할 수 있습니다.
 
+<!--
 * By setting `styles` or `styleUrls` metadata.
 * Inline in the template HTML.
 * With CSS imports.
+-->
+* 컴포넌트 메타데이터에 `style`이나 `styleUrls` 사용하기
+* 템플릿 HTML에 인라인으로 지정하기
+* 외부 CSS 파일 불러오기
 
+<!--
 The scoping rules outlined earlier apply to each of these loading patterns.
+-->
 
+<!--
 ### Styles in component metadata
+-->
+### 컴포넌트 메타데이터로 스타일 지정하기
 
 You can add a `styles` array property to the `@Component` decorator.
 
