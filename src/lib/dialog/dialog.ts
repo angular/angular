@@ -45,11 +45,14 @@ export const MAT_DIALOG_DEFAULT_OPTIONS =
 export const MAT_DIALOG_SCROLL_STRATEGY =
     new InjectionToken<() => ScrollStrategy>('mat-dialog-scroll-strategy', {
       providedIn: 'root',
-      factory: () => {
-        const overlay = inject(Overlay);
-        return () => overlay.scrollStrategies.block();
-      }
+      factory: MAT_DIALOG_SCROLL_STRATEGY_FACTORY,
     });
+
+/** @docs-private */
+export function MAT_DIALOG_SCROLL_STRATEGY_FACTORY(): ()  => ScrollStrategy {
+  const overlay = inject(Overlay);
+  return () => overlay.scrollStrategies.block();
+}
 
 /** @docs-private */
 export function MAT_DIALOG_SCROLL_STRATEGY_PROVIDER_FACTORY(overlay: Overlay):

@@ -46,11 +46,14 @@ import {MenuPositionX, MenuPositionY} from './menu-positions';
 export const MAT_MENU_SCROLL_STRATEGY =
     new InjectionToken<() => ScrollStrategy>('mat-menu-scroll-strategy', {
       providedIn: 'root',
-      factory: () => {
-        const overlay = inject(Overlay);
-        return () => overlay.scrollStrategies.reposition();
-      }
+      factory: MAT_MENU_SCROLL_STRATEGY_FACTORY,
     });
+
+/** @docs-private */
+export function MAT_MENU_SCROLL_STRATEGY_FACTORY(): () => ScrollStrategy {
+  const overlay = inject(Overlay);
+  return () => overlay.scrollStrategies.reposition();
+}
 
 /** Default top padding of the menu panel. */
 export const MENU_PANEL_TOP_PADDING = 8;

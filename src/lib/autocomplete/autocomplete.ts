@@ -63,9 +63,13 @@ export interface MatAutocompleteDefaultOptions {
 export const MAT_AUTOCOMPLETE_DEFAULT_OPTIONS =
     new InjectionToken<MatAutocompleteDefaultOptions>('mat-autocomplete-default-options', {
       providedIn: 'root',
-      factory: () => ({autoActiveFirstOption: false}),
+      factory: MAT_AUTOCOMPLETE_DEFAULT_OPTIONS_FACTORY,
     });
 
+/** @docs-private */
+export function MAT_AUTOCOMPLETE_DEFAULT_OPTIONS_FACTORY(): MatAutocompleteDefaultOptions {
+  return {autoActiveFirstOption: false};
+}
 
 @Component({
   moduleId: module.id,

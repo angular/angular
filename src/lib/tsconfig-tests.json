@@ -14,7 +14,7 @@
     }
   },
   "angularCompilerOptions": {
-    "strictMetadataEmit": false, // Workaround for Angular #22210
+    "strictMetadataEmit": true,
     "skipTemplateCodegen": true,
     "emitDecoratorMetadata": true,
     "fullTemplateTypeCheck": true

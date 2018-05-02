@@ -13,9 +13,13 @@ import {BidiModule} from '@angular/cdk/bidi';
 /** Injection token that configures whether the Material sanity checks are enabled. */
 export const MATERIAL_SANITY_CHECKS = new InjectionToken<boolean>('mat-sanity-checks', {
   providedIn: 'root',
-  factory: () => true,
+  factory: MATERIAL_SANITY_CHECKS_FACTORY,
 });
 
+/** @docs-private */
+export function MATERIAL_SANITY_CHECKS_FACTORY(): boolean {
+  return true;
+}
 
 /**
  * Module that captures anything that should be loaded and/or run for *all* Angular Material

@@ -76,16 +76,19 @@ const defaultPositionList: ConnectedPosition[] = [
 export const CDK_CONNECTED_OVERLAY_SCROLL_STRATEGY =
     new InjectionToken<() => ScrollStrategy>('cdk-connected-overlay-scroll-strategy', {
   providedIn: 'root',
-  factory: () => {
-    // Store the injected deps here because we can't use the `inject` function outside
-    // this function's context (including the inner function).
-    const scrollDispatcher = inject(ScrollDispatcher);
-    const viewportRuler = inject(ViewportRuler);
-    const ngZone = inject(NgZone);
-    return (config?: RepositionScrollStrategyConfig) =>
-        new RepositionScrollStrategy(scrollDispatcher, viewportRuler, ngZone, config);
-  },
+  factory: CDK_CONNECTED_OVERLAY_SCROLL_STRATEGY_FACTORY,
 });
+
+/** @docs-private */
+export function CDK_CONNECTED_OVERLAY_SCROLL_STRATEGY_FACTORY(): () => ScrollStrategy {
+  // Store the injected deps here because we can't use the `inject` function outside
+  // this function's context (including the inner function).
+  const scrollDispatcher = inject(ScrollDispatcher);
+  const viewportRuler = inject(ViewportRuler);
+  const ngZone = inject(NgZone);
+  return (config?: RepositionScrollStrategyConfig) =>
+      new RepositionScrollStrategy(scrollDispatcher, viewportRuler, ngZone, config);
+}
 
 /**
  * Directive applied to an element to make it usable as an origin for an Overlay using a

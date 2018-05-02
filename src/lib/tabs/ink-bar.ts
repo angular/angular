@@ -22,18 +22,21 @@ export interface _MatInkBarPositioner {
 export const _MAT_INK_BAR_POSITIONER =
   new InjectionToken<_MatInkBarPositioner>('MatInkBarPositioner', {
     providedIn: 'root',
-    factory: () => _matInkBarPositioner
+    factory: _MAT_INK_BAR_POSITIONER_FACTORY
   });
 
 /**
  * The default positioner function for the MatInkBar.
+ * @docs-private
  */
-export const _matInkBarPositioner: _MatInkBarPositioner = (element: HTMLElement) => {
-  return {
+export function _MAT_INK_BAR_POSITIONER_FACTORY(): _MatInkBarPositioner {
+  const method = (element: HTMLElement) => ({
     left: element ? (element.offsetLeft || 0) + 'px' : '0',
     width: element ? (element.offsetWidth || 0) + 'px' : '0',
-  };
-};
+  });
+
+  return method;
+}
 
 /**
  * The ink-bar is used to display and animate the line underneath the current active tab label.

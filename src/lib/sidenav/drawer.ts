@@ -53,8 +53,13 @@ export type MatDrawerToggleResult = 'open' | 'close';
 export const MAT_DRAWER_DEFAULT_AUTOSIZE =
     new InjectionToken<boolean>('MAT_DRAWER_DEFAULT_AUTOSIZE', {
       providedIn: 'root',
-      factory: () => false,
+      factory: MAT_DRAWER_DEFAULT_AUTOSIZE_FACTORY,
     });
+
+/** @docs-private */
+export function MAT_DRAWER_DEFAULT_AUTOSIZE_FACTORY(): boolean {
+  return false;
+}
 
 @Component({
   moduleId: module.id,

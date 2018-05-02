@@ -56,11 +56,14 @@ let datepickerUid = 0;
 export const MAT_DATEPICKER_SCROLL_STRATEGY =
     new InjectionToken<() => ScrollStrategy>('mat-datepicker-scroll-strategy', {
       providedIn: 'root',
-      factory: () => {
-        const overlay = inject(Overlay);
-        return () => overlay.scrollStrategies.reposition();
-      }
+      factory: MAT_DATEPICKER_SCROLL_STRATEGY_FACTORY,
     });
+
+/** @docs-private */
+export function MAT_DATEPICKER_SCROLL_STRATEGY_FACTORY(): () => ScrollStrategy {
+  const overlay = inject(Overlay);
+  return () => overlay.scrollStrategies.reposition();
+}
 
 // Boilerplate for applying mixins to MatDatepickerContent.
 /** @docs-private */

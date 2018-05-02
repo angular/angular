@@ -63,11 +63,14 @@ export function getMatTooltipInvalidPositionError(position: string) {
 export const MAT_TOOLTIP_SCROLL_STRATEGY =
     new InjectionToken<() => ScrollStrategy>('mat-tooltip-scroll-strategy', {
       providedIn: 'root',
-      factory: () => {
-        const overlay = inject(Overlay);
-        return () => overlay.scrollStrategies.reposition({scrollThrottle: SCROLL_THROTTLE_MS});
-      }
+      factory: MAT_TOOLTIP_SCROLL_STRATEGY_FACTORY,
     });
+
+/** @docs-private */
+export function MAT_TOOLTIP_SCROLL_STRATEGY_FACTORY(): () => ScrollStrategy {
+  const overlay = inject(Overlay);
+  return () => overlay.scrollStrategies.reposition({scrollThrottle: SCROLL_THROTTLE_MS});
+}
 
 /** Default `matTooltip` options that can be overridden. */
 export interface MatTooltipDefaultOptions {
@@ -80,12 +83,16 @@ export interface MatTooltipDefaultOptions {
 export const MAT_TOOLTIP_DEFAULT_OPTIONS =
     new InjectionToken<MatTooltipDefaultOptions>('mat-tooltip-default-options', {
       providedIn: 'root',
-      factory: () => ({
-        showDelay: 0,
-        hideDelay: 0,
-        touchendHideDelay: 1500,
-      })
+      factory: MAT_TOOLTIP_DEFAULT_OPTIONS_FACTORY
     });
+
+export function MAT_TOOLTIP_DEFAULT_OPTIONS_FACTORY(): MatTooltipDefaultOptions {
+  return {
+    showDelay: 0,
+    hideDelay: 0,
+    touchendHideDelay: 1500,
+  };
+}
 
 /**
  * Directive that attaches a material design tooltip to the host element. Animates the showing and

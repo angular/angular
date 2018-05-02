@@ -62,11 +62,14 @@ export const AUTOCOMPLETE_PANEL_HEIGHT = 256;
 export const MAT_AUTOCOMPLETE_SCROLL_STRATEGY =
     new InjectionToken<() => ScrollStrategy>('mat-autocomplete-scroll-strategy', {
       providedIn: 'root',
-      factory: () => {
-        const overlay = inject(Overlay);
-        return () => overlay.scrollStrategies.reposition();
-      }
+      factory: MAT_AUTOCOMPLETE_SCROLL_STRATEGY_FACTORY,
     });
+
+/** @docs-private */
+export function MAT_AUTOCOMPLETE_SCROLL_STRATEGY_FACTORY(): () => ScrollStrategy {
+  const overlay = inject(Overlay);
+  return () => overlay.scrollStrategies.reposition();
+}
 
 /**
  * Provider that allows the autocomplete to register as a ControlValueAccessor.

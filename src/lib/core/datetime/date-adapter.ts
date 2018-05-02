@@ -12,8 +12,13 @@ import {Observable, Subject} from 'rxjs';
 /** InjectionToken for datepicker that can be used to override default locale code. */
 export const MAT_DATE_LOCALE = new InjectionToken<string>('MAT_DATE_LOCALE', {
   providedIn: 'root',
-  factory: () => inject(LOCALE_ID)
+  factory: MAT_DATE_LOCALE_FACTORY,
 });
+
+/** @docs-private */
+export function MAT_DATE_LOCALE_FACTORY(): string {
+  return inject(LOCALE_ID);
+}
 
 /**
  * No longer needed since MAT_DATE_LOCALE has been changed to a scoped injectable.

@@ -27,5 +27,10 @@ import {inject, InjectionToken} from '@angular/core';
  */
 export const DIR_DOCUMENT = new InjectionToken<Document>('cdk-dir-doc', {
   providedIn: 'root',
-  factory: () => inject(DOCUMENT),
+  factory: DIR_DOCUMENT_FACTORY,
 });
+
+/** @docs-private */
+export function DIR_DOCUMENT_FACTORY(): Document {
+  return inject(DOCUMENT);
+}

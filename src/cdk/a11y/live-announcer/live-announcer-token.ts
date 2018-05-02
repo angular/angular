@@ -14,5 +14,10 @@ import {InjectionToken} from '@angular/core';
 export const LIVE_ANNOUNCER_ELEMENT_TOKEN =
     new InjectionToken<HTMLElement | null>('liveAnnouncerElement', {
       providedIn: 'root',
-      factory: () => null,
+      factory: LIVE_ANNOUNCER_ELEMENT_TOKEN_FACTORY,
     });
+
+/** @docs-private */
+export function LIVE_ANNOUNCER_ELEMENT_TOKEN_FACTORY(): null {
+  return null;
+}

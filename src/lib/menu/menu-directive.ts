@@ -62,14 +62,18 @@ export interface MatMenuDefaultOptions {
 export const MAT_MENU_DEFAULT_OPTIONS =
     new InjectionToken<MatMenuDefaultOptions>('mat-menu-default-options', {
       providedIn: 'root',
-      factory: () => ({
-        overlapTrigger: true,
-        xPosition: 'after',
-        yPosition: 'below',
-        backdropClass: 'cdk-overlay-transparent-backdrop',
-      })
+      factory: MAT_MENU_DEFAULT_OPTIONS_FACTORY
     });
 
+/** @docs-private */
+export function MAT_MENU_DEFAULT_OPTIONS_FACTORY(): MatMenuDefaultOptions {
+  return {
+    overlapTrigger: true,
+    xPosition: 'after',
+    yPosition: 'below',
+    backdropClass: 'cdk-overlay-transparent-backdrop',
+  };
+}
 /**
  * Start elevation for the menu panel.
  * @docs-private

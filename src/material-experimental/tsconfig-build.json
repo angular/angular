@@ -38,7 +38,7 @@
   ],
   "angularCompilerOptions": {
     "annotateForClosureCompiler": true,
-    "strictMetadataEmit": false, // Workaround for Angular #22210
+    "strictMetadataEmit": true,
     "flatModuleOutFile": "index.js",
     "flatModuleId": "@angular/material-experimental",
     "skipTemplateCodegen": true,
