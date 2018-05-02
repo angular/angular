@@ -85,66 +85,66 @@ export declare interface AnimateChildOptions extends AnimationOptions { duration
 export const enum AnimationMetadataType {
     /**
      * Associates a named animation state with a set of CSS styles.
-     * See {@link AnimationStateMetadata AnimationStateMetadata} {@link state state()}
+     * See {@link state state()}
      */
     State = 0,
     /**
      * Collects data for a transition from one animation state to another.
-     * See {@link AnimationTransitionMetadata AnimationTransitionMetadata} {@link transition transition()}
+     * See {@link transition transition()}
      */
     Transition = 1,
     /**
      * Collects a set of animation steps.
-     * See {@link AnimationSequenceMetadata AnimationSequenceMetadata} {@link sequence sequence()}
+     * See {@link sequence sequence()}
      */
     Sequence = 2,
     /**
      * Collects a set of animation steps.
-     * See {@link AnimationGroupMetadata AnimationGroupMetadata} {@link group group()}
+     * See {@link group group()}
      */
     Group = 3,
     /**
      * Defines an animation step.
-     * See {@link AnimationAnimateMetadata AnimationAnimateMetadata} {@link animate animate()}
+     * See {@link animate animate()}
      */
     Animate = 4,
     /**
      * Collects a set of animation steps.
-     * See {@link AnimationKeyframesMetadata AnimationKeyframesMetadata} {@link keyframes keyframes()}
+     * See {@link keyframes keyframes()}
      */
     Keyframes = 5,
     /**
      * Collects a set of CSS property-value pairs into a named style.
-     * See {@link AnimationStyleMetadata AnimationStyleMetadata} {@link style style()}
+     * See {@link style style()}
      */
     Style = 6,
     /**
      * Associates an animation with an entry trigger that can be attached to an element.
-     * See {@link AnimationTriggerMetadata AnimationTriggerMetadata} {@link trigger trigger()} 
+     * See {@link trigger trigger()} 
      */
     Trigger = 7,
     /**
      * Encapsulates a re-usable animation.
-     * See {@link AnimationReferenceMetadata AnimationReferenceMetadata} {@link animation animation()}
+     * See {@link animation animation()}
      */
     Reference = 8,
     /**
      * Collects data to use in executing child animations returned by a query.
-     * See {@link AnimationAnimateChildMetadata AnimationAnimateChildMetadata} {@link animateChild animateChild()}
+     * See {@link animateChild animateChild()}
      */
     AnimateChild = 9,
     /**
-     * See {@link AnimationAnimateRefMetadata AnimationAnimateRefMetadata} {@link useAnimation useAnimation()}
+     * See {@link useAnimation useAnimation()}
      */
     AnimateRef = 10,
     /**
      * Collects child-animation query data.
-     * See {@link AnimationQueryMetadata AnimationQueryMetadata} {@link query query()}
+     * See {@link query query()}
      */
     Query = 11,
     /**
      * Collects data for staggering an animation sequence.
-     * See {@link AnimationStaggerMetadata AnimationStaggerMetadata} {@link stagger stagger()}
+     * See {@link stagger stagger()}
      */
     Stagger = 12
 }
