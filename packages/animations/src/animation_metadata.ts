@@ -503,97 +503,20 @@ return {type: AnimationMetadataType.Trigger, name, definitions, options: {}};
  * that applies given style data to the parent animation for a given amount of time.
  *
  * ### Syntax Examples
- * #### Timing Examples
- *  The following examples show various `timings` specifications.
+ * **Timing examples**
+ * The following examples show various `timings` specifications.
+ * - `animate(500)` : Duration is 500 milliseconds.
+ * - `animate("1s")` : Duration is 1000 milliseconds.
+ * - `animate("100ms 0.5s")` : Duration is 100 milliseconds, delay is 500 milliseconds.
+ * - `animate("5s ease")` : Duration is 5000 milliseconds, easing is (what??)
+ * - `animate("5s 10ms cubic-bezier(.17,.67,.88,.1)")` : Duration is 5000 milliseconds, delay is 10 milliseconds, easing is (what??)
  *
- *    <table>
- *      <tr>
- *        <td>
- *
- * `animate(500)`
- *
- *      </td>
- *        <td>Duration is 500 milliseconds.</td>
- *      </tr>
- *      <tr>
- *        <td>
- *
- * `animate("1s")`
- *
- *      </td>
- *        <td>Duration is 1000 milliseconds.</td>
- *      </tr>
- *      <tr>
- *        <td>
- *
- * `animate("100ms 0.5s")`
- *
- *      </td>
- *        <td>Duration is 100 milliseconds, delay is 500 milliseconds.</td>
- *      </tr>
- *      <tr>
- *        <td>
- *
- * `animate("5s ease")`
- *
- *      </td>
- *        <td>Duration is 5000 milliseconds, easing is (what??) </td>
- *       </tr>
- *      <tr>
- *        <td>
- *
- * `animate("5s 10ms cubic-bezier(.17,.67,.88,.1)")`
- *
- * </td>
- *        <td>Duration is 5000 milliseconds, delay is 10 milliseconds, easing is (what??) </td>
- *      </tr>
- *    </table>
- *
- * #### Style Examples
+ * **Style examples**
  * The following examples show various `styles` specifications.
- *
- *    <table>
- *      <tr>
- *        <td>
- *
- *              `animate(500, style({ background: "red" }))`
- *
- *        </td>
- *        <td>Calls style() to set a single CSS style.</td>
- *      </tr>
- *      <tr>
- *        <td><pre>animate(500, keyframes(
+ * - `animate(500, style({ background: "red" }))` : Calls `style()` to set a single CSS style.
+ * - ```animate(500, keyframes(
      [style({ background: "blue" })),
-     style({ background: "red" }))])</pre> </td>
- *        <td>Calls keyframes() to set a CSS style to different values for successive keyframes.</td>
- *      </tr>
- *    </table>
- * ### Animating to the final state
- * If the final step in a transition is a call to `animate()` that uses a timing value
- * with no style data, that step is automatically considered the final animation arc,
- * for the element to reach the final state. Angular automatically adds or removes
- * CSS styles to ensure that the element is in the correct final state.
- *
- * The following example defines a transition that starts by hiding the element,
- * then makes sure that it animates properly to whatever state is currently active for trigger:
- * ```
- * transition("void => *", [
- *   style({ opacity: 0 }),
- *   animate(500)
- *  ])
- * ```
- * ### Boolean value matching
- * If a trigger binding value is a Boolean, it can be matched using a transition expression
- * that compares true and false or 1 and 0. For example:
- * ```
- * // in the template
- * <div [@openClose]="open ? true : false">...</div>
- * // in the component metadata
- * trigger('openClose', [
- *   state('true', style({ height: '*' })),
- *   state('false', style({ height: '0px' })),
- *   transition('false <=> true', animate(500))
- * ])
+     style({ background: "red" }))])```: Calls keyframes() to set a CSS style to different values for successive keyframes.
  *
  */
 export function animate(
@@ -901,8 +824,27 @@ return {type: AnimationMetadataType.Keyframes, steps};
  *    ])
  * ```
  *
- * - Use `:increment` and `:decrement` to initiate transitions: (example TBD)
- *
+ * - Use `:increment` and `:decrement` to initiate transitions:
+ * ```
+ * transition(":increment", group([
+ *  query(':enter', [
+ *     style({ left: '100%' }),
+ *     animate('0.5s ease-out', style('*'))
+ *   ]),
+ *  query(':leave', [
+ *     animate('0.5s ease-out', style({ left: '-100%' }))
+ *  ])
+ * ]))
+ * 
+ * transition(":decrement", group([
+ *  query(':enter', [
+ *     style({ left: '100%' }),
+ *     animate('0.5s ease-out', style('*'))
+ *   ]),
+ *  query(':leave', [
+ *     animate('0.5s ease-out', style({ left: '-100%' }))
+ *  ])
+ * ]))
  *
  * ### State-change functions
  *
@@ -915,6 +857,35 @@ return {type: AnimationMetadataType.Keyframes, steps};
  *      },
  *      animate("1s 0s"))
  * ```
+ *
+ * ### Animating to the final state
+ *
+ * If the final step in a transition is a call to `animate()` that uses a timing value
+ * with no style data, that step is automatically considered the final animation arc,
+ * for the element to reach the final state. Angular automatically adds or removes
+ * CSS styles to ensure that the element is in the correct final state.
+ *
+ * The following example defines a transition that starts by hiding the element,
+ * then makes sure that it animates properly to whatever state is currently active for trigger:
+ * ```
+ * transition("void => *", [
+ *   style({ opacity: 0 }),
+ *   animate(500)
+ *  ])
+ * ```
+ * ### Boolean value matching
+ * If a trigger binding value is a Boolean, it can be matched using a transition expression
+ * that compares true and false or 1 and 0. For example:
+ * ```
+ * // in the template
+ * <div [@openClose]="open ? true : false">...</div>
+ * // in the component metadata
+ * trigger('openClose', [
+ *   state('true', style({ height: '*' })),
+ *   state('false', style({ height: '0px' })),
+ *   transition('false <=> true', animate(500))
+ * ])
+ *
  **/
 export function transition(
  stateChangeExpr: string | ((fromState: string, toState: string) => boolean),
