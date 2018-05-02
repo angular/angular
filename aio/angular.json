@@ -33,7 +33,6 @@
               "src/assets",
               "src/generated",
               "src/app/search/search-worker.js",
-              "src/favicon.ico",
               "src/pwa-manifest.json",
               "src/google385281288605d160.html",
               {
@@ -123,7 +122,6 @@
               "src/assets",
               "src/generated",
               "src/app/search/search-worker.js",
-              "src/favicon.ico",
               "src/pwa-manifest.json",
               "src/google385281288605d160.html",
               {
