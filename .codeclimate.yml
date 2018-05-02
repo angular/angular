@@ -1,9 +1,7 @@
 engines:
   structure:
     enabled: true
-    channel: "typescript"
   duplication:
     enabled: true
-    channel: "typescript"
     exclude_paths:
       packages/common/locales/
