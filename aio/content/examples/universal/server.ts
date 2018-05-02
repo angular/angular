@@ -17,7 +17,7 @@ const PORT = process.env.PORT || 4000;
 const DIST_FOLDER = join(process.cwd(), 'dist');
 
 // * NOTE :: leave this as require() since this file is built Dynamically from webpack
-const { AppServerModuleNgFactory, LAZY_MODULE_MAP } = require('./dist/server/main.bundle');
+const { AppServerModuleNgFactory, LAZY_MODULE_MAP } = require('./dist/server/main');
 
 // Express Engine
 import { ngExpressEngine } from '@nguniversal/express-engine';
@@ -51,7 +51,7 @@ app.get('*.*', express.static(join(DIST_FOLDER, 'browser')));
 // #docregion navigation-request
 // All regular routes use the Universal engine
 app.get('*', (req, res) => {
-  res.render(join(DIST_FOLDER, 'browser', 'index.html'), { req });
+  res.render('index', { req });
 });
 // #enddocregion navigation-request
 
