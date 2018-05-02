@@ -35,9 +35,8 @@ export function getTableMultipleDefaultRowDefsError() {
  * Returns an error to be thrown when there are no matching row defs for a particular set of data.
  * @docs-private
  */
-export function getTableMissingMatchingRowDefError(data: any) {
-  return Error(`Could not find a matching row definition for the` +
-      `provided row data: ${JSON.stringify(data)}`);
+export function getTableMissingMatchingRowDefError() {
+  return Error(`Could not find a matching row definition for the provided row data.`);
 }
 
 /**

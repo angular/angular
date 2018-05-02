@@ -16,14 +16,11 @@ import {
   MatCardModule,
   MatCheckboxModule,
   MatIconModule,
-  MatInputModule,
-  MatMenuModule,
+  MatInputModule, MatMenuModule,
   MatPaginatorModule,
   MatRadioModule,
-  MatSlideToggleModule,
   MatSortModule,
-  MatTableModule,
-  MatTabsModule
+  MatTableModule, MatTabsModule
 } from '@angular/material';
 import {FormsModule} from '@angular/forms';
 import {CdkTableModule} from '@angular/cdk/table';
@@ -36,7 +33,6 @@ import {MatTableDataSourceDemo} from './mat-table-data-source/mat-table-data-sou
 import {DynamicColumnsDemo} from './dynamic-columns/dynamic-columns';
 import {RowContextDemo} from './row-context/row-context';
 import {WhenRowsDemo} from './when-rows/when-rows';
-import {ExpandableRowsDemo} from 'table/expandable-rows/expandable-rows';
 
 
 @NgModule({
@@ -52,7 +48,6 @@ import {ExpandableRowsDemo} from 'table/expandable-rows/expandable-rows';
     MatMenuModule,
     MatPaginatorModule,
     MatRadioModule,
-    MatSlideToggleModule,
     MatSortModule,
     MatTableModule,
     MatTabsModule,
@@ -69,7 +64,6 @@ import {ExpandableRowsDemo} from 'table/expandable-rows/expandable-rows';
     DynamicColumnsDemo,
     RowContextDemo,
     WhenRowsDemo,
-    ExpandableRowsDemo
   ],
   providers: [
     PeopleDatabase

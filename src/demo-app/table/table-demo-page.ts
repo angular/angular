@@ -21,7 +21,6 @@ export class TableDemoPage {
     {name: 'MatTableDataSource', link: 'mat-table-data-source'},
     {name: 'Dynamic Columns', link: 'dynamic-columns'},
     {name: 'Row Context', link: 'row-context'},
-    {name: 'When Rows', link: 'when-rows'},
-    {name: 'Expandable Rows', link: 'expandable-rows'}
+    {name: 'When Rows', link: 'when-rows'}
   ];
 }

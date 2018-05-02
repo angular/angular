@@ -56,23 +56,6 @@ describe('MatTable', () => {
         ['Footer A', 'Footer B', 'Footer C'],
       ]);
     });
-
-    it('should create a table with multiTemplateDataRows true', () => {
-      let fixture = TestBed.createComponent(MatTableWithWhenRowApp);
-      fixture.componentInstance.multiTemplateDataRows = true;
-      fixture.detectChanges();
-
-      const tableElement = fixture.nativeElement.querySelector('.mat-table');
-      expectTableToMatchContent(tableElement, [
-        ['Column A', 'Column B', 'Column C'],
-        ['a_1'],
-        ['a_2'],
-        ['a_3'],
-        ['a_4'], // With multiple rows, this row shows up along with the special 'when' fourth_row
-        ['fourth_row'],
-        ['Footer A', 'Footer B', 'Footer C'],
-      ]);
-    });
   });
 
   it('should be able to render a table correctly with native elements', () => {
@@ -503,7 +486,7 @@ class NativeHtmlTableApp {
 
 @Component({
   template: `
-    <mat-table [dataSource]="dataSource" [multiTemplateDataRows]="multiTemplateDataRows">
+    <mat-table [dataSource]="dataSource">
       <ng-container matColumnDef="column_a">
         <mat-header-cell *matHeaderCellDef> Column A</mat-header-cell>
         <mat-cell *matCellDef="let row"> {{row.a}}</mat-cell>
@@ -522,7 +505,6 @@ class NativeHtmlTableApp {
   `
 })
 class MatTableWithWhenRowApp {
-  multiTemplateDataRows = false;
   dataSource: FakeDataSource | null = new FakeDataSource();
   isFourthRow = (i: number, _rowData: TestData) => i == 3;
 
