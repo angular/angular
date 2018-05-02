@@ -52,17 +52,22 @@ export class ListKeyManager<T extends ListKeyManagerOption> {
   // Buffer for the letters that the user has pressed when the typeahead option is turned on.
   private _pressedLetters: string[] = [];
 
-  constructor(private _items: QueryList<T>) {
-    _items.changes.subscribe((newItems: QueryList<T>) => {
-      if (this._activeItem) {
-        const itemArray = newItems.toArray();
-        const newIndex = itemArray.indexOf(this._activeItem);
+  constructor(private _items: QueryList<T> | T[]) {
+    // We allow for the items to be an array because, in some cases, the consumer may
+    // not have access to a QueryList of the items they want to manage (e.g. when the
+    // items aren't being collected via `ViewChildren` or `ContentChildren`).
+    if (_items instanceof QueryList) {
+      _items.changes.subscribe((newItems: QueryList<T>) => {
+        if (this._activeItem) {
+          const itemArray = newItems.toArray();
+          const newIndex = itemArray.indexOf(this._activeItem);
 
-        if (newIndex > -1 && newIndex !== this._activeItemIndex) {
-          this._activeItemIndex = newIndex;
+          if (newIndex > -1 && newIndex !== this._activeItemIndex) {
+            this._activeItemIndex = newIndex;
+          }
         }
-      }
-    });
+      });
+    }
   }
 
   /**
@@ -132,7 +137,7 @@ export class ListKeyManager<T extends ListKeyManagerOption> {
       filter(() => this._pressedLetters.length > 0),
       map(() => this._pressedLetters.join(''))
     ).subscribe(inputString => {
-      const items = this._items.toArray();
+      const items = this._getItemsArray();
 
       // Start at 1 because we want to start searching at the item immediately
       // following the current active item.
@@ -288,7 +293,7 @@ export class ListKeyManager<T extends ListKeyManagerOption> {
   updateActiveItem(item: T): void;
 
   updateActiveItem(item: any): void {
-    const itemArray = this._items.toArray();
+    const itemArray = this._getItemsArray();
     const index = typeof item === 'number' ? item : itemArray.indexOf(item);
 
     this._activeItemIndex = index;
@@ -310,9 +315,8 @@ export class ListKeyManager<T extends ListKeyManagerOption> {
    * currently active item and the new active item. It will calculate differently
    * depending on whether wrap mode is turned on.
    */
-  private _setActiveItemByDelta(delta: -1 | 1, items = this._items.toArray()): void {
-    this._wrap ? this._setActiveInWrapMode(delta, items)
-               : this._setActiveInDefaultMode(delta, items);
+  private _setActiveItemByDelta(delta: -1 | 1): void {
+    this._wrap ? this._setActiveInWrapMode(delta) : this._setActiveInDefaultMode(delta);
   }
 
   /**
@@ -320,7 +324,9 @@ export class ListKeyManager<T extends ListKeyManagerOption> {
    * down the list until it finds an item that is not disabled, and it will wrap if it
    * encounters either end of the list.
    */
-  private _setActiveInWrapMode(delta: -1 | 1, items: T[]): void {
+  private _setActiveInWrapMode(delta: -1 | 1): void {
+    const items = this._getItemsArray();
+
     for (let i = 1; i <= items.length; i++) {
       const index = (this._activeItemIndex + (delta * i) + items.length) % items.length;
       const item = items[index];
@@ -337,8 +343,8 @@ export class ListKeyManager<T extends ListKeyManagerOption> {
    * continue to move down the list until it finds an item that is not disabled. If
    * it encounters either end of the list, it will stop and not wrap.
    */
-  private _setActiveInDefaultMode(delta: -1 | 1, items: T[]): void {
-    this._setActiveItemByIndex(this._activeItemIndex + delta, delta, items);
+  private _setActiveInDefaultMode(delta: -1 | 1): void {
+    this._setActiveItemByIndex(this._activeItemIndex + delta, delta);
   }
 
   /**
@@ -346,8 +352,9 @@ export class ListKeyManager<T extends ListKeyManagerOption> {
    * item is disabled, it will move in the fallbackDelta direction until it either
    * finds an enabled item or encounters the end of the list.
    */
-  private _setActiveItemByIndex(index: number, fallbackDelta: -1 | 1,
-                                items = this._items.toArray()): void {
+  private _setActiveItemByIndex(index: number, fallbackDelta: -1 | 1): void {
+    const items = this._getItemsArray();
+
     if (!items[index]) {
       return;
     }
@@ -361,5 +368,10 @@ export class ListKeyManager<T extends ListKeyManagerOption> {
     }
 
     this.setActiveItem(index);
+  }
+
+  /** Returns the items as an array. */
+  private _getItemsArray(): T[] {
+    return this._items instanceof QueryList ? this._items.toArray() : this._items;
   }
 }
