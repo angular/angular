@@ -56,13 +56,13 @@ exampleFolders.forEach(folder => exampleMap[folder] = exampleMap[folder] || []);
  */
 export declare interface AnimationOptions {
     /**
-     * Optional. Sets a time-delay for initiating an animation action.
+     * Sets a time-delay for initiating an animation action.
      * Default is 0, meaning no delay.
      * ?? default unit for number? string values is number unit? allowed unit specs?
      */
     delay?: number|string;
     /**
-     * Optional. A set of developer-defined parameters that modify styling and timing
+     * A set of developer-defined parameters that modify styling and timing
      * when an animation action starts. An array of key-value pairs, where the provided value
      * is used as a default.
      */
@@ -173,7 +173,7 @@ export interface AnimationTriggerMetadata extends AnimationMetadata {
      */
     definitions: AnimationMetadata[];
     /**
-     * Optional. An options object containing a delay and
+     * An options object containing a delay and
      * developer-defined parameters that provide styling defaults and
      * can be overridden on invocation. Default delay is 0.
      */
@@ -194,7 +194,7 @@ export interface AnimationStateMetadata extends AnimationMetadata {
      */
     styles: AnimationStyleMetadata;
     /**
-     * Optional. An options object containing a delay and
+     * An options object containing a delay and
      * developer-defined parameters that provide styling defaults and
      * can be overridden on invocation. Default delay is 0.
      */
@@ -216,7 +216,7 @@ export interface AnimationTransitionMetadata extends AnimationMetadata {
    */
   animation: AnimationMetadata|AnimationMetadata[];
   /**
-   * Optional. An options object containing a delay and
+   * An options object containing a delay and
    * developer-defined parameters that provide styling defaults and
    * can be overridden on invocation. Default delay is 0.
    */
@@ -234,7 +234,7 @@ export interface AnimationReferenceMetadata extends AnimationMetadata {
      */
     animation: AnimationMetadata|AnimationMetadata[];
     /**
-     *  Optional. An options object containing a delay and
+     * An options object containing a delay and
      * developer-defined parameters that provide styling defaults and
      * can be overridden on invocation. Default delay is 0.
      */
@@ -255,7 +255,7 @@ export interface AnimationQueryMetadata extends AnimationMetadata {
      */
     animation: AnimationMetadata|AnimationMetadata[];
     /**
-     * Optional. A query options object. 
+     * A query options object. 
      */
     options: AnimationQueryOptions|null;
 }
@@ -281,7 +281,7 @@ export interface AnimationStyleMetadata extends AnimationMetadata {
      */
     styles: '*'|{[key: string]: string | number}|Array<{[key: string]: string | number}|'*'>;
     /**
-     * Optional. A (0-based?) index number (into what? to start what?). Default is 0. ??
+     * A percentage of the total animate time at which the style is to be applied.
      */
     offset: number|null;
 }
@@ -307,7 +307,7 @@ export interface AnimationAnimateMetadata extends AnimationMetadata {
  */
 export interface AnimationAnimateChildMetadata extends AnimationMetadata {
     /**
-     * Optional. An options object containing a delay and
+     * An options object containing a delay and
      * developer-defined parameters that provide styling defaults and
      * can be overridden on invocation. Default delay is 0.
      */
@@ -324,7 +324,7 @@ export interface AnimationAnimateRefMetadata extends AnimationMetadata {
      */
     animation: AnimationReferenceMetadata;
     /**
-     * Optional. An options object containing a delay and
+     * An options object containing a delay and
      * developer-defined parameters that provide styling defaults and
      * can be overridden on invocation. Default delay is 0.
      */
@@ -341,7 +341,7 @@ export interface AnimationSequenceMetadata extends AnimationMetadata {
      */
     steps: AnimationMetadata[];
     /**
-     * Optional. An options object containing a delay and
+     * An options object containing a delay and
      * developer-defined parameters that provide styling defaults and
      * can be overridden on invocation. Default delay is 0.
      */
@@ -358,7 +358,7 @@ export interface AnimationGroupMetadata extends AnimationMetadata {
      */
     steps: AnimationMetadata[];
     /**
-     * Optional. An options object containing a delay and
+     * An options object containing a delay and
      * developer-defined parameters that provide styling defaults and
      * can be overridden on invocation. Default delay is 0.
      */
@@ -371,11 +371,11 @@ export interface AnimationGroupMetadata extends AnimationMetadata {
  */
 export declare interface AnimationQueryOptions extends AnimationOptions {
     /**
-     * Optional. True if this query is optional, false if it is required. Default is (what?).
+     * True if this query is optional, false if it is required. Default is (what?).
      */
     optional?: boolean;
     /**
-     * Optional. A maximum total number of results to return from the query.
+     * A maximum total number of results to return from the query.
      * If negative, results are limited from the end of the query list towards the beginning.
      * By default, results are not limited.
      */
@@ -477,7 +477,7 @@ export interface AnimationStaggerMetadata extends AnimationMetadata {
  * }
  * ```
  *
- * ### Disable Animations
+ * ### Disabling Animations
  * When true, the special animation control binding `@.disabled` binding prevents 
  * all animations from rendering.
  * Place the  `@.disabled` binding on an element to disable
@@ -509,7 +509,7 @@ export interface AnimationStaggerMetadata extends AnimationMetadata {
  * When `@.disabled` is true, it prevents the `@childAnimation` trigger from animating,
  * along with any inner animations.
  *
- * ### Disabling animations application-wide
+ * ### Disable animations application-wide
  * When an area of the template is set to have animations disabled, 
  * **all** inner components have their animations disabled as well.
  * This means that you can disable all animations for an app
@@ -528,18 +528,17 @@ export interface AnimationStaggerMetadata extends AnimationMetadata {
  * }
  * ```
  *
- * ### Animations that use `query()` and `animateChild()`?
+ * ### Overriding disablement of inner animations
  * Despite inner animations being disabled, a parent animation can {@link query query}
  * for inner elements located in disabled areas of the template and still animate 
- * them as it sees fit. This is also the case for when a sub animation is 
+ * them if needed. This is also the case for when a sub animation is 
  * queried by a parent and then later animated using {@link animateChild animateChild}.
  *
  * ### Detecting when an animation is disabled
- * If a region of the DOM (or the entire application) has its animations disabled, then animation
- * trigger callbacks will still fire just as normal (only for zero seconds).
- *
- * When a trigger callback fires it will provide an instance of an {@link AnimationEvent}.
- * If animations are disabled then the `.disabled` flag on the event will be true.
+ * If a region of the DOM (or the entire application) has its animations disabled, the animation
+ * trigger callbacks still fire, but for zero seconds. When the callback fires, it provides
+ * an instance of an {@link AnimationEvent}. If animations are disabled,
+ * the `.disabled` flag on the event is true.
  *
  * @experimental Animation support is experimental.
  */
@@ -567,7 +566,7 @@ return {type: AnimationMetadataType.Trigger, name, definitions, options: {}};
  * For example, the string "1s 100ms ease-out" specifies a duration of
  * 1000 milliseconds, and delay of 100 ms, and the "ease-out" easing style,
  * which decelerates near the end of the duration.
- * @param styles Optional. Sets AnimationStyles for the parent animation.
+ * @param styles Sets AnimationStyles for the parent animation.
  * A function call to either {@link style  style()} or {@link keyframes keyframes()}
  * that returns a collection of CSS style entries to be applied to the parent animation.
  * When null, uses the styles from the destination state.
@@ -623,7 +622,7 @@ return {type: AnimationMetadataType.Animate, styles, timings};
  * ])
  * ```
  *
- * @param options Optional. An options object containing a delay and
+ * @param options An options object containing a delay and
  * developer-defined parameters that provide styling defaults and
  * can be overridden on invocation.
  *
@@ -659,18 +658,19 @@ return {type: AnimationMetadataType.Group, steps, options};
  * ])
  * ```
  *
- * @param options Optional. An options object containing a delay and
+ * @param options An options object containing a delay and
  * developer-defined parameters that provide styling defaults and
  * can be overridden on invocation.
  *
  * @return An object that encapsulates the sequence data.
  *
- * @usageNotes Sequential application is the default when you pass an array of steps to a
- * {@link transition transition()} call.
- * Compare to {@link group group()} call, which runs animation steps in parallel.
+ * @usageNotes
+ * When you pass an array of steps to a
+ * {@link transition transition()} call, the steps run sequentially by default.
+ * Compare this to the {@link group group()} call, which runs animation steps in parallel.
  *
- * When used within a {@link group group()} or a {@link transition transition()} call,
- * continues to the next instruction only after each of the inner animation
+ * When a sequence is used within a {@link group group()} or a {@link transition transition()} call,
+ * execution continues to the next instruction only after each of the inner animation
  * steps have completed.
  *
  **/
@@ -684,7 +684,7 @@ return {type: AnimationMetadataType.Sequence, steps, options};
 /**
  * @description Declares a key/value object containing CSS properties/styles that
  * can then be used for {@link state animation states}, within an {@link sequence animation sequence},
- * or as styling data for both {@link animate animate} and {@link keyframes keyframes}.
+ * or as styling data for calls to {@link animate animate()} and {@link keyframes keyframes()}.
  *
  * @param tokens A set of CSS styles or HTML styles associated with an animation state.
  * The value can be any of the following:
@@ -740,7 +740,7 @@ return {type: AnimationMetadataType.Style, styles: tokens, offset: null};
  * @param styles A set of CSS styles associated with this state, created using the {@link style style()} function.
  * This set of styles persists on the element once the state has been reached.
  *
- * @param options Optional. Parameters that can be passed to the state when it is invoked. 0 or more key-value pairs.
+ * @param options Parameters that can be passed to the state when it is invoked. 0 or more key-value pairs.
  *
  * @return An object that encapsulates the new state data.
  *
@@ -759,21 +759,21 @@ return {type: AnimationMetadataType.State, name, styles, options};
 }
 
 /**
- *  @description Collects a set of animation styles, associating each style with an optional `offset` value.
+ * @description Collects a set of animation styles, associating each style with an optional `offset` value.
  *
- *  @param steps A set of animation styles with offset data.
- *  @returns An object that encapsulates the keyframes data.
+ * @param steps A set of animation styles with optional offset data.
+ * The optional `offset` value for a style specifies a percentage of the total animation
+ * time at which that style is applied.
+ * @returns An object that encapsulates the keyframes data.
  *
- *  @usageNotes Use with the {@link animate animate()} call. Instead of applying animations from the current state
+ * @usageNotes Use with the {@link animate animate()} call. Instead of applying animations from the current state
  * to the destination state, keyframes describe how each style entry is applied and at what point
- * within the animation arc (like CSS Keyframe Animations).
+ * within the animation arc.
+ * Compare {@link https://www.w3schools.com/css/css3_animations.asp CSS Keyframe Animations}.
  *
  * ### Usage
  *
- * For each `style()` entry an `offset` value can be set. Doing so allows to specifiy at what
- * percentage of the animate time the styles will be applied.
- * The optional `offset` value for a style specifies a percentage of the total animation
- * time in which that style is applied. In the following example, the offset values describe
+ * In the following example, the offset values describe
  * when each `backgroundColor` value is applied. The color is red at the start, and changes to
  * blue when 20% of the total time has elapsed.
  *
@@ -787,8 +787,8 @@ return {type: AnimationMetadataType.State, name, styles, options};
  * ]))
  * ```
  *
- * Alternatively, if there are no `offset` values used within the style entries then the offsets
- * are be calculated automatically.
+ * If there are no `offset` values specified the style entries, the offsets
+ * are calculated automatically.
  *
  * ```typescript
  * animate("5s", keyframes([
@@ -798,9 +798,6 @@ return {type: AnimationMetadataType.State, name, styles, options};
  *   style({ backgroundColor: "black" }) // offset = 1
  * ]))
  * ```
- *
- * {@example core/animation/ts/dsl/animation_example.ts region='Component'}
- *
  */
 export function keyframes(
     steps: AnimationStyleMetadata[]): 
@@ -833,7 +830,7 @@ return {type: AnimationMetadataType.Keyframes, steps};
  * @param steps One or more animation objects, as returned by the {@link animate animate()} or
  * {@link sequence sequence()} function, that form a transformation from one state to another.
  * A sequence is used by default when you pass an array.
- * @param options Optional. An options object that can contain a delay value for the start of the animation,
+ * @param options An options object that can contain a delay value for the start of the animation,
  * and additional developer-defined parameters. Provided values for additional parameters are used as defaults,
  * and override values can be passed to the caller on invocation.
  * @returns An object that encapsulates the transition data.
@@ -980,25 +977,25 @@ return {type: AnimationMetadataType.Transition, expr: stateChangeExpr, animation
  *
  * @param steps One or more animation objects, as returned by the `animate()` or `sequence()` function,
  * that form a transformation from one state to another. A sequence is used by default when you pass an array.
- * @param options Optional. An options object that can contain a delay value for the start of the animation,
+ * @param options An options object that can contain a delay value for the start of the animation,
  * and additional developer-defined parameters. Provided values for additional parameters are used as defaults,
  * and override values can be passed to the caller on invocation.
  * @returns An object that encapsulates the animation data.
  *
  * @usageNotes
+ * The following example defines a reusable animation, providing some default parameter
+ * values. 
  *
  * ```js
  * var fadeAnimation = animation([
  *   style({ opacity: '{{ start }}' }),
  *   animate('{{ time }}',
- *     style({ opacity: '{{ end }}'}))
- * ], { params: { time: '1000ms', start: 0, end: 1 }});
+ *   style({ opacity: '{{ end }}'}))
+ *   ], 
+ *   { params: { time: '1000ms', start: 0, end: 1 }});
  * ```
- *
- * If parameters are attached to an animation then they act as **default parameter values**. When an
- * animation is invoked via `useAnimation` then parameter values are allowed to be passed in
- * directly. If any of the passed in parameter values are missing then the default values will be
- * used. If one or more parameter values are missing before animated, an error is thrown.
+ * The following invokes the defined animation with a call to `useAnimation()`, passing in override
+ * parameter values. 
  *
  * ```js
  * useAnimation(fadeAnimation, {
@@ -1009,7 +1006,9 @@ return {type: AnimationMetadataType.Transition, expr: stateChangeExpr, animation
  *   }
  * })
  * ```
- *
+ * If any of the passed-in parameter values are missing from this call, 
+ * the default values are used. If one or more parameter values are missing before a step is
+ * animated, 'useAnimation()` throws an error.
  */
 export function animation(
  steps: AnimationMetadata | AnimationMetadata[],
@@ -1020,7 +1019,7 @@ return {type: AnimationMetadataType.Reference, animation: steps, options};
 /**
  * @description Executes a queried inner animation element within an animation sequence.
  *
- * @param options Optional. An options object that can contain a delay value for the start of the animation,
+ * @param options An options object that can contain a delay value for the start of the animation,
  * and additional override values for developer-defined parameters.
  * @return An object that encapsulates the child animation data.
  *
@@ -1043,7 +1042,7 @@ return {type: AnimationMetadataType.AnimateChild, options};
  * @description Starts a reusable animation that is created using the {@link animation animation()} function.
  *
  * @param animation The reusable animation to start.
- * @param options Optional. An options object that can contain a delay value for the start of the animation,
+ * @param options An options object that can contain a delay value for the start of the animation,
  * and additional override values for developer-defined parameters.
  * @return An object that encapsulates the animation parameters.
  */
@@ -1065,18 +1064,21 @@ return {type: AnimationMetadataType.AnimateRef, animation, options};
  *  - `query("@*")` : Query all elements that contain an animation triggers.
  *  - `query(":self")` : Include the current element into the animation sequence.
  *
- * Tokens can be merged into a combined query selector string. For example:
+ * @param animation One or more animation steps to apply to the queried element or elements.
+ * An array is treated as an animation sequence.
+ * @param options An options object. Use the 'limit' field to limit the total number of
+ * items to collect.
+ * @return An object that encapsulates the query data.
  *
- * query() is designed to collect multiple elements and works internally by using
- * `element.querySelectorAll`. An additional options object can be provided which
- * can be used to limit the total amount of items to be collected.
+ * @usageNotes
+ * Tokens can be merged into a combined query selector string. For example:
  * ```
  *  query(':self, .record:enter, .record:leave, @subTrigger', [...])
  * ```
- * @param animation One or more animation steps to apply to the queried element or elements.
- * An array is treated as an animation sequence.
- * @param options Optional. An options object.
- *  - Use the 'limit' field to limit the total number of items to collect. For example:
+ *
+ * The `query()` function collects multiple elements and works internally by using
+ * `element.querySelectorAll`. Use the `limit` field of an options object to limit the total number
+ *  of items to be collected. For example:
  * ```js
  * query('div', [
  *   animate(...),
@@ -1094,9 +1096,7 @@ return {type: AnimationMetadataType.AnimateRef, animation, options};
  * ], { optional: true })
  * ```
  *
- * @return An object that encapsulates the query data.
- *
- * @usageNotes
+ * ### Usage Example
  * The following example queries for inner elements and animates them
  * individually using {@link animateChild animateChild()}. 
  *
