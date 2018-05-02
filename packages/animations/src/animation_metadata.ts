@@ -571,7 +571,7 @@ return {type: AnimationMetadataType.Trigger, name, definitions, options: {}};
  * that returns a collection of CSS style entries to be applied to the parent animation.
  * When null, uses the styles from the destination state.
  * This is useful when describing an animation step that will complete an animation;
- * see "Animating to the final state" below.
+ * see "Animating to the final state" in [transitions()](transitions).
  * @returns An object that encapsulates the animation step.
  * 
  * @usageNotes Call within an animation {@link sequence sequence()}, {@link group group()}, or
@@ -590,13 +590,17 @@ return {type: AnimationMetadataType.Trigger, name, definitions, options: {}};
  *
  * **Style examples**
  *
- * The following examples show various `styles` specifications.
- * - `animate(500, style({ background: "red" }))` : Calls `style()` to set a single CSS style.
- * - 1animate(500, keyframes(`
- * ` [style({ background: "blue" })),`
- * ` style({ background: "red" }))])` :
- * Calls `keyframes()` to set a CSS style to different values for successive keyframes.
- *
+ * The following example calls `style()` to set a single CSS style.
+ * ```
+ * animate(500, style({ background: "red" }))
+ * ```
+ * The following example calls `keyframes()` to set a CSS style
+ * to different values for successive keyframes.
+ * ```
+ * animate(500, keyframes(
+ *  [style({ background: "blue" })),
+ *  style({ background: "red" }))])
+ * ```
  */
 export function animate(
     timings: string | number, 
