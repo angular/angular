@@ -66,12 +66,7 @@ export class KeyEventsPlugin extends EventManagerPlugin {
     });
   }
 
-  /**
-   * Parses an event-name string to find key combinations.
-   * @param eventName The event name.
-   * @returns A dictionary that contains the key combination.
-   */
- static parseEventName(eventName: string): {[key: string]: string}|null {
+   static parseEventName(eventName: string): {[key: string]: string}|null {
     const parts: string[] = eventName.toLowerCase().split('.');
 
     const domEventName = parts.shift();
@@ -101,11 +96,7 @@ export class KeyEventsPlugin extends EventManagerPlugin {
     result['fullKey'] = fullKey;
     return result;
   }
-
-   /**
-    * Constructs an event name string from events that combine multiple key actions.
-    * @param event The keyboard-event object.
-    */
+  
    static getEventFullKey(event: KeyboardEvent): string {
     let fullKey = '';
     let key = getDOM().getEventKey(event);

@@ -13,52 +13,57 @@ import {getDOM} from '../dom_adapter';
 /**
  * The injection token for the event-manager plug-in service.
  */
-export const EVENT_MANAGER_PLUGINS =
+ export const EVENT_MANAGER_PLUGINS =
     new InjectionToken<EventManagerPlugin[]>('EventManagerPlugins');
 
+@Injectable()
 /**
  * @description An injectable service that provides event management in the browser.
  */
-@Injectable()
-export class EventManager {
+ export class EventManager {
   private _plugins: EventManagerPlugin[];
   private _eventNameToPlugin = new Map<string, EventManagerPlugin>();
  /**
-  * Initializes an instance of the event-manager service.
-  * @param plugins The event-management plug-ins to provide.
-  * @param _zone The compilation zone.
+  * 
+  * 
+  * 
   */
+  /**
+   * Initializes an instance of the event-manager service.
+   */
   constructor(@Inject(EVENT_MANAGER_PLUGINS) plugins: EventManagerPlugin[], private _zone: NgZone) {
     plugins.forEach(p => p.manager = this);
     this._plugins = plugins.slice().reverse();
   }
- /**
-  * Registers a handler for a specific element and event.
-  * @param element The HTML element to receive event notifications.
-  * @param eventName The name of the event to listen for.
-  * @param handler A function to call when the notification occurs. Receives the
-  * event object as an argument.
-  * @returns  A callback function that can be used to remove the handler.
-  */
+
+  /**
+   * Registers a handler for a specific element and event.
+   * @param element The HTML element to receive event notifications.
+   * @param eventName The name of the event to listen for.
+   * @param handler A function to call when the notification occurs. Receives the
+   * event object as an argument.
+   * @returns  A callback function that can be used to remove the handler.
+   */
   addEventListener(element: HTMLElement, eventName: string, handler: Function): Function {
     const plugin = this._findPluginFor(eventName);
     return plugin.addEventListener(element, eventName, handler);
   }
- /**
-  * Registers a global handler for an event in a target view.
-  * @param target A target for global event notifications. One of "window", "document", or "body".
-  * @param eventName The name of the event to listen for.
-  * @param handler A function to call when the notification occurs. Receives the
-  * event object as an argument.
-  * @returns A callback function that can be used to remove the handler.
-  */
+
+  /**
+   * Registers a global handler for an event in a target view.
+   * @param target A target for global event notifications. One of "window", "document", or "body".
+   * @param eventName The name of the event to listen for.
+   * @param handler A function to call when the notification occurs. Receives the
+   * event object as an argument.
+   * @returns A callback function that can be used to remove the handler.
+   */
   addGlobalEventListener(target: string, eventName: string, handler: Function): Function {
     const plugin = this._findPluginFor(eventName);
     return plugin.addGlobalEventListener(target, eventName, handler);
   }
- /**
-  * Retrieves the compilation zone in which event listeners are registered.
-  */
+  /**
+   * Retrieves the compilation zone in which event listeners are registered.
+   */
   getZone(): NgZone { return this._zone; }
 
   /** @internal */
