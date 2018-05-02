@@ -1,6 +1,7 @@
 @import '../core/style/elevation';
 @import '../core/style/vendor-prefixes';
 @import '../core/style/layout-common';
+@import '../../cdk/a11y/a11y';
 
 $mat-button-toggle-padding: 0 16px !default;
 $mat-button-toggle-height: 36px !default;
@@ -18,6 +19,10 @@ $mat-button-toggle-border-radius: 2px !default;
   cursor: pointer;
   white-space: nowrap;
   overflow: hidden;
+
+  @include cdk-high-contrast {
+    outline: solid 1px;
+  }
 }
 
 .mat-button-toggle-vertical {
@@ -45,6 +50,11 @@ $mat-button-toggle-border-radius: 2px !default;
   &.cdk-keyboard-focused {
     .mat-button-toggle-focus-overlay {
       opacity: 1;
+
+      // In high contrast mode `opacity: 1` will show the overlay as solid so we fall back 0.5.
+      @include cdk-high-contrast {
+        opacity: 0.5;
+      }
     }
   }
 }
@@ -69,6 +79,17 @@ $mat-button-toggle-border-radius: 2px !default;
   pointer-events: none;
   opacity: 0;
   @include mat-fill;
+
+  .mat-button-toggle-checked & {
+    // Changing the background color for the selected item won't be visible in high contrast mode.
+    // We fall back to using the overlay to draw a brighter, semi-transparent tint on top instead.
+    // It uses a border, because the browser will render it using a brighter color.
+    @include cdk-high-contrast {
+      opacity: 0.5;
+      height: 0;
+      border-bottom: solid $mat-button-toggle-height;
+    }
+  }
 }
 
 .mat-button-toggle-ripple {
