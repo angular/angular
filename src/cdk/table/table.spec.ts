@@ -10,7 +10,7 @@ import {
 import {ComponentFixture, TestBed, fakeAsync, flush} from '@angular/core/testing';
 import {CdkTable} from './table';
 import {CollectionViewer, DataSource} from '@angular/cdk/collections';
-import {combineLatest, BehaviorSubject, Observable} from 'rxjs';
+import {combineLatest, BehaviorSubject, Observable, of as observableOf} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {CdkTableModule} from './index';
 import {
@@ -133,37 +133,70 @@ describe('CdkTable', () => {
       });
     });
 
-    it('should use differ to add/remove/move rows', () => {
-      // Each row receives an attribute 'initialIndex' the element's original place
-      getRows(tableElement).forEach((row: Element, index: number) => {
-        row.setAttribute('initialIndex', index.toString());
+    describe('should correctly use the differ to add/remove/move rows', () => {
+      function addInitialIndexAttribute() {
+        // Each row receives an attribute 'initialIndex' the element's original place
+        getRows(tableElement).forEach((row: Element, index: number) => {
+          row.setAttribute('initialIndex', index.toString());
+        });
+
+        // Prove that the attributes match their indicies
+        const initialRows = getRows(tableElement);
+        expect(initialRows[0].getAttribute('initialIndex')).toBe('0');
+        expect(initialRows[1].getAttribute('initialIndex')).toBe('1');
+        expect(initialRows[2].getAttribute('initialIndex')).toBe('2');
+      }
+
+      it('when the data is heterogeneous', () => {
+        addInitialIndexAttribute();
+
+        // Swap first and second data in data array
+        const copiedData = component.dataSource!.data.slice();
+        const temp = copiedData[0];
+        copiedData[0] = copiedData[1];
+        copiedData[1] = temp;
+
+        // Remove the third element
+        copiedData.splice(2, 1);
+
+        // Add new data
+        component.dataSource!.data = copiedData;
+        component.dataSource!.addData();
+
+        // Expect that the first and second rows were swapped and that the last row is new
+        const changedRows = getRows(tableElement);
+        expect(changedRows.length).toBe(3);
+        expect(changedRows[0].getAttribute('initialIndex')).toBe('1');
+        expect(changedRows[1].getAttribute('initialIndex')).toBe('0');
+        expect(changedRows[2].getAttribute('initialIndex')).toBe(null);
       });
 
-      // Prove that the attributes match their indicies
-      const initialRows = getRows(tableElement);
-      expect(initialRows[0].getAttribute('initialIndex')).toBe('0');
-      expect(initialRows[1].getAttribute('initialIndex')).toBe('1');
-      expect(initialRows[2].getAttribute('initialIndex')).toBe('2');
+      it('when the data contains multiple occurrences of the same object instance', () => {
+        const obj = {value: true};
+        component.dataSource!.data = [obj, obj, obj];
+        addInitialIndexAttribute();
 
-      // Swap first and second data in data array
-      const copiedData = component.dataSource!.data.slice();
-      const temp = copiedData[0];
-      copiedData[0] = copiedData[1];
-      copiedData[1] = temp;
+        const copiedData = component.dataSource!.data.slice();
 
-      // Remove the third element
-      copiedData.splice(2, 1);
+        // Remove the third element and add a new different obj in the beginning.
+        copiedData.splice(2, 1);
+        copiedData.unshift({value: false});
 
-      // Add new data
-      component.dataSource!.data = copiedData;
-      component.dataSource!.addData();
+        // Add new data
+        component.dataSource!.data = copiedData;
 
-      // Expect that the first and second rows were swapped and that the last row is new
-      const changedRows = getRows(tableElement);
-      expect(changedRows.length).toBe(3);
-      expect(changedRows[0].getAttribute('initialIndex')).toBe('1');
-      expect(changedRows[1].getAttribute('initialIndex')).toBe('0');
-      expect(changedRows[2].getAttribute('initialIndex')).toBe(null);
+        // Expect that two of the three rows still have an initial index. Not as concerned about
+        // the order they are in, but more important that there was no unnecessary removes/inserts.
+        const changedRows = getRows(tableElement);
+        expect(changedRows.length).toBe(3);
+        let numInitialRows = 0;
+        changedRows.forEach(row => {
+          if (row.getAttribute('initialIndex') !== null) {
+            numInitialRows++;
+          }
+        });
+        expect(numInitialRows).toBe(2);
+      });
     });
 
     it('should clear the row view containers on destroy', () => {
@@ -238,6 +271,13 @@ describe('CdkTable', () => {
     });
   });
 
+  it('should render no rows when the data is null', fakeAsync(() => {
+    setupTableTestApp(NullDataCdkTableApp);
+    fixture.detectChanges();
+
+    expect(getRows(tableElement).length).toBe(0);
+  }));
+
   describe('with different data inputs other than data source', () => {
     let baseData: TestData[] = [
       {a: 'a_1', b: 'b_1', c: 'c_1'},
@@ -247,7 +287,6 @@ describe('CdkTable', () => {
 
     beforeEach(() => {
       setupTableTestApp(CdkTableWithDifferentDataInputsApp);
-      component = fixture.componentInstance;
     });
 
     it('should render with data array input', () => {
@@ -523,24 +562,98 @@ describe('CdkTable', () => {
     });
 
     it('should error if there is row data that does not have a matching row template',
-      fakeAsync(() => {
-        expect(() => {
-          try {
-            createComponent(WhenRowWithoutDefaultCdkTableApp).detectChanges();
-            flush();
-          } catch {
-            flush();
-          }
-        }).toThrowError(getTableMissingMatchingRowDefError().message);
-    }));
+        fakeAsync(() => {
+          const whenRowWithoutDefaultFixture = createComponent(WhenRowWithoutDefaultCdkTableApp);
+          const data = whenRowWithoutDefaultFixture.componentInstance.dataSource.data;
+          expect(() => {
+            try {
+              whenRowWithoutDefaultFixture.detectChanges();
+              flush();
+            } catch {
+              flush();
+            }
+          }).toThrowError(getTableMissingMatchingRowDefError(data[0]).message);
+        }));
 
-    it('should error if there are multiple rows that do not have a when function', fakeAsync(() => {
+    it('should fail when multiple rows match data without multiTemplateDataRows', fakeAsync(() => {
       let whenFixture = createComponent(WhenRowMultipleDefaultsCdkTableApp);
       expect(() => {
         whenFixture.detectChanges();
         flush();
       }).toThrowError(getTableMultipleDefaultRowDefsError().message);
     }));
+
+    describe('with multiTemplateDataRows', () => {
+      it('should be able to render multiple rows per data object', () => {
+        setupTableTestApp(WhenRowCdkTableApp);
+        component.multiTemplateDataRows = true;
+        fixture.detectChanges();
+
+        const data = component.dataSource.data;
+        expectTableToMatchContent(tableElement, [
+          ['Column A', 'Column B', 'Column C'],
+          [data[0].a, data[0].b, data[0].c],
+          [data[1].a, data[1].b, data[1].c],
+          ['index_1_special_row'],
+          [data[2].a, data[2].b, data[2].c],
+          ['c3_special_row'],
+          [data[3].a, data[3].b, data[3].c],
+        ]);
+      });
+
+      it('should have the correct data and row indicies', () => {
+        setupTableTestApp(WhenRowCdkTableApp);
+        component.multiTemplateDataRows = true;
+        component.showIndexColumns();
+        fixture.detectChanges();
+
+        expectTableToMatchContent(tableElement, [
+          ['Index', 'Data Index', 'Render Index'],
+          ['', '0', '0'],
+          ['', '1', '1'],
+          ['', '1', '2'],
+          ['', '2', '3'],
+          ['', '2', '4'],
+          ['', '3', '5'],
+        ]);
+      });
+
+      it('should have the correct data and row indicies when data contains multiple instances of ' +
+          'the same object instance', () => {
+        setupTableTestApp(WhenRowCdkTableApp);
+        component.multiTemplateDataRows = true;
+        component.showIndexColumns();
+
+        const obj = {value: true};
+        component.dataSource.data = [obj, obj, obj, obj];
+        fixture.detectChanges();
+
+        expectTableToMatchContent(tableElement, [
+          ['Index', 'Data Index', 'Render Index'],
+          ['', '0', '0'],
+          ['', '1', '1'],
+          ['', '1', '2'],
+          ['', '2', '3'],
+          ['', '3', '4'],
+        ]);
+
+        // Push unique data on the front and add another obj to the array
+        component.dataSource.data = [{value: false}, obj, obj, obj, obj, obj];
+        fixture.detectChanges();
+
+        expectTableToMatchContent(tableElement, [
+          ['Index', 'Data Index', 'Render Index'],
+          ['', '0', '0'],
+          ['', '1', '1'],
+          ['', '1', '2'],
+          ['', '2', '3'],
+          ['', '3', '4'],
+          ['', '4', '5'],
+          ['', '5', '6'],
+        ]);
+
+      });
+    });
   });
 
   describe('with trackBy', () => {
@@ -921,9 +1034,27 @@ class BooleanRowCdkTableApp {
   dataSource = new BooleanDataSource();
 }
 
+
 @Component({
   template: `
     <cdk-table [dataSource]="dataSource">
+      <ng-container cdkColumnDef="column_a">
+        <cdk-header-cell *cdkHeaderCellDef></cdk-header-cell>
+        <cdk-cell *cdkCellDef="let data"> {{data}} </cdk-cell>
+      </ng-container>
+
+      <cdk-header-row *cdkHeaderRowDef="['column_a']"></cdk-header-row>
+      <cdk-row *cdkRowDef="let row; columns: ['column_a']"></cdk-row>
+    </cdk-table>
+  `
+})
+class NullDataCdkTableApp {
+  dataSource = observableOf(null);
+}
+
+@Component({
+  template: `
+    <cdk-table [dataSource]="dataSource" [multiTemplateDataRows]="multiTemplateDataRows">
       <ng-container cdkColumnDef="column_a">
         <cdk-header-cell *cdkHeaderCellDef> Column A</cdk-header-cell>
         <cdk-cell *cdkCellDef="let row"> {{row.a}}</cdk-cell>
@@ -941,30 +1072,55 @@ class BooleanRowCdkTableApp {
 
       <ng-container cdkColumnDef="index1Column">
         <cdk-header-cell *cdkHeaderCellDef> Column C</cdk-header-cell>
-        <cdk-cell *cdkCellDef="let row"> index_1_special_row </cdk-cell>
+        <cdk-cell *cdkCellDef="let row"> index_1_special_row</cdk-cell>
       </ng-container>
 
       <ng-container cdkColumnDef="c3Column">
         <cdk-header-cell *cdkHeaderCellDef> Column C</cdk-header-cell>
-        <cdk-cell *cdkCellDef="let row"> c3_special_row </cdk-cell>
+        <cdk-cell *cdkCellDef="let row"> c3_special_row</cdk-cell>
+      </ng-container>
+
+      <ng-container cdkColumnDef="index">
+        <cdk-header-cell *cdkHeaderCellDef> Index</cdk-header-cell>
+        <cdk-cell *cdkCellDef="let row; let index = index"> {{index}}</cdk-cell>
+      </ng-container>
+
+      <ng-container cdkColumnDef="dataIndex">
+        <cdk-header-cell *cdkHeaderCellDef> Data Index</cdk-header-cell>
+        <cdk-cell *cdkCellDef="let row; let dataIndex = dataIndex"> {{dataIndex}}</cdk-cell>
+      </ng-container>
+
+      <ng-container cdkColumnDef="renderIndex">
+        <cdk-header-cell *cdkHeaderCellDef> Render Index</cdk-header-cell>
+        <cdk-cell *cdkCellDef="let row; let renderIndex = renderIndex"> {{renderIndex}}</cdk-cell>
       </ng-container>
 
       <cdk-header-row *cdkHeaderRowDef="columnsToRender"></cdk-header-row>
       <cdk-row *cdkRowDef="let row; columns: columnsToRender"></cdk-row>
-      <cdk-row *cdkRowDef="let row; columns: ['index1Column']; when: isIndex1"></cdk-row>
-      <cdk-row *cdkRowDef="let row; columns: ['c3Column']; when: hasC3"></cdk-row>
+      <cdk-row *cdkRowDef="let row; columns: columnsForIsIndex1Row; when: isIndex1"></cdk-row>
+      <cdk-row *cdkRowDef="let row; columns: columnsForHasC3Row; when: hasC3"></cdk-row>
     </cdk-table>
   `
 })
 class WhenRowCdkTableApp {
+  multiTemplateDataRows = false;
   dataSource: FakeDataSource = new FakeDataSource();
   columnsToRender = ['column_a', 'column_b', 'column_c'];
+  columnsForIsIndex1Row = ['index1Column'];
+  columnsForHasC3Row = ['c3Column'];
   isIndex1 = (index: number, _rowData: TestData) => index == 1;
   hasC3 = (_index: number, rowData: TestData) => rowData.c == 'c_3';
 
   constructor() { this.dataSource.addData(); }
 
   @ViewChild(CdkTable) table: CdkTable<TestData>;
+
+  showIndexColumns() {
+    const indexColumns = ['index', 'dataIndex', 'renderIndex'];
+    this.columnsToRender = indexColumns;
+    this.columnsForIsIndex1Row = indexColumns;
+    this.columnsForHasC3Row = indexColumns;
+  }
 }
 
 @Component({

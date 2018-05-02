@@ -9,6 +9,7 @@ ng_module(
   module_name = "@angular/cdk/table",
   deps = [
     "//src/cdk/collections",
+    "//src/cdk/coercion",
     "@rxjs",
   ],
   tsconfig = "//src/cdk:tsconfig-build.json",

@@ -14,6 +14,7 @@ import {MatTableDataSourceDemo} from './mat-table-data-source/mat-table-data-sou
 import {DynamicColumnsDemo} from './dynamic-columns/dynamic-columns';
 import {RowContextDemo} from './row-context/row-context';
 import {WhenRowsDemo} from './when-rows/when-rows';
+import {ExpandableRowsDemo} from './expandable-rows/expandable-rows';
 
 export const TABLE_DEMO_ROUTES: Routes = [
   {path: '', redirectTo: 'main-demo', pathMatch: 'full'},
@@ -23,5 +24,6 @@ export const TABLE_DEMO_ROUTES: Routes = [
   {path: 'mat-table-data-source', component: MatTableDataSourceDemo},
   {path: 'dynamic-columns', component: DynamicColumnsDemo},
   {path: 'row-context', component: RowContextDemo},
-  {path: 'when-rows', component: WhenRowsDemo}
+  {path: 'when-rows', component: WhenRowsDemo},
+  {path: 'expandable-rows', component: ExpandableRowsDemo}
 ];
