@@ -13,7 +13,7 @@ import {getDOM} from '../dom_adapter';
 /**
  * The injection token for the event-manager plug-in service.
  */
- export const EVENT_MANAGER_PLUGINS =
+export const EVENT_MANAGER_PLUGINS =
     new InjectionToken<EventManagerPlugin[]>('EventManagerPlugins');
 
 /**
@@ -21,7 +21,7 @@ import {getDOM} from '../dom_adapter';
  * through a browser plug-in.
  */
 @Injectable()
- export class EventManager {
+export class EventManager {
   private _plugins: EventManagerPlugin[];
   private _eventNameToPlugin = new Map<string, EventManagerPlugin>();
  
@@ -58,6 +58,7 @@ import {getDOM} from '../dom_adapter';
     const plugin = this._findPluginFor(eventName);
     return plugin.addGlobalEventListener(target, eventName, handler);
   }
+  
   /**
    * Retrieves the compilation zone in which event listeners are registered.
    */
