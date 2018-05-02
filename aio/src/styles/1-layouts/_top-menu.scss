@@ -96,7 +96,6 @@ aio-shell.folder-tutorial mat-toolbar.mat-toolbar {
 .nav-link.home img {
   position: relative;
   margin-top: -21px;
-  margin-right: 20px;
   top: 12px;
   height: 40px;
 
@@ -144,6 +143,10 @@ aio-top-menu {
     padding: 24px 16px;
     cursor: pointer;
 
+    &.home{
+      margin-right: 20px;
+    }
+    
     &:focus {
       background: rgba($white, 0.15);
       border-radius: 4px;
