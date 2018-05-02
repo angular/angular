@@ -13,21 +13,27 @@ export interface StyleData { [key: string]: string|number; }
 
 /**
 * @description Collects animation-step timing parameters for an animation step.  
-* @see AnimationAnimateMetadata, {@link animate animate()}.
-* @param duration The full duration of an animation step. A number and optional time unit, 
-* such as "1s" or "10ms" for one second and 10 milliseconds, respectively.
-* The default unit is milliseconds.
-* @param delay The delay in applying an animation step. A number and optional time unit. 
-* The default unit is milliseconds.
-* @param easing An easing style that controls how an animations step accelerates
-* and decelerates during its run time. An easing function, or one of the following constants: 
-* - `ease-in`
-* - `ease-out`
-* - `ease-in-and-out`
+* @see {@link animate animate()}
 */
 export declare type AnimateTimings = {
+    /**
+     * The full duration of an animation step. A number and optional time unit,
+     * such as "1s" or "10ms" for one second and 10 milliseconds, respectively.
+     * The default unit is milliseconds.
+     */
     duration: number,
+    /**
+     * The delay in applying an animation step. A number and optional time unit.
+     * The default unit is milliseconds.
+     */
     delay: number,
+    /**
+     * An easing style that controls how an animations step accelerates
+     * and decelerates during its run time. An easing function, or one of the following constants:
+     * - `ease-in`
+     * - `ease-out`
+     * - `ease-in-and-out`
+     */
     easing: string | null
 };
 
@@ -35,7 +41,6 @@ exampleFolders.forEach(folder => exampleMap[folder] = exampleMap[folder] || []);
 
 /**
  * @description Options that control animation styling and timing.
- *
  * The following animation functions accept animation option data:
  *
  * - {@link transition transition()}
@@ -48,24 +53,25 @@ exampleFolders.forEach(folder => exampleMap[folder] = exampleMap[folder] || []);
  *
  * Programmatic animations built using {@link AnimationBuilder the AnimationBuilder service} also
  * make use of AnimationOptions.
- *
- * @param delay Optional. Sets a time-delay for initiating an animation action.
- * Default is 0, meaning no delay.
- * ?? default unit for number? string values is number unit? allowed unit specs?
- * @param params Optional. A set of developer-defined parameters that modify styling and timing 
- * when an animation action starts. An array of key-value pairs, where the provided value
- * is used as a default.
  */
 export declare interface AnimationOptions {
+    /**
+     * Optional. Sets a time-delay for initiating an animation action.
+     * Default is 0, meaning no delay.
+     * ?? default unit for number? string values is number unit? allowed unit specs?
+     */
     delay?: number|string;
+    /**
+     * Optional. A set of developer-defined parameters that modify styling and timing
+     * when an animation action starts. An array of key-value pairs, where the provided value
+     * is used as a default.
+     */
     params?: {[name: string]: any};
 }
 
 /**
  * @description Adds duration options to control animation styling and timing for a child animation.
  *
- * @param duration Optional. Sets a duration value for a child animation.
- * ??number of what? what are string values? interaction with delay?  default?
  * @see {@link animateChild animateChild()}
  */
 export declare interface AnimateChildOptions extends AnimationOptions { duration?: number|string; }
@@ -75,46 +81,71 @@ export declare interface AnimateChildOptions extends AnimationOptions { duration
  * 
  * A corresponding function defines a  set of parameters for each category, and
  * collects them into a corresponding {@link AnimationMetadata AnimationMetadata} child interface.
- *
- * @param State Associates a named animation state with a set of CSS styles. 
- * See {@link AnimationStateMetadata AnimationStateMetadata} {@link state state()}
- * @param Transition Collects data for a transition from one animation state to another.
- * See {@link AnimationTransitionMetadata AnimationTransitionMetadata} {@link transition transition()}
- * @param Sequence Collects a set of animation steps.
- * See {@link AnimationSequenceMetadata AnimationSequenceMetadata} {@link sequence sequence()}
- * @param Group  Collects a set of animation steps.
- * See {@link AnimationGroupMetadata AnimationGroupMetadata} {@link group group()}
- * @param Animate Defines an animation step.
- * See {@link AnimationAnimateMetadata AnimationAnimateMetadata} {@link animate animate()}
- * @param Keyframes Collects a set of animation steps.
- * See {@link AnimationKeyframesMetadata AnimationKeyframesMetadata} {@link keyframes keyframes()}
- * @param Style Collects a set of CSS property-value pairs into a named style.
- * See {@link AnimationStyleMetadata AnimationStyleMetadata} {@link style style()}
- * @param Trigger Associates an animation with an entry trigger that can be attached to an element.
- * See {@link AnimationTriggerMetadata AnimationTriggerMetadata} {@link trigger trigger()}
- * @param Reference Encapsulates a re-usable animation.
- * See {@link AnimationReferenceMetadata AnimationReferenceMetadata} {@link animation animation()}
- * @param AnimateChild Collects data to use in executing child animations returned by a query.
- * See {@link AnimationAnimateChildMetadata AnimationAnimateChildMetadata} {@link animateChild animateChild()}
- * @param AnimateRef ???
- * See {@link AnimationAnimateRefMetadata AnimationAnimateRefMetadata} {@link useAnimation useAnimation()}
- * @param Query Collects child-animation query data.
- * See {@link AnimationQueryMetadata AnimationQueryMetadata} {@link query query()}   
- * @param Stagger Collects data for staggering an animation sequence.
  */
 export const enum AnimationMetadataType {
+    /**
+     * Associates a named animation state with a set of CSS styles.
+     * See {@link AnimationStateMetadata AnimationStateMetadata} {@link state state()}
+     */
     State = 0,
+    /**
+     * Collects data for a transition from one animation state to another.
+     * See {@link AnimationTransitionMetadata AnimationTransitionMetadata} {@link transition transition()}
+     */
     Transition = 1,
+    /**
+     * Collects a set of animation steps.
+     * See {@link AnimationSequenceMetadata AnimationSequenceMetadata} {@link sequence sequence()}
+     */
     Sequence = 2,
+    /**
+     * Collects a set of animation steps.
+     * See {@link AnimationGroupMetadata AnimationGroupMetadata} {@link group group()}
+     */
     Group = 3,
+    /**
+     * Defines an animation step.
+     * See {@link AnimationAnimateMetadata AnimationAnimateMetadata} {@link animate animate()}
+     */
     Animate = 4,
+    /**
+     * Collects a set of animation steps.
+     * See {@link AnimationKeyframesMetadata AnimationKeyframesMetadata} {@link keyframes keyframes()}
+     */
     Keyframes = 5,
+    /**
+     * Collects a set of CSS property-value pairs into a named style.
+     * See {@link AnimationStyleMetadata AnimationStyleMetadata} {@link style style()}
+     */
     Style = 6,
+    /**
+     * Associates an animation with an entry trigger that can be attached to an element.
+     * See {@link AnimationTriggerMetadata AnimationTriggerMetadata} {@link trigger trigger()} 
+     */
     Trigger = 7,
+    /**
+     * Encapsulates a re-usable animation.
+     * See {@link AnimationReferenceMetadata AnimationReferenceMetadata} {@link animation animation()}
+     */
     Reference = 8,
+    /**
+     * Collects data to use in executing child animations returned by a query.
+     * See {@link AnimationAnimateChildMetadata AnimationAnimateChildMetadata} {@link animateChild animateChild()}
+     */
     AnimateChild = 9,
+    /**
+     * See {@link AnimationAnimateRefMetadata AnimationAnimateRefMetadata} {@link useAnimation useAnimation()}
+     */
     AnimateRef = 10,
+    /**
+     * Collects child-animation query data.
+     * See {@link AnimationQueryMetadata AnimationQueryMetadata} {@link query query()}
+     */
     Query = 11,
+    /**
+     * Collects data for staggering an animation sequence.
+     * See {@link AnimationStaggerMetadata AnimationStaggerMetadata} {@link stagger stagger()}
+     */
     Stagger = 12
 }
 
@@ -129,52 +160,66 @@ export const AUTO_STYLE = '*';
 export interface AnimationMetadata { type: AnimationMetadataType; }
 
 /**
- * @description Encapsulates an animation trigger. Instantiated and returned by the 
+ * @description Encapsulates an animation trigger. Instantiated and returned by the
  * {@link trigger trigger()} function.
- * 
- * @param name The trigger name, used to associate it with an element. Unique within the component. ???
- * @param definitions An animation definition object, containing an array of state and transition declarations.
- * @param options Optional. An options object containing a delay and
- * developer-defined parameters that provide styling defaults and
- * can be overridden on invocation.
  */
 export interface AnimationTriggerMetadata extends AnimationMetadata {
+    /**
+     * The trigger name, used to associate it with an element. Unique within the component. ???
+     */
     name: string;
+    /**
+     * An animation definition object, containing an array of state and transition declarations.
+     */
     definitions: AnimationMetadata[];
+    /**
+     * Optional. An options object containing a delay and
+     * developer-defined parameters that provide styling defaults and
+     * can be overridden on invocation. Default delay is 0.
+     */
     options: {params?: {[name: string]: any}}|null;
 }
 
 /**
  * @description Encapsulates an animation state by associating a state name with a set of CSS styles.
  * Instantiated and returned by the {@link state state()} function.
- *
- * @param name The state name, unique within the component. ???
- * @param styles The CSS styles associated with this state.
- * @param options Optional. An options object containing a delay and
- * developer-defined parameters that provide styling defaults and
- * can be overridden on invocation.
  */
 export interface AnimationStateMetadata extends AnimationMetadata {
+    /**
+     * The state name, unique within the component. ???
+     */
     name: string;
+    /**
+     * The CSS styles associated with this state.
+     */
     styles: AnimationStyleMetadata;
+    /**
+     * Optional. An options object containing a delay and
+     * developer-defined parameters that provide styling defaults and
+     * can be overridden on invocation. Default delay is 0.
+     */
     options?: {params: {[name: string]: any}};
 }
 
 /**
  * @description Encapsulates an animation transition. Instantiated and returned by the
  * {@link transition transition()} function.
- *
- * @param expr An expression that describes a state change.
- * @param animation  One or more animation objects to which this transition applies.
- * @param options Optional. An options object containing a delay and
- * developer-defined parameters that provide styling defaults and
- * can be overridden on invocation. Default delay is 0.
  */
 export interface AnimationTransitionMetadata extends AnimationMetadata {
+  /**
+   * An expression that describes a state change.
+   */
   expr: string|
-      ((fromState: string, toState: string, element?: any,
-        params?: {[key: string]: any}) => boolean);
+  ((fromState: string, toState: string, element?: any, params?: {[key: string]: any}) => boolean);
+  /**
+   * One or more animation objects to which this transition applies. 
+   */
   animation: AnimationMetadata|AnimationMetadata[];
+  /**
+   * Optional. An options object containing a delay and
+   * developer-defined parameters that provide styling defaults and
+   * can be overridden on invocation. Default delay is 0.
+   */
   options: AnimationOptions|null;
 }
 
@@ -182,141 +227,173 @@ export interface AnimationTransitionMetadata extends AnimationMetadata {
  * @description Encapsulates a reusable animation, which is a collection of individual animation steps.
  * Instantiated and returned by the {@link animation animation()} function, and
  * passed to the {@link useAnimation useAnimation()} function.
- *
- * @param animation One or more animation step objects.
- * @param options Optional. An options object containing a delay and
- * developer-defined parameters that provide styling defaults and
- * can be overridden on invocation.
  */
 export interface AnimationReferenceMetadata extends AnimationMetadata {
+    /**
+     * One or more animation step objects.
+     */
     animation: AnimationMetadata|AnimationMetadata[];
+    /**
+     *  Optional. An options object containing a delay and
+     * developer-defined parameters that provide styling defaults and
+     * can be overridden on invocation. Default delay is 0.
+     */
     options: AnimationOptions|null;
 }
 
 /**
  * @description Encapsulates an animation query. Instantiated and returned by
  * the {@link query query()} function.
- *
- * @param selector The HTML tag for this query.
- * @param animation One or more animation steps.
- * @param options Optional. A query options object.
  */
 export interface AnimationQueryMetadata extends AnimationMetadata {
+    /**
+     * The HTML tag for this query.
+     */
     selector: string;
+    /**
+     * One or more animation steps.
+     */
     animation: AnimationMetadata|AnimationMetadata[];
+    /**
+     * Optional. A query options object. 
+     */
     options: AnimationQueryOptions|null;
 }
 
 /**
  * @description Encapsulates a keyframes sequence. Instantiated and returned by
  * the {@link keyframes keyframes()} function.
- *
- * @param steps A collection of animation steps.
  */
 export interface AnimationKeyframesSequenceMetadata extends AnimationMetadata {
+    /**
+     * A collection of animation steps.
+     */
     steps: AnimationStyleMetadata[];
 }
 
 /**
  * @description Encapsulates an animation style. Instantiated and returned by
- * the {@link style style()} function. 
- *
- * @param styles A set of CSS style properties.
- * @param offset ??
+ * the {@link style style()} function.
  */
 export interface AnimationStyleMetadata extends AnimationMetadata {
+    /**
+     * A set of CSS style properties.
+     */
     styles: '*'|{[key: string]: string | number}|Array<{[key: string]: string | number}|'*'>;
+    /**
+     * Optional. A (0-based?) index number (into what? to start what?). Default is 0. ??
+     */
     offset: number|null;
 }
 
 /**
  * @description Encapsulates an animation step. Instantiated and returned by
- * the {@link animate animate()} function. 
- *
- * @param timings The timing data for the step.
- * @param styles A set of styles used in the step.
+ * the {@link animate animate()} function.
  */
 export interface AnimationAnimateMetadata extends AnimationMetadata {
+    /**
+     * The timing data for the step.
+     */
     timings: string|number|AnimateTimings;
+    /**
+     * A set of styles used in the step.
+     */
     styles: AnimationStyleMetadata|AnimationKeyframesSequenceMetadata|null;
 }
 
 /**
  *  @description Encapsulates a child animation, that can be run explicitly when the parent is run.
  *  Instantiated and returned by the {@link animateChild animateChild()} function.
- *
- * @param options Optional. An options object containing a delay and
- * developer-defined parameters that provide styling defaults and
- * can be overridden on invocation.
  */
 export interface AnimationAnimateChildMetadata extends AnimationMetadata {
+    /**
+     * Optional. An options object containing a delay and
+     * developer-defined parameters that provide styling defaults and
+     * can be overridden on invocation. Default delay is 0.
+     */
     options: AnimationOptions|null;
 }
 
 /**
  * @description Encapsulates a reusable animation.
  * Instantiated and returned by the {@link useAnimation useAnimation()} function.
- *
- * @param animation An animation reference object.
- * @param options Optional. An options object containing a delay and
- * developer-defined parameters that provide styling defaults and
- *  can be overridden on invocation.
  */
 export interface AnimationAnimateRefMetadata extends AnimationMetadata {
+    /**
+     * An animation reference object.
+     */
     animation: AnimationReferenceMetadata;
+    /**
+     * Optional. An options object containing a delay and
+     * developer-defined parameters that provide styling defaults and
+     * can be overridden on invocation. Default delay is 0.
+     */
     options: AnimationOptions|null;
 }
 
 /**
  * @description Encapsulates an animation sequence.
  * Instantiated and returned by the {@link sequence sequence()} function.
- *
- * @param steps An array of animation step objects.
- * @param options Optional. An options object containing a delay and
- * developer-defined parameters that provide styling defaults and
- * can be overridden on invocation.
  */
 export interface AnimationSequenceMetadata extends AnimationMetadata {
+    /**
+     * An array of animation step objects.
+     */
     steps: AnimationMetadata[];
+    /**
+     * Optional. An options object containing a delay and
+     * developer-defined parameters that provide styling defaults and
+     * can be overridden on invocation. Default delay is 0.
+     */
     options: AnimationOptions|null;
 }
 
 /**
  * @description Encapsulates an animation group.
  * Instantiated and returned by the {@link group group()} function.
- *
- * @param steps One or more animation or style steps that form this group.
- * @param options Optional. An options object containing a delay and
- * developer-defined parameters that provide styling defaults and
- * can be overridden on invocation.
  */
 export interface AnimationGroupMetadata extends AnimationMetadata {
+    /**
+     * One or more animation or style steps that form this group. 
+     */
     steps: AnimationMetadata[];
+    /**
+     * Optional. An options object containing a delay and
+     * developer-defined parameters that provide styling defaults and
+     * can be overridden on invocation. Default delay is 0.
+     */
     options: AnimationOptions|null;
 }
 
 /**
  * @description Encapsulates animation query options.
  * Passed to the {@link query query()} function.
- *
- * @param optional Optional. True if this query is optional, false if it is required.
- * @param limit Optional. A maximum total number of results to return from the query.
- * If negative, results are limited from the end of the query list towards the beginning. 
  */
 export declare interface AnimationQueryOptions extends AnimationOptions {
+    /**
+     * Optional. True if this query is optional, false if it is required. Default is (what?).
+     */
     optional?: boolean;
+    /**
+     * Optional. A maximum total number of results to return from the query.
+     * If negative, results are limited from the end of the query list towards the beginning.
+     * By default, results are not limited.
+     */
     limit?: number;
 }
 
 /**
  * @description Encapsulates staggering parameters for a set of animation steps.
  * Instantiated and returned by the {@link stagger stagger()} function.
- *
- * @param timings The timing data for the steps.
- * @param animation One or more animation steps.
  **/
 export interface AnimationStaggerMetadata extends AnimationMetadata {
+    /**
+     * The timing data for the steps. 
+     */
     timings: string|number;
+    /**
+     * One or more animation steps.
+     */
     animation: AnimationMetadata|AnimationMetadata[];
 }
 
@@ -504,6 +581,7 @@ return {type: AnimationMetadataType.Trigger, name, definitions, options: {}};
  *
  * ### Syntax Examples
  * **Timing examples**
+ *
  * The following examples show various `timings` specifications.
  * - `animate(500)` : Duration is 500 milliseconds.
  * - `animate("1s")` : Duration is 1000 milliseconds.
@@ -512,11 +590,13 @@ return {type: AnimationMetadataType.Trigger, name, definitions, options: {}};
  * - `animate("5s 10ms cubic-bezier(.17,.67,.88,.1)")` : Duration is 5000 milliseconds, delay is 10 milliseconds, easing is (what??)
  *
  * **Style examples**
+ *
  * The following examples show various `styles` specifications.
  * - `animate(500, style({ background: "red" }))` : Calls `style()` to set a single CSS style.
- * - ```animate(500, keyframes(
-     [style({ background: "blue" })),
-     style({ background: "red" }))])```: Calls keyframes() to set a CSS style to different values for successive keyframes.
+ * - 1animate(500, keyframes(`
+ * ` [style({ background: "blue" })),`
+ * ` style({ background: "red" }))])` :
+ * Calls `keyframes()` to set a CSS style to different values for successive keyframes.
  *
  */
 export function animate(
