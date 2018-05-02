@@ -6,22 +6,13 @@ Schematics come packaged with Angular Material, so once you have
 installed the npm package, they will be available via the Angular CLI.
 
 If you run it will automatically install Angular Material for you
-and run the shell schematic.
+and run the install schematic.
 
 ```
 ng add @angular/material
 ```
 
-## Packaged Schematics
-Angular Material has 4 schematics it comes packaged with:
-
-- Material Shell
-- Navigation
-- Dashboard
-- Table
-
-### Shell Schematic
-The shell schematic will help you quickly add Material to a new project. 
+The install schematic will help you quickly add Material to a new project. 
 This schematic will:
 
 - Ensure project depedencies in `package.json`
@@ -30,9 +21,13 @@ This schematic will:
 - Adds Roboto fonts to your index.html
 - Apply simple CSS reset to body
 
-```
-ng add @angular/material
-```
+
+## Generator Schematics
+In addition to the install schematic Angular Material has three schematics it comes packaged with:
+
+- Navigation
+- Dashboard
+- Table
 
 ### Navigation Schematic
 The navigation schematic will create a new component that includes
