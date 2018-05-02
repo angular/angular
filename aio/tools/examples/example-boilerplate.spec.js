@@ -100,7 +100,7 @@ describe('example-boilerplate tool', () => {
       );
       // for example
       expect(exampleBoilerPlate.copyFile).toHaveBeenCalledWith(`${boilerplateDir}/universal`, 'a/b', '../cli/tslint.json');
-      expect(exampleBoilerPlate.copyFile).toHaveBeenCalledWith(`${boilerplateDir}/universal`, 'a/b', '.angular-cli.json');
+      expect(exampleBoilerPlate.copyFile).toHaveBeenCalledWith(`${boilerplateDir}/universal`, 'a/b', 'angular.json');
       expect(exampleBoilerPlate.copyFile).toHaveBeenCalledWith(`${boilerplateDir}/common`, 'c/d', 'src/styles.css');
     });
 
