@@ -16,11 +16,11 @@ node is read through the `getLevel` method of the `TreeControl`; this level can 
 used to style the node such that it is indented to the appropriate level.
 
 
-```
+```html
 <mat-tree>
-    <mat-tree-node> parent node </mat-tree-node>
-    <mat-tree-node> -- child node1 </mat-tree-node>
-    <mat-tree-node> -- child node2 </mat-tree-node>
+  <mat-tree-node> parent node </mat-tree-node>
+  <mat-tree-node> -- child node1 </mat-tree-node>
+  <mat-tree-node> -- child node2 </mat-tree-node>
 </mat-tree>
 ```
 
@@ -35,12 +35,12 @@ scrolling variations, such as infinite or virtual scrolling
 In Nested tree, children nodes are placed inside their parent node in DOM. The parent node has an
 outlet to keep all the children nodes.
 
-```
+```html
 <mat-tree>
    <mat-nested-tree-node>
-       parent node
-       <mat-nested-tree-node> -- child node1 </mat-tree-node>
-       <mat-nested-tree-node> -- child node2 </mat-tree-node>
+     parent node
+     <mat-nested-tree-node> -- child node1 </mat-tree-node>
+     <mat-nested-tree-node> -- child node2 </mat-tree-node>
    </mat-nested-tree-node>
 </mat-tree>
 ```

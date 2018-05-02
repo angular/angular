@@ -16,7 +16,7 @@ export interface StateGroup {
   styleUrls: ['./autocomplete-optgroup-example.css'],
 })
 
-export class AutocompleteOptionGroupExample implements OnInit {
+export class AutocompleteOptgroupExample implements OnInit {
   stateForm: FormGroup = this.fb.group({
     stateGroup: '',
   });

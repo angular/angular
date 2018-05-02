@@ -16,11 +16,11 @@ list of items from hierarchical data. The "level" of each tree node is read thro
 method of the `TreeControl`; this level can be used to style the node such that it is indented to
 the appropriate level.
 
-```
+```html
 <cdk-tree>
-    <cdk-tree-node> parent node </cdk-tree-node>
-    <cdk-tree-node> -- child node1 </cdk-tree-node>
-    <cdk-tree-node> -- child node2 </cdk-tree-node>
+  <cdk-tree-node> parent node </cdk-tree-node>
+  <cdk-tree-node> -- child node1 </cdk-tree-node>
+  <cdk-tree-node> -- child node2 </cdk-tree-node>
 </cdk-tree>
 
 ```
@@ -36,13 +36,13 @@ variations, such as infinite or virtual scrolling.
 In nested tree, children nodes are placed inside their parent node in DOM. The parent node contains
 a node outlet into which children are projected.
 
-```
+```html
 <cdk-tree>
-   <cdk-nested-tree-node>
-       parent node
-       <cdk-nested-tree-node> -- child node1 </cdk-tree-node>
-       <cdk-nested-tree-node> -- child node2 </cdk-tree-node>
-   </cdk-nested-tree-node>
+  <cdk-nested-tree-node>
+    parent node
+    <cdk-nested-tree-node> -- child node1 </cdk-tree-node>
+    <cdk-nested-tree-node> -- child node2 </cdk-tree-node>
+  </cdk-nested-tree-node>
 </cdk-tree>
 ```
 
@@ -61,9 +61,9 @@ nested children nodes.
 A node definition is specified via any element with `cdkNodeDef`. This directive exports the node
 data to be used in any bindings in the node template.
 
-```
+```html
 <cdk-tree-node *cdkNodeDef=“let node”>
-    {{node.key}}: {{node.value}}
+  {{node.key}}: {{node.value}}
 </cdk-tree-node>
 ```
 
@@ -79,10 +79,10 @@ Spacing can be added either by applying the `cdkNodePadding` directive or by app
 When using nested tree nodes, the node template must contain a `cdkTreeNodeOutlet`, which marks
 where the children of the node will be rendered.
 
-```
+```html
 <cdk-nested-tree-node *cdkNodeDef=“let node”>
-    {{node.value}}
-    <ng-container cdkTreeNodeOutlet></ng-container>
+  {{node.value}}
+  <ng-container cdkTreeNodeOutlet></ng-container>
 </cdk-nested-tree-node>
 
 ```
@@ -93,7 +93,7 @@ A `cdkTreeNodeToggle` can be added in the tree node template to expand/collapse 
 The toggle toggles the expand/collapse functions in TreeControl and is able to expand/collapse
 a tree node recursively by setting `[cdkTreeNodeToggleRecursive]` to true.
 
-```
+```html
 <cdk-tree-node *cdkNodeDef=“let node” cdkTreeNodeToggle [cdkTreeNodeToggleRecursive]="true">
     {{node.value}}
 </cdk-tree-node>
@@ -103,7 +103,7 @@ The toggle can be placed anywhere in the tree node, and is only toggled by click
 For best accessibility, `cdkTreeNodeToggle` should be on a button element and have an appropriate
 `aria-label`.
 
-```
+```html
 <cdk-tree-node *cdkNodeDef=“let node”>
   <button cdkTreeNodeToggle aria-label="toggle tree node" [cdkTreeNodeToggleRecursive]="true">
     <mat-icon>expand</mat-icon>
@@ -117,9 +117,9 @@ For best accessibility, `cdkTreeNodeToggle` should be on a button element and ha
 The cdkTreeNodePadding can be placed in a flat tree's node template to display the level
 information of a flat tree node.
 
-```
+```html
 <cdk-tree-node *cdkNodeDef=“let node” cdkNodePadding>
-    {{node.value}}
+  {{node.value}}
 </cdk-tree-node>
 
 ```
@@ -133,12 +133,12 @@ The tree may include multiple node templates, where a template is chosen
 for a particular data node via the `when` predicate of the template.
 
 
-```
+```html
 <cdk-tree-node *cdkNodeDef=“let node” cdkTreeNodePadding>
-    {{node.value}}
+  {{node.value}}
 </cdk-tree-node>
 <cdk-tree-node *cdkNodeDef=“let node; when: isSpecial” cdkTreeNodePadding>
-    [ A special node {{node.value}} ]
+  [ A special node {{node.value}} ]
 </cdk-tree-node>
 ```
 

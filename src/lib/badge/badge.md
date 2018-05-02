@@ -1,5 +1,8 @@
 Badges are small status descriptors for UI elements. A badge consists of a small circle, 
-typically containing a number or other short set of characters, that appears in proximity to another object.
+typically containing a number or other short set of characters, that appears in proximity to
+another object.
+
+<!-- example(badge-overview) -->
 
 ### Badge position
 By default, the badge will be placed `above after`. The direction can be changed by defining
@@ -51,3 +54,8 @@ background color to `primary`, `accent`, or `warn`.
 ### Accessibility
 Badges should be given a meaningful description via `matBadgeDescription`. This description will be
 applied, via `aria-describedby` to the element decorated by `matBadge`.
+
+When applying a badge to a `<mat-icon>`, it is important to know that the icon is marked as
+`aria-hidden` by default. If the combination of icon and badge communicates some meaningful
+information, that information should be surfaced in another way. [See the guidance on indicator
+icons for more information](https://material.angular.io/components/icon/overview#indicator-icons).
