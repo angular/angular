@@ -6,28 +6,24 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+/**
+ * Relies on a `COMMIT_RANGE` environment variable (of the form `<SHA1>...<SHA2>`).
+ */
 
 // tslint:disable:no-console
 module.exports = (gulp) => () => {
-  const validateCommitMessage = require('../validate-commit-message');
-  const shelljs = require('shelljs');
-
-  let baseBranch = 'master';
-  const currentVersion = require('semver').parse(require('../../package.json').version);
-  const baseHead =
-      shelljs.exec(`git ls-remote --heads origin ${currentVersion.major}.${currentVersion.minor}.*`)
-          .trim()
-          .split('\n')
-          .pop();
-  if (baseHead) {
-    const match = /refs\/heads\/(.+)/.exec(baseHead);
-    baseBranch = match && match[1] || baseBranch;
+  if (!process.env.COMMIT_RANGE) {
+    console.error(
+        'Required environment variable `COMMIT_RANGE` is missing or empty.\n' +
+        'On CircleCI, you can get the commit range by executing `.circleci/commit-range.js`.');
+    process.exit(1);
   }
 
-  // We need to fetch origin explicitly because it might be stale.
-  // I couldn't find a reliable way to do this without fetch.
-  result = shelljs.exec(
-      `git fetch origin ${baseBranch} && git log --reverse --format=%s HEAD ^origin/${baseBranch}`);
+  const validateCommitMessage = require('../validate-commit-message');
+  const shelljs = require('shelljs');
+  const [baseSha, headSha] = process.env.COMMIT_RANGE.split('...');
+
+  const result = shelljs.exec(`git log --reverse --format=%s ${baseSha}..${headSha}`);
 
   if (result.code) {
     console.log(result.stderr);
@@ -36,10 +32,10 @@ module.exports = (gulp) => () => {
 
   const commitsByLine = result.trim().split(/\n/).filter(line => line != '');
 
-  console.log(`Examining ${commitsByLine.length} commits between HEAD and ${baseBranch}`);
+  console.log(`Examining ${commitsByLine.length} commits between ${baseSha} and ${headSha}.`);
 
-  if (commitsByLine.length == 0) {
-    console.log(`There are zero new commits between this HEAD and ${baseBranch}`);
+  if (commitsByLine.length === 0) {
+    console.log(`There are zero new commits between ${baseSha} and ${headSha}.`);
   }
 
   const someCommitsInvalid = !commitsByLine.every(validateCommitMessage);

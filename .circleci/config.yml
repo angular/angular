@@ -15,9 +15,16 @@
 var_1: &docker_image angular/ngcontainer:0.2.0
 var_2: &cache_key v2-angular-{{ .Branch }}-{{ checksum "yarn.lock" }}-0.2.0
 
-# Define common ENV vars
-var_3: &define_env_vars
-  run: echo "export PROJECT_ROOT=$(pwd)" >> $BASH_ENV
+# After checkout, rebase on top of target branch and define common ENV vars.
+# Rebasing is similar to travis behavior, but not quite the same.
+# See https://discuss.circleci.com/t/1662
+var_3: &post_checkout
+  run:
+    name: Rebase on target branch / Define common ENV vars
+    command: |
+      git pull --ff-only origin "refs/pull/${CIRCLE_PULL_REQUEST//*pull\//}/merge"
+      echo "export PROJECT_ROOT=$(pwd)" | tee --append $BASH_ENV
+      echo "export COMMIT_RANGE=$(node .circleci/commit-range)" | tee --append $BASH_ENV
 
 # See remote cache documentation in /docs/BAZEL.md
 var_4: &setup-bazel-remote-cache
@@ -32,19 +39,13 @@ anchor_1: &job_defaults
   docker:
     - image: *docker_image
 
-# After checkout, rebase on top of master.
-# Similar to travis behavior, but not quite the same.
-# See https://discuss.circleci.com/t/1662
-anchor_2: &post_checkout
-  post: git pull --ff-only origin "refs/pull/${CIRCLE_PULL_REQUEST//*pull\//}/merge"
-
 version: 2
 jobs:
   lint:
     <<: *job_defaults
     steps:
-      - checkout:
-          <<: *post_checkout
+      - checkout
+      - *post_checkout
 
       # Check BUILD.bazel formatting before we have a node_modules directory
       # Then we don't need any exclude pattern to avoid checking those files
@@ -67,9 +68,9 @@ jobs:
     <<: *job_defaults
     resource_class: xlarge
     steps:
-      - *define_env_vars
-      - checkout:
-          <<: *post_checkout
+      - checkout
+      - *post_checkout
+
       # See remote cache documentation in /docs/BAZEL.md
       - run: .circleci/setup_cache.sh
       - run: sudo cp .circleci/bazel.rc /etc/bazel.bazelrc
@@ -119,9 +120,9 @@ jobs:
     <<: *job_defaults
     resource_class: xlarge
     steps:
-      - *define_env_vars
-      - checkout:
-          <<: *post_checkout
+      - checkout
+      - *post_checkout
+
       # See remote cache documentation in /docs/BAZEL.md
       - run: .circleci/setup_cache.sh
       - run: sudo cp .circleci/bazel.rc /etc/bazel.bazelrc
@@ -146,9 +147,8 @@ jobs:
   integration_test:
     <<: *job_defaults
     steps:
-      - *define_env_vars
-      - checkout:
-          <<: *post_checkout
+      - checkout
+      - *post_checkout
       - attach_workspace:
           at: dist
       - run: xvfb-run --auto-servernum ./integration/run_tests.sh
@@ -158,8 +158,8 @@ jobs:
   publish_snapshot:
     <<: *job_defaults
     steps:
-      - checkout:
-          <<: *post_checkout
+      - checkout
+      - *post_checkout
       - attach_workspace:
           at: dist
       # CircleCI has a config setting to force SSH for all github connections
@@ -171,8 +171,8 @@ jobs:
   aio_monitoring:
     <<: *job_defaults
     steps:
-      - checkout:
-          <<: *post_checkout
+      - checkout
+      - *post_checkout
       - restore_cache:
           key: *cache_key
       - run: xvfb-run --auto-servernum ./aio/scripts/test-production.sh
