@@ -136,7 +136,7 @@ export class MatExpansionPanelHeader implements OnDestroy {
 /**
  * `<mat-panel-description>`
  *
- * This direction is to be used inside of the MatExpansionPanelHeader component.
+ * This directive is to be used inside of the MatExpansionPanelHeader component.
  */
 @Directive({
   selector: 'mat-panel-description',
@@ -149,7 +149,7 @@ export class MatExpansionPanelDescription {}
 /**
  * `<mat-panel-title>`
  *
- * This direction is to be used inside of the MatExpansionPanelHeader component.
+ * This directive is to be used inside of the MatExpansionPanelHeader component.
  */
 @Directive({
   selector: 'mat-panel-title',
