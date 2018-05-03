@@ -7,8 +7,18 @@
  */
 
 /**
- * An instance of this class is returned as an event parameter when an animation
- * callback is captured for an animation either during the start or done phase.
+ * @description Defines an event object that is returned to an animation
+ * callback is called for an animation during the start or done phase.
+ * 
+ * @param fromState The starting state for the animation.
+ * @param toState The destination state for the animation.
+ * @param totalTime The start-to-completion time.
+ * @param phaseName The animation phase that triggered the event, one of "start" or "done".
+ * @param element The element to which the animation trigger is attached.
+ * @param triggerName The name of the animation trigger.
+ * @param disabled True if the animation is disabled, false otherwise.
+ * 
+ * @usageNotes
  *
  * ```typescript
  * @Component({
@@ -35,7 +45,6 @@
  * }
  * ```
  *
- * @experimental Animation support is experimental.
  */
 export interface AnimationEvent {
   fromState: string;
