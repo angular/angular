@@ -9,7 +9,10 @@ ng_module(
             "*.ts",
             "src/**/*.ts",
         ],
-    ),
+        exclude = ["src/ivy_switch.ts"],
+    ) + [
+        ":ivy_switch",
+    ],
     module_name = "@angular/core",
     deps = [
         "//packages:types",
@@ -29,4 +32,21 @@ ng_package(
         ":core",
         "//packages/core/testing",
     ],
+)
+
+## Controls if Ivy is enabled. (Temporary target until we permanently switch over to Ivy)
+##
+## This file generates `src/ivy_switch.ts` file which reexports symbols for `ViewEngine` or `Ivy.`
+## - append `--define=ivy=false` (default) to `bazel` command to reexport `./ivy_switch_false`
+##   and use `ViewEngine`;
+## - append `--define=ivy=true` to `bazel` command to rexport `./ivy_switch_true` and use `Ivy`;
+##
+## NOTE: `--define=ivy=true` works with any `bazel` command or target across the repo.
+##
+## See: `//tools/bazel.rc` where `--define=ivy=false` is defined as default.
+## See: `./src/ivy_switch.ts` for more details.
+genrule(
+    name = "ivy_switch",
+    outs = ["src/ivy_switch.ts"],
+    cmd = "echo export '*' from \"'./ivy_switch_$(ivy)';\" > $@",
 )
