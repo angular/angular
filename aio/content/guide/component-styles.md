@@ -226,8 +226,8 @@ Use `/deep/`, `>>>` and `::ng-deep` only with *emulated* view encapsulation.
 Emulated is the default and most commonly used view encapsulation. For more information, see the
 [Controlling view encapsulation](guide/component-styles#view-encapsulation) section.
 -->
-`/deep/`, `>>>`, `::ng-deep` 셀렉터는 *에뮬레이티드* 뷰 캡슐화 정책을 사용할 때만 사용하세요.
-이 정책은 뷰 캡슐화 정책의 기본값입니다. 좀 더 자세한 설명은 [뷰 캡슐화 정책 지정하기](guide/component-styles#view-encapsulation) 문서를 참고하세요.
+`/deep/`, `>>>`, `::ng-deep` 셀렉터는 *`Emulated`* 뷰 캡슐화 정책을 사용할 때만 사용하세요.
+이 정책은 뷰 캡슐화 정책의 기본값입니다. 좀 더 자세한 설명은 [뷰 캡슐화 정책](guide/component-styles#뷰-캡슐화) 문서를 참고하세요.
 
 </div>
 
@@ -276,30 +276,48 @@ The scoping rules outlined earlier apply to each of these loading patterns.
 -->
 ### 컴포넌트 메타데이터로 스타일 지정하기
 
+<!--
 You can add a `styles` array property to the `@Component` decorator.
+-->
+`@Component` 데코레이터에는 `styles` 프로퍼티를 지정할 수 있습니다.
 
+<!--
 Each string in the array defines some CSS for this component.
+-->
+이 프로퍼티는 문자열 배열을 사용하는데, 컴포넌트에 지정될 CSS 스타일을 문자열로 각각 지정합니다.
 
 <code-example path="component-styles/src/app/hero-app.component.ts" title="src/app/hero-app.component.ts (CSS inline)">
 </code-example>
 
 <div class="alert is-critical">
 
+<!--
 Reminder: these styles apply _only to this component_.
 They are _not inherited_ by any components nested within the template nor by any content projected into the component.
+-->
+주의 : 이 방법으로 지정하는 스타일은 _이 컴포넌트에만_ 적용됩니다. 템플릿 안에 있는 자식 컴포넌트나, 이 컴포넌트에 프로젝트되는 다른 컨텐츠에도 적용되지 않습니다.
 
 </div>
 
+<!--
 The CLI defines an empty `styles` array when you create the component with the `--inline-styles` flag.
+-->
+그리고 Angular CLI로 컴포넌트를 생성할 때 `--inline-styles` 옵션을 사용하면 `styles` 초기값이 빈 배열로 지정됩니다.
 
 <code-example language="sh" class="code-shell">
 ng generate component hero-app --inline-style
 </code-example>
 
+<!--
 ### Style files in component metadata
+-->
+### 컴포넌트 메타데이터에 외부 스타일 파일 불러오기
 
+<!--
 You can load styles from external CSS files by adding a `styleUrls` property
 to a component's `@Component` decorator:
+-->
+컴포넌트의 `@Component` 데코레이터에 `styleUrls` 프로퍼티를 사용하면 컴포넌트 외부에 있는 CSS 파일을 불러와서 컴포넌트에 적용할 수 있습니다.
 
 <code-tabs>
   <code-pane title="src/app/hero-app.component.ts (CSS in file)" path="component-styles/src/app/hero-app.component.1.ts"></code-pane>
@@ -308,70 +326,122 @@ to a component's `@Component` decorator:
 
 <div class="alert is-critical">
 
+<!--
 Reminder: the styles in the style file apply _only to this component_.
 They are _not inherited_ by any components nested within the template nor by any content projected into the component.
+-->
+주의 : 이 방법으로 지정하는 스타일은 _이 컴포넌트에만_ 적용됩니다. 템플릿 안에 있는 자식 컴포넌트나, 이 컴포넌트에 프로젝트되는 다른 컨텐츠에도 적용되지 않습니다.
 
 </div>
 
 <div class="l-sub-section">
 
+  <!--
   You can specify more than one styles file or even a combination of `style` and `styleUrls`.
+  -->
+  `styles`이나 `styleUrls` 프로퍼티에는 한 번에 여러 스타일을 지정하거나 여러 파일을 지정할 수 있습니다.
 
 </div>
 
+<!--
 The CLI creates an empty styles file for you by default and references that file in the component's generated `styleUrls`.
+-->
+그리고 Angular CLI로 컴포넌트를 생성하면 빈 배열로 `styleUrls` 초기값이 지정됩니다.
 
 <code-example language="sh" class="code-shell">
 ng generate component hero-app
 </code-example>
 
+<!--
 ### Template inline styles
+-->
+### 템플릿 인라인 스타일
 
+<!--
 You can embed CSS styles directly into the HTML template by putting them
 inside `<style>` tags.
+-->
+CSS 스타일은 `<style>` 태그를 사용해서 HTML 템플릿 안에 지정할 수도 있습니다.
 
 <code-example path="component-styles/src/app/hero-controls.component.ts" region="inlinestyles" title="src/app/hero-controls.component.ts">
 </code-example>
 
+<!--
 ### Template link tags
+-->
+### 템플릿 link 태그
 
+<!--
 You can also write `<link>` tags into the component's HTML template.
+-->
+컴포넌트 HTML 템플릿에는 `<link>` 태그를 사용할 수도 있습니다.
 
 <code-example path="component-styles/src/app/hero-team.component.ts" region="stylelink" title="src/app/hero-team.component.ts">
 </code-example>
 
 <div class="alert is-critical">
 
+<!--
 The link tag's `href` URL must be relative to the
 _**application root**_, not relative to the component file.
+-->
+링크 태그의 `href`에서 지정하는 URL은 _**애플리케이션 최상위 폴더**_의 상대주소로 지정되어야 합니다. 컴포넌트의 상대주소가 아닙니다.
 
+<!--
 When building with the CLI, be sure to include the linked style file among the assets to be copied to the server as described in the [CLI documentation](https://github.com/angular/angular-cli/wiki/stories-asset-configuration).
+-->
+Angular CLI가 애플리케이션을 빌드할 때 링크로 연결된 스타일 파일이 `assets` 폴더에 있고 빌드 결과에 제대로 포함되는지 꼭 확인하세요. `assets` 폴더를 활용하는 방법은 [CLI 문서](https://github.com/angular/angular-cli/wiki/stories-asset-configuration)에서 소개합니다.
 
 </div>
 
 ### CSS @imports
 
+<!--
 You can also import CSS files into the CSS files using the standard CSS `@import` rule.
 For details, see [`@import`](https://developer.mozilla.org/en/docs/Web/CSS/@import)
 on the [MDN](https://developer.mozilla.org) site.
+-->
+외부 CSS 파일을 불러올 때는 CSS 표준인 `@import`를 사용하는 방법도 있습니다.
+이 문법에 대해 자세하게 알아보려면 [MDN](https://developer.mozilla.org) 사이트의 [`@import`](https://developer.mozilla.org/en/docs/Web/CSS/@import) 문서를 참고하세요.
 
+<!--
 In this case, the URL is relative to the CSS file into which you're importing.
+-->
+이 경우에는 CSS 파일을 로드하는 컴포넌트에서 시작하는 상대 경로로 외부 CSS 파일의 URL을 지정합니다.
 
 <code-example path="component-styles/src/app/hero-details.component.css" region="import" title="src/app/hero-details.component.css (excerpt)">
 </code-example>
 
+<!--
 ### External and global style files
+-->
+### 전역 스타일 파일
 
+<!--
 When building with the CLI, you must configure the `.angular-cli.json` to include _all external assets_, including external style files.
+-->
+Angular CLI로 애플리케이션의 빌드 설정 파일인 `.angular-cli.json` 파일은 빌드에 포함될 _모든 외부 자원_ 을 지정하는데, 이 때 외부 스타일 파일을 지정할 수도 있습니다.
 
+<!--
 Register **global** style files in the `styles` section which, by default, is pre-configured with the global `styles.css` file.
+-->
+이 때 `styles` 항목을 활용하면 **전역**으로 지정될 스타일 파일을 지정할 수 있으며, CLI로 생성한 프로젝트라면 `styles.css` 파일이 초기값으로 지정됩니다.
 
+<!--
 See the [CLI documentation](https://github.com/angular/angular-cli/wiki/stories-global-styles) to learn more.
+-->
+더 자세한 내용은 [CLI 문서](https://github.com/angular/angular-cli/wiki/stories-global-styles)를 참고하세요.
 
+<!--
 ### Non-CSS style files
+-->
+### CSS 이외의 스타일 파일
 
+<!--
 If you're building with the CLI,
 you can write style files in [sass](http://sass-lang.com/), [less](http://lesscss.org/), or [stylus](http://stylus-lang.com/) and specify those files in the `@Component.styleUrls` metadata with the appropriate extensions (`.scss`, `.less`, `.styl`) as in the following example:
+-->
+Angular CLI를 사용한다면 [sass](http://sass-lang.com/)나 [less](http://lesscss.org/), [stylus](http://stylus-lang.com/)를 사용할 수도 있으며, 이렇게 만든 스타일 파일은 `@Component.styleUrls` 메타데이터에 다음과 같이 지정할 수 있습니다:
 
 <code-example>
 @Component({
@@ -382,66 +452,121 @@ you can write style files in [sass](http://sass-lang.com/), [less](http://lesscs
 ...
 </code-example>
 
+<!--
 The CLI build process runs the pertinent CSS preprocessor.
+-->
+그러면 Angular CLI에 정의된 CSS 프리프로세서를 통해 최종 결과물에는 CSS 스타일로 변환됩니다.
 
+<!--
 When generating a component file with `ng generate component`, the CLI emits an empty CSS styles file (`.css`) by default.
 You can configure the CLI to default to your preferred CSS preprocessor
 as explained in the [CLI documentation](https://github.com/angular/angular-cli/wiki/stories-css-preprocessors
 "CSS Preprocessor integration").
+-->
+`ng generate component` 명령으로 컴포넌트를 생성하면 비어있는 CSS 파일(`.css`)이 기본으로 생성됩니다.
+이 때 스타일 파일을 어떤 확장자로 생성할지 Angular CLI 환경 설정파일에 지정할 수 있으며, 더 자세한 내용은 [CLI 문서](https://github.com/angular/angular-cli/wiki/stories-css-preprocessors
+"CSS Preprocessor integration") 문서를 참고하세요.
 
 <div class="alert is-important">
 
+<!--
 Style strings added to the `@Component.styles` array _must be written in CSS_ because the CLI cannot apply a preprocessor to inline styles.
+-->
+`@Component.styles`에 문자열로 지정하는 스타일은 _반드시 CSS 문법으로_ 지정해야 합니다. Angular CLI는 인라인 스타일을 처리할 때 CSS 프리프로세서를 별도로 사용하지 않습니다.
 
 </div>
 
+<!--
 {@a view-encapsulation}
+-->
+{@a 뷰-캡슐화}
 
+<!--
 ## View encapsulation
+-->
+## 뷰 캡슐화
 
+<!--
 As discussed earlier, component CSS styles are encapsulated into the component's view and don't
 affect the rest of the application.
+-->
+이전에 언급했던 것처럼 컴포넌트의 CSS 스타일은 컴포넌트 뷰 안으로 캡슐화 되며 컴포넌트 외부의 영향을 받지 않습니다.
 
+<!--
 To control how this encapsulation happens on a *per
 component* basis, you can set the *view encapsulation mode* in the component metadata.
 Choose from the following modes:
+-->
+이 정책은 컴포넌트 메타데이터에 *뷰 캡슐화 모드*를 지정해서 *컴포넌트별로* 변경할 수 있습니다.
+지정할 수 있는 뷰 캡슐화 정책은 다음과 같습니다:
 
+<!--
 * `Native` view encapsulation uses the browser's native shadow DOM implementation (see
   [Shadow DOM](https://developer.mozilla.org/en-US/docs/Web/Web_Components/Shadow_DOM)
   on the [MDN](https://developer.mozilla.org) site)
   to attach a shadow DOM to the component's host element, and then puts the component
   view inside that shadow DOM. The component's styles are included within the shadow DOM.
+-->
+* `Native` 캡슐화 정책을 사용하면 브라우저의 네이티브 섀도우 DOM 구현 방식을 사용해서 컴포넌트의 호스트 엘리먼트를 구성합니다.
+컴포넌트 뷰는 이 섀도우 DOM 안에 들어가며, 이 때 컴포넌트의 스타일도 함께 섀도우 DOM에 포함됩니다.
+섀도우 DOM에 대한 자세한 내용은 [MDN](https://developer.mozilla.org) 사이트에서 제공하는 [Shadow DOM](https://developer.mozilla.org/en-US/docs/Web/Web_Components/Shadow_DOM) 문서를 참고하세요.
 
+<!--
 * `Emulated` view encapsulation (the default) emulates the behavior of shadow DOM by preprocessing
   (and renaming) the CSS code to effectively scope the CSS to the component's view.
   For details, see [Appendix 1](guide/component-styles#inspect-generated-css).
+-->
+* 기본값인 `Emulated` 캡슐화 정책을 사용하면 Angular가 제공하는 섀도우 DOM을 사용하며, CSS 코드를 컴포넌트 뷰에 한정되도록 변경해서 적용합니다.
+좀 더 자세한 내용은 [생성된-css-코드-확인하기](guide/component-styles#생성된-css-코드-확인하기) 섹션을 참고하세요.
 
+<!--
 * `None` means that Angular does no view encapsulation.
   Angular adds the CSS to the global styles.
   The scoping rules, isolations, and protections discussed earlier don't apply.
   This is essentially the same as pasting the component's styles into the HTML.
+-->
+* `None` 캡슐화 정책을 사용하면 Angular가 뷰를 캡슐화하지 않습니다. Angular에서 지정한 CSS 스타일은 전역 스타일로 적용되며, 이전에 언급했던 스타일 적용 범위도 컴포넌트 안에만 제한되지 않습니다.
+이 특징 외에는 다른 캡슐화 정책과 비슷합니다.
 
+<!--
 To set the components encapsulation mode, use the `encapsulation` property in the component metadata:
+-->
+컴포넌트 캡슐화 모드는 컴포넌트 메타데이터의 `encapsulation` 프로퍼티로 지정합니다:
 
 <code-example path="component-styles/src/app/quest-summary.component.ts" region="encapsulation.native" title="src/app/quest-summary.component.ts" linenums="false">
 </code-example>
 
+<!--
 `Native` view encapsulation only works on browsers that have native support
 for shadow DOM (see [Shadow DOM v0](http://caniuse.com/#feat=shadowdom) on the
 [Can I use](http://caniuse.com) site). The support is still limited,
 which is why `Emulated` view encapsulation is the default mode and recommended
 in most cases.
+-->
+`Native` 캡슐화 정책은 [Shadow DOM v0](http://caniuse.com/#feat=shadowdom)를 네이티브로 지원하는 브라우저에서만 유효하며, 지원 여부는 [Can I use](http://caniuse.com) 사이트에서 확인할 수 있습니다. 하지만 모든 브라우저가 이 표준을 지원하는 것은 아니기 때문에 Angular의 뷰 캡슐화 정책은 `Emulated`가 기본값이며, 대부분의 경우에 이 모드를 권장합니다.
 
+<!--
 {@a inspect-generated-css}
+-->
+{@a 생성된-css-코드-확인하기}
 
+<!--
 ## Inspecting generated CSS
+-->
+## 생성된 CSS 코드 확인하기
 
+<!--
 When using emulated view encapsulation, Angular preprocesses
 all component styles so that they approximate the standard shadow CSS scoping rules.
+-->
+`Emulated` 뷰 캡슐화 정책을 사용하면 표준 섀도우 CSS 적용범위에 맞게 Angular가 스타일 코드를 수정합니다.
 
+<!--
 In the DOM of a running Angular application with emulated view
 encapsulation enabled, each DOM element has some extra attributes
 attached to it:
+-->
+그래서 Angular가 처리한 코드를 확인해보면 다음과 같이 DOM 엘리먼트에 추가 어트리뷰트가 지정되는 것을 확인할 수 있습니다:
 
 <code-example format="">
   &lt;hero-details _nghost-pmm-5>
@@ -453,16 +578,27 @@ attached to it:
 
 </code-example>
 
+<!--
 There are two kinds of generated attributes:
+-->
+이렇게 추가되는 어트리뷰트는 두 종류가 있습니다:
 
+<!--
 * An element that would be a shadow DOM host in native encapsulation has a
   generated `_nghost` attribute. This is typically the case for component host elements.
 * An element within a component's view has a `_ngcontent` attribute
 that identifies to which host's emulated shadow DOM this element belongs.
+-->
+* 섀도우 DOM 호스트에 해당하는 엘리먼트에는 `_nghost` 어트리뷰트가 추가됩니다. 이 어트리뷰트가 붙은 엘리먼트는 컴포넌트의 호스트 엘리먼트로 볼 수 있습니다.
+* 컴포넌트 뷰 안에 있는 엘리먼트에는 `_ngcontent` 어트리뷰트가 추가되며, 호스트 엘리먼트가 어떤 엘리먼트인지 이 어트리뷰트를 사용해서 판단합니다.
 
+<!--
 The exact values of these attributes aren't important. They are automatically
 generated and you never refer to them in application code. But they are targeted
 by the generated component styles, which are in the `<head>` section of the DOM:
+-->
+어트리뷰트가 정확히 어떤 문자열로 추가되는지는 중요하지 않습니다. 이 어트리뷰트 이름은 자동으로 생성되는 값이며 애플리케이션 코드에서 사용하는 경우도 없습니다.
+이 어트리뷰트 이름은 다음과 같이 `<head>`에서 컴포넌트 스타일을 적용할 때 사용됩니다:
 
 <code-example format="">
   [_nghost-pmm-5] {
@@ -476,6 +612,9 @@ by the generated component styles, which are in the `<head>` section of the DOM:
   }
 </code-example>
 
+<!--
 These styles are post-processed so that each selector is augmented
 with `_nghost` or `_ngcontent` attribute selectors.
 These extra selectors enable the scoping rules described in this page.
+-->
+이 스타일들은 Angular가 생성한 `_nghost`, `_ngcontent` 어트리뷰트 셀렉터를 사용해서 DOM 엘리먼트에 적용됩니다.
