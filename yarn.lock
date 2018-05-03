@@ -5142,15 +5142,15 @@ rollup@0.47.4:
   version "0.47.4"
   resolved "https://registry.yarnpkg.com/rollup/-/rollup-0.47.4.tgz#e3a55de83a78221d232ce29619a8d68189ae845e"
 
-rxjs@^6.0.0-beta.3:
-  version "6.0.0-tactical-rc.1"
-  resolved "https://registry.yarnpkg.com/rxjs/-/rxjs-6.0.0-tactical-rc.1.tgz#1fe1f1204132d1c71c72f249a487f8e76a5ec1d5"
+rxjs@^6.0.0:
+  version "6.0.0"
+  resolved "https://registry.yarnpkg.com/rxjs/-/rxjs-6.0.0.tgz#d647e029b5854617f994c82fe57a4c6747b352da"
   dependencies:
     tslib "^1.9.0"
 
-rxjs@^6.0.0-uncanny-rc.7:
-  version "6.0.0-uncanny-rc.7"
-  resolved "https://registry.yarnpkg.com/rxjs/-/rxjs-6.0.0-uncanny-rc.7.tgz#e5d6ebe2c538c583bf4b3600b60112d64a7a6991"
+rxjs@^6.0.0-beta.3:
+  version "6.0.0-tactical-rc.1"
+  resolved "https://registry.yarnpkg.com/rxjs/-/rxjs-6.0.0-tactical-rc.1.tgz#1fe1f1204132d1c71c72f249a487f8e76a5ec1d5"
   dependencies:
     tslib "^1.9.0"
 
