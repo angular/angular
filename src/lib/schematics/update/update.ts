@@ -4,12 +4,12 @@ import {
   RunSchematicTask,
   TslintFixTask
 } from '@angular-devkit/schematics/tasks';
+import {existsSync, mkdtempSync} from 'fs';
 import * as path from 'path';
-import {existsSync, readFileSync} from 'fs';
-import {getProjectFromWorkspace, getWorkspace} from '../utils/devkit-utils/config';
+import {getWorkspace} from '../utils/devkit-utils/config';
 
 const schematicsSrcPath = 'node_modules/@angular/material/schematics';
-const schematicsTmpPath = 'node_modules/_tmp_angular_material_schematics';
+const schematicsTmpPath = mkdtempSync('angular_material_schematics-');
 
 /** Entry point for `ng update` from Angular CLI. */
 export default function(): Rule {
