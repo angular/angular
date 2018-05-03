@@ -67,7 +67,7 @@ case $deployEnv in
     readonly firebaseToken=$FIREBASE_TOKEN
     ;;
   archive)
-    readonly projectId=angular-io-${majorVersion}
+    readonly projectId=v${majorVersion}-angular-io
     readonly deployedUrl=https://v${majorVersion}.angular.io/
     readonly firebaseToken=$FIREBASE_TOKEN
     ;;
