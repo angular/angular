@@ -219,7 +219,7 @@ export interface LocationChangeEvent {
 
 /** @experimental */
 export interface LocationChangeListener {
-    (e: LocationChangeEvent): any;
+    (event: LocationChangeEvent): any;
 }
 
 export declare abstract class LocationStrategy {
