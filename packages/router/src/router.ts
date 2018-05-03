@@ -327,7 +327,7 @@ export class Router {
   get url(): string { return this.serializeUrl(this.currentUrlTree); }
 
   /** @internal */
-  triggerEvent(e: Event): void { (this.events as Subject<Event>).next(e); }
+  triggerEvent(event: Event): void { (this.events as Subject<Event>).next(event); }
 
   /**
    * Resets the configuration used for navigation and generating links.
