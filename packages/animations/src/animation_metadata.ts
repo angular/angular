@@ -387,7 +387,7 @@ export interface AnimationStaggerMetadata extends AnimationMetadata {
  * }
  * ```
  *
- * **What about animations that us `query()` and `animateChild()`?**
+ * **What about animations that use `query()` and `animateChild()`?**
  *
  * Despite inner animations being disabled, a parent animation can `query` for inner
  * elements located in disabled areas of the template and still animate them as it sees fit. This is
