@@ -80,7 +80,7 @@ The `tab-nav-bar` is not tied to any particular router; it works with normal `<a
 the `active` property to determine which tab is currently active. The corresponding
 `<router-outlet>` can be placed anywhere in the view.
 
-## Lazy Loading
+### Lazy Loading
 By default, the tab contents are eagerly loaded. Eagerly loaded tabs
 will initalize the child components but not inject them into the DOM
 until the tab is activated. 
