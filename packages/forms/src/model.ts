@@ -1432,6 +1432,7 @@ export class FormArray extends AbstractControl {
    *  ```
    */
   patchValue(value: any[], options: {onlySelf?: boolean, emitEvent?: boolean} = {}): void {
+    if(value.length)
     value.forEach((newValue: any, index: number) => {
       if (this.at(index)) {
         this.at(index).patchValue(newValue, {onlySelf: true, emitEvent: options.emitEvent});
