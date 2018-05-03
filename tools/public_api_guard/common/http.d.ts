@@ -1695,10 +1695,10 @@ export interface HttpSentEvent {
 }
 
 export declare class HttpUrlEncodingCodec implements HttpParameterCodec {
-    decodeKey(k: string): string;
-    decodeValue(v: string): string;
-    encodeKey(k: string): string;
-    encodeValue(v: string): string;
+    decodeKey(key: string): string;
+    decodeValue(value: string): string;
+    encodeKey(key: string): string;
+    encodeValue(value: string): string;
 }
 
 export interface HttpUserEvent<T> {
