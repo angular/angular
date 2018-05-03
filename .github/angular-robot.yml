@@ -1,5 +1,13 @@
 # Configuration for angular-robot
 
+#options for the size plugin
+size:
+  disabled: false
+  maxSizeIncrease: 1000
+  status:
+    disabled: false
+    context: "ci/angular: size"
+
 # options for the merge plugin
 merge:
   # the status will be added to your pull requests
