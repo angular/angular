@@ -42,7 +42,7 @@ import {UrlSegment, UrlSegmentGroup} from './url_tree';
  * - `loadChildren` is a reference to lazy loaded child routes. See `LoadChildren` for more
  *   info.
  *
- * ### Simple Configuration
+ * **Simple Configuration**
  *
  * ```
  * [{
@@ -58,7 +58,7 @@ import {UrlSegment, UrlSegmentGroup} from './url_tree';
  * When navigating to `/team/11/user/bob`, the router will create the team component with the user
  * component in it.
  *
- * ### Multiple Outlets
+ * **Multiple Outlets**
  *
  * ```
  * [{
@@ -74,7 +74,7 @@ import {UrlSegment, UrlSegmentGroup} from './url_tree';
  * When navigating to `/team/11(aux:chat/jim)`, the router will create the team component next to
  * the chat component. The chat component will be placed into the aux outlet.
  *
- * ### Wild Cards
+ * **Wild Cards**
  *
  * ```
  * [{
@@ -85,7 +85,7 @@ import {UrlSegment, UrlSegmentGroup} from './url_tree';
  *
  * Regardless of where you navigate to, the router will instantiate the sink component.
  *
- * ### Redirects
+ * **Redirects**
  *
  * ```
  * [{
@@ -108,7 +108,7 @@ import {UrlSegment, UrlSegmentGroup} from './url_tree';
  * If the `redirectTo` value starts with a '/', then it is an absolute redirect. E.g., if in the
  * example above we change the `redirectTo` to `/user/:name`, the result url will be '/user/jim'.
  *
- * ### Empty Path
+ * **Empty Path**
  *
  * Empty-path route configurations can be used to instantiate components that do not 'consume'
  * any url segments. Let's look at the following configuration:
@@ -152,7 +152,7 @@ import {UrlSegment, UrlSegmentGroup} from './url_tree';
  * An empty path route inherits its parent's params and data. This is because it cannot have its
  * own params, and, as a result, it often uses its parent's params and data as its own.
  *
- * ### Matching Strategy
+ * **Matching Strategy**
  *
  * By default the router will look at what is left in the url, and check if it starts with
  * the specified path (e.g., `/team/11/user` starts with `team/:id`).
@@ -190,7 +190,7 @@ import {UrlSegment, UrlSegmentGroup} from './url_tree';
  * }]
  * ```
  *
- * ### Componentless Routes
+ * **Componentless Routes**
  *
  * It is useful at times to have the ability to share parameters between sibling components.
  *
@@ -233,7 +233,7 @@ import {UrlSegment, UrlSegmentGroup} from './url_tree';
  * With this configuration in place, navigating to '/parent/10' will create the main child and aux
  * components.
  *
- * ### Lazy Loading
+ * **Lazy Loading**
  *
  * Lazy loading speeds up our application load time by splitting it into multiple bundles, and
  * loading them on demand. The router is designed to make lazy loading simple and easy. Instead of

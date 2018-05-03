@@ -82,7 +82,7 @@ function containsSegmentGroupHelper(
  * serialized tree.
  * UrlTree is a data structure that provides a lot of affordances in dealing with URLs
  *
- * ### Example
+ * **Example**
  *
  * ```
  * @Component({templateUrl:'template.html'})
@@ -170,7 +170,7 @@ export class UrlSegmentGroup {
  * A UrlSegment is a part of a URL between the two slashes. It contains a path and the matrix
  * parameters associated with the segment.
  *
- * ## Example
+ * **Example**
  *
  * ```
  * @Component({templateUrl:'template.html'})
