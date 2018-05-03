@@ -60,7 +60,7 @@ export const formControlBinding: any = {
  * {@link AbstractControl#statusChanges statusChanges} to be notified when the validation status is
  * re-calculated.
  *
- * ### Example
+ * **Example**
  *
  * {@example forms/ts/simpleFormControl/simple_form_control_example.ts region='Component'}
  *
@@ -68,7 +68,7 @@ export const formControlBinding: any = {
  *
  * * **NgModule**: `ReactiveFormsModule`
  *
- * ### Use with ngModel
+ * **Use with ngModel**
  *
  * Support for using the `ngModel` input property and `ngModelChange` event with reactive
  * form directives has been deprecated in Angular v6 and will be removed in Angular v7.

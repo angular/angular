@@ -66,7 +66,7 @@ export class RadioControlRegistry {
  * value accessor will be active on any radio control that has a form directive. You do
  * **not** need to add a special selector to activate it.
  *
- * ### How to use radio buttons with form directives
+ * **How to use radio buttons with form directives**
  *
  * To use radio buttons in a template-driven form, you'll want to ensure that radio buttons
  * in the same group have the same `name` attribute.  Radio buttons with different `name`

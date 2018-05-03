@@ -46,7 +46,7 @@ export const formDirectiveProvider: any = {
  * triggered a form submission. The `ngSubmit` event will be emitted with the original form
  * submission event.
  *
- * ### Example
+ * **Example**
  *
  * In this example, we create form controls for first name and last name.
  *

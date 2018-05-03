@@ -506,7 +506,7 @@ export abstract class AbstractControl {
    *
    * Calling `setErrors` will also update the validity of the parent control.
    *
-   * ### Example
+   * **Example**
    *
    * ```
    * const login = new FormControl("someLogin");
@@ -924,7 +924,7 @@ export class FormControl extends AbstractControl {
  * When instantiating a `FormGroup`, pass in a collection of child controls as the first
  * argument. The key for each child will be the name under which it is registered.
  *
- * ### Example
+ * **Example**
  *
  * ```
  * const form = new FormGroup({
@@ -940,7 +940,7 @@ export class FormControl extends AbstractControl {
  * validators as the third arg. These come in handy when you want to perform validation
  * that considers the value of more than one child control.
  *
- * ### Example
+ * **Example**
  *
  * ```
  * const form = new FormGroup({
@@ -1052,7 +1052,7 @@ export class FormGroup extends AbstractControl {
    *  Sets the value of the `FormGroup`. It accepts an object that matches
    *  the structure of the group, with control names as keys.
    *
-   *  ### Example
+   *  Usage:
    *
    *  ```
    *  const form = new FormGroup({
@@ -1065,6 +1065,7 @@ export class FormGroup extends AbstractControl {
    *  console.log(form.value);   // {first: 'Nancy', last: 'Drew'}
    *
    *  ```
+   *
    * @throws This method performs strict checks, so it will throw an error if you try
    * to set the value of a control that doesn't exist or if you exclude the
    * value of a control.
@@ -1086,7 +1087,7 @@ export class FormGroup extends AbstractControl {
    *
    *  It accepts both super-sets and sub-sets of the group without throwing an error.
    *
-   *  ### Example
+   *  **Example**
    *
    *  ```
    *  const form = new FormGroup({
@@ -1122,7 +1123,7 @@ export class FormGroup extends AbstractControl {
    * can be a standalone value or a form state object with both a value and a disabled
    * status.
    *
-   * ### Example
+   * **Example**
    *
    * ```ts
    * this.form.reset({first: 'name', last: 'last name'});
@@ -1267,7 +1268,7 @@ export class FormGroup extends AbstractControl {
  * When instantiating a `FormArray`, pass in an array of child controls as the first
  * argument.
  *
- * ### Example
+ * **Example**
  *
  * ```
  * const arr = new FormArray([
@@ -1304,7 +1305,7 @@ export class FormGroup extends AbstractControl {
  * ], {updateOn: 'blur'});
  * ```
  *
- * ### Adding or removing controls
+ * **Adding or removing controls**
  *
  * To change the controls in the array, use the `push`, `insert`, or `removeAt` methods
  * in `FormArray` itself. These methods ensure the controls are properly tracked in the
@@ -1389,7 +1390,7 @@ export class FormArray extends AbstractControl {
    * to set the value of a control that doesn't exist or if you exclude the
    * value of a control.
    *
-   *  ### Example
+   *  **Example**
    *
    *  ```
    *  const arr = new FormArray([
@@ -1418,7 +1419,7 @@ export class FormArray extends AbstractControl {
    *
    *  It accepts both super-sets and sub-sets of the array without throwing an error.
    *
-   *  ### Example
+   *  **Example**
    *
    *  ```
    *  const arr = new FormArray([
@@ -1451,7 +1452,7 @@ export class FormArray extends AbstractControl {
    * that matches the structure of the control. The state can be a standalone value
    * or a form state object with both a value and a disabled status.
    *
-   * ### Example
+   * **Example**
    *
    * ```ts
    * this.arr.reset(['name', 'last name']);

@@ -21,7 +21,7 @@ export type ValidationErrors = {
 /**
  * An interface that can be implemented by classes that can act as validators.
  *
- * ## Usage
+ * Usage:
  *
  * ```typescript
  * @Directive({
@@ -34,7 +34,6 @@ export type ValidationErrors = {
  *   }
  * }
  * ```
- *
  *
  */
 export interface Validator {
@@ -64,12 +63,11 @@ export const CHECKBOX_REQUIRED_VALIDATOR: StaticProvider = {
  * A Directive that adds the `required` validator to any controls marked with the
  * `required` attribute, via the `NG_VALIDATORS` binding.
  *
- * ### Example
+ * Usage:
  *
  * ```
  * <input name="fullName" ngModel required>
  * ```
- *
  *
  */
 @Directive({
@@ -102,7 +100,7 @@ export class RequiredValidator implements Validator {
  * A Directive that adds the `required` validator to checkbox controls marked with the
  * `required` attribute, via the `NG_VALIDATORS` binding.
  *
- * ### Example
+ * Usage:
  *
  * ```
  * <input type="checkbox" name="active" ngModel required>
@@ -135,7 +133,7 @@ export const EMAIL_VALIDATOR: any = {
  * A Directive that adds the `email` validator to controls marked with the
  * `email` attribute, via the `NG_VALIDATORS` binding.
  *
- * ### Example
+ * Usage:
  *
  * ```
  * <input type="email" name="email" ngModel email>
@@ -291,7 +289,7 @@ export const PATTERN_VALIDATOR: any = {
  * as the regex to validate Control value against.  Follows pattern attribute
  * semantics; i.e. regex must match entire Control value.
  *
- * ### Example
+ * Usage:
  *
  * ```
  * <input [name]="fullName" pattern="[a-zA-Z ]*" ngModel>
