@@ -406,7 +406,7 @@ function serializeQueryParams(params: {[key: string]: any}): string {
   return strParams.length ? `?${strParams.join("&")}` : '';
 }
 
-const SEGMENT_RE = /^[^\/()?;=&#]+/;
+const SEGMENT_RE = /^[^\/()?;=#]+/;
 function matchSegments(str: string): string {
   const match = str.match(SEGMENT_RE);
   return match ? match[0] : '';
