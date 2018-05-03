@@ -13,7 +13,7 @@ export interface StyleData { [key: string]: string|number; }
 
 /**
 * @description Collects animation-step timing parameters for an animation step.  
-* @see {@link animate animate()}
+* @see [animate()](animate)
 */
 export declare type AnimateTimings = {
     /**
@@ -43,15 +43,15 @@ exampleFolders.forEach(folder => exampleMap[folder] = exampleMap[folder] || []);
  * @description Options that control animation styling and timing.
  * The following animation functions accept animation option data:
  *
- * - {@link transition transition()}
- * - {@link sequence sequence()}
- * - {@link group group()}
- * - {@link query query()}
- * - {@link animation animation()}
- * - {@link useAnimation useAnimation()}
- * - {@link animateChild animateChild()}
+ * - [transition()](transition)
+ * - [sequence()](sequence)
+ * - [group()](group)
+ * - [query()](query)
+ * - [animation()](animation)
+ * - [useAnimation()](useAnimation)
+ * - [animateChild()](animateChild)
  *
- * Programmatic animations built using {@link AnimationBuilder the AnimationBuilder service} also
+ * Programmatic animations built using [AnimationBuilder the AnimationBuilder service} also
  * make use of AnimationOptions.
  */
 export declare interface AnimationOptions {
@@ -72,79 +72,79 @@ export declare interface AnimationOptions {
 /**
  * @description Adds duration options to control animation styling and timing for a child animation.
  *
- * @see {@link animateChild animateChild()}
+ * @see [animateChild()](animateChild)
  */
 export declare interface AnimateChildOptions extends AnimationOptions { duration?: number|string; }
 
 /**
  * @description Constants for the categories of parameters that can be defined for animations.
  * 
- * A corresponding function defines a  set of parameters for each category, and
- * collects them into a corresponding {@link AnimationMetadata AnimationMetadata} child interface.
+ * A corresponding function defines a set of parameters for each category, and
+ * collects them into a corresponding `AnimationMetadata` object.
  */
 export const enum AnimationMetadataType {
     /**
      * Associates a named animation state with a set of CSS styles.
-     * See {@link state state()}
+     * See [state()](state)
      */
     State = 0,
     /**
      * Collects data for a transition from one animation state to another.
-     * See {@link transition transition()}
+     * See [transition()](transition)
      */
     Transition = 1,
     /**
      * Collects a set of animation steps.
-     * See {@link sequence sequence()}
+     * See [sequence()](sequence)
      */
     Sequence = 2,
     /**
      * Collects a set of animation steps.
-     * See {@link group group()}
+     * See [group()](group)
      */
     Group = 3,
     /**
      * Defines an animation step.
-     * See {@link animate animate()}
+     * See [animate()](animate)
      */
     Animate = 4,
     /**
      * Collects a set of animation steps.
-     * See {@link keyframes keyframes()}
+     * See [keyframes()](keyframes)
      */
     Keyframes = 5,
     /**
      * Collects a set of CSS property-value pairs into a named style.
-     * See {@link style style()}
+     * See [style()](style)
      */
     Style = 6,
     /**
      * Associates an animation with an entry trigger that can be attached to an element.
-     * See {@link trigger trigger()} 
+     * See [trigger()](trigger) 
      */
     Trigger = 7,
     /**
      * Encapsulates a re-usable animation.
-     * See {@link animation animation()}
+     * See [animation()](animation)
      */
     Reference = 8,
     /**
      * Collects data to use in executing child animations returned by a query.
-     * See {@link animateChild animateChild()}
+     * See [animateChild()](animateChild)
      */
     AnimateChild = 9,
     /**
-     * See {@link useAnimation useAnimation()}
+     * See [useAnimation()](useAnimation)
      */
     AnimateRef = 10,
     /**
      * Collects child-animation query data.
-     * See {@link query query()}
+     * See [query()](query)
      */
     Query = 11,
     /**
      * Collects data for staggering an animation sequence.
-     * See {@link stagger stagger()}
+     * See [stagger()](stagger)
      */
     Stagger = 12
 }
@@ -161,7 +161,7 @@ export interface AnimationMetadata { type: AnimationMetadataType; }
 
 /**
  * @description Encapsulates an animation trigger. Instantiated and returned by the
- * {@link trigger trigger()} function.
+ * [trigger()](trigger) function.
  */
 export interface AnimationTriggerMetadata extends AnimationMetadata {
     /**
@@ -182,7 +182,7 @@ export interface AnimationTriggerMetadata extends AnimationMetadata {
 
 /**
  * @description Encapsulates an animation state by associating a state name with a set of CSS styles.
- * Instantiated and returned by the {@link state state()} function.
+ * Instantiated and returned by the [state()](state) function.
  */
 export interface AnimationStateMetadata extends AnimationMetadata {
     /**
@@ -203,7 +203,7 @@ export interface AnimationStateMetadata extends AnimationMetadata {
 
 /**
  * @description Encapsulates an animation transition. Instantiated and returned by the
- * {@link transition transition()} function.
+ * [transition()](transition) function.
  */
 export interface AnimationTransitionMetadata extends AnimationMetadata {
   /**
@@ -225,8 +225,8 @@ export interface AnimationTransitionMetadata extends AnimationMetadata {
 
 /**
  * @description Encapsulates a reusable animation, which is a collection of individual animation steps.
- * Instantiated and returned by the {@link animation animation()} function, and
- * passed to the {@link useAnimation useAnimation()} function.
+ * Instantiated and returned by the [animation()](animation) function, and
+ * passed to the [useAnimation()](useAnimation) function.
  */
 export interface AnimationReferenceMetadata extends AnimationMetadata {
     /**
@@ -243,7 +243,7 @@ export interface AnimationReferenceMetadata extends AnimationMetadata {
 
 /**
  * @description Encapsulates an animation query. Instantiated and returned by
- * the {@link query query()} function.
+ * the [query()](query) function.
  */
 export interface AnimationQueryMetadata extends AnimationMetadata {
     /**
@@ -262,7 +262,7 @@ export interface AnimationQueryMetadata extends AnimationMetadata {
 
 /**
  * @description Encapsulates a keyframes sequence. Instantiated and returned by
- * the {@link keyframes keyframes()} function.
+ * the [keyframes()](keyframes) function.
  */
 export interface AnimationKeyframesSequenceMetadata extends AnimationMetadata {
     /**
@@ -273,7 +273,7 @@ export interface AnimationKeyframesSequenceMetadata extends AnimationMetadata {
 
 /**
  * @description Encapsulates an animation style. Instantiated and returned by
- * the {@link style style()} function.
+ * the [style()](style) function.
  */
 export interface AnimationStyleMetadata extends AnimationMetadata {
     /**
@@ -288,7 +288,7 @@ export interface AnimationStyleMetadata extends AnimationMetadata {
 
 /**
  * @description Encapsulates an animation step. Instantiated and returned by
- * the {@link animate animate()} function.
+ * the [animate()](animate) function.
  */
 export interface AnimationAnimateMetadata extends AnimationMetadata {
     /**
@@ -303,7 +303,7 @@ export interface AnimationAnimateMetadata extends AnimationMetadata {
 
 /**
  *  @description Encapsulates a child animation, that can be run explicitly when the parent is run.
- *  Instantiated and returned by the {@link animateChild animateChild()} function.
+ *  Instantiated and returned by the [animateChild()](animateChild) function.
  */
 export interface AnimationAnimateChildMetadata extends AnimationMetadata {
     /**
@@ -316,7 +316,7 @@ export interface AnimationAnimateChildMetadata extends AnimationMetadata {
 
 /**
  * @description Encapsulates a reusable animation.
- * Instantiated and returned by the {@link useAnimation useAnimation()} function.
+ * Instantiated and returned by the [useAnimation()](useAnimation) function.
  */
 export interface AnimationAnimateRefMetadata extends AnimationMetadata {
     /**
@@ -333,7 +333,7 @@ export interface AnimationAnimateRefMetadata extends AnimationMetadata {
 
 /**
  * @description Encapsulates an animation sequence.
- * Instantiated and returned by the {@link sequence sequence()} function.
+ * Instantiated and returned by the [sequence()](sequence) function.
  */
 export interface AnimationSequenceMetadata extends AnimationMetadata {
     /**
@@ -350,7 +350,7 @@ export interface AnimationSequenceMetadata extends AnimationMetadata {
 
 /**
  * @description Encapsulates an animation group.
- * Instantiated and returned by the {@link group group()} function.
+ * Instantiated and returned by the [group()](group) function.
  */
 export interface AnimationGroupMetadata extends AnimationMetadata {
     /**
@@ -367,7 +367,7 @@ export interface AnimationGroupMetadata extends AnimationMetadata {
 
 /**
  * @description Encapsulates animation query options.
- * Passed to the {@link query query()} function.
+ * Passed to the [query()](query) function.
  */
 export declare interface AnimationQueryOptions extends AnimationOptions {
     /**
@@ -384,7 +384,7 @@ export declare interface AnimationQueryOptions extends AnimationOptions {
 
 /**
  * @description Encapsulates staggering parameters for a set of animation steps.
- * Instantiated and returned by the {@link stagger stagger()} function.
+ * Instantiated and returned by the [stagger()](stagger) function.
  **/
 export interface AnimationStaggerMetadata extends AnimationMetadata {
     /**
@@ -398,18 +398,18 @@ export interface AnimationStaggerMetadata extends AnimationMetadata {
 }
 
 /**
- * @description Creates a named animation trigger, containing a  list of {@link state state}
- * and {@link transition transition} entries to be evaluated when the expression
+ * @description Creates a named animation trigger, containing a  list of [state()](state)
+ * and [transition()](transition) entries to be evaluated when the expression
  * bound to the trigger changes.
  *
  * @param name An identifying string.
- * @param definitions  An animation definition object, containing an array of {@link state state}
- * and {@link transition transition} declarations.
+ * @param definitions  An animation definition object, containing an array of [state()](state)
+ * and [transition()](transition) declarations.
  *
  * @return An object that encapsulates the trigger data.
  * 
  * @usageNotes Define an animation trigger in the
- * {@link Component#animations @Component.animations section}.
+ * [@Component.animations section](Component#animations).
  * In the template, reference the trigger by name and bind it to a trigger expression that
  * evaluates to a defined animation state, using the following format:
  *
@@ -529,15 +529,15 @@ export interface AnimationStaggerMetadata extends AnimationMetadata {
  * ```
  *
  * ### Overriding disablement of inner animations
- * Despite inner animations being disabled, a parent animation can {@link query query}
+ * Despite inner animations being disabled, a parent animation can [query()](query)
  * for inner elements located in disabled areas of the template and still animate 
  * them if needed. This is also the case for when a sub animation is 
- * queried by a parent and then later animated using {@link animateChild animateChild}.
+ * queried by a parent and then later animated using [animateChild()](animateChild).
  *
  * ### Detecting when an animation is disabled
  * If a region of the DOM (or the entire application) has its animations disabled, the animation
  * trigger callbacks still fire, but for zero seconds. When the callback fires, it provides
- * an instance of an {@link AnimationEvent}. If animations are disabled,
+ * an instance of an [AnimationEvent](AnimationEvent). If animations are disabled,
  * the `.disabled` flag on the event is true.
  *
  * @experimental Animation support is experimental.
@@ -567,15 +567,15 @@ return {type: AnimationMetadataType.Trigger, name, definitions, options: {}};
  * 1000 milliseconds, and delay of 100 ms, and the "ease-out" easing style,
  * which decelerates near the end of the duration.
  * @param styles Sets AnimationStyles for the parent animation.
- * A function call to either {@link style  style()} or {@link keyframes keyframes()}
+ * A function call to either [style()](style) or [keyframes()](keyframes)
  * that returns a collection of CSS style entries to be applied to the parent animation.
  * When null, uses the styles from the destination state.
  * This is useful when describing an animation step that will complete an animation;
  * see "Animating to the final state" in [transitions()](transitions).
  * @returns An object that encapsulates the animation step.
  * 
- * @usageNotes Call within an animation {@link sequence sequence()}, {@link group group()}, or
- * {@link transition transition()} call to specify an animation step
+ * @usageNotes Call within an animation [sequence()](sequence), [group()](group), or
+ * [transition()](transition) call to specify an animation step
  * that applies given style data to the parent animation for a given amount of time.
  *
  * ### Syntax Examples
@@ -590,11 +590,11 @@ return {type: AnimationMetadataType.Trigger, name, definitions, options: {}};
  *
  * **Style examples**
  *
- * The following example calls `style()` to set a single CSS style.
+ * The following example calls [style()](style) to set a single CSS style.
  * ```
  * animate(500, style({ background: "red" }))
  * ```
- * The following example calls `keyframes()` to set a CSS style
+ * The following example calls [keyframes()](keyframes) to set a CSS style
  * to different values for successive keyframes.
  * ```
  * animate(500, keyframes(
@@ -614,10 +614,10 @@ return {type: AnimationMetadataType.Animate, styles, timings};
  * @description Defines a list of animation steps to be run in parallel.
  *
  * @param steps An array of animation step objects.
- * - When steps are defined by {@link style style()} or {@link animate animate()}
+ * - When steps are defined by [style()](style) or [animate()](animate)
  *  function calls, each call within the group is executed instantly.
  * - To specify offset styles to be applied at a later time, define steps with
- *   {@link keyframes keyframes()}, or use {@link animate animate()} calls
+ *   [keyframes()](keyframes), or use [animate()](animate) calls
  *   with a delay value. For example:
  * ``` typescript
  * group([
@@ -635,8 +635,8 @@ return {type: AnimationMetadataType.Animate, styles, timings};
  * @usageNotes Grouped animations are useful when a series of styles must be 
  * animated at different starting times and closed off at different ending times.
  *
- * When called within a {@link sequence sequence()} or a
- * {@link transition transition()} call, does not continue to the next
+ * When called within a [sequence()](sequence) or a
+ * [transition()](transition) call, does not continue to the next
  * instruction until all of the inner animation steps have completed.
  *
  */
@@ -651,8 +651,8 @@ return {type: AnimationMetadataType.Group, steps, options};
  * @description Defines a list of animation steps to be run sequentially, one by one.
  *
  * @param steps An array of animation step objects.
- * - Steps defined by {@link style style()} calls apply the styling data immediately.
- * - Steps defined by {@link animate animate()} calls apply the styling data over time
+ * - Steps defined by [style()](style) calls apply the styling data immediately.
+ * - Steps defined by [animate()](animate) calls apply the styling data over time
  *   as specified by the timing data.
  *
  * ``` typescript
@@ -670,10 +670,10 @@ return {type: AnimationMetadataType.Group, steps, options};
  *
  * @usageNotes
  * When you pass an array of steps to a
- * {@link transition transition()} call, the steps run sequentially by default.
- * Compare this to the {@link group group()} call, which runs animation steps in parallel.
+ * [transition()](transition) call, the steps run sequentially by default.
+ * Compare this to the [group()](group) call, which runs animation steps in parallel.
  *
- * When a sequence is used within a {@link group group()} or a {@link transition transition()} call,
+ * When a sequence is used within a [group()](group) or a [transition()](transition) call,
  * execution continues to the next instruction only after each of the inner animation
  * steps have completed.
  *
@@ -687,8 +687,8 @@ return {type: AnimationMetadataType.Sequence, steps, options};
 
 /**
  * @description Declares a key/value object containing CSS properties/styles that
- * can then be used for {@link state animation states}, within an {@link sequence animation sequence},
- * or as styling data for calls to {@link animate animate()} and {@link keyframes keyframes()}.
+ * can then be used for [animation states](state), within an [animation sequence](sequence),
+ * or as styling data for calls to [animate()](animate) and [keyframes()](keyframes).
  *
  * @param tokens A set of CSS styles or HTML styles associated with an animation state.
  * The value can be any of the following:
@@ -731,7 +731,7 @@ return {type: AnimationMetadataType.Style, styles: tokens, offset: null};
  *
  * @param name One or more names for the defined state in a comma-separated string.
  * A "stateNameExpr" can be one or more state names separated by commas.
- * ("stateNameExpr" does not occur anywhere else on the page - is it the correct type for the name param?)
+ * (???"stateNameExpr" does not occur anywhere else on the page - is it the correct type for the name param?)
  * The following reserved state names can be supplied to define a style for specific usage:
  *
  * - `void` You can associate styles with this name to be used when
@@ -741,15 +741,13 @@ return {type: AnimationMetadataType.Style, styles: tokens, offset: null};
  * to be used as the fallback when the state that is being animated is not declared
  * within the trigger.
  *
- * @param styles A set of CSS styles associated with this state, created using the {@link style style()} function.
+ * @param styles A set of CSS styles associated with this state, created using the [style()](style) function.
  * This set of styles persists on the element once the state has been reached.
- *
  * @param options Parameters that can be passed to the state when it is invoked. 0 or more key-value pairs.
- *
  * @return An object that encapsulates the new state data.
  *
- * @usageNotes Use the {@link trigger trigger()} function to register states to an animation trigger.
- * Use the {@link transition transition()} function to animate between states.
+ * @usageNotes Use the [trigger()](trigger) function to register states to an animation trigger.
+ * Use the [transition()](transition) function to animate between states.
  * When a state is active within a component, its associated styles persist on the element,
  * even when the animation ends.
  *
@@ -770,10 +768,10 @@ return {type: AnimationMetadataType.State, name, styles, options};
  * time at which that style is applied.
  * @returns An object that encapsulates the keyframes data.
  *
- * @usageNotes Use with the {@link animate animate()} call. Instead of applying animations from the current state
+ * @usageNotes Use with the [animate()](animate) call. Instead of applying animations from the current state
  * to the destination state, keyframes describe how each style entry is applied and at what point
  * within the animation arc.
- * Compare {@link https://www.w3schools.com/css/css3_animations.asp CSS Keyframe Animations}.
+ * Compare [CSS Keyframe Animations](https://www.w3schools.com/css/css3_animations.asp).
  *
  * ### Usage
  *
@@ -829,10 +827,10 @@ return {type: AnimationMetadataType.Keyframes, steps};
  *   - Special values `:increment` and `:decrement` initiate a transition when a numeric value has
  * increased or decreased in value.
  * - A function is executed each time a state change occurs in the animation trigger element.
- *  The animation steps run when the function returns true.
+ * The animation steps run when the function returns true.
  *
- * @param steps One or more animation objects, as returned by the {@link animate animate()} or
- * {@link sequence sequence()} function, that form a transformation from one state to another.
+ * @param steps One or more animation objects, as returned by the [animate()](animate) or
+ * [sequence()](sequence) function, that form a transformation from one state to another.
  * A sequence is used by default when you pass an array.
  * @param options An options object that can contain a delay value for the start of the animation,
  * and additional developer-defined parameters. Provided values for additional parameters are used as defaults,
@@ -858,8 +856,8 @@ return {type: AnimationMetadataType.Keyframes, steps};
  *  ...]
  * ```
  *
- * Note that when you call the {@link sequence sequence()} function within a {@link group group()}
- * or a {@link transition transition()} call, execution does not continue to the next instruction
+ * Note that when you call the [sequence()](sequence) function within a [group()](group)
+ * or a [transition()](transition) call, execution does not continue to the next instruction
  * until each of the inner animation steps have completed.
  *
  * ### Syntax examples
@@ -941,7 +939,7 @@ return {type: AnimationMetadataType.Keyframes, steps};
  *
  * ### Animating to the final state
  *
- * If the final step in a transition is a call to `animate()` that uses a timing value
+ * If the final step in a transition is a call to [animate()](animate) that uses a timing value
  * with no style data, that step is automatically considered the final animation arc,
  * for the element to reach the final state. Angular automatically adds or removes
  * CSS styles to ensure that the element is in the correct final state.
@@ -977,9 +975,9 @@ return {type: AnimationMetadataType.Transition, expr: stateChangeExpr, animation
 
 /**
  * @description Produces a reusable animation that can be invoked in another animation or sequence,
- * by calling the {@link useAnimation useAnimation()} function.
+ * by calling the [useAnimation()](useAnimation) function.
  *
- * @param steps One or more animation objects, as returned by the `animate()` or `sequence()` function,
+ * @param steps One or more animation objects, as returned by the [animate()](animate) or [sequence()](sequence) function,
  * that form a transformation from one state to another. A sequence is used by default when you pass an array.
  * @param options An options object that can contain a delay value for the start of the animation,
  * and additional developer-defined parameters. Provided values for additional parameters are used as defaults,
@@ -998,7 +996,7 @@ return {type: AnimationMetadataType.Transition, expr: stateChangeExpr, animation
  *   ], 
  *   { params: { time: '1000ms', start: 0, end: 1 }});
  * ```
- * The following invokes the defined animation with a call to `useAnimation()`, passing in override
+ * The following invokes the defined animation with a call to [useAnimation()](useAnimation), passing in override
  * parameter values. 
  *
  * ```js
@@ -1012,7 +1010,7 @@ return {type: AnimationMetadataType.Transition, expr: stateChangeExpr, animation
  * ```
  * If any of the passed-in parameter values are missing from this call, 
  * the default values are used. If one or more parameter values are missing before a step is
- * animated, 'useAnimation()` throws an error.
+ * animated, [useAnimation()](useAnimation) throws an error.
  */
 export function animation(
  steps: AnimationMetadata | AnimationMetadata[],
@@ -1032,7 +1030,7 @@ return {type: AnimationMetadataType.Reference, animation: steps, options};
  * for a child animation to run, the parent animation must query each of the elements
  * containing child animations, and run them using this function.
  *
- * Note that this feature designed to be used with {@link query query()} and it will only work
+ * Note that this feature designed to be used with [query()](query) and it will only work
  * with animations that are assigned using the Angular animation library. CSS keyframes
  * and transitions are not handled by this API.
  *
@@ -1043,7 +1041,7 @@ return {type: AnimationMetadataType.AnimateChild, options};
 }
 
 /**
- * @description Starts a reusable animation that is created using the {@link animation animation()} function.
+ * @description Starts a reusable animation that is created using the [animation()](animation) function.
  *
  * @param animation The reusable animation to start.
  * @param options An options object that can contain a delay value for the start of the animation,
@@ -1058,7 +1056,7 @@ return {type: AnimationMetadataType.AnimateRef, animation, options};
 
 /**
  * @description Finds one or more inner elements within the current element that is
- * being animated within a sequence. Use with {@link animateChild animateChild()}.
+ * being animated within a sequence. Use with [animateChild()](animateChild).
  *
  * @param selector The element to query, or a set of elements that contain Angular-specific
  * characteristics, specified with one or more of the following tokens.
@@ -1102,7 +1100,7 @@ return {type: AnimationMetadataType.AnimateRef, animation, options};
  *
  * ### Usage Example
  * The following example queries for inner elements and animates them
- * individually using {@link animateChild animateChild()}. 
+ * individually using [animateChild()](animateChild). 
  *
  * ```
  * @Component({
@@ -1147,7 +1145,7 @@ return {type: AnimationMetadataType.Query, selector, animation, options};
 }
 
 /**
- * @description Use within an animation {@link query query()} call to issue a timing gap after
+ * @description Use within an animation [query()](query) call to issue a timing gap after
  * each queried item is animated.
  *
  * @param timings A delay value.
@@ -1156,7 +1154,7 @@ return {type: AnimationMetadataType.Query, selector, animation, options};
  *
  * @usageNotes
  * In the following example, a container element wraps a list of items stamped out
- * by an ngFor. The container element contains an animation trigger that will later be set
+ * by an `ngFor`. The container element contains an animation trigger that will later be set
  * to query for each of the inner items.
  *
  * Each time items are added, the opacity fade-in animation runs,
