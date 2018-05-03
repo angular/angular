@@ -52,6 +52,7 @@ const cliRelativePath = BOILERPLATE_PATHS.cli.map(file => `../cli/${file}`);
 
 BOILERPLATE_PATHS.i18n = [
   ...cliRelativePath,
+  'angular.json',
   'package.json'
 ];
 
@@ -63,7 +64,7 @@ BOILERPLATE_PATHS.universal = [
 
 BOILERPLATE_PATHS.testing = [
   ...cliRelativePath,
-  '.angular-cli.json'
+  'angular.json'
 ];
 
 const EXAMPLE_CONFIG_FILENAME = 'example-config.json';
