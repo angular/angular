@@ -28,7 +28,7 @@ let nextId = 0;
  * events and attributes needed to be managed by a CdkAccordion parent.
  */
 @Directive({
-  selector: 'cdk-accordion-item',
+  selector: 'cdk-accordion-item, [cdkAccordionItem]',
   exportAs: 'cdkAccordionItem',
 })
 export class CdkAccordionItem implements OnDestroy {
