@@ -450,7 +450,7 @@ Here is a `searchHeroes` method that queries for heroes whose names contain the 
 
 If there is a search term, the code constructs an options object with an HTML URL-encoded search parameter. If the term were "foo", the GET request URL would be `api/heroes/?name=foo`.
 
-The `HttpParms` are immutable so you'll have to use the `set()` method to update the options.
+The `HttpParams` are immutable so you'll have to use the `set()` method to update the options.
 
 ### Debouncing requests
 
