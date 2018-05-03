@@ -331,7 +331,7 @@ export interface Directive {
   /**
    * Defines the name that can be used in the template to assign this directive to a variable.
    *
-   * **Example**:
+   * The following example demonstrates how to specify how a component is exported.
    *
    * ```
    * @Directive({
@@ -358,7 +358,8 @@ export interface Directive {
    * Content queries are set before the `ngAfterContentInit` callback is called.
    * View queries are set before the `ngAfterViewInit` callback is called.
    *
-   * **Example**:
+   * The following example demonstrates how to specify `contentChilden` and
+   * `viewChildren` queries on a component.
    *
    * ```
    * @Component({
@@ -450,7 +451,8 @@ export interface ComponentDecorator {
    * * **templateUrl** - url to an external file containing a template for the view
    * * **viewProviders** - list of providers available to this component and its view children
    *
-   * **Example:**
+   * The following example demonstrates how to define a component using the `@Component`
+   * decorator.
    *
    * {@example core/ts/metadata/metadata.ts region='component'}
    *
@@ -521,7 +523,7 @@ export interface Component extends Directive {
    * In CommonJS, this can always be set to `module.id`, similarly SystemJS exposes `__moduleName`
    * variable within each module.
    *
-   * **Example**:
+   * The following example demonstrates how to specify the module id for a component.
    *
    * ```
    * @Directive({

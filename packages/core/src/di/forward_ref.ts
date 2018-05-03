@@ -14,7 +14,7 @@ import {stringify} from '../util';
 /**
  * An interface that a function passed into {@link forwardRef} has to implement.
  *
- * **Usage:**
+ * The following example demonstrates how to use the `forwardRef` interface:
  *
  * {@example core/di/ts/forward_ref/forward_ref_spec.ts region='forward_ref_fn'}
  *

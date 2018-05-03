@@ -197,6 +197,7 @@ export class PlatformRef {
    * for offline compilation.
    *
    * ** The following example demonstrates calling `bootstrapModuleFactory`:**
+   *
    * ```typescript
    * my_module.ts:
    *
