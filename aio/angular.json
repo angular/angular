@@ -8,6 +8,7 @@
   "projects": {
     "site": {
       "root": "",
+      "sourceRoot": "src",
       "projectType": "application",
       "architect": {
         "build": {
@@ -29,36 +30,12 @@
             "vendorChunk": false,
             "polyfills": "src/polyfills.ts",
             "assets": [
-              {
-                "glob": "**/*",
-                "input": "src/assets",
-                "output": "/assets"
-              },
-              {
-                "glob": "**/*",
-                "input": "src/generated",
-                "output": "/generated"
-              },
-              {
-                "glob": "app/search/search-worker.js",
-                "input": "src",
-                "output": "/"
-              },
-              {
-                "glob": "favicon.ico",
-                "input": "src",
-                "output": "/"
-              },
-              {
-                "glob": "pwa-manifest.json",
-                "input": "src",
-                "output": "/"
-              },
-              {
-                "glob": "google385281288605d160.html",
-                "input": "src",
-                "output": "/"
-              },
+              "src/assets",
+              "src/generated",
+              "src/app/search/search-worker.js",
+              "src/favicon.ico",
+              "src/pwa-manifest.json",
+              "src/google385281288605d160.html",
               {
                 "glob": "custom-elements.min.js",
                 "input": "node_modules/@webcomponents/custom-elements",
@@ -71,9 +48,7 @@
               }
             ],
             "styles": [
-              {
-                "input": "src/styles.scss"
-              }
+              "src/styles.scss"
             ],
             "scripts": []
           },
@@ -142,41 +117,15 @@
             "tsConfig": "src/tsconfig.spec.json",
             "scripts": [],
             "styles": [
-              {
-                "input": "src/styles.scss"
-              }
+              "src/styles.scss"
             ],
             "assets": [
-              {
-                "glob": "**/*",
-                "input": "src/assets",
-                "output": "/assets"
-              },
-              {
-                "glob": "**/*",
-                "input": "src/generated",
-                "output": "/generated"
-              },
-              {
-                "glob": "app/search/search-worker.js",
-                "input": "src",
-                "output": "/"
-              },
-              {
-                "glob": "favicon.ico",
-                "input": "src",
-                "output": "/"
-              },
-              {
-                "glob": "pwa-manifest.json",
-                "input": "src",
-                "output": "/"
-              },
-              {
-                "glob": "google385281288605d160.html",
-                "input": "src",
-                "output": "/"
-              },
+              "src/assets",
+              "src/generated",
+              "src/app/search/search-worker.js",
+              "src/favicon.ico",
+              "src/pwa-manifest.json",
+              "src/google385281288605d160.html",
               {
                 "glob": "custom-elements.min.js",
                 "input": "node_modules/@webcomponents/custom-elements",
