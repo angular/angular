@@ -12,8 +12,8 @@
   <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500" rel="stylesheet">
 
   <script>
-    if (customElements) {
-      customElements.forcePolyfill = true;
+    if (window.customElements) {
+      window.customElements.forcePolyfill = true;
     }
   </script>
   <script src="node_modules/@webcomponents/custom-elements/custom-elements.min.js"></script>
@@ -29,7 +29,7 @@
   <script src="node_modules/systemjs/dist/system.src.js"></script>
   <script src="node_modules/zone.js/dist/zone.js"></script>
   <script src="node_modules/hammerjs/hammer.min.js"></script>
-  
+
   <script>
     System.import('system-config.js').then(function () {
       System.import('main');
