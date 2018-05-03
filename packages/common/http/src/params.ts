@@ -28,13 +28,13 @@ export interface HttpParameterCodec {
  *
  */
 export class HttpUrlEncodingCodec implements HttpParameterCodec {
-  encodeKey(k: string): string { return standardEncoding(k); }
+  encodeKey(key: string): string { return standardEncoding(key); }
 
-  encodeValue(v: string): string { return standardEncoding(v); }
+  encodeValue(value: string): string { return standardEncoding(value); }
 
-  decodeKey(k: string): string { return decodeURIComponent(k); }
+  decodeKey(key: string): string { return decodeURIComponent(key); }
 
-  decodeValue(v: string) { return decodeURIComponent(v); }
+  decodeValue(value: string) { return decodeURIComponent(value); }
 }
 
 
