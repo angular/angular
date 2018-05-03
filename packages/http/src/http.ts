@@ -47,7 +47,7 @@ function mergeOptions(
  * `request` returns an `Observable` which will emit a single {@link Response} when a
  * response is received.
  *
- * ### Example
+ * **Example**
  *
  * ```typescript
  * import {Http, HTTP_PROVIDERS} from '@angular/http';
@@ -71,7 +71,7 @@ function mergeOptions(
  * ```
  *
  *
- * ### Example
+ * **Example**
  *
  * ```
  * http.get('people.json').subscribe((res:Response) => this.people = res.json());
@@ -81,7 +81,7 @@ function mergeOptions(
  * {@link XHRBackend} in this case), which could be mocked with dependency injection by replacing
  * the {@link XHRBackend} provider, as in the following example:
  *
- * ### Example
+ * **Example**
  *
  * ```typescript
  * import {BaseRequestOptions, Http} from '@angular/http';
