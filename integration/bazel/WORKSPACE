@@ -2,9 +2,9 @@ workspace(name = "bazel_integration_test")
 
 http_archive(
     name = "build_bazel_rules_nodejs",
-    url = "https://github.com/bazelbuild/rules_nodejs/archive/cd368bd71a4b04fae0eafb5c5e2c906a93772584.zip",
-    strip_prefix = "rules_nodejs-cd368bd71a4b04fae0eafb5c5e2c906a93772584",
-    sha256 = "db74c61dd8bf73cc50aed56e78b7a8ad383f5869206901506cf8d3ee27f9277f",
+    url = "https://github.com/bazelbuild/rules_nodejs/archive/0.8.0.zip",
+    strip_prefix = "rules_nodejs-0.8.0",
+    sha256 = "4e40dd49ae7668d245c3107645f2a138660fcfd975b9310b91eda13f0c973953",
 )
 
 load("@build_bazel_rules_nodejs//:defs.bzl", "node_repositories")
