@@ -19,3 +19,8 @@
   <p>div with subtree focus monitored</p>
   <button>1</button><button>2</button>
 </div>
+
+<div class="demo-focusable" cdkMonitorSubtreeFocus>
+  <p>Parent div should get same focus origin as button when button is focused:</p>
+  <button class="demo-focusable" cdkMonitorElementFocus>focus me</button>
+</div>

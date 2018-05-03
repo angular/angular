@@ -6,10 +6,10 @@ import {
   patchElementFocus,
 } from '@angular/cdk/testing';
 import {Component} from '@angular/core';
-import {ComponentFixture, fakeAsync, inject, TestBed, tick} from '@angular/core/testing';
+import {ComponentFixture, fakeAsync, flush, inject, TestBed, tick} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
-import {FocusMonitor, FocusOrigin, TOUCH_BUFFER_MS} from './focus-monitor';
 import {A11yModule} from '../index';
+import {FocusMonitor, FocusOrigin, TOUCH_BUFFER_MS} from './focus-monitor';
 
 
 describe('FocusMonitor', () => {
@@ -224,6 +224,7 @@ describe('cdkMonitorFocus', () => {
         ButtonWithFocusClasses,
         ComplexComponentWithMonitorElementFocus,
         ComplexComponentWithMonitorSubtreeFocus,
+        ComplexComponentWithMonitorSubtreeFocusAnfMonitorElementFocus,
       ],
     }).compileComponents();
   });
@@ -391,6 +392,36 @@ describe('cdkMonitorFocus', () => {
       expect(parentElement.classList.length).toBe(2, 'button should have exactly 2 focus classes');
     }));
   });
+
+  describe('complex component with cdkMonitorSubtreeFocus and cdkMonitorElementFocus', () => {
+    let fixture: ComponentFixture<ComplexComponentWithMonitorSubtreeFocusAnfMonitorElementFocus>;
+    let parentElement: HTMLElement;
+    let childElement: HTMLElement;
+    let focusMonitor: FocusMonitor;
+
+    beforeEach(inject([FocusMonitor], (fm: FocusMonitor) => {
+      focusMonitor = fm;
+      fixture =
+          TestBed.createComponent(ComplexComponentWithMonitorSubtreeFocusAnfMonitorElementFocus);
+      fixture.detectChanges();
+
+      parentElement = fixture.debugElement.query(By.css('div')).nativeElement;
+      childElement = fixture.debugElement.query(By.css('button')).nativeElement;
+
+      patchElementFocus(parentElement);
+      patchElementFocus(childElement);
+    }));
+
+    it('should add keyboard focus classes on both elements when child is focused via keyboard',
+        fakeAsync(() => {
+          focusMonitor.focusVia(childElement, 'keyboard');
+          fixture.detectChanges();
+          flush();
+
+          expect(parentElement.classList).toContain('cdk-keyboard-focused');
+          expect(childElement.classList).toContain('cdk-keyboard-focused');
+        }));
+  });
 });
 
 
@@ -418,3 +449,8 @@ class ComplexComponentWithMonitorElementFocus {}
   template: `<div tabindex="0" cdkMonitorSubtreeFocus><button></button></div>`
 })
 class ComplexComponentWithMonitorSubtreeFocus {}
+
+@Component({
+  template: `<div cdkMonitorSubtreeFocus><button cdkMonitorElementFocus></button></div>`
+})
+class ComplexComponentWithMonitorSubtreeFocusAnfMonitorElementFocus {}

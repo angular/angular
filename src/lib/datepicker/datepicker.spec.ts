@@ -1,11 +1,11 @@
 import {ENTER, ESCAPE, RIGHT_ARROW, UP_ARROW} from '@angular/cdk/keycodes';
 import {Overlay, OverlayContainer, ScrollDispatcher} from '@angular/cdk/overlay';
 import {
+  createKeyboardEvent,
+  dispatchEvent,
   dispatchFakeEvent,
   dispatchKeyboardEvent,
   dispatchMouseEvent,
-  createKeyboardEvent,
-  dispatchEvent,
 } from '@angular/cdk/testing';
 import {Component, FactoryProvider, Type, ValueProvider, ViewChild} from '@angular/core';
 import {ComponentFixture, fakeAsync, flush, inject, TestBed} from '@angular/core/testing';
@@ -23,12 +23,12 @@ import {
 import {MatFormField, MatFormFieldModule} from '@angular/material/form-field';
 import {By} from '@angular/platform-browser';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
+import {Subject} from 'rxjs';
 import {MatInputModule} from '../input/index';
 import {MatDatepicker} from './datepicker';
 import {MatDatepickerInput} from './datepicker-input';
 import {MatDatepickerToggle} from './datepicker-toggle';
 import {MAT_DATEPICKER_SCROLL_STRATEGY, MatDatepickerIntl, MatDatepickerModule} from './index';
-import {Subject} from 'rxjs';
 import {Directionality} from '@angular/cdk/bidi';
 import {BrowserDynamicTestingModule} from '@angular/platform-browser-dynamic/testing';
 
@@ -308,6 +308,7 @@ describe('MatDatepicker', () => {
 
         testComponent.datepicker.open();
         fixture.detectChanges();
+        flush();
 
         let ownedElementId = inputEl.getAttribute('aria-owns');
         expect(ownedElementId).not.toBeNull();
@@ -945,6 +946,7 @@ describe('MatDatepicker', () => {
         testComponent.formField.color = 'primary';
         testComponent.datepicker.open();
         fixture.detectChanges();
+        flush();
 
         let contentEl = document.querySelector('.mat-datepicker-content')!;
 
@@ -959,6 +961,7 @@ describe('MatDatepicker', () => {
 
         contentEl = document.querySelector('.mat-datepicker-content')!;
         fixture.detectChanges();
+        flush();
 
         expect(contentEl.classList).toContain('mat-warn');
         expect(contentEl.classList).not.toContain('mat-primary');
@@ -969,6 +972,7 @@ describe('MatDatepicker', () => {
         testComponent.formField.color = 'warn';
         testComponent.datepicker.open();
         fixture.detectChanges();
+        flush();
 
         const contentEl = document.querySelector('.mat-datepicker-content')!;
 

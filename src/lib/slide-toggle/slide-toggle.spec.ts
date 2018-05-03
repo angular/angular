@@ -1,18 +1,12 @@
-import {Component} from '@angular/core';
-import {By, HAMMER_GESTURE_CONFIG} from '@angular/platform-browser';
-import {
-  ComponentFixture,
-  TestBed,
-  fakeAsync,
-  tick,
-  flushMicrotasks,
-} from '@angular/core/testing';
-import {NgModel, FormsModule, ReactiveFormsModule, FormControl} from '@angular/forms';
-import {MatSlideToggle, MatSlideToggleChange, MatSlideToggleModule} from './index';
-import {TestGestureConfig} from '../slider/test-gesture-config';
-import {dispatchFakeEvent} from '@angular/cdk/testing';
-import {defaultRippleAnimationConfig} from '@angular/material/core';
 import {MutationObserverFactory} from '@angular/cdk/observers';
+import {dispatchFakeEvent} from '@angular/cdk/testing';
+import {Component} from '@angular/core';
+import {ComponentFixture, fakeAsync, flushMicrotasks, TestBed, tick} from '@angular/core/testing';
+import {FormControl, FormsModule, NgModel, ReactiveFormsModule} from '@angular/forms';
+import {defaultRippleAnimationConfig} from '@angular/material/core';
+import {By, HAMMER_GESTURE_CONFIG} from '@angular/platform-browser';
+import {TestGestureConfig} from '../slider/test-gesture-config';
+import {MatSlideToggle, MatSlideToggleChange, MatSlideToggleModule} from './index';
 
 describe('MatSlideToggle without forms', () => {
   let gestureConfig: TestGestureConfig;

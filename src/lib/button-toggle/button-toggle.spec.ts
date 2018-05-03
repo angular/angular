@@ -1,13 +1,13 @@
-import {fakeAsync, tick, ComponentFixture, TestBed} from '@angular/core/testing';
 import {dispatchMouseEvent} from '@angular/cdk/testing';
-import {NgModel, FormsModule, ReactiveFormsModule, FormControl} from '@angular/forms';
-import {Component, DebugElement, ViewChild, ViewChildren, QueryList} from '@angular/core';
+import {Component, DebugElement, QueryList, ViewChild, ViewChildren} from '@angular/core';
+import {ComponentFixture, fakeAsync, flush, TestBed, tick} from '@angular/core/testing';
+import {FormControl, FormsModule, NgModel, ReactiveFormsModule} from '@angular/forms';
 import {By} from '@angular/platform-browser';
 import {
-  MatButtonToggleGroup,
-  MatButtonToggleGroupMultiple,
   MatButtonToggle,
   MatButtonToggleChange,
+  MatButtonToggleGroup,
+  MatButtonToggleGroupMultiple,
   MatButtonToggleModule,
 } from './index';
 
@@ -574,13 +574,14 @@ describe('MatButtonToggle without forms', () => {
 
     it('should toggle when clicked', fakeAsync(() => {
       buttonToggleLabelElement.click();
-
       fixture.detectChanges();
+      flush();
 
       expect(buttonToggleInstance.checked).toBe(true);
 
       buttonToggleLabelElement.click();
       fixture.detectChanges();
+      flush();
 
       expect(buttonToggleInstance.checked).toBe(false);
     }));

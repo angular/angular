@@ -18,7 +18,7 @@ import {
   Output,
   SkipSelf,
 } from '@angular/core';
-import {of as observableOf, Observable, Subject, Subscription} from 'rxjs';
+import {Observable, of as observableOf, Subject, Subscription} from 'rxjs';
 
 
 // This is the value used by AngularJS Material. Through trial and error (on iPhone 6S) they found
@@ -187,7 +187,7 @@ export class FocusMonitor implements OnDestroy {
     // focused element.
     let windowFocusListener = () => {
       this._windowFocused = true;
-      this._windowFocusTimeoutId = setTimeout(() => this._windowFocused = false, 0);
+      this._windowFocusTimeoutId = setTimeout(() => this._windowFocused = false);
     };
 
     // Note: we listen to events in the capture phase so we can detect them even if the user stops
@@ -246,7 +246,7 @@ export class FocusMonitor implements OnDestroy {
   private _setOriginForCurrentEventQueue(origin: FocusOrigin): void {
     this._ngZone.runOutsideAngular(() => {
       this._origin = origin;
-      this._originTimeoutId = setTimeout(() => this._origin = null, 0);
+      this._originTimeoutId = setTimeout(() => this._origin = null);
     });
   }
 
@@ -302,20 +302,20 @@ export class FocusMonitor implements OnDestroy {
     // 2) It was caused by a touch event, in which case we mark the origin as 'touch'.
     // 3) The element was programmatically focused, in which case we should mark the origin as
     //    'program'.
-    if (!this._origin) {
+    let origin = this._origin;
+    if (!origin) {
       if (this._windowFocused && this._lastFocusOrigin) {
-        this._origin = this._lastFocusOrigin;
+        origin = this._lastFocusOrigin;
       } else if (this._wasCausedByTouch(event)) {
-        this._origin = 'touch';
+        origin = 'touch';
       } else {
-        this._origin = 'program';
+        origin = 'program';
       }
     }
 
-    this._setClasses(element, this._origin);
-    elementInfo.subject.next(this._origin);
-    this._lastFocusOrigin = this._origin;
-    this._origin = null;
+    this._setClasses(element, origin);
+    elementInfo.subject.next(origin);
+    this._lastFocusOrigin = origin;
   }
 
   /**
@@ -351,7 +351,6 @@ export class FocusMonitor implements OnDestroy {
       this._unregisterGlobalListeners = () => {};
     }
   }
-
 }
 
 
