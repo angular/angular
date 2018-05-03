@@ -29,7 +29,7 @@ export type ValidationErrors = {
  *   providers: [{provide: NG_VALIDATORS, useExisting: CustomValidatorDirective, multi: true}]
  * })
  * class CustomValidatorDirective implements Validator {
- *   validate(c: Control): {[key: string]: any} {
+ *   validate(control: AbstractControl): {[key: string]: any} {
  *     return {"custom": true};
  *   }
  * }
@@ -37,13 +37,14 @@ export type ValidationErrors = {
  *
  */
 export interface Validator {
-  validate(c: AbstractControl): ValidationErrors|null;
+  validate(control: AbstractControl): ValidationErrors|null;
   registerOnValidatorChange?(fn: () => void): void;
 }
 
 /** @experimental */
 export interface AsyncValidator extends Validator {
-  validate(c: AbstractControl): Promise<ValidationErrors|null>|Observable<ValidationErrors|null>;
+  validate(control: AbstractControl):
+      Promise<ValidationErrors|null>|Observable<ValidationErrors|null>;
 }
 
 export const REQUIRED_VALIDATOR: StaticProvider = {
@@ -88,8 +89,8 @@ export class RequiredValidator implements Validator {
     if (this._onChange) this._onChange();
   }
 
-  validate(c: AbstractControl): ValidationErrors|null {
-    return this.required ? Validators.required(c) : null;
+  validate(control: AbstractControl): ValidationErrors|null {
+    return this.required ? Validators.required(control) : null;
   }
 
   registerOnValidatorChange(fn: () => void): void { this._onChange = fn; }
@@ -115,8 +116,8 @@ export class RequiredValidator implements Validator {
   host: {'[attr.required]': 'required ? "" : null'}
 })
 export class CheckboxRequiredValidator extends RequiredValidator {
-  validate(c: AbstractControl): ValidationErrors|null {
-    return this.required ? Validators.requiredTrue(c) : null;
+  validate(control: AbstractControl): ValidationErrors|null {
+    return this.required ? Validators.requiredTrue(control) : null;
   }
 }
 
@@ -157,8 +158,8 @@ export class EmailValidator implements Validator {
     if (this._onChange) this._onChange();
   }
 
-  validate(c: AbstractControl): ValidationErrors|null {
-    return this._enabled ? Validators.email(c) : null;
+  validate(control: AbstractControl): ValidationErrors|null {
+    return this._enabled ? Validators.email(control) : null;
   }
 
   registerOnValidatorChange(fn: () => void): void { this._onChange = fn; }
@@ -167,13 +168,13 @@ export class EmailValidator implements Validator {
 /**
  *
  */
-export interface ValidatorFn { (c: AbstractControl): ValidationErrors|null; }
+export interface ValidatorFn { (control: AbstractControl): ValidationErrors|null; }
 
 /**
  *
  */
 export interface AsyncValidatorFn {
-  (c: AbstractControl): Promise<ValidationErrors|null>|Observable<ValidationErrors|null>;
+  (control: AbstractControl): Promise<ValidationErrors|null>|Observable<ValidationErrors|null>;
 }
 
 /**
@@ -214,8 +215,8 @@ export class MinLengthValidator implements Validator,
     }
   }
 
-  validate(c: AbstractControl): ValidationErrors|null {
-    return this.minlength == null ? null : this._validator(c);
+  validate(control: AbstractControl): ValidationErrors|null {
+    return this.minlength == null ? null : this._validator(control);
   }
 
   registerOnValidatorChange(fn: () => void): void { this._onChange = fn; }
@@ -264,8 +265,8 @@ export class MaxLengthValidator implements Validator,
     }
   }
 
-  validate(c: AbstractControl): ValidationErrors|null {
-    return this.maxlength != null ? this._validator(c) : null;
+  validate(control: AbstractControl): ValidationErrors|null {
+    return this.maxlength != null ? this._validator(control) : null;
   }
 
   registerOnValidatorChange(fn: () => void): void { this._onChange = fn; }
@@ -315,7 +316,7 @@ export class PatternValidator implements Validator,
     }
   }
 
-  validate(c: AbstractControl): ValidationErrors|null { return this._validator(c); }
+  validate(control: AbstractControl): ValidationErrors|null { return this._validator(control); }
 
   registerOnValidatorChange(fn: () => void): void { this._onChange = fn; }
 
