@@ -20,7 +20,7 @@ export class By {
   /**
    * Match all elements.
    *
-   * ## Example
+   * **Example**
    *
    * {@example platform-browser/dom/debug/ts/by/by.ts region='by_all'}
    */
@@ -29,7 +29,7 @@ export class By {
   /**
    * Match elements by the given CSS selector.
    *
-   * ## Example
+   * **Example**
    *
    * {@example platform-browser/dom/debug/ts/by/by.ts region='by_css'}
    */
@@ -44,7 +44,7 @@ export class By {
   /**
    * Match elements that have the given directive present.
    *
-   * ## Example
+   * **Example**
    *
    * {@example platform-browser/dom/debug/ts/by/by.ts region='by_directive'}
    */
