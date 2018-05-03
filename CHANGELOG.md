@@ -1,5 +1,12 @@
 <a name="6.0.0"></a>
-# [6.0.0](https://github.com/angular/angular/compare/6.0.0-rc.6...6.0.0) (2018-05-03)
+# [6.0.0](https://github.com/angular/angular/compare/6.0.0-beta.0...6.0.0) (2018-05-03)
+
+### Release Highlights & Update instructions
+
+Angular v6 is the first release of Angular that unifies the Framework, Material and CLI.
+
+To learn about the release highlights and our new CLI-powered update workflow for your projects please check out the [v6 release announcement](https://blog.angular.io/version-6-0-0-of-angular-now-available-cc56b0efa7a4). 
+
 
 
 ### Dependency updates
@@ -137,7 +144,7 @@
 
 
 
-### POSSIBLE BREAKING CHANGES
+### Possible Breaking Changes
 
 * **animations:** When animation is triggered within a disabled zone, the associated event (which an instance of AnimationEvent) will no longer report the totalTime as 0 (it will emit the actual time of the animation).
 
