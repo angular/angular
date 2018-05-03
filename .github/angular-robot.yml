@@ -1,5 +1,9 @@
 # Configuration for angular-robot
 
+#options for the size plugin
+size:
+  disabled: true
+
 # options for the merge plugin
 merge:
   # the status will be added to your pull requests
