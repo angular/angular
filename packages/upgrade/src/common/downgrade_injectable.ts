@@ -20,7 +20,7 @@ import {INJECTOR_KEY} from './constants';
  * This helper function returns a factory function that provides access to the Angular
  * service identified by the `token` parameter.
  *
- * ### Examples
+ * **Examples**
  *
  * First ensure that the service to be downgraded is provided in an `NgModule`
  * that will be part of the upgrade application. For example, let's assume we have

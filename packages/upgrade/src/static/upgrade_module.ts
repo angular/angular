@@ -42,7 +42,7 @@ import {NgAdapterInjector} from './util';
  *    coexisting in a single application. See the
  *    {@link UpgradeModule#examples example} below.
  *
- * ### Mental Model
+ * **Mental Model**
  *
  * When reasoning about how a hybrid application works it is useful to have a mental model which
  * describes what is happening and explains what is happening at the lowest level.
@@ -77,11 +77,13 @@ import {NgAdapterInjector} from './util';
  * 9. The new application is running in an Angular zone, and therefore it no longer needs calls
  *    to `$apply()`.
  *
- * ### Core AngularJS services
+ * **Core AngularJS services**
+ *
  * Importing this `NgModule` will add providers for the core
  * [AngularJS services](https://docs.angularjs.org/api/ng/service) to the root injector.
  *
- * ### Bootstrap
+ * **Bootstrap**
+ *
  * The runtime instance of this class contains a {@link UpgradeModule#bootstrap `bootstrap()`}
  * method, which you use to bootstrap the top level AngularJS module onto an element in the
  * DOM for the hybrid upgrade app.
@@ -90,7 +92,8 @@ import {NgAdapterInjector} from './util';
  * bootstrap `NgZone` and the
  * [AngularJS $injector](https://docs.angularjs.org/api/auto/service/$injector).
  *
- * ### Examples
+ * {@a examples}
+ * **Examples**
  *
  * Import the `UpgradeModule` into your top level {@link NgModule Angular `NgModule`}.
  *
@@ -104,7 +107,7 @@ import {NgAdapterInjector} from './util';
  *
  * {@a upgrading-an-angular-1-service}
  *
- * ### Upgrading an AngularJS service
+ * **Upgrading an AngularJS service**
  *
  * There is no specific API for upgrading an AngularJS service. Instead you should just follow the
  * following recipe:
