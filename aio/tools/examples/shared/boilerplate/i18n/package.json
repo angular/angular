@@ -7,7 +7,7 @@
     "start": "ng serve",
     "start:fr": "ng serve --configuration=fr",
     "build": "ng build --prod",
-    "build:fr": "ng build --prod --configuration=fr",
+    "build:fr": "ng build --configuration=production-fr",
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e",
