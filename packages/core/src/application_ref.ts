@@ -196,8 +196,7 @@ export class PlatformRef {
    * Creates an instance of an `@NgModule` for the given platform
    * for offline compilation.
    *
-   * ## Simple Example
-   *
+   * ** The following example demonstrates calling `bootstrapModuleFactory`:**
    * ```typescript
    * my_module.ts:
    *
@@ -251,8 +250,6 @@ export class PlatformRef {
 
   /**
    * Creates an instance of an `@NgModule` for a given platform using the given runtime compiler.
-   *
-   * ## Simple Example
    *
    * ```typescript
    * @NgModule({
@@ -448,7 +445,7 @@ export class ApplicationRef {
   /**
    * Bootstrap a new component at the root level of the application.
    *
-   * ### Bootstrap process
+   * **Bootstrap process**
    *
    * When bootstrapping a new root component into an application, Angular mounts the
    * specified application component onto DOM elements identified by the [componentType]'s
@@ -457,7 +454,6 @@ export class ApplicationRef {
    * Optionally, a component can be mounted onto a DOM element that does not match the
    * [componentType]'s selector.
    *
-   * ### Example
    * {@example core/ts/platform/platform.ts region='longform'}
    */
   bootstrap<C>(componentOrFactory: ComponentFactory<C>|Type<C>, rootSelectorOrNode?: string|any):

@@ -45,7 +45,7 @@ export interface InjectableDecorator {
    *
    * For more details, see the {@linkDocs guide/dependency-injection "Dependency Injection Guide"}.
    *
-   * ### Example
+   * **Usage:**
    *
    * {@example core/di/ts/metadata_spec.ts region='Injectable'}
    *
@@ -53,7 +53,6 @@ export interface InjectableDecorator {
    * does not have `@Injectable` marker, as shown in the example below.
    *
    * {@example core/di/ts/metadata_spec.ts region='InjectableThrows'}
-   *
    *
    */
   (): any;

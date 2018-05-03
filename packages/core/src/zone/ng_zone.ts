@@ -24,8 +24,8 @@ import {EventEmitter} from '../event_emitter';
  *   - link to runOutsideAngular/run (throughout this file!)
  *   -->
  *
- * ### Example
- *
+   * **Example**:
+   *
  * ```
  * import {Component, NgZone} from '@angular/core';
  * import {NgIf} from '@angular/common';

@@ -15,7 +15,7 @@ import {InjectionToken} from '../di/injection_token';
  *
  * See the {@linkDocs guide/i18n#setting-up-locale i18n guide} for more information.
  *
- * ### Example
+ * **Example:**
  *
  * ```typescript
  * import { LOCALE_ID } from '@angular/core';
@@ -37,7 +37,7 @@ export const LOCALE_ID = new InjectionToken<string>('LocaleId');
  *
  * See the {@linkDocs guide/i18n#merge i18n guide} for more information.
  *
- * ### Example
+ * **Example:**
  *
  * ```typescript
  * import { TRANSLATIONS } from '@angular/core';
@@ -62,7 +62,7 @@ export const TRANSLATIONS = new InjectionToken<string>('Translations');
  *
  * See the {@linkDocs guide/i18n#merge i18n guide} for more information.
  *
- * ### Example
+ * **Example:**
  *
  * ```typescript
  * import { TRANSLATIONS_FORMAT } from '@angular/core';
@@ -87,7 +87,8 @@ export const TRANSLATIONS_FORMAT = new InjectionToken<string>('TranslationsForma
  *
  * See the {@linkDocs guide/i18n#missing-translation i18n guide} for more information.
  *
- * ### Example
+ * **Example:**
+ *
  * ```typescript
  * import { MissingTranslationStrategy } from '@angular/core';
  * import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';

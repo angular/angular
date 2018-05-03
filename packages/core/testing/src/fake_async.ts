@@ -33,8 +33,6 @@ export function resetFakeAsyncZone(): void {
  *
  * Can be used to wrap inject() calls.
  *
- * ## Example
- *
  * {@example core/testing/ts/fake_async.ts region='basic'}
  *
  * @param fn
@@ -55,8 +53,6 @@ export function fakeAsync(fn: Function): (...args: any[]) => any {
  *
  * The microtasks queue is drained at the very start of this function and after any timer callback
  * has been executed.
- *
- * ## Example
  *
  * {@example core/testing/ts/fake_async.ts region='basic'}
  *

@@ -42,7 +42,8 @@ export class ViewRef<T> implements viewEngine_EmbeddedViewRef<T> {
    *
    * <!-- TODO: Add a link to a chapter on OnPush components -->
    *
-   * ### Example ([live demo](https://stackblitz.com/edit/angular-kx7rrw))
+   * The following example shows marking a component for change detection
+   * ([live demo](https://stackblitz.com/edit/angular-kx7rrw)):
    *
    * ```typescript
    * @Component({
@@ -75,8 +76,6 @@ export class ViewRef<T> implements viewEngine_EmbeddedViewRef<T> {
    *
    * <!-- TODO: Add a link to a chapter on detach/reattach/local digest -->
    * <!-- TODO: Add a live demo once ref.detectChanges is merged into master -->
-   *
-   * ### Example
    *
    * The following example defines a component with a large list of readonly data.
    * Imagine the data changes constantly, many times per second. For performance reasons,
@@ -127,11 +126,9 @@ export class ViewRef<T> implements viewEngine_EmbeddedViewRef<T> {
    *
    * <!-- TODO: Add a link to a chapter on detach/reattach/local digest -->
    *
-   * ### Example ([live demo](https://stackblitz.com/edit/angular-ymgsxw))
-   *
    * The following example creates a component displaying `live` data. The component will detach
    * its change detector from the main change detector tree when the component's live property
-   * is set to false.
+   * is set to false. ([live demo](https://stackblitz.com/edit/angular-ymgsxw))
    *
    * ```typescript
    * class DataProvider {
@@ -184,8 +181,6 @@ export class ViewRef<T> implements viewEngine_EmbeddedViewRef<T> {
    *
    * <!-- TODO: Add a link to a chapter on detach/reattach/local digest -->
    * <!-- TODO: Add a live demo once ref.detectChanges is merged into master -->
-   *
-   * ### Example
    *
    * The following example defines a component with a large list of readonly data.
    * Imagine, the data changes constantly, many times per second. For performance reasons,

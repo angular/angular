@@ -51,8 +51,6 @@ export class NullInjector implements Injector {
  *
  * For more details, see the {@linkDocs guide/dependency-injection "Dependency Injection Guide"}.
  *
- * ### Example
- *
  * {@example core/di/ts/injector_spec.ts region='Injector'}
  *
  * `Injector` returns itself when given `Injector` as a token:
@@ -86,9 +84,9 @@ export abstract class Injector {
   static create(options: {providers: StaticProvider[], parent?: Injector, name?: string}): Injector;
 
   /**
-   * Create a new Injector which is configure using `StaticProvider`s.
+   * Create a new Injector which is configured using `StaticProvider`s.
    *
-   * ### Example
+   * **Usage**:
    *
    * {@example core/di/ts/provider_spec.ts region='ConstructorProvider'}
    */

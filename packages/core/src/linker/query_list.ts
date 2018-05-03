@@ -27,7 +27,9 @@ import {getSymbolIterator} from '../util';
  *
  * NOTE: In the future this class will implement an `Observable` interface.
  *
- * ### Example ([live demo](http://plnkr.co/edit/RX8sJnQYl9FWuSCWme5z?p=preview))
+ * The following example shows use of `QueryList`
+ * ([live demo](http://plnkr.co/edit/RX8sJnQYl9FWuSCWme5z?p=preview))
+ *
  * ```typescript
  * @Component({...})
  * class Container {
