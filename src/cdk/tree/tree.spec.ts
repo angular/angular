@@ -607,6 +607,8 @@ describe('CdkTree', () => {
           flush();
         } catch {
           flush();
+        } finally {
+          flush();
         }
       }).toThrowError(getTreeControlFunctionsMissingError().message);
     }));

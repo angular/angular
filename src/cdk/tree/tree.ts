@@ -287,6 +287,8 @@ export class CdkTree<T> implements CollectionViewer, OnInit, OnDestroy {
           viewContainer.move(view!, currentIndex);
         }
       });
+
+    this._changeDetectorRef.detectChanges();
   }
 
   /**
@@ -336,7 +338,5 @@ export class CdkTree<T> implements CollectionViewer, OnInit, OnDestroy {
     if (CdkTreeNode.mostRecentTreeNode) {
       CdkTreeNode.mostRecentTreeNode.data = nodeData;
     }
-
-    this._changeDetectorRef.detectChanges();
   }
 }
