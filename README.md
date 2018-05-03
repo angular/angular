@@ -24,5 +24,5 @@ guidelines for [contributing][contributing] and then check out one of our issues
 
 [browserstack]: https://www.browserstack.com/automate/public-build/LzF3RzBVVGt6VWE2S0hHaC9uYllOZz09LS1BVjNTclBKV0x4eVRlcjA4QVY1M0N3PT0=--eb4ce8c8dc2c1c5b2b5352d473ee12a73ac20e06
 [contributing]: http://github.com/angular/angular/blob/master/CONTRIBUTING.md
-[quickstart]: https://angular.io/docs/ts/latest/quickstart.html
+[quickstart]: https://angular.io/guide/quickstart
 [ng]: http://angular.io
