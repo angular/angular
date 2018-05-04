@@ -17,6 +17,7 @@ ng_module(
     "//src/cdk/keycodes",
     "//src/cdk/portal",
     "//src/cdk/overlay",
+    "//src/cdk/coercion",
   ],
   tsconfig = "//src/lib:tsconfig-build.json",
 )
