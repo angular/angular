@@ -3,176 +3,336 @@
 -->
 # 어트리뷰트 디렉티브
 
+<!--
 An **Attribute** directive changes the appearance or behavior of a DOM element.
+-->
+**어트리뷰트** 디렉티브는 DOM 엘리먼트의 모습이나 동작을 변경합니다.
 
+<!--
 Try the <live-example title="Attribute Directive example"></live-example>.
+-->
+이 문서에서 설명하는 예제는 <live-example title="Attribute Directive example"></live-example>에서 직접 확인하거나 다운 받을 수 있습니다.
 
+<!--
 {@a directive-overview}
+-->
+{@a 디렉티브-개요}
 
+<!--
 ## Directives overview
+-->
+## 디렉티브 개요
 
+<!--
 There are three kinds of directives in Angular:
+-->
+Angular 디렉티브는 3종류가 있습니다:
 
+<!--
 1. Components&mdash;directives with a template.
 1. Structural directives&mdash;change the DOM layout by adding and removing DOM elements.
 1. Attribute directives&mdash;change the appearance or behavior of an element, component, or another directive.
+-->
+1. 컴포넌트&mdash;템플릿이 있는 디렉티브
+1. 구조 디렉티브&mdash;DOM 엘리먼트를 추가하거나 제거해서 DOM 레이아웃을 변경합니다.
+1. 어트리뷰트 디렉티브&mdash;엘리먼트나 컴포넌트, 다른 디렉티브의 모습이나 동작을 변경합니다.
 
+<!--
 *Components* are the most common of the three directives.
 You saw a component for the first time in the [QuickStart](guide/quickstart) guide.
+-->
+디렉티브 중에서는 *컴포넌트*를 가장 많이 사용합니다.
+처음 확인하는 가이드 문서인 [QuickStart](guide/quickstart)에서도 확인할 수 있습니다.
 
+<!--
 *Structural Directives* change the structure of the view.
 Two examples are [NgFor](guide/template-syntax#ngFor) and [NgIf](guide/template-syntax#ngIf).
 Learn about them in the [Structural Directives](guide/structural-directives) guide.
+-->
+*구조 디렉티브*는 뷰의 구조를 변경합니다.
+구조 디렉티브 중에서 가장 많이 사용하는 [NgFor](guide/template-syntax#ngFor)나 [NgIf](guide/template-syntax#ngIf) 예제를 확인해 보세요.
+구조 디렉티브의 개념은 [구조 디렉티브](guide/structural-directives)에서도 확인할 수 있습니다.
 
+<!--
 *Attribute directives* are used as attributes of elements.
 The built-in [NgStyle](guide/template-syntax#ngStyle) directive in the
 [Template Syntax](guide/template-syntax) guide, for example,
 can change several element styles at the same time.
+-->
+*어트리뷰트 디렉티브*는 엘리먼트의 어트리뷰트처럼 사용합니다.
+[템플릿 문법](guide/template-syntax) 가이드 문서에서 활용하는 [NgStyle](guide/template-syntax#ngStyle)을 확인해 보세요. 이 디렉티브는 Angular에서 제공하는 기본 디렉티브이며, 여러 엘리먼트 스타일을 한 번에 지정할 수 있습니다.
 
+<!--
 ## Build a simple attribute directive
+-->
+## 간단한 어트리뷰트 디렉티브 만들어보기
 
+<!--
 An attribute directive minimally requires building a controller class annotated with
 `@Directive`, which specifies the selector that identifies
 the attribute.
 The controller class implements the desired directive behavior.
+-->
+어트리뷰트 디렉티브는 `@Directive` 데코레이터가 붙은 클래스 코드만으로 간단하게 만들 수 있습니다. 이 데코레이터의 메타데이터에는 디렉티브가 적용될 셀렉터를 지정합니다.
+클래스 코드에는 디렉티브가 어떻게 동작할지 정의하는 로직을 작성합니다.
 
+<!--
 This page demonstrates building a simple _appHighlight_ attribute
 directive to set an element's background color
 when the user hovers over that element. You can apply it like this:
+-->
+이 문서에서는 사용자가 엘리먼트 위로 마우스를 올렸을 때 엘리먼트의 배경 색상을 변경하는 _appHighlight_ 어트리뷰트 디렉티브를 간단하게 만들어 봅니다.
+이 디렉티브는 다음과 같이 적용합니다:
 
 <code-example path="attribute-directives/src/app/app.component.1.html" linenums="false" title="src/app/app.component.html (applied)" region="applied"></code-example>
 
+<!--
 {@a write-directive}
+-->
+{@a 디렉티브-코드-작성하기}
 
+<!--
 ### Write the directive code
+-->
+### 디렉티브 코드 작성하기
 
+<!--
 Create the directive class file in a terminal window with this CLI command.
+-->
+터미널에서 CLI 명령을 사용하면 디렉티브 클래스 파일을 간단하게 만들 수 있습니다.
 
 <code-example language="sh" class="code-shell">
 ng generate directive highlight
 </code-example>
 
+<!--
 The CLI creates `src/app/highlight.directive.ts`, a corresponding test file (`.../spec.ts`, and _declares_ the directive class in the root `AppModule`.
+-->
+이 명령을 실행하면 CLI가 `src/app/highlight.directive.ts` 파일과 테스트 파일인 `.../spec.ts` 파일을 함께 생성하고 최상위 모듈 `AppModule`에 이 디렉티브 클래스를 자동으로 추가합니다.
 
 <div class="l-sub-section">
 
+<!--
 _Directives_ must be declared in [Angular Modules](guide/ngmodules) in the same manner as _components_.
+-->
+_디렉티브_는 _컴포넌트_와 마찬가지로 [Angular 모듈](guide/ngmodules)에 반드시 정의되어야 합니다.
 
 </div >
 
+<!--
 The generated `src/app/highlight.directive.ts` is as follows:
+-->
+이렇게 생성된 `src/app/highlight.directive.ts` 파일의 내용은 다음과 같습니다:
 
 <code-example path="attribute-directives/src/app/highlight.directive.0.ts" title="src/app/highlight.directive.ts"></code-example>
 
+<!--
 The imported `Directive` symbol provides the Angular the `@Directive` decorator.
+-->
+먼저, Angular 데코레이터 `@Directive`를 사용하기 위해 `Directive` 심볼을 로드합니다.
 
+<!--
 The `@Directive` decorator's lone configuration property specifies the directive's
 [CSS attribute selector](https://developer.mozilla.org/en-US/docs/Web/CSS/Attribute_selectors), `[appHighlight]`.
+-->
+`@Directive`에는 [CSS 어트리뷰트 셀렉터](https://developer.mozilla.org/en-US/docs/Web/CSS/Attribute_selectors)로 디렉티브 셀렉터를 지정하며, 이 코드의 경우에는 `[appHighlight]`로 지정했습니다.
 
+<!--
 It's the brackets (`[]`) that make it an attribute selector.
 Angular locates each element in the template that has an attribute named `appHighlight` and applies the logic of this directive to that element.
+-->
+어트리뷰트 셀렉터는 HTML 문서에 대괄호(`[]`)를 사용해서 지정합니다.
+그러면 Angular가 템플릿을 처리할 때 `appHighlight` 어트리뷰트가 지정된 엘리먼트에 이 디렉티브를 적용합니다.
 
+<!--
 The _attribute selector_ pattern explains the name of this kind of directive.
+-->
+따라서 _어트리뷰트 셀렉터_는 디렉티브의 동작을 적절하게 표현할 수 있는 이름으로 지정하는 것이 좋습니다.
 
 <div class="l-sub-section">
 
+<!--
 #### Why not "highlight"?
+-->
+### `highlight`를 사용하면 왜 안될까?
 
+<!--
 Though *highlight* would be a more concise selector than *appHighlight* and it would work,
 the best practice is to prefix selector names to ensure
 they don't conflict with standard HTML attributes.
 This also reduces the risk of colliding with third-party directive names.
 The CLI added the `app` prefix for you.
+-->
+디렉티브 셀렉터를 *appHighlight*라고 정의하는 것보다 *highlight*라고 정의하는 것이 더 간단하고 이렇게 정의해도 디렉티브가 동작하는 데에는 문제가 없지만, 표준 HTML 어트리뷰트와 충돌하는 것을 방지하기 위해 셀렉터에는 접두사를 붙이는 것을 권장합니다.
+이 방법은 서드파티 디렉티브의 셀렉터와 충돌하는 것을 막는 방법이기도 합니다.
+CLI가 기본으로 붙이는 접두사는 `app`입니다.
 
+<!--
 Make sure you do **not** prefix the `highlight` directive name with **`ng`** because
 that prefix is reserved for Angular and using it could cause bugs that are difficult to diagnose.
+-->
+이 때 접두사로 **`ng`**는 사용하지 마세요. 이 접두사는 Angular가 이미 사용하고 있기 때문에 `ng` 접두사를 사용하면 확인하기 어려운 버그를 발생시킬 수도 있습니다.
 
 </div>
 
+<!--
 After the `@Directive` metadata comes the directive's controller class,
 called `HighlightDirective`, which contains the (currently empty) logic for the directive.
 Exporting `HighlightDirective` makes the directive accessible.
+-->
+`@Directive` 데코레이터 뒤에는 디렉티브의 컨트롤러 클래스가 위치하는데, 이 예제의 경우에는 `HighlightDirective`이며 디렉티브가 동작하는 로직을 이 클래스에 정의합니다.
+그리고 이 디렉티브를 다른 파일에서 사용하기 위해 `export` 키워드를 사용해서 외부로 공개했습니다.
 
+<!--
 Now edit the generated `src/app/highlight.directive.ts` to look as follows:
+-->
+이제 `src/app/highlight.directive.ts` 코드를 다음과 같이 수정합니다:
 
 <code-example path="attribute-directives/src/app/highlight.directive.1.ts" title="src/app/highlight.directive.ts"></code-example>
 
+<!--
 The `import` statement specifies an additional `ElementRef` symbol from the Angular `core` library:
+-->
+이 때 `ElementRef` 심볼을 의존성으로 주입받기 위해 `import` 키워드를 사용해서 Angular `core` 라이브러리를 불러왔습니다:
 
+<!--
 You use the `ElementRef`in the directive's constructor
 to [inject](guide/dependency-injection) a reference to the host DOM element, 
 the element to which you applied `appHighlight`.
+-->
+이 디렉티브는 디렉티브가 적용되는 DOM 엘리먼트를 참조하기 위해 `ElementRef`를 디렉티브 생성자로 [주입](guide/dependency-injection)받습니다.
 
+<!--
 `ElementRef` grants direct access to the host DOM element
 through its `nativeElement` property.
+-->
+그리고 `ElementRef`의 `nativeElement` 프로퍼티를 참조하면 호스트 DOM 엘리먼트에 직접 접근할 수 있습니다.
 
+<!--
 This first implementation sets the background color of the host element to yellow.
+-->
+처음 작성하는 코드에서는 호스트 엘리먼트의 배경 색을 노란색으로 변경하도록 구현했습니다.
 
+<!--
 {@a apply-directive}
+-->
+{@a 디렉티브-적용하기}
 
+<!--
 ## Apply the attribute directive
+-->
+## 어트리뷰트 디렉티브 적용하기
 
+<!--
 To use the new `HighlightDirective`, add a paragraph (`<p>`) element to the template of the root `AppComponent` and apply the directive as an attribute.
+-->
+이렇게 만든 `HighlightDirective`를 적용하려면 `AppComponent`의 템플릿에 문단(`<p>`) 엘리먼트를 추가하고 이 엘리먼트에 어트리뷰트를 다음과 같이 지정합니다.
 
 <code-example path="attribute-directives/src/app/app.component.1.html" title="src/app/app.component.html" region="applied"></code-example>
 
+<!--
 Now run the application to see the `HighlightDirective` in action.
-
+-->
+그리고 애플리케이션을 실행하면 `HighlightDirective`가 동작하는 것을 확인할 수 있습니다.
 
 <code-example language="sh" class="code-shell">
 ng serve
 </code-example>
 
+<!--
 To summarize, Angular found the `appHighlight` attribute on the **host** `<p>` element.
 It created an instance of the `HighlightDirective` class and
 injected a reference to the `<p>` element into the directive's constructor
 which sets the `<p>` element's background style to yellow.
+-->
+애플리케이션이 실행되는 과정을 간단하게 설명하면, Angular는 **호스트 엘리먼트**인 `<p>` 태그에 `appHighlight` 어트리뷰트가 지정된 것을 확인하면 이 엘리먼트에 `HighlightDirective` 클래스의 인스턴스를 생성하는데, 이 때 호스트 엘리먼트 `<p>`의 배경색을 변경하기 위해 `ElementRef`를 의존성으로 주입합니다.
 
+<!--
 {@a respond-to-user}
+-->
+{@a 사용자-동작에-반응하기}
 
+<!--
 ## Respond to user-initiated events
+-->
+## 사용자 동작에 반응하기
 
+<!--
 Currently, `appHighlight` simply sets an element color.
 The directive could be more dynamic.
 It could detect when the user mouses into or out of the element
 and respond by setting or clearing the highlight color.
+-->
+지금까지 구현한 디렉티브는 엘리먼트의 배경색을 변경하는 간단한 로직만 작성했지만, 디렉티브의 동작은 좀 더 역동적이어야 합니다.
+이 디렉티브는 사용자가 마우스를 엘리먼트 위에 올리는 것에 반응해서 배경색을 지정하고, 사용자가 마우스를 엘리먼트 밖으로 옮기면 지정된 배경색을 해제해야 하기 때문입니다.
 
+<!--
 Begin by adding `HostListener` to the list of imported symbols.
+-->
+이 동작을 구현하기 위해 `HostListener` 심볼을 로드합니다.
 
 <code-example path="attribute-directives/src/app/highlight.directive.2.ts" linenums="false" title="src/app/highlight.directive.ts (imports)" region="imports"></code-example>
 
+<!--
 Then add two eventhandlers that respond when the mouse enters or leaves,
 each adorned by the `HostListener` decorator.
+-->
+그리고 이렇게 불러온 `HostListener` 데코레이터를 사용해서 마우스가 들어오고 나가는 두 이벤트 핸들러를 추가합니다.
 
 <code-example path="attribute-directives/src/app/highlight.directive.2.ts" linenums="false" title="src/app/highlight.directive.ts (mouse-methods)" region="mouse-methods"></code-example>
 
+<!--
 The `@HostListener` decorator lets you subscribe to events of the DOM
 element that hosts an attribute directive, the `<p>` in this case.
+-->
+`@HostListener` 데코레이터를 사용하면 DOM 엘리먼트에서 발생하는 이벤트를 구독할 수 있습니다. 이 예제 코드의 경우에는 `<p>` 엘리먼트가 해당됩니다.
 
 <div class="l-sub-section">
 
+<!--
 Of course you could reach into the DOM with standard JavaScript and attach event listeners manually.
 There are at least three problems with _that_ approach:
+-->
+표준 JavaScript를 사용해도 DOM 엘리먼트에 접근할 수 있고, 이벤트 리스너를 수동으로 적용할 수도 있습니다.
+하지만 이 방식은 몇가지 문제가 있습니다:
 
+<!--
 1. You have to write the listeners correctly.
 1. The code must *detach* the listener when the directive is destroyed to avoid memory leaks.
 1. Talking to DOM API directly isn't a best practice.
+-->
+1. 이벤트 리스너 코드가 잘못 구현되면 동작하지 않습니다.
+1. 디렉티브가 종료되면 메모리 누수를 방지하기 위해 이벤트 리스너도 반드시 *제거되어야* 합니다.
+1. Angular를 사용하면서 DOM API를 직접 활용하는 것은 권장하지 않습니다.
 
 </div>
 
+<!--
 The handlers delegate to a helper method that sets the color on the host DOM element, `el`.
+-->
+호스트 DOM 엘리먼트는 `el`이라는 이름으로 참조하고 `highlight` 메소드가 이 엘리먼트를 조작하도록 구현하겠습니다.
 
+<!--
 The helper method, `highlight`, was extracted from the constructor.
 The revised constructor simply declares the injected `el: ElementRef`.
+-->
+이전에 생성자에서 구현했던 로직을 `highlight` 메소드로 옮겼습니다.
+이제 생성자에는 `el: ElementRef`를 주입하기 위한 코드만 남아 있습니다.
 
 <code-example path="attribute-directives/src/app/highlight.directive.2.ts" linenums="false" title="src/app/highlight.directive.ts (constructor)" region="ctor"></code-example>
 
+<!--
 Here's the updated directive in full:
+-->
+이렇게 수정한 디렉티브는 다음과 같습니다:
 
 <code-example path="attribute-directives/src/app/highlight.directive.2.ts" title="src/app/highlight.directive.ts"></code-example>
 
+<!--
 Run the app and confirm that the background color appears when
 the mouse hovers over the `p` and disappears as it moves out.
+-->
+이제 애플리케이션을 실행한 후에 마우스가 `<p>` 엘리먼트 위에 올라가면 배경색이 지정되고, 마우스를 밖으로 옮기면 배경색이 해제되는지 확인해 보세요.
 
 <figure>
   <img src="generated/images/guide/attribute-directives/highlight-directive-anim.gif" alt="Second Highlight">
@@ -314,9 +474,15 @@ Here's how the harness should work when you're done coding.
 
 This page covered how to:
 
+<!--
 * [Build an **attribute directive**](guide/attribute-directives#write-directive) that modifies the behavior of an element.
 * [Apply the directive](guide/attribute-directives#apply-directive) to an element in a template.
 * [Respond to **events**](guide/attribute-directives#respond-to-user) that change the directive's behavior.
+* [**Bind** values to the directive](guide/attribute-directives#bindings).
+-->
+* [Build an **attribute directive**](guide/attribute-directives#디렉티브-코드-작성하기) that modifies the behavior of an element.
+* [Apply the directive](guide/attribute-directives#디렉티브-적용하기) to an element in a template.
+* [Respond to **events**](guide/attribute-directives#사용자-동작에-반응하기) that change the directive's behavior.
 * [**Bind** values to the directive](guide/attribute-directives#bindings).
 
 The final source code follows:
