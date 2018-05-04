@@ -7,7 +7,7 @@
  */
 
 import {DOCUMENT} from '@angular/common';
-import {HttpClient} from '@angular/common/http';
+import {HttpClient, HttpErrorResponse} from '@angular/common/http';
 import {
   Inject,
   Injectable,
@@ -353,12 +353,12 @@ export class MatIconRegistry {
       .filter(iconSetConfig => !iconSetConfig.svgElement)
       .map(iconSetConfig => {
         return this._loadSvgIconSetFromConfig(iconSetConfig).pipe(
-          catchError((err: any): Observable<SVGElement | null> => {
-            let url = this._sanitizer.sanitize(SecurityContext.RESOURCE_URL, iconSetConfig.url);
+          catchError((err: HttpErrorResponse): Observable<SVGElement | null> => {
+            const url = this._sanitizer.sanitize(SecurityContext.RESOURCE_URL, iconSetConfig.url);
 
-            // Swallow errors fetching individual URLs so the combined Observable won't
-            // necessarily fail.
-            console.log(`Loading icon set URL: ${url} failed: ${err}`);
+            // Swallow errors fetching individual URLs so the
+            // combined Observable won't necessarily fail.
+            console.error(`Loading icon set URL: ${url} failed: ${err.message}`);
             return observableOf(null);
           })
         );
