@@ -8,7 +8,7 @@
 /* eslint no-console: "off" */
 
 function createPackage(changedFile) {
-  const marketingMatch = /^aio\/content\/marketing\/(.*)/.exec(changedFile);
+  const marketingMatch = /^aio\/content\/(?:marketing\/|navigation\.json)/.exec(changedFile);
   if (marketingMatch) {
     console.log('Building marketing docs');
     return require('./marketing-package').createPackage();
