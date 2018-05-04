@@ -410,7 +410,11 @@ export class MatRadioButton extends _MatRadioButtonMixinBase
     return this._disabled || (this.radioGroup !== null && this.radioGroup.disabled);
   }
   set disabled(value: boolean) {
-    this._disabled = coerceBooleanProperty(value);
+    const newDisabledState = coerceBooleanProperty(value);
+    if (this._disabled !== newDisabledState) {
+      this._disabled = newDisabledState;
+      this._changeDetector.markForCheck();
+    }
   }
 
   /** Whether the radio button is required. */

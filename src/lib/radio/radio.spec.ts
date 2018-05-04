@@ -1,6 +1,6 @@
 import {async, ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
 import {FormControl, FormsModule, NgModel, ReactiveFormsModule} from '@angular/forms';
-import {Component, DebugElement} from '@angular/core';
+import {Component, DebugElement, ViewChild} from '@angular/core';
 import {By} from '@angular/platform-browser';
 import {dispatchFakeEvent} from '@angular/cdk/testing';
 import {defaultRippleAnimationConfig} from '@angular/material/core';
@@ -12,6 +12,7 @@ describe('MatRadio', () => {
     TestBed.configureTestingModule({
       imports: [MatRadioModule, FormsModule, ReactiveFormsModule],
       declarations: [
+        DisableableRadioButton,
         FocusableRadioButton,
         RadiosInsideRadioGroup,
         RadioGroupWithNgModel,
@@ -515,6 +516,38 @@ describe('MatRadio', () => {
     });
   });
 
+  describe('disableable', () => {
+    let fixture: ComponentFixture<DisableableRadioButton>;
+    let radioInstance: MatRadioButton;
+    let radioNativeElement: HTMLInputElement;
+    let testComponent: DisableableRadioButton;
+
+    beforeEach(() => {
+      fixture = TestBed.createComponent(DisableableRadioButton);
+      fixture.detectChanges();
+
+      testComponent = fixture.debugElement.componentInstance;
+      const radioDebugElement = fixture.debugElement.query(By.directive(MatRadioButton));
+      radioInstance = radioDebugElement.injector.get<MatRadioButton>(MatRadioButton);
+      radioNativeElement = radioDebugElement.nativeElement.querySelector('input');
+    });
+
+    it('should toggle the disabled state', () => {
+      expect(radioInstance.disabled).toBeFalsy();
+      expect(radioNativeElement.disabled).toBeFalsy();
+
+      testComponent.disabled = true;
+      fixture.detectChanges();
+      expect(radioInstance.disabled).toBeTruthy();
+      expect(radioNativeElement.disabled).toBeTruthy();
+
+      testComponent.disabled = false;
+      fixture.detectChanges();
+      expect(radioInstance.disabled).toBeFalsy();
+      expect(radioNativeElement.disabled).toBeFalsy();
+    });
+  });
+
   describe('as standalone', () => {
     let fixture: ComponentFixture<StandaloneRadioButtons>;
     let radioDebugElements: DebugElement[];
@@ -793,6 +826,17 @@ class RadioGroupWithNgModel {
     {label: 'Strawberry', value: 'strawberry'},
   ];
   lastEvent: MatRadioChange;
+}
+
+@Component({
+  template: `<mat-radio-button>One</mat-radio-button>`
+})
+class DisableableRadioButton {
+  @ViewChild(MatRadioButton) matRadioButton;
+
+  set disabled(value: boolean) {
+    this.matRadioButton.disabled = value;
+  }
 }
 
 @Component({
