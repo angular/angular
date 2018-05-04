@@ -12,7 +12,7 @@
     <ng-container matColumnDef="cost">
       <mat-header-cell *matHeaderCellDef> Cost </mat-header-cell>
       <mat-cell *matCellDef="let transaction"> {{transaction.cost | currency}} </mat-cell>
-      <mat-footer-cell *matFooterCellDef> getTotalCost() </mat-footer-cell>
+      <mat-footer-cell *matFooterCellDef> {{getTotalCost() | currency}} </mat-footer-cell>
     </ng-container>
 
     <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
