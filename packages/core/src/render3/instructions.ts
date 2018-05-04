@@ -15,7 +15,7 @@ import {CssSelectorList, LProjection, NG_PROJECT_AS_ATTR_NAME} from './interface
 import {LQueries} from './interfaces/query';
 import {CurrentMatchesList, LView, LViewFlags, LifecycleStage, RootContext, TData, TView} from './interfaces/view';
 
-import {LContainerNode, LElementNode, LNode, TNodeType, TNodeFlags, LProjectionNode, LTextNode, LViewNode, TNode, TContainerNode, InitialInputData, InitialInputs, PropertyAliases, PropertyAliasValue, TElementNode,} from './interfaces/node';
+import {AttributeMarker, TAttributes, LContainerNode, LElementNode, LNode, TNodeType, TNodeFlags, LProjectionNode, LTextNode, LViewNode, TNode, TContainerNode, InitialInputData, InitialInputs, PropertyAliases, PropertyAliasValue, TElementNode,} from './interfaces/node';
 import {assertNodeType} from './node_assert';
 import {appendChild, insertView, appendProjectedNode, removeView, canInsertNativeNode, createTextNode, getNextLNode, getChildLNode, getParentLNode} from './node_manipulation';
 import {isNodeMatchingSelectorList, matchingSelectorIndex} from './node_selector_matcher';
@@ -366,19 +366,19 @@ export function createLNodeObject(
  */
 export function createLNode(
     index: number | null, type: TNodeType.Element, native: RElement | RText | null,
-    name: string | null, attrs: string[] | null, lView?: LView | null): LElementNode;
+    name: string | null, attrs: TAttributes | null, lView?: LView | null): LElementNode;
 export function createLNode(
     index: number | null, type: TNodeType.View, native: null, name: null, attrs: null,
     lView: LView): LViewNode;
 export function createLNode(
     index: number, type: TNodeType.Container, native: undefined, name: string | null,
-    attrs: string[] | null, lContainer: LContainer): LContainerNode;
+    attrs: TAttributes | null, lContainer: LContainer): LContainerNode;
 export function createLNode(
-    index: number, type: TNodeType.Projection, native: null, name: null, attrs: string[] | null,
+    index: number, type: TNodeType.Projection, native: null, name: null, attrs: TAttributes | null,
     lProjection: LProjection): LProjectionNode;
 export function createLNode(
     index: number | null, type: TNodeType, native: RText | RElement | null | undefined,
-    name: string | null, attrs: string[] | null, state?: null | LView | LContainer |
+    name: string | null, attrs: TAttributes | null, state?: null | LView | LContainer |
         LProjection): LElementNode&LTextNode&LViewNode&LContainerNode&LProjectionNode {
   const parent = isParent ? previousOrParentNode :
                             previousOrParentNode && getParentLNode(previousOrParentNode) !as LNode;
@@ -586,7 +586,8 @@ function getRenderFlags(view: LView): RenderFlags {
  * ['id', 'warning5', 'class', 'alert']
  */
 export function elementStart(
-    index: number, name: string, attrs?: string[] | null, localRefs?: string[] | null): RElement {
+    index: number, name: string, attrs?: TAttributes | null,
+    localRefs?: string[] | null): RElement {
   ngDevMode &&
       assertEqual(
           currentView.bindingStartIndex, -1, 'elements should be created before any bindings');
@@ -600,23 +601,18 @@ export function elementStart(
 
   if (attrs) setUpAttributes(native, attrs);
   appendChild(getParentLNode(node), native, currentView);
-  createDirectivesAndLocals(index, name, attrs, localRefs, false);
+  createDirectivesAndLocals(localRefs);
   return native;
 }
 
 /**
  * Creates directive instances and populates local refs.
  *
- * @param index Index of the current node (to create TNode)
- * @param name Tag name of the current node
- * @param attrs Attrs of the current node
  * @param localRefs Local refs of the current node
- * @param inlineViews Whether or not this node will create inline views
  */
-function createDirectivesAndLocals(
-    index: number, name: string | null, attrs: string[] | null | undefined,
-    localRefs: string[] | null | undefined, inlineViews: boolean) {
+function createDirectivesAndLocals(localRefs?: string[] | null) {
   const node = previousOrParentNode;
+
   if (firstTemplatePass) {
     ngDevMode && ngDevMode.firstTemplatePass++;
     cacheMatchingDirectivesForNode(node.tNode, currentView.tView, localRefs || null);
@@ -822,17 +818,18 @@ export function createTView(
   };
 }
 
-function setUpAttributes(native: RElement, attrs: string[]): void {
-  ngDevMode && assertEqual(attrs.length % 2, 0, 'each attribute should have a key and a value');
-
+function setUpAttributes(native: RElement, attrs: TAttributes): void {
   const isProc = isProceduralRenderer(renderer);
   for (let i = 0; i < attrs.length; i += 2) {
     const attrName = attrs[i];
+    if (attrName === AttributeMarker.SELECT_ONLY) break;
     if (attrName !== NG_PROJECT_AS_ATTR_NAME) {
       const attrVal = attrs[i + 1];
       ngDevMode && ngDevMode.rendererSetAttribute++;
-      isProc ? (renderer as ProceduralRenderer3).setAttribute(native, attrName, attrVal) :
-               native.setAttribute(attrName, attrVal);
+      isProc ?
+          (renderer as ProceduralRenderer3)
+              .setAttribute(native, attrName as string, attrVal as string) :
+          native.setAttribute(attrName as string, attrVal as string);
     }
   }
 }
@@ -1046,7 +1043,7 @@ export function elementProperty<T>(
  * @returns the TNode object
  */
 export function createTNode(
-    type: TNodeType, index: number | null, tagName: string | null, attrs: string[] | null,
+    type: TNodeType, index: number | null, tagName: string | null, attrs: TAttributes | null,
     parent: TElementNode | TContainerNode | null, tViews: TView[] | null): TNode {
   ngDevMode && ngDevMode.tNode++;
   return {
@@ -1442,10 +1439,13 @@ function generateInitialInputs(
   for (let i = 0; i < attrs.length; i += 2) {
     const attrName = attrs[i];
     const minifiedInputName = inputs[attrName];
+    const attrValue = attrs[i + 1];
+
+    if (attrName === AttributeMarker.SELECT_ONLY) break;
     if (minifiedInputName !== undefined) {
       const inputsToStore: InitialInputs =
           initialInputData[directiveIndex] || (initialInputData[directiveIndex] = []);
-      inputsToStore.push(minifiedInputName, attrs[i + 1]);
+      inputsToStore.push(minifiedInputName, attrValue as string);
     }
   }
   return initialInputData;
@@ -1484,7 +1484,7 @@ export function createLContainer(
  * @param localRefs A set of local reference bindings on the element.
  */
 export function container(
-    index: number, template?: ComponentTemplate<any>, tagName?: string | null, attrs?: string[],
+    index: number, template?: ComponentTemplate<any>, tagName?: string | null, attrs?: TAttributes,
     localRefs?: string[] | null): void {
   ngDevMode && assertEqual(
                    currentView.bindingStartIndex, -1,
@@ -1501,7 +1501,7 @@ export function container(
   // Containers are added to the current view tree instead of their embedded views
   // because views can be removed and re-inserted.
   addToViewTree(currentView, node.data);
-  createDirectivesAndLocals(index, tagName || null, attrs, localRefs, template == null);
+  createDirectivesAndLocals(localRefs);
 
   isParent = false;
   ngDevMode && assertNodeType(previousOrParentNode, TNodeType.Container);
