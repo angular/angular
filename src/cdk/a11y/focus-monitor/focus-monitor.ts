@@ -314,7 +314,7 @@ export class FocusMonitor implements OnDestroy {
     }
 
     this._setClasses(element, origin);
-    elementInfo.subject.next(origin);
+    this._emitOrigin(elementInfo.subject, origin);
     this._lastFocusOrigin = origin;
   }
 
@@ -334,7 +334,11 @@ export class FocusMonitor implements OnDestroy {
     }
 
     this._setClasses(element);
-    elementInfo.subject.next(null);
+    this._emitOrigin(elementInfo.subject, null);
+  }
+
+  private _emitOrigin(subject: Subject<FocusOrigin>, origin: FocusOrigin) {
+    this._ngZone.run(() => subject.next(origin));
   }
 
   private _incrementMonitoredElementCount() {

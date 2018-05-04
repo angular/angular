@@ -5,7 +5,7 @@ import {
   dispatchMouseEvent,
   patchElementFocus,
 } from '@angular/cdk/testing';
-import {Component} from '@angular/core';
+import {Component, NgZone} from '@angular/core';
 import {ComponentFixture, fakeAsync, flush, inject, TestBed, tick} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 import {A11yModule} from '../index';
@@ -212,7 +212,6 @@ describe('FocusMonitor', () => {
 
     expect(buttonElement.classList.length).toBe(0, 'button should not have any focus classes');
   }));
-
 });
 
 
@@ -224,7 +223,7 @@ describe('cdkMonitorFocus', () => {
         ButtonWithFocusClasses,
         ComplexComponentWithMonitorElementFocus,
         ComplexComponentWithMonitorSubtreeFocus,
-        ComplexComponentWithMonitorSubtreeFocusAnfMonitorElementFocus,
+        ComplexComponentWithMonitorSubtreeFocusAndMonitorElementFocus,
       ],
     }).compileComponents();
   });
@@ -394,7 +393,7 @@ describe('cdkMonitorFocus', () => {
   });
 
   describe('complex component with cdkMonitorSubtreeFocus and cdkMonitorElementFocus', () => {
-    let fixture: ComponentFixture<ComplexComponentWithMonitorSubtreeFocusAnfMonitorElementFocus>;
+    let fixture: ComponentFixture<ComplexComponentWithMonitorSubtreeFocusAndMonitorElementFocus>;
     let parentElement: HTMLElement;
     let childElement: HTMLElement;
     let focusMonitor: FocusMonitor;
@@ -402,7 +401,7 @@ describe('cdkMonitorFocus', () => {
     beforeEach(inject([FocusMonitor], (fm: FocusMonitor) => {
       focusMonitor = fm;
       fixture =
-          TestBed.createComponent(ComplexComponentWithMonitorSubtreeFocusAnfMonitorElementFocus);
+          TestBed.createComponent(ComplexComponentWithMonitorSubtreeFocusAndMonitorElementFocus);
       fixture.detectChanges();
 
       parentElement = fixture.debugElement.query(By.css('div')).nativeElement;
@@ -422,6 +421,40 @@ describe('cdkMonitorFocus', () => {
           expect(childElement.classList).toContain('cdk-keyboard-focused');
         }));
   });
+});
+
+describe('FocusMonitor observable stream', () => {
+  let fixture: ComponentFixture<PlainButton>;
+  let buttonElement: HTMLElement;
+  let focusMonitor: FocusMonitor;
+
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      imports: [A11yModule],
+      declarations: [
+        PlainButton,
+      ],
+    }).compileComponents();
+  });
+
+  beforeEach(inject([FocusMonitor], (fm: FocusMonitor) => {
+    fixture = TestBed.createComponent(PlainButton);
+    focusMonitor = fm;
+    fixture.detectChanges();
+    buttonElement = fixture.debugElement.nativeElement.querySelector('button');
+    patchElementFocus(buttonElement);
+  }));
+
+  it('should emit inside the NgZone', fakeAsync(() => {
+    const spy = jasmine.createSpy('zone spy');
+    focusMonitor.monitor(buttonElement).subscribe(() => spy(NgZone.isInAngularZone()));
+    expect(spy).not.toHaveBeenCalled();
+
+    buttonElement.focus();
+    fixture.detectChanges();
+    tick();
+    expect(spy).toHaveBeenCalledWith(true);
+  }));
 });
 
 
@@ -453,4 +486,4 @@ class ComplexComponentWithMonitorSubtreeFocus {}
 @Component({
   template: `<div cdkMonitorSubtreeFocus><button cdkMonitorElementFocus></button></div>`
 })
-class ComplexComponentWithMonitorSubtreeFocusAnfMonitorElementFocus {}
+class ComplexComponentWithMonitorSubtreeFocusAndMonitorElementFocus {}
