@@ -23,6 +23,7 @@ $mat-chip-remove-size: 18px;
 .mat-chip {
   position: relative;
   overflow: hidden;
+  box-sizing: border-box;
 }
 
 .mat-standard-chip {
