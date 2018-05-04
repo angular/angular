@@ -94,7 +94,7 @@ Deployment URL    : https://angular.io/"
   )
   expected="Git branch        : 2.4.x
 Build/deploy mode : archive
-Firebase project  : angular-io-2
+Firebase project  : v2-angular-io
 Deployment URL    : https://v2.angular.io/"
   check "$actual" "$expected"
 )
