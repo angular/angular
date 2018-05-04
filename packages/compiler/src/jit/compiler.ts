@@ -382,14 +382,22 @@ class ModuleBoundCompiler implements Compiler {
 }
 
 
-function flattenSummaries(fn: () => any[], out: CompileTypeSummary[] = []): CompileTypeSummary[] {
-  fn().forEach((entry) => {
+function flattenSummaries(
+    fn: () => any[], out: CompileTypeSummary[] = [],
+    seen = new Set<() => any[]>()): CompileTypeSummary[] {
+  if (seen.has(fn)) {
+    return out;
+  }
+  seen.add(fn);
+  const summaries = fn();
+  for (let i = 0; i < summaries.length; i++) {
+    const entry = summaries[i];
     if (typeof entry === 'function') {
-      flattenSummaries(entry, out);
+      flattenSummaries(entry, out, seen);
     } else {
       out.push(entry);
     }
-  });
+  }
   return out;
 }
 
