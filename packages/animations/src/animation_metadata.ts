@@ -419,6 +419,7 @@ export function trigger(name: string, definitions: AnimationMetadata[]): Animati
  * to be used within {@link sequence an animation sequence}, {@link group group}, or {@link
  * transition transition}.
  *
+ * {@a usage}
  * **Usage**
  *
  * The `animate` function accepts two input parameters: `timing` and `styles`:
@@ -755,6 +756,7 @@ export function keyframes(steps: AnimationStyleMetadata[]): AnimationKeyframesSe
  * <div [@myAnimationTrigger]="myStatusExp">...</div>
  * ```
  *
+ * {@a the-final-animate-call}
  * **The final `animate` call**
  *
  * If the final step within the transition steps is a call to `animate()` that **only** uses a
