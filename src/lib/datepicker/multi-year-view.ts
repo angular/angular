@@ -102,7 +102,7 @@ export class MatMultiYearView<D> implements AfterContentInit {
   @Output() readonly yearSelected: EventEmitter<D> = new EventEmitter<D>();
 
   /** The body of calendar table */
-  @ViewChild(MatCalendarBody) _matCalendarBody;
+  @ViewChild(MatCalendarBody) _matCalendarBody: MatCalendarBody;
 
   /** Grid of calendar cells representing the currently displayed years. */
   _years: MatCalendarCell[][];
@@ -125,7 +125,6 @@ export class MatMultiYearView<D> implements AfterContentInit {
 
   ngAfterContentInit() {
     this._init();
-    this._focusActiveCell();
   }
 
   /** Initializes this multi-year view. */
@@ -211,7 +210,7 @@ export class MatMultiYearView<D> implements AfterContentInit {
   }
 
   /** Focuses the active cell after the microtask queue is empty. */
-  private _focusActiveCell() {
+  _focusActiveCell() {
     this._matCalendarBody._focusActiveCell();
   }
 

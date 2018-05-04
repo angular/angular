@@ -21,7 +21,7 @@ import {ComponentPortal, ComponentType} from '@angular/cdk/portal';
 import {DOCUMENT} from '@angular/common';
 import {take, filter} from 'rxjs/operators';
 import {
-  AfterContentInit,
+  AfterViewInit,
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
@@ -100,7 +100,7 @@ export const _MatDatepickerContentMixinBase = mixinColor(MatDatepickerContentBas
   inputs: ['color'],
 })
 export class MatDatepickerContent<D> extends _MatDatepickerContentMixinBase
-  implements AfterContentInit, CanColor, OnInit, OnDestroy {
+  implements AfterViewInit, CanColor, OnInit, OnDestroy {
 
   /** Subscription to changes in the overlay's position. */
   private _positionChange: Subscription|null;
@@ -141,17 +141,8 @@ export class MatDatepickerContent<D> extends _MatDatepickerContentMixinBase
     });
   }
 
-  ngAfterContentInit() {
-    this._focusActiveCell();
-  }
-
-  /** Focuses the active cell after the microtask queue is empty. */
-  private _focusActiveCell() {
-    this._ngZone.runOutsideAngular(() => {
-      this._ngZone.onStable.asObservable().pipe(take(1)).subscribe(() => {
-        this._elementRef.nativeElement.querySelector('.mat-calendar-body-active').focus();
-      });
-    });
+  ngAfterViewInit() {
+    this._calendar.focusActiveCell();
   }
 
   ngOnDestroy() {

@@ -2,8 +2,13 @@ import {
   ENTER,
   RIGHT_ARROW,
 } from '@angular/cdk/keycodes';
-import {dispatchFakeEvent, dispatchKeyboardEvent, dispatchMouseEvent} from '@angular/cdk/testing';
-import {Component} from '@angular/core';
+import {
+  dispatchFakeEvent,
+  dispatchKeyboardEvent,
+  dispatchMouseEvent,
+  MockNgZone,
+} from '@angular/cdk/testing';
+import {Component, NgZone} from '@angular/core';
 import {ComponentFixture, TestBed, async, inject} from '@angular/core/testing';
 import {DEC, FEB, JAN, MatNativeDateModule, NOV} from '@angular/material/core';
 import {By} from '@angular/platform-browser';
@@ -14,6 +19,7 @@ import {MatDatepickerModule} from './datepicker-module';
 
 describe('MatCalendar', () => {
   let dir: {value: Direction};
+  let zone: MockNgZone;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -29,6 +35,7 @@ describe('MatCalendar', () => {
       ],
       providers: [
         MatDatepickerIntl,
+        {provide: NgZone, useFactory: () => zone = new MockNgZone()},
         {provide: Directionality, useFactory: () => dir = {value: 'ltr'}}
       ],
     });
@@ -148,6 +155,34 @@ describe('MatCalendar', () => {
 
         it('should make the calendar body focusable', () => {
           expect(calendarBodyEl.getAttribute('tabindex')).toBe('-1');
+        });
+
+        it('should not move focus to the active cell on init', () => {
+          const activeCell =
+              calendarBodyEl.querySelector('.mat-calendar-body-active')! as HTMLElement;
+
+          spyOn(activeCell, 'focus').and.callThrough();
+          fixture.detectChanges();
+          zone.simulateZoneExit();
+
+          expect(activeCell.focus).not.toHaveBeenCalled();
+        });
+
+        it('should move focus to the active cell when the view changes', () => {
+          const activeCell =
+              calendarBodyEl.querySelector('.mat-calendar-body-active')! as HTMLElement;
+
+          spyOn(activeCell, 'focus').and.callThrough();
+          fixture.detectChanges();
+          zone.simulateZoneExit();
+
+          expect(activeCell.focus).not.toHaveBeenCalled();
+
+          calendarInstance.currentView = 'multi-year';
+          fixture.detectChanges();
+          zone.simulateZoneExit();
+
+          expect(activeCell.focus).toHaveBeenCalled();
         });
 
         describe('year view', () => {

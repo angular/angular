@@ -97,7 +97,7 @@ export class MatYearView<D> implements AfterContentInit {
   @Output() readonly monthSelected: EventEmitter<D> = new EventEmitter<D>();
 
   /** The body of calendar table */
-  @ViewChild(MatCalendarBody) _matCalendarBody;
+  @ViewChild(MatCalendarBody) _matCalendarBody: MatCalendarBody;
 
   /** Grid of calendar cells representing the months of the year. */
   _months: MatCalendarCell[][];
@@ -130,7 +130,6 @@ export class MatYearView<D> implements AfterContentInit {
 
   ngAfterContentInit() {
     this._init();
-    this._focusActiveCell();
   }
 
   /** Handles when a new month is selected. */
@@ -211,7 +210,7 @@ export class MatYearView<D> implements AfterContentInit {
   }
 
   /** Focuses the active cell after the microtask queue is empty. */
-  private _focusActiveCell() {
+  _focusActiveCell() {
     this._matCalendarBody._focusActiveCell();
   }
 
