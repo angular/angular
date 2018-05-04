@@ -74,6 +74,10 @@ export {
 } from './instructions';
 
 export {
+    AttributeMarker
+} from './interfaces/node';
+
+export {
   pipe as Pp,
   pipeBind1 as pb1,
   pipeBind2 as pb2,
