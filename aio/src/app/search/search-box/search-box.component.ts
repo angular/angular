@@ -30,7 +30,7 @@ export class SearchBoxComponent implements OnInit {
   private searchSubject = new Subject<string>();
 
   @ViewChild('searchBox') searchBox: ElementRef;
-  @Output() onSearch = this.searchSubject.pipe(distinctUntilChanged(), debounceTime(this.searchDebounce));
+  @Output() onSearch = this.searchSubject.pipe(debounceTime(this.searchDebounce), distinctUntilChanged());
   @Output() onFocus = new EventEmitter<string>();
 
   constructor(private locationService: LocationService) { }
