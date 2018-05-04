@@ -9,9 +9,12 @@ import {
   Component,
   ChangeDetectionStrategy,
   ElementRef,
+  Inject,
   Input,
+  Optional,
   ViewEncapsulation
 } from '@angular/core';
+import {ANIMATION_MODULE_TYPE} from '@angular/platform-browser/animations';
 import {CanColor, mixinColor} from '@angular/material/core';
 
 // TODO(josephperrott): Benchpress tests.
@@ -42,6 +45,7 @@ let progressbarId = 0;
     '[attr.aria-valuenow]': 'value',
     '[attr.mode]': 'mode',
     'class': 'mat-progress-bar',
+    '[class._mat-animation-noopable]': `_animationMode === 'NoopAnimations'`,
   },
   inputs: ['color'],
   templateUrl: 'progress-bar.html',
@@ -51,7 +55,9 @@ let progressbarId = 0;
 })
 export class MatProgressBar extends _MatProgressBarMixinBase implements CanColor {
 
-  constructor(public _elementRef: ElementRef) {
+
+  constructor(public _elementRef: ElementRef,
+              @Optional() @Inject(ANIMATION_MODULE_TYPE) public _animationMode?: string) {
     super(_elementRef);
   }
 

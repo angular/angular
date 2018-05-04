@@ -9,12 +9,13 @@
 import {
   Component,
   ChangeDetectionStrategy,
+  Inject,
   Input,
   ElementRef,
   ViewEncapsulation,
   Optional,
-  Inject,
 } from '@angular/core';
+import {ANIMATION_MODULE_TYPE} from '@angular/platform-browser/animations';
 import {CanColor, mixinColor} from '@angular/material/core';
 import {Platform} from '@angular/cdk/platform';
 import {DOCUMENT} from '@angular/common';
@@ -80,6 +81,7 @@ const INDETERMINATE_ANIMATION_TEMPLATE = `
   host: {
     'role': 'progressbar',
     'class': 'mat-progress-spinner',
+    '[class._mat-animation-noopable]': `_animationMode === 'NoopAnimations'`,
     '[style.width.px]': 'diameter',
     '[style.height.px]': 'diameter',
     '[attr.aria-valuemin]': 'mode === "determinate" ? 0 : null',
@@ -144,7 +146,8 @@ export class MatProgressSpinner extends _MatProgressSpinnerMixinBase implements 
 
   constructor(public _elementRef: ElementRef,
               platform: Platform,
-              @Optional() @Inject(DOCUMENT) private _document: any) {
+              @Optional() @Inject(DOCUMENT) private _document: any,
+              @Optional() @Inject(ANIMATION_MODULE_TYPE) public _animationMode?: string) {
 
     super(_elementRef);
     this._fallbackAnimation = platform.EDGE || platform.TRIDENT;
@@ -233,6 +236,7 @@ export class MatProgressSpinner extends _MatProgressSpinnerMixinBase implements 
     'role': 'progressbar',
     'mode': 'indeterminate',
     'class': 'mat-spinner mat-progress-spinner',
+    '[class._mat-animation-noopable]': `_animationMode === 'NoopAnimations'`,
     '[style.width.px]': 'diameter',
     '[style.height.px]': 'diameter',
   },
@@ -244,8 +248,9 @@ export class MatProgressSpinner extends _MatProgressSpinnerMixinBase implements 
 })
 export class MatSpinner extends MatProgressSpinner {
   constructor(elementRef: ElementRef, platform: Platform,
-              @Optional() @Inject(DOCUMENT) document: any) {
-    super(elementRef, platform, document);
+              @Optional() @Inject(DOCUMENT) document: any,
+              @Optional() @Inject(ANIMATION_MODULE_TYPE) _animationMode?: string) {
+    super(elementRef, platform, document, _animationMode);
     this.mode = 'indeterminate';
   }
 }
