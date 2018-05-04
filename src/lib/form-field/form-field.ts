@@ -420,7 +420,7 @@ export class MatFormField extends _MatFormFieldMixinBase
         this._initialGapCalculated = true;
         return;
       }
-      if (!document.contains(this._elementRef.nativeElement)) {
+      if (!document.documentElement.contains(this._elementRef.nativeElement)) {
         return;
       }
 
