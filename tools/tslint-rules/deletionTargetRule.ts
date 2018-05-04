@@ -9,7 +9,8 @@ import * as path from 'path';
  */
 export class Rule extends Lint.Rules.AbstractRule {
   apply(sourceFile: ts.SourceFile): Lint.RuleFailure[] {
-    const packageVersion = require(path.join(process.cwd(), 'package.json')).version;
+    // Split it on the dash to ignore `-beta.x` suffixes.
+    const packageVersion = require(path.join(process.cwd(), 'package.json')).version.split('-')[0];
 
     return this.applyWithFunction(sourceFile, (ctx: Lint.WalkContext<any>) => {
       utils.forEachComment(ctx.sourceFile, (file, {pos, end}) => {
