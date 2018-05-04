@@ -203,7 +203,7 @@ export interface Directive {
   /**
    * Specify the events, actions, properties and attributes related to the host element.
    *
-   * **Host Listeners:**
+   * **Host Listeners**
    *
    * Specifies which DOM events a directive listens to via a set of `(event)` to `method`
    * key-value pairs:
