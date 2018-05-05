@@ -8,7 +8,7 @@
 
 import {Component, Directive, EventEmitter, Input, Output, Type} from '@angular/core';
 import {ComponentFixture, TestBed, async, fakeAsync, tick} from '@angular/core/testing';
-import {AbstractControl, ControlValueAccessor, FormControl, FormGroup, FormsModule, NG_VALIDATORS, NG_VALUE_ACCESSOR, NgControl, NgForm, NgModel, ReactiveFormsModule, Validators} from '@angular/forms';
+import {AbstractControl, ControlValueAccessor, FormControl, FormGroup, FormArray, FormsModule, NG_VALIDATORS, NG_VALUE_ACCESSOR, NgControl, NgForm, NgModel, ReactiveFormsModule, Validators} from '@angular/forms';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util';
 
@@ -672,47 +672,390 @@ import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util'
           expect(form.value).toEqual({drink: 'sprite'});
         });
 
-        it('should differentiate controls on different levels with the same name', () => {
-          TestBed.overrideComponent(FormControlRadioButtons, {
-            set: {
-              template: `
-              <div [formGroup]="form">
-                <input type="radio" formControlName="food" value="chicken">
-                <input type="radio" formControlName="food" value="fish">
-                <div formGroupName="nested">
-                  <input type="radio" formControlName="food" value="chicken">
-                  <input type="radio" formControlName="food" value="fish">
-                </div>
-              </div>
-              `
-            }
+        describe('with controls on different levels with the same formControlName', () => {
+          let fixture: ComponentFixture<FormControlRadioButtons>;
+          let comp: FormControlRadioButtons;
+
+          const detectChangesAndTick = (): void => {
+            fixture.detectChanges();
+            tick();
+          };
+
+          const setRadio = (index: number): void => {
+            const inputs = fixture.debugElement.queryAll(By.css('input'));
+            inputs[index].nativeElement.checked = true;
+            dispatchEvent(inputs[index].nativeElement, 'change');
+            detectChangesAndTick();
+          };
+
+          const assertFormValue = (path: string, value: string): void => {
+            expect(comp.form.get(path) !.value).toEqual(value);
+          }
+
+          const assertRadioChecked = (index: number, checked: boolean): void => {
+            const inputs = fixture.debugElement.queryAll(By.css('input'));
+            expect (inputs[index].nativeElement.checked).toEqual(checked);
+          }
+
+          describe('when name is absent', () => {
+            beforeEach(() => {
+              TestBed.overrideComponent(FormControlRadioButtons, {
+                set: {
+                  template: `
+                  <div [formGroup]="form">
+                    <input type="radio" formControlName="food" value="chicken">
+                    <input type="radio" formControlName="food" value="fish">
+                    <input type="radio" formControlName="drink" value="cola">
+                    <input type="radio" formControlName="drink" value="sprite">
+                    <div formGroupName="group">
+                      <input type="radio" formControlName="food" value="chicken">
+                      <input type="radio" formControlName="food" value="fish">
+                      <input type="radio" formControlName="drink" value="cola">
+                      <input type="radio" formControlName="drink" value="sprite">
+                      <div formGroupName="group">
+                        <input type="radio" formControlName="food" value="chicken">
+                        <input type="radio" formControlName="food" value="fish">
+                        <input type="radio" formControlName="drink" value="cola">
+                        <input type="radio" formControlName="drink" value="sprite">
+                      </div>
+                      <div formArrayName="array">
+                        <input type="radio" formControlName="0" value="chicken">
+                        <input type="radio" formControlName="0" value="fish">
+                        <input type="radio" formControlName="1" value="cola">
+                        <input type="radio" formControlName="1" value="sprite">
+                      </div>
+                    </div>
+                    <div formArrayName="array">
+                      <input type="radio" formControlName="0" value="chicken">
+                      <input type="radio" formControlName="0" value="fish">
+                      <input type="radio" formControlName="1" value="cola">
+                      <input type="radio" formControlName="1" value="sprite">
+                      <div formGroupName="2">
+                        <input type="radio" formControlName="food" value="chicken">
+                        <input type="radio" formControlName="food" value="fish">
+                        <input type="radio" formControlName="drink" value="cola">
+                        <input type="radio" formControlName="drink" value="sprite">
+                      </div>
+                      <div formArrayName="3">
+                        <input type="radio" formControlName="0" value="chicken">
+                        <input type="radio" formControlName="0" value="fish">
+                        <input type="radio" formControlName="1" value="cola">
+                        <input type="radio" formControlName="1" value="sprite">
+                      </div>
+                    </div>
+                  </div>
+                  `
+                }
+              });
+              fixture = initTest(FormControlRadioButtons);
+              
+              const form = new FormGroup({
+                "food": new FormControl("fish"),
+                "drink": new FormControl("sprite"),
+                "group": new FormGroup({
+                  "food": new FormControl("fish"),
+                  "drink": new FormControl("sprite"),
+                  "group": new FormGroup({"food": new FormControl("fish"), "drink": new FormControl("sprite")}),
+                  "array": new FormArray([new FormControl("fish"), new FormControl("sprite")])
+                }),
+                "array": new FormArray([
+                  new FormControl("fish"),
+                  new FormControl("sprite"),
+                  new FormGroup({"food": new FormControl("fish"), "drink": new FormControl("sprite")}),
+                  new FormArray([new FormControl("fish"), new FormControl("sprite")])
+                ])
+              });
+              fixture.componentInstance.form = form;
+              comp = fixture.componentInstance;
+            });
+
+            it('should initialize controls', fakeAsync(() => {
+              if (isNode) return;
+    
+              // model -> view
+              detectChangesAndTick();
+              
+              // food
+              assertRadioChecked(0,false);
+              assertRadioChecked(1,true);
+              // drink
+              assertRadioChecked(2,false);
+              assertRadioChecked(3,true);
+              // group.food
+              assertRadioChecked(4,false);
+              assertRadioChecked(5,true);
+              // group.drink
+              assertRadioChecked(6,false);
+              assertRadioChecked(7,true);
+              // group.group.food
+              assertRadioChecked(8,false);
+              assertRadioChecked(9,true);
+              // group.group.drink
+              assertRadioChecked(10,false);
+              assertRadioChecked(11,true);
+              // group.array[0]
+              assertRadioChecked(12,false);
+              assertRadioChecked(13,true);
+              // group.array[1]
+              assertRadioChecked(14,false);
+              assertRadioChecked(15,true);
+              // array[0]
+              assertRadioChecked(16,false);
+              assertRadioChecked(17,true);
+              // array[1]
+              assertRadioChecked(18,false);
+              assertRadioChecked(19,true);
+              // array[2].food
+              assertRadioChecked(20,false);
+              assertRadioChecked(21,true);
+              // array[2].drink
+              assertRadioChecked(22,false);
+              assertRadioChecked(23,true);
+              // array[3][0]
+              assertRadioChecked(24,false);
+              assertRadioChecked(25,true);
+              // group[3][1]
+              assertRadioChecked(26,false);
+              assertRadioChecked(27,true);
+            }));
+  
+            it('should differentiate grouped controls with the same formControlName', fakeAsync(() => {
+              if (isNode) return;
+
+              detectChangesAndTick();
+    
+              // set food value="chicken"
+              setRadio(0);
+    
+              // view -> model
+              assertFormValue('food', 'chicken');
+              assertFormValue('group.food', 'fish');
+              assertFormValue('group.group.food', 'fish');
+              assertFormValue('array.2.food', 'fish');
+              // food
+              assertRadioChecked(0,true);
+              assertRadioChecked(1,false);
+              // drink
+              assertRadioChecked(2,false);
+              assertRadioChecked(3,true);
+              // group.food
+              assertRadioChecked(4,false);
+              assertRadioChecked(5,true);
+              // group.group.food
+              assertRadioChecked(8,false);
+              assertRadioChecked(9,true);
+              // array[2].food
+              assertRadioChecked(20,false);
+              assertRadioChecked(21,true);
+            }));
+            
+            it('should differentiate arrayed controls with the same formControlName index', fakeAsync(() => {
+              if (isNode) return;
+
+              detectChangesAndTick();
+  
+              // set array[0] value="chicken"
+              setRadio(16);
+    
+              // view -> model
+              assertFormValue('group.array.0', 'fish');
+              assertFormValue('array.0', 'chicken');
+              assertFormValue('array.3.0', 'fish');
+              // group.array[0]
+              assertRadioChecked(12,false);
+              assertRadioChecked(13,true);
+              // array[0]
+              assertRadioChecked(16,true);
+              assertRadioChecked(17,false);
+              // array[1]
+              assertRadioChecked(18,false);
+              assertRadioChecked(19,true);
+              // array[3][0]
+              assertRadioChecked(24,false);
+              assertRadioChecked(25,true);
+    
+            }));
           });
-          const fixture = initTest(FormControlRadioButtons);
-          const form = new FormGroup({
-            food: new FormControl('fish'),
-            nested: new FormGroup({food: new FormControl('fish')})
+
+          describe('when name is provided', () => {
+            beforeEach(() => {
+              TestBed.overrideComponent(FormControlRadioButtons, {
+                set: {
+                  template: `
+                  <div [formGroup]="form">
+                    <input type="radio" formControlName="food" name="food" value="chicken">
+                    <input type="radio" formControlName="food" name="food" value="fish">
+                    <input type="radio" formControlName="drink" name="drink" value="cola">
+                    <input type="radio" formControlName="drink" name="drink" value="sprite">
+                    <div formGroupName="group">
+                      <input type="radio" formControlName="food" name="group.food" value="chicken">
+                      <input type="radio" formControlName="food" name="group.food" value="fish">
+                      <input type="radio" formControlName="drink" name="group.drink" value="cola">
+                      <input type="radio" formControlName="drink" name="group.drink" value="sprite">
+                      <div formGroupName="group">
+                        <input type="radio" formControlName="food" name="group.group.food" value="chicken">
+                        <input type="radio" formControlName="food" name="group.group.food" value="fish">
+                        <input type="radio" formControlName="drink" name="group.group.drink" value="cola">
+                        <input type="radio" formControlName="drink" name="group.group.drink" value="sprite">
+                      </div>
+                      <div formArrayName="array">
+                        <input type="radio" formControlName="0" name="group.array[0]" value="chicken">
+                        <input type="radio" formControlName="0" name="group.array[0]" value="fish">
+                        <input type="radio" formControlName="1" name="group.array[1]" value="cola">
+                        <input type="radio" formControlName="1" name="group.array[1]" value="sprite">
+                      </div>
+                    </div>
+                    <div formArrayName="array">
+                      <input type="radio" formControlName="0" name="array[0]" value="chicken">
+                      <input type="radio" formControlName="0" name="array[0]" value="fish">
+                      <input type="radio" formControlName="1" name="array[1]" value="cola">
+                      <input type="radio" formControlName="1" name="array[1]" value="sprite">
+                      <div formGroupName="2">
+                        <input type="radio" formControlName="food" name="array[2].food" value="chicken">
+                        <input type="radio" formControlName="food" name="array[2].food" value="fish">
+                        <input type="radio" formControlName="drink" name="array[2].drink" value="cola">
+                        <input type="radio" formControlName="drink" name="array[2].drink" value="sprite">
+                      </div>
+                      <div formArrayName="3">
+                        <input type="radio" formControlName="0" name="array[3][0]" value="chicken">
+                        <input type="radio" formControlName="0" name="array[3][0]" value="fish">
+                        <input type="radio" formControlName="1" name="array[3][1]" value="cola">
+                        <input type="radio" formControlName="1" name="array[3][1]" value="sprite">
+                      </div>
+                    </div>
+                  </div>
+                  `
+                }
+              });
+              fixture = initTest(FormControlRadioButtons);
+              
+              const form = new FormGroup({
+                "food": new FormControl("fish"),
+                "drink": new FormControl("sprite"),
+                "group": new FormGroup({
+                  "food": new FormControl("fish"),
+                  "drink": new FormControl("sprite"),
+                  "group": new FormGroup({"food": new FormControl("fish"), "drink": new FormControl("sprite")}),
+                  "array": new FormArray([new FormControl("fish"), new FormControl("sprite")])
+                }),
+                "array": new FormArray([
+                  new FormControl("fish"),
+                  new FormControl("sprite"),
+                  new FormGroup({"food": new FormControl("fish"), "drink": new FormControl("sprite")}),
+                  new FormArray([new FormControl("fish"), new FormControl("sprite")])
+                ])
+              });
+              fixture.componentInstance.form = form;
+              comp = fixture.componentInstance;
+            });
+
+            it('should initialize controls', fakeAsync(() => {
+              if (isNode) return;
+    
+              // model -> view
+              detectChangesAndTick();
+              
+              // food
+              assertRadioChecked(0,false);
+              assertRadioChecked(1,true);
+              // drink
+              assertRadioChecked(2,false);
+              assertRadioChecked(3,true);
+              // group.food
+              assertRadioChecked(4,false);
+              assertRadioChecked(5,true);
+              // group.drink
+              assertRadioChecked(6,false);
+              assertRadioChecked(7,true);
+              // group.group.food
+              assertRadioChecked(8,false);
+              assertRadioChecked(9,true);
+              // group.group.drink
+              assertRadioChecked(10,false);
+              assertRadioChecked(11,true);
+              // group.array[0]
+              assertRadioChecked(12,false);
+              assertRadioChecked(13,true);
+              // group.array[1]
+              assertRadioChecked(14,false);
+              assertRadioChecked(15,true);
+              // array[0]
+              assertRadioChecked(16,false);
+              assertRadioChecked(17,true);
+              // array[1]
+              assertRadioChecked(18,false);
+              assertRadioChecked(19,true);
+              // array[2].food
+              assertRadioChecked(20,false);
+              assertRadioChecked(21,true);
+              // array[2].drink
+              assertRadioChecked(22,false);
+              assertRadioChecked(23,true);
+              // array[3][0]
+              assertRadioChecked(24,false);
+              assertRadioChecked(25,true);
+              // group[3][1]
+              assertRadioChecked(26,false);
+              assertRadioChecked(27,true);
+            }));
+  
+            it('should differentiate grouped controls with the same formControlName', fakeAsync(() => {
+              if (isNode) return;
+
+              detectChangesAndTick();
+    
+              // set food value="chicken"
+              setRadio(0);
+    
+              // view -> model
+              assertFormValue('food', 'chicken');
+              assertFormValue('group.food', 'fish');
+              assertFormValue('group.group.food', 'fish');
+              assertFormValue('array.2.food', 'fish');
+              // food
+              assertRadioChecked(0,true);
+              assertRadioChecked(1,false);
+              // drink
+              assertRadioChecked(2,false);
+              assertRadioChecked(3,true);
+              // group.food
+              assertRadioChecked(4,false);
+              assertRadioChecked(5,true);
+              // group.group.food
+              assertRadioChecked(8,false);
+              assertRadioChecked(9,true);
+              // array[2].food
+              assertRadioChecked(20,false);
+              assertRadioChecked(21,true);
+            }));
+            
+            it('should differentiate arrayed controls with the same formControlName index', fakeAsync(() => {
+              if (isNode) return;
+
+              detectChangesAndTick();
+  
+              // set array[0] value="chicken"
+              setRadio(16);
+    
+              // view -> model
+              assertFormValue('group.array.0', 'fish');
+              assertFormValue('array.0', 'chicken');
+              assertFormValue('array.3.0', 'fish');
+              // group.array[0]
+              assertRadioChecked(12,false);
+              assertRadioChecked(13,true);
+              // array[0]
+              assertRadioChecked(16,true);
+              assertRadioChecked(17,false);
+              // array[1]
+              assertRadioChecked(18,false);
+              assertRadioChecked(19,true);
+              // array[3][0]
+              assertRadioChecked(24,false);
+              assertRadioChecked(25,true);
+    
+            }));
           });
-          fixture.componentInstance.form = form;
-          fixture.detectChanges();
-
-          // model -> view
-          const inputs = fixture.debugElement.queryAll(By.css('input'));
-          expect(inputs[0].nativeElement.checked).toEqual(false);
-          expect(inputs[1].nativeElement.checked).toEqual(true);
-          expect(inputs[2].nativeElement.checked).toEqual(false);
-          expect(inputs[3].nativeElement.checked).toEqual(true);
-
-          dispatchEvent(inputs[0].nativeElement, 'change');
-          fixture.detectChanges();
-
-          // view -> model
-          expect(form.get('food') !.value).toEqual('chicken');
-          expect(form.get('nested.food') !.value).toEqual('fish');
-
-          expect(inputs[1].nativeElement.checked).toEqual(false);
-          expect(inputs[2].nativeElement.checked).toEqual(false);
-          expect(inputs[3].nativeElement.checked).toEqual(true);
-
         });
 
         it('should disable all radio buttons when disable() is called', () => {

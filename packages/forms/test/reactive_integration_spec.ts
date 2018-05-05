@@ -2321,13 +2321,53 @@ import {MyInput, MyInputForm} from './value_accessor_integration_spec';
         TestBed.overrideComponent(FormGroupComp, {
           set: {
             template: `
-          <form [formGroup]="form">hav
+          <form [formGroup]="form">
             <input type="radio" formControlName="food" name="drink" value="chicken">
           </form>`
           }
         });
         const fixture = initTest(FormGroupComp);
         fixture.componentInstance.form = new FormGroup({'food': new FormControl('fish')});
+
+        expect(() => fixture.detectChanges())
+            .toThrowError(new RegExp('If you define both a name and a formControlName'));
+      });
+
+      it('should throw if nested radio button name does not match parsed control name', () => {
+        TestBed.overrideComponent(FormGroupComp, {
+          set: {
+            template: `
+          <form [formGroup]="form">
+            <div formGroupName="group">
+              <input type="radio" formControlName="food" name="food" value="chicken">
+            </div>
+          </form>`
+          }
+        });
+        const fixture = initTest(FormGroupComp);
+        fixture.componentInstance.form = new FormGroup({
+          'group': new FormGroup({'food': new FormControl('fish')})
+        });
+
+        expect(() => fixture.detectChanges())
+            .toThrowError(new RegExp('If you define both a name and a formControlName'));
+      });
+
+      it('should throw if arrayed radio button name does not match parsed control name', () => {
+        TestBed.overrideComponent(FormGroupComp, {
+          set: {
+            template: `
+          <form [formGroup]="form">
+            <div formArrayName="array">
+              <input type="radio" formControlName="food" name="array.0" value="chicken">
+            </div>
+          </form>`
+          }
+        });
+        const fixture = initTest(FormGroupComp);
+        fixture.componentInstance.form = new FormGroup({
+          'array': new FormArray([new FormControl('fish')])
+        });
 
         expect(() => fixture.detectChanges())
             .toThrowError(new RegExp('If you define both a name and a formControlName'));

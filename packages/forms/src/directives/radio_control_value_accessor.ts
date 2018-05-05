@@ -8,6 +8,7 @@
 
 import {Directive, ElementRef, Injectable, Injector, Input, OnDestroy, OnInit, Renderer2, forwardRef} from '@angular/core';
 
+import {AbstractControl, FormArray} from '../model';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from './control_value_accessor';
 import {NgControl} from './ng_control';
 
@@ -138,16 +139,57 @@ export class RadioControlValueAccessor implements ControlValueAccessor,
   }
 
   private _checkName(): void {
-    if (this.name && this.formControlName && this.name !== this.formControlName) {
-      this._throwNameError();
+    if (this.name && this.formControlName && this.name !== this._parsedName) {
+      this._throwNameError(this.name, this._parsedName);
     }
-    if (!this.name && this.formControlName) this.name = this.formControlName;
+    if (!this.name && this.formControlName) this.name = this._parsedName;
   }
 
-  private _throwNameError(): void {
+  private get _parsedName(): string {
+    if (!this._control._parent || !this._control.path || !this._control.path.length) {
+      return this.formControlName;
+    }
+
+    let path = this._control.path;
+    // Make sure the last element is set to this formControlName
+    if (path[path.length - 1] == null) {
+      path[path.length - 1] = this.formControlName;
+    }
+
+    // Get control ancestors
+    let ancestors: AbstractControl[] = [];
+    let ancestor: AbstractControl | null = this._control._parent.control;
+    while (ancestor && ancestor.parent) {
+      ancestors.push(ancestor);
+      ancestor = ancestor.parent;
+    }
+    ancestors.reverse();
+
+    // Match ancestors with path names, and check if ancestor is a FormArray
+    let parsedAncestors: { name: string, isArray: boolean}[] = [];
+    for (let i = 0; i < path.length; i++) {
+      ancestor = ancestors[i];
+      parsedAncestors.push({ name: path[i], isArray: ancestor && (<FormArray>ancestor).at && true });
+    }
+
+    // Parse name with FormArray indexes in square brackets
+    let parsedName: string = "";
+    let isPreviousAncestorArray: boolean = false;
+    for (let parsedAncestor of parsedAncestors) {
+      if (isPreviousAncestorArray) parsedName += `[${parsedAncestor.name}]`;
+      else parsedName += `${parsedName ? "." : ""}${parsedAncestor.name}`;
+
+      isPreviousAncestorArray = parsedAncestor.isArray;
+    }
+
+    return parsedName;
+  }
+
+  private _throwNameError(formControlName: string, parsedName: string): void {
     throw new Error(`
-      If you define both a name and a formControlName attribute on your radio button, their values
-      must match. Ex: <input type="radio" formControlName="food" name="food">
+      If you define both a name and a formControlName attribute on your radio button,
+      the name must match the form control path.
+      Ex: <input type="radio" formControlName="${formControlName}" name="${parsedName}">
     `);
   }
 }
