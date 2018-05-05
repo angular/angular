@@ -76,7 +76,8 @@ export class RadioControlRegistry {
  * {@example forms/ts/radioButtons/radio_button_example.ts region='TemplateDriven'}
  *
  * When using radio buttons in a reactive form, radio buttons in the same group should have the
- * same `formControlName`. You can also add a `name` attribute, but it's optional.
+ * same `formControlName`. You can also add a `name` attribute, but it's optional and must match
+ * the form control json path.
  *
  * {@example forms/ts/reactiveRadioButtons/reactive_radio_button_example.ts region='Reactive'}
  *

@@ -15,8 +15,13 @@ import {FormControl, FormGroup} from '@angular/forms';
   template: `
     <form [formGroup]="form">
       <input type="radio" formControlName="food" value="beef" > Beef
-      <input type="radio" formControlName="food" value="lamb"> Lamb
+      <input type="radio" formControlName="food" name="food" value="lamb"> Lamb
       <input type="radio" formControlName="food" value="fish"> Fish
+      <div formGroupName="group">
+        <input type="radio" formControlName="food" value="beef" > Beef
+        <input type="radio" formControlName="food" name="group.food" value="lamb"> Lamb
+        <input type="radio" formControlName="food" value="fish"> Fish
+      </div>
     </form>
     
     <p>Form value: {{ form.value | json }}</p>  <!-- {food: 'lamb' } -->
@@ -25,6 +30,9 @@ import {FormControl, FormGroup} from '@angular/forms';
 export class ReactiveRadioButtonComp {
   form = new FormGroup({
     food: new FormControl('lamb'),
+    group: new FormGroup({
+      food: new FormControl('lamb')
+    })
   });
 }
 // #enddocregion
