@@ -888,39 +888,39 @@ import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util'
                     <input type="radio" formControlName="drink" name="drink" value="cola">
                     <input type="radio" formControlName="drink" name="drink" value="sprite">
                     <div formGroupName="group">
-                      <input type="radio" formControlName="food" name="food" value="chicken">
-                      <input type="radio" formControlName="food" name="food" value="fish">
-                      <input type="radio" formControlName="drink" name="drink" value="cola">
-                      <input type="radio" formControlName="drink" name="drink" value="sprite">
+                      <input type="radio" formControlName="food" name="group.food" value="chicken">
+                      <input type="radio" formControlName="food" name="group.food" value="fish">
+                      <input type="radio" formControlName="drink" name="group.drink" value="cola">
+                      <input type="radio" formControlName="drink" name="group.drink" value="sprite">
                       <div formGroupName="group">
-                        <input type="radio" formControlName="food" name="food" value="chicken">
-                        <input type="radio" formControlName="food" name="food" value="fish">
-                        <input type="radio" formControlName="drink" name="drink" value="cola">
-                        <input type="radio" formControlName="drink" name="drink" value="sprite">
+                        <input type="radio" formControlName="food" name="group.group.food" value="chicken">
+                        <input type="radio" formControlName="food" name="group.group.food" value="fish">
+                        <input type="radio" formControlName="drink" name="group.group.drink" value="cola">
+                        <input type="radio" formControlName="drink" name="group.group.drink" value="sprite">
                       </div>
                       <div formArrayName="array">
-                        <input type="radio" formControlName="0" name="0" value="chicken">
-                        <input type="radio" formControlName="0" name="0" value="fish">
-                        <input type="radio" formControlName="1" name="1" value="cola">
-                        <input type="radio" formControlName="1" name="1" value="sprite">
+                        <input type="radio" formControlName="0" name="group.array[0]" value="chicken">
+                        <input type="radio" formControlName="0" name="group.array[0]" value="fish">
+                        <input type="radio" formControlName="1" name="group.array[1]" value="cola">
+                        <input type="radio" formControlName="1" name="group.array[1]" value="sprite">
                       </div>
                     </div>
                     <div formArrayName="array">
-                      <input type="radio" formControlName="0" name="0" value="chicken">
-                      <input type="radio" formControlName="0" name="0" value="fish">
-                      <input type="radio" formControlName="1" name="1" value="cola">
-                      <input type="radio" formControlName="1" name="1" value="sprite">
+                      <input type="radio" formControlName="0" name="array[0]" value="chicken">
+                      <input type="radio" formControlName="0" name="array[0]" value="fish">
+                      <input type="radio" formControlName="1" name="array[1]" value="cola">
+                      <input type="radio" formControlName="1" name="array[1]" value="sprite">
                       <div formGroupName="2">
-                        <input type="radio" formControlName="food" name="food" value="chicken">
-                        <input type="radio" formControlName="food" name="food" value="fish">
-                        <input type="radio" formControlName="drink" name="drink" value="cola">
-                        <input type="radio" formControlName="drink" name="drink" value="sprite">
+                        <input type="radio" formControlName="food" name="array[2].food" value="chicken">
+                        <input type="radio" formControlName="food" name="array[2].food" value="fish">
+                        <input type="radio" formControlName="drink" name="array[2].drink" value="cola">
+                        <input type="radio" formControlName="drink" name="array[2].drink" value="sprite">
                       </div>
                       <div formArrayName="3">
-                        <input type="radio" formControlName="0" name="0" value="chicken">
-                        <input type="radio" formControlName="0" name="0" value="fish">
-                        <input type="radio" formControlName="1" name="1" value="cola">
-                        <input type="radio" formControlName="1" name="1" value="sprite">
+                        <input type="radio" formControlName="0" name="array[3][0]" value="chicken">
+                        <input type="radio" formControlName="0" name="array[3][0]" value="fish">
+                        <input type="radio" formControlName="1" name="array[3][1]" value="cola">
+                        <input type="radio" formControlName="1" name="array[3][1]" value="sprite">
                       </div>
                     </div>
                   </div>
