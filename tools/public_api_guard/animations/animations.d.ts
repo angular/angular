@@ -115,7 +115,7 @@ export interface AnimationPlayer {
     play(): void;
     reset(): void;
     restart(): void;
-    setPosition(position: number): void;
+    setPosition(p: any): void;
 }
 
 /** @experimental */
@@ -216,7 +216,7 @@ export declare class NoopAnimationPlayer implements AnimationPlayer {
     play(): void;
     reset(): void;
     restart(): void;
-    setPosition(position: number): void;
+    setPosition(p: number): void;
 }
 
 /** @experimental */
