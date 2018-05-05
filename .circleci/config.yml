@@ -91,17 +91,16 @@ jobs:
       # Also we can use a service like https://buildsize.org/ to automatically track binary size of these artifacts.
       - store_artifacts:
           path: dist/bin/packages/core/test/bundling/hello_world/bundle.min.js
-          destination: packages/core/test/bundling/hello_world/bundle.min.js
+          destination: core/hello_world/bundle
       - store_artifacts:
           path: dist/bin/packages/core/test/bundling/todo/bundle.min.js
-          destination: packages/core/test/bundling/todo/bundle.min.js
+          destination: core/todo/bundle
       - store_artifacts:
           path: dist/bin/packages/core/test/bundling/hello_world/bundle.min.js.br
-          destination: packages/core/test/bundling/hello_world/bundle.min.js.br
+          destination: core/hello_world/br/bundle
       - store_artifacts:
           path: dist/bin/packages/core/test/bundling/todo/bundle.min.js.br
-          destination: packages/core/test/bundling/todo/bundle.min.js.br
-
+          destination: core/todo/br/bundle
       - save_cache:
           key: *cache_key
           paths:
