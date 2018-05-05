@@ -10,6 +10,7 @@ import {NgModule, Type} from '@angular/core';
 
 import {CheckboxControlValueAccessor} from './directives/checkbox_value_accessor';
 import {DefaultValueAccessor} from './directives/default_value_accessor';
+import {FileValueAccessor} from './directives/file_value_accessor';
 import {NgControlStatus, NgControlStatusGroup} from './directives/ng_control_status';
 import {NgForm} from './directives/ng_form';
 import {NgModel} from './directives/ng_model';
@@ -29,6 +30,7 @@ import {CheckboxRequiredValidator, EmailValidator, MaxLengthValidator, MinLength
 export {CheckboxControlValueAccessor} from './directives/checkbox_value_accessor';
 export {ControlValueAccessor} from './directives/control_value_accessor';
 export {DefaultValueAccessor} from './directives/default_value_accessor';
+export {FileValueAccessor} from './directives/file_value_accessor';
 export {NgControl} from './directives/ng_control';
 export {NgControlStatus, NgControlStatusGroup} from './directives/ng_control_status';
 export {NgForm} from './directives/ng_form';
@@ -50,6 +52,7 @@ export const SHARED_FORM_DIRECTIVES: Type<any>[] = [
   NgSelectMultipleOption,
   DefaultValueAccessor,
   NumberValueAccessor,
+  FileValueAccessor,
   RangeValueAccessor,
   CheckboxControlValueAccessor,
   SelectControlValueAccessor,

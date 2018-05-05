@@ -16,6 +16,7 @@ import {CheckboxControlValueAccessor} from './checkbox_value_accessor';
 import {ControlContainer} from './control_container';
 import {ControlValueAccessor} from './control_value_accessor';
 import {DefaultValueAccessor} from './default_value_accessor';
+import {FileValueAccessor} from './file_value_accessor';
 import {NgControl} from './ng_control';
 import {normalizeAsyncValidator, normalizeValidator} from './normalize_validator';
 import {NumberValueAccessor} from './number_value_accessor';
@@ -162,6 +163,7 @@ const BUILTIN_ACCESSORS = [
   CheckboxControlValueAccessor,
   RangeValueAccessor,
   NumberValueAccessor,
+  FileValueAccessor,
   SelectControlValueAccessor,
   SelectMultipleControlValueAccessor,
   RadioControlValueAccessor,
