@@ -143,7 +143,7 @@ In `AppRoutingModule`, update the `routes` array with the following:
 </code-example>
 
 
-The import statements stay the same. The first two paths are the routes to the `CustomersModule` and the `OrdersModule` respectively. Notice that the lazy loading syntax uses `loadChildren` followed by a string that is the path to the module, a hash mark or `#`, and the module’s class name.
+The import statements stay the same. The first two paths are the routes to the `CustomersModule` and the `OrdersModule` respectively. Notice that the lazy loading syntax uses `loadChildren` followed by a string that is the relative path to the module, a hash mark or `#`, and the module’s class name.
 
 ### Inside the feature module
 
