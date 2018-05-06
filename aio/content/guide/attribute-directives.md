@@ -338,79 +338,156 @@ the mouse hovers over the `p` and disappears as it moves out.
   <img src="generated/images/guide/attribute-directives/highlight-directive-anim.gif" alt="Second Highlight">
 </figure>
 
+<!--
 {@a bindings}
+-->
+{@a 바인딩}
 
+<!--
 ## Pass values into the directive with an _@Input_ data binding
+-->
+## 디렉티브에 데이터 전달하기 : _@Input_ 바인딩
 
+<!--
 Currently the highlight color is hard-coded _within_ the directive. That's inflexible.
 In this section, you give the developer the power to set the highlight color while applying the directive.
+-->
+지금까지 작성한 코드는 배경색을 디렉티브 _안에_ 하드코딩 했습니다. 그래서 이 값은 고정되어 있습니다.
+이번 예제에서는 이 배경색을 디렉티브 밖에서 지정하고 디렉티브에 어떻게 반영할 수 있는지 알아봅니다.
 
+<!--
 Begin by adding `Input` to the list of symbols imported from `@angular/core`.
+-->
+먼저, `@angular/core` 라이브러리에서 `Input` 심볼을 불러옵니다.
 <code-example path="attribute-directives/src/app/highlight.directive.3.ts" linenums="false" title="src/app/highlight.directive.ts (imports)" region="imports"></code-example>
 
+<!--
 Add a `highlightColor` property to the directive class like this:
+-->
+그리고 디렉티브 클래스에 `highlightColor` 프로퍼티를 다음과 같이 추가합니다:
 
 <code-example path="attribute-directives/src/app/highlight.directive.2.ts" linenums="false" title="src/app/highlight.directive.ts (highlightColor)" region="color"></code-example>
 
+<!--
 {@a input}
+-->
+{@a 입력-프로퍼티}
 
+<!--
 ### Binding to an _@Input_ property
+-->
+### _@Input_ 프로퍼티 바인딩
 
+<!--
 Notice the `@Input` decorator. It adds metadata to the class that makes the directive's `highlightColor` property available for binding.
+-->
+`@Input` 데코레이터를 확인해 보세요. 이 데코레이터는 컴포넌트 클래스에 선언된 `highlightColor` 프로퍼티로 데이터를 입력받을 수 있도록 합니다.
 
+<!--
 It's called an *input* property because data flows from the binding expression _into_ the directive.
 Without that input metadata, Angular rejects the binding; see [below](guide/attribute-directives#why-input "Why add @Input?") for more about that.
+-->
+그래서 디렉티브 _밖에서_ 데이터를 받아 오는 프로퍼티를 *입력* 프로퍼티라고 합니다.
+이 데코레이터가 없으면 바인딩이 연결되지 않으며, 더 자세한 내용은 [아래 내용](guide/attribute-directives#why-input "Why add @Input?")을 참고하세요.
 
+<!--
 Try it by adding the following directive binding variations to the `AppComponent` template:
+-->
+`AppComponent` 템플릿은 이 디렉티브를 적용딩하기 위해 다음과 같이 작성합니다:
 
 <code-example path="attribute-directives/src/app/app.component.1.html" linenums="false" title="src/app/app.component.html (excerpt)" region="color-1"></code-example>
 
+<!--
 Add a `color` property to the `AppComponent`.
+-->
+그리고 `AppComponent`에 `color` 프로퍼티를 추가합니다.
 
 <code-example path="attribute-directives/src/app/app.component.1.ts" linenums="false" title="src/app/app.component.ts (class)" region="class"></code-example>
 
+<!--
 Let it control the highlight color with a property binding.
+-->
+그러면 디렉티브에 적용되는 배경색을 프로퍼티 바인딩으로 연결할 수 있습니다.
 
 <code-example path="attribute-directives/src/app/app.component.1.html" linenums="false" title="src/app/app.component.html (excerpt)" region="color-2"></code-example>
 
+<!--
 That's good, but it would be nice to _simultaneously_ apply the directive and set the color _in the same attribute_ like this.
+-->
+이렇게만 작성해도 동작은 되지만, 어트리뷰트 디렉티브를 적용하면서 _이 디렉티브 이름으로_ 배경색도 _함께_ 지정하는 것이 더 좋습니다.
 
 <code-example path="attribute-directives/src/app/app.component.html" linenums="false" title="src/app/app.component.html (color)" region="color"></code-example>
 
+<!--
 The `[appHighlight]` attribute binding both applies the highlighting directive to the `<p>` element
 and sets the directive's highlight color with a property binding.
 You're re-using the directive's attribute selector (`[appHighlight]`) to do both jobs.
 That's a crisp, compact syntax.
+-->
+`[appHighlight]` 처럼 어트리뷰트 바인딩하면 배경색을 지정하는 디렉티브를 `<p>` 엘리먼트에 적용하면서 이 디렉티브에 적용될 배경색도 함께 프로퍼티 바인딩합니다.
+번거롭게 디렉티브와 입력 프로퍼티를 따로 지정할 필요가 없습니다.
 
+<!--
 You'll have to rename the directive's `highlightColor` property to `appHighlight` because that's now the color property binding name.
+-->
+이렇게 사용하려면 바인딩하는 프로퍼티 이름이 바뀌기 때문에 디렉티브에 선언된 `highlightColor` 프로퍼티를 `appHighlight`로 바꿔줘야 합니다.
 
 <code-example path="attribute-directives/src/app/highlight.directive.2.ts" linenums="false" title="src/app/highlight.directive.ts (renamed to match directive selector)" region="color-2"></code-example>
 
+<!--
 This is disagreeable. The word, `appHighlight`, is a terrible property name and it doesn't convey the property's intent.
+-->
+하지만 `appHighlight`라는 이름으로 프로퍼티를 선언하는 것은 별로 좋은 방법이 아닙니다. 좀 더 좋은 방법을 찾아봅시다.
 
+<!--
 {@a input-alias}
+-->
+{@a 입력-별칭}
 
+<!--
 ### Bind to an _@Input_ alias
+-->
+### _@Input_ 에 별칭 사용하기
 
+<!--
 Fortunately you can name the directive property whatever you want _and_ **_alias it_** for binding purposes.
+-->
+다행히도, 입력 프로퍼티 이름은 그대로 두고 이 프로퍼티에 **_별칭_**을 지정할 수 있습니다.
 
+<!--
 Restore the original property name and specify the selector as the alias in the argument to `@Input`.
+-->
+이 별칭은 `@Input` 데코레이터 안에 문자열로 지정합니다.
 
 <code-example path="attribute-directives/src/app/highlight.directive.ts" linenums="false" title="src/app/highlight.directive.ts (color property with alias)" region="color"></code-example>
 
+<!--
 _Inside_ the directive the property is known as `highlightColor`.
 _Outside_ the directive, where you bind to it, it's known as `appHighlight`.
+-->
+이렇게 작성하면 디렉티브 _안에서는_ `highlightColor` 프로퍼티를 사용합니다.
+그리고 디렉티브 _밖에서는_ `appHighlight` 프로퍼티로 입력 프로퍼티를 바인딩할 수 있습니다.
 
+<!--
 You get the best of both worlds: the property name you want and the binding syntax you want:
+-->
+디렉티브 안과 밖, 각 상황에 어울리는 프로퍼티 이름을 사용해 보세요:
 
 <code-example path="attribute-directives/src/app/app.component.html" linenums="false" title="src/app/app.component.html (color)" region="color"></code-example>
 
+<!--
 Now that you're binding via the alias to the `highlightColor`, modify the `onMouseEnter()` method to use that property.
 If someone neglects to bind to `appHighlightColor`, highlight the host element in red:
+-->
+이제 디렉티브 안에서는 `highlightColor` 프로퍼티를 사용하기 때문에 `onMouseEvent()` 메소드가 이 프로퍼티를 사용하도록 수정합니다.
+`appHighlightColor`에 바인딩 하는 값이 없으면 빨간색을 기본값으로 지정하도록 작성했습니다:
 
 <code-example path="attribute-directives/src/app/highlight.directive.3.ts" linenums="false" title="src/app/highlight.directive.ts (mouse enter)" region="mouse-enter"></code-example>
 
+<!--
 Here's the latest version of the directive class.
+-->
+이렇게 만든 디렉티브 클래스의 최종 코드는 다음과 같습니다.
 
 <code-example path="attribute-directives/src/app/highlight.directive.3.ts" linenums="false" title="src/app/highlight.directive.ts (excerpt)"></code-example>
 
