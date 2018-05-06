@@ -23,7 +23,7 @@ describe('radioButtons example', () => {
     expect(inputs.get(1).getAttribute('checked')).toEqual('true');
     expect(inputs.get(2).getAttribute('checked')).toEqual(null);
 
-    expect(element(by.css('p')).getText()).toEqual('Form value: { "food": "lamb" }');
+    expect(element(by.css('p')).getText()).toEqual('Form value: { "food": "lamb", "group": { "food": "lamb" } }');
   });
 
   it('update model and other buttons as the UI value changes', () => {
@@ -33,6 +33,6 @@ describe('radioButtons example', () => {
     expect(inputs.get(1).getAttribute('checked')).toEqual(null);
     expect(inputs.get(2).getAttribute('checked')).toEqual(null);
 
-    expect(element(by.css('p')).getText()).toEqual('Form value: { "food": "beef" }');
+    expect(element(by.css('p')).getText()).toEqual('Form value: { "food": "beef", "group": { "food": "lamb" } }');
   });
 });
