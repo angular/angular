@@ -771,112 +771,112 @@ import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util'
             });
 
             it('should initialize controls', fakeAsync(() => {
-                  if (isNode) return;
+                 if (isNode) return;
 
-                  // model -> view
-                  detectChangesAndTick();
+                 // model -> view
+                 detectChangesAndTick();
 
-                  // food
-                  assertRadioChecked(0, false);
-                  assertRadioChecked(1, true);
-                  // drink
-                  assertRadioChecked(2, false);
-                  assertRadioChecked(3, true);
-                  // group.food
-                  assertRadioChecked(4, false);
-                  assertRadioChecked(5, true);
-                  // group.drink
-                  assertRadioChecked(6, false);
-                  assertRadioChecked(7, true);
-                  // group.group.food
-                  assertRadioChecked(8, false);
-                  assertRadioChecked(9, true);
-                  // group.group.drink
-                  assertRadioChecked(10, false);
-                  assertRadioChecked(11, true);
-                  // group.array[0]
-                  assertRadioChecked(12, false);
-                  assertRadioChecked(13, true);
-                  // group.array[1]
-                  assertRadioChecked(14, false);
-                  assertRadioChecked(15, true);
-                  // array[0]
-                  assertRadioChecked(16, false);
-                  assertRadioChecked(17, true);
-                  // array[1]
-                  assertRadioChecked(18, false);
-                  assertRadioChecked(19, true);
-                  // array[2].food
-                  assertRadioChecked(20, false);
-                  assertRadioChecked(21, true);
-                  // array[2].drink
-                  assertRadioChecked(22, false);
-                  assertRadioChecked(23, true);
-                  // array[3][0]
-                  assertRadioChecked(24, false);
-                  assertRadioChecked(25, true);
-                  // group[3][1]
-                  assertRadioChecked(26, false);
-                  assertRadioChecked(27, true);
-                }));
+                 // food
+                 assertRadioChecked(0, false);
+                 assertRadioChecked(1, true);
+                 // drink
+                 assertRadioChecked(2, false);
+                 assertRadioChecked(3, true);
+                 // group.food
+                 assertRadioChecked(4, false);
+                 assertRadioChecked(5, true);
+                 // group.drink
+                 assertRadioChecked(6, false);
+                 assertRadioChecked(7, true);
+                 // group.group.food
+                 assertRadioChecked(8, false);
+                 assertRadioChecked(9, true);
+                 // group.group.drink
+                 assertRadioChecked(10, false);
+                 assertRadioChecked(11, true);
+                 // group.array[0]
+                 assertRadioChecked(12, false);
+                 assertRadioChecked(13, true);
+                 // group.array[1]
+                 assertRadioChecked(14, false);
+                 assertRadioChecked(15, true);
+                 // array[0]
+                 assertRadioChecked(16, false);
+                 assertRadioChecked(17, true);
+                 // array[1]
+                 assertRadioChecked(18, false);
+                 assertRadioChecked(19, true);
+                 // array[2].food
+                 assertRadioChecked(20, false);
+                 assertRadioChecked(21, true);
+                 // array[2].drink
+                 assertRadioChecked(22, false);
+                 assertRadioChecked(23, true);
+                 // array[3][0]
+                 assertRadioChecked(24, false);
+                 assertRadioChecked(25, true);
+                 // group[3][1]
+                 assertRadioChecked(26, false);
+                 assertRadioChecked(27, true);
+               }));
 
             it('should differentiate grouped controls with the same formControlName',
-                fakeAsync(() => {
-                  if (isNode) return;
+               fakeAsync(() => {
+                 if (isNode) return;
 
-                  detectChangesAndTick();
+                 detectChangesAndTick();
 
-                  // set food value="chicken"
-                  setRadio(0);
+                 // set food value="chicken"
+                 setRadio(0);
 
-                  // view -> model
-                  assertFormValue('food', 'chicken');
-                  assertFormValue('group.food', 'fish');
-                  assertFormValue('group.group.food', 'fish');
-                  assertFormValue('array.2.food', 'fish');
-                  // food
-                  assertRadioChecked(0, true);
-                  assertRadioChecked(1, false);
-                  // drink
-                  assertRadioChecked(2, false);
-                  assertRadioChecked(3, true);
-                  // group.food
-                  assertRadioChecked(4, false);
-                  assertRadioChecked(5, true);
-                  // group.group.food
-                  assertRadioChecked(8, false);
-                  assertRadioChecked(9, true);
-                  // array[2].food
-                  assertRadioChecked(20, false);
-                  assertRadioChecked(21, true);
-                }));
+                 // view -> model
+                 assertFormValue('food', 'chicken');
+                 assertFormValue('group.food', 'fish');
+                 assertFormValue('group.group.food', 'fish');
+                 assertFormValue('array.2.food', 'fish');
+                 // food
+                 assertRadioChecked(0, true);
+                 assertRadioChecked(1, false);
+                 // drink
+                 assertRadioChecked(2, false);
+                 assertRadioChecked(3, true);
+                 // group.food
+                 assertRadioChecked(4, false);
+                 assertRadioChecked(5, true);
+                 // group.group.food
+                 assertRadioChecked(8, false);
+                 assertRadioChecked(9, true);
+                 // array[2].food
+                 assertRadioChecked(20, false);
+                 assertRadioChecked(21, true);
+               }));
             
             it('should differentiate arrayed controls with the same formControlName index',
-                fakeAsync(() => {
-                  if (isNode) return;
+               fakeAsync(() => {
+                 if (isNode) return;
 
-                  detectChangesAndTick();
+                 detectChangesAndTick();
 
-                  // set array[0] value="chicken"
-                  setRadio(16);
+                 // set array[0] value="chicken"
+                 setRadio(16);
 
-                  // view -> model
-                  assertFormValue('group.array.0', 'fish');
-                  assertFormValue('array.0', 'chicken');
-                  assertFormValue('array.3.0', 'fish');
-                  // group.array[0]
-                  assertRadioChecked(12, false);
-                  assertRadioChecked(13, true);
-                  // array[0]
-                  assertRadioChecked(16, true);
-                  assertRadioChecked(17, false);
-                  // array[1]
-                  assertRadioChecked(18, false);
-                  assertRadioChecked(19, true);
-                  // array[3][0]
-                  assertRadioChecked(24, false);
-                  assertRadioChecked(25, true);
-                }));
+                 // view -> model
+                 assertFormValue('group.array.0', 'fish');
+                 assertFormValue('array.0', 'chicken');
+                 assertFormValue('array.3.0', 'fish');
+                 // group.array[0]
+                 assertRadioChecked(12, false);
+                 assertRadioChecked(13, true);
+                 // array[0]
+                 assertRadioChecked(16, true);
+                 assertRadioChecked(17, false);
+                 // array[1]
+                 assertRadioChecked(18, false);
+                 assertRadioChecked(19, true);
+                 // array[3][0]
+                 assertRadioChecked(24, false);
+                 assertRadioChecked(25, true);
+               }));
           });
 
           describe('when name is provided', () => {
@@ -953,112 +953,112 @@ import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util'
             });
 
             it('should initialize controls', fakeAsync(() => {
-                  if (isNode) return;
+                 if (isNode) return;
 
-                  // model -> view
-                  detectChangesAndTick();
+                 // model -> view
+                 detectChangesAndTick();
 
-                  // food
-                  assertRadioChecked(0, false);
-                  assertRadioChecked(1, true);
-                  // drink
-                  assertRadioChecked(2, false);
-                  assertRadioChecked(3, true);
-                  // group.food
-                  assertRadioChecked(4, false);
-                  assertRadioChecked(5, true);
-                  // group.drink
-                  assertRadioChecked(6, false);
-                  assertRadioChecked(7, true);
-                  // group.group.food
-                  assertRadioChecked(8, false);
-                  assertRadioChecked(9, true);
-                  // group.group.drink
-                  assertRadioChecked(10, false);
-                  assertRadioChecked(11, true);
-                  // group.array[0]
-                  assertRadioChecked(12, false);
-                  assertRadioChecked(13, true);
-                  // group.array[1]
-                  assertRadioChecked(14, false);
-                  assertRadioChecked(15, true);
-                  // array[0]
-                  assertRadioChecked(16, false);
-                  assertRadioChecked(17, true);
-                  // array[1]
-                  assertRadioChecked(18, false);
-                  assertRadioChecked(19, true);
-                  // array[2].food
-                  assertRadioChecked(20, false);
-                  assertRadioChecked(21, true);
-                  // array[2].drink
-                  assertRadioChecked(22, false);
-                  assertRadioChecked(23, true);
-                  // array[3][0]
-                  assertRadioChecked(24, false);
-                  assertRadioChecked(25, true);
-                  // group[3][1]
-                  assertRadioChecked(26, false);
-                  assertRadioChecked(27, true);
-                }));
+                 // food
+                 assertRadioChecked(0, false);
+                 assertRadioChecked(1, true);
+                 // drink
+                 assertRadioChecked(2, false);
+                 assertRadioChecked(3, true);
+                 // group.food
+                 assertRadioChecked(4, false);
+                 assertRadioChecked(5, true);
+                 // group.drink
+                 assertRadioChecked(6, false);
+                 assertRadioChecked(7, true);
+                 // group.group.food
+                 assertRadioChecked(8, false);
+                 assertRadioChecked(9, true);
+                 // group.group.drink
+                 assertRadioChecked(10, false);
+                 assertRadioChecked(11, true);
+                 // group.array[0]
+                 assertRadioChecked(12, false);
+                 assertRadioChecked(13, true);
+                 // group.array[1]
+                 assertRadioChecked(14, false);
+                 assertRadioChecked(15, true);
+                 // array[0]
+                 assertRadioChecked(16, false);
+                 assertRadioChecked(17, true);
+                 // array[1]
+                 assertRadioChecked(18, false);
+                 assertRadioChecked(19, true);
+                 // array[2].food
+                 assertRadioChecked(20, false);
+                 assertRadioChecked(21, true);
+                 // array[2].drink
+                 assertRadioChecked(22, false);
+                 assertRadioChecked(23, true);
+                 // array[3][0]
+                 assertRadioChecked(24, false);
+                 assertRadioChecked(25, true);
+                 // group[3][1]
+                 assertRadioChecked(26, false);
+                 assertRadioChecked(27, true);
+               }));
 
             it('should differentiate grouped controls with the same formControlName',
-                fakeAsync(() => {
-                  if (isNode) return;
+               fakeAsync(() => {
+                 if (isNode) return;
 
-                  detectChangesAndTick();
+                 detectChangesAndTick();
 
-                  // set food value="chicken"
-                  setRadio(0);
+                 // set food value="chicken"
+                 setRadio(0);
 
-                  // view -> model
-                  assertFormValue('food', 'chicken');
-                  assertFormValue('group.food', 'fish');
-                  assertFormValue('group.group.food', 'fish');
-                  assertFormValue('array.2.food', 'fish');
-                  // food
-                  assertRadioChecked(0, true);
-                  assertRadioChecked(1, false);
-                  // drink
-                  assertRadioChecked(2, false);
-                  assertRadioChecked(3, true);
-                  // group.food
-                  assertRadioChecked(4, false);
-                  assertRadioChecked(5, true);
-                  // group.group.food
-                  assertRadioChecked(8, false);
-                  assertRadioChecked(9, true);
-                  // array[2].food
-                  assertRadioChecked(20, false);
-                  assertRadioChecked(21, true);
-                }));
+                 // view -> model
+                 assertFormValue('food', 'chicken');
+                 assertFormValue('group.food', 'fish');
+                 assertFormValue('group.group.food', 'fish');
+                 assertFormValue('array.2.food', 'fish');
+                 // food
+                 assertRadioChecked(0, true);
+                 assertRadioChecked(1, false);
+                 // drink
+                 assertRadioChecked(2, false);
+                 assertRadioChecked(3, true);
+                 // group.food
+                 assertRadioChecked(4, false);
+                 assertRadioChecked(5, true);
+                 // group.group.food
+                 assertRadioChecked(8, false);
+                 assertRadioChecked(9, true);
+                 // array[2].food
+                 assertRadioChecked(20, false);
+                 assertRadioChecked(21, true);
+               }));
 
             it('should differentiate arrayed controls with the same formControlName index',
-                fakeAsync(() => {
-                  if (isNode) return;
+               fakeAsync(() => {
+                 if (isNode) return;
 
-                  detectChangesAndTick();
+                 detectChangesAndTick();
 
-                  // set array[0] value="chicken"
-                  setRadio(16);
+                 // set array[0] value="chicken"
+                 setRadio(16);
 
-                  // view -> model
-                  assertFormValue('group.array.0', 'fish');
-                  assertFormValue('array.0', 'chicken');
-                  assertFormValue('array.3.0', 'fish');
-                  // group.array[0]
-                  assertRadioChecked(12, false);
-                  assertRadioChecked(13, true);
-                  // array[0]
-                  assertRadioChecked(16, true);
-                  assertRadioChecked(17, false);
-                  // array[1]
-                  assertRadioChecked(18, false);
-                  assertRadioChecked(19, true);
-                  // array[3][0]
-                  assertRadioChecked(24, false);
-                  assertRadioChecked(25, true);
-                }));
+                 // view -> model
+                 assertFormValue('group.array.0', 'fish');
+                 assertFormValue('array.0', 'chicken');
+                 assertFormValue('array.3.0', 'fish');
+                 // group.array[0]
+                 assertRadioChecked(12, false);
+                 assertRadioChecked(13, true);
+                 // array[0]
+                 assertRadioChecked(16, true);
+                 assertRadioChecked(17, false);
+                 // array[1]
+                 assertRadioChecked(18, false);
+                 assertRadioChecked(19, true);
+                 // array[3][0]
+                 assertRadioChecked(24, false);
+                 assertRadioChecked(25, true);
+               }));
           });
         });
 
