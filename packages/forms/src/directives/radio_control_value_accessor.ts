@@ -159,7 +159,7 @@ export class RadioControlValueAccessor implements ControlValueAccessor,
 
     // Get control ancestors
     let ancestors: AbstractControl[] = [];
-    let ancestor: AbstractControl | null = this._control._parent.control;
+    let ancestor: AbstractControl|null = this._control._parent.control;
     while (ancestor && ancestor.parent) {
       ancestors.push(ancestor);
       ancestor = ancestor.parent;
@@ -167,18 +167,20 @@ export class RadioControlValueAccessor implements ControlValueAccessor,
     ancestors.reverse();
 
     // Match ancestors with path names, and check if ancestor is a FormArray
-    let parsedAncestors: { name: string, isArray: boolean}[] = [];
+    let parsedAncestors: {name: string, isArray: boolean}[] = [];
     for (let i = 0; i < path.length; i++) {
       ancestor = ancestors[i];
-      parsedAncestors.push({ name: path[i], isArray: ancestor && (<FormArray>ancestor).at && true });
+      parsedAncestors.push({name: path[i], isArray: ancestor && (<FormArray>ancestor).at && true});
     }
 
     // Parse name with FormArray indexes in square brackets
-    let parsedName: string = "";
+    let parsedName: string = '';
     let isPreviousAncestorArray: boolean = false;
     for (let parsedAncestor of parsedAncestors) {
-      if (isPreviousAncestorArray) parsedName += `[${parsedAncestor.name}]`;
-      else parsedName += `${parsedName ? "." : ""}${parsedAncestor.name}`;
+      if (isPreviousAncestorArray)
+        parsedName += `[${parsedAncestor.name}]`;
+      else
+        parsedName += `${parsedName ? '.' : ''}${parsedAncestor.name}`;
 
       isPreviousAncestorArray = parsedAncestor.isArray;
     }

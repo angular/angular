@@ -2345,9 +2345,8 @@ import {MyInput, MyInputForm} from './value_accessor_integration_spec';
           }
         });
         const fixture = initTest(FormGroupComp);
-        fixture.componentInstance.form = new FormGroup({
-          'group': new FormGroup({'food': new FormControl('fish')})
-        });
+        fixture.componentInstance.form = 
+          new FormGroup({'group': new FormGroup({'food': new FormControl('fish')})});
 
         expect(() => fixture.detectChanges())
             .toThrowError(new RegExp('If you define both a name and a formControlName'));
@@ -2365,9 +2364,8 @@ import {MyInput, MyInputForm} from './value_accessor_integration_spec';
           }
         });
         const fixture = initTest(FormGroupComp);
-        fixture.componentInstance.form = new FormGroup({
-          'array': new FormArray([new FormControl('fish')])
-        });
+        fixture.componentInstance.form = 
+          new FormGroup({'array': new FormArray([new FormControl('fish')])});
 
         expect(() => fixture.detectChanges())
             .toThrowError(new RegExp('If you define both a name and a formControlName'));

@@ -28,11 +28,7 @@ import {FormControl, FormGroup} from '@angular/forms';
   `,
 })
 export class ReactiveRadioButtonComp {
-  form = new FormGroup({
-    food: new FormControl('lamb'),
-    group: new FormGroup({
-      food: new FormControl('lamb')
-    })
-  });
+  form = new FormGroup(
+    {food: new FormControl('lamb'), group: new FormGroup({food: new FormControl('lamb')})});
 }
 // #enddocregion
