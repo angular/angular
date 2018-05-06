@@ -23,7 +23,7 @@ describe('radioButtons example', () => {
     expect(inputs.get(1).getAttribute('checked')).toEqual('true');
     expect(inputs.get(2).getAttribute('checked')).toEqual(null);
     expect(inputs.get(3).getAttribute('checked')).toEqual(null);
-    expect(inputs.get(4).getAttribute('checked')).toEqual(null);
+    expect(inputs.get(4).getAttribute('checked')).toEqual('true');
     expect(inputs.get(5).getAttribute('checked')).toEqual(null);
 
     expect(element(by.css('p')).getText())
@@ -37,7 +37,7 @@ describe('radioButtons example', () => {
     expect(inputs.get(1).getAttribute('checked')).toEqual(null);
     expect(inputs.get(2).getAttribute('checked')).toEqual(null);
     expect(inputs.get(3).getAttribute('checked')).toEqual(null);
-    expect(inputs.get(4).getAttribute('checked')).toEqual(null);
+    expect(inputs.get(4).getAttribute('checked')).toEqual('true');
     expect(inputs.get(5).getAttribute('checked')).toEqual(null);
 
     expect(element(by.css('p')).getText())
