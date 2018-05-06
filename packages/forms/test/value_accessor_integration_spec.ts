@@ -850,7 +850,7 @@ import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util'
                  assertRadioChecked(20, false);
                  assertRadioChecked(21, true);
                }));
-            
+
             it('should differentiate arrayed controls with the same formControlName index',
                fakeAsync(() => {
                  if (isNode) return;
