@@ -388,7 +388,7 @@ It's called an *input* property because data flows from the binding expression _
 Without that input metadata, Angular rejects the binding; see [below](guide/attribute-directives#why-input "Why add @Input?") for more about that.
 -->
 그래서 디렉티브 _밖에서_ 데이터를 받아 오는 프로퍼티를 *입력* 프로퍼티라고 합니다.
-이 데코레이터가 없으면 바인딩이 연결되지 않으며, 더 자세한 내용은 [아래 내용](guide/attribute-directives#why-input "Why add @Input?")을 참고하세요.
+이 데코레이터가 없으면 바인딩이 연결되지 않으며, 더 자세한 내용은 [아래 내용](guide/attribute-directives#왜-input "왜 @input을 사용할까?")을 참고하세요.
 
 <!--
 Try it by adding the following directive binding variations to the `AppComponent` template:
@@ -491,65 +491,119 @@ Here's the latest version of the directive class.
 
 <code-example path="attribute-directives/src/app/highlight.directive.3.ts" linenums="false" title="src/app/highlight.directive.ts (excerpt)"></code-example>
 
+<!--
 ## Write a harness to try it
+-->
+## _@Input_ 바인딩 응용하기
 
+<!--
 It may be difficult to imagine how this directive actually works.
 In this section, you'll turn `AppComponent` into a harness that
 lets you pick the highlight color with a radio button and bind your color choice to the directive.
+-->
+디렉티브가 어떻게 동작하는지 설명만으로는 이해하기 어려울 수 있습니다.
+그래서 이번 문서에서는 `AppComponent`에서 라디오 버튼으로 배경을 선택하고, 이렇게 선택한 색상을 디렉티브에 받아 배경색으로 지정하도록 구현해 봅시다.
 
+<!--
 Update <code>app.component.html</code> as follows:
+-->
+`app.component.html` 파일을 다음과 같이 수정합니다:
 
 <code-example path="attribute-directives/src/app/app.component.html" linenums="false" title="src/app/app.component.html (v2)" region="v2"></code-example>
 
+<!--
 Revise the `AppComponent.color` so that it has no initial value.
+-->
+그리고 초기값 할당 없이 `AppComponent.color` 프로퍼티를 선언합니다.
 
 <code-example path="attribute-directives/src/app/app.component.ts" linenums="false" title="src/app/app.component.ts (class)" region="class"></code-example>
 
+<!--
 Here are the harness and directive in action.
+-->
+이렇게 구현하면 애플리케이션은 다음과 같이 동작합니다.
 
 <figure>
   <img src="generated/images/guide/attribute-directives/highlight-directive-v2-anim.gif" alt="Highlight v.2">
 </figure>
 
+<!--
 {@a second-property}
+-->
+{@a 입력-프로퍼티-추가하기}
 
+<!--
 ## Bind to a second property
+-->
+## 입력 프로퍼티 추가하기
 
+<!--
 This highlight directive has a single customizable property. In a real app, it may need more.
+-->
+지금까지 만든 하이라이트 디렉티브에는 프로퍼티가 하나 있습니다. 하지만 애플리케이션을 실제로 개발하다보면 여러 입력 프로퍼티가 활용하는 경우가 더 많습니다.
 
+<!--
 At the moment, the default color&mdash;the color that prevails until
 the user picks a highlight color&mdash;is hard-coded as "red".
 Let the template developer set the default color.
+-->
+사용자가 하이라이트 색상을 정하기 전에는 빨간색을 기본 배경으로 사용하도록 하드코딩 해봅시다.
+그리고 이 기본 배경색도 템플릿에서 지정할 수 있도록 만들어 봅시다.
 
+<!--
 Add a second **input** property to `HighlightDirective` called `defaultColor`:
+-->
+`HighlightDirective`에 `defaultColor` 프로퍼티를 **입력** 프로퍼티로 추가합니다:
 
 <code-example path="attribute-directives/src/app/highlight.directive.ts" linenums="false" title="src/app/highlight.directive.ts (defaultColor)" region="defaultColor"></code-example>
 
+<!--
 Revise the directive's `onMouseEnter` so that it first tries to highlight with the `highlightColor`,
 then with the `defaultColor`, and falls back to "red" if both properties are undefined.
+-->
+그리고 디렉티브에 선언한 `onMouseEnter()` 메소드를 수정하는데, `highlightColor` 프로퍼티에 색상이 지정되면 이 값을 사용하고, 아니라면 `defaultColor` 프로퍼티를 사용하도록 합니다. 두 프로퍼티 모두 지정되지 않으면 빨간색을 기본값으로 사용하도록 작성합니다.
 
 <code-example path="attribute-directives/src/app/highlight.directive.ts" linenums="false" title="src/app/highlight.directive.ts (mouse-enter)" region="mouse-enter"></code-example>
 
+<!--
 How do you bind to a second property when you're already binding to the `appHighlight` attribute name?
+-->
+`appHighlight` 어트리뷰트 이름을 그대로 사용하면서 추가 프로퍼티는 어떻게 바인딩할 수 있을까요?
 
+<!--
 As with components, you can add as many directive property bindings as you need by stringing them along in the template.
 The developer should be able to write the following template HTML to both bind to the `AppComponent.color`
 and fall back to "violet" as the default color.
+-->
+컴포넌트와 마찬가지로, 디렉티브도 템플릿에서 원하는 만큼 프로퍼티 바인딩을 연결할 수 있습니다.
+예를 들어 `AppComponent.color`를 지금까지와 마찬가지로 지정하면서 기본 배경색은 "violet"으로 지정하도록 하려면 다음과 같이 작성할 수 있습니다.
 
 <code-example path="attribute-directives/src/app/app.component.html" linenums="false" title="src/app/app.component.html (defaultColor)" region="defaultColor"></code-example>
 
+<!--
 Angular knows that the `defaultColor` binding belongs to the `HighlightDirective`
 because you made it _public_ with the `@Input` decorator.
+-->
+그러면 `HighlightDirective`는 Angular가 `defaultColor` 프로퍼티를 찾아서 바인딩 하는데, 이미 이 프로퍼티에 `@Input` 데코레이터를 사용하면서 _public_ 으로 지정했기 때문입니다.
 
+<!--
 Here's how the harness should work when you're done coding.
+-->
+이렇게 작성하면 이제 애플리케이션은 다음 그림과 같이 동작합니다.
 
 <figure>
   <img src="generated/images/guide/attribute-directives/highlight-directive-final-anim.gif" alt="Final Highlight">
 </figure>
 
+<!--
 ## Summary
+-->
+## 정리
 
+<!--
 This page covered how to:
+-->
+이 문서에서는 다음과 같은 내용을 다뤘습니다:
 
 <!--
 * [Build an **attribute directive**](guide/attribute-directives#write-directive) that modifies the behavior of an element.
@@ -557,12 +611,15 @@ This page covered how to:
 * [Respond to **events**](guide/attribute-directives#respond-to-user) that change the directive's behavior.
 * [**Bind** values to the directive](guide/attribute-directives#bindings).
 -->
-* [Build an **attribute directive**](guide/attribute-directives#디렉티브-코드-작성하기) that modifies the behavior of an element.
-* [Apply the directive](guide/attribute-directives#디렉티브-적용하기) to an element in a template.
-* [Respond to **events**](guide/attribute-directives#사용자-동작에-반응하기) that change the directive's behavior.
-* [**Bind** values to the directive](guide/attribute-directives#bindings).
+* 엘리먼트의 동작을 변경하는 [**어트리뷰트 디렉티브**](guide/attribute-directives#디렉티브-코드-작성하기)를 만들어 봤습니다.
+* 이렇게 만든 [디렉티브](guide/attribute-directives#디렉티브-적용하기)를 템플릿에 있는 엘리먼트에 적용해 봤습니다.
+* 디렉티브의 추가 동작을 구현하기 위해 [**이벤트**에 반응하는 방법](guide/attribute-directives#사용자-동작에-반응하기)을 알아봤습니다.
+* [디렉티브에 프로퍼티를 **바인딩**](guide/attribute-directives#바인딩)하는 방법에 대해 알아봤습니다.
 
+<!--
 The final source code follows:
+-->
+그리고 이렇게 만든 최종 코드는 다음과 같습니다:
 
 <code-tabs>
   <code-pane title="app/app.component.ts" path="attribute-directives/src/app/app.component.ts"></code-pane>
@@ -574,58 +631,111 @@ The final source code follows:
 </code-tabs>
 
 
-
+<!--
 You can also experience and download the <live-example title="Attribute Directive example"></live-example>.
+-->
+이 코드는 <live-example title="Attribute Directive example"></live-example>에서 직접 실행해보거나 다운받아서 확인할 수도 있습니다.
 
+<!--
 {@a why-input}
+-->
+{@a 왜-input}
 
+<!--
 ### Appendix: Why add _@Input_?
+-->
+### 부록: 왜 _@Input_ 가 필요할까?
 
+<!--
 In this demo, the `highlightColor` property is an ***input*** property of
 the `HighlightDirective`. You've seen it applied without an alias:
+-->
+이번 예제에서 `highlightColor` 프로퍼티는 `HighlightDirective`의 ***입력*** 프로퍼티입니다.
+입력 프로퍼티에 별칭을 지정하지 않는 경우라몀ㄴ 다음과 같이 사용했습니다:
 
 <code-example path="attribute-directives/src/app/highlight.directive.2.ts" linenums="false" title="src/app/highlight.directive.ts (color)" region="color"></code-example>
 
+<!--
 You've seen it with an alias:
+-->
+그리고 별칭을 지정하는 경우는 다음과 같이 사용했습니다:
 
 <code-example path="attribute-directives/src/app/highlight.directive.ts" linenums="false" title="src/app/highlight.directive.ts (color)" region="color"></code-example>
 
+<!--
 Either way, the `@Input` decorator tells Angular that this property is
 _public_ and available for binding by a parent component.
 Without  `@Input`, Angular refuses to bind to the property.
+-->
+`@Input` 데코레이터를 사용하면 Angular는 이 프로퍼티를 _public_ 으로 지정하면서 부모 컴포넌트와 바인딩할 준비를 합니다.
+그래서 `@Input` 데코레이터가 없으면 프로퍼티 바인딩 자체가 성립하지 않습니다.
 
+<!--
 You've bound template HTML to component properties before and never used `@Input`.
 What's different?
+-->
+그런데 컴포넌트의 템플릿 HTML에서 해당 컴포넌트의 프로퍼티를 바인딩 할 때는 `@Input` 데코레이터를 사용하지 않았습니다.
+어떤 점이 다를까요?
 
+<!--
 The difference is a matter of trust.
 Angular treats a component's template as _belonging_ to the component.
 The component and its template trust each other implicitly.
 Therefore, the component's own template may bind to _any_ property of that component,
 with or without the `@Input` decorator.
+-->
+이것은 Angular가 컴포넌트를 어떻게 취급하는지의 문제입니다.
+Angular는 컴포넌트 템플릿을 컴포넌트에 _속하는_ 것으로 취급합니다.
+그래서 컴포넌트와 템플릿은 각각 존재하지만 서로를 보장합니다.
+그래서 컴포넌트의 템플릿에서는 `@Input` 데코레이터를 사용하는 지 여부에 관계없이 컴포넌트의 프로퍼티를 _자유롭게_ 바인딩 할 수 있습니다.
 
+<!--
 But a component or directive shouldn't blindly trust _other_ components and directives.
 The properties of a component or directive are hidden from binding by default.
 They are _private_ from an Angular binding perspective.
 When adorned with the `@Input` decorator, the property becomes _public_ from an Angular binding perspective.
 Only then can it be bound by some other component or directive.
+-->
+하지만 _다른_ 컴포넌트나 디렉티브라면 문제가 다릅니다.
+컴포넌트의 프로퍼티나 디렉티브는 기본적으로 감춰져 있으며, Angular가 바인딩하는 관점에서도 이 프로퍼티는 _private_ 으로 취급됩니다.
+그래서 프로퍼티를 바인딩하려면 `@Input` 데코레이터를 붙여서 _public_ 으로 만들어야 합니다.
+다른 컴포넌트와 디렉티브와 프로퍼티 바인딩하려면 이 데코레이터를 꼭 사용해야 합니다.
 
+<!--
 You can tell if `@Input` is needed by the position of the property name in a binding.
+-->
+어떤 경우에 `@Input` 데코레이터가 꼭 사용되어야 하는 경우가 알아봅시다.
 
+<!--
 * When it appears in the template expression to the ***right*** of the equals (=),
   it belongs to the template's component and does not require the `@Input` decorator.
+-->
+* 템플릿에서 등호(`=`) ***오른쪽***에 템플릿 표현식이 있으면 이 평가식에 연결되는 프로퍼티는 해당 컴포넌트 안에 있으며 `@Input` 데코레이터가 필요하지 않습니다.
 
+<!--
 * When it appears in **square brackets** ([ ]) to the **left** of the equals (=),
   the property belongs to some _other_ component or directive;
   that property must be adorned with the `@Input` decorator.
+-->
+* 템플릿에서 등호(`=`) 왼쪽에 **대괄호(`[`, `]`)**가 있으면 이 대괄호 안에 있는 프로퍼티는 _다른_ 컴포넌트나 디렉티브에 선언된 프로퍼티입니다. 이 프로퍼티에는 `@Input` 데코레이터가 꼭 지정되어야 합니다.
 
+<!--
 Now apply that reasoning to the following example:
+-->
+예제를 보면서 이 내용을 확인해 봅시다:
 
 <code-example path="attribute-directives/src/app/app.component.html" linenums="false" title="src/app/app.component.html (color)" region="color"></code-example>
 
+<!--
 * The `color` property in the expression on the right belongs to the template's component.
   The template and its component trust each other.
   The `color` property doesn't require the `@Input` decorator.
+-->
+* 표현식에서 등호 오른쪽에 사용된 `color` 프로퍼티는 이 컴포넌트에 있는 프로퍼티입니다. 템플릿과 컴포넌트는 서로를 보장하기 때문에 `@Input` 데코레이터가 필요하지 않습니다.
 
+<!--
 * The `appHighlight` property on the left refers to an _aliased_ property of the `HighlightDirective`,
   not a property of the template's component. There are trust issues.
   Therefore, the directive property must carry the `@Input` decorator.
+-->
+* 등호 왼쪽에 사용된 `appHighlight` 프로퍼티는 `HighlightDirective`에 _별칭으로 지정된_ 프로퍼티를 가리키며, 이 템플릿의 컴포넌트 클래스에 있는 프로퍼티는 아닙니다. 그래서 이 프로퍼티를 바인딩하려면 `@Input` 데코레이터를 꼭 사용해야 합니다.
