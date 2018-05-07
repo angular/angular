@@ -17,11 +17,11 @@ var_2: &cache_key v2-angular-{{ .Branch }}-{{ checksum "yarn.lock" }}-0.3.0
 var_3: &cache_key_aio v2-angular-{{ .Branch }}-{{ checksum "yarn.lock" }}-0.3.0-aio
 
 # Define common ENV vars
-var_3: &define_env_vars
+var_4: &define_env_vars
   run: echo "export PROJECT_ROOT=$(pwd)" >> $BASH_ENV
 
 # See remote cache documentation in /docs/BAZEL.md
-var_4: &setup-bazel-remote-cache
+var_5: &setup-bazel-remote-cache
   run:
     name: Start up bazel remote cache proxy
     command: ~/bazel-remote-proxy -backend circleci://
@@ -200,6 +200,10 @@ jobs:
       - run:
           name: Build aio
           command: cd aio && yarn build
+      - save_cache:
+          key: *cache_key_aio
+          paths:
+            - "aio/node_modules"
       - persist_to_workspace:
           root: aio
           paths:
@@ -215,7 +219,7 @@ jobs:
           at: aio
       - run:
           name: Unit test
-          command: cd aio && xvfb-run -a yarn test --single-
+          command: cd aio && xvfb-run -a yarn test
   # TODO: Move pwa score test to yarn test if Travis is stopped. Afterwards this job can be removed.
   aio_pwa_test:
     <<: *job_defaults
