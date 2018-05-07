@@ -156,6 +156,7 @@ updating application data values.
 
 Read about the following forms of binding in the [Template Syntax](guide/template-syntax) page:
 
+<!--
  * [Interpolation](guide/template-syntax#interpolation).
  * [Property binding](guide/template-syntax#property-binding).
  * [Event binding](guide/template-syntax#event-binding).
@@ -163,6 +164,14 @@ Read about the following forms of binding in the [Template Syntax](guide/templat
  * [Class binding](guide/template-syntax#class-binding).
  * [Style binding](guide/template-syntax#style-binding).
  * [Two-way data binding with ngModel](guide/template-syntax#ngModel).
+-->
+ * [문자열 바인딩](guide/template-syntax#문자열-바인딩).
+ * [프로퍼티 바인딩](guide/template-syntax#프로퍼티-바인딩).
+ * [이벤트 바인딩](guide/template-syntax#이벤트-바인딩).
+ * [어트리뷰트 바인딩](guide/template-syntax#어트리뷰트-바인딩).
+ * [클래스 바인딩](guide/template-syntax#클래스-바인딩).
+ * [스타일 바인딩](guide/template-syntax#스타일-바인딩).
+ * [ngModel을 사용하는 양방향 바인딩](guide/template-syntax#ngModel).
 
 {@a declarable}
 
@@ -310,8 +319,14 @@ with a registered [provider](guide/glossary#provider). Injectors are created for
 
 ## Input
 
+<!--
 When defining a [directive](guide/glossary#directive), the `@Input` decorator on a directive property makes that property available as a *target* of a
 [property binding](guide/template-syntax#property-binding).
+Data values flow into an input property from the data source identified
+in the [template expression](guide/glossary#template-expression) to the right of the equal sign.
+-->
+When defining a [directive](guide/glossary#directive), the `@Input` decorator on a directive property makes that property available as a *target* of a
+[property binding](guide/template-syntax#프로퍼티-바인딩).
 Data values flow into an input property from the data source identified
 in the [template expression](guide/glossary#template-expression) to the right of the equal sign.
 
@@ -445,7 +460,10 @@ An object passed to the `subscribe()` method for an [observable](guide/glossary#
 
 ## Output
 
+<!--
 When defining a [directive](guide/glossary#directive), the `@Output` decorator on a directive property makes that property available as a *target* of [event binding](guide/template-syntax#event-binding).
+-->
+When defining a [directive](guide/glossary#directive), the `@Output` decorator on a directive property makes that property available as a *target* of [event binding](guide/template-syntax#이벤트-바인딩).
 
 Events stream *out* of this property to the receiver identified
 in the [template expression](guide/glossary#template-expression) to the right of the equal sign.
@@ -610,8 +628,13 @@ in the [Forms](guide/forms) page.
 A TypeScript-like syntax that Angular evaluates within
 a [data binding](guide/glossary#data-binding).
 
+<!--
 Read about how to write template expressions
 in the [Template expressions](guide/template-syntax#template-expressions) section
+of the [Template Syntax](guide/template-syntax) page.
+-->
+Read about how to write template expressions
+in the [Template expressions](guide/template-syntax#템플릿-표현식) section
 of the [Template Syntax](guide/template-syntax) page.
 
 {@a token}

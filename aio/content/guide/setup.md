@@ -10,7 +10,7 @@ Setting up a new project on your machine is quick and easy with the **QuickStart
 maintained [on github](https://github.com/angular/quickstart "Install the github QuickStart repo").
 
 
-Make sure you have [Node.jsÂ® and npm installed](guide/setup#install-prerequisites "What if you don't have Node.js and npm?").
+Make sure you have [Node.js® and npm installed](guide/setup#install-prerequisites "What if you don't have Node.js and npm?").
 
 {@a clone}
 

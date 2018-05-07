@@ -10,13 +10,23 @@ Run the <live-example></live-example>.
 
 ## Binding to user input events
 
+<!--
 You can use [Angular event bindings](guide/template-syntax#event-binding)
 to respond to any [DOM event](https://developer.mozilla.org/en-US/docs/Web/Events).
 Many DOM events are triggered by user input. Binding to these events provides a way to
 get input from the user.
+-->
+You can use [Angular 이벤트 바인딩](guide/template-syntax#이벤트-바인딩)
+to respond to any [DOM event](https://developer.mozilla.org/en-US/docs/Web/Events).
+Many DOM events are triggered by user input. Binding to these events provides a way to
+get input from the user.
 
+<!--
 To bind to a DOM event, surround the DOM event name in parentheses and assign a quoted
 [template statement](guide/template-syntax#template-statements) to it.
+-->
+To bind to a DOM event, surround the DOM event name in parentheses and assign a quoted
+[템플릿 실행문](guide/template-syntax#템플릿-실행문) to it.
 
 The following example shows an event binding that implements a click handler:
 

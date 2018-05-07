@@ -1,60 +1,73 @@
 {
-  "Community": {
+  "커뮤니티": {
+    "//Community": "",
     "order": 3,
     "subCategories": {
-      "Community Curations": {
+      "추천 커뮤니티": {
+        "//Community Curations": "",
         "order": 1,
         "resources": {
           "awesome-angular-components": {
-            "desc": "A community index of components and libraries maintained on GitHub",
+            "//desc": "A community index of components and libraries maintained on GitHub",
+            "desc": "Angular 서드파티 컴포넌트와 라이브러리를 소개하는 GitHub 커뮤니티입니다.",
             "rev": true,
-            "title": "Catalog of Angular Components & Libraries",
+            "//title": "Catalog of Angular Components & Libraries",
+            "title": "Angular 서드파티 컴포넌트 & 라이브러리 소개",
             "url": "https://github.com/brillout/awesome-angular-components"
           },
           "angular-ru": {
-            "desc": "Angular-RU Community on GitHub is a single entry point for all resources, chats, podcasts and meetups for Angular in Russia.",
+            "//desc": "Angular-RU Community on GitHub is a single entry point for all resources, chats, podcasts and meetups for Angular in Russia.",
+            "desc": "러시아에서 열렸던 Angular 밋업부터 팟캐스트, 채팅 등 모든 자료를 Angular-RU 커뮤니티에서 확인하세요.",
             "rev": true,
-            "title": "Angular Conferences and Angular Camps in Moscow, Russia.",
+            "//title": "Angular Conferences and Angular Camps in Moscow, Russia.",
+            "title": "Angular 러시아",
             "url": "https://angular-ru.github.io/"
           }
         }
       },
-      "Groups": {
+      "밋업": {
+        "//Groups": "",
         "order": 2,
         "resources": {
           "sldkjfslkjfslkjdsklj": {
-            "desc": "Meetup in Barcelona, Spain. Express your motivations, share your ideas and play together creating awesome things in team.",
+            "//desc": "Meetup in Barcelona, Spain. Express your motivations, share your ideas and play together creating awesome things in team.",
+            "desc": "2018. 6. 18~ 20 스페인 바르셀로나에서 열리는 밋업에 대한 커뮤니티입니다. 밋업에 참가해서 많은 사람들과 새로운 아이디어를 공유해 보세요.",
             "rev": true,
             "title": "Angular Beers",
             "url": "http://www.meetup.com/AngularJS-Beers/"
           },
           "sldkjfslkjfslkjdskzzzlj": {
-            "desc": "Angular Conferences and Angular Camps in Barcelona, Spain.",
+            "//desc": "Angular Conferences and Angular Camps in Barcelona, Spain.",
+            "desc": "2018. 6. 18 ~ 20 스페인 바르셀로나에서 열리는 밋업 공식 사이트입니다. ",
             "rev": true,
             "title": "Angular Camp",
             "url": "http://angularcamp.org/"
           }
         }
       },
-      "Podcasts": {
+      "팟캐스트": {
+        "//Podcasts": "",
         "order": 3,
         "resources": {
           "sdfjkdkfj": {
-            "desc": "Adventures in Angular is a weekly podcast dedicated to the Angular platform and related technologies, tools, languages, and practices.",
+            "//desc": "Adventures in Angular is a weekly podcast dedicated to the Angular platform and related technologies, tools, languages, and practices.",
+            "desc": "Adventures in Angular는 Angular 플랫폼과 관련 기술, 툴, 언어, 활용방안에 대해 일주일에 한 번씩 방송하는 채널입니다.",
             "logo": "",
             "rev": true,
             "title": "Adventures in Angular",
             "url": "https://devchat.tv/adventures-in-angular"
           },
           "sdlkfjsldfkj": {
-            "desc": "Weekly video podcast hosted by Jeff Whelpley with all the latest and greatest happenings in the wild world of Angular.",
+            "//desc": "Weekly video podcast hosted by Jeff Whelpley with all the latest and greatest happenings in the wild world of Angular.",
+            "desc": "Jeff Whelpley는 일주일에 한 번씩 Angular 생태계에서 일어나는 다양한 소식을 전합니다.",
             "logo": "",
             "rev": true,
             "title": "AngularAir",
             "url": "https://angularair.com/"
           },
           "sldkfjsldjf": {
-            "desc": "The live broadcast podcast all about JavaScript",
+            "//desc": "The live broadcast podcast all about JavaScript",
+            "desc": "JavaScript에 대한 모든 것을 다루는 생방송 채널입니다.",
             "logo": "",
             "rev": true,
             "title": "Javascript Air",
@@ -64,81 +77,95 @@
       }
     }
   },
-  "Development": {
+  "개발": {
+    "//Development": "",
     "order": 1,
     "subCategories": {
-      "Cross-Platform Development": {
+      "크로스 플랫폼 개발": {
+        "//Cross-Platform Development": "",
         "order": 5,
         "resources": {
           "a2b": {
-            "desc": "Angular and React Native to build applications for Android and iOS",
+            "//desc": "Angular and React Native to build applications for Android and iOS",
+            "desc": "Angular와 React Native를 사용해서 Android와 iOS 애플리케이션을 동시에 만들어 보세요.",
             "logo": "",
             "rev": true,
             "title": "ReactNative",
             "url": "http://angular.github.io/react-native-renderer/"
           },
           "a3b": {
-            "desc": "Ionic offers a library of mobile-optimized HTML, CSS and JS components and tools for building highly interactive native and progressive web apps.",
+            "//desc": "Ionic offers a library of mobile-optimized HTML, CSS and JS components and tools for building highly interactive native and progressive web apps.",
+            "desc": "Ionic은 모바일에 최적화된 HTML 구조와 CSS, JS 컴포넌트를 제공하는 라이브러리입니다. Ionic을 사용하면 훌륭한 UX를 제공하는 네이티브 앱과 프로그레시브 웹 앱을 동시에 만들 수 있습니다.",
             "logo": "http://ionicframework.com/img/ionic-logo-white.svg",
             "rev": true,
             "title": "Ionic",
             "url": "http://ionicframework.com/docs/v2/"
           },
           "a4b": {
-            "desc": "Electron Platform for Angular.",
+            "//desc": "Electron Platform for Angular.",
+            "desc": "Electron 환경에서도 Angular를 활용해 보세요.",
             "logo": "",
             "rev": true,
             "title": "Electron",
             "url": "http://github.com/angular/angular-electron"
           },
           "ab": {
-            "desc": "NativeScript is how you build cross-platform, native iOS and Android apps with Angular and TypeScript. Get 100% access to native APIs via JavaScript and reuse of packages from NPM, CocoaPods and Gradle. Open source and backed by Telerik.​​​",
+            "//desc": "NativeScript is how you build cross-platform, native iOS and Android apps with Angular and TypeScript. Get 100% access to native APIs via JavaScript and reuse of packages from NPM, CocoaPods and Gradle. Open source and backed by Telerik.​​​",
+            "desc": "NativeScript는 Angular와 TypeScript를 활용해서 iOS와 안드로이드 환경에 동작하는 네이티브 앱을 만드는 프레임워크입니다. npm 패키지를 그대로 사용할 수 있는 환경에서 네이티브 API에도 자유롭게 접근할 수 있으며, CocoaPod와 Gradle도 활용할 수 있습니다. Teleric이 만든 오픈소스이며, 활발하게 운영되고 있습니다.",
             "logo": "",
             "rev": true,
             "title": "NativeScript",
             "url": "https://github.com/NativeScript/nativescript-angular"
           },
           "ab5": {
-            "desc": "An Universal Windows App (uwp) powered by Angular",
+            "//desc": "An Universal Windows App (uwp) powered by Angular",
+            "desc": "유니버설 Windows 환경에서 동작하는 애플리케이션을 Angular로 만들어 보세요.",
             "logo": "",
             "rev": true,
-            "title": "Windows (UWP)",
+            "//title": "Windows (UWP)",
+            "title": "Universal Windows App (UWP)",
             "url": "http://github.com/preboot/angular2-universal-windows-app"
           }
         }
       },
-      "Data Libraries": {
+      "데이터 관리": {
+        "Data Libraries": "",
         "order": 3,
         "resources": {
           "-KLIzHDRfiB3d7W7vk-e": {
-            "desc": "Reactive Extensions for Angular",
+            "//desc": "Reactive Extensions for Angular",
+            "desc": "Angular의 Rx 라이브러리를 확장하는 라이브러리입니다.",
             "rev": true,
             "title": "ngrx",
             "url": "http://github.com/ngrx"
           },
           "ab": {
-            "desc": "The official library for Firebase and Angular",
+            "//desc": "The official library for Firebase and Angular",
+            "desc": "Angular 환경에서 사용하는 Firebase 공식 라이브러리입니다.",
             "logo": "",
             "rev": true,
             "title": "Angular Fire",
             "url": "https://github.com/angular/angularfire2"
           },
           "ab2": {
-            "desc": "Use Angular and Meteor to build full-stack JavaScript apps  for Mobile and Desktop.",
+            "//desc": "Use Angular and Meteor to build full-stack JavaScript apps  for Mobile and Desktop.",
+            "desc": "Angular와 Meteor를 함께 활용하면 모바일과 데스크탑 환경에서 동작하는 풀스택 애플리케이션을 만들 수 있습니다.",
             "logo": "http://www.angular-meteor.com/images/logo.png",
             "rev": true,
             "title": "Meteor",
             "url": "http://www.angular-meteor.com/angular2"
           },
           "ab3": {
-            "desc": "Apollo is a data stack for modern apps, built with GraphQL.",
+            "//desc": "Apollo is a data stack for modern apps, built with GraphQL.",
+            "desc": "Apollo는 GraphQL을 활용하는 데이터 스택 라이브러리입니다.",
             "logo": "http://docs.apollostack.com/logo/large.png",
             "rev": true,
             "title": "Apollo",
             "url": "http://docs.apollostack.com/apollo-client/angular2.html"
           },
           "ab4": {
-            "desc": "Angular Commerce is a solution for building modern e-commerce applications with power of Google Firebase. Set of components is design agnostic and allows to easily extend functionality.",
+            "//desc": "Angular Commerce is a solution for building modern e-commerce applications with power of Google Firebase. Set of components is design agnostic and allows to easily extend functionality.",
+            "desc": "Angular Commerce는 Google Firebase를 활용하며 전자상거래 애플리케이션을 만들 수 있는 라이브러리입니다. 라이브러리를 그대로 활용할 수도 있고, 간단하게 확장할 수도 있습니다.",
             "logo": "",
             "rev": true,
             "title": "AngularCommerce",
@@ -146,110 +173,128 @@
           }
         }
       },
-      "IDEs": {
+      "IDE 지원": {
+        "//IDEs": "",
         "order": 1,
         "resources": {
           "ab": {
-            "desc": "VS Code is a Free, Lightweight Tool for Editing and Debugging Web Apps.",
+            "//desc": "VS Code is a Free, Lightweight Tool for Editing and Debugging Web Apps.",
+            "desc": "VS Code는 웹 앱을 개발하거나 디버깅할 때 사용합니다. 가볍고 무료입니다.",
             "logo": "",
             "rev": true,
             "title": "Visual Studio Code",
             "url": "http://code.visualstudio.com/"
           },
           "ab2": {
-            "desc": "Lightweight yet powerful IDE, perfectly equipped for complex client-side development and server-side development with Node.js",
+            "//desc": "Lightweight yet powerful IDE, perfectly equipped for complex client-side development and server-side development with Node.js",
+            "desc": "가볍지만 강력한 IDE입니다. 복잡한 클라이언트 애플리케이션이나 node.js 서버를 개발한다면 단언컨대 최고의 선택입니다.",
             "logo": "",
             "rev": true,
             "title": "Webstorm",
             "url": "https://www.jetbrains.com/webstorm/"
           },
           "ab3": {
-            "desc": "Capable and Ergonomic  Java * IDE",
+            "//desc": "Capable and Ergonomic  Java * IDE",
+            "desc": "Java 개발 환경에서도 Angular를 개발할 수 있습니다.",
             "logo": "",
             "rev": true,
             "title": "IntelliJ IDEA",
             "url": "https://www.jetbrains.com/idea/"
           },
           "angular-ide": {
-            "desc": "Built first and foremost for Angular. Turnkey setup for beginners; powerful for experts.",
+            "//desc": "Built first and foremost for Angular. Turnkey setup for beginners; powerful for experts.",
+            "desc": "Angular 개발에 특화되어 개발된 IDE입니다. Angular 개발을 처음 접하는 개발자는 물론이고, 개발에 이미 익숙한 사람도 편하게 사용할 수 있습니다.",
             "rev": true,
             "title": "Angular IDE by Webclipse",
             "url": "https://www.genuitec.com/products/angular-ide"
           }
         }
       },
-      "Tooling": {
+      "개발 툴": {
+        "//Tooling": "",
         "order": 2,
         "resources": {
           "-KLIzHfBEr1qMMUDxfq3": {
-            "desc": "Generate an Angular CRUD application from an existing database schema",
+            "//desc": "Generate an Angular CRUD application from an existing database schema",
+            "desc": "기존 DB를 그대로 활용하는 Angular CRUD 애플리케이션을 만들어보세요.",
             "rev": true,
             "title": "Celerio Angular Quickstart",
             "url": "https://github.com/jaxio/celerio-angular-quickstart"
           },
           "a1": {
-            "desc": "A Google Chrome Dev Tools extension for debugging Angular applications.",
+            "//desc": "A Google Chrome Dev Tools extension for debugging Angular applications.",
+            "desc": "Chrome 개발자 도구에서도 Angular 애플리케이션을 디버깅할 수 있습니다.",
             "logo": "https://augury.angular.io/images/augury-logo.svg",
             "rev": true,
             "title": "Augury",
             "url": "http://augury.angular.io/"
           },
           "b1": {
-            "desc": "Server-side Rendering for Angular apps.",
+            "//desc": "Server-side Rendering for Angular apps.",
+            "desc": "Angular 애플리케이션에 서버사이드 렌더링 기능을 더해보세요.",
             "logo": "https://cloud.githubusercontent.com/assets/1016365/10639063/138338bc-7806-11e5-8057-d34c75f3cafc.png",
             "rev": true,
             "title": "Angular Universal",
             "url": "https://github.com/angular/universal"
           },
           "c1": {
-            "desc": "Lightweight development only Node.js® server",
+            "//desc": "Lightweight development only node server",
+            "desc": "아주 간단한 node 서버입니다.",
             "logo": "",
             "rev": true,
             "title": "Lite-server",
             "url": "https://github.com/johnpapa/lite-server"
           },
           "cli": {
-            "desc": "The official Angular CLI makes it easy to create and develop applications from initial commit to production deployment. It already follows our best practices right out of the box!",
+            "//desc": "The official Angular CLI makes it easy to create and develop applications from initial commit to production deployment. It already follows our best practices right out of the box!",
+            "desc": "프로젝트 생성부터 제품 배포까지 모든 개발 단계에 활용할 수 있는 공식 Angular 커맨드라인 툴입니다. 많은 사람들이 주목하고 있는 프로젝트를 지금 확인해보세요!",
             "rev": true,
             "title": "Angular CLI",
             "url": "https://cli.angular.io"
           },
           "d1": {
-            "desc": "Static analysis for Angular projects.",
+            "//desc": "Static analysis for Angular projects.",
+            "desc": "Angular 애플리케이션 정적 분석툴입니다.",
             "logo": "",
             "rev": true,
             "title": "Codelyzer",
             "url": "https://github.com/mgechev/codelyzer"
           },
           "e1": {
-            "desc": "This package provides facilities for developers building Angular applications on ASP.NET.",
+            "//desc": "This package provides facilities for developers building Angular applications on ASP.NET.",
+            "desc": "ASP.NET 환경에서도 Angular 애플리케이션을 제공할 수 있습니다.",
             "logo": "",
             "rev": true,
             "title": "Universal for ASP.NET",
             "url": "https://github.com/aspnet/nodeservices"
           },
           "f1": {
-            "desc": "This tool generates dedicated documentation for Angular applications.",
+            "//desc": "This tool generates dedicated documentation for Angular applications.",
+            "desc": "Angular 애플리케이션을 개발자 문서로 추출하려면 이 툴을 확인해보세요.",
             "logo": "",
             "rev": true,
             "title": "Compodoc",
             "url": "https://github.com/compodoc/compodoc"
           },
           "ncg": {
-            "desc": "Generate several types of CRUD apps complete with e2e testing using template-sets for Angular, Material Design, Bootstrap, Kendo UI, Ionic, ...",
+            "//desc": "Generate several types of CRUD apps complete with e2e testing using template-sets for Angular, Material Design, Bootstrap, Kendo UI, Ionic, ...",
+            "desc": "e2e 테스트까지 완벽하게 준비된 Angular CRUD 앱을 만들어보세요. Angular, 머티리얼 디자인, 부트스트랩, Kendo UI, Ionic 등 모든 것이 준비되어 있습니다.",
             "logo": "https://avatars3.githubusercontent.com/u/27976684",
             "rev": true,
-            "title": "NinjaCodeGen - Angular CRUD Generator",
+            "//title": "NinjaCodeGen - Angular CRUD Generator",
+            "title": "NinjaCodeGen - Angular CRUD 생성기",
             "url": "https://ninjaCodeGen.com"
           },
           "angular-playground": {
-            "desc": "UI development environment for building, testing, and documenting Angular applications.",
+            "//desc": "UI development environment for building, testing, and documenting Angular applications.",
+            "desc": "로컬 환경에서 간단하게 Angular 애플리케이션을 만들거나 테스트해보고, 문서를 작성할 수 있는 환경입니다.",
             "rev": true,
             "title": "Angular Playground",
             "url": "http://www.angularplayground.it/"
           },
           "nx": {
-            "desc": "Nx (Nrwl Extensions for Angular) is an open source toolkit built on top of Angular CLI to help enterprise teams develop Angular at scale.",
+            "//desc": "Nx (Nrwl Extensions for Angular) is an open source toolkit built on top of Angular CLI to help enterprise teams develop Angular at scale.",
+            "desc": "Nx(Nrwl Extensions for Angular)는 Angular CLI를 활용해서 기업용 솔루션을 만들 수 있는 오픈 소스 툴입니다.",
             "rev": true,
             "title": "Nx",
             "logo": "https://nrwl.io/assets/nx-logo.png",
@@ -257,115 +302,133 @@
           }
         }
       },
-      "UI Components": {
+      "UI 컴포넌트": {
+        "//UI Components" : "",
         "order": 4,
         "resources": {
           "IgniteUIforAngular": {
-            "desc": "Ignite UI for Angular is a dependency-free Angular toolkit for building modern web apps.",
+            "//desc": "Ignite UI for Angular is a dependency-free Angular toolkit for building modern web apps.",
+            "desc": "Ignite UI는 Angular 애플리케이션을 구성하는 툴입니다. 의존성이 복잡하지도 않습니다.",
             "rev": true,
             "title": "Ignite UI for Angular",
             "url": "https://www.infragistics.com/products/ignite-ui-angular"
           },
           "DevExtreme": {
-            "desc": "50+ UI components including data grid, pivot grid, scheduler, charts, editors, maps and other multi-purpose controls for creating highly responsive web applications for touch devices and traditional desktops.",
+            "//desc": "50+ UI components including data grid, pivot grid, scheduler, charts, editors, maps and other multi-purpose controls for creating highly responsive web applications for touch devices and traditional desktops.",
+            "desc": "데이터 그리드나 피봇 그리드, 달력, 차트, 에디터, 지도 등 50개 이상의 UI 컴포넌트를 제공합니다. 모든 컴포넌트는 반응형 웹에 최적화되어 있으며, 터치 디바이스나 데스크탑에 함께 사용할 수 있습니다.",
             "rev": true,
             "title": "DevExtreme",
             "url": "https://js.devexpress.com/Overview/Angular/"
           },
           "234237": {
-            "desc": "UX guidelines, HTML/CSS framework, and Angular components working together to craft exceptional experiences",
+            "//desc": "UX guidelines, HTML/CSS framework, and Angular components working together to craft exceptional experiences",
+            "dest": "Angular 컴포넌트에 어울리는 UX를 고민한다면 이 디자인 가이드를 확인해보세요.",
             "rev": true,
             "title": "Clarity Design System",
             "url": "https://vmware.github.io/clarity/"
           },
           "-KLIzI9BTvvP_hUwutXk": {
-            "desc": "UI components for Angular using Semantic UI",
+            "//desc": "UI components for Angular using Semantic UI",
+            "desc": "사용자에게 친근한 UI 컴포넌트를 제공합니다.",
             "rev": true,
             "title": "Semantic UI",
             "url": "https://github.com/vladotesanovic/ngSemantic"
           },
           "-KMVB8P4TDfht8c0L1AE": {
-            "desc": "The Angular version of the Angular UI Bootstrap library. This library is being built from scratch in Typescript using the Bootstrap 4 CSS framework.",
+            "//desc": "The Angular version of the Angular UI Bootstrap library. This library is being built from scratch in Typescript using the Bootstrap 4 CSS framework.",
+            "desc": "Boostrap 라이브러리의 Angular 버전입니다. 이 라이브러리는 Bootstrap 4 CSS 프레임워크를 바탕으로 TypeScript로 재작성되었습니다.",
             "rev": true,
             "title": "ng-bootstrap",
             "url": "https://ng-bootstrap.github.io/"
           },
           "4ab": {
-            "desc": "Native Angular components & directives for Lightning Design System",
+            "//desc": "Native Angular components & directives for Lightning Design System",
+            "desc": "Lightning Design System에서 만든 네이티브 Angular 컴포넌트와 디렉티브입니다.",
             "logo": "http://ng-lightning.github.io/ng-lightning/img/shield.svg",
             "rev": true,
             "title": "ng-lightning",
             "url": "http://ng-lightning.github.io/ng-lightning/"
           },
           "7ab": {
-            "desc": "UI components for hybrid mobile apps with bindings for both Angular & AngularJS.",
+            "//desc": "UI components for hybrid mobile apps with bindings for both Angular & AngularJS.",
+            "desc": "Angular와 AngularJS를 함께 사용하는 환경에서 활용할 수 있는 UI 컴포넌트를 제공합니다.",
             "rev": true,
             "title": "Onsen UI",
             "url": "https://onsen.io/v2/"
           },
           "a2b": {
-            "desc": "PrimeNG is a collection of rich UI components for Angular",
+            "//desc": "PrimeNG is a collection of rich UI components for Angular",
+            "desc": "PrimeNG는 Angular 환경을 위해 개발된 UI 컴포넌트 라이브러리입니다.",
             "logo": "http://www.primefaces.org/primeng/showcase/resources/images/primeng.svg",
             "rev": true,
             "title": "Prime Faces",
             "url": "http://www.primefaces.org/primeng/"
           },
           "a3b": {
-            "desc": "One of the first major UI frameworks to support Angular",
+            "//desc": "One of the first major UI frameworks to support Angular",
+            "desc": "Kendo UI는 Angular용 UI 프레임워크를 가장 먼저 시작한 프레임워크 중 하나입니다.",
             "logo": "",
             "rev": true,
             "title": "Kendo UI",
             "url": "http://www.telerik.com/kendo-angular-ui/"
           },
           "a5b": {
-            "desc": "High-performance UI controls with the most complete Angular support available. Wijmo’s controls are all written in TypeScript and have zero dependencies. FlexGrid control includes full declarative markup, including cell templates.",
+            "//desc": "High-performance UI controls with the most complete Angular support available. Wijmo’s controls are all written in TypeScript and have zero dependencies. FlexGrid control includes full declarative markup, including cell templates.",
+            "desc": "훌륭한 성능의 Angular용 UI 컨트롤을 제공합니다. Wijmo에서 제공하는 컨트롤은 모두 TypeScript로 작성되었으며, 연결된 의존성도 없습니다. 이 라이브러리는 FlexGrid에 특화되어 있습니다.",
             "logo": "http://wijmocdn.azureedge.net/wijmositeblob/wijmo-theme/logos/wijmo-55.png",
             "rev": true,
             "title": "Wijmo",
             "url": "http://wijmo.com/products/wijmo-5/"
           },
           "a6b": {
-            "desc": "Material design inspired UI components for building great web apps. For mobile and desktop.",
+            "//desc": "Material design inspired UI components for building great web apps. For mobile and desktop.",
+            "desc": "머티리얼 디자인을 적용한 UI 컴포넌트입니다. 모바일과 데스크탑에서 모두 사용할 수 있습니다.",
             "logo": "",
             "rev": true,
             "title": "Vaadin",
             "url": "https://vaadin.com/elements"
           },
           "a7b": {
-            "desc": "Native Angular directives for Bootstrap",
+            "//desc": "Native Angular directives for Bootstrap",
+            "desc": "Angular용 Bootstrap 라이브러리입니다.",
             "logo": "",
             "rev": true,
             "title": "ngx-bootstrap",
             "url": "http://valor-software.com/ngx-bootstrap/#/"
           },
           "ab": {
-            "desc": "Material Design components for Angular",
+            "//desc": "Material Design components for Angular",
+            "desc": "공식 Angular 머티리얼 디자인 컴포넌트입니다.",
             "logo": "",
             "rev": true,
             "title": "Angular Material",
             "url": "https://github.com/angular/material2"
           },
           "aggrid": {
-            "desc": "A datagrid for Angular with enterprise style features such as sorting, filtering, custom rendering, editing, grouping, aggregation and pivoting.",
+            "//desc": "A datagrid for Angular with enterprise style features such as sorting, filtering, custom rendering, editing, grouping, aggregation and pivoting.",
+            "desc": "정렬, 필터링, 커스텀 렌더링, 편집, 그룹화, 합계, 피봇 기능 등, 기업에서 활용할 수 있는 데이터 그리드를 제공합니다.",
             "rev": true,
             "title": "ag-Grid",
             "url": "https://www.ag-grid.com/best-angular-2-data-grid/"
           },
           "jqwidgets": {
-            "desc": "Angular UI Components including data grid, tree grid, pivot grid, scheduler, charts, editors and other multi-purpose components",
+            "//desc": "Angular UI Components including data grid, tree grid, pivot grid, scheduler, charts, editors and other multi-purpose components",
+            "desc": "데이터 그리드나 트리 그리드, 피봇 그리드, 달력, 차트, 편집 기능 등 다양하게 활용할 수 있는 컴포넌트를 제공합니다.",
             "rev": true,
             "title": "jQWidgets",
             "url": "https://www.jqwidgets.com/angular/"
           },
           "amexio": {
-            "desc": "Amexio (Angular MetaMagic EXtensions for Inputs and Outputs)  is a rich set of Angular components powered by Bootstrap for Responsive Design. UI Components include Standard Form Components, Data Grids, Tree Grids, Tabs etc. Open Source (Apache 2 License) & Free and backed by MetaMagic Global Inc",
+            "//desc": "Amexio (Angular MetaMagic EXtensions for Inputs and Outputs)  is a rich set of Angular components powered by Bootstrap for Responsive Design. UI Components include Standard Form Components, Data Grids, Tree Grids, Tabs etc. Open Source (Apache 2 License) & Free and backed by MetaMagic Global Inc",
+            "desc": "Amexio(Angular MetaMagic EXtensions for Inputs and Outputs)는 Bootstrap과 반응형 디자인을 고려하여 만들어진 Angular 컴포넌트 라이브러리입니다. 기본 폼부터 시작해서 데이터 그리드, 트리 그리드, 탭 등 다양한 컴포넌트를 지원합니다. 이 라이브러리는 오픈 소스(Apache 2 라이센스)이며, 무료입니다.",
             "rev": true,
             "title": "Amexio - Angular Extensions",
             "url": "http://www.amexio.tech/",
             "logo": "http://www.amexio.org/amexio-logo.png"
           },
           "essentialjs2": {
-            "desc": "Essential JS 2 for Angular is a collection modern TypeScript based true Angular Components. It has support for Ahead Of Time (AOT) compilation and Tree-Shaking. All the components are developed from the ground up to be lightweight, responsive, modular and touch friendly.",
+            "//desc": "Essential JS 2 for Angular is a collection modern TypeScript based true Angular Components. It has support for Ahead Of Time (AOT) compilation and Tree-Shaking. All the components are developed from the ground up to be lightweight, responsive, modular and touch friendly.",
+            "desc": "Essential JS 2 for Angular는 최신 TypeScript 기술로 만든 Angular 컴포넌트 모음입니다. 제공하는 컴포넌트는 모두 AoT 컴파일되며, 트리 셰이킹도 지원합니다. 모듈화 되어있으며 빠르고, 반응형 화면과 터치에 최적화된 컴포넌트를 활용해 보세요.",
             "rev": true,
             "title": "Essential JS 2",
             "url": "https://www.syncfusion.com/products/angular-js2"
@@ -374,329 +437,389 @@
       }
     }
   },
-  "Education": {
+  "교육": {
+    "Education": "",
     "order": 2,
     "subCategories": {
-      "Books": {
+      "도서": {
+        "Books": "",
         "order": 1,
         "resources": {
           "-KLI8vJ0ZkvWhqPembZ7": {
-            "desc": "A guide that helps developers get up to speed quickly on Angular and its accompanying technologies.",
+            "//desc": "A guide that helps developers get up to speed quickly on Angular and its accompanying technologies.",
+            "desc": "Angular와 관련기술을 활용하는 방법에 대해 소개합니다.",
             "rev": true,
             "title": "How to Get Started and Productive in Angular Fast",
             "url": "http://www.amazon.com/How-Started-Productive-Angular-Fast-ebook/dp/B01D3B0ET4/ref=sr_1_1_twi_kin_2?ie=UTF8&qid=1462381159&sr=8-1"
           },
           "-KLIzGEp8Mh5W-FkiQnL": {
-            "desc": "Your quick, no-nonsense guide to building real-world apps with Angular",
+            "//desc": "Your quick, no-nonsense guide to building real-world apps with Angular",
+            "desc": "Angular로 운영용 애플리케이션을 만드는 방법을 쉽고 합리적인 방법으로 안내합니다.",
             "rev": true,
             "title": "Learning Angular",
             "url": "https://www.packtpub.com/web-development/learning-angular-2"
           },
           "3ab": {
-            "desc": "More than 15 books from O'Reilly about Angular",
+            "//desc": "More than 15 books from O'Reilly about Angular",
+            "desc": "O'reilly 출판사에서도 15종 이상의 Angular 서적을 출판했습니다.",
             "rev": true,
             "title": "O'Reilly Media",
             "url": "https://ssearch.oreilly.com/?q=angular+2&x=0&y=0"
           },
           "8ab": {
-            "desc": "This books shows all the steps necessary for the development of SPA (Single Page Application) applications with the brand new Angular",
+            "//desc": "This books shows all the steps necessary for the development of SPA (Single Page Application) applications with the brand new Angular",
+            "desc": "이 책은 Angular로 SPA(싱글 페이지 애플리케이션)를 만드는 방법을 처음부터 차근차근 소개합니다.",
             "rev": true,
             "title": "Practical Angular",
             "url": "https://leanpub.com/practical-angular-2"
           },
           "a2b": {
-            "desc": "Publications and books from Manning about Angular",
+            "//desc": "Publications and books from Manning about Angular",
+            "desc": "Manning 출판사의 Angular 도서 목록",
             "rev": true,
             "title": "Manning Publications",
             "url": "https://www.manning.com/search?q=angular"
           },
           "a4b": {
-            "desc": "From getting started with the Angular toolchain to writing applications with scalable front end architectures, this book walks you through everything you need to know.",
+            "//desc": "From getting started with the Angular toolchain to writing applications with scalable front end architectures, this book walks you through everything you need to know.",
+            "desc": "Angular를 처음 시작하는 것부터 크게 확장된 프론트엔드 아키텍처까지, 개발에 필요한 모든 내용을 이 책에서 다룹니다.",
             "rev": true,
             "title": "Rangle's Angular Training Book",
             "url": "http://ngcourse.rangle.io/"
           },
           "a5b": {
-            "desc": "The in-depth, complete, and up-to-date book on Angular. Become an Angular expert today.",
+            "//desc": "The in-depth, complete, and up-to-date book on Angular. Become an Angular expert today.",
+            "desc": "Angular 최신 버전이 나올때마다 갱신되는 ebook입니다. 최신 코드를 깊이 있게 공부해 보세요.",
             "rev": true,
             "title": "ng-book",
             "url": "https://www.ng-book.com/2/"
           },
           "a6b": {
-            "desc": "A Practical Introduction to the new Web Development Platform Angular",
+            "//desc": "A Practical Introduction to the new Web Development Platform Angular",
+            "desc": "Angular를 실제 프로젝트에 어떻게 도입하는 것이 좋을지 소개합니다.",
             "rev": true,
             "title": "Angular Book",
             "url": "https://leanpub.com/angular2-book"
           },
           "a7b": {
-            "desc": "This ebook will help you getting the philosophy of the framework: what comes from 1.x, what has been introduced and why",
+            "//desc": "This ebook will help you getting the philosophy of the framework: what comes from 1.x, what has been introduced and why",
+            "desc": "1.x 버전의 어떤 내용이 새로운 버전에도 도입되었는지, 어떤 내용이 새로운 내용이며 왜 그 내용이 도입되었는지 등 Angular 프레임워크의 철학을 이해하려면 이 책을 보는 것이 좋습니다.",
             "rev": true,
             "title": "Becoming a Ninja with Angular",
             "url": "https://books.ninja-squad.com/angular"
           },
           "ab": {
-            "desc": "More than 10 books from Packt Publishing about Angular",
+            "//desc": "More than 10 books from Packt Publishing about Angular",
+            "desc": "Packts 출판사는 10종 이상의 Angular 서적을 출판했습니다.",
             "rev": true,
             "title": "Packt Publishing",
             "url": "https://www.packtpub.com/all/?search=angular%202#"
           },
           "cnoring-rxjs-fundamentals": {
-            "desc": "A free book that covers all facets of working with Rxjs from your first Observable to how to make your code run at optimal speed with Schedulers.",
+            "//desc": "A free book that covers all facets of working with Rxjs from your first Observable to how to make your code run at optimal speed with Schedulers.",
+            "desc": "옵저버블과 RxJS를 다루면서 만나는 내용 대부분을 무료로 소개하는 ebook입니다. 스케쥴러를 사용해서 코드를 최적화하는 내용을 중심으로 다룹니다.",
             "rev": true,
             "title": "RxJS 5 Ultimate",
             "url": "https://www.gitbook.com/book/chrisnoring/rxjs-5-ultimate/details"
           },
           "vsavkin-angular-router": {
-            "desc": "This book is a comprehensive guide to the Angular router written by its designer. The book explores the library in depth, including the mental model, design constraints, subtleties of the API.",
+            "//desc": "This book is a comprehensive guide to the Angular router written by its designer. The book explores the library in depth, including the mental model, design constraints, subtleties of the API.",
+            "desc": "이 책은 Angular 라우터를 깊이 있게 다룹니다. Angular 라우터 라이브러리에 대한 것은 물론이고, 모델 구조, 제약 조건, API의 구체적인 사용방법까지 다룹니다.",
             "rev": true,
             "title": "Angular Router",
             "url": "https://leanpub.com/router"
           },
           "vsavkin-essential-angular": {
-            "desc": "The book is a short, but at the same time, fairly complete overview of the key aspects of Angular written by its core contributors Victor Savkin and Jeff Cross. The book will give you a strong foundation. It will help you put all the concepts into right places. So you will get a good understanding of why the framework is the way it is.",
+            "//desc": "The book is a short, but at the same time, fairly complete overview of the key aspects of Angular written by its core contributors Victor Savkin and Jeff Cross. The book will give you a strong foundation. It will help you put all the concepts into right places. So you will get a good understanding of why the framework is the way it is.",
+            "desc": "이 책은 Angular 컨트리뷰터인 Victor Savkin과 Jeff Cross가 함께 집필했으며, 아주 얇지만 Angular에 대한 기본 내용을 충실하게 담고 있습니다. Angular 프레임워크의 기본 내용을 공부하려면 이 책이 큰 도움이 될 것입니다.",
             "rev": true,
             "title": "Essential Angular",
             "url": "https://gumroad.com/l/essential_angular"
           },
           "angular-buch": {
-            "desc": "The first German book about Angular. It gives you a detailed practical overview of the key concepts of the platform. In each chapter a sample application is built upon with a new Angular topic. All sources are available on GitHub.",
+            "//desc": "The first German book about Angular. It gives you a detailed practical overview of the key concepts of the platform. In each chapter a sample application is built upon with a new Angular topic. All sources are available on GitHub.",
+            "desc": "독일에서는 처음 발행된 Angular 서적입니다. Angular 프레임워크의 실전 활용 방법을 자세하게 설명하고 있습니다. 매 챕터마다 다루는 내용으로 애플리케이션을 만들어 가며, 모든 소스는 Github으로 공개됩니다.",
             "logo": "https://angular-buch.com/assets/img/brand.svg",
             "rev": true,
-            "title": "Angular-Buch (German)",
+            "//title": "Angular-Buch (German)",
+            "title": "Angular-Buch (독일)",
             "url": "https://angular-buch.com/"
           }
         }
       },
-      "Online Training": {
+      "온라인 학습": {
+        "Online Training": "",
         "order": 3,
         "resources": {
           "-KLIBoTWXMiBcvG0dAM6": {
-            "desc": "This course introduces you to the essentials of this \"superheroic\" framework, including declarative templates, two-way data binding, and dependency injection.",
+            "//desc": "This course introduces you to the essentials of this \"superheroic\" framework, including declarative templates, two-way data binding, and dependency injection.",
+            "desc": "이 코스는 선언형 템플릿, 양방향 바인딩, 의존성 주입 등 Angular 프레임워크의 기초에 대해 다룹니다.",
             "rev": true,
             "title": "Angular: Essential Training",
             "url": "https://www.lynda.com/AngularJS-tutorials/Angular-2-Essential-Training/540347-2.html"
           },
           "-KLIzGq3CiFeoZUemVyE": {
-            "desc": "Learn the core concepts, play with the code, become a competent Angular developer",
+            "//desc": "Learn the core concepts, play with the code, become a competent Angular developer",
+            "desc": "Angular의 기초를 배우고 코드를 작성하면서 Angular 전문가가 되어보세요.",
             "rev": true,
             "title": "Angular Concepts, Code and Collective Wisdom",
             "url": "https://www.udemy.com/angular-2-concepts-code-and-collective-wisdom/"
           },
           "-KLIzHwg-glQLXni1hvL": {
-            "desc": "Spanish language Angular articles and information",
+            "//desc": "Spanish language Angular articles and information",
+            "desc": "스페인어로 제공되는 Angular 문서",
             "rev": true,
-            "title": "Academia Binaria (español)",
+            "//title": "Academia Binaria (español)",
+            "title": "Academia Binaria (스페인어)",
             "url": "http://academia-binaria.com/"
           },
           "-KLIzIOgdPXzI4LMOzYP": {
-            "desc": "In this course, you will learn the features listed above and so much more. This amazing Angular tutorial will cover the fundamentals of Angular (you don’t even need to know Angular), TypeScript, and introduction to the programming concepts such as conditions, arrays, functions, directives, pipes, etc.",
+            "//desc": "In this course, you will learn the features listed above and so much more. This amazing Angular tutorial will cover the fundamentals of Angular (you don’t even need to know Angular), TypeScript, and introduction to the programming concepts such as conditions, arrays, functions, directives, pipes, etc.",
+            "desc": "Angular의 기초부터 심화 내용까지 다룹니다. Angular, TypeScript는 물론, 배열과 함수, 디렉티브, 파이프가 어떤 철학을 갖고 만들어졌는지도 다룹니다.",
             "rev": true,
             "title": "Eduonix Angular Fundamentals",
             "url": "https://www.eduonix.com/courses/Web-Development/angular-2-fundamentals-for-web-developers"
           },
           "-KMUuOWwciL_S_o0fzFO": {
-            "desc": "The ngMigrate project is brought to you by Todd Motto, a Developer Advocate at Telerik, spreading the good word of Kendo UI, NativeScript and Angular & AngularJS. You can follow him on Twitter for questions, or even requests about this guide.",
+            "//desc": "The ngMigrate project is brought to you by Todd Motto, a Developer Advocate at Telerik, spreading the good word of Kendo UI, NativeScript and Angular & AngularJS. You can follow him on Twitter for questions, or even requests about this guide.",
+            "desc": "ngMigrate는 Telerik의 개발자인 Todd Motto가 관리하는 프로젝트입니다. Telerik은 Kendo UI, NativeScript로 유명하며, 이 프로젝트에 대해 궁금한 내용이 있으면 트위터로 질문하거나 도움을 요청할 수도 있습니다.",
             "rev": true,
             "title": "ngMigrate",
             "url": "http://ngmigrate.telerik.com/"
           },
           "-KN3uNQvxifu26D6WKJW": {
             "category": "Education",
-            "desc": "Create the future of web applications by taking Angular for a test drive.",
+            "//desc": "Create the future of web applications by taking Angular for a test drive.",
+            "desc": "Angular로 웹 애플리케이션의 최신 기술을 활용해보세요.",
             "rev": true,
             "subcategory": "Online Training",
             "title": "CodeSchool: Accelerating Through Angular",
             "url": "https://www.codeschool.com/courses/accelerating-through-angular-2"
           },
           "angular-playbook": {
-            "desc": "Learn advanced Angular best practices for enterprise teams, created by Nrwl.io.",
+            "//desc": "Learn advanced Angular best practices for enterprise teams, created by Nrwl.io.",
+            "desc": "실제 업무용 애플리케이션에 활용할 수 있는 Angular 고급 지식을 확인해 보세요. Nrwl.io 운영자가 직접 안내합니다.",
             "logo": "https://nrwl.io/assets/logo_footer_2x.png",
             "rev": true,
             "title": "Angular Enterprise Playbook",
             "url": "https://angularplaybook.com"
           },
           "a2b": {
-            "desc": "Hundreds of Angular courses for all skill levels",
+            "//desc": "Hundreds of Angular courses for all skill levels",
+            "desc": "수준에 맞는 Angular 코스를 다양하게 준비했습니다.",
             "logo": "",
             "rev": true,
             "title": "Pluralsight",
             "url": "https://www.pluralsight.com/search?q=angular+2&categories=all"
           },
           "ab": {
-            "desc": "Take this introduction to Angular course, to learn the fundamentals in just two days, free of charge.",
+            "//desc": "Take this introduction to Angular course, to learn the fundamentals in just two days, free of charge.",
+            "desc": "2일만에 Angular 기초를 공부하는 코스가 무료로 제공됩니다.",
             "logo": "",
             "rev": true,
             "title": "Rangle.io",
             "url": "https://rangle.io/services/javascript-training/training-angular1-angular2-with-ngupgrade/"
           },
           "ab3": {
-            "desc": "Angular courses hosted by  Udemy",
+            "//desc": "Angular courses hosted by  Udemy",
+            "desc": "Udemy에서 제공하는 Angular 코스",
             "logo": "",
             "rev": true,
             "title": "Udemy",
             "url": "https://www.udemy.com/courses/search/?ref=home&src=ukw&q=angular+2&lang=en"
           },
           "ab4": {
-            "desc": "Angular Fundamentals and advanced topics focused on Redux Style Angular Applications",
+            "//desc": "Angular Fundamentals and advanced topics focused on Redux Style Angular Applications",
+            "desc": "Angular를 기초부터 심화까지 공부해 보세요. 이 코스는 Redux를 활용하는 것에 초점이 맞춰져 있습니다.",
             "logo": "",
             "rev": true,
             "title": "Egghead.io",
-            "url": "https://egghead.io/browse/frameworks/angular"
+            "url": "https://egghead.io/technologies/angular2"
           },
           "ab5": {
-            "desc": "Build Web Apps with Angular - recorded video content",
+            "//desc": "Build Web Apps with Angular - recorded video content",
+            "desc": "Angular로 웹 애플리케이션을 만들어 보세요.",
             "logo": "",
             "rev": true,
             "title": "Frontend Masters",
             "url": "https://frontendmasters.com/courses/angular-2/"
           },
           "ac6": {
-            "desc": "French language Angular course covering TypeScript, ES6, Dependency Injection, Observables, and more.",
+            "//desc": "French language Angular course covering TypeScript, ES6, Dependency Injection, Observables, and more.",
+            "desc": "TypeScript, ES6, 의존성 주입, 옵저버블 등에 대한 내용이 프랑스어로 제공되는 코스입니다.",
             "rev": true,
-            "title": "Wishtack's Angular Course (francais)",
+            "//title": "Wishtack's Angular Course (francais)",
+            "title": "Wishtack's Angular Course (프랑스어)",
             "url": "http://courses.wishtack.com/angular-2/ecmascript-6"
           },
           "angular-love": {
-            "desc": "Polish language Angular articles and information",
+            "//desc": "Polish language Angular articles and information",
+            "desc": "폴란드어로 제공되는 Angular 수업입니다.",
             "rev": true,
-            "title": "angular.love (Polski)",
+            "//title": "angular.love (Polski)",
+            "title": "angular.love (폴란드어)",
             "url": "http://www.angular.love/"
           },
           "angular2forms": {
-            "desc": "Learn about how to use Reactive Forms with Angular.",
+            "//desc": "Learn about how to use Reactive Forms with Angular.",
+            "desc": "Angular 반응형 폼에 대해 공부해 보세요.",
             "rev": true,
-            "title": "Angular Forms: Data Binding and Validation",
+            "//title": "Angular Forms: Data Binding and Validation",
+            "title": "Angular 폼 : 데이터 바인딩과 유효성 검사",
             "url": "https://www.lynda.com/AngularJS-tutorials/Angular-2-Forms-Data-Binding-Validation/461451-2.html"
           },
           "learn-angular-fr": {
             "desc": "French language Angular content.",
+            "desc": "프랑스어로 제공되는 Angular 문서입니다.",
             "rev": true,
-            "title": "Learn Angular (francais)",
+            "//title": "Learn Angular (francais)",
+            "title": "Learn Angular (프랑스어)",
             "url": "http://www.learn-angular.fr/"
           },
-          "upgrading-ajs": {
-            "desc": "The world's most comprehensive, step-by-step course on using best practices and avoiding pitfalls while migrating from AngularJS to Angular.",
-            "rev": true,
-            "title": "Upgrading AngularJS",
-            "url": "https://www.upgradingangularjs.com"
-          },
           "toddmotto-ultimateangular": {
-            "desc": "Online courses providing in-depth coverage of the Angular ecosystem, AngularJS, Angular and TypeScript, with functional code samples and a full-featured seed environment. Get a deep understanding of Angular and TypeScript from foundation to functional application, then move on to advanced topics with Todd Motto and collaborators.",
+            "//desc": "Online courses providing in-depth coverage of the Angular ecosystem, AngularJS, Angular and TypeScript, with functional code samples and a full-featured seed environment. Get a deep understanding of Angular and TypeScript from foundation to functional application, then move on to advanced topics with Todd Motto and collaborators.",
+            "desc": "Angular와 AngularJS, TypeScript를 샘플 코드와 함께 설명합니다. 애플리케이션을 구성하는 기초부터 시작해서 컨트리뷰터들이 어떻게 활동하고 있는지도 알아봅니다.",
             "rev": true,
             "title": "Ultimate Angular",
             "url": "https://ultimateangular.com/"
           },
           "angular-firebase": {
-            "desc": "Video lessons covering progressive web apps with Angular, Firebase, RxJS, and related APIs.",
+            "//desc": "Video lessons covering progressive web apps with Angular, Firebase, RxJS, and related APIs.",
+            "desc": "Angular를 활용하는 프로그레시브 웹 앱과 Firebase, RxJs에 대해 다룹니다.",
             "rev": true,
             "title": "AngularFirebase.com",
             "url": "https://angularfirebase.com/"
           }
         }
       },
-      "Workshops & Onsite Training": {
+      "워크샵 & 온라인 교육": {
+        "Workshops & Onsite Training": "",
         "order": 2,
         "resources": {
           "-KLIBo3ANF3-1B9wxsoB": {
-            "desc": "Angular Classes from Intertech in Minnesota",
+            "//desc": "Angular Classes from Intertech in Minnesota",
+            "desc": "Minnesota Intertech에서 제공하는 Angular 수업입니다.",
             "rev": true,
             "title": "Intertech",
             "url": "http://www.intertech.com/Training/Web-Dev/AngularJS/AngularJS/Angular-2-Training"
           },
           "-KLIBoFWStce29UCwkvY": {
-            "desc": "Private Angular Training and Mentoring",
+            "//desc": "Private Angular Training and Mentoring",
+            "desc": "강사의 멘토링도 받을 수 있는 전일제 수업입니다.",
             "rev": true,
             "title": "Chariot Solutions",
             "url": "http://chariotsolutions.com/course/angular2-workshop-fundamentals-architecture/"
           },
           "-KLIBoN0p9be3kwC6-ga": {
-            "desc": "Angular Academy is a two day hands-on public course given in-person across Canada!",
+            "//desc": "Angular Academy is a two day hands-on public course given in-person across Canada!",
+            "desc": "Angular Academy는 캐나다 전 지역을 돌며 진행되는 2일제 수업입니다.",
             "rev": true,
-            "title": "Angular Academy (Canada)",
+            "//title": "Angular Academy (Canada)",
+            "title": "Angular Academy (캐나다)",
             "url": "http://www.angularacademy.ca"
           },
           "-KLIBo_lm-WrK1Sjtt-2": {
-            "desc": "Basic and Advanced training across Europe in German",
+            "//desc": "Basic and Advanced training across Europe in German",
+            "desc": "Angular의 기본 내용과 심화 내용을 학습해 보세요. 독일에서 진행됩니다.",
             "rev": true,
-            "title": "TheCodeCampus (German)",
+            "//title": "TheCodeCampus (German)",
+            "title": "TheCodeCampus (독일)",
             "url": "https://www.thecodecampus.de/#!/angularjs"
           },
           "-KLIzFhfGKi1xttqJ7Uh": {
-            "desc": "4 day in-depth Angular training in Israel",
+            "//desc": "4 day in-depth Angular training in Israel",
+            "desc": "이스라엘에서 4일동안 진행되는 집중 코스입니다.",
             "rev": true,
-            "title": "ng-course (Israel)",
+            "//title": "ng-course (Israel)",
+            "title": "ng-course (이스라엘)",
             "url": "http://ng-course.org/"
           },
           "-KLIzIcRoDq3TzCJWnYc": {
-            "desc": "Virtual and in-person training in Canada and the US",
+            "//desc": "Virtual and in-person training in Canada and the US",
+            "desc": "캐나다와 미국에 제공되는 온라인 수업입니다.",
             "rev": true,
             "title": "Web Age Solutions",
             "url": "http://www.webagesolutions.com/courses/WA2533-angular-2-programming"
           },
           "500tech": {
-            "desc": "Learn from 500Tech, an Angular consultancy in Israel.  This course was built by an expert developer, who lives and breathes Angular, and has practical experience  with real world large scale Angular apps.",
+            "//desc": "Learn from 500Tech, an Angular consultancy in Israel.  This course was built by an expert developer, who lives and breathes Angular, and has practical experience  with real world large scale Angular apps.",
+            "desc": "500Tech에서 준비한 Angular 수업입니다. 이 수업은 Angular를 직접 사용하는 전문 개발자가 주관하며, 실제 운영 환경에서는 Angular 애플리케이션을 어떻게 만들어야 할지 안내합니다.",
             "rev": true,
-            "title": "Angular Hands-on Course (Israel)",
+            "//title": "Angular Hands-on Course (Israel)",
+            "title": "Angular 실습 코스 (이스라엘)",
             "url": "http://angular2.courses.500tech.com/"
           },
           "9ab": {
-            "desc": "OnSite Training From the Authors of  \"Become A Ninja with Angular\"",
+            "//desc": "OnSite Training From the Authors of  \"Become A Ninja with Angular\"",
+            "desc": "\"Beceome A Ninja with Angular\" 책의 저자가 직접 진행하는 수업입니다.",
             "rev": true,
             "title": "Ninja Squad",
             "url": "http://ninja-squad.com/formations/formation-angular2"
           },
           "a2b": {
-            "desc": "Angular Boot Camp covers introductory and intermediate content. It includes extensive workshop session, with hands-on help from our experienced developer-trainers. At the end of this class, student are usually able to use AngularJS to make an end-to-end, working application.",
+            "//desc": "Angular Boot Camp covers introductory and intermediate content. It includes extensive workshop session, with hands-on help from our experienced developer-trainers. At the end of this class, student are usually able to use AngularJS to make an end-to-end, working application.",
+            "desc": "Angular Boot Camp는 Angular의 기초를 다루며, 이 수업에서는 이론과 함께 전문 트레이너의 도움을 받을 수도 있습니다. 수업을 마치고 나면 현업에서 사용할 수 있는 Angular 애플리케이션을 만들 수 있을 것입니다.",
             "logo": "",
             "rev": true,
             "title": "Angular Boot Camp",
             "url": "https://angularbootcamp.com"
           },
           "ab": {
-            "desc": "With Rangle’s Custom Training, you can cover Angular in comprehensive detail, on your premises or theirs. Learn directly from Angular experts who will tailor course material to suit your specific application needs.",
+            "//desc": "With Rangle’s Custom Training, you can cover Angular in comprehensive detail, on your premises or theirs. Learn directly from Angular experts who will tailor course material to suit your specific application needs.",
+            "desc": "Rangle이 진행하는 수업입니다. Angular의 기초부터 자세하게 안내하며, 이 수업이 끝나면 웹 애플리케이션을 만들 수 있을만큼 전문가가 될 것입니다.",
             "logo": "",
             "rev": true,
             "title": "Rangle.io",
             "url": "http://rangle.io/services/javascript-training/angular2-training/"
           },
           "ab3": {
-            "desc": "Trainings & Code Reviews. We help people to get a deep understanding of different technologies through trainings and code reviews. Our services can be arranged online, making it possible to join in from anywhere in the world, or on-site to get the best experience possible.",
+            "//desc": "Trainings & Code Reviews. We help people to get a deep understanding of different technologies through trainings and code reviews. Our services can be arranged online, making it possible to join in from anywhere in the world, or on-site to get the best experience possible.",
+            "desc": "수업과 코드 리뷰를 진행하면서 Angular의 심화 내용까지 집중적으로 안내합니다. 현장 수업과 함께 전세계 어디에서라도 들을 수 있는 온라인 수업을 준비했습니다.",
             "logo": "",
             "rev": true,
             "title": "Thoughtram",
             "url": "http://thoughtram.io/"
           },
           "jsru": {
-            "desc": "Complete Angular online course. Constantly updating. Real-time webinars with immediate feedback from the teacher.",
+            "//desc": "Complete Angular online course. Constantly updating. Real-time webinars with immediate feedback from the teacher.",
+            "desc": "온라인으로 진행되는 수업입니다. 실시간으로 진행되며, 강사의 피드백도 바로 확인할 수 있습니다.",
             "logo": "https://learn.javascript.ru/img/sitetoolbar__logo_ru.svg",
             "rev": true,
-            "title": "Learn Javascript (Russian)",
+            "//title": "Learn Javascript (Russian)",
+            "title": "Learn Javascript (러시아)",
             "url": "https://learn.javascript.ru/courses/angular"
           },
           "sa200": {
-            "desc": "Free Angular training delivered by SFEIR in France",
+            "//desc": "Free Angular training delivered by SFEIR in France",
+            "desc": "프랑스 SFEIR에서 제공하는 무료 수업입니다.",
             "rev": true,
-            "title": "SFEIR School (French)",
+            "//title": "SFEIR School (French)",
+            "title": "SFEIR School (프랑스)",
             "url": "https://school.sfeir.com/project/sa200/"
           },
           "formationjs": {
-            "desc": "Angular onsite training in Paris (France). Monthly Angular workshops and custom onsite classes. We are focused on Angular, so we are always up to date.",
+            "//desc": "Angular onsite training in Paris (France). Monthly Angular workshops and custom onsite classes. We are focused on Angular, so we are always up to date.",
+            "desc": "프랑스 파리에서 진행되는 Angular 현장 코스입니다. 매달 진행되며 항상 Angular 최신버전을 대상으로 수업합니다.",
             "rev": true,
-            "title": "Formation JavaScript (French)",
+            "//title": "Formation JavaScript (French)",
+            "title": "Formation JavaScript (프랑스)",
             "url": "https://formationjavascript.com/formation-angular/"
           },
           "wao": {
-            "desc": "Onsite Angular Training delivered by We Are One Sàrl in Switzerland",
+            "//desc": "Onsite Angular Training delivered by We Are One Sàrl in Switzerland",
+            "desc": "스위스 We Are One Sàrl에서 진행하는 현장 교육입니다.",
             "logo": "https://weareone.ch/wordpress/wao-content/uploads/2014/12/logo_200_2x.png",
             "rev": true,
             "title": "We Are One Sàrl",
             "url": "https://weareone.ch/courses/angular/"
           },
           "angular-schule": {
-            "desc": "Angular onsite training and public workshops in Germany from the authors of the German Angular book. We also regularly post articles and videos on our blog (in English and German language).",
+            "//desc": "Angular onsite training and public workshops in Germany from the authors of the German Angular book. We also regularly post articles and videos on our blog (in English and German language).",
+            "desc": "독일에서 Angular 책을 출판한 저자가 직접 강의하는 수업입니다. 블로그에는 관련 기술과 영상을 영어와 독일어로 제공합니다.",
             "logo": "https://angular.schule/assets/img/brand.svg",
             "rev": true,
-            "title": "Angular.Schule (German)",
+            "//title": "Angular.Schule (German)",
+            "title": "Angular.Schule (독일)",
             "url": "https://angular.schule/"
           }
         }
