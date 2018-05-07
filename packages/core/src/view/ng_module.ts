@@ -150,6 +150,15 @@ function _createProviderInstance(ngModule: NgModuleData, providerDef: NgModulePr
       injectable = providerDef.value;
       break;
   }
+
+  // The read of `ngOnDestroy` here is slightly expensive as it's megamorphic, so it should be
+  // avoided if possible. The sequence of checks here determines whether ngOnDestroy needs to be
+  // checked. It might not if the `injectable` isn't an object or if NodeFlags.OnDestroy is already
+  // set (ngOnDestroy was detected statically).
+  if (injectable !== UNDEFINED_VALUE && injectable != null && typeof injectable === 'object' &&
+      !(providerDef.flags & NodeFlags.OnDestroy) && typeof injectable.ngOnDestroy === 'function') {
+    providerDef.flags |= NodeFlags.OnDestroy;
+  }
   return injectable === undefined ? UNDEFINED_VALUE : injectable;
 }
 
@@ -199,12 +208,17 @@ function _callFactory(ngModule: NgModuleData, factory: any, deps: DepDef[]): any
 
 export function callNgModuleLifecycle(ngModule: NgModuleData, lifecycles: NodeFlags) {
   const def = ngModule._def;
+  const destroyed = new Set<any>();
   for (let i = 0; i < def.providers.length; i++) {
     const provDef = def.providers[i];
     if (provDef.flags & NodeFlags.OnDestroy) {
       const instance = ngModule._providers[i];
       if (instance && instance !== UNDEFINED_VALUE) {
-        instance.ngOnDestroy();
+        const onDestroy: Function|undefined = instance.ngOnDestroy;
+        if (typeof onDestroy === 'function' && !destroyed.has(instance)) {
+          onDestroy.apply(instance);
+          destroyed.add(instance);
+        }
       }
     }
   }

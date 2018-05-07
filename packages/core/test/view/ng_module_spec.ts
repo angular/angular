@@ -101,6 +101,22 @@ function makeProviders(classes: any[], modules: any[]): NgModuleDefinition {
                     flags: NodeFlags.TypeClassProvider | NodeFlags.LazyProvider, token,
                     value: token,
                   }));
+  return makeModule(modules, providers);
+}
+
+function makeFactoryProviders(
+    factories: {token: any, factory: Function}[], modules: any[]): NgModuleDefinition {
+  const providers = factories.map((factory, index) => ({
+                                    index,
+                                    deps: [],
+                                    flags: NodeFlags.TypeFactoryProvider | NodeFlags.LazyProvider,
+                                    token: factory.token,
+                                    value: factory.factory,
+                                  }));
+  return makeModule(modules, providers);
+}
+
+function makeModule(modules: any[], providers: NgModuleProviderDef[]): NgModuleDefinition {
   const providersByKey: {[key: string]: NgModuleProviderDef} = {};
   providers.forEach(provider => providersByKey[tokenKey(provider.token)] = provider);
   return {factory: null, providers, providersByKey, modules, isRoot: true};
@@ -155,4 +171,58 @@ describe('NgModuleRef_ injector', () => {
 
   it('injects with the current injector always set',
      () => { expect(() => ref.injector.get(UsesInject)).not.toThrow(); });
+
+  it('calls ngOnDestroy on services created via factory', () => {
+    class Module {}
+
+    class Service {
+      static destroyed = 0;
+      ngOnDestroy(): void { Service.destroyed++; }
+    }
+
+    const ref = createNgModuleRef(
+        Module, Injector.NULL, [], makeFactoryProviders(
+                                       [{
+                                         token: Service,
+                                         factory: () => new Service(),
+                                       }],
+                                       [Module]));
+
+    expect(ref.injector.get(Service)).toBeDefined();
+    expect(Service.destroyed).toBe(0);
+    ref.destroy();
+    expect(Service.destroyed).toBe(1);
+  });
+
+  it('only calls ngOnDestroy once per instance', () => {
+    class Module {}
+
+    class Service {
+      static destroyed = 0;
+      ngOnDestroy(): void { Service.destroyed++; }
+    }
+
+    class OtherToken {}
+
+    const instance = new Service();
+    const ref = createNgModuleRef(
+        Module, Injector.NULL, [], makeFactoryProviders(
+                                       [
+                                         {
+                                           token: Service,
+                                           factory: () => instance,
+                                         },
+                                         {
+                                           token: OtherToken,
+                                           factory: () => instance,
+                                         }
+                                       ],
+                                       [Module]));
+
+    expect(ref.injector.get(Service)).toBe(instance);
+    expect(ref.injector.get(OtherToken)).toBe(instance);
+    expect(Service.destroyed).toBe(0);
+    ref.destroy();
+    expect(Service.destroyed).toBe(1);
+  });
 });
