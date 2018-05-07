@@ -130,6 +130,48 @@ describe('i18n support in the view compiler', () => {
             @Component({
               selector: 'my-component',
               template: \`
+                <div i18n id="static" i18n-title title="introduction"></div>
+              \`
+            })
+            export class MyComponent {}
+
+            @NgModule({declarations: [MyComponent]})
+            export class MyModule {}
+        `
+        }
+      };
+
+      const template = `
+      const $msg_1$ = goog.getMsg('introduction');
+      …
+      const $c1$ = ($a1$:any) => {
+        return ['id', 'static', 'title', $a1$];
+      };
+      …
+      template: function MyComponent_Template(rf: IDENT, ctx: IDENT) {
+        if (rf & 1) {
+          $r3$.ɵE(0, 'div', $r3$.ɵf1($c1$, $msg_1$));
+          $r3$.ɵe();
+        }
+      }
+    `;
+
+      const result = compile(files, angularFiles);
+      // console.log(result.source);
+      expectEmit(result.source, template, 'Incorrect template', {
+        '$msg_1$': TRANSLATION_NAME_REGEXP,
+      });
+    });
+
+    it('should translate static attributes with desc and meaning', () => {
+      const files = {
+        app: {
+          'spec.ts': `
+            import {Component, NgModule} from '@angular/core';
+
+            @Component({
+              selector: 'my-component',
+              template: \`
                 <div i18n id="static" i18n-title="m|d" title="introduction"></div>
               \`
             })
@@ -165,6 +207,32 @@ describe('i18n support in the view compiler', () => {
       expectEmit(result.source, template, 'Incorrect template', {
         '$msg_1$': TRANSLATION_NAME_REGEXP,
       });
+    });
+  });
+
+  describe('dynamic text', () => {
+    it('should throw on i18n bound text', () => {
+      const files = {
+        app: {
+          'spec.ts': `
+            import {Component, NgModule} from '@angular/core';
+
+            @Component({
+              selector: 'my-component',
+              template: \`
+                <div i18n>Hello {{name}}</div>
+              \`
+            })
+            export class MyComponent {}
+
+            @NgModule({declarations: [MyComponent]})
+            export class MyModule {}
+        `
+        }
+      };
+
+      expect(() => compile(files, angularFiles))
+          .toThrowError('I18n bound text is not supported at the moment');
     });
   });
 

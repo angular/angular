@@ -243,7 +243,7 @@ export class HtmlToTemplateTransform implements html.Visitor {
   }
 
   visitAttribute(attribute: html.Attribute, i18nMeta?: string): t.Node {
-    if (i18nMeta) {
+    if (typeof i18nMeta === 'string') {
       const meta = this.parseI18nMeta(i18nMeta);
       return new t.I18nTextAttribute(
           attribute.name, attribute.value, meta, attribute.sourceSpan, attribute.valueSpan);
@@ -265,7 +265,9 @@ export class HtmlToTemplateTransform implements html.Visitor {
 
     const meta = this.parseI18nMeta(i18nMeta);
     const valueNoNgsp = replaceNgsp(text.value);
-    return new t.I18nText(valueNoNgsp, meta, text.sourceSpan);
+    const expr = this.bindingParser.parseInterpolation(valueNoNgsp, text.sourceSpan);
+    return expr ? new t.I18nBoundText(expr, meta, text.sourceSpan) :
+                  new t.I18nText(valueNoNgsp, meta, text.sourceSpan);
   }
 
   visitComment(comment: html.Comment): null { return null; }
