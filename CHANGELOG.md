@@ -1,3 +1,20 @@
+<a name="6.0.1"></a>
+## [6.0.1 glass-spaceship](https://github.com/angular/material2/compare/6.0.0...6.0.1) (2018-05-07)
+
+
+### Bug Fixes
+
+* **chips:** stacked chips overflowing chip list ([#11143](https://github.com/angular/material2/issues/11143)) ([70ba46e](https://github.com/angular/material2/commit/70ba46e))
+* **datepicker:** don't autofocus calendar cell if used outside of overlay ([#11049](https://github.com/angular/material2/issues/11049)) ([2a02ce2](https://github.com/angular/material2/commit/2a02ce2))
+* **focus-monitor:** don't null-out focus until after event is finished with capture & bubble ([#10721](https://github.com/angular/material2/issues/10721)) ([71ac0ae](https://github.com/angular/material2/commit/71ac0ae))
+* **focus-monitor:** reenter ngzone before emitting ([#10549](https://github.com/angular/material2/issues/10549)) ([8be7d4e](https://github.com/angular/material2/commit/8be7d4e))
+* **form-field:** error on IE11 when using outline appearance ([#11108](https://github.com/angular/material2/issues/11108)) ([3f87309](https://github.com/angular/material2/commit/3f87309))
+* **icon:** log full error message when icon set fails to load ([#10915](https://github.com/angular/material2/issues/10915)) ([f6af40c](https://github.com/angular/material2/commit/f6af40c))
+* **ng-add:** install added packages ([#11163](https://github.com/angular/material2/issues/11163)) ([bf9d5bb](https://github.com/angular/material2/commit/bf9d5bb))
+* **radio:** update set disabled directly on MatRadioButton to trigger change detection ([#11056](https://github.com/angular/material2/issues/11056)) ([a4597c9](https://github.com/angular/material2/commit/a4597c9))
+
+
+
 <a name="6.0.0"></a>
 # [6.0.0 vibranium-vivarium](https://github.com/angular/material2/compare/6.0.0-rc.14...6.0.0) (2018-05-03)
 
