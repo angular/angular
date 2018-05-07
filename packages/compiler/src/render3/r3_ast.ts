@@ -20,9 +20,19 @@ export class Text implements Node {
   visit<Result>(visitor: Visitor<Result>): Result { return visitor.visitText(this); }
 }
 
+export class I18nText implements Node {
+  constructor(public value: string, public meta: I18nMeta, public sourceSpan: ParseSourceSpan) {}
+  visit<Result>(visitor: I18nVisitor<Result>): Result { return visitor.visitI18nText(this); }
+}
+
 export class BoundText implements Node {
   constructor(public value: AST, public sourceSpan: ParseSourceSpan) {}
   visit<Result>(visitor: Visitor<Result>): Result { return visitor.visitBoundText(this); }
+}
+
+export class I18nBoundText implements Node {
+  constructor(public value: AST, public meta: I18nMeta, public sourceSpan: ParseSourceSpan) {}
+  visit<Result>(visitor: I18nVisitor<Result>): Result { return visitor.visitI18nBoundText(this); }
 }
 
 export class TextAttribute implements Node {
@@ -30,6 +40,13 @@ export class TextAttribute implements Node {
       public name: string, public value: string, public sourceSpan: ParseSourceSpan,
       public valueSpan?: ParseSourceSpan) {}
   visit<Result>(visitor: Visitor<Result>): Result { return visitor.visitAttribute(this); }
+}
+
+export class I18nTextAttribute implements Node {
+  constructor(
+      public name: string, public value: string, public meta: I18nMeta,
+      public sourceSpan: ParseSourceSpan, public valueSpan?: ParseSourceSpan) {}
+  visit<Result>(visitor: I18nVisitor<Result>): Result { return visitor.visitI18nAttribute(this); }
 }
 
 export class BoundAttribute implements Node {
@@ -68,6 +85,10 @@ export class Element implements Node {
       public sourceSpan: ParseSourceSpan, public startSourceSpan: ParseSourceSpan|null,
       public endSourceSpan: ParseSourceSpan|null) {}
   visit<Result>(visitor: Visitor<Result>): Result { return visitor.visitElement(this); }
+}
+
+export class I18nElement extends Element {
+  visit<Result>(visitor: I18nVisitor<Result>): Result { return visitor.visitI18nElement(this); }
 }
 
 export class Template implements Node {
@@ -192,17 +213,30 @@ export class TransformVisitor implements Visitor<Node> {
   visitBoundText(text: BoundText): Node { return text; }
 }
 
+export interface I18nVisitor<Result = any> extends Visitor {
+  visitI18nAttribute(attribute: I18nTextAttribute): Result;
+  visitI18nBoundText(text: I18nBoundText): Result;
+  visitI18nElement(element: I18nElement): Result;
+  visitI18nText(text: I18nText): Result;
+}
+
+export interface I18nMeta {
+  meaning: string;
+  description: string;
+  id: string;
+}
+
 export function visitAll<Result>(visitor: Visitor<Result>, nodes: Node[]): Result[] {
   const result: Result[] = [];
   if (visitor.visit) {
     for (const node of nodes) {
-      const newNode = visitor.visit(node) || node.visit(visitor);
+      visitor.visit(node) || node.visit(visitor);
     }
   } else {
     for (const node of nodes) {
       const newNode = node.visit(visitor);
       if (newNode) {
-        result.push(newNode);
+        Array.isArray(newNode) ? result.push(...newNode) : result.push(newNode);
       }
     }
   }

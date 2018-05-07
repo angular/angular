@@ -11,12 +11,10 @@ import {AotCompiler, AotCompilerHost, AotCompilerOptions, EmitterVisitorContext,
 import * as fs from 'fs';
 import * as path from 'path';
 import * as ts from 'typescript';
-
 import {TypeCheckHost, translateDiagnostics} from '../diagnostics/translate_diagnostics';
 import {compareVersions} from '../diagnostics/typescript_version';
 import {MetadataCollector, ModuleMetadata, createBundleIndexHost} from '../metadata/index';
 import {NgtscProgram} from '../ngtsc/program';
-
 import {CompilerHost, CompilerOptions, CustomTransformers, DEFAULT_ERROR_CODE, Diagnostic, DiagnosticMessageChain, EmitFlags, LazyRoute, LibrarySummary, Program, SOURCE, TsEmitArguments, TsEmitCallback, TsMergeEmitResultsCallback} from './api';
 import {CodeGenerator, TsCompilerAotCompilerTypeCheckHostAdapter, getOriginalReferences} from './compiler_host';
 import {InlineResourcesMetadataTransformer, getInlineResourcesTransformFactory} from './inline_resources';
@@ -309,7 +307,15 @@ class AngularCompilerProgram implements Program {
         emitCallback?: TsEmitCallback,
         mergeEmitResultsCallback?: TsMergeEmitResultsCallback,
       } = {}): ts.EmitResult {
-    const emitStart = Date.now();
+    if (emitFlags & EmitFlags.I18nBundle) {
+      const locale = this.options.i18nOutLocale || null;
+      const file = this.options.i18nOutFile || null;
+      const format = this.options.i18nOutFormat || null;
+      const bundle =
+          this.compiler.emitMessageBundle(this.analyzedModules, locale, this._analyzedInjectables);
+      i18nExtract(format, file, this.host, this.options, bundle);
+    }
+
     if ((emitFlags & (EmitFlags.JS | EmitFlags.DTS | EmitFlags.Metadata | EmitFlags.Codegen)) ===
         0) {
       return {emitSkipped: true, diagnostics: [], emittedFiles: []};
@@ -358,7 +364,6 @@ class AngularCompilerProgram implements Program {
         emitCallback?: TsEmitCallback,
         mergeEmitResultsCallback?: TsMergeEmitResultsCallback,
       } = {}): ts.EmitResult {
-    const emitStart = Date.now();
     if (emitFlags & EmitFlags.I18nBundle) {
       const locale = this.options.i18nOutLocale || null;
       const file = this.options.i18nOutFile || null;
@@ -366,10 +371,13 @@ class AngularCompilerProgram implements Program {
       const bundle = this.compiler.emitMessageBundle(this.analyzedModules, locale);
       i18nExtract(format, file, this.host, this.options, bundle);
     }
+
     if ((emitFlags & (EmitFlags.JS | EmitFlags.DTS | EmitFlags.Metadata | EmitFlags.Codegen)) ===
         0) {
       return {emitSkipped: true, diagnostics: [], emittedFiles: []};
     }
+
+    const emitStart = Date.now();
     let {genFiles, genDiags} = this.generateFilesForEmit(emitFlags);
     if (genDiags.length) {
       return {

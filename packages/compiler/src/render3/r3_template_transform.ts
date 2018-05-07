@@ -6,15 +6,17 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ParsedEvent, ParsedProperty, ParsedVariable} from '../expression_parser/ast';
+import {ParsedEvent, ParsedProperty} from '../expression_parser/ast';
+import {I18nMessageFactory, createI18nMessageFactory} from '../i18n/i18n_parser';
+import {MessageBundle} from '../i18n/message_bundle';
 import * as html from '../ml_parser/ast';
 import {replaceNgsp} from '../ml_parser/html_whitespaces';
+import {DEFAULT_INTERPOLATION_CONFIG} from '../ml_parser/interpolation_config';
 import {isNgTemplate} from '../ml_parser/tags';
 import {ParseError, ParseErrorLevel, ParseSourceSpan} from '../parse_util';
 import {isStyleUrlResolvable} from '../style_url_resolver';
 import {BindingParser} from '../template_parser/binding_parser';
 import {PreparsedElementType, preparseElement} from '../template_parser/template_preparser';
-
 import * as t from './r3_ast';
 
 const BIND_NAME_REGEXP =
@@ -46,6 +48,14 @@ const CLASS_ATTR = 'class';
 // Default selector used by `<ng-content>` if none specified
 const DEFAULT_CONTENT_SELECTOR = '*';
 
+/** Name of the i18n attributes **/
+const I18N_ATTR = 'i18n';
+const I18N_ATTR_PREFIX = 'i18n-';
+
+/** I18n separators for metadata **/
+const MEANING_SEPARATOR = '|';
+const ID_SEPARATOR = '@@';
+
 export class HtmlToTemplateTransform implements html.Visitor {
   errors: ParseError[];
 
@@ -54,7 +64,16 @@ export class HtmlToTemplateTransform implements html.Visitor {
   // Any `<ng-content>` in the template ?
   hasNgContent = false;
 
-  constructor(private bindingParser: BindingParser) {}
+  // Whether we are inside a translatable element (`<p i18n>... somewhere here ... </p>)
+  private inI18nSection: boolean = false;
+  private i18nSectionIndex = -1;
+  private createI18nMessage: I18nMessageFactory;
+
+  constructor(private bindingParser: BindingParser, private messageBundle?: MessageBundle) {
+    if (this.messageBundle) {
+      this.createI18nMessage = createI18nMessageFactory(DEFAULT_INTERPOLATION_CONFIG);
+    }
+  }
 
   // HTML visitor
   visitElement(element: html.Element): t.Node|null {
@@ -75,6 +94,7 @@ export class HtmlToTemplateTransform implements html.Visitor {
 
     // Whether the element is a `<ng-template>`
     const isTemplateElement = isNgTemplate(element.name);
+    const wasInI18nSection = this.inI18nSection;
 
     const matchableAttributes: [string, string][] = [];
     const parsedProperties: ParsedProperty[] = [];
@@ -91,12 +111,15 @@ export class HtmlToTemplateTransform implements html.Visitor {
     // Whether the element has any *-attribute
     let elementHasInlineTemplate = false;
 
+    const outputAttrs: {[name: string]: html.Attribute} = {};
+    const attrI18nMetas: {[name: string]: string} = {};
+    let i18nMeta: string|null = null;
+
     for (const attribute of element.attrs) {
-      let hasBinding = false;
       const normalizedName = normalizeAttributeName(attribute.name);
 
       // `*attr` defines template bindings
-      let isTemplateBinding = false;
+      let i18nAttr = false;
 
       if (normalizedName.startsWith(TEMPLATE_ATTR_PREFIX)) {
         if (elementHasInlineTemplate) {
@@ -104,7 +127,6 @@ export class HtmlToTemplateTransform implements html.Visitor {
               `Can't have multiple template bindings on one element. Use only one attribute prefixed with *`,
               attribute.sourceSpan);
         }
-        isTemplateBinding = true;
         elementHasInlineTemplate = true;
         const templateValue = attribute.value;
         const templateKey = normalizedName.substring(TEMPLATE_ATTR_PREFIX.length);
@@ -114,22 +136,53 @@ export class HtmlToTemplateTransform implements html.Visitor {
         this.bindingParser.parseInlineTemplateBinding(
             templateKey, templateValue, attribute.sourceSpan, templateMatchableAttributes,
             templateParsedProperties, templateVariables);
+      } else if (normalizedName === I18N_ATTR) {
+        if (this.inI18nSection) {
+          throw new Error(
+              `Could not mark an element as translatable inside of a translatable section`);
+        }
+        this.inI18nSection = true;
+        this.i18nSectionIndex++;
+        i18nMeta = attribute.value;
+        i18nAttr = true;
+      } else if (normalizedName.startsWith(I18N_ATTR_PREFIX)) {
+        attrI18nMetas[normalizedName.slice(I18N_ATTR_PREFIX.length)] = attribute.value;
+        i18nAttr = true;
       } else {
-        // Check for variables, events, property bindings, interpolation
-        hasBinding = this.parseAttribute(
-            isTemplateElement, attribute, matchableAttributes, parsedProperties, boundEvents,
-            variables, references);
-      }
-
-      if (!hasBinding && !isTemplateBinding) {
-        // don't include the bindings as attributes as well in the AST
-        attributes.push(this.visitAttribute(attribute) as t.TextAttribute);
-        matchableAttributes.push([attribute.name, attribute.value]);
+        outputAttrs[normalizedName] = attribute;
       }
     }
 
-    const children: t.Node[] =
-        html.visitAll(preparsedElement.nonBindable ? NON_BINDABLE_VISITOR : this, element.children);
+    Object.getOwnPropertyNames(outputAttrs).forEach(name => {
+      const attr = outputAttrs[name];
+
+      // Check for variables, events, property bindings, interpolation
+      const hasBinding = this.parseAttribute(
+          isTemplateElement, attr, matchableAttributes, parsedProperties, boundEvents, variables,
+          references);
+
+      if (!hasBinding) {
+        // don't include the bindings as attributes as well in the AST
+        attributes.push(this.visitAttribute(attr, attrI18nMetas[name]) as t.TextAttribute);
+        matchableAttributes.push([name, attr.value]);
+      }
+      if (attrI18nMetas.hasOwnProperty(name)) {
+        if (this.messageBundle) {
+          this.addMessage([attr], attrI18nMetas[name]);
+        }
+      }
+    });
+
+    let children: t.Node[];
+    // TODO(ocombe): refactor this when we support more than static i18n text
+    if (i18nMeta !== null && element.children.length == 1 &&
+        element.children[0] instanceof html.Text) {
+      const text = element.children[0] as html.Text;
+      children = [this.visitSingleI18nTextChild(text, i18nMeta)];
+    } else {
+      children = html.visitAll(
+          preparsedElement.nonBindable ? NON_BINDABLE_VISITOR : this, element.children);
+    }
 
     let parsedElement: t.Node|undefined;
     if (preparsedElement.type === PreparsedElementType.NG_CONTENT) {
@@ -156,6 +209,12 @@ export class HtmlToTemplateTransform implements html.Visitor {
       parsedElement = new t.Template(
           attributes, boundAttributes, children, references, variables, element.sourceSpan,
           element.startSourceSpan, element.endSourceSpan);
+    } else if (i18nMeta !== null) {
+      const boundAttributes = this.createBoundAttributes(element.name, parsedProperties);
+
+      parsedElement = new t.I18nElement(
+          element.name, attributes, boundAttributes, boundEvents, children, references,
+          element.sourceSpan, element.startSourceSpan, element.endSourceSpan);
     } else {
       const boundAttributes = this.createBoundAttributes(element.name, parsedProperties);
 
@@ -176,10 +235,19 @@ export class HtmlToTemplateTransform implements html.Visitor {
           attributes, boundAttributes, [parsedElement], [], templateVariables, element.sourceSpan,
           element.startSourceSpan, element.endSourceSpan);
     }
+
+    // Restore the state before exiting this node
+    this.inI18nSection = wasInI18nSection;
+
     return parsedElement;
   }
 
-  visitAttribute(attribute: html.Attribute): t.Node {
+  visitAttribute(attribute: html.Attribute, i18nMeta?: string): t.Node {
+    if (typeof i18nMeta === 'string') {
+      const meta = this.parseI18nMeta(i18nMeta);
+      return new t.I18nTextAttribute(
+          attribute.name, attribute.value, meta, attribute.sourceSpan, attribute.valueSpan);
+    }
     return new t.TextAttribute(
         attribute.name, attribute.value, attribute.sourceSpan, attribute.valueSpan);
   }
@@ -188,6 +256,18 @@ export class HtmlToTemplateTransform implements html.Visitor {
     const valueNoNgsp = replaceNgsp(text.value);
     const expr = this.bindingParser.parseInterpolation(valueNoNgsp, text.sourceSpan);
     return expr ? new t.BoundText(expr, text.sourceSpan) : new t.Text(valueNoNgsp, text.sourceSpan);
+  }
+
+  visitSingleI18nTextChild(text: html.Text, i18nMeta: string) {
+    if (this.messageBundle) {
+      this.addMessage([text], i18nMeta);
+    }
+
+    const meta = this.parseI18nMeta(i18nMeta);
+    const valueNoNgsp = replaceNgsp(text.value);
+    const expr = this.bindingParser.parseInterpolation(valueNoNgsp, text.sourceSpan);
+    return expr ? new t.I18nBoundText(expr, meta, text.sourceSpan) :
+                  new t.I18nText(valueNoNgsp, meta, text.sourceSpan);
   }
 
   visitComment(comment: html.Comment): null { return null; }
@@ -303,6 +383,46 @@ export class HtmlToTemplateTransform implements html.Visitor {
       message: string, sourceSpan: ParseSourceSpan,
       level: ParseErrorLevel = ParseErrorLevel.ERROR) {
     this.errors.push(new ParseError(sourceSpan, message, level));
+  }
+
+  // add a translatable message
+  private addMessage(ast: html.Node[], i18nMeta: string) {
+    if (ast.length == 0 ||
+        ast.length == 1 && ast[0] instanceof html.Attribute && !(<html.Attribute>ast[0]).value) {
+      // Do not create empty messages
+      return null;
+    }
+
+    const msgMeta = this.parseI18nMeta(i18nMeta);
+    const message = this.createI18nMessage(ast, msgMeta.meaning, msgMeta.description, msgMeta.id);
+    this.messageBundle !.addMessages([message]);
+  }
+
+  /**
+   * Parse i18n metas like:
+   * - "@@id",
+   * - "description[@@id]",
+   * - "meaning|description[@@id]"
+   */
+  private parseI18nMeta(i18n?: string): t.I18nMeta {
+    let meaning = '';
+    let description = '';
+    let id = '';
+
+    if (i18n) {
+      // TODO(vicb): figure out how to force a message ID with closure ?
+      const idIndex = i18n.indexOf(ID_SEPARATOR);
+
+      const descIndex = i18n.indexOf(MEANING_SEPARATOR);
+      let meaningAndDesc: string;
+      [meaningAndDesc, id] =
+          (idIndex > -1) ? [i18n.slice(0, idIndex), i18n.slice(idIndex + 2)] : [i18n, ''];
+      [meaning, description] = (descIndex > -1) ?
+          [meaningAndDesc.slice(0, descIndex), meaningAndDesc.slice(descIndex + 1)] :
+          ['', meaningAndDesc];
+    }
+
+    return {description, id, meaning};
   }
 }
 
