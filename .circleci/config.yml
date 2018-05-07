@@ -209,6 +209,7 @@ jobs:
           paths:
             - "dist"
             - "node_modules"
+            - "src/generated"
 
   aio_unit_test:
     <<: *job_defaults
