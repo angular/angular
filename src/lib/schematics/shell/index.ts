@@ -1,4 +1,5 @@
-import {chain, noop, Rule, Tree} from '@angular-devkit/schematics';
+import {chain, noop, Rule, Tree, SchematicContext} from '@angular-devkit/schematics';
+import {NodePackageInstallTask} from '@angular-devkit/schematics/tasks';
 import {addModuleImportToRootModule, getStylesPath} from '../utils/ast';
 import {InsertChange} from '../utils/devkit-utils/change';
 import {getProjectFromWorkspace, getWorkspace} from '../utils/devkit-utils/config';
@@ -27,10 +28,11 @@ export default function(options: Schema): Rule {
 
 /** Add material, cdk, annimations to package.json if not already present. */
 function addMaterialToPackageJson() {
-  return (host: Tree) => {
+  return (host: Tree, context: SchematicContext) => {
     addPackageToPackageJson(host, 'dependencies', '@angular/cdk', cdkVersion);
     addPackageToPackageJson(host, 'dependencies', '@angular/material', materialVersion);
     addPackageToPackageJson(host, 'dependencies', '@angular/animations', angularVersion);
+    context.addTask(new NodePackageInstallTask());
     return host;
   };
 }
