@@ -41,7 +41,7 @@ export const ALLOW_MULTIPLE_PLATFORMS = new InjectionToken<boolean>('AllowMultip
  * does not result in additional changes to any bindings (also known as
  * unidirectional data flow).
  *
- * @stable
+ *
  */
 export function enableProdMode(): void {
   if (_runModeLocked) {
@@ -160,7 +160,7 @@ export function getPlatform(): PlatformRef|null {
 /**
  * Provides additional options to the bootstraping process.
  *
- * @stable
+ *
  */
 export interface BootstrapOptions {
   /**
@@ -181,7 +181,7 @@ export interface BootstrapOptions {
  * A page's platform is initialized implicitly when a platform is created via a platform factory
  * (e.g. {@link platformBrowser}), or explicitly by calling the {@link createPlatform} function.
  *
- * @stable
+ *
  */
 @Injectable()
 export class PlatformRef {
@@ -262,7 +262,7 @@ export class PlatformRef {
    *
    * let moduleRef = platformBrowser().bootstrapModule(MyModule);
    * ```
-   * @stable
+   *
    */
   bootstrapModule<M>(
       moduleType: Type<M>, compilerOptions: (CompilerOptions&BootstrapOptions)|
@@ -359,7 +359,7 @@ function optionsReducer<T extends Object>(dst: any, objs: T | T[]): T {
 /**
  * A reference to an Angular application running on a page.
  *
- * @stable
+ *
  */
 @Injectable()
 export class ApplicationRef {

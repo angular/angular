@@ -1,4 +1,4 @@
-# AngularJS to Angular Quick Reference
+# AngularJS to Angular Concepts: Quick Reference
 
 
 {@a top}
@@ -1181,6 +1181,10 @@ The Angular code is shown using TypeScript.
 
       NOTE: If you are using TypeScript with AngularJS, you must use the `export` keyword to export the component class.
 
+      <!--
+      For more information, see the [Components](guide/architecture#components)
+      section of the [Architecture Overview](guide/architecture) page.
+      -->
       For more information, see the [Components](guide/architecture#컴포넌트)
       section of the [Architecture Overview](guide/architecture) page.
     </td>
@@ -1289,7 +1293,7 @@ also encapsulate a style sheet within a specific component.
       ### Styles configuration
       <code-example hideCopy path="ajs-quick-reference/.angular-cli.1.json" region="styles" linenums="false"></code-example>
 
-      With the Angular CLI, you can configure your global styles in the `.angular-cli.json` file.
+      With the Angular CLI, you can configure your global styles in the `angular.json` file.
       You can rename the extension to `.scss` to use sass.
 
       ### StyleUrls

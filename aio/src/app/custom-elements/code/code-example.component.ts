@@ -15,18 +15,18 @@ import { CodeComponent } from './code.component';
  */
 @Component({
   selector: 'code-example',
-  template: `    
+  template: `
     <!-- Content projection is used to get the content HTML provided to this component -->
     <div #content style="display: none"><ng-content></ng-content></div>
-    
+
     <header *ngIf="title">{{title}}</header>
 
-    <aio-code [ngClass]="classes"  
-              [language]="language" 
-              [linenums]="linenums" 
-              [path]="path" 
-              [region]="region"  
-              [hideCopy]="hidecopy" 
+    <aio-code [ngClass]="classes"
+              [language]="language"
+              [linenums]="linenums"
+              [path]="path"
+              [region]="region"
+              [hideCopy]="hidecopy"
               [title]="title">
     </aio-code>
   `,

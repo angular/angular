@@ -52,7 +52,7 @@ Angular는 사용자의 동작에 따라 컴포넌트를 생성하고 갱신하�
 <img src="generated/images/guide/architecture/metadata.png" alt="메타데이터" class="left">
 
 <!--
-The `@Component` decorator identifies the class immediately below it as a component class, and specifies its metadata. In the example code below, you can see that `HeroListComponent` is just a class, with no special Angular notation or syntax at all. It's not a component until mark it as one with the `@Component` decorator.
+The `@Component` decorator identifies the class immediately below it as a component class, and specifies its metadata. In the example code below, you can see that `HeroListComponent` is just a class, with no special Angular notation or syntax at all. It's not a component until you mark it as one with the `@Component` decorator.
 -->
 Angular 컴포넌트는 컴포넌트 클래스에 `@Component` 데코레이터를 붙여서 정의하며, 이 때 데코레이터 함수에 컴포넌트의 특성을 정의하는 메타데이터를 함께 전달합니다. 아래 코드를 보면, `HeroListComponent`는 단순한 클래스이며 Angular에만 사용하는 문법은 아무것도 없는 것을 확인할 수 있습니다. `@Component` 데코레이터를 붙이기 전까지 이 클래스는 컴포넌트로 등록되지도 않습니다.
 
@@ -173,7 +173,7 @@ Without a framework, you would be responsible for pushing data values into the H
 jQuery를 사용해봤다면 이 말이 어떤 의미인지 좀 더 이해하기 쉬울 것입니다.
 
 <!--
-Angular supports *two-way data binding*, a mechanism for coordinating parts of a template with parts of a component. Add binding markup to the template HTML to tell Angular how to connect both sides. 
+Angular supports *two-way data binding*, a mechanism for coordinating parts of a template with parts of a component. Add binding markup to the template HTML to tell Angular how to connect both sides.
 -->
 Angular에는 템플릿과 컴포넌트를 간편하게 연결하는 **데이터 바인딩** 기능이 있습니다.
 템플릿 HTML에 어떤 항목을 바인딩하겠다고 선언하면, Angular가 해당 항목을 자동으로 처리합니다.

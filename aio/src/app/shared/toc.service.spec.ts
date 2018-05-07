@@ -1,5 +1,6 @@
+import { DOCUMENT } from '@angular/common';
 import { ReflectiveInjector } from '@angular/core';
-import { DOCUMENT, DomSanitizer, SafeHtml } from '@angular/platform-browser';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { Subject } from 'rxjs';
 
 import { ScrollItem, ScrollSpyInfo, ScrollSpyService } from 'app/shared/scroll-spy.service';
@@ -33,8 +34,8 @@ describe('TocService', () => {
 
   describe('tocList', () => {
     it('should emit the latest value to new subscribers', () => {
-      const expectedValue1 = tocItem('Heading A');
-      const expectedValue2 = tocItem('Heading B');
+      const expectedValue1 = createTocItem('Heading A');
+      const expectedValue2 = createTocItem('Heading B');
       let value1: TocItem[]|undefined;
       let value2: TocItem[]|undefined;
 
@@ -48,8 +49,8 @@ describe('TocService', () => {
     });
 
     it('should emit the same values to all subscribers', () => {
-      const expectedValue1 = tocItem('Heading A');
-      const expectedValue2 = tocItem('Heading B');
+      const expectedValue1 = createTocItem('Heading A');
+      const expectedValue2 = createTocItem('Heading B');
       const emittedValues: TocItem[][] = [];
 
       tocService.tocList.subscribe(v => emittedValues.push(v));
@@ -149,8 +150,8 @@ describe('TocService', () => {
   describe('should clear tocList', () => {
     beforeEach(() => {
       // Start w/ dummy data from previous usage
-      const expectedValue1 = tocItem('Heading A');
-      const expectedValue2 = tocItem('Heading B');
+      const expectedValue1 = createTocItem('Heading A');
+      const expectedValue2 = createTocItem('Heading B');
       tocService.tocList.next([expectedValue1, expectedValue2]);
       expect(lastTocList).not.toEqual([]);
     });
@@ -369,7 +370,7 @@ class MockScrollSpyService {
   }
 }
 
-function tocItem(title: string, level = 'h2', href = '', content = title) {
+function createTocItem(title: string, level = 'h2', href = '', content = title) {
   return { title, href, level, content };
 }
 

@@ -14,7 +14,9 @@ import { HEROES } from './mock-heroes';
 import { MessageService } from './message.service';
 // #enddocregion import-message-service
 
-@Injectable()
+@Injectable({
+  providedIn: 'root',
+})
 export class HeroService {
 
   // #docregion ctor
@@ -24,7 +26,7 @@ export class HeroService {
   // #docregion getHeroes, getHeroes-1
   getHeroes(): Observable<Hero[]> {
     // #enddocregion getHeroes-1
-    // Todo: send the message _after_ fetching the heroes
+    // TODO: send the message _after_ fetching the heroes
     this.messageService.add('HeroService: fetched heroes');
     // #docregion getHeroes-1
     return of(HEROES);

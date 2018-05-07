@@ -23,10 +23,13 @@ function main(args) {
   const data = JSON.parse(fs.readFileSync(input, {encoding: 'utf-8'}));
   data['compilerOptions']['target'] = 'es5';
   data['bazelOptions']['es5Mode'] = true;
-  data['bazelOptions']['tsickle'] = false;
+  // Enable tsickle for decorator downleveling only
+  data['bazelOptions']['tsickle'] = true;
   data['bazelOptions']['tsickleExternsPath'] = '';
   data['compilerOptions']['outDir'] = path.join(data['compilerOptions']['outDir'], newRoot);
   if (data['angularCompilerOptions']) {
+    // Don't enable tsickle's closure conversions
+    data['angularCompilerOptions']['annotateForClosureCompiler'] = false;
     data['angularCompilerOptions']['expectedOut'] =
         data['angularCompilerOptions']['expectedOut'].map(
             f => f.replace(/\.closure\.js$/, '.js').replace(binDir, path.join(binDir, newRoot)));

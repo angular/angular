@@ -25,6 +25,7 @@ ts_library(
     tsconfig = ":tsconfig",
     deps = [
         "//packages/compiler",
+        "//packages/compiler-cli/src/ngtsc/transform",
     ],
 )
 
@@ -33,5 +34,6 @@ npm_package(
     srcs = [
         "package.json",
     ],
+    tags = ["release-with-framework"],
     deps = [":compiler-cli"],
 )

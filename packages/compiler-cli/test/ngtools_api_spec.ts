@@ -6,10 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {__NGTOOLS_PRIVATE_API_2 as NgTools_InternalApi_NG_2} from '@angular/compiler-cli';
 import * as path from 'path';
 import * as ts from 'typescript';
-
-import {NgTools_InternalApi_NG_2} from '../src/ngtools_api';
 
 import {TestSupport, setup} from './test_support';
 

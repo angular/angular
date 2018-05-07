@@ -36,6 +36,20 @@ The Angular CLI generated a new project with a default application and supportin
 -->
 Angular CLI가 기본 애플리케이션과 필요한 파일들을 포함한 새로운 프로젝트를 생성하였습니다. 
 
+
+<div class="l-sub-section">
+
+
+
+You can add pre-packaged functionality to a new project by using the `ng add` command. The `ng add` command transforms a project by applying the schematics in the specified package. 
+For more information, see the [Angular CLI documentation.](https://github.com/angular/angular-cli/wiki/add "Angular CLI documentation") 
+
+Angular Material provides schematics for typical app layouts. 
+See the [Angular Material documentation](https://material.angular.io/guides "Angular Material documentation") for details.
+
+</div>
+
+
 <!--
 ## Serve the application
 -->

@@ -311,11 +311,11 @@ so the <code>@Directive</code> configuration applies to components as well</p>
 </td>
 </tr><tr>
 <td><code><b>ngAfterViewInit()</b> { ... }</code></td>
-<td><p>Called after <code>ngAfterContentInit</code> when the component's view has been initialized. Applies to components only.</p>
+<td><p>Called after <code>ngAfterContentInit</code> when the component's views and child views / the view that a directive is in has been initialized.</p>
 </td>
 </tr><tr>
 <td><code><b>ngAfterViewChecked()</b> { ... }</code></td>
-<td><p>Called after every check of the component's view. Applies to components only.</p>
+<td><p>Called after every check of the component's views and child views / the view that a directive is in.</p>
 </td>
 </tr><tr>
 <td><code><b>ngOnDestroy()</b> { ... }</code></td>

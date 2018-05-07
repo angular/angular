@@ -14,9 +14,9 @@ import {ChildrenOutletContexts, ExtraOptions, NoPreloading, PreloadingStrategy, 
 
 
 /**
- * @whatItDoes Allows to simulate the loading of ng modules in tests.
+ * @description
  *
- * @howToUse
+ * Allows to simulate the loading of ng modules in tests.
  *
  * ```
  * const loader = TestBed.get(NgModuleFactoryLoader);
@@ -40,7 +40,7 @@ import {ChildrenOutletContexts, ExtraOptions, NoPreloading, PreloadingStrategy, 
  * router.navigateByUrl('/lazy/loaded');
  * ```
  *
- * @stable
+ *
  */
 @Injectable()
 export class SpyNgModuleFactoryLoader implements NgModuleFactoryLoader {
@@ -86,7 +86,7 @@ function isUrlHandlingStrategy(opts: ExtraOptions | UrlHandlingStrategy):
 /**
  * Router setup factory function used for testing.
  *
- * @stable
+ *
  */
 export function setupTestingRouter(
     urlSerializer: UrlSerializer, contexts: ChildrenOutletContexts, location: Location,
@@ -107,7 +107,7 @@ export function setupTestingRouter(
 /**
  * Router setup factory function used for testing.
  *
- * @stable
+ *
  */
 export function setupTestingRouter(
     urlSerializer: UrlSerializer, contexts: ChildrenOutletContexts, location: Location,
@@ -131,9 +131,15 @@ export function setupTestingRouter(
 }
 
 /**
- * @whatItDoes Sets up the router to be used for testing.
+ * @description
  *
- * @howToUse
+ * Sets up the router to be used for testing.
+ *
+ * The modules sets up the router to be used for testing.
+ * It provides spy implementations of `Location`, `LocationStrategy`, and {@link
+ * NgModuleFactoryLoader}.
+ *
+ * ### Example
  *
  * ```
  * beforeEach(() => {
@@ -147,13 +153,7 @@ export function setupTestingRouter(
  * });
  * ```
  *
- * @description
  *
- * The modules sets up the router to be used for testing.
- * It provides spy implementations of {@link Location}, {@link LocationStrategy}, and {@link
- * NgModuleFactoryLoader}.
- *
- * @stable
  */
 @NgModule({
   exports: [RouterModule],

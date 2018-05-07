@@ -57,19 +57,19 @@ if they are not already on your machine.
 <div class="l-sub-section">
 
 <!--
-**Verify that you are running at least node `6.9.x` and npm `3.x.x`**
+**Verify that you are running at least Node.js version `8.x` or greater and npm version `5.x` or greater**
 by running `node -v` and `npm -v` in a terminal/console window.
 Older versions produce errors, but newer versions are fine.
 -->
-터미널이나 콘솔창에서 `node -v` 명령과 `npm -v` 명령을 실행하면 버전을 확인할 수 있습니다. 이 때 **node.js 버전은 `6.9.x` 이상, npm 버전은 `3.x.x` 이상**을 권장합니다.
+터미널이나 콘솔창에서 `node -v` 명령과 `npm -v` 명령을 실행하면 버전을 확인할 수 있습니다. 이 때 **node.js 버전은 `8.x` 이상, npm 버전은 `5.x` 이상**을 권장합니다.
 이전 버전에서는 일부 동작에서 에러가 발생할 수 있습니다.
 
 </div>
 
 <!--
-Then **install the [Angular CLI](https://github.com/angular/angular-cli)** globally.
+Then install the [Angular CLI](https://github.com/angular/angular-cli) globally.
 -->
-그리고 **[Angular CLI](https://github.com/angular/angular-cli)**를 전역으로 설치합니다.
+그리고 [Angular CLI](https://github.com/angular/angular-cli)를 전역으로 설치합니다.
 
 
 <code-example language="sh" class="code-shell">
@@ -94,7 +94,7 @@ Open a terminal window.
 터미널 창을 엽니다.
 
 <!--
-Generate a new project and skeleton application by running the following commands:
+Generate a new project and default app by running the following command:
 -->
 그리고 다음 명령을 실행하면 애플리케이션의 기본 틀을 구성하면서 프로젝트를 생성합니다:
 
@@ -104,14 +104,20 @@ Generate a new project and skeleton application by running the following command
 </code-example>
 
 
+The Angular CLI installs the necessary npm packages, creates the project files, and populates the project with a simple default app. This can take some time.
+
+
 
 <div class="l-sub-section">
 
-<!--
-Patience, please.
-It takes time to set up a new project; most of it is spent installing npm packages.
--->
-새 프로젝트를 생성하는 과정은 시간이 오래 걸립니다. 이 중 대부분은 npm 패키지를 설치하는 시간입니다.
+
+
+You can add pre-packaged functionality to a new project by using the `ng add` command. The `ng add` command transforms a project by applying the schematics in the specified package. 
+For more information, see the [Angular CLI documentation.](https://github.com/angular/angular-cli/wiki/add "Angular CLI documentation") 
+
+Angular Material provides schematics for typical app layouts. 
+See the [Angular Material documentation](https://material.angular.io/guides "Angular Material documentation") for details.
+
 
 </div>
 
@@ -287,14 +293,17 @@ Any files outside of this folder are meant to support building your app.
       <div class="file">environment.prod.ts</div>
       <div class="file">environment.ts</div>
     </div>
+    <div class="file">browserslist</div>
     <div class="file">favicon.ico</div>
     <div class="file">index.html</div>
+    <div class="file">karma.conf.js</div>
     <div class="file">main.ts</div>
     <div class="file">polyfills.ts</div>
     <div class="file">styles.css</div>
     <div class="file">test.ts</div>
     <div class="file">tsconfig.app.json</div>
     <div class="file">tsconfig.spec.json</div>
+    <div class="file">tslint.json</div>
   </div>
 </div>
 
@@ -400,6 +409,18 @@ Any files outside of this folder are meant to support building your app.
   <tr>
     <td>
 
+      `browserslist`
+
+    </td>
+    <td>
+
+      A configuration file to share [target browsers](https://github.com/browserslist/browserslist) between different front-end tools.
+
+    </td>
+  </tr>
+  <tr>
+    <td>
+
       `favicon.ico`
 
     </td>
@@ -431,6 +452,19 @@ Any files outside of this folder are meant to support building your app.
 
     </td>
   </tr>
+  <tr>
+    <td>
+
+      `karma.conf.js`
+
+    </td>
+    <td>
+
+      Unit test configuration for the [Karma test runner](https://karma-runner.github.io),
+      used when running `ng test`.
+
+    </td>
+  </tr>  
   <tr>
     <td>
 
@@ -521,6 +555,20 @@ Any files outside of this folder are meant to support building your app.
 
     </td>
   </tr>
+  <tr>
+    <td>
+
+      `tslint.json`
+
+    </td>
+    <td>
+
+      Additional Linting configuration for [TSLint](https://palantir.github.io/tslint/) together with
+      [Codelyzer](http://codelyzer.com/), used when running `ng lint`.
+      Linting helps keep your code style consistent.
+
+    </td>
+  </tr>  
 </table>
 
 <!--
@@ -541,18 +589,23 @@ These files go in the root folder next to `src/`.
   <div class='children'>
     <div class="file">e2e</div>
     <div class='children'>
-      <div class="file">app.e2e-spec.ts</div>
-      <div class="file">app.po.ts</div>
+      <div class="file">src</div>
+      <div class='children'>
+        <div class="file">app.e2e-spec.ts</div>
+        <div class="file">app.po.ts</div>
+      </div>      
       <div class="file">tsconfig.e2e.json</div>
+      <div class="file">protractor.conf.js</div>
     </div>
     <div class="file">node_modules/...</div>
     <div class="file">src/...</div>
-    <div class="file">.angular-cli.json</div>
+    <div class='children'>
+      <div class="file">karma.conf.js</div>
+    </div>    
     <div class="file">.editorconfig</div>
     <div class="file">.gitignore</div>
-    <div class="file">karma.conf.js</div>
+    <div class="file">angular.json</div>
     <div class="file">package.json</div>
-    <div class="file">protractor.conf.js</div>
     <div class="file">README.md</div>
     <div class="file">tsconfig.json</div>
     <div class="file">tslint.json</div>
@@ -623,25 +676,6 @@ These files go in the root folder next to `src/`.
   <tr>
     <td>
 
-      `.angular-cli.json`
-
-    </td>
-    <td>
-
-      <!--
-      Configuration for Angular CLI.
-      In this file you can set several defaults and also configure what files are included
-      when your project is built.
-      Check out the official documentation if you want to know more.
-      -->
-      Angular CLI 설정 파일이며, 프로젝트를 빌드할 때 필요한 설정을 정의합니다.
-      좀 더 자세한 내용을 확인하려면 Angular CLI 공식 문서를 확인해 보세요.
-
-    </td>
-  </tr>
-  <tr>
-    <td>
-
       `.editorconfig`
 
     </td>
@@ -676,16 +710,15 @@ These files go in the root folder next to `src/`.
   <tr>
     <td>
 
-      `karma.conf.js`
+      `angular.json`
 
     </td>
     <td>
 
-      <!--
-      Unit test configuration for the [Karma test runner](https://karma-runner.github.io),
-      used when running `ng test`.
-      -->
-      `ng test` 명령으로 [Karma 테스트 러너](https://karma-runner.github.io)를 실행할 때 필요한 환경 설정 파일입니다.
+      Configuration for Angular CLI.
+      In this file you can set several defaults and also configure what files are included
+      when your project is built.
+      Check out the official documentation if you want to know more.
 
     </td>
   </tr>

@@ -4,11 +4,8 @@ import { Directive, ElementRef, EventEmitter, Output } from '@angular/core';
 
 @Directive({selector: '[myClick]'})
 export class ClickDirective {
-  // #docregion output-myClick!
-  // @Output('myClick') clicks = new EventEmitter<string>(); //  @Output(alias) propertyName = ...
- // #enddocregion output-myClick!
- // #docregion output-myClick
-  @Output('myClick') clicks = new EventEmitter<string>(); //  @Output(다른 이름) 프로퍼티 이름 = ...
+  // #docregion output-myClick
+  @Output('myClick') clicks = new EventEmitter<string>(); //  @Output(alias) propertyName = ...
  // #enddocregion output-myClick
 
   toggle = false;
@@ -26,12 +23,8 @@ export class ClickDirective {
 @Directive({
   // #enddocregion output-myClick2
   selector: '[myClick2]',
-  // #docregion output-myClick2!
-  // outputs: ['clicks:myClick']  // propertyName:alias
-// })
-// #enddocregion output-myClick2!
-// #docregion output-myClick2
-  outputs: ['clicks:myClick']  // 프로퍼티 이름:다른 이름
+  // #docregion output-myClick2
+  outputs: ['clicks:myClick']  // propertyName:alias
 })
 // #enddocregion output-myClick2
 export class ClickDirective2 {

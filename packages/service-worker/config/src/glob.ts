@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-const WILD_SINGLE = '[^\\/]+';
+const WILD_SINGLE = '[^\\/]*';
 const WILD_OPEN = '(?:.+\\/)?';
 
 const TO_ESCAPE = [

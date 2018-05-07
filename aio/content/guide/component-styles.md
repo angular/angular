@@ -418,9 +418,9 @@ In this case, the URL is relative to the CSS file into which you're importing.
 ### 전역 스타일 파일
 
 <!--
-When building with the CLI, you must configure the `.angular-cli.json` to include _all external assets_, including external style files.
+When building with the CLI, you must configure the `angular.json` to include _all external assets_, including external style files.
 -->
-Angular CLI로 애플리케이션의 빌드 설정 파일인 `.angular-cli.json` 파일은 빌드에 포함될 _모든 외부 자원_ 을 지정하는데, 이 때 외부 스타일 파일을 지정할 수도 있습니다.
+Angular CLI로 애플리케이션의 빌드 설정 파일인 `angular.json` 파일은 빌드에 포함될 _모든 외부 자원_ 을 지정하는데, 이 때 외부 스타일 파일을 지정할 수도 있습니다.
 
 <!--
 Register **global** style files in the `styles` section which, by default, is pre-configured with the global `styles.css` file.

@@ -21,7 +21,7 @@ export class SitePage {
 
   getNavItem(pattern: RegExp) {
     return element.all(by.css('aio-nav-item .vertical-menu-item'))
-                  .filter(element => element.getText().then(text => pattern.test(text)))
+                  .filter(elementFinder => elementFinder.getText().then(text => pattern.test(text)))
                   .first();
   }
   getNavItemHeadings(parent: ElementFinder, level: number) {
@@ -49,10 +49,10 @@ export class SitePage {
     return this.docViewer.getText();
   }
 
-  getInnerHtml(element) {
+  getInnerHtml(elementFinder) {
     // `getInnerHtml` was removed from webDriver and this is the workaround.
     // See https://github.com/angular/protractor/blob/master/CHANGELOG.md#breaking-changes
-    return browser.executeScript('return arguments[0].innerHTML;', element);
+    return browser.executeScript('return arguments[0].innerHTML;', elementFinder);
   }
 
   getScrollTop() {
@@ -63,8 +63,8 @@ export class SitePage {
     return browser.executeScript('window.scrollTo(0, document.body.scrollHeight)');
   }
 
-  click(element: ElementFinder) {
-    return element.click().then(() => browser.waitForAngular());
+  click(elementFinder: ElementFinder) {
+    return elementFinder.click().then(() => browser.waitForAngular());
   }
 
   enterSearch(query: string) {

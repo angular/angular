@@ -24,7 +24,7 @@ export const CHECKBOX_VALUE_ACCESSOR: any = {
  *  <input type="checkbox" name="rememberLogin" ngModel>
  *  ```
  *
- *  @stable
+ *
  */
 @Directive({
   selector:

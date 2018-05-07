@@ -99,6 +99,7 @@ export enum BinaryOperator {
   Modulo,
   And,
   Or,
+  BitwiseAnd,
   Lower,
   LowerEquals,
   Bigger,
@@ -207,6 +208,10 @@ export abstract class Expression {
   and(rhs: Expression, sourceSpan?: ParseSourceSpan|null): BinaryOperatorExpr {
     return new BinaryOperatorExpr(BinaryOperator.And, this, rhs, null, sourceSpan);
   }
+  bitwiseAnd(rhs: Expression, sourceSpan?: ParseSourceSpan|null, parens: boolean = true):
+      BinaryOperatorExpr {
+    return new BinaryOperatorExpr(BinaryOperator.BitwiseAnd, this, rhs, null, sourceSpan, parens);
+  }
   or(rhs: Expression, sourceSpan?: ParseSourceSpan|null): BinaryOperatorExpr {
     return new BinaryOperatorExpr(BinaryOperator.Or, this, rhs, null, sourceSpan);
   }
@@ -274,6 +279,21 @@ export class ReadVarExpr extends Expression {
   }
 }
 
+export class WrappedNodeExpr<T> extends Expression {
+  constructor(public node: T, type?: Type|null, sourceSpan?: ParseSourceSpan|null) {
+    super(type, sourceSpan);
+  }
+
+  isEquivalent(e: Expression): boolean {
+    return e instanceof WrappedNodeExpr && this.node === e.node;
+  }
+
+  isConstant() { return false; }
+
+  visitExpression(visitor: ExpressionVisitor, context: any): any {
+    return visitor.visitWrappedNodeExpr(this, context);
+  }
+}
 
 export class WriteVarExpr extends Expression {
   public value: Expression;
@@ -569,7 +589,7 @@ export class BinaryOperatorExpr extends Expression {
   public lhs: Expression;
   constructor(
       public operator: BinaryOperator, lhs: Expression, public rhs: Expression, type?: Type|null,
-      sourceSpan?: ParseSourceSpan|null) {
+      sourceSpan?: ParseSourceSpan|null, public parens: boolean = true) {
     super(type || lhs.type, sourceSpan);
     this.lhs = lhs;
   }
@@ -717,6 +737,7 @@ export interface ExpressionVisitor {
   visitLiteralArrayExpr(ast: LiteralArrayExpr, context: any): any;
   visitLiteralMapExpr(ast: LiteralMapExpr, context: any): any;
   visitCommaExpr(ast: CommaExpr, context: any): any;
+  visitWrappedNodeExpr(ast: WrappedNodeExpr<any>, context: any): any;
 }
 
 export const THIS_EXPR = new ReadVarExpr(BuiltinVar.This, null, null);
@@ -968,6 +989,10 @@ export class AstTransformer implements StatementVisitor, ExpressionVisitor {
 
   visitReadVarExpr(ast: ReadVarExpr, context: any): any { return this.transformExpr(ast, context); }
 
+  visitWrappedNodeExpr(ast: WrappedNodeExpr<any>, context: any): any {
+    return this.transformExpr(ast, context);
+  }
+
   visitWriteVarExpr(expr: WriteVarExpr, context: any): any {
     return this.transformExpr(
         new WriteVarExpr(
@@ -1194,6 +1219,7 @@ export class RecursiveAstVisitor implements StatementVisitor, ExpressionVisitor 
   }
   visitArrayType(type: ArrayType, context: any): any { return this.visitType(type, context); }
   visitMapType(type: MapType, context: any): any { return this.visitType(type, context); }
+  visitWrappedNodeExpr(ast: WrappedNodeExpr<any>, context: any): any { return ast; }
   visitReadVarExpr(ast: ReadVarExpr, context: any): any {
     return this.visitExpression(ast, context);
   }
@@ -1483,6 +1509,10 @@ export function ifStmt(condition: Expression, thenClause: Statement[], elseClaus
 export function literal(
     value: any, type?: Type | null, sourceSpan?: ParseSourceSpan | null): LiteralExpr {
   return new LiteralExpr(value, type, sourceSpan);
+}
+
+export function isNull(exp: Expression): boolean {
+  return exp instanceof LiteralExpr && exp.value === null;
 }
 
 // The list of JSDoc tags that we currently support. Extend it if needed.

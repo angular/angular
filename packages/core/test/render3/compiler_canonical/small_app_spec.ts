@@ -7,7 +7,7 @@
  */
 
 import {NgForOf, NgForOfContext} from '@angular/common';
-import {Component, ContentChild, Directive, EventEmitter, Injectable, InjectableDef, InjectorDef, Input, NgModule, OnDestroy, Optional, Output, Pipe, PipeTransform, QueryList, SimpleChanges, TemplateRef, Type, ViewChild, ViewContainerRef, defineInjectable, defineInjector} from '@angular/core';
+import {Component, ContentChild, Directive, EventEmitter, Injectable, Input, NgModule, OnDestroy, Optional, Output, Pipe, PipeTransform, QueryList, SimpleChanges, TemplateRef, Type, ViewChild, ViewContainerRef, defineInjectable, defineInjector} from '@angular/core';
 import {withBody} from '@angular/core/testing';
 
 import * as r3 from '../../../src/render3/index';
@@ -20,6 +20,8 @@ interface ToDo {
   text: string;
   done: boolean;
 }
+
+type $RenderFlags$ = r3.RenderFlags;
 
 @Injectable()
 class AppState {
@@ -58,20 +60,22 @@ class ToDoAppComponent {
   // NORMATIVE
   static ngComponentDef = r3.defineComponent({
     type: ToDoAppComponent,
-    selector: [[['todo-app'], null]],
+    selectors: [['todo-app']],
     factory: function ToDoAppComponent_Factory() {
       return new ToDoAppComponent(r3.directiveInject(AppState));
     },
-    template: function ToDoAppComponent_Template(ctx: ToDoAppComponent, cm: boolean) {
-      if (cm) {
+    template: function ToDoAppComponent_Template(rf: $RenderFlags$, ctx: ToDoAppComponent) {
+      if (rf & 1) {
         const ToDoAppComponent_NgForOf_Template = function ToDoAppComponent_NgForOf_Template(
-            ctx1: NgForOfContext<ToDo>, cm: boolean) {
-          if (cm) {
+            rf: $RenderFlags$, ctx1: NgForOfContext<ToDo>) {
+          if (rf & 1) {
             r3.E(0, 'todo');
             r3.L('archive', ctx.onArchive.bind(ctx));
             r3.e();
           }
-          r3.p(0, 'todo', r3.b(ctx1.$implicit));
+          if (rf & 2) {
+            r3.p(0, 'todo', r3.b(ctx1.$implicit));
+          }
         };
         r3.E(0, 'h1');
         r3.T(1, 'ToDo Application');
@@ -83,14 +87,16 @@ class ToDoAppComponent {
         r3.T(5);
         r3.e();
       }
-      r3.t(5, r3.i1('count: ', ctx.appState.todos.length, ''));
+      if (rf & 2) {
+        r3.t(5, r3.i1('count: ', ctx.appState.todos.length, ''));
+      }
     }
   });
   // /NORMATIVE
 }
 
 // NON-NORMATIVE
-ToDoAppComponent.ngComponentDef.directiveDefs = () =>
+(ToDoAppComponent.ngComponentDef as r3.ComponentDef<any>).directiveDefs = () =>
     [ToDoItemComponent.ngComponentDef, (NgForOf as r3.DirectiveType<NgForOf<any>>).ngDirectiveDef];
 // /NON-NORMATIVE
 
@@ -123,10 +129,10 @@ class ToDoItemComponent {
   // NORMATIVE
   static ngComponentDef = r3.defineComponent({
     type: ToDoItemComponent,
-    selector: [[['todo'], null]],
+    selectors: [['todo']],
     factory: function ToDoItemComponent_Factory() { return new ToDoItemComponent(); },
-    template: function ToDoItemComponent_Template(ctx: ToDoItemComponent, cm: boolean) {
-      if (cm) {
+    template: function ToDoItemComponent_Template(rf: $RenderFlags$, ctx: ToDoItemComponent) {
+      if (rf & 1) {
         r3.E(0, 'div');
         r3.E(1, 'input', e1_attrs);
         r3.L('click', ctx.onCheckboxClick.bind(ctx));
@@ -140,8 +146,10 @@ class ToDoItemComponent {
         r3.e();
         r3.e();
       }
-      r3.p(1, 'value', r3.b(ctx.todo.done));
-      r3.t(3, r3.b(ctx.todo.text));
+      if (rf & 2) {
+        r3.p(1, 'value', r3.b(ctx.todo.done));
+        r3.t(3, r3.b(ctx.todo.text));
+      }
     },
     inputs: {todo: 'todo'},
   });

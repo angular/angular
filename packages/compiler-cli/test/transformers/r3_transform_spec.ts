@@ -8,8 +8,8 @@
 
 import {PartialModule} from '@angular/compiler';
 import * as o from '@angular/compiler/src/output/output_ast';
-import {MockAotCompilerHost} from 'compiler/test/aot/test_util';
-import {initDomAdapter} from 'platform-browser/src/browser';
+import {MockAotCompilerHost} from '@angular/compiler/test/aot/test_util';
+import {initDomAdapter} from '@angular/platform-browser/src/browser';
 import * as ts from 'typescript';
 
 import {getAngularClassTransformerFactory} from '../../src/transformers/r3_transform';

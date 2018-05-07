@@ -21,5 +21,4 @@ export declare class UpgradeAdapterRef {
     ready(fn: (upgradeAdapterRef: UpgradeAdapterRef) => void): void;
 }
 
-/** @stable */
 export declare const VERSION: Version;

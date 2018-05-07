@@ -9,26 +9,23 @@
 // THIS CODE IS GENERATED - DO NOT MODIFY
 // See angular/tools/gulp-tasks/cldr/extract.js
 
+const u = undefined;
+
 function plural(n: number): number {
   return 5;
 }
 
 export default [
-  'my',
-  [
-    ['နံနက်', 'ညနေ'],
-    ,
-  ],
-  ,
+  'my', [['နံနက်', 'ညနေ'], u, u], u,
   [
     ['တ', 'တ', 'အ', 'ဗ', 'က', 'သ', 'စ'],
     [
       'တနင်္ဂနွေ', 'တနင်္လာ', 'အင်္ဂါ',
       'ဗုဒ္ဓဟူး', 'ကြာသပတေး', 'သောကြာ', 'စနေ'
     ],
-    ,
+    u, u
   ],
-  ,
+  u,
   [
     ['ဇ', 'ဖ', 'မ', 'ဧ', 'မ', 'ဇ', 'ဇ', 'ဩ', 'စ', 'အ', 'န', 'ဒ'],
     [
@@ -42,18 +39,13 @@ export default [
       'ဒီဇင်ဘာ'
     ]
   ],
-  ,
+  u,
   [
-    ['ဘီစီ', 'အေဒီ'], ,
+    ['ဘီစီ', 'အေဒီ'], u,
     ['ခရစ်တော် မပေါ်မီနှစ်', 'ခရစ်နှစ်']
   ],
   0, [6, 0], ['dd-MM-yy', 'y၊ MMM d', 'y၊ d MMMM', 'y၊ MMMM d၊ EEEE'],
-  ['B H:mm', 'B HH:mm:ss', 'z HH:mm:ss', 'zzzz HH:mm:ss'],
-  [
-    '{1} {0}',
-    ,
-    ,
-  ],
+  ['B H:mm', 'B HH:mm:ss', 'z HH:mm:ss', 'zzzz HH:mm:ss'], ['{1} {0}', u, u, u],
   [
     '.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞',
     'ဂဏန်းမဟုတ်သော', ':'
@@ -61,8 +53,8 @@ export default [
   ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'], 'K', 'မြန်မာ ကျပ်', {
     'ANG': ['NAf'],
     'AWG': ['Afl'],
-    'BBD': [, 'Bds$'],
-    'BSD': [, 'B$'],
+    'BBD': [u, 'Bds$'],
+    'BSD': [u, 'B$'],
     'HTG': ['G'],
     'JPY': ['JP¥', '¥'],
     'MMK': ['K'],

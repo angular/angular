@@ -6,33 +6,45 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ChangeDetectionStrategy} from '../../change_detection/constants';
-import {PipeTransform} from '../../change_detection/pipe_transform';
 import {Provider} from '../../core';
 import {RendererType2} from '../../render/api';
 import {Type} from '../../type';
-import {resolveRendererType2} from '../../view/util';
-import {CssSelector} from './projection';
-
+import {CssSelectorList} from './projection';
 
 /**
  * Definition of what a template rendering function should look like.
  */
 export type ComponentTemplate<T> = {
-  (ctx: T, creationMode: boolean): void; ngPrivateData?: never;
+  (rf: RenderFlags, ctx: T): void; ngPrivateData?: never;
 };
+
+/**
+ * Flags passed into template functions to determine which blocks (i.e. creation, update)
+ * should be executed.
+ *
+ * Typically, a template runs both the creation block and the update block on initialization and
+ * subsequent runs only execute the update block. However, dynamically created views require that
+ * the creation block be executed separately from the update block (for backwards compat).
+ */
+export const enum RenderFlags {
+  /* Whether to run the creation block (e.g. create elements and directives) */
+  Create = 0b01,
+
+  /* Whether to run the update block (e.g. refresh bindings) */
+  Update = 0b10
+}
 
 /**
  * A subclass of `Type` which has a static `ngComponentDef`:`ComponentDef` field making it
  * consumable for rendering.
  */
-export interface ComponentType<T> extends Type<T> { ngComponentDef: ComponentDef<T>; }
+export interface ComponentType<T> extends Type<T> { ngComponentDef: never; }
 
 /**
  * A subclass of `Type` which has a static `ngDirectiveDef`:`DirectiveDef` field making it
  * consumable for rendering.
  */
-export interface DirectiveType<T> extends Type<T> { ngDirectiveDef: DirectiveDef<T>; }
+export interface DirectiveType<T> extends Type<T> { ngDirectiveDef: never; }
 
 export const enum DirectiveDefFlags {ContentQuery = 0b10}
 
@@ -40,7 +52,7 @@ export const enum DirectiveDefFlags {ContentQuery = 0b10}
  * A subclass of `Type` which has a static `ngPipeDef`:`PipeDef` field making it
  * consumable for rendering.
  */
-export interface PipeType<T> extends Type<T> { ngPipeDef: PipeDef<T>; }
+export interface PipeType<T> extends Type<T> { ngPipeDef: never; }
 
 /**
  * Runtime link information for Directives.
@@ -61,8 +73,8 @@ export interface DirectiveDef<T> {
   /** Function that makes a directive public to the DI system. */
   diPublic: ((def: DirectiveDef<any>) => void)|null;
 
-  /** The selector that will be used to match nodes to this directive. */
-  selector: CssSelector;
+  /** The selectors that will be used to match nodes to this directive. */
+  selectors: CssSelectorList;
 
   /**
    * A dictionary mapping the inputs' minified property names to their public API names, which
@@ -161,6 +173,14 @@ export interface ComponentDef<T> extends DirectiveDef<T> {
    * `DirectiveDef`s. The function is necessary to be able to support forward declarations.
    */
   directiveDefs: DirectiveDefListOrFactory|null;
+
+  /**
+   * Registry of pipes that may be found in this view.
+   *
+   * The property is either an array of `PipeDefs`s or a function which returns the array of
+   * `PipeDefs`s. The function is necessary to be able to support forward declarations.
+   */
+  pipeDefs: PipeDefListOrFactory|null;
 }
 
 /**
@@ -176,6 +196,13 @@ export interface ComponentDef<T> extends DirectiveDef<T> {
  * See: {@link definePipe}
  */
 export interface PipeDef<T> {
+  /**
+   * Pipe name.
+   *
+   * Used to resolve pipe in templates.
+   */
+  name: string;
+
   /**
    * factory function used to create a new directive instance.
    *
@@ -207,6 +234,27 @@ export type ComponentDefFeature = <T>(componentDef: ComponentDef<T>) => void;
 export type DirectiveDefListOrFactory = (() => DirectiveDefList) | DirectiveDefList;
 
 export type DirectiveDefList = (DirectiveDef<any>| ComponentDef<any>)[];
+
+export type DirectiveTypesOrFactory = (() => DirectiveTypeList) | DirectiveTypeList;
+
+export type DirectiveTypeList =
+    (DirectiveDef<any>| ComponentDef<any>|
+     Type<any>/* Type as workaround for: Microsoft/TypeScript/issues/4881 */)[];
+
+/**
+ * Type used for PipeDefs on component definition.
+ *
+ * The function is necessary to be able to support forward declarations.
+ */
+export type PipeDefListOrFactory = (() => PipeDefList) | PipeDefList;
+
+export type PipeDefList = PipeDef<any>[];
+
+export type PipeTypesOrFactory = (() => DirectiveTypeList) | DirectiveTypeList;
+
+export type PipeTypeList =
+    (PipeDef<any>| Type<any>/* Type as workaround for: Microsoft/TypeScript/issues/4881 */)[];
+
 
 // Note: This hack is necessary so we don't erroneously get a circular dependency
 // failure based on types.

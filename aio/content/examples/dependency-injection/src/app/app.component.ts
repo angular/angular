@@ -21,6 +21,7 @@ import { UserService } from './user.service';
     <p>
     <app-heroes id="authorized" *ngIf="isAuthorized"></app-heroes>
     <app-heroes id="unauthorized" *ngIf="!isAuthorized"></app-heroes>
+    <app-heroes-tsp id="tspAuthorized" *ngIf="isAuthorized"></app-heroes-tsp>
     <app-providers></app-providers>
   `
 })

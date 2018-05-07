@@ -1,12 +1,9 @@
-/** @stable */
 export declare const HTTP_INTERCEPTORS: InjectionToken<HttpInterceptor[]>;
 
-/** @stable */
 export declare abstract class HttpBackend implements HttpHandler {
     abstract handle(req: HttpRequest<any>): Observable<HttpEvent<any>>;
 }
 
-/** @stable */
 export declare class HttpClient {
     constructor(handler: HttpHandler);
     delete<T>(url: string, options?: {
@@ -1478,15 +1475,12 @@ export declare class HttpClient {
     }): Observable<any>;
 }
 
-/** @stable */
 export declare class HttpClientJsonpModule {
 }
 
-/** @stable */
 export declare class HttpClientModule {
 }
 
-/** @stable */
 export declare class HttpClientXsrfModule {
     static disable(): ModuleWithProviders;
     static withOptions(options?: {
@@ -1495,13 +1489,11 @@ export declare class HttpClientXsrfModule {
     }): ModuleWithProviders;
 }
 
-/** @stable */
 export interface HttpDownloadProgressEvent extends HttpProgressEvent {
     partialText?: string;
     type: HttpEventType.DownloadProgress;
 }
 
-/** @stable */
 export declare class HttpErrorResponse extends HttpResponseBase implements Error {
     readonly error: any | null;
     readonly message: string;
@@ -1516,10 +1508,8 @@ export declare class HttpErrorResponse extends HttpResponseBase implements Error
     });
 }
 
-/** @stable */
 export declare type HttpEvent<T> = HttpSentEvent | HttpHeaderResponse | HttpResponse<T> | HttpProgressEvent | HttpUserEvent<T>;
 
-/** @stable */
 export declare enum HttpEventType {
     Sent = 0,
     UploadProgress = 1,
@@ -1529,12 +1519,10 @@ export declare enum HttpEventType {
     User = 5,
 }
 
-/** @stable */
 export declare abstract class HttpHandler {
     abstract handle(req: HttpRequest<any>): Observable<HttpEvent<any>>;
 }
 
-/** @stable */
 export declare class HttpHeaderResponse extends HttpResponseBase {
     readonly type: HttpEventType.ResponseHeader;
     constructor(init?: {
@@ -1551,7 +1539,6 @@ export declare class HttpHeaderResponse extends HttpResponseBase {
     }): HttpHeaderResponse;
 }
 
-/** @stable */
 export declare class HttpHeaders {
     constructor(headers?: string | {
         [name: string]: string | string[];
@@ -1565,12 +1552,10 @@ export declare class HttpHeaders {
     set(name: string, value: string | string[]): HttpHeaders;
 }
 
-/** @stable */
 export interface HttpInterceptor {
     intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>>;
 }
 
-/** @stable */
 export interface HttpParameterCodec {
     decodeKey(key: string): string;
     decodeValue(value: string): string;
@@ -1578,7 +1563,6 @@ export interface HttpParameterCodec {
     encodeValue(value: string): string;
 }
 
-/** @stable */
 export declare class HttpParams {
     constructor(options?: HttpParamsOptions);
     append(param: string, value: string): HttpParams;
@@ -1591,14 +1575,12 @@ export declare class HttpParams {
     toString(): string;
 }
 
-/** @stable */
 export interface HttpProgressEvent {
     loaded: number;
     total?: number;
     type: HttpEventType.DownloadProgress | HttpEventType.UploadProgress;
 }
 
-/** @stable */
 export declare class HttpRequest<T> {
     readonly body: T | null;
     readonly headers: HttpHeaders;
@@ -1667,7 +1649,6 @@ export declare class HttpRequest<T> {
     serializeBody(): ArrayBuffer | Blob | FormData | string | null;
 }
 
-/** @stable */
 export declare class HttpResponse<T> extends HttpResponseBase {
     readonly body: T | null;
     readonly type: HttpEventType.Response;
@@ -1694,7 +1675,6 @@ export declare class HttpResponse<T> extends HttpResponseBase {
     }): HttpResponse<V>;
 }
 
-/** @stable */
 export declare abstract class HttpResponseBase {
     readonly headers: HttpHeaders;
     readonly ok: boolean;
@@ -1710,12 +1690,10 @@ export declare abstract class HttpResponseBase {
     }, defaultStatus?: number, defaultStatusText?: string);
 }
 
-/** @stable */
 export interface HttpSentEvent {
     type: HttpEventType.Sent;
 }
 
-/** @stable */
 export declare class HttpUrlEncodingCodec implements HttpParameterCodec {
     decodeKey(k: string): string;
     decodeValue(v: string): string;
@@ -1723,35 +1701,29 @@ export declare class HttpUrlEncodingCodec implements HttpParameterCodec {
     encodeValue(v: string): string;
 }
 
-/** @stable */
 export interface HttpUserEvent<T> {
     type: HttpEventType.User;
 }
 
-/** @stable */
 export declare class HttpXhrBackend implements HttpBackend {
     constructor(xhrFactory: XhrFactory);
     handle(req: HttpRequest<any>): Observable<HttpEvent<any>>;
 }
 
-/** @stable */
 export declare abstract class HttpXsrfTokenExtractor {
     abstract getToken(): string | null;
 }
 
-/** @stable */
 export declare class JsonpClientBackend implements HttpBackend {
     constructor(callbackMap: JsonpCallbackContext, document: any);
     handle(req: HttpRequest<never>): Observable<HttpEvent<any>>;
 }
 
-/** @stable */
 export declare class JsonpInterceptor {
     constructor(jsonp: JsonpClientBackend);
     intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>>;
 }
 
-/** @stable */
 export declare abstract class XhrFactory {
     abstract build(): XMLHttpRequest;
 }

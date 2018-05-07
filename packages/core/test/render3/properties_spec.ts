@@ -9,19 +9,21 @@
 import {EventEmitter} from '@angular/core';
 
 import {defineComponent, defineDirective, tick} from '../../src/render3/index';
-import {NO_CHANGE, bind, container, containerRefreshEnd, containerRefreshStart, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, interpolation1, listener, loadDirective, text, textBinding} from '../../src/render3/instructions';
-
-import {ComponentFixture, TemplateFixture, createComponent, renderToHtml} from './render_util';
+import {NO_CHANGE, bind, container, containerRefreshEnd, containerRefreshStart, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, interpolation1, listener, load, loadDirective, text, textBinding} from '../../src/render3/instructions';
+import {RenderFlags} from '../../src/render3/interfaces/definition';
+import {ComponentFixture, renderToHtml} from './render_util';
 
 describe('elementProperty', () => {
 
   it('should support bindings to properties', () => {
-    function Template(ctx: any, cm: boolean) {
-      if (cm) {
+    function Template(rf: RenderFlags, ctx: any) {
+      if (rf & RenderFlags.Create) {
         elementStart(0, 'span');
         elementEnd();
       }
-      elementProperty(0, 'id', bind(ctx));
+      if (rf & RenderFlags.Update) {
+        elementProperty(0, 'id', bind(ctx));
+      }
     }
 
     expect(renderToHtml(Template, 'testId')).toEqual('<span id="testId"></span>');
@@ -37,12 +39,14 @@ describe('elementProperty', () => {
       }
     }
 
-    function Template(ctx: string, cm: boolean) {
-      if (cm) {
+    function Template(rf: RenderFlags, ctx: string) {
+      if (rf & RenderFlags.Create) {
         elementStart(0, 'span');
         elementEnd();
       }
-      elementProperty(0, 'id', cm ? expensive(ctx) : NO_CHANGE);
+      if (rf & RenderFlags.Update) {
+        elementProperty(0, 'id', rf & RenderFlags.Create ? expensive(ctx) : NO_CHANGE);
+      }
     }
 
     expect(renderToHtml(Template, 'cheapId')).toEqual('<span id="cheapId"></span>');
@@ -50,12 +54,14 @@ describe('elementProperty', () => {
   });
 
   it('should support interpolation for properties', () => {
-    function Template(ctx: any, cm: boolean) {
-      if (cm) {
+    function Template(rf: RenderFlags, ctx: any) {
+      if (rf & RenderFlags.Create) {
         elementStart(0, 'span');
         elementEnd();
       }
-      elementProperty(0, 'id', interpolation1('_', ctx, '_'));
+      if (rf & RenderFlags.Update) {
+        elementProperty(0, 'id', interpolation1('_', ctx, '_'));
+      }
     }
 
     expect(renderToHtml(Template, 'testId')).toEqual('<span id="_testId_"></span>');
@@ -68,13 +74,13 @@ describe('elementProperty', () => {
 
       static ngComponentDef = defineComponent({
         type: HostBindingComp,
-        selector: [[['host-binding-comp'], null]],
+        selectors: [['host-binding-comp']],
         factory: () => new HostBindingComp(),
         hostBindings: (dirIndex: number, elIndex: number) => {
           const instance = loadDirective(dirIndex) as HostBindingComp;
           elementProperty(elIndex, 'id', bind(instance.id));
         },
-        template: (ctx: HostBindingComp, cm: boolean) => {}
+        template: (rf: RenderFlags, ctx: HostBindingComp) => {}
       });
     }
 
@@ -97,7 +103,7 @@ describe('elementProperty', () => {
 
       static ngDirectiveDef = defineDirective({
         type: MyButton,
-        selector: [[['', 'myButton', ''], null]],
+        selectors: [['', 'myButton', '']],
         factory: () => button = new MyButton(),
         inputs: {disabled: 'disabled'}
       });
@@ -109,7 +115,7 @@ describe('elementProperty', () => {
 
       static ngDirectiveDef = defineDirective({
         type: OtherDir,
-        selector: [[['', 'otherDir', ''], null]],
+        selectors: [['', 'otherDir', '']],
         factory: () => otherDir = new OtherDir(),
         inputs: {id: 'id'},
         outputs: {clickStream: 'click'}
@@ -121,7 +127,7 @@ describe('elementProperty', () => {
 
       static ngDirectiveDef = defineDirective({
         type: OtherDisabledDir,
-        selector: [[['', 'otherDisabledDir', ''], null]],
+        selectors: [['', 'otherDisabledDir', '']],
         factory: () => otherDisabledDir = new OtherDisabledDir(),
         inputs: {disabled: 'disabled'}
       });
@@ -132,30 +138,28 @@ describe('elementProperty', () => {
 
       static ngDirectiveDef = defineDirective({
         type: IdDir,
-        selector: [[['', 'idDir', ''], null]],
+        selectors: [['', 'idDir', '']],
         factory: () => idDir = new IdDir(),
         inputs: {idNumber: 'id'}
       });
     }
 
 
-    const deps = [
-      MyButton.ngDirectiveDef, OtherDir.ngDirectiveDef, OtherDisabledDir.ngDirectiveDef,
-      IdDir.ngDirectiveDef
-    ];
+    const deps = [MyButton, OtherDir, OtherDisabledDir, IdDir];
 
     it('should check input properties before setting (directives)', () => {
 
       /** <button myButton otherDir [id]="id" [disabled]="isDisabled">Click me</button> */
-      function Template(ctx: any, cm: boolean) {
-        if (cm) {
+      function Template(rf: RenderFlags, ctx: any) {
+        if (rf & RenderFlags.Create) {
           elementStart(0, 'button', ['otherDir', '', 'myButton', '']);
           { text(1, 'Click me'); }
           elementEnd();
         }
-
-        elementProperty(0, 'disabled', bind(ctx.isDisabled));
-        elementProperty(0, 'id', bind(ctx.id));
+        if (rf & RenderFlags.Update) {
+          elementProperty(0, 'disabled', bind(ctx.isDisabled));
+          elementProperty(0, 'id', bind(ctx.id));
+        }
       }
 
       const ctx: any = {isDisabled: true, id: 0};
@@ -175,15 +179,16 @@ describe('elementProperty', () => {
     it('should support mixed element properties and input properties', () => {
 
       /** <button myButton [id]="id" [disabled]="isDisabled">Click me</button> */
-      function Template(ctx: any, cm: boolean) {
-        if (cm) {
+      function Template(rf: RenderFlags, ctx: any) {
+        if (rf & RenderFlags.Create) {
           elementStart(0, 'button', ['myButton', '']);
           { text(1, 'Click me'); }
           elementEnd();
         }
-
-        elementProperty(0, 'disabled', bind(ctx.isDisabled));
-        elementProperty(0, 'id', bind(ctx.id));
+        if (rf & RenderFlags.Update) {
+          elementProperty(0, 'disabled', bind(ctx.isDisabled));
+          elementProperty(0, 'id', bind(ctx.id));
+        }
       }
 
       const ctx: any = {isDisabled: true, id: 0};
@@ -207,23 +212,25 @@ describe('elementProperty', () => {
 
         static ngComponentDef = defineComponent({
           type: Comp,
-          selector: [[['comp'], null]],
-          template: function(ctx: any, cm: boolean) {},
+          selectors: [['comp']],
+          template: function(rf: RenderFlags, ctx: any) {},
           factory: () => comp = new Comp(),
           inputs: {id: 'id'}
         });
       }
 
       /** <comp [id]="id"></comp> */
-      function Template(ctx: any, cm: boolean) {
-        if (cm) {
+      function Template(rf: RenderFlags, ctx: any) {
+        if (rf & RenderFlags.Create) {
           elementStart(0, 'comp');
           elementEnd();
         }
-        elementProperty(0, 'id', bind(ctx.id));
+        if (rf & RenderFlags.Update) {
+          elementProperty(0, 'id', bind(ctx.id));
+        }
       }
 
-      const deps = [Comp.ngComponentDef];
+      const deps = [Comp];
       expect(renderToHtml(Template, {id: 1}, deps)).toEqual(`<comp></comp>`);
       expect(comp !.id).toEqual(1);
 
@@ -234,13 +241,15 @@ describe('elementProperty', () => {
     it('should support two input properties with the same name', () => {
 
       /** <button myButton otherDisabledDir [disabled]="isDisabled">Click me</button> */
-      function Template(ctx: any, cm: boolean) {
-        if (cm) {
+      function Template(rf: RenderFlags, ctx: any) {
+        if (rf & RenderFlags.Create) {
           elementStart(0, 'button', ['myButton', '', 'otherDisabledDir', '']);
           { text(1, 'Click me'); }
           elementEnd();
         }
-        elementProperty(0, 'disabled', bind(ctx.isDisabled));
+        if (rf & RenderFlags.Update) {
+          elementProperty(0, 'disabled', bind(ctx.isDisabled));
+        }
       }
 
       const ctx: any = {isDisabled: true};
@@ -258,8 +267,8 @@ describe('elementProperty', () => {
 
     it('should set input property if there is an output first', () => {
       /** <button otherDir [id]="id" (click)="onClick()">Click me</button> */
-      function Template(ctx: any, cm: boolean) {
-        if (cm) {
+      function Template(rf: RenderFlags, ctx: any) {
+        if (rf & RenderFlags.Create) {
           elementStart(0, 'button', ['otherDir', '']);
           {
             listener('click', ctx.onClick.bind(ctx));
@@ -267,7 +276,9 @@ describe('elementProperty', () => {
           }
           elementEnd();
         }
-        elementProperty(0, 'id', bind(ctx.id));
+        if (rf & RenderFlags.Update) {
+          elementProperty(0, 'id', bind(ctx.id));
+        }
       }
 
       let counter = 0;
@@ -292,35 +303,43 @@ describe('elementProperty', () => {
        *   <button otherDir [id]="id3">Click me too</button>   // inputs: {'id': [0, 'id']}
        * % }
        */
-      function Template(ctx: any, cm: boolean) {
-        if (cm) {
+      function Template(rf: RenderFlags, ctx: any) {
+        if (rf & RenderFlags.Create) {
           elementStart(0, 'button', ['idDir', '']);
           { text(1, 'Click me'); }
           elementEnd();
           container(2);
         }
-        elementProperty(0, 'id', bind(ctx.id1));
-        containerRefreshStart(2);
-        {
-          if (ctx.condition) {
-            if (embeddedViewStart(0)) {
-              elementStart(0, 'button');
-              { text(1, 'Click me too'); }
-              elementEnd();
+        if (rf & RenderFlags.Update) {
+          elementProperty(0, 'id', bind(ctx.id1));
+          containerRefreshStart(2);
+          {
+            if (ctx.condition) {
+              let rf0 = embeddedViewStart(0);
+              if (rf0 & RenderFlags.Create) {
+                elementStart(0, 'button');
+                { text(1, 'Click me too'); }
+                elementEnd();
+              }
+              if (rf0 & RenderFlags.Update) {
+                elementProperty(0, 'id', bind(ctx.id2));
+              }
+              embeddedViewEnd();
+            } else {
+              let rf1 = embeddedViewStart(1);
+              if (rf1 & RenderFlags.Create) {
+                elementStart(0, 'button', ['otherDir', '']);
+                { text(1, 'Click me too'); }
+                elementEnd();
+              }
+              if (rf1 & RenderFlags.Update) {
+                elementProperty(0, 'id', bind(ctx.id3));
+              }
+              embeddedViewEnd();
             }
-            elementProperty(0, 'id', bind(ctx.id2));
-            embeddedViewEnd();
-          } else {
-            if (embeddedViewStart(1)) {
-              elementStart(0, 'button', ['otherDir', '']);
-              { text(1, 'Click me too'); }
-              elementEnd();
-            }
-            elementProperty(0, 'id', bind(ctx.id3));
-            embeddedViewEnd();
           }
+          containerRefreshEnd();
         }
-        containerRefreshEnd();
       }
 
       expect(renderToHtml(Template, {condition: true, id1: 'one', id2: 'two', id3: 'three'}, deps))
@@ -345,7 +364,7 @@ describe('elementProperty', () => {
 
       static ngDirectiveDef = defineDirective({
         type: MyDir,
-        selector: [[['', 'myDir', ''], null]],
+        selectors: [['', 'myDir', '']],
         factory: () => myDir = new MyDir(),
         inputs: {role: 'role', direction: 'dir'},
         outputs: {changeStream: 'change'},
@@ -359,19 +378,19 @@ describe('elementProperty', () => {
 
       static ngDirectiveDef = defineDirective({
         type: MyDirB,
-        selector: [[['', 'myDirB', ''], null]],
+        selectors: [['', 'myDirB', '']],
         factory: () => dirB = new MyDirB(),
         inputs: {roleB: 'role'}
       });
     }
 
-    const deps = [MyDir.ngDirectiveDef, MyDirB.ngDirectiveDef];
+    const deps = [MyDir, MyDirB];
 
     it('should set input property based on attribute if existing', () => {
 
       /** <div role="button" myDir></div> */
-      function Template(ctx: any, cm: boolean) {
-        if (cm) {
+      function Template(rf: RenderFlags, ctx: any) {
+        if (rf & RenderFlags.Create) {
           elementStart(0, 'div', ['role', 'button', 'myDir', '']);
           elementEnd();
         }
@@ -384,12 +403,14 @@ describe('elementProperty', () => {
     it('should set input property and attribute if both defined', () => {
 
       /** <div role="button" [role]="role" myDir></div> */
-      function Template(ctx: any, cm: boolean) {
-        if (cm) {
+      function Template(rf: RenderFlags, ctx: any) {
+        if (rf & RenderFlags.Create) {
           elementStart(0, 'div', ['role', 'button', 'myDir', '']);
           elementEnd();
         }
-        elementProperty(0, 'role', bind(ctx.role));
+        if (rf & RenderFlags.Update) {
+          elementProperty(0, 'role', bind(ctx.role));
+        }
       }
 
       expect(renderToHtml(Template, {role: 'listbox'}, deps))
@@ -403,8 +424,8 @@ describe('elementProperty', () => {
     it('should set two directive input properties based on same attribute', () => {
 
       /** <div role="button" myDir myDirB></div> */
-      function Template(ctx: any, cm: boolean) {
-        if (cm) {
+      function Template(rf: RenderFlags, ctx: any) {
+        if (rf & RenderFlags.Create) {
           elementStart(0, 'div', ['role', 'button', 'myDir', '', 'myDirB', '']);
           elementEnd();
         }
@@ -419,8 +440,8 @@ describe('elementProperty', () => {
     it('should process two attributes on same directive', () => {
 
       /** <div role="button" dir="rtl" myDir></div> */
-      function Template(ctx: any, cm: boolean) {
-        if (cm) {
+      function Template(rf: RenderFlags, ctx: any) {
+        if (rf & RenderFlags.Create) {
           elementStart(0, 'div', ['role', 'button', 'dir', 'rtl', 'myDir', '']);
           elementEnd();
         }
@@ -435,8 +456,8 @@ describe('elementProperty', () => {
     it('should process attributes and outputs properly together', () => {
 
       /** <div role="button" (change)="onChange()" myDir></div> */
-      function Template(ctx: any, cm: boolean) {
-        if (cm) {
+      function Template(rf: RenderFlags, ctx: any) {
+        if (rf & RenderFlags.Create) {
           elementStart(0, 'div', ['role', 'button', 'myDir', '']);
           { listener('change', ctx.onChange.bind(ctx)); }
           elementEnd();
@@ -458,8 +479,8 @@ describe('elementProperty', () => {
        * <div role="button" dir="rtl" myDir></div>
        * <div role="listbox" myDirB></div>
        */
-      function Template(ctx: any, cm: boolean) {
-        if (cm) {
+      function Template(rf: RenderFlags, ctx: any) {
+        if (rf & RenderFlags.Create) {
           elementStart(0, 'div', ['role', 'button', 'dir', 'rtl', 'myDir', '']);
           elementEnd();
           elementStart(1, 'div', ['role', 'listbox', 'myDirB', '']);
@@ -485,30 +506,33 @@ describe('elementProperty', () => {
        *   <div role="menu"></div>               // initialInputs: [null]
        * % }
        */
-      function Template(ctx: any, cm: boolean) {
-        if (cm) {
+      function Template(rf: RenderFlags, ctx: any) {
+        if (rf & RenderFlags.Create) {
           elementStart(0, 'div', ['role', 'listbox', 'myDir', '']);
           elementEnd();
           container(1);
         }
-        containerRefreshStart(1);
-        {
-          if (ctx.condition) {
-            if (embeddedViewStart(0)) {
-              elementStart(0, 'div', ['role', 'button', 'myDirB', '']);
-              elementEnd();
+        if (rf & RenderFlags.Update) {
+          containerRefreshStart(1);
+          {
+            if (ctx.condition) {
+              let rf1 = embeddedViewStart(0);
+              if (rf1 & RenderFlags.Create) {
+                elementStart(0, 'div', ['role', 'button', 'myDirB', '']);
+                elementEnd();
+              }
+              embeddedViewEnd();
+            } else {
+              let rf2 = embeddedViewStart(1);
+              if (rf2 & RenderFlags.Create) {
+                elementStart(0, 'div', ['role', 'menu']);
+                elementEnd();
+              }
+              embeddedViewEnd();
             }
-            embeddedViewEnd();
-          } else {
-            if (embeddedViewStart(1)) {
-              elementStart(0, 'div', ['role', 'menu']);
-              {}
-              elementEnd();
-            }
-            embeddedViewEnd();
           }
+          containerRefreshEnd();
         }
-        containerRefreshEnd();
       }
 
       expect(renderToHtml(Template, {condition: true}, deps))
@@ -527,19 +551,21 @@ describe('elementProperty', () => {
       class Comp {
         static ngComponentDef = defineComponent({
           type: Comp,
-          selector: [[['comp'], null]],
+          selectors: [['comp']],
           /** <div role="button" dir #dir="myDir"></div> {{ dir.role }} */
-          template: function(ctx: any, cm: boolean) {
-            if (cm) {
+          template: function(rf: RenderFlags, ctx: any) {
+            if (rf & RenderFlags.Create) {
               elementStart(0, 'div', ['role', 'button', 'myDir', ''], ['dir', 'myDir']);
               elementEnd();
-              text(1);
+              text(2);
             }
-            // TODO: remove this loadDirective when removing MyDir
-            textBinding(1, bind(loadDirective<MyDir>(0).role));
+            if (rf & RenderFlags.Update) {
+              const tmp = load(1) as any;
+              textBinding(2, bind(tmp.role));
+            }
           },
           factory: () => new Comp(),
-          directiveDefs: () => [MyDir.ngDirectiveDef]
+          directives: () => [MyDir]
         });
       }
 
@@ -548,24 +574,27 @@ describe('elementProperty', () => {
        *     <comp></comp>
        * % }
        */
-      function Template(ctx: any, cm: boolean) {
-        if (cm) {
+      function Template(rf: RenderFlags, ctx: any) {
+        if (rf & RenderFlags.Create) {
           container(0);
         }
-        containerRefreshStart(0);
-        {
-          for (let i = 0; i < 2; i++) {
-            if (embeddedViewStart(0)) {
-              elementStart(0, 'comp');
-              elementEnd();
+        if (rf & RenderFlags.Update) {
+          containerRefreshStart(0);
+          {
+            for (let i = 0; i < 2; i++) {
+              let rf1 = embeddedViewStart(0);
+              if (rf1 & RenderFlags.Create) {
+                elementStart(0, 'comp');
+                elementEnd();
+              }
+              embeddedViewEnd();
             }
-            embeddedViewEnd();
           }
+          containerRefreshEnd();
         }
-        containerRefreshEnd();
       }
 
-      expect(renderToHtml(Template, {}, [Comp.ngComponentDef]))
+      expect(renderToHtml(Template, {}, [Comp]))
           .toEqual(
               `<comp><div mydir="" role="button"></div>button</comp><comp><div mydir="" role="button"></div>button</comp>`);
     });

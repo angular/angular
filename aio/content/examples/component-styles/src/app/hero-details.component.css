@@ -1,9 +1,5 @@
-/* #docregion import! */
-/* The AOT compiler needs the `./` to show that this is local */
-/*@import './hero-details-box.css';*/
-/* #enddocregion import! */
 /* #docregion import */
-/* AOT compiler를 사용하면 상대주소를 정확하게 지정하기 위해 `./` 가 필요합니다. */
+/* The AOT compiler needs the `./` to show that this is local */
 @import './hero-details-box.css';
 /* #enddocregion import */
 

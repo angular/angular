@@ -9,21 +9,15 @@
 // THIS CODE IS GENERATED - DO NOT MODIFY
 // See angular/tools/gulp-tasks/cldr/extract.js
 
+const u = undefined;
+
 function plural(n: number): number {
   if (n === 1) return 1;
   return 5;
 }
 
 export default [
-  'eu',
-  [
-    ['g', 'a'],
-    ['AM', 'PM'],
-  ],
-  [
-    ['AM', 'PM'],
-    ,
-  ],
+  'eu', [['g', 'a'], ['AM', 'PM'], u], [['AM', 'PM'], u, u],
   [
     ['I', 'A', 'A', 'A', 'O', 'O', 'L'], ['ig.', 'al.', 'ar.', 'az.', 'og.', 'or.', 'lr.'],
     ['igandea', 'astelehena', 'asteartea', 'asteazkena', 'osteguna', 'ostirala', 'larunbata'],
@@ -54,17 +48,12 @@ export default [
       'Iraila', 'Urria', 'Azaroa', 'Abendua'
     ]
   ],
-  [['K.a.', 'K.o.'], , ['K.a.', 'Kristo ondoren']], 1, [6, 0],
+  [['K.a.', 'K.o.'], u, ['K.a.', 'Kristo ondoren']], 1, [6, 0],
   [
     'yy/M/d', 'y MMM d', 'y(\'e\')\'ko\' MMMM\'ren\' d(\'a\')',
     'y(\'e\')\'ko\' MMMM\'ren\' d(\'a\'), EEEE'
   ],
-  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss (z)', 'HH:mm:ss (zzzz)'],
-  [
-    '{1} {0}',
-    ,
-    ,
-  ],
+  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss (z)', 'HH:mm:ss (zzzz)'], ['{1} {0}', u, u, u],
   [',', '.', ';', '%', '+', '−', 'E', '×', '‰', '∞', 'NaN', ':'],
   ['#,##0.###', '% #,##0', '#,##0.00 ¤', '#E0'], '€', 'euroa',
   {'ESP': ['₧'], 'JPY': ['JP¥', '¥'], 'THB': ['฿'], 'TWD': ['NT$'], 'USD': ['US$', '$']},

@@ -373,6 +373,9 @@ where it will be easier to develop and test.
 필요하다면 `!` 연산자로 불리언 연산을 하는 것까지도 좋습니다.
 이정도의 로직 외에 애플리케이션 로직이나 비즈니스 로직이 더 필요하다면, 템플릿보다 테스트하기 쉬운 컴포넌트에 구현하는 것이 좋습니다.
 
+<!--
+#### Idempotence
+-->
 #### 멱등성
 
 <!--
@@ -1685,6 +1688,9 @@ _스타일 프로퍼티_ 이름은 [대시 케이스](guide/glossary#dash-case)�
 
 <hr/>
 
+<!--
+{@a event-binding}
+-->
 {@a 이벤트-바인딩}
 
 <!--
@@ -2735,7 +2741,7 @@ and `odd` in the [NgForOf API reference](api/common/NgForOf).
 {@a trackBy}
 
 <!--
-#### *ngFor* with _trackBy_
+#### *ngFor with _trackBy_
 -->
 #### _trackBy_ 와 함께 사용하기
 

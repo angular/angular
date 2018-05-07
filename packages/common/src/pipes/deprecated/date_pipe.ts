@@ -13,9 +13,9 @@ import {DateFormatter} from './intl';
 
 /**
  * @ngModule CommonModule
- * @whatItDoes Formats a date according to locale rules.
- * @howToUse `date_expression | date[:format]`
  * @description
+ *
+ * Formats a date according to locale rules.
  *
  * Where:
  * - `expression` is a date object or a number (milliseconds since UTC epoch) or an ISO string
@@ -71,7 +71,7 @@ import {DateFormatter} from './intl';
  *
  * {@example common/pipes/ts/date_pipe.ts region='DeprecatedDatePipe'}
  *
- * @stable
+ *
  */
 @Pipe({name: 'date', pure: true})
 export class DeprecatedDatePipe implements PipeTransform {

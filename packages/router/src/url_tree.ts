@@ -74,9 +74,15 @@ function containsSegmentGroupHelper(
 }
 
 /**
- * @whatItDoes Represents the parsed URL.
+ * @description
  *
- * @howToUse
+ * Represents the parsed URL.
+ *
+ * Since a router state is a tree, and the URL is nothing but a serialized state, the URL is a
+ * serialized tree.
+ * UrlTree is a data structure that provides a lot of affordances in dealing with URLs
+ *
+ * ### Example
  *
  * ```
  * @Component({templateUrl:'template.html'})
@@ -94,13 +100,7 @@ function containsSegmentGroupHelper(
  * }
  * ```
  *
- * @description
  *
- * Since a router state is a tree, and the URL is nothing but a serialized state, the URL is a
- * serialized tree.
- * UrlTree is a data structure that provides a lot of affordances in dealing with URLs
- *
- * @stable
  */
 export class UrlTree {
   /** @internal */
@@ -127,11 +127,13 @@ export class UrlTree {
 }
 
 /**
- * @whatItDoes Represents the parsed URL segment group.
+ * @description
  *
- * See {@link UrlTree} for more information.
+ * Represents the parsed URL segment group.
  *
- * @stable
+ * See `UrlTree` for more information.
+ *
+ *
  */
 export class UrlSegmentGroup {
   /** @internal */
@@ -142,7 +144,7 @@ export class UrlSegmentGroup {
   parent: UrlSegmentGroup|null = null;
 
   constructor(
-      /** The URL segments of this group. See {@link UrlSegment} for more information */
+      /** The URL segments of this group. See `UrlSegment` for more information */
       public segments: UrlSegment[],
       /** The list of children of this group */
       public children: {[key: string]: UrlSegmentGroup}) {
@@ -161,9 +163,14 @@ export class UrlSegmentGroup {
 
 
 /**
- * @whatItDoes Represents a single URL segment.
+ * @description
  *
- * @howToUse
+ * Represents a single URL segment.
+ *
+ * A UrlSegment is a part of a URL between the two slashes. It contains a path and the matrix
+ * parameters associated with the segment.
+ *
+ * ## Example
  *
  * ```
  * @Component({templateUrl:'template.html'})
@@ -178,12 +185,7 @@ export class UrlSegmentGroup {
  * }
  * ```
  *
- * @description
  *
- * A UrlSegment is a part of a URL between the two slashes. It contains a path and the matrix
- * parameters associated with the segment.
- *
- * @stable
  */
 export class UrlSegment {
   /** @internal */
@@ -234,27 +236,29 @@ export function mapChildrenIntoArray<T>(
 
 
 /**
- * @whatItDoes Serializes and deserializes a URL string into a URL tree.
+ * @description
  *
- * @description The url serialization strategy is customizable. You can
+ * Serializes and deserializes a URL string into a URL tree.
+ *
+ * The url serialization strategy is customizable. You can
  * make all URLs case insensitive by providing a custom UrlSerializer.
  *
- * See {@link DefaultUrlSerializer} for an example of a URL serializer.
+ * See `DefaultUrlSerializer` for an example of a URL serializer.
  *
- * @stable
+ *
  */
 export abstract class UrlSerializer {
-  /** Parse a url into a {@link UrlTree} */
+  /** Parse a url into a `UrlTree` */
   abstract parse(url: string): UrlTree;
 
-  /** Converts a {@link UrlTree} into a url */
+  /** Converts a `UrlTree` into a url */
   abstract serialize(tree: UrlTree): string;
 }
 
 /**
- * @whatItDoes A default implementation of the {@link UrlSerializer}.
- *
  * @description
+ *
+ * A default implementation of the `UrlSerializer`.
  *
  * Example URLs:
  *
@@ -267,16 +271,16 @@ export abstract class UrlSerializer {
  * colon syntax to specify the outlet, and the ';parameter=value' syntax (e.g., open=true) to
  * specify route specific parameters.
  *
- * @stable
+ *
  */
 export class DefaultUrlSerializer implements UrlSerializer {
-  /** Parses a url into a {@link UrlTree} */
+  /** Parses a url into a `UrlTree` */
   parse(url: string): UrlTree {
     const p = new UrlParser(url);
     return new UrlTree(p.parseRootSegment(), p.parseQueryParams(), p.parseFragment());
   }
 
-  /** Converts a {@link UrlTree} into a url */
+  /** Converts a `UrlTree` into a url */
   serialize(tree: UrlTree): string {
     const segment = `/${serializeSegment(tree.root, true)}`;
     const query = serializeQueryParams(tree.queryParams);

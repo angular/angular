@@ -1,6 +1,6 @@
 // #docplaster
 // #docregion
-// TODO SOMEDAY: Feature Componetized like CrisisCenter
+// TODO: Feature Componetized like CrisisCenter
 // #docregion rxjs-imports
 import { Observable } from 'rxjs';
 import { switchMap } from 'rxjs/operators';

@@ -9,6 +9,8 @@
 // THIS CODE IS GENERATED - DO NOT MODIFY
 // See angular/tools/gulp-tasks/cldr/extract.js
 
+const u = undefined;
+
 export default [
   [
     [
@@ -20,6 +22,7 @@ export default [
       'மதியம்', 'பிற்பகல்', 'மாலை',
       'அந்தி மாலை', 'இரவு'
     ],
+    u
   ],
   [
     [
@@ -31,6 +34,7 @@ export default [
       'மதியம்', 'பிற்பகல்', 'மாலை',
       'அந்தி மாலை', 'இரவு'
     ],
+    u
   ],
   [
     '00:00', '12:00', ['03:00', '05:00'], ['05:00', '12:00'], ['12:00', '14:00'],

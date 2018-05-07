@@ -45,7 +45,6 @@ env:
   matrix:
     # Order: a slower build first, so that we don't occupy an idle travis worker waiting for others to complete.
     - CI_MODE=e2e
-    - CI_MODE=e2e_2
     - CI_MODE=js
     - CI_MODE=saucelabs_required
     # deactivated, see #19768

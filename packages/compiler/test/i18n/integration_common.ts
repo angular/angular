@@ -47,7 +47,8 @@ export function validateHtml(
   expectHtml(el, '#i18n-3b')
       .toBe(
           '<div id="i18n-3b"><p><i class="preserved-on-placeholders">avec des espaces réservés</i></p></div>');
-  expectHtml(el, '#i18n-4').toBe('<p id="i18n-4" title="sur des balises non traductibles"></p>');
+  expectHtml(el, '#i18n-4')
+      .toBe('<p data-html="<b>gras</b>" id="i18n-4" title="sur des balises non traductibles"></p>');
   expectHtml(el, '#i18n-5').toBe('<p id="i18n-5" title="sur des balises traductibles"></p>');
   expectHtml(el, '#i18n-6').toBe('<p id="i18n-6" title=""></p>');
 
@@ -117,7 +118,7 @@ export const HTML = `
     <div id="i18n-3c"><div i18n><div>with <div>nested</div> placeholders</div></div></div>
 
     <div>
-        <p id="i18n-4" i18n-title title="on not translatable node"></p>
+        <p id="i18n-4" i18n-title title="on not translatable node" i18n-data-html data-html="<b>bold</b>"></p>
         <p id="i18n-5" i18n i18n-title title="on translatable node"></p>
         <p id="i18n-6" i18n-title title></p>
     </div>

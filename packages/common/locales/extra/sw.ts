@@ -9,10 +9,13 @@
 // THIS CODE IS GENERATED - DO NOT MODIFY
 // See angular/tools/gulp-tasks/cldr/extract.js
 
+const u = undefined;
+
 export default [
   [
     ['usiku', 'mchana', 'alfajiri', 'asubuhi', 'mchana', 'jioni', 'usiku'],
     ['saa sita za usiku', 'saa sita za mchana', 'alfajiri', 'asubuhi', 'mchana', 'jioni', 'usiku'],
+    u
   ],
   [
     ['saa sita za usiku', 'saa sita za mchana', 'alfajiri', 'asubuhi', 'mchana', 'jioni', 'usiku'],

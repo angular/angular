@@ -1,4 +1,7 @@
 /** @experimental */
+export declare const ANIMATION_MODULE_TYPE: InjectionToken<"NoopAnimations" | "BrowserAnimations">;
+
+/** @experimental */
 export declare class BrowserAnimationsModule {
 }
 

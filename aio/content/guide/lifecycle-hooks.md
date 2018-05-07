@@ -88,7 +88,7 @@ calls the lifecycle hook methods in the following sequence at specific moments:
       <code>ngOnChanges()</code>
     </td>
     <td>
-      
+
       <!--
       Respond when Angular (re)sets data-bound input properties.
       The method receives a `SimpleChanges` object of current and previous property values.
@@ -107,7 +107,7 @@ calls the lifecycle hook methods in the following sequence at specific moments:
       <code>ngOnInit()</code>
     </td>
     <td>
-      
+
       <!--
       Initialize the directive/component after Angular first displays the data-bound properties
       and sets the directive/component's input properties.
@@ -126,7 +126,7 @@ calls the lifecycle hook methods in the following sequence at specific moments:
       <code>ngDoCheck()</code>
     </td>
     <td>
-      
+
       <!--
       Detect and act upon changes that Angular can't or won't detect on its own.
 
@@ -962,7 +962,7 @@ the `AfterContentComponent`'s parent. Here's the parent's template:
 <code-example path="lifecycle-hooks/src/app/after-content.component.ts" region="parent-template" title="AfterContentParentComponent (template excerpt)" linenums="false"></code-example>
 
 <!--
-Notice that the `<my-child>` tag is tucked between the `<after-content>` tags.
+Notice that the `<app-child>` tag is tucked between the `<after-content>` tags.
 Never put content between a component's element tags *unless you intend to project that content
 into the component*.
 -->
@@ -979,7 +979,7 @@ Now look at the component's template:
 <!--
 The `<ng-content>` tag is a *placeholder* for the external content.
 It tells Angular where to insert that content.
-In this case, the projected content is the `<my-child>` from the parent.
+In this case, the projected content is the `<app-child>` from the parent.
 -->
 `<ng-content>` 태그는 외부 컨텐츠가 *들어갈 위치*를 지정하는 태그입니다.
 Angular가 이 태그를 확인하면 컴포넌트 외부에서 전달되는 컨텐츠를 이 위치에 표시하며, 이 예제에서 부모 컴포넌트가 자식 컴포넌트로 전달하는 컨텐츠는 `<my-child>` 엘리먼트입니다.

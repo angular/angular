@@ -9,15 +9,11 @@
 // THIS CODE IS GENERATED - DO NOT MODIFY
 // See angular/tools/gulp-tasks/cldr/extract.js
 
+const u = undefined;
+
 export default [
-  [
-    ['keskööl', 'keskpäeval', 'hommikul', 'pärastlõunal', 'õhtul', 'öösel'],
-    ,
-  ],
-  [
-    ['kesköö', 'keskpäev', 'hommik', 'pärastlõuna', 'õhtu', 'öö'],
-    ,
-  ],
+  [['keskööl', 'keskpäeval', 'hommikul', 'pärastlõunal', 'õhtul', 'öösel'], u, u],
+  [['kesköö', 'keskpäev', 'hommik', 'pärastlõuna', 'õhtu', 'öö'], u, u],
   [
     '00:00', '12:00', ['05:00', '12:00'], ['12:00', '18:00'], ['18:00', '23:00'],
     ['23:00', '05:00']

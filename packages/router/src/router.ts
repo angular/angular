@@ -30,9 +30,11 @@ import {TreeNode, nodeChildrenAsMap} from './utils/tree';
 
 
 /**
- * @whatItDoes Represents the extra options used during navigation.
+ * @description
  *
- * @stable
+ * Represents the extra options used during navigation.
+ *
+ *
  */
 export interface NavigationExtras {
   /**
@@ -142,14 +144,15 @@ export interface NavigationExtras {
 }
 
 /**
- * @whatItDoes Error handler that is invoked when a navigation errors.
- *
  * @description
+ *
+ * Error handler that is invoked when a navigation errors.
+ *
  * If the handler returns a value, the navigation promise will be resolved with this value.
  * If the handler throws an exception, the navigation promise will be rejected with
  * the exception.
  *
- * @stable
+ *
  */
 export type ErrorHandler = (error: any) => any;
 
@@ -184,13 +187,15 @@ function defaultRouterHook(snapshot: RouterStateSnapshot): Observable<void> {
 }
 
 /**
- * @whatItDoes Provides the navigation and url manipulation capabilities.
+ * @description
  *
- * See {@link Routes} for more details and examples.
+ * Provides the navigation and url manipulation capabilities.
+ *
+ * See `Routes` for more details and examples.
  *
  * @ngModule RouterModule
  *
- * @stable
+ *
  */
 export class Router {
   private currentUrlTree: UrlTree;
@@ -208,7 +213,7 @@ export class Router {
   /**
    * Error handler that is invoked when a navigation errors.
    *
-   * See {@link ErrorHandler} for more information.
+   * See `ErrorHandler` for more information.
    */
   errorHandler: ErrorHandler = defaultErrorHandler;
 
@@ -481,10 +486,10 @@ export class Router {
     return this.navigateByUrl(this.createUrlTree(commands, extras), extras);
   }
 
-  /** Serializes a {@link UrlTree} into a string */
+  /** Serializes a `UrlTree` into a string */
   serializeUrl(url: UrlTree): string { return this.urlSerializer.serialize(url); }
 
-  /** Parses a string into a {@link UrlTree} */
+  /** Parses a string into a `UrlTree` */
   parseUrl(url: string): UrlTree { return this.urlSerializer.parse(url); }
 
   /** Returns whether the url is activated */

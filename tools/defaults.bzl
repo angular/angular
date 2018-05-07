@@ -8,12 +8,16 @@ DEFAULT_TSCONFIG = "//packages:tsconfig-build.json"
 
 # Packages which are versioned together on npm
 ANGULAR_SCOPED_PACKAGES = ["@angular/%s" % p for p in [
-  "bazel",
+  # core should be the first package because it's the main package in the group
+  # this is significant for Angular CLI and "ng update" specifically, @angular/core
+  # is considered the identifier of the group by these tools.
   "core",
+  "bazel",
   "common",
   "compiler",
   "compiler-cli",
   "animations",
+  "elements",
   "platform-browser",
   "platform-browser-dynamic",
   "forms",
@@ -45,26 +49,22 @@ def ng_module(name, tsconfig = None, entry_point = None, **kwargs):
     entry_point = "public_api.ts"
   _ng_module(name = name, flat_module_out_file = name, tsconfig = tsconfig, entry_point = entry_point, **kwargs)
 
-def ng_package(name, readme_md = None, license_banner = None, stamp_data = None, **kwargs):
+def ng_package(name, readme_md = None, license_banner = None, **kwargs):
   if not readme_md:
     readme_md = "//packages:README.md"
   if not license_banner:
     license_banner = "//packages:license-banner.txt"
-  if not stamp_data:
-    stamp_data = "//tools:stamp_data"
 
   _ng_package(
       name = name,
       readme_md = readme_md,
       license_banner = license_banner,
-      stamp_data = stamp_data,
       replacements = PKG_GROUP_REPLACEMENTS,
       **kwargs)
 
 def npm_package(name, replacements = {}, **kwargs):
   _npm_package(
       name = name,
-      stamp_data = "//tools:stamp_data",
       replacements = dict(replacements, **PKG_GROUP_REPLACEMENTS),
       **kwargs)
 

@@ -28,6 +28,7 @@ build --watchfs
 # Release support             #
 ###############################
 
+# Releases should always be stamped with version control info
 build --workspace_status_command=./tools/bazel_stamp_vars.sh
 
 ###############################

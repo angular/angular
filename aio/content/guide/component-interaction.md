@@ -88,7 +88,7 @@ E2E test that all children were instantiated and displayed as expected:
 -->
 반복문을 순회하며 각각의 히어로마다 결과를 제대로 표시하는지 확인하기 위해 E2E 테스트 환경을 다음과 같이 설정합니다:
 
-<code-example path="component-interaction/e2e/app.e2e-spec.ts" region="parent-to-child" title="component-interaction/e2e/app.e2e-spec.ts">
+<code-example path="component-interaction/e2e/src/app.e2e-spec.ts" region="parent-to-child" title="component-interaction/e2e/src/app.e2e-spec.ts">
 
 </code-example>
 
@@ -148,7 +148,7 @@ E2E tests of input property setter with empty and non-empty names:
 -->
 입력 프로퍼티 세터를 테스트하는 E2E 환경은 다음과 같이 설정합니다:
 
-<code-example path="component-interaction/e2e/app.e2e-spec.ts" region="parent-to-child-setter" title="component-interaction/e2e/app.e2e-spec.ts">
+<code-example path="component-interaction/e2e/src/app.e2e-spec.ts" region="parent-to-child-setter" title="component-interaction/e2e/src/app.e2e-spec.ts">
 
 </code-example>
 
@@ -226,7 +226,7 @@ the expected `ngOnChanges` calls and values:
 -->
 ***두*** 입력 프로퍼티는 초기값이 설정된 이후에 버튼을 누를 때마다 변경되면서 `ngOnChanges()`를 실행하는데, 이 동작을 테스트하는 E2E 환경을 다음과 같이 정의합니다:
 
-<code-example path="component-interaction/e2e/app.e2e-spec.ts" region="parent-to-child-onchanges" title="component-interaction/e2e/app.e2e-spec.ts">
+<code-example path="component-interaction/e2e/src/app.e2e-spec.ts" region="parent-to-child-onchanges" title="component-interaction/e2e/src/app.e2e-spec.ts">
 
 </code-example>
 
@@ -299,7 +299,7 @@ Test that clicking the *Agree* and *Disagree* buttons update the appropriate cou
 -->
 *Agree* 버튼이나 *Disagree* 버튼을 클릭하면 해당 카운터 값이 증가합니다.
 
-<code-example path="component-interaction/e2e/app.e2e-spec.ts" region="child-to-parent" title="component-interaction/e2e/app.e2e-spec.ts">
+<code-example path="component-interaction/e2e/src/app.e2e-spec.ts" region="child-to-parent" title="component-interaction/e2e/src/app.e2e-spec.ts">
 
 </code-example>
 
@@ -394,7 +394,7 @@ Test also that clicking the *Stop* button pauses the countdown timer:
 부모 컴포넌트의 템플릿에 표시되는 타이머는 자식 컴포넌트에 있는 프로퍼티를 참조하기 때문에 자식 컴포넌트에서 표시하는 메시지와 같은 값을 표시합니다.
 그리고 다음 테스트 코드는 *Stop* 버튼을 클릭했을 때 카운트다운 타이머가 멈추는지도 확인합니다:
 
-<code-example path="component-interaction/e2e/app.e2e-spec.ts" region="countdown-timer-tests" title="component-interaction/e2e/app.e2e-spec.ts">
+<code-example path="component-interaction/e2e/src/app.e2e-spec.ts" region="countdown-timer-tests" title="component-interaction/e2e/src/app.e2e-spec.ts">
 
 </code-example>
 
@@ -631,7 +631,7 @@ and verify that the history meets expectations:
 -->
 부모 컴포넌트 `MissionControlComponent`와 자식 컴포넌트 `AstronautComponent`의 버튼을 클릭했을 때 로그를 제대로 출력하는지 확인하기 위해 테스트 코드를 다음과 같이 작성합니다:
 
-<code-example path="component-interaction/e2e/app.e2e-spec.ts" region="bidirectional-service" title="component-interaction/e2e/app.e2e-spec.ts">
+<code-example path="component-interaction/e2e/src/app.e2e-spec.ts" region="bidirectional-service" title="component-interaction/e2e/src/app.e2e-spec.ts">
 
 </code-example>
 

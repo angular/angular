@@ -9,15 +9,14 @@
 // THIS CODE IS GENERATED - DO NOT MODIFY
 // See angular/tools/gulp-tasks/cldr/extract.js
 
+const u = undefined;
+
 export default [
   [
     ['ponoć', 'podne', 'ujutru', 'po podne', 'uveče', 'noću'],
-    ['ponoć', 'podne', 'ujutro', 'po podne', 'uveče', 'noću'],
+    ['ponoć', 'podne', 'ujutro', 'po podne', 'uveče', 'noću'], u
   ],
-  [
-    ['ponoć', 'podne', 'jutro', 'popodne', 'veče', 'noć'],
-    ,
-  ],
+  [['ponoć', 'podne', 'jutro', 'popodne', 'veče', 'noć'], u, u],
   [
     '00:00', '12:00', ['06:00', '12:00'], ['12:00', '18:00'], ['18:00', '21:00'],
     ['21:00', '06:00']

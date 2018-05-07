@@ -9,6 +9,8 @@
 // THIS CODE IS GENERATED - DO NOT MODIFY
 // See angular/tools/gulp-tasks/cldr/extract.js
 
+const u = undefined;
+
 function plural(n: number): number {
   let i = Math.floor(Math.abs(n)),
       t = parseInt(n.toString().replace(/^[^.]*\.?|0+$/g, ''), 10) || 0;
@@ -17,15 +19,7 @@ function plural(n: number): number {
 }
 
 export default [
-  'is',
-  [
-    ['f.', 'e.'],
-    ['f.h.', 'e.h.'],
-  ],
-  [
-    ['f.h.', 'e.h.'],
-    ,
-  ],
+  'is', [['f.', 'e.'], ['f.h.', 'e.h.'], u], [['f.h.', 'e.h.'], u, u],
   [
     ['S', 'M', 'Þ', 'M', 'F', 'F', 'L'],
     ['sun.', 'mán.', 'þri.', 'mið.', 'fim.', 'fös.', 'lau.'],
@@ -35,7 +29,7 @@ export default [
     ],
     ['su.', 'má.', 'þr.', 'mi.', 'fi.', 'fö.', 'la.']
   ],
-  ,
+  u,
   [
     ['J', 'F', 'M', 'A', 'M', 'J', 'J', 'Á', 'S', 'O', 'N', 'D'],
     [
@@ -47,29 +41,24 @@ export default [
       'október', 'nóvember', 'desember'
     ]
   ],
-  , [['f.k.', 'e.k.'], ['f.Kr.', 'e.Kr.'], ['fyrir Krist', 'eftir Krist']], 1, [6, 0],
+  u, [['f.k.', 'e.k.'], ['f.Kr.', 'e.Kr.'], ['fyrir Krist', 'eftir Krist']], 1, [6, 0],
   ['d.M.y', 'd. MMM y', 'd. MMMM y', 'EEEE, d. MMMM y'],
-  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'],
-  [
-    '{1}, {0}',
-    ,
-    '{1} \'kl\'. {0}',
-  ],
+  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'], ['{1}, {0}', u, '{1} \'kl\'. {0}', u],
   [',', '.', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
   ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'], 'ISK', 'íslensk króna', {
-    'AUD': [, '$'],
-    'BRL': [, 'R$'],
-    'CAD': [, '$'],
-    'EUR': [, '€'],
-    'GBP': [, '£'],
-    'INR': [, '₹'],
+    'AUD': [u, '$'],
+    'BRL': [u, 'R$'],
+    'CAD': [u, '$'],
+    'EUR': [u, '€'],
+    'GBP': [u, '£'],
+    'INR': [u, '₹'],
     'JPY': ['JP¥', '¥'],
-    'KRW': [, '₩'],
-    'MXN': [, '$'],
-    'NZD': [, '$'],
-    'TWD': [, 'NT$'],
-    'USD': [, '$'],
-    'VND': [, '₫']
+    'KRW': [u, '₩'],
+    'MXN': [u, '$'],
+    'NZD': [u, '$'],
+    'TWD': [u, 'NT$'],
+    'USD': [u, '$'],
+    'VND': [u, '₫']
   },
   plural
 ];

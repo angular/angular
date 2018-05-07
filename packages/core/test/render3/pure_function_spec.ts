@@ -7,6 +7,7 @@
  */
 import {defineComponent} from '../../src/render3/index';
 import {bind, container, containerRefreshEnd, containerRefreshStart, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, load, loadDirective} from '../../src/render3/instructions';
+import {RenderFlags} from '../../src/render3/interfaces/definition';
 import {pureFunction1, pureFunction2, pureFunction3, pureFunction4, pureFunction5, pureFunction6, pureFunction7, pureFunction8, pureFunctionV} from '../../src/render3/pure_function';
 import {renderToHtml} from '../../test/render3/render_util';
 
@@ -18,36 +19,38 @@ describe('array literals', () => {
 
     static ngComponentDef = defineComponent({
       type: MyComp,
-      selector: [[['my-comp'], null]],
+      selectors: [['my-comp']],
       factory: function MyComp_Factory() { return myComp = new MyComp(); },
-      template: function MyComp_Template(ctx: MyComp, cm: boolean) {},
+      template: function MyComp_Template(rf: RenderFlags, ctx: MyComp) {},
       inputs: {names: 'names'}
     });
   }
 
-  const defs = [MyComp.ngComponentDef];
+  const directives = [MyComp];
 
   it('should support an array literal with a binding', () => {
     const e0_ff = (v: any) => ['Nancy', v, 'Bess'];
 
     /** <my-comp [names]="['Nancy', customName, 'Bess']"></my-comp> */
-    function Template(ctx: any, cm: boolean) {
-      if (cm) {
+    function Template(rf: RenderFlags, ctx: any) {
+      if (rf & RenderFlags.Create) {
         elementStart(0, 'my-comp');
         elementEnd();
       }
-      elementProperty(0, 'names', bind(pureFunction1(e0_ff, ctx.customName)));
+      if (rf & RenderFlags.Update) {
+        elementProperty(0, 'names', bind(pureFunction1(e0_ff, ctx.customName)));
+      }
     }
 
-    renderToHtml(Template, {customName: 'Carson'}, defs);
+    renderToHtml(Template, {customName: 'Carson'}, directives);
     const firstArray = myComp !.names;
     expect(firstArray).toEqual(['Nancy', 'Carson', 'Bess']);
 
-    renderToHtml(Template, {customName: 'Carson'}, defs);
+    renderToHtml(Template, {customName: 'Carson'}, directives);
     expect(myComp !.names).toEqual(['Nancy', 'Carson', 'Bess']);
     expect(firstArray).toBe(myComp !.names);
 
-    renderToHtml(Template, {customName: 'Hannah'}, defs);
+    renderToHtml(Template, {customName: 'Hannah'}, directives);
     expect(myComp !.names).toEqual(['Nancy', 'Hannah', 'Bess']);
 
     // Identity must change if binding changes
@@ -56,7 +59,7 @@ describe('array literals', () => {
     // The property should not be set if the exp value is the same, so artificially
     // setting the property to ensure it's not overwritten.
     myComp !.names = ['should not be overwritten'];
-    renderToHtml(Template, {customName: 'Hannah'}, defs);
+    renderToHtml(Template, {customName: 'Hannah'}, directives);
     expect(myComp !.names).toEqual(['should not be overwritten']);
   });
 
@@ -69,9 +72,9 @@ describe('array literals', () => {
 
       static ngComponentDef = defineComponent({
         type: ManyPropComp,
-        selector: [[['many-prop-comp'], null]],
+        selectors: [['many-prop-comp']],
         factory: function ManyPropComp_Factory() { return manyPropComp = new ManyPropComp(); },
-        template: function ManyPropComp_Template(ctx: ManyPropComp, cm: boolean) {},
+        template: function ManyPropComp_Template(rf: RenderFlags, ctx: ManyPropComp) {},
         inputs: {names1: 'names1', names2: 'names2'}
       });
     }
@@ -83,16 +86,18 @@ describe('array literals', () => {
      * <many-prop-comp [names1]="['Nancy', customName]" [names2]="[customName2]">
      * </many-prop-comp>
      */
-    function Template(ctx: any, cm: boolean) {
-      if (cm) {
+    function Template(rf: RenderFlags, ctx: any) {
+      if (rf & RenderFlags.Create) {
         elementStart(0, 'many-prop-comp');
         elementEnd();
       }
-      elementProperty(0, 'names1', bind(pureFunction1(e0_ff, ctx.customName)));
-      elementProperty(0, 'names2', bind(pureFunction1(e0_ff_1, ctx.customName2)));
+      if (rf & RenderFlags.Update) {
+        elementProperty(0, 'names1', bind(pureFunction1(e0_ff, ctx.customName)));
+        elementProperty(0, 'names2', bind(pureFunction1(e0_ff_1, ctx.customName2)));
+      }
     }
 
-    const defs = [ManyPropComp.ngComponentDef];
+    const defs = [ManyPropComp];
     renderToHtml(Template, {customName: 'Carson', customName2: 'George'}, defs);
     expect(manyPropComp !.names1).toEqual(['Nancy', 'Carson']);
     expect(manyPropComp !.names2).toEqual(['George']);
@@ -118,22 +123,24 @@ describe('array literals', () => {
 
       static ngComponentDef = defineComponent({
         type: ParentComp,
-        selector: [[['parent-comp'], null]],
+        selectors: [['parent-comp']],
         factory: () => new ParentComp(),
-        template: function(ctx: any, cm: boolean) {
-          if (cm) {
+        template: function(rf: RenderFlags, ctx: any) {
+          if (rf & RenderFlags.Create) {
             elementStart(0, 'my-comp');
             myComps.push(loadDirective(0));
             elementEnd();
           }
-          elementProperty(0, 'names', bind(ctx.someFn(pureFunction1(e0_ff, ctx.customName))));
+          if (rf & RenderFlags.Update) {
+            elementProperty(0, 'names', bind(ctx.someFn(pureFunction1(e0_ff, ctx.customName))));
+          }
         },
-        directiveDefs: defs
+        directives: directives
       });
     }
 
-    function Template(ctx: any, cm: boolean) {
-      if (cm) {
+    function Template(rf: RenderFlags, ctx: any) {
+      if (rf & RenderFlags.Create) {
         elementStart(0, 'parent-comp');
         elementEnd();
         elementStart(1, 'parent-comp');
@@ -141,14 +148,14 @@ describe('array literals', () => {
       }
     }
 
-    renderToHtml(Template, {}, [ParentComp.ngComponentDef]);
+    renderToHtml(Template, {}, [ParentComp]);
     const firstArray = myComps[0].names;
     const secondArray = myComps[1].names;
     expect(firstArray).toEqual(['NANCY', 'Bess']);
     expect(secondArray).toEqual(['NANCY', 'Bess']);
     expect(firstArray).not.toBe(secondArray);
 
-    renderToHtml(Template, {}, [ParentComp.ngComponentDef]);
+    renderToHtml(Template, {}, [ParentComp]);
     expect(firstArray).toEqual(['NANCY', 'Bess']);
     expect(secondArray).toEqual(['NANCY', 'Bess']);
     expect(firstArray).toBe(myComps[0].names);
@@ -159,33 +166,35 @@ describe('array literals', () => {
     const e0_ff = (v1: any, v2: any) => ['Nancy', v1, 'Bess', v2];
 
     /** <my-comp [names]="['Nancy', customName, 'Bess', customName2]"></my-comp> */
-    function Template(ctx: any, cm: boolean) {
-      if (cm) {
+    function Template(rf: RenderFlags, ctx: any) {
+      if (rf & RenderFlags.Create) {
         elementStart(0, 'my-comp');
         elementEnd();
       }
-      elementProperty(0, 'names', bind(pureFunction2(e0_ff, ctx.customName, ctx.customName2)));
+      if (rf & RenderFlags.Update) {
+        elementProperty(0, 'names', bind(pureFunction2(e0_ff, ctx.customName, ctx.customName2)));
+      }
     }
 
-    renderToHtml(Template, {customName: 'Carson', customName2: 'Hannah'}, defs);
+    renderToHtml(Template, {customName: 'Carson', customName2: 'Hannah'}, directives);
     const firstArray = myComp !.names;
     expect(firstArray).toEqual(['Nancy', 'Carson', 'Bess', 'Hannah']);
 
-    renderToHtml(Template, {customName: 'Carson', customName2: 'Hannah'}, defs);
+    renderToHtml(Template, {customName: 'Carson', customName2: 'Hannah'}, directives);
     expect(myComp !.names).toEqual(['Nancy', 'Carson', 'Bess', 'Hannah']);
     expect(firstArray).toBe(myComp !.names);
 
-    renderToHtml(Template, {customName: 'George', customName2: 'Hannah'}, defs);
+    renderToHtml(Template, {customName: 'George', customName2: 'Hannah'}, directives);
     expect(myComp !.names).toEqual(['Nancy', 'George', 'Bess', 'Hannah']);
     expect(firstArray).not.toBe(myComp !.names);
 
-    renderToHtml(Template, {customName: 'Frank', customName2: 'Ned'}, defs);
+    renderToHtml(Template, {customName: 'Frank', customName2: 'Ned'}, directives);
     expect(myComp !.names).toEqual(['Nancy', 'Frank', 'Bess', 'Ned']);
 
     // The property should not be set if the exp value is the same, so artificially
     // setting the property to ensure it's not overwritten.
     myComp !.names = ['should not be overwritten'];
-    renderToHtml(Template, {customName: 'Frank', customName2: 'Ned'}, defs);
+    renderToHtml(Template, {customName: 'Frank', customName2: 'Ned'}, directives);
     expect(myComp !.names).toEqual(['should not be overwritten']);
   });
 
@@ -212,8 +221,8 @@ describe('array literals', () => {
         (v1: any, v2: any, v3: any, v4: any, v5: any, v6: any, v7: any,
          v8: any) => [v1, v2, v3, v4, v5, v6, v7, v8];
 
-    function Template(c: any, cm: boolean) {
-      if (cm) {
+    function Template(rf: RenderFlags, c: any) {
+      if (rf & RenderFlags.Create) {
         elementStart(0, 'my-comp');
         f3Comp = loadDirective(0);
         elementEnd();
@@ -233,17 +242,20 @@ describe('array literals', () => {
         f8Comp = loadDirective(5);
         elementEnd();
       }
-      elementProperty(0, 'names', bind(pureFunction3(e0_ff, c[5], c[6], c[7])));
-      elementProperty(1, 'names', bind(pureFunction4(e2_ff, c[4], c[5], c[6], c[7])));
-      elementProperty(2, 'names', bind(pureFunction5(e4_ff, c[3], c[4], c[5], c[6], c[7])));
-      elementProperty(3, 'names', bind(pureFunction6(e6_ff, c[2], c[3], c[4], c[5], c[6], c[7])));
-      elementProperty(
-          4, 'names', bind(pureFunction7(e8_ff, c[1], c[2], c[3], c[4], c[5], c[6], c[7])));
-      elementProperty(
-          5, 'names', bind(pureFunction8(e10_ff, c[0], c[1], c[2], c[3], c[4], c[5], c[6], c[7])));
+      if (rf & RenderFlags.Update) {
+        elementProperty(0, 'names', bind(pureFunction3(e0_ff, c[5], c[6], c[7])));
+        elementProperty(1, 'names', bind(pureFunction4(e2_ff, c[4], c[5], c[6], c[7])));
+        elementProperty(2, 'names', bind(pureFunction5(e4_ff, c[3], c[4], c[5], c[6], c[7])));
+        elementProperty(3, 'names', bind(pureFunction6(e6_ff, c[2], c[3], c[4], c[5], c[6], c[7])));
+        elementProperty(
+            4, 'names', bind(pureFunction7(e8_ff, c[1], c[2], c[3], c[4], c[5], c[6], c[7])));
+        elementProperty(
+            5, 'names',
+            bind(pureFunction8(e10_ff, c[0], c[1], c[2], c[3], c[4], c[5], c[6], c[7])));
+      }
     }
 
-    renderToHtml(Template, ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i'], defs);
+    renderToHtml(Template, ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i'], directives);
     expect(f3Comp !.names).toEqual(['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']);
     expect(f4Comp !.names).toEqual(['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']);
     expect(f5Comp !.names).toEqual(['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']);
@@ -251,7 +263,7 @@ describe('array literals', () => {
     expect(f7Comp !.names).toEqual(['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']);
     expect(f8Comp !.names).toEqual(['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']);
 
-    renderToHtml(Template, ['a1', 'b1', 'c1', 'd1', 'e1', 'f1', 'g1', 'h1', 'i1'], defs);
+    renderToHtml(Template, ['a1', 'b1', 'c1', 'd1', 'e1', 'f1', 'g1', 'h1', 'i1'], directives);
     expect(f3Comp !.names).toEqual(['a', 'b', 'c', 'd', 'e', 'f1', 'g1', 'h1']);
     expect(f4Comp !.names).toEqual(['a', 'b', 'c', 'd', 'e1', 'f1', 'g1', 'h1']);
     expect(f5Comp !.names).toEqual(['a', 'b', 'c', 'd1', 'e1', 'f1', 'g1', 'h1']);
@@ -259,7 +271,7 @@ describe('array literals', () => {
     expect(f7Comp !.names).toEqual(['a', 'b1', 'c1', 'd1', 'e1', 'f1', 'g1', 'h1']);
     expect(f8Comp !.names).toEqual(['a1', 'b1', 'c1', 'd1', 'e1', 'f1', 'g1', 'h1']);
 
-    renderToHtml(Template, ['a1', 'b1', 'c1', 'd1', 'e1', 'f1', 'g1', 'h2', 'i1'], defs);
+    renderToHtml(Template, ['a1', 'b1', 'c1', 'd1', 'e1', 'f1', 'g1', 'h2', 'i1'], directives);
     expect(f3Comp !.names).toEqual(['a', 'b', 'c', 'd', 'e', 'f1', 'g1', 'h2']);
     expect(f4Comp !.names).toEqual(['a', 'b', 'c', 'd', 'e1', 'f1', 'g1', 'h2']);
     expect(f5Comp !.names).toEqual(['a', 'b', 'c', 'd1', 'e1', 'f1', 'g1', 'h2']);
@@ -274,31 +286,34 @@ describe('array literals', () => {
          v8: any) => ['start', v0, v1, v2, v3, v4, v5, v6, v7, v8, 'end'];
     const e0_ff_1 = (v: any) => { return {name: v}; };
 
-    renderToHtml(Template, ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i'], defs);
+    renderToHtml(Template, ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i'], directives);
     /**
      * <my-comp [names]="['start', v0, v1, v2, v3, {name: v4}, v5, v6, v7, v8, 'end']">
      * </my-comp>
      */
-    function Template(c: any, cm: boolean) {
-      if (cm) {
+    function Template(rf: RenderFlags, c: any) {
+      if (rf & RenderFlags.Create) {
         elementStart(0, 'my-comp');
         elementEnd();
       }
-      elementProperty(0, 'names', bind(pureFunctionV(e0_ff, [
-                        c[0], c[1], c[2], c[3], pureFunction1(e0_ff_1, c[4]), c[5], c[6], c[7], c[8]
-                      ])));
+      if (rf & RenderFlags.Update) {
+        elementProperty(
+            0, 'names', bind(pureFunctionV(e0_ff, [
+              c[0], c[1], c[2], c[3], pureFunction1(e0_ff_1, c[4]), c[5], c[6], c[7], c[8]
+            ])));
+      }
     }
 
     expect(myComp !.names).toEqual([
       'start', 'a', 'b', 'c', 'd', {name: 'e'}, 'f', 'g', 'h', 'i', 'end'
     ]);
 
-    renderToHtml(Template, ['a1', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i'], defs);
+    renderToHtml(Template, ['a1', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i'], directives);
     expect(myComp !.names).toEqual([
       'start', 'a1', 'b', 'c', 'd', {name: 'e'}, 'f', 'g', 'h', 'i', 'end'
     ]);
 
-    renderToHtml(Template, ['a1', 'b', 'c', 'd', 'e5', 'f', 'g', 'h', 'i'], defs);
+    renderToHtml(Template, ['a1', 'b', 'c', 'd', 'e5', 'f', 'g', 'h', 'i'], directives);
     expect(myComp !.names).toEqual([
       'start', 'a1', 'b', 'c', 'd', {name: 'e5'}, 'f', 'g', 'h', 'i', 'end'
     ]);
@@ -313,25 +328,27 @@ describe('object literals', () => {
 
     static ngComponentDef = defineComponent({
       type: ObjectComp,
-      selector: [[['object-comp'], null]],
+      selectors: [['object-comp']],
       factory: function ObjectComp_Factory() { return objectComp = new ObjectComp(); },
-      template: function ObjectComp_Template(ctx: ObjectComp, cm: boolean) {},
+      template: function ObjectComp_Template(rf: RenderFlags, ctx: ObjectComp) {},
       inputs: {config: 'config'}
     });
   }
 
-  const defs = [ObjectComp.ngComponentDef];
+  const defs = [ObjectComp];
 
   it('should support an object literal', () => {
     const e0_ff = (v: any) => { return {duration: 500, animation: v}; };
 
     /** <object-comp [config]="{duration: 500, animation: name}"></object-comp> */
-    function Template(ctx: any, cm: boolean) {
-      if (cm) {
+    function Template(rf: RenderFlags, ctx: any) {
+      if (rf & RenderFlags.Create) {
         elementStart(0, 'object-comp');
         elementEnd();
       }
-      elementProperty(0, 'config', bind(pureFunction1(e0_ff, ctx.name)));
+      if (rf & RenderFlags.Update) {
+        elementProperty(0, 'config', bind(pureFunction1(e0_ff, ctx.name)));
+      }
     }
 
     renderToHtml(Template, {name: 'slide'}, defs);
@@ -359,15 +376,17 @@ describe('object literals', () => {
      * duration: duration }]}">
      * </object-comp>
      */
-    function Template(ctx: any, cm: boolean) {
-      if (cm) {
+    function Template(rf: RenderFlags, ctx: any) {
+      if (rf & RenderFlags.Create) {
         elementStart(0, 'object-comp');
         elementEnd();
       }
-      elementProperty(
-          0, 'config',
-          bind(pureFunction2(
-              e0_ff, ctx.name, pureFunction1(e0_ff_1, pureFunction1(e0_ff_2, ctx.duration)))));
+      if (rf & RenderFlags.Update) {
+        elementProperty(
+            0, 'config',
+            bind(pureFunction2(
+                e0_ff, ctx.name, pureFunction1(e0_ff_1, pureFunction1(e0_ff_2, ctx.duration)))));
+      }
     }
 
     renderToHtml(Template, {name: 'slide', duration: 100}, defs);
@@ -419,25 +438,30 @@ describe('object literals', () => {
      *   </object-comp>
      * % }
      */
-    function Template(ctx: any, cm: boolean) {
-      if (cm) {
+    function Template(rf: RenderFlags, ctx: any) {
+      if (rf & RenderFlags.Create) {
         container(0);
       }
-      containerRefreshStart(0);
-      {
-        for (let i = 0; i < 2; i++) {
-          if (embeddedViewStart(0)) {
-            elementStart(0, 'object-comp');
-            objectComps.push(loadDirective(0));
-            elementEnd();
+      if (rf & RenderFlags.Update) {
+        containerRefreshStart(0);
+        {
+          for (let i = 0; i < 2; i++) {
+            let rf1 = embeddedViewStart(0);
+            if (rf1 & RenderFlags.Create) {
+              elementStart(0, 'object-comp');
+              objectComps.push(loadDirective(0));
+              elementEnd();
+            }
+            if (rf1 & RenderFlags.Update) {
+              elementProperty(
+                  0, 'config',
+                  bind(pureFunction2(e0_ff, ctx.configs[i].opacity, ctx.configs[i].duration)));
+            }
+            embeddedViewEnd();
           }
-          elementProperty(
-              0, 'config',
-              bind(pureFunction2(e0_ff, ctx.configs[i].opacity, ctx.configs[i].duration)));
-          embeddedViewEnd();
         }
+        containerRefreshEnd();
       }
-      containerRefreshEnd();
     }
 
     const e0_ff = (v1: any, v2: any) => { return {opacity: v1, duration: v2}; };

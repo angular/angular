@@ -9,6 +9,8 @@
 // THIS CODE IS GENERATED - DO NOT MODIFY
 // See angular/tools/gulp-tasks/cldr/extract.js
 
+const u = undefined;
+
 function plural(n: number): number {
   let i = Math.floor(Math.abs(n));
   if (i === Math.floor(i) && i >= 0 && i <= 1) return 1;
@@ -16,12 +18,7 @@ function plural(n: number): number {
 }
 
 export default [
-  'pt',
-  [
-    ['AM', 'PM'],
-    ,
-  ],
-  ,
+  'pt', [['AM', 'PM'], u, u], u,
   [
     ['D', 'S', 'T', 'Q', 'Q', 'S', 'S'], ['dom', 'seg', 'ter', 'qua', 'qui', 'sex', 'sáb'],
     [
@@ -30,7 +27,7 @@ export default [
     ],
     ['dom', 'seg', 'ter', 'qua', 'qui', 'sex', 'sáb']
   ],
-  ,
+  u,
   [
     ['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'],
     ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez'],
@@ -39,20 +36,15 @@ export default [
       'outubro', 'novembro', 'dezembro'
     ]
   ],
-  , [['a.C.', 'd.C.'], , ['antes de Cristo', 'depois de Cristo']], 0, [6, 0],
+  u, [['a.C.', 'd.C.'], u, ['antes de Cristo', 'depois de Cristo']], 0, [6, 0],
   ['dd/MM/y', 'd \'de\' MMM \'de\' y', 'd \'de\' MMMM \'de\' y', 'EEEE, d \'de\' MMMM \'de\' y'],
-  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'],
-  [
-    '{1} {0}',
-    ,
-    ,
-  ],
+  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'], ['{1} {0}', u, u, u],
   [',', '.', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
   ['#,##0.###', '#,##0%', '¤ #,##0.00', '#E0'], 'R$', 'Real brasileiro', {
     'AUD': ['AU$', '$'],
     'JPY': ['JP¥', '¥'],
     'PTE': ['Esc.'],
-    'RON': [, 'L'],
+    'RON': [u, 'L'],
     'THB': ['฿'],
     'TWD': ['NT$'],
     'USD': ['US$', '$']

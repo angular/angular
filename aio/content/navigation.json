@@ -230,6 +230,11 @@
 	      "tooltip": "CSS 스타일을 추가해서 컴포넌트를 꾸밀 수 있습니다."
             },
             {
+              "url": "guide/elements",
+              "title": "Angular Elements",
+              "tooltip": "Convert components to Custom Elements."
+            },
+            {
               "url": "guide/dynamic-component-loader",
               "title!": "Dynamic Components",
 	      "title": "동적 컴포넌트",
@@ -568,11 +573,6 @@
           ]
         },
         {
-          "url": "guide/custom-elements",
-          "title": "Custom Elements",
-          "tooltip": "Using Angular Components as Custom Elements."
-        },
-        {
           "title!": "Service Workers",
           "title": "서비스 워커",
           "tooltip": "Angular service workers: Controlling caching of application resources.",
@@ -616,14 +616,31 @@
         },
 
         {
-          "title!": "Upgrading",
+          "title": "Keeping Up-to-Date",
+          "tooltip": "Angular release practices, planning for updates, and update resources.",
+          "children": [
+            { 
+              "url": "guide/updating",
+              "title": "Updating Your Projects",
+              "tooltip": "Information about updating Angular applications and libraries to the latest version."
+            },
+            { 
+              "url": "guide/releases",
+              "title": "Angular Releases",
+              "tooltip": "Angular versioning, release, support, and deprecation policies and practices."
+            }
+          ]
+        },  
+
+        {
+          "title!": "Upgrading from AngularJS",
           "title": "업그레이드",
           "tooltip!": "Incrementally upgrade an AngularJS application to Angular.",
           "tooltip": "AngularJS 애플리케이션을 Angular로 업그레이드 하세요.",
           "children": [
             {
               "url": "guide/upgrade",
-              "title!": "Upgrading from AngularJS",
+              "title!": "Upgrading Instructions",
               "title": "AngularJS 애플리케이션 업그레이드 하기",
               "tooltip!": "Incrementally upgrade an AngularJS application to Angular.",
               "tooltip": "AngularJS 애플리케이션을 Angular로 업그레이드 하세요."
@@ -789,6 +806,10 @@
         {
           "title": "中文版",
           "url": "https://angular.cn/"
+        },
+        {
+          "title": "日本語版",
+          "url": "https://angular.jp/"
         }
       ]
     }

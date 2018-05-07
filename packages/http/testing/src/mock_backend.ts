@@ -19,7 +19,7 @@ import {take} from 'rxjs/operators';
  * @deprecated use @angular/common/http instead
  */
 export class MockConnection implements Connection {
-  // TODO Name `readyState` should change to be more generic, and states could be made to be more
+  // TODO: Name `readyState` should change to be more generic, and states could be made to be more
   // descriptive than ResourceLoader states.
   /**
    * Describes the state of the connection, based on `XMLHttpRequest.readyState`, but with

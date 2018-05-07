@@ -46,31 +46,31 @@ export const formControlBinding: any = {
 const resolvedPromise = Promise.resolve(null);
 
 /**
- * @whatItDoes Creates a {@link FormControl} instance from a domain model and binds it
+ * @description
+ *
+ * Creates a `FormControl` instance from a domain model and binds it
  * to a form control element.
  *
- * The {@link FormControl} instance will track the value, user interaction, and
+ * The `FormControl` instance will track the value, user interaction, and
  * validation status of the control and keep the view synced with the model. If used
  * within a parent form, the directive will also register itself with the form as a child
  * control.
  *
- * @howToUse
- *
  * This directive can be used by itself or as part of a larger form. All you need is the
  * `ngModel` selector to activate it.
  *
- * It accepts a domain model as an optional {@link Input}. If you have a one-way binding
+ * It accepts a domain model as an optional `Input`. If you have a one-way binding
  * to `ngModel` with `[]` syntax, changing the value of the domain model in the component
  * class will set the value in the view. If you have a two-way binding with `[()]` syntax
  * (also known as 'banana-box syntax'), the value in the UI will always be synced back to
  * the domain model in your class as well.
  *
- * If you wish to inspect the properties of the associated {@link FormControl} (like
+ * If you wish to inspect the properties of the associated `FormControl` (like
  * validity state), you can also export the directive into a local template variable using
  * `ngModel` as the key (ex: `#myVar="ngModel"`). You can then access the control using the
  * directive's `control` property, but most properties you'll need (like `valid` and `dirty`)
  * will fall through to the control anyway, so you can access them directly. You can see a
- * full list of properties directly available in {@link AbstractControlDirective}.
+ * full list of properties directly available in `AbstractControlDirective`.
  *
  * The following is an example of a simple standalone control using `ngModel`:
  *
@@ -94,14 +94,14 @@ const resolvedPromise = Promise.resolve(null);
  *
  * To see `ngModel` examples with different form control types, see:
  *
- * * Radio buttons: {@link RadioControlValueAccessor}
- * * Selects: {@link SelectControlValueAccessor}
+ * * Radio buttons: `RadioControlValueAccessor`
+ * * Selects: `SelectControlValueAccessor`
  *
  * **npm package**: `@angular/forms`
  *
  * **NgModule**: `FormsModule`
  *
- *  @stable
+ *
  */
 @Directive({
   selector: '[ngModel]:not([formControlName]):not([formControl])',

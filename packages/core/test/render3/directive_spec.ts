@@ -8,7 +8,7 @@
 
 import {defineDirective} from '../../src/render3/index';
 import {bind, elementEnd, elementProperty, elementStart, loadDirective} from '../../src/render3/instructions';
-
+import {RenderFlags} from '../../src/render3/interfaces/definition';
 import {renderToHtml} from './render_util';
 
 describe('directive', () => {
@@ -22,7 +22,7 @@ describe('directive', () => {
         klass = 'foo';
         static ngDirectiveDef = defineDirective({
           type: Directive,
-          selector: [[['', 'dir', ''], null]],
+          selectors: [['', 'dir', '']],
           factory: () => directiveInstance = new Directive,
           hostBindings: (directiveIndex: number, elementIndex: number) => {
             elementProperty(
@@ -31,14 +31,14 @@ describe('directive', () => {
         });
       }
 
-      function Template(ctx: any, cm: boolean) {
-        if (cm) {
+      function Template(rf: RenderFlags, ctx: any) {
+        if (rf & RenderFlags.Create) {
           elementStart(0, 'span', ['dir', '']);
           elementEnd();
         }
       }
 
-      const defs = [Directive.ngDirectiveDef];
+      const defs = [Directive];
       expect(renderToHtml(Template, {}, defs)).toEqual('<span class="foo" dir=""></span>');
       directiveInstance !.klass = 'bar';
       expect(renderToHtml(Template, {}, defs)).toEqual('<span class="bar" dir=""></span>');

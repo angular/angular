@@ -34,7 +34,7 @@ import {getSymbolIterator} from '../util';
  *   @ViewChildren(Item) items:QueryList<Item>;
  * }
  * ```
- * @stable
+ *
  */
 export class QueryList<T>/* implements Iterable<T> */ {
   public readonly dirty = true;
