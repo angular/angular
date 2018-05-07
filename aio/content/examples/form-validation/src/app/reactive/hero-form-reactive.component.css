@@ -1,0 +1,5 @@
+/* #docregion cross-validation-error-css */
+.cross-validation-error input {
+  border-left: 5px solid red;
+}
+/* #enddocregion cross-validation-error-css */

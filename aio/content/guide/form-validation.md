@@ -92,7 +92,7 @@ built-in validators&mdash;this time, in function form. See below:
 
 {@a reactive-component-class}
 
-<code-example path="form-validation/src/app/reactive/hero-form-reactive.component.ts" region="form-group" title="reactive/hero-form-reactive.component.ts (validator functions)" linenums="false">
+<code-example path="form-validation/src/app/reactive/hero-form-reactive.component.1.ts" region="form-group" title="reactive/hero-form-reactive.component.ts (validator functions)" linenums="false">
 </code-example>
 
 Note that:
@@ -148,7 +148,7 @@ at which point the form uses the last value emitted for validation.
 In reactive forms, custom validators are fairly simple to add. All you have to do is pass the function directly 
 to the `FormControl`.
 
-<code-example path="form-validation/src/app/reactive/hero-form-reactive.component.ts" region="custom-validator" title="reactive/hero-form-reactive.component.ts (validator functions)" linenums="false">
+<code-example path="form-validation/src/app/reactive/hero-form-reactive.component.1.ts" region="custom-validator" title="reactive/hero-form-reactive.component.ts (validator functions)" linenums="false">
 </code-example>
 
 ### Adding to template-driven forms
@@ -208,5 +208,129 @@ set the color of each form control's border.
 
 </code-example>
 
+## Cross field validation 
+This section shows how to perform cross field validation. It assumes some basic knowledge of creating custom validators.
+
+<div class="l-sub-section">
+
+If you haven't created custom validators before, start by reviewing the [CustomValidators](guide/form-validation#custom-validators).
+
+</div>
+
+In the following section we will make sure that our heroes do not reveal their true identities by filling out the Hero Form. We will do that by validating that the hero names and alter egos do not match. The form has the following structure:
+
+```javascript
+const heroForm = new FormGroup({
+  'name': new FormControl(),
+  'alterEgo': new FormControl(),
+  'power': new FormControl()
+};
+```
+
+Notice that the `name` and `alterEgo` are sibling controls. To evaluate both controls in a single custom validator, we should perform the validation in the ancestor control. That way we can query the form tree for the child controls which will allow us to compare their values.
+
+```javascript
+const heroForm = new FormGroup({
+  'name': new FormControl(),
+  'alterEgo': new FormControl(), 
+  'power': new FormControl()   
+}, { validators: identityRevealedValidator });
+```
+
+The validator code is as follows:
+
+<code-example path="form-validation/src/app/shared/identity-revealed.directive.ts" region="cross-validation-validator" title="shared/identity-revealed.directive.ts" linenums="false">
+</code-example>
+
+Identity validator implements the `ValidatorFn` interface. It takes an Angular control object as an argument and returns either null if the form is valid, or ValidationErrors otherwise.
+
+First we retrieve the child controls by calling the `FormGroup`'s [get](api/forms/AbstractControl#get) method. Then we simply compare the values of the `name` and `alterEgo` controls. 
+
+If the values do not match the hero's identity remains disguised, and we can safely return null. Otherwise, the hero's identity is revealed and we must mark the form as invalid by returning an error object.
+
+
+### Adding to reactive forms
+
+As with all reactive forms, the validator can be registered during the form creation. We make sure to register it at the `FormGroup` level, to give it access to the child controls.
+<code-example path="form-validation/src/app/reactive/hero-form-reactive.component.ts" region="cross-validation-register" title="reactive/hero-form-template.component.ts" linenums="false">
+</code-example>
+
+Next, to provide better user experience, we show an appropriate error message when the form is invalid.
+<code-example path="form-validation/src/app/reactive/hero-form-reactive.component.html" region="cross-validation-error-message" title="reactive/hero-form-template.component.html" linenums="false">
+</code-example>
+
+Note that we check if:
+- the `FormGroup` has the cross validation error returned by the `identityRevealed` validator, 
+- the user is yet to [interact](guide/form-validation#why-check-dirty-and-touched) with the form.
+
+Finally, we want to style the `input` elements to give visual feedback about form control's validity. Unfortunately, the `identityRevealed` error is on the form group control (`heroForm`) and not on the child form controls (`name`, `alterEgo`). That means that the `<input formControlName="name" />` and `<input formControlName="alterEgo" />` will not have the `ng-invalid` class after the cross validation fails. 
+
+We can get around this problem by binding our own css class to the same expression that was used to show and hide the validation error message.
+
+<code-tabs linenums="false">
+  <code-pane path="form-validation/src/app/reactive/hero-form-reactive.component.html" region="cross-validation-error-class" title="reactive/hero-form-reactive.component.html" linenums="false">
+  </code-pane>
+  <code-pane path="form-validation/src/app/reactive/hero-form-reactive.component.css" title="reactive/hero-form-reactive.component.css" linenums="false">
+  </code-pane>
+</code-tabs>
+
+Below you can inspect the cross validation example for the reactive forms. The example skips over the parts that are not related to cross validation to keep this section focused on a single task. You can see the complete code example at the end of this chapter.
+
+<code-tabs linenums="false">
+  <code-pane path="form-validation/src/app/reactive/hero-form-reactive.component.html" region="cross-validation" title="reactive/hero-form-reactive.component.html" linenums="false">
+  </code-pane>
+  <code-pane path="form-validation/src/app/reactive/hero-form-reactive.component.ts" region="cross-validation-component" title="reactive/hero-form-reactive.component.ts" linenums="false">
+  </code-pane>
+  <code-pane path="form-validation/src/app/reactive/hero-form-reactive.component.css" title="reactive/hero-form-reactive.component.css" linenums="false">
+  </code-pane>
+  <code-pane path="form-validation/src/app/shared/identity-revealed.directive.ts" title="shared/identity-revealed.directive.ts" region="cross-validation-validator" linenums="false">
+  </code-pane>
+</code-tabs>
+
+### Adding to template driven forms
+First we must create a directive that will wrap the validator function. We provide it as the validator using the `NG_VALIDATORS` token. If you are not sure why, or you do not fully understand the syntax revisit the previous [section](guide/form-validation#adding-to-template-driven-forms).
+
+<code-example path="form-validation/src/app/shared/identity-revealed.directive.ts" region="cross-validation-directive" title="shared/identity-revealed.directive.ts (directive)" linenums="false">
+</code-example>
+
+Next, we have to add the directive to the html template. Since the validator must be registered at the `FormGroup` level, we put the directive on the `form` tag.
+<code-example path="form-validation/src/app/template/hero-form-template.component.html" region="cross-validation-register-validator" title="template/hero-form-template.component.html" linenums="false">
+</code-example>
+
+To provide better user experience, we show an appropriate error message when the form is invalid.
+<code-example path="form-validation/src/app/template/hero-form-template.component.html" region="cross-validation-error-message" title="template/hero-form-template.component.html" linenums="false">
+</code-example>
+
+Note that we check if:
+- the `FormGroup` has the cross validation error returned by the `identityRevealed` validator, 
+- the user is yet to [interact](guide/form-validation#why-check-dirty-and-touched) with the form.
+
+Finally, we want to style the `input` elements to give visual feedback about form control's validity. Unfortunately, the `identityRevealed` error is on the form group control (`heroForm`) and not on the child form controls (`name`, `alterEgo`). That means that the `<input [(ngModel)]="hero.name" />` and `<input [(ngModel)]="hero.alterEgo" />` will not have the `ng-invalid` class after the cross validation fails. 
+
+We can get around this problem by binding our own css class to the same expression that was used to show and hide the validation error message.
+
+<code-tabs linenums="false">
+  <code-pane path="form-validation/src/app/template/hero-form-template.component.html" region="cross-validation-error-class" title="template/hero-form-template.component.html" linenums="false">
+  </code-pane>
+  <code-pane path="form-validation/src/app/template/hero-form-template.component.css" title="template/hero-form-template.component.css" linenums="false">
+  </code-pane>
+</code-tabs>
+
+Below you can inspect the cross validation example for the template-driven forms. The example skips over parts that are not related to cross validation to keep this section focused on a single task. You can see the complete code example at the end of this chapter.
+<code-tabs linenums="false">
+  <code-pane path="form-validation/src/app/template/hero-form-template.component.html" region="cross-validation" title="template/hero-form-template.component.html" linenums="false">
+  </code-pane>
+  <code-pane path="form-validation/src/app/template/hero-form-template.component.ts" region="component" title="template/hero-form-template.component.ts" linenums="false">
+  </code-pane>
+  <code-pane path="form-validation/src/app/template/hero-form-template.component.css" title="template/hero-form-template.component.css" linenums="false">
+  </code-pane>
+  <code-pane path="form-validation/src/app/shared/identity-revealed.directive.ts" title="shared/identity-revealed.directive.ts" region="cross-validation-directive-with-validator" linenums="false">
+  </code-pane>
+</code-tabs>
+
+This completes the cross validation example. We managed to:
+- validate the form based on the values of two sibling controls, 
+- show a descriptive error message after the user interacted with the form and the validation failed,
+- give visual feedback on the form validity.
 
 **You can run the <live-example></live-example> to see the complete reactive and template-driven example code.**
