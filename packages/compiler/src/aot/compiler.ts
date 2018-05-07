@@ -25,7 +25,7 @@ import {ParseError} from '../parse_util';
 import {compileNgModule as compileIvyModule} from '../render3/r3_module_compiler';
 import {compilePipe as compileIvyPipe} from '../render3/r3_pipe_compiler';
 import {HtmlToTemplateTransform} from '../render3/r3_template_transform';
-import {compileComponentGlobal as compileIvyComponent, compileDirectiveGlobal as compileIvyDirective} from '../render3/view/compiler';
+import {compileComponentFromRender2 as compileIvyComponent, compileDirectiveFromRender2 as compileIvyDirective} from '../render3/view/compiler';
 import {DomElementSchemaRegistry} from '../schema/dom_element_schema_registry';
 import {CompiledStylesheet, StyleCompiler} from '../style_compiler';
 import {SummaryResolver} from '../summary_resolver';

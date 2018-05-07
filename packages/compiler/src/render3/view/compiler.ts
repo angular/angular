@@ -22,7 +22,7 @@ import {BindingParser} from '../../template_parser/binding_parser';
 import {OutputContext, error} from '../../util';
 
 import * as t from './../r3_ast';
-import {R3DependencyMetadata, R3ResolvedDependency, compileFactoryFunction, dependenciesFromGlobalMetadata} from './../r3_factory';
+import {R3DependencyMetadata, R3ResolvedDependencyType, compileFactoryFunction, dependenciesFromGlobalMetadata} from './../r3_factory';
 import {Identifiers as R3} from './../r3_identifiers';
 import {R3ComponentDef, R3ComponentMetadata, R3DirectiveDef, R3DirectiveMetadata, R3QueryMetadata} from './api';
 import {BindingScope, TemplateDefinitionBuilder} from './template';
@@ -109,8 +109,8 @@ export function compileComponent(
 
   if (meta.directives.size) {
     const matcher = new SelectorMatcher();
-    meta.directives.forEach((staticType: any, selector: string) => {
-      matcher.addSelectables(CssSelector.parse(selector), staticType);
+    meta.directives.forEach((expression, selector: string) => {
+      matcher.addSelectables(CssSelector.parse(selector), expression);
     });
     directiveMatcher = matcher;
   }
@@ -165,7 +165,7 @@ export function compileComponent(
  * `R3DirectiveMetadata` is computed from `CompileDirectiveMetadata` and other statically reflected
  * information.
  */
-export function compileDirectiveGlobal(
+export function compileDirectiveFromRender2(
     outputCtx: OutputContext, directive: CompileDirectiveMetadata, reflector: CompileReflector,
     bindingParser: BindingParser) {
   const name = identifierName(directive.type) !;
@@ -190,7 +190,7 @@ export function compileDirectiveGlobal(
  * `R3ComponentMetadata` is computed from `CompileDirectiveMetadata` and other statically reflected
  * information.
  */
-export function compileComponentGlobal(
+export function compileComponentFromRender2(
     outputCtx: OutputContext, component: CompileDirectiveMetadata, nodes: t.Node[],
     hasNgContent: boolean, ngContentSelectors: string[], reflector: CompileReflector,
     bindingParser: BindingParser, directiveTypeBySel: Map<string, any>,

@@ -20,7 +20,7 @@ import * as t from '../r3_ast';
 import {Identifiers as R3} from '../r3_identifiers';
 
 import {R3QueryMetadata} from './api';
-import {CONTEXT_NAME, I18N_ATTR, I18N_ATTR_PREFIX, ID_SEPARATOR, IMPLICIT_REFERENCE, MEANING_SEPARATOR, REFERENCE_PREFIX, RENDER_FLAGS, RenderFlags, TEMPORARY_NAME, asLiteral, getQueryPredicate, invalid, mapToExpression, noop, temporaryAllocator, trimTrailingNulls, unsupported} from './util';
+import {CONTEXT_NAME, I18N_ATTR, I18N_ATTR_PREFIX, ID_SEPARATOR, IMPLICIT_REFERENCE, MEANING_SEPARATOR, REFERENCE_PREFIX, RENDER_FLAGS, TEMPORARY_NAME, asLiteral, getQueryPredicate, invalid, mapToExpression, noop, temporaryAllocator, trimTrailingNulls, unsupported} from './util';
 
 const BINDING_INSTRUCTION_MAP: {[type: number]: o.ExternalReference} = {
   [BoundElementBindingType.Property]: R3.elementProperty,
@@ -133,13 +133,13 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
 
     const creationCode = this._creationCode.length > 0 ?
         [o.ifStmt(
-            o.variable(RENDER_FLAGS).bitwiseAnd(o.literal(RenderFlags.Create), null, false),
+            o.variable(RENDER_FLAGS).bitwiseAnd(o.literal(core.RenderFlags.Create), null, false),
             this._creationCode)] :
         [];
 
     const updateCode = this._bindingCode.length > 0 ?
         [o.ifStmt(
-            o.variable(RENDER_FLAGS).bitwiseAnd(o.literal(RenderFlags.Update), null, false),
+            o.variable(RENDER_FLAGS).bitwiseAnd(o.literal(core.RenderFlags.Update), null, false),
             this._bindingCode)] :
         [];
 
