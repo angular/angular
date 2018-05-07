@@ -48,7 +48,10 @@ export interface Announcement {
     <div class="announcement-bar">
       <img [src]="announcement.imageUrl">
       <p [innerHTML]="announcement.message"></p>
+      <!--
       <a class="button" [href]="announcement.linkUrl">Learn More</a>
+      -->
+      <a class="button" [href]="announcement.linkUrl">더 알아보기</a>
     </div>
   </div>`
 })

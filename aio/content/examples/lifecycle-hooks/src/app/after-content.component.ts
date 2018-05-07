@@ -28,12 +28,21 @@ export class ChildComponent {
     </p>
   `
 })
+// // #docregion hooks!
+// export class AfterContentComponent implements AfterContentChecked, AfterContentInit {
+//   private prevHero = '';
+//   comment = '';
+
+//   // Query for a CONTENT child of type `ChildComponent`
+//   @ContentChild(ChildComponent) contentChild: ChildComponent;
+
+// // #enddocregion hooks!
 // #docregion hooks
 export class AfterContentComponent implements AfterContentChecked, AfterContentInit {
   private prevHero = '';
   comment = '';
 
-  // Query for a CONTENT child of type `ChildComponent`
+  // 타입으로 프로젝션된 자식 컴포넌트에 접근할 수 있습니다.
   @ContentChild(ChildComponent) contentChild: ChildComponent;
 
 // #enddocregion hooks
@@ -41,15 +50,33 @@ export class AfterContentComponent implements AfterContentChecked, AfterContentI
     this.logIt('AfterContent constructor');
   }
 
+// // #docregion hooks!
+//   ngAfterContentInit() {
+//     // contentChild is set after the content has been initialized
+//     this.logIt('AfterContentInit');
+//     this.doSomething();
+//   }
+
+//   ngAfterContentChecked() {
+//     // contentChild is updated after the content has been checked
+//     if (this.prevHero === this.contentChild.hero) {
+//       this.logIt('AfterContentChecked (no change)');
+//     } else {
+//       this.prevHero = this.contentChild.hero;
+//       this.logIt('AfterContentChecked');
+//       this.doSomething();
+//     }
+//   }
+// // #enddocregion hooks!
 // #docregion hooks
   ngAfterContentInit() {
-    // contentChild is set after the content has been initialized
+    // contentChild는 컨텐츠가 초기화된 이후에 할당됩니다.
     this.logIt('AfterContentInit');
     this.doSomething();
   }
 
   ngAfterContentChecked() {
-    // contentChild is updated after the content has been checked
+    // contentChild는 컨텐츠가 갱신될때마다 갱신됩니다.
     if (this.prevHero === this.contentChild.hero) {
       this.logIt('AfterContentChecked (no change)');
     } else {
