@@ -14,7 +14,7 @@ import {invalidPipeArgumentError} from './invalid_pipe_argument_error';
  *
  * {@example  common/pipes/ts/lowerupper_pipe.ts region='LowerUpperPipe' }
  *
- * @stable
+ *
  */
 @Pipe({name: 'lowercase'})
 export class LowerCasePipe implements PipeTransform {
@@ -49,7 +49,7 @@ const unicodeWordMatch =
  * ## Example
  * {@example common/pipes/ts/titlecase_pipe.ts region='TitleCasePipe'}
  *
- * @stable
+ *
  */
 @Pipe({name: 'titlecase'})
 export class TitleCasePipe implements PipeTransform {
@@ -67,7 +67,7 @@ export class TitleCasePipe implements PipeTransform {
 /**
  * Transforms text to uppercase.
  *
- * @stable
+ *
  */
 @Pipe({name: 'uppercase'})
 export class UpperCasePipe implements PipeTransform {

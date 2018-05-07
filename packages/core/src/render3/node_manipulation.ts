@@ -11,9 +11,10 @@ import {callHooks} from './hooks';
 import {LContainer, unusedValueExportToPlacateAjd as unused1} from './interfaces/container';
 import {LContainerNode, LElementNode, LNode, LNodeType, LProjectionNode, LTextNode, LViewNode, unusedValueExportToPlacateAjd as unused2} from './interfaces/node';
 import {unusedValueExportToPlacateAjd as unused3} from './interfaces/projection';
-import {ProceduralRenderer3, RElement, RNode, RText, isProceduralRenderer, unusedValueExportToPlacateAjd as unused4} from './interfaces/renderer';
+import {ProceduralRenderer3, RElement, RNode, RText, Renderer3, isProceduralRenderer, unusedValueExportToPlacateAjd as unused4} from './interfaces/renderer';
 import {HookData, LView, LViewOrLContainer, TView, unusedValueExportToPlacateAjd as unused5} from './interfaces/view';
 import {assertNodeType} from './node_assert';
+import {stringify} from './util';
 
 const unusedValueToPlacateAjd = unused1 + unused2 + unused3 + unused4 + unused5;
 
@@ -125,8 +126,10 @@ function findFirstRNode(rootNode: LNode): RElement|RText|null {
       // A LElementNode has a matching RNode in LElementNode.native
       return (node as LElementNode).native;
     } else if (node.type === LNodeType.Container) {
-      // For container look at the first node of the view next
-      const childContainerData: LContainer = (node as LContainerNode).data;
+      const lContainerNode: LContainerNode = (node as LContainerNode);
+      const childContainerData: LContainer = lContainerNode.dynamicLContainerNode ?
+          lContainerNode.dynamicLContainerNode.data :
+          lContainerNode.data;
       nextNode = childContainerData.views.length ? childContainerData.views[0].child : null;
     } else if (node.type === LNodeType.Projection) {
       // For Projection look at the first projected node
@@ -139,6 +142,11 @@ function findFirstRNode(rootNode: LNode): RElement|RText|null {
     node = nextNode === null ? getNextOrParentSiblingNode(node, rootNode) : nextNode;
   }
   return null;
+}
+
+export function createTextNode(value: any, renderer: Renderer3): RText {
+  return isProceduralRenderer(renderer) ? renderer.createText(stringify(value)) :
+                                          renderer.createTextNode(stringify(value));
 }
 
 /**
@@ -201,7 +209,7 @@ export function addRemoveViewFromContainer(
 }
 
 /**
- * Traverses the tree of component views and containers to remove listeners and
+ * Traverses down and up the tree of views and containers to remove listeners and
  * call onDestroy callbacks.
  *
  * Notes:
@@ -214,7 +222,11 @@ export function addRemoveViewFromContainer(
  *  @param rootView The view to destroy
  */
 export function destroyViewTree(rootView: LView): void {
-  let viewOrContainer: LViewOrLContainer|null = rootView;
+  // A view to cleanup doesn't have children so we should not try to descend down the view tree.
+  if (!rootView.child) {
+    return cleanUpView(rootView);
+  }
+  let viewOrContainer: LViewOrLContainer|null = rootView.child;
 
   while (viewOrContainer) {
     let next: LViewOrLContainer|null = null;
@@ -224,13 +236,16 @@ export function destroyViewTree(rootView: LView): void {
     } else if (viewOrContainer.child) {
       next = viewOrContainer.child;
     } else if (viewOrContainer.next) {
+      // Only move to the side and clean if operating below rootView -
+      // otherwise we would start cleaning up sibling views of the rootView.
       cleanUpView(viewOrContainer as LView);
       next = viewOrContainer.next;
     }
 
     if (next == null) {
-      // If the viewOrContainer is the rootView, then the cleanup is done twice.
-      // Without this check, ngOnDestroy would be called twice for a directive on an element.
+      // If the viewOrContainer is the rootView and next is null it means that we are dealing
+      // with a root view that doesn't have children. We didn't descend into child views
+      // so no need to go back up the views tree.
       while (viewOrContainer && !viewOrContainer !.next && viewOrContainer !== rootView) {
         cleanUpView(viewOrContainer as LView);
         viewOrContainer = getParentState(viewOrContainer, rootView);
@@ -309,6 +324,7 @@ export function removeView(container: LContainerNode, removeIndex: number): LVie
     setViewNext(views[removeIndex - 1], viewNode.next);
   }
   views.splice(removeIndex, 1);
+  viewNode.next = null;
   destroyViewTree(viewNode.data);
   addRemoveViewFromContainer(container, viewNode, false);
   // Notify query that view has been removed
@@ -470,21 +486,24 @@ export function insertChild(node: LNode, currentView: LView): void {
  * @param currentView Current LView
  */
 export function appendProjectedNode(
-    node: LElementNode | LTextNode | LContainerNode, currentParent: LViewNode | LElementNode,
+    node: LElementNode | LTextNode | LContainerNode, currentParent: LElementNode,
     currentView: LView): void {
   if (node.type !== LNodeType.Container) {
     appendChild(currentParent, (node as LElementNode | LTextNode).native, currentView);
-  } else if (canInsertNativeNode(currentParent, currentView)) {
+  } else {
     // The node we are adding is a Container and we are adding it to Element which
     // is not a component (no more re-projection).
     // Alternatively a container is projected at the root of a component's template
     // and can't be re-projected (as not content of any component).
     // Assignee the final projection location in those cases.
     const lContainer = (node as LContainerNode).data;
-    lContainer.renderParent = currentParent as LElementNode;
+    lContainer.renderParent = currentParent;
     const views = lContainer.views;
     for (let i = 0; i < views.length; i++) {
       addRemoveViewFromContainer(node as LContainerNode, views[i], true, null);
     }
+  }
+  if (node.dynamicLContainerNode) {
+    node.dynamicLContainerNode.data.renderParent = currentParent;
   }
 }

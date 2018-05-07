@@ -97,11 +97,11 @@ describe('ApiListComponent', () => {
     });
   });
 
-  describe('initial critera from location', () => {
+  describe('initial criteria from location', () => {
     let locationService: TestLocationService;
 
     beforeEach(() => {
-      locationService = <any> fixture.componentRef.injector.get(LocationService);
+      locationService = fixture.componentRef.injector.get<any>(LocationService);
     });
 
     function expectOneItem(name: string, section: string, type: string, stability: string) {
@@ -110,7 +110,7 @@ describe('ApiListComponent', () => {
       component.filteredSections.subscribe(filtered => {
         expect(filtered.length).toBe(1, 'sections');
         expect(filtered[0].name).toBe(section, 'section name');
-        const items = filtered[0].items.filter(item => item.show);
+        const items = filtered[0].items.filter(i => i.show);
         expect(items.length).toBe(1, 'items');
 
         const item = items[0];
@@ -168,7 +168,7 @@ describe('ApiListComponent', () => {
     let locationService: TestLocationService;
 
     beforeEach(() => {
-      locationService = <any> fixture.componentRef.injector.get(LocationService);
+      locationService = fixture.componentRef.injector.get<any>(LocationService);
     });
 
     it('should have query', () => {

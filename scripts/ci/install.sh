@@ -64,22 +64,6 @@ if [[ ${TRAVIS} &&
   travisFoldEnd "yarn-install.aio"
 fi
 
-# Install bazel
-if [[ ${TRAVIS} && ${CI_MODE} == "e2e_2" ]]; then
-  travisFoldStart "bazel-install"
-  (
-    mkdir tmp
-    cd tmp
-    curl --location --compressed https://github.com/bazelbuild/bazel/releases/download/${BAZEL_VERSION}/bazel-${BAZEL_VERSION}-installer-linux-x86_64.sh > bazel-${BAZEL_VERSION}-installer-linux-x86_64.sh
-    chmod +x bazel-${BAZEL_VERSION}-installer-linux-x86_64.sh
-    ./bazel-${BAZEL_VERSION}-installer-linux-x86_64.sh --user
-    cd ..
-    rm -rf tmp
-  )
-  travisFoldEnd "bazel-install"
-fi
-
-
 # Install Chromium
 if [[ ${TRAVIS} &&
   ${CI_MODE} == "js" ||

@@ -9,9 +9,11 @@
 // THIS CODE IS GENERATED - DO NOT MODIFY
 // See angular/tools/gulp-tasks/cldr/extract.js
 
+const u = undefined;
+
 export default [
   [
-    ['gauerdia', 'goizald.', 'goizeko', 'eguerd.', 'arrats.', 'iluntz.', 'gaueko'], ,
+    ['gauerdia', 'goizald.', 'goizeko', 'eguerd.', 'arrats.', 'iluntz.', 'gaueko'], u,
     ['gauerdia', 'goizaldeko', 'goizeko', 'eguerdiko', 'arratsaldeko', 'iluntzeko', 'gaueko']
   ],
   [

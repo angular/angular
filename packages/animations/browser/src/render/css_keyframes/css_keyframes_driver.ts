@@ -9,7 +9,7 @@ import {AnimationPlayer, ɵStyleData} from '@angular/animations';
 
 import {allowPreviousPlayerStylesMerge, balancePreviousStylesIntoKeyframes, computeStyle} from '../../util';
 import {AnimationDriver} from '../animation_driver';
-import {containsElement, invokeQuery, matchesElement, validateStyleProperty} from '../shared';
+import {containsElement, hypenatePropsObject, invokeQuery, matchesElement, validateStyleProperty} from '../shared';
 
 import {CssKeyframesPlayer} from './css_keyframes_player';
 import {DirectStylePlayer} from './direct_style_player';
@@ -135,15 +135,6 @@ function flattenKeyframesIntoStyles(
     });
   }
   return flatKeyframes;
-}
-
-function hypenatePropsObject(object: {[key: string]: any}): {[key: string]: any} {
-  const newObj: {[key: string]: any} = {};
-  Object.keys(object).forEach(prop => {
-    const newProp = prop.replace(/([a-z])([A-Z])/g, '$1-$2');
-    newObj[newProp] = object[prop];
-  });
-  return newObj;
 }
 
 function removeElement(node: any) {

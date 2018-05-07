@@ -22,18 +22,21 @@ const configPath = path.resolve(__dirname, './commit-message.json');
 const config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
 const PATTERN = /^(\w+)(?:\(([^)]+)\))?\: (.+)$/;
 const FIXUP_SQUASH = /^(fixup|squash)\! /i;
-const REVERT = /^revert:? (\"(.*)\"|(.*))?$/i;
+const REVERT = /^revert:? /i;
 
 module.exports = function(commitSubject) {
-  commitSubject = commitSubject.replace(FIXUP_SQUASH, '');
-  commitSubject = commitSubject.replace(REVERT, function(m, g1, g2, g3) { return g2 || g3; });
+  const subject = commitSubject.replace(FIXUP_SQUASH, '');
 
-  if (commitSubject.length > config['maxLength']) {
+  if (subject.match(REVERT)) {
+    return true;
+  }
+
+  if (subject.length > config['maxLength']) {
     error(`The commit message is longer than ${config['maxLength']} characters`, commitSubject);
     return false;
   }
 
-  const match = PATTERN.exec(commitSubject);
+  const match = PATTERN.exec(subject);
   if (!match) {
     error(
         `The commit message does not match the format of '<type>(<scope>): <subject>' OR 'Revert: "type(<scope>): <subject>"'`,

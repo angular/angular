@@ -8,11 +8,15 @@
 
 import {stringifyElement} from '@angular/platform-browser/testing/src/browser_util';
 
+import {Injector} from '../../src/di/injector';
 import {CreateComponentOptions} from '../../src/render3/component';
-import {ComponentDef, ComponentTemplate, ComponentType, DirectiveDef, DirectiveType, PublicFeature, defineComponent, defineDirective, renderComponent as _renderComponent, tick} from '../../src/render3/index';
+import {extractDirectiveDef, extractPipeDef} from '../../src/render3/definition';
+import {ComponentDef, ComponentTemplate, ComponentType, DirectiveDef, DirectiveType, PublicFeature, RenderFlags, defineComponent, defineDirective, renderComponent as _renderComponent, tick} from '../../src/render3/index';
 import {NG_HOST_SYMBOL, renderTemplate} from '../../src/render3/instructions';
+import {DirectiveDefList, DirectiveDefListOrFactory, DirectiveTypesOrFactory, PipeDef, PipeDefList, PipeDefListOrFactory, PipeTypesOrFactory} from '../../src/render3/interfaces/definition';
 import {LElementNode} from '../../src/render3/interfaces/node';
 import {RElement, RText, Renderer3, RendererFactory3, domRendererFactory3} from '../../src/render3/interfaces/renderer';
+import {Type} from '../../src/type';
 
 import {getRendererFactory2} from './imported_renderer2';
 
@@ -45,6 +49,8 @@ function noop() {}
  */
 export class TemplateFixture extends BaseFixture {
   hostNode: LElementNode;
+  private _directiveDefs: DirectiveDefList|null;
+  private _pipeDefs: PipeDefList|null;
   /**
    *
    * @param createBlock Instructions which go into the creation block:
@@ -52,15 +58,20 @@ export class TemplateFixture extends BaseFixture {
    * @param updateBlock Optional instructions which go after the creation block:
    *          `if (creationMode) { ... } __here__`.
    */
-  constructor(private createBlock: () => void, private updateBlock: () => void = noop) {
+  constructor(
+      private createBlock: () => void, private updateBlock: () => void = noop,
+      directives?: DirectiveTypesOrFactory|null, pipes?: PipeTypesOrFactory|null) {
     super();
-    this.updateBlock = updateBlock || function() {};
-    this.hostNode = renderTemplate(this.hostElement, (ctx: any, cm: boolean) => {
-      if (cm) {
+    this._directiveDefs = toDefs(directives, extractDirectiveDef);
+    this._pipeDefs = toDefs(pipes, extractPipeDef);
+    this.hostNode = renderTemplate(this.hostElement, (rf: RenderFlags, ctx: any) => {
+      if (rf & RenderFlags.Create) {
         this.createBlock();
       }
-      this.updateBlock();
-    }, null !, domRendererFactory3, null);
+      if (rf & RenderFlags.Update) {
+        this.updateBlock();
+      }
+    }, null !, domRendererFactory3, null, this._directiveDefs, this._pipeDefs);
   }
 
   /**
@@ -71,7 +82,7 @@ export class TemplateFixture extends BaseFixture {
   update(updateBlock?: () => void): void {
     renderTemplate(
         this.hostNode.native, updateBlock || this.updateBlock, null !, domRendererFactory3,
-        this.hostNode);
+        this.hostNode, this._directiveDefs, this._pipeDefs);
   }
 }
 
@@ -83,7 +94,7 @@ export class ComponentFixture<T> extends BaseFixture {
   component: T;
   requestAnimationFrame: {(fn: () => void): void; flush(): void; queue: (() => void)[];};
 
-  constructor(private componentType: ComponentType<T>) {
+  constructor(private componentType: ComponentType<T>, opts: {injector?: Injector} = {}) {
     super();
     this.requestAnimationFrame = function(fn: () => void) {
       requestAnimationFrame.queue.push(fn);
@@ -95,10 +106,9 @@ export class ComponentFixture<T> extends BaseFixture {
       }
     };
 
-    this.component = _renderComponent(componentType, {
-      host: this.hostElement,
-      scheduler: this.requestAnimationFrame,
-    });
+    this.component = _renderComponent(
+        componentType,
+        {host: this.hostElement, scheduler: this.requestAnimationFrame, injector: opts.injector});
   }
 
   update(): void {
@@ -151,11 +161,28 @@ export function resetDOM() {
  * @deprecated use `TemplateFixture` or `ComponentFixture`
  */
 export function renderToHtml(
-    template: ComponentTemplate<any>, ctx: any, defs?: any[],
-    providedRendererFactory?: RendererFactory3 | null) {
+    template: ComponentTemplate<any>, ctx: any, directives?: DirectiveTypesOrFactory | null,
+    pipes?: PipeTypesOrFactory | null, providedRendererFactory?: RendererFactory3 | null) {
   host = renderTemplate(
-      containerEl, template, ctx, providedRendererFactory || testRendererFactory, host, defs);
+      containerEl, template, ctx, providedRendererFactory || testRendererFactory, host,
+      toDefs(directives, extractDirectiveDef), toDefs(pipes, extractPipeDef));
   return toHtml(containerEl);
+}
+
+function toDefs(
+    types: DirectiveTypesOrFactory | undefined | null,
+    mapFn: (type: Type<any>) => DirectiveDef<any>): DirectiveDefList|null;
+function toDefs(
+    types: PipeTypesOrFactory | undefined | null,
+    mapFn: (type: Type<any>) => PipeDef<any>): PipeDefList|null;
+function toDefs(
+    types: PipeTypesOrFactory | DirectiveTypesOrFactory | undefined | null,
+    mapFn: (type: Type<any>) => PipeDef<any>| DirectiveDef<any>): any {
+  if (!types) return null;
+  if (typeof types == 'function') {
+    types = types();
+  }
+  return types.map(mapFn);
 }
 
 beforeEach(resetDOM);
@@ -189,17 +216,18 @@ export function toHtml<T>(componentOrElement: T | RElement): string {
 }
 
 export function createComponent(
-    name: string, template: ComponentTemplate<any>,
-    defs: (ComponentDef<any>| DirectiveDef<any>)[] = []): ComponentType<any> {
+    name: string, template: ComponentTemplate<any>, directives: DirectiveTypesOrFactory = [],
+    pipes: PipeTypesOrFactory = []): ComponentType<any> {
   return class Component {
     value: any;
     static ngComponentDef = defineComponent({
       type: Component,
-      selector: [[[name], null]],
+      selectors: [[name]],
       factory: () => new Component,
       template: template,
       features: [PublicFeature],
-      directiveDefs: () => defs
+      directives: directives,
+      pipes: pipes
     });
   };
 }
@@ -209,7 +237,7 @@ export function createDirective(
   return class Directive {
     static ngDirectiveDef = defineDirective({
       type: Directive,
-      selector: [[['', name, ''], null]],
+      selectors: [['', name, '']],
       factory: () => new Directive(),
       features: [PublicFeature],
       exportAs: exportAs,

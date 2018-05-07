@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Attribute, ChangeDetectionStrategy, ChangeDetectorRef, Component, ContentChild, ContentChildren, Directive, HostBinding, HostListener, INJECTOR, Inject, InjectFlags, Injectable, InjectableDef, Injector, InjectorDef, Input, NgModule, OnDestroy, Optional, Pipe, PipeTransform, QueryList, SimpleChanges, SkipSelf, TemplateRef, ViewChild, ViewChildren, ViewContainerRef, defineInjectable, defineInjector, inject} from '../../../src/core';
+import {Attribute, ChangeDetectionStrategy, ChangeDetectorRef, Component, ContentChild, ContentChildren, Directive, HostBinding, HostListener, INJECTOR, Inject, InjectFlags, Injectable, Injector, Input, NgModule, OnDestroy, Optional, Pipe, PipeTransform, QueryList, SimpleChanges, SkipSelf, TemplateRef, ViewChild, ViewChildren, ViewContainerRef, defineInjectable, defineInjector, inject} from '../../../src/core';
 import * as $r3$ from '../../../src/core_render3_private_export';
 import {renderComponent, toHtml} from '../render_util';
 
@@ -14,7 +14,7 @@ import {renderComponent, toHtml} from '../render_util';
 
 /// See: `normative.md`
 describe('injection', () => {
-  type $boolean$ = boolean;
+  type $RenderFlags$ = $r3$.ɵRenderFlags;
 
   describe('directives', () => {
     // Directives (and Components) should use `directiveInject`
@@ -30,15 +30,17 @@ describe('injection', () => {
         // NORMATIVE
         static ngComponentDef = $r3$.ɵdefineComponent({
           type: MyComp,
-          selector: [[['my-comp'], null]],
+          selectors: [['my-comp']],
           factory: function MyComp_Factory() {
             return new MyComp($r3$.ɵinjectChangeDetectorRef());
           },
-          template: function MyComp_Template(ctx: $MyComp$, cm: $boolean$) {
-            if (cm) {
+          template: function MyComp_Template(rf: $RenderFlags$, ctx: $MyComp$) {
+            if (rf & 1) {
               $r3$.ɵT(0);
             }
-            $r3$.ɵt(0, $r3$.ɵb(ctx.value));
+            if (rf & 2) {
+              $r3$.ɵt(0, $r3$.ɵb(ctx.value));
+            }
           }
         });
         // /NORMATIVE
@@ -47,16 +49,16 @@ describe('injection', () => {
       class MyApp {
         static ngComponentDef = $r3$.ɵdefineComponent({
           type: MyApp,
-          selector: [[['my-app'], null]],
+          selectors: [['my-app']],
           factory: function MyApp_Factory() { return new MyApp(); },
           /** <my-comp></my-comp> */
-          template: function MyApp_Template(ctx: $MyApp$, cm: $boolean$) {
-            if (cm) {
+          template: function MyApp_Template(rf: $RenderFlags$, ctx: $MyApp$) {
+            if (rf & 1) {
               $r3$.ɵE(0, 'my-comp');
               $r3$.ɵe();
             }
           },
-          directiveDefs: () => [MyComp.ngComponentDef]
+          directives: () => [MyComp]
         });
       }
 
@@ -77,13 +79,15 @@ describe('injection', () => {
         // NORMATIVE
         static ngComponentDef = $r3$.ɵdefineComponent({
           type: MyComp,
-          selector: [[['my-comp'], null]],
+          selectors: [['my-comp']],
           factory: function MyComp_Factory() { return new MyComp($r3$.ɵinjectAttribute('title')); },
-          template: function MyComp_Template(ctx: $MyComp$, cm: $boolean$) {
-            if (cm) {
+          template: function MyComp_Template(rf: $RenderFlags$, ctx: $MyComp$) {
+            if (rf & 1) {
               $r3$.ɵT(0);
             }
-            $r3$.ɵt(0, $r3$.ɵb(ctx.title));
+            if (rf & 2) {
+              $r3$.ɵt(0, $r3$.ɵb(ctx.title));
+            }
           }
         });
         // /NORMATIVE
@@ -92,16 +96,16 @@ describe('injection', () => {
       class MyApp {
         static ngComponentDef = $r3$.ɵdefineComponent({
           type: MyApp,
-          selector: [[['my-app'], null]],
+          selectors: [['my-app']],
           factory: function MyApp_Factory() { return new MyApp(); },
           /** <my-comp></my-comp> */
-          template: function MyApp_Template(ctx: $MyApp$, cm: $boolean$) {
-            if (cm) {
+          template: function MyApp_Template(rf: $RenderFlags$, ctx: $MyApp$) {
+            if (rf & 1) {
               $r3$.ɵE(0, 'my-comp', e0_attrs);
               $r3$.ɵe();
             }
           },
-          directiveDefs: () => [MyComp.ngComponentDef]
+          directives: () => [MyComp]
         });
       }
       const e0_attrs = ['title', 'WORKS'];
@@ -142,13 +146,13 @@ describe('injection', () => {
 
         static ngComponentDef = $r3$.ɵdefineComponent({
           type: MyApp,
-          selector: [[['my-app'], null]],
+          selectors: [['my-app']],
           factory: function MyApp_Factory() {
             return new MyApp(
                 $r3$.ɵdirectiveInject(ServiceA), $r3$.ɵdirectiveInject(ServiceB), inject(INJECTOR));
           },
           /**  */
-          template: function MyApp_Template(ctx: $MyApp$, cm: $boolean$) {},
+          template: function MyApp_Template(rf: $RenderFlags$, ctx: $MyApp$) {},
           providers: [ServiceA],
           viewProviders: [ServiceB],
         });
@@ -181,7 +185,7 @@ describe('injection', () => {
       // NORMATIVE
       static ngInjectableDef = defineInjectable({
         factory: function ServiceA_Factory() {
-          return new ServiceB(inject(ServiceA), inject(INJECTOR, undefined, InjectFlags.SkipSelf));
+          return new ServiceB(inject(ServiceA), inject(INJECTOR, InjectFlags.SkipSelf) !);
         },
       });
       // /NORMATIVE

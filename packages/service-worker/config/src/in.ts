@@ -26,6 +26,7 @@ export interface Config {
   index: string;
   assetGroups?: AssetGroup[];
   dataGroups?: DataGroup[];
+  navigationUrls?: string[];
 }
 
 /**

@@ -6,8 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {StaticReflector} from '../aot/static_reflector';
-import {CompileDirectiveMetadata, CompileIdentifierMetadata, CompileNgModuleMetadata, CompilePipeSummary, CompileTypeMetadata, identifierName} from '../compile_metadata';
+import {CompileNgModuleMetadata, CompileTypeMetadata, identifierName} from '../compile_metadata';
 import {CompileMetadataResolver} from '../metadata_resolver';
 import * as o from '../output/output_ast';
 import {OutputContext} from '../util';

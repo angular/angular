@@ -14,7 +14,7 @@ interface Update {
 
 /**
  * Immutable set of Http headers, with lazy parsing.
- * @stable
+ *
  */
 export class HttpHeaders {
   /**

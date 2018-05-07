@@ -49,13 +49,13 @@ export type TestModuleMetadata = {
 };
 
 /**
- * @whatItDoes Configures and initializes environment for unit testing and provides methods for
- * creating components and services in unit tests.
  * @description
+ * Configures and initializes environment for unit testing and provides methods for
+ * creating components and services in unit tests.
  *
  * TestBed is the primary api for writing unit tests for Angular applications and libraries.
  *
- * @stable
+ *
  */
 export class TestBed implements Injector {
   /**
@@ -606,7 +606,7 @@ export function getTestBed() {
  * eventually
  *   becomes `it('...', @Inject (object: AClass, async: AsyncTestCompleter) => { ... });`
  *
- * @stable
+ *
  */
 export function inject(tokens: any[], fn: Function): () => any {
   const testBed = getTestBed();

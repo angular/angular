@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {LContainer, TContainer} from './container';
+import {LContainer} from './container';
 import {LInjector} from './injector';
 import {LProjection} from './projection';
 import {LQueries} from './query';
@@ -28,22 +28,17 @@ export const enum LNodeType {
 }
 
 /**
- * TNodeFlags corresponds to the TNode.flags property. It contains information
- * on how to map a particular set of bits to the node's first directive index
- * (with INDX_SHIFT) or the node's directive count (with SIZE_MASK)
+ * Corresponds to the TNode.flags property.
  */
 export const enum TNodeFlags {
-  /** Whether or not this node is a component */
-  Component = 0b001,
+  /** The number of directives on this node is encoded on the least significant bits */
+  DirectiveCountMask = 0b00000000000000000000111111111111,
 
-  /** How far to shift the flags to get the first directive index on this node */
-  INDX_SHIFT = 13,
+  /** Then this bit is set when the node is a component */
+  isComponent = 0b1000000000000,
 
-  /** How far to shift the flags to get the number of directives on this node */
-  SIZE_SHIFT = 1,
-
-  /** Mask to get the number of directives on this node */
-  SIZE_MASK = 0b00000000000000000001111111111110
+  /** The index of the first directive on this node is encoded on the most significant bits  */
+  DirectiveStartingIndexShift = 13,
 }
 
 /**
@@ -130,6 +125,11 @@ export interface LNode {
    * data about this node.
    */
   tNode: TNode|null;
+
+  /**
+   * A pointer to a LContainerNode created by directives requesting ViewContainerRef
+   */
+  dynamicLContainerNode: LContainerNode|null;
 }
 
 
@@ -158,6 +158,7 @@ export interface LTextNode extends LNode {
   /** LTextNodes can be inside LElementNodes or inside LViewNodes. */
   readonly parent: LElementNode|LViewNode;
   readonly data: null;
+  dynamicLContainerNode: null;
 }
 
 /** Abstract node which contains root nodes of a view. */
@@ -169,6 +170,7 @@ export interface LViewNode extends LNode {
   /**  LViewNodes can only be added to LContainerNodes. */
   readonly parent: LContainerNode|null;
   readonly data: LView;
+  dynamicLContainerNode: null;
 }
 
 /** Abstract node container which contains other views. */
@@ -199,6 +201,7 @@ export interface LProjectionNode extends LNode {
 
   /** Projections can be added to elements or views. */
   readonly parent: LElementNode|LViewNode;
+  dynamicLContainerNode: null;
 }
 
 /**
@@ -280,21 +283,33 @@ export interface TNode {
   outputs: PropertyAliases|null|undefined;
 
   /**
-   * The static data equivalent of LNode.data.
+   * The TView or TViews attached to this node.
    *
-   * If this TNode corresponds to an LContainerNode, the container will
-   * need to store separate static data for each of its views (TContainer).
+   * If this TNode corresponds to an LContainerNode with inline views, the container will
+   * need to store separate static data for each of its view blocks (TView[]). Otherwise,
+   * nodes in inline views with the same index as nodes in their parent views will overwrite
+   * each other, as they are in the same template.
    *
-   * If this TNode corresponds to an LElementNode, data will be null.
+   * Each index in this array corresponds to the static data for a certain
+   * view. So if you had V(0) and V(1) in a container, you might have:
+   *
+   * [
+   *   [{tagName: 'div', attrs: ...}, null],     // V(0) TView
+   *   [{tagName: 'button', attrs ...}, null]    // V(1) TView
+   *
+   * If this TNode corresponds to an LContainerNode with a template (e.g. structural
+   * directive), the template's TView will be stored here.
+   *
+   * If this TNode corresponds to an LElementNode, tViews will be null .
    */
-  data: TContainer|null;
+  tViews: TView|TView[]|null;
 }
 
 /** Static data for an LElementNode  */
-export interface TElementNode extends TNode { data: null; }
+export interface TElementNode extends TNode { tViews: null; }
 
 /** Static data for an LContainerNode */
-export interface TContainerNode extends TNode { data: TContainer; }
+export interface TContainerNode extends TNode { tViews: TView|TView[]|null; }
 
 /**
  * This mapping is necessary so we can set input properties and output listeners

@@ -123,18 +123,20 @@ export function renderComponent<T>(
   const componentDef = (componentType as ComponentType<T>).ngComponentDef as ComponentDef<T>;
   if (componentDef.type != componentType) componentDef.type = componentType;
   let component: T;
-  // TODO: Replace when flattening CssSelector type
-  const componentTag = componentDef.selector ![0] ![0] ![0];
+  // The first index of the first selector is the tag name.
+  const componentTag = componentDef.selectors ![0] ![0] as string;
   const hostNode = locateHostElement(rendererFactory, opts.host || componentTag);
   const rootContext: RootContext = {
     // Incomplete initialization due to circular reference.
     component: null !,
-    scheduler: opts.scheduler || requestAnimationFrame,
+    scheduler: opts.scheduler || requestAnimationFrame.bind(window),
     clean: CLEAN_PROMISE,
   };
-  const rootView = createLView(
-      -1, rendererFactory.createRenderer(hostNode, componentDef.rendererType), createTView(null),
-      null, rootContext, componentDef.onPush ? LViewFlags.Dirty : LViewFlags.CheckAlways);
+  const rootView: LView = createLView(
+      -1, rendererFactory.createRenderer(hostNode, componentDef.rendererType),
+      createTView(null, null), null, rootContext,
+      componentDef.onPush ? LViewFlags.Dirty : LViewFlags.CheckAlways);
+  rootView.injector = opts.injector || null;
 
   const oldView = enterView(rootView, null !);
   let elementNode: LElementNode;

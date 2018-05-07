@@ -12,7 +12,7 @@ import {Optional, SkipSelf, StaticProvider} from '../../di';
 /**
  * A differ that tracks changes made to an object over time.
  *
- * @stable
+ *
  */
 export interface KeyValueDiffer<K, V> {
   /**
@@ -40,7 +40,7 @@ export interface KeyValueDiffer<K, V> {
  * An object describing the changes in the `Map` or `{[k:string]: string}` since last time
  * `KeyValueDiffer#diff()` was invoked.
  *
- * @stable
+ *
  */
 export interface KeyValueChanges<K, V> {
   /**
@@ -74,7 +74,7 @@ export interface KeyValueChanges<K, V> {
 /**
  * Record representing the item change information.
  *
- * @stable
+ *
  */
 export interface KeyValueChangeRecord<K, V> {
   /**
@@ -96,7 +96,7 @@ export interface KeyValueChangeRecord<K, V> {
 /**
  * Provides a factory for {@link KeyValueDiffer}.
  *
- * @stable
+ *
  */
 export interface KeyValueDifferFactory {
   /**
@@ -112,7 +112,7 @@ export interface KeyValueDifferFactory {
 
 /**
  * A repository of different Map diffing strategies used by NgClass, NgStyle, and others.
- * @stable
+ *
  */
 export class KeyValueDiffers {
   /**

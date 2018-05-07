@@ -1,10 +1,16 @@
 [
   {
     "startDate": "2018-02-14",
-    "endDate": "2018-04-22",
-    "message!": "Join us for ng-conf<br/>Apr 18th-20th, 2018",
-    "message": "2018. 4. 18 ~ 20<br/>ng-conf에 참여하세요",
+    "endDate": "2018-04-18",
+    "message": "Join us for ng-conf<br/>Apr 18th-20th, 2018",
     "imageUrl": "generated/images/marketing/home/ng-conf.png",
     "linkUrl": "http://ng-conf.org/"
+  },
+  {
+    "startDate": "2018-04-18",
+    "endDate": "2018-04-22",
+    "message": "Watch ng-conf live stream <br/>Apr 18th-20th, 2018",
+    "imageUrl": "generated/images/marketing/home/ng-conf.png",
+    "linkUrl": "https://www.ng-conf.org/livestream/"
   }
 ]

@@ -19,7 +19,7 @@ import { AdComponent } from './ad.component';
 // #docregion class
 export class AdBannerComponent implements OnInit, OnDestroy {
   @Input() ads: AdItem[];
-  currentAdIndex: number = -1;
+  currentAdIndex = -1;
   @ViewChild(AdDirective) adHost: AdDirective;
   interval: any;
 

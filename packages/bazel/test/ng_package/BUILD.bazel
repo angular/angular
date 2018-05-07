@@ -49,6 +49,7 @@ jasmine_node_test(
         "//packages/bazel/test/ng_package/example:npm_package",
     ],
     # TODO(alexeagle): re-enable this test
+    # see https://github.com/angular/angular/pull/22933
     tags = ["manual"],
 )
 

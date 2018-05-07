@@ -133,11 +133,10 @@ $ gulp lint
 
 ## Publishing snapshot builds
 
-When the `master` branch successfully builds on Travis, it automatically publishes build artifacts
+When a build of any branch on the upstream fork angular/angular is green on CircleCI,
+it automatically publishes build artifacts
 to repositories in the Angular org, eg. the `@angular/core` package is published to
 http://github.com/angular/core-builds.
-The ES2015 version of Angular is published to a different branch in these repos, for example
-http://github.com/angular/core-builds#master-es2015
 
 You may find that your un-merged change needs some validation from external participants.
 Rather than requiring them to pull your Pull Request and build Angular locally, you can

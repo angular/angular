@@ -1,0 +1,189 @@
+{
+  "$schema": "./node_modules/@angular-devkit/core/src/workspace/workspace-schema.json",
+  "version": 1,
+  "cli": {
+    "packageManager": "yarn"
+  },
+  "newProjectRoot": "projects",
+  "projects": {
+    "site": {
+      "root": "",
+      "sourceRoot": "src",
+      "projectType": "application",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:browser",
+          "options": {
+            "outputPath": "dist",
+            "index": "src/index.html",
+            "main": "src/main.ts",
+            "tsConfig": "src/tsconfig.app.json",
+            "aot": true,
+            "optimization": true,
+            "buildOptimizer": true,
+            "outputHashing": "all",
+            "sourceMap": true,
+            "statsJson": true,
+            "extractCss": true,
+            "extractLicenses": true,
+            "namedChunks": true,
+            "vendorChunk": false,
+            "polyfills": "src/polyfills.ts",
+            "assets": [
+              "src/assets",
+              "src/generated",
+              "src/app/search/search-worker.js",
+              "src/favicon.ico",
+              "src/pwa-manifest.json",
+              "src/google385281288605d160.html",
+              {
+                "glob": "custom-elements.min.js",
+                "input": "node_modules/@webcomponents/custom-elements",
+                "output": "/assets/js"
+              },
+              {
+                "glob": "native-shim.js",
+                "input": "node_modules/@webcomponents/custom-elements/src",
+                "output": "/assets/js"
+              }
+            ],
+            "styles": [
+              "src/styles.scss"
+            ],
+            "scripts": []
+          },
+          "configurations": {
+            "fast": {
+              "optimization": false
+            },
+            "next": {
+              "fileReplacements": [
+                {
+                  "src": "src/environments/environment.ts",
+                  "replaceWith": "src/environments/environment.next.ts"
+                }
+              ]
+            },
+            "stable": {
+              "fileReplacements": [
+                {
+                  "src": "src/environments/environment.ts",
+                  "replaceWith": "src/environments/environment.stable.ts"
+                }
+              ]
+            },
+            "archive": {
+              "fileReplacements": [
+                {
+                  "src": "src/environments/environment.ts",
+                  "replaceWith": "src/environments/environment.archive.ts"
+                }
+              ]
+            }
+          }
+        },
+        "serve": {
+          "builder": "@angular-devkit/build-angular:dev-server",
+          "options": {
+            "browserTarget": "site:build"
+          },
+          "configurations": {
+            "fast": {
+              "browserTarget": "site:build:fast"
+            },
+            "next": {
+              "browserTarget": "site:build:next"
+            },
+            "stable": {
+              "browserTarget": "site:build:stable"
+            },
+            "archive": {
+              "browserTarget": "site:build:archive"
+            }
+          }
+        },
+        "extract-i18n": {
+          "builder": "@angular-devkit/build-angular:extract-i18n",
+          "options": {
+            "browserTarget": "site:build"
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "src/test.ts",
+            "karmaConfig": "src/karma.conf.js",
+            "polyfills": "src/polyfills.ts",
+            "tsConfig": "src/tsconfig.spec.json",
+            "scripts": [],
+            "styles": [
+              "src/styles.scss"
+            ],
+            "assets": [
+              "src/assets",
+              "src/generated",
+              "src/app/search/search-worker.js",
+              "src/favicon.ico",
+              "src/pwa-manifest.json",
+              "src/google385281288605d160.html",
+              {
+                "glob": "custom-elements.min.js",
+                "input": "node_modules/@webcomponents/custom-elements",
+                "output": "/assets/js"
+              },
+              {
+                "glob": "native-shim.js",
+                "input": "node_modules/@webcomponents/custom-elements/src",
+                "output": "/assets/js"
+              }
+            ]
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "src/tsconfig.app.json",
+              "src/tsconfig.spec.json"
+            ],
+            "exclude": []
+          }
+        }
+      }
+    },
+    "site-e2e": {
+      "root": "",
+      "projectType": "application",
+      "cli": {},
+      "schematics": {},
+      "architect": {
+        "e2e": {
+          "builder": "@angular-devkit/build-angular:protractor",
+          "options": {
+            "protractorConfig": "tests/e2e/protractor.conf.js",
+            "devServerTarget": "site:serve"
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "tests/e2e/tsconfig.e2e.json"
+            ],
+            "exclude": []
+          }
+        }
+      }
+    }
+  },
+  "schematics": {
+    "@schematics/angular:component": {
+      "inlineStyle": true,
+      "prefix": "aio",
+      "styleext": "scss"
+    },
+    "@schematics/angular:directive": {
+      "prefix": "aio"
+    }
+  }
+}

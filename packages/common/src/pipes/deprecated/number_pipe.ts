@@ -61,8 +61,6 @@ function formatNumber(
 
 /**
  * @ngModule CommonModule
- * @whatItDoes Formats a number according to locale rules.
- * @howToUse `number_expression | number[:digitInfo]`
  *
  * Formats a number as text. Group sizing and separator and other locale-specific
  * configurations are based on the active locale.
@@ -84,7 +82,7 @@ function formatNumber(
  *
  * {@example common/pipes/ts/number_pipe.ts region='DeprecatedNumberPipe'}
  *
- * @stable
+ *
  */
 @Pipe({name: 'number'})
 export class DeprecatedDecimalPipe implements PipeTransform {
@@ -98,12 +96,10 @@ export class DeprecatedDecimalPipe implements PipeTransform {
 
 /**
  * @ngModule CommonModule
- * @whatItDoes Formats a number as a percentage according to locale rules.
- * @howToUse `number_expression | percent[:digitInfo]`
  *
  * @description
  *
- * Formats a number as percentage.
+ * Formats a number as percentage according to locale rules.
  *
  * - `digitInfo` See {@link DecimalPipe} for detailed description.
  *
@@ -114,7 +110,7 @@ export class DeprecatedDecimalPipe implements PipeTransform {
  *
  * {@example common/pipes/ts/percent_pipe.ts region='DeprecatedPercentPipe'}
  *
- * @stable
+ *
  */
 @Pipe({name: 'percent'})
 export class DeprecatedPercentPipe implements PipeTransform {
@@ -128,9 +124,9 @@ export class DeprecatedPercentPipe implements PipeTransform {
 
 /**
  * @ngModule CommonModule
- * @whatItDoes Formats a number as currency using locale rules.
- * @howToUse `number_expression | currency[:currencyCode[:symbolDisplay[:digitInfo]]]`
  * @description
+ *
+ * Formats a number as currency using locale rules.
  *
  * Use `currency` to format a number as currency.
  *
@@ -148,7 +144,7 @@ export class DeprecatedPercentPipe implements PipeTransform {
  *
  * {@example common/pipes/ts/currency_pipe.ts region='DeprecatedCurrencyPipe'}
  *
- * @stable
+ *
  */
 @Pipe({name: 'currency'})
 export class DeprecatedCurrencyPipe implements PipeTransform {

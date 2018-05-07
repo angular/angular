@@ -6,8 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {Injector} from '../../di/injector';
 import {LContainer} from './container';
-import {ComponentDef, ComponentTemplate, DirectiveDef, DirectiveDefList, PipeDef} from './definition';
+import {ComponentTemplate, DirectiveDef, DirectiveDefList, PipeDef, PipeDefList} from './definition';
 import {LElementNode, LViewNode, TNode} from './node';
 import {LQueries} from './query';
 import {Renderer3} from './renderer';
@@ -61,7 +62,16 @@ export interface LView {
    * will begin reading bindings at the correct point in the array when
    * we are in update mode.
    */
-  bindingStartIndex: number|null;
+  bindingStartIndex: number;
+
+  /**
+   * The binding index we should access next.
+   *
+   * This is stored so that bindings can continue where they left off
+   * if a view is left midway through processing bindings (e.g. if there is
+   * a setter that creates an embedded view, like in ngIf).
+   */
+  bindingIndex: number;
 
   /**
    * When a view is destroyed, listeners need to be released and outputs need to be
@@ -180,6 +190,11 @@ export interface LView {
    * Queries active for this view - nodes from a view are reported to those queries
    */
   queries: LQueries|null;
+
+  /**
+   * An optional Module Injector to be used as fall back after Element Injectors are consulted.
+   */
+  injector: Injector|null;
 }
 
 /** Flags associated with an LView (saved in LView.flags) */
@@ -226,6 +241,24 @@ export interface TView {
   data: TData;
 
   /**
+   * Selector matches for a node are temporarily cached on the TView so the
+   * DI system can eagerly instantiate directives on the same node if they are
+   * created out of order. They are overwritten after each node.
+   *
+   * <div dirA dirB></div>
+   *
+   * e.g. DirA injects DirB, but DirA is created first. DI should instantiate
+   * DirB when it finds that it's on the same node, but not yet created.
+   *
+   * Even indices: Directive defs
+   * Odd indices:
+   *   - Null if the associated directive hasn't been instantiated yet
+   *   - Directive index, if associated directive has been created
+   *   - String, temporary 'CIRCULAR' token set while dependencies are being resolved
+   */
+  currentMatches: CurrentMatchesList|null;
+
+  /**
    * Directive and component defs that have already been matched to nodes on
    * this view.
    *
@@ -237,13 +270,21 @@ export interface TView {
   /**
    * Full registry of directives and components that may be found in this view.
    *
-   * The property is either an array of `DirectiveDef`s or a function which returns the array of
-   * `DirectiveDef`s. The function is necessary to be able to support forward declarations.
-   *
    * It's necessary to keep a copy of the full def list on the TView so it's possible
    * to render template functions without a host component.
    */
   directiveRegistry: DirectiveDefList|null;
+
+  /**
+   * Full registry of pipes that may be found in this view.
+   *
+   * The property is either an array of `PipeDefs`s or a function which returns the array of
+   * `PipeDefs`s. The function is necessary to be able to support forward declarations.
+   *
+   * It's necessary to keep a copy of the full def list on the TView so it's possible
+   * to render template functions without a host component.
+   */
+  pipeRegistry: PipeDefList|null;
 
   /**
    * Array of ngOnInit and ngDoCheck hooks that should be executed for this view in
@@ -373,10 +414,10 @@ export type HookData = (number | (() => void))[];
 export const enum LifecycleStage {
 
   /* Init hooks need to be run, if any. */
-  INIT = 1,
+  Init = 1,
 
   /* Content hooks need to be run, if any. Init hooks have already run. */
-  AFTER_INIT = 2,
+  AfterInit = 2,
 }
 
 /**
@@ -388,6 +429,9 @@ export const enum LifecycleStage {
  * data store a null value in tData to avoid a sparse array.
  */
 export type TData = (TNode | PipeDef<any>| null)[];
+
+/** Type for TView.currentMatches */
+export type CurrentMatchesList = [DirectiveDef<any>, (string | number | null)];
 
 // Note: This hack is necessary so we don't erroneously get a circular dependency
 // failure based on types.

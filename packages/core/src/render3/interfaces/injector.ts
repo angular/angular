@@ -7,7 +7,6 @@
  */
 
 import {ChangeDetectorRef} from '../../change_detection/change_detector_ref';
-import {Injector} from '../../di/injector';
 import {ElementRef} from '../../linker/element_ref';
 import {TemplateRef} from '../../linker/template_ref';
 import {ViewContainerRef} from '../../linker/view_container_ref';
@@ -68,8 +67,6 @@ export interface LInjector {
   cbf5: number;
   cbf6: number;
   cbf7: number;
-
-  injector: Injector|null;
 
   /** Stores the TemplateRef so subsequent injections of the TemplateRef get the same instance. */
   templateRef: TemplateRef<any>|null;

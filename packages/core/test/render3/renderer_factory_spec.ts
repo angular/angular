@@ -12,6 +12,7 @@ import {MockAnimationDriver, MockAnimationPlayer} from '@angular/animations/brow
 import {RendererType2, ViewEncapsulation} from '../../src/core';
 import {defineComponent, detectChanges} from '../../src/render3/index';
 import {bind, elementEnd, elementProperty, elementStart, listener, text, tick} from '../../src/render3/instructions';
+import {RenderFlags} from '../../src/render3/interfaces/definition';
 import {createRendererType2} from '../../src/view/index';
 
 import {getAnimationRendererFactory2, getRendererFactory2} from './imported_renderer2';
@@ -31,10 +32,10 @@ describe('renderer factory lifecycle', () => {
   class SomeComponent {
     static ngComponentDef = defineComponent({
       type: SomeComponent,
-      selector: [[['some-component'], null]],
-      template: function(ctx: SomeComponent, cm: boolean) {
+      selectors: [['some-component']],
+      template: function(rf: RenderFlags, ctx: SomeComponent) {
         logs.push('component');
-        if (cm) {
+        if (rf & RenderFlags.Create) {
           text(0, 'foo');
         }
       },
@@ -45,26 +46,26 @@ describe('renderer factory lifecycle', () => {
   class SomeComponentWhichThrows {
     static ngComponentDef = defineComponent({
       type: SomeComponentWhichThrows,
-      selector: [[['some-component-with-Error'], null]],
-      template: function(ctx: SomeComponentWhichThrows, cm: boolean) {
+      selectors: [['some-component-with-Error']],
+      template: function(rf: RenderFlags, ctx: SomeComponentWhichThrows) {
         throw(new Error('SomeComponentWhichThrows threw'));
       },
       factory: () => new SomeComponentWhichThrows
     });
   }
 
-  function Template(ctx: any, cm: boolean) {
+  function Template(rf: RenderFlags, ctx: any) {
     logs.push('function');
-    if (cm) {
+    if (rf & RenderFlags.Create) {
       text(0, 'bar');
     }
   }
 
-  const defs = [SomeComponent.ngComponentDef, SomeComponentWhichThrows.ngComponentDef];
+  const directives = [SomeComponent, SomeComponentWhichThrows];
 
-  function TemplateWithComponent(ctx: any, cm: boolean) {
+  function TemplateWithComponent(rf: RenderFlags, ctx: any) {
     logs.push('function_with_component');
-    if (cm) {
+    if (rf & RenderFlags.Create) {
       text(0, 'bar');
       elementStart(1, 'some-component');
       elementEnd();
@@ -88,7 +89,7 @@ describe('renderer factory lifecycle', () => {
   });
 
   it('should work with a template', () => {
-    renderToHtml(Template, {}, [], rendererFactory);
+    renderToHtml(Template, {}, null, null, rendererFactory);
     expect(logs).toEqual(['create', 'begin', 'function', 'end']);
 
     logs = [];
@@ -97,12 +98,12 @@ describe('renderer factory lifecycle', () => {
   });
 
   it('should work with a template which contains a component', () => {
-    renderToHtml(TemplateWithComponent, {}, defs, rendererFactory);
+    renderToHtml(TemplateWithComponent, {}, directives, null, rendererFactory);
     expect(logs).toEqual(
         ['create', 'begin', 'function_with_component', 'create', 'component', 'end']);
 
     logs = [];
-    renderToHtml(TemplateWithComponent, {}, defs);
+    renderToHtml(TemplateWithComponent, {}, directives);
     expect(logs).toEqual(['begin', 'function_with_component', 'component', 'end']);
   });
 
@@ -124,9 +125,9 @@ describe('animation renderer factory', () => {
   class SomeComponent {
     static ngComponentDef = defineComponent({
       type: SomeComponent,
-      selector: [[['some-component'], null]],
-      template: function(ctx: SomeComponent, cm: boolean) {
-        if (cm) {
+      selectors: [['some-component']],
+      template: function(rf: RenderFlags, ctx: SomeComponent) {
+        if (rf & RenderFlags.Create) {
           text(0, 'foo');
         }
       },
@@ -141,9 +142,9 @@ describe('animation renderer factory', () => {
     }
     static ngComponentDef = defineComponent({
       type: SomeComponentWithAnimation,
-      selector: [[['some-component'], null]],
-      template: function(ctx: SomeComponentWithAnimation, cm: boolean) {
-        if (cm) {
+      selectors: [['some-component']],
+      template: function(rf: RenderFlags, ctx: SomeComponentWithAnimation) {
+        if (rf & RenderFlags.Create) {
           elementStart(0, 'div');
           {
             listener('@myAnimation.start', ctx.callback.bind(ctx));
@@ -152,7 +153,9 @@ describe('animation renderer factory', () => {
           }
           elementEnd();
         }
-        elementProperty(0, '@myAnimation', bind(ctx.exp));
+        if (rf & RenderFlags.Update) {
+          elementProperty(0, '@myAnimation', bind(ctx.exp));
+        }
       },
       factory: () => new SomeComponentWithAnimation,
       rendererType: createRendererType2({

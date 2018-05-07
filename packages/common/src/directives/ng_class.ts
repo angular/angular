@@ -11,9 +11,7 @@ import {Directive, DoCheck, ElementRef, Input, IterableChanges, IterableDiffer, 
 /**
  * @ngModule CommonModule
  *
- * @whatItDoes Adds and removes CSS classes on an HTML element.
- *
- * @howToUse
+ * @usageNotes
  * ```
  *     <some-element [ngClass]="'first second'">...</some-element>
  *
@@ -28,13 +26,15 @@ import {Directive, DoCheck, ElementRef, Input, IterableChanges, IterableDiffer, 
  *
  * @description
  *
+ * Adds and removes CSS classes on an HTML element.
+ *
  * The CSS classes are updated as follows, depending on the type of the expression evaluation:
  * - `string` - the CSS classes listed in the string (space delimited) are added,
  * - `Array` - the CSS classes declared as Array elements are added,
  * - `Object` - keys are CSS classes that get added when the expression given in the value
  *              evaluates to a truthy value, otherwise they are removed.
  *
- * @stable
+ *
  */
 @Directive({selector: '[ngClass]'})
 export class NgClass implements DoCheck {
@@ -49,15 +49,16 @@ export class NgClass implements DoCheck {
 
   @Input('class')
   set klass(v: string) {
-    this._applyInitialClasses(true);
+    this._removeClasses(this._initialClasses);
     this._initialClasses = typeof v === 'string' ? v.split(/\s+/) : [];
-    this._applyInitialClasses(false);
-    this._applyClasses(this._rawClass, false);
+    this._applyClasses(this._initialClasses);
+    this._applyClasses(this._rawClass);
   }
 
   @Input()
   set ngClass(v: string|string[]|Set<string>|{[klass: string]: any}) {
-    this._cleanupClasses(this._rawClass);
+    this._removeClasses(this._rawClass);
+    this._applyClasses(this._initialClasses);
 
     this._iterableDiffer = null;
     this._keyValueDiffer = null;
@@ -87,11 +88,6 @@ export class NgClass implements DoCheck {
     }
   }
 
-  private _cleanupClasses(rawClassVal: string[]|{[klass: string]: any}): void {
-    this._applyClasses(rawClassVal, true);
-    this._applyInitialClasses(false);
-  }
-
   private _applyKeyValueChanges(changes: KeyValueChanges<string, any>): void {
     changes.forEachAddedItem((record) => this._toggleClass(record.key, record.currentValue));
     changes.forEachChangedItem((record) => this._toggleClass(record.key, record.currentValue));
@@ -115,19 +111,34 @@ export class NgClass implements DoCheck {
     changes.forEachRemovedItem((record) => this._toggleClass(record.item, false));
   }
 
-  private _applyInitialClasses(isCleanup: boolean) {
-    this._initialClasses.forEach(klass => this._toggleClass(klass, !isCleanup));
-  }
-
-  private _applyClasses(
-      rawClassVal: string[]|Set<string>|{[klass: string]: any}, isCleanup: boolean) {
+  /**
+   * Applies a collection of CSS classes to the DOM element.
+   *
+   * For argument of type Set and Array CSS class names contained in those collections are always
+   * added.
+   * For argument of type Map CSS class name in the map's key is toggled based on the value (added
+   * for truthy and removed for falsy).
+   */
+  private _applyClasses(rawClassVal: string[]|Set<string>|{[klass: string]: any}) {
     if (rawClassVal) {
       if (Array.isArray(rawClassVal) || rawClassVal instanceof Set) {
-        (<any>rawClassVal).forEach((klass: string) => this._toggleClass(klass, !isCleanup));
+        (<any>rawClassVal).forEach((klass: string) => this._toggleClass(klass, true));
       } else {
-        Object.keys(rawClassVal).forEach(klass => {
-          if (rawClassVal[klass] != null) this._toggleClass(klass, !isCleanup);
-        });
+        Object.keys(rawClassVal).forEach(klass => this._toggleClass(klass, !!rawClassVal[klass]));
+      }
+    }
+  }
+
+  /**
+   * Removes a collection of CSS classes from the DOM element. This is mostly useful for cleanup
+   * purposes.
+   */
+  private _removeClasses(rawClassVal: string[]|Set<string>|{[klass: string]: any}) {
+    if (rawClassVal) {
+      if (Array.isArray(rawClassVal) || rawClassVal instanceof Set) {
+        (<any>rawClassVal).forEach((klass: string) => this._toggleClass(klass, false));
+      } else {
+        Object.keys(rawClassVal).forEach(klass => this._toggleClass(klass, false));
       }
     }
   }

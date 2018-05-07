@@ -27,26 +27,29 @@ class Bindings {
 }
 
 /**
- * @whatItDoes
+ * @description
+ *
+ * A helper class that allows an AngularJS component to be used from Angular.
  *
  * *Part of the [upgrade/static](api?query=upgrade%2Fstatic)
  * library for hybrid upgrade apps that support AoT compilation*
  *
- * Allows an AngularJS component to be used from Angular.
+ * This helper class should be used as a base class for creating Angular directives
+ * that wrap AngularJS components that need to be "upgraded".
  *
- * @howToUse
+ * ### Examples
  *
  * Let's assume that you have an AngularJS component called `ng1Hero` that needs
  * to be made available in Angular templates.
  *
  * {@example upgrade/static/ts/module.ts region="ng1-hero"}
  *
- * We must create a {@link Directive} that will make this AngularJS component
+ * We must create a `Directive` that will make this AngularJS component
  * available inside Angular templates.
  *
  * {@example upgrade/static/ts/module.ts region="ng1-hero-wrapper"}
  *
- * In this example you can see that we must derive from the {@link UpgradeComponent}
+ * In this example you can see that we must derive from the `UpgradeComponent`
  * base class but also provide an {@link Directive `@Directive`} decorator. This is
  * because the AoT compiler requires that this information is statically available at
  * compile time.
@@ -57,12 +60,7 @@ class Bindings {
  * * derive from `UpgradeComponent`
  * * call the base class from the constructor, passing
  *   * the AngularJS name of the component (`ng1Hero`)
- *   * the {@link ElementRef} and {@link Injector} for the component wrapper
- *
- * @description
- *
- * A helper class that should be used as a base class for creating Angular directives
- * that wrap AngularJS components that need to be "upgraded".
+ *   * the `ElementRef` and `Injector` for the component wrapper
  *
  * @experimental
  */

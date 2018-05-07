@@ -340,9 +340,9 @@ It has a great deal of useful information including:
 
 Two older properties are still available. They are less capable than their replacements, discouraged, and may be deprecated in a future Angular version.
 
-**`params`** &mdash; An `Observable` that contains the required and [optional parameters](#optional-route-parameters) specific to the route. Use `paramMap` instead.
+**`params`**&mdash;An `Observable` that contains the required and [optional parameters](#optional-route-parameters) specific to the route. Use `paramMap` instead.
 
-**`queryParams`** &mdash; An `Observable` that contains the [query parameters](#query-parameters) available to all routes.
+**`queryParams`**&mdash;An `Observable` that contains the [query parameters](#query-parameters) available to all routes.
 Use `queryParamMap` instead.
 
 </div>
@@ -965,11 +965,7 @@ Learn about the how you can also use the _link parameters array_ in the [appendi
 
 ### *RouterLinkActive* binding
 
-<!--
 On each anchor tag, you also see [property bindings](guide/template-syntax#property-binding) to
-the `RouterLinkActive` directive that look like `routerLinkActive="..."`.
--->
-On each anchor tag, you also see [프로퍼티 바인딩](guide/template-syntax#프로퍼티-바인딩) to
 the `RouterLinkActive` directive that look like `routerLinkActive="..."`.
 
 The template expression to the right of the equals (=) contains a space-delimited string of CSS classes
@@ -1623,8 +1619,7 @@ They are distributed across two modules, `AppRoutingModule` and `HeroesRoutingMo
 Each routing module augments the route configuration _in the order of import_.
 If you list `AppRoutingModule` first, the wildcard route will be registered
 _before_ the hero routes.
-The wildcard route &mdash; which matches _every_ URL &mdash;
-will intercept the attempt to navigate to a hero route.
+The wildcard route&mdash;which matches _every_ URL&mdash;will intercept the attempt to navigate to a hero route.
 
 
 <div class="l-sub-section">
@@ -2064,7 +2059,7 @@ The path for the "Heroes" route doesn't have an `:id` token.
 
 The optional route parameters are not separated by "?" and "&" as they would be in the URL query string.
 They are **separated by semicolons ";"**
-This is *matrix URL* notation &mdash; something you may not have seen before.
+This is *matrix URL* notation&mdash;something you may not have seen before.
 
 
 <div class="l-sub-section">
@@ -2148,12 +2143,7 @@ The `ActivatedRoute.paramMap` property is an `Observable` map of route parameter
 when the user navigates to the component. In `ngOnInit` you subscribe to those values, set the `selectedId`, and get the heroes.
 
 
-<!--
 Update the template with a [class binding](guide/template-syntax#class-binding).
-The binding adds the `selected` CSS class when the comparison returns `true` and removes it when `false`.
-Look for it within the repeated `<li>` tag as shown here:
--->
-Update the template with a [클래스 바인딩](guide/template-syntax#클래스-바인딩).
 The binding adds the `selected` CSS class when the comparison returns `true` and removes it when `false`.
 Look for it within the repeated `<li>` tag as shown here:
 
@@ -3158,7 +3148,7 @@ Here's a demo `AuthService`:
 Although it doesn't actually log in, it has what you need for this discussion.
 It has an `isLoggedIn` flag to tell you whether the user is authenticated.
 Its `login` method simulates an API call to an external service by returning an
-Observable that resolves successfully after a short pause.
+observable that resolves successfully after a short pause.
 The `redirectUrl` property will store the attempted URL so you can navigate to it after authenticating.
 
 Revise the `AuthGuard` to call it.
@@ -3468,13 +3458,11 @@ Be explicit. Implement the `Resolve` interface with a type of `Crisis`.
 Inject the `CrisisService` and `Router` and implement the `resolve()` method.
 That method could return a `Promise`, an `Observable`, or a synchronous return value.
 
-The `CrisisService.getCrisis` method returns an Observable.
-Return that observable to prevent the route from loading until the data is fetched.
-The `Router` guards require an Observable to `complete`, meaning it has emitted all
+The `CrisisService.getCrisis` method returns an observable, in order to prevent the route from loading until the data is fetched.
+The `Router` guards require an observable to `complete`, meaning it has emitted all
 of its values. You use the `take` operator with an argument of `1` to ensure that the
-Observable completes after retrieving the first value from the Observable returned by the
-`getCrisis` method.
-If it doesn't return a valid `Crisis`, navigate the user back to the `CrisisListComponent`,
+observable completes after retrieving the first value from the observable returned by the
+`getCrisis` method. If it doesn't return a valid `Crisis`, navigate the user back to the `CrisisListComponent`,
 canceling the previous in-flight navigation to the `CrisisDetailComponent`.
 
 Import this resolver in the `crisis-center-routing.module.ts`
@@ -3511,8 +3499,8 @@ The router looks for that method and calls it if found.
 Don't worry about all the ways that the user  could navigate away.
 That's the router's job. Write this class and let the router take it from there.
 
-1. The Observable provided to the Router _must_ complete.
-If the Observable does not complete, the navigation will not continue.
+1. The observable provided to the Router _must_ complete.
+If the observable does not complete, the navigation will not continue.
 
 The relevant *Crisis Center* code for this milestone follows.
 
@@ -3937,7 +3925,7 @@ The router calls the `preload` method with two arguments:
 1. The route to consider.
 1. A loader function that can load the routed module asynchronously.
 
-An implementation of `preload`must return an `Observable`.
+An implementation of `preload` must return an `Observable`.
 If the route should preload, it returns the observable returned by calling the loader function.
 If the route should _not_ preload, it returns an `Observable` of `null`.
 

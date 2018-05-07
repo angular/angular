@@ -16,7 +16,7 @@ Meanwhile, the browser downloads the full client version and switches to it auto
 <div class="l-sub-section">
 
 [Download the finished sample code](generated/zips/universal/universal.zip),
-which runs in a [node express](https://expressjs.com/) server.
+which runs in a [Node.js® Express](https://expressjs.com/) server.
 
 </div>
 
@@ -123,7 +123,7 @@ You'll add more files to support building and serving with Universal.
 
 In this example, the Angular CLI compiles and bundles the Universal version of the app with the
 [AOT (Ahead-of-Time) compiler](guide/aot-compiler).
-A node/express web server turns client requests into the HTML pages rendered by Universal.
+A Node.js® Express web server turns client requests into the HTML pages rendered by Universal.
 
 You will create:
 
@@ -442,9 +442,9 @@ First add the _build_ and _serve_ commands to the `scripts` section of the `pack
 <code-example format="." language="ts">
 "scripts": {
     ...
-    "build:universal": "npm run build:client-and-server-bundles && npm run webpack:server",
-    "serve:universal": "node dist/server.js",
-    "build:client-and-server-bundles": "ng build --prod && ng build --prod --app 1 --output-hashing=false",
+    "build:ssr": "npm run build:client-and-server-bundles && npm run webpack:server",
+    "serve:ssr": "node dist/server",
+    "build:client-and-server-bundles": "ng build --prod && ng run angular.io-example:server",
     "webpack:server": "webpack --config webpack.server.config.js --progress --colors"
     ...
 }
@@ -457,7 +457,7 @@ First add the _build_ and _serve_ commands to the `scripts` section of the `pack
 From the command prompt, type
 
 <code-example format="." language="bash">
-npm run build:universal
+npm run build:ssr
 </code-example>
 
 The Angular CLI compiles and bundles the universal app into two different folders, `browser` and `server`.
@@ -469,7 +469,7 @@ Webpack transpiles the `server.ts` file into Javascript.
 After building the application, start the server.
 
 <code-example format="." language="bash">
-npm run serve:universal
+npm run serve:ssr
 </code-example>
 
 The console window should say

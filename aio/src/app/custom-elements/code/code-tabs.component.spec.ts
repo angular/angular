@@ -87,7 +87,7 @@ describe('CodeTabsComponent', () => {
                  region="region-B"
                  title="title-B">
         Code example 2
-      </code-pane>    
+      </code-pane>
     </code-tabs>
   `
 })

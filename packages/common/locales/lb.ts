@@ -9,21 +9,15 @@
 // THIS CODE IS GENERATED - DO NOT MODIFY
 // See angular/tools/gulp-tasks/cldr/extract.js
 
+const u = undefined;
+
 function plural(n: number): number {
   if (n === 1) return 1;
   return 5;
 }
 
 export default [
-  'lb',
-  [
-    ['mo.', 'nomë.'],
-    ['moies', 'nomëttes'],
-  ],
-  [
-    ['moies', 'nomëttes'],
-    ,
-  ],
+  'lb', [['mo.', 'nomë.'], ['moies', 'nomëttes'], u], [['moies', 'nomëttes'], u, u],
   [
     ['S', 'M', 'D', 'M', 'D', 'F', 'S'],
     ['Son.', 'Méi.', 'Dën.', 'Mët.', 'Don.', 'Fre.', 'Sam.'],
@@ -53,17 +47,9 @@ export default [
       'Oktober', 'November', 'Dezember'
     ]
   ],
-  [
-    ['v. Chr.', 'n. Chr.'],
-    ,
-  ],
-  1, [6, 0], ['dd.MM.yy', 'd. MMM y', 'd. MMMM y', 'EEEE, d. MMMM y'],
-  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'],
-  [
-    '{1} {0}',
-    ,
-    ,
-  ],
+  [['v. Chr.', 'n. Chr.'], u, u], 1, [6, 0],
+  ['dd.MM.yy', 'd. MMM y', 'd. MMMM y', 'EEEE, d. MMMM y'],
+  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'], ['{1} {0}', u, u, u],
   [',', '.', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
   ['#,##0.###', '#,##0 %', '#,##0.00 ¤', '#E0'], '€', 'Euro',
   {'ATS': ['öS'], 'AUD': ['AU$', '$'], 'THB': ['฿'], 'TWD': ['NT$']}, plural

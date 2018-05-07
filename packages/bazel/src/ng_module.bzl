@@ -12,7 +12,6 @@ load(":rules_typescript.bzl",
     "compile_ts",
     "DEPS_ASPECTS",
     "ts_providers_dict_to_struct",
-    "json_marshal",
 )
 
 def _basename_of(ctx, file):
@@ -23,6 +22,41 @@ def _basename_of(ctx, file):
     ext_len = len(".html")
   return file.short_path[len(ctx.label.package) + 1:-ext_len]
 
+# Return true if run with bazel (the open-sourced version of blaze), false if
+# run with blaze.
+def _is_bazel():
+  return not hasattr(native, "genmpm")
+
+def _flat_module_out_file(ctx):
+  """Provide a default for the flat_module_out_file attribute.
+
+  We cannot use the default="" parameter of ctx.attr because the value is calculated
+  from other attributes (name)
+
+  Args:
+    ctx: skylark rule execution context
+
+  Returns:
+    a basename used for the flat module out (no extension)
+  """
+  if hasattr(ctx.attr, "flat_module_out_file") and ctx.attr.flat_module_out_file:
+    return ctx.attr.flat_module_out_file
+  return "%s_public_index" % ctx.label.name
+
+def _should_produce_flat_module_outs(ctx):
+  """Should we produce flat module outputs.
+
+  We only produce flat module outs when we expect the ng_module is meant to be published,
+  based on the presence of the module_name attribute.
+
+  Args:
+    ctx: skylark rule execution context
+
+  Returns:
+    true iff we should run the bundle_index_host to produce flat module metadata and bundle index
+  """
+  return _is_bazel() and ctx.attr.module_name
+
 # Calculate the expected output of the template compiler for every source in
 # in the library. Most of these will be produced as empty files but it is
 # unknown, without parsing, which will be empty.
@@ -31,6 +65,7 @@ def _expected_outs(ctx):
   closure_js_files = []
   declaration_files = []
   summary_files = []
+  metadata_files = []
 
   factory_basename_set = depset([_basename_of(ctx, src) for src in ctx.files.factories])
 
@@ -50,9 +85,11 @@ def _expected_outs(ctx):
             ".js",
         ]
         summaries = [".ngsummary.json"]
+        metadata = [".metadata.json"]
       else:
         devmode_js = [".js"]
         summaries = []
+        metadata = []
     elif short_path.endswith(".css"):
       basename = short_path[len(package_prefix):-len(".css")]
       devmode_js = [
@@ -60,7 +97,7 @@ def _expected_outs(ctx):
           ".css.ngstyle.js",
       ]
       summaries = []
-
+      metadata = []
     else:
       continue
 
@@ -68,10 +105,23 @@ def _expected_outs(ctx):
     closure_js = [f.replace(".js", ".closure.js") for f in devmode_js if not filter_summaries or not f.endswith(".ngsummary.js")]
     declarations = [f.replace(".js", ".d.ts") for f in devmode_js]
 
-    devmode_js_files += [ctx.new_file(ctx.bin_dir, basename + ext) for ext in devmode_js]
-    closure_js_files += [ctx.new_file(ctx.bin_dir, basename + ext) for ext in closure_js]
-    declaration_files += [ctx.new_file(ctx.bin_dir, basename + ext) for ext in declarations]
-    summary_files += [ctx.new_file(ctx.bin_dir, basename + ext) for ext in summaries]
+    devmode_js_files  += [ctx.actions.declare_file(basename + ext) for ext in devmode_js]
+    closure_js_files  += [ctx.actions.declare_file(basename + ext) for ext in closure_js]
+    declaration_files += [ctx.actions.declare_file(basename + ext) for ext in declarations]
+    summary_files     += [ctx.actions.declare_file(basename + ext) for ext in summaries]
+    if not _is_bazel():
+      metadata_files  += [ctx.actions.declare_file(basename + ext) for ext in metadata]
+
+  # We do this just when producing a flat module index for a publishable ng_module
+  if _should_produce_flat_module_outs(ctx):
+    flat_module_out = _flat_module_out_file(ctx)
+    devmode_js_files.append(ctx.actions.declare_file("%s.js" % flat_module_out))
+    closure_js_files.append(ctx.actions.declare_file("%s.closure.js" % flat_module_out))
+    bundle_index_typings = ctx.actions.declare_file("%s.d.ts" % flat_module_out)
+    declaration_files.append(bundle_index_typings)
+    metadata_files.append(ctx.actions.declare_file("%s.metadata.json" % flat_module_out))
+  else:
+    bundle_index_typings = None
 
   i18n_messages_files = [ctx.new_file(ctx.genfiles_dir, ctx.label.name + "_ngc_messages.xmb")]
 
@@ -80,6 +130,8 @@ def _expected_outs(ctx):
     devmode_js = devmode_js_files,
     declarations = declaration_files,
     summaries = summary_files,
+    metadata = metadata_files,
+    bundle_index_typings = bundle_index_typings,
     i18n_messages = i18n_messages_files,
   )
 
@@ -92,21 +144,29 @@ def _ngc_tsconfig(ctx, files, srcs, **kwargs):
 def _ngc_tsconfig_helper(ctx, files, srcs, enable_ivy, **kwargs):
   outs = _expected_outs(ctx)
   if "devmode_manifest" in kwargs:
-    expected_outs = outs.devmode_js + outs.declarations + outs.summaries
+    expected_outs = outs.devmode_js + outs.declarations + outs.summaries + outs.metadata
   else:
     expected_outs = outs.closure_js
 
+  angular_compiler_options = {
+      "enableResourceInlining": ctx.attr.inline_resources,
+      "generateCodeForLibraries": False,
+      "allowEmptyCodegenFiles": True,
+      "enableSummariesForJit": True,
+      "enableIvy": enable_ivy,
+      "fullTemplateTypeCheck": ctx.attr.type_check,
+      # FIXME: wrong place to de-dupe
+      "expectedOut": depset([o.path for o in expected_outs]).to_list()
+  }
+
+  if _should_produce_flat_module_outs(ctx):
+    angular_compiler_options["flatModuleId"] = ctx.attr.module_name
+    angular_compiler_options["flatModuleOutFile"] = _flat_module_out_file(ctx)
+    angular_compiler_options["flatModulePrivateSymbolPrefix"] = "_".join(
+        [ctx.workspace_name] + ctx.label.package.split("/") + [ctx.label.name, ""])
+
   return dict(tsc_wrapped_tsconfig(ctx, files, srcs, **kwargs), **{
-      "angularCompilerOptions": {
-          "enableResourceInlining": ctx.attr.inline_resources,
-          "generateCodeForLibraries": False,
-          "allowEmptyCodegenFiles": True,
-          "enableSummariesForJit": True,
-          "enableIvy": enable_ivy,
-          "fullTemplateTypeCheck": ctx.attr.type_check,
-          # FIXME: wrong place to de-dupe
-          "expectedOut": depset([o.path for o in expected_outs]).to_list()
-      }
+      "angularCompilerOptions": angular_compiler_options
   })
 
 def _collect_summaries_aspect_impl(target, ctx):
@@ -179,7 +239,7 @@ def ngc_compile_action(ctx, label, inputs, outputs, messages_out, tsconfig_file,
 
   arguments += i18n_args
 
-  ctx.action(
+  ctx.actions.run(
       progress_message = progress_message,
       mnemonic = mnemonic,
       inputs = inputs,
@@ -192,17 +252,18 @@ def ngc_compile_action(ctx, label, inputs, outputs, messages_out, tsconfig_file,
   )
 
   if messages_out != None:
-    ctx.action(inputs = list(inputs),
-               outputs = messages_out,
-               executable = ctx.executable._ng_xi18n,
-               arguments = (_EXTRA_NODE_OPTIONS_FLAGS +
-                            [tsconfig_file.path] +
-                            # The base path is bin_dir because of the way the ngc
-                            # compiler host is configured. So we need to explicitly
-                            # point to genfiles/ to redirect the output.
-                            ["../genfiles/" + messages_out[0].short_path]),
-               progress_message = "Extracting Angular 2 messages (ng_xi18n)",
-               mnemonic = "Angular2MessageExtractor")
+    ctx.actions.run(
+        inputs = list(inputs),
+        outputs = messages_out,
+        executable = ctx.executable._ng_xi18n,
+        arguments = (_EXTRA_NODE_OPTIONS_FLAGS +
+                     [tsconfig_file.path] +
+                     # The base path is bin_dir because of the way the ngc
+                     # compiler host is configured. So we need to explicitly
+                     # point to genfiles/ to redirect the output.
+                     ["../genfiles/" + messages_out[0].short_path]),
+        progress_message = "Extracting Angular 2 messages (ng_xi18n)",
+        mnemonic = "Angular2MessageExtractor")
 
   if not locale and not ctx.attr.no_i18n:
     return struct(
@@ -243,7 +304,7 @@ def _prodmode_compile_action(ctx, inputs, outputs, tsconfig_file, node_opts):
 
 def _devmode_compile_action(ctx, inputs, outputs, tsconfig_file, node_opts):
   outs = _expected_outs(ctx)
-  compile_action_outputs = outputs + outs.devmode_js + outs.declarations + outs.summaries
+  compile_action_outputs = outputs + outs.devmode_js + outs.declarations + outs.summaries + outs.metadata
   _compile_action(ctx, inputs, compile_action_outputs, None, tsconfig_file, node_opts)
 
 def _ts_expected_outs(ctx, label):
@@ -251,71 +312,6 @@ def _ts_expected_outs(ctx, label):
   # implementation doesn't use the label
   _ignored = [label]
   return _expected_outs(ctx)
-
-def _write_bundle_index(ctx):
-  """ Provide an action that runs the bundle_index_main in ngc.
-
-  The action will only be executed when bundling with ng_package with a dep[] on this ng_module.
-
-  This creates:
-  - "flat module" metadata files
-  - "bundle index" js files with private symbol re-export, and their accompanying .d.ts files
-
-  Args:
-    ctx: the skylark rule execution context
-
-  Returns:
-    A struct indicating where the files were produced, which is passed through an ng_package rule to packager.ts
-  """
-  # Provide a default for the flat_module_out_file attribute.
-  # We cannot use the default="" parameter of ctx.attr because the value is calculated
-  # from other attributes (name)
-  flat_module_out_file = ctx.attr.flat_module_out_file if ctx.attr.flat_module_out_file else "%s_public_index" % ctx.label.name
-
-  tsconfig_file = ctx.actions.declare_file("%s.tsconfig.json" % flat_module_out_file)
-  metadata_file = ctx.actions.declare_file("%s.metadata.json" % flat_module_out_file)
-  typings_file = ctx.actions.declare_file("%s.d.ts" % flat_module_out_file)
-  index_file = ctx.actions.declare_file("%s.js" % flat_module_out_file)
-
-  tsconfig = dict(tsc_wrapped_tsconfig(ctx, ctx.files.srcs, ctx.files.srcs), **{
-    "angularCompilerOptions": {
-      "flatModuleOutFile": flat_module_out_file,
-      "flatModulePrivateSymbolPrefix": "_".join([ctx.workspace_name] + ctx.label.package.split("/") + [ctx.label.name, ""]),
-    },
-  })
-  if not ctx.attr.module_name:
-    fail("""Internal error: bundle index files are only produced for ng_module targets with a module_name.
-            Please file a bug at https://github.com/angular/angular/issues""")
-  tsconfig["angularCompilerOptions"]["flatModuleId"] = ctx.attr.module_name
-
-  entry_point = ctx.attr.entry_point if ctx.attr.entry_point else "index.ts"
-  # createBundleIndexHost in bundle_index_host.ts will throw if the "files" has more than one entry.
-  # We don't want to fail() here, however, because not all ng_module's will have the bundle index written.
-  # So we make the assumption that the index.ts file in the highest parent directory is the entry point.
-  index = None
-
-  for f in tsconfig["files"]:
-    if f.endswith("/" + entry_point):
-      if not index or len(f) < len(index):
-        index = f
-
-  if index:
-    tsconfig["files"] = [index]
-
-  ctx.actions.write(tsconfig_file, json_marshal(tsconfig))
-
-  ctx.action(
-      progress_message = "Producing metadata for bundle %s" % ctx.label.name,
-      executable = ctx.executable._index_bundler,
-      inputs = ctx.files.srcs + [tsconfig_file],
-      outputs = [metadata_file, typings_file, index_file],
-      arguments = ["-p", tsconfig_file.path],
-  )
-  return struct(
-      module_name = ctx.attr.module_name,
-      metadata_file = metadata_file,
-      typings_file = typings_file,
-      index_file = index_file)
 
 def ng_module_impl(ctx, ts_compile_actions, ivy = False):
   """Implementation function for the ng_module rule.
@@ -343,18 +339,21 @@ def ng_module_impl(ctx, ts_compile_actions, ivy = False):
 
   outs = _expected_outs(ctx)
   providers["angular"] = {
-    "summaries": _expected_outs(ctx).summaries
+    "summaries": outs.summaries,
+    "metadata": outs.metadata
   }
   providers["ngc_messages"] = outs.i18n_messages
 
-  # Only produces the flattened "index bundle" metadata when requested by some other rule
-  # and only under Bazel
-  if hasattr(ctx.executable, "_index_bundler") and ctx.attr.module_name:
-    bundle_index_metadata = [_write_bundle_index(ctx)]
-  else:
-    bundle_index_metadata = []
+  if _should_produce_flat_module_outs(ctx):
+    if len(outs.metadata) > 1:
+      fail("expecting exactly one metadata output for " + str(ctx.label))
 
-  providers["angular"]["flat_module_metadata"] = depset(bundle_index_metadata)
+    providers["angular"]["flat_module_metadata"] = struct(
+      module_name = ctx.attr.module_name,
+      metadata_file = outs.metadata[0],
+      typings_file = outs.bundle_index_typings,
+      flat_module_out_file = _flat_module_out_file(ctx),
+    )
 
   return providers
 
@@ -422,11 +421,6 @@ NG_MODULE_RULE_ATTRS = dict(dict(COMMON_ATTRIBUTES, **NG_MODULE_ATTRIBUTES), **{
     # See the flatModuleOutFile documentation in
     # https://github.com/angular/angular/blob/master/packages/compiler-cli/src/transformers/api.ts
     "flat_module_out_file": attr.string(),
-
-    "_index_bundler": attr.label(
-        executable = True,
-        cfg = "host",
-        default = Label("//packages/bazel/src:index_bundler")),
 })
 
 ng_module = rule(

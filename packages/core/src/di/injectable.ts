@@ -30,18 +30,19 @@ export type InjectableProvider = ValueSansProvider | ExistingSansProvider |
 /**
  * Type of the Injectable decorator / constructor function.
  *
- * @stable
+ *
  */
 export interface InjectableDecorator {
   /**
-   * @whatItDoes A marker metadata that marks a class as available to {@link Injector} for creation.
-   * @howToUse
+   * @usageNotes
    * ```
    * @Injectable()
    * class Car {}
    * ```
    *
    * @description
+   * A marker metadata that marks a class as available to {@link Injector} for creation.
+   *
    * For more details, see the {@linkDocs guide/dependency-injection "Dependency Injection Guide"}.
    *
    * ### Example
@@ -53,7 +54,7 @@ export interface InjectableDecorator {
    *
    * {@example core/di/ts/metadata_spec.ts region='InjectableThrows'}
    *
-   * @stable
+   *
    */
   (): any;
   (options?: {providedIn: Type<any>| 'root' | null}&InjectableProvider): any;
@@ -112,7 +113,7 @@ export function convertInjectableProviderToFactory(
 /**
 * Injectable decorator and metadata.
 *
-* @stable
+*
 * @Annotation
 */
 export const Injectable: InjectableDecorator = makeDecorator(

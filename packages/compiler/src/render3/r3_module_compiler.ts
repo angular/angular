@@ -15,18 +15,18 @@ import {OutputContext} from '../util';
 
 import {Identifiers as R3} from './r3_identifiers';
 
-const EMPTY_ARRAY = o.literalArr([]);
-
 function convertMetaToOutput(meta: any, ctx: OutputContext): o.Expression {
   if (Array.isArray(meta)) {
     return o.literalArr(meta.map(entry => convertMetaToOutput(entry, ctx)));
-  } else if (meta instanceof StaticSymbol) {
-    return ctx.importExpr(meta);
-  } else if (meta == null) {
-    return o.literal(meta);
-  } else {
-    throw new Error(`Internal error: Unsupported or unknown metadata: ${meta}`);
   }
+  if (meta instanceof StaticSymbol) {
+    return ctx.importExpr(meta);
+  }
+  if (meta == null) {
+    return o.literal(meta);
+  }
+
+  throw new Error(`Internal error: Unsupported or unknown metadata: ${meta}`);
 }
 
 export function compileNgModule(

@@ -8,6 +8,15 @@ build --noshow_progress
 # Don't run manual tests
 test --test_tag_filters=-manual
 
+# Print all the options that apply to the build.
+# This helps us diagnose which options override others
+# (e.g. /etc/bazel.bazelrc vs. tools/bazel.rc)
+build --announce_rc
+
+# Create dist/bin symlink to $(bazel info bazel-bin)
+# We use this when uploading artifacts after the build finishes
+build --symlink_prefix=dist/
+
 # Enable experimental CircleCI bazel remote cache proxy
 # See remote cache documentation in /docs/BAZEL.md
 build --experimental_remote_spawn_cache --remote_rest_cache=http://localhost:7643

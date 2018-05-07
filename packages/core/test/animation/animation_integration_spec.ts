@@ -8,9 +8,9 @@
 import {AUTO_STYLE, AnimationEvent, AnimationOptions, AnimationPlayer, NoopAnimationPlayer, animate, animateChild, group, keyframes, query, state, style, transition, trigger, ɵPRE_STYLE as PRE_STYLE} from '@angular/animations';
 import {AnimationDriver, ɵAnimationEngine, ɵNoopAnimationDriver as NoopAnimationDriver} from '@angular/animations/browser';
 import {MockAnimationDriver, MockAnimationPlayer} from '@angular/animations/browser/testing';
-import {ChangeDetectorRef, Component, HostBinding, HostListener, RendererFactory2, ViewChild} from '@angular/core';
+import {ChangeDetectorRef, Component, HostBinding, HostListener, Inject, RendererFactory2, ViewChild} from '@angular/core';
 import {ɵDomRendererFactory2} from '@angular/platform-browser';
-import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
+import {ANIMATION_MODULE_TYPE, BrowserAnimationsModule, NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 
 import {TestBed, fakeAsync, flushMicrotasks} from '../../testing';
@@ -36,6 +36,34 @@ const DEFAULT_COMPONENT_ID = '1';
         imports: [BrowserAnimationsModule]
       });
     });
+
+    describe('animation modules', function() {
+      it('should hint at BrowserAnimationsModule being used', () => {
+        TestBed.resetTestingModule();
+        TestBed.configureTestingModule(
+            {declarations: [SharedAnimationCmp], imports: [BrowserAnimationsModule]});
+
+        const fixture = TestBed.createComponent(SharedAnimationCmp);
+        const cmp = fixture.componentInstance;
+        expect(cmp.animationType).toEqual('BrowserAnimations');
+      });
+
+      it('should hint at NoopAnimationsModule being used', () => {
+        TestBed.resetTestingModule();
+        TestBed.configureTestingModule(
+            {declarations: [SharedAnimationCmp], imports: [NoopAnimationsModule]});
+
+        const fixture = TestBed.createComponent(SharedAnimationCmp);
+        const cmp = fixture.componentInstance;
+        expect(cmp.animationType).toEqual('NoopAnimations');
+      });
+    });
+
+    @Component({template: '<p>template text</p>'})
+    class SharedAnimationCmp {
+      constructor(@Inject(ANIMATION_MODULE_TYPE) public animationType: 'NoopAnimations'|
+                  'BrowserAnimations') {}
+    }
 
     describe('fakeAsync testing', () => {
       it('should only require one flushMicrotasks call to kick off animation callbacks',
@@ -1424,6 +1452,117 @@ const DEFAULT_COMPONENT_ID = '1';
         expect(getDOM().hasStyle(cmp.element.nativeElement, 'background-color', 'green'))
             .toBeTruthy();
       });
+
+      it('should retain state styles when the underlying DOM structure changes even if there are no insert/remove animations',
+         () => {
+           @Component({
+             selector: 'ani-cmp',
+             template: `
+            <div class="item" *ngFor="let item of items" [@color]="colorExp">
+              {{ item }}
+            </div>
+          `,
+             animations: [trigger('color', [state('green', style({backgroundColor: 'green'}))])]
+           })
+           class Cmp {
+             public colorExp = 'green';
+             public items = [0, 1, 2, 3];
+
+             reorder() {
+               const temp = this.items[0];
+               this.items[0] = this.items[1];
+               this.items[1] = temp;
+             }
+           }
+
+           TestBed.configureTestingModule({declarations: [Cmp]});
+
+           const fixture = TestBed.createComponent(Cmp);
+           const cmp = fixture.componentInstance;
+           fixture.detectChanges();
+
+           let elements: HTMLElement[] = fixture.nativeElement.querySelectorAll('.item');
+           assertBackgroundColor(elements[0], 'green');
+           assertBackgroundColor(elements[1], 'green');
+           assertBackgroundColor(elements[2], 'green');
+           assertBackgroundColor(elements[3], 'green');
+
+           elements[0].title = '0a';
+           elements[1].title = '1a';
+
+           cmp.reorder();
+           fixture.detectChanges();
+
+           elements = fixture.nativeElement.querySelectorAll('.item');
+           assertBackgroundColor(elements[0], 'green');
+           assertBackgroundColor(elements[1], 'green');
+           assertBackgroundColor(elements[2], 'green');
+           assertBackgroundColor(elements[3], 'green');
+
+           function assertBackgroundColor(element: HTMLElement, color: string) {
+             expect(element.style.getPropertyValue('background-color')).toEqual(color);
+           }
+         });
+
+      it('should retain state styles when the underlying DOM structure changes even if there are insert/remove animations',
+         () => {
+           @Component({
+             selector: 'ani-cmp',
+             template: `
+            <div class="item" *ngFor="let item of items" [@color]="colorExp">
+              {{ item }}
+            </div>
+          `,
+             animations: [trigger(
+                 'color',
+                 [
+                   transition('* => *', animate(500)),
+                   state('green', style({backgroundColor: 'green'}))
+                 ])]
+           })
+           class Cmp {
+             public colorExp = 'green';
+             public items = [0, 1, 2, 3];
+
+             reorder() {
+               const temp = this.items[0];
+               this.items[0] = this.items[1];
+               this.items[1] = temp;
+             }
+           }
+
+           TestBed.configureTestingModule({declarations: [Cmp]});
+
+           const fixture = TestBed.createComponent(Cmp);
+           const cmp = fixture.componentInstance;
+           fixture.detectChanges();
+
+           getLog().forEach(p => p.finish());
+
+           let elements: HTMLElement[] = fixture.nativeElement.querySelectorAll('.item');
+           assertBackgroundColor(elements[0], 'green');
+           assertBackgroundColor(elements[1], 'green');
+           assertBackgroundColor(elements[2], 'green');
+           assertBackgroundColor(elements[3], 'green');
+
+           elements[0].title = '0a';
+           elements[1].title = '1a';
+
+           cmp.reorder();
+           fixture.detectChanges();
+
+           getLog().forEach(p => p.finish());
+
+           elements = fixture.nativeElement.querySelectorAll('.item');
+           assertBackgroundColor(elements[0], 'green');
+           assertBackgroundColor(elements[1], 'green');
+           assertBackgroundColor(elements[2], 'green');
+           assertBackgroundColor(elements[3], 'green');
+
+           function assertBackgroundColor(element: HTMLElement, color: string) {
+             expect(element.style.getPropertyValue('background-color')).toEqual(color);
+           }
+         });
 
       it('should animate removals of nodes to the `void` state for each animation trigger, but treat all auto styles as pre styles',
          () => {

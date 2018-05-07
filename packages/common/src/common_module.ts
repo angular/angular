@@ -18,7 +18,7 @@ import {COMMON_PIPES} from './pipes/index';
 /**
  * The module that includes all the basic Angular directives like {@link NgIf}, {@link NgForOf}, ...
  *
- * @stable
+ *
  */
 @NgModule({
   declarations: [COMMON_DIRECTIVES, COMMON_PIPES],

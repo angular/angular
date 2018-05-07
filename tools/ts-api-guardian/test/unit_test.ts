@@ -460,22 +460,6 @@ describe('unit test', () => {
     `;
     check({'file.d.ts': input}, expected);
   });
-
-  it('should warn on onStabilityMissing: warn', () => {
-    const input = `
-      export declare class A {
-        constructor();
-      }
-    `;
-    const expected = `
-      export declare class A {
-        constructor();
-      }
-    `;
-    check({'file.d.ts': input}, expected, {onStabilityMissing: 'warn'});
-    chai.assert.deepEqual(
-        warnings, ['file.d.ts(1,1): error: No stability annotation found for symbol "A"']);
-  });
 });
 
 function getMockHost(files: {[name: string]: string}): ts.CompilerHost {

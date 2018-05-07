@@ -17,7 +17,7 @@ import {platformCoreDynamicTesting} from './platform_core_dynamic_testing';
 export * from './private_export_testing';
 
 /**
- * @stable
+ *
  */
 export const platformBrowserDynamicTesting = createPlatformFactory(
     platformCoreDynamicTesting, 'browserDynamicTesting',
@@ -26,7 +26,7 @@ export const platformBrowserDynamicTesting = createPlatformFactory(
 /**
  * NgModule for testing.
  *
- * @stable
+ *
  */
 @NgModule({
   exports: [BrowserTestingModule],

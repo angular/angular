@@ -9,6 +9,8 @@
 // THIS CODE IS GENERATED - DO NOT MODIFY
 // See angular/tools/gulp-tasks/cldr/extract.js
 
+const u = undefined;
+
 function plural(n: number): number {
   if (n === 0) return 0;
   if (n === 1) return 1;
@@ -19,15 +21,7 @@ function plural(n: number): number {
 }
 
 export default [
-  'cy',
-  [
-    ['b', 'h'],
-    ['yb', 'yh'],
-  ],
-  [
-    ['yb', 'yh'],
-    ,
-  ],
+  'cy', [['b', 'h'], ['yb', 'yh'], u], [['yb', 'yh'], u, u],
   [
     ['S', 'Ll', 'M', 'M', 'I', 'G', 'S'], ['Sul', 'Llun', 'Maw', 'Mer', 'Iau', 'Gwen', 'Sad'],
     [
@@ -62,19 +56,14 @@ export default [
   ],
   [['C', 'O'], ['CC', 'OC'], ['Cyn Crist', 'Oed Crist']], 1, [6, 0],
   ['dd/MM/yy', 'd MMM y', 'd MMMM y', 'EEEE, d MMMM y'],
-  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'],
-  [
-    '{1} {0}',
-    ,
-    '{1} \'am\' {0}',
-  ],
+  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'], ['{1} {0}', u, '{1} \'am\' {0}', u],
   ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
   ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'], '£', 'Punt Prydain', {
-    'BDT': [, 'TK'],
+    'BDT': [u, 'TK'],
     'BWP': [],
     'HKD': ['HK$'],
     'JPY': ['JP¥', '¥'],
-    'KRW': [, '₩'],
+    'KRW': [u, '₩'],
     'THB': ['฿'],
     'TWD': ['NT$'],
     'USD': ['US$', '$'],

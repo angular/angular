@@ -15,12 +15,7 @@ const DEFAULT_FILL_MODE = 'forwards';
 const DEFAULT_EASING = 'linear';
 const ANIMATION_END_EVENT = 'animationend';
 
-export enum AnimatorControlState {
-  INITIALIZED = 1,
-  STARTED = 2,
-  FINISHED = 3,
-  DESTROYED = 4
-}
+export const enum AnimatorControlState {INITIALIZED = 1, STARTED = 2, FINISHED = 3, DESTROYED = 4}
 
 export class CssKeyframesPlayer implements AnimationPlayer {
   private _onDoneFns: Function[] = [];
@@ -34,7 +29,8 @@ export class CssKeyframesPlayer implements AnimationPlayer {
   public readonly totalTime: number;
   public readonly easing: string;
   public currentSnapshot: {[key: string]: string} = {};
-  public state = 0;
+
+  private _state: AnimatorControlState = 0;
 
   constructor(
       public readonly element: any, public readonly keyframes: {[key: string]: string | number}[],
@@ -54,8 +50,8 @@ export class CssKeyframesPlayer implements AnimationPlayer {
 
   destroy() {
     this.init();
-    if (this.state >= AnimatorControlState.DESTROYED) return;
-    this.state = AnimatorControlState.DESTROYED;
+    if (this._state >= AnimatorControlState.DESTROYED) return;
+    this._state = AnimatorControlState.DESTROYED;
     this._styler.destroy();
     this._flushStartFns();
     this._flushDoneFns();
@@ -75,8 +71,8 @@ export class CssKeyframesPlayer implements AnimationPlayer {
 
   finish() {
     this.init();
-    if (this.state >= AnimatorControlState.FINISHED) return;
-    this.state = AnimatorControlState.FINISHED;
+    if (this._state >= AnimatorControlState.FINISHED) return;
+    this._state = AnimatorControlState.FINISHED;
     this._styler.finish();
     this._flushStartFns();
     this._flushDoneFns();
@@ -86,10 +82,10 @@ export class CssKeyframesPlayer implements AnimationPlayer {
 
   getPosition(): number { return this._styler.getPosition(); }
 
-  hasStarted(): boolean { return this.state >= AnimatorControlState.STARTED; }
+  hasStarted(): boolean { return this._state >= AnimatorControlState.STARTED; }
   init(): void {
-    if (this.state >= AnimatorControlState.INITIALIZED) return;
-    this.state = AnimatorControlState.INITIALIZED;
+    if (this._state >= AnimatorControlState.INITIALIZED) return;
+    this._state = AnimatorControlState.INITIALIZED;
     const elm = this.element;
     this._styler.apply();
     if (this._delay) {
@@ -101,7 +97,7 @@ export class CssKeyframesPlayer implements AnimationPlayer {
     this.init();
     if (!this.hasStarted()) {
       this._flushStartFns();
-      this.state = AnimatorControlState.STARTED;
+      this._state = AnimatorControlState.STARTED;
     }
     this._styler.resume();
   }
@@ -137,7 +133,7 @@ export class CssKeyframesPlayer implements AnimationPlayer {
     this.init();
     const styles: {[key: string]: string} = {};
     if (this.hasStarted()) {
-      const finished = this.state >= AnimatorControlState.FINISHED;
+      const finished = this._state >= AnimatorControlState.FINISHED;
       Object.keys(this._finalStyles).forEach(prop => {
         if (prop != 'offset') {
           styles[prop] = finished ? this._finalStyles[prop] : computeStyle(this.element, prop);

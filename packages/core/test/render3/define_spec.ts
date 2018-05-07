@@ -7,7 +7,7 @@
  */
 
 import {DoCheck, OnChanges, SimpleChanges} from '../../src/core';
-import {NgOnChangesFeature, defineDirective} from '../../src/render3/index';
+import {DirectiveDef, NgOnChangesFeature, defineDirective} from '../../src/render3/index';
 
 describe('define', () => {
   describe('component', () => {
@@ -29,21 +29,22 @@ describe('define', () => {
 
           static ngDirectiveDef = defineDirective({
             type: MyDirective,
-            selector: [[['', 'myDir', ''], null]],
+            selectors: [['', 'myDir', '']],
             factory: () => new MyDirective(),
             features: [NgOnChangesFeature()],
             inputs: {valA: 'valA', valB: 'valB'}
           });
         }
 
-        const myDir = MyDirective.ngDirectiveDef.factory() as MyDirective;
+        const myDir =
+            (MyDirective.ngDirectiveDef as DirectiveDef<MyDirective>).factory() as MyDirective;
         myDir.valA = 'first';
         expect(myDir.valA).toEqual('first');
         myDir.valB = 'second';
         expect(myDir.log).toEqual(['second']);
         expect(myDir.valB).toEqual('works');
         myDir.log.length = 0;
-        MyDirective.ngDirectiveDef.doCheck !.call(myDir);
+        (MyDirective.ngDirectiveDef as DirectiveDef<MyDirective>).doCheck !.call(myDir);
         expect(myDir.log).toEqual([
           'ngOnChanges', 'valA', 'initValue', 'first', 'valB', undefined, 'second', 'ngDoCheck'
         ]);

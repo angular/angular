@@ -6,12 +6,17 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {NoopAnimationPlayer} from '@angular/animations';
+import {hypenatePropsObject} from '../shared';
 
 export class DirectStylePlayer extends NoopAnimationPlayer {
   private _startingStyles: {[key: string]: any}|null = {};
   private __initialized = false;
+  private _styles: {[key: string]: any};
 
-  constructor(public element: any, private _styles: {[key: string]: any}) { super(); }
+  constructor(public element: any, styles: {[key: string]: any}) {
+    super();
+    this._styles = hypenatePropsObject(styles);
+  }
 
   init() {
     if (this.__initialized || !this._startingStyles) return;
@@ -25,7 +30,8 @@ export class DirectStylePlayer extends NoopAnimationPlayer {
   play() {
     if (!this._startingStyles) return;
     this.init();
-    Object.keys(this._styles).forEach(prop => { this.element.style[prop] = this._styles[prop]; });
+    Object.keys(this._styles)
+        .forEach(prop => this.element.style.setProperty(prop, this._styles[prop]));
     super.play();
   }
 
@@ -34,7 +40,7 @@ export class DirectStylePlayer extends NoopAnimationPlayer {
     Object.keys(this._startingStyles).forEach(prop => {
       const value = this._startingStyles ![prop];
       if (value) {
-        this.element.style[prop] = value;
+        this.element.style.setProperty(prop, value);
       } else {
         this.element.style.removeProperty(prop);
       }

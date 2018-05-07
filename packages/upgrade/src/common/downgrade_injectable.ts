@@ -10,22 +10,25 @@ import {Injector} from '@angular/core';
 import {INJECTOR_KEY} from './constants';
 
 /**
- * @whatItDoes
+ * @description
+ *
+ * A helper function to allow an Angular service to be accessible from AngularJS.
  *
  * *Part of the [upgrade/static](api?query=upgrade%2Fstatic)
  * library for hybrid upgrade apps that support AoT compilation*
  *
- * Allow an Angular service to be accessible from AngularJS.
+ * This helper function returns a factory function that provides access to the Angular
+ * service identified by the `token` parameter.
  *
- * @howToUse
+ * ### Examples
  *
- * First ensure that the service to be downgraded is provided in an {@link NgModule}
+ * First ensure that the service to be downgraded is provided in an `NgModule`
  * that will be part of the upgrade application. For example, let's assume we have
  * defined `HeroesService`
  *
  * {@example upgrade/static/ts/module.ts region="ng2-heroes-service"}
  *
- * and that we have included this in our upgrade app {@link NgModule}
+ * and that we have included this in our upgrade app `NgModule`
  *
  * {@example upgrade/static/ts/module.ts region="ng2-module"}
  *
@@ -39,15 +42,10 @@ import {INJECTOR_KEY} from './constants';
  *
  * {@example upgrade/static/ts/module.ts region="example-app"}
  *
- * @description
+ * @param token an `InjectionToken` that identifies a service provided from Angular.
  *
- * Takes a `token` that identifies a service provided from Angular.
- *
- * Returns a [factory function](https://docs.angularjs.org/guide/di) that can be
+ * @returns a [factory function](https://docs.angularjs.org/guide/di) that can be
  * used to register the service on an AngularJS module.
- *
- * The factory function provides access to the Angular service that
- * is identified by the `token` parameter.
  *
  * @experimental
  */

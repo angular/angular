@@ -24,6 +24,7 @@ ng_package(
         "//packages/core/testing:package.json",
     ],
     entry_point = "packages/core/index.js",
+    tags = ["release-with-framework"],
     deps = [
         ":core",
         "//packages/core/testing",

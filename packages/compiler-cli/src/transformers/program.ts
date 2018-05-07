@@ -13,7 +13,9 @@ import * as path from 'path';
 import * as ts from 'typescript';
 
 import {TypeCheckHost, translateDiagnostics} from '../diagnostics/translate_diagnostics';
+import {compareVersions} from '../diagnostics/typescript_version';
 import {MetadataCollector, ModuleMetadata, createBundleIndexHost} from '../metadata/index';
+import {NgtscProgram} from '../ngtsc/program';
 
 import {CompilerHost, CompilerOptions, CustomTransformers, DEFAULT_ERROR_CODE, Diagnostic, DiagnosticMessageChain, EmitFlags, LazyRoute, LibrarySummary, Program, SOURCE, TsEmitArguments, TsEmitCallback, TsMergeEmitResultsCallback} from './api';
 import {CodeGenerator, TsCompilerAotCompilerTypeCheckHostAdapter, getOriginalReferences} from './compiler_host';
@@ -68,7 +70,7 @@ const MAX_FILE_COUNT_FOR_SINGLE_FILE_EMIT = 20;
 /**
  * Fields to lower within metadata in render2 mode.
  */
-const LOWER_FIELDS = ['useValue', 'useFactory', 'data'];
+const LOWER_FIELDS = ['useValue', 'useFactory', 'data', 'id', 'loadChildren'];
 
 /**
  * Fields to lower within metadata in render3 mode.
@@ -95,9 +97,24 @@ const defaultEmitCallback: TsEmitCallback =
         program.emit(
             targetSourceFile, writeFile, cancellationToken, emitOnlyDtsFiles, customTransformers);
 
+/**
+ * Minimum supported TypeScript version
+ * ∀ supported typescript version v, v >= MIN_TS_VERSION
+ */
+const MIN_TS_VERSION = '2.7.2';
+
+/**
+ * Supremum of supported TypeScript versions
+ * ∀ supported typescript version v, v < MAX_TS_VERSION
+ * MAX_TS_VERSION is not considered as a supported TypeScript version
+ */
+const MAX_TS_VERSION = '2.8.0';
+
 class AngularCompilerProgram implements Program {
   private rootNames: string[];
   private metadataCache: MetadataCache;
+  // Metadata cache used exclusively for the flat module index
+  private flatModuleMetadataCache: MetadataCache;
   private loweringMetadataTransform: LowerMetadataTransform;
   private oldProgramLibrarySummaries: Map<string, LibrarySummary>|undefined;
   private oldProgramEmittedGeneratedFiles: Map<string, GeneratedFile>|undefined;
@@ -124,10 +141,7 @@ class AngularCompilerProgram implements Program {
       private host: CompilerHost, oldProgram?: Program) {
     this.rootNames = [...rootNames];
 
-    if ((ts.version < '2.7.2' || ts.version >= '2.8.0') && !options.disableTypeScriptVersionCheck) {
-      throw new Error(
-          `The Angular Compiler requires TypeScript >=2.7.2 and <2.8.0 but ${ts.version} was found instead.`);
-    }
+    checkVersion(ts.version, MIN_TS_VERSION, MAX_TS_VERSION, options.disableTypeScriptVersionCheck);
 
     this.oldTsProgram = oldProgram ? oldProgram.getTsProgram() : undefined;
     if (oldProgram) {
@@ -138,7 +152,7 @@ class AngularCompilerProgram implements Program {
 
     if (options.flatModuleOutFile) {
       const {host: bundleHost, indexName, errors} =
-          createBundleIndexHost(options, this.rootNames, host);
+          createBundleIndexHost(options, this.rootNames, host, () => this.flatModuleMetadataCache);
       if (errors) {
         this._optionsDiagnostics.push(...errors.map(e => ({
                                                       category: e.category,
@@ -273,6 +287,9 @@ class AngularCompilerProgram implements Program {
     emitCallback?: TsEmitCallback,
     mergeEmitResultsCallback?: TsMergeEmitResultsCallback,
   } = {}): ts.EmitResult {
+    if (this.options.enableIvy === 'ngtsc') {
+      throw new Error('Cannot run legacy compiler in ngtsc mode');
+    }
     return this.options.enableIvy === true ? this._emitRender3(parameters) :
                                              this._emitRender2(parameters);
   }
@@ -327,7 +344,6 @@ class AngularCompilerProgram implements Program {
       writeFile: writeTsFile, emitOnlyDtsFiles,
       customTransformers: tsCustomTransformers
     });
-
     return emitResult;
   }
 
@@ -507,6 +523,7 @@ class AngularCompilerProgram implements Program {
         `- ${genJsonFiles.length + metadataJsonCount} generated json files`,
       ].join('\n'))]);
     }
+
     return emitResult;
   }
 
@@ -563,9 +580,12 @@ class AngularCompilerProgram implements Program {
       customTransformers?: CustomTransformers): ts.CustomTransformers {
     const beforeTs: Array<ts.TransformerFactory<ts.SourceFile>> = [];
     const metadataTransforms: MetadataTransformer[] = [];
+    const flatModuleMetadataTransforms: MetadataTransformer[] = [];
     if (this.options.enableResourceInlining) {
       beforeTs.push(getInlineResourcesTransformFactory(this.tsProgram, this.hostAdapter));
-      metadataTransforms.push(new InlineResourcesMetadataTransformer(this.hostAdapter));
+      const transformer = new InlineResourcesMetadataTransformer(this.hostAdapter);
+      metadataTransforms.push(transformer);
+      flatModuleMetadataTransforms.push(transformer);
     }
 
     if (!this.options.disableExpressionLowering) {
@@ -581,14 +601,18 @@ class AngularCompilerProgram implements Program {
 
       // If we have partial modules, the cached metadata might be incorrect as it doesn't reflect
       // the partial module transforms.
-      metadataTransforms.push(new PartialModuleMetadataTransformer(partialModules));
+      const transformer = new PartialModuleMetadataTransformer(partialModules);
+      metadataTransforms.push(transformer);
+      flatModuleMetadataTransforms.push(transformer);
     }
 
     if (stripDecorators) {
       beforeTs.push(getDecoratorStripTransformerFactory(
           stripDecorators, this.compiler.reflector, this.getTsProgram().getTypeChecker()));
-      metadataTransforms.push(
-          new StripDecoratorsMetadataTransformer(stripDecorators, this.compiler.reflector));
+      const transformer =
+          new StripDecoratorsMetadataTransformer(stripDecorators, this.compiler.reflector);
+      metadataTransforms.push(transformer);
+      flatModuleMetadataTransforms.push(transformer);
     }
 
     if (customTransformers && customTransformers.beforeTs) {
@@ -596,6 +620,9 @@ class AngularCompilerProgram implements Program {
     }
     if (metadataTransforms.length > 0) {
       this.metadataCache = this.createMetadataCache(metadataTransforms);
+    }
+    if (flatModuleMetadataTransforms.length > 0) {
+      this.flatModuleMetadataCache = this.createMetadataCache(flatModuleMetadataTransforms);
     }
     const afterTs = customTransformers ? customTransformers.afterTs : undefined;
     return {before: beforeTs, after: afterTs};
@@ -847,11 +874,42 @@ class AngularCompilerProgram implements Program {
   }
 }
 
+/**
+ * Checks whether a given version ∈ [minVersion, maxVersion[
+ * An error will be thrown if the following statements are simultaneously true:
+ * - the given version ∉ [minVersion, maxVersion[,
+ * - the result of the version check is not meant to be bypassed (the parameter disableVersionCheck
+ * is false)
+ *
+ * @param version The version on which the check will be performed
+ * @param minVersion The lower bound version. A valid version needs to be greater than minVersion
+ * @param maxVersion The upper bound version. A valid version needs to be strictly less than
+ * maxVersion
+ * @param disableVersionCheck Indicates whether version check should be bypassed
+ *
+ * @throws Will throw an error if the following statements are simultaneously true:
+ * - the given version ∉ [minVersion, maxVersion[,
+ * - the result of the version check is not meant to be bypassed (the parameter disableVersionCheck
+ * is false)
+ */
+export function checkVersion(
+    version: string, minVersion: string, maxVersion: string,
+    disableVersionCheck: boolean | undefined) {
+  if ((compareVersions(version, minVersion) < 0 || compareVersions(version, maxVersion) >= 0) &&
+      !disableVersionCheck) {
+    throw new Error(
+        `The Angular Compiler requires TypeScript >=${minVersion} and <${maxVersion} but ${version} was found instead.`);
+  }
+}
+
 export function createProgram({rootNames, options, host, oldProgram}: {
   rootNames: ReadonlyArray<string>,
   options: CompilerOptions,
   host: CompilerHost, oldProgram?: Program
 }): Program {
+  if (options.enableIvy === 'ngtsc') {
+    return new NgtscProgram(rootNames, options, host, oldProgram);
+  }
   return new AngularCompilerProgram(rootNames, options, host, oldProgram);
 }
 

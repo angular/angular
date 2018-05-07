@@ -3,6 +3,7 @@
 set -eu -o pipefail
 
 readonly PROJECT_NAME="angular-payload-size"
+NODE_MODULES_BIN=$PROJECT_ROOT/node_modules/.bin/
 
 # Calculate the size of target file uncompressed size, gzip7 size, gzip9 size
 # Write to global variable $payloadData, $filename
@@ -88,7 +89,7 @@ uploadData() {
 
     # WARNING: FIREBASE_TOKEN should NOT be printed.
     set +x
-    $PROJECT_ROOT/node_modules/.bin/firebase database:update --data "$payloadData" --project $PROJECT_NAME --confirm --token "$ANGULAR_PAYLOAD_FIREBASE_TOKEN" $dbPath
+    $NODE_MODULES_BIN/firebase database:update --data "$payloadData" --project $PROJECT_NAME --confirm --token "$ANGULAR_PAYLOAD_FIREBASE_TOKEN" $dbPath
   fi
 }
 

@@ -90,5 +90,5 @@ export class TocComponent implements OnInit, AfterViewInit, OnDestroy {
 }
 
 function count<T>(array: T[], fn: (item: T) => boolean) {
-  return array.reduce((count, item) => fn(item) ? count + 1 : count, 0);
+  return array.reduce((result, item) => fn(item) ? result + 1 : result, 0);
 }

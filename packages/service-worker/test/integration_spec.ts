@@ -41,6 +41,7 @@ const manifest: Manifest = {
     urls: ['/only.txt'],
     patterns: [],
   }],
+  navigationUrls: [],
   hashTable: tmpHashTableForFs(dist),
 };
 
@@ -55,6 +56,7 @@ const manifestUpdate: Manifest = {
     urls: ['/only.txt'],
     patterns: [],
   }],
+  navigationUrls: [],
   hashTable: tmpHashTableForFs(distUpdate),
 };
 

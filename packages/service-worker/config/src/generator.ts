@@ -11,6 +11,13 @@ import {Filesystem} from './filesystem';
 import {globToRegex} from './glob';
 import {Config} from './in';
 
+const DEFAULT_NAVIGATION_URLS = [
+  '/**',           // Include all URLs.
+  '!/**/*.*',      // Exclude URLs to files (containing a file extension in the last segment).
+  '!/**/*__*',     // Exclude URLs containing `__` in the last segment.
+  '!/**/*__*/**',  // Exclude URLs containing `__` in any other segment.
+];
+
 /**
  * Consumes service worker configuration files and processes them into control files.
  *
@@ -23,10 +30,11 @@ export class Generator {
     const hashTable = {};
     return {
       configVersion: 1,
-      index: joinUrls(this.baseHref, config.index),
       appData: config.appData,
+      index: joinUrls(this.baseHref, config.index),
       assetGroups: await this.processAssetGroups(config, hashTable),
       dataGroups: this.processDataGroups(config), hashTable,
+      navigationUrls: processNavigationUrls(this.baseHref, config.navigationUrls),
     };
   }
 
@@ -52,15 +60,6 @@ export class Generator {
         hashTable[joinUrls(this.baseHref, file)] = hash;
       }, Promise.resolve());
 
-
-      // Figure out the patterns.
-      const patterns = (group.resources.urls || [])
-                           .map(
-                               glob => glob.startsWith('/') || glob.indexOf('://') !== -1 ?
-                                   glob :
-                                   joinUrls(this.baseHref, glob))
-                           .map(glob => globToRegex(glob));
-
       return {
         name: group.name,
         installMode: group.installMode || 'prefetch',
@@ -69,22 +68,16 @@ export class Generator {
                   .concat(plainFiles)
                   .concat(versionedFiles)
                   .map(url => joinUrls(this.baseHref, url)),
-        patterns,
+        patterns: (group.resources.urls || []).map(url => urlToRegex(url, this.baseHref)),
       };
     }));
   }
 
   private processDataGroups(config: Config): Object[] {
     return (config.dataGroups || []).map(group => {
-      const patterns = group.urls
-                           .map(
-                               glob => glob.startsWith('/') || glob.indexOf('://') !== -1 ?
-                                   glob :
-                                   joinUrls(this.baseHref, glob))
-                           .map(glob => globToRegex(glob));
       return {
         name: group.name,
-        patterns,
+        patterns: group.urls.map(url => urlToRegex(url, this.baseHref)),
         strategy: group.cacheConfig.strategy || 'performance',
         maxSize: group.cacheConfig.maxSize,
         maxAge: parseDurationToMs(group.cacheConfig.maxAge),
@@ -93,6 +86,15 @@ export class Generator {
       };
     });
   }
+}
+
+export function processNavigationUrls(
+    baseHref: string, urls = DEFAULT_NAVIGATION_URLS): {positive: boolean, regex: string}[] {
+  return urls.map(url => {
+    const positive = !url.startsWith('!');
+    url = positive ? url : url.substr(1);
+    return {positive, regex: `^${urlToRegex(url, baseHref)}$`};
+  });
 }
 
 function globListToMatcher(globs: string[]): (file: string) => boolean {
@@ -121,6 +123,14 @@ function matches(file: string, patterns: {positive: boolean, regex: RegExp}[]): 
     }
   }, false);
   return res;
+}
+
+function urlToRegex(url: string, baseHref: string): string {
+  if (!url.startsWith('/') && url.indexOf('://') === -1) {
+    url = joinUrls(baseHref, url);
+  }
+
+  return globToRegex(url);
 }
 
 function joinUrls(a: string, b: string): string {
