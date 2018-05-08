@@ -24,7 +24,7 @@ export const EVENT_MANAGER_PLUGINS =
 export class EventManager {
   private _plugins: EventManagerPlugin[];
   private _eventNameToPlugin = new Map<string, EventManagerPlugin>();
- 
+
   /**
    * Initializes an instance of the event-manager service.
    */
@@ -58,7 +58,7 @@ export class EventManager {
     const plugin = this._findPluginFor(eventName);
     return plugin.addGlobalEventListener(target, eventName, handler);
   }
-  
+
   /**
    * Retrieves the compilation zone in which event listeners are registered.
    */

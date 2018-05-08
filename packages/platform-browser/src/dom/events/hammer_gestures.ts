@@ -80,22 +80,22 @@ export class HammerGestureConfig {
    */
   events: string[] = [];
 
-   /**
-   * Maps gesture event names to a set of configuration options
-   * that specify overrides to the default values for specific properties.
-   *
-   * The key is a supported event name to be configured,
-   * and the options object contains a set of properties, with override values
-   * to be applied to the named recognizer event.
-   * For example, to disable recognition of the rotate event, specify
-   *  `{"rotate": {"enable": false}}`.
-   *
-   * Properties that are not present take the HammerJS default values.
-   * For information about which properties are supported for which events,
-   * and their allowed and default values, see
-   * [HammerJS documentation](http://hammerjs.github.io/).
-   *
-   */
+  /**
+  * Maps gesture event names to a set of configuration options
+  * that specify overrides to the default values for specific properties.
+  *
+  * The key is a supported event name to be configured,
+  * and the options object contains a set of properties, with override values
+  * to be applied to the named recognizer event.
+  * For example, to disable recognition of the rotate event, specify
+  *  `{"rotate": {"enable": false}}`.
+  *
+  * Properties that are not present take the HammerJS default values.
+  * For information about which properties are supported for which events,
+  * and their allowed and default values, see
+  * [HammerJS documentation](http://hammerjs.github.io/).
+  *
+  */
   overrides: {[key: string]: Object} = {};
 
   /**
@@ -122,7 +122,7 @@ export class HammerGestureConfig {
    */
 
   buildHammer(element: HTMLElement): HammerInstance {
-    const mc = new Hammer!(element, this.options);
+    const mc = new Hammer !(element, this.options);
 
     mc.get('pinch').set({enable: true});
     mc.get('rotate').set({enable: true});
@@ -143,7 +143,7 @@ export class HammerGesturesPlugin extends EventManagerPlugin {
       private console: Console) {
     super(doc);
   }
- 
+
   supports(eventName: string): boolean {
     if (!EVENT_NAMES.hasOwnProperty(eventName.toLowerCase()) && !this.isCustomEvent(eventName)) {
       return false;
