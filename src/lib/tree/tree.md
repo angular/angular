@@ -39,8 +39,8 @@ outlet to keep all the children nodes.
 <mat-tree>
    <mat-nested-tree-node>
      parent node
-     <mat-nested-tree-node> -- child node1 </mat-tree-node>
-     <mat-nested-tree-node> -- child node2 </mat-tree-node>
+     <mat-nested-tree-node> -- child node1 </mat-nested-tree-node>
+     <mat-nested-tree-node> -- child node2 </mat-nested-tree-node>
    </mat-nested-tree-node>
 </mat-tree>
 ```

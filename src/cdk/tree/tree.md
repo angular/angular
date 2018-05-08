@@ -40,8 +40,8 @@ a node outlet into which children are projected.
 <cdk-tree>
   <cdk-nested-tree-node>
     parent node
-    <cdk-nested-tree-node> -- child node1 </cdk-tree-node>
-    <cdk-nested-tree-node> -- child node2 </cdk-tree-node>
+    <cdk-nested-tree-node> -- child node1 </cdk-nested-tree-node>
+    <cdk-nested-tree-node> -- child node2 </cdk-nested-tree-node>
   </cdk-nested-tree-node>
 </cdk-tree>
 ```
