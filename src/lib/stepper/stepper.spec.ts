@@ -340,6 +340,28 @@ describe('MatStepper', () => {
         selectionChangeSubscription.unsubscribe();
         animationDoneSubscription.unsubscribe();
       }));
+
+    it('should not throw when attempting to get the selected step too early', () => {
+      fixture.destroy();
+      fixture = TestBed.createComponent(SimpleMatVerticalStepperApp);
+
+      const stepperComponent: MatVerticalStepper = fixture.debugElement
+          .query(By.css('mat-vertical-stepper')).componentInstance;
+
+      expect(() => stepperComponent.selected).not.toThrow();
+    });
+
+    it('should not throw when attempting to set the selected step too early', () => {
+      fixture.destroy();
+      fixture = TestBed.createComponent(SimpleMatVerticalStepperApp);
+
+      const stepperComponent: MatVerticalStepper = fixture.debugElement
+          .query(By.css('mat-vertical-stepper')).componentInstance;
+
+      expect(() => stepperComponent.selected = null!).not.toThrow();
+      expect(stepperComponent.selectedIndex).toBe(-1);
+    });
+
   });
 
   describe('icon overrides', () => {

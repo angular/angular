@@ -189,9 +189,12 @@ export class CdkStepper implements AfterViewInit, OnDestroy {
 
   /** The step that is selected. */
   @Input()
-  get selected(): CdkStep { return this._steps.toArray()[this.selectedIndex]; }
+  get selected(): CdkStep {
+    // @deletion-target 7.0.0 Change return type to `CdkStep | undefined`.
+    return this._steps ? this._steps.toArray()[this.selectedIndex] : undefined!;
+  }
   set selected(step: CdkStep) {
-    this.selectedIndex = this._steps.toArray().indexOf(step);
+    this.selectedIndex = this._steps ? this._steps.toArray().indexOf(step) : -1;
   }
 
   /** Event emitted when the selected step has changed. */
