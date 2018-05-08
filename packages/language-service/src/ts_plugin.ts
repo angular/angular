@@ -64,7 +64,7 @@ export function create(info: any /* ts.server.PluginCreateInfo */): ts.LanguageS
   }
 
   function typescriptOnly(ls: ts.LanguageService): ts.LanguageService {
-    return {
+    const languageService: ts.LanguageService = {
       cleanupSemanticCache: () => ls.cleanupSemanticCache(),
       getSyntacticDiagnostics: tryFilenameCall(ls.getSyntacticDiagnostics),
       getSemanticDiagnostics: tryFilenameCall(ls.getSemanticDiagnostics),
@@ -117,8 +117,13 @@ export function create(info: any /* ts.server.PluginCreateInfo */): ts.LanguageS
       getDefinitionAndBoundSpan: tryFilenameOneCall(ls.getDefinitionAndBoundSpan),
       getCombinedCodeFix:
           (scope: ts.CombinedCodeFixScope, fixId: {}, formatOptions: ts.FormatCodeSettings) =>
-              tryCall(undefined, () => ls.getCombinedCodeFix(scope, fixId, formatOptions))
-    };
+              tryCall(undefined, () => ls.getCombinedCodeFix(scope, fixId, formatOptions)),
+      // TODO(kyliau): dummy implementation to compile with ts 2.8, create real one
+      getSuggestionDiagnostics: (fileName: string) => [],
+      // TODO(kyliau): dummy implementation to compile with ts 2.8, create real one
+      organizeImports: (scope: ts.CombinedCodeFixScope, formatOptions: ts.FormatCodeSettings) => [],
+    } as ts.LanguageService;
+    return languageService;
   }
 
   oldLS = typescriptOnly(oldLS);
