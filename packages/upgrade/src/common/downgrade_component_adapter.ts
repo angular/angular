@@ -11,7 +11,7 @@ import {ApplicationRef, ChangeDetectorRef, ComponentFactory, ComponentRef, Event
 import * as angular from './angular1';
 import {PropertyBinding} from './component_info';
 import {$SCOPE} from './constants';
-import {getAttributesAsArray, getComponentName, hookupNgModel, strictEquals} from './util';
+import {getComponentName, hookupNgModel, strictEquals} from './util';
 
 const INITIAL_VALUE = {
   __UNINITIALIZED__: true

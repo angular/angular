@@ -32,19 +32,6 @@ export function directiveNormalize(name: string): string {
       .replace(DIRECTIVE_SPECIAL_CHARS_REGEXP, (_, letter) => letter.toUpperCase());
 }
 
-export function getAttributesAsArray(node: Node): [string, string][] {
-  const attributes = node.attributes;
-  let asArray: [string, string][] = undefined !;
-  if (attributes) {
-    let attrLen = attributes.length;
-    asArray = new Array(attrLen);
-    for (let i = 0; i < attrLen; i++) {
-      asArray[i] = [attributes[i].nodeName, attributes[i].nodeValue !];
-    }
-  }
-  return asArray || [];
-}
-
 export function getComponentName(component: Type<any>): string {
   // Return the name of the component or the first line of its stringified version.
   return (component as any).overriddenName || component.name || component.toString().split('\n')[0];

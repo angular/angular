@@ -146,7 +146,7 @@ export class InertBodyHelper {
     // loop backwards so that we can support removals.
     for (let i = elAttrs.length - 1; 0 < i; i--) {
       const attrib = elAttrs.item(i);
-      const attrName = attrib.name;
+      const attrName = attrib !.name;
       if (attrName === 'xmlns:ns1' || attrName.indexOf('ns1:') === 0) {
         el.removeAttribute(attrName);
       }
