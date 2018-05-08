@@ -32,7 +32,6 @@ const appVendors = [
   'rxjs',
   'hammerjs',
   'core-js',
-  'web-animations-js',
   'moment',
   'tslib',
   '@webcomponents',

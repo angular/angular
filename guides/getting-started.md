@@ -48,10 +48,6 @@ npm install --save @angular/animations
 yarn add @angular/animations
 ```
 
-**Note:** `@angular/animations` uses the WebAnimation API that isn't supported by all browsers yet.
-If you want to support Material component animations in these browsers, you'll have to
-[include a polyfill](https://github.com/web-animations/web-animations-js).
-
 ```ts
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 
