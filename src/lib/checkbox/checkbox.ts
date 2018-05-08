@@ -110,7 +110,7 @@ export const _MatCheckboxMixinBase =
     '[class.mat-checkbox-label-before]': 'labelPosition == "before"',
   },
   providers: [MAT_CHECKBOX_CONTROL_VALUE_ACCESSOR],
-  inputs: ['disabled', 'disableRipple', 'color', 'tabIndex'],
+  inputs: ['disableRipple', 'color', 'tabIndex'],
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush
 })
@@ -214,6 +214,20 @@ export class MatCheckbox extends _MatCheckboxMixinBase implements ControlValueAc
   private _checked: boolean = false;
 
   /**
+   * Whether the checkbox is disabled. This fully overrides the implementation provided by
+   * mixinDisabled, but the mixin is still required because mixinTabIndex requires it.
+   */
+  @Input()
+  get disabled() { return this._disabled; }
+  set disabled(value: any) {
+    if (value != this.disabled) {
+      this._disabled = value;
+      this._changeDetectorRef.markForCheck();
+    }
+  }
+  private _disabled: boolean = false;
+
+  /**
    * Whether the checkbox is indeterminate. This is also known as "mixed" mode and can be used to
    * represent a checkbox with three states, e.g. a checkbox that represents a nested list of
    * checkable items. Note that whenever checkbox is manually clicked, indeterminate is immediately
@@ -267,7 +281,6 @@ export class MatCheckbox extends _MatCheckboxMixinBase implements ControlValueAc
   // Implemented as part of ControlValueAccessor.
   setDisabledState(isDisabled: boolean) {
     this.disabled = isDisabled;
-    this._changeDetectorRef.markForCheck();
   }
 
   _getAriaChecked(): 'true' | 'false' | 'mixed' {

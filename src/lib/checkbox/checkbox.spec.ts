@@ -1,6 +1,6 @@
 import {ComponentFixture, fakeAsync, TestBed, tick, flush} from '@angular/core/testing';
 import {FormControl, FormsModule, NgModel, ReactiveFormsModule} from '@angular/forms';
-import {Component, DebugElement} from '@angular/core';
+import {Component, DebugElement, ViewChild} from '@angular/core';
 import {By} from '@angular/platform-browser';
 import {dispatchFakeEvent} from '@angular/cdk/testing';
 import {MatCheckbox, MatCheckboxChange, MatCheckboxModule} from './index';
@@ -28,6 +28,7 @@ describe('MatCheckbox', () => {
         CheckboxWithFormControl,
         CheckboxWithoutLabel,
         CheckboxWithTabindexAttr,
+        CheckboxUsingViewChild,
       ]
     });
 
@@ -786,7 +787,6 @@ describe('MatCheckbox', () => {
   });
 
   describe('with native tabindex attribute', () => {
-
     it('should properly detect native tabindex attribute', fakeAsync(() => {
       fixture = TestBed.createComponent(CheckboxWithTabindexAttr);
       fixture.detectChanges();
@@ -797,6 +797,61 @@ describe('MatCheckbox', () => {
       expect(checkbox.tabIndex)
         .toBe(5, 'Expected tabIndex property to have been set based on the native attribute');
     }));
+  });
+
+  describe('using ViewChild', () => {
+    let checkboxDebugElement: DebugElement;
+    let checkboxNativeElement: HTMLElement;
+    let testComponent: CheckboxUsingViewChild;
+
+    beforeEach(() => {
+      fixture = TestBed.createComponent(CheckboxUsingViewChild);
+      fixture.detectChanges();
+
+      checkboxDebugElement = fixture.debugElement.query(By.directive(MatCheckbox));
+      checkboxNativeElement = checkboxDebugElement.nativeElement;
+      testComponent = fixture.debugElement.componentInstance;
+    });
+
+    it('should toggle checkbox disabledness correctly', () => {
+      const checkboxInstance = checkboxDebugElement.componentInstance;
+      const inputElement = <HTMLInputElement>checkboxNativeElement.querySelector('input');
+      expect(checkboxInstance.disabled).toBe(false);
+      expect(checkboxNativeElement.classList).not.toContain('mat-checkbox-disabled');
+      expect(inputElement.tabIndex).toBe(0);
+      expect(inputElement.disabled).toBe(false);
+
+      testComponent.isDisabled = true;
+      fixture.detectChanges();
+
+      expect(checkboxInstance.disabled).toBe(true);
+      expect(checkboxNativeElement.classList).toContain('mat-checkbox-disabled');
+      expect(inputElement.disabled).toBe(true);
+
+      testComponent.isDisabled = false;
+      fixture.detectChanges();
+
+      expect(checkboxInstance.disabled).toBe(false);
+      expect(checkboxNativeElement.classList).not.toContain('mat-checkbox-disabled');
+      expect(inputElement.tabIndex).toBe(0);
+      expect(inputElement.disabled).toBe(false);
+    });
+
+    it('should toggle checkbox ripple disabledness correctly', () => {
+      const labelElement = checkboxNativeElement.querySelector('label') as HTMLLabelElement;
+
+      testComponent.isDisabled = true;
+      fixture.detectChanges();
+      dispatchFakeEvent(labelElement, 'mousedown');
+      dispatchFakeEvent(labelElement, 'mouseup');
+      expect(checkboxNativeElement.querySelectorAll('.mat-ripple-element').length).toBe(0);
+
+      testComponent.isDisabled = false;
+      fixture.detectChanges();
+      dispatchFakeEvent(labelElement, 'mousedown');
+      dispatchFakeEvent(labelElement, 'mouseup');
+      expect(checkboxNativeElement.querySelectorAll('.mat-ripple-element').length).toBe(1);
+    });
   });
 
   describe('with multiple checkboxes', () => {
@@ -1114,6 +1169,20 @@ class MultipleCheckboxes { }
 class CheckboxWithTabIndex {
   customTabIndex: number = 7;
   isDisabled: boolean = false;
+}
+
+
+/** Simple test component that accesses MatCheckbox using ViewChild. */
+@Component({
+  template: `
+    <mat-checkbox></mat-checkbox>`,
+})
+class CheckboxUsingViewChild {
+  @ViewChild(MatCheckbox) checkbox;
+
+  set isDisabled(value: boolean) {
+    this.checkbox.disabled = value;
+  }
 }
 
 /** Simple test component with an aria-label set. */
