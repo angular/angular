@@ -5,7 +5,7 @@
 <div class="demo-sidenav-area" *ngIf="isLaunched">
   <mat-toolbar *ngIf="showHeader && !coverHeader">Header</mat-toolbar>
   <mat-sidenav-container [hasBackdrop]="hasBackdrop">
-    <mat-sidenav #start (open)="myinput.focus()" [mode]="mode"
+    <mat-sidenav #start (opened)="myinput.focus()" [mode]="mode"
                  [fixedInViewport]="fixed" [fixedTopGap]="fixedTop" [fixedBottomGap]="fixedBottom">
       Start Side Sidenav
       <br>
