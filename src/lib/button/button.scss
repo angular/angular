@@ -73,6 +73,9 @@
   // will overlay the user content and we don't want to disable mouse events on the user content.
   // Pointer events can be safely disabled because the ripple trigger element is the host element.
   pointer-events: none;
+
+  // Inherit the border radius from the parent so the ripple is clipped when it reaches the edges.
+  border-radius: inherit;
 }
 
 // Element that overlays the button to show focus and hover effects.
