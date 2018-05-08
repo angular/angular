@@ -1,4 +1,5 @@
 @import '../core/style/menu-common';
+@import '../../cdk/a11y/a11y';
 
 /**
  * The max-height of the panel, currently matching mat-select value.
@@ -21,5 +22,9 @@ $mat-autocomplete-panel-max-height: 256px !default;
 
   &.mat-autocomplete-hidden {
     visibility: hidden;
+  }
+
+  @include cdk-high-contrast {
+    outline: solid 1px;
   }
 }
