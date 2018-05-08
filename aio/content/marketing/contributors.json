@@ -592,7 +592,7 @@
     "bio": "Nir is a Principal Frontend Consultant & Head of the Angular department at 500Tech, Google Developer Expert and community leader. He organizes the largest Angular meetup group in Israel (Angular-IL), talks and teaches about front-end technologies around the world. He is also the author of two books about Angular and the founder of the 'Frontend Band'.",
     "group": "GDE"
   },
-  
+
   "achautard": {
     "name": "Alain Chautard",
     "picture": "alainchautard.png",
@@ -608,6 +608,15 @@
     "twitter": "coryrylan",
     "website": "https://coryrylan.com",
     "bio": "Cory is a full time front end web developer. He works full time building responsive web applications and progressive web apps. When not building web apps he is busy teaching Angular and other web technologies in workshops and conferences. He loves the web and is optimistic of the places it can take us.",
+    "group": "GDE"
+  },
+
+  "mhartington": {
+    "name": "Mike Hartington",
+    "picture": "mhartington.png",
+    "twitter": "mhartington",
+    "website": "https://mhartington.io",
+    "bio": "Mike is a Developer Advocate for the Ionic Framework and a GDE in Angular. He spends most of his time making fast PWAs and exploring emerging web standards. When not behind a keyboard, you'll probably find him with a guitar and beer.",
     "group": "GDE"
   }
 }
