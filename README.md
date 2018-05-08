@@ -40,6 +40,8 @@ High level stuff planned for Q2 2018 (April - June):
 | Feature          | Notes                                                  | Docs         |
 |------------------|--------------------------------------------------------|--------------|
 | autocomplete     |                                                        |   [Docs][24] |
+| badge            |                                                        |   [Docs][37] |
+| bottom-sheet     |                                                        |   [Docs][38] |
 | button           |                                                        |   [Docs][1]  |
 | button-toggle    |                                                        |   [Docs][15] |
 | cards            |                                                        |   [Docs][2]  |
@@ -71,6 +73,7 @@ High level stuff planned for Q2 2018 (April - June):
 | textarea         |                                                        |   [Docs][5]  |
 | toolbar          |                                                        |   [Docs][7]  |
 | tooltip          |                                                        |   [Docs][18] |
+| tree             |                                                        |   [Docs][36] |
 | ---------------- | ------------------------------------------------------ | ------------ |
 | theming          |                                                        |  [Guide][20] |
 | typography       |                                                        |  [Guide][27] |
@@ -82,13 +85,10 @@ High level stuff planned for Q2 2018 (April - June):
 
 | Feature          | Status                              | Docs         | Issue          |
 |------------------|-------------------------------------|--------------|----------------|
-| tree             |                Releasing with 6.0.0 |           -  |  [#3175][3175] |
 | sticky-header    |        In-progress, planned Q2 2018 |           -  |   [#474][0474] |
 | virtual-repeat   |        Prototyping, planned Q2 2018 |           -  |   [#823][0823] |
-| badge            |                Releasing with 6.0.0 |           -  |  [#3085][3058] |
 | fab speed-dial   |            Not started, not planned |           -  |   [#860][0860] |
 | fab toolbar      |            Not started, not planned |           -  |              - |
-| bottom-sheet     |                Releasing with 6.0.0 |           -  |  [#8113][8113] |
 | bottom-nav       |            Not started, not planned |           -  |   [#408][0408] |
 
  [0]: https://github.com/angular/flex-layout/wiki
@@ -127,6 +127,9 @@ High level stuff planned for Q2 2018 (April - June):
 [33]: https://material.angular.io/components/stepper/overview
 [34]: https://material.angular.io/cdk/categories
 [35]: https://material.angular.io/components/divider/overview
+[36]: https://material.angular.io/components/tree/overview
+[37]: https://material.angular.io/components/badge/overview
+[38]: https://material.angular.io/components/bottom-sheet/overview
 
 [0107]: https://github.com/angular/material2/issues/107
 [0119]: https://github.com/angular/material2/issues/119
@@ -144,12 +147,9 @@ High level stuff planned for Q2 2018 (April - June):
 [0508]: https://github.com/angular/material2/issues/508
 [0823]: https://github.com/angular/material2/issues/823
 [0581]: https://github.com/angular/material2/issues/581
-[3175]: https://github.com/angular/material2/issues/3175
 [4191]: https://github.com/angular/material2/pull/4191
 [0995]: https://github.com/angular/material2/pull/995
 [0474]: https://github.com/angular/material2/pull/474
-[8113]: https://github.com/angular/material2/issues/8113
-[3058]: https://github.com/angular/material2/issues/3058
 
 [aio]: https://material.angular.io
 [getting-started]: https://material.angular.io/guide/getting-started
