@@ -877,7 +877,7 @@ import {FormArray} from '@angular/forms/src/model';
       });
     });
 
-    describe('disable() & enable()', () => {
+    describe('disable(), enable() & setEnabled()', () => {
 
       it('should mark the control as disabled', () => {
         const c = new FormControl(null);
@@ -891,6 +891,14 @@ import {FormArray} from '@angular/forms/src/model';
         c.enable();
         expect(c.disabled).toBe(false);
         expect(c.valid).toBe(true);
+
+        c.setEnabled(false);
+        expect(c.disabled).toBe(true);
+        expect(c.valid).toBe(false);
+
+        c.setEnabled(true);
+        expect(c.disabled).toBe(false);
+        expect(c.valid).toBe(true);
       });
 
       it('should set the control status as disabled', () => {
@@ -901,6 +909,12 @@ import {FormArray} from '@angular/forms/src/model';
         expect(c.status).toEqual('DISABLED');
 
         c.enable();
+        expect(c.status).toEqual('VALID');
+
+        c.setEnabled(false);
+        expect(c.status).toEqual('DISABLED');
+
+        c.setEnabled(true);
         expect(c.status).toEqual('VALID');
       });
 

@@ -424,6 +424,14 @@ export abstract class AbstractControl {
     }
   }
 
+  setEnabled(enabled: boolean, opts: {onlySelf?: boolean, emitEvent?: boolean} = {}): void {
+    if (enabled) {
+      this.enable(opts);
+    } else {
+      this.disable(opts);
+    }
+  }
+
   setParent(parent: FormGroup|FormArray): void { this._parent = parent; }
 
   /**
