@@ -156,7 +156,8 @@ export class MockCache {
         headers: {},
       } as DehydratedResponse;
 
-      resp.headers.forEach((value, name) => { dehydratedResp.headers[name] = value; });
+      resp.headers.forEach(
+          (value: string, name: string) => { dehydratedResp.headers[name] = value; });
 
       dehydrated[url] = dehydratedResp;
     });
