@@ -420,10 +420,10 @@ export interface RootContext {
   clean: Promise<null>;
 
   /**
-   * RootComponent - The component which was instantiated by the call to
+   * RootComponents - The components that were instantiated by the call to
    * {@link renderComponent}.
    */
-  component: {};
+  components: {}[];
 }
 
 /**

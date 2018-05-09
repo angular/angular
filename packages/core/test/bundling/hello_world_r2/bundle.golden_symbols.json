@@ -2418,7 +2418,7 @@
     "name": "assertInterpolationSymbols"
   },
   {
-    "name": "assertNotNull$1"
+    "name": "assertNotNull"
   },
   {
     "name": "assertPlatform"

@@ -267,6 +267,9 @@
     "name": "createOutput"
   },
   {
+    "name": "createRootContext"
+  },
+  {
     "name": "createTNode"
   },
   {
@@ -657,7 +660,7 @@
     "name": "throwMultipleComponentError"
   },
   {
-    "name": "tick"
+    "name": "tickRootContext"
   },
   {
     "name": "trackByIdentity"
