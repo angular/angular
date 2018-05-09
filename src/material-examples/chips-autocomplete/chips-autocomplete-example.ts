@@ -26,14 +26,15 @@ export class ChipsAutocompleteExample {
   filteredFruits: Observable<any[]>;
 
   fruits = [
-    { name: 'Lemon' },
+    'Lemon',
   ];
 
   allFruits = [
-    'Orange',
-    'Strawberry',
-    'Lime',
     'Apple',
+    'Lemon',
+    'Lime',
+    'Orange',
+    'Strawberry'
   ];
 
   @ViewChild('fruitInput') fruitInput: ElementRef;
@@ -50,7 +51,7 @@ export class ChipsAutocompleteExample {
 
     // Add our fruit
     if ((value || '').trim()) {
-      this.fruits.push({ name: value.trim() });
+      this.fruits.push(value.trim());
     }
 
     // Reset the input value
@@ -73,7 +74,7 @@ export class ChipsAutocompleteExample {
   }
 
   selected(event: MatAutocompleteSelectedEvent): void {
-    this.fruits.push({ name: event.option.viewValue });
+    this.fruits.push(event.option.viewValue);
     this.fruitInput.nativeElement.value = '';
   }
 }

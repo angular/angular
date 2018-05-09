@@ -4,8 +4,8 @@
       *ngFor="let fruit of fruits"
       [selectable]="selectable"
       [removable]="removable"
-      (remove)="remove(fruit)">
-      {{fruit.name}}
+      (removed)="remove(fruit)">
+      {{fruit}}
       <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
     </mat-chip>
     <input
