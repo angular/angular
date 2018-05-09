@@ -16,6 +16,7 @@ ng_module(
     module_name = "@angular/core",
     deps = [
         "//packages:types",
+        "//packages/compiler",
         "@rxjs",
     ],
 )

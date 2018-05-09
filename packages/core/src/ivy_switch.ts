@@ -32,3 +32,5 @@
  *    symbol in `./ivy_switch_false` and `./ivy_switch_false` depending on the compilation mode.
  */
 export * from './ivy_switch_false';
+
+// TODO(alxhub): debug why metadata doesn't properly propagate through this file.

@@ -12,12 +12,20 @@ import {BindingForm, BuiltinFunctionCall, LocalResolver, convertActionBinding, c
 import {ConstantPool} from '../../constant_pool';
 import * as core from '../../core';
 import {AST, AstMemoryEfficientTransformer, BindingPipe, BindingType, FunctionCall, ImplicitReceiver, LiteralArray, LiteralMap, LiteralPrimitive, PropertyRead} from '../../expression_parser/ast';
+import {Lexer} from '../../expression_parser/lexer';
+import {Parser} from '../../expression_parser/parser';
+import * as html from '../../ml_parser/ast';
+import {HtmlParser} from '../../ml_parser/html_parser';
+import {DEFAULT_INTERPOLATION_CONFIG} from '../../ml_parser/interpolation_config';
 import * as o from '../../output/output_ast';
-import {ParseSourceSpan} from '../../parse_util';
+import {ParseError, ParseSourceSpan} from '../../parse_util';
+import {DomElementSchemaRegistry} from '../../schema/dom_element_schema_registry';
 import {CssSelector, SelectorMatcher} from '../../selector';
+import {BindingParser} from '../../template_parser/binding_parser';
 import {OutputContext, error} from '../../util';
 import * as t from '../r3_ast';
 import {Identifiers as R3} from '../r3_identifiers';
+import {htmlAstToRender3Ast} from '../r3_template_transform';
 
 import {R3QueryMetadata} from './api';
 import {CONTEXT_NAME, I18N_ATTR, I18N_ATTR_PREFIX, ID_SEPARATOR, IMPLICIT_REFERENCE, MEANING_SEPARATOR, REFERENCE_PREFIX, RENDER_FLAGS, TEMPORARY_NAME, asLiteral, getQueryPredicate, invalid, mapToExpression, noop, temporaryAllocator, trimTrailingNulls, unsupported} from './util';
@@ -712,4 +720,36 @@ function interpolate(args: o.Expression[]): o.Expression {
   (args.length >= 19 && args.length % 2 == 1) ||
       error(`Invalid interpolation argument length ${args.length}`);
   return o.importExpr(R3.interpolationV).callFn([o.literalArr(args)]);
+}
+
+/**
+ * Parse a template into render3 `Node`s and additional metadata, with no other dependencies.
+ *
+ * @param template text of the template to parse
+ * @param templateUrl URL to use for source mapping of the parsed template
+ */
+export function parseTemplate(template: string, templateUrl: string):
+    {errors?: ParseError[], nodes: t.Node[], hasNgContent: boolean, ngContentSelectors: string[]} {
+  const bindingParser = makeBindingParser();
+  const htmlParser = new HtmlParser();
+  const parseResult = htmlParser.parse(template, templateUrl);
+  if (parseResult.errors && parseResult.errors.length > 0) {
+    return {errors: parseResult.errors, nodes: [], hasNgContent: false, ngContentSelectors: []};
+  }
+  const {nodes, hasNgContent, ngContentSelectors, errors} =
+      htmlAstToRender3Ast(parseResult.rootNodes, bindingParser);
+  if (errors && errors.length > 0) {
+    return {errors, nodes: [], hasNgContent: false, ngContentSelectors: []};
+  }
+
+  return {nodes, hasNgContent, ngContentSelectors};
+}
+
+/**
+ * Construct a `BindingParser` with a default configuration.
+ */
+export function makeBindingParser(): BindingParser {
+  return new BindingParser(
+      new Parser(new Lexer()), DEFAULT_INTERPOLATION_CONFIG, new DomElementSchemaRegistry(), [],
+      []);
 }
