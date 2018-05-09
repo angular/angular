@@ -8,7 +8,7 @@
 
 import './ng_dev_mode';
 
-import {assertNotNull} from './assert';
+import {assertDefined} from './assert';
 import {AttributeMarker, TAttributes, TNode, unusedValueExportToPlacateAjd as unused1} from './interfaces/node';
 import {CssSelector, CssSelectorList, NG_PROJECT_AS_ATTR_NAME, SelectorFlags, unusedValueExportToPlacateAjd as unused2} from './interfaces/projection';
 
@@ -36,7 +36,7 @@ function isCssClassMatching(nodeClassAttrVal: string, cssClassToMatch: string): 
  * @returns true if node matches the selector.
  */
 export function isNodeMatchingSelector(tNode: TNode, selector: CssSelector): boolean {
-  ngDevMode && assertNotNull(selector[0], 'Selector should have a tag name');
+  ngDevMode && assertDefined(selector[0], 'Selector should have a tag name');
 
   let mode: SelectorFlags = SelectorFlags.ELEMENT;
   const nodeAttrs = tNode.attrs !;

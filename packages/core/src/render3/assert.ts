@@ -46,13 +46,13 @@ export function assertGreaterThan<T>(actual: T, expected: T, msg: string) {
   }
 }
 
-export function assertNull<T>(actual: T, msg: string) {
+export function assertNotDefined<T>(actual: T, msg: string) {
   if (actual != null) {
     throwError(msg);
   }
 }
 
-export function assertNotNull<T>(actual: T, msg: string) {
+export function assertDefined<T>(actual: T, msg: string) {
   if (actual == null) {
     throwError(msg);
   }

@@ -57,6 +57,9 @@
     "name": "createLView"
   },
   {
+    "name": "createRootContext"
+  },
+  {
     "name": "createTNode"
   },
   {
