@@ -627,5 +627,14 @@
     "website": "https://juristr.com",
     "bio": "Juri is a software engineer and freelance trainer and consultant currently mostly focusing on the frontend side using JavaScript, TypeScript and Angular. He has a passion for teaching and sharing his knowledge and experiences with others. This mostly happens by writing tech articles for his personal blog, by creating video courses for Egghead.io, during on-site workshops at companies or by speaking at conferences. In his free time he enjoys practicing Yoseikan Budo, a martial art where he currently owns the 3rd DAN black belt.",
     "group": "GDE"
+  },
+
+  "mashhoodr": {
+    "name": "Mashhood Rastgar",
+    "picture": "mashhood.jpg",
+    "twitter": "mashhoodr",
+    "website": "http://imars.info/",
+    "bio": "Mashhood is the principal technical consultant at Recurship and a Google Developer Expert. He  works with different startups in US and EU to helps them crawl through the technical maze and quickly build amazing products focused around the problems they are trying to solve. He specializes in using the latest web technologies available to execute the best possible solutions.",
+    "group": "GDE"
   }
 }
