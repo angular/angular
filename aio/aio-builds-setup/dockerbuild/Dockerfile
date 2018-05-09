@@ -13,6 +13,10 @@ EXPOSE 80 443
 
 
 # Build-time args and env vars
+# The AIO_ARTIFACT_PATH path needs to be kept in synch with the value of
+# `aio_preview->steps->store_artifacts->destination` property in `.circleci/config.yml`
+ARG      AIO_ARTIFACT_PATH=aio/dist/aio-snapshot.tgz
+ARG TEST_AIO_ARTIFACT_PATH=$AIO_ARTIFACT_PATH
 ARG      AIO_BUILDS_DIR=/var/www/aio-builds
 ARG TEST_AIO_BUILDS_DIR=/tmp/aio-builds
 ARG      AIO_DOMAIN_NAME=ngbuilds.io
