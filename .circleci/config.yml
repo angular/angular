@@ -84,6 +84,21 @@ jobs:
           paths:
             - "node_modules"
             - "~/bazel_repository_cache"
+  aio_preview:
+    <<: *job_defaults
+    environment:
+       AIO_SNAPSHOT_ARTIFACT_PATH: &aio_preview_artifact_path 'aio/tmp/snapshot.tgz'
+    steps:
+      - checkout:
+          <<: *post_checkout
+      - restore_cache:
+          key: *cache_key
+      - run: ./aio/scripts/build-artifacts.sh $AIO_SNAPSHOT_ARTIFACT_PATH
+      - store_artifacts:
+          path: *aio_preview_artifact_path
+          # The `destination` needs to be kept in synch with the value of
+          # `AIO_ARTIFACT_PATH` in `aio/aio-builds-setup/Dockerfile`
+          destination: aio/dist/aio-snapshot.tgz
 
   aio_monitoring:
     <<: *job_defaults
@@ -100,6 +115,7 @@ workflows:
     jobs:
       - lint
       - build
+      - aio_preview
   aio_monitoring:
     jobs:
       - aio_monitoring
