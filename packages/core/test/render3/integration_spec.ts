@@ -11,6 +11,8 @@ import {RenderFlags} from '@angular/core/src/render3';
 import {defineComponent, defineDirective} from '../../src/render3/index';
 import {NO_CHANGE, bind, container, containerRefreshEnd, containerRefreshStart, elementAttribute, elementClassNamed, elementEnd, elementProperty, elementStart, elementStyleNamed, embeddedViewEnd, embeddedViewStart, interpolation1, interpolation2, interpolation3, interpolation4, interpolation5, interpolation6, interpolation7, interpolation8, interpolationV, load, loadDirective, projection, projectionDef, text, textBinding} from '../../src/render3/instructions';
 import {LViewFlags} from '../../src/render3/interfaces/view';
+import {sanitizeUrl} from '../../src/sanitization/sanitization';
+import {Sanitizer, SecurityContext} from '../../src/sanitization/security';
 
 import {ComponentFixture, containerEl, renderToHtml} from './render_util';
 
@@ -847,4 +849,65 @@ describe('render3 integration test', () => {
 
   });
 
+  describe('sanitization', () => {
+    it('should sanitize data using the provided sanitization interface', () => {
+      class SanitizationComp {
+        static ngComponentDef = defineComponent({
+          type: SanitizationComp,
+          selectors: [['sanitize-this']],
+          factory: () => new SanitizationComp(),
+          template: (rf: RenderFlags, ctx: SanitizationComp) => {
+            if (rf & RenderFlags.Create) {
+              elementStart(0, 'a');
+              elementEnd();
+            }
+            if (rf & RenderFlags.Update) {
+              elementProperty(0, 'href', bind(ctx.href), sanitizeUrl);
+            }
+          }
+        });
+
+        private href = '';
+
+        updateLink(href: any) { this.href = href; }
+      }
+
+      const sanitizer = new LocalSanitizer((value) => { return 'http://bar'; });
+
+      const fixture = new ComponentFixture(SanitizationComp, {sanitizer});
+      fixture.component.updateLink('http://foo');
+      fixture.update();
+
+      const element = fixture.hostElement.querySelector('a') !;
+      expect(element.getAttribute('href')).toEqual('http://bar');
+
+      fixture.component.updateLink(sanitizer.bypassSecurityTrustUrl('http://foo'));
+      fixture.update();
+
+      expect(element.getAttribute('href')).toEqual('http://foo');
+    });
+  });
 });
+
+class LocalSanitizedValue {
+  constructor(public value: any) {}
+  toString() { return this.value; }
+}
+
+class LocalSanitizer implements Sanitizer {
+  constructor(private _interceptor: (value: string|null|any) => string) {}
+
+  sanitize(context: SecurityContext, value: LocalSanitizedValue|string|null): string|null {
+    if (value instanceof LocalSanitizedValue) {
+      return value.toString();
+    }
+    return this._interceptor(value);
+  }
+
+  bypassSecurityTrustHtml(value: string) {}
+  bypassSecurityTrustStyle(value: string) {}
+  bypassSecurityTrustScript(value: string) {}
+  bypassSecurityTrustResourceUrl(value: string) {}
+
+  bypassSecurityTrustUrl(value: string) { return new LocalSanitizedValue(value); }
+}
