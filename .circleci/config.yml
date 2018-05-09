@@ -89,6 +89,10 @@ jobs:
 
       # CircleCI will allow us to go back and view/download these artifacts from past builds.
       # Also we can use a service like https://buildsize.org/ to automatically track binary size of these artifacts.
+      # These destination keys need to fit the format {projectName}/{context}/{fileName}
+      # projectName should remain consistant to group files
+      # context and fileName can be almost anything (within usual URI rules)
+      # This is so they're backwards compatiable with the existing data we have on bundle sizes
       - store_artifacts:
           path: dist/bin/packages/core/test/bundling/hello_world/bundle.min.js
           destination: core/hello_world/bundle
@@ -97,10 +101,10 @@ jobs:
           destination: core/todo/bundle
       - store_artifacts:
           path: dist/bin/packages/core/test/bundling/hello_world/bundle.min.js.br
-          destination: core/hello_world/br/bundle
+          destination: core/hello_world/bundle.br
       - store_artifacts:
           path: dist/bin/packages/core/test/bundling/todo/bundle.min.js.br
-          destination: core/todo/br/bundle
+          destination: core/todo/bundle.br
       - save_cache:
           key: *cache_key
           paths:
