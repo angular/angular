@@ -1,0 +1,10 @@
+/**
+ * Add basic flex styling so that the cells evenly space themselves in the row.
+ */
+cdk-row, cdk-header-row, cdk-footer-row {
+  display: flex;
+}
+
+cdk-cell, cdk-header-cell, cdk-footer-cell {
+  flex: 1;
+}

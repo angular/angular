@@ -16,6 +16,7 @@ export interface DemoDataObject {
 }
 
 @Component({
+  selector: 'when-rows-demo',
   moduleId: module.id,
   templateUrl: 'when-rows.html',
 })

@@ -1,0 +1,28 @@
+<cdk-table [dataSource]="dataSource">
+  <!-- Position Column -->
+  <ng-container cdkColumnDef="position">
+    <cdk-header-cell *cdkHeaderCellDef> No. </cdk-header-cell>
+    <cdk-cell *cdkCellDef="let element"> {{element.position}} </cdk-cell>
+  </ng-container>
+
+  <!-- Name Column -->
+  <ng-container cdkColumnDef="name">
+    <cdk-header-cell *cdkHeaderCellDef> Name </cdk-header-cell>
+    <cdk-cell *cdkCellDef="let element"> {{element.name}} </cdk-cell>
+  </ng-container>
+
+  <!-- Weight Column -->
+  <ng-container cdkColumnDef="weight">
+    <cdk-header-cell *cdkHeaderCellDef> Weight </cdk-header-cell>
+    <cdk-cell *cdkCellDef="let element"> {{element.weight}} </cdk-cell>
+  </ng-container>
+
+  <!-- Symbol Column -->
+  <ng-container cdkColumnDef="symbol">
+    <cdk-header-cell *cdkHeaderCellDef> Symbol </cdk-header-cell>
+    <cdk-cell *cdkCellDef="let element"> {{element.symbol}} </cdk-cell>
+  </ng-container>
+
+  <cdk-header-row *cdkHeaderRowDef="displayedColumns"></cdk-header-row>
+  <cdk-row *cdkRowDef="let row; columns: displayedColumns;"></cdk-row>
+</cdk-table>

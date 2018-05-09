@@ -7,7 +7,7 @@
  */
 
 import {Component, ViewChild} from '@angular/core';
-import {Element, ELEMENT_DATA} from 'table/element-data';
+import {PeriodicElement, ELEMENT_DATA} from 'table/element-data';
 import {animate, state, style, transition, trigger} from '@angular/animations';
 import {MatPaginator, MatSort, MatTableDataSource} from '@angular/material';
 
@@ -48,7 +48,7 @@ import {MatPaginator, MatSort, MatTableDataSource} from '@angular/material';
 export class ExpandableRowsDemo {
   dataSource = new MatTableDataSource(ELEMENT_DATA.slice());
   columnsToDisplay = ['name', 'weight', 'symbol', 'position'];
-  expandedElement: Element;
+  expandedElement: PeriodicElement;
 
   @ViewChild(MatSort) sort: MatSort;
   @ViewChild(MatPaginator) paginator: MatPaginator;

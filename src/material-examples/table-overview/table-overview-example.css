@@ -1,14 +1,5 @@
-.example-container {
-  display: flex;
-  flex-direction: column;
-  min-width: 300px;
-  max-height: 500px;
-  overflow: auto;
-}
-
-.example-header {
-  min-height: 64px;
-  padding: 8px 24px 0;
+table {
+  width: 100%;
 }
 
 .mat-form-field {
@@ -16,3 +7,6 @@
   width: 100%;
 }
 
+td, th {
+  width: 25%;
+}

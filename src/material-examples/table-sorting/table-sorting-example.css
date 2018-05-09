@@ -1,11 +1,7 @@
-.example-container {
-  display: flex;
-  flex-direction: column;
-  min-width: 300px;
-  overflow: auto;
-  max-height: 500px;
+table {
+  width: 100%;
 }
 
-.mat-header-cell.mat-sort-header-sorted {
+th.mat-sort-header-sorted {
   color: black;
 }

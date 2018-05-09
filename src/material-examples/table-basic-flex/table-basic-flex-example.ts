@@ -1,23 +1,16 @@
-import {Component, ViewChild} from '@angular/core';
-import {MatTableDataSource, MatSort} from '@angular/material';
+import {Component} from '@angular/core';
 
 /**
- * @title Table with sorting
+ * @title Basic use of `<mat-table>` (uses display flex)
  */
 @Component({
-  selector: 'table-sorting-example',
-  styleUrls: ['table-sorting-example.css'],
-  templateUrl: 'table-sorting-example.html',
+  selector: 'table-basic-flex-example',
+  styleUrls: ['table-basic-flex-example.css'],
+  templateUrl: 'table-basic-flex-example.html',
 })
-export class TableSortingExample {
+export class TableBasicFlexExample {
   displayedColumns = ['position', 'name', 'weight', 'symbol'];
-  dataSource = new MatTableDataSource(ELEMENT_DATA);
-
-  @ViewChild(MatSort) sort: MatSort;
-
-  ngOnInit() {
-    this.dataSource.sort = this.sort;
-  }
+  dataSource = ELEMENT_DATA;
 }
 
 export interface PeriodicElement {

@@ -1,6 +1,6 @@
 import {HttpClient} from '@angular/common/http';
-import {AfterViewInit, Component, ViewChild} from '@angular/core';
-import {MatPaginator, MatSort, MatTableDataSource} from '@angular/material';
+import {Component, OnInit, ViewChild} from '@angular/core';
+import {MatPaginator, MatSort} from '@angular/material';
 import {merge, Observable, of as observableOf} from 'rxjs';
 import {catchError, map, startWith, switchMap} from 'rxjs/operators';
 
@@ -12,10 +12,10 @@ import {catchError, map, startWith, switchMap} from 'rxjs/operators';
   styleUrls: ['table-http-example.css'],
   templateUrl: 'table-http-example.html',
 })
-export class TableHttpExample implements AfterViewInit {
+export class TableHttpExample implements OnInit {
   displayedColumns = ['created', 'state', 'number', 'title'];
   exampleDatabase: ExampleHttpDao | null;
-  dataSource = new MatTableDataSource();
+  data: GithubIssue[] = [];
 
   resultsLength = 0;
   isLoadingResults = true;
@@ -26,7 +26,7 @@ export class TableHttpExample implements AfterViewInit {
 
   constructor(private http: HttpClient) {}
 
-  ngAfterViewInit() {
+  ngOnInit() {
     this.exampleDatabase = new ExampleHttpDao(this.http);
 
     // If the user changes the sort order, reset back to the first page.
@@ -54,7 +54,7 @@ export class TableHttpExample implements AfterViewInit {
           this.isRateLimitReached = true;
           return observableOf([]);
         })
-      ).subscribe(data => this.dataSource.data = data);
+      ).subscribe(data => this.data = data);
   }
 }
 

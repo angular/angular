@@ -3,14 +3,14 @@ import {Component} from '@angular/core';
 import {BehaviorSubject, Observable} from 'rxjs';
 
 /**
- * @title Basic CDK data-table
+ * @title Basic use of `<cdk-table>` (uses display flex)
  */
 @Component({
-  selector: 'cdk-table-basic-example',
-  styleUrls: ['cdk-table-basic-example.css'],
-  templateUrl: 'cdk-table-basic-example.html',
+  selector: 'cdk-table-basic-flex-example',
+  styleUrls: ['cdk-table-basic-flex-example.css'],
+  templateUrl: 'cdk-table-basic-flex-example.html',
 })
-export class CdkTableBasicExample {
+export class CdkTableBasicFlexExample {
   displayedColumns = ['position', 'name', 'weight', 'symbol'];
   dataSource = new ExampleDataSource();
 }

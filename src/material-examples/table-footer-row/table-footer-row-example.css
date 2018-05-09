@@ -1,11 +1,7 @@
-.example-container {
-  display: flex;
-  flex-direction: column;
-  max-height: 500px;
-  min-width: 300px;
+table {
+  width: 100%;
 }
 
-.mat-table {
-  overflow: auto;
-  max-height: 500px;
+tr.mat-footer-row {
+  font-weight: bold;
 }

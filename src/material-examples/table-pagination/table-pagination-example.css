@@ -1,8 +1,3 @@
-.example-container {
-  display: flex;
-  flex-direction: column;
-  min-width: 300px;
-  max-height: 500px;
-  overflow: auto;
+table {
+  width: 100%;
 }
-

@@ -1,39 +1,7 @@
-/* Structure */
-.example-container {
-  display: flex;
-  flex-direction: column;
-  min-width: 300px;
+table {
+  width: 100%;
 }
 
-/*
- * Styles to make the demo's cdk-table match the material design spec
- * https://material.io/guidelines/components/data-tables.html
- */
-.example-table {
-  flex: 1 1 auto;
-  overflow: auto;
-  max-height: 500px;
-}
-
-.example-header-row, .example-row {
-  display: flex;
-  border-bottom: 1px solid #ccc;
-  align-items: center;
-  height: 32px;
-  padding: 0 8px;
-}
-
-.example-cell, .example-header-cell {
-  flex: 1;
-}
-
-.example-header-cell {
-  font-size: 12px;
-  font-weight: bold;
-  color: rgba(0, 0, 0, 0.54);
-}
-
-.example-cell {
-  font-size: 13px;
-  color: rgba(0, 0, 0, 0.87);
+th {
+  text-align: left;
 }

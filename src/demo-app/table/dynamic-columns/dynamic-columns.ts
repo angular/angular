@@ -7,7 +7,7 @@
  */
 
 import {Component} from '@angular/core';
-import {Element, ELEMENT_DATA} from '../element-data';
+import {PeriodicElement, ELEMENT_DATA} from '../element-data';
 
 @Component({
   moduleId: module.id,
@@ -16,7 +16,7 @@ import {Element, ELEMENT_DATA} from '../element-data';
 export class DynamicColumnsDemo {
   definedColumns = ['name', 'weight', 'symbol', 'position'];
   columnsToDisplay = this.definedColumns.slice();
-  dataSource: Element[] = ELEMENT_DATA.slice();
+  dataSource: PeriodicElement[] = ELEMENT_DATA.slice();
 
   addColumn() {
     const randomColumn = Math.floor(Math.random() * 4);

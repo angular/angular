@@ -8,7 +8,7 @@
 
 import {Component, ElementRef, ViewChild} from '@angular/core';
 import {MatPaginator, MatSort, MatTableDataSource} from '@angular/material';
-import {Element, ELEMENT_DATA} from '../element-data';
+import {PeriodicElement, ELEMENT_DATA} from '../element-data';
 import {fromEvent} from 'rxjs';
 
 @Component({
@@ -21,7 +21,7 @@ import {fromEvent} from 'rxjs';
 })
 export class MatTableDataSourceDemo {
   columns = ['name', 'weight', 'symbol', 'position'];
-  dataSource = new MatTableDataSource<Element>(ELEMENT_DATA);
+  dataSource = new MatTableDataSource<PeriodicElement>(ELEMENT_DATA);
 
   // Add button that lets you override the filter predicate with a strict name match
   originalFilterPredicate = this.dataSource.filterPredicate;
@@ -41,7 +41,7 @@ export class MatTableDataSourceDemo {
   toggleFilterPredicate() {
     this.useOverrideFilterPredicate = !this.useOverrideFilterPredicate;
     this.dataSource.filterPredicate = this.useOverrideFilterPredicate ?
-        (d: Element, filter: string) => d.name.indexOf(filter) != -1 :
+        (d: PeriodicElement, filter: string) => d.name.indexOf(filter) != -1 :
         this.originalFilterPredicate;
   }
 }
