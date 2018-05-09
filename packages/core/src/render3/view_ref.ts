@@ -6,8 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {ApplicationRef} from '../application_ref';
+import {ChangeDetectorRef as viewEngine_ChangeDetectorRef} from '../change_detection/change_detector_ref';
 import {ViewContainerRef as viewEngine_ViewContainerRef} from '../linker/view_container_ref';
-import {EmbeddedViewRef as viewEngine_EmbeddedViewRef} from '../linker/view_ref';
+import {EmbeddedViewRef as viewEngine_EmbeddedViewRef, InternalViewRef as viewEngine_InternalViewRef} from '../linker/view_ref';
 
 import {checkNoChanges, detectChanges, markViewDirty, storeCleanupFn} from './instructions';
 import {ComponentTemplate} from './interfaces/definition';
@@ -15,7 +17,15 @@ import {LViewNode} from './interfaces/node';
 import {LView, LViewFlags} from './interfaces/view';
 import {destroyLView} from './node_manipulation';
 
-export class ViewRef<T> implements viewEngine_EmbeddedViewRef<T> {
+// Needed due to tsickle downleveling where multiple `implements` with classes creates
+// multiple @extends in Closure annotations, which is illegal. This workaround fixes
+// the multiple @extends by making the annotation @implements instead
+export interface viewEngine_ChangeDetectorRef_interface extends viewEngine_ChangeDetectorRef {}
+
+export class ViewRef<T> implements viewEngine_EmbeddedViewRef<T>, viewEngine_InternalViewRef,
+    viewEngine_ChangeDetectorRef_interface {
+  private _appRef: ApplicationRef|null;
+
   context: T;
   rootNodes: any[];
 
@@ -210,6 +220,10 @@ export class ViewRef<T> implements viewEngine_EmbeddedViewRef<T> {
    * introduce other changes.
    */
   checkNoChanges(): void { checkNoChanges(this.context); }
+
+  detachFromAppRef() { this._appRef = null; }
+
+  attachToAppRef(appRef: ApplicationRef) { this._appRef = appRef; }
 }
 
 
