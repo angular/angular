@@ -28,6 +28,11 @@ By compiling your application using the `ngc` command-line tool, you can bootstr
 
 Compare [just-in-time (JIT) compilation](guide/glossary#jit).
 
+## Angular element
+
+An Angular [component](guide/glossary#component) that has been packaged as a [custom element](guide/glossary#custom-element). 
+
+Learn more in the [_Angular Elements_](guide/elements) guide.
 
 ## Annotation
 
