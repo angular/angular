@@ -6,9 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {PLATFORM_ID} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 
 import {NgswCommChannel} from '../src/low_level';
+import {RegistrationOptions, ngswCommChannelFactory} from '../src/module';
 import {SwPush} from '../src/push';
 import {SwUpdate} from '../src/update';
 import {MockServiceWorkerContainer, MockServiceWorkerRegistration} from '../testing/mock';
@@ -19,12 +21,12 @@ import {MockServiceWorkerContainer, MockServiceWorkerRegistration} from '../test
     let comm: NgswCommChannel;
     beforeEach(() => {
       mock = new MockServiceWorkerContainer();
-      comm = new NgswCommChannel(mock as any, 'browser');
+      comm = new NgswCommChannel(mock as any);
     });
     describe('NgswCommsChannel', () => {
       it('can access the registration when it comes before subscription', (done: DoneFn) => {
         const mock = new MockServiceWorkerContainer();
-        const comm = new NgswCommChannel(mock as any, 'browser');
+        const comm = new NgswCommChannel(mock as any);
         const regPromise = mock.getRegistration() as any as MockServiceWorkerRegistration;
 
         mock.setupSw();
@@ -33,18 +35,101 @@ import {MockServiceWorkerContainer, MockServiceWorkerRegistration} from '../test
       });
       it('can access the registration when it comes after subscription', (done: DoneFn) => {
         const mock = new MockServiceWorkerContainer();
-        const comm = new NgswCommChannel(mock as any, 'browser');
+        const comm = new NgswCommChannel(mock as any);
         const regPromise = mock.getRegistration() as any as MockServiceWorkerRegistration;
 
         (comm as any).registration.subscribe((reg: any) => { done(); });
 
         mock.setupSw();
       });
-      it('is disabled for platform-server', () => {
-        const mock = new MockServiceWorkerContainer();
-        const comm = new NgswCommChannel(mock as any, 'server');
-        expect(comm.isEnabled).toEqual(false);
+    });
+    describe('ngswCommChannelFactory', () => {
+      it('gives disabled NgswCommChannel for platform-server', () => {
+        TestBed.configureTestingModule({
+          providers: [
+            {provide: PLATFORM_ID, useValue: 'server'},
+            {provide: RegistrationOptions, useValue: {enabled: true}}, {
+              provide: NgswCommChannel,
+              useFactory: ngswCommChannelFactory,
+              deps: [RegistrationOptions, PLATFORM_ID]
+            }
+          ]
+        });
+
+        expect(TestBed.get(NgswCommChannel).isEnabled).toEqual(false);
       });
+      it('gives disabled NgswCommChannel when \'enabled\' option is false', () => {
+        TestBed.configureTestingModule({
+          providers: [
+            {provide: PLATFORM_ID, useValue: 'browser'},
+            {provide: RegistrationOptions, useValue: {enabled: false}}, {
+              provide: NgswCommChannel,
+              useFactory: ngswCommChannelFactory,
+              deps: [RegistrationOptions, PLATFORM_ID]
+            }
+          ]
+        });
+
+        expect(TestBed.get(NgswCommChannel).isEnabled).toEqual(false);
+      });
+      it('gives disabled NgswCommChannel when navigator.serviceWorker is undefined', () => {
+        TestBed.configureTestingModule({
+          providers: [
+            {provide: PLATFORM_ID, useValue: 'browser'},
+            {provide: RegistrationOptions, useValue: {enabled: true}},
+            {
+              provide: NgswCommChannel,
+              useFactory: ngswCommChannelFactory,
+              deps: [RegistrationOptions, PLATFORM_ID],
+            },
+          ],
+        });
+
+        const context: any = global || window;
+        const originalDescriptor = Object.getOwnPropertyDescriptor(context, 'navigator');
+        const patchedDescriptor = {value: {serviceWorker: undefined}, configurable: true};
+
+        try {
+          // Set `navigator` to `{serviceWorker: undefined}`.
+          Object.defineProperty(context, 'navigator', patchedDescriptor);
+          expect(TestBed.get(NgswCommChannel).isEnabled).toBe(false);
+        } finally {
+          if (originalDescriptor) {
+            Object.defineProperty(context, 'navigator', originalDescriptor);
+          } else {
+            delete context.navigator;
+          }
+        }
+      });
+      it('gives enabled NgswCommChannel when browser supports SW and enabled option is true',
+         () => {
+           TestBed.configureTestingModule({
+             providers: [
+               {provide: PLATFORM_ID, useValue: 'browser'},
+               {provide: RegistrationOptions, useValue: {enabled: true}}, {
+                 provide: NgswCommChannel,
+                 useFactory: ngswCommChannelFactory,
+                 deps: [RegistrationOptions, PLATFORM_ID]
+               }
+             ]
+           });
+
+           const context: any = global || window;
+           const originalDescriptor = Object.getOwnPropertyDescriptor(context, 'navigator');
+           const patchedDescriptor = {value: {serviceWorker: mock}, configurable: true};
+
+           try {
+             // Set `navigator` to `{serviceWorker: mock}`.
+             Object.defineProperty(context, 'navigator', patchedDescriptor);
+             expect(TestBed.get(NgswCommChannel).isEnabled).toBe(true);
+           } finally {
+             if (originalDescriptor) {
+               Object.defineProperty(context, 'navigator', originalDescriptor);
+             } else {
+               delete context.navigator;
+             }
+           }
+         });
     });
     describe('SwPush', () => {
       let push: SwPush;
@@ -76,7 +161,7 @@ import {MockServiceWorkerContainer, MockServiceWorkerRegistration} from '../test
         expect(() => TestBed.get(SwPush)).not.toThrow();
       });
       describe('with no SW', () => {
-        beforeEach(() => { comm = new NgswCommChannel(undefined, 'browser'); });
+        beforeEach(() => { comm = new NgswCommChannel(undefined); });
         it('can be instantiated', () => { push = new SwPush(comm); });
         it('does not crash on subscription to observables', () => {
           push = new SwPush(comm);
@@ -170,7 +255,7 @@ import {MockServiceWorkerContainer, MockServiceWorkerRegistration} from '../test
         expect(() => TestBed.get(SwUpdate)).not.toThrow();
       });
       describe('with no SW', () => {
-        beforeEach(() => { comm = new NgswCommChannel(undefined, 'browser'); });
+        beforeEach(() => { comm = new NgswCommChannel(undefined); });
         it('can be instantiated', () => { update = new SwUpdate(comm); });
         it('does not crash on subscription to observables', () => {
           update = new SwUpdate(comm);
