@@ -384,6 +384,9 @@
     "name": "generatePropertyAliases"
   },
   {
+    "name": "getCurrentSanitizer"
+  },
+  {
     "name": "getDirectiveInstance"
   },
   {
