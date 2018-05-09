@@ -591,5 +591,14 @@
     "website": "http://ngnir.life/",
     "bio": "Nir is a Principal Frontend Consultant & Head of the Angular department at 500Tech, Google Developer Expert and community leader. He organizes the largest Angular meetup group in Israel (Angular-IL), talks and teaches about front-end technologies around the world. He is also the author of two books about Angular and the founder of the 'Frontend Band'.",
     "group": "GDE"
+  },
+  
+  "achautard": {
+    "name": "Alain Chautard",
+    "picture": "alainchautard.png",
+    "twitter": "AlainChautard",
+    "website": "http://www.angulartraining.com",
+    "bio": "Alain Chautard is a Google Developer Expert in Web Technologies / Angular. He started working with Angular JS in 2011. Since then he has worked with all Angular versions on a daily basis, both as a developer and as a technical trainer. He is the organizer of the Sacramento Angular Meetup group, co-organizer of the Google Developer Group chapter in Sacramento, California, and published author of the Packt video course 'Getting Started with Angular'",
+    "group": "GDE"
   }
 }
