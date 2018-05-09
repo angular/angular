@@ -1,6 +1,12 @@
 # VM setup - Create docker image
 
 
+## Install node and yarn
+- Install [nvm](https://github.com/creationix/nvm#installation).
+- Install node.js: `nvm install 8`
+- Install yarn: `npm -g install yarn`
+
+
 ## Checkout repository
 - `git clone <repo-url>`
 
