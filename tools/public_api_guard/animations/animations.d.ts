@@ -115,7 +115,7 @@ export interface AnimationPlayer {
     play(): void;
     reset(): void;
     restart(): void;
-    setPosition(position: number): void;
+    setPosition(position: any): void;
 }
 
 /** @experimental */
