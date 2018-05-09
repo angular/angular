@@ -1326,6 +1326,9 @@
     "name": "Quote"
   },
   {
+    "name": "R3_COMPILE_INJECTABLE"
+  },
+  {
     "name": "REMOVE_EVENT_LISTENER"
   },
   {
@@ -3619,6 +3622,9 @@
   },
   {
     "name": "platformCoreDynamic"
+  },
+  {
+    "name": "preR3InjectableCompile"
   },
   {
     "name": "preparseElement"

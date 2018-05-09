@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Expression, IvyInjectableDep, IvyInjectableMetadata, LiteralExpr, WrappedNodeExpr, compileIvyInjectable} from '@angular/compiler';
+import {Expression, LiteralExpr, R3DependencyMetadata, R3InjectableMetadata, R3ResolvedDependencyType, WrappedNodeExpr, compileInjectable as compileIvyInjectable} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {Decorator} from '../../metadata';
@@ -18,20 +18,20 @@ import {AddStaticFieldInstruction, AnalysisOutput, CompilerAdapter} from './api'
 /**
  * Adapts the `compileIvyInjectable` compiler for `@Injectable` decorators to the Ivy compiler.
  */
-export class InjectableCompilerAdapter implements CompilerAdapter<IvyInjectableMetadata> {
+export class InjectableCompilerAdapter implements CompilerAdapter<R3InjectableMetadata> {
   constructor(private checker: ts.TypeChecker) {}
 
   detect(decorator: Decorator[]): Decorator|undefined {
     return decorator.find(dec => dec.name === 'Injectable' && dec.from === '@angular/core');
   }
 
-  analyze(node: ts.ClassDeclaration, decorator: Decorator): AnalysisOutput<IvyInjectableMetadata> {
+  analyze(node: ts.ClassDeclaration, decorator: Decorator): AnalysisOutput<R3InjectableMetadata> {
     return {
       analysis: extractInjectableMetadata(node, decorator, this.checker),
     };
   }
 
-  compile(node: ts.ClassDeclaration, analysis: IvyInjectableMetadata): AddStaticFieldInstruction {
+  compile(node: ts.ClassDeclaration, analysis: R3InjectableMetadata): AddStaticFieldInstruction {
     const res = compileIvyInjectable(analysis);
     return {
       field: 'ngInjectableDef',
@@ -47,7 +47,7 @@ export class InjectableCompilerAdapter implements CompilerAdapter<IvyInjectableM
  */
 function extractInjectableMetadata(
     clazz: ts.ClassDeclaration, decorator: Decorator,
-    checker: ts.TypeChecker): IvyInjectableMetadata {
+    checker: ts.TypeChecker): R3InjectableMetadata {
   if (clazz.name === undefined) {
     throw new Error(`@Injectables must have names`);
   }
@@ -58,7 +58,7 @@ function extractInjectableMetadata(
       name,
       type,
       providedIn: new LiteralExpr(null),
-      useType: getUseType(clazz, checker),
+      deps: getConstructorDependencies(clazz, checker),
     };
   } else if (decorator.args.length === 1) {
     const metaNode = decorator.args[0];
@@ -84,7 +84,7 @@ function extractInjectableMetadata(
     } else if (meta.has('useFactory')) {
       // useFactory is special - the 'deps' property must be analyzed.
       const factory = new WrappedNodeExpr(meta.get('useFactory') !);
-      const deps: IvyInjectableDep[] = [];
+      const deps: R3DependencyMetadata[] = [];
       if (meta.has('deps')) {
         const depsExpr = meta.get('deps') !;
         if (!ts.isArrayLiteralExpression(depsExpr)) {
@@ -95,18 +95,19 @@ function extractInjectableMetadata(
         }
         deps.push(...depsExpr.elements.map(dep => getDep(dep, checker)));
       }
-      return {name, type, providedIn, useFactory: {factory, deps}};
+      return {name, type, providedIn, useFactory: factory, deps};
     } else {
-      const useType = getUseType(clazz, checker);
-      return {name, type, providedIn, useType};
+      const deps = getConstructorDependencies(clazz, checker);
+      return {name, type, providedIn, deps};
     }
   } else {
     throw new Error(`Too many arguments to @Injectable`);
   }
 }
 
-function getUseType(clazz: ts.ClassDeclaration, checker: ts.TypeChecker): IvyInjectableDep[] {
-  const useType: IvyInjectableDep[] = [];
+function getConstructorDependencies(
+    clazz: ts.ClassDeclaration, checker: ts.TypeChecker): R3DependencyMetadata[] {
+  const useType: R3DependencyMetadata[] = [];
   const ctorParams = (reflectConstructorParameters(clazz, checker) || []);
   ctorParams.forEach(param => {
     let tokenExpr = param.typeValueExpr;
@@ -131,18 +132,20 @@ function getUseType(clazz: ts.ClassDeclaration, checker: ts.TypeChecker): IvyInj
       }
     });
     const token = new WrappedNodeExpr(tokenExpr);
-    useType.push({token, optional, self, skipSelf, attribute: false});
+    useType.push(
+        {token, optional, self, skipSelf, host: false, resolved: R3ResolvedDependencyType.Token});
   });
   return useType;
 }
 
-function getDep(dep: ts.Expression, checker: ts.TypeChecker): IvyInjectableDep {
-  const depObj = {
+function getDep(dep: ts.Expression, checker: ts.TypeChecker): R3DependencyMetadata {
+  const meta: R3DependencyMetadata = {
     token: new WrappedNodeExpr(dep),
+    host: false,
+    resolved: R3ResolvedDependencyType.Token,
     optional: false,
     self: false,
     skipSelf: false,
-    attribute: false,
   };
 
   function maybeUpdateDecorator(dec: ts.Identifier, token?: ts.Expression): void {
@@ -153,17 +156,17 @@ function getDep(dep: ts.Expression, checker: ts.TypeChecker): IvyInjectableDep {
     switch (source.name) {
       case 'Inject':
         if (token !== undefined) {
-          depObj.token = new WrappedNodeExpr(token);
+          meta.token = new WrappedNodeExpr(token);
         }
         break;
       case 'Optional':
-        depObj.optional = true;
+        meta.optional = true;
         break;
       case 'SkipSelf':
-        depObj.skipSelf = true;
+        meta.skipSelf = true;
         break;
       case 'Self':
-        depObj.self = true;
+        meta.self = true;
         break;
     }
   }
@@ -178,5 +181,5 @@ function getDep(dep: ts.Expression, checker: ts.TypeChecker): IvyInjectableDep {
       }
     });
   }
-  return depObj;
+  return meta;
 }
