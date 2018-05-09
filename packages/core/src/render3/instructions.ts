@@ -25,6 +25,7 @@ import {isDifferent, stringify} from './util';
 import {executeHooks, queueLifecycleHooks, queueInitHooks, executeInitHooks} from './hooks';
 import {ViewRef} from './view_ref';
 import {throwCyclicDependencyError, throwErrorIfNoChangesMode, throwMultipleComponentError} from './errors';
+import {Sanitizer} from '../sanitization/security';
 
 /**
  * Directive (D) sets a property on all component instances using this constant as a key and the
@@ -42,7 +43,7 @@ const _CLEAN_PROMISE = Promise.resolve(null);
 /**
  * Function used to sanitize the value before writing it into the renderer.
  */
-export type Sanitizer = (value: any) => string;
+export type SanitizerFn = (value: any) => string;
 
 /**
  * Directive and element indices for top-level directive.
@@ -82,6 +83,10 @@ let rendererFactory: RendererFactory3;
 export function getRenderer(): Renderer3 {
   // top level variables should not be exported for performance reason (PERF_NOTES.md)
   return renderer;
+}
+
+export function getCurrentSanitizer(): Sanitizer|null {
+  return currentView && currentView.sanitizer;
 }
 
 /** Used to set the parent property when nodes are created. */
@@ -298,7 +303,7 @@ export function executeInitAndContentHooks(): void {
 
 export function createLView<T>(
     viewId: number, renderer: Renderer3, tView: TView, template: ComponentTemplate<T>| null,
-    context: T | null, flags: LViewFlags): LView {
+    context: T | null, flags: LViewFlags, sanitizer?: Sanitizer | null): LView {
   const newView = {
     parent: currentView,
     id: viewId,  // -1 for component views
@@ -320,6 +325,7 @@ export function createLView<T>(
     lifecycleStage: LifecycleStage.Init,
     queries: null,
     injector: currentView && currentView.injector,
+    sanitizer: sanitizer || null
   };
 
   return newView;
@@ -450,8 +456,8 @@ function resetApplicationState() {
 export function renderTemplate<T>(
     hostNode: RElement, template: ComponentTemplate<T>, context: T,
     providedRendererFactory: RendererFactory3, host: LElementNode | null,
-    directives?: DirectiveDefListOrFactory | null,
-    pipes?: PipeDefListOrFactory | null): LElementNode {
+    directives?: DirectiveDefListOrFactory | null, pipes?: PipeDefListOrFactory | null,
+    sanitizer?: Sanitizer | null): LElementNode {
   if (host == null) {
     resetApplicationState();
     rendererFactory = providedRendererFactory;
@@ -460,7 +466,7 @@ export function renderTemplate<T>(
         null, LNodeType.Element, hostNode,
         createLView(
             -1, providedRendererFactory.createRenderer(null, null), tView, null, {},
-            LViewFlags.CheckAlways));
+            LViewFlags.CheckAlways, sanitizer));
   }
   const hostView = host.data !;
   ngDevMode && assertNotNull(hostView, 'Host node should have an LView defined in host.data.');
@@ -491,7 +497,8 @@ export function renderEmbeddedTemplate<T>(
     previousOrParentNode = null !;
 
     if (viewNode == null) {
-      const lView = createLView(-1, renderer, tView, template, context, LViewFlags.CheckAlways);
+      const lView = createLView(
+          -1, renderer, tView, template, context, LViewFlags.CheckAlways, getCurrentSanitizer());
 
       viewNode = createLNode(null, LNodeType.View, null, lView);
       rf = RenderFlags.Create;
@@ -859,13 +866,14 @@ export function locateHostElement(
  * @returns LElementNode created
  */
 export function hostElement(
-    tag: string, rNode: RElement | null, def: ComponentDef<any>): LElementNode {
+    tag: string, rNode: RElement | null, def: ComponentDef<any>,
+    sanitizer?: Sanitizer | null): LElementNode {
   resetApplicationState();
   const node = createLNode(
       0, LNodeType.Element, rNode,
       createLView(
           -1, renderer, getOrCreateTView(def.template, def.directiveDefs, def.pipeDefs), null, null,
-          def.onPush ? LViewFlags.Dirty : LViewFlags.CheckAlways));
+          def.onPush ? LViewFlags.Dirty : LViewFlags.CheckAlways, sanitizer));
 
   if (firstTemplatePass) {
     node.tNode = createTNode(tag as string, null, null);
@@ -958,7 +966,7 @@ export function elementEnd() {
  * @param sanitizer An optional function used to sanitize the value.
  */
 export function elementAttribute(
-    index: number, name: string, value: any, sanitizer?: Sanitizer): void {
+    index: number, name: string, value: any, sanitizer?: SanitizerFn): void {
   if (value !== NO_CHANGE) {
     const element: LElementNode = data[index];
     if (value == null) {
@@ -989,7 +997,7 @@ export function elementAttribute(
  */
 
 export function elementProperty<T>(
-    index: number, propName: string, value: T | NO_CHANGE, sanitizer?: Sanitizer): void {
+    index: number, propName: string, value: T | NO_CHANGE, sanitizer?: SanitizerFn): void {
   if (value === NO_CHANGE) return;
   const node = data[index] as LElementNode;
   const tNode = node.tNode !;
@@ -1152,10 +1160,10 @@ export function elementClass<T>(index: number, value: T | NO_CHANGE): void {
 export function elementStyleNamed<T>(
     index: number, styleName: string, value: T | NO_CHANGE, suffix?: string): void;
 export function elementStyleNamed<T>(
-    index: number, styleName: string, value: T | NO_CHANGE, sanitizer?: Sanitizer): void;
+    index: number, styleName: string, value: T | NO_CHANGE, sanitizer?: SanitizerFn): void;
 export function elementStyleNamed<T>(
     index: number, styleName: string, value: T | NO_CHANGE,
-    suffixOrSanitizer?: string | Sanitizer): void {
+    suffixOrSanitizer?: string | SanitizerFn): void {
   if (value !== NO_CHANGE) {
     const lElement: LElementNode = data[index];
     if (value == null) {
@@ -1305,7 +1313,8 @@ function addComponentLogic<T>(index: number, instance: T, def: ComponentDef<T>):
       currentView, createLView(
                        -1, rendererFactory.createRenderer(
                                previousOrParentNode.native as RElement, def.rendererType),
-                       tView, null, null, def.onPush ? LViewFlags.Dirty : LViewFlags.CheckAlways));
+                       tView, null, null, def.onPush ? LViewFlags.Dirty : LViewFlags.CheckAlways,
+                       getCurrentSanitizer()));
 
   (previousOrParentNode.data as any) = hostView;
   (hostView.node as any) = previousOrParentNode;
@@ -1596,7 +1605,7 @@ export function embeddedViewStart(viewBlockId: number): RenderFlags {
     // When we create a new LView, we always reset the state of the instructions.
     const newView = createLView(
         viewBlockId, renderer, getOrCreateEmbeddedTView(viewBlockId, container), null, null,
-        LViewFlags.CheckAlways);
+        LViewFlags.CheckAlways, getCurrentSanitizer());
     if (lContainer.queries) {
       newView.queries = lContainer.queries.enterView(lContainer.nextIndex);
     }
