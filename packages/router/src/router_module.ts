@@ -222,6 +222,12 @@ export function provideRoutes(routes: Routes): any {
   ];
 }
 
+
+@Injectable({
+  providedIn: 'root'
+})
+export class Sample {}
+
 /**
  * @description
  *
