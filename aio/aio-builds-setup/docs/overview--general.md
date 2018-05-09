@@ -2,9 +2,10 @@
 
 
 ## Objective
-Whenever a PR job is run on Travis, we want to build `angular.io` and upload the build artifacts to
-a publicly accessible server so that collaborators (developers, designers, authors, etc) can preview
-the changes without having to checkout and build the app locally.
+Whenever a PR job is run on the CI infrastructure (e.g. CircleCI), we want to build `angular.io`
+and upload the build artifacts to a publicly accessible server so that collaborators (developers,
+designers, authors, etc) can preview the changes without having to checkout and build the app
+locally.
 
 
 ## Source code
@@ -32,34 +33,24 @@ This section gives a brief summary of the several operations performed on CI and
 container:
 
 
-### On CI (Travis)
+### On CI (CircleCI)
 - Build job completes successfully.
 - The CI script checks whether the build job was initiated by a PR against the angular/angular
   master branch.
 - The CI script checks whether the PR has touched any files that might affect the angular.io app
   (currently the `aio/` or `packages/` directories, ignoring spec files).
-- Optionally, the CI script can check whether the PR can be automatically verified (i.e. if the
-  author of the PR is a member of one of the whitelisted GitHub teams or the PR has the specified
-  "trusted PR" label).
-  **Note:**
-  For security reasons, the same checks will be performed on the server as well. This is an optional
-  step that can be used in case one wants to apply special logic depending on the outcome of the
-  pre-verification. For example:
-  1. One might want to deploy automatically verified PRs only. In that case, the pre-verification
-     helps avoid the wasted overhead associated with uploads that are going to be rejected (e.g.
-     building the artifacts, sending them to the server, running checks on the server, detecting the
-     reasons of deployment failure and whether to fail the build, etc).
-  2. One might want to apply additional logic (e.g. different tests) depending on whether the PR is
-     automatically verified or not).
-- The CI script gzips and uploads the build artifacts to the server.
+- The CI script gzips and stores the build artifacts in the CI infrastructure.
+- When the build completes CircleCI triggers a webhook on the upload-server.
 
 More info on how to set things up on CI can be found [here](misc--integrate-with-ci.md).
 
 
-### Uploading build artifacts
-- nginx receives the upload request.
-- nginx checks that the uploaded gzip archive does not exceed the specified max file size, stores it
-  in a temporary location and passes the filepath to the Node.js upload-server.
+### Hosting build artifacts
+
+- nginx receives the webhook trigger and passes it through to the upload server.
+- The upload-server makes a request to CircleCI for the URL of the AIO build artifacts.
+- The upload-server makes a request to this URL to receive the artifact - failing if the size
+  exceeds the specified max file size - and stores it in a temporary location.
 - The upload-server runs several checks to determine whether the request should be accepted and
   whether it should be publicly accessible or stored for later verification (more details can be
   found [here](overview--security-model.md)).
