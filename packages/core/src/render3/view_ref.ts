@@ -42,6 +42,7 @@ export class ViewRef<T> implements viewEngine_EmbeddedViewRef<T> {
    *
    * <!-- TODO: Add a link to a chapter on OnPush components -->
    *
+   * @example
    * The following example shows marking a component for change detection
    * ([live demo](https://stackblitz.com/edit/angular-kx7rrw)):
    *
@@ -77,6 +78,7 @@ export class ViewRef<T> implements viewEngine_EmbeddedViewRef<T> {
    * <!-- TODO: Add a link to a chapter on detach/reattach/local digest -->
    * <!-- TODO: Add a live demo once ref.detectChanges is merged into master -->
    *
+   * @example
    * The following example defines a component with a large list of readonly data.
    * Imagine the data changes constantly, many times per second. For performance reasons,
    * we want to check and update the list every five seconds. We can do that by detaching
@@ -126,6 +128,7 @@ export class ViewRef<T> implements viewEngine_EmbeddedViewRef<T> {
    *
    * <!-- TODO: Add a link to a chapter on detach/reattach/local digest -->
    *
+   * @example
    * The following example creates a component displaying `live` data. The component will detach
    * its change detector from the main change detector tree when the component's live property
    * is set to false. ([live demo](https://stackblitz.com/edit/angular-ymgsxw))
@@ -182,7 +185,6 @@ export class ViewRef<T> implements viewEngine_EmbeddedViewRef<T> {
    * <!-- TODO: Add a link to a chapter on detach/reattach/local digest -->
    * <!-- TODO: Add a live demo once ref.detectChanges is merged into master -->
    *
-   * The following example defines a component with a large list of readonly data.
    * Imagine, the data changes constantly, many times per second. For performance reasons,
    * we want to check and update the list every five seconds.
    *

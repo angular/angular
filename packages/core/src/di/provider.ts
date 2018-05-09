@@ -11,9 +11,12 @@ import {Type} from '../type';
 /**
  * Configures the `Injector` to return a value for a token.
  *
- * For more details, see the {@linkDocs guide/dependency-injection "Dependency Injection Guide"}.
+ * For more details, see the [Dependency Injection Guide](guide/dependency-injection).
  *
- * {@example core/di/ts/provider_spec.ts region='ValueSansProvider'}
+ * @example
+ * This example shows how to define a provider that matches this interface:
+ *
+ * <code-example path="core/di/ts/provider_spec.ts" region="ValueSansProvider"></code-example>
  *
  * @usageNotes
  *
@@ -34,9 +37,12 @@ export interface ValueSansProvider {
 /**
  * Configures the `Injector` to return a value for a token.
  *
- * For more details, see the {@linkDocs guide/dependency-injection "Dependency Injection Guide"}.
+ * For more details, see the [Dependency Injection Guide](guide/dependency-injection).
  *
- * {@example core/di/ts/provider_spec.ts region='ValueProvider'}
+ * @example
+ * This example shows how to define a provider that matches this interface:
+ *
+ * <code-example path="core/di/ts/provider_spec.ts" region="ValueProvider"></code-example>
  *
  * @usageNotes
  *
@@ -54,7 +60,10 @@ export interface ValueProvider extends ValueSansProvider {
    * If true, then injector returns an array of instances. This is useful to allow multiple
    * providers spread across many files to provide configuration information to a common token.
    *
-   * {@example core/di/ts/provider_spec.ts region='MultiProviderAspect'}
+   * @example
+   * This example shows how to define a multiple valued provider:
+   *
+   * <code-example path="core/di/ts/provider_spec.ts" region="MultiProviderAspect"></code-example>
    */
   multi?: boolean;
 }
@@ -62,9 +71,12 @@ export interface ValueProvider extends ValueSansProvider {
 /**
  * Configures the `Injector` to return an instance of `useClass` for a token.
  *
- * For more details, see the {@linkDocs guide/dependency-injection "Dependency Injection Guide"}.
+ * For more details, see the [Dependency Injection Guide](guide/dependency-injection).
  *
- * {@example core/di/ts/provider_spec.ts region='StaticClassSansProvider'}
+ * @example
+ * This example shows how to define a provider that matches this interface:
+ *
+ * <code-example path="core/di/ts/provider_spec.ts" region="StaticClassSansProvider"></code-example>
  *
  * @usageNotes
  *
@@ -92,13 +104,17 @@ export interface StaticClassSansProvider {
 /**
  * Configures the `Injector` to return an instance of `useClass` for a token.
  *
- * For more details, see the {@linkDocs guide/dependency-injection "Dependency Injection Guide"}.
+ * For more details, see the [Dependency Injection Guide](/guide/dependency-injection).
  *
- * {@example core/di/ts/provider_spec.ts region='StaticClassProvider'}
+ * @example
+ * This example shows how to define a provider that matches this interface:
  *
+ * <code-example path="core/di/ts/provider_spec.ts" region="StaticClassProvider"></code-example>
+ *
+ * @example
  * Note that following two providers are not equal:
  *
- * {@example core/di/ts/provider_spec.ts region='StaticClassProviderDifference'}
+ * <code-example path="core/di/ts/provider_spec.ts" region="StaticClassProviderDifference"></code-example>
  *
  * @usageNotes
  *
@@ -119,7 +135,10 @@ export interface StaticClassProvider extends StaticClassSansProvider {
    * If true, then injector returns an array of instances. This is useful to allow multiple
    * providers spread across many files to provide configuration information to a common token.
    *
-   * {@example core/di/ts/provider_spec.ts region='MultiProviderAspect'}
+   * @example
+   * This example shows how to define a multiple valued provider:
+   *
+   * <code-example path="core/di/ts/provider_spec.ts" region="MultiProviderAspect"></code-example>
    */
   multi?: boolean;
 }
@@ -134,9 +153,12 @@ export interface StaticClassProvider extends StaticClassSansProvider {
  * @description
  * Configures the `Injector` to return an instance of a token.
  *
- * For more details, see the {@linkDocs guide/dependency-injection "Dependency Injection Guide"}.
+ * For more details, see the [Dependency Injection Guide](/guide/dependency-injection).
  *
- * {@example core/di/ts/provider_spec.ts region='ConstructorSansProvider'}
+ * @example
+ * This example shows how to define a provider that matches this interface:
+ *
+ * <code-example path="core/di/ts/provider_spec.ts" region="ConstructorSansProvider"></code-example>
  *
  * @experimental
  */
@@ -151,9 +173,12 @@ export interface ConstructorSansProvider {
 /**
  * Configures the `Injector` to return an instance of a token.
  *
- * For more details, see the {@linkDocs guide/dependency-injection "Dependency Injection Guide"}.
+ * For more details, see the [Dependency Injection Guide](guide/dependency-injection).
  *
- * {@example core/di/ts/provider_spec.ts region='ConstructorProvider'}
+ * @example
+ * This example shows how to define a provider that matches this interface:
+ *
+ * <code-example path="core/di/ts/provider_spec.ts" region="ConstructorProvider"></code-example>
  *
  * @usageNotes
  *
@@ -174,7 +199,10 @@ export interface ConstructorProvider extends ConstructorSansProvider {
    * If true, then injector returns an array of instances. This is useful to allow multiple
    * providers spread across many files to provide configuration information to a common token.
    *
-   * {@example core/di/ts/provider_spec.ts region='MultiProviderAspect'}
+   * @example
+   * This example shows how to define a multiple valued provider:
+   *
+   * <code-example path="core/di/ts/provider_spec.ts" region="MultiProviderAspect"></code-example>
    */
   multi?: boolean;
 }
@@ -182,9 +210,12 @@ export interface ConstructorProvider extends ConstructorSansProvider {
 /**
  * Configures the `Injector` to return a value of another `useExisting` token.
  *
- * For more details, see the {@linkDocs guide/dependency-injection "Dependency Injection Guide"}.
+ * For more details, see the [Dependency Injection Guide](guide/dependency-injection).
  *
- * {@example core/di/ts/provider_spec.ts region='ExistingSansProvider'}
+ * @example
+ * This example shows how to define a provider that matches this interface:
+ *
+ * <code-example path="core/di/ts/provider_spec.ts" region="ExistingSansProvider"></code-example>
  *
  * @usageNotes
  *
@@ -203,9 +234,12 @@ export interface ExistingSansProvider {
 /**
  * Configures the `Injector` to return a value of another `useExisting` token.
  *
- * For more details, see the {@linkDocs guide/dependency-injection "Dependency Injection Guide"}.
+ * For more details, see the [Dependency Injection Guide](guide/dependency-injection).
  *
- * {@example core/di/ts/provider_spec.ts region='ExistingProvider'}
+ * @example
+ * This example shows how to define a provider that matches this interface:
+ *
+ * <code-example path="core/di/ts/provider_spec.ts" region="ExistingProvider"></code-example>
  *
  * @usageNotes
  *
@@ -223,7 +257,10 @@ export interface ExistingProvider extends ExistingSansProvider {
    * If true, then injector returns an array of instances. This is useful to allow multiple
    * providers spread across many files to provide configuration information to a common token.
    *
-   * {@example core/di/ts/provider_spec.ts region='MultiProviderAspect'}
+   * @example
+   * This example shows how to define a multiple valued provider:
+   *
+   * <code-example path="core/di/ts/provider_spec.ts" region="MultiProviderAspect"></code-example>
    */
   multi?: boolean;
 }
@@ -231,9 +268,12 @@ export interface ExistingProvider extends ExistingSansProvider {
 /**
  * Configures the `Injector` to return a value by invoking a `useFactory` function.
  *
- * For more details, see the {@linkDocs guide/dependency-injection "Dependency Injection Guide"}.
+ * For more details, see the [Dependency Injection Guide](guide/dependency-injection).
  *
- * {@example core/di/ts/provider_spec.ts region='FactorySansProvider'}
+ * @example
+ * This example shows how to define a provider that matches this interface:
+ *
+ * <code-example path="core/di/ts/provider_spec.ts" region="FactorySansProvider"></code-example>
  *
  * @usageNotes
  *
@@ -263,13 +303,18 @@ export interface FactorySansProvider {
 /**
  * Configures the `Injector` to return a value by invoking a `useFactory` function.
  *
- * For more details, see the {@linkDocs guide/dependency-injection "Dependency Injection Guide"}.
+ * For more details, see the [Dependency Injection Guide](guide/dependency-injection).
  *
- * {@example core/di/ts/provider_spec.ts region='FactoryProvider'}
+ * @example
+ * This example shows how to define a provider that matches this interface:
  *
+ * <code-example path="core/di/ts/provider_spec.ts" region="FactoryProvider"></code-example>
+ *
+ *
+ * @example
  * Dependencies can also be marked as optional:
  *
- * {@example core/di/ts/provider_spec.ts region='FactoryProviderOptionalDeps'}
+ * <code-example path="core/di/ts/provider_spec.ts" region="FactoryProviderOptionalDeps"></code-example>
  *
  * @usageNotes
  *
@@ -290,7 +335,10 @@ export interface FactoryProvider extends FactorySansProvider {
    * If true, then injector returns an array of instances. This is useful to allow multiple
    * providers spread across many files to provide configuration information to a common token.
    *
-   * {@example core/di/ts/provider_spec.ts region='MultiProviderAspect'}
+   * @example
+   * This example shows how to define a multiple valued provider:
+   *
+   * <code-example path="core/di/ts/provider_spec.ts" region="MultiProviderAspect"></code-example>
    */
   multi?: boolean;
 }
@@ -298,9 +346,9 @@ export interface FactoryProvider extends FactorySansProvider {
 /**
  * Describes how the `Injector` should be configured in a static way (Without reflection).
  *
- * For more details, see the {@linkDocs guide/dependency-injection "Dependency Injection Guide"}.
+ * For more details, see the [Dependency Injection Guide](guide/dependency-injection).
  *
- * See {@link ValueProvider}, {@link ExistingProvider}, {@link FactoryProvider}.
+ * See `ValueProvider`, `ExistingProvider`, `FactoryProvider`.
  */
 export type StaticProvider = ValueProvider | ExistingProvider | StaticClassProvider |
     ConstructorProvider | FactoryProvider | any[];
@@ -312,9 +360,12 @@ export type StaticProvider = ValueProvider | ExistingProvider | StaticClassProvi
  * Create an instance by invoking the `new` operator and supplying additional arguments.
  * This form is a short form of `TypeProvider`;
  *
- * For more details, see the {@linkDocs guide/dependency-injection "Dependency Injection Guide"}.
+ * For more details, see the [Dependency Injection Guide](guide/dependency-injection).
  *
- * {@example core/di/ts/provider_spec.ts region='TypeProvider'}
+ * @example
+ * This example shows how to define a provider that matches this interface:
+ *
+ * <code-example path="core/di/ts/provider_spec.ts" region="TypeProvider"></code-example>
  *
  * @usageNotes
  *
@@ -330,9 +381,12 @@ export interface TypeProvider extends Type<any> {}
 /**
  * Configures the `Injector` to return a value by invoking a `useClass` function.
  *
- * For more details, see the {@linkDocs guide/dependency-injection "Dependency Injection Guide"}.
+ * For more details, see the [Dependency Injection Guide](guide/dependency-injection).
  *
- * {@example core/di/ts/provider_spec.ts region='ClassSansProvider'}
+ * @example
+ * This example shows how to define a provider that matches this interface:
+ *
+ * <code-example path="core/di/ts/provider_spec.ts" region="ClassSansProvider"></code-example>
  *
  * @usageNotes
  *
@@ -355,13 +409,19 @@ export interface ClassSansProvider {
 /**
  * Configures the `Injector` to return an instance of `useClass` for a token.
  *
- * For more details, see the {@linkDocs guide/dependency-injection "Dependency Injection Guide"}.
+ * For more details, see the [Dependency Injection Guide](guide/dependency-injection).
  *
- * {@example core/di/ts/provider_spec.ts region='ClassProvider'}
+ * @example
+ * This example shows how to define a provider that matches this interface:
  *
+ * <code-example path="core/di/ts/provider_spec.ts" region="ClassProvider"></code-example>
+ *
+ *
+ * @example
  * Note that following two providers are not equal:
+ * This example shows how to define a provider that matches this interface:
  *
- * {@example core/di/ts/provider_spec.ts region='ClassProviderDifference'}
+ * <code-example path="core/di/ts/provider_spec.ts" region="ClassProviderDifference"></code-example>
  *
  * @usageNotes
  *
@@ -382,7 +442,10 @@ export interface ClassProvider extends ClassSansProvider {
    * If true, then injector returns an array of instances. This is useful to allow multiple
    * providers spread across many files to provide configuration information to a common token.
    *
-   * {@example core/di/ts/provider_spec.ts region='MultiProviderAspect'}
+   * @example
+   * This example shows how to define a provider that matches this interface:
+   *
+   * <code-example path="core/di/ts/provider_spec.ts" region="MultiProviderAspect"></code-example>
    */
   multi?: boolean;
 }
@@ -390,9 +453,9 @@ export interface ClassProvider extends ClassSansProvider {
 /**
  * Describes how the `Injector` should be configured.
  *
- * For more details, see the {@linkDocs guide/dependency-injection "Dependency Injection Guide"}.
+ * For more details, see the [Dependency Injection Guide](guide/dependency-injection).
  *
- * See {@link TypeProvider}, {@link ClassProvider}, {@link StaticProvider}.
+ * See `TypeProvider`, `ClassProvider`, `StaticProvider`.
  */
 export type Provider =
     TypeProvider | ValueProvider | ClassProvider | ExistingProvider | FactoryProvider | any[];

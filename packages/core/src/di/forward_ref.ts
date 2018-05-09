@@ -14,9 +14,10 @@ import {stringify} from '../util';
 /**
  * An interface that a function passed into {@link forwardRef} has to implement.
  *
+ * @example
  * The following example demonstrates how to use the `forwardRef` interface:
  *
- * {@example core/di/ts/forward_ref/forward_ref_spec.ts region='forward_ref_fn'}
+ * <code-example path="core/di/ts/forward_ref/forward_ref_spec.ts" region="forward_ref_fn"></code-example>
  *
  * @experimental
  */
@@ -29,7 +30,8 @@ export interface ForwardRefFn { (): any; }
  * DI is declared, but not yet defined.
  * It is also used when the `token` which we use when creating a query is not yet defined.
  *
- * {@example core/di/ts/forward_ref/forward_ref_spec.ts region='forward_ref'}
+ * @example
+ * <code-example path="core/di/ts/forward_ref/forward_ref_spec.ts" region="forward_ref"></code-example>
  *
  * @experimental
  */
@@ -44,10 +46,11 @@ export function forwardRef(forwardRefFn: ForwardRefFn): Type<any> {
  *
  * Acts as the identity function when given a non-forward-ref value.
  *
+ * @example
  * The following example demonstrates this
  * ([live demo](http://plnkr.co/edit/GU72mJrk1fiodChcmiDR?p=preview)).
  *
- * {@example core/di/ts/forward_ref/forward_ref_spec.ts region='resolve_forward_ref'}
+ * <code-example path="core/di/ts/forward_ref/forward_ref_spec.ts" region="resolve_forward_ref"></code-example>
  *
  * See: {@link forwardRef}
  *

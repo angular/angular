@@ -67,10 +67,12 @@ function addKey(this: InjectionError, injector: ReflectiveInjector, key: Reflect
 }
 
 /**
- * Thrown when trying to retrieve a dependency by key from {@link Injector}, but the
- * {@link Injector} does not have a {@link Provider} for the given key.
+ * Thrown when trying to retrieve a dependency by key from `Injector`, but the
+ * `Injector` does not have a `Provider` for the given key.
  *
- * **Example** ([live demo](http://plnkr.co/edit/vq8D3FRB9aGbnWJqtEPE?p=preview))
+ * @example
+ * This example shows what can cause this error to be thrown
+ * ([live demo](http://plnkr.co/edit/vq8D3FRB9aGbnWJqtEPE?p=preview)):
  *
  * ```typescript
  * class A {
@@ -90,7 +92,9 @@ export function noProviderError(injector: ReflectiveInjector, key: ReflectiveKey
 /**
  * Thrown when dependencies form a cycle.
  *
- * **Example** ([live demo](http://plnkr.co/edit/wYQdNos0Tzql3ei1EV9j?p=info))
+ * @example
+ * This example shows what can cause this error to be thrown
+ * ([live demo](http://plnkr.co/edit/wYQdNos0Tzql3ei1EV9j?p=info)):
  *
  * ```typescript
  * var injector = Injector.resolveAndCreate([
@@ -116,7 +120,9 @@ export function cyclicDependencyError(
  * The `InstantiationError` class contains the original error plus the dependency graph which caused
  * this object to be instantiated.
  *
- * **Example** ([live demo](http://plnkr.co/edit/7aWYdcqTQsP0eNqEdUAf?p=preview))
+ * @example
+ * This example shows what can cause this error to be thrown
+ * ([live demo](http://plnkr.co/edit/7aWYdcqTQsP0eNqEdUAf?p=preview)):
  *
  * ```typescript
  * class A {
@@ -146,10 +152,12 @@ export function instantiationError(
 }
 
 /**
- * Thrown when an object other then {@link Provider} (or `Type`) is passed to {@link Injector}
+ * Thrown when an object other then `Provider` (or `Type`) is passed to `Injector`
  * creation.
  *
- * **Example** ([live demo](http://plnkr.co/edit/YatCFbPAMCL0JSSQ4mvH?p=preview))
+ * @example
+ * This example shows what can cause this error to be thrown
+ * ([live demo](http://plnkr.co/edit/YatCFbPAMCL0JSSQ4mvH?p=preview)):
  *
  * ```typescript
  * expect(() => Injector.resolveAndCreate(["not a type"])).toThrowError();
@@ -163,10 +171,12 @@ export function invalidProviderError(provider: any) {
 /**
  * Thrown when the class has no annotation information.
  *
- * Lack of annotation information prevents the {@link Injector} from determining which dependencies
+ * Lack of annotation information prevents the `Injector` from determining which dependencies
  * need to be injected into the constructor.
  *
- * **Example** ([live demo](http://plnkr.co/edit/rHnZtlNS7vJOPQ6pcVkm?p=preview))
+ * @example
+ * This example shows what can cause this error to be thrown
+ * ([live demo](http://plnkr.co/edit/rHnZtlNS7vJOPQ6pcVkm?p=preview)):
  *
  * ```typescript
  * class A {
@@ -176,7 +186,8 @@ export function invalidProviderError(provider: any) {
  * expect(() => Injector.resolveAndCreate([A])).toThrowError();
  * ```
  *
- * This error is also thrown when the class not marked with {@link Injectable} has parameter types.
+ * @example
+ * This error is also thrown when the class not marked with `Injectable` has parameter types.
  *
  * ```typescript
  * class B {}
@@ -209,7 +220,9 @@ export function noAnnotationError(typeOrFunc: Type<any>| Function, params: any[]
 /**
  * Thrown when getting an object by index.
  *
- * **Example** ([live demo](http://plnkr.co/edit/bRs0SX2OTQiJzqvjgl8P?p=preview))
+ * @example
+ * This example shows what can cause this error to be thrown
+ * ([live demo](http://plnkr.co/edit/bRs0SX2OTQiJzqvjgl8P?p=preview)):
  *
  * ```typescript
  * class A {}
@@ -227,6 +240,9 @@ export function outOfBoundsError(index: number) {
 // TODO: add a working example after alpha38 is released
 /**
  * Thrown when a multi provider and a regular provider are bound to the same token.
+ *
+ * @example
+ * This example shows what can cause this error to be thrown
  *
  * ```typescript
  * expect(() => Injector.resolveAndCreate([

@@ -42,7 +42,9 @@ const _EMPTY_LIST: any[] = [];
  *
  * It can be created manually, as follows:
  *
- * **Example** ([live demo](http://plnkr.co/edit/RfEnhh8kUEI0G3qsnIeT?p%3Dpreview&p=preview))
+ * @example
+ * This example shows how to specify this type of provider
+ * ([live demo](http://plnkr.co/edit/RfEnhh8kUEI0G3qsnIeT?p%3Dpreview&p=preview)):
  *
  * ```typescript
  * var resolvedProviders = Injector.resolve([{ provide: 'message', useValue: 'Hello' }]);

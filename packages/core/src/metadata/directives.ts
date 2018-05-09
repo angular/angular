@@ -93,6 +93,7 @@ export interface Directive {
    * - `selector1, selector2`: select if either `selector1` or `selector2` matches.
    *
    *
+   * @example
    * Suppose we have a directive with an `input[type=text]` selector.
    *
    * And the following HTML:
@@ -122,6 +123,7 @@ export interface Directive {
    *
    * When `bindingProperty` is not provided, it is assumed to be equal to `directiveProperty`.
    *
+   * @example
    * The following example creates a component with two data-bound properties
    * ([live demo](http://plnkr.co/edit/ivhfXY?p=preview)):
    *
@@ -166,6 +168,7 @@ export interface Directive {
    * - `directiveProperty` specifies the component property that emits events.
    * - `bindingProperty` specifies the DOM property the event handler is attached to.
    *
+   * @example
    * The following example shows how to use the `outputs` property
    * ([live demo](http://plnkr.co/edit/d5CNq7?p=preview)):
    *
@@ -203,21 +206,33 @@ export interface Directive {
   /**
    * Specify the events, actions, properties and attributes related to the host element.
    *
-   * **Host Listeners**
+   * * **Host Listeners**
    *
-   * Specifies which DOM events a directive listens to via a set of `(event)` to `method`
-   * key-value pairs:
+   *   Specifies which DOM events a directive listens to via a set of `(event)` to `method`
+   *   key-value pairs:
    *
-   * - `event`: the DOM event that the directive listens to.
-   * - `statement`: the statement to execute when the event occurs.
-   * If the evaluation of the statement returns `false`, then `preventDefault`is applied on the DOM
-   * event.
+   *   - `event`: the DOM event that the directive listens to.
+   *   - `statement`: the statement to execute when the event occurs.
+   *   If the evaluation of the statement returns `false`, then `preventDefault`is applied on the DOM
+   *   event.
    *
-   * To listen to global events, a target must be added to the event name.
-   * The target can be `window`, `document` or `body`.
+   *   To listen to global events, a target must be added to the event name.
+   *   The target can be `window`, `document` or `body`.
    *
-   * When writing a directive event binding, you can also refer to the $event local variable.
+   *   When writing a directive event binding, you can also refer to the $event local variable.
    *
+   * * **Host Property Bindings**
+   *
+   *   Specifies which DOM properties a directive updates.
+   *
+   *   Angular automatically checks host property bindings during change detection.
+   *   If a binding changes, it will update the host element of the directive.
+   *
+   * * **Attributes**
+   *
+   *   Specifies static attributes that should be propagated to a host element.
+   *
+   * @example
    * The following example declares a directive that attaches a click listener to the button and
    * counts clicks
    * ([live demo](http://plnkr.co/edit/DlA5KU?p=preview)):
@@ -244,13 +259,7 @@ export interface Directive {
    * class App {}
    * ```
    *
-   * **Host Property Bindings**
-   *
-   * Specifies which DOM properties a directive updates.
-   *
-   * Angular automatically checks host property bindings during change detection.
-   * If a binding changes, it will update the host element of the directive.
-   *
+   * @example
    * The following example creates a directive that sets the `valid` and `invalid` classes
    * on the DOM element that has ngModel directive on it
    * ([live demo](http://plnkr.co/edit/gNg0ED?p=preview)):
@@ -278,10 +287,7 @@ export interface Directive {
    * }
    * ```
    *
-   * **Attributes**
-   *
-   * Specifies static attributes that should be propagated to a host element.
-   *
+   * @example
    * The following example, using `my-button` directive (ex.: `<div my-button></div>`) on a host
    * element (here: `<div>` ), shows that this element will get the "button" role:
    *
@@ -302,6 +308,7 @@ export interface Directive {
    * Defines the set of injectable objects that are visible to a Directive and its light DOM
    * children.
    *
+   * @example
    * Here is an example of a class that can be injected:
    *
    * ```
@@ -331,6 +338,7 @@ export interface Directive {
   /**
    * Defines the name that can be used in the template to assign this directive to a variable.
    *
+   * @example
    * The following example demonstrates how to specify how a component is exported.
    *
    * ```
@@ -358,6 +366,7 @@ export interface Directive {
    * Content queries are set before the `ngAfterContentInit` callback is called.
    * View queries are set before the `ngAfterViewInit` callback is called.
    *
+   * @example
    * The following example demonstrates how to specify `contentChilden` and
    * `viewChildren` queries on a component.
    *
@@ -405,7 +414,7 @@ export interface ComponentDecorator {
   /**
    * @usageNotes
    *
-   * {@example core/ts/metadata/metadata.ts region='component'}
+   * <code-example path="core/ts/metadata/metadata.ts" region="component"></code-example>
    *
    * @description
    * Marks a class as an Angular component and collects component configuration
@@ -451,10 +460,11 @@ export interface ComponentDecorator {
    * * **templateUrl** - url to an external file containing a template for the view
    * * **viewProviders** - list of providers available to this component and its view children
    *
+   * @example
    * The following example demonstrates how to define a component using the `@Component`
    * decorator.
    *
-   * {@example core/ts/metadata/metadata.ts region='component'}
+   * <code-example path="core/ts/metadata/metadata.ts" region="component"></code-example>
    *
    * @Annotation
    */
@@ -483,6 +493,7 @@ export interface Component extends Directive {
   /**
    * Defines the set of injectable objects that are visible to its view DOM children.
    *
+   * @example
    * Here is an example of a class that can be injected:
    *
    * ```
@@ -523,6 +534,7 @@ export interface Component extends Directive {
    * In CommonJS, this can always be set to `module.id`, similarly SystemJS exposes `__moduleName`
    * variable within each module.
    *
+   * @example
    * The following example demonstrates how to specify the module id for a component.
    *
    * ```
@@ -812,6 +824,7 @@ export interface InputDecorator {
    * used when instantiating a component in the template. When not provided,
    * the name of the decorated property is used.
    *
+   * @example
    * The following example creates a component with two input properties.
    *
    * ```typescript
@@ -877,6 +890,10 @@ export interface OutputDecorator {
    * used when instantiating a component in the template. When not provided,
    * the name of the decorated property is used.
    *
+   *
+   * @example
+   * The following example shows how you can use the `@Output` decorator.
+   *
    * ```typescript
    * @Directive({
    *   selector: 'interval-dir',
@@ -937,6 +954,7 @@ export interface HostBindingDecorator {
    * name of the host element that will be updated. When not provided,
    * the class property name is used.
    *
+   * @example
    * The following example creates a directive that sets the `valid` and `invalid` classes
    * on the DOM element that has ngModel directive on it.
    *
@@ -987,6 +1005,7 @@ export interface HostListenerDecorator {
    *
    * If the decorated method returns `false`, then `preventDefault` is applied on the DOM event.
    *
+   * @example
    * The following example declares a directive that attaches a click listener to the button and
    * counts clicks.
    *

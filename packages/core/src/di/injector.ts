@@ -51,11 +51,15 @@ export class NullInjector implements Injector {
  *
  * For more details, see the {@linkDocs guide/dependency-injection "Dependency Injection Guide"}.
  *
- * {@example core/di/ts/injector_spec.ts region='Injector'}
+ * @example
+ * This example shows how to create and use an `Injector`.
  *
- * `Injector` returns itself when given `Injector` as a token:
- * {@example core/di/ts/injector_spec.ts region='injectInjector'}
+ * <code-example path="core/di/ts/injector_spec.ts" region="Injector"></code-example>
  *
+ * @example
+ * This example shows how an `Injector` returns itself when given `Injector` as a token:
+ *
+ * <code-example path="core/di/ts/injector_spec.ts" region="injectInjector"></code-example>
  *
  */
 export abstract class Injector {
@@ -86,9 +90,10 @@ export abstract class Injector {
   /**
    * Create a new Injector which is configured using `StaticProvider`s.
    *
-   * **Usage**:
+   * @example
+   * This example shows how to use this method to create and use an `Injector`.
    *
-   * {@example core/di/ts/provider_spec.ts region='ConstructorProvider'}
+   * <code-example path="core/di/ts/provider_spec.ts" region="ConstructorProvider"></code-example>
    */
   static create(
       options: StaticProvider[]|{providers: StaticProvider[], parent?: Injector, name?: string},
@@ -446,7 +451,7 @@ export function setCurrentInjector(injector: Injector | null | undefined): Injec
  * This function must be used in the context of a factory function such as one defined for an
  * `InjectionToken`, and will throw an error if not called from such a context. For example:
  *
- * {@example core/di/ts/injector_spec.ts region='ShakeableInjectionToken'}
+ * <code-example path="core/di/ts/injector_spec.ts" region="ShakeableInjectionToken"></code-example>
  *
  * Within such a factory function `inject` is utilized to request injection of a dependency, instead
  * of providing an additional array of dependencies as was common to do with `useFactory` providers.

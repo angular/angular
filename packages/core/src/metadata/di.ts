@@ -16,6 +16,7 @@ import {makeParamDecorator, makePropDecorator} from '../util/decorators';
  * All components that are referenced in the `useValue` value (either directly
  * or in a nested array or map) will be added to the `entryComponents` property.
  *
+ * @example
  * The following example shows how the router can populate the `entryComponents`
  * field of an NgModule based on the router configuration which refers
  * to components.
@@ -56,6 +57,7 @@ export interface AttributeDecorator {
    *
    * The directive can inject constant string literals of host element attributes.
    *
+   * @example
    * Suppose we have an `<input>` element and want to know its `type`.
    *
    * ```html
@@ -64,13 +66,15 @@ export interface AttributeDecorator {
    *
    * A decorator can inject the string literal `text` like so:
    *
-   * {@example core/ts/metadata/metadata.ts region='attributeMetadata'}
+   * <code-example path="core/ts/metadata/metadata.ts" region="attributeMetadata"></code-example>
    *
-   * **Use as a TypeScript decorator:**
+   * @example
+   * This example shows how to use this as a TypeScript decorator:
    *
-   * {@example core/ts/metadata/metadata.ts region='attributeFactory'}
+   * <code-example path="core/ts/metadata/metadata.ts" region="attributeFactory"></code-example>
    *
-   * **Use as an ES5 annotation:**
+   * @example
+   * This example shows how to use this as an ES5 annotation:
    *
    * ```
    * var MyComponent = function(title) {
@@ -145,13 +149,14 @@ export interface ContentChildrenDecorator {
    * * **descendants** - include only direct children or all descendants.
    * * **read** - read a different token from the queried elements.
    *
+   * @example
    * Let's look at an example:
    *
-   * {@example core/di/ts/contentChildren/content_children_example.ts region='Component'}
+   * <code-example path="core/di/ts/contentChildren/content_children_example.ts" region="Component"></code-example>?
    *
    * @usageNotes
    *
-   * {@example core/di/ts/contentChildren/content_children_howto.ts region='HowTo'}
+   * <code-example path="core/di/ts/contentChildren/content_children_howto.ts" region="HowTo"></code-example>?
    *
    * @Annotation
    */
@@ -195,13 +200,14 @@ export interface ContentChildDecorator {
    * * **selector** - the directive type or the name used for querying.
    * * **read** - read a different token from the queried element.
    *
+   * @example
    * Let's look at an example:
    *
-   * {@example core/di/ts/contentChild/content_child_example.ts region='Component'}
+   * <code-example path="core/di/ts/contentChild/content_child_example.ts" region="Component"></code-example>
    *
    * @usageNotes
    *
-   * {@example core/di/ts/contentChild/content_child_howto.ts region='HowTo'}
+   * <code-example path="core/di/ts/contentChild/content_child_howto.ts" region="HowTo"></code-example>
    *
    * @Annotation
    */
@@ -249,13 +255,14 @@ export interface ViewChildrenDecorator {
    * * **selector** - the directive type or the name used for querying.
    * * **read** - read a different token from the queried elements.
    *
+   * @example
    * Let's look at an example:
    *
-   * {@example core/di/ts/viewChildren/view_children_example.ts region='Component'}
+   * <code-example path="core/di/ts/viewChildren/view_children_example.ts" region="Component"></code-example>
    *
    * @usageNotes
    *
-   * {@example core/di/ts/viewChildren/view_children_howto.ts region='HowTo'}
+   * <code-example path="core/di/ts/viewChildren/view_children_howto.ts" region="HowTo"></code-example>
    *
    * @Annotation
    */
@@ -287,9 +294,9 @@ export interface ViewChildDecorator {
   /**
    * Configures a view query.
    *
-   * You can use ViewChild to get the first element or the directive matching the selector from the
-   * view DOM. If the view DOM changes, and a new child matches the selector,
-   * the property will be updated.
+   * You can use `@ViewChild()` to get the first element or the directive matching the selector
+   * from the view DOM.
+   * If the view DOM changes, and a new child matches the selector, the property will be updated.
    *
    * View queries are set before the `ngAfterViewInit` callback is called.
    *
@@ -298,11 +305,14 @@ export interface ViewChildDecorator {
    * * **selector** - the directive type or the name used for querying.
    * * **read** - read a different token from the queried elements.
    *
-   * {@example core/di/ts/viewChild/view_child_example.ts region='Component'}
+   * @example
+   * This example shows how you can use this decorator.
+   *
+   * <code-example path="core/di/ts/viewChild/view_child_example.ts" region="Component"></code-example>
    *
    * @usageNotes
    *
-   * {@example core/di/ts/viewChild/view_child_howto.ts region='HowTo'}
+   * <code-example path="core/di/ts/viewChild/view_child_howto.ts" region="HowTo"></code-example>
    *
    * @Annotation
    */

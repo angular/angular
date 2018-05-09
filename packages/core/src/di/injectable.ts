@@ -41,18 +41,20 @@ export interface InjectableDecorator {
    * ```
    *
    * @description
-   * A marker metadata that marks a class as available to {@link Injector} for creation.
+   * A marker metadata that marks a class as available to `Injector` for creation.
    *
-   * For more details, see the {@linkDocs guide/dependency-injection "Dependency Injection Guide"}.
+   * For more details, see the [Dependency Injection Guide](/guide/dependency-injection).
    *
-   * **Usage:**
+   * @example
+   * This example shows how to use the `@Injectable` decorator.
    *
-   * {@example core/di/ts/metadata_spec.ts region='Injectable'}
+   * <code-example path="core/di/ts/metadata_spec.ts" region="Injectable"></code-example>
    *
-   * {@link Injector} will throw an error when trying to instantiate a class that
-   * does not have `@Injectable` marker, as shown in the example below.
+   * @example
+   * This example shows that `Injector` will throw an error when trying to instantiate a
+   * class that does not have `@Injectable` marker.
    *
-   * {@example core/di/ts/metadata_spec.ts region='InjectableThrows'}
+   * <code-example path="core/di/ts/metadata_spec.ts" region="InjectableThrows"></code-example>
    *
    */
   (): any;

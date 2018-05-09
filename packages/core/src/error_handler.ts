@@ -17,6 +17,9 @@ import {ERROR_ORIGINAL_ERROR, getDebugContext, getErrorLogger, getOriginalError}
  * intercept error handling, write a custom exception handler that replaces this default as
  * appropriate for your app.
  *
+ * @example
+ * This example shows show to implement a custom `ErrorHandler`:
+ *
  * ```
  * class MyErrorHandler implements ErrorHandler {
  *   handleError(error) {

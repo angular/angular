@@ -11,6 +11,7 @@ import {Subject, Subscription} from 'rxjs';
 /**
  * Use by directives and components to emit custom Events.
  *
+ * @example
  * In the following example, `Zippy` alternatively emits `open` and `close` events when its
  * title gets clicked:
  *
@@ -47,6 +48,7 @@ import {Subject, Subscription} from 'rxjs';
  * <zippy (open)="onOpen($event)" (close)="onClose($event)"></zippy>
  * ```
  *
+ * @usageNotes
  * Uses `Rx.Observable` but provides an adapter to make it work as specified here:
  * https://github.com/jhusain/observable-spec
  *

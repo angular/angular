@@ -103,6 +103,7 @@ export interface NgModule {
   /**
    * Specifies a list of directives/pipes that belong to this module.
    *
+   * @example
    * The following example demonstrates how declare components with the NgModule
    * decorator:
    *
@@ -121,6 +122,7 @@ export interface NgModule {
    * should be available to templates in this module.
    * This can also contain `ModuleWithProviders`.
    *
+   * @example
    * The following example demonstrates how specify imports with the NgModule
    * decorator:
    *
@@ -139,6 +141,7 @@ export interface NgModule {
    * of any component that is part of an Angular module
    * that imports this Angular module.
    *
+   * @example
    * The following example demonstrates how specify exports with the NgModule
    * decorator:
    *

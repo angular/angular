@@ -24,21 +24,17 @@ export interface InjectDecorator {
    *
    * For more details, see the {@linkDocs guide/dependency-injection "Dependency Injection Guide"}.
    *
-   * {@example core/di/ts/metadata_spec.ts region='Inject'}
+   * @example
+   * This example shows how to use the `@Inject()` decorator.
    *
+   * <code-example path="core/di/ts/metadata_spec.ts" region="Inject"></code-example>
+   *
+   * @example
    * When `@Inject()` is not present, {@link Injector} will use the type annotation of the
    * parameter.
    *
-   * {@example core/di/ts/metadata_spec.ts region='InjectWithoutDecorator'}
+   * <code-example path="core/di/ts/metadata_spec.ts" region="InjectWithoutDecorator"></code-example>
    *
-   * @usageNotes
-   *
-   * ```
-   * @Injectable()
-   * class Car {
-   *   constructor(@Inject("MyEngine") public engine:Engine) {}
-   * }
-   * ```
    */
   (token: any): any;
   new (token: any): Inject;
@@ -67,16 +63,12 @@ export interface OptionalDecorator {
    *
    * For more details, see the {@linkDocs guide/dependency-injection "Dependency Injection Guide"}.
    *
-   * {@example core/di/ts/metadata_spec.ts region='Optional'}
+   * @example
    *
-   * @usageNotes
+   * This example shows how to use the `@Optional()` decorator.
    *
-   * ```
-   * @Injectable()
-   * class Car {
-   *   constructor(@Optional() public engine:Engine) {}
-   * }
-   * ```
+   * <code-example path="core/di/ts/metadata_spec.ts" region="Optional"></code-example>
+   *
    */
   (): any;
   new (): Optional;
@@ -103,16 +95,11 @@ export interface SelfDecorator {
    *
    * For more details, see the {@linkDocs guide/dependency-injection "Dependency Injection Guide"}.
    *
-   * {@example core/di/ts/metadata_spec.ts region='Self'}
+   * @example
+   * This example shows how to use the `@Self()` decorator.
    *
-   * @usageNotes
+   * <code-example path="core/di/ts/metadata_spec.ts" region="Self"></code-example>
    *
-   * ```
-   * @Injectable()
-   * class Car {
-   *   constructor(@Self() public engine:Engine) {}
-   * }
-   * ```
    */
   (): any;
   new (): Self;
@@ -140,16 +127,11 @@ export interface SkipSelfDecorator {
    *
    * For more details, see the {@linkDocs guide/dependency-injection "Dependency Injection Guide"}.
    *
-   * {@example core/di/ts/metadata_spec.ts region='SkipSelf'}
+   * @example
+   * This example shows how to use the `@SkipSelf()` decorotor.
    *
-   * @usageNotes
+   * <code-example path="core/di/ts/metadata_spec.ts" region="SkipSelf"></code-example>
    *
-   * ```
-   * @Injectable()
-   * class Car {
-   *   constructor(@SkipSelf() public engine:Engine) {}
-   * }
-   * ```
    */
   (): any;
   new (): SkipSelf;
@@ -177,16 +159,11 @@ export interface HostDecorator {
    *
    * For more details, see the {@linkDocs guide/dependency-injection "Dependency Injection Guide"}.
    *
-   * {@example core/di/ts/metadata_spec.ts region='Host'}
+   * @example
+   * This example shows how to use the `@Host()` decorator.
    *
-   * @usageNotes
+   * <code-example path="core/di/ts/metadata_spec.ts" region="Host"></code-example>
    *
-   * ```
-   * @Injectable()
-   * class Car {
-   *   constructor(@Host() public engine:Engine) {}
-   * }
-   * ```
    */
   (): any;
   new (): Host;

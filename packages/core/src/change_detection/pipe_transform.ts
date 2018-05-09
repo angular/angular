@@ -16,9 +16,8 @@
  *
  * `value | pipeName[:arg0[:arg1...]]`
  *
- *
- *
- * The `RepeatPipe` example below repeats the value as many times as indicated by the first
+ * @example
+ * This `RepeatPipe` example repeats the value as many times as indicated by the first
  * argument ([live demo](http://plnkr.co/edit/f5oyIked9M2cKzvZNKHV?p=preview)):
  *
  * ```
