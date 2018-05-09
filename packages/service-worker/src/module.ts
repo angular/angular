@@ -8,7 +8,6 @@
 
 import {isPlatformBrowser} from '@angular/common';
 import {APP_INITIALIZER, ApplicationRef, InjectionToken, Injector, ModuleWithProviders, NgModule, PLATFORM_ID} from '@angular/core';
-import {Observable} from 'rxjs';
 import {filter, take} from 'rxjs/operators';
 
 import {NgswCommChannel} from './low_level';
@@ -53,7 +52,8 @@ export function ngswAppInitializer(
 export function ngswCommChannelFactory(
     opts: RegistrationOptions, platformId: string): NgswCommChannel {
   return new NgswCommChannel(
-      opts.enabled !== false ? navigator.serviceWorker : undefined, platformId);
+      isPlatformBrowser(platformId) && opts.enabled !== false ? navigator.serviceWorker :
+                                                                undefined);
 }
 
 /**
