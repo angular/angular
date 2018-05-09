@@ -23,6 +23,8 @@ export {
   injectAttribute as ɵinjectAttribute,
   PublicFeature as ɵPublicFeature,
   NgOnChangesFeature as ɵNgOnChangesFeature,
+  NgModuleDef as ɵNgModuleDef,
+  NgModuleType as ɵNgModuleType,
   CssSelectorList as ɵCssSelectorList,
   markDirty as ɵmarkDirty,
   NC as ɵNC,
