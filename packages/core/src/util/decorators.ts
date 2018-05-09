@@ -43,8 +43,11 @@ export const PROP_METADATA = '__prop__metadata__';
  */
 export function makeDecorator(
     name: string, props?: (...args: any[]) => any, parentClass?: any,
-    chainFn?: (fn: Function) => void, typeFn?: (type: Type<any>, ...args: any[]) => void):
-    {new (...args: any[]): any; (...args: any[]): any; (...args: any[]): (cls: any) => any;} {
+    chainFn?: (fn: Function) => void, typeFn?: (type: Type<any>, ...args: any[]) => void,
+    compile?: (type: Type<any>, meta: any) => void): {
+  new (...args: any[]): any; (...args: any[]): any; (...args: any[]): (cls: any) => any;
+  compile: (type: Type<any>, meta: any) => void
+} {
   const metaCtor = makeMetadataCtor(props);
 
   function DecoratorFactory(...args: any[]): (cls: any) => any {
@@ -74,6 +77,7 @@ export function makeDecorator(
 
   DecoratorFactory.prototype.ngMetadataName = name;
   (<any>DecoratorFactory).annotationCls = DecoratorFactory;
+  (<any>DecoratorFactory).compile = compile || ((type: Type<any>, meta: any) => {});
   return DecoratorFactory as any;
 }
 

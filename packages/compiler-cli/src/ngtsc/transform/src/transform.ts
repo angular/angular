@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {WrappedNodeExpr, compileIvyInjectable} from '@angular/compiler';
+import {WrappedNodeExpr} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {IvyCompilation} from './compilation';

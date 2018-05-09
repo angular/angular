@@ -7,3 +7,7 @@
  */
 
 export const ivyEnabled = false;
+
+export function maybeEnableRender3Jit(): void {}
+
+export const R3_JIT_INITIALIZER = null;

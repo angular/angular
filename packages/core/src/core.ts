@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {maybeEnableRender3Jit} from './ivy_switch';
+
 /**
  * @module
  * @description
@@ -35,3 +37,6 @@ export * from './core_private_export';
 export * from './core_render3_private_export';
 export {Sanitizer, SecurityContext} from './sanitization/security';
 export * from './codegen_private_exports';
+
+// Automatically enable Ivy in JIT mode if the ivy switch is set to true.
+maybeEnableRender3Jit();

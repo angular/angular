@@ -3621,6 +3621,9 @@
     "name": "platformCoreDynamic"
   },
   {
+    "name": "preR3InjectableCompile"
+  },
+  {
     "name": "preparseElement"
   },
   {

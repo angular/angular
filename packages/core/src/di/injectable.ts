@@ -60,6 +60,12 @@ export interface InjectableDecorator {
   (options?: {providedIn: Type<any>| 'root' | null}&InjectableProvider): any;
   new (): Injectable;
   new (options?: {providedIn: Type<any>| 'root' | null}&InjectableProvider): Injectable;
+
+  /**
+   * Compile function for `Injectable`.
+   * @internal
+   */
+  compile(type: Type<any>, injectable: Injectable): void;
 }
 
 /**
@@ -67,10 +73,7 @@ export interface InjectableDecorator {
  *
  * @experimental
  */
-export interface Injectable {
-  providedIn?: Type<any>|'root'|null;
-  factory: () => any;
-}
+export interface Injectable { providedIn?: Type<any>|'root'|null; }
 
 const EMPTY_ARRAY: any[] = [];
 
@@ -111,6 +114,20 @@ export function convertInjectableProviderToFactory(
 }
 
 /**
+ * Supports @Injectable() in JIT mode for Render2.
+ */
+function preR3InjectableCompile(
+    injectableType: InjectableType<any>,
+    options: {providedIn?: Type<any>| 'root' | null} & InjectableProvider): void {
+  if (options && options.providedIn !== undefined && injectableType.ngInjectableDef === undefined) {
+    injectableType.ngInjectableDef = defineInjectable({
+      providedIn: options.providedIn,
+      factory: convertInjectableProviderToFactory(injectableType, options),
+    });
+  }
+}
+
+/**
 * Injectable decorator and metadata.
 *
 *
@@ -118,16 +135,9 @@ export function convertInjectableProviderToFactory(
 */
 export const Injectable: InjectableDecorator = makeDecorator(
     'Injectable', undefined, undefined, undefined,
-    (injectableType: InjectableType<any>,
-     options: {providedIn?: Type<any>| 'root' | null} & InjectableProvider) => {
-      if (options && options.providedIn !== undefined &&
-          injectableType.ngInjectableDef === undefined) {
-        injectableType.ngInjectableDef = defineInjectable({
-          providedIn: options.providedIn,
-          factory: convertInjectableProviderToFactory(injectableType, options)
-        });
-      }
-    });
+    (injectableType: InjectableType<any>, options?: {providedIn?: Type<any>| 'root' | null} &
+         InjectableProvider) => { Injectable.compile(injectableType, options || {});},
+    preR3InjectableCompile);
 
 /**
  * Type representing injectable service.

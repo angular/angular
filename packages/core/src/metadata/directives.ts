@@ -470,6 +470,13 @@ export interface ComponentDecorator {
    * See the {@link Component} decorator.
    */
   new (obj: Component): Component;
+
+  /**
+   * JIT compiler for this decorator.
+   *
+   * @internal
+   */
+  compile(type: Type<any>, metadata: Component): void;
 }
 
 /**
@@ -754,7 +761,7 @@ export interface Component extends Directive {
  */
 export const Component: ComponentDecorator = makeDecorator(
     'Component', (c: Component = {}) => ({changeDetection: ChangeDetectionStrategy.Default, ...c}),
-    Directive);
+    Directive, undefined, (type: Type<any>, meta: Component) => Component.compile(type, meta));
 
 /**
  * Type of the Pipe decorator / constructor function.

@@ -12,6 +12,29 @@ import {Provider} from '../di/provider';
 import {Type} from '../type';
 import {TypeDecorator, makeDecorator} from '../util/decorators';
 
+export interface NgModuleDef<T> {
+  type: T;
+  bootstrap: Type<any>[];
+  declarations: Type<any>[];
+  imports: Type<any>[];
+  exports: Type<any>[];
+
+  /**
+   * @internal
+   */
+  transitiveCompileScope: {directives: any[]; pipes: any[];}|undefined;
+}
+
+export function defineNgModule<T>(def: {type: T} & Partial<NgModuleDef<T>>): NgModuleDef<T> {
+  return {
+    type: def.type,
+    bootstrap: def.bootstrap || [],
+    declarations: def.declarations || [],
+    imports: def.imports || [],
+    exports: def.exports || [],
+    transitiveCompileScope: undefined,
+  };
+}
 
 /**
  * A wrapper around a module that also includes the providers.
@@ -63,6 +86,11 @@ export interface NgModuleDecorator {
    */
   (obj?: NgModule): TypeDecorator;
   new (obj?: NgModule): NgModule;
+
+  /**
+   * @internal
+   */
+  compile: (type: Type<any>, meta: NgModule) => void;
 }
 
 /**
@@ -187,6 +215,19 @@ export interface NgModule {
   id?: string;
 }
 
+function preR3NgModuleCompile(moduleType: InjectorType<any>, metadata: NgModule): void {
+  let imports = (metadata && metadata.imports) || [];
+  if (metadata && metadata.exports) {
+    imports = [...imports, metadata.exports];
+  }
+
+  moduleType.ngInjectorDef = defineInjector({
+    factory: convertInjectableProviderToFactory(moduleType, {useClass: moduleType}),
+    providers: metadata && metadata.providers,
+    imports: imports,
+  });
+}
+
 /**
  * NgModule decorator and metadata.
  *
@@ -194,16 +235,7 @@ export interface NgModule {
  * @Annotation
  */
 export const NgModule: NgModuleDecorator = makeDecorator(
-    'NgModule', (ngModule: NgModule) => ngModule, undefined, undefined,
-    (moduleType: InjectorType<any>, metadata: NgModule) => {
-      let imports = (metadata && metadata.imports) || [];
-      if (metadata && metadata.exports) {
-        imports = [...imports, metadata.exports];
-      }
-
-      moduleType.ngInjectorDef = defineInjector({
-        factory: convertInjectableProviderToFactory(moduleType, {useClass: moduleType}),
-        providers: metadata && metadata.providers,
-        imports: imports,
-      });
-    });
+    'NgModule', (ngModule: NgModule) => ngModule, undefined,
+    undefined, (moduleType: InjectorType<any>, metadata: NgModule) => {
+      NgModule.compile(moduleType, metadata);
+    }, preR3NgModuleCompile);

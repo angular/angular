@@ -22,7 +22,7 @@ import {NgModuleCompiler} from '../ng_module_compiler';
 import {OutputEmitter} from '../output/abstract_emitter';
 import * as o from '../output/output_ast';
 import {ParseError} from '../parse_util';
-import {compileNgModule as compileIvyModule} from '../render3/r3_module_compiler';
+import {compileNgModuleRender2 as compileIvyModule} from '../render3/r3_module_compiler';
 import {compilePipe as compileIvyPipe} from '../render3/r3_pipe_compiler';
 import {htmlAstToRender3Ast} from '../render3/r3_template_transform';
 import {compileComponentFromRender2 as compileIvyComponent, compileDirectiveFromRender2 as compileIvyDirective} from '../render3/view/compiler';
