@@ -591,5 +591,14 @@
     "website": "http://ngnir.life/",
     "bio": "Nir is a Principal Frontend Consultant & Head of the Angular department at 500Tech, Google Developer Expert and community leader. He organizes the largest Angular meetup group in Israel (Angular-IL), talks and teaches about front-end technologies around the world. He is also the author of two books about Angular and the founder of the 'Frontend Band'.",
     "group": "GDE"
+  },
+
+  "mashhoodr": {
+    "name": "Mashhood Rastgar",
+    "picture": "mashhood.jpg",
+    "twitter": "mashhoodr",
+    "website": "http://imars.info/",
+    "bio": "Mashhood is the principal technical consultant at Recurship and a Google Developer Expert. He  works with different startups in US and EU to helps them crawl through the technical maze and quickly build amazing products focused around the problems they are trying to solve. He specializes in using the latest web technologies available to execute the best possible solutions.",
+    "group": "GDE"
   }
 }
