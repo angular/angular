@@ -636,5 +636,14 @@
     "website": "http://imars.info/",
     "bio": "Mashhood is the principal technical consultant at Recurship and a Google Developer Expert. He  works with different startups in US and EU to helps them crawl through the technical maze and quickly build amazing products focused around the problems they are trying to solve. He specializes in using the latest web technologies available to execute the best possible solutions.",
     "group": "GDE"
+  },
+
+  "kimmaida": {
+    "name": "Kim Maida",
+    "picture": "kimmaida.jpg",
+    "twitter": "KimMaida",
+    "website": "https://kmaida.io/",
+    "bio": "Kim is an an Angular consultant, developer, speaker, writer, and Google Developer Expert. She is passionate about learning from and sharing knowledge with other developers through blogging, speaking, workshops, and open source.",
+    "group": "GDE"
   }
 }
