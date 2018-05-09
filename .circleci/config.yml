@@ -148,6 +148,22 @@ jobs:
       - run: bazel run @yarn//:yarn
       - run: bazel query --output=label //... | xargs bazel test --define=compile=local --build_tag_filters=ivy-local --test_tag_filters=-manual,ivy-local
 
+  aio_preview:
+    <<: *job_defaults
+    environment:
+       AIO_SNAPSHOT_ARTIFACT_PATH: &aio_preview_artifact_path 'aio/tmp/snapshot.tgz'
+    steps:
+      - checkout:
+          <<: *post_checkout
+      - restore_cache:
+          key: *cache_key
+      - run: ./aio/scripts/build-artifacts.sh $AIO_SNAPSHOT_ARTIFACT_PATH
+      - store_artifacts:
+          path: *aio_preview_artifact_path
+          # The `destination` needs to be kept in synch with the value of
+          # `AIO_ARTIFACT_PATH` in `aio/aio-builds-setup/Dockerfile`
+          destination: aio/dist/aio-snapshot.tgz
+
   # This job exists only for backwards-compatibility with old scripts and tests
   # that rely on the pre-Bazel dist/packages-dist layout.
   # It duplicates some work with the job above: we build the bazel packages
@@ -245,6 +261,7 @@ workflows:
       - test_ivy_jit
       - test_ivy_aot
       - build-packages-dist
+      - aio_preview
       - integration_test:
           requires:
             - build-packages-dist
@@ -273,3 +290,6 @@ workflows:
             branches:
               only:
                 - master
+notify:
+  webhooks:
+    - url: https://35.224.48.224/circle-build
