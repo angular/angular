@@ -13,14 +13,25 @@ import {defineComponent} from '../../src/render3/definition';
 import {bind, container, elementAttribute, elementClass, elementEnd, elementProperty, elementStart, elementStyle, elementStyleNamed, interpolation1, renderTemplate, text, textBinding} from '../../src/render3/instructions';
 import {LElementNode, LNode} from '../../src/render3/interfaces/node';
 import {RElement, domRendererFactory3} from '../../src/render3/interfaces/renderer';
-import {bypassSanitizationTrustStyle, bypassSanitizationTrustUrl, sanitizeStyle, sanitizeUrl} from '../../src/sanitization/sanitization';
+import {TrustedString, bypassSanitizationTrustHtml, bypassSanitizationTrustResourceUrl, bypassSanitizationTrustScript, bypassSanitizationTrustStyle, bypassSanitizationTrustUrl, sanitizeHtml, sanitizeResourceUrl, sanitizeScript, sanitizeStyle, sanitizeUrl} from '../../src/sanitization/sanitization';
+import {Sanitizer, SecurityContext} from '../../src/sanitization/security';
 
 import {NgForOf} from './common_with_def';
 import {ComponentFixture, TemplateFixture} from './render_util';
 
 describe('instructions', () => {
+  function createAnchor() {
+    elementStart(0, 'a');
+    elementEnd();
+  }
+
   function createDiv() {
     elementStart(0, 'div');
+    elementEnd();
+  }
+
+  function createScript() {
+    elementStart(0, 'script');
     elementEnd();
   }
 
@@ -177,4 +188,210 @@ describe('instructions', () => {
 
     });
   });
+
+  describe('sanitization injection compatibility', () => {
+    it('should work for url sanitization', () => {
+      const s = new LocalMockSanitizer(value => `${value}-sanitized`);
+      const t = new TemplateFixture(createAnchor, undefined, null, null, s);
+      const inputValue = 'http://foo';
+      const outputValue = 'http://foo-sanitized';
+
+      t.update(() => elementAttribute(0, 'href', inputValue, sanitizeUrl));
+      expect(t.html).toEqual(`<a href="${outputValue}"></a>`);
+      expect(s.lastSanitizedValue).toEqual(outputValue);
+    });
+
+    it('should bypass url sanitization if marked by the service', () => {
+      const s = new LocalMockSanitizer(value => '');
+      const t = new TemplateFixture(createAnchor, undefined, null, null, s);
+      const inputValue = s.bypassSecurityTrustUrl('http://foo');
+      const outputValue = 'http://foo';
+
+      t.update(() => elementAttribute(0, 'href', inputValue, sanitizeUrl));
+      expect(t.html).toEqual(`<a href="${outputValue}"></a>`);
+      expect(s.lastSanitizedValue).toBeFalsy();
+    });
+
+    it('should bypass ivy-level url sanitization if a custom sanitizer is used', () => {
+      const s = new LocalMockSanitizer(value => '');
+      const t = new TemplateFixture(createAnchor, undefined, null, null, s);
+      const inputValue = bypassSanitizationTrustUrl('http://foo');
+      const outputValue = 'http://foo-ivy';
+
+      t.update(() => elementAttribute(0, 'href', inputValue, sanitizeUrl));
+      expect(t.html).toEqual(`<a href="${outputValue}"></a>`);
+      expect(s.lastSanitizedValue).toBeFalsy();
+    });
+
+    it('should work for style sanitization', () => {
+      const s = new LocalMockSanitizer(value => `color:blue`);
+      const t = new TemplateFixture(createDiv, undefined, null, null, s);
+      const inputValue = 'color:red';
+      const outputValue = 'color:blue';
+
+      t.update(() => elementAttribute(0, 'style', inputValue, sanitizeStyle));
+      expect(stripStyleWsCharacters(t.html)).toEqual(`<div style="${outputValue}"></div>`);
+      expect(s.lastSanitizedValue).toEqual(outputValue);
+    });
+
+    it('should bypass style sanitization if marked by the service', () => {
+      const s = new LocalMockSanitizer(value => '');
+      const t = new TemplateFixture(createDiv, undefined, null, null, s);
+      const inputValue = s.bypassSecurityTrustStyle('color:maroon');
+      const outputValue = 'color:maroon';
+
+      t.update(() => elementAttribute(0, 'style', inputValue, sanitizeStyle));
+      expect(stripStyleWsCharacters(t.html)).toEqual(`<div style="${outputValue}"></div>`);
+      expect(s.lastSanitizedValue).toBeFalsy();
+    });
+
+    it('should bypass ivy-level style sanitization if a custom sanitizer is used', () => {
+      const s = new LocalMockSanitizer(value => '');
+      const t = new TemplateFixture(createDiv, undefined, null, null, s);
+      const inputValue = bypassSanitizationTrustStyle('font-family:foo');
+      const outputValue = 'font-family:foo-ivy';
+
+      t.update(() => elementAttribute(0, 'style', inputValue, sanitizeStyle));
+      expect(stripStyleWsCharacters(t.html)).toEqual(`<div style="${outputValue}"></div>`);
+      expect(s.lastSanitizedValue).toBeFalsy();
+    });
+
+    it('should work for resourceUrl sanitization', () => {
+      const s = new LocalMockSanitizer(value => `${value}-sanitized`);
+      const t = new TemplateFixture(createScript, undefined, null, null, s);
+      const inputValue = 'http://resource';
+      const outputValue = 'http://resource-sanitized';
+
+      t.update(() => elementAttribute(0, 'src', inputValue, sanitizeResourceUrl));
+      expect(t.html).toEqual(`<script src="${outputValue}"></script>`);
+      expect(s.lastSanitizedValue).toEqual(outputValue);
+    });
+
+    it('should bypass resourceUrl sanitization if marked by the service', () => {
+      const s = new LocalMockSanitizer(value => '');
+      const t = new TemplateFixture(createScript, undefined, null, null, s);
+      const inputValue = s.bypassSecurityTrustResourceUrl('file://all-my-secrets.pdf');
+      const outputValue = 'file://all-my-secrets.pdf';
+
+      t.update(() => elementAttribute(0, 'src', inputValue, sanitizeResourceUrl));
+      expect(t.html).toEqual(`<script src="${outputValue}"></script>`);
+      expect(s.lastSanitizedValue).toBeFalsy();
+    });
+
+    it('should bypass ivy-level resourceUrl sanitization if a custom sanitizer is used', () => {
+      const s = new LocalMockSanitizer(value => '');
+      const t = new TemplateFixture(createScript, undefined, null, null, s);
+      const inputValue = bypassSanitizationTrustResourceUrl('file://all-my-secrets.pdf');
+      const outputValue = 'file://all-my-secrets.pdf-ivy';
+
+      t.update(() => elementAttribute(0, 'src', inputValue, sanitizeResourceUrl));
+      expect(t.html).toEqual(`<script src="${outputValue}"></script>`);
+      expect(s.lastSanitizedValue).toBeFalsy();
+    });
+
+    it('should work for script sanitization', () => {
+      const s = new LocalMockSanitizer(value => `${value} //sanitized`);
+      const t = new TemplateFixture(createScript, undefined, null, null, s);
+      const inputValue = 'fn();';
+      const outputValue = 'fn(); //sanitized';
+
+      t.update(() => elementProperty(0, 'innerHTML', inputValue, sanitizeScript));
+      expect(t.html).toEqual(`<script>${outputValue}</script>`);
+      expect(s.lastSanitizedValue).toEqual(outputValue);
+    });
+
+    it('should bypass script sanitization if marked by the service', () => {
+      const s = new LocalMockSanitizer(value => '');
+      const t = new TemplateFixture(createScript, undefined, null, null, s);
+      const inputValue = s.bypassSecurityTrustScript('alert("bar")');
+      const outputValue = 'alert("bar")';
+
+      t.update(() => elementProperty(0, 'innerHTML', inputValue, sanitizeScript));
+      expect(t.html).toEqual(`<script>${outputValue}</script>`);
+      expect(s.lastSanitizedValue).toBeFalsy();
+    });
+
+    it('should bypass ivy-level script sanitization if a custom sanitizer is used', () => {
+      const s = new LocalMockSanitizer(value => '');
+      const t = new TemplateFixture(createScript, undefined, null, null, s);
+      const inputValue = bypassSanitizationTrustScript('alert("bar")');
+      const outputValue = 'alert("bar")-ivy';
+
+      t.update(() => elementProperty(0, 'innerHTML', inputValue, sanitizeScript));
+      expect(t.html).toEqual(`<script>${outputValue}</script>`);
+      expect(s.lastSanitizedValue).toBeFalsy();
+    });
+
+    it('should work for html sanitization', () => {
+      const s = new LocalMockSanitizer(value => `${value} <!--sanitized-->`);
+      const t = new TemplateFixture(createDiv, undefined, null, null, s);
+      const inputValue = '<header></header>';
+      const outputValue = '<header></header> <!--sanitized-->';
+
+      t.update(() => elementProperty(0, 'innerHTML', inputValue, sanitizeHtml));
+      expect(t.html).toEqual(`<div>${outputValue}</div>`);
+      expect(s.lastSanitizedValue).toEqual(outputValue);
+    });
+
+    it('should bypass html sanitization if marked by the service', () => {
+      const s = new LocalMockSanitizer(value => '');
+      const t = new TemplateFixture(createDiv, undefined, null, null, s);
+      const inputValue = s.bypassSecurityTrustHtml('<div onclick="alert(123)"></div>');
+      const outputValue = '<div onclick="alert(123)"></div>';
+
+      t.update(() => elementProperty(0, 'innerHTML', inputValue, sanitizeHtml));
+      expect(t.html).toEqual(`<div>${outputValue}</div>`);
+      expect(s.lastSanitizedValue).toBeFalsy();
+    });
+
+    it('should bypass ivy-level script sanitization if a custom sanitizer is used', () => {
+      const s = new LocalMockSanitizer(value => '');
+      const t = new TemplateFixture(createDiv, undefined, null, null, s);
+      const inputValue = bypassSanitizationTrustHtml('<div onclick="alert(123)"></div>');
+      const outputValue = '<div onclick="alert(123)"></div>-ivy';
+
+      t.update(() => elementProperty(0, 'innerHTML', inputValue, sanitizeHtml));
+      expect(t.html).toEqual(`<div>${outputValue}</div>`);
+      expect(s.lastSanitizedValue).toBeFalsy();
+    });
+  });
 });
+
+class LocalSanitizedValue {
+  constructor(public value: any) {}
+
+  toString() { return this.value; }
+}
+
+class LocalMockSanitizer implements Sanitizer {
+  public lastSanitizedValue: string|null;
+
+  constructor(private _interceptor: (value: string|null|any) => string) {}
+
+  sanitize(context: SecurityContext, value: LocalSanitizedValue|string|null|any): string|null {
+    if (value instanceof String) {
+      return value.toString() + '-ivy';
+    }
+
+    if (value instanceof LocalSanitizedValue) {
+      return value.toString();
+    }
+
+    return this.lastSanitizedValue = this._interceptor(value);
+  }
+
+  bypassSecurityTrustHtml(value: string) { return new LocalSanitizedValue(value); }
+
+  bypassSecurityTrustStyle(value: string) { return new LocalSanitizedValue(value); }
+
+  bypassSecurityTrustScript(value: string) { return new LocalSanitizedValue(value); }
+
+  bypassSecurityTrustUrl(value: string) { return new LocalSanitizedValue(value); }
+
+  bypassSecurityTrustResourceUrl(value: string) { return new LocalSanitizedValue(value); }
+}
+
+function stripStyleWsCharacters(value: string): string {
+  // color: blue; => color:blue
+  return value.replace(/;/g, '').replace(/:\s+/g, ':');
+}

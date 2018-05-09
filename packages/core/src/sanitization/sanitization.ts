@@ -6,9 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {getCurrentSanitizer} from '../render3/instructions';
 import {stringify} from '../render3/util';
 
 import {_sanitizeHtml as _sanitizeHtml} from './html_sanitizer';
+import {SecurityContext} from './security';
 import {_sanitizeStyle as _sanitizeStyle} from './style_sanitizer';
 import {_sanitizeUrl as _sanitizeUrl} from './url_sanitizer';
 
@@ -79,6 +81,10 @@ export interface TrustedResourceUrlString extends TrustedString {
  * and urls have been removed.
  */
 export function sanitizeHtml(unsafeHtml: any): string {
+  const s = getCurrentSanitizer();
+  if (s) {
+    return s.sanitize(SecurityContext.HTML, unsafeHtml) || '';
+  }
   if (unsafeHtml instanceof String && (unsafeHtml as TrustedHtmlString)[BRAND] === 'Html') {
     return unsafeHtml.toString();
   }
@@ -99,6 +105,10 @@ export function sanitizeHtml(unsafeHtml: any): string {
  * dangerous javascript and urls have been removed.
  */
 export function sanitizeStyle(unsafeStyle: any): string {
+  const s = getCurrentSanitizer();
+  if (s) {
+    return s.sanitize(SecurityContext.STYLE, unsafeStyle) || '';
+  }
   if (unsafeStyle instanceof String && (unsafeStyle as TrustedStyleString)[BRAND] === 'Style') {
     return unsafeStyle.toString();
   }
@@ -120,6 +130,10 @@ export function sanitizeStyle(unsafeStyle: any): string {
  * all of the dangerous javascript has been removed.
  */
 export function sanitizeUrl(unsafeUrl: any): string {
+  const s = getCurrentSanitizer();
+  if (s) {
+    return s.sanitize(SecurityContext.URL, unsafeUrl) || '';
+  }
   if (unsafeUrl instanceof String && (unsafeUrl as TrustedUrlString)[BRAND] === 'Url') {
     return unsafeUrl.toString();
   }
@@ -136,6 +150,10 @@ export function sanitizeUrl(unsafeUrl: any): string {
  * only trusted `url`s have been allowed to pass.
  */
 export function sanitizeResourceUrl(unsafeResourceUrl: any): string {
+  const s = getCurrentSanitizer();
+  if (s) {
+    return s.sanitize(SecurityContext.RESOURCE_URL, unsafeResourceUrl) || '';
+  }
   if (unsafeResourceUrl instanceof String &&
       (unsafeResourceUrl as TrustedResourceUrlString)[BRAND] === 'ResourceUrl') {
     return unsafeResourceUrl.toString();
@@ -153,6 +171,10 @@ export function sanitizeResourceUrl(unsafeResourceUrl: any): string {
  * because only trusted `scripts`s have been allowed to pass.
  */
 export function sanitizeScript(unsafeScript: any): string {
+  const s = getCurrentSanitizer();
+  if (s) {
+    return s.sanitize(SecurityContext.SCRIPT, unsafeScript) || '';
+  }
   if (unsafeScript instanceof String && (unsafeScript as TrustedScriptString)[BRAND] === 'Script') {
     return unsafeScript.toString();
   }
