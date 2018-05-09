@@ -35,7 +35,6 @@
     "example-use-local": "node tools/ng-packages-installer overwrite ./tools/examples/shared --debug",
     "example-use-npm": "node tools/ng-packages-installer restore ./tools/examples/shared",
     "example-check-local": "node tools/ng-packages-installer check ./tools/examples/shared",
-    "deploy-preview": "scripts/deploy-preview.sh",
     "deploy-production": "scripts/deploy-to-firebase.sh",
     "check-env": "yarn ~~check-env",
     "postcheck-env": "yarn aio-check-local",
