@@ -6,7 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ChangeDetectionStrategy, Component, Directive, ViewEncapsulation} from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  Directive,
+  IterableDiffers, TemplateRef,
+  ViewEncapsulation
+} from '@angular/core';
 import {
   CDK_ROW_TEMPLATE, CdkFooterRow, CdkFooterRowDef,
   CdkHeaderRow,
@@ -24,7 +30,12 @@ import {
   providers: [{provide: CdkHeaderRowDef, useExisting: MatHeaderRowDef}],
   inputs: ['columns: matHeaderRowDef'],
 })
-export class MatHeaderRowDef extends CdkHeaderRowDef { }
+export class MatHeaderRowDef extends CdkHeaderRowDef {
+  // TODO(andrewseguin): Remove this constructor after compiler-cli is updated; see issue #9329
+  constructor(template: TemplateRef<any>, _differs: IterableDiffers) {
+    super(template, _differs);
+  }
+}
 
 /**
  * Footer row definition for the mat-table.
@@ -35,7 +46,12 @@ export class MatHeaderRowDef extends CdkHeaderRowDef { }
   providers: [{provide: CdkFooterRowDef, useExisting: MatFooterRowDef}],
   inputs: ['columns: matFooterRowDef'],
 })
-export class MatFooterRowDef extends CdkFooterRowDef { }
+export class MatFooterRowDef extends CdkFooterRowDef {
+  // TODO(andrewseguin): Remove this constructor after compiler-cli is updated; see issue #9329
+  constructor(template: TemplateRef<any>, _differs: IterableDiffers) {
+    super(template, _differs);
+  }
+}
 
 /**
  * Data row definition for the mat-table.
@@ -48,6 +64,10 @@ export class MatFooterRowDef extends CdkFooterRowDef { }
   inputs: ['columns: matRowDefColumns', 'when: matRowDefWhen'],
 })
 export class MatRowDef<T> extends CdkRowDef<T> {
+  // TODO(andrewseguin): Remove this constructor after compiler-cli is updated; see issue #9329
+  constructor(template: TemplateRef<any>, _differs: IterableDiffers) {
+    super(template, _differs);
+  }
 }
 
 /** Footer template container that contains the cell outlet. Adds the right class and role. */

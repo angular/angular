@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, ElementRef, Input} from '@angular/core';
+import {Directive, ElementRef, Input, TemplateRef} from '@angular/core';
 import {
   CdkCell,
   CdkCellDef,
@@ -23,7 +23,12 @@ import {
   selector: '[matCellDef]',
   providers: [{provide: CdkCellDef, useExisting: MatCellDef}]
 })
-export class MatCellDef extends CdkCellDef { }
+export class MatCellDef extends CdkCellDef {
+  // TODO(andrewseguin): Remove this constructor after compiler-cli is updated; see issue #9329
+  constructor(/** @docs-private */ public template: TemplateRef<any>) {
+    super(template);
+  }
+}
 
 /**
  * Header cell definition for the mat-table.
@@ -33,7 +38,12 @@ export class MatCellDef extends CdkCellDef { }
   selector: '[matHeaderCellDef]',
   providers: [{provide: CdkHeaderCellDef, useExisting: MatHeaderCellDef}]
 })
-export class MatHeaderCellDef extends CdkHeaderCellDef { }
+export class MatHeaderCellDef extends CdkHeaderCellDef {
+  // TODO(andrewseguin): Remove this constructor after compiler-cli is updated; see issue #9329
+  constructor(/** @docs-private */ public template: TemplateRef<any>) {
+    super(template);
+  }
+}
 
 /**
  * Footer cell definition for the mat-table.
@@ -43,7 +53,12 @@ export class MatHeaderCellDef extends CdkHeaderCellDef { }
   selector: '[matFooterCellDef]',
   providers: [{provide: CdkFooterCellDef, useExisting: MatFooterCellDef}]
 })
-export class MatFooterCellDef extends CdkFooterCellDef { }
+export class MatFooterCellDef extends CdkFooterCellDef {
+  // TODO(andrewseguin): Remove this constructor after compiler-cli is updated; see issue #9329
+  constructor(/** @docs-private */ public template: TemplateRef<any>) {
+    super(template);
+  }
+}
 
 /**
  * Column definition for the mat-table.
