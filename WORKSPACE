@@ -1,5 +1,9 @@
 workspace(name = "angular")
 
+#
+# Download Bazel toolchain dependencies as needed by build actions
+#
+
 http_archive(
     name = "build_bazel_rules_nodejs",
     url = "https://github.com/bazelbuild/rules_nodejs/archive/0.8.0.zip",
@@ -7,44 +11,24 @@ http_archive(
     sha256 = "4e40dd49ae7668d245c3107645f2a138660fcfd975b9310b91eda13f0c973953",
 )
 
-load("@build_bazel_rules_nodejs//:defs.bzl", "check_bazel_version", "node_repositories", "yarn_install")
-
-check_bazel_version("0.13.0")
-node_repositories(package_json = ["//:package.json"])
-
-yarn_install(
-    name = "ts-api-guardian_runtime_deps",
-    package_json = "//tools/ts-api-guardian:package.json",
-    yarn_lock = "//tools/ts-api-guardian:yarn.lock",
-)
-
-yarn_install(
-    name = "http-server_runtime_deps",
-    package_json = "//tools/http-server:package.json",
-    yarn_lock = "//tools/http-server:yarn.lock",
+http_archive(
+    name = "io_bazel_rules_webtesting",
+    url = "https://github.com/bazelbuild/rules_webtesting/archive/ca7b8062d9cf4ef2fde9193c7d37a0764c4262d7.zip",
+    strip_prefix = "rules_webtesting-ca7b8062d9cf4ef2fde9193c7d37a0764c4262d7",
+    sha256 = "28c73cf9d310fa6dba30e66bdb98071341c99c3feb8662f2d3883a632de97d72",
 )
 
 http_archive(
     name = "build_bazel_rules_typescript",
-    url = "https://github.com/bazelbuild/rules_typescript/archive/0.12.3.zip",
-    strip_prefix = "rules_typescript-0.12.3",
-    sha256 = "967068c3540f59407716fbeb49949c1600dbf387faeeab3089085784dd21f60c",
+    url = "https://github.com/bazelbuild/rules_typescript/archive/v0.13.0.zip",
+    strip_prefix = "rules_typescript-0.13.0",
+    sha256 = "8f2767ff56ad68c80c62e9a1cdc2ba2c2ba0b19d350f713365e5333045df02e3",
 )
 
-load("@build_bazel_rules_typescript//:defs.bzl", "ts_setup_workspace")
-
-ts_setup_workspace()
-
-local_repository(
-    name = "rxjs",
-    path = "node_modules/rxjs/src",
-)
-
-# Point to the integration test workspace just so that Bazel doesn't descend into it
-# when expanding the //... pattern
-local_repository(
-    name = "bazel_integration_test",
-    path = "integration/bazel",
+http_archive(
+    name = "io_bazel_rules_go",
+    url = "https://github.com/bazelbuild/rules_go/releases/download/0.10.3/rules_go-0.10.3.tar.gz",
+    sha256 = "feba3278c13cde8d67e341a837f69a029f698d7a27ddbb2a202be7a10b22142a",
 )
 
 # This commit matches the version of buildifier in angular/ngcontainer
@@ -58,18 +42,6 @@ http_archive(
     strip_prefix = "buildtools-%s" % BAZEL_BUILDTOOLS_VERSION,
     sha256 = "27bb461ade23fd44ba98723ad98f84ee9c83cd3540b773b186a1bc5037f3d862",
 )
-
-http_archive(
-    name = "io_bazel_rules_go",
-    url = "https://github.com/bazelbuild/rules_go/releases/download/0.10.3/rules_go-0.10.3.tar.gz",
-    sha256 = "feba3278c13cde8d67e341a837f69a029f698d7a27ddbb2a202be7a10b22142a",
-)
-
-load("@io_bazel_rules_go//go:def.bzl", "go_rules_dependencies", "go_register_toolchains")
-
-go_rules_dependencies()
-
-go_register_toolchains()
 
 # Fetching the Bazel source code allows us to compile the Skylark linter
 http_archive(
@@ -97,4 +69,64 @@ http_archive(
     url = "https://github.com/google/brotli/archive/c6333e1e79fb62ea088443f192293f964409b04e.zip",
     strip_prefix = "brotli-c6333e1e79fb62ea088443f192293f964409b04e",
     sha256 = "3f781988dee7dd3bcce2bf238294663cfaaf3b6433505bdb762e24d0a284d1dc",
+)
+
+#
+# Load and install our dependencies downloaded above.
+#
+
+load("@build_bazel_rules_nodejs//:defs.bzl", "check_bazel_version", "node_repositories", "yarn_install")
+
+check_bazel_version("0.13.0")
+node_repositories(package_json = ["//:package.json"])
+
+load("@io_bazel_rules_go//go:def.bzl", "go_rules_dependencies", "go_register_toolchains")
+
+go_rules_dependencies()
+go_register_toolchains()
+
+load("@io_bazel_rules_webtesting//web:repositories.bzl", "browser_repositories", "web_test_repositories")
+
+web_test_repositories()
+browser_repositories(
+    chromium = True,
+    firefox = True,
+)
+
+load("@build_bazel_rules_typescript//:defs.bzl", "ts_setup_workspace")
+
+ts_setup_workspace()
+
+#
+# Point Bazel to WORKSPACEs that live in subdirectories
+#
+
+local_repository(
+    name = "rxjs",
+    path = "node_modules/rxjs/src",
+)
+
+# Point to the integration test workspace just so that Bazel doesn't descend into it
+# when expanding the //... pattern
+local_repository(
+    name = "bazel_integration_test",
+    path = "integration/bazel",
+)
+
+#
+# Ask Bazel to manage these toolchain dependencies for us.
+# Bazel will run `yarn install` when one of these toolchains is requested during
+# a build.
+#
+
+yarn_install(
+    name = "ts-api-guardian_runtime_deps",
+    package_json = "//tools/ts-api-guardian:package.json",
+    yarn_lock = "//tools/ts-api-guardian:yarn.lock",
+)
+
+yarn_install(
+    name = "http-server_runtime_deps",
+    package_json = "//tools/http-server:package.json",
+    yarn_lock = "//tools/http-server:yarn.lock",
 )
