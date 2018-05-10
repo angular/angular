@@ -28,29 +28,17 @@ export class GithubApi {
   }
 
   // Methods - Public
-  public get<T>(pathname: string, params?: RequestParamsOrNull): Promise<T> {
+  public get<T = any>(pathname: string, params?: RequestParamsOrNull): Promise<T> {
     const path = this.buildPath(pathname, params);
     return this.request<T>('get', path);
   }
 
-  public post<T>(pathname: string, params?: RequestParamsOrNull, data?: any): Promise<T> {
+  public post<T = any>(pathname: string, params?: RequestParamsOrNull, data?: any): Promise<T> {
     const path = this.buildPath(pathname, params);
     return this.request<T>('post', path, data);
   }
 
-  // Methods - Protected
-  protected buildPath(pathname: string, params?: RequestParamsOrNull): string {
-    if (params == null) {
-      return pathname;
-    }
-
-    const search = (params === null) ? '' : this.serializeSearchParams(params);
-    const joiner = search && '?';
-
-    return `${pathname}${joiner}${search}`;
-  }
-
-  protected getPaginated<T>(pathname: string, baseParams: RequestParams = {}, currentPage: number = 0): Promise<T[]> {
+  public getPaginated<T>(pathname: string, baseParams: RequestParams = {}, currentPage: number = 0): Promise<T[]> {
     const perPage = 100;
     const params = {
       ...baseParams,
@@ -67,7 +55,19 @@ export class GithubApi {
     });
   }
 
-  protected request<T>(method: string, path: string, data: any = null): Promise<T> {
+  // Methods - Protected
+  protected buildPath(pathname: string, params?: RequestParamsOrNull) {
+    if (params == null) {
+      return pathname;
+    }
+
+    const search = (params === null) ? '' : this.serializeSearchParams(params);
+    const joiner = search && '?';
+
+    return `${pathname}${joiner}${search}`;
+  }
+
+  protected request<T>(method: string, path: string, data: any = null) {
     return new Promise<T>((resolve, reject) => {
       const options = {
         headers: {...this.requestHeaders},
@@ -81,7 +81,7 @@ export class GithubApi {
         reject(`Request to '${url}' failed (status: ${statusCode}): ${responseText}`);
       };
       const onSuccess = (responseText: string) => {
-        try { resolve(JSON.parse(responseText)); } catch (err) { reject(err); }
+        try { resolve(responseText && JSON.parse(responseText)); } catch (err) { reject(err); }
       };
       const onResponse = (res: IncomingMessage) => {
         const statusCode = res.statusCode || -1;
@@ -101,7 +101,7 @@ export class GithubApi {
     });
   }
 
-  protected serializeSearchParams(params: RequestParams): string {
+  protected serializeSearchParams(params: RequestParams) {
     return Object.keys(params).
       filter(key => params[key] != null).
       map(key => `${key}=${encodeURIComponent(String(params[key]))}`).
