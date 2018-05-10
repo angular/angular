@@ -22,14 +22,26 @@ achieved by switching elevation classes:
 ### Mixins
 
 Elevations can also be added in CSS via the `mat-elevation` mixin, which takes a number 0-24
-indicating the elevation of the element. In order to use the mixin, you must import
-`~@angular/material/theming`:
+indicating the elevation of the element as well as optional arguments for the elevation shadow's
+color tone and opacity.
+
+Since an elevation shadow consists of multiple shadow components of varying opacities, the
+`$opacity` argument of the mixin is considered a factor by which to scale these initial values
+rather than an absolute value.
+
+In order to use the mixin, you must import `~@angular/material/theming`:
 
 ```scss
 @import '~@angular/material/theming';
 
-.my-class {
+.my-class-with-default-shadow {
+  // Adds a shadow for elevation level 2 with default color and full opacity:
   @include mat-elevation(2);
+}
+
+.my-class-with-custom-shadow {
+  // Adds a shadow for elevation level 2 with color #e91e63 and 80% of the default opacity:
+  @include mat-elevation(2, #e91e63, 0.8);
 }
 ```
 
