@@ -29,7 +29,6 @@ import {InputDemo} from '../input/input-demo';
 import {ListDemo} from '../list/list-demo';
 import {LiveAnnouncerDemo} from '../live-announcer/live-announcer-demo';
 import {MenuDemo} from '../menu/menu-demo';
-import {OverlayDemo} from '../overlay/overlay-demo';
 import {PlatformDemo} from '../platform/platform-demo';
 import {PortalDemo} from '../portal/portal-demo';
 import {ProgressBarDemo} from '../progress-bar/progress-bar-demo';
@@ -82,7 +81,6 @@ export const DEMO_APP_ROUTES: Routes = [
     {path: 'list', component: ListDemo},
     {path: 'live-announcer', component: LiveAnnouncerDemo},
     {path: 'menu', component: MenuDemo},
-    {path: 'overlay', component: OverlayDemo},
     {path: 'paginator', component: PaginatorDemo},
     {path: 'platform', component: PlatformDemo},
     {path: 'portal', component: PortalDemo},

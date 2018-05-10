@@ -71,7 +71,6 @@ export class DemoApp {
     {name: 'List', route: '/list'},
     {name: 'Live Announcer', route: '/live-announcer'},
     {name: 'Menu', route: '/menu'},
-    {name: 'Overlay', route: '/overlay'},
     {name: 'Paginator', route: '/paginator'},
     {name: 'Platform', route: '/platform'},
     {name: 'Portal', route: '/portal'},

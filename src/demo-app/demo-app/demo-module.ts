@@ -38,12 +38,6 @@ import {InputDemo} from '../input/input-demo';
 import {ListDemo} from '../list/list-demo';
 import {LiveAnnouncerDemo} from '../live-announcer/live-announcer-demo';
 import {MenuDemo} from '../menu/menu-demo';
-import {
-  KeyboardTrackingPanel,
-  OverlayDemo,
-  RotiniPanel,
-  SpaghettiPanel
-} from '../overlay/overlay-demo';
 import {PlatformDemo} from '../platform/platform-demo';
 import {PortalDemo, ScienceJoke} from '../portal/portal-demo';
 import {ProgressBarDemo} from '../progress-bar/progress-bar-demo';
@@ -116,12 +110,10 @@ import {MaterialExampleModule} from '../example/example-module';
     IconDemo,
     InputDemo,
     JazzDialog,
-    KeyboardTrackingPanel,
     ListDemo,
     LiveAnnouncerDemo,
     MatCheckboxDemoNestedChecklist,
     MenuDemo,
-    OverlayDemo,
     PaginatorDemo,
     PlatformDemo,
     PortalDemo,
@@ -130,7 +122,6 @@ import {MaterialExampleModule} from '../example/example-module';
     RadioDemo,
     RainyTabContent,
     RippleDemo,
-    RotiniPanel,
     ScienceJoke,
     ScreenTypeDemo,
     SelectDemo,
@@ -138,7 +129,6 @@ import {MaterialExampleModule} from '../example/example-module';
     SlideToggleDemo,
     SliderDemo,
     SnackBarDemo,
-    SpaghettiPanel,
     StepperDemo,
     SunnyTabContent,
     TabsDemo,
@@ -157,10 +147,7 @@ import {MaterialExampleModule} from '../example/example-module';
     ExampleBottomSheet,
     IFrameDialog,
     JazzDialog,
-    KeyboardTrackingPanel,
-    RotiniPanel,
     ScienceJoke,
-    SpaghettiPanel,
   ],
 })
 export class DemoModule {
