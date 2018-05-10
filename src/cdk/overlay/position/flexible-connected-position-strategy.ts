@@ -137,7 +137,7 @@ export class FlexibleConnectedPositionStrategy implements PositionStrategy {
     overlayRef.hostElement.classList.add('cdk-overlay-connected-position-bounding-box');
 
     this._overlayRef = overlayRef;
-    this._boundingBox = overlayRef.hostElement!;
+    this._boundingBox = overlayRef.hostElement;
     this._pane = overlayRef.overlayElement;
     this._resizeSubscription.unsubscribe();
     this._resizeSubscription = this._viewportRuler.change().subscribe(() => this.apply());
