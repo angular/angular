@@ -158,9 +158,6 @@ export class NgIf {
   public static ngIfUseIfTypeGuard: void;
 }
 
-/**
- *
- */
 export class NgIfContext {
   public $implicit: any = null;
   public ngIf: any = null;
