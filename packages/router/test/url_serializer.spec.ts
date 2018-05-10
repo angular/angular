@@ -359,6 +359,14 @@ describe('url serializer', () => {
 
       expect(url.serialize(parsed)).toBe(`/${notEncoded}${encoded}`);
     });
+
+    it('should correctly encode ampersand in segments', () => {
+      const testUrl = '/parent&child';
+
+      const parsed = url.parse(testUrl);
+
+      expect(url.serialize(parsed)).toBe(testUrl);
+    });
   });
 
   describe('error handling', () => {
