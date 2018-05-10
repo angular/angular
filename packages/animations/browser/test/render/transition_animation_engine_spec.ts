@@ -616,6 +616,13 @@ const DEFAULT_NAMESPACE_ID = 'id';
         expect(element.contains(child1)).toBe(true);
         expect(element.contains(child2)).toBe(true);
       });
+
+      it('should not throw an error if a missing namespace is used', () => {
+        const engine = makeEngine();
+        const ID = 'foo';
+        const TRIGGER = 'fooTrigger';
+        expect(() => { engine.trigger(ID, element, TRIGGER, 'something'); }).not.toThrow();
+      });
     });
   });
 })();
