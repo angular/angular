@@ -24,12 +24,16 @@ source ${thisDir}/_travis-fold.sh
     yarn test-pwa-score-localhost
   travisFoldEnd "test.aio.pwaScore"
 
+  # Check the bundle sizes.
+  # (Run before unit and e2e tests, which destroy the `dist/` directory.)
+  travisFoldStart "test.aio.payload-size"
+    yarn payload-size
+  travisFoldEnd "test.aio.payload-size"
 
   # Run unit tests
   travisFoldStart "test.aio.unit"
     yarn test
   travisFoldEnd "test.aio.unit"
-
 
   # Run e2e tests
   travisFoldStart "test.aio.e2e"
