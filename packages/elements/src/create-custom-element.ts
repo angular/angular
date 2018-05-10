@@ -135,16 +135,29 @@ export function createCustomElement<P>(
 
     constructor(injector?: Injector) {
       super();
+
+      // Note that some polyfills (e.g. document-register-element) do not call the constructor.
+      // Do not assume this strategy has been created.
+      // TODO(andrewseguin): Add e2e tests that cover cases where the constructor isn't called. For
+      // now this is tested using a Google internal test suite.
       this.ngElementStrategy = strategyFactory.create(injector || config.injector);
     }
 
     attributeChangedCallback(
         attrName: string, oldValue: string|null, newValue: string, namespace?: string): void {
+      if (!this.ngElementStrategy) {
+        this.ngElementStrategy = strategyFactory.create(config.injector);
+      }
+
       const propName = attributeToPropertyInputs[attrName] !;
       this.ngElementStrategy.setInputValue(propName, newValue);
     }
 
     connectedCallback(): void {
+      if (!this.ngElementStrategy) {
+        this.ngElementStrategy = strategyFactory.create(config.injector);
+      }
+
       this.ngElementStrategy.connect(this);
 
       // Listen for events from the strategy and dispatch them as custom events
@@ -155,7 +168,9 @@ export function createCustomElement<P>(
     }
 
     disconnectedCallback(): void {
-      this.ngElementStrategy.disconnect();
+      if (this.ngElementStrategy) {
+        this.ngElementStrategy.disconnect();
+      }
 
       if (this.ngElementEventsSubscription) {
         this.ngElementEventsSubscription.unsubscribe();
