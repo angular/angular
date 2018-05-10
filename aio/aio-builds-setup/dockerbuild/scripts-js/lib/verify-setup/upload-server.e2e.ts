@@ -1,235 +1,163 @@
 // Imports
 import * as fs from 'fs';
-import * as path from 'path';
-import * as c from './constants';
-import {CmdResult, helper as h} from './helper';
+import {join} from 'path';
+import {AIO_UPLOAD_HOSTNAME, AIO_UPLOAD_PORT, AIO_WWW_USER} from '../common/env-variables';
+import {computeShortSha} from '../common/utils';
+import {ALT_SHA, BuildNums, PrNums, SHA, SIMILAR_SHA} from './constants';
+import {helper as h, makeCurl, payload} from './helper';
+import {customMatchers} from './jasmine-custom-matchers';
 
 // Tests
-describe('upload-server (on HTTP)', () => {
-  const hostname = h.uploadHostname;
-  const port = h.uploadPort;
-  const host = `${hostname}:${port}`;
-  const pr = '9';
-  const sha9 = '9'.repeat(40);
-  const sha0 = '0'.repeat(40);
+describe('upload-server', () => {
+  const hostname = AIO_UPLOAD_HOSTNAME;
+  const port = AIO_UPLOAD_PORT;
+  const host = `http://${hostname}:${port}`;
 
-  beforeEach(() => jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000);
+  beforeEach(() => jasmine.DEFAULT_TIMEOUT_INTERVAL = 5000);
+  beforeEach(() => jasmine.addMatchers(customMatchers));
   afterEach(() => h.cleanUp());
 
 
-  describe(`${host}/create-build/<pr>/<sha>`, () => {
-    const authorizationHeader = `--header "Authorization: Token FOO"`;
-    const xFileHeader = `--header "X-File: ${h.buildsDir}/snapshot.tar.gz"`;
-    const defaultHeaders = `${authorizationHeader} ${xFileHeader}`;
-    const curl = (url: string, headers = defaultHeaders) => `curl -iL ${headers} ${url}`;
+  describe(`${host}/circle-build`, () => {
 
+    const curl = makeCurl(`${host}/circle-build`);
 
-    it('should disallow non-GET requests', done => {
-      const url = `http://${host}/create-build/${pr}/${sha9}`;
+    it('should disallow non-POST requests', async () => {
       const bodyRegex = /^Unknown resource/;
 
-      Promise.all([
-        h.runCmd(`curl -iLX PUT ${url}`).then(h.verifyResponse(404, bodyRegex)),
-        h.runCmd(`curl -iLX POST ${url}`).then(h.verifyResponse(404, bodyRegex)),
-        h.runCmd(`curl -iLX PATCH ${url}`).then(h.verifyResponse(404, bodyRegex)),
-        h.runCmd(`curl -iLX DELETE ${url}`).then(h.verifyResponse(404, bodyRegex)),
-      ]).then(done);
+      await Promise.all([
+        curl({method: 'GET'}).then(h.verifyResponse(404, bodyRegex)),
+        curl({method: 'PUT'}).then(h.verifyResponse(404, bodyRegex)),
+        curl({method: 'PATCH'}).then(h.verifyResponse(404, bodyRegex)),
+        curl({method: 'DELETE'}).then(h.verifyResponse(404, bodyRegex)),
+      ]);
     });
 
 
-    it('should reject requests without an \'AUTHORIZATION\' header', done => {
-      const headers1 = '';
-      const headers2 = '--header "AUTHORIXATION: "';
-      const url = `http://${host}/create-build/${pr}/${sha9}`;
-      const bodyRegex = /^Missing or empty 'AUTHORIZATION' header/;
-
-      Promise.all([
-        h.runCmd(curl(url, headers1)).then(h.verifyResponse(401, bodyRegex)),
-        h.runCmd(curl(url, headers2)).then(h.verifyResponse(401, bodyRegex)),
-      ]).then(done);
+    it('should respond with 404 for unknown paths', async () => {
+      await Promise.all([
+        curl({url: `${host}/foo/circle-build`}).then(h.verifyResponse(404)),
+        curl({url: `${host}/foo-circle-build`}).then(h.verifyResponse(404)),
+        curl({url: `${host}/fooncircle-build`}).then(h.verifyResponse(404)),
+        curl({url: `${host}/circle-build/foo`}).then(h.verifyResponse(404)),
+        curl({url: `${host}/circle-build-foo`}).then(h.verifyResponse(404)),
+        curl({url: `${host}/circle-buildnfoo`}).then(h.verifyResponse(404)),
+        curl({url: `${host}/circle-build/pr`}).then(h.verifyResponse(404)),
+        curl({url: `${host}/circle-build42`}).then(h.verifyResponse(404)),
+      ]);
     });
 
-
-    it('should reject requests without an \'X-FILE\' header', done => {
-      const headers1 = authorizationHeader;
-      const headers2 = `${authorizationHeader} --header "X-FILE: "`;
-      const url = `http://${host}/create-build/${pr}/${sha9}`;
-      const bodyRegex = /^Missing or empty 'X-FILE' header/;
-
-      Promise.all([
-        h.runCmd(curl(url, headers1)).then(h.verifyResponse(400, bodyRegex)),
-        h.runCmd(curl(url, headers2)).then(h.verifyResponse(400, bodyRegex)),
-      ]).then(done);
+    it('should respond with 400 if the body is not valid', async () => {
+      await Promise.all([
+        curl({ data: '' }).then(h.verifyResponse(400)),
+        curl({ data: {} }).then(h.verifyResponse(400)),
+        curl({ data: { payload: {} } }).then(h.verifyResponse(400)),
+        curl({ data: { payload: { build_num: 1 } } }).then(h.verifyResponse(400)),
+        curl({ data: { payload: { build_num: 1, build_parameters: {} } } }).then(h.verifyResponse(400)),
+        curl(payload(0)).then(h.verifyResponse(400)),
+        curl(payload(-1)).then(h.verifyResponse(400)),
+      ]);
     });
 
-
-    it('should reject requests for which the PR verification fails', done => {
-      const headers = `--header "Authorization: ${c.BV_verify_error}" ${xFileHeader}`;
-      const url = `http://${host}/create-build/${pr}/${sha9}`;
-      const bodyRegex = new RegExp(`Error while verifying upload for PR ${pr}: Test`);
-
-      h.runCmd(curl(url, headers)).
-        then(h.verifyResponse(403, bodyRegex)).
-        then(done);
+    it('should respond with 500 if the CircleCI API request errors', async () => {
+      await curl(payload(BuildNums.BUILD_INFO_ERROR)).then(h.verifyResponse(500));
+      await curl(payload(BuildNums.BUILD_INFO_404)).then(h.verifyResponse(500));
     });
 
-
-    it('should respond with 404 for unknown paths', done => {
-      const cmdPrefix = curl(`http://${host}`);
-
-      Promise.all([
-        h.runCmd(`${cmdPrefix}/foo/create-build/${pr}/${sha9}`).then(h.verifyResponse(404)),
-        h.runCmd(`${cmdPrefix}/foo-create-build/${pr}/${sha9}`).then(h.verifyResponse(404)),
-        h.runCmd(`${cmdPrefix}/fooncreate-build/${pr}/${sha9}`).then(h.verifyResponse(404)),
-        h.runCmd(`${cmdPrefix}/create-build/foo/${pr}/${sha9}`).then(h.verifyResponse(404)),
-        h.runCmd(`${cmdPrefix}/create-build-foo/${pr}/${sha9}`).then(h.verifyResponse(404)),
-        h.runCmd(`${cmdPrefix}/create-buildnfoo/${pr}/${sha9}`).then(h.verifyResponse(404)),
-        h.runCmd(`${cmdPrefix}/create-build/pr${pr}/${sha9}`).then(h.verifyResponse(404)),
-        h.runCmd(`${cmdPrefix}/create-build/${pr}/${sha9}42`).then(h.verifyResponse(404)),
-      ]).then(done);
+    it('should respond with 204 if the build on CircleCI failed', async () => {
+      await curl(payload(BuildNums.BUILD_INFO_BUILD_FAILED)).then(h.verifyResponse(204));
     });
 
-
-    it('should reject PRs with leading zeros', done => {
-      h.runCmd(curl(`http://${host}/create-build/0${pr}/${sha9}`)).
-        then(h.verifyResponse(404)).
-        then(done);
+    it('should respond with 500 if the github org from CircleCI does not match what is configured', async () => {
+      await curl(payload(BuildNums.BUILD_INFO_INVALID_GH_ORG)).then(h.verifyResponse(500));
     });
 
-
-    it('should accept SHAs with leading zeros (but not trim the zeros)', done => {
-      Promise.all([
-        h.runCmd(curl(`http://${host}/create-build/${pr}/0${sha9}`)).then(h.verifyResponse(404)),
-        h.runCmd(curl(`http://${host}/create-build/${pr}/${sha9}`)).then(h.verifyResponse(500)),
-        h.runCmd(curl(`http://${host}/create-build/${pr}/${sha0}`)).then(h.verifyResponse(500)),
-      ]).then(done);
+    it('should respond with 500 if the github repo from CircleCI does not match what is configured', async () => {
+      await curl(payload(BuildNums.BUILD_INFO_INVALID_GH_REPO)).then(h.verifyResponse(500));
     });
 
+    it('should respond with 500 if the github files API errors', async () => {
+      await curl(payload(BuildNums.CHANGED_FILES_ERROR)).then(h.verifyResponse(500));
+      await curl(payload(BuildNums.CHANGED_FILES_404)).then(h.verifyResponse(500));
+    });
 
-    [true, false].forEach(isPublic => describe(`(for ${isPublic ? 'public' : 'hidden'} builds)`, () => {
-      const authorizationHeader2 = isPublic ?
-        authorizationHeader : `--header "Authorization: ${c.BV_verify_verifiedNotTrusted}"`;
-      const cmdPrefix = curl('', `${authorizationHeader2} ${xFileHeader}`);
-      const overwriteRe = RegExp(`^Request to overwrite existing ${isPublic ? 'public' : 'non-public'} directory`);
+    it('should respond with 204 if no significant files are changed by the PR', async () => {
+      await curl(payload(BuildNums.CHANGED_FILES_NONE)).then(h.verifyResponse(204));
+    });
 
+    it('should respond with 500 if the CircleCI artifact API fails', async () => {
+      await curl(payload(BuildNums.BUILD_ARTIFACTS_ERROR)).then(h.verifyResponse(500));
+      await curl(payload(BuildNums.BUILD_ARTIFACTS_404)).then(h.verifyResponse(500));
+      await curl(payload(BuildNums.BUILD_ARTIFACTS_EMPTY)).then(h.verifyResponse(500));
+      await curl(payload(BuildNums.BUILD_ARTIFACTS_MISSING)).then(h.verifyResponse(500));
+    });
 
-      it('should not overwrite existing builds', done => {
-        h.createDummyBuild(pr, sha9, isPublic);
-        expect(h.readBuildFile(pr, sha9, 'index.html', isPublic)).toContain('index.html');
+    it('should respond with 500 if fetching the artifact errors', async () => {
+      await curl(payload(BuildNums.DOWNLOAD_ARTIFACT_ERROR)).then(h.verifyResponse(500));
+      await curl(payload(BuildNums.DOWNLOAD_ARTIFACT_404)).then(h.verifyResponse(500));
+    });
 
-        h.writeBuildFile(pr, sha9, 'index.html', 'My content', isPublic);
-        expect(h.readBuildFile(pr, sha9, 'index.html', isPublic)).toBe('My content');
+    it('should respond with 500 if the GH trusted API fails', async () => {
+      await curl(payload(BuildNums.TRUST_CHECK_ERROR)).then(h.verifyResponse(500));
+      expect({ prNum: PrNums.TRUST_CHECK_ERROR }).toExistAsAnArtifact();
+    });
 
-        h.runCmd(`${cmdPrefix} http://${host}/create-build/${pr}/${sha9}`).
-          then(h.verifyResponse(409, overwriteRe)).
-          then(() => expect(h.readBuildFile(pr, sha9, 'index.html', isPublic)).toBe('My content')).
-          then(done);
-      });
+    it('should respond with 201 if a new public build is created', async () => {
+      await curl(payload(BuildNums.TRUST_CHECK_ACTIVE_TRUSTED_USER))
+        .then(h.verifyResponse(201));
+      expect({ prNum: PrNums.TRUST_CHECK_ACTIVE_TRUSTED_USER }).toExistAsABuild();
+    });
 
+    it('should respond with 202 if a new private build is created', async () => {
+      await curl(payload(BuildNums.TRUST_CHECK_UNTRUSTED)).then(h.verifyResponse(202));
+      expect({ prNum: PrNums.TRUST_CHECK_UNTRUSTED, isPublic: false }).toExistAsABuild();
+    });
 
-      it('should not overwrite existing builds (even if the SHA is different)', done => {
-        // Since only the first few characters of the SHA are used, it is possible for two different
-        // SHAs to correspond to the same directory. In that case, we don't want the second SHA to
-        // overwrite the first.
+    [true].forEach(isPublic => {
+      const build = isPublic ? BuildNums.TRUST_CHECK_ACTIVE_TRUSTED_USER : BuildNums.TRUST_CHECK_UNTRUSTED;
+      const prNum = isPublic ? PrNums.TRUST_CHECK_ACTIVE_TRUSTED_USER : PrNums.TRUST_CHECK_UNTRUSTED;
+      const label = isPublic ? 'public' : 'non-public';
+      const overwriteRe = RegExp(`^Request to overwrite existing ${label} directory`);
+      const statusCode = isPublic ? 201 : 202;
 
-        const sha9Almost = sha9.replace(/.$/, '8');
-        expect(sha9Almost).not.toBe(sha9);
+      describe(`for ${label} builds`, () => {
 
-        h.createDummyBuild(pr, sha9, isPublic);
-        expect(h.readBuildFile(pr, sha9, 'index.html', isPublic)).toContain('index.html');
-
-        h.writeBuildFile(pr, sha9, 'index.html', 'My content', isPublic);
-        expect(h.readBuildFile(pr, sha9, 'index.html', isPublic)).toBe('My content');
-
-        h.runCmd(`${cmdPrefix} http://${host}/create-build/${pr}/${sha9Almost}`).
-          then(h.verifyResponse(409, overwriteRe)).
-          then(() => expect(h.readBuildFile(pr, sha9, 'index.html', isPublic)).toBe('My content')).
-          then(done);
-      });
-
-
-      it('should delete the PR directory on error (for new PR)', done => {
-        h.runCmd(`${cmdPrefix} http://${host}/create-build/${pr}/${sha9}`).
-          then(h.verifyResponse(500)).
-          then(() => expect(h.buildExists(pr, '', isPublic)).toBe(false)).
-          then(done);
-      });
-
-
-      it('should only delete the SHA directory on error (for existing PR)', done => {
-        h.createDummyBuild(pr, sha0, isPublic);
-
-        h.runCmd(`${cmdPrefix} http://${host}/create-build/${pr}/${sha9}`).
-          then(h.verifyResponse(500)).
-          then(() => {
-            expect(h.buildExists(pr, sha9, isPublic)).toBe(false);
-            expect(h.buildExists(pr, '', isPublic)).toBe(true);
-          }).
-          then(done);
-      });
-
-
-      describe('on successful upload', () => {
-        const archivePath = path.join(h.buildsDir, 'snapshot.tar.gz');
-        const statusCode = isPublic ? 201 : 202;
-        let uploadPromise: Promise<CmdResult>;
-
-        beforeEach(() => {
-          h.createDummyArchive(pr, sha9, archivePath);
-          uploadPromise = h.runCmd(`${cmdPrefix} http://${host}/create-build/${pr}/${sha9}`);
-        });
-        afterEach(() => h.deletePrDir(pr, isPublic));
-
-
-        it(`should respond with ${statusCode}`, done => {
-          uploadPromise.then(h.verifyResponse(statusCode)).then(done);
+        it('should extract the contents of the uploaded file', async () => {
+          await curl(payload(build))
+            .then(h.verifyResponse(statusCode));
+          expect(h.readBuildFile(prNum, SHA, 'index.html', isPublic))
+            .toContain(`PR: ${prNum} | SHA: ${SHA} | File: /index.html`);
+          expect(h.readBuildFile(prNum, SHA, 'foo/bar.js', isPublic))
+            .toContain(`PR: ${prNum} | SHA: ${SHA} | File: /foo/bar.js`);
+          expect({ prNum, isPublic }).toExistAsABuild();
         });
 
+        it(`should create files/directories owned by '${AIO_WWW_USER}'`, async () => {
+          await curl(payload(build))
+            .then(h.verifyResponse(statusCode));
 
-        it('should extract the contents of the uploaded file', done => {
-          uploadPromise.
-            then(() => {
-              expect(h.readBuildFile(pr, sha9, 'index.html', isPublic)).toContain(`uploaded/${pr}`);
-              expect(h.readBuildFile(pr, sha9, 'foo/bar.js', isPublic)).toContain(`uploaded/${pr}`);
-            }).
-            then(done);
+          const shaDir = h.getShaDir(h.getPrDir(prNum, isPublic), SHA);
+          const { stdout: allFiles } = await h.runCmd(`find ${shaDir}`);
+          const { stdout: userFiles } = await h.runCmd(`find ${shaDir} -user ${AIO_WWW_USER}`);
+
+          expect(userFiles).toBe(allFiles);
+          expect(userFiles).toContain(shaDir);
+          expect(userFiles).toContain(join(shaDir, 'index.html'));
+          expect(userFiles).toContain(join(shaDir, 'foo', 'bar.js'));
+
+          expect({ prNum, isPublic }).toExistAsABuild();
         });
 
-
-        it(`should create files/directories owned by '${h.wwwUser}'`, done => {
-          const prDir = h.getPrDir(pr, isPublic);
-          const shaDir = h.getShaDir(prDir, sha9);
-          const idxPath = path.join(shaDir, 'index.html');
-          const barPath = path.join(shaDir, 'foo', 'bar.js');
-
-          uploadPromise.
-            then(() => Promise.all([
-              h.runCmd(`find ${shaDir}`),
-              h.runCmd(`find ${shaDir} -user ${h.wwwUser}`),
-            ])).
-            then(([{stdout: allFiles}, {stdout: userFiles}]) => {
-              expect(userFiles).toBe(allFiles);
-              expect(userFiles).toContain(shaDir);
-              expect(userFiles).toContain(idxPath);
-              expect(userFiles).toContain(barPath);
-            }).
-            then(done);
+        it('should delete the uploaded file', async () => {
+          await curl(payload(build))
+            .then(h.verifyResponse(statusCode));
+          expect({ prNum, SHA }).not.toExistAsAnArtifact();
+          expect({ prNum, isPublic }).toExistAsABuild();
         });
 
-
-        it('should delete the uploaded file', done => {
-          expect(fs.existsSync(archivePath)).toBe(true);
-          uploadPromise.
-            then(() => expect(fs.existsSync(archivePath)).toBe(false)).
-            then(done);
-        });
-
-
-        it('should make the build directory non-writable', done => {
-          const prDir = h.getPrDir(pr, isPublic);
-          const shaDir = h.getShaDir(prDir, sha9);
-          const idxPath = path.join(shaDir, 'index.html');
-          const barPath = path.join(shaDir, 'foo', 'bar.js');
+        it('should make the build directory non-writable', async () => {
+          await curl(payload(build))
+            .then(h.verifyResponse(statusCode));
 
           // See https://github.com/nodejs/node-v0.x-archive/issues/3045#issuecomment-4862588.
           const isNotWritable = (fileOrDir: string) => {
@@ -238,116 +166,113 @@ describe('upload-server (on HTTP)', () => {
             return !(mode & parseInt('222', 8));
           };
 
-          uploadPromise.
-            then(() => {
-              expect(isNotWritable(shaDir)).toBe(true);
-              expect(isNotWritable(idxPath)).toBe(true);
-              expect(isNotWritable(barPath)).toBe(true);
-            }).
-            then(done);
+          const shaDir = h.getShaDir(h.getPrDir(prNum, isPublic), SHA);
+          expect(isNotWritable(shaDir)).toBe(true);
+          expect(isNotWritable(join(shaDir, 'index.html'))).toBe(true);
+          expect(isNotWritable(join(shaDir, 'foo', 'bar.js'))).toBe(true);
+
+          expect({ prNum, isPublic }).toExistAsABuild();
         });
 
-
-        it('should ignore a legacy 40-chars long build directory (even if it starts with the same chars)', done => {
+        it('should ignore a legacy 40-chars long build directory (even if it starts with the same chars)',
+          async () => {
           // It is possible that 40-chars long build directories exist, if they had been deployed
           // before implementing the shorter build directory names. In that case, we don't want the
           // second (shorter) name to be considered the same as the old one (even if they originate
           // from the same SHA).
 
-          h.createDummyBuild(pr, sha9, isPublic, false, true);
-          expect(h.readBuildFile(pr, sha9, 'index.html', isPublic, true)).toContain('index.html');
+          h.createDummyBuild(prNum, SHA, isPublic, false, true);
+          h.writeBuildFile(prNum, SHA, 'index.html', 'My content', isPublic, true);
+          expect(h.readBuildFile(prNum, SHA, 'index.html', isPublic, true)).toBe('My content');
 
-          h.writeBuildFile(pr, sha9, 'index.html', 'My content', isPublic, true);
-          expect(h.readBuildFile(pr, sha9, 'index.html', isPublic, true)).toBe('My content');
+          await curl(payload(build))
+            .then(h.verifyResponse(statusCode));
 
-          h.runCmd(`${cmdPrefix} http://${host}/create-build/${pr}/${sha9}`).
-            then(h.verifyResponse(statusCode)).
-            then(() => {
-              expect(h.buildExists(pr, sha9, isPublic)).toBe(true);
-              expect(h.buildExists(pr, sha9, isPublic, true)).toBe(true);
-              expect(h.readBuildFile(pr, sha9, 'index.html', isPublic)).toContain('index.html');
-              expect(h.readBuildFile(pr, sha9, 'index.html', isPublic, true)).toBe('My content');
-            }).
-            then(done);
+          expect(h.readBuildFile(prNum, SHA, 'index.html', isPublic, false)).toContain('index.html');
+          expect(h.readBuildFile(prNum, SHA, 'index.html', isPublic, true)).toBe('My content');
+
+          expect({ prNum, isPublic, sha: SHA, isLegacy: false }).toExistAsABuild();
+          expect({ prNum, isPublic, sha: SHA, isLegacy: true }).toExistAsABuild();
         });
 
+        it(`should not overwrite existing builds`, async () => {
+          // setup a build already in place
+          h.createDummyBuild(prNum, SHA, isPublic);
+          // distinguish this build from the downloaded one
+          h.writeBuildFile(prNum, SHA, 'index.html', 'My content', isPublic);
+          await curl(payload(build)).then(h.verifyResponse(409, overwriteRe));
+          expect(h.readBuildFile(prNum, SHA, 'index.html', isPublic)).toBe('My content');
+          expect({ prNum, isPublic }).toExistAsABuild();
+          expect({ prNum }).toExistAsAnArtifact();
+        });
+
+        it(`should not overwrite existing builds (even if the SHA is different)`, async () => {
+          // Since only the first few characters of the SHA are used, it is possible for two different
+          // SHAs to correspond to the same directory. In that case, we don't want the second SHA to
+          // overwrite the first.
+          expect(SIMILAR_SHA).not.toEqual(SHA);
+          expect(computeShortSha(SIMILAR_SHA)).toEqual(computeShortSha(SHA));
+          h.createDummyBuild(prNum, SIMILAR_SHA, isPublic);
+          expect(h.readBuildFile(prNum, SIMILAR_SHA, 'index.html', isPublic)).toContain('index.html');
+          h.writeBuildFile(prNum, SIMILAR_SHA, 'index.html', 'My content', isPublic);
+          expect(h.readBuildFile(prNum, SIMILAR_SHA, 'index.html', isPublic)).toBe('My content');
+
+          await curl(payload(build)).then(h.verifyResponse(409, overwriteRe));
+          expect(h.readBuildFile(prNum, SIMILAR_SHA, 'index.html', isPublic)).toBe('My content');
+          expect({ prNum, isPublic, sha: SIMILAR_SHA }).toExistAsABuild();
+          expect({ prNum, sha: SIMILAR_SHA }).toExistAsAnArtifact();
+        });
+
+        it('should only delete the SHA directory on error (for existing PR)', async () => {
+          h.createDummyBuild(prNum, ALT_SHA, isPublic);
+          await curl(payload(BuildNums.TRUST_CHECK_ERROR)).then(h.verifyResponse(500));
+          expect({ prNum: PrNums.TRUST_CHECK_ERROR }).toExistAsAnArtifact();
+          expect({ prNum, isPublic, sha: SHA }).not.toExistAsABuild();
+          expect({ prNum, isPublic, sha: ALT_SHA }).toExistAsABuild();
+        });
+
+        describe('when the PR\'s visibility has changed', () => {
+
+          it('should update the PR\'s visibility', async () => {
+            h.createDummyBuild(prNum, ALT_SHA, !isPublic);
+            await curl(payload(build)).then(h.verifyResponse(statusCode));
+            expect({ prNum, isPublic }).toExistAsABuild();
+            expect({ prNum, isPublic, sha: ALT_SHA }).toExistAsABuild();
+          });
+
+
+          it('should not overwrite existing builds (but keep the updated visibility)', async () => {
+            h.createDummyBuild(prNum, SHA, !isPublic);
+            await curl(payload(build)).then(h.verifyResponse(409));
+            expect({ prNum, isPublic }).toExistAsABuild();
+            expect({ prNum, isPublic: !isPublic }).not.toExistAsABuild();
+            // since it errored we didn't clear up the downloaded artifact - perhaps we should?
+            expect({ prNum }).toExistAsAnArtifact();
+          });
+
+
+          it('should reject the request if it fails to update the PR\'s visibility', async () => {
+            // One way to cause an error is to have both a public and a hidden directory for the same PR.
+            h.createDummyBuild(prNum, ALT_SHA, isPublic);
+            h.createDummyBuild(prNum, ALT_SHA, !isPublic);
+
+            const errorRegex = new RegExp(`^Request to move '${h.getPrDir(prNum, !isPublic)}' ` +
+                                          `to existing directory '${h.getPrDir(prNum, isPublic)}'.`);
+
+            await curl(payload(build)).then(h.verifyResponse(409, errorRegex));
+
+            expect({ prNum, isPublic }).not.toExistAsABuild();
+
+            // The bad folders should have been deleted
+            expect({ prNum, sha: ALT_SHA, isPublic }).toExistAsABuild();
+            expect({ prNum, sha: ALT_SHA, isPublic: !isPublic }).toExistAsABuild();
+
+            // since it errored we didn't clear up the downloaded artifact - perhaps we should?
+            expect({ prNum }).toExistAsAnArtifact();
+          });
+        });
       });
-
-
-      describe('when the PR\'s visibility has changed', () => {
-        const archivePath = path.join(h.buildsDir, 'snapshot.tar.gz');
-        const statusCode = isPublic ? 201 : 202;
-
-        const checkPrVisibility = (isPublic2: boolean) => {
-          expect(h.buildExists(pr, '', isPublic2)).toBe(true);
-          expect(h.buildExists(pr, '', !isPublic2)).toBe(false);
-          expect(h.buildExists(pr, sha0, isPublic2)).toBe(true);
-          expect(h.buildExists(pr, sha0, !isPublic2)).toBe(false);
-        };
-        const uploadBuild = (sha: string) => h.runCmd(`${cmdPrefix} http://${host}/create-build/${pr}/${sha}`);
-
-        beforeEach(() => {
-          h.createDummyBuild(pr, sha0, !isPublic);
-          h.createDummyArchive(pr, sha9, archivePath);
-          checkPrVisibility(!isPublic);
-        });
-        afterEach(() => h.deletePrDir(pr, isPublic));
-
-
-        it('should update the PR\'s visibility', done => {
-          uploadBuild(sha9).
-            then(h.verifyResponse(statusCode)).
-            then(() => {
-              checkPrVisibility(isPublic);
-              expect(h.buildExists(pr, sha9, isPublic)).toBe(true);
-              expect(h.readBuildFile(pr, sha9, 'index.html', isPublic)).toContain(`uploaded/${pr}`);
-              expect(h.readBuildFile(pr, sha9, 'index.html', isPublic)).toContain(sha9);
-            }).
-            then(done);
-        });
-
-
-        it('should not overwrite existing builds (but keep the updated visibility)', done => {
-          expect(h.buildExists(pr, sha0, isPublic)).toBe(false);
-
-          uploadBuild(sha0).
-            then(h.verifyResponse(409, overwriteRe)).
-            then(() => {
-              checkPrVisibility(isPublic);
-              expect(h.readBuildFile(pr, sha0, 'index.html', isPublic)).toContain(pr);
-              expect(h.readBuildFile(pr, sha0, 'index.html', isPublic)).not.toContain(`uploaded/${pr}`);
-              expect(h.readBuildFile(pr, sha0, 'index.html', isPublic)).toContain(sha0);
-              expect(h.readBuildFile(pr, sha0, 'index.html', isPublic)).not.toContain(sha9);
-            }).
-            then(done);
-        });
-
-
-        it('should reject the request if it fails to update the PR\'s visibility', done => {
-          // One way to cause an error is to have both a public and a hidden directory for the same PR.
-          h.createDummyBuild(pr, sha0, isPublic);
-
-          expect(h.buildExists(pr, sha0, isPublic)).toBe(true);
-          expect(h.buildExists(pr, sha0, !isPublic)).toBe(true);
-
-          const errorRegex = new RegExp(`^Request to move '${h.getPrDir(pr, !isPublic)}' ` +
-                                        `to existing directory '${h.getPrDir(pr, isPublic)}'.`);
-
-          uploadBuild(sha9).
-            then(h.verifyResponse(409, errorRegex)).
-            then(() => {
-              expect(h.buildExists(pr, sha0, isPublic)).toBe(true);
-              expect(h.buildExists(pr, sha0, !isPublic)).toBe(true);
-              expect(h.buildExists(pr, sha9, isPublic)).toBe(false);
-              expect(h.buildExists(pr, sha9, !isPublic)).toBe(false);
-            }).
-            then(done);
-        });
-
-      });
-
-    }));
-
+    });
   });
 
 
@@ -355,20 +280,20 @@ describe('upload-server (on HTTP)', () => {
 
     it('should respond with 200', done => {
       Promise.all([
-        h.runCmd(`curl -iL http://${host}/health-check`).then(h.verifyResponse(200)),
-        h.runCmd(`curl -iL http://${host}/health-check/`).then(h.verifyResponse(200)),
+        h.runCmd(`curl -iL ${host}/health-check`).then(h.verifyResponse(200)),
+        h.runCmd(`curl -iL ${host}/health-check/`).then(h.verifyResponse(200)),
       ]).then(done);
     });
 
 
     it('should respond with 404 if the path does not match exactly', done => {
       Promise.all([
-        h.runCmd(`curl -iL http://${host}/health-check/foo`).then(h.verifyResponse(404)),
-        h.runCmd(`curl -iL http://${host}/health-check-foo`).then(h.verifyResponse(404)),
-        h.runCmd(`curl -iL http://${host}/health-checknfoo`).then(h.verifyResponse(404)),
-        h.runCmd(`curl -iL http://${host}/foo/health-check`).then(h.verifyResponse(404)),
-        h.runCmd(`curl -iL http://${host}/foo-health-check`).then(h.verifyResponse(404)),
-        h.runCmd(`curl -iL http://${host}/foonhealth-check`).then(h.verifyResponse(404)),
+        h.runCmd(`curl -iL ${host}/health-check/foo`).then(h.verifyResponse(404)),
+        h.runCmd(`curl -iL ${host}/health-check-foo`).then(h.verifyResponse(404)),
+        h.runCmd(`curl -iL ${host}/health-checknfoo`).then(h.verifyResponse(404)),
+        h.runCmd(`curl -iL ${host}/foo/health-check`).then(h.verifyResponse(404)),
+        h.runCmd(`curl -iL ${host}/foo-health-check`).then(h.verifyResponse(404)),
+        h.runCmd(`curl -iL ${host}/foonhealth-check`).then(h.verifyResponse(404)),
       ]).then(done);
     });
 
@@ -376,56 +301,48 @@ describe('upload-server (on HTTP)', () => {
 
 
   describe(`${host}/pr-updated`, () => {
-    const url = `http://${host}/pr-updated`;
+    const curl = makeCurl(`${host}/pr-updated`);
 
-    // Helpers
-    const curl = (payload?: {number: number, action?: string}) => {
-      const payloadStr = payload && JSON.stringify(payload) || '';
-      return `curl -iLX POST --header "Content-Type: application/json" --data '${payloadStr}' ${url}`;
-    };
-
-
-    it('should disallow non-POST requests', done => {
+    it('should disallow non-POST requests', async () => {
       const bodyRegex = /^Unknown resource in request/;
 
-      Promise.all([
-        h.runCmd(`curl -iLX GET ${url}`).then(h.verifyResponse(404, bodyRegex)),
-        h.runCmd(`curl -iLX PUT ${url}`).then(h.verifyResponse(404, bodyRegex)),
-        h.runCmd(`curl -iLX PATCH ${url}`).then(h.verifyResponse(404, bodyRegex)),
-        h.runCmd(`curl -iLX DELETE ${url}`).then(h.verifyResponse(404, bodyRegex)),
-      ]).then(done);
+      await Promise.all([
+        curl({method: 'GET'}).then(h.verifyResponse(404, bodyRegex)),
+        curl({method: 'PUT'}).then(h.verifyResponse(404, bodyRegex)),
+        curl({method: 'PATCH'}).then(h.verifyResponse(404, bodyRegex)),
+        curl({method: 'DELETE'}).then(h.verifyResponse(404, bodyRegex)),
+      ]);
     });
 
 
-    it('should respond with 400 for requests without a payload', done => {
+    it('should respond with 400 for requests without a payload', async () => {
       const bodyRegex = /^Missing or empty 'number' field in request/;
 
-      h.runCmd(curl()).
-        then(h.verifyResponse(400, bodyRegex)).
-        then(done);
+      await Promise.all([
+        curl({ data: '' }).then(h.verifyResponse(400, bodyRegex)),
+        curl({ data: {} }).then(h.verifyResponse(400, bodyRegex)),
+      ]);
     });
 
 
-    it('should respond with 400 for requests without a \'number\' field', done => {
+    it('should respond with 400 for requests without a \'number\' field', async () => {
       const bodyRegex = /^Missing or empty 'number' field in request/;
 
-      Promise.all([
-        h.runCmd(curl({} as any)).then(h.verifyResponse(400, bodyRegex)),
-        h.runCmd(curl({number: null} as any)).then(h.verifyResponse(400, bodyRegex)),
-      ]).then(done);
+      await Promise.all([
+        curl({ data: {} }).then(h.verifyResponse(400, bodyRegex)),
+        curl({ data: { number: null} }).then(h.verifyResponse(400, bodyRegex)),
+      ]);
     });
 
 
-    it('should reject requests for which checking the PR visibility fails', done => {
-      h.runCmd(curl({number: c.BV_getPrIsTrusted_error})).
-        then(h.verifyResponse(500, /Test/)).
-        then(done);
+    it('should reject requests for which checking the PR visibility fails', async () => {
+       await curl({ data: { number: PrNums.TRUST_CHECK_ERROR } }).then(h.verifyResponse(500, /TRUST_CHECK_ERROR/));
     });
 
 
     it('should respond with 404 for unknown paths', done => {
-      const mockPayload = JSON.stringify({number: +pr});
-      const cmdPrefix = `curl -iLX POST --data "${mockPayload}" http://${host}`;
+      const mockPayload = JSON.stringify({number: 1}); // MockExternalApiFlags.TRUST_CHECK_ACTIVE_TRUSTED_USER });
+      const cmdPrefix = `curl -iLX POST --data "${mockPayload}" ${host}`;
 
       Promise.all([
         h.runCmd(`${cmdPrefix}/foo/pr-updated`).then(h.verifyResponse(404)),
@@ -438,111 +355,107 @@ describe('upload-server (on HTTP)', () => {
     });
 
 
-    it('should do nothing if PR\'s visibility is already up-to-date', done => {
-      const publicPr = pr;
-      const hiddenPr = String(c.BV_getPrIsTrusted_notTrusted);
-      const checkVisibilities = () => {
+    it('should do nothing if PR\'s visibility is already up-to-date', async () => {
+      const publicPr = PrNums.TRUST_CHECK_ACTIVE_TRUSTED_USER;
+      const hiddenPr = PrNums.TRUST_CHECK_UNTRUSTED;
+
+      const checkVisibilities = (remove: boolean) => {
         // Public build is already public.
-        expect(h.buildExists(publicPr, '', false)).toBe(false);
-        expect(h.buildExists(publicPr, '', true)).toBe(true);
+        expect({ prNum: publicPr, isPublic: false }).not.toExistAsABuild(remove);
+        expect({ prNum: publicPr, isPublic: true }).toExistAsABuild(remove);
         // Hidden build is already hidden.
-        expect(h.buildExists(hiddenPr, '', false)).toBe(true);
-        expect(h.buildExists(hiddenPr, '', true)).toBe(false);
+        expect({ prNum: hiddenPr, isPublic: false }).toExistAsABuild(remove);
+        expect({ prNum: hiddenPr, isPublic: true }).not.toExistAsABuild(remove);
       };
 
-      h.createDummyBuild(publicPr, sha9, true);
-      h.createDummyBuild(hiddenPr, sha9, false);
-      checkVisibilities();
+      h.createDummyBuild(publicPr, SHA, true);
+      h.createDummyBuild(hiddenPr, SHA, false);
+      checkVisibilities(false);
 
-      Promise.
-        all([
-          h.runCmd(curl({number: +publicPr, action: 'foo'})).then(h.verifyResponse(200)),
-          h.runCmd(curl({number: +hiddenPr, action: 'foo'})).then(h.verifyResponse(200)),
-        ]).
-        // Visibilities should not have changed, because the specified action could not have triggered a change.
-        then(checkVisibilities).
-        then(done);
+      await Promise.all([
+        curl({ data: {number: +publicPr, action: 'foo' } }).then(h.verifyResponse(200)),
+        curl({ data: {number: +hiddenPr, action: 'foo' } }).then(h.verifyResponse(200)),
+      ]);
+
+      // Visibilities should not have changed, because the specified action could not have triggered a change.
+      checkVisibilities(true);
     });
 
 
-    it('should do nothing if \'action\' implies no visibility change', done => {
-      const publicPr = pr;
-      const hiddenPr = String(c.BV_getPrIsTrusted_notTrusted);
-      const checkVisibilities = () => {
+    it('should do nothing if \'action\' implies no visibility change', async () => {
+      const publicPr = PrNums.TRUST_CHECK_ACTIVE_TRUSTED_USER;
+      const hiddenPr = PrNums.TRUST_CHECK_UNTRUSTED;
+
+      const checkVisibilities = (remove: boolean) => {
         // Public build is hidden atm.
-        expect(h.buildExists(publicPr, '', false)).toBe(true);
-        expect(h.buildExists(publicPr, '', true)).toBe(false);
+        expect({ prNum: publicPr, isPublic: false }).toExistAsABuild(remove);
+        expect({ prNum: publicPr, isPublic: true }).not.toExistAsABuild(remove);
         // Hidden build is public atm.
-        expect(h.buildExists(hiddenPr, '', false)).toBe(false);
-        expect(h.buildExists(hiddenPr, '', true)).toBe(true);
+        expect({ prNum: hiddenPr, isPublic: false }).not.toExistAsABuild(remove);
+        expect({ prNum: hiddenPr, isPublic: true }).toExistAsABuild(remove);
       };
 
-      h.createDummyBuild(publicPr, sha9, false);
-      h.createDummyBuild(hiddenPr, sha9, true);
-      checkVisibilities();
+      h.createDummyBuild(publicPr, SHA, false);
+      h.createDummyBuild(hiddenPr, SHA, true);
+      checkVisibilities(false);
 
-      Promise.
-        all([
-          h.runCmd(curl({number: +publicPr, action: 'foo'})).then(h.verifyResponse(200)),
-          h.runCmd(curl({number: +hiddenPr, action: 'foo'})).then(h.verifyResponse(200)),
-        ]).
-        // Visibilities should not have changed, because the specified action could not have triggered a change.
-        then(checkVisibilities).
-        then(done);
+      await Promise.all([
+        curl({ data: {number: +publicPr, action: 'foo' } }).then(h.verifyResponse(200)),
+        curl({ data: {number: +hiddenPr, action: 'foo' } }).then(h.verifyResponse(200)),
+      ]);
+      // Visibilities should not have changed, because the specified action could not have triggered a change.
+      checkVisibilities(true);
     });
 
 
     describe('when the visiblity has changed', () => {
-      const publicPr = pr;
-      const hiddenPr = String(c.BV_getPrIsTrusted_notTrusted);
+      const publicPr = PrNums.TRUST_CHECK_ACTIVE_TRUSTED_USER;
+      const hiddenPr = PrNums.TRUST_CHECK_UNTRUSTED;
 
       beforeEach(() => {
         // Create initial PR builds with opposite visibilities as the ones that will be reported:
         // - The now public PR was previously hidden.
         // - The now hidden PR was previously public.
-        h.createDummyBuild(publicPr, sha9, false);
-        h.createDummyBuild(hiddenPr, sha9, true);
+        h.createDummyBuild(publicPr, SHA, false);
+        h.createDummyBuild(hiddenPr, SHA, true);
 
-        expect(h.buildExists(publicPr, '', false)).toBe(true);
-        expect(h.buildExists(publicPr, '', true)).toBe(false);
-        expect(h.buildExists(hiddenPr, '', false)).toBe(false);
-        expect(h.buildExists(hiddenPr, '', true)).toBe(true);
+        expect({ prNum: publicPr, isPublic: false }).toExistAsABuild(false);
+        expect({ prNum: publicPr, isPublic: true }).not.toExistAsABuild(false);
+        expect({ prNum: hiddenPr, isPublic: false }).not.toExistAsABuild(false);
+        expect({ prNum: hiddenPr, isPublic: true }).toExistAsABuild(false);
       });
       afterEach(() => {
         // Expect PRs' visibility to have been updated:
         // - The public PR should be actually public (previously it was hidden).
         // - The hidden PR should be actually hidden (previously it was public).
-        expect(h.buildExists(publicPr, '', false)).toBe(false);
-        expect(h.buildExists(publicPr, '', true)).toBe(true);
-        expect(h.buildExists(hiddenPr, '', false)).toBe(true);
-        expect(h.buildExists(hiddenPr, '', true)).toBe(false);
-
-        h.deletePrDir(publicPr, true);
-        h.deletePrDir(hiddenPr, false);
+        expect({ prNum: publicPr, isPublic: false }).not.toExistAsABuild();
+        expect({ prNum: publicPr, isPublic: true }).toExistAsABuild();
+        expect({ prNum: hiddenPr, isPublic: false }).toExistAsABuild();
+        expect({ prNum: hiddenPr, isPublic: true }).not.toExistAsABuild();
       });
 
 
-      it('should update the PR\'s visibility (action: undefined)', done => {
-        Promise.all([
-          h.runCmd(curl({number: +publicPr})).then(h.verifyResponse(200)),
-          h.runCmd(curl({number: +hiddenPr})).then(h.verifyResponse(200)),
-        ]).then(done);
+      it('should update the PR\'s visibility (action: undefined)', async () => {
+        await Promise.all([
+          curl({ data: {number: +publicPr } }).then(h.verifyResponse(200)),
+          curl({ data: {number: +hiddenPr } }).then(h.verifyResponse(200)),
+        ]);
       });
 
 
-      it('should update the PR\'s visibility (action: labeled)', done => {
-        Promise.all([
-          h.runCmd(curl({number: +publicPr, action: 'labeled'})).then(h.verifyResponse(200)),
-          h.runCmd(curl({number: +hiddenPr, action: 'labeled'})).then(h.verifyResponse(200)),
-        ]).then(done);
+      it('should update the PR\'s visibility (action: labeled)', async () => {
+        await Promise.all([
+          curl({ data: {number: +publicPr, action: 'labeled' } }).then(h.verifyResponse(200)),
+          curl({ data: {number: +hiddenPr, action: 'labeled' } }).then(h.verifyResponse(200)),
+        ]);
       });
 
 
-      it('should update the PR\'s visibility (action: unlabeled)', done => {
-        Promise.all([
-          h.runCmd(curl({number: +publicPr, action: 'unlabeled'})).then(h.verifyResponse(200)),
-          h.runCmd(curl({number: +hiddenPr, action: 'unlabeled'})).then(h.verifyResponse(200)),
-        ]).then(done);
+      it('should update the PR\'s visibility (action: unlabeled)', async () => {
+        await Promise.all([
+          curl({ data: {number: +publicPr, action: 'unlabeled' } }).then(h.verifyResponse(200)),
+          curl({ data: {number: +hiddenPr, action: 'unlabeled' } }).then(h.verifyResponse(200)),
+        ]);
       });
 
     });
@@ -556,16 +469,15 @@ describe('upload-server (on HTTP)', () => {
       const bodyRegex = /^Unknown resource/;
 
       Promise.all([
-        h.runCmd(`curl -iL http://${host}/index.html`).then(h.verifyResponse(404, bodyRegex)),
-        h.runCmd(`curl -iL http://${host}/`).then(h.verifyResponse(404, bodyRegex)),
-        h.runCmd(`curl -iL http://${host}`).then(h.verifyResponse(404, bodyRegex)),
-        h.runCmd(`curl -iLX PUT http://${host}`).then(h.verifyResponse(404, bodyRegex)),
-        h.runCmd(`curl -iLX POST http://${host}`).then(h.verifyResponse(404, bodyRegex)),
-        h.runCmd(`curl -iLX PATCH http://${host}`).then(h.verifyResponse(404, bodyRegex)),
-        h.runCmd(`curl -iLX DELETE http://${host}`).then(h.verifyResponse(404, bodyRegex)),
+        h.runCmd(`curl -iL ${host}/index.html`).then(h.verifyResponse(404, bodyRegex)),
+        h.runCmd(`curl -iL ${host}/`).then(h.verifyResponse(404, bodyRegex)),
+        h.runCmd(`curl -iL ${host}`).then(h.verifyResponse(404, bodyRegex)),
+        h.runCmd(`curl -iLX PUT ${host}`).then(h.verifyResponse(404, bodyRegex)),
+        h.runCmd(`curl -iLX POST ${host}`).then(h.verifyResponse(404, bodyRegex)),
+        h.runCmd(`curl -iLX PATCH ${host}`).then(h.verifyResponse(404, bodyRegex)),
+        h.runCmd(`curl -iLX DELETE ${host}`).then(h.verifyResponse(404, bodyRegex)),
       ]).then(done);
     });
 
   });
-
 });

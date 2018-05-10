@@ -12,13 +12,13 @@ import {expectToBeUploadError} from './helpers';
 
 // Tests
 describe('BuildCreator', () => {
-  const pr = '9';
+  const pr = 9;
   const sha = '9'.repeat(40);
   const shortSha = sha.substr(0, SHORT_SHA_LEN);
   const archive = 'snapshot.tar.gz';
   const buildsDir = 'builds/dir';
   const hiddenPrDir = path.join(buildsDir, `hidden--${pr}`);
-  const publicPrDir = path.join(buildsDir, pr);
+  const publicPrDir = path.join(buildsDir, `${pr}`);
   const hiddenShaDir = path.join(hiddenPrDir, shortSha);
   const publicShaDir = path.join(publicPrDir, shortSha);
   let bc: BuildCreator;
@@ -135,7 +135,7 @@ describe('BuildCreator', () => {
 
         it('should abort and skip further operations if changing the PR\'s visibility fails', done => {
           const mockError = new UploadError(543, 'Test');
-          bcUpdatePrVisibilitySpy.and.returnValue(Promise.reject(mockError));
+          bcUpdatePrVisibilitySpy.and.callFake(() => Promise.reject(mockError));
 
           bc.create(pr, sha, archive, isPublic).catch(err => {
             expect(err).toBe(mockError);
@@ -324,7 +324,7 @@ describe('BuildCreator', () => {
           const shas = ['foo', 'bar', 'baz'];
           let emitted = false;
 
-          bcListShasByDate.and.returnValue(Promise.resolve(shas));
+          bcListShasByDate.and.callFake(() => Promise.resolve(shas));
           bcEmitSpy.and.callFake((type: string, evt: ChangedPrVisibilityEvent) => {
             expect(bcListShasByDate).toHaveBeenCalledWith(newPrDir);
 
@@ -451,7 +451,7 @@ describe('BuildCreator', () => {
 
     it('should call \'fs.access()\' with the specified argument', () => {
       (bc as any).exists('foo');
-      expect(fs.access).toHaveBeenCalledWith('foo', jasmine.any(Function));
+      expect(fsAccessSpy).toHaveBeenCalledWith('foo', jasmine.any(Function));
     });
 
 
@@ -618,7 +618,7 @@ describe('BuildCreator', () => {
 
 
     it('should reject if listing files fails', done => {
-      shellLsSpy.and.returnValue(Promise.reject('Test'));
+      shellLsSpy.and.callFake(() => Promise.reject('Test'));
       (bc as any).listShasByDate('input/dir').catch((err: string) => {
         expect(err).toBe('Test');
         done();
@@ -627,7 +627,7 @@ describe('BuildCreator', () => {
 
 
     it('should return the filenames', done => {
-      shellLsSpy.and.returnValue(Promise.resolve([
+      shellLsSpy.and.callFake(() => Promise.resolve([
         lsResult('foo', 100),
         lsResult('bar', 200),
         lsResult('baz', 300),
@@ -640,7 +640,7 @@ describe('BuildCreator', () => {
 
 
     it('should sort by date', done => {
-      shellLsSpy.and.returnValue(Promise.resolve([
+      shellLsSpy.and.callFake(() => Promise.resolve([
         lsResult('foo', 300),
         lsResult('bar', 100),
         lsResult('baz', 200),
@@ -660,7 +660,7 @@ describe('BuildCreator', () => {
       ];
       mockArray.sort = jasmine.createSpy('sort');
 
-      shellLsSpy.and.returnValue(Promise.resolve(mockArray));
+      shellLsSpy.and.callFake(() => Promise.resolve(mockArray));
       (bc as any).listShasByDate('input/dir').
         then((shas: string[]) => {
           expect(shas).toEqual(['bar', 'baz', 'foo']);
@@ -671,7 +671,7 @@ describe('BuildCreator', () => {
 
 
     it('should only include directories', done => {
-      shellLsSpy.and.returnValue(Promise.resolve([
+      shellLsSpy.and.callFake(() => Promise.resolve([
         lsResult('foo', 100),
         lsResult('bar', 200, false),
         lsResult('baz', 300),
