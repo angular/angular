@@ -6,9 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-/**
- *
- */
 export abstract class ChangeDetectorRef {
   /**
    * Marks a view and all of its ancestors dirty.
