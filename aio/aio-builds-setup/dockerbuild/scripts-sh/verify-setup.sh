@@ -23,6 +23,7 @@ function countdown {
 }
 
 function onExit {
+  echo -e "Stopping Test Server"
   aio-upload-server-test stop
   echo -e "Full logs in '$logFile'.\n" > /dev/fd/3
 }
@@ -31,10 +32,13 @@ function onExit {
 trap 'onExit' EXIT
 
 # Start an upload-server instance for testing
+echo -e "Starting Test Server"
 aio-upload-server-test start --log $uploadServerLogFile
 
 # Give the upload-server some time to start :(
 countdown "Starting" 5 > /dev/fd/3
 
 # Run the tests
+echo Running the tests
+source aio-test-env
 node $AIO_SCRIPTS_JS_DIR/dist/lib/verify-setup | tee /dev/fd/3
