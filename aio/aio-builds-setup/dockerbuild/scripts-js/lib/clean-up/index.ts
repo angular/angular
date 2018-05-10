@@ -1,11 +1,13 @@
 // Imports
-import {getEnvVar} from '../common/utils';
+import {AIO_DOWNLOADS_DIR} from '../common/constants';
+import {
+  AIO_ARTIFACT_PATH,
+  AIO_BUILDS_DIR,
+  AIO_GITHUB_ORGANIZATION,
+  AIO_GITHUB_REPO,
+  AIO_GITHUB_TOKEN,
+} from '../common/env-variables';
 import {BuildCleaner} from './build-cleaner';
-
-// Constants
-const AIO_BUILDS_DIR = getEnvVar('AIO_BUILDS_DIR');
-const AIO_GITHUB_TOKEN = getEnvVar('AIO_GITHUB_TOKEN', true);
-const AIO_REPO_SLUG = getEnvVar('AIO_REPO_SLUG');
 
 // Run
 _main();
@@ -14,7 +16,13 @@ _main();
 function _main() {
   console.log(`[${new Date()}] - Cleaning up builds...`);
 
-  const buildCleaner = new BuildCleaner(AIO_BUILDS_DIR, AIO_REPO_SLUG, AIO_GITHUB_TOKEN);
+  const buildCleaner = new BuildCleaner(
+    AIO_BUILDS_DIR,
+    AIO_GITHUB_ORGANIZATION,
+    AIO_GITHUB_REPO,
+    AIO_GITHUB_TOKEN,
+    AIO_DOWNLOADS_DIR,
+    AIO_ARTIFACT_PATH);
 
   buildCleaner.cleanUp().catch(err => {
     console.error('ERROR:', err);
