@@ -591,5 +591,13 @@
     "website": "http://ngnir.life/",
     "bio": "Nir is a Principal Frontend Consultant & Head of the Angular department at 500Tech, Google Developer Expert and community leader. He organizes the largest Angular meetup group in Israel (Angular-IL), talks and teaches about front-end technologies around the world. He is also the author of two books about Angular and the founder of the 'Frontend Band'.",
     "group": "GDE"
+  },
+  "coryrylan": {
+    "name": "Cory Rylan",
+    "picture": "cory-rylan.jpg",
+    "twitter": "coryrylan",
+    "website": "https://coryrylan.com",
+    "bio": "Cory is a full time front end web developer. He works full time building responsive web applications and progressive web apps. When not building web apps he is busy teaching Angular and other web technologies in workshops and conferences. He loves the web and is optimistic of the places it can take us.",
+    "group": "GDE"
   }
 }
