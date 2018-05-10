@@ -2,35 +2,53 @@
 import * as express from 'express';
 import * as http from 'http';
 import * as supertest from 'supertest';
+import {promisify} from 'util';
+import {CircleCiApi} from '../../lib/common/circle-ci-api';
+import {GithubApi} from '../../lib/common/github-api';
 import {GithubPullRequests} from '../../lib/common/github-pull-requests';
+import {GithubTeams} from '../../lib/common/github-teams';
 import {BuildCreator} from '../../lib/upload-server/build-creator';
 import {ChangedPrVisibilityEvent, CreatedBuildEvent} from '../../lib/upload-server/build-events';
-import {BUILD_VERIFICATION_STATUS, BuildVerifier} from '../../lib/upload-server/build-verifier';
-import {uploadServerFactory as usf} from '../../lib/upload-server/upload-server-factory';
+import {BuildRetriever, GithubInfo} from '../../lib/upload-server/build-retriever';
+import {BuildVerifier} from '../../lib/upload-server/build-verifier';
+import {UploadServerConfig, UploadServerFactory} from '../../lib/upload-server/upload-server-factory';
+
+interface CircleCiWebHookPayload {
+  payload: {
+    build_num: number;
+    build_parameters: {
+      CIRCLE_JOB: string;
+    }
+  };
+}
 
 // Tests
 describe('uploadServerFactory', () => {
-  const defaultConfig = {
+  const defaultConfig: UploadServerConfig = {
+    buildArtifactPath: 'artifact/path.zip',
     buildsDir: 'builds/dir',
+    circleCiToken: 'CIRCLE_CI_TOKEN',
     domainName: 'domain.name',
-    githubOrganization: 'organization',
+    downloadSizeLimit: 999,
+    downloadsDir: '/tmp/aio-create-builds',
+    githubOrg: 'organisation',
+    githubRepo: 'repo',
     githubTeamSlugs: ['team1', 'team2'],
     githubToken: '12345',
-    repoSlug: 'repo/slug',
-    secret: 'secret',
+    significantFilesPattern: '^(?:aio|packages)\\/(?!.*[._]spec\\.[jt]s$)',
     trustedPrLabel: 'trusted: pr-label',
   };
 
   // Helpers
-  const createUploadServer = (partialConfig: Partial<typeof defaultConfig> = {}) =>
-    usf.create({...defaultConfig, ...partialConfig} as typeof defaultConfig);
+  const createUploadServer = (partialConfig: Partial<UploadServerConfig> = {}) =>
+    UploadServerFactory.create({...defaultConfig, ...partialConfig});
 
 
   describe('create()', () => {
     let usfCreateMiddlewareSpy: jasmine.Spy;
 
     beforeEach(() => {
-      usfCreateMiddlewareSpy = spyOn(usf as any, 'createMiddleware').and.callThrough();
+      usfCreateMiddlewareSpy = spyOn(UploadServerFactory, 'createMiddleware').and.callThrough();
     });
 
 
@@ -52,9 +70,9 @@ describe('uploadServerFactory', () => {
     });
 
 
-    it('should throw if \'githubOrganization\' is missing or empty', () => {
-      expect(() => createUploadServer({githubOrganization: ''})).
-        toThrowError('Missing or empty required parameter \'organization\'!');
+    it('should throw if \'githubOrg\' is missing or empty', () => {
+      expect(() => createUploadServer({githubOrg: ''})).
+        toThrowError('Missing or empty required parameter \'githubOrg\'!');
     });
 
 
@@ -64,15 +82,9 @@ describe('uploadServerFactory', () => {
     });
 
 
-    it('should throw if \'repoSlug\' is missing or empty', () => {
-      expect(() => createUploadServer({repoSlug: ''})).
-        toThrowError('Missing or empty required parameter \'repoSlug\'!');
-    });
-
-
-    it('should throw if \'secret\' is missing or empty', () => {
-      expect(() => createUploadServer({secret: ''})).
-        toThrowError('Missing or empty required parameter \'secret\'!');
+    it('should throw if \'githubRepo\' is missing or empty', () => {
+      expect(() => createUploadServer({githubRepo: ''})).
+        toThrowError('Missing or empty required parameter \'githubRepo\'!');
     });
 
 
@@ -91,13 +103,16 @@ describe('uploadServerFactory', () => {
 
 
     it('should create and use an appropriate BuildCreator', () => {
-      const usfCreateBuildCreatorSpy = spyOn(usf as any, 'createBuildCreator').and.callThrough();
+      const usfCreateBuildCreatorSpy = spyOn(UploadServerFactory, 'createBuildCreator').and.callThrough();
 
       createUploadServer();
+      const buildRetriever = jasmine.any(BuildRetriever);
+      const buildVerifier = jasmine.any(BuildVerifier);
+      const prs = jasmine.any(GithubPullRequests);
       const buildCreator: BuildCreator = usfCreateBuildCreatorSpy.calls.mostRecent().returnValue;
 
-      expect(usfCreateMiddlewareSpy).toHaveBeenCalledWith(jasmine.any(BuildVerifier), buildCreator);
-      expect(usfCreateBuildCreatorSpy).toHaveBeenCalledWith('builds/dir', '12345', 'repo/slug', 'domain.name');
+      expect(usfCreateMiddlewareSpy).toHaveBeenCalledWith(buildRetriever, buildVerifier, buildCreator, defaultConfig);
+      expect(usfCreateBuildCreatorSpy).toHaveBeenCalledWith(prs, 'builds/dir', 'domain.name');
     });
 
 
@@ -105,12 +120,14 @@ describe('uploadServerFactory', () => {
       const httpCreateServerSpy = spyOn(http, 'createServer').and.callThrough();
 
       createUploadServer();
-      const middleware: express.Express = usfCreateMiddlewareSpy.calls.mostRecent().returnValue;
+
+      const buildRetriever = jasmine.any(BuildRetriever);
       const buildVerifier = jasmine.any(BuildVerifier);
       const buildCreator = jasmine.any(BuildCreator);
+      expect(usfCreateMiddlewareSpy).toHaveBeenCalledWith(buildRetriever, buildVerifier, buildCreator, defaultConfig);
 
+      const middleware: express.Express = usfCreateMiddlewareSpy.calls.mostRecent().returnValue;
       expect(httpCreateServerSpy).toHaveBeenCalledWith(middleware);
-      expect(usfCreateMiddlewareSpy).toHaveBeenCalledWith(buildVerifier, buildCreator);
     });
 
 
@@ -134,14 +151,10 @@ describe('uploadServerFactory', () => {
     let buildCreator: BuildCreator;
 
     beforeEach(() => {
-      buildCreator = (usf as any).createBuildCreator(
-        defaultConfig.buildsDir,
-        defaultConfig.githubToken,
-        defaultConfig.repoSlug,
-        defaultConfig.domainName,
-      );
+      const api = new GithubApi(defaultConfig.githubToken);
+      const prs = new GithubPullRequests(api, defaultConfig.githubOrg, defaultConfig.githubRepo);
+      buildCreator = UploadServerFactory.createBuildCreator(prs, defaultConfig.buildsDir, defaultConfig.domainName);
     });
-
 
     it('should pass the \'buildsDir\' to the BuildCreator', () => {
       expect((buildCreator as any).buildsDir).toBe('builds/dir');
@@ -199,246 +212,239 @@ describe('uploadServerFactory', () => {
     });
 
 
-    it('should pass the correct \'githubToken\' and \'repoSlug\' to GithubPullRequests', () => {
+    it('should pass the correct parameters to GithubPullRequests', () => {
       const prsAddCommentSpy = spyOn(GithubPullRequests.prototype, 'addComment');
 
       buildCreator.emit(CreatedBuildEvent.type, {pr: 42, sha: '1234567890', isPublic: true});
       buildCreator.emit(ChangedPrVisibilityEvent.type, {pr: 42, shas: ['12345', '67890'], isPublic: true});
 
       const allCalls = prsAddCommentSpy.calls.all();
-      const prs = allCalls[0].object;
+      const prs: GithubPullRequests = allCalls[0].object;
 
       expect(prsAddCommentSpy).toHaveBeenCalledTimes(2);
       expect(prs).toBe(allCalls[1].object);
       expect(prs).toEqual(jasmine.any(GithubPullRequests));
-      expect(prs.repoSlug).toBe('repo/slug');
-      expect(prs.requestHeaders.Authorization).toContain('12345');
+      expect(prs.repoSlug).toBe('organisation/repo');
     });
 
   });
 
 
   describe('createMiddleware()', () => {
+    let buildRetriever: BuildRetriever;
     let buildVerifier: BuildVerifier;
     let buildCreator: BuildCreator;
     let agent: supertest.SuperTest<supertest.Test>;
 
     // Helpers
-    const promisifyRequest = (req: supertest.Request) =>
-      new Promise((resolve, reject) => req.end(err => err ? reject(err) : resolve()));
-    const verifyRequests = (reqs: supertest.Request[], done: jasmine.DoneFn) =>
-      Promise.all(reqs.map(promisifyRequest)).then(done, done.fail);
+    const promisifyRequest = async (req: supertest.Request) => await promisify(req.end.bind(req))();
+    const verifyRequests = async (reqs: supertest.Request[]) => await Promise.all(reqs.map(promisifyRequest));
 
     beforeEach(() => {
-      buildVerifier = new BuildVerifier(
-        defaultConfig.secret,
-        defaultConfig.githubToken,
-        defaultConfig.repoSlug,
-        defaultConfig.githubOrganization,
-        defaultConfig.githubTeamSlugs,
-        defaultConfig.trustedPrLabel,
-      );
+      const circleCiApi = new CircleCiApi(defaultConfig.githubOrg, defaultConfig.githubRepo,
+                                          defaultConfig.circleCiToken);
+      const githubApi = new GithubApi(defaultConfig.githubToken);
+      const prs = new GithubPullRequests(githubApi, defaultConfig.githubOrg, defaultConfig.githubRepo);
+      const teams = new GithubTeams(githubApi, defaultConfig.githubOrg);
+
+      buildRetriever = new BuildRetriever(circleCiApi, defaultConfig.downloadSizeLimit, defaultConfig.downloadsDir);
+      buildVerifier = new BuildVerifier(prs, teams, defaultConfig.githubTeamSlugs, defaultConfig.trustedPrLabel);
       buildCreator = new BuildCreator(defaultConfig.buildsDir);
-      agent = supertest.agent((usf as any).createMiddleware(buildVerifier, buildCreator));
+
+      const middleware = UploadServerFactory.createMiddleware(buildRetriever, buildVerifier, buildCreator,
+                                                              defaultConfig);
+      agent = supertest.agent(middleware);
 
       spyOn(console, 'error');
     });
 
-
-    describe('GET /create-build/<pr>/<sha>', () => {
-      const pr = '9';
-      const sha = '9'.repeat(40);
-      let buildVerifierVerifySpy: jasmine.Spy;
-      let buildCreatorCreateSpy: jasmine.Spy;
-
-      beforeEach(() => {
-        const verStatus = BUILD_VERIFICATION_STATUS.verifiedAndTrusted;
-        buildVerifierVerifySpy = spyOn(buildVerifier, 'verify').and.returnValue(Promise.resolve(verStatus));
-        buildCreatorCreateSpy = spyOn(buildCreator, 'create').and.returnValue(Promise.resolve());
-      });
-
-
-      it('should respond with 404 for non-GET requests', done => {
-        verifyRequests([
-          agent.put(`/create-build/${pr}/${sha}`).expect(404),
-          agent.post(`/create-build/${pr}/${sha}`).expect(404),
-          agent.patch(`/create-build/${pr}/${sha}`).expect(404),
-          agent.delete(`/create-build/${pr}/${sha}`).expect(404),
-        ], done);
-      });
-
-
-      it('should respond with 401 for requests without an \'AUTHORIZATION\' header', done => {
-        const url = `/create-build/${pr}/${sha}`;
-        const responseBody = `Missing or empty 'AUTHORIZATION' header in request: GET ${url}`;
-
-        verifyRequests([
-          agent.get(url).expect(401, responseBody),
-          agent.get(url).set('AUTHORIZATION', '').expect(401, responseBody),
-        ], done);
-      });
-
-
-      it('should respond with 400 for requests without an \'X-FILE\' header', done => {
-        const url = `/create-build/${pr}/${sha}`;
-        const responseBody = `Missing or empty 'X-FILE' header in request: GET ${url}`;
-
-        const request1 = agent.get(url).set('AUTHORIZATION', 'foo');
-        const request2 = agent.get(url).set('AUTHORIZATION', 'foo').set('X-FILE', '');
-
-        verifyRequests([
-          request1.expect(400, responseBody),
-          request2.expect(400, responseBody),
-        ], done);
-      });
-
-
-      it('should respond with 404 for unknown paths', done => {
-        verifyRequests([
-          agent.get(`/foo/create-build/${pr}/${sha}`).expect(404),
-          agent.get(`/foo-create-build/${pr}/${sha}`).expect(404),
-          agent.get(`/fooncreate-build/${pr}/${sha}`).expect(404),
-          agent.get(`/create-build/foo/${pr}/${sha}`).expect(404),
-          agent.get(`/create-build-foo/${pr}/${sha}`).expect(404),
-          agent.get(`/create-buildnfoo/${pr}/${sha}`).expect(404),
-          agent.get(`/create-build/pr${pr}/${sha}`).expect(404),
-          agent.get(`/create-build/${pr}/${sha}42`).expect(404),
-        ], done);
-      });
-
-
-      it('should call \'BuildVerifier#verify()\' with the correct arguments', done => {
-        const req = agent.
-          get(`/create-build/${pr}/${sha}`).
-          set('AUTHORIZATION', 'foo').
-          set('X-FILE', 'bar');
-
-        promisifyRequest(req).
-          then(() => expect(buildVerifierVerifySpy).toHaveBeenCalledWith(9, 'foo')).
-          then(done, done.fail);
-      });
-
-
-      it('should propagate errors from BuildVerifier', done => {
-        buildVerifierVerifySpy.and.callFake(() => Promise.reject('Test'));
-
-        const req = agent.
-          get(`/create-build/${pr}/${sha}`).
-          set('AUTHORIZATION', 'foo').
-          set('X-FILE', 'bar').
-          expect(500, 'Test');
-
-        promisifyRequest(req).
-          then(() => {
-            expect(buildVerifierVerifySpy).toHaveBeenCalledWith(9, 'foo');
-            expect(buildCreatorCreateSpy).not.toHaveBeenCalled();
-          }).
-          then(done, done.fail);
-      });
-
-
-      it('should call \'BuildCreator#create()\' with the correct arguments', done => {
-        buildVerifierVerifySpy.and.returnValues(
-            Promise.resolve(BUILD_VERIFICATION_STATUS.verifiedAndTrusted),
-            Promise.resolve(BUILD_VERIFICATION_STATUS.verifiedNotTrusted));
-
-        const req1 = agent.get(`/create-build/${pr}/${sha}`).set('AUTHORIZATION', 'foo').set('X-FILE', 'bar');
-        const req2 = agent.get(`/create-build/${pr}/${sha}`).set('AUTHORIZATION', 'foo').set('X-FILE', 'bar');
-
-        Promise.all([
-          promisifyRequest(req1).then(() => expect(buildCreatorCreateSpy).toHaveBeenCalledWith(pr, sha, 'bar', true)),
-          promisifyRequest(req2).then(() => expect(buildCreatorCreateSpy).toHaveBeenCalledWith(pr, sha, 'bar', false)),
-        ]).then(done, done.fail);
-      });
-
-
-      it('should propagate errors from BuildCreator', done => {
-        buildCreatorCreateSpy.and.callFake(() => Promise.reject('Test'));
-        const req = agent.
-          get(`/create-build/${pr}/${sha}`).
-          set('AUTHORIZATION', 'foo').
-          set('X-FILE', 'bar').
-          expect(500, 'Test');
-
-        verifyRequests([req], done);
-      });
-
-
-      it('should respond with 201 on successful upload (for public builds)', done => {
-        const req = agent.
-          get(`/create-build/${pr}/${sha}`).
-          set('AUTHORIZATION', 'foo').
-          set('X-FILE', 'bar').
-          expect(201, http.STATUS_CODES[201]);
-
-        verifyRequests([req], done);
-      });
-
-
-      it('should respond with 202 on successful upload (for hidden builds)', done => {
-        buildVerifierVerifySpy.and.returnValue(Promise.resolve(BUILD_VERIFICATION_STATUS.verifiedNotTrusted));
-        const req = agent.
-          get(`/create-build/${pr}/${sha}`).
-          set('AUTHORIZATION', 'foo').
-          set('X-FILE', 'bar').
-          expect(202, http.STATUS_CODES[202]);
-
-        verifyRequests([req], done);
-      });
-
-
-      it('should reject PRs with leading zeros', done => {
-        verifyRequests([agent.get(`/create-build/0${pr}/${sha}`).expect(404)], done);
-      });
-
-
-      it('should accept SHAs with leading zeros (but not trim the zeros)', done => {
-        const sha40 = '0'.repeat(40);
-        const sha41 = `0${sha40}`;
-
-        const request40 = agent.get(`/create-build/${pr}/${sha40}`).set('AUTHORIZATION', 'foo').set('X-FILE', 'bar');
-        const request41 = agent.get(`/create-build/${pr}/${sha41}`).set('AUTHORIZATION', 'baz').set('X-FILE', 'qux');
-
-        Promise.all([
-          promisifyRequest(request40.expect(201)),
-          promisifyRequest(request41.expect(404)),
-        ]).then(done, done.fail);
-      });
-
-    });
-
-
     describe('GET /health-check', () => {
 
-      it('should respond with 200', done => {
-        verifyRequests([
+      it('should respond with 200', async () => {
+        await verifyRequests([
           agent.get('/health-check').expect(200),
           agent.get('/health-check/').expect(200),
-         ], done);
+        ]);
       });
 
 
-      it('should respond with 404 for non-GET requests', done => {
-        verifyRequests([
+      it('should respond with 404 for non-GET requests', async () => {
+        await verifyRequests([
           agent.put('/health-check').expect(404),
           agent.post('/health-check').expect(404),
           agent.patch('/health-check').expect(404),
           agent.delete('/health-check').expect(404),
-        ], done);
+        ]);
       });
 
 
-      it('should respond with 404 if the path does not match exactly', done => {
-        verifyRequests([
+      it('should respond with 404 if the path does not match exactly', async () => {
+        await verifyRequests([
           agent.get('/health-check/foo').expect(404),
           agent.get('/health-check-foo').expect(404),
           agent.get('/health-checknfoo').expect(404),
           agent.get('/foo/health-check').expect(404),
           agent.get('/foo-health-check').expect(404),
           agent.get('/foonhealth-check').expect(404),
-        ], done);
+        ]);
       });
 
+    });
+
+    describe('/circle-build', () => {
+      let getGithubInfoSpy: jasmine.Spy;
+      let getSignificantFilesChangedSpy: jasmine.Spy;
+      let downloadBuildArtifactSpy: jasmine.Spy;
+      let getPrIsTrustedSpy: jasmine.Spy;
+      let createBuildSpy: jasmine.Spy;
+      let IS_PUBLIC: boolean;
+      let BUILD_INFO: GithubInfo;
+      let AFFECTS_SIGNIFICANT_FILES: boolean;
+      let BASIC_PAYLOAD: CircleCiWebHookPayload;
+      const URL = '/circle-build';
+      const BUILD_NUM = 12345;
+      const PR = 777;
+      const SHA = 'COMMIT';
+      const DOWNLOADED_ARTIFACT_PATH = 'downloads/777-COMMIT-build.zip';
+
+      beforeEach(() => {
+        IS_PUBLIC = true;
+        BUILD_INFO  = {
+          org: defaultConfig.githubOrg,
+          pr: PR,
+          repo: defaultConfig.githubRepo,
+          sha: SHA,
+          success: true,
+        };
+        BASIC_PAYLOAD = { payload: { build_num: BUILD_NUM, build_parameters: { CIRCLE_JOB: 'aio_preview' } } };
+        AFFECTS_SIGNIFICANT_FILES = true;
+        getGithubInfoSpy = spyOn(buildRetriever, 'getGithubInfo')
+          .and.callFake(() => Promise.resolve(BUILD_INFO));
+        getSignificantFilesChangedSpy = spyOn(buildVerifier, 'getSignificantFilesChanged')
+          .and.callFake(() => Promise.resolve(AFFECTS_SIGNIFICANT_FILES));
+        downloadBuildArtifactSpy = spyOn(buildRetriever, 'downloadBuildArtifact')
+          .and.callFake(() => Promise.resolve(DOWNLOADED_ARTIFACT_PATH));
+        getPrIsTrustedSpy = spyOn(buildVerifier, 'getPrIsTrusted')
+          .and.callFake(() => Promise.resolve(IS_PUBLIC));
+        createBuildSpy = spyOn(buildCreator, 'create');
+      });
+
+      it('should respond with 400 if the request body is not in the correct format', async () => {
+        await Promise.all([
+          agent.post(URL).expect(400),
+          agent.post(URL).send().expect(400),
+          agent.post(URL).send({}).expect(400),
+          agent.post(URL).send({ payload: {} }).expect(400),
+          agent.post(URL).send({ payload: { build_num: -1 } }).expect(400),
+          agent.post(URL).send({ payload: { build_num: 4000 } }).expect(400),
+          agent.post(URL).send({ payload: { build_num: 4000, build_parameters: { } } }).expect(400),
+          agent.post(URL).send({ payload: { build_num: 4000, build_parameters: { CIRCLE_JOB: '' } } }).expect(400),
+        ]);
+      });
+
+      it('should create a preview if everything is good and the build succeeded', async () => {
+        await agent.post(URL).send(BASIC_PAYLOAD).expect(201);
+        expect(getGithubInfoSpy).toHaveBeenCalledWith(BUILD_NUM);
+        expect(getSignificantFilesChangedSpy).toHaveBeenCalledWith(PR, jasmine.any(RegExp));
+        expect(downloadBuildArtifactSpy).toHaveBeenCalledWith(BUILD_NUM, PR, SHA, defaultConfig.buildArtifactPath);
+        expect(getPrIsTrustedSpy).toHaveBeenCalledWith(PR);
+        expect(createBuildSpy).toHaveBeenCalledWith(PR, SHA, DOWNLOADED_ARTIFACT_PATH, IS_PUBLIC);
+      });
+
+      it('should respond with 204 if the reported build is not the "AIO preview" job', async () => {
+        BASIC_PAYLOAD.payload.build_parameters.CIRCLE_JOB = 'lint';
+        await agent.post(URL).send(BASIC_PAYLOAD).expect(204);
+        expect(getGithubInfoSpy).not.toHaveBeenCalled();
+        expect(getSignificantFilesChangedSpy).not.toHaveBeenCalled();
+        expect(console.log).toHaveBeenCalledWith(jasmine.any(String), 'UploadServer:        ',
+        'Build:12345, Job:lint -', 'Skipping preview processing because this is not the "aio_preview" job.');
+        expect(downloadBuildArtifactSpy).not.toHaveBeenCalled();
+        expect(getPrIsTrustedSpy).not.toHaveBeenCalled();
+        expect(createBuildSpy).not.toHaveBeenCalled();
+      });
+
+      it('should respond with 204 if the build did not affect any significant files', async () => {
+        spyOn(console, 'log');
+        AFFECTS_SIGNIFICANT_FILES = false;
+        await agent.post(URL).send(BASIC_PAYLOAD).expect(204);
+        expect(getGithubInfoSpy).toHaveBeenCalledWith(BUILD_NUM);
+        expect(getSignificantFilesChangedSpy).toHaveBeenCalledWith(PR, jasmine.any(RegExp));
+        expect(console.log).toHaveBeenCalledWith(
+          'PR:777, Build:12345 - Skipping preview processing because this PR did not touch any significant files.');
+        expect(downloadBuildArtifactSpy).not.toHaveBeenCalled();
+        expect(getPrIsTrustedSpy).not.toHaveBeenCalled();
+        expect(createBuildSpy).not.toHaveBeenCalled();
+      });
+
+      it('should respond with 201 if the build is trusted', async () => {
+        IS_PUBLIC = true;
+        await agent.post(URL).send(BASIC_PAYLOAD).expect(201);
+      });
+
+      it('should respond with 202 if the build is not trusted', async () => {
+        IS_PUBLIC = false;
+        await agent.post(URL).send(BASIC_PAYLOAD).expect(202);
+      });
+
+      it('should not create a preview if the build was not successful', async () => {
+        BUILD_INFO.success = false;
+        await agent.post(URL).send(BASIC_PAYLOAD).expect(204);
+        expect(getGithubInfoSpy).toHaveBeenCalledWith(BUILD_NUM);
+        expect(downloadBuildArtifactSpy).not.toHaveBeenCalled();
+        expect(getPrIsTrustedSpy).not.toHaveBeenCalled();
+        expect(createBuildSpy).not.toHaveBeenCalled();
+      });
+
+      it('should fail if the CircleCI request fails', async () => {
+        // Note it is important to put the `reject` into `and.callFake`;
+        // If you just `and.returnValue` the rejected promise
+        // then you get an "unhandled rejection" message in the console.
+        getGithubInfoSpy.and.callFake(() => Promise.reject('Test Error'));
+        await agent.post(URL).send(BASIC_PAYLOAD).expect(500, 'Test Error');
+        expect(getGithubInfoSpy).toHaveBeenCalledWith(BUILD_NUM);
+        expect(downloadBuildArtifactSpy).not.toHaveBeenCalled();
+        expect(getPrIsTrustedSpy).not.toHaveBeenCalled();
+        expect(createBuildSpy).not.toHaveBeenCalled();
+      });
+
+      it('should fail if the Github organisation of the build does not match the configured organisation', async () => {
+        BUILD_INFO.org = 'bad';
+        await agent.post(URL).send(BASIC_PAYLOAD)
+          .expect(500, `Invalid webhook: expected "githubOrg" property to equal "organisation" but got "bad".`);
+      });
+
+      it('should fail if the Github repo of the build does not match the configured repo', async () => {
+        BUILD_INFO.repo = 'bad';
+        await agent.post(URL).send(BASIC_PAYLOAD)
+          .expect(500, `Invalid webhook: expected "githubRepo" property to equal "repo" but got "bad".`);
+      });
+
+      it('should fail if the artifact fetch request fails', async () => {
+        downloadBuildArtifactSpy.and.callFake(() => Promise.reject('Test Error'));
+        await agent.post(URL).send(BASIC_PAYLOAD).expect(500, 'Test Error');
+        expect(getGithubInfoSpy).toHaveBeenCalledWith(BUILD_NUM);
+        expect(downloadBuildArtifactSpy).toHaveBeenCalled();
+        expect(getPrIsTrustedSpy).not.toHaveBeenCalled();
+        expect(createBuildSpy).not.toHaveBeenCalled();
+      });
+
+      it('should fail if verifying the PR fails', async () => {
+        getPrIsTrustedSpy.and.callFake(() => Promise.reject('Test Error'));
+        await agent.post(URL).send(BASIC_PAYLOAD).expect(500, 'Test Error');
+        expect(getGithubInfoSpy).toHaveBeenCalledWith(BUILD_NUM);
+        expect(downloadBuildArtifactSpy).toHaveBeenCalled();
+        expect(getPrIsTrustedSpy).toHaveBeenCalled();
+        expect(createBuildSpy).not.toHaveBeenCalled();
+      });
+
+      it('should fail if creating the preview build fails', async () => {
+        createBuildSpy.and.callFake(() => Promise.reject('Test Error'));
+        await agent.post(URL).send(BASIC_PAYLOAD).expect(500, 'Test Error');
+        expect(getGithubInfoSpy).toHaveBeenCalledWith(BUILD_NUM);
+        expect(downloadBuildArtifactSpy).toHaveBeenCalled();
+        expect(getPrIsTrustedSpy).toHaveBeenCalled();
+        expect(createBuildSpy).toHaveBeenCalled();
+      });
     });
 
 
@@ -458,123 +464,112 @@ describe('uploadServerFactory', () => {
       });
 
 
-      it('should respond with 404 for non-POST requests', done => {
-        verifyRequests([
+      it('should respond with 404 for non-POST requests', async () => {
+        await verifyRequests([
           agent.get(url).expect(404),
           agent.put(url).expect(404),
           agent.patch(url).expect(404),
           agent.delete(url).expect(404),
-        ], done);
+        ]);
       });
 
 
-      it('should respond with 400 for requests without a payload', done => {
+      it('should respond with 400 for requests without a payload', async () => {
         const responseBody = `Missing or empty 'number' field in request: POST ${url} {}`;
 
         const request1 = agent.post(url);
         const request2 = agent.post(url).send();
 
-        verifyRequests([
+        await verifyRequests([
           request1.expect(400, responseBody),
           request2.expect(400, responseBody),
-        ], done);
+        ]);
       });
 
 
-      it('should respond with 400 for requests without a \'number\' field', done => {
+      it('should respond with 400 for requests without a \'number\' field', async () => {
         const responseBodyPrefix = `Missing or empty 'number' field in request: POST ${url}`;
 
         const request1 = agent.post(url).send({});
         const request2 = agent.post(url).send({number: null});
 
-        verifyRequests([
+        await verifyRequests([
           request1.expect(400, `${responseBodyPrefix} {}`),
           request2.expect(400, `${responseBodyPrefix} {"number":null}`),
-        ], done);
+        ]);
       });
 
 
-      it('should call \'BuildVerifier#gtPrIsTrusted()\' with the correct arguments', done => {
-        const req = createRequest(+pr);
-
-        promisifyRequest(req).
-          then(() => expect(bvGetPrIsTrustedSpy).toHaveBeenCalledWith(9)).
-          then(done, done.fail);
+      it('should call \'BuildVerifier#gtPrIsTrusted()\' with the correct arguments', async () => {
+        await promisifyRequest(createRequest(+pr));
+        expect(bvGetPrIsTrustedSpy).toHaveBeenCalledWith(9);
       });
 
 
-      it('should propagate errors from BuildVerifier', done => {
+      it('should propagate errors from BuildVerifier', async () => {
         bvGetPrIsTrustedSpy.and.callFake(() => Promise.reject('Test'));
 
         const req = createRequest(+pr).expect(500, 'Test');
 
-        promisifyRequest(req).
-          then(() => {
-            expect(bvGetPrIsTrustedSpy).toHaveBeenCalledWith(9);
-            expect(bcUpdatePrVisibilitySpy).not.toHaveBeenCalled();
-          }).
-          then(done, done.fail);
+        await promisifyRequest(req);
+        expect(bvGetPrIsTrustedSpy).toHaveBeenCalledWith(9);
+        expect(bcUpdatePrVisibilitySpy).not.toHaveBeenCalled();
       });
 
 
-      it('should call \'BuildCreator#updatePrVisibility()\' with the correct arguments', done => {
+      it('should call \'BuildCreator#updatePrVisibility()\' with the correct arguments', async () => {
         bvGetPrIsTrustedSpy.and.callFake((pr2: number) => Promise.resolve(pr2 === 42));
 
-        const req1 = createRequest(24);
-        const req2 = createRequest(42);
+        await promisifyRequest(createRequest(24));
+        expect(bcUpdatePrVisibilitySpy).toHaveBeenCalledWith(24, false);
 
-        Promise.all([
-          promisifyRequest(req1).then(() => expect(bcUpdatePrVisibilitySpy).toHaveBeenCalledWith('24', false)),
-          promisifyRequest(req2).then(() => expect(bcUpdatePrVisibilitySpy).toHaveBeenCalledWith('42', true)),
-        ]).then(done, done.fail);
+        await promisifyRequest(createRequest(42));
+        expect(bcUpdatePrVisibilitySpy).toHaveBeenCalledWith(42, true);
       });
 
 
-      it('should propagate errors from BuildCreator', done => {
+      it('should propagate errors from BuildCreator', async () => {
         bcUpdatePrVisibilitySpy.and.callFake(() => Promise.reject('Test'));
 
         const req = createRequest(+pr).expect(500, 'Test');
-        verifyRequests([req], done);
+        await verifyRequests([req]);
       });
 
 
       describe('on success', () => {
 
-        it('should respond with 200 (action: undefined)', done => {
+        it('should respond with 200 (action: undefined)', async () => {
           bvGetPrIsTrustedSpy.and.returnValues(Promise.resolve(true), Promise.resolve(false));
 
           const reqs = [4, 2].map(num => createRequest(num).expect(200, http.STATUS_CODES[200]));
-          verifyRequests(reqs, done);
+          await verifyRequests(reqs);
         });
 
 
-        it('should respond with 200 (action: labeled)', done => {
+        it('should respond with 200 (action: labeled)', async () => {
           bvGetPrIsTrustedSpy.and.returnValues(Promise.resolve(true), Promise.resolve(false));
 
           const reqs = [4, 2].map(num => createRequest(num, 'labeled').expect(200, http.STATUS_CODES[200]));
-          verifyRequests(reqs, done);
+          await verifyRequests(reqs);
         });
 
 
-        it('should respond with 200 (action: unlabeled)', done => {
+        it('should respond with 200 (action: unlabeled)', async () => {
           bvGetPrIsTrustedSpy.and.returnValues(Promise.resolve(true), Promise.resolve(false));
 
           const reqs = [4, 2].map(num => createRequest(num, 'unlabeled').expect(200, http.STATUS_CODES[200]));
-          verifyRequests(reqs, done);
+          await verifyRequests(reqs);
         });
 
 
-        it('should respond with 200 (and do nothing) if \'action\' implies no visibility change', done => {
+        it('should respond with 200 (and do nothing) if \'action\' implies no visibility change', async () => {
           const promises = ['foo', 'notlabeled'].
             map(action => createRequest(+pr, action).expect(200, http.STATUS_CODES[200])).
             map(promisifyRequest);
 
-          Promise.all(promises).
-            then(() => {
-              expect(bvGetPrIsTrustedSpy).not.toHaveBeenCalled();
-              expect(bcUpdatePrVisibilitySpy).not.toHaveBeenCalled();
-            }).
-            then(done, done.fail);
+          await Promise.all(promises);
+          expect(bvGetPrIsTrustedSpy).not.toHaveBeenCalled();
+          expect(bcUpdatePrVisibilitySpy).not.toHaveBeenCalled();
         });
 
       });
@@ -584,16 +579,16 @@ describe('uploadServerFactory', () => {
 
     describe('ALL *', () => {
 
-      it('should respond with 404', done => {
+      it('should respond with 404', async () => {
         const responseFor = (method: string) => `Unknown resource in request: ${method.toUpperCase()} /some/url`;
 
-        verifyRequests([
+        await verifyRequests([
           agent.get('/some/url').expect(404, responseFor('get')),
           agent.put('/some/url').expect(404, responseFor('put')),
           agent.post('/some/url').expect(404, responseFor('post')),
           agent.patch('/some/url').expect(404, responseFor('patch')),
           agent.delete('/some/url').expect(404, responseFor('delete')),
-        ], done);
+        ]);
       });
 
     });

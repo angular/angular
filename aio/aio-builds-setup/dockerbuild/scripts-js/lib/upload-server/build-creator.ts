@@ -4,8 +4,8 @@ import {EventEmitter} from 'events';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as shell from 'shelljs';
-import {HIDDEN_DIR_PREFIX, SHORT_SHA_LEN} from '../common/constants';
-import {assertNotMissingOrEmpty} from '../common/utils';
+import {HIDDEN_DIR_PREFIX} from '../common/constants';
+import {assertNotMissingOrEmpty, computeShortSha} from '../common/utils';
 import {ChangedPrVisibilityEvent, CreatedBuildEvent} from './build-events';
 import {UploadError} from './upload-error';
 
@@ -18,9 +18,9 @@ export class BuildCreator extends EventEmitter {
   }
 
   // Methods - Public
-  public create(pr: string, sha: string, archivePath: string, isPublic: boolean): Promise<void> {
+  public create(pr: number, sha: string, archivePath: string, isPublic: boolean): Promise<void> {
     // Use only part of the SHA for more readable URLs.
-    sha = sha.substr(0, SHORT_SHA_LEN);
+    sha = computeShortSha(sha);
 
     const {newPrDir: prDir} = this.getCandidatePrDirs(pr, isPublic);
     const shaDir = path.join(prDir, sha);
@@ -57,7 +57,7 @@ export class BuildCreator extends EventEmitter {
       });
   }
 
-  public updatePrVisibility(pr: string, makePublic: boolean): Promise<boolean> {
+  public updatePrVisibility(pr: number, makePublic: boolean): Promise<boolean> {
     const {oldPrDir: otherVisPrDir, newPrDir: targetVisPrDir} = this.getCandidatePrDirs(pr, makePublic);
 
     return Promise.
@@ -116,9 +116,9 @@ export class BuildCreator extends EventEmitter {
     });
   }
 
-  protected getCandidatePrDirs(pr: string, isPublic: boolean) {
+  protected getCandidatePrDirs(pr: number, isPublic: boolean) {
     const hiddenPrDir = path.join(this.buildsDir, HIDDEN_DIR_PREFIX + pr);
-    const publicPrDir = path.join(this.buildsDir, pr);
+    const publicPrDir = path.join(this.buildsDir, `${pr}`);
 
     const oldPrDir = isPublic ? hiddenPrDir : publicPrDir;
     const newPrDir = isPublic ? publicPrDir : hiddenPrDir;
