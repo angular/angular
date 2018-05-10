@@ -49,13 +49,12 @@ import {TooltipDemo} from '../tooltip/tooltip-demo';
 import {TreeDemo} from '../tree/tree-demo';
 import {TypographyDemo} from '../typography/typography-demo';
 import {DemoApp, Home} from './demo-app';
-import {TableDemoPage} from '../table/table-demo-page';
-import {TABLE_DEMO_ROUTES} from '../table/routes';
 import {BadgeDemo} from '../badge/badge-demo';
 import {ConnectedOverlayDemo} from '../connected-overlay/connected-overlay-demo';
 import {PaginatorDemo} from '../paginator/paginator-demo';
 
 import {ExamplesPage} from '../examples-page/examples-page';
+import {TableDemo} from '../table/table-demo';
 
 export const DEMO_APP_ROUTES: Routes = [
   {path: '', component: DemoApp, children: [
@@ -94,7 +93,7 @@ export const DEMO_APP_ROUTES: Routes = [
     {path: 'slider', component: SliderDemo},
     {path: 'snack-bar', component: SnackBarDemo},
     {path: 'stepper', component: StepperDemo},
-    {path: 'table', component: TableDemoPage, children: TABLE_DEMO_ROUTES},
+    {path: 'table', component: TableDemo},
     {path: 'tabs', component: TabsDemo, children: TABS_DEMO_ROUTES},
     {path: 'toolbar', component: ToolbarDemo},
     {path: 'tooltip', component: TooltipDemo},

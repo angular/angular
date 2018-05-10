@@ -7,7 +7,7 @@
  */
 
 import {Component, ViewChild} from '@angular/core';
-import {PeriodicElement, ELEMENT_DATA} from '../element-data';
+import {Element, ELEMENT_DATA} from '../element-data';
 import {CdkTable} from '@angular/cdk/table';
 import {MatRadioChange, MatTable, MatTableDataSource} from '@angular/material';
 import {Observable} from 'rxjs';
@@ -17,6 +17,7 @@ export type TrackByStrategy = 'position' | 'reference' | 'index';
 
 @Component({
   moduleId: module.id,
+  selector: 'data-input-table-demo',
   templateUrl: 'data-input-table.html',
   styleUrls: ['data-input-table.css'],
 })
@@ -28,7 +29,7 @@ export class DataInputTableDemo {
   matTableDataSource = new MatTableDataSource(this.data);
 
   trackByStrategy: TrackByStrategy = 'reference';
-  trackBy = (index: number, item: PeriodicElement) => {
+  trackBy = (index: number, item: Element) => {
     switch (this.trackByStrategy) {
       case 'position': return item.position;
       case 'reference': return item;
@@ -36,12 +37,10 @@ export class DataInputTableDemo {
     }
   }
 
-  dataSource: DataSource<PeriodicElement> |
-      Observable<PeriodicElement[]> |
-      PeriodicElement[] | null = this.data;
+  dataSource: DataSource<Element> | Observable<Element[]> | Element[] | null = this.data;
 
-  @ViewChild(CdkTable) cdkTable: CdkTable<PeriodicElement>;
-  @ViewChild(MatTable) matTable: MatTable<PeriodicElement>;
+  @ViewChild(CdkTable) cdkTable: CdkTable<Element>;
+  @ViewChild(MatTable) matTable: MatTable<Element>;
 
   changeInput(e: MatRadioChange) {
     this.inputType = e.value;

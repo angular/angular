@@ -7,24 +7,27 @@
  */
 
 import {Component} from '@angular/core';
-import {PeriodicElement, ELEMENT_DATA} from './element-data';
+
 
 @Component({
   moduleId: module.id,
   templateUrl: 'table-demo.html',
-  styles: [`
-    mat-card {
-      max-height: 300px;
-      overflow: auto;
-      margin: 16px 0;
-    }
-
-    table {
-      width: 100%;
-    }
-  `]
 })
 export class TableDemo {
-  columns = ['name', 'weight', 'symbol', 'position'];
-  dataSource: PeriodicElement[] = ELEMENT_DATA.slice();
+  examples = [
+    'table-basic',
+    'table-basic-flex',
+    'cdk-table-basic',
+    'cdk-table-basic-flex',
+    'table-dynamic-columns',
+    'table-filtering',
+    'table-footer-row',
+    'table-http',
+    'table-native-only',
+    'table-overview',
+    'table-pagination',
+    'table-row-context',
+    'table-selection',
+    'table-sorting',
+  ];
 }

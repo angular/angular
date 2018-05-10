@@ -8,19 +8,20 @@
 
 import {Component, ViewChild} from '@angular/core';
 import {MatSort, MatTableDataSource} from '@angular/material';
-import {PeriodicElement, ELEMENT_DATA} from '../element-data';
+import {Element, ELEMENT_DATA} from '../element-data';
 
 
 @Component({
   moduleId: module.id,
+  selector: 'custom-table-demo',
   templateUrl: 'custom-table.html',
   styleUrls: ['custom-table.css'],
 })
 export class CustomTableDemo {
   columnsToDisplay = ['name', 'weight', 'symbol', 'position'];
-  simpleTableDataSource = new MatTableDataSource<PeriodicElement>(ELEMENT_DATA);
-  wrapperTableDataSource = new MatTableDataSource<PeriodicElement>(ELEMENT_DATA);
-  getWeight = (data: PeriodicElement) => '~' + data.weight;
+  simpleTableDataSource = new MatTableDataSource<Element>(ELEMENT_DATA);
+  wrapperTableDataSource = new MatTableDataSource<Element>(ELEMENT_DATA);
+  getWeight = (data: Element) => '~' + data.weight;
 
   @ViewChild('simpleTableSort') simpleTableSort: MatSort;
   @ViewChild('wrapperTableSort') wrapperTableSort: MatSort;

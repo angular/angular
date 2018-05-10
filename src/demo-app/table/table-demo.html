@@ -1,59 +1,7 @@
-<mat-card class="demo-table-card">
-  <mat-card-title> &lt;table mat-table&gt; </mat-card-title>
-  <table mat-table [dataSource]="dataSource" class="demo-table">
-    <ng-container matColumnDef="{{column}}" *ngFor="let column of columns">
-      <th mat-header-cell *matHeaderCellDef> {{column}} </th>
-      <td mat-cell *matCellDef="let element"> {{element[column]}} </td>
-      <td mat-footer-cell *matFooterCellDef> Footer {{column}}</td>
-    </ng-container>
+<material-example-list [ids]="examples"></material-example-list>
 
-    <tr mat-header-row *matHeaderRowDef="columns"></tr>
-    <tr mat-row *matRowDef="let data; columns: columns;"></tr>
-    <tr mat-footer-row *matFooterRowDef="columns;"></tr>
-  </table>
-</mat-card>
+<custom-table-demo></custom-table-demo>
 
-<mat-card class="demo-table-card">
-  <mat-card-title> &lt;mat-table&gt; </mat-card-title>
-  <mat-table [dataSource]="dataSource" class="demo-table">
-    <ng-container matColumnDef="{{column}}" *ngFor="let column of columns">
-      <mat-header-cell *matHeaderCellDef> {{column}} </mat-header-cell>
-      <mat-cell *matCellDef="let element"> {{element[column]}} </mat-cell>
-      <mat-footer-cell *matFooterCellDef> Footer {{column}}</mat-footer-cell>
-    </ng-container>
+<data-input-table-demo></data-input-table-demo>
 
-    <mat-header-row *matHeaderRowDef="columns"></mat-header-row>
-    <mat-row *matRowDef="let data; columns: columns;"></mat-row>
-    <mat-footer-row *matFooterRowDef="columns;"></mat-footer-row>>
-  </mat-table>
-</mat-card>
-
-<mat-card class="demo-table-card">
-  <mat-card-title> &lt;table cdk-table&gt; </mat-card-title>
-  <table cdk-table [dataSource]="dataSource" class="demo-table">
-    <ng-container cdkColumnDef="{{column}}" *ngFor="let column of columns">
-      <th cdk-header-cell *cdkHeaderCellDef> {{column}} </th>
-      <td cdk-cell *cdkCellDef="let element"> {{element[column]}} </td>
-      <td cdk-footer-cell *cdkFooterCellDef> Footer {{column}}</td>
-    </ng-container>
-
-    <tr cdk-header-row *cdkHeaderRowDef="columns"></tr>
-    <tr cdk-row *cdkRowDef="let data; columns: columns;"></tr>
-    <tr cdk-footer-row *cdkFooterRowDef="columns;"></tr>
-  </table>
-</mat-card>
-
-<mat-card class="demo-table-card">
-  <mat-card-title> &lt;cdk-table&gt; </mat-card-title>
-  <cdk-table [dataSource]="dataSource" class="demo-table">
-    <ng-container cdkColumnDef="{{column}}" *ngFor="let column of columns">
-      <cdk-header-cell *cdkHeaderCellDef> {{column}} </cdk-header-cell>
-      <cdk-cell *cdkCellDef="let element"> {{element[column]}} </cdk-cell>
-      <cdk-footer-cell *cdkFooterCellDef> Footer {{column}}</cdk-footer-cell>
-    </ng-container>
-
-    <cdk-header-row *cdkHeaderRowDef="columns"></cdk-header-row>
-    <cdk-row *cdkRowDef="let data; columns: columns;"></cdk-row>
-    <cdk-footer-row *cdkFooterRowDef="columns;"></cdk-footer-row>>
-  </cdk-table>
-</mat-card>
+<when-rows-demo></when-rows-demo>
