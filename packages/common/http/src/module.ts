@@ -118,7 +118,13 @@ export class HttpClientXsrfModule {
    *
    */
   static withOptions(options: {
+    /**
+     * The cookie name to use. Default name is `XSRF-TOKEN`.
+     */
     cookieName?: string,
+    /**
+     * The header name to use. Default name is `X-XSRF-TOKEN`.
+     */
     headerName?: string,
   } = {}): ModuleWithProviders {
     return {
@@ -167,9 +173,8 @@ export class HttpClientModule {
 /**
  * An NgModule that enables JSONP support in `HttpClient`.
  *
- * Without this module, Jsonp requests will reach the backend
- * with method JSONP, where they'll be rejected.
- *
+ * Provides interceptors that prevent Jsonp requests
+ * from being rejected at the backend.
  *
  */
 @NgModule({
