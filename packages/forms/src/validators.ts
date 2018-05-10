@@ -22,7 +22,7 @@ function isEmptyInputValue(value: any): boolean {
  *
  * Provide this using `multi: true` to add validators.
  *
- * ### Example
+ * **Example**
  *
  * ```typescript
  * @Directive({
@@ -62,7 +62,7 @@ const EMAIL_REGEXP =
  * A validator is a function that processes a `FormControl` or collection of
  * controls and returns a map of errors. A null map means that validation has passed.
  *
- * ### Example
+ * **Example**
  *
  * ```typescript
  * var loginControl = new FormControl("", Validators.required)
@@ -190,7 +190,7 @@ export class Validators {
   /**
    * No-op validator.
    */
-  static nullValidator(c: AbstractControl): ValidationErrors|null { return null; }
+  static nullValidator(control: AbstractControl): ValidationErrors|null { return null; }
 
   /**
    * Compose multiple validators into a single function that returns the union

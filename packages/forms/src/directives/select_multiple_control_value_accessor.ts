@@ -42,7 +42,7 @@ abstract class HTMLCollection {
 /**
  * The accessor for writing a value and listening to changes on a select element.
  *
- *  ### Caveat: Options selection
+ *  **Caveat: Options selection**
  *
  * Angular uses object identity to select options. It's possible for the identities of items
  * to change while the data does not. This can happen, for example, if the items are produced
@@ -53,7 +53,7 @@ abstract class HTMLCollection {
  * input. `compareWith` takes a **function** which has two arguments: `option1` and `option2`.
  * If `compareWith` is given, Angular selects options by the return value of the function.
  *
- * #### Syntax
+ * **Syntax**
  *
  * ```
  * <select multiple [compareWith]="compareFn"  [(ngModel)]="selectedCountries">

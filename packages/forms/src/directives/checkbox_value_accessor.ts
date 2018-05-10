@@ -19,12 +19,11 @@ export const CHECKBOX_VALUE_ACCESSOR: any = {
 /**
  * The accessor for writing a value and listening to changes on a checkbox input element.
  *
- *  ### Example
- *  ```
- *  <input type="checkbox" name="rememberLogin" ngModel>
- *  ```
+ * Usage:
  *
- *
+ * ```
+ * <input type="checkbox" name="rememberLogin" ngModel>
+ * ```
  */
 @Directive({
   selector:

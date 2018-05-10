@@ -57,7 +57,7 @@ export const formGroupNameProvider: any = {
  * {@link AbstractControl#statusChanges statusChanges} to be notified when the validation status is
  * re-calculated.
  *
- * ### Example
+ * **Example**
  *
  * {@example forms/ts/nestedFormGroup/nested_form_group_example.ts region='Component'}
  *
@@ -131,7 +131,7 @@ export const formArrayNameProvider: any = {
  * its {@link FormArray#push push} method.
  * Ex: `this.form.get('cities').push(new FormControl());`
  *
- * ### Example
+ * **Example**
  *
  * {@example forms/ts/nestedFormArray/nested_form_array_example.ts region='Component'}
  *

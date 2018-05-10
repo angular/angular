@@ -61,7 +61,7 @@ export const controlNameBinding: any = {
  * {@link AbstractControl#statusChanges statusChanges} to be notified when the validation status is
  * re-calculated.
  *
- * ### Example
+ * **Example**
  *
  * In this example, we create form controls for first name and last name.
  *
@@ -76,7 +76,7 @@ export const controlNameBinding: any = {
  *
  * **NgModule**: `ReactiveFormsModule`
  *
- * ### Use with ngModel
+ * **Use with ngModel**
  *
  * Support for using the `ngModel` input property and `ngModelChange` event with reactive
  * form directives has been deprecated in Angular v6 and will be removed in Angular v7.

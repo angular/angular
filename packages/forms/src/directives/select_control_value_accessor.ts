@@ -38,7 +38,7 @@ function _extractId(valueString: string): string {
  * value accessor will be active on any select control that has a form directive. You do
  * **not** need to add a special selector to activate it.
  *
- * ### How to use select controls with form directives
+ * **How to use select controls with form directives**
  *
  * To use a select in a template-driven form, simply add an `ngModel` and a `name`
  * attribute to the main `<select>` tag.
@@ -55,7 +55,7 @@ function _extractId(valueString: string): string {
  *
  * {@example forms/ts/reactiveSelectControl/reactive_select_control_example.ts region='Component'}
  *
- * ### Caveat: Option selection
+ * **Caveat: Option selection**
  *
  * Angular uses object identity to select option. It's possible for the identities of items
  * to change while the data does not. This can happen, for example, if the items are produced
@@ -66,7 +66,7 @@ function _extractId(valueString: string): string {
  * `compareWith` takes a **function** which has two arguments: `option1` and `option2`.
  * If `compareWith` is given, Angular selects option by the return value of the function.
  *
- * #### Syntax
+ * **Syntax**
  *
  * ```
  * <select [compareWith]="compareFn"  [(ngModel)]="selectedCountries">
