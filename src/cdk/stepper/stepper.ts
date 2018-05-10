@@ -33,7 +33,8 @@ import {
 } from '@angular/core';
 import {AbstractControl} from '@angular/forms';
 import {CdkStepLabel} from './step-label';
-import {Subject} from 'rxjs';
+import {Observable, Subject, of as obaservableOf} from 'rxjs';
+import {startWith, takeUntil} from 'rxjs/operators';
 
 /** Used to generate unique ID for each stepper component. */
 let nextId = 0;
@@ -215,8 +216,11 @@ export class CdkStepper implements AfterViewInit, OnDestroy {
   ngAfterViewInit() {
     this._keyManager = new FocusKeyManager(this._stepHeader)
       .withWrap()
-      .withHorizontalOrientation(this._layoutDirection())
       .withVerticalOrientation(this._orientation === 'vertical');
+
+    (this._dir ? this._dir.change as Observable<Direction> : obaservableOf())
+      .pipe(startWith(this._layoutDirection()), takeUntil(this._destroyed))
+      .subscribe(direction => this._keyManager.withHorizontalOrientation(direction));
 
     this._keyManager.updateActiveItemIndex(this._selectedIndex);
   }

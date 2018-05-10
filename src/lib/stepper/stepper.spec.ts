@@ -11,7 +11,7 @@ import {
 } from '@angular/cdk/keycodes';
 import {StepperOrientation} from '@angular/cdk/stepper';
 import {dispatchKeyboardEvent} from '@angular/cdk/testing';
-import {Component, DebugElement} from '@angular/core';
+import {Component, DebugElement, EventEmitter} from '@angular/core';
 import {async, ComponentFixture, inject, TestBed, fakeAsync, flush} from '@angular/core/testing';
 import {
   AbstractControl,
@@ -35,10 +35,13 @@ import {MatStepperIntl} from './stepper-intl';
 const VALID_REGEX = /valid/;
 
 describe('MatStepper', () => {
-  let dir: Direction;
+  let dir: {value: Direction, change: EventEmitter<Direction>};
 
   beforeEach(async(() => {
-    dir = 'ltr';
+    dir = {
+      value: 'ltr',
+      change: new EventEmitter()
+    };
 
     TestBed.configureTestingModule({
       imports: [MatStepperModule, NoopAnimationsModule, ReactiveFormsModule],
@@ -53,7 +56,7 @@ describe('MatStepper', () => {
         LinearStepperWithValidOptionalStep,
       ],
       providers: [
-        {provide: Directionality, useFactory: () => ({value: dir})}
+        {provide: Directionality, useFactory: () => dir}
       ]
     });
 
@@ -410,7 +413,7 @@ describe('MatStepper', () => {
     let fixture: ComponentFixture<SimpleMatVerticalStepperApp>;
 
     beforeEach(() => {
-      dir = 'rtl';
+      dir.value = 'rtl';
       fixture = TestBed.createComponent(SimpleMatVerticalStepperApp);
       fixture.detectChanges();
     });
@@ -739,7 +742,7 @@ describe('MatStepper', () => {
     });
 
     it('should reverse arrow key focus in RTL mode', () => {
-      dir = 'rtl';
+      dir.value = 'rtl';
       let fixture = TestBed.createComponent(SimpleMatVerticalStepperApp);
       fixture.detectChanges();
 
@@ -766,11 +769,25 @@ describe('MatStepper', () => {
     });
 
     it('should reverse arrow key focus in RTL mode', () => {
-      dir = 'rtl';
+      dir.value = 'rtl';
       let fixture = TestBed.createComponent(SimpleMatHorizontalStepperApp);
       fixture.detectChanges();
 
       let stepHeaders = fixture.debugElement.queryAll(By.css('.mat-horizontal-stepper-header'));
+      assertArrowKeyInteractionInRtl(fixture, stepHeaders);
+    });
+
+    it('should reverse arrow key focus when switching into RTL after init', () => {
+      let fixture = TestBed.createComponent(SimpleMatHorizontalStepperApp);
+      fixture.detectChanges();
+
+      let stepHeaders = fixture.debugElement.queryAll(By.css('.mat-horizontal-stepper-header'));
+      assertCorrectKeyboardInteraction(fixture, stepHeaders, 'horizontal');
+
+      dir.value = 'rtl';
+      dir.change.emit('rtl');
+      fixture.detectChanges();
+
       assertArrowKeyInteractionInRtl(fixture, stepHeaders);
     });
   });
