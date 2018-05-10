@@ -2,8 +2,8 @@
 set -eu -o pipefail
 
 # Set up env variables for production
+export AIO_CIRCLE_CI_TOKEN=$(head -c -1 /aio-secrets/CIRCLE_CI_TOKEN 2>/dev/null || echo "MISSING_CIRCLE_CI_TOKEN")
 export AIO_GITHUB_TOKEN=$(head -c -1 /aio-secrets/GITHUB_TOKEN 2>/dev/null || echo "MISSING_GITHUB_TOKEN")
-export AIO_PREVIEW_DEPLOYMENT_TOKEN=$(head -c -1 /aio-secrets/PREVIEW_DEPLOYMENT_TOKEN 2>/dev/null || echo "MISSING_PREVIEW_DEPLOYMENT_TOKEN")
 
 # Start the upload-server instance
 action=$([ "$1" == "stop" ] && echo "stop" || echo "start")
