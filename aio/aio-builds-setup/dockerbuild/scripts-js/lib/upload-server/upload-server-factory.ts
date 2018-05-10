@@ -2,70 +2,168 @@
 import * as bodyParser from 'body-parser';
 import * as express from 'express';
 import * as http from 'http';
+import {CircleCiApi} from '../common/circle-ci-api';
+import {GithubApi} from '../common/github-api';
 import {GithubPullRequests} from '../common/github-pull-requests';
-import {assertNotMissingOrEmpty} from '../common/utils';
+import {GithubTeams} from '../common/github-teams';
+import {assert, assertNotMissingOrEmpty, createLogger} from '../common/utils';
 import {BuildCreator} from './build-creator';
 import {ChangedPrVisibilityEvent, CreatedBuildEvent} from './build-events';
-import {BUILD_VERIFICATION_STATUS, BuildVerifier} from './build-verifier';
-import {UploadError} from './upload-error';
+import {BuildRetriever} from './build-retriever';
+import {BuildVerifier} from './build-verifier';
+import {respondWithError, throwRequestError} from './utils';
 
-// Constants
-const AUTHORIZATION_HEADER = 'AUTHORIZATION';
-const X_FILE_HEADER = 'X-FILE';
+const AIO_PREVIEW_JOB = 'aio_preview';
 
 // Interfaces - Types
-interface UploadServerConfig {
+export interface UploadServerConfig {
+  downloadsDir: string;
+  downloadSizeLimit: number;
+  buildArtifactPath: string;
   buildsDir: string;
   domainName: string;
-  githubOrganization: string;
+  githubOrg: string;
+  githubRepo: string;
   githubTeamSlugs: string[];
+  circleCiToken: string;
   githubToken: string;
-  repoSlug: string;
-  secret: string;
+  significantFilesPattern: string;
   trustedPrLabel: string;
 }
 
+const logger = createLogger('UploadServer');
+
 // Classes
-class UploadServerFactory {
+export class UploadServerFactory {
   // Methods - Public
-  public create({
-    buildsDir,
-    domainName,
-    githubOrganization,
-    githubTeamSlugs,
-    githubToken,
-    repoSlug,
-    secret,
-    trustedPrLabel,
-  }: UploadServerConfig): http.Server {
-    assertNotMissingOrEmpty('domainName', domainName);
+  public static create(cfg: UploadServerConfig): http.Server {
+    assertNotMissingOrEmpty('domainName', cfg.domainName);
 
-    const buildVerifier = new BuildVerifier(secret, githubToken, repoSlug, githubOrganization, githubTeamSlugs,
-                                            trustedPrLabel);
-    const buildCreator = this.createBuildCreator(buildsDir, githubToken, repoSlug, domainName);
+    const circleCiApi = new CircleCiApi(cfg.githubOrg, cfg.githubRepo, cfg.circleCiToken);
+    const githubApi = new GithubApi(cfg.githubToken);
+    const prs = new GithubPullRequests(githubApi, cfg.githubOrg, cfg.githubRepo);
+    const teams = new GithubTeams(githubApi, cfg.githubOrg);
 
-    const middleware = this.createMiddleware(buildVerifier, buildCreator);
+    const buildRetriever = new BuildRetriever(circleCiApi, cfg.downloadSizeLimit, cfg.downloadsDir);
+    const buildVerifier = new BuildVerifier(prs, teams, cfg.githubTeamSlugs, cfg.trustedPrLabel);
+    const buildCreator = UploadServerFactory.createBuildCreator(prs, cfg.buildsDir, cfg.domainName);
+
+    const middleware = UploadServerFactory.createMiddleware(buildRetriever, buildVerifier, buildCreator, cfg);
     const httpServer = http.createServer(middleware as any);
 
     httpServer.on('listening', () => {
       const info = httpServer.address();
-      console.info(`Up and running (and listening on ${info.address}:${info.port})...`);
+      logger.info(`Up and running (and listening on ${info.address}:${info.port})...`);
     });
 
     return httpServer;
   }
 
-  // Methods - Protected
-  protected createBuildCreator(buildsDir: string, githubToken: string, repoSlug: string,
-                               domainName: string): BuildCreator {
+  public static createMiddleware(buildRetriever: BuildRetriever, buildVerifier: BuildVerifier,
+                                 buildCreator: BuildCreator, cfg: UploadServerConfig): express.Express {
+    const middleware = express();
+    const jsonParser = bodyParser.json();
+
+    // RESPOND TO IS-ALIVE PING
+    middleware.get(/^\/health-check\/?$/, (_req, res) => res.sendStatus(200));
+
+    // CIRCLE_CI BUILD COMPLETE WEBHOOK
+    middleware.post(/^\/circle-build\/?$/, jsonParser, async (req, res) => {
+      try {
+        if (!(
+          req.is('json') &&
+          req.body &&
+          req.body.payload &&
+          req.body.payload.build_num > 0 &&
+          req.body.payload.build_parameters &&
+          req.body.payload.build_parameters.CIRCLE_JOB
+        )) {
+          throwRequestError(400, `Incorrect body content. Expected JSON`, req);
+        }
+
+        const job = req.body.payload.build_parameters.CIRCLE_JOB;
+        const buildNum = req.body.payload.build_num;
+
+        logger.log(`Build:${buildNum}, Job:${job} - processing web-hook trigger`);
+
+        if (job !== AIO_PREVIEW_JOB) {
+          res.sendStatus(204);
+          logger.log(`Build:${buildNum}, Job:${job} -`,
+                     `Skipping preview processing because this is not the "${AIO_PREVIEW_JOB}" job.`);
+          return;
+        }
+
+        const { pr, sha, org, repo, success } = await buildRetriever.getGithubInfo(buildNum);
+
+        if (!success) {
+          res.sendStatus(204);
+          logger.log(`PR:${pr}, Build:${buildNum} - Skipping preview processing because this build did not succeed.`);
+          return;
+        }
+
+        assert(cfg.githubOrg === org,
+          `Invalid webhook: expected "githubOrg" property to equal "${cfg.githubOrg}" but got "${org}".`);
+        assert(cfg.githubRepo === repo,
+          `Invalid webhook: expected "githubRepo" property to equal "${cfg.githubRepo}" but got "${repo}".`);
+
+        // Do not deploy unless this PR has touched relevant files: `aio/` or `packages/` (except for spec files)
+        if (!await buildVerifier.getSignificantFilesChanged(pr, new RegExp(cfg.significantFilesPattern))) {
+          res.sendStatus(204);
+          logger.log(`PR:${pr}, Build:${buildNum} - ` +
+                     `Skipping preview processing because this PR did not touch any significant files.`);
+          return;
+        }
+
+        const artifactPath = await buildRetriever.downloadBuildArtifact(buildNum, pr, sha, cfg.buildArtifactPath);
+        const isPublic = await buildVerifier.getPrIsTrusted(pr);
+        await buildCreator.create(pr, sha, artifactPath, isPublic);
+        res.sendStatus(isPublic ? 201 : 202);
+      } catch (err) {
+        logger.error('CircleCI webhook error', err);
+        respondWithError(res, err);
+      }
+    });
+
+    // GITHUB PR UPDATED WEBHOOK
+    middleware.post(/^\/pr-updated\/?$/, jsonParser, async (req, res) => {
+      const { action, number: prNo }: { action?: string, number?: number } = req.body;
+      const visMayHaveChanged = !action || (action === 'labeled') || (action === 'unlabeled');
+
+      try {
+        if (!visMayHaveChanged) {
+          res.sendStatus(200);
+        } else if (!prNo) {
+          throwRequestError(400, `Missing or empty 'number' field`, req);
+        } else {
+          const isPublic = await buildVerifier.getPrIsTrusted(prNo);
+          await buildCreator.updatePrVisibility(prNo, isPublic);
+          res.sendStatus(200);
+        }
+      } catch (err) {
+        logger.error('PR update hook error', err);
+        respondWithError(res, err);
+      }
+    });
+
+    // ALL OTHER REQUESTS
+    middleware.all('*', req => throwRequestError(404, 'Unknown resource', req));
+    middleware.use((err: any, _req: any, res: express.Response, _next: any) => {
+      const statusText = http.STATUS_CODES[err.status] || '???';
+      logger.error(`Upload error: ${err.status} - ${statusText}:`, err.message);
+      respondWithError(res, err);
+    });
+
+    return middleware;
+  }
+
+  public static createBuildCreator(prs: GithubPullRequests, buildsDir: string, domainName: string) {
     const buildCreator = new BuildCreator(buildsDir);
-    const githubPullRequests = new GithubPullRequests(githubToken, repoSlug);
     const postPreviewsComment = (pr: number, shas: string[]) => {
       const body = shas.
         map(sha => `You can preview ${sha} at https://pr${pr}-${sha}.${domainName}/.`).
         join('\n');
 
-      return githubPullRequests.addComment(pr, body);
+      return prs.addComment(pr, body);
     };
 
     buildCreator.on(CreatedBuildEvent.type, ({pr, sha, isPublic}: CreatedBuildEvent) => {
@@ -82,72 +180,4 @@ class UploadServerFactory {
 
     return buildCreator;
   }
-
-  protected createMiddleware(buildVerifier: BuildVerifier, buildCreator: BuildCreator): express.Express {
-    const middleware = express();
-    const jsonParser = bodyParser.json();
-
-    middleware.get(/^\/create-build\/([1-9][0-9]*)\/([0-9a-f]{40})\/?$/, (req, res) => {
-      const pr = req.params[0];
-      const sha = req.params[1];
-      const archive = req.header(X_FILE_HEADER);
-      const authHeader = req.header(AUTHORIZATION_HEADER);
-
-      if (!authHeader) {
-        this.throwRequestError(401, `Missing or empty '${AUTHORIZATION_HEADER}' header`, req);
-      } else if (!archive) {
-        this.throwRequestError(400, `Missing or empty '${X_FILE_HEADER}' header`, req);
-      } else {
-        Promise.resolve().
-          then(() => buildVerifier.verify(+pr, authHeader)).
-          then(verStatus => verStatus === BUILD_VERIFICATION_STATUS.verifiedAndTrusted).
-          then(isPublic => buildCreator.create(pr, sha, archive, isPublic).
-            then(() => res.sendStatus(isPublic ? 201 : 202))).
-          catch(err => this.respondWithError(res, err));
-      }
-    });
-    middleware.get(/^\/health-check\/?$/, (_req, res) => res.sendStatus(200));
-    middleware.post(/^\/pr-updated\/?$/, jsonParser, (req, res) => {
-      const {action, number: prNo}: {action?: string, number?: number} = req.body;
-      const visMayHaveChanged = !action || (action === 'labeled') || (action === 'unlabeled');
-
-      if (!visMayHaveChanged) {
-        res.sendStatus(200);
-      } else if (!prNo) {
-        this.throwRequestError(400, `Missing or empty 'number' field`, req);
-      } else {
-        Promise.resolve().
-          then(() => buildVerifier.getPrIsTrusted(prNo)).
-          then(isPublic => buildCreator.updatePrVisibility(String(prNo), isPublic)).
-          then(() => res.sendStatus(200)).
-          catch(err => this.respondWithError(res, err));
-      }
-    });
-    middleware.all('*', req => this.throwRequestError(404, 'Unknown resource', req));
-    middleware.use((err: any, _req: any, res: express.Response, _next: any) => this.respondWithError(res, err));
-
-    return middleware;
-  }
-
-  protected respondWithError(res: express.Response, err: any) {
-    if (!(err instanceof UploadError)) {
-      err = new UploadError(500, String((err && err.message) || err));
-    }
-
-    const statusText = http.STATUS_CODES[err.status] || '???';
-    console.error(`Upload error: ${err.status} - ${statusText}`);
-    console.error(err.message);
-
-    res.status(err.status).end(err.message);
-  }
-
-  protected throwRequestError(status: number, error: string, req: express.Request) {
-    const message = `${error} in request: ${req.method} ${req.originalUrl}` +
-                    (!req.body ? '' : ` ${JSON.stringify(req.body)}`);
-
-    throw new UploadError(status, message);
-  }
 }
-
-// Exports
-export const uploadServerFactory = new UploadServerFactory();
