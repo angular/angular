@@ -15,8 +15,8 @@ ng add @angular/material
 The install schematic will help you quickly add Material to a new project. 
 This schematic will:
 
-- Ensure project depedencies in `package.json`
-- Ensure project depedencies in your app module
+- Ensure project dependencies in `package.json`
+- Ensure project dependencies in your app module
 - Adds Prebuilt or Setup Custom Theme
 - Adds Roboto fonts to your index.html
 - Apply simple CSS reset to body
