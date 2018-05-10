@@ -76,10 +76,10 @@ export class MatButton extends _MatButtonMixinBase
     implements OnDestroy, CanDisable, CanColor, CanDisableRipple {
 
   /** Whether the button is round. */
-  _isRoundButton: boolean = this._hasHostAttributes('mat-fab', 'mat-mini-fab');
+  readonly isRoundButton: boolean = this._hasHostAttributes('mat-fab', 'mat-mini-fab');
 
   /** Whether the button is icon button. */
-  _isIconButton: boolean = this._hasHostAttributes('mat-icon-button');
+  readonly isIconButton: boolean = this._hasHostAttributes('mat-icon-button');
 
   /** Reference to the MatRipple instance of the button. */
   @ViewChild(MatRipple) ripple: MatRipple;
@@ -104,7 +104,7 @@ export class MatButton extends _MatButtonMixinBase
 
     this._focusMonitor.monitor(this._elementRef.nativeElement, true);
 
-    if (this._isRoundButton) {
+    if (this.isRoundButton) {
       this.color = DEFAULT_ROUND_BUTTON_COLOR;
     } else if (this._hasHostAttributes('mat-flat-button')) {
       this.color = DEFAULT_FLAT_BUTTON_COLOR;
