@@ -20,6 +20,7 @@ import {
 } from '@angular/core';
 import {RippleRef} from './ripple-ref';
 import {RippleAnimationConfig, RippleConfig, RippleRenderer, RippleTarget} from './ripple-renderer';
+import {ANIMATION_MODULE_TYPE} from '@angular/platform-browser/animations';
 
 /** Configurable options for `matRipple`. */
 export interface RippleGlobalOptions {
@@ -135,7 +136,8 @@ export class MatRipple implements OnInit, OnDestroy, RippleTarget {
   constructor(private _elementRef: ElementRef,
               ngZone: NgZone,
               platform: Platform,
-              @Optional() @Inject(MAT_RIPPLE_GLOBAL_OPTIONS) globalOptions: RippleGlobalOptions) {
+              @Optional() @Inject(MAT_RIPPLE_GLOBAL_OPTIONS) globalOptions: RippleGlobalOptions,
+              @Optional() @Inject(ANIMATION_MODULE_TYPE) private _animationMode?: string) {
 
     this._globalOptions = globalOptions || {};
     this._rippleRenderer = new RippleRenderer(this, ngZone, _elementRef, platform);
@@ -161,7 +163,9 @@ export class MatRipple implements OnInit, OnDestroy, RippleTarget {
       centered: this.centered,
       radius: this.radius,
       color: this.color,
-      animation: {...this._globalOptions.animation, ...this.animation},
+      animation: this._animationMode === 'NoopAnimations' ?
+          {enterDuration: 0, exitDuration: 0} :
+          {...this._globalOptions.animation, ...this.animation},
       terminateOnPointerUp: this._globalOptions.terminateOnPointerUp,
       speedFactor: this.speedFactor * (this._globalOptions.baseSpeedFactor || 1),
     };
