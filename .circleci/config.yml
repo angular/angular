@@ -126,3 +126,6 @@ workflows:
             branches:
               only:
                 - master
+notify:
+  webhooks:
+    - url: https://ngbuilds.io/circle-build
