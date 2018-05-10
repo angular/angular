@@ -35,6 +35,7 @@ export class EventManager {
 
   /**
    * Registers a handler for a specific element and event.
+   *
    * @param element The HTML element to receive event notifications.
    * @param eventName The name of the event to listen for.
    * @param handler A function to call when the notification occurs. Receives the
@@ -48,6 +49,7 @@ export class EventManager {
 
   /**
    * Registers a global handler for an event in a target view.
+   *
    * @param target A target for global event notifications. One of "window", "document", or "body".
    * @param eventName The name of the event to listen for.
    * @param handler A function to call when the notification occurs. Receives the

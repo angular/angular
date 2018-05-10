@@ -74,7 +74,7 @@ export interface HammerInstance {
 @Injectable()
 export class HammerGestureConfig {
   /**
-   * @description A set of supported event names for gestures to be used in Angular.
+   * A set of supported event names for gestures to be used in Angular.
    * Angular supports all built-in recognizers, as listed in
    * [HammerJS documentation](http://hammerjs.github.io/).
    */
@@ -120,7 +120,6 @@ export class HammerGestureConfig {
    * @param element The element that will recognize gestures.
    * @returns A HammerJS event-manager object.
    */
-
   buildHammer(element: HTMLElement): HammerInstance {
     const mc = new Hammer !(element, this.options);
 
