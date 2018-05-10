@@ -627,6 +627,7 @@ describe('MatDatepicker', () => {
 
         expect(inputEl.classList).toContain('ng-pristine');
 
+        inputEl.value = '2001-01-01';
         dispatchFakeEvent(inputEl, 'input');
         fixture.detectChanges();
 
@@ -1132,6 +1133,7 @@ describe('MatDatepicker', () => {
         expect(testComponent.onInput).not.toHaveBeenCalled();
         expect(testComponent.onDateInput).not.toHaveBeenCalled();
 
+        inputEl.value = '2001-01-01';
         dispatchFakeEvent(inputEl, 'input');
         fixture.detectChanges();
 
@@ -1179,6 +1181,22 @@ describe('MatDatepicker', () => {
           expect(testComponent.onDateInput).toHaveBeenCalled();
         })
       );
+
+      it('should not fire the dateInput event if the value has not changed', () => {
+        expect(testComponent.onDateInput).not.toHaveBeenCalled();
+
+        inputEl.value = '12/12/2012';
+        dispatchFakeEvent(inputEl, 'input');
+        fixture.detectChanges();
+
+        expect(testComponent.onDateInput).toHaveBeenCalledTimes(1);
+
+        dispatchFakeEvent(inputEl, 'input');
+        fixture.detectChanges();
+
+        expect(testComponent.onDateInput).toHaveBeenCalledTimes(1);
+      });
+
     });
 
     describe('with ISO 8601 strings as input', () => {
