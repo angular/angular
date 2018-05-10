@@ -29,8 +29,8 @@ import {coerceBooleanProperty, coerceNumberProperty} from '@angular/cdk/coercion
   template: '<ng-content></ng-content>',
   host: {
     'class': 'mat-drawer-content mat-sidenav-content',
-    '[style.margin-left.px]': '_margins.left',
-    '[style.margin-right.px]': '_margins.right',
+    '[style.margin-left.px]': '_container._contentMargins.left',
+    '[style.margin-right.px]': '_container._contentMargins.right',
   },
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,

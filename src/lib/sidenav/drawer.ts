@@ -67,28 +67,20 @@ export function MAT_DRAWER_DEFAULT_AUTOSIZE_FACTORY(): boolean {
   template: '<ng-content></ng-content>',
   host: {
     'class': 'mat-drawer-content',
-    '[style.margin-left.px]': '_margins.left',
-    '[style.margin-right.px]': '_margins.right',
+    '[style.margin-left.px]': '_container._contentMargins.left',
+    '[style.margin-right.px]': '_container._contentMargins.right',
   },
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
 })
 export class MatDrawerContent implements AfterContentInit {
-  /**
-   * Margins to be applied to the content. These are used to push / shrink the drawer content when a
-   * drawer is open. We use margin rather than transform even for push mode because transform breaks
-   * fixed position elements inside of the transformed element.
-   */
-  _margins: {left: number|null, right: number|null} = {left: null, right: null};
-
   constructor(
       private _changeDetectorRef: ChangeDetectorRef,
-      @Inject(forwardRef(() => MatDrawerContainer)) private _container: MatDrawerContainer) {
+      @Inject(forwardRef(() => MatDrawerContainer)) public _container: MatDrawerContainer) {
   }
 
   ngAfterContentInit() {
-    this._container._contentMargins.subscribe(margins => {
-      this._margins = margins;
+    this._container._contentMarginChanges.subscribe(() => {
       this._changeDetectorRef.markForCheck();
     });
   }
@@ -466,7 +458,14 @@ export class MatDrawerContainer implements AfterContentInit, OnDestroy {
   /** Emits on every ngDoCheck. Used for debouncing reflows. */
   private readonly _doCheckSubject = new Subject<void>();
 
-  readonly _contentMargins = new Subject<{left: number|null, right: number|null}>();
+  /**
+   * Margins to be applied to the content. These are used to push / shrink the drawer content when a
+   * drawer is open. We use margin rather than transform even for push mode because transform breaks
+   * fixed position elements inside of the transformed element.
+   */
+  _contentMargins: {left: number|null, right: number|null} = {left: null, right: null};
+
+  readonly _contentMarginChanges = new Subject<{left: number|null, right: number|null}>();
 
   /** Reference to the CdkScrollable instance that wraps the scrollable content. */
   @ViewChild(CdkScrollable) scrollable: CdkScrollable;
@@ -699,7 +698,13 @@ export class MatDrawerContainer implements AfterContentInit, OnDestroy {
       }
     }
 
-    // Pull back into the NgZone since in some cases we could be outside.
-    this._ngZone.run(() => this._contentMargins.next({left, right}));
+    if (left !== this._contentMargins.left || right !== this._contentMargins.right) {
+      this._contentMargins = {left, right};
+
+      // Pull back into the NgZone since in some cases we could be outside. We need to be careful
+      // to do it only when something changed, otherwise we can end up hitting the zone too often.
+      this._ngZone.run(() => this._contentMarginChanges.next(this._contentMargins));
+    }
+
   }
 }
