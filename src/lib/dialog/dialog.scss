@@ -22,6 +22,11 @@ $mat-dialog-button-margin: 8px !default;
   width: 100%;
   height: 100%;
 
+  // Since the dialog won't stretch to fit the parent, if the height
+  // isn't set, we have to inherit the min and max values explicitly.
+  min-height: inherit;
+  max-height: inherit;
+
   @include cdk-high-contrast {
     outline: solid 1px;
   }
