@@ -1,7 +1,21 @@
-<button mat-raised-button matTooltip="Tooltip!" matTooltipShowDelay="1000">
-  My tooltip waits one second to show
-</button>
+<mat-form-field class="example-user-input">
+  <input matInput placeholder="Show delay (milliseconds)"
+         type="number"
+         aria-label="Adds a delay between hovering over the button and displaying the tooltip"
+         [formControl]="showDelay">
+</mat-form-field>
 
-<button mat-raised-button matTooltip="Tooltip!" matTooltipHideDelay="2000">
-  My tooltip waits two seconds to hide
+<mat-form-field class="example-user-input">
+  <input matInput placeholder="Hide delay (milliseconds)"
+         type="number"
+         aria-label="Adds a delay between hovering away from the button and hiding the tooltip"
+         [formControl]="hideDelay">
+</mat-form-field>
+
+<button mat-raised-button
+        matTooltip="Info about the action"
+        [matTooltipShowDelay]="showDelay.value"
+        [matTooltipHideDelay]="hideDelay.value"
+        aria-label="Button that displays a tooltip with a customized delay in showing and hiding">
+  Action
 </button>

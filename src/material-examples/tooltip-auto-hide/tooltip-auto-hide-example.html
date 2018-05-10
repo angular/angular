@@ -1,0 +1,18 @@
+<mat-form-field>
+  <mat-select placeholder="Tooltip position" [formControl]="position">
+    <mat-option *ngFor="let positionOption of positionOptions" [value]="positionOption">
+      {{positionOption}}
+    </mat-option>
+  </mat-select>
+</mat-form-field>
+
+<div class="example-container" cdk-scrollable>
+  <button mat-raised-button #tooltip="matTooltip"
+          matTooltip="Info about the action"
+          [matTooltipPosition]="position.value"
+          matTooltipHideDelay="100000"
+          aria-label="Button that displays a tooltip that hides when scrolled out of the container"
+          class="example-button">
+    Action
+  </button>
+</div>

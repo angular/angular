@@ -1,3 +1,4 @@
-button {
-  margin: 8px;
+.example-user-input {
+  display: block;
+  width: 150px;
 }
