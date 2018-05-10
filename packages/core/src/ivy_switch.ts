@@ -31,6 +31,6 @@
  * 3) Import the symbol from `./ivy_switch`. The imported symbol will that point to either the
  *    symbol in `./ivy_switch_false` and `./ivy_switch_false` depending on the compilation mode.
  */
-export * from './ivy_switch_false';
+export * from './ivy_switch_legacy';
 
 // TODO(alxhub): debug why metadata doesn't properly propagate through this file.
