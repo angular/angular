@@ -14,15 +14,10 @@
 // Wraps each link in the header
 .mat-tab-link {
   @include tab-label;
-  line-height: $mat-tab-bar-height;
+  vertical-align: top;
   text-decoration: none;  // Removes anchor underline styling
   position: relative;
   overflow: hidden;  // Keeps the ripple from extending outside the element bounds
-
-  // Allows for the ellipsis overflow to work. We truncate the
-  // text since we don't support pagination on nav bars.
-  display: block;
-  text-overflow: ellipsis;
 
   [mat-stretch-tabs] & {
     flex-basis: 0;
