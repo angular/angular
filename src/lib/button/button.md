@@ -10,13 +10,14 @@ is performed. An `<a>` element should be used whenever the user will _navigate_ 
 
 There are five button variants, each applied as an attribute:
 
-| Attribute          | Description                                                                 |
-|--------------------|-----------------------------------------------------------------------------|
-| `mat-button`        | Rectangular button w/ no elevation.                                         |
-| `mat-raised-button` | Rectangular button w/ elevation                                             |
-| `mat-icon-button`   | Circular button with a transparent background, meant to contain an icon     |
-| `mat-fab`           | Circular button w/ elevation, defaults to theme's accent color              |
-| `mat-mini-fab`      | Same as `mat-fab` but smaller                                                |
+| Attribute            | Description                                                              |
+|----------------------|--------------------------------------------------------------------------|
+| `mat-button`         | Rectangular button w/ no elevation.                                      |
+| `mat-raised-button`  | Rectangular button w/ elevation                                          |
+| `mat-stroked-button` | Rectangular button w/ an outline border                                  |
+| `mat-icon-button`    | Circular button with a transparent background, meant to contain an icon  |
+| `mat-fab`            | Circular button w/ elevation, defaults to theme's accent color           |
+| `mat-mini-fab`       | Same as `mat-fab` but smaller                                            |
 
 
 ### Theming
