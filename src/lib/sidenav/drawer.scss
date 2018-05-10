@@ -13,7 +13,7 @@ $mat-drawer-over-drawer-z-index: 4;
 // Mixin that creates a new stacking context.
 // see https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Positioning/Understanding_z_index/The_stacking_context
 // stylelint-enable
-@mixin mat-drawer-stacking-context($z-index:1) {
+@mixin mat-drawer-stacking-context($z-index: 1) {
   position: relative;
 
   // Use a z-index to create a new stacking context. (We can't use transform because it breaks fixed

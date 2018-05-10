@@ -609,6 +609,14 @@ describe('MatDrawerContainer', () => {
   }));
 
   it('should not animate when the sidenav is open on load ', fakeAsync(() => {
+    TestBed
+      .resetTestingModule()
+      .configureTestingModule({
+        imports: [MatSidenavModule, BrowserAnimationsModule],
+        declarations: [DrawerSetToOpenedTrue],
+      })
+      .compileComponents();
+
     const fixture = TestBed.createComponent(DrawerSetToOpenedTrue);
 
     fixture.detectChanges();

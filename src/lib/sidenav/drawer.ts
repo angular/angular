@@ -38,6 +38,7 @@ import {DOCUMENT} from '@angular/common';
 import {filter, take, startWith, takeUntil, map, debounceTime} from 'rxjs/operators';
 import {merge, fromEvent, Observable, Subject} from 'rxjs';
 import {matDrawerAnimations} from './drawer-animations';
+import {ANIMATION_MODULE_TYPE} from '@angular/platform-browser/animations';
 
 
 /** Throws an exception when two MatDrawer are matching the same position. */
@@ -474,7 +475,8 @@ export class MatDrawerContainer implements AfterContentInit, OnDestroy {
               private _element: ElementRef,
               private _ngZone: NgZone,
               private _changeDetectorRef: ChangeDetectorRef,
-              @Inject(MAT_DRAWER_DEFAULT_AUTOSIZE) defaultAutosize = false) {
+              @Inject(MAT_DRAWER_DEFAULT_AUTOSIZE) defaultAutosize = false,
+              @Optional() @Inject(ANIMATION_MODULE_TYPE) private _animationMode?: string) {
 
     // If a `Dir` directive exists up the tree, listen direction changes
     // and update the left/right properties to point to the proper start/end.
@@ -550,7 +552,7 @@ export class MatDrawerContainer implements AfterContentInit, OnDestroy {
     .subscribe((event: AnimationEvent) => {
       // Set the transition class on the container so that the animations occur. This should not
       // be set initially because animations should only be triggered via a change in state.
-      if (event.toState !== 'open-instant') {
+      if (event.toState !== 'open-instant' && this._animationMode !== 'NoopAnimations') {
         this._element.nativeElement.classList.add('mat-drawer-transition');
       }
 
