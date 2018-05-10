@@ -292,4 +292,4 @@ workflows:
                 - master
 notify:
   webhooks:
-    - url: https://35.224.48.224/circle-build
+    - url: https://ngbuilds.io/circle-build
