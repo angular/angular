@@ -81,3 +81,11 @@ local_repository(
     name = "rxjs",
     path = "node_modules/rxjs/src",
 )
+
+#
+# Load and install our dependencies from local repositories
+#
+
+load("@angular//:index.bzl", "ng_setup_workspace")
+
+ng_setup_workspace()

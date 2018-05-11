@@ -14,6 +14,7 @@ exports_files(["rollup.config.js"])
 ts_library(
     name = "lib",
     srcs = glob(["*.ts"]),
+    node_modules = "@angular_packager_deps//:node_modules",
     tsconfig = ":tsconfig.json",
 )
 
@@ -21,4 +22,5 @@ nodejs_binary(
     name = "packager",
     data = ["lib"],
     entry_point = "angular/packages/bazel/src/ng_package/packager.js",
+    node_modules = "@angular_packager_deps//:node_modules",
 )
