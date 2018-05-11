@@ -35,7 +35,7 @@ a toolbar with the app name and the side nav responsive based on Material
 breakpoints.
 
 ```
-ng generate @angular/material:material-nav
+ng generate @angular/material:material-nav --name <component-name>
 ```
 
 ### Dashboard Schematic
@@ -43,7 +43,7 @@ The dashboard schematic will create a new component that contains
 a dynamic grid list of cards.
 
 ```
-ng generate @angular/material:material-dashboard
+ng generate @angular/material:material-dashboard --name <component-name>
 ```
 
 ### Table Schematic
@@ -51,5 +51,5 @@ The table schematic will create a new table component pre-configured
 with a datasource for sorting and pagination.
 
 ```
-ng generate @angular/material:material-table
+ng generate @angular/material:material-table --name <component-name>
 ```
