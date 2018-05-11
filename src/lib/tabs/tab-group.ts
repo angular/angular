@@ -59,7 +59,7 @@ export const _MatTabGroupMixinBase = mixinColor(mixinDisableRipple(MatTabGroupBa
 /**
  * Material design tab-group component.  Supports basic tab pairs (label + content) and includes
  * animated ink-bar, keyboard navigation, and screen reader.
- * See: https://www.google.com/design/spec/components/tabs.html
+ * See: https://material.io/design/components/tabs.html
  */
 @Component({
   moduleId: module.id,

@@ -75,7 +75,7 @@ A typical theme file will look something like this:
 
 // Define the palettes for your theme using the Material Design palettes available in palette.scss
 // (imported above). For each palette, you can optionally specify a default, lighter, and darker
-// hue. Available color palettes: https://www.google.com/design/spec/style/color.html
+// hue. Available color palettes: https://material.io/design/color/
 $candy-app-primary: mat-palette($mat-indigo);
 $candy-app-accent:  mat-palette($mat-pink, A200, A100, A400);
 

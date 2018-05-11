@@ -1,7 +1,7 @@
 Angular Material's elevation classes and mixins allow you to add separation between elements along
 the z-axis. All material design elements have resting elevations. In addition, some elements may
 change their elevation in response to user interaction. The
-[Material Design spec](https://material.io/guidelines/material-design/elevation-shadows.html)
+[Material Design spec](https://material.io/design/environment/elevation.html)
 explains how to best use elevation.
 
 Angular Material provides two ways to control the elevation of elements: predefined CSS classes
