@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 
 /**
@@ -9,7 +9,7 @@ import {FormBuilder, FormGroup, Validators} from '@angular/forms';
   templateUrl: 'stepper-editable-example.html',
   styleUrls: ['stepper-editable-example.css']
 })
-export class StepperEditableExample {
+export class StepperEditableExample implements OnInit {
   firstFormGroup: FormGroup;
   secondFormGroup: FormGroup;
   isEditable: boolean = false;

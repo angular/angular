@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {FormControl} from '@angular/forms';
 import {Observable} from 'rxjs';
 import {map, startWith} from 'rxjs/operators';
@@ -15,7 +15,7 @@ export class User {
   templateUrl: 'autocomplete-display-example.html',
   styleUrls: ['autocomplete-display-example.css']
 })
-export class AutocompleteDisplayExample {
+export class AutocompleteDisplayExample implements OnInit {
 
   myControl = new FormControl();
 

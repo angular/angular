@@ -19,7 +19,6 @@ import {
   VerticalConnectionPos,
 } from '@angular/cdk/overlay';
 import {TemplatePortal} from '@angular/cdk/portal';
-import {filter, take, delay, takeUntil} from 'rxjs/operators';
 import {
   AfterContentInit,
   Directive,
@@ -35,7 +34,8 @@ import {
   Self,
   ViewContainerRef,
 } from '@angular/core';
-import {Subscription, merge, of as observableOf, asapScheduler} from 'rxjs';
+import {asapScheduler, merge, of as observableOf, Subscription} from 'rxjs';
+import {delay, filter, take, takeUntil} from 'rxjs/operators';
 import {MatMenu} from './menu-directive';
 import {throwMatMenuMissingError} from './menu-errors';
 import {MatMenuItem} from './menu-item';
@@ -112,6 +112,7 @@ export class MatMenuTrigger implements AfterContentInit, OnDestroy {
    * @deprecated Switch to `menuOpened` instead
    * @deletion-target 7.0.0
    */
+  // tslint:disable-next-line:no-output-on-prefix
   @Output() readonly onMenuOpen: EventEmitter<void> = this.menuOpened;
 
   /** Event emitted when the associated menu is closed. */
@@ -122,6 +123,7 @@ export class MatMenuTrigger implements AfterContentInit, OnDestroy {
    * @deprecated Switch to `menuClosed` instead
    * @deletion-target 7.0.0
    */
+  // tslint:disable-next-line:no-output-on-prefix
   @Output() readonly onMenuClose: EventEmitter<void> = this.menuClosed;
 
   constructor(private _overlay: Overlay,

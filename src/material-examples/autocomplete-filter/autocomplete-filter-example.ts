@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {FormControl} from '@angular/forms';
 import {Observable} from 'rxjs';
 import {map, startWith} from 'rxjs/operators';
@@ -11,7 +11,7 @@ import {map, startWith} from 'rxjs/operators';
   templateUrl: 'autocomplete-filter-example.html',
   styleUrls: ['autocomplete-filter-example.css']
 })
-export class AutocompleteFilterExample {
+export class AutocompleteFilterExample implements OnInit {
 
   myControl: FormControl = new FormControl();
 

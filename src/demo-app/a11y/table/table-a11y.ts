@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, ViewChild} from '@angular/core';
 import {DataSource} from '@angular/cdk/table';
-import {merge, Observable, BehaviorSubject} from 'rxjs';
-import {MatSort, MatPaginator} from '@angular/material';
+import {Component, OnInit, ViewChild} from '@angular/core';
+import {MatPaginator, MatSort} from '@angular/material';
+import {BehaviorSubject, merge, Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 
 
@@ -34,7 +34,7 @@ const exampleData = [
   templateUrl: 'table-a11y.html',
   styleUrls: ['table-a11y.css'],
 })
-export class TableAccessibilityDemo {
+export class TableAccessibilityDemo implements OnInit {
   @ViewChild(MatSort) sort: MatSort;
   @ViewChild(MatPaginator) pager: MatPaginator;
 

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {Observable, Observer} from 'rxjs';
 
 
@@ -146,7 +146,7 @@ export class FoggyTabContent {}
   selector: 'counter',
   template: `<span>Content</span>`
 })
-export class Counter {
+export class Counter implements OnInit {
   ngOnInit() {
     console.log('Tab Loaded');
   }

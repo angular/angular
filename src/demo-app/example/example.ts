@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, ElementRef, Input} from '@angular/core';
 import {coerceBooleanProperty} from '@angular/cdk/coercion';
+import {Component, ElementRef, Input, OnInit} from '@angular/core';
 import {EXAMPLE_COMPONENTS} from '@angular/material-examples';
 
 @Component({
@@ -43,7 +43,7 @@ import {EXAMPLE_COMPONENTS} from '@angular/material-examples';
     }
   `]
 })
-export class Example {
+export class Example implements OnInit {
   /** ID of the material example to display. */
   @Input() id: string;
 

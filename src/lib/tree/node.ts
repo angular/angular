@@ -7,22 +7,24 @@
  */
 
 import {
+  CdkNestedTreeNode,
+  CdkTree,
+  CdkTreeNode,
+  CdkTreeNodeDef,
+} from '@angular/cdk/tree';
+import {
+  AfterContentInit,
   Attribute,
   ContentChildren,
   Directive,
   ElementRef,
   Input,
   IterableDiffers,
+  OnDestroy,
   QueryList
 } from '@angular/core';
-import {
-  CdkNestedTreeNode,
-  CdkTree,
-  CdkTreeNodeDef,
-  CdkTreeNode,
-} from '@angular/cdk/tree';
+import {CanDisable, HasTabIndex, mixinDisabled, mixinTabIndex} from '@angular/material/core';
 import {MatTreeNodeOutlet} from './outlet';
-import {mixinTabIndex, mixinDisabled, CanDisable, HasTabIndex} from '@angular/material/core';
 
 
 export const _MatTreeNodeMixinBase = mixinTabIndex(mixinDisabled(CdkTreeNode));
@@ -43,7 +45,8 @@ export const _MatNestedTreeNodeMixinBase = mixinTabIndex(mixinDisabled(CdkNested
   },
   providers: [{provide: CdkTreeNode, useExisting: MatTreeNode}]
 })
-export class MatTreeNode<T> extends _MatTreeNodeMixinBase<T> implements HasTabIndex, CanDisable {
+export class MatTreeNode<T> extends _MatTreeNodeMixinBase<T>
+    implements CanDisable, HasTabIndex {
   @Input() role: 'treeitem' | 'group' = 'treeitem';
 
   constructor(protected _elementRef: ElementRef,
@@ -87,7 +90,7 @@ export class MatTreeNodeDef<T> extends CdkTreeNodeDef<T> {
   ]
 })
 export class MatNestedTreeNode<T> extends _MatNestedTreeNodeMixinBase<T>
-    implements HasTabIndex, CanDisable {
+    implements AfterContentInit, CanDisable, HasTabIndex, OnDestroy {
 
   @Input('matNestedTreeNode') node: T;
 

@@ -1,5 +1,5 @@
 import {DataSource} from '@angular/cdk/collections';
-import {Component, ViewChild} from '@angular/core';
+import {Component, OnInit, ViewChild} from '@angular/core';
 import {async, ComponentFixture, fakeAsync, flushMicrotasks, TestBed} from '@angular/core/testing';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {BehaviorSubject, Observable} from 'rxjs';
@@ -559,7 +559,7 @@ class MatTableWithWhenRowApp {
     <mat-paginator [pageSize]="5"></mat-paginator>
   `
 })
-class ArrayDataSourceMatTableApp {
+class ArrayDataSourceMatTableApp implements OnInit {
   underlyingDataSource = new FakeDataSource();
   dataSource = new MatTableDataSource<TestData>();
   columnsToRender = ['column_a', 'column_b', 'column_c'];
@@ -612,7 +612,7 @@ class ArrayDataSourceMatTableApp {
     </mat-table>
   `
 })
-class MatTableWithSortApp {
+class MatTableWithSortApp implements OnInit {
   underlyingDataSource = new FakeDataSource();
   dataSource = new MatTableDataSource<TestData>();
   columnsToRender = ['column_a', 'column_b', 'column_c'];
@@ -663,7 +663,7 @@ class MatTableWithSortApp {
     <mat-paginator [pageSize]="5"></mat-paginator>
   `
 })
-class MatTableWithPaginatorApp {
+class MatTableWithPaginatorApp implements OnInit {
   underlyingDataSource = new FakeDataSource();
   dataSource = new MatTableDataSource<TestData>();
   columnsToRender = ['column_a', 'column_b', 'column_c'];

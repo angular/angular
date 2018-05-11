@@ -11,6 +11,7 @@ import {
   Inject,
   Injectable,
   InjectionToken,
+  OnDestroy,
   Optional,
   SkipSelf,
 } from '@angular/core';
@@ -54,7 +55,7 @@ let messagesContainer: HTMLElement | null = null;
  * @docs-private
  */
 @Injectable({providedIn: 'root'})
-export class AriaDescriber {
+export class AriaDescriber implements OnDestroy {
   private _document: Document;
 
   constructor(@Inject(DOCUMENT) _document: any) {

@@ -1,5 +1,5 @@
-import {Component, ViewChild} from '@angular/core';
-import {MatTableDataSource, MatSort} from '@angular/material';
+import {Component, OnInit, ViewChild} from '@angular/core';
+import {MatSort, MatTableDataSource} from '@angular/material';
 
 /**
  * @title Table with sorting
@@ -9,7 +9,7 @@ import {MatTableDataSource, MatSort} from '@angular/material';
   styleUrls: ['table-sorting-example.css'],
   templateUrl: 'table-sorting-example.html',
 })
-export class TableSortingExample {
+export class TableSortingExample implements OnInit {
   displayedColumns = ['position', 'name', 'weight', 'symbol'];
   dataSource = new MatTableDataSource(ELEMENT_DATA);
 

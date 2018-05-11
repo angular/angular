@@ -7,19 +7,19 @@
  */
 
 import {
-  NgModule,
+  ComponentFactoryResolver,
   ComponentRef,
   Directive,
   EmbeddedViewRef,
-  TemplateRef,
-  ComponentFactoryResolver,
-  ViewContainerRef,
+  EventEmitter,
+  NgModule,
   OnDestroy,
   OnInit,
-  EventEmitter,
   Output,
+  TemplateRef,
+  ViewContainerRef,
 } from '@angular/core';
-import {Portal, TemplatePortal, ComponentPortal, BasePortalOutlet} from './portal';
+import {BasePortalOutlet, ComponentPortal, Portal, TemplatePortal} from './portal';
 
 
 /**
@@ -92,7 +92,7 @@ export class CdkPortalOutlet extends BasePortalOutlet implements OnInit, OnDestr
     this._attachedPortal = portal;
   }
 
-  @Output('attached') attached: EventEmitter<CdkPortalOutletAttachedRef> =
+  @Output() attached: EventEmitter<CdkPortalOutletAttachedRef> =
       new EventEmitter<CdkPortalOutletAttachedRef>();
 
   /** Component or view reference that is attached to the portal. */

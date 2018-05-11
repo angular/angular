@@ -1,4 +1,4 @@
-import {Component, ViewChild} from '@angular/core';
+import {Component, OnInit, ViewChild} from '@angular/core';
 import {MatPaginator, MatTableDataSource} from '@angular/material';
 
 /**
@@ -9,7 +9,7 @@ import {MatPaginator, MatTableDataSource} from '@angular/material';
   styleUrls: ['table-pagination-example.css'],
   templateUrl: 'table-pagination-example.html',
 })
-export class TablePaginationExample {
+export class TablePaginationExample implements OnInit {
   displayedColumns = ['position', 'name', 'weight', 'symbol'];
   dataSource = new MatTableDataSource<PeriodicElement>(ELEMENT_DATA);
 

@@ -13,6 +13,8 @@ import {
   ChangeDetectorRef,
   Component,
   Input,
+  OnDestroy,
+  OnInit,
   Optional,
   ViewEncapsulation
 } from '@angular/core';
@@ -85,7 +87,8 @@ export interface ArrowViewStateTransition {
     matSortAnimations.allowChildren,
   ]
 })
-export class MatSortHeader extends _MatSortHeaderMixinBase implements MatSortable, CanDisable {
+export class MatSortHeader extends _MatSortHeaderMixinBase
+    implements CanDisable, MatSortable, OnDestroy, OnInit {
   private _rerenderSubscription: Subscription;
 
   /**

@@ -1,7 +1,7 @@
 import {Direction, Directionality} from '@angular/cdk/bidi';
 import {PortalModule, TemplatePortal} from '@angular/cdk/portal';
 import {CommonModule} from '@angular/common';
-import {Component, TemplateRef, ViewChild, ViewContainerRef} from '@angular/core';
+import {AfterContentInit, Component, TemplateRef, ViewChild, ViewContainerRef} from '@angular/core';
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 import {MatRippleModule} from '@angular/material/core';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
@@ -155,7 +155,7 @@ describe('MatTabBody', () => {
     <mat-tab-body [content]="content" [position]="position" [origin]="origin"></mat-tab-body>
   `
 })
-class SimpleTabBodyApp {
+class SimpleTabBodyApp implements AfterContentInit {
   content: TemplatePortal;
   position: number;
   origin: number;

@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 
 /**
@@ -9,7 +9,7 @@ import {FormBuilder, FormGroup, Validators} from '@angular/forms';
   templateUrl: 'stepper-optional-example.html',
   styleUrls: ['stepper-optional-example.css']
 })
-export class StepperOptionalExample {
+export class StepperOptionalExample implements OnInit {
   firstFormGroup: FormGroup;
   secondFormGroup: FormGroup;
   isOptional: boolean = false;

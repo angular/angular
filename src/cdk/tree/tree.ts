@@ -8,6 +8,7 @@
 import {FocusableOption} from '@angular/cdk/a11y';
 import {CollectionViewer, DataSource} from '@angular/cdk/collections';
 import {
+  AfterContentChecked,
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
@@ -15,9 +16,9 @@ import {
   Directive,
   ElementRef,
   Input,
-  IterableDiffers,
-  IterableDiffer,
   IterableChangeRecord,
+  IterableDiffer,
+  IterableDiffers,
   OnDestroy,
   OnInit,
   QueryList,
@@ -25,16 +26,16 @@ import {
   ViewContainerRef,
   ViewEncapsulation
 } from '@angular/core';
-import {of, BehaviorSubject, Observable, Subject, Subscription} from 'rxjs';
+import {BehaviorSubject, Observable, of as observableOf, Subject, Subscription} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
+import {TreeControl} from './control/tree-control';
 import {CdkTreeNodeDef, CdkTreeNodeOutletContext} from './node';
 import {CdkTreeNodeOutlet} from './outlet';
-import {TreeControl} from './control/tree-control';
 import {
+  getTreeControlFunctionsMissingError,
   getTreeControlMissingError,
   getTreeMissingMatchingNodeDefError,
   getTreeMultipleDefaultNodeDefsError,
-  getTreeControlFunctionsMissingError,
   getTreeNoValidDataSourceError
 } from './tree-errors';
 
@@ -130,7 +131,8 @@ export class CdkTreeNode<T>  implements FocusableOption, OnDestroy {
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class CdkTree<T> implements CollectionViewer, OnInit, OnDestroy {
+export class CdkTree<T>
+    implements AfterContentChecked, CollectionViewer, OnDestroy, OnInit {
   /** Subject that emits when the component has been destroyed. */
   private _onDestroy = new Subject<void>();
 
@@ -257,7 +259,7 @@ export class CdkTree<T> implements CollectionViewer, OnInit, OnDestroy {
     } else if (this._dataSource instanceof Observable) {
       dataStream = this._dataSource;
     } else if (Array.isArray(this._dataSource)) {
-      dataStream = of(this._dataSource);
+      dataStream = observableOf(this._dataSource);
     }
 
     if (dataStream) {

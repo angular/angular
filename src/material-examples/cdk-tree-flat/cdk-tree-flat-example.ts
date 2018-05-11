@@ -1,7 +1,7 @@
-import {Component, Injectable} from '@angular/core';
 import {FlatTreeControl} from '@angular/cdk/tree';
-import {MatTreeFlattener, MatTreeFlatDataSource} from '@angular/material/tree';
-import {of, Observable, BehaviorSubject} from 'rxjs';
+import {Component, Injectable} from '@angular/core';
+import {MatTreeFlatDataSource, MatTreeFlattener} from '@angular/material/tree';
+import {BehaviorSubject, Observable, of as observableOf} from 'rxjs';
 
 /**
  * File node data with nested structure.
@@ -154,7 +154,9 @@ export class CdkTreeFlatExample {
 
   private _isExpandable = (node: FileFlatNode) => { return node.expandable; };
 
-  private _getChildren = (node: FileNode): Observable<FileNode[]> => { return of(node.children); };
+  private _getChildren = (node: FileNode): Observable<FileNode[]> => {
+    return observableOf(node.children);
+  }
 
   hasChild = (_: number, _nodeData: FileFlatNode) => { return _nodeData.expandable; };
 }

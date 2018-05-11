@@ -1,6 +1,7 @@
 {
   "rulesDirectory": [
-    "./tools/tslint-rules/"
+    "./tools/tslint-rules/",
+    "node_modules/codelyzer"
   ],
   "rules": {
     "max-line-length": [true, 100],
@@ -84,6 +85,14 @@
     "no-namespace": true,
     "jsdoc-format": [true, "check-multiline-start"],
     "no-duplicate-imports": true,
+
+    // Codelyzer
+    "banana-in-box": true,
+    "contextual-life-cycle": true,
+    "decorator-not-allowed": true,
+    "no-output-on-prefix": true,
+    "templates-no-negated-async": true,
+    "use-life-cycle-interface": true,
 
     // Custom Rules
     "ts-loader": true,

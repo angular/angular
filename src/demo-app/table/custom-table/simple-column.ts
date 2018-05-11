@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, Input, Optional, ViewChild} from '@angular/core';
 import {coerceBooleanProperty} from '@angular/cdk/coercion';
+import {Component, Input, OnDestroy, OnInit, Optional, ViewChild} from '@angular/core';
 import {MatSortHeader} from '@angular/material/sort';
-import {MatColumnDef, MatTable} from '@angular/material';
+import {MatColumnDef, MatTable} from '@angular/material/table';
 
 
 /**
@@ -36,7 +36,7 @@ import {MatColumnDef, MatTable} from '@angular/material';
     '[attr.ariaHidden]': 'true',
   }
 })
-export class SimpleColumn<T> {
+export class SimpleColumn<T> implements OnDestroy, OnInit {
   /** Column name that should be used to reference this column. */
   @Input()
   get name(): string { return this._name; }

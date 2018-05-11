@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {FormControl} from '@angular/forms';
 import {Observable} from 'rxjs';
 import {map, startWith} from 'rxjs/operators';
@@ -11,7 +11,7 @@ import {map, startWith} from 'rxjs/operators';
   templateUrl: 'autocomplete-auto-active-first-option-example.html',
   styleUrls: ['autocomplete-auto-active-first-option-example.css']
 })
-export class AutocompleteAutoActiveFirstOptionExample {
+export class AutocompleteAutoActiveFirstOptionExample implements OnInit {
   myControl: FormControl = new FormControl();
   options = ['One', 'Two', 'Three'];
   filteredOptions: Observable<string[]>;

@@ -12,6 +12,7 @@ import {coerceBooleanProperty} from '@angular/cdk/coercion';
 import {ESCAPE} from '@angular/cdk/keycodes';
 import {Platform} from '@angular/cdk/platform';
 import {CdkScrollable} from '@angular/cdk/scrolling';
+import {DOCUMENT} from '@angular/common';
 import {
   AfterContentChecked,
   AfterContentInit,
@@ -20,6 +21,7 @@ import {
   Component,
   ContentChild,
   ContentChildren,
+  DoCheck,
   ElementRef,
   EventEmitter,
   forwardRef,
@@ -34,9 +36,8 @@ import {
   ViewChild,
   ViewEncapsulation,
 } from '@angular/core';
-import {DOCUMENT} from '@angular/common';
-import {filter, take, startWith, takeUntil, map, debounceTime} from 'rxjs/operators';
-import {merge, fromEvent, Observable, Subject} from 'rxjs';
+import {fromEvent, merge, Observable, Subject} from 'rxjs';
+import {debounceTime, filter, map, startWith, take, takeUntil} from 'rxjs/operators';
 import {matDrawerAnimations} from './drawer-animations';
 import {ANIMATION_MODULE_TYPE} from '@angular/platform-browser/animations';
 
@@ -199,6 +200,7 @@ export class MatDrawer implements AfterContentInit, AfterContentChecked, OnDestr
   }
 
   /** Event emitted when the drawer's position changes. */
+  // tslint:disable-next-line:no-output-on-prefix
   @Output('positionChanged') onPositionChanged: EventEmitter<void> = new EventEmitter<void>();
 
   /**
@@ -396,7 +398,7 @@ export class MatDrawer implements AfterContentInit, AfterContentChecked, OnDestr
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
 })
-export class MatDrawerContainer implements AfterContentInit, OnDestroy {
+export class MatDrawerContainer implements AfterContentInit, DoCheck, OnDestroy {
   @ContentChildren(MatDrawer) _drawers: QueryList<MatDrawer>;
   @ContentChild(MatDrawerContent) _content: MatDrawerContent;
 

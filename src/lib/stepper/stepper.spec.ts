@@ -11,8 +11,8 @@ import {
 } from '@angular/cdk/keycodes';
 import {StepperOrientation} from '@angular/cdk/stepper';
 import {dispatchKeyboardEvent} from '@angular/cdk/testing';
-import {Component, DebugElement, EventEmitter} from '@angular/core';
-import {async, ComponentFixture, inject, TestBed, fakeAsync, flush} from '@angular/core/testing';
+import {Component, DebugElement, EventEmitter, OnInit} from '@angular/core';
+import {async, ComponentFixture, fakeAsync, flush, inject, TestBed} from '@angular/core/testing';
 import {
   AbstractControl,
   AsyncValidatorFn,
@@ -922,7 +922,7 @@ function assertArrowKeyInteractionInRtl(fixture: ComponentFixture<any>,
   expect(stepperComponent._getFocusIndex()).toBe(0);
 }
 
-function asyncValidator(minLength: number, validationTrigger: Observable<any>): AsyncValidatorFn {
+function asyncValidator(minLength: number, validationTrigger: Subject<void>): AsyncValidatorFn {
   return (control: AbstractControl): Observable<ValidationErrors | null> => {
     return validationTrigger.pipe(
       map(() => control.value && control.value.length >= minLength ? null : {asyncValidation: {}}),
@@ -1036,12 +1036,12 @@ class SimpleMatVerticalStepperApp {
     </mat-vertical-stepper>
   `
 })
-class LinearMatVerticalStepperApp {
+class LinearMatVerticalStepperApp implements OnInit {
   oneGroup: FormGroup;
   twoGroup: FormGroup;
   threeGroup: FormGroup;
 
-  validationTrigger: Subject<any> = new Subject();
+  validationTrigger = new Subject<void>();
 
   ngOnInit() {
     this.oneGroup = new FormGroup({

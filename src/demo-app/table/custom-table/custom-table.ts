@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, ViewChild} from '@angular/core';
+import {Component, OnInit, ViewChild} from '@angular/core';
 import {MatSort, MatTableDataSource} from '@angular/material';
 import {Element, ELEMENT_DATA} from '../element-data';
 
@@ -15,9 +15,9 @@ import {Element, ELEMENT_DATA} from '../element-data';
   moduleId: module.id,
   selector: 'custom-table-demo',
   templateUrl: 'custom-table.html',
-  styleUrls: ['custom-table.css'],
+  styleUrls: ['custom-table.css']
 })
-export class CustomTableDemo {
+export class CustomTableDemo implements OnInit {
   columnsToDisplay = ['name', 'weight', 'symbol', 'position'];
   simpleTableDataSource = new MatTableDataSource<Element>(ELEMENT_DATA);
   wrapperTableDataSource = new MatTableDataSource<Element>(ELEMENT_DATA);

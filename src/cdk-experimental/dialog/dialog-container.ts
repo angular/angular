@@ -6,30 +6,31 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {
-  ElementRef,
-  HostBinding,
-  ViewChild,
-  ComponentRef,
-  EmbeddedViewRef,
-  ChangeDetectorRef,
-  Component,
-  Optional,
-  Inject,
-  ViewEncapsulation,
-  ChangeDetectionStrategy,
-} from '@angular/core';
-import {DOCUMENT} from '@angular/common';
-import {trigger, state, style, transition, animate, AnimationEvent} from '@angular/animations';
+import {animate, AnimationEvent, state, style, transition, trigger} from '@angular/animations';
+import {FocusTrapFactory} from '@angular/cdk/a11y';
 import {
   BasePortalOutlet,
-  PortalHostDirective,
   ComponentPortal,
+  PortalHostDirective,
   TemplatePortal
 } from '@angular/cdk/portal';
-import {FocusTrapFactory} from '@angular/cdk/a11y';
-import {DialogConfig} from './dialog-config';
+import {DOCUMENT} from '@angular/common';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  ComponentRef,
+  ElementRef,
+  EmbeddedViewRef,
+  HostBinding,
+  Inject,
+  OnDestroy,
+  Optional,
+  ViewChild,
+  ViewEncapsulation,
+} from '@angular/core';
 import {Subject} from 'rxjs';
+import {DialogConfig} from './dialog-config';
 
 
 export function throwDialogContentAlreadyAttachedError() {
@@ -63,7 +64,7 @@ export function throwDialogContentAlreadyAttachedError() {
     '(@dialog.done)': '_onAnimationDone($event)',
   },
 })
-export class CdkDialogContainer extends BasePortalOutlet {
+export class CdkDialogContainer extends BasePortalOutlet implements OnDestroy {
   /** State of the dialog animation. */
   _state: 'void' | 'enter' | 'exit' = 'enter';
 

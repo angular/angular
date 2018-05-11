@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, ViewChild} from '@angular/core';
-import {PeriodicElement, ELEMENT_DATA} from 'table/element-data';
 import {animate, state, style, transition, trigger} from '@angular/animations';
+import {Component, OnInit, ViewChild} from '@angular/core';
 import {MatPaginator, MatSort, MatTableDataSource} from '@angular/material';
+import {ELEMENT_DATA, PeriodicElement} from 'table/element-data';
 
 @Component({
   moduleId: module.id,
@@ -45,7 +45,7 @@ import {MatPaginator, MatSort, MatTableDataSource} from '@angular/material';
     }
   `]
 })
-export class ExpandableRowsDemo {
+export class ExpandableRowsDemo implements OnInit {
   dataSource = new MatTableDataSource(ELEMENT_DATA.slice());
   columnsToDisplay = ['name', 'weight', 'symbol', 'position'];
   expandedElement: PeriodicElement;

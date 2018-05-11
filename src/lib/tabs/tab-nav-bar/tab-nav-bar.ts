@@ -9,6 +9,7 @@ import {Directionality} from '@angular/cdk/bidi';
 import {Platform} from '@angular/cdk/platform';
 import {ViewportRuler} from '@angular/cdk/scrolling';
 import {
+  AfterContentChecked,
   AfterContentInit,
   Attribute,
   ChangeDetectionStrategy,
@@ -69,8 +70,8 @@ export const _MatTabNavMixinBase = mixinDisableRipple(mixinColor(MatTabNavBase, 
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MatTabNav extends _MatTabNavMixinBase implements AfterContentInit, CanColor,
-    CanDisableRipple, OnDestroy {
+export class MatTabNav extends _MatTabNavMixinBase
+    implements AfterContentChecked, AfterContentInit, CanColor, CanDisableRipple, OnDestroy {
 
   /** Subject that emits when the component has been destroyed. */
   private readonly _onDestroy = new Subject<void>();

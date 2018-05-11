@@ -1,4 +1,6 @@
+import {CollectionViewer, DataSource} from '@angular/cdk/collections';
 import {
+  AfterContentInit,
   Component,
   ContentChild,
   ContentChildren,
@@ -7,12 +9,13 @@ import {
   Type,
   ViewChild
 } from '@angular/core';
-import {ComponentFixture, TestBed, fakeAsync, flush} from '@angular/core/testing';
-import {CdkTable} from './table';
-import {CollectionViewer, DataSource} from '@angular/cdk/collections';
-import {combineLatest, BehaviorSubject, Observable, of as observableOf} from 'rxjs';
+import {ComponentFixture, fakeAsync, flush, TestBed} from '@angular/core/testing';
+import {BehaviorSubject, combineLatest, Observable, of as observableOf} from 'rxjs';
 import {map} from 'rxjs/operators';
+import {CdkColumnDef} from './cell';
 import {CdkTableModule} from './index';
+import {CdkHeaderRowDef, CdkRowDef} from './row';
+import {CdkTable} from './table';
 import {
   getTableDuplicateColumnNameError,
   getTableMissingMatchingRowDefError,
@@ -21,8 +24,6 @@ import {
   getTableUnknownColumnError,
   getTableUnknownDataSourceError
 } from './table-errors';
-import {CdkHeaderRowDef, CdkRowDef} from './row';
-import {CdkColumnDef} from './cell';
 
 describe('CdkTable', () => {
   let fixture: ComponentFixture<any>;
@@ -1502,7 +1503,7 @@ class RowContextCdkTableApp {
     </cdk-table>
   `
 })
-class WrapperCdkTableApp<T> {
+class WrapperCdkTableApp<T> implements AfterContentInit {
   @ContentChildren(CdkColumnDef) columnDefs: QueryList<CdkColumnDef>;
   @ContentChild(CdkHeaderRowDef) headerRowDef: CdkHeaderRowDef;
   @ContentChildren(CdkRowDef) rowDefs: QueryList<CdkRowDef<T>>;

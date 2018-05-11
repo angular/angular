@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {CollectionViewer, DataSource} from '@angular/cdk/collections';
 import {
   AfterContentChecked,
   Attribute,
@@ -22,6 +23,7 @@ import {
   IterableChangeRecord,
   IterableDiffer,
   IterableDiffers,
+  OnDestroy,
   OnInit,
   QueryList,
   TemplateRef,
@@ -30,7 +32,9 @@ import {
   ViewContainerRef,
   ViewEncapsulation,
 } from '@angular/core';
-import {CollectionViewer, DataSource} from '@angular/cdk/collections';
+import {BehaviorSubject, Observable, of as observableOf, Subject, Subscription} from 'rxjs';
+import {takeUntil} from 'rxjs/operators';
+import {CdkColumnDef} from './cell';
 import {
   BaseRowDef,
   CdkCellOutlet,
@@ -40,9 +44,6 @@ import {
   CdkHeaderRowDef,
   CdkRowDef
 } from './row';
-import {takeUntil} from 'rxjs/operators';
-import {BehaviorSubject, Observable, of as observableOf, Subject, Subscription} from 'rxjs';
-import {CdkColumnDef} from './cell';
 import {
   getTableDuplicateColumnNameError,
   getTableMissingMatchingRowDefError,
@@ -144,7 +145,7 @@ export interface RenderRow<T> {
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class CdkTable<T> implements CollectionViewer, OnInit, AfterContentChecked {
+export class CdkTable<T> implements AfterContentChecked, CollectionViewer, OnDestroy, OnInit {
   /** Subject that emits when the component has been destroyed. */
   private _onDestroy = new Subject<void>();
 

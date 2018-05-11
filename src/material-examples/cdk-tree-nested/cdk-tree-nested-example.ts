@@ -1,7 +1,7 @@
-import {Component, Injectable} from '@angular/core';
 import {NestedTreeControl} from '@angular/cdk/tree';
+import {Component, Injectable} from '@angular/core';
 import {MatTreeNestedDataSource} from '@angular/material/tree';
-import {of, BehaviorSubject} from 'rxjs';
+import {BehaviorSubject, of as observableOf} from 'rxjs';
 
 /**
  * Json node data with nested structure. Each node has a filename and a value or a list of children
@@ -125,7 +125,7 @@ export class CdkTreeNestedExample {
     database.dataChange.subscribe(data => this.nestedDataSource.data = data);
   }
 
-  private _getChildren = (node: FileNode) => { return of(node.children); };
+  private _getChildren = (node: FileNode) => { return observableOf(node.children); };
 
   hasNestedChild = (_: number, nodeData: FileNode) => {return !(nodeData.type); };
 }

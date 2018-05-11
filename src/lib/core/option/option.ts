@@ -8,23 +8,23 @@
 
 import {coerceBooleanProperty} from '@angular/cdk/coercion';
 import {ENTER, SPACE} from '@angular/cdk/keycodes';
-import {Subject} from 'rxjs';
 import {
+  AfterViewChecked,
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
   ElementRef,
   EventEmitter,
+  Inject,
+  InjectionToken,
   Input,
+  OnDestroy,
   Optional,
   Output,
   QueryList,
   ViewEncapsulation,
-  InjectionToken,
-  Inject,
-  AfterViewChecked,
-  OnDestroy,
 } from '@angular/core';
+import {Subject} from 'rxjs';
 import {MatOptgroup} from './optgroup';
 
 /**
@@ -112,6 +112,7 @@ export class MatOption implements AfterViewChecked, OnDestroy {
   get disableRipple() { return this._parent && this._parent.disableRipple; }
 
   /** Event emitted when the option is selected or deselected. */
+  // tslint:disable-next-line:no-output-on-prefix
   @Output() readonly onSelectionChange = new EventEmitter<MatOptionSelectionChange>();
 
   /** Emits when the state of the option changes and any parents have to be notified. */
