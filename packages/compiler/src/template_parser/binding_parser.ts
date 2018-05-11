@@ -8,7 +8,7 @@
 
 import {CompileDirectiveSummary, CompilePipeSummary} from '../compile_metadata';
 import {SecurityContext} from '../core';
-import {ASTWithSource, BindingPipe, BoundElementBindingType, BoundElementProperty, EmptyExpr, ParsedEvent, ParsedEventType, ParsedProperty, ParsedPropertyType, ParsedVariable, ParserError, RecursiveAstVisitor, TemplateBinding} from '../expression_parser/ast';
+import {ASTWithSource, BindingPipe, BindingType, BoundElementProperty, EmptyExpr, ParsedEvent, ParsedEventType, ParsedProperty, ParsedPropertyType, ParsedVariable, ParserError, RecursiveAstVisitor, TemplateBinding} from '../expression_parser/ast';
 import {Parser} from '../expression_parser/parser';
 import {InterpolationConfig} from '../ml_parser/interpolation_config';
 import {mergeNsAndName} from '../ml_parser/tags';
@@ -29,12 +29,13 @@ const ANIMATE_PROP_PREFIX = 'animate-';
  */
 export class BindingParser {
   pipesByName: Map<string, CompilePipeSummary>|null = null;
+
   private _usedPipes: Map<string, CompilePipeSummary> = new Map();
 
   constructor(
       private _exprParser: Parser, private _interpolationConfig: InterpolationConfig,
       private _schemaRegistry: ElementSchemaRegistry, pipes: CompilePipeSummary[]|null,
-      private _targetErrors: ParseError[]) {
+      public errors: ParseError[]) {
     // When the `pipes` parameter is `null`, do not check for used pipes
     // This is used in IVY when we might not know the available pipes at compile time
     if (pipes) {
@@ -239,12 +240,12 @@ export class BindingParser {
       BoundElementProperty {
     if (boundProp.isAnimation) {
       return new BoundElementProperty(
-          boundProp.name, BoundElementBindingType.Animation, SecurityContext.NONE,
-          boundProp.expression, null, boundProp.sourceSpan);
+          boundProp.name, BindingType.Animation, SecurityContext.NONE, boundProp.expression, null,
+          boundProp.sourceSpan);
     }
 
     let unit: string|null = null;
-    let bindingType: BoundElementBindingType = undefined !;
+    let bindingType: BindingType = undefined !;
     let boundPropertyName: string|null = null;
     const parts = boundProp.name.split(PROPERTY_PARTS_SEPARATOR);
     let securityContexts: SecurityContext[] = undefined !;
@@ -264,15 +265,15 @@ export class BindingParser {
           boundPropertyName = mergeNsAndName(ns, name);
         }
 
-        bindingType = BoundElementBindingType.Attribute;
+        bindingType = BindingType.Attribute;
       } else if (parts[0] == CLASS_PREFIX) {
         boundPropertyName = parts[1];
-        bindingType = BoundElementBindingType.Class;
+        bindingType = BindingType.Class;
         securityContexts = [SecurityContext.NONE];
       } else if (parts[0] == STYLE_PREFIX) {
         unit = parts.length > 2 ? parts[2] : null;
         boundPropertyName = parts[1];
-        bindingType = BoundElementBindingType.Style;
+        bindingType = BindingType.Style;
         securityContexts = [SecurityContext.STYLE];
       }
     }
@@ -282,7 +283,7 @@ export class BindingParser {
       boundPropertyName = this._schemaRegistry.getMappedPropName(boundProp.name);
       securityContexts = calcPossibleSecurityContexts(
           this._schemaRegistry, elementSelector, boundPropertyName, false);
-      bindingType = BoundElementBindingType.Property;
+      bindingType = BindingType.Property;
       this._validatePropertyOrAttributeName(boundPropertyName, boundProp.sourceSpan, false);
     }
 
@@ -364,7 +365,7 @@ export class BindingParser {
   private _reportError(
       message: string, sourceSpan: ParseSourceSpan,
       level: ParseErrorLevel = ParseErrorLevel.ERROR) {
-    this._targetErrors.push(new ParseError(sourceSpan, message, level));
+    this.errors.push(new ParseError(sourceSpan, message, level));
   }
 
   private _reportExpressionParserErrors(errors: ParserError[], sourceSpan: ParseSourceSpan) {

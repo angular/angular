@@ -44,9 +44,6 @@ export const BROWSER_SANITIZATION_PROVIDERS: StaticProvider[] = [
   {provide: DomSanitizer, useClass: DomSanitizerImpl, deps: [DOCUMENT]},
 ];
 
-/**
- *
- */
 export const platformBrowser: (extraProviders?: StaticProvider[]) => PlatformRef =
     createPlatformFactory(platformCore, 'browser', INTERNAL_BROWSER_PLATFORM_PROVIDERS);
 

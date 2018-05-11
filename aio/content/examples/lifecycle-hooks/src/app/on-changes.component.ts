@@ -46,8 +46,6 @@ export class OnChangesComponent implements OnChanges {
   reset() { this.changeLog = []; }
 }
 
-/***************************************/
-
 @Component({
   selector: 'on-changes-parent',
   templateUrl: './on-changes-parent.component.html',

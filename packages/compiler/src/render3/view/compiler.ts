@@ -12,7 +12,7 @@ import {CompileReflector} from '../../compile_reflector';
 import {BindingForm, BuiltinFunctionCall, LocalResolver, convertActionBinding, convertPropertyBinding} from '../../compiler_util/expression_converter';
 import {ConstantPool, DefinitionKind} from '../../constant_pool';
 import * as core from '../../core';
-import {AST, AstMemoryEfficientTransformer, BindingPipe, BoundElementBindingType, FunctionCall, ImplicitReceiver, LiteralArray, LiteralMap, LiteralPrimitive, PropertyRead} from '../../expression_parser/ast';
+import {AST, AstMemoryEfficientTransformer, BindingPipe, BindingType, FunctionCall, ImplicitReceiver, LiteralArray, LiteralMap, LiteralPrimitive, PropertyRead} from '../../expression_parser/ast';
 import {Identifiers} from '../../identifiers';
 import {LifecycleHooks} from '../../lifecycle_reflector';
 import * as o from '../../output/output_ast';
@@ -21,9 +21,10 @@ import {CssSelector, SelectorMatcher} from '../../selector';
 import {BindingParser} from '../../template_parser/binding_parser';
 import {OutputContext, error} from '../../util';
 
-import * as t from './../r3_ast';
-import {R3DependencyMetadata, R3ResolvedDependencyType, compileFactoryFunction, dependenciesFromGlobalMetadata} from './../r3_factory';
-import {Identifiers as R3} from './../r3_identifiers';
+import * as t from '../r3_ast';
+import {R3DependencyMetadata, R3ResolvedDependencyType, compileFactoryFunction, dependenciesFromGlobalMetadata} from '../r3_factory';
+import {Identifiers as R3} from '../r3_identifiers';
+import {Render3ParseResult} from '../r3_template_transform';
 import {R3ComponentDef, R3ComponentMetadata, R3DirectiveDef, R3DirectiveMetadata, R3QueryMetadata} from './api';
 import {BindingScope, TemplateDefinitionBuilder} from './template';
 import {CONTEXT_NAME, DefinitionMap, ID_SEPARATOR, MEANING_SEPARATOR, TEMPORARY_NAME, asLiteral, conditionallyCreateMapObjectLiteral, getQueryPredicate, temporaryAllocator, unsupported} from './util';
@@ -191,9 +192,8 @@ export function compileDirectiveFromRender2(
  * information.
  */
 export function compileComponentFromRender2(
-    outputCtx: OutputContext, component: CompileDirectiveMetadata, nodes: t.Node[],
-    hasNgContent: boolean, ngContentSelectors: string[], reflector: CompileReflector,
-    bindingParser: BindingParser, directiveTypeBySel: Map<string, any>,
+    outputCtx: OutputContext, component: CompileDirectiveMetadata, render3Ast: Render3ParseResult,
+    reflector: CompileReflector, bindingParser: BindingParser, directiveTypeBySel: Map<string, any>,
     pipeTypeByName: Map<string, any>) {
   const name = identifierName(component.type) !;
   name || error(`Cannot resolver the name of ${component.type}`);
@@ -207,7 +207,9 @@ export function compileComponentFromRender2(
     ...directiveMetadataFromGlobalMetadata(component, outputCtx, reflector),
     selector: component.selector,
     template: {
-        nodes, hasNgContent, ngContentSelectors,
+      nodes: render3Ast.nodes,
+      hasNgContent: render3Ast.hasNgContent,
+      ngContentSelectors: render3Ast.ngContentSelectors,
     },
     lifecycle: {
       usesOnChanges:

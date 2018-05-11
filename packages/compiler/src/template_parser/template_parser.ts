@@ -59,18 +59,6 @@ const CLASS_ATTR = 'class';
 
 const TEXT_CSS_SELECTOR = CssSelector.parse('*')[0];
 
-let warningCounts: {[warning: string]: number} = {};
-
-function warnOnlyOnce(warnings: string[]): (warning: ParseError) => boolean {
-  return (error: ParseError) => {
-    if (warnings.indexOf(error.msg) !== -1) {
-      warningCounts[error.msg] = (warningCounts[error.msg] || 0) + 1;
-      return warningCounts[error.msg] <= 1;
-    }
-    return true;
-  };
-}
-
 export class TemplateParseError extends ParseError {
   constructor(message: string, span: ParseSourceSpan, level: ParseErrorLevel) {
     super(span, message, level);

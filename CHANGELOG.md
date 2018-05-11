@@ -1,3 +1,19 @@
+<a name="6.0.1"></a>
+# [6.0.1](https://github.com/angular/angular/compare/6.0.0...6.0.1) (2018-05-11)
+
+
+### Bug Fixes
+
+* **animations:** properly clean up queried element styles in safari/edge ([#23686](https://github.com/angular/angular/issues/23686)) ([3824e3f](https://github.com/angular/angular/commit/3824e3f))
+* **animations:** retain state styling for nodes that are moved around ([#23686](https://github.com/angular/angular/issues/23686)) ([05aa5e0](https://github.com/angular/angular/commit/05aa5e0))
+* **core:** call ngOnDestroy on all services that have it ([#23755](https://github.com/angular/angular/issues/23755)) ([5581e97](https://github.com/angular/angular/commit/5581e97)), closes [#22466](https://github.com/angular/angular/issues/22466) [#22240](https://github.com/angular/angular/issues/22240) [#14818](https://github.com/angular/angular/issues/14818)
+* **elements:** always check to create strategy ([#23825](https://github.com/angular/angular/issues/23825)) ([d280077](https://github.com/angular/angular/commit/d280077))
+* **router:** avoid freezing queryParams in-place ([#22663](https://github.com/angular/angular/issues/22663)) ([3d8799b](https://github.com/angular/angular/commit/3d8799b)), closes [#22617](https://github.com/angular/angular/issues/22617)
+* **router:** correct the segment parsing so it won't break on ampersand ([#23684](https://github.com/angular/angular/issues/23684)) ([8733843](https://github.com/angular/angular/commit/8733843))
+* **service-worker:** correctly handle requests with empty `clientId` ([#23625](https://github.com/angular/angular/issues/23625)) ([2254ac2](https://github.com/angular/angular/commit/2254ac2)), closes [#23526](https://github.com/angular/angular/issues/23526)
+
+
+
 <a name="6.0.0"></a>
 # [6.0.0](https://github.com/angular/angular/compare/6.0.0-beta.0...6.0.0) (2018-05-03)
 
