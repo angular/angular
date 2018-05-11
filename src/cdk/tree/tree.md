@@ -166,3 +166,13 @@ nodes should be sent to tree component based on current expansion status.
 
 The data source for nested tree has an option to leave the node expansion/collapsing event for each
 tree node component to handle.
+
+##### `trackBy`
+
+To improve performance, a `trackBy` function can be provided to the tree similar to Angular’s
+[`ngFor` `trackBy`](https://angular.io/api/common/NgForOf#change-propagation). This informs the
+tree how to uniquely identify nodes to track how the data changes with each update.
+
+```html
+<cdk-tree [dataSource]="dataSource" [treeControl]="treeControl" [trackBy]="trackByFn">
+```

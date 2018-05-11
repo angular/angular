@@ -24,7 +24,8 @@ import {
   QueryList,
   ViewChild,
   ViewContainerRef,
-  ViewEncapsulation
+  ViewEncapsulation,
+  TrackByFunction
 } from '@angular/core';
 import {BehaviorSubject, Observable, of as observableOf, Subject, Subscription} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
@@ -165,6 +166,14 @@ export class CdkTree<T>
   /** The tree controller */
   @Input() treeControl: TreeControl<T>;
 
+  /**
+   * Tracking function that will be used to check the differences in data changes. Used similarly
+   * to `ngFor` `trackBy` function. Optimize node operations by identifying a node based on its data
+   * relative to the function to know if a node should be added/removed/moved.
+   * Accepts a function that takes two parameters, `index` and `item`.
+   */
+  @Input() trackBy: TrackByFunction<T>;
+
   // Outlets within the tree's template where the dataNodes will be inserted.
   @ViewChild(CdkTreeNodeOutlet) _nodeOutlet: CdkTreeNodeOutlet;
 
@@ -184,7 +193,7 @@ export class CdkTree<T>
               private _changeDetectorRef: ChangeDetectorRef) {}
 
   ngOnInit() {
-    this._dataDiffer = this._differs.find([]).create();
+    this._dataDiffer = this._differs.find([]).create(this.trackBy);
     if (!this.treeControl) {
       throw getTreeControlMissingError();
     }
