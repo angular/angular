@@ -1,0 +1,9 @@
+{
+  "description": "runtime dependences for packager",
+  "devDependencies": {
+    "@types/node": "6.0.84",
+    "@types/shelljs": "0.7.7",
+    "shelljs": "0.8.2",
+    "typescript": "2.7.2"
+  }
+}
