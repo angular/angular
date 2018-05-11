@@ -7,11 +7,28 @@
 # To validate changes, use an online parser, eg.
 # http://yaml-online-parser.appspot.com/
 
+## IMPORTANT
+# If you change the `docker_image` version, also change the `cache_key` suffix and the version of
+# `com_github_bazelbuild_buildtools` in the `/WORKSPACE` file.
+var_1: &docker_image angular/ngcontainer:0.3.0
+var_2: &cache_key v2-ng-mat-{{ .Branch }}-{{ checksum "package-lock.json" }}-0.3.0
+
+# Define common ENV vars
+var_3: &define_env_vars
+  run: echo "export PROJECT_ROOT=$(pwd)" >> $BASH_ENV
+
+# See remote cache documentation in /docs/BAZEL.md
+var_4: &setup-bazel-remote-cache
+  run:
+    name: Start up bazel remote cache proxy
+    command: ~/bazel-remote-proxy -backend circleci://
+    background: true
+
 # Settings common to each job
 anchor_1: &job_defaults
   working_directory: ~/ng
   docker:
-    - image: angular/ngcontainer:0.1.0
+    - image: *docker_image
 
 # After checkout, rebase on top of master.
 # Similar to travis behavior, but not quite the same.
@@ -29,15 +46,16 @@ jobs:
       - checkout:
           <<: *post_checkout
       - restore_cache:
-          key: material2-{{ .Branch }}-{{ checksum "package-lock.json" }}
+          key: *cache_key
 
       - run: bazel run @nodejs//:npm install
       # For some reason, circleci needs the postinstall to be run explicitly.
       # This may be unnecessary once rules_nodejs uses nodejs 8
       - run: bazel run @nodejs//:npm run postinstall
       - run: bazel build src/...
+      - run: bazel test src/...
       - save_cache:
-          key: material2-{{ .Branch }}-{{ checksum "package-lock.json" }}
+          key: *cache_key
           paths:
             - "node_modules"
 

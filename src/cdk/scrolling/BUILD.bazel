@@ -31,8 +31,6 @@ ts_web_test(
   bootstrap = [
     "//:web_test_bootstrap_scripts",
   ],
-  tags = ["manual"],
-
   # Do not sort
   deps = [
     "//:tslib_bundle",

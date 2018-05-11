@@ -22,6 +22,5 @@ ts_library(
 ts_web_test(
   name = "unit_tests",
   bootstrap = ["//:web_test_bootstrap_scripts"],
-  tags = ["manual"],
   deps = [":coercion_test_sources"],
 )
