@@ -67,8 +67,13 @@ describe('FlexibleConnectedPositionStrategy', () => {
           originY: 'bottom'
         }]);
 
+    // Needs to be in the DOM for IE not to throw an "Unspecified error".
+    document.body.appendChild(origin.nativeElement);
     attachOverlay({positionStrategy});
+
     expect(() => attachOverlay({positionStrategy})).toThrow();
+
+    document.body.removeChild(origin.nativeElement);
   });
 
   it('should not throw when trying to apply after being disposed', () => {
@@ -82,10 +87,14 @@ describe('FlexibleConnectedPositionStrategy', () => {
           originY: 'bottom'
         }]);
 
+    // Needs to be in the DOM for IE not to throw an "Unspecified error".
+    document.body.appendChild(origin.nativeElement);
     attachOverlay({positionStrategy});
     overlayRef.dispose();
 
     expect(() => positionStrategy.apply()).not.toThrow();
+
+    document.body.removeChild(origin.nativeElement);
   });
 
   it('should not throw when trying to re-apply the last position after being disposed', () => {
@@ -99,10 +108,14 @@ describe('FlexibleConnectedPositionStrategy', () => {
           originY: 'bottom'
         }]);
 
+    // Needs to be in the DOM for IE not to throw an "Unspecified error".
+    document.body.appendChild(origin.nativeElement);
     attachOverlay({positionStrategy});
     overlayRef.dispose();
 
     expect(() => positionStrategy.reapplyLastPosition()).not.toThrow();
+
+    document.body.removeChild(origin.nativeElement);
   });
 
   describe('without flexible dimensions and pushing', () => {
@@ -1712,6 +1725,7 @@ describe('FlexibleConnectedPositionStrategy', () => {
     });
 
     afterEach(() => {
+      document.body.removeChild(originElement);
       positionStrategy.dispose();
     });
 
