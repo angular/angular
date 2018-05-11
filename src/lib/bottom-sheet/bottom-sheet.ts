@@ -146,7 +146,7 @@ export class MatBottomSheet {
     injectionTokens.set(MatBottomSheetRef, bottomSheetRef);
     injectionTokens.set(MAT_BOTTOM_SHEET_DATA, config.data);
 
-    if (!userInjector || !userInjector.get(Directionality, null)) {
+    if (!userInjector || !userInjector.get<Directionality | null>(Directionality, null)) {
       injectionTokens.set(Directionality, {
         value: config.direction,
         change: observableOf()
