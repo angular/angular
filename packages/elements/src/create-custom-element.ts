@@ -131,7 +131,9 @@ export function createCustomElement<P>(
   const attributeToPropertyInputs = getDefaultAttributeToPropertyInputs(inputs);
 
   class NgElementImpl extends NgElement {
-    static readonly observedAttributes = Object.keys(attributeToPropertyInputs);
+    // Work around a bug in closure typed optimizations(b/79557487) where it is not honoring static
+    // field externs. So using quoted access to explicitly prevent renaming.
+    static readonly['observedAttributes'] = Object.keys(attributeToPropertyInputs);
 
     constructor(injector?: Injector) {
       super();
