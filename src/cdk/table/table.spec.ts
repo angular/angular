@@ -69,11 +69,11 @@ describe('CdkTable', () => {
       });
 
       it('with a rendered header with the right number of header cells', () => {
-        const header = getHeaderRow(tableElement);
+        const header = getHeaderRows(tableElement)[0];
 
         expect(header).toBeTruthy();
         expect(header.classList).toContain('customHeaderRowClass');
-        expect(getHeaderCells(tableElement).length).toBe(component.columnsToRender.length);
+        expect(getHeaderCells(header).length).toBe(component.columnsToRender.length);
       });
 
       it('with rendered rows with right number of row cells', () => {
@@ -87,7 +87,8 @@ describe('CdkTable', () => {
       });
 
       it('with column class names provided to header and data row cells', () => {
-        getHeaderCells(tableElement).forEach((headerCell, index) => {
+        const header = getHeaderRows(tableElement)[0];
+        getHeaderCells(header).forEach((headerCell, index) => {
           expect(headerCell.classList).toContain(`cdk-column-${component.columnsToRender[index]}`);
         });
 
@@ -101,8 +102,9 @@ describe('CdkTable', () => {
       it('with the right accessibility roles', () => {
         expect(tableElement.getAttribute('role')).toBe('grid');
 
-        expect(getHeaderRow(tableElement).getAttribute('role')).toBe('row');
-        getHeaderCells(tableElement).forEach(cell => {
+        expect(getHeaderRows(tableElement)[0].getAttribute('role')).toBe('row');
+        const header = getHeaderRows(tableElement)[0];
+        getHeaderCells(header).forEach(cell => {
           expect(cell.getAttribute('role')).toBe('columnheader');
         });
 
@@ -278,6 +280,40 @@ describe('CdkTable', () => {
 
     expect(getRows(tableElement).length).toBe(0);
   }));
+
+  it('should be able to render multiple header and footer rows', () => {
+    setupTableTestApp(MultipleHeaderFooterRowsCdkTableApp);
+    fixture.detectChanges();
+
+    expectTableToMatchContent(tableElement, [
+      ['first-header'],
+      ['second-header'],
+      ['first-footer'],
+      ['second-footer'],
+    ]);
+  });
+
+  it('should be able to render and change multiple header and footer rows', () => {
+    setupTableTestApp(MultipleHeaderFooterRowsCdkTableApp);
+    fixture.detectChanges();
+
+    expectTableToMatchContent(tableElement, [
+      ['first-header'],
+      ['second-header'],
+      ['first-footer'],
+      ['second-footer'],
+    ]);
+
+    component.showAlternativeHeadersAndFooters = true;
+    fixture.detectChanges();
+
+    expectTableToMatchContent(tableElement, [
+      ['first-header'],
+      ['second-header'],
+      ['first-footer'],
+      ['second-footer'],
+    ]);
+  });
 
   describe('with different data inputs other than data source', () => {
     let baseData: TestData[] = [
@@ -460,7 +496,8 @@ describe('CdkTable', () => {
   it('should be able to apply class-friendly css class names for the column cells', () => {
     setupTableTestApp(CrazyColumnNameCdkTableApp);
     // Column was named 'crazy-column-NAME-1!@#$%^-_&*()2'
-    expect(getHeaderCells(tableElement)[0].classList)
+    const header = getHeaderRows(tableElement)[0];
+    expect(getHeaderCells(header)[0].classList)
         .toContain('cdk-column-crazy-column-NAME-1-------_----2');
   });
 
@@ -488,7 +525,7 @@ describe('CdkTable', () => {
     setupTableTestApp(UndefinedColumnsCdkTableApp);
 
     // Header should be empty since there are no columns to display.
-    const headerRow = getHeaderRow(tableElement);
+    const headerRow = getHeaderRows(tableElement)[0];
     expect(headerRow.textContent).toBe('');
 
     // Rows should be empty since there are no columns to display.
@@ -656,6 +693,8 @@ describe('CdkTable', () => {
       });
     });
   });
+
+
 
   describe('with trackBy', () => {
     function createTestComponentWithTrackyByTable(trackByStrategy) {
@@ -1051,6 +1090,62 @@ class BooleanRowCdkTableApp {
 })
 class NullDataCdkTableApp {
   dataSource = observableOf(null);
+}
+
+
+@Component({
+  template: `
+    <cdk-table [dataSource]="[]">
+      <ng-container cdkColumnDef="first-header">
+        <th cdk-header-cell *cdkHeaderCellDef> first-header </th>
+      </ng-container>
+
+      <ng-container cdkColumnDef="second-header">
+        <th cdk-header-cell *cdkHeaderCellDef> second-header </th>
+      </ng-container>
+
+      <ng-container cdkColumnDef="first-footer">
+        <td cdk-footer-cell *cdkFooterCellDef> first-footer </td>
+      </ng-container>
+
+      <ng-container cdkColumnDef="second-footer">
+        <td cdk-footer-cell *cdkFooterCellDef> second-footer </td>
+      </ng-container>
+
+      <ng-container *ngIf="!showAlternativeHeadersAndFooters">
+        <tr cdk-header-row *cdkHeaderRowDef="['first-header']"></tr>
+        <tr cdk-header-row *cdkHeaderRowDef="['second-header']"></tr>
+        <tr cdk-footer-row *cdkFooterRowDef="['first-footer']"></tr>
+        <tr cdk-footer-row *cdkFooterRowDef="['second-footer']"></tr>
+      </ng-container>
+
+      <ng-container cdkColumnDef="alt-first-header">
+        <th cdk-header-cell *cdkHeaderCellDef> alt-first-header </th>
+      </ng-container>
+
+      <ng-container cdkColumnDef="alt-second-header">
+        <th cdk-header-cell *cdkHeaderCellDef> alt-second-header </th>
+      </ng-container>
+
+      <ng-container cdkColumnDef="alt-first-footer">
+        <td cdk-footer-cell *cdkFooterCellDef> alt-first-footer </td>
+      </ng-container>
+
+      <ng-container cdkColumnDef="alt-second-footer">
+        <td cdk-footer-cell *cdkFooterCellDef> alt-second-footer </td>
+      </ng-container>
+
+      <ng-container *ngIf="showAlternativeHeadersAndFooters">
+        <tr cdk-header-row *cdkHeaderRowDef="['alt-first-header']"></tr>
+        <tr cdk-header-row *cdkHeaderRowDef="['alt-second-header']"></tr>
+        <tr cdk-footer-row *cdkFooterRowDef="['alt-first-footer']"></tr>
+        <tr cdk-footer-row *cdkFooterRowDef="['alt-second-footer']"></tr>
+      </ng-container>
+    </cdk-table>
+  `
+})
+class MultipleHeaderFooterRowsCdkTableApp {
+  showAlternativeHeadersAndFooters = false;
 }
 
 @Component({
@@ -1586,42 +1681,62 @@ function getElements(element: Element, query: string): Element[] {
   return [].slice.call(element.querySelectorAll(query));
 }
 
-function getHeaderRow(tableElement: Element): Element {
-  return tableElement.querySelector('.cdk-header-row')!;
+function getHeaderRows(tableElement: Element): Element[] {
+  return [].slice.call(tableElement.querySelectorAll('.cdk-header-row'))!;
 }
 
-function getFooterRow(tableElement: Element): Element {
-  return tableElement.querySelector('.cdk-footer-row')!;
+function getFooterRows(tableElement: Element): Element[] {
+  return [].slice.call(tableElement.querySelectorAll('.cdk-footer-row'))!;
 }
 
 function getRows(tableElement: Element): Element[] {
   return getElements(tableElement, '.cdk-row');
 }
+
 function getCells(row: Element): Element[] {
-  return row ? getElements(row, '.cdk-cell') : [];
+  if (!row) {
+    return [];
+  }
+
+  let cells = getElements(row, 'cdk-cell');
+  if (!cells.length) {
+    cells = getElements(row, 'td');
+  }
+
+  return cells;
 }
 
-function getHeaderCells(tableElement: Element): Element[] {
-  return getElements(getHeaderRow(tableElement), '.cdk-header-cell');
+function getHeaderCells(headerRow: Element): Element[] {
+  let cells = getElements(headerRow, 'cdk-header-cell');
+  if (!cells.length) {
+    cells = getElements(headerRow, 'th');
+  }
+
+  return cells;
 }
 
-function getFooterCells(tableElement: Element): Element[] {
-  return getElements(getFooterRow(tableElement), '.cdk-footer-cell');
+function getFooterCells(footerRow: Element): Element[] {
+  let cells = getElements(footerRow, 'cdk-footer-cell');
+  if (!cells.length) {
+    cells = getElements(footerRow, 'td');
+  }
+
+  return cells;
 }
 
 function getActualTableContent(tableElement: Element): string[][] {
   let actualTableContent: Element[][] = [];
-  if (getHeaderRow(tableElement)) {
-    actualTableContent.push(getHeaderCells(tableElement));
-  }
+  getHeaderRows(tableElement).forEach(row => {
+    actualTableContent.push(getHeaderCells(row));
+  });
 
   // Check data row cells
   const rows = getRows(tableElement).map(row => getCells(row));
   actualTableContent = actualTableContent.concat(rows);
 
-  if (getFooterRow(tableElement)) {
-    actualTableContent.push(getFooterCells(tableElement));
-  }
+  getFooterRows(tableElement).forEach(row => {
+    actualTableContent.push(getFooterCells(row));
+  });
 
   // Convert the nodes into their text content;
   return actualTableContent.map(row => row.map(cell => cell.textContent!.trim()));

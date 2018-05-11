@@ -48,12 +48,12 @@ describe('MatTable', () => {
 
       const tableElement = fixture.nativeElement.querySelector('.mat-table');
       expectTableToMatchContent(tableElement, [
-        ['Column A', 'Column B', 'Column C'],
+        ['Column A'],
         ['a_1'],
         ['a_2'],
         ['a_3'],
         ['fourth_row'],
-        ['Footer A', 'Footer B', 'Footer C'],
+        ['Footer A'],
       ]);
     });
 
@@ -64,13 +64,13 @@ describe('MatTable', () => {
 
       const tableElement = fixture.nativeElement.querySelector('.mat-table');
       expectTableToMatchContent(tableElement, [
-        ['Column A', 'Column B', 'Column C'],
+        ['Column A'],
         ['a_1'],
         ['a_2'],
         ['a_3'],
         ['a_4'], // With multiple rows, this row shows up along with the special 'when' fourth_row
         ['fourth_row'],
-        ['Footer A', 'Footer B', 'Footer C'],
+        ['Footer A'],
       ]);
     });
   });
@@ -693,42 +693,62 @@ function getElements(element: Element, query: string): Element[] {
   return [].slice.call(element.querySelectorAll(query));
 }
 
-function getHeaderRow(tableElement: Element): Element {
-  return tableElement.querySelector('.mat-header-row')!;
+function getHeaderRows(tableElement: Element): Element[] {
+  return [].slice.call(tableElement.querySelectorAll('.mat-header-row'))!;
 }
 
-function getFooterRow(tableElement: Element): Element {
-  return tableElement.querySelector('.mat-footer-row')!;
+function getFooterRows(tableElement: Element): Element[] {
+  return [].slice.call(tableElement.querySelectorAll('.mat-footer-row'))!;
 }
 
 function getRows(tableElement: Element): Element[] {
   return getElements(tableElement, '.mat-row');
 }
+
 function getCells(row: Element): Element[] {
-  return row ? getElements(row, '.mat-cell') : [];
+  if (!row) {
+    return [];
+  }
+
+  let cells = getElements(row, 'mat-cell');
+  if (!cells.length) {
+    cells = getElements(row, 'td');
+  }
+
+  return cells;
 }
 
-function getHeaderCells(tableElement: Element): Element[] {
-  return getElements(getHeaderRow(tableElement), '.mat-header-cell');
+function getHeaderCells(headerRow: Element): Element[] {
+  let cells = getElements(headerRow, 'mat-header-cell');
+  if (!cells.length) {
+    cells = getElements(headerRow, 'th');
+  }
+
+  return cells;
 }
 
-function getFooterCells(tableElement: Element): Element[] {
-  return getElements(getFooterRow(tableElement), '.mat-footer-cell');
+function getFooterCells(footerRow: Element): Element[] {
+  let cells = getElements(footerRow, 'mat-footer-cell');
+  if (!cells.length) {
+    cells = getElements(footerRow, 'td');
+  }
+
+  return cells;
 }
 
 function getActualTableContent(tableElement: Element): string[][] {
   let actualTableContent: Element[][] = [];
-  if (getHeaderRow(tableElement)) {
-    actualTableContent.push(getHeaderCells(tableElement));
-  }
+  getHeaderRows(tableElement).forEach(row => {
+    actualTableContent.push(getHeaderCells(row));
+  });
 
   // Check data row cells
   const rows = getRows(tableElement).map(row => getCells(row));
   actualTableContent = actualTableContent.concat(rows);
 
-  if (getFooterRow(tableElement)) {
-    actualTableContent.push(getFooterCells(tableElement));
-  }
+  getFooterRows(tableElement).forEach(row => {
+    actualTableContent.push(getFooterCells(row));
+  });
 
   // Convert the nodes into their text content;
   return actualTableContent.map(row => row.map(cell => cell.textContent!.trim()));
@@ -738,19 +758,29 @@ function expectTableToMatchContent(tableElement: Element, expected: any[]) {
   const missedExpectations: string[] = [];
   function checkCellContent(actualCell: string, expectedCell: string) {
     if (actualCell !== expectedCell) {
-      missedExpectations.push(`Expected cell contents to be ${actualCell} but was ${expectedCell}`);
+      missedExpectations.push(`Expected cell contents to be ${expectedCell} but was ${actualCell}`);
     }
   }
 
   const actual = getActualTableContent(tableElement);
 
+  // Make sure the number of rows match
   if (actual.length !== expected.length) {
     missedExpectations.push(`Expected ${expected.length} total rows but got ${actual.length}`);
     fail(missedExpectations.join('\n'));
   }
+
   actual.forEach((row, rowIndex) => {
+    const expectedRow = expected[rowIndex];
+
+    // Make sure the number of cells match
+    if (row.length !== expectedRow.length) {
+      missedExpectations.push(`Expected ${expectedRow.length} cells in row but got ${row.length}`);
+      fail(missedExpectations.join('\n'));
+    }
+
     row.forEach((actualCell, cellIndex) => {
-      const expectedCell = expected[rowIndex] ? expected[rowIndex][cellIndex] : null;
+      const expectedCell = expectedRow ? expectedRow[cellIndex] : null;
       checkCellContent(actualCell, expectedCell);
     });
   });

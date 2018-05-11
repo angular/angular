@@ -45,7 +45,7 @@ export function getTableMissingMatchingRowDefError(data: any) {
  * @docs-private
  */
 export function getTableMissingRowDefsError() {
-  return Error('Missing definitions for header and row, ' +
+  return Error('Missing definitions for header, footer, and row; ' +
       'cannot determine which columns should be rendered.');
 }
 
