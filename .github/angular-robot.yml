@@ -4,6 +4,7 @@
 size:
   disabled: false
   maxSizeIncrease: 1000
+  circleCiStatusName: "ci/circleci: build-packages-dist"
   status:
     disabled: false
     context: "ci/angular: size"
