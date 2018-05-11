@@ -439,7 +439,7 @@ Observables can deliver single or multiple values of any type to subscribers, ei
 
 Angular uses a third-party library called [Reactive Extensions (RxJS)](http://reactivex.io/rxjs/). 
 
-To learn more, see the [Observables](guide/glossary#observable) guide.
+To learn more, see the [Observables](guide/observables) guide.
 
 
 {@a observer}
