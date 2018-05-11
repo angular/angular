@@ -93,10 +93,7 @@ describe('i18n support in the view compiler', () => {
        * @desc desc
        */
       const $msg_1$ = goog.getMsg('introduction');
-      …
-      const $c1$ = ($a1$:any) => {
-        return ['title', $a1$];
-      };
+      const $c1$ = ['title', $msg_1$];
       …
       /**
        * @desc desc
@@ -106,7 +103,7 @@ describe('i18n support in the view compiler', () => {
       …
       template: function MyComponent_Template(rf: IDENT, ctx: IDENT) {
         if (rf & 1) {
-          $r3$.ɵE(0, 'div', $r3$.ɵf1($c1$, $msg_1$));
+          $r3$.ɵE(0, 'div', $c1$);
           $r3$.ɵT(1, $msg_2$);
           $r3$.ɵe();
         }
@@ -147,14 +144,11 @@ describe('i18n support in the view compiler', () => {
        * @meaning m
        */
       const $msg_1$ = goog.getMsg('introduction');
-      …
-      const $c1$ = ($a1$:any) => {
-        return ['id', 'static', 'title', $a1$];
-      };
+      const $c1$ = ['id', 'static', 'title', $msg_1$];
       …
       template: function MyComponent_Template(rf: IDENT, ctx: IDENT) {
         if (rf & 1) {
-          $r3$.ɵE(0, 'div', $r3$.ɵf1($c1$, $msg_1$));
+          $r3$.ɵE(0, 'div', $c1$);
           $r3$.ɵe();
         }
       }

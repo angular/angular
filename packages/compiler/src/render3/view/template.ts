@@ -257,13 +257,11 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     // Add the attributes
     const i18nMessages: o.Statement[] = [];
     const attributes: o.Expression[] = [];
-    let hasI18nAttr = false;
 
     Object.getOwnPropertyNames(outputAttrs).forEach(name => {
       const value = outputAttrs[name];
       attributes.push(o.literal(name));
       if (attrI18nMetas.hasOwnProperty(name)) {
-        hasI18nAttr = true;
         const meta = parseI18nMeta(attrI18nMetas[name]);
         const variable = this.constantPool.getTranslation(value, meta);
         attributes.push(variable);
@@ -272,13 +270,9 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
       }
     });
 
-    let attrArg: o.Expression = o.TYPED_NULL_EXPR;
-
-    if (attributes.length > 0) {
-      attrArg = hasI18nAttr ? getLiteralFactory(this.constantPool, o.literalArr(attributes)) :
-                              this.constantPool.getConstLiteral(o.literalArr(attributes), true);
-    }
-
+    const attrArg: o.Expression = attributes.length > 0 ?
+        this.constantPool.getConstLiteral(o.literalArr(attributes), true) :
+        o.TYPED_NULL_EXPR;
     parameters.push(attrArg);
 
     if (element.references && element.references.length > 0) {
