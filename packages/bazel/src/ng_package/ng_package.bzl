@@ -226,11 +226,11 @@ def _ng_package_impl(ctx):
     esm2015_config = write_rollup_config(ctx, [], "/".join([ctx.bin_dir.path, ctx.label.package, _esm2015_root_dir(ctx)]), filename="_%s.rollup_esm2015.conf.js")
     esm5_config = write_rollup_config(ctx, [], "/".join([ctx.bin_dir.path, ctx.label.package, esm5_root_dir(ctx)]), filename="_%s.rollup_esm5.conf.js")
 
-    fesm2015.append(_rollup(ctx, "fesm2015", esm2015_config, es2015_entry_point, esm_2015_files, fesm2015_output))
-    fesm5.append(_rollup(ctx, "fesm5", esm5_config, es5_entry_point, esm5_sources, fesm5_output))
+    fesm2015.append(_rollup(ctx, "fesm2015", esm2015_config, es2015_entry_point, esm_2015_files + ctx.files.node_modules, fesm2015_output))
+    fesm5.append(_rollup(ctx, "fesm5", esm5_config, es5_entry_point, esm5_sources + ctx.files.node_modules, fesm5_output))
 
     bundles.append(
-        _rollup(ctx, "umd", esm5_config, es5_entry_point, esm5_sources, umd_output,
+        _rollup(ctx, "umd", esm5_config, es5_entry_point, esm5_sources + ctx.files.node_modules, umd_output,
                 format = "umd", package_name = package_name, include_tslib = True))
     uglify_sourcemap = run_uglify(ctx, umd_output, min_output,
         config_name = entry_point.replace("/", "_"))
