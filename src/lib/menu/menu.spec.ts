@@ -463,68 +463,6 @@ describe('MatMenu', () => {
     }));
   });
 
-  describe('positions', () => {
-    let fixture: ComponentFixture<PositionedMenu>;
-    let panel: HTMLElement;
-
-    beforeEach(() => {
-      fixture = createComponent(PositionedMenu);
-      fixture.detectChanges();
-
-      const trigger = fixture.componentInstance.triggerEl.nativeElement;
-
-      // Push trigger to the bottom edge of viewport,so it has space to open "above"
-      trigger.style.position = 'fixed';
-      trigger.style.top = '600px';
-
-      // Push trigger to the right, so it has space to open "before"
-      trigger.style.left = '100px';
-
-      fixture.componentInstance.trigger.openMenu();
-      fixture.detectChanges();
-      panel = overlayContainerElement.querySelector('.mat-menu-panel') as HTMLElement;
-    });
-
-    it('should append mat-menu-before if the x position is changed', () => {
-      expect(panel.classList).toContain('mat-menu-before');
-      expect(panel.classList).not.toContain('mat-menu-after');
-
-      fixture.componentInstance.xPosition = 'after';
-      fixture.detectChanges();
-
-      expect(panel.classList).toContain('mat-menu-after');
-      expect(panel.classList).not.toContain('mat-menu-before');
-    });
-
-    it('should append mat-menu-above if the y position is changed', () => {
-      expect(panel.classList).toContain('mat-menu-above');
-      expect(panel.classList).not.toContain('mat-menu-below');
-
-      fixture.componentInstance.yPosition = 'below';
-      fixture.detectChanges();
-
-      expect(panel.classList).toContain('mat-menu-below');
-      expect(panel.classList).not.toContain('mat-menu-above');
-    });
-
-    it('should default to the "below" and "after" positions', () => {
-      overlayContainer.ngOnDestroy();
-      fixture.destroy();
-      TestBed.resetTestingModule();
-
-      const newFixture = createComponent(SimpleMenu, [], [FakeIcon]);
-
-      newFixture.detectChanges();
-      newFixture.componentInstance.trigger.openMenu();
-      newFixture.detectChanges();
-      panel = overlayContainerElement.querySelector('.mat-menu-panel') as HTMLElement;
-
-      expect(panel.classList).toContain('mat-menu-below');
-      expect(panel.classList).toContain('mat-menu-after');
-    });
-
-  });
-
   describe('fallback positions', () => {
 
     it('should fall back to "before" mode if "after" mode would not fit on screen', () => {
@@ -729,14 +667,6 @@ describe('MatMenu', () => {
         expect(Math.floor(subject.overlayRect.bottom))
             .toBe(Math.floor(subject.triggerRect.top),
                 `Expected menu to open in "above" position if "below" position wouldn't fit.`);
-      });
-
-      it('repositions the origin to be below, so the menu opens from the trigger', () => {
-        subject.openMenu();
-        subject.fixture.detectChanges();
-
-        expect(subject.menuPanel!.classList).toContain('mat-menu-below');
-        expect(subject.menuPanel!.classList).not.toContain('mat-menu-above');
       });
     });
   });

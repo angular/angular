@@ -353,12 +353,14 @@ export class MatMenuTrigger implements AfterContentInit, OnDestroy {
    * correct, even if a fallback position is used for the overlay.
    */
   private _subscribeToPositions(position: FlexibleConnectedPositionStrategy): void {
-    position.positionChanges.subscribe(change => {
-      const posX: MenuPositionX = change.connectionPair.overlayX === 'start' ? 'after' : 'before';
-      const posY: MenuPositionY = change.connectionPair.overlayY === 'top' ? 'below' : 'above';
+    if (this.menu.setPositionClasses) {
+      position.positionChanges.subscribe(change => {
+        const posX: MenuPositionX = change.connectionPair.overlayX === 'start' ? 'after' : 'before';
+        const posY: MenuPositionY = change.connectionPair.overlayY === 'top' ? 'below' : 'above';
 
-      this.menu.setPositionClasses(posX, posY);
-    });
+        this.menu.setPositionClasses!(posX, posY);
+      });
+    }
   }
 
   /**
@@ -390,6 +392,7 @@ export class MatMenuTrigger implements AfterContentInit, OnDestroy {
 
     return this._overlay.position()
         .flexibleConnectedTo(this._element)
+        .withTransformOriginOn('.mat-menu-panel')
         .withPositions([
           {originX, originY, overlayX, overlayY, offsetY},
           {originX: originFallbackX, originY, overlayX: overlayFallbackX, overlayY, offsetY},

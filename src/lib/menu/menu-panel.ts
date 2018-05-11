@@ -32,7 +32,7 @@ export interface MatMenuPanel<T = any> {
   direction?: Direction;
   focusFirstItem: (origin?: FocusOrigin) => void;
   resetActiveItem: () => void;
-  setPositionClasses: (x: MenuPositionX, y: MenuPositionY) => void;
+  setPositionClasses?: (x: MenuPositionX, y: MenuPositionY) => void;
   setElevation?(depth: number): void;
   lazyContent?: MatMenuContent;
   backdropClass?: string;

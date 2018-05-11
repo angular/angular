@@ -11,7 +11,6 @@ $mat-menu-submenu-indicator-size: 10px !default;
 
 .mat-menu-panel {
   @include mat-menu-base(2);
-  @include mat-menu-positions();
   max-height: calc(100vh - #{$mat-menu-item-height});
   border-radius: $mat-menu-border-radius;
   outline: 0;

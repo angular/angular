@@ -23,7 +23,6 @@ import {
   Input,
   NgZone,
   OnDestroy,
-  OnInit,
   Output,
   TemplateRef,
   QueryList,
@@ -97,7 +96,7 @@ const MAT_MENU_BASE_ELEVATION = 2;
     {provide: MAT_MENU_PANEL, useExisting: MatMenu}
   ]
 })
-export class MatMenu implements OnInit, AfterContentInit, MatMenuPanel<MatMenuItem>, OnDestroy {
+export class MatMenu implements AfterContentInit, MatMenuPanel<MatMenuItem>, OnDestroy {
   private _keyManager: FocusKeyManager<MatMenuItem>;
   private _xPosition: MenuPositionX = this._defaultOptions.xPosition;
   private _yPosition: MenuPositionY = this._defaultOptions.yPosition;
@@ -141,7 +140,6 @@ export class MatMenu implements OnInit, AfterContentInit, MatMenuPanel<MatMenuIt
       throwMatMenuInvalidPositionX();
     }
     this._xPosition = value;
-    this.setPositionClasses();
   }
 
   /** Position of the menu in the Y axis. */
@@ -152,7 +150,6 @@ export class MatMenu implements OnInit, AfterContentInit, MatMenuPanel<MatMenuIt
       throwMatMenuInvalidPositionY();
     }
     this._yPosition = value;
-    this.setPositionClasses();
   }
 
   /** @docs-private */
@@ -202,7 +199,6 @@ export class MatMenu implements OnInit, AfterContentInit, MatMenuPanel<MatMenuIt
       }, {});
 
       this._elementRef.nativeElement.className = '';
-      this.setPositionClasses();
     }
   }
 
@@ -232,10 +228,6 @@ export class MatMenu implements OnInit, AfterContentInit, MatMenuPanel<MatMenuIt
     private _elementRef: ElementRef,
     private _ngZone: NgZone,
     @Inject(MAT_MENU_DEFAULT_OPTIONS) private _defaultOptions: MatMenuDefaultOptions) { }
-
-  ngOnInit() {
-    this.setPositionClasses();
-  }
 
   ngAfterContentInit() {
     this._keyManager = new FocusKeyManager<MatMenuItem>(this._items).withWrap().withTypeAhead();
@@ -304,17 +296,6 @@ export class MatMenu implements OnInit, AfterContentInit, MatMenuPanel<MatMenuIt
    */
   resetActiveItem() {
     this._keyManager.setActiveItem(-1);
-  }
-
-  /**
-   * It's necessary to set position-based classes to ensure the menu panel animation
-   * folds out from the correct direction.
-   */
-  setPositionClasses(posX: MenuPositionX = this.xPosition, posY: MenuPositionY = this.yPosition) {
-    this._classList['mat-menu-before'] = posX === 'before';
-    this._classList['mat-menu-after'] = posX === 'after';
-    this._classList['mat-menu-above'] = posY === 'above';
-    this._classList['mat-menu-below'] = posY === 'below';
   }
 
   /**

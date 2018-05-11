@@ -482,54 +482,6 @@ describe('MatTooltip', () => {
       expect(tooltipDirective._getOverlayPosition().main).toEqual(rightOverlayPosition);
     });
 
-    it('should have consistent left transform origin in ltr', () => {
-      tooltipDirective.position = 'right';
-      tooltipDirective.show();
-      fixture.detectChanges();
-      expect(tooltipDirective._tooltipInstance!._transformOrigin).toBe('left');
-
-      tooltipDirective.position = 'after';
-      tooltipDirective.show();
-      fixture.detectChanges();
-      expect(tooltipDirective._tooltipInstance!._transformOrigin).toBe('left');
-    });
-
-    it('should have consistent left transform origin in rtl', () => {
-      dir.value = 'rtl';
-      tooltipDirective.position = 'before';
-      tooltipDirective.show();
-      fixture.detectChanges();
-      expect(tooltipDirective._tooltipInstance!._transformOrigin).toBe('left');
-    });
-
-    it('should have consistent right transform origin in ltr', () => {
-      // Move the button away from the edge of the screen so
-      // we don't get into the fallback positions.
-      fixture.componentInstance.button.nativeElement.style.margin = '300px';
-
-      tooltipDirective.position = 'left';
-      tooltipDirective.show();
-      fixture.detectChanges();
-      expect(tooltipDirective._tooltipInstance!._transformOrigin).toBe('right');
-
-      tooltipDirective.position = 'before';
-      tooltipDirective.show();
-      fixture.detectChanges();
-      expect(tooltipDirective._tooltipInstance!._transformOrigin).toBe('right');
-    });
-
-    it('should have consistent right transform origin in rtl', () => {
-      // Move the button away from the edge of the screen so
-      // we don't get into the fallback positions.
-      fixture.componentInstance.button.nativeElement.style.margin = '300px';
-
-      dir.value = 'rtl';
-      tooltipDirective.position = 'after';
-      tooltipDirective.show();
-      fixture.detectChanges();
-      expect(tooltipDirective._tooltipInstance!._transformOrigin).toBe('right');
-    });
-
     it('should throw when trying to assign an invalid position', () => {
       expect(() => {
         fixture.componentInstance.position = 'everywhere';

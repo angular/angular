@@ -43,7 +43,10 @@ overlay relative to another element on the page. These features include the abil
 overlay become scrollable once its content reaches the viewport edge, being able to configure a
 margin between the overlay and the viewport edge, having an overlay be pushed into the viewport if
 it doesn't fit into any of its preferred positions, as well as configuring whether the overlay's
-size can grow while the overlay is open.
+size can grow while the overlay is open. The flexible position strategy also allows for the
+`transform-origin` of an element, inside the overlay, to be set based on the current position using
+the `withTransformOriginOn`. This is useful when animating an overlay in and having the animation
+originate from the point at which it connects with the origin.
 
 A custom position strategy can be created by implementing the `PositionStrategy` interface.
 Each `PositionStrategy` defines an `apply` method that is called whenever the overlay's position
