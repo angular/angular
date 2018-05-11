@@ -13,9 +13,9 @@ http_archive(
 
 http_archive(
     name = "io_bazel_rules_webtesting",
-    url = "https://github.com/bazelbuild/rules_webtesting/archive/ca7b8062d9cf4ef2fde9193c7d37a0764c4262d7.zip",
-    strip_prefix = "rules_webtesting-ca7b8062d9cf4ef2fde9193c7d37a0764c4262d7",
-    sha256 = "28c73cf9d310fa6dba30e66bdb98071341c99c3feb8662f2d3883a632de97d72",
+    url = "https://github.com/bazelbuild/rules_webtesting/archive/cfcaaf98553fee8e7063b5f5c11fd1b77e43d683.zip",
+    strip_prefix = "rules_webtesting-cfcaaf98553fee8e7063b5f5c11fd1b77e43d683",
+    sha256 = "636c7a9ac2ca13a04d982c2f9c874876ecc90a7b9ccfe4188156122b26ada7b3",
 )
 
 http_archive(
