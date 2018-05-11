@@ -1,6 +1,6 @@
 """Re-export of some bazel rules with repository-wide defaults."""
 load("@build_bazel_rules_nodejs//:defs.bzl", _npm_package = "npm_package")
-load("@build_bazel_rules_typescript//:defs.bzl", _ts_library = "ts_library", _ts_web_test = "ts_web_test")
+load("@build_bazel_rules_typescript//:defs.bzl", _ts_library = "ts_library", _ts_web_test_suite = "ts_web_test_suite")
 load("//packages/bazel:index.bzl", _ng_module = "ng_module", _ng_package = "ng_package")
 load("//packages/bazel/src:ng_module.bzl", _ivy_ng_module = "internal_ivy_ng_module")
 
@@ -68,7 +68,7 @@ def npm_package(name, replacements = {}, **kwargs):
       replacements = dict(replacements, **PKG_GROUP_REPLACEMENTS),
       **kwargs)
 
-def ts_web_test(bootstrap = [], deps = [], **kwargs):
+def ts_web_test_suite(bootstrap = [], deps = [], **kwargs):
   if not bootstrap:
     bootstrap = ["//:web_test_bootstrap_scripts"]
   local_deps = [
@@ -76,9 +76,16 @@ def ts_web_test(bootstrap = [], deps = [], **kwargs):
     "//tools/testing:browser",
   ] + deps
 
-  _ts_web_test(
+  _ts_web_test_suite(
       bootstrap = bootstrap,
       deps = local_deps,
+      # Run unit tests on Chromium and Firefox by default.
+      # You can exclude tests based on tags, e.g. to skip Firefox testing,
+      #   `bazel test --test_tag_filters=-browser:firefox-local [targets]`
+      browsers = [
+          "@io_bazel_rules_webtesting//browsers:chromium-local",
+          "@io_bazel_rules_webtesting//browsers:firefox-local",
+      ],
       **kwargs)
 
 def ivy_ng_module(name, tsconfig = None, **kwargs):
