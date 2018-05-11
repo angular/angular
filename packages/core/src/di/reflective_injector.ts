@@ -26,7 +26,8 @@ const UNDEFINED = new Object();
  * In typical use, application code asks for the dependencies in the constructor and they are
  * resolved by the `Injector`.
  *
- * ### Example ([live demo](http://plnkr.co/edit/jzjec0?p=preview))
+ * @example
+ * This example shows how to use this class ([live demo](http://plnkr.co/edit/jzjec0?p=preview)):
  *
  * The following example creates an `Injector` configured to create `Engine` and `Car`.
  *
@@ -56,9 +57,10 @@ export abstract class ReflectiveInjector implements Injector {
    * Turns an array of provider definitions into an array of resolved providers.
    *
    * A resolution is a process of flattening multiple nested arrays and converting individual
-   * providers into an array of {@link ResolvedReflectiveProvider}s.
+   * providers into an array of `ResolvedReflectiveProvider`s.
    *
-   * ### Example ([live demo](http://plnkr.co/edit/AiXTHi?p=preview))
+   * @example
+   * This example shows how to use this method ([live demo](http://plnkr.co/edit/AiXTHi?p=preview)):
    *
    * ```typescript
    * @Injectable()
@@ -92,10 +94,11 @@ export abstract class ReflectiveInjector implements Injector {
   /**
    * Resolves an array of providers and creates an injector from those providers.
    *
-   * The passed-in providers can be an array of `Type`, {@link Provider},
+   * The passed-in providers can be an array of `Type`, `Provider`,
    * or a recursive array of more providers.
    *
-   * ### Example ([live demo](http://plnkr.co/edit/ePOccA?p=preview))
+   * @example
+   * This example shows how to use this method ([live demo](http://plnkr.co/edit/ePOccA?p=preview)):
    *
    * ```typescript
    * @Injectable()
@@ -126,7 +129,8 @@ export abstract class ReflectiveInjector implements Injector {
    *
    * This API is the recommended way to construct injectors in performance-sensitive parts.
    *
-   * ### Example ([live demo](http://plnkr.co/edit/KrSMci?p=preview))
+   * @example
+   * This example shows how to use this method ([live demo](http://plnkr.co/edit/KrSMci?p=preview)):
    *
    * ```typescript
    * @Injectable()
@@ -156,7 +160,8 @@ export abstract class ReflectiveInjector implements Injector {
    * <!-- TODO: Add a link to the section of the user guide talking about hierarchical injection.
    * -->
    *
-   * ### Example ([live demo](http://plnkr.co/edit/eosMGo?p=preview))
+   * @example
+   * This example shows how to use this method ([live demo](http://plnkr.co/edit/eosMGo?p=preview)):
    *
    * ```typescript
    * var parent = ReflectiveInjector.resolveAndCreate([]);
@@ -172,10 +177,11 @@ export abstract class ReflectiveInjector implements Injector {
    * <!-- TODO: Add a link to the section of the user guide talking about hierarchical injection.
    * -->
    *
-   * The passed-in providers can be an array of `Type`, {@link Provider},
+   * The passed-in providers can be an array of `Type`, `Provider`,
    * or a recursive array of more providers.
    *
-   * ### Example ([live demo](http://plnkr.co/edit/opB3T4?p=preview))
+   * @example
+   * This example shows how to use this method ([live demo](http://plnkr.co/edit/opB3T4?p=preview)):
    *
    * ```typescript
    * class ParentProvider {}
@@ -204,7 +210,8 @@ export abstract class ReflectiveInjector implements Injector {
    *
    * This API is the recommended way to construct injectors in performance-sensitive parts.
    *
-   * ### Example ([live demo](http://plnkr.co/edit/VhyfjN?p=preview))
+   * @example
+   * This example shows how to use this method ([live demo](http://plnkr.co/edit/VhyfjN?p=preview)):
    *
    * ```typescript
    * class ParentProvider {}
@@ -228,7 +235,8 @@ export abstract class ReflectiveInjector implements Injector {
    *
    * The created object does not get cached by the injector.
    *
-   * ### Example ([live demo](http://plnkr.co/edit/yvVXoB?p=preview))
+   * @example
+   * This example shows how to use this method ([live demo](http://plnkr.co/edit/yvVXoB?p=preview)):
    *
    * ```typescript
    * @Injectable()
@@ -254,7 +262,8 @@ export abstract class ReflectiveInjector implements Injector {
    *
    * The created object does not get cached by the injector.
    *
-   * ### Example ([live demo](http://plnkr.co/edit/ptCImQ?p=preview))
+   * @example
+   * This example shows how to use this method ([live demo](http://plnkr.co/edit/ptCImQ?p=preview)):
    *
    * ```typescript
    * @Injectable()

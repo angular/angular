@@ -18,7 +18,7 @@ export interface SimpleChanges { [propName: string]: SimpleChange; }
 
 /**
  * @usageNotes
- * {@example core/ts/metadata/lifecycle_hooks_spec.ts region='OnChanges'}
+ * <code-example path="core/ts/metadata/lifecycle_hooks_spec.ts" region="OnChanges"></code-example>
  *
  * @description
  * Lifecycle hook that is called when any data-bound property of a directive changes.
@@ -35,7 +35,7 @@ export interface OnChanges { ngOnChanges(changes: SimpleChanges): void; }
 
 /**
  * @usageNotes
- * {@example core/ts/metadata/lifecycle_hooks_spec.ts region='OnInit'}
+ * <code-example path="core/ts/metadata/lifecycle_hooks_spec.ts" region="OnInit"></code-example>
  *
  * @description
  * Lifecycle hook that is called after data-bound properties of a directive are
@@ -53,7 +53,7 @@ export interface OnInit { ngOnInit(): void; }
 
 /**
  * @usageNotes
- * {@example core/ts/metadata/lifecycle_hooks_spec.ts region='DoCheck'}
+ * <code-example path="core/ts/metadata/lifecycle_hooks_spec.ts" region="DoCheck"></code-example>
  *
  * @description
  * Lifecycle hook that is called when Angular dirty checks a directive.
@@ -77,7 +77,7 @@ export interface DoCheck { ngDoCheck(): void; }
 
 /**
  * @usageNotes
- * {@example core/ts/metadata/lifecycle_hooks_spec.ts region='OnDestroy'}
+ * <code-example path="core/ts/metadata/lifecycle_hooks_spec.ts" region="OnDestroy"></code-example>
  *
  * @description
  * Lifecycle hook that is called when a directive, pipe or service is destroyed.
@@ -94,7 +94,7 @@ export interface OnDestroy { ngOnDestroy(): void; }
 /**
  *
  * @usageNotes
- * {@example core/ts/metadata/lifecycle_hooks_spec.ts region='AfterContentInit'}
+ * <code-example path="core/ts/metadata/lifecycle_hooks_spec.ts" region="AfterContentInit"></code-example>
  *
  * @description
  * Lifecycle hook that is called after a directive's content has been fully
@@ -108,7 +108,7 @@ export interface AfterContentInit { ngAfterContentInit(): void; }
 
 /**
  * @usageNotes
- * {@example core/ts/metadata/lifecycle_hooks_spec.ts region='AfterContentChecked'}
+ * <code-example path="core/ts/metadata/lifecycle_hooks_spec.ts" region="AfterContentChecked"></code-example>
  *
  * @description
  * Lifecycle hook that is called after every check of a directive's content.
@@ -121,7 +121,7 @@ export interface AfterContentChecked { ngAfterContentChecked(): void; }
 
 /**
  * @usageNotes
- * {@example core/ts/metadata/lifecycle_hooks_spec.ts region='AfterViewInit'}
+ * <code-example path="core/ts/metadata/lifecycle_hooks_spec.ts" region="AfterViewInit"></code-example>
  *
  * @description
  * Lifecycle hook that is called after a component's view has been fully
@@ -135,7 +135,7 @@ export interface AfterViewInit { ngAfterViewInit(): void; }
 
 /**
  * @usageNotes
- * {@example core/ts/metadata/lifecycle_hooks_spec.ts region='AfterViewChecked'}
+ * <code-example path="core/ts/metadata/lifecycle_hooks_spec.ts" region="AfterViewChecked"></code-example>
  *
  * @description
  * Lifecycle hook that is called after every check of a component's view.

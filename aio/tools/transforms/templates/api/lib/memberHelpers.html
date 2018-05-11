@@ -64,9 +64,18 @@
 
 {% if overload.description and (overload.description != method.description) -%}
 <div class="description">
+  <h4 class="no-anchor">Description</h4>
   {$ overload.description | marked $}
 </div>
 {%- endif %}
+
+{% if overload.examples != method.examples %}
+{%- for example in overload.examples %}
+  <h4 class="no-anchor">Example</h4>
+  {$ example | marked $}
+{%- endfor %}
+{%- endif %}
+
 {%- endmacro -%}
 
 {%- macro renderMethodDetail(method, cssClass) -%}
@@ -154,6 +163,10 @@
           {% if property.shortDescription %}{$ property.shortDescription | marked $}{% endif %}
           {$ (property.description or property.constructorParamDoc.description) | marked $}
           {% if property.constructorParamDoc %} <span class='from-constructor'>Declared in constructor.</span>{% endif %}
+          {% for example in property.examples %}
+            <h5 class="no-anchor">Example</h5>
+            {$ example | marked $}
+          {% endfor %}
         </td>
     </tr>
     {% endfor %}

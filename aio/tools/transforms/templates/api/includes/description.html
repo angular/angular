@@ -4,3 +4,10 @@
   {$ doc.description | trimBlankLines | marked $}
 </section>
 {% endif %}
+
+{% for example in doc.examples -%}
+<section class="example">
+  <h3 class="no-anchor no-toc">Example</h3>
+  {$ example | trimBlankLines | marked $}
+</section>
+{% endfor -%}

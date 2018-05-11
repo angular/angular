@@ -42,10 +42,11 @@ let _inFakeAsyncCall = false;
  * If there are any pending timers at the end of the function, an exception will be thrown.
  *
  * Can be used to wrap inject() calls.
+
+ * @example
+ * This example shows how you can use this helper function.
  *
- * ## Example
- *
- * {@example core/testing/ts/fake_async.ts region='basic'}
+ * <code-example path="core/testing/ts/fake_async.ts" region="basic"></code-example>
  *
  * @param fn
  * @returns The function wrapped to be executed in the fakeAsync zone
@@ -110,9 +111,10 @@ function _getFakeAsyncZoneSpec(): any {
  * The microtasks queue is drained at the very start of this function and after any timer callback
  * has been executed.
  *
- * ## Example
+ * @example
+ * This example shows how you can use this helper function.
  *
- * {@example core/testing/ts/fake_async.ts region='basic'}
+ * <code-example path="core/testing/ts/fake_async.ts" region="basic"></code-example>
  *
  * @experimental
  */

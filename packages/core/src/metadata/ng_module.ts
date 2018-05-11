@@ -75,8 +75,6 @@ export interface NgModule {
    * Defines the set of injectable objects that are available in the injector
    * of this module.
    *
-   * ## Simple Example
-   *
    * Here is an example of a class that can be injected:
    *
    * ```
@@ -105,7 +103,9 @@ export interface NgModule {
   /**
    * Specifies a list of directives/pipes that belong to this module.
    *
-   * ### Example
+   * @example
+   * The following example demonstrates how declare components with the NgModule
+   * decorator:
    *
    * ```javascript
    * @NgModule({
@@ -120,9 +120,11 @@ export interface NgModule {
   /**
    * Specifies a list of modules whose exported directives/pipes
    * should be available to templates in this module.
-   * This can also contain {@link ModuleWithProviders}.
+   * This can also contain `ModuleWithProviders`.
    *
-   * ### Example
+   * @example
+   * The following example demonstrates how specify imports with the NgModule
+   * decorator:
    *
    * ```javascript
    * @NgModule({
@@ -139,7 +141,9 @@ export interface NgModule {
    * of any component that is part of an Angular module
    * that imports this Angular module.
    *
-   * ### Example
+   * @example
+   * The following example demonstrates how specify exports with the NgModule
+   * decorator:
    *
    * ```javascript
    * @NgModule({
@@ -153,8 +157,8 @@ export interface NgModule {
 
   /**
    * Specifies a list of components that should be compiled when this module is defined.
-   * For each component listed here, Angular will create a {@link ComponentFactory}
-   * and store it in the {@link ComponentFactoryResolver}.
+   * For each component listed here, Angular will create a `ComponentFactory`
+   * and store it in the `ComponentFactoryResolver`.
    */
   entryComponents?: Array<Type<any>|any[]>;
 

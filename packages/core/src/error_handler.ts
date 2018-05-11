@@ -11,15 +11,14 @@ import {ERROR_ORIGINAL_ERROR, getDebugContext, getErrorLogger, getOriginalError}
 
 
 /**
- *
- * @description
  * Provides a hook for centralized exception handling.
  *
  * The default implementation of `ErrorHandler` prints error messages to the `console`. To
  * intercept error handling, write a custom exception handler that replaces this default as
  * appropriate for your app.
  *
- * ### Example
+ * @example
+ * This example shows show to implement a custom `ErrorHandler`:
  *
  * ```
  * class MyErrorHandler implements ErrorHandler {

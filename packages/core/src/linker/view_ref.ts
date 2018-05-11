@@ -32,8 +32,7 @@ export abstract class ViewRef extends ChangeDetectorRef {
  * removing nested Views via a {@link ViewContainerRef}. Each View can contain many View Containers.
  * <!-- /TODO -->
  *
- * ### Example
- *
+ * @example
  * Given this template...
  *
  * ```

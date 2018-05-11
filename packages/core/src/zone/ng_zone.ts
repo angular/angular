@@ -24,7 +24,8 @@ import {EventEmitter} from '../event_emitter';
  *   - link to runOutsideAngular/run (throughout this file!)
  *   -->
  *
- * ### Example
+ * @example
+ * The following example demonstrates how to run code inside and outside the Angular zone:
  *
  * ```
  * import {Component, NgZone} from '@angular/core';

@@ -92,6 +92,8 @@ module.exports = function mergeDecoratorDocs(log) {
           decoratorDoc.description = callMember.description;
           decoratorDoc.howToUse = callMember.howToUse;
           decoratorDoc.whatItDoes = callMember.whatItDoes;
+          decoratorDoc.usageNotes = callMember.usageNotes;
+          decoratorDoc.examples = callMember.examples;
 
           // remove doc from its module doc's exports
           doc.moduleDoc.exports =
