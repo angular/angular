@@ -271,7 +271,7 @@ describe('ViewContainerRef', () => {
             * <ng-template directive>A<ng-template>
             * % if (condition) {
             *  B
-            * }
+            * % }
             * |after
             */
            class TestComponent {

@@ -12,14 +12,14 @@ import {getProjectAsAttrValue, isNodeMatchingSelectorList, isNodeMatchingSelecto
 
 function testLStaticData(tagName: string, attrs: string[] | null): TNode {
   return {
-    flags: 0,
-    tagName,
-    attrs,
+    index: 0,
+    flags: 0, tagName, attrs,
     localNames: null,
     initialInputs: undefined,
     inputs: undefined,
     outputs: undefined,
     tViews: null,
+    next: null
   };
 }
 
