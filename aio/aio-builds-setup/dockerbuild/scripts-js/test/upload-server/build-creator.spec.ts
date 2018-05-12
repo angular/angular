@@ -511,7 +511,8 @@ describe('BuildCreator', () => {
 
     it('should log (as a warning) any stderr output if extracting succeeded', done => {
       (bc as any).extractArchive('foo', 'bar').
-        then(() => expect(consoleWarnSpy).toHaveBeenCalledWith('This is stderr')).
+        then(() => expect(consoleWarnSpy)
+          .toHaveBeenCalledWith(jasmine.any(String), 'BuildCreator:        ', 'This is stderr')).
         then(done);
 
       cpExecCbs[0](null, 'This is stdout', 'This is stderr');
