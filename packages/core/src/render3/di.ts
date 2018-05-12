@@ -20,7 +20,6 @@ import {Type} from '../type';
 
 import {assertGreaterThan, assertLessThan, assertNotNull} from './assert';
 import {addToViewTree, assertPreviousIsParent, createLContainer, createLNodeObject, createTView, getDirectiveInstance, getPreviousOrParentNode, getRenderer, isComponent, renderEmbeddedTemplate, resolveDirective} from './instructions';
-import {LContainer} from './interfaces/container';
 import {ComponentTemplate, DirectiveDef, DirectiveDefList, PipeDefList} from './interfaces/definition';
 import {LInjector} from './interfaces/injector';
 import {LContainerNode, LElementNode, LNode, LNodeType, LViewNode, TNodeFlags} from './interfaces/node';
@@ -573,6 +572,8 @@ export function getOrCreateContainerRef(di: LInjector): viewEngine_ViewContainer
     const lContainerNode: LContainerNode = createLNodeObject(
         LNodeType.Container, vcRefHost.view, vcRefHost.parent !, undefined, lContainer, null);
 
+    // TODO(kara): Separate into own TNode when moving parent/child properties
+    lContainerNode.tNode = vcRefHost.tNode;
     vcRefHost.dynamicLContainerNode = lContainerNode;
 
     addToViewTree(vcRefHost.view, lContainer);

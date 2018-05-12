@@ -32,7 +32,7 @@ describe('render3 integration test', () => {
       }
       expect(ngDevMode).toHaveProperties({
         firstTemplatePass: 1,
-        tNode: 1,
+        tNode: 2,
         tView: 1,
         rendererCreateElement: 1,
       });
