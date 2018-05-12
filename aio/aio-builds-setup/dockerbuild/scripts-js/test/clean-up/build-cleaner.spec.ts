@@ -14,13 +14,17 @@ const EXISTING_DOWNLOADS = [
   'downloads/20-1234567-build.zip',
 ];
 const OPEN_PRS = [10, 40];
+const ANY_DATE = jasmine.any(String);
 
 // Tests
 describe('BuildCleaner', () => {
   let cleaner: BuildCleaner;
 
-  beforeEach(() => cleaner = new BuildCleaner('/foo/bar', 'baz', 'qux', '12345', 'downloads', 'build.zip'));
-
+  beforeEach(() => {
+    spyOn(console, 'error');
+    spyOn(console, 'log');
+    cleaner = new BuildCleaner('/foo/bar', 'baz', 'qux', '12345', 'downloads', 'build.zip');
+  });
 
   describe('constructor()', () => {
 
@@ -78,7 +82,6 @@ describe('BuildCleaner', () => {
       cleanerRemoveUnnecessaryBuildsSpy = spyOn(cleaner, 'removeUnnecessaryBuilds');
       cleanerRemoveUnnecessaryDownloadsSpy = spyOn(cleaner, 'removeUnnecessaryDownloads');
 
-      spyOn(console, 'log');
     });
 
 
@@ -276,7 +279,7 @@ describe('BuildCleaner', () => {
 
     it('should log the number of open PRs', () => {
       promise.then(prNumbers => {
-        expect(console.log).toHaveBeenCalledWith(`Open pull requests: ${prNumbers}`);
+        expect(console.log).toHaveBeenCalledWith(ANY_DATE, 'BuildCleaner:        ', `Open pull requests: ${prNumbers}`);
       });
     });
   });
@@ -373,7 +376,6 @@ describe('BuildCleaner', () => {
 
 
     it('should catch errors and log them', () => {
-      const consoleErrorSpy = spyOn(console, 'error');
       shellRmSpy.and.callFake(() => {
         // tslint:disable-next-line: no-string-throw
         throw 'Test';
@@ -381,9 +383,8 @@ describe('BuildCleaner', () => {
 
       cleaner.removeDir('/foo/bar');
 
-      expect(consoleErrorSpy).toHaveBeenCalled();
-      expect(consoleErrorSpy.calls.argsFor(0)[0]).toContain('Unable to remove \'/foo/bar\'');
-      expect(consoleErrorSpy.calls.argsFor(0)[1]).toBe('Test');
+      expect(console.error).toHaveBeenCalledWith(
+        jasmine.any(String), 'BuildCleaner:        ', 'ERROR: Unable to remove \'/foo/bar\' due to:', 'Test');
     });
 
   });
@@ -393,7 +394,6 @@ describe('BuildCleaner', () => {
     let cleanerRemoveDirSpy: jasmine.Spy;
 
     beforeEach(() => {
-      spyOn(console, 'log');
       cleanerRemoveDirSpy = spyOn(cleaner, 'removeDir');
     });
 
@@ -401,8 +401,8 @@ describe('BuildCleaner', () => {
     it('should log the number of existing builds and builds to be removed', () => {
       cleaner.removeUnnecessaryBuilds([1, 2, 3], [3, 4, 5, 6]);
 
-      expect(console.log).toHaveBeenCalledWith('Existing builds: 3');
-      expect(console.log).toHaveBeenCalledWith('Removing 2 build(s): 1, 2');
+      expect(console.log).toHaveBeenCalledWith(ANY_DATE, 'BuildCleaner:        ', 'Existing builds: 3');
+      expect(console.log).toHaveBeenCalledWith(ANY_DATE, 'BuildCleaner:        ', 'Removing 2 build(s): 1, 2');
     });
 
 
@@ -455,7 +455,6 @@ describe('BuildCleaner', () => {
 
   describe('removeUnnecessaryDownloads()', () => {
     beforeEach(() => {
-      spyOn(console, 'log');
       spyOn(shell, 'rm');
     });
 
@@ -471,8 +470,8 @@ describe('BuildCleaner', () => {
     it('should log the number of existing builds and builds to be removed', () => {
       cleaner.removeUnnecessaryDownloads(EXISTING_DOWNLOADS, OPEN_PRS);
 
-      expect(console.log).toHaveBeenCalledWith('Existing downloads: 4');
-      expect(console.log).toHaveBeenCalledWith(
+      expect(console.log).toHaveBeenCalledWith(ANY_DATE, 'BuildCleaner:        ', 'Existing downloads: 4');
+      expect(console.log).toHaveBeenCalledWith(ANY_DATE, 'BuildCleaner:        ',
         'Removing 2 download(s): downloads/20-ABCDEF0-build.zip, downloads/20-1234567-build.zip');
     });
   });
