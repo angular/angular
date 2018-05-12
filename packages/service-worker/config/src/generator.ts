@@ -46,8 +46,9 @@ export class Generator {
     return Promise.all((config.assetGroups || []).map(async(group) => {
       if (group.resources.versionedFiles) {
         console.warn(
-            `Asset-group '${group.name}' in 'ngsw-config.json' uses the deprecated ` +
-            '\'versionedFiles\' property. Please, use \'files\' instead.');
+            `Asset-group '${group.name}' in 'ngsw-config.json' uses the 'versionedFiles' option.\n` +
+            'As of v6 \'versionedFiles\' and \'files\' options have the same behavior. ' +
+            'Use \'files\' instead.');
       }
 
       const fileMatcher = globListToMatcher(group.resources.files || []);
