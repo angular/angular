@@ -17,7 +17,7 @@ import {CurrentMatchesList, LView, LViewFlags, LifecycleStage, RootContext, TDat
 
 import {LContainerNode, LElementNode, LNode, LNodeType, TNodeFlags, LProjectionNode, LTextNode, LViewNode, TNode, TContainerNode, InitialInputData, InitialInputs, PropertyAliases, PropertyAliasValue,} from './interfaces/node';
 import {assertNodeType} from './node_assert';
-import {appendChild, insertView, appendProjectedNode, removeView, canInsertNativeNode, createTextNode} from './node_manipulation';
+import {appendChild, insertView, appendProjectedNode, removeView, canInsertNativeNode, createTextNode, getNextLNode} from './node_manipulation';
 import {isNodeMatchingSelectorList, matchingSelectorIndex} from './node_selector_matcher';
 import {ComponentDef, ComponentTemplate, DirectiveDef, DirectiveDefList, DirectiveDefListOrFactory, PipeDefList, PipeDefListOrFactory, RenderFlags} from './interfaces/definition';
 import {RElement, RText, Renderer3, RendererFactory3, ProceduralRenderer3, RendererStyleFlags3, isProceduralRenderer} from './interfaces/renderer';
@@ -346,7 +346,6 @@ export function createLNodeObject(
     view: currentView,
     parent: parent as any,
     child: null,
-    next: null,
     nodeInjector: parent ? parent.nodeInjector : null,
     data: state,
     queries: queries,
@@ -359,22 +358,31 @@ export function createLNodeObject(
 /**
  * A common way of creating the LNode to make sure that all of them have same shape to
  * keep the execution code monomorphic and fast.
+ *
+ * @param index The index at which the LNode should be saved (null if view, since they are not
+ * saved)
+ * @param type The type of LNode to create
+ * @param native The native element for this LNode, if applicable
+ * @param name The tag name of the associated native element, if applicable
+ * @param attrs Any attrs for the native element, if applicable
+ * @param data Any data that should be saved on the LNode
  */
 export function createLNode(
     index: number | null, type: LNodeType.Element, native: RElement | RText | null,
-    lView?: LView | null): LElementNode;
+    name: string | null, attrs: string[] | null, lView?: LView | null): LElementNode;
 export function createLNode(
-    index: null, type: LNodeType.View, native: null, lView: LView): LViewNode;
+    index: null, type: LNodeType.View, native: null, name: null, attrs: null,
+    lView: LView): LViewNode;
 export function createLNode(
-    index: number, type: LNodeType.Container, native: undefined,
-    lContainer: LContainer): LContainerNode;
+    index: number, type: LNodeType.Container, native: undefined, name: string | null,
+    attrs: string[] | null, lContainer: LContainer): LContainerNode;
 export function createLNode(
-    index: number, type: LNodeType.Projection, native: null,
+    index: number, type: LNodeType.Projection, native: null, name: null, attrs: string[] | null,
     lProjection: LProjection): LProjectionNode;
 export function createLNode(
     index: number | null, type: LNodeType, native: RText | RElement | null | undefined,
-    state?: null | LView | LContainer | LProjection): LElementNode&LTextNode&LViewNode&
-    LContainerNode&LProjectionNode {
+    name: string | null, attrs: string[] | null, state?: null | LView | LContainer |
+        LProjection): LElementNode&LTextNode&LViewNode&LContainerNode&LProjectionNode {
   const parent = isParent ? previousOrParentNode :
                             previousOrParentNode && previousOrParentNode.parent as LNode;
   let queries =
@@ -397,10 +405,12 @@ export function createLNode(
 
     // Every node adds a value to the static data array to avoid a sparse array
     if (index >= tData.length) {
-      tData[index] = null;
-    } else {
-      node.tNode = tData[index] as TNode;
+      const tNode = tData[index] = createTNode(index, name, attrs, null);
+      if (!isParent && previousOrParentNode) {
+        previousOrParentNode.tNode !.next = tNode;
+      }
     }
+    node.tNode = tData[index] as TNode;
 
     // Now link ourselves into the tree.
     if (isParent) {
@@ -414,14 +424,6 @@ export function createLNode(
         previousOrParentNode.child = node;
       } else {
         // We are adding component view, so we don't link parent node child to this node.
-      }
-    } else if (previousOrParentNode) {
-      ngDevMode && assertNull(
-                       previousOrParentNode.next,
-                       `previousOrParentNode's next property should not have been set ${index}.`);
-      previousOrParentNode.next = node;
-      if (previousOrParentNode.dynamicLContainerNode) {
-        previousOrParentNode.dynamicLContainerNode.next = node;
       }
     }
   }
@@ -463,7 +465,7 @@ export function renderTemplate<T>(
     rendererFactory = providedRendererFactory;
     const tView = getOrCreateTView(template, directives || null, pipes || null);
     host = createLNode(
-        null, LNodeType.Element, hostNode,
+        null, LNodeType.Element, hostNode, null, null,
         createLView(
             -1, providedRendererFactory.createRenderer(null, null), tView, null, {},
             LViewFlags.CheckAlways, sanitizer));
@@ -500,7 +502,7 @@ export function renderEmbeddedTemplate<T>(
       const lView = createLView(
           -1, renderer, tView, template, context, LViewFlags.CheckAlways, getCurrentSanitizer());
 
-      viewNode = createLNode(null, LNodeType.View, null, lView);
+      viewNode = createLNode(null, LNodeType.View, null, null, null, lView);
       rf = RenderFlags.Create;
     }
     oldView = enterView(viewNode.data, viewNode);
@@ -585,7 +587,10 @@ export function elementStart(
 
   ngDevMode && ngDevMode.rendererCreateElement++;
   const native: RElement = renderer.createElement(name);
-  const node: LElementNode = createLNode(index, LNodeType.Element, native !, null);
+  ngDevMode && assertDataInRange(index - 1);
+
+  const node: LElementNode =
+      createLNode(index, LNodeType.Element, native !, name, attrs || null, null);
 
   if (attrs) setUpAttributes(native, attrs);
   appendChild(node.parent !, native, currentView);
@@ -608,9 +613,7 @@ function createDirectivesAndLocals(
   const node = previousOrParentNode;
   if (firstTemplatePass) {
     ngDevMode && ngDevMode.firstTemplatePass++;
-    ngDevMode && assertDataInRange(index - 1);
-    node.tNode = tData[index] = createTNode(name, attrs || null, inlineViews ? [] : null);
-    cacheMatchingDirectivesForNode(node.tNode, currentView.tView, localRefs || null);
+    cacheMatchingDirectivesForNode(node.tNode !, currentView.tView, localRefs || null);
   } else {
     instantiateDirectivesDirectly();
   }
@@ -870,14 +873,13 @@ export function hostElement(
     sanitizer?: Sanitizer | null): LElementNode {
   resetApplicationState();
   const node = createLNode(
-      0, LNodeType.Element, rNode,
+      0, LNodeType.Element, rNode, null, null,
       createLView(
           -1, renderer, getOrCreateTView(def.template, def.directiveDefs, def.pipeDefs), null, null,
           def.onPush ? LViewFlags.Dirty : LViewFlags.CheckAlways, sanitizer));
 
   if (firstTemplatePass) {
-    node.tNode = createTNode(tag as string, null, null);
-    node.tNode.flags = TNodeFlags.isComponent;
+    node.tNode !.flags = TNodeFlags.isComponent;
     if (def.diPublic) def.diPublic(def);
     currentView.tView.directives = [def];
   }
@@ -1028,16 +1030,17 @@ export function elementProperty<T>(
 /**
  * Constructs a TNode object from the arguments.
  *
+ * @param index The index of the TNode in TView.data
  * @param tagName The tag name of the node
- * @param attrs The attributes defined on this ndoe
+ * @param attrs The attributes defined on this node
  * @param tViews Any TViews attached to this node
- * @param localNames A list of local names and their matching indices
  * @returns the TNode object
  */
 function createTNode(
-    tagName: string | null, attrs: string[] | null, tViews: TView[] | null): TNode {
+    index: number, tagName: string | null, attrs: string[] | null, tViews: TView[] | null): TNode {
   ngDevMode && ngDevMode.tNode++;
   return {
+    index: index,
     flags: 0,
     tagName: tagName,
     attrs: attrs,
@@ -1045,7 +1048,8 @@ function createTNode(
     initialInputs: undefined,
     inputs: undefined,
     outputs: undefined,
-    tViews: tViews
+    tViews: tViews,
+    next: null
   };
 }
 
@@ -1240,7 +1244,8 @@ export function text(index: number, value?: any): void {
           currentView.bindingStartIndex, -1, 'text nodes should be created before bindings');
   ngDevMode && ngDevMode.rendererCreateTextNode++;
   const textNode = createTextNode(value, renderer);
-  const node = createLNode(index, LNodeType.Element, textNode);
+  const node = createLNode(index, LNodeType.Element, textNode, null, null);
+
   // Text nodes are self closing.
   isParent = false;
   appendChild(node.parent !, textNode, currentView);
@@ -1473,7 +1478,10 @@ export function container(
   const currentParent = isParent ? previousOrParentNode : previousOrParentNode.parent !;
   const lContainer = createLContainer(currentParent, currentView, template);
 
-  const node = createLNode(index, LNodeType.Container, undefined, lContainer);
+  const node = createLNode(
+      index, LNodeType.Container, undefined, tagName || null, attrs || null, lContainer);
+
+  if (firstTemplatePass && template == null) node.tNode !.tViews = [];
 
   // Containers are added to the current view tree instead of their embedded views
   // because views can be removed and re-inserted.
@@ -1610,7 +1618,7 @@ export function embeddedViewStart(viewBlockId: number): RenderFlags {
       newView.queries = lContainer.queries.enterView(lContainer.nextIndex);
     }
 
-    enterView(newView, viewNode = createLNode(null, LNodeType.View, null, newView));
+    enterView(newView, viewNode = createLNode(null, LNodeType.View, null, null, null, newView));
   }
   return getRenderFlags(viewNode.data);
 }
@@ -1673,7 +1681,7 @@ export function embeddedViewEnd(): void {
 function setRenderParentInProjectedNodes(
     renderParent: LElementNode | null, viewNode: LViewNode): void {
   if (renderParent != null) {
-    let node = viewNode.child;
+    let node: LNode|null = viewNode.child;
     while (node) {
       if (node.type === LNodeType.Projection) {
         let nodeToProject: LNode|null = (node as LProjectionNode).data.head;
@@ -1685,7 +1693,7 @@ function setRenderParentInProjectedNodes(
           nodeToProject = nodeToProject === lastNodeToProject ? null : nodeToProject.pNextOrParent;
         }
       }
-      node = node.next;
+      node = getNextLNode(node);
     }
   }
 }
@@ -1749,8 +1757,8 @@ export function projectionDef(
     distributedNodes[i] = [];
   }
 
-  const componentNode = findComponentHost(currentView);
-  let componentChild = componentNode.child;
+  const componentNode: LElementNode = findComponentHost(currentView);
+  let componentChild: LNode|null = componentNode.child;
 
   while (componentChild !== null) {
     // execute selector matching logic if and only if:
@@ -1763,7 +1771,7 @@ export function projectionDef(
       distributedNodes[0].push(componentChild);
     }
 
-    componentChild = componentChild.next;
+    componentChild = getNextLNode(componentChild);
   }
 
   ngDevMode && assertDataNext(index);
@@ -1810,11 +1818,8 @@ function appendToProjectionNode(
  */
 export function projection(
     nodeIndex: number, localIndex: number, selectorIndex: number = 0, attrs?: string[]): void {
-  const node = createLNode(nodeIndex, LNodeType.Projection, null, {head: null, tail: null});
-
-  if (node.tNode == null) {
-    node.tNode = createTNode(null, attrs || null, null);
-  }
+  const node = createLNode(
+      nodeIndex, LNodeType.Projection, null, null, attrs || null, {head: null, tail: null});
 
   // `<ng-content>` has no content
   isParent = false;
