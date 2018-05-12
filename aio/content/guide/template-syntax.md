@@ -2706,7 +2706,7 @@ and then passed in a binding to the `hero` property of the `<hero-detail>` compo
 <!--Learn more about _template input variables_ in the
 [_Structural Directives_](guide/structural-directives#template-input-variable) guide.
 -->
-_템플릿 입력 변수_ 에 대한 자세한 설명은 [_구조 디렉티브_](guide/structural-directives#template-input-variable) 가이드를 참고하세요.
+_템플릿 입력 변수_ 에 대한 자세한 설명은 [_구조 디렉티브_](guide/structural-directives#템플릿-입력-변수) 가이드를 참고하세요.
 
 <!--
 #### *ngFor* with _index_
