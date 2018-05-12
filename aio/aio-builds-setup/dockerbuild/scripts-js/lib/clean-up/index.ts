@@ -14,8 +14,6 @@ _main();
 
 // Functions
 function _main() {
-  console.log(`[${new Date()}] - Cleaning up builds...`);
-
   const buildCleaner = new BuildCleaner(
     AIO_BUILDS_DIR,
     AIO_GITHUB_ORGANIZATION,
@@ -24,8 +22,5 @@ function _main() {
     AIO_DOWNLOADS_DIR,
     AIO_ARTIFACT_PATH);
 
-  buildCleaner.cleanUp().catch(err => {
-    console.error('ERROR:', err);
-    process.exit(1);
-  });
+  buildCleaner.cleanUp().catch(() => process.exit(1));
 }

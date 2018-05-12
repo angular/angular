@@ -43,6 +43,11 @@ describe('uploadServerFactory', () => {
   const createUploadServer = (partialConfig: Partial<UploadServerConfig> = {}) =>
     UploadServerFactory.create({...defaultConfig, ...partialConfig});
 
+  beforeEach(() => {
+    spyOn(console, 'error');
+    spyOn(console, 'info');
+    spyOn(console, 'log');
+  });
 
   describe('create()', () => {
     let usfCreateMiddlewareSpy: jasmine.Spy;
@@ -132,14 +137,14 @@ describe('uploadServerFactory', () => {
 
 
     it('should log the server address info on \'listening\'', () => {
-      const consoleInfoSpy = spyOn(console, 'info');
       const server = createUploadServer();
       server.address = () => ({address: 'foo', family: '', port: 1337});
 
-      expect(consoleInfoSpy).not.toHaveBeenCalled();
+      expect(console.info).not.toHaveBeenCalled();
 
       server.emit('listening');
-      expect(consoleInfoSpy).toHaveBeenCalledWith('Up and running (and listening on foo:1337)...');
+      expect(console.info).toHaveBeenCalledWith(
+        jasmine.any(String), 'UploadServer:        ', 'Up and running (and listening on foo:1337)...');
     });
 
   });
@@ -254,8 +259,6 @@ describe('uploadServerFactory', () => {
       const middleware = UploadServerFactory.createMiddleware(buildRetriever, buildVerifier, buildCreator,
                                                               defaultConfig);
       agent = supertest.agent(middleware);
-
-      spyOn(console, 'error');
     });
 
     describe('GET /health-check', () => {
@@ -364,12 +367,11 @@ describe('uploadServerFactory', () => {
       });
 
       it('should respond with 204 if the build did not affect any significant files', async () => {
-        spyOn(console, 'log');
         AFFECTS_SIGNIFICANT_FILES = false;
         await agent.post(URL).send(BASIC_PAYLOAD).expect(204);
         expect(getGithubInfoSpy).toHaveBeenCalledWith(BUILD_NUM);
         expect(getSignificantFilesChangedSpy).toHaveBeenCalledWith(PR, jasmine.any(RegExp));
-        expect(console.log).toHaveBeenCalledWith(
+        expect(console.log).toHaveBeenCalledWith(jasmine.any(String), 'UploadServer:        ',
           'PR:777, Build:12345 - Skipping preview processing because this PR did not touch any significant files.');
         expect(downloadBuildArtifactSpy).not.toHaveBeenCalled();
         expect(getPrIsTrustedSpy).not.toHaveBeenCalled();

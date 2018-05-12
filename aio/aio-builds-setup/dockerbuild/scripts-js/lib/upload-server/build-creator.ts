@@ -5,12 +5,15 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as shell from 'shelljs';
 import {HIDDEN_DIR_PREFIX} from '../common/constants';
-import {assertNotMissingOrEmpty, computeShortSha} from '../common/utils';
+import {assertNotMissingOrEmpty, computeShortSha, createLogger} from '../common/utils';
 import {ChangedPrVisibilityEvent, CreatedBuildEvent} from './build-events';
 import {UploadError} from './upload-error';
 
 // Classes
 export class BuildCreator extends EventEmitter {
+
+  private logger = createLogger('BuildCreator');
+
   // Constructor
   constructor(protected buildsDir: string) {
     super();
@@ -102,7 +105,7 @@ export class BuildCreator extends EventEmitter {
         }
 
         if (stderr) {
-          console.warn(stderr);
+          this.logger.warn(stderr);
         }
 
         try {

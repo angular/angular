@@ -73,3 +73,13 @@ export const getEnvVar = (name: string, isOptional = false): string => {
 
   return value || '';
 };
+
+export function createLogger(scope: string) {
+  const padding = ' '.repeat(20 - scope.length);
+  return {
+    error: (...args: any[]) => console.error(`[${new Date()}]`, `${scope}:${padding}`, ...args),
+    info: (...args: any[]) => console.info(`[${new Date()}]`, `${scope}:${padding}`, ...args),
+    log: (...args: any[]) => console.log(`[${new Date()}]`, `${scope}:${padding}`, ...args),
+    warn: (...args: any[]) => console.warn(`[${new Date()}]`, `${scope}:${padding}`, ...args),
+  };
+}
