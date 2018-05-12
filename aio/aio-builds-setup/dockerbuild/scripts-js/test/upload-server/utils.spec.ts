@@ -16,20 +16,14 @@ describe('upload-server/utils', () => {
 
     it('should set the status on the response', () => {
       respondWithError(response, new UploadError(505, 'TEST MESSAGE'));
-
       expect(statusSpy).toHaveBeenCalledWith(505);
       expect(endSpy).toHaveBeenCalledWith('TEST MESSAGE', jasmine.any(Function));
-      expect(console.error).toHaveBeenCalledWith('Upload error: 505 - HTTP Version Not Supported');
-      expect(console.error).toHaveBeenCalledWith('TEST MESSAGE');
     });
 
     it('should convert non-UploadError errors to 500 UploadErrors', () => {
       respondWithError(response, new Error('OTHER MESSAGE'));
-
       expect(statusSpy).toHaveBeenCalledWith(500);
       expect(endSpy).toHaveBeenCalledWith('OTHER MESSAGE', jasmine.any(Function));
-      expect(console.error).toHaveBeenCalledWith('Upload error: 500 - Internal Server Error');
-      expect(console.error).toHaveBeenCalledWith('OTHER MESSAGE');
     });
   });
 
