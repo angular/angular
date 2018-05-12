@@ -5,10 +5,12 @@ import * as shell from 'shelljs';
 import {HIDDEN_DIR_PREFIX} from '../common/constants';
 import {GithubApi} from '../common/github-api';
 import {GithubPullRequests} from '../common/github-pull-requests';
-import {assertNotMissingOrEmpty, getPrInfoFromDownloadPath} from '../common/utils';
+import {assertNotMissingOrEmpty, createLogger, getPrInfoFromDownloadPath} from '../common/utils';
 
 // Classes
 export class BuildCleaner {
+
+  private logger = createLogger('BuildCleaner');
 
   // Constructor
   constructor(protected buildsDir: string, protected githubOrg: string, protected githubRepo: string,
@@ -77,15 +79,15 @@ export class BuildCleaner {
         shell.rm('-rf', dir);
       }
     } catch (err) {
-      console.error(`ERROR: Unable to remove '${dir}' due to:`, err);
+      this.logger.error(`ERROR: Unable to remove '${dir}' due to:`, err);
     }
   }
 
   public removeUnnecessaryBuilds(existingBuildNumbers: number[], openPrNumbers: number[]) {
     const toRemove = existingBuildNumbers.filter(num => !openPrNumbers.includes(num));
 
-    console.log(`Existing builds: ${existingBuildNumbers.length}`);
-    console.log(`Removing ${toRemove.length} build(s): ${toRemove.join(', ')}`);
+    this.logger.log(`Existing builds: ${existingBuildNumbers.length}`);
+    this.logger.log(`Removing ${toRemove.length} build(s): ${toRemove.join(', ')}`);
 
     // Try removing public dirs.
     toRemove.
@@ -117,8 +119,8 @@ export class BuildCleaner {
       return !openPrNumbers.includes(pr);
     });
 
-    console.log(`Existing downloads: ${existingDownloads.length}`);
-    console.log(`Removing ${toRemove.length} download(s): ${toRemove.join(', ')}`);
+    this.logger.log(`Existing downloads: ${existingDownloads.length}`);
+    this.logger.log(`Removing ${toRemove.length} download(s): ${toRemove.join(', ')}`);
 
     toRemove.forEach(filePath => shell.rm(filePath));
   }

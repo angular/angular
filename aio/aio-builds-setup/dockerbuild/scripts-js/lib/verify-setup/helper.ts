@@ -11,7 +11,7 @@ import {
   AIO_NGINX_PORT_HTTPS,
   AIO_WWW_USER,
 } from '../common/env-variables';
-import {computeShortSha} from '../common/utils';
+import {computeShortSha, createLogger} from '../common/utils';
 
 // Interfaces - Types
 export interface CmdResult { success: boolean; err: Error | null; stdout: string; stderr: string; }
@@ -23,12 +23,15 @@ export type VerifyCmdResultFn = (result: CmdResult) => void;
 
 // Classes
 class Helper {
+
   // Properties - Protected
   protected cleanUpFns: CleanUpFn[] = [];
   protected portPerScheme: {[scheme: string]: number} = {
     http: AIO_NGINX_PORT_HTTP,
     https: AIO_NGINX_PORT_HTTPS,
   };
+
+  private logger = createLogger('TestHelper');
 
   // Constructor
   constructor() {
@@ -49,12 +52,12 @@ class Helper {
     const leftoverBuilds = fs.readdirSync(AIO_BUILDS_DIR);
 
     if (leftoverDownloads.length) {
-      console.log(`Downloads directory '${AIO_DOWNLOADS_DIR}' is not empty after clean-up.`, leftoverDownloads);
+      this.logger.log(`Downloads directory '${AIO_DOWNLOADS_DIR}' is not empty after clean-up.`, leftoverDownloads);
       shell.rm('-rf', `${AIO_DOWNLOADS_DIR}/*`);
     }
 
     if (leftoverBuilds.length) {
-      console.log(`Builds directory '${AIO_BUILDS_DIR}' is not empty after clean-up.`, leftoverBuilds);
+      this.logger.log(`Builds directory '${AIO_BUILDS_DIR}' is not empty after clean-up.`, leftoverBuilds);
       shell.rm('-rf', `${AIO_BUILDS_DIR}/*`);
     }
 
@@ -122,9 +125,9 @@ class Helper {
                      // Only keep the last to sections (final headers and body).
 
       if (!result.success) {
-        console.log('Stdout:', result.stdout);
-        console.log('Stderr:', result.stderr);
-        console.log('Error:', result.err);
+        this.logger.log('Stdout:', result.stdout);
+        this.logger.error('Stderr:', result.stderr);
+        this.logger.error('Error:', result.err);
       }
 
       expect(result.success).toBe(true);

@@ -2,7 +2,7 @@
 import * as nock from 'nock';
 import * as tar from 'tar-stream';
 import {gzipSync} from 'zlib';
-import {getEnvVar} from '../common/utils';
+import {createLogger, getEnvVar} from '../common/utils';
 import {BuildNums, PrNums, SHA} from './constants';
 
 // We are using the `nock` library to fake responses from REST requests, when testing.
@@ -14,11 +14,12 @@ import {BuildNums, PrNums, SHA} from './constants';
 // below and return a suitable response. This is quite complicated to setup since the
 // response from, say, CircleCI will affect what request is made to, say, Github.
 
+const logger = createLogger('NOCK');
+
 const log = (...args: any[]) => {
   // Filter out non-matching URL checks
   if (!/^matching.+: false$/.test(args[0])) {
-    args.unshift('>> NOCK:');
-    console.log.apply(console, args);
+    logger.log(...args);
   }
 };
 
@@ -80,7 +81,7 @@ const getCommentUrl = (prNum: number) => `${getIssueUrl(prNum)}/comments`;
 const getTeamMembershipUrl = (teamId: number, username: string) => `/teams/${teamId}/memberships/${username}`;
 
 const createArchive = (buildNum: number, prNum: number, sha: string) => {
-  console.log('createArchive', buildNum, prNum, sha);
+  logger.log('createArchive', buildNum, prNum, sha);
   const pack = tar.pack();
   pack.entry({name: 'index.html'}, `BUILD: ${buildNum} | PR: ${prNum} | SHA: ${sha} | File: /index.html`);
   pack.entry({name: 'foo/bar.js'}, `BUILD: ${buildNum} | PR: ${prNum} | SHA: ${sha} | File: /foo/bar.js`);
