@@ -142,6 +142,9 @@ Here are the code files discussed on this page and your app should look like thi
   <code-pane title="src/app/heroes/heroes.component.html" path="toh-pt3/src/app/heroes/heroes.component.html">
   </code-pane>
 
+  <code-pane title="src/app/app.module.ts" path="toh-pt3/src/app/app.module.ts">
+  </code-pane>
+
 </code-tabs>
 
 ## Summary
