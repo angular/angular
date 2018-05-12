@@ -44,13 +44,13 @@ function findNextRNodeSibling(node: LNode | null, stopNode: LNode | null): RElem
       }
       currentNode = pNextOrParent;
     } else {
-      let currentSibling = currentNode.next;
+      let currentSibling = getNextLNode(currentNode);
       while (currentSibling) {
         const nativeNode = findFirstRNode(currentSibling);
         if (nativeNode) {
           return nativeNode;
         }
-        currentSibling = currentSibling.next;
+        currentSibling = getNextLNode(currentSibling);
       }
       const parentNode = currentNode.parent;
       currentNode = null;
@@ -63,6 +63,16 @@ function findNextRNodeSibling(node: LNode | null, stopNode: LNode | null): RElem
     }
   }
   return null;
+}
+
+/** Retrieves the sibling node for the given node. */
+export function getNextLNode(node: LNode): LNode|null {
+  // View nodes don't have TNodes, so their next must be retrieved through their LView.
+  if (node.type === LNodeType.View) {
+    const lView = node.data as LView;
+    return lView.next ? (lView.next as LView).node : null;
+  }
+  return node.tNode !.next ? node.view.data[node.tNode !.next !.index] : null;
 }
 
 /**
@@ -83,7 +93,7 @@ function getNextLNodeWithProjection(node: LNode): LNode|null {
   }
 
   // returns node.next because the the node is not projected
-  return node.next;
+  return getNextLNode(node);
 }
 
 /**
@@ -187,7 +197,7 @@ export function addRemoveViewFromContainer(
           isProceduralRenderer(renderer) ? renderer.removeChild(parent as RElement, node.native !) :
                                            parent.removeChild(node.native !);
         }
-        nextNode = node.next;
+        nextNode = getNextLNode(node);
       } else if (node.type === LNodeType.Container) {
         // if we get to a container, it must be a root node of a view because we are only
         // propagating down into child views / containers and not child elements
@@ -267,32 +277,34 @@ export function destroyViewTree(rootView: LView): void {
  * the container's parent view is added later).
  *
  * @param container The container into which the view should be inserted
- * @param newView The view to insert
+ * @param viewNode The view to insert
  * @param index The index at which to insert the view
  * @returns The inserted view
  */
 export function insertView(
-    container: LContainerNode, newView: LViewNode, index: number): LViewNode {
+    container: LContainerNode, viewNode: LViewNode, index: number): LViewNode {
   const state = container.data;
   const views = state.views;
 
   if (index > 0) {
     // This is a new view, we need to add it to the children.
-    setViewNext(views[index - 1], newView);
+    views[index - 1].data.next = viewNode.data as LView;
   }
 
   if (index < views.length) {
-    setViewNext(newView, views[index]);
-    views.splice(index, 0, newView);
+    viewNode.data.next = views[index].data;
+    views.splice(index, 0, viewNode);
   } else {
-    views.push(newView);
+    views.push(viewNode);
+    viewNode.data.next = null;
   }
 
   // If the container's renderParent is null, we know that it is a root node of its own parent view
   // and we should wait until that parent processes its nodes (otherwise, we will insert this view's
   // nodes twice - once now and once when its parent inserts its views).
   if (container.data.renderParent !== null) {
-    let beforeNode = findNextRNodeSibling(newView, container);
+    let beforeNode = findNextRNodeSibling(viewNode, container);
+
     if (!beforeNode) {
       let containerNextNativeNode = container.native;
       if (containerNextNativeNode === undefined) {
@@ -300,10 +312,10 @@ export function insertView(
       }
       beforeNode = containerNextNativeNode;
     }
-    addRemoveViewFromContainer(container, newView, true, beforeNode);
+    addRemoveViewFromContainer(container, viewNode, true, beforeNode);
   }
 
-  return newView;
+  return viewNode;
 }
 
 /**
@@ -321,28 +333,14 @@ export function removeView(container: LContainerNode, removeIndex: number): LVie
   const views = container.data.views;
   const viewNode = views[removeIndex];
   if (removeIndex > 0) {
-    setViewNext(views[removeIndex - 1], viewNode.next);
+    views[removeIndex - 1].data.next = viewNode.data.next as LView;
   }
   views.splice(removeIndex, 1);
-  viewNode.next = null;
   destroyViewTree(viewNode.data);
   addRemoveViewFromContainer(container, viewNode, false);
   // Notify query that view has been removed
   container.data.queries && container.data.queries.removeView(removeIndex);
   return viewNode;
-}
-
-/**
- * Sets a next on the view node, so views in for loops can easily jump from
- * one view to the next to add/remove elements. Also adds the LView (view.data)
- * to the view tree for easy traversal when cleaning up the view.
- *
- * @param view The view to set up
- * @param next The view's new next
- */
-export function setViewNext(view: LViewNode, next: LViewNode | null): void {
-  view.next = next;
-  view.data.next = next ? next.data : null;
 }
 
 /**

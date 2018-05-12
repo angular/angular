@@ -1367,7 +1367,7 @@ describe('di', () => {
           createLView(-1, null !, createTView(null, null), null, null, LViewFlags.CheckAlways);
       const oldView = enterView(contentView, null !);
       try {
-        const parent = createLNode(0, LNodeType.Element, null, null);
+        const parent = createLNode(0, LNodeType.Element, null, null, null, null);
 
         // Simulate the situation where the previous parent is not initialized.
         // This happens on first bootstrap because we don't init existing values
