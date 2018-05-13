@@ -1,83 +1,131 @@
+<!--
 # Pipes
+-->
+# 파이프
 
+<!--
 Every application starts out with what seems like a simple task: get data, transform them, and show them to users.
 Getting data could be as simple as creating a local variable or as complex as streaming data over a WebSocket.
+-->
+애플리케이션이 수행하는 로직을 모두 동일합니다. 데이터를 가져와서, 적절하게 처리하고, 사용자에게 표시합니다.
+이때 사용하는 데이터가 지역 변수인지 스트리밍 데이터나 웹소켓인지에 따라 데이터를 가져오는 로직은 달라질 수 있습니다.
 
+<!--
 Once data arrive, you could push their raw `toString` values directly to the view,
 but that rarely makes for a good user experience.
 For example, in most use cases, users prefer to see a date in a simple format like
 <samp>April 15, 1988</samp> rather than the raw string format
 <samp>Fri Apr 15 1988 00:00:00 GMT-0700 (Pacific Daylight Time)</samp>.
+-->
+가져온 데이터를 화면에 표시하려면 `toString` 을 바로 사용할 수도 있지만, 이렇게 표시하는 데이터는 사용자가 보기에 적합하지 않습니다.
+사용자의 입장에서 생각해보면 <samp>Fri Apr 15 1988 00:00:00 GMT-0700 (Pacific Daylight Time)</samp>과 같이 날짜를 문자열로 바로 변환한 표현보다 <samp>April 15, 1988</samp>와 같은 표현이 사용자가 보기에 더 좋은 것이 당연합니다.
 
+<!--
 Clearly, some values benefit from a bit of editing. You may notice that you
 desire many of the same transformations repeatedly, both within and across many applications.
 You can almost think of them as styles.
 In fact, you might like to apply them in your HTML templates as you do styles.
+-->
+그래서 화면에 표시되는 데이터는 사용자가 보기 편한 형식으로 변환하는 것이 좋습니다.
+이 때 데이터를 변환하는 로직이 애플리케이션 전반에 필요하다면 이 로직을 어디에 작성하는 것이 좋은지 고민을 해볼 수 있습니다.
+왜냐하면 화면에 표시되는 데이터의 종류가 같다면 비슷한 스타일로 표시되는 것이 일관되기 때문입니다.
 
+<!--
 Introducing Angular pipes, a way to write display-value transformations that you can declare in your HTML.
+-->
+Angular 파이프는 화면에 표시되는 데이터를 일관되게 변환할 때 사용합니다.
 
+<!--
 You can run the <live-example></live-example> in Stackblitz and download the code from there.
+-->
+이 문서에서 다루는 예제는 <live-example></live-example>에서 직접 확인하거나 다운받아 확인할 수 있습니다.
 
-
+<!--
 ## Using pipes
+-->
+## 파이프 사용하기
 
+<!--
 A pipe takes in data as input and transforms it to a desired output.
 In this page, you'll use pipes to transform a component's birthday property into
 a human-friendly date.
-
+-->
+파이프는 데이터를 입력으로 받고, 이 데이터를 특정 형식으로 변환해서 반환합니다.
+이 문서에서는 컴포넌트에 있는 날짜 프로퍼티를 사용자에게 효율적으로 표시하기 위해 파이프를 어떻게 사용할 수 있는지 알아봅니다.
 
 <code-example path="pipes/src/app/hero-birthday1.component.ts" title="src/app/hero-birthday1.component.ts" linenums="false">
 
 </code-example>
 
 
-
+<!--
 Focus on the component's template.
-
+-->
+컴포넌트 템플릿에 집중해 봅시다.
 
 <code-example path="pipes/src/app/app.component.html" region="hero-birthday-template" title="src/app/app.component.html" linenums="false">
 
 </code-example>
 
 
-
+<!--
 Inside the interpolation expression, you flow the component's `birthday` value through the
 [pipe operator](guide/template-syntax#pipe) ( | ) to the [Date pipe](api/common/DatePipe)
 function on the right. All pipes work this way.
+-->
+문자열 삽입 표현식 안에 사용된 것을 보면, 순서대로 `birthday` 프로퍼티, [파이프 연산자](guide/template-syntax#pipe) (`|`), [Date 파이프](api/common/DatePipe) 입니다.
+데이터는 파이프 연산자를 통해 특정 파이프로 전달되며, 모든 파이프가 이 방식으로 동작합니다.
 
 
-
-
+<!--
 ## Built-in pipes
+-->
+## 기본 파이프
+<!--
 Angular comes with a stock of pipes such as
 `DatePipe`, `UpperCasePipe`, `LowerCasePipe`, `CurrencyPipe`, and `PercentPipe`.
 They are all available for use in any template.
-
+-->
+Angular는 `DatePipe`, `UpperCasePipe`, `LowerCasePipe`, `CurrencyPipe`, `PercentPipe`와 같은 파이프를 기본으로 제공합니다.
+이 파이프들은 모든 템플릿에 자유롭게 사용할 수 있습니다.
 
 <div class="l-sub-section">
 
 
-
+<!--
 Read more about these and many other built-in pipes in the [pipes topics](api?type=pipe) of the
 [API Reference](api); filter for entries that include the word "pipe".
 
 Angular doesn't have a `FilterPipe` or an `OrderByPipe` for reasons explained in the [Appendix](guide/pipes#no-filter-pipe) of this page.
+-->
+각각의 파이프에 대해 알아보고 싶거나 기본 파이프에 대해 좀 더 알아보려면 [API 문서](api)에서 파이프를 검색해 보세요. [이 링크](api?type=pipe)는 검색 결과로 바로 이동합니다.
 
+Angular에서 제공하는 기본 파이프 중에 `FilterPipe`나 `orderByPipe`는 없습니다. 그 이유에 대해서는 이 문서의 [부록](guide/pipes#no-filter-pipe) 부분을 참고하세요.
 
 </div>
 
 
 
-
+<!--
 ## Parameterizing a pipe
+-->
+## 파이프 인자 사용하기
 
+<!--
 A pipe can accept any number of optional parameters to fine-tune its output.
 To add parameters to a pipe, follow the pipe name with a colon ( : ) and then the parameter value
 (such as `currency:'EUR'`). If the pipe accepts multiple parameters, separate the values with colons (such as `slice:1:5`)
+-->
+파이프의 결과물을 특정 형식으로 지정하려면 인자를 전달할 수도 있습니다.
+파이프 인자는 파이프 이름 뒤에 콜론(`:`)을 붙이고 지정합니다.
+그래서 간단하게는 `currency:'EUR'`와 같이 사용할 수 있으며, 콜론을 여러개 사용하면 `slice:1:5`와 같이 여러 인자를 전달할 수도 있습니다.
 
+<!--
 Modify the birthday template to give the date pipe a format parameter.
 After formatting the hero's April 15th birthday, it renders as **<samp>04/15/88</samp>**:
-
+-->
+템플릿에 생년월일을 표시할 때 특정 형식을 인자로 지정해 보겠습니다.
+**<samp>04/15/88</samp>**과 같이 표시하려면 다음과 같이 작성합니다:
 
 <code-example path="pipes/src/app/app.component.html" region="format-birthday" title="src/app/app.component.html" linenums="false">
 
@@ -91,37 +139,40 @@ The parameter value can be any valid template expression,
 such as a string literal or a component property.
 In other words, you can control the format through a binding the same way you control the birthday value through a binding.
 -->
-The parameter value can be any valid template expression,
-(see the [템플릿 표현식](guide/template-syntax#템플릿-표현식) section of the
-[Template Syntax](guide/template-syntax) page)
-such as a string literal or a component property.
-In other words, you can control the format through a binding the same way you control the birthday value through a binding.
+파이프 인자는 [템플릿 표현식](guide/template-syntax#템플릿-표현식) 에 적합하다면 어떠한 형태로든 사용할 수 있습니다.
+그래서 문자열은 물론이고 컴포넌트 프로퍼티도 사용할 수 있는데, 이 방법을 활용하면 파이프의 동작을 컴포넌트 클래스에서 지정할 수도 있습니다.
 
+<!--
 Write a second component that *binds* the pipe's format parameter
 to the component's `format` property. Here's the template for that component:
-
+-->
+컴포넌트 클래스에 있는 `format` 프로퍼티를 파이프 인자로 *바인딩 하는* 컴포넌트를 작성해 봅시다.
+이 컴포넌트의 템플릿은 다음과 같이 작성합니다:
 
 <code-example path="pipes/src/app/hero-birthday2.component.ts" region="template" title="src/app/hero-birthday2.component.ts (template)" linenums="false">
 
 </code-example>
 
 
-
+<!--
 You also added a button to the template and bound its click event to the component's `toggleFormat()` method.
 That method toggles the component's `format` property between a short form
 (`'shortDate'`) and a longer form (`'fullDate'`).
-
+-->
+그리고 템플릿에 버튼을 추가하는데, 이 버튼을 클릭할 때마다 `toggleFormat()` 함수를 실행합니다.
+이 함수는 컴포넌트의 `format` 프로퍼티를 간단한 형식(`'shortDate'`)이나 자세한 형식(`'fullDate'`)으로 지정합니다.
 
 <code-example path="pipes/src/app/hero-birthday2.component.ts" region="class" title="src/app/hero-birthday2.component.ts (class)" linenums="false">
 
 </code-example>
 
 
-
+<!--
 As you click the button, the displayed date alternates between
 "**<samp>04/15/1988</samp>**" and
 "**<samp>Friday, April 15, 1988</samp>**".
-
+-->
+앱을 실행하고 버튼을 클릭하면 템플릿에 적용되는 파이프의 형식이 바뀌는 것을 확인할 수 있습니다.
 
 <figure>
   <img src='generated/images/guide/pipes/date-format-toggle-anim.gif' alt="Date Format Toggle">
@@ -132,10 +183,11 @@ As you click the button, the displayed date alternates between
 <div class="l-sub-section">
 
 
-
+<!--
 Read more about the `DatePipe` format options in the [Date Pipe](api/common/DatePipe)
 API Reference page.
-
+-->
+`DatePipe`에 적용할 수 있는 옵션을 확인하려면 [Date Pipe](api/common/DatePipe) 문서를 참고하세요.
 
 </div>
 

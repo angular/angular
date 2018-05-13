@@ -3404,7 +3404,7 @@ You can chain expressions through multiple pipes:
 <!--
 And you can also [apply parameters](guide/pipes#parameterizing-a-pipe) to a pipe:
 -->
-그리고 파이프 함수에 [파이프 인자](guide/pipes#parameterizing-a-pipe)를 전달해서 파이프의 동작을 구체적으로 지정할 수도 있습니다:
+그리고 파이프 함수에 [파이프 인자](guide/pipes#파이프-인자-사용하기)를 전달해서 파이프의 동작을 구체적으로 지정할 수도 있습니다:
 
 <code-example path="template-syntax/src/app/app.component.html" region="pipes-3" title="src/app/app.component.html" linenums="false">
 </code-example>
