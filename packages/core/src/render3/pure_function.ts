@@ -15,6 +15,7 @@ import {bindingUpdated, bindingUpdated2, bindingUpdated4, checkAndUpdateBinding,
  * value. If it has been saved, returns the saved value.
  *
  * @param pureFn Function that returns a value
+ * @param thisArg Optional calling context of pureFn
  * @returns value
  */
 export function pureFunction0<T>(pureFn: () => T, thisArg?: any): T {
@@ -28,6 +29,7 @@ export function pureFunction0<T>(pureFn: () => T, thisArg?: any): T {
  *
  * @param pureFn Function that returns an updated value
  * @param exp Updated expression value
+ * @param thisArg Optional calling context of pureFn
  * @returns Updated value
  */
 export function pureFunction1(pureFn: (v: any) => any, exp: any, thisArg?: any): any {
@@ -43,6 +45,7 @@ export function pureFunction1(pureFn: (v: any) => any, exp: any, thisArg?: any):
  * @param pureFn
  * @param exp1
  * @param exp2
+ * @param thisArg Optional calling context of pureFn
  * @returns Updated value
  */
 export function pureFunction2(
@@ -60,6 +63,7 @@ export function pureFunction2(
  * @param exp1
  * @param exp2
  * @param exp3
+ * @param thisArg Optional calling context of pureFn
  * @returns Updated value
  */
 export function pureFunction3(
@@ -81,6 +85,7 @@ export function pureFunction3(
  * @param exp2
  * @param exp3
  * @param exp4
+ * @param thisArg Optional calling context of pureFn
  * @returns Updated value
  */
 export function pureFunction4(
@@ -102,6 +107,7 @@ export function pureFunction4(
  * @param exp3
  * @param exp4
  * @param exp5
+ * @param thisArg Optional calling context of pureFn
  * @returns Updated value
  */
 export function pureFunction5(
@@ -126,6 +132,7 @@ export function pureFunction5(
  * @param exp4
  * @param exp5
  * @param exp6
+ * @param thisArg Optional calling context of pureFn
  * @returns Updated value
  */
 export function pureFunction6(
@@ -151,6 +158,7 @@ export function pureFunction6(
  * @param exp5
  * @param exp6
  * @param exp7
+ * @param thisArg Optional calling context of pureFn
  * @returns Updated value
  */
 export function pureFunction7(
@@ -178,6 +186,7 @@ export function pureFunction7(
  * @param exp6
  * @param exp7
  * @param exp8
+ * @param thisArg Optional calling context of pureFn
  * @returns Updated value
  */
 export function pureFunction8(
@@ -200,7 +209,8 @@ export function pureFunction8(
  *
  * @param pureFn A pure function that takes binding values and builds an object or array
  * containing those values.
- * @param exp An array of binding values
+ * @param exps An array of binding values
+ * @param thisArg Optional calling context of pureFn
  * @returns Updated value
  */
 export function pureFunctionV(pureFn: (...v: any[]) => any, exps: any[], thisArg?: any): any {
