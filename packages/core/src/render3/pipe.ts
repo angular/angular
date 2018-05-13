@@ -33,7 +33,7 @@ export function pipe(index: number, pipeName: string): any {
     pipeDef = tView.data[index] as PipeDef<any>;
   }
 
-  const pipeInstance = pipeDef.n();
+  const pipeInstance = pipeDef.factory();
   store(index, pipeInstance);
   return pipeInstance;
 }
