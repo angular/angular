@@ -35,6 +35,43 @@ describe('instructions', () => {
     elementEnd();
   }
 
+  describe('bind', () => {
+    it('should update bindings when value changes', () => {
+      const t = new TemplateFixture(createAnchor);
+
+      t.update(() => elementProperty(0, 'title', bind('Hello')));
+      expect(t.html).toEqual('<a title="Hello"></a>');
+
+      t.update(() => elementProperty(0, 'title', bind('World')));
+      expect(t.html).toEqual('<a title="World"></a>');
+      expect(ngDevMode).toHaveProperties({
+        firstTemplatePass: 1,
+        tNode: 2,  // 1 for hostElement + 1 for the template under test
+        tView: 1,
+        rendererCreateElement: 1,
+        rendererSetProperty: 2
+      });
+    });
+
+    it('should not update bindings when value does not change', () => {
+      const idempotentUpdate = () => elementProperty(0, 'title', bind('Hello'));
+      const t = new TemplateFixture(createAnchor, idempotentUpdate);
+
+      t.update();
+      expect(t.html).toEqual('<a title="Hello"></a>');
+
+      t.update();
+      expect(t.html).toEqual('<a title="Hello"></a>');
+      expect(ngDevMode).toHaveProperties({
+        firstTemplatePass: 1,
+        tNode: 2,  // 1 for hostElement + 1 for the template under test
+        tView: 1,
+        rendererCreateElement: 1,
+        rendererSetProperty: 1
+      });
+    });
+  });
+
   describe('elementAttribute', () => {
     it('should use sanitizer function', () => {
       const t = new TemplateFixture(createDiv);

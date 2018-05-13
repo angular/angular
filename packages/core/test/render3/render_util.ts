@@ -58,9 +58,9 @@ export class TemplateFixture extends BaseFixture {
   /**
    *
    * @param createBlock Instructions which go into the creation block:
-   *          `if (creationMode) { __here__ }`.
-   * @param updateBlock Optional instructions which go after the creation block:
-   *          `if (creationMode) { ... } __here__`.
+   *          `if (rf & RenderFlags.Create) { __here__ }`.
+   * @param updateBlock Optional instructions which go into the update block:
+   *          `if (rf & RenderFlags.Update) { __here__ }`.
    */
   constructor(
       private createBlock: () => void, private updateBlock: () => void = noop,
