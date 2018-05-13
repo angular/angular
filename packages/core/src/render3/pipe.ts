@@ -102,7 +102,7 @@ export function pipeBind2(index: number, v1: any, v2: any): any {
  */
 export function pipeBind3(index: number, v1: any, v2: any, v3: any): any {
   const pipeInstance = load<PipeTransform>(index);
-  return isPure(index) ? pureFunction3(pipeInstance.transform.bind(pipeInstance), v1, v2, v3) :
+  return isPure(index) ? pureFunction3(pipeInstance.transform, v1, v2, v3, pipeInstance) :
                          pipeInstance.transform(v1, v2, v3);
 }
 
