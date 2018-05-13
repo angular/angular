@@ -2152,20 +2152,7 @@ function initBindings() {
  * @param value Value to diff
  */
 export function bind<T>(value: T | NO_CHANGE): T|NO_CHANGE {
-  if (currentView.bindingStartIndex < 0) {
-    initBindings();
-    return data[currentView.bindingIndex++] = value;
-  }
-
-  const changed: boolean =
-      value !== NO_CHANGE && isDifferent(data[currentView.bindingIndex], value);
-  if (changed) {
-    throwErrorIfNoChangesMode(
-        creationMode, checkNoChangesMode, data[currentView.bindingIndex], value);
-    data[currentView.bindingIndex] = value;
-  }
-  currentView.bindingIndex++;
-  return changed ? value : NO_CHANGE;
+  return value !== NO_CHANGE && bindingUpdated(value) ? value : NO_CHANGE;
 }
 
 /**

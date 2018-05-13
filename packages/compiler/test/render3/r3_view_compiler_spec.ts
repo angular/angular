@@ -120,5 +120,43 @@ describe('r3_view_compiler', () => {
       const result = compile(files, angularFiles);
       expectEmit(result.source, bV_call, 'Incorrect bV call');
     });
+
+    it('should generate interpolated bindings', () => {
+      const files: MockDirectory = {
+        app: {
+          'example.ts': `
+          import {Component, NgModule} from '@angular/core';
+
+          @Component({
+            selector: 'my-component',
+            template: \`
+              <a title="Hello {{name}}"></a>\`
+          })
+          export class MyComponent {
+            name = 'World';
+          }
+
+          @NgModule({declarations: [MyComponent]})
+          export class MyModule {}
+          `
+        }
+      };
+
+      const template = `
+      // ...
+      template:function MyComponent_Template(rf: IDENT, $ctx$: IDENT){
+        if (rf & 1) {
+          $i0$.ɵE(0, 'a');
+          $i0$.ɵe();
+        }
+        if (rf & 2) {
+          $i0$.ɵp(0, 'title', $i0$.ɵb($i0$.ɵi1('Hello ', $ctx$.name, '')));
+        }
+      }`;
+
+      const result = compile(files, angularFiles);
+
+      expectEmit(result.source, template, 'Incorrect interpolated binding');
+    });
   });
 });
