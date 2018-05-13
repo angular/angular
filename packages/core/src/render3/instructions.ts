@@ -1266,7 +1266,7 @@ export function text(index: number, value?: any): void {
 
 /**
  * Create text node with binding
- * Bindings should be handled externally with the proper bind(1-8) method
+ * Bindings should be handled externally with the proper interpolation(1-8) method
  *
  * @param index Index of the node in the data array.
  * @param value Stringified value to write.
@@ -2151,21 +2151,8 @@ function initBindings() {
  *
  * @param value Value to diff
  */
-export function bind<T>(value: T | NO_CHANGE): T|NO_CHANGE {
-  if (currentView.bindingStartIndex < 0) {
-    initBindings();
-    return data[currentView.bindingIndex++] = value;
-  }
-
-  const changed: boolean =
-      value !== NO_CHANGE && isDifferent(data[currentView.bindingIndex], value);
-  if (changed) {
-    throwErrorIfNoChangesMode(
-        creationMode, checkNoChangesMode, data[currentView.bindingIndex], value);
-    data[currentView.bindingIndex] = value;
-  }
-  currentView.bindingIndex++;
-  return changed ? value : NO_CHANGE;
+export function bind<T>(value: T): T|NO_CHANGE {
+  return bindingUpdated(value) ? value : NO_CHANGE;
 }
 
 /**
