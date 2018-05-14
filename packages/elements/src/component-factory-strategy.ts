@@ -6,13 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ApplicationRef, ComponentFactory, ComponentFactoryResolver, ComponentRef, EventEmitter, Injector, OnChanges, SimpleChange, SimpleChanges, Type} from '@angular/core';
+import {ApplicationRef, ComponentFactory, ComponentFactoryResolver, ComponentRef, EventEmitter, Injector, NgZone, OnChanges, SimpleChange, SimpleChanges, Type} from '@angular/core';
 import {Observable, merge} from 'rxjs';
 import {map} from 'rxjs/operators';
 
 import {NgElementStrategy, NgElementStrategyEvent, NgElementStrategyFactory} from './element-strategy';
 import {extractProjectableNodes} from './extract-projectable-nodes';
 import {isFunction, scheduler, strictEquals} from './utils';
+
 
 /** Time in milliseconds to wait before destroying the component ref when disconnected. */
 const DESTROY_DELAY = 10;
@@ -67,7 +68,13 @@ export class ComponentNgElementStrategy implements NgElementStrategy {
   /** Set of inputs that were not initially set when the component was created. */
   private readonly uninitializedInputs = new Set<string>();
 
-  constructor(private componentFactory: ComponentFactory<any>, private injector: Injector) {}
+  private ngZone: NgZone;
+  private applicationRef: ApplicationRef;
+
+  constructor(private componentFactory: ComponentFactory<any>, private injector: Injector) {
+    this.ngZone = this.injector.get<NgZone>(NgZone);
+    this.applicationRef = this.injector.get<ApplicationRef>(ApplicationRef);
+  }
 
   /**
    * Initializes a new component if one has not yet been created and cancels any scheduled
@@ -155,8 +162,7 @@ export class ComponentNgElementStrategy implements NgElementStrategy {
 
     this.detectChanges();
 
-    const applicationRef = this.injector.get<ApplicationRef>(ApplicationRef);
-    applicationRef.attachView(this.componentRef.hostView);
+    this.applicationRef.attachView(this.componentRef.hostView);
   }
 
   /** Set any stored initial inputs on the component's properties. */
@@ -207,10 +213,17 @@ export class ComponentNgElementStrategy implements NgElementStrategy {
       return;
     }
 
-    this.scheduledChangeDetectionFn = scheduler.scheduleBeforeRender(() => {
+    // Prevents scheduling change detection
+    // if is already inside a tick.
+    if (this.applicationRef && this.applicationRef.isTicking()) {
+      return;
+    }
+    const detectChangesFn = () => {
       this.scheduledChangeDetectionFn = null;
       this.detectChanges();
-    });
+    };
+    this.scheduledChangeDetectionFn = scheduler.scheduleBeforeRender(
+        NgZone.isInAngularZone() ? detectChangesFn : () => { this.ngZone.run(detectChangesFn); });
   }
 
   /**

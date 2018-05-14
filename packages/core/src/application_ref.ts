@@ -498,6 +498,11 @@ export class ApplicationRef {
   }
 
   /**
+   * Returns a boolean to tell whether ApplicationRef is running tick.
+   */
+  isTicking() { return this._runningTick; }
+
+  /**
    * Invoke this method to explicitly process change detection and its side-effects.
    *
    * In development mode, `tick()` also performs a second change detection cycle to ensure that no

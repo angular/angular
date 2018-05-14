@@ -143,7 +143,10 @@ export class NgZone {
     forkInnerZoneWithAngularBehavior(self);
   }
 
-  static isInAngularZone(): boolean { return Zone.current.get('isAngularZone') === true; }
+  static isInAngularZone(): boolean {
+    // if in noop zone, Zone is undefined
+    return typeof Zone !== 'undefined' ? Zone.current.get('isAngularZone') === true : true;
+  }
 
   static assertInAngularZone(): void {
     if (!NgZone.isInAngularZone()) {
