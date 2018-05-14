@@ -70,25 +70,6 @@ describe('instructions', () => {
         rendererSetProperty: 1
       });
     });
-
-    it('should handle NO_CHANGE value from interpolation bindings', () => {
-      const idempotentUpdate = () =>
-          elementProperty(0, 'title', bind(interpolation1('Hello ', 'world', '')));
-      const t = new TemplateFixture(createAnchor, idempotentUpdate);
-
-      t.update();
-      expect(t.html).toEqual('<a title="Hello world"></a>');
-
-      t.update();
-      expect(t.html).toEqual('<a title="Hello world"></a>');
-      expect(ngDevMode).toHaveProperties({
-        firstTemplatePass: 1,
-        tNode: 1,
-        tView: 1,
-        rendererCreateElement: 1,
-        rendererSetProperty: 1
-      });
-    });
   });
 
   describe('elementAttribute', () => {
