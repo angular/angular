@@ -469,21 +469,16 @@ Functions that control complex animation sequences are as follows:
 * `group()` runs multiple animation steps in parallel
 * `sequence()` runs animation  steps one after another
 
-### Grouping and staggering animations
+### Animate multiple elements using query() and stagger() functions
 
-First, we describe the grouping and choreographing of multiple animated HTML elements. The functions that allow this to happen are `query()` and `stagger()`. 
+The `query()` function allows you to find inner elements within the element that is being animated. The function targets specific HTML elements within a parent component and applies animations specifically to each element individually. Angular intelligently handles setup, tear-down, and cleanup as it coordinates the elements across the page. 
 
-<div class="l-sub-section">
-The function known as `group()` is used to group animation steps, rather than animated elements.
-</div>
+The `stagger()` function allows you to define a timing gap between each queried item that is animated and thus animates a bunch of elements with a delay between them.
 
-The `query()` function targets specific HTML elements within a parent component and applies animations specifically to each element individually. Angular intelligently handles setup, tear-down, and cleanup as it coordinates the elements across the page. 
 
-### Multiple elements with query()
+This [demo](http://animationsftw.in/#/) shows an example of an animation involving multiple elements in a grid. The **Advanced** tab contains three image galleries, each consisting of a grid with tiled photo images. 
 
-This [demo](http://animationsftw.in/#/) shows an example of a choreographed animation involving multiple elements in a grid. The Advanced tab contains three image galleries, each consisting of a grid with tiled photo images. 
-
-The page opens with an introductory sequence. To see the portion that is relevant to this `query()` description, click **Advanced**. The entire grid for Gallery One cascades in, with a slight delay from row to row from the bottom up. Within each row, the elements slide down and fade into place starting from right to left.
+The page opens with an introductory sequence. To see the portion that is relevant to the above `query()` description, click **Advanced**. The entire grid for Gallery One cascades in, with a slight delay from row to row from the bottom up. Within each row, the elements slide down and fade into place starting from right to left.
 
 ### Page entry query stagger example
 
@@ -519,6 +514,32 @@ This animation does the following:
 * Animate each element in over 0.5 second using a custom-defined easing curve, simultaneously fading it in and un-transforming it at the same time.
 
 In addition to the page animation that runs when you click **Advanced** from any other tab, there are additional animations when transitioning between Gallery Two, Gallery Three, and back to Gallery One again. You can review the code snippets embedded in the demo to see small differences in the `transition()` statements and animation parameters.
+
+### Parallel animation using group() fucntion
+
+You've seen how to add delay between each successive animation. But you may also want to configure animations that happen in parallel. For example, you may want to animate two CSS properties of the smae element but use a different easing function for each one. For this you can use the
+animation `group()` function. 
+
+In the following example, using groups both on `enter:` and `leave:` allows for two different timing configurations. Both are applied to the same element in parallel, but run independently of each other:
+
+<code-example path=""  title="hero-list-groups.component.ts" linenums="false"> </code-example>
+
+<div class="l-sub-section">
+
+The `group()` function is used to group animation steps, rather than animated elements.
+</div>
+
+
+### Sequential vs. parallel animations
+
+Complex animations can have many things happening at once. But what if you want to create an animation involving not just one, but several animations happening one after the other? 
+Earlier we used `group()` to run multiple animations all at the same time, in parallel. 
+
+A second function called `sequence()` lets you run those same animations one after the other. Within `sequence()`, the animation steps consist of either `style()` or `animate()` function calls. 
+
+* Use `style()` to apply the provided styling data immediately.
+
+* Use `animate()` to apply styling data over a given time interval.
 
 ### Filter animation example
 
@@ -575,19 +596,9 @@ For each match:
 
 * If there are multiple matching elements, stagger each element in starting at the top of the page, with a 50-millisecond delay between each element.
 
-### Sequential vs. parallel animations
-
-Complex animations can have many things happening at once. But what if you want to create an animation involving not just one, but several choreographies happening one after the other? Earlier we used `group()` to run multiple animations all at the same time, in parallel. 
-
-A second function called `sequence()` lets you run those same animations one after the other. Within `sequence()`, the animation steps consist of either `style()` or `animate()` function calls. 
-
-* Use `style()` to apply the provided styling data immediately.
-
-* Use `animate()` to apply styling data over a given time interval.
-
 ### Summary
 
-Angular functions for choreographing multiple elements start with `query()` to find inner elements, for example gathering all images within a <div>. The remaining functions, `stagger()`, `group()`, and `sequence()`, apply cascades or allow you to control how multiple animation steps are applied.
+Angular functions for animating multiple elements start with `query()` to find inner elements. The remaining functions, `stagger()`, `group()`, and `sequence()`, apply cascades or allow you to control how multiple animation steps are applied.
 
 
 
