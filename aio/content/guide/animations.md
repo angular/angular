@@ -449,6 +449,7 @@ The code snippet for this animation might look like this:
 
 
 <div class="l-sub-section">
+
 The use of the wildcard state `*` under `transition()` in the above code snippet is described on the [Animation Basics Deep Dive](guide/animation-basics-deep-dive).
 </div>
 
@@ -471,7 +472,7 @@ Functions that control complex animation sequences are as follows:
 
 ### Animate multiple elements using query() and stagger() functions
 
-The `query()` function allows you to find inner elements within the element that is being animated. The function targets specific HTML elements within a parent component and applies animations specifically to each element individually. Angular intelligently handles setup, tear-down, and cleanup as it coordinates the elements across the page. 
+The `query()` function allows you to find inner elements within the element that is being animated. It targets specific HTML elements within a parent component and applies animations specifically to each element individually. Angular intelligently handles setup, tear-down, and clean up as it coordinates the elements across the page. 
 
 The `stagger()` function allows you to define a timing gap between each queried item that is animated and thus animates a bunch of elements with a delay between them.
 
@@ -517,12 +518,12 @@ In addition to the page animation that runs when you click **Advanced** from any
 
 ### Parallel animation using group() fucntion
 
-You've seen how to add delay between each successive animation. But you may also want to configure animations that happen in parallel. For example, you may want to animate two CSS properties of the smae element but use a different easing function for each one. For this you can use the
+You've seen how to add a delay between each successive animation. But you may also want to configure animations that happen in parallel. For example, you may want to animate two CSS properties of the same element but use a different easing function for each one. For this, you can use the
 animation `group()` function. 
 
 In the following example, using groups both on `enter:` and `leave:` allows for two different timing configurations. Both are applied to the same element in parallel, but run independently of each other:
 
-<code-example path=""  title="hero-list-groups.component.ts" linenums="false"> </code-example>
+<code-example path="animations/src/app/hero-list-groups.component.ts" region="animationdef" title="hero-list-groups.component.ts (excerpt)" linenums="false"></code-example>
 
 <div class="l-sub-section">
 
