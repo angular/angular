@@ -126,6 +126,18 @@ export class HeroService {
   }
   // #enddocregion updateHero
 
+  
+  // #docregion updateHeroByIndex
+  /** PUT: update the hero on the server */
+  /** update(replace) an object(index) */
+  updateHeroByIndex (hero: Hero, index: number): Observable<any> {
+    return this.http.put(`${this.heroesUrl}/${index}`, hero, httpOptions).pipe(
+      tap(_ => this.log(`updated hero id=${hero.id}`)),
+      catchError(this.handleError<any>('updateHeroByIndex'))
+    );
+  }
+  // #enddocregion updateHeroByIndex
+  
   // #docregion handleError
   /**
    * Handle Http operation that failed.
