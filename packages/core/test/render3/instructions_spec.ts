@@ -46,7 +46,7 @@ describe('instructions', () => {
       expect(t.html).toEqual('<a title="World"></a>');
       expect(ngDevMode).toHaveProperties({
         firstTemplatePass: 1,
-        tNode: 1,
+        tNode: 2,  // 1 for hostElement + 1 for the template under test
         tView: 1,
         rendererCreateElement: 1,
         rendererSetProperty: 2
@@ -64,7 +64,7 @@ describe('instructions', () => {
       expect(t.html).toEqual('<a title="Hello"></a>');
       expect(ngDevMode).toHaveProperties({
         firstTemplatePass: 1,
-        tNode: 1,
+        tNode: 2,  // 1 for hostElement + 1 for the template under test
         tView: 1,
         rendererCreateElement: 1,
         rendererSetProperty: 1
