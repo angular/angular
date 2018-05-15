@@ -47,6 +47,10 @@ $mat-radio-ripple-radius: 25px;
     style: solid;
     radius: 50%;
   }
+
+  ._mat-animation-noopable & {
+    transition: none;
+  }
 }
 
 // The inner circle for the radio, shown when checked.
@@ -63,6 +67,10 @@ $mat-radio-ripple-radius: 25px;
   // Note: This starts from 0.001 instead of 0, because transitioning from 0 to 0.5 causes
   // IE to flash the entire circle for a couple of frames, throwing off the entire animation.
   transform: scale(0.001);
+
+  ._mat-animation-noopable & {
+    transition: none;
+  }
 
   .mat-radio-checked & {
     transform: scale(0.5);
