@@ -102,3 +102,11 @@
 </div>
 
 <div style="height: 500px"></div>
+
+<ng-template #overlay>
+  <div class="demo-overlay">
+    <div style="overflow: auto;">
+      <ul><li *ngFor="let item of itemArray; index as i">{{itemText}} {{i}}</li></ul>
+    </div>
+  </div>
+</ng-template>

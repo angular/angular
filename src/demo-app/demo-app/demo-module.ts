@@ -24,7 +24,7 @@ import {ButtonDemo} from '../button/button-demo';
 import {CardDemo} from '../card/card-demo';
 import {CheckboxDemo, MatCheckboxDemoNestedChecklist} from '../checkbox/checkbox-demo';
 import {ChipsDemo} from '../chips/chips-demo';
-import {ConnectedOverlayDemo, DemoOverlay} from '../connected-overlay/connected-overlay-demo';
+import {ConnectedOverlayDemo} from '../connected-overlay/connected-overlay-demo';
 import {CustomHeader, DatepickerDemo} from '../datepicker/datepicker-demo';
 import {DemoMaterialModule} from '../demo-material-module';
 import {ContentElementDialog, DialogDemo, IFrameDialog, JazzDialog} from '../dialog/dialog-demo';
@@ -95,7 +95,6 @@ import {MaterialExampleModule} from '../example/example-module';
     CustomHeader,
     DatepickerDemo,
     DemoApp,
-    DemoOverlay,
     DialogDemo,
     DrawerDemo,
     ExampleBottomSheet,
@@ -143,7 +142,6 @@ import {MaterialExampleModule} from '../example/example-module';
     ContentElementDialog,
     CustomHeader,
     DemoApp,
-    DemoOverlay,
     ExampleBottomSheet,
     IFrameDialog,
     JazzDialog,

@@ -14,8 +14,8 @@ import {
   OverlayRef,
   VerticalConnectionPos
 } from '@angular/cdk/overlay';
-import {ComponentPortal} from '@angular/cdk/portal';
-import {Component, ViewChild, ViewContainerRef} from '@angular/core';
+import {TemplatePortal} from '@angular/cdk/portal';
+import {Component, TemplateRef, ViewChild, ViewContainerRef} from '@angular/core';
 
 
 @Component({
@@ -26,6 +26,7 @@ import {Component, ViewChild, ViewContainerRef} from '@angular/core';
 })
 export class ConnectedOverlayDemo {
   @ViewChild(CdkOverlayOrigin) _overlayOrigin: CdkOverlayOrigin;
+  @ViewChild('overlay') overlayTemplate: TemplateRef<any>;
 
   originX: HorizontalConnectionPos = 'start';
   originY: VerticalConnectionPos = 'bottom';
@@ -37,6 +38,7 @@ export class ConnectedOverlayDemo {
   offsetX = 0;
   offsetY = 0;
   itemCount = 25;
+  itemArray: any[] = [];
   itemText = 'Item with a long name';
   overlayRef: OverlayRef | null;
 
@@ -82,11 +84,8 @@ export class ConnectedOverlayDemo {
       minHeight: 50
     });
 
-    const portal = new ComponentPortal(DemoOverlay, this.viewContainerRef);
-    const componentRef = this.overlayRef.attach(portal);
-
-    componentRef.instance.items = Array(this.itemCount);
-    componentRef.instance.text = this.itemText;
+    this.itemArray = Array(this.itemCount);
+    this.overlayRef.attach(new TemplatePortal(this.overlayTemplate, this.viewContainerRef));
   }
 
   close() {
@@ -98,26 +97,11 @@ export class ConnectedOverlayDemo {
   }
 
   toggleShowBoundingBox() {
-    const box = document.querySelector('.cdk-overlay-connected-position-bounding-box');
+    const box = document.querySelector<HTMLElement>('.cdk-overlay-connected-position-bounding-box');
 
     if (box) {
       this.showBoundingBox = !this.showBoundingBox;
-      box.classList.toggle('demo-show-box');
+      box.style.background = this.showBoundingBox ? 'rgb(255, 69, 0, 0.2)' : '';
     }
   }
 }
-
-
-@Component({
-  selector: 'demo-overlay',
-  template: `
-    <div style="overflow: auto;">
-      <ul><li *ngFor="let item of items; index as i">{{text}} {{i}}</li></ul>
-    </div>`,
-
-})
-export class DemoOverlay {
-  items: number[];
-  text: string;
-}
-

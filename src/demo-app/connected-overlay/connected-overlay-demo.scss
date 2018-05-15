@@ -12,7 +12,7 @@
   }
 }
 
-demo-overlay {
+.demo-overlay {
   display: block;
 
   background: lightblue;
@@ -28,13 +28,4 @@ demo-overlay {
   justify-content: center;
   align-items: center;
   padding: 10px;
-}
-
-.cdk-overlay-connected-position-bounding-box.demo-show-box {
-  background: orangered;
-  opacity: 0.2;
-
-  .cdk-overlay-pane {
-    opacity: 1;
-  }
 }
