@@ -19,6 +19,7 @@ import {
   QueryList,
   ViewChild,
   ViewChildren,
+  Type,
 } from '@angular/core';
 import {
   async,
@@ -54,7 +55,7 @@ describe('MatAutocomplete', () => {
   let zone: MockNgZone;
 
   // Creates a test component fixture.
-  function createComponent(component: any, providers: Provider[] = []): ComponentFixture<any> {
+  function createComponent<T>(component: Type<T>, providers: Provider[] = []) {
     TestBed.configureTestingModule({
       imports: [
         MatAutocompleteModule,
@@ -78,7 +79,7 @@ describe('MatAutocomplete', () => {
       overlayContainerElement = oc.getContainerElement();
     })();
 
-    return TestBed.createComponent(component);
+    return TestBed.createComponent<T>(component);
   }
 
   afterEach(inject([OverlayContainer], (currentOverlayContainer: OverlayContainer) => {
@@ -1978,6 +1979,22 @@ describe('MatAutocomplete', () => {
     expect(event.source).toBe(fixture.componentInstance.autocomplete);
     expect(event.option.value).toBe('Puerto Rico');
   }));
+
+  it('should be able to set a custom panel connection element', () => {
+    const fixture = createComponent(AutocompleteWithDifferentOrigin);
+
+    fixture.detectChanges();
+    fixture.componentInstance.trigger.openPanel();
+    fixture.detectChanges();
+    zone.simulateZoneExit();
+
+    const overlayRect =
+        overlayContainerElement.querySelector('.cdk-overlay-pane')!.getBoundingClientRect();
+    const originRect = fixture.nativeElement.querySelector('.origin').getBoundingClientRect();
+
+    expect(Math.floor(overlayRect.top)).toBe(Math.floor(originRect.bottom),
+        'Expected autocomplete panel to align with the bottom of the new origin.');
+  });
 });
 
 @Component({
@@ -2314,4 +2331,36 @@ class PlainAutocompleteInputWithFormControl {
 class AutocompleteWithNumberInputAndNgModel {
   selectedValue: number;
   values = [1, 2, 3];
+}
+
+
+@Component({
+  template: `
+    <div>
+      <mat-form-field>
+        <input
+          matInput
+          [matAutocomplete]="auto"
+          [matAutocompleteConnectedTo]="origin"
+          [(ngModel)]="selectedValue">
+      </mat-form-field>
+    </div>
+
+    <div
+      class="origin"
+      matAutocompleteOrigin
+      #origin="matAutocompleteOrigin"
+      style="margin-top: 50px">
+      Connection element
+    </div>
+
+    <mat-autocomplete #auto="matAutocomplete">
+      <mat-option *ngFor="let value of values" [value]="value">{{value}}</mat-option>
+    </mat-autocomplete>
+  `
+})
+class AutocompleteWithDifferentOrigin {
+  @ViewChild(MatAutocompleteTrigger) trigger: MatAutocompleteTrigger;
+  selectedValue: string;
+  values = ['one', 'two', 'three'];
 }

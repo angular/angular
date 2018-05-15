@@ -45,6 +45,7 @@ import {MatFormField} from '@angular/material/form-field';
 import {Subscription, defer, fromEvent, merge, of as observableOf, Subject, Observable} from 'rxjs';
 import {MatAutocomplete} from './autocomplete';
 import {coerceBooleanProperty} from '@angular/cdk/coercion';
+import {MatAutocompleteOrigin} from './autocomplete-origin';
 
 
 /**
@@ -90,6 +91,7 @@ export function getMatAutocompleteMissingPanelError(): Error {
                'Make sure that the id passed to the `matAutocomplete` is correct and that ' +
                'you\'re attempting to open it after the ngAfterContentInit hook.');
 }
+
 
 @Directive({
   selector: `input[matAutocomplete], textarea[matAutocomplete]`,
@@ -142,6 +144,12 @@ export class MatAutocompleteTrigger implements ControlValueAccessor, OnDestroy {
 
   /** The autocomplete panel to be attached to this trigger. */
   @Input('matAutocomplete') autocomplete: MatAutocomplete;
+
+  /**
+   * Reference relative to which to position the autocomplete panel.
+   * Defaults to the autocomplete trigger element.
+   */
+  @Input('matAutocompleteConnectedTo') connectedTo: MatAutocompleteOrigin;
 
   /**
    * Whether the autocomplete is disabled. When disabled, the element will
@@ -562,6 +570,10 @@ export class MatAutocompleteTrigger implements ControlValueAccessor, OnDestroy {
   }
 
   private _getConnectedElement(): ElementRef {
+    if (this.connectedTo) {
+      return this.connectedTo.elementRef;
+    }
+
     return this._formField ? this._formField.getConnectedOverlayOrigin() : this._element;
   }
 

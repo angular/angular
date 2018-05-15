@@ -6,9 +6,10 @@ Start by adding a regular `matInput` to your template. Let's assume you're using
 directive from `ReactiveFormsModule` to track the value of the input.
 
 > Note: It is possible to use template-driven forms instead, if you prefer. We use reactive forms
-in this example because it makes subscribing to changes in the input's value easy. For this example, be sure to
-import `ReactiveFormsModule` from `@angular/forms` into your `NgModule`. If you are unfamiliar with using reactive
-forms, you can read more about the subject in the [Angular documentation](https://angular.io/guide/reactive-forms).
+in this example because it makes subscribing to changes in the input's value easy. For this
+example, be sure to import `ReactiveFormsModule` from `@angular/forms` into your `NgModule`.
+If you are unfamiliar with using reactive forms, you can read more about the subject in the
+[Angular documentation](https://angular.io/guide/reactive-forms).
 
 *my-comp.html*
 ```html
@@ -41,9 +42,7 @@ to the input's `matAutocomplete` property.
 </mat-form-field>
 
 <mat-autocomplete #auto="matAutocomplete">
-  <mat-option *ngFor="let option of options" [value]="option">
-    {{ option }}
-  </mat-option>
+  <mat-option *ngFor="let option of options" [value]="option">{{option}}</mat-option>
 </mat-autocomplete>
 ```
 
@@ -61,8 +60,8 @@ option's first letter. We already have access to the built-in `valueChanges` Obs
 them through this filter. The resulting Observable, `filteredOptions`, can be added to the
 template in place of the `options` property using the `async` pipe.
 
-Below we are also priming our value change stream with an empty string so that the options are filtered by
-that value on init (before there are any value changes).
+Below we are also priming our value change stream with an empty string so that the options are
+filtered by that value on init (before there are any value changes).
 
 \*For optimal accessibility, you may want to consider adding text guidance on the page to explain
 filter criteria. This is especially helpful for screenreader users if you're using a non-standard
@@ -91,6 +90,27 @@ injection token.
 
 <!-- example(autocomplete-auto-active-first-option) -->
 
+### Attaching the autocomplete panel to a different element
+
+By default the autocomplete panel will be attached to your input element, however in some cases you
+may want it to attach to a different container element. You can change the element that the
+autocomplete is attached to using the `matAutocompleteOrigin` directive together with the
+`matAutocompleteConnectedTo` input:
+
+```html
+<div class="custom-wrapper-example" matAutocompleteOrigin #origin="matAutocompleteOrigin">
+  <input
+    matInput
+    [formControl]="myControl"
+    [matAutocomplete]="auto"
+    [matAutocompleteConnectedTo]="origin">
+</div>
+
+<mat-autocomplete #auto="matAutocomplete">
+  <mat-option *ngFor="let option of options" [value]="option">{{option}}</mat-option>
+</mat-autocomplete>
+```
+
 ### Keyboard interaction
 - <kbd>DOWN_ARROW</kbd>: Next option becomes active.
 - <kbd>UP_ARROW</kbd>: Previous option becomes active.
@@ -105,7 +125,7 @@ injection token.
 <mat-autocomplete #auto="matAutocomplete">
   <mat-optgroup *ngFor="let group of filteredGroups | async" [label]="group.name">
     <mat-option *ngFor="let option of group.options" [value]="option">
-      {{ option.name }}
+      {{option.name}}
     </mat-option>
   </mat-optgroup>
 </mat-autocomplete>
@@ -115,5 +135,5 @@ injection token.
 The input for an autocomplete without text or labels should be given a meaningful label via
 `aria-label` or `aria-labelledby`.
 
-The autocomplete trigger is given `role="combobox"`. The trigger sets `aria-owns` to the autocomplete's
-id, and sets `aria-activedescendant` to the active option's id.
+The autocomplete trigger is given `role="combobox"`. The trigger sets `aria-owns` to the
+autocomplete's id, and sets `aria-activedescendant` to the active option's id.

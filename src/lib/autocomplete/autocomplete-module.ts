@@ -11,13 +11,18 @@ import {CommonModule} from '@angular/common';
 import {OverlayModule} from '@angular/cdk/overlay';
 import {MatOptionModule, MatCommonModule} from '@angular/material/core';
 import {MatAutocomplete} from './autocomplete';
-import {
-  MatAutocompleteTrigger,
-} from './autocomplete-trigger';
+import {MatAutocompleteTrigger} from './autocomplete-trigger';
+import {MatAutocompleteOrigin} from './autocomplete-origin';
 
 @NgModule({
   imports: [MatOptionModule, OverlayModule, MatCommonModule, CommonModule],
-  exports: [MatAutocomplete, MatOptionModule, MatAutocompleteTrigger, MatCommonModule],
-  declarations: [MatAutocomplete, MatAutocompleteTrigger],
+  exports: [
+    MatAutocomplete,
+    MatOptionModule,
+    MatAutocompleteTrigger,
+    MatAutocompleteOrigin,
+    MatCommonModule
+  ],
+  declarations: [MatAutocomplete, MatAutocompleteTrigger, MatAutocompleteOrigin],
 })
 export class MatAutocompleteModule {}
