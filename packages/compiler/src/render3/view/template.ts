@@ -11,7 +11,7 @@ import {CompileReflector} from '../../compile_reflector';
 import {BindingForm, BuiltinFunctionCall, LocalResolver, convertActionBinding, convertPropertyBinding} from '../../compiler_util/expression_converter';
 import {ConstantPool} from '../../constant_pool';
 import * as core from '../../core';
-import {AST, AstMemoryEfficientTransformer, BindingPipe, BindingType, FunctionCall, ImplicitReceiver, LiteralArray, LiteralMap, LiteralPrimitive, PropertyRead} from '../../expression_parser/ast';
+import {AST, AstMemoryEfficientTransformer, BindingPipe, BindingType, FunctionCall, ImplicitReceiver, Interpolation, LiteralArray, LiteralMap, LiteralPrimitive, PropertyRead} from '../../expression_parser/ast';
 import {Lexer} from '../../expression_parser/lexer';
 import {Parser} from '../../expression_parser/parser';
 import * as html from '../../ml_parser/ast';
@@ -340,10 +340,9 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
       const instruction = BINDING_INSTRUCTION_MAP[input.type];
       if (instruction) {
         // TODO(chuckj): runtime: security context?
-        const value = o.importExpr(R3.bind).callFn([convertedBinding]);
         this.instruction(
             this._bindingCode, input.sourceSpan, instruction, o.literal(elementIndex),
-            o.literal(input.name), value);
+            o.literal(input.name), convertedBinding);
       } else {
         this._unsupported(`binding type ${input.type}`);
       }
@@ -418,7 +417,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
       const convertedBinding = this.convertPropertyBinding(context, input.value);
       this.instruction(
           this._bindingCode, template.sourceSpan, R3.elementProperty, o.literal(templateIndex),
-          o.literal(input.name), o.importExpr(R3.bind).callFn([convertedBinding]));
+          o.literal(input.name), convertedBinding);
     });
 
     // Create the template function
@@ -443,7 +442,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     this.instruction(this._creationCode, text.sourceSpan, R3.text, o.literal(nodeIndex));
 
     this.instruction(
-        this._bindingCode, text.sourceSpan, R3.textCreateBound, o.literal(nodeIndex),
+        this._bindingCode, text.sourceSpan, R3.textBinding, o.literal(nodeIndex),
         this.convertPropertyBinding(o.variable(CONTEXT_NAME), text.value));
   }
 
@@ -483,11 +482,19 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
 
   private convertPropertyBinding(implicit: o.Expression, value: AST): o.Expression {
     const pipesConvertedValue = value.visit(this._valueConverter);
-    const convertedPropertyBinding = convertPropertyBinding(
-        this, implicit, pipesConvertedValue, this.bindingContext(), BindingForm.TrySimple,
-        interpolate);
-    this._bindingCode.push(...convertedPropertyBinding.stmts);
-    return convertedPropertyBinding.currValExpr;
+    if (pipesConvertedValue instanceof Interpolation) {
+      const convertedPropertyBinding = convertPropertyBinding(
+          this, implicit, pipesConvertedValue, this.bindingContext(), BindingForm.TrySimple,
+          interpolate);
+      this._bindingCode.push(...convertedPropertyBinding.stmts);
+      return convertedPropertyBinding.currValExpr;
+    } else {
+      const convertedPropertyBinding = convertPropertyBinding(
+          this, implicit, pipesConvertedValue, this.bindingContext(), BindingForm.TrySimple,
+          () => error('Unexpected interpolation'));
+      this._bindingCode.push(...convertedPropertyBinding.stmts);
+      return o.importExpr(R3.bind).callFn([convertedPropertyBinding.currValExpr]);
+    }
   }
 }
 
