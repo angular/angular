@@ -205,6 +205,7 @@ describe('MatButtonToggle without forms', () => {
       declarations: [
         ButtonTogglesInsideButtonToggleGroup,
         ButtonTogglesInsideButtonToggleGroupMultiple,
+        FalsyButtonTogglesInsideButtonToggleGroupMultiple,
         ButtonToggleGroupWithInitialValue,
         StandaloneButtonToggle,
         ButtonToggleWithAriaLabel,
@@ -694,6 +695,22 @@ describe('MatButtonToggle without forms', () => {
       expect(fixture.componentInstance.toggleGroup.value).toBe('Seven');
       expect(fixture.componentInstance.toggles.toArray()[2].checked).toBe(true);
     });
+
+  it('should select falsy button toggle value in multiple selection', () => {
+    const fixture = TestBed.createComponent(FalsyButtonTogglesInsideButtonToggleGroupMultiple);
+    fixture.detectChanges();
+
+    expect(fixture.componentInstance.toggles.toArray()[0].checked).toBe(true);
+    expect(fixture.componentInstance.toggles.toArray()[1].checked).toBe(false);
+    expect(fixture.componentInstance.toggles.toArray()[2].checked).toBe(false);
+
+    fixture.componentInstance.value = [0, false];
+    fixture.detectChanges();
+
+    expect(fixture.componentInstance.toggles.toArray()[0].checked).toBe(true);
+    expect(fixture.componentInstance.toggles.toArray()[1].checked).toBe(false);
+    expect(fixture.componentInstance.toggles.toArray()[2].checked).toBe(true);
+  });
 });
 
 @Component({
@@ -746,6 +763,21 @@ class ButtonToggleGroupWithNgModel {
 class ButtonTogglesInsideButtonToggleGroupMultiple {
   isGroupDisabled: boolean = false;
   isVertical: boolean = false;
+}
+
+@Component({
+  template: `
+  <mat-button-toggle-group multiple [value]="value">
+    <mat-button-toggle [value]="0">Eggs</mat-button-toggle>
+    <mat-button-toggle [value]="null">Flour</mat-button-toggle>
+    <mat-button-toggle [value]="false">Sugar</mat-button-toggle>
+    <mat-button-toggle>Sugar</mat-button-toggle>
+  </mat-button-toggle-group>
+  `
+})
+class FalsyButtonTogglesInsideButtonToggleGroupMultiple {
+  value: ('' | number | null | undefined | boolean)[] = [0];
+  @ViewChildren(MatButtonToggle) toggles: QueryList<MatButtonToggle>;
 }
 
 @Component({
