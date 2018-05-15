@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {coerceBooleanProperty} from '@angular/cdk/coercion';
+import {coerceBooleanProperty, coerceNumberProperty} from '@angular/cdk/coercion';
 import {
   AfterContentInit,
   Directive,
@@ -16,12 +16,10 @@ import {
   Input,
   NgModule,
   NgZone,
-  OnChanges,
   OnDestroy,
   Output,
-  SimpleChanges,
 } from '@angular/core';
-import {Subject} from 'rxjs';
+import {Observable, Subject, Subscription} from 'rxjs';
 import {debounceTime} from 'rxjs/operators';
 
 /**
@@ -35,6 +33,88 @@ export class MutationObserverFactory {
   }
 }
 
+
+/** An injectable service that allows watching elements for changes to their content. */
+@Injectable({providedIn: 'root'})
+export class ContentObserver implements OnDestroy {
+  /** Keeps track of the existing MutationObservers so they can be reused. */
+  private _observedElements = new Map<Element, {
+    observer: MutationObserver | null,
+    stream: Subject<MutationRecord[]>,
+    count: number
+  }>();
+
+  constructor(private _mutationObserverFactory: MutationObserverFactory) {}
+
+  ngOnDestroy() {
+    this._observedElements.forEach((_, element) => this._cleanupObserver(element));
+  }
+
+  /**
+   * Observe content changes on an element.
+   * @param element The element to observe for content changes.
+   */
+  observe(element: Element): Observable<MutationRecord[]> {
+    return Observable.create(observer => {
+      const stream = this._observeElement(element);
+      const subscription = stream.subscribe(observer);
+
+      return () => {
+        subscription.unsubscribe();
+        this._unobserveElement(element);
+      };
+    });
+  }
+
+  /**
+   * Observes the given element by using the existing MutationObserver if available, or creating a
+   * new one if not.
+   */
+  private _observeElement(element: Element): Subject<MutationRecord[]> {
+    if (!this._observedElements.has(element)) {
+      const stream = new Subject<MutationRecord[]>();
+      const observer = this._mutationObserverFactory.create(mutations => stream.next(mutations));
+      if (observer) {
+        observer.observe(element, {
+          characterData: true,
+          childList: true,
+          subtree: true
+        });
+      }
+      this._observedElements.set(element, {observer, stream, count: 1});
+    } else {
+      this._observedElements.get(element)!.count++;
+    }
+    return this._observedElements.get(element)!.stream;
+  }
+
+  /**
+   * Un-observes the given element and cleans up the underlying MutationObserver if nobody else is
+   * observing this element.
+   */
+  private _unobserveElement(element: Element) {
+    if (this._observedElements.has(element)) {
+      this._observedElements.get(element)!.count--;
+      if (!this._observedElements.get(element)!.count) {
+        this._cleanupObserver(element);
+      }
+    }
+  }
+
+  /** Clean up the underlying MutationObserver for the specified element. */
+  private _cleanupObserver(element: Element) {
+    if (this._observedElements.has(element)) {
+      const {observer, stream} = this._observedElements.get(element)!;
+      if (observer) {
+        observer.disconnect();
+      }
+      stream.complete();
+      this._observedElements.delete(element);
+    }
+  }
+}
+
+
 /**
  * Directive that triggers a callback whenever the content of
  * its associated element has changed.
@@ -43,10 +123,7 @@ export class MutationObserverFactory {
   selector: '[cdkObserveContent]',
   exportAs: 'cdkObserveContent',
 })
-export class CdkObserveContent implements AfterContentInit, OnChanges, OnDestroy {
-  private _observer: MutationObserver | null;
-  private _disabled = false;
-
+export class CdkObserveContent implements AfterContentInit, OnDestroy {
   /** Event emitted for each change in the element's content. */
   @Output('cdkObserveContent') event = new EventEmitter<MutationRecord[]>();
 
@@ -58,64 +135,55 @@ export class CdkObserveContent implements AfterContentInit, OnChanges, OnDestroy
   get disabled() { return this._disabled; }
   set disabled(value: any) {
     this._disabled = coerceBooleanProperty(value);
+    if (this._disabled) {
+      this._unsubscribe();
+    } else {
+      this._subscribe();
+    }
   }
-
-  /** Used for debouncing the emitted values to the observeContent event. */
-  private _debouncer = new Subject<MutationRecord[]>();
+  private _disabled = false;
 
   /** Debounce interval for emitting the changes. */
-  @Input() debounce: number;
+  @Input()
+  get debounce(): number { return this._debounce; }
+  set debounce(value: number) {
+    this._debounce = coerceNumberProperty(value);
+    this._subscribe();
+  }
+  private _debounce: number;
 
-  constructor(
-    private _mutationObserverFactory: MutationObserverFactory,
-    private _elementRef: ElementRef,
-    private _ngZone: NgZone) { }
+  private _currentSubscription: Subscription | null = null;
+
+  constructor(private _contentObserver: ContentObserver, private _elementRef: ElementRef,
+              private _ngZone: NgZone) {}
 
   ngAfterContentInit() {
-    if (this.debounce > 0) {
-      this._ngZone.runOutsideAngular(() => {
-        this._debouncer.pipe(debounceTime(this.debounce))
-            .subscribe((mutations: MutationRecord[]) => this.event.emit(mutations));
-      });
-    } else {
-      this._debouncer.subscribe(mutations => this.event.emit(mutations));
-    }
-
-    this._observer = this._ngZone.runOutsideAngular(() => {
-      return this._mutationObserverFactory.create((mutations: MutationRecord[]) => {
-        this._debouncer.next(mutations);
-      });
-    });
-
-    if (!this.disabled) {
-      this._enable();
-    }
-  }
-
-  ngOnChanges(changes: SimpleChanges) {
-    if (changes['disabled']) {
-      changes['disabled'].currentValue ? this._disable() : this._enable();
+    if (!this._currentSubscription && !this.disabled) {
+      this._subscribe();
     }
   }
 
   ngOnDestroy() {
-    this._disable();
-    this._debouncer.complete();
+    this._unsubscribe();
   }
 
-  private _disable() {
-    if (this._observer) {
-      this._observer.disconnect();
-    }
+  private _subscribe() {
+    this._unsubscribe();
+    const stream = this._contentObserver.observe(this._elementRef.nativeElement);
+
+    // TODO(mmalerba): We shouldn't be emitting on this @Output() outside the zone.
+    // Consider brining it back inside the zone next time we're making breaking changes.
+    // Bringing it back inside can cause things like infinite change detection loops and changed
+    // after checked errors if people's code isn't handling it properly.
+    this._ngZone.runOutsideAngular(() => {
+      this._currentSubscription =
+          (this.debounce ? stream.pipe(debounceTime(this.debounce)) : stream).subscribe(this.event);
+    });
   }
 
-  private _enable() {
-    if (this._observer) {
-      this._observer.observe(this._elementRef.nativeElement, {
-        characterData: true,
-        childList: true,
-        subtree: true
-      });
+  private _unsubscribe() {
+    if (this._currentSubscription) {
+      this._currentSubscription.unsubscribe();
     }
   }
 }

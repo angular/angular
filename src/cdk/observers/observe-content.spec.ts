@@ -1,11 +1,11 @@
-import {Component} from '@angular/core';
-import {async, TestBed, ComponentFixture, fakeAsync, tick} from '@angular/core/testing';
-import {ObserversModule, MutationObserverFactory} from './observe-content';
+import {Component, ElementRef, ViewChild} from '@angular/core';
+import {async, ComponentFixture, fakeAsync, inject, TestBed, tick} from '@angular/core/testing';
+import {ContentObserver, MutationObserverFactory, ObserversModule} from './observe-content';
 
 // TODO(elad): `ProxyZone` doesn't seem to capture the events raised by
 // `MutationObserver` and needs to be investigated
 
-describe('Observe content', () => {
+describe('Observe content directive', () => {
   describe('basic usage', () => {
     beforeEach(async(() => {
       TestBed.configureTestingModule({
@@ -120,6 +120,85 @@ describe('Observe content', () => {
   });
 });
 
+describe('ContentObserver injectable', () => {
+  describe('basic usage', () => {
+    let callbacks: Function[];
+    let invokeCallbacks = (args?: any) => callbacks.forEach(callback => callback(args));
+    let contentObserver: ContentObserver;
+
+    beforeEach(fakeAsync(() => {
+      callbacks = [];
+
+      TestBed.configureTestingModule({
+        imports: [ObserversModule],
+        declarations: [UnobservedComponentWithTextContent],
+        providers: [{
+          provide: MutationObserverFactory,
+          useValue: {
+            create: function(callback: Function) {
+              callbacks.push(callback);
+
+              return {
+                observe: () => {},
+                disconnect: () => {}
+              };
+            }
+          }
+        }]
+      });
+
+      TestBed.compileComponents();
+    }));
+
+    beforeEach(inject([ContentObserver], (co: ContentObserver) => {
+      contentObserver = co;
+    }));
+
+    it('should trigger the callback when the content of the element changes', fakeAsync(() => {
+      const spy = jasmine.createSpy('content observer');
+      const fixture = TestBed.createComponent(UnobservedComponentWithTextContent);
+      fixture.detectChanges();
+
+      contentObserver.observe(fixture.componentInstance.contentEl.nativeElement)
+          .subscribe(() => spy());
+
+      expect(spy).not.toHaveBeenCalled();
+
+      fixture.componentInstance.text = 'text';
+      invokeCallbacks();
+
+      expect(spy).toHaveBeenCalled();
+    }));
+
+    it('should only create one MutationObserver when observing the same element twice',
+        fakeAsync(inject([MutationObserverFactory], (mof: MutationObserverFactory) => {
+          const spy = jasmine.createSpy('content observer');
+          spyOn(mof, 'create').and.callThrough();
+          const fixture = TestBed.createComponent(UnobservedComponentWithTextContent);
+          fixture.detectChanges();
+
+          const sub1 = contentObserver.observe(fixture.componentInstance.contentEl.nativeElement)
+              .subscribe(() => spy());
+          contentObserver.observe(fixture.componentInstance.contentEl.nativeElement)
+              .subscribe(() => spy());
+
+          expect(mof.create).toHaveBeenCalledTimes(1);
+
+          fixture.componentInstance.text = 'text';
+          invokeCallbacks();
+
+          expect(spy).toHaveBeenCalledTimes(2);
+
+          spy.calls.reset();
+          sub1.unsubscribe();
+          fixture.componentInstance.text = 'text text';
+          invokeCallbacks();
+
+          expect(spy).toHaveBeenCalledTimes(1);
+        })));
+  });
+});
+
 
 @Component({
   template: `
@@ -134,7 +213,7 @@ class ComponentWithTextContent {
   doSomething() {}
 }
 
-@Component({ template: `<div (cdkObserveContent)="doSomething()"><div>{{text}}<div></div>` })
+@Component({ template: `<div (cdkObserveContent)="doSomething()"><div>{{text}}</div></div>` })
 class ComponentWithChildTextContent {
   text = '';
   doSomething() {}
@@ -146,4 +225,12 @@ class ComponentWithChildTextContent {
 class ComponentWithDebouncedListener {
   debounce = 500;
   spy = jasmine.createSpy('MutationObserver callback');
+}
+
+@Component({
+  template: `<div #contentEl>{{text}}</div>`
+})
+class UnobservedComponentWithTextContent {
+  @ViewChild('contentEl') contentEl: ElementRef;
+  text = '';
 }
