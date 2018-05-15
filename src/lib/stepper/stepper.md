@@ -9,6 +9,9 @@ styling.
 ### Stepper variants
 There are two stepper components: `mat-horizontal-stepper` and `mat-vertical-stepper`. They
 can be used the same way. The only difference is the orientation of stepper.
+
+<!-- example(stepper-vertical) -->
+
 `mat-horizontal-stepper` selector can be used to create a horizontal stepper, and
 `mat-vertical-stepper` can be used to create a vertical stepper. `mat-step` components need to be
 placed inside either one of the two stepper components.
