@@ -416,22 +416,27 @@ If you added the ability to remove or change a hero, Angular would detect those 
 
 <h3 class="no-toc"><i>FlyingHeroesPipe</i></h3>
 
+<!--
 Add a `FlyingHeroesPipe` to the `*ngFor` repeater that filters the list of heroes to just those heroes who can fly.
+-->
+이제 `<div>`에 적용된 `*ngFor`에 `FlyingHeroesPipe`를 적용합니다. 이 파이프를 적용하면 전체 히어로 목록에서 하늘을 날 수 있는 히어로만 `*ngFor`의 대상으로 필터링됩니다.
 
 <code-example path="pipes/src/app/flying-heroes.component.html" region="template-flying-heroes" title="src/app/flying-heroes.component.html (flyers)" linenums="false">
 
 </code-example>
 
 
-
+<!--
 Here's the `FlyingHeroesPipe` implementation, which follows the pattern for custom pipes described earlier.
+-->
+그리고 `FlyingHeroesPipe` 를 다음과 같이 구현합니다.
 
 <code-example path="pipes/src/app/flying-heroes.pipe.ts" region="pure" title="src/app/flying-heroes.pipe.ts" linenums="false">
 
 </code-example>
 
 
-
+<!--
 Notice the odd behavior in the <live-example></live-example>:
 when you add flying heroes, none of them are displayed under "Heroes who fly."
 
@@ -439,13 +444,20 @@ Although you're not getting the behavior you want, Angular isn't broken.
 It's just using a different change-detection algorithm that ignores changes to the list or any of its items.
 
 Notice how a hero is added:
+-->
+하지만 <live-example></live-example>에서 확인하면, 하늘을 날 수 있는 히어로를 추가해도 "Heroes who fly." 밑에 아무것도 표시되지 않습니다.
+
+원하는 동작은 이것이 아니지만 Angular에서 에러가 발생하는 것도 아닙니다.
+이 예제에서 사용하는 변화 감지 알고리즘은 배열에 반응하며, 배열을 참조하는 주소가 바뀌지 않고 항목만 추가되었을 때는 변화 감지 알고리즘이 동작하지 않습니다.
+
+히어로를 추가하는 로직을 확인해 봅시다:
 
 <code-example path="pipes/src/app/flying-heroes.component.ts" region="push" title="src/app/flying-heroes.component.ts" linenums="false">
 
 </code-example>
 
 
-
+<!--
 You add the hero into the `heroes` array.  The reference to the array hasn't changed.
 It's the same array. That's all Angular cares about. From its perspective, *same array, no change, no display update*.
 
@@ -457,14 +469,22 @@ If you *mutate* the array, no pipe is invoked and the display isn't updated;
 if you *replace* the array, the pipe executes and the display is updated.
 The Flying Heroes application extends the
 code with checkbox switches and additional displays to help you experience these effects.
+-->
+새 히어로는 `heroes` 배열의 항목으로 추가됩니다. 하지만 이 과정에 배열의 주소 자체는 변경되지 않습니다. 그러면 Angular는 이렇게 판단합니다. *배열의 주소는 바뀌지 않았으니, 뷰를 업데이트 할 필요는 없다*.
 
+이 문제를 수정하려면 배열에 히어로를 추가할 때 기존에 있던 배열에 새 히어로를 추가해서 새로운 배열을 구성하고, 이 배열로 `heroes` 프로퍼티 값을 할당해야 합니다.
+그러면 참조하던 배열이 바뀌었기 때문에 Angular의 동작 감지 로직이 제대로 동작합니다.
+그래서 새로운 배열에 파이프가 적용되고, 하늘을 날 수 있는 히어로만 화면에 표시됩니다.
+
+요약하자면, 배열 자체를 새로 할당하지 않으면 파이프도 적용되지 않고 화면도 갱신되지 않습니다.
+이 문제를 수정하고 체크박스를 추가해서 사용자가 사용하기에 좀 더 편하게 개선하면 다음과 같은 구현할 수 있습니다.
 
 <figure>
   <img src='generated/images/guide/pipes/flying-heroes-anim.gif' alt="Flying Heroes">
 </figure>
 
 
-
+<!--
 Replacing the array is an efficient way to signal Angular to update the display.
 When do you replace the array? When the data change.
 That's an easy rule to follow in *this* example
@@ -479,27 +499,53 @@ Strive to keep the component class independent of the HTML.
 The component should be unaware of pipes.
 
 For filtering flying heroes, consider an *impure pipe*.
+-->
+뷰를 확실하게 갱신하려면 뷰에서 참조하는 배열을 새로운 배열로 교체하는 것이 좋습니다.
+배열은 언제 교체해야 할까요? 물론 데이터가 변경되었을 때 교체해야 합니다.
+그래서 이 예제는 히어로가 추가되어 데이터가 변경되었을 때만 배열을 교체합니다.
 
+하지만 애플리케이션에서 다루는 데이터가 많아질수록, 이 데이터가 언제 변경되는지 일일이 추적하기는 어려워 집니다.
+그리고 컴포넌트 단위에서 보면 데이터가 변경되는 것을 추적할 수 없는 경우도 있습니다.
+그래서 파이프와 컴포넌트의 관계는 긴밀하지 연결하지 않는 것이 좋습니다.
+컴포넌트 클래스는 HTML 템플릿과 최대한 분리하세요.
+컴포넌트 자체는 파이프의 영향을 받지 않을 수록 좋습니다.
 
+이런 내용을 염두에 두면, *순수하지 않은 파이프* 를 활용하는 것을 고려할 수도 있습니다.
 
+{@a pure-impure-pipe}
+
+<!--
 ## Pure and impure pipes
+-->
+## 순수한(pure) 파이프, 순수하지 않은(impure) 파이프
 
+<!--
 There are two categories of pipes: *pure* and *impure*.
 Pipes are pure by default. Every pipe you've seen so far has been pure.
 You make a pipe impure by setting its pure flag to false. You could make the `FlyingHeroesPipe`
 impure like this:
-
+-->
+파이프는 *순수한* 파이프와 *순수하지 않은* 파이프가 있습니다.
+따로 설정하지 않으면 순수한 파이프가 기본입니다. 지금까지 살펴본 파이프도 모두 순수한 파이프였습니다.
+하지만 `pure` 값을 `false`로 설정하면 순수하지 않은 파이프를 구현할 수 있습니다.
+예를 들어 `FlyingHeroesPipe`에는 다음과 같이 적용할 수 있습니다:
 
 <code-example path="pipes/src/app/flying-heroes.pipe.ts" region="pipe-decorator" title="src/app/flying-heroes.pipe.ts" linenums="false">
 
 </code-example>
 
 
-
+<!--
 Before doing that, understand the difference between pure and impure, starting with a pure pipe.
+-->
+순수하지 않은 파이프의 동작을 확인하기 전에, 순수한 파이프와 어떻게 다른지 알아보기 위해 순수한 파이프부터 확인해 봅시다.
 
+<!--
 <h3 class="no-toc">Pure pipes</h3>
+-->
+<h3 class="no-toc">순수한 파이프</h3>
 
+<!--
 Angular executes a *pure pipe* only when it detects a *pure change* to the input value.
 A pure change is either a change to a primitive input value (`String`, `Number`, `Boolean`, `Symbol`)
 or a changed object reference (`Date`, `Array`, `Function`, `Object`).
@@ -514,37 +560,66 @@ pipe execution and a view update.
 
 For this reason, a pure pipe is preferable when you can live with the change detection strategy.
 When you can't, you *can* use the impure pipe.
+-->
+*순수한 파이프*는 파이프에 전달되는 값이 *순수하게 바뀌었을* 때만 동작합니다.
+이 때 값이 순수하게 바뀌었다는 것은 기본 자료형(`String`, `Number`, `Boolean`, `Symbol`)의 값이 바뀌었거나, 객체(`Date`, `Array`, `Function`, `Object`)를 참조하는 주소가 바뀐 것을 의미합니다.
 
+그리고 이 모드에서는 객체 안에서 일어나는 변화를 감지하지 않습니다.
+그래서 Date 객체의 일부 요소가 바뀐다던가, 배열에 항목이 추가된다던가, 객체의 프로퍼티값이 변경되는 것에는 반응하지 않습니다.
+
+동작이 조금 이상해보이기도 하지만, 이 방식은 실행속도가 빠릅니다.
+왜냐하면 객체를 내부까지 모두 검사하는 것보다 참조하는 객체가 바뀌었는지만 검사하는 것이 당연히 빠르기 때문입니다.
+그래서 파이프를 실행하거나 뷰를 업데이트해야 할지 Angular가 판단할 때는 이 방식으로 동작합니다.
+
+기본 변화 감지 정책으로도 원하는 변화를 감지할 수 있다면 순수한 파이프를 사용하는 것으로 충분합니다.
+하지만 순수하지 않은 파이프를 사용해야만 하는 경우도 있습니다.
 
 <div class="l-sub-section">
 
 
-
+<!--
 Or you might not use a pipe at all.
 It may be better to pursue the pipe's purpose with a property of the component,
 a point that's discussed later in this page.
-
+-->
+파이프를 아예 사용하지 않는 방법을 택할 수도 있습니다.
+때로는 컴포넌트의 프로퍼티를 직접 조작하는 것이 파이프를 사용하는 것보다 나은 경우도 있습니다.
+이 내용은 이 문서 아래쪽에서 자세하게 알아봅니다.
 
 </div>
 
 
-
+<!--
 <h3 class="no-toc">Impure pipes</h3>
+-->
+<h3 class="no-toc">순수하지 않은 파이프</h3>
 
+<!--
 Angular executes an *impure pipe*  during every component change detection cycle.
 An impure pipe is called often, as often as every keystroke or mouse-move.
 
 With that concern in mind, implement an impure pipe with great care.
 An expensive, long-running pipe could destroy the user experience.
+-->
+*순수하지 않은 파이프*를 사용하면 컴포넌트의 변화 감지 싸이클마다 파이프 로직을 다시 실행합니다.
+그래서 어쩌면 키 입력이 있을때마다, 마우스가 움직일 때마다 파이프 로직이 계속 실행될 수도 있습니다.
 
+그렇기 때문에 순수하지 않은 파이프는 조심해서 사용해야 합니다.
+파이프 로직을 실행하는 데 오래 걸리면 사용자가 체감하는 앱 성능이 저하될 수 있습니다.
 
 {@a impure-flying-heroes}
 
-
+<!--
 <h3 class="no-toc">An impure <i>FlyingHeroesPipe</i></h3>
+-->
+<h3 class="no-toc">순수하지 않은 <i>FlyingHeroesPipe</i></h3>
 
+<!--
 A flip of the switch turns the `FlyingHeroesPipe` into a `FlyingHeroesImpurePipe`.
 The complete implementation is as follows:
+-->
+`FlyingHeroesPipe`를 상속받아서 순수하지 않은 파이프로 동작하는 `FlyingHeroesImpurePipe`를 만들어 봅시다.
+이 파이프는 다음과 같이 구현합니다.
 
 <code-tabs>
 
@@ -559,32 +634,40 @@ The complete implementation is as follows:
 </code-tabs>
 
 
-
+<!--
 You inherit from `FlyingHeroesPipe` to prove the point that nothing changed internally.
 The only difference is the `pure` flag in the pipe metadata.
 
 This is a good candidate for an impure pipe because the `transform` function is trivial and fast.
+-->
+파이프의 동작은 다른 것이 없기 때문에 `FlyingHeroesPipe`를 그대로 상속받았습니다.
+파이프 메타데이터에 `pure` 값을 지정했다는 것만 다릅니다.
 
+이렇게 만든 `FlyingHeroesImpurePipe`는 순수하지 않은 파이프지만, `transform` 함수의 로직은 순수한 파이프일 때와 마찬가지로 아주 간단하기 때문에 위에서 설명한 성능 저하는 크게 신경쓰지 않아도 됩니다.
 
 <code-example path="pipes/src/app/flying-heroes.pipe.ts" linenums="false" title="src/app/flying-heroes.pipe.ts (filter)" region="filter">
 
 </code-example>
 
 
-
+<!--
 You can derive a `FlyingHeroesImpureComponent` from `FlyingHeroesComponent`.
-
+-->
+그리고 `FlyingHeroesImpureComponent` 의 템플릿은 `FlyingHeroesComponent` 와 비슷하게 다음과 같이 구현합니다.
 
 <code-example path="pipes/src/app/flying-heroes-impure.component.html" linenums="false" title="src/app/flying-heroes-impure.component.html (excerpt)" region="template-flying-heroes">
 
 </code-example>
 
 
-
+<!--
 The only substantive change is the pipe in the template.
 You can confirm in the <live-example></live-example> that the _flying heroes_
 display updates as you add heroes, even when you mutate the `heroes` array.
-
+-->
+유일하게 다른 점은 템플릿에 적용된 파이프가 다르다는 것 뿐입니다.
+이 예제의 동작은 <live-example></live-example>에서 확인할 수 있습니다.
+앱을 실행하고 히어로를 추가하면, `heroes` 배열 자체가 변경되지 않아도 파이프는 제대로 동작합니다.
 
 {@a async-pipe}
 <h3 class="no-toc">The impure <i>AsyncPipe</i></h3>
@@ -721,10 +804,17 @@ Angular doesn't provide pipes for filtering or sorting lists.
 Developers familiar with AngularJS know these as `filter` and `orderBy`.
 There are no equivalents in Angular.
 
+<!--
 This isn't an oversight. Angular doesn't offer such pipes because
 they perform poorly and prevent aggressive minification.
 Both `filter` and `orderBy` require parameters that reference object properties.
 Earlier in this page, you learned that such pipes must be [impure](guide/pipes#pure-and-impure-pipes) and that
+Angular calls impure pipes in almost every change-detection cycle.
+-->
+This isn't an oversight. Angular doesn't offer such pipes because
+they perform poorly and prevent aggressive minification.
+Both `filter` and `orderBy` require parameters that reference object properties.
+Earlier in this page, you learned that such pipes must be [impure](guide/pipes#pure-impure-pipe) and that
 Angular calls impure pipes in almost every change-detection cycle.
 
 Filtering and especially sorting are expensive operations.
