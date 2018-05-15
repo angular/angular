@@ -29,6 +29,7 @@ export class InputDemo {
   hideRequiredMarker: boolean;
   ctrlDisabled = false;
   textareaNgModelValue: string;
+  textareaAutosizeEnabled = false;
   placeholderTestControl = new FormControl('', Validators.required);
 
   name: string;

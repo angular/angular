@@ -34,4 +34,12 @@ export class MatTextareaAutosize extends CdkTextareaAutosize {
   @Input()
   get matAutosizeMaxRows(): number { return this.maxRows; }
   set matAutosizeMaxRows(value: number) { this.maxRows = value; }
+
+  @Input('mat-autosize')
+  get matAutosize(): boolean { return this.enabled; }
+  set matAutosize(value: boolean) { this.enabled = value; }
+
+  @Input()
+  get matTextareaAutosize(): boolean { return this.enabled; }
+  set matTextareaAutosize(value: boolean) { this.enabled = value; }
 }

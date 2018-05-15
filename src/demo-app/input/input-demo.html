@@ -559,6 +559,12 @@
       Plain textarea with auto size
       <textarea cdkTextareaAutosize [(ngModel)]="textareaNgModelValue"></textarea>
     </label>
+
+    <h3>&lt;textarea&gt; with bindable autosize </h3>
+    <mat-checkbox [(ngModel)]="textareaAutosizeEnabled" name="autosizeEnabledCheckbox">
+      Autosize enabled
+    </mat-checkbox>
+    <textarea [cdkTextareaAutosize]="textareaAutosizeEnabled"></textarea>
   </mat-card-content>
 </mat-card>
 
