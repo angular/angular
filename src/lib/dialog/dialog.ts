@@ -17,7 +17,6 @@ import {
 import {ComponentPortal, ComponentType, PortalInjector, TemplatePortal} from '@angular/cdk/portal';
 import {Location} from '@angular/common';
 import {
-  ComponentRef,
   Inject,
   inject,
   Injectable,
@@ -210,9 +209,13 @@ export class MatDialog {
    * @returns A promise resolving to a ComponentRef for the attached container.
    */
   private _attachDialogContainer(overlay: OverlayRef, config: MatDialogConfig): MatDialogContainer {
-    let containerPortal = new ComponentPortal(MatDialogContainer, config.viewContainerRef);
-    let containerRef: ComponentRef<MatDialogContainer> = overlay.attach(containerPortal);
-    containerRef.instance._config = config;
+    const userInjector = config && config.viewContainerRef && config.viewContainerRef.injector;
+    const injector = new PortalInjector(userInjector || this._injector, new WeakMap([
+      [MatDialogConfig, config]
+    ]));
+    const containerPortal =
+        new ComponentPortal(MatDialogContainer, config.viewContainerRef, injector);
+    const containerRef = overlay.attach<MatDialogContainer>(containerPortal);
 
     return containerRef.instance;
   }
@@ -278,16 +281,16 @@ export class MatDialog {
       dialogContainer: MatDialogContainer): PortalInjector {
 
     const userInjector = config && config.viewContainerRef && config.viewContainerRef.injector;
-    const injectionTokens = new WeakMap();
 
     // The MatDialogContainer is injected in the portal as the MatDialogContainer and the dialog's
     // content are created out of the same ViewContainerRef and as such, are siblings for injector
     // purposes. To allow the hierarchy that is expected, the MatDialogContainer is explicitly
     // added to the injection tokens.
-    injectionTokens
-      .set(MatDialogContainer, dialogContainer)
-      .set(MAT_DIALOG_DATA, config.data)
-      .set(MatDialogRef, dialogRef);
+    const injectionTokens = new WeakMap<any, any>([
+      [MatDialogContainer, dialogContainer],
+      [MAT_DIALOG_DATA, config.data],
+      [MatDialogRef, dialogRef]
+    ]);
 
     if (!userInjector || !userInjector.get<Directionality | null>(Directionality, null)) {
       injectionTokens.set(Directionality, {

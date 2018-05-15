@@ -66,13 +66,13 @@ export class MatSnackBarContainer extends BasePortalOutlet implements OnDestroy 
   /** The state of the snack bar animations. */
   _animationState = 'void';
 
-  /** The snack bar configuration. */
-  snackBarConfig: MatSnackBarConfig;
-
   constructor(
     private _ngZone: NgZone,
     private _elementRef: ElementRef,
-    private _changeDetectorRef: ChangeDetectorRef) {
+    private _changeDetectorRef: ChangeDetectorRef,
+    /** The snack bar configuration. */
+    public snackBarConfig: MatSnackBarConfig) {
+
     super();
   }
 

@@ -22,7 +22,6 @@ import {isElementScrolledOutsideView, isElementClippedByScrolling} from './scrol
 import {coerceCssPixelValue} from '@angular/cdk/coercion';
 import {Platform} from '@angular/cdk/platform';
 
-
 // TODO: refactor clipping detection into a separate thing (part of scrolling module)
 // TODO: doesn't handle both flexible width and height when it has to scroll along both axis.
 

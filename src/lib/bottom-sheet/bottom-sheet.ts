@@ -103,9 +103,15 @@ export class MatBottomSheet {
    */
   private _attachContainer(overlayRef: OverlayRef,
                            config: MatBottomSheetConfig): MatBottomSheetContainer {
-    const containerPortal = new ComponentPortal(MatBottomSheetContainer, config.viewContainerRef);
+
+    const userInjector = config && config.viewContainerRef && config.viewContainerRef.injector;
+    const injector = new PortalInjector(userInjector || this._injector, new WeakMap([
+      [MatBottomSheetConfig, config]
+    ]));
+
+    const containerPortal =
+        new ComponentPortal(MatBottomSheetContainer, config.viewContainerRef, injector);
     const containerRef: ComponentRef<MatBottomSheetContainer> = overlayRef.attach(containerPortal);
-    containerRef.instance.bottomSheetConfig = config;
     return containerRef.instance;
   }
 
@@ -141,10 +147,10 @@ export class MatBottomSheet {
                              bottomSheetRef: MatBottomSheetRef<T>): PortalInjector {
 
     const userInjector = config && config.viewContainerRef && config.viewContainerRef.injector;
-    const injectionTokens = new WeakMap();
-
-    injectionTokens.set(MatBottomSheetRef, bottomSheetRef);
-    injectionTokens.set(MAT_BOTTOM_SHEET_DATA, config.data);
+    const injectionTokens = new WeakMap<any, any>([
+      [MatBottomSheetRef, bottomSheetRef],
+      [MAT_BOTTOM_SHEET_DATA, config.data]
+    ]);
 
     if (!userInjector || !userInjector.get<Directionality | null>(Directionality, null)) {
       injectionTokens.set(Directionality, {

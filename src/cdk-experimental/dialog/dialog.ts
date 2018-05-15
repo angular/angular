@@ -178,8 +178,12 @@ export class Dialog {
    */
   protected _attachDialogContainer(overlay: OverlayRef, config: DialogConfig): CdkDialogContainer {
     const container = config.containerComponent || this.injector.get(DIALOG_CONTAINER);
-    let containerPortal = new ComponentPortal(container, config.viewContainerRef);
-    let containerRef: ComponentRef<CdkDialogContainer> = overlay.attach(containerPortal);
+    const userInjector = config && config.viewContainerRef && config.viewContainerRef.injector;
+    const injector = new PortalInjector(userInjector || this.injector, new WeakMap([
+      [DialogConfig, config]
+    ]));
+    const containerPortal = new ComponentPortal(container, config.viewContainerRef, injector);
+    const containerRef: ComponentRef<CdkDialogContainer> = overlay.attach(containerPortal);
     containerRef.instance._config = config;
 
     return containerRef.instance;
@@ -259,12 +263,11 @@ export class Dialog {
       dialogContainer: CdkDialogContainer): PortalInjector {
 
     const userInjector = config && config.viewContainerRef && config.viewContainerRef.injector;
-    const injectionTokens = new WeakMap();
-
-    injectionTokens
-      .set(this.injector.get(DIALOG_REF), dialogRef)
-      .set(this.injector.get(DIALOG_CONTAINER), dialogContainer)
-      .set(DIALOG_DATA, config.data);
+    const injectionTokens = new WeakMap<any, any>([
+      [this.injector.get(DIALOG_REF), dialogRef],
+      [this.injector.get(DIALOG_CONTAINER), dialogContainer],
+      [DIALOG_DATA, config.data]
+    ]);
 
     if (!userInjector || !userInjector.get<Directionality | null>(Directionality, null)) {
       injectionTokens.set(Directionality, {

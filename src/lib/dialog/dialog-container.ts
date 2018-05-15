@@ -60,10 +60,10 @@ export function throwMatDialogContentAlreadyAttachedError() {
     'class': 'mat-dialog-container',
     'tabindex': '-1',
     '[attr.id]': '_id',
-    '[attr.role]': '_config?.role',
-    '[attr.aria-labelledby]': '_config?.ariaLabel ? null : _ariaLabelledBy',
-    '[attr.aria-label]': '_config?.ariaLabel',
-    '[attr.aria-describedby]': '_config?.ariaDescribedBy || null',
+    '[attr.role]': '_config.role',
+    '[attr.aria-labelledby]': '_config.ariaLabel ? null : _ariaLabelledBy',
+    '[attr.aria-label]': '_config.ariaLabel',
+    '[attr.aria-describedby]': '_config.ariaDescribedBy || null',
     '[@slideDialog]': '_state',
     '(@slideDialog.start)': '_onAnimationStart($event)',
     '(@slideDialog.done)': '_onAnimationDone($event)',
@@ -78,9 +78,6 @@ export class MatDialogContainer extends BasePortalOutlet {
 
   /** Element that was focused before the dialog was opened. Save this to restore upon close. */
   private _elementFocusedBeforeDialogWasOpened: HTMLElement | null = null;
-
-  /** The dialog configuration. */
-  _config: MatDialogConfig;
 
   /** State of the dialog animation. */
   _state: 'void' | 'enter' | 'exit' = 'enter';
@@ -98,7 +95,9 @@ export class MatDialogContainer extends BasePortalOutlet {
     private _elementRef: ElementRef,
     private _focusTrapFactory: FocusTrapFactory,
     private _changeDetectorRef: ChangeDetectorRef,
-    @Optional() @Inject(DOCUMENT) private _document: any) {
+    @Optional() @Inject(DOCUMENT) private _document: any,
+    /** The dialog configuration. */
+    public _config: MatDialogConfig) {
 
     super();
   }
