@@ -4,7 +4,7 @@ import {
   NgModuleRef,
   Type
 } from '@angular/core';
-import {TestBed, fakeAsync, tick} from '@angular/core/testing';
+import { TestBed, fakeAsync, flushMicrotasks } from '@angular/core/testing';
 
 import { ElementsLoader } from './elements-loader';
 import { ELEMENT_MODULE_PATHS_TOKEN, WithCustomElementComponent } from './element-registry';
@@ -31,22 +31,10 @@ const FAKE_COMPONENT_FACTORIES = new Map([
   ['element-b-module-path', new FakeComponentFactory('element-b-input')],
 ]);
 
+const SOME_FUNCTION = jasmine.any(Function);
+
 describe('ElementsLoader', () => {
   let elementsLoader: ElementsLoader;
-  let actualCustomElementsDefine;
-  let fakeCustomElementsDefine;
-
-  // ElementsLoader uses the window's customElements API. Provide a fake for this test.
-  beforeEach(() => {
-    actualCustomElementsDefine = window.customElements.define;
-
-    fakeCustomElementsDefine = jasmine.createSpy('define');
-
-    window.customElements.define = fakeCustomElementsDefine;
-  });
-  afterEach(() => {
-    window.customElements.define = actualCustomElementsDefine;
-  });
 
   beforeEach(() => {
     const injector = TestBed.configureTestingModule({
@@ -63,63 +51,213 @@ describe('ElementsLoader', () => {
     elementsLoader = injector.get(ElementsLoader);
   });
 
-  it('should be able to register an element', fakeAsync(() => {
-    // Verify that the elements loader considered `element-a-selector` to be unregistered.
-    expect(elementsLoader.elementsToLoad.has('element-a-selector')).toBeTruthy();
+  describe('loadContainingCustomElements()', () => {
+    let loadCustomElementSpy: jasmine.Spy;
 
-    const hostEl = document.createElement('div');
-    hostEl.innerHTML = `<element-a-selector></element-a-selector>`;
+    beforeEach(() => loadCustomElementSpy = spyOn(elementsLoader, 'loadCustomElement'));
 
-    elementsLoader.loadContainingCustomElements(hostEl);
-    tick();
+    it('should load and register all contained elements', fakeAsync(() => {
+      expect(loadCustomElementSpy).not.toHaveBeenCalled();
 
-    const defineArgs = fakeCustomElementsDefine.calls.argsFor(0);
-    expect(defineArgs[0]).toBe('element-a-selector');
+      const hostEl = document.createElement('div');
+      hostEl.innerHTML = `
+        <element-a-selector></element-a-selector>
+        <element-b-selector></element-b-selector>
+      `;
 
-    // Verify the right component was loaded/created
-    expect(defineArgs[1].observedAttributes[0]).toBe('element-a-input');
+      elementsLoader.loadContainingCustomElements(hostEl);
+      flushMicrotasks();
 
-    expect(elementsLoader.elementsToLoad.has('element-a-selector')).toBeFalsy();
-  }));
+      expect(loadCustomElementSpy).toHaveBeenCalledTimes(2);
+      expect(loadCustomElementSpy).toHaveBeenCalledWith('element-a-selector');
+      expect(loadCustomElementSpy).toHaveBeenCalledWith('element-b-selector');
+    }));
 
-  it('should be able to register multiple elements', fakeAsync(() => {
-    // Verify that the elements loader considered `element-a-selector` to be unregistered.
-    expect(elementsLoader.elementsToLoad.has('element-a-selector')).toBeTruthy();
+    it('should load and register only contained elements', fakeAsync(() => {
+      expect(loadCustomElementSpy).not.toHaveBeenCalled();
 
-    const hostEl = document.createElement('div');
-    hostEl.innerHTML = `
-      <element-a-selector></element-a-selector>
-      <element-b-selector></element-b-selector>
-    `;
+      const hostEl = document.createElement('div');
+      hostEl.innerHTML = `
+        <element-b-selector></element-b-selector>
+      `;
 
-    elementsLoader.loadContainingCustomElements(hostEl);
-    tick();
+      elementsLoader.loadContainingCustomElements(hostEl);
+      flushMicrotasks();
 
-    const defineElementA = fakeCustomElementsDefine.calls.argsFor(0);
-    expect(defineElementA[0]).toBe('element-a-selector');
-    expect(defineElementA[1].observedAttributes[0]).toBe('element-a-input');
-    expect(elementsLoader.elementsToLoad.has('element-a-selector')).toBeFalsy();
+      expect(loadCustomElementSpy).toHaveBeenCalledTimes(1);
+      expect(loadCustomElementSpy).toHaveBeenCalledWith('element-b-selector');
+    }));
 
-    const defineElementB = fakeCustomElementsDefine.calls.argsFor(1);
-    expect(defineElementB[0]).toBe('element-b-selector');
-    expect(defineElementB[1].observedAttributes[0]).toBe('element-b-input');
-    expect(elementsLoader.elementsToLoad.has('element-b-selector')).toBeFalsy();
-  }));
+    it('should wait for all contained elements to load and register', fakeAsync(() => {
+      const deferreds: {resolve: () => void, reject: (err: any) => void}[] = [];
+      loadCustomElementSpy.and.returnValues(
+        new Promise((resolve, reject) => deferreds.push({resolve, reject})),
+        new Promise((resolve, reject) => deferreds.push({resolve, reject})),
+      );
 
-  it('should only register an element one time', fakeAsync(() => {
-    const hostEl = document.createElement('div');
-    hostEl.innerHTML = `<element-a-selector></element-a-selector>`;
+      const hostEl = document.createElement('div');
+      hostEl.innerHTML = `
+        <element-a-selector></element-a-selector>
+        <element-b-selector></element-b-selector>
+      `;
 
-    elementsLoader.loadContainingCustomElements(hostEl);
-    tick(); // Tick for the module factory loader's async `load` function
+      const log: any[] = [];
+      elementsLoader.loadContainingCustomElements(hostEl).subscribe(
+        v => log.push(`emitted: ${v}`),
+        e => log.push(`errored: ${e}`),
+        () => log.push('completed'),
+      );
 
-    // Call again to to check how many times customElements.define was called.
-    elementsLoader.loadContainingCustomElements(hostEl);
-    tick(); // Tick for the module factory loader's async `load` function
+      flushMicrotasks();
+      expect(log).toEqual([]);
 
-    // Should have only been called once, since the second load would not query for element-a
-    expect(window.customElements.define).toHaveBeenCalledTimes(1);
-  }));
+      deferreds[0].resolve();
+      flushMicrotasks();
+      expect(log).toEqual([]);
+
+      deferreds[1].resolve();
+      flushMicrotasks();
+      expect(log).toEqual(['emitted: undefined', 'completed']);
+    }));
+
+    it('should fail if any of the contained elements fails to load and register', fakeAsync(() => {
+      const deferreds: {resolve: () => void, reject: (err: any) => void}[] = [];
+      loadCustomElementSpy.and.returnValues(
+        new Promise((resolve, reject) => deferreds.push({resolve, reject})),
+        new Promise((resolve, reject) => deferreds.push({resolve, reject})),
+      );
+
+      const hostEl = document.createElement('div');
+      hostEl.innerHTML = `
+        <element-a-selector></element-a-selector>
+        <element-b-selector></element-b-selector>
+      `;
+
+      const log: any[] = [];
+      elementsLoader.loadContainingCustomElements(hostEl).subscribe(
+        v => log.push(`emitted: ${v}`),
+        e => log.push(`errored: ${e}`),
+        () => log.push('completed'),
+      );
+
+      flushMicrotasks();
+      expect(log).toEqual([]);
+
+      deferreds[0].resolve();
+      flushMicrotasks();
+      expect(log).toEqual([]);
+
+      deferreds[1].reject('foo');
+      flushMicrotasks();
+      expect(log).toEqual(['errored: foo']);
+    }));
+  });
+
+  describe('loadCustomElement()', () => {
+    const customElementsDescriptor = Object.getOwnPropertyDescriptor(window, 'customElements')!;
+    let mockCustomElements: jasmine.SpyObj<typeof window.customElements>;
+    let whenDefinedDeferreds: {resolve: () => void, reject: (err: any) => void}[];
+
+    // `loadCustomElement()` uses the `window.customElements` API. Provide a mock for this test.
+    beforeEach(() => {
+      whenDefinedDeferreds = [];
+
+      mockCustomElements = jasmine.createSpyObj('customElements', ['define', 'whenDefined']);
+      mockCustomElements.whenDefined.and.callFake(() =>
+        new Promise((resolve, reject) => whenDefinedDeferreds.push({resolve, reject})));
+
+      Object.defineProperty(window, 'customElements', {
+        configurable: true,
+        enumerable: true,
+        value: mockCustomElements,
+      });
+    });
+    afterEach(() => Object.defineProperty(window, 'customElements', customElementsDescriptor));
+
+    it('should be able to load and register an element', fakeAsync(() => {
+      elementsLoader.loadCustomElement('element-a-selector');
+      flushMicrotasks();
+
+      expect(mockCustomElements.define).toHaveBeenCalledTimes(1);
+      expect(mockCustomElements.define).toHaveBeenCalledWith('element-a-selector', SOME_FUNCTION);
+
+      // Verify the right component was loaded/registered.
+      const Ctor = mockCustomElements.define.calls.argsFor(0)[1];
+      expect(Ctor.observedAttributes).toEqual(['element-a-input']);
+    }));
+
+    it('should wait until the element is defined', fakeAsync(() => {
+      let state = 'pending';
+      elementsLoader.loadCustomElement('element-b-selector').then(() => state = 'resolved');
+      flushMicrotasks();
+
+      expect(state).toBe('pending');
+      expect(mockCustomElements.whenDefined).toHaveBeenCalledTimes(1);
+      expect(mockCustomElements.whenDefined).toHaveBeenCalledWith('element-b-selector');
+
+      whenDefinedDeferreds[0].resolve();
+      flushMicrotasks();
+      expect(state).toBe('resolved');
+    }));
+
+    it('should not load and register the same element more than once', fakeAsync(() => {
+      elementsLoader.loadCustomElement('element-a-selector');
+      flushMicrotasks();
+      expect(mockCustomElements.define).toHaveBeenCalledTimes(1);
+
+      mockCustomElements.define.calls.reset();
+
+      // While loading/registering is still in progress:
+      elementsLoader.loadCustomElement('element-a-selector');
+      flushMicrotasks();
+      expect(mockCustomElements.define).not.toHaveBeenCalled();
+
+      mockCustomElements.define.calls.reset();
+      whenDefinedDeferreds[0].resolve();
+
+      // Once loading/registering is already completed:
+      let state = 'pending';
+      elementsLoader.loadCustomElement('element-a-selector').then(() => state = 'resolved');
+      flushMicrotasks();
+      expect(state).toBe('resolved');
+      expect(mockCustomElements.define).not.toHaveBeenCalled();
+    }));
+
+    it('should fail if defining the the custom element fails', fakeAsync(() => {
+      let state = 'pending';
+      elementsLoader.loadCustomElement('element-b-selector').catch(e => state = `rejected: ${e}`);
+      flushMicrotasks();
+      expect(state).toBe('pending');
+
+      whenDefinedDeferreds[0].reject('foo');
+      flushMicrotasks();
+      expect(state).toBe('rejected: foo');
+    }));
+
+    it('should be able to load and register an element again if previous attempt failed',
+      fakeAsync(() => {
+        elementsLoader.loadCustomElement('element-a-selector');
+        flushMicrotasks();
+        expect(mockCustomElements.define).toHaveBeenCalledTimes(1);
+
+        mockCustomElements.define.calls.reset();
+
+        // While loading/registering is still in progress:
+        elementsLoader.loadCustomElement('element-a-selector').catch(() => undefined);
+        flushMicrotasks();
+        expect(mockCustomElements.define).not.toHaveBeenCalled();
+
+        whenDefinedDeferreds[0].reject('foo');
+        flushMicrotasks();
+        expect(mockCustomElements.define).not.toHaveBeenCalled();
+
+        // Once loading/registering has already failed:
+        elementsLoader.loadCustomElement('element-a-selector');
+        flushMicrotasks();
+        expect(mockCustomElements.define).toHaveBeenCalledTimes(1);
+      })
+    );
+  });
 });
 
 // TEST CLASSES/HELPERS
