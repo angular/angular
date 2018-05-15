@@ -26,12 +26,12 @@
   margin: 16px 0;
 
   .mat-accordion > &:first-child,
-  .mat-accordion > *:first-child & {
+  .mat-accordion > *:first-child:not(.mat-expansion-panel) & {
     margin-top: 0;
   }
 
   .mat-accordion > &:last-child,
-  .mat-accordion > *:last-child & {
+  .mat-accordion > *:last-child:not(.mat-expansion-panel) & {
     margin-bottom: 0;
   }
 }
