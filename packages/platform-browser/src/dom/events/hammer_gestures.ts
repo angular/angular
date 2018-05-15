@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Inject, Injectable, InjectionToken, ɵConsole as Console} from '@angular/core';
+import {Inject, Injectable, InjectionToken, Optional, ɵConsole as Console} from '@angular/core';
 
 import {DOCUMENT} from '../dom_tokens';
 
@@ -58,6 +58,13 @@ const EVENT_NAMES = {
  */
 export const HAMMER_GESTURE_CONFIG = new InjectionToken<HammerGestureConfig>('HammerGestureConfig');
 
+
+/** Function that loads HammerJS, returning a promise that is resolved once HammerJs is loaded. */
+export type HammerLoader = (() => Promise<void>) | null;
+
+/** Injection token used to provide a {@link HammerLoader} to Angular. */
+export const HAMMER_LOADER = new InjectionToken<HammerLoader>('HammerLoader');
+
 export interface HammerInstance {
   on(eventName: string, callback?: Function): void;
   off(eventName: string, callback?: Function): void;
@@ -99,8 +106,8 @@ export class HammerGestureConfig {
 export class HammerGesturesPlugin extends EventManagerPlugin {
   constructor(
       @Inject(DOCUMENT) doc: any,
-      @Inject(HAMMER_GESTURE_CONFIG) private _config: HammerGestureConfig,
-      private console: Console) {
+      @Inject(HAMMER_GESTURE_CONFIG) private _config: HammerGestureConfig, private console: Console,
+      @Optional() @Inject(HAMMER_LOADER) private loader?: HammerLoader) {
     super(doc);
   }
 
@@ -109,8 +116,10 @@ export class HammerGesturesPlugin extends EventManagerPlugin {
       return false;
     }
 
-    if (!(window as any).Hammer) {
-      this.console.warn(`Hammer.js is not loaded, can not bind '${eventName}' event.`);
+    if (!(window as any).Hammer && !this.loader) {
+      this.console.warn(
+          `The "${eventName}" event cannot be bound because Hammer.JS is not ` +
+          `loaded and no custom loader has been specified.`);
       return false;
     }
 
@@ -120,6 +129,44 @@ export class HammerGesturesPlugin extends EventManagerPlugin {
   addEventListener(element: HTMLElement, eventName: string, handler: Function): Function {
     const zone = this.manager.getZone();
     eventName = eventName.toLowerCase();
+
+    // If Hammer is not present but a loader is specified, we defer adding the event listener
+    // until Hammer is loaded.
+    if (!(window as any).Hammer && this.loader) {
+      // This `addEventListener` method returns a function to remove the added listener.
+      // Until Hammer is loaded, the returned function needs to *cancel* the registration rather
+      // than remove anything.
+      let cancelRegistration = false;
+      let deregister: Function = () => { cancelRegistration = true; };
+
+      this.loader()
+          .then(() => {
+            // If Hammer isn't actually loaded when the custom loader resolves, give up.
+            if (!(window as any).Hammer) {
+              this.console.warn(
+                  `The custom HAMMER_LOADER completed, but Hammer.JS is not present.`);
+              deregister = () => {};
+              return;
+            }
+
+            if (!cancelRegistration) {
+              // Now that Hammer is loaded and the listener is being loaded for real,
+              // the deregistration function changes from canceling registration to removal.
+              deregister = this.addEventListener(element, eventName, handler);
+            }
+          })
+          .catch(() => {
+            this.console.warn(
+                `The "${eventName}" event cannot be bound because the custom ` +
+                `Hammer.JS loader failed.`);
+            deregister = () => {};
+          });
+
+      // Return a function that *executes* `deregister` (and not `deregister` itself) so that we
+      // can change the behavior of `deregister` once the listener is added. Using a closure in
+      // this way allows us to avoid any additional data structures to track listener removal.
+      return () => { deregister(); };
+    }
 
     return zone.runOutsideAngular(() => {
       // Creating the manager bind events, must be done outside of angular
