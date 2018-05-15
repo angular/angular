@@ -33,7 +33,7 @@ export class Identifiers {
 
   static text: o.ExternalReference = {name: 'ɵT', moduleName: CORE};
 
-  static textCreateBound: o.ExternalReference = {name: 'ɵt', moduleName: CORE};
+  static textBinding: o.ExternalReference = {name: 'ɵt', moduleName: CORE};
 
   static bind: o.ExternalReference = {name: 'ɵb', moduleName: CORE};
 
