@@ -30,7 +30,7 @@ $mat-tab-animation-duration: 500ms !default;
     cursor: default;
   }
 
-  &.mat-tab-label-content {
+  .mat-tab-label-content {
     display: inline-flex;
     justify-content: center;
     align-items: center;
