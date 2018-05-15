@@ -292,7 +292,8 @@ export class MatDialog {
       [MatDialogRef, dialogRef]
     ]);
 
-    if (!userInjector || !userInjector.get<Directionality | null>(Directionality, null)) {
+    if (config.direction &&
+        (!userInjector || !userInjector.get<Directionality | null>(Directionality, null))) {
       injectionTokens.set(Directionality, {
         value: config.direction,
         change: observableOf()

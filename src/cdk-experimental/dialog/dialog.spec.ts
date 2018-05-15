@@ -522,6 +522,14 @@ describe('Dialog', () => {
     expect(dialogRef.componentInstance.directionality.value).toBe('rtl');
   });
 
+  it('should fall back to injecting the global direction if none is passed by the config', () => {
+    const dialogRef = dialog.openFromComponent(PizzaMsg, {});
+
+    viewContainerFixture.detectChanges();
+
+    expect(dialogRef.componentInstance.directionality.value).toBe('ltr');
+  });
+
   it('should close all of the dialogs', fakeAsync(() => {
     dialog.openFromComponent(PizzaMsg);
     dialog.openFromComponent(PizzaMsg);

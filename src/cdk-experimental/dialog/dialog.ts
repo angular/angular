@@ -269,7 +269,8 @@ export class Dialog {
       [DIALOG_DATA, config.data]
     ]);
 
-    if (!userInjector || !userInjector.get<Directionality | null>(Directionality, null)) {
+    if (config.direction &&
+        (!userInjector || !userInjector.get<Directionality | null>(Directionality, null))) {
       injectionTokens.set(Directionality, {
         value: config.direction,
         change: observableOf()

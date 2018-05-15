@@ -627,12 +627,12 @@ export class MatDrawerContainer implements AfterContentInit, DoCheck, OnDestroy 
     this._right = this._left = null;
 
     // Detect if we're LTR or RTL.
-    if (!this._dir || this._dir.value == 'ltr') {
-      this._left = this._start;
-      this._right = this._end;
-    } else {
+    if (this._dir && this._dir.value === 'rtl') {
       this._left = this._end;
       this._right = this._start;
+    } else {
+      this._left = this._start;
+      this._right = this._end;
     }
   }
 
