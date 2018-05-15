@@ -422,6 +422,31 @@ describe('MatSnackBar', () => {
         .toContain('custom-class', 'Expected class applied through the defaults to be applied.');
   }));
 
+  it('should position the snack bar correctly if no default position is defined', fakeAsync(() => {
+    overlayContainer.ngOnDestroy();
+    viewContainerFixture.destroy();
+
+    TestBed
+      .resetTestingModule()
+      .overrideProvider(MAT_SNACK_BAR_DEFAULT_OPTIONS, {
+        deps: [],
+        useFactory: () => ({politeness: 'polite'})
+      })
+      .configureTestingModule({imports: [MatSnackBarModule, NoopAnimationsModule]})
+      .compileComponents();
+
+    inject([MatSnackBar, OverlayContainer], (sb: MatSnackBar, oc: OverlayContainer) => {
+      snackBar = sb;
+      overlayContainer = oc;
+      overlayContainerElement = oc.getContainerElement();
+    })();
+
+    const snackBarRef = snackBar.open(simpleMessage);
+    flush();
+
+    expect(snackBarRef.containerInstance._animationState).toBe('visible-bottom');
+  }));
+
   describe('with custom component', () => {
     it('should open a custom component', () => {
       const snackBarRef = snackBar.openFromComponent(BurritosNotification);

@@ -149,7 +149,7 @@ export class MatSnackBar {
   private _attach<T>(content: ComponentType<T> | TemplateRef<T>, userConfig?: MatSnackBarConfig):
     MatSnackBarRef<T | EmbeddedViewRef<any>> {
 
-    const config = {...this._defaultConfig, ...userConfig};
+    const config = {...new MatSnackBarConfig(), ...this._defaultConfig, ...userConfig};
     const overlayRef = this._createOverlay(config);
     const container = this._attachSnackBarContainer(overlayRef, config);
     const snackBarRef = new MatSnackBarRef<T | EmbeddedViewRef<any>>(container, overlayRef);
