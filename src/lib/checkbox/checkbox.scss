@@ -3,6 +3,7 @@
 @import '../core/style/checkbox-common';
 @import '../core/ripple/ripple';
 @import '../core/style/layout-common';
+@import '../core/style/noop-animation';
 
 // Manual calculation done on SVG
 $_mat-checkbox-mark-path-length: 22.910259;
@@ -179,6 +180,8 @@ $_mat-checkbox-mark-stroke-size: 2 / 15 * $mat-checkbox-size !default;
 }
 
 .mat-checkbox {
+  @include _noop-animation();
+
   // Animation
   transition: background $swift-ease-out-duration $swift-ease-out-timing-function,
               mat-elevation-transition-property-value();
@@ -234,6 +237,10 @@ $_mat-checkbox-mark-stroke-size: 2 / 15 * $mat-checkbox-size !default;
     width: $mat-checkbox-border-width;
     style: solid;
   }
+
+  ._mat-animation-noopable & {
+    transition: none;
+  }
 }
 
 .mat-checkbox-background {
@@ -245,6 +252,10 @@ $_mat-checkbox-mark-stroke-size: 2 / 15 * $mat-checkbox-size !default;
   transition: background-color $mat-checkbox-transition-duration
                   $mat-linear-out-slow-in-timing-function,
               opacity $mat-checkbox-transition-duration $mat-linear-out-slow-in-timing-function;
+
+  ._mat-animation-noopable & {
+    transition: none;
+  }
 }
 
 .mat-checkbox-checkmark {

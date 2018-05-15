@@ -39,6 +39,7 @@ import {
   RippleRef,
 } from '@angular/material/core';
 import {MAT_CHECKBOX_CLICK_ACTION, MatCheckboxClickAction} from './checkbox-config';
+import {ANIMATION_MODULE_TYPE} from '@angular/platform-browser/animations';
 
 
 // Increasing integer for generating unique ids for checkbox components.
@@ -108,6 +109,7 @@ export const _MatCheckboxMixinBase =
     '[class.mat-checkbox-checked]': 'checked',
     '[class.mat-checkbox-disabled]': 'disabled',
     '[class.mat-checkbox-label-before]': 'labelPosition == "before"',
+    '[class._mat-animation-noopable]': `_animationMode === 'NoopAnimations'`,
   },
   providers: [MAT_CHECKBOX_CONTROL_VALUE_ACCESSOR],
   inputs: ['disableRipple', 'color', 'tabIndex'],
@@ -184,7 +186,8 @@ export class MatCheckbox extends _MatCheckboxMixinBase implements ControlValueAc
               private _focusMonitor: FocusMonitor,
               @Attribute('tabindex') tabIndex: string,
               @Optional() @Inject(MAT_CHECKBOX_CLICK_ACTION)
-                  private _clickAction: MatCheckboxClickAction) {
+                  private _clickAction: MatCheckboxClickAction,
+              @Optional() @Inject(ANIMATION_MODULE_TYPE) public _animationMode?: string) {
     super(elementRef);
 
     this.tabIndex = parseInt(tabIndex) || 0;
@@ -322,7 +325,11 @@ export class MatCheckbox extends _MatCheckboxMixinBase implements ControlValueAc
     if (!this._focusRipple && focusOrigin === 'keyboard') {
       this._focusRipple = this.ripple.launch(0, 0, {persistent: true});
     } else if (!focusOrigin) {
-      this._removeFocusRipple();
+      if (this._focusRipple) {
+        this._focusRipple.fadeOut();
+        this._focusRipple = null;
+      }
+
       this._onTouched();
     }
   }
@@ -390,6 +397,11 @@ export class MatCheckbox extends _MatCheckboxMixinBase implements ControlValueAc
 
   private _getAnimationClassForCheckStateTransition(
       oldState: TransitionCheckState, newState: TransitionCheckState): string {
+    // Don't transition if animations are disabled.
+    if (this._animationMode === 'NoopAnimations') {
+      return '';
+    }
+
     let animSuffix: string = '';
 
     switch (oldState) {
@@ -419,13 +431,5 @@ export class MatCheckbox extends _MatCheckboxMixinBase implements ControlValueAc
     }
 
     return `mat-checkbox-anim-${animSuffix}`;
-  }
-
-  /** Fades out the focus state ripple. */
-  private _removeFocusRipple(): void {
-    if (this._focusRipple) {
-      this._focusRipple.fadeOut();
-      this._focusRipple = null;
-    }
   }
 }
