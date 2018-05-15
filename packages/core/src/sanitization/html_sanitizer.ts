@@ -141,13 +141,13 @@ class SanitizingHtmlSerializer {
     const elAttrs = element.attributes;
     for (let i = 0; i < elAttrs.length; i++) {
       const elAttr = elAttrs.item(i);
-      const attrName = elAttr.name;
+      const attrName = elAttr !.name;
       const lower = attrName.toLowerCase();
       if (!VALID_ATTRS.hasOwnProperty(lower)) {
         this.sanitizedSomething = true;
         continue;
       }
-      let value = elAttr.value;
+      let value = elAttr !.value;
       // TODO(martinprobst): Special case image URIs for data:image/...
       if (URI_ATTRS[lower]) value = _sanitizeUrl(value);
       if (SRCSET_ATTRS[lower]) value = sanitizeSrcset(value);
