@@ -192,24 +192,31 @@ API Reference page.
 </div>
 
 
-
+<!--
 ## Chaining pipes
+-->
+## 파이프 체이닝
 
+<!--
 You can chain pipes together in potentially useful combinations.
 In the following example, to display the birthday in uppercase,
 the birthday is chained to the `DatePipe` and on to the `UpperCasePipe`.
 The birthday displays as **<samp>APR 15, 1988</samp>**.
-
+-->
+파이프는 체이닝해서 여러 파이프를 한 번에 적용할 수도 있습니다.
+아래 예제는 생년월일을 `DatePipe`로 처리한 후에 `UpperasePipe`로 다시 한 번 처리해서 최종 결과를 대문자로 표시합니다.
+최종 결과는 **<samp>APR 15, 1988</samp>**와 같이 표시됩니다.
 
 <code-example path="pipes/src/app/app.component.html" region="chained-birthday" title="src/app/app.component.html" linenums="false">
 
 </code-example>
 
 
-
+<!--
 This example&mdash;which displays **<samp>FRIDAY, APRIL 15, 1988</samp>**&mdash;chains
 the same pipes as above, but passes in a parameter to `date` as well.
-
+-->
+같은 방식으로 파이프를 체이닝하면서 `date` 파이프에 인자를 전달하면 **<samp>FRIDAY, APRIL 15, 1988</samp>**와 같은 형식으로도 표현할 수 있습니다.
 
 <code-example path="pipes/src/app/app.component.html" region="chained-parameter-birthday" title="src/app/app.component.html" linenums="false">
 
@@ -217,19 +224,24 @@ the same pipes as above, but passes in a parameter to `date` as well.
 
 
 
-
+<!--
 ## Custom pipes
+-->
+## 커스텀 파이프
 
+<!--
 You can write your own custom pipes.
 Here's a custom pipe named `ExponentialStrengthPipe` that can boost a hero's powers:
-
+-->
+기본 파이프 기능 외에 다른 기능이 필요하다면 커스텀 파이프를 만들어서 활용할 수도 있습니다.
+이번에는 히어로의 파워를 증폭시키는 `ExponentialStrengthPipe` 를 만들어 봅시다.
 
 <code-example path="pipes/src/app/exponential-strength.pipe.ts" title="src/app/exponential-strength.pipe.ts" linenums="false">
 
 </code-example>
 
 
-
+<!--
 This pipe definition reveals the following key points:
 
 * A pipe is a class decorated with pipe metadata.
@@ -242,21 +254,38 @@ Your pipe has one such parameter: the `exponent`.
 * The `@Pipe` decorator allows you to define the
    pipe name that you'll use within template expressions. It must be a valid JavaScript identifier.
    Your pipe's name is `exponentialStrength`.
+-->
+커스텀 파이프를 정의하는 과정을 자세히 보면 다음과 같은 내용이 중요합니다.
 
+* 파이프는 파이프 데코레이터와 메타데이터가 지정된 클래스입니다.
+* 파이프 클래스는 `PipeTransform` 인터페이스를 활용해서 구현하며, 파이프의 동작은 이 인터페이스에 있는 `transform` 메소드를 구현하는 것으로 정의합니다. 이 함수는 입력 값과 파이프 옵션을 인자로 받고 변환된 값을 반환합니다.
+* 이 예제에서는 파이프 옵션으로 `exponent`를 받습니다.
+* 커스텀 파이프를 Angular에 등록하려면 `@Pipe` 데코레이터를 사용합니다. 이 데코레이터는 Angular 코어 라이브러리에 있습니다.
+* `@Pipe` 데코레이터에는 템플릿 표현식에 사용할 파이프 이름을 지정합니다. 파이프 이름은 JavaScript 문법에 적합하게 지정해야 하며, 이 예제에서는 `exponentialStrength`로 지정했습니다.
 
 <div class="l-sub-section">
 
 
-
+<!--
 ## The *PipeTransform* interface
+-->
+## *PipeTransform* 인터페이스
 
+<!--
 The `transform` method is essential to a pipe.
 The `PipeTransform` *interface* defines that method and guides both tooling and the compiler.
 Technically, it's optional; Angular looks for and executes the `transform` method regardless.
+-->
+파이프에서는 `transform` 메소드가 중요합니다.
+이 함수는 `PipeTransform` *인터페이스* 에서 정의하고 있으며, Angular가 해당 파이프를 제대로 동작시키기 위해서도 꼭 정의되어야 합니다.
+문법적으로는 이 인터페이스를 사용하지 않더라도 Angular가 `transform` 메소드를 확인하면 파이프로 실행합니다.
 
 </div>
 
+<!--
 Now you need a component to demonstrate the pipe.
+-->
+이제 파이프를 테스트하기 위해 컴포넌트를 하나 만듭니다.
 
 <code-example path="pipes/src/app/power-booster.component.ts" title="src/app/power-booster.component.ts" linenums="false">
 </code-example>
@@ -266,37 +295,55 @@ Now you need a component to demonstrate the pipe.
 </figure>
 
 
-
+<!--
 Note the following:
 
 * You use your custom pipe the same way you use built-in pipes.
 * You must include your pipe in the `declarations` array of the `AppModule`.
+-->
+다음 내용을 확인해 보세요:
+
+* 커스텀 파이프를 사용하는 방법은 기본 파이프를 사용하는 방법과 같습니다.
+* 커스텀 파이프는 `AppModule`의 `declarations`에 등록해야 사용할 수 있습니다.
 
 <div class="callout is-helpful">
 
 <header>
+  <!--
   Remember the declarations array
+  -->
+  declarations 배열에 꼭 등록하세요.
 </header>
 
-
+<!--
 You must register custom pipes.
 If you don't, Angular reports an error.
 Angular CLI's generator registers the pipe automatically.
-
+-->
+커스텀 파이프는 `AppModule`에 등록해야 사용할 수 있으며, 등록하지 않은 파이프를 사용하면 Angular에서 에러가 발생합니다.
+Angular CLI를 사용해서 파이프를 생성하면, 이 파이프는 `AppModule`에 자동으로 등록됩니다.
 
 </div>
 
 
-
+<!--
 To probe the behavior in the <live-example></live-example>,
 change the value and optional exponent in the template.
+-->
+<live-example></live-example>에서 파이프가 동작하는 것을 직접 확인해 보세요.
 
+<!--
 ## Power Boost Calculator
+-->
+## 파워 증폭 계산기
 
+<!--
 It's not much fun updating the template to test the custom pipe.
 Upgrade the example to a "Power Boost Calculator" that combines
 your pipe and two-way data binding with `ngModel`.
-
+-->
+그런데 커스텀 파이프를 테스트할 때마다 템플릿을 수정해야 하는 것은 좋은 방법이 아닙니다.
+이전에 만들었던 예제에 양방향 데이터 바인딩을 추가해서 "파워 증폭 계산기"를 만들어 봅시다.
 
 <code-example path="pipes/src/app/power-boost-calculator.component.ts" title="src/app/power-boost-calculator.component.ts">
 
@@ -310,41 +357,62 @@ your pipe and two-way data binding with `ngModel`.
 
 
 
-
+<!--
 {@a change-detection}
+-->
+{@a 변화-감지}
 
-
+<!--
 ## Pipes and change detection
+-->
+## 파이프와 변화 감지
 
+<!--
 Angular looks for changes to data-bound values through a *change detection* process that runs after every DOM event:
 every keystroke, mouse move, timer tick, and server response. This could be expensive.
 Angular strives to lower the cost whenever possible and appropriate.
 
 Angular picks a simpler, faster change detection algorithm when you use a pipe.
+-->
+Angular는 키보드 입력, 마우스 이동, 타이머 만료, 서버 응답 등 DOM에서 발생하는 이벤트를 확인하면 *변화 감지* 로직을 수행하고 바인딩된 값이 변경되었는지 확인합니다.
+그래서 Angular 팀은 이 변화 감지 로직이 최대한 적은 리소스로 동작할 수 있도록 항상 신경쓰고 있습니다.
 
+그리고 파이프를 사용할 때는 좀 더 간단하고 빠른 변화 감지 알고리즘을 활용합니다.
+
+<!--
 <h3 class="no-toc">No pipe</h3>
+-->
+<h3 class="no-toc">파이프 적용 전</h3>
 
+<!--
 In the next example, the component uses the default, aggressive change detection strategy to monitor and update
 its display of every hero in the `heroes` array. Here's the template:
-
+-->
+이번에 다루는 예제는 컴포넌트의 기본 변화 감지 정책을 사용합니다. 이 예제에서는 `heroes` 배열에 있는 모든 히어로를 화면에 표시하며, 템플릿은 다음과 같이 정의합니다:
 
 <code-example path="pipes/src/app/flying-heroes.component.html" region="template-1" title="src/app/flying-heroes.component.html (v1)" linenums="false">
 
 </code-example>
 
 
-
+<!--
 The companion component class provides heroes, adds heroes into the array, and can reset the array.
+-->
+그리고 컴포넌트 클래스 코드에서는 히어로 목록에 히어로를 추가하거나 초기화하는 로직을 작성합니다.
 
 <code-example path="pipes/src/app/flying-heroes.component.ts" region="v1" title="src/app/flying-heroes.component.ts (v1)" linenums="false">
 
 </code-example>
 
 
-
+<!--
 You can add heroes and Angular updates the display when you do.
 If you click the `reset` button, Angular replaces `heroes` with a new array of the original heroes and updates the display.
 If you added the ability to remove or change a hero, Angular would detect those changes and update the display as well.
+-->
+이제 앱을 실행하면 히어로 목록에 히어로를 추가할 수 있으며, Angular는 이렇게 변경된 히어로 목록을 화면에 표시합니다.
+그리고 `reset` 버튼을 클릭하면 `heroes` 프로퍼티의 값이 기본값으로 초기화되며 화면에 표시되는 히어로 목록도 갱신됩니다.
+히어로 목록을 수정하거나, 히어로 목록에서 히어로를 제거하는 기능을 추가하더라도 Angular는 마찬가지로 컴포넌트 데이터를 기준으로 화면을 갱신할 것입니다.
 
 <h3 class="no-toc"><i>FlyingHeroesPipe</i></h3>
 
