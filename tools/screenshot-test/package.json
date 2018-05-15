@@ -20,7 +20,7 @@
     "@angular/platform-browser-dynamic": "6.0.0",
     "@angular/router": "6.0.0",
     "core-js": "^2.4.1",
-    "firebase": "4.13.1",
+    "firebase": "5.0.2",
     "rxjs": "6.0.0",
     "ts-helpers": "^1.1.1",
     "zone.js": "^0.8.12"

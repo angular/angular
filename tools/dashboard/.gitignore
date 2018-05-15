@@ -1,4 +1,3 @@
 # Sub Gitignore file for the Dashboard project.
 dist/
 node_modules/
-package-lock.json
