@@ -349,7 +349,7 @@ export function createLNodeObject(
     nodeInjector: parent ? parent.nodeInjector : null,
     data: state,
     queries: queries,
-    tNode: null,
+    tNode: null !,
     pNextOrParent: null,
     dynamicLContainerNode: null
   };
@@ -371,7 +371,7 @@ export function createLNode(
     index: number | null, type: LNodeType.Element, native: RElement | RText | null,
     name: string | null, attrs: string[] | null, lView?: LView | null): LElementNode;
 export function createLNode(
-    index: null, type: LNodeType.View, native: null, name: null, attrs: null,
+    index: number | null, type: LNodeType.View, native: null, name: null, attrs: null,
     lView: LView): LViewNode;
 export function createLNode(
     index: number, type: LNodeType.Container, native: undefined, name: string | null,
@@ -392,14 +392,12 @@ export function createLNode(
   const node =
       createLNodeObject(type, currentView, parent, native, isState ? state as any : null, queries);
 
-  if ((type & LNodeType.ViewOrElement) === LNodeType.ViewOrElement && isState) {
-    // Bit of a hack to bust through the readonly because there is a circular dep between
-    // LView and LNode.
-    ngDevMode && assertNull((state as LView).node, 'LView.node should not have been initialized');
-    (state as LView as{node: LNode}).node = node;
-  }
-  if (index != null) {
-    // We are Element or Container
+  if (index === null || type === LNodeType.View) {
+    // View nodes are not stored in data because they can be added / removed at runtime (which
+    // would cause indices to change). Their TNodes are instead stored in TView.node.
+    node.tNode = (state as LView).tView.node || createTNode(index, null, null, null);
+  } else {
+    // This is an element or container or projection node
     ngDevMode && assertDataNext(index);
     data[index] = node;
 
@@ -407,7 +405,9 @@ export function createLNode(
     if (index >= tData.length) {
       const tNode = tData[index] = createTNode(index, name, attrs, null);
       if (!isParent && previousOrParentNode) {
-        previousOrParentNode.tNode !.next = tNode;
+        const previousTNode = previousOrParentNode.tNode;
+        previousTNode.next = tNode;
+        if (previousTNode.dynamicContainerNode) previousTNode.dynamicContainerNode.next = tNode;
       }
     }
     node.tNode = tData[index] as TNode;
@@ -427,6 +427,16 @@ export function createLNode(
       }
     }
   }
+
+  // View nodes and host elements need to set their host node (components set host nodes later)
+  if ((type & LNodeType.ViewOrElement) === LNodeType.ViewOrElement && isState) {
+    // Bit of a hack to bust through the readonly because there is a circular dep between
+    // LView and LNode.
+    ngDevMode && assertNull((state as LView).node, 'LView.node should not have been initialized');
+    (state as{node: LNode}).node = node;
+    if (firstTemplatePass) (state as LView).tView.node = node.tNode;
+  }
+
   previousOrParentNode = node;
   isParent = true;
   return node;
@@ -613,7 +623,7 @@ function createDirectivesAndLocals(
   const node = previousOrParentNode;
   if (firstTemplatePass) {
     ngDevMode && ngDevMode.firstTemplatePass++;
-    cacheMatchingDirectivesForNode(node.tNode !, currentView.tView, localRefs || null);
+    cacheMatchingDirectivesForNode(node.tNode, currentView.tView, localRefs || null);
   } else {
     instantiateDirectivesDirectly();
   }
@@ -708,7 +718,7 @@ export function isComponent(tNode: TNode): boolean {
  * This function instantiates the given directives.
  */
 function instantiateDirectivesDirectly() {
-  const tNode = previousOrParentNode.tNode !;
+  const tNode = previousOrParentNode.tNode;
   const count = tNode.flags & TNodeFlags.DirectiveCountMask;
 
   if (count > 0) {
@@ -758,7 +768,7 @@ function saveNameToExportMap(
  * to data[] in the same order as they are loaded in the template with load().
  */
 function saveResolvedLocalsInData(): void {
-  const localNames = previousOrParentNode.tNode !.localNames;
+  const localNames = previousOrParentNode.tNode.localNames;
   if (localNames) {
     for (let i = 0; i < localNames.length; i += 2) {
       const index = localNames[i + 1] as number;
@@ -796,6 +806,7 @@ export function createTView(
     defs: DirectiveDefListOrFactory | null, pipes: PipeDefListOrFactory | null): TView {
   ngDevMode && ngDevMode.tView++;
   return {
+    node: null !,
     data: [],
     directives: null,
     firstTemplatePass: true,
@@ -879,7 +890,7 @@ export function hostElement(
           def.onPush ? LViewFlags.Dirty : LViewFlags.CheckAlways, sanitizer));
 
   if (firstTemplatePass) {
-    node.tNode !.flags = TNodeFlags.isComponent;
+    node.tNode.flags = TNodeFlags.isComponent;
     if (def.diPublic) def.diPublic(def);
     currentView.tView.directives = [def];
   }
@@ -918,11 +929,11 @@ export function listener(
     cleanupFns.push(eventName, native, wrappedListener, useCapture);
   }
 
-  let tNode: TNode|null = node.tNode !;
+  let tNode: TNode|null = node.tNode;
   if (tNode.outputs === undefined) {
     // if we create TNode here, inputs must be undefined so we know they still need to be
     // checked
-    tNode.outputs = generatePropertyAliases(node.tNode !.flags, BindingDirection.Output);
+    tNode.outputs = generatePropertyAliases(node.tNode.flags, BindingDirection.Output);
   }
 
   const outputs = tNode.outputs;
@@ -955,7 +966,7 @@ export function elementEnd() {
   ngDevMode && assertNodeType(previousOrParentNode, LNodeType.Element);
   const queries = previousOrParentNode.queries;
   queries && queries.addNode(previousOrParentNode);
-  queueLifecycleHooks(previousOrParentNode.tNode !.flags, currentView);
+  queueLifecycleHooks(previousOrParentNode.tNode.flags, currentView);
 }
 
 /**
@@ -1002,12 +1013,12 @@ export function elementProperty<T>(
     index: number, propName: string, value: T | NO_CHANGE, sanitizer?: SanitizerFn): void {
   if (value === NO_CHANGE) return;
   const node = data[index] as LElementNode;
-  const tNode = node.tNode !;
+  const tNode = node.tNode;
   // if tNode.inputs is undefined, a listener has created outputs, but inputs haven't
   // yet been checked
   if (tNode && tNode.inputs === undefined) {
     // mark inputs as checked
-    tNode.inputs = generatePropertyAliases(node.tNode !.flags, BindingDirection.Input);
+    tNode.inputs = generatePropertyAliases(node.tNode.flags, BindingDirection.Input);
   }
 
   const inputData = tNode && tNode.inputs;
@@ -1036,8 +1047,9 @@ export function elementProperty<T>(
  * @param tViews Any TViews attached to this node
  * @returns the TNode object
  */
-function createTNode(
-    index: number, tagName: string | null, attrs: string[] | null, tViews: TView[] | null): TNode {
+export function createTNode(
+    index: number | null, tagName: string | null, attrs: string[] | null,
+    tViews: TView[] | null): TNode {
   ngDevMode && ngDevMode.tNode++;
   return {
     index: index,
@@ -1049,7 +1061,8 @@ function createTNode(
     inputs: undefined,
     outputs: undefined,
     tViews: tViews,
-    next: null
+    next: null,
+    dynamicContainerNode: null
   };
 }
 
@@ -1321,8 +1334,11 @@ function addComponentLogic<T>(index: number, instance: T, def: ComponentDef<T>):
                        tView, null, null, def.onPush ? LViewFlags.Dirty : LViewFlags.CheckAlways,
                        getCurrentSanitizer()));
 
-  (previousOrParentNode.data as any) = hostView;
-  (hostView.node as any) = previousOrParentNode;
+  // We need to set the host node/data here because when the component LNode was created,
+  // we didn't yet know it was a component (just an element).
+  (previousOrParentNode as{data: LView}).data = hostView;
+  (hostView as{node: LNode}).node = previousOrParentNode;
+  if (firstTemplatePass) tView.node = previousOrParentNode.tNode;
 
   initChangeDetectorIfExisting(previousOrParentNode.nodeInjector, instance, hostView);
 
@@ -1351,19 +1367,19 @@ export function baseDirectiveCreate<T>(
   directives[index] = directive;
 
   if (firstTemplatePass) {
-    const flags = previousOrParentNode.tNode !.flags;
+    const flags = previousOrParentNode.tNode.flags;
     if ((flags & TNodeFlags.DirectiveCountMask) === 0) {
       // When the first directive is created:
       // - save the index,
       // - set the number of directives to 1
-      previousOrParentNode.tNode !.flags =
+      previousOrParentNode.tNode.flags =
           index << TNodeFlags.DirectiveStartingIndexShift | flags & TNodeFlags.isComponent | 1;
     } else {
       // Only need to bump the size when subsequent directives are created
       ngDevMode && assertNotEqual(
                        flags & TNodeFlags.DirectiveCountMask, TNodeFlags.DirectiveCountMask,
                        'Reached the max number of directives');
-      previousOrParentNode.tNode !.flags++;
+      previousOrParentNode.tNode.flags++;
     }
   } else {
     const diPublic = directiveDef !.diPublic;
@@ -1481,7 +1497,7 @@ export function container(
   const node = createLNode(
       index, LNodeType.Container, undefined, tagName || null, attrs || null, lContainer);
 
-  if (firstTemplatePass && template == null) node.tNode !.tViews = [];
+  if (firstTemplatePass && template == null) node.tNode.tViews = [];
 
   // Containers are added to the current view tree instead of their embedded views
   // because views can be removed and re-inserted.
@@ -1618,7 +1634,8 @@ export function embeddedViewStart(viewBlockId: number): RenderFlags {
       newView.queries = lContainer.queries.enterView(lContainer.nextIndex);
     }
 
-    enterView(newView, viewNode = createLNode(null, LNodeType.View, null, null, null, newView));
+    enterView(
+        newView, viewNode = createLNode(viewBlockId, LNodeType.View, null, null, null, newView));
   }
   return getRenderFlags(viewNode.data);
 }
@@ -2027,7 +2044,7 @@ export function getRootView(component: any): LView {
 export function detectChanges<T>(component: T): void {
   const hostNode = _getComponentHostLElementNode(component);
   ngDevMode && assertNotNull(hostNode.data, 'Component host node should be attached to an LView');
-  const componentIndex = hostNode.tNode !.flags >> TNodeFlags.DirectiveStartingIndexShift;
+  const componentIndex = hostNode.tNode.flags >> TNodeFlags.DirectiveStartingIndexShift;
   const def = hostNode.view.tView.directives ![componentIndex] as ComponentDef<T>;
   detectChangesInternal(hostNode.data as LView, hostNode, def, component);
 }

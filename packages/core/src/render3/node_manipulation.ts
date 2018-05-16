@@ -72,7 +72,7 @@ export function getNextLNode(node: LNode): LNode|null {
     const lView = node.data as LView;
     return lView.next ? (lView.next as LView).node : null;
   }
-  return node.tNode !.next ? node.view.data[node.tNode !.next !.index] : null;
+  return node.tNode.next ? node.view.data[node.tNode.next !.index as number] : null;
 }
 
 /**
