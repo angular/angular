@@ -12,6 +12,7 @@ ts_library(
             "**/*_perf.ts",
             "domino.d.ts",
             "load_domino.ts",
+            "jit_spec.ts",
         ],
     ),
     deps = [
@@ -29,16 +30,25 @@ ts_library(
 )
 
 ts_library(
-    name = "render3_node_lib",
+    name = "domino",
     testonly = 1,
     srcs = [
         "domino.d.ts",
         "load_domino.ts",
     ],
     deps = [
-        ":render3_lib",
         "//packages/platform-browser",
         "//packages/platform-server",
+    ],
+)
+
+ts_library(
+    name = "render3_node_lib",
+    testonly = 1,
+    srcs = [],
+    deps = [
+        ":domino",
+        ":render3_lib",
     ],
 )
 

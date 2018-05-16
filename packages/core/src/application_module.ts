@@ -13,7 +13,6 @@ import {IterableDiffers, KeyValueDiffers, defaultIterableDiffers, defaultKeyValu
 import {forwardRef} from './di/forward_ref';
 import {Inject, Optional, SkipSelf} from './di/metadata';
 import {LOCALE_ID} from './i18n/tokens';
-import {R3_JIT_INITIALIZER, ivyEnabled} from './ivy_switch';
 import {Compiler} from './linker/compiler';
 import {NgModule} from './metadata';
 
@@ -43,7 +42,6 @@ export function _localeFactory(locale?: string): string {
     APP_ID_RANDOM_PROVIDER,
     {provide: IterableDiffers, useFactory: _iterableDiffersFactory},
     {provide: KeyValueDiffers, useFactory: _keyValueDiffersFactory},
-    ivyEnabled ? [{provide: APP_INITIALIZER, useExisting: R3_JIT_INITIALIZER, multi: true}] : [],
     {
       provide: LOCALE_ID,
       useFactory: _localeFactory,

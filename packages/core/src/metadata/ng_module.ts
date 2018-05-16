@@ -9,6 +9,7 @@
 import {InjectorDef, InjectorType, defineInjector} from '../di/defs';
 import {convertInjectableProviderToFactory} from '../di/injectable';
 import {Provider} from '../di/provider';
+import {R3_COMPILE_NGMODULE} from '../ivy_switch';
 import {Type} from '../type';
 import {TypeDecorator, makeDecorator} from '../util/decorators';
 
@@ -19,14 +20,11 @@ export interface NgModuleDef<T> {
   imports: Type<any>[];
   exports: Type<any>[];
 
-  /**
-   * @internal
-   */
   transitiveCompileScope: {directives: any[]; pipes: any[];}|undefined;
 }
 
-export function defineNgModule<T>(def: {type: T} & Partial<NgModuleDef<T>>): NgModuleDef<T> {
-  return {
+export function defineNgModule<T>(def: {type: T} & Partial<NgModuleDef<T>>): never {
+  const res: NgModuleDef<T> = {
     type: def.type,
     bootstrap: def.bootstrap || [],
     declarations: def.declarations || [],
@@ -34,6 +32,7 @@ export function defineNgModule<T>(def: {type: T} & Partial<NgModuleDef<T>>): NgM
     exports: def.exports || [],
     transitiveCompileScope: undefined,
   };
+  return res as never;
 }
 
 /**
@@ -86,11 +85,6 @@ export interface NgModuleDecorator {
    */
   (obj?: NgModule): TypeDecorator;
   new (obj?: NgModule): NgModule;
-
-  /**
-   * @internal
-   */
-  compile: (type: Type<any>, meta: NgModule) => void;
 }
 
 /**
@@ -235,7 +229,5 @@ function preR3NgModuleCompile(moduleType: InjectorType<any>, metadata: NgModule)
  * @Annotation
  */
 export const NgModule: NgModuleDecorator = makeDecorator(
-    'NgModule', (ngModule: NgModule) => ngModule, undefined,
-    undefined, (moduleType: InjectorType<any>, metadata: NgModule) => {
-      NgModule.compile(moduleType, metadata);
-    }, preR3NgModuleCompile);
+    'NgModule', (ngModule: NgModule) => ngModule, undefined, undefined,
+    (type: Type<any>, meta: NgModule) => (R3_COMPILE_NGMODULE || preR3NgModuleCompile)(type, meta));

@@ -13,9 +13,11 @@ import * as path from 'path';
 
 const PACKAGE = 'angular/packages/core/test/bundling/hello_world_jit';
 
-(ivyEnabled ? describe : xdescribe)('Ivy JIT hello world', () => {
+ivyEnabled && describe('Ivy JIT hello world', () => {
   it('should render hello world', withBody('<hello-world></hello-world>', () => {
        require(path.join(PACKAGE, 'bundle.js'));
        expect(document.body.textContent).toEqual('Hello World!');
      }));
 });
+
+xit('ensure at least one spec exists', () => {});

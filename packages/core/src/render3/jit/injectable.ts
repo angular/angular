@@ -21,7 +21,12 @@ import {convertDependencies, reflectDependencies} from './util';
  * Compile an Angular injectable according to its `Injectable` metadata, and patch the resulting
  * `ngInjectableDef` onto the injectable type.
  */
-export function compileInjectable(type: Type<any>, meta: Injectable): void {
+export function compileInjectable(type: Type<any>, meta?: Injectable): void {
+  // TODO(alxhub): handle JIT of bare @Injectable().
+  if (!meta) {
+    return;
+  }
+
   // Check whether the injectable metadata includes a provider specification.
   const hasAProvider = isUseClassProvider(meta) || isUseFactoryProvider(meta) ||
       isUseValueProvider(meta) || isUseExistingProvider(meta);

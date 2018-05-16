@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {R3_COMPILE_INJECTABLE} from '../ivy_switch';
 import {ReflectionCapabilities} from '../reflection/reflection_capabilities';
 import {Type} from '../type';
 import {makeDecorator, makeParamDecorator} from '../util/decorators';
@@ -60,12 +61,6 @@ export interface InjectableDecorator {
   (options?: {providedIn: Type<any>| 'root' | null}&InjectableProvider): any;
   new (): Injectable;
   new (options?: {providedIn: Type<any>| 'root' | null}&InjectableProvider): Injectable;
-
-  /**
-   * Compile function for `Injectable`.
-   * @internal
-   */
-  compile(type: Type<any>, injectable: Injectable): void;
 }
 
 /**
@@ -135,9 +130,8 @@ function preR3InjectableCompile(
 */
 export const Injectable: InjectableDecorator = makeDecorator(
     'Injectable', undefined, undefined, undefined,
-    (injectableType: InjectableType<any>, options?: {providedIn?: Type<any>| 'root' | null} &
-         InjectableProvider) => { Injectable.compile(injectableType, options || {});},
-    preR3InjectableCompile);
+    (type: Type<any>, meta: Injectable) =>
+        (R3_COMPILE_INJECTABLE || preR3InjectableCompile)(type, meta));
 
 /**
  * Type representing injectable service.

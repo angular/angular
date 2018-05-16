@@ -21,7 +21,6 @@ let _reflect: ReflectionCapabilities|null = null;
 
 export function reflectDependencies(type: Type<any>): R3DependencyMetadata[] {
   _reflect = _reflect || new ReflectionCapabilities();
-  debugger;
   return convertDependencies(_reflect.parameters(type));
 }
 
@@ -30,7 +29,6 @@ export function convertDependencies(deps: any[]): R3DependencyMetadata[] {
 }
 
 function reflectDependency(dep: any | any[]): R3DependencyMetadata {
-  debugger;
   const meta: R3DependencyMetadata = {
     token: new LiteralExpr(null),
     host: false,

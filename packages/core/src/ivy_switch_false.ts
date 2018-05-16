@@ -7,7 +7,6 @@
  */
 
 export const ivyEnabled = false;
-
-export function maybeEnableRender3Jit(): void {}
-
-export const R3_JIT_INITIALIZER = null;
+export const R3_COMPILE_COMPONENT: ((type: any, meta: any) => void)|null = null;
+export const R3_COMPILE_INJECTABLE: ((type: any, meta: any) => void)|null = null;
+export const R3_COMPILE_NGMODULE: ((type: any, meta: any) => void)|null = null;

@@ -6,40 +6,18 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {forwardRef} from '@angular/core/src/di/forward_ref';
 import {Injectable} from '@angular/core/src/di/injectable';
 import {inject, setCurrentInjector} from '@angular/core/src/di/injector';
 import {ivyEnabled} from '@angular/core/src/ivy_switch';
 import {Component} from '@angular/core/src/metadata/directives';
 import {NgModule, NgModuleDef} from '@angular/core/src/metadata/ng_module';
 import {ComponentDef} from '@angular/core/src/render3/interfaces/definition';
-import {enableRender3Jit} from '@angular/core/src/render3/jit/glue';
 
-describe('render3 jit', () => {
-  // Enable Ivy JIT compilation for the span of this test.
-  if (!ivyEnabled) {
-    const savedFns: {[key: string]: any} = {
-      Component: undefined,
-      Injectable: undefined,
-      NgModule: undefined,
-    };
-    let injector: any;
-    beforeAll(() => {
-      savedFns.Component = (Component as any).compile;
-      savedFns.Injectable = (Injectable as any).compile;
-      savedFns.NgModule = (NgModule as any).compile;
+ivyEnabled && describe('render3 jit', () => {
+  let injector: any;
+  beforeAll(() => { injector = setCurrentInjector(null); });
 
-      enableRender3Jit();
-      injector = setCurrentInjector(null);
-    });
-
-    afterAll(() => {
-      (Component as any).compile = savedFns.Component;
-      (Injectable as any).compile = savedFns.Injectable;
-      (NgModule as any).compile = savedFns.NgModule;
-      setCurrentInjector(injector);
-    });
-  }
+  afterAll(() => { setCurrentInjector(injector); });
 
   it('compiles a component', () => {
     @Component({
@@ -184,3 +162,5 @@ describe('render3 jit', () => {
     expect((cmpDef.directiveDefs as Function)()).toEqual([cmpDef]);
   });
 });
+
+it('ensure at least one spec exists', () => {});

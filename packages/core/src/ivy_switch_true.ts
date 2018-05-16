@@ -6,14 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {APP_INITIALIZER} from './application_init';
-import {Provider} from './di/provider';
-import {R3JitInitializer, enableRender3Jit} from './render3/jit/glue';
+import {compileComponentDecorator} from './render3/jit/directive';
+import {compileInjectable} from './render3/jit/injectable';
+import {compileNgModule} from './render3/jit/module';
 
 export const ivyEnabled = true;
-
-export function maybeEnableRender3Jit(): void {
-  enableRender3Jit();
-}
-
-export const R3_JIT_INITIALIZER = R3JitInitializer;
+export const R3_COMPILE_COMPONENT = compileComponentDecorator;
+export const R3_COMPILE_INJECTABLE = compileInjectable;
+export const R3_COMPILE_NGMODULE = compileNgModule;

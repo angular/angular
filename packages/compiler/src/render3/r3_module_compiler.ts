@@ -79,7 +79,7 @@ export function compileNgModule(meta: R3NgModuleMetadata): R3NgModuleDef {
 }
 
 // TODO(alxhub): integrate this with `compileNgModule`. Currently the two are separate operations.
-export function compileNgModuleRender2(
+export function compileNgModuleFromRender2(
     ctx: OutputContext, ngModule: CompileShallowModuleMetadata,
     injectableCompiler: InjectableCompiler): void {
   const className = identifierName(ngModule.type) !;
