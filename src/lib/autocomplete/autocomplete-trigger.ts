@@ -26,7 +26,6 @@ import {
   forwardRef,
   Host,
   Inject,
-  inject,
   InjectionToken,
   Input,
   NgZone,
@@ -62,16 +61,19 @@ export const AUTOCOMPLETE_PANEL_HEIGHT = 256;
 
 /** Injection token that determines the scroll handling while the autocomplete panel is open. */
 export const MAT_AUTOCOMPLETE_SCROLL_STRATEGY =
-    new InjectionToken<() => ScrollStrategy>('mat-autocomplete-scroll-strategy', {
-      providedIn: 'root',
-      factory: MAT_AUTOCOMPLETE_SCROLL_STRATEGY_FACTORY,
-    });
+    new InjectionToken<() => ScrollStrategy>('mat-autocomplete-scroll-strategy');
 
 /** @docs-private */
-export function MAT_AUTOCOMPLETE_SCROLL_STRATEGY_FACTORY(): () => ScrollStrategy {
-  const overlay = inject(Overlay);
+export function MAT_AUTOCOMPLETE_SCROLL_STRATEGY_FACTORY(overlay: Overlay): () => ScrollStrategy {
   return () => overlay.scrollStrategies.reposition();
 }
+
+/** @docs-private */
+export const MAT_AUTOCOMPLETE_SCROLL_STRATEGY_FACTORY_PROVIDER = {
+  provide: MAT_AUTOCOMPLETE_SCROLL_STRATEGY,
+  deps: [Overlay],
+  useFactory: MAT_AUTOCOMPLETE_SCROLL_STRATEGY_FACTORY,
+};
 
 /**
  * Provider that allows the autocomplete to register as a ControlValueAccessor.

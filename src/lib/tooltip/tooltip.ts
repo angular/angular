@@ -32,7 +32,6 @@ import {
   Directive,
   ElementRef,
   Inject,
-  inject,
   InjectionToken,
   Input,
   NgZone,
@@ -60,16 +59,19 @@ export function getMatTooltipInvalidPositionError(position: string) {
 
 /** Injection token that determines the scroll handling while a tooltip is visible. */
 export const MAT_TOOLTIP_SCROLL_STRATEGY =
-    new InjectionToken<() => ScrollStrategy>('mat-tooltip-scroll-strategy', {
-      providedIn: 'root',
-      factory: MAT_TOOLTIP_SCROLL_STRATEGY_FACTORY,
-    });
+    new InjectionToken<() => ScrollStrategy>('mat-tooltip-scroll-strategy');
 
 /** @docs-private */
-export function MAT_TOOLTIP_SCROLL_STRATEGY_FACTORY(): () => ScrollStrategy {
-  const overlay = inject(Overlay);
+export function MAT_TOOLTIP_SCROLL_STRATEGY_FACTORY(overlay: Overlay): () => ScrollStrategy {
   return () => overlay.scrollStrategies.reposition({scrollThrottle: SCROLL_THROTTLE_MS});
 }
+
+/** @docs-private */
+export const MAT_TOOLTIP_SCROLL_STRATEGY_FACTORY_PROVIDER = {
+  provide: MAT_TOOLTIP_SCROLL_STRATEGY,
+  deps: [Overlay],
+  useFactory: MAT_TOOLTIP_SCROLL_STRATEGY_FACTORY,
+};
 
 /** Default `matTooltip` options that can be overridden. */
 export interface MatTooltipDefaultOptions {

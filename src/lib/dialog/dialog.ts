@@ -18,7 +18,6 @@ import {ComponentPortal, ComponentType, PortalInjector, TemplatePortal} from '@a
 import {Location} from '@angular/common';
 import {
   Inject,
-  inject,
   Injectable,
   InjectionToken,
   Injector,
@@ -42,14 +41,10 @@ export const MAT_DIALOG_DEFAULT_OPTIONS =
 
 /** Injection token that determines the scroll handling while the dialog is open. */
 export const MAT_DIALOG_SCROLL_STRATEGY =
-    new InjectionToken<() => ScrollStrategy>('mat-dialog-scroll-strategy', {
-      providedIn: 'root',
-      factory: MAT_DIALOG_SCROLL_STRATEGY_FACTORY,
-    });
+    new InjectionToken<() => ScrollStrategy>('mat-dialog-scroll-strategy');
 
 /** @docs-private */
-export function MAT_DIALOG_SCROLL_STRATEGY_FACTORY(): ()  => ScrollStrategy {
-  const overlay = inject(Overlay);
+export function MAT_DIALOG_SCROLL_STRATEGY_FACTORY(overlay: Overlay): ()  => ScrollStrategy {
   return () => overlay.scrollStrategies.block();
 }
 

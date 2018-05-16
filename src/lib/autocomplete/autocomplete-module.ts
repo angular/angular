@@ -11,7 +11,10 @@ import {CommonModule} from '@angular/common';
 import {OverlayModule} from '@angular/cdk/overlay';
 import {MatOptionModule, MatCommonModule} from '@angular/material/core';
 import {MatAutocomplete} from './autocomplete';
-import {MatAutocompleteTrigger} from './autocomplete-trigger';
+import {
+  MatAutocompleteTrigger,
+  MAT_AUTOCOMPLETE_SCROLL_STRATEGY_FACTORY_PROVIDER,
+} from './autocomplete-trigger';
 import {MatAutocompleteOrigin} from './autocomplete-origin';
 
 @NgModule({
@@ -24,5 +27,6 @@ import {MatAutocompleteOrigin} from './autocomplete-origin';
     MatCommonModule
   ],
   declarations: [MatAutocomplete, MatAutocompleteTrigger, MatAutocompleteOrigin],
+  providers: [MAT_AUTOCOMPLETE_SCROLL_STRATEGY_FACTORY_PROVIDER],
 })
 export class MatAutocompleteModule {}

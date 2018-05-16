@@ -25,7 +25,10 @@ import {OverlayPositionBuilder} from './position/overlay-position-builder';
   imports: [BidiModule, PortalModule, ScrollDispatchModule],
   exports: [CdkConnectedOverlay, CdkOverlayOrigin, ScrollDispatchModule],
   declarations: [CdkConnectedOverlay, CdkOverlayOrigin],
-  providers: [Overlay],
+  providers: [
+    Overlay,
+    CDK_CONNECTED_OVERLAY_SCROLL_STRATEGY_PROVIDER,
+  ],
 })
 export class OverlayModule {}
 

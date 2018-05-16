@@ -25,7 +25,6 @@ import {
   ElementRef,
   EventEmitter,
   Inject,
-  inject,
   InjectionToken,
   Input,
   OnDestroy,
@@ -44,16 +43,19 @@ import {MenuPositionX, MenuPositionY} from './menu-positions';
 
 /** Injection token that determines the scroll handling while the menu is open. */
 export const MAT_MENU_SCROLL_STRATEGY =
-    new InjectionToken<() => ScrollStrategy>('mat-menu-scroll-strategy', {
-      providedIn: 'root',
-      factory: MAT_MENU_SCROLL_STRATEGY_FACTORY,
-    });
+    new InjectionToken<() => ScrollStrategy>('mat-menu-scroll-strategy');
 
 /** @docs-private */
-export function MAT_MENU_SCROLL_STRATEGY_FACTORY(): () => ScrollStrategy {
-  const overlay = inject(Overlay);
+export function MAT_MENU_SCROLL_STRATEGY_FACTORY(overlay: Overlay): () => ScrollStrategy {
   return () => overlay.scrollStrategies.reposition();
 }
+
+/** @docs-private */
+export const MAT_MENU_SCROLL_STRATEGY_FACTORY_PROVIDER = {
+  provide: MAT_MENU_SCROLL_STRATEGY,
+  deps: [Overlay],
+  useFactory: MAT_MENU_SCROLL_STRATEGY_FACTORY,
+};
 
 /** Default top padding of the menu panel. */
 export const MENU_PANEL_TOP_PADDING = 8;

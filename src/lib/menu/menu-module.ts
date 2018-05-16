@@ -13,7 +13,10 @@ import {MatCommonModule, MatRippleModule} from '@angular/material/core';
 import {MatMenuContent} from './menu-content';
 import {MatMenu} from './menu-directive';
 import {MatMenuItem} from './menu-item';
-import {MatMenuTrigger} from './menu-trigger';
+import {
+  MatMenuTrigger,
+  MAT_MENU_SCROLL_STRATEGY_FACTORY_PROVIDER,
+} from './menu-trigger';
 
 
 @NgModule({
@@ -25,5 +28,6 @@ import {MatMenuTrigger} from './menu-trigger';
   ],
   exports: [MatMenu, MatMenuItem, MatMenuTrigger, MatMenuContent, MatCommonModule],
   declarations: [MatMenu, MatMenuItem, MatMenuTrigger, MatMenuContent],
+  providers: [MAT_MENU_SCROLL_STRATEGY_FACTORY_PROVIDER]
 })
 export class MatMenuModule {}

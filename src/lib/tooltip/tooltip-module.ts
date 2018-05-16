@@ -10,8 +10,11 @@ import {OverlayModule} from '@angular/cdk/overlay';
 import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
 import {MatCommonModule} from '@angular/material/core';
-import {MatTooltip, TooltipComponent} from './tooltip';
-
+import {
+  MatTooltip,
+  TooltipComponent,
+  MAT_TOOLTIP_SCROLL_STRATEGY_FACTORY_PROVIDER,
+} from './tooltip';
 
 @NgModule({
   imports: [
@@ -22,5 +25,6 @@ import {MatTooltip, TooltipComponent} from './tooltip';
   exports: [MatTooltip, TooltipComponent, MatCommonModule],
   declarations: [MatTooltip, TooltipComponent],
   entryComponents: [TooltipComponent],
+  providers: [MAT_TOOLTIP_SCROLL_STRATEGY_FACTORY_PROVIDER]
 })
 export class MatTooltipModule {}
