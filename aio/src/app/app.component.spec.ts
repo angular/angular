@@ -6,7 +6,7 @@ import { HttpClient } from '@angular/common/http';
 import { MatProgressBar, MatSidenav } from '@angular/material';
 import { By } from '@angular/platform-browser';
 
-import { timer } from 'rxjs';
+import { of, timer } from 'rxjs';
 import { first, mapTo } from 'rxjs/operators';
 
 import { AppComponent } from './app.component';
@@ -14,6 +14,7 @@ import { AppModule } from './app.module';
 import { DocumentService } from 'app/documents/document.service';
 import { DocViewerComponent } from 'app/layout/doc-viewer/doc-viewer.component';
 import { Deployment } from 'app/shared/deployment.service';
+import { ElementsLoader } from 'app/custom-elements/elements-loader';
 import { GaService } from 'app/shared/ga.service';
 import { LocationService } from 'app/shared/location.service';
 import { Logger } from 'app/shared/logger.service';
@@ -26,7 +27,6 @@ import { SearchBoxComponent } from 'app/search/search-box/search-box.component';
 import { SearchResultsComponent } from 'app/shared/search-results/search-results.component';
 import { SearchService } from 'app/search/search.service';
 import { SelectComponent } from 'app/shared/select/select.component';
-import { TocComponent } from 'app/layout/toc/toc.component';
 import { TocItem, TocService } from 'app/shared/toc.service';
 
 const sideBySideBreakPoint = 992;
@@ -621,53 +621,53 @@ describe('AppComponent', () => {
     });
 
     describe('aio-toc', () => {
-      let tocDebugElement: DebugElement;
-      let tocContainer: DebugElement|null;
+      let tocContainer: HTMLElement|null;
+      let toc: HTMLElement|null;
 
       const setHasFloatingToc = (hasFloatingToc: boolean) => {
         component.hasFloatingToc = hasFloatingToc;
         fixture.detectChanges();
 
-        tocDebugElement = fixture.debugElement.query(By.directive(TocComponent));
-        tocContainer = tocDebugElement && tocDebugElement.parent;
+        tocContainer = fixture.debugElement.nativeElement.querySelector('.toc-container');
+        toc = tocContainer && tocContainer.querySelector('aio-toc');
       };
 
       beforeEach(() => setHasFloatingToc(true));
 
 
       it('should show/hide `<aio-toc>` based on `hasFloatingToc`', () => {
-        expect(tocDebugElement).toBeTruthy();
         expect(tocContainer).toBeTruthy();
+        expect(toc).toBeTruthy();
 
         setHasFloatingToc(false);
-        expect(tocDebugElement).toBeFalsy();
         expect(tocContainer).toBeFalsy();
+        expect(toc).toBeFalsy();
 
         setHasFloatingToc(true);
-        expect(tocDebugElement).toBeTruthy();
         expect(tocContainer).toBeTruthy();
+        expect(toc).toBeTruthy();
       });
 
       it('should have a non-embedded `<aio-toc>` element', () => {
-        expect(tocDebugElement.classes['embedded']).toBeFalsy();
+        expect(toc!.classList.contains('embedded')).toBe(false);
       });
 
       it('should update the TOC container\'s `maxHeight` based on `tocMaxHeight`', () => {
-        expect(tocContainer!.styles['max-height']).toBeNull();
+        expect(tocContainer!.style['max-height']).toBe('');
 
         component.tocMaxHeight = '100';
         fixture.detectChanges();
 
-        expect(tocContainer!.styles['max-height']).toBe('100px');
+        expect(tocContainer!.style['max-height']).toBe('100px');
       });
 
       it('should restrain scrolling inside the ToC container', () => {
         const restrainScrolling = spyOn(component, 'restrainScrolling');
-        const evt = {};
+        const evt = new MouseEvent('mousewheel');
 
         expect(restrainScrolling).not.toHaveBeenCalled();
 
-        tocContainer!.triggerEventHandler('mousewheel', evt);
+        tocContainer!.dispatchEvent(evt);
         expect(restrainScrolling).toHaveBeenCalledWith(evt);
       });
     });
@@ -1280,6 +1280,7 @@ function createTestingModule(initialUrl: string, mode: string = 'stable') {
     imports: [ AppModule ],
     providers: [
       { provide: APP_BASE_HREF, useValue: '/' },
+      { provide: ElementsLoader, useClass: TestElementsLoader },
       { provide: GaService, useClass: TestGaService },
       { provide: HttpClient, useClass: TestHttpClient },
       { provide: LocationService, useFactory: () => mockLocationService },
@@ -1292,6 +1293,14 @@ function createTestingModule(initialUrl: string, mode: string = 'stable') {
       }},
     ]
   });
+}
+
+class TestElementsLoader {
+  loadContainingCustomElements = jasmine.createSpy('loadContainingCustomElements')
+      .and.returnValue(of(undefined));
+
+  loadCustomElement = jasmine.createSpy('loadCustomElement')
+      .and.returnValue(Promise.resolve());
 }
 
 class TestGaService {

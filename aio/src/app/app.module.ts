@@ -32,7 +32,6 @@ import { ScrollService } from 'app/shared/scroll.service';
 import { ScrollSpyService } from 'app/shared/scroll-spy.service';
 import { SearchBoxComponent } from 'app/search/search-box/search-box.component';
 import { NotificationComponent } from 'app/layout/notification/notification.component';
-import { TocComponent } from 'app/layout/toc/toc.component';
 import { TocService } from 'app/shared/toc.service';
 import { CurrentDateToken, currentDateProvider } from 'app/shared/current-date';
 import { WindowToken, windowProvider } from 'app/shared/window';
@@ -111,7 +110,6 @@ export const svgIconProviders = [
     NavItemComponent,
     SearchBoxComponent,
     NotificationComponent,
-    TocComponent,
     TopMenuComponent,
   ],
   providers: [
@@ -133,7 +131,6 @@ export const svgIconProviders = [
     { provide: CurrentDateToken, useFactory: currentDateProvider },
     { provide: WindowToken, useFactory: windowProvider },
   ],
-  entryComponents: [ TocComponent ],
   bootstrap: [ AppComponent ]
 })
 export class AppModule { }

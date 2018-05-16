@@ -25,6 +25,10 @@ export const ELEMENT_MODULE_PATHS_AS_ROUTES = [
     loadChildren: './resource/resource-list.module#ResourceListModule'
   },
   {
+    selector: 'aio-toc',
+    loadChildren: './toc/toc.module#TocModule'
+  },
+  {
     selector: 'code-example',
     loadChildren: './code/code-example.module#CodeExampleModule'
   },
