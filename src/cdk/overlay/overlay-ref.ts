@@ -21,6 +21,9 @@ export type ImmutableObject<T> = {
   readonly [P in keyof T]: T[P];
 };
 
+// TODO(crisbeto): add support for passing in a `Directionality`
+// to make syncing the direction easier.
+
 /**
  * Reference to an overlay that has been created with the Overlay service.
  * Used to manipulate or dispose of said overlay.

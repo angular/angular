@@ -264,6 +264,7 @@ export class MatTooltip implements OnDestroy {
     const overlayRef = this._createOverlay();
 
     this._detach();
+    overlayRef.setDirection(this._dir ? this._dir.value : 'ltr');
     this._portal = this._portal || new ComponentPortal(TooltipComponent, this._viewContainerRef);
     this._tooltipInstance = overlayRef.attach(this._portal).instance;
     this._tooltipInstance.afterHidden()
@@ -310,20 +311,12 @@ export class MatTooltip implements OnDestroy {
       return this._overlayRef;
     }
 
-    const origin = this._getOrigin();
-    const overlay = this._getOverlayPosition();
-    const direction = this._dir ? this._dir.value : 'ltr';
-
     // Create connected position strategy that listens for scroll events to reposition.
     const strategy = this._overlay.position()
       .flexibleConnectedTo(this._elementRef)
       .withTransformOriginOn('.mat-tooltip')
       .withFlexibleDimensions(false)
-      .withViewportMargin(8)
-      .withPositions([
-        {...origin.main, ...overlay.main},
-        {...origin.fallback, ...overlay.fallback}
-      ]);
+      .withViewportMargin(8);
 
     const scrollableAncestors = this._scrollDispatcher
       .getAncestorScrollContainers(this._elementRef);
@@ -341,11 +334,12 @@ export class MatTooltip implements OnDestroy {
     });
 
     this._overlayRef = this._overlay.create({
-      direction,
       positionStrategy: strategy,
       panelClass: TOOLTIP_PANEL_CLASS,
       scrollStrategy: this._scrollStrategy()
     });
+
+    this._updatePosition();
 
     this._overlayRef.detachments()
       .pipe(takeUntil(this._destroyed))
@@ -370,11 +364,10 @@ export class MatTooltip implements OnDestroy {
     const origin = this._getOrigin();
     const overlay = this._getOverlayPosition();
 
-    position
-      .withPositions([
-        {...origin.main, ...overlay.main},
-        {...origin.fallback, ...overlay.fallback}
-      ]);
+    position.withPositions([
+      {...origin.main, ...overlay.main},
+      {...origin.fallback, ...overlay.fallback}
+    ]);
   }
 
   /**

@@ -503,6 +503,28 @@ describe('MatTooltip', () => {
       expect(tooltipWrapper.getAttribute('dir')).toBe('rtl', 'Expected tooltip to be in RTL mode.');
     }));
 
+    it('should keep the overlay direction in sync with the trigger direction', fakeAsync(() => {
+      dir.value = 'rtl';
+      tooltipDirective.show();
+      tick();
+      fixture.detectChanges();
+
+      let tooltipWrapper = overlayContainerElement.querySelector('.cdk-overlay-pane')!;
+      expect(tooltipWrapper.getAttribute('dir')).toBe('rtl', 'Expected tooltip to be in RTL.');
+
+      tooltipDirective.hide(0);
+      tick();
+      fixture.detectChanges();
+
+      dir.value = 'ltr';
+      tooltipDirective.show();
+      tick();
+      fixture.detectChanges();
+
+      tooltipWrapper = overlayContainerElement.querySelector('.cdk-overlay-pane')!;
+      expect(tooltipWrapper.getAttribute('dir')).toBe('ltr', 'Expected tooltip to be in LTR.');
+    }));
+
     it('should be able to set the tooltip message as a number', fakeAsync(() => {
       fixture.componentInstance.message = 100;
       fixture.detectChanges();
