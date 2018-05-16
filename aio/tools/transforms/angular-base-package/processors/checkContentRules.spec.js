@@ -18,7 +18,7 @@ describe('checkContentRules processor', function() {
 
   it('shpuld run at the right time', () => {
     expect(processor.$runAfter).toEqual(['tags-extracted']);
-    expect(processor.$runBefore).toEqual(['processing-docs']);
+    expect(processor.$runBefore).toEqual([]);
   });
 
   it('should do nothing if not configured', () => {
