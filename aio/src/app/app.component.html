@@ -58,7 +58,7 @@
 </mat-sidenav-container>
 
 <div *ngIf="hasFloatingToc" class="toc-container no-print" [style.max-height.px]="tocMaxHeight" (mousewheel)="restrainScrolling($event)">
-  <aio-toc></aio-toc>
+  <aio-lazy-ce selector="aio-toc"></aio-lazy-ce>
 </div>
 
 <footer class="no-print">

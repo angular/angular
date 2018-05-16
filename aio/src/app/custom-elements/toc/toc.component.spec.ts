@@ -4,8 +4,8 @@ import { By } from '@angular/platform-browser';
 import { asapScheduler as asap, BehaviorSubject } from 'rxjs';
 
 import { ScrollService } from 'app/shared/scroll.service';
-import { TocComponent } from './toc.component';
 import { TocItem, TocService } from 'app/shared/toc.service';
+import { TocComponent } from './toc.component';
 
 describe('TocComponent', () => {
   let tocComponentDe: DebugElement;
