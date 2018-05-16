@@ -11,6 +11,7 @@
   "devDependencies": [
     "@angular/cli",
     "@types/jasminewd2",
+    "jasmine-marbles",
     "jasmine-spec-reporter",
     "karma-coverage-istanbul-reporter",
     "ts-node"
