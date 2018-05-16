@@ -28,7 +28,7 @@ In fact, you might like to apply them in your HTML templates as you do styles.
 -->
 그래서 화면에 표시되는 데이터는 사용자가 보기 편한 형식으로 변환하는 것이 좋습니다.
 이 때 데이터를 변환하는 로직이 애플리케이션 전반에 필요하다면 이 로직을 어디에 작성하는 것이 좋은지 고민을 해볼 수 있습니다.
-왜냐하면 화면에 표시되는 데이터의 종류가 같다면 비슷한 스타일로 표시되는 것이 일관되기 때문입니다.
+왜냐하면 화면에 표시되는 데이터의 종류가 같다면 일관된 형식으로 변환하는 것이 좋기 때문입니다.
 
 <!--
 Introducing Angular pipes, a way to write display-value transformations that you can declare in your HTML.
@@ -51,7 +51,7 @@ In this page, you'll use pipes to transform a component's birthday property into
 a human-friendly date.
 -->
 파이프는 데이터를 입력으로 받고, 이 데이터를 특정 형식으로 변환해서 반환합니다.
-이 문서에서는 컴포넌트에 있는 날짜 프로퍼티를 사용자에게 효율적으로 표시하기 위해 파이프를 어떻게 사용할 수 있는지 알아봅니다.
+다음 예제는 컴포넌트에 있는 날짜 데이터를 사용자에게 효율적으로 표시하기 위해 파이프를 어떻게 사용할 수 있는지 알아봅니다.
 
 <code-example path="pipes/src/app/hero-birthday1.component.ts" title="src/app/hero-birthday1.component.ts" linenums="false">
 
@@ -61,7 +61,7 @@ a human-friendly date.
 <!--
 Focus on the component's template.
 -->
-컴포넌트 템플릿에 집중해 봅시다.
+컴포넌트 템플릿을 자세히 봅시다.
 
 <code-example path="pipes/src/app/app.component.html" region="hero-birthday-template" title="src/app/app.component.html" linenums="false">
 
@@ -205,7 +205,7 @@ The birthday displays as **<samp>APR 15, 1988</samp>**.
 -->
 파이프는 체이닝해서 여러 파이프를 한 번에 적용할 수도 있습니다.
 아래 예제는 생년월일을 `DatePipe`로 처리한 후에 `UpperasePipe`로 다시 한 번 처리해서 최종 결과를 대문자로 표시합니다.
-최종 결과는 **<samp>APR 15, 1988</samp>**와 같이 표시됩니다.
+화면에는 **<samp>APR 15, 1988</samp>**과 같이 표시됩니다.
 
 <code-example path="pipes/src/app/app.component.html" region="chained-birthday" title="src/app/app.component.html" linenums="false">
 
@@ -216,7 +216,7 @@ The birthday displays as **<samp>APR 15, 1988</samp>**.
 This example&mdash;which displays **<samp>FRIDAY, APRIL 15, 1988</samp>**&mdash;chains
 the same pipes as above, but passes in a parameter to `date` as well.
 -->
-같은 방식으로 파이프를 체이닝하면서 `date` 파이프에 인자를 전달하면 **<samp>FRIDAY, APRIL 15, 1988</samp>**와 같은 형식으로도 표현할 수 있습니다.
+같은 방식으로 파이프를 체이닝하면서 `date` 파이프에 인자를 지정하면 **<samp>FRIDAY, APRIL 15, 1988</samp>**과 같은 형식으로도 표현할 수 있습니다.
 
 <code-example path="pipes/src/app/app.component.html" region="chained-parameter-birthday" title="src/app/app.component.html" linenums="false">
 
@@ -255,16 +255,15 @@ Your pipe has one such parameter: the `exponent`.
    pipe name that you'll use within template expressions. It must be a valid JavaScript identifier.
    Your pipe's name is `exponentialStrength`.
 -->
-커스텀 파이프를 정의하는 과정을 자세히 보면 다음과 같은 내용이 중요합니다.
+커스텀 파이프를 정의하는 과정에는 다음과 같은 내용이 중요합니다.
 
 * 파이프는 파이프 데코레이터와 메타데이터가 지정된 클래스입니다.
-* 파이프 클래스는 `PipeTransform` 인터페이스를 활용해서 구현하며, 파이프의 동작은 이 인터페이스에 있는 `transform` 메소드를 구현하는 것으로 정의합니다. 이 함수는 입력 값과 파이프 옵션을 인자로 받고 변환된 값을 반환합니다.
+* 파이프 클래스는 `PipeTransform` 인터페이스를 활용해서 구현하며, 파이프의 동작은 이 인터페이스에 있는 `transform` 메소드 안에 구현합니다. 이 함수는 입력 값과 파이프 옵션을 인자로 받고 변환된 값을 반환합니다.
 * 이 예제에서는 파이프 옵션으로 `exponent`를 받습니다.
 * 커스텀 파이프를 Angular에 등록하려면 `@Pipe` 데코레이터를 사용합니다. 이 데코레이터는 Angular 코어 라이브러리에 있습니다.
 * `@Pipe` 데코레이터에는 템플릿 표현식에 사용할 파이프 이름을 지정합니다. 파이프 이름은 JavaScript 문법에 적합하게 지정해야 하며, 이 예제에서는 `exponentialStrength`로 지정했습니다.
 
 <div class="l-sub-section">
-
 
 <!--
 ## The *PipeTransform* interface
@@ -276,9 +275,9 @@ The `transform` method is essential to a pipe.
 The `PipeTransform` *interface* defines that method and guides both tooling and the compiler.
 Technically, it's optional; Angular looks for and executes the `transform` method regardless.
 -->
-파이프에서는 `transform` 메소드가 중요합니다.
+파이프는 `transform` 메소드가 중요합니다.
 이 함수는 `PipeTransform` *인터페이스* 에서 정의하고 있으며, Angular가 해당 파이프를 제대로 동작시키기 위해서도 꼭 정의되어야 합니다.
-문법적으로는 이 인터페이스를 사용하지 않더라도 Angular가 `transform` 메소드를 확인하면 파이프로 실행합니다.
+문법적으로는 이 인터페이스를 사용하지 않더라도 Angular가 `transform` 메소드를 확인하면 파이프로 인식하고 실행합니다.
 
 </div>
 
@@ -429,7 +428,7 @@ Add a `FlyingHeroesPipe` to the `*ngFor` repeater that filters the list of heroe
 <!--
 Here's the `FlyingHeroesPipe` implementation, which follows the pattern for custom pipes described earlier.
 -->
-그리고 `FlyingHeroesPipe` 를 다음과 같이 구현합니다.
+`FlyingHeroesPipe`는 다음과 같이 구현합니다.
 
 <code-example path="pipes/src/app/flying-heroes.pipe.ts" region="pure" title="src/app/flying-heroes.pipe.ts" linenums="false">
 
@@ -470,9 +469,9 @@ if you *replace* the array, the pipe executes and the display is updated.
 The Flying Heroes application extends the
 code with checkbox switches and additional displays to help you experience these effects.
 -->
-새 히어로는 `heroes` 배열의 항목으로 추가됩니다. 하지만 이 과정에 배열의 주소 자체는 변경되지 않습니다. 그러면 Angular는 이렇게 판단합니다. *배열의 주소는 바뀌지 않았으니, 뷰를 업데이트 할 필요는 없다*.
+새 히어로는 `heroes` 배열의 항목으로 추가됩니다. 하지만 이 로직이 실행되어도 배열의 주소 자체는 변경되지 않습니다. 그러면 Angular는 이렇게 판단합니다. *바인딩 된 객체가 바뀌지 않았으니, 뷰를 업데이트 할 필요는 없다*.
 
-이 문제를 수정하려면 배열에 히어로를 추가할 때 기존에 있던 배열에 새 히어로를 추가해서 새로운 배열을 구성하고, 이 배열로 `heroes` 프로퍼티 값을 할당해야 합니다.
+이 문제를 수정하려면 배열에 히어로를 추가할 때 기존에 있던 배열에 새 히어로를 추가해서 새로운 배열을 생성하고, 이 배열로 `heroes` 프로퍼티 값을 할당해야 합니다.
 그러면 참조하던 배열이 바뀌었기 때문에 Angular의 동작 감지 로직이 제대로 동작합니다.
 그래서 새로운 배열에 파이프가 적용되고, 하늘을 날 수 있는 히어로만 화면에 표시됩니다.
 
@@ -527,8 +526,8 @@ impure like this:
 -->
 파이프는 *순수한* 파이프와 *순수하지 않은* 파이프가 있습니다.
 따로 설정하지 않으면 순수한 파이프가 기본입니다. 지금까지 살펴본 파이프도 모두 순수한 파이프였습니다.
-하지만 `pure` 값을 `false`로 설정하면 순수하지 않은 파이프를 구현할 수 있습니다.
-예를 들어 `FlyingHeroesPipe`에는 다음과 같이 적용할 수 있습니다:
+하지만 파이프 메타데이터의 `pure` 값을 `false`로 설정하면 순수하지 않은 파이프를 구현할 수 있습니다.
+`FlyingHeroesPipe`를 순수하지 않은 파이프로 구현하려면 다음과 같이 적용합니다:
 
 <code-example path="pipes/src/app/flying-heroes.pipe.ts" region="pipe-decorator" title="src/app/flying-heroes.pipe.ts" linenums="false">
 
@@ -538,7 +537,7 @@ impure like this:
 <!--
 Before doing that, understand the difference between pure and impure, starting with a pure pipe.
 -->
-순수하지 않은 파이프의 동작을 확인하기 전에, 순수한 파이프와 어떻게 다른지 알아보기 위해 순수한 파이프부터 확인해 봅시다.
+순수하지 않은 파이프의 동작을 확인하기 전에, 순수한 파이프와 어떻게 다른지 알아보기 위해 순수한 파이프부터 알아봅시다.
 
 <!--
 <h3 class="no-toc">Pure pipes</h3>
@@ -564,10 +563,10 @@ When you can't, you *can* use the impure pipe.
 *순수한 파이프*는 파이프에 전달되는 값이 *순수하게 바뀌었을* 때만 동작합니다.
 이 때 값이 순수하게 바뀌었다는 것은 기본 자료형(`String`, `Number`, `Boolean`, `Symbol`)의 값이 바뀌었거나, 객체(`Date`, `Array`, `Function`, `Object`)를 참조하는 주소가 바뀐 것을 의미합니다.
 
-그리고 이 모드에서는 객체 안에서 일어나는 변화를 감지하지 않습니다.
-그래서 Date 객체의 일부 요소가 바뀐다던가, 배열에 항목이 추가된다던가, 객체의 프로퍼티값이 변경되는 것에는 반응하지 않습니다.
+그래서 이 모드에서는 객체 안에서 일어나는 변화를 감지하지 않습니다.
+Date 객체의 일부 요소가 바뀐다던가, 배열에 항목이 추가된다던가, 객체의 프로퍼티값이 변경되는 것에는 반응하지 않습니다.
 
-동작이 조금 이상해보이기도 하지만, 이 방식은 실행속도가 빠릅니다.
+동작이 조금 이상해보이기도 하지만, 이 방식은 실행속도를 빠르게 하기 위해 필요합니다.
 왜냐하면 객체를 내부까지 모두 검사하는 것보다 참조하는 객체가 바뀌었는지만 검사하는 것이 당연히 빠르기 때문입니다.
 그래서 파이프를 실행하거나 뷰를 업데이트해야 할지 Angular가 판단할 때는 이 방식으로 동작합니다.
 
@@ -602,10 +601,10 @@ With that concern in mind, implement an impure pipe with great care.
 An expensive, long-running pipe could destroy the user experience.
 -->
 *순수하지 않은 파이프*를 사용하면 컴포넌트의 변화 감지 싸이클마다 파이프 로직을 다시 실행합니다.
-그래서 어쩌면 키 입력이 있을때마다, 마우스가 움직일 때마다 파이프 로직이 계속 실행될 수도 있습니다.
+어쩌면 키 입력이 있을때마다, 마우스가 움직일 때마다 파이프 로직이 계속 실행될 수도 있습니다.
 
 그렇기 때문에 순수하지 않은 파이프는 조심해서 사용해야 합니다.
-파이프 로직을 실행하는 데 오래 걸리면 사용자가 체감하는 앱 성능이 저하될 수 있습니다.
+파이프 로직을 실행하는 시간이 오래 걸리면 사용자가 체감하는 앱 성능이 저하될 수 있습니다.
 
 {@a impure-flying-heroes}
 
@@ -670,9 +669,12 @@ display updates as you add heroes, even when you mutate the `heroes` array.
 앱을 실행하고 히어로를 추가하면, `heroes` 배열 자체가 변경되지 않아도 파이프는 제대로 동작합니다.
 
 {@a async-pipe}
+<!--
 <h3 class="no-toc">The impure <i>AsyncPipe</i></h3>
+-->
+<h3 class="no-toc">순수하지 않은 <i>AsyncPipe</i></h3>
 
-
+<!--
 The Angular `AsyncPipe` is an interesting example of an impure pipe.
 The `AsyncPipe` accepts a `Promise` or `Observable` as input
 and subscribes to the input automatically, eventually returning the emitted values.
@@ -683,22 +685,34 @@ keeps delivering values from that `Observable` as they arrive.
 
 This next example binds an `Observable` of message strings
 (`message$`) to a view with the `async` pipe.
+-->
+순수하지 않은 파이프 중에서도 `AsyncPipe`는 조금 더 흥미롭습니다.
+`AsyncPipe`는 입력값으로 `Promise`나 `Observable` 타입을 받으며, 입력값을 자동으로 구독하면서 새로운 값이 입력될 때마다 파이프 로직을 실행하고 결과값을 반환합니다.
 
+아래 예제는 `Observable` 형태로 전달되는 메시지 문자열(`message$`)을 `async` 파이프로 뷰에 표시하는 예제입니다.
 
 <code-example path="pipes/src/app/hero-async-message.component.ts" title="src/app/hero-async-message.component.ts">
 
 </code-example>
 
 
-
+<!--
 The Async pipe saves boilerplate in the component code.
 The component doesn't have to subscribe to the async data source,
 extract the resolved values and expose them for binding,
 and have to unsubscribe when it's destroyed
 (a potent source of memory leaks).
+-->
+`AsyncPipe`가 사용하는 문자열은 컴포넌트 코드 안에 미리 정의되어 있습니다.
+이 컴포넌트는 데이터를 직접 구독하지는 않아 뷰에서 사용한 `async` 파이프가 데이터 스트림을 직접 가져오고, 각각의 문자열을 화면에 표시합니다.
+이 파이프를 사용할 때는 메모리 누수를 방지하기 위해 컴포넌트 종료 전에 Observable 스트림 구독을 해제해야 합니다.
 
+<!--
 <h3 class="no-toc">An impure caching pipe</h3>
+-->
+<h3 class="no-toc">캐싱 파이프</h3>
 
+<!--
 Write one more impure pipe, a pipe that makes an HTTP request.
 
 Remember that impure pipes are called every few milliseconds.
@@ -706,59 +720,81 @@ If you're not careful, this pipe will punish the server with requests.
 
 In the following code, the pipe only calls the server when the request URL changes and it caches the server response.
 The code uses the [Angular http](guide/http) client to retrieve data:
+-->
+순수하지 않은 파이프를 하나 더 살펴봅시다. 이 파이프는 HTTP 요청을 처리하는 파이프입니다.
 
+이전에 설명한 것처럼, 순수하지 않은 파이프는 아주 짧은 시간에 의도치 않게 여러번 실행될 수 있습니다.
+그래서 조심히 사용하지 않으면 순식간에 서버로 수많은 요청을 보낼 수 있습니다.
+
+이번에 구현하는 파이프는 요청하는 서버의 주소가 다를 때만 서버로 요청을 보내고, 한 번 보낸 서버의 응답은 캐싱합니다.
+이 코드는 [Angular http](guide/http) 클라이언트 예제에서도 활용하고 있으니 함께 확인해 보세요.
 
 <code-example path="pipes/src/app/fetch-json.pipe.ts" title="src/app/fetch-json.pipe.ts">
 
 </code-example>
 
 
-
+<!--
 Now demonstrate it in a harness component whose template defines two bindings to this pipe,
 both requesting the heroes from the `heroes.json` file.
-
+-->
+이렇게 만든 파이프를 컴포넌트 템플릿에 적용해 봅시다. 파이프가 제대로 동작하는 것을 확인하기 위해 `heroes.json` 파일을 요청하는 부분을 템플릿에 총 2번 추가했습니다.
 
 <code-example path="pipes/src/app/hero-list.component.ts" title="src/app/hero-list.component.ts">
 
 </code-example>
 
 
-
+<!--
 The component renders as the following:
-
+-->
+이 컴포넌트는 다음 그림처럼 표시됩니다:
 
 <figure>
   <img src='generated/images/guide/pipes/hero-list.png' alt="Hero List">
 </figure>
 
 
-
+<!--
 A breakpoint on the pipe's request for data shows the following:
 
 * Each binding gets its own pipe instance.
 * Each pipe instance caches its own URL and data.
 * Each pipe instance only calls the server once.
+-->
+이 파이프를 사용할 때 주의해야 할 점이 있습니다.
+
+* 파이프 인스턴스는 각 바인딩마다 따로 생성됩니다.
+* 파이프가 캐싱하는 URL과 데이터는 그 인스턴스에 저장됩니다.
+* 파이프는 서버 요청을 인스턴스마다 한 번씩만 보냅니다.
 
 <h3 class="no-toc"><i>JsonPipe</i></h3>
 
+<!--
 In the previous code sample, the second `fetch` pipe binding demonstrates more pipe chaining.
 It displays the same hero data in JSON format by chaining through to the built-in `JsonPipe`.
-
+-->
+위 예제에서 두 번째 `fetch` 파이프는 다른 파이프와 체이닝하면서 함께 사용했습니다.
+두 번째 파이프는 첫 번째 파이프와 같은 데이터를 사용하지만, 이 데이터는 Angular 내장 파이프인 `JsonPipe`를 한 번 더 거쳐서 JSON 형식으로 화면에 표시했습니다.
 
 <div class="callout is-helpful">
 
 
 
 <header>
+  <!--
   Debugging with the json pipe
+  -->
+  JSON 파이프로 디버깅하기
 </header>
 
 
-
+<!--
 The [JsonPipe](api/common/JsonPipe)
 provides an easy way to diagnosis a mysteriously failing data binding or
 inspect an object for future binding.
-
+-->
+[JsonPipe](api/common/JsonPipe)를 사용하면 템플릿에 어떤 데이터가 바인딩 되었는지, 바인딩하기 전에 데이터가 어떤 모양인지 간단하게 확인할 수 있습니다.
 
 </div>
 
@@ -766,9 +802,12 @@ inspect an object for future binding.
 
 {@a pure-pipe-pure-fn}
 
-
+<!--
 <h3 class="no-toc">Pure pipes and pure functions</h3>
+-->
+<h3 class="no-toc">순수한 파이프와 순수한 함수</h3>
 
+<!--
 A pure pipe uses pure functions.
 Pure functions process inputs and return values without detectable side effects.
 Given the same input, they should always return the same output.
@@ -780,11 +819,24 @@ A few steps back, you reviewed the `FlyingHeroesImpurePipe`&mdash;an impure pipe
 
 But always implement a *pure pipe* with a *pure function*.
 Otherwise, you'll see many console errors regarding expressions that changed after they were checked.
+-->
+순수한 파이프는 순수 함수(pure function)를 사용합니다.
+이 때 순수 함수란, 입력값과 출력값이 일관된 것을 의미하며, 순수 함수라면 같은 값이 입력되었을 때 언제나 같은 결과를 반환합니다.
 
+지금까지 살펴본 파이프는 모두 순수 함수를 사용해서 구현했습니다.
+`DatePipe`만 봐도 이 파이프는 순수한 파이프이며, 순수 함수로 구현되었습니다.
+`ExponentialStrengthPipe`와 `FlyingHeroesPipe`도 마찬가지입니다.
+반면에 `FlyingHeroesImpurePipe`는 순수 함수를 사용했지만 순수하지 않은 파이프입니다.
 
+순수하지 않은 파이프와 다르게, *순수한 파이프*는 반드시 *순수 함수*로 구현해야 합니다.
+그렇지 않으면 파이프의 적용된 값이 바뀐  이후에 수많은 에러 로그를 확인할 수 있을 것입니다.
 
+<!--
 ## Next steps
+-->
+## 다음 단계
 
+<!--
 Pipes are a great way to encapsulate and share common display-value
 transformations. Use them like styles, dropping them
 into your template's expressions to enrich the appeal and usability
@@ -792,17 +844,27 @@ of your views.
 
 Explore Angular's inventory of built-in pipes in the [API Reference](api?type=pipe).
 Try writing a custom pipe and perhaps contributing it to the community.
+-->
+뷰에 사용하는 데이터의 형식을 변환하는 로직이 다른 곳에서도 사용된다면 파이프를 사용하는 방법이 가장 효율적입니다. 그래서 파이프는 스타일처럼 간단하게 적용하면서도 템플릿 표현식의 복잡한 로직을 대체할 수 있습니다.
 
+Angular에서 제공하는 기본 파이프는 [API Reference](api?type=pipe)에서 확인할 수 있습니다.
+필요하다면 커스텀 파이프를 만드는 것도 자유로우며, 이렇게 만든 파이프를 Angular 커뮤니티에 공유해보는 것도 좋습니다.
 
 {@a no-filter-pipe}
 
 
-
+<!--
 ## Appendix: No *FilterPipe* or *OrderByPipe*
+-->
+## 부록 : *FilterPipe*와 *OrderByPipe*는 존재하지 않습니다.
 
+<!--
 Angular doesn't provide pipes for filtering or sorting lists.
 Developers familiar with AngularJS know these as `filter` and `orderBy`.
 There are no equivalents in Angular.
+-->
+Angular는 배열을 필터링하거나 정렬하는 파이프는 기본 파이프로 제공하지 않습니다.
+AngularJS에 익숙한 개발자라면 `filter`와 `orderBy` 파이프를 떠올릴 수 있지만, 이와 같은 역할을 하는 파이프는 Angular에 없습니다.
 
 <!--
 This isn't an oversight. Angular doesn't offer such pipes because
@@ -811,43 +873,76 @@ Both `filter` and `orderBy` require parameters that reference object properties.
 Earlier in this page, you learned that such pipes must be [impure](guide/pipes#pure-and-impure-pipes) and that
 Angular calls impure pipes in almost every change-detection cycle.
 -->
-This isn't an oversight. Angular doesn't offer such pipes because
-they perform poorly and prevent aggressive minification.
-Both `filter` and `orderBy` require parameters that reference object properties.
-Earlier in this page, you learned that such pipes must be [impure](guide/pipes#pure-impure-pipe) and that
-Angular calls impure pipes in almost every change-detection cycle.
+하지만 실수로 빼먹은 것은 아닙니다. Angular는 이 파이프들을 기본 파이프로 제공하는 것이 성능면에서 좋지 않다고 판단했습니다. 그리고 코드 난독화를 사용하는 경우에도 문제의 여지가 있습니다.
 
+`filter`와 `orderBy` 파이프는 모두 객체 참조를 인자로 받습니다.
+하지만 이전에 설명했듯이, Angular의 기본 변화 감지 정책에서는 객체의 참조가 바뀌지 않는 이상 파이프가 갱신되지 않기 때문에 두 파이프는 반드시 [순수하지 않은 파이프](guide/pipes#pure-impure-pipe)로 구현되어야 합니다.
+그러면 이 파이프는 모든 변화 감지 싸이클마다 다시 실행될 것입니다.
+
+<!--
 Filtering and especially sorting are expensive operations.
 The user experience can degrade severely for even moderate-sized lists when Angular calls these pipe methods many times per second.
 `filter` and `orderBy` have often been abused in AngularJS apps, leading to complaints that Angular itself is slow.
 That charge is fair in the indirect sense that AngularJS prepared this performance trap
 by offering `filter` and `orderBy` in the first place.
+-->
+배열을 필터링하고 정렬하는 로직은 많은 연산이 필요합니다.
+이 로직이 변화 감지 싸이클마다 매번 실행된다면 배열의 길이가 별로 길지 않더라도 사용자가 체감하는 앱 성능은 심각하게 저하될 수 있습니다.
+그래서 AngularJS에서도 `filter`와 `orderBy` 파이프는 앱 성능을 저하시키는 원인으로 꼽히며 종종 기피 대상이 되었습니다.
+결국 AngularJS에서는 `filter`와 `orderBy`의 성능을 따로 개선하면서 이 부담을 일부 해소하기도 했습니다.
 
+<!--
 The minification hazard is also compelling, if less obvious. Imagine a sorting pipe applied to a list of heroes.
 The list might be sorted by hero `name` and `planet` of origin properties in the following way:
+-->
+코드 난독화를 사용하는 경우에도 문제가 생길 수 있습니다.
+히어로 배열에 정렬 파이프를 적용한다고 가정해 봅시다.
+이 배열을 히어로의 `name`이나 `planet` 프로퍼티로 정렬하려면 다음과 같이 구현하는 것을 생각해 볼 수 있습니다:
 
+<!--
 <code-example language="html">
-  &lt;!-- NOT REAL CODE! -->
+  &lt;!-- NOT REAL CODE!
+  &lt;div *ngFor="let hero of heroes | orderBy:'name,planet'">&lt;/div>
+</code-example>
+-->
+<code-example language="html">
+  &lt;!-- 실제로 동작하는 코드는 아닙니다! -->
   &lt;div *ngFor="let hero of heroes | orderBy:'name,planet'">&lt;/div>
 </code-example>
 
-
-
+<!--
 You identify the sort fields by text strings, expecting the pipe to reference a property value by indexing
 (such as `hero['name']`).
 Unfortunately, aggressive minification manipulates the `Hero` property names so that `Hero.name` and `Hero.planet`
 become something like `Hero.a` and `Hero.b`. Clearly `hero['name']` doesn't work.
+-->
+이 코드를 보면 `name`과 `planet` 필드를 기준으로 정렬할 것이고, 따라서 `hero['name']`으로 객체 내부 값에 접근할 수 있다고 생각할 것입니다.
+하지만 코드 난독화를 거치고 나면 `Hero.name`이나 `Hero.planet`과 같은 프로퍼티 이름은 `Hero.a`나 `Hero.b`와 같이 변경될 수 있습니다. `hero['name']`으로 참조하는 로직은 더이상 유효하지 않습니다.
 
+<!--
 While some may not care to minify this aggressively,
 the Angular product shouldn't prevent anyone from minifying aggressively.
 Therefore, the Angular team decided that everything Angular provides will minify safely.
+-->
+그러면 코드 난독화를 적용하지 않는 경우에는 괜찮다고 생각할 수 있지만,
+Angular 때문에 코드 난독화를 하지 못하는 것은 문제가 있습니다.
+Angular 팀은 Angular 코드 전체가 코드 난독화에 지장이 있어서는 안된다고 최종 판단했습니다.
 
+<!--
 The Angular team and many experienced Angular developers strongly recommend moving
 filtering and sorting logic into the component itself.
 The component can expose a `filteredHeroes` or `sortedHeroes` property and take control
 over when and how often to execute the supporting logic.
 Any capabilities that you would have put in a pipe and shared across the app can be
 written in a filtering/sorting service and injected into the component.
+-->
+Angular 팀과 Angular를 많이 다뤄본 개발자들은 배열을 필터링하거나 정렬하는 로직을 컴포넌트와 분리하도록 권장합니다.
+꼭 필요하다면 컴포넌트에 `filteredHeroes`나 `sortedHeroes` 프로퍼티를 선언하고, 컴포넌트 클래스에 동작 로직을 구현하는 것도 고려해볼만 합니다. 이 방법을 사용하면 배열 필터링과 정렬 로직이 언제 어떻게 실행될지 개발자가 제어할 수 있습니다.
+배열을 필터링하거나 정렬하는 로직을 서비스에 구현하고, 컴포넌트는 이 서비스를 주입받아 사용하는 방법도 있습니다.
 
+<!--
 If these performance and minification considerations don't apply to you, you can always create your own such pipes
 (similar to the [FlyingHeroesPipe](guide/pipes#impure-flying-heroes)) or find them in the community.
+-->
+성능이나 코드 난독화의 문제가 항상 문제가 되는 것은 아닙니다.
+로직을 파이프로 구현해도 별 문제가 없다면 파이프로 구현하는 것도 여전히 검토해볼만 합니다.
