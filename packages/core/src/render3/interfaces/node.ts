@@ -118,11 +118,12 @@ export interface LNode {
    * Pointer to the corresponding TNode object, which stores static
    * data about this node.
    */
-  tNode: TNode|null;
+  tNode: TNode;
 
   /**
    * A pointer to a LContainerNode created by directives requesting ViewContainerRef
    */
+  // TODO(kara): Remove when removing LNodes
   dynamicLContainerNode: LContainerNode|null;
 }
 
@@ -210,8 +211,10 @@ export interface TNode {
    *
    * This is necessary to get from any TNode to its corresponding LNode when
    * traversing the node tree.
+   *
+   * If null, this is a view node created from a dynamically created view.
    */
-  index: number;
+  index: number|null;
 
   /**
    * This number stores two values using its bits:
@@ -306,6 +309,11 @@ export interface TNode {
    * to insert them or remove them from the DOM.
    */
   next: TNode|null;
+
+  /**
+   * A pointer to a LContainerNode created by directives requesting ViewContainerRef
+   */
+  dynamicContainerNode: TNode|null;
 }
 
 /** Static data for an LElementNode  */

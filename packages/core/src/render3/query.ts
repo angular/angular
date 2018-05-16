@@ -195,7 +195,7 @@ function getIdxOfMatchingSelector(tNode: TNode, selector: string): number|null {
  */
 function getIdxOfMatchingDirective(node: LNode, type: Type<any>): number|null {
   const defs = node.view.tView.directives !;
-  const flags = node.tNode !.flags;
+  const flags = node.tNode.flags;
   const count = flags & TNodeFlags.DirectiveCountMask;
   const start = flags >> TNodeFlags.DirectiveStartingIndexShift;
   const end = start + count;
@@ -241,8 +241,7 @@ function add(query: LQuery<any>| null, node: LNode) {
     } else {
       const selector = predicate.selector !;
       for (let i = 0; i < selector.length; i++) {
-        ngDevMode && assertNotNull(node.tNode, 'node.tNode');
-        const directiveIdx = getIdxOfMatchingSelector(node.tNode !, selector[i]);
+        const directiveIdx = getIdxOfMatchingSelector(node.tNode, selector[i]);
         if (directiveIdx !== null) {
           // a node is matching a predicate - determine what to read
           // note that queries using name selector must specify read strategy
