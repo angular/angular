@@ -187,7 +187,7 @@ export function LifecycleHooksFeature(component: any, def: ComponentDef<any>): v
 
   // Root component is always created at dir index 0
   queueInitHooks(0, def.onInit, def.doCheck, elementNode.view.tView);
-  queueLifecycleHooks(elementNode.tNode !.flags, elementNode.view);
+  queueLifecycleHooks(elementNode.tNode.flags, elementNode.view);
 }
 
 /**
