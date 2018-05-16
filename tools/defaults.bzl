@@ -79,12 +79,16 @@ def ts_web_test_suite(bootstrap = [], deps = [], **kwargs):
   _ts_web_test_suite(
       bootstrap = bootstrap,
       deps = local_deps,
-      # Run unit tests on Chromium and Firefox by default.
+      # Run unit tests on local Chromium by default.
       # You can exclude tests based on tags, e.g. to skip Firefox testing,
       #   `bazel test --test_tag_filters=-browser:firefox-local [targets]`
       browsers = [
           "@io_bazel_rules_webtesting//browsers:chromium-local",
-          "@io_bazel_rules_webtesting//browsers:firefox-local",
+          # Don't test on local Firefox by default, for faster builds.
+          # We think that bugs in Angular tend to be caught the same in any
+          # evergreen browser.
+          # "@io_bazel_rules_webtesting//browsers:firefox-local",
+          # TODO(alexeagle): add remote browsers on SauceLabs
       ],
       **kwargs)
 
