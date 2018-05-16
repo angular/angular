@@ -92,11 +92,11 @@ describe('AppComponent', () => {
     });
 
     describe('hasFloatingToc', () => {
-      it('should initially be true', () => {
+      it('should initially be false', () => {
         const fixture2 = TestBed.createComponent(AppComponent);
         const component2 = fixture2.componentInstance;
 
-        expect(component2.hasFloatingToc).toBe(true);
+        expect(component2.hasFloatingToc).toBe(false);
       });
 
       it('should be false on narrow screens', () => {
@@ -632,27 +632,28 @@ describe('AppComponent', () => {
         toc = tocContainer && tocContainer.querySelector('aio-toc');
       };
 
-      beforeEach(() => setHasFloatingToc(true));
-
 
       it('should show/hide `<aio-toc>` based on `hasFloatingToc`', () => {
-        expect(tocContainer).toBeTruthy();
-        expect(toc).toBeTruthy();
-
-        setHasFloatingToc(false);
         expect(tocContainer).toBeFalsy();
         expect(toc).toBeFalsy();
 
         setHasFloatingToc(true);
         expect(tocContainer).toBeTruthy();
         expect(toc).toBeTruthy();
+
+        setHasFloatingToc(false);
+        expect(tocContainer).toBeFalsy();
+        expect(toc).toBeFalsy();
       });
 
       it('should have a non-embedded `<aio-toc>` element', () => {
+        setHasFloatingToc(true);
         expect(toc!.classList.contains('embedded')).toBe(false);
       });
 
       it('should update the TOC container\'s `maxHeight` based on `tocMaxHeight`', () => {
+        setHasFloatingToc(true);
+
         expect(tocContainer!.style['max-height']).toBe('');
 
         component.tocMaxHeight = '100';
@@ -665,10 +666,19 @@ describe('AppComponent', () => {
         const restrainScrolling = spyOn(component, 'restrainScrolling');
         const evt = new MouseEvent('mousewheel');
 
+        setHasFloatingToc(true);
         expect(restrainScrolling).not.toHaveBeenCalled();
 
         tocContainer!.dispatchEvent(evt);
         expect(restrainScrolling).toHaveBeenCalledWith(evt);
+      });
+
+      it('should not be loaded/registered until necessary', () => {
+        const loader: TestElementsLoader = fixture.debugElement.injector.get(ElementsLoader);
+        expect(loader.loadCustomElement).not.toHaveBeenCalled();
+
+        setHasFloatingToc(true);
+        expect(loader.loadCustomElement).toHaveBeenCalledWith('aio-toc');
       });
     });
 
@@ -1377,7 +1387,7 @@ class TestHttpClient {
       const id = match[1]!;
       // Make up a title for test purposes
       const title = id.split('/').pop()!.replace(/^([a-z])/, (_, letter) => letter.toUpperCase());
-      const h1 = (id === 'no-title') ? '' : `<h1>${title}</h1>`;
+      const h1 = (id === 'no-title') ? '' : `<h1 class="no-toc">${title}</h1>`;
       const contents = `${h1}<h2 id="#somewhere">Some heading</h2>`;
       data = { id, contents };
     }
