@@ -18,7 +18,7 @@ import {
 } from '@angular/cdk/overlay';
 import {TemplatePortal} from '@angular/cdk/portal';
 import {DOCUMENT} from '@angular/common';
-import {filter, take, switchMap, delay, tap} from 'rxjs/operators';
+import {filter, take, switchMap, delay, tap, map} from 'rxjs/operators';
 import {
   ChangeDetectorRef,
   Directive,
@@ -226,7 +226,7 @@ export class MatAutocompleteTrigger implements ControlValueAccessor, OnDestroy {
    * A stream of actions that should close the autocomplete panel, including
    * when an option is selected, on blur, and when TAB is pressed.
    */
-  get panelClosingActions(): Observable<MatOptionSelectionChange> {
+  get panelClosingActions(): Observable<MatOptionSelectionChange|null> {
     return merge(
       this.optionSelections,
       this.autocomplete._keyManager.tabOut.pipe(filter(() => this._overlayAttached)),
@@ -235,6 +235,9 @@ export class MatAutocompleteTrigger implements ControlValueAccessor, OnDestroy {
       this._overlayRef ?
           this._overlayRef.detachments().pipe(filter(() => this._overlayAttached)) :
           observableOf()
+    ).pipe(
+      // Normalize the output so we return a consistent type.
+      map(event => event instanceof MatOptionSelectionChange ? event : null)
     );
   }
 
