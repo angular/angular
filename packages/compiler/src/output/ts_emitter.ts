@@ -15,6 +15,9 @@ import * as o from './output_ast';
 
 const _debugFilePath = '/debug/lib';
 
+import * as ts from 'typescript';
+ts.parseConfig
+
 export function debugOutputAstAsTypeScript(ast: o.Statement | o.Expression | o.Type | any[]):
     string {
   const converter = new _TsEmitterVisitor();
