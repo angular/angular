@@ -1,3 +1,13 @@
+<a name="5.2.11"></a>
+## [5.2.11](https://github.com/angular/angular/compare/5.2.10...5.2.11) (2018-05-16)
+
+
+### Bug Fixes
+
+* **service-worker:** correctly handle requests with empty `clientId` ([#23625](https://github.com/angular/angular/issues/23625)) ([bc27d4a](https://github.com/angular/angular/commit/bc27d4a)), closes [#23526](https://github.com/angular/angular/issues/23526)
+
+
+
 <a name="5.2.10"></a>
 ## [5.2.10](https://github.com/angular/angular/compare/5.2.9...5.2.10) (2018-04-16)
 
