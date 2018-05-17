@@ -124,7 +124,7 @@ export interface Directive {
    *
    * When `bindingProperty` is not provided, it is assumed to be equal to `directiveProperty`.
    *
-   * ### Example ([live demo](http://plnkr.co/edit/ivhfXY?p=preview))
+   * ### Example
    *
    * The following example creates a component with two data-bound properties.
    *
@@ -169,7 +169,7 @@ export interface Directive {
    * - `directiveProperty` specifies the component property that emits events.
    * - `bindingProperty` specifies the DOM property the event handler is attached to.
    *
-   * ### Example ([live demo](http://plnkr.co/edit/d5CNq7?p=preview))
+   * ### Example
    *
    * ```typescript
    * @Directive({
@@ -220,7 +220,7 @@ export interface Directive {
    *
    * When writing a directive event binding, you can also refer to the $event local variable.
    *
-   * ### Example ([live demo](http://plnkr.co/edit/DlA5KU?p=preview))
+   * ### Example
    *
    * The following example declares a directive that attaches a click listener to the button and
    * counts clicks.
@@ -254,7 +254,7 @@ export interface Directive {
    * Angular automatically checks host property bindings during change detection.
    * If a binding changes, it will update the host element of the directive.
    *
-   * ### Example ([live demo](http://plnkr.co/edit/gNg0ED?p=preview))
+   * ### Example
    *
    * The following example creates a directive that sets the `valid` and `invalid` classes
    * on the DOM element that has ngModel directive on it.
