@@ -72,10 +72,6 @@ describe('Attribute Utilities', () => {
       expect(getAttrValue(attrMap, 'x')).toBeUndefined();
     });
 
-    it('should return undefined if no argument', () => {
-      expect(getAttrValue(attrMap)).toBeUndefined();
-    });
-
   });
 
   describe('boolFromValue', () => {
