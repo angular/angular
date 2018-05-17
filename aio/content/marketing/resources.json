@@ -345,6 +345,12 @@
             "title": "Angular Material",
             "url": "https://github.com/angular/material2"
           },
+          "ngzorro": {
+            "desc": "A set of enterprise-class UI components based on Ant Design and Angular",
+            "rev": true,
+            "title": "Ant Design of Angular (ng-zorro-antd)",
+            "url": "https://ng.ant.design/docs/introduce/en"
+          },
           "aggrid": {
             "desc": "A datagrid for Angular with enterprise style features such as sorting, filtering, custom rendering, editing, grouping, aggregation and pivoting.",
             "rev": true,
