@@ -43,10 +43,6 @@ describe('LiveExampleComponent', () => {
     // Trigger `ngAfterContentInit()`.
     fixture.detectChanges();
 
-    // Ensure wide-screen by default.
-    liveExampleComponent.onResize(1033);
-    fixture.detectChanges();
-
     testFn();
   }
 
@@ -100,15 +96,6 @@ describe('LiveExampleComponent', () => {
       });
     });
 
-    it('should have expected flat-style stackblitz when has `flat-style`', () => {
-      testPath = '/tutorial/toh-pt1';
-      setHostTemplate('<live-example flat-style></live-example>');
-      testComponent(() => {
-        // The file should be "stackblitz.html", not "stackblitz.html"
-        expect(getLiveExampleAnchor().href).toContain('/stackblitz.html');
-      });
-    });
-
     it('should have expected stackblitz & download hrefs when has example directory (name)', () => {
       testPath = '/guide/somewhere';
       setHostTemplate('<live-example name="toh-pt1"></live-example>');
@@ -147,15 +134,7 @@ describe('LiveExampleComponent', () => {
       });
     });
 
-    it('should be flat style when flat-style requested', () => {
-      setHostTemplate('<live-example flat-style></live-example>');
-      testComponent(() => {
-        const hrefs = getHrefs();
-        expect(hrefs[0]).toContain(defaultTestPath + '/stackblitz.html');
-      });
-    });
-
-    it('should not have a download link when `noDownload` atty present', () => {
+    it('should not have a download link when `noDownload` attr present', () => {
       setHostTemplate('<live-example noDownload></live-example>');
       testComponent(() => {
         const hrefs = getHrefs();
@@ -164,7 +143,7 @@ describe('LiveExampleComponent', () => {
       });
     });
 
-    it('should only have a download link when `downloadOnly` atty present', () => {
+    it('should only have a download link when `downloadOnly` attr present', () => {
       setHostTemplate('<live-example downloadOnly>download this</live-example>');
       testComponent(() => {
         const hrefs = getHrefs();
@@ -245,29 +224,6 @@ describe('LiveExampleComponent', () => {
       setHostTemplate('<live-example embedded nodownload></live-example>');
       testComponent(() => {
         expect(getDownloadAnchor()).toBeNull();
-      });
-    });
-  });
-
-  describe('when narrow display (mobile)', () => {
-
-    it('should be embedded style when no style defined', () => {
-      setHostTemplate('<live-example></live-example>');
-      testComponent(() => {
-        liveExampleComponent.onResize(600); // narrow
-        fixture.detectChanges();
-        const hrefs = getHrefs();
-        expect(hrefs[0]).toContain(defaultTestPath + '/stackblitz.html');
-      });
-    });
-
-    it('should be embedded style even when flat-style requested', () => {
-      setHostTemplate('<live-example flat-style></live-example>');
-      testComponent(() => {
-        liveExampleComponent.onResize(600); // narrow
-        fixture.detectChanges();
-        const hrefs = getHrefs();
-        expect(hrefs[0]).toContain(defaultTestPath + '/stackblitz.html');
       });
     });
   });
