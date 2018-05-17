@@ -6,20 +6,23 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {TNode} from '../../src/render3/interfaces/node';
+import {TNode, TNodeType} from '../../src/render3/interfaces/node';
+
 import {CssSelector, CssSelectorList, NG_PROJECT_AS_ATTR_NAME, SelectorFlags,} from '../../src/render3/interfaces/projection';
 import {getProjectAsAttrValue, isNodeMatchingSelectorList, isNodeMatchingSelector} from '../../src/render3/node_selector_matcher';
 
 function testLStaticData(tagName: string, attrs: string[] | null): TNode {
   return {
-    flags: 0,
-    tagName,
-    attrs,
+    type: TNodeType.Element,
+    index: 0,
+    flags: 0, tagName, attrs,
     localNames: null,
     initialInputs: undefined,
     inputs: undefined,
     outputs: undefined,
     tViews: null,
+    next: null,
+    dynamicContainerNode: null
   };
 }
 
