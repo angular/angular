@@ -1,3 +1,6 @@
+<!-- Content projection is used to get the content HTML provided to the component. -->
+<span #content style="display: none"><ng-content></ng-content></span>
+
 <span [ngSwitch]="mode">
   <span *ngSwitchCase="'disabled'">{{title}} <em>(not available on this device)</em></span>
   <span *ngSwitchCase="'embedded'">
