@@ -22,7 +22,7 @@ import {assertGreaterThan, assertLessThan, assertNotNull} from './assert';
 import {addToViewTree, assertPreviousIsParent, createLContainer, createLNodeObject, createTNode, createTView, getDirectiveInstance, getPreviousOrParentNode, getRenderer, isComponent, renderEmbeddedTemplate, resolveDirective} from './instructions';
 import {ComponentTemplate, DirectiveDef, DirectiveDefList, PipeDefList} from './interfaces/definition';
 import {LInjector} from './interfaces/injector';
-import {LContainerNode, LElementNode, LNode, TNodeType, LViewNode, TNodeFlags} from './interfaces/node';
+import {LContainerNode, LElementNode, LNode, LViewNode, TNodeFlags, TNodeType} from './interfaces/node';
 import {QueryReadType} from './interfaces/query';
 import {Renderer3} from './interfaces/renderer';
 import {LView, TView} from './interfaces/view';

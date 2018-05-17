@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {TNodeType, TNode} from '../../src/render3/interfaces/node';
+import {TNode, TNodeType} from '../../src/render3/interfaces/node';
 
 import {CssSelector, CssSelectorList, NG_PROJECT_AS_ATTR_NAME, SelectorFlags,} from '../../src/render3/interfaces/projection';
 import {getProjectAsAttrValue, isNodeMatchingSelectorList, isNodeMatchingSelector} from '../../src/render3/node_selector_matcher';
