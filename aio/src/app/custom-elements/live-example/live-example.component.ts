@@ -1,5 +1,5 @@
 /* tslint:disable component-selector */
-import { Component, ElementRef, HostListener, Input, OnInit, AfterViewInit, ViewChild } from '@angular/core';
+import { AfterContentInit, AfterViewInit, Component, ElementRef, HostListener, Input, ViewChild } from '@angular/core';
 import { Location } from '@angular/common';
 import { CONTENT_URL_PREFIX } from 'app/documents/document.service';
 
@@ -54,7 +54,7 @@ const zipBase = CONTENT_URL_PREFIX + 'zips/';
   selector: 'live-example',
   templateUrl: 'live-example.component.html'
 })
-export class LiveExampleComponent implements OnInit {
+export class LiveExampleComponent implements AfterContentInit {
 
   // Will force to embedded-style when viewport width is narrow
   // "narrow" value was picked based on phone dimensions from http://screensiz.es/phone
@@ -70,6 +70,9 @@ export class LiveExampleComponent implements OnInit {
   title: string;
   zip: string;
   zipName: string;
+
+  @ViewChild('content')
+  private content: ElementRef;
 
   constructor(
     private elementRef: ElementRef,
@@ -111,11 +114,9 @@ export class LiveExampleComponent implements OnInit {
     this.stackblitz = `${liveExampleBase}${exampleDir}/${this.stackblitzName}stackblitz.html${urlQuery}`;
   }
 
-  ngOnInit() {
-    // The `liveExampleContent` property is set by the DocViewer when it builds this component.
-    // It is the original innerHTML of the host element.
+  ngAfterContentInit() {
     // Angular will sanitize this title when displayed so should be plain text.
-    const title = this.elementRef.nativeElement.liveExampleContent;
+    const title = this.content.nativeElement.textContent;
     this.title = (title || this.attrs.title || 'live example').trim();
     this.onResize(window.innerWidth);
   }

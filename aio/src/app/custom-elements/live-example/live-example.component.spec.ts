@@ -12,7 +12,6 @@ describe('LiveExampleComponent', () => {
   let liveExampleComponent: LiveExampleComponent;
   let fixture: ComponentFixture<HostComponent>;
   let testPath: string;
-  let liveExampleContent: string|null;
 
   //////// test helpers ////////
 
@@ -41,12 +40,11 @@ describe('LiveExampleComponent', () => {
     liveExampleDe = fixture.debugElement.children[0];
     liveExampleComponent = liveExampleDe.componentInstance;
 
-    // Copy the LiveExample's innerHTML (content)
-    // into the `liveExampleContent` property as the DocViewer does
-    liveExampleDe.nativeElement.liveExampleContent = liveExampleContent;
-
+    // Trigger `ngAfterContentInit()`.
     fixture.detectChanges();
-    liveExampleComponent.onResize(1033); // wide by default
+
+    // Ensure wide-screen by default.
+    liveExampleComponent.onResize(1033);
     fixture.detectChanges();
 
     testFn();
@@ -64,7 +62,6 @@ describe('LiveExampleComponent', () => {
     .overrideComponent(EmbeddedStackblitzComponent, {set: {template: 'NO IFRAME'}});
 
     testPath = defaultTestPath;
-    liveExampleContent = null;
   });
 
   describe('when not embedded', () => {
@@ -196,12 +193,12 @@ describe('LiveExampleComponent', () => {
     });
 
     it('should add title from <live-example> body', () => {
-      liveExampleContent = 'The Greatest Example';
-      setHostTemplate('<live-example title="ignore this title"></live-example>');
+      const expectedTitle = 'The Greatest Example';
+      setHostTemplate(`<live-example title="ignore this title">${expectedTitle}</live-example>`);
       testComponent(() => {
         const anchor = getLiveExampleAnchor();
-        expect(anchor.textContent).toBe(liveExampleContent, 'anchor content');
-        expect(anchor.getAttribute('title')).toBe(liveExampleContent, 'title');
+        expect(anchor.textContent).toBe(expectedTitle, 'anchor content');
+        expect(anchor.getAttribute('title')).toBe(expectedTitle, 'title');
       });
     });
 
