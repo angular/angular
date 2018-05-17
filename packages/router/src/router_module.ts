@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {APP_BASE_HREF, HashLocationStrategy, LOCATION_INITIALIZED, Location, LocationStrategy, PathLocationStrategy, PlatformLocation} from '@angular/common';
+import {APP_BASE_HREF, HashLocationStrategy, LOCATION_INITIALIZED, Location, LocationStrategy, PathLocationStrategy, PlatformLocation, ViewportScroller} from '@angular/common';
 import {ANALYZE_FOR_ENTRY_COMPONENTS, APP_BOOTSTRAP_LISTENER, APP_INITIALIZER, ApplicationRef, Compiler, ComponentRef, Inject, Injectable, InjectionToken, Injector, ModuleWithProviders, NgModule, NgModuleFactoryLoader, NgProbeToken, Optional, Provider, SkipSelf, SystemJsNgModuleLoader} from '@angular/core';
 import {ɵgetDOM as getDOM} from '@angular/platform-browser';
 import {Subject, of } from 'rxjs';
@@ -21,6 +21,7 @@ import {ErrorHandler, Router} from './router';
 import {ROUTES} from './router_config_loader';
 import {ChildrenOutletContexts} from './router_outlet_context';
 import {NoPreloading, PreloadAllModules, PreloadingStrategy, RouterPreloader} from './router_preloader';
+import {RouterScroller} from './router_scroller';
 import {ActivatedRoute} from './router_state';
 import {UrlHandlingStrategy} from './url_handling_strategy';
 import {DefaultUrlSerializer, UrlSerializer} from './url_tree';
@@ -166,6 +167,11 @@ export class RouterModule {
           ]
         },
         {
+          provide: RouterScroller,
+          useFactory: createRouterScroller,
+          deps: [Router, ViewportScroller, ROUTER_CONFIGURATION]
+        },
+        {
           provide: PreloadingStrategy,
           useExisting: config && config.preloadingStrategy ? config.preloadingStrategy :
                                                              NoPreloading
@@ -182,6 +188,14 @@ export class RouterModule {
   static forChild(routes: Routes): ModuleWithProviders {
     return {ngModule: RouterModule, providers: [provideRoutes(routes)]};
   }
+}
+
+export function createRouterScroller(
+    router: Router, viewportScroller: ViewportScroller, config: ExtraOptions): RouterScroller {
+  if (config.scrollOffset) {
+    viewportScroller.setOffset(config.scrollOffset);
+  }
+  return new RouterScroller(router, viewportScroller, config);
 }
 
 export function provideLocationStrategy(
@@ -290,6 +304,77 @@ export interface ExtraOptions {
    * current URL. Default is 'ignore'.
    */
   onSameUrlNavigation?: 'reload'|'ignore';
+
+  /**
+   * Configures if the scroll position needs to be restored when navigating back.
+   *
+   * * 'disabled'--does nothing (default).
+   * * 'top'--set the scroll position to 0,0..
+   * * 'enabled'--set the scroll position to the stored position. This option will be the default in
+   * the future.
+   *
+   * When enabled, the router store store scroll positions when navigating forward, and will
+   * restore the stored positions whe navigating back (popstate). When navigating forward,
+   * the scroll position will be set to [0, 0], or to the anchor if one is provided.
+   *
+   * You can implement custom scroll restoration behavior as follows.
+   * ```typescript
+   * class AppModule {
+   *  constructor(router: Router, viewportScroller: ViewportScroller, store: Store<AppState>) {
+   *    router.events.pipe(filter(e => e instanceof Scroll), switchMap(e => {
+   *      return store.pipe(first(), timeout(200), map(() => e));
+   *    }).subscribe(e => {
+   *      if (e.position) {
+   *        viewportScroller.scrollToPosition(e.position);
+   *      } else if (e.anchor) {
+   *        viewportScroller.scrollToAnchor(e.anchor);
+   *      } else {
+   *        viewportScroller.scrollToPosition([0, 0]);
+   *      }
+   *    });
+   *  }
+   * }
+   * ```
+   *
+   * You can also implement component-specific scrolling like this:
+   *
+   * ```typescript
+   * class ListComponent {
+   *   list: any[];
+   *   constructor(router: Router, viewportScroller: ViewportScroller, fetcher: ListFetcher) {
+   *     const scrollEvents = router.events.filter(e => e instanceof Scroll);
+   *     listFetcher.fetch().pipe(withLatestFrom(scrollEvents)).subscribe(([list, e]) => {
+   *       this.list = list;
+   *       if (e.position) {
+   *         viewportScroller.scrollToPosition(e.position);
+   *       } else {
+   *         viewportScroller.scrollToPosition([0, 0]);
+   *       }
+   *     });
+   *   }
+   * }
+   */
+  scrollPositionRestoration?: 'disabled'|'enabled'|'top';
+
+  /**
+   * Configures if the router should scroll to the element when the url has a fragment.
+   *
+   * * 'disabled'--does nothing (default).
+   * * 'enabled'--scrolls to the element. This option will be the default in the future.
+   *
+   * Anchor scrolling does not happen on 'popstate'. Instead, we restore the position
+   * that we stored or scroll to the top.
+   */
+  anchorScrolling?: 'disabled'|'enabled';
+
+  /**
+   * Configures the scroll offset the router will use when scrolling to an element.
+   *
+   * When given a tuple with two numbers, the router will always use the numbers.
+   * When given a function, the router will invoke the function every time it restores scroll
+   * position.
+   */
+  scrollOffset?: [number, number]|(() => [number, number]);
 
   /**
    * Defines how the router merges params, data and resolved data from parent to child
@@ -406,6 +491,7 @@ export class RouterInitializer {
   bootstrapListener(bootstrappedComponentRef: ComponentRef<any>): void {
     const opts = this.injector.get(ROUTER_CONFIGURATION);
     const preloader = this.injector.get(RouterPreloader);
+    const routerScroller = this.injector.get(RouterScroller);
     const router = this.injector.get(Router);
     const ref = this.injector.get<ApplicationRef>(ApplicationRef);
 
@@ -420,6 +506,7 @@ export class RouterInitializer {
     }
 
     preloader.setUpPreloading();
+    routerScroller.init();
     router.resetRootComponentType(ref.componentTypes[0]);
     this.resultOfPreactivationDone.next(null !);
     this.resultOfPreactivationDone.complete();
