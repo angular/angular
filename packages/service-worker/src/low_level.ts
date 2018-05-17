@@ -61,19 +61,10 @@ function errorObservable(message: string): Observable<any> {
  * @experimental
  */
 export class NgswCommChannel {
-  /**
-   * @internal
-   */
   readonly worker: Observable<ServiceWorker>;
 
-  /**
-   * @internal
-   */
   readonly registration: Observable<ServiceWorkerRegistration>;
 
-  /**
-   * @internal
-   */
   readonly events: Observable<TypedEvent>;
 
   constructor(private serviceWorker: ServiceWorkerContainer|undefined) {
@@ -100,9 +91,6 @@ export class NgswCommChannel {
     }
   }
 
-  /**
-   * @internal
-   */
   postMessage(action: string, payload: Object): Promise<void> {
     return this.worker
         .pipe(take(1), tap((sw: ServiceWorker) => {
@@ -114,38 +102,23 @@ export class NgswCommChannel {
         .then(() => undefined);
   }
 
-  /**
-   * @internal
-   */
   postMessageWithStatus(type: string, payload: Object, nonce: number): Promise<void> {
     const waitForStatus = this.waitForStatus(nonce);
     const postMessage = this.postMessage(type, payload);
     return Promise.all([waitForStatus, postMessage]).then(() => undefined);
   }
 
-  /**
-   * @internal
-   */
   generateNonce(): number { return Math.round(Math.random() * 10000000); }
 
-  /**
-   * @internal
-   */
   eventsOfType<T extends TypedEvent>(type: T['type']): Observable<T> {
     const filterFn = (event: TypedEvent): event is T => event.type === type;
     return this.events.pipe(filter(filterFn));
   }
 
-  /**
-   * @internal
-   */
   nextEventOfType<T extends TypedEvent>(type: T['type']): Observable<T> {
     return this.eventsOfType(type).pipe(take(1));
   }
 
-  /**
-   * @internal
-   */
   waitForStatus(nonce: number): Promise<void> {
     return this.eventsOfType<StatusEvent>('STATUS')
         .pipe(filter(event => event.nonce === nonce), take(1), map(event => {
