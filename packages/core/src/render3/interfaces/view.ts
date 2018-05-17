@@ -182,14 +182,6 @@ export interface LView {
   context: {}|RootContext|null;
 
   /**
-   * A count of dynamic views that are children of this view (indirectly via containers).
-   *
-   * This is used to decide whether to scan children of this view when refreshing dynamic views
-   * after refreshing the view itself.
-   */
-  dynamicViewCount: number;
-
-  /**
    * Queries active for this view - nodes from a view are reported to those queries
    */
   queries: LQueries|null;
