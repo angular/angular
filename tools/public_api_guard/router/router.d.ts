@@ -108,15 +108,18 @@ export declare class DefaultUrlSerializer implements UrlSerializer {
 /** @experimental */
 export declare type DetachedRouteHandle = {};
 
-export declare type Event = RouterEvent | RouteConfigLoadStart | RouteConfigLoadEnd | ChildActivationStart | ChildActivationEnd | ActivationStart | ActivationEnd;
+export declare type Event = RouterEvent | RouteConfigLoadStart | RouteConfigLoadEnd | ChildActivationStart | ChildActivationEnd | ActivationStart | ActivationEnd | Scroll;
 
 export interface ExtraOptions {
+    anchorScrolling?: 'disabled' | 'enabled';
     enableTracing?: boolean;
     errorHandler?: ErrorHandler;
     initialNavigation?: InitialNavigation;
     onSameUrlNavigation?: 'reload' | 'ignore';
     paramsInheritanceStrategy?: 'emptyOnly' | 'always';
     preloadingStrategy?: any;
+    scrollOffset?: [number, number] | (() => [number, number]);
+    scrollPositionRestoration?: 'disabled' | 'enabled' | 'top';
     useHash?: boolean;
 }
 
@@ -464,6 +467,17 @@ export declare class RoutesRecognized extends RouterEvent {
 
 /** @experimental */
 export declare type RunGuardsAndResolvers = 'paramsChange' | 'paramsOrQueryParamsChange' | 'always';
+
+export declare class Scroll {
+    readonly anchor: string | null;
+    readonly position: [number, number] | null;
+    readonly routerEvent: NavigationEnd;
+    constructor(
+        routerEvent: NavigationEnd,
+        position: [number, number] | null,
+        anchor: string | null);
+    toString(): string;
+}
 
 /** @experimental */
 export declare abstract class UrlHandlingStrategy {

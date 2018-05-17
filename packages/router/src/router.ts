@@ -543,7 +543,6 @@ export class Router {
       rawUrl: UrlTree, source: NavigationTrigger, state: {navigationId: number}|null,
       extras: NavigationExtras): Promise<boolean> {
     const lastNavigation = this.navigations.value;
-
     // If the user triggers a navigation imperatively (e.g., by using navigateByUrl),
     // and that navigation results in 'replaceState' that leads to the same URL,
     // we should skip those.
