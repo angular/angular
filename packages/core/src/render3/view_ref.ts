@@ -42,7 +42,7 @@ export class ViewRef<T> implements viewEngine_EmbeddedViewRef<T> {
    *
    * <!-- TODO: Add a link to a chapter on OnPush components -->
    *
-   * ### Example ([live demo](https://stackblitz.com/edit/angular-kx7rrw))
+   * ### Example
    *
    * ```typescript
    * @Component({
@@ -127,7 +127,7 @@ export class ViewRef<T> implements viewEngine_EmbeddedViewRef<T> {
    *
    * <!-- TODO: Add a link to a chapter on detach/reattach/local digest -->
    *
-   * ### Example ([live demo](https://stackblitz.com/edit/angular-ymgsxw))
+   * ### Example
    *
    * The following example creates a component displaying `live` data. The component will detach
    * its change detector from the main change detector tree when the component's live property
