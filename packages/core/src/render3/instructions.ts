@@ -321,7 +321,6 @@ export function createLView<T>(
     bindingIndex: -1,
     template: template,
     context: context,
-    dynamicViewCount: 0,
     lifecycleStage: LifecycleStage.Init,
     queries: null,
     injector: currentView && currentView.injector,
@@ -1455,19 +1454,28 @@ function generateInitialInputs(
 //// ViewContainer & View
 //////////////////////////
 
+/**
+ * Creates a LContainer, either from a container instruction, or for a ViewContainerRef.
+ *
+ * @param parentLNode the LNode in which the container's content will be rendered
+ * @param currentView The parent view of the LContainer
+ * @param template Optional the inline template (ng-template instruction case)
+ * @param isForViewContainerRef Optional a flag indicating the ViewContainerRef case
+ * @returns LContainer
+ */
 export function createLContainer(
-    parentLNode: LNode, currentView: LView, template?: ComponentTemplate<any>): LContainer {
+    parentLNode: LNode, currentView: LView, template?: ComponentTemplate<any>,
+    isForViewContainerRef?: boolean): LContainer {
   ngDevMode && assertNotNull(parentLNode, 'containers should have a parent');
   return <LContainer>{
     views: [],
-    nextIndex: 0,
+    nextIndex: isForViewContainerRef ? null : 0,
     // If the direct parent of the container is a view, its views will need to be added
     // through insertView() when its parent view is being inserted:
     renderParent: canInsertNativeNode(parentLNode, currentView) ? parentLNode : null,
     template: template == null ? null : template,
     next: null,
     parent: currentView,
-    dynamicViewCount: 0,
     queries: null
   };
 }
@@ -1553,7 +1561,7 @@ export function containerRefreshEnd(): void {
   const container = previousOrParentNode as LContainerNode;
   container.native = undefined;
   ngDevMode && assertNodeType(container, TNodeType.Container);
-  const nextIndex = container.data.nextIndex;
+  const nextIndex = container.data.nextIndex !;
 
   // remove extra views at the end of the container
   while (nextIndex < container.data.views.length) {
@@ -1563,7 +1571,9 @@ export function containerRefreshEnd(): void {
 
 function refreshDynamicChildren() {
   for (let current = currentView.child; current !== null; current = current.next) {
-    if (current.dynamicViewCount !== 0 && (current as LContainer).views) {
+    // Note: current can be a LView or a LContainer, but here we are only interested in LContainer.
+    // The distinction is made because nextIndex and views do not exist on LView.
+    if (isLContainer(current)) {
       const container = current as LContainer;
       for (let i = 0; i < container.views.length; i++) {
         const lViewNode = container.views[i];
@@ -1575,6 +1585,10 @@ function refreshDynamicChildren() {
       }
     }
   }
+}
+
+function isLContainer(node: LView | LContainer): node is LContainer {
+  return (node as LContainer).nextIndex == null && (node as LContainer).views != null;
 }
 
 /**
@@ -1617,7 +1631,7 @@ export function embeddedViewStart(viewBlockId: number): RenderFlags {
       (isParent ? previousOrParentNode : getParentLNode(previousOrParentNode)) as LContainerNode;
   ngDevMode && assertNodeType(container, TNodeType.Container);
   const lContainer = container.data;
-  let viewNode: LViewNode|null = scanForView(container, lContainer.nextIndex, viewBlockId);
+  let viewNode: LViewNode|null = scanForView(container, lContainer.nextIndex !, viewBlockId);
 
   if (viewNode) {
     previousOrParentNode = viewNode;
@@ -1630,7 +1644,7 @@ export function embeddedViewStart(viewBlockId: number): RenderFlags {
         viewBlockId, renderer, getOrCreateEmbeddedTView(viewBlockId, container), null, null,
         LViewFlags.CheckAlways, getCurrentSanitizer());
     if (lContainer.queries) {
-      newView.queries = lContainer.queries.enterView(lContainer.nextIndex);
+      newView.queries = lContainer.queries.enterView(lContainer.nextIndex !);
     }
 
     enterView(
@@ -1678,10 +1692,10 @@ export function embeddedViewEnd(): void {
       // used by the ViewContainerRef must be set.
       setRenderParentInProjectedNodes(lContainer.renderParent, viewNode);
       // it is a new view, insert it into collection of views for a given container
-      insertView(containerNode, viewNode, lContainer.nextIndex);
+      insertView(containerNode, viewNode, lContainer.nextIndex !);
     }
 
-    lContainer.nextIndex++;
+    lContainer.nextIndex !++;
   }
   leaveView(currentView !.parent !);
   ngDevMode && assertEqual(isParent, false, 'isParent');
