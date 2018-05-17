@@ -572,7 +572,7 @@ export function getOrCreateContainerRef(di: LInjector): viewEngine_ViewContainer
 
     ngDevMode && assertNodeOfPossibleTypes(vcRefHost, TNodeType.Container, TNodeType.Element);
     const hostParent = getParentLNode(vcRefHost) !;
-    const lContainer = createLContainer(hostParent, vcRefHost.view);
+    const lContainer = createLContainer(hostParent, vcRefHost.view, undefined, true);
     const lContainerNode: LContainerNode = createLNodeObject(
         TNodeType.Container, vcRefHost.view, hostParent, undefined, lContainer, null);
 
@@ -644,19 +644,6 @@ class ViewContainerRef implements viewEngine_ViewContainerRef {
 
     this._viewRefs.splice(adjustedIdx, 0, viewRef);
 
-    // If the view is dynamic (has a template), it needs to be counted both at the container
-    // level and at the node above the container.
-    if (lViewNode.data.template !== null) {
-      // Increment the container view count.
-      this._lContainerNode.data.dynamicViewCount++;
-
-      // Look for the parent node and increment its dynamic view count.
-      const containerParent = getParentLNode(this._lContainerNode) as LElementNode;
-      if (containerParent !== null && containerParent.data !== null) {
-        ngDevMode && assertNodeOfPossibleTypes(containerParent, TNodeType.View, TNodeType.Element);
-        containerParent.data.dynamicViewCount++;
-      }
-    }
     return viewRef;
   }
 

@@ -18,8 +18,11 @@ export interface LContainer {
   /**
    * The next active index in the views array to read or write to. This helps us
    * keep track of where we are in the views array.
+   * In the case the LContainer is created for a ViewContainerRef,
+   * it is set to null to identify this scenario, as indices are "absolute" in that case,
+   * i.e. provided directly by the user of the ViewContainerRef API.
    */
-  nextIndex: number;
+  nextIndex: number|null;
 
   /**
    * This allows us to jump from a container to a sibling container or
@@ -68,12 +71,6 @@ export interface LContainer {
    * The template extracted from the location of the Container.
    */
   readonly template: ComponentTemplate<any>|null;
-
-  /**
-   * A count of dynamic views rendered into this container. If this is non-zero, the `views` array
-   * will be traversed when refreshing dynamic views on this container.
-   */
-  dynamicViewCount: number;
 
   /**
    * Queries active for this container - all the views inserted to / removed from
