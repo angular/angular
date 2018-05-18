@@ -180,8 +180,6 @@ export interface BootstrapOptions {
  *
  * A page's platform is initialized implicitly when a platform is created via a platform factory
  * (e.g. {@link platformBrowser}), or explicitly by calling the {@link createPlatform} function.
- *
- *
  */
 @Injectable()
 export class PlatformRef {
@@ -196,7 +194,8 @@ export class PlatformRef {
    * Creates an instance of an `@NgModule` for the given platform
    * for offline compilation.
    *
-   * ## Simple Example
+   * @usageNotes
+   * ### Simple Example
    *
    * ```typescript
    * my_module.ts:
@@ -252,7 +251,8 @@ export class PlatformRef {
   /**
    * Creates an instance of an `@NgModule` for a given platform using the given runtime compiler.
    *
-   * ## Simple Example
+   * @usageNotes
+   * ### Simple Example
    *
    * ```typescript
    * @NgModule({
@@ -358,8 +358,6 @@ function optionsReducer<T extends Object>(dst: any, objs: T | T[]): T {
 
 /**
  * A reference to an Angular application running on a page.
- *
- *
  */
 @Injectable()
 export class ApplicationRef {
@@ -448,14 +446,15 @@ export class ApplicationRef {
   /**
    * Bootstrap a new component at the root level of the application.
    *
+   * @usageNotes
    * ### Bootstrap process
    *
    * When bootstrapping a new root component into an application, Angular mounts the
-   * specified application component onto DOM elements identified by the [componentType]'s
+   * specified application component onto DOM elements identified by the componentType's
    * selector and kicks off automatic change detection to finish initializing the component.
    *
    * Optionally, a component can be mounted onto a DOM element that does not match the
-   * [componentType]'s selector.
+   * componentType's selector.
    *
    * ### Example
    * {@example core/ts/platform/platform.ts region='longform'}

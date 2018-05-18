@@ -27,6 +27,7 @@ import {getSymbolIterator} from '../util';
  *
  * NOTE: In the future this class will implement an `Observable` interface.
  *
+ * @usageNotes
  * ### Example
  * ```typescript
  * @Component({...})
@@ -34,7 +35,6 @@ import {getSymbolIterator} from '../util';
  *   @ViewChildren(Item) items:QueryList<Item>;
  * }
  * ```
- *
  */
 export class QueryList<T>/* implements Iterable<T> */ {
   public readonly dirty = true;
