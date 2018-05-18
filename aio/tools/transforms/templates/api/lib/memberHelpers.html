@@ -113,12 +113,24 @@
       </td>
     </tr>
   {% endif %}
-  {% if method.description %}<tr>
+
+  {% if method.description -%}
+    <tr>
       <td class="description">
-        {$ method.description | marked $}
+        {$ method.description | marked({ h3: 'h4' }) $}
       </td>
-    </tr>{% endif %}
-  </tbody>
+    </tr>
+  {%- endif %}
+
+  {% if method.usageNotes -%}
+    <tr>
+      <td class="usage-notes">
+        <h3>Usage Notes</h3>
+        {$ method.usageNotes | marked({ h3: 'h4' }) $}
+      </td>
+    </tr>
+  {%- endif %}
+    </tbody>
 </table>
 {% endmacro -%}
 
