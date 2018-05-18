@@ -28,7 +28,7 @@ export function getAttrValue(attrs: AttrMap, attr: string | string[]): string | 
       ? attr
       : attr.find(a => attrs.hasOwnProperty(a.toLowerCase()));
 
-  return key && attrs[key.toLowerCase()];
+  return (key === undefined) ? undefined : attrs[key.toLowerCase()];
 }
 
 /**
