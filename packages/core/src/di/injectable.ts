@@ -43,7 +43,7 @@ export interface InjectableDecorator {
    * @description
    * A marker metadata that marks a class as available to {@link Injector} for creation.
    *
-   * For more details, see the {@linkDocs guide/dependency-injection "Dependency Injection Guide"}.
+   * For more details, see the ["Dependency Injection Guide"(guide/dependency-injection).
    *
    * ### Example
    *
