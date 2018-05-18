@@ -32,7 +32,7 @@ source ${thisDir}/_travis-fold.sh
 
   # Run unit tests
   travisFoldStart "test.aio.unit"
-    yarn test
+    yarn test --watch=false
   travisFoldEnd "test.aio.unit"
 
   # Run e2e tests
