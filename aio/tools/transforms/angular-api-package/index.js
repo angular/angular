@@ -239,7 +239,15 @@ function addAllowedPropertiesRules(checkContentRules, API_CONTAINED_DOC_TYPES) {
     const ruleSet = checkContentRules.docTypeRules[docType] = checkContentRules.docTypeRules[docType] || {};
     PROPS_TO_DISALLOW.forEach(prop => {
       const rules = ruleSet[prop] = ruleSet[prop] || [];
-      rules.push((doc, prop, value) => value && `Invalid property: "${prop}" is not allowed on "${doc.docType}" docs.`);
+      rules.push((doc, prop, value) => {
+        return value &&
+               !isMethod(doc) &&
+               `Invalid property: "${prop}" is not allowed on "${doc.docType}" docs.`;
+      });
     });
   });
+}
+
+function isMethod(doc) {
+  return doc.hasOwnProperty('parameters') && !doc.isGetAccessor && !doc.isSetAccessor;
 }
