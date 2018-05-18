@@ -3656,7 +3656,7 @@ Lazy loading has multiple benefits.
 * You can speed up load time for users that only visit certain areas of the application.
 * You can continue expanding lazy loaded feature areas without increasing the size of the initial load bundle.
 
-You're already made part way there.
+You're already part of the way there.
 By organizing the application into modules&mdash;`AppModule`,
 `HeroesModule`, `AdminModule` and `CrisisCenterModule`&mdash;you
 have natural candidates for lazy loading.
